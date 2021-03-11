@@ -22,7 +22,7 @@ namespace autofill {
 namespace {
 
 // Returns a copy of |input| without >= 5 consecutive digits.
-std::string StripDigitsIfRequired(const base::string16& input) {
+std::string StripDigitsIfRequired(const std::u16string& input) {
   std::string input_utf8 = UTF16ToUTF8(input);
   std::string result;
   result.reserve(input_utf8.length());
@@ -95,7 +95,7 @@ FormSignature CalculateFormSignature(const FormData& form_data) {
 }
 
 FieldSignature CalculateFieldSignatureByNameAndType(
-    const base::string16& field_name,
+    const std::u16string& field_name,
     const std::string& field_type) {
   std::string name = UTF16ToUTF8(field_name);
   std::string field_string = name + "&" + field_type;

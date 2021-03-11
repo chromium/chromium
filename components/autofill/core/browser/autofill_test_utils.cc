@@ -155,11 +155,11 @@ void CreateTestSelectField(const char* label,
   // Fill the base attributes.
   CreateTestFormField(label, name, value, "select-one", field);
 
-  std::vector<base::string16> values16(select_size);
+  std::vector<std::u16string> values16(select_size);
   for (size_t i = 0; i < select_size; ++i)
     values16[i] = base::UTF8ToUTF16(values[i]);
 
-  std::vector<base::string16> contents16(select_size);
+  std::vector<std::u16string> contents16(select_size);
   for (size_t i = 0; i < select_size; ++i)
     contents16[i] = base::UTF8ToUTF16(contents[i]);
 
@@ -181,11 +181,11 @@ void CreateTestDatalistField(const char* label,
   // Fill the base attributes.
   CreateTestFormField(label, name, value, "text", field);
 
-  std::vector<base::string16> values16(values.size());
+  std::vector<std::u16string> values16(values.size());
   for (size_t i = 0; i < values.size(); ++i)
     values16[i] = base::UTF8ToUTF16(values[i]);
 
-  std::vector<base::string16> label16(labels.size());
+  std::vector<std::u16string> label16(labels.size());
   for (size_t i = 0; i < labels.size(); ++i)
     label16[i] = base::UTF8ToUTF16(labels[i]);
 

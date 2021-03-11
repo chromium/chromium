@@ -31,22 +31,22 @@ class CardExpirationDateFixFlowControllerImpl
 
   void Show(CardExpirationDateFixFlowView* card_expiration_date_fix_flow_view,
             const CreditCard& card,
-            base::OnceCallback<void(const base::string16&,
-                                    const base::string16&)> callback);
+            base::OnceCallback<void(const std::u16string&,
+                                    const std::u16string&)> callback);
 
   // CardExpirationDateFixFlowController implementation.
-  void OnAccepted(const base::string16& month,
-                  const base::string16& year) override;
+  void OnAccepted(const std::u16string& month,
+                  const std::u16string& year) override;
   void OnDismissed() override;
   void OnDialogClosed() override;
   int GetIconId() const override;
-  base::string16 GetTitleText() const override;
-  base::string16 GetSaveButtonLabel() const override;
-  base::string16 GetCardLabel() const override;
-  base::string16 GetCancelButtonLabel() const override;
-  base::string16 GetInputLabel() const override;
-  base::string16 GetDateSeparator() const override;
-  base::string16 GetInvalidDateError() const override;
+  std::u16string GetTitleText() const override;
+  std::u16string GetSaveButtonLabel() const override;
+  std::u16string GetCardLabel() const override;
+  std::u16string GetCancelButtonLabel() const override;
+  std::u16string GetInputLabel() const override;
+  std::u16string GetDateSeparator() const override;
+  std::u16string GetInvalidDateError() const override;
 
  private:
   // View that displays the fix flow prompt.
@@ -54,7 +54,7 @@ class CardExpirationDateFixFlowControllerImpl
 
   // The callback to save the credit card to Google Payments once user accepts
   // fix flow.
-  base::OnceCallback<void(const base::string16&, const base::string16&)>
+  base::OnceCallback<void(const std::u16string&, const std::u16string&)>
       upload_save_card_callback_;
 
   // Whether the prompt was shown to the user.
@@ -64,7 +64,7 @@ class CardExpirationDateFixFlowControllerImpl
   bool had_user_interaction_ = false;
 
   // Label of the card describing the network and the last four digits.
-  base::string16 card_label_;
+  std::u16string card_label_;
 
   DISALLOW_COPY_AND_ASSIGN(CardExpirationDateFixFlowControllerImpl);
 };

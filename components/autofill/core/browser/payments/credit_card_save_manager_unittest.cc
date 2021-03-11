@@ -195,16 +195,16 @@ class CreditCardSaveManagerTest : public testing::Test {
   void CreateTestCreditCardFormData(FormData* form,
                                     CreditCardFormOptions options) {
     form->name = ASCIIToUTF16("MyForm");
-    base::string16 scheme =
+    std::u16string scheme =
         options.is_https ? ASCIIToUTF16("https://") : ASCIIToUTF16("http://");
-    base::string16 host = options.is_google_host
+    std::u16string host = options.is_google_host
                               ? ASCIIToUTF16("pay.google.com")
                               : ASCIIToUTF16("myform.com");
-    base::string16 root_host = options.is_google_host
+    std::u16string root_host = options.is_google_host
                                    ? ASCIIToUTF16("pay.google.com")
                                    : ASCIIToUTF16("myform.root.com");
-    base::string16 form_path = ASCIIToUTF16("/form.html");
-    base::string16 submit_path = ASCIIToUTF16("/submit.html");
+    std::u16string form_path = ASCIIToUTF16("/form.html");
+    std::u16string submit_path = ASCIIToUTF16("/submit.html");
     form->url = GURL(scheme + host + form_path);
     form->action = GURL(scheme + host + submit_path);
     form->main_frame_origin =

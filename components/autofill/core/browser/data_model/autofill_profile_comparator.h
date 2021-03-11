@@ -58,7 +58,7 @@ class AutofillProfileComparator {
   //
   // If |whitespace_spec| is DISCARD_WHITESPACE, punctuation and whitespace are
   // discarded. For example, +1 (234) 567-8900 becomes 12345678900.
-  static base::string16 NormalizeForComparison(
+  static std::u16string NormalizeForComparison(
       base::StringPiece16 text,
       WhitespaceSpec whitespace_spec = RETAIN_WHITESPACE);
 
@@ -92,8 +92,8 @@ class AutofillProfileComparator {
   // true, "john quincy public" is not a name variant of "john q public".
   //
   // Note: Expects that |full_name| is already normalized for comparison.
-  bool IsNameVariantOf(const base::string16& full_name_1,
-                       const base::string16& full_name_2) const;
+  bool IsNameVariantOf(const std::u16string& full_name_1,
+                       const std::u16string& full_name_2) const;
 
   // Populates |email_info| with the result of merging the email addresses in
   // |p1| and |p2|. Returns true if successful. Expects that |p1| and |p2| have
@@ -169,7 +169,7 @@ class AutofillProfileComparator {
   // Returns the value of |t| from |p1| or |p2| depending on which is non-empty.
   // This method expects that the value is either the same in |p1| and |p2| or
   // empty in one of them.
-  base::string16 GetNonEmptyOf(const AutofillProfile& p1,
+  std::u16string GetNonEmptyOf(const AutofillProfile& p1,
                                const AutofillProfile& p2,
                                AutofillType t) const;
 
@@ -183,8 +183,8 @@ class AutofillProfileComparator {
   //     "jean", "jean f", "jean francois", "jf" }
   //
   // Note: Expects that |name| is already normalized for comparison.
-  static std::set<base::string16> GetNamePartVariants(
-      const base::string16& name_part);
+  static std::set<std::u16string> GetNamePartVariants(
+      const std::u16string& name_part);
 
   // Returns true if |p1| and |p2| have names which are equivalent for the
   // purposes of merging the two profiles. This means one of the names is

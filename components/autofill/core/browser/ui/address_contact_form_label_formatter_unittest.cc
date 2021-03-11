@@ -97,7 +97,7 @@ TEST(AddressContactFormLabelFormatterTest,
           ConstructLabelLine({base::ASCIIToUTF16("(617) 324-0000"),
                               base::ASCIIToUTF16("deborah@mit.edu")}),
           base::ASCIIToUTF16("Old North Church, 193 Salem St"),
-          base::string16()));
+          std::u16string()));
 }
 
 TEST(AddressContactFormLabelFormatterTest,
@@ -153,7 +153,7 @@ TEST(AddressContactFormLabelFormatterTest,
           ConstructLabelLine({base::ASCIIToUTF16("Deborah Katabi"),
                               base::ASCIIToUTF16("(617) 324-0000"),
                               base::ASCIIToUTF16("deborah@mit.edu")}),
-          base::ASCIIToUTF16(""), base::string16()));
+          base::ASCIIToUTF16(""), std::u16string()));
 }
 
 TEST(AddressContactFormLabelFormatterTest,
@@ -209,7 +209,7 @@ TEST(AddressContactFormLabelFormatterTest,
           ConstructLabelLine({base::ASCIIToUTF16("(617) 324-0000"),
                               base::ASCIIToUTF16("deborah@mit.edu")}),
           base::ASCIIToUTF16("Old North Church, 193 Salem St"),
-          base::string16()));
+          std::u16string()));
 }
 
 TEST(AddressContactFormLabelFormatterTest,
@@ -265,7 +265,7 @@ TEST(AddressContactFormLabelFormatterTest,
                   ConstructLabelLine({base::ASCIIToUTF16("Deborah Katabi"),
                                       base::ASCIIToUTF16("(617) 324-0000")}),
                   base::ASCIIToUTF16("Old North Church, 193 Salem St"),
-                  base::string16()));
+                  std::u16string()));
 }
 
 TEST(AddressContactFormLabelFormatterTest,
@@ -322,7 +322,7 @@ TEST(AddressContactFormLabelFormatterTest,
           ConstructLabelLine({base::ASCIIToUTF16("Deborah Katabi"),
                               base::ASCIIToUTF16("deborah@mit.edu")}),
           base::ASCIIToUTF16("Old North Church, 193 Salem St"),
-          base::string16()));
+          std::u16string()));
 }
 
 TEST(AddressContactFormLabelFormatterTest,

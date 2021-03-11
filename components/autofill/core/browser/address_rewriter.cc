@@ -140,7 +140,7 @@ class Cache {
 }  // namespace
 
 AddressRewriter AddressRewriter::ForCountryCode(
-    const base::string16& country_code) {
+    const std::u16string& country_code) {
   const std::string region =
       base::UTF16ToUTF8(base::i18n::ToUpper(country_code));
   const CompiledRuleVector* rules =
@@ -159,7 +159,7 @@ AddressRewriter AddressRewriter::ForCustomRules(
   return rewriter;
 }
 
-base::string16 AddressRewriter::Rewrite(const base::string16& text) const {
+std::u16string AddressRewriter::Rewrite(const std::u16string& text) const {
   if (impl_ == nullptr)
     return base::CollapseWhitespace(text, true);
 

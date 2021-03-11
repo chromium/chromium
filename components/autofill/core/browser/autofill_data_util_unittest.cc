@@ -214,7 +214,7 @@ class JoinNamePartsTest : public testing::TestWithParam<FullNameTestCase> {};
 
 TEST_P(JoinNamePartsTest, JoinNameParts) {
   auto test_case = GetParam();
-  base::string16 joined =
+  std::u16string joined =
       JoinNameParts(base::UTF8ToUTF16(test_case.given_name),
                     base::UTF8ToUTF16(test_case.middle_name),
                     base::UTF8ToUTF16(test_case.family_name));

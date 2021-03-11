@@ -57,7 +57,7 @@ JNI_AutofillProviderTestHelper_SimulateMainFrameAutofillServerResponseForTesting
     const base::android::JavaParamRef<jobject>& jweb_contents,
     const base::android::JavaParamRef<jobjectArray>& jfield_ids,
     const base::android::JavaParamRef<jintArray>& jfield_types) {
-  std::vector<base::string16> field_ids;
+  std::vector<std::u16string> field_ids;
   base::android::AppendJavaStringArrayToStringVector(env, jfield_ids,
                                                      &field_ids);
   std::vector<int> field_types;
@@ -111,7 +111,7 @@ JNI_AutofillProviderTestHelper_SimulateMainFramePredictionsAutofillServerRespons
     const base::android::JavaParamRef<jobject>& jweb_contents,
     const base::android::JavaParamRef<jobjectArray>& jfield_ids,
     const base::android::JavaParamRef<jobjectArray>& jfield_types) {
-  std::vector<base::string16> field_ids;
+  std::vector<std::u16string> field_ids;
   base::android::AppendJavaStringArrayToStringVector(env, jfield_ids,
                                                      &field_ids);
   std::vector<std::vector<int>> field_types;

@@ -99,7 +99,7 @@ TEST(CountryNamesTest, GetCachedCountryCodeForLocalizedCountryName) {
 // Test mapping of an empty country name to an country code.
 TEST(CountryNamesTest, EmptyCountryNameHasEmptyCountryCode) {
   std::string country_code =
-      TestCountryNames("en").GetCountryCode(base::string16());
+      TestCountryNames("en").GetCountryCode(std::u16string());
   EXPECT_TRUE(country_code.empty()) << country_code;
 }
 

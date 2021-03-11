@@ -84,7 +84,7 @@ size_t FindLongestCommonPrefixLengthInStringsWithMinimalLength(
 // Returns true if |parseable_name| is a valid parseable_name. Current criterion
 // is the |autofill::kParseableNameValidationRe| regex.
 bool IsValidParseableName(const base::StringPiece16 parseable_name) {
-  static const base::string16 kParseableNameValidationPattern =
+  static const std::u16string kParseableNameValidationPattern =
       base::UTF8ToUTF16(kParseableNameValidationRe);
   return MatchesPattern(parseable_name, kParseableNameValidationPattern);
 }
@@ -204,10 +204,10 @@ OptionalNamePieces RemoveCommonPrefixForNamesWithMinimalLengthIfPossible(
                                           kMinCommonNameLongPrefixLength);
 }
 
-std::vector<base::string16> GetParseableNames(const NamePieces& field_names) {
+std::vector<std::u16string> GetParseableNames(const NamePieces& field_names) {
   OptionalNamePieces parseable_names = base::nullopt;
 
-  std::vector<base::string16> result;
+  std::vector<std::u16string> result;
   result.reserve(field_names.size());
 
   // If the feature is enabled, try to remove a common affix. If this is not
@@ -231,7 +231,7 @@ std::vector<base::string16> GetParseableNames(const NamePieces& field_names) {
   // field names.
   base::ranges::transform(
       parseable_names.has_value() ? parseable_names.value() : field_names,
-      std::back_inserter(result), [](auto& s) { return base::string16(s); });
+      std::back_inserter(result), [](auto& s) { return std::u16string(s); });
 
   return result;
 }

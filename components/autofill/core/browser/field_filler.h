@@ -36,21 +36,21 @@ class FieldFiller {
                      absl::variant<const AutofillProfile*, const CreditCard*>
                          profile_or_credit_card,
                      FormFieldData* field_data,
-                     const base::string16& cvc,
+                     const std::u16string& cvc,
                      std::string* failure_to_fill = nullptr);
 
   // Returns the phone number value for the given |field|. The returned value
   // might be |number|, or |phone_home_city_and_number|, or could possibly be a
   // meaningful subset |number|, if that's appropriate for the field.
-  static base::string16 GetPhoneNumberValue(
+  static std::u16string GetPhoneNumberValue(
       const AutofillField& field,
-      const base::string16& number,
-      const base::string16& phone_home_city_and_number,
+      const std::u16string& number,
+      const std::u16string& phone_home_city_and_number,
       const FormFieldData& field_data);
 
   // Returns the index of the shortest entry in the given select field of which
   // |value| is a substring. Returns -1 if no such entry exists.
-  static int FindShortestSubstringMatchInSelect(const base::string16& value,
+  static int FindShortestSubstringMatchInSelect(const std::u16string& value,
                                                 bool ignore_whitespace,
                                                 const FormFieldData* field);
 

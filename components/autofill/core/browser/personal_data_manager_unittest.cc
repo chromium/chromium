@@ -2198,7 +2198,7 @@ TEST_F(PersonalDataManagerTest, GetProfileSuggestions_HideSubsets) {
   // Subset profile.
   AutofillProfile profile3 = profile;
   profile3.set_guid(base::GenerateGUID());
-  profile3.SetRawInfo(ADDRESS_HOME_STATE, base::string16());
+  profile3.SetRawInfo(ADDRESS_HOME_STATE, std::u16string());
 
   // For easier results verification, make sure |profile| is suggested first.
   profile.set_use_count(5);
@@ -2361,7 +2361,7 @@ TEST_F(PersonalDataManagerTest, GetProfileSuggestions_NumberOfSuggestions) {
 
   // Verify that all the profiles are suggested.
   std::vector<Suggestion> suggestions = personal_data_->GetProfileSuggestions(
-      AutofillType(NAME_FIRST), base::string16(), false,
+      AutofillType(NAME_FIRST), std::u16string(), false,
       std::vector<ServerFieldType>());
   EXPECT_EQ(3U, suggestions.size());
 }
@@ -2392,7 +2392,7 @@ TEST_F(PersonalDataManagerTest,
   // Query with empty string only returns profile2.
   {
     std::vector<Suggestion> suggestions = personal_data_->GetProfileSuggestions(
-        AutofillType(ADDRESS_HOME_STREET_ADDRESS), base::string16(), false,
+        AutofillType(ADDRESS_HOME_STREET_ADDRESS), std::u16string(), false,
         std::vector<ServerFieldType>());
     EXPECT_EQ(1U, suggestions.size());
   }
@@ -2460,7 +2460,7 @@ TEST_F(PersonalDataManagerTest, GetProfileSuggestions_Validity) {
         /*disabled_features=*/{});
     std::vector<Suggestion> email_suggestions =
         personal_data_->GetProfileSuggestions(AutofillType(EMAIL_ADDRESS),
-                                              base::string16(), false,
+                                              std::u16string(), false,
                                               std::vector<ServerFieldType>());
 
     for (auto* profile : profiles) {
@@ -2474,7 +2474,7 @@ TEST_F(PersonalDataManagerTest, GetProfileSuggestions_Validity) {
 
     std::vector<Suggestion> name_suggestions =
         personal_data_->GetProfileSuggestions(AutofillType(NAME_FIRST),
-                                              base::string16(), false,
+                                              std::u16string(), false,
                                               std::vector<ServerFieldType>());
     ASSERT_EQ(2U, name_suggestions.size());
     EXPECT_EQ(base::ASCIIToUTF16("Alice"), name_suggestions[0].value);
@@ -2510,7 +2510,7 @@ TEST_F(PersonalDataManagerTest, GetProfileSuggestions_Validity) {
 
     std::vector<Suggestion> email_suggestions =
         personal_data_->GetProfileSuggestions(AutofillType(EMAIL_ADDRESS),
-                                              base::string16(), false,
+                                              std::u16string(), false,
                                               std::vector<ServerFieldType>());
 
     for (auto* profile : profiles) {
@@ -2525,7 +2525,7 @@ TEST_F(PersonalDataManagerTest, GetProfileSuggestions_Validity) {
 
     std::vector<Suggestion> name_suggestions =
         personal_data_->GetProfileSuggestions(AutofillType(NAME_FIRST),
-                                              base::string16(), false,
+                                              std::u16string(), false,
                                               std::vector<ServerFieldType>());
     ASSERT_EQ(2U, name_suggestions.size());
     EXPECT_EQ(base::ASCIIToUTF16("Alice"), name_suggestions[0].value);
@@ -2539,7 +2539,7 @@ TEST_F(PersonalDataManagerTest, GetProfileSuggestions_Validity) {
         /*disabled_features=*/{features::kAutofillProfileServerValidation});
     std::vector<Suggestion> email_suggestions =
         personal_data_->GetProfileSuggestions(AutofillType(EMAIL_ADDRESS),
-                                              base::string16(), false,
+                                              std::u16string(), false,
                                               std::vector<ServerFieldType>());
 
     for (auto* profile : profiles) {
@@ -2554,7 +2554,7 @@ TEST_F(PersonalDataManagerTest, GetProfileSuggestions_Validity) {
 
     std::vector<Suggestion> name_suggestions =
         personal_data_->GetProfileSuggestions(AutofillType(NAME_FIRST),
-                                              base::string16(), false,
+                                              std::u16string(), false,
                                               std::vector<ServerFieldType>());
     ASSERT_EQ(2U, name_suggestions.size());
     EXPECT_EQ(base::ASCIIToUTF16("Alice"), name_suggestions[0].value);
@@ -2569,7 +2569,7 @@ TEST_F(PersonalDataManagerTest, GetProfileSuggestions_Validity) {
         /*disabled_features=*/{features::kAutofillProfileClientValidation});
     std::vector<Suggestion> email_suggestions =
         personal_data_->GetProfileSuggestions(AutofillType(EMAIL_ADDRESS),
-                                              base::string16(), false,
+                                              std::u16string(), false,
                                               std::vector<ServerFieldType>());
 
     for (auto* profile : profiles) {
@@ -2584,7 +2584,7 @@ TEST_F(PersonalDataManagerTest, GetProfileSuggestions_Validity) {
 
     std::vector<Suggestion> name_suggestions =
         personal_data_->GetProfileSuggestions(AutofillType(NAME_FIRST),
-                                              base::string16(), false,
+                                              std::u16string(), false,
                                               std::vector<ServerFieldType>());
     ASSERT_EQ(2U, name_suggestions.size());
     EXPECT_EQ(base::ASCIIToUTF16("Alice"), name_suggestions[0].value);
@@ -2723,7 +2723,7 @@ TEST_F(PersonalDataManagerTest,
   base::HistogramTester histogram_tester;
   EXPECT_THAT(
       personal_data_->GetProfileSuggestions(
-          AutofillType(NAME_FIRST), base::string16(), false,
+          AutofillType(NAME_FIRST), std::u16string(), false,
           std::vector<ServerFieldType>{NAME_FIRST, NAME_LAST, EMAIL_ADDRESS,
                                        PHONE_HOME_WHOLE_NUMBER}),
       ElementsAre(
@@ -2747,7 +2747,7 @@ TEST_F(PersonalDataManagerTest, GetProfileSuggestions_ForContactForm) {
 
   EXPECT_THAT(
       personal_data_->GetProfileSuggestions(
-          AutofillType(NAME_FIRST), base::string16(), false,
+          AutofillType(NAME_FIRST), std::u16string(), false,
           std::vector<ServerFieldType>{NAME_FIRST, NAME_LAST, EMAIL_ADDRESS,
                                        PHONE_HOME_WHOLE_NUMBER}),
       ElementsAre(AllOf(
@@ -2772,7 +2772,7 @@ TEST_F(PersonalDataManagerTest, GetProfileSuggestions_AddressForm) {
       features::kAutofillUseImprovedLabelDisambiguation);
 
   EXPECT_THAT(personal_data_->GetProfileSuggestions(
-                  AutofillType(NAME_FULL), base::string16(), false,
+                  AutofillType(NAME_FULL), std::u16string(), false,
                   std::vector<ServerFieldType>{
                       NAME_FULL, ADDRESS_HOME_STREET_ADDRESS, ADDRESS_HOME_CITY,
                       ADDRESS_HOME_STATE, ADDRESS_HOME_ZIP}),
@@ -2798,7 +2798,7 @@ TEST_F(PersonalDataManagerTest, GetProfileSuggestions_AddressPhoneForm) {
 
   EXPECT_THAT(
       personal_data_->GetProfileSuggestions(
-          AutofillType(NAME_FULL), base::string16(), false,
+          AutofillType(NAME_FULL), std::u16string(), false,
           std::vector<ServerFieldType>{NAME_FULL, ADDRESS_HOME_STREET_ADDRESS,
                                        PHONE_HOME_WHOLE_NUMBER}),
       ElementsAre(AllOf(
@@ -2824,7 +2824,7 @@ TEST_F(PersonalDataManagerTest, GetProfileSuggestions_AddressEmailForm) {
 
   EXPECT_THAT(
       personal_data_->GetProfileSuggestions(
-          AutofillType(NAME_FULL), base::string16(), false,
+          AutofillType(NAME_FULL), std::u16string(), false,
           std::vector<ServerFieldType>{NAME_FULL, ADDRESS_HOME_STREET_ADDRESS,
                                        EMAIL_ADDRESS}),
       ElementsAre(AllOf(
@@ -2850,7 +2850,7 @@ TEST_F(PersonalDataManagerTest, GetProfileSuggestions_FormWithOneProfile) {
 
   EXPECT_THAT(
       personal_data_->GetProfileSuggestions(
-          AutofillType(NAME_FULL), base::string16(), false,
+          AutofillType(NAME_FULL), std::u16string(), false,
           std::vector<ServerFieldType>{NAME_FULL, ADDRESS_HOME_STREET_ADDRESS,
                                        EMAIL_ADDRESS, PHONE_HOME_WHOLE_NUMBER}),
       ElementsAre(AllOf(testing::Field(&Suggestion::label,
@@ -2894,7 +2894,7 @@ TEST_F(PersonalDataManagerTest,
 
   EXPECT_THAT(
       personal_data_->GetProfileSuggestions(
-          AutofillType(NAME_FULL), base::string16(), false,
+          AutofillType(NAME_FULL), std::u16string(), false,
           std::vector<ServerFieldType>{NAME_FULL, ADDRESS_HOME_STREET_ADDRESS,
                                        EMAIL_ADDRESS, PHONE_HOME_WHOLE_NUMBER}),
       ElementsAre(
@@ -2948,7 +2948,7 @@ TEST_F(PersonalDataManagerTest, GetProfileSuggestions_MobileShowOne) {
   // Tests a form with name, email address, and phone number fields.
   EXPECT_THAT(
       personal_data_->GetProfileSuggestions(
-          AutofillType(EMAIL_ADDRESS), base::string16(), false,
+          AutofillType(EMAIL_ADDRESS), std::u16string(), false,
           std::vector<ServerFieldType>{NAME_FIRST, NAME_LAST, EMAIL_ADDRESS,
                                        PHONE_HOME_WHOLE_NUMBER}),
       ElementsAre(AllOf(testing::Field(&Suggestion::label,
@@ -2961,7 +2961,7 @@ TEST_F(PersonalDataManagerTest, GetProfileSuggestions_MobileShowOne) {
   // Tests a form with name, address, phone number, and email address fields.
   EXPECT_THAT(
       personal_data_->GetProfileSuggestions(
-          AutofillType(EMAIL_ADDRESS), base::string16(), false,
+          AutofillType(EMAIL_ADDRESS), std::u16string(), false,
           std::vector<ServerFieldType>{NAME_FULL, ADDRESS_HOME_STREET_ADDRESS,
                                        ADDRESS_HOME_CITY, EMAIL_ADDRESS,
                                        PHONE_HOME_WHOLE_NUMBER}),
@@ -3008,7 +3008,7 @@ TEST_F(PersonalDataManagerTest, GetProfileSuggestions_MobileShowAll) {
   // Tests a form with name, email address, and phone number fields.
   EXPECT_THAT(
       personal_data_->GetProfileSuggestions(
-          AutofillType(EMAIL_ADDRESS), base::string16(), false,
+          AutofillType(EMAIL_ADDRESS), std::u16string(), false,
           std::vector<ServerFieldType>{NAME_FIRST, NAME_LAST, EMAIL_ADDRESS,
                                        PHONE_HOME_WHOLE_NUMBER}),
       ElementsAre(
@@ -3026,7 +3026,7 @@ TEST_F(PersonalDataManagerTest, GetProfileSuggestions_MobileShowAll) {
   // Tests a form with name, address, phone number, and email address fields.
   EXPECT_THAT(
       personal_data_->GetProfileSuggestions(
-          AutofillType(EMAIL_ADDRESS), base::string16(), false,
+          AutofillType(EMAIL_ADDRESS), std::u16string(), false,
           std::vector<ServerFieldType>{NAME_FULL, ADDRESS_HOME_STREET_ADDRESS,
                                        ADDRESS_HOME_CITY, EMAIL_ADDRESS,
                                        PHONE_HOME_WHOLE_NUMBER}),
@@ -3272,20 +3272,20 @@ TEST_F(PersonalDataManagerTest, GetCreditCardSuggestions_LocalCardsRanking) {
   std::vector<Suggestion> suggestions =
       personal_data_->GetCreditCardSuggestions(
           AutofillType(CREDIT_CARD_NAME_FULL),
-          /*field_contents=*/base::string16(),
+          /*field_contents=*/std::u16string(),
           /*include_server_cards=*/true);
   ASSERT_EQ(3U, suggestions.size());
 
   // Ordered as expected.
   EXPECT_EQ(base::ASCIIToUTF16("John Dillinger"), suggestions[0].value);
   EXPECT_TRUE(suggestions[0].label.find(base::ASCIIToUTF16("3456")) !=
-              base::string16::npos);
+              std::u16string::npos);
   EXPECT_EQ(base::ASCIIToUTF16("Clyde Barrow"), suggestions[1].value);
   EXPECT_TRUE(suggestions[1].label.find(base::ASCIIToUTF16("0005")) !=
-              base::string16::npos);
+              std::u16string::npos);
   EXPECT_EQ(base::ASCIIToUTF16("Bonnie Parker"), suggestions[2].value);
   EXPECT_TRUE(suggestions[2].label.find(base::ASCIIToUTF16("5100")) !=
-              base::string16::npos);
+              std::u16string::npos);
 }
 
 // Test that local and server cards are ordered as expected.
@@ -3320,7 +3320,7 @@ TEST_F(PersonalDataManagerTest,
   std::vector<Suggestion> suggestions =
       personal_data_->GetCreditCardSuggestions(
           AutofillType(CREDIT_CARD_NAME_FULL),
-          /*field_contents=*/base::string16(),
+          /*field_contents=*/std::u16string(),
           /*include_server_cards=*/true);
   ASSERT_EQ(5U, suggestions.size());
 
@@ -3373,7 +3373,7 @@ TEST_F(PersonalDataManagerTest,
   std::vector<Suggestion> suggestions =
       personal_data_->GetCreditCardSuggestions(
           AutofillType(CREDIT_CARD_NAME_FULL),
-          /*field_contents=*/base::string16(),
+          /*field_contents=*/std::u16string(),
           /*include_server_cards=*/true);
   ASSERT_EQ(0U, suggestions.size());
 }
@@ -3422,7 +3422,7 @@ TEST_F(PersonalDataManagerTest,
   std::vector<Suggestion> suggestions =
       personal_data_->GetCreditCardSuggestions(
           AutofillType(CREDIT_CARD_NAME_FULL),
-          /*field_contents=*/base::string16(),
+          /*field_contents=*/std::u16string(),
           /*include_server_cards=*/true);
   ASSERT_EQ(0U, suggestions.size());
 }
@@ -3487,7 +3487,7 @@ TEST_F(PersonalDataManagerTest, GetCreditCardSuggestions_ExpiredCards) {
   std::vector<Suggestion> suggestions =
       personal_data_->GetCreditCardSuggestions(
           AutofillType(CREDIT_CARD_NAME_FULL),
-          /*field_contents=*/base::string16(),
+          /*field_contents=*/std::u16string(),
           /* include_server_cards= */ true);
   ASSERT_EQ(3U, suggestions.size());
 
@@ -3553,7 +3553,7 @@ TEST_F(PersonalDataManagerTest,
   {
     std::vector<Suggestion> suggestions =
         personal_data_->GetCreditCardSuggestions(
-            AutofillType(CREDIT_CARD_NAME_FULL), base::string16(),
+            AutofillType(CREDIT_CARD_NAME_FULL), std::u16string(),
             /*include_server_cards=*/true);
     EXPECT_EQ(2U, suggestions.size());
     EXPECT_EQ(base::ASCIIToUTF16("Bonnie Parker"), suggestions[0].value);
@@ -3647,7 +3647,7 @@ TEST_F(PersonalDataManagerTest,
   std::vector<Suggestion> suggestions =
       personal_data_->GetCreditCardSuggestions(
           AutofillType(CREDIT_CARD_NUMBER),
-          /*field_contents=*/base::string16(),
+          /*field_contents=*/std::u16string(),
           /*include_server_cards=*/true);
   ASSERT_EQ(1U, suggestions.size());
   EXPECT_EQ(base::UTF8ToUTF16(std::string("Amex  ") +
@@ -3683,7 +3683,7 @@ TEST_F(PersonalDataManagerTest,
   std::vector<Suggestion> suggestions =
       personal_data_->GetCreditCardSuggestions(
           AutofillType(CREDIT_CARD_NAME_FULL),
-          /*field_contents=*/base::string16(),
+          /*field_contents=*/std::u16string(),
           /*include_server_cards=*/true);
   ASSERT_EQ(1U, suggestions.size());
   EXPECT_EQ(base::UTF8ToUTF16("nickname"), suggestions[0].label);
@@ -3728,7 +3728,7 @@ TEST_F(PersonalDataManagerTest, GetCreditCardSuggestions_ServerDuplicates) {
   std::vector<Suggestion> suggestions =
       personal_data_->GetCreditCardSuggestions(
           AutofillType(CREDIT_CARD_NAME_FULL),
-          /*field_contents=*/base::string16(),
+          /*field_contents=*/std::u16string(),
           /*include_server_cards=*/true);
   ASSERT_EQ(3U, suggestions.size());
   EXPECT_EQ(base::ASCIIToUTF16("John Dillinger"), suggestions[0].value);
@@ -3736,7 +3736,7 @@ TEST_F(PersonalDataManagerTest, GetCreditCardSuggestions_ServerDuplicates) {
   EXPECT_EQ(base::ASCIIToUTF16("Bonnie Parker"), suggestions[2].value);
 
   suggestions = personal_data_->GetCreditCardSuggestions(
-      AutofillType(CREDIT_CARD_NUMBER), /*field_contents=*/base::string16(),
+      AutofillType(CREDIT_CARD_NUMBER), /*field_contents=*/std::u16string(),
       /*include_server_cards=*/true);
   ASSERT_EQ(3U, suggestions.size());
   EXPECT_EQ(base::UTF8ToUTF16(std::string("Visa  ") +
@@ -3774,7 +3774,7 @@ TEST_F(PersonalDataManagerTest,
   std::vector<Suggestion> suggestions =
       personal_data_->GetCreditCardSuggestions(
           AutofillType(CREDIT_CARD_NAME_FULL),
-          /*field_contents=*/base::string16(),
+          /*field_contents=*/std::u16string(),
           /*include_server_cards=*/true);
   ASSERT_EQ(3U, suggestions.size());
 
@@ -3789,7 +3789,7 @@ TEST_F(PersonalDataManagerTest,
 
   suggestions = personal_data_->GetCreditCardSuggestions(
       AutofillType(CREDIT_CARD_NAME_FULL),
-      /*field_contents=*/base::string16(), /*include_server_cards=*/true);
+      /*field_contents=*/std::u16string(), /*include_server_cards=*/true);
   ASSERT_EQ(3U, suggestions.size());
 }
 
@@ -5593,7 +5593,7 @@ TEST_F(PersonalDataManagerTest,
   WaitForOnPersonalDataChanged();
 
   EXPECT_EQ(5U, personal_data_->GetCreditCards().size());
-  std::unordered_set<base::string16> expectedToRemain = {
+  std::unordered_set<std::u16string> expectedToRemain = {
       base::UTF8ToUTF16("Alice"), base::UTF8ToUTF16("Bob"),
       base::UTF8ToUTF16("Clyde"), base::UTF8ToUTF16("Emma"),
       base::UTF8ToUTF16("Frank")};
@@ -5635,7 +5635,7 @@ TEST_F(PersonalDataManagerTest, DeleteLocalCreditCards) {
 
   EXPECT_EQ(1U, personal_data_->GetCreditCards().size());
 
-  std::unordered_set<base::string16> expectedToRemain = {
+  std::unordered_set<std::u16string> expectedToRemain = {
       base::UTF8ToUTF16("Clyde")};
   for (auto* card : personal_data_->GetCreditCards()) {
     EXPECT_NE(expectedToRemain.end(),
@@ -7956,9 +7956,9 @@ class PersonalDataManagerTestForSharingNickname
     return full_server_card;
   }
 
-  base::string16 local_nickname_;
-  base::string16 server_nickname_;
-  base::string16 expected_nickname_;
+  std::u16string local_nickname_;
+  std::u16string server_nickname_;
+  std::u16string expected_nickname_;
 };
 
 INSTANTIATE_TEST_SUITE_P(,
@@ -7981,7 +7981,7 @@ TEST_P(PersonalDataManagerTestForSharingNickname,
   std::vector<Suggestion> suggestions =
       personal_data_->GetCreditCardSuggestions(
           AutofillType(CREDIT_CARD_NUMBER),
-          /*field_contents=*/base::string16(),
+          /*field_contents=*/std::u16string(),
           /*include_server_cards=*/true);
   ASSERT_EQ(1U, suggestions.size());
   EXPECT_EQ(suggestions[0].value,
@@ -8012,11 +8012,11 @@ TEST_P(PersonalDataManagerTestForSharingNickname,
   std::vector<Suggestion> suggestions =
       personal_data_->GetCreditCardSuggestions(
           AutofillType(CREDIT_CARD_NUMBER),
-          /*field_contents=*/base::string16(),
+          /*field_contents=*/std::u16string(),
           /*include_server_cards=*/true);
   ASSERT_EQ(2U, suggestions.size());
   EXPECT_THAT(
-      std::vector<base::string16>({suggestions[0].value, suggestions[1].value}),
+      std::vector<std::u16string>({suggestions[0].value, suggestions[1].value}),
       testing::UnorderedElementsAre(
           (server_nickname_.empty() ? base::ASCIIToUTF16("Amex")
                                     : server_nickname_) +

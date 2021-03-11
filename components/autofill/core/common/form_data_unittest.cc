@@ -22,7 +22,7 @@ void SerializeInVersion1Format(const FormData& form_data,
                                base::Pickle* pickle) {
   pickle->WriteInt(1);
   pickle->WriteString16(form_data.name);
-  base::string16 method(base::ASCIIToUTF16("POST"));
+  std::u16string method(base::ASCIIToUTF16("POST"));
   pickle->WriteString16(method);
   pickle->WriteString(form_data.url.spec());
   pickle->WriteString(form_data.action.spec());

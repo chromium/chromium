@@ -32,17 +32,17 @@ class AutofillSaveAddressProfileDelegateIOS : public ConfirmInfoBarDelegate {
   static AutofillSaveAddressProfileDelegateIOS* FromInfobarDelegate(
       infobars::InfoBarDelegate* delegate);
 
-  base::string16 GetMessageDescriptionText() const;
-  base::string16 GetMessageActionText() const;
+  std::u16string GetMessageDescriptionText() const;
+  std::u16string GetMessageActionText() const;
 
   // ConfirmInfoBarDelegate
   int GetIconId() const override;
-  base::string16 GetMessageText() const override;
+  std::u16string GetMessageText() const override;
   infobars::InfoBarDelegate::InfoBarIdentifier GetIdentifier() const override;
   bool ShouldExpire(const NavigationDetails& details) const override;
   void InfoBarDismissed() override;
   int GetButtons() const override;
-  base::string16 GetButtonLabel(InfoBarButton button) const override;
+  std::u16string GetButtonLabel(InfoBarButton button) const override;
   bool Accept() override;
   bool Cancel() override;
 

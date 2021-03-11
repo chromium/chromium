@@ -42,13 +42,13 @@ class CardExpirationDateFixFlowControllerImplGenericTest {
   std::unique_ptr<TestCardExpirationDateFixFlowView>
       test_card_expiration_date_fix_flow_view_;
   std::unique_ptr<CardExpirationDateFixFlowControllerImpl> controller_;
-  base::string16 accepted_month_;
-  base::string16 accepted_year_;
+  std::u16string accepted_month_;
+  std::u16string accepted_year_;
   base::WeakPtrFactory<CardExpirationDateFixFlowControllerImplGenericTest>
       weak_ptr_factory_{this};
 
  private:
-  void OnAccepted(const base::string16& month, const base::string16& year) {
+  void OnAccepted(const std::u16string& month, const std::u16string& year) {
     accepted_month_ = month;
     accepted_year_ = year;
   }

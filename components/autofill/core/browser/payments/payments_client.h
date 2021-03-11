@@ -192,9 +192,9 @@ class PaymentsClient {
     int64_t billing_customer_number = 0;
     int detected_values;
     CreditCard card;
-    base::string16 cvc;
+    std::u16string cvc;
     std::vector<AutofillProfile> profiles;
-    base::string16 context_token;
+    std::u16string context_token;
     std::string risk_data;
     std::string app_locale;
     std::vector<const char*> active_experiments;
@@ -208,7 +208,7 @@ class PaymentsClient {
     ~MigrationRequestDetails();
 
     int64_t billing_customer_number = 0;
-    base::string16 context_token;
+    std::u16string context_token;
     std::string risk_data;
     std::string app_locale;
   };
@@ -293,7 +293,7 @@ class PaymentsClient {
       const std::vector<const char*>& active_experiments,
       const std::string& app_locale,
       base::OnceCallback<void(AutofillClient::PaymentsRpcResult,
-                              const base::string16&,
+                              const std::u16string&,
                               std::unique_ptr<base::Value>,
                               std::vector<std::pair<int, int>>)> callback,
       const int billable_service_number,

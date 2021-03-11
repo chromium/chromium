@@ -29,7 +29,7 @@ AutofillField::AutofillField(const FormFieldData& field)
 }
 
 AutofillField::AutofillField(const FormFieldData& field,
-                             const base::string16& unique_name)
+                             const std::u16string& unique_name)
     : FormFieldData(field),
       unique_name_(unique_name),
       parseable_name_(field.name),

@@ -22,8 +22,8 @@ class MockAutocompleteHistoryManager : public AutocompleteHistoryManager {
       void(int query_id,
            bool is_autocomplete_enabled,
            bool autoselect_first_suggestion,
-           const base::string16& name,
-           const base::string16& prefix,
+           const std::u16string& name,
+           const std::u16string& prefix,
            const std::string& form_control_type,
            base::WeakPtr<AutocompleteHistoryManager::SuggestionsHandler>
                handler));
@@ -35,8 +35,8 @@ class MockAutocompleteHistoryManager : public AutocompleteHistoryManager {
   MOCK_METHOD1(CancelPendingQueries,
                void(const AutocompleteHistoryManager::SuggestionsHandler*));
   MOCK_METHOD2(OnRemoveAutocompleteEntry,
-               void(const base::string16&, const base::string16&));
-  MOCK_METHOD1(OnAutocompleteEntrySelected, void(const base::string16&));
+               void(const std::u16string&, const std::u16string&));
+  MOCK_METHOD1(OnAutocompleteEntrySelected, void(const std::u16string&));
 };
 
 }  // namespace autofill

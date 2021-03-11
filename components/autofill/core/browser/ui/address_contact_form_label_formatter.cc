@@ -29,10 +29,10 @@ AddressContactFormLabelFormatter::~AddressContactFormLabelFormatter() {}
 // Note that the order in which parts of the label are added--name, street
 // address, phone, and email--ensures that the label is formatted correctly for
 // |focused_group|, |focused_field_type_|, and this kind of formatter.
-base::string16 AddressContactFormLabelFormatter::GetLabelForProfile(
+std::u16string AddressContactFormLabelFormatter::GetLabelForProfile(
     const AutofillProfile& profile,
     FieldTypeGroup focused_group) const {
-  std::vector<base::string16> label_parts;
+  std::vector<std::u16string> label_parts;
 
   bool street_address_is_focused =
       focused_group == FieldTypeGroup::kAddressHome &&

@@ -44,7 +44,7 @@ int RegionComboboxModel::GetItemCount() const {
   return regions_.size();
 }
 
-base::string16 RegionComboboxModel::GetItemAt(int index) const {
+std::u16string RegionComboboxModel::GetItemAt(int index) const {
   DCHECK_GE(index, 0);
   // This might happen because of the asynchronous nature of the data.
   if (static_cast<size_t>(index) >= regions_.size())

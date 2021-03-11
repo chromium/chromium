@@ -41,7 +41,7 @@ class MockResultDelegate : public FullCardRequest::ResultDelegate,
   MOCK_METHOD3(OnFullCardRequestSucceeded,
                void(const payments::FullCardRequest&,
                     const CreditCard&,
-                    const base::string16&));
+                    const std::u16string&));
   MOCK_METHOD1(OnFullCardRequestFailed,
                void(payments::FullCardRequest::FailureType));
 };

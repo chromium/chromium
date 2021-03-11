@@ -201,7 +201,7 @@ class FormStructure {
   // empty set if the form doesn't reference the given type or if all inputs
   // are accepted (e.g., <input type="text" autocomplete="region">).
   // All returned values are standardized to upper case.
-  std::set<base::string16> PossibleValues(ServerFieldType type);
+  std::set<std::u16string> PossibleValues(ServerFieldType type);
 
   // Rationalize phone number fields in a given section, that is only fill
   // the fields that are considered composing a first complete phone number.
@@ -230,11 +230,11 @@ class FormStructure {
     return fields_.end();
   }
 
-  const base::string16& form_name() const { return form_name_; }
+  const std::u16string& form_name() const { return form_name_; }
 
-  const base::string16& id_attribute() const { return id_attribute_; }
+  const std::u16string& id_attribute() const { return id_attribute_; }
 
-  const base::string16& name_attribute() const { return name_attribute_; }
+  const std::u16string& name_attribute() const { return name_attribute_; }
 
   const GURL& source_url() const { return source_url_; }
 
@@ -359,7 +359,7 @@ class FormStructure {
   // empty of these or returns an empty string:
   // - Form name
   // - Name for Autofill of first field
-  base::string16 GetIdentifierForRefill() const;
+  std::u16string GetIdentifierForRefill() const;
 
   int developer_engagement_metrics() const {
     return developer_engagement_metrics_;
@@ -532,13 +532,13 @@ class FormStructure {
   LanguageCode current_page_language_;
 
   // The id attribute of the form.
-  base::string16 id_attribute_;
+  std::u16string id_attribute_;
 
   // The name attribute of the form.
-  base::string16 name_attribute_;
+  std::u16string name_attribute_;
 
   // The name of the form.
-  base::string16 form_name_;
+  std::u16string form_name_;
 
   // The titles of form's buttons.
   ButtonTitleList button_titles_;

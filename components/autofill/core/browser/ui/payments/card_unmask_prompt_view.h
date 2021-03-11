@@ -20,7 +20,7 @@ class CardUnmaskPromptView {
   virtual void Show() = 0;
   virtual void ControllerGone() = 0;
   virtual void DisableAndWaitForVerification() = 0;
-  virtual void GotVerificationResult(const base::string16& error_message,
+  virtual void GotVerificationResult(const std::u16string& error_message,
                                      bool allow_retry) = 0;
 
  protected:

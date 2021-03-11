@@ -45,7 +45,7 @@ FormSignature CalculateFormSignature(const FormData& form_data);
 
 // Calculates field signature based on |field_name| and |field_type|.
 FieldSignature CalculateFieldSignatureByNameAndType(
-    const base::string16& field_name,
+    const std::u16string& field_name,
     const std::string& field_type);
 
 // Calculates field signature based on |field_data|. This function is a proxy to

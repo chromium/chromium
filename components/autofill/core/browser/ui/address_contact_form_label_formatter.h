@@ -28,7 +28,7 @@ class AddressContactFormLabelFormatter : public LabelFormatter {
 
   ~AddressContactFormLabelFormatter() override;
 
-  base::string16 GetLabelForProfile(
+  std::u16string GetLabelForProfile(
       const AutofillProfile& profile,
       FieldTypeGroup focused_group) const override;
 

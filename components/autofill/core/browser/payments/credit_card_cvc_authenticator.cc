@@ -46,7 +46,7 @@ void CreditCardCVCAuthenticator::Authenticate(
 void CreditCardCVCAuthenticator::OnFullCardRequestSucceeded(
     const payments::FullCardRequest& full_card_request,
     const CreditCard& card,
-    const base::string16& cvc) {
+    const std::u16string& cvc) {
   payments::PaymentsClient::UnmaskResponseDetails response =
       full_card_request.unmask_response_details();
   requester_->OnCVCAuthenticationComplete(

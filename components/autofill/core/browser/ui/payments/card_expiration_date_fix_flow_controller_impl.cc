@@ -36,7 +36,7 @@ CardExpirationDateFixFlowControllerImpl::
 void CardExpirationDateFixFlowControllerImpl::Show(
     CardExpirationDateFixFlowView* card_expiration_date_fix_flow_view,
     const CreditCard& card,
-    base::OnceCallback<void(const base::string16&, const base::string16&)>
+    base::OnceCallback<void(const std::u16string&, const std::u16string&)>
         callback) {
   DCHECK(!callback.is_null());
   DCHECK(card_expiration_date_fix_flow_view);
@@ -55,8 +55,8 @@ void CardExpirationDateFixFlowControllerImpl::Show(
 }
 
 void CardExpirationDateFixFlowControllerImpl::OnAccepted(
-    const base::string16& month,
-    const base::string16& year) {
+    const std::u16string& month,
+    const std::u16string& year) {
   AutofillMetrics::LogExpirationDateFixFlowPromptEvent(
       AutofillMetrics::ExpirationDateFixFlowPromptEvent::
           EXPIRATION_DATE_FIX_FLOW_PROMPT_ACCEPTED);
@@ -83,37 +83,37 @@ int CardExpirationDateFixFlowControllerImpl::GetIconId() const {
 #endif
 }
 
-base::string16 CardExpirationDateFixFlowControllerImpl::GetTitleText() const {
+std::u16string CardExpirationDateFixFlowControllerImpl::GetTitleText() const {
   return l10n_util::GetStringUTF16(
       IDS_AUTOFILL_SAVE_CARD_UPDATE_EXPIRATION_DATE_TITLE);
 }
 
-base::string16 CardExpirationDateFixFlowControllerImpl::GetSaveButtonLabel()
+std::u16string CardExpirationDateFixFlowControllerImpl::GetSaveButtonLabel()
     const {
   return l10n_util::GetStringUTF16(
       IDS_AUTOFILL_FIX_FLOW_PROMPT_SAVE_CARD_LABEL);
 }
 
-base::string16 CardExpirationDateFixFlowControllerImpl::GetCardLabel() const {
+std::u16string CardExpirationDateFixFlowControllerImpl::GetCardLabel() const {
   return card_label_;
 }
 
-base::string16 CardExpirationDateFixFlowControllerImpl::GetCancelButtonLabel()
+std::u16string CardExpirationDateFixFlowControllerImpl::GetCancelButtonLabel()
     const {
   return l10n_util::GetStringUTF16(IDS_CANCEL);
 }
 
-base::string16 CardExpirationDateFixFlowControllerImpl::GetInputLabel() const {
+std::u16string CardExpirationDateFixFlowControllerImpl::GetInputLabel() const {
   return l10n_util::GetStringUTF16(
       IDS_AUTOFILL_SAVE_CARD_UPDATE_EXPIRATION_DATE_TOOLTIP);
 }
 
-base::string16 CardExpirationDateFixFlowControllerImpl::GetDateSeparator()
+std::u16string CardExpirationDateFixFlowControllerImpl::GetDateSeparator()
     const {
   return l10n_util::GetStringUTF16(IDS_AUTOFILL_EXPIRATION_DATE_SEPARATOR);
 }
 
-base::string16 CardExpirationDateFixFlowControllerImpl::GetInvalidDateError()
+std::u16string CardExpirationDateFixFlowControllerImpl::GetInvalidDateError()
     const {
   return l10n_util::GetStringUTF16(
       IDS_AUTOFILL_SAVE_CARD_UPDATE_EXPIRATION_DATE_ERROR_TRY_AGAIN);

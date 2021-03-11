@@ -19,13 +19,13 @@ namespace autofill {
 class AddressRewriter {
  public:
   // Get an AddressRewrite instance which applies the rules for |country_code|.
-  static AddressRewriter ForCountryCode(const base::string16& country_code);
+  static AddressRewriter ForCountryCode(const std::u16string& country_code);
 
   // Gets an AddressRewrite instance for tests with custom rules.
   static AddressRewriter ForCustomRules(const std::string& custom_rules);
 
   // Apply the rewrite rules to |text| and return the result.
-  base::string16 Rewrite(const base::string16& text) const;
+  std::u16string Rewrite(const std::u16string& text) const;
 
  private:
   // A handle to the internal rewrite rules this instance is using.

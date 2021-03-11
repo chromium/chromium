@@ -201,7 +201,7 @@ TEST_F(AutofillProfileValidatorTest, ValidateAddress_RuleNotExists) {
 // When country code is empty, the profile is unvalidated.
 TEST_F(AutofillProfileValidatorTest, ValidateAddress_EmptyCountryCode) {
   AutofillProfile profile(autofill::test::GetFullValidProfileForCanada());
-  profile.SetRawInfo(ADDRESS_HOME_COUNTRY, base::string16());
+  profile.SetRawInfo(ADDRESS_HOME_COUNTRY, std::u16string());
 
   EXPECT_EQ(false, AreRulesLoadedForRegion(""));
 
@@ -261,7 +261,7 @@ TEST_F(AutofillProfileValidatorTest, StartProfileValidation_InvalidAddress) {
 TEST_F(AutofillProfileValidatorTest,
        StartProfileValidation_EmptyPhone_InvalidAddress) {
   AutofillProfile profile(autofill::test::GetFullValidProfileForCanada());
-  profile.SetRawInfo(PHONE_HOME_WHOLE_NUMBER, base::string16());
+  profile.SetRawInfo(PHONE_HOME_WHOLE_NUMBER, std::u16string());
   profile.SetRawInfo(ADDRESS_HOME_STATE, base::UTF8ToUTF16("Invalid State"));
 
   // Set up the test expectations.
@@ -303,7 +303,7 @@ TEST_F(AutofillProfileValidatorTest,
 TEST_F(AutofillProfileValidatorTest,
        StartProfileValidation_EmptyEmail_InvalidZip) {
   AutofillProfile profile(autofill::test::GetFullValidProfileForCanada());
-  profile.SetRawInfo(EMAIL_ADDRESS, base::string16());
+  profile.SetRawInfo(EMAIL_ADDRESS, std::u16string());
   profile.SetRawInfo(ADDRESS_HOME_ZIP, base::UTF8ToUTF16("Invalid Zip"));
 
   // Set up the test expectations.
@@ -325,7 +325,7 @@ TEST_F(AutofillProfileValidatorTest,
        StartProfileValidation_InvalidEmail_EmptyZip) {
   AutofillProfile profile(autofill::test::GetFullValidProfileForCanada());
   profile.SetRawInfo(EMAIL_ADDRESS, base::UTF8ToUTF16("Invalid Email"));
-  profile.SetRawInfo(ADDRESS_HOME_ZIP, base::string16());
+  profile.SetRawInfo(ADDRESS_HOME_ZIP, std::u16string());
 
   // Set up the test expectations.
   expected_validity_ = {

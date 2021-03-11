@@ -24,7 +24,7 @@ namespace {
 // deserialization routine from previous kFormFieldDataPickleVersion format.
 const int kFormFieldDataPickleVersion = 8;
 
-void AddVectorToPickle(std::vector<base::string16> strings,
+void AddVectorToPickle(std::vector<std::u16string> strings,
                        base::Pickle* pickle) {
   pickle->WriteInt(static_cast<int>(strings.size()));
   for (size_t i = 0; i < strings.size(); ++i) {
@@ -33,12 +33,12 @@ void AddVectorToPickle(std::vector<base::string16> strings,
 }
 
 bool ReadStringVector(base::PickleIterator* iter,
-                      std::vector<base::string16>* strings) {
+                      std::vector<std::u16string>* strings) {
   int size;
   if (!iter->ReadInt(&size))
     return false;
 
-  base::string16 pickle_data;
+  std::u16string pickle_data;
   for (int i = 0; i < size; i++) {
     if (!iter->ReadString16(&pickle_data))
       return false;
@@ -430,7 +430,7 @@ LogBuffer& operator<<(LogBuffer& buffer, const FormFieldData& field) {
   buffer << Tr{} << "Name attribute:" << field.name_attribute;
   buffer << Tr{} << "Id attribute:" << field.id_attribute;
   constexpr size_t kMaxLabelSize = 100;
-  const base::string16 truncated_label =
+  const std::u16string truncated_label =
       field.label.substr(0, std::min(field.label.length(), kMaxLabelSize));
   buffer << Tr{} << "Label:" << truncated_label;
   buffer << Tr{} << "Form control type:" << field.form_control_type;

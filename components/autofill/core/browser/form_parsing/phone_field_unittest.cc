@@ -73,7 +73,7 @@ class PhoneFieldTest : public testing::Test {
     field->name = ASCIIToUTF16(name);
     field->form_control_type = "select-one";
 
-    std::vector<base::string16> contents16;
+    std::vector<std::u16string> contents16;
     for (auto* const element : contents)
       contents16.push_back(base::UTF8ToUTF16(element));
 
@@ -221,13 +221,13 @@ TEST_F(PhoneFieldTest, ThreePartPhoneNumberPrefixSuffix) {
     list_.push_back(std::make_unique<AutofillField>(field));
     FieldRendererId areacode1 = list_.back()->unique_renderer_id;
 
-    field.label = base::string16();
+    field.label = std::u16string();
     field.name = ASCIIToUTF16("prefix");
     field.unique_renderer_id = MakeFieldRendererId();
     list_.push_back(std::make_unique<AutofillField>(field));
     FieldRendererId prefix2 = list_.back()->unique_renderer_id;
 
-    field.label = base::string16();
+    field.label = std::u16string();
     field.name = ASCIIToUTF16("suffix");
     field.unique_renderer_id = MakeFieldRendererId();
     list_.push_back(std::make_unique<AutofillField>(field));
@@ -264,7 +264,7 @@ TEST_F(PhoneFieldTest, ThreePartPhoneNumberPrefixSuffix2) {
     list_.push_back(std::make_unique<AutofillField>(field));
     FieldRendererId phone2 = list_.back()->unique_renderer_id;
 
-    field.label = base::string16();
+    field.label = std::u16string();
     field.name = ASCIIToUTF16("phone3");
     field.max_length = 4;
     field.unique_renderer_id = MakeFieldRendererId();

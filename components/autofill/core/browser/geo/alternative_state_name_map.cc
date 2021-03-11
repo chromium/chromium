@@ -30,7 +30,7 @@ AlternativeStateNameMap* AlternativeStateNameMap::GetInstance() {
 // static
 AlternativeStateNameMap::StateName AlternativeStateNameMap::NormalizeStateName(
     const StateName& text) {
-  base::string16 normalized_text;
+  std::u16string normalized_text;
   base::RemoveChars(text.value(), base::ASCIIToUTF16(kCharsToStrip),
                     &normalized_text);
   return StateName(normalized_text);
@@ -40,7 +40,7 @@ AlternativeStateNameMap::StateName AlternativeStateNameMap::NormalizeStateName(
 base::Optional<AlternativeStateNameMap::CanonicalStateName>
 AlternativeStateNameMap::GetCanonicalStateName(
     const std::string& country_code,
-    const base::string16& state_name) {
+    const std::u16string& state_name) {
   return AlternativeStateNameMap::GetInstance()->GetCanonicalStateName(
       AlternativeStateNameMap::CountryCode(country_code),
       AlternativeStateNameMap::StateName(state_name));

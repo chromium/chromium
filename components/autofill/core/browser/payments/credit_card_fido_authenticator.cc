@@ -514,7 +514,7 @@ void CreditCardFIDOAuthenticator::OnDidGetOptChangeResult(
 void CreditCardFIDOAuthenticator::OnFullCardRequestSucceeded(
     const payments::FullCardRequest& full_card_request,
     const CreditCard& card,
-    const base::string16& cvc) {
+    const std::u16string& cvc) {
   DCHECK_EQ(AUTHENTICATION_FLOW, current_flow_);
   current_flow_ = NONE_FLOW;
   requester_->OnFIDOAuthenticationComplete(/*did_succeed=*/true, &card, cvc);

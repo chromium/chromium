@@ -15,7 +15,7 @@ using base::ASCIIToUTF16;
 namespace {
 
 std::vector<base::StringPiece16> StringsToStringPieces(
-    const std::vector<base::string16>& strings) {
+    const std::vector<std::u16string>& strings) {
   std::vector<base::StringPiece16> string_pieces;
   for (const auto& s : strings) {
     string_pieces.emplace_back(base::StringPiece16(s));
@@ -28,13 +28,13 @@ std::vector<base::StringPiece16> StringsToStringPieces(
 namespace autofill {
 
 TEST(LabelProcessingUtil, GetParseableNameStringPieces) {
-  std::vector<base::string16> labels;
+  std::vector<std::u16string> labels;
   labels.push_back(ASCIIToUTF16("City"));
   labels.push_back(ASCIIToUTF16("Street & House Number"));
   labels.push_back(ASCIIToUTF16(""));
   labels.push_back(ASCIIToUTF16("Zip"));
 
-  auto expectation = base::make_optional(std::vector<base::string16>());
+  auto expectation = base::make_optional(std::vector<std::u16string>());
   expectation->push_back(ASCIIToUTF16("City"));
   expectation->push_back(ASCIIToUTF16("Street"));
   expectation->push_back(ASCIIToUTF16("House Number"));
@@ -44,14 +44,14 @@ TEST(LabelProcessingUtil, GetParseableNameStringPieces) {
 }
 
 TEST(LabelProcessingUtil, GetParseableNameStringPieces_ThreeComponents) {
-  std::vector<base::string16> labels;
+  std::vector<std::u16string> labels;
   labels.push_back(ASCIIToUTF16("City"));
   labels.push_back(ASCIIToUTF16("Street & House Number & Floor"));
   labels.push_back(ASCIIToUTF16(""));
   labels.push_back(ASCIIToUTF16(""));
   labels.push_back(ASCIIToUTF16("Zip"));
 
-  auto expectation = base::make_optional(std::vector<base::string16>());
+  auto expectation = base::make_optional(std::vector<std::u16string>());
   expectation->push_back(ASCIIToUTF16("City"));
   expectation->push_back(ASCIIToUTF16("Street"));
   expectation->push_back(ASCIIToUTF16("House Number"));
@@ -62,7 +62,7 @@ TEST(LabelProcessingUtil, GetParseableNameStringPieces_ThreeComponents) {
 }
 
 TEST(LabelProcessingUtil, GetParseableNameStringPieces_TooManyComponents) {
-  std::vector<base::string16> labels;
+  std::vector<std::u16string> labels;
   labels.push_back(ASCIIToUTF16("City"));
   labels.push_back(ASCIIToUTF16("Street & House Number & Floor & Stairs"));
   labels.push_back(ASCIIToUTF16(""));
@@ -70,38 +70,38 @@ TEST(LabelProcessingUtil, GetParseableNameStringPieces_TooManyComponents) {
   labels.push_back(ASCIIToUTF16(""));
   labels.push_back(ASCIIToUTF16("Zip"));
 
-  base::Optional<std::vector<base::string16>> expectation = base::nullopt;
+  base::Optional<std::vector<std::u16string>> expectation = base::nullopt;
   ;
 
   EXPECT_EQ(GetParseableLabels(StringsToStringPieces(labels)), expectation);
 }
 
 TEST(LabelProcessingUtil, GetParseableNameStringPieces_UnmachtingComponents) {
-  std::vector<base::string16> labels;
+  std::vector<std::u16string> labels;
   labels.push_back(ASCIIToUTF16("City"));
   labels.push_back(ASCIIToUTF16("Street & House Number & Floor"));
   labels.push_back(ASCIIToUTF16(""));
   labels.push_back(ASCIIToUTF16("Zip"));
 
-  base::Optional<std::vector<base::string16>> expectation = base::nullopt;
+  base::Optional<std::vector<std::u16string>> expectation = base::nullopt;
 
   EXPECT_EQ(GetParseableLabels(StringsToStringPieces(labels)), expectation);
 }
 
 TEST(LabelProcessingUtil, GetParseableNameStringPieces_SplitableLabelAtEnd) {
-  std::vector<base::string16> labels;
+  std::vector<std::u16string> labels;
   labels.push_back(ASCIIToUTF16("City"));
   labels.push_back(ASCIIToUTF16(""));
   labels.push_back(ASCIIToUTF16("Zip"));
   labels.push_back(ASCIIToUTF16("Street & House Number & Floor"));
 
-  base::Optional<std::vector<base::string16>> expectation = base::nullopt;
+  base::Optional<std::vector<std::u16string>> expectation = base::nullopt;
 
   EXPECT_EQ(GetParseableLabels(StringsToStringPieces(labels)), expectation);
 }
 
 TEST(LabelProcessingUtil, GetParseableNameStringPieces_TooLongLabel) {
-  std::vector<base::string16> labels;
+  std::vector<std::u16string> labels;
   labels.push_back(ASCIIToUTF16("City"));
   labels.push_back(
       ASCIIToUTF16("Street & House Number with a lot of additional text that "
@@ -109,7 +109,7 @@ TEST(LabelProcessingUtil, GetParseableNameStringPieces_TooLongLabel) {
   labels.push_back(ASCIIToUTF16(""));
   labels.push_back(ASCIIToUTF16("Zip"));
 
-  base::Optional<std::vector<base::string16>> expectation = base::nullopt;
+  base::Optional<std::vector<std::u16string>> expectation = base::nullopt;
 
   EXPECT_EQ(GetParseableLabels(StringsToStringPieces(labels)), expectation);
 }

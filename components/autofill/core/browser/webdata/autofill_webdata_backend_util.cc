@@ -61,7 +61,7 @@ std::string MergeServerAddressesIntoProfilesAndUpdateDb(
 
   // Wallet addresses don't have an email address, use the one from the
   // currently signed-in account.
-  base::string16 email = base::UTF8ToUTF16(primary_account_email);
+  std::u16string email = base::UTF8ToUTF16(primary_account_email);
   if (!email.empty())
     existing_profiles->back()->SetRawInfo(EMAIL_ADDRESS, email);
 

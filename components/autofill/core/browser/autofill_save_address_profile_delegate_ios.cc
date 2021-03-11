@@ -35,16 +35,16 @@ AutofillSaveAddressProfileDelegateIOS::FromInfobarDelegate(
              : nullptr;
 }
 
-base::string16
+std::u16string
 AutofillSaveAddressProfileDelegateIOS::GetMessageDescriptionText() const {
   // TODO(crbug.com/1167062): Replace with proper localized string.
-  return base::string16(base::ASCIIToUTF16("Fill forms faster in Chrome"));
+  return std::u16string(base::ASCIIToUTF16("Fill forms faster in Chrome"));
 }
 
-base::string16 AutofillSaveAddressProfileDelegateIOS::GetMessageActionText()
+std::u16string AutofillSaveAddressProfileDelegateIOS::GetMessageActionText()
     const {
   // TODO(crbug.com/1167062): Replace with proper localized string.
-  return base::string16(base::ASCIIToUTF16("Save..."));
+  return std::u16string(base::ASCIIToUTF16("Save..."));
 }
 
 bool AutofillSaveAddressProfileDelegateIOS::Accept() {
@@ -69,9 +69,9 @@ int AutofillSaveAddressProfileDelegateIOS::GetIconId() const {
   return IDR_INFOBAR_AUTOFILL_CC;
 }
 
-base::string16 AutofillSaveAddressProfileDelegateIOS::GetMessageText() const {
+std::u16string AutofillSaveAddressProfileDelegateIOS::GetMessageText() const {
   // TODO(crbug.com/1167062): Replace with proper localized string.
-  return base::string16(base::ASCIIToUTF16("Save address?"));
+  return std::u16string(base::ASCIIToUTF16("Save address?"));
 }
 
 infobars::InfoBarDelegate::InfoBarIdentifier
@@ -90,20 +90,20 @@ int AutofillSaveAddressProfileDelegateIOS::GetButtons() const {
   return BUTTON_OK | BUTTON_CANCEL;
 }
 
-base::string16 AutofillSaveAddressProfileDelegateIOS::GetButtonLabel(
+std::u16string AutofillSaveAddressProfileDelegateIOS::GetButtonLabel(
     InfoBarButton button) const {
   if (button == BUTTON_OK) {
     // TODO(crbug.com/1167062): Replace with proper localized string.
-    return base::string16(base::ASCIIToUTF16("Save"));
+    return std::u16string(base::ASCIIToUTF16("Save"));
   }
 
   if (button == BUTTON_CANCEL) {
     // TODO(crbug.com/1167062): Replace with proper localized string.
-    return base::string16(base::ASCIIToUTF16("No Thanks"));
+    return std::u16string(base::ASCIIToUTF16("No Thanks"));
   }
 
   NOTREACHED() << "Unsupported button label requested.";
-  return base::string16();
+  return std::u16string();
 }
 
 void AutofillSaveAddressProfileDelegateIOS::RunSaveAddressProfilePromptCallback(

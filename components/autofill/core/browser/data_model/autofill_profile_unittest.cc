@@ -39,10 +39,10 @@ constexpr VerificationStatus kObserved = VerificationStatus::kObserved;
 
 namespace {
 
-base::string16 GetLabel(AutofillProfile* profile) {
+std::u16string GetLabel(AutofillProfile* profile) {
   std::vector<AutofillProfile*> profiles;
   profiles.push_back(profile);
-  std::vector<base::string16> labels;
+  std::vector<std::u16string> labels;
   AutofillProfile::CreateDifferentiatingLabels(profiles, "en-US", &labels);
   return labels[0];
 }
@@ -96,15 +96,15 @@ TEST_P(AutofillProfileTest, PreviewSummaryString) {
   // Case 0/null: ""
   AutofillProfile profile0(base::GenerateGUID(), test::kEmptyOrigin);
   // Empty profile - nothing to update.
-  base::string16 summary0 = GetLabel(&profile0);
-  EXPECT_EQ(base::string16(), summary0);
+  std::u16string summary0 = GetLabel(&profile0);
+  EXPECT_EQ(std::u16string(), summary0);
 
   // Case 0a/empty name and address, so the first two fields of the rest of the
   // data is used: "Hollywood, CA"
   AutofillProfile profile00(base::GenerateGUID(), test::kEmptyOrigin);
   test::SetProfileInfo(&profile00, "", "", "", "johnwayne@me.xyz", "Fox", "",
                        "", "Hollywood", "CA", "91601", "US", "16505678910");
-  base::string16 summary00 = GetLabel(&profile00);
+  std::u16string summary00 = GetLabel(&profile00);
   EXPECT_EQ(ASCIIToUTF16("Hollywood, CA"), summary00);
 
   // Case 1: "<address>" without line 2.
@@ -112,7 +112,7 @@ TEST_P(AutofillProfileTest, PreviewSummaryString) {
   test::SetProfileInfo(&profile1, "", "", "", "johnwayne@me.xyz", "Fox",
                        "123 Zoo St.", "", "Hollywood", "CA", "91601", "US",
                        "16505678910");
-  base::string16 summary1 = GetLabel(&profile1);
+  std::u16string summary1 = GetLabel(&profile1);
   EXPECT_EQ(ASCIIToUTF16("123 Zoo St., Hollywood"), summary1);
 
   // Case 1a: "<address>" with line 2.
@@ -120,7 +120,7 @@ TEST_P(AutofillProfileTest, PreviewSummaryString) {
   test::SetProfileInfo(&profile1a, "", "", "", "johnwayne@me.xyz", "Fox",
                        "123 Zoo St.", "unit 5", "Hollywood", "CA", "91601",
                        "US", "16505678910");
-  base::string16 summary1a = GetLabel(&profile1a);
+  std::u16string summary1a = GetLabel(&profile1a);
   EXPECT_EQ(ASCIIToUTF16("123 Zoo St., unit 5"), summary1a);
 
   // Case 2: "<lastname>"
@@ -128,7 +128,7 @@ TEST_P(AutofillProfileTest, PreviewSummaryString) {
   test::SetProfileInfo(&profile2, "", "Mitchell", "Morrison",
                        "johnwayne@me.xyz", "Fox", "", "", "Hollywood", "CA",
                        "91601", "US", "16505678910");
-  base::string16 summary2 = GetLabel(&profile2);
+  std::u16string summary2 = GetLabel(&profile2);
   // Summary includes full name, to the maximal extent available.
   EXPECT_EQ(ASCIIToUTF16("Mitchell Morrison, Hollywood"), summary2);
 
@@ -137,7 +137,7 @@ TEST_P(AutofillProfileTest, PreviewSummaryString) {
   test::SetProfileInfo(&profile3, "", "Mitchell", "Morrison",
                        "johnwayne@me.xyz", "Fox", "123 Zoo St.", "",
                        "Hollywood", "CA", "91601", "US", "16505678910");
-  base::string16 summary3 = GetLabel(&profile3);
+  std::u16string summary3 = GetLabel(&profile3);
   EXPECT_EQ(ASCIIToUTF16("Mitchell Morrison, 123 Zoo St."), summary3);
 
   // Case 4: "<firstname>"
@@ -145,7 +145,7 @@ TEST_P(AutofillProfileTest, PreviewSummaryString) {
   test::SetProfileInfo(&profile4, "Marion", "Mitchell", "", "johnwayne@me.xyz",
                        "Fox", "", "", "Hollywood", "CA", "91601", "US",
                        "16505678910");
-  base::string16 summary4 = GetLabel(&profile4);
+  std::u16string summary4 = GetLabel(&profile4);
   EXPECT_EQ(ASCIIToUTF16("Marion Mitchell, Hollywood"), summary4);
 
   // Case 5: "<firstname>, <address>"
@@ -153,7 +153,7 @@ TEST_P(AutofillProfileTest, PreviewSummaryString) {
   test::SetProfileInfo(&profile5, "Marion", "Mitchell", "", "johnwayne@me.xyz",
                        "Fox", "123 Zoo St.", "unit 5", "Hollywood", "CA",
                        "91601", "US", "16505678910");
-  base::string16 summary5 = GetLabel(&profile5);
+  std::u16string summary5 = GetLabel(&profile5);
   EXPECT_EQ(ASCIIToUTF16("Marion Mitchell, 123 Zoo St."), summary5);
 
   // Case 6: "<firstname> <lastname>"
@@ -161,7 +161,7 @@ TEST_P(AutofillProfileTest, PreviewSummaryString) {
   test::SetProfileInfo(&profile6, "Marion", "Mitchell", "Morrison",
                        "johnwayne@me.xyz", "Fox", "", "", "Hollywood", "CA",
                        "91601", "US", "16505678910");
-  base::string16 summary6 = GetLabel(&profile6);
+  std::u16string summary6 = GetLabel(&profile6);
   EXPECT_EQ(ASCIIToUTF16("Marion Mitchell Morrison, Hollywood"), summary6);
 
   // Case 7: "<firstname> <lastname>, <address>"
@@ -169,7 +169,7 @@ TEST_P(AutofillProfileTest, PreviewSummaryString) {
   test::SetProfileInfo(&profile7, "Marion", "Mitchell", "Morrison",
                        "johnwayne@me.xyz", "Fox", "123 Zoo St.", "unit 5",
                        "Hollywood", "CA", "91601", "US", "16505678910");
-  base::string16 summary7 = GetLabel(&profile7);
+  std::u16string summary7 = GetLabel(&profile7);
   EXPECT_EQ(ASCIIToUTF16("Marion Mitchell Morrison, 123 Zoo St."), summary7);
 
   // Case 7a: "<firstname> <lastname>, <address>" - same as #7, except for
@@ -181,11 +181,11 @@ TEST_P(AutofillProfileTest, PreviewSummaryString) {
   std::vector<AutofillProfile*> profiles;
   profiles.push_back(&profile7);
   profiles.push_back(&profile7a);
-  std::vector<base::string16> labels;
+  std::vector<std::u16string> labels;
   AutofillProfile::CreateDifferentiatingLabels(profiles, "en-US", &labels);
   ASSERT_EQ(profiles.size(), labels.size());
   summary7 = labels[0];
-  base::string16 summary7a = labels[1];
+  std::u16string summary7a = labels[1];
   EXPECT_EQ(
       ASCIIToUTF16("Marion Mitchell Morrison, 123 Zoo St., johnwayne@me.xyz"),
       summary7);
@@ -206,7 +206,7 @@ TEST_P(AutofillProfileTest, AdjustInferredLabels) {
   test::SetProfileInfo(profiles[1].get(), "Jane", "", "Doe",
                        "janedoe@tertium.com", "Pluto Inc.", "123 Letha Shore.",
                        "", "Dis", "CA", "91222", "US", "12345678910");
-  std::vector<base::string16> labels;
+  std::vector<std::u16string> labels;
   AutofillProfile::CreateDifferentiatingLabels(ToRawPointerVector(profiles),
                                                "en-US", &labels);
   ASSERT_EQ(2U, labels.size());
@@ -321,7 +321,7 @@ TEST_P(AutofillProfileTest, CreateInferredLabelsI18n_CH) {
       "Switzerland, hrgiger@beispiel.com, +41 44-668-1800",
   };
 
-  std::vector<base::string16> labels;
+  std::vector<std::u16string> labels;
   for (size_t i = 0; i < base::size(kExpectedLabels); ++i) {
     AutofillProfile::CreateInferredLabels(ToRawPointerVector(profiles), nullptr,
                                           UNKNOWN_TYPE, i, "en-US", &labels);
@@ -355,7 +355,7 @@ TEST_P(AutofillProfileTest, CreateInferredLabelsI18n_FR) {
       "France, antoine@exemple.com, +33 (0) 1 42 68 53 00",
   };
 
-  std::vector<base::string16> labels;
+  std::vector<std::u16string> labels;
   for (size_t i = 0; i < base::size(kExpectedLabels); ++i) {
     AutofillProfile::CreateInferredLabels(ToRawPointerVector(profiles), nullptr,
                                           UNKNOWN_TYPE, i, "en-US", &labels);
@@ -399,7 +399,7 @@ TEST_P(AutofillProfileTest, CreateInferredLabelsI18n_KR) {
       "park@yeleul.com, +82-2-531-9000",
   };
 
-  std::vector<base::string16> labels;
+  std::vector<std::u16string> labels;
   for (size_t i = 0; i < base::size(kExpectedLabels); ++i) {
     AutofillProfile::CreateInferredLabels(ToRawPointerVector(profiles), nullptr,
                                           UNKNOWN_TYPE, i, "en-US", &labels);
@@ -436,7 +436,7 @@ TEST_P(AutofillProfileTest, CreateInferredLabelsI18n_JP_Latn) {
       "Minato-ku, Tokyo, 106-6126, Japan, miku@rei.com, +81-3-6384-9000",
   };
 
-  std::vector<base::string16> labels;
+  std::vector<std::u16string> labels;
   for (size_t i = 0; i < base::size(kExpectedLabels); ++i) {
     AutofillProfile::CreateInferredLabels(ToRawPointerVector(profiles), nullptr,
                                           UNKNOWN_TYPE, i, "en-US", &labels);
@@ -469,7 +469,7 @@ TEST_P(AutofillProfileTest, CreateInferredLabelsI18n_JP_ja) {
       "miku@rei.com, 03-6384-9000",
   };
 
-  std::vector<base::string16> labels;
+  std::vector<std::u16string> labels;
   for (size_t i = 0; i < base::size(kExpectedLabels); ++i) {
     AutofillProfile::CreateInferredLabels(ToRawPointerVector(profiles), nullptr,
                                           UNKNOWN_TYPE, i, "en-US", &labels);
@@ -490,7 +490,7 @@ TEST_P(AutofillProfileTest, CreateInferredLabels) {
   test::SetProfileInfo(profiles[1].get(), "Jane", "", "Doe",
                        "janedoe@tertium.com", "Pluto Inc.", "123 Letha Shore.",
                        "", "Dis", "CA", "91222", "US", "12345678910");
-  std::vector<base::string16> labels;
+  std::vector<std::u16string> labels;
   // Two fields at least - no filter.
   AutofillProfile::CreateInferredLabels(ToRawPointerVector(profiles), nullptr,
                                         UNKNOWN_TYPE, 2, "en-US", &labels);
@@ -545,8 +545,8 @@ TEST_P(AutofillProfileTest, CreateInferredLabels) {
   AutofillProfile::CreateInferredLabels(ToRawPointerVector(profiles),
                                         &suggested_fields, NAME_MIDDLE, 1,
                                         "en-US", &labels);
-  EXPECT_EQ(base::string16(), labels[0]);
-  EXPECT_EQ(base::string16(), labels[1]);
+  EXPECT_EQ(std::u16string(), labels[0]);
+  EXPECT_EQ(std::u16string(), labels[1]);
 
   suggested_fields.clear();
   // In our implementation we always display NAME_FULL for NAME_MIDDLE_INITIAL
@@ -567,14 +567,14 @@ TEST_P(AutofillProfileTest, CreateInferredLabels) {
   AutofillProfile::CreateInferredLabels(ToRawPointerVector(profiles),
                                         &suggested_fields, NAME_FULL, 1,
                                         "en-US", &labels);
-  EXPECT_EQ(base::string16(ASCIIToUTF16("666 Erebus St.")), labels[0]);
-  EXPECT_EQ(base::string16(ASCIIToUTF16("123 Letha Shore.")), labels[1]);
+  EXPECT_EQ(std::u16string(ASCIIToUTF16("666 Erebus St.")), labels[0]);
+  EXPECT_EQ(std::u16string(ASCIIToUTF16("123 Letha Shore.")), labels[1]);
 
   // No suggested fields, but non-unknown excluded field.
   AutofillProfile::CreateInferredLabels(ToRawPointerVector(profiles), nullptr,
                                         NAME_FULL, 1, "en-US", &labels);
-  EXPECT_EQ(base::string16(ASCIIToUTF16("666 Erebus St.")), labels[0]);
-  EXPECT_EQ(base::string16(ASCIIToUTF16("123 Letha Shore.")), labels[1]);
+  EXPECT_EQ(std::u16string(ASCIIToUTF16("666 Erebus St.")), labels[0]);
+  EXPECT_EQ(std::u16string(ASCIIToUTF16("123 Letha Shore.")), labels[1]);
 }
 
 // Test that we fall back to using the full name if there are no other
@@ -597,7 +597,7 @@ TEST_P(AutofillProfileTest, CreateInferredLabelsFallsBackToFullName) {
   suggested_fields.push_back(NAME_LAST);
   suggested_fields.push_back(ADDRESS_HOME_LINE1);
   suggested_fields.push_back(EMAIL_ADDRESS);
-  std::vector<base::string16> labels;
+  std::vector<std::u16string> labels;
   AutofillProfile::CreateInferredLabels(ToRawPointerVector(profiles),
                                         &suggested_fields, NAME_LAST, 1,
                                         "en-US", &labels);
@@ -633,7 +633,7 @@ TEST_P(AutofillProfileTest, CreateInferredLabelsNoDuplicatedFields) {
   suggested_fields.push_back(ADDRESS_HOME_LINE1);
   suggested_fields.push_back(ADDRESS_BILLING_LINE1);
   suggested_fields.push_back(EMAIL_ADDRESS);
-  std::vector<base::string16> labels;
+  std::vector<std::u16string> labels;
   AutofillProfile::CreateInferredLabels(ToRawPointerVector(profiles),
                                         &suggested_fields, UNKNOWN_TYPE, 2,
                                         "en-US", &labels);
@@ -659,7 +659,7 @@ TEST_P(AutofillProfileTest, CreateInferredLabelsSkipsEmptyFields) {
                        "john.doe@example.com", "Goolge", "", "", "", "", "", "",
                        "");
 
-  std::vector<base::string16> labels;
+  std::vector<std::u16string> labels;
   AutofillProfile::CreateInferredLabels(ToRawPointerVector(profiles), nullptr,
                                         UNKNOWN_TYPE, 3, "en-US", &labels);
   ASSERT_EQ(3U, labels.size());
@@ -693,7 +693,7 @@ TEST_P(AutofillProfileTest, CreateInferredLabelsFlattensMultiLineValues) {
   std::vector<ServerFieldType> suggested_fields;
   suggested_fields.push_back(NAME_FULL);
   suggested_fields.push_back(ADDRESS_HOME_STREET_ADDRESS);
-  std::vector<base::string16> labels;
+  std::vector<std::u16string> labels;
   AutofillProfile::CreateInferredLabels(ToRawPointerVector(profiles),
                                         &suggested_fields, NAME_FULL, 1,
                                         "en-US", &labels);
@@ -1128,7 +1128,7 @@ TEST_P(AutofillProfileTest, MergeDataFrom_DifferentProfile) {
       ADDRESS_HOME_LINE2, ASCIIToUTF16("Unit 5, area 51"),
       structured_address::VerificationStatus::kObserved);
   b.SetRawInfoWithVerificationStatus(
-      COMPANY_NAME, base::string16(),
+      COMPANY_NAME, std::u16string(),
       structured_address::VerificationStatus::kObserved);
 
   b.SetRawInfo(NAME_MIDDLE, ASCIIToUTF16("M."));
@@ -1144,7 +1144,7 @@ TEST_P(AutofillProfileTest, MergeDataFrom_DifferentProfile) {
   EXPECT_EQ("Unit 5, area 51",
             base::UTF16ToUTF8(a.GetRawInfo(ADDRESS_HOME_LINE2)));
   EXPECT_EQ(ASCIIToUTF16("Fox"), a.GetRawInfo(COMPANY_NAME));
-  base::string16 name = a.GetInfo(NAME_FULL, "en-US");
+  std::u16string name = a.GetInfo(NAME_FULL, "en-US");
   EXPECT_EQ(ASCIIToUTF16("Marion Mitchell Morrison"), name);
   EXPECT_EQ("en", a.language_code());
 }
@@ -1388,7 +1388,7 @@ TEST_P(AutofillProfileTest, FullAddress) {
                        "Hollywood", "CA", "91601", "US", "12345678910");
 
   AutofillType full_address(HTML_TYPE_FULL_ADDRESS, HTML_MODE_NONE);
-  base::string16 formatted_address(
+  std::u16string formatted_address(
       ASCIIToUTF16("Marion Mitchell Morrison\n"
                    "Fox\n"
                    "123 Zoo St.\n"
@@ -1400,8 +1400,8 @@ TEST_P(AutofillProfileTest, FullAddress) {
   EXPECT_EQ(formatted_address, profile.GetInfo(full_address, "en-US"));
 
   // Some things can be missing...
-  profile.SetInfo(ADDRESS_HOME_LINE2, base::string16(), "en-US");
-  profile.SetInfo(EMAIL_ADDRESS, base::string16(), "en-US");
+  profile.SetInfo(ADDRESS_HOME_LINE2, std::u16string(), "en-US");
+  profile.SetInfo(EMAIL_ADDRESS, std::u16string(), "en-US");
   EXPECT_EQ(ASCIIToUTF16("Marion Mitchell Morrison\n"
                          "Fox\n"
                          "123 Zoo St.\n"
@@ -1409,13 +1409,13 @@ TEST_P(AutofillProfileTest, FullAddress) {
             profile.GetInfo(full_address, "en-US"));
 
   // ...but nothing comes out if a required field is missing.
-  profile.SetInfo(ADDRESS_HOME_STATE, base::string16(), "en-US");
+  profile.SetInfo(ADDRESS_HOME_STATE, std::u16string(), "en-US");
   EXPECT_TRUE(profile.GetInfo(full_address, "en-US").empty());
 
   // Restore the state but remove country. This should also fail.
   profile.SetInfo(ADDRESS_HOME_STATE, ASCIIToUTF16("CA"), "en-US");
   EXPECT_FALSE(profile.GetInfo(full_address, "en-US").empty());
-  profile.SetInfo(ADDRESS_HOME_COUNTRY, base::string16(), "en-US");
+  profile.SetInfo(ADDRESS_HOME_COUNTRY, std::u16string(), "en-US");
   EXPECT_TRUE(profile.GetInfo(full_address, "en-US").empty());
 }
 

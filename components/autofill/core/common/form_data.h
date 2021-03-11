@@ -24,7 +24,7 @@ class LogBuffer;
 
 // Pair of a button title (e.g. "Register") and its type (e.g.
 // INPUT_ELEMENT_SUBMIT_TYPE).
-using ButtonTitleInfo = std::pair<base::string16, mojom::ButtonTitleType>;
+using ButtonTitleInfo = std::pair<std::u16string, mojom::ButtonTitleType>;
 
 // List of button titles of a given form.
 using ButtonTitleList = std::vector<ButtonTitleInfo>;
@@ -59,10 +59,10 @@ struct FormData {
   bool operator<(const FormData& form) const;
 
   // The id attribute of the form.
-  base::string16 id_attribute;
+  std::u16string id_attribute;
 
   // The name attribute of the form.
-  base::string16 name_attribute;
+  std::u16string name_attribute;
 
   // NOTE: update IdentityComparator                when adding new a member.
   // NOTE: update SameFormAs()            if needed when adding new a member.
@@ -74,7 +74,7 @@ struct FormData {
   // priority given to the name_attribute. This value is used when computing
   // form signatures.
   // TODO(crbug/896689): remove this and use attributes/unique_id instead.
-  base::string16 name;
+  std::u16string name;
   // Titles of form's buttons.
   ButtonTitleList button_titles;
   // The URL (minus query parameters and fragment) containing the form.

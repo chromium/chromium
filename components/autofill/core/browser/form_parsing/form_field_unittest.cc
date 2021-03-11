@@ -38,11 +38,11 @@ TEST(FormFieldTest, Match) {
   AutofillField field;
 
   // Empty strings match.
-  EXPECT_TRUE(FormField::Match(&field, base::string16(), MATCH_LABEL));
+  EXPECT_TRUE(FormField::Match(&field, std::u16string(), MATCH_LABEL));
 
   // Empty pattern matches non-empty string.
   SetFieldLabels(&field, "a");
-  EXPECT_TRUE(FormField::Match(&field, base::string16(), MATCH_LABEL));
+  EXPECT_TRUE(FormField::Match(&field, std::u16string(), MATCH_LABEL));
 
   // Strictly empty pattern matches empty string.
   SetFieldLabels(&field, "");

@@ -115,7 +115,7 @@ struct FormFieldData {
   //
   // TODO(crbug.com/896689): Expand the logic/application of this to other
   // platforms and/or merge this concept with |unique_renderer_id|.
-  base::string16 unique_id;
+  std::u16string unique_id;
 #define EXPECT_EQ_UNIQUE_ID(expected, actual) \
   EXPECT_EQ((expected).unique_id, (actual).unique_id)
 #else
@@ -132,18 +132,18 @@ struct FormFieldData {
   // priority given to the name_attribute. This value is used when computing
   // form signatures.
   // TODO(crbug/896689): remove this and use attributes/unique_id instead.
-  base::string16 name;
+  std::u16string name;
 
-  base::string16 id_attribute;
-  base::string16 name_attribute;
-  base::string16 label;
-  base::string16 value;
+  std::u16string id_attribute;
+  std::u16string name_attribute;
+  std::u16string label;
+  std::u16string value;
   std::string form_control_type;
   std::string autocomplete_attribute;
-  base::string16 placeholder;
-  base::string16 css_classes;
-  base::string16 aria_label;
-  base::string16 aria_description;
+  std::u16string placeholder;
+  std::u16string css_classes;
+  std::u16string aria_label;
+  std::u16string aria_description;
 
   // Unique renderer id returned by
   // WebFormControlElement::UniqueRendererFormId(). It is not persistent between
@@ -176,12 +176,12 @@ struct FormFieldData {
   bool is_readonly = false;
   // Contains value that was either manually typed or autofilled on user
   // trigger.
-  base::string16 user_input;
+  std::u16string user_input;
 
   // For the HTML snippet |<option value="US">United States</option>|, the
   // value is "US" and the contents are "United States".
-  std::vector<base::string16> option_values;
-  std::vector<base::string16> option_contents;
+  std::vector<std::u16string> option_values;
+  std::vector<std::u16string> option_contents;
 
   // Password Manager doesn't use labels nor client side nor server side, so
   // label_source isn't in serialize methods.
@@ -197,8 +197,8 @@ struct FormFieldData {
   // used for field comparison and aren't in serialize methods.
   // The datalist option is intentionally separated from option_values and
   // option_contents because they are handled very differently in autofill.
-  std::vector<base::string16> datalist_values;
-  std::vector<base::string16> datalist_labels;
+  std::vector<std::u16string> datalist_values;
+  std::vector<std::u16string> datalist_labels;
 };
 
 // Serialize and deserialize FormFieldData. These are used when FormData objects

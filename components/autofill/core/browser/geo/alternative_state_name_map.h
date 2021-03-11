@@ -73,13 +73,13 @@ class AlternativeStateNameMap {
 
   // Represents either a canonical state name, or an abbreviation, or an
   // alternative name or normalized state name from the profile.
-  using StateName = base::StrongAlias<class StateNameTag, base::string16>;
+  using StateName = base::StrongAlias<class StateNameTag, std::u16string>;
 
   // States can be represented as different strings (different spellings,
   // translations, abbreviations). All representations of a single state in a
   // single country are mapped to the same canonical name.
   using CanonicalStateName =
-      base::StrongAlias<class CanonicalStateNameTag, base::string16>;
+      base::StrongAlias<class CanonicalStateNameTag, std::u16string>;
 
   static AlternativeStateNameMap* GetInstance();
 
@@ -91,7 +91,7 @@ class AlternativeStateNameMap {
   // |state_name| if present.
   static base::Optional<AlternativeStateNameMap::CanonicalStateName>
   GetCanonicalStateName(const std::string& country_code,
-                        const base::string16& state_name);
+                        const std::u16string& state_name);
 
   ~AlternativeStateNameMap() = delete;
   AlternativeStateNameMap(const AlternativeStateNameMap&) = delete;

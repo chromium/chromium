@@ -125,8 +125,8 @@ void CompareAutofillEntrySets(const AutofillEntrySet& actual,
   EXPECT_EQ(actual.size(), count);
 }
 
-int GetAutofillEntryCount(const base::string16& name,
-                          const base::string16& value,
+int GetAutofillEntryCount(const std::u16string& name,
+                          const std::u16string& value,
                           WebDatabase* db) {
   sql::Statement s(db->GetSQLConnection()->GetUniqueStatement(
       "SELECT count FROM autofill WHERE name = ? AND value = ?"));
@@ -213,7 +213,7 @@ TEST_F(AutofillTableTest, Autofill) {
   // no matter what they start with.  The order that the names occur in the list
   // should be decreasing order by count.
   EXPECT_TRUE(table_->GetFormValuesForElementName(ASCIIToUTF16("Name"),
-                                                  base::string16(), &v, 6));
+                                                  std::u16string(), &v, 6));
   EXPECT_EQ(3U, v.size());
   if (v.size() == 3) {
     EXPECT_EQ(ASCIIToUTF16("Clark Kent"), v[0].key().value());
@@ -224,7 +224,7 @@ TEST_F(AutofillTableTest, Autofill) {
   // If we query again limiting the list size to 1, we should only get the most
   // frequent entry.
   EXPECT_TRUE(table_->GetFormValuesForElementName(ASCIIToUTF16("Name"),
-                                                  base::string16(), &v, 1));
+                                                  std::u16string(), &v, 1));
   EXPECT_EQ(1U, v.size());
   if (v.size() == 1) {
     EXPECT_EQ(ASCIIToUTF16("Clark Kent"), v[0].key().value());
@@ -268,13 +268,13 @@ TEST_F(AutofillTableTest, Autofill) {
                                      ASCIIToUTF16("Clark Kent"), db_.get()));
 
   EXPECT_TRUE(table_->GetFormValuesForElementName(ASCIIToUTF16("Name"),
-                                                  base::string16(), &v, 6));
+                                                  std::u16string(), &v, 6));
   EXPECT_EQ(0U, v.size());
 
   // Now add some values with empty strings.
-  const base::string16 kValue = ASCIIToUTF16("  toto   ");
+  const std::u16string kValue = ASCIIToUTF16("  toto   ");
   field.name = ASCIIToUTF16("blank");
-  field.value = base::string16();
+  field.value = std::u16string();
   EXPECT_TRUE(table_->AddFormFieldValue(field, &changes));
   field.name = ASCIIToUTF16("blank");
   field.value = ASCIIToUTF16(" ");
@@ -290,7 +290,7 @@ TEST_F(AutofillTableTest, Autofill) {
   // values.
   v.clear();
   EXPECT_TRUE(table_->GetFormValuesForElementName(ASCIIToUTF16("blank"),
-                                                  base::string16(), &v, 10));
+                                                  std::u16string(), &v, 10));
   EXPECT_EQ(4U, v.size());
 }
 
@@ -1232,15 +1232,15 @@ TEST_F(AutofillTableTest,
   ASSERT_TRUE(legacy_db_profile);
 
   EXPECT_EQ(legacy_db_profile->GetRawInfo(ADDRESS_HOME_STREET_NAME),
-            base::string16());
+            std::u16string());
   EXPECT_EQ(legacy_db_profile->GetRawInfo(ADDRESS_HOME_DEPENDENT_STREET_NAME),
-            base::string16());
+            std::u16string());
   EXPECT_EQ(legacy_db_profile->GetRawInfo(ADDRESS_HOME_HOUSE_NUMBER),
-            base::string16());
+            std::u16string());
   EXPECT_EQ(legacy_db_profile->GetRawInfo(ADDRESS_HOME_SUBPREMISE),
-            base::string16());
+            std::u16string());
   EXPECT_EQ(legacy_db_profile->GetRawInfo(ADDRESS_HOME_PREMISE_NAME),
-            base::string16());
+            std::u16string());
 
   // Change the street address and update the profile.
   legacy_db_profile->SetRawInfoWithVerificationStatus(
@@ -2541,7 +2541,7 @@ TEST_F(AutofillTableTest, SetGetServerCards) {
   inputs[1].SetRawInfo(CREDIT_CARD_NUMBER, ASCIIToUTF16("1111"));
   inputs[1].SetNetworkForMaskedCard(kVisaCard);
   inputs[1].SetServerStatus(CreditCard::EXPIRED);
-  base::string16 nickname = ASCIIToUTF16("Grocery card");
+  std::u16string nickname = ASCIIToUTF16("Grocery card");
   inputs[1].SetNickname(nickname);
   inputs[1].set_card_issuer(CreditCard::Issuer::GOOGLE);
   inputs[1].set_instrument_id(123);
@@ -2927,7 +2927,7 @@ TEST_F(AutofillTableTest, RemoveWrongServerAddressMetadata) {
 }
 
 TEST_F(AutofillTableTest, MaskUnmaskServerCards) {
-  base::string16 masked_number(ASCIIToUTF16("1111"));
+  std::u16string masked_number(ASCIIToUTF16("1111"));
   std::vector<CreditCard> inputs;
   inputs.push_back(CreditCard(CreditCard::MASKED_SERVER_CARD, "a123"));
   inputs[0].SetRawInfo(CREDIT_CARD_NAME_FULL, ASCIIToUTF16("Jay Johnson"));
@@ -2938,7 +2938,7 @@ TEST_F(AutofillTableTest, MaskUnmaskServerCards) {
   test::SetServerCreditCards(table_.get(), inputs);
 
   // Unmask the number. The full number should be available.
-  base::string16 full_number(ASCIIToUTF16("4111111111111111"));
+  std::u16string full_number(ASCIIToUTF16("4111111111111111"));
   ASSERT_TRUE(table_->UnmaskServerCreditCard(inputs[0], full_number));
 
   std::vector<std::unique_ptr<CreditCard>> outputs;
@@ -2976,7 +2976,7 @@ TEST_F(AutofillTableTest, SetServerCardModify) {
   test::SetServerCreditCards(table_.get(), inputs);
 
   // Now unmask it.
-  base::string16 full_number = ASCIIToUTF16("4111111111111111");
+  std::u16string full_number = ASCIIToUTF16("4111111111111111");
   table_->UnmaskServerCreditCard(masked_card, full_number);
 
   // The card should now be unmasked.
@@ -3175,7 +3175,7 @@ TEST_F(AutofillTableTest, DeleteUnmaskedCard) {
   base::Time unmasked_time = AutofillClock::Now();
 
   // Add a masked card.
-  base::string16 masked_number = ASCIIToUTF16("1111");
+  std::u16string masked_number = ASCIIToUTF16("1111");
   CreditCard masked_card(CreditCard::MASKED_SERVER_CARD, "a123");
   masked_card.SetRawInfo(CREDIT_CARD_NAME_FULL,
                          ASCIIToUTF16("Paul F. Tompkins"));
@@ -3189,7 +3189,7 @@ TEST_F(AutofillTableTest, DeleteUnmaskedCard) {
   table_->SetServerCreditCards(inputs);
 
   // Unmask it.
-  base::string16 full_number = ASCIIToUTF16("4111111111111111");
+  std::u16string full_number = ASCIIToUTF16("4111111111111111");
   table_->UnmaskServerCreditCard(masked_card, full_number);
 
   // Delete data in a range a year in the future.

@@ -323,7 +323,7 @@ bool AutofillProfile::IsDeletable() const {
 }
 
 void AutofillProfile::GetMatchingTypes(
-    const base::string16& text,
+    const std::u16string& text,
     const std::string& app_locale,
     ServerFieldTypeSet* matching_types) const {
   ServerFieldTypeSet matching_types_in_this_profile;
@@ -338,7 +338,7 @@ void AutofillProfile::GetMatchingTypes(
 }
 
 void AutofillProfile::GetMatchingTypesAndValidities(
-    const base::string16& text,
+    const std::u16string& text,
     const std::string& app_locale,
     ServerFieldTypeSet* matching_types,
     ServerFieldTypeValidityStateMap* matching_types_validities) const {
@@ -362,17 +362,17 @@ void AutofillProfile::GetMatchingTypesAndValidities(
   }
 }
 
-base::string16 AutofillProfile::GetRawInfo(ServerFieldType type) const {
+std::u16string AutofillProfile::GetRawInfo(ServerFieldType type) const {
   const FormGroup* form_group = FormGroupForType(AutofillType(type));
   if (!form_group)
-    return base::string16();
+    return std::u16string();
 
   return form_group->GetRawInfo(type);
 }
 
 void AutofillProfile::SetRawInfoWithVerificationStatus(
     ServerFieldType type,
-    const base::string16& value,
+    const std::u16string& value,
     VerificationStatus status) {
   FormGroup* form_group = MutableFormGroupForType(AutofillType(type));
   if (form_group) {
@@ -397,7 +397,7 @@ bool AutofillProfile::IsEmpty(const std::string& app_locale) const {
 
 bool AutofillProfile::IsPresentButInvalid(ServerFieldType type) const {
   std::string country = UTF16ToUTF8(GetRawInfo(ADDRESS_HOME_COUNTRY));
-  base::string16 data = GetRawInfo(type);
+  std::u16string data = GetRawInfo(type);
   if (data.empty())
     return false;
 
@@ -547,7 +547,7 @@ bool AutofillProfile::IsSubsetOfForFieldSet(
     // profile's first and last names are set but its full name is not set.
     // GetInfo for the NAME_FULL type returns the constituent name parts;
     // however, GetRawInfo returns an empty string.
-    const base::string16 value = GetInfo(type, app_locale);
+    const std::u16string value = GetInfo(type, app_locale);
 
     if (value.empty() || type == ADDRESS_HOME_STREET_ADDRESS ||
         type == ADDRESS_HOME_LINE1 || type == ADDRESS_HOME_LINE2 ||
@@ -810,7 +810,7 @@ bool AutofillProfile::SaveAdditionalInfo(const AutofillProfile& profile,
 void AutofillProfile::CreateDifferentiatingLabels(
     const std::vector<AutofillProfile*>& profiles,
     const std::string& app_locale,
-    std::vector<base::string16>* labels) {
+    std::vector<std::u16string>* labels) {
   const size_t kMinimalFieldsShown = 2;
   CreateInferredLabels(profiles, nullptr, UNKNOWN_TYPE, kMinimalFieldsShown,
                        app_locale, labels);
@@ -824,7 +824,7 @@ void AutofillProfile::CreateInferredLabels(
     ServerFieldType excluded_field,
     size_t minimal_fields_shown,
     const std::string& app_locale,
-    std::vector<base::string16>* labels) {
+    std::vector<std::u16string>* labels) {
   std::vector<ServerFieldType> fields_to_use;
   GetFieldsForDistinguishingProfiles(suggested_fields, excluded_field,
                                      &fields_to_use);
@@ -832,9 +832,9 @@ void AutofillProfile::CreateInferredLabels(
   // Construct the default label for each profile. Also construct a map that
   // associates each label with the profiles that have this label. This map is
   // then used to detect which labels need further differentiating fields.
-  std::map<base::string16, std::list<size_t>> labels_to_profiles;
+  std::map<std::u16string, std::list<size_t>> labels_to_profiles;
   for (size_t i = 0; i < profiles.size(); ++i) {
-    base::string16 label = profiles[i]->ConstructInferredLabel(
+    std::u16string label = profiles[i]->ConstructInferredLabel(
         fields_to_use.data(), fields_to_use.size(), minimal_fields_shown,
         app_locale);
     labels_to_profiles[label].push_back(i);
@@ -844,7 +844,7 @@ void AutofillProfile::CreateInferredLabels(
   for (auto& it : labels_to_profiles) {
     if (it.second.size() == 1) {
       // This label is unique, so use it without any further ado.
-      base::string16 label = it.first;
+      std::u16string label = it.first;
       size_t profile_index = it.second.front();
       (*labels)[profile_index] = label;
     } else {
@@ -856,17 +856,17 @@ void AutofillProfile::CreateInferredLabels(
   }
 }
 
-base::string16 AutofillProfile::ConstructInferredLabel(
+std::u16string AutofillProfile::ConstructInferredLabel(
     const ServerFieldType* included_fields,
     const size_t included_fields_size,
     size_t num_fields_to_use,
     const std::string& app_locale) const {
   // TODO(estade): use libaddressinput?
-  base::string16 separator =
+  std::u16string separator =
       l10n_util::GetStringUTF16(IDS_AUTOFILL_ADDRESS_SUMMARY_SEPARATOR);
 
   AutofillType region_code_type(HTML_TYPE_COUNTRY_CODE, HTML_MODE_NONE);
-  const base::string16& profile_region_code =
+  const std::u16string& profile_region_code =
       GetInfo(region_code_type, app_locale);
   std::string address_region_code = UTF16ToUTF8(profile_region_code);
 
@@ -888,7 +888,7 @@ base::string16 AutofillProfile::ConstructInferredLabel(
     }
 
     AutofillType autofill_type(included_fields[i]);
-    base::string16 field_value = GetInfo(autofill_type, app_locale);
+    std::u16string field_value = GetInfo(autofill_type, app_locale);
     if (field_value.empty())
       continue;
 
@@ -901,12 +901,12 @@ base::string16 AutofillProfile::ConstructInferredLabel(
   std::string address_line;
   ::i18n::addressinput::GetFormattedNationalAddressLine(*address_data,
                                                         &address_line);
-  base::string16 label = base::UTF8ToUTF16(address_line);
+  std::u16string label = base::UTF8ToUTF16(address_line);
 
   for (std::vector<ServerFieldType>::const_iterator it =
            remaining_fields.begin();
        it != remaining_fields.end() && num_fields_to_use > 0; ++it) {
-    base::string16 field_value;
+    std::u16string field_value;
     // Special case whole numbers: we want the user-formatted (raw) version, not
     // the canonicalized version we'll fill into the page.
     if (*it == PHONE_HOME_WHOLE_NUMBER)
@@ -933,7 +933,7 @@ base::string16 AutofillProfile::ConstructInferredLabel(
 
 void AutofillProfile::GenerateServerProfileIdentifier() {
   DCHECK_EQ(SERVER_PROFILE, record_type());
-  base::string16 contents = GetRawInfo(NAME_FIRST);
+  std::u16string contents = GetRawInfo(NAME_FIRST);
   contents.append(GetRawInfo(NAME_MIDDLE));
   contents.append(GetRawInfo(NAME_LAST));
   contents.append(GetRawInfo(EMAIL_ADDRESS));
@@ -1158,14 +1158,14 @@ VerificationStatus AutofillProfile::GetVerificationStatusImpl(
   return form_group->GetVerificationStatus(type);
 }
 
-base::string16 AutofillProfile::GetInfoImpl(
+std::u16string AutofillProfile::GetInfoImpl(
     const AutofillType& type,
     const std::string& app_locale) const {
   if (type.html_type() == HTML_TYPE_FULL_ADDRESS) {
     std::unique_ptr<AddressData> address_data =
         i18n::CreateAddressDataFromAutofillProfile(*this, app_locale);
     if (!addressinput::HasAllRequiredFields(*address_data))
-      return base::string16();
+      return std::u16string();
 
     std::vector<std::string> lines;
     ::i18n::addressinput::GetFormattedNationalAddress(*address_data, &lines);
@@ -1174,14 +1174,14 @@ base::string16 AutofillProfile::GetInfoImpl(
 
   const FormGroup* form_group = FormGroupForType(type);
   if (!form_group)
-    return base::string16();
+    return std::u16string();
 
   return form_group->GetInfoImpl(type, app_locale);
 }
 
 bool AutofillProfile::SetInfoWithVerificationStatusImpl(
     const AutofillType& type,
-    const base::string16& value,
+    const std::u16string& value,
     const std::string& app_locale,
     VerificationStatus status) {
   FormGroup* form_group = MutableFormGroupForType(type);
@@ -1191,7 +1191,7 @@ bool AutofillProfile::SetInfoWithVerificationStatusImpl(
   is_client_validity_states_updated_ &=
       !IsClientValidationSupportedForType(type.GetStorableType());
 
-  base::string16 trimmed_value;
+  std::u16string trimmed_value;
   base::TrimWhitespace(value, base::TRIM_ALL, &trimmed_value);
 
   return form_group->SetInfoWithVerificationStatusImpl(type, trimmed_value,
@@ -1205,18 +1205,18 @@ void AutofillProfile::CreateInferredLabelsHelper(
     const std::vector<ServerFieldType>& fields,
     size_t num_fields_to_include,
     const std::string& app_locale,
-    std::vector<base::string16>* labels) {
+    std::vector<std::u16string>* labels) {
   // For efficiency, we first construct a map of fields to their text values and
   // each value's frequency.
-  std::map<ServerFieldType, std::map<base::string16, size_t>>
+  std::map<ServerFieldType, std::map<std::u16string, size_t>>
       field_text_frequencies_by_field;
   for (const ServerFieldType& field : fields) {
-    std::map<base::string16, size_t>& field_text_frequencies =
+    std::map<std::u16string, size_t>& field_text_frequencies =
         field_text_frequencies_by_field[field];
 
     for (const auto& it : indices) {
       const AutofillProfile* profile = profiles[it];
-      base::string16 field_text =
+      std::u16string field_text =
           profile->GetInfo(AutofillType(field), app_locale);
 
       // If this label is not already in the map, add it with frequency 0.
@@ -1242,15 +1242,15 @@ void AutofillProfile::CreateInferredLabelsHelper(
     bool found_differentiating_field = false;
     for (auto field = fields.begin(); field != fields.end(); ++field) {
       // Skip over empty fields.
-      base::string16 field_text =
+      std::u16string field_text =
           profile->GetInfo(AutofillType(*field), app_locale);
       if (field_text.empty())
         continue;
 
-      std::map<base::string16, size_t>& field_text_frequencies =
+      std::map<std::u16string, size_t>& field_text_frequencies =
           field_text_frequencies_by_field[*field];
       found_differentiating_field |=
-          !field_text_frequencies.count(base::string16()) &&
+          !field_text_frequencies.count(std::u16string()) &&
           (field_text_frequencies[field_text] == 1);
 
       // Once we've found enough non-empty fields, skip over any remaining

@@ -98,7 +98,7 @@ bool NameInfo::operator==(const NameInfo& other) const {
          family_ == other.family_ && full_ == other.full_;
 }
 
-base::string16 NameInfo::GetRawInfo(ServerFieldType type) const {
+std::u16string NameInfo::GetRawInfo(ServerFieldType type) const {
   DCHECK_EQ(FieldTypeGroup::kName, AutofillType(type).group());
 
   // TODO(crbug.com/1103421): Clean legacy implementation once structured names
@@ -109,7 +109,7 @@ base::string16 NameInfo::GetRawInfo(ServerFieldType type) const {
     if ((type == NAME_HONORIFIC_PREFIX ||
          type == NAME_FULL_WITH_HONORIFIC_PREFIX) &&
         !structured_address::HonorificPrefixEnabled()) {
-      return base::string16();
+      return std::u16string();
     }
     return name_->GetValueForType(type);
   }
@@ -130,12 +130,12 @@ base::string16 NameInfo::GetRawInfo(ServerFieldType type) const {
       return full_;
 
     default:
-      return base::string16();
+      return std::u16string();
   }
 }
 
 void NameInfo::SetRawInfoWithVerificationStatus(ServerFieldType type,
-                                                const base::string16& value,
+                                                const std::u16string& value,
                                                 VerificationStatus status) {
   DCHECK_EQ(FieldTypeGroup::kName, AutofillType(type).group());
   // TODO(crbug.com/1103421): Clean legacy implementation once structured names
@@ -196,7 +196,7 @@ void NameInfo::GetSupportedTypes(ServerFieldTypeSet* supported_types) const {
   }
 }
 
-base::string16 NameInfo::GetInfoImpl(const AutofillType& type,
+std::u16string NameInfo::GetInfoImpl(const AutofillType& type,
                                      const std::string& app_locale) const {
   // TODO(crbug.com/1103421): Clean legacy implementation once structured names
   // are fully launched.
@@ -208,7 +208,7 @@ base::string16 NameInfo::GetInfoImpl(const AutofillType& type,
 }
 
 bool NameInfo::SetInfoWithVerificationStatusImpl(const AutofillType& type,
-                                                 const base::string16& value,
+                                                 const std::u16string& value,
                                                  const std::string& app_locale,
                                                  VerificationStatus status) {
   // TODO(crbug.com/1103421): Clean legacy implementation once structured names
@@ -240,7 +240,7 @@ bool NameInfo::SetInfoWithVerificationStatusImpl(const AutofillType& type,
                                                       status);
 }
 
-void NameInfo::GetMatchingTypes(const base::string16& text,
+void NameInfo::GetMatchingTypes(const std::u16string& text,
                                 const std::string& app_locale,
                                 ServerFieldTypeSet* matching_types) const {
   FormGroup::GetMatchingTypes(text, app_locale, matching_types);
@@ -268,7 +268,7 @@ VerificationStatus NameInfo::GetVerificationStatusImpl(
   return VerificationStatus::kNoStatus;
 }
 
-base::string16 NameInfo::FullName() const {
+std::u16string NameInfo::FullName() const {
   // TODO(crbug.com/1103421): Clean legacy implementation once structured
   // names are fully launched.
   if (structured_address::StructuredNamesEnabled())
@@ -279,15 +279,15 @@ base::string16 NameInfo::FullName() const {
   return data_util::JoinNameParts(given_, middle_, family_);
 }
 
-base::string16 NameInfo::MiddleInitial() const {
+std::u16string NameInfo::MiddleInitial() const {
   // TODO(crbug.com/1103421): Clean legacy implementation once structured
   // names are fully launched.
   if (structured_address::StructuredNamesEnabled())
     NOTREACHED();
-  return middle_.empty() ? base::string16() : middle_.substr(0U, 1U);
+  return middle_.empty() ? std::u16string() : middle_.substr(0U, 1U);
 }
 
-void NameInfo::SetFullName(const base::string16& full) {
+void NameInfo::SetFullName(const std::u16string& full) {
   // TODO(crbug.com/1103421): Clean legacy implementation once structured
   // names are fully launched.
   if (structured_address::StructuredNamesEnabled())
@@ -323,15 +323,15 @@ void EmailInfo::GetSupportedTypes(ServerFieldTypeSet* supported_types) const {
   supported_types->insert(EMAIL_ADDRESS);
 }
 
-base::string16 EmailInfo::GetRawInfo(ServerFieldType type) const {
+std::u16string EmailInfo::GetRawInfo(ServerFieldType type) const {
   if (type == EMAIL_ADDRESS)
     return email_;
 
-  return base::string16();
+  return std::u16string();
 }
 
 void EmailInfo::SetRawInfoWithVerificationStatus(ServerFieldType type,
-                                                 const base::string16& value,
+                                                 const std::u16string& value,
                                                  VerificationStatus status) {
   DCHECK_EQ(EMAIL_ADDRESS, type);
   email_ = value;
@@ -364,18 +364,18 @@ void CompanyInfo::GetSupportedTypes(ServerFieldTypeSet* supported_types) const {
   supported_types->insert(COMPANY_NAME);
 }
 
-base::string16 CompanyInfo::GetRawInfo(ServerFieldType type) const {
-  return IsValidOrVerified(company_name_) ? company_name_ : base::string16();
+std::u16string CompanyInfo::GetRawInfo(ServerFieldType type) const {
+  return IsValidOrVerified(company_name_) ? company_name_ : std::u16string();
 }
 
 void CompanyInfo::SetRawInfoWithVerificationStatus(ServerFieldType type,
-                                                   const base::string16& value,
+                                                   const std::u16string& value,
                                                    VerificationStatus status) {
   DCHECK_EQ(COMPANY_NAME, type);
   company_name_ = value;
 }
 
-bool CompanyInfo::IsValidOrVerified(const base::string16& value) const {
+bool CompanyInfo::IsValidOrVerified(const std::u16string& value) const {
   // TODO(crbug/1117296): retrieve regular expressions dynamically.
   static const char* kBirthyearRe = "^(19|20)\\d{2}$";
   static const char* kSocialTitleRe =

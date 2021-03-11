@@ -69,7 +69,7 @@ TEST(AddressPhoneFormLabelFormatterTest, GetLabelsForUSProfilesAndFocusedName) {
       ElementsAre(ConstructLabelLine({base::ASCIIToUTF16("(617) 730-2000"),
                                       base::ASCIIToUTF16("333 Washington St")}),
                   base::ASCIIToUTF16("151 Irving Ave"),
-                  base::ASCIIToUTF16("(617) 523-2338"), base::string16()));
+                  base::ASCIIToUTF16("(617) 523-2338"), std::u16string()));
 }
 
 TEST(AddressPhoneFormLabelFormatterTest,
@@ -106,7 +106,7 @@ TEST(AddressPhoneFormLabelFormatterTest,
       ElementsAre(ConstructLabelLine({base::ASCIIToUTF16("John F Kennedy"),
                                       base::ASCIIToUTF16("(617) 730-2000")}),
                   base::ASCIIToUTF16("Jackie Kennedy"),
-                  base::ASCIIToUTF16("(617) 523-2338"), base::string16()));
+                  base::ASCIIToUTF16("(617) 523-2338"), std::u16string()));
 }
 
 TEST(AddressPhoneFormLabelFormatterTest,
@@ -143,7 +143,7 @@ TEST(AddressPhoneFormLabelFormatterTest,
       ElementsAre(ConstructLabelLine({base::ASCIIToUTF16("333 Washington St"),
                                       base::ASCIIToUTF16("(617) 730-2000")}),
                   base::ASCIIToUTF16("151 Irving Ave"),
-                  base::ASCIIToUTF16("(617) 523-2338"), base::string16()));
+                  base::ASCIIToUTF16("(617) 523-2338"), std::u16string()));
 }
 
 TEST(AddressPhoneFormLabelFormatterTest,
@@ -181,7 +181,7 @@ TEST(AddressPhoneFormLabelFormatterTest,
                                       base::ASCIIToUTF16("333 Washington St")}),
                   base::ASCIIToUTF16("Jackie Kennedy"),
                   base::ASCIIToUTF16("Paul Revere House, 19 North Square"),
-                  base::string16()));
+                  std::u16string()));
 }
 
 TEST(AddressPhoneFormLabelFormatterTest, GetLabelsForBRProfilesAndFocusedName) {

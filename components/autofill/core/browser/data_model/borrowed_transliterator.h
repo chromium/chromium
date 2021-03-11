@@ -37,7 +37,7 @@ class BorrowedTransliterator {
 // Apply the transliteration to a full string to convert it to lower case and to
 // remove the diacritics.
 // and remove the diacritics.
-base::string16 RemoveDiacriticsAndConvertToLowerCase(base::StringPiece16 value);
+std::u16string RemoveDiacriticsAndConvertToLowerCase(base::StringPiece16 value);
 
 }  // namespace autofill
 

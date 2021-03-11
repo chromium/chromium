@@ -87,7 +87,7 @@ class AutofillProvider {
   // Notifies the renderer should accept the datalist suggestion given by
   // |value| and fill the associated input field.
   void RendererShouldAcceptDataListSuggestion(AutofillHandlerProxy* handler,
-                                              const base::string16& value);
+                                              const std::u16string& value);
 };
 
 }  // namespace autofill

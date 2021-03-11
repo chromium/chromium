@@ -96,7 +96,7 @@ const char kDebugAttributeForFieldSignature[] = "field_signature";
 const char kDebugAttributeForParserAnnotations[] = "pm_parser_annotation";
 
 // Maps element names to the actual elements to simplify form filling.
-typedef std::map<base::string16, WebInputElement> FormInputElementMap;
+typedef std::map<std::u16string, WebInputElement> FormInputElementMap;
 
 // Use the shorter name when referencing SavePasswordProgressLogger::StringID
 // values to spare line breaks. The code provides enough context for that
@@ -109,8 +109,8 @@ bool IsElementEditable(const WebInputElement& element) {
   return element.IsEnabled() && !element.IsReadOnly();
 }
 
-bool DoUsernamesMatch(const base::string16& potential_suggestion,
-                      const base::string16& current_username,
+bool DoUsernamesMatch(const std::u16string& potential_suggestion,
+                      const std::u16string& current_username,
                       bool exact_match) {
   if (potential_suggestion == current_username)
     return true;
@@ -156,8 +156,8 @@ void LogHTMLForm(Logger* logger,
 // Returns true if there are any suggestions to be derived from |fill_data|.
 // Only considers suggestions with usernames having |typed_username| as prefix.
 bool CanShowUsernameSuggestion(const PasswordFormFillData& fill_data,
-                               const base::string16& typed_username) {
-  base::string16 typed_username_lower = base::i18n::ToLower(typed_username);
+                               const std::u16string& typed_username) {
+  std::u16string typed_username_lower = base::i18n::ToLower(typed_username);
   if (base::StartsWith(base::i18n::ToLower(fill_data.username_field.value),
                        typed_username_lower, base::CompareCase::SENSITIVE)) {
     return true;
@@ -177,11 +177,11 @@ bool CanShowUsernameSuggestion(const PasswordFormFillData& fill_data,
 // |current_username| by scanning |fill_data|. The result is written in
 // |username| and |password| parameters.
 void FindMatchesByUsername(const PasswordFormFillData& fill_data,
-                           const base::string16& current_username,
+                           const std::u16string& current_username,
                            bool exact_username_match,
                            RendererSavePasswordProgressLogger* logger,
-                           base::string16* username,
-                           base::string16* password) {
+                           std::u16string* username,
+                           std::u16string* password) {
   // Look for any suitable matches to current field text.
   if (DoUsernamesMatch(fill_data.username_field.value, current_username,
                        exact_username_match)) {
@@ -548,7 +548,7 @@ void PasswordAutofillAgent::UpdateStateForTextChange(
   // TODO(crbug.com/415449): Do this through const WebInputElement.
   WebInputElement mutable_element = element;  // We need a non-const.
 
-  const base::string16 element_value = element.Value().Utf16();
+  const std::u16string element_value = element.Value().Utf16();
   const FieldRendererId element_id(element.UniqueRendererFormControlId());
   field_data_manager_->UpdateFieldDataMap(element_id, element_value,
                                           FieldPropertiesFlags::kUserTyped);
@@ -577,8 +577,8 @@ void PasswordAutofillAgent::TrackAutofilledElement(
 
 bool PasswordAutofillAgent::FillSuggestion(
     const WebFormControlElement& control_element,
-    const base::string16& username,
-    const base::string16& password) {
+    const std::u16string& username,
+    const std::u16string& password) {
   // The element in context of the suggestion popup.
   const WebInputElement* element = ToWebInputElement(&control_element);
   if (!element)
@@ -625,7 +625,7 @@ bool PasswordAutofillAgent::FillSuggestion(
 
 void PasswordAutofillAgent::FillIntoFocusedField(
     bool is_password,
-    const base::string16& credential) {
+    const std::u16string& credential) {
   if (focused_input_element_.IsNull())
     return;
   if (!is_password) {
@@ -637,7 +637,7 @@ void PasswordAutofillAgent::FillIntoFocusedField(
 }
 
 void PasswordAutofillAgent::FillField(WebInputElement* input,
-                                      const base::string16& credential) {
+                                      const std::u16string& credential) {
   DCHECK(input);
   DCHECK(!input->IsNull());
   input->SetAutofillValue(WebString::FromUTF16(credential));
@@ -650,7 +650,7 @@ void PasswordAutofillAgent::FillField(WebInputElement* input,
 
 void PasswordAutofillAgent::FillPasswordFieldAndSave(
     WebInputElement* password_input,
-    const base::string16& credential) {
+    const std::u16string& credential) {
   DCHECK(password_input);
   DCHECK(password_input->IsPasswordFieldForAutofill());
   FillField(password_input, credential);
@@ -904,7 +904,7 @@ bool PasswordAutofillAgent::ShowSuggestions(
     return false;
   }
 
-  ShowSuggestionPopup(base::string16(), element, show_all,
+  ShowSuggestionPopup(std::u16string(), element, show_all,
                       OnPasswordField(true));
   return true;
 }
@@ -1424,7 +1424,7 @@ void PasswordAutofillAgent::InformAboutFieldClearing(
 // PasswordAutofillAgent, private:
 
 void PasswordAutofillAgent::ShowSuggestionPopup(
-    const base::string16& typed_username,
+    const std::u16string& typed_username,
     const WebInputElement& user_input,
     ShowAll show_all,
     OnPasswordField show_on_password_field) {
@@ -1538,7 +1538,7 @@ bool PasswordAutofillAgent::FillUserNameAndPassword(
   // autocompletable.
   // 3. Empty if username field doesn't exist or if username field is empty and
   // not autocompletable (no username case).
-  base::string16 current_username;
+  std::u16string current_username;
 
   // Whether the username element was prefilled with content that was on a
   // list of known placeholder texts that should be overridden (e.g. "username
@@ -1573,8 +1573,8 @@ bool PasswordAutofillAgent::FillUserNameAndPassword(
   }
 
   // |username| and |password| will contain the match found if any.
-  base::string16 username;
-  base::string16 password;
+  std::u16string username;
+  std::u16string password;
 
   bool exact_username_match =
       username_element.IsNull() || IsElementEditable(username_element);
@@ -1869,7 +1869,7 @@ void PasswordAutofillAgent::TryFixAutofilledForm(
   }
 }
 
-void PasswordAutofillAgent::AutofillField(const base::string16& value,
+void PasswordAutofillAgent::AutofillField(const std::u16string& value,
                                           WebInputElement field) {
   // Do not autofill on load fields that have any user typed input.
   const FieldRendererId field_id(field.UniqueRendererFormControlId());

@@ -74,8 +74,8 @@ enum ExtractMask {
 // Gets up to kMaxListSize data list values (with corresponding label) for the
 // given element, each value and label have as far as kMaxDataLength.
 void GetDataListSuggestions(const blink::WebInputElement& element,
-                            std::vector<base::string16>* values,
-                            std::vector<base::string16>* labels);
+                            std::vector<std::u16string>* values,
+                            std::vector<std::u16string>* labels);
 
 // Extract FormData from the form element and return whether the operation was
 // successful.
@@ -142,7 +142,7 @@ bool IsWebElementVisible(const blink::WebElement& element);
 
 // Returns the form's |name| attribute if non-empty; otherwise the form's |id|
 // attribute.
-base::string16 GetFormIdentifier(const blink::WebFormElement& form);
+std::u16string GetFormIdentifier(const blink::WebFormElement& form);
 
 // Returns the |unique_renderer_id| of a given |WebFormElement|. If
 // |WebFormElement::IsNull()|, returns a null renderer ID.
@@ -276,8 +276,8 @@ bool IsWebElementEmpty(const blink::WebElement& element);
 // not be null. |user_input| should be the text typed by the user into
 // |input_element|. Note that |user_input| cannot be easily derived from
 // |input_element| by calling value(), because of http://crbug.com/507714.
-void PreviewSuggestion(const base::string16& suggestion,
-                       const base::string16& user_input,
+void PreviewSuggestion(const std::u16string& suggestion,
+                       const std::u16string& user_input,
                        blink::WebFormControlElement* input_element);
 
 // Returns the aggregated values of the descendants of |element| that are
@@ -286,7 +286,7 @@ void PreviewSuggestion(const base::string16& suggestion,
 // used when the structure is not directly known.  However, unlike with
 // |innerText()|, the search depth and breadth are limited to a fixed threshold.
 // Whitespace is trimmed from text accumulated at descendant nodes.
-base::string16 FindChildText(const blink::WebNode& node);
+std::u16string FindChildText(const blink::WebNode& node);
 
 // Returns the button titles for |web_form| (or unowned buttons in |document| if
 // |web_form| is null). |button_titles_cache| can be used to spare recomputation
@@ -298,12 +298,12 @@ ButtonTitleList GetButtonTitles(const blink::WebFormElement& web_form,
                                 ButtonTitlesCache* button_titles_cache);
 
 // Exposed for testing purpose
-base::string16 FindChildTextWithIgnoreListForTesting(
+std::u16string FindChildTextWithIgnoreListForTesting(
     const blink::WebNode& node,
     const std::set<blink::WebNode>& divs_to_skip);
 bool InferLabelForElementForTesting(const blink::WebFormControlElement& element,
                                     const std::vector<char16_t>& stop_words,
-                                    base::string16* label,
+                                    std::u16string* label,
                                     FormFieldData::LabelSource* label_source);
 
 // Returns form by unique renderer id. Return null element if there is no form
@@ -347,12 +347,12 @@ FindFormControlElementsByUniqueRendererId(
 // Returns the ARIA label text of the elements denoted by the aria-labelledby
 // attribute of |element| or the value of the aria-label attribute of
 // |element|, with priority given to the aria-labelledby attribute.
-base::string16 GetAriaLabel(const blink::WebDocument& document,
+std::u16string GetAriaLabel(const blink::WebDocument& document,
                             const blink::WebFormControlElement& element);
 
 // Returns the ARIA label text of the elements denoted by the aria-describedby
 // attribute of |element|.
-base::string16 GetAriaDescription(const blink::WebDocument& document,
+std::u16string GetAriaDescription(const blink::WebDocument& document,
                                   const blink::WebFormControlElement& element);
 
 }  // namespace form_util

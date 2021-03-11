@@ -51,12 +51,12 @@ class AddressTest : public testing::Test,
 // localized country name.
 TEST_P(AddressTest, GetCountry) {
   Address address;
-  EXPECT_EQ(base::string16(), address.GetRawInfo(ADDRESS_HOME_COUNTRY));
+  EXPECT_EQ(std::u16string(), address.GetRawInfo(ADDRESS_HOME_COUNTRY));
 
   // Make sure that nothing breaks when the country code is missing.
-  base::string16 country =
+  std::u16string country =
       address.GetInfo(AutofillType(ADDRESS_HOME_COUNTRY), "en-US");
-  EXPECT_EQ(base::string16(), country);
+  EXPECT_EQ(std::u16string(), country);
 
   address.SetInfo(AutofillType(ADDRESS_HOME_COUNTRY), ASCIIToUTF16("US"),
                   "en-US");
@@ -84,7 +84,7 @@ TEST_P(AddressTest, GetCountry) {
 // full country name that can even be localized.
 TEST_P(AddressTest, SetHtmlCountryCodeTypeWithFullCountryName) {
   Address address;
-  EXPECT_EQ(base::string16(), address.GetRawInfo(ADDRESS_HOME_COUNTRY));
+  EXPECT_EQ(std::u16string(), address.GetRawInfo(ADDRESS_HOME_COUNTRY));
 
   // Create an autofill type from HTML_TYPE_COUNTRY_CODE.
   AutofillType autofill_type(HTML_TYPE_COUNTRY_CODE, HTML_MODE_NONE);
@@ -92,9 +92,9 @@ TEST_P(AddressTest, SetHtmlCountryCodeTypeWithFullCountryName) {
   // Test that the country value can be set and retrieved if it is not
   // a country code but a full country name.
   address.SetInfo(autofill_type, ASCIIToUTF16("Germany"), "en-US");
-  base::string16 actual_country =
+  std::u16string actual_country =
       address.GetInfo(AutofillType(ADDRESS_HOME_COUNTRY), "en-US");
-  base::string16 actual_country_code = address.GetInfo(
+  std::u16string actual_country_code = address.GetInfo(
       AutofillType(HTML_TYPE_COUNTRY_CODE, HTML_MODE_NONE), "en-US");
   EXPECT_EQ(ASCIIToUTF16("Germany"), actual_country);
   EXPECT_EQ(ASCIIToUTF16("DE"), actual_country_code);
@@ -132,12 +132,12 @@ TEST_P(AddressTest, SetHtmlCountryCodeTypeWithFullCountryName) {
 // Test that we properly detect country codes appropriate for each country.
 TEST_P(AddressTest, SetCountry) {
   Address address;
-  EXPECT_EQ(base::string16(), address.GetRawInfo(ADDRESS_HOME_COUNTRY));
+  EXPECT_EQ(std::u16string(), address.GetRawInfo(ADDRESS_HOME_COUNTRY));
 
   // Test basic conversion.
   address.SetInfo(AutofillType(ADDRESS_HOME_COUNTRY),
                   ASCIIToUTF16("United States"), "en-US");
-  base::string16 country =
+  std::u16string country =
       address.GetInfo(AutofillType(ADDRESS_HOME_COUNTRY), "en-US");
   EXPECT_EQ(ASCIIToUTF16("US"), address.GetRawInfo(ADDRESS_HOME_COUNTRY));
   EXPECT_EQ(ASCIIToUTF16("United States"), country);
@@ -167,8 +167,8 @@ TEST_P(AddressTest, SetCountry) {
   address.SetInfo(AutofillType(ADDRESS_HOME_COUNTRY), ASCIIToUTF16("Unknown"),
                   "en-US");
   country = address.GetInfo(AutofillType(ADDRESS_HOME_COUNTRY), "en-US");
-  EXPECT_EQ(base::string16(), address.GetRawInfo(ADDRESS_HOME_COUNTRY));
-  EXPECT_EQ(base::string16(), country);
+  EXPECT_EQ(std::u16string(), address.GetRawInfo(ADDRESS_HOME_COUNTRY));
+  EXPECT_EQ(std::u16string(), country);
 
   // Test setting the country based on an HTML field type.
   AutofillType html_type_country_code =
@@ -188,8 +188,8 @@ TEST_P(AddressTest, SetCountry) {
   // Test setting the country based on invalid data with an HTML field type.
   address.SetInfo(html_type_country_code, ASCIIToUTF16("unknown"), "en-US");
   country = address.GetInfo(AutofillType(ADDRESS_HOME_COUNTRY), "en-US");
-  EXPECT_EQ(base::string16(), address.GetRawInfo(ADDRESS_HOME_COUNTRY));
-  EXPECT_EQ(base::string16(), country);
+  EXPECT_EQ(std::u16string(), address.GetRawInfo(ADDRESS_HOME_COUNTRY));
+  EXPECT_EQ(std::u16string(), country);
 }
 
 // Test setting and getting the new structured address tokens
@@ -296,12 +296,12 @@ TEST_P(AddressTest,
             base::ASCIIToUTF16("Line2"));
   EXPECT_EQ(address.GetRawInfo(ADDRESS_HOME_STREET_ADDRESS),
             base::ASCIIToUTF16("NewLine1\nLine2"));
-  EXPECT_EQ(address.GetRawInfo(ADDRESS_HOME_STREET_NAME), base::string16());
-  EXPECT_EQ(address.GetRawInfo(ADDRESS_HOME_HOUSE_NUMBER), base::string16());
+  EXPECT_EQ(address.GetRawInfo(ADDRESS_HOME_STREET_NAME), std::u16string());
+  EXPECT_EQ(address.GetRawInfo(ADDRESS_HOME_HOUSE_NUMBER), std::u16string());
   EXPECT_EQ(address.GetRawInfo(ADDRESS_HOME_DEPENDENT_STREET_NAME),
-            base::string16());
-  EXPECT_EQ(address.GetRawInfo(ADDRESS_HOME_PREMISE_NAME), base::string16());
-  EXPECT_EQ(address.GetRawInfo(ADDRESS_HOME_SUBPREMISE), base::string16());
+            std::u16string());
+  EXPECT_EQ(address.GetRawInfo(ADDRESS_HOME_PREMISE_NAME), std::u16string());
+  EXPECT_EQ(address.GetRawInfo(ADDRESS_HOME_SUBPREMISE), std::u16string());
 
   // Reset the structured tokens and perform the same step for
   // HOME_ADDRESS_LINE2.
@@ -325,12 +325,12 @@ TEST_P(AddressTest,
             base::ASCIIToUTF16("NewLine2"));
   EXPECT_EQ(address.GetRawInfo(ADDRESS_HOME_STREET_ADDRESS),
             base::ASCIIToUTF16("Line1\nNewLine2"));
-  EXPECT_EQ(address.GetRawInfo(ADDRESS_HOME_STREET_NAME), base::string16());
-  EXPECT_EQ(address.GetRawInfo(ADDRESS_HOME_HOUSE_NUMBER), base::string16());
+  EXPECT_EQ(address.GetRawInfo(ADDRESS_HOME_STREET_NAME), std::u16string());
+  EXPECT_EQ(address.GetRawInfo(ADDRESS_HOME_HOUSE_NUMBER), std::u16string());
   EXPECT_EQ(address.GetRawInfo(ADDRESS_HOME_DEPENDENT_STREET_NAME),
-            base::string16());
-  EXPECT_EQ(address.GetRawInfo(ADDRESS_HOME_PREMISE_NAME), base::string16());
-  EXPECT_EQ(address.GetRawInfo(ADDRESS_HOME_SUBPREMISE), base::string16());
+            std::u16string());
+  EXPECT_EQ(address.GetRawInfo(ADDRESS_HOME_PREMISE_NAME), std::u16string());
+  EXPECT_EQ(address.GetRawInfo(ADDRESS_HOME_SUBPREMISE), std::u16string());
 
   // And once again for ADDRESS_HOME_STREET_ADDRESS.
   address.SetRawInfo(ADDRESS_HOME_STREET_ADDRESS,
@@ -353,12 +353,12 @@ TEST_P(AddressTest,
             base::ASCIIToUTF16("NewLine2"));
   EXPECT_EQ(address.GetRawInfo(ADDRESS_HOME_STREET_ADDRESS),
             base::ASCIIToUTF16("NewLine1\nNewLine2"));
-  EXPECT_EQ(address.GetRawInfo(ADDRESS_HOME_STREET_NAME), base::string16());
-  EXPECT_EQ(address.GetRawInfo(ADDRESS_HOME_HOUSE_NUMBER), base::string16());
+  EXPECT_EQ(address.GetRawInfo(ADDRESS_HOME_STREET_NAME), std::u16string());
+  EXPECT_EQ(address.GetRawInfo(ADDRESS_HOME_HOUSE_NUMBER), std::u16string());
   EXPECT_EQ(address.GetRawInfo(ADDRESS_HOME_DEPENDENT_STREET_NAME),
-            base::string16());
-  EXPECT_EQ(address.GetRawInfo(ADDRESS_HOME_PREMISE_NAME), base::string16());
-  EXPECT_EQ(address.GetRawInfo(ADDRESS_HOME_SUBPREMISE), base::string16());
+            std::u16string());
+  EXPECT_EQ(address.GetRawInfo(ADDRESS_HOME_PREMISE_NAME), std::u16string());
+  EXPECT_EQ(address.GetRawInfo(ADDRESS_HOME_SUBPREMISE), std::u16string());
 }
 
 // Test that we properly match typed values to stored country data.
@@ -385,8 +385,8 @@ TEST_P(AddressTest, IsCountry) {
   }
 
   // Make sure that garbage values don't match when the country code is empty.
-  address.SetRawInfo(ADDRESS_HOME_COUNTRY, base::string16());
-  EXPECT_EQ(base::string16(), address.GetRawInfo(ADDRESS_HOME_COUNTRY));
+  address.SetRawInfo(ADDRESS_HOME_COUNTRY, std::u16string());
+  EXPECT_EQ(std::u16string(), address.GetRawInfo(ADDRESS_HOME_COUNTRY));
   ServerFieldTypeSet matching_types;
   address.GetMatchingTypes(ASCIIToUTF16("Garbage"), "US", &matching_types);
   EXPECT_EQ(0U, matching_types.size());
@@ -450,7 +450,7 @@ TEST_P(AddressTest, GetStreetAddress) {
   EXPECT_TRUE(address.GetRawInfo(ADDRESS_HOME_LINE1).empty());
   EXPECT_TRUE(address.GetRawInfo(ADDRESS_HOME_LINE2).empty());
   EXPECT_TRUE(address.GetRawInfo(ADDRESS_HOME_LINE3).empty());
-  EXPECT_EQ(base::string16(), address.GetInfo(type, "en-US"));
+  EXPECT_EQ(std::u16string(), address.GetInfo(type, "en-US"));
 
   // Address has only line 1.
   address.SetRawInfo(ADDRESS_HOME_LINE1, ASCIIToUTF16("123 Example Ave."));
@@ -460,7 +460,7 @@ TEST_P(AddressTest, GetStreetAddress) {
   EXPECT_EQ(ASCIIToUTF16("123 Example Ave."), address.GetInfo(type, "en-US"));
 
   // Address has only line 2.
-  address.SetRawInfo(ADDRESS_HOME_LINE1, base::string16());
+  address.SetRawInfo(ADDRESS_HOME_LINE1, std::u16string());
   address.SetRawInfo(ADDRESS_HOME_LINE2, ASCIIToUTF16("Apt 42."));
   EXPECT_TRUE(address.GetRawInfo(ADDRESS_HOME_LINE1).empty());
   EXPECT_FALSE(address.GetRawInfo(ADDRESS_HOME_LINE2).empty());
@@ -490,7 +490,7 @@ TEST_P(AddressTest, GetStreetAddress) {
             address.GetRawInfo(ADDRESS_HOME_STREET_ADDRESS));
 
   // The second line vanishes.
-  address.SetRawInfo(ADDRESS_HOME_LINE2, base::string16());
+  address.SetRawInfo(ADDRESS_HOME_LINE2, std::u16string());
   EXPECT_FALSE(address.GetRawInfo(ADDRESS_HOME_LINE1).empty());
   EXPECT_TRUE(address.GetRawInfo(ADDRESS_HOME_LINE2).empty());
   EXPECT_FALSE(address.GetRawInfo(ADDRESS_HOME_LINE3).empty());
@@ -509,27 +509,27 @@ TEST_P(AddressTest, GetStreetAddressAfterOverwritingLongAddressWithShorterOne) {
   address.SetRawInfo(ADDRESS_HOME_LINE2, ASCIIToUTF16("Apt. 42"));
 
   // Now clear out the second address line.
-  address.SetRawInfo(ADDRESS_HOME_LINE2, base::string16());
+  address.SetRawInfo(ADDRESS_HOME_LINE2, std::u16string());
   EXPECT_EQ(ASCIIToUTF16("123 Example Ave."),
             address.GetRawInfo(ADDRESS_HOME_STREET_ADDRESS));
 
   // Now clear out the first address line as well.
-  address.SetRawInfo(ADDRESS_HOME_LINE1, base::string16());
-  EXPECT_EQ(base::string16(), address.GetRawInfo(ADDRESS_HOME_STREET_ADDRESS));
+  address.SetRawInfo(ADDRESS_HOME_LINE1, std::u16string());
+  EXPECT_EQ(std::u16string(), address.GetRawInfo(ADDRESS_HOME_STREET_ADDRESS));
 }
 
 // Verifies that Address::SetRawInfo() is able to split address lines correctly.
 TEST_P(AddressTest, SetRawStreetAddress) {
-  const base::string16 empty_street_address;
-  const base::string16 short_street_address = ASCIIToUTF16("456 Nowhere Ln.");
-  const base::string16 long_street_address = ASCIIToUTF16(
+  const std::u16string empty_street_address;
+  const std::u16string short_street_address = ASCIIToUTF16("456 Nowhere Ln.");
+  const std::u16string long_street_address = ASCIIToUTF16(
       "123 Example Ave.\n"
       "Apt. 42\n"
       "(The one with the blue door)");
 
   Address address;
-  EXPECT_EQ(base::string16(), address.GetRawInfo(ADDRESS_HOME_LINE1));
-  EXPECT_EQ(base::string16(), address.GetRawInfo(ADDRESS_HOME_LINE2));
+  EXPECT_EQ(std::u16string(), address.GetRawInfo(ADDRESS_HOME_LINE1));
+  EXPECT_EQ(std::u16string(), address.GetRawInfo(ADDRESS_HOME_LINE2));
 
   address.SetRawInfo(ADDRESS_HOME_STREET_ADDRESS, long_street_address);
   EXPECT_EQ(ASCIIToUTF16("123 Example Ave."),
@@ -542,23 +542,23 @@ TEST_P(AddressTest, SetRawStreetAddress) {
   address.SetRawInfo(ADDRESS_HOME_STREET_ADDRESS, short_street_address);
   EXPECT_EQ(ASCIIToUTF16("456 Nowhere Ln."),
             address.GetRawInfo(ADDRESS_HOME_LINE1));
-  EXPECT_EQ(base::string16(), address.GetRawInfo(ADDRESS_HOME_LINE2));
+  EXPECT_EQ(std::u16string(), address.GetRawInfo(ADDRESS_HOME_LINE2));
 
   // An empty address should clear out all address lines.
   address.SetRawInfo(ADDRESS_HOME_STREET_ADDRESS, long_street_address);
   address.SetRawInfo(ADDRESS_HOME_STREET_ADDRESS, empty_street_address);
-  EXPECT_EQ(base::string16(), address.GetRawInfo(ADDRESS_HOME_LINE1));
-  EXPECT_EQ(base::string16(), address.GetRawInfo(ADDRESS_HOME_LINE2));
+  EXPECT_EQ(std::u16string(), address.GetRawInfo(ADDRESS_HOME_LINE1));
+  EXPECT_EQ(std::u16string(), address.GetRawInfo(ADDRESS_HOME_LINE2));
 }
 
 // Street addresses should be set properly.
 TEST_P(AddressTest, SetStreetAddress) {
-  const base::string16 empty_street_address;
-  const base::string16 multi_line_street_address = ASCIIToUTF16(
+  const std::u16string empty_street_address;
+  const std::u16string multi_line_street_address = ASCIIToUTF16(
       "789 Fancy Pkwy.\n"
       "Unit 3.14\n"
       "Box 9");
-  const base::string16 single_line_street_address =
+  const std::u16string single_line_street_address =
       ASCIIToUTF16("123 Main, Apt 7");
   const AutofillType type = AutofillType(ADDRESS_HOME_STREET_ADDRESS);
 
@@ -581,8 +581,8 @@ TEST_P(AddressTest, SetStreetAddress) {
   // Setting a single line street address should clear out subsequent lines.
   EXPECT_TRUE(address.SetInfo(type, single_line_street_address, "en-US"));
   EXPECT_EQ(single_line_street_address, address.GetRawInfo(ADDRESS_HOME_LINE1));
-  EXPECT_EQ(base::string16(), address.GetRawInfo(ADDRESS_HOME_LINE2));
-  EXPECT_EQ(base::string16(), address.GetRawInfo(ADDRESS_HOME_LINE3));
+  EXPECT_EQ(std::u16string(), address.GetRawInfo(ADDRESS_HOME_LINE2));
+  EXPECT_EQ(std::u16string(), address.GetRawInfo(ADDRESS_HOME_LINE3));
 
   // Attempting to set an empty address should also succeed, and clear out the
   // previously stored data.
@@ -591,9 +591,9 @@ TEST_P(AddressTest, SetStreetAddress) {
   EXPECT_FALSE(address.GetRawInfo(ADDRESS_HOME_LINE2).empty());
   EXPECT_FALSE(address.GetRawInfo(ADDRESS_HOME_LINE3).empty());
   EXPECT_TRUE(address.SetInfo(type, empty_street_address, "en-US"));
-  EXPECT_EQ(base::string16(), address.GetRawInfo(ADDRESS_HOME_LINE1));
-  EXPECT_EQ(base::string16(), address.GetRawInfo(ADDRESS_HOME_LINE2));
-  EXPECT_EQ(base::string16(), address.GetRawInfo(ADDRESS_HOME_LINE3));
+  EXPECT_EQ(std::u16string(), address.GetRawInfo(ADDRESS_HOME_LINE1));
+  EXPECT_EQ(std::u16string(), address.GetRawInfo(ADDRESS_HOME_LINE2));
+  EXPECT_EQ(std::u16string(), address.GetRawInfo(ADDRESS_HOME_LINE3));
 }
 
 // Verifies that Address::SetInfio() rejects setting data for
@@ -614,9 +614,9 @@ TEST_P(AddressTest, SetStreetAddressRejectsAddressesWithInteriorBlankLines) {
                                             "\n"
                                             "Address line 3"),
                                "en-US"));
-  EXPECT_EQ(base::string16(), address.GetRawInfo(ADDRESS_HOME_LINE1));
-  EXPECT_EQ(base::string16(), address.GetRawInfo(ADDRESS_HOME_LINE2));
-  EXPECT_EQ(base::string16(), address.GetRawInfo(ADDRESS_HOME_STREET_ADDRESS));
+  EXPECT_EQ(std::u16string(), address.GetRawInfo(ADDRESS_HOME_LINE1));
+  EXPECT_EQ(std::u16string(), address.GetRawInfo(ADDRESS_HOME_LINE2));
+  EXPECT_EQ(std::u16string(), address.GetRawInfo(ADDRESS_HOME_STREET_ADDRESS));
 }
 
 // Verifies that Address::SetInfio() rejects setting data for
@@ -637,9 +637,9 @@ TEST_P(AddressTest, SetStreetAddressRejectsAddressesWithLeadingBlankLines) {
                                             "Address line 2"
                                             "Address line 3"),
                                "en-US"));
-  EXPECT_EQ(base::string16(), address.GetRawInfo(ADDRESS_HOME_LINE1));
-  EXPECT_EQ(base::string16(), address.GetRawInfo(ADDRESS_HOME_LINE2));
-  EXPECT_EQ(base::string16(), address.GetRawInfo(ADDRESS_HOME_STREET_ADDRESS));
+  EXPECT_EQ(std::u16string(), address.GetRawInfo(ADDRESS_HOME_LINE1));
+  EXPECT_EQ(std::u16string(), address.GetRawInfo(ADDRESS_HOME_LINE2));
+  EXPECT_EQ(std::u16string(), address.GetRawInfo(ADDRESS_HOME_STREET_ADDRESS));
 }
 
 // Verifies that Address::SetInfio() rejects setting data for
@@ -660,9 +660,9 @@ TEST_P(AddressTest, SetStreetAddressRejectsAddressesWithTrailingBlankLines) {
                                             "Address line 2"
                                             "\n"),
                                "en-US"));
-  EXPECT_EQ(base::string16(), address.GetRawInfo(ADDRESS_HOME_LINE1));
-  EXPECT_EQ(base::string16(), address.GetRawInfo(ADDRESS_HOME_LINE2));
-  EXPECT_EQ(base::string16(), address.GetRawInfo(ADDRESS_HOME_STREET_ADDRESS));
+  EXPECT_EQ(std::u16string(), address.GetRawInfo(ADDRESS_HOME_LINE1));
+  EXPECT_EQ(std::u16string(), address.GetRawInfo(ADDRESS_HOME_LINE2));
+  EXPECT_EQ(std::u16string(), address.GetRawInfo(ADDRESS_HOME_STREET_ADDRESS));
 }
 
 // Verifies that the merging-related methods for structured addresses are

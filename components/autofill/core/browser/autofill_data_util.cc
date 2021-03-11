@@ -148,7 +148,7 @@ void StripSuffixes(std::vector<base::StringPiece16>* name_tokens) {
 size_t StartsWithAny(base::StringPiece16 name,
                      const char** prefixes,
                      size_t prefix_count) {
-  base::string16 buffer;
+  std::u16string buffer;
   for (size_t i = 0; i < prefix_count; i++) {
     buffer.clear();
     base::UTF8ToUTF16(prefixes[i], strlen(prefixes[i]), &buffer);
@@ -231,15 +231,15 @@ bool SplitCJKName(const std::vector<base::StringPiece16>& name_tokens,
           1, StartsWithAny(name, common_cjk_multi_char_surnames,
                            base::size(common_cjk_multi_char_surnames)));
     }
-    parts->family = base::string16(name.substr(0, surname_length));
-    parts->given = base::string16(name.substr(surname_length));
+    parts->family = std::u16string(name.substr(0, surname_length));
+    parts->given = std::u16string(name.substr(surname_length));
     return true;
   }
   if (name_tokens.size() == 2) {
     // The user entered a space between the two name parts. This makes our job
     // easier. Family name first, given name second.
-    parts->family = base::string16(name_tokens[0]);
-    parts->given = base::string16(name_tokens[1]);
+    parts->family = std::u16string(name_tokens[0]);
+    parts->given = std::u16string(name_tokens[1]);
     return true;
   }
   // We don't know what to do if there are more than 2 tokens.
@@ -411,13 +411,13 @@ NameParts SplitName(base::StringPiece16 name) {
 
   if (name_tokens.empty()) {
     // Bad things have happened; just assume the whole thing is a given name.
-    parts.given = base::string16(name);
+    parts.given = std::u16string(name);
     return parts;
   }
 
   // Only one token, assume given name.
   if (name_tokens.size() == 1) {
-    parts.given = base::string16(name_tokens[0]);
+    parts.given = std::u16string(name_tokens[0]);
     return parts;
   }
 
@@ -440,7 +440,7 @@ NameParts SplitName(base::StringPiece16 name) {
   // Take the last remaining token as the middle name (if there are at least 2
   // tokens).
   if (name_tokens.size() >= 2) {
-    parts.middle = base::string16(name_tokens.back());
+    parts.middle = std::u16string(name_tokens.back());
     name_tokens.pop_back();
   }
 
@@ -450,7 +450,7 @@ NameParts SplitName(base::StringPiece16 name) {
   return parts;
 }
 
-base::string16 JoinNameParts(base::StringPiece16 given,
+std::u16string JoinNameParts(base::StringPiece16 given,
                              base::StringPiece16 middle,
                              base::StringPiece16 family) {
   // First Middle Last
@@ -510,7 +510,7 @@ bool IsValidCountryCode(const std::string& country_code) {
   return re2::RE2::FullMatch(country_code, "^[A-Z]{2}$");
 }
 
-bool IsValidCountryCode(const base::string16& country_code) {
+bool IsValidCountryCode(const std::u16string& country_code) {
   return IsValidCountryCode(base::UTF16ToUTF8(country_code));
 }
 

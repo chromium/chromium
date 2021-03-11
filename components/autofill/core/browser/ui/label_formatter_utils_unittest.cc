@@ -243,8 +243,8 @@ TEST(LabelFormatterUtilsTest, GetLabelName) {
             GetLabelName({NAME_SUFFIX, NAME_LAST}, profile, "de"));
   EXPECT_EQ(base::ASCIIToUTF16("Margaretha"),
             GetLabelName({NAME_MIDDLE}, profile, "de"));
-  EXPECT_EQ(base::string16(), GetLabelName({EMPTY_TYPE}, profile, "de"));
-  EXPECT_EQ(base::string16(), GetLabelName({}, profile, "de"));
+  EXPECT_EQ(std::u16string(), GetLabelName({EMPTY_TYPE}, profile, "de"));
+  EXPECT_EQ(std::u16string(), GetLabelName({}, profile, "de"));
 }
 
 }  // namespace

@@ -146,9 +146,9 @@ class AutofillClient : public RiskDataLoader {
   // Used for explicitly requesting the user to enter/confirm cardholder name,
   // expiration date month and year.
   struct UserProvidedCardDetails {
-    base::string16 cardholder_name;
-    base::string16 expiration_date_month;
-    base::string16 expiration_date_year;
+    std::u16string cardholder_name;
+    std::u16string expiration_date_month;
+    std::u16string expiration_date_year;
   };
 
   // Used for options of upload prompt.
@@ -365,7 +365,7 @@ class AutofillClient : public RiskDataLoader {
   // one invalid card from local storage.
   virtual void ShowLocalCardMigrationResults(
       const bool has_server_error,
-      const base::string16& tip_message,
+      const std::u16string& tip_message,
       const std::vector<MigratableCreditCard>& migratable_credit_cards,
       MigrationDeleteCardCallback delete_local_card_callback) = 0;
 
@@ -410,14 +410,14 @@ class AutofillClient : public RiskDataLoader {
   // Display the cardholder name fix flow prompt and run the |callback| if
   // the card should be uploaded to payments with updated name from the user.
   virtual void ConfirmAccountNameFixFlow(
-      base::OnceCallback<void(const base::string16&)> callback) = 0;
+      base::OnceCallback<void(const std::u16string&)> callback) = 0;
 
   // Display the expiration date fix flow prompt with the |card| details
   // and run the |callback| if the card should be uploaded to payments with
   // updated expiration date from the user.
   virtual void ConfirmExpirationDateFixFlow(
       const CreditCard& card,
-      base::OnceCallback<void(const base::string16&, const base::string16&)>
+      base::OnceCallback<void(const std::u16string&, const std::u16string&)>
           callback) = 0;
 #endif
 
@@ -481,8 +481,8 @@ class AutofillClient : public RiskDataLoader {
 
   // Update the data list values shown by the Autofill popup, if visible.
   virtual void UpdateAutofillPopupDataListValues(
-      const std::vector<base::string16>& values,
-      const std::vector<base::string16>& labels) = 0;
+      const std::vector<std::u16string>& values,
+      const std::vector<std::u16string>& labels) = 0;
 
   // Informs the client that the popup needs to be kept alive. Call before
   // |UpdatePopup| to update the open popup in-place.
@@ -530,8 +530,8 @@ class AutofillClient : public RiskDataLoader {
 
   // Inform the client that the field has been filled.
   virtual void DidFillOrPreviewField(
-      const base::string16& autofilled_value,
-      const base::string16& profile_full_name) = 0;
+      const std::u16string& autofilled_value,
+      const std::u16string& profile_full_name) = 0;
 
   // If the context is secure.
   virtual bool IsContextSecure() const = 0;

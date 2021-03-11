@@ -37,18 +37,18 @@ namespace {
 bool HaveSameData(
     const std::vector<AutofillProfile*>& profiles,
     const std::string& app_locale,
-    base::RepeatingCallback<base::string16(const AutofillProfile&,
+    base::RepeatingCallback<std::u16string(const AutofillProfile&,
                                            const std::string&)> get_data,
-    base::RepeatingCallback<bool(const base::string16& str1,
-                                 const base::string16& str2)> matches) {
+    base::RepeatingCallback<bool(const std::u16string& str1,
+                                 const std::u16string& str2)> matches) {
   if (profiles.size() <= 1) {
     return true;
   }
 
-  const base::string16 first_profile_data =
+  const std::u16string first_profile_data =
       get_data.Run(*profiles[0], app_locale);
   for (size_t i = 1; i < profiles.size(); ++i) {
-    const base::string16 current_profile_data =
+    const std::u16string current_profile_data =
         get_data.Run(*profiles[i], app_locale);
     if (!matches.Run(first_profile_data, current_profile_data)) {
       return false;
@@ -59,26 +59,26 @@ bool HaveSameData(
 
 // Used to avoid having the same lambda in HaveSameEmailAddresses,
 // HaveSameFirstNames, HaveSameStreetAddresses.
-bool Equals(const base::string16& str1, const base::string16& str2) {
+bool Equals(const std::u16string& str1, const std::u16string& str2) {
   return str1 == str2;
 }
 
 }  // namespace
 
-void AddLabelPartIfNotEmpty(const base::string16& part,
-                            std::vector<base::string16>* parts) {
+void AddLabelPartIfNotEmpty(const std::u16string& part,
+                            std::vector<std::u16string>* parts) {
   if (!part.empty()) {
     parts->push_back(part);
   }
 }
 
-base::string16 ConstructLabelLine(const std::vector<base::string16>& parts) {
+std::u16string ConstructLabelLine(const std::vector<std::u16string>& parts) {
   return base::JoinString(parts, l10n_util::GetStringUTF16(
                                      IDS_AUTOFILL_SUGGESTION_LABEL_SEPARATOR));
 }
 
-base::string16 ConstructMobileLabelLine(
-    const std::vector<base::string16>& parts) {
+std::u16string ConstructMobileLabelLine(
+    const std::vector<std::u16string>& parts) {
   return base::JoinString(
       parts, l10n_util::GetStringUTF16(IDS_AUTOFILL_ADDRESS_SUMMARY_SEPARATOR));
 }
@@ -167,7 +167,7 @@ AutofillProfile MakeTrimmedProfile(const AutofillProfile& profile,
   trimmed_profile.set_language_code(profile.language_code());
 
   const AutofillType country_code_type(HTML_TYPE_COUNTRY_CODE, HTML_MODE_NONE);
-  const base::string16 country_code =
+  const std::u16string country_code =
       profile.GetInfo(country_code_type, app_locale);
   trimmed_profile.SetInfo(country_code_type, country_code, app_locale);
 
@@ -178,7 +178,7 @@ AutofillProfile MakeTrimmedProfile(const AutofillProfile& profile,
   return trimmed_profile;
 }
 
-base::string16 GetLabelForFocusedAddress(
+std::u16string GetLabelForFocusedAddress(
     ServerFieldType focused_field_type,
     bool form_has_street_address,
     const AutofillProfile& profile,
@@ -189,7 +189,7 @@ base::string16 GetLabelForFocusedAddress(
       profile, app_locale, types);
 }
 
-base::string16 GetLabelAddress(bool use_street_address,
+std::u16string GetLabelAddress(bool use_street_address,
                                const AutofillProfile& profile,
                                const std::string& app_locale,
                                const std::vector<ServerFieldType>& types) {
@@ -202,7 +202,7 @@ base::string16 GetLabelAddress(bool use_street_address,
                    profile, app_locale);
 }
 
-base::string16 GetLabelNationalAddress(
+std::u16string GetLabelNationalAddress(
     const std::vector<ServerFieldType>& types,
     const AutofillProfile& profile,
     const std::string& app_locale) {
@@ -216,7 +216,7 @@ base::string16 GetLabelNationalAddress(
   return base::UTF8ToUTF16(address_line);
 }
 
-base::string16 GetLabelStreetAddress(const std::vector<ServerFieldType>& types,
+std::u16string GetLabelStreetAddress(const std::vector<ServerFieldType>& types,
                                      const AutofillProfile& profile,
                                      const std::string& app_locale) {
   std::unique_ptr<::i18n::addressinput::AddressData> address_data =
@@ -229,13 +229,13 @@ base::string16 GetLabelStreetAddress(const std::vector<ServerFieldType>& types,
   return base::UTF8ToUTF16(address_line);
 }
 
-base::string16 GetLabelForProfileOnFocusedNonStreetAddress(
+std::u16string GetLabelForProfileOnFocusedNonStreetAddress(
     bool form_has_street_address,
     const AutofillProfile& profile,
     const std::string& app_locale,
     const std::vector<ServerFieldType>& types,
-    const base::string16& contact_info) {
-  std::vector<base::string16> label_parts;
+    const std::u16string& contact_info) {
+  std::vector<std::u16string> label_parts;
   AddLabelPartIfNotEmpty(
       GetLabelAddress(form_has_street_address, profile, app_locale, types),
       &label_parts);
@@ -243,7 +243,7 @@ base::string16 GetLabelForProfileOnFocusedNonStreetAddress(
   return ConstructLabelLine(label_parts);
 }
 
-base::string16 GetLabelName(const std::vector<ServerFieldType>& types,
+std::u16string GetLabelName(const std::vector<ServerFieldType>& types,
                             const AutofillProfile& profile,
                             const std::string& app_locale) {
   bool has_first_name = false;
@@ -268,7 +268,7 @@ base::string16 GetLabelName(const std::vector<ServerFieldType>& types,
   }
 
   if (has_first_name && has_last_name) {
-    std::vector<base::string16> name_parts;
+    std::vector<std::u16string> name_parts;
     AddLabelPartIfNotEmpty(GetLabelFirstName(profile, app_locale), &name_parts);
     AddLabelPartIfNotEmpty(profile.GetInfo(AutofillType(NAME_LAST), app_locale),
                            &name_parts);
@@ -291,27 +291,27 @@ base::string16 GetLabelName(const std::vector<ServerFieldType>& types,
       return profile.GetInfo(AutofillType(type), app_locale);
     }
   }
-  return base::string16();
+  return std::u16string();
 }
 
-base::string16 GetLabelFirstName(const AutofillProfile& profile,
+std::u16string GetLabelFirstName(const AutofillProfile& profile,
                                  const std::string& app_locale) {
   return profile.GetInfo(AutofillType(NAME_FIRST), app_locale);
 }
 
-base::string16 GetLabelEmail(const AutofillProfile& profile,
+std::u16string GetLabelEmail(const AutofillProfile& profile,
                              const std::string& app_locale) {
-  const base::string16 email =
+  const std::u16string email =
       profile.GetInfo(AutofillType(EMAIL_ADDRESS), app_locale);
-  return IsValidEmailAddress(email) ? email : base::string16();
+  return IsValidEmailAddress(email) ? email : std::u16string();
 }
 
-base::string16 GetLabelPhone(const AutofillProfile& profile,
+std::u16string GetLabelPhone(const AutofillProfile& profile,
                              const std::string& app_locale) {
   const std::string unformatted_phone = base::UTF16ToUTF8(
       profile.GetInfo(AutofillType(PHONE_HOME_WHOLE_NUMBER), app_locale));
   return unformatted_phone.empty()
-             ? base::string16()
+             ? std::u16string()
              : base::UTF8ToUTF16(i18n::FormatPhoneNationallyForDisplay(
                    unformatted_phone,
                    data_util::GetCountryCodeWithFallback(profile, app_locale)));
@@ -346,8 +346,8 @@ bool HaveSamePhoneNumbers(const std::vector<AutofillProfile*>& profiles,
                           const std::string& app_locale) {
   // Note that the same country code is used in all comparisons.
   auto equals = [](const std::string& country_code,
-                   const std::string& app_locale, const base::string16& phone1,
-                   const base::string16& phone2) -> bool {
+                   const std::string& app_locale, const std::u16string& phone1,
+                   const std::u16string& phone2) -> bool {
     return (phone1.empty() && phone2.empty()) ||
            i18n::PhoneNumbersMatch(phone1, phone2, country_code, app_locale);
   };

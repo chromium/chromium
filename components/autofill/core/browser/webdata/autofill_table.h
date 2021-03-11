@@ -438,8 +438,8 @@ class AutofillTable : public WebDatabaseTable,
   // Retrieves a vector of all values which have been recorded in the autofill
   // table as the value in a form element with name |name| and which start with
   // |prefix|.  The comparison of the prefix is case insensitive.
-  bool GetFormValuesForElementName(const base::string16& name,
-                                   const base::string16& prefix,
+  bool GetFormValuesForElementName(const std::u16string& name,
+                                   const std::u16string& prefix,
                                    std::vector<AutofillEntry>* entries,
                                    int limit);
 
@@ -460,8 +460,8 @@ class AutofillTable : public WebDatabaseTable,
   bool RemoveExpiredFormElements(std::vector<AutofillChange>* changes);
 
   // Removes the row from the autofill table for the given |name| |value| pair.
-  virtual bool RemoveFormElement(const base::string16& name,
-                                 const base::string16& value);
+  virtual bool RemoveFormElement(const std::u16string& name,
+                                 const std::u16string& value);
 
   // Returns the number of unique values such that for all autofill entries with
   // that value, the interval between creation date and last usage is entirely
@@ -473,8 +473,8 @@ class AutofillTable : public WebDatabaseTable,
   virtual bool GetAllAutofillEntries(std::vector<AutofillEntry>* entries);
 
   // Retrieves a single entry from the autofill table.
-  virtual bool GetAutofillTimestamps(const base::string16& name,
-                                     const base::string16& value,
+  virtual bool GetAutofillTimestamps(const std::u16string& name,
+                                     const std::u16string& value,
                                      base::Time* date_created,
                                      base::Time* date_last_used);
 
@@ -536,7 +536,7 @@ class AutofillTable : public WebDatabaseTable,
   // available) or "unmasked" (everything is available). These functions set
   // that state.
   bool UnmaskServerCreditCard(const CreditCard& masked,
-                              const base::string16& full_number);
+                              const std::u16string& full_number);
   bool MaskServerCreditCard(const std::string& id);
 
   // Methods to add, update, remove and get the metadata for server cards and
@@ -769,7 +769,7 @@ class AutofillTable : public WebDatabaseTable,
 
   // Adds to |unmasked_credit_cards|.
   void AddUnmaskedCreditCard(const std::string& id,
-                             const base::string16& full_number);
+                             const std::u16string& full_number);
 
   // Deletes server credit cards by |id|. Returns true if a row was deleted.
   bool DeleteFromMaskedCreditCards(const std::string& id);

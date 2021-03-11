@@ -28,7 +28,7 @@ class AddressPhoneFormLabelFormatter : public LabelFormatter {
 
   ~AddressPhoneFormLabelFormatter() override;
 
-  base::string16 GetLabelForProfile(
+  std::u16string GetLabelForProfile(
       const AutofillProfile& profile,
       FieldTypeGroup focused_group) const override;
 
@@ -36,7 +36,7 @@ class AddressPhoneFormLabelFormatter : public LabelFormatter {
   // Returns a label to show the user when |focused_field_type_| is a type
   // other than a non-street-address field type. For example,
   // |focused_field_type_| could be first name, address line 1, or phone number.
-  base::string16 GetLabelForProfileOnFocusedNamePhoneOrStreetAddress(
+  std::u16string GetLabelForProfileOnFocusedNamePhoneOrStreetAddress(
       const AutofillProfile& profile,
       FieldTypeGroup focused_group) const;
 

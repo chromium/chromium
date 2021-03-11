@@ -61,7 +61,7 @@ namespace {
 // src/components/autofill/core/browser/data_model/contact_info.cc. However, for
 // now we want the logic of which variations of names are considered to be the
 // same to exactly match the logic applied on the Payments server.
-base::string16 RemoveMiddleInitial(const base::string16& name) {
+std::u16string RemoveMiddleInitial(const std::u16string& name) {
   std::vector<base::StringPiece16> parts =
       base::SplitStringPiece(name, base::kWhitespaceUTF16,
                              base::KEEP_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
@@ -366,7 +366,7 @@ CreditCardSaveManager::GetLocalCardMigrationStrikeDatabase() {
 
 void CreditCardSaveManager::OnDidGetUploadDetails(
     AutofillClient::PaymentsRpcResult result,
-    const base::string16& context_token,
+    const std::u16string& context_token,
     std::unique_ptr<base::Value> legal_message,
     std::vector<std::pair<int, int>> supported_card_bin_ranges) {
   if (observer_for_testing_)
@@ -598,16 +598,16 @@ void CreditCardSaveManager::SetProfilesForCreditCardUpload(
   // candidate set is invalid. This matches the rules for name matching applied
   // server-side by Google Payments and ensures that we don't send upload
   // requests that are guaranteed to fail.
-  const base::string16 card_name =
+  const std::u16string card_name =
       card.GetInfo(AutofillType(CREDIT_CARD_NAME_FULL), app_locale_);
-  base::string16 verified_name;
+  std::u16string verified_name;
   if (candidate_profiles.empty()) {
     verified_name = card_name;
   } else {
     bool found_conflicting_names = false;
     verified_name = RemoveMiddleInitial(card_name);
     for (const AutofillProfile& profile : candidate_profiles) {
-      const base::string16 address_name =
+      const std::u16string address_name =
           RemoveMiddleInitial(profile.GetInfo(NAME_FULL, app_locale_));
       if (address_name.empty())
         continue;
@@ -633,10 +633,10 @@ void CreditCardSaveManager::SetProfilesForCreditCardUpload(
 
   // If any of the candidate addresses have a non-empty zip that doesn't match
   // any other non-empty zip, then the candidate set is invalid.
-  base::string16 verified_zip;
+  std::u16string verified_zip;
   const AutofillType kZipCode(ADDRESS_HOME_ZIP);
   for (const AutofillProfile& profile : candidate_profiles) {
-    const base::string16 zip = profile.GetRawInfo(ADDRESS_HOME_ZIP);
+    const std::u16string zip = profile.GetRawInfo(ADDRESS_HOME_ZIP);
     if (!zip.empty()) {
       if (verified_zip.empty()) {
         verified_zip = zip;
@@ -821,19 +821,19 @@ void CreditCardSaveManager::OnUserDidDecideOnUploadSave(
 
 #if defined(OS_ANDROID) || defined(OS_IOS)
 void CreditCardSaveManager::OnUserDidAcceptAccountNameFixFlow(
-    const base::string16& cardholder_name) {
+    const std::u16string& cardholder_name) {
   DCHECK(should_request_name_from_user_);
 
   OnUserDidAcceptUploadHelper({cardholder_name,
-                               /*expiration_date_month=*/base::string16(),
-                               /*expiration_date_year=*/base::string16()});
+                               /*expiration_date_month=*/std::u16string(),
+                               /*expiration_date_year=*/std::u16string()});
 }
 
 void CreditCardSaveManager::OnUserDidAcceptExpirationDateFixFlow(
-    const base::string16& month,
-    const base::string16& year) {
+    const std::u16string& month,
+    const std::u16string& year) {
   OnUserDidAcceptUploadHelper(
-      {/*cardholder_name=*/base::string16(), month, year});
+      {/*cardholder_name=*/std::u16string(), month, year});
 }
 #endif  // defined(OS_ANDROID) || defined(OS_IOS)
 
@@ -915,7 +915,7 @@ void CreditCardSaveManager::SendUploadCardRequest() {
 }
 
 void CreditCardSaveManager::OnUserDidIgnoreOrDeclineSave(
-    const base::string16& card_last_four_digits) {
+    const std::u16string& card_last_four_digits) {
   if (show_save_prompt_.has_value() && show_save_prompt_.value()) {
     // If the user rejected or ignored save and the offer-to-save bubble or
     // infobar was actually shown (NOT just the icon if on desktop), count

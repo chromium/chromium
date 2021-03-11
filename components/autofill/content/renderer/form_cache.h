@@ -103,7 +103,7 @@ class FormCache {
 
   // The cached initial values for <select> elements. Entries are keyed by
   // unique_renderer_form_control_id of the WebSelectElements.
-  std::map<FieldRendererId, base::string16> initial_select_values_;
+  std::map<FieldRendererId, std::u16string> initial_select_values_;
 
   // The cached initial values for checkable <input> elements. Entries are
   // keyed by the unique_renderer_form_control_id of the WebInputElements.

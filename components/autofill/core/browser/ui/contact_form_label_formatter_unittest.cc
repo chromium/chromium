@@ -68,7 +68,7 @@ TEST(ContactFormLabelFormatterTest, GetLabelsForUSProfilesAndFocusedName) {
       ElementsAre(ConstructLabelLine({base::ASCIIToUTF16("(617) 730-2000"),
                                       base::ASCIIToUTF16("jfk@gmail.com")}),
                   base::ASCIIToUTF16("jackie@outlook.com"),
-                  base::ASCIIToUTF16("(617) 523-2338"), base::string16()));
+                  base::ASCIIToUTF16("(617) 523-2338"), std::u16string()));
 }
 
 TEST(ContactFormLabelFormatterTest, GetLabelsForUSProfilesAndFocusedEmail) {
@@ -106,7 +106,7 @@ TEST(ContactFormLabelFormatterTest, GetLabelsForUSProfilesAndFocusedEmail) {
                   base::ASCIIToUTF16("Jackie Kennedy"),
                   ConstructLabelLine({base::ASCIIToUTF16("Paul Revere"),
                                       base::ASCIIToUTF16("(617) 523-2338")}),
-                  base::string16()));
+                  std::u16string()));
 }
 
 TEST(ContactFormLabelFormatterTest, GetLabelsForUSProfilesAndFocusedPhone) {
@@ -145,7 +145,7 @@ TEST(ContactFormLabelFormatterTest, GetLabelsForUSProfilesAndFocusedPhone) {
                               base::ASCIIToUTF16("jfk@gmail.com")}),
           ConstructLabelLine({base::ASCIIToUTF16("Jackie Kennedy"),
                               base::ASCIIToUTF16("jackie@outlook.com")}),
-          base::ASCIIToUTF16("Paul Revere"), base::string16()));
+          base::ASCIIToUTF16("Paul Revere"), std::u16string()));
 }
 
 TEST(ContactFormLabelFormatterTest, GetLabelsForBRProfilesAndFocusedName) {

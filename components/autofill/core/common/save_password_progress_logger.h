@@ -191,7 +191,7 @@ class SavePasswordProgressLogger {
   // will be still possible to match the scrubbed string to the original ID or
   // name in the HTML doc. That's good enough for the logging purposes, and
   // provides some security benefits.
-  static std::string ScrubElementID(const base::string16& element_id);
+  static std::string ScrubElementID(const std::u16string& element_id);
 
   // The UTF-8 version of the function above.
   static std::string ScrubElementID(std::string element_id);

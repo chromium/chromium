@@ -31,7 +31,7 @@ class LabelFormatter {
 
   // Returns a collection of labels formed by extracting useful disambiguating
   // information from |profiles_|.
-  std::vector<base::string16> GetLabels() const;
+  std::vector<std::u16string> GetLabels() const;
 
   // Creates a form-specific LabelFormatter according to |field_types|. This
   // formatter has the ability to build labels with disambiguating information
@@ -46,7 +46,7 @@ class LabelFormatter {
   // Returns a label to show the user. The elements of the label and their
   // ordering depend on the kind of LabelFormatter, the data in |profile|,
   // |focused_group|, and |focused_field_type_|.
-  virtual base::string16 GetLabelForProfile(
+  virtual std::u16string GetLabelForProfile(
       const AutofillProfile& profile,
       FieldTypeGroup focused_group) const = 0;
 

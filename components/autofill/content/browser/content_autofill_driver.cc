@@ -193,7 +193,7 @@ void ContentAutofillDriver::SendAutofillTypePredictionsToRenderer(
 }
 
 void ContentAutofillDriver::RendererShouldAcceptDataListSuggestion(
-    const base::string16& value) {
+    const std::u16string& value) {
   if (!RendererIsAvailable())
     return;
   GetAutofillAgent()->AcceptDataListSuggestion(value);
@@ -212,14 +212,14 @@ void ContentAutofillDriver::RendererShouldClearPreviewedForm() {
 }
 
 void ContentAutofillDriver::RendererShouldFillFieldWithValue(
-    const base::string16& value) {
+    const std::u16string& value) {
   if (!RendererIsAvailable())
     return;
   GetAutofillAgent()->FillFieldWithValue(value);
 }
 
 void ContentAutofillDriver::RendererShouldPreviewFieldWithValue(
-    const base::string16& value) {
+    const std::u16string& value) {
   if (!RendererIsAvailable())
     return;
   GetAutofillAgent()->PreviewFieldWithValue(value);

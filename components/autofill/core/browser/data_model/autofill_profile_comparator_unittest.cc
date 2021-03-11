@@ -384,18 +384,18 @@ class AutofillProfileComparatorTest
 }  // namespace
 
 TEST_P(AutofillProfileComparatorTest, UniqueTokens) {
-  base::string16 kInput = UTF8ToUTF16("a b a a b");
-  std::vector<base::string16> tokens = {UTF8ToUTF16("a"), UTF8ToUTF16("b")};
+  std::u16string kInput = UTF8ToUTF16("a b a a b");
+  std::vector<std::u16string> tokens = {UTF8ToUTF16("a"), UTF8ToUTF16("b")};
   EXPECT_EQ(std::set<base::StringPiece16>(tokens.begin(), tokens.end()),
             comparator_.UniqueTokens(kInput));
 }
 
 TEST_P(AutofillProfileComparatorTest, CompareTokens) {
-  base::string16 kEmptyStr = UTF8ToUTF16("");
-  base::string16 kHello = UTF8ToUTF16("hello");
-  base::string16 kHelloThere = UTF8ToUTF16("hello there");
-  base::string16 kHelloThereAlice = UTF8ToUTF16("hello there alice");
-  base::string16 kHelloThereBob = UTF8ToUTF16("hello there bob");
+  std::u16string kEmptyStr = UTF8ToUTF16("");
+  std::u16string kHello = UTF8ToUTF16("hello");
+  std::u16string kHelloThere = UTF8ToUTF16("hello there");
+  std::u16string kHelloThereAlice = UTF8ToUTF16("hello there alice");
+  std::u16string kHelloThereBob = UTF8ToUTF16("hello there bob");
 
   EXPECT_EQ(AutofillProfileComparator::SAME_TOKENS,
             comparator_.CompareTokens(kHelloThereBob, kHelloThereBob));
@@ -416,10 +416,10 @@ TEST_P(AutofillProfileComparatorTest, CompareTokens) {
 TEST_P(AutofillProfileComparatorTest, Compare) {
   // Checks the empty case.
   EXPECT_TRUE(
-      comparator_.Compare(base::string16(), base::string16(),
+      comparator_.Compare(std::u16string(), std::u16string(),
                           AutofillProfileComparator::RETAIN_WHITESPACE));
   EXPECT_TRUE(
-      comparator_.Compare(base::string16(), base::string16(),
+      comparator_.Compare(std::u16string(), std::u16string(),
                           AutofillProfileComparator::DISCARD_WHITESPACE));
 
   // Checks that leading punctuation and white space are ignored.
@@ -512,8 +512,8 @@ TEST_P(AutofillProfileComparatorTest, NormalizeForComparison) {
             comparator_.NormalizeForComparison(
                 UTF8ToUTF16("Timothé-Noël Étienne Périer")));
   // NOP.
-  EXPECT_EQ(base::string16(),
-            comparator_.NormalizeForComparison(base::string16()));
+  EXPECT_EQ(std::u16string(),
+            comparator_.NormalizeForComparison(std::u16string()));
 
   // Simple punctuation removed.
   EXPECT_EQ(UTF8ToUTF16("1600 amphitheatre pkwy"),
@@ -548,7 +548,7 @@ TEST_P(AutofillProfileComparatorTest, NormalizeForComparison) {
 }
 
 TEST_P(AutofillProfileComparatorTest, GetNamePartVariants) {
-  std::set<base::string16> expected_variants = {
+  std::set<std::u16string> expected_variants = {
       UTF8ToUTF16("timothe noel"),
       UTF8ToUTF16("timothe n"),
       UTF8ToUTF16("timothe"),
@@ -566,7 +566,7 @@ TEST_P(AutofillProfileComparatorTest, GetNamePartVariants) {
 }
 
 TEST_P(AutofillProfileComparatorTest, IsNameVariantOf) {
-  const base::string16 kNormalizedFullName =
+  const std::u16string kNormalizedFullName =
       UTF8ToUTF16("timothe noel etienne perier");
 
   EXPECT_TRUE(
@@ -1166,7 +1166,7 @@ TEST_P(AutofillProfileComparatorTest, MergePhoneNumbers_NA) {
 }
 
 TEST_P(AutofillProfileComparatorTest, MergePhoneNumbers_Intl) {
-  const base::string16 kGermany = UTF8ToUTF16("DE");
+  const std::u16string kGermany = UTF8ToUTF16("DE");
   const AutofillType kCountry(ADDRESS_HOME_COUNTRY);
 
   static const char kPhoneA[] = "+49492180185611";

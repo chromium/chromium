@@ -75,14 +75,14 @@ TEST_F(FieldDataManagerTest, UpdateFieldDataMapWithNullValue) {
       FieldPropertiesFlags::kUserTyped);
   const FieldRendererId id(control_elements_[0].unique_renderer_id);
   EXPECT_TRUE(field_data_manager->HasFieldData(id));
-  EXPECT_EQ(base::string16(), field_data_manager->GetUserInput(id));
+  EXPECT_EQ(std::u16string(), field_data_manager->GetUserInput(id));
   EXPECT_EQ(FieldPropertiesFlags::kUserTyped,
             field_data_manager->GetFieldPropertiesMask(id));
 
   field_data_manager->UpdateFieldDataMapWithNullValue(
       control_elements_[0].unique_renderer_id,
       FieldPropertiesFlags::kAutofilled);
-  EXPECT_EQ(base::string16(), field_data_manager->GetUserInput(id));
+  EXPECT_EQ(std::u16string(), field_data_manager->GetUserInput(id));
   FieldPropertiesMask mask =
       FieldPropertiesFlags::kUserTyped | FieldPropertiesFlags::kAutofilled;
   EXPECT_EQ(mask, field_data_manager->GetFieldPropertiesMask(id));

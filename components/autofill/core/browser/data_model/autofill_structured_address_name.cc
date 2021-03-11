@@ -21,16 +21,16 @@ namespace autofill {
 
 namespace structured_address {
 
-base::string16 ReduceToInitials(const base::string16& value) {
+std::u16string ReduceToInitials(const std::u16string& value) {
   if (value.empty())
-    return base::string16();
+    return std::u16string();
 
-  std::vector<base::string16> middle_name_tokens =
+  std::vector<std::u16string> middle_name_tokens =
       base::SplitString(value, base::ASCIIToUTF16(kNameSeparators),
                         base::WhitespaceHandling::TRIM_WHITESPACE,
                         base::SplitResult::SPLIT_WANT_NONEMPTY);
 
-  base::string16 result;
+  std::u16string result;
   result.reserve(middle_name_tokens.size());
   for (const auto& token : middle_name_tokens) {
     DCHECK(!token.empty());
@@ -61,7 +61,7 @@ void NameMiddle::GetAdditionalSupportedFieldTypes(
 
 bool NameMiddle::ConvertAndGetTheValueForAdditionalFieldTypeName(
     const std::string& type_name,
-    base::string16* value) const {
+    std::u16string* value) const {
   if (type_name == AutofillType::ServerFieldTypeToString(NAME_MIDDLE_INITIAL)) {
     if (value) {
       // If the stored value has the characteristics of containing only
@@ -81,7 +81,7 @@ bool NameMiddle::ConvertAndGetTheValueForAdditionalFieldTypeName(
 
 bool NameMiddle::ConvertAndSetValueForAdditionalFieldTypeName(
     const std::string& type_name,
-    const base::string16& value,
+    const std::u16string& value,
     const VerificationStatus& status) {
   if (type_name == AutofillType::ServerFieldTypeToString(NAME_MIDDLE_INITIAL)) {
     SetValue(value, status);
@@ -235,7 +235,7 @@ std::vector<const re2::RE2*> NameFull::GetParseRegularExpressionsByRelevance()
           pattern_provider->GetRegEx(RegEx::kParseLastCommaFirstMiddleName),
           pattern_provider->GetRegEx(RegEx::kParseFirstMiddleLastName)};
 }
-base::string16 NameFull::GetBestFormatString() const {
+std::u16string NameFull::GetBestFormatString() const {
   if (HasCjkNameCharacteristics(base::UTF16ToUTF8(name_first_.GetValue())) &&
       HasCjkNameCharacteristics(base::UTF16ToUTF8(name_last_.GetValue()))) {
     return base::ASCIIToUTF16("${NAME_LAST}${NAME_FIRST}");

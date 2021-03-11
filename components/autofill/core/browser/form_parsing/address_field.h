@@ -89,7 +89,7 @@ class AddressField : public FormField {
   // change.
   ParseNameLabelResult ParseNameAndLabelSeparately(
       AutofillScanner* scanner,
-      const base::string16& pattern,
+      const std::u16string& pattern,
       int match_type,
       const std::vector<MatchingPattern>& patterns,
       AutofillField** match,

@@ -151,7 +151,7 @@ void TestAutofillClient::ConfirmMigrateLocalCardToCloud(
 
 void TestAutofillClient::ShowLocalCardMigrationResults(
     const bool has_server_error,
-    const base::string16& tip_message,
+    const std::u16string& tip_message,
     const std::vector<MigratableCreditCard>& migratable_credit_cards,
     MigrationDeleteCardCallback delete_local_card_callback) {}
 void TestAutofillClient::ShowWebauthnOfferDialog(
@@ -176,19 +176,19 @@ void TestAutofillClient::OfferVirtualCardOptions(
 
 #else  // defined(OS_ANDROID) || defined(OS_IOS)
 void TestAutofillClient::ConfirmAccountNameFixFlow(
-    base::OnceCallback<void(const base::string16&)> callback) {
+    base::OnceCallback<void(const std::u16string&)> callback) {
   credit_card_name_fix_flow_bubble_was_shown_ = true;
-  std::move(callback).Run(base::string16(base::ASCIIToUTF16("Gaia Name")));
+  std::move(callback).Run(std::u16string(base::ASCIIToUTF16("Gaia Name")));
 }
 
 void TestAutofillClient::ConfirmExpirationDateFixFlow(
     const CreditCard& card,
-    base::OnceCallback<void(const base::string16&, const base::string16&)>
+    base::OnceCallback<void(const std::u16string&, const std::u16string&)>
         callback) {
   credit_card_name_fix_flow_bubble_was_shown_ = true;
   std::move(callback).Run(
-      base::string16(base::ASCIIToUTF16("03")),
-      base::string16(base::ASCIIToUTF16(test::NextYear().c_str())));
+      std::u16string(base::ASCIIToUTF16("03")),
+      std::u16string(base::ASCIIToUTF16(test::NextYear().c_str())));
 }
 #endif
 
@@ -235,8 +235,8 @@ void TestAutofillClient::ShowAutofillPopup(
     base::WeakPtr<AutofillPopupDelegate> delegate) {}
 
 void TestAutofillClient::UpdateAutofillPopupDataListValues(
-    const std::vector<base::string16>& values,
-    const std::vector<base::string16>& labels) {}
+    const std::vector<std::u16string>& values,
+    const std::vector<std::u16string>& labels) {}
 
 base::span<const Suggestion> TestAutofillClient::GetPopupSuggestions() const {
   return base::span<const Suggestion>();
@@ -262,8 +262,8 @@ void TestAutofillClient::PropagateAutofillPredictions(
     const std::vector<FormStructure*>& forms) {}
 
 void TestAutofillClient::DidFillOrPreviewField(
-    const base::string16& autofilled_value,
-    const base::string16& profile_full_name) {}
+    const std::u16string& autofilled_value,
+    const std::u16string& profile_full_name) {}
 
 bool TestAutofillClient::IsContextSecure() const {
   // Simplified secure context check for tests.

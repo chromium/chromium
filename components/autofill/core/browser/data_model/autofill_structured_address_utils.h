@@ -25,9 +25,9 @@ namespace structured_address {
 
 struct AddressToken {
   // The original value.
-  base::string16 value;
+  std::u16string value;
   // The normalized value.
-  base::string16 normalized_value;
+  std::u16string normalized_value;
   // The token position in the original string.
   int position;
 };
@@ -150,21 +150,21 @@ class RewriterCache {
 
   // Applies the rewriter to |text| for a specific county given by
   // |country_code|.
-  static base::string16 Rewrite(const base::string16& country_code,
-                                const base::string16& text);
+  static std::u16string Rewrite(const std::u16string& country_code,
+                                const std::u16string& text);
 
  private:
   RewriterCache();
 
   // Returns the Rewriter for |country_code|.
-  const AddressRewriter& GetRewriter(const base::string16& country_code);
+  const AddressRewriter& GetRewriter(const std::u16string& country_code);
 
   // Since the constructor is private, |base::NoDestructor| must be friend to be
   // allowed to construct the cache.
   friend class base::NoDestructor<RewriterCache>;
 
   // Stores a country-specific Rewriter keyed by its corresponding |pattern|.
-  std::map<base::string16, const AddressRewriter> rewriter_map_;
+  std::map<std::u16string, const AddressRewriter> rewriter_map_;
 
   // A lock to prevent concurrent access to the map.
   base::Lock lock_;
@@ -190,7 +190,7 @@ bool HasMiddleNameInitialsCharacteristics(const std::string& middle_name);
 
 // Reduces a name to the initials in upper case.
 // Example: George walker -> GW, Hans-Peter -> HP
-base::string16 ReduceToInitials(const base::string16& value);
+std::u16string ReduceToInitials(const std::u16string& value);
 
 // Parses |value| with an regular expression defined by |pattern|.
 // Returns true on success meaning that the expressions is fully matched.
@@ -287,7 +287,7 @@ std::string CaptureTypeWithPattern(
 // removes diacritics.
 // If |keep_white_spaces| is true, white spaces are collapsed. Otherwise,
 // white spaces are completely removed.
-base::string16 NormalizeValue(const base::StringPiece16 value,
+std::u16string NormalizeValue(const base::StringPiece16 value,
                               bool keep_white_space = true);
 
 // Returns true of both vectors contain the same tokens in the same order.
@@ -295,13 +295,13 @@ bool AreSortedTokensEqual(const std::vector<AddressToken>& first,
                           const std::vector<AddressToken>& second);
 
 // Returns true if both strings contain the same tokens after normalization.
-bool AreStringTokenEquivalent(const base::string16& one,
-                              const base::string16& other);
+bool AreStringTokenEquivalent(const std::u16string& one,
+                              const std::u16string& other);
 
 // Returns a sorted vector containing the tokens of |value| after |value| was
 // canonicalized. |value| is tokenized by splitting it by white spaces and
 // commas.
-std::vector<AddressToken> TokenizeValue(const base::string16 value);
+std::vector<AddressToken> TokenizeValue(const std::u16string value);
 
 // Compares two vectors of sorted AddressTokens and returns the
 // SortedTokenComparisonResult;
@@ -310,8 +310,8 @@ SortedTokenComparisonResult CompareSortedTokens(
     const std::vector<AddressToken>& second);
 
 // Convenience wrapper to supply untokenized strings.
-SortedTokenComparisonResult CompareSortedTokens(const base::string16& first,
-                                                const base::string16& second);
+SortedTokenComparisonResult CompareSortedTokens(const std::u16string& first,
+                                                const std::u16string& second);
 
 }  // namespace structured_address
 

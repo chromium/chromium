@@ -63,8 +63,8 @@ constexpr structured_address::VerificationStatus kNoStatus =
 // Helper struct for AutofillTable::RemoveFormElementsAddedBetween().
 // Contains all the necessary fields to update a row in the 'autofill' table.
 struct AutofillUpdate {
-  base::string16 name;
-  base::string16 value;
+  std::u16string name;
+  std::u16string value;
   time_t date_created;
   time_t date_last_used;
   int count;
@@ -72,9 +72,9 @@ struct AutofillUpdate {
 
 // Returns the |data_model|'s value corresponding to the |type|, trimmed to the
 // maximum length that can be stored in a column of the Autofill database.
-base::string16 GetInfo(const AutofillDataModel& data_model,
+std::u16string GetInfo(const AutofillDataModel& data_model,
                        ServerFieldType type) {
-  base::string16 data = data_model.GetRawInfo(type);
+  std::u16string data = data_model.GetRawInfo(type);
   if (data.size() > AutofillTable::kMaxDataLength)
     return data.substr(0, AutofillTable::kMaxDataLength);
 
@@ -128,7 +128,7 @@ void AddAutofillProfileDetailsFromStatement(const sql::Statement& s,
 
 void BindEncryptedCardToColumn(sql::Statement* s,
                                int column_index,
-                               const base::string16& number,
+                               const std::u16string& number,
                                const AutofillTableEncryptor& encryptor) {
   std::string encrypted_data;
   encryptor.EncryptString16(number, &encrypted_data);
@@ -158,11 +158,11 @@ void BindCreditCardToStatement(const CreditCard& credit_card,
   s->BindString16(index++, credit_card.nickname());
 }
 
-base::string16 UnencryptedCardFromColumn(
+std::u16string UnencryptedCardFromColumn(
     const sql::Statement& s,
     int column_index,
     const AutofillTableEncryptor& encryptor) {
-  base::string16 credit_card_number;
+  std::u16string credit_card_number;
   int encrypted_number_len = s.ColumnByteLength(column_index);
   if (encrypted_number_len) {
     std::string encrypted_number;
@@ -416,24 +416,24 @@ bool AddAutofillProfileAddressesToProfile(sql::Database* db,
 
     if (s.Step()) {
       DCHECK_EQ(profile->guid(), s.ColumnString(0));
-      base::string16 street_address = s.ColumnString16(1);
-      base::string16 dependent_locality = s.ColumnString16(13);
-      base::string16 city = s.ColumnString16(15);
-      base::string16 state = s.ColumnString16(17);
-      base::string16 zip_code = s.ColumnString16(19);
-      base::string16 sorting_code = s.ColumnString16(21);
-      base::string16 country = s.ColumnString16(23);
+      std::u16string street_address = s.ColumnString16(1);
+      std::u16string dependent_locality = s.ColumnString16(13);
+      std::u16string city = s.ColumnString16(15);
+      std::u16string state = s.ColumnString16(17);
+      std::u16string zip_code = s.ColumnString16(19);
+      std::u16string sorting_code = s.ColumnString16(21);
+      std::u16string country = s.ColumnString16(23);
 
-      base::string16 street_address_legacy =
+      std::u16string street_address_legacy =
           profile->GetRawInfo(ADDRESS_HOME_STREET_ADDRESS);
-      base::string16 dependent_locality_legacy =
+      std::u16string dependent_locality_legacy =
           profile->GetRawInfo(ADDRESS_HOME_DEPENDENT_LOCALITY);
-      base::string16 city_legacy = profile->GetRawInfo(ADDRESS_HOME_CITY);
-      base::string16 state_legacy = profile->GetRawInfo(ADDRESS_HOME_STATE);
-      base::string16 zip_code_legacy = profile->GetRawInfo(ADDRESS_HOME_ZIP);
-      base::string16 sorting_code_legacy =
+      std::u16string city_legacy = profile->GetRawInfo(ADDRESS_HOME_CITY);
+      std::u16string state_legacy = profile->GetRawInfo(ADDRESS_HOME_STATE);
+      std::u16string zip_code_legacy = profile->GetRawInfo(ADDRESS_HOME_ZIP);
+      std::u16string sorting_code_legacy =
           profile->GetRawInfo(ADDRESS_HOME_SORTING_CODE);
-      base::string16 country_legacy = profile->GetRawInfo(ADDRESS_HOME_COUNTRY);
+      std::u16string country_legacy = profile->GetRawInfo(ADDRESS_HOME_COUNTRY);
 
       // At this stage, the unstructured address was already written to
       // the profile. If the address was changed by a legacy client, the
@@ -632,17 +632,17 @@ CreditCard::ServerStatus ServerStatusStringToEnum(const std::string& status) {
 // Returns |s| with |escaper| in front of each of occurrence of a character
 // from |special_chars|. Any occurrence of |escaper| in |s| is doubled. For
 // example, Substitute("hello_world!", "_%", '!'') returns "hello!_world!!".
-base::string16 Substitute(const base::string16& s,
-                          const base::string16& special_chars,
+std::u16string Substitute(const std::u16string& s,
+                          const std::u16string& special_chars,
                           const char16_t& escaper) {
   // Prepend |escaper| to the list of |special_chars|.
-  base::string16 escape_wildcards(special_chars);
+  std::u16string escape_wildcards(special_chars);
   escape_wildcards.insert(escape_wildcards.begin(), escaper);
 
   // Prepend the |escaper| just before |special_chars| in |s|.
-  base::string16 result(s);
+  std::u16string result(s);
   for (char16_t c : escape_wildcards) {
-    for (size_t pos = 0; (pos = result.find(c, pos)) != base::string16::npos;
+    for (size_t pos = 0; (pos = result.find(c, pos)) != std::u16string::npos;
          pos += 2) {
       result.insert(result.begin() + pos, escaper);
     }
@@ -802,8 +802,8 @@ bool AutofillTable::AddFormFieldValue(const FormFieldData& element,
 }
 
 bool AutofillTable::GetFormValuesForElementName(
-    const base::string16& name,
-    const base::string16& prefix,
+    const std::u16string& name,
+    const std::u16string& prefix,
     std::vector<AutofillEntry>* entries,
     int limit) {
   DCHECK(entries);
@@ -829,8 +829,8 @@ bool AutofillTable::GetFormValuesForElementName(
 
     succeeded = s.Succeeded();
   } else {
-    base::string16 prefix_lower = base::i18n::ToLower(prefix);
-    base::string16 next_prefix = prefix_lower;
+    std::u16string prefix_lower = base::i18n::ToLower(prefix);
+    std::u16string next_prefix = prefix_lower;
     next_prefix.back()++;
 
     sql::Statement s1;
@@ -912,8 +912,8 @@ bool AutofillTable::RemoveFormElementsAddedBetween(
   std::vector<AutofillUpdate> updates;
   std::vector<AutofillChange> tentative_changes;
   while (s.Step()) {
-    base::string16 name = s.ColumnString16(0);
-    base::string16 value = s.ColumnString16(1);
+    std::u16string name = s.ColumnString16(0);
+    std::u16string value = s.ColumnString16(1);
     int count = s.ColumnInt(2);
     time_t date_created_time_t = s.ColumnInt64(3);
     time_t date_last_used_time_t = s.ColumnInt64(4);
@@ -1011,8 +1011,8 @@ bool AutofillTable::RemoveExpiredFormElements(
   select_for_delete.BindInt64(0, expiration_time.ToTimeT());
   std::vector<AutofillChange> tentative_changes;
   while (select_for_delete.Step()) {
-    base::string16 name = select_for_delete.ColumnString16(0);
-    base::string16 value = select_for_delete.ColumnString16(1);
+    std::u16string name = select_for_delete.ColumnString16(0);
+    std::u16string value = select_for_delete.ColumnString16(1);
     tentative_changes.push_back(
         AutofillChange(change_type, AutofillKey(name, value)));
   }
@@ -1030,8 +1030,8 @@ bool AutofillTable::RemoveExpiredFormElements(
   return true;
 }
 
-bool AutofillTable::RemoveFormElement(const base::string16& name,
-                                      const base::string16& value) {
+bool AutofillTable::RemoveFormElement(const std::u16string& name,
+                                      const std::u16string& value) {
   sql::Statement s(db_->GetUniqueStatement(
       "DELETE FROM autofill WHERE name = ? AND value= ?"));
   s.BindString16(0, name);
@@ -1066,8 +1066,8 @@ bool AutofillTable::GetAllAutofillEntries(std::vector<AutofillEntry>* entries) {
       "SELECT name, value, date_created, date_last_used FROM autofill"));
 
   while (s.Step()) {
-    base::string16 name = s.ColumnString16(0);
-    base::string16 value = s.ColumnString16(1);
+    std::u16string name = s.ColumnString16(0);
+    std::u16string value = s.ColumnString16(1);
     base::Time date_created = base::Time::FromTimeT(s.ColumnInt64(2));
     base::Time date_last_used = base::Time::FromTimeT(s.ColumnInt64(3));
     entries->push_back(
@@ -1077,8 +1077,8 @@ bool AutofillTable::GetAllAutofillEntries(std::vector<AutofillEntry>* entries) {
   return s.Succeeded();
 }
 
-bool AutofillTable::GetAutofillTimestamps(const base::string16& name,
-                                          const base::string16& value,
+bool AutofillTable::GetAutofillTimestamps(const std::u16string& name,
+                                          const std::u16string& value,
                                           base::Time* date_created,
                                           base::Time* date_last_used) {
   sql::Statement s(db_->GetUniqueStatement(
@@ -1308,7 +1308,7 @@ bool AutofillTable::GetServerProfiles(
     // here to override the default value of AutofillClock::Now().
     profile->set_modification_date(base::Time());
 
-    base::string16 recipient_name = s.ColumnString16(index++);
+    std::u16string recipient_name = s.ColumnString16(index++);
     profile->SetRawInfo(COMPANY_NAME, s.ColumnString16(index++));
     profile->SetRawInfo(ADDRESS_HOME_STREET_ADDRESS, s.ColumnString16(index++));
     profile->SetRawInfo(ADDRESS_HOME_STATE, s.ColumnString16(index++));
@@ -1319,7 +1319,7 @@ bool AutofillTable::GetServerProfiles(
     profile->SetRawInfo(ADDRESS_HOME_ZIP, s.ColumnString16(index++));
     profile->SetRawInfo(ADDRESS_HOME_SORTING_CODE, s.ColumnString16(index++));
     profile->SetRawInfo(ADDRESS_HOME_COUNTRY, s.ColumnString16(index++));
-    base::string16 phone_number = s.ColumnString16(index++);
+    std::u16string phone_number = s.ColumnString16(index++);
     profile->set_language_code(s.ColumnString(index++));
     profile->set_has_converted(s.ColumnBool(index++));
 
@@ -1547,9 +1547,9 @@ bool AutofillTable::GetServerCreditCards(
 
     // If the card_number_encrypted field is nonempty, we can assume this card
     // is a full card, otherwise it's masked.
-    base::string16 full_card_number =
+    std::u16string full_card_number =
         UnencryptedCardFromColumn(s, index++, *autofill_table_encryptor_);
-    base::string16 last_four = s.ColumnString16(index++);
+    std::u16string last_four = s.ColumnString16(index++);
     CreditCard::RecordType record_type = full_card_number.empty()
                                              ? CreditCard::MASKED_SERVER_CARD
                                              : CreditCard::FULL_SERVER_CARD;
@@ -1618,7 +1618,7 @@ void AutofillTable::SetServerCreditCards(
 }
 
 bool AutofillTable::UnmaskServerCreditCard(const CreditCard& masked,
-                                           const base::string16& full_number) {
+                                           const std::u16string& full_number) {
   sql::Transaction transaction(db_);
   if (!transaction.Begin())
     return false;
@@ -2585,9 +2585,9 @@ bool AutofillTable::MigrateToVersion54AddI18nFieldsAndRemoveDeprecatedFields() {
         "SELECT guid, address_line_1, address_line_2 FROM autofill_profiles"));
     while (s.Step()) {
       std::string guid = s.ColumnString(0);
-      base::string16 line1 = s.ColumnString16(1);
-      base::string16 line2 = s.ColumnString16(2);
-      base::string16 street_address = line1;
+      std::u16string line1 = s.ColumnString16(1);
+      std::u16string line2 = s.ColumnString16(2);
+      std::u16string street_address = line1;
       if (!line2.empty())
         street_address += base::ASCIIToUTF16("\n") + line2;
 
@@ -2895,7 +2895,7 @@ bool AutofillTable::MigrateToVersion65AddServerMetadataTables() {
     AutofillProfile profile(AutofillProfile::SERVER_PROFILE,
                             s.ColumnString(index++));
 
-    base::string16 recipient_name = s.ColumnString16(index++);
+    std::u16string recipient_name = s.ColumnString16(index++);
     profile.SetRawInfo(COMPANY_NAME, s.ColumnString16(index++));
     profile.SetRawInfo(ADDRESS_HOME_STREET_ADDRESS, s.ColumnString16(index++));
     profile.SetRawInfo(ADDRESS_HOME_STATE, s.ColumnString16(index++));
@@ -2906,7 +2906,7 @@ bool AutofillTable::MigrateToVersion65AddServerMetadataTables() {
     profile.SetRawInfo(ADDRESS_HOME_ZIP, s.ColumnString16(index++));
     profile.SetRawInfo(ADDRESS_HOME_SORTING_CODE, s.ColumnString16(index++));
     profile.SetRawInfo(ADDRESS_HOME_COUNTRY, s.ColumnString16(index++));
-    base::string16 phone_number = s.ColumnString16(index++);
+    std::u16string phone_number = s.ColumnString16(index++);
     profile.set_language_code(s.ColumnString(index++));
     profile.SetInfo(NAME_FULL, recipient_name, profile.language_code());
     profile.SetInfo(PHONE_HOME_WHOLE_NUMBER, phone_number,
@@ -3413,7 +3413,7 @@ bool AutofillTable::AddFormFieldValuesTime(
   // to track this.  Add up to |kMaximumUniqueNames| unique entries per
   // form.
   const size_t kMaximumUniqueNames = 256;
-  std::set<base::string16> seen_names;
+  std::set<std::u16string> seen_names;
   bool result = true;
   for (const FormFieldData& element : elements) {
     if (seen_names.size() >= kMaximumUniqueNames)
@@ -3603,7 +3603,7 @@ void AutofillTable::AddMaskedCreditCards(
 }
 
 void AutofillTable::AddUnmaskedCreditCard(const std::string& id,
-                                          const base::string16& full_number) {
+                                          const std::u16string& full_number) {
   sql::Statement s(
       db_->GetUniqueStatement("INSERT INTO unmasked_credit_cards("
                               "id,"

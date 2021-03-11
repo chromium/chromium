@@ -28,25 +28,25 @@ using i18n::PhoneNumbersMatch;
 
 TEST(PhoneNumberI18NTest, NormalizePhoneNumber) {
   // "Large" digits.
-  base::string16 phone1(
+  std::u16string phone1(
       UTF8ToUTF16("\xEF\xBC\x91\xEF\xBC\x96\xEF\xBC\x95\xEF\xBC\x90"
                   "\xEF\xBC\x97\xEF\xBC\x94\xEF\xBC\x99\xEF\xBC\x98"
                   "\xEF\xBC\x93\xEF\xBC\x92\xEF\xBC\x93"));
   EXPECT_EQ(NormalizePhoneNumber(phone1, "US"), ASCIIToUTF16("16507498323"));
 
   // Devanagari script digits.
-  base::string16 phone2(
+  std::u16string phone2(
       UTF8ToUTF16("\xD9\xA1\xD9\xA6\xD9\xA5\xD9\xA0\xD9\xA8\xD9\xA3"
                   "\xD9\xA2\xD9\xA3\xD9\xA7\xD9\xA4\xD9\xA9"));
   EXPECT_EQ(NormalizePhoneNumber(phone2, "US"), ASCIIToUTF16("16508323749"));
 
-  base::string16 phone3(UTF8ToUTF16("16503334\xef\xbc\x92\x35\xd9\xa5"));
+  std::u16string phone3(UTF8ToUTF16("16503334\xef\xbc\x92\x35\xd9\xa5"));
   EXPECT_EQ(NormalizePhoneNumber(phone3, "US"), ASCIIToUTF16("16503334255"));
 
-  base::string16 phone4(UTF8ToUTF16("+1(650)2346789"));
+  std::u16string phone4(UTF8ToUTF16("+1(650)2346789"));
   EXPECT_EQ(NormalizePhoneNumber(phone4, "US"), ASCIIToUTF16("16502346789"));
 
-  base::string16 phone5(UTF8ToUTF16("6502346789"));
+  std::u16string phone5(UTF8ToUTF16("6502346789"));
   EXPECT_EQ(NormalizePhoneNumber(phone5, "US"), ASCIIToUTF16("6502346789"));
 }
 
@@ -78,7 +78,7 @@ TEST_P(ParseNumberTest, ParsePhoneNumber) {
   auto test_case = GetParam();
   SCOPED_TRACE("Testing phone number " + test_case.input);
 
-  base::string16 country_code, city_code, number;
+  std::u16string country_code, city_code, number;
   std::string deduced_region;
   ::i18n::phonenumbers::PhoneNumber unused_i18n_number;
   EXPECT_EQ(
@@ -192,35 +192,35 @@ INSTANTIATE_TEST_SUITE_P(
                             "", "DE"}));
 
 TEST(PhoneNumberI18NTest, ConstructPhoneNumber) {
-  base::string16 number;
+  std::u16string number;
   EXPECT_TRUE(ConstructPhoneNumber(ASCIIToUTF16("1"), ASCIIToUTF16("650"),
                                    ASCIIToUTF16("2345678"), "US", &number));
   EXPECT_EQ(ASCIIToUTF16("1 650-234-5678"), number);
-  EXPECT_TRUE(ConstructPhoneNumber(base::string16(), ASCIIToUTF16("650"),
+  EXPECT_TRUE(ConstructPhoneNumber(std::u16string(), ASCIIToUTF16("650"),
                                    ASCIIToUTF16("2345678"), "US", &number));
   EXPECT_EQ(ASCIIToUTF16("(650) 234-5678"), number);
-  EXPECT_TRUE(ConstructPhoneNumber(ASCIIToUTF16("1"), base::string16(),
+  EXPECT_TRUE(ConstructPhoneNumber(ASCIIToUTF16("1"), std::u16string(),
                                    ASCIIToUTF16("6502345678"), "US", &number));
   EXPECT_EQ(ASCIIToUTF16("1 650-234-5678"), number);
-  EXPECT_TRUE(ConstructPhoneNumber(base::string16(), base::string16(),
+  EXPECT_TRUE(ConstructPhoneNumber(std::u16string(), std::u16string(),
                                    ASCIIToUTF16("6502345678"), "US", &number));
   EXPECT_EQ(ASCIIToUTF16("(650) 234-5678"), number);
 
-  EXPECT_FALSE(ConstructPhoneNumber(base::string16(), ASCIIToUTF16("650"),
+  EXPECT_FALSE(ConstructPhoneNumber(std::u16string(), ASCIIToUTF16("650"),
                                     ASCIIToUTF16("234567890"), "US", &number));
-  EXPECT_EQ(base::string16(), number);
+  EXPECT_EQ(std::u16string(), number);
   // Italian number
   EXPECT_TRUE(ConstructPhoneNumber(ASCIIToUTF16("39"), ASCIIToUTF16("347"),
                                    ASCIIToUTF16("2345678"), "IT", &number));
   EXPECT_EQ(ASCIIToUTF16("+39 347 234 5678"), number);
-  EXPECT_TRUE(ConstructPhoneNumber(base::string16(), ASCIIToUTF16("347"),
+  EXPECT_TRUE(ConstructPhoneNumber(std::u16string(), ASCIIToUTF16("347"),
                                    ASCIIToUTF16("2345678"), "IT", &number));
   EXPECT_EQ(ASCIIToUTF16("347 234 5678"), number);
   // German number.
   EXPECT_TRUE(ConstructPhoneNumber(ASCIIToUTF16("49"), ASCIIToUTF16("024"),
                                    ASCIIToUTF16("2345678901"), "DE", &number));
   EXPECT_EQ(ASCIIToUTF16("+49 2423 45678901"), number);
-  EXPECT_TRUE(ConstructPhoneNumber(base::string16(), ASCIIToUTF16("024"),
+  EXPECT_TRUE(ConstructPhoneNumber(std::u16string(), ASCIIToUTF16("024"),
                                    ASCIIToUTF16("2345678901"), "DE", &number));
   EXPECT_EQ(ASCIIToUTF16("02423 45678901"), number);
 }
@@ -260,10 +260,10 @@ TEST(PhoneNumberI18NTest, PhoneNumbersMatch) {
 
   // Two empty numbers match.
   EXPECT_TRUE(
-      PhoneNumbersMatch(base::string16(), base::string16(), "US", "en-US"));
+      PhoneNumbersMatch(std::u16string(), std::u16string(), "US", "en-US"));
 
   // An empty and a non-empty number do not match.
-  EXPECT_FALSE(PhoneNumbersMatch(base::string16(), ASCIIToUTF16("5088585123"),
+  EXPECT_FALSE(PhoneNumbersMatch(std::u16string(), ASCIIToUTF16("5088585123"),
                                  "US", "en-US"));
 }
 

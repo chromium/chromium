@@ -23,13 +23,13 @@ class AddressComponentWithRewriter : public AddressComponent {
 
  protected:
   // Apply a country-specific rewriter to the normalized value.
-  base::string16 ValueForComparison() const override;
+  std::u16string ValueForComparison() const override;
 
   // Tries to retrieve the |ADDRESS_HOME_COUNTRY| node from the structure tree
   // to apply a country-specific rewriter to the normalized value.
   // If the country value cannot be retrieved or is empty, the method returns
   // the normalized values without further processing.
-  base::string16 RewriteValue(const base::string16&) const;
+  std::u16string RewriteValue(const std::u16string&) const;
 };
 
 // The name of the street.
@@ -110,7 +110,7 @@ class StreetAddress : public AddressComponentWithRewriter {
   void GetAdditionalSupportedFieldTypes(
       ServerFieldTypeSet* supported_types) const override;
 
-  void SetValue(base::string16 value, VerificationStatus status) override;
+  void SetValue(std::u16string value, VerificationStatus status) override;
 
   void UnsetValue() override;
 
@@ -125,7 +125,7 @@ class StreetAddress : public AddressComponentWithRewriter {
       const override;
 
   // Returns the format string to create the full name from its subcomponents.
-  base::string16 GetBestFormatString() const override;
+  std::u16string GetBestFormatString() const override;
 
   // Recalculates the address line after an assignment.
   void PostAssignSanitization() override;
@@ -137,12 +137,12 @@ class StreetAddress : public AddressComponentWithRewriter {
   // Implements support for getting the value of the individual address lines.
   bool ConvertAndGetTheValueForAdditionalFieldTypeName(
       const std::string& type_name,
-      base::string16* value) const override;
+      std::u16string* value) const override;
 
   // Implements support for setting the value of the individual address lines.
   bool ConvertAndSetValueForAdditionalFieldTypeName(
       const std::string& type_name,
-      const base::string16& value,
+      const std::u16string& value,
       const VerificationStatus& status) override;
 
   // Returns true of the address lines do not contain an empty line.
@@ -159,7 +159,7 @@ class StreetAddress : public AddressComponentWithRewriter {
 
   // Holds the values of the individual address lines.
   // Must be recalculated if the value of the component changes.
-  std::vector<base::string16> address_lines_;
+  std::vector<std::u16string> address_lines_;
 };
 
 // Stores the country code of an address profile.
@@ -203,7 +203,7 @@ class PostalCode : public AddressComponentWithRewriter {
  protected:
   // In contrast to the base class, the normalization removes all white spaces
   // from the value.
-  base::string16 NormalizedValue() const override;
+  std::u16string NormalizedValue() const override;
 };
 
 // Stores the sorting code.

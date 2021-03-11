@@ -386,7 +386,7 @@ void AutofillAgent::UserGestureObserved() {
 }
 
 void AutofillAgent::DoAcceptDataListSuggestion(
-    const base::string16& suggested_value) {
+    const std::u16string& suggested_value) {
   if (element_.IsNull())
     return;
 
@@ -402,18 +402,18 @@ void AutofillAgent::DoAcceptDataListSuggestion(
     // Keep this return after removing the TODO(crbug.com/1048270) above.
     return;
   }
-  base::string16 new_value = suggested_value;
+  std::u16string new_value = suggested_value;
   // If this element takes multiple values then replace the last part with
   // the suggestion.
   if (input_element->IsMultiple() && input_element->IsEmailField()) {
-    base::string16 value = input_element->EditingValue().Utf16();
+    std::u16string value = input_element->EditingValue().Utf16();
     std::vector<base::StringPiece16> parts =
         base::SplitStringPiece(value, base::ASCIIToUTF16(","),
                                base::KEEP_WHITESPACE, base::SPLIT_WANT_ALL);
     if (parts.size() == 0)
       parts.push_back(base::StringPiece16());
 
-    base::string16 last_part(parts.back());
+    std::u16string last_part(parts.back());
     // We want to keep just the leading whitespace.
     for (size_t i = 0; i < last_part.size(); ++i) {
       if (!base::IsUnicodeWhitespace(last_part[i])) {
@@ -519,7 +519,7 @@ void AutofillAgent::ClearPreviewedForm() {
   previewed_elements_ = {};
 }
 
-void AutofillAgent::FillFieldWithValue(const base::string16& value) {
+void AutofillAgent::FillFieldWithValue(const std::u16string& value) {
   if (element_.IsNull())
     return;
 
@@ -530,7 +530,7 @@ void AutofillAgent::FillFieldWithValue(const base::string16& value) {
   }
 }
 
-void AutofillAgent::PreviewFieldWithValue(const base::string16& value) {
+void AutofillAgent::PreviewFieldWithValue(const std::u16string& value) {
   if (element_.IsNull())
     return;
 
@@ -567,12 +567,12 @@ void AutofillAgent::SetSuggestionAvailability(
   }
 }
 
-void AutofillAgent::AcceptDataListSuggestion(const base::string16& value) {
+void AutofillAgent::AcceptDataListSuggestion(const std::u16string& value) {
   DoAcceptDataListSuggestion(value);
 }
 
-void AutofillAgent::FillPasswordSuggestion(const base::string16& username,
-                                           const base::string16& password) {
+void AutofillAgent::FillPasswordSuggestion(const std::u16string& username,
+                                           const std::u16string& password) {
   if (element_.IsNull())
     return;
 
@@ -581,8 +581,8 @@ void AutofillAgent::FillPasswordSuggestion(const base::string16& username,
   DCHECK(handled);
 }
 
-void AutofillAgent::PreviewPasswordSuggestion(const base::string16& username,
-                                              const base::string16& password) {
+void AutofillAgent::PreviewPasswordSuggestion(const std::u16string& username,
+                                              const std::u16string& password) {
   if (element_.IsNull())
     return;
 
@@ -814,7 +814,7 @@ void AutofillAgent::QueryAutofillSuggestions(
                                               autoselect_first_suggestion);
 }
 
-void AutofillAgent::DoFillFieldWithValue(const base::string16& value,
+void AutofillAgent::DoFillFieldWithValue(const std::u16string& value,
                                          WebInputElement* node) {
   form_tracker_.set_ignore_control_changes(true);
   node->SetAutofillValue(blink::WebString::FromUTF16(value));
@@ -822,7 +822,7 @@ void AutofillAgent::DoFillFieldWithValue(const base::string16& value,
   form_tracker_.set_ignore_control_changes(false);
 }
 
-void AutofillAgent::DoPreviewFieldWithValue(const base::string16& value,
+void AutofillAgent::DoPreviewFieldWithValue(const std::u16string& value,
                                             WebInputElement* node) {
   ClearPreviewedForm();
   query_node_autofill_state_ = element_.GetAutofillState();

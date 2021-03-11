@@ -149,7 +149,7 @@ void SavePasswordProgressLogger::LogValue(StringID label, const Value& log) {
 
 // static
 std::string SavePasswordProgressLogger::ScrubElementID(
-    const base::string16& element_id) {
+    const std::u16string& element_id) {
   return ScrubElementID(base::UTF16ToUTF8(element_id));
 }
 

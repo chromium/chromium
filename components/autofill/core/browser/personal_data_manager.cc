@@ -1211,14 +1211,14 @@ std::vector<AutofillProfile*> PersonalDataManager::GetProfilesToSuggest()
 
 std::vector<Suggestion> PersonalDataManager::GetProfileSuggestions(
     const AutofillType& type,
-    const base::string16& field_contents,
+    const std::u16string& field_contents,
     bool field_is_autofilled,
     const std::vector<ServerFieldType>& field_types) {
   if (IsInAutofillSuggestionsDisabledExperiment())
     return std::vector<Suggestion>();
 
   const AutofillProfileComparator comparator(app_locale_);
-  base::string16 field_contents_canon =
+  std::u16string field_contents_canon =
       comparator.NormalizeForComparison(field_contents);
 
   if (base::FeatureList::IsEnabled(
@@ -1270,7 +1270,7 @@ std::vector<Suggestion> PersonalDataManager::GetProfileSuggestions(
                   : nullptr;
 
   // Generate disambiguating labels based on the list of matches.
-  std::vector<base::string16> labels;
+  std::vector<std::u16string> labels;
   if (formatter) {
     labels = formatter->GetLabels();
   } else {
@@ -1348,7 +1348,7 @@ void PersonalDataManager::RemoveExpiredCreditCardsNotUsedSinceTimestamp(
 
 std::vector<Suggestion> PersonalDataManager::GetCreditCardSuggestions(
     const AutofillType& type,
-    const base::string16& field_contents,
+    const std::u16string& field_contents,
     bool include_server_cards) {
   if (IsInAutofillSuggestionsDisabledExperiment())
     return std::vector<Suggestion>();
@@ -2049,14 +2049,14 @@ void PersonalDataManager::OnCreditCardSaved(bool is_local_card) {
 
 std::vector<Suggestion> PersonalDataManager::GetSuggestionsForCards(
     const AutofillType& type,
-    const base::string16& field_contents,
+    const std::u16string& field_contents,
     const std::vector<CreditCard*>& cards_to_suggest) const {
   std::vector<Suggestion> suggestions;
-  base::string16 field_contents_lower = base::i18n::ToLower(field_contents);
+  std::u16string field_contents_lower = base::i18n::ToLower(field_contents);
 
   for (const CreditCard* credit_card : cards_to_suggest) {
     // The value of the stored data for this field type in the |credit_card|.
-    base::string16 creditcard_field_value =
+    std::u16string creditcard_field_value =
         credit_card->GetInfo(type, app_locale_);
     if (creditcard_field_value.empty())
       continue;
@@ -2079,7 +2079,7 @@ std::vector<Suggestion> PersonalDataManager::GetSuggestionsForCards(
 
       // Get the nickname for the card suggestion, which may not be the same as
       // the card's nickname if there are duplicates of the card on file.
-      base::string16 suggestion_nickname =
+      std::u16string suggestion_nickname =
           GetDisplayNicknameForCreditCard(*credit_card);
 
       // If the value is the card number, the label is the expiration date.
@@ -2366,7 +2366,7 @@ void PersonalDataManager::MigrateUserOptedInWalletSyncTransportIfNeeded() {
                                            /*opted_in=*/true);
 }
 
-base::string16 PersonalDataManager::GetDisplayNicknameForCreditCard(
+std::u16string PersonalDataManager::GetDisplayNicknameForCreditCard(
     const CreditCard& card) const {
   // Always prefer a local nickname if available.
   if (card.HasNonEmptyValidNickname() &&

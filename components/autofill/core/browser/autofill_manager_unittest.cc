@@ -453,7 +453,7 @@ class AutofillManagerTest : public testing::Test {
   }
 
   void AutocompleteSuggestionsReturned(
-      const std::vector<base::string16>& results,
+      const std::vector<std::u16string>& results,
       int query_id = kDefaultPageID) {
     std::vector<Suggestion> suggestions;
     std::transform(results.begin(), results.end(),
@@ -1058,7 +1058,7 @@ TEST_P(AutofillManagerStructuredProfileTest,
 
 // Test that the call is properly forwarded to AutocompleteHistoryManager.
 TEST_P(AutofillManagerStructuredProfileTest, OnAutocompleteEntrySelected) {
-  base::string16 test_value = ASCIIToUTF16("TestValue");
+  std::u16string test_value = ASCIIToUTF16("TestValue");
   EXPECT_CALL(*autocomplete_history_manager_.get(),
               OnAutocompleteEntrySelected(test_value))
       .Times(1);
@@ -1458,7 +1458,7 @@ TEST_P(AutofillManagerStructuredProfileTest,
   FormsSeen(forms);
 
   FormFieldData field = form.fields[1];
-  field.value = base::string16({0x200E, 0x200F});
+  field.value = std::u16string({0x200E, 0x200F});
   GetAutofillSuggestions(form, field);
 
 #if defined(OS_ANDROID) || defined(OS_IOS)
@@ -2313,7 +2313,7 @@ TEST_P(AutofillManagerStructuredProfileTest,
 
   // Add some Autocomplete suggestions.
   // This triggers the combined message send.
-  std::vector<base::string16> suggestions;
+  std::vector<std::u16string> suggestions;
   suggestions.push_back(ASCIIToUTF16("one"));
   suggestions.push_back(ASCIIToUTF16("two"));
   AutocompleteSuggestionsReturned(suggestions);
@@ -2840,7 +2840,7 @@ TEST_P(AutofillManagerStructuredProfileTest,
 
   // Add 20 credit card number fields with distinct names.
   for (int i = 0; i < 20; i++) {
-    base::string16 field_name =
+    std::u16string field_name =
         base::ASCIIToUTF16("Card Number ") + base::NumberToString16(i + 1);
     test::CreateTestFormField(base::UTF16ToASCII(field_name).c_str(),
                               "cardnumber", "", "text", &field);
@@ -2866,7 +2866,7 @@ TEST_P(AutofillManagerStructuredProfileTest,
 
   // Verify that the first 19 credit card number fields are filled.
   for (int i = 0; i < 19; i++) {
-    base::string16 field_name =
+    std::u16string field_name =
         base::ASCIIToUTF16("Card Number ") + base::NumberToString16(i + 1);
     ExpectFilledField(base::UTF16ToASCII(field_name).c_str(), "cardnumber",
                       "4234567890123456", "text", response_data.fields[2 + i]);
@@ -2970,7 +2970,7 @@ TEST_P(AutofillManagerStructuredProfileTest,
                     response_data.fields[1]);
 
   // Verify that the first 19 card number fields are filled.
-  base::string16 card_number = base::ASCIIToUTF16("4234567890123456");
+  std::u16string card_number = base::ASCIIToUTF16("4234567890123456");
   for (unsigned int i = 0; i < 19; i++) {
     ExpectFilledField("Card Number", "cardnumber",
                       i < card_number.length()
@@ -3552,7 +3552,7 @@ TEST_P(AutofillManagerStructuredProfileTest, FillFormWithMultipleSections) {
     // The second address section should be empty.
     ASSERT_EQ(response_data.fields.size(), 2 * kAddressFormSize);
     for (size_t i = kAddressFormSize; i < form.fields.size(); ++i) {
-      EXPECT_EQ(base::string16(), response_data.fields[i].value);
+      EXPECT_EQ(std::u16string(), response_data.fields[i].value);
     }
 
     // The first address section should be filled with Elvis's data.
@@ -3577,7 +3577,7 @@ TEST_P(AutofillManagerStructuredProfileTest, FillFormWithMultipleSections) {
     // The first address section should be empty.
     ASSERT_EQ(response_data.fields.size(), 2 * kAddressFormSize);
     for (size_t i = 0; i < kAddressFormSize; ++i) {
-      EXPECT_EQ(base::string16(), response_data.fields[i].value);
+      EXPECT_EQ(std::u16string(), response_data.fields[i].value);
     }
 
     // The second address section should be filled with Elvis's data.
@@ -3586,8 +3586,8 @@ TEST_P(AutofillManagerStructuredProfileTest, FillFormWithMultipleSections) {
                                secondSection.fields.begin() + kAddressFormSize);
     for (size_t i = 0; i < kAddressFormSize; ++i) {
       // Restore the expected field names.
-      base::string16 name = secondSection.fields[i].name;
-      base::string16 original_name = name.substr(0, name.size() - 1);
+      std::u16string name = secondSection.fields[i].name;
+      std::u16string original_name = name.substr(0, name.size() - 1);
       secondSection.fields[i].name = original_name;
     }
     ExpectFilledAddressFormElvis(response_page_id, secondSection, kPageID2,
@@ -3999,7 +3999,7 @@ TEST_P(AutofillManagerStructuredProfileTest, FillPhoneNumber) {
   EXPECT_EQ(ASCIIToUTF16("650"), response_data1.fields[1].value);
   EXPECT_EQ(ASCIIToUTF16("555"), response_data1.fields[2].value);
   EXPECT_EQ(ASCIIToUTF16("4567"), response_data1.fields[3].value);
-  EXPECT_EQ(base::string16(), response_data1.fields[4].value);
+  EXPECT_EQ(std::u16string(), response_data1.fields[4].value);
 
   page_id = 2;
   response_page_id = 0;
@@ -4015,7 +4015,7 @@ TEST_P(AutofillManagerStructuredProfileTest, FillPhoneNumber) {
   EXPECT_EQ(ASCIIToUTF16("650"), response_data2.fields[1].value);
   EXPECT_EQ(ASCIIToUTF16("555"), response_data2.fields[2].value);
   EXPECT_EQ(ASCIIToUTF16("4567"), response_data2.fields[3].value);
-  EXPECT_EQ(base::string16(), response_data2.fields[4].value);
+  EXPECT_EQ(std::u16string(), response_data2.fields[4].value);
 
   // We should not be able to fill international numbers correctly in a form
   // containing fields with US max_length. However, the field should fill with
@@ -4038,7 +4038,7 @@ TEST_P(AutofillManagerStructuredProfileTest, FillPhoneNumber) {
   EXPECT_EQ(ASCIIToUTF16("700"), response_data3.fields[1].value);
   EXPECT_EQ(ASCIIToUTF16("321"), response_data3.fields[2].value);
   EXPECT_EQ(ASCIIToUTF16("4321"), response_data3.fields[3].value);
-  EXPECT_EQ(base::string16(), response_data3.fields[4].value);
+  EXPECT_EQ(std::u16string(), response_data3.fields[4].value);
 
   page_id = 4;
   response_page_id = 0;
@@ -4054,7 +4054,7 @@ TEST_P(AutofillManagerStructuredProfileTest, FillPhoneNumber) {
   EXPECT_EQ(ASCIIToUTF16("7700"), response_data4.fields[1].value);
   EXPECT_EQ(ASCIIToUTF16("954321"), response_data4.fields[2].value);
   EXPECT_EQ(ASCIIToUTF16("954321"), response_data4.fields[3].value);
-  EXPECT_EQ(base::string16(), response_data4.fields[4].value);
+  EXPECT_EQ(std::u16string(), response_data4.fields[4].value);
 }
 
 TEST_P(AutofillManagerStructuredProfileTest,
@@ -4121,10 +4121,10 @@ TEST_P(AutofillManagerStructuredProfileTest,
   EXPECT_EQ(ASCIIToUTF16("1"), response_data.fields[1].value);
   EXPECT_EQ(ASCIIToUTF16("650"), response_data.fields[2].value);
   EXPECT_EQ(ASCIIToUTF16("5554567"), response_data.fields[3].value);
-  EXPECT_EQ(base::string16(), response_data.fields[4].value);
-  EXPECT_EQ(base::string16(), response_data.fields[5].value);
-  EXPECT_EQ(base::string16(), response_data.fields[6].value);
-  EXPECT_EQ(base::string16(), response_data.fields[7].value);
+  EXPECT_EQ(std::u16string(), response_data.fields[4].value);
+  EXPECT_EQ(std::u16string(), response_data.fields[5].value);
+  EXPECT_EQ(std::u16string(), response_data.fields[6].value);
+  EXPECT_EQ(std::u16string(), response_data.fields[7].value);
 }
 
 TEST_P(AutofillManagerStructuredProfileTest,
@@ -4176,8 +4176,8 @@ TEST_P(AutofillManagerStructuredProfileTest,
   EXPECT_EQ(ASCIIToUTF16("Charles Hardin Holley"),
             response_data.fields[0].value);
   EXPECT_EQ(ASCIIToUTF16("6505554567"), response_data.fields[1].value);
-  EXPECT_EQ(base::string16(), response_data.fields[2].value);
-  EXPECT_EQ(base::string16(), response_data.fields[3].value);
+  EXPECT_EQ(std::u16string(), response_data.fields[2].value);
+  EXPECT_EQ(std::u16string(), response_data.fields[3].value);
 }
 
 TEST_P(AutofillManagerStructuredProfileTest,
@@ -4245,12 +4245,12 @@ TEST_P(AutofillManagerStructuredProfileTest,
   EXPECT_EQ(ASCIIToUTF16("Charles Hardin Holley"),
             response_data.fields[0].value);
   EXPECT_EQ(ASCIIToUTF16("1"), response_data.fields[1].value);
-  EXPECT_EQ(base::string16(), response_data.fields[2].value);
+  EXPECT_EQ(std::u16string(), response_data.fields[2].value);
   EXPECT_EQ(ASCIIToUTF16("6505554567"), response_data.fields[3].value);
-  EXPECT_EQ(base::string16(), response_data.fields[4].value);
-  EXPECT_EQ(base::string16(), response_data.fields[5].value);
-  EXPECT_EQ(base::string16(), response_data.fields[6].value);
-  EXPECT_EQ(base::string16(), response_data.fields[7].value);
+  EXPECT_EQ(std::u16string(), response_data.fields[4].value);
+  EXPECT_EQ(std::u16string(), response_data.fields[5].value);
+  EXPECT_EQ(std::u16string(), response_data.fields[6].value);
+  EXPECT_EQ(std::u16string(), response_data.fields[7].value);
 }
 
 // Verify when extension is misclassified, and there is a complete
@@ -4310,10 +4310,10 @@ TEST_P(AutofillManagerStructuredProfileTest,
   ASSERT_EQ(5U, response_data.fields.size());
   EXPECT_EQ(ASCIIToUTF16("Charles Hardin Holley"),
             response_data.fields[0].value);
-  EXPECT_EQ(base::string16(), response_data.fields[1].value);
+  EXPECT_EQ(std::u16string(), response_data.fields[1].value);
   EXPECT_EQ(ASCIIToUTF16("650"), response_data.fields[2].value);
   EXPECT_EQ(ASCIIToUTF16("5554567"), response_data.fields[3].value);
-  EXPECT_EQ(base::string16(), response_data.fields[4].value);
+  EXPECT_EQ(std::u16string(), response_data.fields[4].value);
 }
 
 // Verify when no complete number can be found, we do best-effort filling.
@@ -4372,7 +4372,7 @@ TEST_P(AutofillManagerStructuredProfileTest,
   EXPECT_EQ(ASCIIToUTF16("123 Apple St., unit 6"),
             response_data.fields[1].value);
   EXPECT_EQ(ASCIIToUTF16("650"), response_data.fields[2].value);
-  EXPECT_EQ(base::string16(), response_data.fields[3].value);
+  EXPECT_EQ(std::u16string(), response_data.fields[3].value);
 }
 
 // When the focus is on second phone field explicitly, we will fill the
@@ -4429,7 +4429,7 @@ TEST_P(AutofillManagerStructuredProfileTest,
   EXPECT_EQ(ASCIIToUTF16("Charles Hardin Holley"),
             response_data.fields[0].value);
   EXPECT_EQ(ASCIIToUTF16("6505554567"), response_data.fields[1].value);
-  EXPECT_EQ(base::string16(), response_data.fields[2].value);
+  EXPECT_EQ(std::u16string(), response_data.fields[2].value);
   EXPECT_EQ(ASCIIToUTF16("6505554567"), response_data.fields[3].value);
 }
 
@@ -4483,8 +4483,8 @@ TEST_P(AutofillManagerStructuredProfileTest,
   ASSERT_EQ(4U, response_data.fields.size());
   EXPECT_EQ(ASCIIToUTF16("Charles Hardin Holley"),
             response_data.fields[0].value);
-  EXPECT_EQ(base::string16(), response_data.fields[1].value);
-  EXPECT_EQ(base::string16(), response_data.fields[2].value);
+  EXPECT_EQ(std::u16string(), response_data.fields[1].value);
+  EXPECT_EQ(std::u16string(), response_data.fields[2].value);
   EXPECT_EQ(ASCIIToUTF16("6505554567"), response_data.fields[3].value);
 }
 
@@ -4624,12 +4624,12 @@ TEST_P(AutofillManagerStructuredProfileTest,
             response_data.fields[0].value);
   EXPECT_EQ(ASCIIToUTF16("123 Apple St."), response_data.fields[1].value);
   EXPECT_EQ(ASCIIToUTF16("6505554567"), response_data.fields[2].value);
-  EXPECT_EQ(base::string16(), response_data.fields[3].value);
-  EXPECT_EQ(base::string16(), response_data.fields[4].value);
-  EXPECT_EQ(base::string16(), response_data.fields[5].value);
-  EXPECT_EQ(base::string16(), response_data.fields[6].value);
-  EXPECT_EQ(base::string16(), response_data.fields[7].value);
-  EXPECT_EQ(base::string16(), response_data.fields[8].value);
+  EXPECT_EQ(std::u16string(), response_data.fields[3].value);
+  EXPECT_EQ(std::u16string(), response_data.fields[4].value);
+  EXPECT_EQ(std::u16string(), response_data.fields[5].value);
+  EXPECT_EQ(std::u16string(), response_data.fields[6].value);
+  EXPECT_EQ(std::u16string(), response_data.fields[7].value);
+  EXPECT_EQ(std::u16string(), response_data.fields[8].value);
 
   // Fill second section.
   auto it = form_with_multiple_sections.fields.begin();
@@ -4642,16 +4642,16 @@ TEST_P(AutofillManagerStructuredProfileTest,
 
   // Verify second section is filled with rationalization.
   ASSERT_EQ(9U, response_data.fields.size());
-  EXPECT_EQ(base::string16(), response_data.fields[0].value);
-  EXPECT_EQ(base::string16(), response_data.fields[1].value);
-  EXPECT_EQ(base::string16(), response_data.fields[2].value);
-  EXPECT_EQ(base::string16(), response_data.fields[3].value);
-  EXPECT_EQ(base::string16(), response_data.fields[4].value);
+  EXPECT_EQ(std::u16string(), response_data.fields[0].value);
+  EXPECT_EQ(std::u16string(), response_data.fields[1].value);
+  EXPECT_EQ(std::u16string(), response_data.fields[2].value);
+  EXPECT_EQ(std::u16string(), response_data.fields[3].value);
+  EXPECT_EQ(std::u16string(), response_data.fields[4].value);
   EXPECT_EQ(ASCIIToUTF16("Charles Hardin Holley"),
             response_data.fields[5].value);
   EXPECT_EQ(ASCIIToUTF16("123 Apple St."), response_data.fields[6].value);
   EXPECT_EQ(ASCIIToUTF16("6505554567"), response_data.fields[7].value);
-  EXPECT_EQ(base::string16(), response_data.fields[8].value);
+  EXPECT_EQ(std::u16string(), response_data.fields[8].value);
 }
 
 // Test that we can still fill a form when a field has been removed from it.
@@ -5768,7 +5768,7 @@ TEST_P(ProfileMatchingTypesTest, DeterminePossibleFieldTypesForUpload) {
 
   base::HistogramTester histogram_tester;
   AutofillManager::DeterminePossibleFieldTypesForUploadForTest(
-      profiles, credit_cards, base::string16(), "en-us", &form_structure);
+      profiles, credit_cards, std::u16string(), "en-us", &form_structure);
 
   ASSERT_EQ(1U, form_structure.field_count());
 
@@ -5802,7 +5802,7 @@ TEST_P(AutofillManagerStructuredProfileTest,
   form.action = GURL("https://myform.com/submit.html");
 
   std::vector<ServerFieldTypeSet> expected_types;
-  std::vector<base::string16> expected_values;
+  std::vector<std::u16string> expected_values;
 
   // These fields should all match.
   FormFieldData field;
@@ -5921,7 +5921,7 @@ TEST_P(AutofillManagerStructuredProfileTest,
     }
 
     AutofillManager::DeterminePossibleFieldTypesForUploadForTest(
-        profiles, {}, base::string16(), "en-us", &form_structure);
+        profiles, {}, std::u16string(), "en-us", &form_structure);
 
     ASSERT_EQ(test_fields.size(), form_structure.field_count());
 
@@ -6107,7 +6107,7 @@ TEST_P(AutofillManagerStructuredProfileTest, DisambiguateUploadTypes) {
       form_structure.field(i)->set_server_type(test_fields[i].predicted_type);
 
     AutofillManager::DeterminePossibleFieldTypesForUploadForTest(
-        profiles, credit_cards, base::string16(), "en-us", &form_structure);
+        profiles, credit_cards, std::u16string(), "en-us", &form_structure);
     ASSERT_EQ(test_fields.size(), form_structure.field_count());
 
     // Make sure the disambiguation method selects the expected upload type.
@@ -6159,7 +6159,7 @@ TEST_P(AutofillManagerStructuredProfileTest, CrowdsourceUPIVPA) {
   FormStructure form_structure(form);
 
   AutofillManager::DeterminePossibleFieldTypesForUploadForTest(
-      profiles, credit_cards, base::string16(), "en-us", &form_structure);
+      profiles, credit_cards, std::u16string(), "en-us", &form_structure);
 
   EXPECT_THAT(form_structure.field(0)->possible_types(), ElementsAre(UPI_VPA));
   EXPECT_THAT(form_structure.field(1)->possible_types(),
@@ -6254,7 +6254,7 @@ TEST_P(AutofillManagerStructuredProfileTest,
   std::vector<AutofillProfile> profiles;
 
   AutofillManager::DeterminePossibleFieldTypesForUploadForTest(
-      profiles, credit_cards, base::string16(), "en-us", &form_structure);
+      profiles, credit_cards, std::u16string(), "en-us", &form_structure);
 
   CheckThatOnlyFieldByIndexHasThisPossibleType(form_structure, 2,
                                                CREDIT_CARD_VERIFICATION_CODE,
@@ -6308,7 +6308,7 @@ TEST_P(AutofillManagerStructuredProfileTest,
   std::vector<AutofillProfile> profiles;
 
   AutofillManager::DeterminePossibleFieldTypesForUploadForTest(
-      profiles, credit_cards, base::string16(), "en-us", &form_structure);
+      profiles, credit_cards, std::u16string(), "en-us", &form_structure);
 
   CheckThatOnlyFieldByIndexHasThisPossibleType(form_structure, 2,
                                                CREDIT_CARD_VERIFICATION_CODE,
@@ -6362,7 +6362,7 @@ TEST_P(AutofillManagerStructuredProfileTest,
   std::vector<AutofillProfile> profiles;
 
   AutofillManager::DeterminePossibleFieldTypesForUploadForTest(
-      profiles, credit_cards, base::string16(), "en-us", &form_structure);
+      profiles, credit_cards, std::u16string(), "en-us", &form_structure);
 
   CheckThatOnlyFieldByIndexHasThisPossibleType(form_structure, 1,
                                                CREDIT_CARD_VERIFICATION_CODE,
@@ -6416,7 +6416,7 @@ TEST_P(AutofillManagerStructuredProfileTest,
   std::vector<AutofillProfile> profiles;
 
   AutofillManager::DeterminePossibleFieldTypesForUploadForTest(
-      profiles, credit_cards, base::string16(), "en-us", &form_structure);
+      profiles, credit_cards, std::u16string(), "en-us", &form_structure);
   CheckThatNoFieldHasThisPossibleType(form_structure,
                                       CREDIT_CARD_VERIFICATION_CODE);
 }
@@ -6467,7 +6467,7 @@ TEST_P(AutofillManagerStructuredProfileTest,
   std::vector<AutofillProfile> profiles;
 
   AutofillManager::DeterminePossibleFieldTypesForUploadForTest(
-      profiles, credit_cards, base::string16(), "en-us", &form_structure);
+      profiles, credit_cards, std::u16string(), "en-us", &form_structure);
 
   CheckThatNoFieldHasThisPossibleType(form_structure,
                                       CREDIT_CARD_VERIFICATION_CODE);
@@ -8475,7 +8475,7 @@ TEST_F(AutofillManagerTest, PossibleFieldTypesForEnhancementVotes) {
   FormStructure form_structure(form);
 
   AutofillManager::DeterminePossibleFieldTypesForUploadForTest(
-      profiles, {}, base::string16(), "en-us", &form_structure);
+      profiles, {}, std::u16string(), "en-us", &form_structure);
 
   ASSERT_EQ(4U, form_structure.field_count());
 
@@ -8494,7 +8494,7 @@ TEST_F(AutofillManagerTest, PossibleFieldTypesForEnhancementVotes) {
       features::kAutofillAddressEnhancementVotes);
 
   AutofillManager::DeterminePossibleFieldTypesForUploadForTest(
-      profiles, {}, base::string16(), "en-us", &form_structure);
+      profiles, {}, std::u16string(), "en-us", &form_structure);
 
   ASSERT_EQ(4U, form_structure.field_count());
 

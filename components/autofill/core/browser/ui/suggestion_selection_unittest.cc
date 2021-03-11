@@ -85,7 +85,7 @@ class SuggestionSelectionTest : public testing::Test {
     return profile_ptr;
   }
 
-  base::string16 GetCanonicalUtf16Content(const char* content) {
+  std::u16string GetCanonicalUtf16Content(const char* content) {
     return comparator_.NormalizeForComparison(ASCIIToUTF16(content));
   }
 
@@ -530,7 +530,7 @@ TEST_F(SuggestionSelectionTest,
                                       Suggestion(ASCIIToUTF16("Jon Snow")),
                                       Suggestion(ASCIIToUTF16("Jon Snow"))};
 
-  const std::vector<base::string16> labels{
+  const std::vector<std::u16string> labels{
       ASCIIToUTF16("2 Beyond-the-Wall Rd"), ASCIIToUTF16("1 Winterfell Ln"),
       ASCIIToUTF16("2 Beyond-the-Wall Rd"),
       ASCIIToUTF16("2 Beyond-the-Wall Rd.")};
@@ -555,7 +555,7 @@ TEST_F(SuggestionSelectionTest,
                                       Suggestion(ASCIIToUTF16("Sansa")),
                                       Suggestion(ASCIIToUTF16("Brienne"))};
 
-  const std::vector<base::string16> labels{ASCIIToUTF16("1 Winterfell Ln"),
+  const std::vector<std::u16string> labels{ASCIIToUTF16("1 Winterfell Ln"),
                                            ASCIIToUTF16(""),
                                            ASCIIToUTF16("1 Winterfell Ln")};
 
@@ -576,13 +576,13 @@ TEST_F(SuggestionSelectionTest, PrepareSuggestions_SameStringInValueAndLabel) {
   std::vector<Suggestion> suggestions{
       Suggestion(base::UTF8ToUTF16("4 Mañana Road"))};
 
-  const std::vector<base::string16> labels{ASCIIToUTF16("4 manana road")};
+  const std::vector<std::u16string> labels{ASCIIToUTF16("4 manana road")};
 
   PrepareSuggestions(labels, &suggestions, comparator_);
   EXPECT_THAT(suggestions,
               ElementsAre(AllOf(
                   Field(&Suggestion::value, base::UTF8ToUTF16("4 Mañana Road")),
-                  Field(&Suggestion::label, base::string16()))));
+                  Field(&Suggestion::label, std::u16string()))));
 }
 
 }  // namespace suggestion_selection

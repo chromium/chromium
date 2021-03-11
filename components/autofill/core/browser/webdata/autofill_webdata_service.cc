@@ -82,7 +82,9 @@ void AutofillWebDataService::AddFormFields(
 }
 
 WebDataServiceBase::Handle AutofillWebDataService::GetFormValuesForElementName(
-    const base::string16& name, const base::string16& prefix, int limit,
+    const std::u16string& name,
+    const std::u16string& prefix,
+    int limit,
     WebDataServiceConsumer* consumer) {
   return wdbs_->ScheduleDBTaskWithResult(
       FROM_HERE,
@@ -101,7 +103,8 @@ void AutofillWebDataService::RemoveFormElementsAddedBetween(
 }
 
 void AutofillWebDataService::RemoveFormValueForElementName(
-    const base::string16& name, const base::string16& value) {
+    const std::u16string& name,
+    const std::u16string& value) {
   wdbs_->ScheduleDBTask(
       FROM_HERE,
       base::BindOnce(&AutofillWebDataBackendImpl::RemoveFormValueForElementName,
@@ -230,7 +233,7 @@ WebDataServiceBase::Handle AutofillWebDataService::GetServerCreditCards(
 
 void AutofillWebDataService::UnmaskServerCreditCard(
     const CreditCard& credit_card,
-    const base::string16& full_number) {
+    const std::u16string& full_number) {
   wdbs_->ScheduleDBTask(
       FROM_HERE,
       base::BindOnce(&AutofillWebDataBackendImpl::UnmaskServerCreditCard,

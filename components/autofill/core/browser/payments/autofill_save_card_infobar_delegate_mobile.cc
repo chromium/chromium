@@ -94,12 +94,12 @@ bool AutofillSaveCardInfoBarDelegateMobile::IsGooglePayBrandingEnabled() const {
 #endif
 }
 
-base::string16 AutofillSaveCardInfoBarDelegateMobile::GetDescriptionText()
+std::u16string AutofillSaveCardInfoBarDelegateMobile::GetDescriptionText()
     const {
   // Without Google Pay branding, the title acts as the description (see
   // |GetMessageText|).
   if (!IsGooglePayBrandingEnabled())
-    return base::string16();
+    return std::u16string();
 
   return l10n_util::GetStringUTF16(
       IDS_AUTOFILL_SAVE_CARD_PROMPT_UPLOAD_EXPLANATION_V3);
@@ -110,7 +110,7 @@ int AutofillSaveCardInfoBarDelegateMobile::GetIconId() const {
                                       : IDR_INFOBAR_AUTOFILL_CC;
 }
 
-base::string16 AutofillSaveCardInfoBarDelegateMobile::GetMessageText() const {
+std::u16string AutofillSaveCardInfoBarDelegateMobile::GetMessageText() const {
   return l10n_util::GetStringUTF16(
       IsGooglePayBrandingEnabled()
           ? IDS_AUTOFILL_SAVE_CARD_PROMPT_TITLE_TO_CLOUD_V3
@@ -160,7 +160,7 @@ int AutofillSaveCardInfoBarDelegateMobile::GetButtons() const {
   return BUTTON_OK | BUTTON_CANCEL;
 }
 
-base::string16 AutofillSaveCardInfoBarDelegateMobile::GetButtonLabel(
+std::u16string AutofillSaveCardInfoBarDelegateMobile::GetButtonLabel(
     InfoBarButton button) const {
   if (button == BUTTON_OK) {
     // Requesting name or expiration date from the user makes the save prompt a
@@ -179,7 +179,7 @@ base::string16 AutofillSaveCardInfoBarDelegateMobile::GetButtonLabel(
   }
 
   NOTREACHED() << "Unsupported button label requested.";
-  return base::string16();
+  return std::u16string();
 }
 
 bool AutofillSaveCardInfoBarDelegateMobile::Accept() {
@@ -191,9 +191,9 @@ bool AutofillSaveCardInfoBarDelegateMobile::Accept() {
 
 #if defined(OS_IOS)
 bool AutofillSaveCardInfoBarDelegateMobile::UpdateAndAccept(
-    base::string16 cardholder_name,
-    base::string16 expiration_date_month,
-    base::string16 expiration_date_year) {
+    std::u16string cardholder_name,
+    std::u16string expiration_date_month,
+    std::u16string expiration_date_year) {
   AutofillClient::UserProvidedCardDetails user_provided_details;
   user_provided_details.cardholder_name = cardholder_name;
   user_provided_details.expiration_date_month = expiration_date_month;

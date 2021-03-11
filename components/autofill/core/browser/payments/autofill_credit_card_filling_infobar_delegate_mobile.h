@@ -29,13 +29,13 @@ class AutofillCreditCardFillingInfoBarDelegateMobile
   ~AutofillCreditCardFillingInfoBarDelegateMobile() override;
 
   int issuer_icon_id() const { return issuer_icon_id_; }
-  const base::string16& card_label() const { return card_label_; }
-  const base::string16& card_sub_label() const { return card_sub_label_; }
+  const std::u16string& card_label() const { return card_label_; }
+  const std::u16string& card_sub_label() const { return card_sub_label_; }
   void set_was_shown() { was_shown_ = true; }
 
   // ConfirmInfoBarDelegate (publicly exposed):
   int GetIconId() const override;
-  base::string16 GetMessageText() const override;
+  std::u16string GetMessageText() const override;
   void InfoBarDismissed() override;
   bool Accept() override;
   bool Cancel() override;
@@ -43,7 +43,7 @@ class AutofillCreditCardFillingInfoBarDelegateMobile
  private:
   // ConfirmInfoBarDelegate (continued):
   infobars::InfoBarDelegate::InfoBarIdentifier GetIdentifier() const override;
-  base::string16 GetButtonLabel(InfoBarButton button) const override;
+  std::u16string GetButtonLabel(InfoBarButton button) const override;
 
   void LogUserAction(AutofillMetrics::InfoBarMetric user_action);
 
@@ -60,8 +60,8 @@ class AutofillCreditCardFillingInfoBarDelegateMobile
   // The resource ID for the icon that identifies the issuer of the card.
   int issuer_icon_id_;
 
-  base::string16 card_label_;
-  base::string16 card_sub_label_;
+  std::u16string card_label_;
+  std::u16string card_sub_label_;
 
   DISALLOW_COPY_AND_ASSIGN(AutofillCreditCardFillingInfoBarDelegateMobile);
 };

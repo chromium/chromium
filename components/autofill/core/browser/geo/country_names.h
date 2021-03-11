@@ -38,14 +38,14 @@ class CountryNames {
 
   // Returns the country code corresponding to the |country_name| queried for
   // the application and default locale.
-  const std::string GetCountryCode(const base::string16& country_name) const;
+  const std::string GetCountryCode(const std::u16string& country_name) const;
 
   // Returns the country code for a |country_name| provided with a
   // |locale_name|. If no country code can be determined, an empty string is
   // returned. The purpose of this method is to translate country names from a
   // locale different to one the instance was constructed for.
   const std::string GetCountryCodeForLocalizedCountryName(
-      const base::string16& country_name,
+      const std::u16string& country_name,
       const std::string& locale_name);
 
 #if defined(UNIT_TEST)

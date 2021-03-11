@@ -39,8 +39,8 @@ const size_t kMaxValidCardNumberSize = 19;
 
 // Look for the vector |regex_needles| in |haystack|. Returns true if a
 // consecutive section of |haystack| matches |regex_needles|.
-bool FindConsecutiveStrings(const std::vector<base::string16>& regex_needles,
-                            const std::vector<base::string16>& haystack) {
+bool FindConsecutiveStrings(const std::vector<std::u16string>& regex_needles,
+                            const std::vector<std::u16string>& haystack) {
   if (regex_needles.empty() || haystack.empty() ||
       (haystack.size() < regex_needles.size()))
     return false;
@@ -325,7 +325,7 @@ bool CreditCardField::LikelyCardMonthSelectField(AutofillScanner* scanner) {
     return false;
 
   // Filter out years.
-  const base::string16 kNumericalYearRe =
+  const std::u16string kNumericalYearRe =
       base::ASCIIToUTF16("[1-9][0-9][0-9][0-9]");
   for (const auto& value : field->option_values) {
     if (MatchesPattern(value, kNumericalYearRe))
@@ -337,7 +337,7 @@ bool CreditCardField::LikelyCardMonthSelectField(AutofillScanner* scanner) {
   }
 
   // Look for numerical months.
-  const base::string16 kNumericalMonthRe = base::ASCIIToUTF16("12");
+  const std::u16string kNumericalMonthRe = base::ASCIIToUTF16("12");
   if (MatchesPattern(field->option_values.back(), kNumericalMonthRe) ||
       MatchesPattern(field->option_contents.back(), kNumericalMonthRe)) {
     return true;
@@ -364,7 +364,7 @@ bool CreditCardField::LikelyCardYearSelectField(
 
   // Filter out days - elements for date entries would have
   // numbers 1 to 9 as well in them, which we can filter on.
-  const base::string16 kSingleDigitDateRe = base::ASCIIToUTF16("\\b[1-9]\\b");
+  const std::u16string kSingleDigitDateRe = base::ASCIIToUTF16("\\b[1-9]\\b");
   for (const auto& value : field->option_contents) {
     if (MatchesPattern(value, kSingleDigitDateRe)) {
       return false;
@@ -382,7 +382,7 @@ bool CreditCardField::LikelyCardYearSelectField(
 
   // Filter out birth years - a website would not offer 1999 as a credit card
   // expiration year, but show it in the context of a birth year selector.
-  const base::string16 kBirthYearRe = base::ASCIIToUTF16("(1999|99)");
+  const std::u16string kBirthYearRe = base::ASCIIToUTF16("(1999|99)");
   for (const auto& value : field->option_contents) {
     if (MatchesPattern(value, kBirthYearRe)) {
       return false;
@@ -394,8 +394,8 @@ bool CreditCardField::LikelyCardYearSelectField(
   time_now.UTCExplode(&time_exploded);
 
   const int kYearsToMatch = 3;
-  std::vector<base::string16> years_to_check_4_digit;
-  std::vector<base::string16> years_to_check_2_digit;
+  std::vector<std::u16string> years_to_check_4_digit;
+  std::vector<std::u16string> years_to_check_2_digit;
   for (int year = time_exploded.year; year < time_exploded.year + kYearsToMatch;
        ++year) {
     years_to_check_4_digit.push_back(base::NumberToString16(year));

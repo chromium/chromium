@@ -228,7 +228,7 @@ TEST_F(FormAutofillUtilsTest, InferLabelForElementTest) {
 
     FormFieldData::LabelSource label_source =
         FormFieldData::LabelSource::kUnknown;
-    base::string16 label;
+    std::u16string label;
     InferLabelForElementForTesting(form_target, stop_words, &label,
                                    &label_source);
     EXPECT_EQ(base::UTF8ToUTF16(test_case.expected_label), label);
@@ -275,7 +275,7 @@ TEST_F(FormAutofillUtilsTest, InferLabelSourceTest) {
 
     FormFieldData::LabelSource label_source =
         FormFieldData::LabelSource::kUnknown;
-    base::string16 label;
+    std::u16string label;
     EXPECT_TRUE(autofill::form_util::InferLabelForElementForTesting(
         form_target, stop_words, &label, &label_source));
     EXPECT_EQ(base::UTF8ToUTF16(kLabelSourceExpectedLabel), label);
@@ -846,8 +846,8 @@ TEST_F(FormAutofillUtilsTest, GetDataListSuggestions) {
       "value='2'></datalist></body>");
   WebDocument doc = GetMainFrame()->GetDocument();
   auto web_control = doc.GetElementById("i1").To<WebInputElement>();
-  std::vector<base::string16> values;
-  std::vector<base::string16> labels;
+  std::vector<std::u16string> values;
+  std::vector<std::u16string> labels;
   GetDataListSuggestions(web_control, &values, &labels);
   ASSERT_EQ(values.size(), 2u);
   ASSERT_EQ(labels.size(), 2u);
@@ -864,8 +864,8 @@ TEST_F(FormAutofillUtilsTest, GetDataListSuggestionsWithLabels) {
       "value='2'>two</option></datalist></body>");
   WebDocument doc = GetMainFrame()->GetDocument();
   auto web_control = doc.GetElementById("i1").To<WebInputElement>();
-  std::vector<base::string16> values;
-  std::vector<base::string16> labels;
+  std::vector<std::u16string> values;
+  std::vector<std::u16string> labels;
   GetDataListSuggestions(web_control, &values, &labels);
   ASSERT_EQ(values.size(), 2u);
   ASSERT_EQ(labels.size(), 2u);

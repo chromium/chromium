@@ -14,7 +14,7 @@ using base::ASCIIToUTF16;
 
 namespace {
 std::vector<base::StringPiece16> StringsToStringPieces(
-    const std::vector<base::string16>& strings) {
+    const std::vector<std::u16string>& strings) {
   std::vector<base::StringPiece16> string_pieces;
   for (const auto& s : strings) {
     string_pieces.emplace_back(base::StringPiece16(s));
@@ -39,7 +39,7 @@ TEST(NameProcessingUtil, IsValidParseableName) {
 
 // Tests that the correct length of prefixes and suffixes are returned.
 TEST(NameProcessingUtil, FindLongestCommonAffixLength) {
-  auto String16ToStringPiece16 = [](std::vector<base::string16>& vin,
+  auto String16ToStringPiece16 = [](std::vector<std::u16string>& vin,
                                     std::vector<base::StringPiece16>& vout) {
     vout.clear();
     for (auto& str : vin)
@@ -47,7 +47,7 @@ TEST(NameProcessingUtil, FindLongestCommonAffixLength) {
   };
 
   // Normal prefix case.
-  std::vector<base::string16> strings;
+  std::vector<std::u16string> strings;
   std::vector<base::StringPiece16> stringPieces;
   strings.push_back(ASCIIToUTF16("123456XXX123456789"));
   strings.push_back(ASCIIToUTF16("12345678XXX012345678_foo"));
@@ -116,7 +116,7 @@ TEST(NameProcessingUtil, FindLongestCommonAffixLength) {
 // strings with a minimal length.
 TEST(NameProcessingUtil,
      FindLongestCommonPrefixLengthForStringsWithMinimalLength) {
-  std::vector<base::string16> strings;
+  std::vector<std::u16string> strings;
   strings.push_back(ASCIIToUTF16("aabbccddeeff"));
   strings.push_back(ASCIIToUTF16("aabbccddeeffgg"));
   strings.push_back(ASCIIToUTF16("zzz"));
@@ -131,7 +131,7 @@ TEST(NameProcessingUtil,
 
 // Tests that a |base::nullopt| is returned if no common affix was removed.
 TEST(NameProcessingUtil, RemoveCommonAffixesIfPossible_NotPossible) {
-  std::vector<base::string16> strings;
+  std::vector<std::u16string> strings;
   strings.push_back(ASCIIToUTF16("abc"));
   strings.push_back(ASCIIToUTF16("def"));
   strings.push_back(ASCIIToUTF16("abcd"));
@@ -143,12 +143,12 @@ TEST(NameProcessingUtil, RemoveCommonAffixesIfPossible_NotPossible) {
 
 // Tests that both the prefix and the suffix are removed.
 TEST(NameProcessingUtil, RemoveCommonAffixesIfPossible) {
-  std::vector<base::string16> strings;
+  std::vector<std::u16string> strings;
   strings.push_back(ASCIIToUTF16("abcaazzz"));
   strings.push_back(ASCIIToUTF16("abcbbzzz"));
   strings.push_back(ASCIIToUTF16("abccczzz"));
 
-  std::vector<base::string16> expectation;
+  std::vector<std::u16string> expectation;
   expectation.push_back(ASCIIToUTF16("aa"));
   expectation.push_back(ASCIIToUTF16("bb"));
   expectation.push_back(ASCIIToUTF16("cc"));
@@ -159,7 +159,7 @@ TEST(NameProcessingUtil, RemoveCommonAffixesIfPossible) {
 
 // Tests that a |base::nullopt| is returned if no common prefix was removed.
 TEST(NameProcessingUtil, RemoveCommonPrefixIfPossible_NotPossible) {
-  std::vector<base::string16> strings;
+  std::vector<std::u16string> strings;
   strings.push_back(ASCIIToUTF16("abc"));
   strings.push_back(ASCIIToUTF16("def"));
   strings.push_back(ASCIIToUTF16("abcd"));
@@ -171,13 +171,13 @@ TEST(NameProcessingUtil, RemoveCommonPrefixIfPossible_NotPossible) {
 
 // Tests that prefix is removed correctly.
 TEST(NameProcessingUtil, RemoveCommonPrefixIfPossible) {
-  std::vector<base::string16> strings;
+  std::vector<std::u16string> strings;
   // The strings contain a long common prefix that can be removed.
   strings.push_back(ASCIIToUTF16("ccccccccccccccccaazzz"));
   strings.push_back(ASCIIToUTF16("ccccccccccccccccbbzzz"));
   strings.push_back(ASCIIToUTF16("cccccccccccccccccczzz"));
 
-  std::vector<base::string16> expectation;
+  std::vector<std::u16string> expectation;
   expectation.push_back(ASCIIToUTF16("aazzz"));
   expectation.push_back(ASCIIToUTF16("bbzzz"));
   expectation.push_back(ASCIIToUTF16("cczzz"));
@@ -189,14 +189,14 @@ TEST(NameProcessingUtil, RemoveCommonPrefixIfPossible) {
 // Tests that prefix is removed correctly for fields with a minimal length.
 TEST(NameProcessingUtil,
      RemoveCommonPrefixForFieldsWithMinimalLengthIfPossible) {
-  std::vector<base::string16> strings;
+  std::vector<std::u16string> strings;
   strings.push_back(ASCIIToUTF16("ccccccccccccccccaazzz"));
   // This name is too short to be considered and is skipped both in the
   // detection of prefixes as well as in the removal.
   strings.push_back(ASCIIToUTF16("abc"));
   strings.push_back(ASCIIToUTF16("cccccccccccccccccczzz"));
 
-  std::vector<base::string16> expectation;
+  std::vector<std::u16string> expectation;
   expectation.push_back(ASCIIToUTF16("aazzz"));
   expectation.push_back(ASCIIToUTF16("abc"));
   expectation.push_back(ASCIIToUTF16("cczzz"));
@@ -208,7 +208,7 @@ TEST(NameProcessingUtil,
 
 // Tests that prefix is not removed because it is too short.
 TEST(NameProcessingUtil, RemoveCommonPrefixIfPossible_TooShort) {
-  std::vector<base::string16> strings;
+  std::vector<std::u16string> strings;
   strings.push_back(ASCIIToUTF16("abcaazzz"));
   strings.push_back(ASCIIToUTF16("abcbbzzz"));
   strings.push_back(ASCIIToUTF16("abccczzz"));
@@ -219,12 +219,12 @@ TEST(NameProcessingUtil, RemoveCommonPrefixIfPossible_TooShort) {
 
 // Tests that the strings are correctly stripped.
 TEST(NameProcessingUtil, GetStrippedParseableNamesIfValid) {
-  std::vector<base::string16> strings;
+  std::vector<std::u16string> strings;
   strings.push_back(ASCIIToUTF16("abcaazzz"));
   strings.push_back(ASCIIToUTF16("abcbbzzz"));
   strings.push_back(ASCIIToUTF16("abccczzz"));
 
-  std::vector<base::string16> expectation;
+  std::vector<std::u16string> expectation;
   expectation.push_back(ASCIIToUTF16("aaz"));
   expectation.push_back(ASCIIToUTF16("bbz"));
   expectation.push_back(ASCIIToUTF16("ccz"));
@@ -237,13 +237,13 @@ TEST(NameProcessingUtil, GetStrippedParseableNamesIfValid) {
 // Tests that a |base::nullopt| is returned if one of stripped names is not
 // valid.
 TEST(NameProcessingUtil, GetStrippedParseableNamesIfValid_NotValid) {
-  std::vector<base::string16> strings;
+  std::vector<std::u16string> strings;
   strings.push_back(ASCIIToUTF16("abcaazzz"));
   // This string is not valid because only the "1" is left after stripping.
   strings.push_back(ASCIIToUTF16("abc1zz"));
   strings.push_back(ASCIIToUTF16("abccczzz"));
 
-  std::vector<base::string16> expectation;
+  std::vector<std::u16string> expectation;
   expectation.push_back(ASCIIToUTF16("aaz"));
   expectation.push_back(ASCIIToUTF16("bbz"));
   expectation.push_back(ASCIIToUTF16("ccz"));
@@ -255,7 +255,7 @@ TEST(NameProcessingUtil, GetStrippedParseableNamesIfValid_NotValid) {
 
 // Tests that the parseable names are returned correctly.
 TEST(NameProcessingUtil, GetParseableNames_OnlyPrefix) {
-  std::vector<base::string16> strings;
+  std::vector<std::u16string> strings;
   strings.push_back(ASCIIToUTF16("abcaazzz1"));
   strings.push_back(ASCIIToUTF16("abcbbzzz2"));
   strings.push_back(ASCIIToUTF16("abccczzz3"));
@@ -265,7 +265,7 @@ TEST(NameProcessingUtil, GetParseableNames_OnlyPrefix) {
       features::kAutofillLabelAffixRemoval);
 
   // With the feature turned on, the prefix is removed.
-  std::vector<base::string16> expectation;
+  std::vector<std::u16string> expectation;
   expectation.push_back(ASCIIToUTF16("aazzz1"));
   expectation.push_back(ASCIIToUTF16("bbzzz2"));
   expectation.push_back(ASCIIToUTF16("cczzz3"));
@@ -275,7 +275,7 @@ TEST(NameProcessingUtil, GetParseableNames_OnlyPrefix) {
 
 // Tests that the parseable names are returned correctly.
 TEST(NameProcessingUtil, GetParseableNames_OnlySuffix) {
-  std::vector<base::string16> strings;
+  std::vector<std::u16string> strings;
   strings.push_back(ASCIIToUTF16("1aazzz"));
   strings.push_back(ASCIIToUTF16("2bbzzz"));
   strings.push_back(ASCIIToUTF16("3cczzz"));
@@ -285,7 +285,7 @@ TEST(NameProcessingUtil, GetParseableNames_OnlySuffix) {
       features::kAutofillLabelAffixRemoval);
 
   // With the feature turned on, the suffix is removed.
-  std::vector<base::string16> expectation;
+  std::vector<std::u16string> expectation;
   expectation.push_back(ASCIIToUTF16("1aa"));
   expectation.push_back(ASCIIToUTF16("2bb"));
   expectation.push_back(ASCIIToUTF16("3cc"));
@@ -295,7 +295,7 @@ TEST(NameProcessingUtil, GetParseableNames_OnlySuffix) {
 
 // Tests that the parseable names are returned correctly.
 TEST(NameProcessingUtil, GetParseableNames_Affix) {
-  std::vector<base::string16> strings;
+  std::vector<std::u16string> strings;
   strings.push_back(ASCIIToUTF16("abcaazzz"));
   strings.push_back(ASCIIToUTF16("abcbbzzz"));
   strings.push_back(ASCIIToUTF16("abccczzz"));
@@ -305,7 +305,7 @@ TEST(NameProcessingUtil, GetParseableNames_Affix) {
       features::kAutofillLabelAffixRemoval);
 
   // With the feature turned on, the prefix and affix is removed.
-  std::vector<base::string16> expectation;
+  std::vector<std::u16string> expectation;
   expectation.push_back(ASCIIToUTF16("aa"));
   expectation.push_back(ASCIIToUTF16("bb"));
   expectation.push_back(ASCIIToUTF16("cc"));

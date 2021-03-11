@@ -36,7 +36,7 @@ class TestCreditCardSaveManager : public CreditCardSaveManager {
 
   void set_show_save_prompt(bool show_save_prompt);
 
-  void set_upload_request_card_number(const base::string16& credit_card_number);
+  void set_upload_request_card_number(const std::u16string& credit_card_number);
 
  private:
   void OnDidUploadCard(AutofillClient::PaymentsRpcResult result,

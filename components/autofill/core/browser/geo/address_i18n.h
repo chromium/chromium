@@ -29,7 +29,7 @@ namespace i18n {
 // Creates an AddressData object for internationalized address display or
 // validation using |get_info| for field values.
 std::unique_ptr<::i18n::addressinput::AddressData> CreateAddressData(
-    const base::RepeatingCallback<base::string16(const AutofillType&)>&
+    const base::RepeatingCallback<std::u16string(const AutofillType&)>&
         get_info);
 
 // Creates an |AddressData| from |profile|.

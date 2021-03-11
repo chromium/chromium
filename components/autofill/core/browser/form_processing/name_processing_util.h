@@ -56,7 +56,7 @@ RemoveCommonPrefixForNamesWithMinimalLengthIfPossible(
 // Beware, this function works on string pieces and therefore, it should not be
 // called with temporary objects. Also, the underlying strings should not be
 // modified before the last usage of the result.
-std::vector<base::string16> GetParseableNames(
+std::vector<std::u16string> GetParseableNames(
     const std::vector<base::StringPiece16>& field_names);
 
 }  // namespace autofill

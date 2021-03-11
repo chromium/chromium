@@ -24,7 +24,7 @@ AddressEmailFormLabelFormatter::AddressEmailFormLabelFormatter(
 
 AddressEmailFormLabelFormatter::~AddressEmailFormLabelFormatter() {}
 
-base::string16 AddressEmailFormLabelFormatter::GetLabelForProfile(
+std::u16string AddressEmailFormLabelFormatter::GetLabelForProfile(
     const AutofillProfile& profile,
     FieldTypeGroup focused_group) const {
   return focused_group == FieldTypeGroup::kAddressHome &&
@@ -40,11 +40,11 @@ base::string16 AddressEmailFormLabelFormatter::GetLabelForProfile(
 // Note that the order--name, address, and email--in which parts of the label
 // are added ensures that the label is formatted correctly for |focused_group|,
 // |focused_field_type_| and for this kind of formatter.
-base::string16 AddressEmailFormLabelFormatter::
+std::u16string AddressEmailFormLabelFormatter::
     GetLabelForProfileOnFocusedNameEmailOrStreetAddress(
         const AutofillProfile& profile,
         FieldTypeGroup focused_group) const {
-  std::vector<base::string16> label_parts;
+  std::vector<std::u16string> label_parts;
 
   if (focused_group != FieldTypeGroup::kName &&
       data_util::ContainsName(groups())) {

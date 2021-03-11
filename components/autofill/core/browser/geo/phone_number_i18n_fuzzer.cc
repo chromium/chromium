@@ -30,11 +30,11 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
     return 0;
 
   std::string default_region(reinterpret_cast<const char*>(data), 2);
-  base::string16 value(reinterpret_cast<const char16_t*>(data + 2),
+  std::u16string value(reinterpret_cast<const char16_t*>(data + 2),
                        (size - 2) / 2);
-  base::string16 dummy_country_code;
-  base::string16 dummy_city_code;
-  base::string16 dummy_number;
+  std::u16string dummy_country_code;
+  std::u16string dummy_city_code;
+  std::u16string dummy_number;
   std::string dummy_inferred_region;
   ::i18n::phonenumbers::PhoneNumber dummy_i18n_number;
 

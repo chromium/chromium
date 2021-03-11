@@ -21,7 +21,7 @@ class FormFieldDataAndroid {
 
   base::android::ScopedJavaLocalRef<jobject> GetJavaPeer();
   void GetValue();
-  void OnFormFieldDidChange(const base::string16& value);
+  void OnFormFieldDidChange(const std::u16string& value);
   bool SimilarFieldAs(const FormFieldData& field) const;
   void UpdateAutofillTypes(const AutofillType& heuristic_type,
                            const AutofillType& server_type,

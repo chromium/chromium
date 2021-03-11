@@ -637,7 +637,7 @@ FormStructure::FormStructure(const FormData& form)
       developer_engagement_metrics_(0),
       unique_renderer_id_(form.unique_renderer_id) {
   // Copy the form fields.
-  std::map<base::string16, size_t> unique_names;
+  std::map<std::u16string, size_t> unique_names;
   for (const FormFieldData& field : form.fields) {
     if (!ShouldSkipField(field))
       ++active_field_count_;
@@ -650,7 +650,7 @@ FormStructure::FormStructure(const FormData& form)
     // Generate a unique name for this field by appending a counter to the name.
     // Make sure to prepend the counter with a non-numeric digit so that we are
     // guaranteed to avoid collisions.
-    base::string16 unique_name =
+    std::u16string unique_name =
         field.name + base::ASCIIToUTF16("_") +
         base::NumberToString16(++unique_names[field.name]);
     fields_.push_back(std::make_unique<AutofillField>(field, unique_name));
@@ -1049,7 +1049,7 @@ bool FormStructure::ShouldBeParsed(LogManager* log_manager) const {
   }
 
   // Rule out search forms.
-  static const base::string16 kUrlSearchActionPattern =
+  static const std::u16string kUrlSearchActionPattern =
       base::UTF8ToUTF16(kUrlSearchActionRe);
   if (MatchesPattern(base::UTF8ToUTF16(target_url_.path_piece()),
                      kUrlSearchActionPattern)) {
@@ -1151,7 +1151,7 @@ void FormStructure::RetrieveFromCache(
           // default values are equivalent to empty fields.
           // Since a website can prefill country and state values basedw on
           // GeoIp, the mechanism is deactivated for state and country fields.
-          field->value = base::string16();
+          field->value = std::u16string();
         }
       }
       field->set_server_type(cached_field->server_type());
@@ -1450,8 +1450,8 @@ void FormStructure::ParseFieldTypesFromAutocompleteAttributes() {
   was_parsed_for_autocomplete_attributes_ = true;
 }
 
-std::set<base::string16> FormStructure::PossibleValues(ServerFieldType type) {
-  std::set<base::string16> values;
+std::set<std::u16string> FormStructure::PossibleValues(ServerFieldType type) {
+  std::set<std::u16string> values;
   AutofillType target_type(type);
   for (const auto& field : fields_) {
     if (field->Type().GetStorableType() != target_type.GetStorableType() ||
@@ -1465,12 +1465,12 @@ std::set<base::string16> FormStructure::PossibleValues(ServerFieldType type) {
       break;
     }
 
-    for (const base::string16& val : field->option_values) {
+    for (const std::u16string& val : field->option_values) {
       if (!val.empty())
         values.insert(base::i18n::ToUpper(val));
     }
 
-    for (const base::string16& content : field->option_contents) {
+    for (const std::u16string& content : field->option_contents) {
       if (!content.empty())
         values.insert(base::i18n::ToUpper(content));
     }
@@ -2101,7 +2101,7 @@ void FormStructure::IdentifySectionsWithNewMethod() {
     }
   };
 
-  base::string16 current_section = get_section_name(*fields_.front());
+  std::u16string current_section = get_section_name(*fields_.front());
 
   // Keep track of the types we've seen in this section.
   ServerFieldTypeSet seen_types;
@@ -2112,7 +2112,7 @@ void FormStructure::IdentifySectionsWithNewMethod() {
   bool previous_autocomplete_section_present = false;
 
   bool is_hidden_section = false;
-  base::string16 last_visible_section;
+  std::u16string last_visible_section;
   for (const auto& field : fields_) {
     const ServerFieldType current_type = field->Type().GetStorableType();
     // All credit card fields belong to the same section that's different
@@ -2284,14 +2284,14 @@ void FormStructure::IdentifySections(bool has_author_specified_sections) {
   };
 
   if (!has_author_specified_sections) {
-    base::string16 current_section = get_section_name(*fields_.front());
+    std::u16string current_section = get_section_name(*fields_.front());
 
     // Keep track of the types we've seen in this section.
     ServerFieldTypeSet seen_types;
     ServerFieldType previous_type = UNKNOWN_TYPE;
 
     bool is_hidden_section = false;
-    base::string16 last_visible_section;
+    std::u16string last_visible_section;
     for (const auto& field : fields_) {
       const ServerFieldType current_type = field->Type().GetStorableType();
       // All credit card fields belong to the same section that's different
@@ -2429,7 +2429,7 @@ void FormStructure::ExtractParseableFieldLabels() {
   }
 
   // Determine the parsable labels and write them back.
-  base::Optional<std::vector<base::string16>> parsable_labels =
+  base::Optional<std::vector<std::u16string>> parsable_labels =
       GetParseableLabels(field_labels);
   // If not single label was split, the function can return, because the
   // |parsable_label_| is assigned to |label| by default.
@@ -2458,7 +2458,7 @@ void FormStructure::ExtractParseableFieldNames() {
   }
 
   // Determine the parseable names and write them into the corresponding field.
-  std::vector<base::string16> parseable_names = GetParseableNames(names);
+  std::vector<std::u16string> parseable_names = GetParseableNames(names);
   DCHECK_EQ(parseable_names.size(), field_count());
   size_t idx = 0;
   for (auto& field : *this) {
@@ -2474,14 +2474,14 @@ DenseSet<FormType> FormStructure::GetFormTypes() const {
   return form_types;
 }
 
-base::string16 FormStructure::GetIdentifierForRefill() const {
+std::u16string FormStructure::GetIdentifierForRefill() const {
   if (!form_name().empty())
     return form_name();
 
   if (field_count() && !field(0)->unique_name().empty())
     return field(0)->unique_name();
 
-  return base::string16();
+  return std::u16string();
 }
 
 void FormStructure::set_randomized_encoder(
@@ -2550,7 +2550,7 @@ std::ostream& operator<<(std::ostream& buffer, const FormStructure& form) {
     buffer << "\n  Section: " << field->section;
 
     constexpr size_t kMaxLabelSize = 100;
-    const base::string16 truncated_label =
+    const std::u16string truncated_label =
         field->label.substr(0, std::min(field->label.length(), kMaxLabelSize));
     buffer << "\n  Label: " << truncated_label;
 
@@ -2601,7 +2601,7 @@ LogBuffer& operator<<(LogBuffer& buffer, const FormStructure& form) {
     buffer << Tr{} << "Section:" << field->section;
 
     constexpr size_t kMaxLabelSize = 100;
-    const base::string16 truncated_label =
+    const std::u16string truncated_label =
         field->label.substr(0, std::min(field->label.length(), kMaxLabelSize));
     buffer << Tr{} << "Label:" << truncated_label;
 

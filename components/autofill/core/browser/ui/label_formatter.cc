@@ -70,8 +70,8 @@ LabelFormatter::LabelFormatter(const std::vector<AutofillProfile*>& profiles,
 
 LabelFormatter::~LabelFormatter() = default;
 
-std::vector<base::string16> LabelFormatter::GetLabels() const {
-  std::vector<base::string16> labels;
+std::vector<std::u16string> LabelFormatter::GetLabels() const {
+  std::vector<std::u16string> labels;
   for (const AutofillProfile* profile : profiles_) {
     labels.push_back(GetLabelForProfile(*profile, GetFocusedNonBillingGroup()));
   }

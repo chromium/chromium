@@ -36,7 +36,7 @@ class AutofillOfferNotificationInfoBarDelegateMobile
   AutofillOfferNotificationInfoBarDelegateMobile& operator=(
       const AutofillOfferNotificationInfoBarDelegateMobile&) = delete;
 
-  const base::string16& credit_card_identifier_string() const {
+  const std::u16string& credit_card_identifier_string() const {
     return credit_card_identifier_string_;
   }
   int network_icon_id() { return network_icon_id_; }
@@ -47,14 +47,14 @@ class AutofillOfferNotificationInfoBarDelegateMobile
 
   // ConfirmInfoBarDelegate:
   int GetIconId() const override;
-  base::string16 GetMessageText() const override;
+  std::u16string GetMessageText() const override;
   infobars::InfoBarDelegate::InfoBarIdentifier GetIdentifier() const override;
   int GetButtons() const override;
-  base::string16 GetButtonLabel(InfoBarButton button) const override;
+  std::u16string GetButtonLabel(InfoBarButton button) const override;
 
  private:
   // Identifier for the credit card associated with the offer.
-  base::string16 credit_card_identifier_string_;
+  std::u16string credit_card_identifier_string_;
   // Resource id for the icon representing the network of the credit card.
   int network_icon_id_;
   // URL that links to the offer details page in the Google Pay app.

@@ -19,7 +19,7 @@ namespace i18n {
 
 namespace {
 
-base::string16 GetInfoHelper(const AutofillProfile& profile,
+std::u16string GetInfoHelper(const AutofillProfile& profile,
                              const std::string& app_locale,
                              const AutofillType& type) {
   return profile.GetInfo(type, app_locale);
@@ -31,7 +31,7 @@ using ::i18n::addressinput::AddressData;
 using ::i18n::addressinput::AddressField;
 
 std::unique_ptr<AddressData> CreateAddressData(
-    const base::RepeatingCallback<base::string16(const AutofillType&)>&
+    const base::RepeatingCallback<std::u16string(const AutofillType&)>&
         get_info) {
   auto address_data = std::make_unique<AddressData>();
   address_data->recipient =

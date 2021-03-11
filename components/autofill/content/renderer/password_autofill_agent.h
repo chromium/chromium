@@ -131,7 +131,7 @@ class PasswordAutofillAgent : public content::RenderFrameObserver,
   void InformNoSavedCredentials(
       bool should_show_popup_without_passwords) override;
   void FillIntoFocusedField(bool is_password,
-                            const base::string16& credential) override;
+                            const std::u16string& credential) override;
   void SetLoggingState(bool active) override;
   void TouchToFillClosed(bool show_virtual_keyboard) override;
   void AnnotateFieldsWithParsingResult(
@@ -167,8 +167,8 @@ class PasswordAutofillAgent : public content::RenderFrameObserver,
   // Fills the username and password fields of this form with the given values.
   // Returns true if the fields were filled, false otherwise.
   bool FillSuggestion(const blink::WebFormControlElement& control_element,
-                      const base::string16& username,
-                      const base::string16& password);
+                      const std::u16string& username,
+                      const std::u16string& password);
 
   // Previews the username and password fields of this form with the given
   // values. Returns true if the fields were previewed, false otherwise.
@@ -364,7 +364,7 @@ class PasswordAutofillAgent : public content::RenderFrameObserver,
   // username exists, it should be passed as |user_input|. If there is no
   // username, pass the password field in |user_input|. In the latter case, no
   // username value will be shown in the pop-up.
-  void ShowSuggestionPopup(const base::string16& typed_username,
+  void ShowSuggestionPopup(const std::u16string& typed_username,
                            const blink::WebInputElement& user_input,
                            ShowAll show_all,
                            OnPasswordField show_on_password_field);
@@ -396,12 +396,12 @@ class PasswordAutofillAgent : public content::RenderFrameObserver,
   // Checks that a given input field is valid before filling the given |input|
   // with the given |credential| and marking the field as auto-filled.
   void FillField(blink::WebInputElement* input,
-                 const base::string16& credential);
+                 const std::u16string& credential);
 
   // Uses |FillField| to fill the given |credential| into the |password_input|.
   // Saves the password for its associated form.
   void FillPasswordFieldAndSave(blink::WebInputElement* password_input,
-                                const base::string16& credential);
+                                const std::u16string& credential);
 
   // |form| and |input| are the elements user has just been interacting with
   // before the form save. |form| or |input| can be null but not both at the
@@ -469,7 +469,7 @@ class PasswordAutofillAgent : public content::RenderFrameObserver,
   // Autofills |field| with |value| and updates |gatekeeper_|,
   // |field_data_manager_|, |autofilled_elements_cache_|. |field| should be
   // non-null.
-  void AutofillField(const base::string16& value, blink::WebInputElement field);
+  void AutofillField(const std::u16string& value, blink::WebInputElement field);
 
   void SetLastUpdatedFormAndField(const blink::WebFormElement& form,
                                   const blink::WebFormControlElement& input);
@@ -532,7 +532,7 @@ class PasswordAutofillAgent : public content::RenderFrameObserver,
   bool checked_safe_browsing_reputation_;
 
   // Records the username typed before suggestions preview.
-  base::string16 username_query_prefix_;
+  std::u16string username_query_prefix_;
 
   // This notifier is used to avoid sending redundant messages to the password
   // manager driver mojo interface.

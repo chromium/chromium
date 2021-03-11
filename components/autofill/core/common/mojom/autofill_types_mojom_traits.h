@@ -49,24 +49,24 @@ struct StructTraits<autofill::mojom::FieldRendererIdDataView,
 template <>
 struct StructTraits<autofill::mojom::FormFieldDataDataView,
                     autofill::FormFieldData> {
-  static const base::string16& label(const autofill::FormFieldData& r) {
+  static const std::u16string& label(const autofill::FormFieldData& r) {
     return r.label;
   }
 
-  static const base::string16& name(const autofill::FormFieldData& r) {
+  static const std::u16string& name(const autofill::FormFieldData& r) {
     return r.name;
   }
 
-  static const base::string16& id_attribute(const autofill::FormFieldData& r) {
+  static const std::u16string& id_attribute(const autofill::FormFieldData& r) {
     return r.id_attribute;
   }
 
-  static const base::string16& name_attribute(
+  static const std::u16string& name_attribute(
       const autofill::FormFieldData& r) {
     return r.name_attribute;
   }
 
-  static const base::string16& value(const autofill::FormFieldData& r) {
+  static const std::u16string& value(const autofill::FormFieldData& r) {
     return r.value;
   }
 
@@ -80,19 +80,19 @@ struct StructTraits<autofill::mojom::FormFieldDataDataView,
     return r.autocomplete_attribute;
   }
 
-  static const base::string16& placeholder(const autofill::FormFieldData& r) {
+  static const std::u16string& placeholder(const autofill::FormFieldData& r) {
     return r.placeholder;
   }
 
-  static const base::string16& css_classes(const autofill::FormFieldData& r) {
+  static const std::u16string& css_classes(const autofill::FormFieldData& r) {
     return r.css_classes;
   }
 
-  static const base::string16& aria_label(const autofill::FormFieldData& r) {
+  static const std::u16string& aria_label(const autofill::FormFieldData& r) {
     return r.aria_label;
   }
 
-  static const base::string16& aria_description(
+  static const std::u16string& aria_description(
       const autofill::FormFieldData& r) {
     return r.aria_description;
   }
@@ -153,16 +153,16 @@ struct StructTraits<autofill::mojom::FormFieldDataDataView,
     return r.is_readonly;
   }
 
-  static const base::string16& user_input(const autofill::FormFieldData& r) {
+  static const std::u16string& user_input(const autofill::FormFieldData& r) {
     return r.user_input;
   }
 
-  static const std::vector<base::string16>& option_values(
+  static const std::vector<std::u16string>& option_values(
       const autofill::FormFieldData& r) {
     return r.option_values;
   }
 
-  static const std::vector<base::string16>& option_contents(
+  static const std::vector<std::u16string>& option_contents(
       const autofill::FormFieldData& r) {
     return r.option_contents;
   }
@@ -176,12 +176,12 @@ struct StructTraits<autofill::mojom::FormFieldDataDataView,
     return r.bounds;
   }
 
-  static const std::vector<base::string16>& datalist_values(
+  static const std::vector<std::u16string>& datalist_values(
       const autofill::FormFieldData& r) {
     return r.datalist_values;
   }
 
-  static const std::vector<base::string16>& datalist_labels(
+  static const std::vector<std::u16string>& datalist_labels(
       const autofill::FormFieldData& r) {
     return r.datalist_labels;
   }
@@ -193,7 +193,7 @@ struct StructTraits<autofill::mojom::FormFieldDataDataView,
 template <>
 struct StructTraits<autofill::mojom::ButtonTitleInfoDataView,
                     autofill::ButtonTitleInfo> {
-  static const base::string16& title(const autofill::ButtonTitleInfo& r) {
+  static const std::u16string& title(const autofill::ButtonTitleInfo& r) {
     return r.first;
   }
 
@@ -208,15 +208,15 @@ struct StructTraits<autofill::mojom::ButtonTitleInfoDataView,
 
 template <>
 struct StructTraits<autofill::mojom::FormDataDataView, autofill::FormData> {
-  static const base::string16& id_attribute(const autofill::FormData& r) {
+  static const std::u16string& id_attribute(const autofill::FormData& r) {
     return r.id_attribute;
   }
 
-  static const base::string16& name_attribute(const autofill::FormData& r) {
+  static const std::u16string& name_attribute(const autofill::FormData& r) {
     return r.name_attribute;
   }
 
-  static const base::string16& name(const autofill::FormData& r) {
+  static const std::u16string& name(const autofill::FormData& r) {
     return r.name;
   }
 
@@ -333,12 +333,12 @@ struct StructTraits<autofill::mojom::FormDataPredictionsDataView,
 template <>
 struct StructTraits<autofill::mojom::PasswordAndMetadataDataView,
                     autofill::PasswordAndMetadata> {
-  static const base::string16& username(
+  static const std::u16string& username(
       const autofill::PasswordAndMetadata& r) {
     return r.username;
   }
 
-  static const base::string16& password(
+  static const std::u16string& password(
       const autofill::PasswordAndMetadata& r) {
     return r.password;
   }
@@ -438,7 +438,7 @@ struct StructTraits<autofill::mojom::PasswordGenerationUIDataDataView,
     return r.max_length;
   }
 
-  static const base::string16& generation_element(
+  static const std::u16string& generation_element(
       const autofill::password_generation::PasswordGenerationUIData& r) {
     return r.generation_element;
   }

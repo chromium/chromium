@@ -99,7 +99,7 @@ enum FieldFilterMask {
                                      FILTER_NON_FOCUSABLE_ELEMENTS,
 };
 
-void TruncateString(base::string16* str, size_t max_length) {
+void TruncateString(std::u16string* str, size_t max_length) {
   if (str->length() > max_length)
     str->resize(max_length);
 }
@@ -167,7 +167,7 @@ size_t CalculateTableCellColumnSpan(const WebElement& element) {
 
   size_t span = 1;
   if (element.HasAttribute("colspan")) {
-    base::string16 colspan = element.GetAttribute("colspan").Utf16();
+    std::u16string colspan = element.GetAttribute("colspan").Utf16();
     // Do not check return value to accept imperfect conversions.
     base::StringToSizeT(colspan, &span);
     // Handle overflow.
@@ -193,15 +193,15 @@ size_t CalculateTableCellColumnSpan(const WebElement& element) {
 //  * CombineAndCollapseWhitespace("foo   ", "   bar", false) -> "foo bar"
 //  * CombineAndCollapseWhitespace(" foo", "bar ", false)     -> " foobar "
 //  * CombineAndCollapseWhitespace(" foo", "bar ", true)      -> " foo bar "
-const base::string16 CombineAndCollapseWhitespace(const base::string16& prefix,
-                                                  const base::string16& suffix,
+const std::u16string CombineAndCollapseWhitespace(const std::u16string& prefix,
+                                                  const std::u16string& suffix,
                                                   bool force_whitespace) {
-  base::string16 prefix_trimmed;
+  std::u16string prefix_trimmed;
   base::TrimPositions prefix_trailing_whitespace =
       base::TrimWhitespace(prefix, base::TRIM_TRAILING, &prefix_trimmed);
 
   // Recursively compute the children's text.
-  base::string16 suffix_trimmed;
+  std::u16string suffix_trimmed;
   base::TrimPositions suffix_leading_whitespace =
       base::TrimWhitespace(suffix, base::TRIM_LEADING, &suffix_trimmed);
 
@@ -215,18 +215,18 @@ const base::string16 CombineAndCollapseWhitespace(const base::string16& prefix,
 // This is a helper function for the FindChildText() function (see below).
 // Search depth is limited with the |depth| parameter.
 // |divs_to_skip| is a list of <div> tags to ignore if encountered.
-base::string16 FindChildTextInner(const WebNode& node,
+std::u16string FindChildTextInner(const WebNode& node,
                                   int depth,
                                   const std::set<WebNode>& divs_to_skip) {
   if (depth <= 0 || node.IsNull())
-    return base::string16();
+    return std::u16string();
 
   // Skip over comments.
   if (node.IsCommentNode())
     return FindChildTextInner(node.NextSibling(), depth - 1, divs_to_skip);
 
   if (!node.IsElementNode() && !node.IsTextNode())
-    return base::string16();
+    return std::u16string();
 
   // Ignore elements known not to contain inferable labels.
   if (node.IsElementNode()) {
@@ -235,26 +235,26 @@ base::string16 FindChildTextInner(const WebNode& node,
         IsNoScriptElement(element) ||
         (element.IsFormControlElement() &&
          IsAutofillableElement(element.ToConst<WebFormControlElement>()))) {
-      return base::string16();
+      return std::u16string();
     }
 
     if (element.HasHTMLTagName("div") && base::Contains(divs_to_skip, node))
-      return base::string16();
+      return std::u16string();
   }
 
   // Extract the text exactly at this node.
-  base::string16 node_text = node.NodeValue().Utf16();
+  std::u16string node_text = node.NodeValue().Utf16();
 
   // Recursively compute the children's text.
   // Preserve inter-element whitespace separation.
-  base::string16 child_text =
+  std::u16string child_text =
       FindChildTextInner(node.FirstChild(), depth - 1, divs_to_skip);
   bool add_space = node.IsTextNode() && node_text.empty();
   node_text = CombineAndCollapseWhitespace(node_text, child_text, add_space);
 
   // Recursively compute the siblings' text.
   // Again, preserve inter-element whitespace separation.
-  base::string16 sibling_text =
+  std::u16string sibling_text =
       FindChildTextInner(node.NextSibling(), depth - 1, divs_to_skip);
   add_space = node.IsTextNode() && node_text.empty();
   node_text = CombineAndCollapseWhitespace(node_text, sibling_text, add_space);
@@ -263,7 +263,7 @@ base::string16 FindChildTextInner(const WebNode& node,
 }
 
 // Same as FindChildText() below, but with a list of div nodes to skip.
-base::string16 FindChildTextWithIgnoreList(
+std::u16string FindChildTextWithIgnoreList(
     const WebNode& node,
     const std::set<WebNode>& divs_to_skip) {
   if (node.IsTextNode())
@@ -272,7 +272,7 @@ base::string16 FindChildTextWithIgnoreList(
   WebNode child = node.FirstChild();
 
   const int kChildSearchDepth = 10;
-  base::string16 node_text =
+  std::u16string node_text =
       FindChildTextInner(child, kChildSearchDepth, divs_to_skip);
   base::TrimWhitespace(node_text, base::TRIM_ALL, &node_text);
   return node_text;
@@ -291,9 +291,9 @@ bool IsLabelValid(base::StringPiece16 inferred_label,
 bool InferLabelFromSibling(const WebFormControlElement& element,
                            const std::vector<char16_t>& stop_words,
                            bool forward,
-                           base::string16* label,
+                           std::u16string* label,
                            FormFieldData::LabelSource* label_source) {
-  base::string16 inferred_label;
+  std::u16string inferred_label;
   FormFieldData::LabelSource inferred_label_source =
       FormFieldData::LabelSource::kUnknown;
   WebNode sibling = element;
@@ -321,7 +321,7 @@ bool InferLabelFromSibling(const WebFormControlElement& element,
     if (sibling.IsTextNode() || HasTagName(sibling, *kBold) ||
         HasTagName(sibling, *kStrong) || HasTagName(sibling, *kSpan) ||
         HasTagName(sibling, *kFont)) {
-      base::string16 value = FindChildText(sibling);
+      std::u16string value = FindChildText(sibling);
       // A text node's value will be empty if it is for a line break.
       bool add_space = sibling.IsTextNode() && value.empty();
       inferred_label_source = FormFieldData::LabelSource::kCombined;
@@ -332,7 +332,7 @@ bool InferLabelFromSibling(const WebFormControlElement& element,
 
     // If we have identified a partial label and have reached a non-lightweight
     // element, consider the label to be complete.
-    base::string16 trimmed_label;
+    std::u16string trimmed_label;
     base::TrimWhitespace(inferred_label, base::TRIM_ALL, &trimmed_label);
     if (!trimmed_label.empty()) {
       inferred_label_source = FormFieldData::LabelSource::kCombined;
@@ -370,7 +370,7 @@ bool InferLabelFromSibling(const WebFormControlElement& element,
 }
 
 // Helper function to add a button's |title| to the |list|.
-void AddButtonTitleToList(base::string16 title,
+void AddButtonTitleToList(std::u16string title,
                           ButtonTitleType button_type,
                           ButtonTitleList* list) {
   title = base::CollapseWhitespace(std::move(title), false);
@@ -420,10 +420,10 @@ void FindElementsWithButtonFeatures(const WebElementCollection& elements,
                                       false /* consider_fieldset_tags */)) {
       continue;
     }
-    base::string16 title =
+    std::u16string title =
         extract_value_attribute
             ? (item.HasAttribute(*kValue) ? item.GetAttribute(*kValue).Utf16()
-                                          : base::string16())
+                                          : std::u16string())
             : item.TextContent().Utf16();
     if (extract_value_attribute && title.empty())
       title = item.TextContent().Utf16();
@@ -441,7 +441,7 @@ void FindElementsWithButtonFeatures(const WebElementCollection& elements,
 // or   <b>Some Text</b><br/> <input ...>.
 bool InferLabelFromPrevious(const WebFormControlElement& element,
                             const std::vector<char16_t>& stop_words,
-                            base::string16* label,
+                            std::u16string* label,
                             FormFieldData::LabelSource* label_source) {
   return InferLabelFromSibling(element, stop_words, false /* forward? */, label,
                                label_source);
@@ -451,7 +451,7 @@ bool InferLabelFromPrevious(const WebFormControlElement& element,
 // Useful for cases like: <span><input type="checkbox">Label For Checkbox</span>
 bool InferLabelFromNext(const WebFormControlElement& element,
                         const std::vector<char16_t>& stop_words,
-                        base::string16* label,
+                        std::u16string* label,
                         FormFieldData::LabelSource* label_source) {
   return InferLabelFromSibling(element, stop_words, true /* forward? */, label,
                                label_source);
@@ -459,41 +459,41 @@ bool InferLabelFromNext(const WebFormControlElement& element,
 
 // Helper for |InferLabelForElement()| that infers a label, if possible, from
 // the placeholder text. e.g. <input placeholder="foo">
-base::string16 InferLabelFromPlaceholder(const WebFormControlElement& element) {
+std::u16string InferLabelFromPlaceholder(const WebFormControlElement& element) {
   static base::NoDestructor<WebString> kPlaceholder("placeholder");
   if (element.HasAttribute(*kPlaceholder))
     return element.GetAttribute(*kPlaceholder).Utf16();
 
-  return base::string16();
+  return std::u16string();
 }
 
 // Helper for |InferLabelForElement()| that infers a label, if possible, from
 // the aria-label. e.g. <input aria-label="foo">
-base::string16 InferLabelFromAriaLabel(const WebFormControlElement& element) {
+std::u16string InferLabelFromAriaLabel(const WebFormControlElement& element) {
   static const base::NoDestructor<WebString> kAriaLabel("aria-label");
   if (element.HasAttribute(*kAriaLabel))
     return element.GetAttribute(*kAriaLabel).Utf16();
 
-  return base::string16();
+  return std::u16string();
 }
 
 // Helper for |InferLabelForElement()| that infers a label, from
 // the value attribute when it is present and user has not typed in (if
 // element's value attribute is same as the element's value).
-base::string16 InferLabelFromValueAttr(const WebFormControlElement& element) {
+std::u16string InferLabelFromValueAttr(const WebFormControlElement& element) {
   static base::NoDestructor<WebString> kValue("value");
   if (element.HasAttribute(*kValue) &&
       element.GetAttribute(*kValue) == element.Value()) {
     return element.GetAttribute(*kValue).Utf16();
   }
 
-  return base::string16();
+  return std::u16string();
 }
 
 // Helper for |InferLabelForElement()| that infers a label, if possible, from
 // enclosing list item,
 // e.g. <li>Some Text<input ...><input ...><input ...></li>
-base::string16 InferLabelFromListItem(const WebFormControlElement& element) {
+std::u16string InferLabelFromListItem(const WebFormControlElement& element) {
   WebNode parent = element.ParentNode();
   static base::NoDestructor<WebString> kListItem("li");
   while (!parent.IsNull() && parent.IsElementNode() &&
@@ -504,13 +504,13 @@ base::string16 InferLabelFromListItem(const WebFormControlElement& element) {
   if (!parent.IsNull() && HasTagName(parent, *kListItem))
     return FindChildText(parent);
 
-  return base::string16();
+  return std::u16string();
 }
 
 // Helper for |InferLabelForElement()| that infers a label, if possible, from
 // enclosing label,
 // e.g. <label>Some Text<input ...><input ...><input ...></label>
-base::string16 InferLabelFromEnclosingLabel(
+std::u16string InferLabelFromEnclosingLabel(
     const WebFormControlElement& element) {
   WebNode parent = element.ParentNode();
   static base::NoDestructor<WebString> kLabel("label");
@@ -522,7 +522,7 @@ base::string16 InferLabelFromEnclosingLabel(
   if (!parent.IsNull() && HasTagName(parent, *kLabel))
     return FindChildText(parent);
 
-  return base::string16();
+  return std::u16string();
 }
 
 // Helper for |InferLabelForElement()| that infers a label, if possible, from
@@ -531,7 +531,7 @@ base::string16 InferLabelFromEnclosingLabel(
 // or   <tr><th>Some Text</th><td><input ...></td></tr>
 // or   <tr><td><b>Some Text</b></td><td><b><input ...></b></td></tr>
 // or   <tr><th><b>Some Text</b></th><td><b><input ...></b></td></tr>
-base::string16 InferLabelFromTableColumn(const WebFormControlElement& element) {
+std::u16string InferLabelFromTableColumn(const WebFormControlElement& element) {
   static base::NoDestructor<WebString> kTableCell("td");
   WebNode parent = element.ParentNode();
   while (!parent.IsNull() && parent.IsElementNode() &&
@@ -540,11 +540,11 @@ base::string16 InferLabelFromTableColumn(const WebFormControlElement& element) {
   }
 
   if (parent.IsNull())
-    return base::string16();
+    return std::u16string();
 
   // Check all previous siblings, skipping non-element nodes, until we find a
   // non-empty text block.
-  base::string16 inferred_label;
+  std::u16string inferred_label;
   WebNode previous = parent.PreviousSibling();
   static base::NoDestructor<WebString> kTableHeader("th");
   while (inferred_label.empty() && !previous.IsNull()) {
@@ -568,9 +568,9 @@ base::string16 InferLabelFromTableColumn(const WebFormControlElement& element) {
 //
 // Otherwise, just look in the entire previous row.
 // e.g. <tr><td>Some Text</td></tr><tr><td><input ...></td></tr>
-base::string16 InferLabelFromTableRow(const WebFormControlElement& element) {
+std::u16string InferLabelFromTableRow(const WebFormControlElement& element) {
   static base::NoDestructor<WebString> kTableCell("td");
-  base::string16 inferred_label;
+  std::u16string inferred_label;
 
   // First find the <td> that contains |element|.
   WebNode cell = element.ParentNode();
@@ -685,13 +685,13 @@ base::string16 InferLabelFromTableRow(const WebFormControlElement& element) {
 //
 // Because this is already traversing the <div> structure, if it finds a <label>
 // sibling along the way, infer from that <label>.
-base::string16 InferLabelFromDivTable(const WebFormControlElement& element) {
+std::u16string InferLabelFromDivTable(const WebFormControlElement& element) {
   WebNode node = element.ParentNode();
   bool looking_for_parent = true;
   std::set<WebNode> divs_to_skip;
 
   // Search the sibling and parent <div>s until we find a candidate label.
-  base::string16 inferred_label;
+  std::u16string inferred_label;
   static base::NoDestructor<WebString> kDiv("div");
   static base::NoDestructor<WebString> kLabel("label");
   while (inferred_label.empty() && !node.IsNull()) {
@@ -737,7 +737,7 @@ base::string16 InferLabelFromDivTable(const WebFormControlElement& element) {
 // a surrounding definition list,
 // e.g. <dl><dt>Some Text</dt><dd><input ...></dd></dl>
 // e.g. <dl><dt><b>Some Text</b></dt><dd><b><input ...></b></dd></dl>
-base::string16 InferLabelFromDefinitionList(
+std::u16string InferLabelFromDefinitionList(
     const WebFormControlElement& element) {
   static base::NoDestructor<WebString> kDefinitionData("dd");
   WebNode parent = element.ParentNode();
@@ -746,7 +746,7 @@ base::string16 InferLabelFromDefinitionList(
     parent = parent.ParentNode();
 
   if (parent.IsNull() || !HasTagName(parent, *kDefinitionData))
-    return base::string16();
+    return std::u16string();
 
   // Skip by any intervening text nodes.
   WebNode previous = parent.PreviousSibling();
@@ -755,7 +755,7 @@ base::string16 InferLabelFromDefinitionList(
 
   static base::NoDestructor<WebString> kDefinitionTag("dt");
   if (previous.IsNull() || !HasTagName(previous, *kDefinitionTag))
-    return base::string16();
+    return std::u16string();
 
   return FindChildText(previous);
 }
@@ -779,7 +779,7 @@ std::vector<std::string> AncestorTagNames(
 // e.g. the contents of the preceding <p> tag or text element.
 bool InferLabelForElement(const WebFormControlElement& element,
                           const std::vector<char16_t>& stop_words,
-                          base::string16* label,
+                          std::u16string* label,
                           FormFieldData::LabelSource* label_source) {
   if (IsCheckableElement(ToWebInputElement(&element))) {
     if (InferLabelFromNext(element, stop_words, label, label_source))
@@ -790,7 +790,7 @@ bool InferLabelForElement(const WebFormControlElement& element,
     return true;
 
   // If we didn't find a label, check for placeholder text.
-  base::string16 inferred_label = InferLabelFromPlaceholder(element);
+  std::u16string inferred_label = InferLabelFromPlaceholder(element);
   if (IsLabelValid(inferred_label, stop_words)) {
     *label_source = FormFieldData::LabelSource::kPlaceHolder;
     *label = std::move(inferred_label);
@@ -914,7 +914,7 @@ ButtonTitleList InferButtonTitlesForForm(const WebElement& root_element) {
         control_element.FormControlTypeForAutofill() == *kButton;
     if (!is_submit_input && !is_button_input)
       continue;
-    base::string16 title = control_element.Value().Utf16();
+    std::u16string title = control_element.Value().Utf16();
     AddButtonTitleToList(std::move(title),
                          is_submit_input
                              ? ButtonTitleType::INPUT_ELEMENT_SUBMIT_TYPE
@@ -937,7 +937,7 @@ ButtonTitleList InferButtonTitlesForForm(const WebElement& root_element) {
       continue;
     }
     bool is_submit_type = type_attribute.IsNull() || type_attribute == *kSubmit;
-    base::string16 title = item.TextContent().Utf16();
+    std::u16string title = item.TextContent().Utf16();
     AddButtonTitleToList(std::move(title),
                          is_submit_type
                              ? ButtonTitleType::BUTTON_ELEMENT_SUBMIT_TYPE
@@ -960,8 +960,8 @@ ButtonTitleList InferButtonTitlesForForm(const WebElement& root_element) {
 // Fills |option_strings| with the values of the <option> elements present in
 // |select_element|.
 void GetOptionStringsFromElement(const WebSelectElement& select_element,
-                                 std::vector<base::string16>* option_values,
-                                 std::vector<base::string16>* option_contents) {
+                                 std::vector<std::u16string>* option_values,
+                                 std::vector<std::u16string>* option_contents) {
   DCHECK(!select_element.IsNull());
 
   option_values->clear();
@@ -1190,7 +1190,7 @@ void FillFormField(const FormFieldData& data,
   if (IsCheckableElement(input_element)) {
     input_element->SetChecked(IsChecked(data.check_status), true);
   } else {
-    base::string16 value = data.value;
+    std::u16string value = data.value;
     if (IsTextInput(input_element) || IsMonthInput(input_element)) {
       // If the maxlength attribute contains a negative value, maxLength()
       // returns the default maxlength value.
@@ -1312,7 +1312,7 @@ void MatchLabelsAndFields(
     if (control.IsNull()) {
       // Sometimes site authors will incorrectly specify the corresponding
       // field element's name rather than its id, so we compensate here.
-      base::string16 element_name = label.GetAttribute(*kFor).Utf16();
+      std::u16string element_name = label.GetAttribute(*kFor).Utf16();
       if (element_name.empty())
         continue;
       // Look through the list for elements with this name. There can actually
@@ -1341,7 +1341,7 @@ void MatchLabelsAndFields(
     if (!field_data)
       continue;
 
-    base::string16 label_text = FindChildText(label);
+    std::u16string label_text = FindChildText(label);
 
     // Concatenate labels because some sites might have multiple label
     // candidates.
@@ -1464,8 +1464,8 @@ bool FormOrFieldsetsToFormData(
 // Check if a script modified username is suitable for Password Manager to
 // remember.
 bool ScriptModifiedUsernameAcceptable(
-    const base::string16& value,
-    const base::string16& typed_value,
+    const std::u16string& value,
+    const std::u16string& typed_value,
     const FieldDataManager* field_data_manager) {
   // The minimal size of a field value that will be substring-matched.
   constexpr size_t kMinMatchSize = 3u;
@@ -1478,7 +1478,7 @@ bool ScriptModifiedUsernameAcceptable(
     return true;
   }
   if (typed_lowercase.size() >= kMinMatchSize &&
-      lowercase.find(typed_lowercase) != base::string16::npos) {
+      lowercase.find(typed_lowercase) != std::u16string::npos) {
     return true;
   }
 
@@ -1489,7 +1489,7 @@ bool ScriptModifiedUsernameAcceptable(
 
 // Trim the vector before sending it to the browser process to ensure we
 // don't send too much data through the IPC.
-void TrimStringVectorForIPC(std::vector<base::string16>* strings) {
+void TrimStringVectorForIPC(std::vector<std::u16string>* strings) {
   // Limit the size of the vector.
   if (strings->size() > kMaxListSize)
     strings->resize(kMaxListSize);
@@ -1515,14 +1515,14 @@ GURL StripAuthAndParams(const GURL& gurl) {
 }  // namespace
 
 void GetDataListSuggestions(const WebInputElement& element,
-                            std::vector<base::string16>* values,
-                            std::vector<base::string16>* labels) {
+                            std::vector<std::u16string>* values,
+                            std::vector<std::u16string>* labels) {
   for (const auto& option : element.FilteredDataListOptions()) {
     values->push_back(option.Value().Utf16());
     if (option.Value() != option.Label())
       labels->push_back(option.Label().Utf16());
     else
-      labels->push_back(base::string16());
+      labels->push_back(std::u16string());
   }
   TrimStringVectorForIPC(values);
   TrimStringVectorForIPC(labels);
@@ -1665,8 +1665,8 @@ bool IsWebElementVisible(const blink::WebElement& element) {
   return element.IsFocusable();
 }
 
-base::string16 GetFormIdentifier(const WebFormElement& form) {
-  base::string16 identifier = form.GetName().Utf16();
+std::u16string GetFormIdentifier(const WebFormElement& form) {
+  std::u16string identifier = form.GetName().Utf16();
   if (identifier.empty())
     identifier = form.GetIdAttribute().Utf16();
   return identifier;
@@ -1805,7 +1805,7 @@ void WebFormControlElementToFormField(
   if (!(extract_mask & EXTRACT_VALUE))
     return;
 
-  base::string16 value = element.Value().Utf16();
+  std::u16string value = element.Value().Utf16();
 
   if (IsSelectElement(element) && (extract_mask & EXTRACT_OPTION_TEXT)) {
     const WebSelectElement select_element = element.ToConst<WebSelectElement>();
@@ -1838,7 +1838,7 @@ void WebFormControlElementToFormField(
   if (field_data_manager &&
       field->properties_mask & (FieldPropertiesFlags::kUserTyped |
                                 FieldPropertiesFlags::kAutofilled)) {
-    const base::string16 user_input = field_data_manager->GetUserInput(
+    const std::u16string user_input = field_data_manager->GetUserInput(
         FieldRendererId(element.UniqueRendererFormControlId()));
 
     // The typed value is preserved for all passwords. It is also preserved for
@@ -2085,21 +2085,21 @@ bool IsWebElementEmpty(const blink::WebElement& root) {
   return true;
 }
 
-void PreviewSuggestion(const base::string16& suggestion,
-                       const base::string16& user_input,
+void PreviewSuggestion(const std::u16string& suggestion,
+                       const std::u16string& user_input,
                        blink::WebFormControlElement* input_element) {
   size_t selection_start = user_input.length();
   if (IsFeatureSubstringMatchEnabled()) {
     size_t offset = GetTextSelectionStart(suggestion, user_input, false);
     // Zero selection start is for password manager, which can show usernames
     // that do not begin with the user input value.
-    selection_start = (offset == base::string16::npos) ? 0 : offset;
+    selection_start = (offset == std::u16string::npos) ? 0 : offset;
   }
 
   input_element->SetSelectionRange(selection_start, suggestion.length());
 }
 
-base::string16 FindChildText(const WebNode& node) {
+std::u16string FindChildText(const WebNode& node) {
   return FindChildTextWithIgnoreList(node, std::set<WebNode>());
 }
 
@@ -2139,7 +2139,7 @@ ButtonTitleList GetButtonTitles(const WebFormElement& web_form,
   return form_position->second;
 }
 
-base::string16 FindChildTextWithIgnoreListForTesting(
+std::u16string FindChildTextWithIgnoreListForTesting(
     const WebNode& node,
     const std::set<WebNode>& divs_to_skip) {
   return FindChildTextWithIgnoreList(node, divs_to_skip);
@@ -2147,7 +2147,7 @@ base::string16 FindChildTextWithIgnoreListForTesting(
 
 bool InferLabelForElementForTesting(const WebFormControlElement& element,
                                     const std::vector<char16_t>& stop_words,
-                                    base::string16* label,
+                                    std::u16string* label,
                                     FormFieldData::LabelSource* label_source) {
   return InferLabelForElement(element, stop_words, label, label_source);
 }
@@ -2250,18 +2250,18 @@ namespace {
 // The coalesced text by the id_list found in the aria-labelledby attribute
 // of the field1 input element would be "Billing Name" and for field2 it would
 // be "Billing Address".
-base::string16 CoalesceTextByIdList(const WebDocument& document,
+std::u16string CoalesceTextByIdList(const WebDocument& document,
                                     const WebString& id_list) {
-  const base::string16 kSpace = base::ASCIIToUTF16(" ");
+  const std::u16string kSpace = base::ASCIIToUTF16(" ");
 
-  base::string16 text;
-  base::string16 id_list_utf16 = id_list.Utf16();
+  std::u16string text;
+  std::u16string id_list_utf16 = id_list.Utf16();
   for (const auto& id : base::SplitStringPiece(
            id_list_utf16, base::kWhitespaceUTF16, base::KEEP_WHITESPACE,
            base::SPLIT_WANT_NONEMPTY)) {
     auto node = document.GetElementById(WebString(id.data(), id.length()));
     if (!node.IsNull()) {
-      base::string16 child_text = FindChildText(node);
+      std::u16string child_text = FindChildText(node);
       if (!child_text.empty()) {
         if (!text.empty())
           text.append(kSpace);
@@ -2275,11 +2275,11 @@ base::string16 CoalesceTextByIdList(const WebDocument& document,
 
 }  // namespace
 
-base::string16 GetAriaLabel(const blink::WebDocument& document,
+std::u16string GetAriaLabel(const blink::WebDocument& document,
                             const WebFormControlElement& element) {
   static const base::NoDestructor<WebString> kAriaLabelledBy("aria-labelledby");
   if (element.HasAttribute(*kAriaLabelledBy)) {
-    base::string16 text =
+    std::u16string text =
         CoalesceTextByIdList(document, element.GetAttribute(*kAriaLabelledBy));
     if (!text.empty())
       return text;
@@ -2289,10 +2289,10 @@ base::string16 GetAriaLabel(const blink::WebDocument& document,
   if (element.HasAttribute(*kAriaLabel))
     return element.GetAttribute(*kAriaLabel).Utf16();
 
-  return base::string16();
+  return std::u16string();
 }
 
-base::string16 GetAriaDescription(const blink::WebDocument& document,
+std::u16string GetAriaDescription(const blink::WebDocument& document,
                                   const WebFormControlElement& element) {
   static const base::NoDestructor<WebString> kAriaDescribedBy(
       "aria-describedby");

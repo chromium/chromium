@@ -208,7 +208,7 @@ void CreditCardFormEventLogger::OnLog(const std::string& name,
 
 FormEvent CreditCardFormEventLogger::GetCardNumberStatusFormEvent(
     const CreditCard& credit_card) {
-  const base::string16 number = credit_card.number();
+  const std::u16string number = credit_card.number();
   FormEvent form_event =
       FORM_EVENT_SUBMIT_WITHOUT_SELECTING_SUGGESTIONS_UNKNOWN_CARD;
 

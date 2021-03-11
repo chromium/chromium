@@ -55,13 +55,13 @@ class AutofillDriverIOS : public AutofillDriver {
   void RendererShouldClearFilledSection() override;
   void RendererShouldClearPreviewedForm() override;
   void RendererShouldAcceptDataListSuggestion(
-      const base::string16& value) override;
+      const std::u16string& value) override;
 
   AutofillManager* autofill_manager() { return &autofill_manager_; }
 
-  void RendererShouldFillFieldWithValue(const base::string16& value) override;
+  void RendererShouldFillFieldWithValue(const std::u16string& value) override;
   void RendererShouldPreviewFieldWithValue(
-      const base::string16& value) override;
+      const std::u16string& value) override;
   void RendererShouldSetSuggestionAvailability(
       const mojom::AutofillState state) override;
   void PopupHidden() override;

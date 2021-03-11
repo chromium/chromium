@@ -56,8 +56,8 @@ CaseInsensitiveCompare::CaseInsensitiveCompare(const icu::Locale& locale)
 CaseInsensitiveCompare::~CaseInsensitiveCompare() {
 }
 
-bool CaseInsensitiveCompare::StringsEqual(const base::string16& lhs,
-                                          const base::string16& rhs) const {
+bool CaseInsensitiveCompare::StringsEqual(const std::u16string& lhs,
+                                          const std::u16string& rhs) const {
   if (collator_) {
     return base::i18n::CompareString16WithCollator(*collator_, lhs, rhs) ==
            UCOL_EQUAL;

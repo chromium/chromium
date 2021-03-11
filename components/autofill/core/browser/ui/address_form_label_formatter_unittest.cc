@@ -71,7 +71,7 @@ TEST(AddressFormLabelFormatterTest,
                               {base::ASCIIToUTF16("John Kennedy"),
                                base::ASCIIToUTF16("Brookline, MA 02445")}),
                           base::ASCIIToUTF16("Hyannis, MA"),
-                          base::ASCIIToUTF16("Paul Revere"), base::string16()));
+                          base::ASCIIToUTF16("Paul Revere"), std::u16string()));
 }
 
 TEST(AddressFormLabelFormatterTest,
@@ -108,7 +108,7 @@ TEST(AddressFormLabelFormatterTest,
       ElementsAre(ConstructLabelLine({base::ASCIIToUTF16("John Kennedy"),
                                       base::ASCIIToUTF16("333 Washington St")}),
                   base::ASCIIToUTF16("151 Irving Ave"),
-                  base::ASCIIToUTF16("Paul Revere"), base::string16()));
+                  base::ASCIIToUTF16("Paul Revere"), std::u16string()));
 }
 
 TEST(AddressFormLabelFormatterTest, GetLabelsForUSProfilesAndFocusedName) {

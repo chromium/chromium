@@ -21,17 +21,17 @@ namespace autofill {
 
 namespace structured_address {
 
-base::string16 AddressComponentWithRewriter::RewriteValue(
-    const base::string16& value) const {
+std::u16string AddressComponentWithRewriter::RewriteValue(
+    const std::u16string& value) const {
   // Retrieve the country name from the structured tree the node resides in.
-  base::string16 country = GetRootNode().GetValueForType(ADDRESS_HOME_COUNTRY);
+  std::u16string country = GetRootNode().GetValueForType(ADDRESS_HOME_COUNTRY);
   // If no country is available (this should not be the case for a valid
   // importable profile), use the US as a fallback country for the rewriter.
   return RewriterCache::Rewrite(
       !country.empty() ? country : base::ASCIIToUTF16("US"), value);
 }
 
-base::string16 AddressComponentWithRewriter::ValueForComparison() const {
+std::u16string AddressComponentWithRewriter::ValueForComparison() const {
   return RewriteValue(NormalizedValue());
 }
 
@@ -137,8 +137,8 @@ bool StreetAddress::HasNewerValuePrecendenceInMerging(
   // If the verification statuses are the same, do not use the newer component
   // if the older one has new lines but the newer one doesn't.
   if (GetVerificationStatus() == newer_component.GetVerificationStatus()) {
-    if (GetValue().find('\n') != base::string16::npos &&
-        newer_component.GetValue().find('\n') == base::string16::npos) {
+    if (GetValue().find('\n') != std::u16string::npos &&
+        newer_component.GetValue().find('\n') == std::u16string::npos) {
       return false;
     }
     return true;
@@ -146,7 +146,7 @@ bool StreetAddress::HasNewerValuePrecendenceInMerging(
   return false;
 }
 
-base::string16 StreetAddress::GetBestFormatString() const {
+std::u16string StreetAddress::GetBestFormatString() const {
   std::string country_code =
       base::UTF16ToUTF8(GetRootNode().GetValueForType(ADDRESS_HOME_COUNTRY));
 
@@ -183,7 +183,7 @@ void StreetAddress::UnsetValue() {
   address_lines_.clear();
 }
 
-void StreetAddress::SetValue(base::string16 value, VerificationStatus status) {
+void StreetAddress::SetValue(std::u16string value, VerificationStatus status) {
   AddressComponent::SetValue(value, status);
   CalculateAddressLines();
 }
@@ -198,7 +198,7 @@ void StreetAddress::CalculateAddressLines() {
   // additional entries into the third line.
   if (address_lines_.size() > 3) {
     address_lines_[2] =
-        base::JoinString(std::vector<base::string16>(address_lines_.begin() + 2,
+        base::JoinString(std::vector<std::u16string>(address_lines_.begin() + 2,
                                                      address_lines_.end()),
                          base::ASCIIToUTF16(" "));
     // Drop the addition address lines.
@@ -208,30 +208,30 @@ void StreetAddress::CalculateAddressLines() {
 }
 
 bool StreetAddress::IsValueValid() const {
-  return !base::Contains(address_lines_, base::string16());
+  return !base::Contains(address_lines_, std::u16string());
 }
 
 bool StreetAddress::ConvertAndGetTheValueForAdditionalFieldTypeName(
     const std::string& type_name,
-    base::string16* value) const {
+    std::u16string* value) const {
   if (type_name == AutofillType::ServerFieldTypeToString(ADDRESS_HOME_LINE1)) {
     if (value) {
       *value =
-          address_lines_.size() > 0 ? address_lines_.at(0) : base::string16();
+          address_lines_.size() > 0 ? address_lines_.at(0) : std::u16string();
     }
     return true;
   }
   if (type_name == AutofillType::ServerFieldTypeToString(ADDRESS_HOME_LINE2)) {
     if (value) {
       *value =
-          address_lines_.size() > 1 ? address_lines_.at(1) : base::string16();
+          address_lines_.size() > 1 ? address_lines_.at(1) : std::u16string();
     }
     return true;
   }
   if (type_name == AutofillType::ServerFieldTypeToString(ADDRESS_HOME_LINE3)) {
     if (value) {
       *value =
-          address_lines_.size() > 2 ? address_lines_.at(2) : base::string16();
+          address_lines_.size() > 2 ? address_lines_.at(2) : std::u16string();
     }
     return true;
   }
@@ -242,7 +242,7 @@ bool StreetAddress::ConvertAndGetTheValueForAdditionalFieldTypeName(
 // Implements support for setting the value of the individual address lines.
 bool StreetAddress::ConvertAndSetValueForAdditionalFieldTypeName(
     const std::string& type_name,
-    const base::string16& value,
+    const std::u16string& value,
     const VerificationStatus& status) {
   size_t index = 0;
   if (type_name == AutofillType::ServerFieldTypeToString(ADDRESS_HOME_LINE1)) {
@@ -259,7 +259,7 @@ bool StreetAddress::ConvertAndSetValueForAdditionalFieldTypeName(
 
   // Make sure that there are three address lines stored.
   if (index >= address_lines_.size())
-    address_lines_.resize(index + 1, base::string16());
+    address_lines_.resize(index + 1, std::u16string());
 
   bool change = address_lines_[index] != value;
   if (change)
@@ -337,7 +337,7 @@ PostalCode::PostalCode(AddressComponent* parent)
 
 PostalCode::~PostalCode() = default;
 
-base::string16 PostalCode::NormalizedValue() const {
+std::u16string PostalCode::NormalizedValue() const {
   return NormalizeValue(GetValue(), /*keep_white_space=*/false);
 }
 

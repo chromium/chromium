@@ -54,7 +54,7 @@ class PasswordGenerationAgent : public content::RenderFrameObserver,
           pending_receiver);
 
   // mojom::PasswordGenerationAgent:
-  void GeneratedPasswordAccepted(const base::string16& password) override;
+  void GeneratedPasswordAccepted(const std::u16string& password) override;
   void FoundFormEligibleForGeneration(
       const PasswordFormGenerationData& form) override;
   // Sets |generation_element_| to the focused password field and responds back

@@ -57,7 +57,7 @@ class FullCardRequest final : public CardUnmaskDelegate {
     virtual void OnFullCardRequestSucceeded(
         const payments::FullCardRequest& full_card_request,
         const CreditCard& card,
-        const base::string16& cvc) = 0;
+        const std::u16string& cvc) = 0;
     virtual void OnFullCardRequestFailed(FailureType failure_type) = 0;
   };
 

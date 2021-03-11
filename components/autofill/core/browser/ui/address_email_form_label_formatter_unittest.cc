@@ -75,7 +75,7 @@ TEST(AddressEmailFormLabelFormatterTest, GetLabelsForUSProfilesAndFocusedName) {
       ElementsAre(ConstructLabelLine({base::ASCIIToUTF16("333 Washington St"),
                                       base::ASCIIToUTF16("jfk@gmail.com")}),
                   base::ASCIIToUTF16("151 Irving Ave"),
-                  base::ASCIIToUTF16("paul1775@gmail.com"), base::string16()));
+                  base::ASCIIToUTF16("paul1775@gmail.com"), std::u16string()));
 }
 
 TEST(AddressEmailFormLabelFormatterTest,
@@ -112,7 +112,7 @@ TEST(AddressEmailFormLabelFormatterTest,
       ElementsAre(ConstructLabelLine({base::ASCIIToUTF16("John F Kennedy"),
                                       base::ASCIIToUTF16("jfk@gmail.com")}),
                   base::ASCIIToUTF16("Jackie Kennedy"),
-                  base::ASCIIToUTF16("paul1775@gmail.com"), base::string16()));
+                  base::ASCIIToUTF16("paul1775@gmail.com"), std::u16string()));
 }
 
 TEST(AddressEmailFormLabelFormatterTest,
@@ -149,7 +149,7 @@ TEST(AddressEmailFormLabelFormatterTest,
       ElementsAre(ConstructLabelLine({base::ASCIIToUTF16("333 Washington St"),
                                       base::ASCIIToUTF16("jfk@gmail.com")}),
                   base::ASCIIToUTF16("151 Irving Ave"),
-                  base::ASCIIToUTF16("paul1775@gmail.com"), base::string16()));
+                  base::ASCIIToUTF16("paul1775@gmail.com"), std::u16string()));
 }
 
 TEST(AddressEmailFormLabelFormatterTest,
@@ -184,7 +184,7 @@ TEST(AddressEmailFormLabelFormatterTest,
       formatter->GetLabels(),
       ElementsAre(ConstructLabelLine({base::ASCIIToUTF16("John F Kennedy"),
                                       base::ASCIIToUTF16("333 Washington St")}),
-                  base::ASCIIToUTF16("Jackie Kennedy"), base::string16(),
+                  base::ASCIIToUTF16("Jackie Kennedy"), std::u16string(),
                   base::ASCIIToUTF16("141 Franklin St")));
 }
 

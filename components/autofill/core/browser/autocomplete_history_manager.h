@@ -77,8 +77,8 @@ class AutocompleteHistoryManager : public KeyedService,
       int query_id,
       bool is_autocomplete_enabled,
       bool autoselect_first_suggestion,
-      const base::string16& name,
-      const base::string16& prefix,
+      const std::u16string& name,
+      const std::u16string& prefix,
       const std::string& form_control_type,
       base::WeakPtr<SuggestionsHandler> handler);
 
@@ -99,13 +99,13 @@ class AutocompleteHistoryManager : public KeyedService,
   virtual void CancelPendingQueries(const SuggestionsHandler* handler);
 
   // Must be public for the autofill manager to use.
-  virtual void OnRemoveAutocompleteEntry(const base::string16& name,
-                                         const base::string16& value);
+  virtual void OnRemoveAutocompleteEntry(const std::u16string& name,
+                                         const std::u16string& value);
 
   // Invoked when the user selected |value| in the Autocomplete drop-down. This
   // function logs the DaysSinceLastUse of the Autocomplete entry associated
   // with |value|.
-  virtual void OnAutocompleteEntrySelected(const base::string16& value);
+  virtual void OnAutocompleteEntrySelected(const std::u16string& value);
 
  private:
   friend class AutocompleteHistoryManagerTest;
@@ -122,7 +122,7 @@ class AutocompleteHistoryManager : public KeyedService,
     ~UMARecorder() = default;
 
     void OnGetAutocompleteSuggestions(
-        const base::string16& name,
+        const std::u16string& name,
         WebDataServiceBase::Handle pending_query_handle);
     void OnWebDataServiceRequestDone(
         WebDataServiceBase::Handle pending_query_handle,
@@ -134,7 +134,7 @@ class AutocompleteHistoryManager : public KeyedService,
 
     // The name of field that is currently measured, we don't repeatedly measure
     // the query of the same field while user is filling the field.
-    base::string16 measuring_name_;
+    std::u16string measuring_name_;
 
     DISALLOW_COPY_AND_ASSIGN(UMARecorder);
   };
@@ -144,7 +144,7 @@ class AutocompleteHistoryManager : public KeyedService,
   struct QueryHandler {
     QueryHandler(int client_query_id,
                  bool autoselect_first_suggestion,
-                 base::string16 prefix,
+                 std::u16string prefix,
                  base::WeakPtr<SuggestionsHandler> handler);
     QueryHandler(const QueryHandler& original);
     ~QueryHandler();
@@ -159,7 +159,7 @@ class AutocompleteHistoryManager : public KeyedService,
     bool autoselect_first_suggestion_;
 
     // Prefix used to search suggestions, submitted by the handler.
-    base::string16 prefix_;
+    std::u16string prefix_;
 
     // Weak pointer to the handler instance which will be called-back when
     // we get the response for the associate query.
@@ -222,7 +222,7 @@ class AutocompleteHistoryManager : public KeyedService,
   // Cached results of the last batch of autocomplete suggestions.
   // Key are the suggestions' values, and values are the associated
   // AutofillEntry.
-  std::map<base::string16, AutofillEntry> last_entries_;
+  std::map<std::u16string, AutofillEntry> last_entries_;
 
   // Whether the service is associated with an off-the-record browser context.
   bool is_off_the_record_ = false;

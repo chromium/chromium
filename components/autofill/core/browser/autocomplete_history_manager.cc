@@ -49,7 +49,7 @@ bool IsTextField(const FormFieldData& field) {
 // An input field name 'field_2' bears no semantic meaning and there is a chance
 // that a different website or different form uses the same field name for a
 // totally different purpose.
-bool IsMeaningfulFieldName(const base::string16& name) {
+bool IsMeaningfulFieldName(const std::u16string& name) {
   // If the corresponding feature is not enabled, every field name is considered
   // as meaningful.
   if (!base::FeatureList::IsEnabled(
@@ -64,7 +64,7 @@ bool IsMeaningfulFieldName(const base::string16& name) {
 }  // namespace
 
 void AutocompleteHistoryManager::UMARecorder::OnGetAutocompleteSuggestions(
-    const base::string16& name,
+    const std::u16string& name,
     WebDataServiceBase::Handle pending_query_handle) {
   // log only if the current field is different than the latest one that has
   // been logged. we assume that user works at the same field if
@@ -99,7 +99,7 @@ void AutocompleteHistoryManager::UMARecorder::OnWebDataServiceRequestDone(
 AutocompleteHistoryManager::QueryHandler::QueryHandler(
     int client_query_id,
     bool autoselect_first_suggestion,
-    base::string16 prefix,
+    std::u16string prefix,
     base::WeakPtr<SuggestionsHandler> handler)
     : client_query_id_(client_query_id),
       autoselect_first_suggestion_(autoselect_first_suggestion),
@@ -166,8 +166,8 @@ void AutocompleteHistoryManager::OnGetAutocompleteSuggestions(
     int query_id,
     bool is_autocomplete_enabled,
     bool autoselect_first_suggestion,
-    const base::string16& name,
-    const base::string16& prefix,
+    const std::u16string& name,
+    const std::u16string& prefix,
     const std::string& form_control_type,
     base::WeakPtr<SuggestionsHandler> handler) {
   CancelPendingQueries(handler.get());
@@ -217,13 +217,14 @@ void AutocompleteHistoryManager::OnWillSubmitForm(
 }
 
 void AutocompleteHistoryManager::OnRemoveAutocompleteEntry(
-    const base::string16& name, const base::string16& value) {
+    const std::u16string& name,
+    const std::u16string& value) {
   if (profile_database_)
     profile_database_->RemoveFormValueForElementName(name, value);
 }
 
 void AutocompleteHistoryManager::OnAutocompleteEntrySelected(
-    const base::string16& value) {
+    const std::u16string& value) {
   // Try to find the AutofillEntry associated with the given suggestion.
   auto last_entries_iter = last_entries_.find(value);
   if (last_entries_iter == last_entries_.end()) {
@@ -385,7 +386,7 @@ bool AutocompleteHistoryManager::IsFieldValueSaveable(
   // We don't want to save a trimmed string, but we want to make sure that the
   // value is non-empty nor only whitespaces.
   bool is_value_valid = false;
-  for (const base::string16::value_type& c : field.value) {
+  for (const std::u16string::value_type& c : field.value) {
     if (c != ' ') {
       is_value_valid = true;
       break;

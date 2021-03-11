@@ -38,12 +38,12 @@ class TestAutofillDataModel : public AutofillDataModel {
   ~TestAutofillDataModel() override {}
 
  private:
-  base::string16 GetRawInfo(ServerFieldType type) const override {
-    return base::string16();
+  std::u16string GetRawInfo(ServerFieldType type) const override {
+    return std::u16string();
   }
   void SetRawInfoWithVerificationStatus(
       ServerFieldType type,
-      const base::string16& value,
+      const std::u16string& value,
       structured_address::VerificationStatus status) override {}
   void GetSupportedTypes(ServerFieldTypeSet* supported_types) const override {}
 

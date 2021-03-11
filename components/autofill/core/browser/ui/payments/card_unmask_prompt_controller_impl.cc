@@ -63,7 +63,7 @@ void CardUnmaskPromptControllerImpl::OnVerificationResult(
   if (!card_unmask_view_)
     return;
 
-  base::string16 error_message;
+  std::u16string error_message;
   switch (result) {
     case AutofillClient::SUCCESS:
       break;
@@ -107,9 +107,9 @@ void CardUnmaskPromptControllerImpl::OnUnmaskDialogClosed() {
 }
 
 void CardUnmaskPromptControllerImpl::OnUnmaskPromptAccepted(
-    const base::string16& cvc,
-    const base::string16& exp_month,
-    const base::string16& exp_year,
+    const std::u16string& cvc,
+    const std::u16string& exp_month,
+    const std::u16string& exp_year,
     bool should_store_pan,
     bool enable_fido_auth) {
   verify_timestamp_ = AutofillClock::Now();
@@ -149,7 +149,7 @@ void CardUnmaskPromptControllerImpl::NewCardLinkClicked() {
   new_card_link_clicked_ = true;
 }
 
-base::string16 CardUnmaskPromptControllerImpl::GetWindowTitle() const {
+std::u16string CardUnmaskPromptControllerImpl::GetWindowTitle() const {
 #if defined(OS_IOS)
   // The iOS UI has less room for the title so it shows a shorter string.
   return l10n_util::GetStringUTF16(IDS_AUTOFILL_CARD_UNMASK_PROMPT_TITLE);
@@ -162,7 +162,7 @@ base::string16 CardUnmaskPromptControllerImpl::GetWindowTitle() const {
 #endif
 }
 
-base::string16 CardUnmaskPromptControllerImpl::GetInstructionsMessage() const {
+std::u16string CardUnmaskPromptControllerImpl::GetInstructionsMessage() const {
 // The prompt for server cards should reference Google Payments, whereas the
 // prompt for local cards should not.
 #if defined(OS_IOS)
@@ -195,7 +195,7 @@ base::string16 CardUnmaskPromptControllerImpl::GetInstructionsMessage() const {
 #endif
 }
 
-base::string16 CardUnmaskPromptControllerImpl::GetOkButtonLabel() const {
+std::u16string CardUnmaskPromptControllerImpl::GetOkButtonLabel() const {
   return l10n_util::GetStringUTF16(IDS_AUTOFILL_CARD_UNMASK_CONFIRM_BUTTON);
 }
 
@@ -235,15 +235,15 @@ bool CardUnmaskPromptControllerImpl::IsCardLocal() const {
 #endif
 
 bool CardUnmaskPromptControllerImpl::InputCvcIsValid(
-    const base::string16& input_text) const {
-  base::string16 trimmed_text;
+    const std::u16string& input_text) const {
+  std::u16string trimmed_text;
   base::TrimWhitespace(input_text, base::TRIM_ALL, &trimmed_text);
   return IsValidCreditCardSecurityCode(trimmed_text, card_.network());
 }
 
 bool CardUnmaskPromptControllerImpl::InputExpirationIsValid(
-    const base::string16& month,
-    const base::string16& year) const {
+    const std::u16string& month,
+    const std::u16string& year) const {
   if ((month.size() != 2U && month.size() != 1U) ||
       (year.size() != 4U && year.size() != 2U)) {
     return false;

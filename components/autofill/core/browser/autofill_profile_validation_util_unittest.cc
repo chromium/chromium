@@ -679,7 +679,7 @@ TEST_F(AutofillProfileValidationUtilTest, ValidatePhone_FullValidProfile) {
 
 TEST_F(AutofillProfileValidationUtilTest, ValidatePhone_EmptyPhoneNumber) {
   AutofillProfile profile(autofill::test::GetFullValidProfileForCanada());
-  profile.SetRawInfo(PHONE_HOME_WHOLE_NUMBER, base::string16());
+  profile.SetRawInfo(PHONE_HOME_WHOLE_NUMBER, std::u16string());
   ValidatePhoneTest(&profile);
   EXPECT_EQ(AutofillDataModel::EMPTY,
             profile.GetValidityState(PHONE_HOME_WHOLE_NUMBER,
@@ -706,7 +706,7 @@ TEST_F(AutofillProfileValidationUtilTest,
   const std::string country_code = "PP";
   AutofillProfile profile(autofill::test::GetFullValidProfileForCanada());
   profile.SetRawInfo(ADDRESS_HOME_COUNTRY, base::UTF8ToUTF16(country_code));
-  profile.SetRawInfo(PHONE_HOME_WHOLE_NUMBER, base::string16());
+  profile.SetRawInfo(PHONE_HOME_WHOLE_NUMBER, std::u16string());
   ValidatePhoneTest(&profile);
   EXPECT_EQ(AutofillDataModel::EMPTY,
             profile.GetValidityState(PHONE_HOME_WHOLE_NUMBER,
@@ -818,7 +818,7 @@ TEST_F(AutofillProfileValidationUtilTest, ValidateEmail_FullValidProfile) {
 
 TEST_F(AutofillProfileValidationUtilTest, ValidateEmail_EmptyEmailAddress) {
   AutofillProfile profile(autofill::test::GetFullValidProfileForCanada());
-  profile.SetRawInfo(EMAIL_ADDRESS, base::string16());
+  profile.SetRawInfo(EMAIL_ADDRESS, std::u16string());
   ValidateEmailTest(&profile);
   EXPECT_EQ(AutofillDataModel::EMPTY,
             profile.GetValidityState(EMAIL_ADDRESS, AutofillDataModel::CLIENT));

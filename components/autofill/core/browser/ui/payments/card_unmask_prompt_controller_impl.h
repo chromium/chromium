@@ -42,15 +42,15 @@ class CardUnmaskPromptControllerImpl : public CardUnmaskPromptController {
 
   // CardUnmaskPromptController implementation.
   void OnUnmaskDialogClosed() override;
-  void OnUnmaskPromptAccepted(const base::string16& cvc,
-                              const base::string16& exp_month,
-                              const base::string16& exp_year,
+  void OnUnmaskPromptAccepted(const std::u16string& cvc,
+                              const std::u16string& exp_month,
+                              const std::u16string& exp_year,
                               bool should_store_pan,
                               bool enable_fido_auth) override;
   void NewCardLinkClicked() override;
-  base::string16 GetWindowTitle() const override;
-  base::string16 GetInstructionsMessage() const override;
-  base::string16 GetOkButtonLabel() const override;
+  std::u16string GetWindowTitle() const override;
+  std::u16string GetInstructionsMessage() const override;
+  std::u16string GetOkButtonLabel() const override;
   int GetCvcImageRid() const override;
   bool ShouldRequestExpirationDate() const override;
   bool GetStoreLocallyStartState() const override;
@@ -60,9 +60,9 @@ class CardUnmaskPromptControllerImpl : public CardUnmaskPromptController {
   bool GetWebauthnOfferStartState() const override;
   bool IsCardLocal() const override;
 #endif
-  bool InputCvcIsValid(const base::string16& input_text) const override;
-  bool InputExpirationIsValid(const base::string16& month,
-                              const base::string16& year) const override;
+  bool InputCvcIsValid(const std::u16string& input_text) const override;
+  bool InputExpirationIsValid(const std::u16string& month,
+                              const std::u16string& year) const override;
   int GetExpectedCvcLength() const override;
   base::TimeDelta GetSuccessMessageDuration() const override;
   AutofillClient::PaymentsRpcResult GetVerificationResult() const override;

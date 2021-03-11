@@ -47,12 +47,12 @@ class NameMiddle : public AddressComponent {
   // type.
   bool ConvertAndGetTheValueForAdditionalFieldTypeName(
       const std::string& type_name,
-      base::string16* value) const override;
+      std::u16string* value) const override;
 
   // Implements support for setting the |MIDDLE_NAME_INITIAL| type.
   bool ConvertAndSetValueForAdditionalFieldTypeName(
       const std::string& type_name,
-      const base::string16& value,
+      const std::u16string& value,
       const VerificationStatus& status) override;
 };
 
@@ -145,7 +145,7 @@ class NameFull : public AddressComponent {
       const override;
 
   // Returns the format string to create the full name from its subcomponents.
-  base::string16 GetBestFormatString() const override;
+  std::u16string GetBestFormatString() const override;
 
  private:
   NameFirst name_first_{this};

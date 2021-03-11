@@ -61,7 +61,7 @@ class TestCardUnmaskPromptView : public CardUnmaskPromptView {
   void Show() override {}
   void ControllerGone() override {}
   void DisableAndWaitForVerification() override {}
-  void GotVerificationResult(const base::string16& error_message,
+  void GotVerificationResult(const std::u16string& error_message,
                              bool allow_retry) override {}
 };
 
@@ -702,7 +702,7 @@ TEST_P(CvcInputAmexValidationTest, CvcInputValidation) {
     return;
 
   controller_->OnUnmaskPromptAccepted(
-      ASCIIToUTF16(cvc_case_amex.input), base::string16(), base::string16(),
+      ASCIIToUTF16(cvc_case_amex.input), std::u16string(), std::u16string(),
       /*should_store_pan=*/false, /*enable_fido_auth=*/false);
   EXPECT_EQ(ASCIIToUTF16(cvc_case_amex.canonicalized_input),
             delegate_->details().cvc);

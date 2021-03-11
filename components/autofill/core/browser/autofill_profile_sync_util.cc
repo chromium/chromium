@@ -393,7 +393,7 @@ std::unique_ptr<AutofillProfile> CreateAutofillProfileFromSpecifics(
   // by a newer version of Chrome), or a country name (if set by an older
   // version of Chrome).
   // TODO(jkrcal): Move this migration logic into Address::SetRawInfo()?
-  base::string16 country_name_or_code =
+  std::u16string country_name_or_code =
       base::ASCIIToUTF16(specifics.address_home_country());
   std::string country_code =
       CountryNames::GetInstance()->GetCountryCode(country_name_or_code);

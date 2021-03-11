@@ -8,13 +8,13 @@
 
 namespace autofill {
 
-bool SystemEncryptor::EncryptString16(const base::string16& plaintext,
+bool SystemEncryptor::EncryptString16(const std::u16string& plaintext,
                                       std::string* ciphertext) const {
   return ::OSCrypt::EncryptString16(plaintext, ciphertext);
 }
 
 bool SystemEncryptor::DecryptString16(const std::string& ciphertext,
-                                      base::string16* plaintext) const {
+                                      std::u16string* plaintext) const {
   return ::OSCrypt::DecryptString16(ciphertext, plaintext);
 }
 

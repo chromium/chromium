@@ -188,7 +188,7 @@ bool DeserializeFormData(base::PickleIterator* iter, FormData* form_data) {
   }
 
   if (version == 1) {
-    base::string16 method;
+    std::u16string method;
     if (!iter->ReadString16(&method)) {
       LogDeserializationError(version);
       return false;

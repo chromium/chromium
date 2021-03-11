@@ -591,7 +591,7 @@ TEST_F(FormStructureTestImpl, StripCommonNameAffix) {
   field.unique_renderer_id = MakeFieldRendererId();
   form.fields.push_back(field);
 
-  field.label = base::string16();
+  field.label = std::u16string();
   field.name = ASCIIToUTF16("ctl01$ctl00$ShippingAddressCreditPhone$submit");
   field.form_control_type = "submit";
   field.unique_renderer_id = MakeFieldRendererId();
@@ -698,7 +698,7 @@ TEST_F(FormStructureTestImpl, StripCommonNameAffix_PrefixAndSuffix) {
       ASCIIToUTF16("ctl01$ctl00$ShippingAddressCreditPhone$phone_data");
   form.fields.push_back(field);
 
-  field.label = base::string16();
+  field.label = std::u16string();
   field.name =
       ASCIIToUTF16("ctl01$ctl00$ShippingAddressCreditPhone$submit_data");
   field.form_control_type = "submit";
@@ -752,7 +752,7 @@ TEST_F(FormStructureTestImpl, StripCommonNameAffix_SelectiveLongPrefix) {
   field.name = ASCIIToUTF16("phone");
   form.fields.push_back(field);
 
-  field.label = base::string16();
+  field.label = std::u16string();
   field.name = ASCIIToUTF16("ctl01$ctl00$ShippingAddressCreditPhone$submit");
   field.form_control_type = "submit";
   form.fields.push_back(field);
@@ -806,7 +806,7 @@ TEST_F(FormStructureTestImpl,
   field.name = ASCIIToUTF16("address_housenumber");
   form.fields.push_back(field);
 
-  field.label = base::string16();
+  field.label = std::u16string();
   field.name = ASCIIToUTF16("address_apartmentnumber");
   form.fields.push_back(field);
 
@@ -1316,12 +1316,12 @@ TEST_F(FormStructureTestImpl,
   field.unique_renderer_id = MakeFieldRendererId();
   form.fields.push_back(field);
 
-  field.name = base::string16();
+  field.name = std::u16string();
   field.autocomplete_attribute = "section-foo email";
   field.unique_renderer_id = MakeFieldRendererId();
   form.fields.push_back(field);
 
-  field.name = base::string16();
+  field.name = std::u16string();
   field.autocomplete_attribute = "name";
   field.unique_renderer_id = MakeFieldRendererId();
   form.fields.push_back(field);
@@ -1399,7 +1399,7 @@ TEST_F(FormStructureTestImpl, HeuristicsSample8) {
   field.unique_renderer_id = MakeFieldRendererId();
   form.fields.push_back(field);
 
-  field.label = base::string16();
+  field.label = std::u16string();
   field.name = ASCIIToUTF16("Submit");
   field.form_control_type = "submit";
   field.unique_renderer_id = MakeFieldRendererId();
@@ -1472,7 +1472,7 @@ TEST_F(FormStructureTestImpl, HeuristicsSample6) {
   field.unique_renderer_id = MakeFieldRendererId();
   form.fields.push_back(field);
 
-  field.label = base::string16();
+  field.label = std::u16string();
   field.name = ASCIIToUTF16("Submit");
   field.value = ASCIIToUTF16("continue");
   field.form_control_type = "submit";
@@ -1513,41 +1513,41 @@ TEST_F(FormStructureTestImpl, HeuristicsLabelsOnly) {
   field.form_control_type = "text";
 
   field.label = ASCIIToUTF16("First Name");
-  field.name = base::string16();
+  field.name = std::u16string();
   field.unique_renderer_id = MakeFieldRendererId();
   form.fields.push_back(field);
 
   field.label = ASCIIToUTF16("Last Name");
-  field.name = base::string16();
+  field.name = std::u16string();
   field.unique_renderer_id = MakeFieldRendererId();
   form.fields.push_back(field);
 
   field.label = ASCIIToUTF16("Email");
-  field.name = base::string16();
+  field.name = std::u16string();
   field.unique_renderer_id = MakeFieldRendererId();
   form.fields.push_back(field);
 
   field.label = ASCIIToUTF16("Phone");
-  field.name = base::string16();
+  field.name = std::u16string();
   field.unique_renderer_id = MakeFieldRendererId();
   form.fields.push_back(field);
 
   field.label = ASCIIToUTF16("Address");
-  field.name = base::string16();
+  field.name = std::u16string();
   field.unique_renderer_id = MakeFieldRendererId();
   form.fields.push_back(field);
 
   field.label = ASCIIToUTF16("Address");
-  field.name = base::string16();
+  field.name = std::u16string();
   field.unique_renderer_id = MakeFieldRendererId();
   form.fields.push_back(field);
 
   field.label = ASCIIToUTF16("Zip code");
-  field.name = base::string16();
+  field.name = std::u16string();
   field.unique_renderer_id = MakeFieldRendererId();
   form.fields.push_back(field);
 
-  field.label = base::string16();
+  field.label = std::u16string();
   field.name = ASCIIToUTF16("Submit");
   field.form_control_type = "submit";
   field.unique_renderer_id = MakeFieldRendererId();
@@ -1611,7 +1611,7 @@ TEST_F(FormStructureTestImpl, HeuristicsCreditCardInfo) {
   field.unique_renderer_id = MakeFieldRendererId();
   form.fields.push_back(field);
 
-  field.label = base::string16();
+  field.label = std::u16string();
   field.name = ASCIIToUTF16("Submit");
   field.form_control_type = "submit";
   field.unique_renderer_id = MakeFieldRendererId();
@@ -1679,7 +1679,7 @@ TEST_F(FormStructureTestImpl, HeuristicsCreditCardInfoWithUnknownCardField) {
   field.unique_renderer_id = MakeFieldRendererId();
   form.fields.push_back(field);
 
-  field.label = base::string16();
+  field.label = std::u16string();
   field.name = ASCIIToUTF16("Submit");
   field.form_control_type = "submit";
   field.unique_renderer_id = MakeFieldRendererId();
@@ -2141,7 +2141,7 @@ TEST_F(FormStructureTestImpl, HeuristicsInferCCNames_NamesNotFirst) {
   field.unique_renderer_id = MakeFieldRendererId();
   form.fields.push_back(field);
 
-  field.label = base::string16();
+  field.label = std::u16string();
   field.name = ASCIIToUTF16("ccexpiresyear");
   field.unique_renderer_id = MakeFieldRendererId();
   form.fields.push_back(field);
@@ -2206,7 +2206,7 @@ TEST_F(FormStructureTestImpl, HeuristicsInferCCNames_NamesFirst) {
   field.unique_renderer_id = MakeFieldRendererId();
   form.fields.push_back(field);
 
-  field.label = base::string16();
+  field.label = std::u16string();
   field.name = ASCIIToUTF16("ccexpiresyear");
   field.unique_renderer_id = MakeFieldRendererId();
   form.fields.push_back(field);
@@ -4892,7 +4892,7 @@ TEST_F(FormStructureTestImpl, ToFormData) {
   field.unique_renderer_id = MakeFieldRendererId();
   form.fields.push_back(field);
 
-  field.label = base::string16();
+  field.label = std::u16string();
   field.name = ASCIIToUTF16("Submit");
   field.form_control_type = "submit";
   field.unique_renderer_id = MakeFieldRendererId();
@@ -4921,7 +4921,7 @@ TEST_F(FormStructureTestImpl, SkipFieldTest) {
   field.unique_renderer_id = MakeFieldRendererId();
   form.fields.push_back(field);
 
-  field.label = base::string16();
+  field.label = std::u16string();
   field.name = ASCIIToUTF16("email");
   field.form_control_type = "text";
   field.check_status = FormFieldData::CheckStatus::kNotCheckable;
@@ -5081,7 +5081,7 @@ TEST_F(FormStructureTestImpl, EncodeQueryRequest_MissingNames) {
   field.unique_renderer_id = MakeFieldRendererId();
   form.fields.push_back(field);
 
-  field.label = base::string16();
+  field.label = std::u16string();
   // No name set for this field.
   field.name = ASCIIToUTF16("");
   field.form_control_type = "text";
@@ -5140,7 +5140,7 @@ TEST_F(FormStructureTestImpl, PossibleValues) {
   form_structure.ParseFieldTypesFromAutocompleteAttributes();
 
   // All values in <option> value= or contents are returned, set to upper case.
-  std::set<base::string16> possible_values =
+  std::set<std::u16string> possible_values =
       form_structure.PossibleValues(ADDRESS_BILLING_COUNTRY);
   EXPECT_EQ(5U, possible_values.size());
   EXPECT_EQ(1U, possible_values.count(ASCIIToUTF16("AU")));

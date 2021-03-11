@@ -4160,7 +4160,7 @@ TEST_F(AutofillMetricsTest, CreditCardCheckoutFlowUserActions) {
     base::UserActionTester user_action_tester;
     std::string guid("10000000-0000-0000-0000-000000000001");  // local card
     external_delegate_->OnQuery(0, form, form.fields.front(), gfx::RectF());
-    external_delegate_->DidAcceptSuggestion(base::string16(),
+    external_delegate_->DidAcceptSuggestion(std::u16string(),
                                             POPUP_ITEM_ID_CLEAR_FORM, 0);
     EXPECT_EQ(1, user_action_tester.GetActionCount("Autofill_ClearedForm"));
   }
@@ -8056,7 +8056,7 @@ TEST_F(AutofillMetricsTest, AutofillFormSubmittedState) {
   }
 
   // Clear out the third field's value.
-  form.fields[2].value = base::string16();
+  form.fields[2].value = std::u16string();
   forms.front() = form;
 }
 

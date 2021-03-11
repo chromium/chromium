@@ -293,7 +293,7 @@ TEST_F(AutofillDownloadManagerTest, QueryAndUploadTest) {
   field.form_control_type = "password";
   form.fields.push_back(field);
 
-  field.label = base::string16();
+  field.label = std::u16string();
   field.name = UTF8ToUTF16("Submit");
   field.form_control_type = "submit";
   form.fields.push_back(field);
@@ -318,7 +318,7 @@ TEST_F(AutofillDownloadManagerTest, QueryAndUploadTest) {
   field.form_control_type = "text";
   form.fields.push_back(field);
 
-  field.label = base::string16();
+  field.label = std::u16string();
   field.name = UTF8ToUTF16("Submit");
   field.form_control_type = "submit";
   form.fields.push_back(field);
@@ -337,7 +337,7 @@ TEST_F(AutofillDownloadManagerTest, QueryAndUploadTest) {
   field.form_control_type = "password";
   form.fields.push_back(field);
 
-  field.label = base::string16();
+  field.label = std::u16string();
   field.name = UTF8ToUTF16("Submit");
   field.form_control_type = "submit";
   form.fields.push_back(field);
@@ -886,7 +886,7 @@ TEST_F(AutofillDownloadManagerTest, BackoffLogic_Query) {
   field.form_control_type = "text";
   form.fields.push_back(field);
 
-  field.label = base::string16();
+  field.label = std::u16string();
   field.name = UTF8ToUTF16("Submit");
   field.form_control_type = "submit";
   form.fields.push_back(field);
@@ -957,7 +957,7 @@ TEST_F(AutofillDownloadManagerTest, BackoffLogic_Upload) {
   field.form_control_type = "text";
   form.fields.push_back(field);
 
-  field.label = base::string16();
+  field.label = std::u16string();
   field.name = UTF8ToUTF16("Submit");
   field.form_control_type = "submit";
   form.fields.push_back(field);
@@ -1045,7 +1045,7 @@ TEST_F(AutofillDownloadManagerTest, RetryLimit_Query) {
   field.form_control_type = "text";
   form.fields.push_back(field);
 
-  field.label = base::string16();
+  field.label = std::u16string();
   field.name = UTF8ToUTF16("Submit");
   field.form_control_type = "submit";
   form.fields.push_back(field);
@@ -1122,7 +1122,7 @@ TEST_F(AutofillDownloadManagerTest, RetryLimit_Upload) {
   field.form_control_type = "text";
   form.fields.push_back(field);
 
-  field.label = base::string16();
+  field.label = std::u16string();
   field.name = UTF8ToUTF16("Submit");
   field.form_control_type = "submit";
   form.fields.push_back(field);

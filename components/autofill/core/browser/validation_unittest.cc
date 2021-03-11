@@ -204,7 +204,7 @@ class AutofillTypeValidationTest
     : public testing::TestWithParam<ValidationCase> {};
 
 TEST_P(AutofillTypeValidationTest, IsValidForType) {
-  base::string16 error_message;
+  std::u16string error_message;
   EXPECT_EQ(GetParam().expected_valid,
             IsValidForType(ASCIIToUTF16(GetParam().value),
                            GetParam().field_type, &error_message))
@@ -363,7 +363,7 @@ class AutofillCCNumberValidationTest
     : public testing::TestWithParam<CCNumberCase> {};
 
 TEST_P(AutofillCCNumberValidationTest, IsValidCreditCardNumber) {
-  base::string16 error_message;
+  std::u16string error_message;
   EXPECT_EQ(GetParam().expected_valid,
             IsValidCreditCardNumberForBasicCardNetworks(
                 ASCIIToUTF16(GetParam().value),

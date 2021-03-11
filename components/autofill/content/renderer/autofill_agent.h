@@ -85,14 +85,14 @@ class AutofillAgent : public content::RenderFrameObserver,
       const std::vector<FormDataPredictions>& forms) override;
   void ClearSection() override;
   void ClearPreviewedForm() override;
-  void FillFieldWithValue(const base::string16& value) override;
-  void PreviewFieldWithValue(const base::string16& value) override;
+  void FillFieldWithValue(const std::u16string& value) override;
+  void PreviewFieldWithValue(const std::u16string& value) override;
   void SetSuggestionAvailability(const mojom::AutofillState state) override;
-  void AcceptDataListSuggestion(const base::string16& value) override;
-  void FillPasswordSuggestion(const base::string16& username,
-                              const base::string16& password) override;
-  void PreviewPasswordSuggestion(const base::string16& username,
-                                 const base::string16& password) override;
+  void AcceptDataListSuggestion(const std::u16string& value) override;
+  void FillPasswordSuggestion(const std::u16string& username,
+                              const std::u16string& password) override;
+  void PreviewPasswordSuggestion(const std::u16string& username,
+                                 const std::u16string& password) override;
   void SetUserGestureRequired(bool required) override;
   void SetSecureContextRequired(bool required) override;
   void SetFocusRequiresScroll(bool require) override;
@@ -227,16 +227,16 @@ class AutofillAgent : public content::RenderFrameObserver,
                                 bool autoselect_first_suggestion);
 
   // Sets the element value to reflect the selected |suggested_value|.
-  void DoAcceptDataListSuggestion(const base::string16& suggested_value);
+  void DoAcceptDataListSuggestion(const std::u16string& suggested_value);
 
   // Set |node| to display the given |value|.
-  void DoFillFieldWithValue(const base::string16& value,
+  void DoFillFieldWithValue(const std::u16string& value,
                             blink::WebInputElement* node);
 
   // Set |node| to display the given |value| as a preview.  The preview is
   // visible on screen to the user, but not visible to the page via the DOM or
   // JavaScript.
-  void DoPreviewFieldWithValue(const base::string16& value,
+  void DoPreviewFieldWithValue(const std::u16string& value,
                                blink::WebInputElement* node);
 
   // Notifies browser of new fillable forms in |render_frame|.

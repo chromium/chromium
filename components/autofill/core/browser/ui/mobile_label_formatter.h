@@ -43,7 +43,7 @@ class MobileLabelFormatter : public LabelFormatter {
 
   ~MobileLabelFormatter() override;
 
-  base::string16 GetLabelForProfile(
+  std::u16string GetLabelForProfile(
       const AutofillProfile& profile,
       FieldTypeGroup focused_group) const override;
 
@@ -61,7 +61,7 @@ class MobileLabelFormatter : public LabelFormatter {
   // and (C) this user is interacting with a form that has first name, last
   // name, and email address fields. If this user clicks on the first name
   // field, then the suggestion with Joe has an empty string as its label.
-  base::string16 GetLabelForShowOneVariant(const AutofillProfile& profile,
+  std::u16string GetLabelForShowOneVariant(const AutofillProfile& profile,
                                            FieldTypeGroup focused_group) const;
 
   // Returns a label for the kAutofillUseMobileLabelDisambiguation feature when
@@ -73,7 +73,7 @@ class MobileLabelFormatter : public LabelFormatter {
   //
   // As explained in the comment for GetLabelForShowOneVariant, it is possible
   // for the label to be an empty string.
-  base::string16 GetLabelForShowAllVariant(const AutofillProfile& profile,
+  std::u16string GetLabelForShowAllVariant(const AutofillProfile& profile,
                                            FieldTypeGroup focused_group) const;
 
   // Returns a label with the most useful piece of data according to the
@@ -82,7 +82,7 @@ class MobileLabelFormatter : public LabelFormatter {
   // It is possible for the label to be an empty string. This can happen when
   // |profile| is missing data corresponding to a field, e.g. a profile without
   // a phone number.
-  base::string16 GetDefaultLabel(const AutofillProfile& profile,
+  std::u16string GetDefaultLabel(const AutofillProfile& profile,
                                  FieldTypeGroup focused_group) const;
 
   // Returns true if the label should be an address part, e.g. 4 Oak Rd or

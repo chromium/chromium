@@ -66,7 +66,7 @@ ScopedJavaLocalRef<jobject> FormDataAndroid::GetNextFormFieldData(JNIEnv* env) {
 }
 
 void FormDataAndroid::OnFormFieldDidChange(size_t index,
-                                           const base::string16& value) {
+                                           const std::u16string& value) {
   form_.fields[index].value = value;
   fields_[index]->OnFormFieldDidChange(value);
 }

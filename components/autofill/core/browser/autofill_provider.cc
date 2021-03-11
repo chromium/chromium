@@ -33,7 +33,7 @@ void AutofillProvider::SendFormDataToRenderer(AutofillHandlerProxy* handler,
 
 void AutofillProvider::RendererShouldAcceptDataListSuggestion(
     AutofillHandlerProxy* handler,
-    const base::string16& value) {
+    const std::u16string& value) {
   handler->driver()->RendererShouldAcceptDataListSuggestion(value);
 }
 

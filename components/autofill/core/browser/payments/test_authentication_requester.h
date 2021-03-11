@@ -49,7 +49,7 @@ class TestAuthenticationRequester
   void OnFIDOAuthenticationComplete(
       bool did_succeed,
       const CreditCard* card = nullptr,
-      const base::string16& cvc = base::string16()) override;
+      const std::u16string& cvc = std::u16string()) override;
   void OnFidoAuthorizationComplete(bool did_succeed) override;
 
   void IsUserVerifiableCallback(bool is_user_verifiable);
@@ -61,7 +61,7 @@ class TestAuthenticationRequester
 
   bool did_succeed() { return did_succeed_; }
 
-  base::string16 number() { return number_; }
+  std::u16string number() { return number_; }
 
  private:
   // Set when CreditCardFIDOAuthenticator invokes IsUserVerifiableCallback().
@@ -71,7 +71,7 @@ class TestAuthenticationRequester
   bool did_succeed_ = false;
 
   // The card number returned from On*AuthenticationComplete().
-  base::string16 number_;
+  std::u16string number_;
 
   base::WeakPtrFactory<TestAuthenticationRequester> weak_ptr_factory_{this};
 };

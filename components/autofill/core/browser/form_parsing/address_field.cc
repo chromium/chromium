@@ -60,8 +60,8 @@ std::unique_ptr<FormField> AddressField::Parse(
   const AutofillField* const initial_field = scanner->Cursor();
   size_t saved_cursor = scanner->SaveCursor();
 
-  base::string16 attention_ignored = UTF8ToUTF16(kAttentionIgnoredRe);
-  base::string16 region_ignored = UTF8ToUTF16(kRegionIgnoredRe);
+  std::u16string attention_ignored = UTF8ToUTF16(kAttentionIgnoredRe);
+  std::u16string region_ignored = UTF8ToUTF16(kRegionIgnoredRe);
 
   const std::vector<MatchingPattern>& email_patterns =
       PatternProvider::GetInstance().GetMatchPatterns("EMAIL_ADDRESS",
@@ -300,8 +300,8 @@ bool AddressField::ParseAddressLines(AutofillScanner* scanner,
   if (address1_ || street_address_)
     return false;
 
-  base::string16 pattern = UTF8ToUTF16(kAddressLine1Re);
-  base::string16 label_pattern = UTF8ToUTF16(kAddressLine1LabelRe);
+  std::u16string pattern = UTF8ToUTF16(kAddressLine1Re);
+  std::u16string label_pattern = UTF8ToUTF16(kAddressLine1LabelRe);
 
   const std::vector<MatchingPattern>& address_line1_patterns =
       PatternProvider::GetInstance().GetMatchPatterns("ADDRESS_LINE_1",
@@ -467,7 +467,7 @@ bool AddressField::ParseState(AutofillScanner* scanner,
 
 AddressField::ParseNameLabelResult AddressField::ParseNameAndLabelSeparately(
     AutofillScanner* scanner,
-    const base::string16& pattern,
+    const std::u16string& pattern,
     int match_type,
     const std::vector<MatchingPattern>& patterns,
     AutofillField** match,

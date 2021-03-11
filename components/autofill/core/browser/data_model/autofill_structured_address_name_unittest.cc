@@ -48,14 +48,14 @@ struct LastNameParserTestRecord {
 
 // Function to test the parsing of a name from the full (unstructured)
 // representation into its subcomponents.
-void TestNameParsing(const base::string16& full_with_prefix,
-                     const base::string16& honorific,
-                     const base::string16& first,
-                     const base::string16& middle,
-                     const base::string16& last,
-                     const base::string16& last_first,
-                     const base::string16& last_conjunction,
-                     const base::string16& last_second) {
+void TestNameParsing(const std::u16string& full_with_prefix,
+                     const std::u16string& honorific,
+                     const std::u16string& first,
+                     const std::u16string& middle,
+                     const std::u16string& last,
+                     const std::u16string& last_first,
+                     const std::u16string& last_conjunction,
+                     const std::u16string& last_second) {
   SCOPED_TRACE(full_with_prefix);
   NameFullWithPrefix name;
   name.SetValueForTypeIfPossible(NAME_FULL_WITH_HONORIFIC_PREFIX,
@@ -84,10 +84,10 @@ void TestNameParsing(const base::string16& full_with_prefix,
 }
 
 // Testing function for parsing a |NAME_LAST| into its subcomponents.
-void TestLastNameParsing(const base::string16& last_name,
-                         const base::string16& target_first,
-                         const base::string16& target_conjunction,
-                         const base::string16& target_second) {
+void TestLastNameParsing(const std::u16string& last_name,
+                         const std::u16string& target_first,
+                         const std::u16string& target_conjunction,
+                         const std::u16string& target_second) {
   SCOPED_TRACE(last_name);
 
   NameLast last_name_component(nullptr);
@@ -380,7 +380,7 @@ TEST(AutofillStructuredName, TestGetSupportedTypes_FullName) {
 TEST(AutofillStructuredName, TestSettingMiddleNameInitial) {
   NameFullWithPrefix full_name_with_prefix;
   EXPECT_EQ(full_name_with_prefix.GetValueForType(NAME_MIDDLE),
-            base::string16());
+            std::u16string());
 
   EXPECT_TRUE(full_name_with_prefix.SetValueForTypeIfPossible(
       NAME_MIDDLE_INITIAL, base::UTF8ToUTF16("M"),

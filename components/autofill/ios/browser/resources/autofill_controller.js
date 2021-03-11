@@ -606,7 +606,7 @@ __gCrWeb.autofill['fillPredictionData'] = function(data) {
  * Returns whether |value| contains only formating characters.
  *
  * It is based on the logic in
- *     void SanitizedFieldIsEmpty(const base::string16& value);
+ *     void SanitizedFieldIsEmpty(const std::u16string& value);
  * in chromium/src/components/autofill/common/autofill_util.h.
  *
  * @param {HTMLFormElement} formElement A form element to be processed.

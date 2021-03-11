@@ -372,7 +372,7 @@ bool FormCache::ShowPredictions(const FormDataPredictions& form,
     // If the flag is enabled, attach the prediction to the field.
     if (attach_predictions_to_dom) {
       constexpr size_t kMaxLabelSize = 100;
-      const base::string16 truncated_label = field_data.label.substr(
+      const std::u16string truncated_label = field_data.label.substr(
           0, std::min(field_data.label.length(), kMaxLabelSize));
 
       std::string form_id =

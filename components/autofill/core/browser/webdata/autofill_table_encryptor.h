@@ -15,10 +15,10 @@ class AutofillTableEncryptor {
  public:
   virtual ~AutofillTableEncryptor() = default;
 
-  virtual bool EncryptString16(const base::string16& plaintext,
+  virtual bool EncryptString16(const std::u16string& plaintext,
                                std::string* ciphertext) const = 0;
   virtual bool DecryptString16(const std::string& ciphertext,
-                               base::string16* plaintext) const = 0;
+                               std::u16string* plaintext) const = 0;
 };
 
 }  // namespace autofill

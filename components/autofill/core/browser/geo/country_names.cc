@@ -89,7 +89,7 @@ CountryNames::CountryNames() : CountryNames(g_application_locale.Get()) {
 CountryNames::~CountryNames() = default;
 
 const std::string CountryNames::GetCountryCode(
-    const base::string16& country) const {
+    const std::u16string& country) const {
   // First, check common country names, including 2- and 3-letter country codes.
   std::string country_utf8 = base::UTF16ToUTF8(base::ToUpperASCII(country));
   const auto result = common_names_.find(country_utf8);
@@ -107,7 +107,7 @@ const std::string CountryNames::GetCountryCode(
 }
 
 const std::string CountryNames::GetCountryCodeForLocalizedCountryName(
-    const base::string16& country,
+    const std::u16string& country,
     const std::string& locale_name) {
   // Do an unconditional lookup using the default and app_locale.
   // Chances are that the name of the country matches the localized one.

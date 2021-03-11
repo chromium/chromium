@@ -45,7 +45,7 @@ bool TestAuthenticationRequester::UserOptedInToFidoFromSettingsPageOnMobile()
 void TestAuthenticationRequester::OnFIDOAuthenticationComplete(
     bool did_succeed,
     const CreditCard* card,
-    const base::string16& cvc) {
+    const std::u16string& cvc) {
   did_succeed_ = did_succeed;
   if (did_succeed_) {
     DCHECK(card);

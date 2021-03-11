@@ -28,7 +28,7 @@ class AddressEmailFormLabelFormatter : public LabelFormatter {
 
   ~AddressEmailFormLabelFormatter() override;
 
-  base::string16 GetLabelForProfile(
+  std::u16string GetLabelForProfile(
       const AutofillProfile& profile,
       FieldTypeGroup focused_group) const override;
 
@@ -37,7 +37,7 @@ class AddressEmailFormLabelFormatter : public LabelFormatter {
   // other than a non-street-address field type. For example,
   // |focused_field_type_| could be last name, home street address, or email
   // address.
-  base::string16 GetLabelForProfileOnFocusedNameEmailOrStreetAddress(
+  std::u16string GetLabelForProfileOnFocusedNameEmailOrStreetAddress(
       const AutofillProfile& profile,
       FieldTypeGroup focused_group) const;
 

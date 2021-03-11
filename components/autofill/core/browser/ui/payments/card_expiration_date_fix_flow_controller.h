@@ -23,20 +23,20 @@ class CardExpirationDateFixFlowController {
   virtual ~CardExpirationDateFixFlowController() {}
 
   // Interaction.
-  virtual void OnAccepted(const base::string16& month,
-                          const base::string16& year) = 0;
+  virtual void OnAccepted(const std::u16string& month,
+                          const std::u16string& year) = 0;
   virtual void OnDismissed() = 0;
   virtual void OnDialogClosed() = 0;
 
   // State.
   virtual int GetIconId() const = 0;
-  virtual base::string16 GetTitleText() const = 0;
-  virtual base::string16 GetSaveButtonLabel() const = 0;
-  virtual base::string16 GetCardLabel() const = 0;
-  virtual base::string16 GetCancelButtonLabel() const = 0;
-  virtual base::string16 GetInputLabel() const = 0;
-  virtual base::string16 GetDateSeparator() const = 0;
-  virtual base::string16 GetInvalidDateError() const = 0;
+  virtual std::u16string GetTitleText() const = 0;
+  virtual std::u16string GetSaveButtonLabel() const = 0;
+  virtual std::u16string GetCardLabel() const = 0;
+  virtual std::u16string GetCancelButtonLabel() const = 0;
+  virtual std::u16string GetInputLabel() const = 0;
+  virtual std::u16string GetDateSeparator() const = 0;
+  virtual std::u16string GetInvalidDateError() const = 0;
 };
 
 }  // namespace autofill

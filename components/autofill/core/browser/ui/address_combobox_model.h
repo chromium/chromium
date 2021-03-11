@@ -35,7 +35,7 @@ class AddressComboboxModel : public ui::ComboboxModel {
 
   // ui::ComboboxModel implementation:
   int GetItemCount() const override;
-  base::string16 GetItemAt(int index) const override;
+  std::u16string GetItemAt(int index) const override;
   bool IsItemSeparatorAt(int index) const override;
   int GetDefaultIndex() const override;
   void AddObserver(ui::ComboboxModelObserver* observer) override;
@@ -59,7 +59,7 @@ class AddressComboboxModel : public ui::ComboboxModel {
 
   // List of <id, user visible string> pairs for the addresses extracted from
   // the |personal_data_manager| passed in the constructor.
-  std::vector<std::pair<std::string, base::string16>> addresses_;
+  std::vector<std::pair<std::string, std::u16string>> addresses_;
 
   // A cached copy of all profiles to allow rebuilding the differentiating
   // labels when new profiles are added.

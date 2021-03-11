@@ -151,7 +151,7 @@ class PaymentsClientTest : public testing::Test {
 
   void OnDidGetUploadDetails(
       AutofillClient::PaymentsRpcResult result,
-      const base::string16& context_token,
+      const std::u16string& context_token,
       std::unique_ptr<base::Value> legal_message,
       std::vector<std::pair<int, int>> supported_card_bin_ranges) {
     result_ = result;
@@ -321,7 +321,7 @@ class PaymentsClientTest : public testing::Test {
   // GetDetails upload save preflight call.
   std::vector<std::pair<int, int>> supported_card_bin_ranges_;
   // The nickname name in the UploadRequest that was supposed to be saved.
-  base::string16 upstream_nickname_;
+  std::u16string upstream_nickname_;
 
 #if !defined(OS_ANDROID) && !defined(OS_IOS)
   // Credit cards to be upload saved during a local credit card migration call.

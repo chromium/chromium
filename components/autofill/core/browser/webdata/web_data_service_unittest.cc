@@ -167,8 +167,8 @@ class WebDataServiceAutofillTest : public WebDataServiceTest {
     WebDataServiceTest::TearDown();
   }
 
-  void AppendFormField(const base::string16& name,
-                       const base::string16& value,
+  void AppendFormField(const std::u16string& name,
+                       const std::u16string& value,
                        std::vector<FormFieldData>* form_fields) {
     FormFieldData field;
     field.name = name;
@@ -176,10 +176,10 @@ class WebDataServiceAutofillTest : public WebDataServiceTest {
     form_fields->push_back(field);
   }
 
-  base::string16 name1_;
-  base::string16 name2_;
-  base::string16 value1_;
-  base::string16 value2_;
+  std::u16string name1_;
+  std::u16string name2_;
+  std::u16string value1_;
+  std::u16string value2_;
   int unique_id1_, unique_id2_;
   const TimeDelta test_timeout_;
   testing::NiceMock<MockAutofillWebDataServiceObserver> observer_;
@@ -208,7 +208,7 @@ TEST_F(WebDataServiceAutofillTest, FormFillAdd) {
   AutofillWebDataServiceConsumer<std::vector<AutofillEntry>> consumer;
   WebDataServiceBase::Handle handle;
   static const int limit = 10;
-  handle = wds_->GetFormValuesForElementName(name1_, base::string16(), limit,
+  handle = wds_->GetFormValuesForElementName(name1_, std::u16string(), limit,
                                              &consumer);
   task_environment_.RunUntilIdle();
   EXPECT_EQ(handle, consumer.handle());

@@ -50,7 +50,7 @@ class FormDataAndroid {
 
   // Invoked when form field which specified by |index| is charged to new
   // |value|.
-  void OnFormFieldDidChange(size_t index, const base::string16& value);
+  void OnFormFieldDidChange(size_t index, const std::u16string& value);
 
   // Updates the field types from the |form|.
   void UpdateFieldTypes(const FormStructure& form);

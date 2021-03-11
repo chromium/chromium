@@ -20,10 +20,10 @@ bool FieldDataManager::HasFieldData(FieldRendererId id) const {
          field_value_and_properties_map_.end();
 }
 
-base::string16 FieldDataManager::GetUserInput(FieldRendererId id) const {
+std::u16string FieldDataManager::GetUserInput(FieldRendererId id) const {
   DCHECK(HasFieldData(id));
   return field_value_and_properties_map_.at(id).first.value_or(
-      base::string16());
+      std::u16string());
 }
 
 FieldPropertiesMask FieldDataManager::GetFieldPropertiesMask(
@@ -32,32 +32,32 @@ FieldPropertiesMask FieldDataManager::GetFieldPropertiesMask(
   return field_value_and_properties_map_.at(id).second;
 }
 
-bool FieldDataManager::FindMachedValue(const base::string16& value) const {
+bool FieldDataManager::FindMachedValue(const std::u16string& value) const {
   constexpr size_t kMinMatchSize = 3u;
   const auto lowercase = base::i18n::ToLower(value);
   for (const auto& map_key : field_value_and_properties_map_) {
-    const base::string16 typed_from_key =
-        map_key.second.first.value_or(base::string16());
+    const std::u16string typed_from_key =
+        map_key.second.first.value_or(std::u16string());
     if (typed_from_key.empty())
       continue;
     if (typed_from_key.size() >= kMinMatchSize &&
         lowercase.find(base::i18n::ToLower(typed_from_key)) !=
-            base::string16::npos)
+            std::u16string::npos)
       return true;
   }
   return false;
 }
 
 void FieldDataManager::UpdateFieldDataMap(FieldRendererId id,
-                                          const base::string16& value,
+                                          const std::u16string& value,
                                           FieldPropertiesMask mask) {
   if (HasFieldData(id)) {
     field_value_and_properties_map_.at(id).first =
-        base::Optional<base::string16>(value);
+        base::Optional<std::u16string>(value);
     field_value_and_properties_map_.at(id).second |= mask;
   } else {
     field_value_and_properties_map_[id] =
-        std::make_pair(base::Optional<base::string16>(value), mask);
+        std::make_pair(base::Optional<std::u16string>(value), mask);
   }
   // Reset kUserTyped and kAutofilled flags if the value is empty.
   if (value.empty()) {

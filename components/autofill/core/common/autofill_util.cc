@@ -72,8 +72,8 @@ bool IsTouchToFillEnabled() {
 }
 
 bool FieldIsSuggestionSubstringStartingOnTokenBoundary(
-    const base::string16& suggestion,
-    const base::string16& field_contents,
+    const std::u16string& suggestion,
+    const std::u16string& field_contents,
     bool case_sensitive) {
   if (!IsFeatureSubstringMatchEnabled()) {
     return base::StartsWith(suggestion, field_contents,
@@ -84,26 +84,26 @@ bool FieldIsSuggestionSubstringStartingOnTokenBoundary(
 
   return suggestion.length() >= field_contents.length() &&
          GetTextSelectionStart(suggestion, field_contents, case_sensitive) !=
-             base::string16::npos;
+             std::u16string::npos;
 }
 
-bool IsPrefixOfEmailEndingWithAtSign(const base::string16& full_string,
-                                     const base::string16& prefix) {
+bool IsPrefixOfEmailEndingWithAtSign(const std::u16string& full_string,
+                                     const std::u16string& prefix) {
   return base::StartsWith(full_string, prefix + base::UTF8ToUTF16("@"),
                           base::CompareCase::SENSITIVE);
 }
 
-size_t GetTextSelectionStart(const base::string16& suggestion,
-                             const base::string16& field_contents,
+size_t GetTextSelectionStart(const std::u16string& suggestion,
+                             const std::u16string& field_contents,
                              bool case_sensitive) {
-  const base::string16 kSplitChars = base::ASCIIToUTF16(kSplitCharacters);
+  const std::u16string kSplitChars = base::ASCIIToUTF16(kSplitCharacters);
 
   // Loop until we find either the |field_contents| is a prefix of |suggestion|
   // or character right before the match is one of the splitting characters.
-  for (base::string16::const_iterator it = suggestion.begin();
+  for (std::u16string::const_iterator it = suggestion.begin();
        (it = std::search(
             it, suggestion.end(), field_contents.begin(), field_contents.end(),
-            Compare<base::string16::value_type>(case_sensitive))) !=
+            Compare<std::u16string::value_type>(case_sensitive))) !=
        suggestion.end();
        ++it) {
     if (it == suggestion.begin() ||
@@ -115,7 +115,7 @@ size_t GetTextSelectionStart(const base::string16& suggestion,
   }
 
   // Unable to find the |field_contents| in |suggestion| text.
-  return base::string16::npos;
+  return std::u16string::npos;
 }
 
 bool IsDesktopPlatform() {
@@ -156,11 +156,11 @@ std::vector<std::string> LowercaseAndTokenizeAttributeString(
                            base::SPLIT_WANT_NONEMPTY);
 }
 
-bool SanitizedFieldIsEmpty(const base::string16& value) {
+bool SanitizedFieldIsEmpty(const std::u16string& value) {
   // Some sites enter values such as ____-____-____-____ or (___)-___-____ in
   // their fields. Check if the field value is empty after the removal of the
   // formatting characters.
-  static base::string16 formatting =
+  static std::u16string formatting =
       (base::ASCIIToUTF16("-_()/") + char16_t(base::i18n::kRightToLeftMark) +
        char16_t(base::i18n::kLeftToRightMark))
           .append(base::kWhitespaceUTF16);

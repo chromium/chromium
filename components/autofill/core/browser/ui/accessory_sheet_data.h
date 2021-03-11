@@ -28,12 +28,12 @@ class UserInfo {
   // number.
   class Field {
    public:
-    Field(base::string16 display_text,
-          base::string16 a11y_description,
+    Field(std::u16string display_text,
+          std::u16string a11y_description,
           bool is_obfuscated,
           bool selectable);
-    Field(base::string16 display_text,
-          base::string16 a11y_description,
+    Field(std::u16string display_text,
+          std::u16string a11y_description,
           std::string id,
           bool is_obfuscated,
           bool selectable);
@@ -45,9 +45,9 @@ class UserInfo {
     Field& operator=(const Field& field);
     Field& operator=(Field&& field);
 
-    const base::string16& display_text() const { return display_text_; }
+    const std::u16string& display_text() const { return display_text_; }
 
-    const base::string16& a11y_description() const { return a11y_description_; }
+    const std::u16string& a11y_description() const { return a11y_description_; }
 
     const std::string& id() const { return id_; }
 
@@ -64,8 +64,8 @@ class UserInfo {
    private:
     // IMPORTANT(https://crbug.com/1169167): Add the size of newly added strings
     // to the memory estimation member!
-    base::string16 display_text_;
-    base::string16 a11y_description_;
+    std::u16string display_text_;
+    std::u16string a11y_description_;
     std::string id_;  // Optional, if needed to complete filling.
     bool is_obfuscated_;
     bool selectable_;
@@ -116,7 +116,7 @@ std::ostream& operator<<(std::ostream& out, const UserInfo& user_info);
 // Represents a command below the suggestions, such as "Manage password...".
 class FooterCommand {
  public:
-  FooterCommand(base::string16 display_text, autofill::AccessoryAction action);
+  FooterCommand(std::u16string display_text, autofill::AccessoryAction action);
   FooterCommand(const FooterCommand& footer_command);
   FooterCommand(FooterCommand&& footer_command);
 
@@ -125,7 +125,7 @@ class FooterCommand {
   FooterCommand& operator=(const FooterCommand& footer_command);
   FooterCommand& operator=(FooterCommand&& footer_command);
 
-  const base::string16& display_text() const { return display_text_; }
+  const std::u16string& display_text() const { return display_text_; }
 
   autofill::AccessoryAction accessory_action() const {
     return accessory_action_;
@@ -140,7 +140,7 @@ class FooterCommand {
  private:
   // IMPORTANT(https://crbug.com/1169167): Add the size of newly added strings
   // to the memory estimation member!
-  base::string16 display_text_;
+  std::u16string display_text_;
   autofill::AccessoryAction accessory_action_;
   size_t estimated_memory_use_by_strings_ = 0;
 };
@@ -153,7 +153,7 @@ std::ostream& operator<<(std::ostream& out, const AccessoryTabType& type);
 // for example, to turn password saving on for the current origin.
 class OptionToggle {
  public:
-  OptionToggle(base::string16 display_text,
+  OptionToggle(std::u16string display_text,
                bool enabled,
                AccessoryAction accessory_action);
   OptionToggle(const OptionToggle& option_toggle);
@@ -164,7 +164,7 @@ class OptionToggle {
   OptionToggle& operator=(const OptionToggle& option_toggle);
   OptionToggle& operator=(OptionToggle&& option_toggle);
 
-  const base::string16& display_text() const { return display_text_; }
+  const std::u16string& display_text() const { return display_text_; }
 
   bool is_enabled() const { return enabled_; }
 
@@ -179,7 +179,7 @@ class OptionToggle {
  private:
   // IMPORTANT(https://crbug.com/1169167): Add the size of newly added strings
   // to the memory estimation member!
-  base::string16 display_text_;
+  std::u16string display_text_;
   bool enabled_;
   autofill::AccessoryAction accessory_action_;
   size_t estimated_memory_use_by_strings_ = 0;
@@ -191,10 +191,10 @@ class AccessorySheetData {
  public:
   class Builder;
 
-  AccessorySheetData(AccessoryTabType sheet_type, base::string16 title);
+  AccessorySheetData(AccessoryTabType sheet_type, std::u16string title);
   AccessorySheetData(AccessoryTabType sheet_type,
-                     base::string16 title,
-                     base::string16 warning);
+                     std::u16string title,
+                     std::u16string warning);
   AccessorySheetData(const AccessorySheetData& data);
   AccessorySheetData(AccessorySheetData&& data);
 
@@ -203,11 +203,11 @@ class AccessorySheetData {
   AccessorySheetData& operator=(const AccessorySheetData& data);
   AccessorySheetData& operator=(AccessorySheetData&& data);
 
-  const base::string16& title() const { return title_; }
+  const std::u16string& title() const { return title_; }
   AccessoryTabType get_sheet_type() const { return sheet_type_; }
 
-  const base::string16& warning() const { return warning_; }
-  void set_warning(base::string16 warning) { warning_ = std::move(warning); }
+  const std::u16string& warning() const { return warning_; }
+  void set_warning(std::u16string warning) { warning_ = std::move(warning); }
 
   void set_option_toggle(OptionToggle toggle) {
     option_toggle_ = std::move(toggle);
@@ -242,8 +242,8 @@ class AccessorySheetData {
 
  private:
   AccessoryTabType sheet_type_;
-  base::string16 title_;
-  base::string16 warning_;
+  std::u16string title_;
+  std::u16string warning_;
   base::Optional<OptionToggle> option_toggle_;
   std::vector<UserInfo> user_info_list_;
   std::vector<FooterCommand> footer_commands_;
@@ -266,18 +266,18 @@ std::ostream& operator<<(std::ostream& out, const AccessorySheetData& data);
 //       .Build();
 class AccessorySheetData::Builder {
  public:
-  Builder(AccessoryTabType type, base::string16 title);
+  Builder(AccessoryTabType type, std::u16string title);
   ~Builder();
 
   // Adds a warning string to the accessory sheet.
-  Builder&& SetWarning(base::string16 warning) &&;
-  Builder& SetWarning(base::string16 warning) &;
+  Builder&& SetWarning(std::u16string warning) &&;
+  Builder& SetWarning(std::u16string warning) &;
 
   // Sets the option toggle in the accessory sheet.
-  Builder&& SetOptionToggle(base::string16 display_text,
+  Builder&& SetOptionToggle(std::u16string display_text,
                             bool enabled,
                             autofill::AccessoryAction action) &&;
-  Builder& SetOptionToggle(base::string16 display_text,
+  Builder& SetOptionToggle(std::u16string display_text,
                            bool enabled,
                            autofill::AccessoryAction action) &;
 
@@ -290,34 +290,34 @@ class AccessorySheetData::Builder {
       UserInfo::IsPslMatch is_psl_match = UserInfo::IsPslMatch(false)) &;
 
   // Appends a selectable, non-obfuscated field to the last UserInfo object.
-  Builder&& AppendSimpleField(base::string16 text) &&;
-  Builder& AppendSimpleField(base::string16 text) &;
+  Builder&& AppendSimpleField(std::u16string text) &&;
+  Builder& AppendSimpleField(std::u16string text) &;
 
   // Appends a field to the last UserInfo object.
-  Builder&& AppendField(base::string16 display_text,
-                        base::string16 a11y_description,
+  Builder&& AppendField(std::u16string display_text,
+                        std::u16string a11y_description,
                         bool is_obfuscated,
                         bool selectable) &&;
-  Builder& AppendField(base::string16 display_text,
-                       base::string16 a11y_description,
+  Builder& AppendField(std::u16string display_text,
+                       std::u16string a11y_description,
                        bool is_obfuscated,
                        bool selectable) &;
 
-  Builder&& AppendField(base::string16 display_text,
-                        base::string16 a11y_description,
+  Builder&& AppendField(std::u16string display_text,
+                        std::u16string a11y_description,
                         std::string id,
                         bool is_obfuscated,
                         bool selectable) &&;
-  Builder& AppendField(base::string16 display_text,
-                       base::string16 a11y_description,
+  Builder& AppendField(std::u16string display_text,
+                       std::u16string a11y_description,
                        std::string id,
                        bool is_obfuscated,
                        bool selectable) &;
 
   // Appends a new footer command to |accessory_sheet_data_|.
-  Builder&& AppendFooterCommand(base::string16 display_text,
+  Builder&& AppendFooterCommand(std::u16string display_text,
                                 autofill::AccessoryAction action) &&;
-  Builder& AppendFooterCommand(base::string16 display_text,
+  Builder& AppendFooterCommand(std::u16string display_text,
                                autofill::AccessoryAction action) &;
 
   // This class returns the constructed AccessorySheetData object. Since this

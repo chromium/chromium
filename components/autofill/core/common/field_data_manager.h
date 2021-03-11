@@ -21,7 +21,7 @@ class FieldDataManager : public base::RefCounted<FieldDataManager> {
  public:
   using FieldDataMap =
       std::map<FieldRendererId,
-               std::pair<base::Optional<base::string16>, FieldPropertiesMask>>;
+               std::pair<base::Optional<std::u16string>, FieldPropertiesMask>>;
 
   FieldDataManager();
 
@@ -33,19 +33,19 @@ class FieldDataManager : public base::RefCounted<FieldDataManager> {
   // Flags in |mask| are added with bitwise OR operation.
   // If |value| is empty, kUserTyped and kAutofilled should be cleared.
   void UpdateFieldDataMap(FieldRendererId id,
-                          const base::string16& value,
+                          const std::u16string& value,
                           FieldPropertiesMask mask);
   // Only update FieldPropertiesMask when value is null.
   void UpdateFieldDataMapWithNullValue(FieldRendererId id,
                                        FieldPropertiesMask mask);
 
   // Returns value that was either typed or manually autofilled into the field.
-  base::string16 GetUserInput(FieldRendererId id) const;
+  std::u16string GetUserInput(FieldRendererId id) const;
 
   FieldPropertiesMask GetFieldPropertiesMask(FieldRendererId id) const;
 
   // Check if the string |value| is saved in |field_value_and_properties_map_|.
-  bool FindMachedValue(const base::string16& value) const;
+  bool FindMachedValue(const std::u16string& value) const;
 
   bool DidUserType(FieldRendererId id) const;
 

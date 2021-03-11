@@ -12,8 +12,8 @@ using autofill::AddressRewriter;
 
 TEST(AddressRewriterTest, InvalidCountryCode) {
   AddressRewriter ad = AddressRewriter::ForCountryCode(UTF8ToUTF16("ZZZZ"));
-  const base::string16 kSomeRandomText = UTF8ToUTF16("some random text");
-  const base::string16 kOtherRandomText = UTF8ToUTF16("other random text");
+  const std::u16string kSomeRandomText = UTF8ToUTF16("some random text");
+  const std::u16string kOtherRandomText = UTF8ToUTF16("other random text");
 
   EXPECT_EQ(ad.Rewrite(kSomeRandomText), ad.Rewrite(kSomeRandomText));
   EXPECT_EQ(ad.Rewrite(kOtherRandomText), ad.Rewrite(kOtherRandomText));
