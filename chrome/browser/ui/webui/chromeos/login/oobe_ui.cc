@@ -729,8 +729,20 @@ void OobeUI::AddOobeComponents(content::WebUIDataSource* source,
                           IDR_OOBE_COMPONENTS_OOBE_LOADING_DIALOG_JS);
 
   if (features::IsNewOobeLayoutEnabled()) {
+    if (policy::EnrollmentRequisitionManager::IsRemoraRequisition()) {
+      source->AddResourcePath(
+          kOobeCustomVarsCssHTML,
+          IDR_OOBE_COMPONENTS_OOBE_CUSTOM_VARS_REMORA_CSS_HTML);
+    } else {
+      source->AddResourcePath(kOobeCustomVarsCssHTML,
+                              IDR_OOBE_COMPONENTS_OOBE_CUSTOM_VARS_CSS_HTML);
+    }
+  } else {
     source->AddResourcePath(kOobeCustomVarsCssHTML,
-                            IDR_OOBE_COMPONENTS_OOBE_CUSTOM_VARS_CSS_HTML);
+                            IDR_OOBE_COMPONENTS_OOBE_CUSTOM_VARS_OLD_CSS_HTML);
+  }
+
+  if (features::IsNewOobeLayoutEnabled()) {
     source->AddResourcePath(kOobeAdaptiveDialogHTML,
                             IDR_OOBE_COMPONENTS_OOBE_ADAPTIVE_DIALOG_HTML);
     source->AddResourcePath(kOobeAdaptvieDialogJS,
@@ -747,9 +759,6 @@ void OobeUI::AddOobeComponents(content::WebUIDataSource* source,
         "worker-src blob: 'self';");
 
   } else {
-    source->AddResourcePath(
-        kOobeCustomVarsCssHTML,
-        IDR_OOBE_COMPONENTS_OOBE_CUSTOM_VARS_OLD_CSS_HTML);
     source->AddResourcePath(kOobeAdaptiveDialogHTML,
                             IDR_OOBE_COMPONENTS_OOBE_ADAPTIVE_DIALOG_OLD_HTML);
     source->AddResourcePath(kOobeAdaptvieDialogJS,

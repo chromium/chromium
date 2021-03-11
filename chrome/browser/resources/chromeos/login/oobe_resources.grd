@@ -46,6 +46,7 @@
       <!-- OOBE CSS Vars -->
       <include name="IDR_OOBE_COMPONENTS_OOBE_CUSTOM_VARS_OLD_CSS_HTML" file="components/oobe_vars/oobe_custom_vars_old_css.html" type="chrome_html" />
       <include name="IDR_OOBE_COMPONENTS_OOBE_CUSTOM_VARS_CSS_HTML" file="components/oobe_vars/oobe_custom_vars_css.html" type="chrome_html" />
+      <include name="IDR_OOBE_COMPONENTS_OOBE_CUSTOM_VARS_REMORA_CSS_HTML" file="components/oobe_vars/oobe_custom_vars_remora_css.html" type="chrome_html" />
       <include name="IDR_OOBE_COMPONENTS_OOBE_SHARED_VARS_CSS_HTML" file="components/oobe_vars/oobe_shared_vars_css.html" type="chrome_html" />
 
       <!-- OOBE Test API -->
