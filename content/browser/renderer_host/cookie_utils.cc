@@ -78,6 +78,7 @@ void EmitCookieWarningsAndMetrics(
   bool samesite_treated_as_lax_cookies = false;
   bool samesite_none_insecure_cookies = false;
   bool breaking_context_downgrade = false;
+  bool lax_allow_unsafe_cookies = false;
 
   bool same_party = false;
   bool same_party_exclusion_overruled_samesite = false;
@@ -100,6 +101,12 @@ void EmitCookieWarningsAndMetrics(
           samesite_none_insecure_cookies ||
           status.HasWarningReason(
               net::CookieInclusionStatus::WARN_SAMESITE_NONE_INSECURE);
+
+      lax_allow_unsafe_cookies =
+          lax_allow_unsafe_cookies ||
+          status.HasWarningReason(
+              net::CookieInclusionStatus::
+                  WARN_SAMESITE_UNSPECIFIED_LAX_ALLOW_UNSAFE);
 
       if (cookie->cookie_or_line->is_cookie()) {
         // TODO(sigurds): report issues on cookie line problems as well.
@@ -155,6 +162,11 @@ void EmitCookieWarningsAndMetrics(
   if (breaking_context_downgrade) {
     GetContentClient()->browser()->LogWebFeatureForCurrentPage(
         rfh, blink::mojom::WebFeature::kSchemefulSameSiteContextDowngrade);
+  }
+
+  if (lax_allow_unsafe_cookies) {
+    GetContentClient()->browser()->LogWebFeatureForCurrentPage(
+        rfh, blink::mojom::WebFeature::kLaxAllowingUnsafeCookies);
   }
 
   if (same_party) {

@@ -31776,6 +31776,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="3849" label="V8ScreenAdvanced_Label_AttributeGetter"/>
   <int value="3850" label="PermissionsPolicyHeader"/>
   <int value="3851" label="WebAppManifestUrlHandlers"/>
+  <int value="3852" label="LaxAllowingUnsafeCookies"/>
 </enum>
 
 <enum name="FeaturePolicyAllowlistType">
