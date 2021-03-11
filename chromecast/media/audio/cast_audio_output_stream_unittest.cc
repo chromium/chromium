@@ -929,7 +929,7 @@ TEST_F(CastAudioOutputStreamTest, AudioDelay) {
 
 TEST_F(CastAudioOutputStreamTest, MultiroomInfo) {
   chromecast::mojom::MultiroomInfo info(true, AudioChannel::kAll,
-                                        base::TimeDelta::FromSeconds(3));
+                                        base::TimeDelta::FromSeconds(3), "");
   multiroom_manager_.SetMultiroomInfo(info);
 
   ::media::AudioOutputStream* stream = CreateStream();
