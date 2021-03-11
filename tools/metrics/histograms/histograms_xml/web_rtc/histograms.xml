@@ -1192,9 +1192,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <owner>hta@chromium.org</owner>
   <owner>webrtc-dev@chromium.org</owner>
   <summary>
-    Determines whether BUNDLE is configured. Recorded during DTLS connection
-    establishment which usually happens only once per connection. Values are
-    specified in https://w3c.github.io/webrtc-pc/#dom-rtcbundlepolicy
+    Determines whether BUNDLE is configured. Recorded during the first DTLS
+    connection establishment. Values are specified in
+    https://w3c.github.io/webrtc-pc/#dom-rtcbundlepolicy
   </summary>
 </histogram>
 
@@ -1219,6 +1219,24 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
   <token key="IPProtocolType" variants="IPProtocolType">
     <variant name=""/>
+  </token>
+</histogram>
+
+<histogram name="WebRTC.PeerConnection.CandidatePoolUsage.{BundlePolicy}"
+    units="components" expires_after="2022-01-01">
+  <owner>hta@chromium.org</owner>
+  <owner>webrtc-dev@chromium.org</owner>
+  <summary>
+    Measures the configured ice candidate poolsize for the {BundlePolicy}
+    bundlePolicy:
+    https://w3c.github.io/webrtc-pc/#dom-rtcconfiguration-icecandidatepoolsize
+    Recorded during the first DTLS connection establishment. See also
+    WebRTC.PeerConnection.BundlePolicy.
+  </summary>
+  <token key="BundlePolicy">
+    <variant name="Balanced"/>
+    <variant name="MaxBundle"/>
+    <variant name="MaxCompat"/>
   </token>
 </histogram>
 
