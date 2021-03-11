@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/chromeos/scanning/zeroconf_scanner_detector.h"
+#include "chrome/browser/ash/scanning/zeroconf_scanner_detector.h"
 
 #include <algorithm>
 #include <functional>
@@ -16,7 +16,7 @@
 #include "base/bind.h"
 #include "base/strings/strcat.h"
 #include "base/test/task_environment.h"
-#include "chrome/browser/chromeos/scanning/zeroconf_scanner_detector_utils.h"
+#include "chrome/browser/ash/scanning/zeroconf_scanner_detector_utils.h"
 #include "chrome/browser/local_discovery/fake_service_discovery_device_lister.h"
 #include "chrome/browser/local_discovery/service_discovery_device_lister.h"
 #include "chromeos/scanning/scanner.h"

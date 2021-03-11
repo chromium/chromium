@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/chromeos/scanning/scanning_paths_provider_impl.h"
+#include "chrome/browser/ash/scanning/scanning_paths_provider_impl.h"
 
 #include <memory>
 

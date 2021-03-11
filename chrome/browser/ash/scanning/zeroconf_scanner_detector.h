@@ -2,14 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_CHROMEOS_SCANNING_ZEROCONF_SCANNER_DETECTOR_H_
-#define CHROME_BROWSER_CHROMEOS_SCANNING_ZEROCONF_SCANNER_DETECTOR_H_
+#ifndef CHROME_BROWSER_ASH_SCANNING_ZEROCONF_SCANNER_DETECTOR_H_
+#define CHROME_BROWSER_ASH_SCANNING_ZEROCONF_SCANNER_DETECTOR_H_
 
 #include <memory>
 #include <string>
 
 #include "base/containers/flat_map.h"
-#include "chrome/browser/chromeos/scanning/scanner_detector.h"
+#include "chrome/browser/ash/scanning/scanner_detector.h"
 #include "chrome/browser/local_discovery/service_discovery_device_lister.h"
 
 namespace chromeos {
@@ -40,4 +40,4 @@ class ZeroconfScannerDetector
 
 }  // namespace chromeos
 
-#endif  // CHROME_BROWSER_CHROMEOS_SCANNING_ZEROCONF_SCANNER_DETECTOR_H_
+#endif  // CHROME_BROWSER_ASH_SCANNING_ZEROCONF_SCANNER_DETECTOR_H_

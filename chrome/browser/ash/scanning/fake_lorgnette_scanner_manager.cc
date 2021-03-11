@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/chromeos/scanning/fake_lorgnette_scanner_manager.h"
+#include "chrome/browser/ash/scanning/fake_lorgnette_scanner_manager.h"
 
 #include <utility>
 

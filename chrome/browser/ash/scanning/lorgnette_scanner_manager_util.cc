@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/chromeos/scanning/lorgnette_scanner_manager_util.h"
+#include "chrome/browser/ash/scanning/lorgnette_scanner_manager_util.h"
 
 #include "third_party/re2/src/re2/re2.h"
 

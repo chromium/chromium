@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/chromeos/scanning/scan_service.h"
+#include "chrome/browser/ash/scanning/scan_service.h"
 
 #include <cstdint>
 #include <map>
@@ -20,7 +20,7 @@
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "base/unguessable_token.h"
-#include "chrome/browser/chromeos/scanning/fake_lorgnette_scanner_manager.h"
+#include "chrome/browser/ash/scanning/fake_lorgnette_scanner_manager.h"
 #include "chromeos/components/scanning/mojom/scanning.mojom-test-utils.h"
 #include "chromeos/components/scanning/mojom/scanning.mojom.h"
 #include "chromeos/dbus/lorgnette/lorgnette_service.pb.h"

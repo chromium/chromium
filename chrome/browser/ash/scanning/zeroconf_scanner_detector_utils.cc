@@ -2,14 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/chromeos/scanning/zeroconf_scanner_detector_utils.h"
+#include "chrome/browser/ash/scanning/zeroconf_scanner_detector_utils.h"
 
 #include <string>
 
 #include "base/logging.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
-#include "chrome/browser/chromeos/scanning/zeroconf_scanner_detector.h"
+#include "chrome/browser/ash/scanning/zeroconf_scanner_detector.h"
 #include "url/gurl.h"
 
 namespace chromeos {

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/chromeos/scanning/lorgnette_scanner_manager.h"
+#include "chrome/browser/ash/scanning/lorgnette_scanner_manager.h"
 
 #include <array>
 #include <memory>
@@ -17,8 +17,8 @@
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/strings/stringprintf.h"
-#include "chrome/browser/chromeos/scanning/lorgnette_scanner_manager_util.h"
-#include "chrome/browser/chromeos/scanning/zeroconf_scanner_detector.h"
+#include "chrome/browser/ash/scanning/lorgnette_scanner_manager_util.h"
+#include "chrome/browser/ash/scanning/zeroconf_scanner_detector.h"
 #include "chromeos/dbus/dbus_thread_manager.h"
 #include "chromeos/dbus/lorgnette/lorgnette_service.pb.h"
 #include "chromeos/dbus/lorgnette_manager/lorgnette_manager_client.h"

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/chromeos/scanning/lorgnette_scanner_manager.h"
+#include "chrome/browser/ash/scanning/lorgnette_scanner_manager.h"
 
 #include <cstdint>
 #include <memory>
@@ -17,8 +17,8 @@
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
-#include "chrome/browser/chromeos/scanning/zeroconf_scanner_detector.h"
-#include "chrome/browser/chromeos/scanning/zeroconf_scanner_detector_utils.h"
+#include "chrome/browser/ash/scanning/zeroconf_scanner_detector.h"
+#include "chrome/browser/ash/scanning/zeroconf_scanner_detector_utils.h"
 #include "chrome/browser/local_discovery/service_discovery_client.h"
 #include "chromeos/dbus/dbus_thread_manager.h"
 #include "chromeos/dbus/lorgnette/lorgnette_service.pb.h"

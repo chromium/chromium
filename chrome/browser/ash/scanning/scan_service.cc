@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/chromeos/scanning/scan_service.h"
+#include "chrome/browser/ash/scanning/scan_service.h"
 
 #include <cstdint>
 #include <utility>
@@ -21,8 +21,8 @@
 #include "base/task/thread_pool.h"
 #include "base/task_runner_util.h"
 #include "base/time/time.h"
-#include "chrome/browser/chromeos/scanning/lorgnette_scanner_manager.h"
-#include "chrome/browser/chromeos/scanning/scanning_type_converters.h"
+#include "chrome/browser/ash/scanning/lorgnette_scanner_manager.h"
+#include "chrome/browser/ash/scanning/scanning_type_converters.h"
 #include "chromeos/components/scanning/scanning_uma.h"
 #include "third_party/skia/include/core/SkCanvas.h"
 #include "third_party/skia/include/core/SkData.h"

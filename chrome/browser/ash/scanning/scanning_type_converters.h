@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_CHROMEOS_SCANNING_SCANNING_TYPE_CONVERTERS_H_
-#define CHROME_BROWSER_CHROMEOS_SCANNING_SCANNING_TYPE_CONVERTERS_H_
+#ifndef CHROME_BROWSER_ASH_SCANNING_SCANNING_TYPE_CONVERTERS_H_
+#define CHROME_BROWSER_ASH_SCANNING_SCANNING_TYPE_CONVERTERS_H_
 
 #include "chromeos/components/scanning/mojom/scanning.mojom.h"
 #include "mojo/public/cpp/bindings/type_converter.h"
@@ -31,4 +31,4 @@ struct TypeConverter<lorgnette::ScanSettings,
 
 }  // namespace mojo
 
-#endif  // CHROME_BROWSER_CHROMEOS_SCANNING_SCANNING_TYPE_CONVERTERS_H_
+#endif  // CHROME_BROWSER_ASH_SCANNING_SCANNING_TYPE_CONVERTERS_H_

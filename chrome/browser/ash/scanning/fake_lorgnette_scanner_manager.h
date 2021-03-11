@@ -2,14 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_CHROMEOS_SCANNING_FAKE_LORGNETTE_SCANNER_MANAGER_H_
-#define CHROME_BROWSER_CHROMEOS_SCANNING_FAKE_LORGNETTE_SCANNER_MANAGER_H_
+#ifndef CHROME_BROWSER_ASH_SCANNING_FAKE_LORGNETTE_SCANNER_MANAGER_H_
+#define CHROME_BROWSER_ASH_SCANNING_FAKE_LORGNETTE_SCANNER_MANAGER_H_
 
 #include <string>
 #include <vector>
 
 #include "base/optional.h"
-#include "chrome/browser/chromeos/scanning/lorgnette_scanner_manager.h"
+#include "chrome/browser/ash/scanning/lorgnette_scanner_manager.h"
 #include "chromeos/dbus/lorgnette/lorgnette_service.pb.h"
 #include "chromeos/dbus/lorgnette_manager/lorgnette_manager_client.h"
 
@@ -56,4 +56,4 @@ class FakeLorgnetteScannerManager final : public LorgnetteScannerManager {
 
 }  // namespace chromeos
 
-#endif  // CHROME_BROWSER_CHROMEOS_SCANNING_FAKE_LORGNETTE_SCANNER_MANAGER_H_
+#endif  // CHROME_BROWSER_ASH_SCANNING_FAKE_LORGNETTE_SCANNER_MANAGER_H_

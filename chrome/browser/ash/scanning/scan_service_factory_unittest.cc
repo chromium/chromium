@@ -2,16 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/chromeos/scanning/scan_service_factory.h"
+#include "chrome/browser/ash/scanning/scan_service_factory.h"
 
 #include <memory>
 #include <string>
 
 #include "base/bind.h"
 #include "base/files/file_path.h"
-#include "chrome/browser/chromeos/scanning/fake_lorgnette_scanner_manager.h"
-#include "chrome/browser/chromeos/scanning/lorgnette_scanner_manager_factory.h"
-#include "chrome/browser/chromeos/scanning/scan_service.h"
+#include "chrome/browser/ash/scanning/fake_lorgnette_scanner_manager.h"
+#include "chrome/browser/ash/scanning/lorgnette_scanner_manager_factory.h"
+#include "chrome/browser/ash/scanning/scan_service.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/chrome_constants.h"
 #include "chrome/test/base/testing_profile.h"

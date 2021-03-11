@@ -1662,7 +1662,7 @@
     },
     'scanning': {
       'filepath': 'chromeos/components/scanning/'\
-                  '|chrome/browser/chromeos/scanning/',
+                  '|chrome/browser/ash/scanning/',
     },
     'screen_orientation': {
       'filepath': 'screen_orientation',
