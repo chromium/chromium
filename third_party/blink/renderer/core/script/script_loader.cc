@@ -58,6 +58,8 @@
 #include "third_party/blink/renderer/core/script/script.h"
 #include "third_party/blink/renderer/core/script/script_element_base.h"
 #include "third_party/blink/renderer/core/script/script_runner.h"
+#include "third_party/blink/renderer/core/speculation_rules/document_speculation_rules.h"
+#include "third_party/blink/renderer/core/speculation_rules/speculation_rule_set.h"
 #include "third_party/blink/renderer/core/svg_names.h"
 #include "third_party/blink/renderer/core/trustedtypes/trusted_types_util.h"
 #include "third_party/blink/renderer/platform/bindings/parkable_string.h"
@@ -69,11 +71,13 @@
 #include "third_party/blink/renderer/platform/loader/fetch/resource_fetcher.h"
 #include "third_party/blink/renderer/platform/loader/subresource_integrity.h"
 #include "third_party/blink/renderer/platform/network/mime/mime_type_registry.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/weborigin/security_origin.h"
 #include "third_party/blink/renderer/platform/weborigin/security_policy.h"
 #include "third_party/blink/renderer/platform/wtf/std_lib_extras.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_hash.h"
+#include "third_party/blink/renderer/platform/wtf/text/string_view.h"
 
 namespace blink {
 
@@ -231,6 +235,10 @@ ScriptLoader::ScriptTypeAtPrepare ScriptLoader::GetScriptTypeAtPrepare(
     return ScriptTypeAtPrepare::kImportMap;
   }
 
+  if (EqualIgnoringASCIICase(type, "speculationrules")) {
+    return ScriptTypeAtPrepare::kSpeculationRules;
+  }
+
   // <spec step="7">... If neither of the above conditions are true, then
   // return. No script is executed.</spec>
   return ScriptTypeAtPrepare::kInvalid;
@@ -272,9 +280,10 @@ bool ShouldBlockSyncScriptForDocumentPolicy(
     return false;
   }
 
-  // Module scripts and import maps never block parsing.
+  // Non-classic scripts don't block parsing.
   if (script_type == ScriptLoader::ScriptTypeAtPrepare::kModule ||
       script_type == ScriptLoader::ScriptTypeAtPrepare::kImportMap ||
+      script_type == ScriptLoader::ScriptTypeAtPrepare::kSpeculationRules ||
       !parser_inserted)
     return false;
 
@@ -343,6 +352,11 @@ bool ScriptLoader::PrepareScript(const TextPosition& script_start_position,
 
     case ScriptTypeAtPrepare::kImportMap:
       if (!IsImportMapEnabled(context_window))
+        return false;
+      break;
+
+    case ScriptTypeAtPrepare::kSpeculationRules:
+      if (!RuntimeEnabledFeatures::SpeculationRulesEnabled(context_window))
         return false;
       break;
 
@@ -602,6 +616,14 @@ bool ScriptLoader::PrepareScript(const TextPosition& script_start_position,
                                  WrapPersistent(element_.Get())));
         return false;
 
+      case ScriptTypeAtPrepare::kSpeculationRules:
+        // TODO(crbug.com/1182803): Implement external speculation rules.
+        element_document.AddConsoleMessage(MakeGarbageCollected<ConsoleMessage>(
+            mojom::blink::ConsoleMessageSource::kJavaScript,
+            mojom::blink::ConsoleMessageLevel::kError,
+            "External speculation rules are not yet supported."));
+        return false;
+
       case ScriptTypeAtPrepare::kClassic: {
         // - "classic":
 
@@ -702,6 +724,21 @@ bool ScriptLoader::PrepareScript(const TextPosition& script_start_position,
         // map` synchronously here.
         pending_import_map->RegisterImportMap();
 
+        return false;
+      }
+
+      case ScriptTypeAtPrepare::kSpeculationRules: {
+        // https://jeremyroman.github.io/alternate-loading-modes/#speculation-rules-prepare-a-script-patch
+        // Let result be the result of parsing speculation rules given source
+        // text and base URL.
+        // Set the script’s result to result.
+        // If the script’s result is not null, append it to the element’s node
+        // document's list of speculation rule sets.
+        DCHECK(RuntimeEnabledFeatures::SpeculationRulesEnabled(context_window));
+        if (auto* rule_set =
+                SpeculationRuleSet::ParseInline(source_text, base_url)) {
+          DocumentSpeculationRules::From(element_document).AddRuleSet(rule_set);
+        }
         return false;
       }
 

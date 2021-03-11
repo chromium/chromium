@@ -64,7 +64,13 @@ class CORE_EXPORT ScriptLoader final : public GarbageCollected<ScriptLoader>,
   // Script type at the time of #prepare-a-script. Import maps are included here
   // but not in `mojom::blink::ScriptType` because import maps are handled
   // differently from ordinal scripts after PrepareScript().
-  enum class ScriptTypeAtPrepare { kClassic, kModule, kImportMap, kInvalid };
+  enum class ScriptTypeAtPrepare {
+    kClassic,
+    kModule,
+    kImportMap,
+    kSpeculationRules,
+    kInvalid
+  };
 
   static ScriptTypeAtPrepare GetScriptTypeAtPrepare(
       const String& type_attribute_value,

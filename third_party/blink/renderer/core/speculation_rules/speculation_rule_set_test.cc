@@ -1,0 +1,232 @@
+#include "third_party/blink/renderer/core/speculation_rules/speculation_rule_set.h"
+
+#include "testing/gmock/include/gmock/gmock.h"
+#include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/renderer/core/frame/local_frame.h"
+#include "third_party/blink/renderer/core/frame/settings.h"
+#include "third_party/blink/renderer/core/html/html_head_element.h"
+#include "third_party/blink/renderer/core/html/html_script_element.h"
+#include "third_party/blink/renderer/core/speculation_rules/document_speculation_rules.h"
+#include "third_party/blink/renderer/core/testing/dummy_page_holder.h"
+#include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
+
+namespace blink {
+namespace {
+
+using ::testing::AllOf;
+using ::testing::ElementsAre;
+using ::testing::Not;
+
+// Convenience matcher for list rules that sub-matches on their URLs.
+class ListRuleMatcher {
+ public:
+  explicit ListRuleMatcher(::testing::Matcher<const Vector<KURL>&> url_matcher)
+      : url_matcher_(std::move(url_matcher)) {}
+
+  bool MatchAndExplain(const Member<SpeculationRule>& rule,
+                       ::testing::MatchResultListener* listener) const {
+    return MatchAndExplain(*rule, listener);
+  }
+
+  bool MatchAndExplain(const SpeculationRule& rule,
+                       ::testing::MatchResultListener* listener) const {
+    ::testing::StringMatchResultListener inner_listener;
+    const bool matches =
+        url_matcher_.MatchAndExplain(rule.urls(), &inner_listener);
+    std::string inner_explanation = inner_listener.str();
+    if (!inner_explanation.empty())
+      *listener << "whose URLs " << inner_explanation;
+    return matches;
+  }
+
+  void DescribeTo(::std::ostream* os) const {
+    *os << "is a list rule whose URLs ";
+    url_matcher_.DescribeTo(os);
+  }
+
+  void DescribeNegationTo(::std::ostream* os) const {
+    *os << "is not list rule whose URLs ";
+    url_matcher_.DescribeTo(os);
+  }
+
+ private:
+  ::testing::Matcher<const Vector<KURL>&> url_matcher_;
+};
+
+template <typename... Matchers>
+auto MatchesListOfURLs(Matchers&&... matchers) {
+  return ::testing::MakePolymorphicMatcher(
+      ListRuleMatcher(ElementsAre(std::forward<Matchers>(matchers)...)));
+}
+
+MATCHER(RequiresAnonymousClientIPWhenCrossOrigin,
+        negation ? "doesn't require anonymous client IP when cross origin"
+                 : "requires anonymous client IP when cross origin") {
+  return arg->requires_anonymous_client_ip_when_cross_origin();
+}
+
+class SpeculationRuleSetTest : public ::testing::Test {
+ private:
+  ScopedSpeculationRulesForTest enable_{true};
+};
+
+TEST_F(SpeculationRuleSetTest, Empty) {
+  auto* rule_set =
+      SpeculationRuleSet::ParseInline("{}", KURL("https://example.com/"));
+  ASSERT_TRUE(rule_set);
+  EXPECT_THAT(rule_set->prefetch_rules(), ElementsAre());
+  EXPECT_THAT(rule_set->prefetch_with_subresources_rules(), ElementsAre());
+}
+
+TEST_F(SpeculationRuleSetTest, SimplePrefetchRule) {
+  auto* rule_set = SpeculationRuleSet::ParseInline(
+      R"({
+        "prefetch": [{
+          "source": "list",
+          "urls": ["https://example.com/index2.html"]
+        }]
+      })",
+      KURL("https://example.com/"));
+  ASSERT_TRUE(rule_set);
+  EXPECT_THAT(
+      rule_set->prefetch_rules(),
+      ElementsAre(MatchesListOfURLs("https://example.com/index2.html")));
+  EXPECT_THAT(rule_set->prefetch_with_subresources_rules(), ElementsAre());
+}
+
+TEST_F(SpeculationRuleSetTest, SimplePrefetchWithSubresourcesRule) {
+  auto* rule_set = SpeculationRuleSet::ParseInline(
+      R"({
+        "prefetch_with_subresources": [{
+          "source": "list",
+          "urls": ["https://example.com/index2.html"]
+        }]
+      })",
+      KURL("https://example.com/"));
+  ASSERT_TRUE(rule_set);
+  EXPECT_THAT(rule_set->prefetch_rules(), ElementsAre());
+  EXPECT_THAT(
+      rule_set->prefetch_with_subresources_rules(),
+      ElementsAre(MatchesListOfURLs("https://example.com/index2.html")));
+}
+
+TEST_F(SpeculationRuleSetTest, ResolvesURLs) {
+  auto* rule_set = SpeculationRuleSet::ParseInline(
+      R"({
+        "prefetch": [{
+          "source": "list",
+          "urls": [
+            "bar",
+            "/baz",
+            "//example.org/",
+            "http://example.net/"
+          ]
+        }]
+      })",
+      KURL("https://example.com/foo/"));
+  ASSERT_TRUE(rule_set);
+  EXPECT_THAT(rule_set->prefetch_rules(),
+              ElementsAre(MatchesListOfURLs(
+                  "https://example.com/foo/bar", "https://example.com/baz",
+                  "https://example.org/", "http://example.net/")));
+}
+
+TEST_F(SpeculationRuleSetTest, RequiresAnonymousClientIPWhenCrossOrigin) {
+  auto* rule_set = SpeculationRuleSet::ParseInline(
+      R"({
+        "prefetch": [{
+          "source": "list",
+          "urls": ["//example.net/anonymous.html"],
+          "requires": ["anonymous-client-ip-when-cross-origin"]
+        }, {
+          "source": "list",
+          "urls": ["//example.net/direct.html"]
+        }]
+      })",
+      KURL("https://example.com/"));
+  ASSERT_TRUE(rule_set);
+  EXPECT_THAT(
+      rule_set->prefetch_rules(),
+      ElementsAre(AllOf(MatchesListOfURLs("https://example.net/anonymous.html"),
+                        RequiresAnonymousClientIPWhenCrossOrigin()),
+                  AllOf(MatchesListOfURLs("https://example.net/direct.html"),
+                        Not(RequiresAnonymousClientIPWhenCrossOrigin()))));
+}
+
+TEST_F(SpeculationRuleSetTest, RejectsInvalidJSON) {
+  auto* rule_set =
+      SpeculationRuleSet::ParseInline("[invalid]", KURL("https://example.com"));
+  EXPECT_FALSE(rule_set);
+}
+
+TEST_F(SpeculationRuleSetTest, IgnoresUnknownOrDifferentlyTypedTopLevelKeys) {
+  auto* rule_set = SpeculationRuleSet::ParseInline(
+      R"({
+        "unrecognized_key": true,
+        "prefetch": 42,
+        "prefetch_with_subresources": false
+      })",
+      KURL("https://example.com/"));
+  ASSERT_TRUE(rule_set);
+  EXPECT_THAT(rule_set->prefetch_rules(), ElementsAre());
+  EXPECT_THAT(rule_set->prefetch_with_subresources_rules(), ElementsAre());
+}
+
+TEST_F(SpeculationRuleSetTest, DropUnrecognizedRules) {
+  auto* rule_set = SpeculationRuleSet::ParseInline(
+      R"({"prefetch": [)"
+
+      // A rule that doesn't elaborate on its source.
+      R"({"urls": ["no-source.html"]},)"
+
+      // A rule with an unrecognized source.
+      R"({"source": "magic-8-ball", "urls": ["no-source.html"]},)"
+
+      // A list rule with no "urls" key.
+      R"({"source": "list"},)"
+
+      // A list rule where some URL is not a string.
+      R"({"source": "list", "urls": [42]},)"
+
+      // A rule with an unrecognized requirement.
+      R"({"source": "list", "urls": ["/"], "requires": ["more-vespene-gas"]},)"
+
+      // Invalid URLs within a list rule should be discarded.
+      // This includes totally invalid ones and ones with unacceptable schemes.
+      R"({"source": "list",
+          "urls": [
+            "valid.html", "mailto:alice@example.com", "http://@:"
+           ]
+         }]})",
+      KURL("https://example.com/"));
+  ASSERT_TRUE(rule_set);
+  EXPECT_THAT(rule_set->prefetch_rules(),
+              ElementsAre(MatchesListOfURLs("https://example.com/valid.html")));
+}
+
+TEST_F(SpeculationRuleSetTest, PropagatesToDocument) {
+  // A <script> with a case-insensitive type match should be propagated to the
+  // document.
+  // TODO(jbroman): Should we need to enable script? Should that be bypassed?
+  DummyPageHolder page_holder;
+  page_holder.GetFrame().GetSettings()->SetScriptEnabled(true);
+  Document& document = page_holder.GetDocument();
+  HTMLScriptElement* script =
+      MakeGarbageCollected<HTMLScriptElement>(document, CreateElementFlags());
+  script->setAttribute(html_names::kTypeAttr, "SpEcUlAtIoNrUlEs");
+  script->setText(
+      R"({"prefetch": [
+           {"source": "list", "urls": ["https://example.com/foo"]}
+         ]})");
+  document.head()->appendChild(script);
+
+  auto* supplement = DocumentSpeculationRules::FromIfExists(document);
+  ASSERT_TRUE(supplement);
+  ASSERT_EQ(supplement->rule_sets().size(), 1u);
+  SpeculationRuleSet* rule_set = supplement->rule_sets()[0];
+  EXPECT_THAT(rule_set->prefetch_rules(),
+              ElementsAre(MatchesListOfURLs("https://example.com/foo")));
+}
+
+}  // namespace
+}  // namespace blink

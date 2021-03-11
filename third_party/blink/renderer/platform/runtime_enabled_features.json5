@@ -1912,6 +1912,9 @@
       settable_from_internals: true,
     },
     {
+      name: "SpeculationRules",
+    },
+    {
       name: "SrcsetMaxDensity",
     },
     // Used as argument in attribute of stable-release functions/interfaces

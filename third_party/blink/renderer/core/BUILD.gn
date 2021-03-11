@@ -55,6 +55,7 @@ import("//third_party/blink/renderer/core/permissions_policy/build.gni")
 import("//third_party/blink/renderer/core/resize_observer/build.gni")
 import("//third_party/blink/renderer/core/script/build.gni")
 import("//third_party/blink/renderer/core/scroll/build.gni")
+import("//third_party/blink/renderer/core/speculation_rules/build.gni")
 import("//third_party/blink/renderer/core/streams/build.gni")
 import("//third_party/blink/renderer/core/style/build.gni")
 import("//third_party/blink/renderer/core/svg/build.gni")
@@ -235,6 +236,8 @@ component("core") {
   sources += rebase_path(blink_core_sources_paint, "", "paint")
   sources +=
       rebase_path(blink_core_sources_resize_observer, "", "resize_observer")
+  sources +=
+      rebase_path(blink_core_sources_speculation_rules, "", "speculation_rules")
   sources += rebase_path(blink_core_sources_script, "", "script")
   sources += rebase_path(blink_core_sources_scroll, "", "scroll")
   sources += rebase_path(blink_core_sources_streams, "", "streams")
@@ -1572,6 +1575,7 @@ source_set("unit_tests") {
     "scroll/scrollable_area_test.cc",
     "scroll/scrollbar_test_suite.h",
     "scroll/scrollbar_theme_overlay_test.cc",
+    "speculation_rules/speculation_rule_set_test.cc",
     "streams/miscellaneous_operations_test.cc",
     "streams/queue_with_sizes_test.cc",
     "streams/readable_stream_test.cc",
