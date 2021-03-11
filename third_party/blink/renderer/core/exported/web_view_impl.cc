@@ -3104,6 +3104,10 @@ void WebViewImpl::SetInsidePortal(bool inside_portal) {
     web_widget_->SetIsNestedMainFrameWidget(inside_portal);
 }
 
+void WebViewImpl::ActivatePrerender() {
+  GetPage()->ActivateForPrerendering();
+}
+
 void WebViewImpl::RegisterRendererPreferenceWatcher(
     CrossVariantMojoRemote<mojom::RendererPreferenceWatcherInterfaceBase>
         watcher) {

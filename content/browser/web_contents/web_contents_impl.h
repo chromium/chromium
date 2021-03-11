@@ -1206,6 +1206,10 @@ class CONTENT_EXPORT WebContentsImpl : public WebContents,
   void DidActivatePortal(WebContentsImpl* predecessor_web_contents,
                          base::TimeTicks activation_time);
 
+  // Sends a page message to notify every process in the frame tree if the
+  // prerendering page is activated.
+  void NotifyPrerenderingPageActivated();
+
   // Notifies observers that AppCache was accessed. Public so AppCache code can
   // call this directly.
   void OnAppCacheAccessed(const GURL& manifest_url, bool blocked_by_policy);
