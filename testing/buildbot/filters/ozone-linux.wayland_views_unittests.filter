@@ -7,24 +7,8 @@
 # Tests behaviour that is specific for X11.
 -DesktopWidgetTest.GetWindowPlacement
 
-# crbug.com/1186974 : Fix failed and crashed tests listed below.  Move tests
-# that cannot work on Wayland into sections above and document the decision.
-
-# Failed tests.
--EditableComboboxTest.AltLeftOrRightDoesNothing
--EditableComboboxTest.CtrlLeftOrRightMovesToNextWords
--EditableComboboxTest.EndOrHomeMovesToBeginningOrEndOfText
--EditableComboboxTest.EnterClosesMenuWhileSelectingHighlightedMenuItem
--EditableComboboxTest.EscClosesMenuWithoutSelectingHighlightedMenuItem
--EditableComboboxTest.F4ClosesMenuWhileSelectingHighlightedMenuItem
--EditableComboboxTest.LeftOrRightKeysMoveInTextfield
--EditableComboboxTest.MenuCanAdaptToContentChange
--EditableComboboxTest.RefocusingReopensMenuBasedOnLatestContent
--EditableComboboxTest.ShiftLeftOrRightSelectsCharInTextfield
--EditableComboboxTest.SpaceIsReflectedInTextfield
+# crbug.com/1186996: tests below require XKB.
 -EditableComboboxTest.TypingInTextfieldUnhighlightsMenuItem
--EditableComboboxTest.UpOrDownKeysMoveInMenu
--MenuRunnerTest.LatinMnemonic
 -TextfieldTest.ContextMenuDisplayTest
 -TextfieldTest.ControlAndSelectTest
 -TextfieldTest.CursorMovement
@@ -46,6 +30,11 @@
 -TextfieldTest.TextInputType_InsertionTest
 -TextfieldTest.TextfieldBoundsChangeTest
 -TextfieldTest.UndoRedoTest
+
+# crbug.com/1186974 : Fix failed and crashed tests listed below.  Move tests
+# that cannot work on Wayland into sections above and document the decision.
+
+# Failed tests.
 -TooltipControllerTest.DontShowTooltipOnTouch
 -TooltipControllerTest.EnableOrDisableTooltips
 -TooltipControllerTest.HideEmptyTooltip
