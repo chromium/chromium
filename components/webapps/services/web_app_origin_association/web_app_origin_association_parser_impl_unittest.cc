@@ -10,8 +10,15 @@
 
 #include "base/run_loop.h"
 #include "base/test/bind.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
+#include "components/webapps/services/web_app_origin_association/web_app_origin_association_uma_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
+
+namespace {
+constexpr char kParseResultHistogram[] =
+    "Webapp.WebAppOriginAssociationParseResult";
+}
 
 namespace webapps {
 
@@ -35,6 +42,7 @@ class WebAppOriginAssociationParserImplTest : public testing::Test {
 
   base::test::TaskEnvironment scoped_task_environment_;
   std::unique_ptr<WebAppOriginAssociationParserImpl> parser_;
+  base::HistogramTester histogram_tester_;
 };
 
 TEST_F(WebAppOriginAssociationParserImplTest, ParseGoodAssociationFile) {
@@ -59,13 +67,19 @@ TEST_F(WebAppOriginAssociationParserImplTest, ParseGoodAssociationFile) {
             ASSERT_EQ(1u, association->apps.size());
             EXPECT_EQ("https://foo.com/manifest.json",
                       association->apps[0]->manifest_url);
+
+            histogram_tester_.ExpectBucketCount(
+                kParseResultHistogram,
+                WebAppOriginAssociationMetrics::ParseResult::kParseSucceeded,
+                1);
             run_loop.Quit();
           }));
 
   run_loop.Run();
 }
 
-TEST_F(WebAppOriginAssociationParserImplTest, ParseBadAssociationFile) {
+TEST_F(WebAppOriginAssociationParserImplTest,
+       ParseBadAssociationFileNotADictionary) {
   std::string raw_json = "\"invalid\"";
 
   base::RunLoop run_loop;
@@ -78,6 +92,38 @@ TEST_F(WebAppOriginAssociationParserImplTest, ParseBadAssociationFile) {
             ASSERT_FALSE(errors.empty());
             ASSERT_EQ(1u, errors.size());
             EXPECT_EQ("No valid JSON object found.", errors[0]->message);
+
+            histogram_tester_.ExpectBucketCount(
+                kParseResultHistogram,
+                WebAppOriginAssociationMetrics::ParseResult::
+                    kParseFailedNotADictionary,
+                1);
+            run_loop.Quit();
+          }));
+
+  run_loop.Run();
+}
+
+TEST_F(WebAppOriginAssociationParserImplTest,
+       ParseBadAssociationFileInvalidJson) {
+  std::string raw_json = "[1, 2";
+
+  base::RunLoop run_loop;
+  ParseWebAppOriginAssociation(
+      raw_json,
+      base::BindLambdaForTesting(
+          [&](mojom::WebAppOriginAssociationPtr association,
+              std::vector<mojom::WebAppOriginAssociationErrorPtr> errors) {
+            ASSERT_TRUE(!association);
+            ASSERT_FALSE(errors.empty());
+            ASSERT_EQ(1u, errors.size());
+            EXPECT_EQ("Line: 1, column: 6, Syntax error.", errors[0]->message);
+
+            histogram_tester_.ExpectBucketCount(
+                kParseResultHistogram,
+                WebAppOriginAssociationMetrics::ParseResult::
+                    kParseFailedInvalidJson,
+                1);
             run_loop.Quit();
           }));
 

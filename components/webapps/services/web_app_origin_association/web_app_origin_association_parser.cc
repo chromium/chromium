@@ -6,6 +6,7 @@
 
 #include "base/json/json_reader.h"
 #include "base/values.h"
+#include "components/webapps/services/web_app_origin_association/web_app_origin_association_uma_util.h"
 #include "url/gurl.h"
 
 namespace {
@@ -32,17 +33,25 @@ mojom::WebAppOriginAssociationPtr WebAppOriginAssociationParser::Parse(
     AddErrorInfo(parsed_data.error_message, parsed_data.error_line,
                  parsed_data.error_column);
     failed_ = true;
+    webapps::WebAppOriginAssociationMetrics::RecordParseResult(
+        webapps::WebAppOriginAssociationMetrics::ParseResult::
+            kParseFailedInvalidJson);
     return nullptr;
   }
   if (!parsed_data.value->is_dict()) {
     AddErrorInfo("No valid JSON object found.");
     failed_ = true;
+    webapps::WebAppOriginAssociationMetrics::RecordParseResult(
+        webapps::WebAppOriginAssociationMetrics::ParseResult::
+            kParseFailedNotADictionary);
     return nullptr;
   }
 
   mojom::WebAppOriginAssociationPtr association =
       mojom::WebAppOriginAssociation::New();
   association->apps = ParseAssociatedWebApps(*parsed_data.value);
+  webapps::WebAppOriginAssociationMetrics::RecordParseResult(
+      webapps::WebAppOriginAssociationMetrics::ParseResult::kParseSucceeded);
   return association;
 }
 

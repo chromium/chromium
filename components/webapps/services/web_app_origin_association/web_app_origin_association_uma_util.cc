@@ -13,4 +13,9 @@ void WebAppOriginAssociationMetrics::RecordFetchResult(FetchResult result) {
                                 result);
 }
 
+void WebAppOriginAssociationMetrics::RecordParseResult(ParseResult result) {
+  base::UmaHistogramEnumeration("Webapp.WebAppOriginAssociationParseResult",
+                                result);
+}
+
 }  // namespace webapps

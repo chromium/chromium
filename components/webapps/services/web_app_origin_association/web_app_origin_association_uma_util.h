@@ -18,7 +18,17 @@ class WebAppOriginAssociationMetrics {
     kMaxValue = kFetchFailedInvalidUrl,
   };
 
+  // These values are persisted to logs. Entries should not be renumbered and
+  // numeric values should never be reused.
+  enum class ParseResult {
+    kParseSucceeded = 0,
+    kParseFailedNotADictionary = 1,
+    kParseFailedInvalidJson = 2,
+    kMaxValue = kParseFailedInvalidJson,
+  };
+
   static void RecordFetchResult(FetchResult result);
+  static void RecordParseResult(ParseResult result);
 };
 
 }  // namespace webapps
