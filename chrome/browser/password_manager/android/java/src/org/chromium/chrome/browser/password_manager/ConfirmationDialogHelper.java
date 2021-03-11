@@ -2,26 +2,24 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.chrome.browser.keyboard_accessory.helper;
+package org.chromium.chrome.browser.password_manager;
 
 import android.content.Context;
 import android.content.DialogInterface;
 
 import androidx.appcompat.app.AlertDialog;
 
-import org.chromium.chrome.browser.keyboard_accessory.R;
-
 import java.lang.ref.WeakReference;
 
 /**
  * Helps to show a confirmation.
  */
-public class ConfirmationHelper implements DialogInterface.OnClickListener {
+public class ConfirmationDialogHelper implements DialogInterface.OnClickListener {
     private final WeakReference<Context> mContext;
     private AlertDialog mConfirmationDialog;
     private Runnable mConfirmedCallback;
 
-    public ConfirmationHelper(WeakReference<Context> context) {
+    public ConfirmationDialogHelper(WeakReference<Context> context) {
         mContext = context;
     }
 
@@ -43,7 +41,8 @@ public class ConfirmationHelper implements DialogInterface.OnClickListener {
      * @param title A {@link String} used as title.
      * @param message A {@link String} used message body.
      */
-    public void showConfirmation(String title, String message, Runnable confirmedCallback) {
+    public void showConfirmation(
+            String title, String message, int confirmButtonTextId, Runnable confirmedCallback) {
         assert title != null;
         assert message != null;
         assert confirmedCallback != null;
@@ -55,7 +54,7 @@ public class ConfirmationHelper implements DialogInterface.OnClickListener {
                                       .setTitle(title)
                                       .setMessage(message)
                                       .setNegativeButton(R.string.cancel, null)
-                                      .setPositiveButton(R.string.ok, this)
+                                      .setPositiveButton(confirmButtonTextId, this)
                                       .create();
         mConfirmationDialog.show();
     }

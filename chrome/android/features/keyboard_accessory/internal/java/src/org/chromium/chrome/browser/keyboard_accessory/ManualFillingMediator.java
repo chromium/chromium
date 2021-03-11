@@ -42,13 +42,13 @@ import org.chromium.chrome.browser.keyboard_accessory.bar_component.KeyboardAcce
 import org.chromium.chrome.browser.keyboard_accessory.data.KeyboardAccessoryData;
 import org.chromium.chrome.browser.keyboard_accessory.data.KeyboardAccessoryData.Action;
 import org.chromium.chrome.browser.keyboard_accessory.data.PropertyProvider;
-import org.chromium.chrome.browser.keyboard_accessory.helper.ConfirmationHelper;
 import org.chromium.chrome.browser.keyboard_accessory.sheet_component.AccessorySheetCoordinator;
 import org.chromium.chrome.browser.keyboard_accessory.sheet_tabs.AccessorySheetTabCoordinator;
 import org.chromium.chrome.browser.keyboard_accessory.sheet_tabs.AddressAccessorySheetCoordinator;
 import org.chromium.chrome.browser.keyboard_accessory.sheet_tabs.CreditCardAccessorySheetCoordinator;
 import org.chromium.chrome.browser.keyboard_accessory.sheet_tabs.PasswordAccessorySheetCoordinator;
 import org.chromium.chrome.browser.keyboard_accessory.sheet_tabs.TouchToFillSheetCoordinator;
+import org.chromium.chrome.browser.password_manager.ConfirmationDialogHelper;
 import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabHidingType;
@@ -94,7 +94,7 @@ class ManualFillingMediator extends EmptyTabObserver
     private TabModelSelectorTabModelObserver mTabModelObserver;
     private DropdownPopupWindow mPopup;
     private BottomSheetController mBottomSheetController;
-    private ConfirmationHelper mConfirmationHelper;
+    private ConfirmationDialogHelper mConfirmationHelper;
 
     private final TabObserver mTabObserver = new EmptyTabObserver() {
         @Override
@@ -132,7 +132,7 @@ class ManualFillingMediator extends EmptyTabObserver
 
     void initialize(KeyboardAccessoryCoordinator keyboardAccessory,
             AccessorySheetCoordinator accessorySheet, WindowAndroid windowAndroid,
-            BottomSheetController sheetController, ConfirmationHelper confirmationHelper) {
+            BottomSheetController sheetController, ConfirmationDialogHelper confirmationHelper) {
         mActivity = (ChromeActivity) windowAndroid.getActivity().get();
         assert mActivity != null;
         mWindowAndroid = windowAndroid;
@@ -498,7 +498,7 @@ class ManualFillingMediator extends EmptyTabObserver
     }
 
     void confirmOperation(String title, String message, Runnable confirmedCallback) {
-        mConfirmationHelper.showConfirmation(title, message, confirmedCallback);
+        mConfirmationHelper.showConfirmation(title, message, R.string.ok, confirmedCallback);
     }
 
     private void changeBottomControlSpaceForState(int extensionState) {

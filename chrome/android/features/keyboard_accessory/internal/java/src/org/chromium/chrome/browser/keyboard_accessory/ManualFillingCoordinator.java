@@ -14,8 +14,8 @@ import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.keyboard_accessory.bar_component.KeyboardAccessoryCoordinator;
 import org.chromium.chrome.browser.keyboard_accessory.data.KeyboardAccessoryData;
 import org.chromium.chrome.browser.keyboard_accessory.data.PropertyProvider;
-import org.chromium.chrome.browser.keyboard_accessory.helper.ConfirmationHelper;
 import org.chromium.chrome.browser.keyboard_accessory.sheet_component.AccessorySheetCoordinator;
+import org.chromium.chrome.browser.password_manager.ConfirmationDialogHelper;
 import org.chromium.components.autofill.AutofillDelegate;
 import org.chromium.components.autofill.AutofillSuggestion;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
@@ -50,7 +50,7 @@ class ManualFillingCoordinator implements ManualFillingComponent {
         sheetStub.setLayoutResource(R.layout.keyboard_accessory_sheet);
         initialize(windowAndroid, new KeyboardAccessoryCoordinator(mMediator, barStub),
                 new AccessorySheetCoordinator(sheetStub), sheetController,
-                new ConfirmationHelper(windowAndroid.getContext()));
+                new ConfirmationDialogHelper(windowAndroid.getContext()));
         mComponentSupplier.set(this);
         mComponentSupplier.attach(windowAndroid.getUnownedUserDataHost());
     }
@@ -58,7 +58,7 @@ class ManualFillingCoordinator implements ManualFillingComponent {
     @VisibleForTesting
     void initialize(WindowAndroid windowAndroid, KeyboardAccessoryCoordinator accessoryBar,
             AccessorySheetCoordinator accessorySheet, BottomSheetController sheetController,
-            ConfirmationHelper confirmationHelper) {
+            ConfirmationDialogHelper confirmationHelper) {
         mMediator.initialize(
                 accessoryBar, accessorySheet, windowAndroid, sheetController, confirmationHelper);
     }

@@ -71,9 +71,9 @@ import org.chromium.chrome.browser.keyboard_accessory.data.KeyboardAccessoryData
 import org.chromium.chrome.browser.keyboard_accessory.data.KeyboardAccessoryData.UserInfo;
 import org.chromium.chrome.browser.keyboard_accessory.data.PropertyProvider;
 import org.chromium.chrome.browser.keyboard_accessory.data.UserInfoField;
-import org.chromium.chrome.browser.keyboard_accessory.helper.ConfirmationHelper;
 import org.chromium.chrome.browser.keyboard_accessory.sheet_component.AccessorySheetCoordinator;
 import org.chromium.chrome.browser.keyboard_accessory.sheet_tabs.AccessorySheetTabCoordinator;
+import org.chromium.chrome.browser.password_manager.ConfirmationDialogHelper;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabCreationState;
 import org.chromium.chrome.browser.tab.TabHidingType;
@@ -123,7 +123,7 @@ public class ManualFillingControllerTest {
     @Mock
     private BottomSheetController mMockBottomSheetController;
     @Mock
-    private ConfirmationHelper mMockConfirmationHelper;
+    private ConfirmationDialogHelper mMockConfirmationHelper;
     @Mock
     private FullscreenManager mMockFullscreenManager;
     @Mock
@@ -1060,7 +1060,8 @@ public class ManualFillingControllerTest {
     public void testCallsHelperToConfirmDeletion() {
         Runnable testRunnable = () -> {};
         mMediator.confirmOperation("Suggestion", "Delete it?", testRunnable);
-        verify(mMockConfirmationHelper).showConfirmation("Suggestion", "Delete it?", testRunnable);
+        verify(mMockConfirmationHelper)
+                .showConfirmation("Suggestion", "Delete it?", R.string.ok, testRunnable);
     }
 
     /**

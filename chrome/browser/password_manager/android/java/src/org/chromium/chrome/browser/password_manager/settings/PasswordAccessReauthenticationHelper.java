@@ -11,6 +11,7 @@ import androidx.annotation.IntDef;
 import androidx.fragment.app.FragmentManager;
 
 import org.chromium.base.Callback;
+import org.chromium.chrome.browser.password_manager.R;
 import org.chromium.chrome.browser.password_manager.settings.ReauthenticationManager.ReauthScope;
 import org.chromium.ui.widget.Toast;
 
