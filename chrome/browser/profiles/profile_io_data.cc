@@ -35,17 +35,13 @@ void ProfileIOData::InitializeOnUIThread(Profile* profile) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  // This triggers ResourceContext creation and initializes the per-profile NSS
-  // database.
-  //
   // TODO(https://crbug.com/1018972): Remove this line once NSS initialization
   // no longer depends on the ResourceContext.
   NssServiceChromeOSFactory::GetForContext(profile);
-#else  // !BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // #if BUILDFLAG(IS_CHROMEOS_ASH)
   // Make sure the ResourceContext is initialized.  It's unclear if this is
   // still needed.
   content::BrowserContext::EnsureResourceContextInitialized(profile);
-#endif
 }
 
 ProfileIOData::ProfileIOData()

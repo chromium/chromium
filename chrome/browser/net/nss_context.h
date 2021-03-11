@@ -21,7 +21,6 @@ class NSSCertDatabase;
 
 namespace content {
 class BrowserContext;
-class ResourceContext;
 }  // namespace content
 
 // NssCertDatabaseGetter is a callback that MUST only be invoked on the IO
@@ -40,20 +39,6 @@ using NssCertDatabaseGetter = base::OnceCallback<net::NSSCertDatabase*(
 // thread and then invoked.
 NssCertDatabaseGetter CreateNSSCertDatabaseGetter(
     content::BrowserContext* browser_context);
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-// Sets the |username_hash| associated with |context|.
-// Must be called only on the IO thread, once for each ResourceContext.
-void SetNSSCertDatabaseUsernameHash(content::ResourceContext* context,
-                                    const std::string& username_hash);
-
-// Enables the system key slot in the NSSCertDatabase for the user associated
-// with |context|.
-// Must be called only on the IO thread. SetNSSCertDatabaseUsernameHash() must
-// already have been called on |context|.
-void EnableNSSSystemKeySlotForResourceContext(
-    content::ResourceContext* context);
-#endif
 
 // Gets a pointer to the NSSCertDatabase for the user associated with |context|.
 // It's a wrapper around |GetNSSCertDatabaseForResourceContext| which makes
