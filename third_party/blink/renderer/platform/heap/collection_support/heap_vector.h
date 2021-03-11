@@ -121,16 +121,6 @@ struct VectorTraits<blink::HeapVector<T, 0>>
   static const bool kCanMoveWithMemcpy = true;
 };
 
-template <typename T>
-struct VectorTraits<blink::HeapDeque<T>>
-    : VectorTraitsBase<blink::HeapDeque<T>> {
-  STATIC_ONLY(VectorTraits);
-  static const bool kNeedsDestruction = false;
-  static const bool kCanInitializeWithMemset = true;
-  static const bool kCanClearUnusedSlotsWithMemset = true;
-  static const bool kCanMoveWithMemcpy = true;
-};
-
 template <typename T, wtf_size_t inlineCapacity>
 struct VectorTraits<blink::HeapVector<T, inlineCapacity>>
     : VectorTraitsBase<blink::HeapVector<T, inlineCapacity>> {
