@@ -426,6 +426,5 @@ void TabStripRegionView::UpdateNewTabButtonBorder() {
 }
 
 BEGIN_METADATA(TabStripRegionView, views::AccessiblePaneView)
-// TODO(crbug.com/1169051): Uncomment when bug is fixed
-// ADD_READONLY_PROPERTY_METADATA(int, TabStripAvailableWidth)
+ADD_READONLY_PROPERTY_METADATA(int, TabStripAvailableWidth)
 END_METADATA
