@@ -97,6 +97,7 @@ Polymer({
    */
   onPrimaryActionButtonClicked_() {
     this.authenticator.sendMessageToWebview('primaryActionHit');
+    this.focusWebview_();
   },
 
   /**
@@ -105,6 +106,12 @@ Polymer({
    */
   onSecondaryActionButtonClicked_() {
     this.authenticator.sendMessageToWebview('secondaryActionHit');
+    this.focusWebview_();
+  },
+
+  /** @private */
+  focusWebview_() {
+    this.fire('set-focus-to-webview');
   },
 
   /** @param {Object} authExtHost */

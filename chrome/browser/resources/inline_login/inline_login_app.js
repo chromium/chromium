@@ -360,6 +360,12 @@ Polymer({
         /** @type {WelcomePageAppElement} */ (this.$$('welcome-page-app'))
             .isSkipCheckboxChecked();
     this.browserProxy_.skipWelcomePage(skipChecked);
+    this.setFocusToWebview_();
+  },
+
+  /** @private */
+  setFocusToWebview_() {
+    this.$.signinFrame.focus();
   },
   // </if>
 
