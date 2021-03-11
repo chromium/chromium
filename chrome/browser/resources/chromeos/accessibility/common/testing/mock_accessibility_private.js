@@ -2,6 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+/**
+ * @typedef {{
+ *   show: boolean,
+ *   anchor: (!chrome.accessibilityPrivate.ScreenRect|undefined),
+ *   isPaused: (boolean|undefined),
+ *   speed: (number|undefined),
+ * }}
+ */
+let SelectToSpeakPanelState;
+
 /*
  * A mock AccessibilityPrivate API for tests.
  */
@@ -13,13 +23,28 @@ var MockAccessibilityPrivate = {
   /** @private {function<number, number>} */
   boundsListener_: null,
 
+  /**
+   * @private {function(!chrome.accessibilityPrivate.SelectToSpeakPanelAction,
+   *     number=)}
+   */
+  selectToSpeakPanelActionListener_: null,
+
+  /** @private {function()} */
+  selectToSpeakStateChangeListener_: null,
+
   /** @private {!chrome.accessibilityPrivate.ScreenRect} */
   scrollableBounds_: {},
 
-  /** @private {!Array<!chrome.accessibilityPrivate.ScreenRect>} */
-  focusRingRects_: [],
+  /** @private {!Array<!chrome.accessibilityPrivate.FocusRingInfo>} */
+  focusRings_: [],
   handleScrollableBoundsForPointFoundCallback_: null,
   moveMagnifierToRectCallback_: null,
+
+  /** @private {?SelectToSpeakPanelState} */
+  selectToSpeakPanelState_: null,
+
+  /** @private {!Array<!chrome.accessibilityPrivate.ScreenRect>} */
+  highlightRects_: [],
 
   // Methods from AccessibilityPrivate API. //
 
@@ -40,6 +65,27 @@ var MockAccessibilityPrivate = {
         MockAccessibilityPrivate.boundsListener_ = null;
       }
     }
+  },
+
+  onSelectToSpeakPanelAction: {
+    /**
+     * Adds a listener to onSelectToSpeakPanelAction.
+     * @param {!function(!chrome.accessibilityPrivate.SelectToSpeakPanelAction,
+     *     number=)} listener
+     */
+    addListener: (listener) => {
+      MockAccessibilityPrivate.selectToSpeakPanelActionListener_ = listener;
+    },
+  },
+
+  onSelectToSpeakStateChangeRequested: {
+    /**
+     * Adds a listener to onSelectToSpeakStateChangeRequested.
+     * @param {!function()} listener
+     */
+    addListener: (listener) => {
+      MockAccessibilityPrivate.selectToSpeakStateChangeListener_ = listener;
+    },
   },
 
   /**
@@ -63,24 +109,45 @@ var MockAccessibilityPrivate = {
   },
 
   /**
-   * Called when AccessibilityCommon wants to set the focus rings. We can assume
-   * that it is only setting one set of rings at a time, and safely extract
-   * focusRingInfos[0].rects.
-   * @param {!Array<!FocusRingInfo>} focusRingInfos
+   * Called when AccessibilityCommon wants to set the focus rings. We can
+   * assume that it is only setting one set of rings at a time, and safely
+   * extract focusRingInfos[0].rects.
+   * @param {!Array<!!chrome.accessibilityPrivate.FocusRingInfo>} focusRingInfos
    */
   setFocusRings: (focusRingInfos) => {
-    MockAccessibilityPrivate.focusRingRects_ = focusRingInfos[0].rects;
+    MockAccessibilityPrivate.focusRings_ = focusRingInfos;
+  },
+
+  /**
+   * Sets highlights.
+   * @param {!Array<!chrome.accessibilityPrivate.ScreenRect>} rects
+   * @param {string} color
+   */
+  setHighlights: (rects, color) => {
+    MockAccessibilityPrivate.highlightRects_ = rects;
+  },
+
+  /**
+   * Updates properties of the Select-to-speak panel.
+   * @param {boolean} show
+   * @param {!chrome.accessibilityPrivate.ScreenRect=} anchor
+   * @param {boolean=} isPaused
+   * @param {number=} speed
+   */
+  updateSelectToSpeakPanel: (show, anchor, isPaused, speed) => {
+    MockAccessibilityPrivate
+        .selectToSpeakPanelState_ = {show, anchor, isPaused, speed};
   },
 
   // Methods for testing. //
 
   /**
-   * Called to get the AccessibilityCommon extension to use the Automation API
-   * to find the scrollable bounds at a point. In Automatic Clicks, this would
-   * actually be initiated by ash/autoclick/autoclick_controller calling the
-   * AccessibilityPrivate API call.
-   * When the bounds are found, handleScrollableBoundsForPointFoundCallback will
-   * be called to inform the test that work is complete.
+   * Called to get the AccessibilityCommon extension to use the Automation
+   * API to find the scrollable bounds at a point. In Automatic Clicks, this
+   * would actually be initiated by ash/autoclick/autoclick_controller
+   * calling the AccessibilityPrivate API call. When the bounds are found,
+   * handleScrollableBoundsForPointFoundCallback will be called to inform
+   * the test that work is complete.
    * @param {number} x
    * @param {number} y
    * @param {!function<>} handleScrollableBoundsForPointFoundCallback
@@ -115,9 +182,44 @@ var MockAccessibilityPrivate = {
   /**
    * Gets the focus rings bounds which were set by the AccessibilityCommon
    * extension.
-   * @return {Array<!chrome.AccessibilityPrivate.ScreenRect>}
+   * @return {Array<!chrome.accessibilityPrivate.FocusRingInfo>}
    */
   getFocusRings: () => {
-    return MockAccessibilityPrivate.focusRingRects_;
+    return MockAccessibilityPrivate.focusRings_;
+  },
+
+  /**
+   * Gets the highlight bounds.
+   * @return {!Array<!chrome.AccessibilityPrivate.ScreenRect>}
+   */
+  getHighlights: () => {
+    return MockAccessibilityPrivate.highlightRects_;
+  },
+
+  /**
+   * @return {?SelectToSpeakPanelState}
+   */
+  getSelectToSpeakPanelState: () => {
+    return MockAccessibilityPrivate.selectToSpeakPanelState_;
+  },
+
+  /**
+   * Simulates Select-to-speak panel action.
+   * @param {!chrome.accessibilityPrivate.SelectToSpeakPanelAction} action
+   * @param {number=} value
+   */
+  sendSelectToSpeakPanelAction(action, value) {
+    if (MockAccessibilityPrivate.selectToSpeakPanelActionListener_) {
+      MockAccessibilityPrivate.selectToSpeakPanelActionListener_(action, value);
+    }
+  },
+
+  /**
+   * Simulates Select-to-speak state change request (tray button).
+   */
+  sendSelectToSpeakStateChangeRequest() {
+    if (MockAccessibilityPrivate.selectToSpeakStateChangeListener_) {
+      MockAccessibilityPrivate.selectToSpeakStateChangeListener_();
+    }
   },
 };
