@@ -428,6 +428,32 @@ inline v8::MaybeLocal<v8::Value> ToV8HelperSequence(ScriptState* script_state,
   return array;
 }
 
+// Helper function for IDLSequence in the case using reinterpret_cast
+// In order to reduce code size, avoids template instantiation of
+// ToV8HelperSequence<T> where T is a subclass of bindings::DictionaryBase or
+// ScriptWrappable. Since these base classes are the leftmost base class,
+// HeapVector<Member<TheBase>> has the same binary representation with
+// HeapVector<Member<T>>. We leverage this fact to reduce the APK size.
+//
+// This hack reduces the APK size by 4 Kbytes as of 2021 March.
+template <typename BaseClassOfT, typename T>
+inline v8::MaybeLocal<v8::Value> ToV8HelperSequenceWithMemberUpcast(
+    ScriptState* script_state,
+    const HeapVector<Member<T>>* vector) {
+  return ToV8HelperSequence<BaseClassOfT>(
+      script_state,
+      *reinterpret_cast<const HeapVector<Member<BaseClassOfT>>*>(vector));
+}
+
+template <typename BaseClassOfT, typename T>
+inline v8::MaybeLocal<v8::Value> ToV8HelperSequenceWithMemberUpcast(
+    ScriptState* script_state,
+    const HeapVector<Member<const T>>* vector) {
+  return ToV8HelperSequence<BaseClassOfT>(
+      script_state,
+      *reinterpret_cast<const HeapVector<Member<BaseClassOfT>>*>(vector));
+}
+
 // Helper function for IDLRecord
 template <typename ValueIDLType, typename VectorType>
 inline v8::MaybeLocal<v8::Value> ToV8HelperRecord(ScriptState* script_state,
@@ -463,7 +489,130 @@ inline v8::MaybeLocal<v8::Value> ToV8HelperRecord(ScriptState* script_state,
 
 // IDLSequence
 template <typename T>
-struct ToV8Traits<IDLSequence<T>> {
+struct ToV8Traits<
+    IDLSequence<T>,
+    std::enable_if_t<std::is_base_of<bindings::DictionaryBase, T>::value>> {
+  static v8::MaybeLocal<v8::Value> ToV8(ScriptState* script_state,
+                                        const HeapVector<Member<T>>& value)
+      WARN_UNUSED_RESULT {
+    return bindings::ToV8HelperSequenceWithMemberUpcast<
+        bindings::DictionaryBase>(script_state, &value);
+  }
+
+  static v8::MaybeLocal<v8::Value> ToV8(
+      ScriptState* script_state,
+      const HeapVector<Member<const T>>& value) WARN_UNUSED_RESULT {
+    return bindings::ToV8HelperSequenceWithMemberUpcast<
+        bindings::DictionaryBase>(script_state, &value);
+  }
+
+  static v8::MaybeLocal<v8::Value> ToV8(ScriptState* script_state,
+                                        const HeapVector<Member<T>>* value)
+      WARN_UNUSED_RESULT {
+    DCHECK(value);
+    return bindings::ToV8HelperSequenceWithMemberUpcast<
+        bindings::DictionaryBase>(script_state, value);
+  }
+
+  static v8::MaybeLocal<v8::Value> ToV8(
+      ScriptState* script_state,
+      const HeapVector<Member<const T>>* value) WARN_UNUSED_RESULT {
+    DCHECK(value);
+    return bindings::ToV8HelperSequenceWithMemberUpcast<
+        bindings::DictionaryBase>(script_state, value);
+  }
+
+  // TODO(crbug.com/1185046): Remove this overload.
+  static v8::MaybeLocal<v8::Value> ToV8(
+      ScriptState* script_state,
+      const Vector<v8::Local<v8::Value>>& value) WARN_UNUSED_RESULT {
+    return bindings::ToV8HelperSequence<IDLAny>(script_state, value);
+  }
+};
+
+template <typename T>
+struct ToV8Traits<
+    IDLSequence<T>,
+    std::enable_if_t<std::is_base_of<IDLDictionaryBase, T>::value>> {
+  static v8::MaybeLocal<v8::Value> ToV8(ScriptState* script_state,
+                                        const HeapVector<Member<T>>& value)
+      WARN_UNUSED_RESULT {
+    return bindings::ToV8HelperSequenceWithMemberUpcast<IDLDictionaryBase>(
+        script_state, &value);
+  }
+
+  static v8::MaybeLocal<v8::Value> ToV8(
+      ScriptState* script_state,
+      const HeapVector<Member<const T>>& value) WARN_UNUSED_RESULT {
+    return bindings::ToV8HelperSequenceWithMemberUpcast<IDLDictionaryBase>(
+        script_state, &value);
+  }
+
+  static v8::MaybeLocal<v8::Value> ToV8(ScriptState* script_state,
+                                        const HeapVector<Member<T>>* value)
+      WARN_UNUSED_RESULT {
+    DCHECK(value);
+    return bindings::ToV8HelperSequenceWithMemberUpcast<IDLDictionaryBase>(
+        script_state, value);
+  }
+
+  static v8::MaybeLocal<v8::Value> ToV8(
+      ScriptState* script_state,
+      const HeapVector<Member<const T>>* value) WARN_UNUSED_RESULT {
+    DCHECK(value);
+    return bindings::ToV8HelperSequenceWithMemberUpcast<IDLDictionaryBase>(
+        script_state, value);
+  }
+
+  // TODO(crbug.com/1185046): Remove this overload.
+  static v8::MaybeLocal<v8::Value> ToV8(
+      ScriptState* script_state,
+      const Vector<v8::Local<v8::Value>>& value) WARN_UNUSED_RESULT {
+    return bindings::ToV8HelperSequence<IDLAny>(script_state, value);
+  }
+};
+
+template <typename T>
+struct ToV8Traits<
+    IDLSequence<T>,
+    std::enable_if_t<std::is_base_of<ScriptWrappable, T>::value>> {
+  static v8::MaybeLocal<v8::Value> ToV8(ScriptState* script_state,
+                                        const HeapVector<Member<T>>& value)
+      WARN_UNUSED_RESULT {
+    return bindings::ToV8HelperSequenceWithMemberUpcast<ScriptWrappable>(
+        script_state, &value);
+  }
+
+  static v8::MaybeLocal<v8::Value> ToV8(
+      ScriptState* script_state,
+      const HeapVector<Member<const T>>& value) WARN_UNUSED_RESULT {
+    return bindings::ToV8HelperSequenceWithMemberUpcast<ScriptWrappable>(
+        script_state, &value);
+  }
+
+  static v8::MaybeLocal<v8::Value> ToV8(ScriptState* script_state,
+                                        const HeapVector<Member<T>>* value)
+      WARN_UNUSED_RESULT {
+    DCHECK(value);
+    return bindings::ToV8HelperSequenceWithMemberUpcast<ScriptWrappable>(
+        script_state, value);
+  }
+
+  static v8::MaybeLocal<v8::Value> ToV8(
+      ScriptState* script_state,
+      const HeapVector<Member<const T>>* value) WARN_UNUSED_RESULT {
+    DCHECK(value);
+    return bindings::ToV8HelperSequenceWithMemberUpcast<ScriptWrappable>(
+        script_state, value);
+  }
+};
+
+template <typename T>
+struct ToV8Traits<
+    IDLSequence<T>,
+    std::enable_if_t<!std::is_base_of<bindings::DictionaryBase, T>::value &&
+                     !std::is_base_of<IDLDictionaryBase, T>::value &&
+                     !std::is_base_of<ScriptWrappable, T>::value>> {
   template <typename VectorType>
   static v8::MaybeLocal<v8::Value> ToV8(ScriptState* script_state,
                                         const VectorType& value)
