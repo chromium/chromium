@@ -71,7 +71,7 @@ const base::Feature kPasswordProtectionForSavedPasswords{
 
 const base::Feature kPasswordProtectionReferringAppEnabledAndroid{
     "SafeBrowsingPasswordProtectionReferringAppEnabledAndroid",
-    base::FEATURE_DISABLED_BY_DEFAULT};
+    base::FEATURE_ENABLED_BY_DEFAULT};
 
 const base::Feature kPasswordProtectionShowDomainsForSavedPasswords{
     "SafeBrowsingPasswordProtectionShowDomainsForSavedPasswords",
