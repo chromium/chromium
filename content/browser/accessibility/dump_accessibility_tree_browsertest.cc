@@ -643,7 +643,7 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
                        AccessibilityAriaColumnHeader) {
   // TODO(crbug.com/1152126): Enable extra mac nodes in AXTree.
   base::AutoReset<bool> disable_extra_mac_nodes(
-      &allow_extra_mac_nodes_for_testing_, false);
+      &disable_extra_mac_nodes_for_testing_, true);
   RunAriaTest(FILE_PATH_LITERAL("aria-columnheader.html"));
 }
 
@@ -962,7 +962,7 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest, AccessibilityAriaLevel) {
   // TODO(crbug.com/1152126): Enable extra mac nodes in AXTree.
   base::AutoReset<bool> disable_extra_mac_nodes(
-      &allow_extra_mac_nodes_for_testing_, false);
+      &disable_extra_mac_nodes_for_testing_, true);
   RunAriaTest(FILE_PATH_LITERAL("aria-level.html"));
 }
 
@@ -1236,7 +1236,7 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest, AccessibilityAriaRowGroup) {
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest, AccessibilityAriaRowHeader) {
   // TODO(crbug.com/1152126): Enable extra mac nodes in AXTree.
   base::AutoReset<bool> disable_extra_mac_nodes(
-      &allow_extra_mac_nodes_for_testing_, false);
+      &disable_extra_mac_nodes_for_testing_, true);
   RunAriaTest(FILE_PATH_LITERAL("aria-rowheader.html"));
 }
 
@@ -1396,7 +1396,7 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest, AccessibilityAriaTree) {
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest, AccessibilityAriaTreeGrid) {
   // TODO(crbug.com/1152126): Enable extra mac nodes in AXTree.
   base::AutoReset<bool> disable_extra_mac_nodes(
-      &allow_extra_mac_nodes_for_testing_, false);
+      &disable_extra_mac_nodes_for_testing_, true);
   RunAriaTest(FILE_PATH_LITERAL("aria-treegrid.html"));
 }
 
@@ -2671,7 +2671,7 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest, AccessibilityTableRowAdd) {
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest, AccessibilityTableSimple) {
   // TODO(crbug.com/1152126): Enable extra mac nodes in AXTree.
   base::AutoReset<bool> disable_extra_mac_nodes(
-      &allow_extra_mac_nodes_for_testing_, false);
+      &disable_extra_mac_nodes_for_testing_, true);
   RunHtmlTest(FILE_PATH_LITERAL("table-simple.html"));
 }
 
@@ -2688,7 +2688,7 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
                        AccessibilityTableThColHeader) {
   // TODO(crbug.com/1152126): Enable extra mac nodes in AXTree.
   base::AutoReset<bool> disable_extra_mac_nodes(
-      &allow_extra_mac_nodes_for_testing_, false);
+      &disable_extra_mac_nodes_for_testing_, true);
   RunHtmlTest(FILE_PATH_LITERAL("table-th-colheader.html"));
 }
 
@@ -2696,7 +2696,7 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
                        AccessibilityTableThRowHeader) {
   // TODO(crbug.com/1152126): Enable extra mac nodes in AXTree.
   base::AutoReset<bool> disable_extra_mac_nodes(
-      &allow_extra_mac_nodes_for_testing_, false);
+      &disable_extra_mac_nodes_for_testing_, true);
   RunHtmlTest(FILE_PATH_LITERAL("table-th-rowheader.html"));
 }
 
@@ -2704,7 +2704,7 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
                        AccessibilityTableTbodyTfoot) {
   // TODO(crbug.com/1152126): Enable extra mac nodes in AXTree.
   base::AutoReset<bool> disable_extra_mac_nodes(
-      &allow_extra_mac_nodes_for_testing_, false);
+      &disable_extra_mac_nodes_for_testing_, true);
   RunHtmlTest(FILE_PATH_LITERAL("table-thead-tbody-tfoot.html"));
 }
 
@@ -2712,14 +2712,14 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
                        AccessibilityTableFocusableSections) {
   // TODO(crbug.com/1152126): Enable extra mac nodes in AXTree.
   base::AutoReset<bool> disable_extra_mac_nodes(
-      &allow_extra_mac_nodes_for_testing_, false);
+      &disable_extra_mac_nodes_for_testing_, true);
   RunHtmlTest(FILE_PATH_LITERAL("table-focusable-sections.html"));
 }
 
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest, AccessibilityTableSpans) {
   // TODO(crbug.com/1152126): Enable extra mac nodes in AXTree.
   base::AutoReset<bool> disable_extra_mac_nodes(
-      &allow_extra_mac_nodes_for_testing_, false);
+      &disable_extra_mac_nodes_for_testing_, true);
   RunHtmlTest(FILE_PATH_LITERAL("table-spans.html"));
 }
 

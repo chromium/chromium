@@ -162,10 +162,10 @@ void DumpAccessibilityTestBase::RunTestForPlatform(
 
   // Extra mac nodes are disabled temporarily for stability purposes, but keep
   // them on for tests.
-  if (allow_extra_mac_nodes_for_testing_)
-    BrowserAccessibilityManager::AllowExtraMacNodesForTesting();
-  EXPECT_EQ(allow_extra_mac_nodes_for_testing_,
-            BrowserAccessibilityManager::GetExtraMacNodesAllowed());
+  if (disable_extra_mac_nodes_for_testing_)
+    BrowserAccessibilityManager::DisableExtraMacNodesForTesting();
+  EXPECT_EQ(disable_extra_mac_nodes_for_testing_,
+            BrowserAccessibilityManager::GetExtraMacNodesDisabled());
 
   EXPECT_TRUE(NavigateToURL(shell(), GURL(url::kAboutBlankURL)));
 
