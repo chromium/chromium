@@ -106,7 +106,7 @@ void ShillLogSource::OnGetManagerProperties(
     base::Optional<base::Value> result) {
   if (!result) {
     LOG(ERROR) << "ManagerPropertiesCallback Failed";
-    std::move(callback_).Run(nullptr);
+    std::move(callback_).Run(std::make_unique<SystemLogsResponse>());
     return;
   }
 
