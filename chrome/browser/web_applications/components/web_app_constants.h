@@ -34,6 +34,8 @@ enum Type {
 };
 }  // namespace Source
 
+std::ostream& operator<<(std::ostream& os, Source::Type type);
+
 // Type of OS hook.
 //
 // This enum should be zero based. It is not strongly typed enum class to

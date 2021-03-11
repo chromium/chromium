@@ -327,9 +327,16 @@ std::ostream& operator<<(std::ostream& out, const WebApp& app) {
       << "  user_page_ordinal: " << app.user_page_ordinal_.ToDebugString()
       << std::endl
       << "  user_launch_ordinal: " << app.user_launch_ordinal_.ToDebugString()
-      << std::endl
-      << "  sources: " << app.sources_.to_string() << std::endl
-      << "  is_locally_installed: " << app.is_locally_installed_ << std::endl
+      << std::endl;
+
+  out << "  sources: ";
+  for (int i = Source::Type::kMinValue; i <= Source::Type::kMaxValue; ++i) {
+    if (app.sources_[i])
+      out << static_cast<Source::Type>(i) << " ";
+  }
+  out << std::endl;
+
+  out << "  is_locally_installed: " << app.is_locally_installed_ << std::endl
       << "  is_in_sync_install: " << app.is_in_sync_install_ << std::endl
       << "  sync_fallback_data: " << std::endl
       << app.sync_fallback_data_  // Outputs a std::endl.
