@@ -11,6 +11,8 @@
 
 namespace extensions {
 
+class AutomationEventRouterInterface;
+
 // A delegate for chrome specific automation api logic.
 class ChromeAutomationInternalApiDelegate
     : public AutomationInternalApiDelegate {
@@ -36,7 +38,8 @@ class ChromeAutomationInternalApiDelegate
   bool EnableTree(const ui::AXTreeID& tree_id) override;
   void EnableDesktop() override;
   ui::AXTreeID GetAXTreeID() override;
-  void SetEventBundleSink(ui::AXEventBundleSink* sink) override;
+  void SetAutomationEventRouterInterface(
+      AutomationEventRouterInterface* router) override;
   content::BrowserContext* GetActiveUserContext() override;
 };
 

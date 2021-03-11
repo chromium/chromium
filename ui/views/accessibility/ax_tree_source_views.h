@@ -60,7 +60,7 @@ class VIEWS_EXPORT AXTreeSourceViews
   // Useful for debugging.
   std::string ToString(views::AXAuraObjWrapper* root, std::string prefix);
 
-  const ui::AXTreeID tree_id_for_test() const { return tree_id_; }
+  const ui::AXTreeID tree_id() const { return tree_id_; }
 
  private:
   // The top-level object to use for the AX tree. See class comment.

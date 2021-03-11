@@ -96,10 +96,13 @@ class MockAutomationEventRouter
     : public extensions::AutomationEventRouterInterface {
  public:
   MockAutomationEventRouter() {}
-  ~MockAutomationEventRouter() override = default;
-  void DispatchAccessibilityEvents(
-      const ExtensionMsg_AccessibilityEventBundleParams& events) override {
-    for (const auto& event : events.events)
+  virtual ~MockAutomationEventRouter() = default;
+
+  void DispatchAccessibilityEvents(const ui::AXTreeID& tree_id,
+                                   std::vector<ui::AXTreeUpdate> updates,
+                                   const gfx::Point& mouse_location,
+                                   std::vector<ui::AXEvent> events) {
+    for (const auto& event : events)
       event_count_[event.event_type]++;
   }
   MOCK_METHOD(void,
@@ -114,6 +117,10 @@ class MockAutomationEventRouter
               DispatchActionResult,
               (const ui::AXActionData&, bool, content::BrowserContext*),
               (override));
+  void DispatchGetTextLocationDataResult(
+      const ui::AXActionData& data,
+      const base::Optional<gfx::Rect>& rect) override {}
+
   std::map<ax::mojom::Event, int> event_count_;
 };
 

@@ -24,18 +24,17 @@ namespace ui {
 struct AXActionData;
 }  // namespace ui
 
-struct ExtensionMsg_AccessibilityEventBundleParams;
 struct ExtensionMsg_AccessibilityLocationChangeParams;
 
 namespace extensions {
 
-// NOTE: This interface is implemented in chromecast/internal by
-// ax_tree_source_flutter_unittest.cc
 class AutomationEventRouterInterface {
  public:
   virtual void DispatchAccessibilityEvents(
-      const ExtensionMsg_AccessibilityEventBundleParams& events) = 0;
-
+      const ui::AXTreeID& tree_id,
+      std::vector<ui::AXTreeUpdate> updates,
+      const gfx::Point& mouse_location,
+      std::vector<ui::AXEvent> events) = 0;
   virtual void DispatchAccessibilityLocationChange(
       const ExtensionMsg_AccessibilityLocationChangeParams& params) = 0;
 
@@ -54,12 +53,7 @@ class AutomationEventRouterInterface {
   // Notify the source extension of the result to getTextLocation.
   virtual void DispatchGetTextLocationDataResult(
       const ui::AXActionData& data,
-      const base::Optional<gfx::Rect>& rect) {}
-
-  AutomationEventRouterInterface() {}
-  virtual ~AutomationEventRouterInterface() {}
-
-  DISALLOW_COPY_AND_ASSIGN(AutomationEventRouterInterface);
+      const base::Optional<gfx::Rect>& rect) = 0;
 };
 
 }  // namespace extensions
