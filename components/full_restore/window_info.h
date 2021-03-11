@@ -35,9 +35,15 @@ struct COMPONENT_EXPORT(FULL_RESTORE) WindowInfo {
 
   // The restored bounds in screen coordinates. Empty if the window is not
   // snapped/maximized/minimized.
+  // TODO(sammiequon): This may not be needed as we save the restore bounds in
+  // screen coordinates into |current_bounds|. On creating the widget,
+  // |current_bounds| will be stored as restore bounds and the maximized or
+  // snapped bounds will be determined by the system. Update the comment below
+  // if this is removed.
   base::Optional<gfx::Rect> restore_bounds;
 
-  // Current bounds in screen in coordinates.
+  // Current bounds in screen in coordinates. If the window has restore bounds,
+  // then this contains the restore bounds.
   base::Optional<gfx::Rect> current_bounds;
 
   // Window state, minimized, maximized, inactive, etc.

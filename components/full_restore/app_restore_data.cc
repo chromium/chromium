@@ -26,6 +26,8 @@ constexpr char kFilePathsKey[] = "file_paths";
 constexpr char kActivationIndexKey[] = "index";
 constexpr char kDeskIdKey[] = "desk_id";
 constexpr char kVisibleOnAllWorkspacesKey[] = "all_desk";
+// TODO(sammiequon): This may not be needed as restore bounds are saved in
+// current_bounds if needed. See WindowInfo for more details.
 constexpr char kRestoreBoundsKey[] = "restore_bounds";
 constexpr char kCurrentBoundsKey[] = "current_bounds";
 constexpr char kWindowStateTypeKey[] = "window_state_type";

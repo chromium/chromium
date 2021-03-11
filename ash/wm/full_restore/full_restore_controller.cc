@@ -177,8 +177,13 @@ void FullRestoreController::SaveWindowImpl(
     // storage size.
     window_info.visible_on_all_workspaces = true;
   }
-  window_info.restore_bounds = window_state->GetRestoreBoundsInScreen();
-  window_info.current_bounds = window->GetBoundsInScreen();
+  // If there are restore bounds, use those as current bounds. On restore, for
+  // states with restore bounds (maximized, minimized, snapped, etc), they will
+  // take the current bounds as their restore bounds and have the current bounds
+  // determined by the system.
+  window_info.current_bounds = window_state->HasRestoreBounds()
+                                   ? window_state->GetRestoreBoundsInScreen()
+                                   : window->GetBoundsInScreen();
   window_info.window_state_type = window_state->GetStateType();
   window_info.display_id =
       display::Screen::GetScreen()->GetDisplayNearestWindow(window).id();

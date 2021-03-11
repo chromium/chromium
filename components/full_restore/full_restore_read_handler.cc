@@ -15,7 +15,6 @@
 #include "components/full_restore/restore_data.h"
 #include "components/full_restore/window_info.h"
 #include "components/sessions/core/session_id.h"
-#include "ui/aura/client/aura_constants.h"
 #include "ui/aura/env.h"
 
 namespace full_restore {
@@ -154,10 +153,6 @@ void FullRestoreReadHandler::ModifyWidgetParams(
       window_info->visible_on_all_workspaces.has_value();
   if (window_info->current_bounds)
     out_params->bounds = *window_info->current_bounds;
-  if (window_info->restore_bounds) {
-    out_params->init_properties_container.SetProperty(
-        aura::client::kRestoreBoundsKey, *window_info->restore_bounds);
-  }
   if (window_info->window_state_type) {
     // ToWindowShowState will make us lose some ash-specific types (left/right
     // snap). Ash is responsible for restoring these states by checking
