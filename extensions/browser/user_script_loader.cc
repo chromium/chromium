@@ -30,9 +30,14 @@ namespace extensions {
 namespace {
 
 // The error message passed inside ScriptsLoadedCallback if the shared memory
-// region where scripts are supposed to b e loaded into is invalid.
+// region where scripts are supposed to be loaded into is invalid.
 const char kSharedMemoryInvalidErrorMsg[] =
     "Script could not be loaded into invalid shared memory.";
+
+// The error message passed inside ScriptsLoadedCallback if the callback is
+// fired when the UserScriptLoader is destroyed.
+const char kUserScriptLoaderDestroyedErrorMsg[] =
+    "Scripts could not be loaded as the script loader has been destroyed.";
 
 #if DCHECK_IS_ON()
 bool AreScriptsUnique(const UserScriptList& scripts) {
@@ -172,6 +177,18 @@ UserScriptLoader::UserScriptLoader(BrowserContext* browser_context,
       host_id_(host_id) {}
 
 UserScriptLoader::~UserScriptLoader() {
+  base::Optional<std::string> error =
+      base::make_optional(kUserScriptLoaderDestroyedErrorMsg);
+
+  // Clean up state by firing all remaining callbacks with |error| populated to
+  // alert consumers that scripts are not loaded.
+  std::list<ScriptsLoadedCallback> remaining_callbacks;
+  remaining_callbacks.splice(remaining_callbacks.end(), queued_load_callbacks_);
+  remaining_callbacks.splice(remaining_callbacks.end(), loading_callbacks_);
+  for (auto& callback : remaining_callbacks)
+    std::move(callback).Run(this, error);
+  remaining_callbacks.clear();
+
   for (auto& observer : observers_)
     observer.OnUserScriptLoaderDestroyed(this);
 }

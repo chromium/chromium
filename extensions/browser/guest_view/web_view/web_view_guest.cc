@@ -1126,7 +1126,7 @@ void WebViewGuest::CanDownload(const GURL& url,
 
 void WebViewGuest::SignalWhenReady(base::OnceClosure callback) {
   auto* manager = WebViewContentScriptManager::Get(browser_context());
-  manager->SignalOnScriptsLoaded(std::move(callback));
+  manager->SignalOnScriptsUpdated(std::move(callback));
 }
 
 void WebViewGuest::WillAttachToEmbedder() {

@@ -26,8 +26,7 @@ namespace extensions {
 
 WebViewContentScriptManager::WebViewContentScriptManager(
     content::BrowserContext* browser_context)
-    : user_script_loader_observer_(this), browser_context_(browser_context)  {
-}
+    : browser_context_(browser_context) {}
 
 WebViewContentScriptManager::~WebViewContentScriptManager() {
 }
@@ -65,7 +64,7 @@ void WebViewContentScriptManager::AddContentScripts(
   GuestMapKey key = std::pair<int, int>(embedder_process_id, view_instance_id);
   auto iter = guest_content_script_map_.find(key);
 
-  // Step 1: finds the entry in guest_content_script_map_ by the given |key|.
+  // Step 1: Finds the entry in guest_content_script_map_ by the given |key|.
   // If there isn't any content script added for the given guest yet, insert an
   // empty map first.
   if (iter == guest_content_script_map_.end()) {
@@ -74,7 +73,7 @@ void WebViewContentScriptManager::AddContentScripts(
         std::pair<GuestMapKey, ContentScriptMap>(key, ContentScriptMap()));
   }
 
-  // Step 2: updates the guest_content_script_map_.
+  // Step 2: Updates the guest_content_script_map_.
   ContentScriptMap& map = iter->second;
   std::set<UserScriptIDPair> to_delete;
   for (const std::unique_ptr<UserScript>& script : *scripts) {
@@ -90,28 +89,29 @@ void WebViewContentScriptManager::AddContentScripts(
     ids_to_add.insert(script->id());
   }
 
-  if (!to_delete.empty())
-    loader->RemoveScripts(to_delete, UserScriptLoader::ScriptsLoadedCallback());
+  if (!to_delete.empty()) {
+    pending_operation_count_++;
+    loader->RemoveScripts(
+        to_delete,
+        base::BindOnce(&WebViewContentScriptManager::OnScriptsUpdated,
+                       weak_factory_.GetWeakPtr()));
+  }
 
-  // Step 3: makes WebViewContentScriptManager become an observer of the
-  // |loader| for scripts loaded event.
-  // TODO(crbug.com/1180408): Use callbacks instead to remove the need to
-  // observe this loader for when the load has finished.
-  if (!user_script_loader_observer_.IsObserving(loader))
-    user_script_loader_observer_.Add(loader);
+  // Step 3: Adds new scripts to the set.
+  pending_operation_count_++;
+  loader->AddScripts(
+      std::move(scripts), embedder_process_id,
+      render_frame_host->GetRoutingID(),
+      base::BindOnce(&WebViewContentScriptManager::OnScriptsUpdated,
+                     weak_factory_.GetWeakPtr()));
 
-  // Step 4: adds new scripts to the set.
-  loader->AddScripts(std::move(scripts), embedder_process_id,
-                     render_frame_host->GetRoutingID(),
-                     UserScriptLoader::ScriptsLoadedCallback());
-
-  // Step 5: creates an entry in |webview_host_id_map_| for the given
+  // Step 4: Creates an entry in |webview_host_id_map_| for the given
   // |embedder_process_id| and |view_instance_id| if it doesn't exist.
   auto host_it = webview_host_id_map_.find(key);
   if (host_it == webview_host_id_map_.end())
     webview_host_id_map_.insert(std::make_pair(key, host_id));
 
-  // Step 6: updates WebViewRenderState.
+  // Step 5: Updates WebViewRenderState.
   if (!ids_to_add.empty()) {
     WebViewRendererState::GetInstance()->AddContentScriptIDs(
         embedder_process_id, view_instance_id, ids_to_add);
@@ -157,7 +157,7 @@ void WebViewContentScriptManager::RemoveContentScripts(
   std::set<std::string> ids_to_delete;
   std::set<UserScriptIDPair> scripts_to_delete;
 
-  // Step 1: removes content scripts from |set| and updates
+  // Step 1: Removes content scripts from |set| and updates
   // |guest_content_script_map_|.
   std::map<std::string, UserScriptIDPair>& map = script_map_iter->second;
   // If the |script_name_list| is empty, all the content scripts added by the
@@ -182,18 +182,14 @@ void WebViewContentScriptManager::RemoveContentScripts(
     }
   }
 
-  // Step 2: makes WebViewContentScriptManager become an observer of the
-  // |loader| for scripts loaded event.
-  // TODO(crbug.com/1180408): Use callbacks instead to remove the need to
-  // observe this loader for when the load has finished.
-  if (!user_script_loader_observer_.IsObserving(loader))
-    user_script_loader_observer_.Add(loader);
+  // Step 2: Removes content scripts from set.
+  pending_operation_count_++;
+  loader->RemoveScripts(
+      scripts_to_delete,
+      base::BindOnce(&WebViewContentScriptManager::OnScriptsUpdated,
+                     weak_factory_.GetWeakPtr()));
 
-  // Step 3: removes content scripts from set.
-  loader->RemoveScripts(scripts_to_delete,
-                        UserScriptLoader::ScriptsLoadedCallback());
-
-  // Step 4: updates WebViewRenderState.
+  // Step 3: Updates WebViewRenderState.
   if (!ids_to_delete.empty()) {
     WebViewRendererState::GetInstance()->RemoveContentScriptIDs(
         embedder_process_id, view_instance_id, ids_to_delete);
@@ -217,30 +213,25 @@ std::set<std::string> WebViewContentScriptManager::GetContentScriptIDSet(
   return ids;
 }
 
-void WebViewContentScriptManager::SignalOnScriptsLoaded(
+void WebViewContentScriptManager::SignalOnScriptsUpdated(
     base::OnceClosure callback) {
-  if (!user_script_loader_observer_.IsObservingSources()) {
+  if (pending_operation_count_ == 0) {
     std::move(callback).Run();
     return;
   }
   pending_scripts_loading_callbacks_.push_back(std::move(callback));
 }
 
-void WebViewContentScriptManager::OnScriptsLoaded(
+void WebViewContentScriptManager::OnScriptsUpdated(
     UserScriptLoader* loader,
-    content::BrowserContext* browser_context) {
-  user_script_loader_observer_.Remove(loader);
-  RunCallbacksIfReady();
-}
-
-void WebViewContentScriptManager::OnUserScriptLoaderDestroyed(
-    UserScriptLoader* loader) {
-  user_script_loader_observer_.Remove(loader);
+    const base::Optional<std::string>& error) {
+  --pending_operation_count_;
+  DCHECK_GE(pending_operation_count_, 0);
   RunCallbacksIfReady();
 }
 
 void WebViewContentScriptManager::RunCallbacksIfReady() {
-  if (user_script_loader_observer_.IsObservingSources())
+  if (pending_operation_count_ > 0)
     return;
   for (auto& callback : pending_scripts_loading_callbacks_)
     std::move(callback).Run();

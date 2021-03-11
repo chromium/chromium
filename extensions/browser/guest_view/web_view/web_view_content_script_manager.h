@@ -12,9 +12,13 @@
 
 #include "base/callback.h"
 #include "base/macros.h"
+#include "base/memory/weak_ptr.h"
+#include "base/optional.h"
 #include "base/supports_user_data.h"
-#include "extensions/browser/user_script_loader.h"
 #include "extensions/common/mojom/host_id.mojom-forward.h"
+#include "extensions/common/user_script.h"
+
+struct HostID;
 
 namespace content {
 class BrowserContext;
@@ -22,11 +26,11 @@ class RenderFrameHost;
 }
 
 namespace extensions {
+class UserScriptLoader;
 
 // WebViewContentScriptManager manages the content scripts that each webview
 // guest adds and removes programmatically.
-class WebViewContentScriptManager : public base::SupportsUserData::Data,
-                                    public UserScriptLoader::Observer {
+class WebViewContentScriptManager : public base::SupportsUserData::Data {
  public:
   explicit WebViewContentScriptManager(
       content::BrowserContext* browser_context);
@@ -62,24 +66,25 @@ class WebViewContentScriptManager : public base::SupportsUserData::Data,
   std::set<std::string> GetContentScriptIDSet(int embedder_process_id,
                                               int view_instance_id);
 
-  // Checks if there is any pending content scripts to load.
-  // If no, run |callback| immediately; otherwise caches the |callback|, and
+  // Checks if there is any pending content script updates.
+  // If not, run |callback| immediately; otherwise caches the |callback|, and
   // the |callback| will be called after all the pending content scripts are
   // loaded.
-  void SignalOnScriptsLoaded(base::OnceClosure callback);
+  void SignalOnScriptsUpdated(base::OnceClosure callback);
 
  private:
   using GuestMapKey = std::pair<int, int>;
   using ContentScriptMap = std::map<std::string, UserScriptIDPair>;
   using GuestContentScriptMap = std::map<GuestMapKey, ContentScriptMap>;
 
-  // UserScriptLoader::Observer implementation:
-  void OnScriptsLoaded(UserScriptLoader* loader,
-                       content::BrowserContext* browser_context) override;
-  void OnUserScriptLoaderDestroyed(UserScriptLoader* loader) override;
+  // Invoked when scripts are updated from any kind of operation or when a
+  // UserScriptLoader is about to be destroyed. This may be called multiple
+  // times per script load.
+  void OnScriptsUpdated(UserScriptLoader* loader,
+                        const base::Optional<std::string>& error);
 
-  // If |user_script_loader_observer_| doesn't observe any source, we will run
-  // all the remaining callbacks in |pending_scripts_loading_callbacks_|.
+  // If there are no pending script loads, we will run all the remaining
+  // callbacks in |pending_scripts_loading_callbacks_|.
   void RunCallbacksIfReady();
 
   // A map from embedder process ID and view instance ID (uniquely identifying
@@ -90,15 +95,16 @@ class WebViewContentScriptManager : public base::SupportsUserData::Data,
 
   GuestContentScriptMap guest_content_script_map_;
 
-  // WebViewContentScriptManager observes UserScriptLoader to wait for scripts
-  // loaded event.
-  ScopedObserver<UserScriptLoader, UserScriptLoader::Observer>
-      user_script_loader_observer_;
+  // Tracks the number of pending Add/Remove content script operations initiated
+  // from this class.
+  int pending_operation_count_ = 0;
 
   // Caches callbacks and resumes them when all the scripts are loaded.
   std::vector<base::OnceClosure> pending_scripts_loading_callbacks_;
 
   content::BrowserContext* browser_context_;
+
+  base::WeakPtrFactory<WebViewContentScriptManager> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(WebViewContentScriptManager);
 };
