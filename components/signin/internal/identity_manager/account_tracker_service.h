@@ -131,11 +131,6 @@ class AccountTrackerService {
       JNIEnv* env,
       const base::android::JavaParamRef<jobjectArray>& gaiaIds,
       const base::android::JavaParamRef<jobjectArray>& accountNames);
-
-  // Checks whether all the accounts with |accountNames| are seeded.
-  jboolean AreAccountsSeeded(
-      JNIEnv* env,
-      const base::android::JavaParamRef<jobjectArray>& accountNames) const;
 #endif
 
   // If set, this callback will be invoked whenever the details of a tracked

@@ -105,7 +105,7 @@ AccountTrackerService::AccountTrackerService() {
 #if defined(OS_ANDROID)
   JNIEnv* env = base::android::AttachCurrentThread();
   base::android::ScopedJavaLocalRef<jobject> java_ref =
-      signin::Java_AccountTrackerService_create(
+      signin::Java_AccountTrackerService_Constructor(
           env, reinterpret_cast<intptr_t>(this));
   java_ref_.Reset(env, java_ref.obj());
 #endif
@@ -726,27 +726,5 @@ void AccountTrackerService::SeedAccountsInfo(
   for (size_t i = 0; i < gaia_ids.size(); ++i) {
     SeedAccountInfo(gaia_ids[i], account_names[i]);
   }
-}
-
-jboolean AccountTrackerService::AreAccountsSeeded(
-    JNIEnv* env,
-    const base::android::JavaParamRef<jobjectArray>& accountNames) const {
-  std::vector<std::string> account_names;
-  base::android::AppendJavaStringArrayToStringVector(env, accountNames,
-                                                     &account_names);
-
-  const bool migrated =
-      GetMigrationState() == AccountIdMigrationState::MIGRATION_DONE;
-
-  for (const auto& account_name : account_names) {
-    AccountInfo info = FindAccountInfoByEmail(account_name);
-    if (info.account_id.empty()) {
-      return false;
-    }
-    if (migrated && info.gaia.empty()) {
-      return false;
-    }
-  }
-  return true;
 }
 #endif

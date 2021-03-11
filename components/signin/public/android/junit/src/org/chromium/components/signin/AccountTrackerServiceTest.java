@@ -72,25 +72,9 @@ public class AccountTrackerServiceTest {
         })
                 .when(mNativeMock)
                 .seedAccountsInfo(eq(ACCOUNT_TRACKER_SERVICE_NATIVE), any(), any());
-        AccountTrackerService service =
-                AccountTrackerService.create(ACCOUNT_TRACKER_SERVICE_NATIVE);
+        AccountTrackerService service = new AccountTrackerService(ACCOUNT_TRACKER_SERVICE_NATIVE);
         service.checkAndSeedSystemAccounts();
         verify(mFakeAccountManagerFacade).addObserver(notNull());
         verify(mNativeMock).seedAccountsInfo(eq(ACCOUNT_TRACKER_SERVICE_NATIVE), any(), any());
-    }
-
-    @Test
-    public void testValidateSystemAccountsAfterSeeding() {
-        doAnswer(invocation -> {
-            Assert.assertArrayEquals(new String[] {ACCOUNT_EMAIL}, invocation.getArgument(1));
-            return true;
-        })
-                .when(mNativeMock)
-                .areAccountsSeeded(eq(ACCOUNT_TRACKER_SERVICE_NATIVE), any());
-        AccountTrackerService service =
-                AccountTrackerService.create(ACCOUNT_TRACKER_SERVICE_NATIVE);
-        service.checkAndSeedSystemAccounts();
-        service.validateSystemAccounts();
-        verify(mNativeMock).areAccountsSeeded(eq(ACCOUNT_TRACKER_SERVICE_NATIVE), any());
     }
 }
