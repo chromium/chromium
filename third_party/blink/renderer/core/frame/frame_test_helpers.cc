@@ -656,7 +656,12 @@ void TestWebFrameClient::DidStopLoading() {
 }
 
 bool TestWebFrameClient::SwapIn(WebFrame* previous_frame) {
-  return previous_frame->Swap(frame_);
+  bool result = previous_frame->Swap(frame_);
+
+  if (!frame_->Parent())
+    frame_->View()->DidAttachLocalMainFrame();
+
+  return result;
 }
 
 void TestWebFrameClient::BeginNavigation(
