@@ -7105,29 +7105,6 @@
             ]
         }
     ],
-    "ThrottleInstallingServiceWorker": [
-        {
-            "platforms": [
-                "windows",
-                "mac",
-                "chromeos",
-                "chromeos_lacros",
-                "linux",
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled3_v1",
-                    "params": {
-                        "limit": "3"
-                    },
-                    "enable_features": [
-                        "ThrottleInstallingServiceWorker"
-                    ]
-                }
-            ]
-        }
-    ],
     "TopCat": [
         {
             "platforms": [
