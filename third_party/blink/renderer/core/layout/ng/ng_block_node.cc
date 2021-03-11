@@ -1012,7 +1012,7 @@ bool NGBlockNode::CanUseNewLayout(const LayoutBox& box) {
   if (box.ForceLegacyLayout())
     return false;
   return box.IsLayoutNGMixin() ||
-         (box.IsLayoutImage() && !box.IsMedia() &&
+         (box.IsLayoutImage() && !box.IsMedia() && !box.IsListMarkerImage() &&
           RuntimeEnabledFeatures::LayoutNGReplacedEnabled());
 }
 
