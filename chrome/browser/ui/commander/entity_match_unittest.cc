@@ -14,6 +14,8 @@
 #include "chrome/test/base/test_browser_window.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
+#include "components/tab_groups/tab_group_id.h"
+#include "content/public/test/web_contents_tester.h"
 
 namespace commander {
 
@@ -52,6 +54,14 @@ class CommanderEntityMatchTest : public BrowserWithTestWindowTest {
       tab_groups::TabGroupVisualData data(
           titles.at(i), tab_groups::TabGroupColorId::kGrey, false);
       group_model->GetTabGroup(group)->SetVisualData(data);
+    }
+  }
+
+  void CreateTabs(std::vector<base::string16> titles) {
+    for (const auto& title : titles) {
+      GURL url("chrome://newtab");
+      AddTab(browser(), url);
+      NavigateAndCommitActiveTabWithTitle(browser(), url, title);
     }
   }
 };
@@ -170,6 +180,108 @@ TEST_F(CommanderEntityMatchTest, GroupExcludeWithInput) {
   auto first_group = browser()->tab_strip_model()->GetTabGroupForTab(0);
   auto matches = GroupsMatchingInput(browser(), u"orange", first_group);
   ASSERT_EQ(matches.size(), 1u);
+  EXPECT_EQ(matches.at(0).title, u"Orange juice");
+}
+
+TEST_F(CommanderEntityMatchTest, TabReturnsAllWithNoInput) {
+  CreateTabs({u"A", u"B", u"C"});
+
+  EXPECT_EQ(TabsMatchingInput(browser(), u"").size(), 3u);
+}
+
+TEST_F(CommanderEntityMatchTest, TabOnlyPinnedExcludesUnpinned) {
+  CreateTabs({u"A", u"B", u"C"});
+  browser()->tab_strip_model()->SetTabPinned(1, true);
+
+  TabSearchOptions options;
+  options.only_pinned = true;
+  auto matches = TabsMatchingInput(browser(), u"", options);
+  ASSERT_EQ(matches.size(), 1u);
+  EXPECT_EQ(matches.at(0).title, u"B");
+}
+
+TEST_F(CommanderEntityMatchTest, TabOnlyUnpinnedExcludesPinned) {
+  CreateTabs({u"A", u"B", u"C"});
+  browser()->tab_strip_model()->SetTabPinned(1, true);
+
+  TabSearchOptions options;
+  options.only_unpinned = true;
+  auto matches = TabsMatchingInput(browser(), u"", options);
+  ASSERT_EQ(matches.size(), 2u);
+  EXPECT_EQ(base::ranges::find(matches, u"B", &TabMatch::title), matches.end());
+}
+
+TEST_F(CommanderEntityMatchTest, TabExcludeTabGroupExcludes) {
+  CreateTabs({u"A", u"B", u"C"});
+  browser()->tab_strip_model()->AddToNewGroup({1});
+  browser()->tab_strip_model()->AddToNewGroup({2});
+  auto first_group = browser()->tab_strip_model()->GetTabGroupForTab(1);
+  EXPECT_TRUE(first_group.has_value());
+
+  TabSearchOptions options;
+  options.exclude_tab_group = first_group;
+  auto matches = TabsMatchingInput(browser(), u"", options);
+  EXPECT_EQ(matches.size(), 2u);
+  EXPECT_EQ(base::ranges::find(matches, u"B", &TabMatch::title), matches.end());
+}
+
+TEST_F(CommanderEntityMatchTest, TabOnlyTabGroupExcludesOthers) {
+  CreateTabs({u"A", u"B", u"C"});
+  browser()->tab_strip_model()->AddToNewGroup({1});
+  browser()->tab_strip_model()->AddToNewGroup({2});
+  auto first_group = browser()->tab_strip_model()->GetTabGroupForTab(1);
+  EXPECT_TRUE(first_group.has_value());
+
+  TabSearchOptions options;
+  options.only_tab_group = first_group;
+  auto matches = TabsMatchingInput(browser(), u"", options);
+  ASSERT_EQ(matches.size(), 1u);
+  EXPECT_EQ(matches.at(0).title, u"B");
+}
+
+TEST_F(CommanderEntityMatchTest, TabOnlyAudibleExcludesOthers) {
+  CreateTabs({u"A", u"B", u"C"});
+  browser()->tab_strip_model()->InsertWebContentsAt(
+      1, content::WebContentsTester::CreateTestWebContents(profile(), nullptr),
+      TabStripModel::ADD_NONE);
+  content::WebContentsTester::For(
+      browser()->tab_strip_model()->GetWebContentsAt(1))
+      ->SetIsCurrentlyAudible(true);
+
+  TabSearchOptions options;
+  options.only_audible = true;
+  auto matches = TabsMatchingInput(browser(), u"", options);
+  ASSERT_EQ(matches.size(), 1u);
+  EXPECT_EQ(matches.at(0).index, 1);
+}
+
+TEST_F(CommanderEntityMatchTest, TabOnlyMutedExcludesOthers) {
+  CreateTabs({u"A", u"B", u"C"});
+  browser()->tab_strip_model()->GetWebContentsAt(1)->SetAudioMuted(true);
+
+  TabSearchOptions options;
+  options.only_muted = true;
+  auto matches = TabsMatchingInput(browser(), u"", options);
+  ASSERT_EQ(matches.size(), 1u);
+  EXPECT_EQ(matches.at(0).index, 1);
+}
+
+TEST_F(CommanderEntityMatchTest, TabOnlyIncludesMatches) {
+  CreateTabs({u"Orange juice", u"Aqua regia"});
+
+  auto matches = TabsMatchingInput(browser(), u"orange");
+  ASSERT_EQ(matches.size(), 1u);
+  EXPECT_EQ(matches.at(0).title, u"Orange juice");
+}
+
+TEST_F(CommanderEntityMatchTest, TabOnlyRanksMatches) {
+  CreateTabs({u"Oracular Nouns Gesture Electrically", u"Orange juice"});
+
+  auto matches = TabsMatchingInput(browser(), u"range");
+  ASSERT_EQ(matches.size(), 2u);
+  EXPECT_EQ(matches.at(0).title, u"Orange juice");
+
+  base::ranges::sort(matches, std::greater<>(), &TabMatch::score);
   EXPECT_EQ(matches.at(0).title, u"Orange juice");
 }
 
