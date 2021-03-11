@@ -546,6 +546,19 @@ class UserMetricsActionTest(unittest.TestCase):
        % (file_with_user_action, 1, 'NotInActionsXml')),
       output[0].message)
 
+  def testUserMetricsActionInTestFile(self):
+    input_api = MockInputApi()
+    file_with_user_action = 'file_with_user_action_unittest.cc'
+    contents_with_user_action = [
+      'base::UserMetricsAction("NotInActionsXml")'
+    ]
+
+    input_api.files = [MockFile(file_with_user_action,
+                                contents_with_user_action)]
+
+    self.assertEqual(
+      [], PRESUBMIT.CheckUserActionUpdate(input_api, MockOutputApi()))
+
 
 class PydepsNeedsUpdatingTest(unittest.TestCase):
 

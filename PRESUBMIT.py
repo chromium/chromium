@@ -2442,7 +2442,8 @@ def CheckSpamLogging(input_api, output_api):
                     r"^fuchsia[\\/]engine[\\/]browser[\\/]frame_impl.cc$",
                     r"^fuchsia[\\/]engine[\\/]context_provider_main.cc$",
                     # TODO(https://crbug.com/1181062): Temporary debugging.
-                    r"^fuchsia[\\/]engine[\\/]renderer[\\/]web_engine_render_frame_observer.cc$",
+                    r"^fuchsia[\\/]engine[\\/]renderer[\\/]"
+                        r"web_engine_render_frame_observer.cc$",
                     r"^headless[\\/]app[\\/]headless_shell\.cc$",
                     r"^ipc[\\/]ipc_logging\.cc$",
                     r"^native_client_sdk[\\/]",
@@ -2648,7 +2649,13 @@ def CheckUserActionUpdate(input_api, output_api):
     # for actions.xml will do a more complete presubmit check.
     return []
 
-  file_filter = lambda f: f.LocalPath().endswith(('.cc', '.mm'))
+  file_inclusion_pattern = [r'.*\.(cc|mm)$']
+  files_to_skip = (_EXCLUDED_PATHS +
+                   _TEST_CODE_EXCLUDED_PATHS +
+                   input_api.DEFAULT_FILES_TO_SKIP )
+  file_filter = lambda f: input_api.FilterSourceFile(
+      f, files_to_check=file_inclusion_pattern, files_to_skip=files_to_skip)
+
   action_re = r'[^a-zA-Z]UserMetricsAction\("([^"]*)'
   current_actions = None
   for f in input_api.AffectedFiles(file_filter=file_filter):
