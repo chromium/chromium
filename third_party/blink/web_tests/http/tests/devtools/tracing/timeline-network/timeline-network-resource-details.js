@@ -5,6 +5,7 @@
 (async function() {
   TestRunner.addResult(`Tests the Timeline UI API for network requests.\n`);
   await TestRunner.loadModule('performance_test_runner');
+  await TestRunner.loadLegacyModule('components');
   await TestRunner.showPanel('timeline');
   await TestRunner.evaluateInPagePromise(`
       function performActions()

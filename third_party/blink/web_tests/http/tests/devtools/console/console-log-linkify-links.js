@@ -6,6 +6,7 @@
   TestRunner.addResult(`Test that console.log() would linkify the links. Bug 231074.\n`);
 
   await TestRunner.loadModule('console_test_runner');
+  await TestRunner.loadLegacyModule('components');
   await TestRunner.showPanel('console');
   await TestRunner.evaluateInPagePromise(`
     console.log("www.chromium.org");

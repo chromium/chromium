@@ -6,6 +6,7 @@
   TestRunner.addResult(`Tests the Timeline API instrumentation of a Layout event\n`);
   await TestRunner.loadModule('elements_test_runner');
   await TestRunner.loadModule('performance_test_runner');
+  await TestRunner.loadLegacyModule('components');
   await TestRunner.showPanel('timeline');
   await TestRunner.loadHTML(`
       <style>

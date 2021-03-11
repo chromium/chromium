@@ -5,6 +5,7 @@
 (async function() {
   TestRunner.addResult(`Tests that Linkifier works correctly.\n`);
   await TestRunner.loadModule('sources_test_runner');
+  await TestRunner.loadLegacyModule('components');
   await TestRunner.showPanel('sources');
   await TestRunner.evaluateInPagePromise(`function foo () {} //# sourceURL=linkifier.js`)
   var script;

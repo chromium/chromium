@@ -5,6 +5,7 @@
 (async function() {
   TestRunner.addResult(`Test that causes are correctly generated for various types of events.\n`);
   await TestRunner.loadModule('performance_test_runner');
+  await TestRunner.loadLegacyModule('components');
   await TestRunner.showPanel('timeline');
   await TestRunner.loadHTML(`
       <div id="testElement"></div>

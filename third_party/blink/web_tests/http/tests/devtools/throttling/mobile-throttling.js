@@ -6,6 +6,7 @@
   TestRunner.addResult(`Tests that mobile, network, and CPU throttling interact with each other logically.\n`);
   await TestRunner.showPanel("network");
   await TestRunner.showPanel("timeline");
+  await TestRunner.loadLegacyModule('emulation');
   await UI.viewManager.showView("network.config");
 
   var deviceModeView = new Emulation.DeviceModeView();

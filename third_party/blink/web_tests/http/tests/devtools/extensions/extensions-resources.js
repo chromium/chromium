@@ -7,6 +7,7 @@
   await TestRunner.loadModule('console_test_runner');
   await TestRunner.loadModule('extensions_test_runner');
   await TestRunner.loadModule('sources_test_runner');
+  await TestRunner.loadLegacyModule('components');
 
   TestRunner.clickOnURL = async function() {
     await UI.viewManager.showView("console").then(() => {

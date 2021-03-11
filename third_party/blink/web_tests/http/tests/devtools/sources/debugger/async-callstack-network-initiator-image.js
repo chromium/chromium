@@ -6,6 +6,7 @@
   TestRunner.addResult(`Tests asynchronous network initiator for image loaded from JS.\n`);
   await TestRunner.loadModule('sources_test_runner');
   await TestRunner.loadModule('console_test_runner');
+  await TestRunner.loadLegacyModule('components');
   await TestRunner.showPanel('sources');
   await TestRunner.evaluateInPagePromise(`
       function testFunction()

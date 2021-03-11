@@ -6,6 +6,7 @@
   TestRunner.addResult(`Tests that jumping to previous location works as intended.\n`);
   await TestRunner.loadModule('console_test_runner');
   await TestRunner.loadModule('sources_test_runner');
+  await TestRunner.loadLegacyModule('components');
   await TestRunner.showPanel('sources');
   await TestRunner.addScriptTag('resources/example-fileset-for-test.js');
   await TestRunner.addScriptTag('resources/jump-text.js');

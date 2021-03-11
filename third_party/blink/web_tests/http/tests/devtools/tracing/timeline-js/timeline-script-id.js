@@ -7,6 +7,7 @@
       `Test that checks location resolving mechanics for TimerInstall TimerRemove and FunctionCall events with scriptId.
        It expects two FunctionCall for InjectedScript, two TimerInstall events, two FunctionCall events and one TimerRemove event to be logged with performActions.js script name and some line number.\n`);
   await TestRunner.loadModule('performance_test_runner');
+  await TestRunner.loadLegacyModule('components');
   await TestRunner.showPanel('timeline');
 
   function performActions() {

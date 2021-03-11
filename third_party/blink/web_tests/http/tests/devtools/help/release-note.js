@@ -4,6 +4,7 @@
 
 (async function() {
   await TestRunner.loadModule('help');
+  await TestRunner.loadLegacyModule('help');
 
   TestRunner.addResult(`Test release note\n`);
 
