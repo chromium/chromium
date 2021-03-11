@@ -7,6 +7,7 @@
 #include <memory>
 #include <string>
 
+#include "base/command_line.h"
 #include "base/path_service.h"
 #include "base/supports_user_data.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -39,6 +40,10 @@
 #include "ui/events/keycodes/dom/dom_code.h"
 #include "ui/events/keycodes/dom/dom_key.h"
 #include "ui/events/keycodes/keyboard_codes.h"
+
+#if defined(OS_LINUX)
+#include "ui/ozone/public/ozone_switches.h"
+#endif
 
 namespace {
 const char kPopupFirstDocumentEngagement[] =
@@ -623,6 +628,18 @@ IN_PROC_BROWSER_TEST_F(PopupTrackerBrowserTest,
 #endif
 IN_PROC_BROWSER_TEST_F(PopupTrackerBrowserTest,
                        MAYBE_PopupRedirectsTwice_RedirectCountTwo) {
+#if defined(OS_LINUX)
+  {
+    auto* command_line = base::CommandLine::ForCurrentProcess();
+    if (command_line->HasSwitch(switches::kOzonePlatform) &&
+        command_line->GetSwitchValueASCII(switches::kOzonePlatform) ==
+            "wayland") {
+      // TODO(crbug.com/1179235): Test is flaky on Linux Wayland configuration.
+      GTEST_SKIP() << "Flaky on Linux Wayland";
+    }
+  }
+#endif
+
   const GURL first_url = embedded_test_server()->GetURL("/title1.html");
   ui_test_utils::NavigateToURL(browser(), first_url);
 
