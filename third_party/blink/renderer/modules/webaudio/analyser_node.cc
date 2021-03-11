@@ -35,8 +35,8 @@ namespace blink {
 
 AnalyserHandler::AnalyserHandler(AudioNode& node, float sample_rate)
     : AudioBasicInspectorHandler(kNodeTypeAnalyser, node, sample_rate),
-      analyser_(std::make_unique<RealtimeAnalyser>(
-          node.context()->GetDeferredTaskHandler().RenderQuantumFrames())) {
+      analyser_(
+          node.context()->GetDeferredTaskHandler().RenderQuantumFrames()) {
   channel_count_ = 2;
   AddOutput(1);
 
@@ -65,7 +65,7 @@ void AnalyserHandler::Process(uint32_t frames_to_process) {
   // Give the analyser the audio which is passing through this
   // AudioNode.  This must always be done so that the state of the
   // Analyser reflects the current input.
-  analyser_->WriteInput(input_bus.get(), frames_to_process);
+  analyser_.WriteInput(input_bus.get(), frames_to_process);
 
   if (!Input(0).IsConnected()) {
     // No inputs, so clear the output, and propagate the silence hint.
@@ -83,7 +83,7 @@ void AnalyserHandler::Process(uint32_t frames_to_process) {
 
 void AnalyserHandler::SetFftSize(unsigned size,
                                  ExceptionState& exception_state) {
-  if (!analyser_->SetFftSize(size)) {
+  if (!analyser_.SetFftSize(size)) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kIndexSizeError,
         (size < RealtimeAnalyser::kMinFFTSize ||
@@ -101,7 +101,7 @@ void AnalyserHandler::SetFftSize(unsigned size,
 void AnalyserHandler::SetMinDecibels(double k,
                                      ExceptionState& exception_state) {
   if (k < MaxDecibels()) {
-    analyser_->SetMinDecibels(k);
+    analyser_.SetMinDecibels(k);
   } else {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kIndexSizeError,
@@ -113,7 +113,7 @@ void AnalyserHandler::SetMinDecibels(double k,
 void AnalyserHandler::SetMaxDecibels(double k,
                                      ExceptionState& exception_state) {
   if (k > MinDecibels()) {
-    analyser_->SetMaxDecibels(k);
+    analyser_.SetMaxDecibels(k);
   } else {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kIndexSizeError,
@@ -133,15 +133,15 @@ void AnalyserHandler::SetMinMaxDecibels(double min_decibels,
             String::Number(min_decibels) + ").");
     return;
   }
-  analyser_->SetMinDecibels(min_decibels);
-  analyser_->SetMaxDecibels(max_decibels);
+  analyser_.SetMinDecibels(min_decibels);
+  analyser_.SetMaxDecibels(max_decibels);
 }
 
 void AnalyserHandler::SetSmoothingTimeConstant(
     double k,
     ExceptionState& exception_state) {
   if (k >= 0 && k <= 1) {
-    analyser_->SetSmoothingTimeConstant(k);
+    analyser_.SetSmoothingTimeConstant(k);
   } else {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kIndexSizeError,

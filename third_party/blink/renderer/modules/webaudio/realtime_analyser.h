@@ -39,6 +39,8 @@ namespace blink {
 class AudioBus;
 
 class RealtimeAnalyser final {
+  DISALLOW_NEW();
+
  public:
   explicit RealtimeAnalyser(unsigned render_quantum_frames);
 
