@@ -4447,6 +4447,10 @@ const char kFsNosymfollowDescription[] =
 const char kFullRestoreName[] = "Full restore";
 const char kFullRestoreDescription[] = "Chrome OS full restore";
 
+const char kHelpAppLauncherSearchName[] = "Help App launcher search";
+const char kHelpAppLauncherSearchDescription[] =
+    "Enables showing search results from the help app in the launcher.";
+
 const char kHelpAppSearchServiceIntegrationName[] =
     "Help App search service integration";
 const char kHelpAppSearchServiceIntegrationDescription[] =

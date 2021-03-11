@@ -3122,6 +3122,11 @@
     "expiry_milestone": 90
   },
   {
+    "name": "help-app-launcher-search",
+    "owners": [ "//chromeos/components/help_app_ui/OWNERS" ],
+    "expiry_milestone": 93
+  },
+  {
     "name": "help-app-search-service-integration",
     "owners": [ "//chromeos/components/help_app_ui/OWNERS" ],
     "expiry_milestone": 90

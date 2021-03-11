@@ -186,6 +186,8 @@ extern const base::Feature kGamepadVibration;
 COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const base::Feature kGesturePropertiesDBusService;
 COMPONENT_EXPORT(ASH_CONSTANTS)
+extern const base::Feature kHelpAppLauncherSearch;
+COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const base::Feature kHelpAppSearchServiceIntegration;
 COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const base::Feature kImeMojoDecoder;

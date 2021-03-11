@@ -85,6 +85,11 @@ void ChromeHelpAppUIDelegate::PopulateLoadTimeData(
 
   // Add any features that have been enabled.
   source->AddBoolean("HelpAppReleaseNotes", true);
+  source->AddBoolean("HelpAppLauncherSearch",
+                     base::FeatureList::IsEnabled(
+                         chromeos::features::kHelpAppLauncherSearch) &&
+                         base::FeatureList::IsEnabled(
+                             chromeos::features::kEnableLocalSearchService));
   source->AddBoolean(
       "HelpAppSearchServiceIntegration",
       base::FeatureList::IsEnabled(
