@@ -68,7 +68,7 @@ export {DownloadsBrowserProxyImpl} from './downloads_page/downloads_browser_prox
 // <if expr="_google_chrome and is_win">
 export {IncompatibleApplication, IncompatibleApplicationsBrowserProxyImpl} from './incompatible_applications_page/incompatible_applications_browser_proxy.js';
 // </if>
-export {LanguagesBrowserProxy, LanguagesBrowserProxyImpl} from './languages_page/languages_browser_proxy.m.js';
+export {LanguagesBrowserProxy, LanguagesBrowserProxyImpl} from './languages_page/languages_browser_proxy.js';
 // <if expr="chromeos">
 export {LanguagesMetricsProxy, LanguagesMetricsProxyImpl, LanguagesPageInteraction} from './languages_page/languages_metrics_proxy.js';
 // </if>

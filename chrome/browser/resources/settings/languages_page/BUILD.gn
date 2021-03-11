@@ -4,8 +4,6 @@
 
 import("//third_party/closure_compiler/compile_js.gni")
 import("//tools/polymer/html_to_js.gni")
-import("//tools/polymer/polymer.gni")
-import("//ui/webui/resources/tools/js_modulizer.gni")
 import("../settings.gni")
 
 js_type_check("closure_compile_module") {
@@ -14,8 +12,8 @@ js_type_check("closure_compile_module") {
   deps = [
     ":add_languages_dialog",
     ":edit_dictionary_page",
-    ":languages.m",
-    ":languages_browser_proxy.m",
+    ":languages",
+    ":languages_browser_proxy",
     ":languages_metrics_proxy",
     ":languages_page",
     ":languages_settings_metrics_proxy",
@@ -30,7 +28,7 @@ js_library("languages_types") {
 
 js_library("add_languages_dialog") {
   deps = [
-    ":languages.m",
+    ":languages",
     ":languages_types",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
     "//ui/webui/resources/cr_elements:cr_scrollable_behavior.m",
@@ -41,7 +39,7 @@ js_library("add_languages_dialog") {
 
 js_library("edit_dictionary_page") {
   deps = [
-    ":languages_browser_proxy.m",
+    ":languages_browser_proxy",
     "..:global_scroll_target_behavior.m",
     "..:route",
     "../prefs:prefs.m",
@@ -52,10 +50,9 @@ js_library("edit_dictionary_page") {
   ]
 }
 
-js_library("languages.m") {
-  sources = [ "$root_gen_dir/chrome/browser/resources/settings/languages_page/languages.m.js" ]
+js_library("languages") {
   deps = [
-    ":languages_browser_proxy.m",
+    ":languages_browser_proxy",
     ":languages_types",
     "../prefs:prefs.m",
     "../prefs:prefs_behavior.m",
@@ -75,11 +72,9 @@ js_library("languages.m") {
     "$interfaces_path/input_method_private_interface.js",
     "$interfaces_path/language_settings_private_interface.js",
   ]
-  extra_deps = [ ":languages_module" ]
 }
 
-js_library("languages_browser_proxy.m") {
-  sources = [ "$root_gen_dir/chrome/browser/resources/settings/languages_page/languages_browser_proxy.m.js" ]
+js_library("languages_browser_proxy") {
   deps = [ "//ui/webui/resources/js:cr.m" ]
   externs_list = [
     "$externs_path/chrome_send.js",
@@ -90,7 +85,6 @@ js_library("languages_browser_proxy.m") {
     "$interfaces_path/input_method_private_interface.js",
     "$interfaces_path/language_settings_private_interface.js",
   ]
-  extra_deps = [ ":modulize" ]
 }
 
 js_library("languages_metrics_proxy") {
@@ -105,7 +99,7 @@ js_library("languages_settings_metrics_proxy") {
 
 js_library("languages_page") {
   deps = [
-    ":languages.m",
+    ":languages",
     ":languages_metrics_proxy",
     ":languages_settings_metrics_proxy",
     "..:lifetime_browser_proxy.m",
@@ -123,7 +117,7 @@ js_library("languages_page") {
 
 js_library("languages_subpage") {
   deps = [
-    ":languages.m",
+    ":languages",
     ":languages_metrics_proxy",
     ":languages_settings_metrics_proxy",
     "..:lifetime_browser_proxy.m",
@@ -139,14 +133,6 @@ js_library("languages_subpage") {
   ]
 }
 
-group("polymer3_elements") {
-  public_deps = [
-    ":languages_module",
-    ":modulize",
-    ":web_components",
-  ]
-}
-
 html_to_js("web_components") {
   js_files = [
     "add_languages_dialog.js",
@@ -154,21 +140,4 @@ html_to_js("web_components") {
     "languages_page.js",
     "languages_subpage.js",
   ]
-}
-
-polymer_modulizer("languages") {
-  js_file = "languages.js"
-  html_file = "languages.html"
-  html_type = "dom-module"
-  auto_imports = settings_auto_imports + [
-                   "chrome/browser/resources/settings/languages_page/languages_browser_proxy.html|LanguagesBrowserProxy,LanguagesBrowserProxyImpl",
-                   "ui/webui/resources/html/assert.html|assert",
-                   "ui/webui/resources/html/cr.html|isChromeOS, isWindows",
-                 ]
-  namespace_rewrites = settings_namespace_rewrites
-}
-
-js_modulizer("modulize") {
-  input_files = [ "languages_browser_proxy.js" ]
-  namespace_rewrites = settings_namespace_rewrites
 }

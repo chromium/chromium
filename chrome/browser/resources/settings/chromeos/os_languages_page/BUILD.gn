@@ -36,7 +36,7 @@ js_library("change_device_language_dialog.m") {
   sources = [ "$root_gen_dir/chrome/browser/resources/settings/chromeos/os_languages_page/change_device_language_dialog.m.js" ]
   deps = [
     "../..:lifetime_browser_proxy.m",
-    "../../languages_page:languages.m",
+    "../../languages_page:languages",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
     "//ui/webui/resources/cr_elements:cr_scrollable_behavior.m",
     "//ui/webui/resources/cr_elements/cr_search_field:cr_search_field.m",
@@ -95,7 +95,7 @@ js_library("manage_input_methods_page.m") {
 js_library("os_add_languages_dialog.m") {
   sources = [ "$root_gen_dir/chrome/browser/resources/settings/chromeos/os_languages_page/os_add_languages_dialog.m.js" ]
   deps = [
-    "../../languages_page:languages.m",
+    "../../languages_page:languages",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
     "//ui/webui/resources/cr_elements:cr_scrollable_behavior.m",
     "//ui/webui/resources/cr_elements:find_shortcut_behavior.m",
@@ -109,7 +109,7 @@ js_library("os_edit_dictionary_page.m") {
   deps = [
     "..:os_route.m",
     "../..:global_scroll_target_behavior.m",
-    "../../languages_page:languages_browser_proxy.m",
+    "../../languages_page:languages_browser_proxy",
     "//third_party/polymer/v3_0/components-chromium/iron-list:iron-list",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
     "//ui/webui/resources/cr_elements/cr_button:cr_button.m",
@@ -171,7 +171,7 @@ js_library("os_languages_section.m") {
     ":os_languages_page.m",
     "..:os_route.m",
     "../..:router.m",
-    "../../languages_page:languages.m",
+    "../../languages_page:languages",
     "../../settings_page:settings_animated_pages",
     "../../settings_page:settings_subpage",
     "//ui/webui/resources/js:assert.m",
@@ -210,8 +210,6 @@ group("polymer3_elements") {
     ":shared_style_module",
     ":shared_vars_module",
     ":smart_inputs_page_module",
-    "../../languages_page:languages_module",
-    "../../languages_page:modulize",
   ]
 }
 

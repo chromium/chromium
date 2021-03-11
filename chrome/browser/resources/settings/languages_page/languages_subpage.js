@@ -20,7 +20,7 @@ import 'chrome://resources/cr_elements/action_link_css.m.js';
 import 'chrome://resources/polymer/v3_0/iron-flex-layout/iron-flex-layout-classes.js';
 import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
 import './add_languages_dialog.js';
-import './languages.m.js';
+import './languages.js';
 import '../controls/settings_toggle_button.js';
 import '../icons.m.js';
 import '../settings_shared_css.m.js';

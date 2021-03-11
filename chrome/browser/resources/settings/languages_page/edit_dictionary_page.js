@@ -24,7 +24,7 @@ import {loadTimeData} from '../i18n_setup.js';
 import {PrefsBehavior} from '../prefs/prefs_behavior.m.js';
 import {routes} from '../route.js';
 
-import {LanguagesBrowserProxyImpl} from './languages_browser_proxy.m.js';
+import {LanguagesBrowserProxyImpl} from './languages_browser_proxy.js';
 
 // Max valid word size defined in
 // https://cs.chromium.org/chromium/src/components/spellcheck/common/spellcheck_common.h?l=28

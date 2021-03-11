@@ -150,7 +150,7 @@ js_library("tts_subpage.m") {
     "//chrome/browser/resources/settings/chromeos:deep_linking_behavior.m",
     "//chrome/browser/resources/settings/chromeos:os_route.m",
     "//chrome/browser/resources/settings/controls:settings_slider",
-    "//chrome/browser/resources/settings/languages_page:languages_browser_proxy.m",
+    "//chrome/browser/resources/settings/languages_page:languages_browser_proxy",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
     "//ui/webui/resources/cr_elements/cr_button:cr_button.m",
     "//ui/webui/resources/cr_elements/cr_expand_button:cr_expand_button.m",
