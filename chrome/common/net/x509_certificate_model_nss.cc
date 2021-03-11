@@ -320,11 +320,11 @@ string ProcessRawBitsSignatureWrap(CERTCertificate* cert_handle) {
 
 std::string ProcessIDN(const std::string& input) {
   // Convert the ASCII input to a string16 for ICU.
-  base::string16 input16;
+  std::u16string input16;
   input16.reserve(input.length());
   input16.insert(input16.end(), input.begin(), input.end());
 
-  base::string16 output16 = url_formatter::IDNToUnicode(input);
+  std::u16string output16 = url_formatter::IDNToUnicode(input);
   if (input16 == output16)
     return input;  // Input did not contain any encoded data.
 

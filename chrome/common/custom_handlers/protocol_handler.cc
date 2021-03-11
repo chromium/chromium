@@ -150,7 +150,7 @@ std::unique_ptr<base::DictionaryValue> ProtocolHandler::Encode() const {
   return d;
 }
 
-base::string16 ProtocolHandler::GetProtocolDisplayName(
+std::u16string ProtocolHandler::GetProtocolDisplayName(
     const std::string& protocol) {
   if (protocol == "mailto")
     return l10n_util::GetStringUTF16(IDS_REGISTER_PROTOCOL_HANDLER_MAILTO_NAME);
@@ -159,7 +159,7 @@ base::string16 ProtocolHandler::GetProtocolDisplayName(
   return base::UTF8ToUTF16(protocol);
 }
 
-base::string16 ProtocolHandler::GetProtocolDisplayName() const {
+std::u16string ProtocolHandler::GetProtocolDisplayName() const {
   return GetProtocolDisplayName(protocol_);
 }
 

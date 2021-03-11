@@ -261,7 +261,7 @@ const chromeos::CaptionButtonModel* FrameHeader::GetCaptionButtonModel() const {
 }
 
 void FrameHeader::SetFrameTextOverride(
-    const base::string16& frame_text_override) {
+    const std::u16string& frame_text_override) {
   frame_text_override_ = frame_text_override;
   SchedulePaintForTitle();
 }
@@ -297,7 +297,7 @@ void FrameHeader::UpdateCaptionButtonColors() {
 }
 
 void FrameHeader::PaintTitleBar(gfx::Canvas* canvas) {
-  base::string16 text = frame_text_override_;
+  std::u16string text = frame_text_override_;
   views::WidgetDelegate* target_widget_delegate =
       target_widget_->widget_delegate();
   if (text.empty() && target_widget_delegate &&

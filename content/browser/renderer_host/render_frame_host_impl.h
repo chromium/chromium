@@ -339,21 +339,21 @@ class CONTENT_EXPORT RenderFrameHostImpl
   gfx::NativeView GetNativeView() override;
   void AddMessageToConsole(blink::mojom::ConsoleMessageLevel level,
                            const std::string& message) override;
-  void ExecuteJavaScriptMethod(const base::string16& object_name,
-                               const base::string16& method_name,
+  void ExecuteJavaScriptMethod(const std::u16string& object_name,
+                               const std::u16string& method_name,
                                base::Value arguments,
                                JavaScriptResultCallback callback) override;
-  void ExecuteJavaScript(const base::string16& javascript,
+  void ExecuteJavaScript(const std::u16string& javascript,
                          JavaScriptResultCallback callback) override;
-  void ExecuteJavaScriptInIsolatedWorld(const base::string16& javascript,
+  void ExecuteJavaScriptInIsolatedWorld(const std::u16string& javascript,
                                         JavaScriptResultCallback callback,
                                         int32_t world_id) override;
   void ExecuteJavaScriptForTests(
-      const base::string16& javascript,
+      const std::u16string& javascript,
       JavaScriptResultCallback callback,
       int32_t world_id = ISOLATED_WORLD_ID_GLOBAL) override;
   void ExecuteJavaScriptWithUserGestureForTests(
-      const base::string16& javascript,
+      const std::u16string& javascript,
       int32_t world_id = ISOLATED_WORLD_ID_GLOBAL) override;
   void ActivateFindInPageResultForAccessibility(int request_id) override;
   void InsertVisualStateCallback(VisualStateCallback callback) override;
@@ -943,14 +943,14 @@ class CONTENT_EXPORT RenderFrameHostImpl
 #if defined(OS_ANDROID)
   // Samsung Galaxy Note-specific "smart clip" stylus text getter.
   using ExtractSmartClipDataCallback = base::OnceCallback<
-      void(const base::string16&, const base::string16&, const gfx::Rect&)>;
+      void(const std::u16string&, const std::u16string&, const gfx::Rect&)>;
 
   void RequestSmartClipExtract(ExtractSmartClipDataCallback callback,
                                gfx::Rect rect);
 
   void OnSmartClipDataExtracted(int32_t callback_id,
-                                const base::string16& text,
-                                const base::string16& html,
+                                const std::u16string& text,
+                                const std::u16string& html,
                                 const gfx::Rect& clip_rect);
 #endif  // defined(OS_ANDROID)
 
@@ -1345,8 +1345,8 @@ class CONTENT_EXPORT RenderFrameHostImpl
   // Posts a message from a frame in another process to the current renderer.
   void PostMessageEvent(
       const base::Optional<blink::RemoteFrameToken>& source_token,
-      const base::string16& source_origin,
-      const base::string16& target_origin,
+      const std::u16string& source_origin,
+      const std::u16string& target_origin,
       blink::TransferableMessage message);
 
   // Requests to swap the current frame into the frame tree, replacing the
@@ -1738,7 +1738,7 @@ class CONTENT_EXPORT RenderFrameHostImpl
   void DispatchLoad() override;
   void GoToEntryAtOffset(int32_t offset, bool has_user_gesture) override;
   void RenderFallbackContentInParentProcess() override;
-  void UpdateTitle(const base::Optional<::base::string16>& title,
+  void UpdateTitle(const base::Optional<::std::u16string>& title,
                    base::i18n::TextDirection title_direction) override;
   void UpdateUserActivationState(
       blink::mojom::UserActivationUpdateType update_type,
@@ -1750,12 +1750,12 @@ class CONTENT_EXPORT RenderFrameHostImpl
   void ForwardResourceTimingToParent(
       blink::mojom::ResourceTimingInfoPtr timing) override;
   void DidFinishDocumentLoad() override;
-  void RunModalAlertDialog(const base::string16& alert_message,
+  void RunModalAlertDialog(const std::u16string& alert_message,
                            RunModalAlertDialogCallback callback) override;
-  void RunModalConfirmDialog(const base::string16& alert_message,
+  void RunModalConfirmDialog(const std::u16string& alert_message,
                              RunModalConfirmDialogCallback callback) override;
-  void RunModalPromptDialog(const base::string16& alert_message,
-                            const base::string16& default_value,
+  void RunModalPromptDialog(const std::u16string& alert_message,
+                            const std::u16string& default_value,
                             RunModalPromptDialogCallback callback) override;
   void RunBeforeUnloadConfirm(bool is_reload,
                               RunBeforeUnloadConfirmCallback callback) override;
@@ -1765,7 +1765,7 @@ class CONTENT_EXPORT RenderFrameHostImpl
   void FocusedElementChanged(bool is_editable_element,
                              const gfx::Rect& bounds_in_frame_widget,
                              blink::mojom::FocusType focus_type) override;
-  void TextSelectionChanged(const base::string16& text,
+  void TextSelectionChanged(const std::u16string& text,
                             uint32_t offset,
                             const gfx::Range& range) override;
   void ShowPopupMenu(
@@ -1804,10 +1804,10 @@ class CONTENT_EXPORT RenderFrameHostImpl
   void Detach() override;
   void DidAddMessageToConsole(
       blink::mojom::ConsoleMessageLevel log_level,
-      const base::string16& message,
+      const std::u16string& message,
       int32_t line_no,
-      const base::Optional<base::string16>& source_id,
-      const base::Optional<base::string16>& untrusted_stack_trace) override;
+      const base::Optional<std::u16string>& source_id,
+      const base::Optional<std::u16string>& untrusted_stack_trace) override;
   void FrameSizeChanged(const gfx::Size& frame_size) override;
 
   // blink::LocalMainFrameHost overrides:
@@ -2681,8 +2681,8 @@ class CONTENT_EXPORT RenderFrameHostImpl
   // Common handler for displaying a javascript dialog from the Run*Dialog
   // mojo handlers. This method sets up some initial state before asking the
   // delegate to create a dialog.
-  void RunJavaScriptDialog(const base::string16& message,
-                           const base::string16& default_prompt,
+  void RunJavaScriptDialog(const std::u16string& message,
+                           const std::u16string& default_prompt,
                            JavaScriptDialogType dialog_type,
                            JavaScriptDialogCallback callback);
 
@@ -2691,7 +2691,7 @@ class CONTENT_EXPORT RenderFrameHostImpl
   // callback when done.
   void JavaScriptDialogClosed(JavaScriptDialogCallback response_callback,
                               bool success,
-                              const base::string16& user_input);
+                              const std::u16string& user_input);
 
   // See |SetIsXrOverlaySetup()|
   bool HasSeenRecentXrOverlaySetup();

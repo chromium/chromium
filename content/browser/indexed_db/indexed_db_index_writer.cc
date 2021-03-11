@@ -40,7 +40,7 @@ bool IndexWriter::VerifyIndexKeys(
     int64_t index_id,
     bool* can_add_keys,
     const IndexedDBKey& primary_key,
-    base::string16* error_message) const {
+    std::u16string* error_message) const {
   *can_add_keys = false;
   for (const auto& key : keys_) {
     bool ok = AddingKeyAllowed(backing_store, transaction, database_id,
@@ -119,7 +119,7 @@ bool MakeIndexWriters(IndexedDBTransaction* transaction,
                       bool key_was_generated,
                       const std::vector<IndexedDBIndexKeys>& index_keys,
                       std::vector<std::unique_ptr<IndexWriter>>* index_writers,
-                      base::string16* error_message,
+                      std::u16string* error_message,
                       bool* completed) {
   *completed = false;
 

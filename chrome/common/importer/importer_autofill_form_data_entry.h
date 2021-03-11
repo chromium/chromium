@@ -17,10 +17,10 @@ struct ImporterAutofillFormDataEntry {
   ~ImporterAutofillFormDataEntry();
 
   // Name of input element.
-  base::string16 name;
+  std::u16string name;
 
   // Value of input element.
-  base::string16 value;
+  std::u16string value;
 
   // Number of times this name-value pair has been used.
   int times_used;

@@ -62,8 +62,8 @@ class CONTENT_EXPORT BrowserAccessibilityManagerMac
   // Returns an autoreleased object.
   NSDictionary* GetUserInfoForValueChangedNotification(
       const BrowserAccessibilityCocoa* native_node,
-      const base::string16& deleted_text,
-      const base::string16& inserted_text,
+      const std::u16string& deleted_text,
+      const std::u16string& inserted_text,
       id edit_text_marker) const;
 
   void AnnounceActiveDescendant(BrowserAccessibility* node) const;

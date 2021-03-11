@@ -11,7 +11,7 @@
 namespace chromeos {
 namespace phonehub {
 
-Notification::AppMetadata::AppMetadata(const base::string16& visible_app_name,
+Notification::AppMetadata::AppMetadata(const std::u16string& visible_app_name,
                                        const std::string& package_name,
                                        const gfx::Image& icon)
     : visible_app_name(visible_app_name),
@@ -35,8 +35,8 @@ Notification::Notification(int64_t id,
                            Importance importance,
                            int64_t inline_reply_id,
                            InteractionBehavior interaction_behavior,
-                           const base::Optional<base::string16>& title,
-                           const base::Optional<base::string16>& text_content,
+                           const base::Optional<std::u16string>& title,
+                           const base::Optional<std::u16string>& text_content,
                            const base::Optional<gfx::Image>& shared_image,
                            const base::Optional<gfx::Image>& contact_image)
     : id_(id),

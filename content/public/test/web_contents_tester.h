@@ -104,7 +104,7 @@ class WebContentsTester {
   virtual const std::string& GetSaveFrameHeaders() = 0;
 
   // Returns the suggested file name passed in the SaveFrameWithHeaders call.
-  virtual const base::string16& GetSuggestedFileName() = 0;
+  virtual const std::u16string& GetSuggestedFileName() = 0;
 
   // Returns whether a download request triggered via DownloadImage() is in
   // progress for |url|.
@@ -123,7 +123,7 @@ class WebContentsTester {
 
   // Sets the return value of GetTitle() of TestWebContents. Once set, the real
   // title will never be returned.
-  virtual void SetTitle(const base::string16& new_title) = 0;
+  virtual void SetTitle(const std::u16string& new_title) = 0;
 
   // Sets the return value of GetContentsMimeType().
   virtual void SetMainFrameMimeType(const std::string& mime_type) = 0;

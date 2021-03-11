@@ -29,10 +29,10 @@ class TestClient : public TestContentClient {
  public:
   ~TestClient() override {}
 
-  base::string16 GetLocalizedString(int message_id) override {
+  std::u16string GetLocalizedString(int message_id) override {
     if (message_id == kDummyStringId)
       return base::UTF8ToUTF16(kDummyString);
-    return base::string16();
+    return std::u16string();
   }
 
   base::RefCountedMemory* GetDataResourceBytes(int resource_id) override {

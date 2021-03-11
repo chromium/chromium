@@ -31,7 +31,7 @@ bool ReadLaunchDimension(const extensions::Manifest* manifest,
                          const char* key,
                          int* target,
                          bool is_valid_container,
-                         base::string16* error) {
+                         std::u16string* error) {
   const base::Value* temp = NULL;
   if (manifest->Get(key, &temp)) {
     if (!is_valid_container) {
@@ -125,14 +125,14 @@ GURL AppLaunchInfo::GetFullLaunchURL(const Extension* extension) {
     return extension->url().Resolve(info.launch_local_path_);
 }
 
-bool AppLaunchInfo::Parse(Extension* extension, base::string16* error) {
+bool AppLaunchInfo::Parse(Extension* extension, std::u16string* error) {
   if (!LoadLaunchURL(extension, error) ||
       !LoadLaunchContainer(extension, error))
     return false;
   return true;
 }
 
-bool AppLaunchInfo::LoadLaunchURL(Extension* extension, base::string16* error) {
+bool AppLaunchInfo::LoadLaunchURL(Extension* extension, std::u16string* error) {
   const base::Value* temp = NULL;
 
   // Launch URL can be either local (to chrome-extension:// root) or an absolute
@@ -264,7 +264,7 @@ bool AppLaunchInfo::LoadLaunchURL(Extension* extension, base::string16* error) {
 }
 
 bool AppLaunchInfo::LoadLaunchContainer(Extension* extension,
-                                        base::string16* error) {
+                                        std::u16string* error) {
   const base::Value* tmp_launcher_container = NULL;
   if (!extension->manifest()->Get(keys::kLaunchContainer,
                                   &tmp_launcher_container))
@@ -342,7 +342,7 @@ AppLaunchManifestHandler::~AppLaunchManifestHandler() {
 }
 
 bool AppLaunchManifestHandler::Parse(Extension* extension,
-                                     base::string16* error) {
+                                     std::u16string* error) {
   std::unique_ptr<AppLaunchInfo> info(new AppLaunchInfo);
   if (!info->Parse(extension, error))
     return false;

@@ -372,7 +372,7 @@ void FileChooserDelegate::RunFileChooser(
     const blink::mojom::FileChooserParams& params) {
   // Send the selected file to the renderer process.
   auto file_info = blink::mojom::FileChooserFileInfo::NewNativeFile(
-      blink::mojom::NativeFileInfo::New(file_, base::string16()));
+      blink::mojom::NativeFileInfo::New(file_, std::u16string()));
   std::vector<blink::mojom::FileChooserFileInfoPtr> files;
   files.push_back(std::move(file_info));
   listener->FileSelected(std::move(files), base::FilePath(),
@@ -562,7 +562,7 @@ BeforeUnloadBlockingDelegate::BeforeUnloadBlockingDelegate(
 
 BeforeUnloadBlockingDelegate::~BeforeUnloadBlockingDelegate() {
   if (!callback_.is_null())
-    std::move(callback_).Run(true, base::string16());
+    std::move(callback_).Run(true, std::u16string());
 
   web_contents_->SetDelegate(nullptr);
   web_contents_->SetJavaScriptDialogManagerForTesting(nullptr);
@@ -582,8 +582,8 @@ void BeforeUnloadBlockingDelegate::RunJavaScriptDialog(
     WebContents* web_contents,
     RenderFrameHost* render_frame_host,
     JavaScriptDialogType dialog_type,
-    const base::string16& message_text,
-    const base::string16& default_prompt_text,
+    const std::u16string& message_text,
+    const std::u16string& default_prompt_text,
     DialogClosedCallback callback,
     bool* did_suppress_message) {
   NOTREACHED();
@@ -601,7 +601,7 @@ void BeforeUnloadBlockingDelegate::RunBeforeUnloadDialog(
 bool BeforeUnloadBlockingDelegate::HandleJavaScriptDialog(
     WebContents* web_contents,
     bool accept,
-    const base::string16* prompt_override) {
+    const std::u16string* prompt_override) {
   NOTREACHED();
   return true;
 }

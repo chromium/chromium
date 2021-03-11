@@ -1063,7 +1063,7 @@ void RenderWidgetHostViewAndroid::Destroy() {
 }
 
 void RenderWidgetHostViewAndroid::SetTooltipText(
-    const base::string16& tooltip_text) {
+    const std::u16string& tooltip_text) {
   // Tooltips don't makes sense on Android.
 }
 

@@ -51,7 +51,7 @@
 
 namespace {
 
-base::string16 SerializeUpdate(const std::string& function,
+std::u16string SerializeUpdate(const std::string& function,
                                const base::Value* value) {
   return content::WebUI::GetJavascriptCall(
       function, std::vector<const base::Value*>(1, value));
@@ -361,7 +361,7 @@ void MediaInternals::Observe(int type,
 // Converts the |event| to a |update|. Returns whether the conversion succeeded.
 static bool ConvertEventToUpdate(int render_process_id,
                                  const media::MediaLogRecord& event,
-                                 base::string16* update) {
+                                 std::u16string* update) {
   DCHECK(update);
 
   base::DictionaryValue dict;
@@ -420,7 +420,7 @@ void MediaInternals::OnMediaEvents(
   // Notify observers that |event| has occurred.
   for (const auto& event : events) {
     if (CanUpdate()) {
-      base::string16 update;
+      std::u16string update;
       if (ConvertEventToUpdate(render_process_id, event, &update))
         SendUpdate(update);
     }
@@ -460,7 +460,7 @@ void MediaInternals::SendHistoricalMediaEvents() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   for (const auto& saved_events : saved_events_by_process_) {
     for (const auto& event : saved_events.second) {
-      base::string16 update;
+      std::u16string update;
       if (ConvertEventToUpdate(saved_events.first, event, &update))
         SendUpdate(update);
     }
@@ -506,13 +506,13 @@ void MediaInternals::SendGeneralAudioInformation() {
   set_explicit_feature_data(
       features::kAudioServiceSandbox,
       GetContentClient()->browser()->ShouldSandboxAudioService());
-  base::string16 audio_info_update =
+  std::u16string audio_info_update =
       SerializeUpdate("media.updateGeneralAudioInformation", &audio_info_data);
   SendUpdate(audio_info_update);
 }
 
 void MediaInternals::SendAudioStreamData() {
-  base::string16 audio_stream_update;
+  std::u16string audio_stream_update;
   {
     base::AutoLock auto_lock(lock_);
     audio_stream_update = SerializeUpdate("media.onReceiveAudioStreamData",
@@ -627,7 +627,7 @@ MediaInternals::CreateAudioLogImpl(
                                         render_frame_id);
 }
 
-void MediaInternals::SendUpdate(const base::string16& update) {
+void MediaInternals::SendUpdate(const std::u16string& update) {
   // SendUpdate() may be called from any thread, but must run on the UI thread.
   if (!BrowserThread::CurrentlyOn(BrowserThread::UI)) {
     GetUIThreadTaskRunner({})->PostTask(

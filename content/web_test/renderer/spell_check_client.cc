@@ -91,7 +91,7 @@ void SpellCheckClient::FinishLastTextCheck() {
   size_t offset = 0;
   if (!spell_checker_.IsMultiWordMisspelling(last_requested_text_check_string_,
                                              &results)) {
-    base::string16 text = last_requested_text_check_string_.Utf16();
+    std::u16string text = last_requested_text_check_string_.Utf16();
     while (text.length()) {
       size_t misspelled_position = 0;
       size_t misspelled_length = 0;

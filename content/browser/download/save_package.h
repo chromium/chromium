@@ -312,7 +312,7 @@ class CONTENT_EXPORT SavePackage
   static GURL GetUrlToBeSaved(WebContents* web_contents);
 
   static base::FilePath CreateDirectoryOnFileThread(
-      const base::string16& title,
+      const std::u16string& title,
       const GURL& page_url,
       bool can_save_as_complete,
       const std::string& mime_type,
@@ -391,7 +391,7 @@ class CONTENT_EXPORT SavePackage
   base::FilePath saved_main_directory_path_;
 
   // The title of the page the user wants to save.
-  const base::string16 title_;
+  const std::u16string title_;
 
   // Used to calculate package download speed (in files per second).
   const base::TimeTicks start_tick_;

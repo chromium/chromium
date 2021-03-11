@@ -164,7 +164,7 @@ scoped_refptr<network::ResourceRequestBody> FrameNavigationEntry::GetPostData(
 
   *content_type = base::UTF16ToASCII(
       exploded_state.top.http_body.http_content_type.value_or(
-          base::string16()));
+          std::u16string()));
   return exploded_state.top.http_body.request_body;
 }
 

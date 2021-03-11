@@ -194,11 +194,11 @@ TEST_F(DWriteFontProxyImplUnitTest, MapCharacter) {
       blink::mojom::DWriteFontStyle::New(DWRITE_FONT_WEIGHT_NORMAL,
                                          DWRITE_FONT_STYLE_NORMAL,
                                          DWRITE_FONT_STRETCH_NORMAL),
-      base::string16(), DWRITE_READING_DIRECTION_LEFT_TO_RIGHT,
-      base::string16(), &result);
+      std::u16string(), DWRITE_READING_DIRECTION_LEFT_TO_RIGHT,
+      std::u16string(), &result);
 
   EXPECT_NE(UINT32_MAX, result->family_index);
-  EXPECT_NE(base::string16(), result->family_name);
+  EXPECT_NE(std::u16string(), result->family_name);
   EXPECT_EQ(3u, result->mapped_length);
   EXPECT_NE(0.0, result->scale);
   EXPECT_NE(0, result->font_style->font_weight);
@@ -216,11 +216,11 @@ TEST_F(DWriteFontProxyImplUnitTest, MapCharacterInvalidCharacter) {
       blink::mojom::DWriteFontStyle::New(DWRITE_FONT_WEIGHT_NORMAL,
                                          DWRITE_FONT_STYLE_NORMAL,
                                          DWRITE_FONT_STRETCH_NORMAL),
-      u"en-us", DWRITE_READING_DIRECTION_LEFT_TO_RIGHT, base::string16(),
+      u"en-us", DWRITE_READING_DIRECTION_LEFT_TO_RIGHT, std::u16string(),
       &result);
 
   EXPECT_EQ(UINT32_MAX, result->family_index);
-  EXPECT_EQ(base::string16(), result->family_name);
+  EXPECT_EQ(std::u16string(), result->family_name);
   EXPECT_EQ(2u, result->mapped_length);
 }
 
@@ -234,11 +234,11 @@ TEST_F(DWriteFontProxyImplUnitTest, MapCharacterInvalidAfterValid) {
       blink::mojom::DWriteFontStyle::New(DWRITE_FONT_WEIGHT_NORMAL,
                                          DWRITE_FONT_STYLE_NORMAL,
                                          DWRITE_FONT_STRETCH_NORMAL),
-      u"en-us", DWRITE_READING_DIRECTION_LEFT_TO_RIGHT, base::string16(),
+      u"en-us", DWRITE_READING_DIRECTION_LEFT_TO_RIGHT, std::u16string(),
       &result);
 
   EXPECT_NE(UINT32_MAX, result->family_index);
-  EXPECT_NE(base::string16(), result->family_name);
+  EXPECT_NE(std::u16string(), result->family_name);
   EXPECT_EQ(3u, result->mapped_length);
   EXPECT_NE(0.0, result->scale);
   EXPECT_NE(0, result->font_style->font_weight);

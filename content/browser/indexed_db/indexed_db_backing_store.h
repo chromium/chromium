@@ -417,7 +417,7 @@ class CONTENT_EXPORT IndexedDBBackingStore {
   // Compact is public for testing.
   virtual void Compact();
   virtual leveldb::Status DeleteDatabase(
-      const base::string16& name,
+      const std::u16string& name,
       TransactionalLevelDBTransaction* transaction);
 
   static bool RecordCorruptionInfo(const base::FilePath& path_base,

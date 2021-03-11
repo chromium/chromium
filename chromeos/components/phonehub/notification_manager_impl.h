@@ -32,7 +32,7 @@ class NotificationManagerImpl
   // NotificationManager:
   void DismissNotification(int64_t notification_id) override;
   void SendInlineReply(int64_t notification_id,
-                       const base::string16& inline_reply_text) override;
+                       const std::u16string& inline_reply_text) override;
 
   // MultiDeviceSetupClient::Observer:
   void OnFeatureStatesChanged(

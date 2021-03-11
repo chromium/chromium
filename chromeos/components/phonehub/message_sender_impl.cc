@@ -81,7 +81,7 @@ void MessageSenderImpl::SendDismissNotificationRequest(
 
 void MessageSenderImpl::SendNotificationInlineReplyRequest(
     int64_t notification_id,
-    const base::string16& reply_text) {
+    const std::u16string& reply_text) {
   proto::NotificationInlineReplyRequest request;
   request.set_notification_id(notification_id);
   request.set_reply_text(base::UTF16ToUTF8(reply_text));

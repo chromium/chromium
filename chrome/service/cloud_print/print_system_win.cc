@@ -293,7 +293,7 @@ class JobSpoolerWin : public PrintSystem::JobSpooler {
       }
       DOCINFO di = {0};
       di.cbSize = sizeof(DOCINFO);
-      base::string16 doc_name = base::UTF8ToUTF16(job_title);
+      std::u16string doc_name = base::UTF8ToUTF16(job_title);
       DCHECK(printing::SimplifyDocumentTitle(doc_name) == doc_name);
       di.lpszDocName = base::as_wcstr(doc_name);
       job_id_ = StartDoc(dc, &di);

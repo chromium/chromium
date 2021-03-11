@@ -25,7 +25,7 @@ mojom::ExternalPowerSource ConvertPowerSourceFromProto(
 // amount of time is unreliable / still being calculated, this returns an
 // empty string. Otherwise, the time is returned in DURATION_WIDTH_NARROW
 // format.
-base::string16 ConstructPowerTime(
+std::u16string ConstructPowerTime(
     mojom::BatteryState battery_state,
     const power_manager::PowerSupplyProperties& power_supply_props);
 

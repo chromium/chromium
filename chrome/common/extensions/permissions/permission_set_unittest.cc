@@ -47,7 +47,7 @@ static void AddPattern(URLPatternSet* extent, const std::string& pattern) {
 }
 
 size_t IndexOf(const PermissionMessages& warnings, const std::string& warning) {
-  base::string16 warning16 = base::ASCIIToUTF16(warning);
+  std::u16string warning16 = base::ASCIIToUTF16(warning);
   size_t i = 0;
   for (const PermissionMessage& msg : warnings) {
     if (msg.message() == warning16)

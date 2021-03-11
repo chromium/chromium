@@ -75,15 +75,15 @@ class TextCallbackWaiter {
 
   void Wait() { run_loop_.Run(); }
 
-  const base::string16& text() const { return text_; }
+  const std::u16string& text() const { return text_; }
 
-  void GetText(const base::string16& text) {
+  void GetText(const std::u16string& text) {
     text_ = text;
     run_loop_.Quit();
   }
 
  private:
-  base::string16 text_;
+  std::u16string text_;
   base::RunLoop run_loop_;
 
   DISALLOW_COPY_AND_ASSIGN(TextCallbackWaiter);

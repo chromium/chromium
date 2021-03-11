@@ -34,7 +34,7 @@ TtsVoices::~TtsVoices() {}
 //  static
 bool TtsVoices::Parse(const base::ListValue* tts_voices,
                       TtsVoices* out_voices,
-                      base::string16* error,
+                      std::u16string* error,
                       Extension* extension) {
   bool added_gender_warning = false;
   for (size_t i = 0; i < tts_voices->GetSize(); i++) {
@@ -126,7 +126,7 @@ TtsEngineManifestHandler::TtsEngineManifestHandler() {}
 TtsEngineManifestHandler::~TtsEngineManifestHandler() {}
 
 bool TtsEngineManifestHandler::Parse(Extension* extension,
-                                     base::string16* error) {
+                                     std::u16string* error) {
   auto info = std::make_unique<TtsVoices>();
   const base::DictionaryValue* tts_dict = nullptr;
   if (!extension->manifest()->GetDictionary(keys::kTtsEngine, &tts_dict)) {

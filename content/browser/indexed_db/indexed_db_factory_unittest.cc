@@ -146,7 +146,7 @@ class IndexedDBFactoryTest : public testing::Test {
   std::tuple<std::unique_ptr<IndexedDBConnection>,
              scoped_refptr<MockIndexedDBDatabaseCallbacks>>
   CreateConnectionForDatatabase(const Origin& origin,
-                                const base::string16& name) {
+                                const std::u16string& name) {
     auto callbacks = base::MakeRefCounted<MockIndexedDBCallbacks>();
     auto db_callbacks = base::MakeRefCounted<MockIndexedDBDatabaseCallbacks>();
     const int64_t transaction_id = 1;
@@ -749,7 +749,7 @@ TEST_F(IndexedDBFactoryTest, DeleteDatabaseWithForceClose) {
   SetupContext();
 
   const Origin origin = Origin::Create(GURL("http://localhost:81"));
-  const base::string16 name = ASCIIToUTF16("db");
+  const std::u16string name = ASCIIToUTF16("db");
 
   std::unique_ptr<IndexedDBConnection> connection;
   scoped_refptr<MockIndexedDBDatabaseCallbacks> db_callbacks;
@@ -853,7 +853,7 @@ TEST_F(IndexedDBFactoryTest, QuotaErrorOnDiskFull) {
       base::MakeRefCounted<IndexedDBDatabaseCallbacks>(
           nullptr, mojo::NullAssociatedRemote(), context()->IDBTaskRunner());
   const Origin origin = Origin::Create(GURL("http://localhost:81"));
-  const base::string16 name(ASCIIToUTF16("name"));
+  const std::u16string name(ASCIIToUTF16("name"));
   auto create_transaction_callback =
       base::BindOnce(&CreateAndBindTransactionPlaceholder);
   auto connection = std::make_unique<IndexedDBPendingConnection>(
@@ -906,7 +906,7 @@ class ErrorCallbacks : public MockIndexedDBCallbacks {
 TEST_F(IndexedDBFactoryTest, DatabaseFailedOpen) {
   SetupContext();
   const Origin origin = Origin::Create(GURL("http://localhost:81"));
-  const base::string16 db_name(ASCIIToUTF16("db"));
+  const std::u16string db_name(ASCIIToUTF16("db"));
   const int64_t transaction_id = 1;
 
   auto callbacks = base::MakeRefCounted<MockIndexedDBCallbacks>();

@@ -27,7 +27,7 @@ using chromeos::string_matching::TokenizedString;
 }  // namespace
 
 std::vector<Token> ConsolidateToken(const std::vector<Token>& tokens) {
-  std::unordered_map<base::string16, std::vector<WeightedPosition>> dictionary;
+  std::unordered_map<std::u16string, std::vector<WeightedPosition>> dictionary;
   for (const auto& token : tokens) {
     dictionary[token.content].insert(dictionary[token.content].end(),
                                      token.positions.begin(),
@@ -42,7 +42,7 @@ std::vector<Token> ConsolidateToken(const std::vector<Token>& tokens) {
 }
 
 std::vector<Token> ExtractContent(const std::string& content_id,
-                                  const base::string16& text,
+                                  const std::u16string& text,
                                   double weight,
                                   const std::string& locale) {
   // Use two different string tokenizing algorithms for Latin and non Latin
@@ -62,7 +62,7 @@ std::vector<Token> ExtractContent(const std::string& content_id,
   std::vector<Token> tokens;
 
   for (size_t i = 0; i < num_tokens; i++) {
-    const base::string16 word = Normalizer(tokenized_string.tokens()[i]);
+    const std::u16string word = Normalizer(tokenized_string.tokens()[i]);
     if (IsStopword(word, locale))
       continue;
     tokens.push_back(Token(
@@ -85,7 +85,7 @@ bool IsNonLatinLocale(const std::string& locale) {
   return base::Contains(*non_latin_locales, locale.substr(0, 2));
 }
 
-bool IsStopword(const base::string16& word, const std::string& locale) {
+bool IsStopword(const std::u16string& word, const std::string& locale) {
   // TODO(thanhdng): Currently we support stopword list for English only. In the
   // future, when we need to support other languages, creates resource files to
   // store the stopwords.
@@ -134,7 +134,7 @@ bool IsStopword(const base::string16& word, const std::string& locale) {
   return base::Contains(*english_stopwords, base::UTF16ToUTF8(word));
 }
 
-base::string16 Normalizer(const base::string16& word, bool remove_hyphen) {
+std::u16string Normalizer(const std::u16string& word, bool remove_hyphen) {
   // Case folding.
   icu::UnicodeString source = icu::UnicodeString::fromUTF8(
       base::UTF16ToUTF8(base::i18n::FoldCase(word)));

@@ -145,7 +145,7 @@ RenderWidgetHostViewBase* RenderWidgetHostViewBase::GetRootView() {
   return this;
 }
 
-void RenderWidgetHostViewBase::SelectionChanged(const base::string16& text,
+void RenderWidgetHostViewBase::SelectionChanged(const std::u16string& text,
                                                 size_t offset,
                                                 const gfx::Range& range) {
   if (GetTextInputManager())
@@ -280,9 +280,9 @@ RenderWidgetHostViewBase::CreateVideoCapturer() {
   return video_capturer;
 }
 
-base::string16 RenderWidgetHostViewBase::GetSelectedText() {
+std::u16string RenderWidgetHostViewBase::GetSelectedText() {
   if (!GetTextInputManager())
-    return base::string16();
+    return std::u16string();
   return GetTextInputManager()->GetTextSelection(this)->selected_text();
 }
 

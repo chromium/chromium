@@ -422,7 +422,7 @@ class TestJavaScriptDialogManager : public JavaScriptDialogManager,
   }
 
   // Runs the dialog callback.
-  void Run(bool success, const base::string16& user_input) {
+  void Run(bool success, const std::u16string& user_input) {
     std::move(callback_).Run(success, user_input);
   }
 
@@ -450,8 +450,8 @@ class TestJavaScriptDialogManager : public JavaScriptDialogManager,
   void RunJavaScriptDialog(WebContents* web_contents,
                            RenderFrameHost* render_frame_host,
                            JavaScriptDialogType dialog_type,
-                           const base::string16& message_text,
-                           const base::string16& default_prompt_text,
+                           const std::u16string& message_text,
+                           const std::u16string& default_prompt_text,
                            DialogClosedCallback callback,
                            bool* did_suppress_message) override {
     callback_ = std::move(callback);
@@ -469,7 +469,7 @@ class TestJavaScriptDialogManager : public JavaScriptDialogManager,
 
   bool HandleJavaScriptDialog(WebContents* web_contents,
                               bool accept,
-                              const base::string16* prompt_override) override {
+                              const std::u16string* prompt_override) override {
     return true;
   }
 
@@ -576,7 +576,7 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTest,
   EXPECT_TRUE(WaitForLoadStop(web_contents()));
   // JavaScript onbeforeunload dialogs require a user gesture.
   for (auto* frame : web_contents()->GetAllFrames())
-    frame->ExecuteJavaScriptWithUserGestureForTests(base::string16());
+    frame->ExecuteJavaScriptWithUserGestureForTests(std::u16string());
 
   // Force a process switch by going to a privileged page. The beforeunload
   // timer will be started on the top-level frame but will be paused while the
@@ -590,7 +590,7 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTest,
   EXPECT_TRUE(main_frame->is_waiting_for_beforeunload_completion());
 
   // Answer the dialog.
-  dialog_manager.Run(true, base::string16());
+  dialog_manager.Run(true, std::u16string());
 
   // There will be no beforeunload completion callback invocation, so if the
   // beforeunload completion callback timer isn't functioning then the
@@ -624,12 +624,12 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTest,
   // Give the page a user gesture and try reloading again. This time there
   // should be a dialog. If there is no dialog, the call to Wait will hang.
   web_contents()->GetMainFrame()->ExecuteJavaScriptWithUserGestureForTests(
-      base::string16());
+      std::u16string());
   web_contents()->GetController().Reload(ReloadType::NORMAL, false);
   dialog_manager.Wait();
 
   // Answer the dialog.
-  dialog_manager.Run(true, base::string16());
+  dialog_manager.Run(true, std::u16string());
   EXPECT_TRUE(WaitForLoadStop(web_contents()));
 
   // The reload should have cleared the user gesture bit, so upon leaving again
@@ -659,7 +659,7 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTest,
 
   // Cancel the dialog.
   dialog_manager.reset_url_invalidate_count();
-  dialog_manager.Run(false, base::string16());
+  dialog_manager.Run(false, std::u16string());
   EXPECT_FALSE(web_contents()->IsLoading());
 
   // Verify there are no pending history items after the dialog is cancelled.
@@ -694,12 +694,12 @@ class RenderFrameHostImplBeforeUnloadBrowserTest
 
   void CloseDialogAndProceed() {
     dialog_manager_->Run(true /* navigation should proceed */,
-                         base::string16());
+                         std::u16string());
   }
 
   void CloseDialogAndCancel() {
     dialog_manager_->Run(false /* navigation should proceed */,
-                         base::string16());
+                         std::u16string());
   }
 
   // Installs a beforeunload handler in the given frame.
@@ -1501,7 +1501,7 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTest, FastNavigationAbort) {
   // NavigationHandleGrabber::SendingNavigationCommitted(). The navigation
   // should get aborted because of the document.open() in the navigating RFH.
   NavigationHandleGrabber observer(web_contents());
-  const base::string16 title = base::ASCIIToUTF16("done");
+  const std::u16string title = base::ASCIIToUTF16("done");
   EXPECT_TRUE(
       ExecuteScript(web_contents(), "window.location.href='/title2.html'"));
   observer.WaitForTitle2();
@@ -1590,8 +1590,8 @@ IN_PROC_BROWSER_TEST_F(
   xhr_response.Done();
 
   // 4) Wait for the XHR request to complete.
-  const base::string16 xhr_aborted_title = base::ASCIIToUTF16("xhr aborted");
-  const base::string16 xhr_loaded_title = base::ASCIIToUTF16("xhr loaded");
+  const std::u16string xhr_aborted_title = base::ASCIIToUTF16("xhr aborted");
+  const std::u16string xhr_loaded_title = base::ASCIIToUTF16("xhr loaded");
   TitleWatcher watcher(shell()->web_contents(), xhr_loaded_title);
   watcher.AlsoWaitForTitle(xhr_aborted_title);
 
@@ -1644,7 +1644,7 @@ IN_PROC_BROWSER_TEST_F(ContentBrowserTest,
   // 3) The end of the response is issued. The renderer must be able to receive
   //    it.
   {
-    const base::string16 document_loaded_title =
+    const std::u16string document_loaded_title =
         base::ASCIIToUTF16("document loaded");
     TitleWatcher watcher(shell()->web_contents(), document_loaded_title);
     main_document_response.Send(
@@ -2639,7 +2639,7 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTest,
   // dispatch a before unload with discard as a reason. This should return
   // without any dialog being seen.
   web_contents()->GetMainFrame()->ExecuteJavaScriptWithUserGestureForTests(
-      base::string16());
+      std::u16string());
   web_contents()->GetMainFrame()->DispatchBeforeUnload(
       RenderFrameHostImpl::BeforeUnloadType::DISCARD, false);
   dialog_manager.Wait();
@@ -2666,7 +2666,7 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTest,
   // dispatch a before unload with discard as a reason. This should return
   // without any dialog being seen.
   web_contents()->GetMainFrame()->ExecuteJavaScriptWithUserGestureForTests(
-      base::string16());
+      std::u16string());
 
   // Launch an alert javascript dialog. This pending dialog should block a
   // subsequent discarding before unload request.
@@ -2688,7 +2688,7 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTest,
 
   // Clear the existing javascript dialog so that the associated IPC message
   // doesn't leak.
-  dialog_manager.Run(true, base::string16());
+  dialog_manager.Run(true, std::u16string());
 
   web_contents()->SetDelegate(nullptr);
   web_contents()->SetJavaScriptDialogManagerForTesting(nullptr);

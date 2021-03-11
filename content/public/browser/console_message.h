@@ -18,7 +18,7 @@ namespace content {
 struct ConsoleMessage {
   ConsoleMessage(blink::mojom::ConsoleMessageSource source,
                  blink::mojom::ConsoleMessageLevel message_level,
-                 const base::string16& message,
+                 const std::u16string& message,
                  int line_number,
                  const GURL& source_url)
       : source(source),
@@ -32,7 +32,7 @@ struct ConsoleMessage {
   // The severity of the console message.
   const blink::mojom::ConsoleMessageLevel message_level;
   // The message that was logged to the console.
-  const base::string16 message;
+  const std::u16string message;
   // The line in the script file that the log was emitted at.
   const int line_number;
   // The URL that emitted the log.

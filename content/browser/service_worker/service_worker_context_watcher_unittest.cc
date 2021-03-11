@@ -330,7 +330,7 @@ TEST_F(ServiceWorkerContextWatcherTest, ErrorReport) {
       watcher_callback.versions().at(registration_id).begin()->first;
   EXPECT_EQ(0u, watcher_callback.errors().size());
 
-  base::string16 message(base::ASCIIToUTF16("HELLO"));
+  std::u16string message(base::ASCIIToUTF16("HELLO"));
   ReportError(watcher, version_id, scope,
               ServiceWorkerContextObserver::ErrorInfo(message, 0, 0, script));
   base::RunLoop().RunUntilIdle();
@@ -381,7 +381,7 @@ TEST_F(ServiceWorkerContextWatcherTest, Race) {
   watcher->Stop();
 
   int callback_count = watcher_callback.callback_count();
-  base::string16 message(base::ASCIIToUTF16("HELLO"));
+  std::u16string message(base::ASCIIToUTF16("HELLO"));
   ReportError(watcher, 0 /*version_id*/, scope,
               ServiceWorkerContextObserver::ErrorInfo(message, 0, 0, script));
   base::RunLoop().RunUntilIdle();

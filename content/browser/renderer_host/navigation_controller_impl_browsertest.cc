@@ -185,7 +185,7 @@ class NavigationControllerBrowserTest
       shell()->LoadDataWithBaseURL(history_url, data, base_url);
     }
     same_tab_observer.Wait();
-    base::string16 actual_title = title_watcher.WaitAndGetTitle();
+    std::u16string actual_title = title_watcher.WaitAndGetTitle();
     EXPECT_EQ(title, base::UTF16ToUTF8(actual_title));
   }
 
@@ -7870,10 +7870,10 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
   EXPECT_TRUE(blink::DecodePageState(entry->GetPageState().ToEncodedData(),
                                      &exploded_state));
   EXPECT_EQ(url_a,
-            GURL(exploded_state.top.url_string.value_or(base::string16())));
+            GURL(exploded_state.top.url_string.value_or(std::u16string())));
   EXPECT_EQ(frame_url_a2,
             GURL(exploded_state.top.children.at(0).url_string.value_or(
-                base::string16())));
+                std::u16string())));
 }
 
 // Start a provisional navigation, but abort it by going back before it commits.
@@ -7994,7 +7994,7 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
   EXPECT_TRUE(blink::DecodePageState(entry->GetPageState().ToEncodedData(),
                                      &exploded_state));
   EXPECT_EQ(url_b,
-            GURL(exploded_state.top.url_string.value_or(base::string16())));
+            GURL(exploded_state.top.url_string.value_or(std::u16string())));
   EXPECT_EQ(0U, exploded_state.top.children.size());
 
   // Go back and then forward to see if the PageState loads correctly.
@@ -8088,7 +8088,7 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
   EXPECT_TRUE(blink::DecodePageState(entry->GetPageState().ToEncodedData(),
                                      &exploded_state));
   EXPECT_EQ(url_b,
-            GURL(exploded_state.top.url_string.value_or(base::string16())));
+            GURL(exploded_state.top.url_string.value_or(std::u16string())));
 
   // Go back and then forward to see if the PageState loads correctly.
   controller.GoBack();
@@ -9058,7 +9058,7 @@ class AllowDialogInterceptor
     return render_frame_host_;
   }
 
-  void RunModalAlertDialog(const base::string16& alert_message,
+  void RunModalAlertDialog(const std::u16string& alert_message,
                            RunModalAlertDialogCallback callback) override {
     alert_callback_ = std::move(callback);
     alert_message_ = alert_message;
@@ -9074,7 +9074,7 @@ class AllowDialogInterceptor
 
  private:
   RenderFrameHostImpl* render_frame_host_;
-  base::string16 alert_message_;
+  std::u16string alert_message_;
   RunModalAlertDialogCallback alert_callback_;
   bool has_called_callback_ = false;
 };
@@ -9430,7 +9430,7 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest, ReloadDoesntKeepTitle) {
       "/navigation_controller/simple_page_1.html"));
   GURL intermediate_url(embedded_test_server()->GetURL(
       "/navigation_controller/simple_page_2.html"));
-  base::string16 title = base::UTF8ToUTF16("title");
+  std::u16string title = base::UTF8ToUTF16("title");
 
   // Reload from the browser side.
   {
@@ -12250,7 +12250,7 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
   // Navigate to a valid page.
   EXPECT_TRUE(NavigateToURL(shell(), url));
   int initial_entry_id = controller.GetLastCommittedEntry()->GetUniqueID();
-  base::string16 initial_title = controller.GetLastCommittedEntry()->GetTitle();
+  std::u16string initial_title = controller.GetLastCommittedEntry()->GetTitle();
   // Trigger a post-commit error page navigation.
   TestNavigationObserver error_observer(shell()->web_contents());
   controller.LoadPostCommitErrorPage(shell()->web_contents()->GetMainFrame(),

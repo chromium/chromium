@@ -161,7 +161,7 @@ TEST_F(NavigationEntryTest, NavigationEntryURLs) {
 
   // For chrome-untrusted:// URLs, title is blank.
   entry1_->SetURL(GURL("chrome-untrusted://terminal/html/terminal.html"));
-  EXPECT_EQ(base::string16(), entry1_->GetTitleForDisplay());
+  EXPECT_EQ(std::u16string(), entry1_->GetTitleForDisplay());
 
   // Title affects GetTitleForDisplay
   entry1_->SetTitle(ASCIIToUTF16("Google"));
@@ -242,7 +242,7 @@ TEST_F(NavigationEntryTest, NavigationEntryAccessors) {
   EXPECT_EQ(GURL("from2"), entry2_->GetReferrer().url);
 
   // Title
-  EXPECT_EQ(base::string16(), entry1_->GetTitle());
+  EXPECT_EQ(std::u16string(), entry1_->GetTitle());
   EXPECT_EQ(ASCIIToUTF16("title"), entry2_->GetTitle());
   entry2_->SetTitle(ASCIIToUTF16("title2"));
   EXPECT_EQ(ASCIIToUTF16("title2"), entry2_->GetTitle());

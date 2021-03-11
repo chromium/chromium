@@ -86,7 +86,7 @@ void LegacyRenderWidgetHostHWND::UpdateParent(HWND parent) {
 
   // Reset tooltips when parent changed; otherwise tooltips could stay open as
   // the former parent wouldn't be forwarded any mouse leave messages.
-  host_->DisplayTooltipText(base::string16());
+  host_->DisplayTooltipText(std::u16string());
 }
 
 HWND LegacyRenderWidgetHostHWND::GetParent() {

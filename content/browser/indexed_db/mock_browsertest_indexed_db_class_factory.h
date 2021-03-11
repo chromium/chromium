@@ -44,7 +44,7 @@ class CONTENT_EXPORT MockBrowserTestIndexedDBClassFactory
 
   std::pair<std::unique_ptr<IndexedDBDatabase>, leveldb::Status>
   CreateIndexedDBDatabase(
-      const base::string16& name,
+      const std::u16string& name,
       IndexedDBBackingStore* backing_store,
       IndexedDBFactory* factory,
       TasksAvailableCallback tasks_available_callback,

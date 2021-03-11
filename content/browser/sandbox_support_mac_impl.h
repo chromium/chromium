@@ -26,7 +26,7 @@ class SandboxSupportMacImpl : public mojom::SandboxSupportMac {
 
   // content::mojom::SandboxSupportMac:
   void GetSystemColors(GetSystemColorsCallback callback) override;
-  void LoadFont(const base::string16& font_name,
+  void LoadFont(const std::u16string& font_name,
                 float font_point_size,
                 LoadFontCallback callback) override;
 

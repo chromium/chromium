@@ -67,7 +67,7 @@ int FakePepperPluginInstance::MakePendingFileRefRendererHost(
 void FakePepperPluginInstance::SetEmbedProperty(PP_Var key, PP_Var value) {}
 
 void FakePepperPluginInstance::SetSelectedText(
-    const base::string16& selected_text) {}
+    const std::u16string& selected_text) {}
 
 void FakePepperPluginInstance::SetLinkUnderCursor(const std::string& url) {}
 void FakePepperPluginInstance::SetTextInputType(ui::TextInputType type) {}

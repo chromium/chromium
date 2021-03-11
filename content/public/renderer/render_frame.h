@@ -168,7 +168,7 @@ class CONTENT_EXPORT RenderFrame : public IPC::Listener,
       const blink::WebPluginParams& params) = 0;
 
   // Execute a string of JavaScript in this frame's context.
-  virtual void ExecuteJavaScript(const base::string16& javascript) = 0;
+  virtual void ExecuteJavaScript(const std::u16string& javascript) = 0;
 
   // Returns true if this is the main (top-level) frame.
   virtual bool IsMainFrame() = 0;
@@ -208,7 +208,7 @@ class CONTENT_EXPORT RenderFrame : public IPC::Listener,
   virtual bool IsFTPDirectoryListing() = 0;
 
   // Notifies the browser of text selection changes made.
-  virtual void SetSelectedText(const base::string16& selection_text,
+  virtual void SetSelectedText(const std::u16string& selection_text,
                                size_t offset,
                                const gfx::Range& range) = 0;
 

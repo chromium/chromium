@@ -284,7 +284,7 @@ void ChromeRenderFrameObserver::SetWindowFeatures(
 }
 
 void ChromeRenderFrameObserver::ExecuteWebUIJavaScript(
-    const base::string16& javascript) {
+    const std::u16string& javascript) {
 #if !defined(OS_ANDROID)
   webui_javascript_.push_back(javascript);
 #endif
@@ -493,7 +493,7 @@ void ChromeRenderFrameObserver::CapturePageText(
   }
   DCHECK_GT(capture_max_size, 0U);
 
-  base::string16 contents;
+  std::u16string contents;
   {
     SCOPED_UMA_HISTOGRAM_TIMER(kTranslateCaptureText);
     TRACE_EVENT0("renderer", "ChromeRenderFrameObserver::CapturePageText");

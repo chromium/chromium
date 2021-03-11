@@ -44,7 +44,7 @@ CHROMEOS_EXPORT bool GetOffsetFromTimezoneToGmt(const icu::TimeZone& timezone,
 // Similarly, the output will be "Donnerstag 05:00" in a German locale in a GMT
 // timezone (there may be slight changes in formatting due to different
 // standards in different locales).
-CHROMEOS_EXPORT base::string16 WeeklyTimeToLocalizedString(
+CHROMEOS_EXPORT std::u16string WeeklyTimeToLocalizedString(
     const WeeklyTime& weekly_time,
     base::Clock* clock);
 

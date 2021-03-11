@@ -99,7 +99,7 @@ TEST(WebUIMessageHandlerTest, ExtractStringValue) {
   static const char in_string[] =
       "The facts, though interesting, are irrelevant.";
   list.AppendString(in_string);
-  base::string16 out_string = WebUIMessageHandler::ExtractStringValue(&list);
+  std::u16string out_string = WebUIMessageHandler::ExtractStringValue(&list);
   EXPECT_EQ(base::ASCIIToUTF16(in_string), out_string);
 }
 

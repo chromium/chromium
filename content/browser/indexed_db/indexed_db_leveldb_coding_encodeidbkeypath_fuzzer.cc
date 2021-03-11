@@ -33,7 +33,7 @@ IndexedDBKeyPath GetKeyPath(FuzzedDataProvider* fuzzed_data) {
 
   // Create and add string16s to |paths| until |vector_size| is reached or the
   // end of |data| is reached.
-  std::vector<base::string16> paths;
+  std::vector<std::u16string> paths;
   for (size_t i = 0; i < vector_size && fuzzed_data->remaining_bytes() > 0;
        ++i) {
     // Consume sizeof(size_t) bytes to determine the size of the string to

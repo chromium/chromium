@@ -1318,7 +1318,7 @@ void SavePackage::GetSaveInfo() {
 
 // static
 base::FilePath SavePackage::CreateDirectoryOnFileThread(
-    const base::string16& title,
+    const std::u16string& title,
     const GURL& page_url,
     bool can_save_as_complete,
     const std::string& mime_type,

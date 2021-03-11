@@ -1077,7 +1077,7 @@ CreateDefaultURLLoaderFactoryBundle() {
 
 v8::MaybeLocal<v8::Value> GetProperty(v8::Local<v8::Context> context,
                                       v8::Local<v8::Value> object,
-                                      const base::string16& name) {
+                                      const std::u16string& name) {
   v8::Isolate* isolate = context->GetIsolate();
   v8::Local<v8::String> name_str =
       gin::ConvertToV8(isolate, name).As<v8::String>();
@@ -1089,8 +1089,8 @@ v8::MaybeLocal<v8::Value> GetProperty(v8::Local<v8::Context> context,
 }
 
 v8::MaybeLocal<v8::Value> CallMethodOnFrame(blink::WebNavigationControl* frame,
-                                            const base::string16& object_name,
-                                            const base::string16& method_name,
+                                            const std::u16string& object_name,
+                                            const std::u16string& method_name,
                                             base::Value arguments) {
   v8::Local<v8::Context> context = frame->MainWorldScriptContext();
 
@@ -2409,8 +2409,8 @@ void RenderFrameImpl::Delete(mojom::FrameDeleteIntention intent) {
 }
 
 void RenderFrameImpl::JavaScriptMethodExecuteRequest(
-    const base::string16& object_name,
-    const base::string16& method_name,
+    const std::u16string& object_name,
+    const std::u16string& method_name,
     base::Value arguments,
     bool wants_result,
     JavaScriptMethodExecuteRequestCallback callback) {
@@ -2438,7 +2438,7 @@ void RenderFrameImpl::JavaScriptMethodExecuteRequest(
 }
 
 void RenderFrameImpl::JavaScriptExecuteRequest(
-    const base::string16& javascript,
+    const std::u16string& javascript,
     bool wants_result,
     JavaScriptExecuteRequestCallback callback) {
   TRACE_EVENT_INSTANT0("test_tracing", "JavaScriptExecuteRequest",
@@ -2461,7 +2461,7 @@ void RenderFrameImpl::JavaScriptExecuteRequest(
 }
 
 void RenderFrameImpl::JavaScriptExecuteRequestForTests(
-    const base::string16& javascript,
+    const std::u16string& javascript,
     bool wants_result,
     bool has_user_gesture,
     int32_t world_id,
@@ -2498,7 +2498,7 @@ void RenderFrameImpl::JavaScriptExecuteRequestForTests(
 }
 
 void RenderFrameImpl::JavaScriptExecuteRequestInIsolatedWorld(
-    const base::string16& javascript,
+    const std::u16string& javascript,
     bool wants_result,
     int32_t world_id,
     JavaScriptExecuteRequestInIsolatedWorldCallback callback) {
@@ -2705,7 +2705,7 @@ blink::WebPlugin* RenderFrameImpl::CreatePlugin(
   return nullptr;
 }
 
-void RenderFrameImpl::ExecuteJavaScript(const base::string16& javascript) {
+void RenderFrameImpl::ExecuteJavaScript(const std::u16string& javascript) {
   JavaScriptExecuteRequest(javascript, false, base::DoNothing());
 }
 
@@ -2750,7 +2750,7 @@ bool RenderFrameImpl::IsFTPDirectoryListing() {
   return frame_->GetDocumentLoader()->IsListingFtpDirectory();
 }
 
-void RenderFrameImpl::SetSelectedText(const base::string16& selection_text,
+void RenderFrameImpl::SetSelectedText(const std::u16string& selection_text,
                                       size_t offset,
                                       const gfx::Range& range) {
   GetWebFrame()->TextSelectionChanged(WebString::FromUTF16(selection_text),
@@ -5658,7 +5658,7 @@ void RenderFrameImpl::UpdateEncoding(WebFrame* frame,
 }
 
 void RenderFrameImpl::SyncSelectionIfRequired() {
-  base::string16 text;
+  std::u16string text;
   size_t offset;
   gfx::Range range;
 #if BUILDFLAG(ENABLE_PLUGINS)

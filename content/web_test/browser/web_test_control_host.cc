@@ -119,7 +119,7 @@ std::string DumpFrameState(const blink::ExplodedFrameState& frame_state,
   }
 
   std::string url = web_test_string_util::NormalizeWebTestURL(
-      base::UTF16ToUTF8(frame_state.url_string.value_or(base::string16())));
+      base::UTF16ToUTF8(frame_state.url_string.value_or(std::u16string())));
   result.append(url);
   DCHECK(frame_state.target);
   if (!frame_state.target->empty()) {
@@ -1506,7 +1506,7 @@ class FakeSelectFileDialog : public ui::SelectFileDialog {
   ~FakeSelectFileDialog() override = default;
 
   void SelectFileImpl(Type type,
-                      const base::string16& title,
+                      const std::u16string& title,
                       const base::FilePath& default_path,
                       const FileTypeInfo* file_types,
                       int file_type_index,
@@ -1626,7 +1626,7 @@ void WebTestControlHost::ClearAllDatabases() {
 void WebTestControlHost::SimulateWebNotificationClick(
     const std::string& title,
     int32_t action_index,
-    const base::Optional<base::string16>& reply) {
+    const base::Optional<std::u16string>& reply) {
   auto* client = WebTestContentBrowserClient::Get();
   auto* context = client->GetWebTestBrowserContext();
   auto* service = client->GetPlatformNotificationService(context);

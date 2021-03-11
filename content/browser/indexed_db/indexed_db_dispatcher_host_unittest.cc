@@ -95,7 +95,7 @@ struct TestDatabaseConnection {
 
   TestDatabaseConnection(scoped_refptr<base::SequencedTaskRunner> task_runner,
                          url::Origin origin,
-                         base::string16 db_name,
+                         std::u16string db_name,
                          int64_t version,
                          int64_t upgrade_txn_id)
       : task_runner(std::move(task_runner)),
@@ -125,7 +125,7 @@ struct TestDatabaseConnection {
 
   scoped_refptr<base::SequencedTaskRunner> task_runner;
   url::Origin origin;
-  base::string16 db_name;
+  std::u16string db_name;
   int64_t version;
   int64_t upgrade_txn_id;
 
@@ -159,8 +159,8 @@ class TestIndexedDBObserver : public storage::mojom::IndexedDBObserver {
 
   void OnIndexedDBContentChanged(
       const url::Origin& origin,
-      const base::string16& database_name,
-      const base::string16& object_store_name) override {
+      const std::u16string& database_name,
+      const std::u16string& object_store_name) override {
     ++notify_content_changed_count;
   }
 
@@ -529,7 +529,7 @@ TEST_F(IndexedDBDispatcherHostTest, DISABLED_PutWithInvalidBlob) {
         external_objects.push_back(
             blink::mojom::IDBExternalObject::NewBlobOrFile(
                 blink::mojom::IDBBlobInfo::New(std::move(blob), "fakeUUID",
-                                               base::string16(), 100,
+                                               std::u16string(), 100,
                                                nullptr)));
 
         std::string value = "hello";
@@ -1432,9 +1432,9 @@ TEST_F(IndexedDBDispatcherHostTest, DISABLED_NotifyIndexedDBContentChanged) {
 TEST_F(IndexedDBDispatcherHostTest, DatabaseOperationSequencing) {
   const int64_t kDBVersion = 1;
   const int64_t kTransactionId = 1;
-  const base::string16 kObjectStoreName1 = base::ASCIIToUTF16("os1");
-  const base::string16 kObjectStoreName2 = base::ASCIIToUTF16("os2");
-  const base::string16 kObjectStoreName3 = base::ASCIIToUTF16("os3");
+  const std::u16string kObjectStoreName1 = base::ASCIIToUTF16("os1");
+  const std::u16string kObjectStoreName2 = base::ASCIIToUTF16("os2");
+  const std::u16string kObjectStoreName3 = base::ASCIIToUTF16("os3");
 
   std::unique_ptr<TestDatabaseConnection> connection;
   IndexedDBDatabaseMetadata metadata;

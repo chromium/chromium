@@ -30,7 +30,7 @@ namespace content {
 namespace {
 
 const char kTestPath[] = "/loader/cors_preflight.html";
-const base::string16 kTestDone = base::string16(base::ASCIIToUTF16("DONE"));
+const std::u16string kTestDone = std::u16string(base::ASCIIToUTF16("DONE"));
 
 // Tests end to end behaviors on CORS preflight and its cache.
 class CorsPreflightCacheBrowserTest : public ContentBrowserTest {

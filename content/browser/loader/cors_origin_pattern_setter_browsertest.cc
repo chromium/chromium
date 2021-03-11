@@ -110,8 +110,8 @@ class CorsOriginPatternSetterBrowserTest : public ContentBrowserTest {
 
   std::string host_ip() { return embedded_test_server()->base_url().host(); }
 
-  const base::string16& pass_string() const { return pass_string_; }
-  const base::string16& fail_string() const { return fail_string_; }
+  const std::u16string& pass_string() const { return pass_string_; }
+  const std::u16string& fail_string() const { return fail_string_; }
 
   WebContents* web_contents() { return shell()->web_contents(); }
 
@@ -129,9 +129,9 @@ class CorsOriginPatternSetterBrowserTest : public ContentBrowserTest {
                              embedded_test_server()->host_port_pair().host());
   }
 
-  const base::string16 pass_string_ = base::ASCIIToUTF16("PASS");
-  const base::string16 fail_string_ = base::ASCIIToUTF16("FAIL");
-  const base::string16 script_ = base::ASCIIToUTF16("reason");
+  const std::u16string pass_string_ = base::ASCIIToUTF16("PASS");
+  const std::u16string fail_string_ = base::ASCIIToUTF16("FAIL");
+  const std::u16string script_ = base::ASCIIToUTF16("reason");
 
   DISALLOW_COPY_AND_ASSIGN(CorsOriginPatternSetterBrowserTest);
 };

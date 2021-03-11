@@ -124,7 +124,7 @@ HRESULT FontFilePathAndTtcIndex(IDWriteFontFace* font_face,
     LogMessageFilterError(MessageFilterError::ADD_LOCAL_FILE_GET_PATH_FAILED);
     return hr;
   }
-  // No need for the null-terminator in base::string16.
+  // No need for the null-terminator in std::u16string.
   retrieve_file_path.resize(--path_length);
 
   uint32_t retrieve_ttc_index = font_face->GetIndex();
@@ -139,7 +139,7 @@ HRESULT FontFilePathAndTtcIndex(IDWriteFontFace* font_face,
 }
 
 HRESULT AddFilesForFont(IDWriteFont* font,
-                        const base::string16& windows_fonts_path,
+                        const std::u16string& windows_fonts_path,
                         std::set<std::wstring>* path_set,
                         std::set<std::wstring>* custom_font_path_set,
                         uint32_t* ttc_index) {
@@ -149,7 +149,7 @@ HRESULT AddFilesForFont(IDWriteFont* font,
     return hr;
   }
 
-  base::string16 file_path_folded =
+  std::u16string file_path_folded =
       base::i18n::FoldCase(base::WideToUTF16(file_path));
 
   if (!file_path_folded.size())
@@ -166,7 +166,7 @@ HRESULT AddFilesForFont(IDWriteFont* font,
   return S_OK;
 }
 
-base::string16 GetWindowsFontsPath() {
+std::u16string GetWindowsFontsPath() {
   std::vector<wchar_t> font_path_chars;
   // SHGetSpecialFolderPath requires at least MAX_PATH characters.
   font_path_chars.resize(MAX_PATH);

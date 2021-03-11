@@ -67,7 +67,7 @@ class AndroidGranularityMovementBrowserTest : public ContentBrowserTest {
   // and fails (by logging an error and returning the empty string) if
   // the result when traversing backwards is not the same
   // (but in reverse order).
-  base::string16 TraverseNodeAtGranularity(BrowserAccessibility* node,
+  std::u16string TraverseNodeAtGranularity(BrowserAccessibility* node,
                                            int granularity) {
     AccessibilityNotificationWaiter waiter(shell()->web_contents(),
                                            ui::kAXModeComplete,
@@ -81,13 +81,13 @@ class AndroidGranularityMovementBrowserTest : public ContentBrowserTest {
         static_cast<BrowserAccessibilityAndroid*>(node);
     BrowserAccessibilityManagerAndroid* manager =
         static_cast<BrowserAccessibilityManagerAndroid*>(node->manager());
-    base::string16 text = android_node->GetInnerText();
-    base::string16 concatenated;
+    std::u16string text = android_node->GetInnerText();
+    std::u16string concatenated;
     int previous_end_index = -1;
     while (manager->NextAtGranularity(granularity, end_index, android_node,
                                       &start_index, &end_index)) {
       int len = end_index - start_index;
-      base::string16 selection = text.substr(start_index, len);
+      std::u16string selection = text.substr(start_index, len);
       if (base::EndsWith(selection, base::ASCIIToUTF16("\n"),
                          base::CompareCase::INSENSITIVE_ASCII))
         selection.erase(selection.size() - 1);
@@ -106,13 +106,13 @@ class AndroidGranularityMovementBrowserTest : public ContentBrowserTest {
       previous_end_index = end_index;
     }
 
-    base::string16 reverse;
+    std::u16string reverse;
     previous_end_index = -1;
     start_index = end_index;
     while (manager->PreviousAtGranularity(
         granularity, start_index, android_node, &start_index, &end_index)) {
       int len = end_index - start_index;
-      base::string16 selection = text.substr(start_index, len);
+      std::u16string selection = text.substr(start_index, len);
       if (base::EndsWith(selection, base::ASCIIToUTF16("\n"),
                          base::CompareCase::INSENSITIVE_ASCII))
         selection = selection.substr(0, selection.size() - 1);
@@ -134,7 +134,7 @@ class AndroidGranularityMovementBrowserTest : public ContentBrowserTest {
                  << "reverse directions!";
       LOG(ERROR) << "Forwards: " << concatenated;
       LOG(ERROR) << "Backwards " << reverse;
-      return base::string16();
+      return std::u16string();
     }
 
     return concatenated;

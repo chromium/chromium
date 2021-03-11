@@ -42,9 +42,9 @@ class CONTENT_EXPORT IndexedDBExternalObject {
   // These two are used for Blobs.
   IndexedDBExternalObject(mojo::PendingRemote<blink::mojom::Blob> blob_remote,
                           const std::string& uuid,
-                          const base::string16& type,
+                          const std::u16string& type,
                           int64_t size);
-  IndexedDBExternalObject(const base::string16& type,
+  IndexedDBExternalObject(const std::u16string& type,
                           int64_t size,
                           int64_t blob_number);
   // These two are used for Files.
@@ -54,13 +54,13 @@ class CONTENT_EXPORT IndexedDBExternalObject {
   // it should be considered corrupt.
   IndexedDBExternalObject(mojo::PendingRemote<blink::mojom::Blob> blob_remote,
                           const std::string& uuid,
-                          const base::string16& file_name,
-                          const base::string16& type,
+                          const std::u16string& file_name,
+                          const std::u16string& type,
                           const base::Time& last_modified,
                           const int64_t size);
   IndexedDBExternalObject(int64_t blob_number,
-                          const base::string16& type,
-                          const base::string16& file_name,
+                          const std::u16string& type,
+                          const std::u16string& file_name,
                           const base::Time& last_modified,
                           const int64_t size);
   // These are for File System Access handles.
@@ -89,9 +89,9 @@ class CONTENT_EXPORT IndexedDBExternalObject {
   }
   void Clone(mojo::PendingReceiver<blink::mojom::Blob> receiver) const;
   mojo::SharedRemote<blink::mojom::Blob> remote() const { return blob_remote_; }
-  const base::string16& type() const { return type_; }
+  const std::u16string& type() const { return type_; }
   int64_t size() const { return size_; }
-  const base::string16& file_name() const { return file_name_; }
+  const std::u16string& file_name() const { return file_name_; }
   const base::FilePath indexed_db_file_path() const {
     return indexed_db_file_path_;
   }
@@ -130,14 +130,14 @@ class CONTENT_EXPORT IndexedDBExternalObject {
   // If blob_remote_ is true, this is the blob's uuid.
   std::string uuid_;
   // Mime type.
-  base::string16 type_;
+  std::u16string type_;
   // This is the path of the file that was copied into the IndexedDB system.
   // Only populated when reading from the database.
   base::FilePath indexed_db_file_path_;
   // -1 if unknown for File.
   int64_t size_ = kUnknownSize;
   // Only for File.
-  base::string16 file_name_;
+  std::u16string file_name_;
   // Only for File; valid only if size is.
   base::Time last_modified_;
 

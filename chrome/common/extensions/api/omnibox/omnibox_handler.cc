@@ -35,7 +35,7 @@ OmniboxHandler::OmniboxHandler() {
 OmniboxHandler::~OmniboxHandler() {
 }
 
-bool OmniboxHandler::Parse(Extension* extension, base::string16* error) {
+bool OmniboxHandler::Parse(Extension* extension, std::u16string* error) {
   ManifestKeys manifest_keys;
   if (!ManifestKeys::ParseFromDictionary(
           extension->manifest()->available_values(), &manifest_keys, error)) {

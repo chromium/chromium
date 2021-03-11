@@ -41,7 +41,7 @@ class MockPhishingClassifier : public PhishingClassifier {
 
   ~MockPhishingClassifier() override {}
 
-  MOCK_METHOD2(BeginClassification, void(const base::string16*, DoneCallback));
+  MOCK_METHOD2(BeginClassification, void(const std::u16string*, DoneCallback));
   MOCK_METHOD0(CancelPendingClassification, void());
 
  private:
@@ -120,7 +120,7 @@ TEST_F(PhishingClassifierDelegateTest, Navigation) {
   Mock::VerifyAndClearExpectations(classifier_);
 
   OnStartPhishingDetection(url);
-  base::string16 page_text = ASCIIToUTF16("dummy");
+  std::u16string page_text = ASCIIToUTF16("dummy");
   {
     InSequence s;
     EXPECT_CALL(*classifier_, CancelPendingClassification());
@@ -254,7 +254,7 @@ TEST_F(PhishingClassifierDelegateTest, NoScorer) {
 
   // Queue up a pending classification, cancel it, then queue up another one.
   GURL url("http://host.test");
-  base::string16 page_text = ASCIIToUTF16("dummy");
+  std::u16string page_text = ASCIIToUTF16("dummy");
   LoadHTMLWithUrlOverride("dummy", url.spec().c_str());
   OnStartPhishingDetection(url);
   delegate_->PageCaptured(&page_text, false);
@@ -293,7 +293,7 @@ TEST_F(PhishingClassifierDelegateTest, NoScorer_Ref) {
 
   // Queue up a pending classification, cancel it, then queue up another one.
   GURL url("http://host.test");
-  base::string16 page_text = ASCIIToUTF16("dummy");
+  std::u16string page_text = ASCIIToUTF16("dummy");
   LoadHTMLWithUrlOverride("dummy", url.spec().c_str());
   OnStartPhishingDetection(url);
   delegate_->PageCaptured(&page_text, false);
@@ -335,7 +335,7 @@ TEST_F(PhishingClassifierDelegateTest, NoStartPhishingDetection) {
   LoadHTMLWithUrlOverride("<html><body>phish</body></html>",
                           url.spec().c_str());
   Mock::VerifyAndClearExpectations(classifier_);
-  base::string16 page_text = ASCIIToUTF16("phish");
+  std::u16string page_text = ASCIIToUTF16("phish");
   EXPECT_CALL(*classifier_, CancelPendingClassification());
   delegate_->PageCaptured(&page_text, false);
   Mock::VerifyAndClearExpectations(classifier_);
@@ -410,7 +410,7 @@ TEST_F(PhishingClassifierDelegateTest, IgnorePreliminaryCapture) {
                           url.spec().c_str());
   Mock::VerifyAndClearExpectations(classifier_);
   OnStartPhishingDetection(url);
-  base::string16 page_text = ASCIIToUTF16("phish");
+  std::u16string page_text = ASCIIToUTF16("phish");
   delegate_->PageCaptured(&page_text, true);
 
   // Once the non-preliminary capture happens, classification should begin.
@@ -440,7 +440,7 @@ TEST_F(PhishingClassifierDelegateTest, DuplicatePageCapture) {
                           url.spec().c_str());
   Mock::VerifyAndClearExpectations(classifier_);
   OnStartPhishingDetection(url);
-  base::string16 page_text = ASCIIToUTF16("phish");
+  std::u16string page_text = ASCIIToUTF16("phish");
   {
     InSequence s;
     EXPECT_CALL(*classifier_, CancelPendingClassification());
@@ -471,7 +471,7 @@ TEST_F(PhishingClassifierDelegateTest, PhishingDetectionDone) {
   LoadHTMLWithUrlOverride("<html><body>phish</body></html>",
                           url.spec().c_str());
   Mock::VerifyAndClearExpectations(classifier_);
-  base::string16 page_text = ASCIIToUTF16("phish");
+  std::u16string page_text = ASCIIToUTF16("phish");
   OnStartPhishingDetection(url);
   {
     InSequence s;

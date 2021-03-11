@@ -48,7 +48,7 @@ class PhoneStatusModel {
     SignalStrength signal_strength;
 
     // Name of the service provider (e.g., "Google Fi").
-    base::string16 mobile_provider;
+    std::u16string mobile_provider;
   };
 
   enum class ChargingState {

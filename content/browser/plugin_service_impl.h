@@ -62,7 +62,7 @@ class CONTENT_EXPORT PluginServiceImpl : public PluginService {
                      std::string* actual_mime_type) override;
   bool GetPluginInfoByPath(const base::FilePath& plugin_path,
                            WebPluginInfo* info) override;
-  base::string16 GetPluginDisplayNameByPath(
+  std::u16string GetPluginDisplayNameByPath(
       const base::FilePath& path) override;
   void GetPlugins(GetPluginsCallback callback) override;
   const PepperPluginInfo* GetRegisteredPpapiPluginInfo(

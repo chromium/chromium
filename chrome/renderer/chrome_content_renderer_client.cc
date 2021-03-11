@@ -800,7 +800,7 @@ WebPlugin* ChromeContentRendererClient::CreatePlugin(
     const chrome::mojom::PluginInfo& plugin_info) {
   const WebPluginInfo& info = plugin_info.plugin;
   const std::string& actual_mime_type = plugin_info.actual_mime_type;
-  const base::string16& group_name = plugin_info.group_name;
+  const std::u16string& group_name = plugin_info.group_name;
   const std::string& identifier = plugin_info.group_identifier;
   chrome::mojom::PluginStatus status = plugin_info.status;
   GURL url(original_params.url);
@@ -870,7 +870,7 @@ WebPlugin* ChromeContentRendererClient::CreatePlugin(
 
     auto create_blocked_plugin = [&render_frame, &params, &info, &identifier,
                                   &group_name](int template_id,
-                                               const base::string16& message) {
+                                               const std::u16string& message) {
       return ChromePluginPlaceholder::CreateBlockedPlugin(
           render_frame, params, info, identifier, group_name, template_id,
           message);
@@ -1113,7 +1113,7 @@ GURL ChromeContentRendererClient::GetNaClContentHandlerURL(
     const content::WebPluginInfo& plugin) {
   // Look for the manifest URL among the MIME type's additonal parameters.
   const char kNaClPluginManifestAttribute[] = "nacl";
-  base::string16 nacl_attr = ASCIIToUTF16(kNaClPluginManifestAttribute);
+  std::u16string nacl_attr = ASCIIToUTF16(kNaClPluginManifestAttribute);
   for (size_t i = 0; i < plugin.mime_types.size(); ++i) {
     if (plugin.mime_types[i].mime_type == actual_mime_type) {
       for (const auto& p : plugin.mime_types[i].additional_params) {
@@ -1423,7 +1423,7 @@ bool ChromeContentRendererClient::IsKeySystemsUpdateNeeded() {
 }
 
 bool ChromeContentRendererClient::ShouldReportDetailedMessageForSource(
-    const base::string16& source) {
+    const std::u16string& source) {
 #if BUILDFLAG(ENABLE_EXTENSIONS)
   return extensions::IsSourceFromAnExtension(source);
 #else

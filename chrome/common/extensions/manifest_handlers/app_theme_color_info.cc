@@ -34,7 +34,7 @@ AppThemeColorHandler::AppThemeColorHandler() {}
 
 AppThemeColorHandler::~AppThemeColorHandler() {}
 
-bool AppThemeColorHandler::Parse(Extension* extension, base::string16* error) {
+bool AppThemeColorHandler::Parse(Extension* extension, std::u16string* error) {
   std::string theme_color_string;
   SkColor theme_color = SK_ColorTRANSPARENT;
   if (!extension->manifest()->GetString(keys::kAppThemeColor,

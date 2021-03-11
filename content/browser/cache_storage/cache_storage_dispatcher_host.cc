@@ -666,7 +666,7 @@ class CacheStorageDispatcherHost::CacheStorageImpl final
         [](base::TimeTicks start_time, int64_t trace_id,
            blink::mojom::CacheStorage::KeysCallback callback,
            std::vector<std::string> cache_names) {
-          std::vector<base::string16> string16s;
+          std::vector<std::u16string> string16s;
           for (const auto& name : cache_names) {
             string16s.push_back(base::UTF8ToUTF16(name));
           }
@@ -692,7 +692,7 @@ class CacheStorageDispatcherHost::CacheStorageImpl final
     cache_storage->EnumerateCaches(trace_id, std::move(cb));
   }
 
-  void Delete(const base::string16& cache_name,
+  void Delete(const std::u16string& cache_name,
               int64_t trace_id,
               blink::mojom::CacheStorage::DeleteCallback callback) override {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -729,7 +729,7 @@ class CacheStorageDispatcherHost::CacheStorageImpl final
     cache_storage->DoomCache(utf8_cache_name, trace_id, std::move(cb));
   }
 
-  void Has(const base::string16& cache_name,
+  void Has(const std::u16string& cache_name,
            int64_t trace_id,
            blink::mojom::CacheStorage::HasCallback callback) override {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -866,7 +866,7 @@ class CacheStorageDispatcherHost::CacheStorageImpl final
                               trace_id, std::move(cb));
   }
 
-  void Open(const base::string16& cache_name,
+  void Open(const std::u16string& cache_name,
             int64_t trace_id,
             blink::mojom::CacheStorage::OpenCallback callback) override {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);

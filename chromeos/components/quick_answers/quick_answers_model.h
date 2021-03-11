@@ -84,7 +84,7 @@ struct QuickAnswerText : public QuickAnswerUiElement {
         text(base::UTF8ToUTF16(text)),
         color(color) {}
 
-  base::string16 text;
+  std::u16string text;
 
   // Attributes for text style.
   SkColor color = SK_ColorBLACK;

@@ -188,7 +188,7 @@ class AutocompleteChangeObserver : public AutocompleteController::Observer {
 
 }  // namespace
 
-bool GetCurrentTabTitle(const Browser* browser, base::string16* title) {
+bool GetCurrentTabTitle(const Browser* browser, std::u16string* title) {
   WebContents* web_contents =
       browser->tab_strip_model()->GetActiveWebContents();
   if (!web_contents)
@@ -387,7 +387,7 @@ void WaitForViewVisibility(Browser* browser, ViewID vid, bool visible) {
 #endif
 
 int FindInPage(WebContents* tab,
-               const base::string16& search_string,
+               const std::u16string& search_string,
                bool forward,
                bool match_case,
                int* ordinal,
@@ -507,7 +507,7 @@ HistoryEnumerator::HistoryEnumerator(Profile* profile) {
   HistoryServiceFactory::GetForProfile(profile,
                                        ServiceAccessType::EXPLICIT_ACCESS)
       ->QueryHistory(
-          base::string16(), history::QueryOptions(),
+          std::u16string(), history::QueryOptions(),
           base::BindLambdaForTesting([&](history::QueryResults results) {
             for (const auto& item : results)
               urls_.push_back(item.url());

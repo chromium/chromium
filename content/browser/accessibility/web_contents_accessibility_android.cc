@@ -194,10 +194,10 @@ enum {
                             UMA_ACCESSIBILITYSERVICEINFO_MAX)
 
 using SearchKeyToPredicateMap =
-    std::unordered_map<base::string16, AccessibilityMatchPredicate>;
+    std::unordered_map<std::u16string, AccessibilityMatchPredicate>;
 base::LazyInstance<SearchKeyToPredicateMap>::Leaky
     g_search_key_to_predicate_map = LAZY_INSTANCE_INITIALIZER;
-base::LazyInstance<base::string16>::Leaky g_all_search_keys =
+base::LazyInstance<std::u16string>::Leaky g_all_search_keys =
     LAZY_INSTANCE_INITIALIZER;
 
 bool SectionPredicate(BrowserAccessibility* start, BrowserAccessibility* node) {
@@ -228,7 +228,7 @@ bool AllInterestingNodesPredicate(BrowserAccessibility* start,
 
 void AddToPredicateMap(const char* search_key_ascii,
                        AccessibilityMatchPredicate predicate) {
-  base::string16 search_key_utf16 = base::ASCIIToUTF16(search_key_ascii);
+  std::u16string search_key_utf16 = base::ASCIIToUTF16(search_key_ascii);
   g_search_key_to_predicate_map.Get()[search_key_utf16] = predicate;
   if (!g_all_search_keys.Get().empty())
     g_all_search_keys.Get() += base::ASCIIToUTF16(",");
@@ -271,7 +271,7 @@ void InitSearchKeyToPredicateMapIfNeeded() {
 }
 
 AccessibilityMatchPredicate PredicateForSearchKey(
-    const base::string16& element_type) {
+    const std::u16string& element_type) {
   InitSearchKeyToPredicateMapIfNeeded();
   const auto& iter = g_search_key_to_predicate_map.Get().find(element_type);
   if (iter != g_search_key_to_predicate_map.Get().end())
@@ -536,7 +536,7 @@ void WebContentsAccessibilityAndroid::HandleScrolledToAnchor(
 }
 
 void WebContentsAccessibilityAndroid::AnnounceLiveRegionText(
-    const base::string16& text) {
+    const std::u16string& text) {
   JNIEnv* env = AttachCurrentThread();
   ScopedJavaLocalRef<jobject> obj = java_ref_.get(env);
   if (obj.is_null())
@@ -892,7 +892,7 @@ jboolean WebContentsAccessibilityAndroid::PopulateAccessibilityNodeInfo(
       base::android::ConvertUTF16ToJavaString(env,
                                               node->GetStateDescription()));
 
-  base::string16 element_id;
+  std::u16string element_id;
   if (node->GetHtmlAttribute("id", &element_id)) {
     Java_WebContentsAccessibilityImpl_setAccessibilityNodeInfoViewIdResourceName(
         env, obj, info,
@@ -955,8 +955,8 @@ jboolean WebContentsAccessibilityAndroid::PopulateAccessibilityEvent(
 
   switch (event_type) {
     case ANDROID_ACCESSIBILITY_EVENT_TEXT_CHANGED: {
-      base::string16 before_text = node->GetTextChangeBeforeText();
-      base::string16 text = node->GetInnerText();
+      std::u16string before_text = node->GetTextChangeBeforeText();
+      std::u16string text = node->GetInnerText();
       Java_WebContentsAccessibilityImpl_setAccessibilityEventTextChangedAttrs(
           env, obj, event, node->GetTextChangeFromIndex(),
           node->GetTextChangeAddedCount(), node->GetTextChangeRemovedCount(),
@@ -965,7 +965,7 @@ jboolean WebContentsAccessibilityAndroid::PopulateAccessibilityEvent(
       break;
     }
     case ANDROID_ACCESSIBILITY_EVENT_TEXT_SELECTION_CHANGED: {
-      base::string16 text = node->GetInnerText();
+      std::u16string text = node->GetInnerText();
       Java_WebContentsAccessibilityImpl_setAccessibilityEventSelectionAttrs(
           env, obj, event, node->GetSelectionStart(), node->GetSelectionEnd(),
           node->GetEditableTextLength(),
@@ -1187,7 +1187,7 @@ jboolean WebContentsAccessibilityAndroid::NextAtGranularity(
   int end_index = -1;
   if (root_manager->NextAtGranularity(granularity, cursor_index, node,
                                       &start_index, &end_index)) {
-    base::string16 text = node->GetInnerText();
+    std::u16string text = node->GetInnerText();
     Java_WebContentsAccessibilityImpl_finishGranularityMoveNext(
         env, obj, base::android::ConvertUTF16ToJavaString(env, text),
         extend_selection, start_index, end_index);
@@ -1203,7 +1203,7 @@ jint WebContentsAccessibilityAndroid::GetTextLength(
   BrowserAccessibilityAndroid* node = GetAXFromUniqueID(unique_id);
   if (!node)
     return -1;
-  base::string16 text = node->GetInnerText();
+  std::u16string text = node->GetInnerText();
   return text.size();
 }
 
@@ -1222,7 +1222,7 @@ void WebContentsAccessibilityAndroid::AddSpellingErrorForTesting(
   }
 
   CHECK(node->GetRole() == ax::mojom::Role::kStaticText);
-  base::string16 text = node->GetInnerText();
+  std::u16string text = node->GetInnerText();
   CHECK_LT(start_offset, static_cast<int>(text.size()));
   CHECK_LE(end_offset, static_cast<int>(text.size()));
 

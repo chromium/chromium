@@ -16,7 +16,7 @@ namespace mojo {
 
 namespace {
 
-NSDictionary* ToAttributesDictionary(base::string16 name, float font_size) {
+NSDictionary* ToAttributesDictionary(std::u16string name, float font_size) {
   DCHECK(!name.empty());
   NSString* font_name_ns = base::SysUTF16ToNSString(name);
   NSFont* font = [NSFont fontWithName:font_name_ns size:font_size];
@@ -73,7 +73,7 @@ TypeConverter<ui::mojom::AttributedStringPtr, NSAttributedString*>::Convert(
                                  effectiveRange:&effective_range];
 
     NSFont* font = [ns_attributes objectForKey:NSFontAttributeName];
-    base::string16 font_name;
+    std::u16string font_name;
     float font_point_size;
     // Only encode the attributes if the filtered set contains font information.
     if (font) {

@@ -63,7 +63,7 @@ class UrlHandlersParser : public ManifestHandler {
   ~UrlHandlersParser() override;
 
   // ManifestHandler API
-  bool Parse(Extension* extension, base::string16* error) override;
+  bool Parse(Extension* extension, std::u16string* error) override;
 
  private:
   base::span<const char* const> Keys() const override;

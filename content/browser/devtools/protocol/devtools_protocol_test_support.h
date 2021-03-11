@@ -32,9 +32,9 @@ class DevToolsProtocolTest : virtual public ContentBrowserTest,
   // WebContentsDelegate methods:
   bool DidAddMessageToConsole(WebContents* source,
                               blink::mojom::ConsoleMessageLevel log_level,
-                              const base::string16& message,
+                              const std::u16string& message,
                               int32_t line_no,
-                              const base::string16& source_id) override;
+                              const std::u16string& source_id) override;
 
   blink::SecurityStyle GetSecurityStyle(
       content::WebContents* web_contents,

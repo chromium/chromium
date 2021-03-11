@@ -75,7 +75,7 @@ class CastWebContentsImpl : public CastWebContents,
       const std::string& data,
       std::vector<blink::WebMessagePort> ports) override;
   void ExecuteJavaScript(
-      const base::string16& javascript,
+      const std::u16string& javascript,
       base::OnceCallback<void(base::Value)> callback) override;
   void AddObserver(Observer* observer) override;
   void RemoveObserver(Observer* observer) override;

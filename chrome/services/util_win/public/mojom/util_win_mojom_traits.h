@@ -36,17 +36,17 @@ struct EnumTraits<chrome::mojom::CertificateType, CertificateInfo::Type> {
 template <>
 struct StructTraits<chrome::mojom::InspectionResultDataView,
                     ModuleInspectionResult> {
-  static const base::string16& location(const ModuleInspectionResult& input);
-  static const base::string16& basename(const ModuleInspectionResult& input);
-  static const base::string16& product_name(
+  static const std::u16string& location(const ModuleInspectionResult& input);
+  static const std::u16string& basename(const ModuleInspectionResult& input);
+  static const std::u16string& product_name(
       const ModuleInspectionResult& input);
-  static const base::string16& description(const ModuleInspectionResult& input);
-  static const base::string16& version(const ModuleInspectionResult& input);
+  static const std::u16string& description(const ModuleInspectionResult& input);
+  static const std::u16string& version(const ModuleInspectionResult& input);
   static chrome::mojom::CertificateType certificate_type(
       const ModuleInspectionResult& input);
   static const base::FilePath& certificate_path(
       const ModuleInspectionResult& input);
-  static const base::string16& certificate_subject(
+  static const std::u16string& certificate_subject(
       const ModuleInspectionResult& input);
 
   static bool Read(chrome::mojom::InspectionResultDataView data,
@@ -55,10 +55,10 @@ struct StructTraits<chrome::mojom::InspectionResultDataView,
 
 template <>
 struct StructTraits<chrome::mojom::FileFilterSpecDataView, ui::FileFilterSpec> {
-  static const base::string16& description(const ui::FileFilterSpec& input) {
+  static const std::u16string& description(const ui::FileFilterSpec& input) {
     return input.description;
   }
-  static const base::string16& extension_spec(const ui::FileFilterSpec& input) {
+  static const std::u16string& extension_spec(const ui::FileFilterSpec& input) {
     return input.extension_spec;
   }
 

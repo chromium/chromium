@@ -64,7 +64,7 @@ class WebTestSpellChecker {
   bool InitializeIfNeeded();
 
   // A table that consists of misspelled words.
-  std::vector<base::string16> misspelled_words_;
+  std::vector<std::u16string> misspelled_words_;
 
   // A flag representing whether or not this object is initialized.
   bool initialized_ = false;

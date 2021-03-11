@@ -17,7 +17,7 @@ constexpr double kDefaultWeight = 1.0;
 
 TEST(ContentExtractionUtilsTest, ConsolidateTokenTest) {
   {
-    const base::string16 text(base::UTF8ToUTF16(
+    const std::u16string text(base::UTF8ToUTF16(
         "Check duplicate. Duplicate is #@$%^&@#$%#@$^@#$ bad"));
     const auto tokens = ConsolidateToken(
         ExtractContent("3rd test", text, kDefaultWeight, "en"));
@@ -75,7 +75,7 @@ TEST(ContentExtractionUtilsTest, ConsolidateTokenTest) {
 
 TEST(ContentExtractionUtilsTest, ExtractContentTest) {
   {
-    const base::string16 text(base::UTF8ToUTF16(
+    const std::u16string text(base::UTF8ToUTF16(
         "Normal... English!!! paragraph: email@gmail.com. Here is a link: "
         "https://google.com, ip=8.8.8.8"));
     const auto tokens =
@@ -89,7 +89,7 @@ TEST(ContentExtractionUtilsTest, ExtractContentTest) {
     EXPECT_EQ(tokens[1].positions[0].position.length, 7u);
   }
   {
-    const base::string16 text(base::UTF8ToUTF16("@#$%@^你好!!!"));
+    const std::u16string text(base::UTF8ToUTF16("@#$%@^你好!!!"));
     const auto tokens = ExtractContent("2nd test", text, kDefaultWeight, "zh");
     EXPECT_EQ(tokens.size(), 1u);
 

@@ -56,7 +56,7 @@ const double kDefaultVolumeMultiplier = 1.0;
 const double kDuckingVolumeMultiplier = 0.2;
 const double kDifferentDuckingVolumeMultiplier = 0.018;
 
-const base::string16 kExpectedSourceTitlePrefix =
+const std::u16string kExpectedSourceTitlePrefix =
     base::ASCIIToUTF16("http://example.com:");
 
 constexpr gfx::Size kDefaultFaviconSize = gfx::Size(16, 16);
@@ -279,8 +279,8 @@ class MediaSessionImplBrowserTest : public ContentBrowserTest {
 
   bool IsDucking() const { return media_session_->is_ducking_; }
 
-  base::string16 GetExpectedSourceTitle() {
-    base::string16 expected_title =
+  std::u16string GetExpectedSourceTitle() {
+    std::u16string expected_title =
         base::StrCat({kExpectedSourceTitlePrefix,
                       base::NumberToString16(embedded_test_server()->port())});
 

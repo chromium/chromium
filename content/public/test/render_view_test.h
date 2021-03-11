@@ -96,14 +96,14 @@ class RenderViewTest : public testing::Test {
   // |result|.
   // Returns true if the JavaScript was evaluated correctly to an int value,
   // false otherwise.
-  bool ExecuteJavaScriptAndReturnIntValue(const base::string16& script,
+  bool ExecuteJavaScriptAndReturnIntValue(const std::u16string& script,
                                           int* result);
 
   // Executes the given JavaScript and sets the number value it evaluates to in
   // |result|.
   // Returns true if the JavaScript was evaluated correctly to an number value,
   // false otherwise.
-  bool ExecuteJavaScriptAndReturnNumberValue(const base::string16& script,
+  bool ExecuteJavaScriptAndReturnNumberValue(const std::u16string& script,
                                              double* result);
 
   // Loads |html| into the main frame as a data: URL and blocks until the

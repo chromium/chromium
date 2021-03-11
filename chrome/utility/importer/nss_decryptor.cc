@@ -71,8 +71,8 @@
 struct FirefoxRawPasswordInfo {
   std::string host;
   std::string realm;
-  base::string16 username_element;
-  base::string16 password_element;
+  std::u16string username_element;
+  std::u16string password_element;
   std::string encrypted_username;
   std::string encrypted_password;
   std::string form_action;
@@ -97,13 +97,13 @@ importer::ImportedPasswordForm CreateBlockedPasswordForm(
 
 }  // namespace
 
-base::string16 NSSDecryptor::Decrypt(const std::string& crypt) const {
+std::u16string NSSDecryptor::Decrypt(const std::string& crypt) const {
   // Do nothing if NSS is not loaded.
   if (!is_nss_initialized_)
-    return base::string16();
+    return std::u16string();
 
   if (crypt.empty())
-    return base::string16();
+    return std::u16string();
 
   // The old style password is encoded in base64. They are identified
   // by a leading '~'. Otherwise, we should decrypt the text.
@@ -111,12 +111,12 @@ base::string16 NSSDecryptor::Decrypt(const std::string& crypt) const {
   if (crypt[0] != '~') {
     std::string decoded_data;
     if (!base::Base64Decode(crypt, &decoded_data))
-      return base::string16();
+      return std::u16string();
     PK11SlotInfo* slot = GetKeySlotForDB();
     SECStatus result = PK11_Authenticate(slot, PR_TRUE, NULL);
     if (result != SECSuccess) {
       FreeSlot(slot);
-      return base::string16();
+      return std::u16string();
     }
 
     SECItem request;
@@ -139,7 +139,7 @@ base::string16 NSSDecryptor::Decrypt(const std::string& crypt) const {
   } else {
     // Deletes the leading '~' before decoding.
     if (!base::Base64Decode(crypt.substr(1), &plain))
-      return base::string16();
+      return std::u16string();
   }
 
   return base::UTF8ToUTF16(plain);

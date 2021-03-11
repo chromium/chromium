@@ -468,13 +468,13 @@ class WebContents : public PageNavigator,
   // Returns the current navigation properties, which if a navigation is
   // pending may be provisional (e.g., the navigation could result in a
   // download, in which case the URL would revert to what it was previously).
-  virtual const base::string16& GetTitle() = 0;
+  virtual const std::u16string& GetTitle() = 0;
 
   // Saves the given title to the navigation entry and does associated work. It
   // will update history and the view with the new title, and also synthesize
   // titles for file URLs that have none. Thus |entry| must have a URL set.
   virtual void UpdateTitleForEntry(NavigationEntry* entry,
-                                   const base::string16& title) = 0;
+                                   const std::u16string& title) = 0;
 
   // Returns the SiteInstance associated with the current page.
   virtual SiteInstance* GetSiteInstance() = 0;
@@ -503,7 +503,7 @@ class WebContents : public PageNavigator,
   // Returns the current load state and the URL associated with it.
   // The load state is only updated while IsLoading() is true.
   virtual const net::LoadStateWithParam& GetLoadState() = 0;
-  virtual const base::string16& GetLoadStateHost() = 0;
+  virtual const std::u16string& GetLoadStateHost() = 0;
 
   // Returns the upload progress.
   virtual uint64_t GetUploadSize() = 0;
@@ -755,10 +755,10 @@ class WebContents : public PageNavigator,
                                                 bool show_selection_menu) = 0;
 
   // Replaces the currently selected word or a word around the cursor.
-  virtual void Replace(const base::string16& word) = 0;
+  virtual void Replace(const std::u16string& word) = 0;
 
   // Replaces the misspelling in the current selection.
-  virtual void ReplaceMisspelling(const base::string16& word) = 0;
+  virtual void ReplaceMisspelling(const std::u16string& word) = 0;
 
   // Let the renderer know that the menu has been closed.
   virtual void NotifyContextMenuClosed(const GURL& link_followed) = 0;
@@ -848,7 +848,7 @@ class WebContents : public PageNavigator,
   virtual void SaveFrameWithHeaders(const GURL& url,
                                     const Referrer& referrer,
                                     const std::string& headers,
-                                    const base::string16& suggested_filename,
+                                    const std::u16string& suggested_filename,
                                     RenderFrameHost* rfh) = 0;
 
   // Generate an MHTML representation of the current page conforming to the
@@ -1004,7 +1004,7 @@ class WebContents : public PageNavigator,
 
   // Finds text on a page. |search_text| should not be empty.
   virtual void Find(int request_id,
-                    const base::string16& search_text,
+                    const std::u16string& search_text,
                     blink::mojom::FindOptionsPtr options) = 0;
 
   // Notifies the renderer that the user has closed the FindInPage window

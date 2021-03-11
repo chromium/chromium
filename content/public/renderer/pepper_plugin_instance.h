@@ -101,7 +101,7 @@ class PepperPluginInstance {
   virtual void SetEmbedProperty(PP_Var key, PP_Var value) = 0;
 
   // Sets the selected text for this plugin.
-  virtual void SetSelectedText(const base::string16& selected_text) = 0;
+  virtual void SetSelectedText(const std::u16string& selected_text) = 0;
 
   // Sets the link currently under the cursor.
   virtual void SetLinkUnderCursor(const std::string& url) = 0;

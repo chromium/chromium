@@ -125,7 +125,7 @@ void DevToolsProtocolTestBindings::DispatchProtocolMessage(
     std::string param;
     base::EscapeJSONString(str_message, true, &param);
     std::string code = "DevToolsAPI.dispatchMessage(" + param + ");";
-    base::string16 javascript = base::UTF8ToUTF16(code);
+    std::u16string javascript = base::UTF8ToUTF16(code);
     web_contents()->GetMainFrame()->ExecuteJavaScriptForTests(
         javascript, base::NullCallback());
     return;
@@ -139,7 +139,7 @@ void DevToolsProtocolTestBindings::DispatchProtocolMessage(
                            true, &param);
     std::string code = "DevToolsAPI.dispatchMessageChunk(" + param + "," +
                        base::NumberToString(pos ? 0 : total_size) + ");";
-    base::string16 javascript = base::UTF8ToUTF16(code);
+    std::u16string javascript = base::UTF8ToUTF16(code);
     web_contents()->GetMainFrame()->ExecuteJavaScriptForTests(
         javascript, base::NullCallback());
   }

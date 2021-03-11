@@ -200,7 +200,7 @@ WebString BlinkPlatformImpl::QueryLocalizedString(int resource_id,
   if (resource_id < 0)
     return WebString();
 
-  base::string16 format_string =
+  std::u16string format_string =
       GetContentClient()->GetLocalizedString(resource_id);
 
   // If the ContentClient returned an empty string, e.g. because it's using the
@@ -222,7 +222,7 @@ WebString BlinkPlatformImpl::QueryLocalizedString(int resource_id,
                                                   const WebString& value2) {
   if (resource_id < 0)
     return WebString();
-  std::vector<base::string16> values;
+  std::vector<std::u16string> values;
   values.reserve(2);
   values.push_back(value1.Utf16());
   values.push_back(value2.Utf16());

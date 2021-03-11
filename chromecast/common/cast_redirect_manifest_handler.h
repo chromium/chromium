@@ -21,7 +21,7 @@ class CastRedirectHandler : public extensions::ManifestHandler {
   CastRedirectHandler();
   ~CastRedirectHandler() override;
 
-  bool Parse(extensions::Extension* extension, base::string16* error) override;
+  bool Parse(extensions::Extension* extension, std::u16string* error) override;
   bool Validate(
       const extensions::Extension* extension,
       std::string* error,

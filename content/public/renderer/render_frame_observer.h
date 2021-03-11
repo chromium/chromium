@@ -163,9 +163,9 @@ class CONTENT_EXPORT RenderFrameObserver : public IPC::Listener,
   // internal), and |stack_trace| is the stack trace of the error in a
   // human-readable format (each frame is formatted as
   // "\n    at function_name (source:line_number:column_number)").
-  virtual void DetailedConsoleMessageAdded(const base::string16& message,
-                                           const base::string16& source,
-                                           const base::string16& stack_trace,
+  virtual void DetailedConsoleMessageAdded(const std::u16string& message,
+                                           const std::u16string& source,
+                                           const std::u16string& stack_trace,
                                            uint32_t line_number,
                                            int32_t severity_level) {}
 

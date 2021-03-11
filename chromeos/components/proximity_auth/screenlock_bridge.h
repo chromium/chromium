@@ -56,11 +56,11 @@ class ScreenlockBridge {
 
     // Sets the icon tooltip. If |autoshow| is set the tooltip is automatically
     // shown with the icon.
-    void SetTooltip(const base::string16& tooltip, bool autoshow);
+    void SetTooltip(const std::u16string& tooltip, bool autoshow);
 
     // Sets the accessibility label of the icon. If this attribute is not
     // provided, then the tooltip will be used.
-    void SetAriaLabel(const base::string16& aria_label);
+    void SetAriaLabel(const std::u16string& aria_label);
 
     // If hardlock on click is set, clicking the icon in the screenlock will
     // go to state where password is required for unlock.
@@ -70,21 +70,21 @@ class ScreenlockBridge {
 
     UserPodCustomIcon icon() const { return icon_; }
 
-    const base::string16 tooltip() const { return tooltip_; }
+    const std::u16string tooltip() const { return tooltip_; }
 
     bool autoshow_tooltip() const { return autoshow_tooltip_; }
 
-    const base::string16 aria_label() const { return aria_label_; }
+    const std::u16string aria_label() const { return aria_label_; }
 
     bool hardlock_on_click() const { return hardlock_on_click_; }
 
    private:
     UserPodCustomIcon icon_;
 
-    base::string16 tooltip_;
+    std::u16string tooltip_;
     bool autoshow_tooltip_;
 
-    base::string16 aria_label_;
+    std::u16string aria_label_;
 
     bool hardlock_on_click_;
 
@@ -96,7 +96,7 @@ class ScreenlockBridge {
     enum ScreenType { SIGNIN_SCREEN = 0, LOCK_SCREEN = 1, OTHER_SCREEN = 2 };
 
     // Displays |message| in a banner on the lock screen.
-    virtual void ShowBannerMessage(const base::string16& message,
+    virtual void ShowBannerMessage(const std::u16string& message,
                                    bool is_warning) = 0;
 
     // Shows a custom icon in the user pod on the lock screen.
@@ -113,7 +113,7 @@ class ScreenlockBridge {
     // Set the authentication type to be used on the lock screen.
     virtual void SetAuthType(const AccountId& account_id,
                              proximity_auth::mojom::AuthType auth_type,
-                             const base::string16& auth_value) = 0;
+                             const std::u16string& auth_value) = 0;
 
     // Returns the authentication type used for a user.
     virtual proximity_auth::mojom::AuthType GetAuthType(

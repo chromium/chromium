@@ -203,7 +203,7 @@ class MediaSessionImplServiceRoutingTest
     return empty_metadata_;
   }
 
-  const base::string16& GetSourceTitleForNonEmptyMetadata() const {
+  const std::u16string& GetSourceTitleForNonEmptyMetadata() const {
     return empty_metadata_.source_title;
   }
 

@@ -71,7 +71,7 @@ DevToolsPageHandler::DevToolsPageHandler() {
 DevToolsPageHandler::~DevToolsPageHandler() {
 }
 
-bool DevToolsPageHandler::Parse(Extension* extension, base::string16* error) {
+bool DevToolsPageHandler::Parse(Extension* extension, std::u16string* error) {
   std::unique_ptr<ManifestURL> manifest_url(new ManifestURL);
   std::string devtools_str;
   if (!extension->manifest()->GetString(keys::kDevToolsPage, &devtools_str)) {
@@ -103,7 +103,7 @@ URLOverridesHandler::URLOverridesHandler() {
 URLOverridesHandler::~URLOverridesHandler() {
 }
 
-bool URLOverridesHandler::Parse(Extension* extension, base::string16* error) {
+bool URLOverridesHandler::Parse(Extension* extension, std::u16string* error) {
   const base::DictionaryValue* overrides = NULL;
   if (!extension->manifest()->GetDictionary(keys::kChromeURLOverrides,
                                             &overrides)) {

@@ -93,7 +93,7 @@ RenderWidgetHostViewBase* WebContentsViewChildFrame::CreateViewForChildWidget(
   return GetOuterView()->CreateViewForChildWidget(render_widget_host);
 }
 
-void WebContentsViewChildFrame::SetPageTitle(const base::string16& title) {
+void WebContentsViewChildFrame::SetPageTitle(const std::u16string& title) {
   // The title is ignored for the WebContentsViewChildFrame.
 }
 

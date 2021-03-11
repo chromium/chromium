@@ -146,7 +146,7 @@ class IndexedDBConnectionCoordinator::OpenRequest
       saved_leveldb_status_ = db_->OpenInternal();
       if (!saved_leveldb_status_.ok()) {
         // TODO(jsbell): Consider including sanitized leveldb status message.
-        base::string16 message;
+        std::u16string message;
         if (pending_->version == IndexedDBDatabaseMetadata::NO_VERSION) {
           message = ASCIIToUTF16(
               "Internal error opening database with no version specified.");

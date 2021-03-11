@@ -103,14 +103,14 @@ class CONTENT_EXPORT TextInputManager {
     TextSelection(const TextSelection& other);
     ~TextSelection();
 
-    void SetSelection(const base::string16& text,
+    void SetSelection(const std::u16string& text,
                       size_t offset,
                       const gfx::Range& range);
 
-    const base::string16& selected_text() const { return selected_text_; }
+    const std::u16string& selected_text() const { return selected_text_; }
     size_t offset() const { return offset_; }
     const gfx::Range& range() const { return range_; }
-    const base::string16& text() const { return text_; }
+    const std::u16string& text() const { return text_; }
 
    private:
     // The offset of the text stored in |text| relative to the start of the web
@@ -124,11 +124,11 @@ class CONTENT_EXPORT TextInputManager {
     // and |range_|. It will be an empty string if either |text_| or |range_|
     // are empty of this selection information is invalid (i.e., |range_| does
     // not cover any of |text_|.
-    base::string16 selected_text_;
+    std::u16string selected_text_;
 
     // Part of the text on the page which includes the highlighted text plus
     // possibly several characters before and after it.
-    base::string16 text_;
+    std::u16string text_;
   };
 
   explicit TextInputManager(bool should_do_learning);
@@ -204,7 +204,7 @@ class CONTENT_EXPORT TextInputManager {
 
   // Updates the new text selection information for the |view|.
   void SelectionChanged(RenderWidgetHostViewBase* view,
-                        const base::string16& text,
+                        const std::u16string& text,
                         size_t offset,
                         const gfx::Range& range);
 

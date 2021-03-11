@@ -53,7 +53,7 @@ class SyntheticInputTest : public ContentBrowserTest {
     HitTestRegionObserver observer(GetRenderWidgetHost()->GetFrameSinkId());
     host->GetView()->SetSize(gfx::Size(400, 400));
 
-    base::string16 ready_title(base::ASCIIToUTF16("ready"));
+    std::u16string ready_title(base::ASCIIToUTF16("ready"));
     TitleWatcher watcher(shell()->web_contents(), ready_title);
     ignore_result(watcher.WaitAndGetTitle());
 

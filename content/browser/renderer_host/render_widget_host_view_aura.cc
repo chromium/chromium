@@ -758,12 +758,12 @@ void RenderWidgetHostViewAura::Destroy() {
 }
 
 void RenderWidgetHostViewAura::SetTooltipText(
-    const base::string16& tooltip_text) {
+    const std::u16string& tooltip_text) {
   GetCursorManager()->SetTooltipTextForView(this, tooltip_text);
 }
 
 void RenderWidgetHostViewAura::DisplayTooltipText(
-    const base::string16& tooltip_text) {
+    const std::u16string& tooltip_text) {
   tooltip_ = tooltip_text;
   aura::Window* root_window = window_->GetRootWindow();
   wm::TooltipClient* tooltip_client = wm::GetTooltipClient(root_window);
@@ -1155,7 +1155,7 @@ void RenderWidgetHostViewAura::ClearCompositionText() {
 }
 
 void RenderWidgetHostViewAura::InsertText(
-    const base::string16& text,
+    const std::u16string& text,
     InsertTextCursorBehavior cursor_behavior) {
   DCHECK_NE(GetTextInputType(), ui::TEXT_INPUT_TYPE_NONE);
 
@@ -1359,9 +1359,8 @@ bool RenderWidgetHostViewAura::DeleteRange(const gfx::Range& range) {
   return false;
 }
 
-bool RenderWidgetHostViewAura::GetTextFromRange(
-    const gfx::Range& range,
-    base::string16* text) const {
+bool RenderWidgetHostViewAura::GetTextFromRange(const gfx::Range& range,
+                                                std::u16string* text) const {
   if (!text_input_manager_ || !GetFocusedWidget())
     return false;
 
@@ -1569,7 +1568,7 @@ void RenderWidgetHostViewAura::GetActiveTextInputControlLayoutBounds(
 
 void RenderWidgetHostViewAura::SetActiveCompositionForAccessibility(
     const gfx::Range& range,
-    const base::string16& active_composition_text,
+    const std::u16string& active_composition_text,
     bool is_composition_committed) {
   BrowserAccessibilityManager* manager =
       host()->GetRootBrowserAccessibilityManager();

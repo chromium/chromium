@@ -288,7 +288,7 @@ class CONTENT_EXPORT RenderWidgetHostImpl
                            const ChildProcessTerminationInfo& info) override;
 
   // blink::mojom::WidgetHost implementation.
-  void SetToolTipText(const base::string16& tooltip_text,
+  void SetToolTipText(const std::u16string& tooltip_text,
                       base::i18n::TextDirection text_direction_hint) override;
   void TextInputStateChanged(ui::mojom::TextInputStatePtr state) override;
   void SelectionBoundsChanged(const gfx::Rect& anchor_rect,
@@ -542,7 +542,7 @@ class CONTENT_EXPORT RenderWidgetHostImpl
   //   (on Windows);
   // * when it receives a "preedit_changed" signal of GtkIMContext (on Linux);
   // * when markedText of NSTextInput is called (on Mac).
-  void ImeSetComposition(const base::string16& text,
+  void ImeSetComposition(const std::u16string& text,
                          const std::vector<ui::ImeTextSpan>& ime_text_spans,
                          const gfx::Range& replacement_range,
                          int selection_start,
@@ -555,7 +555,7 @@ class CONTENT_EXPORT RenderWidgetHostImpl
   //   (on Windows);
   // * when it receives a "commit" signal of GtkIMContext (on Linux);
   // * when insertText of NSTextInput is called (on Mac).
-  void ImeCommitText(const base::string16& text,
+  void ImeCommitText(const std::u16string& text,
                      const std::vector<ui::ImeTextSpan>& ime_text_spans,
                      const gfx::Range& replacement_range,
                      int relative_cursor_pos);
@@ -676,7 +676,7 @@ class CONTENT_EXPORT RenderWidgetHostImpl
   void RendererExited();
 
   // Called from a RenderFrameHost when the text selection has changed.
-  void SelectionChanged(const base::string16& text,
+  void SelectionChanged(const std::u16string& text,
                         uint32_t offset,
                         const gfx::Range& range);
 

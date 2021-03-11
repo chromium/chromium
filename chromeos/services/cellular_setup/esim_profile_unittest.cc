@@ -89,7 +89,7 @@ mojom::ESimOperationResult DisableProfile(
 
 mojom::ESimOperationResult SetProfileNickname(
     const mojo::Remote<mojom::ESimProfile>& esim_profile,
-    const base::string16& nickname) {
+    const std::u16string& nickname) {
   mojom::ESimOperationResult result;
 
   base::RunLoop run_loop;
@@ -327,7 +327,7 @@ TEST_F(ESimProfileTest, DisableProfile) {
 }
 
 TEST_F(ESimProfileTest, SetProfileNickName) {
-  const base::string16 test_nickname = base::UTF8ToUTF16("Test nickname");
+  const std::u16string test_nickname = base::UTF8ToUTF16("Test nickname");
   HermesEuiccClient::TestInterface* euicc_test =
       HermesEuiccClient::Get()->GetTestInterface();
   dbus::ObjectPath active_profile_path = euicc_test->AddFakeCarrierProfile(

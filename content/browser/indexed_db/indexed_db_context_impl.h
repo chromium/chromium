@@ -202,8 +202,8 @@ class CONTENT_EXPORT IndexedDBContextImpl
 
   void NotifyIndexedDBListChanged(const url::Origin& origin);
   void NotifyIndexedDBContentChanged(const url::Origin& origin,
-                                     const base::string16& database_name,
-                                     const base::string16& object_store_name);
+                                     const std::u16string& database_name,
+                                     const std::u16string& object_store_name);
 
  private:
   friend class base::RefCountedThreadSafe<IndexedDBContextImpl>;

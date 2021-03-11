@@ -236,7 +236,7 @@ TEST_F(WebContentsViewAuraTest, DragDropFiles) {
   WebContentsViewAura* view = GetView();
   auto data = std::make_unique<ui::OSExchangeData>();
 
-  const base::string16 string_data = base::ASCIIToUTF16("Some string data");
+  const std::u16string string_data = base::ASCIIToUTF16("Some string data");
   data->SetString(string_data);
 
 #if defined(OS_WIN)
@@ -324,7 +324,7 @@ TEST_F(WebContentsViewAuraTest, DragDropFilesOriginateFromRenderer) {
   WebContentsViewAura* view = GetView();
   auto data = std::make_unique<ui::OSExchangeData>();
 
-  const base::string16 string_data = base::ASCIIToUTF16("Some string data");
+  const std::u16string string_data = base::ASCIIToUTF16("Some string data");
   data->SetString(string_data);
 
 #if defined(OS_WIN)
@@ -406,7 +406,7 @@ TEST_F(WebContentsViewAuraTest, DragDropVirtualFiles) {
   WebContentsViewAura* view = GetView();
   auto data = std::make_unique<ui::OSExchangeData>();
 
-  const base::string16 string_data = base::ASCIIToUTF16("Some string data");
+  const std::u16string string_data = base::ASCIIToUTF16("Some string data");
   data->SetString(string_data);
 
   const std::vector<std::pair<base::FilePath, std::string>>
@@ -485,7 +485,7 @@ TEST_F(WebContentsViewAuraTest, DragDropVirtualFilesOriginateFromRenderer) {
   WebContentsViewAura* view = GetView();
   auto data = std::make_unique<ui::OSExchangeData>();
 
-  const base::string16 string_data = base::ASCIIToUTF16("Some string data");
+  const std::u16string string_data = base::ASCIIToUTF16("Some string data");
   data->SetString(string_data);
 
   const std::vector<std::pair<base::FilePath, std::string>>
@@ -542,7 +542,7 @@ TEST_F(WebContentsViewAuraTest, DragDropUrlData) {
 
   const std::string url_spec = "https://www.wikipedia.org/";
   const GURL url(url_spec);
-  const base::string16 url_title = base::ASCIIToUTF16("Wikipedia");
+  const std::u16string url_title = base::ASCIIToUTF16("Wikipedia");
   data->SetURL(url, url_title);
 
   // SetUrl should also add a virtual .url (internet shortcut) file.

@@ -31,8 +31,8 @@ namespace content {
 // appropriately.
 // For example, we can have
 //   text/plain:example.txt:http://example.com/example.txt
-bool ParseDownloadMetadata(const base::string16& metadata,
-                           base::string16* mime_type,
+bool ParseDownloadMetadata(const std::u16string& metadata,
+                           std::u16string* mime_type,
                            base::FilePath* file_name,
                            GURL* url);
 

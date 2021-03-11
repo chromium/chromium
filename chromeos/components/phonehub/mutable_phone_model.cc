@@ -12,7 +12,7 @@ MutablePhoneModel::MutablePhoneModel() = default;
 MutablePhoneModel::~MutablePhoneModel() = default;
 
 void MutablePhoneModel::SetPhoneName(
-    const base::Optional<base::string16>& phone_name) {
+    const base::Optional<std::u16string>& phone_name) {
   if (phone_name_ == phone_name)
     return;
 

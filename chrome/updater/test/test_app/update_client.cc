@@ -40,7 +40,7 @@ void UpdateClient::CheckForUpdate(StatusCallback callback) {
 
   callback_task_runner_->PostTask(
       FROM_HERE, base::BindOnce(callback_, UpdateStatus::INIT, 0, false,
-                                std::string(), 0, base::string16()));
+                                std::string(), 0, std::u16string()));
 
   if (CanCheckForUpdate()) {
     BeginUpdateCheck(
@@ -49,7 +49,7 @@ void UpdateClient::CheckForUpdate(StatusCallback callback) {
   } else {
     callback_task_runner_->PostTask(
         FROM_HERE, base::BindOnce(callback_, UpdateStatus::FAILED, 0, false,
-                                  std::string(), 0, base::string16()));
+                                  std::string(), 0, std::u16string()));
   }
 }
 
@@ -80,7 +80,7 @@ void UpdateClient::HandleStatusUpdate(UpdateService::UpdateState update_state) {
 
   callback_task_runner_->PostTask(
       FROM_HERE, base::BindOnce(callback_, status, 0, false, std::string(), 0,
-                                base::string16()));
+                                std::u16string()));
 }
 
 void UpdateClient::RegistrationCompleted(base::OnceCallback<void(int)> callback,
@@ -97,9 +97,9 @@ void UpdateClient::UpdateCompleted(UpdateService::Result result) {
   if (result == UpdateService::Result::kSuccess) {
     callback_task_runner_->PostTask(
         FROM_HERE, base::BindOnce(callback_, UpdateStatus::NEARLY_UPDATED, 0,
-                                  false, std::string(), 0, base::string16()));
+                                  false, std::string(), 0, std::u16string()));
   } else {
-    const base::string16 error_message(base::ASCIIToUTF16(base::StrCat(
+    const std::u16string error_message(base::ASCIIToUTF16(base::StrCat(
         {"Error code: ", base::NumberToString(static_cast<int>(result))})));
     callback_task_runner_->PostTask(
         FROM_HERE, base::BindOnce(callback_, UpdateStatus::FAILED, 0, false,

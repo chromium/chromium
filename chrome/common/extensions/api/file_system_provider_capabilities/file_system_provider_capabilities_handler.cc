@@ -53,7 +53,7 @@ const FileSystemProviderCapabilities* FileSystemProviderCapabilities::Get(
 }
 
 bool FileSystemProviderCapabilitiesHandler::Parse(Extension* extension,
-                                                  base::string16* error) {
+                                                  std::u16string* error) {
   const bool has_permission = extensions::PermissionsParser::HasAPIPermission(
       extension, extensions::APIPermission::ID::kFileSystemProvider);
   const base::DictionaryValue* section = nullptr;

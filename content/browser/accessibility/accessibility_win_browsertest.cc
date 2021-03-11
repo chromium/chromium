@@ -3747,7 +3747,7 @@ IN_PROC_BROWSER_TEST_F(AccessibilityWinBrowserTest,
       contenteditable_text->get_nCharacters(&n_characters));
   ASSERT_EQ(13, n_characters);
 
-  const base::string16 embedded_character(
+  const std::u16string embedded_character(
       1, BrowserAccessibilityComWin::kEmbeddedCharacter);
   const std::wstring expected_hypertext =
       L"Before" + base::UTF16ToWide(embedded_character) + L"after.";
@@ -3921,7 +3921,7 @@ IN_PROC_BROWSER_TEST_F(AccessibilityWinBrowserTest,
   Microsoft::WRL::ComPtr<IAccessibleText> paragraph_text;
   SetUpSampleParagraph(&paragraph_text);
   std::wstring embedded_character = base::UTF16ToWide(
-      base::string16(1, BrowserAccessibilityComWin::kEmbeddedCharacter));
+      std::u16string(1, BrowserAccessibilityComWin::kEmbeddedCharacter));
   std::vector<std::wstring> words = {
       L"Game ",    L"theory ",      L"is ",       L"\"",
       L"the ",     L"study ",       L"of ",       embedded_character,
@@ -4520,7 +4520,7 @@ IN_PROC_BROWSER_TEST_F(AccessibilityWinBrowserTest,
   // The beforeunload dialog won't be shown unless the page has at
   // least one user gesture on it.
   auto* main_frame = shell()->web_contents()->GetMainFrame();
-  main_frame->ExecuteJavaScriptWithUserGestureForTests(base::string16());
+  main_frame->ExecuteJavaScriptWithUserGestureForTests(std::u16string());
 
   // Trigger a reload here, which will get cancelled.
   AppModalDialogWaiter dialog_waiter(shell());

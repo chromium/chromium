@@ -253,11 +253,11 @@ class CONTENT_EXPORT RenderWidgetHost {
     // InputEvents are only triggered when user typed in through number bar on
     // Android keyboard. This function is triggered when text is committed in
     // input form.
-    virtual void OnImeTextCommittedEvent(const base::string16& text_str) {}
+    virtual void OnImeTextCommittedEvent(const std::u16string& text_str) {}
     // This function is triggered when composing text is updated. Note that
     // text_str contains all text that is currently under composition rather
     // than updated text only.
-    virtual void OnImeSetComposingTextEvent(const base::string16& text_str) {}
+    virtual void OnImeSetComposingTextEvent(const std::u16string& text_str) {}
     // This function is triggered when composing text is filled into the input
     // form.
     virtual void OnImeFinishComposingTextEvent() {}

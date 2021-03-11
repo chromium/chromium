@@ -19,7 +19,7 @@ class MockImporterBridge : public ImporterBridge {
 
   MOCK_METHOD2(AddBookmarks,
                void(const std::vector<ImportedBookmarkEntry>&,
-                    const base::string16&));
+                    const std::u16string&));
   MOCK_METHOD1(AddHomePage, void(const GURL&));
   MOCK_METHOD1(SetFavicons, void(const favicon_base::FaviconUsageDataList&));
   MOCK_METHOD2(SetHistoryItems,
@@ -33,7 +33,7 @@ class MockImporterBridge : public ImporterBridge {
   MOCK_METHOD1(NotifyItemStarted, void(importer::ImportItem));
   MOCK_METHOD1(NotifyItemEnded, void(importer::ImportItem));
   MOCK_METHOD0(NotifyEnded, void());
-  MOCK_METHOD1(GetLocalizedString, base::string16(int));
+  MOCK_METHOD1(GetLocalizedString, std::u16string(int));
 
  private:
   ~MockImporterBridge() override;

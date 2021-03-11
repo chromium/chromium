@@ -34,7 +34,7 @@ uint8_t AlphaScaleToAlphaValue(int alpha_scale) {
 
 }  // namespace
 
-SplashScreen::SplashScreen(const base::string16& bundle_name)
+SplashScreen::SplashScreen(const std::u16string& bundle_name)
     : timer_created_(false), alpha_index_(0) {
   title_ = GetInstallerDisplayName(bundle_name);
   SwitchToState(WindowState::STATE_CREATED);

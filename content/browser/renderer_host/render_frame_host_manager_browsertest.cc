@@ -1108,7 +1108,7 @@ IN_PROC_BROWSER_TEST_P(RenderFrameHostManagerTest,
 
   // 3) Post a message from the foo window to the opener.  The opener will
   // reply, causing the foo window to update its own title.
-  base::string16 expected_title = ASCIIToUTF16("msg");
+  std::u16string expected_title = ASCIIToUTF16("msg");
   TitleWatcher title_watcher(foo_contents, expected_title);
   EXPECT_TRUE(ExecuteScriptAndExtractBool(
       foo_contents,
@@ -1215,7 +1215,7 @@ IN_PROC_BROWSER_TEST_P(RenderFrameHostManagerTest,
   // 2) Post a message containing a MessagePort from opener to the the foo
   // window. The foo window will reply via the passed port, causing the opener
   // to update its own title.
-  base::string16 expected_title = ASCIIToUTF16("msg-back-via-port");
+  std::u16string expected_title = ASCIIToUTF16("msg-back-via-port");
   TitleWatcher title_observer(opener_contents, expected_title);
   EXPECT_TRUE(ExecuteScriptAndExtractBool(
       opener_contents,
@@ -1445,7 +1445,7 @@ IN_PROC_BROWSER_TEST_P(RenderFrameHostManagerTest, ClickLinkAfter204Error) {
       shell()->web_contents()->GetController().GetLastCommittedEntry());
 
   // Renderer-initiated navigations should work.
-  base::string16 expected_title = ASCIIToUTF16("Title Of Awesomeness");
+  std::u16string expected_title = ASCIIToUTF16("Title Of Awesomeness");
   TitleWatcher title_watcher(shell()->web_contents(), expected_title);
   GURL url = embedded_test_server()->GetURL("/title2.html");
   EXPECT_TRUE(ExecuteScript(
@@ -1555,7 +1555,7 @@ IN_PROC_BROWSER_TEST_P(RenderFrameHostManagerSpoofingTest,
   // Now get another reference to the window object, but don't otherwise access
   // it. This is to ensure that DidAccessInitialDocument() notifications are not
   // incorrectly generated when nothing is modified.
-  base::string16 expected_title = ASCIIToUTF16("Modified Title");
+  std::u16string expected_title = ASCIIToUTF16("Modified Title");
   TitleWatcher title_watcher(orig_contents, expected_title);
   ExecuteScript(orig_contents, "getNewWindowReference();");
   ASSERT_EQ(expected_title, title_watcher.WaitAndGetTitle());
@@ -1610,7 +1610,7 @@ IN_PROC_BROWSER_TEST_P(RenderFrameHostManagerSpoofingTest,
 
   // Now modify the contents of the new window from the opener.  This will also
   // modify the title of the document to give us something to listen for.
-  base::string16 expected_title = ASCIIToUTF16("Modified Title");
+  std::u16string expected_title = ASCIIToUTF16("Modified Title");
   TitleWatcher title_watcher(orig_contents, expected_title);
   ExecuteScript(orig_contents, "modifyNewWindow();");
   ASSERT_EQ(expected_title, title_watcher.WaitAndGetTitle());
@@ -1668,7 +1668,7 @@ IN_PROC_BROWSER_TEST_P(RenderFrameHostManagerSpoofingTest,
 
   // Now modify the contents of the new window from the opener.  This will also
   // modify the title of the document to give us something to listen for.
-  base::string16 expected_title = ASCIIToUTF16("Modified Title");
+  std::u16string expected_title = ASCIIToUTF16("Modified Title");
   TitleWatcher title_watcher(orig_contents, expected_title);
   ExecuteScript(orig_contents, "modifyNewWindow();");
   ASSERT_EQ(expected_title, title_watcher.WaitAndGetTitle());
@@ -1719,7 +1719,7 @@ IN_PROC_BROWSER_TEST_P(RenderFrameHostManagerSpoofingTest,
 
   // Now modify the contents of the new window from the opener.  This will also
   // modify the title of the document to give us something to listen for.
-  base::string16 expected_title = ASCIIToUTF16("Modified Title");
+  std::u16string expected_title = ASCIIToUTF16("Modified Title");
   TitleWatcher title_watcher(orig_contents, expected_title);
   ExecuteScript(orig_contents, "modifyNewWindowWithDocumentOpen();");
   ASSERT_EQ(expected_title, title_watcher.WaitAndGetTitle());
@@ -2436,7 +2436,7 @@ IN_PROC_BROWSER_TEST_P(RenderFrameHostManagerTest,
   EXPECT_TRUE(NavigateToURL(shell(), view_source_url));
 
   // Check that javascript: URLs work.
-  base::string16 expected_title = ASCIIToUTF16("msg");
+  std::u16string expected_title = ASCIIToUTF16("msg");
   TitleWatcher title_watcher(shell()->web_contents(), expected_title);
   shell()->LoadURL(GURL("javascript:document.title='msg'"));
   ASSERT_EQ(expected_title, title_watcher.WaitAndGetTitle());
@@ -3232,7 +3232,7 @@ IN_PROC_BROWSER_TEST_P(RenderFrameHostManagerTest, UpdateOpener) {
 
   // Check that foo's opener was updated in foo's process. Send a postMessage
   // to the opener and check that the right window (bar_shell) receives it.
-  base::string16 expected_title = ASCIIToUTF16("opener-msg");
+  std::u16string expected_title = ASCIIToUTF16("opener-msg");
   TitleWatcher title_watcher(bar_shell->web_contents(), expected_title);
   success = false;
   EXPECT_TRUE(ExecuteScriptAndExtractBool(
@@ -3733,7 +3733,7 @@ IN_PROC_BROWSER_TEST_P(RenderFrameHostManagerTest,
                             "window.onunload=function(e){"
                             "history.pushState({}, 'foo', 'foo');"
                             "document.title='foo'; };\n"));
-  base::string16 title = web_contents->GetTitle();
+  std::u16string title = web_contents->GetTitle();
   NavigationEntryImpl* entry = web_contents->GetController().GetEntryAtIndex(0);
 
   // Navigate the first tab to a different site and wait for the old process to

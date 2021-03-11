@@ -1160,7 +1160,7 @@ IN_PROC_BROWSER_TEST_P(CrossSiteDocumentBlockingTest,
   GURL main_url = app_cache_content_server.GetURL(
       "/appcache/simple_page_with_manifest.html");
   EXPECT_TRUE(NavigateToURL(shell(), main_url));
-  base::string16 expected_title = base::ASCIIToUTF16("AppCache updated");
+  std::u16string expected_title = base::ASCIIToUTF16("AppCache updated");
   content::TitleWatcher title_watcher(shell()->web_contents(), expected_title);
   EXPECT_EQ(expected_title, title_watcher.WaitAndGetTitle());
   EXPECT_TRUE(NavigateToURL(shell(), main_url));
@@ -1227,7 +1227,7 @@ IN_PROC_BROWSER_TEST_P(CrossSiteDocumentBlockingTest,
   GURL main_url = embedded_test_server()->GetURL(
       "/site_isolation/appcached_cross_origin_resource.html");
   EXPECT_TRUE(NavigateToURL(shell(), main_url));
-  base::string16 expected_title = base::ASCIIToUTF16("AppCache updated");
+  std::u16string expected_title = base::ASCIIToUTF16("AppCache updated");
   content::TitleWatcher title_watcher(shell()->web_contents(), expected_title);
   EXPECT_EQ(expected_title, title_watcher.WaitAndGetTitle());
 
@@ -1268,7 +1268,7 @@ IN_PROC_BROWSER_TEST_P(CrossSiteDocumentBlockingTest,
   GURL main_url = embedded_test_server()->GetURL(
       "/appcache/simple_page_with_manifest.html");
   EXPECT_TRUE(NavigateToURL(shell(), main_url));
-  base::string16 expected_title = base::ASCIIToUTF16("AppCache updated");
+  std::u16string expected_title = base::ASCIIToUTF16("AppCache updated");
   content::TitleWatcher title_watcher(shell()->web_contents(), expected_title);
   EXPECT_EQ(expected_title, title_watcher.WaitAndGetTitle());
   EXPECT_TRUE(NavigateToURL(shell(), main_url));
@@ -1322,7 +1322,7 @@ IN_PROC_BROWSER_TEST_P(CrossSiteDocumentBlockingTest,
   GURL main_url = embedded_test_server()->GetURL(
       "/appcache/simple_page_with_manifest.html");
   EXPECT_TRUE(NavigateToURL(shell(), main_url));
-  base::string16 expected_title = base::ASCIIToUTF16("AppCache updated");
+  std::u16string expected_title = base::ASCIIToUTF16("AppCache updated");
   content::TitleWatcher title_watcher(shell()->web_contents(), expected_title);
   EXPECT_EQ(expected_title, title_watcher.WaitAndGetTitle());
   EXPECT_TRUE(NavigateToURL(shell(), main_url));

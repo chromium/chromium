@@ -86,7 +86,7 @@ class COMPONENT_EXPORT(CHROMEOS_UI_FRAME) FrameHeader {
 
   virtual ~FrameHeader();
 
-  const base::string16& frame_text_override() const {
+  const std::u16string& frame_text_override() const {
     return frame_text_override_;
   }
 
@@ -131,7 +131,7 @@ class COMPONENT_EXPORT(CHROMEOS_UI_FRAME) FrameHeader {
 
   // Sets text to display in place of the window's title. This will be shown
   // regardless of what ShouldShowWindowTitle() returns.
-  void SetFrameTextOverride(const base::string16& frame_text_override);
+  void SetFrameTextOverride(const std::u16string& frame_text_override);
 
   void UpdateFrameHeaderKey();
 
@@ -200,7 +200,7 @@ class COMPONENT_EXPORT(CHROMEOS_UI_FRAME) FrameHeader {
   // Whether the header should be painted as active.
   Mode mode_ = MODE_INACTIVE;
 
-  base::string16 frame_text_override_;
+  std::u16string frame_text_override_;
 
   DISALLOW_COPY_AND_ASSIGN(FrameHeader);
 };

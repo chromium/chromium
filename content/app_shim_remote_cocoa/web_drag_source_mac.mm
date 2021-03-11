@@ -91,7 +91,7 @@ using content::DropData;
 - (void)lazyWriteToPasteboard:(NSPasteboard*)pboard forType:(NSString*)type {
   // NSHTMLPboardType requires the character set to be declared. Otherwise, it
   // assumes US-ASCII. Awesome.
-  const base::string16 kHtmlHeader = base::ASCIIToUTF16(
+  const std::u16string kHtmlHeader = base::ASCIIToUTF16(
       "<meta http-equiv=\"Content-Type\" content=\"text/html;charset=UTF-8\">");
 
   // Be extra paranoid; avoid crashing.
@@ -289,7 +289,7 @@ using content::DropData;
         net::GetMimeTypeFromFile(_downloadFileName, &mimeType);
       }
     } else {
-      base::string16 mimeType16;
+      std::u16string mimeType16;
       base::FilePath fileName;
       if (content::ParseDownloadMetadata(
               _dropData->download_metadata,

@@ -51,7 +51,7 @@ class SingleParameterFormatter : public ChromePermissionMessageFormatter {
   PermissionMessage GetPermissionMessage(
       const PermissionIDSet& permissions) const override {
     DCHECK(permissions.size() > 0);
-    std::vector<base::string16> parameters =
+    std::vector<std::u16string> parameters =
         permissions.GetAllPermissionParameters();
     DCHECK_EQ(1U, parameters.size())
         << "Only one message with each ID can be parameterized.";
@@ -103,9 +103,9 @@ class SpaceSeparatedListFormatter : public ChromePermissionMessageFormatter {
   PermissionMessage GetPermissionMessage(
       const PermissionIDSet& permissions) const override {
     DCHECK(permissions.size() > 0);
-    std::vector<base::string16> hostnames =
+    std::vector<std::u16string> hostnames =
         permissions.GetAllPermissionParameters();
-    base::string16 hosts_string =
+    std::u16string hosts_string =
         base::JoinString(hostnames, base::ASCIIToUTF16(" "));
     return PermissionMessage(
         l10n_util::GetStringFUTF16(hostnames.size() == 1
@@ -140,7 +140,7 @@ class HostListFormatter : public ChromePermissionMessageFormatter {
   PermissionMessage GetPermissionMessage(
       const PermissionIDSet& permissions) const override {
     DCHECK(!permissions.empty());
-    std::vector<base::string16> hostnames =
+    std::vector<std::u16string> hostnames =
         GetHostMessages(permissions.GetAllPermissionParameters());
     int message_id = message_id_for_hosts(hostnames.size());
     if (hostnames.size() <= kMaxHostsInMainMessage) {
@@ -166,13 +166,13 @@ class HostListFormatter : public ChromePermissionMessageFormatter {
     }
   }
 
-  std::vector<base::string16> GetHostMessages(
-      const std::vector<base::string16>& hosts) const {
+  std::vector<std::u16string> GetHostMessages(
+      const std::vector<std::u16string>& hosts) const {
     int msg_id = hosts.size() <= kMaxHostsInMainMessage
                      ? IDS_EXTENSION_PROMPT_WARNING_HOST_AND_SUBDOMAIN
                      : IDS_EXTENSION_PROMPT_WARNING_HOST_AND_SUBDOMAIN_LIST;
-    std::vector<base::string16> messages;
-    for (const base::string16& host : hosts) {
+    std::vector<std::u16string> messages;
+    for (const std::u16string& host : hosts) {
       messages.push_back(
           host[0] == '*' && host[1] == '.'
               ? l10n_util::GetStringFUTF16(msg_id, host.substr(2))
@@ -207,7 +207,7 @@ class USBDevicesFormatter : public ChromePermissionMessageFormatter {
   PermissionMessage GetItemMessage(const PermissionIDSet& permissions) const {
     DCHECK(permissions.size() == 1);
     const PermissionID& permission = *permissions.begin();
-    base::string16 msg;
+    std::u16string msg;
     switch (permission.id()) {
       case APIPermission::kUsbDevice:
         msg = l10n_util::GetStringFUTF16(
@@ -232,14 +232,14 @@ class USBDevicesFormatter : public ChromePermissionMessageFormatter {
       const PermissionIDSet& permissions) const {
     DCHECK(permissions.size() > 1);
     // Put all the individual items into submessages.
-    std::vector<base::string16> submessages =
+    std::vector<std::u16string> submessages =
         permissions.GetAllPermissionsWithID(APIPermission::kUsbDevice)
             .GetAllPermissionParameters();
-    std::vector<base::string16> vendors =
-        permissions.GetAllPermissionsWithID(
-                       APIPermission::kUsbDeviceUnknownProduct)
+    std::vector<std::u16string> vendors =
+        permissions
+            .GetAllPermissionsWithID(APIPermission::kUsbDeviceUnknownProduct)
             .GetAllPermissionParameters();
-    for (const base::string16& vendor : vendors) {
+    for (const std::u16string& vendor : vendors) {
       submessages.push_back(l10n_util::GetStringFUTF16(
           IDS_EXTENSION_PROMPT_WARNING_USB_DEVICE_LIST_ITEM_UNKNOWN_PRODUCT,
           vendor));

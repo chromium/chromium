@@ -75,11 +75,11 @@ class ProtocolHandler {
 
   // Returns a friendly name for |protocol| if one is available, otherwise
   // this function returns |protocol|.
-  static base::string16 GetProtocolDisplayName(const std::string& protocol);
+  static std::u16string GetProtocolDisplayName(const std::string& protocol);
 
   // Returns a friendly name for |this.protocol_| if one is available, otherwise
   // this function returns |this.protocol_|.
-  base::string16 GetProtocolDisplayName() const;
+  std::u16string GetProtocolDisplayName() const;
 
   const std::string& protocol() const { return protocol_; }
   const GURL& url() const { return url_;}

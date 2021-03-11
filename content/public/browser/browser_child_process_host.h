@@ -88,7 +88,7 @@ class CONTENT_EXPORT BrowserChildProcessHost : public IPC::Sender {
   TakeMetricsAllocator() = 0;
 
   // Sets the user-visible name of the process.
-  virtual void SetName(const base::string16& name) = 0;
+  virtual void SetName(const std::u16string& name) = 0;
 
   // Sets the name of the process used for metrics reporting.
   virtual void SetMetricsName(const std::string& metrics_name) = 0;

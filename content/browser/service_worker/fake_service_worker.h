@@ -89,7 +89,7 @@ class FakeServiceWorker : public blink::mojom::ServiceWorker {
       const std::string& notification_id,
       const blink::PlatformNotificationData& notification_data,
       int action_index,
-      const base::Optional<base::string16>& reply,
+      const base::Optional<std::u16string>& reply,
       DispatchNotificationClickEventCallback callback) override;
   void DispatchNotificationCloseEvent(
       const std::string& notification_id,

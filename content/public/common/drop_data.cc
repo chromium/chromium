@@ -15,7 +15,7 @@ DropData::Metadata::Metadata() {}
 // static
 DropData::Metadata DropData::Metadata::CreateForMimeType(
     const Kind& kind,
-    const base::string16& mime_type) {
+    const std::u16string& mime_type) {
   Metadata metadata;
   metadata.kind = kind;
   metadata.mime_type = mime_type;

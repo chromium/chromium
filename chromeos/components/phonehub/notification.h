@@ -24,7 +24,7 @@ class Notification {
  public:
   // Describes the app which generates a notification.
   struct AppMetadata {
-    AppMetadata(const base::string16& visible_app_name,
+    AppMetadata(const std::u16string& visible_app_name,
                 const std::string& package_name,
                 const gfx::Image& icon);
     AppMetadata(const AppMetadata& other);
@@ -32,7 +32,7 @@ class Notification {
     bool operator==(const AppMetadata& other) const;
     bool operator!=(const AppMetadata& other) const;
 
-    base::string16 visible_app_name;
+    std::u16string visible_app_name;
     std::string package_name;
     gfx::Image icon;
   };
@@ -80,8 +80,8 @@ class Notification {
       Importance importance,
       int64_t inline_reply_id,
       InteractionBehavior interaction_behavior,
-      const base::Optional<base::string16>& title = base::nullopt,
-      const base::Optional<base::string16>& text_content = base::nullopt,
+      const base::Optional<std::u16string>& title = base::nullopt,
+      const base::Optional<std::u16string>& text_content = base::nullopt,
       const base::Optional<gfx::Image>& shared_image = base::nullopt,
       const base::Optional<gfx::Image>& contact_image = base::nullopt);
   Notification(const Notification& other);
@@ -99,8 +99,8 @@ class Notification {
   InteractionBehavior interaction_behavior() const {
     return interaction_behavior_;
   }
-  const base::Optional<base::string16>& title() const { return title_; }
-  const base::Optional<base::string16>& text_content() const {
+  const base::Optional<std::u16string>& title() const { return title_; }
+  const base::Optional<std::u16string>& text_content() const {
     return text_content_;
   }
   const base::Optional<gfx::Image>& shared_image() const {
@@ -117,8 +117,8 @@ class Notification {
   Importance importance_;
   int64_t inline_reply_id_;
   InteractionBehavior interaction_behavior_;
-  base::Optional<base::string16> title_;
-  base::Optional<base::string16> text_content_;
+  base::Optional<std::u16string> title_;
+  base::Optional<std::u16string> text_content_;
   base::Optional<gfx::Image> shared_image_;
   base::Optional<gfx::Image> contact_image_;
 };

@@ -45,7 +45,7 @@ DEFINE_UI_CLASS_PROPERTY_KEY(WindowPinType,
                              kWindowPinTypeKey,
                              WindowPinType::kNone)
 
-DEFINE_OWNED_UI_CLASS_PROPERTY_KEY(base::string16,
+DEFINE_OWNED_UI_CLASS_PROPERTY_KEY(std::u16string,
                                    kWindowOverviewTitleKey,
                                    nullptr)
 

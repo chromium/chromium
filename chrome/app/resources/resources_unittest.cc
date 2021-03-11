@@ -48,7 +48,7 @@ TEST_F(ResourcesTest, CriticalMessagesContainNoExtraWhitespaces) {
     ui::ResourceBundle::GetSharedInstance().ReloadLocaleResources("");
 
     for (int message : messages_to_check) {
-      base::string16 message_str = l10n_util::GetStringUTF16(message);
+      std::u16string message_str = l10n_util::GetStringUTF16(message);
       EXPECT_EQ(message_str, base::TrimWhitespace(message_str, base::TRIM_ALL));
     }
   }

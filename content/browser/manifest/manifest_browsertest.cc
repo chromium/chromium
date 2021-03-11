@@ -57,9 +57,9 @@ class MockWebContentsDelegate : public WebContentsDelegate {
 
   bool DidAddMessageToConsole(WebContents* source,
                               blink::mojom::ConsoleMessageLevel log_level,
-                              const base::string16& message,
+                              const std::u16string& message,
                               int32_t line_no,
-                              const base::string16& source_id) override;
+                              const std::u16string& source_id) override;
 
  private:
   WebContents* web_contents_;
@@ -186,9 +186,9 @@ class ManifestBrowserTest : public ContentBrowserTest,
 bool MockWebContentsDelegate::DidAddMessageToConsole(
     WebContents* source,
     blink::mojom::ConsoleMessageLevel log_level,
-    const base::string16& message,
+    const std::u16string& message,
     int32_t line_no,
-    const base::string16& source_id) {
+    const std::u16string& source_id) {
   DCHECK(source == web_contents_);
 
   if (log_level == blink::mojom::ConsoleMessageLevel::kError ||

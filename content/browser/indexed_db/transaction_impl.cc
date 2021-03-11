@@ -44,7 +44,7 @@ TransactionImpl::~TransactionImpl() {
 }
 
 void TransactionImpl::CreateObjectStore(int64_t object_store_id,
-                                        const base::string16& name,
+                                        const std::u16string& name,
                                         const blink::IndexedDBKeyPath& key_path,
                                         bool auto_increment) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);

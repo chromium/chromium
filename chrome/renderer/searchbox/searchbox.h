@@ -93,7 +93,7 @@ class SearchBox : public content::RenderFrameObserver,
                                 InstantMostVisitedItem* item) const;
 
   // Sends PasteAndOpenDropdown to the browser.
-  void Paste(const base::string16& text);
+  void Paste(const std::u16string& text);
 
   // Will return null if the theme info hasn't been set yet.
   const NtpTheme* GetNtpTheme() const;
@@ -194,7 +194,7 @@ class SearchBox : public content::RenderFrameObserver,
   // search term. |prevent_inline_autocomplete| is true if the result set should
   // not require inline autocomplete for the default match. Handled by
   // |QueryAutocompleteResult|.
-  void QueryAutocomplete(const base::string16& input,
+  void QueryAutocomplete(const std::u16string& input,
                          bool prevent_inline_autocomplete);
 
   // Deletes |AutocompleteMatch| by index of the result.

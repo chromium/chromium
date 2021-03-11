@@ -57,7 +57,7 @@ void MockWidgetInputHandler::CursorVisibilityChanged(bool visible) {
 }
 
 void MockWidgetInputHandler::ImeSetComposition(
-    const base::string16& text,
+    const std::u16string& text,
     const std::vector<ui::ImeTextSpan>& ime_text_spans,
     const gfx::Range& range,
     int32_t start,
@@ -67,7 +67,7 @@ void MockWidgetInputHandler::ImeSetComposition(
 }
 
 void MockWidgetInputHandler::ImeCommitText(
-    const base::string16& text,
+    const std::u16string& text,
     const std::vector<ui::ImeTextSpan>& ime_text_spans,
     const gfx::Range& range,
     int32_t relative_cursor_position,
@@ -169,7 +169,7 @@ MockWidgetInputHandler::DispatchedMessage::ToFinishComposing() {
 
 MockWidgetInputHandler::DispatchedIMEMessage::DispatchedIMEMessage(
     const std::string& name,
-    const base::string16& text,
+    const std::u16string& text,
     const std::vector<ui::ImeTextSpan>& text_spans,
     const gfx::Range& range,
     int32_t start,
@@ -189,7 +189,7 @@ MockWidgetInputHandler::DispatchedIMEMessage::ToIME() {
 }
 
 bool MockWidgetInputHandler::DispatchedIMEMessage::Matches(
-    const base::string16& text,
+    const std::u16string& text,
     const std::vector<ui::ImeTextSpan>& ime_text_spans,
     const gfx::Range& range,
     int32_t start,

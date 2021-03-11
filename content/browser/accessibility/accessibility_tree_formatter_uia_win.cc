@@ -1012,7 +1012,7 @@ void AccessibilityTreeFormatterUia::WriteElementArray(
     base::DictionaryValue* dict) const {
   int count;
   array->get_Length(&count);
-  base::string16 element_list;
+  std::u16string element_list;
   for (int i = 0; i < count; i++) {
     Microsoft::WRL::ComPtr<IUIAutomationElement> element;
     if (SUCCEEDED(array->GetElement(i, &element))) {
@@ -1032,7 +1032,7 @@ void AccessibilityTreeFormatterUia::WriteElementArray(
     dict->SetString(GetPropertyName(propertyId), element_list);
 }
 
-base::string16 AccessibilityTreeFormatterUia::GetNodeName(
+std::u16string AccessibilityTreeFormatterUia::GetNodeName(
     IUIAutomationElement* uncached_node) const {
   // Update the cache for this node.
   if (uncached_node) {
@@ -1048,7 +1048,7 @@ base::string16 AccessibilityTreeFormatterUia::GetNodeName(
           {variant.ptr()->bstrVal, SysStringLen(variant.ptr()->bstrVal)});
     }
   }
-  return base::string16();
+  return std::u16string();
 }
 
 void AccessibilityTreeFormatterUia::BuildCacheRequests() {

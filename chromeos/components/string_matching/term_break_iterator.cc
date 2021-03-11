@@ -15,7 +15,7 @@
 namespace chromeos {
 namespace string_matching {
 
-TermBreakIterator::TermBreakIterator(const base::string16& word)
+TermBreakIterator::TermBreakIterator(const std::u16string& word)
     : word_(word),
       prev_(npos),
       pos_(0),
@@ -51,7 +51,7 @@ bool TermBreakIterator::Advance() {
   return prev_ != pos_ || !iter_->end();
 }
 
-const base::string16 TermBreakIterator::GetCurrentTerm() const {
+const std::u16string TermBreakIterator::GetCurrentTerm() const {
   DCHECK(prev_ != npos && pos_ != npos);
   return word_.substr(prev_, pos_ - prev_);
 }

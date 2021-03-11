@@ -519,7 +519,7 @@ AXImageStopwords::AXImageStopwords() {
 AXImageStopwords::~AXImageStopwords() = default;
 
 bool AXImageStopwords::IsImageStopword(const char* word_utf8) const {
-  base::string16 word_utf16 = base::UTF8ToUTF16(word_utf8);
+  std::u16string word_utf16 = base::UTF8ToUTF16(word_utf8);
 
   // It's not really meaningful, but since short words are stopwords, for
   // simplicity we define the empty string to be a stopword too.

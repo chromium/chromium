@@ -151,7 +151,7 @@ gfx::Rect WebContentsViewAndroid::GetContainerBounds() const {
   return GetViewBounds();
 }
 
-void WebContentsViewAndroid::SetPageTitle(const base::string16& title) {
+void WebContentsViewAndroid::SetPageTitle(const std::u16string& title) {
   // Do nothing.
 }
 
@@ -356,7 +356,7 @@ bool WebContentsViewAndroid::OnDragEvent(const ui::DragEventAndroid& event) {
   switch (event.action()) {
     case JNI_DragEvent::ACTION_DRAG_ENTERED: {
       std::vector<DropData::Metadata> metadata;
-      for (const base::string16& mime_type : event.mime_types()) {
+      for (const std::u16string& mime_type : event.mime_types()) {
         metadata.push_back(DropData::Metadata::CreateForMimeType(
             DropData::Kind::STRING, mime_type));
       }
@@ -370,9 +370,9 @@ bool WebContentsViewAndroid::OnDragEvent(const ui::DragEventAndroid& event) {
       DropData drop_data;
       drop_data.did_originate_from_renderer = false;
       JNIEnv* env = AttachCurrentThread();
-      base::string16 drop_content =
+      std::u16string drop_content =
           ConvertJavaStringToUTF16(env, event.GetJavaContent());
-      for (const base::string16& mime_type : event.mime_types()) {
+      for (const std::u16string& mime_type : event.mime_types()) {
         if (base::EqualsASCII(mime_type, ui::kMimeTypeURIList)) {
           drop_data.url = GURL(drop_content);
         } else if (base::EqualsASCII(mime_type, ui::kMimeTypeText)) {

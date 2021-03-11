@@ -286,7 +286,7 @@ class DownloadURLMockLocalFrameHost : public LocalFrameHostInterceptor {
       : LocalFrameHostInterceptor(provider) {}
 
   MOCK_METHOD2(RunModalAlertDialog,
-               void(const base::string16& alert_message,
+               void(const std::u16string& alert_message,
                     RunModalAlertDialogCallback callback));
   MOCK_METHOD1(DownloadURL, void(blink::mojom::DownloadURLParamsPtr params));
 };

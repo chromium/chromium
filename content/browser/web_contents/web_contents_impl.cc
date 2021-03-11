@@ -278,14 +278,14 @@ class CloseDialogCallbackWrapper
     : public base::RefCountedThreadSafe<CloseDialogCallbackWrapper> {
  public:
   using CloseCallback =
-      base::OnceCallback<void(bool, bool, const base::string16&)>;
+      base::OnceCallback<void(bool, bool, const std::u16string&)>;
 
   explicit CloseDialogCallbackWrapper(CloseCallback callback)
       : callback_(std::move(callback)) {}
 
   void Run(bool dialog_was_suppressed,
            bool success,
-           const base::string16& user_input) {
+           const std::u16string& user_input) {
     if (callback_.is_null())
       return;
     std::move(callback_).Run(dialog_was_suppressed, success, user_input);
@@ -830,7 +830,7 @@ WebContentsImpl::WebContentsImpl(BrowserContext* browser_context)
       main_frame_process_status_(base::TERMINATION_STATUS_STILL_RUNNING),
       main_frame_process_error_code_(0),
       waiting_for_response_(false),
-      load_state_(net::LOAD_STATE_IDLE, base::string16()),
+      load_state_(net::LOAD_STATE_IDLE, std::u16string()),
       upload_size_(0),
       upload_position_(0),
       is_resume_pending_(false),
@@ -1697,7 +1697,7 @@ void WebContentsImpl::SetDisplayCutoutSafeArea(gfx::Insets insets) {
 
 #endif
 
-const base::string16& WebContentsImpl::GetTitle() {
+const std::u16string& WebContentsImpl::GetTitle() {
   WebUI* our_web_ui =
       GetRenderManager()->speculative_frame_host()
           ? GetRenderManager()->speculative_frame_host()->web_ui()
@@ -1707,7 +1707,7 @@ const base::string16& WebContentsImpl::GetTitle() {
     NavigationEntry* entry = GetController().GetVisibleEntry();
     if (!(entry && entry->IsViewSourceMode())) {
       // Give the Web UI the chance to override our title.
-      const base::string16& title = our_web_ui->GetOverriddenTitle();
+      const std::u16string& title = our_web_ui->GetOverriddenTitle();
       if (!title.empty())
         return title;
     }
@@ -1775,7 +1775,7 @@ const net::LoadStateWithParam& WebContentsImpl::GetLoadState() {
   return load_state_;
 }
 
-const base::string16& WebContentsImpl::GetLoadStateHost() {
+const std::u16string& WebContentsImpl::GetLoadStateHost() {
   return load_state_host_;
 }
 
@@ -4200,7 +4200,7 @@ WebContentsImpl::GetOrCreateRootBrowserAccessibilityManager() {
 
 void WebContentsImpl::ExecuteEditCommand(
     const std::string& command,
-    const base::Optional<base::string16>& value) {
+    const base::Optional<std::u16string>& value) {
   OPTIONAL_TRACE_EVENT0("content", "WebContentsImpl::ExecuteEditCommand");
   auto* input_handler = GetFocusedFrameWidgetInputHandler();
   if (!input_handler)
@@ -4442,7 +4442,7 @@ void WebContentsImpl::CollapseSelection() {
   input_handler->CollapseSelection();
 }
 
-void WebContentsImpl::Replace(const base::string16& word) {
+void WebContentsImpl::Replace(const std::u16string& word) {
   OPTIONAL_TRACE_EVENT0("content", "WebContentsImpl::Replace");
   auto* input_handler = GetFocusedFrameWidgetInputHandler();
   if (!input_handler)
@@ -4451,7 +4451,7 @@ void WebContentsImpl::Replace(const base::string16& word) {
   input_handler->Replace(word);
 }
 
-void WebContentsImpl::ReplaceMisspelling(const base::string16& word) {
+void WebContentsImpl::ReplaceMisspelling(const std::u16string& word) {
   OPTIONAL_TRACE_EVENT0("content", "WebContentsImpl::ReplaceMisspelling");
   auto* input_handler = GetFocusedFrameWidgetInputHandler();
   if (!input_handler)
@@ -4585,14 +4585,14 @@ void WebContentsImpl::SaveFrame(const GURL& url,
                                 const Referrer& referrer,
                                 RenderFrameHost* rfh) {
   OPTIONAL_TRACE_EVENT0("content", "WebContentsImpl::SaveFrame");
-  SaveFrameWithHeaders(url, referrer, std::string(), base::string16(), rfh);
+  SaveFrameWithHeaders(url, referrer, std::string(), std::u16string(), rfh);
 }
 
 void WebContentsImpl::SaveFrameWithHeaders(
     const GURL& url,
     const Referrer& referrer,
     const std::string& headers,
-    const base::string16& suggested_filename,
+    const std::u16string& suggested_filename,
     RenderFrameHost* rfh) {
   DCHECK(rfh);
 
@@ -4757,7 +4757,7 @@ void WebContentsImpl::LoadStateChanged(network::mojom::LoadInfoPtr load_info) {
   }
 
   load_info_timestamp_ = load_info->timestamp;
-  base::string16 host16 = url_formatter::IDNToUnicode(load_info->host);
+  std::u16string host16 = url_formatter::IDNToUnicode(load_info->host);
   // Drop no-op updates.
   if (load_state_.state == load_info->load_state &&
       load_state_.param == load_info->state_param &&
@@ -4989,7 +4989,7 @@ int WebContentsImpl::DownloadImageInFrame(
 }
 
 void WebContentsImpl::Find(int request_id,
-                           const base::string16& search_text,
+                           const std::u16string& search_text,
                            blink::mojom::FindOptionsPtr options) {
   OPTIONAL_TRACE_EVENT0("content", "WebContentsImpl::Find");
   // Cowardly refuse to search for no text.
@@ -5547,7 +5547,7 @@ void WebContentsImpl::ViewSource(RenderFrameHostImpl* frame) {
   Referrer referrer_for_view_source;
   base::Optional<url::Origin> initiator_for_view_source = base::nullopt;
   // Do not restore title, derive it from the url.
-  base::string16 title_for_view_source;
+  std::u16string title_for_view_source;
   auto navigation_entry = std::make_unique<NavigationEntryImpl>(
       site_instance_for_view_source, frame_entry->url(),
       referrer_for_view_source, initiator_for_view_source,
@@ -6100,10 +6100,10 @@ bool WebContentsImpl::HasAccessedInitialDocument() {
 }
 
 void WebContentsImpl::UpdateTitleForEntry(NavigationEntry* entry,
-                                          const base::string16& title) {
+                                          const std::u16string& title) {
   OPTIONAL_TRACE_EVENT1("content", "WebContentsImpl::UpdateTitleForEntry",
                         "title", base::trace_event::ValueToString(title));
-  base::string16 final_title;
+  std::u16string final_title;
   base::TrimWhitespace(title, base::TRIM_ALL, &final_title);
 
   // If a page is created via window.open and never navigated,
@@ -6160,8 +6160,8 @@ void WebContentsImpl::LoadingStateChanged(bool to_different_document,
                         "is_loading", is_loading);
 
   if (!is_loading) {
-    load_state_ = net::LoadStateWithParam(net::LOAD_STATE_IDLE,
-                                          base::string16());
+    load_state_ =
+        net::LoadStateWithParam(net::LOAD_STATE_IDLE, std::u16string());
     load_state_host_.clear();
     upload_size_ = 0;
     upload_position_ = 0;
@@ -6415,12 +6415,12 @@ void WebContentsImpl::ShowContextMenu(
 
 namespace {
 // Normalizes the line endings: \r\n -> \n, lone \r -> \n.
-base::string16 NormalizeLineBreaks(const base::string16& source) {
-  static const base::NoDestructor<base::string16> kReturnNewline(
+std::u16string NormalizeLineBreaks(const std::u16string& source) {
+  static const base::NoDestructor<std::u16string> kReturnNewline(
       base::ASCIIToUTF16("\r\n"));
-  static const base::NoDestructor<base::string16> kReturn(
+  static const base::NoDestructor<std::u16string> kReturn(
       base::ASCIIToUTF16("\r"));
-  static const base::NoDestructor<base::string16> kNewline(
+  static const base::NoDestructor<std::u16string> kNewline(
       base::ASCIIToUTF16("\n"));
 
   std::vector<base::StringPiece16> pieces;
@@ -6440,8 +6440,8 @@ base::string16 NormalizeLineBreaks(const base::string16& source) {
 
 void WebContentsImpl::RunJavaScriptDialog(
     RenderFrameHostImpl* render_frame_host,
-    const base::string16& message,
-    const base::string16& default_prompt,
+    const std::u16string& message,
+    const std::u16string& default_prompt,
     JavaScriptDialogType dialog_type,
     JavaScriptDialogCallback response_callback) {
   OPTIONAL_TRACE_EVENT1("content", "WebContentsImpl::RunJavaScriptDialog",
@@ -6490,7 +6490,7 @@ void WebContentsImpl::RunJavaScriptDialog(
   }
 
   if (suppress_this_message) {
-    std::move(callback).Run(true, false, base::string16());
+    std::move(callback).Run(true, false, std::u16string());
     return;
   }
 
@@ -6499,7 +6499,7 @@ void WebContentsImpl::RunJavaScriptDialog(
 
   is_showing_javascript_dialog_ = true;
 
-  base::string16 normalized_message = NormalizeLineBreaks(message);
+  std::u16string normalized_message = NormalizeLineBreaks(message);
 
   for (auto* handler : page_handlers) {
     handler->DidRunJavaScriptDialog(
@@ -6519,7 +6519,7 @@ void WebContentsImpl::RunJavaScriptDialog(
   if (suppress_this_message) {
     // If we are suppressing messages, just reply as if the user immediately
     // pressed "Cancel", passing true to |dialog_was_suppressed|.
-    wrapper->Run(true, false, base::string16());
+    wrapper->Run(true, false, std::u16string());
   }
 }
 
@@ -6568,7 +6568,7 @@ void WebContentsImpl::RunBeforeUnloadConfirm(
   bool has_non_devtools_handlers = delegate_ && dialog_manager_;
   bool has_handlers = page_handlers.size() || has_non_devtools_handlers;
   if (should_suppress || !has_handlers) {
-    std::move(callback).Run(false, true, base::string16());
+    std::move(callback).Run(false, true, std::u16string());
     return;
   }
 
@@ -7154,7 +7154,7 @@ void WebContentsImpl::DocumentOnLoadCompleted(
 }
 
 void WebContentsImpl::UpdateTitle(RenderFrameHostImpl* render_frame_host,
-                                  const base::string16& title,
+                                  const std::u16string& title,
                                   base::i18n::TextDirection title_direction) {
   OPTIONAL_TRACE_EVENT2("content", "WebContentsImpl::UpdateTitle",
                         "render_frame_host",
@@ -7388,10 +7388,10 @@ void WebContentsImpl::OnFocusedElementChangedInFrame(
 bool WebContentsImpl::DidAddMessageToConsole(
     RenderFrameHostImpl* source_frame,
     blink::mojom::ConsoleMessageLevel log_level,
-    const base::string16& message,
+    const std::u16string& message,
     int32_t line_no,
-    const base::string16& source_id,
-    const base::Optional<base::string16>& untrusted_stack_trace) {
+    const std::u16string& source_id,
+    const base::Optional<std::u16string>& untrusted_stack_trace) {
   OPTIONAL_TRACE_EVENT1("content", "WebContentsImpl::DidAddMessageToConsole",
                         "message", base::trace_event::ValueToString(message));
 
@@ -7764,7 +7764,7 @@ void WebContentsImpl::OnDialogClosed(int render_process_id,
                                      base::ScopedClosureRunner fullscreen_block,
                                      bool dialog_was_suppressed,
                                      bool success,
-                                     const base::string16& user_input) {
+                                     const std::u16string& user_input) {
   RenderFrameHostImpl* rfh = RenderFrameHostImpl::FromID(render_process_id,
                                                          render_frame_id);
   OPTIONAL_TRACE_EVENT1("content", "WebContentsImpl::OnDialogClosed",

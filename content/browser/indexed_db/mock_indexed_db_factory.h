@@ -28,21 +28,20 @@ class MockIndexedDBFactory : public IndexedDBFactory {
                void(scoped_refptr<IndexedDBCallbacks> callbacks,
                     const url::Origin& origin,
                     const base::FilePath& data_directory));
-  MOCK_METHOD4(
-      OpenProxy,
-      void(const base::string16& name,
-           IndexedDBPendingConnection* connection,
-           const url::Origin& origin,
-           const base::FilePath& data_directory));
+  MOCK_METHOD4(OpenProxy,
+               void(const std::u16string& name,
+                    IndexedDBPendingConnection* connection,
+                    const url::Origin& origin,
+                    const base::FilePath& data_directory));
   // Googlemock can't deal with move-only types, so *Proxy() is a workaround.
-  void Open(const base::string16& name,
+  void Open(const std::u16string& name,
             std::unique_ptr<IndexedDBPendingConnection> connection,
             const url::Origin& origin,
             const base::FilePath& data_directory) override {
     OpenProxy(name, connection.get(), origin, data_directory);
   }
   MOCK_METHOD5(DeleteDatabase,
-               void(const base::string16& name,
+               void(const std::u16string& name,
                     scoped_refptr<IndexedDBCallbacks> callbacks,
                     const url::Origin& origin,
                     const base::FilePath& data_directory,
@@ -95,8 +94,8 @@ class MockIndexedDBFactory : public IndexedDBFactory {
   MOCK_METHOD1(NotifyIndexedDBListChanged, void(const url::Origin& origin));
   MOCK_METHOD3(NotifyIndexedDBContentChanged,
                void(const url::Origin& origin,
-                    const base::string16& database_name,
-                    const base::string16& object_store_name));
+                    const std::u16string& database_name,
+                    const std::u16string& object_store_name));
 
  private:
   DISALLOW_COPY_AND_ASSIGN(MockIndexedDBFactory);

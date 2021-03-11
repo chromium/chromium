@@ -159,7 +159,7 @@ void RenderWidgetHostNSViewBridge::SetVisible(bool visible) {
 }
 
 void RenderWidgetHostNSViewBridge::SetTooltipText(
-    const base::string16& tooltip_text) {
+    const std::u16string& tooltip_text) {
   // Called from the renderer to tell us what the tooltip text should be. It
   // calls us frequently so we need to cache the value to prevent doing a lot
   // of repeat work.
@@ -174,7 +174,7 @@ void RenderWidgetHostNSViewBridge::SetTooltipText(
   // Windows; we're just trying to be polite. Don't persist the trimmed
   // string, as then the comparison above will always fail and we'll try to
   // set it again every single time the mouse moves.
-  base::string16 display_text = tooltip_text_;
+  std::u16string display_text = tooltip_text_;
   if (tooltip_text_.length() > kMaxTooltipLength)
     display_text = tooltip_text_.substr(0, kMaxTooltipLength);
 
@@ -199,7 +199,7 @@ void RenderWidgetHostNSViewBridge::SetTextInputState(
   [cocoa_view_ setTextInputFlags:flags];
 }
 
-void RenderWidgetHostNSViewBridge::SetTextSelection(const base::string16& text,
+void RenderWidgetHostNSViewBridge::SetTextSelection(const std::u16string& text,
                                                     uint64_t offset,
                                                     const gfx::Range& range) {
   [cocoa_view_ setTextSelectionText:text offset:offset range:range];

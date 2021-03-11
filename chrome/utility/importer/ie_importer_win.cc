@@ -475,7 +475,7 @@ void IEImporter::ImportFavorites() {
   ParseFavoritesFolder(info, &bookmarks, &favicons);
 
   if (!bookmarks.empty() && !cancelled()) {
-    const base::string16& first_folder_name =
+    const std::u16string& first_folder_name =
         edge_import_mode_
             ? l10n_util::GetStringUTF16(IDS_BOOKMARK_GROUP_FROM_EDGE)
             : l10n_util::GetStringUTF16(IDS_BOOKMARK_GROUP_FROM_IE);
@@ -551,7 +551,7 @@ void IEImporter::ImportSearchEngines() {
   // Software\Microsoft\Internet Explorer\SearchScopes
   // Each key represents a search engine. The URL value contains the URL and
   // the DisplayName the name.
-  typedef std::map<std::string, base::string16> SearchEnginesMap;
+  typedef std::map<std::string, std::u16string> SearchEnginesMap;
   SearchEnginesMap search_engines_map;
   for (base::win::RegistryKeyIterator key_iter(HKEY_CURRENT_USER,
                                                kSearchScopePath);

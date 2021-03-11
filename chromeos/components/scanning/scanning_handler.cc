@@ -140,7 +140,7 @@ void ScanningHandler::HandleGetPluralString(const base::ListValue* args) {
   const std::string name = args->GetList()[1].GetString();
   const int count = args->GetList()[2].GetInt();
 
-  const base::string16 localized_string = l10n_util::GetPluralStringFUTF16(
+  const std::u16string localized_string = l10n_util::GetPluralStringFUTF16(
       string_id_map_.find(name)->second, count);
   ResolveJavascriptCallback(base::Value(callback),
                             base::Value(localized_string));

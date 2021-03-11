@@ -151,7 +151,7 @@ TEST_F(BrowserAccessibilityAuraLinuxTest, TestComplexHypertext) {
   const std::string link_text_name = "Blue";
   // Each control (combo / check box, radio button and link) will be represented
   // by an embedded object character.
-  const base::string16 string16_embed(
+  const std::u16string string16_embed(
       1, ui::AXPlatformNodeAuraLinux::kEmbeddedCharacter);
   const std::string embed = base::UTF16ToUTF8(string16_embed);
   const std::string root_hypertext =

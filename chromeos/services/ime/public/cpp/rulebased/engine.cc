@@ -131,7 +131,7 @@ ProcessKeyResult Engine::ProcessBackspace() {
   ProcessKeyResult res;
   // Reverts the current state.
   // If the backspace across over the transat pos, adjusts it.
-  base::string16 text = base::UTF8ToUTF16(context_);
+  std::u16string text = base::UTF8ToUTF16(context_);
   text = text.substr(0, text.length() - 1);
   context_ = base::UTF16ToUTF8(text);
   if (transat_ > (int)context_.length())

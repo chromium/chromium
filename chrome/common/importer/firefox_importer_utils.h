@@ -37,7 +37,7 @@ struct FirefoxDetail {
   // in stored.
   base::FilePath path;
   // The user specified name of the profile.
-  base::string16 name;
+  std::u16string name;
 };
 
 inline bool operator==(const FirefoxDetail& a1, const FirefoxDetail& a2) {
@@ -101,6 +101,6 @@ std::string GetPrefsJsValue(const std::string& prefs,
 // This is useful to differentiate between Firefox and Iceweasel.
 // If anything goes wrong while trying to obtain the branding name,
 // the function assumes it's Firefox.
-base::string16 GetFirefoxImporterName(const base::FilePath& app_path);
+std::u16string GetFirefoxImporterName(const base::FilePath& app_path);
 
 #endif  // CHROME_COMMON_IMPORTER_FIREFOX_IMPORTER_UTILS_H_

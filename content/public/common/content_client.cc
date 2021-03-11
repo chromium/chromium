@@ -68,14 +68,14 @@ ContentClient::ContentClient()
 ContentClient::~ContentClient() {
 }
 
-base::string16 ContentClient::GetLocalizedString(int message_id) {
-  return base::string16();
+std::u16string ContentClient::GetLocalizedString(int message_id) {
+  return std::u16string();
 }
 
-base::string16 ContentClient::GetLocalizedString(
+std::u16string ContentClient::GetLocalizedString(
     int message_id,
-    const base::string16& replacement) {
-  return base::string16();
+    const std::u16string& replacement) {
+  return std::u16string();
 }
 
 base::StringPiece ContentClient::GetDataResource(int resource_id,

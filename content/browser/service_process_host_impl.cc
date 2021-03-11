@@ -213,7 +213,7 @@ void ServiceProcessHost::Launch(mojo::GenericPendingReceiver receiver,
 
 void LaunchUtilityProcessServiceDeprecated(
     const std::string& service_name,
-    const base::string16& display_name,
+    const std::u16string& display_name,
     sandbox::policy::SandboxType sandbox_type,
     mojo::ScopedMessagePipeHandle service_pipe,
     base::OnceCallback<void(base::ProcessId)> callback) {

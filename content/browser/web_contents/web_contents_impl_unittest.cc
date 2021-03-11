@@ -290,7 +290,7 @@ TEST_F(WebContentsImplTest, UpdateTitle) {
 
 TEST_F(WebContentsImplTest, UpdateTitleBeforeFirstNavigation) {
   ASSERT_TRUE(controller().IsInitialNavigation());
-  const base::string16 title = base::ASCIIToUTF16("Initial Entry Title");
+  const std::u16string title = base::ASCIIToUTF16("Initial Entry Title");
   contents()->UpdateTitle(main_test_rfh(), title, base::i18n::LEFT_TO_RIGHT);
   EXPECT_EQ(title, contents()->GetTitle());
 }
@@ -308,17 +308,17 @@ TEST_F(WebContentsImplTest, DontUseTitleFromPendingEntry) {
   const GURL kGURL(GetWebUIURL("blah"));
   controller().LoadURL(
       kGURL, Referrer(), ui::PAGE_TRANSITION_TYPED, std::string());
-  EXPECT_EQ(base::string16(), contents()->GetTitle());
+  EXPECT_EQ(std::u16string(), contents()->GetTitle());
 
   // Also test setting title while the first navigation is still pending.
-  const base::string16 title = base::ASCIIToUTF16("Initial Entry Title");
+  const std::u16string title = base::ASCIIToUTF16("Initial Entry Title");
   contents()->UpdateTitle(main_test_rfh(), title, base::i18n::LEFT_TO_RIGHT);
   EXPECT_EQ(title, contents()->GetTitle());
 }
 
 TEST_F(WebContentsImplTest, UseTitleFromPendingEntryIfSet) {
   const GURL kGURL(GetWebUIURL("blah"));
-  const base::string16 title = base::ASCIIToUTF16("My Title");
+  const std::u16string title = base::ASCIIToUTF16("My Title");
   controller().LoadURL(
       kGURL, Referrer(), ui::PAGE_TRANSITION_TYPED, std::string());
 
@@ -2471,8 +2471,8 @@ class TestJavaScriptDialogManager : public JavaScriptDialogManager {
   void RunJavaScriptDialog(WebContents* web_contents,
                            RenderFrameHost* render_frame_host,
                            JavaScriptDialogType dialog_type,
-                           const base::string16& message_text,
-                           const base::string16& default_prompt_text,
+                           const std::u16string& message_text,
+                           const std::u16string& default_prompt_text,
                            DialogClosedCallback callback,
                            bool* did_suppress_message) override {
     *did_suppress_message = true;
@@ -2485,7 +2485,7 @@ class TestJavaScriptDialogManager : public JavaScriptDialogManager {
 
   bool HandleJavaScriptDialog(WebContents* web_contents,
                               bool accept,
-                              const base::string16* prompt_override) override {
+                              const std::u16string* prompt_override) override {
     return true;
   }
 

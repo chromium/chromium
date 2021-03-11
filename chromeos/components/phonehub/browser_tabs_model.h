@@ -24,7 +24,7 @@ class BrowserTabsModel {
 
   struct BrowserTabMetadata {
     BrowserTabMetadata(GURL url,
-                       const base::string16& title,
+                       const std::u16string& title,
                        base::Time last_accessed_timestamp,
                        const gfx::Image& favicon);
     BrowserTabMetadata(const BrowserTabMetadata& other);
@@ -34,7 +34,7 @@ class BrowserTabsModel {
     bool operator<(const BrowserTabMetadata& other) const;
 
     GURL url;
-    base::string16 title;
+    std::u16string title;
     base::Time last_accessed_timestamp;
     gfx::Image favicon;
   };

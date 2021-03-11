@@ -396,7 +396,7 @@ void RenderWidgetHostViewChildFrame::Destroy() {
 }
 
 void RenderWidgetHostViewChildFrame::SetTooltipText(
-    const base::string16& tooltip_text) {
+    const std::u16string& tooltip_text) {
   if (!frame_connector_)
     return;
 

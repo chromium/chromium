@@ -128,7 +128,7 @@ void EncodeInt(int64_t value, std::string* into) {
   } while (n);
 }
 
-void EncodeString(const base::string16& value, std::string* into) {
+void EncodeString(const std::u16string& value, std::string* into) {
   if (value.empty())
     return;
   // Backing store is UTF-16BE, convert from host endianness.
@@ -154,7 +154,7 @@ void EncodeBinary(base::span<const uint8_t> value, std::string* into) {
   DCHECK(into->size() >= value.size());
 }
 
-void EncodeStringWithLength(const base::string16& value, std::string* into) {
+void EncodeStringWithLength(const std::u16string& value, std::string* into) {
   EncodeVarInt(value.length(), into);
   EncodeString(value, into);
 }
@@ -235,7 +235,7 @@ void EncodeIDBKeyPath(const IndexedDBKeyPath& value, std::string* into) {
       break;
     }
     case blink::mojom::IDBKeyPathType::Array: {
-      const std::vector<base::string16>& array = value.array();
+      const std::vector<std::u16string>& array = value.array();
       size_t count = array.size();
       EncodeVarInt(count, into);
       for (size_t i = 0; i < count; ++i) {
@@ -288,7 +288,7 @@ bool DecodeInt(StringPiece* slice, int64_t* value) {
   return true;
 }
 
-bool DecodeString(StringPiece* slice, base::string16* value) {
+bool DecodeString(StringPiece* slice, std::u16string* value) {
   if (slice->empty()) {
     value->clear();
     return true;
@@ -297,7 +297,7 @@ bool DecodeString(StringPiece* slice, base::string16* value) {
   // Backing store is UTF-16BE, convert to host endianness.
   DCHECK(!(slice->size() % sizeof(char16_t)));
   size_t length = slice->size() / sizeof(char16_t);
-  base::string16 decoded;
+  std::u16string decoded;
   decoded.reserve(length);
   const char16_t* encoded = reinterpret_cast<const char16_t*>(slice->begin());
   for (unsigned i = 0; i < length; ++i)
@@ -308,7 +308,7 @@ bool DecodeString(StringPiece* slice, base::string16* value) {
   return true;
 }
 
-bool DecodeStringWithLength(StringPiece* slice, base::string16* value) {
+bool DecodeStringWithLength(StringPiece* slice, std::u16string* value) {
   if (slice->empty())
     return false;
 
@@ -398,7 +398,7 @@ bool DecodeIDBKeyRecursive(StringPiece* slice,
       return true;
     }
     case kIndexedDBKeyStringTypeByte: {
-      base::string16 s;
+      std::u16string s;
       if (!DecodeStringWithLength(slice, &s))
         return false;
       *value = std::make_unique<IndexedDBKey>(std::move(s));
@@ -449,7 +449,7 @@ bool DecodeIDBKeyPath(StringPiece* slice, IndexedDBKeyPath* value) {
   // always written as typed.
   if (slice->size() < 3 || (*slice)[0] != kIndexedDBKeyPathTypeCodedByte1 ||
       (*slice)[1] != kIndexedDBKeyPathTypeCodedByte2) {
-    base::string16 s;
+    std::u16string s;
     if (!DecodeString(slice, &s))
       return false;
     *value = IndexedDBKeyPath(s);
@@ -468,7 +468,7 @@ bool DecodeIDBKeyPath(StringPiece* slice, IndexedDBKeyPath* value) {
       *value = IndexedDBKeyPath();
       return true;
     case blink::mojom::IDBKeyPathType::String: {
-      base::string16 string;
+      std::u16string string;
       if (!DecodeStringWithLength(slice, &string))
         return false;
       DCHECK(slice->empty());
@@ -476,13 +476,13 @@ bool DecodeIDBKeyPath(StringPiece* slice, IndexedDBKeyPath* value) {
       return true;
     }
     case blink::mojom::IDBKeyPathType::Array: {
-      std::vector<base::string16> array;
+      std::vector<std::u16string> array;
       int64_t count;
       if (!DecodeVarInt(slice, &count))
         return false;
       DCHECK_GE(count, 0);
       while (count--) {
-        base::string16 string;
+        std::u16string string;
         if (!DecodeStringWithLength(slice, &string))
           return false;
         array.push_back(string);
@@ -1575,7 +1575,7 @@ bool DatabaseNameKey::Decode(StringPiece* slice, DatabaseNameKey* result) {
 }
 
 std::string DatabaseNameKey::Encode(const std::string& origin_identifier,
-                                    const base::string16& database_name) {
+                                    const std::u16string& database_name) {
   std::string ret = KeyPrefix::EncodeEmpty();
   ret.push_back(kDatabaseNameTypeByte);
   EncodeStringWithLength(base::ASCIIToUTF16(origin_identifier), &ret);
@@ -1585,7 +1585,7 @@ std::string DatabaseNameKey::Encode(const std::string& origin_identifier,
 
 std::string DatabaseNameKey::EncodeMinKeyForOrigin(
     const std::string& origin_identifier) {
-  return Encode(origin_identifier, base::string16());
+  return Encode(origin_identifier, std::u16string());
 }
 
 std::string DatabaseNameKey::EncodeStopKeyForOrigin(
@@ -1943,7 +1943,7 @@ bool ObjectStoreNamesKey::Decode(StringPiece* slice,
 
 std::string ObjectStoreNamesKey::Encode(
     int64_t database_id,
-    const base::string16& object_store_name) {
+    const std::u16string& object_store_name) {
   KeyPrefix prefix(database_id);
   std::string ret = prefix.Encode();
   ret.push_back(kObjectStoreNamesTypeByte);
@@ -1986,7 +1986,7 @@ bool IndexNamesKey::Decode(StringPiece* slice, IndexNamesKey* result) {
 
 std::string IndexNamesKey::Encode(int64_t database_id,
                                   int64_t object_store_id,
-                                  const base::string16& index_name) {
+                                  const std::u16string& index_name) {
   KeyPrefix prefix(database_id);
   std::string ret = prefix.Encode();
   ret.push_back(kIndexNamesKeyTypeByte);

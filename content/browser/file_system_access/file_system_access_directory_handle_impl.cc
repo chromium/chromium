@@ -452,7 +452,7 @@ bool FileSystemAccessDirectoryHandleImpl::IsSafePathComponent(
     return false;
   }
 
-  base::string16 component16;
+  std::u16string component16;
 #if defined(OS_WIN)
   component16.assign(component.value().begin(), component.value().end());
 #else

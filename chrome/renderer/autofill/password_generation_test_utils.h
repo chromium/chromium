@@ -28,7 +28,7 @@ void SetFoundFormEligibleForGeneration(
 
 std::string CreateScriptToRegisterListeners(
     const char* const element_name,
-    std::vector<base::string16>* variables_to_check);
+    std::vector<std::u16string>* variables_to_check);
 
 }  // namespace autofill
 

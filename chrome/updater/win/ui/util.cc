@@ -107,7 +107,7 @@ HRESULT SetWindowIcon(HWND hwnd, WORD icon_id, HICON* hicon) {
   return S_OK;
 }
 
-std::wstring GetInstallerDisplayName(const base::string16& bundle_name) {
+std::wstring GetInstallerDisplayName(const std::u16string& bundle_name) {
   std::wstring display_name = base::AsWString(bundle_name);
   if (display_name.empty())
     LoadString(IDS_FRIENDLY_COMPANY_NAME, &display_name);

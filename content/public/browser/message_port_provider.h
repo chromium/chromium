@@ -36,11 +36,10 @@ class CONTENT_EXPORT MessagePortProvider {
   // See https://html.spec.whatwg.org/multipage/comms.html#messageevent for
   // further information on message events.
   // Should be called on UI thread.
-  static void PostMessageToFrame(
-      WebContents* web_contents,
-      const base::string16& source_origin,
-      const base::string16& target_origin,
-      const base::string16& data);
+  static void PostMessageToFrame(WebContents* web_contents,
+                                 const std::u16string& source_origin,
+                                 const std::u16string& target_origin,
+                                 const std::u16string& data);
 
 #if defined(OS_ANDROID)
   static void PostMessageToFrame(
@@ -56,9 +55,9 @@ class CONTENT_EXPORT MessagePortProvider {
   // If |target_origin| is unset, then no origin scoping is applied.
   static void PostMessageToFrame(
       WebContents* web_contents,
-      const base::string16& source_origin,
-      const base::Optional<base::string16>& target_origin,
-      const base::string16& data,
+      const std::u16string& source_origin,
+      const base::Optional<std::u16string>& target_origin,
+      const std::u16string& data,
       std::vector<blink::WebMessagePort> ports);
 #endif  // OS_FUCHSIA || BUILDFLAG(IS_CHROMECAST)
 

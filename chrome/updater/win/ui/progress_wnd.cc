@@ -322,9 +322,9 @@ void ProgressWnd::OnCheckingForUpdate() {
   ChangeControlState();
 }
 
-void ProgressWnd::OnUpdateAvailable(const base::string16& app_id,
-                                    const base::string16& app_name,
-                                    const base::string16& version_string) {
+void ProgressWnd::OnUpdateAvailable(const std::u16string& app_id,
+                                    const std::u16string& app_name,
+                                    const std::u16string& version_string) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
   if (base::EqualsCaseInsensitiveASCII(app_id,
@@ -341,8 +341,8 @@ void ProgressWnd::OnUpdateAvailable(const base::string16& app_id,
     return;
 }
 
-void ProgressWnd::OnWaitingToDownload(const base::string16& app_id,
-                                      const base::string16& app_name) {
+void ProgressWnd::OnWaitingToDownload(const std::u16string& app_id,
+                                      const std::u16string& app_name) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   if (!IsWindow())
     return;
@@ -357,8 +357,8 @@ void ProgressWnd::OnWaitingToDownload(const base::string16& app_id,
 }
 
 // May be called repeatedly during download.
-void ProgressWnd::OnDownloading(const base::string16& app_id,
-                                const base::string16& app_name,
+void ProgressWnd::OnDownloading(const std::u16string& app_id,
+                                const std::u16string& app_name,
                                 int time_remaining_ms,
                                 int pos) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
@@ -409,8 +409,8 @@ void ProgressWnd::OnDownloading(const base::string16& app_id,
   ChangeControlState();
 }
 
-void ProgressWnd::OnWaitingRetryDownload(const base::string16& app_id,
-                                         const base::string16& app_name,
+void ProgressWnd::OnWaitingRetryDownload(const std::u16string& app_id,
+                                         const std::u16string& app_name,
                                          const base::Time& next_retry_time) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   if (!IsWindow())
@@ -429,8 +429,8 @@ void ProgressWnd::OnWaitingRetryDownload(const base::string16& app_id,
   }
 }
 
-void ProgressWnd::OnWaitingToInstall(const base::string16& app_id,
-                                     const base::string16& app_name,
+void ProgressWnd::OnWaitingToInstall(const std::u16string& app_id,
+                                     const std::u16string& app_name,
                                      bool* can_start_install) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   DCHECK(can_start_install);
@@ -449,8 +449,8 @@ void ProgressWnd::OnWaitingToInstall(const base::string16& app_id,
 }
 
 // May be called repeatedly during install.
-void ProgressWnd::OnInstalling(const base::string16& app_id,
-                               const base::string16& app_name,
+void ProgressWnd::OnInstalling(const std::u16string& app_id,
+                               const std::u16string& app_name,
                                int time_remaining_ms,
                                int pos) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);

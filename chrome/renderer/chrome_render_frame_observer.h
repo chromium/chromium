@@ -81,7 +81,7 @@ class ChromeRenderFrameObserver : public content::RenderFrameObserver,
   // chrome::mojom::ChromeRenderFrame:
   void SetWindowFeatures(
       blink::mojom::WindowFeaturesPtr window_features) override;
-  void ExecuteWebUIJavaScript(const base::string16& javascript) override;
+  void ExecuteWebUIJavaScript(const std::u16string& javascript) override;
   void RequestImageForContextNode(
       int32_t thumbnail_min_area_pixels,
       const gfx::Size& thumbnail_max_size_pixels,
@@ -140,7 +140,7 @@ class ChromeRenderFrameObserver : public content::RenderFrameObserver,
 
 #if !defined(OS_ANDROID)
   // Save the JavaScript to preload if ExecuteWebUIJavaScript is invoked.
-  std::vector<base::string16> webui_javascript_;
+  std::vector<std::u16string> webui_javascript_;
 #endif
 
   mojo::AssociatedReceiverSet<chrome::mojom::ChromeRenderFrame> receivers_;

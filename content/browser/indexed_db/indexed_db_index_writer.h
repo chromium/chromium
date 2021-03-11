@@ -40,7 +40,7 @@ class IndexWriter {
                        int64_t index_id,
                        bool* can_add_keys,
                        const blink::IndexedDBKey& primary_key,
-                       base::string16* error_message) const WARN_UNUSED_RESULT;
+                       std::u16string* error_message) const WARN_UNUSED_RESULT;
 
   leveldb::Status WriteIndexKeys(
       const IndexedDBBackingStore::RecordIdentifier& record,
@@ -75,7 +75,7 @@ bool MakeIndexWriters(IndexedDBTransaction* transaction,
                       bool key_was_generated,
                       const std::vector<blink::IndexedDBIndexKeys>& index_keys,
                       std::vector<std::unique_ptr<IndexWriter>>* index_writers,
-                      base::string16* error_message,
+                      std::u16string* error_message,
                       bool* completed) WARN_UNUSED_RESULT;
 
 }  // namespace content

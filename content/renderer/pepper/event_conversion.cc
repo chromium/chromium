@@ -449,7 +449,7 @@ WebKeyboardEvent* BuildCharEvent(const InputEventData& event) {
   // Make sure to not read beyond the buffer in case some bad code doesn't
   // NULL-terminate it (this is called from plugins).
   size_t text_length_cap = WebKeyboardEvent::kTextLengthCap;
-  base::string16 text16 = base::UTF8ToUTF16(event.character_text);
+  std::u16string text16 = base::UTF8ToUTF16(event.character_text);
 
   std::fill_n(key_event->text, text_length_cap, 0);
   std::fill_n(key_event->unmodified_text, text_length_cap, 0);
@@ -589,7 +589,7 @@ void GetKeyCode(const std::string& char_text,
       }
     }
     if (!vk_code) {
-      base::string16 char_text16 = base::UTF8ToUTF16(char_text);
+      std::u16string char_text16 = base::UTF8ToUTF16(char_text);
       DCHECK_EQ(char_text16.size(), 1U);
       vk_text = vk_code = char_text16[0];
       *needs_shift_modifier = base::IsAsciiUpper(vk_code & 0xFF);

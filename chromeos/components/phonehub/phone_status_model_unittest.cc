@@ -59,7 +59,7 @@ TEST(PhoneStatusModelTest, NoReceptionWithMetadata_MobileCarrierProvided) {
 TEST(PhoneStatusModelTest, NoReceptionWithMetadata_NoCarrier) {
   PhoneStatusModel::MobileConnectionMetadata metadata;
   metadata.signal_strength = PhoneStatusModel::SignalStrength::kZeroBars;
-  metadata.mobile_provider = base::string16();
+  metadata.mobile_provider = std::u16string();
 
   // If the MobileStatus does not indicate reception, connection metadata should
   // be cleared.

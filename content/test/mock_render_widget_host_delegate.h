@@ -44,7 +44,7 @@ class MockRenderWidgetHostDelegate : public RenderWidgetHostDelegate {
   KeyboardEventProcessingResult PreHandleKeyboardEvent(
       const NativeWebKeyboardEvent& event) override;
   void ExecuteEditCommand(const std::string& command,
-                          const base::Optional<base::string16>& value) override;
+                          const base::Optional<std::u16string>& value) override;
   void Undo() override;
   void Redo() override;
   void Cut() override;

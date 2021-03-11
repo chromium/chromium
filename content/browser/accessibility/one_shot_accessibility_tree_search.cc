@@ -22,8 +22,8 @@ namespace content {
 // Given a node, populate a vector with all of the strings from that node's
 // attributes that might be relevant for a text search.
 void GetNodeStrings(BrowserAccessibility* node,
-                    std::vector<base::string16>* strings) {
-  base::string16 value;
+                    std::vector<std::u16string>* strings) {
+  std::u16string value;
   if (node->GetString16Attribute(ax::mojom::StringAttribute::kName, &value))
     strings->push_back(value);
   if (node->GetString16Attribute(ax::mojom::StringAttribute::kDescription,
@@ -204,14 +204,14 @@ bool OneShotAccessibilityTreeSearch::Matches(BrowserAccessibility* node) {
     return false;  // Partly scrolled offscreen.
 
   if (!search_text_.empty()) {
-    base::string16 search_text_lower =
+    std::u16string search_text_lower =
         base::i18n::ToLower(base::UTF8ToUTF16(search_text_));
-    std::vector<base::string16> node_strings;
+    std::vector<std::u16string> node_strings;
     GetNodeStrings(node, &node_strings);
     bool found_text_match = false;
     for (size_t i = 0; i < node_strings.size(); ++i) {
-      base::string16 node_string_lower = base::i18n::ToLower(node_strings[i]);
-      if (node_string_lower.find(search_text_lower) != base::string16::npos) {
+      std::u16string node_string_lower = base::i18n::ToLower(node_strings[i]);
+      if (node_string_lower.find(search_text_lower) != std::u16string::npos) {
         found_text_match = true;
         break;
       }

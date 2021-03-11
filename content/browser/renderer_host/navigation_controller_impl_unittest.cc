@@ -3077,7 +3077,7 @@ TEST_F(NavigationControllerTest, CloneAndGoBack) {
   NavigationControllerImpl& controller = controller_impl();
   const GURL url1("http://foo1");
   const GURL url2("http://foo2");
-  const base::string16 title(base::ASCIIToUTF16("Title"));
+  const std::u16string title(base::ASCIIToUTF16("Title"));
 
   NavigateAndCommit(url1);
   controller.GetVisibleEntry()->SetTitle(title);
@@ -3102,7 +3102,7 @@ TEST_F(NavigationControllerTest, CloneAndReload) {
   NavigationControllerImpl& controller = controller_impl();
   const GURL url1("http://foo1");
   const GURL url2("http://foo2");
-  const base::string16 title(base::ASCIIToUTF16("Title"));
+  const std::u16string title(base::ASCIIToUTF16("Title"));
 
   NavigateAndCommit(url1);
   controller.GetVisibleEntry()->SetTitle(title);
@@ -4098,7 +4098,7 @@ TEST_F(NavigationControllerTest, PushStateUpdatesTitleAndFavicon) {
                                                      main_test_rfh());
 
   // Set title and favicon.
-  base::string16 title(base::ASCIIToUTF16("Title"));
+  std::u16string title(base::ASCIIToUTF16("Title"));
   FaviconStatus favicon;
   favicon.valid = true;
   favicon.url = GURL("http://foo/favicon.ico");
@@ -4118,7 +4118,7 @@ TEST_F(NavigationControllerTest, PushStateUpdatesTitleAndFavicon) {
   main_test_rfh()->SendNavigateWithParams(std::move(params), true);
 
   // The title should immediately be visible on the new NavigationEntry.
-  base::string16 new_title =
+  std::u16string new_title =
       controller().GetLastCommittedEntry()->GetTitleForDisplay();
   EXPECT_EQ(title, new_title);
   FaviconStatus new_favicon =

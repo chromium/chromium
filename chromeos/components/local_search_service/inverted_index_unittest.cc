@@ -78,12 +78,12 @@ class InvertedIndexTest : public ::testing::Test {
     index_.is_index_built_ = false;
   }
 
-  PostingList FindTerm(const base::string16& term) {
+  PostingList FindTerm(const std::u16string& term) {
     return index_.FindTerm(term);
   }
 
   std::vector<Result> FindMatchingDocumentsApproximately(
-      const std::unordered_set<base::string16>& terms,
+      const std::unordered_set<std::u16string>& terms,
       double prefix_threshold,
       double block_threshold) {
     return index_.FindMatchingDocumentsApproximately(terms, prefix_threshold,
@@ -152,11 +152,11 @@ class InvertedIndexTest : public ::testing::Test {
     ASSERT_TRUE(callback_done);
   }
 
-  std::vector<TfidfResult> GetTfidf(const base::string16& term) {
+  std::vector<TfidfResult> GetTfidf(const std::u16string& term) {
     return index_.GetTfidf(term);
   }
 
-  bool GetTfidfForDocId(const base::string16& term,
+  bool GetTfidfForDocId(const std::u16string& term,
                         const std::string& docid,
                         float* tfidf,
                         size_t* number_positions) {
@@ -187,7 +187,7 @@ class InvertedIndexTest : public ::testing::Test {
 
   bool IsInvertedIndexBuilt() { return index_.IsInvertedIndexBuilt(); }
 
-  std::unordered_map<base::string16, PostingList> GetDictionary() {
+  std::unordered_map<std::u16string, PostingList> GetDictionary() {
     return index_.dictionary_;
   }
 
@@ -195,7 +195,7 @@ class InvertedIndexTest : public ::testing::Test {
     return index_.doc_length_;
   }
 
-  std::unordered_map<base::string16, std::vector<TfidfResult>> GetTfidfCache() {
+  std::unordered_map<std::u16string, std::vector<TfidfResult>> GetTfidfCache() {
     return index_.tfidf_cache_;
   }
 
@@ -242,8 +242,8 @@ TEST_F(InvertedIndexTest, FindTermTest) {
 }
 
 TEST_F(InvertedIndexTest, AddNewDocumentTest) {
-  const base::string16 a_utf16(base::UTF8ToUTF16("A"));
-  const base::string16 d_utf16(base::UTF8ToUTF16("D"));
+  const std::u16string a_utf16(base::UTF8ToUTF16("A"));
+  const std::u16string d_utf16(base::UTF8ToUTF16("D"));
 
   AddDocuments({{"doc3",
                  {{a_utf16,
@@ -316,8 +316,8 @@ TEST_F(InvertedIndexTest, AddNewDocumentTest) {
 }
 
 TEST_F(InvertedIndexTest, AddNewDocumentTestCallback) {
-  const base::string16 a_utf16(base::UTF8ToUTF16("A"));
-  const base::string16 d_utf16(base::UTF8ToUTF16("D"));
+  const std::u16string a_utf16(base::UTF8ToUTF16("A"));
+  const std::u16string d_utf16(base::UTF8ToUTF16("D"));
 
   AddDocumentsAndCheck({{"doc3",
                          {{a_utf16,
@@ -376,8 +376,8 @@ TEST_F(InvertedIndexTest, AddNewDocumentTestCallback) {
 }
 
 TEST_F(InvertedIndexTest, ReplaceDocumentTest) {
-  const base::string16 a_utf16(base::UTF8ToUTF16("A"));
-  const base::string16 d_utf16(base::UTF8ToUTF16("D"));
+  const std::u16string a_utf16(base::UTF8ToUTF16("A"));
+  const std::u16string d_utf16(base::UTF8ToUTF16("D"));
 
   AddDocuments({{"doc1",
                  {{a_utf16,
@@ -418,8 +418,8 @@ TEST_F(InvertedIndexTest, ReplaceDocumentTest) {
 }
 
 TEST_F(InvertedIndexTest, ReplaceDocumentTestCallback) {
-  const base::string16 a_utf16(base::UTF8ToUTF16("A"));
-  const base::string16 d_utf16(base::UTF8ToUTF16("D"));
+  const std::u16string a_utf16(base::UTF8ToUTF16("A"));
+  const std::u16string d_utf16(base::UTF8ToUTF16("D"));
 
   AddDocumentsAndCheck({{"doc1",
                          {{a_utf16,
@@ -753,8 +753,8 @@ TEST_F(InvertedIndexTest, ClearInvertedIndexTest) {
   EXPECT_EQ(GetTfidfCache().size(), 3u);
 
   // Add a document and clear the index simultaneously.
-  const base::string16 a_utf16(base::UTF8ToUTF16("A"));
-  const base::string16 d_utf16(base::UTF8ToUTF16("D"));
+  const std::u16string a_utf16(base::UTF8ToUTF16("A"));
+  const std::u16string d_utf16(base::UTF8ToUTF16("D"));
   AddDocuments({{"doc3",
                  {{a_utf16,
                    {{kDefaultWeight, {"header", 1, 1}},
@@ -779,8 +779,8 @@ TEST_F(InvertedIndexTest, ClearInvertedIndexTestCallback) {
   EXPECT_EQ(GetTfidfCache().size(), 3u);
 
   // Add a document and clear the index simultaneously.
-  const base::string16 a_utf16(base::UTF8ToUTF16("A"));
-  const base::string16 d_utf16(base::UTF8ToUTF16("D"));
+  const std::u16string a_utf16(base::UTF8ToUTF16("A"));
+  const std::u16string d_utf16(base::UTF8ToUTF16("D"));
   AddDocumentsAndCheck({{"doc3",
                          {{a_utf16,
                            {{kDefaultWeight, {"header", 1, 1}},
@@ -801,10 +801,10 @@ TEST_F(InvertedIndexTest, ClearInvertedIndexTestCallback) {
 TEST_F(InvertedIndexTest, FindMatchingDocumentsApproximatelyTest) {
   const double prefix_threshold = 1.0;
   const double block_threshold = 1.0;
-  const base::string16 a_utf16(base::UTF8ToUTF16("A"));
-  const base::string16 b_utf16(base::UTF8ToUTF16("B"));
-  const base::string16 c_utf16(base::UTF8ToUTF16("C"));
-  const base::string16 d_utf16(base::UTF8ToUTF16("D"));
+  const std::u16string a_utf16(base::UTF8ToUTF16("A"));
+  const std::u16string b_utf16(base::UTF8ToUTF16("B"));
+  const std::u16string c_utf16(base::UTF8ToUTF16("C"));
+  const std::u16string d_utf16(base::UTF8ToUTF16("D"));
 
   // Replace doc1, same occurrences, just different weights.
   AddDocumentsAndCheck({{"doc1",

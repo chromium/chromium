@@ -43,7 +43,7 @@ HRESULT SetWindowIcon(HWND hwnd, WORD icon_id, HICON* hicon);
 
 // Returns a localized installer name for a bundle. If |bundle_name| is empty,
 // the friendly company name is used.
-std::wstring GetInstallerDisplayName(const base::string16& bundle_name);
+std::wstring GetInstallerDisplayName(const std::u16string& bundle_name);
 
 // Returns the quotient of the two numbers (m/n) rounded upwards to the
 // nearest integer type. T should be unsigned integer type, such as unsigned

@@ -94,7 +94,7 @@ class MockKeyboard {
   int GetCharacters(Layout layout,
                     int key_code,
                     Modifiers modifiers,
-                    base::string16* output);
+                    std::u16string* output);
 
  private:
 #if defined(OS_WIN)

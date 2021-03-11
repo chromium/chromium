@@ -97,7 +97,7 @@ class CONTENT_EXPORT UtilityProcessHost
                             RunServiceDeprecatedCallback callback);
 
   // Sets the name of the process to appear in the task manager.
-  void SetName(const base::string16& name);
+  void SetName(const std::u16string& name);
 
   // Sets the name used for metrics reporting. This should not be a localized
   // name. This is recorded to metrics, so update UtilityProcessNameHash enum in
@@ -140,7 +140,7 @@ class CONTENT_EXPORT UtilityProcessHost
   bool started_;
 
   // The process name used to identify the process in task manager.
-  base::string16 name_;
+  std::u16string name_;
 
   // The non-localized name used for metrics reporting.
   std::string metrics_name_;

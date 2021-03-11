@@ -121,7 +121,7 @@ class PhishingClassifierTest : public ChromeRenderViewTest {
   }
 
   // Helper method to start phishing classification.
-  void RunPhishingClassifier(const base::string16* page_text) {
+  void RunPhishingClassifier(const std::u16string* page_text) {
     feature_map_.Clear();
 
     classifier_->BeginClassification(
@@ -166,7 +166,7 @@ class PhishingClassifierTest : public ChromeRenderViewTest {
   const std::string url_tld_token_net_;
   const std::string page_link_domain_phishing_;
   const std::string page_term_login_;
-  base::string16 page_text_;
+  std::u16string page_text_;
 
   // Outputs of phishing classifier.
   FeatureMap feature_map_;

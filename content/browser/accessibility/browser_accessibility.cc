@@ -524,7 +524,7 @@ gfx::Rect BrowserAccessibility::GetHypertextRangeBoundsRect(
   if (effective_start_offset > effective_end_offset)
     std::swap(effective_start_offset, effective_end_offset);
 
-  const base::string16& text_str = GetHypertext();
+  const std::u16string& text_str = GetHypertext();
   if (effective_start_offset < 0 ||
       effective_start_offset >= static_cast<int>(text_str.size()))
     return gfx::Rect();
@@ -937,7 +937,7 @@ const std::string& BrowserAccessibility::GetInheritedStringAttribute(
   return node_->GetInheritedStringAttribute(attribute);
 }
 
-base::string16 BrowserAccessibility::GetInheritedString16Attribute(
+std::u16string BrowserAccessibility::GetInheritedString16Attribute(
     ax::mojom::StringAttribute attribute) const {
   return node_->GetInheritedString16Attribute(attribute);
 }
@@ -973,14 +973,14 @@ bool BrowserAccessibility::GetStringAttribute(
   return GetData().GetStringAttribute(attribute, value);
 }
 
-base::string16 BrowserAccessibility::GetString16Attribute(
+std::u16string BrowserAccessibility::GetString16Attribute(
     ax::mojom::StringAttribute attribute) const {
   return GetData().GetString16Attribute(attribute);
 }
 
 bool BrowserAccessibility::GetString16Attribute(
     ax::mojom::StringAttribute attribute,
-    base::string16* value) const {
+    std::u16string* value) const {
   return GetData().GetString16Attribute(attribute, value);
 }
 
@@ -1006,7 +1006,7 @@ bool BrowserAccessibility::GetHtmlAttribute(const char* html_attr,
 }
 
 bool BrowserAccessibility::GetHtmlAttribute(const char* html_attr,
-                                            base::string16* value) const {
+                                            std::u16string* value) const {
   return GetData().GetHtmlAttribute(html_attr, value);
 }
 
@@ -1103,7 +1103,7 @@ BrowserAccessibility::CreatePositionForSelectionAt(int offset) const {
   return position;
 }
 
-base::string16 BrowserAccessibility::GetNameAsString16() const {
+std::u16string BrowserAccessibility::GetNameAsString16() const {
   return base::UTF8ToUTF16(GetName());
 }
 
@@ -1119,17 +1119,17 @@ std::string BrowserAccessibility::GetName() const {
   return GetStringAttribute(ax::mojom::StringAttribute::kName);
 }
 
-base::string16 BrowserAccessibility::GetHypertext() const {
+std::u16string BrowserAccessibility::GetHypertext() const {
   // Overloaded by platforms which require a hypertext accessibility text
   // implementation.
-  return base::string16();
+  return std::u16string();
 }
 
-base::string16 BrowserAccessibility::GetInnerText() const {
+std::u16string BrowserAccessibility::GetInnerText() const {
   return base::UTF8ToUTF16(node()->GetInnerText());
 }
 
-base::string16 BrowserAccessibility::GetValueForControl() const {
+std::u16string BrowserAccessibility::GetValueForControl() const {
   return base::UTF8ToUTF16(node()->GetValueForControl());
 }
 
@@ -1317,8 +1317,8 @@ std::set<ui::AXPlatformNode*> BrowserAccessibility::GetReverseRelations(
       manager_->ax_tree()->GetReverseRelations(attr, GetData().id));
 }
 
-base::string16 BrowserAccessibility::GetAuthorUniqueId() const {
-  base::string16 html_id;
+std::u16string BrowserAccessibility::GetAuthorUniqueId() const {
+  std::u16string html_id;
   GetData().GetHtmlAttribute("id", &html_id);
   return html_id;
 }
@@ -1940,7 +1940,7 @@ bool BrowserAccessibility::AccessibilityPerformAction(
   }
 }
 
-base::string16 BrowserAccessibility::GetLocalizedStringForImageAnnotationStatus(
+std::u16string BrowserAccessibility::GetLocalizedStringForImageAnnotationStatus(
     ax::mojom::ImageAnnotationStatus status) const {
   ContentClient* content_client = content::GetContentClient();
 
@@ -1964,7 +1964,7 @@ base::string16 BrowserAccessibility::GetLocalizedStringForImageAnnotationStatus(
     case ax::mojom::ImageAnnotationStatus::kIneligibleForAnnotation:
     case ax::mojom::ImageAnnotationStatus::kSilentlyEligibleForAnnotation:
     case ax::mojom::ImageAnnotationStatus::kAnnotationSucceeded:
-      return base::string16();
+      return std::u16string();
   }
 
   DCHECK(message_id);
@@ -1972,14 +1972,14 @@ base::string16 BrowserAccessibility::GetLocalizedStringForImageAnnotationStatus(
   return content_client->GetLocalizedString(message_id);
 }
 
-base::string16
+std::u16string
 BrowserAccessibility::GetLocalizedRoleDescriptionForUnlabeledImage() const {
   ContentClient* content_client = content::GetContentClient();
   return content_client->GetLocalizedString(
       IDS_AX_UNLABELED_IMAGE_ROLE_DESCRIPTION);
 }
 
-base::string16 BrowserAccessibility::GetLocalizedStringForLandmarkType() const {
+std::u16string BrowserAccessibility::GetLocalizedStringForLandmarkType() const {
   ContentClient* content_client = content::GetContentClient();
   const ui::AXNodeData& data = GetData();
 
@@ -2006,7 +2006,7 @@ base::string16 BrowserAccessibility::GetLocalizedStringForLandmarkType() const {
   }
 }
 
-base::string16 BrowserAccessibility::GetLocalizedStringForRoleDescription()
+std::u16string BrowserAccessibility::GetLocalizedStringForRoleDescription()
     const {
   ContentClient* content_client = content::GetContentClient();
   const ui::AXNodeData& data = GetData();
@@ -2111,7 +2111,7 @@ base::string16 BrowserAccessibility::GetLocalizedStringForRoleDescription()
   }
 }
 
-base::string16 BrowserAccessibility::GetStyleNameAttributeAsLocalizedString()
+std::u16string BrowserAccessibility::GetStyleNameAttributeAsLocalizedString()
     const {
   const BrowserAccessibility* current_node = this;
   while (current_node) {

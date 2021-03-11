@@ -165,7 +165,7 @@ class BrowserWithTestWindowTest : public testing::Test {
   // Set the |title| of the current tab.
   void NavigateAndCommitActiveTabWithTitle(Browser* browser,
                                            const GURL& url,
-                                           const base::string16& title);
+                                           const std::u16string& title);
 
   // Creates the profile used by this test. The caller doesn't own the return
   // value.

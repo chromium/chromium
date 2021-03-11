@@ -115,7 +115,7 @@ bool IsInvalidExtension(base::FilePath::StringType& extension) {
 bool GetFileTypesFromAcceptsOption(
     const blink::mojom::ChooseFileSystemEntryAcceptsOption& option,
     std::vector<base::FilePath::StringType>* extensions,
-    base::string16* description) {
+    std::u16string* description) {
   std::set<base::FilePath::StringType> extension_set;
 
   for (const std::string& extension_string : option.extensions) {
@@ -156,7 +156,7 @@ bool GetFileTypesFromAcceptsOption(
   if (extensions->empty())
     return false;
 
-  base::string16 sanitized_description = option.description;
+  std::u16string sanitized_description = option.description;
   if (!sanitized_description.empty()) {
     sanitized_description = base::CollapseWhitespace(
         sanitized_description, /*trim_sequences_with_line_breaks=*/false);
@@ -176,7 +176,7 @@ ui::SelectFileDialog::FileTypeInfo ConvertAcceptsToFileTypeInfo(
 
   for (const auto& option : accepts_types_info->accepts) {
     std::vector<base::FilePath::StringType> extensions;
-    base::string16 description;
+    std::u16string description;
 
     if (!GetFileTypesFromAcceptsOption(*option, &extensions, &description))
       continue;  // No extensions were found for this option, skip it.
@@ -282,7 +282,7 @@ void FileSystemChooser::CreateAndShow(
   //     SelectFile.
 
   listener->dialog_->SelectFile(
-      options.type(), /*title=*/base::string16(), options.default_path(),
+      options.type(), /*title=*/std::u16string(), options.default_path(),
       &options.file_type_info(), options.default_file_type_index(),
       /*default_extension=*/base::FilePath::StringType(),
       web_contents ? web_contents->GetTopLevelNativeWindow() : nullptr,

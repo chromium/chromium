@@ -376,10 +376,9 @@ RenderWidgetHostViewBase* WebContentsViewMac::CreateViewForChildWidget(
   return view;
 }
 
-void WebContentsViewMac::SetPageTitle(const base::string16& title) {
+void WebContentsViewMac::SetPageTitle(const std::u16string& title) {
   // Meaningless on the Mac; widgets don't have a "title" attribute
 }
-
 
 void WebContentsViewMac::RenderViewReady() {}
 

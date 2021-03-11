@@ -26,13 +26,13 @@ void ShellJavaScriptDialogManager::RunJavaScriptDialog(
     WebContents* web_contents,
     RenderFrameHost* render_frame_host,
     JavaScriptDialogType dialog_type,
-    const base::string16& message_text,
-    const base::string16& default_prompt_text,
+    const std::u16string& message_text,
+    const std::u16string& default_prompt_text,
     DialogClosedCallback callback,
     bool* did_suppress_message) {
   if (dialog_request_callback_) {
     std::move(dialog_request_callback_).Run();
-    std::move(callback).Run(true, base::string16());
+    std::move(callback).Run(true, std::u16string());
     return;
   }
 
@@ -45,7 +45,7 @@ void ShellJavaScriptDialogManager::RunJavaScriptDialog(
     return;
   }
 
-  base::string16 new_message_text =
+  std::u16string new_message_text =
       url_formatter::FormatUrl(render_frame_host->GetLastCommittedURL()) +
       base::ASCIIToUTF16("\n\n") + message_text;
   gfx::NativeWindow parent_window = web_contents->GetTopLevelNativeWindow();
@@ -71,7 +71,7 @@ void ShellJavaScriptDialogManager::RunBeforeUnloadDialog(
     std::move(dialog_request_callback_).Run();
 
     if (should_proceed_on_beforeunload_)
-      std::move(callback).Run(beforeunload_success_, base::string16());
+      std::move(callback).Run(beforeunload_success_, std::u16string());
     else
       before_unload_callback_ = std::move(callback);
     return;
@@ -80,22 +80,22 @@ void ShellJavaScriptDialogManager::RunBeforeUnloadDialog(
 #if defined(OS_MAC) || defined(OS_WIN)
   if (dialog_) {
     // Seriously!?
-    std::move(callback).Run(true, base::string16());
+    std::move(callback).Run(true, std::u16string());
     return;
   }
 
-  base::string16 message_text =
+  std::u16string message_text =
       base::ASCIIToUTF16("Is it OK to leave/reload this page?");
 
   gfx::NativeWindow parent_window = web_contents->GetTopLevelNativeWindow();
 
   dialog_.reset(new ShellJavaScriptDialog(
       this, parent_window, JAVASCRIPT_DIALOG_TYPE_CONFIRM, message_text,
-      base::string16(),  // default
+      std::u16string(),  // default
       std::move(callback)));
 #else
   // TODO: implement ShellJavaScriptDialog for other platforms, drop this #if
-  std::move(callback).Run(true, base::string16());
+  std::move(callback).Run(true, std::u16string());
   return;
 #endif
 }
@@ -115,7 +115,7 @@ void ShellJavaScriptDialogManager::CancelDialogs(WebContents* web_contents,
     return;
 
   if (reset_state)
-    std::move(before_unload_callback_).Run(false, base::string16());
+    std::move(before_unload_callback_).Run(false, std::u16string());
 }
 
 void ShellJavaScriptDialogManager::DialogClosed(ShellJavaScriptDialog* dialog) {

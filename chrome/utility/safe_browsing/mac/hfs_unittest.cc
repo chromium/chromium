@@ -24,8 +24,8 @@ namespace {
 class HFSIteratorTest : public testing::Test {
  public:
   void GetTargetFiles(bool case_sensitive,
-                      std::set<base::string16>* files,
-                      std::set<base::string16>* dirs) {
+                      std::set<std::u16string>* files,
+                      std::set<std::u16string>* dirs) {
     const char* kBaseFiles[] = {
       "first/second/third/fourth/fifth/random",
       "first/second/third/fourth/Hello World",
@@ -45,7 +45,7 @@ class HFSIteratorTest : public testing::Test {
       ".Trashes",
     };
 
-    const base::string16 dmg_name = base::ASCIIToUTF16("SafeBrowsingDMG/");
+    const std::u16string dmg_name = base::ASCIIToUTF16("SafeBrowsingDMG/");
 
     for (size_t i = 0; i < base::size(kBaseFiles); ++i)
       files->insert(dmg_name + base::ASCIIToUTF16(kBaseFiles[i]));
@@ -65,15 +65,15 @@ class HFSIteratorTest : public testing::Test {
 
   void TestTargetFiles(safe_browsing::dmg::HFSIterator* hfs_reader,
                        bool case_sensitive) {
-    std::set<base::string16> files, dirs;
+    std::set<std::u16string> files, dirs;
     GetTargetFiles(case_sensitive, &files, &dirs);
 
     ASSERT_TRUE(hfs_reader->Open());
     while (hfs_reader->Next()) {
-      base::string16 path = hfs_reader->GetPath();
+      std::u16string path = hfs_reader->GetPath();
       // Skip over .fseventsd files.
       if (path.find(base::ASCIIToUTF16("SafeBrowsingDMG/.fseventsd")) !=
-              base::string16::npos) {
+          std::u16string::npos) {
         continue;
       }
       if (hfs_reader->IsDirectory())

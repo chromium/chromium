@@ -56,7 +56,7 @@ namespace content {
 class IndexedDBTestDatabase : public IndexedDBDatabase {
  public:
   IndexedDBTestDatabase(
-      const base::string16& name,
+      const std::u16string& name,
       IndexedDBBackingStore* backing_store,
       IndexedDBFactory* factory,
       IndexedDBClassFactory* class_factory,
@@ -370,7 +370,7 @@ MockBrowserTestIndexedDBClassFactory::transactional_leveldb_factory() {
 
 std::pair<std::unique_ptr<IndexedDBDatabase>, leveldb::Status>
 MockBrowserTestIndexedDBClassFactory::CreateIndexedDBDatabase(
-    const base::string16& name,
+    const std::u16string& name,
     IndexedDBBackingStore* backing_store,
     IndexedDBFactory* factory,
     TasksAvailableCallback tasks_available_callback,

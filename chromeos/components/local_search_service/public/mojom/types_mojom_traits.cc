@@ -78,7 +78,7 @@ bool StructTraits<chromeos::local_search_service::mojom::ContentDataView,
     Read(chromeos::local_search_service::mojom::ContentDataView data,
          chromeos::local_search_service::Content* out) {
   std::string id;
-  base::string16 content;
+  std::u16string content;
   if (!data.ReadId(&id) || !data.ReadContent(&content))
     return false;
 

@@ -310,9 +310,9 @@ class MockInputEventObserver : public RenderWidgetHost::InputEventObserver {
  public:
   MOCK_METHOD1(OnInputEvent, void(const blink::WebInputEvent&));
 #if defined(OS_ANDROID)
-  MOCK_METHOD1(OnImeTextCommittedEvent, void(const base::string16& text_str));
+  MOCK_METHOD1(OnImeTextCommittedEvent, void(const std::u16string& text_str));
   MOCK_METHOD1(OnImeSetComposingTextEvent,
-               void(const base::string16& text_str));
+               void(const std::u16string& text_str));
   MOCK_METHOD0(OnImeFinishComposingTextEvent, void());
 #endif
 };
@@ -445,7 +445,7 @@ class MockRenderWidgetHostDelegate : public RenderWidgetHostDelegate {
 
   void ExecuteEditCommand(
       const std::string& command,
-      const base::Optional<base::string16>& value) override {}
+      const base::Optional<std::u16string>& value) override {}
 
   void Undo() override {}
   void Redo() override {}

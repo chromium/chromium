@@ -55,7 +55,7 @@ void JavaScriptBrowserTest::SetUpOnMainThread() {
 // TODO(dtseng): Make this return bool (success/failure) and remove ASSERt_TRUE
 // calls.
 void JavaScriptBrowserTest::BuildJavascriptLibraries(
-    std::vector<base::string16>* libraries) {
+    std::vector<std::u16string>* libraries) {
   base::ScopedAllowBlockingForTesting allow_blocking;
   ASSERT_TRUE(libraries != NULL);
   std::vector<base::FilePath>::iterator user_libraries_iterator;
@@ -95,7 +95,7 @@ void JavaScriptBrowserTest::BuildJavascriptLibraries(
   }
 }
 
-base::string16 JavaScriptBrowserTest::BuildRunTestJSCall(
+std::u16string JavaScriptBrowserTest::BuildRunTestJSCall(
     bool is_async,
     const std::string& function_name,
     std::vector<base::Value> test_func_args) {

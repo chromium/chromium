@@ -516,8 +516,8 @@ class IndexedDBBackingStoreTestWithExternalObjects
     key3_ = IndexedDBKey(ASCIIToUTF16("key3"));
   }
 
-  IndexedDBExternalObject CreateBlobInfo(const base::string16& file_name,
-                                         const base::string16& type,
+  IndexedDBExternalObject CreateBlobInfo(const std::u16string& file_name,
+                                         const std::u16string& type,
                                          base::Time last_modified,
                                          int64_t size) {
     auto uuid = base::GenerateGUID();
@@ -537,7 +537,7 @@ class IndexedDBBackingStoreTestWithExternalObjects
     return info;
   }
 
-  IndexedDBExternalObject CreateBlobInfo(const base::string16& type,
+  IndexedDBExternalObject CreateBlobInfo(const std::u16string& type,
                                          int64_t size) {
     auto uuid = base::GenerateGUID();
     mojo::PendingRemote<blink::mojom::Blob> remote;
@@ -1500,18 +1500,18 @@ TEST_F(IndexedDBBackingStoreTest, CreateDatabase) {
   base::RunLoop loop;
   idb_context_->IDBTaskRunner()->PostTask(
       FROM_HERE, base::BindLambdaForTesting([&]() {
-        const base::string16 database_name(ASCIIToUTF16("db1"));
+        const std::u16string database_name(ASCIIToUTF16("db1"));
         int64_t database_id;
         const int64_t version = 9;
 
         const int64_t object_store_id = 99;
-        const base::string16 object_store_name(ASCIIToUTF16("object_store1"));
+        const std::u16string object_store_name(ASCIIToUTF16("object_store1"));
         const bool auto_increment = true;
         const IndexedDBKeyPath object_store_key_path(
             ASCIIToUTF16("object_store_key"));
 
         const int64_t index_id = 999;
-        const base::string16 index_name(ASCIIToUTF16("index1"));
+        const std::u16string index_name(ASCIIToUTF16("index1"));
         const bool unique = true;
         const bool multi_entry = true;
         const IndexedDBKeyPath index_key_path(ASCIIToUTF16("index_key"));
@@ -1595,12 +1595,12 @@ TEST_F(IndexedDBBackingStoreTest, CreateDatabase) {
 }
 
 TEST_F(IndexedDBBackingStoreTest, GetDatabaseNames) {
-  const base::string16 db1_name(ASCIIToUTF16("db1"));
+  const std::u16string db1_name(ASCIIToUTF16("db1"));
   const int64_t db1_version = 1LL;
 
   // Database records with DEFAULT_VERSION represent
   // stale data, and should not be enumerated.
-  const base::string16 db2_name(ASCIIToUTF16("db2"));
+  const std::u16string db2_name(ASCIIToUTF16("db2"));
   const int64_t db2_version = IndexedDBDatabaseMetadata::DEFAULT_VERSION;
   IndexedDBMetadataCoding metadata_coding;
 
@@ -1618,7 +1618,7 @@ TEST_F(IndexedDBBackingStoreTest, GetDatabaseNames) {
   EXPECT_TRUE(s.ok());
   EXPECT_GT(db2.id, db1.id);
 
-  std::vector<base::string16> names;
+  std::vector<std::u16string> names;
   s = metadata_coding.ReadDatabaseNames(
       backing_store()->db(), backing_store()->origin_identifier(), &names);
   EXPECT_TRUE(s.ok());
@@ -1722,10 +1722,10 @@ TEST_F(IndexedDBBackingStoreTest, SchemaUpgradeWithoutBlobsSurvives) {
 
   // The database metadata needs to be written so we can verify the blob entry
   // keys are not detected.
-  const base::string16 database_name(ASCIIToUTF16("db1"));
+  const std::u16string database_name(ASCIIToUTF16("db1"));
   const int64_t version = 9;
 
-  const base::string16 object_store_name(ASCIIToUTF16("object_store1"));
+  const std::u16string object_store_name(ASCIIToUTF16("object_store1"));
   const bool auto_increment = true;
   const IndexedDBKeyPath object_store_key_path(
       ASCIIToUTF16("object_store_key"));
@@ -1829,10 +1829,10 @@ TEST_F(IndexedDBBackingStoreTestWithBlobs, SchemaUpgradeWithBlobsCorrupt) {
 
   // The database metadata needs to be written so the blob entry keys can
   // be detected.
-  const base::string16 database_name(ASCIIToUTF16("db1"));
+  const std::u16string database_name(ASCIIToUTF16("db1"));
   const int64_t version = 9;
 
-  const base::string16 object_store_name(ASCIIToUTF16("object_store1"));
+  const std::u16string object_store_name(ASCIIToUTF16("object_store1"));
   const bool auto_increment = true;
   const IndexedDBKeyPath object_store_key_path(
       ASCIIToUTF16("object_store_key"));
@@ -1947,10 +1947,10 @@ TEST_F(IndexedDBBackingStoreTestWithBlobs, SchemaUpgradeV3ToV4) {
   int64_t database_id;
   const int64_t object_store_id = 99;
 
-  const base::string16 database_name(ASCIIToUTF16("db1"));
+  const std::u16string database_name(ASCIIToUTF16("db1"));
   const int64_t version = 9;
 
-  const base::string16 object_store_name(ASCIIToUTF16("object_store1"));
+  const std::u16string object_store_name(ASCIIToUTF16("object_store1"));
   const bool auto_increment = true;
   const IndexedDBKeyPath object_store_key_path(
       ASCIIToUTF16("object_store_key"));
@@ -2093,10 +2093,10 @@ TEST_F(IndexedDBBackingStoreTestWithBlobs, SchemaUpgradeV4ToV5) {
   int64_t database_id;
   const int64_t object_store_id = 99;
 
-  const base::string16 database_name(ASCIIToUTF16("db1"));
+  const std::u16string database_name(ASCIIToUTF16("db1"));
   const int64_t version = 9;
 
-  const base::string16 object_store_name(ASCIIToUTF16("object_store1"));
+  const std::u16string object_store_name(ASCIIToUTF16("object_store1"));
   const bool auto_increment = true;
   const IndexedDBKeyPath object_store_key_path(
       ASCIIToUTF16("object_store_key"));

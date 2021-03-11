@@ -110,7 +110,7 @@ ServiceProcessState::CreateServiceProcessDataRegion(size_t size) {
   if (size > static_cast<size_t>(std::numeric_limits<int>::max()))
     return {};
 
-  base::string16 name = base::ASCIIToUTF16(GetServiceProcessSharedMemName());
+  std::u16string name = base::ASCIIToUTF16(GetServiceProcessSharedMemName());
 
   SECURITY_ATTRIBUTES sa = {sizeof(sa), nullptr, FALSE};
   HANDLE raw_handle =
@@ -140,7 +140,7 @@ ServiceProcessState::CreateServiceProcessDataRegion(size_t size) {
 base::ReadOnlySharedMemoryMapping
 ServiceProcessState::OpenServiceProcessDataMapping(size_t size) {
   DWORD access = FILE_MAP_READ | SECTION_QUERY;
-  base::string16 name = base::ASCIIToUTF16(GetServiceProcessSharedMemName());
+  std::u16string name = base::ASCIIToUTF16(GetServiceProcessSharedMemName());
   HANDLE raw_handle = OpenFileMapping(access, false, base::as_wcstr(name));
   if (!raw_handle) {
     auto err = GetLastError();

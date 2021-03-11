@@ -26,8 +26,8 @@ using base::android::ScopedJavaLocalRef;
 
 namespace {
 
-base::string16 SanitizeSuggestionString(const base::string16& string) {
-  base::string16 trimmed = string.substr(0, 255);
+std::u16string SanitizeSuggestionString(const std::u16string& string) {
+  std::u16string trimmed = string.substr(0, 255);
   icu::UnicodeString sanitized;
   for (base::i18n::UTF16CharIterator sanitized_iterator(trimmed);
        !sanitized_iterator.end(); sanitized_iterator.Advance()) {

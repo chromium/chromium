@@ -71,7 +71,7 @@ DatabaseImpl::~DatabaseImpl() {
 
 void DatabaseImpl::RenameObjectStore(int64_t transaction_id,
                                      int64_t object_store_id,
-                                     const base::string16& new_name) {
+                                     const std::u16string& new_name) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!connection_->IsConnected())
     return;
@@ -455,7 +455,7 @@ void DatabaseImpl::Clear(
 void DatabaseImpl::CreateIndex(int64_t transaction_id,
                                int64_t object_store_id,
                                int64_t index_id,
-                               const base::string16& name,
+                               const std::u16string& name,
                                const IndexedDBKeyPath& key_path,
                                bool unique,
                                bool multi_entry) {
@@ -507,7 +507,7 @@ void DatabaseImpl::DeleteIndex(int64_t transaction_id,
 void DatabaseImpl::RenameIndex(int64_t transaction_id,
                                int64_t object_store_id,
                                int64_t index_id,
-                               const base::string16& new_name) {
+                               const std::u16string& new_name) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!connection_->IsConnected())
     return;

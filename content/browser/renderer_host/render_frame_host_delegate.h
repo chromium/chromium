@@ -158,10 +158,10 @@ class CONTENT_EXPORT RenderFrameHostDelegate {
   virtual bool DidAddMessageToConsole(
       RenderFrameHostImpl* source_frame,
       blink::mojom::ConsoleMessageLevel log_level,
-      const base::string16& message,
+      const std::u16string& message,
       int32_t line_no,
-      const base::string16& source_id,
-      const base::Optional<base::string16>& untrusted_stack_trace);
+      const std::u16string& source_id,
+      const base::Optional<std::u16string>& untrusted_stack_trace);
 
   // Called when a RenderFrame for |render_frame_host| is created in the
   // renderer process. Use |RenderFrameDeleted| to listen for when this
@@ -183,8 +183,8 @@ class CONTENT_EXPORT RenderFrameHostDelegate {
 
   // A JavaScript alert, confirmation or prompt dialog should be shown.
   virtual void RunJavaScriptDialog(RenderFrameHostImpl* render_frame_host,
-                                   const base::string16& message,
-                                   const base::string16& default_prompt,
+                                   const std::u16string& message,
+                                   const std::u16string& default_prompt,
                                    JavaScriptDialogType type,
                                    JavaScriptDialogCallback callback) {}
 
@@ -227,7 +227,7 @@ class CONTENT_EXPORT RenderFrameHostDelegate {
   // The page's title was changed and should be updated. Only called for the
   // top-level frame.
   virtual void UpdateTitle(RenderFrameHostImpl* render_frame_host,
-                           const base::string16& title,
+                           const std::u16string& title,
                            base::i18n::TextDirection title_direction) {}
 
   // The destination URL has changed and should be updated.

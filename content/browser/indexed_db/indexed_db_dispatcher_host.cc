@@ -285,7 +285,7 @@ void IndexedDBDispatcherHost::Open(
     mojo::PendingAssociatedRemote<blink::mojom::IDBCallbacks> pending_callbacks,
     mojo::PendingAssociatedRemote<blink::mojom::IDBDatabaseCallbacks>
         database_callbacks_remote,
-    const base::string16& name,
+    const std::u16string& name,
     int64_t version,
     mojo::PendingAssociatedReceiver<blink::mojom::IDBTransaction>
         transaction_receiver,
@@ -315,7 +315,7 @@ void IndexedDBDispatcherHost::Open(
 
 void IndexedDBDispatcherHost::DeleteDatabase(
     mojo::PendingAssociatedRemote<blink::mojom::IDBCallbacks> pending_callbacks,
-    const base::string16& name,
+    const std::u16string& name,
     bool force_close) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 

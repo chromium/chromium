@@ -92,7 +92,7 @@ class CONTENT_EXPORT RenderWidgetHostViewBase : public RenderWidgetHostView {
   void WasUnOccluded() override {}
   void WasOccluded() override {}
   void SetIsInVR(bool is_in_vr) override;
-  base::string16 GetSelectedText() override;
+  std::u16string GetSelectedText() override;
   bool IsMouseLocked() override;
   bool GetIsMouseLockedUnadjustedMovementForTesting() override;
   bool LockKeyboard(base::Optional<base::flat_set<ui::DomCode>> codes) override;
@@ -185,7 +185,7 @@ class CONTENT_EXPORT RenderWidgetHostViewBase : public RenderWidgetHostView {
   virtual RenderWidgetHostViewBase* GetRootView();
 
   // Notifies the View that the renderer text selection has changed.
-  virtual void SelectionChanged(const base::string16& text,
+  virtual void SelectionChanged(const std::u16string& text,
                                 size_t offset,
                                 const gfx::Range& range);
 
@@ -432,10 +432,10 @@ class CONTENT_EXPORT RenderWidgetHostViewBase : public RenderWidgetHostView {
 
   // Tells the View that the tooltip text for the current mouse position over
   // the page has changed.
-  virtual void SetTooltipText(const base::string16& tooltip_text) = 0;
+  virtual void SetTooltipText(const std::u16string& tooltip_text) = 0;
 
   // Displays the requested tooltip on the screen.
-  virtual void DisplayTooltipText(const base::string16& tooltip_text) {}
+  virtual void DisplayTooltipText(const std::u16string& tooltip_text) {}
 
   // Transforms |point| to be in the coordinate space of browser compositor's
   // surface. This is in DIP.

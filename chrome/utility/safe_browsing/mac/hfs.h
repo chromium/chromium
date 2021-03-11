@@ -66,7 +66,7 @@ class HFSIterator {
   bool IsDecmpfsCompressed();
 
   // Returns the full filesystem path of the current iterator item.
-  base::string16 GetPath();
+  std::u16string GetPath();
 
   // Returns a stream for the data fork of the current iterator item. This may
   // only be called if IsDirectory() and IsHardLink() returns false.

@@ -653,7 +653,7 @@ IN_PROC_BROWSER_TEST_F(WebContentsImplBrowserTest,
   EXPECT_TRUE(NavigateToURL(
       shell(), embedded_test_server()->GetURL("/push_state.html")));
   load_observer.Wait();
-  base::string16 title = title_watcher.WaitAndGetTitle();
+  std::u16string title = title_watcher.WaitAndGetTitle();
   ASSERT_EQ(title, base::ASCIIToUTF16("pushState"));
 
   // LoadingStateChanged should be called 5 times: start and stop for the
@@ -1703,8 +1703,8 @@ class TestWCDelegateForDialogsAndFullscreen : public JavaScriptDialogManager,
   void RunJavaScriptDialog(WebContents* web_contents,
                            RenderFrameHost* render_frame_host,
                            JavaScriptDialogType dialog_type,
-                           const base::string16& message_text,
-                           const base::string16& default_prompt_text,
+                           const std::u16string& message_text,
+                           const std::u16string& default_prompt_text,
                            DialogClosedCallback callback,
                            bool* did_suppress_message) override {
     last_message_ = base::UTF16ToUTF8(message_text);
@@ -1720,7 +1720,7 @@ class TestWCDelegateForDialogsAndFullscreen : public JavaScriptDialogManager,
                              RenderFrameHost* render_frame_host,
                              bool is_reload,
                              DialogClosedCallback callback) override {
-    std::move(callback).Run(true, base::string16());
+    std::move(callback).Run(true, std::u16string());
 
     if (waiting_for_ == kDialog) {
       waiting_for_ = kNothing;
@@ -1730,7 +1730,7 @@ class TestWCDelegateForDialogsAndFullscreen : public JavaScriptDialogManager,
 
   bool HandleJavaScriptDialog(WebContents* web_contents,
                               bool accept,
-                              const base::string16* prompt_override) override {
+                              const std::u16string* prompt_override) override {
     return true;
   }
 
@@ -2562,7 +2562,7 @@ IN_PROC_BROWSER_TEST_F(WebContentsImplBrowserTest,
   // gesture to allow dialogs.
   wc->GetMainFrame()->DisableBeforeUnloadHangMonitorForTesting();
   wc->GetMainFrame()->ExecuteJavaScriptWithUserGestureForTests(
-      base::string16());
+      std::u16string());
   script = "window.onbeforeunload=function(e){ return 'x' };";
   EXPECT_TRUE(content::ExecuteScript(wc, script));
   test_delegate.WillWaitForDialog();
@@ -2752,7 +2752,7 @@ IN_PROC_BROWSER_TEST_F(WebContentsImplBrowserTest,
   shell()->web_contents()->Copy();
 
   TitleWatcher title_watcher(web_contents, base::ASCIIToUTF16("done"));
-  base::string16 title = title_watcher.WaitAndGetTitle();
+  std::u16string title = title_watcher.WaitAndGetTitle();
   ASSERT_EQ(title, base::ASCIIToUTF16("done"));
 }
 
@@ -2819,7 +2819,7 @@ class LoadStateWaiter : public WebContentsDelegate {
   ~LoadStateWaiter() override = default;
 
   // Waits until the WebContents changes its LoadStateHost to |host|.
-  void Wait(net::LoadState load_state, const base::string16& host) {
+  void Wait(net::LoadState load_state, const std::u16string& host) {
     waiting_host_ = host;
     waiting_state_ = load_state;
     if (!LoadStateMatches(web_contents_)) {
@@ -2849,7 +2849,7 @@ class LoadStateWaiter : public WebContentsDelegate {
   }
   base::OnceClosure quit_closure_;
   content::WebContents* web_contents_ = nullptr;
-  base::string16 waiting_host_;
+  std::u16string waiting_host_;
   net::LoadState waiting_state_;
 
   DISALLOW_COPY_AND_ASSIGN(LoadStateWaiter);
@@ -2860,9 +2860,9 @@ class LoadStateWaiter : public WebContentsDelegate {
 // TODO(csharrison,mmenke):  Beef up testing of LoadState a little. In
 // particular, check upload progress and check the LoadState param.
 IN_PROC_BROWSER_TEST_F(WebContentsImplBrowserTest, DISABLED_UpdateLoadState) {
-  base::string16 a_host = url_formatter::IDNToUnicode("a.com");
-  base::string16 b_host = url_formatter::IDNToUnicode("b.com");
-  base::string16 paused_host = url_formatter::IDNToUnicode("paused.com");
+  std::u16string a_host = url_formatter::IDNToUnicode("a.com");
+  std::u16string b_host = url_formatter::IDNToUnicode("b.com");
+  std::u16string paused_host = url_formatter::IDNToUnicode("paused.com");
 
   // Controlled responses for image requests made in the test. They will
   // alternate being the "most interesting" for the purposes of notifying the
@@ -2897,7 +2897,7 @@ IN_PROC_BROWSER_TEST_F(WebContentsImplBrowserTest, DISABLED_UpdateLoadState) {
   };
 
   // There should be no outgoing requests, so the load state should be empty.
-  waiter.Wait(net::LOAD_STATE_IDLE, base::string16());
+  waiter.Wait(net::LOAD_STATE_IDLE, std::u16string());
 
   // The |frame_pauser| pauses the navigation after every step. It will only
   // finish by calling WaitForNavigationFinished or ResumeNavigation.
@@ -2917,7 +2917,7 @@ IN_PROC_BROWSER_TEST_F(WebContentsImplBrowserTest, DISABLED_UpdateLoadState) {
   EXPECT_FALSE(frame_pauser.was_successful());
   // Note: the pausing only works for the non-network service path because of
   // http://crbug.com/791049.
-  waiter.Wait(net::LOAD_STATE_IDLE, base::string16());
+  waiter.Wait(net::LOAD_STATE_IDLE, std::u16string());
 
   load_resource(a_frame, "/a_img");
   a_response->WaitForRequest();
@@ -3309,7 +3309,7 @@ IN_PROC_BROWSER_TEST_F(WebContentsImplBrowserTest, RejectFullscreenIfBlocked) {
 
   EXPECT_TRUE(ExecuteScript(main_frame, "document.body.requestFullscreen();"));
 
-  base::string16 title = title_watcher.WaitAndGetTitle();
+  std::u16string title = title_watcher.WaitAndGetTitle();
   ASSERT_EQ(title, base::ASCIIToUTF16("onfullscreenerror"));
 }
 
@@ -3476,7 +3476,7 @@ IN_PROC_BROWSER_TEST_F(WebContentsImplBrowserTest,
         "document.body.requestFullscreen({ navigationUI: 'show' }).then(() => "
         "{document.title = 'main_fullscreen_fulfilled'});"));
 
-    base::string16 title = title_watcher.WaitAndGetTitle();
+    std::u16string title = title_watcher.WaitAndGetTitle();
     ASSERT_EQ(title, base::ASCIIToUTF16("main_fullscreen_fulfilled"));
   }
 
@@ -3493,7 +3493,7 @@ IN_PROC_BROWSER_TEST_F(WebContentsImplBrowserTest,
         "document.body.requestFullscreen({ navigationUI: 'hide' }).then(() => "
         "{parent.document.title = 'child_fullscreen_fulfilled'});"));
 
-    base::string16 title = title_watcher.WaitAndGetTitle();
+    std::u16string title = title_watcher.WaitAndGetTitle();
     ASSERT_EQ(title, base::ASCIIToUTF16("child_fullscreen_fulfilled"));
   }
 
@@ -3509,7 +3509,7 @@ IN_PROC_BROWSER_TEST_F(WebContentsImplBrowserTest,
     TitleWatcher title_watcher(web_contents,
                                base::ASCIIToUTF16("main_in_fullscreen_again"));
     EXPECT_TRUE(ExecuteScript(child_frame, "document.exitFullscreen();"));
-    base::string16 title = title_watcher.WaitAndGetTitle();
+    std::u16string title = title_watcher.WaitAndGetTitle();
     ASSERT_EQ(title, base::ASCIIToUTF16("main_in_fullscreen_again"));
   }
 

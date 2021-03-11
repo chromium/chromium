@@ -47,7 +47,7 @@ class DMGIterator {
   virtual bool Next();
 
   // Returns the full path in a DMG filesystem to the current file item.
-  virtual base::string16 GetPath();
+  virtual std::u16string GetPath();
 
   // Returns a ReadStream for the current file item.
   virtual std::unique_ptr<ReadStream> GetReadStream();

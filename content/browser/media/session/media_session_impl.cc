@@ -167,8 +167,8 @@ bool IsSizesAtLeast(const std::vector<gfx::Size>& sizes, int min_size) {
   return check_size;
 }
 
-base::string16 SanitizeMediaTitle(const base::string16 title) {
-  base::string16 out;
+std::u16string SanitizeMediaTitle(const std::u16string title) {
+  std::u16string out;
   base::TrimString(title, base::ASCIIToUTF16(" "), &out);
   return out;
 }
@@ -1490,7 +1490,7 @@ void MediaSessionImpl::RebuildAndNotifyMetadataChanged() {
   const GURL& url = web_contents()->GetLastCommittedURL();
 
   // If the url is a file then we should display a placeholder.
-  base::string16 formatted_origin =
+  std::u16string formatted_origin =
       url.SchemeIsFile()
           ? content_client->GetLocalizedString(IDS_MEDIA_SESSION_FILE_SOURCE)
           : url_formatter::FormatUrl(

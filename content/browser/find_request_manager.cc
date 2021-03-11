@@ -221,7 +221,7 @@ FindRequestManager::FindRequest::FindRequest() = default;
 
 FindRequestManager::FindRequest::FindRequest(
     int id,
-    const base::string16& search_text,
+    const std::u16string& search_text,
     blink::mojom::FindOptionsPtr options)
     : id(id), search_text(search_text), options(std::move(options)) {}
 
@@ -268,7 +268,7 @@ FindRequestManager::FindRequestManager(WebContentsImpl* web_contents)
 FindRequestManager::~FindRequestManager() = default;
 
 void FindRequestManager::Find(int request_id,
-                              const base::string16& search_text,
+                              const std::u16string& search_text,
                               blink::mojom::FindOptionsPtr options) {
   // Every find request must have a unique ID, and these IDs must strictly
   // increase so that newer requests always have greater IDs than older

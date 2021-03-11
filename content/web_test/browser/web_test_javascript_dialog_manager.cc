@@ -39,8 +39,8 @@ void WebTestJavaScriptDialogManager::RunJavaScriptDialog(
     WebContents* web_contents,
     RenderFrameHost* render_frame_host,
     JavaScriptDialogType dialog_type,
-    const base::string16& message_text,
-    const base::string16& default_prompt_text,
+    const std::u16string& message_text,
+    const std::u16string& default_prompt_text,
     DialogClosedCallback callback,
     bool* did_suppress_message) {
   if (DumpJavascriptDialog()) {
@@ -62,7 +62,7 @@ void WebTestJavaScriptDialogManager::RunJavaScriptDialog(
     }
     WebTestControlHost::Get()->printer()->AddMessageRaw(message);
   }
-  std::move(callback).Run(true, base::string16());
+  std::move(callback).Run(true, std::u16string());
 }
 
 void WebTestJavaScriptDialogManager::RunBeforeUnloadDialog(
@@ -73,7 +73,7 @@ void WebTestJavaScriptDialogManager::RunBeforeUnloadDialog(
   if (DumpJavascriptDialog())
     WebTestControlHost::Get()->printer()->AddMessageRaw("CONFIRM NAVIGATION\n");
   std::move(callback).Run(!ShouldStayOnPageAfterHandlingBeforeUnload(),
-                          base::string16());
+                          std::u16string());
 }
 
 }  // namespace content

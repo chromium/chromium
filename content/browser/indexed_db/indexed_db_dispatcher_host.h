@@ -111,14 +111,14 @@ class CONTENT_EXPORT IndexedDBDispatcherHost : public blink::mojom::IDBFactory {
                 pending_callbacks,
             mojo::PendingAssociatedRemote<blink::mojom::IDBDatabaseCallbacks>
                 database_callbacks_remote,
-            const base::string16& name,
+            const std::u16string& name,
             int64_t version,
             mojo::PendingAssociatedReceiver<blink::mojom::IDBTransaction>
                 transaction_receiver,
             int64_t transaction_id) override;
   void DeleteDatabase(mojo::PendingAssociatedRemote<blink::mojom::IDBCallbacks>
                           pending_callbacks,
-                      const base::string16& name,
+                      const std::u16string& name,
                       bool force_close) override;
   void AbortTransactionsAndCompactDatabase(
       AbortTransactionsAndCompactDatabaseCallback callback) override;

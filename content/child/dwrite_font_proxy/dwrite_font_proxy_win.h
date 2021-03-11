@@ -93,7 +93,7 @@ class DWriteFontCollectionProxy
   // Gets the family at the specified index with the expected name. This can be
   // used to avoid an IPC call when both the index and family name are known.
   bool GetFontFamily(UINT32 family_index,
-                     const base::string16& family_name,
+                     const std::u16string& family_name,
                      IDWriteFontFamily** font_family);
 
   bool LoadFamilyNames(UINT32 family_index, IDWriteLocalizedStrings** strings);

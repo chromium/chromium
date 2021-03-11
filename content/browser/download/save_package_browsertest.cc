@@ -295,7 +295,7 @@ IN_PROC_BROWSER_TEST_F(SavePackageWebBundleBrowserTest, OnePageSimple) {
   download_manager->SetDelegate(old_delegate);
   EXPECT_TRUE(NavigateToURL(shell(), GURL("about:blank")));
 
-  base::string16 expected_title = base::ASCIIToUTF16("Hello");
+  std::u16string expected_title = base::ASCIIToUTF16("Hello");
   TitleWatcher title_watcher(shell()->web_contents(), expected_title);
   EXPECT_TRUE(NavigateToURL(
       shell(), wbn_file_url,

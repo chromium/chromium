@@ -330,7 +330,7 @@ IN_PROC_BROWSER_TEST_F(
 
   // Focus the element, wait for it to receive focus, and simulate an enter
   // press.
-  base::string16 expected_title = base::ASCIIToUTF16("focused");
+  std::u16string expected_title = base::ASCIIToUTF16("focused");
   content::TitleWatcher title_watcher(web_contents(), expected_title);
   EXPECT_TRUE(ExecJs(shell(), R"(
     let link = document.getElementById('link');

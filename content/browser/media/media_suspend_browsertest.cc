@@ -33,11 +33,11 @@ class MediaSuspendTest : public MediaBrowserTest {
         media::GetTestDataFilePath("media_suspend_test.html"),
         media::GetURLQueryString(query_params));
 
-    const base::string16 kError = base::ASCIIToUTF16(media::kError);
+    const std::u16string kError = base::ASCIIToUTF16(media::kError);
 
     {
       VLOG(0) << "Waiting for test URL: " << gurl << ", to load.";
-      const base::string16 kLoaded = base::ASCIIToUTF16("LOADED");
+      const std::u16string kLoaded = base::ASCIIToUTF16("LOADED");
       TitleWatcher title_watcher(shell()->web_contents(), kLoaded);
       title_watcher.AlsoWaitForTitle(kError);
       EXPECT_TRUE(NavigateToURL(shell(), gurl));
@@ -46,7 +46,7 @@ class MediaSuspendTest : public MediaBrowserTest {
 
     {
       VLOG(0) << "Suspending and waiting for suspend to occur.";
-      const base::string16 kSuspended = base::ASCIIToUTF16("SUSPENDED");
+      const std::u16string kSuspended = base::ASCIIToUTF16("SUSPENDED");
       TitleWatcher title_watcher(shell()->web_contents(), kSuspended);
       title_watcher.AlsoWaitForTitle(kError);
       static_cast<WebContentsImpl*>(shell()->web_contents())
@@ -62,7 +62,7 @@ class MediaSuspendTest : public MediaBrowserTest {
 
     {
       VLOG(0) << "Waiting for playback to resume.";
-      const base::string16 kEnded = base::ASCIIToUTF16(media::kEnded);
+      const std::u16string kEnded = base::ASCIIToUTF16(media::kEnded);
       TitleWatcher title_watcher(shell()->web_contents(), kEnded);
       title_watcher.AlsoWaitForTitle(kError);
       ASSERT_TRUE(ExecuteScript(shell(), "video.play();"));

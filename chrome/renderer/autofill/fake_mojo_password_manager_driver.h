@@ -38,7 +38,7 @@ class FakeMojoPasswordManagerDriver
 
   MOCK_METHOD4(ShowPasswordSuggestions,
                void(base::i18n::TextDirection,
-                    const base::string16&,
+                    const std::u16string&,
                     int,
                     const gfx::RectF&));
 
@@ -99,7 +99,7 @@ class FakeMojoPasswordManagerDriver
     return called_save_generation_field_;
   }
 
-  const base::Optional<base::string16>& save_generation_field() const {
+  const base::Optional<std::u16string>& save_generation_field() const {
     return save_generation_field_;
   }
 
@@ -139,7 +139,7 @@ class FakeMojoPasswordManagerDriver
   void UserModifiedPasswordField() override;
 
   void UserModifiedNonPasswordField(autofill::FieldRendererId renderer_id,
-                                    const base::string16& value) override;
+                                    const std::u16string& value) override;
 
   void CheckSafeBrowsingReputation(const GURL& form_action,
                                    const GURL& frame_url) override;
@@ -176,7 +176,7 @@ class FakeMojoPasswordManagerDriver
   // Records whether SaveGenerationFieldDetectedByClassifier() gets called.
   bool called_save_generation_field_ = false;
   // Records data received via SaveGenerationFieldDetectedByClassifier() call.
-  base::Optional<base::string16> save_generation_field_;
+  base::Optional<std::u16string> save_generation_field_;
 
   // Records number of times CheckSafeBrowsingReputation() gets called.
   int called_check_safe_browsing_reputation_cnt_ = 0;

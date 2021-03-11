@@ -129,8 +129,8 @@ class CONTENT_EXPORT RenderWidgetHostViewAura
   void RenderProcessGone() override;
   void ShowWithVisibility(Visibility web_contents_visibility) override;
   void Destroy() override;
-  void SetTooltipText(const base::string16& tooltip_text) override;
-  void DisplayTooltipText(const base::string16& tooltip_text) override;
+  void SetTooltipText(const std::u16string& tooltip_text) override;
+  void DisplayTooltipText(const std::u16string& tooltip_text) override;
   uint32_t GetCaptureSequenceNumber() const override;
   bool IsSurfaceAvailableForCopy() override;
   void CopyFromSurface(
@@ -197,7 +197,7 @@ class CONTENT_EXPORT RenderWidgetHostViewAura
   void SetCompositionText(const ui::CompositionText& composition) override;
   uint32_t ConfirmCompositionText(bool keep_selection) override;
   void ClearCompositionText() override;
-  void InsertText(const base::string16& text,
+  void InsertText(const std::u16string& text,
                   InsertTextCursorBehavior cursor_behavior) override;
   void InsertChar(const ui::KeyEvent& event) override;
   ui::TextInputType GetTextInputType() const override;
@@ -216,7 +216,7 @@ class CONTENT_EXPORT RenderWidgetHostViewAura
   bool SetEditableSelectionRange(const gfx::Range& range) override;
   bool DeleteRange(const gfx::Range& range) override;
   bool GetTextFromRange(const gfx::Range& range,
-                        base::string16* text) const override;
+                        std::u16string* text) const override;
   void OnInputMethodChanged() override;
   bool ChangeTextDirectionAndLayoutAlignment(
       base::i18n::TextDirection direction) override;
@@ -252,7 +252,7 @@ class CONTENT_EXPORT RenderWidgetHostViewAura
   // composition has been committed or not.
   void SetActiveCompositionForAccessibility(
       const gfx::Range& range,
-      const base::string16& active_composition_text,
+      const std::u16string& active_composition_text,
       bool is_composition_committed) override;
 #endif
 
@@ -629,7 +629,7 @@ class CONTENT_EXPORT RenderWidgetHostViewAura
   bool has_composition_text_;
 
   // Current tooltip text.
-  base::string16 tooltip_;
+  std::u16string tooltip_;
 
   // Whether or not a frame observer has been added.
   bool added_frame_observer_;

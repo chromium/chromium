@@ -40,7 +40,7 @@ class CONTENT_EXPORT WebUI {
 
   // Returns JavaScript code that, when executed, calls the function specified
   // by |function_name| with the arguments specified in |arg_list|.
-  static base::string16 GetJavascriptCall(
+  static std::u16string GetJavascriptCall(
       const std::string& function_name,
       const std::vector<const base::Value*>& arg_list);
 
@@ -59,8 +59,8 @@ class CONTENT_EXPORT WebUI {
   // Gets a custom tab title provided by the Web UI. If there is no title
   // override, the string will be empty which should trigger the default title
   // behavior for the tab.
-  virtual const base::string16& GetOverriddenTitle() = 0;
-  virtual void OverrideTitle(const base::string16& title) = 0;
+  virtual const std::u16string& GetOverriddenTitle() = 0;
+  virtual void OverrideTitle(const std::u16string& title) = 0;
 
   // Allows a controller to override the BindingsPolicy that should be enabled
   // for this page.

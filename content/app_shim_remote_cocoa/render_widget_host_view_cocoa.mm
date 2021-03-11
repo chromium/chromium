@@ -443,7 +443,7 @@ void ExtractUnderlines(NSAttributedString* string,
   [NSSpellChecker.sharedSpellChecker.substitutionsPanel orderFront:sender];
 }
 
-- (void)setTextSelectionText:(base::string16)text
+- (void)setTextSelectionText:(std::u16string)text
                       offset:(size_t)offset
                        range:(gfx::Range)range {
   _availableText = text;
@@ -487,12 +487,12 @@ void ExtractUnderlines(NSAttributedString* string,
     [self invalidateTouchBar];
 }
 
-- (base::string16)selectedText {
+- (std::u16string)selectedText {
   gfx::Range textRange(_availableTextOffset,
                        _availableTextOffset + _availableText.size());
   gfx::Range intersectionRange = textRange.Intersect(_textSelectionRange);
   if (intersectionRange.is_empty())
-    return base::string16();
+    return std::u16string();
   return _availableText.substr(intersectionRange.start() - _availableTextOffset,
                                intersectionRange.length());
 }
@@ -1826,7 +1826,7 @@ extern NSString* NSTextInputReplacementRangeAttributeName;
     return nil;
 
   gfx::Range expectedRange;
-  const base::string16* expectedText;
+  const std::u16string* expectedText;
 
   expectedText = &_availableText;
   size_t offset = _availableTextOffset;
@@ -1838,7 +1838,7 @@ extern NSString* NSTextInputReplacementRangeAttributeName;
   if (actualRange)
     *actualRange = gfxActualRange.ToNSRange();
 
-  base::string16 string = expectedText->substr(
+  std::u16string string = expectedText->substr(
       gfxActualRange.start() - expectedRange.start(), gfxActualRange.length());
   return [[[NSAttributedString alloc]
       initWithString:base::SysUTF16ToNSString(string)] autorelease];

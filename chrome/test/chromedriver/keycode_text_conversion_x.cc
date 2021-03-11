@@ -178,7 +178,7 @@ bool ConvertKeyCodeToText(ui::KeyboardCode key_code,
   if (!character)
     *text = std::string();
   else
-    *text = base::UTF16ToUTF8(base::string16(1, character));
+    *text = base::UTF16ToUTF8(std::u16string(1, character));
   return true;
 }
 
@@ -191,7 +191,7 @@ bool ConvertCharToKeyCode(char16_t key,
                                      error_msg);
   }
 
-  std::string key_string(base::UTF16ToUTF8(base::string16(1, key)));
+  std::string key_string(base::UTF16ToUTF8(std::u16string(1, key)));
   bool found = false;
   ui::KeyboardCode test_code;
   int test_modifiers;

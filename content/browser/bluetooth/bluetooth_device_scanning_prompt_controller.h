@@ -38,7 +38,7 @@ class CONTENT_EXPORT BluetoothDeviceScanningPromptController final {
   // ShowPermissionPrompt() is called.
   void AddFilteredDevice(const std::string& device_id,
                          bool should_update_name,
-                         const base::string16& device_name);
+                         const std::u16string& device_name);
 
  private:
   // The WebBluetoothServiceImpl that owns this instance.

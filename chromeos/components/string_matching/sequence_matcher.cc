@@ -30,8 +30,8 @@ SequenceMatcher::Match::Match(int pos_first, int pos_second, int len)
   DCHECK_GE(length, 0);
 }
 
-SequenceMatcher::SequenceMatcher(const base::string16& first_string,
-                                 const base::string16& second_string,
+SequenceMatcher::SequenceMatcher(const std::u16string& first_string,
+                                 const std::u16string& second_string,
                                  bool use_edit_distance,
                                  double num_matching_blocks_penalty)
     : first_string_(first_string),

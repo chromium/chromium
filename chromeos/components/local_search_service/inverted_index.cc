@@ -26,7 +26,7 @@ namespace {
 using ScoreWithPosting = std::pair<double, Posting>;
 
 // Calculates TF-IDF scores for a term
-std::vector<TfidfResult> CalculateTfidf(const base::string16& term,
+std::vector<TfidfResult> CalculateTfidf(const std::u16string& term,
                                         const DocLength& doc_length,
                                         const Dictionary& dictionary) {
   std::vector<TfidfResult> results;
@@ -174,7 +174,7 @@ InvertedIndex::InvertedIndex() {
 }
 InvertedIndex::~InvertedIndex() = default;
 
-PostingList InvertedIndex::FindTerm(const base::string16& term) const {
+PostingList InvertedIndex::FindTerm(const std::u16string& term) const {
   if (dictionary_.find(term) != dictionary_.end())
     return dictionary_.at(term);
 
@@ -182,7 +182,7 @@ PostingList InvertedIndex::FindTerm(const base::string16& term) const {
 }
 
 std::vector<Result> InvertedIndex::FindMatchingDocumentsApproximately(
-    const std::unordered_set<base::string16>& terms,
+    const std::unordered_set<std::u16string>& terms,
     double prefix_threshold,
     double block_threshold) const {
   // For each document, its score is the sum of TF-IDF scores of its terms
@@ -190,7 +190,7 @@ std::vector<Result> InvertedIndex::FindMatchingDocumentsApproximately(
   // The map is keyed by the document id.
   std::unordered_map<std::string, ScoreWithPosting> matching_docs;
   for (const auto& kv : tfidf_cache_) {
-    const base::string16& index_term = kv.first;
+    const std::u16string& index_term = kv.first;
     const std::vector<TfidfResult>& tfidf_results = kv.second;
     for (const auto& term : terms) {
       if (IsRelevantApproximately(term, index_term, prefix_threshold,
@@ -305,7 +305,7 @@ void InvertedIndex::UpdateDocuments(
 }
 
 std::vector<TfidfResult> InvertedIndex::GetTfidf(
-    const base::string16& term) const {
+    const std::u16string& term) const {
   if (tfidf_cache_.find(term) != tfidf_cache_.end()) {
     return tfidf_cache_.at(term);
   }

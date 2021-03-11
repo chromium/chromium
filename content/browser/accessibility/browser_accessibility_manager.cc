@@ -1219,7 +1219,7 @@ BrowserAccessibilityManager::FindTextOnlyObjectsInRange(
 }
 
 // static
-base::string16 BrowserAccessibilityManager::GetTextForRange(
+std::u16string BrowserAccessibilityManager::GetTextForRange(
     const BrowserAccessibility& start_object,
     const BrowserAccessibility& end_object) {
   return GetTextForRange(start_object, 0, end_object,
@@ -1227,7 +1227,7 @@ base::string16 BrowserAccessibilityManager::GetTextForRange(
 }
 
 // static
-base::string16 BrowserAccessibilityManager::GetTextForRange(
+std::u16string BrowserAccessibilityManager::GetTextForRange(
     const BrowserAccessibility& start_object,
     int start_offset,
     const BrowserAccessibility& end_object,
@@ -1242,7 +1242,7 @@ base::string16 BrowserAccessibilityManager::GetTextForRange(
     if (start_offset >=
             static_cast<int>(start_object.GetInnerText().length()) ||
         end_offset > static_cast<int>(start_object.GetInnerText().length())) {
-      return base::string16();
+      return std::u16string();
     }
 
     return start_object.GetInnerText().substr(start_offset,
@@ -1252,7 +1252,7 @@ base::string16 BrowserAccessibilityManager::GetTextForRange(
   std::vector<const BrowserAccessibility*> text_only_objects =
       FindTextOnlyObjectsInRange(start_object, end_object);
   if (text_only_objects.empty())
-    return base::string16();
+    return std::u16string();
 
   if (text_only_objects.size() == 1) {
     // Be a little permissive with the start and end offsets.
@@ -1268,7 +1268,7 @@ base::string16 BrowserAccessibilityManager::GetTextForRange(
     return text_object->GetInnerText();
   }
 
-  base::string16 text;
+  std::u16string text;
   const BrowserAccessibility* start_text_object = text_only_objects[0];
   // Figure out if the start and end positions have been reversed.
   const BrowserAccessibility* first_object = &start_object;

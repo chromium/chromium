@@ -767,7 +767,7 @@ TEST_F(FormAutocompleteTest, AcceptDataListSuggestion) {
   WebDocument document = GetMainFrame()->GetDocument();
 
   // Each case tests a different field value with the same suggestion.
-  const base::string16 kSuggestion =
+  const std::u16string kSuggestion =
       base::ASCIIToUTF16("suggestion@example.com");
   struct TestCase {
     std::string id;

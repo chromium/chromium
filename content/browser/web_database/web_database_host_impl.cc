@@ -95,7 +95,7 @@ void WebDatabaseHostImpl::Create(
       std::move(receiver));
 }
 
-void WebDatabaseHostImpl::OpenFile(const base::string16& vfs_file_name,
+void WebDatabaseHostImpl::OpenFile(const std::u16string& vfs_file_name,
                                    int32_t desired_flags,
                                    OpenFileCallback callback) {
   DCHECK(db_tracker_->task_runner()->RunsTasksInCurrentSequence());
@@ -105,7 +105,7 @@ void WebDatabaseHostImpl::OpenFile(const base::string16& vfs_file_name,
                                 desired_flags, std::move(callback)));
 }
 
-void WebDatabaseHostImpl::OpenFileValidated(const base::string16& vfs_file_name,
+void WebDatabaseHostImpl::OpenFileValidated(const std::u16string& vfs_file_name,
                                             int32_t desired_flags,
                                             OpenFileCallback callback) {
   DCHECK(db_tracker_->task_runner()->RunsTasksInCurrentSequence());
@@ -113,7 +113,7 @@ void WebDatabaseHostImpl::OpenFileValidated(const base::string16& vfs_file_name,
   base::File file;
   const base::File* tracked_file = nullptr;
   std::string origin_identifier;
-  base::string16 database_name;
+  std::u16string database_name;
 
   // When in Incognito mode, we want to make sure that all DB files are
   // removed when the Incognito browser context goes away, so we add the
@@ -156,7 +156,7 @@ void WebDatabaseHostImpl::OpenFileValidated(const base::string16& vfs_file_name,
   std::move(callback).Run(std::move(result));
 }
 
-void WebDatabaseHostImpl::DeleteFile(const base::string16& vfs_file_name,
+void WebDatabaseHostImpl::DeleteFile(const std::u16string& vfs_file_name,
                                      bool sync_dir,
                                      DeleteFileCallback callback) {
   DCHECK(db_tracker_->task_runner()->RunsTasksInCurrentSequence());
@@ -168,7 +168,7 @@ void WebDatabaseHostImpl::DeleteFile(const base::string16& vfs_file_name,
 }
 
 void WebDatabaseHostImpl::GetFileAttributes(
-    const base::string16& vfs_file_name,
+    const std::u16string& vfs_file_name,
     GetFileAttributesCallback callback) {
   DCHECK(db_tracker_->task_runner()->RunsTasksInCurrentSequence());
   ValidateOrigin(
@@ -179,7 +179,7 @@ void WebDatabaseHostImpl::GetFileAttributes(
 }
 
 void WebDatabaseHostImpl::GetFileAttributesValidated(
-    const base::string16& vfs_file_name,
+    const std::u16string& vfs_file_name,
     GetFileAttributesCallback callback) {
   DCHECK(db_tracker_->task_runner()->RunsTasksInCurrentSequence());
 
@@ -192,7 +192,7 @@ void WebDatabaseHostImpl::GetFileAttributesValidated(
   std::move(callback).Run(attributes);
 }
 
-void WebDatabaseHostImpl::GetFileSize(const base::string16& vfs_file_name,
+void WebDatabaseHostImpl::GetFileSize(const std::u16string& vfs_file_name,
                                       GetFileSizeCallback callback) {
   DCHECK(db_tracker_->task_runner()->RunsTasksInCurrentSequence());
   ValidateOrigin(vfs_file_name,
@@ -202,7 +202,7 @@ void WebDatabaseHostImpl::GetFileSize(const base::string16& vfs_file_name,
 }
 
 void WebDatabaseHostImpl::GetFileSizeValidated(
-    const base::string16& vfs_file_name,
+    const std::u16string& vfs_file_name,
     GetFileSizeCallback callback) {
   DCHECK(db_tracker_->task_runner()->RunsTasksInCurrentSequence());
 
@@ -215,7 +215,7 @@ void WebDatabaseHostImpl::GetFileSizeValidated(
   std::move(callback).Run(size);
 }
 
-void WebDatabaseHostImpl::SetFileSize(const base::string16& vfs_file_name,
+void WebDatabaseHostImpl::SetFileSize(const std::u16string& vfs_file_name,
                                       int64_t expected_size,
                                       SetFileSizeCallback callback) {
   DCHECK(db_tracker_->task_runner()->RunsTasksInCurrentSequence());
@@ -226,7 +226,7 @@ void WebDatabaseHostImpl::SetFileSize(const base::string16& vfs_file_name,
 }
 
 void WebDatabaseHostImpl::SetFileSizeValidated(
-    const base::string16& vfs_file_name,
+    const std::u16string& vfs_file_name,
     int64_t expected_size,
     SetFileSizeCallback callback) {
   DCHECK(db_tracker_->task_runner()->RunsTasksInCurrentSequence());
@@ -275,7 +275,7 @@ void WebDatabaseHostImpl::GetSpaceAvailableValidated(
 }
 
 void WebDatabaseHostImpl::DatabaseDeleteFile(
-    const base::string16& vfs_file_name,
+    const std::u16string& vfs_file_name,
     bool sync_dir,
     DeleteFileCallback callback,
     int reschedule_count) {
@@ -290,8 +290,8 @@ void WebDatabaseHostImpl::DatabaseDeleteFile(
     // In order to delete a journal file in Incognito mode, we only need to
     // close the open handle to it that's stored in the database tracker.
     if (db_tracker_->IsIncognitoProfile()) {
-      const base::string16 wal_suffix(base::ASCIIToUTF16("-wal"));
-      base::string16 sqlite_suffix;
+      const std::u16string wal_suffix(base::ASCIIToUTF16("-wal"));
+      std::u16string sqlite_suffix;
 
       // WAL files can be deleted without having previously been opened.
       if (!db_tracker_->HasSavedIncognitoFileHandle(vfs_file_name) &&
@@ -323,8 +323,8 @@ void WebDatabaseHostImpl::DatabaseDeleteFile(
 }
 
 void WebDatabaseHostImpl::Opened(const url::Origin& origin,
-                                 const base::string16& database_name,
-                                 const base::string16& database_description,
+                                 const std::u16string& database_name,
+                                 const std::u16string& database_description,
                                  int64_t estimated_size) {
   DCHECK(db_tracker_->task_runner()->RunsTasksInCurrentSequence());
 
@@ -341,8 +341,8 @@ void WebDatabaseHostImpl::Opened(const url::Origin& origin,
 
 void WebDatabaseHostImpl::OpenedValidated(
     const url::Origin& origin,
-    const base::string16& database_name,
-    const base::string16& database_description,
+    const std::u16string& database_name,
+    const std::u16string& database_description,
     int64_t estimated_size) {
   DCHECK(db_tracker_->task_runner()->RunsTasksInCurrentSequence());
 
@@ -362,7 +362,7 @@ void WebDatabaseHostImpl::OpenedValidated(
 }
 
 void WebDatabaseHostImpl::Modified(const url::Origin& origin,
-                                   const base::string16& database_name) {
+                                   const std::u16string& database_name) {
   DCHECK(db_tracker_->task_runner()->RunsTasksInCurrentSequence());
 
   ValidateOrigin(origin, base::BindOnce(&WebDatabaseHostImpl::ModifiedValidated,
@@ -372,7 +372,7 @@ void WebDatabaseHostImpl::Modified(const url::Origin& origin,
 
 void WebDatabaseHostImpl::ModifiedValidated(
     const url::Origin& origin,
-    const base::string16& database_name) {
+    const std::u16string& database_name) {
   DCHECK(db_tracker_->task_runner()->RunsTasksInCurrentSequence());
   std::string origin_identifier(storage::GetIdentifierFromOrigin(origin));
   if (!database_connections_.IsDatabaseOpened(origin_identifier,
@@ -385,7 +385,7 @@ void WebDatabaseHostImpl::ModifiedValidated(
 }
 
 void WebDatabaseHostImpl::Closed(const url::Origin& origin,
-                                 const base::string16& database_name) {
+                                 const std::u16string& database_name) {
   DCHECK(db_tracker_->task_runner()->RunsTasksInCurrentSequence());
 
   ValidateOrigin(origin, base::BindOnce(&WebDatabaseHostImpl::ClosedValidated,
@@ -394,7 +394,7 @@ void WebDatabaseHostImpl::Closed(const url::Origin& origin,
 }
 
 void WebDatabaseHostImpl::ClosedValidated(const url::Origin& origin,
-                                          const base::string16& database_name) {
+                                          const std::u16string& database_name) {
   DCHECK(db_tracker_->task_runner()->RunsTasksInCurrentSequence());
 
   std::string origin_identifier(storage::GetIdentifierFromOrigin(origin));
@@ -409,7 +409,7 @@ void WebDatabaseHostImpl::ClosedValidated(const url::Origin& origin,
 }
 
 void WebDatabaseHostImpl::HandleSqliteError(const url::Origin& origin,
-                                            const base::string16& database_name,
+                                            const std::u16string& database_name,
                                             int32_t error) {
   DCHECK(db_tracker_->task_runner()->RunsTasksInCurrentSequence());
   ValidateOrigin(
@@ -421,7 +421,7 @@ void WebDatabaseHostImpl::HandleSqliteError(const url::Origin& origin,
 
 void WebDatabaseHostImpl::OnDatabaseSizeChanged(
     const std::string& origin_identifier,
-    const base::string16& database_name,
+    const std::u16string& database_name,
     int64_t database_size) {
   DCHECK(db_tracker_->task_runner()->RunsTasksInCurrentSequence());
   if (!database_connections_.IsOriginUsed(origin_identifier)) {
@@ -435,7 +435,7 @@ void WebDatabaseHostImpl::OnDatabaseSizeChanged(
 
 void WebDatabaseHostImpl::OnDatabaseScheduledForDeletion(
     const std::string& origin_identifier,
-    const base::string16& database_name) {
+    const std::u16string& database_name) {
   DCHECK(db_tracker_->task_runner()->RunsTasksInCurrentSequence());
 
   GetWebDatabase().CloseImmediately(
@@ -475,7 +475,7 @@ void WebDatabaseHostImpl::ValidateOrigin(const url::Origin& origin,
                      std::move(callback), mojo::GetBadMessageCallback()));
 }
 
-void WebDatabaseHostImpl::ValidateOrigin(const base::string16& vfs_file_name,
+void WebDatabaseHostImpl::ValidateOrigin(const std::u16string& vfs_file_name,
                                          base::OnceClosure callback) {
   std::string origin_identifier;
   if (vfs_file_name.empty()) {

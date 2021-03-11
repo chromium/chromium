@@ -282,7 +282,7 @@ void TextInputManager::ImeCompositionRangeChanged(
 }
 
 void TextInputManager::SelectionChanged(RenderWidgetHostViewBase* view,
-                                        const base::string16& text,
+                                        const std::u16string& text,
                                         size_t offset,
                                         const gfx::Range& range) {
   DCHECK(IsRegistered(view));
@@ -373,7 +373,7 @@ TextInputManager::TextSelection::TextSelection(const TextSelection& other) =
 
 TextInputManager::TextSelection::~TextSelection() {}
 
-void TextInputManager::TextSelection::SetSelection(const base::string16& text,
+void TextInputManager::TextSelection::SetSelection(const std::u16string& text,
                                                    size_t offset,
                                                    const gfx::Range& range) {
   text_ = text;

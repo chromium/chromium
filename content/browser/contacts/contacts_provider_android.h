@@ -62,7 +62,7 @@ class ContactsProviderAndroid : public ContactsProvider {
 
   // The origin that the contacts data will be shared with. Formatted for
   // display with the scheme omitted.
-  base::string16 formatted_origin_;
+  std::u16string formatted_origin_;
 
   DISALLOW_COPY_AND_ASSIGN(ContactsProviderAndroid);
 };

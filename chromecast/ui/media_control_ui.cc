@@ -103,9 +103,9 @@ MediaControlUi::MediaControlUi(CastWindowManager* window_manager)
 
   // Labels.
   lbl_title_ =
-      view_->AddChildView(std::make_unique<views::Label>(base::string16()));
+      view_->AddChildView(std::make_unique<views::Label>(std::u16string()));
   lbl_meta_ =
-      view_->AddChildView(std::make_unique<views::Label>(base::string16()));
+      view_->AddChildView(std::make_unique<views::Label>(std::u16string()));
 
   // Progress Bar.
   progress_bar_ = view_->AddChildView(std::make_unique<views::ProgressBar>());

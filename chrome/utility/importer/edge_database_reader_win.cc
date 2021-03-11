@@ -44,10 +44,10 @@ bool ValidateAndConvertValue(const JET_COLTYP column_type,
 
 bool ValidateAndConvertValue(const JET_COLTYP column_type,
                              const std::vector<uint8_t>& column_data,
-                             base::string16* value) {
+                             std::u16string* value) {
   if ((column_type == JET_coltypLongText) &&
       ((column_data.size() % sizeof(char16_t)) == 0)) {
-    base::string16& value_ref = *value;
+    std::u16string& value_ref = *value;
     size_t char_length = column_data.size() / sizeof(char16_t);
     value_ref.resize(char_length);
     memcpy(&value_ref[0], &column_data[0], column_data.size());
@@ -185,7 +185,7 @@ template bool EdgeDatabaseTableEnumerator::RetrieveColumn(const std::wstring&,
 template bool EdgeDatabaseTableEnumerator::RetrieveColumn(const std::wstring&,
                                                           int64_t*);
 template bool EdgeDatabaseTableEnumerator::RetrieveColumn(const std::wstring&,
-                                                          base::string16*);
+                                                          std::u16string*);
 template bool EdgeDatabaseTableEnumerator::RetrieveColumn(const std::wstring&,
                                                           uint32_t*);
 

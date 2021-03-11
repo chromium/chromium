@@ -641,7 +641,7 @@ class SearchBoxBindings : public gin::Wrappable<SearchBoxBindings> {
   // Handlers for JS functions.
   static void DeleteAutocompleteMatch(int line);
   static void Paste(const std::string& text);
-  static void QueryAutocomplete(const base::string16& input,
+  static void QueryAutocomplete(const std::u16string& input,
                                 bool prevent_inline_autocomplete);
   static void StopAutocomplete(bool clear_result);
   static void LogCharTypedToRepaintLatency(uint32_t latency_ms);
@@ -757,7 +757,7 @@ void SearchBoxBindings::Paste(const std::string& text) {
 }
 
 // static
-void SearchBoxBindings::QueryAutocomplete(const base::string16& input,
+void SearchBoxBindings::QueryAutocomplete(const std::u16string& input,
                                           bool prevent_inline_autocomplete) {
   SearchBox* search_box = GetSearchBoxForCurrentContext();
   if (!search_box)
@@ -1141,7 +1141,7 @@ void NewTabPageBindings::UpdateCustomLink(int rid,
 
   // Limit the title to |kMaxCustomLinkTitleLength| characters. If truncated,
   // adds an ellipsis.
-  base::string16 truncated_title =
+  std::u16string truncated_title =
       gfx::TruncateString(base::UTF8ToUTF16(title), kMaxCustomLinkTitleLength,
                           gfx::CHARACTER_BREAK);
 

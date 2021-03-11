@@ -22,7 +22,7 @@ class CredentialProviderBrokerWin
 
  protected:
   // GcpwHidBroker impl:
-  void OpenDevice(const base::string16& device_path,
+  void OpenDevice(const std::u16string& device_path,
                   OpenDeviceCallback callback) override;
 };
 }  // namespace credential_provider

@@ -16,10 +16,10 @@ namespace security_token_pin {
 // equal to this constant. (This is a pure UX heuristic.)
 constexpr int kAttemptsLeftThreshold = 3;
 
-base::string16 GenerateErrorMessage(ErrorLabel error_label,
+std::u16string GenerateErrorMessage(ErrorLabel error_label,
                                     int attempts_left,
                                     bool accept_input) {
-  base::string16 error_message;
+  std::u16string error_message;
   switch (error_label) {
     case ErrorLabel::kInvalidPin:
       error_message =
@@ -39,7 +39,7 @@ base::string16 GenerateErrorMessage(ErrorLabel error_label,
       break;
     case ErrorLabel::kNone:
       if (attempts_left < 0)
-        return base::string16();
+        return std::u16string();
       break;
   }
 

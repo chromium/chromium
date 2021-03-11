@@ -28,7 +28,7 @@ class SplashScreen : public CAxDialogImpl<SplashScreen>,
  public:
   static constexpr int IDD = IDD_PROGRESS;
 
-  explicit SplashScreen(const base::string16& bundle_name);
+  explicit SplashScreen(const std::u16string& bundle_name);
   SplashScreen(const SplashScreen&) = delete;
   SplashScreen& operator=(const SplashScreen&) = delete;
   ~SplashScreen() override;

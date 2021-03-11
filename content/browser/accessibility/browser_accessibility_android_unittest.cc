@@ -18,7 +18,7 @@ namespace content {
 
 class MockContentClient : public TestContentClient {
  public:
-  base::string16 GetLocalizedString(int message_id) override {
+  std::u16string GetLocalizedString(int message_id) override {
     switch (message_id) {
       case IDS_AX_UNLABELED_IMAGE_ROLE_DESCRIPTION:
         return base::ASCIIToUTF16("Unlabeled image");
@@ -38,7 +38,7 @@ class MockContentClient : public TestContentClient {
       case IDS_AX_IMAGE_ANNOTATION_NO_DESCRIPTION:
         return base::ASCIIToUTF16("No description available.");
       default:
-        return base::string16();
+        return std::u16string();
     }
   }
 };
@@ -400,7 +400,7 @@ TEST_F(BrowserAccessibilityAndroidTest, TestImageRoleDescription_Empty) {
         static_cast<BrowserAccessibilityAndroid*>(
             manager->GetRoot()->PlatformGetChild(child_index));
 
-    EXPECT_EQ(base::string16(), child->GetRoleDescription());
+    EXPECT_EQ(std::u16string(), child->GetRoleDescription());
   }
 }
 
@@ -558,10 +558,10 @@ TEST_F(BrowserAccessibilityAndroidTest, TestImageInnerText_Ineligible) {
       static_cast<BrowserAccessibilityAndroid*>(
           manager->GetRoot()->PlatformGetChild(3));
 
-  EXPECT_EQ(base::string16(), image_none->GetInnerText());
+  EXPECT_EQ(std::u16string(), image_none->GetInnerText());
   EXPECT_EQ(base::ASCIIToUTF16("image_name"), image_scheme->GetInnerText());
-  EXPECT_EQ(base::string16(), image_ineligible->GetInnerText());
-  EXPECT_EQ(base::string16(), image_silent->GetInnerText());
+  EXPECT_EQ(std::u16string(), image_ineligible->GetInnerText());
+  EXPECT_EQ(std::u16string(), image_silent->GetInnerText());
 }
 
 TEST_F(BrowserAccessibilityAndroidTest,

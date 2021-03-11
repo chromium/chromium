@@ -74,7 +74,7 @@ bool ParseCharsetFromLine(const std::string& line,
                           std::string* charset);
 bool ParseFolderNameFromLine(const std::string& line,
                              const std::string& charset,
-                             base::string16* folder_name,
+                             std::u16string* folder_name,
                              bool* is_toolbar_folder,
                              base::Time* add_date);
 // See above, this will also put the data: URL of the favicon into |*favicon|
@@ -82,12 +82,12 @@ bool ParseFolderNameFromLine(const std::string& line,
 // the contents of the actual POST (with %s for the search term).
 bool ParseBookmarkFromLine(const std::string& line,
                            const std::string& charset,
-                           base::string16* title,
+                           std::u16string* title,
                            GURL* url,
                            GURL* favicon,
-                           base::string16* shortcut,
+                           std::u16string* shortcut,
                            base::Time* add_date,
-                           base::string16* post_data);
+                           std::u16string* post_data);
 // Save bookmarks imported from browsers with Firefox 2 compatible bookmark
 // systems such as Epiphany. This bookmark format is the same as that of the
 // basic Firefox 2 bookmark, but it misses additional properties and uses
@@ -98,7 +98,7 @@ bool ParseBookmarkFromLine(const std::string& line,
 //   </dl>
 bool ParseMinimumBookmarkFromLine(const std::string& line,
                                   const std::string& charset,
-                                  base::string16* title,
+                                  std::u16string* title,
                                   GURL* url);
 
 }  // namespace internal

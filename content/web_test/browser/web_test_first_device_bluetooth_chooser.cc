@@ -48,7 +48,7 @@ void WebTestFirstDeviceBluetoothChooser::ShowDiscoveryState(
 void WebTestFirstDeviceBluetoothChooser::AddOrUpdateDevice(
     const std::string& device_id,
     bool should_update_name,
-    const base::string16& deviceName,
+    const std::u16string& deviceName,
     bool is_gatt_connected,
     bool is_paired,
     int signal_strength_level) {

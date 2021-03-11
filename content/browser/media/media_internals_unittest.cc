@@ -48,7 +48,7 @@ class MediaInternalsTestBase {
 
  protected:
   // Extracts and deserializes the JSON update data; merges into |update_data_|.
-  virtual void UpdateCallbackImpl(const base::string16& update) {
+  virtual void UpdateCallbackImpl(const std::u16string& update) {
     // Each update string looks like "<JavaScript Function Name>({<JSON>});"
     // or for video capabilities: "<JavaScript Function Name>([{<JSON>}]);".
     // In the second case we will be able to extract the dictionary if it is the
@@ -339,7 +339,7 @@ class MediaInternalsAudioFocusTest : public RenderViewHostTestHarness,
   }
 
  protected:
-  void UpdateCallbackImpl(const base::string16& update) override {
+  void UpdateCallbackImpl(const std::u16string& update) override {
     base::AutoLock auto_lock(lock_);
     MediaInternalsTestBase::UpdateCallbackImpl(update);
     call_count_++;

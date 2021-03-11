@@ -64,7 +64,7 @@ class TestingProfileManager {
   TestingProfile* CreateTestingProfile(
       const std::string& profile_name,
       std::unique_ptr<sync_preferences::PrefServiceSyncable> prefs,
-      const base::string16& user_name,
+      const std::u16string& user_name,
       int avatar_id,
       const std::string& supervised_user_id,
       TestingProfile::TestingFactories testing_factories,

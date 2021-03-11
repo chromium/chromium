@@ -169,7 +169,7 @@ IN_PROC_BROWSER_TEST_F(PictureInPictureContentBrowserTest,
   // Play first video.
   ASSERT_TRUE(ExecJs(shell(), "videos[0].play();"));
 
-  base::string16 expected_title = base::ASCIIToUTF16("videos[0] playing");
+  std::u16string expected_title = base::ASCIIToUTF16("videos[0] playing");
   EXPECT_EQ(
       expected_title,
       TitleWatcher(shell()->web_contents(), expected_title).WaitAndGetTitle());
@@ -215,7 +215,7 @@ IN_PROC_BROWSER_TEST_F(PictureInPictureContentBrowserTest,
       embedded_test_server()->GetURL(
           "example.com", "/media/picture_in_picture/two-videos.html")));
 
-  base::string16 expected_title = base::ASCIIToUTF16("iframe loaded");
+  std::u16string expected_title = base::ASCIIToUTF16("iframe loaded");
   EXPECT_EQ(
       expected_title,
       TitleWatcher(shell()->web_contents(), expected_title).WaitAndGetTitle());
@@ -310,7 +310,7 @@ IN_PROC_BROWSER_TEST_F(PictureInPictureContentBrowserTest,
   ASSERT_TRUE(ExecJs(shell(), "addPlayEventListener();"));
   window_controller()->TogglePlayPause();
 
-  base::string16 expected_title = base::ASCIIToUTF16("play");
+  std::u16string expected_title = base::ASCIIToUTF16("play");
   EXPECT_EQ(
       expected_title,
       TitleWatcher(shell()->web_contents(), expected_title).WaitAndGetTitle());
@@ -364,7 +364,7 @@ IN_PROC_BROWSER_TEST_F(MediaSessionPictureInPictureContentBrowserTest,
   ASSERT_TRUE(ExecJs(shell(), "addPlayEventListener();"));
   window_controller()->TogglePlayPause();
 
-  base::string16 expected_title = base::ASCIIToUTF16("play");
+  std::u16string expected_title = base::ASCIIToUTF16("play");
   EXPECT_EQ(
       expected_title,
       TitleWatcher(shell()->web_contents(), expected_title).WaitAndGetTitle());
@@ -410,7 +410,7 @@ IN_PROC_BROWSER_TEST_F(AutoPictureInPictureContentBrowserTest,
 
   // Hide page and check that video entered Picture-in-Picture automatically.
   shell()->web_contents()->WasHidden();
-  base::string16 expected_title = base::ASCIIToUTF16("enterpictureinpicture");
+  std::u16string expected_title = base::ASCIIToUTF16("enterpictureinpicture");
   EXPECT_EQ(
       expected_title,
       TitleWatcher(shell()->web_contents(), expected_title).WaitAndGetTitle());

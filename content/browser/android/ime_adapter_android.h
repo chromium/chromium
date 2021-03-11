@@ -133,7 +133,7 @@ class CONTENT_EXPORT ImeAdapterAndroid : public RenderWidgetHostConnector {
       JNIEnv* env,
       const base::android::JavaParamRef<jobject>& obj,
       const base::android::JavaParamRef<jobject>& text,
-      const base::string16& text16);
+      const std::u16string& text16);
 
   gfx::SizeF old_viewport_size_;
 

@@ -38,8 +38,8 @@ class CONTENT_EXPORT RawClipboardHostImpl
   // mojom::RawClipboardHost.
   void ReadAvailableFormatNames(
       ReadAvailableFormatNamesCallback callback) override;
-  void Read(const base::string16& format, ReadCallback callback) override;
-  void Write(const base::string16& format, mojo_base::BigBuffer data) override;
+  void Read(const std::u16string& format, ReadCallback callback) override;
+  void Write(const std::u16string& format, mojo_base::BigBuffer data) override;
   void CommitWrite() override;
 
   std::unique_ptr<ui::DataTransferEndpoint> CreateDataEndpoint();

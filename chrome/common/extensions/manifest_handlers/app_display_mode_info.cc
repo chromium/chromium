@@ -32,7 +32,7 @@ AppDisplayModeHandler::AppDisplayModeHandler() = default;
 
 AppDisplayModeHandler::~AppDisplayModeHandler() = default;
 
-bool AppDisplayModeHandler::Parse(Extension* extension, base::string16* error) {
+bool AppDisplayModeHandler::Parse(Extension* extension, std::u16string* error) {
   std::string display_mode_string;
   blink::mojom::DisplayMode display_mode =
       blink::mojom::DisplayMode::kUndefined;

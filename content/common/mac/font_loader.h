@@ -47,7 +47,7 @@ class FontLoader {
   // sending over IPC. On failure, zeroes and an invalid handle are reported
   // to the callback.
   CONTENT_EXPORT
-  static void LoadFont(const base::string16& font_name,
+  static void LoadFont(const std::u16string& font_name,
                        float font_point_size,
                        LoadedCallback callback);
 
@@ -69,7 +69,7 @@ class FontLoader {
 
   CONTENT_EXPORT
   static std::unique_ptr<ResultInternal> LoadFontForTesting(
-      const base::string16& font_name,
+      const std::u16string& font_name,
       float font_point_size);
 };
 

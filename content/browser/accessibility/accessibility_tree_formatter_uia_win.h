@@ -93,7 +93,7 @@ class AccessibilityTreeFormatterUia : public ui::AXTreeFormatterBase {
   void WriteElementArray(long propertyId,
                          IUIAutomationElementArray* array,
                          base::DictionaryValue* dict) const;
-  base::string16 GetNodeName(IUIAutomationElement* node) const;
+  std::u16string GetNodeName(IUIAutomationElement* node) const;
   std::string ProcessTreeForOutput(
       const base::DictionaryValue& node) const override;
   void ProcessPropertyForOutput(const std::string& property_name,

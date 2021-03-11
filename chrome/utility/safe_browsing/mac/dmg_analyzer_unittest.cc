@@ -49,7 +49,7 @@ class MockDMGIterator : public DMGIterator {
 
   bool Next() override { return ++index_ < entries_.size(); }
 
-  base::string16 GetPath() override {
+  std::u16string GetPath() override {
     EXPECT_LT(index_, entries_.size());
     return base::UTF8ToUTF16(entries_[index_].path);
   }

@@ -104,7 +104,7 @@ TEST_F(MessageSenderImplTest, SendDismissNotificationRequest) {
 
 TEST_F(MessageSenderImplTest, SendNotificationInlineReplyRequest) {
   const int expected_id = 24;
-  const base::string16 expected_reply(base::UTF8ToUTF16("Test message"));
+  const std::u16string expected_reply(base::UTF8ToUTF16("Test message"));
 
   proto::NotificationInlineReplyRequest request;
   request.set_notification_id(expected_id);

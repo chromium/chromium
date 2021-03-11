@@ -38,7 +38,7 @@ class TransactionImpl : public blink::mojom::IDBTransaction {
 
   // blink::mojom::IDBTransaction implementation
   void CreateObjectStore(int64_t object_store_id,
-                         const base::string16& name,
+                         const std::u16string& name,
                          const blink::IndexedDBKeyPath& key_path,
                          bool auto_increment) override;
   void DeleteObjectStore(int64_t object_store_id) override;

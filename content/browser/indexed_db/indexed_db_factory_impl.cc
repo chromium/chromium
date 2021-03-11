@@ -232,7 +232,7 @@ void IndexedDBFactoryImpl::GetDatabaseInfo(
 }
 
 void IndexedDBFactoryImpl::Open(
-    const base::string16& name,
+    const std::u16string& name,
     std::unique_ptr<IndexedDBPendingConnection> connection,
     const Origin& origin,
     const base::FilePath& data_directory) {
@@ -287,7 +287,7 @@ void IndexedDBFactoryImpl::Open(
 }
 
 void IndexedDBFactoryImpl::DeleteDatabase(
-    const base::string16& name,
+    const std::u16string& name,
     scoped_refptr<IndexedDBCallbacks> callbacks,
     const Origin& origin,
     const base::FilePath& data_directory,
@@ -329,7 +329,7 @@ void IndexedDBFactoryImpl::DeleteDatabase(
   // TODO(dmurph): Get rid of on-demand metadata loading, and store metadata
   // in-memory in the backing store.
   IndexedDBMetadataCoding metadata_coding;
-  std::vector<base::string16> names;
+  std::vector<std::u16string> names;
   s = metadata_coding.ReadDatabaseNames(
       factory->backing_store()->db(),
       factory->backing_store()->origin_identifier(), &names);
@@ -561,8 +561,8 @@ size_t IndexedDBFactoryImpl::GetConnectionCount(const Origin& origin) const {
 
 void IndexedDBFactoryImpl::NotifyIndexedDBContentChanged(
     const url::Origin& origin,
-    const base::string16& database_name,
-    const base::string16& object_store_name) {
+    const std::u16string& database_name,
+    const std::u16string& object_store_name) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!context_)
     return;
@@ -1013,7 +1013,7 @@ void IndexedDBFactoryImpl::RunTasksForOrigin(
 }
 
 bool IndexedDBFactoryImpl::IsDatabaseOpen(const Origin& origin,
-                                          const base::string16& name) const {
+                                          const std::u16string& name) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   auto it = factories_per_origin_.find(origin);
   if (it == factories_per_origin_.end())

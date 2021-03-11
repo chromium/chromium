@@ -101,7 +101,7 @@ CredentialProviderBrokerWin::CredentialProviderBrokerWin() = default;
 CredentialProviderBrokerWin::~CredentialProviderBrokerWin() = default;
 
 void CredentialProviderBrokerWin::OpenDevice(
-    const base::string16& input_device_path,
+    const std::u16string& input_device_path,
     OpenDeviceCallback callback) {
   base::win::ScopedDevInfo device_info_set(
       SetupDiGetClassDevs(&GUID_DEVINTERFACE_HID, nullptr, nullptr,

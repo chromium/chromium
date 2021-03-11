@@ -41,7 +41,7 @@ class InvertedIndexSearch : public Index {
               DeleteCallback callback) override;
   void UpdateDocuments(const std::vector<Data>& data,
                        UpdateDocumentsCallback callback) override;
-  void Find(const base::string16& query,
+  void Find(const std::u16string& query,
             uint32_t max_results,
             FindCallback callback) override;
   void ClearIndex(ClearIndexCallback callback) override;
@@ -49,7 +49,7 @@ class InvertedIndexSearch : public Index {
   // Returns document id and number of occurrences of |term|.
   // Document ids are sorted in alphabetical order.
   std::vector<std::pair<std::string, uint32_t>> FindTermForTesting(
-      const base::string16& term) const;
+      const std::u16string& term) const;
 
  private:
   void FinalizeAddOrUpdate(

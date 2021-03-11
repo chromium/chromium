@@ -120,7 +120,7 @@ const GURL& TestWebContents::GetLastCommittedURL() {
   return WebContentsImpl::GetLastCommittedURL();
 }
 
-const base::string16& TestWebContents::GetTitle() {
+const std::u16string& TestWebContents::GetTitle() {
   if (title_)
     return title_.value();
 
@@ -131,7 +131,7 @@ const std::string& TestWebContents::GetSaveFrameHeaders() {
   return save_frame_headers_;
 }
 
-const base::string16& TestWebContents::GetSuggestedFileName() {
+const std::u16string& TestWebContents::GetSuggestedFileName() {
   return suggested_filename_;
 }
 
@@ -170,7 +170,7 @@ void TestWebContents::SetLastCommittedURL(const GURL& url) {
   last_committed_url_ = url;
 }
 
-void TestWebContents::SetTitle(const base::string16& title) {
+void TestWebContents::SetTitle(const std::u16string& title) {
   title_ = title;
 }
 
@@ -351,7 +351,7 @@ void TestWebContents::SaveFrameWithHeaders(
     const GURL& url,
     const Referrer& referrer,
     const std::string& headers,
-    const base::string16& suggested_filename,
+    const std::u16string& suggested_filename,
     RenderFrameHost* rfh) {
   save_frame_headers_ = headers;
   suggested_filename_ = suggested_filename;

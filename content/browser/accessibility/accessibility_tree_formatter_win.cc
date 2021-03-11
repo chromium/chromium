@@ -349,14 +349,14 @@ void AccessibilityTreeFormatterWin::AddProperties(
   }
 }
 
-base::string16 RoleVariantToString(const base::win::ScopedVariant& role) {
+std::u16string RoleVariantToString(const base::win::ScopedVariant& role) {
   if (role.type() == VT_I4) {
     return base::WideToUTF16(IAccessible2RoleToString(V_I4(role.ptr())));
   } else if (role.type() == VT_BSTR) {
     BSTR bstr_role = V_BSTR(role.ptr());
     return base::WideToUTF16({bstr_role, SysStringLen(bstr_role)});
   }
-  return base::string16();
+  return std::u16string();
 }
 
 void AccessibilityTreeFormatterWin::AddMSAAProperties(
@@ -524,9 +524,9 @@ bool AccessibilityTreeFormatterWin::AddIA2Properties(
   if (ia2->get_attributes(temp_bstr.Receive()) == S_OK) {
     // get_attributes() returns a semicolon delimited string. Turn it into a
     // ListValue
-    std::vector<base::string16> ia2_attributes = base::SplitString(
+    std::vector<std::u16string> ia2_attributes = base::SplitString(
         base::WideToUTF16({temp_bstr.Get(), temp_bstr.Length()}),
-        base::string16(1, ';'), base::KEEP_WHITESPACE, base::SPLIT_WANT_ALL);
+        std::u16string(1, ';'), base::KEEP_WHITESPACE, base::SPLIT_WANT_ALL);
 
     base::Value::ListStorage attributes;
     attributes.reserve(ia2_attributes.size());
@@ -603,7 +603,7 @@ void AccessibilityTreeFormatterWin::AddIA2HypertextProperties(
     // Replace all embedded characters with the child indices of the
     // accessibility objects they refer to.
     std::wstring embedded_character = base::UTF16ToWide(
-        base::string16(1, BrowserAccessibilityComWin::kEmbeddedCharacter));
+        std::u16string(1, BrowserAccessibilityComWin::kEmbeddedCharacter));
     size_t character_index = 0;
     size_t hypertext_index = 0;
     while (hypertext_index < ia2_hypertext.length()) {
@@ -665,9 +665,9 @@ void AccessibilityTreeFormatterWin::AddIA2TableProperties(
     dict->SetIntPath("table_columns", table_columns);
 }
 
-static base::string16 ProcessAccessiblesArray(IUnknown** accessibles,
+static std::u16string ProcessAccessiblesArray(IUnknown** accessibles,
                                               LONG num_accessibles) {
-  base::string16 related_accessibles_string;
+  std::u16string related_accessibles_string;
   if (num_accessibles <= 0)
     return related_accessibles_string;
 
@@ -710,7 +710,7 @@ void AccessibilityTreeFormatterWin::AddIA2TableCellProperties(
   if (SUCCEEDED(
           ia2cell->get_rowHeaderCells(&row_headers, &n_row_header_cells)) &&
       n_row_header_cells > 0) {
-    base::string16 accessibles_desc =
+    std::u16string accessibles_desc =
         ProcessAccessiblesArray(row_headers, n_row_header_cells);
     CoTaskMemFree(row_headers);  // Free the array manually.
     dict->SetStringPath("row_headers", accessibles_desc);
@@ -721,7 +721,7 @@ void AccessibilityTreeFormatterWin::AddIA2TableCellProperties(
   if (SUCCEEDED(ia2cell->get_columnHeaderCells(&column_headers,
                                                &n_column_header_cells)) &&
       n_column_header_cells > 0) {
-    base::string16 accessibles_desc =
+    std::u16string accessibles_desc =
         ProcessAccessiblesArray(column_headers, n_column_header_cells);
     CoTaskMemFree(column_headers);  // Free the array manually.
     dict->SetStringPath("column_headers", accessibles_desc);
@@ -779,7 +779,7 @@ void AccessibilityTreeFormatterWin::AddIA2TextProperties(
     // DCHECK(start_offset == current_offset);  // Always at text range start.
     if (hr == S_OK && temp_bstr.Get() && wcslen(temp_bstr.Get())) {
       // Append offset:<number>.
-      base::string16 offset_str =
+      std::u16string offset_str =
           base::ASCIIToUTF16("offset:") + base::NumberToString16(start_offset);
       text_attributes.Append(offset_str);
       // Append name:value pairs.

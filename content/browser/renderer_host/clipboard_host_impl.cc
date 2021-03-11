@@ -155,7 +155,7 @@ void ClipboardHostImpl::GetSequenceNumber(ui::ClipboardBuffer clipboard_buffer,
 void ClipboardHostImpl::ReadAvailableTypes(
     ui::ClipboardBuffer clipboard_buffer,
     ReadAvailableTypesCallback callback) {
-  std::vector<base::string16> types;
+  std::vector<std::u16string> types;
   clipboard_->ReadAvailableTypes(clipboard_buffer, CreateDataEndpoint().get(),
                                  &types);
   std::move(callback).Run(types);
@@ -203,10 +203,10 @@ void ClipboardHostImpl::IsFormatAvailable(blink::mojom::ClipboardFormat format,
 void ClipboardHostImpl::ReadText(ui::ClipboardBuffer clipboard_buffer,
                                  ReadTextCallback callback) {
   if (!IsClipboardPasteAllowed(render_frame_routing_id_)) {
-    std::move(callback).Run(base::string16());
+    std::move(callback).Run(std::u16string());
     return;
   }
-  base::string16 result;
+  std::u16string result;
   auto data_dst = CreateDataEndpoint();
   if (clipboard_->IsFormatAvailable(ui::ClipboardFormatType::GetPlainTextType(),
                                     clipboard_buffer, data_dst.get())) {
@@ -228,7 +228,7 @@ void ClipboardHostImpl::ReadText(ui::ClipboardBuffer clipboard_buffer,
                        ui::ClipboardFormatType::GetPlainTextType(),
                        std::move(data),
                        base::BindOnce(
-                           [](base::string16 result, ReadTextCallback callback,
+                           [](std::u16string result, ReadTextCallback callback,
                               ClipboardPasteContentAllowed allowed) {
                              if (!allowed)
                                result.clear();
@@ -240,10 +240,10 @@ void ClipboardHostImpl::ReadText(ui::ClipboardBuffer clipboard_buffer,
 void ClipboardHostImpl::ReadHtml(ui::ClipboardBuffer clipboard_buffer,
                                  ReadHtmlCallback callback) {
   if (!IsClipboardPasteAllowed(render_frame_routing_id_)) {
-    std::move(callback).Run(base::string16(), GURL(), 0, 0);
+    std::move(callback).Run(std::u16string(), GURL(), 0, 0);
     return;
   }
-  base::string16 markup;
+  std::u16string markup;
   std::string src_url_str;
   uint32_t fragment_start = 0;
   uint32_t fragment_end = 0;
@@ -255,7 +255,7 @@ void ClipboardHostImpl::ReadHtml(ui::ClipboardBuffer clipboard_buffer,
   PasteIfPolicyAllowed(
       clipboard_buffer, ui::ClipboardFormatType::GetHtmlType(), std::move(data),
       base::BindOnce(
-          [](base::string16 markup, std::string src_url_str,
+          [](std::u16string markup, std::string src_url_str,
              uint32_t fragment_start, uint32_t fragment_end,
              ReadHtmlCallback callback, ClipboardPasteContentAllowed allowed) {
             if (!allowed)
@@ -270,17 +270,17 @@ void ClipboardHostImpl::ReadHtml(ui::ClipboardBuffer clipboard_buffer,
 void ClipboardHostImpl::ReadSvg(ui::ClipboardBuffer clipboard_buffer,
                                 ReadSvgCallback callback) {
   if (!IsClipboardPasteAllowed(render_frame_routing_id_)) {
-    std::move(callback).Run(base::string16());
+    std::move(callback).Run(std::u16string());
     return;
   }
-  base::string16 markup;
+  std::u16string markup;
   clipboard_->ReadSvg(clipboard_buffer, /*data_dst=*/nullptr, &markup);
 
   std::string data = base::UTF16ToUTF8(markup);
   PasteIfPolicyAllowed(clipboard_buffer, ui::ClipboardFormatType::GetSvgType(),
                        std::move(data),
                        base::BindOnce(
-                           [](base::string16 markup, ReadSvgCallback callback,
+                           [](std::u16string markup, ReadSvgCallback callback,
                               ClipboardPasteContentAllowed allowed) {
                              if (!allowed)
                                markup.clear();
@@ -400,13 +400,13 @@ void ClipboardHostImpl::ReadFiles(ui::ClipboardBuffer clipboard_buffer,
 }
 
 void ClipboardHostImpl::ReadCustomData(ui::ClipboardBuffer clipboard_buffer,
-                                       const base::string16& type,
+                                       const std::u16string& type,
                                        ReadCustomDataCallback callback) {
   if (!IsClipboardPasteAllowed(render_frame_routing_id_)) {
-    std::move(callback).Run(base::string16());
+    std::move(callback).Run(std::u16string());
     return;
   }
-  base::string16 result;
+  std::u16string result;
   auto data_dst = CreateDataEndpoint();
   clipboard_->ReadCustomData(clipboard_buffer, type, data_dst.get(), &result);
 
@@ -415,7 +415,7 @@ void ClipboardHostImpl::ReadCustomData(ui::ClipboardBuffer clipboard_buffer,
       clipboard_buffer, ui::ClipboardFormatType::GetWebCustomDataType(),
       std::move(data),
       base::BindOnce(
-          [](base::string16 result, ReadCustomDataCallback callback,
+          [](std::u16string result, ReadCustomDataCallback callback,
              ClipboardPasteContentAllowed allowed) {
             if (!allowed)
               result.clear();
@@ -424,16 +424,16 @@ void ClipboardHostImpl::ReadCustomData(ui::ClipboardBuffer clipboard_buffer,
           std::move(result), std::move(callback)));
 }
 
-void ClipboardHostImpl::WriteText(const base::string16& text) {
+void ClipboardHostImpl::WriteText(const std::u16string& text) {
   clipboard_writer_->WriteText(text);
 }
 
-void ClipboardHostImpl::WriteHtml(const base::string16& markup,
+void ClipboardHostImpl::WriteHtml(const std::u16string& markup,
                                   const GURL& url) {
   clipboard_writer_->WriteHTML(markup, url.spec());
 }
 
-void ClipboardHostImpl::WriteSvg(const base::string16& markup) {
+void ClipboardHostImpl::WriteSvg(const std::u16string& markup) {
   clipboard_writer_->WriteSvg(markup);
 }
 
@@ -442,7 +442,7 @@ void ClipboardHostImpl::WriteSmartPasteMarker() {
 }
 
 void ClipboardHostImpl::WriteCustomData(
-    const base::flat_map<base::string16, base::string16>& data) {
+    const base::flat_map<std::u16string, std::u16string>& data) {
   base::Pickle pickle;
   ui::WriteCustomDataToPickle(data, &pickle);
   clipboard_writer_->WritePickledData(
@@ -450,7 +450,7 @@ void ClipboardHostImpl::WriteCustomData(
 }
 
 void ClipboardHostImpl::WriteBookmark(const std::string& url,
-                                      const base::string16& title) {
+                                      const std::u16string& title) {
   clipboard_writer_->WriteBookmark(title, url);
 }
 

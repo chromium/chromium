@@ -151,7 +151,7 @@ base::Value ClientDirectiveToReadableDictionary(
                                       directive.policy_reference()));
 
   {
-    base::string16 checkin_delay;
+    std::u16string checkin_delay;
     bool success = base::TimeDurationFormatWithSeconds(
         base::TimeDelta::FromMilliseconds(directive.checkin_delay_millis()),
         base::DurationFormatWidth::DURATION_WIDTH_NARROW, &checkin_delay);
@@ -167,7 +167,7 @@ base::Value ClientDirectiveToReadableDictionary(
                  directive.retry_attempts());
 
   {
-    base::string16 retry_period;
+    std::u16string retry_period;
     bool success = base::TimeDurationFormatWithSeconds(
         base::TimeDelta::FromMilliseconds(directive.retry_period_millis()),
         base::DurationFormatWidth::DURATION_WIDTH_NARROW, &retry_period);

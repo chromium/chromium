@@ -112,7 +112,7 @@ class ContentChildServiceProcessHost
   mojo::PendingRemote<service_manager::mojom::Service> Launch(
       const service_manager::Identity& identity,
       sandbox::policy::SandboxType sandbox_type,
-      const base::string16& display_name,
+      const std::u16string& display_name,
       LaunchCallback callback) override {
     // Start a new process for this service.
     mojo::PendingRemote<service_manager::mojom::Service> remote;
@@ -141,7 +141,7 @@ class ServiceExecutableProcessHost
   mojo::PendingRemote<service_manager::mojom::Service> Launch(
       const service_manager::Identity& identity,
       sandbox::policy::SandboxType sandbox_type,
-      const base::string16& display_name,
+      const std::u16string& display_name,
       LaunchCallback callback) override {
     // TODO(https://crbug.com/781334): Support sandboxing.
     return launcher_.Start(identity, sandbox::policy::SandboxType::kNoSandbox,

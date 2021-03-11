@@ -74,7 +74,7 @@ bool GetOffsetFromTimezoneToGmt(const icu::TimeZone& timezone,
   return true;
 }
 
-base::string16 WeeklyTimeToLocalizedString(const WeeklyTime& weekly_time,
+std::u16string WeeklyTimeToLocalizedString(const WeeklyTime& weekly_time,
                                            base::Clock* clock) {
   WeeklyTime result = weekly_time;
   if (!weekly_time.timezone_offset()) {
@@ -83,7 +83,7 @@ base::string16 WeeklyTimeToLocalizedString(const WeeklyTime& weekly_time,
     auto local_time_zone = base::WrapUnique(icu::TimeZone::createDefault());
     if (!GetOffsetFromTimezoneToGmt(*local_time_zone, clock, &offset)) {
       LOG(ERROR) << "Unable to obtain offset for time agnostic timezone";
-      return base::string16();
+      return std::u16string();
     }
     result = weekly_time.ConvertToCustomTimezone(-offset);
   }

@@ -65,13 +65,13 @@ bool WebUIMessageHandler::ExtractDoubleValue(const base::ListValue* value,
   return false;
 }
 
-base::string16 WebUIMessageHandler::ExtractStringValue(
+std::u16string WebUIMessageHandler::ExtractStringValue(
     const base::ListValue* value) {
-  base::string16 string16_value;
+  std::u16string string16_value;
   if (value->GetString(0, &string16_value))
     return string16_value;
   NOTREACHED();
-  return base::string16();
+  return std::u16string();
 }
 
 void WebUIMessageHandler::ResolveJavascriptCallback(

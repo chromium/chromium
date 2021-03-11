@@ -76,8 +76,8 @@ class DevToolsURLLoaderInterceptor {
     };
 
     explicit AuthChallengeResponse(ResponseType response_type);
-    AuthChallengeResponse(const base::string16& username,
-                          const base::string16& password);
+    AuthChallengeResponse(const std::u16string& username,
+                          const std::u16string& password);
 
     const ResponseType response_type;
     const net::AuthCredentials credentials;

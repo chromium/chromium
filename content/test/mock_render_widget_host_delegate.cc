@@ -29,7 +29,7 @@ MockRenderWidgetHostDelegate::PreHandleKeyboardEvent(
 
 void MockRenderWidgetHostDelegate::ExecuteEditCommand(
     const std::string& command,
-    const base::Optional<base::string16>& value) {}
+    const base::Optional<std::u16string>& value) {}
 
 void MockRenderWidgetHostDelegate::Undo() {}
 

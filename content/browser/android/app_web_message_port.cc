@@ -71,7 +71,7 @@ JNI_AppWebMessagePort_DecodeStringMessage(
   std::vector<uint8_t> encoded_message;
   base::android::JavaByteArrayToByteVector(env, encoded_data, &encoded_message);
 
-  base::string16 message;
+  std::u16string message;
   if (!blink::DecodeStringMessage(encoded_message, &message))
     return nullptr;
 

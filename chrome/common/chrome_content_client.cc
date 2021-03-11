@@ -566,13 +566,13 @@ void ChromeContentClient::AddAdditionalSchemes(Schemes* schemes) {
 #endif
 }
 
-base::string16 ChromeContentClient::GetLocalizedString(int message_id) {
+std::u16string ChromeContentClient::GetLocalizedString(int message_id) {
   return l10n_util::GetStringUTF16(message_id);
 }
 
-base::string16 ChromeContentClient::GetLocalizedString(
+std::u16string ChromeContentClient::GetLocalizedString(
     int message_id,
-    const base::string16& replacement) {
+    const std::u16string& replacement) {
   return l10n_util::GetStringFUTF16(message_id, replacement);
 }
 

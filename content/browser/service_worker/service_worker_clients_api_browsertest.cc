@@ -93,7 +93,7 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerClientsApiBrowserTest, Navigate) {
   EXPECT_EQ(true, EvalJs(shell(), navigate_script));
 
   // The page should be navigated to empty.html.
-  const base::string16 title =
+  const std::u16string title =
       base::ASCIIToUTF16("ServiceWorker test - empty page");
   TitleWatcher title_watcher(shell()->web_contents(), title);
   EXPECT_EQ(title, title_watcher.WaitAndGetTitle());

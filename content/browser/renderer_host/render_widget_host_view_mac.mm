@@ -730,12 +730,12 @@ void RenderWidgetHostViewMac::Destroy() {
 }
 
 void RenderWidgetHostViewMac::SetTooltipText(
-    const base::string16& tooltip_text) {
+    const std::u16string& tooltip_text) {
   GetCursorManager()->SetTooltipTextForView(this, tooltip_text);
 }
 
 void RenderWidgetHostViewMac::DisplayTooltipText(
-    const base::string16& tooltip_text) {
+    const std::u16string& tooltip_text) {
   ns_view_->SetTooltipText(tooltip_text);
 }
 
@@ -765,7 +765,7 @@ namespace {
 // and needs to be recursive, and that's crazy difficult to do with a lambda.
 // TODO(avi): Move this to be a lambda when P0839R0 lands in C++.
 void AddTextNodesToVector(const ui::AXNode* node,
-                          std::vector<base::string16>* strings) {
+                          std::vector<std::u16string>* strings) {
   const ui::AXNodeData& node_data = node->data();
 
   if (node_data.role == ax::mojom::Role::kStaticText) {
@@ -780,10 +780,10 @@ void AddTextNodesToVector(const ui::AXNode* node,
     AddTextNodesToVector(child, strings);
 }
 
-using SpeechCallback = base::OnceCallback<void(const base::string16&)>;
+using SpeechCallback = base::OnceCallback<void(const std::u16string&)>;
 void CombineTextNodesAndMakeCallback(SpeechCallback callback,
                                      const ui::AXTreeUpdate& update) {
-  std::vector<base::string16> text_node_contents;
+  std::vector<std::u16string> text_node_contents;
   text_node_contents.reserve(update.nodes.size());
 
   ui::AXTree tree(update);
@@ -1117,7 +1117,7 @@ blink::mojom::PointerLockResult RenderWidgetHostViewMac::LockMouse(
   ns_view_->SetCursorLocked(true);
 
   // Clear the tooltip window.
-  ns_view_->SetTooltipText(base::string16());
+  ns_view_->SetTooltipText(std::u16string());
 
   return blink::mojom::PointerLockResult::kSuccess;
 }
@@ -1611,7 +1611,7 @@ void RenderWidgetHostViewMac::ForwardMouseEvent(
     host()->ForwardMouseEvent(web_event);
 
   if (web_event.GetType() == WebInputEvent::Type::kMouseLeave)
-    ns_view_->SetTooltipText(base::string16());
+    ns_view_->SetTooltipText(std::u16string());
 }
 
 void RenderWidgetHostViewMac::ForwardWheelEvent(
@@ -1683,7 +1683,7 @@ void RenderWidgetHostViewMac::SmartMagnify(
 }
 
 void RenderWidgetHostViewMac::ImeSetComposition(
-    const base::string16& text,
+    const std::u16string& text,
     const std::vector<ui::ImeTextSpan>& ime_text_spans,
     const gfx::Range& replacement_range,
     int selection_start,
@@ -1695,7 +1695,7 @@ void RenderWidgetHostViewMac::ImeSetComposition(
 }
 
 void RenderWidgetHostViewMac::ImeCommitText(
-    const base::string16& text,
+    const std::u16string& text,
     const gfx::Range& replacement_range) {
   if (auto* widget_host = GetWidgetForIme()) {
     widget_host->ImeCommitText(text, std::vector<ui::ImeTextSpan>(),
@@ -2082,7 +2082,7 @@ void RenderWidgetHostViewMac::OnGotStringForDictionaryOverlay(
     // selected.
     // https://crbug.com/830906
     if (auto* selection = GetTextSelection()) {
-      const base::string16& selected_text = selection->selected_text();
+      const std::u16string& selected_text = selection->selected_text();
       NSString* ns_selected_text = base::SysUTF16ToNSString(selected_text);
       if ([ns_selected_text length] == 0)
         return;

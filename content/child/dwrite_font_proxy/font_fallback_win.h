@@ -53,7 +53,7 @@ class FontFallback
  protected:
   ~FontFallback() override;
 
-  bool GetCachedFont(const base::string16& text,
+  bool GetCachedFont(const std::u16string& text,
                      const wchar_t* base_family_name,
                      const wchar_t* locale,
                      DWRITE_FONT_WEIGHT base_weight,

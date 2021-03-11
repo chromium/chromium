@@ -49,16 +49,16 @@ class CastResourceDelegate : public ui::ResourceBundle::Delegate {
   bool GetRawDataResource(int resource_id,
                           ui::ScaleFactor scale_factor,
                           base::StringPiece* value) const override;
-  bool GetLocalizedString(int message_id, base::string16* value) const override;
+  bool GetLocalizedString(int message_id, std::u16string* value) const override;
 
   // Adds/removes/clears extra localized strings.
   void AddExtraLocalizedString(int resource_id,
-                               const base::string16& localized);
+                               const std::u16string& localized);
   void RemoveExtraLocalizedString(int resource_id);
   void ClearAllExtraLocalizedStrings();
 
  private:
-  using ExtraLocaledStringMap = std::unordered_map<int, base::string16>;
+  using ExtraLocaledStringMap = std::unordered_map<int, std::u16string>;
 
   ExtraLocaledStringMap extra_localized_strings_;
 

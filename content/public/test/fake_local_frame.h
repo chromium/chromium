@@ -76,8 +76,8 @@ class FakeLocalFrame : public blink::mojom::LocalFrame {
   void OnScreensChange() override;
   void PostMessageEvent(
       const base::Optional<blink::RemoteFrameToken>& source_frame_token,
-      const base::string16& source_origin,
-      const base::string16& target_origin,
+      const std::u16string& source_origin,
+      const std::u16string& target_origin,
       blink::TransferableMessage message) override;
   void GetSavableResourceLinks(
       GetSavableResourceLinksCallback callback) override;

@@ -85,14 +85,14 @@ void ScreenlockBridge::UserPodCustomIconOptions::SetIcon(
 }
 
 void ScreenlockBridge::UserPodCustomIconOptions::SetTooltip(
-    const base::string16& tooltip,
+    const std::u16string& tooltip,
     bool autoshow) {
   tooltip_ = tooltip;
   autoshow_tooltip_ = autoshow;
 }
 
 void ScreenlockBridge::UserPodCustomIconOptions::SetAriaLabel(
-    const base::string16& aria_label) {
+    const std::u16string& aria_label) {
   aria_label_ = aria_label;
 }
 

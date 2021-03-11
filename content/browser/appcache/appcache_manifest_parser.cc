@@ -335,7 +335,7 @@ bool ParseManifest(const GURL& manifest_url,
   // purpose, but AppCache isn't important enough to add conversion code just
   // to accelerate manifest decoding.
   DCHECK_GE(manifest_size, 0);
-  base::string16 wide_manifest_bytes =
+  std::u16string wide_manifest_bytes =
       base::UTF8ToUTF16(base::StringPiece(manifest_bytes, manifest_size));
   std::string decoded_manifest_bytes = base::UTF16ToUTF8(wide_manifest_bytes);
 

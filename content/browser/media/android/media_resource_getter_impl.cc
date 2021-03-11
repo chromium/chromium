@@ -198,7 +198,7 @@ void MediaResourceGetterImpl::GetAuthCredentialsCallback(
   if (credentials)
     std::move(callback).Run(credentials->username(), credentials->password());
   else
-    std::move(callback).Run(base::string16(), base::string16());
+    std::move(callback).Run(std::u16string(), std::u16string());
 }
 
 void MediaResourceGetterImpl::GetPlatformPathFromURL(

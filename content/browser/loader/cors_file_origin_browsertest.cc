@@ -74,7 +74,7 @@ class CorsFileOriginBrowserTest : public ContentBrowserTest {
 
     // Does not appear in the expectations, but the title can be on unexpected
     // failures.
-    base::string16 wrong_origin_string =
+    std::u16string wrong_origin_string =
         base::ASCIIToUTF16("FAIL: response text does not match");
     watcher->AlsoWaitForTitle(wrong_origin_string);
     return watcher;
@@ -88,8 +88,8 @@ class CorsFileOriginBrowserTest : public ContentBrowserTest {
     return "cors_file_origin_test.html";
   }
 
-  const base::string16& pass_string() const { return pass_string_; }
-  const base::string16& fail_string() const { return fail_string_; }
+  const std::u16string& pass_string() const { return pass_string_; }
+  const std::u16string& fail_string() const { return fail_string_; }
 
   uint16_t port() {
     base::AutoLock lock(lock_);
@@ -174,8 +174,8 @@ class CorsFileOriginBrowserTest : public ContentBrowserTest {
   uint16_t port_;
   bool is_preflight_requested_ = false;
 
-  const base::string16 pass_string_;
-  const base::string16 fail_string_;
+  const std::u16string pass_string_;
+  const std::u16string fail_string_;
 
   DISALLOW_COPY_AND_ASSIGN(CorsFileOriginBrowserTest);
 };

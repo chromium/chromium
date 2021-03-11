@@ -495,8 +495,8 @@ bool BaseWebUIBrowserTest::RunJavascriptUsingHandler(
   // Get the user libraries. Preloading them individually is best, then
   // we can assign each one a filename for better stack traces. Otherwise
   // append them all to |content|.
-  base::string16 content;
-  std::vector<base::string16> libraries;
+  std::u16string content;
+  std::vector<std::u16string> libraries;
   if (!libraries_preloaded_) {
     BuildJavascriptLibraries(&libraries);
     if (!preload_frame) {
@@ -506,7 +506,7 @@ bool BaseWebUIBrowserTest::RunJavascriptUsingHandler(
   }
 
   if (!function_name.empty()) {
-    base::string16 called_function;
+    std::u16string called_function;
     if (is_test) {
       called_function = BuildRunTestJSCall(is_async, function_name,
                                            std::move(function_arguments));
@@ -525,7 +525,7 @@ bool BaseWebUIBrowserTest::RunJavascriptUsingHandler(
 
   bool result = true;
 
-  for (const base::string16& library : libraries)
+  for (const std::u16string& library : libraries)
     test_handler_->PreloadJavaScript(library, preload_frame);
 
   if (is_test)

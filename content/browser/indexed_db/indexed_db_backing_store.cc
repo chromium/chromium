@@ -317,9 +317,9 @@ bool DecodeV3ExternalObjects(const base::StringPiece& data,
   while (!slice.empty()) {
     bool is_file;
     int64_t blob_number;
-    base::string16 type;
+    std::u16string type;
     int64_t size;
-    base::string16 file_name;
+    std::u16string file_name;
 
     if (!DecodeBool(&slice, &is_file))
       return false;
@@ -362,9 +362,9 @@ bool DecodeExternalObjects(const std::string& data,
       case IndexedDBExternalObject::ObjectType::kBlob:
       case IndexedDBExternalObject::ObjectType::kFile: {
         int64_t blob_number;
-        base::string16 type;
+        std::u16string type;
         int64_t size;
-        base::string16 file_name;
+        std::u16string file_name;
 
         if (!DecodeVarInt(&slice, &blob_number) ||
             !DatabaseMetaDataKey::IsValidBlobNumber(blob_number)) {
@@ -814,7 +814,7 @@ Status IndexedDBBackingStore::AnyDatabaseContainsBlobs(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   Status status = leveldb::Status::OK();
-  std::vector<base::string16> names;
+  std::vector<std::u16string> names;
   IndexedDBMetadataCoding metadata_coding;
   status = metadata_coding.ReadDatabaseNames(db, origin_identifier_, &names);
   if (!status.ok())
@@ -870,7 +870,7 @@ Status IndexedDBBackingStore::UpgradeBlobEntriesToV4(
   DCHECK(filesystem_proxy_);
 
   Status status = leveldb::Status::OK();
-  std::vector<base::string16> names;
+  std::vector<std::u16string> names;
   IndexedDBMetadataCoding metadata_coding;
   status = metadata_coding.ReadDatabaseNames(db, origin_identifier_, &names);
   if (!status.ok())
@@ -957,7 +957,7 @@ Status IndexedDBBackingStore::ValidateBlobFiles(
   DCHECK(filesystem_proxy_);
 
   Status status = leveldb::Status::OK();
-  std::vector<base::string16> names;
+  std::vector<std::u16string> names;
   IndexedDBMetadataCoding metadata_coding;
   status = metadata_coding.ReadDatabaseNames(db, origin_identifier_, &names);
   if (!status.ok())
@@ -1097,7 +1097,7 @@ leveldb::Status IndexedDBBackingStore::GetCompleteMetadata(
 
   IndexedDBMetadataCoding metadata_coding;
   leveldb::Status status = leveldb::Status::OK();
-  std::vector<base::string16> names;
+  std::vector<std::u16string> names;
   status =
       metadata_coding.ReadDatabaseNames(db_.get(), origin_identifier_, &names);
   if (!status.ok())
@@ -1140,7 +1140,7 @@ bool IndexedDBBackingStore::RecordCorruptionInfo(
 }
 
 Status IndexedDBBackingStore::DeleteDatabase(
-    const base::string16& name,
+    const std::u16string& name,
     TransactionalLevelDBTransaction* transaction) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 #if DCHECK_IS_ON()

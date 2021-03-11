@@ -53,7 +53,7 @@ int CreateUniqueEntryID() {
 
 void RecursivelyGenerateFrameEntries(
     const blink::ExplodedFrameState& state,
-    const std::vector<base::Optional<base::string16>>& referenced_files,
+    const std::vector<base::Optional<std::u16string>>& referenced_files,
     NavigationEntryImpl::TreeNode* node) {
   // Set a single-frame PageState on the entry.
   blink::ExplodedPageState page_state;
@@ -72,13 +72,13 @@ void RecursivelyGenerateFrameEntries(
   DCHECK(!data.empty()) << "Shouldn't generate an empty PageState.";
 
   node->frame_entry = base::MakeRefCounted<FrameNavigationEntry>(
-      UTF16ToUTF8(state.target.value_or(base::string16())),
+      UTF16ToUTF8(state.target.value_or(std::u16string())),
       state.item_sequence_number, state.document_sequence_number, nullptr,
-      nullptr, GURL(state.url_string.value_or(base::string16())),
+      nullptr, GURL(state.url_string.value_or(std::u16string())),
       // TODO(nasko): Supply valid origin once the value is persisted across
       // session restore.
       nullptr /* origin */,
-      Referrer(GURL(state.referrer.value_or(base::string16())),
+      Referrer(GURL(state.referrer.value_or(std::u16string())),
                state.referrer_policy),
       state.initiator_origin, std::vector<GURL>(),
       blink::PageState::CreateFromEncodedData(data), "GET", -1,
@@ -92,7 +92,7 @@ void RecursivelyGenerateFrameEntries(
   // Don't pass the file list to subframes, since that would result in multiple
   // copies of it ending up in the combined list in GetPageState (via
   // RecursivelyGenerateFrameState).
-  std::vector<base::Optional<base::string16>> empty_file_list;
+  std::vector<base::Optional<std::u16string>> empty_file_list;
 
   for (const blink::ExplodedFrameState& child_state : state.children) {
     node->children.push_back(
@@ -102,7 +102,7 @@ void RecursivelyGenerateFrameEntries(
   }
 }
 
-base::Optional<base::string16> UrlToOptionalString16(const GURL& url) {
+base::Optional<std::u16string> UrlToOptionalString16(const GURL& url) {
   if (!url.is_valid())
     return base::nullopt;
   return base::UTF8ToUTF16(url.spec());
@@ -111,7 +111,7 @@ base::Optional<base::string16> UrlToOptionalString16(const GURL& url) {
 void RecursivelyGenerateFrameState(
     NavigationEntryImpl::TreeNode* node,
     blink::ExplodedFrameState* state,
-    std::vector<base::Optional<base::string16>>* referenced_files) {
+    std::vector<base::Optional<std::u16string>>* referenced_files) {
   // The FrameNavigationEntry's PageState contains just the ExplodedFrameState
   // for that particular frame.
   blink::ExplodedPageState exploded_page_state;
@@ -310,7 +310,7 @@ NavigationEntryImpl::NavigationEntryImpl()
                           GURL(),
                           Referrer(),
                           base::nullopt,
-                          base::string16(),
+                          std::u16string(),
                           ui::PAGE_TRANSITION_LINK,
                           false,
                           nullptr) {}
@@ -320,7 +320,7 @@ NavigationEntryImpl::NavigationEntryImpl(
     const GURL& url,
     const Referrer& referrer,
     const base::Optional<url::Origin>& initiator_origin,
-    const base::string16& title,
+    const std::u16string& title,
     ui::PageTransition transition_type,
     bool is_renderer_initiated,
     scoped_refptr<network::SharedURLLoaderFactory> blob_url_loader_factory)
@@ -424,12 +424,12 @@ const GURL& NavigationEntryImpl::GetVirtualURL() {
   return virtual_url_.is_empty() ? GetURL() : virtual_url_;
 }
 
-void NavigationEntryImpl::SetTitle(const base::string16& title) {
+void NavigationEntryImpl::SetTitle(const std::u16string& title) {
   title_ = title;
   cached_display_title_.clear();
 }
 
-const base::string16& NavigationEntryImpl::GetTitle() {
+const std::u16string& NavigationEntryImpl::GetTitle() {
   return title_;
 }
 
@@ -478,7 +478,7 @@ void NavigationEntryImpl::set_site_instance(
   frame_tree_->frame_entry->set_site_instance(std::move(site_instance));
 }
 
-const base::string16& NavigationEntryImpl::GetTitleForDisplay() {
+const std::u16string& NavigationEntryImpl::GetTitleForDisplay() {
   // Most pages have real titles. Don't even bother caching anything if this is
   // the case.
   if (!title_.empty())
@@ -490,7 +490,7 @@ const base::string16& NavigationEntryImpl::GetTitleForDisplay() {
     return cached_display_title_;
 
   // Use the virtual URL first if any, and fall back on using the real URL.
-  base::string16 title;
+  std::u16string title;
   if (!virtual_url_.is_empty()) {
     title = url_formatter::FormatUrl(virtual_url_);
   } else if (!GetURL().is_empty()) {
@@ -502,22 +502,22 @@ const base::string16& NavigationEntryImpl::GetTitleForDisplay() {
     // It is necessary to ignore the reference and query parameters or else
     // looking for slashes might accidentally return one of those values. See
     // https://crbug.com/503003.
-    base::string16::size_type refpos = title.find('#');
-    base::string16::size_type querypos = title.find('?');
-    base::string16::size_type lastpos;
-    if (refpos == base::string16::npos)
+    std::u16string::size_type refpos = title.find('#');
+    std::u16string::size_type querypos = title.find('?');
+    std::u16string::size_type lastpos;
+    if (refpos == std::u16string::npos)
       lastpos = querypos;
-    else if (querypos == base::string16::npos)
+    else if (querypos == std::u16string::npos)
       lastpos = refpos;
     else
       lastpos = (refpos < querypos) ? refpos : querypos;
-    base::string16::size_type slashpos = title.rfind('/', lastpos);
-    if (slashpos != base::string16::npos)
+    std::u16string::size_type slashpos = title.rfind('/', lastpos);
+    if (slashpos != std::u16string::npos)
       title = title.substr(slashpos + 1);
 
   } else if (GetURL().SchemeIs(kChromeUIUntrustedScheme)) {
     // For chrome-untrusted:// URLs, leave title blank until the page loads.
-    title = base::string16();
+    title = std::u16string();
 
   } else if (base::i18n::StringContainsStrongRTLChars(title)) {
     // Wrap the URL in an LTR embedding for proper handling of RTL characters.
@@ -529,7 +529,7 @@ const base::string16& NavigationEntryImpl::GetTitleForDisplay() {
 
 #if defined(OS_ANDROID)
   if (GetURL().SchemeIs(url::kContentScheme)) {
-    base::string16 file_display_name;
+    std::u16string file_display_name;
     if (base::MaybeGetFileDisplayName(base::FilePath(GetURL().spec()),
                                       &file_display_name)) {
       title = file_display_name;
@@ -969,7 +969,7 @@ base::flat_map<std::string, bool> NavigationEntryImpl::GetSubframeUniqueNames(
               child->frame_entry->page_state().ToEncodedData(),
               &exploded_page_state)) {
         blink::ExplodedFrameState frame_state = exploded_page_state.top;
-        if (UTF16ToUTF8(frame_state.url_string.value_or(base::string16())) ==
+        if (UTF16ToUTF8(frame_state.url_string.value_or(std::u16string())) ==
             url::kAboutBlankURL)
           is_about_blank = true;
       }

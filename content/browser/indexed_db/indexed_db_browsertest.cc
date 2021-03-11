@@ -144,7 +144,7 @@ class IndexedDBBrowserTest : public ContentBrowserTest,
     if (hash)
       url = GURL(url.spec() + hash);
 
-    base::string16 expected_title16(ASCIIToUTF16(expected_string));
+    std::u16string expected_title16(ASCIIToUTF16(expected_string));
     TitleWatcher title_watcher(shell->web_contents(), expected_title16);
     EXPECT_TRUE(NavigateToURL(shell, url));
     EXPECT_EQ(expected_title16, title_watcher.WaitAndGetTitle());
@@ -1105,7 +1105,7 @@ IN_PROC_BROWSER_TEST_F(
   NavigateAndWaitForTitle(new_shell, "version_change_blocked.html", "#tab2",
                           "setVersion(3) blocked");
 
-  base::string16 expected_title16(ASCIIToUTF16("setVersion(3) complete"));
+  std::u16string expected_title16(ASCIIToUTF16("setVersion(3) complete"));
   TitleWatcher title_watcher(new_shell->web_contents(), expected_title16);
 
   shell()->web_contents()->GetMainFrame()->GetProcess()->Shutdown(0);
@@ -1120,7 +1120,7 @@ IN_PROC_BROWSER_TEST_F(IndexedDBBrowserTest, ForceCloseEventTest) {
   constexpr char kFilename[] = "force_close_event.html";
   NavigateAndWaitForTitle(shell(), kFilename, nullptr, "connection ready");
   DeleteForOrigin(url::Origin::Create(GetTestUrl("indexeddb", kFilename)));
-  base::string16 expected_title16(ASCIIToUTF16("connection closed"));
+  std::u16string expected_title16(ASCIIToUTF16("connection closed"));
   TitleWatcher title_watcher(shell()->web_contents(), expected_title16);
   title_watcher.AlsoWaitForTitle(ASCIIToUTF16("connection closed with error"));
   EXPECT_EQ(expected_title16, title_watcher.WaitAndGetTitle());

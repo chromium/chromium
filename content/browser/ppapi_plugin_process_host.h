@@ -87,7 +87,7 @@ class PpapiPluginProcessHost : public BrowserChildProcessHostDelegate,
 
   // Returns the instances that match the specified process name.
   // It can only be called on the IO thread.
-  static void FindByName(const base::string16& name,
+  static void FindByName(const std::u16string& name,
                          std::vector<PpapiPluginProcessHost*>* hosts);
 
   // IPC::Sender implementation:

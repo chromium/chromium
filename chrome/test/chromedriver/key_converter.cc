@@ -186,7 +186,7 @@ bool KeyCodeFromSpecialWebDriverKey(char16_t key, ui::KeyboardCode* key_code) {
 bool KeyCodeFromShorthandKey(char16_t key_utf16,
                              ui::KeyboardCode* key_code,
                              bool* client_should_skip) {
-  base::string16 key_str_utf16;
+  std::u16string key_str_utf16;
   key_str_utf16.push_back(key_utf16);
   std::string key_str_utf8 = base::UTF16ToUTF8(key_str_utf16);
   if (key_str_utf8.length() != 1)
@@ -447,13 +447,13 @@ int GetKeyLocation(uint32_t code_point) {
 
 }  // namespace
 
-Status ConvertKeysToKeyEvents(const base::string16& client_keys,
+Status ConvertKeysToKeyEvents(const std::u16string& client_keys,
                               bool release_modifiers,
                               int* modifiers,
                               std::vector<KeyEvent>* client_key_events) {
   std::vector<KeyEvent> key_events;
 
-  base::string16 keys = client_keys;
+  std::u16string keys = client_keys;
   // Add an implicit NULL character to the end of the input to depress all
   // modifiers.
   if (release_modifiers)

@@ -82,11 +82,11 @@ void CastExtensionHost::DidStartNavigation(
 bool CastExtensionHost::DidAddMessageToConsole(
     content::WebContents* source,
     blink::mojom::ConsoleMessageLevel log_level,
-    const base::string16& message,
+    const std::u16string& message,
     int32_t line_no,
-    const base::string16& source_id) {
+    const std::u16string& source_id) {
   std::string context = "Cast Extension:";
-  base::string16 single_line_message;
+  std::u16string single_line_message;
   // Mult-line message is not friendly to dumpstate redact.
   base::ReplaceChars(message, base::ASCIIToUTF16("\n"),
                      base::ASCIIToUTF16("\\n "), &single_line_message);

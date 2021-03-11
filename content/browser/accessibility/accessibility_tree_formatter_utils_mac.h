@@ -109,7 +109,7 @@ class CONTENT_EXPORT AttributeInvoker final {
   id PropertyNodeToTextMarkerRange(const ui::AXPropertyNode&) const;
 
   gfx::NativeViewAccessible LineIndexToNode(
-      const base::string16 line_index) const;
+      const std::u16string line_index) const;
 
   const id node;
   const LineIndexer* line_indexer;

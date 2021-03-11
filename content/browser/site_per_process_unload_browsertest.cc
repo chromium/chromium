@@ -357,7 +357,7 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
   // the page a gesture to allow dialogs.
   web_contents->GetMainFrame()->DisableBeforeUnloadHangMonitorForTesting();
   web_contents->GetMainFrame()->ExecuteJavaScriptWithUserGestureForTests(
-      base::string16());
+      std::u16string());
 
   // Hang the first contents in a beforeunload dialog.
   BeforeUnloadBlockingDelegate test_delegate(web_contents);
@@ -993,7 +993,7 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
   // This performs window.open() and waits for the title of the original
   // document to change to signal that the unload handler has been registered.
   {
-    base::string16 title_when_loaded = base::UTF8ToUTF16("loaded");
+    std::u16string title_when_loaded = base::UTF8ToUTF16("loaded");
     TitleWatcher title_watcher(shell()->web_contents(), title_when_loaded);
     EXPECT_TRUE(
         ExecuteScript(root, JsReplace("var w = window.open($1)", open_url)));
@@ -1003,7 +1003,7 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
   // The closes the window and waits for the title of the original document to
   // change again to signal that the unload handler has run.
   {
-    base::string16 title_when_done = base::UTF8ToUTF16("unloaded");
+    std::u16string title_when_done = base::UTF8ToUTF16("unloaded");
     TitleWatcher title_watcher(shell()->web_contents(), title_when_done);
     EXPECT_TRUE(ExecuteScript(root, "w.close()"));
     EXPECT_EQ(title_watcher.WaitAndGetTitle(), title_when_done);

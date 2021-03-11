@@ -64,8 +64,8 @@ class CONTENT_EXPORT WebUIImpl : public WebUI,
   WebUIController* GetController() override;
   void SetController(std::unique_ptr<WebUIController> controller) override;
   float GetDeviceScaleFactor() override;
-  const base::string16& GetOverriddenTitle() override;
-  void OverrideTitle(const base::string16& title) override;
+  const std::u16string& GetOverriddenTitle() override;
+  void OverrideTitle(const std::u16string& title) override;
   int GetBindings() override;
   void SetBindings(int bindings) override;
   const std::vector<std::string>& GetRequestableSchemes() override;
@@ -114,7 +114,7 @@ class CONTENT_EXPORT WebUIImpl : public WebUI,
   void Send(const std::string& message, base::Value args) override;
 
   // Execute a string of raw JavaScript on the page.
-  void ExecuteJavascript(const base::string16& javascript);
+  void ExecuteJavascript(const std::u16string& javascript);
 
   // Called internally and by the owned WebUIMainFrameObserver.
   void DisallowJavascriptOnAllHandlers();
@@ -124,7 +124,7 @@ class CONTENT_EXPORT WebUIImpl : public WebUI,
 
   // Options that may be overridden by individual Web UI implementations. The
   // bool options default to false. See the public getters for more information.
-  base::string16 overridden_title_;  // Defaults to empty string.
+  std::u16string overridden_title_;  // Defaults to empty string.
   int bindings_;  // The bindings from BindingsPolicy that should be enabled for
                   // this page.
 

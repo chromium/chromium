@@ -62,7 +62,7 @@ class CONTENT_EXPORT IndexedDBClassFactory {
   // database has tasks to run.
   virtual std::pair<std::unique_ptr<IndexedDBDatabase>, leveldb::Status>
   CreateIndexedDBDatabase(
-      const base::string16& name,
+      const std::u16string& name,
       IndexedDBBackingStore* backing_store,
       IndexedDBFactory* factory,
       TasksAvailableCallback tasks_available_callback,

@@ -97,7 +97,7 @@ class MockRenderProcessHost : public RenderProcessHost {
   void OnForegroundServiceWorkerAdded() override;
   void OnForegroundServiceWorkerRemoved() override;
   StoragePartition* GetStoragePartition() override;
-  virtual void AddWord(const base::string16& word);
+  virtual void AddWord(const std::u16string& word);
   bool Shutdown(int exit_code) override;
   bool ShutdownRequested() override;
   bool FastShutdownIfPossible(size_t page_count,

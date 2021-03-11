@@ -267,14 +267,14 @@ class UnboundWidgetInputHandler : public blink::mojom::WidgetInputHandler {
   void CursorVisibilityChanged(bool visible) override {
     DLOG(WARNING) << "Input request on unbound interface";
   }
-  void ImeSetComposition(const base::string16& text,
+  void ImeSetComposition(const std::u16string& text,
                          const std::vector<ui::ImeTextSpan>& ime_text_spans,
                          const gfx::Range& range,
                          int32_t start,
                          int32_t end) override {
     DLOG(WARNING) << "Input request on unbound interface";
   }
-  void ImeCommitText(const base::string16& text,
+  void ImeCommitText(const std::u16string& text,
                      const std::vector<ui::ImeTextSpan>& ime_text_spans,
                      const gfx::Range& range,
                      int32_t relative_cursor_position,
@@ -2014,7 +2014,7 @@ void RenderWidgetHostImpl::GetSnapshotFromBrowser(
   RequestForceRedraw(snapshot_id);
 }
 
-void RenderWidgetHostImpl::SelectionChanged(const base::string16& text,
+void RenderWidgetHostImpl::SelectionChanged(const std::u16string& text,
                                             uint32_t offset,
                                             const gfx::Range& range) {
   if (view_)
@@ -2109,7 +2109,7 @@ void RenderWidgetHostImpl::NotifyTextDirection() {
 }
 
 void RenderWidgetHostImpl::ImeSetComposition(
-    const base::string16& text,
+    const std::u16string& text,
     const std::vector<ui::ImeTextSpan>& ime_text_spans,
     const gfx::Range& replacement_range,
     int selection_start,
@@ -2124,7 +2124,7 @@ void RenderWidgetHostImpl::ImeSetComposition(
 }
 
 void RenderWidgetHostImpl::ImeCommitText(
-    const base::string16& text,
+    const std::u16string& text,
     const std::vector<ui::ImeTextSpan>& ime_text_spans,
     const gfx::Range& replacement_range,
     int relative_cursor_pos) {
@@ -2148,7 +2148,7 @@ void RenderWidgetHostImpl::ImeFinishComposingText(bool keep_selection) {
 }
 
 void RenderWidgetHostImpl::ImeCancelComposition() {
-  GetWidgetInputHandler()->ImeSetComposition(base::string16(),
+  GetWidgetInputHandler()->ImeSetComposition(std::u16string(),
                                              std::vector<ui::ImeTextSpan>(),
                                              gfx::Range::InvalidRange(), 0, 0);
 }
@@ -2349,7 +2349,7 @@ void RenderWidgetHostImpl::ShowPopup(const gfx::Rect& initial_rect,
 }
 
 void RenderWidgetHostImpl::SetToolTipText(
-    const base::string16& tooltip_text,
+    const std::u16string& tooltip_text,
     base::i18n::TextDirection text_direction_hint) {
   if (!GetView())
     return;
@@ -2367,7 +2367,7 @@ void RenderWidgetHostImpl::SetToolTipText(
   // trying to detect the directionality from the tooltip text rather than the
   // element direction.  One could argue that would be a preferable solution
   // but we use the current approach to match Fx & IE's behavior.
-  base::string16 wrapped_tooltip_text = tooltip_text;
+  std::u16string wrapped_tooltip_text = tooltip_text;
   if (!tooltip_text.empty()) {
     if (text_direction_hint == base::i18n::LEFT_TO_RIGHT) {
       // Force the tooltip to have LTR directionality.

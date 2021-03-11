@@ -19,7 +19,7 @@ MockKeyboard::~MockKeyboard() {
 int MockKeyboard::GetCharacters(Layout layout,
                                 int key_code,
                                 Modifiers modifiers,
-                                base::string16* output) {
+                                std::u16string* output) {
 #if defined(OS_WIN)
   CHECK(output);
   // Change the keyboard layout only when we have to because it takes a lot of

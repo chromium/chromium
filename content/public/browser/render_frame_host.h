@@ -392,26 +392,26 @@ class CONTENT_EXPORT RenderFrameHost : public IPC::Listener,
   // is semantically equivalent to
   //
   //   ExecuteJavaScript("obj.foo(1, true)", callback)
-  virtual void ExecuteJavaScriptMethod(const base::string16& object_name,
-                                       const base::string16& method_name,
+  virtual void ExecuteJavaScriptMethod(const std::u16string& object_name,
+                                       const std::u16string& method_name,
                                        base::Value arguments,
                                        JavaScriptResultCallback callback) = 0;
 
   // This is the default API to run JavaScript in this frame. This API can only
   // be called on chrome:// or devtools:// URLs.
-  virtual void ExecuteJavaScript(const base::string16& javascript,
+  virtual void ExecuteJavaScript(const std::u16string& javascript,
                                  JavaScriptResultCallback callback) = 0;
 
   // This runs the JavaScript in an isolated world of the top of this frame's
   // context.
   virtual void ExecuteJavaScriptInIsolatedWorld(
-      const base::string16& javascript,
+      const std::u16string& javascript,
       JavaScriptResultCallback callback,
       int32_t world_id) = 0;
 
   // This runs the JavaScript, but without restrictions. THIS IS ONLY FOR TESTS.
   virtual void ExecuteJavaScriptForTests(
-      const base::string16& javascript,
+      const std::u16string& javascript,
       JavaScriptResultCallback callback,
       int32_t world_id = ISOLATED_WORLD_ID_GLOBAL) = 0;
 
@@ -420,7 +420,7 @@ class CONTENT_EXPORT RenderFrameHost : public IPC::Listener,
   // notification to test functionalities that are gated by user
   // activation.
   virtual void ExecuteJavaScriptWithUserGestureForTests(
-      const base::string16& javascript,
+      const std::u16string& javascript,
       int32_t world_id = ISOLATED_WORLD_ID_GLOBAL) = 0;
 
   // Send a message to the RenderFrame to trigger an action on an

@@ -110,7 +110,7 @@ void WebTestShellPlatformDelegate::SetAddressBarURL(Shell* shell,
 }
 
 void WebTestShellPlatformDelegate::SetTitle(Shell* shell,
-                                            const base::string16& title) {
+                                            const std::u16string& title) {
   if (!IsHeadless())
     ShellPlatformDelegate::SetTitle(shell, title);
   // Nothing in headless mode.

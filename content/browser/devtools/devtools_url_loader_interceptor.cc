@@ -49,8 +49,8 @@ DevToolsURLLoaderInterceptor::AuthChallengeResponse::AuthChallengeResponse(
 }
 
 DevToolsURLLoaderInterceptor::AuthChallengeResponse::AuthChallengeResponse(
-    const base::string16& username,
-    const base::string16& password)
+    const std::u16string& username,
+    const std::u16string& password)
     : response_type(kProvideCredentials), credentials(username, password) {}
 
 DevToolsURLLoaderInterceptor::FilterEntry::FilterEntry(

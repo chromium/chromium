@@ -19,9 +19,9 @@ namespace {
 
 // Returns a string of |text| marked the hits in |match| using block bracket.
 // e.g. text= "Text", match.hits = [{0,1}], returns "[T]ext".
-std::string MatchHit(const base::string16& text,
+std::string MatchHit(const std::u16string& text,
                      const TokenizedStringMatch& match) {
-  base::string16 marked = text;
+  std::u16string marked = text;
 
   const TokenizedStringMatch::Hits& hits = match.hits();
   for (TokenizedStringMatch::Hits::const_reverse_iterator it = hits.rbegin();
@@ -48,7 +48,7 @@ TEST(TokenizedStringMatchTest, NotMatch) {
 
   TokenizedStringMatch match;
   for (size_t i = 0; i < base::size(kTestCases); ++i) {
-    const base::string16 text(base::UTF8ToUTF16(kTestCases[i].text));
+    const std::u16string text(base::UTF8ToUTF16(kTestCases[i].text));
     EXPECT_FALSE(match.Calculate(base::UTF8ToUTF16(kTestCases[i].query), text))
         << "Test case " << i << " : text=" << kTestCases[i].text
         << ", query=" << kTestCases[i].query;
@@ -75,7 +75,7 @@ TEST(TokenizedStringMatchTest, Match) {
 
   TokenizedStringMatch match;
   for (size_t i = 0; i < base::size(kTestCases); ++i) {
-    const base::string16 text(base::UTF8ToUTF16(kTestCases[i].text));
+    const std::u16string text(base::UTF8ToUTF16(kTestCases[i].text));
     EXPECT_TRUE(match.Calculate(base::UTF8ToUTF16(kTestCases[i].query), text));
     EXPECT_EQ(kTestCases[i].expect, MatchHit(text, match));
   }
@@ -107,7 +107,7 @@ TEST(TokenizedStringMatchTest, Relevance) {
   TokenizedStringMatch match_low;
   TokenizedStringMatch match_high;
   for (size_t i = 0; i < base::size(kTestCases); ++i) {
-    const base::string16 text(base::UTF8ToUTF16(kTestCases[i].text));
+    const std::u16string text(base::UTF8ToUTF16(kTestCases[i].text));
     EXPECT_TRUE(
         match_low.Calculate(base::UTF8ToUTF16(kTestCases[i].query_low), text));
     EXPECT_TRUE(match_high.Calculate(
@@ -141,7 +141,7 @@ TEST(TokenizedStringMatchTest, AbsoluteRelevance) {
 
   TokenizedStringMatch match;
   for (size_t i = 0; i < base::size(kTestCases); ++i) {
-    const base::string16 text(base::UTF8ToUTF16(kTestCases[i].text));
+    const std::u16string text(base::UTF8ToUTF16(kTestCases[i].text));
     EXPECT_TRUE(match.Calculate(base::UTF8ToUTF16(kTestCases[i].query), text));
     EXPECT_NEAR(match.relevance(), kTestCases[i].expected_score, kEpsilon)
         << "Test case " << i << " : text=" << kTestCases[i].text

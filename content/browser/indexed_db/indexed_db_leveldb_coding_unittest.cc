@@ -253,7 +253,7 @@ TEST(IndexedDBLevelDBCodingTest, DecodeInt) {
   }
 }
 
-static std::string WrappedEncodeString(base::string16 value) {
+static std::string WrappedEncodeString(std::u16string value) {
   std::string buffer;
   EncodeString(value, &buffer);
   return buffer;
@@ -266,20 +266,20 @@ TEST(IndexedDBLevelDBCodingTest, EncodeString) {
   EXPECT_EQ(0u, WrappedEncodeString(ASCIIToUTF16("")).size());
   EXPECT_EQ(2u, WrappedEncodeString(ASCIIToUTF16("a")).size());
   EXPECT_EQ(6u, WrappedEncodeString(ASCIIToUTF16("foo")).size());
-  EXPECT_EQ(6u, WrappedEncodeString(base::string16(test_string_a)).size());
-  EXPECT_EQ(4u, WrappedEncodeString(base::string16(test_string_b)).size());
+  EXPECT_EQ(6u, WrappedEncodeString(std::u16string(test_string_a)).size());
+  EXPECT_EQ(4u, WrappedEncodeString(std::u16string(test_string_b)).size());
 }
 
 TEST(IndexedDBLevelDBCodingTest, DecodeString) {
   const char16_t test_string_a[] = {'f', 'o', 'o', '\0'};
   const char16_t test_string_b[] = {0xdead, 0xbeef, '\0'};
 
-  std::vector<base::string16> test_cases = {base::string16(), ASCIIToUTF16("a"),
+  std::vector<std::u16string> test_cases = {std::u16string(), ASCIIToUTF16("a"),
                                             ASCIIToUTF16("foo"), test_string_a,
                                             test_string_b};
 
   for (size_t i = 0; i < test_cases.size(); ++i) {
-    const base::string16& test_case = test_cases[i];
+    const std::u16string& test_case = test_cases[i];
     std::string v = WrappedEncodeString(test_case);
 
     StringPiece slice;
@@ -287,7 +287,7 @@ TEST(IndexedDBLevelDBCodingTest, DecodeString) {
       slice = StringPiece(&*v.begin(), v.size());
     }
 
-    base::string16 result;
+    std::u16string result;
     EXPECT_TRUE(DecodeString(&slice, &result));
     EXPECT_EQ(test_case, result);
     EXPECT_TRUE(slice.empty());
@@ -301,7 +301,7 @@ TEST(IndexedDBLevelDBCodingTest, DecodeString) {
   }
 }
 
-static std::string WrappedEncodeStringWithLength(base::string16 value) {
+static std::string WrappedEncodeStringWithLength(std::u16string value) {
   std::string buffer;
   EncodeStringWithLength(value, &buffer);
   return buffer;
@@ -311,12 +311,12 @@ TEST(IndexedDBLevelDBCodingTest, EncodeStringWithLength) {
   const char16_t test_string_a[] = {'f', 'o', 'o', '\0'};
   const char16_t test_string_b[] = {0xdead, 0xbeef, '\0'};
 
-  EXPECT_EQ(1u, WrappedEncodeStringWithLength(base::string16()).size());
+  EXPECT_EQ(1u, WrappedEncodeStringWithLength(std::u16string()).size());
   EXPECT_EQ(3u, WrappedEncodeStringWithLength(ASCIIToUTF16("a")).size());
   EXPECT_EQ(
-      7u, WrappedEncodeStringWithLength(base::string16(test_string_a)).size());
+      7u, WrappedEncodeStringWithLength(std::u16string(test_string_a)).size());
   EXPECT_EQ(
-      5u, WrappedEncodeStringWithLength(base::string16(test_string_b)).size());
+      5u, WrappedEncodeStringWithLength(std::u16string(test_string_b)).size());
 }
 
 TEST(IndexedDBLevelDBCodingTest, DecodeStringWithLength) {
@@ -329,19 +329,19 @@ TEST(IndexedDBLevelDBCodingTest, DecodeStringWithLength) {
     long_string[i] = i;
   long_string[kLongStringLen] = 0;
 
-  std::vector<base::string16> test_cases = {ASCIIToUTF16(""),
+  std::vector<std::u16string> test_cases = {ASCIIToUTF16(""),
                                             ASCIIToUTF16("a"),
                                             ASCIIToUTF16("foo"),
-                                            base::string16(test_string_a),
-                                            base::string16(test_string_b),
-                                            base::string16(long_string)};
+                                            std::u16string(test_string_a),
+                                            std::u16string(test_string_b),
+                                            std::u16string(long_string)};
 
   for (size_t i = 0; i < test_cases.size(); ++i) {
-    base::string16 s = test_cases[i];
+    std::u16string s = test_cases[i];
     std::string v = WrappedEncodeStringWithLength(s);
     ASSERT_GT(v.size(), 0u);
     StringPiece slice(v);
-    base::string16 res;
+    std::u16string res;
     EXPECT_TRUE(DecodeStringWithLength(&slice, &res));
     EXPECT_EQ(s, res);
     EXPECT_TRUE(slice.empty());
@@ -382,24 +382,24 @@ TEST(IndexedDBLevelDBCodingTest, CompareEncodedStringsWithLength) {
   const char16_t test_string_e[] = {0xd834, 0xdd1e, '\0'};
   const char16_t test_string_f[] = {0xfffd, '\0'};
 
-  std::vector<base::string16> test_cases = {
+  std::vector<std::u16string> test_cases = {
       ASCIIToUTF16(""),
       ASCIIToUTF16("a"),
       ASCIIToUTF16("b"),
       ASCIIToUTF16("baaa"),
       ASCIIToUTF16("baab"),
       ASCIIToUTF16("c"),
-      base::string16(test_string_a),
-      base::string16(test_string_b),
-      base::string16(test_string_c),
-      base::string16(test_string_d),
-      base::string16(test_string_e),
-      base::string16(test_string_f),
+      std::u16string(test_string_a),
+      std::u16string(test_string_b),
+      std::u16string(test_string_c),
+      std::u16string(test_string_d),
+      std::u16string(test_string_e),
+      std::u16string(test_string_f),
   };
 
   for (size_t i = 0; i < test_cases.size() - 1; ++i) {
-    base::string16 a = test_cases[i];
-    base::string16 b = test_cases[i + 1];
+    std::u16string a = test_cases[i];
+    std::u16string b = test_cases[i + 1];
 
     EXPECT_LT(a.compare(b), 0);
     EXPECT_GT(b.compare(a), 0);
@@ -567,7 +567,7 @@ TEST(IndexedDBLevelDBCodingTest, EncodeDecodeIDBKeyPath) {
   }
 
   {
-    key_paths.push_back(IndexedDBKeyPath(base::string16()));
+    key_paths.push_back(IndexedDBKeyPath(std::u16string()));
     char expected[] = {0, 0,  // Header
                        1,     // Type is string
                        0      // Length is 0
@@ -598,7 +598,7 @@ TEST(IndexedDBLevelDBCodingTest, EncodeDecodeIDBKeyPath) {
   }
 
   {
-    std::vector<base::string16> array = {base::string16(), ASCIIToUTF16("foo"),
+    std::vector<std::u16string> array = {std::u16string(), ASCIIToUTF16("foo"),
                                          ASCIIToUTF16("foo.bar")};
 
     key_paths.push_back(IndexedDBKeyPath(array));
@@ -686,7 +686,7 @@ TEST(IndexedDBLevelDBCodingTest, DecodeLegacyIDBKeyPath) {
   std::vector<std::string> encoded_paths;
 
   {
-    key_paths.push_back(IndexedDBKeyPath(base::string16()));
+    key_paths.push_back(IndexedDBKeyPath(std::u16string()));
     encoded_paths.push_back(std::string());
   }
   {

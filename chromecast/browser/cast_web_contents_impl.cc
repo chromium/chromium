@@ -343,22 +343,22 @@ void CastWebContentsImpl::PostMessageToMainFrame(
     std::vector<blink::WebMessagePort> ports) {
   DCHECK(!data.empty());
 
-  base::string16 data_utf16;
+  std::u16string data_utf16;
   data_utf16 = base::UTF8ToUTF16(data);
 
   // If origin is set as wildcard, no origin scoping would be applied.
   constexpr char kWildcardOrigin[] = "*";
-  base::Optional<base::string16> target_origin_utf16;
+  base::Optional<std::u16string> target_origin_utf16;
   if (target_origin != kWildcardOrigin)
     target_origin_utf16 = base::UTF8ToUTF16(target_origin);
 
   content::MessagePortProvider::PostMessageToFrame(
-      web_contents(), base::string16(), target_origin_utf16, data_utf16,
+      web_contents(), std::u16string(), target_origin_utf16, data_utf16,
       std::move(ports));
 }
 
 void CastWebContentsImpl::ExecuteJavaScript(
-    const base::string16& javascript,
+    const std::u16string& javascript,
     base::OnceCallback<void(base::Value)> callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!web_contents_ || closing_ || !main_frame_loaded_ ||

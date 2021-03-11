@@ -27,8 +27,8 @@ class ShellJavaScriptDialog {
   ShellJavaScriptDialog(ShellJavaScriptDialogManager* manager,
                         gfx::NativeWindow parent_window,
                         JavaScriptDialogType dialog_type,
-                        const base::string16& message_text,
-                        const base::string16& default_prompt_text,
+                        const std::u16string& message_text,
+                        const std::u16string& default_prompt_text,
                         JavaScriptDialogManager::DialogClosedCallback callback);
   ~ShellJavaScriptDialog();
 
@@ -43,8 +43,8 @@ class ShellJavaScriptDialog {
   ShellJavaScriptDialogManager* manager_;
   JavaScriptDialogType dialog_type_;
   HWND dialog_win_;
-  base::string16 message_text_;
-  base::string16 default_prompt_text_;
+  std::u16string message_text_;
+  std::u16string default_prompt_text_;
   static INT_PTR CALLBACK DialogProc(HWND dialog, UINT message, WPARAM wparam,
                                      LPARAM lparam);
 #endif

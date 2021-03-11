@@ -707,7 +707,7 @@ IN_PROC_BROWSER_TEST_F(TrustTokenBrowsertest, OverlongAdditionalSigningData) {
   // network::kTrustTokenAdditionalSigningDataMaxSizeBytes code units, once it's
   // converted to UTF-8 it will contain more than that many bytes, so we expect
   // that it will get rejected by the network service.
-  base::string16 overlong_signing_data(
+  std::u16string overlong_signing_data(
       network::kTrustTokenAdditionalSigningDataMaxSizeBytes,
       u'€' /* char16 literal */);
   ASSERT_LE(overlong_signing_data.size(),

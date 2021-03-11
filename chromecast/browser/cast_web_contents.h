@@ -161,7 +161,7 @@ class CastWebContents {
 
     // These methods are calls forwarded from WebContentsObserver.
     virtual void MainFrameResized(const gfx::Rect& bounds) {}
-    virtual void UpdateTitle(const base::string16& title) {}
+    virtual void UpdateTitle(const std::u16string& title) {}
     virtual void UpdateFaviconURL(GURL icon_url) {}
     virtual void DidFinishBlockedNavigation(GURL url) {}
     virtual void DidFirstVisuallyNonEmptyPaint() {}
@@ -362,7 +362,7 @@ class CastWebContents {
   // default-constructed callback. If provided, the callback
   // will be invoked on the UI thread.
   virtual void ExecuteJavaScript(
-      const base::string16& javascript,
+      const std::u16string& javascript,
       base::OnceCallback<void(base::Value)> callback) = 0;
 
   // ===========================================================================

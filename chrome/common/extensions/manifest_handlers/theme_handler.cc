@@ -22,7 +22,7 @@ namespace errors = manifest_errors;
 namespace {
 
 bool LoadImages(const base::DictionaryValue* theme_value,
-                base::string16* error,
+                std::u16string* error,
                 ThemeInfo* theme_info) {
   const base::DictionaryValue* images_value = NULL;
   if (theme_value->GetDictionary(keys::kThemeImages, &images_value)) {
@@ -57,7 +57,7 @@ bool LoadImages(const base::DictionaryValue* theme_value,
 }
 
 bool LoadColors(const base::DictionaryValue* theme_value,
-                base::string16* error,
+                std::u16string* error,
                 ThemeInfo* theme_info) {
   const base::DictionaryValue* colors_value = NULL;
   if (theme_value->GetDictionary(keys::kThemeColors, &colors_value)) {
@@ -89,7 +89,7 @@ bool LoadColors(const base::DictionaryValue* theme_value,
 }
 
 bool LoadTints(const base::DictionaryValue* theme_value,
-               base::string16* error,
+               std::u16string* error,
                ThemeInfo* theme_info) {
   const base::DictionaryValue* tints_value = NULL;
   if (!theme_value->GetDictionary(keys::kThemeTints, &tints_value))
@@ -114,7 +114,7 @@ bool LoadTints(const base::DictionaryValue* theme_value,
 }
 
 bool LoadDisplayProperties(const base::DictionaryValue* theme_value,
-                           base::string16* error,
+                           std::u16string* error,
                            ThemeInfo* theme_info) {
   const base::DictionaryValue* display_properties_value = NULL;
   if (theme_value->GetDictionary(keys::kThemeDisplayProperties,
@@ -168,7 +168,7 @@ ThemeHandler::ThemeHandler() {
 ThemeHandler::~ThemeHandler() {
 }
 
-bool ThemeHandler::Parse(Extension* extension, base::string16* error) {
+bool ThemeHandler::Parse(Extension* extension, std::u16string* error) {
   const base::DictionaryValue* theme_value = NULL;
   if (!extension->manifest()->GetDictionary(keys::kTheme, &theme_value)) {
     *error = base::ASCIIToUTF16(errors::kInvalidTheme);

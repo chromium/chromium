@@ -95,7 +95,7 @@ class CONTENT_EXPORT TouchSelectionControllerClientAura
   void ExecuteCommand(int command_id, int event_flags) override;
   void RunContextMenu() override;
   bool ShouldShowQuickMenu() override;
-  base::string16 GetSelectedText() override;
+  std::u16string GetSelectedText() override;
 
   // Not owned, non-null for the lifetime of this object.
   RenderWidgetHostViewAura* rwhva_;

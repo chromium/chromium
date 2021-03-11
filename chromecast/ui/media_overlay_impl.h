@@ -43,7 +43,7 @@ class MediaOverlayImpl : public MediaOverlay,
 
   // MediaOverlay implementation:
   void SetController(Controller* controller) override;
-  void ShowMessage(const base::string16& message) override;
+  void ShowMessage(const std::u16string& message) override;
   void ShowVolumeBar(float volume) override;
 
   // media::MediaPipelineObserver implementation
@@ -60,7 +60,7 @@ class MediaOverlayImpl : public MediaOverlay,
 
   void HideVolumeWidget();
 
-  void ShowToast(const base::string16& text);
+  void ShowToast(const std::u16string& text);
   void HideToast();
 
   std::unique_ptr<views::Widget> CreateOverlayWidget(

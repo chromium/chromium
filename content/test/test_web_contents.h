@@ -62,7 +62,7 @@ class TestWebContents : public WebContentsImpl, public WebContentsTester {
                     bool bypass_cache,
                     ImageDownloadCallback callback) override;
   const GURL& GetLastCommittedURL() override;
-  const base::string16& GetTitle() override;
+  const std::u16string& GetTitle() override;
 
   // WebContentsTester implementation.
   void CommitPendingNavigation() override;
@@ -76,7 +76,7 @@ class TestWebContents : public WebContentsImpl, public WebContentsTester {
   void SetOpener(WebContents* opener) override;
   void SetIsCrashed(base::TerminationStatus status, int error_code) override;
   const std::string& GetSaveFrameHeaders() override;
-  const base::string16& GetSuggestedFileName() override;
+  const std::u16string& GetSuggestedFileName() override;
   bool HasPendingDownloadImage(const GURL& url) override;
   bool TestDidDownloadImage(
       const GURL& url,
@@ -84,7 +84,7 @@ class TestWebContents : public WebContentsImpl, public WebContentsTester {
       const std::vector<SkBitmap>& bitmaps,
       const std::vector<gfx::Size>& original_bitmap_sizes) override;
   void SetLastCommittedURL(const GURL& url) override;
-  void SetTitle(const base::string16& new_title) override;
+  void SetTitle(const std::u16string& new_title) override;
   void SetMainFrameMimeType(const std::string& mime_type) override;
   const std::string& GetContentsMimeType() override;
   void SetIsCurrentlyAudible(bool audible) override;
@@ -174,7 +174,7 @@ class TestWebContents : public WebContentsImpl, public WebContentsTester {
   void SaveFrameWithHeaders(const GURL& url,
                             const Referrer& referrer,
                             const std::string& headers,
-                            const base::string16& suggested_filename,
+                            const std::u16string& suggested_filename,
                             RenderFrameHost* rfh) override;
   void ReattachToOuterWebContentsFrame() override {}
   void SetPageFrozen(bool frozen) override;
@@ -184,12 +184,12 @@ class TestWebContents : public WebContentsImpl, public WebContentsTester {
   // See set_web_preferences_changed_counter() above. May be nullptr.
   int* web_preferences_changed_counter_;
   std::string save_frame_headers_;
-  base::string16 suggested_filename_;
+  std::u16string suggested_filename_;
   // Map keyed by image URL. Values are <id, callback> pairs.
   std::map<GURL, std::list<std::pair<int, ImageDownloadCallback>>>
       pending_image_downloads_;
   GURL last_committed_url_;
-  base::Optional<base::string16> title_;
+  base::Optional<std::u16string> title_;
   bool pause_subresource_loading_called_;
   base::UnguessableToken audio_group_id_;
   bool is_page_frozen_;

@@ -925,7 +925,7 @@ EmbeddedWorkerInstance::CreateFactoryBundles() {
 }
 
 void EmbeddedWorkerInstance::OnReportException(
-    const base::string16& error_message,
+    const std::u16string& error_message,
     int line_number,
     int column_number,
     const GURL& source_url) {
@@ -938,7 +938,7 @@ void EmbeddedWorkerInstance::OnReportException(
 void EmbeddedWorkerInstance::OnReportConsoleMessage(
     blink::mojom::ConsoleMessageSource source,
     blink::mojom::ConsoleMessageLevel message_level,
-    const base::string16& message,
+    const std::u16string& message,
     int line_number,
     const GURL& source_url) {
   for (auto& observer : listener_list_) {

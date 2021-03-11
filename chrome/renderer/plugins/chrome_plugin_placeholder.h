@@ -33,9 +33,9 @@ class ChromePluginPlaceholder final
       const blink::WebPluginParams& params,
       const content::WebPluginInfo& info,
       const std::string& identifier,
-      const base::string16& name,
+      const std::u16string& name,
       int resource_id,
-      const base::string16& message);
+      const std::u16string& message);
 
   // Creates a new WebViewPlugin with a MissingPlugin as a delegate.
   static ChromePluginPlaceholder* CreateLoadableMissingPlugin(
@@ -55,7 +55,7 @@ class ChromePluginPlaceholder final
   ChromePluginPlaceholder(content::RenderFrame* render_frame,
                           const blink::WebPluginParams& params,
                           const std::string& html_data,
-                          const base::string16& title);
+                          const std::u16string& title);
   ~ChromePluginPlaceholder() override;
 
   // content::LoadablePluginPlaceholder overrides.
@@ -92,9 +92,9 @@ class ChromePluginPlaceholder final
 
   chrome::mojom::PluginStatus status_;
 
-  base::string16 title_;
+  std::u16string title_;
 
-  base::string16 plugin_name_;
+  std::u16string plugin_name_;
 
   mojo::Receiver<chrome::mojom::PluginRenderer> plugin_renderer_receiver_{this};
 

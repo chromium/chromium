@@ -358,7 +358,7 @@ class CONTENT_EXPORT RenderFrameImpl
   void ShowVirtualKeyboard() override;
   blink::WebPlugin* CreatePlugin(const WebPluginInfo& info,
                                  const blink::WebPluginParams& params) override;
-  void ExecuteJavaScript(const base::string16& javascript) override;
+  void ExecuteJavaScript(const std::u16string& javascript) override;
   bool IsMainFrame() override;
   bool IsHidden() override;
   void BindLocalInterface(
@@ -371,7 +371,7 @@ class CONTENT_EXPORT RenderFrameImpl
   void PluginDidStopLoading() override;
 #endif
   bool IsFTPDirectoryListing() override;
-  void SetSelectedText(const base::string16& selection_text,
+  void SetSelectedText(const std::u16string& selection_text,
                        size_t offset,
                        const gfx::Range& range) override;
   void AddMessageToConsole(blink::mojom::ConsoleMessageLevel level,
@@ -826,23 +826,23 @@ class CONTENT_EXPORT RenderFrameImpl
       mojo::PendingAssociatedReceiver<blink::mojom::DevToolsAgent> receiver)
       override;
   void JavaScriptMethodExecuteRequest(
-      const base::string16& object_name,
-      const base::string16& method_name,
+      const std::u16string& object_name,
+      const std::u16string& method_name,
       base::Value arguments,
       bool wants_result,
       JavaScriptMethodExecuteRequestCallback callback) override;
   void JavaScriptExecuteRequest(
-      const base::string16& javascript,
+      const std::u16string& javascript,
       bool wants_result,
       JavaScriptExecuteRequestCallback callback) override;
   void JavaScriptExecuteRequestForTests(
-      const base::string16& javascript,
+      const std::u16string& javascript,
       bool wants_result,
       bool has_user_gesture,
       int32_t world_id,
       JavaScriptExecuteRequestForTestsCallback callback) override;
   void JavaScriptExecuteRequestInIsolatedWorld(
-      const base::string16& javascript,
+      const std::u16string& javascript,
       bool wants_result,
       int32_t world_id,
       JavaScriptExecuteRequestInIsolatedWorldCallback callback) override;
@@ -1212,7 +1212,7 @@ class CONTENT_EXPORT RenderFrameImpl
   // portion of this string that is the actual selected text starts at index
   // |selection_range_.GetMin() - selection_text_offset_| and has length
   // |selection_range_.length()|.
-  base::string16 selection_text_;
+  std::u16string selection_text_;
   // The offset corresponding to the start of |selection_text_| in the document.
   size_t selection_text_offset_;
   // Range over the document corresponding to the actual selected text (which

@@ -190,21 +190,21 @@ TEST_F(AutofillRendererTest, SendForms) {
 
   expected.id_attribute = ASCIIToUTF16("firstname");
   expected.name = expected.id_attribute;
-  expected.value = base::string16();
+  expected.value = std::u16string();
   expected.form_control_type = "text";
   expected.max_length = WebInputElement::DefaultMaxLength();
   EXPECT_FORM_FIELD_DATA_EQUALS(expected, forms[0].fields[0]);
 
   expected.id_attribute = ASCIIToUTF16("middlename");
   expected.name = expected.id_attribute;
-  expected.value = base::string16();
+  expected.value = std::u16string();
   expected.form_control_type = "text";
   expected.max_length = WebInputElement::DefaultMaxLength();
   EXPECT_FORM_FIELD_DATA_EQUALS(expected, forms[0].fields[1]);
 
   expected.id_attribute = ASCIIToUTF16("lastname");
   expected.name = expected.id_attribute;
-  expected.value = base::string16();
+  expected.value = std::u16string();
   expected.form_control_type = "text";
   expected.autocomplete_attribute = "off";
   expected.max_length = WebInputElement::DefaultMaxLength();

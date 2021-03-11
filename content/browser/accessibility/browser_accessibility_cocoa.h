@@ -23,16 +23,16 @@ namespace content {
 // support character echo and other announcements during editing.
 struct CONTENT_EXPORT AXTextEdit {
   AXTextEdit();
-  AXTextEdit(base::string16 inserted_text,
-             base::string16 deleted_text,
+  AXTextEdit(std::u16string inserted_text,
+             std::u16string deleted_text,
              id edit_text_marker);
   AXTextEdit(const AXTextEdit& other);
   ~AXTextEdit();
 
   bool IsEmpty() const { return inserted_text.empty() && deleted_text.empty(); }
 
-  base::string16 inserted_text;
-  base::string16 deleted_text;
+  std::u16string inserted_text;
+  std::u16string deleted_text;
   base::scoped_nsprotocol<id> edit_text_marker;
 };
 
@@ -74,7 +74,7 @@ id AXTextMarkerRangeFrom(id anchor_text_marker, id focus_text_marker);
   // Whether _children is currently being computed.
   bool _gettingChildren;
   // Stores the previous value of an edit field.
-  base::string16 _oldValue;
+  std::u16string _oldValue;
 }
 
 // This creates a cocoa browser accessibility object around

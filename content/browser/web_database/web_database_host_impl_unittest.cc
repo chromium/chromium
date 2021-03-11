@@ -24,9 +24,9 @@ namespace content {
 
 namespace {
 
-base::string16 ConstructVfsFileName(const url::Origin& origin,
-                                    const base::string16& name,
-                                    const base::string16& suffix) {
+std::u16string ConstructVfsFileName(const url::Origin& origin,
+                                    const std::u16string& name,
+                                    const std::u16string& suffix) {
   std::string identifier = storage::GetIdentifierFromOrigin(origin);
   return base::UTF8ToUTF16(identifier) + base::ASCIIToUTF16("/") + name +
          base::ASCIIToUTF16("#") + suffix;
@@ -119,9 +119,9 @@ TEST_F(WebDatabaseHostImplTest, BadMessagesUnauthorized) {
   const url::Origin correct_origin = url::Origin::Create(correct_url);
   const url::Origin incorrect_origin =
       url::Origin::Create(GURL("http://incorrect.net"));
-  const base::string16 db_name(base::ASCIIToUTF16("db_name"));
-  const base::string16 suffix(base::ASCIIToUTF16("suffix"));
-  const base::string16 bad_vfs_file_name =
+  const std::u16string db_name(base::ASCIIToUTF16("db_name"));
+  const std::u16string suffix(base::ASCIIToUTF16("suffix"));
+  const std::u16string bad_vfs_file_name =
       ConstructVfsFileName(incorrect_origin, db_name, suffix);
 
   auto* security_policy = ChildProcessSecurityPolicyImpl::GetInstance();
@@ -178,7 +178,7 @@ TEST_F(WebDatabaseHostImplTest, BadMessagesUnauthorized) {
 
 TEST_F(WebDatabaseHostImplTest, BadMessagesInvalid) {
   const url::Origin opaque_origin;
-  const base::string16 db_name(base::ASCIIToUTF16("db_name"));
+  const std::u16string db_name(base::ASCIIToUTF16("db_name"));
 
   CheckInvalidOrigin(
       [&]() { host()->GetSpaceAvailable(opaque_origin, base::DoNothing()); });
@@ -202,9 +202,9 @@ TEST_F(WebDatabaseHostImplTest, ProcessShutdown) {
   const url::Origin correct_origin = url::Origin::Create(correct_url);
   const url::Origin incorrect_origin =
       url::Origin::Create(GURL("http://incorrect.net"));
-  const base::string16 db_name(base::ASCIIToUTF16("db_name"));
-  const base::string16 suffix(base::ASCIIToUTF16("suffix"));
-  const base::string16 bad_vfs_file_name =
+  const std::u16string db_name(base::ASCIIToUTF16("db_name"));
+  const std::u16string suffix(base::ASCIIToUTF16("suffix"));
+  const std::u16string bad_vfs_file_name =
       ConstructVfsFileName(incorrect_origin, db_name, suffix);
 
   auto* security_policy = ChildProcessSecurityPolicyImpl::GetInstance();

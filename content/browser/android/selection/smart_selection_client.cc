@@ -72,7 +72,7 @@ void SmartSelectionClient::RequestSurroundingText(
     int callback_data) {
   RenderFrameHost* focused_frame = web_contents_->GetFocusedFrame();
   if (!focused_frame) {
-    OnSurroundingTextReceived(callback_data, base::string16(), 0, 0);
+    OnSurroundingTextReceived(callback_data, std::u16string(), 0, 0);
     return;
   }
 
@@ -89,7 +89,7 @@ void SmartSelectionClient::CancelAllRequests(
 }
 
 void SmartSelectionClient::OnSurroundingTextReceived(int callback_data,
-                                                     const base::string16& text,
+                                                     const std::u16string& text,
                                                      uint32_t start,
                                                      uint32_t end) {
   JNIEnv* env = AttachCurrentThread();

@@ -13,13 +13,13 @@ namespace string_matching {
 using base::UTF8ToUTF16;
 
 TEST(TermBreakIteratorTest, EmptyWord) {
-  base::string16 empty;
+  std::u16string empty;
   TermBreakIterator iter(empty);
   EXPECT_FALSE(iter.Advance());
 }
 
 TEST(TermBreakIteratorTest, Simple) {
-  base::string16 word(UTF8ToUTF16("simple"));
+  std::u16string word(UTF8ToUTF16("simple"));
   TermBreakIterator iter(word);
   EXPECT_TRUE(iter.Advance());
   EXPECT_EQ(UTF8ToUTF16("simple"), iter.GetCurrentTerm());
@@ -27,7 +27,7 @@ TEST(TermBreakIteratorTest, Simple) {
 }
 
 TEST(TermBreakIteratorTest, CamelCase) {
-  base::string16 word(UTF8ToUTF16("CamelCase"));
+  std::u16string word(UTF8ToUTF16("CamelCase"));
   TermBreakIterator iter(word);
   EXPECT_TRUE(iter.Advance());
   EXPECT_EQ(UTF8ToUTF16("Camel"), iter.GetCurrentTerm());
@@ -37,7 +37,7 @@ TEST(TermBreakIteratorTest, CamelCase) {
 }
 
 TEST(TermBreakIteratorTest, LowerToUpper) {
-  base::string16 word(UTF8ToUTF16("lowerToUpper"));
+  std::u16string word(UTF8ToUTF16("lowerToUpper"));
   TermBreakIterator iter(word);
   EXPECT_TRUE(iter.Advance());
   EXPECT_EQ(UTF8ToUTF16("lower"), iter.GetCurrentTerm());
@@ -49,7 +49,7 @@ TEST(TermBreakIteratorTest, LowerToUpper) {
 }
 
 TEST(TermBreakIteratorTest, AlphaNumber) {
-  base::string16 word(UTF8ToUTF16("Chromium26.0.0.0"));
+  std::u16string word(UTF8ToUTF16("Chromium26.0.0.0"));
   TermBreakIterator iter(word);
   EXPECT_TRUE(iter.Advance());
   EXPECT_EQ(UTF8ToUTF16("Chromium"), iter.GetCurrentTerm());
@@ -59,7 +59,7 @@ TEST(TermBreakIteratorTest, AlphaNumber) {
 }
 
 TEST(TermBreakIteratorTest, StartsWithNumber) {
-  base::string16 word(UTF8ToUTF16("123startWithNumber"));
+  std::u16string word(UTF8ToUTF16("123startWithNumber"));
   TermBreakIterator iter(word);
   EXPECT_TRUE(iter.Advance());
   EXPECT_EQ(UTF8ToUTF16("123"), iter.GetCurrentTerm());
@@ -74,7 +74,7 @@ TEST(TermBreakIteratorTest, StartsWithNumber) {
 
 TEST(TermBreakIteratorTest, CaseAndNoCase) {
   // "English" + two Chinese chars U+4E2D U+6587 + "Word"
-  base::string16 word(UTF8ToUTF16("English\xe4\xb8\xad\xe6\x96\x87Word"));
+  std::u16string word(UTF8ToUTF16("English\xe4\xb8\xad\xe6\x96\x87Word"));
   TermBreakIterator iter(word);
   EXPECT_TRUE(iter.Advance());
   EXPECT_EQ(UTF8ToUTF16("English"), iter.GetCurrentTerm());

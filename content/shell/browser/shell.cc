@@ -558,9 +558,9 @@ bool Shell::HandleKeyboardEvent(WebContents* source,
 
 bool Shell::DidAddMessageToConsole(WebContents* source,
                                    blink::mojom::ConsoleMessageLevel log_level,
-                                   const base::string16& message,
+                                   const std::u16string& message,
                                    int32_t line_no,
-                                   const base::string16& source_id) {
+                                   const std::u16string& source_id) {
   return switches::IsRunWebTestsSwitchPresent();
 }
 

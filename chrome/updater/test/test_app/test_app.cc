@@ -42,7 +42,7 @@ class TestApp : public App {
                        bool rollback,
                        const std::string& version,
                        int64_t size,
-                       const base::string16& message);
+                       const std::u16string& message);
 };
 
 void TestApp::SetUpdateStatus(UpdateStatus status,
@@ -50,7 +50,7 @@ void TestApp::SetUpdateStatus(UpdateStatus status,
                               bool rollback,
                               const std::string& version,
                               int64_t size,
-                              const base::string16& message) {
+                              const std::u16string& message) {
   switch (status) {
     case UpdateStatus::INIT:
       VLOG(1) << "Updates starting!";

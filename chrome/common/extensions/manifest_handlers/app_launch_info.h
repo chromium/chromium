@@ -46,11 +46,11 @@ class AppLaunchInfo : public Extension::ManifestData {
   // Get the fully resolved absolute launch URL.
   static GURL GetFullLaunchURL(const Extension* extension);
 
-  bool Parse(Extension* extension, base::string16* error);
+  bool Parse(Extension* extension, std::u16string* error);
 
  private:
-  bool LoadLaunchURL(Extension* extension, base::string16* error);
-  bool LoadLaunchContainer(Extension* extension, base::string16* error);
+  bool LoadLaunchURL(Extension* extension, std::u16string* error);
+  bool LoadLaunchContainer(Extension* extension, std::u16string* error);
   void OverrideLaunchURL(Extension* extension, GURL override_url);
 
   std::string launch_local_path_;
@@ -71,7 +71,7 @@ class AppLaunchManifestHandler : public ManifestHandler {
   AppLaunchManifestHandler();
   ~AppLaunchManifestHandler() override;
 
-  bool Parse(Extension* extension, base::string16* error) override;
+  bool Parse(Extension* extension, std::u16string* error) override;
   bool AlwaysParseForType(Manifest::Type type) const override;
 
  private:

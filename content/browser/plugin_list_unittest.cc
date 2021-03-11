@@ -73,8 +73,8 @@ TEST_F(PluginListTest, GetPlugins) {
 
 TEST_F(PluginListTest, BadPluginDescription) {
   WebPluginInfo plugin_3043(
-      base::string16(), base::FilePath(FILE_PATH_LITERAL("/myplugin.3.0.43")),
-      base::string16(), base::string16());
+      std::u16string(), base::FilePath(FILE_PATH_LITERAL("/myplugin.3.0.43")),
+      std::u16string(), std::u16string());
   // Simulate loading of the plugins.
   plugin_list_.RegisterInternalPlugin(plugin_3043, false);
   // Now we should have them in the state we specified above.

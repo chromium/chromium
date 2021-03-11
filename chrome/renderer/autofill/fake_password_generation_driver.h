@@ -38,11 +38,11 @@ class FakePasswordGenerationDriver
                void(const gfx::RectF&,
                     const autofill::FormData&,
                     autofill::FieldRendererId,
-                    const base::string16&));
+                    const std::u16string&));
   MOCK_METHOD0(PasswordGenerationRejectedByTyping, void());
   MOCK_METHOD2(PresaveGeneratedPassword,
                void(const autofill::FormData& form_data,
-                    const base::string16& generated_password));
+                    const std::u16string& generated_password));
   MOCK_METHOD1(PasswordNoLongerGenerated,
                void(const autofill::FormData& form_data));
   MOCK_METHOD0(FrameWasScrolled, void());

@@ -21,17 +21,17 @@ class CONTENT_EXPORT IndexedDBDatabaseError {
   explicit IndexedDBDatabaseError(blink::mojom::IDBException code);
   IndexedDBDatabaseError(blink::mojom::IDBException code, const char* message);
   IndexedDBDatabaseError(blink::mojom::IDBException code,
-                         const base::string16& message);
+                         const std::u16string& message);
   ~IndexedDBDatabaseError();
 
   IndexedDBDatabaseError& operator=(const IndexedDBDatabaseError& rhs);
 
   blink::mojom::IDBException code() const { return code_; }
-  const base::string16& message() const { return message_; }
+  const std::u16string& message() const { return message_; }
 
  private:
   blink::mojom::IDBException code_ = blink::mojom::IDBException::kNoError;
-  base::string16 message_;
+  std::u16string message_;
 };
 
 }  // namespace content

@@ -293,11 +293,11 @@ class FormAutofillTest : public ChromeRenderViewTest {
 #endif
 
   void ExpectLabels(const char* html,
-                    const std::vector<base::string16>& id_attributes,
-                    const std::vector<base::string16>& name_attributes,
-                    const std::vector<base::string16>& labels,
-                    const std::vector<base::string16>& names,
-                    const std::vector<base::string16>& values) {
+                    const std::vector<std::u16string>& id_attributes,
+                    const std::vector<std::u16string>& name_attributes,
+                    const std::vector<std::u16string>& labels,
+                    const std::vector<std::u16string>& names,
+                    const std::vector<std::u16string>& values) {
     ASSERT_EQ(labels.size(), id_attributes.size());
     ASSERT_EQ(labels.size(), name_attributes.size());
     ASSERT_EQ(labels.size(), names.size());
@@ -346,23 +346,23 @@ class FormAutofillTest : public ChromeRenderViewTest {
   // the name attribute to identify the input fields. Otherwise, this is the
   // same text structure as ExpectJohnSmithLabelsAndNameAttributes().
   void ExpectJohnSmithLabelsAndIdAttributes(const char* html) {
-    std::vector<base::string16> id_attributes, name_attributes, labels, names,
+    std::vector<std::u16string> id_attributes, name_attributes, labels, names,
         values;
 
     id_attributes.push_back(ASCIIToUTF16("firstname"));
-    name_attributes.push_back(base::string16());
+    name_attributes.push_back(std::u16string());
     labels.push_back(ASCIIToUTF16("First name:"));
     names.push_back(id_attributes.back());
     values.push_back(ASCIIToUTF16("John"));
 
     id_attributes.push_back(ASCIIToUTF16("lastname"));
-    name_attributes.push_back(base::string16());
+    name_attributes.push_back(std::u16string());
     labels.push_back(ASCIIToUTF16("Last name:"));
     names.push_back(id_attributes.back());
     values.push_back(ASCIIToUTF16("Smith"));
 
     id_attributes.push_back(ASCIIToUTF16("email"));
-    name_attributes.push_back(base::string16());
+    name_attributes.push_back(std::u16string());
     labels.push_back(ASCIIToUTF16("Email:"));
     names.push_back(id_attributes.back());
     values.push_back(ASCIIToUTF16("john@example.com"));
@@ -374,21 +374,21 @@ class FormAutofillTest : public ChromeRenderViewTest {
   // the id attribute to identify the input fields. Otherwise, this is the same
   // text structure as ExpectJohnSmithLabelsAndIdAttributes().
   void ExpectJohnSmithLabelsAndNameAttributes(const char* html) {
-    std::vector<base::string16> id_attributes, name_attributes, labels, names,
+    std::vector<std::u16string> id_attributes, name_attributes, labels, names,
         values;
-    id_attributes.push_back(base::string16());
+    id_attributes.push_back(std::u16string());
     name_attributes.push_back(ASCIIToUTF16("firstname"));
     labels.push_back(ASCIIToUTF16("First name:"));
     names.push_back(name_attributes.back());
     values.push_back(ASCIIToUTF16("John"));
 
-    id_attributes.push_back(base::string16());
+    id_attributes.push_back(std::u16string());
     name_attributes.push_back(ASCIIToUTF16("lastname"));
     labels.push_back(ASCIIToUTF16("Last name:"));
     names.push_back(name_attributes.back());
     values.push_back(ASCIIToUTF16("Smith"));
 
-    id_attributes.push_back(base::string16());
+    id_attributes.push_back(std::u16string());
     name_attributes.push_back(ASCIIToUTF16("email"));
     labels.push_back(ASCIIToUTF16("Email:"));
     names.push_back(name_attributes.back());
@@ -3155,7 +3155,7 @@ TEST_F(FormAutofillTest, WebFormElementToFormData_CssClasses) {
   EXPECT_EQ(3U, form.fields.size());
   EXPECT_EQ(ASCIIToUTF16("firstname_field"), form.fields[0].css_classes);
   EXPECT_EQ(ASCIIToUTF16("lastname_field"), form.fields[1].css_classes);
-  EXPECT_EQ(base::string16(), form.fields[2].css_classes);
+  EXPECT_EQ(std::u16string(), form.fields[2].css_classes);
 }
 
 // Tests id attributes are set.
@@ -3582,7 +3582,7 @@ TEST_F(FormAutofillTest, LabelsWithSpans) {
 // however, current label parsing code will extract the text from the previous
 // label element and apply it to the following input field.
 TEST_F(FormAutofillTest, InvalidLabels) {
-  std::vector<base::string16> id_attributes, name_attributes, labels, names,
+  std::vector<std::u16string> id_attributes, name_attributes, labels, names,
       values;
 
   id_attributes.push_back(ASCIIToUTF16(""));
@@ -3738,7 +3738,7 @@ TEST_F(FormAutofillTest, LabelsInferredFromTableCellTH) {
 }
 
 TEST_F(FormAutofillTest, LabelsInferredFromTableCellNested) {
-  std::vector<base::string16> id_attributes, name_attributes, labels, names,
+  std::vector<std::u16string> id_attributes, name_attributes, labels, names,
       values;
 
   id_attributes.push_back(ASCIIToUTF16("firstname"));
@@ -3813,7 +3813,7 @@ TEST_F(FormAutofillTest, LabelsInferredFromTableCellNested) {
 }
 
 TEST_F(FormAutofillTest, LabelsInferredFromTableEmptyTDs) {
-  std::vector<base::string16> id_attributes, name_attributes, labels, names,
+  std::vector<std::u16string> id_attributes, name_attributes, labels, names,
       values;
 
   id_attributes.push_back(ASCIIToUTF16("firstname"));
@@ -3879,7 +3879,7 @@ TEST_F(FormAutofillTest, LabelsInferredFromTableEmptyTDs) {
 }
 
 TEST_F(FormAutofillTest, LabelsInferredFromPreviousTD) {
-  std::vector<base::string16> id_attributes, name_attributes, labels, names,
+  std::vector<std::u16string> id_attributes, name_attributes, labels, names,
       values;
 
   id_attributes.push_back(ASCIIToUTF16("firstname"));
@@ -4115,7 +4115,7 @@ TEST_F(FormAutofillTest, LabelsInferredFromTableTDInterveningElements) {
 // Verify that we correctly infer labels when the label text spans multiple
 // adjacent HTML elements, not separated by whitespace.
 TEST_F(FormAutofillTest, LabelsInferredFromTableAdjacentElements) {
-  std::vector<base::string16> id_attributes, name_attributes, labels, names,
+  std::vector<std::u16string> id_attributes, name_attributes, labels, names,
       values;
 
   id_attributes.push_back(ASCIIToUTF16("firstname"));
@@ -4176,7 +4176,7 @@ TEST_F(FormAutofillTest, LabelsInferredFromTableAdjacentElements) {
 // Verify that we correctly infer labels when the label text resides in the
 // previous row.
 TEST_F(FormAutofillTest, LabelsInferredFromTableRow) {
-  std::vector<base::string16> id_attributes, name_attributes, labels, names,
+  std::vector<std::u16string> id_attributes, name_attributes, labels, names,
       values;
 
   id_attributes.push_back(ASCIIToUTF16("firstname"));
@@ -4300,7 +4300,7 @@ TEST_F(FormAutofillTest, LabelsInferredFromTableRow) {
 
 // Verify that we correctly infer labels when enclosed within a list item.
 TEST_F(FormAutofillTest, LabelsInferredFromListItem) {
-  std::vector<base::string16> id_attributes, name_attributes, labels, names,
+  std::vector<std::u16string> id_attributes, name_attributes, labels, names,
       values;
 
   id_attributes.push_back(ASCIIToUTF16("areacode"));
@@ -4342,7 +4342,7 @@ TEST_F(FormAutofillTest, LabelsInferredFromListItem) {
 }
 
 TEST_F(FormAutofillTest, LabelsInferredFromDefinitionList) {
-  std::vector<base::string16> id_attributes, name_attributes, labels, names,
+  std::vector<std::u16string> id_attributes, name_attributes, labels, names,
       values;
 
   id_attributes.push_back(ASCIIToUTF16("firstname"));
@@ -4412,26 +4412,26 @@ TEST_F(FormAutofillTest, LabelsInferredFromDefinitionList) {
 }
 
 TEST_F(FormAutofillTest, LabelsInferredWithSameName) {
-  std::vector<base::string16> id_attributes, name_attributes, labels, names,
+  std::vector<std::u16string> id_attributes, name_attributes, labels, names,
       values;
 
   id_attributes.push_back(ASCIIToUTF16(""));
   name_attributes.push_back(ASCIIToUTF16("Address"));
   labels.push_back(ASCIIToUTF16("Address Line 1:"));
   names.push_back(name_attributes.back());
-  values.push_back(base::string16());
+  values.push_back(std::u16string());
 
   id_attributes.push_back(ASCIIToUTF16(""));
   name_attributes.push_back(ASCIIToUTF16("Address"));
   labels.push_back(ASCIIToUTF16("Address Line 2:"));
   names.push_back(name_attributes.back());
-  values.push_back(base::string16());
+  values.push_back(std::u16string());
 
   id_attributes.push_back(ASCIIToUTF16(""));
   name_attributes.push_back(ASCIIToUTF16("Address"));
   labels.push_back(ASCIIToUTF16("Address Line 3:"));
   names.push_back(name_attributes.back());
-  values.push_back(base::string16());
+  values.push_back(std::u16string());
 
   ExpectLabels(
       "<FORM name='TestForm' action='http://cnn.com' method='post'>"
@@ -4447,38 +4447,38 @@ TEST_F(FormAutofillTest, LabelsInferredWithSameName) {
 }
 
 TEST_F(FormAutofillTest, LabelsInferredWithImageTags) {
-  std::vector<base::string16> id_attributes, name_attributes, labels, names,
+  std::vector<std::u16string> id_attributes, name_attributes, labels, names,
       values;
 
   id_attributes.push_back(ASCIIToUTF16(""));
   name_attributes.push_back(ASCIIToUTF16("dayphone1"));
   labels.push_back(ASCIIToUTF16("Phone:"));
   names.push_back(name_attributes.back());
-  values.push_back(base::string16());
+  values.push_back(std::u16string());
 
   id_attributes.push_back(ASCIIToUTF16(""));
   name_attributes.push_back(ASCIIToUTF16("dayphone2"));
   labels.push_back(ASCIIToUTF16(""));
   names.push_back(name_attributes.back());
-  values.push_back(base::string16());
+  values.push_back(std::u16string());
 
   id_attributes.push_back(ASCIIToUTF16(""));
   name_attributes.push_back(ASCIIToUTF16("dayphone3"));
   labels.push_back(ASCIIToUTF16(""));
   names.push_back(name_attributes.back());
-  values.push_back(base::string16());
+  values.push_back(std::u16string());
 
   id_attributes.push_back(ASCIIToUTF16(""));
   name_attributes.push_back(ASCIIToUTF16("dayphone4"));
   labels.push_back(ASCIIToUTF16("ext.:"));
   names.push_back(name_attributes.back());
-  values.push_back(base::string16());
+  values.push_back(std::u16string());
 
   id_attributes.push_back(ASCIIToUTF16(""));
   name_attributes.push_back(ASCIIToUTF16("dummy"));
-  labels.push_back(base::string16());
+  labels.push_back(std::u16string());
   names.push_back(name_attributes.back());
-  values.push_back(base::string16());
+  values.push_back(std::u16string());
 
   ExpectLabels(
       "<FORM name='TestForm' action='http://cnn.com' method='post'>"
@@ -5131,23 +5131,23 @@ TEST_F(FormAutofillTest, ClearOnlyAutofilledFieldsForUnownedForm) {
 
 // If we have multiple labels per id, the labels concatenated into label string.
 TEST_F(FormAutofillTest, MultipleLabelsPerElement) {
-  std::vector<base::string16> id_attributes, name_attributes, labels, names,
+  std::vector<std::u16string> id_attributes, name_attributes, labels, names,
       values;
 
   id_attributes.push_back(ASCIIToUTF16("firstname"));
-  name_attributes.push_back(base::string16());
+  name_attributes.push_back(std::u16string());
   labels.push_back(ASCIIToUTF16("First Name:"));
   names.push_back(id_attributes.back());
   values.push_back(ASCIIToUTF16("John"));
 
   id_attributes.push_back(ASCIIToUTF16("lastname"));
-  name_attributes.push_back(base::string16());
+  name_attributes.push_back(std::u16string());
   labels.push_back(ASCIIToUTF16("Last Name:"));
   names.push_back(id_attributes.back());
   values.push_back(ASCIIToUTF16("Smith"));
 
   id_attributes.push_back(ASCIIToUTF16("email"));
-  name_attributes.push_back(base::string16());
+  name_attributes.push_back(std::u16string());
   labels.push_back(ASCIIToUTF16("Email: xxx@yyy.com"));
   names.push_back(id_attributes.back());
   values.push_back(ASCIIToUTF16("john@example.com"));

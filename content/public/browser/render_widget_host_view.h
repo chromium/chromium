@@ -142,7 +142,7 @@ class CONTENT_EXPORT RenderWidgetHostView {
 
   // Returns the currently selected text in both of editable text fields and
   // non-editable texts.
-  virtual base::string16 GetSelectedText() = 0;
+  virtual std::u16string GetSelectedText() = 0;
 
   // This only returns non-null on platforms that implement touch
   // selection editing (TSE), currently Aura and Android.

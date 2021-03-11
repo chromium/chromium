@@ -50,7 +50,7 @@ class MockCastWebContents : public CastWebContents {
               (override));
   MOCK_METHOD(void,
               ExecuteJavaScript,
-              (const base::string16&, base::OnceCallback<void(base::Value)>),
+              (const std::u16string&, base::OnceCallback<void(base::Value)>),
               (override));
   MOCK_METHOD(void, AddObserver, (Observer*), (override));
   MOCK_METHOD(void, RemoveObserver, (Observer*), (override));

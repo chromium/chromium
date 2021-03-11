@@ -441,7 +441,7 @@ bool TouchSelectionControllerClientAura::IsCommandIdEnabled(
     case ui::TouchEditable::kCopy:
       return readable && has_selection;
     case ui::TouchEditable::kPaste: {
-      base::string16 result;
+      std::u16string result;
       ui::DataTransferEndpoint data_dst = ui::DataTransferEndpoint(
           ui::EndpointType::kDefault, /*notify_if_restricted=*/false);
       ui::Clipboard::GetForCurrentThread()->ReadText(
@@ -496,7 +496,7 @@ bool TouchSelectionControllerClientAura::ShouldShowQuickMenu() {
          !handle_drag_in_progress_ && IsQuickMenuAvailable();
 }
 
-base::string16 TouchSelectionControllerClientAura::GetSelectedText() {
+std::u16string TouchSelectionControllerClientAura::GetSelectedText() {
   return rwhva_->GetSelectedText();
 }
 

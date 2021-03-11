@@ -188,9 +188,9 @@ TEST_F(EdgeDatabaseReaderTest, OpenTableAndReadDataDatabaseTest) {
     EXPECT_EQ(expected_filetime_col_value.dwHighDateTime,
               filetime_col_value.dwHighDateTime);
 
-    base::string16 row_string =
+    std::u16string row_string =
         base::AsString16(base::StringPrintf(L"String: %d", row_count));
-    base::string16 str_col_value;
+    std::u16string str_col_value;
     EXPECT_TRUE(table_enum->RetrieveColumn(L"StrCol", &str_col_value));
     EXPECT_EQ(row_string, str_col_value);
 
@@ -283,8 +283,8 @@ TEST_F(EdgeDatabaseReaderTest, UnicodeStringsDatabaseTest) {
   EXPECT_NE(nullptr, table_enum);
   size_t utf8_strings_count = base::size(utf8_strings);
   for (size_t row_count = 0; row_count < utf8_strings_count; ++row_count) {
-    base::string16 row_string = base::UTF8ToUTF16(utf8_strings[row_count]);
-    base::string16 str_col_value;
+    std::u16string row_string = base::UTF8ToUTF16(utf8_strings[row_count]);
+    std::u16string str_col_value;
     EXPECT_TRUE(table_enum->RetrieveColumn(L"StrCol", &str_col_value));
     EXPECT_EQ(row_string, str_col_value);
     if (row_count < utf8_strings_count - 1)
@@ -302,7 +302,7 @@ TEST_F(EdgeDatabaseReaderTest, NonUnicodeStringsDatabaseTest) {
   std::unique_ptr<EdgeDatabaseTableEnumerator> table_enum =
       reader.OpenTableEnumerator(L"NonUnicodeTable");
   EXPECT_NE(nullptr, table_enum);
-  base::string16 str_col_value;
+  std::u16string str_col_value;
   EXPECT_FALSE(table_enum->RetrieveColumn(L"StrCol", &str_col_value));
   EXPECT_EQ(JET_errInvalidColumnType, table_enum->last_error());
 }
@@ -345,7 +345,7 @@ TEST_F(EdgeDatabaseReaderTest, CheckNullColumnDatabaseTest) {
   EXPECT_EQ(expected_filetime_col_value.dwHighDateTime,
             filetime_col_value.dwHighDateTime);
 
-  base::string16 str_col_value;
+  std::u16string str_col_value;
   EXPECT_TRUE(table_enum->RetrieveColumn(L"StrCol", &str_col_value));
   EXPECT_TRUE(str_col_value.empty());
 

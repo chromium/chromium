@@ -520,8 +520,8 @@ void RenderFrameProxyHost::SetIsInert(bool inert) {
 
 void RenderFrameProxyHost::RouteMessageEvent(
     const base::Optional<blink::LocalFrameToken>& source_frame_token,
-    const base::string16& source_origin,
-    const base::string16& target_origin,
+    const std::u16string& source_origin,
+    const std::u16string& target_origin,
     blink::TransferableMessage message) {
   RenderFrameHostImpl* target_rfh = frame_tree_node()->current_frame_host();
   if (!target_rfh->IsRenderFrameLive()) {

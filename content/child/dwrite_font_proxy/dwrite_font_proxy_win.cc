@@ -338,7 +338,7 @@ bool DWriteFontCollectionProxy::LoadFamily(
 }
 
 bool DWriteFontCollectionProxy::GetFontFamily(UINT32 family_index,
-                                              const base::string16& family_name,
+                                              const std::u16string& family_name,
                                               IDWriteFontFamily** font_family) {
   DCHECK(font_family);
   DCHECK(!family_name.empty());

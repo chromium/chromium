@@ -70,7 +70,7 @@ TEST_F(WebDragDestTest, URL) {
   NSString* url = nil;
   NSString* title = nil;
   GURL result_url;
-  base::string16 result_title;
+  std::u16string result_title;
 
   // Put a URL on the pasteboard and check it.
   scoped_refptr<ui::UniquePasteboard> pboard = new ui::UniquePasteboard;

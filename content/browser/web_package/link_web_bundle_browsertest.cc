@@ -328,7 +328,7 @@ IN_PROC_BROWSER_TEST_F(LinkWebBundleBrowserTest, NetworkIsolationKey) {
   GURL page_url(https_server()->GetURL(
       "page.test", "/web_bundle/frame_parent.html?wbn=" + bundle_url.spec()));
   EXPECT_TRUE(NavigateToURL(shell(), page_url));
-  base::string16 expected_title(base::UTF8ToUTF16("OK"));
+  std::u16string expected_title(base::UTF8ToUTF16("OK"));
   TitleWatcher title_watcher(shell()->web_contents(), expected_title);
   EXPECT_EQ(expected_title, title_watcher.WaitAndGetTitle());
 

@@ -110,7 +110,7 @@ void PrefetchBrowserTestBase::RegisterRequestHandler(
 void PrefetchBrowserTestBase::NavigateToURLAndWaitTitle(
     const GURL& url,
     const std::string& title) {
-  base::string16 title16 = base::ASCIIToUTF16(title);
+  std::u16string title16 = base::ASCIIToUTF16(title);
   TitleWatcher title_watcher(shell()->web_contents(), title16);
   // Execute the JavaScript code to triger the followup navigation from the
   // current page.

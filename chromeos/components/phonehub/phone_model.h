@@ -32,7 +32,7 @@ class PhoneModel {
   PhoneModel& operator=(const PhoneModel&) = delete;
   virtual ~PhoneModel();
 
-  const base::Optional<base::string16>& phone_name() const {
+  const base::Optional<std::u16string>& phone_name() const {
     return phone_name_;
   }
 
@@ -52,7 +52,7 @@ class PhoneModel {
 
   void NotifyModelChanged();
 
-  base::Optional<base::string16> phone_name_;
+  base::Optional<std::u16string> phone_name_;
   base::Optional<PhoneStatusModel> phone_status_model_;
   base::Optional<BrowserTabsModel> browser_tabs_model_;
 

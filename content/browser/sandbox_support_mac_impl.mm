@@ -32,7 +32,7 @@ void SandboxSupportMacImpl::GetSystemColors(GetSystemColorsCallback callback) {
       std::move(callback));
 }
 
-void SandboxSupportMacImpl::LoadFont(const base::string16& font_name,
+void SandboxSupportMacImpl::LoadFont(const std::u16string& font_name,
                                      float font_point_size,
                                      LoadFontCallback callback) {
   FontLoader::LoadFont(font_name, font_point_size, std::move(callback));

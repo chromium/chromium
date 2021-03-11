@@ -35,8 +35,8 @@ class TestWebUI : public WebUI {
   WebUIController* GetController() override;
   void SetController(std::unique_ptr<WebUIController> controller) override;
   float GetDeviceScaleFactor() override;
-  const base::string16& GetOverriddenTitle() override;
-  void OverrideTitle(const base::string16& title) override {}
+  const std::u16string& GetOverriddenTitle() override;
+  void OverrideTitle(const std::u16string& title) override {}
   int GetBindings() override;
   void SetBindings(int bindings) override;
   const std::vector<std::string>& GetRequestableSchemes() override;
@@ -118,7 +118,7 @@ class TestWebUI : public WebUI {
   std::vector<std::unique_ptr<CallData>> call_data_;
   std::vector<std::unique_ptr<WebUIMessageHandler>> handlers_;
   int bindings_ = 0;
-  base::string16 temp_string_;
+  std::u16string temp_string_;
   WebContents* web_contents_;
   std::unique_ptr<WebUIController> controller_;
 

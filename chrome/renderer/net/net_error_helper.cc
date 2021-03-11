@@ -283,7 +283,7 @@ LocalizedError::PageState NetErrorHelper::UpdateErrorPage(
 
   std::string js = "if (window.updateForDnsProbe) "
                    "updateForDnsProbe(" + json + ");";
-  base::string16 js16;
+  std::u16string js16;
   if (base::UTF8ToUTF16(js.c_str(), js.length(), &js16)) {
     render_frame()->ExecuteJavaScript(js16);
   } else {
@@ -297,7 +297,7 @@ void NetErrorHelper::InitializeErrorPageEasterEggHighScore(int high_score) {
       "if (window.initializeEasterEggHighScore) "
       "initializeEasterEggHighScore(%i);",
       high_score);
-  base::string16 js16;
+  std::u16string js16;
   if (!base::UTF8ToUTF16(js.c_str(), js.length(), &js16)) {
     NOTREACHED();
     return;

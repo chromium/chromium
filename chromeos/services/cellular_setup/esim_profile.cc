@@ -137,7 +137,7 @@ void ESimProfile::DisableProfile(DisableProfileCallback callback) {
                      weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
 }
 
-void ESimProfile::SetProfileNickname(const base::string16& nickname,
+void ESimProfile::SetProfileNickname(const std::u16string& nickname,
                                      SetProfileNicknameCallback callback) {
   if (set_profile_nickname_callback_) {
     NET_LOG(ERROR) << "Set Profile Nickname already in progress.";
@@ -281,7 +281,7 @@ void ESimProfile::PerformInstallProfile(
 }
 
 void ESimProfile::PerformSetProfileNickname(
-    const base::string16& nickname,
+    const std::u16string& nickname,
     bool request_profile_success,
     std::unique_ptr<CellularInhibitor::InhibitLock> inhibit_lock) {
   if (!request_profile_success) {

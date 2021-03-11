@@ -75,7 +75,7 @@ class TestOptGuideConsumer
   TestOptGuideConsumer() = default;
   ~TestOptGuideConsumer() override = default;
 
-  base::string16 text() const { return base::StrCat(chunks_); }
+  std::u16string text() const { return base::StrCat(chunks_); }
   bool on_chunks_end_called() const { return on_chunks_end_called_; }
   size_t num_chunks() const { return chunks_.size(); }
 
@@ -85,7 +85,7 @@ class TestOptGuideConsumer
   }
 
   // optimization_guide::mojom::PageTextConsumer:
-  void OnTextDumpChunk(const base::string16& chunk) override {
+  void OnTextDumpChunk(const std::u16string& chunk) override {
     ASSERT_FALSE(on_chunks_end_called_);
     chunks_.push_back(chunk);
   }
@@ -94,7 +94,7 @@ class TestOptGuideConsumer
 
  private:
   mojo::Receiver<optimization_guide::mojom::PageTextConsumer> receiver_{this};
-  std::vector<base::string16> chunks_;
+  std::vector<std::u16string> chunks_;
   bool on_chunks_end_called_ = false;
 };
 

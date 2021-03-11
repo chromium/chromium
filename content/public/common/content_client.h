@@ -150,12 +150,12 @@ class CONTENT_EXPORT ContentClient {
   virtual void AddAdditionalSchemes(Schemes* schemes) {}
 
   // Returns a string resource given its id.
-  virtual base::string16 GetLocalizedString(int message_id);
+  virtual std::u16string GetLocalizedString(int message_id);
 
   // Returns a string resource given its id and replace $1 with the given
   // replacement.
-  virtual base::string16 GetLocalizedString(int message_id,
-                                            const base::string16& replacement);
+  virtual std::u16string GetLocalizedString(int message_id,
+                                            const std::u16string& replacement);
 
   // Return the contents of a resource in a StringPiece given the resource id.
   virtual base::StringPiece GetDataResource(int resource_id,

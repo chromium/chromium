@@ -43,8 +43,8 @@ TEST_F(FuzzyTokenizedStringMatchTest, PartialRatioTest) {
 TEST_F(FuzzyTokenizedStringMatchTest, TokenSetRatioTest) {
   FuzzyTokenizedStringMatch match;
   {
-    base::string16 query(base::UTF8ToUTF16("order different in"));
-    base::string16 text(base::UTF8ToUTF16("text order"));
+    std::u16string query(base::UTF8ToUTF16("order different in"));
+    std::u16string text(base::UTF8ToUTF16("text order"));
     EXPECT_EQ(match.TokenSetRatio(TokenizedString(query), TokenizedString(text),
                                   true, kPartialMatchPenaltyRate, false, 0.0),
               1);
@@ -54,8 +54,8 @@ TEST_F(FuzzyTokenizedStringMatchTest, TokenSetRatioTest) {
         0.67, 0.01);
   }
   {
-    base::string16 query(base::UTF8ToUTF16("short text"));
-    base::string16 text(
+    std::u16string query(base::UTF8ToUTF16("short text"));
+    std::u16string text(
         base::UTF8ToUTF16("this text is really really really long"));
     EXPECT_EQ(match.TokenSetRatio(TokenizedString(query), TokenizedString(text),
                                   true, kPartialMatchPenaltyRate, false, 0.0),
@@ -66,8 +66,8 @@ TEST_F(FuzzyTokenizedStringMatchTest, TokenSetRatioTest) {
         0.57, 0.01);
   }
   {
-    base::string16 query(base::UTF8ToUTF16("common string"));
-    base::string16 text(base::UTF8ToUTF16("nothing is shared"));
+    std::u16string query(base::UTF8ToUTF16("common string"));
+    std::u16string text(base::UTF8ToUTF16("nothing is shared"));
     EXPECT_NEAR(
         match.TokenSetRatio(TokenizedString(query), TokenizedString(text), true,
                             kPartialMatchPenaltyRate, false, 0.0),
@@ -78,9 +78,9 @@ TEST_F(FuzzyTokenizedStringMatchTest, TokenSetRatioTest) {
         0.33, 0.01);
   }
   {
-    base::string16 query(
+    std::u16string query(
         base::UTF8ToUTF16("token shared token same shared same"));
-    base::string16 text(base::UTF8ToUTF16("token shared token text text long"));
+    std::u16string text(base::UTF8ToUTF16("token shared token text text long"));
     EXPECT_EQ(match.TokenSetRatio(TokenizedString(query), TokenizedString(text),
                                   true, kPartialMatchPenaltyRate, false, 0.0),
               1);
@@ -94,8 +94,8 @@ TEST_F(FuzzyTokenizedStringMatchTest, TokenSetRatioTest) {
 TEST_F(FuzzyTokenizedStringMatchTest, TokenSortRatioTest) {
   FuzzyTokenizedStringMatch match;
   {
-    base::string16 query(base::UTF8ToUTF16("order different in"));
-    base::string16 text(base::UTF8ToUTF16("text order"));
+    std::u16string query(base::UTF8ToUTF16("order different in"));
+    std::u16string text(base::UTF8ToUTF16("text order"));
     EXPECT_NEAR(
         match.TokenSortRatio(TokenizedString(query), TokenizedString(text),
                              true, kPartialMatchPenaltyRate, false, 0.0),
@@ -106,8 +106,8 @@ TEST_F(FuzzyTokenizedStringMatchTest, TokenSortRatioTest) {
         0.36, 0.01);
   }
   {
-    base::string16 query(base::UTF8ToUTF16("short text"));
-    base::string16 text(
+    std::u16string query(base::UTF8ToUTF16("short text"));
+    std::u16string text(
         base::UTF8ToUTF16("this text is really really really long"));
     EXPECT_EQ(
         match.TokenSortRatio(TokenizedString(query), TokenizedString(text),
@@ -119,8 +119,8 @@ TEST_F(FuzzyTokenizedStringMatchTest, TokenSortRatioTest) {
         0.33, 0.01);
   }
   {
-    base::string16 query(base::UTF8ToUTF16("common string"));
-    base::string16 text(base::UTF8ToUTF16("nothing is shared"));
+    std::u16string query(base::UTF8ToUTF16("common string"));
+    std::u16string text(base::UTF8ToUTF16("nothing is shared"));
     EXPECT_NEAR(
         match.TokenSortRatio(TokenizedString(query), TokenizedString(text),
                              true, kPartialMatchPenaltyRate, false, 0.0),
@@ -135,32 +135,32 @@ TEST_F(FuzzyTokenizedStringMatchTest, TokenSortRatioTest) {
 TEST_F(FuzzyTokenizedStringMatchTest, WeightedRatio) {
   FuzzyTokenizedStringMatch match;
   {
-    base::string16 query(base::UTF8ToUTF16("anonymous"));
-    base::string16 text(base::UTF8ToUTF16("famous"));
+    std::u16string query(base::UTF8ToUTF16("anonymous"));
+    std::u16string text(base::UTF8ToUTF16("famous"));
     EXPECT_NEAR(
         match.WeightedRatio(TokenizedString(query), TokenizedString(text),
                             kPartialMatchPenaltyRate, false, 0.0),
         0.67, 0.01);
   }
   {
-    base::string16 query(base::UTF8ToUTF16("Clash.of.clan"));
-    base::string16 text(base::UTF8ToUTF16("ClashOfTitan"));
+    std::u16string query(base::UTF8ToUTF16("Clash.of.clan"));
+    std::u16string text(base::UTF8ToUTF16("ClashOfTitan"));
     EXPECT_NEAR(
         match.WeightedRatio(TokenizedString(query), TokenizedString(text),
                             kPartialMatchPenaltyRate, false, 0.0),
         0.81, 0.01);
   }
   {
-    base::string16 query(base::UTF8ToUTF16("final fantasy"));
-    base::string16 text(base::UTF8ToUTF16("finalfantasy"));
+    std::u16string query(base::UTF8ToUTF16("final fantasy"));
+    std::u16string text(base::UTF8ToUTF16("finalfantasy"));
     EXPECT_NEAR(
         match.WeightedRatio(TokenizedString(query), TokenizedString(text),
                             kPartialMatchPenaltyRate, false, 0.0),
         0.96, 0.01);
   }
   {
-    base::string16 query(base::UTF8ToUTF16("short text!!!"));
-    base::string16 text(
+    std::u16string query(base::UTF8ToUTF16("short text!!!"));
+    std::u16string text(
         base::UTF8ToUTF16("this sentence is much much much much much longer "
                           "than the text before"));
     EXPECT_NEAR(
@@ -172,57 +172,57 @@ TEST_F(FuzzyTokenizedStringMatchTest, WeightedRatio) {
 
 TEST_F(FuzzyTokenizedStringMatchTest, PrefixMatcherTest) {
   {
-    base::string16 query(base::UTF8ToUTF16("clas"));
-    base::string16 text(base::UTF8ToUTF16("Clash of Clan"));
+    std::u16string query(base::UTF8ToUTF16("clas"));
+    std::u16string text(base::UTF8ToUTF16("Clash of Clan"));
     EXPECT_NEAR(FuzzyTokenizedStringMatch::PrefixMatcher(TokenizedString(query),
                                                          TokenizedString(text)),
                 0.94, 0.01);
   }
   {
-    base::string16 query(base::UTF8ToUTF16("clash clan"));
-    base::string16 text(base::UTF8ToUTF16("Clash of Clan"));
+    std::u16string query(base::UTF8ToUTF16("clash clan"));
+    std::u16string text(base::UTF8ToUTF16("Clash of Clan"));
     EXPECT_EQ(FuzzyTokenizedStringMatch::PrefixMatcher(TokenizedString(query),
                                                        TokenizedString(text)),
               0.0);
   }
   {
-    base::string16 query(base::UTF8ToUTF16("c o c"));
-    base::string16 text(base::UTF8ToUTF16("Clash of Clan"));
+    std::u16string query(base::UTF8ToUTF16("c o c"));
+    std::u16string text(base::UTF8ToUTF16("Clash of Clan"));
     EXPECT_NEAR(FuzzyTokenizedStringMatch::PrefixMatcher(TokenizedString(query),
                                                          TokenizedString(text)),
                 0.84, 0.01);
   }
   {
-    base::string16 query(base::UTF8ToUTF16("wifi"));
-    base::string16 text(base::UTF8ToUTF16("wi-fi"));
+    std::u16string query(base::UTF8ToUTF16("wifi"));
+    std::u16string text(base::UTF8ToUTF16("wi-fi"));
     EXPECT_NEAR(FuzzyTokenizedStringMatch::PrefixMatcher(TokenizedString(query),
                                                          TokenizedString(text)),
                 0.91, 0.01);
   }
   {
-    base::string16 query(base::UTF8ToUTF16("clam"));
-    base::string16 text(base::UTF8ToUTF16("Clash of Clan"));
+    std::u16string query(base::UTF8ToUTF16("clam"));
+    std::u16string text(base::UTF8ToUTF16("Clash of Clan"));
     EXPECT_EQ(FuzzyTokenizedStringMatch::PrefixMatcher(TokenizedString(query),
                                                        TokenizedString(text)),
               0.0);
   }
   {
-    base::string16 query(base::UTF8ToUTF16("rp"));
-    base::string16 text(base::UTF8ToUTF16("Remove Google Play Store"));
+    std::u16string query(base::UTF8ToUTF16("rp"));
+    std::u16string text(base::UTF8ToUTF16("Remove Google Play Store"));
     EXPECT_EQ(FuzzyTokenizedStringMatch::PrefixMatcher(TokenizedString(query),
                                                        TokenizedString(text)),
               0.0);
   }
   {
-    base::string16 query(base::UTF8ToUTF16("remove play"));
-    base::string16 text(base::UTF8ToUTF16("Remove Google Play Store"));
+    std::u16string query(base::UTF8ToUTF16("remove play"));
+    std::u16string text(base::UTF8ToUTF16("Remove Google Play Store"));
     EXPECT_EQ(FuzzyTokenizedStringMatch::PrefixMatcher(TokenizedString(query),
                                                        TokenizedString(text)),
               0.0);
   }
   {
-    base::string16 query(base::UTF8ToUTF16("google play"));
-    base::string16 text(base::UTF8ToUTF16("Remove Google Play Store"));
+    std::u16string query(base::UTF8ToUTF16("google play"));
+    std::u16string text(base::UTF8ToUTF16("Remove Google Play Store"));
     EXPECT_NEAR(FuzzyTokenizedStringMatch::PrefixMatcher(TokenizedString(query),
                                                          TokenizedString(text)),
                 0.99, 0.01);
@@ -232,22 +232,22 @@ TEST_F(FuzzyTokenizedStringMatchTest, PrefixMatcherTest) {
 TEST_F(FuzzyTokenizedStringMatchTest, ParamThresholdTest1) {
   FuzzyTokenizedStringMatch match;
   {
-    base::string16 query(base::UTF8ToUTF16("anonymous"));
-    base::string16 text(base::UTF8ToUTF16("famous"));
+    std::u16string query(base::UTF8ToUTF16("anonymous"));
+    std::u16string text(base::UTF8ToUTF16("famous"));
     EXPECT_FALSE(match.IsRelevant(TokenizedString(query), TokenizedString(text),
                                   0.4, false, true, false,
                                   kPartialMatchPenaltyRate, 0.0));
   }
   {
-    base::string16 query(base::UTF8ToUTF16("CC"));
-    base::string16 text(base::UTF8ToUTF16("Clash Of Clan"));
+    std::u16string query(base::UTF8ToUTF16("CC"));
+    std::u16string text(base::UTF8ToUTF16("Clash Of Clan"));
     EXPECT_FALSE(match.IsRelevant(TokenizedString(query), TokenizedString(text),
                                   0.25, false, true, false,
                                   kPartialMatchPenaltyRate, 0.0));
   }
   {
-    base::string16 query(base::UTF8ToUTF16("Clash.of.clan"));
-    base::string16 text(base::UTF8ToUTF16("ClashOfTitan"));
+    std::u16string query(base::UTF8ToUTF16("Clash.of.clan"));
+    std::u16string text(base::UTF8ToUTF16("ClashOfTitan"));
     EXPECT_TRUE(match.IsRelevant(TokenizedString(query), TokenizedString(text),
                                  0.4, false, true, false,
                                  kPartialMatchPenaltyRate, 0.0));
@@ -257,22 +257,22 @@ TEST_F(FuzzyTokenizedStringMatchTest, ParamThresholdTest1) {
 TEST_F(FuzzyTokenizedStringMatchTest, ParamThresholdTest2) {
   FuzzyTokenizedStringMatch match;
   {
-    base::string16 query(base::UTF8ToUTF16("anonymous"));
-    base::string16 text(base::UTF8ToUTF16("famous"));
+    std::u16string query(base::UTF8ToUTF16("anonymous"));
+    std::u16string text(base::UTF8ToUTF16("famous"));
     EXPECT_FALSE(match.IsRelevant(TokenizedString(query), TokenizedString(text),
                                   0.5, false, true, false,
                                   kPartialMatchPenaltyRate, 0.0));
   }
   {
-    base::string16 query(base::UTF8ToUTF16("CC"));
-    base::string16 text(base::UTF8ToUTF16("Clash Of Clan"));
+    std::u16string query(base::UTF8ToUTF16("CC"));
+    std::u16string text(base::UTF8ToUTF16("Clash Of Clan"));
     EXPECT_FALSE(match.IsRelevant(TokenizedString(query), TokenizedString(text),
                                   0.25, false, true, false,
                                   kPartialMatchPenaltyRate));
   }
   {
-    base::string16 query(base::UTF8ToUTF16("Clash.of.clan"));
-    base::string16 text(base::UTF8ToUTF16("ClashOfTitan"));
+    std::u16string query(base::UTF8ToUTF16("Clash.of.clan"));
+    std::u16string text(base::UTF8ToUTF16("ClashOfTitan"));
     EXPECT_FALSE(match.IsRelevant(TokenizedString(query), TokenizedString(text),
                                   0.5, false, true, false,
                                   kPartialMatchPenaltyRate, 0.0));
@@ -281,8 +281,8 @@ TEST_F(FuzzyTokenizedStringMatchTest, ParamThresholdTest2) {
 
 TEST_F(FuzzyTokenizedStringMatchTest, OtherParamTest) {
   FuzzyTokenizedStringMatch match;
-  base::string16 query(base::UTF8ToUTF16("anonymous"));
-  base::string16 text(base::UTF8ToUTF16("famous"));
+  std::u16string query(base::UTF8ToUTF16("anonymous"));
+  std::u16string text(base::UTF8ToUTF16("famous"));
   EXPECT_FALSE(match.IsRelevant(TokenizedString(query), TokenizedString(text),
                                 0.35, false, false, true,
                                 kPartialMatchPenaltyRate, 0.0));
@@ -291,8 +291,8 @@ TEST_F(FuzzyTokenizedStringMatchTest, OtherParamTest) {
 
 TEST_F(FuzzyTokenizedStringMatchTest, ExactTextMatchTest) {
   FuzzyTokenizedStringMatch match;
-  base::string16 query(base::UTF8ToUTF16("yat"));
-  base::string16 text(base::UTF8ToUTF16("YaT"));
+  std::u16string query(base::UTF8ToUTF16("yat"));
+  std::u16string text(base::UTF8ToUTF16("YaT"));
   EXPECT_TRUE(match.IsRelevant(TokenizedString(query), TokenizedString(text),
                                0.35, false, false, true,
                                kPartialMatchPenaltyRate, 0.0));

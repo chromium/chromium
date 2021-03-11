@@ -544,7 +544,7 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerBrowserTest, FetchPageWithSaveData) {
                      blink::ServiceWorkerStatusCode::kOk, base::DoNothing()));
   observer->Wait();
 
-  const base::string16 title1 = base::ASCIIToUTF16("save-data=on");
+  const std::u16string title1 = base::ASCIIToUTF16("save-data=on");
   TitleWatcher title_watcher1(shell()->web_contents(), title1);
   EXPECT_TRUE(NavigateToURL(shell(), embedded_test_server()->GetURL(kPageUrl)));
   EXPECT_EQ(title1, title_watcher1.WaitAndGetTitle());
@@ -591,7 +591,7 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerBrowserTest, CrossOriginFetchWithSaveData) {
                      blink::ServiceWorkerStatusCode::kOk, base::DoNothing()));
   observer->Wait();
 
-  const base::string16 title = base::ASCIIToUTF16("PASS");
+  const std::u16string title = base::ASCIIToUTF16("PASS");
   TitleWatcher title_watcher(shell()->web_contents(), title);
   EXPECT_TRUE(NavigateToURL(
       shell(), embedded_test_server()->GetURL(base::StringPrintf(
@@ -670,12 +670,12 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerBrowserTest, Reload) {
                      blink::ServiceWorkerStatusCode::kOk, base::DoNothing()));
   observer->Wait();
 
-  const base::string16 title1 = base::ASCIIToUTF16("reload=false");
+  const std::u16string title1 = base::ASCIIToUTF16("reload=false");
   TitleWatcher title_watcher1(shell()->web_contents(), title1);
   EXPECT_TRUE(NavigateToURL(shell(), embedded_test_server()->GetURL(kPageUrl)));
   EXPECT_EQ(title1, title_watcher1.WaitAndGetTitle());
 
-  const base::string16 title2 = base::ASCIIToUTF16("reload=true");
+  const std::u16string title2 = base::ASCIIToUTF16("reload=true");
   TitleWatcher title_watcher2(shell()->web_contents(), title2);
   ReloadBlockUntilNavigationsComplete(shell(), 1);
   EXPECT_EQ(title2, title_watcher2.WaitAndGetTitle());
@@ -814,7 +814,7 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerBrowserTest,
     }
 
     // Wait until the page is appropriately served by the service worker.
-    const base::string16 title = base::ASCIIToUTF16("Title");
+    const std::u16string title = base::ASCIIToUTF16("Title");
     TitleWatcher title_watcher(shell()->web_contents(), title);
     EXPECT_TRUE(NavigateToURL(shell(), https_server.GetURL(kPageUrl)));
     EXPECT_EQ(title, title_watcher.WaitAndGetTitle());
@@ -836,7 +836,7 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerBrowserTest,
     observer->Wait();
 
     // Wait until the page is appropriately served by the service worker.
-    const base::string16 title = base::ASCIIToUTF16("Title");
+    const std::u16string title = base::ASCIIToUTF16("Title");
     TitleWatcher title_watcher(shell()->web_contents(), title);
     EXPECT_TRUE(NavigateToURL(shell(), https_server.GetURL(kPageUrl)));
     EXPECT_EQ(title, title_watcher.WaitAndGetTitle());
@@ -873,7 +873,7 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerBrowserTest,
                      blink::ServiceWorkerStatusCode::kOk, base::DoNothing()));
   observer->Wait();
 
-  const base::string16 title = base::ASCIIToUTF16("Title");
+  const std::u16string title = base::ASCIIToUTF16("Title");
   TitleWatcher title_watcher(shell()->web_contents(), title);
   EXPECT_TRUE(NavigateToURL(shell(), embedded_test_server()->GetURL(kPageUrl)));
   EXPECT_EQ(title, title_watcher.WaitAndGetTitle());
@@ -898,13 +898,13 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerBrowserTest, ImportsBustMemcache) {
   StartServerAndNavigateToSetup();
   const char kScopeUrl[] = "/service_worker/imports_bust_memcache_scope/";
   const char kPageUrl[] = "/service_worker/imports_bust_memcache.html";
-  const base::string16 kOKTitle(base::ASCIIToUTF16("OK"));
-  const base::string16 kFailTitle(base::ASCIIToUTF16("FAIL"));
+  const std::u16string kOKTitle(base::ASCIIToUTF16("OK"));
+  const std::u16string kFailTitle(base::ASCIIToUTF16("FAIL"));
 
   TitleWatcher title_watcher(shell()->web_contents(), kOKTitle);
   title_watcher.AlsoWaitForTitle(kFailTitle);
   EXPECT_TRUE(NavigateToURL(shell(), embedded_test_server()->GetURL(kPageUrl)));
-  base::string16 title = title_watcher.WaitAndGetTitle();
+  std::u16string title = title_watcher.WaitAndGetTitle();
   EXPECT_EQ(kOKTitle, title);
 
   // Verify the number of resources in the implicit script cache is correct.
@@ -1196,7 +1196,7 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerEagerCacheStorageSetupTest,
   observer->Wait();
 
   // Navigation should succeed.
-  const base::string16 title =
+  const std::u16string title =
       base::ASCIIToUTF16("ServiceWorker test - empty page");
   TitleWatcher title_watcher(shell()->web_contents(), title);
   EXPECT_TRUE(NavigateToURL(
@@ -1257,7 +1257,7 @@ class ServiceWorkerNavigationPreloadTest : public ServiceWorkerBrowserTest {
     StartServerAndNavigateToSetup();
     SetupForNavigationPreloadTest(page_url, worker_url);
 
-    const base::string16 title = base::ASCIIToUTF16("PASS");
+    const std::u16string title = base::ASCIIToUTF16("PASS");
     TitleWatcher title_watcher(shell()->web_contents(), title);
     title_watcher.AlsoWaitForTitle(base::ASCIIToUTF16("ERROR"));
     title_watcher.AlsoWaitForTitle(base::ASCIIToUTF16("REJECTED"));
@@ -1518,7 +1518,7 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerNavigationPreloadTest, SetHeaderValue) {
   SetupForNavigationPreloadTest(page_url, worker_url);
 
   const std::string kPageUrl1 = kPageUrl + "?enable";
-  const base::string16 title1 = base::ASCIIToUTF16("ENABLED");
+  const std::u16string title1 = base::ASCIIToUTF16("ENABLED");
   TitleWatcher title_watcher1(shell()->web_contents(), title1);
   title_watcher1.AlsoWaitForTitle(base::ASCIIToUTF16("FROM_SERVER"));
   EXPECT_TRUE(
@@ -1529,7 +1529,7 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerNavigationPreloadTest, SetHeaderValue) {
   ASSERT_EQ(0, GetRequestCount(kPageUrl1));
 
   const std::string kPageUrl2 = kPageUrl + "?change";
-  const base::string16 title2 = base::ASCIIToUTF16("CHANGED");
+  const std::u16string title2 = base::ASCIIToUTF16("CHANGED");
   TitleWatcher title_watcher2(shell()->web_contents(), title2);
   title_watcher2.AlsoWaitForTitle(base::ASCIIToUTF16("FROM_SERVER"));
   EXPECT_TRUE(
@@ -1543,7 +1543,7 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerNavigationPreloadTest, SetHeaderValue) {
   EXPECT_EQ("true", GetNavigationPreloadHeader(request_log_[kPageUrl2][0]));
 
   const std::string kPageUrl3 = kPageUrl + "?disable";
-  const base::string16 title3 = base::ASCIIToUTF16("DISABLED");
+  const std::u16string title3 = base::ASCIIToUTF16("DISABLED");
   TitleWatcher title_watcher3(shell()->web_contents(), title3);
   title_watcher3.AlsoWaitForTitle(base::ASCIIToUTF16("FROM_SERVER"));
   EXPECT_TRUE(
@@ -1556,7 +1556,7 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerNavigationPreloadTest, SetHeaderValue) {
   EXPECT_EQ("Hello", GetNavigationPreloadHeader(request_log_[kPageUrl3][0]));
 
   const std::string kPageUrl4 = kPageUrl + "?test";
-  const base::string16 title4 = base::ASCIIToUTF16("TEST");
+  const std::u16string title4 = base::ASCIIToUTF16("TEST");
   TitleWatcher title_watcher4(shell()->web_contents(), title4);
   title_watcher4.AlsoWaitForTitle(base::ASCIIToUTF16("FROM_SERVER"));
   EXPECT_TRUE(
@@ -1765,7 +1765,7 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerNavigationPreloadTest, NetworkError) {
 
   EXPECT_TRUE(embedded_test_server()->ShutdownAndWaitUntilComplete());
 
-  const base::string16 title = base::ASCIIToUTF16("REJECTED");
+  const std::u16string title = base::ASCIIToUTF16("REJECTED");
   TitleWatcher title_watcher(shell()->web_contents(), title);
   title_watcher.AlsoWaitForTitle(base::ASCIIToUTF16("RESOLVED"));
   EXPECT_TRUE(NavigateToURL(shell(), page_url));
@@ -1971,7 +1971,7 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerNavigationPreloadTest,
   // Navigate to a same-origin, out of scope URL that redirects to the target
   // URL. The navigation preload request should be the single request to the
   // target URL.
-  const base::string16 title1 = base::ASCIIToUTF16("?1");
+  const std::u16string title1 = base::ASCIIToUTF16("?1");
   TitleWatcher title_watcher1(shell()->web_contents(), title1);
   GURL expected_commit_url1(embedded_test_server()->GetURL(kPageUrl + "?1"));
   EXPECT_TRUE(NavigateToURL(shell(), redirect_page_url, expected_commit_url1));
@@ -1981,7 +1981,7 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerNavigationPreloadTest,
   // Navigate to a same-origin, in-scope URL that redirects to the target URL.
   // The navigation preload request should be the single request to the target
   // URL.
-  const base::string16 title2 = base::ASCIIToUTF16("?2");
+  const std::u16string title2 = base::ASCIIToUTF16("?2");
   TitleWatcher title_watcher2(shell()->web_contents(), title2);
   GURL expected_commit_url2(embedded_test_server()->GetURL(kPageUrl + "?2"));
   EXPECT_TRUE(
@@ -1991,7 +1991,7 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerNavigationPreloadTest,
 
   // Navigate to a cross-origin URL that redirects to the target URL. The
   // navigation preload request should be the single request to the target URL.
-  const base::string16 title3 = base::ASCIIToUTF16("?3");
+  const std::u16string title3 = base::ASCIIToUTF16("?3");
   TitleWatcher title_watcher3(shell()->web_contents(), title3);
   GURL expected_commit_url3(embedded_test_server()->GetURL(kPageUrl + "?3"));
   EXPECT_TRUE(NavigateToURL(shell(), cross_origin_redirect_page_url,
@@ -2257,7 +2257,7 @@ class ServiceWorkerV8CodeCacheForCacheStorageTest
   }
 
   void NavigateToTestPage() {
-    const base::string16 title =
+    const std::u16string title =
         base::ASCIIToUTF16("Title was changed by the script.");
     TitleWatcher title_watcher(shell()->web_contents(), title);
     EXPECT_TRUE(
@@ -2609,7 +2609,7 @@ class ServiceWorkerDisableWebSecurityTest : public ServiceWorkerBrowserTest {
 
   void RunTestWithCrossOriginURL(const std::string& test_page,
                                  const std::string& cross_origin_url) {
-    const base::string16 title = base::ASCIIToUTF16("PASS");
+    const std::u16string title = base::ASCIIToUTF16("PASS");
     TitleWatcher title_watcher(shell()->web_contents(), title);
     EXPECT_TRUE(NavigateToURL(
         shell(), embedded_test_server()->GetURL(

@@ -50,7 +50,7 @@ class CONTENT_EXPORT MediaInternals : public media::AudioLogFactory,
                                       public NotificationObserver {
  public:
   // Called with the update string.
-  using UpdateCallback = base::RepeatingCallback<void(const base::string16&)>;
+  using UpdateCallback = base::RepeatingCallback<void(const std::u16string&)>;
 
   static MediaInternals* GetInstance();
 
@@ -134,7 +134,7 @@ class CONTENT_EXPORT MediaInternals : public media::AudioLogFactory,
 
   // Sends |update| to each registered UpdateCallback.  Safe to call from any
   // thread, but will forward to the IO thread.
-  void SendUpdate(const base::string16& update);
+  void SendUpdate(const std::u16string& update);
 
   // Saves |event| so that it can be sent later in SendHistoricalMediaEvents().
   void SaveEvent(int process_id, const media::MediaLogRecord& event);

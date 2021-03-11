@@ -27,7 +27,7 @@ class CONTENT_EXPORT CursorManager {
 
     virtual void OnSetTooltipTextForView(
         const RenderWidgetHostViewBase* view,
-        const base::string16& tooltip_text) = 0;
+        const std::u16string& tooltip_text) = 0;
   };
 
   CursorManager(RenderWidgetHostViewBase* root);
@@ -43,7 +43,7 @@ class CONTENT_EXPORT CursorManager {
   // Accepts TooltipText updates from views, but only updates what's displayed
   // if the requesting view is currently under the mouse cursor.
   void SetTooltipTextForView(const RenderWidgetHostViewBase* view,
-                             const base::string16& tooltip_text);
+                             const std::u16string& tooltip_text);
 
   // Notification of a RenderWidgetHostView being destroyed, so that its
   // cursor map entry can be removed if it has one. If it is the current

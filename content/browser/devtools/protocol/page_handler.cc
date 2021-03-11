@@ -303,8 +303,8 @@ void PageHandler::DidDetachInterstitialPage() {
 }
 
 void PageHandler::DidRunJavaScriptDialog(const GURL& url,
-                                         const base::string16& message,
-                                         const base::string16& default_prompt,
+                                         const std::u16string& message,
+                                         const std::u16string& default_prompt,
                                          JavaScriptDialogType dialog_type,
                                          bool has_non_devtools_handlers,
                                          JavaScriptDialogCallback callback) {
@@ -335,7 +335,7 @@ void PageHandler::DidRunBeforeUnloadConfirm(const GURL& url,
 }
 
 void PageHandler::DidCloseJavaScriptDialog(bool success,
-                                           const base::string16& user_input) {
+                                           const std::u16string& user_input) {
   if (!enabled_)
     return;
   pending_dialog_.Reset();
@@ -362,7 +362,7 @@ Response PageHandler::Disable() {
         web_contents && web_contents->GetDelegate() &&
         web_contents->GetDelegate()->GetJavaScriptDialogManager(web_contents);
     if (!has_dialog_manager)
-      std::move(pending_dialog_).Run(false, base::string16());
+      std::move(pending_dialog_).Run(false, std::u16string());
     pending_dialog_.Reset();
   }
 
@@ -554,7 +554,7 @@ void PageHandler::DownloadWillBegin(FrameTreeNode* ftn,
   // and DownloadTargetDeterminer::GenerateFileName in
   // chrome/browser/download/download_target_determiner.cc
   // for the more comprehensive logic.
-  const base::string16 likely_filename = net::GetSuggestedFilename(
+  const std::u16string likely_filename = net::GetSuggestedFilename(
       item->GetURL(), item->GetContentDisposition(), std::string(),
       item->GetSuggestedFilename(), item->GetMimeType(), "download");
 
@@ -943,7 +943,7 @@ Response PageHandler::HandleJavaScriptDialog(bool accept,
   if (pending_dialog_.is_null())
     return Response::InvalidParams("No dialog is showing");
 
-  base::string16 prompt_override;
+  std::u16string prompt_override;
   if (prompt_text.isJust())
     prompt_override = base::UTF8ToUTF16(prompt_text.fromJust());
   std::move(pending_dialog_).Run(accept, prompt_override);

@@ -1063,17 +1063,16 @@ class TitleWatcher : public WebContentsObserver {
   // |web_contents| must be non-NULL and needs to stay alive for the
   // entire lifetime of |this|. |expected_title| is the title that |this|
   // will wait for.
-  TitleWatcher(WebContents* web_contents,
-               const base::string16& expected_title);
+  TitleWatcher(WebContents* web_contents, const std::u16string& expected_title);
   ~TitleWatcher() override;
 
   // Adds another title to watch for.
-  void AlsoWaitForTitle(const base::string16& expected_title);
+  void AlsoWaitForTitle(const std::u16string& expected_title);
 
   // Waits until the title matches either expected_title or one of the titles
   // added with AlsoWaitForTitle. Returns the value of the most recently
   // observed matching title.
-  const base::string16& WaitAndGetTitle() WARN_UNUSED_RESULT;
+  const std::u16string& WaitAndGetTitle() WARN_UNUSED_RESULT;
 
  private:
   // Overridden WebContentsObserver methods.
@@ -1082,11 +1081,11 @@ class TitleWatcher : public WebContentsObserver {
 
   void TestTitle();
 
-  std::vector<base::string16> expected_titles_;
+  std::vector<std::u16string> expected_titles_;
   base::RunLoop run_loop_;
 
   // The most recently observed expected title, if any.
-  base::string16 observed_title_;
+  std::u16string observed_title_;
 
   DISALLOW_COPY_AND_ASSIGN(TitleWatcher);
 };
@@ -1640,9 +1639,9 @@ class WebContentsConsoleObserver : public WebContentsObserver {
   struct Message {
     RenderFrameHost* source_frame;
     blink::mojom::ConsoleMessageLevel log_level;
-    base::string16 message;
+    std::u16string message;
     int32_t line_no;
-    base::string16 source_id;
+    std::u16string source_id;
   };
 
   // A filter to apply to incoming console messages to determine whether to
@@ -1676,10 +1675,10 @@ class WebContentsConsoleObserver : public WebContentsObserver {
   void OnDidAddMessageToConsole(
       RenderFrameHost* source_frame,
       blink::mojom::ConsoleMessageLevel log_level,
-      const base::string16& message,
+      const std::u16string& message,
       int32_t line_no,
-      const base::string16& source_id,
-      const base::Optional<base::string16>& untrusted_stack_trace) override;
+      const std::u16string& source_id,
+      const base::Optional<std::u16string>& untrusted_stack_trace) override;
 
   Filter filter_;
   std::string pattern_;

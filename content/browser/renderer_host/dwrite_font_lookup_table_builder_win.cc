@@ -451,7 +451,7 @@ DWriteFontLookupTableBuilder::ExtractPathAndNamesFromFamily(
   TRACE_EVENT0("dwrite,fonts",
                "DWriteFontLookupTableBuilder::ExtractPathAndNamesFromFamily");
 
-  static base::NoDestructor<base::string16> windows_fonts_path(
+  static base::NoDestructor<std::u16string> windows_fonts_path(
       GetWindowsFontsPath());
 
   DWriteFontLookupTableBuilder::FamilyResult family_result;

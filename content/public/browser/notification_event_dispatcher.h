@@ -41,7 +41,7 @@ class CONTENT_EXPORT NotificationEventDispatcher {
       const std::string& notification_id,
       const GURL& origin,
       const base::Optional<int>& action_index,
-      const base::Optional<base::string16>& reply,
+      const base::Optional<std::u16string>& reply,
       NotificationDispatchCompleteCallback dispatch_complete_callback) = 0;
 
   // Dispatches the "notificationclose" event on the Service Worker associated

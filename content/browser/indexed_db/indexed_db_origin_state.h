@@ -54,7 +54,7 @@ class CONTENT_EXPORT IndexedDBOriginState {
  public:
   using TearDownCallback = base::RepeatingCallback<void(leveldb::Status)>;
   using OriginDBMap =
-      base::flat_map<base::string16, std::unique_ptr<IndexedDBDatabase>>;
+      base::flat_map<std::u16string, std::unique_ptr<IndexedDBDatabase>>;
 
   // Maximum time interval between runs of the IndexedDBSweeper. Sweeping only
   // occurs after backing store close.
@@ -180,7 +180,7 @@ class CONTENT_EXPORT IndexedDBOriginState {
   // Test needs access to CompactionKillSwitchWorks.
   FRIEND_TEST_ALL_PREFIXES(IndexedDBFactoryTest, CompactionKillSwitchWorks);
 
-  IndexedDBDatabase* AddDatabase(const base::string16& name,
+  IndexedDBDatabase* AddDatabase(const std::u16string& name,
                                  std::unique_ptr<IndexedDBDatabase> database);
 
   // Returns a new handle to this factory. If this object was in its closing

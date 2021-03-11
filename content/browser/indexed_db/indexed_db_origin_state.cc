@@ -169,14 +169,14 @@ void IndexedDBOriginState::AbortAllTransactions(bool compact) {
   // Because finishing all transactions could cause a database to be destructed
   // (which would mutate the database_ map), save the keys beforehand and use
   // those.
-  std::vector<base::string16> origins;
+  std::vector<std::u16string> origins;
   origins.reserve(databases_.size());
   for (const auto& pair : databases_) {
     origins.push_back(pair.first);
   }
 
   base::WeakPtr<IndexedDBOriginState> weak_ptr = AsWeakPtr();
-  for (const base::string16& origin : origins) {
+  for (const std::u16string& origin : origins) {
     auto it = databases_.find(origin);
     if (it == databases_.end())
       continue;
@@ -279,7 +279,7 @@ IndexedDBOriginState::RunTasks() {
 }
 
 IndexedDBDatabase* IndexedDBOriginState::AddDatabase(
-    const base::string16& name,
+    const std::u16string& name,
     std::unique_ptr<IndexedDBDatabase> database) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(!base::Contains(databases_, name));

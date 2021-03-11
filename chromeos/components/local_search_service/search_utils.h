@@ -16,17 +16,17 @@ struct Result;
 
 // Score is non-zero if |query| is a prefix of |text|. No case normalization is
 // done.
-float ExactPrefixMatchScore(const base::string16& query,
-                            const base::string16& text);
+float ExactPrefixMatchScore(const std::u16string& query,
+                            const std::u16string& text);
 
 // Returns block matching ratio between |query| and |text|. No case
 // normalization is done.
-float BlockMatchScore(const base::string16& query, const base::string16& text);
+float BlockMatchScore(const std::u16string& query, const std::u16string& text);
 
 // |query| approximately matches |text| if its prefix score is above the
 // |prefix_threshold| or block matching score is above |block_threshold|.
-bool IsRelevantApproximately(const base::string16& query,
-                             const base::string16& text,
+bool IsRelevantApproximately(const std::u16string& query,
+                             const std::u16string& text,
                              float prefix_threshold,
                              float block_threshold);
 

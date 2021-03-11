@@ -171,7 +171,7 @@ TEST(ExtensionTest, RTLNameInLTRLocale) {
         ExtensionBuilder().SetManifest(manifest.Build()).Build();
     ASSERT_TRUE(extension);
     const int kResourceId = IDS_EXTENSION_PERMISSIONS_PROMPT_TITLE;
-    const base::string16 expected_utf16 = base::WideToUTF16(expected);
+    const std::u16string expected_utf16 = base::WideToUTF16(expected);
     EXPECT_EQ(l10n_util::GetStringFUTF16(kResourceId, expected_utf16),
               l10n_util::GetStringFUTF16(kResourceId,
                                          base::UTF8ToUTF16(extension->name())));

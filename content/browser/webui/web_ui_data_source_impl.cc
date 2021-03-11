@@ -126,7 +126,7 @@ WebUIDataSourceImpl::WebUIDataSourceImpl(const std::string& source_name)
 WebUIDataSourceImpl::~WebUIDataSourceImpl() = default;
 
 void WebUIDataSourceImpl::AddString(base::StringPiece name,
-                                    const base::string16& value) {
+                                    const std::u16string& value) {
   // TODO(dschuyler): Share only one copy of these strings.
   localized_strings_.SetKey(name, base::Value(value));
   replacements_[name.as_string()] = base::UTF16ToUTF8(value);

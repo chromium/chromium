@@ -824,8 +824,8 @@ void IndexedDBContextImpl::NotifyIndexedDBListChanged(const Origin& origin) {
 
 void IndexedDBContextImpl::NotifyIndexedDBContentChanged(
     const Origin& origin,
-    const base::string16& database_name,
-    const base::string16& object_store_name) {
+    const std::u16string& database_name,
+    const std::u16string& object_store_name) {
   for (auto& observer : observers_) {
     observer->OnIndexedDBContentChanged(origin, database_name,
                                         object_store_name);

@@ -17,7 +17,7 @@ namespace security_token_pin {
 // Generate an error message for a security pin token dialog, based on dialog
 // parameters |error_label|, |attempts_left|, and |accept_input|.
 COMPONENT_EXPORT(SECURITY_TOKEN_PIN)
-base::string16 GenerateErrorMessage(ErrorLabel error_label,
+std::u16string GenerateErrorMessage(ErrorLabel error_label,
                                     int attempts_left,
                                     bool accept_input);
 

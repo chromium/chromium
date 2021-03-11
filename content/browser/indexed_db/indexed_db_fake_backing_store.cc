@@ -60,7 +60,7 @@ IndexedDBFakeBackingStore::IndexedDBFakeBackingStore(
 IndexedDBFakeBackingStore::~IndexedDBFakeBackingStore() = default;
 
 leveldb::Status IndexedDBFakeBackingStore::DeleteDatabase(
-    const base::string16& name,
+    const std::u16string& name,
     TransactionalLevelDBTransaction* transaction) {
   return leveldb::Status::OK();
 }

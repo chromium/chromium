@@ -41,7 +41,7 @@ class SmartSelectionClient {
 
  private:
   void OnSurroundingTextReceived(int callback_data,
-                                 const base::string16& text,
+                                 const std::u16string& text,
                                  uint32_t start,
                                  uint32_t end);
 

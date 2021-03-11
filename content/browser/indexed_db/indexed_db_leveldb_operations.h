@@ -132,13 +132,13 @@ WARN_UNUSED_RESULT leveldb::Status PutVarInt(
 template <typename DBOrTransaction>
 WARN_UNUSED_RESULT leveldb::Status GetString(DBOrTransaction* db,
                                              const base::StringPiece& key,
-                                             base::string16* found_string,
+                                             std::u16string* found_string,
                                              bool* found);
 
 WARN_UNUSED_RESULT leveldb::Status PutString(
     TransactionalLevelDBTransaction* transaction,
     const base::StringPiece& key,
-    const base::string16& value);
+    const std::u16string& value);
 
 WARN_UNUSED_RESULT leveldb::Status PutIDBKeyPath(
     TransactionalLevelDBTransaction* transaction,

@@ -24,8 +24,8 @@
 namespace chromeos {
 namespace local_search_service {
 
-float ExactPrefixMatchScore(const base::string16& query,
-                            const base::string16& text) {
+float ExactPrefixMatchScore(const std::u16string& query,
+                            const std::u16string& text) {
   const size_t query_len = query.size();
   if (query_len == 0)
     return 0;
@@ -40,15 +40,15 @@ float ExactPrefixMatchScore(const base::string16& query,
   return 0.0;
 }
 
-float BlockMatchScore(const base::string16& query, const base::string16& text) {
+float BlockMatchScore(const std::u16string& query, const std::u16string& text) {
   return chromeos::string_matching::SequenceMatcher(
              query, text, false /* use_edit_distance */,
              0.1 /*num_matching_blocks_penalty*/)
       .Ratio();
 }
 
-bool IsRelevantApproximately(const base::string16& query,
-                             const base::string16& text,
+bool IsRelevantApproximately(const std::u16string& query,
+                             const std::u16string& text,
                              float prefix_threshold,
                              float block_threshold) {
   return (ExactPrefixMatchScore(query, text) >= prefix_threshold ||

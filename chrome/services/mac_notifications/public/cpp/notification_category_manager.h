@@ -25,7 +25,7 @@
 // buttons.
 class API_AVAILABLE(macos(10.14)) NotificationCategoryManager {
  public:
-  using Buttons = std::vector<base::string16>;
+  using Buttons = std::vector<std::u16string>;
 
   explicit NotificationCategoryManager(
       UNUserNotificationCenter* notification_center);

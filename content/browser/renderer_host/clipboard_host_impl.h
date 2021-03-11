@@ -164,20 +164,20 @@ class CONTENT_EXPORT ClipboardHostImpl : public blink::mojom::ClipboardHost {
   void ReadFiles(ui::ClipboardBuffer clipboard_buffer,
                  ReadFilesCallback callback) override;
   void ReadCustomData(ui::ClipboardBuffer clipboard_buffer,
-                      const base::string16& type,
+                      const std::u16string& type,
                       ReadCustomDataCallback callback) override;
-  void WriteText(const base::string16& text) override;
-  void WriteHtml(const base::string16& markup, const GURL& url) override;
-  void WriteSvg(const base::string16& markup) override;
+  void WriteText(const std::u16string& text) override;
+  void WriteHtml(const std::u16string& markup, const GURL& url) override;
+  void WriteSvg(const std::u16string& markup) override;
   void WriteSmartPasteMarker() override;
   void WriteCustomData(
-      const base::flat_map<base::string16, base::string16>& data) override;
+      const base::flat_map<std::u16string, std::u16string>& data) override;
   void WriteBookmark(const std::string& url,
-                     const base::string16& title) override;
+                     const std::u16string& title) override;
   void WriteImage(const SkBitmap& unsafe_bitmap) override;
   void CommitWrite() override;
 #if defined(OS_MAC)
-  void WriteStringToFindPboard(const base::string16& text) override;
+  void WriteStringToFindPboard(const std::u16string& text) override;
 #endif
 
   // Called by PerformPasteIfContentAllowed() when an is allowed request is

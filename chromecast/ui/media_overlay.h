@@ -27,7 +27,7 @@ class MediaOverlay {
   virtual void SetController(Controller* controller) = 0;
 
   // Displays a brief toast to the user.
-  virtual void ShowMessage(const base::string16& message) = 0;
+  virtual void ShowMessage(const std::u16string& message) = 0;
 
   // Shows the volume bar for a given |volume|.
   virtual void ShowVolumeBar(float volume) = 0;

@@ -76,8 +76,8 @@ void JavaScriptResultCallback(const ScopedJavaGlobalRef<jobject>& callback,
 }
 
 void SmartClipCallback(const ScopedJavaGlobalRef<jobject>& callback,
-                       const base::string16& text,
-                       const base::string16& html,
+                       const std::u16string& text,
+                       const std::u16string& html,
                        const gfx::Rect& clip_rect) {
   JNIEnv* env = base::android::AttachCurrentThread();
   ScopedJavaLocalRef<jstring> j_text = ConvertUTF16ToJavaString(env, text);

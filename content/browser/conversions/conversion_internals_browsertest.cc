@@ -26,7 +26,7 @@ namespace {
 
 const char kConversionInternalsUrl[] = "chrome://conversion-internals/";
 
-const base::string16 kCompleteTitle = base::ASCIIToUTF16("Complete");
+const std::u16string kCompleteTitle = base::ASCIIToUTF16("Complete");
 
 }  // namespace
 
@@ -60,7 +60,7 @@ class ConversionInternalsWebUiBrowserTest : public ContentBrowserTest {
 
   // Registers a mutation observer that sets the window title to |title| when
   // the report table is empty.
-  void SetTitleOnReportsTableEmpty(const base::string16& title) {
+  void SetTitleOnReportsTableEmpty(const std::u16string& title) {
     const std::string kObserveEmptyReportsTableScript = R"(
     let table = document.getElementById("report-table-body");
     let obs = new MutationObserver(() => {
@@ -265,7 +265,7 @@ IN_PROC_BROWSER_TEST_F(ConversionInternalsWebUiBrowserTest,
   EXPECT_EQ(kCompleteTitle, title_watcher.WaitAndGetTitle());
 
   // Click the clear storage button and expect that the report table is emptied.
-  const base::string16 kDeleteTitle = base::ASCIIToUTF16("Delete");
+  const std::u16string kDeleteTitle = base::ASCIIToUTF16("Delete");
   TitleWatcher delete_title_watcher(shell()->web_contents(), kDeleteTitle);
   SetTitleOnReportsTableEmpty(kDeleteTitle);
 
@@ -305,7 +305,7 @@ IN_PROC_BROWSER_TEST_F(ConversionInternalsWebUiBrowserTest,
   EXPECT_EQ(kCompleteTitle, title_watcher.WaitAndGetTitle());
 
   // Click the send reports button and expect that the report table is emptied.
-  const base::string16 kSentTitle = base::ASCIIToUTF16("Sent");
+  const std::u16string kSentTitle = base::ASCIIToUTF16("Sent");
   TitleWatcher sent_title_watcher(shell()->web_contents(), kSentTitle);
   SetTitleOnReportsTableEmpty(kSentTitle);
 
@@ -318,7 +318,7 @@ IN_PROC_BROWSER_TEST_F(ConversionInternalsWebUiBrowserTest,
                        MojoJsBindingsCorrectlyScoped) {
   EXPECT_TRUE(NavigateToURL(shell(), GURL(kConversionInternalsUrl)));
 
-  const base::string16 passed_title = base::ASCIIToUTF16("passed");
+  const std::u16string passed_title = base::ASCIIToUTF16("passed");
 
   {
     TitleWatcher sent_title_watcher(shell()->web_contents(), passed_title);

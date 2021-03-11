@@ -31,7 +31,7 @@ namespace string_matching {
 class TermBreakIterator {
  public:
   // Note that |word| must out live this iterator.
-  explicit TermBreakIterator(const base::string16& word);
+  explicit TermBreakIterator(const std::u16string& word);
   ~TermBreakIterator();
 
   // Advance to the next term. Returns false if at the end of the word.
@@ -39,7 +39,7 @@ class TermBreakIterator {
 
   // Returns the current term, which is the substr of |word_| in range
   // [prev_, pos_).
-  const base::string16 GetCurrentTerm() const;
+  const std::u16string GetCurrentTerm() const;
 
   size_t prev() const { return prev_; }
   size_t pos() const { return pos_; }
@@ -59,7 +59,7 @@ class TermBreakIterator {
   // Returns new state for given |ch|.
   State GetNewState(char16_t ch);
 
-  const base::string16& word_;
+  const std::u16string& word_;
   size_t prev_;
   size_t pos_;
 

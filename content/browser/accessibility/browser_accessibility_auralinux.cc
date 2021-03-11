@@ -53,7 +53,7 @@ ui::AXPlatformNode* BrowserAccessibilityAuraLinux::GetAXPlatformNode() const {
   return GetNode();
 }
 
-base::string16 BrowserAccessibilityAuraLinux::GetHypertext() const {
+std::u16string BrowserAccessibilityAuraLinux::GetHypertext() const {
   return GetNode()->AXPlatformNodeAuraLinux::GetHypertext();
 }
 

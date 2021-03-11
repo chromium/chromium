@@ -1786,7 +1786,7 @@ void TestRunnerBindings::SimulateWebNotificationClick(gin::Arguments* args) {
 
   std::string title;
   int action_index = std::numeric_limits<int32_t>::min();
-  base::Optional<base::string16> reply;
+  base::Optional<std::u16string> reply;
 
   if (!args->GetNext(&title)) {
     args->ThrowError();

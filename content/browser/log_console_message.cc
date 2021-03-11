@@ -33,11 +33,11 @@ logging::LogSeverity ConsoleMessageLevelToLogSeverity(
 }
 
 void LogConsoleMessage(blink::mojom::ConsoleMessageLevel log_level,
-                       const base::string16& message,
+                       const std::u16string& message,
                        int32_t line_number,
                        bool is_builtin_component,
                        bool is_off_the_record,
-                       const base::string16& source_id) {
+                       const std::u16string& source_id) {
   const int32_t resolved_level =
       is_builtin_component ? ConsoleMessageLevelToLogSeverity(log_level)
                            : ::logging::LOG_INFO;

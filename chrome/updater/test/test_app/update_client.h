@@ -29,7 +29,7 @@ class UpdateClient : public base::RefCountedThreadSafe<UpdateClient> {
                                    bool rollback,
                                    const std::string& version,
                                    int64_t update_size,
-                                   const base::string16& message)>;
+                                   const std::u16string& message)>;
 
   static scoped_refptr<UpdateClient> Create();
 

@@ -63,7 +63,7 @@ struct IndexedDBValue;
 class CONTENT_EXPORT IndexedDBDatabase {
  public:
   // Identifier is pair of (origin, database name).
-  using Identifier = std::pair<url::Origin, base::string16>;
+  using Identifier = std::pair<url::Origin, std::u16string>;
   // Used to report irrecoverable backend errors. The second argument can be
   // null.
   using ErrorCallback =
@@ -78,7 +78,7 @@ class CONTENT_EXPORT IndexedDBDatabase {
   IndexedDBBackingStore* backing_store() { return backing_store_; }
 
   int64_t id() const { return metadata_.id; }
-  const base::string16& name() const { return metadata_.name; }
+  const std::u16string& name() const { return metadata_.name; }
   const url::Origin& origin() const { return identifier_.first; }
   const blink::IndexedDBDatabaseMetadata& metadata() const { return metadata_; }
 
@@ -151,7 +151,7 @@ class CONTENT_EXPORT IndexedDBDatabase {
 
   leveldb::Status CreateObjectStoreOperation(
       int64_t object_store_id,
-      const base::string16& name,
+      const std::u16string& name,
       const blink::IndexedDBKeyPath& key_path,
       bool auto_increment,
       IndexedDBTransaction* transaction);
@@ -163,10 +163,10 @@ class CONTENT_EXPORT IndexedDBDatabase {
       blink::IndexedDBObjectStoreMetadata object_store_metadata);
 
   leveldb::Status RenameObjectStoreOperation(int64_t object_store_id,
-                                             const base::string16& new_name,
+                                             const std::u16string& new_name,
                                              IndexedDBTransaction* transaction);
   void RenameObjectStoreAbortOperation(int64_t object_store_id,
-                                       base::string16 old_name);
+                                       std::u16string old_name);
 
   leveldb::Status VersionChangeOperation(
       int64_t version,
@@ -176,7 +176,7 @@ class CONTENT_EXPORT IndexedDBDatabase {
 
   leveldb::Status CreateIndexOperation(int64_t object_store_id,
                                        int64_t index_id,
-                                       const base::string16& name,
+                                       const std::u16string& name,
                                        const blink::IndexedDBKeyPath& key_path,
                                        bool unique,
                                        bool multi_entry,
@@ -191,11 +191,11 @@ class CONTENT_EXPORT IndexedDBDatabase {
 
   leveldb::Status RenameIndexOperation(int64_t object_store_id,
                                        int64_t index_id,
-                                       const base::string16& new_name,
+                                       const std::u16string& new_name,
                                        IndexedDBTransaction* transaction);
   void RenameIndexAbortOperation(int64_t object_store_id,
                                  int64_t index_id,
-                                 base::string16 old_name);
+                                 std::u16string old_name);
 
   leveldb::Status GetOperation(
       base::WeakPtr<IndexedDBDispatcherHost> dispatcher_host,
@@ -322,7 +322,7 @@ class CONTENT_EXPORT IndexedDBDatabase {
   friend class IndexedDBConnectionCoordinator::OpenRequest;
   friend class IndexedDBConnectionCoordinator::DeleteRequest;
 
-  IndexedDBDatabase(const base::string16& name,
+  IndexedDBDatabase(const std::u16string& name,
                     IndexedDBBackingStore* backing_store,
                     IndexedDBFactory* factory,
                     IndexedDBClassFactory* class_factory,

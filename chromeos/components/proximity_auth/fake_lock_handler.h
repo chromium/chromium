@@ -16,7 +16,7 @@ class FakeLockHandler : public ScreenlockBridge::LockHandler {
   ~FakeLockHandler() override;
 
   // LockHandler:
-  void ShowBannerMessage(const base::string16& message,
+  void ShowBannerMessage(const std::u16string& message,
                          bool is_warning) override;
   void ShowUserPodCustomIcon(
       const AccountId& account_id,
@@ -25,7 +25,7 @@ class FakeLockHandler : public ScreenlockBridge::LockHandler {
   void EnableInput() override;
   void SetAuthType(const AccountId& account_id,
                    mojom::AuthType auth_type,
-                   const base::string16& auth_value) override;
+                   const std::u16string& auth_value) override;
   mojom::AuthType GetAuthType(const AccountId& account_id) const override;
   ScreenType GetScreenType() const override;
   void Unlock(const AccountId& account_id) override;

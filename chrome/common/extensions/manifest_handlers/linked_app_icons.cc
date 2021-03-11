@@ -50,7 +50,7 @@ LinkedAppIconsHandler::LinkedAppIconsHandler() {
 LinkedAppIconsHandler::~LinkedAppIconsHandler() {
 }
 
-bool LinkedAppIconsHandler::Parse(Extension* extension, base::string16* error) {
+bool LinkedAppIconsHandler::Parse(Extension* extension, std::u16string* error) {
   std::unique_ptr<LinkedAppIcons> linked_app_icons(new LinkedAppIcons);
 
   const base::Value* icons_value = nullptr;

@@ -88,13 +88,13 @@ void RawClipboardHostImpl::ReadAvailableFormatNames(
     ReadAvailableFormatNamesCallback callback) {
   if (!HasTransientUserActivation())
     return;
-  std::vector<base::string16> raw_types =
+  std::vector<std::u16string> raw_types =
       clipboard_->ReadAvailablePlatformSpecificFormatNames(
           ui::ClipboardBuffer::kCopyPaste, CreateDataEndpoint().get());
   std::move(callback).Run(raw_types);
 }
 
-void RawClipboardHostImpl::Read(const base::string16& format,
+void RawClipboardHostImpl::Read(const std::u16string& format,
                                 ReadCallback callback) {
   if (!HasTransientUserActivation())
     return;
@@ -113,7 +113,7 @@ void RawClipboardHostImpl::Read(const base::string16& format,
   std::move(callback).Run(std::move(buffer));
 }
 
-void RawClipboardHostImpl::Write(const base::string16& format,
+void RawClipboardHostImpl::Write(const std::u16string& format,
                                  mojo_base::BigBuffer data) {
   if (!HasTransientUserActivation())
     return;
@@ -140,7 +140,7 @@ void RawClipboardHostImpl::Write(const base::string16& format,
   // https://docs.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-registerclipboardformata
   static constexpr int kMaxWindowsClipboardFormats = 0x4000;
   static constexpr int kMaxRegisteredFormats = kMaxWindowsClipboardFormats / 4;
-  static base::NoDestructor<std::set<base::string16>> registered_formats;
+  static base::NoDestructor<std::set<std::u16string>> registered_formats;
   if (!base::Contains(*registered_formats, format)) {
     if (registered_formats->size() >= kMaxRegisteredFormats)
       return;

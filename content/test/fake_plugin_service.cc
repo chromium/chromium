@@ -43,9 +43,9 @@ bool FakePluginService::GetPluginInfoByPath(const base::FilePath& plugin_path,
   return false;
 }
 
-base::string16 FakePluginService::GetPluginDisplayNameByPath(
+std::u16string FakePluginService::GetPluginDisplayNameByPath(
     const base::FilePath& path) {
-  return base::string16();
+  return std::u16string();
 }
 
 void FakePluginService::GetPlugins(GetPluginsCallback callback) {}

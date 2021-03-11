@@ -1835,8 +1835,8 @@ void RenderFrameHostImpl::AddMessageToConsole(
 }
 
 void RenderFrameHostImpl::ExecuteJavaScriptMethod(
-    const base::string16& object_name,
-    const base::string16& method_name,
+    const std::u16string& object_name,
+    const std::u16string& method_name,
     base::Value arguments,
     JavaScriptResultCallback callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
@@ -1849,7 +1849,7 @@ void RenderFrameHostImpl::ExecuteJavaScriptMethod(
       std::move(callback));
 }
 
-void RenderFrameHostImpl::ExecuteJavaScript(const base::string16& javascript,
+void RenderFrameHostImpl::ExecuteJavaScript(const std::u16string& javascript,
                                             JavaScriptResultCallback callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   CHECK(CanExecuteJavaScript());
@@ -1860,7 +1860,7 @@ void RenderFrameHostImpl::ExecuteJavaScript(const base::string16& javascript,
 }
 
 void RenderFrameHostImpl::ExecuteJavaScriptInIsolatedWorld(
-    const base::string16& javascript,
+    const std::u16string& javascript,
     JavaScriptResultCallback callback,
     int32_t world_id) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
@@ -1873,7 +1873,7 @@ void RenderFrameHostImpl::ExecuteJavaScriptInIsolatedWorld(
 }
 
 void RenderFrameHostImpl::ExecuteJavaScriptForTests(
-    const base::string16& javascript,
+    const std::u16string& javascript,
     JavaScriptResultCallback callback,
     int32_t world_id) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
@@ -1886,7 +1886,7 @@ void RenderFrameHostImpl::ExecuteJavaScriptForTests(
 }
 
 void RenderFrameHostImpl::ExecuteJavaScriptWithUserGestureForTests(
-    const base::string16& javascript,
+    const std::u16string& javascript,
     int32_t world_id) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
@@ -2220,7 +2220,7 @@ void RenderFrameHostImpl::RenderProcessExited(
            iter(&smart_clip_callbacks_);
        !iter.IsAtEnd(); iter.Advance()) {
     std::move(*iter.GetCurrentValue())
-        .Run(base::string16(), base::string16(), gfx::Rect());
+        .Run(std::u16string(), std::u16string(), gfx::Rect());
   }
   smart_clip_callbacks_.Clear();
 #endif  // defined(OS_ANDROID)
@@ -2639,11 +2639,11 @@ void RenderFrameHostImpl::OnAudibleStateChanged(bool is_audible) {
 
 void RenderFrameHostImpl::DidAddMessageToConsole(
     blink::mojom::ConsoleMessageLevel log_level,
-    const base::string16& message,
+    const std::u16string& message,
     int32_t line_no,
-    const base::Optional<base::string16>& source_id,
-    const base::Optional<base::string16>& untrusted_stack_trace) {
-  base::string16 updated_source_id;
+    const base::Optional<std::u16string>& source_id,
+    const base::Optional<std::u16string>& untrusted_stack_trace) {
+  std::u16string updated_source_id;
   if (source_id.has_value())
     updated_source_id = *source_id;
   if (delegate_->DidAddMessageToConsole(this, log_level, message, line_no,
@@ -3582,8 +3582,8 @@ void RenderFrameHostImpl::RequestSmartClipExtract(
 }
 
 void RenderFrameHostImpl::OnSmartClipDataExtracted(int32_t callback_id,
-                                                   const base::string16& text,
-                                                   const base::string16& html,
+                                                   const std::u16string& text,
+                                                   const std::u16string& html,
                                                    const gfx::Rect& clip_rect) {
   std::move(*smart_clip_callbacks_.Lookup(callback_id))
       .Run(text, html, clip_rect);
@@ -3592,40 +3592,40 @@ void RenderFrameHostImpl::OnSmartClipDataExtracted(int32_t callback_id,
 #endif  // defined(OS_ANDROID)
 
 void RenderFrameHostImpl::RunModalAlertDialog(
-    const base::string16& alert_message,
+    const std::u16string& alert_message,
     RunModalAlertDialogCallback response_callback) {
   auto dialog_closed_callback = base::BindOnce(
       [](RunModalAlertDialogCallback response_callback, bool success,
-         const base::string16& response) {
+         const std::u16string& response) {
         // The response string is unused but we use a generic mechanism for
         // closing the javascript dialog that returns two arguments.
         std::move(response_callback).Run();
       },
       std::move(response_callback));
-  RunJavaScriptDialog(alert_message, base::string16(),
+  RunJavaScriptDialog(alert_message, std::u16string(),
                       JAVASCRIPT_DIALOG_TYPE_ALERT,
                       std::move(dialog_closed_callback));
 }
 
 void RenderFrameHostImpl::RunModalConfirmDialog(
-    const base::string16& alert_message,
+    const std::u16string& alert_message,
     RunModalConfirmDialogCallback response_callback) {
   auto dialog_closed_callback = base::BindOnce(
       [](RunModalConfirmDialogCallback response_callback, bool success,
-         const base::string16& response) {
+         const std::u16string& response) {
         // The response string is unused but we use a generic mechanism for
         // closing the javascript dialog that returns two arguments.
         std::move(response_callback).Run(success);
       },
       std::move(response_callback));
-  RunJavaScriptDialog(alert_message, base::string16(),
+  RunJavaScriptDialog(alert_message, std::u16string(),
                       JAVASCRIPT_DIALOG_TYPE_CONFIRM,
                       std::move(dialog_closed_callback));
 }
 
 void RenderFrameHostImpl::RunModalPromptDialog(
-    const base::string16& alert_message,
-    const base::string16& default_value,
+    const std::u16string& alert_message,
+    const std::u16string& default_value,
     RunModalPromptDialogCallback response_callback) {
   RunJavaScriptDialog(alert_message, default_value,
                       JAVASCRIPT_DIALOG_TYPE_PROMPT,
@@ -3633,15 +3633,15 @@ void RenderFrameHostImpl::RunModalPromptDialog(
 }
 
 void RenderFrameHostImpl::RunJavaScriptDialog(
-    const base::string16& message,
-    const base::string16& default_prompt,
+    const std::u16string& message,
+    const std::u16string& default_prompt,
     JavaScriptDialogType dialog_type,
     JavaScriptDialogCallback ipc_response_callback) {
   // Don't show the dialog if it's triggered on a non-active RenderFrameHost.
   // This happens when the RenderFrameHost is pending deletion or in the
   // back-forward cache.
   if (lifecycle_state_ != LifecycleState::kActive) {
-    std::move(ipc_response_callback).Run(true, base::string16());
+    std::move(ipc_response_callback).Run(true, std::u16string());
     return;
   }
 
@@ -3707,7 +3707,7 @@ void RenderFrameHostImpl::RunBeforeUnloadConfirm(
 
   auto ipc_callback_wrapper = base::BindOnce(
       [](RunBeforeUnloadConfirmCallback response_callback, bool success,
-         const base::string16& response) {
+         const std::u16string& response) {
         // The response string is unused but we use a generic mechanism for
         // closing the javascript dialog that returns two arguments.
         std::move(response_callback).Run(success);
@@ -3828,7 +3828,7 @@ void RenderFrameHostImpl::DownloadURL(
                                           traffic_annotation));
   parameters->set_content_initiated(!blink_parameters->is_context_menu_save);
   parameters->set_suggested_name(
-      blink_parameters->suggested_name.value_or(base::string16()));
+      blink_parameters->suggested_name.value_or(std::u16string()));
   parameters->set_prompt(blink_parameters->is_context_menu_save);
   parameters->set_cross_origin_redirects(
       blink_parameters->cross_origin_redirects);
@@ -4187,13 +4187,13 @@ RenderFrameHostImpl* RenderFrameHostImpl::FindAndVerifyChildInternal(
 }
 
 void RenderFrameHostImpl::UpdateTitle(
-    const base::Optional<::base::string16>& title,
+    const base::Optional<::std::u16string>& title,
     base::i18n::TextDirection title_direction) {
   // This message should only be sent for top-level frames.
   if (!is_main_frame())
     return;
 
-  base::string16 received_title;
+  std::u16string received_title;
   if (title.has_value())
     received_title = title.value();
 
@@ -4869,7 +4869,7 @@ void RenderFrameHostImpl::FocusedElementChanged(
       focus_type);
 }
 
-void RenderFrameHostImpl::TextSelectionChanged(const base::string16& text,
+void RenderFrameHostImpl::TextSelectionChanged(const std::u16string& text,
                                                uint32_t offset,
                                                const gfx::Range& range) {
   has_selection_ = !text.empty();
@@ -6303,7 +6303,7 @@ void RenderFrameHostImpl::AdvanceFocus(blink::mojom::FocusType type,
 void RenderFrameHostImpl::JavaScriptDialogClosed(
     JavaScriptDialogCallback dialog_closed_callback,
     bool success,
-    const base::string16& user_input) {
+    const std::u16string& user_input) {
   GetProcess()->SetBlocked(false);
   std::move(dialog_closed_callback).Run(success, user_input);
   // If executing as part of beforeunload event handling, there may have been
@@ -9549,8 +9549,8 @@ bool RenderFrameHostImpl::MaybeInterceptCommitCallback(
 
 void RenderFrameHostImpl::PostMessageEvent(
     const base::Optional<blink::RemoteFrameToken>& source_token,
-    const base::string16& source_origin,
-    const base::string16& target_origin,
+    const std::u16string& source_origin,
+    const std::u16string& target_origin,
     blink::TransferableMessage message) {
   DCHECK(is_render_frame_created());
 

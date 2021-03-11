@@ -839,7 +839,7 @@ IN_PROC_BROWSER_TEST_F(CrossPlatformAccessibilityBrowserTest,
   auto TestLocalizedLandmarkType =
       [root](int child_index, ax::mojom::Role expected_role,
              const std::string& expected_name,
-             const base::string16& expected_localized_landmark_type = {}) {
+             const std::u16string& expected_localized_landmark_type = {}) {
         BrowserAccessibility* node = root->PlatformGetChild(child_index);
         ASSERT_NE(nullptr, node);
 
@@ -922,7 +922,7 @@ IN_PROC_BROWSER_TEST_F(CrossPlatformAccessibilityBrowserTest,
 
   auto TestLocalizedRoleDescription =
       [root](int child_index,
-             const base::string16& expected_localized_role_description = {}) {
+             const std::u16string& expected_localized_role_description = {}) {
         BrowserAccessibility* node = root->PlatformGetChild(child_index);
         ASSERT_NE(nullptr, node);
 
@@ -972,7 +972,7 @@ IN_PROC_BROWSER_TEST_F(CrossPlatformAccessibilityBrowserTest,
 
   auto TestGetStyleNameAttributeAsLocalizedString =
       [](BrowserAccessibility* node, ax::mojom::Role expected_role,
-         const base::string16& expected_localized_style_name_attribute = {}) {
+         const std::u16string& expected_localized_style_name_attribute = {}) {
         ASSERT_NE(nullptr, node);
 
         EXPECT_EQ(expected_role, node->GetRole());

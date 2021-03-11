@@ -42,10 +42,10 @@ namespace content {
 const WebUI::TypeID WebUI::kNoWebUI = nullptr;
 
 // static
-base::string16 WebUI::GetJavascriptCall(
+std::u16string WebUI::GetJavascriptCall(
     const std::string& function_name,
     const std::vector<const base::Value*>& arg_list) {
-  base::string16 result(base::ASCIIToUTF16(function_name));
+  std::u16string result(base::ASCIIToUTF16(function_name));
   result.push_back('(');
 
   std::string json;
@@ -152,11 +152,11 @@ float WebUIImpl::GetDeviceScaleFactor() {
   return GetScaleFactorForView(web_contents_->GetRenderWidgetHostView());
 }
 
-const base::string16& WebUIImpl::GetOverriddenTitle() {
+const std::u16string& WebUIImpl::GetOverriddenTitle() {
   return overridden_title_;
 }
 
-void WebUIImpl::OverrideTitle(const base::string16& title) {
+void WebUIImpl::OverrideTitle(const std::u16string& title) {
   overridden_title_ = title;
 }
 
@@ -195,7 +195,7 @@ bool WebUIImpl::CanCallJavascript() {
 
 void WebUIImpl::CallJavascriptFunctionUnsafe(const std::string& function_name) {
   DCHECK(base::IsStringASCII(function_name));
-  base::string16 javascript = base::ASCIIToUTF16(function_name + "();");
+  std::u16string javascript = base::ASCIIToUTF16(function_name + "();");
   ExecuteJavascript(javascript);
 }
 
@@ -286,7 +286,7 @@ void WebUIImpl::AddMessageHandler(
   handlers_.push_back(std::move(handler));
 }
 
-void WebUIImpl::ExecuteJavascript(const base::string16& javascript) {
+void WebUIImpl::ExecuteJavascript(const std::u16string& javascript) {
   // Silently ignore the request. Would be nice to clean-up WebUI so we
   // could turn this into a CHECK(). http://crbug.com/516690.
   if (!CanCallJavascript())

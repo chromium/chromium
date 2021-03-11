@@ -294,7 +294,7 @@ BrowserChildProcessHostImpl::TakeMetricsAllocator() {
   return std::move(metrics_allocator_);
 }
 
-void BrowserChildProcessHostImpl::SetName(const base::string16& name) {
+void BrowserChildProcessHostImpl::SetName(const std::u16string& name) {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
   data_.name = name;
 }

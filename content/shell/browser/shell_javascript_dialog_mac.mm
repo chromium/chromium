@@ -65,7 +65,7 @@
     return;
 
   bool success = returnCode == NSAlertFirstButtonReturn;
-  base::string16 input;
+  std::u16string input;
   if (_textField)
     input = base::SysNSStringToUTF16([_textField stringValue]);
 
@@ -77,7 +77,7 @@
   [NSApp endSheet:[_alert window]];
   _alert.reset();
   if (_callback)
-    std::move(_callback).Run(false, base::string16());
+    std::move(_callback).Run(false, std::u16string());
 }
 
 @end
@@ -88,8 +88,8 @@ ShellJavaScriptDialog::ShellJavaScriptDialog(
     ShellJavaScriptDialogManager* manager,
     gfx::NativeWindow parent_window,
     JavaScriptDialogType dialog_type,
-    const base::string16& message_text,
-    const base::string16& default_prompt_text,
+    const std::u16string& message_text,
+    const std::u16string& default_prompt_text,
     JavaScriptDialogManager::DialogClosedCallback callback) {
   bool text_field = dialog_type == JAVASCRIPT_DIALOG_TYPE_PROMPT;
   bool one_button = dialog_type == JAVASCRIPT_DIALOG_TYPE_ALERT;

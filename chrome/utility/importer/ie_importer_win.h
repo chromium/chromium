@@ -35,7 +35,7 @@ class IEImporter : public Importer {
   // A struct that hosts the information of IE Favorite folder.
   struct FavoritesInfo {
     base::FilePath path;
-    base::string16 links_folder;
+    std::u16string links_folder;
   };
 
   // IE PStore subkey GUID: AutoComplete password & form data.

@@ -31,7 +31,7 @@ class CONTENT_EXPORT BrowserAccessibilityWin : public BrowserAccessibility {
   bool CanFireEvents() const override;
   ui::AXPlatformNode* GetAXPlatformNode() const override;
   void OnLocationChanged() override;
-  base::string16 GetHypertext() const override;
+  std::u16string GetHypertext() const override;
 
   const std::vector<gfx::NativeViewAccessible> GetUIADescendants()
       const override;

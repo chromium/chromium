@@ -65,7 +65,7 @@ void AddQuery(GURL* url, const std::string& key, const std::string& value) {
 // information to the loaded website's title and C++ will wait until that
 // happens.
 void WaitForTitle(const Shell* shell, const char* expected_title) {
-  base::string16 expected_title_16 = base::ASCIIToUTF16(expected_title);
+  std::u16string expected_title_16 = base::ASCIIToUTF16(expected_title);
   TitleWatcher title_watcher(shell->web_contents(), expected_title_16);
   ASSERT_EQ(expected_title_16, title_watcher.WaitAndGetTitle());
 }

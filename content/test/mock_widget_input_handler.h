@@ -77,7 +77,7 @@ class MockWidgetInputHandler : public blink::mojom::WidgetInputHandler {
   class DispatchedIMEMessage : public DispatchedMessage {
    public:
     DispatchedIMEMessage(const std::string& name,
-                         const base::string16& text,
+                         const std::u16string& text,
                          const std::vector<ui::ImeTextSpan>& ime_text_spans,
                          const gfx::Range& range,
                          int32_t start,
@@ -88,14 +88,14 @@ class MockWidgetInputHandler : public blink::mojom::WidgetInputHandler {
     DispatchedIMEMessage* ToIME() override;
 
     // Returns if this message matches the parameters passed in.
-    bool Matches(const base::string16& text,
+    bool Matches(const std::u16string& text,
                  const std::vector<ui::ImeTextSpan>& ime_text_spans,
                  const gfx::Range& range,
                  int32_t start,
                  int32_t end) const;
 
    private:
-    base::string16 text_;
+    std::u16string text_;
     std::vector<ui::ImeTextSpan> text_spans_;
     gfx::Range range_;
     int32_t start_;
@@ -224,12 +224,12 @@ class MockWidgetInputHandler : public blink::mojom::WidgetInputHandler {
   void SetEditCommandsForNextKeyEvent(
       std::vector<blink::mojom::EditCommandPtr> commands) override;
   void CursorVisibilityChanged(bool visible) override;
-  void ImeSetComposition(const base::string16& text,
+  void ImeSetComposition(const std::u16string& text,
                          const std::vector<ui::ImeTextSpan>& ime_text_spans,
                          const gfx::Range& range,
                          int32_t start,
                          int32_t end) override;
-  void ImeCommitText(const base::string16& text,
+  void ImeCommitText(const std::u16string& text,
                      const std::vector<ui::ImeTextSpan>& ime_text_spans,
                      const gfx::Range& range,
                      int32_t relative_cursor_position,

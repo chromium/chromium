@@ -666,18 +666,18 @@ TEST_F(BrowserAccessibilityWinTest, TestSimpleHypertext) {
 }
 
 TEST_F(BrowserAccessibilityWinTest, TestComplexHypertext) {
-  const base::string16 text1_name = u"One two three.";
-  const base::string16 combo_box_name = u"City:";
-  const base::string16 combo_box_value = u"Happyland";
-  const base::string16 text2_name = u" Four five six.";
-  const base::string16 check_box_name = u"I agree";
-  const base::string16 check_box_value = u"Checked";
-  const base::string16 button_text_name = u"Red";
-  const base::string16 link_text_name = u"Blue";
+  const std::u16string text1_name = u"One two three.";
+  const std::u16string combo_box_name = u"City:";
+  const std::u16string combo_box_value = u"Happyland";
+  const std::u16string text2_name = u" Four five six.";
+  const std::u16string check_box_name = u"I agree";
+  const std::u16string check_box_value = u"Checked";
+  const std::u16string button_text_name = u"Red";
+  const std::u16string link_text_name = u"Blue";
   // Each control (combo / check box, button and link) will be represented by an
   // embedded object character.
-  const base::string16 embed(1, BrowserAccessibilityComWin::kEmbeddedCharacter);
-  const base::string16 root_hypertext =
+  const std::u16string embed(1, BrowserAccessibilityComWin::kEmbeddedCharacter);
+  const std::u16string root_hypertext =
       text1_name + embed + text2_name + embed + embed + embed;
   const LONG root_hypertext_len = root_hypertext.length();
 
@@ -1487,7 +1487,7 @@ TEST_F(BrowserAccessibilityWinTest, TextBoundariesOnlyEmbeddedObjectsNoCrash) {
   EXPECT_IA2_TEXT_AT_OFFSET(menu_accessible_com, 0, IA2_TEXT_BOUNDARY_CHAR,
                             /*expected_hr=*/S_OK, /*start=*/0, /*end=*/1,
                             /*text=*/
-                            base::as_wcstr(base::string16{
+                            base::as_wcstr(std::u16string{
                                 ui::AXPlatformNodeBase::kEmbeddedCharacter}));
 }
 
@@ -1661,14 +1661,14 @@ TEST_F(BrowserAccessibilityWinTest,
   EXPECT_IA2_TEXT_AT_OFFSET(body_accessible_com, 6, IA2_TEXT_BOUNDARY_CHAR,
                             /*expected_hr=*/S_OK, /*start=*/6, /*end=*/7,
                             /*text=*/
-                            base::as_wcstr(base::string16{
+                            base::as_wcstr(std::u16string{
                                 ui::AXPlatformNodeBase::kEmbeddedCharacter}));
 
   // L"before" [obj] <[obj]> L"after" L"tail"
   EXPECT_IA2_TEXT_AT_OFFSET(body_accessible_com, 7, IA2_TEXT_BOUNDARY_CHAR,
                             /*expected_hr=*/S_OK, /*start=*/7, /*end=*/8,
                             /*text=*/
-                            base::as_wcstr(base::string16{
+                            base::as_wcstr(std::u16string{
                                 ui::AXPlatformNodeBase::kEmbeddedCharacter}));
 
   // L"before" [obj] [obj] L"<a>fter" L"tail"
@@ -1727,7 +1727,7 @@ TEST_F(BrowserAccessibilityWinTest,
   EXPECT_IA2_TEXT_AT_OFFSET(menu_1_accessible_com, 0, IA2_TEXT_BOUNDARY_CHAR,
                             /*expected_hr=*/S_OK, /*start=*/0, /*end=*/1,
                             /*text=*/
-                            base::as_wcstr(base::string16{
+                            base::as_wcstr(std::u16string{
                                 ui::AXPlatformNodeBase::kEmbeddedCharacter}));
 
   // [obj]<>
@@ -1780,7 +1780,7 @@ TEST_F(BrowserAccessibilityWinTest,
       /*expected_hr=*/S_OK, /*start=*/6, /*end=*/7,
       /*text=*/
       base::as_wcstr(
-          base::string16{ui::AXPlatformNodeBase::kEmbeddedCharacter}));
+          std::u16string{ui::AXPlatformNodeBase::kEmbeddedCharacter}));
 
   // L"before" <[obj]> [obj] L"after" L"tail"
   EXPECT_IA2_TEXT_BEFORE_OFFSET(body_accessible_com, 6, IA2_TEXT_BOUNDARY_CHAR,
@@ -1806,7 +1806,7 @@ TEST_F(BrowserAccessibilityWinTest,
       /*expected_hr=*/S_OK, /*start=*/6, /*end=*/7,
       /*text=*/
       base::as_wcstr(
-          base::string16{ui::AXPlatformNodeBase::kEmbeddedCharacter}));
+          std::u16string{ui::AXPlatformNodeBase::kEmbeddedCharacter}));
 
   // L"before" <[obj]> [obj] L"after" L"tail"
   EXPECT_IA2_TEXT_AFTER_OFFSET(
@@ -1814,7 +1814,7 @@ TEST_F(BrowserAccessibilityWinTest,
       /*expected_hr=*/S_OK, /*start=*/7, /*end=*/8,
       /*text=*/
       base::as_wcstr(
-          base::string16{ui::AXPlatformNodeBase::kEmbeddedCharacter}));
+          std::u16string{ui::AXPlatformNodeBase::kEmbeddedCharacter}));
 
   // <[obj]>
   EXPECT_IA2_TEXT_AFTER_OFFSET(menu_1_accessible_com, 0, IA2_TEXT_BOUNDARY_CHAR,
@@ -2262,7 +2262,7 @@ TEST_F(BrowserAccessibilityWinTest, TestIAccessibleHyperlink) {
   base::win::ScopedVariant anchor_target;
   base::win::ScopedBstr bstr;
 
-  base::string16 div_hypertext(u"Click ");
+  std::u16string div_hypertext(u"Click ");
   div_hypertext.push_back(BrowserAccessibilityComWin::kEmbeddedCharacter);
 
   // div_accessible and link_accessible are the only IA2 hyperlinks.

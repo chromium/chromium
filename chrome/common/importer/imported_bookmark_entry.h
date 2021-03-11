@@ -22,8 +22,8 @@ struct ImportedBookmarkEntry {
   bool in_toolbar;
   bool is_folder;
   GURL url;
-  std::vector<base::string16> path;
-  base::string16 title;
+  std::vector<std::u16string> path;
+  std::u16string title;
   base::Time creation_time;
 };
 

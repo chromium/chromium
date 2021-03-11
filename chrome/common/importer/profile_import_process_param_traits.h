@@ -69,22 +69,22 @@ struct StructTraits<chrome::mojom::ImportedPasswordFormDataView,
     return r.action;
   }
 
-  static const base::string16& username_element(
+  static const std::u16string& username_element(
       const importer::ImportedPasswordForm& r) {
     return r.username_element;
   }
 
-  static const base::string16& username_value(
+  static const std::u16string& username_value(
       const importer::ImportedPasswordForm& r) {
     return r.username_value;
   }
 
-  static const base::string16& password_element(
+  static const std::u16string& password_element(
       const importer::ImportedPasswordForm& r) {
     return r.password_element;
   }
 
-  static const base::string16& password_value(
+  static const std::u16string& password_value(
       const importer::ImportedPasswordForm& r) {
     return r.password_value;
   }

@@ -120,7 +120,7 @@ bool SetKeyboardEventText(char16_t* to, Maybe<std::string> from) {
   if (!from.isJust())
     return true;
 
-  base::string16 text16 = base::UTF8ToUTF16(from.fromJust());
+  std::u16string text16 = base::UTF8ToUTF16(from.fromJust());
   if (text16.size() > blink::WebKeyboardEvent::kTextLengthCap)
     return false;
 
@@ -641,7 +641,7 @@ void InputHandler::DispatchKeyEvent(
 
 void InputHandler::InsertText(const std::string& text,
                               std::unique_ptr<InsertTextCallback> callback) {
-  base::string16 text16 = base::UTF8ToUTF16(text);
+  std::u16string text16 = base::UTF8ToUTF16(text);
   if (!host_ || !host_->GetRenderWidgetHost()) {
     callback->sendFailure(Response::InternalError());
     return;

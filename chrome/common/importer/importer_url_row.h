@@ -21,7 +21,7 @@ struct ImporterURLRow {
   ImporterURLRow(const ImporterURLRow& other);
 
   GURL url;
-  base::string16 title;
+  std::u16string title;
 
   // Total number of times this URL has been visited.
   int visit_count;

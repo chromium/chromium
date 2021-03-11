@@ -44,7 +44,7 @@ class DatabaseImpl : public blink::mojom::IDBDatabase {
   // blink::mojom::IDBDatabase implementation
   void RenameObjectStore(int64_t transaction_id,
                          int64_t object_store_id,
-                         const base::string16& new_name) override;
+                         const std::u16string& new_name) override;
   void CreateTransaction(
       mojo::PendingAssociatedReceiver<blink::mojom::IDBTransaction>
           transaction_receiver,
@@ -107,7 +107,7 @@ class DatabaseImpl : public blink::mojom::IDBDatabase {
   void CreateIndex(int64_t transaction_id,
                    int64_t object_store_id,
                    int64_t index_id,
-                   const base::string16& name,
+                   const std::u16string& name,
                    const blink::IndexedDBKeyPath& key_path,
                    bool unique,
                    bool multi_entry) override;
@@ -117,7 +117,7 @@ class DatabaseImpl : public blink::mojom::IDBDatabase {
   void RenameIndex(int64_t transaction_id,
                    int64_t object_store_id,
                    int64_t index_id,
-                   const base::string16& new_name) override;
+                   const std::u16string& new_name) override;
   void Abort(int64_t transaction_id) override;
 
  private:

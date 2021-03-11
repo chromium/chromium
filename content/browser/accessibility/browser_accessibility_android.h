@@ -26,7 +26,7 @@ class CONTENT_EXPORT BrowserAccessibilityAndroid : public BrowserAccessibility {
   // BrowserAccessibility Overrides.
   void OnDataChanged() override;
   void OnLocationChanged() override;
-  base::string16 GetLocalizedStringForImageAnnotationStatus(
+  std::u16string GetLocalizedStringForImageAnnotationStatus(
       ax::mojom::ImageAnnotationStatus status) const override;
 
   bool IsCheckable() const;
@@ -88,26 +88,26 @@ class CONTENT_EXPORT BrowserAccessibilityAndroid : public BrowserAccessibility {
   const char* GetClassName() const;
   bool IsChildOfLeaf() const override;
   bool IsLeaf() const override;
-  base::string16 GetInnerText() const override;
-  base::string16 GetValueForControl() const override;
-  base::string16 GetHint() const;
+  std::u16string GetInnerText() const override;
+  std::u16string GetValueForControl() const override;
+  std::u16string GetHint() const;
 
   std::string GetRoleString() const;
 
-  base::string16 GetContentInvalidErrorMessage() const;
+  std::u16string GetContentInvalidErrorMessage() const;
 
-  base::string16 GetStateDescription() const;
-  base::string16 GetMultiselectableStateDescription() const;
-  base::string16 GetToggleButtonStateDescription() const;
-  base::string16 GetCheckboxStateDescription() const;
-  base::string16 GetListBoxStateDescription() const;
-  base::string16 GetListBoxItemStateDescription() const;
-  base::string16 GetAriaCurrentStateDescription() const;
+  std::u16string GetStateDescription() const;
+  std::u16string GetMultiselectableStateDescription() const;
+  std::u16string GetToggleButtonStateDescription() const;
+  std::u16string GetCheckboxStateDescription() const;
+  std::u16string GetListBoxStateDescription() const;
+  std::u16string GetListBoxItemStateDescription() const;
+  std::u16string GetAriaCurrentStateDescription() const;
 
-  base::string16 GetComboboxExpandedText() const;
-  base::string16 GetComboboxExpandedTextFallback() const;
+  std::u16string GetComboboxExpandedText() const;
+  std::u16string GetComboboxExpandedTextFallback() const;
 
-  base::string16 GetRoleDescription() const;
+  std::u16string GetRoleDescription() const;
 
   int GetItemIndex() const;
   int GetItemCount() const;
@@ -130,7 +130,7 @@ class CONTENT_EXPORT BrowserAccessibilityAndroid : public BrowserAccessibility {
   int GetTextChangeFromIndex() const;
   int GetTextChangeAddedCount() const;
   int GetTextChangeRemovedCount() const;
-  base::string16 GetTextChangeBeforeText() const;
+  std::u16string GetTextChangeBeforeText() const;
 
   int GetSelectionStart() const;
   int GetSelectionEnd() const;
@@ -173,7 +173,7 @@ class CONTENT_EXPORT BrowserAccessibilityAndroid : public BrowserAccessibility {
                          int offset);
 
   // Return the target of a link or the source of an image.
-  base::string16 GetTargetUrl() const;
+  std::u16string GetTargetUrl() const;
 
   // On Android, spelling errors are returned as "suggestions". Retreive
   // all of the suggestions for a given text field as vectors of start
@@ -185,12 +185,12 @@ class CONTENT_EXPORT BrowserAccessibilityAndroid : public BrowserAccessibility {
   // This gives BrowserAccessibility::Create access to the class constructor.
   friend class BrowserAccessibility;
 
-  static size_t CommonPrefixLength(const base::string16 a,
-                                   const base::string16 b);
-  static size_t CommonSuffixLength(const base::string16 a,
-                                   const base::string16 b);
-  static size_t CommonEndLengths(const base::string16 a,
-                                 const base::string16 b);
+  static size_t CommonPrefixLength(const std::u16string a,
+                                   const std::u16string b);
+  static size_t CommonSuffixLength(const std::u16string a,
+                                   const std::u16string b);
+  static size_t CommonEndLengths(const std::u16string a,
+                                 const std::u16string b);
 
   BrowserAccessibilityAndroid();
   ~BrowserAccessibilityAndroid() override;
@@ -203,12 +203,12 @@ class CONTENT_EXPORT BrowserAccessibilityAndroid : public BrowserAccessibility {
   bool ShouldExposeValueAsName() const;
   int CountChildrenWithRole(ax::mojom::Role role) const;
 
-  void AppendTextToString(base::string16 extra_text,
-                          base::string16* string) const;
+  void AppendTextToString(std::u16string extra_text,
+                          std::u16string* string) const;
 
-  base::string16 cached_text_;
-  base::string16 old_value_;
-  base::string16 new_value_;
+  std::u16string cached_text_;
+  std::u16string old_value_;
+  std::u16string new_value_;
   int32_t unique_id_;
 
   DISALLOW_COPY_AND_ASSIGN(BrowserAccessibilityAndroid);

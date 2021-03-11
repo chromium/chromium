@@ -1419,8 +1419,8 @@ bool MatchesCommand(const std::string& method,
       url::DecodeURLEscapeSequences(
           path_parts[i].data(), path_parts[i].length(),
           url::DecodeURLMode::kUTF8OrIsomorphic, &output);
-      std::string decoded = base::UTF16ToASCII(
-          base::string16(output.data(), output.length()));
+      std::string decoded =
+          base::UTF16ToASCII(std::u16string(output.data(), output.length()));
       // Due to crbug.com/533361, the url decoding libraries decodes all of the
       // % escape sequences except for %%. We need to handle this case manually.
       // So, replacing all the instances of "%%" with "%".

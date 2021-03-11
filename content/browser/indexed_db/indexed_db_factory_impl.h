@@ -65,12 +65,12 @@ class CONTENT_EXPORT IndexedDBFactoryImpl
   void GetDatabaseInfo(scoped_refptr<IndexedDBCallbacks> callbacks,
                        const url::Origin& origin,
                        const base::FilePath& data_directory) override;
-  void Open(const base::string16& name,
+  void Open(const std::u16string& name,
             std::unique_ptr<IndexedDBPendingConnection> connection,
             const url::Origin& origin,
             const base::FilePath& data_directory) override;
 
-  void DeleteDatabase(const base::string16& name,
+  void DeleteDatabase(const std::u16string& name,
                       scoped_refptr<IndexedDBCallbacks> callbacks,
                       const url::Origin& origin,
                       const base::FilePath& data_directory,
@@ -114,8 +114,8 @@ class CONTENT_EXPORT IndexedDBFactoryImpl
 
   void NotifyIndexedDBContentChanged(
       const url::Origin& origin,
-      const base::string16& database_name,
-      const base::string16& object_store_name) override;
+      const std::u16string& database_name,
+      const std::u16string& object_store_name) override;
 
   int64_t GetInMemoryDBSize(const url::Origin& origin) const override;
 
@@ -213,7 +213,7 @@ class CONTENT_EXPORT IndexedDBFactoryImpl
   // Testing helpers, so unit tests don't need to grovel through internal
   // state.
   bool IsDatabaseOpen(const url::Origin& origin,
-                      const base::string16& name) const;
+                      const std::u16string& name) const;
   bool IsBackingStoreOpen(const url::Origin& origin) const;
   bool IsBackingStorePendingClose(const url::Origin& origin) const;
 

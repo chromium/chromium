@@ -135,7 +135,7 @@ base::LazyInstance<RoutingIDViewMap>::Leaky g_routing_id_view_map =
 #if defined(OS_WIN)
 // Fetches the name and font size of a particular Windows system font.
 void GetFontInfo(gfx::win::SystemFont system_font,
-                 base::string16* name,
+                 std::u16string* name,
                  int32_t* size) {
   const gfx::Font& font = gfx::win::GetSystemFont(system_font);
   *name = base::UTF8ToUTF16(font.GetFontName());

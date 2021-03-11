@@ -1267,7 +1267,7 @@ void ServiceWorkerVersion::OnRegisteredToDevToolsManager() {
 }
 
 void ServiceWorkerVersion::OnReportException(
-    const base::string16& error_message,
+    const std::u16string& error_message,
     int line_number,
     int column_number,
     const GURL& source_url) {
@@ -1280,7 +1280,7 @@ void ServiceWorkerVersion::OnReportException(
 void ServiceWorkerVersion::OnReportConsoleMessage(
     blink::mojom::ConsoleMessageSource source,
     blink::mojom::ConsoleMessageLevel message_level,
-    const base::string16& message,
+    const std::u16string& message,
     int line_number,
     const GURL& source_url) {
   for (auto& observer : observers_) {

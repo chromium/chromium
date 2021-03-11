@@ -29,7 +29,7 @@ class SecurityTokenPinErrorGeneratorTest : public testing::Test {
 TEST_F(SecurityTokenPinErrorGeneratorTest, NoError) {
   EXPECT_EQ(GenerateErrorMessage(ErrorLabel::kNone, /*attempts_left=*/-1,
                                  /*accept_input=*/true),
-            base::string16());
+            std::u16string());
 }
 
 // Tests the message for the kInvalidPin error.
@@ -85,7 +85,7 @@ TEST_F(SecurityTokenPinErrorGeneratorTest, Attempts) {
 TEST_F(SecurityTokenPinErrorGeneratorTest, HiddenAttempts) {
   EXPECT_EQ(GenerateErrorMessage(ErrorLabel::kNone, /*attempts_left=*/4,
                                  /*accept_input=*/true),
-            base::string16());
+            std::u16string());
 }
 
 // Tests the message for the kInvalidPin error with the number of attempts left.

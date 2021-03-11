@@ -145,7 +145,7 @@ TEST(FirefoxImporterUtilsTest, GetFirefoxProfilePath) {
       GetFirefoxDetailsFromDictionary(single_profile, std::string());
   EXPECT_THAT(details, UnorderedElementsAre(FirefoxDetail{
                            base::FilePath(FILE_PATH_LITERAL("first")),
-                           base::string16()}));
+                           std::u16string()}));
 
   base::DictionaryValue no_default;
   no_default.SetString("Profile0.Path", "first");
@@ -222,9 +222,9 @@ TEST(FirefoxImporterUtilsTest, GetFirefoxProfilePath) {
   EXPECT_THAT(default_single_install_unknown_profile_details,
               UnorderedElementsAre(
                   FirefoxDetail{base::FilePath(FILE_PATH_LITERAL("first")),
-                                base::string16()},
+                                std::u16string()},
                   FirefoxDetail{base::FilePath(FILE_PATH_LITERAL("second")),
-                                base::string16()}));
+                                std::u16string()}));
 
   default_single_install_unknown_profile.SetString("Install01.Default",
                                                    "first");
@@ -241,9 +241,9 @@ TEST(FirefoxImporterUtilsTest, GetFirefoxProfilePath) {
   EXPECT_THAT(default_multiple_install_details,
               UnorderedElementsAre(
                   FirefoxDetail{base::FilePath(FILE_PATH_LITERAL("first")),
-                                base::string16()},
+                                std::u16string()},
                   FirefoxDetail{base::FilePath(FILE_PATH_LITERAL("second")),
-                                base::string16()}));
+                                std::u16string()}));
 
   base::DictionaryValue one_of_profiles_is_not_ascii_named;
   one_of_profiles_is_not_ascii_named.SetString("Profile0.Path", "first");

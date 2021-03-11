@@ -113,7 +113,7 @@ class ServicePdfToEmfConverterClientImpl
   // mojom::PdfToEmfConverterClient:
   void PreCacheFontCharacters(
       const std::vector<uint8_t>& logfont_data,
-      const base::string16& characters,
+      const std::u16string& characters,
       PreCacheFontCharactersCallback callback) override {
     std::move(callback).Run();
   }

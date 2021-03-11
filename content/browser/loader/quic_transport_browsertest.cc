@@ -117,19 +117,19 @@ class QuicTransportBrowserTest : public ContentBrowserTest {
         "I+ryIVl5ksb8KijTneC3y7z1wBFn5x35O5is9g5n/KM=");
   }
 
-  bool WaitForTitle(const base::string16& expected_title,
-                    const std::vector<base::string16> additional_titles) {
+  bool WaitForTitle(const std::u16string& expected_title,
+                    const std::vector<std::u16string> additional_titles) {
     TitleWatcher title_watcher(shell()->web_contents(), expected_title);
 
     for (const auto& title : additional_titles) {
       title_watcher.AlsoWaitForTitle(title);
     }
-    base::string16 actual_title = title_watcher.WaitAndGetTitle();
+    std::u16string actual_title = title_watcher.WaitAndGetTitle();
     EXPECT_EQ(expected_title, actual_title);
     return expected_title == actual_title;
   }
 
-  bool WaitForTitle(const base::string16& title) {
+  bool WaitForTitle(const std::u16string& title) {
     return WaitForTitle(title, {});
   }
 

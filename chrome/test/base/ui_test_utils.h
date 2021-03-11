@@ -79,7 +79,7 @@ enum BrowserTestWaitFlags {
 };
 
 // Puts the current tab title in |title|. Returns true on success.
-bool GetCurrentTabTitle(const Browser* browser, base::string16* title);
+bool GetCurrentTabTitle(const Browser* browser, std::u16string* title);
 
 // NavigateToURL* functions navigate the given |browser| to |url| according the
 // provided parameters and block until ready (by default - until loading stops,
@@ -168,7 +168,7 @@ void WaitForViewVisibility(Browser* browser, ViewID vid, bool visible);
 // of the current match. |selection_rect| is an optional parameter which is set
 // to the location of the current match.
 int FindInPage(content::WebContents* tab,
-               const base::string16& search_string,
+               const std::u16string& search_string,
                bool forward,
                bool case_sensitive,
                int* ordinal,

@@ -1573,7 +1573,7 @@ void EventSender::KeyDown(const std::string& code_str,
       }
     }
     if (!code) {
-      base::string16 code_str16 = base::UTF8ToUTF16(code_str);
+      std::u16string code_str16 = base::UTF8ToUTF16(code_str);
       if (code_str16.size() != 1u) {
         v8::Isolate* isolate = blink::MainThreadIsolate();
         isolate->ThrowException(v8::Exception::TypeError(

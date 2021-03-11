@@ -43,7 +43,7 @@ class ESimProfile : public mojom::ESimProfile {
   void UninstallProfile(UninstallProfileCallback callback) override;
   void EnableProfile(EnableProfileCallback callback) override;
   void DisableProfile(DisableProfileCallback callback) override;
-  void SetProfileNickname(const base::string16& nickname,
+  void SetProfileNickname(const std::u16string& nickname,
                           SetProfileNicknameCallback callback) override;
 
   // Update properties for this ESimProfile from D-Bus.
@@ -87,7 +87,7 @@ class ESimProfile : public mojom::ESimProfile {
       bool request_profile_success,
       std::unique_ptr<CellularInhibitor::InhibitLock> inhibit_lock);
   void PerformSetProfileNickname(
-      const base::string16& nickname,
+      const std::u16string& nickname,
       bool request_profile_success,
       std::unique_ptr<CellularInhibitor::InhibitLock> inhibit_lock);
   void OnPendingProfileInstallResult(

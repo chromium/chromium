@@ -95,7 +95,7 @@ ChromePluginPlaceholder::ChromePluginPlaceholder(
     content::RenderFrame* render_frame,
     const blink::WebPluginParams& params,
     const std::string& html_data,
-    const base::string16& title)
+    const std::u16string& title)
     : plugins::LoadablePluginPlaceholder(render_frame, params, html_data),
       status_(chrome::mojom::PluginStatus::kAllowed),
       title_(title) {
@@ -152,9 +152,9 @@ ChromePluginPlaceholder* ChromePluginPlaceholder::CreateBlockedPlugin(
     const blink::WebPluginParams& params,
     const content::WebPluginInfo& info,
     const std::string& identifier,
-    const base::string16& name,
+    const std::u16string& name,
     int template_id,
-    const base::string16& message) {
+    const std::u16string& message) {
   base::DictionaryValue values;
   values.SetString("message", message);
   values.SetString("name", name);

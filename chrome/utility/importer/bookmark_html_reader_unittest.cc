@@ -39,7 +39,7 @@ TEST(BookmarkHTMLReaderTest, ParseTests) {
   EXPECT_EQ("UTF-8", charset);
 
   // Escaped characters in name.
-  base::string16 folder_name;
+  std::u16string folder_name;
   bool is_toolbar_folder;
   base::Time folder_add_date;
   result = internal::ParseFolderNameFromLine(
@@ -56,14 +56,14 @@ TEST(BookmarkHTMLReaderTest, ParseTests) {
       "<DT><H3 PERSONAL_TOOLBAR_FOLDER=\"true\"></H3>",
       charset, &folder_name, &is_toolbar_folder, &folder_add_date);
   EXPECT_TRUE(result);
-  EXPECT_EQ(base::string16(), folder_name);
+  EXPECT_EQ(std::u16string(), folder_name);
   EXPECT_TRUE(is_toolbar_folder);
 
   // Unicode characters in title and shortcut.
-  base::string16 title;
+  std::u16string title;
   GURL url, favicon;
-  base::string16 shortcut;
-  base::string16 post_data;
+  std::u16string shortcut;
+  std::u16string post_data;
   base::Time add_date;
   result = internal::ParseBookmarkFromLine(
       "<DT><A HREF=\"http://chinese.site.cn/path?query=1#ref\" "
@@ -73,7 +73,7 @@ TEST(BookmarkHTMLReaderTest, ParseTests) {
   EXPECT_EQ(L"\x4E2D\x6587", UTF16ToWide(title));
   EXPECT_EQ("http://chinese.site.cn/path?query=1#ref", url.spec());
   EXPECT_EQ(L"\x4E2D", UTF16ToWide(shortcut));
-  EXPECT_EQ(base::string16(), post_data);
+  EXPECT_EQ(std::u16string(), post_data);
   EXPECT_TRUE(base::Time() == add_date);
 
   // No shortcut, and url contains %22 ('"' character).
@@ -83,8 +83,8 @@ TEST(BookmarkHTMLReaderTest, ParseTests) {
   EXPECT_TRUE(result);
   EXPECT_EQ(ASCIIToUTF16("name"), title);
   EXPECT_EQ("http://domain.com/?q=%22%3C%3E%22", url.spec());
-  EXPECT_EQ(base::string16(), shortcut);
-  EXPECT_EQ(base::string16(), post_data);
+  EXPECT_EQ(std::u16string(), shortcut);
+  EXPECT_EQ(std::u16string(), post_data);
   EXPECT_TRUE(base::Time() == add_date);
 
   result = internal::ParseBookmarkFromLine(
@@ -93,8 +93,8 @@ TEST(BookmarkHTMLReaderTest, ParseTests) {
   EXPECT_TRUE(result);
   EXPECT_EQ(ASCIIToUTF16("name"), title);
   EXPECT_EQ("http://domain.com/?g=%22", url.spec());
-  EXPECT_EQ(base::string16(), shortcut);
-  EXPECT_EQ(base::string16(), post_data);
+  EXPECT_EQ(std::u16string(), shortcut);
+  EXPECT_EQ(std::u16string(), post_data);
   EXPECT_TRUE(base::Time() == add_date);
 
   // Creation date.
@@ -104,8 +104,8 @@ TEST(BookmarkHTMLReaderTest, ParseTests) {
   EXPECT_TRUE(result);
   EXPECT_EQ(ASCIIToUTF16("name"), title);
   EXPECT_EQ(GURL("http://site/"), url);
-  EXPECT_EQ(base::string16(), shortcut);
-  EXPECT_EQ(base::string16(), post_data);
+  EXPECT_EQ(std::u16string(), shortcut);
+  EXPECT_EQ(std::u16string(), post_data);
   EXPECT_TRUE(base::Time::FromTimeT(1121301154) == add_date);
 
   // Post-data
@@ -127,10 +127,10 @@ TEST(BookmarkHTMLReaderTest, ParseTests) {
       "<DT><A HREF=\"http://domain.com/?q=%22",
       charset, &title, &url, &favicon, &shortcut, &add_date, &post_data);
   EXPECT_FALSE(result);
-  EXPECT_EQ(base::string16(), title);
+  EXPECT_EQ(std::u16string(), title);
   EXPECT_EQ("", url.spec());
-  EXPECT_EQ(base::string16(), shortcut);
-  EXPECT_EQ(base::string16(), post_data);
+  EXPECT_EQ(std::u16string(), shortcut);
+  EXPECT_EQ(std::u16string(), post_data);
   EXPECT_TRUE(base::Time() == add_date);
 
   // Epiphany format.
@@ -324,7 +324,7 @@ void BookmarkHTMLReaderTestWithData::ExpectSecondFirefoxBookmarkWithKeyword(
 
 void BookmarkHTMLReaderTestWithData::ExpectFirstEmptyFolderBookmark(
     const ImportedBookmarkEntry& entry) {
-  EXPECT_EQ(base::string16(), entry.title);
+  EXPECT_EQ(std::u16string(), entry.title);
   EXPECT_TRUE(entry.is_folder);
   EXPECT_EQ(base::Time::FromTimeT(1295938143), entry.creation_time);
   EXPECT_EQ(1U, entry.path.size());
@@ -339,7 +339,7 @@ void BookmarkHTMLReaderTestWithData::ExpectSecondEmptyFolderBookmark(
   EXPECT_EQ(base::Time::FromTimeT(1234567890), entry.creation_time);
   EXPECT_EQ(1U, entry.path.size());
   if (entry.path.size() == 1)
-    EXPECT_EQ(base::string16(), entry.path.front());
+    EXPECT_EQ(std::u16string(), entry.path.front());
   EXPECT_EQ("http://www.tamurayukari.com/", entry.url.spec());
 }
 

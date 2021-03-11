@@ -45,9 +45,9 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) CellularESimProfile {
                       const dbus::ObjectPath& path,
                       const std::string& eid,
                       const std::string& iccid,
-                      const base::string16& name,
-                      const base::string16& nickname,
-                      const base::string16& service_provider,
+                      const std::u16string& name,
+                      const std::u16string& nickname,
+                      const std::u16string& service_provider,
                       const std::string& activation_code);
   CellularESimProfile(const CellularESimProfile&);
   CellularESimProfile& operator=(const CellularESimProfile&);
@@ -57,9 +57,9 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) CellularESimProfile {
   const dbus::ObjectPath& path() const { return path_; }
   const std::string& eid() const { return eid_; }
   const std::string& iccid() const { return iccid_; }
-  const base::string16& name() const { return name_; }
-  const base::string16& nickname() const { return nickname_; }
-  const base::string16& service_provider() const { return service_provider_; }
+  const std::u16string& name() const { return name_; }
+  const std::u16string& nickname() const { return nickname_; }
+  const std::u16string& service_provider() const { return service_provider_; }
   const std::string& activation_code() const { return activation_code_; }
 
   base::Value ToDictionaryValue() const;
@@ -81,13 +81,13 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) CellularESimProfile {
   std::string iccid_;
 
   // Service provider’s name for this profile. e.g. “Verizon Plan 1”
-  base::string16 name_;
+  std::u16string name_;
 
   // A user configurable nickname for this profile. e.g. “My Personal SIM”
-  base::string16 nickname_;
+  std::u16string nickname_;
 
   // Name of the service provider. e.g. “Verizon Wireless”
-  base::string16 service_provider_;
+  std::u16string service_provider_;
 
   // An alphanumeric code that can be used to install this profile.
   std::string activation_code_;

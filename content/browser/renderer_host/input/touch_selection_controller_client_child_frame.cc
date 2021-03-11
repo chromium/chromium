@@ -166,7 +166,7 @@ bool TouchSelectionControllerClientChildFrame::IsCommandIdEnabled(
     case ui::TouchEditable::kCopy:
       return readable && has_selection;
     case ui::TouchEditable::kPaste: {
-      base::string16 result;
+      std::u16string result;
       ui::DataTransferEndpoint data_dst = ui::DataTransferEndpoint(
           ui::EndpointType::kDefault, /*notify_if_restricted=*/false);
       ui::Clipboard::GetForCurrentThread()->ReadText(
@@ -224,7 +224,7 @@ bool TouchSelectionControllerClientChildFrame::ShouldShowQuickMenu() {
   return true;
 }
 
-base::string16 TouchSelectionControllerClientChildFrame::GetSelectedText() {
+std::u16string TouchSelectionControllerClientChildFrame::GetSelectedText() {
   return rwhv_->GetSelectedText();
 }
 

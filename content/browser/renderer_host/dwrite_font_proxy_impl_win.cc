@@ -77,7 +77,7 @@ const RequiredFontStyle kRequiredStyles[] = {
 // That results in a poor user experience because websites that use those fonts
 // usually expect them to be rendered in the regular variant.
 bool CheckRequiredStylesPresent(IDWriteFontCollection* collection,
-                                const base::string16& family_name,
+                                const std::u16string& family_name,
                                 uint32_t family_index) {
   for (const auto& font_style : kRequiredStyles) {
     if (base::EqualsCaseInsensitiveASCII(family_name, font_style.family_name)) {
@@ -126,11 +126,11 @@ void DWriteFontProxyImpl::Create(
                               std::move(receiver));
 }
 
-void DWriteFontProxyImpl::SetWindowsFontsPathForTesting(base::string16 path) {
+void DWriteFontProxyImpl::SetWindowsFontsPathForTesting(std::u16string path) {
   windows_fonts_path_.swap(path);
 }
 
-void DWriteFontProxyImpl::FindFamily(const base::string16& family_name,
+void DWriteFontProxyImpl::FindFamily(const std::u16string& family_name,
                                      FindFamilyCallback callback) {
   InitializeDirectWrite();
   TRACE_EVENT0("dwrite,fonts", "FontProxyHost::OnFindFamily");
@@ -286,11 +286,11 @@ void DWriteFontProxyImpl::GetFontFiles(uint32_t family_index,
 }
 
 void DWriteFontProxyImpl::MapCharacters(
-    const base::string16& text,
+    const std::u16string& text,
     blink::mojom::DWriteFontStylePtr font_style,
-    const base::string16& locale_name,
+    const std::u16string& locale_name,
     uint32_t reading_direction,
-    const base::string16& base_family_name,
+    const std::u16string& base_family_name,
     MapCharactersCallback callback) {
   InitializeDirectWrite();
   callback = mojo::WrapCallbackWithDefaultInvokeIfNotRun(
@@ -408,7 +408,7 @@ void DWriteFontProxyImpl::GetUniqueNameLookupTableIfAvailable(
 }
 
 void DWriteFontProxyImpl::MatchUniqueFont(
-    const base::string16& unique_font_name,
+    const std::u16string& unique_font_name,
     MatchUniqueFontCallback callback) {
   TRACE_EVENT0("dwrite,fonts", "DWriteFontProxyImpl::MatchUniqueFont");
 

@@ -5367,7 +5367,7 @@ TEST_F(RenderWidgetHostViewAuraTest, OcclusionHidesTooltip) {
   EXPECT_TRUE(view_->UsesNativeWindowFrame());
 
   // Simulate a tooltip.
-  base::string16 tooltip_text(base::ASCIIToUTF16("The tooltip!"));
+  std::u16string tooltip_text(base::ASCIIToUTF16("The tooltip!"));
   view_->SetTooltipText(tooltip_text);
   EXPECT_FALSE(widget_host_->is_hidden());
   EXPECT_EQ(tooltip_text, view_->tooltip_);
@@ -5375,7 +5375,7 @@ TEST_F(RenderWidgetHostViewAuraTest, OcclusionHidesTooltip) {
   // Simulate occlusion, which should clear the tooltip.
   view_->WasOccluded();
   EXPECT_TRUE(widget_host_->is_hidden());
-  EXPECT_EQ(base::string16(), view_->tooltip_);
+  EXPECT_EQ(std::u16string(), view_->tooltip_);
 }
 #endif
 
@@ -6049,7 +6049,7 @@ TEST_F(InputMethodResultAuraTest, ClearCompositionText) {
 TEST_F(InputMethodResultAuraTest, FinishComposingText) {
   base::RepeatingClosure ime_call = base::BindRepeating(
       &ui::TextInputClient::InsertText, base::Unretained(text_input_client()),
-      base::string16(),
+      std::u16string(),
       ui::TextInputClient::InsertTextCursorBehavior::kMoveCursorAfterText);
   for (auto index : active_view_sequence_) {
     ActivateViewForTextInputManager(views_[index], ui::TEXT_INPUT_TYPE_TEXT);
@@ -6222,7 +6222,7 @@ TEST_F(InputMethodStateAuraTest, GetCompositionCharacterBounds) {
 
 // This test is for selected text.
 TEST_F(InputMethodStateAuraTest, GetSelectedText) {
-  base::string16 text = base::ASCIIToUTF16("some text of length 22");
+  std::u16string text = base::ASCIIToUTF16("some text of length 22");
   size_t offset = 0U;
   gfx::Range selection_range(20, 21);
 
@@ -6230,7 +6230,7 @@ TEST_F(InputMethodStateAuraTest, GetSelectedText) {
     render_widget_host_delegate()->set_focused_widget(
         RenderWidgetHostImpl::From(views_[index]->GetRenderWidgetHost()));
     views_[index]->SelectionChanged(text, offset, selection_range);
-    base::string16 expected_text = text.substr(
+    std::u16string expected_text = text.substr(
         selection_range.GetMin() - offset, selection_range.length());
 
     EXPECT_EQ(expected_text, views_[index]->GetSelectedText());
@@ -6243,7 +6243,7 @@ TEST_F(InputMethodStateAuraTest, GetSelectedText) {
 
 // This test is for text range.
 TEST_F(InputMethodStateAuraTest, GetTextRange) {
-  const base::string16 text = base::ASCIIToUTF16("some text of length 22");
+  const std::u16string text = base::ASCIIToUTF16("some text of length 22");
 
   for (auto index : active_view_sequence_) {
     ActivateViewForTextInputManager(views_[index], ui::TEXT_INPUT_TYPE_TEXT);
@@ -6305,7 +6305,7 @@ TEST_F(InputMethodStateAuraTest, GetEditableSelectionRange) {
 }
 
 TEST_F(InputMethodStateAuraTest, GetTextFromRange) {
-  const base::string16 text = base::ASCIIToUTF16("some text of length 22");
+  const std::u16string text = base::ASCIIToUTF16("some text of length 22");
 
   for (auto index : active_view_sequence_) {
     ActivateViewForTextInputManager(views_[index], ui::TEXT_INPUT_TYPE_TEXT);
@@ -6316,7 +6316,7 @@ TEST_F(InputMethodStateAuraTest, GetTextFromRange) {
 
     gfx::Range request_range(std::min(index, text.length() - 1),
                              std::min(index + 3, text.length() - 1));
-    base::string16 result;
+    std::u16string result;
     EXPECT_TRUE(text_input_client()->GetTextFromRange(request_range, &result));
     EXPECT_EQ(text.substr(request_range.start(), request_range.length()),
               result);
@@ -6344,11 +6344,11 @@ TEST_F(InputMethodStateAuraTest, SelectedTextCopiedToClipboard) {
 
     // Change the selection of the currently focused widget. It suffices to just
     // call the method on the view.
-    base::string16 expected_text = base::ASCIIToUTF16(texts[index]);
+    std::u16string expected_text = base::ASCIIToUTF16(texts[index]);
     views_[index]->SelectionChanged(expected_text, 0U, gfx::Range(0, 5));
 
     // Retrieve the selected text from clipboard and verify it is as expected.
-    base::string16 result_text;
+    std::u16string result_text;
     clipboard->ReadText(ui::ClipboardBuffer::kSelection,
                         /* data_dst = */ nullptr, &result_text);
     EXPECT_EQ(expected_text, result_text);
@@ -6505,7 +6505,7 @@ TEST_F(RenderWidgetHostViewAuraInputMethodTest, OnCaretBoundsChanged) {
   input_method->SetFocusedTextInputClient(parent_view_);
   input_method->AddObserver(this);
 
-  parent_view_->SelectionChanged(base::string16(), 0, gfx::Range());
+  parent_view_->SelectionChanged(std::u16string(), 0, gfx::Range());
   EXPECT_EQ(parent_view_, text_input_client_);
 
   text_input_client_ = nullptr;

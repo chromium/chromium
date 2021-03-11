@@ -178,8 +178,8 @@ class CONTENT_EXPORT RenderFrameProxyHost
                     const blink::LocalFrameToken& source_frame_token) override;
   void RouteMessageEvent(
       const base::Optional<blink::LocalFrameToken>& source_frame_token,
-      const base::string16& source_origin,
-      const base::string16& target_origin,
+      const std::u16string& source_origin,
+      const std::u16string& target_origin,
       blink::TransferableMessage message) override;
   void PrintCrossProcessSubframe(const gfx::Rect& rect,
                                  int document_cookie) override;

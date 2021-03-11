@@ -649,7 +649,7 @@ TEST_F(RenderWidgetHostViewMacTest, InvalidKeyCode) {
 }
 
 TEST_F(RenderWidgetHostViewMacTest, GetFirstRectForCharacterRangeCaretCase) {
-  const base::string16 kDummyString = base::UTF8ToUTF16("hogehoge");
+  const std::u16string kDummyString = base::UTF8ToUTF16("hogehoge");
   const size_t kDummyOffset = 0;
 
   gfx::Rect caret_rect(10, 11, 0, 10);
@@ -1714,7 +1714,7 @@ TEST_F(RenderWidgetHostViewMacTest, EventLatencyOSMouseWheelHistogram) {
 // This test verifies that |selected_text_| is updated accordingly with
 // different variations of RWHVMac::SelectChanged updates.
 TEST_F(RenderWidgetHostViewMacTest, SelectedText) {
-  base::string16 sample_text;
+  std::u16string sample_text;
   base::UTF8ToUTF16("hello world!", 12, &sample_text);
   gfx::Range range(6, 11);
 
@@ -2092,7 +2092,7 @@ TEST_F(InputMethodMacTest, TouchBarTextSuggestionsReplacement) {
         [FakeTextCheckingResult resultWithRange:NSMakeRange(0, 3)
                               replacementString:@"foo"];
 
-    const base::string16 kOriginalString = base::UTF8ToUTF16("abcxxxghi");
+    const std::u16string kOriginalString = base::UTF8ToUTF16("abcxxxghi");
 
     // Change the selection once; requests completions from the spell checker.
     tab_view()->SelectionChanged(kOriginalString, 3, gfx::Range(3, 3));
@@ -2148,7 +2148,7 @@ TEST_F(InputMethodMacTest, TouchBarTextSuggestionsNotRequestedForPasswords) {
     EXPECT_NSNE(nil, candidate_list_item());
     candidate_list_item().allowsCollapsing = NO;
 
-    const base::string16 kOriginalString = base::UTF8ToUTF16("abcxxxghi");
+    const std::u16string kOriginalString = base::UTF8ToUTF16("abcxxxghi");
 
     // Change the selection once; completions should *not* be requested.
     tab_view()->SelectionChanged(kOriginalString, 3, gfx::Range(3, 3));
@@ -2180,7 +2180,7 @@ TEST_F(InputMethodMacTest, TouchBarTextSuggestionsInvalidSelection) {
         [FakeTextCheckingResult resultWithRange:NSMakeRange(0, 3)
                               replacementString:@"foo"];
 
-    const base::string16 kOriginalString = base::UTF8ToUTF16("abcxxxghi");
+    const std::u16string kOriginalString = base::UTF8ToUTF16("abcxxxghi");
 
     tab_view()->SelectionChanged(kOriginalString, 3,
                                  gfx::Range::InvalidRange());

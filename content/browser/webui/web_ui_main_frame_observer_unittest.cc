@@ -150,10 +150,10 @@ class WebUIMainFrameObserverTest : public RenderViewHostTestHarness {
   void CallOnDidAddMessageToConsole(
       RenderFrameHost* source_frame,
       blink::mojom::ConsoleMessageLevel log_level,
-      const base::string16& message,
+      const std::u16string& message,
       int32_t line_no,
-      const base::string16& source_id,
-      const base::Optional<base::string16>& stack_trace) {
+      const std::u16string& source_id,
+      const base::Optional<std::u16string>& stack_trace) {
     web_ui_->GetWebUIMainFrameObserverForTest()->OnDidAddMessageToConsole(
         source_frame, log_level, message, line_no, source_id, stack_trace);
   }
@@ -166,14 +166,14 @@ class WebUIMainFrameObserverTest : public RenderViewHostTestHarness {
   scoped_refptr<JsErrorReportProcessor> previous_processor_;
 
   static constexpr char kMessage8[] = "An Error Is Me";
-  const base::string16 kMessage16 = base::UTF8ToUTF16(kMessage8);
+  const std::u16string kMessage16 = base::UTF8ToUTF16(kMessage8);
   static constexpr char kSourceURL8[] = "chrome://here.is.error/bad.js";
-  const base::string16 kSourceId16 = base::UTF8ToUTF16(kSourceURL8);
+  const std::u16string kSourceId16 = base::UTF8ToUTF16(kSourceURL8);
   static constexpr char kPageURL8[] = "chrome://here.is.error/index.html";
   static constexpr char kStackTrace8[] =
       "at badFunction (chrome://page/my.js:20:30)\n"
       "at poorCaller (chrome://page/my.js:50:10)\n";
-  const base::string16 kStackTrace16 = base::UTF8ToUTF16(kStackTrace8);
+  const std::u16string kStackTrace16 = base::UTF8ToUTF16(kStackTrace8);
 };
 
 constexpr char WebUIMainFrameObserverTest::kMessage8[];

@@ -38,7 +38,7 @@ INT_PTR CALLBACK ShellJavaScriptDialog::DialogProc(HWND dialog,
           GetWindowLongPtr(dialog, DWLP_USER));
       if (owner->dialog_win_) {
         owner->dialog_win_ = 0;
-        std::move(owner->callback_).Run(false, base::string16());
+        std::move(owner->callback_).Run(false, std::u16string());
         owner->manager_->DialogClosed(owner);
       }
       break;
@@ -83,8 +83,8 @@ ShellJavaScriptDialog::ShellJavaScriptDialog(
     ShellJavaScriptDialogManager* manager,
     gfx::NativeWindow parent_window,
     JavaScriptDialogType dialog_type,
-    const base::string16& message_text,
-    const base::string16& default_prompt_text,
+    const std::u16string& message_text,
+    const std::u16string& default_prompt_text,
     JavaScriptDialogManager::DialogClosedCallback callback)
     : callback_(std::move(callback)),
       manager_(manager),
@@ -114,7 +114,7 @@ void ShellJavaScriptDialog::Cancel() {
     DestroyWindow(dialog_win_);
   dialog_win_ = 0;
   if (callback_)
-    std::move(callback_).Run(false, base::string16());
+    std::move(callback_).Run(false, std::u16string());
 }
 
 }  // namespace content

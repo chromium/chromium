@@ -42,7 +42,7 @@ class ExternalProcessImporterBridge : public ImporterBridge {
 
   // Begin ImporterBridge implementation:
   void AddBookmarks(const std::vector<ImportedBookmarkEntry>& bookmarks,
-                    const base::string16& first_folder_name) override;
+                    const std::u16string& first_folder_name) override;
 
   void AddHomePage(const GURL& home_page) override;
 
@@ -65,7 +65,7 @@ class ExternalProcessImporterBridge : public ImporterBridge {
   void NotifyItemEnded(importer::ImportItem item) override;
   void NotifyEnded() override;
 
-  base::string16 GetLocalizedString(int message_id) override;
+  std::u16string GetLocalizedString(int message_id) override;
   // End ImporterBridge implementation.
 
  private:

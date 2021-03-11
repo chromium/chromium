@@ -79,7 +79,7 @@ HRESULT FontFallback::MapCharacters(IDWriteTextAnalysisSource* source,
     DCHECK(false);
     return E_FAIL;
   }
-  base::string16 text_chunk;
+  std::u16string text_chunk;
   base::WideToUTF16(text, std::min(chunk_length, text_length), &text_chunk);
 
   if (text_chunk.size() == 0) {
@@ -166,7 +166,7 @@ FontFallback::RuntimeClassInitialize(DWriteFontCollectionProxy* collection) {
   return S_OK;
 }
 
-bool FontFallback::GetCachedFont(const base::string16& text,
+bool FontFallback::GetCachedFont(const std::u16string& text,
                                  const wchar_t* base_family_name,
                                  const wchar_t* locale,
                                  DWRITE_FONT_WEIGHT base_weight,
