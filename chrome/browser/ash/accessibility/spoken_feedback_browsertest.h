@@ -46,6 +46,8 @@ class LoggedInSpokenFeedbackTest : public InProcessBrowserTest {
 
   void EnableChromeVox();
 
+  void StablizeChromeVoxState();
+
   void PressRepeatedlyUntilUtterance(ui::KeyboardCode key,
                                      const std::string& expected_utterance);
 

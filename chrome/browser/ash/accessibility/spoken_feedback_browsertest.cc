@@ -159,6 +159,15 @@ void LoggedInSpokenFeedbackTest::EnableChromeVox() {
   sm_.Call([this]() { DisableEarcons(); });
 }
 
+void LoggedInSpokenFeedbackTest::StablizeChromeVoxState() {
+  sm_.Call([this]() {
+    ui_test_utils::NavigateToURL(browser(),
+                                 GURL("data:text/html;charset=utf-8,<button "
+                                      "autofocus>Click me</button>"));
+  });
+  sm_.ExpectSpeech("Click me");
+}
+
 // Flaky test, crbug.com/1081563
 IN_PROC_BROWSER_TEST_F(LoggedInSpokenFeedbackTest, DISABLED_AddBookmark) {
   EnableChromeVox();
@@ -799,13 +808,7 @@ IN_PROC_BROWSER_TEST_P(SpokenFeedbackTest, ChromeVoxStickyMode) {
 // timing element to it.
 IN_PROC_BROWSER_TEST_P(SpokenFeedbackTest, ChromeVoxStickyModeRawKeys) {
   EnableChromeVox();
-
-  sm_.Call([this]() {
-    ui_test_utils::NavigateToURL(browser(),
-                                 GURL("data:text/html;charset=utf-8,<button "
-                                      "autofocus>Click me</button>"));
-  });
-  sm_.ExpectSpeech("Click me");
+  StablizeChromeVoxState();
 
   sm_.Call([this]() {
     SendKeyPress(ui::VKEY_LWIN);
@@ -1180,6 +1183,7 @@ IN_PROC_BROWSER_TEST_P(SpokenFeedbackTest, SmartStickyMode) {
 
 IN_PROC_BROWSER_TEST_P(SpokenFeedbackTest, HardwareKeysGetRewritten) {
   EnableChromeVox();
+  StablizeChromeVoxState();
   sm_.Call([this]() { SendKeyPressWithSearch(ui::VKEY_F7); });
   sm_.ExpectSpeech("Darken screen");
   sm_.Replay();
