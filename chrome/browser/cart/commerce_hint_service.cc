@@ -12,6 +12,8 @@
 #include "chrome/browser/cart/cart_db_content.pb.h"
 #include "chrome/browser/cart/cart_service.h"
 #include "chrome/browser/cart/cart_service_factory.h"
+#include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
+#include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_user_data.h"
@@ -75,9 +77,16 @@ class CommerceHintObserverImpl : public mojom::CommerceHintObserver {
 
 CommerceHintService::CommerceHintService(content::WebContents* web_contents)
     : web_contents_(web_contents) {
-  service_ = CartServiceFactory::GetInstance()->GetForProfile(
-      Profile::FromBrowserContext(web_contents_->GetBrowserContext()));
   DCHECK(!web_contents->GetBrowserContext()->IsOffTheRecord());
+  Profile* profile =
+      Profile::FromBrowserContext(web_contents_->GetBrowserContext());
+  service_ = CartServiceFactory::GetInstance()->GetForProfile(profile);
+  optimization_guide_decider_ =
+      OptimizationGuideKeyedServiceFactory::GetForProfile(profile);
+  if (optimization_guide_decider_) {
+    optimization_guide_decider_->RegisterOptimizationTypes(
+        {optimization_guide::proto::SHOPPING_PAGE_PREDICTOR});
+  }
 }
 
 CommerceHintService::~CommerceHintService() = default;
@@ -93,8 +102,22 @@ void CommerceHintService::BindCommerceHintObserver(
       std::move(receiver));
 }
 
+bool CommerceHintService::ShouldSkip(const GURL& url) {
+  if (!optimization_guide_decider_) {
+    return false;
+  }
+
+  optimization_guide::OptimizationMetadata metadata;
+  auto decision = optimization_guide_decider_->CanApplyOptimization(
+      url, optimization_guide::proto::SHOPPING_PAGE_PREDICTOR, &metadata);
+  VLOG(1) << "SHOPPING_PAGE_PREDICTOR = " << static_cast<int>(decision);
+  return optimization_guide::OptimizationGuideDecision::kFalse == decision;
+}
+
 void CommerceHintService::OnAddToCart(const GURL& navigation_url,
                                       const base::Optional<GURL>& cart_url) {
+  if (ShouldSkip(navigation_url))
+    return;
   cart_db::ChromeCartContentProto proto;
   ConstructCartProto(&proto, navigation_url);
   service_->AddCart(eTLDPlusOne(navigation_url), cart_url, std::move(proto));
