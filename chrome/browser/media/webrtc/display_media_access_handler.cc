@@ -318,11 +318,14 @@ void DisplayMediaAccessHandler::OnPickerDialogResults(
       const auto& visible_url = url_formatter::FormatUrlForSecurityDisplay(
           web_contents->GetLastCommittedURL(),
           url_formatter::SchemeDisplay::OMIT_CRYPTOGRAPHIC);
+      const bool disable_local_echo =
+          (media_id.type == content::DesktopMediaID::TYPE_WEB_CONTENTS) &&
+          media_id.web_contents_id.disable_local_echo;
       ui = GetDevicesForDesktopCapture(
           web_contents, &devices, media_id, pending_request.request.video_type,
           blink::mojom::MediaStreamType::DISPLAY_AUDIO_CAPTURE,
-          media_id.audio_share, false /* disable_local_echo */,
-          display_notification_, visible_url, visible_url);
+          media_id.audio_share, disable_local_echo, display_notification_,
+          visible_url, visible_url);
     }
   }
 
