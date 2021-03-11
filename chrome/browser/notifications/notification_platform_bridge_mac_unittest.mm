@@ -14,6 +14,7 @@
 #include "base/run_loop.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "chrome/browser/notifications/notification_platform_bridge_mac.h"
 #include "chrome/browser/notifications/notification_platform_bridge_mac_utils.h"
 #include "chrome/browser/notifications/notification_test_util.h"
@@ -133,6 +134,7 @@ class NotificationPlatformBridgeMacTest : public testing::Test {
 };
 
 TEST_F(NotificationPlatformBridgeMacTest, TestDisplayNoButtons) {
+  base::HistogramTester histogram_tester;
   std::unique_ptr<Notification> notification =
       CreateBanner("Title", "Context", "https://gmail.com", nullptr, nullptr);
 
@@ -153,6 +155,9 @@ TEST_F(NotificationPlatformBridgeMacTest, TestDisplayNoButtons) {
 
   if (!base::mac::IsAtLeastOS11())
     EXPECT_NSEQ(@"Close", [delivered_notification otherButtonTitle]);
+
+  histogram_tester.ExpectUniqueSample("Notifications.macOS.Delivered.Banner",
+                                      /*sample=*/true, /*expected_count=*/1);
 }
 
 TEST_F(NotificationPlatformBridgeMacTest, TestIncognitoProfile) {
@@ -363,6 +368,7 @@ TEST_F(NotificationPlatformBridgeMacTest, TestDisplayAlert) {
   if (!MacOSSupportsXPCAlerts())
     return;
 
+  base::HistogramTester histogram_tester;
   std::unique_ptr<Notification> alert =
       CreateAlert("Title", "Context", "https://gmail.com", "Button 1", nullptr);
   std::unique_ptr<NotificationPlatformBridgeMac> bridge(
@@ -372,6 +378,8 @@ TEST_F(NotificationPlatformBridgeMacTest, TestDisplayAlert) {
                   nullptr);
   EXPECT_EQ(0u, [[notification_center() deliveredNotifications] count]);
   EXPECT_EQ(1u, [[alert_dispatcher() alerts] count]);
+  histogram_tester.ExpectUniqueSample("Notifications.macOS.Delivered.Alert",
+                                      /*sample=*/true, /*expected_count=*/1);
 }
 
 TEST_F(NotificationPlatformBridgeMacTest, TestDisplayBannerAndAlert) {
@@ -493,6 +501,7 @@ TEST_F(NotificationPlatformBridgeMacTest, TestDisplayETLDPlusOne) {
 }
 
 TEST_F(NotificationPlatformBridgeMacTest, DidActivateNotification) {
+  base::HistogramTester histogram_tester;
   auto bridge = std::make_unique<NotificationPlatformBridgeMac>(
       notification_center(), alert_dispatcher());
 
@@ -513,4 +522,8 @@ TEST_F(NotificationPlatformBridgeMacTest, DidActivateNotification) {
 
   // Handling responses is async, make sure we wait for all tasks to complete.
   task_environment_.RunUntilIdle();
+
+  histogram_tester.ExpectUniqueSample(
+      "Notifications.macOS.ActionReceived.Banner", /*sample=*/true,
+      /*expected_count=*/1);
 }

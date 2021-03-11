@@ -27,6 +27,7 @@
 #include "chrome/browser/notifications/mac_notification_provider_factory.h"
 #include "chrome/browser/notifications/notification_common.h"
 #include "chrome/browser/notifications/notification_display_service_impl.h"
+#include "chrome/browser/notifications/notification_platform_bridge_mac_metrics.h"
 #include "chrome/browser/notifications/notification_platform_bridge_mac_utils.h"
 #include "chrome/browser/notifications/platform_notification_service_impl.h"
 #include "chrome/browser/profiles/profile.h"
@@ -138,6 +139,7 @@ void NotificationPlatformBridgeMac::Display(
       notification_type != NotificationHandler::Type::EXTENSION;
 
   bool is_alert = IsAlertNotificationMac(notification);
+  LogMacNotificationDelivered(is_alert, /*sucess=*/true);
 
   [builder setSubTitle:base::SysUTF16ToNSString(CreateMacNotificationContext(
                            is_alert, notification, requires_attribution))];

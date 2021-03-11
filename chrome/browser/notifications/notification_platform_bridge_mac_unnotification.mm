@@ -16,6 +16,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/thread_pool.h"
 #include "base/timer/timer.h"
+#include "chrome/browser/notifications/notification_platform_bridge_mac_metrics.h"
 #include "chrome/browser/notifications/notification_platform_bridge_mac_utils.h"
 #include "chrome/browser/notifications/unnotification_metrics.h"
 #include "chrome/browser/profiles/profile.h"
@@ -161,6 +162,7 @@ void NotificationPlatformBridgeMacUNNotification::Display(
   [builder setIdentifier:notification_id];
 
   if (is_alert) {
+    LogMacNotificationDelivered(is_alert, /*success=*/true);
     NSDictionary* dict = [builder buildDictionary];
     [alert_dispatcher_ dispatchNotification:dict];
     [builder setClosedFromAlert:YES];
@@ -184,6 +186,7 @@ void NotificationPlatformBridgeMacUNNotification::Display(
 
   void (^notification_delivered_block)(NSError* _Nullable) = ^(
       NSError* _Nullable error) {
+    LogMacNotificationDelivered(is_alert, /*success=*/!error);
     if (error != nil) {
       DVLOG(1) << "Notification request did not succeed";
       return;

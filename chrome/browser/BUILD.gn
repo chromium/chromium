@@ -5007,6 +5007,8 @@ static_library("browser") {
       "notifications/notification_alert_service_bridge.mm",
       "notifications/notification_platform_bridge_mac.h",
       "notifications/notification_platform_bridge_mac.mm",
+      "notifications/notification_platform_bridge_mac_metrics.cc",
+      "notifications/notification_platform_bridge_mac_metrics.h",
       "notifications/notification_platform_bridge_mac_unnotification.h",
       "notifications/notification_platform_bridge_mac_unnotification.mm",
       "notifications/notification_platform_bridge_mac_utils.h",

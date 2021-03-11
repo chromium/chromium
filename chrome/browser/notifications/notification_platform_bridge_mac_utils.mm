@@ -12,6 +12,7 @@
 #include "base/system/sys_info.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/notifications/notification_display_service_impl.h"
+#include "chrome/browser/notifications/notification_platform_bridge_mac_metrics.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/services/mac_notifications/public/cpp/notification_constants_mac.h"
@@ -201,7 +202,12 @@ bool VerifyMacNotificationData(NSDictionary* response) {
 }
 
 void ProcessMacNotificationResponse(NSDictionary* response) {
-  if (!VerifyMacNotificationData(response))
+  bool isAlert = [[response
+      objectForKey:notification_constants::kNotificationIsAlert] boolValue];
+  bool isValid = VerifyMacNotificationData(response);
+  LogMacNotificationActionReceived(isAlert, isValid);
+
+  if (!isValid)
     return;
 
   NSNumber* buttonIndex =

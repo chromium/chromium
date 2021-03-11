@@ -10,6 +10,7 @@
 #include "base/process/process_handle.h"
 #include "base/run_loop.h"
 #include "base/strings/string16.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
 #import "chrome/browser/notifications/notification_alert_service_bridge.h"
 #include "chrome/services/mac_notifications/public/cpp/notification_constants_mac.h"
@@ -259,6 +260,7 @@ TEST_F(NotificationAlertServiceBridgeTest, CloseAllNotifications) {
 }
 
 TEST_F(NotificationAlertServiceBridgeTest, OnNotificationAction) {
+  base::HistogramTester histogram_tester;
   auto profile_identifier = mac_notifications::mojom::ProfileIdentifier::New(
       "profileId", /*incognito=*/true);
   auto notification_identifier =
@@ -279,4 +281,8 @@ TEST_F(NotificationAlertServiceBridgeTest, OnNotificationAction) {
   // TODO(knollr): verify expected notification action data.
   // Wait until the action has been handled.
   run_loop.Run();
+
+  histogram_tester.ExpectUniqueSample(
+      "Notifications.macOS.ActionReceived.Alert", /*sample=*/true,
+      /*expected_count=*/1);
 }
