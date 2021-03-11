@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.toolbar;
 import android.graphics.drawable.Drawable;
 import android.view.View;
 
+import org.chromium.chrome.browser.toolbar.adaptive.AdaptiveToolbarFeatures.AdaptiveToolbarButtonVariant;
 import org.chromium.chrome.browser.user_education.IPHCommandBuilder;
 
 /** An implementation of the {@link ButtonData}. */
@@ -16,13 +17,24 @@ public class ButtonDataImpl implements ButtonData {
 
     private ButtonSpec mButtonSpec;
 
+    public ButtonDataImpl() {}
+
     public ButtonDataImpl(boolean canShow, Drawable drawable, View.OnClickListener onClickListener,
             int contentDescriptionResId, boolean supportsTinting,
-            IPHCommandBuilder iphCommandBuilder, boolean isEnabled) {
+            IPHCommandBuilder iphCommandBuilder, boolean isEnabled,
+            @AdaptiveToolbarButtonVariant int buttonVariant) {
         mCanShow = canShow;
         mIsEnabled = isEnabled;
         mButtonSpec = new ButtonSpec(drawable, onClickListener, contentDescriptionResId,
-                supportsTinting, iphCommandBuilder);
+                supportsTinting, iphCommandBuilder, buttonVariant);
+    }
+
+    // A convenience constructor, doesn't require callers to import AdaptiveToolbarButtonVariant
+    public ButtonDataImpl(boolean canShow, Drawable drawable, View.OnClickListener onClickListener,
+            int contentDescriptionResId, boolean supportsTinting,
+            IPHCommandBuilder iphCommandBuilder, boolean isEnabled) {
+        this(canShow, drawable, onClickListener, contentDescriptionResId, supportsTinting,
+                iphCommandBuilder, isEnabled, AdaptiveToolbarButtonVariant.UNKNOWN);
     }
 
     @Override

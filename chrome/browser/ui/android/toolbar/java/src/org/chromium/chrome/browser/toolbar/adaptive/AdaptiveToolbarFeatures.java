@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.toolbar.adaptive;
 
 import androidx.annotation.IntDef;
+import androidx.annotation.VisibleForTesting;
 
 import org.chromium.chrome.browser.flags.CachedFeatureFlags;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -56,22 +57,40 @@ public class AdaptiveToolbarFeatures {
      * When the adaptive toolbar is configured in a single button variant mode, returns the {@link
      * AdaptiveToolbarButtonVariant} being used. Returns {@link
      * AdaptiveToolbarButtonVariant#UNKNOWN} otherwise.
+     * <p>
+     * This methods avoids parsing param strings more than once. Tests need to call {@link
+     * #clearParsedParamsForTesting()} to clear the cached values.
      */
     @AdaptiveToolbarButtonVariant
     public static int getSingleVariantMode() {
+        if (sButtonVariant != null) return sButtonVariant;
         String mode = MODE_PARAM.getValue();
         switch (mode) {
             case ALWAYS_NONE:
-                return AdaptiveToolbarButtonVariant.NONE;
+                sButtonVariant = AdaptiveToolbarButtonVariant.NONE;
+                break;
             case ALWAYS_NEW_TAB:
-                return AdaptiveToolbarButtonVariant.NEW_TAB;
+                sButtonVariant = AdaptiveToolbarButtonVariant.NEW_TAB;
+                break;
             case ALWAYS_SHARE:
-                return AdaptiveToolbarButtonVariant.SHARE;
+                sButtonVariant = AdaptiveToolbarButtonVariant.SHARE;
+                break;
             case ALWAYS_VOICE:
-                return AdaptiveToolbarButtonVariant.VOICE;
+                sButtonVariant = AdaptiveToolbarButtonVariant.VOICE;
+                break;
             default:
-                return AdaptiveToolbarButtonVariant.UNKNOWN;
+                sButtonVariant = AdaptiveToolbarButtonVariant.UNKNOWN;
+                break;
         }
+        return sButtonVariant;
+    }
+
+    @AdaptiveToolbarButtonVariant
+    private static Integer sButtonVariant;
+
+    @VisibleForTesting
+    public static void clearParsedParamsForTesting() {
+        sButtonVariant = null;
     }
 
     private AdaptiveToolbarFeatures() {}

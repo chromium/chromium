@@ -111,7 +111,8 @@ public class VoiceToolbarButtonController
 
         mButtonData = new ButtonDataImpl(/*canShow=*/false, buttonDrawable, onClickListener,
                 R.string.accessibility_toolbar_btn_mic,
-                /*supportsTinting=*/true, /*iphCommandBuilder=*/null, /*isEnabled=*/true);
+                /*supportsTinting=*/true, /*iphCommandBuilder=*/null, /*isEnabled=*/true,
+                AdaptiveToolbarButtonVariant.VOICE);
 
         mScreenWidthDp = context.getResources().getConfiguration().screenWidthDp;
     }

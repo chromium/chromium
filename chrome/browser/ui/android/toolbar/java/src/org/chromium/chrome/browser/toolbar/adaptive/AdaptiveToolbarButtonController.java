@@ -4,11 +4,16 @@
 
 package org.chromium.chrome.browser.toolbar.adaptive;
 
+import android.view.View;
+
 import androidx.annotation.Nullable;
 
 import org.chromium.base.ObserverList;
+import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.toolbar.ButtonData;
+import org.chromium.chrome.browser.toolbar.ButtonData.ButtonSpec;
+import org.chromium.chrome.browser.toolbar.ButtonDataImpl;
 import org.chromium.chrome.browser.toolbar.ButtonDataProvider;
 import org.chromium.chrome.browser.toolbar.ButtonDataProvider.ButtonDataObserver;
 import org.chromium.chrome.browser.toolbar.adaptive.AdaptiveToolbarFeatures.AdaptiveToolbarButtonVariant;
@@ -18,6 +23,19 @@ public class AdaptiveToolbarButtonController implements ButtonDataProvider, Butt
     private ObserverList<ButtonDataObserver> mObservers = new ObserverList<>();
     @Nullable
     private ButtonDataProvider mSingleProvider;
+
+    /** {@code true} if the SessionVariant histogram value was already recorded. */
+    private boolean mIsSessionVariantRecorded;
+
+    /** The last received {@link ButtonSpec}. */
+    @Nullable
+    private ButtonSpec mOriginalButtonSpec;
+
+    /**
+     * {@link ButtonData} instance returned by {@link AdaptiveToolbarButtonController#get(Tab)}
+     * when wrapping {@code mOriginalButtonSpec}.
+     */
+    private final ButtonDataImpl mButtonData = new ButtonDataImpl();
 
     /**
      * Adds an instance of a button variant to the collection of buttons managed by {@code
@@ -79,7 +97,48 @@ public class AdaptiveToolbarButtonController implements ButtonDataProvider, Butt
     @Override
     public ButtonData get(@Nullable Tab tab) {
         if (mSingleProvider == null) return null;
-        return mSingleProvider.get(tab);
+        final ButtonData receivedButtonData = mSingleProvider.get(tab);
+        if (receivedButtonData == null) return null;
+        assert receivedButtonData.getButtonSpec().getButtonVariant()
+                == AdaptiveToolbarFeatures.getSingleVariantMode();
+
+        if (!mIsSessionVariantRecorded && receivedButtonData.canShow()
+                && receivedButtonData.isEnabled()) {
+            mIsSessionVariantRecorded = true;
+            RecordHistogram.recordEnumeratedHistogram(
+                    "Android.AdaptiveToolbarButton.SessionVariant",
+                    receivedButtonData.getButtonSpec().getButtonVariant(),
+                    AdaptiveToolbarButtonVariant.NUM_ENTRIES);
+        }
+        // Return early if there is no need to wrap the listener.
+        if (receivedButtonData.getButtonSpec().getOnClickListener() == null) {
+            return receivedButtonData;
+        }
+
+        mButtonData.setCanShow(receivedButtonData.canShow());
+        mButtonData.setEnabled(receivedButtonData.isEnabled());
+        final ButtonSpec receivedButtonSpec = receivedButtonData.getButtonSpec();
+        // ButtonSpec is immutable, so we keep the previous value when noting changes.
+        if (receivedButtonSpec != mOriginalButtonSpec) {
+            mOriginalButtonSpec = receivedButtonSpec;
+            mButtonData.setButtonSpec(new ButtonSpec(receivedButtonSpec.getDrawable(),
+                    wrapListener(receivedButtonSpec.getOnClickListener(),
+                            receivedButtonSpec.getButtonVariant()),
+                    receivedButtonSpec.getContentDescriptionResId(),
+                    receivedButtonSpec.getSupportsTinting(),
+                    receivedButtonSpec.getIPHCommandBuilder(),
+                    receivedButtonSpec.getButtonVariant()));
+        }
+        return mButtonData;
+    }
+
+    private static View.OnClickListener wrapListener(View.OnClickListener receivedListener,
+            @AdaptiveToolbarButtonVariant int buttonVariant) {
+        return view -> {
+            RecordHistogram.recordEnumeratedHistogram("Android.AdaptiveToolbarButton.Clicked",
+                    buttonVariant, AdaptiveToolbarButtonVariant.NUM_ENTRIES);
+            receivedListener.onClick(view);
+        };
     }
 
     @Override

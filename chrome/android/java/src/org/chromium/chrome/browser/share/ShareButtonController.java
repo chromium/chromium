@@ -117,9 +117,10 @@ public class ShareButtonController implements ButtonDataProvider, ConfigurationC
         mModalDialogManager = modalDialogManager;
         mModalDialogManager.addObserver(mModalDialogManagerObserver);
 
-        mButtonData = new ButtonDataImpl(false,
+        mButtonData = new ButtonDataImpl(/*canShow=*/false,
                 AppCompatResources.getDrawable(mContext, R.drawable.ic_toolbar_share_offset_24dp),
-                mOnClickListener, R.string.share, true, null, true);
+                mOnClickListener, R.string.share, /*supportsTinting=*/true,
+                /*iphCommandBuilder=*/null, /*isEnabled=*/true, AdaptiveToolbarButtonVariant.SHARE);
 
         mScreenWidthDp = mContext.getResources().getConfiguration().screenWidthDp;
     }
