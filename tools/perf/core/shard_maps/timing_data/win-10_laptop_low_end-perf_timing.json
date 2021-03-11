@@ -536,10 +536,6 @@
         "name": "blink_perf.layout/auto-grid-lots-of-spanning-data.html"
     },
     {
-        "duration": "19.0",
-        "name": "blink_perf.layout/change-text-css-contain.html"
-    },
-    {
         "duration": "14.0",
         "name": "blink_perf.layout/chapter-reflow-once-random.html"
     },
