@@ -248,6 +248,8 @@ scoped_refptr<const NGLayoutResult> NGSimplifiedLayoutAlgorithm::Layout() {
             .ToLogical(*previous_fragment.InflowBounds());
     container_builder_.SetInflowBounds(inflow_bounds);
   }
+  container_builder_.SetMayHaveDescendantAboveBlockStart(
+      previous_fragment.MayHaveDescendantAboveBlockStart());
 
   NGOutOfFlowLayoutPart(Node(), ConstraintSpace(), &container_builder_).Run();
 
@@ -286,12 +288,11 @@ void NGSimplifiedLayoutAlgorithm::AddChildFragment(
                            previous_physical_container_size_)
           .ToLogical(old_fragment.Offset(), new_fragment.Size());
 
-  RemoveRelativeOffset(container_builder_, *old_fragment, &child_offset);
-
   // Add the new fragment to the builder.
   container_builder_.AddChild(new_fragment, child_offset,
                               /* inline_container */ nullptr, margin_strut,
-                              is_self_collapsing);
+                              is_self_collapsing,
+                              /* offset_includes_relative_position */ true);
 }
 
 }  // namespace blink

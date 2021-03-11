@@ -15,15 +15,15 @@ namespace blink {
 
 NGSimplifiedOOFLayoutAlgorithm::NGSimplifiedOOFLayoutAlgorithm(
     const NGLayoutAlgorithmParams& params,
-    const NGPhysicalBoxFragment& fragment,
+    const NGPhysicalBoxFragment& previous_fragment,
     bool is_new_fragment)
     : NGLayoutAlgorithm(params),
       writing_direction_(Style().GetWritingDirection()),
       incoming_break_token_(params.break_token) {
-  DCHECK(fragment.IsFragmentainerBox());
+  DCHECK(previous_fragment.IsFragmentainerBox());
   DCHECK(params.space.HasKnownFragmentainerBlockSize());
 
-  container_builder_.SetBoxType(fragment.BoxType());
+  container_builder_.SetBoxType(previous_fragment.BoxType());
   container_builder_.SetFragmentBlockSize(
       params.space.FragmentainerBlockSize());
 
@@ -37,11 +37,11 @@ NGSimplifiedOOFLayoutAlgorithm::NGSimplifiedOOFLayoutAlgorithm(
     return;
   }
 
-  container_builder_.SetIsFirstForNode(fragment.IsFirstForNode());
+  container_builder_.SetIsFirstForNode(previous_fragment.IsFirstForNode());
 
   // We need the previous physical container size to calculate the position of
   // any child fragments.
-  previous_physical_container_size_ = fragment.Size();
+  previous_physical_container_size_ = previous_fragment.Size();
 
   // Children (along with any OOF fragments that will be added as children) need
   // to be added in an order that matches the order of any incoming break tokens
@@ -49,9 +49,14 @@ NGSimplifiedOOFLayoutAlgorithm::NGSimplifiedOOFLayoutAlgorithm(
   // break tokens are accounted for, the order will be determined by the
   // remaining children in |child_iterator_|, followed by any newly added OOF
   // children.
-  children_ = fragment.Children();
+  children_ = previous_fragment.Children();
   child_iterator_ = children_.begin();
   AdvanceChildIterator();
+
+  // Inflow-bounds should never exist on a fragmentainer.
+  DCHECK(!previous_fragment.InflowBounds());
+  container_builder_.SetMayHaveDescendantAboveBlockStart(
+      previous_fragment.MayHaveDescendantAboveBlockStart());
 }
 
 scoped_refptr<const NGLayoutResult> NGSimplifiedOOFLayoutAlgorithm::Layout() {
@@ -85,10 +90,11 @@ void NGSimplifiedOOFLayoutAlgorithm::AddChildFragment(const NGLink& child) {
                            previous_physical_container_size_)
           .ToLogical(child.Offset(), fragment->Size());
 
-  RemoveRelativeOffset(container_builder_, *fragment, &child_offset);
-
   // Add the fragment to the builder.
-  container_builder_.AddChild(*fragment, child_offset);
+  container_builder_.AddChild(
+      *fragment, child_offset, /* inline_container */ nullptr,
+      /* margin_strut */ nullptr, /* is_self_collapsing */ false,
+      /* offset_includes_relative_position */ true);
 }
 
 void NGSimplifiedOOFLayoutAlgorithm::AdvanceChildIterator() {

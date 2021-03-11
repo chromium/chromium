@@ -201,13 +201,16 @@ class CORE_EXPORT NGBoxFragmentBuilder final
   // Add a layout result. This involves appending the fragment and its relative
   // offset to the builder, but also keeping track of out-of-flow positioned
   // descendants, propagating fragmentainer breaks, and more.
-  void AddResult(const NGLayoutResult&, const LogicalOffset);
+  void AddResult(const NGLayoutResult&,
+                 const LogicalOffset,
+                 bool offset_includes_relative_position = false);
 
   void AddChild(const NGPhysicalContainerFragment&,
                 const LogicalOffset&,
                 const LayoutInline* inline_container = nullptr,
                 const NGMarginStrut* margin_strut = nullptr,
-                bool is_self_collapsing = false);
+                bool is_self_collapsing = false,
+                bool offset_includes_relative_position = false);
 
   // Manually add a break token to the builder. Note that we're assuming that
   // this break token is for content in the same flow as this parent.
@@ -355,7 +358,17 @@ class CORE_EXPORT NGBoxFragmentBuilder final
   void SetInflowBounds(const LogicalRect& inflow_bounds) {
     DCHECK_NE(box_type_, NGPhysicalBoxFragment::NGBoxType::kInlineBox);
     DCHECK(Node().IsScrollContainer());
+#if DCHECK_IS_ON()
+    is_inflow_bounds_explicitly_set_ = true;
+#endif
     inflow_bounds_ = inflow_bounds;
+  }
+
+  void SetMayHaveDescendantAboveBlockStart(bool b) {
+#if DCHECK_IS_ON()
+    is_may_have_descendant_above_block_start_explicitly_set_ = true;
+#endif
+    may_have_descendant_above_block_start_ = b;
   }
 
   void SetColumnSpanner(NGBlockNode spanner) { column_spanner_ = spanner; }
@@ -639,6 +652,13 @@ class CORE_EXPORT NGBoxFragmentBuilder final
   // Describes what size_.block_size represents; either the size of a single
   // fragment (false), or the size of all fragments for a node (true).
   bool block_size_is_for_all_fragments_ = false;
+
+  // If any fragment has been added with an offset including the relative
+  // position, we also need the inflow-bounds set explicitly.
+  bool needs_inflow_bounds_explicitly_set_ = false;
+  bool needs_may_have_descendant_above_block_start_explicitly_set_ = false;
+  bool is_inflow_bounds_explicitly_set_ = false;
+  bool is_may_have_descendant_above_block_start_explicitly_set_ = false;
 #endif
 
   friend class NGBlockBreakToken;

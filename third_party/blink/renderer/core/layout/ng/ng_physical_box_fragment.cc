@@ -92,6 +92,15 @@ scoped_refptr<const NGPhysicalBoxFragment> NGPhysicalBoxFragment::Create(
   if (builder->inflow_bounds_)
     inflow_bounds = converter.ToPhysical(*builder->inflow_bounds_);
 
+#if DCHECK_IS_ON()
+  if (builder->needs_inflow_bounds_explicitly_set_ && builder->node_ &&
+      builder->node_.IsScrollContainer() &&
+      builder->box_type_ != NGBoxType::kColumnBox)
+    DCHECK(builder->is_inflow_bounds_explicitly_set_);
+  if (builder->needs_may_have_descendant_above_block_start_explicitly_set_)
+    DCHECK(builder->is_may_have_descendant_above_block_start_explicitly_set_);
+#endif
+
   PhysicalRect layout_overflow = {PhysicalOffset(), physical_size};
   if (builder->node_ && !builder->is_legacy_layout_root_) {
     const NGPhysicalBoxStrut scrollbar =
