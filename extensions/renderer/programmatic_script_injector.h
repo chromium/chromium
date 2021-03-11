@@ -11,11 +11,10 @@
 #include "base/optional.h"
 #include "base/values.h"
 #include "extensions/common/mojom/css_origin.mojom-shared.h"
+#include "extensions/common/mojom/frame.mojom-forward.h"
 #include "extensions/common/mojom/run_location.mojom-shared.h"
 #include "extensions/renderer/script_injection.h"
 #include "url/gurl.h"
-
-struct ExtensionMsg_ExecuteCode_Params;
 
 namespace content {
 class RenderFrame;
@@ -26,8 +25,7 @@ namespace extensions {
 // A ScriptInjector to handle tabs.executeScript().
 class ProgrammaticScriptInjector : public ScriptInjector {
  public:
-  explicit ProgrammaticScriptInjector(
-      const ExtensionMsg_ExecuteCode_Params& params);
+  explicit ProgrammaticScriptInjector(mojom::ExecuteCodeParamsPtr params);
   ~ProgrammaticScriptInjector() override;
 
  private:
@@ -71,7 +69,7 @@ class ProgrammaticScriptInjector : public ScriptInjector {
   void Finish(const std::string& error, content::RenderFrame* render_frame);
 
   // The parameters for injecting the script.
-  std::unique_ptr<ExtensionMsg_ExecuteCode_Params> params_;
+  mojom::ExecuteCodeParamsPtr params_;
 
   // The url of the frame into which we are injecting.
   GURL url_;

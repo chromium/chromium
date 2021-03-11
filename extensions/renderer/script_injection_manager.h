@@ -15,13 +15,12 @@
 #include "base/callback.h"
 #include "base/macros.h"
 #include "base/scoped_observer.h"
+#include "extensions/common/mojom/frame.mojom-forward.h"
 #include "extensions/common/mojom/host_id.mojom-forward.h"
 #include "extensions/common/mojom/run_location.mojom-shared.h"
 #include "extensions/common/user_script.h"
 #include "extensions/renderer/script_injection.h"
 #include "extensions/renderer/user_script_set_manager.h"
-
-struct ExtensionMsg_ExecuteCode_Params;
 
 namespace content {
 class RenderFrame;
@@ -86,7 +85,7 @@ class ScriptInjectionManager : public UserScriptSetManager::Observer {
                    ScriptsRunInfo* scripts_run_info);
 
   // Handle the ExecuteCode extension message.
-  void HandleExecuteCode(const ExtensionMsg_ExecuteCode_Params& params,
+  void HandleExecuteCode(const mojom::ExecuteCodeParams& params,
                          content::RenderFrame* render_frame);
 
   // Handle the ExecuteDeclarativeScript extension message.

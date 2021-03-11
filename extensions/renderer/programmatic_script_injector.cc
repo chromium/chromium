@@ -14,6 +14,7 @@
 #include "extensions/common/extension_messages.h"
 #include "extensions/common/manifest_constants.h"
 #include "extensions/common/mojom/action_type.mojom-shared.h"
+#include "extensions/common/mojom/frame.mojom.h"
 #include "extensions/common/mojom/host_id.mojom.h"
 #include "extensions/common/permissions/api_permission.h"
 #include "extensions/common/permissions/permissions_data.h"
@@ -29,10 +30,8 @@
 namespace extensions {
 
 ProgrammaticScriptInjector::ProgrammaticScriptInjector(
-    const ExtensionMsg_ExecuteCode_Params& params)
-    : params_(new ExtensionMsg_ExecuteCode_Params(params)),
-      finished_(false) {
-}
+    mojom::ExecuteCodeParamsPtr params)
+    : params_(std::move(params)), finished_(false) {}
 
 ProgrammaticScriptInjector::~ProgrammaticScriptInjector() {
 }
@@ -179,10 +178,10 @@ void ProgrammaticScriptInjector::OnWillNotInject(
 }
 
 bool ProgrammaticScriptInjector::CanShowUrlInError() const {
-  if (params_->host_id.type != mojom::HostID::HostType::kExtensions)
+  if (params_->host_id->type != mojom::HostID::HostType::kExtensions)
     return false;
   const Extension* extension =
-      RendererExtensionRegistry::Get()->GetByID(params_->host_id.id);
+      RendererExtensionRegistry::Get()->GetByID(params_->host_id->id);
   if (!extension)
     return false;
   return extension->permissions_data()->active_permissions().HasAPIPermission(

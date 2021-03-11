@@ -20,7 +20,6 @@
 #include "extensions/common/user_script.h"
 
 class GURL;
-struct ExtensionMsg_ExecuteCode_Params;
 
 namespace content {
 class WebContents;
@@ -40,7 +39,7 @@ using ScriptsExecutedNotification = base::RepeatingCallback<
     void(content::WebContents*, const ExecutingScriptsMap&, const GURL&)>;
 
 // Interface for executing extension content scripts (e.g. executeScript) as
-// described by the ExtensionMsg_ExecuteCode_Params IPC, and notifying the
+// described by the mojom::ExecuteCodeParams IPC, and notifying the
 // caller when responded with ExtensionHostMsg_ExecuteCodeFinished.
 class ScriptExecutor {
  public:
@@ -97,8 +96,8 @@ class ScriptExecutor {
   using ScriptFinishedCallback =
       base::OnceCallback<void(std::vector<FrameResult> frame_results)>;
 
-  // Executes a script. The arguments match ExtensionMsg_ExecuteCode_Params in
-  // extension_messages.h (request_id is populated automatically).
+  // Executes a script. The arguments match mojom::ExecuteCodeParams in
+  // frame.mojom (request_id is populated automatically).
   //
   // The script will be executed in the frames identified by |frame_ids| (which
   // are extension API frame IDs). If |frame_scope| is INCLUDE_SUB_FRAMES,
@@ -130,7 +129,7 @@ class ScriptExecutor {
   }
 
  private:
-  // The next value to use for request_id in ExtensionMsg_ExecuteCode_Params.
+  // The next value to use for request_id in mojom::ExecuteCodeParams.
   int next_request_id_ = 0;
 
   content::WebContents* web_contents_;

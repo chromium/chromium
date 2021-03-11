@@ -55,13 +55,13 @@ class Handler : public content::WebContentsObserver {
 
   Handler(ScriptsExecutedOnceCallback observer,
           content::WebContents* web_contents,
-          const ExtensionMsg_ExecuteCode_Params& params,
+          const mojom::ExecuteCodeParams& params,
           ScriptExecutor::FrameScope scope,
           const std::vector<int>& frame_ids,
           ScriptExecutor::ScriptFinishedCallback callback)
       : content::WebContentsObserver(web_contents),
         observer_(std::move(observer)),
-        host_id_(params.host_id),
+        host_id_(params.host_id->type, params.host_id->id),
         request_id_(params.request_id),
         callback_(std::move(callback)) {
     for (int frame_id : frame_ids) {
@@ -183,7 +183,7 @@ class Handler : public content::WebContentsObserver {
 
   // Sends an ExecuteCode message to the given frame host, and increments
   // the number of pending messages.
-  void SendExecuteCode(const ExtensionMsg_ExecuteCode_Params& params,
+  void SendExecuteCode(const mojom::ExecuteCodeParams& params,
                        content::RenderFrameHost* frame) {
     DCHECK(frame->IsRenderFrameLive());
     DCHECK(base::Contains(pending_render_frames_, frame));
@@ -316,9 +316,9 @@ void ScriptExecutor::ExecuteScript(const mojom::HostID& host_id,
     CHECK(process_type == WEB_VIEW_PROCESS);
   }
 
-  ExtensionMsg_ExecuteCode_Params params;
+  mojom::ExecuteCodeParams params;
   params.request_id = next_request_id_++;
-  params.host_id = host_id;
+  params.host_id = mojom::HostID::New(host_id.type, host_id.id);
   params.action_type = action_type;
   params.code = code;
   params.match_about_blank = (about_blank == MATCH_ABOUT_BLANK);
