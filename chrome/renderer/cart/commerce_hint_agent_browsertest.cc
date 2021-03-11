@@ -40,12 +40,14 @@ cart_db::ChromeCartContentProto BuildProto(const char* domain,
   return proto;
 }
 
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
 void UnblockOnProfileCreation(base::RunLoop* run_loop,
                               Profile* profile,
                               Profile::CreateStatus status) {
   if (status == Profile::CREATE_STATUS_INITIALIZED)
     run_loop->Quit();
 }
+#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
 
 const char kMockExample[] = "walmart.com";
 const char kMockExampleURL[] = "https://www.walmart.com/cart";
