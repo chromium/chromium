@@ -604,6 +604,9 @@ const char kDisableArcCpuRestriction[] = "disable-arc-cpu-restriction";
 // for testing the policy behaviour on the DUT.
 const char kUpdateRequiredAueForTest[] = "aue-reached-for-update-required-test";
 
+// Enables configuring the OEM Device Requsition in the OOBE.
+const char kEnableRequisitionEdits[] = "enable-requisition-edits";
+
 bool MemoryPressureHandlingEnabled() {
   if (base::FieldTrialList::FindFullName(kMemoryPressureExperimentName) ==
       kMemoryPressureHandlingOff) {
@@ -681,6 +684,11 @@ bool IsAueReachedForUpdateRequiredForTest() {
 bool IsOOBEChromeVoxHintTimerDisabledForTesting() {
   return base::CommandLine::ForCurrentProcess()->HasSwitch(
       kDisableOOBEChromeVoxHintTimerForTesting);
+}
+
+bool IsDeviceRequisitionConfigurable() {
+  return base::CommandLine::ForCurrentProcess()->HasSwitch(
+      kEnableRequisitionEdits);
 }
 
 }  // namespace switches
