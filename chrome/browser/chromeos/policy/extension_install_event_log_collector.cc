@@ -518,12 +518,12 @@ ExtensionInstallEventLogCollector::~ExtensionInstallEventLogCollector() {
 void ExtensionInstallEventLogCollector::OnLoginInternal() {
   std::unique_ptr<em::ExtensionInstallReportLogEvent> event =
       CreateSessionChangeEvent(em::ExtensionInstallReportLogEvent::LOGIN);
-  if (chromeos::ProfileHelper::Get()->GetUserByProfile(profile_)) {
     extensions::InstallStageTracker::UserInfo user_info =
         extensions::InstallStageTracker::GetUserInfo(profile_);
-    event->set_user_type(ConvertUserTypeToProto(user_info.user_type));
-    event->set_is_new_user(user_info.is_new_user);
-  }
+    if (user_info.is_user_present) {
+      event->set_user_type(ConvertUserTypeToProto(user_info.user_type));
+      event->set_is_new_user(user_info.is_new_user);
+    }
   event->set_online(online_);
   delegate_->AddForAllExtensions(std::move(event));
 }

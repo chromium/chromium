@@ -278,6 +278,30 @@ void ReportDetailedFailureReasons(
             ->extensions_enabled());
   }
 }
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+// Report type of user in case Force Installed Extensions fail to
+// install only if there is a user corresponding to given profile.
+void ReportUserType(Profile* profile, bool is_stuck_in_initial_creation_stage) {
+  InstallStageTracker::UserInfo user_info =
+      InstallStageTracker::GetUserInfo(profile);
+  // There can be extensions on the login screen. There is no user on the login
+  // screen and thus we would not report in that case.
+  if (!user_info.is_user_present)
+    return;
+
+  ForceInstalledMetrics::UserType user_type = ConvertUserType(user_info);
+  base::UmaHistogramEnumeration("Extensions.ForceInstalledFailureSessionType",
+                                user_type);
+  if (is_stuck_in_initial_creation_stage) {
+    base::UmaHistogramEnumeration(
+        "Extensions.ForceInstalledFailureSessionType."
+        "ExtensionStuckInCreatedStage",
+        user_type);
+  }
+}
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
 }  // namespace
 
 ForceInstalledMetrics::ForceInstalledMetrics(
@@ -412,26 +436,13 @@ void ForceInstalledMetrics::ReportMetrics() {
     }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-    // Report type of user in case Force Installed Extensions fail to
-    // install only if there is a user corresponding to given profile. There can
-    // be extensions on the login screen. There is no user on the login screen
-    // and thus we would not report in that case.
-    if (chromeos::ProfileHelper::Get()->GetUserByProfile(profile_)) {
-      InstallStageTracker::UserInfo user_info =
-          InstallStageTracker::GetUserInfo(profile_);
-      ForceInstalledMetrics::UserType user_type = ConvertUserType(user_info);
-      base::UmaHistogramEnumeration(
-          "Extensions.ForceInstalledFailureSessionType", user_type);
-      if (failure_reason == FailureReason::IN_PROGRESS &&
-          installation.install_creation_stage ==
-              InstallStageTracker::InstallCreationStage::
-                  NOTIFIED_FROM_MANAGEMENT_INITIAL_CREATION_FORCED) {
-        base::UmaHistogramEnumeration(
-            "Extensions.ForceInstalledFailureSessionType."
-            "ExtensionStuckInCreatedStage",
-            user_type);
-      }
-    }
+    bool is_stuck_in_initial_creation_stage =
+        failure_reason == FailureReason::IN_PROGRESS &&
+        installation.install_stage == InstallStageTracker::Stage::CREATED &&
+        installation.install_creation_stage ==
+            InstallStageTracker::InstallCreationStage::
+                NOTIFIED_FROM_MANAGEMENT_INITIAL_CREATION_FORCED;
+    ReportUserType(profile_, is_stuck_in_initial_creation_stage);
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
     VLOG(2) << "Forced extension " << extension_id
             << " failed to install with data="

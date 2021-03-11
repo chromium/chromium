@@ -36,10 +36,14 @@ bool ShouldOverrideCurrentStage(
 }  // namespace
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
+InstallStageTracker::UserInfo::UserInfo() = default;
 InstallStageTracker::UserInfo::UserInfo(const UserInfo&) = default;
 InstallStageTracker::UserInfo::UserInfo(user_manager::UserType user_type,
-                                        bool is_new_user)
-    : user_type(user_type), is_new_user(is_new_user) {}
+                                        bool is_new_user,
+                                        bool is_user_present)
+    : user_type(user_type),
+      is_new_user(is_new_user),
+      is_user_present(is_user_present) {}
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 // InstallStageTracker::InstallationData implementation.
@@ -131,10 +135,12 @@ InstallStageTracker::UserInfo InstallStageTracker::GetUserInfo(
     Profile* profile) {
   const user_manager::User* user =
       chromeos::ProfileHelper::Get()->GetUserByProfile(profile);
-  DCHECK(user);
+  if (!user)
+    return UserInfo();
+
   bool is_new_user = user_manager::UserManager::Get()->IsCurrentUserNew() ||
                      profile->IsNewProfile();
-  UserInfo current_user(user->GetType(), is_new_user);
+  UserInfo current_user(user->GetType(), is_new_user, /*is_user_present=*/true);
   return current_user;
 }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
