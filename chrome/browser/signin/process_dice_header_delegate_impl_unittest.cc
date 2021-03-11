@@ -10,11 +10,13 @@
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
+#include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/signin/dice_tab_helper.h"
 #include "chrome/browser/signin/dice_web_signin_interceptor.h"
 #include "chrome/browser/signin/dice_web_signin_interceptor_factory.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/signin/identity_test_environment_profile_adaptor.h"
+#include "chrome/browser/ui/webui/signin/signin_ui_error.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "components/signin/public/base/account_consistency_method.h"
@@ -170,12 +172,11 @@ class ProcessDiceHeaderDelegateImplTest
   // Callback for the ProcessDiceHeaderDelegateImpl.
   void ShowSigninErrorCallback(Profile* profile,
                                content::WebContents* contents,
-                               const std::string& error_message,
-                               const std::string& email) {
+                               const SigninUIError& error) {
     EXPECT_EQ(profile, this->profile());
     EXPECT_EQ(web_contents(), contents);
-    EXPECT_EQ(auth_error_.ToString(), error_message);
-    EXPECT_EQ(email_, email);
+    EXPECT_EQ(base::UTF8ToUTF16(auth_error_.ToString()), error.message());
+    EXPECT_EQ(base::UTF8ToUTF16(email_), error.email());
     show_error_called_ = true;
   }
 

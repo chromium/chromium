@@ -6,9 +6,11 @@
 
 #include <tuple>
 
+#include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/grit/chromium_strings.h"
 #include "chrome/grit/generated_resources.h"
+#include "google_apis/gaia/google_service_auth_error.h"
 #include "ui/base/l10n/l10n_util.h"
 
 // static
@@ -60,6 +62,26 @@ SigninUIError SigninUIError::ProfileWasUsedByAnotherAccount(
                                  base::UTF8ToUTF16(last_email)));
 }
 
+// static
+SigninUIError SigninUIError::FromGoogleServiceAuthError(
+    const std::string& email,
+    const GoogleServiceAuthError& error) {
+  return SigninUIError(Type::kFromGoogleServiceAuthError, email,
+                       base::UTF8ToUTF16(error.ToString()));
+}
+
+#if defined(OS_WIN)
+// static
+SigninUIError SigninUIError::FromCredentialProviderUiExitCode(
+    const std::string& email,
+    credential_provider::UiExitCodes exit_code) {
+  SigninUIError error(Type::kFromCredentialProviderUiExitCode, email,
+                      base::NumberToString16(exit_code));
+  error.credential_provider_exit_code_ = exit_code;
+  return error;
+}
+#endif
+
 SigninUIError::SigninUIError(const SigninUIError& other) = default;
 SigninUIError& SigninUIError::operator=(const SigninUIError& other) = default;
 
@@ -84,10 +106,23 @@ const base::FilePath& SigninUIError::another_profile_path() const {
   return another_profile_path_;
 }
 
+#if defined(OS_WIN)
+credential_provider::UiExitCodes SigninUIError::credential_provider_exit_code()
+    const {
+  DCHECK(type() == Type::kFromCredentialProviderUiExitCode);
+  return credential_provider_exit_code_;
+}
+#endif
+
 bool SigninUIError::operator==(const SigninUIError& other) const {
-  return std::tie(type_, email_, message_, another_profile_path_) ==
-         std::tie(other.type_, other.email_, other.message_,
-                  other.another_profile_path_);
+  bool result = std::tie(type_, email_, message_, another_profile_path_) ==
+                std::tie(other.type_, other.email_, other.message_,
+                         other.another_profile_path_);
+#if defined(OS_WIN)
+  result = result && credential_provider_exit_code_ ==
+                         other.credential_provider_exit_code_;
+#endif
+  return result;
 }
 
 bool SigninUIError::operator!=(const SigninUIError& other) const {

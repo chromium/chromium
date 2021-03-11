@@ -98,8 +98,9 @@ TEST_F(LoginUIServiceTest, SetProfileBlockingErrorMessage) {
 
   service.SetProfileBlockingErrorMessage();
 
-  EXPECT_EQ(base::string16(), service.GetLastLoginResult());
-  EXPECT_EQ(base::string16(), service.GetLastLoginErrorEmail());
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
+  EXPECT_TRUE(service.GetLastLoginError().IsOk());
+#endif
   EXPECT_TRUE(service.IsDisplayingProfileBlockedErrorMessage());
 }
 

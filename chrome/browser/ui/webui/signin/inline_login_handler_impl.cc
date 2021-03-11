@@ -517,8 +517,10 @@ void InlineSigninHelper::CreateSyncStarter(const std::string& refresh_token) {
 
 void InlineSigninHelper::OnClientOAuthFailure(
     const GoogleServiceAuthError& error) {
-  if (handler_)
-    handler_->HandleLoginError(error.ToString(), base::string16());
+  if (handler_) {
+    handler_->HandleLoginError(
+        SigninUIError::FromGoogleServiceAuthError(email_, error));
+  }
 
   HandlerSigninReason reason = GetHandlerSigninReason(current_url_);
   if (reason != HandlerSigninReason::FETCH_LST_ONLY) {
@@ -750,8 +752,9 @@ void InlineLoginHandlerImpl::FinishCompleteLogin(
     credential_provider::UiExitCodes exit_code = ValidateSigninEmail(
         validate_gaia_id, email_domains, params.email, params.gaia_id);
     if (exit_code != credential_provider::kUiecSuccess) {
-      params.handler->HandleLoginError(base::NumberToString((int)exit_code),
-                                       base::UTF8ToUTF16(params.email));
+      params.handler->HandleLoginError(
+          SigninUIError::FromCredentialProviderUiExitCode(params.email,
+                                                          exit_code));
       return;
     } else {
       // Validation has already been done for GCPW, so clear the validate
@@ -769,9 +772,7 @@ void InlineLoginHandlerImpl::FinishCompleteLogin(
   if (validate_email == "1" && !default_email.empty()) {
     if (!gaia::AreEmailsSame(params.email, default_email)) {
       params.handler->HandleLoginError(
-          l10n_util::GetStringFUTF8(IDS_SYNC_WRONG_EMAIL,
-                                    base::UTF8ToUTF16(default_email)),
-          base::UTF8ToUTF16(params.email));
+          SigninUIError::WrongReauthAccount(params.email, default_email));
       return;
     }
   }
@@ -802,9 +803,7 @@ void InlineLoginHandlerImpl::FinishCompleteLogin(
         CanOfferSignin(profile, can_offer_for, params.gaia_id, params.email);
   }
   if (!can_offer_error.IsOk()) {
-    params.handler->HandleLoginError(
-        base::UTF16ToUTF8(can_offer_error.message()),
-        base::UTF8ToUTF16(params.email));
+    params.handler->HandleLoginError(can_offer_error);
     return;
   }
 
@@ -833,8 +832,7 @@ void InlineLoginHandlerImpl::FinishCompleteLogin(
   }
 }
 
-void InlineLoginHandlerImpl::HandleLoginError(const std::string& error_msg,
-                                              const base::string16& email) {
+void InlineLoginHandlerImpl::HandleLoginError(const SigninUIError& error) {
   content::WebContents* contents = web_ui()->GetWebContents();
   const GURL& current_url = contents->GetURL();
   HandlerSigninReason reason = GetHandlerSigninReason(current_url);
@@ -842,11 +840,12 @@ void InlineLoginHandlerImpl::HandleLoginError(const std::string& error_msg,
   if (reason == HandlerSigninReason::FETCH_LST_ONLY) {
     base::Value error_value(base::Value::Type::DICTIONARY);
 #if defined(OS_WIN)
-    // If the message is an integer error code, send it as part of the result.
-    int exit_code = 0;
-    if (base::StringToInt(error_msg, &exit_code)) {
+    // If the error contains an integer error code, send it as part of the
+    // result.
+    if (error.type() ==
+        SigninUIError::Type::kFromCredentialProviderUiExitCode) {
       error_value.SetKey(credential_provider::kKeyExitCode,
-                         base::Value(exit_code));
+                         base::Value(error.credential_provider_exit_code()));
     }
 #endif
     SendLSTFetchResultsMessage(error_value);
@@ -859,9 +858,9 @@ void InlineLoginHandlerImpl::HandleLoginError(const std::string& error_msg,
   if (profile->IsSystemProfile())
     profile = g_browser_process->profile_manager()->GetProfileByPath(
         ProfilePicker::GetForceSigninProfilePath());
-  if (!error_msg.empty()) {
-    LoginUIServiceFactory::GetForProfile(profile)->DisplayLoginResult(
-        browser, base::UTF8ToUTF16(error_msg), email);
+  if (!error.IsOk()) {
+    LoginUIServiceFactory::GetForProfile(profile)->DisplayLoginResult(browser,
+                                                                      error);
   }
 }
 

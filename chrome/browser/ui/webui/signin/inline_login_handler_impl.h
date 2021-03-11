@@ -28,6 +28,7 @@ class SharedURLLoaderFactory;
 }
 
 class Browser;
+class SigninUIError;
 
 // Implementation for the inline login WebUI handler on desktop Chrome. Once
 // CrOS migrates to the same webview approach as desktop Chrome, much of the
@@ -48,8 +49,7 @@ class InlineLoginHandlerImpl : public InlineLoginHandler {
   void SyncSetupFailed();
   // Closes the current tab.
   void CloseTab();
-  void HandleLoginError(const std::string& error_msg,
-                        const base::string16& email);
+  void HandleLoginError(const SigninUIError& error);
 
   // Calls the javascript function 'sendLSTFetchResults' with the given
   // base::Value result. This value will be passed to another

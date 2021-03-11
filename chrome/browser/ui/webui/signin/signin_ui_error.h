@@ -9,6 +9,13 @@
 
 #include "base/files/file_path.h"
 #include "base/strings/string16.h"
+#include "build/build_config.h"
+
+#if defined(OS_WIN)
+#include "chrome/credential_provider/common/gcp_strings.h"
+#endif
+
+class GoogleServiceAuthError;
 
 // Holds different sign-in error types along with error messages for displaying
 // in the UI.
@@ -23,6 +30,8 @@ class SigninUIError {
     kWrongReauthAccount,
     kAccountAlreadyUsedByAnotherProfile,
     kProfileWasUsedByAnotherAccount,
+    kFromGoogleServiceAuthError,
+    kFromCredentialProviderUiExitCode,
   };
 
   // Following static functions construct a `SigninUIError` with a corresponding
@@ -39,6 +48,14 @@ class SigninUIError {
   static SigninUIError ProfileWasUsedByAnotherAccount(
       const std::string& email,
       const std::string& last_email);
+  static SigninUIError FromGoogleServiceAuthError(
+      const std::string& email,
+      const GoogleServiceAuthError& error);
+#if defined(OS_WIN)
+  static SigninUIError FromCredentialProviderUiExitCode(
+      const std::string& email,
+      credential_provider::UiExitCodes exit_code);
+#endif
 
   SigninUIError(const SigninUIError& other);
   SigninUIError& operator=(const SigninUIError& other);
@@ -50,9 +67,15 @@ class SigninUIError {
   const base::string16& email() const;
   const base::string16& message() const;
 
-  // Should be called only if `type()` == //
+  // Should be called only if `type()` ==
   // `Type::kAccountAlreadyUsedByAnotherProfile`.
   const base::FilePath& another_profile_path() const;
+
+#if defined(OS_WIN)
+  // Should be called only if `type()` ==
+  // `Type::kFromCredentialProviderUiExitCode`.
+  credential_provider::UiExitCodes credential_provider_exit_code() const;
+#endif
 
   bool operator==(const SigninUIError& other) const;
   bool operator!=(const SigninUIError& other) const;
@@ -67,8 +90,14 @@ class SigninUIError {
   base::string16 email_;
   base::string16 message_;
 
-  // Defined only for Type::kAccountAlreadyUsedByAnotherProfile
+  // Defined only for Type::kAccountAlreadyUsedByAnotherProfile.
   base::FilePath another_profile_path_;
+
+#if defined(OS_WIN)
+  // Defined only for Type::kFromCredentialProviderUiExitCode.
+  credential_provider::UiExitCodes credential_provider_exit_code_ =
+      credential_provider::UiExitCodes::kUiecSuccess;
+#endif
 };
 
 #endif  // CHROME_BROWSER_UI_WEBUI_SIGNIN_SIGNIN_UI_ERROR_H_

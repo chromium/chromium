@@ -162,11 +162,10 @@ void SetCurrentDiceTurnSyncOnHelper(Profile* profile,
 
 // static
 void DiceTurnSyncOnHelper::Delegate::ShowLoginErrorForBrowser(
-    const base::string16& email,
-    const base::string16& error_message,
+    const SigninUIError& error,
     Browser* browser) {
   LoginUIServiceFactory::GetForProfile(browser->profile())
-      ->DisplayLoginResult(browser, error_message, email);
+      ->DisplayLoginResult(browser, error);
 }
 
 // static

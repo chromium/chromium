@@ -36,6 +36,7 @@
 #include "chrome/browser/ui/webui/signin/dice_turn_sync_on_helper.h"
 #include "chrome/browser/ui/webui/signin/login_ui_service.h"
 #include "chrome/browser/ui/webui/signin/login_ui_service_factory.h"
+#include "chrome/browser/ui/webui/signin/signin_ui_error.h"
 #include "chrome/common/url_constants.h"
 #include "components/account_manager_core/account_manager_facade.h"
 #include "components/signin/core/browser/account_reconcilor.h"
@@ -352,14 +353,13 @@ void CreateDiceTurnOnSyncHelper(Profile* profile,
 // Shows UI for signin errors.
 void ShowDiceSigninError(Profile* profile,
                          content::WebContents* web_contents,
-                         const std::string& error_message,
-                         const std::string& email) {
+                         const SigninUIError& error) {
   DCHECK(profile);
   Browser* browser = web_contents
                          ? chrome::FindBrowserWithWebContents(web_contents)
                          : chrome::FindBrowserWithProfile(profile);
-  LoginUIServiceFactory::GetForProfile(profile)->DisplayLoginResult(
-      browser, base::UTF8ToUTF16(error_message), base::UTF8ToUTF16(email));
+  LoginUIServiceFactory::GetForProfile(profile)->DisplayLoginResult(browser,
+                                                                    error);
 }
 
 void ProcessDiceHeader(

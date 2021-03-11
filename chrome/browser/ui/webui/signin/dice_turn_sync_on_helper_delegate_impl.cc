@@ -87,8 +87,7 @@ DiceTurnSyncOnHelperDelegateImpl::~DiceTurnSyncOnHelperDelegateImpl() {
 void DiceTurnSyncOnHelperDelegateImpl::ShowLoginError(
     const SigninUIError& error) {
   DCHECK(!error.IsOk());
-  DiceTurnSyncOnHelper::Delegate::ShowLoginErrorForBrowser(
-      error.email(), error.message(), browser_);
+  DiceTurnSyncOnHelper::Delegate::ShowLoginErrorForBrowser(error, browser_);
 }
 
 void DiceTurnSyncOnHelperDelegateImpl::ShowEnterpriseAccountConfirmation(

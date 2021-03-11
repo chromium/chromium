@@ -18,6 +18,7 @@
 #include "chrome/browser/ui/webui/signin/login_ui_service.h"
 #include "chrome/browser/ui/webui/signin/login_ui_service_factory.h"
 #include "chrome/browser/ui/webui/signin/signin_error_handler.h"
+#include "chrome/browser/ui/webui/signin/signin_ui_error.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/grit/browser_resources.h"
 #include "chrome/grit/generated_resources.h"
@@ -83,23 +84,24 @@ void SigninErrorUI::Initialize(Browser* browser, bool is_system_profile) {
   // Retrieve the last signin error message and email used.
   LoginUIService* login_ui_service =
       LoginUIServiceFactory::GetForProfile(signin_profile);
-  const base::string16 last_login_result(
-      login_ui_service->GetLastLoginResult());
-  const base::string16 email = login_ui_service->GetLastLoginErrorEmail();
+  const SigninUIError last_login_error = login_ui_service->GetLastLoginError();
   const bool is_profile_blocked =
       login_ui_service->IsDisplayingProfileBlockedErrorMessage();
   if (is_profile_blocked) {
     source->AddLocalizedString("signinErrorTitle",
                                IDS_OLD_PROFILES_DISABLED_TITLE);
-  } else if (email.empty()) {
+  } else if (last_login_error.email().empty()) {
+    // TODO(https://crbug.com/1133189): investigate whether an empty email
+    // string is ever passed and possibly add a DCHECK.
     source->AddLocalizedString("signinErrorTitle", IDS_SIGNIN_ERROR_TITLE);
   } else {
     int title_string_id =
         AccountConsistencyModeManager::IsDiceEnabledForProfile(signin_profile)
             ? IDS_SIGNIN_ERROR_DICE_EMAIL_TITLE
             : IDS_SIGNIN_ERROR_EMAIL_TITLE;
-    source->AddString("signinErrorTitle",
-                      l10n_util::GetStringFUTF16(title_string_id, email));
+    source->AddString(
+        "signinErrorTitle",
+        l10n_util::GetStringFUTF16(title_string_id, last_login_error.email()));
   }
 
   source->AddString("signinErrorMessage", base::string16());
@@ -131,35 +133,25 @@ void SigninErrorUI::Initialize(Browser* browser, bool is_system_profile) {
     source->AddLocalizedString("profileBlockedRemoveProfileSuggestion",
                                IDS_OLD_PROFILES_DISABLED_REMOVED_OLD_PROFILE);
   } else if (!is_system_profile &&
-             last_login_result.compare(l10n_util::GetStringUTF16(
-                 IDS_SYNC_USER_NAME_IN_USE_ERROR)) == 0) {
-    ProfileManager* profile_manager = g_browser_process->profile_manager();
-    if (profile_manager) {
-      std::vector<ProfileAttributesEntry*> entries =
-          profile_manager->GetProfileAttributesStorage()
-              .GetAllProfilesAttributes();
-      DCHECK(!email.empty());
-      for (const ProfileAttributesEntry* entry : entries) {
-        if (!entry->IsAuthenticated())
-          continue;
-
-        if (gaia::AreEmailsSame(base::UTF16ToUTF8(email),
-                                base::UTF16ToUTF8(entry->GetUserName()))) {
-          handler->set_duplicate_profile_path(entry->GetPath());
-          existing_name = entry->GetName();
-        }
-      }
-    }
-    DCHECK(!existing_name.empty());
-    source->AddString(
-        "signinErrorMessage",
-        l10n_util::GetStringFUTF16(IDS_SYNC_USER_NAME_IN_USE_BY_ERROR,
-                                   existing_name));
+             last_login_error.type() ==
+                 SigninUIError::Type::kAccountAlreadyUsedByAnotherProfile) {
+    ProfileAttributesEntry* entry =
+        g_browser_process->profile_manager()
+            ->GetProfileAttributesStorage()
+            .GetProfileAttributesWithPath(
+                last_login_error.another_profile_path());
+    DCHECK(entry);
+    DCHECK(entry->IsAuthenticated());
+    handler->set_duplicate_profile_path(entry->GetPath());
+    existing_name = entry->GetName();
+    source->AddString("signinErrorMessage",
+                      l10n_util::GetStringFUTF16(
+                          IDS_SYNC_USER_NAME_IN_USE_BY_ERROR, existing_name));
     // Elide the existing name for the switch user button label.
     existing_name =
         gfx::TruncateString(existing_name, 10, gfx::CHARACTER_BREAK);
   } else {
-    source->AddString("signinErrorMessage", last_login_result);
+    source->AddString("signinErrorMessage", last_login_error.message());
   }
 
   // Add button label strings.

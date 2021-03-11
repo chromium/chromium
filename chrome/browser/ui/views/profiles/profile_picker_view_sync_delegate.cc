@@ -107,10 +107,10 @@ void ProfilePickerViewSyncDelegate::ShowLoginError(const SigninUIError& error) {
   // this account, we should likely auto-delete the profile and offer to either
   // switch or to start sign-in once again.
   std::move(open_browser_callback_)
-      .Run(base::BindOnce(
-               &DiceTurnSyncOnHelper::Delegate::ShowLoginErrorForBrowser,
-               error.email(), error.message()),
-           /*enterprise_sync_consent_needed=*/false);
+      .Run(
+          base::BindOnce(
+              &DiceTurnSyncOnHelper::Delegate::ShowLoginErrorForBrowser, error),
+          /*enterprise_sync_consent_needed=*/false);
 }
 
 void ProfilePickerViewSyncDelegate::ShowMergeSyncDataConfirmation(

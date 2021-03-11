@@ -117,13 +117,10 @@ class DiceTurnSyncOnHelper
     // Informs the delegate that the flow is switching to a new profile.
     virtual void SwitchToProfile(Profile* new_profile) = 0;
 
-    // Shows the login error with `error_message` and `email` for `browser`.
+    // Shows the `error` for `browser`.
     // This helper is static because in some cases it needs to be called
     // after this object gets destroyed.
-    // TODO(crbug.com/1133189): Replace `email` and `error_message` with a
-    // `SigninUIError`.
-    static void ShowLoginErrorForBrowser(const base::string16& email,
-                                         const base::string16& error_message,
+    static void ShowLoginErrorForBrowser(const SigninUIError& error,
                                          Browser* browser);
 
     // Shows the enterprise account confirmation dialog with `email` for
