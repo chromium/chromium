@@ -41,22 +41,25 @@ class FeedbackHelper {
     // user submit a feedback.
     return new Promise(
         resolve => cr.sendWithPromise('getFeedbackInfo')
-                       .then(resolve, resolve({
-                               assistantDebugInfoAllowed: false,
-                               attachedFile: undefined,
-                               attachedFileBlobUuid: undefined,
-                               categoryTag: undefined,
-                               description: undefined,
-                               descriptionPlaceholder: undefined,
-                               email: undefined,
-                               flow: 'regular',
-                               fromAssistant: false,
-                               includeBluetoothLogs: false,
-                               pageUrl: undefined,
-                               screenshot: {},
-                               systemInformation: [],
-                               useSystemWindowFrame: false,
-                             })));
+                       .then(info => resolve(info))
+                       .catch(() => {
+                         resolve({
+                           assistantDebugInfoAllowed: false,
+                           attachedFile: undefined,
+                           attachedFileBlobUuid: undefined,
+                           categoryTag: undefined,
+                           description: undefined,
+                           descriptionPlaceholder: undefined,
+                           email: undefined,
+                           flow: 'regular',
+                           fromAssistant: false,
+                           includeBluetoothLogs: false,
+                           pageUrl: undefined,
+                           screenshot: {},
+                           systemInformation: [],
+                           useSystemWindowFrame: false,
+                         });
+                       }));
   }
 
   getSystemInformation() {
