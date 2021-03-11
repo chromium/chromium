@@ -91,6 +91,13 @@ std::unique_ptr<PolicyContainerPolicies> PolicyContainerPolicies::Clone()
       mojo::Clone(content_security_policies));
 }
 
+void PolicyContainerPolicies::AddContentSecurityPolicies(
+    std::vector<network::mojom::ContentSecurityPolicyPtr> policies) {
+  content_security_policies.insert(content_security_policies.end(),
+                                   std::make_move_iterator(policies.begin()),
+                                   std::make_move_iterator(policies.end()));
+}
+
 PolicyContainerHost::PolicyContainerHost()
     : PolicyContainerHost(std::make_unique<PolicyContainerPolicies>()) {}
 
@@ -133,10 +140,7 @@ void PolicyContainerHost::SetReferrerPolicy(
 void PolicyContainerHost::AddContentSecurityPolicies(
     std::vector<network::mojom::ContentSecurityPolicyPtr>
         content_security_policies) {
-  policies_->content_security_policies.insert(
-      policies_->content_security_policies.end(),
-      std::make_move_iterator(content_security_policies.begin()),
-      std::make_move_iterator(content_security_policies.end()));
+  policies_->AddContentSecurityPolicies(std::move(content_security_policies));
 }
 
 blink::mojom::PolicyContainerPtr

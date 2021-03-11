@@ -1190,12 +1190,27 @@ class CONTENT_EXPORT NavigationRequest
   // NavigationRequest is in.
   NavigationControllerImpl* GetNavigationController();
 
+  // Computes the PolicyContainerPolicies and the sandbox flags to use for
+  // committing a regular document.
+  // Called when the response to commit is known.
+  void ComputePoliciesToCommit();
+
+  // Computes the PolicyContainerPolicies and the sandbox flags to use for
+  // committing an error document.
+  //
+  // Note:
+  // |ComputePoliciesToCommit()| can be followed by
+  // |ComputePoliciesToCommitForErrorPage()|. This happens when the decision to
+  // commit an error document happens after receiving the regular document's
+  // response.
+  void ComputePoliciesToCommitForError();
+
   // Compute the sandbox policy of the document to be loaded. This is called
   // once the final response is known. It is based on the current FramePolicy,
   // the response's CSP and the embedder's HTMLIframeElement.csp.
   void ComputeSandboxFlagsToCommit(
       const network::mojom::URLResponseHead* response_head,
-      network::mojom::ContentSecurityPolicy* required_csp);
+      const network::mojom::ContentSecurityPolicy* required_csp);
 
   // DCHECK that tranistioning from the current state to |state| valid. This
   // does nothing in non-debug builds.

@@ -35,6 +35,10 @@ struct CONTENT_EXPORT PolicyContainerPolicies {
   // pointer.
   std::unique_ptr<PolicyContainerPolicies> Clone() const;
 
+  // Helper function to append items to `content_security_policies`.
+  void AddContentSecurityPolicies(
+      std::vector<network::mojom::ContentSecurityPolicyPtr> policies);
+
   // The referrer policy for the associated document. If not overwritten via a
   // call to SetReferrerPolicy (for example after parsing the Referrer-Policy
   // header or a meta tag), the default referrer policy will be applied to the

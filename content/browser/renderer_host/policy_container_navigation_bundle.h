@@ -31,9 +31,12 @@ class RenderFrameHostImpl;
 // Setters can be called as the navigation progresses to record interesting
 // properties for later.
 //
-// At ready-to-commit time, |FinalizePolicies()| or |FinalizePoliciesForError()|
-// can be called to set the final policies of the new document and create a new
-// policy container host.
+// When the potential response to commit is known, |ComputePolicies()| can be
+// called to set the final polices of the new document and create a new policy
+// container host.
+// For error documents, |ComputePoliciesForError()| should be used instead. It
+// can also be called after |ComputePolicies()| in some cases when the error is
+// only detected after receiving a response
 //
 // At commit time, |TakePolicyContainerHost()| can be called to transfer
 // ownership of the policy container host to the target RenderFrameHostImpl.
@@ -78,20 +81,26 @@ class CONTENT_EXPORT PolicyContainerNavigationBundle {
 
   // Sets the IP address space of the delivered policies of the new document.
   //
-  // This instance must not be finalized.
+  // This must be called before |ComputePolicies()|.
   void SetIPAddressSpace(network::mojom::IPAddressSpace address_space);
 
   // Sets whether the origin of the document being navigated to is
   // potentially-trustworthy, as defined in:
   // https://w3c.github.io/webappsec-secure-contexts/#is-origin-trustworthy.
   //
-  // This instance must not be frozen.
+  // This must be called before |ComputePolicies()|.
   void SetIsOriginPotentiallyTrustworthy(bool value);
+
+  // Records an additional Content Security Policy that will apply to the new
+  // document. |policy| must not be null. Policies added this way are ignored
+  // for failed navigations and history navigations.
+  void AddContentSecurityPolicy(
+      network::mojom::ContentSecurityPolicyPtr policy);
 
   // Returns the delivered policies, as set so far by:
   //
   //  - |SetIPAddressSpace()| for |ip_address_space|
-  //  - |SetIsOriginPotentiallyTrustworthy()| and |FinalizePolicies()| for
+  //  - |SetIsOriginPotentiallyTrustworthy()| and |ComputePolicies()| for
   //    |is_web_secure_context|
   //
   // TODO(titouan): Consider exposing individual accessors instead, since the
@@ -102,9 +111,9 @@ class CONTENT_EXPORT PolicyContainerNavigationBundle {
   // Sets final policies to defaults suitable for error pages, and builds a
   // policy container host.
   //
-  // This method must only be called once, and is mutually exclusive with
-  // |FinalizePolicies()|.
-  void FinalizePoliciesForError();
+  // This method must only be called once. However it can be called after
+  // |ComputePolicies()|.
+  void ComputePoliciesForError();
 
   // Sets final policies to their correct values and builds a policy container
   // host.
@@ -114,56 +123,59 @@ class CONTENT_EXPORT PolicyContainerNavigationBundle {
   //
   // Also sets |DeliveredPolicies().is_web_secure_context| to its final value.
   //
-  // This method must only be called once, and is mutually exclusive with
-  // |FinalizePoliciesForError()|.
-  void FinalizePolicies(const GURL& url);
+  // This method must only be called once. |ComputePoliciesForError()| may be
+  // called later and this override the final policies.
+  void ComputePolicies(const GURL& url);
 
   // Returns a reference to the policies of the new document, i.e. the policies
   // in the policy container host to be committed.
   //
-  // This instance must be finalized.
+  // |ComputePolicies()| or |ComputePoliciesForError()| must have been called
+  // previously.
   const PolicyContainerPolicies& FinalPolicies() const;
 
   // Creates a PolicyContainer connected to this bundle's PolicyContainerHost.
   //
-  // Should only be called once. This instance must be finalized.
+  // Should only be called once. |ComputePolicies()| or
+  // |ComputePoliciesForError()| must have been called previously.
   blink::mojom::PolicyContainerPtr CreatePolicyContainerForBlink();
 
   // Moves the PolicyContainerHost out of this bundle. The returned host
   // contains the same policies as |FinalPolicies()|.
   //
-  // This instance must be finalized.
+  // |ComputePolicies()| or |ComputePoliciesForError()| must have been called
+  // previously.
   scoped_refptr<PolicyContainerHost> TakePolicyContainerHost() &&;
 
  private:
-  // Whether either of |FinalizePolicies()| or |FinalizePoliciesForError()| has
+  // Whether either of |ComputePolicies()| or |ComputePoliciesForError()| has
   // been called yet.
-  bool IsFinalized() const;
+  bool HasComputedPolicies() const;
 
   // Sets |delivered_policies_.is_web_secure_context| to its final value.
   //
-  // Helper for |FreezeFinalPolicies()|.
-  void FinalizeIsWebSecureContext();
+  // Helper for |ComputePolicies()|.
+  void ComputeIsWebSecureContext();
 
   // Sets |host_|.
   void SetFinalPolicies(std::unique_ptr<PolicyContainerPolicies> policies);
 
   // The policies of the parent document, if any.
-  std::unique_ptr<PolicyContainerPolicies> parent_policies_;
+  const std::unique_ptr<PolicyContainerPolicies> parent_policies_;
 
   // The policies of the document that initiated the navigation, if any.
-  std::unique_ptr<PolicyContainerPolicies> initiator_policies_;
+  const std::unique_ptr<PolicyContainerPolicies> initiator_policies_;
 
   // The policies restored from the history navigation entry, if any.
-  std::unique_ptr<PolicyContainerPolicies> history_policies_;
+  const std::unique_ptr<PolicyContainerPolicies> history_policies_;
 
   // The policies extracted from the response as it is loaded.
   //
   // See the comment on |SetIsOriginPotentiallyTrustworthy()| regarding this
   // member's |is_web_secure_context| field.
-  std::unique_ptr<PolicyContainerPolicies> delivered_policies_;
+  const std::unique_ptr<PolicyContainerPolicies> delivered_policies_;
 
-  // Nullptr until |FinalizePolicies()| or |FinalizePoliciesForError()| is
+  // Nullptr until |ComputePolicies()| or |ComputePoliciesForError()| is
   // called, then moved from by |TakePolicyContainerHost()|.
   scoped_refptr<PolicyContainerHost> host_;
 };

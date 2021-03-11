@@ -9,6 +9,7 @@
 
 #include "base/files/file_path.h"
 #include "base/test/bind.h"
+#include "base/test/gtest_util.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/test/navigation_simulator.h"
 #include "content/test/test_render_view_host.h"
@@ -27,6 +28,7 @@ using ::testing::Eq;
 using ::testing::IsNull;
 using ::testing::NotNull;
 using ::testing::Pointee;
+using ::testing::SizeIs;
 
 // Returns non-default policies for use in tests.
 std::unique_ptr<PolicyContainerPolicies> MakeTestPolicies() {
@@ -107,7 +109,7 @@ TEST_F(PolicyContainerNavigationBundleTest, SetIsOriginPotentiallyTrustworthy) {
 // and are equal to the policies of the bundle's policy container host.
 TEST_F(PolicyContainerNavigationBundleTest, DefaultFinalPolicies) {
   PolicyContainerNavigationBundle bundle(nullptr, nullptr, nullptr);
-  bundle.FinalizePolicies(GURL());
+  bundle.ComputePolicies(GURL());
 
   PolicyContainerPolicies expected_policies;
   EXPECT_EQ(bundle.FinalPolicies(), expected_policies);
@@ -126,7 +128,7 @@ TEST_F(PolicyContainerNavigationBundleTest, FinalPoliciesNormalUrl) {
   bundle.SetIPAddressSpace(network::mojom::IPAddressSpace::kPublic);
   std::unique_ptr<PolicyContainerPolicies> delivered_policies =
       bundle.DeliveredPolicies().Clone();
-  bundle.FinalizePolicies(GURL("https://foo.test"));
+  bundle.ComputePolicies(GURL("https://foo.test"));
 
   EXPECT_EQ(bundle.FinalPolicies(), *delivered_policies);
 }
@@ -137,7 +139,7 @@ TEST_F(PolicyContainerNavigationBundleTest,
        FinalPoliciesAboutBlankWithoutInitiator) {
   PolicyContainerNavigationBundle bundle(nullptr, nullptr, nullptr);
   bundle.SetIPAddressSpace(network::mojom::IPAddressSpace::kPublic);
-  bundle.FinalizePolicies(AboutBlankUrl());
+  bundle.ComputePolicies(AboutBlankUrl());
 
   EXPECT_EQ(bundle.FinalPolicies(), PolicyContainerPolicies());
 }
@@ -146,7 +148,7 @@ TEST_F(PolicyContainerNavigationBundleTest,
 TEST_F(PolicyContainerNavigationBundleTest, DefaultFinalPoliciesForErrorPage) {
   PolicyContainerNavigationBundle bundle(nullptr, nullptr, nullptr);
 
-  bundle.FinalizePoliciesForError();
+  bundle.ComputePoliciesForError();
 
   // Error pages commit with default policies, mostly ignoring the delivered
   // policies and the document's URL.
@@ -159,11 +161,41 @@ TEST_F(PolicyContainerNavigationBundleTest, ErrorPageIPAddressSpace) {
   PolicyContainerNavigationBundle bundle(nullptr, nullptr, nullptr);
 
   bundle.SetIPAddressSpace(network::mojom::IPAddressSpace::kPublic);
-  bundle.FinalizePoliciesForError();
+  bundle.ComputePoliciesForError();
 
   PolicyContainerPolicies expected_policies;
   expected_policies.ip_address_space = network::mojom::IPAddressSpace::kPublic;
   EXPECT_EQ(bundle.FinalPolicies(), expected_policies);
+}
+
+// Variation of: PolicyContainerNavigationBundleTest.ErrorPageIPAddressSpace
+// The decision to commit an error happens after receiving the response.
+TEST_F(PolicyContainerNavigationBundleTest,
+       ErrorPageIPAddressSpaceAfterResponse) {
+  PolicyContainerNavigationBundle bundle(nullptr, nullptr, nullptr);
+
+  bundle.SetIPAddressSpace(network::mojom::IPAddressSpace::kPrivate);
+  PolicyContainerPolicies expected_policies;
+  expected_policies.ip_address_space = network::mojom::IPAddressSpace::kPrivate;
+
+  bundle.ComputePolicies(GURL("https://foo.test"));
+  EXPECT_EQ(bundle.FinalPolicies(), expected_policies);
+
+  bundle.ComputePoliciesForError();
+  EXPECT_EQ(bundle.FinalPolicies(), expected_policies);
+}
+
+// CSP delivered by the HTTP response are ignored for error document.
+TEST_F(PolicyContainerNavigationBundleTest,
+       DeliveredCSPIgnoredForErrorDocument) {
+  PolicyContainerNavigationBundle bundle(nullptr, nullptr, nullptr);
+  bundle.AddContentSecurityPolicy(network::mojom::ContentSecurityPolicy::New());
+
+  bundle.ComputePolicies(GURL("https://foo.test"));
+  EXPECT_THAT(bundle.FinalPolicies().content_security_policies, SizeIs(1));
+
+  bundle.ComputePoliciesForError();
+  EXPECT_THAT(bundle.FinalPolicies().content_security_policies, SizeIs(0));
 }
 
 // Verifies that InitiatorPolicies() returns nullptr in the absence of an
@@ -209,7 +241,7 @@ TEST_F(PolicyContainerNavigationBundleTest,
   // Force implicit conversion from LocalFrameToken to UnguessableToken.
   const blink::LocalFrameToken& token = initiator->GetFrameToken();
   PolicyContainerNavigationBundle bundle(nullptr, &token, nullptr);
-  bundle.FinalizePolicies(AboutBlankUrl());
+  bundle.ComputePolicies(AboutBlankUrl());
 
   EXPECT_EQ(bundle.FinalPolicies(), *initiator_policies);
 }
@@ -244,7 +276,7 @@ TEST_F(PolicyContainerNavigationBundleTest,
   parent->SetPolicyContainerHost(NewHost(parent_policies->Clone()));
 
   PolicyContainerNavigationBundle bundle(parent, nullptr, nullptr);
-  bundle.FinalizePolicies(AboutSrcdocUrl());
+  bundle.ComputePolicies(AboutSrcdocUrl());
 
   EXPECT_EQ(bundle.FinalPolicies(), *parent_policies);
 }
@@ -261,7 +293,7 @@ TEST_F(PolicyContainerNavigationBundleTest,
       bundle.DeliveredPolicies().Clone();
   EXPECT_TRUE(delivered_policies->is_web_secure_context);
 
-  bundle.FinalizePolicies(GURL());
+  bundle.ComputePolicies(GURL());
 
   EXPECT_EQ(bundle.FinalPolicies(), *delivered_policies);
 }
@@ -278,7 +310,7 @@ TEST_F(PolicyContainerNavigationBundleTest,
       bundle.DeliveredPolicies().Clone();
   EXPECT_FALSE(delivered_policies->is_web_secure_context);
 
-  bundle.FinalizePolicies(GURL());
+  bundle.ComputePolicies(GURL());
 
   EXPECT_EQ(bundle.FinalPolicies(), *delivered_policies);
 }
@@ -297,7 +329,7 @@ TEST_F(PolicyContainerNavigationBundleTest,
 
   bundle.SetIsOriginPotentiallyTrustworthy(true);
 
-  bundle.FinalizePolicies(GURL("https://foo.test"));
+  bundle.ComputePolicies(GURL("https://foo.test"));
 
   EXPECT_FALSE(bundle.FinalPolicies().is_web_secure_context);
 }
@@ -320,7 +352,7 @@ TEST_F(PolicyContainerNavigationBundleTest,
       bundle.DeliveredPolicies().Clone();
   EXPECT_FALSE(delivered_policies->is_web_secure_context);
 
-  bundle.FinalizePolicies(GURL("http://foo.test"));
+  bundle.ComputePolicies(GURL("http://foo.test"));
 
   EXPECT_EQ(bundle.FinalPolicies(), *delivered_policies);
 }
@@ -343,9 +375,66 @@ TEST_F(PolicyContainerNavigationBundleTest,
       bundle.DeliveredPolicies().Clone();
   EXPECT_TRUE(delivered_policies->is_web_secure_context);
 
-  bundle.FinalizePolicies(GURL("https://foo.test"));
+  bundle.ComputePolicies(GURL("https://foo.test"));
 
   EXPECT_EQ(bundle.FinalPolicies(), *delivered_policies);
+}
+
+// Calling ComputePolicies() twice triggers a DCHECK.
+TEST_F(PolicyContainerNavigationBundleTest, ComputePoliciesTwiceDCHECK) {
+  PolicyContainerNavigationBundle bundle(nullptr, nullptr, nullptr);
+  GURL url("https://foo.test");
+  bundle.ComputePolicies(url);
+  EXPECT_DCHECK_DEATH(bundle.ComputePolicies(url));
+}
+
+// Calling ComputePolicies() followed by ComputePoliciesForError() is
+// supported.
+TEST_F(PolicyContainerNavigationBundleTest, ComputePoliciesThenError) {
+  PolicyContainerNavigationBundle bundle(nullptr, nullptr, nullptr);
+  bundle.ComputePolicies(GURL("https://foo.test"));
+  bundle.ComputePoliciesForError();
+}
+
+// After ComputePolicies() or ComputePoliciesForError(), the initiator
+// policies are still accessible.
+TEST_F(PolicyContainerNavigationBundleTest,
+       AccessInitiatorAfterComputingPolicies) {
+  std::unique_ptr<PolicyContainerPolicies> initiator_policies =
+      MakeTestPolicies();
+  TestRenderFrameHost* initiator = contents()->GetMainFrame();
+  initiator->SetPolicyContainerHost(NewHost(initiator_policies->Clone()));
+  const blink::LocalFrameToken& token = initiator->GetFrameToken();
+
+  PolicyContainerNavigationBundle bundle(nullptr, &token, nullptr);
+  EXPECT_THAT(bundle.InitiatorPolicies(),
+              Pointee(Eq(ByRef(*initiator_policies))));
+
+  bundle.ComputePolicies(GURL("https://foo.test"));
+  EXPECT_THAT(bundle.InitiatorPolicies(),
+              Pointee(Eq(ByRef(*initiator_policies))));
+
+  bundle.ComputePoliciesForError();
+  EXPECT_THAT(bundle.InitiatorPolicies(),
+              Pointee(Eq(ByRef(*initiator_policies))));
+}
+
+// After ComputePolicies() or ComputePoliciesForError(), the parent
+// policies are still accessible.
+TEST_F(PolicyContainerNavigationBundleTest,
+       AccessParentAfterComputingPolicies) {
+  std::unique_ptr<PolicyContainerPolicies> parent_policies = MakeTestPolicies();
+  TestRenderFrameHost* parent = contents()->GetMainFrame();
+  parent->SetPolicyContainerHost(NewHost(parent_policies->Clone()));
+
+  PolicyContainerNavigationBundle bundle(parent, nullptr, nullptr);
+  EXPECT_THAT(bundle.ParentPolicies(), Pointee(Eq(ByRef(*parent_policies))));
+
+  bundle.ComputePolicies(GURL("https://foo.test"));
+  EXPECT_THAT(bundle.ParentPolicies(), Pointee(Eq(ByRef(*parent_policies))));
+
+  bundle.ComputePoliciesForError();
+  EXPECT_THAT(bundle.ParentPolicies(), Pointee(Eq(ByRef(*parent_policies))));
 }
 
 }  // namespace

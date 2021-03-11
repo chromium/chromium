@@ -142,7 +142,7 @@ IN_PROC_BROWSER_TEST_F(PolicyContainerNavigationBundleBrowserTest,
   PolicyContainerNavigationBundle bundle(nullptr, nullptr, nullptr);
   bundle.SetIPAddressSpace(network::mojom::IPAddressSpace::kPublic);
 
-  bundle.FinalizePolicies(GURL());
+  bundle.ComputePolicies(GURL());
 
   // This must be called on a task runner, hence the need for this test to be
   // a browser test and not a simple unit test.
@@ -186,7 +186,7 @@ IN_PROC_BROWSER_TEST_F(PolicyContainerNavigationBundleBrowserTest,
 
   std::unique_ptr<PolicyContainerPolicies> history_policies =
       bundle.HistoryPolicies()->Clone();
-  bundle.FinalizePolicies(AboutBlankUrl());
+  bundle.ComputePolicies(AboutBlankUrl());
 
   EXPECT_EQ(bundle.FinalPolicies(), *history_policies);
 }
@@ -225,7 +225,7 @@ IN_PROC_BROWSER_TEST_F(PolicyContainerNavigationBundleBrowserTest,
 
   std::unique_ptr<PolicyContainerPolicies> history_policies =
       bundle.HistoryPolicies()->Clone();
-  bundle.FinalizePolicies(AboutSrcdocUrl());
+  bundle.ComputePolicies(AboutSrcdocUrl());
 
   EXPECT_EQ(bundle.FinalPolicies(), *history_policies);
 }
@@ -244,10 +244,35 @@ IN_PROC_BROWSER_TEST_F(PolicyContainerNavigationBundleBrowserTest,
   PolicyContainerNavigationBundle bundle(
       nullptr, nullptr, GetLastCommittedFrameNavigationEntry());
 
-  bundle.FinalizePoliciesForError();
+  bundle.ComputePoliciesForError();
 
   // Error pages commit with default policies, ignoring the history policies.
   EXPECT_EQ(bundle.FinalPolicies(), PolicyContainerPolicies());
+}
+
+// After |ComputePolicies()| or |ComputePoliciesForError()|, the history
+// policies are still accessible.
+IN_PROC_BROWSER_TEST_F(PolicyContainerNavigationBundleBrowserTest,
+                       AccessHistoryAfterComputingPolicies) {
+  // First navigate to a local scheme with non-default policies. To do that, we
+  // first navigate to a document with a public address space, then have that
+  // document navigate itself to `about:blank`. The final blank document
+  // inherits its policies from the first document, and stores them in its
+  // frame navigation entry for restoring later.
+  EXPECT_TRUE(NavigateToURL(shell()->web_contents(), PublicUrl()));
+  EXPECT_TRUE(NavigateToURLFromRenderer(root_frame_host(), AboutBlankUrl()));
+
+  PolicyContainerNavigationBundle bundle(
+      nullptr, nullptr, GetLastCommittedFrameNavigationEntry());
+
+  std::unique_ptr<PolicyContainerPolicies> history_policies =
+      bundle.HistoryPolicies()->Clone();
+
+  bundle.ComputePolicies(AboutBlankUrl());
+  EXPECT_THAT(bundle.HistoryPolicies(), Pointee(Eq(ByRef(*history_policies))));
+
+  bundle.ComputePoliciesForError();
+  EXPECT_THAT(bundle.HistoryPolicies(), Pointee(Eq(ByRef(*history_policies))));
 }
 
 }  // namespace
