@@ -338,7 +338,7 @@ class CONTENT_EXPORT WebContentsDelegate {
       const GURL& opener_url,
       const std::string& frame_name,
       const GURL& target_url,
-      const std::string& partition_id,
+      const StoragePartitionId& partition_id,
       SessionStorageNamespace* session_storage_namespace);
 
   // Notifies the delegate about the creation of a new WebContents. This

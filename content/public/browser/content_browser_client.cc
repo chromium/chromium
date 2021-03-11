@@ -512,21 +512,11 @@ bool ContentBrowserClient::ShouldUseGmsCoreGeolocationProvider() {
 }
 #endif
 
-std::string ContentBrowserClient::GetStoragePartitionIdForSite(
+StoragePartitionId ContentBrowserClient::GetStoragePartitionIdForSite(
     BrowserContext* browser_context,
     const GURL& site) {
   DCHECK(browser_context);
-  return std::string();
-}
-
-bool ContentBrowserClient::IsValidStoragePartitionId(
-    BrowserContext* browser_context,
-    const std::string& partition_id) {
-  DCHECK(browser_context);
-
-  // Since the GetStoragePartitionIdForChildProcess() only generates empty
-  // strings, we should only ever see empty strings coming back.
-  return partition_id.empty();
+  return StoragePartitionId();
 }
 
 StoragePartitionConfig ContentBrowserClient::GetStoragePartitionConfigForSite(

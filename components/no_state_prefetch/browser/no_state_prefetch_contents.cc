@@ -266,11 +266,9 @@ std::unique_ptr<WebContents> NoStatePrefetchContents::CreateWebContents(
     SessionStorageNamespace* session_storage_namespace) {
   // TODO(ajwong): Remove the temporary map once prerendering is aware of
   // multiple session storage namespaces per tab.
-  content::SessionStorageNamespaceMap session_storage_namespace_map;
-  session_storage_namespace_map[std::string()] = session_storage_namespace;
   return WebContents::CreateWithSessionStorage(
       WebContents::CreateParams(browser_context_),
-      session_storage_namespace_map);
+      CreateMapWithDefaultSessionStorageNamespace(session_storage_namespace));
 }
 
 void NoStatePrefetchContents::NotifyPrefetchStart() {

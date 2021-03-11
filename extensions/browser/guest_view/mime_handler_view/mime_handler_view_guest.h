@@ -166,7 +166,7 @@ class MimeHandlerViewGuest
       const GURL& opener_url,
       const std::string& frame_name,
       const GURL& target_url,
-      const std::string& partition_id,
+      const content::StoragePartitionId& partition_id,
       content::SessionStorageNamespace* session_storage_namespace) override;
 
   // Updates the fullscreen state for the guest. Returns whether the change

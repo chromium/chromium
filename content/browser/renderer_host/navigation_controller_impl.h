@@ -281,7 +281,7 @@ class CONTENT_EXPORT NavigationControllerImpl : public NavigationController {
   // Calling this function when a SessionStorageNamespace has already been
   // associated with a |partition_id| will CHECK() fail.
   void SetSessionStorageNamespace(
-      const std::string& partition_id,
+      const StoragePartitionId& partition_id,
       SessionStorageNamespace* session_storage_namespace);
 
   // Random data ---------------------------------------------------------------

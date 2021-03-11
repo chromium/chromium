@@ -826,15 +826,9 @@ class CONTENT_EXPORT ContentBrowserClient {
 
   // Allow the embedder to specify a string version of the storage partition
   // config with a site.
-  virtual std::string GetStoragePartitionIdForSite(
+  virtual StoragePartitionId GetStoragePartitionIdForSite(
       BrowserContext* browser_context,
       const GURL& site);
-
-  // Allows the embedder to provide a validation check for |partition_id|s.
-  // This domain of valid entries should match the range of outputs for
-  // GetStoragePartitionIdForChildProcess().
-  virtual bool IsValidStoragePartitionId(BrowserContext* browser_context,
-                                         const std::string& partition_id);
 
   // Allows the embedder to provide a storage partition configuration for a
   // site. A storage partition configuration includes a domain of the embedder's

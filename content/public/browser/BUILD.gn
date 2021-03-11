@@ -324,6 +324,7 @@ source_set("browser_sources") {
     "service_worker_external_request_result.h",
     "service_worker_running_info.cc",
     "service_worker_running_info.h",
+    "session_storage_namespace.cc",
     "session_storage_namespace.h",
     "session_storage_usage_info.h",
     "shared_cors_origin_access_list.h",

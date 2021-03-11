@@ -2485,7 +2485,7 @@ void NavigationControllerImpl::NavigateFromFrameProxy(
 }
 
 void NavigationControllerImpl::SetSessionStorageNamespace(
-    const std::string& partition_id,
+    const StoragePartitionId& partition_id,
     SessionStorageNamespace* session_storage_namespace) {
   if (!session_storage_namespace)
     return;
@@ -2495,9 +2495,9 @@ void NavigationControllerImpl::SetSessionStorageNamespace(
   // so die hard on an error.
   bool successful_insert =
       session_storage_namespace_map_
-          .insert(
-              make_pair(partition_id, static_cast<SessionStorageNamespaceImpl*>(
-                                          session_storage_namespace)))
+          .insert(std::make_pair(partition_id,
+                                 static_cast<SessionStorageNamespaceImpl*>(
+                                     session_storage_namespace)))
           .second;
   CHECK(successful_insert) << "Cannot replace existing SessionStorageNamespace";
 }
@@ -2509,7 +2509,7 @@ bool NavigationControllerImpl::IsUnmodifiedBlankTab() {
 
 SessionStorageNamespace* NavigationControllerImpl::GetSessionStorageNamespace(
     SiteInstance* instance) {
-  std::string partition_id;
+  StoragePartitionId partition_id;
   if (instance) {
     // TODO(ajwong): When GetDefaultSessionStorageNamespace() goes away, remove
     // this if statement so |instance| must not be null.

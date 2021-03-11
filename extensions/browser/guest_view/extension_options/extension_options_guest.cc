@@ -228,7 +228,7 @@ WebContents* ExtensionOptionsGuest::CreateCustomWebContents(
     const GURL& opener_url,
     const std::string& frame_name,
     const GURL& target_url,
-    const std::string& partition_id,
+    const content::StoragePartitionId& partition_id,
     content::SessionStorageNamespace* session_storage_namespace) {
   // To get links out of the guest view, we just open the URL in a new tab.
   // TODO(ericzeng): Open the tab in the background if the click was a

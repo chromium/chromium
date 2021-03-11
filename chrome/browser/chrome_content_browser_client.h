@@ -124,12 +124,10 @@ class ChromeContentBrowserClient : public content::ContentBrowserClient {
       base::OnceClosure task) override;
   bool IsBrowserStartupComplete() override;
   void SetBrowserStartupIsCompleteForTesting() override;
-  std::string GetStoragePartitionIdForSite(
+  content::StoragePartitionId GetStoragePartitionIdForSite(
       content::BrowserContext* browser_context,
       const GURL& site) override;
   bool IsShuttingDown() override;
-  bool IsValidStoragePartitionId(content::BrowserContext* browser_context,
-                                 const std::string& partition_id) override;
   content::StoragePartitionConfig GetStoragePartitionConfigForSite(
       content::BrowserContext* browser_context,
       const GURL& site) override;

@@ -3570,8 +3570,7 @@ RenderFrameHostDelegate* WebContentsImpl::CreateNewWindow(
   auto* source_site_instance =
       static_cast<SiteInstanceImpl*>(opener->GetSiteInstance());
 
-  const std::string& partition_id =
-      source_site_instance->GetStoragePartitionId();
+  const auto& partition_id = source_site_instance->GetStoragePartitionId();
   {
     StoragePartition* partition = BrowserContext::GetStoragePartition(
         GetBrowserContext(), source_site_instance);

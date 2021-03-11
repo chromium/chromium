@@ -15,6 +15,7 @@
 #include "content/common/content_export.h"
 #include "content/public/browser/render_process_host_observer.h"
 #include "content/public/browser/site_instance.h"
+#include "content/public/browser/storage_partition_config.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
@@ -543,7 +544,7 @@ class CONTENT_EXPORT SiteInstanceImpl final : public SiteInstance,
 
   // Storage Partition ID to use when associating storage partition namespaces
   // with this object.
-  const std::string& GetStoragePartitionId();
+  const StoragePartitionId& GetStoragePartitionId();
 
   // Set the web site that this SiteInstance is rendering pages for.
   // This includes the scheme and registered domain, but not the port.  If the
@@ -737,7 +738,7 @@ class CONTENT_EXPORT SiteInstanceImpl final : public SiteInstance,
 
   // Helper function that asks the embedder to compute a storage partition ID
   // based on the current `site_info_`.
-  std::string ComputeStoragePartitionId() const;
+  StoragePartitionId ComputeStoragePartitionId() const;
 
   // Return whether both UrlInfos must share a process to preserve script
   // relationships.  The decision is based on a variety of factors such as
@@ -837,7 +838,7 @@ class CONTENT_EXPORT SiteInstanceImpl final : public SiteInstance,
   // values are returned over the lifetime of this object. This member gets set
   // by either GetStoragePartitionId() or SetSiteInfoInternal(), whichever is
   // called first.
-  base::Optional<std::string> storage_partition_id_;
+  base::Optional<StoragePartitionId> storage_partition_id_;
 
   DISALLOW_COPY_AND_ASSIGN(SiteInstanceImpl);
 };

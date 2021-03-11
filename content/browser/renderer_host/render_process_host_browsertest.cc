@@ -506,16 +506,12 @@ class CustomStoragePartitionForSomeSites : public TestContentBrowserClient {
     return StoragePartitionConfig::CreateDefault(browser_context);
   }
 
-  std::string GetStoragePartitionIdForSite(BrowserContext* browser_context,
-                                           const GURL& site) override {
+  StoragePartitionId GetStoragePartitionIdForSite(
+      BrowserContext* browser_context,
+      const GURL& site) override {
     if (site == site_to_isolate_)
-      return "custom";
-    return "";
-  }
-
-  bool IsValidStoragePartitionId(BrowserContext* browser_context,
-                                 const std::string& partition_id) override {
-    return partition_id == "" || partition_id == "custom";
+      return StoragePartitionId(site.spec());
+    return StoragePartitionId();
   }
 
  private:

@@ -6,8 +6,18 @@
 
 #include "base/check.h"
 #include "content/public/browser/browser_context.h"
+#include "url/gurl.h"
 
 namespace content {
+
+StoragePartitionId::StoragePartitionId(const std::string& partition_id)
+    : id_(partition_id) {
+  DCHECK(id_.empty() || GURL(id_).is_valid());
+}
+
+std::string StoragePartitionId::ToString() const {
+  return id_;
+}
 
 StoragePartitionConfig::StoragePartitionConfig(const StoragePartitionConfig&) =
     default;

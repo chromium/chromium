@@ -1256,7 +1256,7 @@ std::string SiteInstanceImpl::GetPartitionDomain(
   return storage_partition->GetPartitionDomain();
 }
 
-const std::string& SiteInstanceImpl::GetStoragePartitionId() {
+const StoragePartitionId& SiteInstanceImpl::GetStoragePartitionId() {
   if (!storage_partition_id_.has_value()) {
     // Note: This can get called before `site_info_` is set. This will result
     // in a partition ID being generated from an empty site URL. This is ok
@@ -1268,7 +1268,7 @@ const std::string& SiteInstanceImpl::GetStoragePartitionId() {
   return storage_partition_id_.value();
 }
 
-std::string SiteInstanceImpl::ComputeStoragePartitionId() const {
+StoragePartitionId SiteInstanceImpl::ComputeStoragePartitionId() const {
   return GetContentClient()->browser()->GetStoragePartitionIdForSite(
       browsing_instance_->GetBrowserContext(), site_info_.site_url());
 }

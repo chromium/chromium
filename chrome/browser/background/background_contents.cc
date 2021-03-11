@@ -34,7 +34,7 @@ BackgroundContents::BackgroundContents(
     content::RenderFrameHost* opener,
     bool is_new_browsing_instance,
     Delegate* delegate,
-    const std::string& partition_id,
+    const content::StoragePartitionId& partition_id,
     content::SessionStorageNamespace* session_storage_namespace)
     : delegate_(delegate),
       extension_host_delegate_(extensions::ExtensionsBrowserClient::Get()

@@ -136,7 +136,7 @@ WebContents* WebContentsDelegate::CreateCustomWebContents(
     const GURL& opener_url,
     const std::string& frame_name,
     const GURL& target_url,
-    const std::string& partition_id,
+    const StoragePartitionId& partition_id,
     SessionStorageNamespace* session_storage_namespace) {
   return nullptr;
 }

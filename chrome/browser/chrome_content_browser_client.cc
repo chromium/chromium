@@ -1408,35 +1408,23 @@ bool ChromeContentBrowserClient::IsShuttingDown() {
   return browser_shutdown::HasShutdownStarted();
 }
 
-std::string ChromeContentBrowserClient::GetStoragePartitionIdForSite(
+content::StoragePartitionId
+ChromeContentBrowserClient::GetStoragePartitionIdForSite(
     content::BrowserContext* browser_context,
     const GURL& site) {
-  std::string partition_id;
-
   // The partition ID for webview guest processes is the string value of its
   // SiteInstance URL - "chrome-guest://app_id/persist?partition".
   if (site.SchemeIs(content::kGuestScheme))
-    partition_id = site.spec();
+    return content::StoragePartitionId(site.spec());
 #if BUILDFLAG(ENABLE_EXTENSIONS)
   // The partition ID for extensions with isolated storage is treated similarly
   // to the above.
   else if (extensions::util::IsExtensionSiteWithIsolatedStorage(
                site, browser_context))
-    partition_id = site.spec();
+    return content::StoragePartitionId(site.spec());
 #endif
 
-  DCHECK(IsValidStoragePartitionId(browser_context, partition_id));
-  return partition_id;
-}
-
-bool ChromeContentBrowserClient::IsValidStoragePartitionId(
-    content::BrowserContext* browser_context,
-    const std::string& partition_id) {
-  // The default ID is empty and is always valid.
-  if (partition_id.empty())
-    return true;
-
-  return GURL(partition_id).is_valid();
+  return {};
 }
 
 content::StoragePartitionConfig

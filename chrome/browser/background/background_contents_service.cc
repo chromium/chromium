@@ -575,7 +575,7 @@ void BackgroundContentsService::LoadBackgroundContents(
 
   BackgroundContents* contents = CreateBackgroundContents(
       SiteInstance::CreateForURL(profile_, url), nullptr, true, frame_name,
-      application_id, std::string(), nullptr);
+      application_id, content::StoragePartitionId(), nullptr);
 
   contents->CreateRendererSoon(url);
 }
@@ -586,7 +586,7 @@ BackgroundContents* BackgroundContentsService::CreateBackgroundContents(
     bool is_new_browsing_instance,
     const std::string& frame_name,
     const std::string& application_id,
-    const std::string& partition_id,
+    const content::StoragePartitionId& partition_id,
     content::SessionStorageNamespace* session_storage_namespace) {
   auto contents = std::make_unique<BackgroundContents>(
       std::move(site), opener, is_new_browsing_instance, this, partition_id,

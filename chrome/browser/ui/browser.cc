@@ -1778,7 +1778,7 @@ WebContents* Browser::CreateCustomWebContents(
     const GURL& opener_url,
     const std::string& frame_name,
     const GURL& target_url,
-    const std::string& partition_id,
+    const content::StoragePartitionId& partition_id,
     content::SessionStorageNamespace* session_storage_namespace) {
   BackgroundContents* background_contents = CreateBackgroundContents(
       source_site_instance, opener, opener_url, is_new_browsing_instance,
@@ -2995,7 +2995,7 @@ BackgroundContents* Browser::CreateBackgroundContents(
     bool is_new_browsing_instance,
     const std::string& frame_name,
     const GURL& target_url,
-    const std::string& partition_id,
+    const content::StoragePartitionId& partition_id,
     content::SessionStorageNamespace* session_storage_namespace) {
   BackgroundContentsService* service =
       BackgroundContentsServiceFactory::GetForProfile(profile_);

@@ -96,6 +96,31 @@ class CONTENT_EXPORT StoragePartitionConfig {
       FallbackMode::kNone;
 };
 
+// Represents the storage partition ID that is used as the key for the
+// SessionStorageNamespaceMap. This type is to help facilitate migrating the
+// map key away from a string to a StoragePartitionConfig.
+class CONTENT_EXPORT StoragePartitionId {
+ public:
+  StoragePartitionId() = default;
+  explicit StoragePartitionId(const std::string& partition_id);
+  StoragePartitionId(const StoragePartitionId&) = default;
+  StoragePartitionId& operator=(const StoragePartitionId&) = default;
+
+  bool operator==(const StoragePartitionId& rhs) const {
+    return id_ == rhs.id_;
+  }
+  bool operator!=(const StoragePartitionId& rhs) const {
+    return id_ != rhs.id_;
+  }
+  bool operator<(const StoragePartitionId& rhs) const { return id_ < rhs.id_; }
+
+  // String representation of this object for debug logging purposes.
+  std::string ToString() const;
+
+ private:
+  std::string id_;
+};
+
 }  // namespace content
 
 #endif  // CONTENT_PUBLIC_BROWSER_STORAGE_PARTITION_CONFIG_H_
