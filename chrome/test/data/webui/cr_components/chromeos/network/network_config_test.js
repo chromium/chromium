@@ -137,6 +137,19 @@ suite('network-config', function() {
         assertTrue(networkConfig.propertiesSent_);
       });
     });
+
+    test('Remove error text when input key is pressed', function() {
+      return flushAsync().then(() => {
+        networkConfig.error = 'bad-passphrase';
+        let passwordInput = networkConfig.$$('#wifi-passphrase');
+        assertTrue(!!passwordInput);
+        assertTrue(!!networkConfig.error);
+
+        passwordInput.fire('keypress');
+        Polymer.dom.flush();
+        assertFalse(!!networkConfig.error);
+      });
+    });
   });
 
   suite('Share', function() {

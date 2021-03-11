@@ -1763,4 +1763,13 @@ Polymer({
     assertNotReached();
     return undefined;
   },
+
+  /** @private */
+  onWifiPasswordInputKeypress_() {
+    // bad-passphrase corresponds to kErrorBadPassphrase in shill
+    if (this.error === 'bad-passphrase') {
+      // Reset error if user starts typing new password.
+      this.setError_('');
+    }
+  }
 });
