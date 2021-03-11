@@ -31887,6 +31887,16 @@ Called by update_permissions_policy_enum.py.-->
   <int value="3" label="WebPAnimationFormat"/>
 </enum>
 
+<enum name="FeatureUsageEvent">
+  <int value="0"
+      label="Device is eligible for this feature. Recorded once per day."/>
+  <int value="1" label="Feature is enabled by user. Recorded once per day."/>
+  <int value="2"
+      label="Successful attempt to use the feature. Recorded on each event."/>
+  <int value="3"
+      label="Failed attempt to use the feature. Recorded on each event."/>
+</enum>
+
 <enum name="FeedbackSource">
   <int value="0" label="Arc App"/>
   <int value="1" label="Ash"/>

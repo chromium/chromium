@@ -8,6 +8,7 @@
 #include "base/test/simple_test_clock.h"
 #include "base/test/simple_test_tick_clock.h"
 #include "chrome/browser/ash/login/lock/screen_locker_tester.h"
+#include "chrome/browser/ash/login/quick_unlock/fingerprint_storage.h"
 #include "chrome/browser/ash/login/quick_unlock/quick_unlock_factory.h"
 #include "chrome/browser/ash/login/quick_unlock/quick_unlock_storage.h"
 #include "chrome/browser/ash/login/quick_unlock/quick_unlock_utils.h"
@@ -295,6 +296,49 @@ IN_PROC_BROWSER_TEST_F(InProcessBrowserTest, FingerprintScanResult) {
                   base::Bucket(static_cast<base::HistogramBase::Sample>(
                                    device::mojom::ScanResult::TOO_FAST),
                                1)));
+}
+
+constexpr char kFingerprintSuccessHistogramName[] =
+    "Fingerprint.Unlock.AuthSuccessful";
+constexpr char kFingerprintAttemptsCountBeforeSuccessHistogramName[] =
+    "Fingerprint.Unlock.AttemptsCountBeforeSuccess";
+
+// Verifies that fingerprint auth success is recorded correctly.
+IN_PROC_BROWSER_TEST_F(FingerprintUnlockTest, FeatureUsageMetrics) {
+  // Show lock screen and wait until it is shown.
+  ScreenLockerTester tester;
+  tester.Lock();
+  base::HistogramTester histogram_tester;
+
+  // Mark strong auth, checks for strong auth.
+  // The default is one day, so verify moving the last strong auth time back 12
+  // hours (half of the expiration time) should not request strong auth.
+  MarkStrongAuth();
+  EXPECT_TRUE(HasStrongAuth());
+  FakeBiodClient::Get()->SendAuthScanDone(kFingerprint,
+                                          biod::SCAN_RESULT_TOO_FAST);
+  FakeBiodClient::Get()->SendAuthScanDone(kFingerprint,
+                                          biod::SCAN_RESULT_SUCCESS);
+  tester.WaitForUnlock();
+  histogram_tester.ExpectBucketCount(kFingerprintSuccessHistogramName,
+                                     /*success=*/1, 1);
+  histogram_tester.ExpectBucketCount(
+      "Fingerprint.Unlock.Result",
+      static_cast<int>(quick_unlock::FingerprintUnlockResult::kSuccess), 1);
+  histogram_tester.ExpectTotalCount(
+      kFingerprintAttemptsCountBeforeSuccessHistogramName, 1);
+  histogram_tester.ExpectBucketCount(
+      "ChromeOS.FeatureUsage.Fingerprint",
+      static_cast<int>(FeatureUsageMetrics::Event::kUsedWithSucess), 1);
+  histogram_tester.ExpectBucketCount(
+      "ChromeOS.FeatureUsage.Fingerprint",
+      static_cast<int>(FeatureUsageMetrics::Event::kUsedWithFailure), 1);
+
+  histogram_tester.ExpectBucketCount(kFingerprintSuccessHistogramName,
+                                     /*success=*/0, 1);
+  histogram_tester.ExpectBucketCount(
+      "Fingerprint.Unlock.Result",
+      static_cast<int>(quick_unlock::FingerprintUnlockResult::kMatchFailed), 1);
 }
 
 }  // namespace chromeos

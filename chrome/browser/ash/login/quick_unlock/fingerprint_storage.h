@@ -7,8 +7,8 @@
 
 #include "base/macros.h"
 #include "base/time/time.h"
+#include "chrome/browser/chromeos/feature_usage_metrics/feature_usage_metrics.h"
 #include "mojo/public/cpp/bindings/remote.h"
-
 #include "services/device/public/mojom/fingerprint.mojom.h"
 
 class PrefRegistrySimple;
@@ -23,7 +23,22 @@ namespace quick_unlock {
 class FingerprintMetricsReporter;
 class QuickUnlockStorage;
 
-class FingerprintStorage {
+// The result of fingerprint auth attempt on the lock screen. These values are
+// persisted to logs. Entries should not be renumbered and numeric values
+// should never be reused.
+enum class FingerprintUnlockResult {
+  kSuccess = 0,
+  kFingerprintUnavailable = 1,
+  kAuthTemporarilyDisabled = 2,
+  kMatchFailed = 3,
+  kMatchNotForPrimaryUser = 4,
+  kMaxValue = kMatchNotForPrimaryUser,
+};
+
+// `FingerprintStorage` manages fingerprint user preferences. Keeps them in sync
+// with the actual fingerprint records state. The class also reports fingerprint
+// metrics.
+class FingerprintStorage : public FeatureUsageMetrics::Delegate {
  public:
   static const int kMaximumUnlockAttempts = 5;
 
@@ -31,7 +46,15 @@ class FingerprintStorage {
   static void RegisterProfilePrefs(PrefRegistrySimple* registry);
 
   explicit FingerprintStorage(Profile* profile);
-  ~FingerprintStorage();
+  ~FingerprintStorage() final;
+
+  // FeatureUsageMetrics::Delegate:
+  bool IsEligible() const final;
+  bool IsEnabled() const final;
+
+  // Called after a fingerprint unlock attempt to record the result.
+  // `num_attempts`:  Only valid when auth success to record number of attempts.
+  void RecordFingerprintUnlockResult(FingerprintUnlockResult result);
 
   // Returns true if fingerprint unlock is currently available.
   // This does not check if strong auth is available.
@@ -65,6 +88,7 @@ class FingerprintStorage {
   mojo::Remote<device::mojom::Fingerprint> fp_service_;
 
   std::unique_ptr<FingerprintMetricsReporter> metrics_reporter_;
+  std::unique_ptr<FeatureUsageMetrics> feature_usage_metrics_service_;
 
   base::WeakPtrFactory<FingerprintStorage> weak_factory_{this};
 

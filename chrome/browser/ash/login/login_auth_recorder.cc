@@ -173,24 +173,6 @@ void LoginAuthRecorder::RecordAuthMethod(AuthMethod method) {
   }
 }
 
-void LoginAuthRecorder::RecordFingerprintUnlockResult(
-    FingerprintUnlockResult result,
-    const base::Optional<int>& num_attempts) {
-  if (session_manager::SessionManager::Get()->session_state() !=
-      session_manager::SessionState::LOCKED) {
-    return;
-  }
-  base::UmaHistogramEnumeration("Fingerprint.Unlock.Result", result);
-
-  const bool success = (result == FingerprintUnlockResult::kSuccess);
-  base::UmaHistogramBoolean("Fingerprint.Unlock.AuthSuccessful", success);
-  if (success) {
-    DCHECK(num_attempts);
-    base::UmaHistogramCounts100("Fingerprint.Unlock.AttemptsCountBeforeSuccess",
-                                num_attempts.value());
-  }
-}
-
 void LoginAuthRecorder::OnSessionStateChanged() {
   // Reset local state.
   last_auth_method_ = AuthMethod::kNothing;

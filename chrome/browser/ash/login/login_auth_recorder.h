@@ -73,11 +73,6 @@ class LoginAuthRecorder : public session_manager::SessionManagerObserver {
   // Called when user attempts authentication using AuthMethod `type`.
   void RecordAuthMethod(AuthMethod type);
 
-  // Called after a fingerprint unlock attempt to record the result.
-  // `num_attempts`:  Only valid when auth success to record number of attempts.
-  void RecordFingerprintUnlockResult(FingerprintUnlockResult result,
-                                     const base::Optional<int>& num_attempts);
-
   // session_manager::SessionManagerObserver
   void OnSessionStateChanged() override;
 

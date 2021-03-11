@@ -792,17 +792,15 @@ void ScreenLocker::OnAuthScanDone(
   if (!quick_unlock_storage ||
       !quick_unlock_storage->IsFingerprintAuthenticationAvailable()) {
     // In theory this should be very rare. The auth session should be ended when
-    // fingerprint becomes unavaliable.
-    LoginScreenClient::Get()->auth_recorder()->RecordFingerprintUnlockResult(
-        LoginAuthRecorder::FingerprintUnlockResult::kFingerprintUnavailable,
-        base::nullopt);
+    // fingerprint becomes unavailable.
+    quick_unlock_storage->fingerprint_storage()->RecordFingerprintUnlockResult(
+        quick_unlock::FingerprintUnlockResult::kFingerprintUnavailable);
     return;
   }
 
   if (IsAuthTemporarilyDisabledForUser(primary_user->GetAccountId())) {
-    LoginScreenClient::Get()->auth_recorder()->RecordFingerprintUnlockResult(
-        LoginAuthRecorder::FingerprintUnlockResult::kAuthTemporarilyDisabled,
-        base::nullopt);
+    quick_unlock_storage->fingerprint_storage()->RecordFingerprintUnlockResult(
+        quick_unlock::FingerprintUnlockResult::kAuthTemporarilyDisabled);
     return;
   }
 
@@ -813,9 +811,8 @@ void ScreenLocker::OnAuthScanDone(
     LOG(ERROR) << "Fingerprint unlock failed because scan_result="
                << scan_result;
     OnFingerprintAuthFailure(*primary_user);
-    LoginScreenClient::Get()->auth_recorder()->RecordFingerprintUnlockResult(
-        LoginAuthRecorder::FingerprintUnlockResult::kMatchFailed,
-        base::nullopt);
+    quick_unlock_storage->fingerprint_storage()->RecordFingerprintUnlockResult(
+        quick_unlock::FingerprintUnlockResult::kMatchFailed);
     return;
   }
 
@@ -824,14 +821,12 @@ void ScreenLocker::OnAuthScanDone(
     LOG(ERROR) << "Fingerprint unlock failed because it does not match primary"
                << " user's record";
     OnFingerprintAuthFailure(*primary_user);
-    LoginScreenClient::Get()->auth_recorder()->RecordFingerprintUnlockResult(
-        LoginAuthRecorder::FingerprintUnlockResult::kMatchNotForPrimaryUser,
-        base::nullopt);
+    quick_unlock_storage->fingerprint_storage()->RecordFingerprintUnlockResult(
+        quick_unlock::FingerprintUnlockResult::kMatchNotForPrimaryUser);
     return;
   }
-  LoginScreenClient::Get()->auth_recorder()->RecordFingerprintUnlockResult(
-      LoginAuthRecorder::FingerprintUnlockResult::kSuccess,
-      quick_unlock_storage->fingerprint_storage()->unlock_attempt_count());
+  quick_unlock_storage->fingerprint_storage()->RecordFingerprintUnlockResult(
+      quick_unlock::FingerprintUnlockResult::kSuccess);
   ash::LoginScreen::Get()->GetModel()->NotifyFingerprintAuthResult(
       primary_user->GetAccountId(), true /*success*/);
   VLOG(1) << "Fingerprint unlock is successful.";

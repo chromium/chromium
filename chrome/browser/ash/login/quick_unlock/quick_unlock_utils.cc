@@ -142,13 +142,18 @@ FingerprintLocation GetFingerprintLocation() {
   return default_location;
 }
 
+bool IsFingerprintSupported() {
+  const base::CommandLine* command_line =
+      base::CommandLine::ForCurrentProcess();
+  return base::FeatureList::IsEnabled(::features::kQuickUnlockFingerprint) &&
+         command_line->HasSwitch(switches::kFingerprintSensorLocation);
+}
+
 bool IsFingerprintEnabled(Profile* profile) {
   if (enable_for_testing_)
     return true;
 
-  // Disable fingerprint if the device does not have a fingerprint reader.
-  const base::CommandLine* cl = base::CommandLine::ForCurrentProcess();
-  if (!cl->HasSwitch(switches::kFingerprintSensorLocation))
+  if (!IsFingerprintSupported())
     return false;
 
   // Disable fingerprint if the profile does not belong to the primary user.
@@ -159,8 +164,7 @@ bool IsFingerprintEnabled(Profile* profile) {
   if (IsFingerprintDisabledByPolicy(profile->GetPrefs()))
     return false;
 
-  // Enable fingerprint unlock only if the switch is present.
-  return base::FeatureList::IsEnabled(::features::kQuickUnlockFingerprint);
+  return true;
 }
 
 void EnabledForTesting(bool state) {

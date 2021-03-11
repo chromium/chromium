@@ -20,10 +20,6 @@ constexpr char kAuthMethodUsageAsClamShellHistogramName[] =
     "Ash.Login.Lock.AuthMethod.Used.ClamShellMode";
 constexpr char kAuthMethodSwitchHistogramName[] =
     "Ash.Login.Lock.AuthMethod.Switched";
-constexpr char kFingerprintSuccessHistogramName[] =
-    "Fingerprint.Unlock.AuthSuccessful";
-constexpr char kFingerprintAttemptsCountBeforeSuccessHistogramName[] =
-    "Fingerprint.Unlock.AttemptsCountBeforeSuccess";
 
 }  // namespace
 
@@ -50,14 +46,6 @@ class LoginAuthRecorderTest : public InProcessBrowserTest {
 
   void SetAuthMethod(LoginAuthRecorder::AuthMethod auth_method) {
     metrics_recorder()->RecordAuthMethod(auth_method);
-  }
-
-  void SetFingerprintUnlockResult(
-      LoginAuthRecorder::FingerprintUnlockResult result) {
-    metrics_recorder()->RecordFingerprintUnlockResult(
-        result, result == LoginAuthRecorder::FingerprintUnlockResult::kSuccess
-                    ? base::Optional<int>(1)
-                    : base::nullopt);
   }
 
   void ExpectBucketCount(const std::string& name,
@@ -191,34 +179,6 @@ IN_PROC_BROWSER_TEST_F(LoginAuthRecorderTest, AuthMethodSwitch) {
   SetAuthMethod(LoginAuthRecorder::AuthMethod::kPassword);
   ExpectBucketCount(kAuthMethodSwitchHistogramName,
                     LoginAuthRecorder::AuthMethodSwitchType::kPinToPassword, 1);
-}
-
-// Verifies that fingerprint auth success is recorded correctly.
-IN_PROC_BROWSER_TEST_F(LoginAuthRecorderTest, FingerprintAuthSuccess) {
-  session_manager::SessionManager::Get()->SetSessionState(
-      session_manager::SessionState::LOCKED);
-  SetFingerprintUnlockResult(
-      LoginAuthRecorder::FingerprintUnlockResult::kSuccess);
-  histogram_tester_->ExpectBucketCount(kFingerprintSuccessHistogramName,
-                                       1 /*success*/, 1);
-  histogram_tester_->ExpectBucketCount(
-      "Fingerprint.Unlock.Result",
-      static_cast<int>(LoginAuthRecorder::FingerprintUnlockResult::kSuccess),
-      1);
-  histogram_tester_->ExpectTotalCount(
-      kFingerprintAttemptsCountBeforeSuccessHistogramName, 1);
-
-  SetFingerprintUnlockResult(
-      LoginAuthRecorder::FingerprintUnlockResult::kMatchFailed);
-  histogram_tester_->ExpectBucketCount(kFingerprintSuccessHistogramName,
-                                       0 /*success*/, 1);
-  histogram_tester_->ExpectBucketCount(
-      "Fingerprint.Unlock.Result",
-      static_cast<int>(
-          LoginAuthRecorder::FingerprintUnlockResult::kMatchFailed),
-      1);
-  histogram_tester_->ExpectTotalCount(
-      kFingerprintAttemptsCountBeforeSuccessHistogramName, 1);
 }
 
 }  // namespace chromeos

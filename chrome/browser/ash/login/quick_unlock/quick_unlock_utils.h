@@ -47,6 +47,9 @@ bool IsPinDisabledByPolicy(PrefService* pref_service);
 // Returns true if the quick unlock feature flag is present.
 bool IsPinEnabled(PrefService* pref_service);
 
+// Returns true if the fingerprint is supported by the device.
+bool IsFingerprintSupported();
+
 // Returns true if the fingerprint is allowed for specified profile.
 bool IsFingerprintEnabled(Profile* profile);
 

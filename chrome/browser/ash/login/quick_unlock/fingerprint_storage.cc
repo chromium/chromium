@@ -7,6 +7,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "chrome/browser/ash/login/quick_unlock/quick_unlock_utils.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
+#include "chrome/browser/chromeos/feature_usage_metrics/feature_usage_metrics.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/pref_names.h"
 #include "chromeos/dbus/biod/biod_client.h"
@@ -17,6 +18,12 @@
 
 namespace chromeos {
 namespace quick_unlock {
+
+namespace {
+
+constexpr char kFingerprintUMAFeatureName[] = "Fingerprint";
+
+}
 
 class FingerprintMetricsReporter : public device::mojom::FingerprintObserver {
  public:
@@ -47,6 +54,7 @@ class FingerprintMetricsReporter : public device::mojom::FingerprintObserver {
 // static
 void FingerprintStorage::RegisterProfilePrefs(PrefRegistrySimple* registry) {
   registry->RegisterIntegerPref(prefs::kQuickUnlockFingerprintRecord, 0);
+  FeatureUsageMetrics::RegisterPref(registry, kFingerprintUMAFeatureName);
 }
 
 FingerprintStorage::FingerprintStorage(Profile* profile) : profile_(profile) {
@@ -65,9 +73,32 @@ FingerprintStorage::FingerprintStorage(Profile* profile) : profile_(profile) {
 
   metrics_reporter_ = std::make_unique<FingerprintMetricsReporter>();
   fp_service_->AddFingerprintObserver(metrics_reporter_->GetRemote());
+  feature_usage_metrics_service_ = std::make_unique<FeatureUsageMetrics>(
+      kFingerprintUMAFeatureName, profile_->GetPrefs(), this);
 }
 
 FingerprintStorage::~FingerprintStorage() {}
+
+bool FingerprintStorage::IsEligible() const {
+  return IsFingerprintSupported();
+}
+
+bool FingerprintStorage::IsEnabled() const {
+  return IsFingerprintEnabled(profile_) && HasRecord();
+}
+
+void FingerprintStorage::RecordFingerprintUnlockResult(
+    FingerprintUnlockResult result) {
+  base::UmaHistogramEnumeration("Fingerprint.Unlock.Result", result);
+
+  const bool success = (result == FingerprintUnlockResult::kSuccess);
+  base::UmaHistogramBoolean("Fingerprint.Unlock.AuthSuccessful", success);
+  if (success) {
+    base::UmaHistogramCounts100("Fingerprint.Unlock.AttemptsCountBeforeSuccess",
+                                unlock_attempt_count());
+  }
+  feature_usage_metrics_service_->RecordUsage(success);
+}
 
 bool FingerprintStorage::IsFingerprintAvailable() const {
   return !ExceededUnlockAttempts() && IsFingerprintEnabled(profile_) &&

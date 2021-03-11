@@ -22,6 +22,19 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histograms>
 
+<variants name="FeaturesLoggingUsageEvents">
+<!-- The variants are names of Chrome OS features. These are used for the
+  ChromeOS.FeatureUsage.* histograms to record different events related to the
+  feature -->
+
+  <variant name="Fingerprint" summary="fingerprint">
+    <owner>rsorokin@chromium.org</owner>
+    <owner>tomhughes@chromium.org</owner>
+    <owner>cros-oac@google.com</owner>
+    <owner>chromeos-fingerprint@google.com</owner>
+  </variant>
+</variants>
+
 <histogram name="ChromeOS.Apps.ExternalProtocolDialog"
     enum="ArcIntentHandlerAction" expires_after="2021-08-22">
   <owner>dominickn@chromium.org</owner>
@@ -468,6 +481,18 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
     primary account on an unmanaged ChromeOS device, regardless of the secondary
     account. A Regular User is an unmanaged consumer user on any device.
   </summary>
+</histogram>
+
+<histogram name="ChromeOS.FeatureUsage.{FeatureName}" enum="FeatureUsageEvent"
+    expires_after="2022-01-01">
+  <owner>rsorokin@chromium.org</owner>
+  <owner>cros-oac@google.com</owner>
+  <summary>
+    Records device eligibility, enabled status, and success rate for the
+    {FeatureName} feature. Different events are recorded at different times, as
+    described in the enum labels.
+  </summary>
+  <token key="FeatureName" variants="FeaturesLoggingUsageEvents"/>
 </histogram>
 
 <histogram name="ChromeOS.GAIA.AuthenticatorContentWindowNull" enum="Boolean"
