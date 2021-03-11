@@ -1,8 +1,16 @@
-# https://crbug.com/ : Fix this failed and crashed tests.
+# Tests that cannot work on Wayland.
+
+# Tests activation of windows.  Wayland doesn't allow the client to activate its
+# windows so this test makes no sense.
+-DesktopWidgetFocusManagerTest.AnchoredDialogInDesktopNativeWidgetAura
+
+# Tests behaviour that is specific for X11.
+-DesktopWidgetTest.GetWindowPlacement
+
+# crbug.com/1186974 : Fix failed and crashed tests listed below.  Move tests
+# that cannot work on Wayland into sections above and document the decision.
 
 # Failed tests.
--DesktopWidgetFocusManagerTest.AnchoredDialogInDesktopNativeWidgetAura
--DesktopWidgetTest.GetWindowPlacement
 -EditableComboboxTest.AltLeftOrRightDoesNothing
 -EditableComboboxTest.CtrlLeftOrRightMovesToNextWords
 -EditableComboboxTest.EndOrHomeMovesToBeginningOrEndOfText
