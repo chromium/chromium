@@ -20,9 +20,12 @@ export class ResultSaver {
 
   /**
    * Returns a video saver to save captured result video.
+   * @param {number} videoRotation Clock-wise rotation in degrees to set in the
+   *     video metadata so that the saved video can be displayed in upright
+   *     orientation.
    * @return {!Promise<!VideoSaver>}
    */
-  async startSaveVideo() {}
+  async startSaveVideo(videoRotation) {}
 
   /**
    * Saves captured video result.

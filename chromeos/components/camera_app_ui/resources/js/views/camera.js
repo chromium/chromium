@@ -130,6 +130,14 @@ export class Camera extends View {
         new VideoEncoderOptions((parameters) => setAvc1Parameters(parameters));
 
     /**
+     * Clock-wise rotation that needs to be applied to the recorded video in
+     * order for the video to be replayed in upright orientation.
+     * @type {number}
+     * @private
+     */
+    this.outputVideoRotation_ = 0;
+
+    /**
      * @type {!ResultSaver}
      * @protected
      */
@@ -422,6 +430,20 @@ export class Camera extends View {
     this.take_ = (async () => {
       let hasError = false;
       try {
+        // Record and keep the rotation only at the instance the user starts the
+        // capture. Users may change the device orientation while taking video.
+        const cameraFrameRotation = await (async () => {
+          const deviceOperator = await DeviceOperator.getInstance();
+          if (deviceOperator === null) {
+            return 0;
+          }
+          assert(this.activeDeviceId_ !== null);
+          return await deviceOperator.getCameraFrameRotation(
+              this.activeDeviceId_);
+        })();
+        // Translate the camera frame rotation back to the UI rotation, which is
+        // what we need to rotate the captured video with.
+        this.outputVideoRotation_ = (360 - cameraFrameRotation) % 360;
         await timertick.start();
         await this.modes_.current.startCapture();
       } catch (e) {
@@ -481,7 +503,7 @@ export class Camera extends View {
    * @override
    */
   createVideoSaver() {
-    return this.resultSaver_.startSaveVideo();
+    return this.resultSaver_.startSaveVideo(this.outputVideoRotation_);
   }
 
   /**
