@@ -1610,8 +1610,16 @@ cr.define('device_page_tests', function() {
           assertEquals(null, powerPage.$$('#batteryIdleSettingBox'));
           assertEquals(null, powerPage.$$('#acIdleSettingBox'));
 
+          const acIdleSelect = assert(powerPage.$$('#noBatteryAcIdleSelect'));
           // Expect the "When idle" dropdown options to appear instead.
-          assert(powerPage.$$('#noBatteryAcIdleSelect'));
+          assert(acIdleSelect);
+
+          // Select a "When idle" selection and expect it to be set.
+          selectValue(acIdleSelect, settings.IdleBehavior.DISPLAY_ON);
+          expectEquals(
+              settings.IdleBehavior.DISPLAY_ON,
+              settings.DevicePageBrowserProxyImpl.getInstance()
+                  .acIdleBehavior_);
         });
 
         test('power sources', function() {
