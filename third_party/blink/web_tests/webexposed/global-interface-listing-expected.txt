@@ -11516,11 +11516,6 @@ interface VideoTrackList : EventTarget
     setter onaddtrack
     setter onchange
     setter onremovetrack
-interface VideoTrackReader
-    attribute @@toStringTag
-    method constructor
-    method start
-    method stop
 interface VirtualKeyboard : EventTarget
     attribute @@toStringTag
     getter boundingRect

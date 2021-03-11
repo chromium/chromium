@@ -56,10 +56,6 @@ blink_modules_sources("webcodecs") {
     "video_frame_handle.h",
     "video_frame_logger.cc",
     "video_frame_logger.h",
-    "video_track_reader.cc",
-    "video_track_reader.h",
-    "video_track_writer.cc",
-    "video_track_writer.h",
   ]
   deps = [
     "//media",
@@ -90,7 +86,6 @@ source_set("unit_tests") {
     "image_decoder_external_test.cc",
     "video_decoder_broker_test.cc",
     "video_frame_test.cc",
-    "video_track_reader_writer_test.cc",
   ]
 
   configs += [
