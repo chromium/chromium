@@ -46,8 +46,23 @@ bool IsNavigationUsingHttpsAsDefaultScheme(content::NavigationHandle* handle) {
   if (!ui_data) {
     return false;
   }
-  return static_cast<ChromeNavigationUIData*>(ui_data)
-      ->is_using_https_as_default_scheme();
+  // Only handle HTTPS navigations typed in the omnibox. If a navigation has
+  // HTTP URL, either the omnibox didn't upgrade the navigation to HTTPS, or it
+  // previously upgraded and we fell back to HTTP so there is no need to
+  // observe again.
+  // TODO(crbug.com/1161620): There are cases where we don't currently upgrade
+  // even though we probably should. Make a decision for the ones listed in the
+  // bug and potentially identify more.
+  bool is_using_https_as_default_scheme =
+      static_cast<ChromeNavigationUIData*>(ui_data)
+          ->is_using_https_as_default_scheme();
+  return is_using_https_as_default_scheme && handle->IsInMainFrame() &&
+         !handle->IsSameDocument() &&
+         handle->GetURL().SchemeIs(url::kHttpsScheme) &&
+         !handle->GetWebContents()->IsPortal() &&
+         ui::PageTransitionCoreTypeIs(handle->GetPageTransition(),
+                                      ui::PAGE_TRANSITION_TYPED) &&
+         ui::PageTransitionIsNewNavigation(handle->GetPageTransition());
 }
 
 void RecordUMA(TypedNavigationUpgradeThrottle::Event event) {
@@ -120,29 +135,13 @@ TypedNavigationUpgradeThrottle::MaybeCreateThrottleFor(
     content::NavigationHandle* handle) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
-  // Only observe HTTPS navigations typed in the omnibox. If a navigation has
-  // HTTP URL, either the omnibox didn't upgrade the navigation to HTTPS, or it
-  // previously upgraded and we fell back to HTTP so there is no need to
-  // observe again.
-  // TODO(crbug.com/1161620): There are cases where we don't currently upgrade
-  // even though we probably should. Make a decision for the ones listed in the
-  // bug and potentially identify more.
-  if (!handle->IsInMainFrame() || handle->IsSameDocument() ||
-      !handle->GetURL().SchemeIs(url::kHttpsScheme) ||
-      handle->GetWebContents()->IsPortal() ||
-      !ui::PageTransitionCoreTypeIs(handle->GetPageTransition(),
-                                    ui::PAGE_TRANSITION_TYPED) ||
-      !ui::PageTransitionIsNewNavigation(handle->GetPageTransition())) {
-    return nullptr;
-  }
-  // Typed main frame navigations can only be GET requests.
-  DCHECK(!handle->IsPost());
-
   // Check if the omnibox added https as the default scheme for this navigation.
   // If not, no need to create the throttle.
   if (!IsNavigationUsingHttpsAsDefaultScheme(handle)) {
     return nullptr;
   }
+  // Typed main frame navigations can only be GET requests.
+  DCHECK(!handle->IsPost());
 
   return base::WrapUnique(new TypedNavigationUpgradeThrottle(handle));
 }

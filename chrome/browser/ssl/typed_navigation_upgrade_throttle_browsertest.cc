@@ -320,7 +320,6 @@ class TypedNavigationUpgradeThrottleBrowserTest
   }
 
  private:
-
   void TypeUrlAndCheckNavigation(const std::string& url_without_scheme,
                                  const base::HistogramTester& histograms,
                                  NavigationExpectation expectation,
@@ -875,6 +874,35 @@ IN_PROC_BROWSER_TEST_P(
 
   histograms.ExpectTotalCount(SSLErrorHandler::GetHistogramNameForTesting(), 4);
   histograms.ExpectTotalCount(kNetErrorHistogram, 0);
+
+  // Regression test for crbug.com/1182760: Try again, this time using the
+  // target URL. This should show an interstitial instead of a net error.
+  const std::string url_without_scheme = GetURLWithoutScheme(target_url);
+  SetOmniboxText(url_without_scheme);
+  PressEnterAndWaitForNavigations(/*num_expected_navigations=*/1);
+  ASSERT_TRUE(chrome_browser_interstitials::IsShowingInterstitial(contents));
+  ui_test_utils::HistoryEnumerator enumerator(browser()->profile());
+  const GURL http_url = MakeHttpURL(url_without_scheme);
+  const GURL https_url = MakeHttpsURL(url_without_scheme);
+  EXPECT_EQ(https_url, contents->GetLastCommittedURL());
+  // Since the navigation results in an interstitial, https_url isn't added to
+  // history.
+  EXPECT_FALSE(base::Contains(enumerator.urls(), https_url));
+  EXPECT_FALSE(base::Contains(enumerator.urls(), http_url));
+  histograms.ExpectTotalCount(SSLErrorHandler::GetHistogramNameForTesting(), 6);
+  histograms.ExpectTotalCount(kNetErrorHistogram, 0);
+  // Throttle histogram numbers shouldn't change:
+  histograms.ExpectTotalCount(TypedNavigationUpgradeThrottle::kHistogramName,
+                              6);
+  histograms.ExpectBucketCount(
+      TypedNavigationUpgradeThrottle::kHistogramName,
+      TypedNavigationUpgradeThrottle::Event::kHttpsLoadStarted, 2);
+  histograms.ExpectBucketCount(
+      TypedNavigationUpgradeThrottle::kHistogramName,
+      TypedNavigationUpgradeThrottle::Event::kHttpsLoadFailedWithCertError, 2);
+  histograms.ExpectBucketCount(
+      TypedNavigationUpgradeThrottle::kHistogramName,
+      TypedNavigationUpgradeThrottle::Event::kRedirected, 2);
 }
 
 // Same as UrlTypedWithoutScheme_BadHttps_Redirected_ShouldFallback, but the
