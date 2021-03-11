@@ -212,6 +212,37 @@ inline internal::OwnedWrapper<T, Deleter> Owned(
   return internal::OwnedWrapper<T, Deleter>(std::move(ptr));
 }
 
+// OwnedRef() stores an object in the callback resulting from
+// bind and passes a reference to the object to the bound function.
+//
+// EXAMPLE OF OwnedRef():
+//
+//   void foo(int& arg) { cout << ++arg << endl }
+//
+//   int counter = 0;
+//   RepeatingClosure foo_callback = BindRepeating(&foo, OwnedRef(counter));
+//
+//   foo_callback.Run();  // Prints "1"
+//   foo_callback.Run();  // Prints "2"
+//   foo_callback.Run();  // Prints "3"
+//
+//   cout << counter;     // Prints "0", OwnedRef creates a copy of counter.
+//
+//  Supports OnceCallbacks as well, useful to pass placeholder arguments:
+//
+//   void bar(int& ignore, const std::string& s) { cout << s << endl }
+//
+//   OnceClosure bar_callback = BindOnce(&bar, OwnedRef(0), "Hello");
+//
+//   std::move(bar_callback).Run(); // Prints "Hello"
+//
+// Without OwnedRef() it would not be possible to pass a mutable reference to an
+// object owned by the callback.
+template <typename T>
+internal::OwnedRefWrapper<std::decay_t<T>> OwnedRef(T&& t) {
+  return internal::OwnedRefWrapper<std::decay_t<T>>(std::forward<T>(t));
+}
+
 // Passed() is for transferring movable-but-not-copyable types (eg. unique_ptr)
 // through a RepeatingCallback. Logically, this signifies a destructive transfer
 // of the state of the argument into the target function. Invoking

@@ -816,6 +816,27 @@ TEST_F(BindTest, OwnedForOnceUniquePtr) {
   EXPECT_EQ(1, deletes);
 }
 
+// Tests OwnedRef
+TEST_F(BindTest, OwnedRefForCounter) {
+  int counter = 0;
+  RepeatingCallback<int()> counter_callback =
+      BindRepeating([](int& counter) { return ++counter; }, OwnedRef(counter));
+
+  EXPECT_EQ(1, counter_callback.Run());
+  EXPECT_EQ(2, counter_callback.Run());
+  EXPECT_EQ(3, counter_callback.Run());
+  EXPECT_EQ(4, counter_callback.Run());
+
+  EXPECT_EQ(0, counter);  // counter should remain unchanged.
+}
+
+TEST_F(BindTest, OwnedRefForIgnoringArguments) {
+  OnceCallback<std::string(std::string)> echo_callback =
+      BindOnce([](int& ignore, std::string s) { return s; }, OwnedRef(0));
+
+  EXPECT_EQ("Hello World", std::move(echo_callback).Run("Hello World"));
+}
+
 template <typename T>
 class BindVariantsTest : public ::testing::Test {
 };

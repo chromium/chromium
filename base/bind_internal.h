@@ -118,6 +118,17 @@ class OwnedWrapper {
   std::unique_ptr<T, Deleter> ptr_;
 };
 
+template <typename T>
+class OwnedRefWrapper {
+ public:
+  explicit OwnedRefWrapper(const T& t) : t_(t) {}
+  explicit OwnedRefWrapper(T&& t) : t_(std::move(t)) {}
+  T& get() const { return t_; }
+
+ private:
+  mutable T t_;
+};
+
 // PassedWrapper is a copyable adapter for a scoper that ignores const.
 //
 // It is needed to get around the fact that Bind() takes a const reference to
@@ -1261,6 +1272,11 @@ struct BindUnwrapTraits<internal::OwnedWrapper<T, Deleter>> {
   static T* Unwrap(const internal::OwnedWrapper<T, Deleter>& o) {
     return o.get();
   }
+};
+
+template <typename T>
+struct BindUnwrapTraits<internal::OwnedRefWrapper<T>> {
+  static T& Unwrap(const internal::OwnedRefWrapper<T>& o) { return o.get(); }
 };
 
 template <typename T>
