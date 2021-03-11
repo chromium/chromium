@@ -338,6 +338,16 @@ BOOL gChromeLongPressAndForceTouchHandlingEnabled = YES;
   _javaScriptDialogPresenter->SetUIDelegate(_UIDelegate);
 }
 
+#pragma mark - UIResponder
+
+- (BOOL)becomeFirstResponder {
+  if (_webState) {
+    return [_webState->GetWebViewProxy() becomeFirstResponder];
+  } else {
+    return [super becomeFirstResponder];
+  }
+}
+
 #pragma mark - UIView
 
 - (void)didMoveToSuperview {
