@@ -162,6 +162,11 @@ void PermissionPromptBubbleView::Show() {
     widget->ShowInactive();
 
   SizeToContents();
+
+  DCHECK(browser_->window());
+  set_parent_window(
+      platform_util::GetViewForWindow(browser_->window()->GetNativeWindow()));
+
   UpdateAnchorPosition();
   chrome::RecordDialogCreation(chrome::DialogIdentifier::PERMISSIONS);
 }
@@ -214,10 +219,7 @@ void PermissionPromptBubbleView::AddRequestLine(
 }
 
 void PermissionPromptBubbleView::UpdateAnchorPosition() {
-  DCHECK(browser_->window());
-
-  set_parent_window(
-      platform_util::GetViewForWindow(browser_->window()->GetNativeWindow()));
+  DCHECK_EQ(browser_->window()->GetNativeWindow(), parent_window());
 
   bubble_anchor_util::AnchorConfiguration configuration =
       bubble_anchor_util::GetPermissionPromptBubbleAnchorConfiguration(
