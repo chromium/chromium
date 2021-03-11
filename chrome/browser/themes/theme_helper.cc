@@ -389,14 +389,29 @@ SkColor ThemeHelper::GetDefaultColor(
           GetColor(TP::COLOR_NTP_TEXT, incognito, theme_supplier), 0.40);
     case TP::COLOR_TAB_THROBBER_SPINNING:
     case TP::COLOR_TAB_THROBBER_WAITING: {
-      SkColor base_color =
-          ui::GetAuraColor(id == TP::COLOR_TAB_THROBBER_SPINNING
-                               ? ui::NativeTheme::kColorId_ThrobberSpinningColor
-                               : ui::NativeTheme::kColorId_ThrobberWaitingColor,
-                           ui::NativeTheme::GetInstanceForNativeUi());
-      color_utils::HSL hsl =
-          GetTint(TP::TINT_BUTTONS, incognito, theme_supplier);
-      return color_utils::HSLShift(base_color, hsl);
+      // Similar to the code in BrowserThemeProvider::HasCustomColor(), here we
+      // decide the toolbar button icon has a custom color if the theme supplier
+      // has explicitly specified it or a TINT_BUTTONS value. Unlike that code,
+      // this does not consider TINT_BUTTONS to have been customized just
+      // because it differs from {-1, -1, -1}. The effect is that for the
+      // default light/dark/incognito themes, or custom themes which use the
+      // default toolbar button colors, the default throbber colors will be
+      // used; otherwise the throbber will be colored to match the toolbar
+      // buttons to guarantee visibility.
+      bool has_custom_color = false;
+      const SkColor button_color =
+          GetColor(TP::COLOR_TOOLBAR_BUTTON_ICON, incognito, theme_supplier,
+                   &has_custom_color);
+      color_utils::HSL hsl;
+      return (has_custom_color ||
+              (theme_supplier &&
+               theme_supplier->GetTint(TP::TINT_BUTTONS, &hsl)))
+                 ? button_color
+                 : ui::GetAuraColor(
+                       id == TP::COLOR_TAB_THROBBER_SPINNING
+                           ? ui::NativeTheme::kColorId_ThrobberSpinningColor
+                           : ui::NativeTheme::kColorId_ThrobberWaitingColor,
+                       ui::NativeTheme::GetInstanceForNativeUi());
     }
   }
 
