@@ -147,8 +147,11 @@ void FullRestoreController::SaveWindowImpl(
   DCHECK(window_state);
   aura::Window* window = window_state->window();
 
-  if (!base::Contains(kAppParentContainers, window->parent()->id()))
+  // Only apps whose parent is a certain container can be saved.
+  if (!window->parent() ||
+      !base::Contains(kAppParentContainers, window->parent()->id())) {
     return;
+  }
 
   // Only some app types can be saved.
   if (!base::Contains(
