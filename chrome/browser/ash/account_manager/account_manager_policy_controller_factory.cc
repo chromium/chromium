@@ -6,11 +6,13 @@
 
 #include "ash/components/account_manager/account_manager_factory.h"
 #include "base/no_destructor.h"
+#include "chrome/browser/account_manager_facade_factory.h"
 #include "chrome/browser/ash/account_manager/account_manager_policy_controller.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part.h"
 #include "chrome/browser/profiles/profile.h"
+#include "components/account_manager_core/account_manager_facade.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 
 namespace ash {
@@ -49,6 +51,12 @@ KeyedService* AccountManagerPolicyControllerFactory::BuildServiceInstanceFor(
   if (!account_manager)
     return nullptr;
 
+  auto* account_manager_facade =
+      ::GetAccountManagerFacade(profile->GetPath().value());
+
+  if (!account_manager_facade)
+    return nullptr;
+
   user_manager::User* const user =
       ProfileHelper::Get()->GetUserByProfile(profile);
   if (!user)
@@ -56,6 +64,7 @@ KeyedService* AccountManagerPolicyControllerFactory::BuildServiceInstanceFor(
 
   AccountManagerPolicyController* const service =
       new AccountManagerPolicyController(profile, account_manager,
+                                         account_manager_facade,
                                          user->GetAccountId());
   // Auto-start the Service.
   service->Start();

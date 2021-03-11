@@ -20,15 +20,21 @@
 
 class Profile;
 
+namespace account_manager {
+class AccountManagerFacade;
+}
+
 namespace ash {
 class AccountManager;
 class EduCoexistenceConsentInvalidationController;
 
 class AccountManagerPolicyController : public KeyedService {
  public:
-  AccountManagerPolicyController(Profile* profile,
-                                 AccountManager* account_manager,
-                                 const AccountId& device_account_id);
+  AccountManagerPolicyController(
+      Profile* profile,
+      AccountManager* account_manager,
+      account_manager::AccountManagerFacade* account_manager_facade,
+      const AccountId& device_account_id);
   ~AccountManagerPolicyController() override;
 
   // Starts applying the behaviour required by |AccountManager|
@@ -64,6 +70,7 @@ class AccountManagerPolicyController : public KeyedService {
   // Non-owning pointers.
   Profile* const profile_;
   AccountManager* const account_manager_;
+  account_manager::AccountManagerFacade* const account_manager_facade_;
 
   const AccountId device_account_id_;
 
