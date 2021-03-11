@@ -3011,15 +3011,6 @@ Data from your Incognito session will only be cleared from Chrome when you <ph n
       <message name="IDS_MENU_STOP_IMAGE_DESCRIPTIONS" desc="Menu item to stop getting alt text accessibility image labels/descriptions [CHAR-LIMIT=27]">
         Stop image descriptions
       </message>
-      <message name="IDS_MENU_ADD_TO" desc="Menu item for opening the 'Add to' dialog which can add the page to bookmarks, downloads, home screen, etc. [CHAR-LIMIT=27]">
-        Add to…
-      </message>
-      <message name="IDS_MENU_ADD_TO_DIALOG_TITLE" desc="Menu item for opening the 'Add to' dialog which can add the page to bookmarks, downloads, home screen, etc.">
-        Add to
-      </message>
-      <message name="IDS_MENU_HOMESCREEN" desc="Menu item for adding a shortcut to the Home screen (default title). [CHAR-LIMIT=27]">
-        Home screen
-      </message>
 
       <!-- Bookmarks strings -->
       <message name="IDS_BOOKMARKS" desc="Title of the bookmarks page, which shows a list of the user's bookmarks. [CHAR-LIMIT=18]">
@@ -3131,9 +3122,6 @@ Data from your Incognito session will only be cleared from Chrome when you <ph n
       </message>
 
       <!-- Read later strings -->
-      <message name="IDS_READING_LIST_TITLE" desc="The title for the reading list page in main bookmark UI.">
-        Reading list
-      </message>
       <message name="IDS_READING_LIST_TITLE_NEW" desc="The title for the reading list with a new text.">
         Reading list <ph name="BEGIN_NEW">&lt;new&gt;</ph>New<ph name="END_NEW">&lt;/new&gt;</ph>
       </message>

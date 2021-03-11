@@ -676,8 +676,6 @@ chrome_java_resources = [
   "java/res/layout/account_chooser_dialog_title.xml",
   "java/res/layout/account_divider_preference.xml",
   "java/res/layout/account_management_account_row.xml",
-  "java/res/layout/add_to_menu_dialog.xml",
-  "java/res/layout/add_to_menu_dialog_item.xml",
   "java/res/layout/assistant_voice_search_consent_ui.xml",
   "java/res/layout/auto_sign_in_first_run_dialog.xml",
   "java/res/layout/autofill_billing_address_dropdown.xml",

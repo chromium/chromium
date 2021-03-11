@@ -349,8 +349,7 @@ public abstract class BaseCustomTabActivity extends ChromeActivity<BaseCustomTab
                 mIntentDataProvider.shouldShowShareMenuItem(),
                 mIntentDataProvider.shouldShowStarButton(),
                 mIntentDataProvider.shouldShowDownloadButton(), mIntentDataProvider.isIncognito(),
-                getModalDialogManager(), new WebFeedBridge(),
-                mIntentDataProvider.shouldShowOpenInChromeMenuItem());
+                new WebFeedBridge(), mIntentDataProvider.shouldShowOpenInChromeMenuItem());
     }
 
     @Override

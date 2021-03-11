@@ -2045,9 +2045,6 @@ const FeatureEntry::FeatureParam
 const FeatureEntry::FeatureParam
     kTabbedAppOverflowMenuThreeButtonActionbarDestination[] = {
         {"three_button_action_bar", "destination_chip_view"}};
-const FeatureEntry::FeatureParam
-    kTabbedAppOverflowMenuThreeButtonAddToOption[] = {
-        {"three_button_action_bar", "add_to_option"}};
 const FeatureEntry::FeatureVariation
     kTabbedAppOverflowMenuThreeButtonActionbarVariations[] = {
         {"(three button with action chip view)",
@@ -2056,10 +2053,7 @@ const FeatureEntry::FeatureVariation
         {"(three button with destination chip view)",
          kTabbedAppOverflowMenuThreeButtonActionbarDestination,
          base::size(kTabbedAppOverflowMenuThreeButtonActionbarDestination),
-         nullptr},
-        {"(three button with add to option)",
-         kTabbedAppOverflowMenuThreeButtonAddToOption,
-         base::size(kTabbedAppOverflowMenuThreeButtonAddToOption), nullptr}};
+         nullptr}};
 
 // Request Desktop Site on Tablet by default variations.
 const FeatureEntry::FeatureParam kRequestDesktopSiteForTablets768[] = {

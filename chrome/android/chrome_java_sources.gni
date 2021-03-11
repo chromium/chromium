@@ -67,7 +67,6 @@ chrome_java_sources = [
   "java/src/org/chromium/chrome/browser/accessibility_tab_switcher/OverviewListLayout.java",
   "java/src/org/chromium/chrome/browser/announcement/AnnouncementNotificationManager.java",
   "java/src/org/chromium/chrome/browser/app/ChromeActivity.java",
-  "java/src/org/chromium/chrome/browser/app/appmenu/AddToMenuItemViewBinder.java",
   "java/src/org/chromium/chrome/browser/app/appmenu/AppMenuPropertiesDelegateImpl.java",
   "java/src/org/chromium/chrome/browser/app/appmenu/ChipViewMenuItemViewBinder.java",
   "java/src/org/chromium/chrome/browser/app/appmenu/DividerLineMenuItemViewBinder.java",

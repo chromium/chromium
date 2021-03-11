@@ -22,7 +22,6 @@ import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ActivityTabProvider;
 import org.chromium.chrome.browser.ActivityTabProvider.ActivityTabTabObserver;
 import org.chromium.chrome.browser.app.ChromeActivity;
-import org.chromium.chrome.browser.app.appmenu.AppMenuPropertiesDelegateImpl;
 import org.chromium.chrome.browser.banners.AppBannerInProductHelpController;
 import org.chromium.chrome.browser.banners.AppBannerInProductHelpControllerFactory;
 import org.chromium.chrome.browser.bookmarks.BookmarkBridge;
@@ -414,7 +413,7 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
                         mActivity, mAppMenuCoordinator.getAppMenuHandler(),
                         ()
                                 -> mActivity.getToolbarManager().getMenuButtonView(),
-                                AppMenuPropertiesDelegateImpl.getAddToHomescreenId(), TrackerFactory::getTrackerForProfile);
+                        R.id.add_to_homescreen_id, TrackerFactory::getTrackerForProfile);
         AppBannerInProductHelpControllerFactory.attach(
                 mActivity.getWindowAndroid(), mAppBannerInProductHelpController);
 

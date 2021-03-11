@@ -807,8 +807,7 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
     public AppMenuPropertiesDelegate createAppMenuPropertiesDelegate() {
         return new AppMenuPropertiesDelegateImpl(this, getActivityTabProvider(),
                 getMultiWindowModeStateDispatcher(), getTabModelSelector(), getToolbarManager(),
-                getWindow().getDecorView(), null, mBookmarkBridgeSupplier, getModalDialogManager(),
-                new WebFeedBridge());
+                getWindow().getDecorView(), null, mBookmarkBridgeSupplier, new WebFeedBridge());
     }
 
     /**
@@ -2226,24 +2225,13 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
             return false;
         }
 
-        if (id == R.id.bookmark_this_page_id || id == R.id.bookmark_this_page_chip_id
-                || id == R.id.add_to_bookmarks_menu_id) {
+        if (id == R.id.bookmark_this_page_id || id == R.id.bookmark_this_page_chip_id) {
             addOrEditBookmark(currentTab);
             RecordUserAction.record("MobileMenuAddToBookmarks");
             return true;
         }
 
-        if (id == R.id.add_to_reading_list_menu_id) {
-            mBookmarkBridgeSupplier.get().finishLoadingBookmarkModel(() -> {
-                BookmarkUtils.addToReadingList(currentTab.getOriginalUrl(), currentTab.getTitle(),
-                        this.getSnackbarManager(), mBookmarkBridgeSupplier.get(), this);
-            });
-            RecordUserAction.record("MobileMenuAddToReadingList");
-            return true;
-        }
-
-        if (id == R.id.offline_page_id || id == R.id.offline_page_chip_id
-                || id == R.id.add_to_downloads_menu_id) {
+        if (id == R.id.offline_page_id || id == R.id.offline_page_chip_id) {
             DownloadUtils.downloadOfflinePage(this, currentTab);
             RecordUserAction.record("MobileMenuDownloadPage");
             return true;
@@ -2297,8 +2285,7 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
             return false;
         }
 
-        if (id == R.id.add_to_homescreen_id || id == R.id.add_to_homescreen_menu_id
-                || id == R.id.install_app_id) {
+        if (id == R.id.add_to_homescreen_id) {
             RecordUserAction.record("MobileMenuAddToHomescreen");
             if (ChromeFeatureList.isEnabled(ChromeFeatureList.PWA_INSTALL_USE_BOTTOMSHEET)) {
                 PwaBottomSheetController controller =
@@ -2314,7 +2301,7 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
             return true;
         }
 
-        if (id == R.id.open_webapk_id || id == R.id.menu_open_webapk_id) {
+        if (id == R.id.open_webapk_id) {
             Context context = ContextUtils.getApplicationContext();
             String packageName =
                     WebApkValidator.queryFirstWebApkPackage(context, currentTab.getUrlString());

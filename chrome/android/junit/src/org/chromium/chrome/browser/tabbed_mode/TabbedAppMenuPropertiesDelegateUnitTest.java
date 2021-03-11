@@ -59,7 +59,6 @@ import org.chromium.content.browser.ContentFeatureListImplJni;
 import org.chromium.content_public.browser.ContentFeatureList;
 import org.chromium.content_public.browser.NavigationController;
 import org.chromium.content_public.browser.WebContents;
-import org.chromium.ui.modaldialog.ModalDialogManager;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -111,8 +110,6 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
     @Mock
     private ContentFeatureListImpl.Natives mContentFeatureListJniMock;
     @Mock
-    private ModalDialogManager mModalDialogManager;
-    @Mock
     private WebFeedBridge mWebFeedBridge;
 
     private OneshotSupplierImpl<OverviewModeBehavior> mOverviewModeSupplier =
@@ -147,11 +144,10 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
         when(mWebFeedBridge.getFollowedIds(any())).thenReturn(null);
         FeatureList.setTestCanUseDefaultsForTesting();
 
-        mTabbedAppMenuPropertiesDelegate = Mockito.spy(
-                new TabbedAppMenuPropertiesDelegate(ContextUtils.getApplicationContext(),
-                        mActivityTabProvider, mMultiWindowModeStateDispatcher, mTabModelSelector,
-                        mToolbarManager, mDecorView, mAppMenuDelegate, mOverviewModeSupplier,
-                        mBookmarkBridgeSupplier, mModalDialogManager, mWebFeedBridge));
+        mTabbedAppMenuPropertiesDelegate = Mockito.spy(new TabbedAppMenuPropertiesDelegate(
+                ContextUtils.getApplicationContext(), mActivityTabProvider,
+                mMultiWindowModeStateDispatcher, mTabModelSelector, mToolbarManager, mDecorView,
+                mAppMenuDelegate, mOverviewModeSupplier, mBookmarkBridgeSupplier, mWebFeedBridge));
     }
 
     @Test
