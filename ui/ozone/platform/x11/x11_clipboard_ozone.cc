@@ -222,7 +222,7 @@ void X11ClipboardOzone::OnSelectionNotify(
 
   // RequestClipboardData.
   if (static_cast<x11::Atom>(event.property) == x_property_) {
-    x11::Atom type;
+    x11::Atom type = x11::Atom::None;
     std::vector<uint8_t> data;
     GetArrayProperty(x_window_, x_property_, &data, &type);
     x11::DeleteProperty(x_window_, x_property_);
