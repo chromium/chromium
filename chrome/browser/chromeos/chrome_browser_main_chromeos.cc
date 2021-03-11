@@ -143,7 +143,7 @@
 #include "chrome/browser/ui/ash/assistant/assistant_state_client.h"
 #include "chrome/browser/ui/ash/image_downloader_impl.h"
 #include "chrome/browser/ui/ash/keyboard/chrome_keyboard_controller_client.h"
-#include "chrome/browser/ui/webui/chromeos/emoji/emoji_dialog.h"
+#include "chrome/browser/ui/webui/chromeos/emoji/emoji_ui.h"
 #include "chrome/common/channel_info.h"
 #include "chrome/common/chrome_constants.h"
 #include "chrome/common/chrome_features.h"
@@ -707,10 +707,6 @@ void ChromeBrowserMainPartsChromeos::PreProfileInit() {
   // on ChromeKeyboardControllerClient.
   chrome_keyboard_controller_client_ = ChromeKeyboardControllerClient::Create();
 
-  if (base::FeatureList::IsEnabled(chromeos::features::kImeSystemEmojiPicker)) {
-    ui::SetShowEmojiKeyboardCallback(
-        base::BindRepeating(&EmojiPickerDialog::Show));
-  }
 
   // ProfileHelper has to be initialized after UserManager instance is created.
   ProfileHelper::Get()->Initialize();
@@ -934,6 +930,11 @@ void ChromeBrowserMainPartsChromeos::PostProfileInit() {
     // possible when we are restoring session or skipping login screen for some
     // other reason.
     ProfileHelper::GetSigninProfile();
+  }
+
+  if (base::FeatureList::IsEnabled(chromeos::features::kImeSystemEmojiPicker)) {
+    ui::SetShowEmojiKeyboardCallback(
+        base::BindRepeating(&EmojiUI::Show, base::Unretained(profile())));
   }
 
   BootTimesRecorder::Get()->OnChromeProcessStart();

@@ -5707,6 +5707,11 @@ You can manage this account’s settings by installing the Family Link app on yo
     Autocorrect undo dialog is shown for <ph name="TYPED_WORD">$1<ex>hllo</ex></ph> corrected to <ph name="CORRECTED_WORD">$2<ex>hello</ex></ph>.  Press up arrow to access, escape to ignore.
   </message>
 
+  <!-- Strings for emoji picker-->
+  <message name="IDS_ACCNAME_EMOJI_PICKER" desc="The accessible name for the emoji picker.">
+    Emoji Picker
+  </message>
+
   <!-- Strings for Custom Tab UI -->
   <message name="IDS_CUSTOM_TABS_ACTION_MENU_ACCESSIBLE_NAME" desc="Accessible name for the overflow menu of the Chrome Custom Tab toolbar.">
     Action menu button

@@ -1,0 +1,25 @@
+// Copyright 2020 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module emoji_picker.mojom;
+
+
+// Used by the WebUI page to bootstrap bidirectional communication.
+interface PageHandlerFactory {
+  // The WebUI calls this method when the page is first initialized.
+  CreatePageHandler(pending_receiver<PageHandler> handler);
+};
+
+// Browser-side handler for requests from WebUI page.
+interface PageHandler {
+
+  // Request the UI to be shown.  Using this interface, dialog can be invisible
+  // while rendering to avoid UI showing in incomplete state.
+  ShowUI();
+
+  // Request backend to insert emoji (will close the picker).
+  // emoji: The emoji to insert in string form e.g. "😂".
+  // is_variant: If the emoji is a variant / base emoji, used for metrics.
+  InsertEmoji(string emoji, bool is_variant);
+};

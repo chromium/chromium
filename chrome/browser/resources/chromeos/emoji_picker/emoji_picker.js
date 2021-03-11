@@ -13,6 +13,7 @@ import {afterNextRender, html, PolymerElement} from 'chrome://resources/polymer/
 
 import {EMOJI_ICON_SIZE, EMOJI_PER_ROW, EMOJI_PICKER_HEIGHT_PX, EMOJI_PICKER_PADDING_PX, EMOJI_PICKER_WIDTH_PX, EMOJI_SIZE_PX, GROUP_ICON_SIZE, GROUP_PER_ROW} from './constants.js';
 import {EmojiButton} from './emoji_button.js';
+import {EmojiPickerApiProxy, EmojiPickerApiProxyImpl} from './emoji_picker_api_proxy.js';
 import {createCustomEvent, EMOJI_BUTTON_CLICK, EMOJI_DATA_LOADED, EMOJI_VARIANTS_SHOWN, EmojiVariantsShownEvent, GROUP_BUTTON_CLICK} from './events.js';
 import {RecentEmojiStore} from './store.js';
 import {Emoji, EmojiGroup, EmojiGroupData, EmojiVariants} from './types.js';
@@ -140,6 +141,9 @@ export class EmojiPicker extends PolymerElement {
     /** @private {?EmojiButton} */
     this.activeVariant = null;
 
+    /** @private {!EmojiPickerApiProxy} */
+    this.apiProxy_ = EmojiPickerApiProxyImpl.getInstance();
+
     /** @private {boolean} */
     this.autoScrollingToGroup = false;
 
@@ -156,6 +160,7 @@ export class EmojiPicker extends PolymerElement {
         ev => this.onShowEmojiVariants(
             /** @type {!EmojiVariantsShownEvent} */ (ev)));
     this.addEventListener('click', () => this.hideEmojiVariants());
+    this.apiProxy_.showUI();
   }
 
   ready() {
@@ -183,12 +188,11 @@ export class EmojiPicker extends PolymerElement {
    * @param {!string} emoji
    */
   insertEmoji(emoji, isVariant) {
-    chrome.send('insertEmoji', [emoji, isVariant]);
+    this.$.message.textContent = emoji + ' inserted.';
     this.recentEmojiStore.bumpEmoji(emoji);
     this.set(
         ['history', 'emoji'], makeRecentlyUsed(this.recentEmojiStore.data));
-
-    this.$.message.textContent = emoji + ' inserted.';
+    this.apiProxy_.insertEmoji(emoji, isVariant);
   }
 
   /**

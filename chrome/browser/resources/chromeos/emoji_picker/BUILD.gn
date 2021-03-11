@@ -29,6 +29,7 @@ fuse_grdp_file = "$target_gen_dir/fuse.grdp"
 generate_grd("build_grd") {
   deps = [
     ":build_fuse_grdp",
+    ":build_mojo_grdp",
     ":build_preprocessed_grdp",
     ":emoji_data",
   ]
@@ -40,12 +41,26 @@ generate_grd("build_grd") {
     "index.html",
     "store.js",
     "types.js",
+    "emoji_picker_api_proxy.js",
   ]
   grdp_files = [
     preprocessed_grdp_file,
     fuse_grdp_file,
+    "$target_gen_dir/mojo_resources.grdp",
   ]
   input_files_base_dir = rebase_path(".", "//")
+}
+
+generate_grd("build_mojo_grdp") {
+  grd_prefix = "emoji_picker"
+  out_grd = "$target_gen_dir/mojo_resources.grdp"
+  deps = [ "//chrome/browser/ui/webui/chromeos/emoji:mojo_bindings_webui_js" ]
+  input_files = [ "emoji_picker.mojom-webui.js" ]
+  input_files_base_dir =
+      rebase_path(
+          "${root_gen_dir}/mojom-webui/chrome/browser/ui/webui/chromeos/emoji",
+          "$root_build_dir")
+  resource_path_rewrites = [ "emoji-picker.mojom-webui.js|chrome/browser/ui/webui/chromeos/emoji/emoji-picker.mojom-webui.js" ]
 }
 
 generate_grd("build_preprocessed_grdp") {
@@ -111,6 +126,7 @@ js_library("emoji_picker") {
     ":constants",
     ":emoji_group",
     ":emoji_group_button",
+    ":emoji_picker_api_proxy",
     ":emoji_search",
     ":events",
     ":store",
@@ -119,6 +135,13 @@ js_library("emoji_picker") {
     "//ui/webui/resources/js:assert.m",
   ]
   externs_list = [ "$externs_path/chrome_send.js" ]
+}
+
+js_library("emoji_picker_api_proxy") {
+  deps = [
+    "//chrome/browser/ui/webui/chromeos/emoji:mojo_bindings_webui_js",
+    "//ui/webui/resources/js:cr.m",
+  ]
 }
 
 js_library("emoji_group_button") {
@@ -185,12 +208,19 @@ js_library("store") {
 
 js_type_check("closure_compile") {
   is_polymer3 = true
+  closure_flags = default_closure_args + mojom_js_args + [
+                    "js_module_root=" + rebase_path(".", root_build_dir),
+                    "js_module_root=" + rebase_path(
+                            "$root_gen_dir/mojom-webui/chrome/browser/ui/webui/chromeos/emoji",
+                            root_build_dir),
+                  ]
   deps = [
     ":constants",
     ":emoji_button",
     ":emoji_group",
     ":emoji_group_button",
     ":emoji_picker",
+    ":emoji_picker_api_proxy",
     ":emoji_search",
     ":emoji_variants",
     ":events",

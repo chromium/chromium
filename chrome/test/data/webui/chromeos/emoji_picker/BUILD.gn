@@ -6,10 +6,16 @@ import("//third_party/closure_compiler/compile_js.gni")
 
 js_type_check("closure_compile") {
   is_polymer3 = true
-  closure_flags = default_closure_args + [
+  closure_flags = default_closure_args + mojom_js_args + [
                     "browser_resolver_prefix_replacements=\"chrome://emoji-picker/=../../chrome/browser/resources/chromeos/emoji_picker/\"",
                     "js_module_root=../../chrome/test/data/webui/",
                     "js_module_root=./gen/chrome/test/data/webui/",
+                    "js_module_root=" + rebase_path(
+                            "//chrome/browser/resources/chromeos/emoji_picker/",
+                            root_build_dir),
+                    "js_module_root=" + rebase_path(
+                            "$root_gen_dir/mojom-webui/chrome/browser/ui/webui/chromeos/emoji",
+                            root_build_dir),
                   ]
   deps = [
     ":emoji_picker_store_test",

@@ -170,6 +170,8 @@
 #include "chrome/browser/ui/webui/chromeos/crostini_installer/crostini_installer_ui.h"
 #include "chrome/browser/ui/webui/chromeos/crostini_upgrader/crostini_upgrader.mojom.h"
 #include "chrome/browser/ui/webui/chromeos/crostini_upgrader/crostini_upgrader_ui.h"
+#include "chrome/browser/ui/webui/chromeos/emoji/emoji_picker.mojom.h"
+#include "chrome/browser/ui/webui/chromeos/emoji/emoji_ui.h"
 #include "chrome/browser/ui/webui/chromeos/internet_config_dialog.h"
 #include "chrome/browser/ui/webui/chromeos/internet_detail_dialog.h"
 #include "chrome/browser/ui/webui/chromeos/login/oobe_ui.h"
@@ -836,6 +838,11 @@ void PopulateChromeWebUIFrameBinders(
 
   RegisterWebUIControllerInterfaceBinder<chromeos::scanning::mojom::ScanService,
                                          chromeos::ScanningUI>(map);
+
+  if (base::FeatureList::IsEnabled(chromeos::features::kImeSystemEmojiPicker)) {
+    RegisterWebUIControllerInterfaceBinder<
+        emoji_picker::mojom::PageHandlerFactory, chromeos::EmojiUI>(map);
+  }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH) && !defined(OFFICIAL_BUILD)
