@@ -120,10 +120,10 @@ class WPTAndroidAdapter(wpt_common.BaseWptScriptAdapter):
     rest_args.extend([self.options.wpt_path])
 
     # TODO(crbug.com/1166741): We should be running WPT under Python 3.
-    rest_args.extend(["--py3"])
+    rest_args.extend(["--py2"])
 
     # vpython has packages needed by wpt, so force it to skip the setup
-    rest_args.extend(["--venv=" + SRC_DIR, "--skip-venv-setup"])
+    rest_args.extend(["--venv=../../", "--skip-venv-setup"])
 
     rest_args.extend(["run",
       "--tests=" + wpt_common.EXTERNAL_WPT_TESTS_DIR,
@@ -177,7 +177,6 @@ class WPTAndroidAdapter(wpt_common.BaseWptScriptAdapter):
          self._metadata_dir,
          '--additional-expectations',
          ANDROID_DISABLED_TESTS,
-         "--no-process-baselines",
     ]
     metadata_builder_cmd.extend(self._extra_metadata_builder_args())
     return common.run_command(metadata_builder_cmd)

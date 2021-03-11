@@ -30,15 +30,9 @@ python_library("webview_cts_tests") {
   data = [ "//android_webview/tools/cts_config/" ]
 }
 
-script_test("system_webview_wpt") {
-  script = "//testing/scripts/run_android_wpt.py"
-  args = [
-    "--product=android_webview",
-    "--webview-provider=apks/SystemWebView.apk",
-    "--system-webview-shell=apks/SystemWebViewShell.apk",
-    "--webdriver-binary=clang_x64/chromedriver",
-    "-v",
-  ]
+python_library("system_webview_wpt") {
+  testonly = true
+  pydeps_file = "//testing/scripts/run_android_wpt.pydeps"
   data_deps = [
     "//android_webview:system_webview_apk",
     "//android_webview/tools/system_webview_shell:system_webview_shell_layout_test_apk",
