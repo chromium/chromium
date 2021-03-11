@@ -118,6 +118,7 @@ class ArcContainerClientAdapter
         params.arc_disable_system_default_app);
     request.set_disable_media_store_maintenance(
         params.disable_media_store_maintenance);
+    request.set_disable_download_provider(params.disable_download_provider);
     request.set_arc_generate_pai(params.arc_generate_play_auto_install);
 
     switch (params.usap_profile) {
@@ -128,11 +129,6 @@ class ArcContainerClientAdapter
       case StartParams::UsapProfile::M16G:
         VLOG(1) << "USAP profile is not supported for container.";
         break;
-    }
-
-    if (params.disable_download_provider) {
-      VLOG(1) << "Disabling download provider is not supported for "
-              << "container.";
     }
 
     chromeos::SessionManagerClient::Get()->StartArcMiniContainer(

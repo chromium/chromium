@@ -106,6 +106,27 @@ TEST_F(ArcContainerClientAdapterTest, StartArc_DisableMediaStoreMaintenance) {
   EXPECT_TRUE(request.disable_media_store_maintenance());
 }
 
+TEST_F(ArcContainerClientAdapterTest, StartArc_DisableDownloadProviderDefault) {
+  StartParams start_params;
+  client_adapter()->StartMiniArc(std::move(start_params),
+                                 base::BindOnce(&OnMiniInstanceStarted));
+  const auto& request = chromeos::FakeSessionManagerClient::Get()
+                            ->last_start_arc_mini_container_request();
+  EXPECT_TRUE(request.has_disable_download_provider());
+  EXPECT_FALSE(request.disable_download_provider());
+}
+
+TEST_F(ArcContainerClientAdapterTest, StartArc_DisableDownloadProviderOn) {
+  StartParams start_params;
+  start_params.disable_download_provider = true;
+  client_adapter()->StartMiniArc(std::move(start_params),
+                                 base::BindOnce(&OnMiniInstanceStarted));
+  const auto& request = chromeos::FakeSessionManagerClient::Get()
+                            ->last_start_arc_mini_container_request();
+  EXPECT_TRUE(request.has_disable_download_provider());
+  EXPECT_TRUE(request.disable_download_provider());
+}
+
 struct DalvikMemoryProfileTestParam {
   // Requested profile.
   StartParams::DalvikMemoryProfile profile;
