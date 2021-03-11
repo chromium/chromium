@@ -4,7 +4,7 @@
 
 // https://gpuweb.github.io/gpuweb/
 
-dictionary GPUVertexAttributeDescriptor {
+dictionary GPUVertexAttribute {
     required GPUVertexFormat format;
     required GPUSize64 offset;
     required GPUIndex32 shaderLocation;

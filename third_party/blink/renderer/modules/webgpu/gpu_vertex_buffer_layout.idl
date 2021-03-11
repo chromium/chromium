@@ -4,10 +4,10 @@
 
 // https://gpuweb.github.io/gpuweb/
 
-dictionary GPUVertexBufferLayoutDescriptor {
+dictionary GPUVertexBufferLayout {
     required GPUSize64 arrayStride;
     GPUInputStepMode stepMode = "vertex";
-    required sequence<GPUVertexAttributeDescriptor> attributes;
+    required sequence<GPUVertexAttribute> attributes;
 };
 
 enum GPUInputStepMode {

@@ -10,8 +10,8 @@ dictionary GPURenderPipelineDescriptor : GPUPipelineDescriptorBase {
 
     required GPUPrimitiveTopology primitiveTopology;
     GPURasterizationStateDescriptor rasterizationState = {};
-    required sequence<GPUColorTargetState> colorStates;
-    GPUDepthStencilState depthStencilState;
+    required sequence<GPUColorStateDescriptor> colorStates;
+    GPUDepthStencilStateDescriptor depthStencilState;
     GPUVertexStateDescriptor vertexState = {};
 
     GPUSize32 sampleCount = 1;

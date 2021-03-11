@@ -7,7 +7,7 @@
 dictionary GPUVertexStateDescriptor {
     GPUIndexFormat indexFormat;
     // TODO(crbug.com/951629): Make this a sequence of nullables.
-    object vertexBuffers; // We validate this is an array of nullable GPUVertexBufferLayoutDescriptor
+    object vertexBuffers; // We validate this is an array of nullable GPUVertexBufferLayout
 };
 
 enum GPUIndexFormat {

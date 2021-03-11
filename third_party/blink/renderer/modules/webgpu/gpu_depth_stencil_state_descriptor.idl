@@ -1,10 +1,10 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 // https://gpuweb.github.io/gpuweb/
 
-dictionary GPUDepthStencilState {
+dictionary GPUDepthStencilStateDescriptor {
     required GPUTextureFormat format;
 
     boolean depthWriteEnabled = false;
@@ -15,8 +15,4 @@ dictionary GPUDepthStencilState {
 
     GPUStencilValue stencilReadMask = 0xFFFFFFFF;
     GPUStencilValue stencilWriteMask = 0xFFFFFFFF;
-
-    GPUDepthBias depthBias = 0;
-    float depthBiasSlopeScale = 0;
-    float depthBiasClamp = 0;
 };

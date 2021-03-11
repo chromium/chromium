@@ -5,14 +5,14 @@
 #include "third_party/blink/renderer/modules/webgpu/gpu_render_pipeline.h"
 
 #include "third_party/blink/renderer/bindings/core/v8/native_value_traits_impl.h"
-#include "third_party/blink/renderer/bindings/modules/v8/v8_gpu_blend_state.h"
-#include "third_party/blink/renderer/bindings/modules/v8/v8_gpu_color_target_state.h"
-#include "third_party/blink/renderer/bindings/modules/v8/v8_gpu_depth_stencil_state.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_gpu_blend_component.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_gpu_color_state_descriptor.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_gpu_depth_stencil_state_descriptor.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_gpu_rasterization_state_descriptor.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_gpu_render_pipeline_descriptor.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_gpu_stencil_face_state.h"
-#include "third_party/blink/renderer/bindings/modules/v8/v8_gpu_vertex_attribute_descriptor.h"
-#include "third_party/blink/renderer/bindings/modules/v8/v8_gpu_vertex_buffer_layout_descriptor.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_gpu_vertex_attribute.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_gpu_vertex_buffer_layout.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_gpu_vertex_state_descriptor.h"
 #include "third_party/blink/renderer/modules/webgpu/gpu_bind_group_layout.h"
 #include "third_party/blink/renderer/modules/webgpu/gpu_device.h"
@@ -24,7 +24,7 @@ namespace blink {
 
 namespace {
 
-WGPUBlendDescriptor AsDawnType(const GPUBlendState* webgpu_desc) {
+WGPUBlendDescriptor AsDawnType(const GPUBlendComponent* webgpu_desc) {
   DCHECK(webgpu_desc);
 
   WGPUBlendDescriptor dawn_desc = {};
@@ -38,7 +38,8 @@ WGPUBlendDescriptor AsDawnType(const GPUBlendState* webgpu_desc) {
 
 }  // anonymous namespace
 
-WGPUColorStateDescriptor AsDawnType(const GPUColorTargetState* webgpu_desc) {
+WGPUColorStateDescriptor AsDawnType(
+    const GPUColorStateDescriptor* webgpu_desc) {
   DCHECK(webgpu_desc);
 
   WGPUColorStateDescriptor dawn_desc = {};
@@ -69,7 +70,7 @@ WGPUStencilStateFaceDescriptor AsDawnType(
 }
 
 WGPUDepthStencilStateDescriptor AsDawnType(
-    const GPUDepthStencilState* webgpu_desc) {
+    const GPUDepthStencilStateDescriptor* webgpu_desc) {
   DCHECK(webgpu_desc);
 
   WGPUDepthStencilStateDescriptor dawn_desc = {};
@@ -153,6 +154,89 @@ const char* GetUpdatedVertexFormat(WGPUVertexFormat format) {
   }
 }
 
+void AsDawnVertexBufferLayouts(
+    v8::Isolate* isolate,
+    GPUDevice* device,
+    v8::Local<v8::Value> vertex_buffers_value,
+    Vector<WGPUVertexBufferLayoutDescriptor>* dawn_vertex_buffers,
+    Vector<WGPUVertexAttributeDescriptor>* dawn_vertex_attributes,
+    ExceptionState& exception_state) {
+  if (!vertex_buffers_value->IsArray()) {
+    exception_state.ThrowTypeError("vertexBuffers must be an array");
+    return;
+  }
+
+  v8::Local<v8::Context> context = isolate->GetCurrentContext();
+  v8::Local<v8::Array> vertex_buffers = vertex_buffers_value.As<v8::Array>();
+
+  // First we collect all the descriptors but we don't set
+  // WGPUVertexBufferLayoutDescriptor::attributes
+  // TODO(cwallez@chromium.org): Should we validate the Length() first so we
+  // don't risk creating HUGE vectors of WGPUVertexBufferLayoutDescriptor from
+  // the sparse array?
+  for (uint32_t i = 0; i < vertex_buffers->Length(); ++i) {
+    // This array can be sparse. Skip empty slots.
+    v8::MaybeLocal<v8::Value> maybe_value = vertex_buffers->Get(context, i);
+    v8::Local<v8::Value> value;
+    if (!maybe_value.ToLocal(&value) || value.IsEmpty() ||
+        value->IsNullOrUndefined()) {
+      WGPUVertexBufferLayoutDescriptor dawn_vertex_buffer = {};
+      dawn_vertex_buffer.arrayStride = 0;
+      dawn_vertex_buffer.stepMode = WGPUInputStepMode_Vertex;
+      dawn_vertex_buffer.attributeCount = 0;
+      dawn_vertex_buffer.attributes = nullptr;
+      dawn_vertex_buffers->push_back(dawn_vertex_buffer);
+      continue;
+    }
+
+    GPUVertexBufferLayout* vertex_buffer =
+        NativeValueTraits<GPUVertexBufferLayout>::NativeValue(isolate, value,
+                                                              exception_state);
+    if (exception_state.HadException()) {
+      return;
+    }
+
+    WGPUVertexBufferLayoutDescriptor dawn_vertex_buffer = {};
+    dawn_vertex_buffer.arrayStride = vertex_buffer->arrayStride();
+    dawn_vertex_buffer.stepMode =
+        AsDawnEnum<WGPUInputStepMode>(vertex_buffer->stepMode());
+    dawn_vertex_buffer.attributeCount =
+        static_cast<uint32_t>(vertex_buffer->attributes().size());
+    dawn_vertex_buffer.attributes = nullptr;
+    dawn_vertex_buffers->push_back(dawn_vertex_buffer);
+
+    for (wtf_size_t j = 0; j < vertex_buffer->attributes().size(); ++j) {
+      const GPUVertexAttribute* attribute = vertex_buffer->attributes()[j];
+      WGPUVertexAttributeDescriptor dawn_vertex_attribute = {};
+      dawn_vertex_attribute.shaderLocation = attribute->shaderLocation();
+      dawn_vertex_attribute.offset = attribute->offset();
+      dawn_vertex_attribute.format =
+          AsDawnEnum<WGPUVertexFormat>(attribute->format());
+      if (dawn_vertex_attribute.format >= WGPUVertexFormat_UChar2) {
+        WTF::String message =
+            String("The vertex format '") +
+            IDLEnumAsString(attribute->format()) +
+            String("' has been deprecated in favor of '") +
+            GetUpdatedVertexFormat(dawn_vertex_attribute.format) + "'.";
+        device->AddConsoleWarning(message.Utf8().data());
+      }
+      dawn_vertex_attributes->push_back(dawn_vertex_attribute);
+    }
+  }
+
+  // Set up pointers in DawnVertexBufferLayoutDescriptor::attributes only
+  // after we stopped appending to the vector so the pointers aren't
+  // invalidated.
+  uint32_t attributeIndex = 0;
+  for (WGPUVertexBufferLayoutDescriptor& buffer : *dawn_vertex_buffers) {
+    if (buffer.attributeCount == 0) {
+      continue;
+    }
+    buffer.attributes = &(*dawn_vertex_attributes)[attributeIndex];
+    attributeIndex += buffer.attributeCount;
+  }
+}
+
 void GPUVertexStateAsWGPUVertexState(
     v8::Isolate* isolate,
     GPUDevice* device,
@@ -177,81 +261,9 @@ void GPUVertexStateAsWGPUVertexState(
     // TODO(crbug.com/951629): Use a sequence of nullable descriptors.
     v8::Local<v8::Value> vertex_buffers_value =
         descriptor->vertexBuffers().V8Value();
-    if (!vertex_buffers_value->IsArray()) {
-      exception_state.ThrowTypeError("vertexBuffers must be an array");
-      return;
-    }
-
-    v8::Local<v8::Context> context = isolate->GetCurrentContext();
-    v8::Local<v8::Array> vertex_buffers = vertex_buffers_value.As<v8::Array>();
-
-    // First we collect all the descriptors but we don't set
-    // WGPUVertexBufferLayoutDescriptor::attributes
-    // TODO(cwallez@chromium.org): Should we validate the Length() first so we
-    // don't risk creating HUGE vectors of WGPUVertexBufferLayoutDescriptor from
-    // the sparse array?
-    for (uint32_t i = 0; i < vertex_buffers->Length(); ++i) {
-      // This array can be sparse. Skip empty slots.
-      v8::MaybeLocal<v8::Value> maybe_value = vertex_buffers->Get(context, i);
-      v8::Local<v8::Value> value;
-      if (!maybe_value.ToLocal(&value) || value.IsEmpty() ||
-          value->IsNullOrUndefined()) {
-        WGPUVertexBufferLayoutDescriptor dawn_vertex_buffer = {};
-        dawn_vertex_buffer.arrayStride = 0;
-        dawn_vertex_buffer.stepMode = WGPUInputStepMode_Vertex;
-        dawn_vertex_buffer.attributeCount = 0;
-        dawn_vertex_buffer.attributes = nullptr;
-        dawn_vertex_buffers->push_back(dawn_vertex_buffer);
-        continue;
-      }
-
-      GPUVertexBufferLayoutDescriptor* vertex_buffer =
-          NativeValueTraits<GPUVertexBufferLayoutDescriptor>::NativeValue(
-              isolate, value, exception_state);
-      if (exception_state.HadException()) {
-        return;
-      }
-
-      WGPUVertexBufferLayoutDescriptor dawn_vertex_buffer = {};
-      dawn_vertex_buffer.arrayStride = vertex_buffer->arrayStride();
-      dawn_vertex_buffer.stepMode =
-          AsDawnEnum<WGPUInputStepMode>(vertex_buffer->stepMode());
-      dawn_vertex_buffer.attributeCount =
-          static_cast<uint32_t>(vertex_buffer->attributes().size());
-      dawn_vertex_buffer.attributes = nullptr;
-      dawn_vertex_buffers->push_back(dawn_vertex_buffer);
-
-      for (wtf_size_t j = 0; j < vertex_buffer->attributes().size(); ++j) {
-        const GPUVertexAttributeDescriptor* attribute =
-            vertex_buffer->attributes()[j];
-        WGPUVertexAttributeDescriptor dawn_vertex_attribute = {};
-        dawn_vertex_attribute.shaderLocation = attribute->shaderLocation();
-        dawn_vertex_attribute.offset = attribute->offset();
-        dawn_vertex_attribute.format =
-            AsDawnEnum<WGPUVertexFormat>(attribute->format());
-        if (dawn_vertex_attribute.format >= WGPUVertexFormat_UChar2) {
-          WTF::String message =
-              String("The vertex format '") +
-              IDLEnumAsString(attribute->format()) +
-              String("' has been deprecated in favor of '") +
-              GetUpdatedVertexFormat(dawn_vertex_attribute.format) + "'.";
-          device->AddConsoleWarning(message.Utf8().data());
-        }
-        dawn_vertex_attributes->push_back(dawn_vertex_attribute);
-      }
-    }
-
-    // Set up pointers in DawnVertexBufferLayoutDescriptor::attributes only
-    // after we stopped appending to the vector so the pointers aren't
-    // invalidated.
-    uint32_t attributeIndex = 0;
-    for (WGPUVertexBufferLayoutDescriptor& buffer : *dawn_vertex_buffers) {
-      if (buffer.attributeCount == 0) {
-        continue;
-      }
-      buffer.attributes = &(*dawn_vertex_attributes)[attributeIndex];
-      attributeIndex += buffer.attributeCount;
-    }
+    AsDawnVertexBufferLayouts(isolate, device, vertex_buffers_value,
+                              dawn_vertex_buffers, dawn_vertex_attributes,
+                              exception_state);
   }
 
   dawn_desc->vertexBufferCount =
