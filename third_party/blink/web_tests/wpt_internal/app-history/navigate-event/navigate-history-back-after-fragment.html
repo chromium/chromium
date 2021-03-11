@@ -1,0 +1,20 @@
+<!doctype html>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script>
+async_test(t => {
+  window.onload = t.step_timeout(() => {
+    let start_length = history.length;
+    location.hash = "#1";
+    assert_equals(history.length, start_length + 1);
+
+    appHistory.onnavigate = t.step_func_done(e => {
+      assert_equals(e.canRespond, true);
+      assert_equals(e.hashChange, true);
+      assert_equals(e.formData, null);
+    });
+
+    history.back();
+  }, 0);
+}, "history.back() fires the navigate event and sets hashChange when reversing a fragment navigation");
+</script>

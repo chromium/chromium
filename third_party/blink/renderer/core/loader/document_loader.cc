@@ -1215,12 +1215,10 @@ mojom::CommitResult DocumentLoader::CommitSameDocumentNavigation(
     return mojom::blink::CommitResult::RestartCrossDocument;
   }
 
-  if (frame_load_type != WebFrameLoadType::kBackForward) {
-    if (auto* app_history = AppHistory::appHistory(*frame_->DomWindow())) {
-      if (!app_history->DispatchNavigateEvent(url, nullptr, true,
-                                              frame_load_type)) {
-        return mojom::blink::CommitResult::Aborted;
-      }
+  if (auto* app_history = AppHistory::appHistory(*frame_->DomWindow())) {
+    if (!app_history->DispatchNavigateEvent(url, nullptr, true,
+                                            frame_load_type)) {
+      return mojom::blink::CommitResult::Aborted;
     }
   }
 
