@@ -16745,6 +16745,9 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="Notifications.WebPlatform.ActionButton.Click">
+  <obsolete>
+    From 2021-03 use Notifications.WebPlatformV2 instead; it's equivalent.
+  </obsolete>
   <owner>peconn@chromium.org</owner>
   <owner>peter@chromium.org</owner>
   <description>
@@ -16754,6 +16757,9 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="Notifications.WebPlatform.ActionButton.Close">
+  <obsolete>
+    From 2021-03 use Notifications.WebPlatformV2 instead; it's equivalent.
+  </obsolete>
   <owner>peconn@chromium.org</owner>
   <owner>beverloo@chromium.org</owner>
   <description>
@@ -16763,6 +16769,9 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="Notifications.WebPlatform.ActionButton.FocusActivity">
+  <obsolete>
+    From 2021-03 use Notifications.WebPlatformV2 instead; it's equivalent.
+  </obsolete>
   <owner>peconn@chromium.org</owner>
   <owner>beverloo@chromium.org</owner>
   <description>
@@ -16772,6 +16781,9 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="Notifications.WebPlatform.ActionButton.NewActivity">
+  <obsolete>
+    From 2021-03 use Notifications.WebPlatformV2 instead; it's equivalent.
+  </obsolete>
   <owner>peconn@chromium.org</owner>
   <owner>beverloo@chromium.org</owner>
   <description>
@@ -16781,14 +16793,18 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="Notifications.WebPlatform.Body.Click">
+  <obsolete>From 2021-03 use Notifications.WebPlatformV2 instead.</obsolete>
   <owner>peconn@chromium.org</owner>
   <owner>beverloo@chromium.org</owner>
   <description>
     Recorded when the user clicks on the body of a web platform notification.
+    This metric had a bug where it also counted cases where the user dismissed
+    the notification, invalidating this and related actions.
   </description>
 </action>
 
 <action name="Notifications.WebPlatform.Body.Close">
+  <obsolete>From 2021-03 use Notifications.WebPlatformV2 instead.</obsolete>
   <owner>peconn@chromium.org</owner>
   <owner>beverloo@chromium.org</owner>
   <description>
@@ -16798,6 +16814,7 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="Notifications.WebPlatform.Body.FocusActivity">
+  <obsolete>From 2021-03 use Notifications.WebPlatformV2 instead.</obsolete>
   <owner>peconn@chromium.org</owner>
   <owner>beverloo@chromium.org</owner>
   <description>
@@ -16807,6 +16824,78 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="Notifications.WebPlatform.Body.NewActivity">
+  <obsolete>From 2021-03 use Notifications.WebPlatformV2 instead.</obsolete>
+  <owner>peconn@chromium.org</owner>
+  <owner>beverloo@chromium.org</owner>
+  <description>
+    Recorded when the user clicks on the body of a web platform notification,
+    and the notification opens a new Activity.
+  </description>
+</action>
+
+<action name="Notifications.WebPlatformV2.ActionButton.Click">
+  <owner>peconn@chromium.org</owner>
+  <owner>peter@chromium.org</owner>
+  <description>
+    Recorded when the user clicks on the action button of a web platform
+    notification.
+  </description>
+</action>
+
+<action name="Notifications.WebPlatformV2.ActionButton.Close">
+  <owner>peconn@chromium.org</owner>
+  <owner>beverloo@chromium.org</owner>
+  <description>
+    Recorded when the user clicks on the action button of a web platform
+    notification, and the notification closes.
+  </description>
+</action>
+
+<action name="Notifications.WebPlatformV2.ActionButton.FocusActivity">
+  <owner>peconn@chromium.org</owner>
+  <owner>beverloo@chromium.org</owner>
+  <description>
+    Recorded when the user clicks on the action button of a web platform
+    notification, and the notification focuses an Activity.
+  </description>
+</action>
+
+<action name="Notifications.WebPlatformV2.ActionButton.NewActivity">
+  <owner>peconn@chromium.org</owner>
+  <owner>beverloo@chromium.org</owner>
+  <description>
+    Recorded when the user clicks on the action button of a web platform
+    notification, and the notification opens a new Activity.
+  </description>
+</action>
+
+<action name="Notifications.WebPlatformV2.Body.Click">
+  <owner>peconn@chromium.org</owner>
+  <owner>beverloo@chromium.org</owner>
+  <description>
+    Recorded when the user clicks on the body of a web platform notification.
+  </description>
+</action>
+
+<action name="Notifications.WebPlatformV2.Body.Close">
+  <owner>peconn@chromium.org</owner>
+  <owner>beverloo@chromium.org</owner>
+  <description>
+    Recorded when the user clicks on the body of a web platform notification,
+    and the notification closes.
+  </description>
+</action>
+
+<action name="Notifications.WebPlatformV2.Body.FocusActivity">
+  <owner>peconn@chromium.org</owner>
+  <owner>beverloo@chromium.org</owner>
+  <description>
+    Recorded when the user clicks on the body of a web platform notification,
+    and the notification focuses an Activity.
+  </description>
+</action>
+
+<action name="Notifications.WebPlatformV2.Body.NewActivity">
   <owner>peconn@chromium.org</owner>
   <owner>beverloo@chromium.org</owner>
   <description>

@@ -22,8 +22,8 @@ import org.chromium.base.metrics.RecordUserAction;
  * counts.
  */
 public class WebPlatformNotificationMetrics {
-    private static final String METRIC_PREFIX = "Notifications.WebPlatform.";
-    private static final int ATTRIBUTION_THRESHOLD_MS = 5000;
+    private static final String METRIC_PREFIX = "Notifications.WebPlatformV2.";
+    private static final int ATTRIBUTION_THRESHOLD_MS = 10_000;
     private static final long INVALID_TIME = -1;
     private static WebPlatformNotificationMetrics sInstance;
 
