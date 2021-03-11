@@ -66,7 +66,8 @@ public final class ReturnToChromeExperimentsUtil {
             mEmptyTabCloseCallback = emptyTabCloseCallback;
             mFakeboxDelegate = fakeboxDelegate;
             mActivityTabProvider = activityTabProvider;
-            mIsOmniboxFocused = false;
+            mIsOmniboxFocused =
+                    fakeboxDelegate.isUrlBarFocused() && activityTabProvider.get() == newTab;
             mFakeboxDelegate.addUrlFocusChangeListener(this);
         }
 
