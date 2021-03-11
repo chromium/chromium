@@ -155,7 +155,7 @@ void AutoConnectNotifier::DisplayNotification(
       l10n_util::GetStringUTF16(IDS_ASH_NETWORK_AUTOCONNECT_NOTIFICATION_TITLE),
       l10n_util::GetStringUTF16(
           IDS_ASH_NETWORK_AUTOCONNECT_NOTIFICATION_MESSAGE),
-      base::string16() /* display_source */, GURL() /* origin_url */,
+      std::u16string() /* display_source */, GURL() /* origin_url */,
       message_center::NotifierId(message_center::NotifierType::SYSTEM_COMPONENT,
                                  kNotifierAutoConnect),
       {} /* optional_fields */,

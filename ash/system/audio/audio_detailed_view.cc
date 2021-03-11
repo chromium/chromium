@@ -22,7 +22,7 @@
 namespace ash {
 namespace {
 
-base::string16 GetAudioDeviceName(const AudioDevice& device) {
+std::u16string GetAudioDeviceName(const AudioDevice& device) {
   switch (device.type) {
     case AudioDeviceType::kFrontMic:
       return l10n_util::GetStringUTF16(IDS_ASH_STATUS_TRAY_AUDIO_FRONT_MIC);

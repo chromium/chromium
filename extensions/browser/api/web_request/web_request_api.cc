@@ -2778,8 +2778,8 @@ WebRequestInternalEventHandledFunction::Run() {
       EXTENSION_FUNCTION_VALIDATE(value->GetDictionary(
           keys::kAuthCredentialsKey,
           &credentials_value));
-      base::string16 username;
-      base::string16 password;
+      std::u16string username;
+      std::u16string password;
       EXTENSION_FUNCTION_VALIDATE(
           credentials_value->GetString(keys::kUsernameKey, &username));
       EXTENSION_FUNCTION_VALIDATE(

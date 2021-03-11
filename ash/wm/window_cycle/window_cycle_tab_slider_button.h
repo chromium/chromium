@@ -18,7 +18,7 @@ class ASH_EXPORT WindowCycleTabSliderButton : public views::LabelButton {
   METADATA_HEADER(WindowCycleTabSliderButton);
 
   WindowCycleTabSliderButton(views::Button::PressedCallback callback,
-                             const base::string16& label);
+                             const std::u16string& label);
   WindowCycleTabSliderButton(const WindowCycleTabSliderButton&) = delete;
   WindowCycleTabSliderButton& operator=(const WindowCycleTabSliderButton&) =
       delete;

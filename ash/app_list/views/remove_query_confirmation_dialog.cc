@@ -24,7 +24,7 @@ constexpr int kDialogWidth = 320;
 }  // namespace
 
 RemoveQueryConfirmationDialog::RemoveQueryConfirmationDialog(
-    const base::string16& query,
+    const std::u16string& query,
     RemovalConfirmationCallback confirm_callback)
     : confirm_callback_(std::move(confirm_callback)) {
   SetModalType(ui::MODAL_TYPE_WINDOW);

@@ -189,7 +189,7 @@ void PhoneStatusView::OnModelChanged() {
 void PhoneStatusView::Update() {
   // Set phone name text and elide it if needed.
   phone_name_label_->SetText(
-      gfx::ElideText(phone_model_->phone_name().value_or(base::string16()),
+      gfx::ElideText(phone_model_->phone_name().value_or(std::u16string()),
                      phone_name_label_->font_list(), kPhoneNameLabelWidthMax,
                      gfx::ELIDE_TAIL));
 
@@ -214,7 +214,7 @@ void PhoneStatusView::UpdateMobileStatus() {
       AshColorProvider::ContentLayerType::kIconColorPrimary);
 
   gfx::ImageSkia signal_image;
-  base::string16 tooltip_text;
+  std::u16string tooltip_text;
   switch (phone_status.mobile_status()) {
     case PhoneStatusModel::MobileStatus::kNoSim:
       signal_image = CreateVectorIcon(kPhoneHubMobileNoSimIcon, primary_color);
@@ -323,12 +323,12 @@ void PhoneStatusView::SetBatteryTooltipText() {
       charging_tooltip_id = IDS_ASH_PHONE_HUB_BATTERY_STATUS_CHARGING_USB;
       break;
   }
-  base::string16 charging_tooltip =
+  std::u16string charging_tooltip =
       l10n_util::GetStringUTF16(charging_tooltip_id);
 
   bool battery_saver_on = phone_status.battery_saver_state() ==
                           PhoneStatusModel::BatterySaverState::kOn;
-  base::string16 batter_saver_tooltip =
+  std::u16string batter_saver_tooltip =
       battery_saver_on
           ? l10n_util::GetStringUTF16(IDS_ASH_PHONE_HUB_BATTERY_SAVER_ON)
           : l10n_util::GetStringUTF16(IDS_ASH_PHONE_HUB_BATTERY_SAVER_OFF);
@@ -344,7 +344,7 @@ void PhoneStatusView::ClearExistingStatus() {
 
   // Clear battery status.
   battery_icon_->SetImage(gfx::ImageSkia());
-  battery_label_->SetText(base::string16());
+  battery_label_->SetText(std::u16string());
 }
 
 void PhoneStatusView::ConfigureTriViewContainer(TriView::Container container) {

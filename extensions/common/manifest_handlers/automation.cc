@@ -106,7 +106,7 @@ PermissionIDSet AutomationManifestPermission::GetPermissions() const {
 }
 
 bool AutomationManifestPermission::FromValue(const base::Value* value) {
-  base::string16 error;
+  std::u16string error;
   automation_info_.reset(
       AutomationInfo::FromValue(*value, NULL /* install_warnings */, &error)
           .release());
@@ -168,7 +168,7 @@ AutomationHandler::AutomationHandler() = default;
 
 AutomationHandler::~AutomationHandler() = default;
 
-bool AutomationHandler::Parse(Extension* extension, base::string16* error) {
+bool AutomationHandler::Parse(Extension* extension, std::u16string* error) {
   const base::Value* automation = nullptr;
   CHECK(extension->manifest()->Get(keys::kAutomation, &automation));
   std::vector<InstallWarning> install_warnings;
@@ -217,7 +217,7 @@ const AutomationInfo* AutomationInfo::Get(const Extension* extension) {
 std::unique_ptr<AutomationInfo> AutomationInfo::FromValue(
     const base::Value& value,
     std::vector<InstallWarning>* install_warnings,
-    base::string16* error) {
+    std::u16string* error) {
   std::unique_ptr<Automation> automation = Automation::FromValue(value, error);
   if (!automation)
     return nullptr;

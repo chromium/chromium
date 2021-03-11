@@ -28,7 +28,7 @@ class KSVSearchBoxView : public ash::SearchBoxViewBase {
   void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
   void OnKeyEvent(ui::KeyEvent* event) override;
 
-  void SetAccessibleValue(const base::string16& value);
+  void SetAccessibleValue(const std::u16string& value);
 
   // SearchBoxViewBase:
   void OnSearchBoxActiveChanged(bool active) override;
@@ -42,7 +42,7 @@ class KSVSearchBoxView : public ash::SearchBoxViewBase {
   void SetPlaceholderTextAttributes();
 
   // Accessibility data value. Used to pronounce the number of search results.
-  base::string16 accessible_value_;
+  std::u16string accessible_value_;
 
   DISALLOW_COPY_AND_ASSIGN(KSVSearchBoxView);
 };

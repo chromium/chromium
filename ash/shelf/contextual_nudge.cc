@@ -35,7 +35,7 @@ ContextualNudge::ContextualNudge(views::View* anchor,
                                  aura::Window* parent_window,
                                  Position position,
                                  const gfx::Insets& margins,
-                                 const base::string16& text,
+                                 const std::u16string& text,
                                  SkColor text_color,
                                  const base::RepeatingClosure& tap_callback)
     : views::BubbleDialogDelegateView(anchor,

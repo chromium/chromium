@@ -35,12 +35,12 @@ class ResolutionNotificationControllerTest
 
   ~ResolutionNotificationControllerTest() override = default;
 
-  base::string16 ExpectedNotificationMessage(int64_t display_id,
+  std::u16string ExpectedNotificationMessage(int64_t display_id,
                                              const gfx::Size& new_resolution,
                                              float new_refresh_rate) {
-    const base::string16 display_name =
+    const std::u16string display_name =
         base::UTF8ToUTF16(display_manager()->GetDisplayNameForId(display_id));
-    const base::string16 countdown = ui::TimeFormat::Simple(
+    const std::u16string countdown = ui::TimeFormat::Simple(
         ui::TimeFormat::FORMAT_DURATION, ui::TimeFormat::LENGTH_LONG,
         base::TimeDelta::FromSeconds(15));
     if (::display::features::IsListAllDisplayModesEnabled()) {
@@ -54,15 +54,15 @@ class ResolutionNotificationControllerTest
         base::UTF8ToUTF16(new_resolution.ToString()), countdown);
   }
 
-  base::string16 ExpectedFallbackNotificationMessage(
+  std::u16string ExpectedFallbackNotificationMessage(
       int64_t display_id,
       const gfx::Size& specified_resolution,
       float specified_refresh_rate,
       const gfx::Size& fallback_resolution,
       float fallback_refresh_rate) {
-    const base::string16 display_name =
+    const std::u16string display_name =
         base::UTF8ToUTF16(display_manager()->GetDisplayNameForId(display_id));
-    const base::string16 countdown = ui::TimeFormat::Simple(
+    const std::u16string countdown = ui::TimeFormat::Simple(
         ui::TimeFormat::FORMAT_DURATION, ui::TimeFormat::LENGTH_LONG,
         base::TimeDelta::FromSeconds(15));
     if (::display::features::IsListAllDisplayModesEnabled()) {
@@ -145,7 +145,7 @@ class ResolutionNotificationControllerTest
         new_is_native, source);
   }
 
-  static base::string16 GetNotificationMessage() {
+  static std::u16string GetNotificationMessage() {
     return controller()->dialog_for_testing()->label_->GetText();
   }
 

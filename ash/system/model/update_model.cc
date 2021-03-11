@@ -31,8 +31,8 @@ void UpdateModel::SetUpdateAvailable(UpdateSeverity severity,
 
 void UpdateModel::SetUpdateNotificationState(
     NotificationStyle style,
-    const base::string16& notification_title,
-    const base::string16& notification_body) {
+    const std::u16string& notification_title,
+    const std::u16string& notification_body) {
   DCHECK_EQ(update_type_, UpdateType::kSystem);
   notification_style_ = style;
   notification_title_ = notification_title;

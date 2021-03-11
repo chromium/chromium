@@ -685,7 +685,7 @@ void FilePath::WriteToPickle(Pickle* pickle) const {
 
 bool FilePath::ReadFromPickle(PickleIterator* iter) {
 #if defined(OS_WIN)
-  base::string16 path;
+  std::u16string path;
   if (!iter->ReadString16(&path))
     return false;
   path_ = UTF16ToWide(path);

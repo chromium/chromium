@@ -12,7 +12,7 @@ namespace ash {
 // The text label used by the clipboard history menu.
 class ClipboardHistoryLabel : public views::Label {
  public:
-  explicit ClipboardHistoryLabel(const base::string16& text);
+  explicit ClipboardHistoryLabel(const std::u16string& text);
   ClipboardHistoryLabel(const ClipboardHistoryLabel& rhs) = delete;
   ClipboardHistoryLabel& operator=(const ClipboardHistoryLabel& rhs) = delete;
   ~ClipboardHistoryLabel() override = default;

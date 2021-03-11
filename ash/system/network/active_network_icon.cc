@@ -51,9 +51,9 @@ ActiveNetworkIcon::~ActiveNetworkIcon() {
 }
 
 void ActiveNetworkIcon::GetConnectionStatusStrings(Type type,
-                                                   base::string16* a11y_name,
-                                                   base::string16* a11y_desc,
-                                                   base::string16* tooltip) {
+                                                   std::u16string* a11y_name,
+                                                   std::u16string* a11y_desc,
+                                                   std::u16string* tooltip) {
   const NetworkStateProperties* network = nullptr;
   switch (type) {
     case Type::kSingle:
@@ -68,7 +68,7 @@ void ActiveNetworkIcon::GetConnectionStatusStrings(Type type,
       break;
   }
 
-  base::string16 network_name;
+  std::u16string network_name;
   if (network) {
     network_name = network->type == NetworkType::kEthernet
                        ? l10n_util::GetStringUTF16(IDS_ASH_STATUS_TRAY_ETHERNET)
@@ -78,19 +78,19 @@ void ActiveNetworkIcon::GetConnectionStatusStrings(Type type,
   if (network && network->type == NetworkType::kCellular &&
       network->type_state->get_cellular()->activation_state ==
           ActivationStateType::kActivating) {
-    base::string16 activating_string = l10n_util::GetStringFUTF16(
+    std::u16string activating_string = l10n_util::GetStringFUTF16(
         IDS_ASH_STATUS_TRAY_NETWORK_ACTIVATING, network_name);
     if (a11y_name)
       *a11y_name = activating_string;
     if (a11y_desc)
-      *a11y_desc = base::string16();
+      *a11y_desc = std::u16string();
     if (tooltip)
       *tooltip = activating_string;
   } else if (network && chromeos::network_config::StateIsConnected(
                             network->connection_state)) {
-    base::string16 connected_string = l10n_util::GetStringFUTF16(
+    std::u16string connected_string = l10n_util::GetStringFUTF16(
         IDS_ASH_STATUS_TRAY_NETWORK_CONNECTED, network_name);
-    base::string16 signal_strength_string;
+    std::u16string signal_strength_string;
     if (chromeos::network_config::NetworkTypeMatchesType(
             network->type, NetworkType::kWireless)) {
       // Retrieve the string describing the signal strength, if it is applicable
@@ -127,12 +127,12 @@ void ActiveNetworkIcon::GetConnectionStatusStrings(Type type,
     }
   } else if (network &&
              network->connection_state == ConnectionStateType::kConnecting) {
-    base::string16 connecting_string = l10n_util::GetStringFUTF16(
+    std::u16string connecting_string = l10n_util::GetStringFUTF16(
         IDS_ASH_STATUS_TRAY_NETWORK_CONNECTING, network_name);
     if (a11y_name)
       *a11y_name = connecting_string;
     if (a11y_desc)
-      *a11y_desc = base::string16();
+      *a11y_desc = std::u16string();
     if (tooltip)
       *tooltip = connecting_string;
   } else {
@@ -141,7 +141,7 @@ void ActiveNetworkIcon::GetConnectionStatusStrings(Type type,
           IDS_ASH_STATUS_TRAY_NETWORK_NOT_CONNECTED_A11Y);
     }
     if (a11y_desc)
-      *a11y_desc = base::string16();
+      *a11y_desc = std::u16string();
     if (tooltip) {
       *tooltip = l10n_util::GetStringUTF16(
           IDS_ASH_STATUS_TRAY_NETWORK_DISCONNECTED_TOOLTIP);

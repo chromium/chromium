@@ -35,7 +35,7 @@ class NetworkFeaturePodButton : public FeaturePodButton,
   const char* GetClassName() const override;
 
  private:
-  void UpdateTooltip(const base::string16& connection_state_message);
+  void UpdateTooltip(const std::u16string& connection_state_message);
 
   DISALLOW_COPY_AND_ASSIGN(NetworkFeaturePodButton);
 };

@@ -64,7 +64,7 @@ std::unique_ptr<UserScript> CreateUserScript(
     int valid_schemes,
     bool all_urls_includes_chrome_urls,
     Extension* extension,
-    base::string16* error) {
+    std::u16string* error) {
   auto result = std::make_unique<UserScript>();
 
   // run_at
@@ -278,7 +278,7 @@ base::span<const char* const> ContentScriptsHandler::Keys() const {
   return kKeys;
 }
 
-bool ContentScriptsHandler::Parse(Extension* extension, base::string16* error) {
+bool ContentScriptsHandler::Parse(Extension* extension, std::u16string* error) {
   ContentScriptsKeys manifest_keys;
   if (!ContentScriptsKeys::ParseFromDictionary(
           extension->manifest()->available_values(), &manifest_keys, error)) {

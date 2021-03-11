@@ -26,7 +26,7 @@ void PolicyCheck::Start(ResultCallback callback) {
   std::move(callback).Run(errors);
 }
 
-base::string16 PolicyCheck::GetErrorMessage() const {
+std::u16string PolicyCheck::GetErrorMessage() const {
   return error_;
 }
 

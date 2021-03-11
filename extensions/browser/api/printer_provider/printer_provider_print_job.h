@@ -31,7 +31,7 @@ struct PrinterProviderPrintJob {
   std::string printer_id;
 
   // The print job title.
-  base::string16 job_title;
+  std::u16string job_title;
 
   // The print job ticket.
   base::Value ticket;

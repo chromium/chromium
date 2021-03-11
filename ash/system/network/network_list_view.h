@@ -87,7 +87,7 @@ class NetworkListView : public NetworkStateListDetailedView,
   // and updates accessibility label. Used when cellular network is not
   // activiated.
   void SetupUnactivatedCellularNetworkListItem(HoverHighlightView* view,
-                                               const base::string16& sub_text);
+                                               const std::u16string& sub_text);
 
   // Adds or updates child views representing the network connections when
   // |is_wifi| is matching the attribute of a network connection starting at
@@ -131,11 +131,11 @@ class NetworkListView : public NetworkStateListDetailedView,
   bool NeedUpdateViewForNetwork(const NetworkInfo& info) const;
 
   // Creates an accessibility label for given network.
-  base::string16 GenerateAccessibilityLabel(const NetworkInfo& info);
+  std::u16string GenerateAccessibilityLabel(const NetworkInfo& info);
 
   // Creates an accessibility description for the given network that includes
   // all details that are shown in the ui.
-  base::string16 GenerateAccessibilityDescription(const NetworkInfo& info);
+  std::u16string GenerateAccessibilityDescription(const NetworkInfo& info);
 
   bool needs_relayout_ = false;
 

@@ -40,7 +40,7 @@ class WebViewFindHelper {
 
   // Helper function for WebViewGuest::Find().
   void Find(content::WebContents* guest_web_contents,
-            const base::string16& search_text,
+            const std::u16string& search_text,
             blink::mojom::FindOptionsPtr options,
             scoped_refptr<WebViewInternalFindFunction> find_function);
 
@@ -81,7 +81,7 @@ class WebViewFindHelper {
   // Stores and processes the results for the |findupdate| event.
   class FindUpdateEvent {
    public:
-    explicit FindUpdateEvent(const base::string16& search_text);
+    explicit FindUpdateEvent(const std::u16string& search_text);
     ~FindUpdateEvent();
 
     // Aggregate the find results.
@@ -94,7 +94,7 @@ class WebViewFindHelper {
     void PrepareResults(base::DictionaryValue* results);
 
    private:
-    const base::string16 search_text_;
+    const std::u16string search_text_;
     FindResults find_results_;
 
     DISALLOW_COPY_AND_ASSIGN(FindUpdateEvent);
@@ -104,7 +104,7 @@ class WebViewFindHelper {
   class FindInfo : public base::RefCounted<FindInfo> {
    public:
     FindInfo(int request_id,
-             const base::string16& search_text,
+             const std::u16string& search_text,
              blink::mojom::FindOptionsPtr options,
              scoped_refptr<WebViewInternalFindFunction> find_function);
 
@@ -131,9 +131,7 @@ class WebViewFindHelper {
       return request_id_;
     }
 
-    const base::string16& search_text() {
-      return search_text_;
-    }
+    const std::u16string& search_text() { return search_text_; }
 
     // Calls the callback function within |find_function_| with the find results
     // from within |find_results_|.
@@ -145,7 +143,7 @@ class WebViewFindHelper {
     ~FindInfo();
 
     const int request_id_;
-    const base::string16 search_text_;
+    const std::u16string search_text_;
     blink::mojom::FindOptionsPtr options_;
     scoped_refptr<WebViewInternalFindFunction> find_function_;
     FindResults find_results_;

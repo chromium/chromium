@@ -19,7 +19,7 @@ class ASH_EXPORT InterstitialViewButton : public RoundedLabelButton {
   METADATA_HEADER(InterstitialViewButton);
 
   InterstitialViewButton(Button::PressedCallback callback,
-                         const base::string16& text,
+                         const std::u16string& text,
                          bool paint_background);
   InterstitialViewButton(const InterstitialViewButton&) = delete;
   InterstitialViewButton& operator=(const InterstitialViewButton&) = delete;

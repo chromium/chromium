@@ -31,7 +31,7 @@ namespace ash {
 
 namespace {
 
-base::string16 GetSubLabelForConnectedNetwork(
+std::u16string GetSubLabelForConnectedNetwork(
     const NetworkStateProperties* network) {
   DCHECK(network &&
          chromeos::network_config::StateIsConnected(network->connection_state));
@@ -179,7 +179,7 @@ void NetworkFeaturePodButton::Update() {
   icon_button()->SetImage(views::Button::STATE_DISABLED, image_disabled);
   SetToggled(toggled);
 
-  base::string16 network_name;
+  std::u16string network_name;
   if (network) {
     network_name = network->type == NetworkType::kEthernet
                        ? l10n_util::GetStringUTF16(IDS_ASH_STATUS_TRAY_ETHERNET)
@@ -207,7 +207,7 @@ void NetworkFeaturePodButton::Update() {
     SetSubLabel(l10n_util::GetStringUTF16(
         IDS_ASH_STATUS_TRAY_NETWORK_DISCONNECTED_SUBLABEL));
   }
-  base::string16 tooltip;
+  std::u16string tooltip;
   Shell::Get()
       ->system_tray_model()
       ->active_network_icon()
@@ -218,7 +218,7 @@ void NetworkFeaturePodButton::Update() {
 }
 
 void NetworkFeaturePodButton::UpdateTooltip(
-    const base::string16& connection_state_message) {
+    const std::u16string& connection_state_message) {
   // When the button is enabled, use tooltips to alert the user of the actions
   // that will be taken when interacting with the button/toggle. However, if the
   // button is disabled, those actions cannot be taken, so simply display the

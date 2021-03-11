@@ -316,7 +316,7 @@ void TrayDetailedView::AddScrollListChild(std::unique_ptr<views::View> child) {
 
 HoverHighlightView* TrayDetailedView::AddScrollListItem(
     const gfx::VectorIcon& icon,
-    const base::string16& text) {
+    const std::u16string& text) {
   HoverHighlightView* item = delegate_->CreateScrollListItem(this, icon, text);
   scroll_content_->AddChildView(item);
   return item;
@@ -324,7 +324,7 @@ HoverHighlightView* TrayDetailedView::AddScrollListItem(
 
 HoverHighlightView* TrayDetailedView::AddScrollListCheckableItem(
     const gfx::VectorIcon& icon,
-    const base::string16& text,
+    const std::u16string& text,
     bool checked,
     bool enterprise_managed) {
   HoverHighlightView* item = AddScrollListItem(icon, text);
@@ -337,7 +337,7 @@ HoverHighlightView* TrayDetailedView::AddScrollListCheckableItem(
 }
 
 HoverHighlightView* TrayDetailedView::AddScrollListCheckableItem(
-    const base::string16& text,
+    const std::u16string& text,
     bool checked,
     bool enterprise_managed) {
   return AddScrollListCheckableItem(gfx::kNoneIcon, text, checked,
@@ -353,7 +353,7 @@ void TrayDetailedView::SetupConnectedScrollListItem(
     base::Optional<uint8_t> battery_percentage) {
   DCHECK(view->is_populated());
 
-  base::string16 status;
+  std::u16string status;
 
   if (battery_percentage) {
     view->SetSubText(l10n_util::GetStringFUTF16(

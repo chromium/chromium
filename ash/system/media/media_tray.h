@@ -56,7 +56,7 @@ class ASH_EXPORT MediaTray : public MediaNotificationProviderObserver,
   void OnNotificationListViewSizeChanged() override;
 
   // TrayBackgroundview implementations.
-  base::string16 GetAccessibleNameForTray() override;
+  std::u16string GetAccessibleNameForTray() override;
   void UpdateAfterLoginStatusChange() override;
   void HandleLocaleChange() override;
   bool PerformAction(const ui::Event& event) override;
@@ -81,7 +81,7 @@ class ASH_EXPORT MediaTray : public MediaNotificationProviderObserver,
   friend class MediaTrayTest;
 
   // TrayBubbleView::Delegate implementation.
-  base::string16 GetAccessibleNameForBubble() override;
+  std::u16string GetAccessibleNameForBubble() override;
 
   // Called when theme change, set colors for media notification view.
   void SetNotificationColorTheme();

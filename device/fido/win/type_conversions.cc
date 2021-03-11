@@ -197,7 +197,7 @@ std::vector<WEBAUTHN_CREDENTIAL_EX> ToWinCredentialExVector(
 }
 
 CtapDeviceResponseCode WinErrorNameToCtapDeviceResponseCode(
-    const base::string16& error_name) {
+    const std::u16string& error_name) {
   // See WebAuthNGetErrorName in <webauthn.h> for these string literals.
   //
   // Note that the set of errors that browser are allowed to return in a
@@ -206,7 +206,7 @@ CtapDeviceResponseCode WinErrorNameToCtapDeviceResponseCode(
   // permissible errors are "InvalidStateError" (aka CREDENTIAL_EXCLUDED in
   // Chromium code) and "NotAllowedError". Hence, we can collapse the set of
   // Windows errors to a smaller set of CtapDeviceResponseCodes.
-  static base::flat_map<base::string16, CtapDeviceResponseCode>
+  static base::flat_map<std::u16string, CtapDeviceResponseCode>
       kResponseCodeMap({
           {u"Success", CtapDeviceResponseCode::kSuccess},
           {u"InvalidStateError",

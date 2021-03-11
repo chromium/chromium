@@ -194,7 +194,7 @@ int SearchResultTileItemListView::DoUpdate() {
 
   // Track play store results and start the timer for recording their impression
   // UMA metrics.
-  base::string16 user_typed_query = GetUserTypedQuery();
+  std::u16string user_typed_query = GetUserTypedQuery();
   if (found_playstore_results && user_typed_query != recent_playstore_query_) {
     recent_playstore_query_ = user_typed_query;
     playstore_impression_timer_.Stop();
@@ -250,8 +250,8 @@ int SearchResultTileItemListView::DoUpdate() {
 }
 
 std::vector<SearchResult*> SearchResultTileItemListView::GetDisplayResults() {
-  base::string16 raw_query = search_box_->GetText();
-  base::string16 query;
+  std::u16string raw_query = search_box_->GetText();
+  std::u16string query;
   base::TrimWhitespace(raw_query, base::TRIM_ALL, &query);
 
   // We ask for |max_search_result_tiles_| policy tile results first,
@@ -315,13 +315,13 @@ std::vector<SearchResult*> SearchResultTileItemListView::GetDisplayResults() {
   return display_results;
 }
 
-base::string16 SearchResultTileItemListView::GetUserTypedQuery() {
-  base::string16 search_box_text = search_box_->GetText();
+std::u16string SearchResultTileItemListView::GetUserTypedQuery() {
+  std::u16string search_box_text = search_box_->GetText();
   gfx::Range range = search_box_->GetSelectedRange();
-  base::string16 raw_query = range.is_empty()
+  std::u16string raw_query = range.is_empty()
                                  ? search_box_text
                                  : search_box_text.substr(0, range.start());
-  base::string16 query;
+  std::u16string query;
   base::TrimWhitespace(raw_query, base::TRIM_ALL, &query);
   return query;
 }

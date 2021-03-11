@@ -18,7 +18,7 @@ class ScreenShareObserver {
   // |stop_callback| must be a base::RepeatingCallback so that it can be passed
   // to all observers.
   virtual void OnScreenShareStart(const base::RepeatingClosure& stop_callback,
-                                  const base::string16& helper_name) = 0;
+                                  const std::u16string& helper_name) = 0;
 
   // Called when screen share is stopped.
   virtual void OnScreenShareStop() = 0;

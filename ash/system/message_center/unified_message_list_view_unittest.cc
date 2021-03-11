@@ -67,7 +67,7 @@ class TestUnifiedMessageListView : public UnifiedMessageListView {
       auto notification = std::make_unique<Notification>(
           message_center::NOTIFICATION_TYPE_BASE_FORMAT, id,
           base::UTF8ToUTF16("test title"), base::UTF8ToUTF16("test message"),
-          gfx::Image(), base::string16() /* display_source */, GURL(),
+          gfx::Image(), std::u16string() /* display_source */, GURL(),
           message_center::NotifierId(), message_center::RichNotificationData(),
           new message_center::NotificationDelegate());
 
@@ -127,7 +127,7 @@ class UnifiedMessageListViewTest : public AshTestBase,
     auto notification = std::make_unique<Notification>(
         message_center::NOTIFICATION_TYPE_BASE_FORMAT, id,
         base::UTF8ToUTF16("test title"), base::UTF8ToUTF16("test message"),
-        gfx::Image(), base::string16() /* display_source */, GURL(),
+        gfx::Image(), std::u16string() /* display_source */, GURL(),
         message_center::NotifierId(), message_center::RichNotificationData(),
         new message_center::NotificationDelegate());
     notification->set_pinned(pinned);

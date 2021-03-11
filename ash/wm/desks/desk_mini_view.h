@@ -96,7 +96,7 @@ class ASH_EXPORT DeskMiniView
   // Desk::Observer:
   void OnContentChanged() override;
   void OnDeskDestroyed(const Desk* desk) override;
-  void OnDeskNameChanged(const base::string16& new_name) override;
+  void OnDeskNameChanged(const std::u16string& new_name) override;
 
   // OverviewHighlightController::OverviewHighlightableView:
   views::View* GetView() override;
@@ -108,7 +108,7 @@ class ASH_EXPORT DeskMiniView
 
   // views::TextfieldController:
   void ContentsChanged(views::Textfield* sender,
-                       const base::string16& new_contents) override;
+                       const std::u16string& new_contents) override;
   bool HandleKeyEvent(views::Textfield* sender,
                       const ui::KeyEvent& key_event) override;
   bool HandleMouseEvent(views::Textfield* sender,

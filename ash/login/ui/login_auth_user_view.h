@@ -99,7 +99,7 @@ class ASH_EXPORT LoginAuthUserView : public NonAccessibleView {
     views::Button* challenge_response_button();
     views::Label* challenge_response_label();
     bool HasAuthMethod(AuthMethods auth_method) const;
-    const base::string16& GetDisabledAuthMessageContent() const;
+    const std::u16string& GetDisabledAuthMessageContent() const;
 
    private:
     LoginAuthUserView* const view_;
@@ -146,7 +146,7 @@ class ASH_EXPORT LoginAuthUserView : public NonAccessibleView {
 
   // Add an easy unlock icon.
   void SetEasyUnlockIcon(EasyUnlockIconId id,
-                         const base::string16& accessibility_label);
+                         const std::u16string& accessibility_label);
 
   // Captures any metadata about the current view state that will be used for
   // animation.
@@ -190,7 +190,7 @@ class ASH_EXPORT LoginAuthUserView : public NonAccessibleView {
   class LockedTpmMessageView;
 
   // Called when the user submits an auth method. Runs mojo call.
-  void OnAuthSubmit(const base::string16& password);
+  void OnAuthSubmit(const std::u16string& password);
   // Called with the result of the request started in |OnAuthSubmit| or
   // |AttemptAuthenticateWithExternalBinary|.
   void OnAuthComplete(base::Optional<bool> auth_success);
@@ -250,8 +250,8 @@ class ASH_EXPORT LoginAuthUserView : public NonAccessibleView {
   gfx::Size GetPaddingBelowPasswordView() const;
 
   // Convenience methods to determine UI text based on the InputFieldMode.
-  base::string16 GetPinPasswordToggleText();
-  base::string16 GetPasswordViewPlaceholder() const;
+  std::u16string GetPinPasswordToggleText();
+  std::u16string GetPasswordViewPlaceholder() const;
 
   // Authentication methods available and extra parameters that control the UI.
   AuthMethods auth_methods_ = AUTH_NONE;

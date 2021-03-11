@@ -63,7 +63,7 @@ KeyboardShortcutItemListView::KeyboardShortcutItemListView() {
 }
 
 void KeyboardShortcutItemListView::AddCategoryLabel(
-    const base::string16& text) {
+    const std::u16string& text) {
   constexpr int kLabelTopPadding = 44;
   constexpr int kLabelBottomPadding = 20;
   constexpr SkColor kLabelColor = SkColorSetARGB(0xFF, 0x42, 0x85, 0xF4);

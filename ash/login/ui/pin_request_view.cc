@@ -88,7 +88,7 @@ PinRequest::~PinRequest() = default;
 // Label button that displays focus ring.
 class PinRequestView::FocusableLabelButton : public views::LabelButton {
  public:
-  FocusableLabelButton(PressedCallback callback, const base::string16& text)
+  FocusableLabelButton(PressedCallback callback, const std::u16string& text)
       : views::LabelButton(std::move(callback), text) {
     SetInstallFocusRingOnFocus(true);
     focus_ring()->SetColor(ShelfConfig::Get()->shelf_focus_border_color());
@@ -414,7 +414,7 @@ views::View* PinRequestView::GetInitiallyFocusedView() {
   return access_code_view_;
 }
 
-base::string16 PinRequestView::GetAccessibleWindowTitle() const {
+std::u16string PinRequestView::GetAccessibleWindowTitle() const {
   return default_accessible_title_;
 }
 
@@ -473,8 +473,8 @@ void PinRequestView::OnBack() {
 }
 
 void PinRequestView::UpdateState(PinRequestViewState state,
-                                 const base::string16& title,
-                                 const base::string16& description) {
+                                 const std::u16string& title,
+                                 const std::u16string& description) {
   state_ = state;
   title_label_->SetText(title);
   description_label_->SetText(description);

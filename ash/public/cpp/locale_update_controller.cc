@@ -16,7 +16,7 @@ LocaleUpdateController* g_instance = nullptr;
 
 LocaleInfo::LocaleInfo() = default;
 LocaleInfo::LocaleInfo(const std::string& iso_code,
-                       const base::string16& display_name)
+                       const std::u16string& display_name)
     : iso_code(iso_code), display_name(display_name) {}
 LocaleInfo::LocaleInfo(const LocaleInfo& rhs) = default;
 LocaleInfo::LocaleInfo(LocaleInfo&& rhs) = default;

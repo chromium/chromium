@@ -190,29 +190,29 @@ void SearchResultSuggestionChipView::SetIcon(const gfx::ImageSkia& icon) {
   icon_view_->SetVisible(true);
 }
 
-void SearchResultSuggestionChipView::SetText(const base::string16& text) {
+void SearchResultSuggestionChipView::SetText(const std::u16string& text) {
   text_view_->SetText(text);
   gfx::Size size = text_view_->CalculatePreferredSize();
   size.set_width(std::min(kMaxTextWidth, size.width()));
   text_view_->SetPreferredSize(size);
 }
 
-const base::string16& SearchResultSuggestionChipView::GetText() const {
+const std::u16string& SearchResultSuggestionChipView::GetText() const {
   return text_view_->GetText();
 }
 
 void SearchResultSuggestionChipView::UpdateSuggestionChipView() {
   if (!result()) {
     SetIcon(gfx::ImageSkia());
-    SetText(base::string16());
-    SetAccessibleName(base::string16());
+    SetText(std::u16string());
+    SetAccessibleName(std::u16string());
     return;
   }
 
   SetIcon(result()->chip_icon());
   SetText(result()->title());
 
-  base::string16 accessible_name = result()->title();
+  std::u16string accessible_name = result()->title();
   if (result()->id() == kInternalAppIdContinueReading) {
     accessible_name = l10n_util::GetStringFUTF16(
         IDS_APP_LIST_CONTINUE_READING_ACCESSIBILE_NAME, accessible_name);
@@ -242,7 +242,7 @@ void SearchResultSuggestionChipView::InitLayout() {
   text_view_->SetAutoColorReadabilityEnabled(false);
   text_view_->SetSubpixelRenderingEnabled(false);
   text_view_->SetFontList(AppListConfig::instance().app_title_font());
-  SetText(base::string16());
+  SetText(std::u16string());
   text_view_->SetEnabledColor(
       AppListColorProvider::Get()->GetSuggestionChipTextColor());
 }

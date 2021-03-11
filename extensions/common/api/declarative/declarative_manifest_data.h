@@ -32,7 +32,7 @@ class DeclarativeManifestData : public Extension::ManifestData {
   // the manifest. Sets |error| and returns an empty scoped_ptr on failure.
   static std::unique_ptr<DeclarativeManifestData> FromValue(
       const base::Value& value,
-      base::string16* error);
+      std::u16string* error);
 
   std::vector<Rule> RulesForEvent(const std::string& event);
 

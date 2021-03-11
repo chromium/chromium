@@ -148,7 +148,7 @@ bool PowerNotificationController::MaybeShowUsbChargerNotification() {
                   ui::GetChromeOSDeviceName(),
                   base::FormatDouble(
                       PowerStatus::Get()->GetPreferredMinimumPower(), 0)),
-        base::string16(), GURL(),
+        std::u16string(), GURL(),
         message_center::NotifierId(
             message_center::NotifierType::SYSTEM_COMPONENT, kNotifierPower),
         message_center::RichNotificationData(),

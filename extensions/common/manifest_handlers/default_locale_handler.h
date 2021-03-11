@@ -27,7 +27,7 @@ class DefaultLocaleHandler : public ManifestHandler {
   DefaultLocaleHandler();
   ~DefaultLocaleHandler() override;
 
-  bool Parse(Extension* extension, base::string16* error) override;
+  bool Parse(Extension* extension, std::u16string* error) override;
 
   // Validates locale info. Doesn't check if messages.json files are valid.
   bool Validate(const Extension* extension,

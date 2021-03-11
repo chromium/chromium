@@ -60,8 +60,8 @@ class APP_LIST_EXPORT SearchResultSuggestionChipView
 
   void SetIcon(const gfx::ImageSkia& icon);
 
-  void SetText(const base::string16& text);
-  const base::string16& GetText() const;
+  void SetText(const std::u16string& text);
+  const std::u16string& GetText() const;
 
  private:
   // Updates the suggestion chip view's title and icon.

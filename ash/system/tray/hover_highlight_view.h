@@ -45,14 +45,14 @@ class HoverHighlightView : public ActionableView {
   // Convenience function for populating the view with an icon and a label. This
   // also sets the accessible name. Primarily used for scrollable rows in
   // detailed views.
-  void AddIconAndLabel(const gfx::ImageSkia& image, const base::string16& text);
+  void AddIconAndLabel(const gfx::ImageSkia& image, const std::u16string& text);
 
   // Populates the view with a text label, inset on the left by the horizontal
   // space that would normally be occupied by an icon.
-  void AddLabelRow(const base::string16& text);
+  void AddLabelRow(const std::u16string& text);
 
   // Populates the view with a text label with custom start inset.
-  void AddLabelRow(const base::string16& text, int start_inset);
+  void AddLabelRow(const std::u16string& text, int start_inset);
 
   // Adds an optional right icon to an already populated view. |icon_size| is
   // the size of the icon in DP.
@@ -68,7 +68,7 @@ class HoverHighlightView : public ActionableView {
   // Sets the text of the sub label for an already populated view. |sub_text|
   // must not be empty and prior to calling this function, |text_label_| must
   // not be null.
-  void SetSubText(const base::string16& sub_text);
+  void SetSubText(const std::u16string& sub_text);
 
   // Allows view to expand its height. Size of unexapandable view is fixed and
   // equals to kTrayPopupItemHeight.
@@ -90,7 +90,7 @@ class HoverHighlightView : public ActionableView {
 
  protected:
   // Override from Button to also set the tooltip for all child elements.
-  void OnSetTooltipText(const base::string16& tooltip_text) override;
+  void OnSetTooltipText(const std::u16string& tooltip_text) override;
 
   // views::View:
   void GetAccessibleNodeData(ui::AXNodeData* node_data) override;

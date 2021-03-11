@@ -126,7 +126,7 @@ void AshMessageCenterLockScreenController::EncourageUserToUnlock(
     unified_system_tray->CloseBubble();
   }
 
-  base::string16 message;
+  std::u16string message;
   if (message_id != -1) {
     message = l10n_util::GetStringUTF16(message_id);
   } else {

@@ -539,11 +539,11 @@ const std::vector<aura::Window*> ShelfView::GetOpenWindowsForView(
   return open_windows;
 }
 
-base::string16 ShelfView::GetTitleForView(const views::View* view) const {
+std::u16string ShelfView::GetTitleForView(const views::View* view) const {
   if (view->parent() == this)
     return GetTitleForChildView(view);
 
-  return base::string16();
+  return std::u16string();
 }
 
 views::View* ShelfView::GetViewForEvent(const ui::Event& event) {
@@ -1846,7 +1846,7 @@ gfx::Rect ShelfView::GetMenuAnchorRect(const views::View& source,
 }
 
 void ShelfView::AnnounceShelfAlignment() {
-  base::string16 announcement;
+  std::u16string announcement;
   switch (shelf_->alignment()) {
     case ShelfAlignment::kBottom:
     case ShelfAlignment::kBottomLocked:
@@ -1865,7 +1865,7 @@ void ShelfView::AnnounceShelfAlignment() {
 }
 
 void ShelfView::AnnounceShelfAutohideBehavior() {
-  base::string16 announcement;
+  std::u16string announcement;
   switch (shelf_->auto_hide_behavior()) {
     case ShelfAutoHideBehavior::kAlways:
       announcement = l10n_util::GetStringUTF16(IDS_SHELF_STATE_AUTO_HIDE);
@@ -1883,11 +1883,11 @@ void ShelfView::AnnounceShelfAutohideBehavior() {
 }
 
 void ShelfView::AnnouncePinUnpinEvent(const ShelfItem& item, bool pinned) {
-  base::string16 item_title =
+  std::u16string item_title =
       item.title.empty()
           ? l10n_util::GetStringUTF16(IDS_SHELF_ITEM_GENERIC_NAME)
           : item.title;
-  base::string16 announcement = l10n_util::GetStringFUTF16(
+  std::u16string announcement = l10n_util::GetStringFUTF16(
       pinned ? IDS_SHELF_ITEM_WAS_PINNED : IDS_SHELF_ITEM_WAS_UNPINNED,
       item_title);
   announcement_view_->GetViewAccessibility().OverrideName(announcement);
@@ -1897,15 +1897,15 @@ void ShelfView::AnnouncePinUnpinEvent(const ShelfItem& item, bool pinned) {
 
 void ShelfView::AnnounceSwapEvent(const ShelfItem& first_item,
                                   const ShelfItem& second_item) {
-  base::string16 first_item_title =
+  std::u16string first_item_title =
       first_item.title.empty()
           ? l10n_util::GetStringUTF16(IDS_SHELF_ITEM_GENERIC_NAME)
           : first_item.title;
-  base::string16 second_item_title =
+  std::u16string second_item_title =
       second_item.title.empty()
           ? l10n_util::GetStringUTF16(IDS_SHELF_ITEM_GENERIC_NAME)
           : second_item.title;
-  base::string16 announcement = l10n_util::GetStringFUTF16(
+  std::u16string announcement = l10n_util::GetStringFUTF16(
       IDS_SHELF_ITEMS_WERE_SWAPPED, first_item_title, second_item_title);
   announcement_view_->GetViewAccessibility().OverrideName(announcement);
   announcement_view_->NotifyAccessibilityEvent(ax::mojom::Event::kAlert,
@@ -2440,9 +2440,9 @@ bool ShelfView::ShouldHandleGestures(const ui::GestureEvent& event) const {
   return true;
 }
 
-base::string16 ShelfView::GetTitleForChildView(const views::View* view) const {
+std::u16string ShelfView::GetTitleForChildView(const views::View* view) const {
   const ShelfItem* item = ShelfItemForView(view);
-  return item ? item->title : base::string16();
+  return item ? item->title : std::u16string();
 }
 
 void ShelfView::UpdateShelfItemViewsVisibility() {

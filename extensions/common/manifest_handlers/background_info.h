@@ -49,21 +49,21 @@ class BackgroundInfo : public Extension::ManifestData {
     return has_background_page() && !is_persistent_;
   }
 
-  bool Parse(const Extension* extension, base::string16* error);
+  bool Parse(const Extension* extension, std::u16string* error);
 
  private:
   bool LoadBackgroundScripts(const Extension* extension,
                              const std::string& key,
-                             base::string16* error);
+                             std::u16string* error);
   bool LoadBackgroundPage(const Extension* extension,
                           const std::string& key,
-                          base::string16* error);
-  bool LoadBackgroundPage(const Extension* extension, base::string16* error);
+                          std::u16string* error);
+  bool LoadBackgroundPage(const Extension* extension, std::u16string* error);
   bool LoadBackgroundServiceWorkerScript(const Extension* extension,
-                                         base::string16* error);
+                                         std::u16string* error);
   bool LoadBackgroundPersistent(const Extension* extension,
-                                base::string16* error);
-  bool LoadAllowJSAccess(const Extension* extension, base::string16* error);
+                                std::u16string* error);
+  bool LoadAllowJSAccess(const Extension* extension, std::u16string* error);
 
   // Optional URL to a master page of which a single instance should be always
   // loaded in the background.
@@ -96,7 +96,7 @@ class BackgroundManifestHandler : public ManifestHandler {
   BackgroundManifestHandler();
   ~BackgroundManifestHandler() override;
 
-  bool Parse(Extension* extension, base::string16* error) override;
+  bool Parse(Extension* extension, std::u16string* error) override;
   bool Validate(const Extension* extension,
                 std::string* error,
                 std::vector<InstallWarning>* warnings) const override;

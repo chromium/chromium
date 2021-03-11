@@ -14,7 +14,7 @@
 namespace base {
 namespace android {
 
-base::string16 GetDefaultTimeZoneId() {
+std::u16string GetDefaultTimeZoneId() {
   JNIEnv* env = base::android::AttachCurrentThread();
   ScopedJavaLocalRef<jstring> timezone_id =
       Java_TimezoneUtils_getDefaultTimeZoneId(env);

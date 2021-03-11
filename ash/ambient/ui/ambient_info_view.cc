@@ -39,7 +39,7 @@ AmbientInfoView::AmbientInfoView(AmbientViewDelegate* delegate)
 
 AmbientInfoView::~AmbientInfoView() = default;
 
-void AmbientInfoView::UpdateImageDetails(const base::string16& details) {
+void AmbientInfoView::UpdateImageDetails(const std::u16string& details) {
   details_label_->SetText(details);
 }
 

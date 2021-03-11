@@ -57,7 +57,7 @@ TEST_F(QuickAnswersUiControllerTest, TearDownWhileQuickAnswersViewShowing) {
 TEST_F(QuickAnswersUiControllerTest, TearDownWhileNoticeViewShowing) {
   EXPECT_FALSE(ui_controller()->is_showing_user_notice_view());
   ui_controller()->CreateUserNoticeView(kDefaultAnchorBoundsInScreen,
-                                        base::string16(), base::string16());
+                                        std::u16string(), std::u16string());
   EXPECT_TRUE(ui_controller()->is_showing_user_notice_view());
 }
 

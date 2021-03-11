@@ -378,14 +378,14 @@ void UnifiedSystemTray::CloseBubble() {
   HideBubbleInternal();
 }
 
-base::string16 UnifiedSystemTray::GetAccessibleNameForBubble() {
+std::u16string UnifiedSystemTray::GetAccessibleNameForBubble() {
   if (IsBubbleShown())
     return GetAccessibleNameForQuickSettingsBubble();
   else
     return GetAccessibleNameForTray();
 }
 
-base::string16 UnifiedSystemTray::GetAccessibleNameForQuickSettingsBubble() {
+std::u16string UnifiedSystemTray::GetAccessibleNameForQuickSettingsBubble() {
   if (bubble_->unified_view()->IsDetailedViewShown())
     return bubble_->unified_view()->GetDetailedViewAccessibleName();
 
@@ -398,13 +398,13 @@ void UnifiedSystemTray::HandleLocaleChange() {
     item->HandleLocaleChange();
 }
 
-base::string16 UnifiedSystemTray::GetAccessibleNameForTray() {
-  base::string16 time = base::TimeFormatTimeOfDayWithHourClockType(
+std::u16string UnifiedSystemTray::GetAccessibleNameForTray() {
+  std::u16string time = base::TimeFormatTimeOfDayWithHourClockType(
       base::Time::Now(),
       Shell::Get()->system_tray_model()->clock()->hour_clock_type(),
       base::kKeepAmPm);
-  base::string16 battery = PowerStatus::Get()->GetAccessibleNameString(false);
-  std::vector<base::string16> status = {time, battery};
+  std::u16string battery = PowerStatus::Get()->GetAccessibleNameString(false);
+  std::vector<std::u16string> status = {time, battery};
 
   status.push_back(network_tray_view_->GetVisible()
                        ? network_tray_view_->GetAccessibleNameString()

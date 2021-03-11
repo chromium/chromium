@@ -170,7 +170,7 @@ class COMPONENT_EXPORT(DEVICE_FIDO) FidoRequestHandlerBase
     // hard lock.
     virtual void CollectPIN(
         CollectPINOptions options,
-        base::OnceCallback<void(base::string16)> provide_pin_cb) = 0;
+        base::OnceCallback<void(std::u16string)> provide_pin_cb) = 0;
 
     virtual void FinishCollectToken() = 0;
 

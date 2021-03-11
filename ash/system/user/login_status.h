@@ -13,7 +13,7 @@
 namespace ash {
 namespace user {
 
-base::string16 GetLocalizedSignOutStringForStatus(LoginStatus status,
+std::u16string GetLocalizedSignOutStringForStatus(LoginStatus status,
                                                   bool multiline);
 
 }  // namespace user

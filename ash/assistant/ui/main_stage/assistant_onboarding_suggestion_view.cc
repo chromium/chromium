@@ -117,7 +117,7 @@ const gfx::ImageSkia& AssistantOnboardingSuggestionView::GetIcon() const {
   return icon_->GetImage();
 }
 
-const base::string16& AssistantOnboardingSuggestionView::GetText() const {
+const std::u16string& AssistantOnboardingSuggestionView::GetText() const {
   return label_->GetText();
 }
 

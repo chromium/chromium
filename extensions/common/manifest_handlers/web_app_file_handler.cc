@@ -66,7 +66,7 @@ base::Optional<base::flat_set<std::string>> LoadFileExtensions(
 bool LoadWebAppFileHandler(const std::string& manifest_entry_index,
                            const base::Value& manifest_entry,
                            apps::FileHandlers* file_handlers,
-                           base::string16* error,
+                           std::u16string* error,
                            std::vector<InstallWarning>* install_warnings) {
   DCHECK(error);
 
@@ -150,7 +150,7 @@ WebAppFileHandlersParser::WebAppFileHandlersParser() = default;
 WebAppFileHandlersParser::~WebAppFileHandlersParser() = default;
 
 bool WebAppFileHandlersParser::Parse(Extension* extension,
-                                     base::string16* error) {
+                                     std::u16string* error) {
   // The "web_app_file_handlers" key is only available for Bookmark Apps.
   // Including it elsewhere results in an install warning, and the file handlers
   // are not parsed.

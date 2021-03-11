@@ -46,9 +46,9 @@ TEST(SysStrings, RoundTripsFromUTF8) {
 
 TEST(SysStrings, RoundTripsFromUTF16) {
   for (const auto& string8 : GetRoundTripStrings()) {
-    base::string16 string16 = base::UTF8ToUTF16(string8);
+    std::u16string string16 = base::UTF8ToUTF16(string8);
     NSString* nsstring16 = SysUTF16ToNSString(string16);
-    base::string16 back16 = SysNSStringToUTF16(nsstring16);
+    std::u16string back16 = SysNSStringToUTF16(nsstring16);
     EXPECT_EQ(string16, back16);
   }
 }

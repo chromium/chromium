@@ -14,7 +14,7 @@ namespace mac {
 FakeTouchIdContext::FakeTouchIdContext() = default;
 FakeTouchIdContext::~FakeTouchIdContext() = default;
 
-void FakeTouchIdContext::PromptTouchId(const base::string16& reason,
+void FakeTouchIdContext::PromptTouchId(const std::u16string& reason,
                                        Callback callback) {
   std::move(callback).Run(callback_result_);
 }

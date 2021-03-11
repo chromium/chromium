@@ -87,7 +87,7 @@ void GestureEducationNotificationController::
       CreateSystemNotification(
           message_center::NOTIFICATION_TYPE_SIMPLE, kNotificationId,
           GetNotificationTitle(), GetNotificationMessage(),
-          base::string16() /* display_source */, GURL(),
+          std::u16string() /* display_source */, GURL(),
           message_center::NotifierId(
               message_center::NotifierType::SYSTEM_COMPONENT, kNotificationId),
           message_center::RichNotificationData(),
@@ -113,12 +113,12 @@ void GestureEducationNotificationController::ResetPrefForTest() {
   }
 }
 
-base::string16 GestureEducationNotificationController::GetNotificationMessage()
+std::u16string GestureEducationNotificationController::GetNotificationMessage()
     const {
   return l10n_util::GetStringUTF16(IDS_GESTURE_NOTIFICATION_MESSAGE_LEARN_MORE);
 }
 
-base::string16 GestureEducationNotificationController::GetNotificationTitle()
+std::u16string GestureEducationNotificationController::GetNotificationTitle()
     const {
   return l10n_util::GetStringUTF16(IDS_GESTURE_NOTIFICATION_TITLE);
 }

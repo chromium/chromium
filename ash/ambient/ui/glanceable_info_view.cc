@@ -107,7 +107,7 @@ void GlanceableInfoView::Show() {
   temperature_->SetText(GetTemperatureText());
 }
 
-base::string16 GlanceableInfoView::GetTemperatureText() const {
+std::u16string GlanceableInfoView::GetTemperatureText() const {
   AmbientBackendModel* ambient_backend_model =
       delegate_->GetAmbientBackendModel();
   if (ambient_backend_model->show_celsius()) {

@@ -313,7 +313,7 @@ ClipboardHistoryBitmapItemView::CreateContentsView() {
   return std::make_unique<BitmapContentsView>(this);
 }
 
-base::string16 ClipboardHistoryBitmapItemView::GetAccessibleName() const {
+std::u16string ClipboardHistoryBitmapItemView::GetAccessibleName() const {
   switch (data_format_) {
     case ui::ClipboardInternalFormat::kHtml:
       return l10n_util::GetStringUTF16(IDS_CLIPBOARD_HISTORY_MENU_HTML_IMAGE);
@@ -321,7 +321,7 @@ base::string16 ClipboardHistoryBitmapItemView::GetAccessibleName() const {
       return l10n_util::GetStringUTF16(IDS_CLIPBOARD_HISTORY_MENU_BITMAP_IMAGE);
     default:
       NOTREACHED();
-      return base::string16();
+      return std::u16string();
   }
 }
 

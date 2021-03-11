@@ -253,7 +253,7 @@ DesksController* DesksController::Get() {
 }
 
 // static
-base::string16 DesksController::GetDeskDefaultName(size_t desk_index) {
+std::u16string DesksController::GetDeskDefaultName(size_t desk_index) {
   DCHECK_LT(desk_index, desks_util::GetMaxNumberOfDesks());
   return l10n_util::GetStringUTF16(kDeskDefaultNameIds[desk_index]);
 }
@@ -669,7 +669,7 @@ void DesksController::RevertDeskNameToDefault(Desk* desk) {
   desk->SetName(GetDeskDefaultName(GetDeskIndex(desk)), /*set_by_user=*/false);
 }
 
-void DesksController::RestoreNameOfDeskAtIndex(base::string16 name,
+void DesksController::RestoreNameOfDeskAtIndex(std::u16string name,
                                                size_t index) {
   DCHECK(!name.empty());
   DCHECK_LT(index, desks_.size());
@@ -732,9 +732,9 @@ int DesksController::GetActiveDeskIndex() const {
   return GetDeskIndex(active_desk_);
 }
 
-base::string16 DesksController::GetDeskName(int index) const {
+std::u16string DesksController::GetDeskName(int index) const {
   return index < static_cast<int>(desks_.size()) ? desks_[index]->name()
-                                                 : base::string16();
+                                                 : std::u16string();
 }
 
 int DesksController::GetNumberOfDesks() const {

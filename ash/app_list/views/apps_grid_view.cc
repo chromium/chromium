@@ -1882,10 +1882,10 @@ void AppsGridView::HandleKeyboardFoldering(ui::KeyboardCode key_code) {
   if (!CanMoveSelectedToTargetForKeyboardFoldering(target_index))
     return;
 
-  const base::string16 moving_view_title = selected_view_->title()->GetText();
+  const std::u16string moving_view_title = selected_view_->title()->GetText();
   AppListItemView* target_view =
       GetViewDisplayedAtSlotOnCurrentPage(target_index.slot);
-  const base::string16 target_view_title = target_view->title()->GetText();
+  const std::u16string target_view_title = target_view->title()->GetText();
   const bool target_view_is_folder = target_view->is_folder();
 
   AppListItemView* folder_item = MoveItemToFolder(selected_view_, target_index);
@@ -3755,7 +3755,7 @@ void AppsGridView::StartFolderDroppingAnimation(
 
   // Start animation.
   auto animation_view = std::make_unique<TopIconAnimationView>(
-      this, drag_item->GetIcon(GetAppListConfig().type()), base::string16(),
+      this, drag_item->GetIcon(GetAppListConfig().type()), std::u16string(),
       target_bounds, false, true);
   auto* animation_view_ptr =
       items_container_->AddChildView(std::move(animation_view));
@@ -3784,7 +3784,7 @@ void AppsGridView::MaybeCreateFolderDroppingAccessibilityEvent() {
 }
 
 void AppsGridView::AnnounceItemNotificationBadge(
-    const base::string16& selected_view_title) {
+    const std::u16string& selected_view_title) {
   // Set a11y name to announce the notification badge for the focused item.
   auto* announcement_view =
       contents_view_->app_list_view()->announcement_view();
@@ -3794,8 +3794,8 @@ void AppsGridView::AnnounceItemNotificationBadge(
   announcement_view->NotifyAccessibilityEvent(ax::mojom::Event::kAlert, true);
 }
 
-void AppsGridView::AnnounceFolderDrop(const base::string16& moving_view_title,
-                                      const base::string16& target_view_title,
+void AppsGridView::AnnounceFolderDrop(const std::u16string& moving_view_title,
+                                      const std::u16string& target_view_title,
                                       bool target_is_folder) {
   // Set a11y name to announce possible move to folder or creation of folder.
   auto* announcement_view =
@@ -3810,8 +3810,8 @@ void AppsGridView::AnnounceFolderDrop(const base::string16& moving_view_title,
 }
 
 void AppsGridView::AnnounceKeyboardFoldering(
-    const base::string16& moving_view_title,
-    const base::string16& target_view_title,
+    const std::u16string& moving_view_title,
+    const std::u16string& target_view_title,
     bool target_is_folder) {
   // Set a11y name to announce keyboard move to folder or creation of folder.
   auto* announcement_view =

@@ -239,7 +239,7 @@ ax::mojom::Role KeyboardShortcutView::GetAccessibleWindowRole() {
   return ax::mojom::Role::kWindow;
 }
 
-base::string16 KeyboardShortcutView::GetAccessibleWindowTitle() const {
+std::u16string KeyboardShortcutView::GetAccessibleWindowTitle() const {
   return l10n_util::GetStringUTF16(IDS_KSV_TITLE);
 }
 
@@ -513,7 +513,7 @@ void KeyboardShortcutView::UpdateViewsLayout(bool is_search_box_active) {
 }
 
 void KeyboardShortcutView::ShowSearchResults(
-    const base::string16& search_query) {
+    const std::u16string& search_query) {
   search_results_container_->RemoveAllChildViews(true);
   auto* search_container_content_view = search_no_result_view_.get();
   auto found_items_list_view = std::make_unique<KeyboardShortcutItemListView>();
@@ -524,9 +524,9 @@ void KeyboardShortcutView::ShowSearchResults(
   found_shortcut_items_.clear();
 
   for (const auto& item_view : shortcut_views_) {
-    base::string16 description_text =
+    std::u16string description_text =
         item_view->description_label_view()->GetText();
-    base::string16 shortcut_text = item_view->shortcut_label_view()->GetText();
+    std::u16string shortcut_text = item_view->shortcut_label_view()->GetText();
     size_t match_index = -1;
     size_t match_length = 0;
     // Only highlight |description_label_view_| in KeyboardShortcutItemView.
@@ -565,7 +565,7 @@ void KeyboardShortcutView::ShowSearchResults(
     }
   }
 
-  std::vector<base::string16> replacement_strings;
+  std::vector<std::u16string> replacement_strings;
   const int number_search_results = found_shortcut_items_.size();
   if (!found_items_list_view->children().empty()) {
     UpdateAXNodeDataPosition(found_shortcut_items_);

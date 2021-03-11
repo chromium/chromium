@@ -104,9 +104,9 @@ void PrivacyScreenToastController::OnMouseExitedView() {
   mouse_hovered_ = false;
 }
 
-base::string16 PrivacyScreenToastController::GetAccessibleNameForBubble() {
+std::u16string PrivacyScreenToastController::GetAccessibleNameForBubble() {
   if (!toast_view_)
-    return base::string16();
+    return std::u16string();
   return toast_view_->GetAccessibleName();
 }
 

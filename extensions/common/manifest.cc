@@ -346,8 +346,8 @@ bool Manifest::GetString(
   return available_values_->GetString(path, out_value);
 }
 
-bool Manifest::GetString(
-    const std::string& path, base::string16* out_value) const {
+bool Manifest::GetString(const std::string& path,
+                         std::u16string* out_value) const {
   return available_values_->GetString(path, out_value);
 }
 

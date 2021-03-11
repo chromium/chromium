@@ -48,7 +48,7 @@ views::View* UnifiedIMEDetailedViewController::CreateView() {
   return view_;
 }
 
-base::string16 UnifiedIMEDetailedViewController::GetAccessibleName() const {
+std::u16string UnifiedIMEDetailedViewController::GetAccessibleName() const {
   return l10n_util::GetStringUTF16(
       IDS_ASH_QUICK_SETTINGS_BUBBLE_IME_SETTINGS_ACCESSIBLE_DESCRIPTION);
 }

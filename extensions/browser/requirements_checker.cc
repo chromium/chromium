@@ -49,7 +49,7 @@ void RequirementsChecker::Start(ResultCallback callback) {
   }
 }
 
-base::string16 RequirementsChecker::GetErrorMessage() const {
+std::u16string RequirementsChecker::GetErrorMessage() const {
   // Join the error messages into one string.
   std::vector<std::string> messages;
   if (errors_.count(WEBGL_NOT_SUPPORTED)) {

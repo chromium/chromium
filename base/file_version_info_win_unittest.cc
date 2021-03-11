@@ -135,7 +135,7 @@ TYPED_TEST(FileVersionInfoTest, CustomProperties) {
   ASSERT_TRUE(version_info);
 
   // Test few existing properties.
-  base::string16 str;
+  std::u16string str;
   FileVersionInfoWin* version_info_win =
       static_cast<FileVersionInfoWin*>(version_info.get());
   EXPECT_TRUE(version_info_win->GetValue(u"Custom prop 1", &str));
@@ -153,7 +153,7 @@ TYPED_TEST(FileVersionInfoTest, CustomProperties) {
 
   // Test an non-existing property.
   EXPECT_FALSE(version_info_win->GetValue(u"Unknown property", &str));
-  EXPECT_EQ(base::string16(),
+  EXPECT_EQ(std::u16string(),
             version_info_win->GetStringValue(u"Unknown property"));
 
   EXPECT_EQ(base::Version(std::vector<uint32_t>{1, 0, 0, 1}),

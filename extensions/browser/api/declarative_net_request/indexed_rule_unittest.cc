@@ -560,7 +560,7 @@ TEST_F(IndexedRuleTest, RedirectParsing) {
         base::JSONReader::Read(cases[i].redirect_dictionary_json);
     ASSERT_TRUE(redirect_val);
 
-    base::string16 error;
+    std::u16string error;
     rule.action.redirect = dnr_api::Redirect::FromValue(*redirect_val, &error);
     ASSERT_TRUE(rule.action.redirect);
     ASSERT_TRUE(error.empty());

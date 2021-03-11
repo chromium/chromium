@@ -18,7 +18,7 @@ void TestSystemTrayClient::ShowBluetoothSettings() {
 
 void TestSystemTrayClient::ShowBluetoothPairingDialog(
     const std::string& address,
-    const base::string16& name_for_display,
+    const std::u16string& name_for_display,
     bool paired,
     bool connected) {}
 

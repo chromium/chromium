@@ -633,7 +633,7 @@ TEST(ExtensionCSPValidator, DoesCSPDisallowRemoteCode) {
 
   for (const auto& test_case : test_cases) {
     SCOPED_TRACE(test_case.policy);
-    base::string16 error;
+    std::u16string error;
     bool result = extensions::csp_validator::DoesCSPDisallowRemoteCode(
         test_case.policy, kManifestKey, &error);
     EXPECT_EQ(test_case.expected_error.empty(), result);

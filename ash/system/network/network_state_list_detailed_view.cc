@@ -426,7 +426,7 @@ views::View* NetworkStateListDetailedView::CreateNetworkInfoView() {
       cellular_address = *cellular->mac_address;
   }
 
-  base::string16 bubble_text;
+  std::u16string bubble_text;
   auto maybe_add_mac_address = [&bubble_text](const std::string& address,
                                               int ids) {
     if (address.empty())

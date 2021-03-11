@@ -110,7 +110,7 @@ BluetoothDevice::ConnectionInfo::ConnectionInfo(int rssi,
 
 BluetoothDevice::ConnectionInfo::~ConnectionInfo() = default;
 
-base::string16 BluetoothDevice::GetNameForDisplay() const {
+std::u16string BluetoothDevice::GetNameForDisplay() const {
   base::Optional<std::string> name = GetName();
   if (name && HasGraphicCharacter(name.value())) {
     return base::UTF8ToUTF16(name.value());
@@ -119,8 +119,8 @@ base::string16 BluetoothDevice::GetNameForDisplay() const {
   }
 }
 
-base::string16 BluetoothDevice::GetAddressWithLocalizedDeviceTypeName() const {
-  base::string16 address_utf16 = base::UTF8ToUTF16(GetAddress());
+std::u16string BluetoothDevice::GetAddressWithLocalizedDeviceTypeName() const {
+  std::u16string address_utf16 = base::UTF8ToUTF16(GetAddress());
   BluetoothDeviceType device_type = GetDeviceType();
   switch (device_type) {
     case BluetoothDeviceType::COMPUTER:

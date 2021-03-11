@@ -28,14 +28,12 @@ struct PermissionIDCompareHelper {
   APIPermission::ID id;
 };
 
-bool CreateAPIPermission(
-    const std::string& permission_str,
-    const base::Value* permission_value,
-    APIPermissionSet::ParseSource source,
-    APIPermissionSet* api_permissions,
-    base::string16* error,
-    std::vector<std::string>* unhandled_permissions) {
-
+bool CreateAPIPermission(const std::string& permission_str,
+                         const base::Value* permission_value,
+                         APIPermissionSet::ParseSource source,
+                         APIPermissionSet* api_permissions,
+                         std::u16string* error,
+                         std::vector<std::string>* unhandled_permissions) {
   const APIPermissionInfo* permission_info =
       PermissionsInfo::GetInstance()->GetByName(permission_str);
   if (permission_info) {
@@ -86,7 +84,7 @@ bool ParseChildPermissions(const std::string& base_name,
                            const base::Value* permission_value,
                            APIPermissionSet::ParseSource source,
                            APIPermissionSet* api_permissions,
-                           base::string16* error,
+                           std::u16string* error,
                            std::vector<std::string>* unhandled_permissions) {
   if (permission_value) {
     if (!permission_value->is_list()) {
@@ -145,7 +143,7 @@ bool APIPermissionSet::ParseFromJSON(
     const base::Value* permissions,
     APIPermissionSet::ParseSource source,
     APIPermissionSet* api_permissions,
-    base::string16* error,
+    std::u16string* error,
     std::vector<std::string>* unhandled_permissions) {
   if (!permissions->is_list()) {
     if (error) {
@@ -196,13 +194,11 @@ bool APIPermissionSet::ParseFromJSON(
 }
 
 PermissionID::PermissionID(APIPermission::ID id)
-    : std::pair<APIPermission::ID, base::string16>(id, base::string16()) {
-}
+    : std::pair<APIPermission::ID, std::u16string>(id, std::u16string()) {}
 
 PermissionID::PermissionID(APIPermission::ID id,
-                           const base::string16& parameter)
-    : std::pair<APIPermission::ID, base::string16>(id, parameter) {
-}
+                           const std::u16string& parameter)
+    : std::pair<APIPermission::ID, std::u16string>(id, parameter) {}
 
 PermissionID::~PermissionID() {
 }
@@ -223,11 +219,11 @@ PermissionIDSet::~PermissionIDSet() {
 }
 
 void PermissionIDSet::insert(APIPermission::ID permission_id) {
-  insert(permission_id, base::string16());
+  insert(permission_id, std::u16string());
 }
 
 void PermissionIDSet::insert(APIPermission::ID permission_id,
-                             const base::string16& permission_detail) {
+                             const std::u16string& permission_detail) {
   permissions_.insert(PermissionID(permission_id, permission_detail));
 }
 
@@ -247,9 +243,9 @@ void PermissionIDSet::erase(APIPermission::ID permission_id) {
   permissions_.erase(lower_bound, upper_bound);
 }
 
-std::vector<base::string16> PermissionIDSet::GetAllPermissionParameters()
+std::vector<std::u16string> PermissionIDSet::GetAllPermissionParameters()
     const {
-  std::vector<base::string16> params;
+  std::vector<std::u16string> params;
   for (const auto& permission : permissions_) {
     params.push_back(permission.parameter());
   }

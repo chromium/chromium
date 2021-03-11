@@ -30,7 +30,7 @@ views::View* UnifiedVPNDetailedViewController::CreateView() {
   return view_;
 }
 
-base::string16 UnifiedVPNDetailedViewController::GetAccessibleName() const {
+std::u16string UnifiedVPNDetailedViewController::GetAccessibleName() const {
   return l10n_util::GetStringUTF16(
       IDS_ASH_QUICK_SETTINGS_BUBBLE_VPN_SETTINGS_ACCESSIBLE_DESCRIPTION);
 }

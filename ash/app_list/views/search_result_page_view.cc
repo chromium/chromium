@@ -262,8 +262,8 @@ void SearchResultPageView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
 
   node_data->role = ax::mojom::Role::kListBox;
 
-  base::string16 value;
-  base::string16 query = search_model_->search_box()->text();
+  std::u16string value;
+  std::u16string query = search_model_->search_box()->text();
   if (!query.empty()) {
     if (last_search_result_count_ == 1) {
       value = l10n_util::GetStringFUTF16(

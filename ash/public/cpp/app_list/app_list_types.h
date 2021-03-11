@@ -235,13 +235,13 @@ using SearchResultTags = std::vector<SearchResultTag>;
 struct ASH_PUBLIC_EXPORT SearchResultAction {
   SearchResultAction();
   SearchResultAction(const gfx::ImageSkia& image,
-                     const base::string16& tooltip_text,
+                     const std::u16string& tooltip_text,
                      bool visible_on_hover);
   SearchResultAction(const SearchResultAction& other);
   ~SearchResultAction();
 
   gfx::ImageSkia image;
-  base::string16 tooltip_text;
+  std::u16string tooltip_text;
   // Visible when button or its parent row in hover state.
   bool visible_on_hover;
 };
@@ -258,13 +258,13 @@ struct ASH_PUBLIC_EXPORT SearchResultMetadata {
   std::string id;
 
   // The title of the result, e.g. an app's name, an autocomplete query, etc.
-  base::string16 title;
+  std::u16string title;
 
   // A detail string of this result.
-  base::string16 details;
+  std::u16string details;
 
   // An text to be announced by a screen reader app.
-  base::string16 accessible_name;
+  std::u16string accessible_name;
 
   // How the title matches the query. See the SearchResultTag section for more
   // details.
@@ -283,7 +283,7 @@ struct ASH_PUBLIC_EXPORT SearchResultMetadata {
   float rating = -1.0;
 
   // A formatted price string, e.g. "$7.09", "HK$3.94", etc.
-  base::string16 formatted_price;
+  std::u16string formatted_price;
 
   // The type of this result.
   AppListSearchResultType result_type = AppListSearchResultType::kUnknown;

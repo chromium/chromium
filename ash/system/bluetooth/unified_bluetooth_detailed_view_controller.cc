@@ -85,7 +85,7 @@ views::View* UnifiedBluetoothDetailedViewController::CreateView() {
   return view_;
 }
 
-base::string16 UnifiedBluetoothDetailedViewController::GetAccessibleName()
+std::u16string UnifiedBluetoothDetailedViewController::GetAccessibleName()
     const {
   return l10n_util::GetStringUTF16(
       IDS_ASH_QUICK_SETTINGS_BUBBLE_BLUETOOTH_SETTINGS_ACCESSIBLE_DESCRIPTION);

@@ -21,7 +21,7 @@ ExtensionActionHandler::ExtensionActionHandler() {}
 ExtensionActionHandler::~ExtensionActionHandler() {}
 
 bool ExtensionActionHandler::Parse(Extension* extension,
-                                   base::string16* error) {
+                                   std::u16string* error) {
   const char* key = nullptr;
   const char* error_key = nullptr;
   ActionInfo::Type type = ActionInfo::TYPE_ACTION;

@@ -207,14 +207,14 @@ void AwQuotaManagerBridge::DeleteAllDataOnUiThread() {
 void AwQuotaManagerBridge::DeleteOrigin(JNIEnv* env,
                                         const JavaParamRef<jobject>& object,
                                         const JavaParamRef<jstring>& origin) {
-  base::string16 origin_string(
+  std::u16string origin_string(
       base::android::ConvertJavaStringToUTF16(env, origin));
   RunOnUIThread(base::BindOnce(&AwQuotaManagerBridge::DeleteOriginOnUiThread,
                                this, origin_string));
 }
 
 void AwQuotaManagerBridge::DeleteOriginOnUiThread(
-    const base::string16& origin) {
+    const std::u16string& origin) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   StoragePartition* storage_partition = GetStoragePartition();
   storage_partition->ClearDataForOrigin(
@@ -285,7 +285,7 @@ void AwQuotaManagerBridge::GetUsageAndQuotaForOrigin(
     const JavaParamRef<jstring>& origin,
     jint callback_id,
     bool is_quota) {
-  base::string16 origin_string(
+  std::u16string origin_string(
       base::android::ConvertJavaStringToUTF16(env, origin));
   RunOnUIThread(
       base::BindOnce(&AwQuotaManagerBridge::GetUsageAndQuotaForOriginOnUiThread,
@@ -293,7 +293,7 @@ void AwQuotaManagerBridge::GetUsageAndQuotaForOrigin(
 }
 
 void AwQuotaManagerBridge::GetUsageAndQuotaForOriginOnUiThread(
-    const base::string16& origin,
+    const std::u16string& origin,
     jint callback_id,
     bool is_quota) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);

@@ -498,7 +498,7 @@ void SandboxedUnpacker::UnpackExtensionSucceeded(base::Value manifest) {
   // Localize manifest now, so confirm UI gets correct extension name.
 
   // TODO(rdevlin.cronin): Continue removing std::string errors and replacing
-  // with base::string16
+  // with std::u16string
   std::string utf8_error;
   if (!extension_l10n_util::LocalizeExtension(
           extension_root_, final_manifest_dict.get(),
@@ -569,7 +569,7 @@ void SandboxedUnpacker::ImageSanitizationDone(
 
   SandboxedUnpackerFailureReason failure_reason =
       SandboxedUnpackerFailureReason::UNPACKER_CLIENT_FAILED;
-  base::string16 error;
+  std::u16string error;
   switch (status) {
     case ImageSanitizer::Status::kImagePathError:
       failure_reason =
@@ -658,7 +658,7 @@ void SandboxedUnpacker::MessageCatalogsSanitized(
 
   SandboxedUnpackerFailureReason failure_reason =
       SandboxedUnpackerFailureReason::UNPACKER_CLIENT_FAILED;
-  base::string16 error;
+  std::u16string error;
   switch (status) {
     case JsonFileSanitizer::Status::kFileReadError:
     case JsonFileSanitizer::Status::kDecodingError:
@@ -778,7 +778,7 @@ void SandboxedUnpacker::ReportUnpackExtensionFailed(base::StringPiece error) {
                                            base::UTF8ToUTF16(error)));
 }
 
-base::string16 SandboxedUnpacker::FailureReasonToString16(
+std::u16string SandboxedUnpacker::FailureReasonToString16(
     const SandboxedUnpackerFailureReason reason) {
   switch (reason) {
     case SandboxedUnpackerFailureReason::COULD_NOT_GET_TEMP_DIRECTORY:
@@ -870,7 +870,7 @@ base::string16 SandboxedUnpacker::FailureReasonToString16(
     case SandboxedUnpackerFailureReason::NUM_FAILURE_REASONS:
     default:
       NOTREACHED();
-      return base::string16();
+      return std::u16string();
   }
 }
 
@@ -947,7 +947,7 @@ bool SandboxedUnpacker::ValidateSignature(
 
 void SandboxedUnpacker::ReportFailure(
     const SandboxedUnpackerFailureReason reason,
-    const base::string16& error) {
+    const std::u16string& error) {
   DCHECK(unpacker_io_task_runner_->RunsTasksInCurrentSequence());
 
   UMA_HISTOGRAM_ENUMERATION(

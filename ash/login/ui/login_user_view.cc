@@ -311,7 +311,7 @@ class LoginUserView::UserLabel : public NonAccessibleView {
         AshColorProvider::ContentLayerType::kTextColorPrimary));
   }
 
-  const base::string16& displayed_name() const { return user_name_->GetText(); }
+  const std::u16string& displayed_name() const { return user_name_->GetText(); }
 
  private:
   views::Label* user_name_ = nullptr;
@@ -362,7 +362,7 @@ LoginDisplayStyle LoginUserView::TestApi::display_style() const {
   return view_->display_style_;
 }
 
-const base::string16& LoginUserView::TestApi::displayed_name() const {
+const std::u16string& LoginUserView::TestApi::displayed_name() const {
   return view_->user_label_->displayed_name();
 }
 
@@ -623,7 +623,7 @@ void LoginUserView::DropdownButtonPressed() {
 }
 
 void LoginUserView::UpdateCurrentUserState() {
-  base::string16 accessible_name;
+  std::u16string accessible_name;
   auto email = base::UTF8ToUTF16(current_user_.basic_user_info.display_email);
   if (current_user_.user_account_manager) {
     accessible_name = l10n_util::GetStringFUTF16(

@@ -119,8 +119,8 @@ class NotificationMenuViewTest : public views::ViewsTestBase {
 
   message_center::Notification AddNotification(
       const std::string& notification_id,
-      const base::string16& title,
-      const base::string16& message) {
+      const std::u16string& title,
+      const std::u16string& message) {
     const message_center::NotifierId notifier_id(
         message_center::NotifierType::APPLICATION, kTestAppId);
     message_center::Notification notification(
@@ -135,8 +135,8 @@ class NotificationMenuViewTest : public views::ViewsTestBase {
 
   message_center::Notification UpdateNotification(
       const std::string& notification_id,
-      const base::string16& title,
-      const base::string16& message) {
+      const std::u16string& title,
+      const std::u16string& message) {
     const message_center::NotifierId notifier_id(
         message_center::NotifierType::APPLICATION, kTestAppId);
     message_center::Notification notification(

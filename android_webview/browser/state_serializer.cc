@@ -233,7 +233,7 @@ bool RestoreNavigationEntryFromPickle(uint32_t state_version,
   }
 
   {
-    base::string16 title;
+    std::u16string title;
     if (!iterator->ReadString16(&title))
       return false;
     entry->SetTitle(title);

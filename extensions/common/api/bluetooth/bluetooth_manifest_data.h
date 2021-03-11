@@ -41,7 +41,7 @@ class BluetoothManifestData : public Extension::ManifestData {
   // the manifest. Sets |error| and returns an empty scoped_ptr on failure.
   static std::unique_ptr<BluetoothManifestData> FromValue(
       const base::Value& value,
-      base::string16* error);
+      std::u16string* error);
 
   const BluetoothManifestPermission* permission() const {
     return permission_.get();

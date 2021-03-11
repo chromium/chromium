@@ -32,7 +32,7 @@ void ProjectorControllerImpl::OnSpeechRecognitionAvailable(bool available) {
 }
 
 void ProjectorControllerImpl::OnTranscription(
-    const base::string16& text,
+    const std::u16string& text,
     base::TimeDelta audio_start_time,
     base::TimeDelta audio_end_time,
     const std::vector<base::TimeDelta>& word_offsets,

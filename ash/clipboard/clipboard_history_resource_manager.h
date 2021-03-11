@@ -42,7 +42,7 @@ class ASH_EXPORT ClipboardHistoryResourceManager
   ui::ImageModel GetImageModel(const ClipboardHistoryItem& item) const;
 
   // Returns the label to display for the specified clipboard history |item|.
-  base::string16 GetLabel(const ClipboardHistoryItem& item) const;
+  std::u16string GetLabel(const ClipboardHistoryItem& item) const;
 
   void AddObserver(Observer* observer) const;
   void RemoveObserver(Observer* observer) const;

@@ -98,7 +98,7 @@ bool HasFocusInAnyChildView(views::View* view) {
   return search == view;
 }
 
-views::Label* CreateBubbleLabel(const base::string16& message,
+views::Label* CreateBubbleLabel(const std::u16string& message,
                                 views::View* view_defining_max_width,
                                 SkColor color,
                                 const gfx::FontList& font_list,

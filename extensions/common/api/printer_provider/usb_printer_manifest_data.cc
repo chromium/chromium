@@ -30,7 +30,7 @@ const UsbPrinterManifestData* UsbPrinterManifestData::Get(
 // static
 std::unique_ptr<UsbPrinterManifestData> UsbPrinterManifestData::FromValue(
     const base::Value& value,
-    base::string16* error) {
+    std::u16string* error) {
   std::unique_ptr<api::extensions_manifest_types::UsbPrinters> usb_printers =
       api::extensions_manifest_types::UsbPrinters::FromValue(value, error);
   if (!usb_printers) {

@@ -26,7 +26,7 @@ views::View* UnifiedLocaleDetailedViewController::CreateView() {
   return view_;
 }
 
-base::string16 UnifiedLocaleDetailedViewController::GetAccessibleName() const {
+std::u16string UnifiedLocaleDetailedViewController::GetAccessibleName() const {
   return l10n_util::GetStringUTF16(
       IDS_ASH_QUICK_SETTINGS_BUBBLE_LOCALE_SETTINGS_ACCESSIBLE_DESCRIPTION);
 }

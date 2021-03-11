@@ -53,7 +53,7 @@ END_METADATA
 }  // namespace
 
 ImeModeIndicatorView::ImeModeIndicatorView(const gfx::Rect& cursor_bounds,
-                                           const base::string16& label)
+                                           const std::u16string& label)
     : cursor_bounds_(cursor_bounds), label_view_(new views::Label(label)) {
   SetButtons(ui::DIALOG_BUTTON_NONE);
   SetCanActivate(false);

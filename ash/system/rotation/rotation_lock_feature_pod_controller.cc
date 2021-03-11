@@ -67,7 +67,7 @@ void RotationLockFeaturePodController::UpdateButton() {
 
   button_->SetToggled(rotation_locked);
 
-  base::string16 tooltip_state;
+  std::u16string tooltip_state;
 
   if (rotation_locked && is_portrait) {
     button_->SetVectorIcon(kUnifiedMenuRotationLockPortraitIcon);

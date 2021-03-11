@@ -72,7 +72,7 @@ struct BluetoothSocketWin::ServiceRegData {
   SOCKADDR_BTH address;
   CSADDR_INFO address_info;
   GUID uuid;
-  base::string16 name;
+  std::u16string name;
   WSAQUERYSET service;
 };
 
@@ -298,7 +298,7 @@ void BluetoothSocketWin::DoListen(const BluetoothUUID& uuid,
   reg_data->address_info.iSocketType = SOCK_STREAM;
   reg_data->address_info.iProtocol = BTHPROTO_RFCOMM;
 
-  base::string16 cannonical_uuid =
+  std::u16string cannonical_uuid =
       u"{" + base::ASCIIToUTF16(uuid.canonical_value()) + u"}";
   if (!SUCCEEDED(
           CLSIDFromString(base::as_wcstr(cannonical_uuid), &reg_data->uuid))) {

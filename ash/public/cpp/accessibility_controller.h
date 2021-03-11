@@ -112,7 +112,7 @@ class ASH_PUBLIC_EXPORT AccessibilityController {
       gfx::Rect& bounds_in_screen) = 0;
 
   // Retrieves a string description of the current battery status.
-  virtual base::string16 GetBatteryDescription() const = 0;
+  virtual std::u16string GetBatteryDescription() const = 0;
 
   // Shows or hides the virtual keyboard.
   virtual void SetVirtualKeyboardVisible(bool is_visible) = 0;

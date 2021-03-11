@@ -263,7 +263,7 @@ class AppListViewTest : public views::ViewsTestBase,
     views::Textfield* search_box =
         view_->app_list_main_view()->search_box_view()->search_box();
     // Set new text as if it is typed by a user.
-    search_box->SetText(base::string16());
+    search_box->SetText(std::u16string());
     search_box->InsertText(
         base::UTF8ToUTF16(text),
         ui::TextInputClient::InsertTextCursorBehavior::kMoveCursorAfterText);
@@ -657,7 +657,7 @@ class AppListViewFocusTest : public views::ViewsTestBase,
     TestLeftAndRightKeyTraversalOnTextfield(textfield);
 
     // Type something in textfield.
-    base::string16 text =
+    std::u16string text =
         text_rtl
             // Arabic word of "test".
             ? base::UTF8ToUTF16(
@@ -959,7 +959,7 @@ TEST_F(AppListViewFocusTest, CloseButtonClearsSearchOnEnter) {
   // Enter - it should clear the search box.
   SimulateKeyPress(ui::VKEY_RETURN, false /*shift_down*/);
   EXPECT_TRUE(search_box_view()->search_box()->HasFocus());
-  EXPECT_EQ(base::string16(), search_box_view()->search_box()->GetText());
+  EXPECT_EQ(std::u16string(), search_box_view()->search_box()->GetText());
   EXPECT_FALSE(search_box_view()->is_search_box_active());
   EXPECT_FALSE(contents_view()->search_results_page_view()->GetVisible());
   ResultSelectionController* selection_controller =
@@ -986,7 +986,7 @@ TEST_P(AppListViewFocusTest, LeftRightFocusTraversalInHalfState) {
   // Type something in search box to transition to HALF state and populate
   // fake search results.
   // Type something in textfield.
-  base::string16 text =
+  std::u16string text =
       is_rtl_
           // Arabic word of "test".
           ? base::UTF8ToUTF16(
@@ -1689,7 +1689,7 @@ TEST_F(AppListViewTest, EmptySearchTextStillPeeking) {
       view_->app_list_main_view()->search_box_view()->search_box();
 
   Show();
-  search_box->SetText(base::string16());
+  search_box->SetText(std::u16string());
 
   ASSERT_EQ(ash::AppListViewState::kPeeking, view_->app_list_state());
 }
@@ -1770,7 +1770,7 @@ TEST_F(AppListViewTest, TypingPeekingToHalf) {
       view_->app_list_main_view()->search_box_view()->search_box();
 
   Show();
-  search_box->SetText(base::string16());
+  search_box->SetText(std::u16string());
   search_box->InsertText(
       base::UTF8ToUTF16("nice"),
       ui::TextInputClient::InsertTextCursorBehavior::kMoveCursorAfterText);
@@ -1787,7 +1787,7 @@ TEST_F(AppListViewTest, TypingFullscreenToFullscreenSearch) {
   views::Textfield* search_box =
       view_->app_list_main_view()->search_box_view()->search_box();
 
-  search_box->SetText(base::string16());
+  search_box->SetText(std::u16string());
   search_box->InsertText(
       base::UTF8ToUTF16("https://youtu.be/dQw4w9WgXcQ"),
       ui::TextInputClient::InsertTextCursorBehavior::kMoveCursorAfterText);
@@ -1802,7 +1802,7 @@ TEST_F(AppListViewTest, TypingTabletModeFullscreenSearch) {
       view_->app_list_main_view()->search_box_view()->search_box();
 
   Show();
-  search_box->SetText(base::string16());
+  search_box->SetText(std::u16string());
   search_box->InsertText(
       base::UTF8ToUTF16("cool!"),
       ui::TextInputClient::InsertTextCursorBehavior::kMoveCursorAfterText);
@@ -2217,8 +2217,8 @@ TEST_F(AppListViewTest, DISABLED_SearchResultsTest) {
   view_->Layout();
   EXPECT_TRUE(IsStateShown(ash::AppListState::kStateApps));
 
-  base::string16 search_text = base::UTF8ToUTF16("test");
-  main_view->search_box_view()->search_box()->SetText(base::string16());
+  std::u16string search_text = base::UTF8ToUTF16("test");
+  main_view->search_box_view()->search_box()->SetText(std::u16string());
   main_view->search_box_view()->search_box()->InsertText(
       search_text,
       ui::TextInputClient::InsertTextCursorBehavior::kMoveCursorAfterText);
@@ -2238,8 +2238,8 @@ TEST_F(AppListViewTest, DISABLED_SearchResultsTest) {
   EXPECT_TRUE(CheckSearchBoxWidget(
       contents_view->GetSearchBoxBounds(ash::AppListState::kStateApps)));
 
-  base::string16 new_search_text = base::UTF8ToUTF16("apple");
-  main_view->search_box_view()->search_box()->SetText(base::string16());
+  std::u16string new_search_text = base::UTF8ToUTF16("apple");
+  main_view->search_box_view()->search_box()->SetText(std::u16string());
   main_view->search_box_view()->search_box()->InsertText(
       new_search_text,
       ui::TextInputClient::InsertTextCursorBehavior::kMoveCursorAfterText);
@@ -2293,8 +2293,8 @@ TEST_F(AppListViewTest, DISABLED_BackTest) {
   EXPECT_EQ(1, delegate_->dismiss_count());
 
   // Show the search results.
-  base::string16 new_search_text = base::UTF8ToUTF16("apple");
-  search_box_view->search_box()->SetText(base::string16());
+  std::u16string new_search_text = base::UTF8ToUTF16("apple");
+  search_box_view->search_box()->SetText(std::u16string());
   search_box_view->search_box()->InsertText(
       new_search_text,
       ui::TextInputClient::InsertTextCursorBehavior::kMoveCursorAfterText);

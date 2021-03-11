@@ -36,7 +36,7 @@ void SearchBoxModel::SetSearchEngineIsGoogle(bool is_google) {
     observer.SearchEngineChanged();
 }
 
-void SearchBoxModel::Update(const base::string16& text,
+void SearchBoxModel::Update(const std::u16string& text,
                             bool initiated_by_user) {
   if (text_ == text)
     return;

@@ -421,7 +421,7 @@ IN_PROC_BROWSER_TEST_F(MimeHandlerViewTest, BeforeUnload_ShowDialog) {
       ui_test_utils::WaitForAppModalDialog();
   EXPECT_TRUE(before_unload_dialog->is_before_unload_dialog());
   EXPECT_FALSE(before_unload_dialog->is_reload());
-  before_unload_dialog->OnAccept(base::string16(), false);
+  before_unload_dialog->OnAccept(std::u16string(), false);
 }
 
 IN_PROC_BROWSER_TEST_F(MimeHandlerViewTest,
@@ -466,7 +466,7 @@ IN_PROC_BROWSER_TEST_F(MimeHandlerViewTest,
       ui_test_utils::WaitForAppModalDialog();
   EXPECT_TRUE(before_unload_dialog->is_before_unload_dialog());
   EXPECT_FALSE(before_unload_dialog->is_reload());
-  before_unload_dialog->OnAccept(base::string16(), false);
+  before_unload_dialog->OnAccept(std::u16string(), false);
 }
 
 // Helper class to wait for document load event in the main frame.

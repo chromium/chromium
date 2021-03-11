@@ -16,7 +16,7 @@ namespace ash {
 // The locale info to show in the system tray locale detailed view.
 struct ASH_PUBLIC_EXPORT LocaleInfo {
   LocaleInfo();
-  LocaleInfo(const std::string& iso_code, const base::string16& display_name);
+  LocaleInfo(const std::string& iso_code, const std::u16string& display_name);
   LocaleInfo(const LocaleInfo& rhs);
   LocaleInfo(LocaleInfo&& rhs);
   ~LocaleInfo();
@@ -25,7 +25,7 @@ struct ASH_PUBLIC_EXPORT LocaleInfo {
   std::string iso_code;
 
   // The display name of the locale.
-  base::string16 display_name;
+  std::u16string display_name;
 };
 
 // Sent as the response to LocaleUpdateController.OnLocaleChanged().

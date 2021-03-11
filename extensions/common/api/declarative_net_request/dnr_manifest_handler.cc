@@ -30,7 +30,7 @@ namespace declarative_net_request {
 DNRManifestHandler::DNRManifestHandler() = default;
 DNRManifestHandler::~DNRManifestHandler() = default;
 
-bool DNRManifestHandler::Parse(Extension* extension, base::string16* error) {
+bool DNRManifestHandler::Parse(Extension* extension, std::u16string* error) {
   DCHECK(extension->manifest()->HasKey(
       dnr_api::ManifestKeys::kDeclarativeNetRequest));
 

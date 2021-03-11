@@ -125,7 +125,7 @@ void FloatingAccessibilityDetailedController::TransitionToMainView(
   CloseBubble();
 }
 
-base::string16
+std::u16string
 FloatingAccessibilityDetailedController::GetAccessibleNameForBubble() {
   return l10n_util::GetStringUTF16(
       IDS_ASH_FLOATING_ACCESSIBILITY_DETAILED_MENU);

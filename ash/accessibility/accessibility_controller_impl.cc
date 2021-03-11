@@ -325,8 +325,8 @@ void ShowAccessibilityNotification(A11yNotificationType type) {
   if (type == A11yNotificationType::kNone)
     return;
 
-  base::string16 text;
-  base::string16 title;
+  std::u16string text;
+  std::u16string title;
   if (type == A11yNotificationType::kBrailleDisplayConnected) {
     text = l10n_util::GetStringUTF16(
         IDS_ASH_STATUS_TRAY_BRAILLE_DISPLAY_CONNECTED);
@@ -350,7 +350,7 @@ void ShowAccessibilityNotification(A11yNotificationType type) {
   std::unique_ptr<message_center::Notification> notification =
       ash::CreateSystemNotification(
           message_center::NOTIFICATION_TYPE_SIMPLE, kNotificationId, title,
-          text, base::string16(), GURL(),
+          text, std::u16string(), GURL(),
           message_center::NotifierId(
               message_center::NotifierType::SYSTEM_COMPONENT,
               kNotifierAccessibility),
@@ -1886,7 +1886,7 @@ void AccessibilityControllerImpl::
   NotifyAccessibilityStatusChanged();
 }
 
-base::string16 AccessibilityControllerImpl::GetBatteryDescription() const {
+std::u16string AccessibilityControllerImpl::GetBatteryDescription() const {
   // Pass battery status as string to callback function.
   return PowerStatus::Get()->GetAccessibleNameString(
       /*full_description=*/true);

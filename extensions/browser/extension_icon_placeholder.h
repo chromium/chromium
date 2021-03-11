@@ -40,7 +40,7 @@ class ExtensionIconPlaceholder : public gfx::CanvasImageSource {
   extension_misc::ExtensionIcons icon_size_;
 
   // The first letter of the extension's name.
-  base::string16 letter_;
+  std::u16string letter_;
 
   // The gray background image, on top of which the letter is drawn.
   gfx::Image base_image_;

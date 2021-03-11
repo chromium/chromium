@@ -413,7 +413,7 @@ void NetworkListView::UpdateViewForNetwork(HoverHighlightView* view,
 
 void NetworkListView::SetupUnactivatedCellularNetworkListItem(
     HoverHighlightView* view,
-    const base::string16& sub_text) {
+    const std::u16string& sub_text) {
   DCHECK(view->is_populated());
 
   view->SetSubText(sub_text);
@@ -422,7 +422,7 @@ void NetworkListView::SetupUnactivatedCellularNetworkListItem(
           AshColorProvider::ContentLayerType::kTextColorWarning));
 }
 
-base::string16 NetworkListView::GenerateAccessibilityLabel(
+std::u16string NetworkListView::GenerateAccessibilityLabel(
     const NetworkInfo& info) {
   if (CanNetworkConnect(info.connection_state, info.type, info.connectable)) {
     return l10n_util::GetStringFUTF16(
@@ -432,9 +432,9 @@ base::string16 NetworkListView::GenerateAccessibilityLabel(
                                     info.label);
 }
 
-base::string16 NetworkListView::GenerateAccessibilityDescription(
+std::u16string NetworkListView::GenerateAccessibilityDescription(
     const NetworkInfo& info) {
-  base::string16 connection_status;
+  std::u16string connection_status;
   if (StateIsConnected(info.connection_state) ||
       info.connection_state == ConnectionStateType::kConnecting) {
     connection_status = l10n_util::GetStringUTF16(
@@ -460,7 +460,7 @@ base::string16 NetworkListView::GenerateAccessibilityDescription(
       }
       return info.label;
     case NetworkType::kWiFi: {
-      base::string16 security_label = l10n_util::GetStringUTF16(
+      std::u16string security_label = l10n_util::GetStringUTF16(
           info.secured ? IDS_ASH_STATUS_TRAY_NETWORK_STATUS_SECURED
                        : IDS_ASH_STATUS_TRAY_NETWORK_STATUS_UNSECURED);
       if (!connection_status.empty()) {

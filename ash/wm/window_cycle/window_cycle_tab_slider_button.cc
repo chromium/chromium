@@ -29,7 +29,7 @@ constexpr int kTabSliderButtonLabelFontSizeDp = 13;
 
 WindowCycleTabSliderButton::WindowCycleTabSliderButton(
     views::Button::PressedCallback callback,
-    const base::string16& label_text)
+    const std::u16string& label_text)
     : LabelButton(std::move(callback), label_text) {
   SetHorizontalAlignment(gfx::ALIGN_CENTER);
 

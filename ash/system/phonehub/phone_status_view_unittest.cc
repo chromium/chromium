@@ -61,9 +61,9 @@ class PhoneStatusViewTest : public AshTestBase,
 };
 
 TEST_F(PhoneStatusViewTest, PhoneStatusLabelsContent) {
-  base::string16 expected_name_text = base::UTF8ToUTF16("Test Phone Name");
-  base::string16 expected_provider_text = base::UTF8ToUTF16("Test Provider");
-  base::string16 expected_battery_text = base::UTF8ToUTF16("10%");
+  std::u16string expected_name_text = base::UTF8ToUTF16("Test Phone Name");
+  std::u16string expected_provider_text = base::UTF8ToUTF16("Test Provider");
+  std::u16string expected_battery_text = base::UTF8ToUTF16("10%");
 
   phone_model_.SetPhoneName(expected_name_text);
 

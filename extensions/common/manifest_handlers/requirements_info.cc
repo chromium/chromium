@@ -50,7 +50,7 @@ bool RequirementsHandler::AlwaysParseForType(Manifest::Type type) const {
   return true;
 }
 
-bool RequirementsHandler::Parse(Extension* extension, base::string16* error) {
+bool RequirementsHandler::Parse(Extension* extension, std::u16string* error) {
   std::unique_ptr<RequirementsInfo> requirements(
       new RequirementsInfo(extension->manifest()));
 

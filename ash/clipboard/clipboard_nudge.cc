@@ -117,11 +117,11 @@ class ClipboardNudge::ClipboardNudgeView : public views::View {
     keyboard_shortcut_icon->SetBorder(views::CreateEmptyBorder(2, 4, 0, -2));
 
     // Set the text for |label_|.
-    base::string16 shortcut_key = l10n_util::GetStringUTF16(
+    std::u16string shortcut_key = l10n_util::GetStringUTF16(
         use_launcher_key ? IDS_ASH_SHORTCUT_MODIFIER_LAUNCHER
                          : IDS_ASH_SHORTCUT_MODIFIER_SEARCH);
     size_t offset;
-    base::string16 label_text = l10n_util::GetStringFUTF16(
+    std::u16string label_text = l10n_util::GetStringFUTF16(
         nudge_type == kZeroStateNudge
             ? IDS_ASH_MULTIPASTE_ZERO_STATE_CONTEXTUAL_NUDGE
             : IDS_ASH_MULTIPASTE_CONTEXTUAL_NUDGE,

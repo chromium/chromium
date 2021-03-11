@@ -75,7 +75,7 @@ void PhoneHubTray::ClickedOutsideBubble() {
   CloseBubble();
 }
 
-base::string16 PhoneHubTray::GetAccessibleNameForTray() {
+std::u16string PhoneHubTray::GetAccessibleNameForTray() {
   return l10n_util::GetStringUTF16(IDS_ASH_PHONE_HUB_TRAY_ACCESSIBLE_NAME);
 }
 
@@ -89,7 +89,7 @@ void PhoneHubTray::HideBubbleWithView(const TrayBubbleView* bubble_view) {
     CloseBubble();
 }
 
-base::string16 PhoneHubTray::GetAccessibleNameForBubble() {
+std::u16string PhoneHubTray::GetAccessibleNameForBubble() {
   return GetAccessibleNameForTray();
 }
 

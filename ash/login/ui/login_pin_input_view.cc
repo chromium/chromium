@@ -183,7 +183,7 @@ void LoginPinInputView::Init(const OnPinSubmit& on_submit,
   on_changed_ = on_changed;
 }
 
-void LoginPinInputView::SubmitPin(const base::string16& pin) {
+void LoginPinInputView::SubmitPin(const std::u16string& pin) {
   DCHECK(on_submit_);
   on_submit_.Run(pin);
 }

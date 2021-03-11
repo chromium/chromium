@@ -46,7 +46,7 @@ SwitchAccessMenuButton::SwitchAccessMenuButton(std::string action_name,
   SkColor label_color = AshColorProvider::Get()->GetContentLayerColor(
       AshColorProvider::ContentLayerType::kTextColorPrimary);
 
-  base::string16 label_text = l10n_util::GetStringUTF16(label_text_id);
+  std::u16string label_text = l10n_util::GetStringUTF16(label_text_id);
   views::Builder<SwitchAccessMenuButton>(this)
       .SetFocusBehavior(views::View::FocusBehavior::ACCESSIBLE_ONLY)
       .AddChildren(

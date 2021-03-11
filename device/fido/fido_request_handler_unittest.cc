@@ -111,7 +111,7 @@ class TestObserver : public FidoRequestHandlerBase::Observer {
 
   void CollectPIN(
       CollectPINOptions options,
-      base::OnceCallback<void(base::string16)> provide_pin_cb) override {
+      base::OnceCallback<void(std::u16string)> provide_pin_cb) override {
     NOTREACHED();
   }
 

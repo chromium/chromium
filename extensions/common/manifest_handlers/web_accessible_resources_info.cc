@@ -48,7 +48,7 @@ URLPattern GetPattern(std::string relative_path, const Extension& extension) {
 
 std::unique_ptr<WebAccessibleResourcesInfo> ParseResourceStringList(
     const Extension& extension,
-    base::string16* error) {
+    std::u16string* error) {
   WebAccessibleResourcesMv2ManifestKeys manifest_keys;
   if (!WebAccessibleResourcesMv2ManifestKeys::ParseFromDictionary(
           extension.manifest()->available_values(), &manifest_keys, error)) {
@@ -78,7 +78,7 @@ std::unique_ptr<WebAccessibleResourcesInfo> ParseResourceStringList(
 
 std::unique_ptr<WebAccessibleResourcesInfo> ParseEntryList(
     const Extension& extension,
-    base::string16* error) {
+    std::u16string* error) {
   auto info = std::make_unique<WebAccessibleResourcesInfo>();
   auto get_error = [](size_t i, base::StringPiece message) {
     return ErrorUtils::FormatErrorMessageUTF16(
@@ -205,7 +205,7 @@ WebAccessibleResourcesHandler::~WebAccessibleResourcesHandler() {
 }
 
 bool WebAccessibleResourcesHandler::Parse(Extension* extension,
-                                          base::string16* error) {
+                                          std::u16string* error) {
   auto info = extension->manifest_version() < 3
                   ? ParseResourceStringList(*extension, error)
                   : ParseEntryList(*extension, error);

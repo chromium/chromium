@@ -93,7 +93,7 @@ bool ContainsFileSystemData(const ui::ClipboardData& data) {
 
 void GetSplitFileSystemData(const ui::ClipboardData& data,
                             std::vector<base::StringPiece16>* source_list,
-                            base::string16* sources) {
+                            std::u16string* sources) {
   DCHECK(sources);
   DCHECK(sources->empty());
   DCHECK(source_list);
@@ -112,7 +112,7 @@ void GetSplitFileSystemData(const ui::ClipboardData& data,
 }
 
 size_t GetCountOfCopiedFiles(const ui::ClipboardData& data) {
-  base::string16 sources;
+  std::u16string sources;
   std::vector<base::StringPiece16> source_list;
   GetSplitFileSystemData(data, &source_list, &sources);
 
@@ -124,12 +124,12 @@ size_t GetCountOfCopiedFiles(const ui::ClipboardData& data) {
   return source_list.size();
 }
 
-base::string16 GetFileSystemSources(const ui::ClipboardData& data) {
+std::u16string GetFileSystemSources(const ui::ClipboardData& data) {
   if (!ContainsFormat(data, ui::ClipboardInternalFormat::kCustom))
-    return base::string16();
+    return std::u16string();
 
   // Attempt to read file system sources in the custom data.
-  base::string16 sources;
+  std::u16string sources;
   ui::ReadCustomDataForType(
       data.custom_data_data().c_str(), data.custom_data_data().size(),
       base::UTF8ToUTF16(kFileSystemSourcesType), &sources);

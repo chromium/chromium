@@ -132,8 +132,8 @@ const storage_monitor::StorageInfo& GetFakeStorageInfo() {
     return storage_monitor::StorageInfo(
         GetFakeStorageDeviceId(),
         base::FilePath::StringType() /* device_location */,
-        base::string16() /* label */, base::string16() /* vendor */,
-        base::string16() /* model */, 0 /* size_in_bytes */);
+        std::u16string() /* label */, std::u16string() /* vendor */,
+        std::u16string() /* model */, 0 /* size_in_bytes */);
   }());
   return *info;
 }

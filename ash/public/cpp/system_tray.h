@@ -95,8 +95,8 @@ class ASH_PUBLIC_EXPORT SystemTray {
   // |notification_body| the new notification body which overwrites the default.
   virtual void SetUpdateNotificationState(
       NotificationStyle style,
-      const base::string16& notification_title,
-      const base::string16& notification_body) = 0;
+      const std::u16string& notification_title,
+      const std::u16string& notification_body) = 0;
 
   // If |visible| is true, shows an icon in the system tray which indicates that
   // a software update is available but user's agreement is required as current

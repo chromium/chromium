@@ -50,7 +50,7 @@ static std::unique_ptr<base::Value> ParsePermissionJSON(
 
 static std::unique_ptr<SocketsManifestPermission> PermissionFromValue(
     const base::Value& value) {
-  base::string16 error16;
+  std::u16string error16;
   std::unique_ptr<SocketsManifestPermission> permission(
       SocketsManifestPermission::FromValue(value, &error16));
   EXPECT_TRUE(permission) << "Error parsing Value into permission: " << error16;

@@ -53,7 +53,7 @@ void CaptureModeToggleButton::OnPaintBackground(gfx::Canvas* canvas) {
 
 void CaptureModeToggleButton::GetAccessibleNodeData(ui::AXNodeData* node_data) {
   ImageButton::GetAccessibleNodeData(node_data);
-  const base::string16 tooltip = GetTooltipText(gfx::Point());
+  const std::u16string tooltip = GetTooltipText(gfx::Point());
   DCHECK(!tooltip.empty());
   node_data->SetName(tooltip);
   node_data->role = ax::mojom::Role::kToggleButton;

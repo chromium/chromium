@@ -27,14 +27,14 @@ class ErrorUtils {
                                         base::StringPiece s2,
                                         base::StringPiece s3);
 
-  static base::string16 FormatErrorMessageUTF16(base::StringPiece format,
+  static std::u16string FormatErrorMessageUTF16(base::StringPiece format,
                                                 base::StringPiece s1);
 
-  static base::string16 FormatErrorMessageUTF16(base::StringPiece format,
+  static std::u16string FormatErrorMessageUTF16(base::StringPiece format,
                                                 base::StringPiece s1,
                                                 base::StringPiece s2);
 
-  static base::string16 FormatErrorMessageUTF16(base::StringPiece format,
+  static std::u16string FormatErrorMessageUTF16(base::StringPiece format,
                                                 base::StringPiece s1,
                                                 base::StringPiece s2,
                                                 base::StringPiece s3);

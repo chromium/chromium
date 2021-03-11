@@ -80,7 +80,7 @@ void DictationButtonTray::OnAccessibilityStatusChanged() {
   CheckDictationStatusAndUpdateIcon();
 }
 
-base::string16 DictationButtonTray::GetAccessibleNameForTray() {
+std::u16string DictationButtonTray::GetAccessibleNameForTray() {
   return l10n_util::GetStringUTF16(IDS_ASH_DICTATION_BUTTON_ACCESSIBLE_NAME);
 }
 

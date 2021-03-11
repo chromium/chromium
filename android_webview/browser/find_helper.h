@@ -32,7 +32,7 @@ class FindHelper : public content::WebContentsObserver {
   void SetListener(Listener* listener);
 
   // Asynchronous API.
-  void FindAllAsync(const base::string16& search_string);
+  void FindAllAsync(const std::u16string& search_string);
   void HandleFindReply(int request_id,
                        int match_count,
                        int active_ordinal,
@@ -43,8 +43,8 @@ class FindHelper : public content::WebContentsObserver {
   void ClearMatches();
 
  private:
-  void StartNewSession(const base::string16& search_string);
-  bool MaybeHandleEmptySearch(const base::string16& search_string);
+  void StartNewSession(const std::u16string& search_string);
+  bool MaybeHandleEmptySearch(const std::u16string& search_string);
   void NotifyResults(int active_ordinal, int match_count, bool finished);
 
   // Listener results are reported to.
@@ -63,7 +63,7 @@ class FindHelper : public content::WebContentsObserver {
   int current_session_id_;
 
   // Required by FindNext and the incremental find replies.
-  base::string16 last_search_string_;
+  std::u16string last_search_string_;
   int last_match_count_;
   int last_active_ordinal_;
 

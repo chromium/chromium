@@ -79,7 +79,7 @@ class ASH_EXPORT LoginUserMenuView : public LoginBaseBubbleView,
   views::Label* email_label_ = nullptr;
   views::Label* management_disclosure_label_ = nullptr;
 
-  base::string16 warning_message_;
+  std::u16string warning_message_;
 
   std::unique_ptr<views::FocusSearch> focus_search_;
 

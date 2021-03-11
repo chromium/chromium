@@ -69,7 +69,7 @@ ExtensionFunction::ResponseAction
 DeclarativeNetRequestUpdateDynamicRulesFunction::Run() {
   using Params = dnr_api::UpdateDynamicRules::Params;
 
-  base::string16 error;
+  std::u16string error;
   std::unique_ptr<Params> params(Params::Create(*args_, &error));
   EXTENSION_FUNCTION_VALIDATE(params);
   EXTENSION_FUNCTION_VALIDATE(error.empty());
@@ -164,7 +164,7 @@ ExtensionFunction::ResponseAction
 DeclarativeNetRequestUpdateSessionRulesFunction::Run() {
   using Params = dnr_api::UpdateSessionRules::Params;
 
-  base::string16 error;
+  std::u16string error;
   std::unique_ptr<Params> params(Params::Create(*args_, &error));
   EXTENSION_FUNCTION_VALIDATE(params);
   EXTENSION_FUNCTION_VALIDATE(error.empty());
@@ -228,7 +228,7 @@ DeclarativeNetRequestUpdateEnabledRulesetsFunction::Run() {
   using RulesetID = declarative_net_request::RulesetID;
   using DNRManifestData = declarative_net_request::DNRManifestData;
 
-  base::string16 error;
+  std::u16string error;
   std::unique_ptr<Params> params(Params::Create(*args_, &error));
   EXTENSION_FUNCTION_VALIDATE(params);
   EXTENSION_FUNCTION_VALIDATE(error.empty());
@@ -341,7 +341,7 @@ ExtensionFunction::ResponseAction
 DeclarativeNetRequestGetMatchedRulesFunction::Run() {
   using Params = dnr_api::GetMatchedRules::Params;
 
-  base::string16 error;
+  std::u16string error;
   std::unique_ptr<Params> params(Params::Create(*args_, &error));
   EXTENSION_FUNCTION_VALIDATE(params);
   EXTENSION_FUNCTION_VALIDATE(error.empty());
@@ -414,7 +414,7 @@ ExtensionFunction::ResponseAction
 DeclarativeNetRequestSetExtensionActionOptionsFunction::Run() {
   using Params = dnr_api::SetExtensionActionOptions::Params;
 
-  base::string16 error;
+  std::u16string error;
   std::unique_ptr<Params> params(Params::Create(*args_, &error));
   EXTENSION_FUNCTION_VALIDATE(params);
   EXTENSION_FUNCTION_VALIDATE(error.empty());
@@ -483,7 +483,7 @@ ExtensionFunction::ResponseAction
 DeclarativeNetRequestIsRegexSupportedFunction::Run() {
   using Params = dnr_api::IsRegexSupported::Params;
 
-  base::string16 error;
+  std::u16string error;
   std::unique_ptr<Params> params(Params::Create(*args_, &error));
   EXTENSION_FUNCTION_VALIDATE(params);
   EXTENSION_FUNCTION_VALIDATE(error.empty());

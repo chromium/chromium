@@ -141,7 +141,7 @@ void NotificationCounterView::Update() {
   SetVisible(true);
 }
 
-base::string16 NotificationCounterView::GetAccessibleNameString() const {
+std::u16string NotificationCounterView::GetAccessibleNameString() const {
   return GetVisible() ? image_view()->GetTooltipText() : base::EmptyString16();
 }
 

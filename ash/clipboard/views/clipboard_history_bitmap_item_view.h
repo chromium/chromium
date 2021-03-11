@@ -31,7 +31,7 @@ class ClipboardHistoryBitmapItemView : public ClipboardHistoryItemView {
   // ClipboardHistoryItemView:
   const char* GetClassName() const override;
   std::unique_ptr<ContentsView> CreateContentsView() override;
-  base::string16 GetAccessibleName() const override;
+  std::u16string GetAccessibleName() const override;
 
   // Owned by ClipboardHistoryController.
   const ClipboardHistoryResourceManager* const resource_manager_;

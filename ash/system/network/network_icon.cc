@@ -556,7 +556,7 @@ gfx::ImageSkia GetDisconnectedImageForNetworkType(NetworkType network_type) {
   return GetBasicImage(ICON_TYPE_LIST, network_type, false /* connected */);
 }
 
-base::string16 GetLabelForNetworkList(const NetworkStateProperties* network) {
+std::u16string GetLabelForNetworkList(const NetworkStateProperties* network) {
   if (network->type == NetworkType::kCellular) {
     ActivationStateType activation_state =
         network->type_state->get_cellular()->activation_state;

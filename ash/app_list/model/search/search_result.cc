@@ -38,7 +38,7 @@ void SearchResult::SetChipIcon(const gfx::ImageSkia& chip_icon) {
     observer.OnMetadataChanged();
 }
 
-void SearchResult::set_title(const base::string16& title) {
+void SearchResult::set_title(const std::u16string& title) {
   metadata_->title = title;
   for (auto& observer : observers_)
     observer.OnMetadataChanged();
@@ -56,7 +56,7 @@ void SearchResult::SetRating(float rating) {
     observer.OnMetadataChanged();
 }
 
-void SearchResult::SetFormattedPrice(const base::string16& formatted_price) {
+void SearchResult::SetFormattedPrice(const std::u16string& formatted_price) {
   metadata_->formatted_price = formatted_price;
   for (auto& observer : observers_)
     observer.OnMetadataChanged();

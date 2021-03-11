@@ -57,7 +57,7 @@ class APIPermissionSet : public BaseSetOperators<APIPermissionSet> {
   static bool ParseFromJSON(const base::Value* permissions,
                             ParseSource source,
                             APIPermissionSet* api_permissions,
-                            base::string16* error,
+                            std::u16string* error,
                             std::vector<std::string>* unhandled_permissions);
 };
 
@@ -77,14 +77,14 @@ class APIPermissionSet : public BaseSetOperators<APIPermissionSet> {
 //
 // TODO(sashab): Move this to the same file as PermissionIDSet once that moves
 // to its own file.
-class PermissionID : public std::pair<APIPermission::ID, base::string16> {
+class PermissionID : public std::pair<APIPermission::ID, std::u16string> {
  public:
   explicit PermissionID(APIPermission::ID id);
-  PermissionID(APIPermission::ID id, const base::string16& parameter);
+  PermissionID(APIPermission::ID id, const std::u16string& parameter);
   virtual ~PermissionID();
 
   const APIPermission::ID& id() const { return this->first; }
-  const base::string16& parameter() const { return this->second; }
+  const std::u16string& parameter() const { return this->second; }
 };
 
 // A set of permissions for an app or extension. Used for passing around groups
@@ -121,14 +121,14 @@ class PermissionIDSet {
   // Adds the given permission, and an optional parameter, to the set.
   void insert(APIPermission::ID permission_id);
   void insert(APIPermission::ID permission_id,
-              const base::string16& permission_parameter);
+              const std::u16string& permission_parameter);
   void InsertAll(const PermissionIDSet& permission_set);
 
   // Erases all permissions with the given id.
   void erase(APIPermission::ID permission_id);
 
   // Returns the parameters for all PermissionIDs in this set.
-  std::vector<base::string16> GetAllPermissionParameters() const;
+  std::vector<std::u16string> GetAllPermissionParameters() const;
 
   // Check if the set contains a permission with the given ID.
   bool ContainsID(PermissionID permission_id) const;

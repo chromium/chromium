@@ -368,7 +368,7 @@ void PaletteTray::OnThemeChanged() {
   UpdateTrayIcon();
 }
 
-base::string16 PaletteTray::GetAccessibleNameForTray() {
+std::u16string PaletteTray::GetAccessibleNameForTray() {
   return l10n_util::GetStringUTF16(IDS_ASH_STYLUS_TOOLS_TITLE);
 }
 
@@ -429,7 +429,7 @@ void PaletteTray::BubbleViewDestroyed() {
                              PaletteGroup::MODE) != PaletteToolId::NONE);
 }
 
-base::string16 PaletteTray::GetAccessibleNameForBubble() {
+std::u16string PaletteTray::GetAccessibleNameForBubble() {
   return GetAccessibleNameForTray();
 }
 

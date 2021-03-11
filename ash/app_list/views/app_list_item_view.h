@@ -57,8 +57,8 @@ class APP_LIST_EXPORT AppListItemView : public views::Button,
   // config state.
   void RefreshIcon();
 
-  void SetItemName(const base::string16& display_name,
-                   const base::string16& full_name);
+  void SetItemName(const std::u16string& display_name,
+                   const std::u16string& full_name);
 
   void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
 
@@ -126,7 +126,7 @@ class APP_LIST_EXPORT AppListItemView : public views::Button,
   void OnThemeChanged() override;
 
   // views::View overrides:
-  base::string16 GetTooltipText(const gfx::Point& p) const override;
+  std::u16string GetTooltipText(const gfx::Point& p) const override;
 
   // When a dragged view enters this view, a preview circle is shown for
   // non-folder item while the icon is enlarged for folder item. When a
@@ -286,7 +286,7 @@ class APP_LIST_EXPORT AppListItemView : public views::Button,
   // Whether |context_menu_| was shown via key event.
   bool menu_show_initiated_from_key_ = false;
 
-  base::string16 tooltip_text_;
+  std::u16string tooltip_text_;
 
   // A timer to defer showing drag UI when mouse is pressed.
   base::OneShotTimer mouse_drag_timer_;

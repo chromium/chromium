@@ -75,7 +75,7 @@ ClipboardHistoryTextItemView::CreateContentsView() {
   return std::make_unique<TextContentsView>(this);
 }
 
-base::string16 ClipboardHistoryTextItemView::GetAccessibleName() const {
+std::u16string ClipboardHistoryTextItemView::GetAccessibleName() const {
   return text_;
 }
 

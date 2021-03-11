@@ -39,7 +39,7 @@ views::StyledLabel::RangeStyleInfo CreateStyleInfo(
   return style;
 }
 
-base::string16 GetAction(int consent_status) {
+std::u16string GetAction(int consent_status) {
   return consent_status ==
                  chromeos::assistant::prefs::ConsentStatus::kUnauthorized
              ? l10n_util::GetStringUTF16(
@@ -154,11 +154,11 @@ void AssistantOptInView::InitLayout() {
 
 void AssistantOptInView::UpdateLabel(int consent_status) {
   // First substitution string: "Unlock more Assistant features."
-  const base::string16 unlock_features =
+  const std::u16string unlock_features =
       l10n_util::GetStringUTF16(IDS_ASH_ASSISTANT_OPT_IN_UNLOCK_MORE_FEATURES);
 
   // Second substitution string specifies the action to be taken.
-  const base::string16 action = GetAction(consent_status);
+  const std::u16string action = GetAction(consent_status);
 
   // Set the text, having replaced placeholders in the opt in prompt with
   // substitution strings and caching their offset positions for styling.

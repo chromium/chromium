@@ -105,8 +105,8 @@ void QuickAnswersUiController::UpdateQuickAnswersBounds(
 
 void QuickAnswersUiController::CreateUserNoticeView(
     const gfx::Rect& anchor_bounds,
-    const base::string16& intent_type,
-    const base::string16& intent_text) {
+    const std::u16string& intent_type,
+    const std::u16string& intent_text) {
   DCHECK(!quick_answers_view_);
   DCHECK(!user_notice_view_);
   user_notice_view_ = new quick_answers::UserNoticeView(

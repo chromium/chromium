@@ -511,9 +511,9 @@ const AppListConfig& AppListItemView::GetAppListConfig() const {
   return apps_grid_view_->GetAppListConfig();
 }
 
-void AppListItemView::SetItemName(const base::string16& display_name,
-                                  const base::string16& full_name) {
-  const base::string16 folder_name_placeholder =
+void AppListItemView::SetItemName(const std::u16string& display_name,
+                                  const std::u16string& full_name) {
+  const std::u16string folder_name_placeholder =
       ui::ResourceBundle::GetSharedInstance().GetLocalizedString(
           IDS_APP_LIST_FOLDER_NAME_PLACEHOLDER);
   if (is_folder_ && display_name.empty())
@@ -521,7 +521,7 @@ void AppListItemView::SetItemName(const base::string16& display_name,
   else
     title_->SetText(display_name);
 
-  tooltip_text_ = display_name == full_name ? base::string16() : full_name;
+  tooltip_text_ = display_name == full_name ? std::u16string() : full_name;
 
   // Use full name for accessibility.
   SetAccessibleName(
@@ -861,14 +861,14 @@ void AppListItemView::OnThemeChanged() {
   SchedulePaint();
 }
 
-base::string16 AppListItemView::GetTooltipText(const gfx::Point& p) const {
+std::u16string AppListItemView::GetTooltipText(const gfx::Point& p) const {
   // Use the label to generate a tooltip, so that it will consider its text
   // truncation in making the tooltip. We do not want the label itself to have a
   // tooltip, so we only temporarily enable it to get the tooltip text from the
   // label, then disable it again.
   title_->SetHandlesTooltips(true);
   title_->SetTooltipText(tooltip_text_);
-  base::string16 tooltip = title_->GetTooltipText(p);
+  std::u16string tooltip = title_->GetTooltipText(p);
   title_->SetHandlesTooltips(false);
   return tooltip;
 }

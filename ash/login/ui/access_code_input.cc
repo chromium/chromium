@@ -73,7 +73,7 @@ FlexCodeInput::FlexCodeInput(OnInputChange on_input_change,
 
 FlexCodeInput::~FlexCodeInput() = default;
 
-void FlexCodeInput::SetAccessibleName(const base::string16& name) {
+void FlexCodeInput::SetAccessibleName(const std::u16string& name) {
   code_field_->SetAccessibleName(name);
 }
 
@@ -101,7 +101,7 @@ void FlexCodeInput::Backspace() {
 }
 
 base::Optional<std::string> FlexCodeInput::GetCode() const {
-  base::string16 code = code_field_->GetText();
+  std::u16string code = code_field_->GetText();
   if (!code.length()) {
     return base::nullopt;
   }
@@ -121,7 +121,7 @@ void FlexCodeInput::SetReadOnly(bool read_only) {
 }
 
 void FlexCodeInput::ClearInput() {
-  code_field_->SetText(base::string16());
+  code_field_->SetText(std::u16string());
   on_input_change_.Run(false);
 }
 
@@ -130,7 +130,7 @@ void FlexCodeInput::RequestFocus() {
 }
 
 void FlexCodeInput::ContentsChanged(views::Textfield* sender,
-                                    const base::string16& new_contents) {
+                                    const std::u16string& new_contents) {
   const bool has_content = new_contents.length() > 0;
   on_input_change_.Run(has_content);
 }
@@ -233,7 +233,7 @@ FixedLengthCodeInput::FixedLengthCodeInput(int length,
     layout->SetFlexForView(field, 1);
   }
 
-  text_value_for_a11y_ = base::string16(length, ' ');
+  text_value_for_a11y_ = std::u16string(length, ' ');
 }
 
 FixedLengthCodeInput::~FixedLengthCodeInput() = default;
@@ -263,7 +263,7 @@ void FixedLengthCodeInput::Backspace() {
     FocusPreviousField();
   }
 
-  ActiveField()->SetText(base::string16());
+  ActiveField()->SetText(std::u16string());
   ResetTextValueForA11y();
 
   NotifyAccessibilityEvent(ax::mojom::Event::kTextSelectionChanged, true);
@@ -304,7 +304,7 @@ void FixedLengthCodeInput::RequestFocus() {
 }
 
 void FixedLengthCodeInput::ResetTextValueForA11y() {
-  base::string16 result;
+  std::u16string result;
 
   for (size_t i = 0; i < input_fields_.size(); ++i) {
     if (input_fields_[i]->GetText().empty()) {
@@ -445,7 +445,7 @@ void FixedLengthCodeInput::SetReadOnly(bool read_only) {
 
 void FixedLengthCodeInput::ClearInput() {
   for (auto* field : input_fields_) {
-    field->SetText(base::string16());
+    field->SetText(std::u16string());
   }
   active_input_index_ = 0;
   text_value_for_a11y_.clear();
@@ -492,7 +492,7 @@ AccessibleInputField* FixedLengthCodeInput::ActiveField() const {
   return input_fields_[active_input_index_];
 }
 
-const base::string16& FixedLengthCodeInput::ActiveInput() const {
+const std::u16string& FixedLengthCodeInput::ActiveInput() const {
   return ActiveField()->GetText();
 }
 

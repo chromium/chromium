@@ -332,7 +332,7 @@ class TestDeskObserver : public Desk::Observer {
   // Desk::Observer:
   void OnContentChanged() override { ++notify_counts_; }
   void OnDeskDestroyed(const Desk* desk) override {}
-  void OnDeskNameChanged(const base::string16& new_name) override {}
+  void OnDeskNameChanged(const std::u16string& new_name) override {}
 
  private:
   int notify_counts_ = 0;
@@ -2113,7 +2113,7 @@ TEST_F(DesksEditableNamesTest, MaxLength) {
   SendKey(ui::VKEY_BACK);
 
   // Simulate user is typing text beyond the max length.
-  base::string16 expected_desk_name(DeskNameView::kMaxLength, L'a');
+  std::u16string expected_desk_name(DeskNameView::kMaxLength, L'a');
   for (size_t i = 0; i < DeskNameView::kMaxLength + 10; ++i)
     SendKey(ui::VKEY_A);
   SendKey(ui::VKEY_RETURN);
@@ -2125,8 +2125,8 @@ TEST_F(DesksEditableNamesTest, MaxLength) {
   EXPECT_TRUE(desk_1->is_name_set_by_user());
 
   // Test that pasting a large amount of text is trimmed at the max length.
-  base::string16 clipboard_text(DeskNameView::kMaxLength + 10, L'b');
-  expected_desk_name = base::string16(DeskNameView::kMaxLength, L'b');
+  std::u16string clipboard_text(DeskNameView::kMaxLength + 10, L'b');
+  expected_desk_name = std::u16string(DeskNameView::kMaxLength, L'b');
   EXPECT_GT(clipboard_text.size(), DeskNameView::kMaxLength);
   ui::ScopedClipboardWriter(ui::ClipboardBuffer::kCopyPaste)
       .WriteText(clipboard_text);
@@ -4130,7 +4130,7 @@ TEST_F(DesksBentoTest, NameNudges) {
     ClickOnView(new_desk_button, event_generator);
     auto* desk_name_view = desks_bar_view->mini_views()[i]->desk_name_view();
     EXPECT_TRUE(desk_name_view->HasFocus());
-    EXPECT_EQ(base::string16(), controller->desks()[i]->name());
+    EXPECT_EQ(std::u16string(), controller->desks()[i]->name());
     EXPECT_EQ(DesksController::GetDeskDefaultName(i),
               desk_name_view->GetAccessibleName());
     EXPECT_EQ(DesksController::GetDeskDefaultName(i - 1),
@@ -4701,8 +4701,8 @@ TEST_F(DesksBentoTest, ZeroStateDeskButtonText) {
   desks_bar_view = GetOverviewGridForRoot(root_window)->desks_bar_view();
   auto* zero_state_default_desk_button =
       desks_bar_view->zero_state_default_desk_button();
-  base::string16 desk_button_text = zero_state_default_desk_button->GetText();
-  base::string16 expected_desk_name(DeskNameView::kMaxLength, L'a');
+  std::u16string desk_button_text = zero_state_default_desk_button->GetText();
+  std::u16string expected_desk_name(DeskNameView::kMaxLength, L'a');
   // Zero state desk button should show the elided name as the DeskNameView.
   EXPECT_EQ(expected_desk_name,
             DesksController::Get()->desks()[0].get()->name());

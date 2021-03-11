@@ -171,8 +171,8 @@ base::Optional<std::string> FakePeripheral::GetName() const {
   return name_;
 }
 
-base::string16 FakePeripheral::GetNameForDisplay() const {
-  return base::string16();
+std::u16string FakePeripheral::GetNameForDisplay() const {
+  return std::u16string();
 }
 
 bool FakePeripheral::IsPaired() const {

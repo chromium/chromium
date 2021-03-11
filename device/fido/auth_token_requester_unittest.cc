@@ -42,7 +42,7 @@ struct TestExpectation {
   pin::PINEntryError error = pin::PINEntryError::kNoError;
   uint32_t min_pin_length = kMinPinLength;
   int attempts = 8;
-  base::string16 pin = base::UTF8ToUTF16(kTestPIN);
+  std::u16string pin = base::UTF8ToUTF16(kTestPIN);
 };
 
 struct TestCase {
@@ -84,7 +84,7 @@ class TestAuthTokenRequesterDelegate : public AuthTokenRequester::Delegate {
     DCHECK_EQ(min_pin_length, expectations_.front().min_pin_length);
     DCHECK_EQ(attempts, expectations_.front().attempts);
 
-    base::string16 pin = expectations_.front().pin;
+    std::u16string pin = expectations_.front().pin;
     expectations_.pop_front();
     std::move(provide_pin_cb).Run(pin);
   }
@@ -392,7 +392,7 @@ TEST_F(AuthTokenRequesterTest, PINInvalid) {
                UserVerificationAvailability::kNotSupported,
                true,
                {{.reason = pin::PINEntryReason::kChallenge,
-                 .pin = base::string16({0xd800, 0xd800, 0xd800, 0xd800})},
+                 .pin = std::u16string({0xd800, 0xd800, 0xd800, 0xd800})},
                 {pin::PINEntryReason::kChallenge,
                  pin::PINEntryError::kInvalidCharacters}}});
 }

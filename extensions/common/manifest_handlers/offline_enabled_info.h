@@ -32,7 +32,7 @@ class OfflineEnabledHandler : public ManifestHandler {
   OfflineEnabledHandler();
   ~OfflineEnabledHandler() override;
 
-  bool Parse(Extension* extension, base::string16* error) override;
+  bool Parse(Extension* extension, std::u16string* error) override;
   bool AlwaysParseForType(Manifest::Type type) const override;
 
  private:

@@ -44,7 +44,7 @@ SkPath GetSystemButtonHighlightPath(const views::View* view) {
 }  // namespace
 
 SystemLabelButton::SystemLabelButton(PressedCallback callback,
-                                     const base::string16& text,
+                                     const std::u16string& text,
                                      DisplayType display_type,
                                      bool multiline)
     : LabelButton(std::move(callback), text), display_type_(display_type) {

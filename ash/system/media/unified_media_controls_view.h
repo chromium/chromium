@@ -33,8 +33,8 @@ class ASH_EXPORT UnifiedMediaControlsView : public views::Button {
 
   void SetIsPlaying(bool playing);
   void SetArtwork(base::Optional<gfx::ImageSkia> artwork);
-  void SetTitle(const base::string16& title);
-  void SetArtist(const base::string16& artist);
+  void SetTitle(const std::u16string& title);
+  void SetArtist(const std::u16string& artist);
   void UpdateActionButtonAvailability(
       const base::flat_set<media_session::mojom::MediaSessionAction>&
           enabled_actions);
@@ -58,11 +58,11 @@ class ASH_EXPORT UnifiedMediaControlsView : public views::Button {
    public:
     MediaActionButton(UnifiedMediaControlsController* controller,
                       media_session::mojom::MediaSessionAction action,
-                      const base::string16& accessible_name);
+                      const std::u16string& accessible_name);
     ~MediaActionButton() override = default;
 
     void SetAction(media_session::mojom::MediaSessionAction action,
-                   const base::string16& accessible_name);
+                   const std::u16string& accessible_name);
 
     // views::ImageButton:
     std::unique_ptr<views::InkDrop> CreateInkDrop() override;

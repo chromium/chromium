@@ -58,7 +58,7 @@ bool BluetoothManifestData::CheckPeripheralPermitted(
 // static
 std::unique_ptr<BluetoothManifestData> BluetoothManifestData::FromValue(
     const base::Value& value,
-    base::string16* error) {
+    std::u16string* error) {
   std::unique_ptr<BluetoothManifestPermission> permission =
       BluetoothManifestPermission::FromValue(value, error);
   if (!permission)

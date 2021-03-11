@@ -914,9 +914,9 @@ TEST_F(AccessibilityControllerTest, SetDarkenScreen) {
 }
 
 TEST_F(AccessibilityControllerTest, ShowNotificationOnSpokenFeedback) {
-  const base::string16 kChromeVoxEnabledTitle =
+  const std::u16string kChromeVoxEnabledTitle =
       base::ASCIIToUTF16("ChromeVox enabled");
-  const base::string16 kChromeVoxEnabled =
+  const std::u16string kChromeVoxEnabled =
       base::ASCIIToUTF16("Press Ctrl + Alt + Z to disable spoken feedback.");
   AccessibilityControllerImpl* controller =
       Shell::Get()->accessibility_controller();
@@ -945,11 +945,11 @@ TEST_F(AccessibilityControllerTest, ShowNotificationOnSpokenFeedback) {
 
 TEST_F(AccessibilityControllerTest,
        ShowNotificationOnBrailleDisplayStateChanged) {
-  const base::string16 kBrailleConnected =
+  const std::u16string kBrailleConnected =
       base::ASCIIToUTF16("Braille display connected.");
-  const base::string16 kChromeVoxEnabled =
+  const std::u16string kChromeVoxEnabled =
       base::ASCIIToUTF16("Press Ctrl + Alt + Z to disable spoken feedback.");
-  const base::string16 kBrailleConnectedAndChromeVoxEnabledTitle =
+  const std::u16string kBrailleConnectedAndChromeVoxEnabledTitle =
       base::ASCIIToUTF16("Braille and ChromeVox are enabled");
   AccessibilityControllerImpl* controller =
       Shell::Get()->accessibility_controller();
@@ -962,7 +962,7 @@ TEST_F(AccessibilityControllerTest,
   message_center::NotificationList::Notifications notifications =
       MessageCenter::Get()->GetVisibleNotifications();
   ASSERT_EQ(1u, notifications.size());
-  EXPECT_EQ(base::string16(), (*notifications.begin())->title());
+  EXPECT_EQ(std::u16string(), (*notifications.begin())->title());
   EXPECT_EQ(kBrailleConnected, (*notifications.begin())->message());
 
   // Neither disconnecting a braille display, nor disabling spoken feedback

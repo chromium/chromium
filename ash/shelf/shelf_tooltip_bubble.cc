@@ -39,7 +39,7 @@ constexpr int kTooltipPaddingHorizontalBottom = 6;
 ShelfTooltipBubble::ShelfTooltipBubble(views::View* anchor,
                                        ShelfAlignment alignment,
                                        SkColor background_color,
-                                       const base::string16& text)
+                                       const std::u16string& text)
     : ShelfBubble(anchor, alignment, background_color) {
   set_margins(gfx::Insets(kTooltipTopBottomMargin, kTooltipLeftRightMargin));
   set_close_on_deactivate(false);

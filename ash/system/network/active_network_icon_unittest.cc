@@ -177,7 +177,7 @@ class ActiveNetworkIconTest : public AshTestBase {
 TEST_F(ActiveNetworkIconTest, GetConnectionStatusStrings) {
   // TODO(902409): Test multi icon and improve coverage.
   SetupCellular(shill::kStateOnline);
-  base::string16 name, desc, tooltip;
+  std::u16string name, desc, tooltip;
   active_network_icon()->GetConnectionStatusStrings(
       ActiveNetworkIcon::Type::kSingle, &name, &desc, &tooltip);
   // Note: The guid is used for the name in ConfigureService.

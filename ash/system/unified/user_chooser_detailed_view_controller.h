@@ -34,7 +34,7 @@ class UserChooserDetailedViewController : public DetailedViewController {
 
   // DetailedViewController:
   views::View* CreateView() override;
-  base::string16 GetAccessibleName() const override;
+  std::u16string GetAccessibleName() const override;
 
  private:
   UnifiedSystemTrayController* tray_controller_;

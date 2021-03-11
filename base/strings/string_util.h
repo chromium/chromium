@@ -408,11 +408,10 @@ BASE_EXPORT string16 FormatBytesUnlocalized(int64_t bytes);
 
 // Starting at |start_offset| (usually 0), replace the first instance of
 // |find_this| with |replace_with|.
-BASE_EXPORT void ReplaceFirstSubstringAfterOffset(
-    base::string16* str,
-    size_t start_offset,
-    StringPiece16 find_this,
-    StringPiece16 replace_with);
+BASE_EXPORT void ReplaceFirstSubstringAfterOffset(std::u16string* str,
+                                                  size_t start_offset,
+                                                  StringPiece16 find_this,
+                                                  StringPiece16 replace_with);
 BASE_EXPORT void ReplaceFirstSubstringAfterOffset(
     std::string* str,
     size_t start_offset,

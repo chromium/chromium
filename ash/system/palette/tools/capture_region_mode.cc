@@ -43,9 +43,10 @@ const gfx::VectorIcon& CaptureRegionMode::GetActiveTrayIcon() const {
 void CaptureRegionMode::OnEnable() {
   CommonPaletteTool::OnEnable();
 
-  ToastData toast(kToastId, l10n_util::GetStringUTF16(
-                                IDS_ASH_STYLUS_TOOLS_CAPTURE_REGION_TOAST),
-                  kToastDurationMs, base::Optional<base::string16>());
+  ToastData toast(
+      kToastId,
+      l10n_util::GetStringUTF16(IDS_ASH_STYLUS_TOOLS_CAPTURE_REGION_TOAST),
+      kToastDurationMs, base::Optional<std::u16string>());
   Shell::Get()->toast_manager()->Show(toast);
 
   auto* screenshot_controller = Shell::Get()->screenshot_controller();

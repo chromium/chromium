@@ -63,7 +63,7 @@ class APP_LIST_EXPORT SearchResultBaseView : public views::Button,
   void OnResultDestroying() override;
 
   // Computes the button's spoken feedback name.
-  virtual base::string16 ComputeAccessibleName() const;
+  virtual std::u16string ComputeAccessibleName() const;
 
   // Clears the result without calling |OnResultChanged| or |OnResultChanging|
   void ClearResult();

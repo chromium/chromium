@@ -30,7 +30,7 @@ namespace {
 
 bool ParseUuid(BluetoothManifestPermission* permission,
                const std::string& uuid,
-               base::string16* error) {
+               std::u16string* error) {
   device::BluetoothUUID bt_uuid(uuid);
   if (!bt_uuid.IsValid()) {
     *error = ErrorUtils::FormatErrorMessageUTF16(
@@ -43,7 +43,7 @@ bool ParseUuid(BluetoothManifestPermission* permission,
 
 bool ParseUuidArray(BluetoothManifestPermission* permission,
                     const std::unique_ptr<std::vector<std::string>>& uuids,
-                    base::string16* error) {
+                    std::u16string* error) {
   for (std::vector<std::string>::const_iterator it = uuids->begin();
        it != uuids->end();
        ++it) {
@@ -65,7 +65,7 @@ BluetoothManifestPermission::~BluetoothManifestPermission() {}
 // static
 std::unique_ptr<BluetoothManifestPermission>
 BluetoothManifestPermission::FromValue(const base::Value& value,
-                                       base::string16* error) {
+                                       std::u16string* error) {
   std::unique_ptr<api::extensions_manifest_types::Bluetooth> bluetooth =
       api::extensions_manifest_types::Bluetooth::FromValue(value, error);
   if (!bluetooth)
@@ -136,7 +136,7 @@ PermissionIDSet BluetoothManifestPermission::GetPermissions() const {
 bool BluetoothManifestPermission::FromValue(const base::Value* value) {
   if (!value)
     return false;
-  base::string16 error;
+  std::u16string error;
   std::unique_ptr<BluetoothManifestPermission> manifest_permission(
       BluetoothManifestPermission::FromValue(*value, &error));
 

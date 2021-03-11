@@ -188,7 +188,7 @@ views::View* NativeAppWindowViews::GetInitiallyFocusedView() {
   return web_view_;
 }
 
-base::string16 NativeAppWindowViews::GetWindowTitle() const {
+std::u16string NativeAppWindowViews::GetWindowTitle() const {
   return app_window_->GetTitle();
 }
 

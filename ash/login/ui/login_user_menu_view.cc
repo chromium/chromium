@@ -140,16 +140,15 @@ LoginUserMenuView::LoginUserMenuView(
       bubble_opener_(bubble_opener),
       on_remove_user_warning_shown_(on_remove_user_warning_shown),
       on_remove_user_requested_(on_remove_user_requested) {
-
-  const base::string16& email =
+  const std::u16string& email =
       base::UTF8ToUTF16(user.basic_user_info.display_email);
   bool is_owner = user.is_device_owner;
 
   // User information.
   {
-    const base::string16& username =
+    const std::u16string& username =
         base::UTF8ToUTF16(user.basic_user_info.display_name);
-    base::string16 display_username =
+    std::u16string display_username =
         is_owner
             ? l10n_util::GetStringFUTF16(IDS_ASH_LOGIN_POD_OWNER_USER, username)
             : username;
@@ -177,7 +176,7 @@ LoginUserMenuView::LoginUserMenuView(
     managed_user_data_ = new views::View();
     managed_user_data_->SetLayoutManager(std::make_unique<views::BoxLayout>(
         views::BoxLayout::Orientation::kVertical));
-    base::string16 managed_text = l10n_util::GetStringFUTF16(
+    std::u16string managed_text = l10n_util::GetStringFUTF16(
         IDS_ASH_LOGIN_MANAGED_SESSION_MONITORING_USER_WARNING,
         base::UTF8ToUTF16(user.user_account_manager.value()));
     management_disclosure_label_ =
@@ -195,9 +194,9 @@ LoginUserMenuView::LoginUserMenuView(
   if (user.can_remove) {
     DCHECK(!is_owner);
     user_manager::UserType type = user.basic_user_info.type;
-    base::string16 part1 = l10n_util::GetStringUTF16(
+    std::u16string part1 = l10n_util::GetStringUTF16(
         IDS_ASH_LOGIN_POD_NON_OWNER_USER_REMOVE_WARNING_PART_1);
-    base::string16 part2 = l10n_util::GetStringFUTF16(
+    std::u16string part2 = l10n_util::GetStringFUTF16(
         type == user_manager::UserType::USER_TYPE_CHILD
             ? IDS_ASH_LOGIN_POD_NON_OWNER_USER_REMOVE_WARNING_PART_2_SUPERVISED_USER
             : IDS_ASH_LOGIN_POD_NON_OWNER_USER_REMOVE_WARNING_PART_2,
@@ -244,7 +243,7 @@ void LoginUserMenuView::ResetState() {
         SystemLabelButton::DisplayType::DEFAULT);
     // Reset button's description to none.
     remove_user_button_->GetViewAccessibility().OverrideDescription(
-        base::string16());
+        std::u16string());
   }
 }
 

@@ -55,16 +55,16 @@ class BASE_EXPORT FileVersionInfo {
 
   // Accessors to the different version properties.
   // Returns an empty string if the property is not found.
-  virtual base::string16 company_name() = 0;
-  virtual base::string16 company_short_name() = 0;
-  virtual base::string16 product_name() = 0;
-  virtual base::string16 product_short_name() = 0;
-  virtual base::string16 internal_name() = 0;
-  virtual base::string16 product_version() = 0;
-  virtual base::string16 special_build() = 0;
-  virtual base::string16 original_filename() = 0;
-  virtual base::string16 file_description() = 0;
-  virtual base::string16 file_version() = 0;
+  virtual std::u16string company_name() = 0;
+  virtual std::u16string company_short_name() = 0;
+  virtual std::u16string product_name() = 0;
+  virtual std::u16string product_short_name() = 0;
+  virtual std::u16string internal_name() = 0;
+  virtual std::u16string product_version() = 0;
+  virtual std::u16string special_build() = 0;
+  virtual std::u16string original_filename() = 0;
+  virtual std::u16string file_description() = 0;
+  virtual std::u16string file_version() = 0;
 };
 
 #endif  // BASE_FILE_VERSION_INFO_H_

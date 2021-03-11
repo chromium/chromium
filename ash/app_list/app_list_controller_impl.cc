@@ -287,7 +287,7 @@ void AppListControllerImpl::SetSearchEngineIsGoogle(bool is_google) {
   search_model_.SetSearchEngineIsGoogle(is_google);
 }
 
-void AppListControllerImpl::UpdateSearchBox(const base::string16& text,
+void AppListControllerImpl::UpdateSearchBox(const std::u16string& text,
                                             bool initiated_by_user) {
   search_model_.search_box()->Update(text, initiated_by_user);
 }
@@ -1058,9 +1058,9 @@ void AppListControllerImpl::StartAssistant() {
       AssistantEntryPoint::kLauncherSearchBoxIcon);
 }
 
-void AppListControllerImpl::StartSearch(const base::string16& raw_query) {
+void AppListControllerImpl::StartSearch(const std::u16string& raw_query) {
   if (client_) {
-    base::string16 query;
+    std::u16string query;
     base::TrimWhitespace(raw_query, base::TRIM_ALL, &query);
     client_->StartSearch(query);
     auto* notifier = GetNotifier();
@@ -1270,11 +1270,11 @@ void AppListControllerImpl::OnSearchResultVisibilityChanged(
 }
 
 void AppListControllerImpl::NotifySearchResultsForLogging(
-    const base::string16& raw_query,
+    const std::u16string& raw_query,
     const SearchResultIdWithPositionIndices& results,
     int position_index) {
   if (client_) {
-    base::string16 query;
+    std::u16string query;
     base::TrimWhitespace(raw_query, base::TRIM_ALL, &query);
     client_->NotifySearchResultsForLogging(query, results, position_index);
   }
@@ -1596,7 +1596,7 @@ void AppListControllerImpl::ResetHomeLauncherIfShown() {
   presenter_.GetView()->CloseOpenedPage();
 
   // Refresh the suggestion chips with empty query.
-  StartSearch(base::string16());
+  StartSearch(std::u16string());
 }
 
 void AppListControllerImpl::UpdateLauncherContainer(
@@ -1642,7 +1642,7 @@ bool AppListControllerImpl::ShouldLauncherShowBehindApps() const {
 }
 
 int AppListControllerImpl::GetLastQueryLength() {
-  base::string16 query;
+  std::u16string query;
   base::TrimWhitespace(search_model_.search_box()->text(), base::TRIM_ALL,
                        &query);
   return query.length();

@@ -69,7 +69,7 @@ class ASH_PUBLIC_EXPORT AppListController {
   virtual void SetSearchEngineIsGoogle(bool is_google) = 0;
 
   // Sets the text for the search box's Textfield and the voice search flag.
-  virtual void UpdateSearchBox(const base::string16& text,
+  virtual void UpdateSearchBox(const std::u16string& text,
                                bool initiated_by_user) = 0;
 
   // Publishes search results to Ash to render them.

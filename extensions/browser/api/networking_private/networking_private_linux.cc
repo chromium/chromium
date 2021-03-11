@@ -835,7 +835,7 @@ bool NetworkingPrivateLinux::GetAccessPointInfo(
     }
 
     std::string ssidUTF8(ssid_bytes, ssid_bytes + ssid_length);
-    base::string16 ssid = base::UTF8ToUTF16(ssidUTF8);
+    std::u16string ssid = base::UTF8ToUTF16(ssidUTF8);
 
     access_point_info->SetString(kAccessPointInfoName, ssid);
   }
@@ -973,7 +973,7 @@ void NetworkingPrivateLinux::AddOrUpdateAccessPoint(
     NetworkMap* network_map,
     const std::string& network_guid,
     std::unique_ptr<base::DictionaryValue>& access_point) {
-  base::string16 ssid;
+  std::u16string ssid;
   std::string connection_state;
   int signal_strength;
 

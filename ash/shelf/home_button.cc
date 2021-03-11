@@ -58,9 +58,9 @@ void HomeButton::OnGestureEvent(ui::GestureEvent* event) {
     Button::OnGestureEvent(event);
 }
 
-base::string16 HomeButton::GetTooltipText(const gfx::Point& p) const {
+std::u16string HomeButton::GetTooltipText(const gfx::Point& p) const {
   // Don't show a tooltip if we're already showing the app list.
-  return IsShowingAppList() ? base::string16() : GetAccessibleName();
+  return IsShowingAppList() ? std::u16string() : GetAccessibleName();
 }
 
 const char* HomeButton::GetClassName() const {

@@ -216,7 +216,7 @@ IN_PROC_BROWSER_TEST_F(LoadAndLaunchPlatformAppBrowserTest,
 #endif
 IN_PROC_BROWSER_TEST_F(LoadAndLaunchExtensionBrowserTest,
                        MAYBE_LoadAndLaunchExtension) {
-  const std::vector<base::string16>* errors =
+  const std::vector<std::u16string>* errors =
       extensions::LoadErrorReporter::GetInstance()->GetErrors();
 
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
@@ -225,7 +225,7 @@ IN_PROC_BROWSER_TEST_F(LoadAndLaunchExtensionBrowserTest,
 #else
   // Expect |extension_instead_of_app_error|.
   EXPECT_EQ(1u, errors->size());
-  EXPECT_NE(base::string16::npos,
+  EXPECT_NE(std::u16string::npos,
             errors->at(0).find(base::ASCIIToUTF16(
                 "App loading flags cannot be used to load extensions")));
 #endif

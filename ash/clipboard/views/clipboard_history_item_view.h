@@ -108,7 +108,7 @@ class ClipboardHistoryItemView : public views::View {
   virtual std::unique_ptr<ContentsView> CreateContentsView() = 0;
 
   // Returns the name of the accessible node.
-  virtual base::string16 GetAccessibleName() const = 0;
+  virtual std::u16string GetAccessibleName() const = 0;
 
   const ClipboardHistoryItem* clipboard_history_item() const {
     return clipboard_history_item_;

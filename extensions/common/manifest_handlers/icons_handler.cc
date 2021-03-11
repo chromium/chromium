@@ -58,7 +58,7 @@ IconsHandler::IconsHandler() {
 IconsHandler::~IconsHandler() {
 }
 
-bool IconsHandler::Parse(Extension* extension, base::string16* error) {
+bool IconsHandler::Parse(Extension* extension, std::u16string* error) {
   std::unique_ptr<IconsInfo> icons_info(new IconsInfo);
   const base::Value* icons_dict = nullptr;
   if (!extension->manifest()->GetDictionary(keys::kIcons, &icons_dict)) {

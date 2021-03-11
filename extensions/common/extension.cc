@@ -147,7 +147,7 @@ bool IsManifestSupported(int manifest_version,
 bool ComputeExtensionID(const base::DictionaryValue& manifest,
                         const base::FilePath& path,
                         int creation_flags,
-                        base::string16* error,
+                        std::u16string* error,
                         ExtensionId* extension_id) {
   if (manifest.HasKey(keys::kPublicKey)) {
     std::string public_key;
@@ -215,7 +215,7 @@ scoped_refptr<Extension> Extension::Create(const base::FilePath& path,
 }
 
 // TODO(sungguk): Continue removing std::string errors and replacing
-// with base::string16. See http://crbug.com/71980.
+// with std::u16string. See http://crbug.com/71980.
 scoped_refptr<Extension> Extension::Create(const base::FilePath& path,
                                            Manifest::Location location,
                                            const base::DictionaryValue& value,
@@ -224,7 +224,7 @@ scoped_refptr<Extension> Extension::Create(const base::FilePath& path,
                                            std::string* utf8_error) {
   base::ElapsedTimer timer;
   DCHECK(utf8_error);
-  base::string16 error;
+  std::u16string error;
 
   ExtensionId extension_id;
   if (!explicit_id.empty()) {
@@ -554,7 +554,7 @@ Extension::Extension(const base::FilePath& path,
 Extension::~Extension() {
 }
 
-bool Extension::InitFromValue(int flags, base::string16* error) {
+bool Extension::InitFromValue(int flags, std::u16string* error) {
   DCHECK(error);
 
   creation_flags_ = flags;
@@ -605,29 +605,29 @@ bool Extension::InitFromValue(int flags, base::string16* error) {
   return true;
 }
 
-bool Extension::LoadRequiredFeatures(base::string16* error) {
+bool Extension::LoadRequiredFeatures(std::u16string* error) {
   if (!LoadName(error) ||
       !LoadVersion(error))
     return false;
   return true;
 }
 
-bool Extension::LoadName(base::string16* error) {
-  base::string16 localized_name;
+bool Extension::LoadName(std::u16string* error) {
+  std::u16string localized_name;
   if (!manifest_->GetString(keys::kName, &localized_name)) {
     *error = base::ASCIIToUTF16(errors::kInvalidName);
     return false;
   }
 
   non_localized_name_ = base::UTF16ToUTF8(localized_name);
-  base::string16 sanitized_name =
+  std::u16string sanitized_name =
       base::CollapseWhitespace(localized_name, true);
   base::i18n::SanitizeUserSuppliedString(&sanitized_name);
   display_name_ = base::UTF16ToUTF8(sanitized_name);
   return true;
 }
 
-bool Extension::LoadVersion(base::string16* error) {
+bool Extension::LoadVersion(std::u16string* error) {
   std::string version_str;
   if (!manifest_->GetString(keys::kVersion, &version_str)) {
     *error = base::ASCIIToUTF16(errors::kInvalidVersion);
@@ -647,7 +647,7 @@ bool Extension::LoadVersion(base::string16* error) {
   return true;
 }
 
-bool Extension::LoadAppFeatures(base::string16* error) {
+bool Extension::LoadAppFeatures(std::u16string* error) {
   if (!LoadExtent(keys::kWebURLs, &extent_,
                   errors::kInvalidWebURLs, errors::kInvalidWebURL, error)) {
     return false;
@@ -674,7 +674,7 @@ bool Extension::LoadExtent(const char* key,
                            URLPatternSet* extent,
                            const char* list_error,
                            const char* value_error,
-                           base::string16* error) {
+                           std::u16string* error) {
   const base::Value* temp_pattern_value = nullptr;
   if (!manifest_->Get(key, &temp_pattern_value))
     return true;
@@ -738,7 +738,7 @@ bool Extension::LoadExtent(const char* key,
   return true;
 }
 
-bool Extension::LoadSharedFeatures(base::string16* error) {
+bool Extension::LoadSharedFeatures(std::u16string* error) {
   if (!LoadDescription(error) ||
       !ManifestHandler::ParseExtension(this, error) ||
       !LoadShortName(error))
@@ -747,7 +747,7 @@ bool Extension::LoadSharedFeatures(base::string16* error) {
   return true;
 }
 
-bool Extension::LoadDescription(base::string16* error) {
+bool Extension::LoadDescription(std::u16string* error) {
   if (manifest_->HasKey(keys::kDescription) &&
       !manifest_->GetString(keys::kDescription, &description_)) {
     *error = base::ASCIIToUTF16(errors::kInvalidDescription);
@@ -756,7 +756,7 @@ bool Extension::LoadDescription(base::string16* error) {
   return true;
 }
 
-bool Extension::LoadManifestVersion(base::string16* error) {
+bool Extension::LoadManifestVersion(std::u16string* error) {
   // Get the original value out of the dictionary so that we can validate it
   // more strictly.
   if (manifest_->available_values().HasKey(keys::kManifestVersion)) {
@@ -788,9 +788,9 @@ bool Extension::LoadManifestVersion(base::string16* error) {
   return true;
 }
 
-bool Extension::LoadShortName(base::string16* error) {
+bool Extension::LoadShortName(std::u16string* error) {
   if (manifest_->HasKey(keys::kShortName)) {
-    base::string16 localized_short_name;
+    std::u16string localized_short_name;
     if (!manifest_->GetString(keys::kShortName, &localized_short_name) ||
         localized_short_name.empty()) {
       *error = base::ASCIIToUTF16(errors::kInvalidShortName);

@@ -48,16 +48,16 @@ class ScreenLayoutObserverTest : public AshTestBase {
 
   void CloseNotification();
   void ClickNotification();
-  base::string16 GetDisplayNotificationText() const;
-  base::string16 GetDisplayNotificationAdditionalText() const;
+  std::u16string GetDisplayNotificationText() const;
+  std::u16string GetDisplayNotificationAdditionalText() const;
 
-  base::string16 GetFirstDisplayName();
+  std::u16string GetFirstDisplayName();
 
-  base::string16 GetSecondDisplayName();
+  std::u16string GetSecondDisplayName();
 
-  base::string16 GetMirroringDisplayNames();
+  std::u16string GetMirroringDisplayNames();
 
-  base::string16 GetUnifiedDisplayName();
+  std::u16string GetUnifiedDisplayName();
 
   bool IsNotificationShown() const;
 
@@ -96,32 +96,32 @@ void ScreenLayoutObserverTest::ClickNotification() {
   notification->delegate()->Click(base::nullopt, base::nullopt);
 }
 
-base::string16 ScreenLayoutObserverTest::GetDisplayNotificationText() const {
+std::u16string ScreenLayoutObserverTest::GetDisplayNotificationText() const {
   const message_center::Notification* notification = GetDisplayNotification();
-  return notification ? notification->title() : base::string16();
+  return notification ? notification->title() : std::u16string();
 }
 
-base::string16 ScreenLayoutObserverTest::GetDisplayNotificationAdditionalText()
+std::u16string ScreenLayoutObserverTest::GetDisplayNotificationAdditionalText()
     const {
   const message_center::Notification* notification = GetDisplayNotification();
-  return notification ? notification->message() : base::string16();
+  return notification ? notification->message() : std::u16string();
 }
 
-base::string16 ScreenLayoutObserverTest::GetFirstDisplayName() {
+std::u16string ScreenLayoutObserverTest::GetFirstDisplayName() {
   return base::UTF8ToUTF16(display_manager()->GetDisplayNameForId(
       display_manager()->first_display_id()));
 }
 
-base::string16 ScreenLayoutObserverTest::GetSecondDisplayName() {
+std::u16string ScreenLayoutObserverTest::GetSecondDisplayName() {
   return base::UTF8ToUTF16(display_manager()->GetDisplayNameForId(
       display::test::DisplayManagerTestApi(display_manager())
           .GetSecondaryDisplay()
           .id()));
 }
 
-base::string16 ScreenLayoutObserverTest::GetMirroringDisplayNames() {
+std::u16string ScreenLayoutObserverTest::GetMirroringDisplayNames() {
   DCHECK(display_manager()->IsInMirrorMode());
-  base::string16 display_names;
+  std::u16string display_names;
   for (auto& id : display_manager()->GetMirroringDestinationDisplayIdList()) {
     if (!display_names.empty())
       display_names.append(base::UTF8ToUTF16(","));
@@ -131,7 +131,7 @@ base::string16 ScreenLayoutObserverTest::GetMirroringDisplayNames() {
   return display_names;
 }
 
-base::string16 ScreenLayoutObserverTest::GetUnifiedDisplayName() {
+std::u16string ScreenLayoutObserverTest::GetUnifiedDisplayName() {
   return base::UTF8ToUTF16(
       display_manager()->GetDisplayNameForId(display::kUnifiedDisplayId));
 }

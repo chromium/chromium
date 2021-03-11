@@ -35,9 +35,9 @@ constexpr char kNotifierId[] = "assistant";
 std::unique_ptr<message_center::Notification> CreateSystemNotification(
     const message_center::NotifierId& notifier_id,
     const chromeos::assistant::AssistantNotification& notification) {
-  const base::string16 title = base::UTF8ToUTF16(notification.title);
-  const base::string16 message = base::UTF8ToUTF16(notification.message);
-  const base::string16 display_source =
+  const std::u16string title = base::UTF8ToUTF16(notification.title);
+  const std::u16string message = base::UTF8ToUTF16(notification.message);
+  const std::u16string display_source =
       l10n_util::GetStringUTF16(IDS_ASH_ASSISTANT_NOTIFICATION_DISPLAY_SOURCE);
 
   message_center::RichNotificationData data;
@@ -174,7 +174,7 @@ void AssistantNotificationControllerImpl::OnAllNotificationsRemoved(
 void AssistantNotificationControllerImpl::OnNotificationClicked(
     const std::string& id,
     const base::Optional<int>& button_index,
-    const base::Optional<base::string16>& reply) {
+    const base::Optional<std::u16string>& reply) {
   const AssistantNotification* notification = model_.GetNotificationById(id);
   if (!notification)
     return;

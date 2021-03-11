@@ -32,7 +32,7 @@ struct ASH_PUBLIC_EXPORT ShelfItem {
   ShelfID id;
 
   // The title to display for tooltips, etc.
-  base::string16 title;
+  std::u16string title;
 
   SkColor notification_badge_color = SK_ColorWHITE;
 

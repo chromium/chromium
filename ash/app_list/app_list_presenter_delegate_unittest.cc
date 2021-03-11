@@ -353,7 +353,7 @@ class PopulatedAppListTest : public AshTestBase,
   }
 
   void UpdateFolderName(const std::string& name) {
-    base::string16 folder_name = base::UTF8ToUTF16(name);
+    std::u16string folder_name = base::UTF8ToUTF16(name);
     folder_view()->folder_header_view()->SetFolderNameForTest(folder_name);
     folder_view()->folder_header_view()->ContentsChanged(
         folder_view()->folder_header_view()->GetFolderNameViewForTest(),

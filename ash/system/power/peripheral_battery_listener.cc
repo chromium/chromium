@@ -112,7 +112,7 @@ PeripheralBatteryListener::BatteryInfo::BatteryInfo() = default;
 
 PeripheralBatteryListener::BatteryInfo::BatteryInfo(
     const std::string& key,
-    const base::string16& name,
+    const std::u16string& name,
     base::Optional<uint8_t> level,
     base::TimeTicks last_update_timestamp,
     PeripheralType type,

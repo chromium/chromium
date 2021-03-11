@@ -133,8 +133,8 @@ void TrayBubbleView::Delegate::OnMouseEnteredView() {}
 
 void TrayBubbleView::Delegate::OnMouseExitedView() {}
 
-base::string16 TrayBubbleView::Delegate::GetAccessibleNameForBubble() {
-  return base::string16();
+std::u16string TrayBubbleView::Delegate::GetAccessibleNameForBubble() {
+  return std::u16string();
 }
 
 bool TrayBubbleView::Delegate::ShouldEnableExtraKeyboardAccessibility() {
@@ -412,11 +412,11 @@ void TrayBubbleView::GetWidgetHitTestMask(SkPath* mask) const {
   mask->addRect(gfx::RectToSkRect(GetBubbleFrameView()->GetContentsBounds()));
 }
 
-base::string16 TrayBubbleView::GetAccessibleWindowTitle() const {
+std::u16string TrayBubbleView::GetAccessibleWindowTitle() const {
   if (delegate_)
     return delegate_->GetAccessibleNameForBubble();
   else
-    return base::string16();
+    return std::u16string();
 }
 
 gfx::Size TrayBubbleView::CalculatePreferredSize() const {

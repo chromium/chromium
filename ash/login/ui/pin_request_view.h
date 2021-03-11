@@ -64,9 +64,9 @@ struct ASH_EXPORT PinRequest {
   bool obscure_pin = true;
 
   // Strings for UI.
-  base::string16 title;
-  base::string16 description;
-  base::string16 accessible_title;
+  std::u16string title;
+  std::u16string description;
+  std::u16string accessible_title;
 };
 
 // The view that allows for input of pins to authorize certain actions.
@@ -130,7 +130,7 @@ class ASH_EXPORT PinRequestView : public views::DialogDelegateView,
 
   // views::DialogDelegateView:
   views::View* GetInitiallyFocusedView() override;
-  base::string16 GetAccessibleWindowTitle() const override;
+  std::u16string GetAccessibleWindowTitle() const override;
 
   // TabletModeObserver:
   void OnTabletModeStarted() override;
@@ -146,8 +146,8 @@ class ASH_EXPORT PinRequestView : public views::DialogDelegateView,
 
   // Updates state of the view.
   void UpdateState(PinRequestViewState state,
-                   const base::string16& title,
-                   const base::string16& description);
+                   const std::u16string& title,
+                   const std::u16string& description);
 
  private:
   class FocusableLabelButton;
@@ -190,9 +190,9 @@ class ASH_EXPORT PinRequestView : public views::DialogDelegateView,
   bool pin_keyboard_always_enabled_ = true;
 
   // Strings as on view construction to enable restoring the original state.
-  base::string16 default_title_;
-  base::string16 default_description_;
-  base::string16 default_accessible_title_;
+  std::u16string default_title_;
+  std::u16string default_description_;
+  std::u16string default_accessible_title_;
 
   views::Label* title_label_ = nullptr;
   views::Label* description_label_ = nullptr;

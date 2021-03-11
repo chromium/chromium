@@ -646,7 +646,7 @@ void ManagementUninstallFunctionBase::Finish(bool did_start_uninstall,
 
 void ManagementUninstallFunctionBase::OnExtensionUninstallDialogClosed(
     bool did_start_uninstall,
-    const base::string16& error) {
+    const std::u16string& error) {
   Finish(did_start_uninstall,
          ErrorUtils::FormatErrorMessage(keys::kUninstallCanceledError,
                                         target_extension_id_));
@@ -666,7 +666,7 @@ void ManagementUninstallFunctionBase::UninstallExtension() {
     const ManagementAPIDelegate* delegate = ManagementAPI::GetFactoryInstance()
                                                 ->Get(browser_context())
                                                 ->GetDelegate();
-    base::string16 utf16_error;
+    std::u16string utf16_error;
     success = delegate->UninstallExtension(
         browser_context(), target_extension_id_,
         extensions::UNINSTALL_REASON_MANAGEMENT_API, &utf16_error);

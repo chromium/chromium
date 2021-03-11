@@ -232,7 +232,7 @@ void MediaTray::OnNotificationListViewSizeChanged() {
   bubble_->GetBubbleView()->UpdateBubble();
 }
 
-base::string16 MediaTray::GetAccessibleNameForTray() {
+std::u16string MediaTray::GetAccessibleNameForTray() {
   return l10n_util::GetStringUTF16(
       IDS_ASH_GLOBAL_MEDIA_CONTROLS_BUTTON_TOOLTIP_TEXT);
 }
@@ -351,7 +351,7 @@ void MediaTray::UpdateDisplayState() {
   SetVisiblePreferred(should_show);
 }
 
-base::string16 MediaTray::GetAccessibleNameForBubble() {
+std::u16string MediaTray::GetAccessibleNameForBubble() {
   return l10n_util::GetStringUTF16(IDS_ASH_GLOBAL_MEDIA_CONTROLS_TITLE);
 }
 

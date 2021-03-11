@@ -33,7 +33,7 @@ class ASH_EXPORT LoginShelfGestureController : public views::WidgetObserver {
  public:
   LoginShelfGestureController(Shelf* shelf,
                               DragHandle* drag_handle,
-                              const base::string16& gesture_nudge,
+                              const std::u16string& gesture_nudge,
                               const base::RepeatingClosure fling_handler,
                               base::OnceClosure exit_handler);
   LoginShelfGestureController(const LoginShelfGestureController& other) =

@@ -78,7 +78,7 @@ LegendEntry::LegendEntry(const Legend::Entry& data)
 
   constexpr int kLabelToValueSpece = 5;
   value_ = AddChildView(std::make_unique<views::Label>(
-      base::string16(), views::style::CONTEXT_LABEL));
+      std::u16string(), views::style::CONTEXT_LABEL));
   layout_manager->SetFlexForView(value_, /*flex=*/1);
   value_->SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_RIGHT);
   value_->SetBorder(views::CreateEmptyBorder(0, kLabelToValueSpece, 0, 0));
@@ -136,15 +136,15 @@ void LegendEntry::RefreshValue() {
   if (graph_.IsFilledIndex(value_index_)) {
     value_->SetText(formatter_.Run(graph_.GetUnscaledValueAt(value_index_)));
   } else {
-    value_->SetText(base::string16());
+    value_->SetText(std::u16string());
   }
 }
 
 }  // namespace
 
 Legend::Entry::Entry(const Graph& graph,
-                     base::string16 label,
-                     base::string16 tooltip,
+                     std::u16string label,
+                     std::u16string tooltip,
                      Formatter formatter)
     : graph(graph), label(label), tooltip(tooltip), formatter(formatter) {}
 

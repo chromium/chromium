@@ -21,21 +21,21 @@ class Graph;
 // Draws legend view.
 class Legend : public views::View {
  public:
-  using Formatter = base::RepeatingCallback<base::string16(float)>;
+  using Formatter = base::RepeatingCallback<std::u16string(float)>;
 
   METADATA_HEADER(Legend);
 
   struct Entry {
     Entry(const Graph& graph,
-          base::string16 label,
-          base::string16 tooltip,
+          std::u16string label,
+          std::u16string tooltip,
           Formatter formatter);
     Entry(const Entry&);
     ~Entry();
 
     const Graph& graph;
-    base::string16 label;
-    base::string16 tooltip;
+    std::u16string label;
+    std::u16string tooltip;
     Formatter formatter;  // formatting function
   };
 

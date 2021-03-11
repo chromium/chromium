@@ -106,7 +106,7 @@ SubtleNotificationView::SubtleNotificationView()
     : instruction_view_(nullptr) {
   ...
   instruction_view_ =
-      new InstructionView(base::string16());
+      new InstructionView(std::u16string());
 
   int outer_padding_horiz = kOuterPaddingHorizPx;
   int outer_padding_vert = kOuterPaddingVertPx;
@@ -135,7 +135,7 @@ SubtleNotificationView::SubtleNotificationView()
     : instruction_view_(nullptr) {
   ...
   AddChildView(std::make_unique<InstructionView>(
-      base::string16()));
+      std::u16string()));
 
   const gfx::Insets kDialogInsets =
       ChromeLayoutProvider::Get()->GetInsetsMetric(
@@ -514,8 +514,8 @@ in clearer code.
 HoverButton::HoverButton(
     ...
     std::unique_ptr<views::View> icon_view,
-    const base::string16& title,
-    const base::string16& subtitle,
+    const std::u16string& title,
+    const std::u16string& subtitle,
     std::unique_ptr<views::View> secondary_view,
     ...) {
   ...
@@ -592,8 +592,8 @@ HoverButton::HoverButton(
 HoverButton::HoverButton(
     ...
     std::unique_ptr<views::View> icon_view,
-    const base::string16& title,
-    const base::string16& subtitle,
+    const std::u16string& title,
+    const std::u16string& subtitle,
     std::unique_ptr<views::View> secondary_view,
     ...) {
   ...

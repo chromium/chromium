@@ -13,7 +13,7 @@ namespace extensions {
 
 CrxInstallError::CrxInstallError(CrxInstallErrorType type,
                                  CrxInstallErrorDetail detail,
-                                 const base::string16& message)
+                                 const std::u16string& message)
     : type_(type), detail_(detail), message_(message) {
   DCHECK_NE(CrxInstallErrorType::NONE, type);
   DCHECK_NE(CrxInstallErrorType::SANDBOXED_UNPACKER_FAILURE, type);
@@ -21,10 +21,10 @@ CrxInstallError::CrxInstallError(CrxInstallErrorType type,
 
 CrxInstallError::CrxInstallError(CrxInstallErrorType type,
                                  CrxInstallErrorDetail detail)
-    : CrxInstallError(type, detail, base::string16()) {}
+    : CrxInstallError(type, detail, std::u16string()) {}
 
 CrxInstallError::CrxInstallError(SandboxedUnpackerFailureReason reason,
-                                 const base::string16& message)
+                                 const std::u16string& message)
     : type_(CrxInstallErrorType::SANDBOXED_UNPACKER_FAILURE),
       detail_(CrxInstallErrorDetail::NONE),
       sandbox_failure_detail_(reason),

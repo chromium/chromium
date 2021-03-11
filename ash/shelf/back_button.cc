@@ -53,7 +53,7 @@ const char* BackButton::GetClassName() const {
   return kViewClassName;
 }
 
-base::string16 BackButton::GetTooltipText(const gfx::Point& p) const {
+std::u16string BackButton::GetTooltipText(const gfx::Point& p) const {
   return GetAccessibleName();
 }
 

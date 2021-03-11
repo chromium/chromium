@@ -69,7 +69,7 @@ void ManagedDeviceTrayItemView::Update() {
           IDS_ASH_ENTERPRISE_DEVICE_MANAGED_BY, ui::GetChromeOSDeviceName(),
           base::UTF8ToUTF16(enterprise_domain_manager)));
     } else {
-      image_view()->SetTooltipText(base::string16());
+      image_view()->SetTooltipText(std::u16string());
       LOG(WARNING)
           << "Public account user, but device not enterprise-enrolled.";
     }

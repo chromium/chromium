@@ -134,7 +134,7 @@ bool ContentSecurityPolicyIsSandboxed(
 // If not, populates |error|.
 bool DoesCSPDisallowRemoteCode(const std::string& content_security_policy,
                                base::StringPiece manifest_key,
-                               base::string16* error);
+                               std::u16string* error);
 
 }  // namespace csp_validator
 

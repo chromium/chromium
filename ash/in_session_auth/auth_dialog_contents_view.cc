@@ -91,14 +91,14 @@ class AuthDialogContentsView::FingerprintView : public views::View {
       node_data->SetName(accessible_name_);
     }
 
-    void SetAccessibleName(const base::string16& name) {
+    void SetAccessibleName(const std::u16string& name) {
       accessible_name_ = name;
       NotifyAccessibilityEvent(ax::mojom::Event::kTextChanged,
                                true /*send_native_event*/);
     }
 
    private:
-    base::string16 accessible_name_;
+    std::u16string accessible_name_;
   };
 
   FingerprintView() {
@@ -202,7 +202,7 @@ class AuthDialogContentsView::FingerprintView : public views::View {
     SetVisible(state_ != FingerprintState::UNAVAILABLE);
     SetIcon(state_);
     if (state_ != FingerprintState::UNAVAILABLE) {
-      base::string16 fingerprint_text =
+      std::u16string fingerprint_text =
           l10n_util::GetStringUTF16(GetTextIdFromState());
       label_->SetText(fingerprint_text);
       label_->SetAccessibleName(
@@ -287,7 +287,7 @@ class AuthDialogContentsView::TitleLabel : public views::Label {
   bool IsShowingError() const { return is_showing_error_; }
 
   void ShowTitle() {
-    base::string16 title =
+    std::u16string title =
         l10n_util::GetStringUTF16(IDS_ASH_IN_SESSION_AUTH_TITLE);
     SetText(title);
     SetEnabledColor(kTextColorPrimary);
@@ -295,7 +295,7 @@ class AuthDialogContentsView::TitleLabel : public views::Label {
     SetAccessibleName(title);
   }
 
-  void ShowError(const base::string16& error_text) {
+  void ShowError(const std::u16string& error_text) {
     SetText(error_text);
     SetEnabledColor(kErrorColor);
     is_showing_error_ = true;
@@ -311,14 +311,14 @@ class AuthDialogContentsView::TitleLabel : public views::Label {
   }
 
  private:
-  void SetAccessibleName(const base::string16& name) {
+  void SetAccessibleName(const std::u16string& name) {
     accessible_name_ = name;
     NotifyAccessibilityEvent(ax::mojom::Event::kTextChanged,
                              true /*send_native_event*/);
   }
 
   bool is_showing_error_ = false;
-  base::string16 accessible_name_;
+  std::u16string accessible_name_;
 };
 
 AuthDialogContentsView::AuthDialogContentsView(
@@ -572,7 +572,7 @@ void AuthDialogContentsView::OnNeedHelpButtonPressed(const ui::Event& event) {
   InSessionAuthDialogController::Get()->OpenInSessionAuthHelpPage();
 }
 
-void AuthDialogContentsView::OnAuthSubmit(const base::string16& pin) {
+void AuthDialogContentsView::OnAuthSubmit(const std::u16string& pin) {
   if (pin_autosubmit_on_) {
     pin_digit_input_view_->SetReadOnly(true);
   } else {
@@ -591,7 +591,7 @@ void AuthDialogContentsView::OnPinAuthComplete(base::Optional<bool> success) {
     return;
 
   pin_attempts_++;
-  base::string16 error_text =
+  std::u16string error_text =
       pin_attempts_ >= kMaxPinAttempts
           ? l10n_util::GetStringUTF16(
                 IDS_ASH_IN_SESSION_AUTH_PIN_TOO_MANY_ATTEMPTS)

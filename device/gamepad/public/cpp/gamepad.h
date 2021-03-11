@@ -115,7 +115,7 @@ class COMPONENT_EXPORT(GAMEPAD_PUBLIC) Gamepad {
   // If src is too long, then the contents of id will be truncated to
   // kIdLengthCap-1. id will be null-terminated and any extra space in the
   // buffer will be zeroed out.
-  void SetID(const base::string16& src);
+  void SetID(const std::u16string& src);
 
   // Is there a gamepad connected at this index?
   bool connected;

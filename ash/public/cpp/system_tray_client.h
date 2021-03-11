@@ -29,7 +29,7 @@ class ASH_PUBLIC_EXPORT SystemTrayClient {
   // necessarily the device name.
   virtual void ShowBluetoothPairingDialog(
       const std::string& address,
-      const base::string16& name_for_display,
+      const std::u16string& name_for_display,
       bool paired,
       bool connected) = 0;
 

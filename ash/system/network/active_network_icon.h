@@ -53,9 +53,9 @@ class ASH_EXPORT ActiveNetworkIcon : public TrayNetworkStateObserver {
   // Provides the a11y and tooltip strings for |type|. Output parameters can
   // be null.
   void GetConnectionStatusStrings(Type type,
-                                  base::string16* a11y_name,
-                                  base::string16* a11y_desc,
-                                  base::string16* tooltip);
+                                  std::u16string* a11y_name,
+                                  std::u16string* a11y_desc,
+                                  std::u16string* tooltip);
 
   // Returns a network icon (which may be empty) and sets |animating| if
   // provided.

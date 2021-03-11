@@ -781,7 +781,7 @@ TEST_F(BentoOverviewHighlightControllerTest,
         desk_bar_view->mini_views()[index]->desk_name_view();
     EXPECT_TRUE(desk_name_view->HasFocus());
     EXPECT_EQ(GetHighlightedView(), desk_name_view);
-    EXPECT_EQ(base::string16(), desk_name_view->GetText());
+    EXPECT_EQ(std::u16string(), desk_name_view->GetText());
   };
 
   // Use the keyboard to navigate to the new desk button.

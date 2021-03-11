@@ -95,7 +95,7 @@ IPC_STRUCT_BEGIN(ExtensionHostMsg_DOMAction_Params)
   IPC_STRUCT_MEMBER(GURL, url)
 
   // Title of the page.
-  IPC_STRUCT_MEMBER(base::string16, url_title)
+  IPC_STRUCT_MEMBER(std::u16string, url_title)
 
   // API name.
   IPC_STRUCT_MEMBER(std::string, api_call)
@@ -852,8 +852,8 @@ IPC_MESSAGE_CONTROL2(ExtensionHostMsg_WakeEventPage,
 // Tells listeners that a detailed message was reported to the console by
 // WebKit.
 IPC_MESSAGE_ROUTED4(ExtensionHostMsg_DetailedConsoleMessageAdded,
-                    base::string16 /* message */,
-                    base::string16 /* source */,
+                    std::u16string /* message */,
+                    std::u16string /* source */,
                     extensions::StackTrace /* stack trace */,
                     int32_t /* severity level */)
 
@@ -862,7 +862,7 @@ IPC_MESSAGE_ROUTED4(ExtensionHostMsg_DetailedConsoleMessageAdded,
 IPC_MESSAGE_ROUTED3(ExtensionMsg_AutomationQuerySelector,
                     int /* request_id */,
                     int /* acc_obj_id */,
-                    base::string16 /* selector */)
+                    std::u16string /* selector */)
 
 // Result of a query selector request.
 // result_acc_obj_id is the accessibility tree ID of the result element; 0

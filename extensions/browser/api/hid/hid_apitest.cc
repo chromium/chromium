@@ -77,11 +77,11 @@ class TestDevicePermissionsPrompt
     }
   }
 
-  void OnDeviceAdded(size_t index, const base::string16& device_name) override {
+  void OnDeviceAdded(size_t index, const std::u16string& device_name) override {
   }
 
   void OnDeviceRemoved(size_t index,
-                       const base::string16& device_name) override {}
+                       const std::u16string& device_name) override {}
 };
 
 class TestExtensionsAPIClient : public ShellExtensionsAPIClient {

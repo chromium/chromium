@@ -63,7 +63,7 @@ VirtualKeyboardPrivateFunction::~VirtualKeyboardPrivateFunction() {}
 
 ExtensionFunction::ResponseAction
 VirtualKeyboardPrivateInsertTextFunction::Run() {
-  base::string16 text;
+  std::u16string text;
   EXTENSION_FUNCTION_VALIDATE(args_->GetString(0, &text));
   if (!delegate()->InsertText(text))
     return RespondNow(Error(kUnknownError));

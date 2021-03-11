@@ -46,7 +46,7 @@ class ASH_EXPORT PhoneHubNotificationController
   // notifications.
   void SetManager(chromeos::phonehub::PhoneHubManager* phone_hub_manager);
 
-  const base::string16 GetPhoneName() const;
+  const std::u16string GetPhoneName() const;
 
  private:
   FRIEND_TEST_ALL_PREFIXES(PhoneHubNotificationControllerTest,
@@ -76,7 +76,7 @@ class ASH_EXPORT PhoneHubNotificationController
   void DismissNotification(int64_t notification_id);
   void HandleNotificationBodyClick(int64_t notification_id);
   void SendInlineReply(int64_t notification_id,
-                       const base::string16& inline_reply_text);
+                       const std::u16string& inline_reply_text);
 
   // Logs the number of PhoneHub notifications.
   void LogNotificationCount();

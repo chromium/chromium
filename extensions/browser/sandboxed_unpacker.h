@@ -166,7 +166,7 @@ class SandboxedUnpacker : public base::RefCountedThreadSafe<SandboxedUnpacker> {
   bool CreateTempDirectory();
 
   // Helper functions to simplify calling ReportFailure.
-  base::string16 FailureReasonToString16(
+  std::u16string FailureReasonToString16(
       const SandboxedUnpackerFailureReason reason);
   void FailWithPackageError(const SandboxedUnpackerFailureReason reason);
 
@@ -220,7 +220,7 @@ class SandboxedUnpacker : public base::RefCountedThreadSafe<SandboxedUnpacker> {
   // Puts a sanboxed unpacker failure in histogram
   // Extensions.SandboxUnpackFailureReason.
   void ReportFailure(const SandboxedUnpackerFailureReason reason,
-                     const base::string16& error);
+                     const std::u16string& error);
 
   // Overwrites original manifest with safe result from utility process.
   // Returns nullopt on error.

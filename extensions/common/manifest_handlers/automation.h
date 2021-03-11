@@ -41,7 +41,7 @@ struct AutomationInfo : public Extension::ManifestData {
   static std::unique_ptr<AutomationInfo> FromValue(
       const base::Value& value,
       std::vector<InstallWarning>* install_warnings,
-      base::string16* error);
+      std::u16string* error);
 
   static std::unique_ptr<base::Value> ToValue(const AutomationInfo& info);
   ~AutomationInfo() override;
@@ -77,7 +77,7 @@ class AutomationHandler : public ManifestHandler {
 
  private:
   // ManifestHandler implementation.
-  bool Parse(Extension* extensions, base::string16* error) override;
+  bool Parse(Extension* extensions, std::u16string* error) override;
 
   ManifestPermission* CreatePermission() override;
   ManifestPermission* CreateInitialRequiredPermission(

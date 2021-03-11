@@ -40,7 +40,7 @@ SearchResultTag::SearchResultTag(int styles, uint32_t start, uint32_t end)
 SearchResultAction::SearchResultAction() {}
 
 SearchResultAction::SearchResultAction(const gfx::ImageSkia& image,
-                                       const base::string16& tooltip_text,
+                                       const std::u16string& tooltip_text,
                                        bool visible_on_hover)
     : image(image),
       tooltip_text(tooltip_text),

@@ -19,7 +19,7 @@ NotificationMenuViewTestAPI::NotificationMenuViewTestAPI(
 
 NotificationMenuViewTestAPI::~NotificationMenuViewTestAPI() = default;
 
-base::string16 NotificationMenuViewTestAPI::GetCounterViewContents() const {
+std::u16string NotificationMenuViewTestAPI::GetCounterViewContents() const {
   return notification_menu_view_->header_view_->counter_->GetText();
 }
 

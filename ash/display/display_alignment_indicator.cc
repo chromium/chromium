@@ -211,7 +211,7 @@ class IndicatorHighlightView : public views::View {
 // of the target display.
 class IndicatorPillView : public views::View {
  public:
-  explicit IndicatorPillView(const base::string16& text)
+  explicit IndicatorPillView(const std::u16string& text)
       :  // TODO(1070352): Replace current placeholder arrow in
          // IndicatorPillView
         icon_(AddChildView(std::make_unique<views::ImageView>())),

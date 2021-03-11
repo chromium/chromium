@@ -39,7 +39,7 @@ class CommonPaletteTool : public PaletteTool, public ViewClickListener {
   virtual const gfx::VectorIcon& GetPaletteIcon() const = 0;
 
   // Creates a default view implementation to be returned by CreateView.
-  views::View* CreateDefaultView(const base::string16& name);
+  views::View* CreateDefaultView(const std::u16string& name);
 
   HoverHighlightView* highlight_view_ = nullptr;
 

@@ -273,22 +273,22 @@ void FeaturePodLabelButton::OnThemeChanged() {
   OnEnabledChanged();
 }
 
-void FeaturePodLabelButton::SetLabel(const base::string16& label) {
+void FeaturePodLabelButton::SetLabel(const std::u16string& label) {
   label_->SetText(label);
   InvalidateLayout();
 }
 
-const base::string16& FeaturePodLabelButton::GetLabelText() const {
+const std::u16string& FeaturePodLabelButton::GetLabelText() const {
   return label_->GetText();
 }
 
-void FeaturePodLabelButton::SetSubLabel(const base::string16& sub_label) {
+void FeaturePodLabelButton::SetSubLabel(const std::u16string& sub_label) {
   sub_label_->SetText(sub_label);
   sub_label_->SetVisible(true);
   InvalidateLayout();
 }
 
-const base::string16& FeaturePodLabelButton::GetSubLabelText() const {
+const std::u16string& FeaturePodLabelButton::GetSubLabelText() const {
   return sub_label_->GetText();
 }
 
@@ -361,7 +361,7 @@ void FeaturePodButton::SetVectorIcon(const gfx::VectorIcon& icon) {
   icon_button_->SetVectorIcon(icon);
 }
 
-void FeaturePodButton::SetLabel(const base::string16& label) {
+void FeaturePodButton::SetLabel(const std::u16string& label) {
   if (label_button_->GetLabelText() == label)
     return;
 
@@ -370,7 +370,7 @@ void FeaturePodButton::SetLabel(const base::string16& label) {
   label_button_->SchedulePaint();
 }
 
-void FeaturePodButton::SetSubLabel(const base::string16& sub_label) {
+void FeaturePodButton::SetSubLabel(const std::u16string& sub_label) {
   if (label_button_->GetSubLabelText() == sub_label)
     return;
 
@@ -379,15 +379,15 @@ void FeaturePodButton::SetSubLabel(const base::string16& sub_label) {
   label_button_->SchedulePaint();
 }
 
-void FeaturePodButton::SetIconTooltip(const base::string16& text) {
+void FeaturePodButton::SetIconTooltip(const std::u16string& text) {
   icon_button_->SetTooltipText(text);
 }
 
-void FeaturePodButton::SetLabelTooltip(const base::string16& text) {
+void FeaturePodButton::SetLabelTooltip(const std::u16string& text) {
   label_button_->SetTooltipText(text);
 }
 
-void FeaturePodButton::SetIconAndLabelTooltips(const base::string16& text) {
+void FeaturePodButton::SetIconAndLabelTooltips(const std::u16string& text) {
   SetIconTooltip(text);
   SetLabelTooltip(text);
 }

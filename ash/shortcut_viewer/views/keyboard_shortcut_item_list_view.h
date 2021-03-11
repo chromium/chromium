@@ -20,7 +20,7 @@ class KeyboardShortcutItemListView : public views::View {
 
   // In search result page, a text label is added at the beginning of the group
   // of KeyboardShortcutItemView to indicate the ShortcutCategory.
-  void AddCategoryLabel(const base::string16& text);
+  void AddCategoryLabel(const std::u16string& text);
 
   // Add a horizontal line to separate the KeyboardShortcutItemView. The last
   // item in the list is not followed by the horizontal line.

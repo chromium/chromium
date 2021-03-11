@@ -78,7 +78,7 @@ END_METADATA
 
 HUDTabButton::HUDTabButton(Style style,
                            const DisplayMode display_mode,
-                           const base::string16& text)
+                           const std::u16string& text)
     : views::LabelButton(views::Button::PressedCallback(), text),
       style_(style),
       display_mode_(display_mode) {
@@ -172,7 +172,7 @@ HUDTabStrip::HUDTabStrip(HUDDisplayView* hud) : hud_(hud) {
 HUDTabStrip::~HUDTabStrip() = default;
 
 HUDTabButton* HUDTabStrip::AddTabButton(const DisplayMode display_mode,
-                                        const base::string16& label) {
+                                        const std::u16string& label) {
   CHECK_NE(static_cast<int>(display_mode), 0);
   // Make first tab active by default.
   HUDTabButton* tab_button = AddChildView(std::make_unique<HUDTabButton>(

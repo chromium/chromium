@@ -250,10 +250,10 @@ class LoginShelfButton : public views::LabelButton {
     return ink_drop;
   }
 
-  base::string16 GetTooltipText(const gfx::Point& p) const override {
+  std::u16string GetTooltipText(const gfx::Point& p) const override {
     if (label()->IsDisplayTextTruncated())
       return label()->GetText();
-    return base::string16();
+    return std::u16string();
   }
 
   void PaintDarkColors() {

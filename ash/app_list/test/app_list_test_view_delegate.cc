@@ -168,7 +168,7 @@ void AppListTestViewDelegate::OnSearchResultVisibilityChanged(
     bool visibility) {}
 
 void AppListTestViewDelegate::NotifySearchResultsForLogging(
-    const base::string16& raw_query,
+    const std::u16string& raw_query,
     const ash::SearchResultIdWithPositionIndices& results,
     int position_index) {}
 

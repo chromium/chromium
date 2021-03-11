@@ -141,8 +141,8 @@ class ASH_EXPORT UnifiedSystemTray : public TrayBackgroundView,
   // TrayBackgroundView:
   void ShowBubble() override;
   void CloseBubble() override;
-  base::string16 GetAccessibleNameForBubble() override;
-  base::string16 GetAccessibleNameForTray() override;
+  std::u16string GetAccessibleNameForBubble() override;
+  std::u16string GetAccessibleNameForTray() override;
   void HandleLocaleChange() override;
   void HideBubble(const TrayBubbleView* bubble_view) override;
   void HideBubbleWithView(const TrayBubbleView* bubble_view) override;
@@ -156,7 +156,7 @@ class ASH_EXPORT UnifiedSystemTray : public TrayBackgroundView,
   // ShelfConfig::Observer:
   void OnShelfConfigUpdated() override;
 
-  base::string16 GetAccessibleNameForQuickSettingsBubble();
+  std::u16string GetAccessibleNameForQuickSettingsBubble();
 
   UnifiedSystemTrayModel* model() { return model_.get(); }
   UnifiedSystemTrayBubble* bubble() { return bubble_.get(); }

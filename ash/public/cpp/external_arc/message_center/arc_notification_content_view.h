@@ -192,7 +192,7 @@ class ArcNotificationContentView
   // Widget which this view tree is currently attached to.
   views::Widget* attached_widget_ = nullptr;
 
-  base::string16 accessible_name_;
+  std::u16string accessible_name_;
 
   // If it's true, the surface gets active when attached to this view.
   bool activate_on_attach_ = false;

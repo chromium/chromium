@@ -56,15 +56,15 @@ constexpr char kPeripheralDeviceIdPrefix[] = "battery_notification-";
 // stylus notifications and the non stylus notifications.
 struct NotificationParams {
   std::string id;
-  base::string16 title;
-  base::string16 message;
+  std::u16string title;
+  std::u16string message;
   std::string notifier_name;
   GURL url;
   const gfx::VectorIcon* icon;
 };
 
 NotificationParams GetNonStylusNotificationParams(const std::string& map_key,
-                                                  const base::string16& name,
+                                                  const std::u16string& name,
                                                   uint8_t battery_level,
                                                   bool is_bluetooth) {
   return NotificationParams{
@@ -230,7 +230,7 @@ void PeripheralBatteryNotifier::ShowOrUpdateNotification(
 
   auto notification = CreateSystemNotification(
       message_center::NOTIFICATION_TYPE_SIMPLE, params.id, params.title,
-      params.message, base::string16(), params.url,
+      params.message, std::u16string(), params.url,
       message_center::NotifierId(message_center::NotifierType::SYSTEM_COMPONENT,
                                  params.notifier_name),
       message_center::RichNotificationData(), std::move(delegate), *params.icon,

@@ -55,7 +55,7 @@ WebAppShortcutIconsHandler::WebAppShortcutIconsHandler() = default;
 WebAppShortcutIconsHandler::~WebAppShortcutIconsHandler() = default;
 
 bool WebAppShortcutIconsHandler::Parse(Extension* extension,
-                                       base::string16* error) {
+                                       std::u16string* error) {
   // The "web_app_shortcut_icons" key is only available for Bookmark Apps.
   // Including it elsewhere results in an install warning, and the shortcut
   // icons are not parsed.

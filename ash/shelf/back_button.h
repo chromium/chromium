@@ -34,7 +34,7 @@ class ASH_EXPORT BackButton : public ShelfControlButton,
   // views::Button:
   void PaintButtonContents(gfx::Canvas* canvas) override;
   const char* GetClassName() const override;
-  base::string16 GetTooltipText(const gfx::Point& p) const override;
+  std::u16string GetTooltipText(const gfx::Point& p) const override;
 
   // views::View:
   void OnThemeChanged() override;

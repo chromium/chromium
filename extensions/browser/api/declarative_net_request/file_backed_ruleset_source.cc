@@ -138,7 +138,7 @@ ReadJSONRulesResult ParseRulesFromJSON(const RulesetID& ruleset_id,
 
   for (size_t i = 0; i < rules_list.size(); i++) {
     dnr_api::Rule parsed_rule;
-    base::string16 parse_error;
+    std::u16string parse_error;
 
     if (dnr_api::Rule::Populate(rules_list[i], &parsed_rule, &parse_error)) {
       DCHECK(parse_error.empty());

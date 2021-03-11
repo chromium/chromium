@@ -182,8 +182,8 @@ void AppListMainView::OnAppListStateChanged(AppListState new_state,
 }
 
 void AppListMainView::QueryChanged(SearchBoxViewBase* sender) {
-  base::string16 raw_query = search_model_->search_box()->text();
-  base::string16 query;
+  std::u16string raw_query = search_model_->search_box()->text();
+  std::u16string query;
   base::TrimWhitespace(raw_query, base::TRIM_ALL, &query);
   contents_view_->ShowSearchResults(search_box_view_->is_search_box_active() ||
                                     !query.empty());
@@ -199,8 +199,8 @@ void AppListMainView::ActiveChanged(SearchBoxViewBase* sender) {
   if (search_box_view_->is_search_box_active()) {
     // Show zero state suggestions when search box is activated with an empty
     // query.
-    base::string16 raw_query = search_model_->search_box()->text();
-    base::string16 query;
+    std::u16string raw_query = search_model_->search_box()->text();
+    std::u16string query;
     base::TrimWhitespace(raw_query, base::TRIM_ALL, &query);
     if (query.empty())
       search_box_view_->ShowZeroStateSuggestions();

@@ -40,7 +40,7 @@ class HUDTabButton : public views::LabelButton {
 
   HUDTabButton(Style style,
                const DisplayMode display_mode,
-               const base::string16& text);
+               const std::u16string& text);
   HUDTabButton(const HUDTabButton&) = delete;
   HUDTabButton& operator=(const HUDTabButton&) = delete;
 
@@ -73,7 +73,7 @@ class HUDTabStrip : public views::View {
   ~HUDTabStrip() override;
 
   HUDTabButton* AddTabButton(const DisplayMode display_mode,
-                             const base::string16& label);
+                             const std::u16string& label);
 
   // Mark tabs around the active one need repaint to modify borders.
   void ActivateTab(DisplayMode mode);

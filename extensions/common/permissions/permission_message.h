@@ -38,24 +38,24 @@ namespace extensions {
 // permission message, registerable as a callback.
 class PermissionMessage {
  public:
-  PermissionMessage(const base::string16& message,
+  PermissionMessage(const std::u16string& message,
                     const PermissionIDSet& permissions);
-  PermissionMessage(const base::string16& message,
+  PermissionMessage(const std::u16string& message,
                     const PermissionIDSet& permissions,
-                    const std::vector<base::string16>& submessages);
+                    const std::vector<std::u16string>& submessages);
   PermissionMessage(const PermissionMessage& other);
   virtual ~PermissionMessage();
 
-  const base::string16& message() const { return message_; }
+  const std::u16string& message() const { return message_; }
   const PermissionIDSet& permissions() const { return permissions_; }
-  const std::vector<base::string16>& submessages() const {
+  const std::vector<std::u16string>& submessages() const {
     return submessages_;
   }
 
  private:
-  const base::string16 message_;
+  const std::u16string message_;
   const PermissionIDSet permissions_;
-  const std::vector<base::string16> submessages_;
+  const std::vector<std::u16string> submessages_;
 };
 
 using PermissionMessages = std::vector<PermissionMessage>;

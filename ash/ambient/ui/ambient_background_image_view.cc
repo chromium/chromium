@@ -118,7 +118,7 @@ void AmbientBackgroundImageView::UpdateImage(
 }
 
 void AmbientBackgroundImageView::UpdateImageDetails(
-    const base::string16& details) {
+    const std::u16string& details) {
   ambient_info_view_->UpdateImageDetails(details);
 }
 

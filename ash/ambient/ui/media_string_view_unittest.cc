@@ -35,7 +35,7 @@ class MediaStringViewTest : public AmbientAshTestBase {
     AmbientAshTestBase::TearDown();
   }
 
-  const base::string16& GetText() {
+  const std::u16string& GetText() {
     return GetMediaStringViewTextLabel()->GetText();
   }
 };
@@ -50,7 +50,7 @@ TEST_F(MediaStringViewTest, ShowMediaTitleAndArtist) {
 
   SimulateMediaMetadataChanged(metadata);
 
-  const base::string16 expected_text = base::UTF8ToUTF16("title \u2022 artist");
+  const std::u16string expected_text = base::UTF8ToUTF16("title \u2022 artist");
   EXPECT_EQ(GetMediaStringViewTextLabel()->GetText(), expected_text);
 }
 

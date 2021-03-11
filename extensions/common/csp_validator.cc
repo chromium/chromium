@@ -622,7 +622,7 @@ bool ContentSecurityPolicyIsSandboxed(
 
 bool DoesCSPDisallowRemoteCode(const std::string& content_security_policy,
                                base::StringPiece manifest_key,
-                               base::string16* error) {
+                               std::u16string* error) {
   DCHECK(error);
 
   struct DirectiveMapping {
@@ -682,7 +682,7 @@ bool DoesCSPDisallowRemoteCode(const std::string& content_security_policy,
   fallback_if_necessary(&worker_src_mapping, script_src_mapping);
 
   auto is_secure_directive = [manifest_key](const DirectiveMapping& mapping,
-                                            base::string16* error) {
+                                            std::u16string* error) {
     if (!mapping.directive) {
       *error = ErrorUtils::FormatErrorMessageUTF16(
           manifest_errors::kInvalidCSPMissingSecureSrc, manifest_key,

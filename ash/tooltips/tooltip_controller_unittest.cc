@@ -95,7 +95,7 @@ class TooltipControllerTest : public AshTestBase {
 
 TEST_F(TooltipControllerTest, NonNullTooltipClient) {
   EXPECT_TRUE(::wm::GetTooltipClient(Shell::GetPrimaryRootWindow()) != NULL);
-  EXPECT_EQ(base::string16(), helper_->GetTooltipText());
+  EXPECT_EQ(std::u16string(), helper_->GetTooltipText());
   EXPECT_EQ(NULL, helper_->GetTooltipWindow());
   EXPECT_FALSE(helper_->IsTooltipVisible());
 }
@@ -105,13 +105,13 @@ TEST_F(TooltipControllerTest, HideTooltipWhenCursorHidden) {
   TooltipTestView* view = new TooltipTestView;
   AddViewToWidgetAndResize(widget.get(), view);
   view->set_tooltip_text(base::ASCIIToUTF16("Tooltip Text"));
-  EXPECT_EQ(base::string16(), helper_->GetTooltipText());
+  EXPECT_EQ(std::u16string(), helper_->GetTooltipText());
   EXPECT_EQ(NULL, helper_->GetTooltipWindow());
 
   ui::test::EventGenerator generator(Shell::GetPrimaryRootWindow());
   generator.MoveMouseRelativeTo(widget->GetNativeView(),
                                 view->bounds().CenterPoint());
-  base::string16 expected_tooltip = base::ASCIIToUTF16("Tooltip Text");
+  std::u16string expected_tooltip = base::ASCIIToUTF16("Tooltip Text");
 
   // Mouse event triggers tooltip update so it becomes visible.
   EXPECT_TRUE(helper_->IsTooltipVisible());

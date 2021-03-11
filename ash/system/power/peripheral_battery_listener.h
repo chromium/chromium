@@ -67,7 +67,7 @@ class ASH_EXPORT PeripheralBatteryListener
 
     BatteryInfo();
     BatteryInfo(const std::string& key,
-                const base::string16& name,
+                const std::u16string& name,
                 base::Optional<uint8_t> level,
                 base::TimeTicks last_update_timestamp,
                 PeripheralType type,
@@ -81,7 +81,7 @@ class ASH_EXPORT PeripheralBatteryListener
     std::string key;
 
     // Human readable name for the device. It is changeable.
-    base::string16 name;
+    std::u16string name;
     // Battery level within range [0, 100], or unset. This is changeable.
     // TODO(kenalba): explain when we might have an unset state.
     base::Optional<uint8_t> level;

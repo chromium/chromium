@@ -159,7 +159,7 @@ HoldingSpaceItem::HoldingSpaceItem(Type type,
                                    const std::string& id,
                                    const base::FilePath& file_path,
                                    const GURL& file_system_url,
-                                   const base::string16& text,
+                                   const std::u16string& text,
                                    std::unique_ptr<HoldingSpaceImage> image)
     : type_(type),
       id_(id),

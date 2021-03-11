@@ -198,8 +198,8 @@ void SearchResultTileItemView::OnResultChanged() {
   UpdateAccessibleName();
 }
 
-base::string16 SearchResultTileItemView::ComputeAccessibleName() const {
-  base::string16 accessible_name;
+std::u16string SearchResultTileItemView::ComputeAccessibleName() const {
+  std::u16string accessible_name;
   if (!result()->accessible_name().empty())
     return result()->accessible_name();
 
@@ -440,7 +440,7 @@ void SearchResultTileItemView::SetBadgeIcon(const ui::ImageModel& badge_icon,
   badge_->SetVisible(true);
 }
 
-void SearchResultTileItemView::SetTitle(const base::string16& title) {
+void SearchResultTileItemView::SetTitle(const std::u16string& title) {
   title_->SetText(title);
 }
 
@@ -459,7 +459,7 @@ void SearchResultTileItemView::SetRating(float rating) {
   rating_star_->SetVisible(true);
 }
 
-void SearchResultTileItemView::SetPrice(const base::string16& price) {
+void SearchResultTileItemView::SetPrice(const std::u16string& price) {
   if (!price_)
     return;
 
@@ -592,14 +592,14 @@ gfx::Size SearchResultTileItemView::CalculatePreferredSize() const {
                    AppListConfig::instance().search_tile_height());
 }
 
-base::string16 SearchResultTileItemView::GetTooltipText(
+std::u16string SearchResultTileItemView::GetTooltipText(
     const gfx::Point& p) const {
   // Use the label to generate a tooltip, so that it will consider its text
   // truncation in making the tooltip. We do not want the label itself to have a
   // tooltip, so we only temporarily enable it to get the tooltip text from the
   // label, then disable it again.
   title_->SetHandlesTooltips(true);
-  base::string16 tooltip = title_->GetTooltipText(p);
+  std::u16string tooltip = title_->GetTooltipText(p);
   title_->SetHandlesTooltips(false);
   return tooltip;
 }

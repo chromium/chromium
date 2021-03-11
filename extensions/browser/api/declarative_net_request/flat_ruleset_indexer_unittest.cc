@@ -110,7 +110,7 @@ std::unique_ptr<dnr_api::URLTransform> CreateUrlTransform() {
   base::Optional<base::Value> value = base::JSONReader::Read(transform);
   CHECK(value);
 
-  base::string16 error;
+  std::u16string error;
   auto result = dnr_api::URLTransform::FromValue(*value, &error);
   CHECK(result);
   CHECK(error.empty());

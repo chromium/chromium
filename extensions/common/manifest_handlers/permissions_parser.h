@@ -28,7 +28,7 @@ class PermissionsParser {
   ~PermissionsParser();
 
   // Parse the manifest-specified permissions.
-  bool Parse(Extension* extension, base::string16* error);
+  bool Parse(Extension* extension, std::u16string* error);
 
   // Finalize the permissions, setting the related manifest data on the
   // extension.

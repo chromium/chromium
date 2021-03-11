@@ -145,7 +145,7 @@ void ApplyStyle(views::Label* label, LabelStyle style) {
 }
 
 std::unique_ptr<views::Label> CreateLabel(LabelStyle style,
-                                          const base::string16& text) {
+                                          const std::u16string& text) {
   auto label = std::make_unique<views::Label>(text);
   ApplyStyle(label.get(), style);
   return label;

@@ -338,7 +338,7 @@ static void JNI_AwWebContentsDelegate_FilesSelectedInChooser(
   }
 
   std::vector<std::string> file_path_str;
-  std::vector<base::string16> display_name_str;
+  std::vector<std::u16string> display_name_str;
   // Note file_paths maybe NULL, but this will just yield a zero-length vector.
   base::android::AppendJavaStringArrayToStringVector(env, file_paths,
                                                      &file_path_str);

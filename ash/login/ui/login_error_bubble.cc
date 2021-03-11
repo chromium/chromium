@@ -42,7 +42,7 @@ void LoginErrorBubble::SetContent(views::View* content) {
   content_ = AddChildView(content);
 }
 
-void LoginErrorBubble::SetTextContent(const base::string16& message) {
+void LoginErrorBubble::SetTextContent(const std::u16string& message) {
   message_ = message;
   SetContent(login_views_utils::CreateBubbleLabel(message, this));
 }

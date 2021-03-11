@@ -36,7 +36,7 @@ void AwContentClient::AddAdditionalSchemes(Schemes* schemes) {
   schemes->allow_non_standard_schemes_in_origins = true;
 }
 
-base::string16 AwContentClient::GetLocalizedString(int message_id) {
+std::u16string AwContentClient::GetLocalizedString(int message_id) {
   // TODO(boliu): Used only by WebKit, so only bundle those resources for
   // Android WebView.
   return l10n_util::GetStringUTF16(message_id);

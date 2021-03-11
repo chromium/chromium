@@ -1275,7 +1275,7 @@ void AppListView::MaybeCreateAccessibilityEvent(AppListViewState new_state) {
   if (!delegate_->AppListTargetVisibility())
     return;
 
-  base::string16 state_announcement;
+  std::u16string state_announcement;
 
   if (new_state == AppListViewState::kPeeking) {
     state_announcement = l10n_util::GetStringUTF16(

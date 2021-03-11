@@ -30,8 +30,8 @@ namespace quick_answers {
 class UserNoticeView : public views::View {
  public:
   UserNoticeView(const gfx::Rect& anchor_view_bounds,
-                 const base::string16& intent_type,
-                 const base::string16& intent_text,
+                 const std::u16string& intent_type,
+                 const std::u16string& intent_text,
                  QuickAnswersUiController* ui_controller);
 
   // Disallow copy and assign.
@@ -64,7 +64,7 @@ class UserNoticeView : public views::View {
   // Cached bounds of the anchor this view is tied to.
   gfx::Rect anchor_view_bounds_;
   // Cached title text.
-  base::string16 title_;
+  std::u16string title_;
 
   std::unique_ptr<QuickAnswersPreTargetHandler> event_handler_;
   QuickAnswersUiController* const ui_controller_;

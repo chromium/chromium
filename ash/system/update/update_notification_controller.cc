@@ -82,7 +82,7 @@ void UpdateNotificationController::GenerateUpdateNotification(
   std::unique_ptr<Notification> notification = CreateSystemNotification(
       message_center::NOTIFICATION_TYPE_SIMPLE, kNotificationId,
       GetNotificationTitle(), GetNotificationMessage(),
-      base::string16() /* display_source */, GURL(),
+      std::u16string() /* display_source */, GURL(),
       message_center::NotifierId(message_center::NotifierType::SYSTEM_COMPONENT,
                                  kNotifierId),
       message_center::RichNotificationData(),
@@ -123,11 +123,11 @@ bool UpdateNotificationController::ShouldShowUpdate() const {
   return model_->update_required() || model_->update_over_cellular_available();
 }
 
-base::string16 UpdateNotificationController::GetNotificationMessage() const {
+std::u16string UpdateNotificationController::GetNotificationMessage() const {
   if (model_->update_type() == UpdateType::kLacros)
     return l10n_util::GetStringUTF16(IDS_UPDATE_NOTIFICATION_MESSAGE_LACROS);
 
-  base::string16 system_app_name =
+  std::u16string system_app_name =
       l10n_util::GetStringUTF16(IDS_ASH_MESSAGE_CENTER_SYSTEM_APP_NAME);
   if (model_->rollback()) {
     return l10n_util::GetStringUTF16(IDS_UPDATE_NOTIFICATION_MESSAGE_ROLLBACK);
@@ -137,8 +137,8 @@ base::string16 UpdateNotificationController::GetNotificationMessage() const {
                                       system_app_name);
   }
 
-  const base::string16 notification_body = model_->notification_body();
-  base::string16 update_text;
+  const std::u16string notification_body = model_->notification_body();
+  std::u16string update_text;
   if (model_->update_type() == UpdateType::kSystem &&
       !notification_body.empty()) {
     update_text = notification_body;
@@ -154,11 +154,11 @@ base::string16 UpdateNotificationController::GetNotificationMessage() const {
   return update_text;
 }
 
-base::string16 UpdateNotificationController::GetNotificationTitle() const {
+std::u16string UpdateNotificationController::GetNotificationTitle() const {
   if (model_->update_type() == UpdateType::kLacros)
     return l10n_util::GetStringUTF16(IDS_UPDATE_NOTIFICATION_TITLE_LACROS);
 
-  const base::string16 notification_title = model_->notification_title();
+  const std::u16string notification_title = model_->notification_title();
   if (!notification_title.empty())
     return notification_title;
 

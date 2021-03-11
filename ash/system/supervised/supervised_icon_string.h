@@ -17,7 +17,7 @@ namespace ash {
 
 const gfx::VectorIcon& GetSupervisedUserIcon();
 
-base::string16 GetSupervisedUserMessage();
+std::u16string GetSupervisedUserMessage();
 
 }  // namespace ash
 

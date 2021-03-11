@@ -1555,7 +1555,7 @@ void AutomationInternalCustomBindings::AddRoutes() {
       [this](v8::Isolate* isolate, v8::ReturnValue<v8::Value> result,
              AutomationAXTreeWrapper* tree_wrapper, ui::AXNode* node,
              const std::string& search_str, bool backward) {
-        base::string16 search_str_16 = base::UTF8ToUTF16(search_str);
+        std::u16string search_str_16 = base::UTF8ToUTF16(search_str);
         auto next =
             backward ? &AutomationInternalCustomBindings::GetPreviousInTreeOrder
                      : &AutomationInternalCustomBindings::GetNextInTreeOrder;
@@ -1570,7 +1570,7 @@ void AutomationInternalCustomBindings::AddRoutes() {
           if (!node)
             return;
 
-          base::string16 name;
+          std::u16string name;
           if (!node->GetString16Attribute(ax::mojom::StringAttribute::kName,
                                           &name))
             continue;
@@ -2712,7 +2712,7 @@ std::vector<int> AutomationInternalCustomBindings::CalculateSentenceBoundary(
   // Create an empty vector for storing final results and deal with the node
   // without a name.
   std::vector<int> sentence_boundary;
-  base::string16 node_name =
+  std::u16string node_name =
       node->GetString16Attribute(ax::mojom::StringAttribute::kName);
   if (node_name.empty()) {
     return sentence_boundary;
@@ -2723,8 +2723,8 @@ std::vector<int> AutomationInternalCustomBindings::CalculateSentenceBoundary(
   // is the string from the beginning of the paragraph to the head of current
   // node. The |post_str| is the string from the head of current node to the end
   // of the paragraph.
-  base::string16 pre_str;
-  base::string16 post_str;
+  std::u16string pre_str;
+  std::u16string post_str;
   ui::AXNodePosition::AXPositionInstance head_pos =
       ui::AXNodePosition::CreatePosition(*node,
                                          0 /* child_index_or_text_offset */,
@@ -2753,7 +2753,7 @@ std::vector<int> AutomationInternalCustomBindings::CalculateSentenceBoundary(
   post_str = post_range.GetText();
 
   // Calculate the boundary of the |combined_str|.
-  base::string16 combined_str = pre_str + post_str;
+  std::u16string combined_str = pre_str + post_str;
   auto boundary_func = start_boundary ? &ui::GetSentenceStartOffsets
                                       : &ui::GetSentenceEndOffsets;
   std::vector<int> combined_sentence_boundary = boundary_func(combined_str);

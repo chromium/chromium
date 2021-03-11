@@ -123,7 +123,7 @@ class SettingsCheckbox : public views::Checkbox {
  public:
   METADATA_HEADER(SettingsCheckbox);
 
-  SettingsCheckbox(const base::string16& label, const base::string16& tooltip)
+  SettingsCheckbox(const std::u16string& label, const std::u16string& tooltip)
       : views::Checkbox(label, views::Button::PressedCallback()) {
     SetTooltipText(tooltip);
   }
@@ -245,7 +245,7 @@ AnimationSpeedControl::AnimationSpeedControl() {
 
   auto add_speed_point = [](AnimationSpeedControl* self, views::View* container,
                             std::vector<float>& multipliers, float multiplier,
-                            const base::string16& text) {
+                            const std::u16string& text) {
     const int kLabelBorderWidth = 3;
     views::Label* label = container->AddChildView(
         std::make_unique<views::Label>(text, views::style::CONTEXT_LABEL));
@@ -342,7 +342,7 @@ void AnimationSpeedControl::Layout() {
 
 std::unique_ptr<views::LabelButton> CreateActionButton(
     views::Button::PressedCallback::Callback callback,
-    const base::string16& text) {
+    const std::u16string& text) {
   auto button = std::make_unique<views::LabelButton>(callback, text);
   button->SetHorizontalAlignment(gfx::ALIGN_CENTER);
   button->SetEnabledTextColors(kHUDBackground);
@@ -384,7 +384,7 @@ HUDSettingsView::HUDSettingsView(HUDDisplayView* hud_display) {
 
   auto add_checkbox =
       [](HUDSettingsView* self, views::View* container,
-         const base::string16& text, const base::string16& tooltip,
+         const std::u16string& text, const std::u16string& tooltip,
          base::RepeatingCallback<void(views::Checkbox*)> callback) {
         views::Checkbox* checkbox = container->AddChildView(
             std::make_unique<SettingsCheckbox>(text, tooltip));
@@ -465,7 +465,7 @@ HUDSettingsView::HUDSettingsView(HUDDisplayView* hud_display) {
       ui_devtools_controls->AddChildView(CreateActionButton(
           base::BindRepeating(&HUDSettingsView::OnEnableUiDevToolsButtonPressed,
                               base::Unretained(this)),
-          base::string16()));
+          std::u16string()));
   UpdateDevToolsControlButtonLabel();
 }
 

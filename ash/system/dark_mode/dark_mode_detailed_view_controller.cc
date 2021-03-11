@@ -29,7 +29,7 @@ views::View* DarkModeDetailedViewController::CreateView() {
   return view_;
 }
 
-base::string16 DarkModeDetailedViewController::GetAccessibleName() const {
+std::u16string DarkModeDetailedViewController::GetAccessibleName() const {
   return l10n_util::GetStringUTF16(
       IDS_ASH_QUICK_SETTINGS_BUBBLE_DARK_THEME_SETTINGS_ACCESSIBLE_DESCRIPTION);
 }

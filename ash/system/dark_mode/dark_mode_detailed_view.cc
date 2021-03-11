@@ -24,7 +24,7 @@ namespace {
 
 class TrayRadioButton : public views::RadioButton {
  public:
-  TrayRadioButton(PressedCallback callback, const base::string16& button_label)
+  TrayRadioButton(PressedCallback callback, const std::u16string& button_label)
       : views::RadioButton(button_label) {
     SetCallback(std::move(callback));
     SetBorder(views::CreateEmptyBorder(kTrayRadioButtonPadding));

@@ -188,8 +188,8 @@ void RecordTabletVolumeAdjustTypeHistogram(TabletModeVolumeAdjustType type) {
 
 // Ensures that there are no word breaks at the "+"s in the shortcut texts such
 // as "Ctrl+Shift+Space".
-void EnsureNoWordBreaks(base::string16* shortcut_text) {
-  std::vector<base::string16> keys =
+void EnsureNoWordBreaks(std::u16string* shortcut_text) {
+  std::vector<std::u16string> keys =
       base::SplitString(*shortcut_text, base::ASCIIToUTF16("+"),
                         base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL);
 
@@ -198,7 +198,7 @@ void EnsureNoWordBreaks(base::string16* shortcut_text) {
 
   // The plus sign surrounded by the word joiner to guarantee an non-breaking
   // shortcut.
-  const base::string16 non_breaking_plus =
+  const std::u16string non_breaking_plus =
       base::UTF8ToUTF16("\xe2\x81\xa0+\xe2\x81\xa0");
   shortcut_text->clear();
   for (size_t i = 0; i < keys.size() - 1; ++i) {
@@ -211,11 +211,11 @@ void EnsureNoWordBreaks(base::string16* shortcut_text) {
 
 // Gets the notification message after it formats it in such a way that there
 // are no line breaks in the middle of the shortcut texts.
-base::string16 GetNotificationText(int message_id,
+std::u16string GetNotificationText(int message_id,
                                    int old_shortcut_id,
                                    int new_shortcut_id) {
-  base::string16 old_shortcut = l10n_util::GetStringUTF16(old_shortcut_id);
-  base::string16 new_shortcut = l10n_util::GetStringUTF16(new_shortcut_id);
+  std::u16string old_shortcut = l10n_util::GetStringUTF16(old_shortcut_id);
+  std::u16string new_shortcut = l10n_util::GetStringUTF16(new_shortcut_id);
   EnsureNoWordBreaks(&old_shortcut);
   EnsureNoWordBreaks(&new_shortcut);
 
@@ -227,7 +227,7 @@ void ShowDeprecatedAcceleratorNotification(const char* const notification_id,
                                            int message_id,
                                            int old_shortcut_id,
                                            int new_shortcut_id) {
-  const base::string16 message =
+  const std::u16string message =
       GetNotificationText(message_id, old_shortcut_id, new_shortcut_id);
   auto delegate =
       base::MakeRefCounted<message_center::HandleNotificationClickDelegate>(
@@ -239,7 +239,7 @@ void ShowDeprecatedAcceleratorNotification(const char* const notification_id,
   std::unique_ptr<Notification> notification = ash::CreateSystemNotification(
       message_center::NOTIFICATION_TYPE_SIMPLE, notification_id,
       l10n_util::GetStringUTF16(IDS_DEPRECATED_SHORTCUT_TITLE), message,
-      base::string16(), GURL(),
+      std::u16string(), GURL(),
       message_center::NotifierId(message_center::NotifierType::SYSTEM_COMPONENT,
                                  kNotifierAccelerator),
       message_center::RichNotificationData(), std::move(delegate),
@@ -248,7 +248,7 @@ void ShowDeprecatedAcceleratorNotification(const char* const notification_id,
       std::move(notification));
 }
 
-void ShowToast(std::string id, const base::string16& text) {
+void ShowToast(std::string id, const std::u16string& text) {
   ToastData toast(id, text, kToastDurationMs, base::nullopt,
                   /*visible_on_lock_screen=*/true);
   Shell::Get()->toast_manager()->Show(toast);
@@ -1255,13 +1255,13 @@ bool CanHandleToggleOverview() {
   return true;
 }
 
-void CreateAndShowStickyNotification(const base::string16& title,
-                                     const base::string16& message,
+void CreateAndShowStickyNotification(const std::u16string& title,
+                                     const std::u16string& message,
                                      const std::string& notification_id,
                                      const gfx::VectorIcon& icon) {
   std::unique_ptr<Notification> notification = ash::CreateSystemNotification(
       message_center::NOTIFICATION_TYPE_SIMPLE, notification_id, title, message,
-      base::string16() /* display source */, GURL(),
+      std::u16string() /* display source */, GURL(),
       message_center::NotifierId(message_center::NotifierType::SYSTEM_COMPONENT,
                                  kNotifierAccelerator),
       message_center::RichNotificationData(), nullptr, icon,
@@ -1285,7 +1285,7 @@ void NotifyAccessibilityFeatureDisabledByAdmin(
     int feature_name_id,
     bool feature_state,
     const std::string& notification_id) {
-  const base::string16 organization_manager =
+  const std::u16string organization_manager =
       base::UTF8ToUTF16(Shell::Get()
                             ->system_tray_model()
                             ->enterprise_domain()

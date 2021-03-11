@@ -280,7 +280,7 @@ LoginScreenModel* LoginScreenController::GetModel() {
 void LoginScreenController::ShowKioskAppError(const std::string& message) {
   ToastData toast_data(
       "KioskAppError", base::UTF8ToUTF16(message), -1 /*duration_ms*/,
-      base::Optional<base::string16>(base::string16()) /*dismiss_text*/,
+      base::Optional<std::u16string>(std::u16string()) /*dismiss_text*/,
       true /*visible_on_lock_screen*/);
   Shell::Get()->toast_manager()->Show(toast_data);
 }
@@ -371,7 +371,7 @@ void LoginScreenController::ClearSecurityTokenPinRequest() {
   security_token_request_controller_.ClosePinUi();
 }
 bool LoginScreenController::SetLoginShelfGestureHandler(
-    const base::string16& nudge_text,
+    const std::u16string& nudge_text,
     const base::RepeatingClosure& fling_callback,
     base::OnceClosure exit_callback) {
   return Shelf::ForWindow(Shell::Get()->GetPrimaryRootWindow())

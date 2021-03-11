@@ -854,7 +854,7 @@ TEST_F(AssistantPageViewTest, RememberAndShowHistory) {
 }
 
 TEST_F(AssistantPageViewTest, ShouldNotClearQueryWhenSwitchingToTabletMode) {
-  const base::string16 query_text = base::UTF8ToUTF16("unsubmitted query");
+  const std::u16string query_text = base::UTF8ToUTF16("unsubmitted query");
   ShowAssistantUiInTextMode();
   input_text_field()->SetText(query_text);
 

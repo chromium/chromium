@@ -62,17 +62,17 @@ class ASH_EXPORT ScreenLayoutObserver : public WindowTreeHostManager::Observer {
   bool GetDisplayMessageForNotification(
       const DisplayInfoMap& old_info,
       bool should_notify_has_unassociated_display,
-      base::string16* out_message,
-      base::string16* out_additional_message);
+      std::u16string* out_message,
+      std::u16string* out_additional_message);
 
   // Creates or updates the display notification.
-  void CreateOrUpdateNotification(const base::string16& message,
-                                  const base::string16& additional_message);
+  void CreateOrUpdateNotification(const std::u16string& message,
+                                  const std::u16string& additional_message);
 
   // Returns the notification message that should be shown when mirror display
   // mode is exited.
-  bool GetExitMirrorModeMessage(base::string16* out_message,
-                                base::string16* out_additional_message);
+  bool GetExitMirrorModeMessage(std::u16string* out_message,
+                                std::u16string* out_additional_message);
 
   DisplayInfoMap display_info_;
 

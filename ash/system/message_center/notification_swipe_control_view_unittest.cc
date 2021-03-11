@@ -75,7 +75,7 @@ class NotificationSwipeControlViewTest : public testing::Test {
     message_center::Notification notification(
         message_center::NOTIFICATION_TYPE_SIMPLE, "id",
         base::UTF8ToUTF16("title"), base::UTF8ToUTF16("id"), gfx::Image(),
-        base::string16(), GURL(),
+        std::u16string(), GURL(),
         message_center::NotifierId(message_center::NotifierType::APPLICATION,
                                    "notifier_id"),
         rich_data, nullptr);

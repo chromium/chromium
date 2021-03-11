@@ -247,7 +247,7 @@ void DeskMiniView::OnDeskDestroyed(const Desk* desk) {
   // No need to remove `this` as an observer; it's done automatically.
 }
 
-void DeskMiniView::OnDeskNameChanged(const base::string16& new_name) {
+void DeskMiniView::OnDeskNameChanged(const std::u16string& new_name) {
   if (is_desk_name_being_modified_)
     return;
 
@@ -298,19 +298,19 @@ void DeskMiniView::OnViewUnhighlighted() {
 }
 
 void DeskMiniView::ContentsChanged(views::Textfield* sender,
-                                   const base::string16& new_contents) {
+                                   const std::u16string& new_contents) {
   DCHECK_EQ(sender, desk_name_view_);
   DCHECK(is_desk_name_being_modified_);
   if (!desk_)
     return;
 
   // Avoid copying new_contents if we don't need to trim it below.
-  const base::string16* new_text = &new_contents;
+  const std::u16string* new_text = &new_contents;
 
   // To avoid potential security and memory issues, we don't allow desk names to
   // have an unbounded length. Therefore we trim if needed at kMaxLength UTF-16
   // boundary. Note that we don't care about code point boundaries in this case.
-  base::string16 trimmed_new_contents;
+  std::u16string trimmed_new_contents;
   if (new_contents.size() > DeskNameView::kMaxLength) {
     trimmed_new_contents = new_contents;
     trimmed_new_contents.resize(DeskNameView::kMaxLength);

@@ -8,7 +8,7 @@
 
 std::string output_std_string;
 std::wstring output_std_wstring;
-base::string16 output_string16;
+std::u16string output_string16;
 
 // Entry point for LibFuzzer.
 extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {

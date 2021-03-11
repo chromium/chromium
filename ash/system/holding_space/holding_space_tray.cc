@@ -202,7 +202,7 @@ void HoldingSpaceTray::ClickedOutsideBubble() {
   CloseBubble();
 }
 
-base::string16 HoldingSpaceTray::GetAccessibleNameForTray() {
+std::u16string HoldingSpaceTray::GetAccessibleNameForTray() {
   return l10n_util::GetStringUTF16(IDS_ASH_HOLDING_SPACE_A11Y_NAME);
 }
 
@@ -212,7 +212,7 @@ views::View* HoldingSpaceTray::GetTooltipHandlerForPoint(
   return HitTestPoint(point) ? this : nullptr;
 }
 
-base::string16 HoldingSpaceTray::GetTooltipText(const gfx::Point& point) const {
+std::u16string HoldingSpaceTray::GetTooltipText(const gfx::Point& point) const {
   return l10n_util::GetStringUTF16(IDS_ASH_HOLDING_SPACE_TITLE);
 }
 
@@ -379,7 +379,7 @@ void HoldingSpaceTray::UpdateVisibility() {
                       ModelContainsFinalizedItems(model));
 }
 
-base::string16 HoldingSpaceTray::GetAccessibleNameForBubble() {
+std::u16string HoldingSpaceTray::GetAccessibleNameForBubble() {
   return GetAccessibleNameForTray();
 }
 

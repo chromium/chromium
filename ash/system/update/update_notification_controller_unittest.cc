@@ -352,7 +352,7 @@ TEST_F(UpdateNotificationControllerTest, SetUpdateNotificationStateTest) {
 
   // Simulate notification type set back to default.
   Shell::Get()->system_tray_model()->SetUpdateNotificationState(
-      NotificationStyle::kDefault, base::string16(), base::string16());
+      NotificationStyle::kDefault, std::u16string(), std::u16string());
 
   // Showing Update Notification posts a task to check for slow boot request
   // and use the result of that check to generate appropriate notification. Wait

@@ -303,7 +303,7 @@ void TouchHudDebug::Clear() {
   if (widget()->IsVisible()) {
     canvas_->Clear();
     for (int i = 0; i < kMaxTouchPoints; ++i)
-      touch_labels_[i]->SetText(base::string16());
+      touch_labels_[i]->SetText(std::u16string());
     label_container_->SetSize(label_container_->GetPreferredSize());
   }
 }

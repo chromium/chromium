@@ -40,7 +40,7 @@ class ASH_EXPORT NotificationIconTrayItemView : public TrayItemView {
   void Reset();
 
   // Returns a string describing the current state for accessibility.
-  const base::string16& GetAccessibleNameString() const;
+  const std::u16string& GetAccessibleNameString() const;
 
   const std::string& GetNotificationId() const;
 
@@ -82,7 +82,7 @@ class ASH_EXPORT NotificationIconsController
   bool ShouldShowNotificationItemsInTray();
 
   // Returns a string describing the current state for accessibility.
-  base::string16 GetAccessibleNameString() const;
+  std::u16string GetAccessibleNameString() const;
 
   // Update notification indicators, including counters and quiet mode view.
   void UpdateNotificationIndicators();

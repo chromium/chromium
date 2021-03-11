@@ -24,7 +24,7 @@ namespace {
 // Number of digits displayed in parent access code input.
 constexpr int kParentAccessCodePinLength = 6;
 
-base::string16 GetTitle(SupervisedAction action) {
+std::u16string GetTitle(SupervisedAction action) {
   int title_id;
   switch (action) {
     case SupervisedAction::kUnlockTimeLimits:
@@ -44,7 +44,7 @@ base::string16 GetTitle(SupervisedAction action) {
   return l10n_util::GetStringUTF16(title_id);
 }
 
-base::string16 GetDescription(SupervisedAction action) {
+std::u16string GetDescription(SupervisedAction action) {
   int description_id;
   switch (action) {
     case SupervisedAction::kUnlockTimeLimits:
@@ -64,7 +64,7 @@ base::string16 GetDescription(SupervisedAction action) {
   return l10n_util::GetStringUTF16(description_id);
 }
 
-base::string16 GetAccessibleTitle() {
+std::u16string GetAccessibleTitle() {
   return l10n_util::GetStringUTF16(IDS_ASH_LOGIN_PARENT_ACCESS_DIALOG_NAME);
 }
 

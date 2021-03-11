@@ -19,7 +19,7 @@ namespace {
 
 class ErrorBuilder {
  public:
-  explicit ErrorBuilder(base::string16* error) : error_(error) {}
+  explicit ErrorBuilder(std::u16string* error) : error_(error) {}
 
   // Appends a literal string |error|.
   void Append(base::StringPiece error) {
@@ -34,7 +34,7 @@ class ErrorBuilder {
   }
 
  private:
-  base::string16* const error_;
+  std::u16string* const error_;
   DISALLOW_COPY_AND_ASSIGN(ErrorBuilder);
 };
 
@@ -87,7 +87,7 @@ DeclarativeManifestData* DeclarativeManifestData::Get(
 // static
 std::unique_ptr<DeclarativeManifestData> DeclarativeManifestData::FromValue(
     const base::Value& value,
-    base::string16* error) {
+    std::u16string* error) {
   //  The following is an example of how an event programmatic rule definition
   //  translates to a manifest definition.
   //

@@ -75,7 +75,7 @@ void DeskNameView::CommitChanges(views::Widget* widget) {
   focus_manager->SetStoredFocusView(nullptr);
 }
 
-void DeskNameView::SetTextAndElideIfNeeded(const base::string16& text) {
+void DeskNameView::SetTextAndElideIfNeeded(const std::u16string& text) {
   // Use the potential max size of this to calculate elision, not its current
   // size to avoid eliding names that don't need to be.
   SetText(

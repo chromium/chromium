@@ -25,12 +25,12 @@ struct ASH_PUBLIC_EXPORT ImeInfo {
   std::string id;
 
   // Long name of the IME, which is used as the user-visible name.
-  base::string16 name;
+  std::u16string name;
 
   // UI indicator for the IME (e.g., "US"). If the IME has no indicator, uses
   // the first two characters in its preferred keyboard layout or language code
   // (e.g., "ko", "ja", "en-US").
-  base::string16 short_name;
+  std::u16string short_name;
 };
 
 // A menu item that sets an IME configuration property.
@@ -47,7 +47,7 @@ struct ASH_PUBLIC_EXPORT ImeMenuItem {
   std::string key;
 
   // The item label, e.g. "Switch to full punctuation mode" or "Hiragana".
-  base::string16 label;
+  std::u16string label;
 };
 
 }  // namespace ash

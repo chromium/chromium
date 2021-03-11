@@ -55,7 +55,7 @@ SandboxedPageHandler::SandboxedPageHandler() {
 SandboxedPageHandler::~SandboxedPageHandler() {
 }
 
-bool SandboxedPageHandler::Parse(Extension* extension, base::string16* error) {
+bool SandboxedPageHandler::Parse(Extension* extension, std::u16string* error) {
   std::unique_ptr<SandboxedPageInfo> sandboxed_info(new SandboxedPageInfo);
 
   const base::Value* list_value = nullptr;

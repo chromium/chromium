@@ -24,7 +24,7 @@ class MockVirtualKeyboardDelegate : public VirtualKeyboardDelegate {
       OnKeyboardSettingsCallback on_settings_callback) override {}
   void OnKeyboardConfigChanged() override {}
   bool HideKeyboard() override { return false; }
-  bool InsertText(const base::string16& text) override { return false; }
+  bool InsertText(const std::u16string& text) override { return false; }
   bool OnKeyboardLoaded() override { return false; }
   void SetHotrodKeyboard(bool enable) override {}
   bool LockKeyboard(bool state) override { return false; }

@@ -101,7 +101,7 @@ SkColor GetBackgroundColor() {
 UnifiedMediaControlsView::MediaActionButton::MediaActionButton(
     UnifiedMediaControlsController* controller,
     MediaSessionAction action,
-    const base::string16& accessible_name)
+    const std::u16string& accessible_name)
     : views::ImageButton(base::BindRepeating(
           // Handle dynamically-updated button tags without rebinding.
           [](UnifiedMediaControlsController* controller,
@@ -123,7 +123,7 @@ UnifiedMediaControlsView::MediaActionButton::MediaActionButton(
 
 void UnifiedMediaControlsView::MediaActionButton::SetAction(
     MediaSessionAction action,
-    const base::string16& accessible_name) {
+    const std::u16string& accessible_name) {
   action_ = action;
   set_tag(static_cast<int>(action));
   SetTooltipText(accessible_name);
@@ -275,7 +275,7 @@ void UnifiedMediaControlsView::SetArtwork(
   artwork_view_->SetClipPath(GetArtworkClipPath());
 }
 
-void UnifiedMediaControlsView::SetTitle(const base::string16& title) {
+void UnifiedMediaControlsView::SetTitle(const std::u16string& title) {
   if (title_label_->GetText() == title)
     return;
 
@@ -285,7 +285,7 @@ void UnifiedMediaControlsView::SetTitle(const base::string16& title) {
       title));
 }
 
-void UnifiedMediaControlsView::SetArtist(const base::string16& artist) {
+void UnifiedMediaControlsView::SetArtist(const std::u16string& artist) {
   artist_label_->SetText(artist);
 
   if (artist_label_->GetVisible() != artist.empty())

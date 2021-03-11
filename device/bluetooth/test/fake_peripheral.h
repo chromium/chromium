@@ -81,7 +81,7 @@ class FakePeripheral : public device::BluetoothDevice {
   uint16_t GetDeviceID() const override;
   uint16_t GetAppearance() const override;
   base::Optional<std::string> GetName() const override;
-  base::string16 GetNameForDisplay() const override;
+  std::u16string GetNameForDisplay() const override;
   bool IsPaired() const override;
   bool IsConnected() const override;
   bool IsGattConnected() const override;

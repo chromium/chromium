@@ -328,7 +328,7 @@ class LoginPasswordView::EasyUnlockIcon : public views::ImageButton {
   }
 
   void SetEasyUnlockIcon(EasyUnlockIconId icon_id,
-                         const base::string16& accessibility_label) {
+                         const std::u16string& accessibility_label) {
     icon_id_ = icon_id;
     UpdateImage(icon_id);
     SetAccessibleName(accessibility_label);
@@ -695,7 +695,7 @@ void LoginPasswordView::SetEnabledOnEmptyPassword(bool enabled) {
 
 void LoginPasswordView::SetEasyUnlockIcon(
     EasyUnlockIconId id,
-    const base::string16& accessibility_label) {
+    const std::u16string& accessibility_label) {
   // Update icon.
   easy_unlock_icon_->SetEasyUnlockIcon(id, accessibility_label);
 
@@ -709,7 +709,7 @@ void LoginPasswordView::SetEasyUnlockIcon(
   HandleLeftIconsVisibilities(false /*handling_capslock*/);
 }
 
-void LoginPasswordView::SetAccessibleName(const base::string16& name) {
+void LoginPasswordView::SetAccessibleName(const std::u16string& name) {
   textfield_->SetAccessibleName(name);
 }
 
@@ -738,7 +738,7 @@ void LoginPasswordView::Reset() {
 }
 
 void LoginPasswordView::Clear() {
-  textfield_->SetText(base::string16());
+  textfield_->SetText(std::u16string());
   // For security reasons, we also want to clear the edit history if the Clear
   // function is invoked by the clear password timer.
   textfield_->ClearEditHistory();
@@ -771,7 +771,7 @@ void LoginPasswordView::Backspace() {
 }
 
 void LoginPasswordView::SetPlaceholderText(
-    const base::string16& placeholder_text) {
+    const std::u16string& placeholder_text) {
   textfield_->SetPlaceholderText(placeholder_text);
 }
 
@@ -825,7 +825,7 @@ void LoginPasswordView::HidePassword(bool chromevox_exception) {
 }
 
 void LoginPasswordView::ContentsChanged(views::Textfield* sender,
-                                        const base::string16& new_contents) {
+                                        const std::u16string& new_contents) {
   DCHECK_EQ(sender, textfield_);
   UpdateUiState();
   textfield_->UpdateFontListAndCursor();

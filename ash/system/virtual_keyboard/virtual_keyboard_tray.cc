@@ -54,7 +54,7 @@ void VirtualKeyboardTray::Initialize() {
       Shell::Get()->accessibility_controller()->virtual_keyboard().enabled());
 }
 
-base::string16 VirtualKeyboardTray::GetAccessibleNameForTray() {
+std::u16string VirtualKeyboardTray::GetAccessibleNameForTray() {
   return l10n_util::GetStringUTF16(
       IDS_ASH_VIRTUAL_KEYBOARD_TRAY_ACCESSIBLE_NAME);
 }

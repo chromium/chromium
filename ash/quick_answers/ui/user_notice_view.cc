@@ -88,7 +88,7 @@ bool ShouldUseCompactButtonLayout(int anchor_view_width) {
 }
 
 // Create and return a simple label with provided specs.
-std::unique_ptr<views::Label> CreateLabel(const base::string16& text,
+std::unique_ptr<views::Label> CreateLabel(const std::u16string& text,
                                           const SkColor color,
                                           int font_size_delta) {
   auto label = std::make_unique<views::Label>(text);
@@ -106,7 +106,7 @@ std::unique_ptr<views::Label> CreateLabel(const base::string16& text,
 class CustomizedLabelButton : public views::MdTextButton {
  public:
   CustomizedLabelButton(PressedCallback callback,
-                        const base::string16& text,
+                        const std::u16string& text,
                         const SkColor color,
                         bool is_compact)
       : MdTextButton(std::move(callback), text) {
@@ -136,8 +136,8 @@ class CustomizedLabelButton : public views::MdTextButton {
 // -------------------------------------------------------------
 
 UserNoticeView::UserNoticeView(const gfx::Rect& anchor_view_bounds,
-                               const base::string16& intent_type,
-                               const base::string16& intent_text,
+                               const std::u16string& intent_type,
+                               const std::u16string& intent_text,
                                QuickAnswersUiController* ui_controller)
     : anchor_view_bounds_(anchor_view_bounds),
       event_handler_(std::make_unique<QuickAnswersPreTargetHandler>(this)),

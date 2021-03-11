@@ -867,27 +867,27 @@ TEST_F(LoggingTest, String16) {
   // Basic stream test.
   {
     std::ostringstream stream;
-    stream << "Empty '" << base::string16() << "' standard '"
-           << base::string16(base::ASCIIToUTF16("Hello, world")) << "'";
+    stream << "Empty '" << std::u16string() << "' standard '"
+           << std::u16string(base::ASCIIToUTF16("Hello, world")) << "'";
     EXPECT_STREQ("Empty '' standard 'Hello, world'", stream.str().c_str());
   }
 
   // Interesting edge cases.
   {
     // These should each get converted to the invalid character: EF BF BD.
-    base::string16 initial_surrogate;
+    std::u16string initial_surrogate;
     initial_surrogate.push_back(0xd800);
-    base::string16 final_surrogate;
+    std::u16string final_surrogate;
     final_surrogate.push_back(0xdc00);
 
     // Old italic A = U+10300, will get converted to: F0 90 8C 80 'z'.
-    base::string16 surrogate_pair;
+    std::u16string surrogate_pair;
     surrogate_pair.push_back(0xd800);
     surrogate_pair.push_back(0xdf00);
     surrogate_pair.push_back('z');
 
     // Will get converted to the invalid char + 's': EF BF BD 's'.
-    base::string16 unterminated_surrogate;
+    std::u16string unterminated_surrogate;
     unterminated_surrogate.push_back(0xd800);
     unterminated_surrogate.push_back('s');
 

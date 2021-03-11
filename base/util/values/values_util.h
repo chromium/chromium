@@ -43,7 +43,7 @@ base::Value TimeToValue(base::Time time);
 base::Optional<base::Time> ValueToTime(const base::Value* value);
 base::Optional<base::Time> ValueToTime(const base::Value& value);
 
-// Converts between a base::FilePath (a std::string or base::string16) and a
+// Converts between a base::FilePath (a std::string or std::u16string) and a
 // string-flavored base::Value (the UTF-8 representation).
 base::Value FilePathToValue(base::FilePath file_path);
 base::Optional<base::FilePath> ValueToFilePath(const base::Value* value);

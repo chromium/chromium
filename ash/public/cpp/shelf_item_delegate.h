@@ -66,7 +66,7 @@ class ASH_PUBLIC_EXPORT ShelfItemDelegate {
     // called when this item is selected from the menu.
     int command_id;
     // The title and icon shown for this item in the app menu.
-    base::string16 title;
+    std::u16string title;
     gfx::ImageSkia icon;
   };
   using AppMenuItems = std::vector<AppMenuItem>;

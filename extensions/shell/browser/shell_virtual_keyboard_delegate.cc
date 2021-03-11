@@ -29,7 +29,7 @@ bool ShellVirtualKeyboardDelegate::HideKeyboard() {
   return false;
 }
 
-bool ShellVirtualKeyboardDelegate::InsertText(const base::string16& text) {
+bool ShellVirtualKeyboardDelegate::InsertText(const std::u16string& text) {
   return false;
 }
 

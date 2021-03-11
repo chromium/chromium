@@ -70,7 +70,7 @@ class DOMActivityLogger: public blink::WebDOMActivityLogger {
   // Helper function to actually send the message across IPC.
   void SendDomActionMessage(const std::string& api_call,
                             const GURL& url,
-                            const base::string16& url_title,
+                            const std::u16string& url_title,
                             DomActionType::Type call_type,
                             std::unique_ptr<base::ListValue> args);
 

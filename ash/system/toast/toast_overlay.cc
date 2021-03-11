@@ -72,7 +72,7 @@ void AdjustWorkAreaBoundsForHotseatState(gfx::Rect& bounds,
 //  ToastOverlayLabel
 class ToastOverlayLabel : public views::Label {
  public:
-  explicit ToastOverlayLabel(const base::string16& label)
+  explicit ToastOverlayLabel(const std::u16string& label)
       : Label(label, CONTEXT_TOAST_OVERLAY) {
     SetHorizontalAlignment(gfx::ALIGN_LEFT);
     SetAutoColorReadabilityEnabled(false);
@@ -127,7 +127,7 @@ class ToastOverlay::ToastDisplayObserver : public display::DisplayObserver {
 //  ToastOverlayButton
 class ToastOverlayButton : public views::LabelButton {
  public:
-  ToastOverlayButton(PressedCallback callback, const base::string16& text)
+  ToastOverlayButton(PressedCallback callback, const std::u16string& text)
       : views::LabelButton(std::move(callback), text, CONTEXT_TOAST_OVERLAY) {
     SetInkDropMode(InkDropMode::ON);
     SetHasInkDropActionOnClick(true);
@@ -174,8 +174,8 @@ class ToastOverlayView : public views::View {
  public:
   // This object is not owned by the views hierarchy or by the widget.
   ToastOverlayView(ToastOverlay* overlay,
-                   const base::string16& text,
-                   const base::Optional<base::string16>& dismiss_text,
+                   const std::u16string& text,
+                   const base::Optional<std::u16string>& dismiss_text,
                    const bool is_managed) {
     SetPaintToLayer();
     layer()->SetFillsBoundsOpaquely(false);
@@ -258,8 +258,8 @@ class ToastOverlayView : public views::View {
 ///////////////////////////////////////////////////////////////////////////////
 //  ToastOverlay
 ToastOverlay::ToastOverlay(Delegate* delegate,
-                           const base::string16& text,
-                           base::Optional<base::string16> dismiss_text,
+                           const std::u16string& text,
+                           base::Optional<std::u16string> dismiss_text,
                            bool show_on_lock_screen,
                            bool is_managed)
     : delegate_(delegate),

@@ -37,7 +37,7 @@ api::declarative_net_request::Rule GetAPIRule(const TestRule& rule) {
   std::unique_ptr<base::DictionaryValue> value = rule.ToValue();
   EXPECT_TRUE(value);
   api::declarative_net_request::Rule result;
-  base::string16 error;
+  std::u16string error;
   EXPECT_TRUE(
       api::declarative_net_request::Rule::Populate(*value, &result, &error))
       << error;

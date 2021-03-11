@@ -18,7 +18,7 @@ namespace ash {
 
 TopIconAnimationView::TopIconAnimationView(AppsGridView* grid,
                                            const gfx::ImageSkia& icon,
-                                           const base::string16& title,
+                                           const std::u16string& title,
                                            const gfx::Rect& scaled_rect,
                                            bool open_folder,
                                            bool item_in_folder_icon)

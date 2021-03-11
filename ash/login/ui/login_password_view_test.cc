@@ -54,7 +54,7 @@ class LoginPasswordViewTest : public LoginTestBase {
     SetWidget(CreateWidgetWithContent(view_));
   }
 
-  void OnPasswordSubmit(const base::string16& password) {
+  void OnPasswordSubmit(const std::u16string& password) {
     password_ = password;
   }
   void OnPasswordTextChanged(bool is_empty) {
@@ -76,7 +76,7 @@ class LoginPasswordViewTest : public LoginTestBase {
   }
 
   LoginPasswordView* view_ = nullptr;
-  base::Optional<base::string16> password_;
+  base::Optional<std::u16string> password_;
   bool is_password_field_empty_ = true;
   bool easy_unlock_icon_hovered_called_ = false;
   bool easy_unlock_icon_tapped_called_ = false;
@@ -257,7 +257,7 @@ TEST_F(LoginPasswordViewTest, EasyUnlockClickFiresEvent) {
 
   // Enable icon.
   view_->SetEasyUnlockIcon(EasyUnlockIconId::SPINNER,
-                           base::string16() /*accessibility_label*/);
+                           std::u16string() /*accessibility_label*/);
   ASSERT_TRUE(test_api.easy_unlock_icon()->GetVisible());
 
   // Click to the right of the icon, call is not generated.
@@ -289,7 +289,7 @@ TEST_F(LoginPasswordViewTest, EasyUnlockMouseHover) {
 
   // Enable icon, enable immediate hovering.
   view_->SetEasyUnlockIcon(EasyUnlockIconId::SPINNER,
-                           base::string16() /*accessibility_label*/);
+                           std::u16string() /*accessibility_label*/);
   test_api.set_immediately_hover_easy_unlock_icon();
   ASSERT_TRUE(test_api.easy_unlock_icon()->GetVisible());
 
@@ -329,7 +329,7 @@ TEST_F(LoginPasswordViewTest, DISABLED_SwitchBetweenEasyUnlockAndCapsLock) {
 
   // Show the easy unlock icon.
   view_->SetEasyUnlockIcon(EasyUnlockIconId::SPINNER,
-                           base::string16() /*accessibility_label*/);
+                           std::u16string() /*accessibility_label*/);
   // The easy unlock icon should be visible.
   EXPECT_TRUE(test_api.easy_unlock_icon()->GetVisible());
   EXPECT_FALSE(test_api.capslock_icon()->GetVisible());
@@ -360,7 +360,7 @@ TEST_F(LoginPasswordViewTest, DISABLED_SwitchBetweenEasyUnlockAndCapsLock) {
 
   // Hide the easy unlock icon.
   view_->SetEasyUnlockIcon(EasyUnlockIconId::NONE,
-                           base::string16() /*accessibility_label*/);
+                           std::u16string() /*accessibility_label*/);
   // Nothing should be displayed.
   EXPECT_FALSE(test_api.easy_unlock_icon()->GetVisible());
   EXPECT_FALSE(test_api.capslock_icon()->GetVisible());
@@ -372,13 +372,13 @@ TEST_F(LoginPasswordViewTest, DISABLED_SwitchBetweenEasyUnlockAndCapsLock) {
 
   // Then trigger the easy unlock icon, it should be displayed immediately.
   view_->SetEasyUnlockIcon(EasyUnlockIconId::SPINNER,
-                           base::string16() /*accessibility_label*/);
+                           std::u16string() /*accessibility_label*/);
   EXPECT_TRUE(test_api.easy_unlock_icon()->GetVisible());
   EXPECT_FALSE(test_api.capslock_icon()->GetVisible());
 
   // Hide the easy unlock icon, the capslock icon should be shown.
   view_->SetEasyUnlockIcon(EasyUnlockIconId::NONE,
-                           base::string16() /*accessibility_label*/);
+                           std::u16string() /*accessibility_label*/);
   EXPECT_FALSE(test_api.easy_unlock_icon()->GetVisible());
   EXPECT_TRUE(test_api.capslock_icon()->GetVisible());
 }

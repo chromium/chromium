@@ -58,7 +58,7 @@ void LoginDataDispatcher::Observer::OnShowEasyUnlockIcon(
     const EasyUnlockIconOptions& icon) {}
 
 void LoginDataDispatcher::Observer::OnWarningMessageUpdated(
-    const base::string16& message) {}
+    const std::u16string& message) {}
 
 void LoginDataDispatcher::Observer::OnSystemInfoChanged(
     bool show,
@@ -189,7 +189,7 @@ void LoginDataDispatcher::ShowEasyUnlockIcon(
     observer.OnShowEasyUnlockIcon(user, icon);
 }
 
-void LoginDataDispatcher::UpdateWarningMessage(const base::string16& message) {
+void LoginDataDispatcher::UpdateWarningMessage(const std::u16string& message) {
   for (auto& observer : observers_)
     observer.OnWarningMessageUpdated(message);
 }

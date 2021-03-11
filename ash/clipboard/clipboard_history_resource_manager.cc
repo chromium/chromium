@@ -86,21 +86,21 @@ class UnrenderedHTMLPlaceholderImage : public gfx::CanvasImageSource {
 // Helpers ---------------------------------------------------------------------
 
 // Returns the localized string for the specified |resource_id|.
-base::string16 GetLocalizedString(int resource_id) {
+std::u16string GetLocalizedString(int resource_id) {
   return ui::ResourceBundle::GetSharedInstance().GetLocalizedString(
       resource_id);
 }
 
 // Returns the label to display for the custom data contained within |data|.
-base::string16 GetLabelForCustomData(const ui::ClipboardData& data) {
+std::u16string GetLabelForCustomData(const ui::ClipboardData& data) {
   // Currently the only supported type of custom data is file system data. This
   // code should not be reached if `data` does not contain file system data.
-  base::string16 sources;
+  std::u16string sources;
   std::vector<base::StringPiece16> source_list;
   ClipboardHistoryUtil::GetSplitFileSystemData(data, &source_list, &sources);
   if (sources.empty()) {
     NOTREACHED();
-    return base::string16();
+    return std::u16string();
   }
 
   // Strip path information, so all that's left are file names.
@@ -149,7 +149,7 @@ ui::ImageModel ClipboardHistoryResourceManager::GetImageModel(
   return cached_image_model->image_model;
 }
 
-base::string16 ClipboardHistoryResourceManager::GetLabel(
+std::u16string ClipboardHistoryResourceManager::GetLabel(
     const ClipboardHistoryItem& item) const {
   const ui::ClipboardData& data = item.data();
   switch (ClipboardHistoryUtil::CalculateMainFormat(data).value()) {

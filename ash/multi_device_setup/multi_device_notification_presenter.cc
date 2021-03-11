@@ -94,9 +94,9 @@ MultiDeviceNotificationPresenter::~MultiDeviceNotificationPresenter() {
 }
 
 void MultiDeviceNotificationPresenter::OnPotentialHostExistsForNewUser() {
-  base::string16 title = l10n_util::GetStringUTF16(
+  std::u16string title = l10n_util::GetStringUTF16(
       IDS_ASH_MULTI_DEVICE_SETUP_NEW_USER_POTENTIAL_HOST_EXISTS_TITLE);
-  base::string16 message = l10n_util::GetStringFUTF16(
+  std::u16string message = l10n_util::GetStringFUTF16(
       IDS_ASH_MULTI_DEVICE_SETUP_NEW_USER_POTENTIAL_HOST_EXISTS_MESSAGE,
       ui::GetChromeOSDeviceName());
   ShowSetupNotification(Status::kNewUserNotificationVisible, title, message);
@@ -110,10 +110,10 @@ void MultiDeviceNotificationPresenter::OnNoLongerNewUser() {
 
 void MultiDeviceNotificationPresenter::OnConnectedHostSwitchedForExistingUser(
     const std::string& new_host_device_name) {
-  base::string16 title = l10n_util::GetStringFUTF16(
+  std::u16string title = l10n_util::GetStringFUTF16(
       IDS_ASH_MULTI_DEVICE_SETUP_EXISTING_USER_HOST_SWITCHED_TITLE,
       base::ASCIIToUTF16(new_host_device_name));
-  base::string16 message = l10n_util::GetStringFUTF16(
+  std::u16string message = l10n_util::GetStringFUTF16(
       IDS_ASH_MULTI_DEVICE_SETUP_EXISTING_USER_HOST_SWITCHED_MESSAGE,
       ui::GetChromeOSDeviceName());
   ShowSetupNotification(Status::kExistingUserHostSwitchedNotificationVisible,
@@ -122,10 +122,10 @@ void MultiDeviceNotificationPresenter::OnConnectedHostSwitchedForExistingUser(
 
 void MultiDeviceNotificationPresenter::OnNewChromebookAddedForExistingUser(
     const std::string& new_host_device_name) {
-  base::string16 title = l10n_util::GetStringFUTF16(
+  std::u16string title = l10n_util::GetStringFUTF16(
       IDS_ASH_MULTI_DEVICE_SETUP_EXISTING_USER_NEW_CHROME_DEVICE_ADDED_TITLE,
       base::ASCIIToUTF16(new_host_device_name));
-  base::string16 message = l10n_util::GetStringFUTF16(
+  std::u16string message = l10n_util::GetStringFUTF16(
       IDS_ASH_MULTI_DEVICE_SETUP_EXISTING_USER_NEW_CHROME_DEVICE_ADDED_MESSAGE,
       ui::GetChromeOSDeviceName());
   ShowSetupNotification(Status::kExistingUserNewChromebookNotificationVisible,
@@ -133,9 +133,9 @@ void MultiDeviceNotificationPresenter::OnNewChromebookAddedForExistingUser(
 }
 
 void MultiDeviceNotificationPresenter::OnBecameEligibleForWifiSync() {
-  base::string16 title =
+  std::u16string title =
       l10n_util::GetStringUTF16(IDS_ASH_MULTI_DEVICE_WIFI_SYNC_AVAILABLE_TITLE);
-  base::string16 message = l10n_util::GetStringFUTF16(
+  std::u16string message = l10n_util::GetStringFUTF16(
       IDS_ASH_MULTI_DEVICE_WIFI_SYNC_AVAILABLE_MESSAGE,
       ui::GetChromeOSDeviceName());
   message_center::RichNotificationData optional_fields;
@@ -189,7 +189,7 @@ void MultiDeviceNotificationPresenter::OnNotificationRemoved(
 void MultiDeviceNotificationPresenter::OnNotificationClicked(
     const std::string& notification_id,
     const base::Optional<int>& button_index,
-    const base::Optional<base::string16>& reply) {
+    const base::Optional<std::u16string>& reply) {
   if (notification_id == kWifiSyncNotificationId) {
     message_center_->RemoveNotification(kWifiSyncNotificationId,
                                         /* by_user */ false);
@@ -278,8 +278,8 @@ void MultiDeviceNotificationPresenter::ObserveMultiDeviceSetupIfPossible() {
 
 void MultiDeviceNotificationPresenter::ShowSetupNotification(
     const Status notification_status,
-    const base::string16& title,
-    const base::string16& message) {
+    const std::u16string& title,
+    const std::u16string& message) {
   PA_LOG(VERBOSE) << "Showing "
                   << GetNotificationDescriptionForLogging(notification_status)
                   << ".";
@@ -294,13 +294,13 @@ void MultiDeviceNotificationPresenter::ShowSetupNotification(
 
 void MultiDeviceNotificationPresenter::ShowNotification(
     const std::string& id,
-    const base::string16& title,
-    const base::string16& message,
+    const std::u16string& title,
+    const std::u16string& message,
     message_center::RichNotificationData optional_fields) {
   std::unique_ptr<message_center::Notification> notification =
       CreateSystemNotification(
           message_center::NotificationType::NOTIFICATION_TYPE_SIMPLE, id, title,
-          message, base::string16() /* display_source */,
+          message, std::u16string() /* display_source */,
           GURL() /* origin_url */,
           message_center::NotifierId(
               message_center::NotifierType::SYSTEM_COMPONENT,

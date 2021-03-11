@@ -69,9 +69,9 @@ class AwQuotaManagerBridge
   storage::QuotaManager* GetQuotaManager() const;
 
   void DeleteAllDataOnUiThread();
-  void DeleteOriginOnUiThread(const base::string16& origin);
+  void DeleteOriginOnUiThread(const std::u16string& origin);
   void GetOriginsOnUiThread(jint callback_id);
-  void GetUsageAndQuotaForOriginOnUiThread(const base::string16& origin,
+  void GetUsageAndQuotaForOriginOnUiThread(const std::u16string& origin,
                                            jint callback_id,
                                            bool is_quota);
 

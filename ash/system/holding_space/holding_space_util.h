@@ -52,7 +52,7 @@ void ApplyStyle(views::Label* label, LabelStyle style);
 // Creates a label with optional `text` matching the specified `style`.
 std::unique_ptr<views::Label> CreateLabel(
     LabelStyle style,
-    const base::string16& text = base::string16());
+    const std::u16string& text = std::u16string());
 
 // Creates a circular background of the specified `color` and `fixed_size`.
 std::unique_ptr<views::Background> CreateCircleBackground(SkColor color,

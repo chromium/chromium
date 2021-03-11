@@ -25,7 +25,7 @@ base::FilePath PrettifyPath(const base::FilePath& source_path);
 void CalculateAndFormatExtensionDirectorySize(
     const base::FilePath& extension_path,
     int message_id,
-    base::OnceCallback<void(const base::string16&)> callback);
+    base::OnceCallback<void(const std::u16string&)> callback);
 
 // Returns a new FilePath with the '~' resolved to the home directory, if
 // appropriate. Otherwise, returns the original path.

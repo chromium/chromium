@@ -47,7 +47,7 @@ class ASH_EXPORT Desk {
     virtual void OnDeskDestroyed(const Desk* desk) = 0;
 
     // Called  when the desk's name changes.
-    virtual void OnDeskNameChanged(const base::string16& new_name) = 0;
+    virtual void OnDeskNameChanged(const std::u16string& new_name) = 0;
   };
 
   explicit Desk(int associated_container_id);
@@ -57,8 +57,7 @@ class ASH_EXPORT Desk {
 
   const std::vector<aura::Window*>& windows() const { return windows_; }
 
-
-  const base::string16& name() const { return name_; }
+  const std::u16string& name() const { return name_; }
 
   bool is_active() const { return is_active_; }
 
@@ -99,7 +98,7 @@ class ASH_EXPORT Desk {
   // Sets the desk's name to |new_name| and updates the observers.
   // |set_by_user| should be true if this name was given to the desk by the user
   // from its mini view in overview mode.
-  void SetName(base::string16 new_name, bool set_by_user);
+  void SetName(std::u16string new_name, bool set_by_user);
 
   // Prepares for the animation to activate this desk (i.e. this desk is not
   // active yet), by showing its containers on all root windows while setting
@@ -197,7 +196,7 @@ class ASH_EXPORT Desk {
   std::vector<aura::Window*> windows_;
 
   // The name given to this desk.
-  base::string16 name_;
+  std::u16string name_;
 
   // Maps all root windows to observer objects observing the containers
   // associated with this desk on those root windows.

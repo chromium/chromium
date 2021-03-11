@@ -73,7 +73,7 @@ class ProtoToJSONRuleConverter {
     }
 
     // Sanity check that we can parse this rule.
-    base::string16 err;
+    std::u16string err;
     dnr_api::Rule rule;
     CHECK(dnr_api::Rule::Populate(json_rule_, &rule, &err) && err.empty())
         << "Converted rule can't be parsed " << json_rule_;

@@ -27,7 +27,7 @@ class DarkModeDetailedViewController : public DetailedViewController,
 
   // DetailedViewControllerBase:
   views::View* CreateView() override;
-  base::string16 GetAccessibleName() const override;
+  std::u16string GetAccessibleName() const override;
 
   // ColorModeObserver:
   void OnColorModeChanged(bool dark_mode_enabled) override;

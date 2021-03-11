@@ -57,7 +57,7 @@ class ASH_PUBLIC_EXPORT AppListViewDelegate {
   // Invoked to start a new search. This collects a list of search results
   // matching the raw query, which is an unhandled string typed into the search
   // box by the user.
-  virtual void StartSearch(const base::string16& raw_query) = 0;
+  virtual void StartSearch(const std::u16string& raw_query) = 0;
 
   // Invoked to open the search result and log a click. If the result is
   // represented by a SuggestedChipView or is a zero state result,
@@ -157,7 +157,7 @@ class ASH_PUBLIC_EXPORT AppListViewDelegate {
   // |position_index| is the position index of the clicked item (if no item got
   // clicked, |position_index| will be -1).
   virtual void NotifySearchResultsForLogging(
-      const base::string16& raw_query,
+      const std::u16string& raw_query,
       const SearchResultIdWithPositionIndices& results,
       int position_index) = 0;
 

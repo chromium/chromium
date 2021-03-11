@@ -27,13 +27,13 @@ using BI = ash::PeripheralBatteryListener::BatteryInfo;
 
 namespace {
 
-const base::string16& NotificationMessagePrefix() {
-  static const base::string16 prefix(base::ASCIIToUTF16("Battery low ("));
+const std::u16string& NotificationMessagePrefix() {
+  static const std::u16string prefix(base::ASCIIToUTF16("Battery low ("));
   return prefix;
 }
 
-const base::string16& NotificationMessageSuffix() {
-  static const base::string16 suffix(base::ASCIIToUTF16("%)"));
+const std::u16string& NotificationMessageSuffix() {
+  static const std::u16string suffix(base::ASCIIToUTF16("%)"));
   return suffix;
 }
 
@@ -78,7 +78,7 @@ class PeripheralBatteryNotifierTest : public AshTestBase {
 
   // Extracts the battery percentage from the message of a notification.
   uint8_t ExtractBatteryPercentage(message_center::Notification* notification) {
-    const base::string16& message = notification->message();
+    const std::u16string& message = notification->message();
     EXPECT_TRUE(base::StartsWith(message, NotificationMessagePrefix(),
                                  base::CompareCase::SENSITIVE));
     EXPECT_TRUE(base::EndsWith(message, NotificationMessageSuffix(),

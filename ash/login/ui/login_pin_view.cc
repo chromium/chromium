@@ -66,12 +66,12 @@ constexpr int kButtonHeightDp = 56;
 constexpr int kButtonWidthDp = 72;
 constexpr gfx::Size kButtonSize = gfx::Size(kButtonWidthDp, kButtonHeightDp);
 
-base::string16 GetButtonLabelForNumber(int value) {
+std::u16string GetButtonLabelForNumber(int value) {
   DCHECK(value >= 0 && value < int{base::size(kPinLabels)});
   return base::ASCIIToUTF16(std::to_string(value));
 }
 
-base::string16 GetButtonSubLabelForNumber(int value) {
+std::u16string GetButtonSubLabelForNumber(int value) {
   DCHECK(value >= 0 && value < int{base::size(kPinLabels)});
   return base::ASCIIToUTF16(kPinLabels[value]);
 }
@@ -88,7 +88,7 @@ class BasePinButton : public views::InkDropHostView {
  public:
   BasePinButton(const LoginPalette& palette,
                 const gfx::Size& size,
-                const base::string16& accessible_name,
+                const std::u16string& accessible_name,
                 const base::RepeatingClosure& on_press)
       : on_press_(on_press),
         palette_(palette),
@@ -189,7 +189,7 @@ class BasePinButton : public views::InkDropHostView {
   LoginPalette palette_;
 
  private:
-  const base::string16 accessible_name_;
+  const std::u16string accessible_name_;
 
   DISALLOW_COPY_AND_ASSIGN(BasePinButton);
 };

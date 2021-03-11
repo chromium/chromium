@@ -31,7 +31,7 @@ class ASH_PUBLIC_EXPORT DesksHelper {
 
   // Returns the names of the desk at |index|. If |index| is out-of-bounds,
   // return empty string.
-  virtual base::string16 GetDeskName(int index) const = 0;
+  virtual std::u16string GetDeskName(int index) const = 0;
 
   // Returns the number of desks.
   virtual int GetNumberOfDesks() const = 0;

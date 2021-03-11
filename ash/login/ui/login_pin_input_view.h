@@ -32,7 +32,7 @@ class LoginPinInput;
 //
 class ASH_EXPORT LoginPinInputView : public views::View {
  public:
-  using OnPinSubmit = base::RepeatingCallback<void(const base::string16& pin)>;
+  using OnPinSubmit = base::RepeatingCallback<void(const std::u16string& pin)>;
   using OnPinChanged = base::RepeatingCallback<void(bool is_empty)>;
 
   static const int kDefaultLength;
@@ -90,7 +90,7 @@ class ASH_EXPORT LoginPinInputView : public views::View {
 
  private:
   // The code input will call this when all digits are in.
-  void SubmitPin(const base::string16& pin);
+  void SubmitPin(const std::u16string& pin);
 
   // Called by the inner view whenever the fields change.
   void OnChanged(bool is_empty);

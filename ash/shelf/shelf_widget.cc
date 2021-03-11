@@ -503,7 +503,7 @@ bool ShelfWidget::IsHotseatForcedShowInTabletMode() const {
 }
 
 bool ShelfWidget::SetLoginShelfSwipeHandler(
-    const base::string16& nudge_text,
+    const std::u16string& nudge_text,
     const base::RepeatingClosure& fling_callback,
     base::OnceClosure exit_callback) {
   if (!login_shelf_view_->GetVisible())

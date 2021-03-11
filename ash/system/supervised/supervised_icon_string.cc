@@ -25,7 +25,7 @@ const gfx::VectorIcon& GetSupervisedUserIcon() {
   return kSystemMenuLegacySupervisedUserIcon;
 }
 
-base::string16 GetSupervisedUserMessage() {
+std::u16string GetSupervisedUserMessage() {
   SessionControllerImpl* session_controller =
       Shell::Get()->session_controller();
   DCHECK(session_controller->IsUserChild());
@@ -35,8 +35,8 @@ base::string16 GetSupervisedUserMessage() {
   const UserSession* const user_session = session_controller->GetUserSession(0);
   DCHECK(user_session);
 
-  base::string16 first_custodian = UTF8ToUTF16(user_session->custodian_email);
-  base::string16 second_custodian =
+  std::u16string first_custodian = UTF8ToUTF16(user_session->custodian_email);
+  std::u16string second_custodian =
       UTF8ToUTF16(user_session->second_custodian_email);
 
   if (second_custodian.empty()) {

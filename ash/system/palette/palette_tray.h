@@ -74,7 +74,7 @@ class ASH_EXPORT PaletteTray : public TrayBackgroundView,
   // TrayBackgroundView:
   void ClickedOutsideBubble() override;
   void OnThemeChanged() override;
-  base::string16 GetAccessibleNameForTray() override;
+  std::u16string GetAccessibleNameForTray() override;
   void HandleLocaleChange() override;
   void HideBubbleWithView(const TrayBubbleView* bubble_view) override;
   void AnchorUpdated() override;
@@ -102,7 +102,7 @@ class ASH_EXPORT PaletteTray : public TrayBackgroundView,
 
   // TrayBubbleView::Delegate:
   void BubbleViewDestroyed() override;
-  base::string16 GetAccessibleNameForBubble() override;
+  std::u16string GetAccessibleNameForBubble() override;
   bool ShouldEnableExtraKeyboardAccessibility() override;
   void HideBubble(const TrayBubbleView* bubble_view) override;
 

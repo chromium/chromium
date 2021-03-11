@@ -74,7 +74,7 @@ views::View* UserChooserDetailedViewController::CreateView() {
   return new UserChooserView(this);
 }
 
-base::string16 UserChooserDetailedViewController::GetAccessibleName() const {
+std::u16string UserChooserDetailedViewController::GetAccessibleName() const {
   return l10n_util::GetStringUTF16(
       IDS_ASH_QUICK_SETTINGS_BUBBLE_USER_SETTINGS_ACCESSIBLE_DESCRIPTION);
 }

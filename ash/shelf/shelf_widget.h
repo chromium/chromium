@@ -150,7 +150,7 @@ class ASH_EXPORT ShelfWidget : public SessionObserver,
 
   // Creates a login shelf gesture controller (which enabled login shelf gesture
   // detection). See ash/public/cpp/login_screen.h for more info.
-  bool SetLoginShelfSwipeHandler(const base::string16& nudge_text,
+  bool SetLoginShelfSwipeHandler(const std::u16string& nudge_text,
                                  const base::RepeatingClosure& fling_callback,
                                  base::OnceClosure exit_callback);
 

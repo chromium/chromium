@@ -36,7 +36,7 @@ namespace {
 class StackingBarLabelButton : public views::LabelButton {
  public:
   StackingBarLabelButton(PressedCallback callback,
-                         const base::string16& text,
+                         const std::u16string& text,
                          UnifiedMessageCenterView* message_center_view)
       : views::LabelButton(std::move(callback), text),
         message_center_view_(message_center_view) {

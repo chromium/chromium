@@ -752,7 +752,7 @@ void WebViewGuest::RendererUnresponsive(
 }
 
 void WebViewGuest::StartFind(
-    const base::string16& search_text,
+    const std::u16string& search_text,
     blink::mojom::FindOptionsPtr options,
     scoped_refptr<WebViewInternalFindFunction> find_function) {
   find_helper_.Find(web_contents(), search_text, std::move(options),
@@ -1043,10 +1043,10 @@ void WebViewGuest::OnAudioStateChanged(bool audible) {
 void WebViewGuest::OnDidAddMessageToConsole(
     content::RenderFrameHost* source_frame,
     blink::mojom::ConsoleMessageLevel log_level,
-    const base::string16& message,
+    const std::u16string& message,
     int32_t line_no,
-    const base::string16& source_id,
-    const base::Optional<base::string16>& untrusted_stack_trace) {
+    const std::u16string& source_id,
+    const base::Optional<std::u16string>& untrusted_stack_trace) {
   auto args = std::make_unique<base::DictionaryValue>();
   // Log levels are from base/logging.h: LogSeverity.
   args->SetInteger(webview::kLevel,

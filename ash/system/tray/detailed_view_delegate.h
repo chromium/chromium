@@ -77,7 +77,7 @@ class ASH_EXPORT DetailedViewDelegate {
   // ownership of the returned view.
   virtual HoverHighlightView* CreateScrollListItem(ViewClickListener* listener,
                                                    const gfx::VectorIcon& icon,
-                                                   const base::string16& text);
+                                                   const std::u16string& text);
 
   // Return the back button used in the title row. Caller takes ownership of the
   // returned view.

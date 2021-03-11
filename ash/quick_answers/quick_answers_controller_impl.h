@@ -105,8 +105,8 @@ class ASH_EXPORT QuickAnswersControllerImpl
   bool ShouldShowUserNotice() const;
   // Show the user notice view. Does nothing if the view is already
   // visible.
-  void ShowUserNotice(const base::string16& intent_type,
-                      const base::string16& intent_text);
+  void ShowUserNotice(const std::u16string& intent_type,
+                      const std::u16string& intent_text);
 
   chromeos::quick_answers::QuickAnswersRequest BuildRequest();
 

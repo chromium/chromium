@@ -46,7 +46,7 @@ bool NormalizeAndValidatePath(const std::string& path,
 
 bool LoadIconsFromDictionary(const base::Value* icons_value,
                              ExtensionIconSet* icons,
-                             base::string16* error) {
+                             std::u16string* error) {
   DCHECK(icons);
   DCHECK(error);
   for (const auto& entry : icons_value->DictItems()) {

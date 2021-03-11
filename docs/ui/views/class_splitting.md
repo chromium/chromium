@@ -28,7 +28,7 @@ class MyDialogView : public views::DialogDelegateView,
   ~MyDialogView() override;
 
   // DialogDelegate:
-  base::string16 GetWindowTitle() const override;
+  std::u16string GetWindowTitle() const override;
   bool ShouldShowCloseButton() const override;
   ...
 

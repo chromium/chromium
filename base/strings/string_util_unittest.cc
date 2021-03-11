@@ -756,7 +756,7 @@ TEST(StringUtilTest, ReplaceSubstringsAfterOffset) {
       {"abababab", 1, "aba", "c", "abcbab"},
   };
 
-  // base::string16 variant
+  // std::u16string variant
   for (const auto& scenario : cases) {
     string16 str = ASCIIToUTF16(scenario.str);
     ReplaceSubstringsAfterOffset(&str, scenario.start_offset,

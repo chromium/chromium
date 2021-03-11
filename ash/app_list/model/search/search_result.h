@@ -57,34 +57,34 @@ class APP_LIST_MODEL_EXPORT SearchResult {
   const ui::ImageModel& badge_icon() const { return metadata_->badge_icon; }
   void SetBadgeIcon(const ui::ImageModel& badge_icon);
 
-  const base::string16& title() const { return metadata_->title; }
-  void set_title(const base::string16& title);
+  const std::u16string& title() const { return metadata_->title; }
+  void set_title(const std::u16string& title);
 
   const Tags& title_tags() const { return metadata_->title_tags; }
   void set_title_tags(const Tags& tags) { metadata_->title_tags = tags; }
 
-  const base::string16& details() const { return metadata_->details; }
-  void set_details(const base::string16& details) {
+  const std::u16string& details() const { return metadata_->details; }
+  void set_details(const std::u16string& details) {
     metadata_->details = details;
   }
 
   const Tags& details_tags() const { return metadata_->details_tags; }
   void set_details_tags(const Tags& tags) { metadata_->details_tags = tags; }
 
-  const base::string16& accessible_name() const {
+  const std::u16string& accessible_name() const {
     return metadata_->accessible_name;
   }
-  void set_accessible_name(const base::string16& name) {
+  void set_accessible_name(const std::u16string& name) {
     metadata_->accessible_name = name;
   }
 
   float rating() const { return metadata_->rating; }
   void SetRating(float rating);
 
-  const base::string16& formatted_price() const {
+  const std::u16string& formatted_price() const {
     return metadata_->formatted_price;
   }
-  void SetFormattedPrice(const base::string16& formatted_price);
+  void SetFormattedPrice(const std::u16string& formatted_price);
 
   const base::Optional<GURL>& query_url() const { return metadata_->query_url; }
   void set_query_url(const GURL& url) { metadata_->query_url = url; }

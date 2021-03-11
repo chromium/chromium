@@ -588,7 +588,7 @@ class CanSwitchUserTest : public AshTestBase {
     Shell::Get()->system_tray_notifier()->NotifyScreenCaptureStart(
         base::BindRepeating(&CanSwitchUserTest::StopCaptureCallback,
                             base::Unretained(this)),
-        base::RepeatingClosure(), base::string16());
+        base::RepeatingClosure(), std::u16string());
   }
 
   // The callback which gets called when the screen capture gets stopped.
@@ -605,7 +605,7 @@ class CanSwitchUserTest : public AshTestBase {
     Shell::Get()->system_tray_notifier()->NotifyScreenShareStart(
         base::BindRepeating(&CanSwitchUserTest::StopShareCallback,
                             base::Unretained(this)),
-        base::string16());
+        std::u16string());
   }
 
   // Simulates a screen share session stop.

@@ -33,7 +33,7 @@ class ASH_EXPORT LoginUserView : public views::View,
 
     LoginDisplayStyle display_style() const;
 
-    const base::string16& displayed_name() const;
+    const std::u16string& displayed_name() const;
 
     views::View* user_label() const;
     views::View* tap_button() const;

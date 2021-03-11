@@ -409,7 +409,7 @@ void ShowAppCannotSnapToast() {
   Shell::Get()->toast_manager()->Show(ToastData(
       kAppCannotSnapToastId,
       l10n_util::GetStringUTF16(IDS_ASH_SPLIT_VIEW_CANNOT_SNAP),
-      kAppCannotSnapToastDurationMs, base::Optional<base::string16>()));
+      kAppCannotSnapToastDurationMs, base::Optional<std::u16string>()));
 }
 
 SplitViewController::SnapPosition GetSnapPositionForLocation(

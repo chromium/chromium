@@ -262,7 +262,7 @@ void UnifiedVolumeView::Update(bool by_user) {
   button()->SetToggled(!is_muted);
   button()->SetVectorIcon(is_muted ? kUnifiedMenuVolumeMuteIcon
                                    : GetVolumeIconForLevel(level));
-  base::string16 state_tooltip_text = l10n_util::GetStringUTF16(
+  std::u16string state_tooltip_text = l10n_util::GetStringUTF16(
       is_muted ? IDS_ASH_STATUS_TRAY_VOLUME_STATE_MUTED
                : IDS_ASH_STATUS_TRAY_VOLUME_STATE_ON);
   button()->SetTooltipText(l10n_util::GetStringFUTF16(

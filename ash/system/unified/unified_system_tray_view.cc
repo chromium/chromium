@@ -366,7 +366,7 @@ int UnifiedSystemTrayView::GetVisibleFeaturePodCount() const {
   return feature_pods_container_->GetVisibleCount();
 }
 
-base::string16 UnifiedSystemTrayView::GetDetailedViewAccessibleName() const {
+std::u16string UnifiedSystemTrayView::GetDetailedViewAccessibleName() const {
   return controller_->detailed_view_controller()->GetAccessibleName();
 }
 

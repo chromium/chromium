@@ -127,7 +127,7 @@ gfx::Size AssistantDialogPlate::CalculatePreferredSize() const {
 
 void AssistantDialogPlate::OnButtonPressed(AssistantButtonId button_id) {
   delegate_->OnDialogPlateButtonPressed(button_id);
-  textfield_->SetText(base::string16());
+  textfield_->SetText(std::u16string());
 }
 
 bool AssistantDialogPlate::HandleKeyEvent(views::Textfield* textfield,
@@ -153,7 +153,7 @@ bool AssistantDialogPlate::HandleKeyEvent(views::Textfield* textfield,
             base::UTF16ToUTF8(trimmed_text));
       }
 
-      textfield_->SetText(base::string16());
+      textfield_->SetText(std::u16string());
 
       return true;
     }
@@ -281,7 +281,7 @@ void AssistantDialogPlate::OnUiVisibilityChanged(
   } else {
     // When the Assistant UI is no longer visible we need to clear the dialog
     // plate so that text does not persist across Assistant launches.
-    textfield_->SetText(base::string16());
+    textfield_->SetText(std::u16string());
 
     HideKeyboardIfEnabled();
   }

@@ -90,7 +90,7 @@ class AwRenderViewHostExt : public content::WebContentsObserver,
       android_webview::mojom::HitTestDataPtr hit_test_data) override;
   void ContentsSizeChanged(const gfx::Size& contents_size) override;
   void ShouldOverrideUrlLoading(
-      const base::string16& url,
+      const std::u16string& url,
       bool has_user_gesture,
       bool is_redirect,
       bool is_main_frame,

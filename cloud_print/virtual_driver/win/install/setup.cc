@@ -221,7 +221,7 @@ HRESULT InstallPrinter(void) {
   printer_info.pPrinterName = const_cast<LPWSTR>(driver_name.c_str());
   printer_info.pComment = const_cast<LPWSTR>(driver_name.c_str());
   printer_info.pLocation = const_cast<LPWSTR>(kGcpUrl);
-  base::string16 port_name;
+  std::u16string port_name;
   printer_info.pPortName = const_cast<LPWSTR>(kPortName);
   printer_info.Attributes = PRINTER_ATTRIBUTE_DIRECT | PRINTER_ATTRIBUTE_LOCAL;
   printer_info.pPrintProcessor = const_cast<LPWSTR>(L"winprint");

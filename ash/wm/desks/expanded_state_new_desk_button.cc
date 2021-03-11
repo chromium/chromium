@@ -32,7 +32,7 @@ constexpr int kCornerRadius = 4;
 class ASH_EXPORT InnerNewDeskButton : public DeskButtonBase {
  public:
   InnerNewDeskButton(ExpandedStateNewDeskButton* outer_button)
-      : DeskButtonBase(base::string16(), kBorderCornerRadius, kCornerRadius),
+      : DeskButtonBase(std::u16string(), kBorderCornerRadius, kCornerRadius),
         outer_button_(outer_button) {
     paint_contents_only_ = true;
   }

@@ -39,7 +39,7 @@ OfflineEnabledHandler::OfflineEnabledHandler() {
 OfflineEnabledHandler::~OfflineEnabledHandler() {
 }
 
-bool OfflineEnabledHandler::Parse(Extension* extension, base::string16* error) {
+bool OfflineEnabledHandler::Parse(Extension* extension, std::u16string* error) {
   if (!extension->manifest()->HasKey(keys::kOfflineEnabled)) {
     // Only platform apps are provided with a default offline enabled value.
     // A platform app is offline enabled unless it requests the webview

@@ -18,7 +18,7 @@ class ASH_EXPORT SystemLabelButton : public views::LabelButton {
   enum class DisplayType { DEFAULT, ALERT_NO_ICON, ALERT_WITH_ICON };
 
   SystemLabelButton(PressedCallback callback,
-                    const base::string16& text,
+                    const std::u16string& text,
                     DisplayType display_type,
                     bool multiline = false);
   SystemLabelButton(const SystemLabelButton&) = delete;

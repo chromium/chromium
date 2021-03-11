@@ -262,9 +262,9 @@ class Bindings : public proxy_resolver::ProxyResolverV8Tracing::Bindings {
  public:
   Bindings(HostResolver* host_resolver) : host_resolver_(host_resolver) {}
 
-  void Alert(const base::string16& message) override {}
+  void Alert(const std::u16string& message) override {}
 
-  void OnError(int line_number, const base::string16& message) override {}
+  void OnError(int line_number, const std::u16string& message) override {}
 
   proxy_resolver::ProxyHostResolver* GetHostResolver() override {
     return host_resolver_;

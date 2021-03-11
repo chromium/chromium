@@ -110,7 +110,7 @@ class ASH_EXPORT ImeControllerImpl : public ImeController,
   // Show the mode indicator UI with the given text at the anchor bounds.
   // The anchor bounds is in the universal screen coordinates in DIP.
   void ShowModeIndicator(const gfx::Rect& anchor_bounds,
-                         const base::string16& ime_short_name) override;
+                         const std::u16string& ime_short_name) override;
 
   // display::DisplayObserver:
   void OnDisplayMetricsChanged(const display::Display& display,

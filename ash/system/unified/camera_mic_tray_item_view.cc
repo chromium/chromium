@@ -88,7 +88,7 @@ void CameraMicTrayItemView::Update() {
                  chromeos::features::kVmCameraMicIndicatorsAndNotifications));
 }
 
-base::string16 CameraMicTrayItemView::GetAccessibleNameString() const {
+std::u16string CameraMicTrayItemView::GetAccessibleNameString() const {
   return message_;
 }
 
@@ -97,7 +97,7 @@ views::View* CameraMicTrayItemView::GetTooltipHandlerForPoint(
   return GetLocalBounds().Contains(point) ? this : nullptr;
 }
 
-base::string16 CameraMicTrayItemView::GetTooltipText(
+std::u16string CameraMicTrayItemView::GetTooltipText(
     const gfx::Point& p) const {
   return message_;
 }

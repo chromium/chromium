@@ -137,7 +137,7 @@ struct ASH_PUBLIC_EXPORT EasyUnlockIconOptions {
   // |autoshow_tooltip| is true. The user can always see the tooltip if they
   // hover over the icon. The tooltip should be used for the accessibility label
   // if it is present.
-  base::string16 tooltip;
+  std::u16string tooltip;
   // If true, the tooltip should be displayed (even if the user is not currently
   // hovering over the icon, ie, this makes |tooltip| act like a little like a
   // notification).
@@ -145,7 +145,7 @@ struct ASH_PUBLIC_EXPORT EasyUnlockIconOptions {
   // Accessibility label. Only used if |tooltip| is empty.
   // TODO(jdufault): Always populate and use |aria_label|, even if |tooltip| is
   // non-empty.
-  base::string16 aria_label;
+  std::u16string aria_label;
   // If true, clicking the easy unlock icon should fire a hardlock event which
   // will disable easy unlock. The hardlock event will request a new icon
   // display via a separate EasyUnlockIconsOption update. See

@@ -464,7 +464,7 @@ TEST_F(AppListControllerImplTest, MAYBE_CloseNotificationWithAppListShown) {
           message_center::NOTIFICATION_TYPE_BASE_FORMAT, notification_id,
           base::UTF8ToUTF16(notification_title),
           base::UTF8ToUTF16("test message"), gfx::Image(),
-          base::string16() /* display_source */, GURL(),
+          std::u16string() /* display_source */, GURL(),
           message_center::NotifierId(), message_center::RichNotificationData(),
           new message_center::NotificationDelegate()));
   base::RunLoop().RunUntilIdle();

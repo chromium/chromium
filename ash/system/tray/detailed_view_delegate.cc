@@ -170,7 +170,7 @@ views::Separator* DetailedViewDelegate::CreateListSubHeaderSeparator() {
 HoverHighlightView* DetailedViewDelegate::CreateScrollListItem(
     ViewClickListener* listener,
     const gfx::VectorIcon& icon,
-    const base::string16& text) {
+    const std::u16string& text) {
   HoverHighlightView* item = new HoverHighlightView(listener);
   if (icon.is_empty())
     item->AddLabelRow(text);

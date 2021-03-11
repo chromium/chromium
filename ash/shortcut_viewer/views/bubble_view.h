@@ -33,7 +33,7 @@ class BubbleView : public views::View {
 
   void SetIcon(const gfx::VectorIcon& icon);
 
-  void SetText(const base::string16& text);
+  void SetText(const std::u16string& text);
 
  private:
   // views::View:

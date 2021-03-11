@@ -125,7 +125,7 @@ void NotificationMenuController::InitializeNotificationMenuView() {
   }
 
   app_menu_model_adapter_->model()->AddItem(NOTIFICATION_CONTAINER,
-                                            base::string16());
+                                            std::u16string());
   // Add the container MenuItemView to |root_menu_|.
   views::MenuItemView* container =
       root_menu_->AppendMenuItem(NOTIFICATION_CONTAINER);

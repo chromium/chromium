@@ -66,21 +66,21 @@ std::unique_ptr<Notification> CreateNotification(
     PowerNotificationController::NotificationState notification_state) {
   const PowerStatus& status = *PowerStatus::Get();
 
-  base::string16 message = base::i18n::MessageFormatter::FormatWithNumberedArgs(
+  std::u16string message = base::i18n::MessageFormatter::FormatWithNumberedArgs(
       l10n_util::GetStringUTF16(IDS_ASH_STATUS_TRAY_BATTERY_PERCENT),
       static_cast<double>(status.GetRoundedBatteryPercent()) / 100.0);
 
   const base::Optional<base::TimeDelta> time =
       status.IsBatteryCharging() ? status.GetBatteryTimeToFull()
                                  : status.GetBatteryTimeToEmpty();
-  base::string16 time_message;
+  std::u16string time_message;
   if (status.IsUsbChargerConnected()) {
     time_message = l10n_util::GetStringUTF16(
         IDS_ASH_STATUS_TRAY_BATTERY_CHARGING_UNRELIABLE);
   } else if (time && power_utils::ShouldDisplayBatteryTime(*time) &&
              !status.IsBatteryDischargingOnLinePower()) {
     if (status.IsBatteryCharging()) {
-      base::string16 duration;
+      std::u16string duration;
       if (!TimeDurationFormat(*time, base::DURATION_WIDTH_NARROW, &duration))
         LOG(ERROR) << "Failed to format duration " << *time;
       time_message = l10n_util::GetStringFUTF16(
@@ -97,7 +97,7 @@ std::unique_ptr<Notification> CreateNotification(
 
   std::unique_ptr<Notification> notification = ash::CreateSystemNotification(
       message_center::NOTIFICATION_TYPE_SIMPLE, kBatteryNotificationId,
-      base::string16(), message, base::string16(), GURL(),
+      std::u16string(), message, std::u16string(), GURL(),
       message_center::NotifierId(message_center::NotifierType::SYSTEM_COMPONENT,
                                  kNotifierBattery),
       message_center::RichNotificationData(), nullptr,

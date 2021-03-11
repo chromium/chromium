@@ -21,7 +21,7 @@ namespace extensions {
 // to a page or a script, and can be external (e.g., "http://www.google.com"),
 // extension-related (e.g., "chrome-extension://<extension_id>/background.js"),
 // or internal (e.g., "event_bindings" or "schemaUtils").
-bool IsSourceFromAnExtension(const base::string16& source);
+bool IsSourceFromAnExtension(const std::u16string& source);
 
 }  // namespace extensions
 

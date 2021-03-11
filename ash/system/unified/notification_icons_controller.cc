@@ -98,10 +98,10 @@ void NotificationIconTrayItemView::SetNotification(
 void NotificationIconTrayItemView::Reset() {
   notification_id_ = std::string();
   image_view()->SetImage(gfx::ImageSkia());
-  image_view()->SetTooltipText(base::string16());
+  image_view()->SetTooltipText(std::u16string());
 }
 
-const base::string16& NotificationIconTrayItemView::GetAccessibleNameString()
+const std::u16string& NotificationIconTrayItemView::GetAccessibleNameString()
     const {
   if (notification_id_.empty())
     return base::EmptyString16();
@@ -169,11 +169,11 @@ bool NotificationIconsController::ShouldShowNotificationItemsInTray() {
           AshMessageCenterLockScreenController::IsEnabled());
 }
 
-base::string16 NotificationIconsController::GetAccessibleNameString() const {
+std::u16string NotificationIconsController::GetAccessibleNameString() const {
   if (!TrayItemHasNotification())
     return notification_counter_view_->GetAccessibleNameString();
 
-  std::vector<base::string16> status;
+  std::vector<std::u16string> status;
   status.push_back(l10n_util::GetPluralStringFUTF16(
       IDS_ASH_STATUS_TRAY_NOTIFICATIONS_IMPORTANT_COUNT_ACCESSIBLE_NAME,
       TrayNotificationIconsCount()));

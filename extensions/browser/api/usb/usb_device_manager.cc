@@ -162,11 +162,11 @@ void UsbDeviceManager::GetApiDevice(
                         device_in.device_version_minor << 4 |
                         device_in.device_version_subminor;
   device_out->product_name =
-      base::UTF16ToUTF8(device_in.product_name.value_or(base::string16()));
+      base::UTF16ToUTF8(device_in.product_name.value_or(std::u16string()));
   device_out->manufacturer_name =
-      base::UTF16ToUTF8(device_in.manufacturer_name.value_or(base::string16()));
+      base::UTF16ToUTF8(device_in.manufacturer_name.value_or(std::u16string()));
   device_out->serial_number =
-      base::UTF16ToUTF8(device_in.serial_number.value_or(base::string16()));
+      base::UTF16ToUTF8(device_in.serial_number.value_or(std::u16string()));
 }
 
 void UsbDeviceManager::GetDevices(

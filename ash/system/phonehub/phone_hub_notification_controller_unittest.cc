@@ -179,8 +179,8 @@ TEST_F(PhoneHubNotificationControllerTest, CloseByUser) {
 TEST_F(PhoneHubNotificationControllerTest, InlineReply) {
   notification_manager_->SetNotificationsInternal(fake_notifications_);
 
-  const base::string16 kInlineReply0 = base::UTF8ToUTF16("inline reply 0");
-  const base::string16 kInlineReply1 = base::UTF8ToUTF16("inline reply 1");
+  const std::u16string kInlineReply0 = base::UTF8ToUTF16("inline reply 0");
+  const std::u16string kInlineReply1 = base::UTF8ToUTF16("inline reply 1");
   message_center_->ClickOnNotificationButtonWithReply(kCrOSNotificationId0, 0,
                                                       kInlineReply0);
   message_center_->ClickOnNotificationButtonWithReply(kCrOSNotificationId1, 0,
@@ -267,7 +267,7 @@ TEST_F(PhoneHubNotificationControllerTest, NotificationHasPhoneName) {
   notification_manager_->SetNotificationsInternal(fake_notifications_);
   auto* notification = FindNotification(kCrOSNotificationId0);
 
-  const base::string16 expected_phone_name = base::UTF8ToUTF16("Phone name");
+  const std::u16string expected_phone_name = base::UTF8ToUTF16("Phone name");
   phone_hub_manager_.mutable_phone_model()->SetPhoneName(expected_phone_name);
 
   auto notification_view =
@@ -297,7 +297,7 @@ TEST_F(PhoneHubNotificationControllerTest, ReplyBrieflyDisabled) {
   views::View* reply_button = action_buttons_row->children()[0];
 
   // Initially, reply button should be disabled after replied.
-  const base::string16 kInlineReply0 = base::UTF8ToUTF16("inline reply 0");
+  const std::u16string kInlineReply0 = base::UTF8ToUTF16("inline reply 0");
   notification_view_md->OnNotificationInputSubmit(0, kInlineReply0);
   EXPECT_FALSE(reply_button->GetEnabled());
 

@@ -21,7 +21,7 @@ class ASH_EXPORT ShelfTooltipBubble : public ShelfBubble {
   ShelfTooltipBubble(views::View* anchor,
                      ShelfAlignment alignment,
                      SkColor background_color,
-                     const base::string16& text);
+                     const std::u16string& text);
 
  protected:
   // ShelfBubble:

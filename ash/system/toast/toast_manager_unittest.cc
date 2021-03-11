@@ -71,14 +71,14 @@ class ToastManagerImplTest : public AshTestBase {
     return overlay->dismiss_button_for_testing();
   }
 
-  base::string16 GetCurrentText() {
+  std::u16string GetCurrentText() {
     ToastOverlay* overlay = GetCurrentOverlay();
-    return overlay ? overlay->text_ : base::string16();
+    return overlay ? overlay->text_ : std::u16string();
   }
 
-  base::Optional<base::string16> GetCurrentDismissText() {
+  base::Optional<std::u16string> GetCurrentDismissText() {
     ToastOverlay* overlay = GetCurrentOverlay();
-    return overlay ? overlay->dismiss_text_ : base::string16();
+    return overlay ? overlay->dismiss_text_ : std::u16string();
   }
 
   void ClickDismissButton() {
@@ -92,7 +92,7 @@ class ToastManagerImplTest : public AshTestBase {
                         bool visible_on_lock_screen = false) {
     std::string id = "TOAST_ID_" + base::NumberToString(serial_++);
     manager()->Show(ToastData(id, base::ASCIIToUTF16(text), duration,
-                              base::string16(), visible_on_lock_screen));
+                              std::u16string(), visible_on_lock_screen));
     return id;
   }
 
@@ -100,7 +100,7 @@ class ToastManagerImplTest : public AshTestBase {
       const std::string& text,
       int32_t duration,
       const base::Optional<std::string>& dismiss_text) {
-    base::Optional<base::string16> localized_dismiss;
+    base::Optional<std::u16string> localized_dismiss;
     if (dismiss_text.has_value())
       localized_dismiss = base::ASCIIToUTF16(dismiss_text.value());
 

@@ -202,7 +202,7 @@ ClipboardHistoryItemBuilder& ClipboardHistoryItemBuilder::SetFileSystemData(
 
   base::Pickle custom_data;
   ui::WriteCustomDataToPickle(
-      std::unordered_map<base::string16, base::string16>(
+      std::unordered_map<std::u16string, std::u16string>(
           {{base::UTF8ToUTF16(kFileSystemSourcesType),
             base::UTF8ToUTF16(base::JoinString(source_list, "\n"))}}),
       &custom_data);

@@ -270,7 +270,7 @@ TEST_F(ShelfContextMenuModelTest, NotificationContainerEnabled) {
   // Tests that NOTIFICATION_CONTAINER is enabled. This ensures that the
   // container is able to handle gesture events.
   ShelfContextMenuModel menu(nullptr, GetPrimaryDisplay().id());
-  menu.AddItem(NOTIFICATION_CONTAINER, base::string16());
+  menu.AddItem(NOTIFICATION_CONTAINER, std::u16string());
 
   EXPECT_TRUE(menu.IsCommandIdEnabled(NOTIFICATION_CONTAINER));
 }

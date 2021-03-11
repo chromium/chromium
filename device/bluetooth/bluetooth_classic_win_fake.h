@@ -41,7 +41,7 @@ class BluetoothClassicWrapperFake : public BluetoothClassicWrapper {
   DWORD LastError() override;
   bool HasHandle() override;
 
-  BluetoothRadio* SimulateARadio(base::string16 name,
+  BluetoothRadio* SimulateARadio(std::u16string name,
                                  BLUETOOTH_ADDRESS address);
 
  private:

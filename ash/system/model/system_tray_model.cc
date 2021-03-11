@@ -94,8 +94,8 @@ void SystemTrayModel::ShowUpdateIcon(UpdateSeverity severity,
 
 void SystemTrayModel::SetUpdateNotificationState(
     NotificationStyle style,
-    const base::string16& notification_title,
-    const base::string16& notification_body) {
+    const std::u16string& notification_title,
+    const std::u16string& notification_body) {
   update_model()->SetUpdateNotificationState(style, notification_title,
                                              notification_body);
 }

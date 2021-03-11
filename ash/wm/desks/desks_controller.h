@@ -74,7 +74,7 @@ class ASH_EXPORT DesksController : public DesksHelper,
   static DesksController* Get();
 
   // Returns the default name for a desk at |desk_index|.
-  static base::string16 GetDeskDefaultName(size_t desk_index);
+  static std::u16string GetDeskDefaultName(size_t desk_index);
 
   const std::vector<std::unique_ptr<Desk>>& desks() const { return desks_; }
 
@@ -194,7 +194,7 @@ class ASH_EXPORT DesksController : public DesksHelper,
   // Restores the desk at |index| to the given |name|. This is only for
   // user-modified desk names, and hence |name| should never be empty since
   // users are not allowed to set empty names.
-  void RestoreNameOfDeskAtIndex(base::string16 name, size_t index);
+  void RestoreNameOfDeskAtIndex(std::u16string name, size_t index);
 
   // Restores the creation time of the desk at |index|.
   void RestoreCreationTimeOfDeskAtIndex(base::Time creation_time, size_t index);
@@ -220,7 +220,7 @@ class ASH_EXPORT DesksController : public DesksHelper,
   // DesksHelper:
   bool BelongsToActiveDesk(aura::Window* window) override;
   int GetActiveDeskIndex() const override;
-  base::string16 GetDeskName(int index) const override;
+  std::u16string GetDeskName(int index) const override;
   int GetNumberOfDesks() const override;
   void SendToDeskAtIndex(aura::Window* window, int desk_index) override;
 

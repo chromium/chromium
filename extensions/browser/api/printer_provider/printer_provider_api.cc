@@ -74,13 +74,13 @@ void UpdatePrinterWithExtensionInfo(base::DictionaryValue* printer,
   printer->SetString("extensionId", extension->id());
   printer->SetString("extensionName", extension->name());
 
-  base::string16 printer_name;
+  std::u16string printer_name;
   if (printer->GetString("name", &printer_name) &&
       base::i18n::AdjustStringForLocaleDirection(&printer_name)) {
     printer->SetString("name", printer_name);
   }
 
-  base::string16 printer_description;
+  std::u16string printer_description;
   if (printer->GetString("description", &printer_description) &&
       base::i18n::AdjustStringForLocaleDirection(&printer_description)) {
     printer->SetString("description", printer_description);

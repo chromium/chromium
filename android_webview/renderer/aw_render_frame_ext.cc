@@ -41,12 +41,12 @@ const char kEmailPrefix[] = "mailto:";
 const char kPhoneNumberPrefix[] = "tel:";
 
 GURL GetAbsoluteUrl(const blink::WebNode& node,
-                    const base::string16& url_fragment) {
+                    const std::u16string& url_fragment) {
   return GURL(node.GetDocument().CompleteURL(
       blink::WebString::FromUTF16(url_fragment)));
 }
 
-base::string16 GetHref(const blink::WebElement& element) {
+std::u16string GetHref(const blink::WebElement& element) {
   // Get the actual 'href' attribute, which might relative if valid or can
   // possibly contain garbage otherwise, so not using absoluteLinkURL here.
   return element.GetAttribute("href").Utf16();

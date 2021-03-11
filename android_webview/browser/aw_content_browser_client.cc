@@ -762,7 +762,7 @@ bool AwContentBrowserClient::ShouldOverrideUrlLoading(
   if (client_bridge == nullptr)
     return true;
 
-  base::string16 url = base::UTF8ToUTF16(gurl.possibly_invalid_spec());
+  std::u16string url = base::UTF8ToUTF16(gurl.possibly_invalid_spec());
   return client_bridge->ShouldOverrideUrlLoading(
       url, has_user_gesture, is_redirect, is_main_frame, ignore_navigation);
 }

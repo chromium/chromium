@@ -342,7 +342,7 @@ const base::ListValue& RulesMonitorService::GetSessionRulesValue(
 std::vector<api::declarative_net_request::Rule>
 RulesMonitorService::GetSessionRules(const ExtensionId& extension_id) const {
   std::vector<api::declarative_net_request::Rule> result;
-  base::string16 error;
+  std::u16string error;
   bool populate_result = json_schema_compiler::util::PopulateArrayFromList(
       GetSessionRulesValue(extension_id), &result, &error);
   DCHECK(populate_result);

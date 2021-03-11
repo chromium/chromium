@@ -103,7 +103,7 @@ void StatusAreaOverflowButtonTray::ResetStateToCollapsed() {
   icon_->ToggleState(state_);
 }
 
-base::string16 StatusAreaOverflowButtonTray::GetAccessibleNameForTray() {
+std::u16string StatusAreaOverflowButtonTray::GetAccessibleNameForTray() {
   return l10n_util::GetStringUTF16(
       state_ == CLICK_TO_COLLAPSE ? IDS_ASH_STATUS_AREA_OVERFLOW_BUTTON_COLLAPSE
                                   : IDS_ASH_STATUS_AREA_OVERFLOW_BUTTON_EXPAND);

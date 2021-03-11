@@ -86,7 +86,7 @@ class ASH_EXPORT TrayBackgroundView : public ActionableView,
   virtual void AnchorUpdated() {}
 
   // Called from GetAccessibleNodeData, must return a valid accessible name.
-  virtual base::string16 GetAccessibleNameForTray() = 0;
+  virtual std::u16string GetAccessibleNameForTray() = 0;
 
   // Called when a locale change is detected. It should reload any strings the
   // view may be using. Note that the locale is not expected to change after the

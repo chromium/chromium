@@ -53,7 +53,7 @@ bool DeviceInfoQueryWin::GetDeviceStringProperty(const DEVPROPKEY& property,
     return false;
   }
 
-  base::string16 buffer;
+  std::u16string buffer;
   if (!SetupDiGetDeviceProperty(
           device_info_list_, &device_info_data_, &property, &property_type,
           reinterpret_cast<PBYTE>(base::WriteInto(&buffer, required_size)),

@@ -55,7 +55,7 @@ class ImeMenuTrayTest : public AshTestBase {
   bool IsVisible() { return GetTray()->GetVisible(); }
 
   // Returns the label text of the tray.
-  const base::string16& GetTrayText() { return GetTray()->label_->GetText(); }
+  const std::u16string& GetTrayText() { return GetTray()->label_->GetText(); }
 
   // Returns true if the background color of the tray is active.
   bool IsTrayBackgroundActive() { return GetTray()->is_active(); }

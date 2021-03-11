@@ -100,7 +100,7 @@ class ASH_EXPORT AppListControllerImpl
                         const std::string& folder_id) override;
   void SetStatus(AppListModelStatus status) override;
   void SetSearchEngineIsGoogle(bool is_google) override;
-  void UpdateSearchBox(const base::string16& text,
+  void UpdateSearchBox(const std::u16string& text,
                        bool initiated_by_user) override;
   void PublishSearchResults(
       std::vector<std::unique_ptr<SearchResultMetadata>> results) override;
@@ -169,7 +169,7 @@ class ASH_EXPORT AppListControllerImpl
   SearchModel* GetSearchModel() override;
   AppListNotifier* GetNotifier() override;
   void StartAssistant() override;
-  void StartSearch(const base::string16& raw_query) override;
+  void StartSearch(const std::u16string& raw_query) override;
   void OpenSearchResult(const std::string& result_id,
                         int event_flags,
                         AppListLaunchedFrom launched_from,
@@ -205,7 +205,7 @@ class ASH_EXPORT AppListControllerImpl
   void OnSearchResultVisibilityChanged(const std::string& id,
                                        bool visibility) override;
   void NotifySearchResultsForLogging(
-      const base::string16& raw_query,
+      const std::u16string& raw_query,
       const SearchResultIdWithPositionIndices& results,
       int position_index) override;
   void MaybeIncreaseSuggestedContentInfoShownCount() override;

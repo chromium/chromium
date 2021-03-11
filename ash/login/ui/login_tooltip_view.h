@@ -17,10 +17,10 @@ namespace ash {
 
 class LoginTooltipView : public LoginBaseBubbleView {
  public:
-  LoginTooltipView(const base::string16& message, views::View* anchor_view);
+  LoginTooltipView(const std::u16string& message, views::View* anchor_view);
   ~LoginTooltipView() override;
 
-  void set_text(const base::string16& message) { label_->SetText(message); }
+  void set_text(const std::u16string& message) { label_->SetText(message); }
 
   void UpdateIcon();
 

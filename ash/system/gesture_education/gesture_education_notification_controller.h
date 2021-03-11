@@ -49,8 +49,8 @@ class ASH_EXPORT GestureEducationNotificationController
   friend class GestureEducationNotificationControllerTest;
 
   void GenerateGestureEducationNotification();
-  base::string16 GetNotificationTitle() const;
-  base::string16 GetNotificationMessage() const;
+  std::u16string GetNotificationTitle() const;
+  std::u16string GetNotificationMessage() const;
   void HandleNotificationClick();
 
   void ResetPrefForTest();

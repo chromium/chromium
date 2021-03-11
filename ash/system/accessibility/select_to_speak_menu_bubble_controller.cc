@@ -92,7 +92,7 @@ void SelectToSpeakMenuBubbleController::Hide() {
   }
 }
 
-base::string16 SelectToSpeakMenuBubbleController::GetAccessibleNameForBubble() {
+std::u16string SelectToSpeakMenuBubbleController::GetAccessibleNameForBubble() {
   return l10n_util::GetStringUTF16(IDS_ASH_SELECT_TO_SPEAK_MENU);
 }
 

@@ -48,7 +48,7 @@ void SelectToSpeakSpeedView::SetInitialSpeechRate(double initial_speech_rate) {
 }
 
 void SelectToSpeakSpeedView::AddMenuItem(int option_id,
-                                         const base::string16& label,
+                                         const std::u16string& label,
                                          bool is_selected) {
   HoverHighlightView* item = new HoverHighlightView(this);
   AddChildView(item);

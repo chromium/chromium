@@ -20,17 +20,17 @@ namespace ash {
 
 namespace {
 
-base::string16 GetTitle() {
+std::u16string GetTitle() {
   return l10n_util::GetStringUTF16(
       IDS_ASH_LOGIN_SECURITY_TOKEN_REQUEST_DIALOG_TITLE);
 }
 
-base::string16 GetDescription() {
+std::u16string GetDescription() {
   return l10n_util::GetStringUTF16(
       IDS_ASH_LOGIN_SECURITY_TOKEN_REQUEST_DIALOG_DESCRIPTION);
 }
 
-base::string16 GetAccessibleTitle() {
+std::u16string GetAccessibleTitle() {
   return l10n_util::GetStringUTF16(
       IDS_ASH_LOGIN_SECURITY_TOKEN_REQUEST_DIALOG_TITLE);
 }
@@ -111,7 +111,7 @@ bool SecurityTokenRequestController::SetPinUiState(
         chromeos::security_token_pin::GenerateErrorMessage(
             request.error_label, request.attempts_left,
             request.enable_user_input),
-        /*description=*/base::string16());
+        /*description=*/std::u16string());
   }
   return true;
 }

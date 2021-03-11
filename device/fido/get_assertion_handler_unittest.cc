@@ -803,7 +803,7 @@ class TestObserver : public FidoRequestHandlerBase::Observer {
   bool SupportsPIN() const override { return false; }
   void CollectPIN(
       CollectPINOptions options,
-      base::OnceCallback<void(base::string16)> provide_pin_cb) override {
+      base::OnceCallback<void(std::u16string)> provide_pin_cb) override {
     NOTREACHED();
   }
   void StartBioEnrollment(base::OnceClosure next_callback) override {}

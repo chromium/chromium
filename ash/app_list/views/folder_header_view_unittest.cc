@@ -89,7 +89,7 @@ class FolderHeaderViewTest : public views::ViewsTestBase {
 
  protected:
   void UpdateFolderName(const std::string& name) {
-    base::string16 folder_name = base::UTF8ToUTF16(name);
+    std::u16string folder_name = base::UTF8ToUTF16(name);
     folder_header_view_->SetFolderNameForTest(folder_name);
     folder_header_view_->ContentsChanged(textfield_.get(), folder_name);
   }
@@ -107,7 +107,7 @@ class FolderHeaderViewTest : public views::ViewsTestBase {
         previous_cursor_position);
   }
 
-  void UpdatePreviousFolderName(const base::string16& previous_name) {
+  void UpdatePreviousFolderName(const std::u16string& previous_name) {
     folder_header_view_->SetPreviousFolderNameForTest(previous_name);
   }
 
@@ -164,7 +164,7 @@ TEST_F(FolderHeaderViewTest, MaxFolderNameLength) {
   }
   std::string too_long_name = max_len_name + "a";
   UpdatePreviousCursorPosition(0);
-  UpdatePreviousFolderName(base::string16());
+  UpdatePreviousFolderName(std::u16string());
 
   // Expect that the folder name does not change, and does not truncate
   UpdateFolderName(too_long_name);

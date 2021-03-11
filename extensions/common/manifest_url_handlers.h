@@ -67,7 +67,7 @@ class HomepageURLHandler : public ManifestHandler {
   HomepageURLHandler();
   ~HomepageURLHandler() override;
 
-  bool Parse(Extension* extension, base::string16* error) override;
+  bool Parse(Extension* extension, std::u16string* error) override;
 
  private:
   base::span<const char* const> Keys() const override;
@@ -81,7 +81,7 @@ class UpdateURLHandler : public ManifestHandler {
   UpdateURLHandler();
   ~UpdateURLHandler() override;
 
-  bool Parse(Extension* extension, base::string16* error) override;
+  bool Parse(Extension* extension, std::u16string* error) override;
 
  private:
   base::span<const char* const> Keys() const override;
@@ -99,7 +99,7 @@ class AboutPageHandler : public ManifestHandler {
   AboutPageHandler();
   ~AboutPageHandler() override;
 
-  bool Parse(Extension* extension, base::string16* error) override;
+  bool Parse(Extension* extension, std::u16string* error) override;
   bool Validate(const Extension* extension,
                 std::string* error,
                 std::vector<InstallWarning>* warnings) const override;

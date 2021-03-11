@@ -99,7 +99,7 @@ class APP_LIST_EXPORT SearchBoxView : public SearchBoxViewBase,
   void ProcessAutocomplete();
 
   // Updates the search box with |new_query| and starts a new search.
-  void UpdateQuery(const base::string16& new_query);
+  void UpdateQuery(const std::u16string& new_query);
 
   // Clears the search query and de-activate the search box.
   void ClearSearchAndDeactivateSearchBox();
@@ -133,12 +133,12 @@ class APP_LIST_EXPORT SearchBoxView : public SearchBoxViewBase,
 
   // After verifying autocomplete text is valid, sets the current searchbox
   // text to the autocomplete text and sets the text highlight.
-  void SetAutocompleteText(const base::string16& autocomplete_text);
+  void SetAutocompleteText(const std::u16string& autocomplete_text);
 
   // Overridden from views::TextfieldController:
   void OnBeforeUserAction(views::Textfield* sender) override;
   void ContentsChanged(views::Textfield* sender,
-                       const base::string16& new_contents) override;
+                       const std::u16string& new_contents) override;
   bool HandleKeyEvent(views::Textfield* sender,
                       const ui::KeyEvent& key_event) override;
   bool HandleMouseEvent(views::Textfield* sender,
@@ -161,7 +161,7 @@ class APP_LIST_EXPORT SearchBoxView : public SearchBoxViewBase,
   // Clear highlight range.
   void ResetHighlightRange();
 
-  base::string16 current_query_;
+  std::u16string current_query_;
 
   // The range of highlighted text for autocomplete.
   gfx::Range highlight_range_;

@@ -73,8 +73,8 @@ class PinRequestViewTest : public LoginTestBase,
     ++pin_submitted_;
     last_code_submitted_ = code;
     if (!will_authenticate_) {
-      view_->UpdateState(PinRequestViewState::kError, base::string16(),
-                         base::string16());
+      view_->UpdateState(PinRequestViewState::kError, std::u16string(),
+                         std::u16string());
       return PinRequestView::SubmissionResult::kPinError;
     }
     return PinRequestView::SubmissionResult::kPinAccepted;

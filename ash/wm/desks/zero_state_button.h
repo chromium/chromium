@@ -20,7 +20,7 @@ class ASH_EXPORT DeskButtonBase
     : public views::LabelButton,
       public OverviewHighlightController::OverviewHighlightableView {
  public:
-  DeskButtonBase(const base::string16& text,
+  DeskButtonBase(const std::u16string& text,
                  int border_corder_radius,
                  int corner_radius);
   ~DeskButtonBase() override = default;

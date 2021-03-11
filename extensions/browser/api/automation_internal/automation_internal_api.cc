@@ -71,7 +71,7 @@ class QuerySelectorHandler : public content::WebContentsObserver {
       content::WebContents* web_contents,
       int request_id,
       int acc_obj_id,
-      const base::string16& query,
+      const std::u16string& query,
       extensions::AutomationInternalQuerySelectorFunction::Callback callback)
       : content::WebContentsObserver(web_contents),
         request_id_(request_id),
@@ -688,7 +688,7 @@ AutomationInternalQuerySelectorFunction::Run() {
       content::WebContents::FromRenderFrameHost(rfh);
 
   int request_id = query_request_id_counter_++;
-  base::string16 selector = base::UTF8ToUTF16(params->args.selector);
+  std::u16string selector = base::UTF8ToUTF16(params->args.selector);
 
   // QuerySelectorHandler handles IPCs and deletes itself on completion.
   new QuerySelectorHandler(

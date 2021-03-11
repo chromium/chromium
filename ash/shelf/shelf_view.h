@@ -126,7 +126,7 @@ class ASH_EXPORT ShelfView : public views::AccessiblePaneView,
   bool ShouldHideTooltip(const gfx::Point& cursor_location) const override;
   const std::vector<aura::Window*> GetOpenWindowsForView(
       views::View* view) override;
-  base::string16 GetTitleForView(const views::View* view) const override;
+  std::u16string GetTitleForView(const views::View* view) const override;
   views::View* GetViewForEvent(const ui::Event& event) override;
 
   // Returns rectangle bounding all visible launcher items. Used screen
@@ -530,7 +530,7 @@ class ASH_EXPORT ShelfView : public views::AccessiblePaneView,
   void DestroyScopedDisplay();
 
   // Different from GetTitleForView, |view| here must be a child view.
-  base::string16 GetTitleForChildView(const views::View* view) const;
+  std::u16string GetTitleForChildView(const views::View* view) const;
 
   int CalculateAppIconsLayoutOffset() const;
 

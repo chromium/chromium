@@ -456,7 +456,7 @@ void ShelfAppButton::ShowContextMenu(const gfx::Point& p,
 
 void ShelfAppButton::GetAccessibleNodeData(ui::AXNodeData* node_data) {
   ShelfButton::GetAccessibleNodeData(node_data);
-  const base::string16 title = shelf_view_->GetTitleForView(this);
+  const std::u16string title = shelf_view_->GetTitleForView(this);
   node_data->SetName(title.empty() ? GetAccessibleName() : title);
 
   switch (app_status_) {

@@ -356,26 +356,26 @@ class Extension final : public base::RefCountedThreadSafe<Extension> {
   // of the underlying DictionaryValue in its members. We should decide to
   // either wrap the DictionaryValue and go with that only, or we should parse
   // into strong types and discard the value. But doing both is bad.
-  bool InitFromValue(int flags, base::string16* error);
+  bool InitFromValue(int flags, std::u16string* error);
 
   // The following are helpers for InitFromValue to load various features of the
   // extension from the manifest.
 
-  bool LoadRequiredFeatures(base::string16* error);
-  bool LoadName(base::string16* error);
-  bool LoadVersion(base::string16* error);
+  bool LoadRequiredFeatures(std::u16string* error);
+  bool LoadName(std::u16string* error);
+  bool LoadVersion(std::u16string* error);
 
-  bool LoadAppFeatures(base::string16* error);
+  bool LoadAppFeatures(std::u16string* error);
   bool LoadExtent(const char* key,
                   URLPatternSet* extent,
                   const char* list_error,
                   const char* value_error,
-                  base::string16* error);
+                  std::u16string* error);
 
-  bool LoadSharedFeatures(base::string16* error);
-  bool LoadDescription(base::string16* error);
-  bool LoadManifestVersion(base::string16* error);
-  bool LoadShortName(base::string16* error);
+  bool LoadSharedFeatures(std::u16string* error);
+  bool LoadDescription(std::u16string* error);
+  bool LoadManifestVersion(std::u16string* error);
+  bool LoadShortName(std::u16string* error);
 
   // The extension's human-readable name. Name is used for display purpose. It
   // might be wrapped with unicode bidi control characters so that it is

@@ -27,7 +27,7 @@ class AutomationApiHelper : public content::RenderFrameObserver {
 
   void OnQuerySelector(int acc_obj_id,
                        int request_id,
-                       const base::string16& selector);
+                       const std::u16string& selector);
 
   DISALLOW_COPY_AND_ASSIGN(AutomationApiHelper);
 };

@@ -1151,10 +1151,10 @@ const std::vector<aura::Window*> ScrollableShelfView::GetOpenWindowsForView(
   return shelf_view_->GetOpenWindowsForView(view);
 }
 
-base::string16 ScrollableShelfView::GetTitleForView(
+std::u16string ScrollableShelfView::GetTitleForView(
     const views::View* view) const {
   if (!view || !view->parent())
-    return base::string16();
+    return std::u16string();
 
   if (view->parent() == shelf_view_)
     return shelf_view_->GetTitleForView(view);
@@ -1165,7 +1165,7 @@ base::string16 ScrollableShelfView::GetTitleForView(
   if (view == right_arrow_)
     return l10n_util::GetStringUTF16(IDS_SHELF_NEXT);
 
-  return base::string16();
+  return std::u16string();
 }
 
 views::View* ScrollableShelfView::GetViewForEvent(const ui::Event& event) {

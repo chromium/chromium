@@ -220,7 +220,7 @@ views::Widget* UnifiedMessageCenterBubble::GetBubbleWidget() const {
   return bubble_widget_;
 }
 
-base::string16 UnifiedMessageCenterBubble::GetAccessibleNameForBubble() {
+std::u16string UnifiedMessageCenterBubble::GetAccessibleNameForBubble() {
   return l10n_util::GetStringUTF16(IDS_ASH_MESSAGE_CENTER_ACCESSIBLE_NAME);
 }
 

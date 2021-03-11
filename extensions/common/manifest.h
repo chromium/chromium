@@ -200,7 +200,7 @@ class Manifest final {
   bool GetBoolean(const std::string& path, bool* out_value) const;
   bool GetInteger(const std::string& path, int* out_value) const;
   bool GetString(const std::string& path, std::string* out_value) const;
-  bool GetString(const std::string& path, base::string16* out_value) const;
+  bool GetString(const std::string& path, std::u16string* out_value) const;
   // Deprecated: Use the GetDictionary() overload that accepts a base::Value
   // output parameter instead.
   bool GetDictionary(const std::string& path,

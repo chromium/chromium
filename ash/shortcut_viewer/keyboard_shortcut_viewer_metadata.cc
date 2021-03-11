@@ -53,7 +53,7 @@ ui::KeyboardCode GetKeyCodeForModifier(ui::EventFlags modifier) {
 // description or they require a special one we explicitly specify. For example,
 // ui::VKEY_COMMAND could return a string "Meta", but we want to display it as
 // "Search" or "Launcher".
-base::Optional<base::string16> GetSpecialStringForKeyboardCode(
+base::Optional<std::u16string> GetSpecialStringForKeyboardCode(
     ui::KeyboardCode key_code) {
   int msg_id = 0;
   switch (key_code) {
@@ -103,7 +103,7 @@ base::Optional<base::string16> GetSpecialStringForKeyboardCode(
 
 }  // namespace
 
-base::string16 GetStringForCategory(ShortcutCategory category) {
+std::u16string GetStringForCategory(ShortcutCategory category) {
   int msg_id = 0;
   switch (category) {
     case ShortcutCategory::kPopular:
@@ -126,13 +126,13 @@ base::string16 GetStringForCategory(ShortcutCategory category) {
       break;
     default:
       NOTREACHED();
-      return base::string16();
+      return std::u16string();
   }
   return l10n_util::GetStringUTF16(msg_id);
 }
 
-base::string16 GetStringForKeyboardCode(ui::KeyboardCode key_code) {
-  const base::Optional<base::string16> key_label =
+std::u16string GetStringForKeyboardCode(ui::KeyboardCode key_code) {
+  const base::Optional<std::u16string> key_label =
       GetSpecialStringForKeyboardCode(key_code);
   if (key_label)
     return key_label.value();
@@ -150,10 +150,10 @@ base::string16 GetStringForKeyboardCode(ui::KeyboardCode key_code) {
     }
     return base::UTF8ToUTF16(ui::KeycodeConverter::DomKeyToKeyString(dom_key));
   }
-  return base::string16();
+  return std::u16string();
 }
 
-base::string16 GetAccessibleNameForKeyboardCode(ui::KeyboardCode key_code) {
+std::u16string GetAccessibleNameForKeyboardCode(ui::KeyboardCode key_code) {
   int msg_id = 0;
   switch (key_code) {
     case ui::VKEY_OEM_PERIOD:
@@ -174,7 +174,7 @@ base::string16 GetAccessibleNameForKeyboardCode(ui::KeyboardCode key_code) {
     default:
       break;
   }
-  return msg_id ? l10n_util::GetStringUTF16(msg_id) : base::string16();
+  return msg_id ? l10n_util::GetStringUTF16(msg_id) : std::u16string();
 }
 
 const gfx::VectorIcon* GetVectorIconForKeyboardCode(ui::KeyboardCode key_code) {

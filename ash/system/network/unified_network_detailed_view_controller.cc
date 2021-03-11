@@ -31,7 +31,7 @@ views::View* UnifiedNetworkDetailedViewController::CreateView() {
   return view_;
 }
 
-base::string16 UnifiedNetworkDetailedViewController::GetAccessibleName() const {
+std::u16string UnifiedNetworkDetailedViewController::GetAccessibleName() const {
   return l10n_util::GetStringUTF16(
       IDS_ASH_QUICK_SETTINGS_BUBBLE_NETWORK_SETTINGS_ACCESSIBLE_DESCRIPTION);
 }

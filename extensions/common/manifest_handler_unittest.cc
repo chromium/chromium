@@ -76,7 +76,7 @@ class ManifestHandlerTest : public testing::Test {
                      [](const std::string& s) { return s.c_str(); });
     }
 
-    bool Parse(Extension* extension, base::string16* error) override {
+    bool Parse(Extension* extension, std::u16string* error) override {
       watcher_->Record(name_);
       return true;
     }
@@ -103,7 +103,7 @@ class ManifestHandlerTest : public testing::Test {
                                ParsingWatcher* watcher)
         : TestManifestHandler(name, keys, prereqs, watcher) {
     }
-    bool Parse(Extension* extension, base::string16* error) override {
+    bool Parse(Extension* extension, std::u16string* error) override {
       *error = base::ASCIIToUTF16(name_);
       return false;
     }
@@ -134,7 +134,7 @@ class ManifestHandlerTest : public testing::Test {
                      [](const std::string& s) { return s.c_str(); });
     }
 
-    bool Parse(Extension* extension, base::string16* error) override {
+    bool Parse(Extension* extension, std::u16string* error) override {
       return true;
     }
 

@@ -46,13 +46,13 @@ using ContentLayerType = AshColorProvider::ContentLayerType;
 
 namespace {
 
-base::string16 FormatDate(const base::Time& time) {
+std::u16string FormatDate(const base::Time& time) {
   // Use 'short' month format (e.g., "Oct") followed by non-padded day of
   // month (e.g., "2", "10").
   return base::TimeFormatWithPattern(time, "LLLd");
 }
 
-base::string16 FormatDayOfWeek(const base::Time& time) {
+std::u16string FormatDayOfWeek(const base::Time& time) {
   // Use 'short' day of week format (e.g., "Wed").
   return base::TimeFormatWithPattern(time, "EEE");
 }
@@ -210,8 +210,8 @@ void BatteryView::OnPowerStatusChanged() {
 }
 
 void BatteryView::Update() {
-  base::string16 percentage_text;
-  base::string16 status_text;
+  std::u16string percentage_text;
+  std::u16string status_text;
   std::tie(percentage_text, status_text) =
       PowerStatus::Get()->GetStatusStrings();
 
@@ -379,7 +379,7 @@ void EnterpriseManagedView::Update() {
   }
 
   // Display both device and user management if the feature is enabled.
-  base::string16 managed_string;
+  std::u16string managed_string;
   if (enterprise_domain_manager.empty() && account_domain_manager.empty()) {
     managed_string = l10n_util::GetStringFUTF16(
         IDS_ASH_ENTERPRISE_DEVICE_MANAGED, ui::GetChromeOSDeviceName());
@@ -391,7 +391,7 @@ void EnterpriseManagedView::Update() {
                                    base::UTF8ToUTF16(enterprise_domain_manager),
                                    base::UTF8ToUTF16(account_domain_manager));
   } else {
-    base::string16 display_domain_manager =
+    std::u16string display_domain_manager =
         enterprise_domain_manager.empty()
             ? base::UTF8ToUTF16(account_domain_manager)
             : base::UTF8ToUTF16(enterprise_domain_manager);

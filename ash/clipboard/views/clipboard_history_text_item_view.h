@@ -26,7 +26,7 @@ class ClipboardHistoryTextItemView : public ClipboardHistoryItemView {
   ~ClipboardHistoryTextItemView() override;
 
  protected:
-  const base::string16& text() const { return text_; }
+  const std::u16string& text() const { return text_; }
 
   // ClipboardHistoryItemView:
   std::unique_ptr<ContentsView> CreateContentsView() override;
@@ -35,11 +35,11 @@ class ClipboardHistoryTextItemView : public ClipboardHistoryItemView {
   class TextContentsView;
 
   // ClipboardHistoryItemView:
-  base::string16 GetAccessibleName() const override;
+  std::u16string GetAccessibleName() const override;
   const char* GetClassName() const override;
 
   // Text to show.
-  const base::string16 text_;
+  const std::u16string text_;
 };
 
 }  // namespace ash

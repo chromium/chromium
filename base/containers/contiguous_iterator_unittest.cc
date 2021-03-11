@@ -234,21 +234,21 @@ TEST(ContiguousIterator, String) {
 }
 
 TEST(ContiguousIterator, String16) {
-  static_assert(IsContiguousIterator<base::string16::iterator>::value,
-                "Error: base::string16:iterator should be considered a "
+  static_assert(IsContiguousIterator<std::u16string::iterator>::value,
+                "Error: std::u16string:iterator should be considered a "
                 "contiguous iterator.");
 
-  static_assert(IsContiguousIterator<base::string16::const_iterator>::value,
-                "Error: base::string16::const_iterator should be considered a "
+  static_assert(IsContiguousIterator<std::u16string::const_iterator>::value,
+                "Error: std::u16string::const_iterator should be considered a "
                 "contiguous iterator.");
 
-  static_assert(!IsContiguousIterator<base::string16::reverse_iterator>::value,
-                "Error: base::string16::reverse_iterator should not be "
+  static_assert(!IsContiguousIterator<std::u16string::reverse_iterator>::value,
+                "Error: std::u16string::reverse_iterator should not be "
                 "considered a contiguous iterator.");
 
   static_assert(
-      !IsContiguousIterator<base::string16::const_reverse_iterator>::value,
-      "Error: base::string16::const_reverse_iterator should not be considered a"
+      !IsContiguousIterator<std::u16string::const_reverse_iterator>::value,
+      "Error: std::u16string::const_reverse_iterator should not be considered a"
       "contiguous iterator.");
 }
 

@@ -30,7 +30,7 @@ class ASH_EXPORT ImeModeIndicatorView : public views::BubbleDialogDelegateView {
 
   // The cursor bounds is in the universal screen coordinates in DIP.
   ImeModeIndicatorView(const gfx::Rect& cursor_bounds,
-                       const base::string16& label);
+                       const std::u16string& label);
   ImeModeIndicatorView(const ImeModeIndicatorView&) = delete;
   ImeModeIndicatorView& operator=(const ImeModeIndicatorView&) = delete;
   ~ImeModeIndicatorView() override;

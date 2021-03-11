@@ -32,7 +32,7 @@ views::View* UnifiedAccessibilityDetailedViewController::CreateView() {
   return view_;
 }
 
-base::string16 UnifiedAccessibilityDetailedViewController::GetAccessibleName()
+std::u16string UnifiedAccessibilityDetailedViewController::GetAccessibleName()
     const {
   return l10n_util::GetStringUTF16(
       IDS_ASH_QUICK_SETTINGS_BUBBLE_A11Y_SETTINGS_ACCESSIBLE_DESCRIPTION);

@@ -120,7 +120,7 @@ void EnableHotspotQuickActionController::SetState(ActionState state) {
   if (state == ActionState::kNoReception) {
     item_->SetIconTooltip(l10n_util::GetStringUTF16(state_text_id));
   } else {
-    base::string16 tooltip_state =
+    std::u16string tooltip_state =
         l10n_util::GetStringFUTF16(state_text_id, item_->GetItemLabel());
     item_->SetIconTooltip(l10n_util::GetStringFUTF16(
         IDS_ASH_PHONE_HUB_QUICK_ACTIONS_TOGGLE_TOOLTIP, item_->GetItemLabel(),

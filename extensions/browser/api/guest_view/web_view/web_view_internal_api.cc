@@ -737,7 +737,7 @@ ExtensionFunction::ResponseAction WebViewInternalFindFunction::Run() {
   EXTENSION_FUNCTION_VALIDATE(params.get());
 
   // Convert the std::string search_text to string16.
-  base::string16 search_text;
+  std::u16string search_text;
   base::UTF8ToUTF16(
       params->search_text.c_str(), params->search_text.length(), &search_text);
 

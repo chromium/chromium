@@ -23,7 +23,7 @@ class NotificationMenuViewTestAPI {
   ~NotificationMenuViewTestAPI();
 
   // Returns the numeric string contained in the counter view.
-  base::string16 GetCounterViewContents() const;
+  std::u16string GetCounterViewContents() const;
 
   // Returns the number of NotificationItemViews.
   int GetItemViewCount() const;

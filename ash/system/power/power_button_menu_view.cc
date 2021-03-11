@@ -149,7 +149,7 @@ void PowerButtonMenuView::RecreateItems() {
   auto add_remove_item =
       [this](bool create, PowerButtonMenuActionType action,
              base::RepeatingClosure callback, const gfx::VectorIcon& icon,
-             const base::string16& string,
+             const std::u16string& string,
              PowerButtonMenuItemView** out_item_ptr) -> void {
     // If an item needs to be created and exists, or needs to be destroyed but
     // does not exist, there is nothing to be done.

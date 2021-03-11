@@ -111,7 +111,7 @@ void DualRoleNotification::Update() {
 }
 
 std::unique_ptr<Notification> DualRoleNotification::CreateNotification() {
-  base::string16 title;
+  std::u16string title;
   if (dual_role_source_) {
     title = l10n_util::GetStringFUTF16(
         IDS_ASH_STATUS_TRAY_CHARGING_FROM_DUAL_ROLE_TITLE,
@@ -134,7 +134,7 @@ std::unique_ptr<Notification> DualRoleNotification::CreateNotification() {
   std::unique_ptr<Notification> notification = CreateSystemNotification(
       message_center::NOTIFICATION_TYPE_SIMPLE, kDualRoleNotificationId, title,
       l10n_util::GetStringUTF16(IDS_ASH_STATUS_TRAY_DUAL_ROLE_MESSAGE),
-      base::string16(), GURL(),
+      std::u16string(), GURL(),
       message_center::NotifierId(message_center::NotifierType::SYSTEM_COMPONENT,
                                  kNotifierDualRole),
       message_center::RichNotificationData(), std::move(delegate),

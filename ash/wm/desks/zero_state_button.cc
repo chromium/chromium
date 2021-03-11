@@ -41,7 +41,7 @@ constexpr int kZeroStateDefaultDeskButtonMinWidth = 56;
 // -----------------------------------------------------------------------------
 // DeskButtonBase:
 
-DeskButtonBase::DeskButtonBase(const base::string16& text,
+DeskButtonBase::DeskButtonBase(const std::u16string& text,
                                int border_corder_radius,
                                int corner_radius)
     : LabelButton(base::BindRepeating(&DeskButtonBase::OnButtonPressed,
@@ -57,7 +57,7 @@ DeskButtonBase::DeskButtonBase(const base::string16& text,
   SetFocusPainter(nullptr);
   SetFocusBehavior(views::View::FocusBehavior::ACCESSIBLE_ONLY);
 
-  const base::string16 tooltip_text =
+  const std::u16string tooltip_text =
       text.empty() ? l10n_util::GetStringUTF16(IDS_ASH_DESKS_NEW_DESK_BUTTON)
                    : text;
   SetAccessibleName(tooltip_text);
@@ -201,7 +201,7 @@ void ZeroStateDefaultDeskButton::UpdateLabelText() {
 // ZeroStateNewDeskButton:
 
 ZeroStateNewDeskButton::ZeroStateNewDeskButton()
-    : DeskButtonBase(base::string16(), kCornerRadius, kCornerRadius) {
+    : DeskButtonBase(std::u16string(), kCornerRadius, kCornerRadius) {
   highlight_on_hover_ = false;
 }
 

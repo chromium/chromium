@@ -70,7 +70,7 @@ bool ManifestHandler::IsRegistrationFinalized() {
 
 // static
 bool ManifestHandler::ParseExtension(Extension* extension,
-                                     base::string16* error) {
+                                     std::u16string* error) {
   return ManifestHandlerRegistry::Get()->ParseExtension(extension, error);
 }
 
@@ -130,7 +130,7 @@ void ManifestHandlerRegistry::RegisterHandler(
 }
 
 bool ManifestHandlerRegistry::ParseExtension(Extension* extension,
-                                             base::string16* error) {
+                                             std::u16string* error) {
   std::map<int, ManifestHandler*> handlers_by_priority;
   for (ManifestHandlerMap::iterator iter = handlers_.begin();
        iter != handlers_.end(); ++iter) {

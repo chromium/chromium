@@ -44,7 +44,7 @@ void CheckRoundtrips16(const uint8_t* data,
                        const size_t size,
                        bool (*string_to_num)(base::StringPiece16,
                                              NumberType*)) {
-  return CheckRoundtripsT<NumberType, base::StringPiece16, base::string16>(
+  return CheckRoundtripsT<NumberType, base::StringPiece16, std::u16string>(
       data, size, &base::NumberToString16, string_to_num);
 }
 

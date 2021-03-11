@@ -415,7 +415,7 @@ bool AutomationPosition::IsValid(gin::Arguments* arguments) {
   return position_->IsValid();
 }
 
-base::string16 AutomationPosition::GetText(gin::Arguments* arguments) {
+std::u16string AutomationPosition::GetText(gin::Arguments* arguments) {
   return position_->GetText();
 }
 

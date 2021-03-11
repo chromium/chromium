@@ -195,7 +195,7 @@ void FocusFirstOrLastFocusableChild(views::View* root, bool reverse) {
 // |bold_start|:  The position in |text| to start bolding.
 // |bold_length|: The length of bold text.
 void MakeSectionBold(views::StyledLabel* label,
-                     const base::string16& text,
+                     const std::u16string& text,
                      const base::Optional<int>& bold_start,
                      int bold_length) {
   auto create_style = [&](bool is_bold) {
@@ -326,7 +326,7 @@ class UserAddingScreenIndicator : public views::View {
     info_icon_ = AddChildView(new views::ImageView());
     info_icon_->SetPreferredSize(gfx::Size(kInfoIconSizeDp, kInfoIconSizeDp));
 
-    base::string16 message =
+    std::u16string message =
         l10n_util::GetStringUTF16(IDS_ASH_LOGIN_USER_ADDING_BANNER);
     label_ = AddChildView(login_views_utils::CreateBubbleLabel(message, this));
     label_->SetText(message);
@@ -383,7 +383,7 @@ class LockContentsView::AuthErrorBubble : public LoginErrorBubble {
 
 class LockContentsView::ManagementBubble : public LoginTooltipView {
  public:
-  ManagementBubble(const base::string16& message, views::View* anchor_view)
+  ManagementBubble(const std::u16string& message, views::View* anchor_view)
       : LoginTooltipView(message, anchor_view) {
     views::BoxLayout* layout_manager =
         SetLayoutManager(std::make_unique<views::BoxLayout>(
@@ -1185,7 +1185,7 @@ void LockContentsView::OnShowEasyUnlockIcon(const AccountId& user,
   }
 }
 
-void LockContentsView::OnWarningMessageUpdated(const base::string16& message) {
+void LockContentsView::OnWarningMessageUpdated(const std::u16string& message) {
   if (message.empty()) {
     if (warning_banner_bubble_->GetVisible())
       warning_banner_bubble_->Hide();
@@ -1357,7 +1357,7 @@ void LockContentsView::OnDetachableBasePairingStatusChanged(
   if (auth_error_bubble_->GetVisible())
     auth_error_bubble_->Hide();
 
-  base::string16 error_text =
+  std::u16string error_text =
       l10n_util::GetStringUTF16(IDS_ASH_LOGIN_ERROR_DETACHABLE_BASE_CHANGED);
 
   detachable_base_error_bubble_->SetTextContent(error_text);
@@ -2010,13 +2010,13 @@ void LockContentsView::UpdateEasyUnlockIconForUser(const AccountId& user) {
   // Hide easy unlock icon if there is no data is available.
   if (!state->easy_unlock_state) {
     big_view->auth_user()->SetEasyUnlockIcon(EasyUnlockIconId::NONE,
-                                             base::string16());
+                                             std::u16string());
     return;
   }
 
   // TODO(jdufault): Make easy unlock backend always send aria_label, right now
   // it is only sent if there is no tooltip.
-  base::string16 accessibility_label = state->easy_unlock_state->aria_label;
+  std::u16string accessibility_label = state->easy_unlock_state->aria_label;
   if (accessibility_label.empty())
     accessibility_label = state->easy_unlock_state->tooltip;
 
@@ -2050,7 +2050,7 @@ void LockContentsView::ShowAuthErrorMessage() {
     return;
   }
 
-  base::string16 error_text = l10n_util::GetStringUTF16(
+  std::u16string error_text = l10n_util::GetStringUTF16(
       unlock_attempt_ > 1 ? IDS_ASH_LOGIN_ERROR_AUTHENTICATING_2ND_TIME
                           : IDS_ASH_LOGIN_ERROR_AUTHENTICATING);
   ImeControllerImpl* ime_controller = Shell::Get()->ime_controller();
@@ -2066,7 +2066,7 @@ void LockContentsView::ShowAuthErrorMessage() {
   if (ime_controller->available_imes().size() > 1 && !IsTabletMode()) {
     error_text += base::ASCIIToUTF16(" ");
     bold_start = error_text.length();
-    base::string16 shortcut =
+    std::u16string shortcut =
         l10n_util::GetStringUTF16(IDS_ASH_LOGIN_KEYBOARD_SWITCH_SHORTCUT);
     bold_length = shortcut.length();
 

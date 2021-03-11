@@ -233,7 +233,7 @@ class ASH_EXPORT LockScreenMediaControlsView
 
   // Caches the text to be read by screen readers describing the media controls
   // view.
-  base::string16 accessible_name_;
+  std::u16string accessible_name_;
 
   // Set of enabled actions.
   base::flat_set<media_session::mojom::MediaSessionAction> enabled_actions_;

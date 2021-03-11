@@ -24,7 +24,7 @@ class DeclarativeManifestHandler : public ManifestHandler {
   ~DeclarativeManifestHandler() override;
 
   // ManifestHandler overrides.
-  bool Parse(Extension* extension, base::string16* error) override;
+  bool Parse(Extension* extension, std::u16string* error) override;
 
  private:
   // ManifestHandler overrides.

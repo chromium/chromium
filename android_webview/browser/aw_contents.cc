@@ -535,12 +535,12 @@ void AwContents::AddVisitedLinks(
     const JavaParamRef<jobject>& obj,
     const JavaParamRef<jobjectArray>& jvisited_links) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  std::vector<base::string16> visited_link_strings;
+  std::vector<std::u16string> visited_link_strings;
   base::android::AppendJavaStringArrayToStringVector(env, jvisited_links,
                                                      &visited_link_strings);
 
   std::vector<GURL> visited_link_gurls;
-  std::vector<base::string16>::const_iterator itr;
+  std::vector<std::u16string>::const_iterator itr;
   for (itr = visited_link_strings.begin(); itr != visited_link_strings.end();
        ++itr) {
     visited_link_gurls.push_back(GURL(*itr));
@@ -1381,12 +1381,12 @@ base::android::ScopedJavaLocalRef<jstring> AwContents::AddWebMessageListener(
     const base::android::JavaParamRef<jobject>& listener,
     const base::android::JavaParamRef<jstring>& js_object_name,
     const base::android::JavaParamRef<jobjectArray>& allowed_origin_rules) {
-  base::string16 native_js_object_name =
+  std::u16string native_js_object_name =
       base::android::ConvertJavaStringToUTF16(env, js_object_name);
   std::vector<std::string> native_allowed_origin_rule_strings;
   AppendJavaStringArrayToStringVector(env, allowed_origin_rules,
                                       &native_allowed_origin_rule_strings);
-  const base::string16 error_message =
+  const std::u16string error_message =
       GetJsCommunicationHost()->AddWebMessageHostFactory(
           std::make_unique<AwWebMessageHostFactory>(listener),
           native_js_object_name, native_allowed_origin_rule_strings);

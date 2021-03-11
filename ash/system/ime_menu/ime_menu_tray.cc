@@ -422,7 +422,7 @@ void ImeMenuTray::OnThemeChanged() {
   UpdateTrayLabel();
 }
 
-base::string16 ImeMenuTray::GetAccessibleNameForTray() {
+std::u16string ImeMenuTray::GetAccessibleNameForTray() {
   return l10n_util::GetStringUTF16(IDS_ASH_IME_MENU_ACCESSIBLE_NAME);
 }
 
@@ -498,7 +498,7 @@ void ImeMenuTray::OnIMEMenuActivationChanged(bool is_activated) {
     CloseBubble();
 }
 
-base::string16 ImeMenuTray::GetAccessibleNameForBubble() {
+std::u16string ImeMenuTray::GetAccessibleNameForBubble() {
   return l10n_util::GetStringUTF16(IDS_ASH_IME_MENU_ACCESSIBLE_NAME);
 }
 

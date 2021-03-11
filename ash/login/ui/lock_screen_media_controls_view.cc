@@ -138,7 +138,7 @@ class MediaActionButton : public views::ImageButton {
   MediaActionButton(LockScreenMediaControlsView* view,
                     int icon_size,
                     MediaSessionAction action,
-                    const base::string16& accessible_name)
+                    const std::u16string& accessible_name)
       : views::ImageButton(base::BindRepeating(
             // Handle dynamically-updated button tags without rebinding.
             [](LockScreenMediaControlsView* controls,
@@ -172,7 +172,7 @@ class MediaActionButton : public views::ImageButton {
   ~MediaActionButton() override = default;
 
   void SetAction(MediaSessionAction action,
-                 const base::string16& accessible_name) {
+                 const std::u16string& accessible_name) {
     set_tag(static_cast<int>(action));
     SetTooltipText(accessible_name);
     UpdateIcon();
@@ -535,7 +535,7 @@ void LockScreenMediaControlsView::MediaSessionMetadataChanged(
 
   media_session::MediaMetadata session_metadata =
       metadata.value_or(media_session::MediaMetadata());
-  base::string16 source_title =
+  std::u16string source_title =
       session_metadata.source_title.empty()
           ? message_center::MessageCenter::Get()->GetSystemNotificationAppName()
           : session_metadata.source_title;

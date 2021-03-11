@@ -44,7 +44,7 @@ class LoginPinInputViewTest
     SetWidget(CreateWidgetWithContent(view_));
   }
 
-  void OnPinSubmit(const base::string16& pin) {
+  void OnPinSubmit(const std::u16string& pin) {
     submitted_pin_ = base::make_optional(pin);
   }
 
@@ -78,7 +78,7 @@ class LoginPinInputViewTest
   int length_ = 0;
 
   // Generated during the callback response.
-  base::Optional<base::string16> submitted_pin_;
+  base::Optional<std::u16string> submitted_pin_;
   base::Optional<bool> is_empty_;
 };
 

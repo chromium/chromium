@@ -93,7 +93,7 @@ gfx::ImageSkia GetDisconnectedImageForNetworkType(
     chromeos::network_config::mojom::NetworkType network_type);
 
 // Returns the label for |network| when displayed in a list.
-ASH_EXPORT base::string16 GetLabelForNetworkList(
+ASH_EXPORT std::u16string GetLabelForNetworkList(
     const chromeos::network_config::mojom::NetworkStateProperties* network);
 
 // Called periodically with the current list of network guids. Removes cached

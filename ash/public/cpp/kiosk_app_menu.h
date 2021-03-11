@@ -33,7 +33,7 @@ struct ASH_PUBLIC_EXPORT KioskAppMenuEntry {
   // For ARC kiosk apps only, the account id for the app.
   AccountId account_id;
 
-  base::string16 name;
+  std::u16string name;
 
   gfx::ImageSkia icon;
 };

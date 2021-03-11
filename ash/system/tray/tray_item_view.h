@@ -30,11 +30,11 @@ class Shelf;
 // understandable.
 class IconizedLabel : public views::Label {
  public:
-  void SetCustomAccessibleName(const base::string16& name) {
+  void SetCustomAccessibleName(const std::u16string& name) {
     custom_accessible_name_ = name;
   }
 
-  base::string16 GetAccessibleNameString() const {
+  std::u16string GetAccessibleNameString() const {
     return custom_accessible_name_;
   }
 
@@ -42,7 +42,7 @@ class IconizedLabel : public views::Label {
   void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
 
  private:
-  base::string16 custom_accessible_name_;
+  std::u16string custom_accessible_name_;
 };
 
 // Base-class for items in the tray. It makes sure the widget is updated

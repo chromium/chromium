@@ -30,7 +30,7 @@ class ASH_EXPORT NotificationCounterView : public TrayItemView {
   void Update();
 
   // Returns a string describing the current state for accessibility.
-  base::string16 GetAccessibleNameString() const;
+  std::u16string GetAccessibleNameString() const;
 
   // TrayItemView:
   void HandleLocaleChange() override;

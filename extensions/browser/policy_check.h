@@ -29,11 +29,11 @@ class PolicyCheck : public PreloadCheck {
 
   // PreloadCheck:
   void Start(ResultCallback callback) override;
-  base::string16 GetErrorMessage() const override;
+  std::u16string GetErrorMessage() const override;
 
  private:
   content::BrowserContext* context_;
-  base::string16 error_;
+  std::u16string error_;
 
   DISALLOW_COPY_AND_ASSIGN(PolicyCheck);
 };

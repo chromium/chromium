@@ -136,7 +136,7 @@ bool AwContentRendererClient::HandleNavigation(
   }
 
   bool ignore_navigation = false;
-  base::string16 url = request.Url().GetString().Utf16();
+  std::u16string url = request.Url().GetString().Utf16();
   bool has_user_gesture = request.HasUserGesture();
 
   mojo::AssociatedRemote<mojom::FrameHost> frame_host_remote;

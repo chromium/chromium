@@ -37,7 +37,7 @@ class ExternallyConnectableHandler : public ManifestHandler {
   ExternallyConnectableHandler();
   ~ExternallyConnectableHandler() override;
 
-  bool Parse(Extension* extension, base::string16* error) override;
+  bool Parse(Extension* extension, std::u16string* error) override;
 
  private:
   base::span<const char* const> Keys() const override;
@@ -58,7 +58,7 @@ struct ExternallyConnectableInfo : public Extension::ManifestData {
       const base::Value& value,
       bool allow_all_urls,
       std::vector<InstallWarning>* install_warnings,
-      base::string16* error);
+      std::u16string* error);
 
   ~ExternallyConnectableInfo() override;
 

@@ -43,7 +43,7 @@ class SelectToSpeakSpeedView : public views::BoxLayoutView,
 
  private:
   void AddMenuItem(int option_id,
-                   const base::string16& label,
+                   const std::u16string& label,
                    bool is_selected);
 
   // ViewClickListener:

@@ -89,7 +89,7 @@ void ClipboardHistoryMenuModelAdapter::Run(
   const ui::DataTransferEndpoint data_dst(ui::EndpointType::kDefault,
                                           /*notify_if_restricted=*/false);
   for (const auto& item : items) {
-    model_->AddItem(command_id, base::string16());
+    model_->AddItem(command_id, std::u16string());
     item_snapshots_.emplace(command_id, item);
     ++command_id;
   }

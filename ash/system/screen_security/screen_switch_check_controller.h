@@ -28,12 +28,12 @@ class ScreenSwitchCheckController : public ScreenCaptureObserver,
   void OnScreenCaptureStart(
       const base::RepeatingClosure& stop_callback,
       const base::RepeatingClosure& source_callback,
-      const base::string16& screen_capture_status) override;
+      const std::u16string& screen_capture_status) override;
   void OnScreenCaptureStop() override;
 
   // ScreenShareObserver:
   void OnScreenShareStart(const base::RepeatingClosure& stop_callback,
-                          const base::string16& helper_name) override;
+                          const std::u16string& helper_name) override;
   void OnScreenShareStop() override;
 
   bool has_capture_ = false;

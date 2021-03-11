@@ -47,8 +47,8 @@ constexpr SkColor kNotificationTitleTextColor =
 NotificationItemView::NotificationItemView(
     NotificationMenuView::Delegate* delegate,
     views::SlideOutControllerDelegate* slide_out_controller_delegate,
-    const base::string16& title,
-    const base::string16& message,
+    const std::u16string& title,
+    const std::u16string& message,
     const gfx::Image& icon,
     const std::string& notification_id)
     : delegate_(delegate),
@@ -95,8 +95,8 @@ NotificationItemView::NotificationItemView(
 
 NotificationItemView::~NotificationItemView() = default;
 
-void NotificationItemView::UpdateContents(const base::string16& title,
-                                          const base::string16& message,
+void NotificationItemView::UpdateContents(const std::u16string& title,
+                                          const std::u16string& message,
                                           const gfx::Image& icon) {
   if (title_ != title) {
     title_ = title;

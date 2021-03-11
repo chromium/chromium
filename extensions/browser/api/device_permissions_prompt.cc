@@ -47,12 +47,12 @@ class UsbDeviceInfo : public DevicePermissionsPrompt::Prompt::DeviceInfo {
       : device_(std::move(device)) {
     name_ = DevicePermissionsManager::GetPermissionMessage(
         device_->vendor_id, device_->product_id,
-        device_->manufacturer_name.value_or(base::string16()),
-        device_->product_name.value_or(base::string16()),
-        base::string16(),  // Serial number is displayed separately.
+        device_->manufacturer_name.value_or(std::u16string()),
+        device_->product_name.value_or(std::u16string()),
+        std::u16string(),  // Serial number is displayed separately.
         true);
     serial_number_ =
-        device_->serial_number ? *(device_->serial_number) : base::string16();
+        device_->serial_number ? *(device_->serial_number) : std::u16string();
   }
 
   ~UsbDeviceInfo() override {}
@@ -125,7 +125,7 @@ class UsbDevicePermissionsPrompt : public DevicePermissionsPrompt::Prompt,
       UsbDeviceInfo* entry = static_cast<UsbDeviceInfo*>((*it).get());
       if (entry->device()->guid == device.guid) {
         size_t index = it - devices_.begin();
-        base::string16 device_name = (*it)->name();
+        std::u16string device_name = (*it)->name();
         devices_.erase(it);
         if (observer())
           observer()->OnDeviceRemoved(index, device_name);
@@ -188,9 +188,9 @@ class HidDeviceInfo : public DevicePermissionsPrompt::Prompt::DeviceInfo {
       : device_(std::move(device)) {
     name_ = DevicePermissionsManager::GetPermissionMessage(
         device_->vendor_id, device_->product_id,
-        base::string16(),  // HID devices include manufacturer in product name.
+        std::u16string(),  // HID devices include manufacturer in product name.
         base::UTF8ToUTF16(device_->product_name),
-        base::string16(),  // Serial number is displayed separately.
+        std::u16string(),  // Serial number is displayed separately.
         false);
     serial_number_ = base::UTF8ToUTF16(device_->serial_number);
   }
@@ -283,7 +283,7 @@ class HidDevicePermissionsPrompt : public DevicePermissionsPrompt::Prompt,
       HidDeviceInfo* entry = static_cast<HidDeviceInfo*>((*it).get());
       if (entry->device()->guid == device->guid) {
         size_t index = it - devices_.begin();
-        base::string16 device_name = (*it)->name();
+        std::u16string device_name = (*it)->name();
         devices_.erase(it);
         if (observer())
           observer()->OnDeviceRemoved(index, device_name);
@@ -372,13 +372,13 @@ void DevicePermissionsPrompt::Prompt::SetObserver(Observer* observer) {
   observer_ = observer;
 }
 
-base::string16 DevicePermissionsPrompt::Prompt::GetDeviceName(
+std::u16string DevicePermissionsPrompt::Prompt::GetDeviceName(
     size_t index) const {
   DCHECK_LT(index, devices_.size());
   return devices_[index]->name();
 }
 
-base::string16 DevicePermissionsPrompt::Prompt::GetDeviceSerialNumber(
+std::u16string DevicePermissionsPrompt::Prompt::GetDeviceSerialNumber(
     size_t index) const {
   DCHECK_LT(index, devices_.size());
   return devices_[index]->serial_number();
@@ -394,7 +394,7 @@ DevicePermissionsPrompt::Prompt::~Prompt() {
 
 void DevicePermissionsPrompt::Prompt::AddDevice(
     std::unique_ptr<DeviceInfo> device) {
-  base::string16 device_name = device->name();
+  std::u16string device_name = device->name();
   devices_.push_back(std::move(device));
   if (observer_)
     observer_->OnDeviceAdded(devices_.size() - 1, device_name);

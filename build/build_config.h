@@ -224,7 +224,7 @@
 // The compiler thinks std::string::const_iterator and "const char*" are
 // equivalent types.
 #define STD_STRING_ITERATOR_IS_CHAR_POINTER
-// The compiler thinks base::string16::const_iterator and "char16*" are
+// The compiler thinks std::u16string::const_iterator and "char16*" are
 // equivalent types.
 #define BASE_STRING16_ITERATOR_IS_CHAR16_POINTER
 #endif

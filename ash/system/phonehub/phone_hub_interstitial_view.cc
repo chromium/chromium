@@ -149,13 +149,13 @@ void PhoneHubInterstitialView::SetImage(const gfx::ImageSkia& image) {
   image_->SetImage(image);
 }
 
-void PhoneHubInterstitialView::SetTitle(const base::string16& title) {
+void PhoneHubInterstitialView::SetTitle(const std::u16string& title) {
   // Expect a non-empty string for the title.
   DCHECK(!title.empty());
   title_->SetText(title);
 }
 
-void PhoneHubInterstitialView::SetDescription(const base::string16& desc) {
+void PhoneHubInterstitialView::SetDescription(const std::u16string& desc) {
   // Expect a non-empty string for the description.
   DCHECK(!desc.empty());
   description_->SetText(desc);

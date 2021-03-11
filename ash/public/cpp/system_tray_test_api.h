@@ -57,11 +57,11 @@ class ASH_EXPORT SystemTrayTestApi {
 
   // Returns the tooltip for a bubble view, or the empty string if the view
   // does not exist.
-  base::string16 GetBubbleViewTooltip(int view_id);
+  std::u16string GetBubbleViewTooltip(int view_id);
 
   // Returns the text for a bubble view, or the empty string if the view
   // does not exist. This method only works if the bubble view is a label.
-  base::string16 GetBubbleViewText(int view_id);
+  std::u16string GetBubbleViewText(int view_id);
 
   // Get the notification pop up view based on the notification id.
   message_center::MessagePopupView* GetPopupViewForNotificationID(

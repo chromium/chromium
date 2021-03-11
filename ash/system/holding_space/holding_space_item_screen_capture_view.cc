@@ -81,7 +81,7 @@ views::View* HoldingSpaceItemScreenCaptureView::GetTooltipHandlerForPoint(
   return HitTestPoint(point) ? this : nullptr;
 }
 
-base::string16 HoldingSpaceItemScreenCaptureView::GetTooltipText(
+std::u16string HoldingSpaceItemScreenCaptureView::GetTooltipText(
     const gfx::Point& point) const {
   return item()->text();
 }

@@ -45,7 +45,7 @@ class ASH_EXPORT QuietModeFeaturePodController
       const std::vector<NotifierMetadata>& notifiers) override;
 
  private:
-  base::string16 GetQuietModeStateTooltip();
+  std::u16string GetQuietModeStateTooltip();
 
   void RecordDisabledNotifierCount(int disabled_count);
 

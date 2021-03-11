@@ -51,7 +51,7 @@ class OptionsPageInfo : public Extension::ManifestData {
       const base::Value* options_ui_value,
       const std::string& options_page_string,
       std::vector<InstallWarning>* install_warnings,
-      base::string16* error);
+      std::u16string* error);
 
  private:
   // The URL to the options page of this extension. We only store one options
@@ -72,7 +72,7 @@ class OptionsPageManifestHandler : public ManifestHandler {
   OptionsPageManifestHandler();
   ~OptionsPageManifestHandler() override;
 
-  bool Parse(Extension* extension, base::string16* error) override;
+  bool Parse(Extension* extension, std::u16string* error) override;
   bool Validate(const Extension* extension,
                 std::string* error,
                 std::vector<InstallWarning>* warnings) const override;

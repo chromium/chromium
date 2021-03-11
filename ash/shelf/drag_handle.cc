@@ -272,7 +272,7 @@ gfx::Rect DragHandle::GetAnchorBoundsInScreen() const {
 void DragHandle::GetAccessibleNodeData(ui::AXNodeData* node_data) {
   Button::GetAccessibleNodeData(node_data);
 
-  base::string16 accessible_name = base::string16();
+  std::u16string accessible_name = std::u16string();
   switch (shelf_->shelf_layout_manager()->hotseat_state()) {
     case HotseatState::kNone:
     case HotseatState::kShownClamshell:

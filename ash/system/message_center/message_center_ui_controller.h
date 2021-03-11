@@ -70,7 +70,7 @@ class ASH_EXPORT MessageCenterUiController
   void OnNotificationClicked(
       const std::string& notification_id,
       const base::Optional<int>& button_index,
-      const base::Optional<base::string16>& reply) override;
+      const base::Optional<std::u16string>& reply) override;
   void OnNotificationDisplayed(
       const std::string& notification_id,
       const message_center::DisplaySource source) override;

@@ -25,7 +25,7 @@ class SocketsManifestHandler : public ManifestHandler {
   ~SocketsManifestHandler() override;
 
   // ManifestHandler overrides.
-  bool Parse(Extension* extension, base::string16* error) override;
+  bool Parse(Extension* extension, std::u16string* error) override;
   ManifestPermission* CreatePermission() override;
   ManifestPermission* CreateInitialRequiredPermission(
       const Extension* extension) override;

@@ -139,7 +139,7 @@ class ManagementUninstallFunctionBase : public ExtensionFunction {
   ManagementUninstallFunctionBase();
 
   void OnExtensionUninstallDialogClosed(bool did_start_uninstall,
-                                        const base::string16& error);
+                                        const std::u16string& error);
 
  protected:
   ~ManagementUninstallFunctionBase() override;

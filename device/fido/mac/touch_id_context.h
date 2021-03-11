@@ -57,7 +57,7 @@ class COMPONENT_EXPORT(DEVICE_FIDO)
   // reason string to the user. On completion or error, the provided callback is
   // invoked, unless the TouchIdContext instance has been destroyed in the
   // meantime (in which case nothing happens).
-  virtual void PromptTouchId(const base::string16& reason, Callback callback);
+  virtual void PromptTouchId(const std::u16string& reason, Callback callback);
 
   // authentication_context returns the LAContext used for the local user
   // authentication prompt.

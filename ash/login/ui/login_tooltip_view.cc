@@ -24,7 +24,7 @@ constexpr int kInfoIconSizeDp = 20;
 
 }  // namespace
 
-LoginTooltipView::LoginTooltipView(const base::string16& message,
+LoginTooltipView::LoginTooltipView(const std::u16string& message,
                                    views::View* anchor_view)
     : LoginBaseBubbleView(anchor_view) {
   info_icon_ = AddChildView(std::make_unique<views::ImageView>());

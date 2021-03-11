@@ -26,8 +26,8 @@
 namespace device {
 
 namespace {
-base::string16 OptionalGURLToUTF16(const base::Optional<GURL>& in) {
-  return in ? base::UTF8ToUTF16(in->spec()) : base::string16();
+std::u16string OptionalGURLToUTF16(const base::Optional<GURL>& in) {
+  return in ? base::UTF8ToUTF16(in->spec()) : std::u16string();
 }
 }  // namespace
 
@@ -204,16 +204,16 @@ AuthenticatorMakeCredentialBlocking(WinWebAuthnApi* webauthn_api,
                                     CtapMakeCredentialRequest request) {
   DCHECK(webauthn_api->IsAvailable());
 
-  base::string16 rp_id = base::UTF8ToUTF16(request.rp.id);
-  base::string16 rp_name = base::UTF8ToUTF16(request.rp.name.value_or(""));
-  base::string16 rp_icon_url = OptionalGURLToUTF16(request.rp.icon_url);
+  std::u16string rp_id = base::UTF8ToUTF16(request.rp.id);
+  std::u16string rp_name = base::UTF8ToUTF16(request.rp.name.value_or(""));
+  std::u16string rp_icon_url = OptionalGURLToUTF16(request.rp.icon_url);
   WEBAUTHN_RP_ENTITY_INFORMATION rp_info{
       WEBAUTHN_RP_ENTITY_INFORMATION_CURRENT_VERSION, base::as_wcstr(rp_id),
       base::as_wcstr(rp_name), base::as_wcstr(rp_icon_url)};
 
-  base::string16 user_name = base::UTF8ToUTF16(request.user.name.value_or(""));
-  base::string16 user_icon_url = OptionalGURLToUTF16(request.user.icon_url);
-  base::string16 user_display_name =
+  std::u16string user_name = base::UTF8ToUTF16(request.user.name.value_or(""));
+  std::u16string user_icon_url = OptionalGURLToUTF16(request.user.icon_url);
+  std::u16string user_display_name =
       base::UTF8ToUTF16(request.user.display_name.value_or(""));
   std::vector<uint8_t> user_id = request.user.id;
   WEBAUTHN_USER_ENTITY_INFORMATION user_info{
@@ -362,7 +362,7 @@ AuthenticatorGetAssertionBlocking(WinWebAuthnApi* webauthn_api,
                                   CtapGetAssertionOptions request_options) {
   DCHECK(webauthn_api->IsAvailable());
 
-  base::string16 rp_id16 = base::UTF8ToUTF16(request.rp_id);
+  std::u16string rp_id16 = base::UTF8ToUTF16(request.rp_id);
   std::string client_data_json = request.client_data_json;
   WEBAUTHN_CLIENT_DATA client_data{
       WEBAUTHN_CLIENT_DATA_CURRENT_VERSION, client_data_json.size(),
@@ -370,7 +370,7 @@ AuthenticatorGetAssertionBlocking(WinWebAuthnApi* webauthn_api,
           reinterpret_cast<const unsigned char*>(client_data_json.data())),
       WEBAUTHN_HASH_ALGORITHM_SHA_256};
 
-  base::Optional<base::string16> opt_app_id16 = base::nullopt;
+  base::Optional<std::u16string> opt_app_id16 = base::nullopt;
   if (request.app_id) {
     opt_app_id16 = base::UTF8ToUTF16(
         base::StringPiece(reinterpret_cast<const char*>(request.app_id->data()),

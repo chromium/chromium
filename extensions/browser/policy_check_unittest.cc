@@ -40,7 +40,7 @@ class ManagementPolicyMock : public ManagementPolicy::Provider {
   }
 
   bool UserMayLoad(const Extension* extension,
-                   base::string16* error) const override {
+                   std::u16string* error) const override {
     EXPECT_EQ(extension_, extension);
     if (!may_load_)
       *error = base::ASCIIToUTF16(kDummyPolicyError);

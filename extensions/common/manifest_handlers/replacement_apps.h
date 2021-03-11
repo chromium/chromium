@@ -36,11 +36,11 @@ struct ReplacementAppsInfo : public Extension::ManifestData {
   static const std::string& GetReplacementAndroidApp(
       const Extension* extension);
 
-  bool Parse(const Extension* extension, base::string16* error);
+  bool Parse(const Extension* extension, std::u16string* error);
 
  private:
-  bool LoadWebApp(const Extension* extension, base::string16* error);
-  bool LoadAndroidApp(const Extension* extension, base::string16* error);
+  bool LoadWebApp(const Extension* extension, std::u16string* error);
+  bool LoadAndroidApp(const Extension* extension, std::u16string* error);
 
   // Optional URL of a Web app.
   GURL replacement_web_app;
@@ -57,7 +57,7 @@ class ReplacementAppsHandler : public ManifestHandler {
   ReplacementAppsHandler();
   ~ReplacementAppsHandler() override;
 
-  bool Parse(Extension* extension, base::string16* error) override;
+  bool Parse(Extension* extension, std::u16string* error) override;
 
  private:
   base::span<const char* const> Keys() const override;

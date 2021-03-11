@@ -253,7 +253,7 @@ class AppWindow : public content::WebContentsDelegate,
 
   // NativeAppWindows should call this to determine what the window's title
   // is on startup and from within UpdateWindowTitle().
-  base::string16 GetTitle() const;
+  std::u16string GetTitle() const;
 
   // |callback| will be called when the first navigation was completed or window
   // is closed before that. |did_finish| argument of the |callback| is set to

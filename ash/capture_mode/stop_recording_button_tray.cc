@@ -47,7 +47,7 @@ bool StopRecordingButtonTray::PerformAction(const ui::Event& event) {
   return true;
 }
 
-base::string16 StopRecordingButtonTray::GetAccessibleNameForTray() {
+std::u16string StopRecordingButtonTray::GetAccessibleNameForTray() {
   return l10n_util::GetStringUTF16(
       IDS_ASH_STATUS_AREA_STOP_RECORDING_BUTTON_ACCESSIBLE_NAME);
 }

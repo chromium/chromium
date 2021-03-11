@@ -58,15 +58,15 @@ void DetachableBaseNotificationController::
     return;
   }
 
-  base::string16 title = l10n_util::GetStringUTF16(
+  std::u16string title = l10n_util::GetStringUTF16(
       IDS_ASH_DETACHABLE_BASE_NOTIFICATION_UPDATE_NEEDED_TITLE);
-  base::string16 message = l10n_util::GetStringUTF16(
+  std::u16string message = l10n_util::GetStringUTF16(
       IDS_ASH_DETACHABLE_BASE_NOTIFICATION_UPDATE_NEEDED_MESSAGE);
 
   std::unique_ptr<message_center::Notification> notification =
       CreateSystemNotification(
           message_center::NOTIFICATION_TYPE_SIMPLE,
-          kBaseRequiresUpdateNotificationId, title, message, base::string16(),
+          kBaseRequiresUpdateNotificationId, title, message, std::u16string(),
           GURL(),
           message_center::NotifierId(
               message_center::NotifierType::SYSTEM_COMPONENT,
@@ -134,15 +134,15 @@ void DetachableBaseNotificationController::ShowPairingNotificationIfNeeded() {
   options.never_timeout = true;
   options.priority = message_center::MAX_PRIORITY;
 
-  base::string16 title = l10n_util::GetStringUTF16(
+  std::u16string title = l10n_util::GetStringUTF16(
       IDS_ASH_DETACHABLE_BASE_NOTIFICATION_DEVICE_CHANGED_TITLE);
-  base::string16 message = l10n_util::GetStringUTF16(
+  std::u16string message = l10n_util::GetStringUTF16(
       IDS_ASH_DETACHABLE_BASE_NOTIFICATION_DEVICE_CHANGED_MESSAGE);
 
   std::unique_ptr<message_center::Notification> notification =
       CreateSystemNotification(
           message_center::NOTIFICATION_TYPE_SIMPLE, kBaseChangedNotificationId,
-          title, message, base::string16(), GURL(),
+          title, message, std::u16string(), GURL(),
           message_center::NotifierId(
               message_center::NotifierType::SYSTEM_COMPONENT,
               kDetachableBaseNotifierId),

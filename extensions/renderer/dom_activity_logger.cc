@@ -117,7 +117,7 @@ void DOMActivityLogger::LogEvent(const WebString& event_name,
 void DOMActivityLogger::SendDomActionMessage(
     const std::string& api_call,
     const GURL& url,
-    const base::string16& url_title,
+    const std::u16string& url_title,
     DomActionType::Type call_type,
     std::unique_ptr<base::ListValue> args) {
   ExtensionHostMsg_DOMAction_Params params;

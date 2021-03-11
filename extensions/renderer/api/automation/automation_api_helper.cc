@@ -37,7 +37,7 @@ void AutomationApiHelper::OnDestruct() {
 
 void AutomationApiHelper::OnQuerySelector(int request_id,
                                           int acc_obj_id,
-                                          const base::string16& selector) {
+                                          const std::u16string& selector) {
   // ExtensionMsg_AutomationQuerySelector should only be sent to an active view.
   DCHECK(render_frame()->IsMainFrame());
 

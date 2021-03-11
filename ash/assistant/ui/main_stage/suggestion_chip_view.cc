@@ -72,7 +72,7 @@ void SuggestionChipView::ChildVisibilityChanged(views::View* child) {
 }
 
 void SuggestionChipView::InitLayout(const AssistantSuggestion& suggestion) {
-  const base::string16 text = base::UTF8ToUTF16(suggestion.text);
+  const std::u16string text = base::UTF8ToUTF16(suggestion.text);
 
   // Accessibility.
   SetAccessibleName(text);
@@ -174,11 +174,11 @@ const gfx::ImageSkia& SuggestionChipView::GetIcon() const {
   return icon_view_->GetImage();
 }
 
-void SuggestionChipView::SetText(const base::string16& text) {
+void SuggestionChipView::SetText(const std::u16string& text) {
   text_view_->SetText(text);
 }
 
-const base::string16& SuggestionChipView::GetText() const {
+const std::u16string& SuggestionChipView::GetText() const {
   return text_view_->GetText();
 }
 

@@ -83,7 +83,7 @@ void PrintWindowHierarchy(const aura::Window* active_window,
     *out << " ax_tree_id=" << *tree_id;
 
   if (!scrub_data) {
-    base::string16 title(window->GetTitle());
+    std::u16string title(window->GetTitle());
     if (!title.empty())
       *out << " title=" << title;
   }

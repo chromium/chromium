@@ -50,8 +50,8 @@ class ImeListItemView : public ActionableView {
   METADATA_HEADER(ImeListItemView);
 
   ImeListItemView(ImeListView* list_view,
-                  const base::string16& id,
-                  const base::string16& label,
+                  const std::u16string& id,
+                  const std::u16string& label,
                   bool selected,
                   const SkColor button_color)
       : ActionableView(TrayPopupInkDropStyle::FILL_BOUNDS),
@@ -285,7 +285,7 @@ void ImeListView::AppendImeListAndProperties(
       // Adds the property items.
       for (size_t i = 0; i < property_list.size(); i++) {
         ImeListItemView* property_view =
-            new ImeListItemView(this, base::string16(), property_list[i].label,
+            new ImeListItemView(this, std::u16string(), property_list[i].label,
                                 property_list[i].checked, icon_color);
         scroll_content()->AddChildView(property_view);
         property_map_[property_view] = property_list[i].key;

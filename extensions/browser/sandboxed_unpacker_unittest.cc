@@ -85,10 +85,10 @@ class MockSandboxedUnpackerClient : public SandboxedUnpackerClient {
   }
 
   base::FilePath temp_dir() const { return temp_dir_; }
-  base::string16 unpack_error_message() const {
+  std::u16string unpack_error_message() const {
     if (error_)
       return error_->message();
-    return base::string16();
+    return std::u16string();
   }
   CrxInstallErrorType unpack_error_type() const {
     if (error_)
@@ -226,7 +226,7 @@ class SandboxedUnpackerTest : public ExtensionsTest {
     return client_->temp_dir().AppendASCII(kTempExtensionName);
   }
 
-  base::string16 GetInstallErrorMessage() const {
+  std::u16string GetInstallErrorMessage() const {
     return client_->unpack_error_message();
   }
 

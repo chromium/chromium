@@ -33,7 +33,7 @@ class SocketsManifestPermission : public ManifestPermission {
   // the manifest. Sets |error| and returns an empty scoped_ptr on failure.
   static std::unique_ptr<SocketsManifestPermission> FromValue(
       const base::Value& value,
-      base::string16* error);
+      std::u16string* error);
 
   bool CheckRequest(const Extension* extension,
                     const content::SocketPermissionRequest& request) const;

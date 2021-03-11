@@ -40,7 +40,7 @@ class APP_LIST_EXPORT SearchResultTileItemView
   void OnResultChanged() override;
 
   // Overridden from SearchResultBaseView:
-  base::string16 ComputeAccessibleName() const override;
+  std::u16string ComputeAccessibleName() const override;
 
   // Informs the SearchResultTileItemView of its parent's background color. The
   // controls within the SearchResultTileItemView will adapt to suit the given
@@ -88,9 +88,9 @@ class APP_LIST_EXPORT SearchResultTileItemView
   void SetIcon(const gfx::ImageSkia& icon);
   void SetBadgeIcon(const ui::ImageModel& badge_icon,
                     bool use_badge_icon_background);
-  void SetTitle(const base::string16& title);
+  void SetTitle(const std::u16string& title);
   void SetRating(float rating);
-  void SetPrice(const base::string16& price);
+  void SetPrice(const std::u16string& price);
 
   AppListMenuModelAdapter::AppListViewAppType GetAppType() const;
 
@@ -106,7 +106,7 @@ class APP_LIST_EXPORT SearchResultTileItemView
   void Layout() override;
   const char* GetClassName() const override;
   gfx::Size CalculatePreferredSize() const override;
-  base::string16 GetTooltipText(const gfx::Point& p) const override;
+  std::u16string GetTooltipText(const gfx::Point& p) const override;
 
   AppListViewDelegate* const view_delegate_;           // Owned by AppListView.
 

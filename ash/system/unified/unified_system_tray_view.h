@@ -120,7 +120,7 @@ class ASH_EXPORT UnifiedSystemTrayView : public views::View,
   int GetVisibleFeaturePodCount() const;
 
   // Get the accessible name for the currently shown detailed view.
-  base::string16 GetDetailedViewAccessibleName() const;
+  std::u16string GetDetailedViewAccessibleName() const;
 
   // Returns true if a detailed view is being shown in the tray. (e.g Bluetooth
   // Settings).

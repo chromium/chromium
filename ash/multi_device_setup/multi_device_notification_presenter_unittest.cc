@@ -217,9 +217,9 @@ class MultiDeviceNotificationPresenterTest : public NoSessionAshTestBase {
     const message_center::Notification* kVisibleNotification =
         test_message_center_.FindVisibleNotificationById(
             MultiDeviceNotificationPresenter::kWifiSyncNotificationId);
-    base::string16 title = l10n_util::GetStringUTF16(
+    std::u16string title = l10n_util::GetStringUTF16(
         IDS_ASH_MULTI_DEVICE_WIFI_SYNC_AVAILABLE_TITLE);
-    base::string16 message = l10n_util::GetStringFUTF16(
+    std::u16string message = l10n_util::GetStringFUTF16(
         IDS_ASH_MULTI_DEVICE_WIFI_SYNC_AVAILABLE_MESSAGE,
         base::ASCIIToUTF16(kTestDeviceType));
     EXPECT_EQ(title, kVisibleNotification->title());
@@ -297,8 +297,8 @@ class MultiDeviceNotificationPresenterTest : public NoSessionAshTestBase {
     const message_center::Notification* kVisibleNotification =
         test_message_center_.FindVisibleNotificationById(
             MultiDeviceNotificationPresenter::kSetupNotificationId);
-    base::string16 title;
-    base::string16 message;
+    std::u16string title;
+    std::u16string message;
     switch (notification_status) {
       case MultiDeviceNotificationPresenter::Status::
           kNewUserNotificationVisible:

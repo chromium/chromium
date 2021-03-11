@@ -138,13 +138,13 @@ void AwAutofillClient::OnUnmaskVerificationResult(PaymentsRpcResult result) {
 }
 
 void AwAutofillClient::ConfirmAccountNameFixFlow(
-    base::OnceCallback<void(const base::string16&)> callback) {
+    base::OnceCallback<void(const std::u16string&)> callback) {
   NOTIMPLEMENTED();
 }
 
 void AwAutofillClient::ConfirmExpirationDateFixFlow(
     const autofill::CreditCard& card,
-    base::OnceCallback<void(const base::string16&, const base::string16&)>
+    base::OnceCallback<void(const std::u16string&, const std::u16string&)>
         callback) {
   NOTIMPLEMENTED();
 }
@@ -205,8 +205,8 @@ void AwAutofillClient::ShowAutofillPopup(
 }
 
 void AwAutofillClient::UpdateAutofillPopupDataListValues(
-    const std::vector<base::string16>& values,
-    const std::vector<base::string16>& labels) {
+    const std::vector<std::u16string>& values,
+    const std::vector<std::u16string>& labels) {
   // Leaving as an empty method since updating autofill popup window
   // dynamically does not seem to be a useful feature for android webview.
   // See crrev.com/18102002 if need to implement.
@@ -257,8 +257,8 @@ void AwAutofillClient::PropagateAutofillPredictions(
     const std::vector<autofill::FormStructure*>& forms) {}
 
 void AwAutofillClient::DidFillOrPreviewField(
-    const base::string16& autofilled_value,
-    const base::string16& profile_full_name) {}
+    const std::u16string& autofilled_value,
+    const std::u16string& profile_full_name) {}
 
 bool AwAutofillClient::IsContextSecure() const {
   content::SSLStatus ssl_status;

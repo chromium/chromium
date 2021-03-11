@@ -37,7 +37,7 @@ class ASH_EXPORT PowerButtonMenuItemView : public views::ImageButton {
 
   PowerButtonMenuItemView(PressedCallback callback,
                           const gfx::VectorIcon& icon,
-                          const base::string16& title_text);
+                          const std::u16string& title_text);
   PowerButtonMenuItemView(const PowerButtonMenuItemView&) = delete;
   PowerButtonMenuItemView& operator=(const PowerButtonMenuItemView&) = delete;
   ~PowerButtonMenuItemView() override;

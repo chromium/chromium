@@ -35,7 +35,7 @@ bool IncognitoInfo::IsIncognitoAllowed(const Extension* extension) {
 IncognitoHandler::IncognitoHandler() = default;
 IncognitoHandler::~IncognitoHandler() = default;
 
-bool IncognitoHandler::Parse(Extension* extension, base::string16* error) {
+bool IncognitoHandler::Parse(Extension* extension, std::u16string* error) {
   IncognitoManifestKeys manifest_keys;
   if (!IncognitoManifestKeys::ParseFromDictionary(
           extension->manifest()->available_values(), &manifest_keys, error)) {

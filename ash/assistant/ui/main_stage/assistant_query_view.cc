@@ -115,12 +115,12 @@ void AssistantQueryView::SetText(const std::string& high_confidence_text,
   // When coming from the server, both |high_confidence_text| and
   // |low_confidence_text| may be HTML escaped, so we need to unescape both
   // before displaying to avoid printing HTML entities to the user.
-  const base::string16& high_confidence_text_16 =
+  const std::u16string& high_confidence_text_16 =
       net::UnescapeForHTML(base::UTF8ToUTF16(high_confidence_text));
 
   high_confidence_label_->SetText(high_confidence_text_16);
 
-  const base::string16& low_confidence_text_16 =
+  const std::u16string& low_confidence_text_16 =
       net::UnescapeForHTML(base::UTF8ToUTF16(low_confidence_text));
 
   low_confidence_label_->SetText(low_confidence_text_16);

@@ -28,7 +28,7 @@ class ASH_EXPORT SelectToSpeakTray : public TrayBackgroundView,
 
   // TrayBackgroundView:
   void Initialize() override;
-  base::string16 GetAccessibleNameForTray() override;
+  std::u16string GetAccessibleNameForTray() override;
   void HandleLocaleChange() override;
   const char* GetClassName() const override;
   bool PerformAction(const ui::Event& event) override;

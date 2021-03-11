@@ -145,7 +145,7 @@ void PrivacyScreenToastView::SetPrivacyScreenEnabled(bool enabled,
   button_->SetToggled(enabled);
   label_->SetPrivacyScreenEnabled(enabled, managed);
 
-  base::string16 state = l10n_util::GetStringUTF16(
+  std::u16string state = l10n_util::GetStringUTF16(
       is_enabled_ ? IDS_ASH_STATUS_TRAY_PRIVACY_SCREEN_ON_STATE
                   : IDS_ASH_STATUS_TRAY_PRIVACY_SCREEN_OFF_STATE);
   button_->SetTooltipText(l10n_util::GetStringFUTF16(
@@ -154,14 +154,14 @@ void PrivacyScreenToastView::SetPrivacyScreenEnabled(bool enabled,
   Layout();
 }
 
-base::string16 PrivacyScreenToastView::GetAccessibleName() {
-  base::string16 enabled_state = l10n_util::GetStringUTF16(
+std::u16string PrivacyScreenToastView::GetAccessibleName() {
+  std::u16string enabled_state = l10n_util::GetStringUTF16(
       is_enabled_ ? IDS_ASH_STATUS_TRAY_PRIVACY_SCREEN_ON_STATE
                   : IDS_ASH_STATUS_TRAY_PRIVACY_SCREEN_OFF_STATE);
-  base::string16 managed_state =
+  std::u16string managed_state =
       is_managed_ ? l10n_util::GetStringUTF16(
                         IDS_ASH_STATUS_TRAY_PRIVACY_SCREEN_ENTERPRISE_MANAGED)
-                  : base::string16();
+                  : std::u16string();
   return l10n_util::GetStringFUTF16(
       IDS_ASH_STATUS_TRAY_PRIVACY_SCREEN_TOAST_ACCESSIBILITY_TEXT,
       enabled_state, managed_state);

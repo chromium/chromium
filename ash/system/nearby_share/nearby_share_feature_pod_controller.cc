@@ -24,7 +24,7 @@ namespace {
 constexpr base::TimeDelta kOneMinute = base::TimeDelta::FromMinutes(1);
 constexpr base::TimeDelta kOneSecond = base::TimeDelta::FromSeconds(1);
 
-base::string16 RemainingTimeString(base::TimeDelta remaining_time) {
+std::u16string RemainingTimeString(base::TimeDelta remaining_time) {
   if (remaining_time > kOneMinute) {
     return l10n_util::GetStringFUTF16Int(
         IDS_ASH_STATUS_TRAY_NEARBY_SHARE_REMAINING_MINUTES,

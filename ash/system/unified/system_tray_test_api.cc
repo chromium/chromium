@@ -94,14 +94,14 @@ void SystemTrayTestApi::ClickBubbleView(int view_id) {
   }
 }
 
-base::string16 SystemTrayTestApi::GetBubbleViewTooltip(int view_id) {
+std::u16string SystemTrayTestApi::GetBubbleViewTooltip(int view_id) {
   views::View* view = GetBubbleView(view_id);
-  return view ? view->GetTooltipText(gfx::Point()) : base::string16();
+  return view ? view->GetTooltipText(gfx::Point()) : std::u16string();
 }
 
-base::string16 SystemTrayTestApi::GetBubbleViewText(int view_id) {
+std::u16string SystemTrayTestApi::GetBubbleViewText(int view_id) {
   views::View* view = GetBubbleView(view_id);
-  return view ? static_cast<views::Label*>(view)->GetText() : base::string16();
+  return view ? static_cast<views::Label*>(view)->GetText() : std::u16string();
 }
 
 bool SystemTrayTestApi::Is24HourClock() {

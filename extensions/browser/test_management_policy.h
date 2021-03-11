@@ -38,24 +38,24 @@ class TestManagementPolicyProvider : public ManagementPolicy::Provider {
   std::string GetDebugPolicyProviderName() const override;
 
   bool UserMayLoad(const Extension* extension,
-                   base::string16* error) const override;
+                   std::u16string* error) const override;
 
   bool UserMayModifySettings(const Extension* extension,
-                             base::string16* error) const override;
+                             std::u16string* error) const override;
 
   bool ExtensionMayModifySettings(const Extension* source_extension,
                                   const Extension* extension,
-                                  base::string16* error) const override;
+                                  std::u16string* error) const override;
 
   bool MustRemainEnabled(const Extension* extension,
-                         base::string16* error) const override;
+                         std::u16string* error) const override;
 
   bool MustRemainDisabled(const Extension* extension,
                           disable_reason::DisableReason* reason,
-                          base::string16* error) const override;
+                          std::u16string* error) const override;
 
   bool MustRemainInstalled(const Extension* extension,
-                           base::string16* error) const override;
+                           std::u16string* error) const override;
 
  private:
   bool may_load_;
@@ -65,7 +65,7 @@ class TestManagementPolicyProvider : public ManagementPolicy::Provider {
   bool must_remain_installed_;
   disable_reason::DisableReason disable_reason_;
 
-  base::string16 error_message_;
+  std::u16string error_message_;
 };
 
 }  // namespace extensions

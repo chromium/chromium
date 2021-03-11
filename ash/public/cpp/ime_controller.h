@@ -72,7 +72,7 @@ class ASH_PUBLIC_EXPORT ImeController {
   // The view fades out after a delay and close itself.
   // The anchor bounds is in the universal screen coordinates in DIP.
   virtual void ShowModeIndicator(const gfx::Rect& anchor_bounds,
-                                 const base::string16& ime_short_name) = 0;
+                                 const std::u16string& ime_short_name) = 0;
 
  protected:
   ImeController();

@@ -86,7 +86,7 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
         break;
       }
       case 11: {
-        base::string16 result;
+        std::u16string result;
         ignore_result(iter.ReadString16(&result));
         break;
       }

@@ -29,8 +29,8 @@ struct NetworkInfo {
   bool operator!=(const NetworkInfo& other) const { return !(*this == other); }
 
   std::string guid;
-  base::string16 label;
-  base::string16 tooltip;
+  std::u16string label;
+  std::u16string tooltip;
   gfx::ImageSkia image;
   bool disable = false;
   bool secured = false;

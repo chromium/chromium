@@ -301,7 +301,7 @@ int BluetoothDetailedView::AddSameTypeDevicesToScrollList(
   for (const auto& device : list) {
     const gfx::VectorIcon& icon =
         GetBluetoothDeviceIcon(device->device_type, device->connection_state);
-    base::string16 device_name =
+    std::u16string device_name =
         device::GetBluetoothDeviceNameForDisplay(device);
     HoverHighlightView* container =
         GetScrollListItemForDevice(old_device_list, device->address);

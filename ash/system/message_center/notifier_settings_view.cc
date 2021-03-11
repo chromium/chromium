@@ -315,7 +315,7 @@ NotifierSettingsView::NotifierButton::NotifierButton(
   auto icon_view = std::make_unique<views::ImageView>();
   auto name_view = std::make_unique<views::Label>(notifier.name);
   auto checkbox = std::make_unique<NotifierViewCheckbox>(
-      base::string16(),
+      std::u16string(),
       base::BindRepeating(
           [](NotifierButton* button, const ui::Event& event) {
             // The checkbox state has already changed at this point, but we'll

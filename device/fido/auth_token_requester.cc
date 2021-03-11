@@ -248,7 +248,7 @@ void AuthTokenRequester::OnGetPINRetries(
       base::BindOnce(&AuthTokenRequester::HavePIN, weak_factory_.GetWeakPtr()));
 }
 
-void AuthTokenRequester::HavePIN(base::string16 pin16) {
+void AuthTokenRequester::HavePIN(std::u16string pin16) {
   pin::PINEntryError error = pin::ValidatePIN(
       pin16, authenticator_->CurrentMinPINLength(), current_pin_);
   if (error != pin::PINEntryError::kNoError) {
@@ -320,7 +320,7 @@ void AuthTokenRequester::ObtainTokenFromNewPIN() {
                                        weak_factory_.GetWeakPtr()));
 }
 
-void AuthTokenRequester::HaveNewPIN(base::string16 pin16) {
+void AuthTokenRequester::HaveNewPIN(std::u16string pin16) {
   pin::PINEntryError error =
       pin::ValidatePIN(pin16, authenticator_->NewMinPINLength(), current_pin_);
   if (error != pin::PINEntryError::kNoError) {

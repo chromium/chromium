@@ -34,7 +34,7 @@ class ASH_EXPORT DeskNameView
   // from any view on |widget|, where |widget| should be the desks bar widget.
   static void CommitChanges(views::Widget* widget);
 
-  void SetTextAndElideIfNeeded(const base::string16& text);
+  void SetTextAndElideIfNeeded(const std::u16string& text);
 
   // If this view has focus, make the view's border visible and change
   // background to its active color. If it doesn't have focus, hide the view's
@@ -74,7 +74,7 @@ class ASH_EXPORT DeskNameView
   WmHighlightItemBorder* border_ptr_;
 
   // Full text without being elided.
-  base::string16 full_text_;
+  std::u16string full_text_;
 };
 
 }  // namespace ash

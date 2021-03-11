@@ -98,7 +98,7 @@ BASE_EXPORT size_t find_last_not_of(WStringPiece self,
 // StringPiece and StringPiece16.
 //
 // This is templatized by string class type rather than character type, so
-// BasicStringPiece<std::string> or BasicStringPiece<base::string16>.
+// BasicStringPiece<std::string> or BasicStringPiece<std::u16string>.
 template <typename STRING_TYPE> class BasicStringPiece {
  public:
   // Standard STL container boilerplate.

@@ -47,8 +47,7 @@ OAuth2ManifestHandler::OAuth2ManifestHandler() {
 OAuth2ManifestHandler::~OAuth2ManifestHandler() {
 }
 
-bool OAuth2ManifestHandler::Parse(Extension* extension,
-                                  base::string16* error) {
+bool OAuth2ManifestHandler::Parse(Extension* extension, std::u16string* error) {
   std::unique_ptr<OAuth2Info> info(new OAuth2Info);
   const base::Value* dict = nullptr;
   if (!extension->manifest()->GetDictionary(keys::kOAuth2, &dict)) {

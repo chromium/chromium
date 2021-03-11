@@ -100,7 +100,7 @@ class Separator : public views::View {
   DISALLOW_COPY_AND_ASSIGN(Separator);
 };
 
-views::View* CreateAddUserErrorView(const base::string16& message) {
+views::View* CreateAddUserErrorView(const std::u16string& message) {
   auto* label = new views::Label(message);
   label->SetEnabledColor(AshColorProvider::Get()->GetContentLayerColor(
       ContentLayerType::kTextColorPrimary));
@@ -137,7 +137,7 @@ views::View* CreateUserAvatarView(int user_index) {
   return image_view;
 }
 
-base::string16 GetUserItemAccessibleString(int user_index) {
+std::u16string GetUserItemAccessibleString(int user_index) {
   DCHECK(Shell::Get());
   const UserSession* const user_session =
       Shell::Get()->session_controller()->GetUserSession(user_index);
@@ -265,11 +265,11 @@ void UserItemButton::SetCaptureState(MediaCaptureState capture_state) {
     capture_icon_->SetTooltipText(l10n_util::GetStringUTF16(res_id));
 }
 
-base::string16 UserItemButton::GetTooltipText(const gfx::Point& p) const {
+std::u16string UserItemButton::GetTooltipText(const gfx::Point& p) const {
   // If both of them are full shown, hide the tooltip.
   if (name_->GetPreferredSize().width() <= name_->width() &&
       email_->GetPreferredSize().width() <= email_->width()) {
-    return base::string16();
+    return std::u16string();
   }
   return views::Button::GetTooltipText(p);
 }

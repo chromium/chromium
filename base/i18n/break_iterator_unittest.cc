@@ -562,7 +562,7 @@ TEST(BreakIteratorTest, GetWordBreakStatusBreakLine) {
   // A string containing the English word "foo", followed by two Khmer
   // characters, the English word "Can", and then two Russian characters and
   // punctuation.
-  base::string16 text(
+  std::u16string text(
       base::WideToUTF16(L"foo \x1791\x17C1 \nCan \x041C\x0438..."));
   BreakIterator iter(text, BreakIterator::BREAK_LINE);
   ASSERT_TRUE(iter.Init());
@@ -594,7 +594,7 @@ TEST(BreakIteratorTest, GetWordBreakStatusBreakWord) {
   // A string containing the English word "foo", followed by two Khmer
   // characters, the English word "Can", and then two Russian characters and
   // punctuation.
-  base::string16 text(
+  std::u16string text(
       base::WideToUTF16(L"foo \x1791\x17C1 \nCan \x041C\x0438..."));
   BreakIterator iter(text, BreakIterator::BREAK_WORD);
   ASSERT_TRUE(iter.Init());

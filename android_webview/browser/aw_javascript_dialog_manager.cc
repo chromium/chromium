@@ -21,14 +21,14 @@ void AwJavaScriptDialogManager::RunJavaScriptDialog(
     content::WebContents* web_contents,
     content::RenderFrameHost* render_frame_host,
     content::JavaScriptDialogType dialog_type,
-    const base::string16& message_text,
-    const base::string16& default_prompt_text,
+    const std::u16string& message_text,
+    const std::u16string& default_prompt_text,
     DialogClosedCallback callback,
     bool* did_suppress_message) {
   AwContentsClientBridge* bridge =
       AwContentsClientBridge::FromWebContents(web_contents);
   if (!bridge) {
-    std::move(callback).Run(false, base::string16());
+    std::move(callback).Run(false, std::u16string());
     return;
   }
 
@@ -45,7 +45,7 @@ void AwJavaScriptDialogManager::RunBeforeUnloadDialog(
   AwContentsClientBridge* bridge =
       AwContentsClientBridge::FromWebContents(web_contents);
   if (!bridge) {
-    std::move(callback).Run(false, base::string16());
+    std::move(callback).Run(false, std::u16string());
     return;
   }
 

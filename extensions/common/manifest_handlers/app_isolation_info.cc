@@ -43,7 +43,7 @@ AppIsolationHandler::AppIsolationHandler() {
 AppIsolationHandler::~AppIsolationHandler() {
 }
 
-bool AppIsolationHandler::Parse(Extension* extension, base::string16* error) {
+bool AppIsolationHandler::Parse(Extension* extension, std::u16string* error) {
   // Platform apps always get isolated storage.
   if (extension->is_platform_app()) {
     extension->SetManifestData(keys::kIsolation,

@@ -130,7 +130,7 @@ class SearchBoxViewBase : public views::WidgetDelegateView,
 
   // Overridden from views::TextfieldController:
   void ContentsChanged(views::Textfield* sender,
-                       const base::string16& new_contents) override;
+                       const std::u16string& new_contents) override;
   bool HandleMouseEvent(views::Textfield* sender,
                         const ui::MouseEvent& mouse_event) override;
   bool HandleGestureEvent(views::Textfield* sender,

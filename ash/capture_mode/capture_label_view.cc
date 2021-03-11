@@ -153,7 +153,7 @@ CaptureLabelView::CaptureLabelView(CaptureModeSession* capture_mode_session)
   label_button_ = AddChildView(std::make_unique<views::LabelButton>(
       base::BindRepeating(&CaptureLabelView::OnButtonPressed,
                           base::Unretained(this)),
-      base::string16()));
+      std::u16string()));
   label_button_->SetPaintToLayer();
   label_button_->layer()->SetFillsBoundsOpaquely(false);
   label_button_->SetEnabledTextColors(text_color);
@@ -167,7 +167,7 @@ CaptureLabelView::CaptureLabelView(CaptureModeSession* capture_mode_session)
   label_button_->SetInkDropBaseColor(ripple_attributes.base_color);
   label_button_->SetFocusBehavior(views::View::FocusBehavior::ACCESSIBLE_ONLY);
 
-  label_ = AddChildView(std::make_unique<views::Label>(base::string16()));
+  label_ = AddChildView(std::make_unique<views::Label>(std::u16string()));
   label_->SetPaintToLayer();
   label_->layer()->SetFillsBoundsOpaquely(false);
   label_->SetEnabledColor(text_color);
@@ -188,7 +188,7 @@ void CaptureLabelView::UpdateIconAndText() {
       AshColorProvider::ContentLayerType::kIconColorPrimary);
 
   gfx::ImageSkia icon;
-  base::string16 text;
+  std::u16string text;
   switch (source) {
     case CaptureModeSource::kFullscreen:
       text = l10n_util::GetStringUTF16(

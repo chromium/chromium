@@ -135,9 +135,9 @@ class OnboardingDismissPromptView : public PhoneHubInterstitialView {
     // Adds title and description.
     SetTitle(l10n_util::GetStringUTF16(
         IDS_ASH_PHONE_HUB_ONBOARDING_DISMISS_DIALOG_TITLE));
-    base::string16 part1 = l10n_util::GetStringUTF16(
+    std::u16string part1 = l10n_util::GetStringUTF16(
         IDS_ASH_PHONE_HUB_ONBOARDING_DISMISS_DIALOG_DESCRIPTION_PART_1);
-    base::string16 part2 = l10n_util::GetStringUTF16(
+    std::u16string part2 = l10n_util::GetStringUTF16(
         IDS_ASH_PHONE_HUB_ONBOARDING_DISMISS_DIALOG_DESCRIPTION_PART_2);
     // Uses "\n" to create a newline separator between two text paragraphs.
     SetDescription(base::StrCat({part1, base::ASCIIToUTF16("\n\n"), part2}));

@@ -105,14 +105,14 @@ ASH_EXPORT bool ContainsFileSystemData(const ui::ClipboardData& data);
 ASH_EXPORT void GetSplitFileSystemData(
     const ui::ClipboardData& data,
     std::vector<base::StringPiece16>* source_list,
-    base::string16* sources);
+    std::u16string* sources);
 
 // Returns the count of copied files contained by the clipboard data.
 ASH_EXPORT size_t GetCountOfCopiedFiles(const ui::ClipboardData& data);
 
 // Returns file system sources contained in `data`. If `data` does not contain
 // file system sources, an empty string is returned.
-ASH_EXPORT base::string16 GetFileSystemSources(const ui::ClipboardData& data);
+ASH_EXPORT std::u16string GetFileSystemSources(const ui::ClipboardData& data);
 
 // Returns true if `data` is supported by clipboard history.
 ASH_EXPORT bool IsSupported(const ui::ClipboardData& data);

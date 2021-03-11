@@ -272,21 +272,21 @@ class FingerprintLabel : public views::Label {
   }
 
  private:
-  void SetAccessibleName(const base::string16& name) {
+  void SetAccessibleName(const std::u16string& name) {
     accessible_name_ = name;
     NotifyAccessibilityEvent(ax::mojom::Event::kTextChanged,
                              true /*send_native_event*/);
   }
 
-  base::string16 accessible_name_;
+  std::u16string accessible_name_;
 
   DISALLOW_COPY_AND_ASSIGN(FingerprintLabel);
 };
 
 // The content needed to render the disabled auth message view.
 struct LockScreenMessage {
-  base::string16 title;
-  base::string16 content;
+  std::u16string title;
+  std::u16string content;
   const gfx::VectorIcon* icon;
 };
 
@@ -299,7 +299,7 @@ LockScreenMessage GetWindowLimitMessage(const base::Time& unlock_time,
 
   base::Time local_midnight = base::Time::Now().LocalMidnight();
 
-  base::string16 time_to_display;
+  std::u16string time_to_display;
   if (use_24hour_clock) {
     time_to_display = base::TimeFormatTimeOfDayWithHourClockType(
         unlock_time, base::k24HourClock, base::kDropAmPm);
@@ -344,7 +344,7 @@ LockScreenMessage GetUsageLimitMessage(const base::TimeDelta& used_time) {
 
     // TODO(933973): Stop displaying the hours part of the string when duration
     // is less than 1 hour. Example: change "0 hours, 7 minutes" to "7 minutes".
-    base::string16 used_time_string;
+    std::u16string used_time_string;
     if (!base::TimeDurationFormat(
             used_time, base::DurationFormatWidth::DURATION_WIDTH_WIDE,
             &used_time_string)) {
@@ -652,7 +652,7 @@ class LoginAuthUserView::ChallengeResponseView : public views::View {
     }
   }
 
-  base::string16 GetTextForLabel() const {
+  std::u16string GetTextForLabel() const {
     switch (state_) {
       case State::kInitial:
       case State::kAuthenticating:
@@ -689,7 +689,7 @@ class LoginAuthUserView::DisabledAuthMessageView : public views::View {
     explicit TestApi(DisabledAuthMessageView* view) : view_(view) {}
     ~TestApi() = default;
 
-    const base::string16& GetDisabledAuthMessageContent() const {
+    const std::u16string& GetDisabledAuthMessageContent() const {
       return view_->message_contents_->GetText();
     }
 
@@ -729,7 +729,7 @@ class LoginAuthUserView::DisabledAuthMessageView : public views::View {
       label->SetFocusBehavior(FocusBehavior::ALWAYS);
     };
     message_title_ = AddChildView(std::make_unique<views::Label>(
-        base::string16(), views::style::CONTEXT_LABEL,
+        std::u16string(), views::style::CONTEXT_LABEL,
         views::style::STYLE_PRIMARY));
     message_title_->SetFontList(
         gfx::FontList().Derive(kDisabledAuthMessageTitleFontSizeDeltaDp,
@@ -737,7 +737,7 @@ class LoginAuthUserView::DisabledAuthMessageView : public views::View {
     decorate_label(message_title_);
 
     message_contents_ = AddChildView(std::make_unique<views::Label>(
-        base::string16(), views::style::CONTEXT_LABEL,
+        std::u16string(), views::style::CONTEXT_LABEL,
         views::style::STYLE_PRIMARY));
     message_contents_->SetFontList(
         gfx::FontList().Derive(kDisabledAuthMessageContentsFontSizeDeltaDp,
@@ -857,7 +857,7 @@ class LoginAuthUserView::LockedTpmMessageView : public views::View {
     message_description_ = CreateLabel();
 
     // Set content.
-    base::string16 message_description = l10n_util::GetStringUTF16(
+    std::u16string message_description = l10n_util::GetStringUTF16(
         IDS_ASH_LOGIN_POD_TPM_LOCKED_ISSUE_DESCRIPTION);
     message_description_->SetText(message_description);
   }
@@ -868,11 +868,11 @@ class LoginAuthUserView::LockedTpmMessageView : public views::View {
 
   // Set the parameters needed to render the message.
   void SetRemainingTime(base::TimeDelta time_left) {
-    base::string16 time_left_message;
+    std::u16string time_left_message;
     if (base::TimeDurationFormatWithSeconds(
             time_left, base::DurationFormatWidth::DURATION_WIDTH_WIDE,
             &time_left_message)) {
-      base::string16 message_warning = l10n_util::GetStringFUTF16(
+      std::u16string message_warning = l10n_util::GetStringFUTF16(
           IDS_ASH_LOGIN_POD_TPM_LOCKED_ISSUE_WARNING, time_left_message);
       message_warning_->SetText(message_warning);
 
@@ -916,7 +916,7 @@ class LoginAuthUserView::LockedTpmMessageView : public views::View {
 
  private:
   views::Label* CreateLabel() {
-    auto label = std::make_unique<views::Label>(base::string16(),
+    auto label = std::make_unique<views::Label>(std::u16string(),
                                                 views::style::CONTEXT_LABEL,
                                                 views::style::STYLE_PRIMARY);
     label->SetFontList(gfx::FontList().Derive(kLockedTpmMessageDeltaDp,
@@ -1017,7 +1017,7 @@ bool LoginAuthUserView::TestApi::HasAuthMethod(AuthMethods auth_method) const {
   return view_->HasAuthMethod(auth_method);
 }
 
-const base::string16&
+const std::u16string&
 LoginAuthUserView::TestApi::GetDisabledAuthMessageContent() const {
   return LoginAuthUserView::DisabledAuthMessageView::TestApi(
              view_->disabled_auth_message_)
@@ -1105,7 +1105,7 @@ LoginAuthUserView::LoginAuthUserView(const LoginUserInfo& user,
       gfx::Size(kNonEmptyWidthDp, kDistanceBetweenUserViewAndPasswordDp));
   padding_below_user_view_ = padding_below_user_view.get();
 
-  base::string16 button_message =
+  std::u16string button_message =
       l10n_util::GetStringUTF16(IDS_ASH_LOGIN_SIGN_IN_REQUIRED_MESSAGE);
   if (user.is_signed_in) {
     button_message =
@@ -1307,7 +1307,7 @@ void LoginAuthUserView::SetAuthMethods(
 
 void LoginAuthUserView::SetEasyUnlockIcon(
     EasyUnlockIconId id,
-    const base::string16& accessibility_label) {
+    const std::u16string& accessibility_label) {
   password_view_->SetEasyUnlockIcon(id, accessibility_label);
 
   const std::string& user_display_email =
@@ -1565,7 +1565,7 @@ void LoginAuthUserView::OnThemeChanged() {
   pin_view_->UpdatePalette(palette);
 }
 
-void LoginAuthUserView::OnAuthSubmit(const base::string16& password) {
+void LoginAuthUserView::OnAuthSubmit(const std::u16string& password) {
   // Pressing enter when the password field is empty and tap-to-unlock is
   // enabled should attempt unlock.
   if (HasAuthMethod(AUTH_TAP) && password.empty()) {
@@ -1830,14 +1830,14 @@ gfx::Size LoginAuthUserView::GetPaddingBelowPasswordView() const {
   return SizeFromHeight(0);
 }
 
-base::string16 LoginAuthUserView::GetPinPasswordToggleText() {
+std::u16string LoginAuthUserView::GetPinPasswordToggleText() {
   if (input_field_mode_ == InputFieldMode::PWD_WITH_TOGGLE)
     return l10n_util::GetStringUTF16(IDS_ASH_LOGIN_SWITCH_TO_PIN);
   else
     return l10n_util::GetStringUTF16(IDS_ASH_LOGIN_SWITCH_TO_PASSWORD);
 }
 
-base::string16 LoginAuthUserView::GetPasswordViewPlaceholder() const {
+std::u16string LoginAuthUserView::GetPasswordViewPlaceholder() const {
   // Note: |AUTH_TAP| must have higher priority than |AUTH_PIN| when
   // determining the placeholder.
   if (HasAuthMethod(AUTH_TAP))

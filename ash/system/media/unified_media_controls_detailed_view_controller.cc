@@ -61,7 +61,7 @@ views::View* UnifiedMediaControlsDetailedViewController::CreateView() {
           kMenuSeparatorWidth));
 }
 
-base::string16 UnifiedMediaControlsDetailedViewController::GetAccessibleName()
+std::u16string UnifiedMediaControlsDetailedViewController::GetAccessibleName()
     const {
   return l10n_util::GetStringUTF16(
       IDS_ASH_QUICK_SETTINGS_BUBBLE_MEDIA_CONTROLS_SUB_MENU_ACCESSIBLE_DESCRIPTION);

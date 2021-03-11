@@ -130,7 +130,7 @@ const std::vector<SharedModuleInfo::ImportInfo>& SharedModuleInfo::GetImports(
 SharedModuleHandler::SharedModuleHandler() = default;
 SharedModuleHandler::~SharedModuleHandler() = default;
 
-bool SharedModuleHandler::Parse(Extension* extension, base::string16* error) {
+bool SharedModuleHandler::Parse(Extension* extension, std::u16string* error) {
   ManifestKeys manifest_keys;
   if (!ManifestKeys::ParseFromDictionary(
           extension->manifest()->available_values(), &manifest_keys, error)) {

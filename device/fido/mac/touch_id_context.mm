@@ -191,7 +191,7 @@ TouchIdContext::~TouchIdContext() {
   [context_ invalidate];
 }
 
-void TouchIdContext::PromptTouchId(const base::string16& reason,
+void TouchIdContext::PromptTouchId(const std::u16string& reason,
                                    Callback callback) {
   callback_ = std::move(callback);
   scoped_refptr<base::SequencedTaskRunner> runner =

@@ -32,7 +32,7 @@ class DisplayErrorObserverTest : public AshTestBase {
  protected:
   DisplayErrorObserver* observer() { return observer_.get(); }
 
-  base::string16 GetMessageContents() {
+  std::u16string GetMessageContents() {
     return GetDisplayErrorNotificationMessageForTest();
   }
 
@@ -56,13 +56,13 @@ TEST_F(DisplayErrorObserverTest, CallTwice) {
   observer()->OnDisplayModeChangeFailed(
       display::DisplayConfigurator::DisplayStateList(),
       display::MULTIPLE_DISPLAY_STATE_MULTI_MIRROR);
-  base::string16 message = GetMessageContents();
+  std::u16string message = GetMessageContents();
   EXPECT_FALSE(message.empty());
 
   observer()->OnDisplayModeChangeFailed(
       display::DisplayConfigurator::DisplayStateList(),
       display::MULTIPLE_DISPLAY_STATE_MULTI_MIRROR);
-  base::string16 message2 = GetMessageContents();
+  std::u16string message2 = GetMessageContents();
   EXPECT_FALSE(message2.empty());
   EXPECT_EQ(message, message2);
 }
