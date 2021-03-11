@@ -5,12 +5,8 @@ specific_include_rules = {
   "headless_content_client.cc": [
       "+components/embedder_support/origin_trials",
   ],
-  "headless_content_main_delegate.h": [
-    "+components/prefs",
-  ],
   "headless_content_main_delegate.cc": [
     "+cc/base/switches.h",
-    "+components/prefs",
     "+components/viz/common/switches.h",
     "+gpu/config/gpu_switches.h",
     "+third_party/blink/public/common/switches.h",

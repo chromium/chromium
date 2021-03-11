@@ -18,3 +18,11 @@ include_rules = [
   "+ui/compositor",
   "+ui/events/keycodes/dom",
 ]
+specific_include_rules = {
+  "headless_browser_main_parts.h": [
+    "+components/prefs",
+  ],
+  "headless_browser_main_parts.cc": [
+    "+components/prefs",
+  ],
+}

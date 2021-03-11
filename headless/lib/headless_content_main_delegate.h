@@ -19,11 +19,6 @@
 #include "headless/public/headless_browser.h"
 #include "headless/public/headless_export.h"
 
-#if defined(HEADLESS_USE_PREFS)
-#include "components/prefs/pref_registry_simple.h"
-#include "components/prefs/pref_service.h"
-#endif
-
 namespace base {
 namespace debug {
 struct CrashKeyString;
@@ -78,10 +73,6 @@ class HEADLESS_EXPORT HeadlessContentMainDelegate
   void InitLogging(const base::CommandLine& command_line);
   void InitCrashReporter(const base::CommandLine& command_line);
 
-#if defined(HEADLESS_USE_PREFS)
-  void CreatePrefService();
-#endif
-
   std::unique_ptr<content::ContentRendererClient> renderer_client_;
   std::unique_ptr<content::ContentBrowserClient> browser_client_;
   std::unique_ptr<content::ContentUtilityClient> utility_client_;
@@ -90,10 +81,6 @@ class HEADLESS_EXPORT HeadlessContentMainDelegate
 
   std::unique_ptr<HeadlessBrowserImpl> browser_;
   std::unique_ptr<HeadlessBrowser::Options> options_;
-
-#if defined(HEADLESS_USE_PREFS)
-  std::unique_ptr<PrefService> local_state_;
-#endif
 
   base::debug::CrashKeyString* headless_crash_key_;  // Note: never deallocated.
 
