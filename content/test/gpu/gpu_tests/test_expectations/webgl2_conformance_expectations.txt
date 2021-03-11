@@ -210,7 +210,7 @@ crbug.com/1127867 [ win angle-d3d11 ] conformance2/textures/image_data/tex-3d-rg
 # Intel flaky issues
 crbug.com/1122744 [ win angle-d3d11 intel ] conformance/textures/misc/texparameter-test.html [ RetryOnFailure ]
 crbug.com/912579 [ angle-opengl win passthrough intel ] conformance2/rendering/out-of-bounds-index-buffers-after-copying.html [ RetryOnFailure ]
-crbug.com/1114780 [ win intel ] deqp/functional/gles3/multisample.html [ Skip ]
+crbug.com/1114780 [ win intel ] deqp/functional/gles3/multisample.html [ RetryOnFailure ]
 crbug.com/1127867 [ win angle-d3d11 intel ] conformance2/textures/image_data/tex-3d-r16f-red-half_float.html [ RetryOnFailure ]
 # Flakily times out on driver 26.20.100.8141.
 crbug.com/1093482 [ win10 intel-0x3e92 ] deqp/functional/gles3/shadermatrix/div_dynamic.html [ RetryOnFailure ]
