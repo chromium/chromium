@@ -122,9 +122,14 @@ void ExtensionWebContentsObserver::RenderFrameCreated(
   // subframes in places like this, since they currently stay in process with
   // their parent. A malicious site shouldn't be able to gain a hosted app's
   // privileges just by embedding a subframe to a popular hosted app.
+  //
+  // Note: Keep this logic in sync with related logic in
+  // ChromeContentBrowserClient::RegisterNonNetworkSubresourceURLLoaderFactories.
   if (type == Manifest::TYPE_EXTENSION ||
       type == Manifest::TYPE_LEGACY_PACKAGED_APP) {
     ExtensionPrefs* prefs = ExtensionPrefs::Get(browser_context_);
+    // TODO(karandeepb): This should probably use
+    // extensions::util::AllowFileAccess.
     if (prefs->AllowFileAccess(extension->id())) {
       content::ChildProcessSecurityPolicy::GetInstance()->GrantRequestScheme(
           render_frame_host->GetProcess()->GetID(), url::kFileScheme);

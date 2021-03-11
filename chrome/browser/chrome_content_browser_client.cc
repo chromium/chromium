@@ -4793,12 +4793,14 @@ void ChromeContentBrowserClient::
                            std::move(allowed_webui_hosts)));
   }
 
-  // Extension with a background page get file access that gets approval from
-  // ChildProcessSecurityPolicy.
-  extensions::ExtensionHost* host =
-      extensions::ProcessManager::Get(web_contents->GetBrowserContext())
-          ->GetBackgroundHostForExtension(extension->id());
-  if (host) {
+  // Extensions with the necessary permissions get access to file:// URLs that
+  // gets approval from ChildProcessSecurityPolicy. Keep this logic in sync with
+  // ExtensionWebContentsObserver::RenderFrameCreated.
+  Manifest::Type type = extension->GetType();
+  if ((type == Manifest::TYPE_EXTENSION ||
+       type == Manifest::TYPE_LEGACY_PACKAGED_APP) &&
+      extensions::util::AllowFileAccess(extension->id(),
+                                        web_contents->GetBrowserContext())) {
     factories->emplace(
         url::kFileScheme,
         SpecialAccessFileURLLoaderFactory::Create(render_process_id));
