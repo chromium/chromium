@@ -1,3 +1,4 @@
-CONSOLE MESSAGE: line 11: PASS: received unhandledrejection event
-CONSOLE MESSAGE: line 13: PASS: received expected reason
+CONSOLE ERROR: line 1: Uncaught (in promise) 42
+CONSOLE MESSAGE: line 22: PASS: received unhandledrejection event
+CONSOLE MESSAGE: line 25: PASS: received expected reason
 Tests that promise rejection events are received for cross origin CORS scripts
