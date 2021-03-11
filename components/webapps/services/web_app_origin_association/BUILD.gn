@@ -10,6 +10,8 @@ source_set("lib") {
     "web_app_origin_association_parser.h",
     "web_app_origin_association_parser_impl.cc",
     "web_app_origin_association_parser_impl.h",
+    "web_app_origin_association_uma_util.cc",
+    "web_app_origin_association_uma_util.h",
   ]
 
   deps = [

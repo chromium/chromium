@@ -80055,6 +80055,13 @@ others/histograms.xml -->
   <int value="6" label="Success"/>
 </enum>
 
+<enum name="WebAppOriginAssociationFetchResult">
+  <summary>Result of web app origin association file fetch.</summary>
+  <int value="0" label="FetchSucceed"/>
+  <int value="1" label="FailedNoResponseBody"/>
+  <int value="2" label="FetchFailedInvalidUrl"/>
+</enum>
+
 <enum name="WebappUninstallDialogAction">
   <int value="0" label="Uninstall only"/>
   <int value="1" label="Uninstall and remove data"/>

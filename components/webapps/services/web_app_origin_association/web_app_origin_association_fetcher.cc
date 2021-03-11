@@ -7,6 +7,7 @@
 #include <utility>
 
 #include "base/bind.h"
+#include "components/webapps/services/web_app_origin_association/web_app_origin_association_uma_util.h"
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "services/network/public/cpp/resource_request.h"
@@ -116,7 +117,10 @@ void WebAppOriginAssociationFetcher::FetchWebAppOriginAssociationFile(
       url_handler.origin.GetURL().Resolve(association_file_name);
   if (!ShouldFetchAssociationFile(resource_url)) {
     // Do not proceed if |resource_url| is not valid.
-    OnResponse(std::move(callback), nullptr);
+    webapps::WebAppOriginAssociationMetrics::RecordFetchResult(
+        webapps::WebAppOriginAssociationMetrics::FetchResult::
+            kFetchFailedInvalidUrl);
+    std::move(callback).Run(nullptr);
     return;
   }
 
@@ -139,6 +143,14 @@ void WebAppOriginAssociationFetcher::SendRequest(
 void WebAppOriginAssociationFetcher::OnResponse(
     FetchFileCallback callback,
     std::unique_ptr<std::string> response_body) {
+  if (!response_body) {
+    webapps::WebAppOriginAssociationMetrics::RecordFetchResult(
+        webapps::WebAppOriginAssociationMetrics::FetchResult::
+            kFetchFailedNoResponseBody);
+  } else {
+    webapps::WebAppOriginAssociationMetrics::RecordFetchResult(
+        webapps::WebAppOriginAssociationMetrics::FetchResult::kFetchSucceed);
+  }
   std::move(callback).Run(std::move(response_body));
 }
 

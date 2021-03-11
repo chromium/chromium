@@ -9,7 +9,9 @@
 
 #include "base/run_loop.h"
 #include "base/test/bind.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
+#include "components/webapps/services/web_app_origin_association/web_app_origin_association_uma_util.h"
 #include "content/public/browser/network_service_instance.h"
 #include "content/public/test/browser_task_environment.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
@@ -31,6 +33,8 @@ constexpr char kWebAppOriginAssociationFileContent[] =
     "    }"
     "}]})";
 
+constexpr char kFetchResultHistogram[] =
+    "Webapp.WebAppOriginAssociationFetchResult";
 }  // namespace
 
 namespace webapps {
@@ -81,6 +85,7 @@ class WebAppOriginAssociationFetcherTest : public testing::Test {
   net::test_server::EmbeddedTestServerHandle test_server_handle_;
   scoped_refptr<network::TestSharedURLLoaderFactory> shared_url_loader_factory_;
   std::unique_ptr<WebAppOriginAssociationFetcher> fetcher_;
+  base::HistogramTester histogram_tester_;
 };
 
 TEST_F(WebAppOriginAssociationFetcherTest, FileExists) {
@@ -93,6 +98,9 @@ TEST_F(WebAppOriginAssociationFetcherTest, FileExists) {
           [&](std::unique_ptr<std::string> file_content) {
             ASSERT_FALSE(!file_content);
             EXPECT_EQ(*file_content, kWebAppOriginAssociationFileContent);
+            histogram_tester_.ExpectBucketCount(
+                kFetchResultHistogram,
+                WebAppOriginAssociationMetrics::FetchResult::kFetchSucceed, 1);
             run_loop.Quit();
           }));
   run_loop.Run();
@@ -101,12 +109,18 @@ TEST_F(WebAppOriginAssociationFetcherTest, FileExists) {
 TEST_F(WebAppOriginAssociationFetcherTest, FileDoesNotExist) {
   base::RunLoop run_loop;
   auto handler = apps::UrlHandlerInfo();
-  handler.origin = url::Origin::Create(server_.GetURL("https://foo.com", "/"));
+  GURL url = server_.GetURL("foo.com", "/");
+  handler.origin = url::Origin::Create(url);
   fetcher_->FetchWebAppOriginAssociationFile(
       std::move(handler), shared_url_loader_factory_.get(),
       base::BindLambdaForTesting(
           [&](std::unique_ptr<std::string> file_content) {
             ASSERT_TRUE(!file_content);
+            histogram_tester_.ExpectBucketCount(
+                kFetchResultHistogram,
+                WebAppOriginAssociationMetrics::FetchResult::
+                    kFetchFailedNoResponseBody,
+                1);
             run_loop.Quit();
           }));
   run_loop.Run();
@@ -121,6 +135,11 @@ TEST_F(WebAppOriginAssociationFetcherTest, FileUrlIsInvalid) {
       base::BindLambdaForTesting(
           [&](std::unique_ptr<std::string> file_content) {
             ASSERT_TRUE(!file_content);
+            histogram_tester_.ExpectBucketCount(
+                kFetchResultHistogram,
+                WebAppOriginAssociationMetrics::FetchResult::
+                    kFetchFailedInvalidUrl,
+                1);
             run_loop.Quit();
           }));
   run_loop.Run();

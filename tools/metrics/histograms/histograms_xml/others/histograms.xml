@@ -17742,6 +17742,16 @@ regressions. -->
   </summary>
 </histogram>
 
+<histogram name="Webapp.WebAppOriginAssociationFetchResult"
+    enum="WebAppOriginAssociationFetchResult" expires_after="2022-03-05">
+  <owner>mek@chromium.org</owner>
+  <owner>desktop-pwas-team@google.com</owner>
+  <summary>
+    Records the result of web app origin association file fetch when url
+    handlers are present. Happens when PWA is installed or updated.
+  </summary>
+</histogram>
+
 <histogram name="Webapp.WebAppUrlLoaderPrepareForLoadResult"
     enum="WebAppUrlLoaderResult" expires_after="2021-09-05">
   <owner>qjw@chromium.org</owner>
