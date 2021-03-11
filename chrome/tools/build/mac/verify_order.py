@@ -26,7 +26,7 @@ def parse_order_file(filename):
   """
   strip_comments = re.compile('#.*$')
   symbols = [strip_comments.sub('', line).strip() for line in open(filename)]
-  symbols = filter(None, symbols)
+  symbols = list(filter(None, symbols))
   if has_duplicates(symbols):
     print('order file "%s" contains duplicate symbols' % filename,
           file=sys.stderr)
@@ -36,7 +36,7 @@ def parse_order_file(filename):
 
 def check_symbol_table(binary, allowed_symbols, mac_bin_path, symbol_file):
   nm = os.path.join(mac_bin_path, 'nm')
-  actual_symbols = subprocess.check_output([nm, '-jUng', binary])
+  actual_symbols = subprocess.check_output([nm, '-jUng', binary]).decode('utf8')
   actual_symbols = [s.rstrip() for s in actual_symbols.splitlines()]
   def print_syms(syms):
     print('\n'.join(['  ' + s for s in syms]), file=sys.stderr)
