@@ -20,6 +20,7 @@
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/accessibility/platform/ax_platform_node.h"
 #include "ui/events/event.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/focus/focus_manager.h"
 #include "ui/views/metadata/metadata_impl_macros.h"
 #include "ui/views/views_delegate.h"
@@ -250,10 +251,6 @@ void WebView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
   // provided via other means. Providing it here would be redundant.
   // Mark the name as explicitly empty so that accessibility_checks pass.
   node_data->SetNameExplicitlyEmpty();
-  if (child_ax_tree_id_ != ui::AXTreeIDUnknown()) {
-    node_data->AddStringAttribute(ax::mojom::StringAttribute::kChildTreeId,
-                                  child_ax_tree_id_.ToString());
-  }
 }
 
 void WebView::AddedToWidget() {
@@ -409,7 +406,8 @@ void WebView::UpdateCrashedOverlayView() {
 void WebView::NotifyAccessibilityWebContentsChanged() {
   content::RenderFrameHost* rfh =
       web_contents() ? web_contents()->GetMainFrame() : nullptr;
-  child_ax_tree_id_ = rfh ? rfh->GetAXTreeID() : ui::AXTreeIDUnknown();
+  GetViewAccessibility().OverrideChildTreeID(rfh ? rfh->GetAXTreeID()
+                                                 : ui::AXTreeIDUnknown());
   NotifyAccessibilityEvent(ax::mojom::Event::kChildrenChanged, false);
 }
 

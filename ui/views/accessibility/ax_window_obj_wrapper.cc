@@ -103,11 +103,24 @@ AXAuraObjWrapper* AXWindowObjWrapper::GetParent() {
   if (!parent)
     return nullptr;
 
+  if (parent->GetProperty(ui::kChildAXTreeID) &&
+      ui::AXTreeID::FromString(*(parent->GetProperty(ui::kChildAXTreeID))) !=
+          ui::AXTreeIDUnknown()) {
+    return nullptr;
+  }
+
   return aura_obj_cache_->GetOrCreate(parent);
 }
 
 void AXWindowObjWrapper::GetChildren(
     std::vector<AXAuraObjWrapper*>* out_children) {
+  // Ignore this window's descendants if it has a child tree.
+  if (window_->GetProperty(ui::kChildAXTreeID) &&
+      ui::AXTreeID::FromString(*(window_->GetProperty(ui::kChildAXTreeID))) !=
+          ui::AXTreeIDUnknown()) {
+    return;
+  }
+
   for (auto* child : window_->children())
     out_children->push_back(aura_obj_cache_->GetOrCreate(child));
 

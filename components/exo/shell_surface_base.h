@@ -347,7 +347,6 @@ class ShellSurfaceBase : public SurfaceTreeHost,
   gfx::Size maximum_size_;
   gfx::Size pending_maximum_size_;
   gfx::SizeF pending_aspect_ratio_;
-  ui::AXTreeID child_ax_tree_id_ = ui::AXTreeIDUnknown();
 
   bool skip_ime_processing_ = false;
   std::unique_ptr<views::Widget> overlay_widget_;

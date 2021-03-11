@@ -26,6 +26,7 @@
 #include "ui/message_center/public/cpp/message_center_constants.h"
 #include "ui/message_center/public/cpp/notification.h"
 #include "ui/strings/grit/ui_strings.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/focus/focus_manager.h"
 #include "ui/views/metadata/metadata_impl_macros.h"
 #include "ui/views/widget/root_view.h"
@@ -764,8 +765,7 @@ void ArcNotificationContentView::GetAccessibleNodeData(
     ui::AXNodeData* node_data) {
   if (surface_ && surface_->GetAXTreeId() != ui::AXTreeIDUnknown()) {
     node_data->role = ax::mojom::Role::kClient;
-    node_data->AddStringAttribute(ax::mojom::StringAttribute::kChildTreeId,
-                                  surface_->GetAXTreeId().ToString());
+    GetViewAccessibility().OverrideChildTreeID(surface_->GetAXTreeId());
   } else {
     node_data->role = ax::mojom::Role::kButton;
     node_data->AddStringAttribute(

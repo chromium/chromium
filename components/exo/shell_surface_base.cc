@@ -52,6 +52,7 @@
 #include "ui/display/display.h"
 #include "ui/display/screen.h"
 #include "ui/gfx/geometry/vector2d_conversions.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/layout/fill_layout.h"
 #include "ui/views/widget/widget.h"
 #include "ui/wm/core/coordinate_conversion.h"
@@ -486,10 +487,7 @@ void ShellSurfaceBase::UnsetSnap() {
 }
 
 void ShellSurfaceBase::SetChildAxTreeId(ui::AXTreeID child_ax_tree_id) {
-  if (child_ax_tree_id_ == child_ax_tree_id)
-    return;
-
-  child_ax_tree_id_ = child_ax_tree_id;
+  GetViewAccessibility().OverrideChildTreeID(child_ax_tree_id);
   this->NotifyAccessibilityEvent(ax::mojom::Event::kChildrenChanged, false);
 }
 
@@ -899,12 +897,6 @@ gfx::Size ShellSurfaceBase::GetMaximumSize() const {
 
 void ShellSurfaceBase::GetAccessibleNodeData(ui::AXNodeData* node_data) {
   node_data->role = ax::mojom::Role::kClient;
-
-  if (child_ax_tree_id_ == ui::AXTreeIDUnknown())
-    return;
-
-  node_data->AddStringAttribute(ax::mojom::StringAttribute::kChildTreeId,
-                                child_ax_tree_id_.ToString());
 }
 
 views::FocusTraversable* ShellSurfaceBase::GetFocusTraversable() {

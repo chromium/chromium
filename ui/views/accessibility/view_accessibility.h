@@ -157,6 +157,10 @@ class VIEWS_EXPORT ViewAccessibility {
   Widget* GetNextFocus() const;
   Widget* GetPreviousFocus() const;
 
+  // Override the child tree id.
+  void OverrideChildTreeID(ui::AXTreeID tree_id);
+  ui::AXTreeID GetChildTreeID() const;
+
   // Returns the accessibility object that represents the View whose
   // accessibility is managed by this instance. This may be an AXPlatformNode or
   // it may be a native accessible object implemented by another class.
@@ -263,6 +267,9 @@ class VIEWS_EXPORT ViewAccessibility {
   // screen readers, transition focus from one widget to another.
   Widget* next_focus_ = nullptr;
   Widget* previous_focus_ = nullptr;
+
+  // This view's child tree id.
+  base::Optional<ui::AXTreeID> child_tree_id_;
 
 #if defined(USE_AURA) && !BUILDFLAG(IS_CHROMEOS_ASH)
   // Each instance of ViewAccessibility that's associated with a root View

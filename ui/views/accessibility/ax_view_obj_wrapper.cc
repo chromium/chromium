@@ -30,8 +30,13 @@ AXAuraObjWrapper* AXViewObjWrapper::GetParent() {
   if (!view_)
     return nullptr;
 
-  if (view_->parent())
+  if (view_->parent()) {
+    if (view_->parent()->GetViewAccessibility().GetChildTreeID() !=
+        ui::AXTreeIDUnknown())
+      return nullptr;
+
     return aura_obj_cache_->GetOrCreate(view_->parent());
+  }
 
   if (view_->GetWidget())
     return aura_obj_cache_->GetOrCreate(view_->GetWidget());
@@ -45,6 +50,11 @@ void AXViewObjWrapper::GetChildren(
     return;
 
   const ViewAccessibility& view_accessibility = view_->GetViewAccessibility();
+
+  // Ignore this view's descendants if it has a child tree.
+  if (view_accessibility.GetChildTreeID() != ui::AXTreeIDUnknown())
+    return;
+
   if (view_accessibility.IsLeaf())
     return;
 

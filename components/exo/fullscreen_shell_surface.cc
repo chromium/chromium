@@ -14,6 +14,7 @@
 #include "ui/aura/window_occlusion_tracker.h"
 #include "ui/aura/window_targeter.h"
 #include "ui/compositor/compositor.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/metadata/metadata_header_macros.h"
 #include "ui/views/metadata/metadata_impl_macros.h"
 #include "ui/views/view.h"
@@ -33,20 +34,11 @@ class FullscreenShellSurface::FullscreenShellView : public views::View {
   // views::View:
   void GetAccessibleNodeData(ui::AXNodeData* node_data) override {
     node_data->role = ax::mojom::Role::kClient;
-
-    if (child_ax_tree_id_ == ui::AXTreeIDUnknown())
-      return;
-
-    node_data->AddStringAttribute(ax::mojom::StringAttribute::kChildTreeId,
-                                  child_ax_tree_id_.ToString());
   }
 
   void SetChildAxTreeId(ui::AXTreeID child_ax_tree_id) {
-    child_ax_tree_id_ = child_ax_tree_id;
+    GetViewAccessibility().OverrideChildTreeID(child_ax_tree_id);
   }
-
- private:
-  ui::AXTreeID child_ax_tree_id_ = ui::AXTreeIDUnknown();
 };
 
 BEGIN_METADATA(FullscreenShellSurface, FullscreenShellView, views::View)
@@ -251,11 +243,6 @@ void FullscreenShellSurface::SetChildAxTreeId(ui::AXTreeID child_ax_tree_id) {
 void FullscreenShellSurface::SetEnabled(bool enabled) {
   DCHECK(contents_view_);
   contents_view_->SetEnabled(enabled);
-}
-
-void FullscreenShellSurface::GetAccessibleNodeData(ui::AXNodeData* node_data) {
-  DCHECK(contents_view_);
-  contents_view_->GetAccessibleNodeData(node_data);
 }
 
 void FullscreenShellSurface::UpdateHostWindowBounds() {

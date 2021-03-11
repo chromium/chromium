@@ -270,6 +270,14 @@ void ViewAccessibility::GetAccessibleNodeData(ui::AXNodeData* data) const {
 
   if (view_->context_menu_controller())
     data->AddAction(ax::mojom::Action::kShowContextMenu);
+
+  DCHECK(!data->HasStringAttribute(ax::mojom::StringAttribute::kChildTreeId))
+      << "Please annotate child tree ids using "
+         "ViewAccessibility::OverrideChildTreeID.";
+  if (child_tree_id_) {
+    data->AddStringAttribute(ax::mojom::StringAttribute::kChildTreeId,
+                             child_tree_id_->ToString());
+  }
 }
 
 void ViewAccessibility::OverrideFocus(AXVirtualView* virtual_view) {
@@ -425,6 +433,17 @@ Widget* ViewAccessibility::GetNextFocus() const {
 
 Widget* ViewAccessibility::GetPreviousFocus() const {
   return previous_focus_;
+}
+
+void ViewAccessibility::OverrideChildTreeID(ui::AXTreeID tree_id) {
+  if (tree_id == ui::AXTreeIDUnknown())
+    child_tree_id_ = base::nullopt;
+  else
+    child_tree_id_ = tree_id;
+}
+
+ui::AXTreeID ViewAccessibility::GetChildTreeID() const {
+  return child_tree_id_ ? *child_tree_id_ : ui::AXTreeIDUnknown();
 }
 
 gfx::NativeViewAccessible ViewAccessibility::GetNativeObject() const {

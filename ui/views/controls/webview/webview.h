@@ -197,10 +197,6 @@ class WEBVIEW_EXPORT WebView : public View,
   gfx::Size min_size_;
   gfx::Size max_size_;
 
-  // Tracks the child accessibility tree id which is associated with the
-  // WebContents's main RenderFrameHost.
-  ui::AXTreeID child_ax_tree_id_;
-
   DISALLOW_COPY_AND_ASSIGN(WebView);
 };
 

@@ -79,7 +79,6 @@ class FullscreenShellSurface : public SurfaceTreeHost,
 
   void SetChildAxTreeId(ui::AXTreeID child_ax_tree_id);
   void SetEnabled(bool enabled);
-  void GetAccessibleNodeData(ui::AXNodeData* node_data);
 
  private:
   class FullscreenShellView;
