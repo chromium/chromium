@@ -56,6 +56,7 @@ class PLATFORM_EXPORT Panner {
 
   static std::unique_ptr<Panner> Create(PanningModel,
                                         float sample_rate,
+                                        unsigned render_quantum_frames,
                                         HRTFDatabaseLoader*);
 
   virtual ~Panner() = default;

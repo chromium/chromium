@@ -48,12 +48,10 @@ class PLATFORM_EXPORT AudioDSPKernel {
         sample_rate_(kernel_processor->SampleRate()),
         render_quantum_frames_(kernel_processor->RenderQuantumFrames()) {}
 
-  // TODO(crbug.com/988121): Need to replace the explicit 128 below with
-  // something else to support settable render sizes.
-  explicit AudioDSPKernel(float sample_rate)
+  explicit AudioDSPKernel(float sample_rate, unsigned render_quantum_frames)
       : kernel_processor_(nullptr),
         sample_rate_(sample_rate),
-        render_quantum_frames_(128) {}
+        render_quantum_frames_(render_quantum_frames) {}
 
   virtual ~AudioDSPKernel();
 

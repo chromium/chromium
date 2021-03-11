@@ -331,6 +331,7 @@ void PannerHandler::Initialize() {
 
   auto listener = Listener();
   panner_ = Panner::Create(panning_model_, Context()->sampleRate(),
+                           GetDeferredTaskHandler().RenderQuantumFrames(),
                            listener->HrtfDatabaseLoader());
   listener->AddPanner(*this);
 
@@ -403,6 +404,7 @@ bool PannerHandler::SetPanningModel(Panner::PanningModel model) {
     // This synchronizes with process().
     MutexLocker process_locker(process_lock_);
     panner_ = Panner::Create(model, Context()->sampleRate(),
+                             GetDeferredTaskHandler().RenderQuantumFrames(),
                              Listener()->HrtfDatabaseLoader());
     panning_model_ = model;
   }

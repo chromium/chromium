@@ -39,8 +39,9 @@ DelayDSPKernel::DelayDSPKernel(DelayProcessor* processor)
   DCHECK_GE(max_delay_time_, 0);
   DCHECK(!std::isnan(max_delay_time_));
 
-  buffer_.Allocate(
-      BufferLengthForDelay(max_delay_time_, processor->SampleRate()));
+  buffer_.Allocate(BufferLengthForDelay(max_delay_time_,
+                                        processor->SampleRate(),
+                                        processor->RenderQuantumFrames()));
   buffer_.Zero();
 }
 
