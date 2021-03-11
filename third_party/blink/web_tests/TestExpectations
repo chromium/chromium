@@ -5764,3 +5764,4 @@ crbug.com/1184157 http/tests/serviceworker/window-close-during-registration.html
 
 # Sheriff 2021-03-11
 crbug.com/1184773 [ Mac ] virtual/synchronous_html_parser/svg/dynamic-updates/SVGFEComponentTransferElement-svgdom-intercept-prop.html [ Pass Failure ]
+crbug.com/1186901 [ Linux ] http/tests/devtools/elements/styles-3/style-autocomplete.js [ Pass Failure ]
