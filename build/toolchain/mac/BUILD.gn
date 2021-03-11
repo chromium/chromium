@@ -72,7 +72,7 @@ tool_versions =
                               "//build/apple/swiftc.py",
                               "//build/config/ios/compile_xcassets.py",
                               "//build/toolchain/mac/filter_libtool.py",
-                              "//build/toolchain/mac/linker_driver.py",
+                              "//build/toolchain/apple/linker_driver.py",
                             ],
                             root_build_dir),
                 "trim scope")
@@ -164,7 +164,7 @@ template("mac_toolchain") {
 
     linker_driver =
         "TOOL_VERSION=${tool_versions.linker_driver} " +
-        rebase_path("//build/toolchain/mac/linker_driver.py", root_build_dir)
+        rebase_path("//build/toolchain/apple/linker_driver.py", root_build_dir)
 
     # Specify an explicit path for the strip binary.
     _strippath = mac_bin_path + "strip"

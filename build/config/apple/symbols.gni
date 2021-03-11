@@ -11,7 +11,7 @@ import("//build/config/sanitizers/sanitizers.gni")
 declare_args() {
   # Produce dSYM files for targets that are configured to do so. dSYM
   # generation is controlled globally as it is a linker output (produced via
-  # the //build/toolchain/mac/linker_driver.py. Enabling this will result in
+  # the //build/toolchain/apple/linker_driver.py. Enabling this will result in
   # all shared library, loadable module, and executable targets having a dSYM
   # generated.
   enable_dsyms = is_official_build || using_sanitizer
@@ -20,7 +20,7 @@ declare_args() {
   # //build/config/mac:strip_all config will be applied to all linked targets.
   # If custom stripping parameters are required, remove that config from a
   # linked target and apply custom -Wcrl,strip flags. See
-  # //build/toolchain/mac/linker_driver.py for more information.
+  # //build/toolchain/apple/linker_driver.py for more information.
   enable_stripping = is_official_build
 }
 

@@ -57,6 +57,7 @@ DETERMINISTIC_FLAG = '--deterministic'
 #       Sets the path to the strip to run with -Wcrl,strip, in which case
 #       `xcrun` is not used to invoke it.
 
+
 def Main(args):
   """Main function for the linker driver. Separates out the arguments for
   the main compiler driver and the linker driver, then invokes all the
@@ -126,17 +127,16 @@ def ProcessLinkerDriverArg(arg):
          action.
   """
   if not arg.startswith(_LINKER_DRIVER_ARG_PREFIX):
-    raise ValueError('%s is not a linker driver argument' % (arg,))
+    raise ValueError('%s is not a linker driver argument' % (arg, ))
 
   sub_arg = arg[len(_LINKER_DRIVER_ARG_PREFIX):]
 
   for driver_action in _LINKER_DRIVER_ACTIONS:
     (name, action) = driver_action
     if sub_arg.startswith(name):
-      return (name,
-          lambda full_args: action(sub_arg[len(name):], full_args))
+      return (name, lambda full_args: action(sub_arg[len(name):], full_args))
 
-  raise ValueError('Unknown linker driver argument: %s' % (arg,))
+  raise ValueError('Unknown linker driver argument: %s' % (arg, ))
 
 
 def RunDsymUtil(dsym_path_prefix, full_args):
@@ -289,7 +289,6 @@ def _RemovePath(path):
 
 
 _LINKER_DRIVER_ARG_PREFIX = '-Wcrl,'
-
 """List of linker driver actions. The sort order of this list affects the
 order in which the actions are invoked. The first item in the tuple is the
 argument's -Wcrl,<sub_argument> and the second is the function to invoke.
@@ -301,7 +300,6 @@ _LINKER_DRIVER_ACTIONS = [
     ('strippath,', SetStripPath),
     ('strip,', RunStrip),
 ]
-
 
 if __name__ == '__main__':
   Main(sys.argv)

@@ -74,7 +74,7 @@ template("lipo_binary") {
                              "output_name",
                            ])
 
-    script = "//build/toolchain/mac/linker_driver.py"
+    script = "//build/toolchain/apple/linker_driver.py"
 
     # http://crbug.com/762840. Fix for bots running out of memory.
     pool = "//build/toolchain:link_pool($default_toolchain)"
@@ -470,7 +470,7 @@ template("create_signed_bundle") {
         invoker.partial_info_plist,
       ]
 
-      _plist_compiler_path = "//build/config/mac/plist_util.py"
+      _plist_compiler_path = "//build/apple/plist_util.py"
 
       code_signing_sources += _partial_info_plists
       code_signing_sources += [ _plist_compiler_path ]
@@ -875,7 +875,8 @@ template("ios_app_bundle") {
       _create_pkg_info = target_name + "_pkg_info"
       action(_create_pkg_info) {
         forward_variables_from(invoker, [ "testonly" ])
-        script = "//build/config/mac/write_pkg_info.py"
+        script = "//build/apple/write_pkg_info.py"
+        inputs = [ "//build/apple/plist_util.py" ]
         sources = get_target_outputs(":$_generate_info_plist")
         outputs = [
           # Cannot name the output PkgInfo as the name will not be unique if
@@ -1995,7 +1996,7 @@ template("ios_xcuitest_test_runner_bundle") {
 
   action(_info_plist_merge_plist) {
     testonly = true
-    script = "//build/config/mac/plist_util.py"
+    script = "//build/apple/plist_util.py"
 
     sources = [
       "$_xctrunner_path/Info.plist",

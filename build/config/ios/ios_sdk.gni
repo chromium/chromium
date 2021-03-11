@@ -143,7 +143,7 @@ if (ios_sdk_path == "") {
       "sdk/xcode_links",
     ]
   }
-  script_name = "//build/config/mac/sdk_info.py"
+  script_name = "//build/config/apple/sdk_info.py"
   _ios_sdk_result = exec_script(script_name, ios_sdk_info_args, "scope")
   ios_sdk_path = _ios_sdk_result.sdk_path
   ios_sdk_platform_path = _ios_sdk_result.sdk_platform_path

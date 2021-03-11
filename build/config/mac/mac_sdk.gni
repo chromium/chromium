@@ -67,7 +67,7 @@ if (!use_system_xcode) {
   _hermetic_xcode_path = "//build/${target_os}_files/xcode_binaries"
 }
 
-script_name = "//build/config/mac/sdk_info.py"
+script_name = "//build/config/apple/sdk_info.py"
 sdk_info_args = []
 if (!use_system_xcode) {
   sdk_info_args += [

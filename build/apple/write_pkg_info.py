@@ -11,12 +11,15 @@ import sys
 # Usage: python write_pkg_info.py --plist Foo.app/Contents/Info.plist \
 #           --output Foo.app/Contents/PkgInfo
 
+
 def Main():
   parser = argparse.ArgumentParser(
       description='A script to write PkgInfo files for .app bundles.')
-  parser.add_argument('--plist', required=True,
+  parser.add_argument('--plist',
+                      required=True,
                       help='Path to the Info.plist for the .app.')
-  parser.add_argument('--output', required=True,
+  parser.add_argument('--output',
+                      required=True,
                       help='Path to the desired output file.')
   args = parser.parse_args()
 
@@ -36,7 +39,7 @@ def Main():
   signature_code = plist.get('CFBundleSignature', '????')
   if len(signature_code) != 4:
     raise ValueError('CFBundleSignature should be exactly four characters, ' +
-        'got %s' % signature_code)
+                     'got %s' % signature_code)
 
   with open(args.output, 'w') as fp:
     fp.write('%s%s' % (package_type, signature_code))

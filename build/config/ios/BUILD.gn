@@ -217,7 +217,7 @@ _xctrunner_path =
 # are below $root_build_dir, it is not possible to list them as a target input
 # without gn complaining (as it can't find a target creating those files).
 #
-# The symlinks are created by //build/config/mac/sdk_info.py script invoked
+# The symlinks are created by //build/config/apple/sdk_info.py script invoked
 # via exec_script() from //build/config/{ios/ios_sdk.gni,mac/mac_sdk.gni}.
 # As the invocation is done by exec_script, there is no target that can list
 # those files as output.

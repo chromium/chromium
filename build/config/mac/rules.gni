@@ -440,7 +440,8 @@ template("mac_app_bundle") {
 
     action(_pkg_info_target) {
       forward_variables_from(invoker, [ "testonly" ])
-      script = "//build/config/mac/write_pkg_info.py"
+      script = "//build/apple/write_pkg_info.py"
+      inputs = [ "//build/apple/plist_util.py" ]
       sources = get_target_outputs(":$_info_plist_target")
       outputs = [ "$target_gen_dir/$_pkg_info_target" ]
       args = [ "--plist" ] + rebase_path(sources, root_build_dir) +

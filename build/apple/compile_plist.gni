@@ -43,7 +43,7 @@ template("compile_plist") {
                              "testonly",
                            ])
 
-    script = "//build/config/mac/plist_util.py"
+    script = "//build/apple/plist_util.py"
     sources = invoker.plist_templates
     outputs = [ _merged_name ]
     args = [
@@ -59,7 +59,7 @@ template("compile_plist") {
                              "testonly",
                              "visibility",
                            ])
-    script = "//build/config/mac/plist_util.py"
+    script = "//build/apple/plist_util.py"
     sources = [ _merged_name ]
     outputs = [ _output_name ]
     args = [
