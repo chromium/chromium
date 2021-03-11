@@ -250,6 +250,7 @@ struct SameSizeAsDocumentLoader
   bool is_error_page_for_failed_navigation;
   mojo::Remote<mojom::blink::ContentSecurityNotifier> content_security_notifier;
   scoped_refptr<SecurityOrigin> origin_to_commit;
+  network::mojom::WebSandboxFlags sandbox_flags;
   WebNavigationType navigation_type;
   DocumentLoadTiming document_load_timing;
   base::TimeTicks time_of_last_data_received;
@@ -371,6 +372,7 @@ DocumentLoader::DocumentLoader(
       origin_to_commit_(params_->origin_to_commit.IsNull()
                             ? nullptr
                             : params_->origin_to_commit.Get()->IsolatedCopy()),
+      sandbox_flags_(params_->sandbox_flags),
       navigation_type_(navigation_type),
       document_load_timing_(*this),
       service_worker_network_provider_(
@@ -495,6 +497,7 @@ DocumentLoader::CreateWebNavigationParamsToCloneDocument() {
   // sandbox flags and various policies are copied separately during commit in
   // CommitNavigation() and CalculateSandboxFlags().
   params->origin_to_commit = window->GetSecurityOrigin();
+  params->sandbox_flags = sandbox_flags_;
   params->origin_agent_cluster = origin_agent_cluster_;
   params->grant_load_local_resources = grant_load_local_resources_;
   // Various attributes that relates to the last "real" navigation that is known
@@ -1702,43 +1705,8 @@ void DocumentLoader::DidCommitNavigation() {
   }
 }
 
-network::mojom::blink::WebSandboxFlags DocumentLoader::CalculateSandboxFlags(
-    ContentSecurityPolicy* csp) {
-  // The snapshot of the FramePolicy taken, when the navigation started. This
-  // contains the sandbox of the parent/opener and also the sandbox of the
-  // iframe element owning this new document.
-  auto sandbox_flags = frame_policy_.sandbox_flags;
-
-  // The new document's response can further restrict sandbox using the
-  // Content-Security-Policy: sandbox directive:
-  sandbox_flags |= csp->GetSandboxMask();
-
-  if (archive_) {
-    // The URL of a Document loaded from a MHTML archive is controlled by
-    // the Content-Location header. This would allow UXSS, since
-    // Content-Location can be arbitrarily controlled to control the
-    // Document's URL and origin. Instead, force a Document loaded from a
-    // MHTML archive to be sandboxed, providing exceptions only for creating
-    // new windows.
-    DCHECK(commit_reason_ == CommitReason::kRegular ||
-           commit_reason_ == CommitReason::kInitialization);
-    sandbox_flags |= (network::mojom::blink::WebSandboxFlags::kAll &
-                      ~(network::mojom::blink::WebSandboxFlags::kPopups |
-                        network::mojom::blink::WebSandboxFlags::
-                            kPropagatesToAuxiliaryBrowsingContexts));
-  } else if (commit_reason_ == CommitReason::kXSLT ||
-             commit_reason_ == CommitReason::kJavascriptUrl) {
-    // An XSLT document inherits sandbox flags from the document that create it,
-    // while javascript: URL document reuses the previous document's sandbox
-    // flags.
-    sandbox_flags |= frame_->DomWindow()->GetSandboxFlags();
-  }
-  return sandbox_flags;
-}
-
 scoped_refptr<SecurityOrigin> DocumentLoader::CalculateOrigin(
-    Document* owner_document,
-    network::mojom::blink::WebSandboxFlags sandbox_flags) {
+    Document* owner_document) {
   scoped_refptr<SecurityOrigin> origin;
   if (origin_to_commit_) {
     // Origin to commit is specified by the browser process, it must be taken
@@ -1774,7 +1742,7 @@ scoped_refptr<SecurityOrigin> DocumentLoader::CalculateOrigin(
     origin = SecurityOrigin::CreateWithReferenceOrigin(url_, precursor.get());
   }
 
-  if ((sandbox_flags & network::mojom::blink::WebSandboxFlags::kOrigin) !=
+  if ((sandbox_flags_ & network::mojom::blink::WebSandboxFlags::kOrigin) !=
       network::mojom::blink::WebSandboxFlags::kNone) {
     auto sandbox_origin = origin->DeriveNewOpaqueOrigin();
 
@@ -1890,10 +1858,9 @@ void DocumentLoader::InitializeWindow(Document* owner_document) {
   // placeholder. Enforce a strict sandbox and ensure a unique opaque origin.
   // TODO(dcheng): Actually enforce strict sandbox flags for provisional frame.
   // For some reason, doing so breaks some random devtools tests.
-  auto sandbox_flags = CalculateSandboxFlags(csp);
   auto security_origin = frame_->IsProvisional()
                              ? SecurityOrigin::CreateUniqueOpaque()
-                             : CalculateOrigin(owner_document, sandbox_flags);
+                             : CalculateOrigin(owner_document);
 
   bool origin_agent_cluster = origin_agent_cluster_;
   if (ShouldInheritExplicitOriginKeying(Url(), commit_reason_) &&
@@ -1981,7 +1948,7 @@ void DocumentLoader::InitializeWindow(Document* owner_document) {
       frame_->DomWindow()->GetAgent()->cluster_id());
 
   SecurityContext& security_context = frame_->DomWindow()->GetSecurityContext();
-  security_context.SetSandboxFlags(sandbox_flags);
+  security_context.SetSandboxFlags(sandbox_flags_);
   // Conceptually, SecurityOrigin doesn't have to be initialized after sandbox
   // flags are applied, but there's a UseCounter in SetSecurityOrigin() that
   // wants to inspect sandbox flags.

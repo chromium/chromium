@@ -17,16 +17,17 @@ import "services/network/public/mojom/url_loader.mojom";
 import "services/network/public/mojom/url_request.mojom";
 import "services/network/public/mojom/url_response_head.mojom";
 import "services/network/public/mojom/web_client_hints_types.mojom";
-import "third_party/blink/public/mojom/navigation/navigation_policy.mojom";
-import "third_party/blink/public/mojom/permissions_policy/permissions_policy.mojom";
+import "services/network/public/mojom/web_sandbox_flags.mojom";
 import "third_party/blink/public/mojom/fetch/fetch_api_request.mojom";
 import "third_party/blink/public/mojom/frame/frame_policy.mojom";
+import "third_party/blink/public/mojom/loader/mixed_content.mojom";
 import "third_party/blink/public/mojom/loader/referrer.mojom";
+import "third_party/blink/public/mojom/navigation/navigation_policy.mojom";
+import "third_party/blink/public/mojom/page/page.mojom";
+import "third_party/blink/public/mojom/permissions_policy/permissions_policy.mojom";
 import "third_party/blink/public/mojom/tokens/tokens.mojom";
 import "url/mojom/origin.mojom";
 import "url/mojom/url.mojom";
-import "third_party/blink/public/mojom/loader/mixed_content.mojom";
-import "third_party/blink/public/mojom/page/page.mojom";
 
 [Native]
 struct Impression;
@@ -288,6 +289,15 @@ struct CommitNavigationParams {
   // It is specified for session history navigations, for which the origin is
   // known and saved in the FrameNavigationEntry.
   url.mojom.Origin? origin_to_commit;
+
+  // The sandbox flags to apply to the new document. This is the union of:
+  // - the frame's current sandbox, taken when the navigation started.
+  // - the navigation response's CSP sandbox flags.
+  // - the result of CSP embedded enforcement required CSP sandbox flags.
+  // - Various edge cases: MHTML document, error pages, ...
+  // See content/browser/renderer_host/sandbox_flags.md
+  network.mojom.WebSandboxFlags sandbox_flags =
+    network.mojom.WebSandboxFlags.kAll;
 
   // Whether or not the user agent override string should be used.
   bool is_overriding_user_agent = false;

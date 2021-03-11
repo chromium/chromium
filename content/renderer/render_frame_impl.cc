@@ -986,6 +986,8 @@ void FillMiscNavigationParams(
     navigation_params->origin_to_commit =
         commit_params.origin_to_commit.value();
   }
+  navigation_params->sandbox_flags = commit_params.sandbox_flags;
+
   navigation_params->appcache_host_id =
       commit_params.appcache_host_id.value_or(base::UnguessableToken());
 
@@ -6072,6 +6074,7 @@ void RenderFrameImpl::LoadHTMLStringForTesting(const std::string& html,
 
   auto navigation_params = std::make_unique<WebNavigationParams>();
   navigation_params->url = base_url;
+  navigation_params->sandbox_flags = network::mojom::WebSandboxFlags::kNone;
   WebNavigationParams::FillStaticResponse(navigation_params.get(), "text/html",
                                           WebString::FromUTF8(text_encoding),
                                           html);

@@ -367,11 +367,7 @@ class CORE_EXPORT DocumentLoader : public GarbageCollected<DocumentLoader>,
   Member<MHTMLArchive> archive_;
 
  private:
-  network::mojom::blink::WebSandboxFlags CalculateSandboxFlags(
-      ContentSecurityPolicy* csp);
-  scoped_refptr<SecurityOrigin> CalculateOrigin(
-      Document* owner_document,
-      network::mojom::blink::WebSandboxFlags);
+  scoped_refptr<SecurityOrigin> CalculateOrigin(Document* owner_document);
   void InitializeWindow(Document* owner_document);
   void DidInstallNewDocument(Document*);
   void WillCommitNavigation();
@@ -511,6 +507,7 @@ class CORE_EXPORT DocumentLoader : public GarbageCollected<DocumentLoader>,
       content_security_notifier_;
 
   const scoped_refptr<SecurityOrigin> origin_to_commit_;
+  const network::mojom::WebSandboxFlags sandbox_flags_;
   WebNavigationType navigation_type_;
 
   DocumentLoadTiming document_load_timing_;

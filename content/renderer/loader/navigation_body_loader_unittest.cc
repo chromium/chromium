@@ -51,6 +51,7 @@ class NavigationBodyLoaderTest : public ::testing::Test,
     auto endpoints = network::mojom::URLLoaderClientEndpoints::New();
     endpoints->url_loader_client = client_remote_.BindNewPipeAndPassReceiver();
     blink::WebNavigationParams navigation_params;
+    navigation_params.sandbox_flags = network::mojom::WebSandboxFlags::kNone;
     auto common_params = CreateCommonNavigationParams();
     auto commit_params = CreateCommitNavigationParams();
     NavigationBodyLoader::FillNavigationParamsResponseAndBodyLoader(
@@ -331,6 +332,7 @@ TEST_F(NavigationBodyLoaderTest, FillResponseWithSecurityDetails) {
   auto commit_params = CreateCommitNavigationParams();
 
   blink::WebNavigationParams navigation_params;
+  navigation_params.sandbox_flags = network::mojom::WebSandboxFlags::kNone;
   auto endpoints = network::mojom::URLLoaderClientEndpoints::New();
   mojo::ScopedDataPipeProducerHandle producer_handle;
   mojo::ScopedDataPipeConsumerHandle consumer_handle;

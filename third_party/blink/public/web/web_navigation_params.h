@@ -182,6 +182,11 @@ struct BLINK_EXPORT WebNavigationParams {
   explicit WebNavigationParams(const base::UnguessableToken&);
 
   // Shortcut for navigating based on WebNavigationInfo parameters.
+  //
+  // This is used only for navigations not driven by the browser process:
+  // - the re-navigation to about:blank when creating a new subframe or window
+  //   with initial location == about:blank (see https://crbug.com/778318)
+  // - unit tests.
   static std::unique_ptr<WebNavigationParams> CreateFromInfo(
       const WebNavigationInfo&);
 
@@ -301,7 +306,18 @@ struct BLINK_EXPORT WebNavigationParams {
   // The origin in which a navigation should commit. When provided, Blink
   // should use this origin directly and not compute locally the new document
   // origin.
+  // TODO(arthursonzogni): Always provide origin_to_commit.
   WebSecurityOrigin origin_to_commit;
+
+  // The sandbox flags to apply to the new document. This is the union of:
+  // - the frame's current sandbox attribute, taken when the navigation started.
+  // - the navigation response's CSP sandbox flags.
+  // - the result of CSP embedded enforcement required CSP sandbox flags.
+  // - Various edge cases: MHTML document, error pages, ...
+  // See content/browser/renderer_host/sandbox_flags.md
+  network::mojom::WebSandboxFlags sandbox_flags =
+      network::mojom::WebSandboxFlags::kAll;
+
   // The devtools token for this navigation. See DocumentLoader
   // for details.
   base::UnguessableToken devtools_navigation_token;
