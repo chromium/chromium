@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "base/files/file_util.h"
+#include "base/notreached.h"
 #include "base/path_service.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
@@ -57,6 +58,7 @@ class SpeechRecognitionServiceTest
   // media::mojom::SpeechRecognitionRecognizerClient
   void OnSpeechRecognitionRecognitionEvent(
       media::mojom::SpeechRecognitionResultPtr result) override;
+  void OnSpeechRecognitionError() override;
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
     // Required for the utility process to access the directory containing the
@@ -96,6 +98,10 @@ void SpeechRecognitionServiceTest::SetUp() {
 void SpeechRecognitionServiceTest::OnSpeechRecognitionRecognitionEvent(
     media::mojom::SpeechRecognitionResultPtr result) {
   recognition_results_.push_back(std::move(result->transcription));
+}
+
+void SpeechRecognitionServiceTest::OnSpeechRecognitionError() {
+  NOTREACHED();
 }
 
 void SpeechRecognitionServiceTest::LaunchService() {
@@ -266,7 +272,6 @@ IN_PROC_BROWSER_TEST_F(SpeechRecognitionServiceTest, CreateAudioSourceFetcher) {
 
   // TODO(crbug.com/1173135): Test mock audio input for AudioSourceFetcher.
   // Currently a sanity check as nothing happens yet.
-  audio_source_fetcher_->Start();
   audio_source_fetcher_->Stop();
   base::RunLoop().RunUntilIdle();
 }

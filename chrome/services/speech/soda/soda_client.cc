@@ -5,6 +5,7 @@
 #include "chrome/services/speech/soda/soda_client.h"
 
 #include "base/logging.h"
+#include "base/metrics/histogram_functions.h"
 
 namespace soda {
 
@@ -32,16 +33,34 @@ SodaClient::SodaClient(base::FilePath library_path)
   DCHECK(delete_soda_func_);
   DCHECK(add_audio_func_);
   DCHECK(soda_start_func_);
+
+  if (!lib_.is_valid()) {
+    load_soda_result_ = LoadSodaResultValue::kBinaryInvalid;
+  } else if (!(create_soda_func_ && delete_soda_func_ && add_audio_func_ &&
+               soda_start_func_)) {
+    load_soda_result_ = LoadSodaResultValue::kFunctionPointerInvalid;
+  } else {
+    load_soda_result_ = LoadSodaResultValue::kSuccess;
+  }
+
+  base::UmaHistogramEnumeration("Accessibility.LiveCaption.LoadSodaResult",
+                                load_soda_result_);
 }
 
 NO_SANITIZE("cfi-icall")
 SodaClient::~SodaClient() {
+  if (load_soda_result_ != LoadSodaResultValue::kSuccess)
+    return;
+
   if (IsInitialized())
     delete_soda_func_(soda_async_handle_);
 }
 
 NO_SANITIZE("cfi-icall")
 void SodaClient::AddAudio(const char* audio_buffer, int audio_buffer_size) {
+  if (load_soda_result_ != LoadSodaResultValue::kSuccess)
+    return;
+
   add_audio_func_(soda_async_handle_, audio_buffer, audio_buffer_size);
 }
 
@@ -53,6 +72,9 @@ NO_SANITIZE("cfi-icall")
 void SodaClient::Reset(const SerializedSodaConfig config,
                        int sample_rate,
                        int channel_count) {
+  if (load_soda_result_ != LoadSodaResultValue::kSuccess)
+    return;
+
   if (IsInitialized()) {
     delete_soda_func_(soda_async_handle_);
   }

@@ -107,6 +107,10 @@ void ChromeSpeechRecognitionClient::OnSpeechRecognitionRecognitionEvent(
                      base::Unretained(this)));
 }
 
+void ChromeSpeechRecognitionClient::OnSpeechRecognitionError() {
+  caption_host_->OnError();
+}
+
 void ChromeSpeechRecognitionClient::SpeechRecognitionAvailabilityChanged(
     bool is_speech_recognition_available) {
   if (is_speech_recognition_available) {

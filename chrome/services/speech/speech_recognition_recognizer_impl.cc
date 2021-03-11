@@ -118,6 +118,9 @@ SpeechRecognitionRecognizerImpl::SpeechRecognitionRecognizerImpl(
   if (enable_soda_) {
     DCHECK(base::PathExists(binary_path));
     soda_client_ = std::make_unique<::soda::SodaClient>(binary_path);
+    if (!soda_client_->BinaryLoadedSuccessfully()) {
+      client_remote_->OnSpeechRecognitionError();
+    }
   } else {
     cloud_client_ = std::make_unique<CloudSpeechRecognitionClient>(
         recognition_event_callback(),

@@ -43147,6 +43147,15 @@ Called by update_gpu_driver_bug_workaround_entries.py.-->
   <int value="5" label="Load failed - Checksum not found in prefs"/>
 </enum>
 
+<enum name="LoadSodaResult">
+  <int value="0" label="Unknown"/>
+  <int value="1" label="Success"/>
+  <int value="2" label="Binary invalid"/>
+  <int value="3"
+      label="Binary successfully loaded but one or more function pointers are
+             null."/>
+</enum>
+
 <enum name="LoadType">
   <int value="0" label="UNDEFINED_LOAD">Not yet initialized</int>
   <int value="1" label="RELOAD">User pressed reload</int>

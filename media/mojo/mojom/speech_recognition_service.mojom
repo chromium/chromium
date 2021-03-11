@@ -98,6 +98,9 @@ interface SpeechRecognitionRecognizer {
 interface SpeechRecognitionRecognizerClient {
   // Triggered by speech recognition process on a speech recognition event.
   OnSpeechRecognitionRecognitionEvent(SpeechRecognitionResult result);
+
+  // Triggered by an error within the speech recognition service.
+  OnSpeechRecognitionError();
 };
 
 // A speech recognition result created by the speech service and passed to the
