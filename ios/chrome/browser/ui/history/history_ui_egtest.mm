@@ -138,10 +138,6 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
 }
 
 - (void)tearDown {
-  // No-op if only one window presents.
-  [ChromeEarlGrey closeAllExtraWindows];
-  [EarlGrey setRootMatcherForSubsequentInteractions:nil];
-
   NSError* error = nil;
   // Dismiss search bar by pressing cancel, if present. Passing error prevents
   // failure if the element is not found.

@@ -25,11 +25,6 @@ using chrome_test_util::MatchInWindowWithNumber;
 
 @implementation SyncEncryptionPassphraseTestCase
 
-- (void)tearDown {
-  [ChromeEarlGrey closeAllExtraWindows];
-  [super tearDown];
-}
-
 // Tests to open the sync passphrase view, and to close it.
 - (void)testShowSyncPassphraseAndDismiss {
   [ChromeEarlGrey addBookmarkWithSyncPassphrase:@"hello"];

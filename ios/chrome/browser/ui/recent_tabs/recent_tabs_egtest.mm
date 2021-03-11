@@ -379,8 +379,6 @@ GURL TestPageURL() {
       selectElementWithMatcher:grey_allOf(RecentTabsTable(),
                                           grey_accessibilityElement(), nil)]
       assertWithMatcher:grey_notNil()];
-
-  [ChromeEarlGrey closeAllExtraWindows];
 }
 
 // Tests the Share action on a recent tab's context menu.

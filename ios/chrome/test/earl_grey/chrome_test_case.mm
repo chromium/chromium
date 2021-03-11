@@ -206,6 +206,10 @@ GREY_STUB_CLASS_IN_APP_MAIN_QUEUE(ChromeTestCaseAppInterface)
 // Tear down called once per test, to close all tabs and menus, and clear the
 // tracked tests accounts. It also makes sure mock authentication is running.
 - (void)tearDown {
+  // Clear multiwindow root and any extra windows.
+  [ChromeEarlGrey closeAllExtraWindows];
+  [EarlGrey setRootMatcherForSubsequentInteractions:nil];
+
   [[AppLaunchManager sharedManager] removeObserver:self];
 
   if (_tearDownHandler) {
@@ -361,6 +365,11 @@ GREY_STUB_CLASS_IN_APP_MAIN_QUEUE(ChromeTestCaseAppInterface)
 
   // Enforce the assumption that the tests are runing in portrait.
   [EarlGrey rotateDeviceToOrientation:UIDeviceOrientationPortrait error:nil];
+
+  // Clear multiwindow root and any extra windows. Once in |setUpForTestCase|
+  // (in case of crashes) and on every |tearDown|.
+  [ChromeEarlGrey closeAllExtraWindows];
+  [EarlGrey setRootMatcherForSubsequentInteractions:nil];
 }
 
 // Resets the application state.

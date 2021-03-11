@@ -279,29 +279,11 @@ BOOL DragWindowSplitterToSize(int first_window_number,
 
 ## setUp/tearDown/test
 
-The setUp method does not need any changes. tearDown however needs to cleanup
-two things: extra window(s) and root matcher. A tearDown like this:
-
-```
-- (void)tearDown {
- [super tearDown];
- [ReadingListAppInterface resetConnectionType];
-}
-```
-
-Should become like this:
-
-```
-- (void)tearDown {
- [ChromeEarlGrey closeAllExtraWindows];
- [EarlGrey setRootMatcherForSubsequentInteractions:nil];
- [super tearDown];
- [ReadingListAppInterface resetConnectionType];
-}
-```
-
-If any multiwindow tests are present in that suite. Failure to clear extra
-windows at the end of a test, means a more than likely failure on the next one.
+In multiwindow tests, a failure to clear extra windows and root matcher at the 
+end of a test, would mean a more than likely failure on the next one. To do so, 
+the setUp/tearDown methods do not need any changes. ```closeAllExtraWindows``` 
+and ```[EarlGrey setRootMatcherForSubsequentInteractions:nil]``` are called on 
+```[ChromeTestCase tearDown]``` and ```[ChromeTestCase setUpForTestCase]```.
 
 Tests should check if multiwindow is available on their first lines, to avoid
 failing on iPhones:

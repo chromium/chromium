@@ -74,13 +74,6 @@ using chrome_test_util::WindowWithNumber;
 
 @implementation ClearBrowsingDataSettingsTestCase
 
-- (void)tearDown {
-  // No-op if only one window presents.
-  [EarlGrey setRootMatcherForSubsequentInteractions:nil];
-  [ChromeEarlGrey closeAllExtraWindows];
-  [super tearDown];
-}
-
 - (void)openClearBrowsingDataDialog {
   [ChromeEarlGreyUI openSettingsMenu];
   [ChromeEarlGreyUI tapSettingsMenuButton:SettingsMenuPrivacyButton()];

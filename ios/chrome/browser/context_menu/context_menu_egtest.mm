@@ -187,7 +187,6 @@ void TapOnContextMenuButton(id<GREYMatcher> context_menu_item_button) {
 
 + (void)tearDown {
   [ChromeEarlGrey setContentSettings:CONTENT_SETTING_DEFAULT];
-  [ChromeEarlGrey closeAllExtraWindows];
   [super tearDown];
 }
 

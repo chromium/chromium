@@ -54,7 +54,6 @@ id<GREYMatcher> SkipSigninButton() {
 }
 
 - (void)tearDown {
-  [ChromeEarlGrey closeAllExtraWindows];
   [super tearDown];
   [FirstRunAppInterface setUMACollectionEnabled:NO];
   [FirstRunAppInterface resetUMACollectionEnabledByDefault];

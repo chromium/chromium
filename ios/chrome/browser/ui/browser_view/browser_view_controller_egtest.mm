@@ -31,12 +31,6 @@
 
 @implementation BrowserViewControllerTestCase
 
-- (void)tearDown {
-  // No-op if only one window presents.
-  [ChromeEarlGrey closeAllExtraWindows];
-  [super tearDown];
-}
-
 // Tests that the NTP is interactable even when multiple NTP are opened during
 // the animation of the first NTP opening. See crbug.com/1032544.
 - (void)testPageInteractable {

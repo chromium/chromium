@@ -548,8 +548,6 @@ void AssertIsShowingDistillablePage(bool online, const GURL& distillable_url) {
 }
 
 - (void)tearDown {
-  [ChromeEarlGrey closeAllExtraWindows];
-  [EarlGrey setRootMatcherForSubsequentInteractions:nil];
   [ChromeEarlGrey stopWatcher];
   [super tearDown];
   [ReadingListAppInterface resetConnectionType];

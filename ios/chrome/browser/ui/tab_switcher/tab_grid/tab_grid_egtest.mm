@@ -87,12 +87,6 @@ NSString* IdentifierForCellAtIndex(unsigned int index) {
   web::test::SetUpSimpleHttpServer(responses);
 }
 
-- (void)tearDown {
-  [ChromeEarlGrey closeAllExtraWindows];
-  [EarlGrey setRootMatcherForSubsequentInteractions:nil];
-  [super tearDown];
-}
-
 // Tests entering and leaving the tab grid.
 - (void)testEnteringAndLeavingTabGrid {
   [[EarlGrey selectElementWithMatcher:chrome_test_util::ShowTabsButton()]
