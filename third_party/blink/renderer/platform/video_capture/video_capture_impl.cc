@@ -905,6 +905,7 @@ void VideoCaptureImpl::OnVideoFrameReady(
 }
 
 void VideoCaptureImpl::OnBufferDestroyed(int32_t buffer_id) {
+  DVLOG(1) << __func__ << " buffer_id: " << buffer_id;
   DCHECK_CALLED_ON_VALID_THREAD(io_thread_checker_);
 
   const auto& cb_iter = client_buffers_.find(buffer_id);
