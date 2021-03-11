@@ -459,6 +459,10 @@ Polymer({
     let messageId = null;
     switch (error) {
       case InstallerError.kErrorLoadingTermina:
+      case InstallerError.kNeedReboot:
+        // TODO(sidereal) kNeedReboot should really have it's own error message,
+        // but that has to go through UX. Previously these failures would have
+        // been reported as kErrorLoadingTermina so use that message for now.
         messageId = 'loadTerminaError';
         break;
       case InstallerError.kErrorCreatingDiskImage:
