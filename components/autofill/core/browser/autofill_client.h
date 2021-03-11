@@ -511,9 +511,12 @@ class AutofillClient : public RiskDataLoader {
   // eligible offer or reward if no other notification bubble is currently
   // visible. See bubble controller for details. The bubble is sticky over a set
   // of domains given in |domains_to_display_bubble|. The bubble displays the
-  // information of the |card| if the offer is card-related.
+  // information of the |card| if the offer is card-related. On mobile, the
+  // bubble also shows the |offer_details_url| as a link which has more
+  // information about the offer.
   virtual void ShowOfferNotificationIfApplicable(
       const std::vector<GURL>& domains_to_display_bubble,
+      const GURL& offer_details_url,
       const CreditCard* card);
 
   // Whether the Autocomplete feature of Autofill should be enabled.

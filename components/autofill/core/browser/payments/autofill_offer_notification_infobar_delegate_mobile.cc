@@ -30,10 +30,13 @@
 namespace autofill {
 
 AutofillOfferNotificationInfoBarDelegateMobile::
-    AutofillOfferNotificationInfoBarDelegateMobile(const CreditCard& card)
+    AutofillOfferNotificationInfoBarDelegateMobile(
+        const GURL& offer_details_url,
+        const CreditCard& card)
     : credit_card_identifier_string_(
           card.CardIdentifierStringForAutofillDisplay()),
-      network_icon_id_(CreditCard::IconResourceId(card.network())) {}
+      network_icon_id_(CreditCard::IconResourceId(card.network())),
+      deep_link_url_(offer_details_url) {}
 
 AutofillOfferNotificationInfoBarDelegateMobile::
     ~AutofillOfferNotificationInfoBarDelegateMobile() {}

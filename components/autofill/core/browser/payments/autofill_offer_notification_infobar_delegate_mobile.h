@@ -25,7 +25,8 @@ class CreditCard;
 class AutofillOfferNotificationInfoBarDelegateMobile
     : public ConfirmInfoBarDelegate {
  public:
-  AutofillOfferNotificationInfoBarDelegateMobile(const CreditCard& card);
+  AutofillOfferNotificationInfoBarDelegateMobile(const GURL& offer_details_url,
+                                                 const CreditCard& card);
 
   ~AutofillOfferNotificationInfoBarDelegateMobile() override;
 
@@ -38,7 +39,7 @@ class AutofillOfferNotificationInfoBarDelegateMobile
     return credit_card_identifier_string_;
   }
   int network_icon_id() { return network_icon_id_; }
-  const base::string16& deep_link_url() const { return deep_link_url_; }
+  const GURL& deep_link_url() const { return deep_link_url_; }
 
   // Called when the offer details deep link was clicked.
   virtual void OnOfferDeepLinkClicked(GURL url);
@@ -56,7 +57,7 @@ class AutofillOfferNotificationInfoBarDelegateMobile
   // Resource id for the icon representing the network of the credit card.
   int network_icon_id_;
   // URL that links to the offer details page in the Google Pay app.
-  base::string16 deep_link_url_;
+  GURL deep_link_url_;
 };
 
 }  // namespace autofill

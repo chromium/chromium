@@ -505,16 +505,18 @@ void ContentAutofillDriver::ShowOfferNotificationIfApplicable(
 
   // Try to show offer notification when the last committed URL has the domain
   // that an offer is applicable for.
-  std::tuple<std::vector<GURL>, CreditCard*> result =
+  std::tuple<std::vector<GURL>, GURL, CreditCard*> result =
       offer_manager->GetEligibleDomainsAndCardForOfferForUrl(url);
   std::vector<GURL>& domains = std::get<0>(result);
-  CreditCard* card = std::get<1>(result);
+  GURL offer_details_url = std::get<1>(result);
+  CreditCard* card = std::get<2>(result);
   // TODO(crbug.com/1093057): Update return condition once we introduce the
   // promo offers.
   if (domains.empty() || !card)
     return;
 
-  autofill_manager_->client()->ShowOfferNotificationIfApplicable(domains, card);
+  autofill_manager_->client()->ShowOfferNotificationIfApplicable(
+      domains, offer_details_url, card);
 }
 
 }  // namespace autofill
