@@ -39,9 +39,6 @@ const base::FilePath::CharType kPolicyCacheFile[] =
 const base::FilePath::CharType kKeyCacheFile[] =
     FILE_PATH_LITERAL("Signing Key");
 
-const char kMetricPolicyHasVerifiedCachedKey[] =
-    "Enterprise.PolicyHasVerifiedCachedKey";
-
 // Maximum policy and key size that will be loaded, in bytes.
 const size_t kPolicySizeLimit = 1024 * 1024;
 const size_t kKeySizeLimit = 16 * 1024;
@@ -200,12 +197,6 @@ PolicyLoadResult DesktopCloudPolicyStore::LoadPolicyFromDisk(
     LOG(ERROR) << "Failed to read or parse key data from " << key_path;
     result.key.clear_signing_key();
   }
-
-  // Track the occurrence of valid cached keys - when this ratio gets high
-  // enough, we can update the code to reject unsigned policy or unverified
-  // keys.
-  UMA_HISTOGRAM_BOOLEAN(kMetricPolicyHasVerifiedCachedKey,
-                        result.key.has_signing_key());
 
   return result;
 }

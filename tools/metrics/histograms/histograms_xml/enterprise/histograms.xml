@@ -1173,6 +1173,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Enterprise.PolicyHasVerifiedCachedKey"
     enum="BooleanValidKeyExists" expires_after="M77">
+  <obsolete>
+    Removed in M91 since the data is not monitored
+  </obsolete>
   <owner>atwilson@chromium.org</owner>
   <summary>
     Boolean tracking whether there is a valid policy signing key on disk.
@@ -1213,6 +1216,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Enterprise.PolicyKeyVerification"
     enum="EnterprisePolicyKeyVerification" expires_after="M77">
+  <obsolete>
+    Removed in M91 since the data is not monitored
+  </obsolete>
   <owner>atwilson@chromium.org</owner>
   <summary>Tracking the results of policy key verification.</summary>
 </histogram>

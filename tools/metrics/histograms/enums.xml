@@ -9237,6 +9237,9 @@ Called by update_bad_message_reasons.py.-->
 </enum>
 
 <enum name="BooleanValidKeyExists">
+  <obsolete>
+    Removed in M91 since the data is not monitored
+  </obsolete>
   <int value="0" label="No Valid Cached Key Found"/>
   <int value="1" label="Valid Cached Key Found"/>
 </enum>
@@ -23870,6 +23873,9 @@ Called by update_document_policy_enum.py.-->
 </enum>
 
 <enum name="EnterprisePolicyKeyVerification">
+  <obsolete>
+    Removed in M91 since the data is not monitored
+  </obsolete>
   <summary>
     Defined as MetricPolicyKeyVerification in
     components/policy/core/common/cloud/cloud_policy_validator.cc.
