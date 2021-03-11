@@ -61,7 +61,7 @@ class PaymentRequestSheetController {
   base::WeakPtr<PaymentRequestDialogView> dialog() { return dialog_; }
 
   // Returns the title to be displayed in this sheet's header.
-  virtual base::string16 GetSheetTitle() = 0;
+  virtual std::u16string GetSheetTitle() = 0;
 
   // Stops the controller from controlling the UI. Used when the UI is being
   // destroyed.
@@ -85,7 +85,7 @@ class PaymentRequestSheetController {
   // Methods that control the appearance and behavior of the primary dialog
   // button.  By default the dialog shows a "pay" button.
   virtual bool ShouldShowPrimaryButton();
-  virtual base::string16 GetPrimaryButtonLabel();
+  virtual std::u16string GetPrimaryButtonLabel();
   virtual views::Button::PressedCallback GetPrimaryButtonCallback();
   virtual int GetPrimaryButtonId();
   virtual bool GetPrimaryButtonEnabled();
@@ -93,7 +93,7 @@ class PaymentRequestSheetController {
   // Methods that control the appearance and behavior of the secondary dialog
   // button.  By default the dialog shows a "cancel payment" button.
   virtual bool ShouldShowSecondaryButton();
-  virtual base::string16 GetSecondaryButtonLabel();
+  virtual std::u16string GetSecondaryButtonLabel();
   virtual views::Button::PressedCallback GetSecondaryButtonCallback();
   virtual int GetSecondaryButtonId();
 

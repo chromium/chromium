@@ -19,12 +19,12 @@ class WebIdPermissionView : public views::View {
  public:
   static std::unique_ptr<WebIdPermissionView> CreateForInitialPermission(
       WebIdDialogViews* dialog,
-      const base::string16& idp_hostname,
-      const base::string16& rp_hostname);
+      const std::u16string& idp_hostname,
+      const std::u16string& rp_hostname);
   static std::unique_ptr<WebIdPermissionView> CreateForTokenExchangePermission(
       WebIdDialogViews* dialog,
-      const base::string16& idp_hostname,
-      const base::string16& rp_hostname);
+      const std::u16string& idp_hostname,
+      const std::u16string& rp_hostname);
 
   WebIdPermissionView(WebIdDialogViews* dialog,
                       std::unique_ptr<views::View> content);

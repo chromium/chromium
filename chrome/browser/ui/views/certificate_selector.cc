@@ -53,15 +53,15 @@ class CertificateSelector::CertificateTableModel : public ui::TableModel {
 
   // ui::TableModel:
   int RowCount() override;
-  base::string16 GetText(int index, int column_id) override;
+  std::u16string GetText(int index, int column_id) override;
   void SetObserver(ui::TableModelObserver* observer) override;
 
  private:
   struct Row {
-    base::string16 subject;
-    base::string16 issuer;
-    base::string16 provider;
-    base::string16 serial;
+    std::u16string subject;
+    std::u16string issuer;
+    std::u16string provider;
+    std::u16string serial;
   };
   std::vector<Row> rows_;
 
@@ -90,7 +90,7 @@ int CertificateSelector::CertificateTableModel::RowCount() {
   return rows_.size();
 }
 
-base::string16 CertificateSelector::CertificateTableModel::GetText(
+std::u16string CertificateSelector::CertificateTableModel::GetText(
     int index,
     int column_id) {
   DCHECK_GE(index, 0);
@@ -109,7 +109,7 @@ base::string16 CertificateSelector::CertificateTableModel::GetText(
     default:
       NOTREACHED();
   }
-  return base::string16();
+  return std::u16string();
 }
 
 void CertificateSelector::CertificateTableModel::SetObserver(
@@ -271,7 +271,7 @@ bool CertificateSelector::Accept() {
   return true;
 }
 
-base::string16 CertificateSelector::GetWindowTitle() const {
+std::u16string CertificateSelector::GetWindowTitle() const {
   return l10n_util::GetStringUTF16(IDS_CLIENT_CERT_DIALOG_TITLE);
 }
 

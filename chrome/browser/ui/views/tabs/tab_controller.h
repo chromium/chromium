@@ -196,7 +196,7 @@ class TabController {
   virtual gfx::Rect GetTabAnimationTargetBounds(const Tab* tab) = 0;
 
   // Returns the accessible tab name for this tab.
-  virtual base::string16 GetAccessibleTabName(const Tab* tab) const = 0;
+  virtual std::u16string GetAccessibleTabName(const Tab* tab) const = 0;
 
   // Returns opacity for hover effect on a tab with |range_parameter| between
   // 0 and 1, where 0 gives the minimum opacity suitable for wider tabs and 1
@@ -207,7 +207,7 @@ class TabController {
   virtual float GetHoverOpacityForRadialHighlight() const = 0;
 
   // Returns the displayed title of the given |group|.
-  virtual base::string16 GetGroupTitle(
+  virtual std::u16string GetGroupTitle(
       const tab_groups::TabGroupId& group) const = 0;
 
   // Returns the color ID of the given |group|.

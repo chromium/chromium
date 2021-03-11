@@ -553,8 +553,8 @@ void TranslateBubbleView::ConfirmAdvancedOptions() {
     SwitchView(TranslateBubbleModel::VIEW_STATE_AFTER_TRANSLATE);
     SizeToContents();
   } else {
-    base::string16 source_language_name;
-    base::string16 target_language_name;
+    std::u16string source_language_name;
+    std::u16string target_language_name;
     DCHECK(tabbed_pane_);
     UpdateLanguageNames(&source_language_name, &target_language_name);
     tabbed_pane_->GetTabAt(0)->SetTitleText(source_language_name);
@@ -628,8 +628,8 @@ std::unique_ptr<views::View> TranslateBubbleView::CreateEmptyPane() {
 }
 
 std::unique_ptr<views::View> TranslateBubbleView::CreateView() {
-  base::string16 source_language_name;
-  base::string16 target_language_name;
+  std::u16string source_language_name;
+  std::u16string target_language_name;
   UpdateLanguageNames(&source_language_name, &target_language_name);
 
   ChromeLayoutProvider* provider = ChromeLayoutProvider::Get();
@@ -1178,8 +1178,8 @@ void TranslateBubbleView::UpdateAdvancedView() {
 }
 
 void TranslateBubbleView::UpdateLanguageNames(
-    base::string16* source_language_name,
-    base::string16* target_language_name) {
+    std::u16string* source_language_name,
+    std::u16string* target_language_name) {
   DCHECK(source_language_name && target_language_name);
   previous_source_language_index_ = model_->GetSourceLanguageIndex();
   *source_language_name =

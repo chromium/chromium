@@ -33,8 +33,8 @@ AlternateNavInfoBarView::AlternateNavInfoBarView(
     : InfoBarView(std::move(delegate)) {
   auto* delegate_ptr = GetDelegate();
   size_t offset;
-  base::string16 message_text = delegate_ptr->GetMessageTextWithOffset(&offset);
-  DCHECK_NE(base::string16::npos, offset);
+  std::u16string message_text = delegate_ptr->GetMessageTextWithOffset(&offset);
+  DCHECK_NE(std::u16string::npos, offset);
   label_1_text_ = message_text.substr(0, offset);
   label_1_ = CreateLabel(label_1_text_);
   AddChildView(label_1_);

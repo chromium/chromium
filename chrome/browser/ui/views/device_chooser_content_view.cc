@@ -104,10 +104,10 @@ DeviceChooserContentView::DeviceChooserContentView(
     no_options_help->SetMultiLine(true);
     no_options_view_ = add_centering_view(std::move(no_options_help));
 
-    base::string16 link_text = l10n_util::GetStringUTF16(
+    std::u16string link_text = l10n_util::GetStringUTF16(
         IDS_BLUETOOTH_DEVICE_CHOOSER_TURN_ON_BLUETOOTH_LINK_TEXT);
     size_t offset = 0;
-    base::string16 text = l10n_util::GetStringFUTF16(
+    std::u16string text = l10n_util::GetStringFUTF16(
         IDS_BLUETOOTH_DEVICE_CHOOSER_TURN_ADAPTER_OFF, link_text, &offset);
     auto adapter_off_help = std::make_unique<views::StyledLabel>();
     adapter_off_help->SetText(text);
@@ -120,9 +120,9 @@ DeviceChooserContentView::DeviceChooserContentView(
   }
 
   {
-    base::string16 link_text = l10n_util::GetStringUTF16(
+    std::u16string link_text = l10n_util::GetStringUTF16(
         IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK_TEXT);
-    base::string16 text = l10n_util::GetStringFUTF16(
+    std::u16string text = l10n_util::GetStringFUTF16(
         IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH, link_text);
     size_t text_end = text.size();
     auto adapter_unauthorized_help = std::make_unique<views::StyledLabel>();
@@ -156,10 +156,10 @@ int DeviceChooserContentView::RowCount() {
   return base::checked_cast<int>(chooser_controller_->NumOptions());
 }
 
-base::string16 DeviceChooserContentView::GetText(int row, int column_id) {
+std::u16string DeviceChooserContentView::GetText(int row, int column_id) {
   DCHECK_GE(row, 0);
   DCHECK_LT(row, RowCount());
-  base::string16 text = chooser_controller_->GetOption(size_t{row});
+  std::u16string text = chooser_controller_->GetOption(size_t{row});
   return chooser_controller_->IsPaired(row)
              ? l10n_util::GetStringFUTF16(
                    IDS_DEVICE_CHOOSER_DEVICE_NAME_AND_PAIRED_STATUS_TEXT, text)
@@ -255,7 +255,7 @@ void DeviceChooserContentView::OnRefreshStateChanged(bool refreshing) {
     GetWidget()->GetRootView()->Layout();
 }
 
-base::string16 DeviceChooserContentView::GetWindowTitle() const {
+std::u16string DeviceChooserContentView::GetWindowTitle() const {
   return chooser_controller_->GetTitle();
 }
 
@@ -417,5 +417,5 @@ views::Label* DeviceChooserContentView::ThrobberLabelForTesting() {
 }
 
 BEGIN_METADATA(DeviceChooserContentView, views::View)
-ADD_READONLY_PROPERTY_METADATA(base::string16, WindowTitle)
+ADD_READONLY_PROPERTY_METADATA(std::u16string, WindowTitle)
 END_METADATA

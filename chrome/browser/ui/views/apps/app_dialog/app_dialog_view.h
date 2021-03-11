@@ -25,10 +25,10 @@ class AppDialogView : public views::BubbleDialogDelegateView {
   ~AppDialogView() override;
 
  protected:
-  void InitializeView(const base::string16& heading_text);
+  void InitializeView(const std::u16string& heading_text);
 
   // Can only be called after InitializeView().
-  void SetLabelText(const base::string16& text);
+  void SetLabelText(const std::u16string& text);
 
  private:
   views::Label* label_ = nullptr;

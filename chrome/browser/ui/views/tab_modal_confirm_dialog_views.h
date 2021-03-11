@@ -35,7 +35,7 @@ class TabModalConfirmDialogViews : public TabModalConfirmDialog,
       content::WebContents* web_contents);
 
   // views::DialogDelegate:
-  base::string16 GetWindowTitle() const override;
+  std::u16string GetWindowTitle() const override;
   bool ShouldShowCloseButton() const override;
   views::View* GetContentsView() override;
   views::Widget* GetWidget() override;

@@ -57,14 +57,13 @@ views::View* CryptoModulePasswordDialogView::GetInitiallyFocusedView() {
   return password_entry_;
 }
 
-base::string16 CryptoModulePasswordDialogView::GetWindowTitle() const {
+std::u16string CryptoModulePasswordDialogView::GetWindowTitle() const {
   return l10n_util::GetStringUTF16(IDS_CRYPTO_MODULE_AUTH_DIALOG_TITLE);
 }
 
 void CryptoModulePasswordDialogView::ContentsChanged(
     views::Textfield* sender,
-    const base::string16& new_contents) {
-}
+    const std::u16string& new_contents) {}
 
 bool CryptoModulePasswordDialogView::HandleKeyEvent(
     views::Textfield* sender,
@@ -77,8 +76,8 @@ void CryptoModulePasswordDialogView::Init(const std::string& hostname,
                                           CryptoModulePasswordReason reason) {
   // Select an appropriate text for the reason.
   std::string text;
-  const base::string16& hostname16 = base::UTF8ToUTF16(hostname);
-  const base::string16& slot16 = base::UTF8ToUTF16(slot_name);
+  const std::u16string& hostname16 = base::UTF8ToUTF16(hostname);
+  const std::u16string& slot16 = base::UTF8ToUTF16(slot_name);
   switch (reason) {
     case kCryptoModulePasswordCertEnrollment:
       text = l10n_util::GetStringFUTF8(

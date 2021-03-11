@@ -64,7 +64,7 @@ class PermissionChip : public views::AccessiblePaneView,
   void ChipButtonPressed();
   void Collapse();
   void StartCollapseTimer();
-  base::string16 GetPermissionMessage() const;
+  std::u16string GetPermissionMessage() const;
   const gfx::VectorIcon& GetPermissionIconId() const;
   void AnnouncePermissionRequested();
 

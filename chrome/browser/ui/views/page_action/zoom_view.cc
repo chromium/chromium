@@ -109,7 +109,7 @@ const gfx::VectorIcon& ZoomView::GetVectorIcon() const {
   return *icon_;
 }
 
-base::string16 ZoomView::GetTextForTooltipAndAccessibleName() const {
+std::u16string ZoomView::GetTextForTooltipAndAccessibleName() const {
   return l10n_util::GetStringFUTF16(IDS_TOOLTIP_ZOOM,
                                     base::FormatPercent(current_zoom_percent_));
 }

@@ -34,8 +34,8 @@ ToolbarActionsBarBubbleViews::ToolbarActionsBarBubbleViews(
                                       views::BubbleBorder::TOP_RIGHT),
       delegate_(std::move(delegate)),
       anchored_to_action_(anchored_to_action) {
-  base::string16 ok_text = delegate_->GetActionButtonText();
-  base::string16 cancel_text = delegate_->GetDismissButtonText();
+  std::u16string ok_text = delegate_->GetActionButtonText();
+  std::u16string cancel_text = delegate_->GetDismissButtonText();
 
   int buttons = ui::DIALOG_BUTTON_NONE;
   if (!ok_text.empty())
@@ -88,7 +88,7 @@ ToolbarActionsBarBubbleViews::CreateExtraInfoView() {
   }
 
   std::unique_ptr<views::View> extra_view;
-  const base::string16& text = extra_view_info->text;
+  const std::u16string& text = extra_view_info->text;
   if (!text.empty()) {
     if (extra_view_info->is_learn_more) {
       auto image_button = views::CreateVectorImageButtonWithNativeTheme(
@@ -133,7 +133,7 @@ void ToolbarActionsBarBubbleViews::NotifyDelegateOfClose(
   delegate_->OnBubbleClosed(action);
 }
 
-base::string16 ToolbarActionsBarBubbleViews::GetWindowTitle() const {
+std::u16string ToolbarActionsBarBubbleViews::GetWindowTitle() const {
   return delegate_->GetHeadingText();
 }
 
@@ -157,8 +157,8 @@ void ToolbarActionsBarBubbleViews::RemovedFromWidget() {
 }
 
 void ToolbarActionsBarBubbleViews::Init() {
-  base::string16 body_text_string = delegate_->GetBodyText(anchored_to_action_);
-  base::string16 item_list = delegate_->GetItemListText();
+  std::u16string body_text_string = delegate_->GetBodyText(anchored_to_action_);
+  std::u16string item_list = delegate_->GetItemListText();
   if (body_text_string.empty() && item_list.empty())
     return;
 

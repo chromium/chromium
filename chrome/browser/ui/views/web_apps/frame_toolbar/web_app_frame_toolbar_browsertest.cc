@@ -280,7 +280,7 @@ IN_PROC_BROWSER_TEST_F(WebAppFrameToolbarBrowserTest, TitleHover) {
 #endif
   EXPECT_EQ(window_title->parent(), helper()->frame_view());
 
-  window_title->SetText(base::string16(30, 't'));
+  window_title->SetText(std::u16string(30, 't'));
 
   // Ensure we initially have abundant space.
   helper()->frame_view()->SetSize(gfx::Size(1000, 1000));

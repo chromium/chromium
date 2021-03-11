@@ -66,9 +66,9 @@ class CvcUnmaskViewController
 
  protected:
   // PaymentRequestSheetController:
-  base::string16 GetSheetTitle() override;
+  std::u16string GetSheetTitle() override;
   void FillContentView(views::View* content_view) override;
-  base::string16 GetPrimaryButtonLabel() override;
+  std::u16string GetPrimaryButtonLabel() override;
   views::Button::PressedCallback GetPrimaryButtonCallback() override;
   int GetPrimaryButtonId() override;
   bool GetPrimaryButtonEnabled() override;
@@ -80,7 +80,7 @@ class CvcUnmaskViewController
   void CvcConfirmed();
 
   // Display a label with the text |error|
-  void DisplayError(base::string16 error);
+  void DisplayError(std::u16string error);
 
   // Updates the enabled state of the pay button
   void UpdatePayButtonState();
@@ -93,7 +93,7 @@ class CvcUnmaskViewController
 
   // views::TextfieldController:
   void ContentsChanged(views::Textfield* sender,
-                       const base::string16& new_contents) override;
+                       const std::u16string& new_contents) override;
 
   void OnPerformAction();
 

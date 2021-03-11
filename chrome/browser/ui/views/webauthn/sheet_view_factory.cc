@@ -32,9 +32,9 @@ class PlaceholderSheetModel : public AuthenticatorSheetModelBase {
       ImageColorScheme color_scheme) const override {
     return gfx::kNoneIcon;
   }
-  base::string16 GetStepTitle() const override { return base::string16(); }
-  base::string16 GetStepDescription() const override {
-    return base::string16();
+  std::u16string GetStepTitle() const override { return std::u16string(); }
+  std::u16string GetStepDescription() const override {
+    return std::u16string();
   }
 };
 

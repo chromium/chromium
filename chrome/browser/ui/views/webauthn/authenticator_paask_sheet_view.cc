@@ -28,14 +28,14 @@ AuthenticatorPaaskSheetView::BuildStepSpecificContent() {
   }
 
   // link_message contains the translation of the text of the link.
-  const base::string16 link_message =
+  const std::u16string link_message =
       l10n_util::GetStringUTF16(IDS_WEBAUTHN_CABLEV2_SERVERLINK_TROUBLE);
 
   // offsets will contain the index of the start of the substituted strings. The
   // second of these will be the position of the link text, which is used to
   // decorate it.
   std::vector<size_t> offsets;
-  const base::string16 description = l10n_util::GetStringFUTF16(
+  const std::u16string description = l10n_util::GetStringFUTF16(
       IDS_WEBAUTHN_CABLEV2_SERVERLINK_DESCRIPTION,
       {AuthenticatorPaaskSheetModel::GetRelyingPartyIdString(dialog_model),
        link_message},

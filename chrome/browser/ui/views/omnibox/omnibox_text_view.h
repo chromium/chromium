@@ -45,14 +45,14 @@ class OmniboxTextView : public views::View {
   void ApplyTextColor(OmniboxPart part);
 
   // Returns the render text, or an empty string if there is none.
-  const base::string16& GetText() const;
+  const std::u16string& GetText() const;
 
   // Sets the render text with default rendering for the given |new_text|. The
   // |classifications| are used to style the text. An ImageLine incorporates
   // both the text and the styling.
   // |deemphasize| specifies whether to use a slightly smaller font than normal.
-  void SetText(const base::string16& new_text);
-  void SetTextWithStyling(const base::string16& new_text,
+  void SetText(const std::u16string& new_text);
+  void SetTextWithStyling(const std::u16string& new_text,
                           const ACMatchClassifications& classifications,
                           bool deemphasize = false);
   void SetTextWithStyling(const SuggestionAnswer::ImageLine& line,
@@ -72,13 +72,13 @@ class OmniboxTextView : public views::View {
   // Creates a platform-approriate RenderText, sets its format to that of
   // a suggestion and inserts (renders) the provided |text|.
   std::unique_ptr<gfx::RenderText> CreateRenderText(
-      const base::string16& text) const;
+      const std::u16string& text) const;
 
  private:
   // Adds text from an answer field to the render text using appropriate style.
   // A prefix (such as separating space) may also be prepended to field text.
   void AppendText(const SuggestionAnswer::TextField& field,
-                  const base::string16& prefix);
+                  const std::u16string& prefix);
 
   // Updates the cached maximum line height and recomputes the preferred size.
   void OnStyleChanged();

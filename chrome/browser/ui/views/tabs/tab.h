@@ -90,7 +90,7 @@ class Tab : public gfx::AnimationDelegate,
   void OnMouseEntered(const ui::MouseEvent& event) override;
   void OnMouseExited(const ui::MouseEvent& event) override;
   void OnGestureEvent(ui::GestureEvent* event) override;
-  base::string16 GetTooltipText(const gfx::Point& p) const override;
+  std::u16string GetTooltipText(const gfx::Point& p) const override;
   void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
   gfx::Size CalculatePreferredSize() const override;
   void PaintChildren(const views::PaintInfo& info) override;
@@ -169,8 +169,8 @@ class Tab : public gfx::AnimationDelegate,
   // Returns the text to show in a tab's tooltip: The contents |title|, followed
   // by a break, followed by a localized string describing the |alert_state|.
   // Exposed publicly for tests.
-  static base::string16 GetTooltipText(
-      const base::string16& title,
+  static std::u16string GetTooltipText(
+      const std::u16string& title,
       base::Optional<TabAlertState> alert_state);
 
   // Returns an alert state to be shown among given alert states.

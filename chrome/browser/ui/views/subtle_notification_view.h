@@ -33,7 +33,7 @@ class SubtleNotificationView : public views::View {
 
   // Display the |instruction_text| to the user. If |instruction_text| is
   // empty hide the view.
-  void UpdateContent(const base::string16& instruction_text);
+  void UpdateContent(const std::u16string& instruction_text);
 
   // Creates a Widget containing a SubtleNotificationView.
   static views::Widget* CreatePopupWidget(

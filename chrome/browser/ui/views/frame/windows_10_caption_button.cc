@@ -21,7 +21,7 @@ Windows10CaptionButton::Windows10CaptionButton(
     PressedCallback callback,
     GlassBrowserFrameView* frame_view,
     ViewID button_type,
-    const base::string16& accessible_name)
+    const std::u16string& accessible_name)
     : views::Button(std::move(callback)),
       frame_view_(frame_view),
       button_type_(button_type) {

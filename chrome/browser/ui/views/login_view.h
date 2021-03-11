@@ -30,20 +30,20 @@ class LoginView : public views::View,
   // |login_model_data->model| is observed for the entire lifetime of the
   // LoginView. Therefore |login_model_data->model| should not be destroyed
   // before the LoginView object. |login_model_data| may be null.
-  LoginView(const base::string16& authority,
-            const base::string16& explanation,
+  LoginView(const std::u16string& authority,
+            const std::u16string& explanation,
             LoginHandler::LoginModelData* login_model_data);
   LoginView(const LoginView&) = delete;
   LoginView& operator=(const LoginView&) = delete;
   ~LoginView() override;
 
   // Access the data in the username/password text fields.
-  const base::string16& GetUsername() const;
-  const base::string16& GetPassword() const;
+  const std::u16string& GetUsername() const;
+  const std::u16string& GetPassword() const;
 
   // password_manager::HttpAuthObserver:
-  void OnAutofillDataAvailable(const base::string16& username,
-                               const base::string16& password) override;
+  void OnAutofillDataAvailable(const std::u16string& username,
+                               const std::u16string& password) override;
   void OnLoginModelDestroying() override;
 
   // Used by LoginHandlerViews to set the initial focus.

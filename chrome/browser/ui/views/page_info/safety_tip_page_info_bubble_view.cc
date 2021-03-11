@@ -73,7 +73,7 @@ SafetyTipPageInfoBubbleView::SafetyTipPageInfoBubbleView(
   // created over it, etc).
   set_close_on_deactivate(false);
 
-  const base::string16 title_text =
+  const std::u16string title_text =
       GetSafetyTipTitle(safety_tip_status, suggested_url);
   SetTitle(title_text);
 

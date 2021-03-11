@@ -32,7 +32,7 @@ class OmniboxRowView : public views::View {
                  PrefService* pref_service);
 
   // Sets the header that appears above this row. Also shows the header.
-  void ShowHeader(int suggestion_group_id, const base::string16& header_text);
+  void ShowHeader(int suggestion_group_id, const std::u16string& header_text);
 
   // Hides the header.
   void HideHeader();

@@ -56,7 +56,7 @@ class ExtensionDialog : public views::DialogDelegate,
     gfx::Size min_size;
 
     // Text for the dialog title, it should be already localized.
-    base::string16 title;
+    std::u16string title;
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     // |title_color| customizes the color of the window title.
@@ -114,7 +114,7 @@ class ExtensionDialog : public views::DialogDelegate,
                   const InitParams& init_params);
 
   // Window Title
-  base::string16 window_title_;
+  std::u16string window_title_;
 
   // The contained host for the view.
   std::unique_ptr<extensions::ExtensionViewHost> host_;

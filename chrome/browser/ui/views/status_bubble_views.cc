@@ -157,8 +157,8 @@ class StatusBubbleViews::StatusView : public views::View {
   // views::View:
   gfx::Insets GetInsets() const override;
 
-  const base::string16& GetText() const;
-  void SetText(const base::string16& text);
+  const std::u16string& GetText() const;
+  void SetText(const std::u16string& text);
 
   BubbleState GetState() const { return state_; }
 
@@ -167,7 +167,7 @@ class StatusBubbleViews::StatusView : public views::View {
 
   // If |text| is empty, hides the bubble; otherwise, sets the bubble text to
   // |text| and shows the bubble.
-  void AnimateForText(const base::string16& text);
+  void AnimateForText(const std::u16string& text);
 
   // Show the bubble instantly.
   void ShowInstantly();
@@ -255,11 +255,11 @@ gfx::Insets StatusView::GetInsets() const {
   return gfx::Insets(kShadowThickness, kShadowThickness + kTextHorizPadding);
 }
 
-const base::string16& StatusView::GetText() const {
+const std::u16string& StatusView::GetText() const {
   return text_->GetText();
 }
 
-void StatusView::SetText(const base::string16& text) {
+void StatusView::SetText(const std::u16string& text) {
   if (text == GetText())
     return;
 
@@ -267,7 +267,7 @@ void StatusView::SetText(const base::string16& text) {
   OnPropertyChanged(&text_, views::kPropertyEffectsNone);
 }
 
-void StatusView::AnimateForText(const base::string16& text) {
+void StatusView::AnimateForText(const std::u16string& text) {
   if (text.empty()) {
     StartHiding();
   } else {
@@ -297,7 +297,7 @@ void StatusView::HideInstantly() {
   animation_->Stop();
   CancelTimer();
   SetOpacity(0.0);
-  SetText(base::string16());
+  SetText(std::u16string());
   state_ = BubbleState::kHidden;
   // Don't orderOut: the window on macOS. Doing so for a child window requires
   // it to be detached/reattached, which may trigger a space switch. Instead,
@@ -545,7 +545,7 @@ DEFINE_ENUM_CONVERTERS(
      base::ASCIIToUTF16("kStandardRight")})
 
 BEGIN_METADATA(StatusView, views::View)
-ADD_PROPERTY_METADATA(base::string16, Text)
+ADD_PROPERTY_METADATA(std::u16string, Text)
 ADD_READONLY_PROPERTY_METADATA(StatusView::BubbleState, State)
 ADD_PROPERTY_METADATA(StatusView::BubbleStyle, Style)
 END_METADATA
@@ -602,7 +602,7 @@ class StatusBubbleViews::StatusViewExpander
   StatusViewExpander& operator=(const StatusViewExpander&) = delete;
 
   // Manage the expansion of the bubble.
-  void StartExpansion(const base::string16& expanded_text,
+  void StartExpansion(const std::u16string& expanded_text,
                       int current_width,
                       int expansion_end);
 
@@ -620,7 +620,7 @@ class StatusBubbleViews::StatusViewExpander
   StatusView* status_view_;
 
   // Text elided (if needed) to fit maximum status bar width.
-  base::string16 expanded_text_;
+  std::u16string expanded_text_;
 
   // Widths at expansion start and end.
   int expansion_start_ = 0;
@@ -640,7 +640,7 @@ void StatusBubbleViews::StatusViewExpander::AnimationEnded(
 }
 
 void StatusBubbleViews::StatusViewExpander::StartExpansion(
-    const base::string16& expanded_text,
+    const std::u16string& expanded_text,
     int expansion_start,
     int expansion_end) {
   expanded_text_ = expanded_text;
@@ -763,7 +763,7 @@ void StatusBubbleViews::SetBounds(int x, int y, int w, int h) {
     AvoidMouse(last_mouse_moved_location_);
 }
 
-int StatusBubbleViews::GetWidthForURL(const base::string16& url_string) {
+int StatusBubbleViews::GetWidthForURL(const std::u16string& url_string) {
   // Get the width of the elided url
   int elided_url_width = gfx::GetStringWidth(url_string, GetFont());
   // Add proper paddings
@@ -775,7 +775,7 @@ void StatusBubbleViews::OnThemeChanged() {
     popup_->ThemeChanged();
 }
 
-void StatusBubbleViews::SetStatus(const base::string16& status_text) {
+void StatusBubbleViews::SetStatus(const std::u16string& status_text) {
   if (size_.IsEmpty())
     return;  // We have no bounds, don't attempt to show the popup.
 
@@ -812,7 +812,7 @@ void StatusBubbleViews::SetURL(const GURL& url) {
   // If we want to clear a displayed URL but there is a status still to
   // display, display that status instead.
   if (url.is_empty() && !status_text_.empty()) {
-    url_text_ = base::string16();
+    url_text_ = std::u16string();
     if (IsFrameVisible())
       view_->AnimateForText(status_text_);
     return;
@@ -824,7 +824,7 @@ void StatusBubbleViews::SetURL(const GURL& url) {
   url_text_ = url_formatter::ElideUrl(url, GetFont(), text_width);
 
   // Get the width of the URL if the bubble width is the maximum size.
-  base::string16 full_size_elided_url =
+  std::u16string full_size_elided_url =
       url_formatter::ElideUrl(url, GetFont(), GetMaxStatusBubbleWidth());
   int url_width = GetWidthForURL(full_size_elided_url);
 
@@ -869,8 +869,8 @@ void StatusBubbleViews::SetURL(const GURL& url) {
 }
 
 void StatusBubbleViews::Hide() {
-  status_text_ = base::string16();
-  url_text_ = base::string16();
+  status_text_ = std::u16string();
+  url_text_ = std::u16string();
   if (view_)
     view_->HideInstantly();
 }

@@ -81,8 +81,8 @@ class CustomTabBarView : public views::AccessiblePaneView,
                                      on_icon_fetched) const override;
 
   // Methods for testing.
-  base::string16 title_for_testing() const { return last_title_; }
-  base::string16 location_for_testing() const { return last_location_; }
+  std::u16string title_for_testing() const { return last_title_; }
+  std::u16string location_for_testing() const { return last_location_; }
   views::ImageButton* close_button_for_testing() const { return close_button_; }
   ui::SimpleMenuModel* context_menu_for_testing() const {
     return context_menu_model_.get();
@@ -126,8 +126,8 @@ class CustomTabBarView : public views::AccessiblePaneView,
   SkColor title_bar_color_;
   SkColor background_color_;
 
-  base::string16 last_title_;
-  base::string16 last_location_;
+  std::u16string last_title_;
+  std::u16string last_location_;
 
   views::ImageButton* close_button_ = nullptr;
   LocationBarView::Delegate* delegate_ = nullptr;

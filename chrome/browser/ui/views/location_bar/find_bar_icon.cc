@@ -42,7 +42,7 @@ void FindBarIcon::SetActive(bool activate, bool should_animate) {
   }
 }
 
-base::string16 FindBarIcon::GetTextForTooltipAndAccessibleName() const {
+std::u16string FindBarIcon::GetTextForTooltipAndAccessibleName() const {
   return l10n_util::GetStringUTF16(IDS_TOOLTIP_FIND);
 }
 

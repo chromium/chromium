@@ -27,7 +27,7 @@ class AutoSigninFirstRunDialogView : public views::DialogDelegateView,
 
  private:
   // views::DialogDelegateView:
-  base::string16 GetWindowTitle() const override;
+  std::u16string GetWindowTitle() const override;
   void WindowClosing() override;
 
   // Sets up the child views.

@@ -66,7 +66,7 @@ class DesktopMediaSourceView : public views::View {
   void SetStyle(DesktopMediaSourceViewStyle style);
 
   // Updates thumbnail and title from |source|.
-  void SetName(const base::string16& name);
+  void SetName(const std::u16string& name);
   void SetThumbnail(const gfx::ImageSkia& thumbnail);
   void SetIcon(const gfx::ImageSkia& icon);
 

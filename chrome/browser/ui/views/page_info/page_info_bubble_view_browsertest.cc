@@ -103,7 +103,7 @@ void ClickAndWaitForSettingsPageToOpen(views::View* site_settings_button) {
   content::WebContentsAddedObserver new_tab_observer;
   PerformMouseClickOnView(site_settings_button);
 
-  base::string16 expected_title(base::ASCIIToUTF16("Settings"));
+  std::u16string expected_title(base::ASCIIToUTF16("Settings"));
   content::TitleWatcher title_watcher(new_tab_observer.GetWebContents(),
                                       expected_title);
   EXPECT_EQ(expected_title, title_watcher.WaitAndGetTitle());
@@ -357,7 +357,7 @@ class PageInfoBubbleViewBrowserTest : public DialogBrowserTest {
         ->SetIdentityInfo(identity_info);
   }
 
-  base::string16 GetCertificateButtonTitle() const {
+  std::u16string GetCertificateButtonTitle() const {
     // Only PageInfoBubbleViewBrowserTest can access certificate_button_ in
     // PageInfoBubbleView, or title() in HoverButton.
     PageInfoBubbleView* page_info_bubble_view =
@@ -366,14 +366,14 @@ class PageInfoBubbleViewBrowserTest : public DialogBrowserTest {
     return page_info_bubble_view->certificate_button_->title()->GetText();
   }
 
-  base::string16 GetCertificateButtonSubtitle() const {
+  std::u16string GetCertificateButtonSubtitle() const {
     PageInfoBubbleView* page_info_bubble_view =
         static_cast<PageInfoBubbleView*>(
             PageInfoBubbleView::GetPageInfoBubbleForTesting());
     return page_info_bubble_view->certificate_button_->subtitle()->GetText();
   }
 
-  const base::string16 GetPageInfoBubbleViewDetailText() {
+  const std::u16string GetPageInfoBubbleViewDetailText() {
     PageInfoBubbleView* page_info_bubble_view =
         static_cast<PageInfoBubbleView*>(
             PageInfoBubbleView::GetPageInfoBubbleForTesting());
@@ -822,7 +822,7 @@ IN_PROC_BROWSER_TEST_F(PageInfoBubbleViewBrowserTest, BlockedAndInvalidCert) {
             l10n_util::GetStringUTF16(IDS_PAGE_INFO_MALWARE_SUMMARY));
 
   // ...and has a "Certificate (Invalid)" button.
-  const base::string16 invalid_parens = l10n_util::GetStringUTF16(
+  const std::u16string invalid_parens = l10n_util::GetStringUTF16(
       IDS_PAGE_INFO_CERTIFICATE_INVALID_PARENTHESIZED);
   EXPECT_EQ(GetCertificateButtonTitle(),
             l10n_util::GetStringFUTF16(IDS_PAGE_INFO_CERTIFICATE_BUTTON_TEXT,

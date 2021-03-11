@@ -85,12 +85,12 @@ class ToolbarActionsBarBubbleViewsTest : public ChromeViewsTestBase {
     base::RunLoop().RunUntilIdle();
   }
 
-  base::string16 HeadingString() { return base::ASCIIToUTF16("Heading"); }
-  base::string16 BodyString() { return base::ASCIIToUTF16("Body"); }
-  base::string16 ActionString() { return base::ASCIIToUTF16("Action"); }
-  base::string16 DismissString() { return base::ASCIIToUTF16("Dismiss"); }
-  base::string16 LearnMoreString() { return base::ASCIIToUTF16("Learn"); }
-  base::string16 ItemListString() {
+  std::u16string HeadingString() { return base::ASCIIToUTF16("Heading"); }
+  std::u16string BodyString() { return base::ASCIIToUTF16("Body"); }
+  std::u16string ActionString() { return base::ASCIIToUTF16("Action"); }
+  std::u16string DismissString() { return base::ASCIIToUTF16("Dismiss"); }
+  std::u16string LearnMoreString() { return base::ASCIIToUTF16("Learn"); }
+  std::u16string ItemListString() {
     return base::ASCIIToUTF16("Item 1\nItem2");
   }
 
@@ -123,8 +123,8 @@ TEST_F(ToolbarActionsBarBubbleViewsTest, TestBubbleLayoutNoButtons) {
       extra_view_info =
           std::make_unique<ToolbarActionsBarBubbleDelegate::ExtraViewInfo>();
   delegate.set_extra_view_info(std::move(extra_view_info));
-  delegate.set_dismiss_button_text(base::string16());
-  delegate.set_action_button_text(base::string16());
+  delegate.set_dismiss_button_text(std::u16string());
+  delegate.set_action_button_text(std::u16string());
   ShowBubble(&delegate);
 
   EXPECT_EQ(nullptr, bubble()->GetExtraView());
@@ -197,7 +197,7 @@ TEST_F(ToolbarActionsBarBubbleViewsTest, TestBubbleLayoutListView) {
 
 TEST_F(ToolbarActionsBarBubbleViewsTest, TestBubbleLayoutNoBodyText) {
   TestToolbarActionsBarBubbleDelegate delegate(
-      HeadingString(), base::string16(), ActionString());
+      HeadingString(), std::u16string(), ActionString());
   ShowBubble(&delegate);
 
   EXPECT_TRUE(bubble()->GetOkButton());

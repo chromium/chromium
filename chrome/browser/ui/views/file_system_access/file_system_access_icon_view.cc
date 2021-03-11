@@ -59,7 +59,7 @@ void FileSystemAccessIconView::UpdateImpl() {
     FileSystemAccessUsageBubbleView::CloseCurrentBubble();
 }
 
-base::string16 FileSystemAccessIconView::GetTextForTooltipAndAccessibleName()
+std::u16string FileSystemAccessIconView::GetTextForTooltipAndAccessibleName()
     const {
   return has_write_access_
              ? l10n_util::GetStringUTF16(

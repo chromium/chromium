@@ -69,7 +69,7 @@ constexpr int kSharingDialogSpacing = 8;
 
 // TODO(himanshujaju): This is almost same as self share, we could unify these
 // methods once we unify our architecture and dialog views.
-base::string16 GetLastUpdatedTimeInDays(base::Time last_updated_timestamp) {
+std::u16string GetLastUpdatedTimeInDays(base::Time last_updated_timestamp) {
   int time_in_days = (base::Time::Now() - last_updated_timestamp).InDays();
   return l10n_util::GetPluralStringFUTF16(
       IDS_BROWSER_SHARING_DIALOG_DEVICE_SUBTITLE_LAST_ACTIVE_DAYS,
@@ -83,14 +83,14 @@ bool ShouldShowOrigin(const SharingDialogData& data,
              web_contents->GetMainFrame()->GetLastCommittedOrigin());
 }
 
-base::string16 PrepareHelpTextWithoutOrigin(const SharingDialogData& data) {
+std::u16string PrepareHelpTextWithoutOrigin(const SharingDialogData& data) {
   DCHECK_NE(0, data.help_text_id);
   return l10n_util::GetStringUTF16(data.help_text_id);
 }
 
-base::string16 PrepareHelpTextWithOrigin(const SharingDialogData& data) {
+std::u16string PrepareHelpTextWithOrigin(const SharingDialogData& data) {
   DCHECK_NE(0, data.help_text_origin_id);
-  base::string16 origin = url_formatter::FormatOriginForSecurityDisplay(
+  std::u16string origin = url_formatter::FormatOriginForSecurityDisplay(
       *data.initiating_origin,
       url_formatter::SchemeDisplay::OMIT_HTTP_AND_HTTPS);
 
@@ -146,7 +146,7 @@ bool SharingDialogView::ShouldShowCloseButton() const {
   return true;
 }
 
-base::string16 SharingDialogView::GetWindowTitle() const {
+std::u16string SharingDialogView::GetWindowTitle() const {
   return data_.title;
 }
 
@@ -291,7 +291,7 @@ void SharingDialogView::InitListView() {
             base::BindRepeating(&SharingDialogView::AppButtonPressed,
                                 base::Unretained(this), index++),
             std::move(icon), app.name,
-            /* subtitle= */ base::string16()));
+            /* subtitle= */ std::u16string()));
     dialog_button->SetEnabled(true);
     dialog_button->SetBorder(views::CreateEmptyBorder(app_border));
   }

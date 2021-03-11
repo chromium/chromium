@@ -100,9 +100,9 @@ void SetContentsBorderVisible(content::WebContents* contents, bool visible) {
 #endif
 }
 
-base::string16 GetTabName(content::WebContents* tab) {
+std::u16string GetTabName(content::WebContents* tab) {
   GURL url = tab->GetLastCommittedURL();
-  const base::string16 tab_name =
+  const std::u16string tab_name =
       network::IsUrlPotentiallyTrustworthy(url)
           ? base::UTF8ToUTF16(net::GetHostAndOptionalPort(url))
           : url_formatter::FormatUrlForSecurityDisplay(url.GetOrigin());
@@ -114,12 +114,12 @@ base::string16 GetTabName(content::WebContents* tab) {
 // static
 std::unique_ptr<TabSharingUI> TabSharingUI::Create(
     const content::DesktopMediaID& media_id,
-    base::string16 app_name) {
+    std::u16string app_name) {
   return base::WrapUnique(new TabSharingUIViews(media_id, app_name));
 }
 
 TabSharingUIViews::TabSharingUIViews(const content::DesktopMediaID& media_id,
-                                     base::string16 app_name)
+                                     std::u16string app_name)
     : shared_tab_media_id_(media_id), app_name_(std::move(app_name)) {
   shared_tab_ = content::WebContents::FromRenderFrameHost(
       content::RenderFrameHost::FromID(

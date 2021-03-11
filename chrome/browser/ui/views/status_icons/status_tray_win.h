@@ -44,7 +44,7 @@ class StatusTrayWin : public StatusTray {
   std::unique_ptr<StatusIcon> CreatePlatformStatusIcon(
       StatusIconType type,
       const gfx::ImageSkia& image,
-      const base::string16& tool_tip) override;
+      const std::u16string& tool_tip) override;
 
  private:
   FRIEND_TEST_ALL_PREFIXES(StatusTrayWinTest, EnsureVisibleTest);

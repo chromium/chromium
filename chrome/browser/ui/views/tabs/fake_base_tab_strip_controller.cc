@@ -78,14 +78,14 @@ void FakeBaseTabStripController::RemoveTab(int index) {
     tab_strip_->SetSelection(selection_model_);
 }
 
-base::string16 FakeBaseTabStripController::GetGroupTitle(
+std::u16string FakeBaseTabStripController::GetGroupTitle(
     const tab_groups::TabGroupId& group_id) const {
   return fake_group_data_.title();
 }
 
-base::string16 FakeBaseTabStripController::GetGroupContentString(
+std::u16string FakeBaseTabStripController::GetGroupContentString(
     const tab_groups::TabGroupId& group_id) const {
-  return base::string16();
+  return std::u16string();
 }
 
 tab_groups::TabGroupColorId FakeBaseTabStripController::GetGroupColorId(
@@ -253,8 +253,7 @@ void FakeBaseTabStripController::CreateNewTab() {
 }
 
 void FakeBaseTabStripController::CreateNewTabWithLocation(
-    const base::string16& location) {
-}
+    const std::u16string& location) {}
 
 void FakeBaseTabStripController::StackedLayoutMaybeChanged() {
 }
@@ -300,9 +299,9 @@ base::Optional<int> FakeBaseTabStripController::GetCustomBackgroundId(
   return base::nullopt;
 }
 
-base::string16 FakeBaseTabStripController::GetAccessibleTabName(
+std::u16string FakeBaseTabStripController::GetAccessibleTabName(
     const Tab* tab) const {
-  return base::string16();
+  return std::u16string();
 }
 
 Profile* FakeBaseTabStripController::GetProfile() const {

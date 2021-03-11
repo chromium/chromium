@@ -29,7 +29,7 @@ class OverlayMediaNotificationView : public OverlayMediaNotification,
   void CloseNotification() override;
 
   // Update taskbar title.
-  void UpdateTitle(const base::string16& title);
+  void UpdateTitle(const std::u16string& title);
 
   // views::Widget implementation.
   void OnNativeWidgetDestroyed() override;

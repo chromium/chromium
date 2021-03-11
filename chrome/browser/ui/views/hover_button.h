@@ -41,12 +41,12 @@ class HoverButton : public views::LabelButton {
   enum Style { STYLE_PROMINENT, STYLE_ERROR };
 
   // Creates a single line hover button with no icon.
-  HoverButton(PressedCallback callback, const base::string16& text);
+  HoverButton(PressedCallback callback, const std::u16string& text);
 
   // Creates a single line hover button with an icon.
   HoverButton(PressedCallback callback,
               const gfx::ImageSkia& icon,
-              const base::string16& text);
+              const std::u16string& text);
 
   // Creates a HoverButton with custom subviews. |icon_view| replaces the
   // LabelButton icon, and titles appear on separate rows. An empty |subtitle|
@@ -57,8 +57,8 @@ class HoverButton : public views::LabelButton {
   // insets appropriately up to a value of 0.
   HoverButton(PressedCallback callback,
               std::unique_ptr<views::View> icon_view,
-              const base::string16& title,
-              const base::string16& subtitle = base::string16(),
+              const std::u16string& title,
+              const std::u16string& subtitle = std::u16string(),
               std::unique_ptr<views::View> secondary_view = nullptr,
               bool resize_row_for_secondary_view = true,
               bool secondary_view_can_process_events = false);

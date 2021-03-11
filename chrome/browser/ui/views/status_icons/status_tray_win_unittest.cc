@@ -61,7 +61,7 @@ class FakeStatusIconObserver : public StatusIconObserver {
 StatusIconWin* CreateStatusIcon(StatusTray* tray) {
   return static_cast<StatusIconWin*>(tray->CreateStatusIcon(
       StatusTray::OTHER_ICON, gfx::test::CreateImageSkia(16, 16),
-      base::string16()));
+      std::u16string()));
 }
 
 }  // namespace

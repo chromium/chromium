@@ -39,7 +39,7 @@ class SettingsResetPromptDialog : public views::DialogDelegateView {
   void Show();
 
   // views::DialogDelegateView:
-  base::string16 GetWindowTitle() const override;
+  std::u16string GetWindowTitle() const override;
 
  private:
   Browser* const browser_;

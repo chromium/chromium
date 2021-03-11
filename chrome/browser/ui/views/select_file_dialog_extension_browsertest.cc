@@ -255,7 +255,7 @@ class BaseSelectFileDialogExtensionBrowserTest
     // the Files app.
     ui::SelectFileDialog::FileTypeInfo file_types;
     file_types.extensions = {{"html"}};
-    dialog_->SelectFile(dialog_type, base::string16() /* title */, file_path,
+    dialog_->SelectFile(dialog_type, std::u16string() /* title */, file_path,
                         UseFileTypeFilter() ? &file_types : nullptr,
                         0 /* file_type_index */,
                         FILE_PATH_LITERAL("") /* default_extension */,
@@ -291,14 +291,11 @@ class BaseSelectFileDialogExtensionBrowserTest
 
     // The dialog type is not relevant for this test but is required: use the
     // open file dialog type.
-    second_dialog_->SelectFile(ui::SelectFileDialog::SELECT_OPEN_FILE,
-                               base::string16() /* title */,
-                               base::FilePath() /* default_path */,
-                               NULL /* file_types */,
-                               0 /* file_type_index */,
-                               FILE_PATH_LITERAL("") /* default_extension */,
-                               owning_window,
-                               this /* params */);
+    second_dialog_->SelectFile(
+        ui::SelectFileDialog::SELECT_OPEN_FILE, std::u16string() /* title */,
+        base::FilePath() /* default_path */, NULL /* file_types */,
+        0 /* file_type_index */, FILE_PATH_LITERAL("") /* default_extension */,
+        owning_window, this /* params */);
   }
 
   void CloseDialog(DialogButtonType button_type,
@@ -308,9 +305,10 @@ class BaseSelectFileDialogExtensionBrowserTest
     std::string button_class =
         (button_type == DIALOG_BTN_OK) ? ".button-panel .ok" :
                                          ".button-panel .cancel";
-    base::string16 script = base::ASCIIToUTF16(
+    std::u16string script = base::ASCIIToUTF16(
         "console.log(\'Test JavaScript injected.\');"
-        "document.querySelector(\'" + button_class + "\').click();");
+        "document.querySelector(\'" +
+        button_class + "\').click();");
     // The file selection handler code closes the dialog but does not return
     // control to JavaScript, so do not wait for the script return value.
     frame_host->ExecuteJavaScriptForTests(script, base::NullCallback());

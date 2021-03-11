@@ -31,7 +31,7 @@ BackToTabImageButton::BackToTabImageButton(PressedCallback callback)
                                  kBackToTabIconColor));
 
   // Accessibility.
-  const base::string16 back_to_tab_button_label(l10n_util::GetStringUTF16(
+  const std::u16string back_to_tab_button_label(l10n_util::GetStringUTF16(
       IDS_PICTURE_IN_PICTURE_BACK_TO_TAB_CONTROL_TEXT));
   SetAccessibleName(back_to_tab_button_label);
   SetTooltipText(back_to_tab_button_label);

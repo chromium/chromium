@@ -76,7 +76,7 @@ class BookmarkDragImageSource : public gfx::CanvasImageSource {
   static constexpr int kDragImageOffsetX = kContainerWidth / 2;
   static constexpr int kDragImageOffsetY = 0.9 * kContainerHeight;
 
-  BookmarkDragImageSource(const base::string16& title,
+  BookmarkDragImageSource(const std::u16string& title,
                           const gfx::ImageSkia& icon,
                           size_t count)
       : gfx::CanvasImageSource(kBookmarkDragImageSize),
@@ -121,7 +121,7 @@ class BookmarkDragImageSource : public gfx::CanvasImageSource {
       return;
 
     // Draw bookmark count if more than 1 bookmark is dragged.
-    base::string16 count = base::NumberToString16(count_);
+    std::u16string count = base::NumberToString16(count_);
     std::unique_ptr<gfx::RenderText> render_text =
         gfx::RenderText::CreateRenderText();
     render_text->SetFontList(font_list);
@@ -149,7 +149,7 @@ class BookmarkDragImageSource : public gfx::CanvasImageSource {
     render_text->Draw(canvas);
   }
 
-  const base::string16 title_;
+  const std::u16string title_;
   const gfx::ImageSkia icon_;
   const int count_;
 };

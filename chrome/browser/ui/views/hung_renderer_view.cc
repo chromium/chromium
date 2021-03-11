@@ -125,7 +125,7 @@ int HungPagesTableModel::RowCount() {
   return static_cast<int>(tab_observers_.size());
 }
 
-base::string16 HungPagesTableModel::GetText(int row, int column_id) {
+std::u16string HungPagesTableModel::GetText(int row, int column_id) {
   DCHECK(row >= 0 && row < RowCount());
   return GetHungWebContentsTitle(tab_observers_[row]->web_contents(),
                                  render_widget_host_->GetProcess());
@@ -286,7 +286,7 @@ HungRendererDialogView::HungRendererDialogView() {
   set_margins(ChromeLayoutProvider::Get()->GetDialogInsetsForContentType(
       views::TEXT, views::CONTROL));
   auto info_label = std::make_unique<views::Label>(
-      base::string16(), views::style::CONTEXT_DIALOG_BODY_TEXT,
+      std::u16string(), views::style::CONTEXT_DIALOG_BODY_TEXT,
       views::style::STYLE_SECONDARY);
   info_label->SetMultiLine(true);
   info_label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
@@ -405,7 +405,7 @@ void HungRendererDialogView::EndForWebContents(
 ///////////////////////////////////////////////////////////////////////////////
 // HungRendererDialogView, views::DialogDelegate implementation:
 
-base::string16 HungRendererDialogView::GetWindowTitle() const {
+std::u16string HungRendererDialogView::GetWindowTitle() const {
   return l10n_util::GetPluralStringFUTF16(
       IDS_BROWSER_HANGMONITOR_RENDERER_TITLE,
       hung_pages_table_model_->RowCount());

@@ -43,7 +43,7 @@ class DeviceChooserContentView : public views::View,
 
   // ui::TableModel:
   int RowCount() override;
-  base::string16 GetText(int row, int column_id) override;
+  std::u16string GetText(int row, int column_id) override;
   void SetObserver(ui::TableModelObserver* observer) override;
   gfx::ImageSkia GetIcon(int row) override;
 
@@ -59,7 +59,7 @@ class DeviceChooserContentView : public views::View,
   // Note that there is no way to update the window title - for any given
   // instance of DeviceChooserContentView, this method is only called once to
   // initially set the window title.
-  base::string16 GetWindowTitle() const;
+  std::u16string GetWindowTitle() const;
   std::unique_ptr<views::View> CreateExtraView();
   bool IsDialogButtonEnabled(ui::DialogButton button) const;
   void Accept();

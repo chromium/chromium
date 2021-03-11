@@ -162,10 +162,10 @@ const gfx::VectorIcon& SharingIconView::GetVectorIcon() const {
   return controller ? controller->GetVectorIcon() : gfx::kNoneIcon;
 }
 
-base::string16 SharingIconView::GetTextForTooltipAndAccessibleName() const {
+std::u16string SharingIconView::GetTextForTooltipAndAccessibleName() const {
   auto* controller = GetController();
   return controller ? controller->GetTextForTooltipAndAccessibleName()
-                    : base::string16();
+                    : std::u16string();
 }
 
 BEGIN_METADATA(SharingIconView, PageActionIconView)

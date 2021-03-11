@@ -112,7 +112,7 @@ views::Widget* FileSystemAccessPermissionView::ShowDialog(
                                                      web_contents);
 }
 
-base::string16 FileSystemAccessPermissionView::GetWindowTitle() const {
+std::u16string FileSystemAccessPermissionView::GetWindowTitle() const {
   switch (request_.access) {
     case AccessType::kRead:
       if (request_.handle_type == HandleType::kDirectory) {

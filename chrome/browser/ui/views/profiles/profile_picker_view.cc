@@ -526,7 +526,7 @@ void ProfilePickerView::Display(ProfilePicker::EntryPoint entry_point) {
         ProfileManager::GetSystemProfilePath(),
         base::BindRepeating(&ProfilePickerView::OnSystemProfileCreated,
                             weak_ptr_factory_.GetWeakPtr()),
-        /*name=*/base::string16(), /*icon_url=*/std::string());
+        /*name=*/std::u16string(), /*icon_url=*/std::string());
     return;
   }
 
@@ -775,7 +775,7 @@ views::View* ProfilePickerView::GetContentsView() {
   return this;
 }
 
-base::string16 ProfilePickerView::GetAccessibleWindowTitle() const {
+std::u16string ProfilePickerView::GetAccessibleWindowTitle() const {
   if (!web_view_ || !web_view_->GetWebContents() ||
       web_view_->GetWebContents()->GetTitle().empty()) {
     return l10n_util::GetStringUTF16(IDS_PROFILE_PICKER_MAIN_VIEW_TITLE);

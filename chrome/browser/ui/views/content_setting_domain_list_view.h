@@ -11,7 +11,7 @@
 class ContentSettingDomainListView : public views::View {
  public:
   METADATA_HEADER(ContentSettingDomainListView);
-  ContentSettingDomainListView(const base::string16& title,
+  ContentSettingDomainListView(const std::u16string& title,
                                const std::set<std::string>& domains);
   ContentSettingDomainListView(const ContentSettingDomainListView&) = delete;
   ContentSettingDomainListView& operator=(const ContentSettingDomainListView&) =

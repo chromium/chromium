@@ -67,7 +67,7 @@ KeywordHintView::KeywordHintView(PressedCallback callback, Profile* profile)
   auto chip_container = std::make_unique<views::View>();
 
   chip_label_ = chip_container->AddChildView(std::make_unique<ChipLabel>(
-      base::string16(), CONTEXT_OMNIBOX_DECORATION));
+      std::u16string(), CONTEXT_OMNIBOX_DECORATION));
 
   auto* layout = SetLayoutManager(std::make_unique<views::FlexLayout>());
   layout->SetCrossAxisAlignment(views::LayoutAlignment::kCenter)
@@ -77,7 +77,7 @@ KeywordHintView::KeywordHintView(PressedCallback callback, Profile* profile)
                       views::MaximumFlexSizeRule::kPreferred, true));
 
   leading_label_ = AddChildView(std::make_unique<views::Label>(
-      base::string16(), CONTEXT_OMNIBOX_DECORATION));
+      std::u16string(), CONTEXT_OMNIBOX_DECORATION));
 
   chip_container->SetLayoutManager(std::make_unique<views::FillLayout>());
   chip_container->SetProperty(
@@ -88,7 +88,7 @@ KeywordHintView::KeywordHintView(PressedCallback callback, Profile* profile)
   chip_container_ = AddChildView(std::move(chip_container));
 
   trailing_label_ = AddChildView(std::make_unique<views::Label>(
-      base::string16(), CONTEXT_OMNIBOX_DECORATION));
+      std::u16string(), CONTEXT_OMNIBOX_DECORATION));
 
   SetFocusBehavior(FocusBehavior::NEVER);
 
@@ -100,11 +100,11 @@ KeywordHintView::KeywordHintView(PressedCallback callback, Profile* profile)
 
 KeywordHintView::~KeywordHintView() {}
 
-base::string16 KeywordHintView::GetKeyword() const {
+std::u16string KeywordHintView::GetKeyword() const {
   return keyword_;
 }
 
-void KeywordHintView::SetKeyword(const base::string16& keyword) {
+void KeywordHintView::SetKeyword(const std::u16string& keyword) {
   // When the virtual keyboard is visible, we show a modified touch UI
   // containing only the chip and no surrounding labels.
   const bool was_touch_ui = leading_label_->GetText().empty();
@@ -126,35 +126,35 @@ void KeywordHintView::SetKeyword(const base::string16& keyword) {
     return;
 
   bool is_extension_keyword;
-  base::string16 short_name(
+  std::u16string short_name(
       url_service->GetKeywordShortName(keyword, &is_extension_keyword));
 
   if (is_touch_ui) {
     int message_id = is_extension_keyword
                          ? IDS_OMNIBOX_EXTENSION_KEYWORD_HINT_TOUCH
                          : IDS_OMNIBOX_KEYWORD_HINT_TOUCH;
-    base::string16 visible_text =
+    std::u16string visible_text =
         l10n_util::GetStringFUTF16(message_id, short_name);
     chip_label_->SetText(visible_text);
     SetAccessibleName(visible_text);
 
-    leading_label_->SetText(base::string16());
-    trailing_label_->SetText(base::string16());
+    leading_label_->SetText(std::u16string());
+    trailing_label_->SetText(std::u16string());
   } else {
     chip_label_->SetText(l10n_util::GetStringUTF16(IDS_APP_TAB_KEY));
 
     std::vector<size_t> content_param_offsets;
     int message_id = is_extension_keyword ? IDS_OMNIBOX_EXTENSION_KEYWORD_HINT
                                           : IDS_OMNIBOX_KEYWORD_HINT;
-    const base::string16 keyword_hint = l10n_util::GetStringFUTF16(
-        message_id, base::string16(), short_name, &content_param_offsets);
+    const std::u16string keyword_hint = l10n_util::GetStringFUTF16(
+        message_id, std::u16string(), short_name, &content_param_offsets);
     DCHECK_EQ(2U, content_param_offsets.size());
     leading_label_->SetText(
         keyword_hint.substr(0, content_param_offsets.front()));
     trailing_label_->SetText(
         keyword_hint.substr(content_param_offsets.front()));
 
-    const base::string16 tab_key_name =
+    const std::u16string tab_key_name =
         l10n_util::GetStringUTF16(IDS_OMNIBOX_KEYWORD_HINT_KEY_ACCNAME);
     SetAccessibleName(leading_label_->GetText() + tab_key_name +
                       trailing_label_->GetText());
@@ -229,5 +229,5 @@ void KeywordHintView::OnThemeChanged() {
 }
 
 BEGIN_METADATA(KeywordHintView, views::Button)
-ADD_PROPERTY_METADATA(base::string16, Keyword)
+ADD_PROPERTY_METADATA(std::u16string, Keyword)
 END_METADATA

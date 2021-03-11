@@ -82,7 +82,7 @@ void PasswordSaveUnsyncedCredentialsLocallyView::CreateLayout() {
        controller_.unsynced_credentials()) {
     auto* row_view = AddChildView(std::make_unique<views::View>());
     auto* checkbox = row_view->AddChildView(std::make_unique<views::Checkbox>(
-        base::string16(), views::Button::PressedCallback()));
+        std::u16string(), views::Button::PressedCallback()));
     checkbox->SetCallback(base::BindRepeating(
         &PasswordSaveUnsyncedCredentialsLocallyView::ButtonPressed,
         base::Unretained(this), base::Unretained(checkbox)));

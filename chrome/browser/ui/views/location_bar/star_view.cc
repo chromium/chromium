@@ -132,7 +132,7 @@ const gfx::VectorIcon& StarView::GetVectorIcon() const {
   return GetActive() ? omnibox::kStarActiveIcon : omnibox::kStarIcon;
 }
 
-base::string16 StarView::GetTextForTooltipAndAccessibleName() const {
+std::u16string StarView::GetTextForTooltipAndAccessibleName() const {
   return l10n_util::GetStringUTF16(GetActive() ? IDS_TOOLTIP_STARRED
                                                : IDS_TOOLTIP_STAR);
 }

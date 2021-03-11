@@ -16,7 +16,7 @@ std::unique_ptr<views::View> CreateOriginLabel(int message_id,
                                                const url::Origin& origin,
                                                int text_context,
                                                bool show_emphasis) {
-  base::string16 formatted_origin =
+  std::u16string formatted_origin =
       url_formatter::FormatOriginForSecurityDisplay(
           origin, url_formatter::SchemeDisplay::OMIT_CRYPTOGRAPHIC);
   size_t offset;
@@ -42,10 +42,10 @@ std::unique_ptr<views::View> CreateOriginPathLabel(int message_id,
                                                    const base::FilePath& path,
                                                    int text_context,
                                                    bool show_emphasis) {
-  base::string16 formatted_origin =
+  std::u16string formatted_origin =
       url_formatter::FormatOriginForSecurityDisplay(
           origin, url_formatter::SchemeDisplay::OMIT_CRYPTOGRAPHIC);
-  base::string16 formatted_path = path.BaseName().LossyDisplayName();
+  std::u16string formatted_path = path.BaseName().LossyDisplayName();
   std::vector<size_t> offsets;
   auto label = std::make_unique<views::StyledLabel>();
   label->SetText(l10n_util::GetStringFUTF16(message_id, formatted_origin,

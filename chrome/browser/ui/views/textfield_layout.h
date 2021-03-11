@@ -30,15 +30,15 @@ views::ColumnSet* ConfigureTextfieldStack(views::GridLayout* layout,
 // been configured as a Textfield stack. The returned Textfield will be owned by
 // the View hosting |layout|.
 views::Textfield* AddFirstTextfieldRow(views::GridLayout* layout,
-                                       const base::string16& label,
+                                       const std::u16string& label,
                                        int column_set_id);
 views::Textfield* AddTextfieldRow(views::GridLayout* layout,
-                                  const base::string16& label,
+                                  const std::u16string& label,
                                   int column_set_id);
 
 // Adds a views::Combobox to a textfield stack with the given |label|.
 views::Combobox* AddComboboxRow(views::GridLayout* layout,
-                                const base::string16& label,
+                                const std::u16string& label,
                                 std::unique_ptr<ui::ComboboxModel> model,
                                 int column_set_id);
 

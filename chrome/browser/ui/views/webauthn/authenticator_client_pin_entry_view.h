@@ -28,8 +28,8 @@ class AuthenticatorClientPinEntryView : public views::View,
 
   class Delegate {
    public:
-    virtual void OnPincodeChanged(base::string16 pin_code) = 0;
-    virtual void OnConfirmationChanged(base::string16 pin_confirmation) = 0;
+    virtual void OnPincodeChanged(std::u16string pin_code) = 0;
+    virtual void OnConfirmationChanged(std::u16string pin_confirmation) = 0;
   };
 
   explicit AuthenticatorClientPinEntryView(Delegate* delegate,
@@ -46,7 +46,7 @@ class AuthenticatorClientPinEntryView : public views::View,
 
   // views::TextFieldController:
   void ContentsChanged(views::Textfield* sender,
-                       const base::string16& new_contents) override;
+                       const std::u16string& new_contents) override;
   bool HandleKeyEvent(views::Textfield* sender,
                       const ui::KeyEvent& key_event) override;
 

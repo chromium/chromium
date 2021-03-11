@@ -67,10 +67,10 @@ class DesktopMediaListController : public DesktopMediaListObserver,
   std::unique_ptr<views::View> CreateView(
       DesktopMediaSourceViewStyle generic_style,
       DesktopMediaSourceViewStyle single_style,
-      const base::string16& accessible_name);
+      const std::u16string& accessible_name);
 
   std::unique_ptr<views::View> CreateTabListView(
-      const base::string16& accessible_name);
+      const std::u16string& accessible_name);
 
   // Starts observing the DesktopMediaList given earlier, ignoring any entries
   // whose id matches dialog_window_id.

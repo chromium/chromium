@@ -81,7 +81,7 @@ PlatformKeysCertificateSelector::~PlatformKeysCertificateSelector() {
 }
 
 void PlatformKeysCertificateSelector::Init() {
-  const base::string16 name = base::ASCIIToUTF16(extension_name_);
+  const std::u16string name = base::ASCIIToUTF16(extension_name_);
 
   auto label = std::make_unique<views::StyledLabel>();
   size_t offset;

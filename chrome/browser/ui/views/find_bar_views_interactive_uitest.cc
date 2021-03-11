@@ -78,9 +78,9 @@ class FindInPageTest : public InProcessBrowserTest {
 
   FindBarView* GetFindBarView() { return GetFindBarHost()->find_bar_view(); }
 
-  base::string16 GetFindBarText() { return GetFindBarHost()->GetFindText(); }
+  std::u16string GetFindBarText() { return GetFindBarHost()->GetFindText(); }
 
-  base::string16 GetFindBarSelectedText() {
+  std::u16string GetFindBarSelectedText() {
     return GetFindBarHost()->GetFindBarTesting()->GetFindSelectedText();
   }
 
@@ -479,7 +479,7 @@ IN_PROC_BROWSER_TEST_F(FindInPageTest, PrepopulateRespectBlank) {
       browser(), ui::VKEY_BACK, false, false, false, false));
 
   // Validate we have cleared the text.
-  EXPECT_EQ(base::string16(), GetFindBarText());
+  EXPECT_EQ(std::u16string(), GetFindBarText());
 
   // Close the Find box.
   ASSERT_TRUE(ui_test_utils::SendKeyPressSync(
@@ -490,7 +490,7 @@ IN_PROC_BROWSER_TEST_F(FindInPageTest, PrepopulateRespectBlank) {
 
   // After the Find box has been reopened, it should not have been prepopulated
   // with "a" again.
-  EXPECT_EQ(base::string16(), GetFindBarText());
+  EXPECT_EQ(std::u16string(), GetFindBarText());
 
   // Close the Find box.
   ASSERT_TRUE(ui_test_utils::SendKeyPressSync(
@@ -502,7 +502,7 @@ IN_PROC_BROWSER_TEST_F(FindInPageTest, PrepopulateRespectBlank) {
 
   // After the Find box has been reopened, it should still have no prepopulate
   // value.
-  EXPECT_EQ(base::string16(), GetFindBarText());
+  EXPECT_EQ(std::u16string(), GetFindBarText());
 }
 #endif
 
@@ -547,7 +547,7 @@ IN_PROC_BROWSER_TEST_F(FindInPageTest, DISABLED_PasteWithoutTextChange) {
   ASSERT_TRUE(ui_test_utils::SendKeyPressSync(
       browser(), ui::VKEY_C, true, false, false, false));
 
-  base::string16 str;
+  std::u16string str;
   ui::Clipboard::GetForCurrentThread()->ReadText(
       ui::ClipboardBuffer::kCopyPaste, /* data_dst = */ nullptr, &str);
 
@@ -721,7 +721,7 @@ IN_PROC_BROWSER_TEST_F(FindInPageTest, SelectionDuringFind) {
   ASSERT_TRUE(ui_test_utils::SendKeyPressSync(browser(), ui::VKEY_DELETE, false,
                                               false, false, false));
   content::RunUntilInputProcessed(host);
-  EXPECT_EQ(base::string16(), host_view->GetSelectedText());
+  EXPECT_EQ(std::u16string(), host_view->GetSelectedText());
 
   find_bar_controller->Show();
   details = WaitForFindResult();

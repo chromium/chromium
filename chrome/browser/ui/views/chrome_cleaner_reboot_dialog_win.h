@@ -40,7 +40,7 @@ class ChromeCleanerRebootDialog : public views::DialogDelegateView {
   void Show(Browser* browser);
 
   // views::WidgetDelegate overrides.
-  base::string16 GetWindowTitle() const override;
+  std::u16string GetWindowTitle() const override;
   views::View* GetInitiallyFocusedView() override;
 
  private:

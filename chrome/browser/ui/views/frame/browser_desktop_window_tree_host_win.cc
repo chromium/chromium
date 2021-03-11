@@ -546,7 +546,7 @@ void BrowserDesktopWindowTreeHostWin::OnProfileAdded(
 
 void BrowserDesktopWindowTreeHostWin::OnProfileWasRemoved(
     const base::FilePath& profile_path,
-    const base::string16& profile_name) {
+    const std::u16string& profile_name) {
   if (g_browser_process->profile_manager()
           ->GetProfileAttributesStorage()
           .GetNumberOfProfiles() == 1) {

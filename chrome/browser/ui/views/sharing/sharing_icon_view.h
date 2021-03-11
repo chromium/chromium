@@ -45,7 +45,7 @@ class SharingIconView : public PageActionIconView {
   views::BubbleDialogDelegate* GetBubble() const override;
   void UpdateImpl() override;
   const gfx::VectorIcon& GetVectorIcon() const override;
-  base::string16 GetTextForTooltipAndAccessibleName() const override;
+  std::u16string GetTextForTooltipAndAccessibleName() const override;
 
   // gfx::AnimationDelegate:
   void AnimationProgressed(const gfx::Animation* animation) override;

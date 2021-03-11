@@ -33,7 +33,7 @@ InfoBarService* GetInfobarService(Browser* browser, int tab) {
   return InfoBarService::FromWebContents(GetWebContents(browser, tab));
 }
 
-base::string16 GetInfobarMessageText(Browser* browser, int tab) {
+std::u16string GetInfobarMessageText(Browser* browser, int tab) {
   return static_cast<ConfirmInfoBarDelegate*>(
              GetInfobarService(browser, tab)->infobar_at(0)->delegate())
       ->GetMessageText();

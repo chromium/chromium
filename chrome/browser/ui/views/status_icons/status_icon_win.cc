@@ -103,7 +103,7 @@ void StatusIconWin::SetImage(const gfx::ImageSkia& image) {
     LOG(WARNING) << "Error setting status tray icon image";
 }
 
-void StatusIconWin::SetToolTip(const base::string16& tool_tip) {
+void StatusIconWin::SetToolTip(const std::u16string& tool_tip) {
   // Create the icon.
   NOTIFYICONDATA icon_data;
   InitIconData(&icon_data);
@@ -116,8 +116,8 @@ void StatusIconWin::SetToolTip(const base::string16& tool_tip) {
 
 void StatusIconWin::DisplayBalloon(
     const gfx::ImageSkia& icon,
-    const base::string16& title,
-    const base::string16& contents,
+    const std::u16string& title,
+    const std::u16string& contents,
     const message_center::NotifierId& notifier_id) {
   NOTIFYICONDATA icon_data;
   InitIconData(&icon_data);

@@ -62,7 +62,7 @@ class ExtensionInstallDialogView
   void VisibilityChanged(views::View* starting_from, bool is_visible) override;
   void AddedToWidget() override;
   bool IsDialogButtonEnabled(ui::DialogButton button) const override;
-  base::string16 GetAccessibleWindowTitle() const override;
+  std::u16string GetAccessibleWindowTitle() const override;
 
  private:
   void CloseDialog();
@@ -91,7 +91,7 @@ class ExtensionInstallDialogView
   content::PageNavigator* navigator_;
   ExtensionInstallPrompt::DoneCallback done_callback_;
   std::unique_ptr<ExtensionInstallPrompt::Prompt> prompt_;
-  base::string16 title_;
+  std::u16string title_;
   base::ScopedObservation<extensions::ExtensionRegistry,
                           extensions::ExtensionRegistryObserver>
       extension_registry_observation_{this};

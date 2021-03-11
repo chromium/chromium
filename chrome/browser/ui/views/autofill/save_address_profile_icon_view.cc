@@ -41,10 +41,10 @@ void SaveAddressProfileIconView::UpdateImpl() {
   SetVisible(command_enabled);
 }
 
-base::string16 SaveAddressProfileIconView::GetTextForTooltipAndAccessibleName()
+std::u16string SaveAddressProfileIconView::GetTextForTooltipAndAccessibleName()
     const {
   // TODO(crbug.com/1167060): Update upon having final mocks.
-  return base::string16();
+  return std::u16string();
 }
 
 void SaveAddressProfileIconView::OnExecuting(

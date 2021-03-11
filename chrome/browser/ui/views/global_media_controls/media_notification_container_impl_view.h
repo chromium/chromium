@@ -117,7 +117,7 @@ class MediaNotificationContainerImplView
   // Called when overlay notification is shown and setup |overlay_|.
   void OnOverlayNotificationShown(OverlayMediaNotificationView* overlay);
 
-  const base::string16& GetTitle() const;
+  const std::u16string& GetTitle() const;
 
   views::ImageButton* GetDismissButtonForTesting();
   views::Button* GetStopCastingButtonForTesting();
@@ -161,7 +161,7 @@ class MediaNotificationContainerImplView
   const std::string id_;
   views::View* swipeable_container_ = nullptr;
 
-  base::string16 title_;
+  std::u16string title_;
 
   // Always "visible" so that it reserves space in the header so that the
   // dismiss button can appear without forcing things to shift.

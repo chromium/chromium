@@ -66,7 +66,7 @@ class TestExtensionUninstallDialogDelegate
 
  private:
   void OnExtensionUninstallDialogClosed(bool did_start_uninstall,
-                                        const base::string16& error) override {
+                                        const std::u16string& error) override {
     canceled_ = !did_start_uninstall;
     quit_closure_.Run();
   }
@@ -345,7 +345,7 @@ class ExtensionUninstallDialogViewInteractiveBrowserTest
   class TestDelegate : public extensions::ExtensionUninstallDialog::Delegate {
     void OnExtensionUninstallDialogClosed(
         bool did_start_uninstall,
-        const base::string16& error) override {}
+        const std::u16string& error) override {}
   };
 
   void TearDownOnMainThread() override {

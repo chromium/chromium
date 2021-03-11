@@ -186,10 +186,10 @@ const gfx::VectorIcon& PwaInstallView::GetVectorIcon() const {
   return omnibox::kPlusIcon;
 }
 
-base::string16 PwaInstallView::GetTextForTooltipAndAccessibleName() const {
+std::u16string PwaInstallView::GetTextForTooltipAndAccessibleName() const {
   content::WebContents* web_contents = GetWebContents();
   if (!web_contents)
-    return base::string16();
+    return std::u16string();
   return l10n_util::GetStringFUTF16(
       IDS_OMNIBOX_PWA_INSTALL_ICON_TOOLTIP,
       webapps::AppBannerManager::GetInstallableWebAppName(web_contents));

@@ -465,7 +465,7 @@ void BrowserTabStripController::CreateNewTab() {
 }
 
 void BrowserTabStripController::CreateNewTabWithLocation(
-    const base::string16& location) {
+    const std::u16string& location) {
   // Use autocomplete to clean up the text, going so far as to turn it into
   // a search query if necessary.
   AutocompleteMatch match;
@@ -525,12 +525,12 @@ void BrowserTabStripController::OnKeyboardFocusedTabChanged(
       index);
 }
 
-base::string16 BrowserTabStripController::GetGroupTitle(
+std::u16string BrowserTabStripController::GetGroupTitle(
     const tab_groups::TabGroupId& group) const {
   return model_->group_model()->GetTabGroup(group)->visual_data()->title();
 }
 
-base::string16 BrowserTabStripController::GetGroupContentString(
+std::u16string BrowserTabStripController::GetGroupContentString(
     const tab_groups::TabGroupId& group) const {
   return model_->group_model()->GetTabGroup(group)->GetContentString();
 }
@@ -605,7 +605,7 @@ base::Optional<int> BrowserTabStripController::GetCustomBackgroundId(
   return GetFrameView()->GetCustomBackgroundId(active_state);
 }
 
-base::string16 BrowserTabStripController::GetAccessibleTabName(
+std::u16string BrowserTabStripController::GetAccessibleTabName(
     const Tab* tab) const {
   return browser_view_->GetAccessibleTabLabel(false /* include_app_name */,
                                               tabstrip_->GetModelIndexOf(tab));

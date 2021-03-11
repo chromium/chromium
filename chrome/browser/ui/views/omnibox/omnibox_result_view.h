@@ -143,7 +143,7 @@ class OmniboxResultView : public views::View,
   AutocompleteMatch match_;
 
   // Accessible name (enables to emit certain events).
-  base::string16 accessible_name_;
+  std::u16string accessible_name_;
 
   // For sliding in the keyword search.
   std::unique_ptr<gfx::SlideAnimation> keyword_slide_animation_;

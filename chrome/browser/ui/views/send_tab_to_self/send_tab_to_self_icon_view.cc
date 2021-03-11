@@ -101,7 +101,7 @@ const gfx::VectorIcon& SendTabToSelfIconView::GetVectorIcon() const {
   return kSendTabToSelfIcon;
 }
 
-base::string16 SendTabToSelfIconView::GetTextForTooltipAndAccessibleName()
+std::u16string SendTabToSelfIconView::GetTextForTooltipAndAccessibleName()
     const {
   return l10n_util::GetStringUTF16(IDS_OMNIBOX_TOOLTIP_SEND_TAB_TO_SELF);
 }

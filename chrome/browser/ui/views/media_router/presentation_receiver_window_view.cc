@@ -268,7 +268,7 @@ void PresentationReceiverWindowView::DeleteDelegate() {
   delegate->WindowClosed();
 }
 
-base::string16 PresentationReceiverWindowView::GetWindowTitle() const {
+std::u16string PresentationReceiverWindowView::GetWindowTitle() const {
   return delegate_->web_contents()->GetTitle();
 }
 

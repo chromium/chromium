@@ -97,14 +97,14 @@ CloudServicesDialogView::CloudServicesDialogView(views::View* anchor_view,
 CloudServicesDialogView::~CloudServicesDialogView() = default;
 
 void CloudServicesDialogView::Init() {
-  std::vector<base::string16> substrings;
+  std::vector<std::u16string> substrings;
   substrings.push_back(
       l10n_util::GetStringUTF16(IDS_MEDIA_ROUTER_CLOUD_SERVICES_DIALOG_BODY));
   substrings.push_back(l10n_util::GetStringUTF16(IDS_LEARN_MORE));
 
   std::vector<size_t> offsets;
 
-  base::string16 text = base::ReplaceStringPlaceholders(
+  std::u16string text = base::ReplaceStringPlaceholders(
       base::ASCIIToUTF16("$1 $2"), substrings, &offsets);
   gfx::Range learn_more_range(offsets[1], text.length());
 

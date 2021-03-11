@@ -557,7 +557,7 @@ bool WebUITabStripContainerView::IsDraggedTab(const ui::OSExchangeData& data) {
   base::Pickle pickle;
   if (data.GetPickledData(ui::ClipboardFormatType::GetWebCustomDataType(),
                           &pickle)) {
-    base::string16 result;
+    std::u16string result;
     ui::ReadCustomDataForType(pickle.data(), pickle.size(),
                               base::ASCIIToUTF16(kWebUITabIdDataType), &result);
     if (result.size())

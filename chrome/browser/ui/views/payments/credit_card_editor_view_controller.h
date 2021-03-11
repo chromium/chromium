@@ -53,12 +53,12 @@ class CreditCardEditorViewController : public EditorViewController {
       autofill::ServerFieldType type,
       views::View** focusable_field,
       bool* valid,
-      base::string16* error_message) override;
+      std::u16string* error_message) override;
   std::unique_ptr<views::View> CreateExtraViewForField(
       autofill::ServerFieldType type) override;
   bool IsEditingExistingItem() override;
   std::vector<EditorField> GetFieldDefinitions() override;
-  base::string16 GetInitialValueForType(
+  std::u16string GetInitialValueForType(
       autofill::ServerFieldType type) override;
   bool ValidateModelAndSave() override;
   std::unique_ptr<ValidationDelegate> CreateValidationDelegate(
@@ -71,13 +71,13 @@ class CreditCardEditorViewController : public EditorViewController {
   void SelectBasicCardNetworkIcon(const std::string& basic_card_network);
 
   // Exposed for validation delegate.
-  bool IsValidCreditCardNumber(const base::string16& card_number,
-                               base::string16* error_message);
+  bool IsValidCreditCardNumber(const std::u16string& card_number,
+                               std::u16string* error_message);
 
  protected:
   // PaymentRequestSheetController:
   void FillContentView(views::View* content_view) override;
-  base::string16 GetSheetTitle() override;
+  std::u16string GetSheetTitle() override;
 
  private:
   class CreditCardValidationDelegate : public ValidationDelegate {
@@ -90,11 +90,11 @@ class CreditCardEditorViewController : public EditorViewController {
 
     // ValidationDelegate:
     bool ShouldFormat() override;
-    base::string16 Format(const base::string16& text) override;
+    std::u16string Format(const std::u16string& text) override;
     bool IsValidTextfield(views::Textfield* textfield,
-                          base::string16* error_message) override;
+                          std::u16string* error_message) override;
     bool IsValidCombobox(ValidatingCombobox* combobox,
-                         base::string16* error_message) override;
+                         std::u16string* error_message) override;
     bool TextfieldValueChanged(views::Textfield* textfield,
                                bool was_blurred) override;
     bool ComboboxValueChanged(ValidatingCombobox* combobox) override;
@@ -102,10 +102,10 @@ class CreditCardEditorViewController : public EditorViewController {
 
    private:
     // Validates a specific |value|/|combobox|.
-    bool ValidateValue(const base::string16& value,
-                       base::string16* error_message);
+    bool ValidateValue(const std::u16string& value,
+                       std::u16string* error_message);
     bool ValidateCombobox(ValidatingCombobox* combobox,
-                          base::string16* error_message);
+                          std::u16string* error_message);
 
     EditorField field_;
     // Outlives this class.

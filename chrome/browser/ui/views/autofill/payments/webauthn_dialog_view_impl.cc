@@ -107,7 +107,7 @@ bool WebauthnDialogViewImpl::IsDialogButtonEnabled(
                                         : true;
 }
 
-base::string16 WebauthnDialogViewImpl::GetWindowTitle() const {
+std::u16string WebauthnDialogViewImpl::GetWindowTitle() const {
   return model_->GetStepTitle();
 }
 

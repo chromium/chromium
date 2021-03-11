@@ -163,7 +163,7 @@ int UninstallView::GetItemCount() const {
   return browsers_->size();
 }
 
-base::string16 UninstallView::GetItemAt(int index) const {
+std::u16string UninstallView::GetItemAt(int index) const {
   DCHECK_LT(index, static_cast<int>(browsers_->size()));
   BrowsersMap::const_iterator i = browsers_->begin();
   std::advance(i, index);

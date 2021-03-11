@@ -37,11 +37,11 @@ class WebIdDialogViews : public WebIdDialog,
   WebIdDialogViews operator=(const WebIdDialogViews&) = delete;
   ~WebIdDialogViews() override;
 
-  void ShowInitialPermission(const base::string16& idp_hostname,
-                             const base::string16& rp_hostname,
+  void ShowInitialPermission(const std::u16string& idp_hostname,
+                             const std::u16string& rp_hostname,
                              PermissionCallback) override;
-  void ShowTokenExchangePermission(const base::string16& idp_hostname,
-                                   const base::string16& rp_hostname,
+  void ShowTokenExchangePermission(const std::u16string& idp_hostname,
+                                   const std::u16string& rp_hostname,
                                    PermissionCallback) override;
   void ShowSigninPage(content::WebContents* idp_web_contents,
                       const GURL& idp_signin_url,

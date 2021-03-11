@@ -87,8 +87,8 @@ class ConstrainedDialogWebView : public views::WebView,
   void WindowClosing() override;
   views::Widget* GetWidget() override;
   const views::Widget* GetWidget() const override;
-  base::string16 GetWindowTitle() const override;
-  base::string16 GetAccessibleWindowTitle() const override;
+  std::u16string GetWindowTitle() const override;
+  std::u16string GetAccessibleWindowTitle() const override;
   views::View* GetContentsView() override;
   std::unique_ptr<views::NonClientFrameView> CreateNonClientFrameView(
       views::Widget* widget) override;
@@ -447,14 +447,14 @@ const views::Widget* ConstrainedDialogWebView::GetWidget() const {
   return View::GetWidget();
 }
 
-base::string16 ConstrainedDialogWebView::GetWindowTitle() const {
-  return impl_->closed_via_webui() ? base::string16()
+std::u16string ConstrainedDialogWebView::GetWindowTitle() const {
+  return impl_->closed_via_webui() ? std::u16string()
                                    : GetWebDialogDelegate()->GetDialogTitle();
 }
 
-base::string16 ConstrainedDialogWebView::GetAccessibleWindowTitle() const {
+std::u16string ConstrainedDialogWebView::GetAccessibleWindowTitle() const {
   return impl_->closed_via_webui()
-             ? base::string16()
+             ? std::u16string()
              : GetWebDialogDelegate()->GetAccessibleDialogTitle();
 }
 

@@ -205,7 +205,7 @@ class CaptionBubbleLabel : public views::Label {
     node_data->role = ax::mojom::Role::kParagraph;
   }
 
-  void SetText(const base::string16& text) override {
+  void SetText(const std::u16string& text) override {
     views::Label::SetText(text);
 
     // Only update ViewAccessibility if accessibility is enabled.
@@ -225,11 +225,11 @@ class CaptionBubbleLabel : public views::Label {
     size_t start = 0;
     for (size_t i = 0; i < num_lines - 1; ++i) {
       size_t end = GetTextIndexOfLine(i + 1);
-      base::string16 substring = text.substr(start, end - start);
+      std::u16string substring = text.substr(start, end - start);
       UpdateAXLine(substring, i, gfx::Range(start, end));
       start = end;
     }
-    base::string16 substring = text.substr(start, text.size() - start);
+    std::u16string substring = text.substr(start, text.size() - start);
     if (!substring.empty()) {
       UpdateAXLine(substring, num_lines - 1, gfx::Range(start, text.size()));
     }
@@ -244,7 +244,7 @@ class CaptionBubbleLabel : public views::Label {
   }
 
  private:
-  void UpdateAXLine(const base::string16& line_text,
+  void UpdateAXLine(const std::u16string& line_text,
                     const size_t line_index,
                     const gfx::Range& text_range) {
     auto& ax_lines = GetViewAccessibility().virtual_children();
@@ -431,7 +431,7 @@ void CaptionBubble::Init() {
   label->SetBackgroundColor(SK_ColorTRANSPARENT);
   label->SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_LEFT);
   label->SetVerticalAlignment(gfx::VerticalAlignment::ALIGN_TOP);
-  label->SetTooltipText(base::string16());
+  label->SetTooltipText(std::u16string());
   // Render text truncates the end of text that is greater than 10000 chars.
   // While it is unlikely that the text will exceed 10000 chars, it is not
   // impossible, if the speech service sends a very long transcription_result.
@@ -594,7 +594,7 @@ void CaptionBubble::GetAccessibleNodeData(ui::AXNodeData* node_data) {
   node_data->SetName(title_->GetText());
 }
 
-base::string16 CaptionBubble::GetAccessibleWindowTitle() const {
+std::u16string CaptionBubble::GetAccessibleWindowTitle() const {
   return title_->GetText();
 }
 

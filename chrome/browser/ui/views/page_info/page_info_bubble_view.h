@@ -97,7 +97,7 @@ class PageInfoBubbleView : public PageInfoBubbleViewBase,
   void ResetDecisionsClicked();
 
  protected:
-  const base::string16 details_text() const { return details_text_; }
+  const std::u16string details_text() const { return details_text_; }
 
  private:
   friend class PageInfoBubbleViewBrowserTest;
@@ -164,7 +164,7 @@ class PageInfoBubbleView : public PageInfoBubbleViewBase,
   BubbleHeaderView* header_ = nullptr;
 
   // The raw details of the status of the identity check for this site.
-  base::string16 details_text_ = base::string16();
+  std::u16string details_text_ = std::u16string();
 
   // The view that contains the certificate, cookie, and permissions sections.
   views::View* site_settings_view_ = nullptr;

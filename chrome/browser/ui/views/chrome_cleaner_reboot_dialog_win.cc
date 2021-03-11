@@ -102,7 +102,7 @@ void ChromeCleanerRebootDialog::Show(Browser* browser) {
 
 // WidgetDelegate overrides.
 
-base::string16 ChromeCleanerRebootDialog::GetWindowTitle() const {
+std::u16string ChromeCleanerRebootDialog::GetWindowTitle() const {
   DCHECK(dialog_controller_);
   return l10n_util::GetStringUTF16(IDS_CHROME_CLEANUP_REBOOT_PROMPT_TITLE);
 }

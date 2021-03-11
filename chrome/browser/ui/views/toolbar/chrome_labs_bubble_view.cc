@@ -38,9 +38,9 @@ enum class ChromeLabsSelectedLab {
   kMaxValue = kTabScrollingSelected,
 };
 
-void EmitToHistogram(const base::string16& selected_lab_state,
+void EmitToHistogram(const std::u16string& selected_lab_state,
                      const std::string& internal_name) {
-  const auto get_histogram_name = [](const base::string16& selected_lab_state) {
+  const auto get_histogram_name = [](const std::u16string& selected_lab_state) {
     if (selected_lab_state == base::ASCIIToUTF16(base::StringPiece(
                                   flags_ui::kGenericExperimentChoiceDefault))) {
       return "Toolbar.ChromeLabs.DefaultLabAction";

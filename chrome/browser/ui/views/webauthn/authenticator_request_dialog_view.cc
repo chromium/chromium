@@ -203,7 +203,7 @@ views::View* AuthenticatorRequestDialogView::GetInitiallyFocusedView() {
   return nullptr;
 }
 
-base::string16 AuthenticatorRequestDialogView::GetWindowTitle() const {
+std::u16string AuthenticatorRequestDialogView::GetWindowTitle() const {
   return sheet()->model()->GetStepTitle();
 }
 

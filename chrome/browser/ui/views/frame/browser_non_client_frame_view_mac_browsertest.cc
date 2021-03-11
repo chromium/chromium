@@ -94,7 +94,7 @@ IN_PROC_BROWSER_TEST_F(BrowserNonClientFrameViewMacBrowserTest, TitleUpdates) {
     chrome::ToggleFullscreenMode(browser);
     EXPECT_TRUE(browser_view->GetWidget()->IsFullscreen());
     TextChangeWaiter waiter(title);
-    const base::string16 expected_title(base::ASCIIToUTF16("Full Screen"));
+    const std::u16string expected_title(base::ASCIIToUTF16("Full Screen"));
     ASSERT_TRUE(content::ExecJs(
         web_contents,
         "document.querySelector('title').textContent = 'Full Screen'"));
@@ -106,7 +106,7 @@ IN_PROC_BROWSER_TEST_F(BrowserNonClientFrameViewMacBrowserTest, TitleUpdates) {
     chrome::ToggleFullscreenMode(browser);
     EXPECT_FALSE(browser_view->GetWidget()->IsFullscreen());
     TextChangeWaiter waiter(title);
-    const base::string16 expected_title(base::ASCIIToUTF16("Not Full Screen"));
+    const std::u16string expected_title(base::ASCIIToUTF16("Not Full Screen"));
     ASSERT_TRUE(content::ExecJs(
         web_contents,
         "document.querySelector('title').textContent = 'Not Full Screen'"));

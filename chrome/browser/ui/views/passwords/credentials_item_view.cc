@@ -64,8 +64,8 @@ END_METADATA
 
 CredentialsItemView::CredentialsItemView(
     PressedCallback callback,
-    const base::string16& upper_text,
-    const base::string16& lower_text,
+    const std::u16string& upper_text,
+    const std::u16string& lower_text,
     const password_manager::PasswordForm* form,
     network::mojom::URLLoaderFactory* loader_factory,
     int upper_text_style,

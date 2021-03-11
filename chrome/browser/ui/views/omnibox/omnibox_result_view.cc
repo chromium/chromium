@@ -547,7 +547,7 @@ void OmniboxResultView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
     AutocompleteMatch raw_match = model->result().match_at(model_index_);
     // The selected match can have a special name, e.g. when is one or more
     // buttons that can be tabbed to.
-    base::string16 label =
+    std::u16string label =
         is_selected ? model->GetAccessibilityLabelForCurrentSelection(
                           raw_match.contents, false)
                     : AutocompleteMatchType::ToAccessibilityLabel(
@@ -585,7 +585,7 @@ void OmniboxResultView::EmitTextChangedAccessiblityEvent() {
   // for a given item is exposed to screen readers as the item's name/label.
   ui::AXNodeData node_data;
   GetAccessibleNodeData(&node_data);
-  base::string16 current_name =
+  std::u16string current_name =
       node_data.GetString16Attribute(ax::mojom::StringAttribute::kName);
   if (accessible_name_ != current_name) {
     NotifyAccessibilityEvent(ax::mojom::Event::kTextChanged, true);

@@ -80,7 +80,7 @@ std::string MigratableCardView::GetGuid() const {
   return migratable_credit_card_.credit_card().guid();
 }
 
-base::string16 MigratableCardView::GetCardIdentifierString() const {
+std::u16string MigratableCardView::GetCardIdentifierString() const {
   return migratable_credit_card_.credit_card()
       .CardIdentifierStringForAutofillDisplay();
 }
@@ -112,7 +112,7 @@ MigratableCardView::GetMigratableCardDescriptionView(
       if (should_show_checkbox) {
         checkbox_ = migratable_card_description_view->AddChildView(
             std::make_unique<views::Checkbox>(
-                base::string16(),
+                std::u16string(),
                 base::BindRepeating(&MigratableCardView::CheckboxPressed,
                                     base::Unretained(this))));
         checkbox_->SetChecked(true);
@@ -217,7 +217,7 @@ void MigratableCardView::CheckboxPressed() {
 BEGIN_METADATA(MigratableCardView, views::View)
 ADD_READONLY_PROPERTY_METADATA(bool, Selected)
 ADD_READONLY_PROPERTY_METADATA(std::string, Guid)
-ADD_READONLY_PROPERTY_METADATA(base::string16, CardIdentifierString)
+ADD_READONLY_PROPERTY_METADATA(std::u16string, CardIdentifierString)
 END_METADATA
 
 }  // namespace autofill

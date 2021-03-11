@@ -29,7 +29,7 @@ class OpaqueBrowserFrameViewLayoutDelegate {
   // mode.
   virtual bool ShouldShowWindowIcon() const = 0;
   virtual bool ShouldShowWindowTitle() const = 0;
-  virtual base::string16 GetWindowTitle() const = 0;
+  virtual std::u16string GetWindowTitle() const = 0;
 
   // Returns the size of the window icon. This can be platform dependent
   // because of differences in fonts, so its part of the interface.

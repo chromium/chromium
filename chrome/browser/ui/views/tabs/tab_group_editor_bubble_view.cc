@@ -112,7 +112,7 @@ TabGroupEditorBubbleView::TabGroupEditorBubbleView(
   SetButtons(ui::DIALOG_BUTTON_NONE);
   SetModalType(ui::MODAL_TYPE_NONE);
 
-  const base::string16 title = browser_->tab_strip_model()
+  const std::u16string title = browser_->tab_strip_model()
                                    ->group_model()
                                    ->GetTabGroup(group_)
                                    ->visual_data()
@@ -357,7 +357,7 @@ END_METADATA
 
 void TabGroupEditorBubbleView::TitleFieldController::ContentsChanged(
     views::Textfield* sender,
-    const base::string16& new_contents) {
+    const std::u16string& new_contents) {
   DCHECK_EQ(sender, parent_->title_field_);
   parent_->UpdateGroup();
 }

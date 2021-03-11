@@ -60,9 +60,9 @@ namespace {
 constexpr int kAccountStoragePromoWidth = 240;
 
 struct ComboboxItem {
-  base::string16 combobox_text;
-  base::string16 dropdown_text;
-  base::string16 dropdown_secondary_text;
+  std::u16string combobox_text;
+  std::u16string dropdown_text;
+  std::u16string dropdown_secondary_text;
   ui::ImageModel icon;
 };
 
@@ -72,13 +72,13 @@ class ComboboxModelWithIcons : public ui::ComboboxModel {
       : items_(std::move(items)) {}
 
   int GetItemCount() const override { return items_.size(); }
-  base::string16 GetItemAt(int index) const override {
+  std::u16string GetItemAt(int index) const override {
     return items_[index].combobox_text;
   }
-  base::string16 GetDropDownTextAt(int index) const override {
+  std::u16string GetDropDownTextAt(int index) const override {
     return items_[index].dropdown_text;
   }
-  base::string16 GetDropDownSecondaryTextAt(int index) const override {
+  std::u16string GetDropDownSecondaryTextAt(int index) const override {
     return items_[index].dropdown_secondary_text;
   }
   ui::ImageModel GetIconAt(int index) const override {
@@ -184,9 +184,9 @@ void BuildCredentialRows(
 }
 
 // Create a vector which contains only the values in |items| and no elements.
-std::vector<base::string16> ToValues(
+std::vector<std::u16string> ToValues(
     const password_manager::ValueElementVector& items) {
-  std::vector<base::string16> passwords;
+  std::vector<std::u16string> passwords;
   passwords.reserve(items.size());
   for (auto& pair : items)
     passwords.push_back(pair.first);
@@ -213,13 +213,13 @@ std::unique_ptr<views::ToggleImageButton> CreatePasswordViewButton(
 // even just |PasswordForm.username_value|.
 std::unique_ptr<views::EditableCombobox> CreateUsernameEditableCombobox(
     const password_manager::PasswordForm& form) {
-  std::vector<base::string16> usernames = {form.username_value};
+  std::vector<std::u16string> usernames = {form.username_value};
   for (const password_manager::ValueElementPair& other_possible_username_pair :
        form.all_possible_usernames) {
     if (other_possible_username_pair.first != form.username_value)
       usernames.push_back(other_possible_username_pair.first);
   }
-  base::EraseIf(usernames, [](const base::string16& username) {
+  base::EraseIf(usernames, [](const std::u16string& username) {
     return username.empty();
   });
   bool display_arrow = !usernames.empty();
@@ -242,11 +242,11 @@ std::unique_ptr<views::EditableCombobox> CreatePasswordEditableCombobox(
     const password_manager::PasswordForm& form,
     bool are_passwords_revealed) {
   DCHECK(!form.IsFederatedCredential());
-  std::vector<base::string16> passwords =
+  std::vector<std::u16string> passwords =
       form.all_possible_passwords.empty()
-          ? std::vector<base::string16>(/*n=*/1, form.password_value)
+          ? std::vector<std::u16string>(/*n=*/1, form.password_value)
           : ToValues(form.all_possible_passwords);
-  base::EraseIf(passwords, [](const base::string16& password) {
+  base::EraseIf(passwords, [](const std::u16string& password) {
     return password.empty();
   });
   bool display_arrow = !passwords.empty();
@@ -281,7 +281,7 @@ std::unique_ptr<views::Combobox> CreateDestinationCombobox(
            IDS_PASSWORD_MANAGER_DESTINATION_DROPDOWN_SAVE_TO_DEVICE),
        .dropdown_text = l10n_util::GetStringUTF16(
            IDS_PASSWORD_MANAGER_DESTINATION_DROPDOWN_SAVE_TO_DEVICE),
-       .dropdown_secondary_text = base::string16(),
+       .dropdown_secondary_text = std::u16string(),
        .icon = computer_image}};
 
   auto combobox = std::make_unique<views::Combobox>(
@@ -600,8 +600,8 @@ void PasswordSaveUpdateWithAccountStoreView::
     UpdateUsernameAndPasswordInModel() {
   if (!username_dropdown_ && !password_dropdown_)
     return;
-  base::string16 new_username = controller_.pending_password().username_value;
-  base::string16 new_password = controller_.pending_password().password_value;
+  std::u16string new_username = controller_.pending_password().username_value;
+  std::u16string new_password = controller_.pending_password().password_value;
   if (username_dropdown_) {
     new_username = username_dropdown_->GetText();
     base::TrimString(new_username, base::ASCIIToUTF16(" "), &new_username);
@@ -614,7 +614,7 @@ void PasswordSaveUpdateWithAccountStoreView::
 
 void PasswordSaveUpdateWithAccountStoreView::UpdateBubbleUIElements() {
   SetButtons((ui::DIALOG_BUTTON_OK | ui::DIALOG_BUTTON_CANCEL));
-  base::string16 ok_button_text;
+  std::u16string ok_button_text;
   if (controller_.IsAccountStorageOptInRequired()) {
     ok_button_text = l10n_util::GetStringUTF16(
         IDS_PASSWORD_MANAGER_SAVE_BUBBLE_OPT_IN_BUTTON);
@@ -753,7 +753,7 @@ void PasswordSaveUpdateWithAccountStoreView::AnnounceSaveUpdateChange() {
   if (!accessibility_alert_)
     return;
 
-  base::string16 accessibility_alert_text = GetWindowTitle();
+  std::u16string accessibility_alert_text = GetWindowTitle();
   if (destination_dropdown_ && !controller_.IsCurrentStateUpdate()) {
     // For Save bubbles, if the `destination_dropdown_` exists (for account
     // store users), we use the labels in the `destination_dropdown_` instead.

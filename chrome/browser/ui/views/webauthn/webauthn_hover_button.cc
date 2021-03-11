@@ -46,11 +46,11 @@ END_METADATA
 WebAuthnHoverButton::WebAuthnHoverButton(
     PressedCallback callback,
     std::unique_ptr<views::ImageView> icon,
-    const base::string16& title_text,
-    const base::string16& subtitle_text,
+    const std::u16string& title_text,
+    const std::u16string& subtitle_text,
     std::unique_ptr<views::View> secondary_icon,
     bool force_two_line)
-    : HoverButton(std::move(callback), base::string16()) {
+    : HoverButton(std::move(callback), std::u16string()) {
   ChromeLayoutProvider* layout_provider = ChromeLayoutProvider::Get();
 
   views::GridLayout* grid_layout =

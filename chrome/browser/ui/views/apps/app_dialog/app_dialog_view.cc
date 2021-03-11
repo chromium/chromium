@@ -25,7 +25,7 @@ AppDialogView::AppDialogView(const gfx::ImageSkia& image)
 
 AppDialogView::~AppDialogView() = default;
 
-void AppDialogView::InitializeView(const base::string16& heading_text) {
+void AppDialogView::InitializeView(const std::u16string& heading_text) {
   SetButtons(ui::DIALOG_BUTTON_OK);
   ChromeLayoutProvider* provider = ChromeLayoutProvider::Get();
   SetLayoutManager(std::make_unique<views::BoxLayout>(
@@ -38,7 +38,7 @@ void AppDialogView::InitializeView(const base::string16& heading_text) {
   label_->SetAllowCharacterBreak(true);
 }
 
-void AppDialogView::SetLabelText(const base::string16& text) {
+void AppDialogView::SetLabelText(const std::u16string& text) {
   DCHECK(label_);
   label_->SetText(text);
 }

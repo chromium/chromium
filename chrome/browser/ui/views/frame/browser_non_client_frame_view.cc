@@ -363,7 +363,7 @@ void BrowserNonClientFrameView::OnProfileAdded(
 
 void BrowserNonClientFrameView::OnProfileWasRemoved(
     const base::FilePath& profile_path,
-    const base::string16& profile_name) {
+    const std::u16string& profile_name) {
   OnProfileAvatarChanged(profile_path);
 }
 

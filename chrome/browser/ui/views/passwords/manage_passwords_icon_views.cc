@@ -77,7 +77,7 @@ const gfx::VectorIcon& ManagePasswordsIconViews::GetVectorIcon() const {
   return kKeyIcon;
 }
 
-base::string16 ManagePasswordsIconViews::GetTextForTooltipAndAccessibleName()
+std::u16string ManagePasswordsIconViews::GetTextForTooltipAndAccessibleName()
     const {
   switch (state_) {
     case password_manager::ui::INACTIVE_STATE:
@@ -97,7 +97,7 @@ base::string16 ManagePasswordsIconViews::GetTextForTooltipAndAccessibleName()
       return l10n_util::GetStringUTF16(IDS_PASSWORD_MANAGER_TOOLTIP_MOVE);
   }
   NOTREACHED();
-  return base::string16();
+  return std::u16string();
 }
 
 void ManagePasswordsIconViews::AboutToRequestFocusFromTabTraversal(

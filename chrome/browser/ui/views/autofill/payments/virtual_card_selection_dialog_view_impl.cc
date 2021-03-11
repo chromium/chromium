@@ -104,7 +104,7 @@ views::View* VirtualCardSelectionDialogViewImpl::GetContentsView() {
   return this;
 }
 
-base::string16 VirtualCardSelectionDialogViewImpl::GetWindowTitle() const {
+std::u16string VirtualCardSelectionDialogViewImpl::GetWindowTitle() const {
   return controller_->GetContentTitle();
 }
 

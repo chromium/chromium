@@ -25,7 +25,7 @@ namespace views {
 
 TrackImageButton::TrackImageButton(PressedCallback callback,
                                    const gfx::VectorIcon& icon,
-                                   base::string16 label)
+                                   std::u16string label)
     : ImageButton(std::move(callback)),
       image_(gfx::CreateVectorIcon(icon, kTrackImageSize, kTrackIconColor)) {
   SetImageHorizontalAlignment(views::ImageButton::ALIGN_CENTER);

@@ -88,7 +88,7 @@ class CastDialogView : public views::BubbleDialogDelegateView,
   static views::Widget* GetCurrentDialogWidget();
 
   // views::WidgetDelegate:
-  base::string16 GetWindowTitle() const override;
+  std::u16string GetWindowTitle() const override;
 
   // CastDialogController::Observer:
   void OnModelUpdated(const CastDialogModel& model) override;
@@ -197,7 +197,7 @@ class CastDialogView : public views::BubbleDialogDelegateView,
   static CastDialogView* instance_;
 
   // Title shown at the top of the dialog.
-  base::string16 dialog_title_;
+  std::u16string dialog_title_;
 
   // The source selected in the sources menu. This defaults to "tab"
   // (presentation or tab mirroring). "Tab" is represented by a single item in
@@ -235,7 +235,7 @@ class CastDialogView : public views::BubbleDialogDelegateView,
   base::Optional<size_t> selected_sink_index_;
 
   // This value is set if the user has chosen a local file to cast.
-  base::Optional<base::string16> local_file_name_;
+  base::Optional<std::u16string> local_file_name_;
 
   base::ObserverList<Observer> observers_;
 

@@ -84,7 +84,7 @@ ExtensionInstallBlockedByParentDialogView::
 }
 
 void ExtensionInstallBlockedByParentDialogView::ConfigureTitle() {
-  base::string16 title_string;
+  std::u16string title_string;
   switch (action_) {
     case chrome::ExtensionInstalledBlockedByParentDialogAction::kAdd:
       // The user is trying to add/install the extension/app
@@ -105,7 +105,7 @@ void ExtensionInstallBlockedByParentDialogView::ConfigureTitle() {
 void ExtensionInstallBlockedByParentDialogView::CreateContents() {
   SetLayoutManager(std::make_unique<views::FillLayout>());
 
-  base::string16 body_string;
+  std::u16string body_string;
   switch (action_) {
     case chrome::ExtensionInstalledBlockedByParentDialogAction::kAdd:
       // The user is trying to add/install the extension/app
@@ -137,7 +137,7 @@ void ExtensionInstallBlockedByParentDialogView::CreateContents() {
   message_body_label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
 }
 
-base::string16
+std::u16string
 ExtensionInstallBlockedByParentDialogView::GetExtensionTypeString() const {
   return l10n_util::GetStringUTF16(
       extension_->is_app()
@@ -147,5 +147,5 @@ ExtensionInstallBlockedByParentDialogView::GetExtensionTypeString() const {
 
 BEGIN_METADATA(ExtensionInstallBlockedByParentDialogView,
                views::DialogDelegateView)
-ADD_READONLY_PROPERTY_METADATA(base::string16, ExtensionTypeString)
+ADD_READONLY_PROPERTY_METADATA(std::u16string, ExtensionTypeString)
 END_METADATA

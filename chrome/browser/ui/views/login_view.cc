@@ -24,7 +24,7 @@ constexpr int kFieldsColumnSetId = 1;
 
 // Adds a row to |layout| and puts a Label in it.
 void AddHeaderLabel(views::GridLayout* layout,
-                    const base::string16& text,
+                    const std::u16string& text,
                     int text_style) {
   auto label = std::make_unique<views::Label>(text, views::style::CONTEXT_LABEL,
                                               text_style);
@@ -40,8 +40,8 @@ void AddHeaderLabel(views::GridLayout* layout,
 ///////////////////////////////////////////////////////////////////////////////
 // LoginView, public:
 
-LoginView::LoginView(const base::string16& authority,
-                     const base::string16& explanation,
+LoginView::LoginView(const std::u16string& authority,
+                     const std::u16string& explanation,
                      LoginHandler::LoginModelData* login_model_data)
     : http_auth_manager_(login_model_data ? login_model_data->model : nullptr) {
   // TODO(tapted): When Harmony is default, this should be removed and left up
@@ -85,11 +85,11 @@ LoginView::~LoginView() {
     http_auth_manager_->DetachObserver(this);
 }
 
-const base::string16& LoginView::GetUsername() const {
+const std::u16string& LoginView::GetUsername() const {
   return username_field_->GetText();
 }
 
-const base::string16& LoginView::GetPassword() const {
+const std::u16string& LoginView::GetPassword() const {
   return password_field_->GetText();
 }
 
@@ -100,8 +100,8 @@ views::View* LoginView::GetInitiallyFocusedView() {
 ///////////////////////////////////////////////////////////////////////////////
 // LoginView, views::View, password_manager::HttpAuthObserver overrides:
 
-void LoginView::OnAutofillDataAvailable(const base::string16& username,
-                                        const base::string16& password) {
+void LoginView::OnAutofillDataAvailable(const std::u16string& username,
+                                        const std::u16string& password) {
   if (username_field_->GetText().empty()) {
     username_field_->SetText(username);
     password_field_->SetText(password);
@@ -114,6 +114,6 @@ void LoginView::OnLoginModelDestroying() {
 }
 
 BEGIN_METADATA(LoginView, views::View)
-ADD_READONLY_PROPERTY_METADATA(base::string16, Username)
-ADD_READONLY_PROPERTY_METADATA(base::string16, Password)
+ADD_READONLY_PROPERTY_METADATA(std::u16string, Username)
+ADD_READONLY_PROPERTY_METADATA(std::u16string, Password)
 END_METADATA

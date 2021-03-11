@@ -123,11 +123,11 @@ std::unique_ptr<views::StyledLabel>
 ExtensionInstallFrictionDialogView::CreateWarningLabel() {
   auto label = std::make_unique<views::StyledLabel>();
 
-  base::string16 warning_text = l10n_util::GetStringUTF16(
+  std::u16string warning_text = l10n_util::GetStringUTF16(
       IDS_EXTENSION_PROMPT_INSTALL_FRICTION_WARNING_TEXT);
-  base::string16 learn_more_text = l10n_util::GetStringUTF16(IDS_LEARN_MORE);
+  std::u16string learn_more_text = l10n_util::GetStringUTF16(IDS_LEARN_MORE);
 
-  base::string16 text =
+  std::u16string text =
       base::StrCat({warning_text, base::ASCIIToUTF16(" "), learn_more_text});
 
   label->SetText(text);

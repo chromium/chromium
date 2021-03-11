@@ -58,7 +58,7 @@ class CrostiniUninstallerView : public views::BubbleDialogDelegateView {
   explicit CrostiniUninstallerView(Profile* profile);
   ~CrostiniUninstallerView() override;
 
-  void HandleError(const base::string16& error_message);
+  void HandleError(const std::u16string& error_message);
   void UninstallCrostiniFinished(crostini::CrostiniResult result);
   void RecordUninstallResultHistogram(UninstallResult result);
 

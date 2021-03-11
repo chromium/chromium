@@ -27,7 +27,7 @@ class TabListModel : public ui::TableModel,
 
   // ui::TableModel:
   int RowCount() override;
-  base::string16 GetText(int row, int column) override;
+  std::u16string GetText(int row, int column) override;
   gfx::ImageSkia GetIcon(int row) override;
   void SetObserver(ui::TableModelObserver* observer) override;
 
@@ -53,7 +53,7 @@ int TabListModel::RowCount() {
   return base::checked_cast<int>(controller_->GetSourceCount());
 }
 
-base::string16 TabListModel::GetText(int row, int column) {
+std::u16string TabListModel::GetText(int row, int column) {
   return controller_->GetSource(row).name;
 }
 
@@ -116,7 +116,7 @@ void TabListViewObserver::OnKeyDown(ui::KeyboardCode virtual_keycode) {
 }  // namespace
 
 DesktopMediaTabList::DesktopMediaTabList(DesktopMediaListController* controller,
-                                         const base::string16& accessible_name)
+                                         const std::u16string& accessible_name)
     : controller_(controller) {
   // The thumbnail size isn't allowed to be smaller than gfx::kFaviconSize by
   // the underlying media list. TableView requires that the icon size be exactly

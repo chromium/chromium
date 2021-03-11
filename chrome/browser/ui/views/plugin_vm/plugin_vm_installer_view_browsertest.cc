@@ -288,7 +288,7 @@ IN_PROC_BROWSER_TEST_F(
 
   view_->AcceptDialog();
 
-  base::string16 app_name = l10n_util::GetStringUTF16(IDS_PLUGIN_VM_APP_NAME);
+  std::u16string app_name = l10n_util::GetStringUTF16(IDS_PLUGIN_VM_APP_NAME);
   EXPECT_FALSE(HasAcceptButton());
   EXPECT_TRUE(HasCancelButton());
   EXPECT_EQ(view_->GetTitle(),

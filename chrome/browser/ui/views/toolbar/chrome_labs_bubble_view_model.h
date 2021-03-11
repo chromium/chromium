@@ -16,15 +16,15 @@
 // struct after that.
 struct LabInfo {
   LabInfo(const std::string& internal_name,
-          const base::string16& visible_name,
-          const base::string16& visible_description,
+          const std::u16string& visible_name,
+          const std::u16string& visible_description,
           const std::string& feedback_category_name,
           version_info::Channel allowed_channel);
   LabInfo(const LabInfo& other);
   ~LabInfo();
   std::string internal_name;
-  base::string16 visible_name;
-  base::string16 visible_description;
+  std::u16string visible_name;
+  std::u16string visible_description;
   std::string feedback_category_name;
   // Channels that are less stable than allowed_channel will also be
   // considered allowed. ex) if BETA is specified, this feature will also be

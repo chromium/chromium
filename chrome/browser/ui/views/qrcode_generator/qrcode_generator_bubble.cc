@@ -357,7 +357,7 @@ void QRCodeGeneratorBubble::Init() {
 
 void QRCodeGeneratorBubble::ContentsChanged(
     views::Textfield* sender,
-    const base::string16& new_contents) {
+    const std::u16string& new_contents) {
   DCHECK_EQ(sender, textfield_url_);
   if (sender == textfield_url_) {
     url_ = GURL(base::UTF16ToUTF8(new_contents));
@@ -384,7 +384,7 @@ bool QRCodeGeneratorBubble::HandleMouseEvent(
 }
 
 /*static*/
-const base::string16 QRCodeGeneratorBubble::GetQRCodeFilenameForURL(
+const std::u16string QRCodeGeneratorBubble::GetQRCodeFilenameForURL(
     const GURL& url) {
   if (!url.has_host() || url.HostIsIPAddress())
     return base::ASCIIToUTF16("qrcode_chrome.png");

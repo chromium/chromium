@@ -66,8 +66,8 @@ const float kDimmedCardIconOpacity = 0.33f;
 // used.
 const auto kBillingAddressType = autofill::ADDRESS_BILLING_LINE1;
 
-bool IsCardExpired(const base::string16& month,
-                   const base::string16& year,
+bool IsCardExpired(const std::u16string& month,
+                   const std::u16string& year,
                    const std::string& app_locale) {
   autofill::CreditCard card;
   card.SetExpirationMonthFromString(month, app_locale);
@@ -86,20 +86,20 @@ class ExpirationDateValidationDelegate : public ValidationDelegate {
         initially_valid_(initially_valid) {}
 
   bool IsValidTextfield(views::Textfield* textfield,
-                        base::string16* error_message) override {
+                        std::u16string* error_message) override {
     NOTREACHED();
     return true;
   }
 
   bool IsValidCombobox(ValidatingCombobox* combobox,
-                       base::string16* error_message) override {
+                       std::u16string* error_message) override {
     // View will have no parent if it's not been attached yet. Use initial
     // validity state.
     views::View* view_parent = combobox->parent();
     if (!view_parent) {
       *error_message =
           initially_valid_
-              ? base::string16()
+              ? std::u16string()
               : l10n_util::GetStringUTF16(
                     IDS_PAYMENTS_VALIDATION_INVALID_CREDIT_CARD_EXPIRED);
       return initially_valid_;
@@ -109,13 +109,13 @@ class ExpirationDateValidationDelegate : public ValidationDelegate {
     views::Combobox* month_combobox = static_cast<views::Combobox*>(
         view_parent->GetViewByID(EditorViewController::GetInputFieldViewId(
             autofill::CREDIT_CARD_EXP_MONTH)));
-    base::string16 month = month_combobox->GetModel()->GetItemAt(
+    std::u16string month = month_combobox->GetModel()->GetItemAt(
         month_combobox->GetSelectedIndex());
 
     views::Combobox* year_combobox = static_cast<views::Combobox*>(
         view_parent->GetViewByID(EditorViewController::GetInputFieldViewId(
             autofill::CREDIT_CARD_EXP_4_DIGIT_YEAR)));
-    base::string16 year =
+    std::u16string year =
         year_combobox->GetModel()->GetItemAt(year_combobox->GetSelectedIndex());
 
     bool is_expired = IsCardExpired(month, year, app_locale_);
@@ -125,7 +125,7 @@ class ExpirationDateValidationDelegate : public ValidationDelegate {
     *error_message =
         is_expired ? l10n_util::GetStringUTF16(
                          IDS_PAYMENTS_VALIDATION_INVALID_CREDIT_CARD_EXPIRED)
-                   : base::string16();
+                   : std::u16string();
     return !is_expired;
   }
 
@@ -136,7 +136,7 @@ class ExpirationDateValidationDelegate : public ValidationDelegate {
   }
 
   bool ComboboxValueChanged(ValidatingCombobox* combobox) override {
-    base::string16 error_message;
+    std::u16string error_message;
     bool is_valid = IsValidCombobox(combobox, &error_message);
     controller_->DisplayErrorMessageForField(
         autofill::CREDIT_CARD_EXP_DATE_4_DIGIT_YEAR, error_message);
@@ -259,7 +259,7 @@ CreditCardEditorViewController::CreateHeaderView() {
 
     // "Edit" link.
     auto edit_link = std::make_unique<views::StyledLabel>();
-    base::string16 link_text =
+    std::u16string link_text =
         l10n_util::GetStringUTF16(IDS_AUTOFILL_WALLET_MANAGEMENT_LINK_TEXT);
     edit_link->SetText(link_text);
     edit_link->SetID(
@@ -288,7 +288,7 @@ CreditCardEditorViewController::CreateCustomFieldView(
     autofill::ServerFieldType type,
     views::View** focusable_field,
     bool* valid,
-    base::string16* error_message) {
+    std::u16string* error_message) {
   DCHECK_EQ(type, autofill::CREDIT_CARD_EXP_DATE_4_DIGIT_YEAR);
 
   std::unique_ptr<views::View> view = std::make_unique<views::View>();
@@ -340,9 +340,9 @@ CreditCardEditorViewController::CreateCustomFieldView(
   }
 
   // Set the initial validity of the custom view.
-  base::string16 month =
+  std::u16string month =
       GetInitialValueForType(autofill::CREDIT_CARD_EXP_MONTH);
-  base::string16 year =
+  std::u16string year =
       GetInitialValueForType(autofill::CREDIT_CARD_EXP_4_DIGIT_YEAR);
   *valid = !IsCardExpired(month, year, state()->GetApplicationLocale());
   return view;
@@ -400,12 +400,12 @@ std::vector<EditorField> CreditCardEditorViewController::GetFieldDefinitions() {
        EditorField::ControlType::COMBOBOX}};
 }
 
-base::string16 CreditCardEditorViewController::GetInitialValueForType(
+std::u16string CreditCardEditorViewController::GetInitialValueForType(
     autofill::ServerFieldType type) {
   if (!credit_card_to_edit_ || type == kBillingAddressType)
-    return base::string16();
+    return std::u16string();
 
-  base::string16 info = credit_card_to_edit_->GetInfo(
+  std::u16string info = credit_card_to_edit_->GetInfo(
       autofill::AutofillType(type), state()->GetApplicationLocale());
 
   return type == autofill::CREDIT_CARD_NUMBER
@@ -587,8 +587,8 @@ void CreditCardEditorViewController::FillContentView(
 }
 
 bool CreditCardEditorViewController::IsValidCreditCardNumber(
-    const base::string16& card_number,
-    base::string16* error_message) {
+    const std::u16string& card_number,
+    std::u16string* error_message) {
   return autofill::IsValidCreditCardNumberForBasicCardNetworks(
       card_number, supported_card_networks_, error_message);
   // TODO(crbug.com/725604): The UI should offer to load / update the existing
@@ -597,12 +597,12 @@ bool CreditCardEditorViewController::IsValidCreditCardNumber(
   // tokenized form through Google Pay.)
 }
 
-base::string16 CreditCardEditorViewController::GetSheetTitle() {
+std::u16string CreditCardEditorViewController::GetSheetTitle() {
   if (!credit_card_to_edit_)
     return l10n_util::GetStringUTF16(IDS_PAYMENTS_ADD_CARD);
 
   // Gets the completion message, or empty if nothing is missing from the card.
-  base::string16 title = GetCompletionMessageForCard(GetCompletionStatusForCard(
+  std::u16string title = GetCompletionMessageForCard(GetCompletionStatusForCard(
       *credit_card_to_edit_, state()->GetApplicationLocale(),
       state()->GetPersonalDataManager()->GetProfiles()));
   return title.empty() ? l10n_util::GetStringUTF16(IDS_PAYMENTS_EDIT_CARD)
@@ -645,21 +645,21 @@ bool CreditCardEditorViewController::CreditCardValidationDelegate::
   return field_.type == autofill::CREDIT_CARD_NUMBER;
 }
 
-base::string16
+std::u16string
 CreditCardEditorViewController::CreditCardValidationDelegate::Format(
-    const base::string16& text) {
+    const std::u16string& text) {
   return data_util::FormatCardNumberForDisplay(text);
 }
 
 bool CreditCardEditorViewController::CreditCardValidationDelegate::
     IsValidTextfield(views::Textfield* textfield,
-                     base::string16* error_message) {
+                     std::u16string* error_message) {
   return ValidateValue(textfield->GetText(), error_message);
 }
 
 bool CreditCardEditorViewController::CreditCardValidationDelegate::
     IsValidCombobox(ValidatingCombobox* combobox,
-                    base::string16* error_message) {
+                    std::u16string* error_message) {
   return ValidateCombobox(combobox, error_message);
 }
 
@@ -679,7 +679,7 @@ bool CreditCardEditorViewController::CreditCardValidationDelegate::
   if (!was_blurred)
     return true;
 
-  base::string16 error_message;
+  std::u16string error_message;
   bool is_valid = ValidateValue(textfield->GetText(), &error_message);
   controller_->DisplayErrorMessageForField(field_.type, error_message);
 
@@ -688,16 +688,16 @@ bool CreditCardEditorViewController::CreditCardValidationDelegate::
 
 bool CreditCardEditorViewController::CreditCardValidationDelegate::
     ComboboxValueChanged(ValidatingCombobox* combobox) {
-  base::string16 error_message;
+  std::u16string error_message;
   bool is_valid = ValidateCombobox(combobox, nullptr);
   controller_->DisplayErrorMessageForField(field_.type, error_message);
   return is_valid;
 }
 
 bool CreditCardEditorViewController::CreditCardValidationDelegate::
-    ValidateValue(const base::string16& value, base::string16* error_message) {
+    ValidateValue(const std::u16string& value, std::u16string* error_message) {
   if (!value.empty()) {
-    base::string16 local_error_message;
+    std::u16string local_error_message;
     bool is_valid = false;
     if (field_.type == autofill::CREDIT_CARD_NUMBER) {
       is_valid =
@@ -720,7 +720,7 @@ bool CreditCardEditorViewController::CreditCardValidationDelegate::
 
 bool CreditCardEditorViewController::CreditCardValidationDelegate::
     ValidateCombobox(ValidatingCombobox* combobox,
-                     base::string16* error_message) {
+                     std::u16string* error_message) {
   // The billing address ID is the selected item identifier and not the combobox
   // value itself.
   if (field_.type == kBillingAddressType) {

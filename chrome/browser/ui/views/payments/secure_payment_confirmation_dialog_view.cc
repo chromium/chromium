@@ -172,7 +172,7 @@ void SecurePaymentConfirmationDialogView::OnModelUpdated() {
 
 void SecurePaymentConfirmationDialogView::UpdateLabelView(
     DialogViewID id,
-    const base::string16& text) {
+    const std::u16string& text) {
   static_cast<views::Label*>(GetViewByID(static_cast<int>(id)))->SetText(text);
 }
 
@@ -321,9 +321,9 @@ std::unique_ptr<views::View> SecurePaymentConfirmationDialogView::CreateRows() {
 // | label      [icon] value                  |
 // +~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~+ <-- border
 std::unique_ptr<views::View> SecurePaymentConfirmationDialogView::CreateRowView(
-    const base::string16& label,
+    const std::u16string& label,
     DialogViewID label_id,
-    const base::string16& value,
+    const std::u16string& value,
     DialogViewID value_id,
     const SkBitmap* icon,
     DialogViewID icon_id) {

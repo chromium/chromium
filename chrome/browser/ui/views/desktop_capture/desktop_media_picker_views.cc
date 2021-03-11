@@ -208,7 +208,7 @@ DesktopMediaPickerDialogView::DesktopMediaPickerDialogView(
   description_label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
   description_label_ = AddChildView(std::move(description_label));
 
-  std::vector<std::pair<base::string16, std::unique_ptr<View>>> panes;
+  std::vector<std::pair<std::u16string, std::unique_ptr<View>>> panes;
 
   const bool current_tab_among_sources = std::any_of(
       source_lists.begin(), source_lists.end(),
@@ -249,7 +249,7 @@ DesktopMediaPickerDialogView::DesktopMediaPickerDialogView(
 
         std::unique_ptr<views::ScrollView> screen_scroll_view =
             views::ScrollView::CreateScrollViewWithBorder();
-        base::string16 screen_title_text = l10n_util::GetStringUTF16(
+        std::u16string screen_title_text = l10n_util::GetStringUTF16(
             IDS_DESKTOP_MEDIA_PICKER_SOURCE_TYPE_SCREEN);
         auto list_controller = std::make_unique<DesktopMediaListController>(
             this, std::move(source_list));
@@ -281,7 +281,7 @@ DesktopMediaPickerDialogView::DesktopMediaPickerDialogView(
 
         std::unique_ptr<views::ScrollView> window_scroll_view =
             views::ScrollView::CreateScrollViewWithBorder();
-        base::string16 window_title_text = l10n_util::GetStringUTF16(
+        std::u16string window_title_text = l10n_util::GetStringUTF16(
             IDS_DESKTOP_MEDIA_PICKER_SOURCE_TYPE_WINDOW);
         auto list_controller = std::make_unique<DesktopMediaListController>(
             this, std::move(source_list));
@@ -302,7 +302,7 @@ DesktopMediaPickerDialogView::DesktopMediaPickerDialogView(
         source_types_.push_back(DesktopMediaList::Type::kWebContents);
         // Note that "other tab" is inaccurate - we actually allow any tab
         // to be selected in either case.
-        const base::string16 title = l10n_util::GetStringUTF16(
+        const std::u16string title = l10n_util::GetStringUTF16(
             current_tab_among_sources
                 ? IDS_DESKTOP_MEDIA_PICKER_SOURCE_TYPE_OTHER_TAB
                 : IDS_DESKTOP_MEDIA_PICKER_SOURCE_TYPE_TAB);
@@ -325,7 +325,7 @@ DesktopMediaPickerDialogView::DesktopMediaPickerDialogView(
             5);                                      // focus_rectangle_inset
         std::unique_ptr<views::ScrollView> window_scroll_view =
             views::ScrollView::CreateScrollViewWithBorder();
-        const base::string16 title = l10n_util::GetStringUTF16(
+        const std::u16string title = l10n_util::GetStringUTF16(
             IDS_DESKTOP_MEDIA_PICKER_SOURCE_TYPE_THIS_TAB);
         auto list_controller = std::make_unique<DesktopMediaListController>(
             this, std::move(source_list));
@@ -484,7 +484,7 @@ gfx::Size DesktopMediaPickerDialogView::CalculatePreferredSize() const {
   return gfx::Size(kDialogViewWidth, GetHeightForWidth(kDialogViewWidth));
 }
 
-base::string16 DesktopMediaPickerDialogView::GetWindowTitle() const {
+std::u16string DesktopMediaPickerDialogView::GetWindowTitle() const {
   int title_id = IDS_DESKTOP_MEDIA_PICKER_TITLE;
 
   if (!tabbed_pane_) {

@@ -147,9 +147,9 @@ void BuildCredentialRows(
 }
 
 // Create a vector which contains only the values in |items| and no elements.
-std::vector<base::string16> ToValues(
+std::vector<std::u16string> ToValues(
     const password_manager::ValueElementVector& items) {
-  std::vector<base::string16> passwords;
+  std::vector<std::u16string> passwords;
   passwords.reserve(items.size());
   for (auto& pair : items)
     passwords.push_back(pair.first);
@@ -176,13 +176,13 @@ std::unique_ptr<views::ToggleImageButton> CreatePasswordViewButton(
 // even just |PasswordForm.username_value|.
 std::unique_ptr<views::EditableCombobox> CreateUsernameEditableCombobox(
     const password_manager::PasswordForm& form) {
-  std::vector<base::string16> usernames = {form.username_value};
+  std::vector<std::u16string> usernames = {form.username_value};
   for (const password_manager::ValueElementPair& other_possible_username_pair :
        form.all_possible_usernames) {
     if (other_possible_username_pair.first != form.username_value)
       usernames.push_back(other_possible_username_pair.first);
   }
-  base::EraseIf(usernames, [](const base::string16& username) {
+  base::EraseIf(usernames, [](const std::u16string& username) {
     return username.empty();
   });
   bool display_arrow = !usernames.empty();
@@ -205,11 +205,11 @@ std::unique_ptr<views::EditableCombobox> CreatePasswordEditableCombobox(
     const password_manager::PasswordForm& form,
     bool are_passwords_revealed) {
   DCHECK(!form.IsFederatedCredential());
-  std::vector<base::string16> passwords =
+  std::vector<std::u16string> passwords =
       form.all_possible_passwords.empty()
-          ? std::vector<base::string16>(/*n=*/1, form.password_value)
+          ? std::vector<std::u16string>(/*n=*/1, form.password_value)
           : ToValues(form.all_possible_passwords);
-  base::EraseIf(passwords, [](const base::string16& password) {
+  base::EraseIf(passwords, [](const std::u16string& password) {
     return password.empty();
   });
   bool display_arrow = !passwords.empty();
@@ -389,8 +389,8 @@ void PasswordSaveUpdateView::TogglePasswordVisibility() {
 void PasswordSaveUpdateView::UpdateUsernameAndPasswordInModel() {
   if (!username_dropdown_ && !password_dropdown_)
     return;
-  base::string16 new_username = controller_.pending_password().username_value;
-  base::string16 new_password = controller_.pending_password().password_value;
+  std::u16string new_username = controller_.pending_password().username_value;
+  std::u16string new_password = controller_.pending_password().password_value;
   if (username_dropdown_) {
     new_username = username_dropdown_->GetText();
     base::TrimString(new_username, base::ASCIIToUTF16(" "), &new_username);

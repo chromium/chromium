@@ -76,7 +76,7 @@ class BookmarkMenuController : public bookmarks::BaseBookmarkModelObserver,
   }
 
   // views::MenuDelegate:
-  base::string16 GetTooltipText(int id, const gfx::Point& p) const override;
+  std::u16string GetTooltipText(int id, const gfx::Point& p) const override;
   bool IsTriggerableEvent(views::MenuItemView* view,
                           const ui::Event& e) override;
   void ExecuteCommand(int id, int mouse_event_flags) override;

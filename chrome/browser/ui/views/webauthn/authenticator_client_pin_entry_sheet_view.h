@@ -29,8 +29,8 @@ class AuthenticatorClientPinEntrySheetView
   std::unique_ptr<views::View> BuildStepSpecificContent() override;
 
   // AuthenticatorClientPinEntryView::Delegate:
-  void OnPincodeChanged(base::string16 pincode) override;
-  void OnConfirmationChanged(base::string16 pincode) override;
+  void OnPincodeChanged(std::u16string pincode) override;
+  void OnConfirmationChanged(std::u16string pincode) override;
 
   DISALLOW_COPY_AND_ASSIGN(AuthenticatorClientPinEntrySheetView);
 };

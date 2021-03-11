@@ -167,7 +167,7 @@ MediaNotificationContainerImplView::MediaNotificationContainerImplView(
   } else {
     view = std::make_unique<media_message_center::MediaNotificationViewImpl>(
         this, std::move(item), std::move(dismiss_button_placeholder),
-        base::string16(), kWidth, /*should_show_icon=*/false, theme);
+        std::u16string(), kWidth, /*should_show_icon=*/false, theme);
     SetPreferredSize(kNormalSize);
   }
 
@@ -506,7 +506,7 @@ void MediaNotificationContainerImplView::OnOverlayNotificationShown(
   overlay_ = overlay;
 }
 
-const base::string16& MediaNotificationContainerImplView::GetTitle() const {
+const std::u16string& MediaNotificationContainerImplView::GetTitle() const {
   return title_;
 }
 
@@ -614,5 +614,5 @@ void MediaNotificationContainerImplView::OnSizeChanged() {
 }
 
 BEGIN_METADATA(MediaNotificationContainerImplView, views::Button)
-ADD_READONLY_PROPERTY_METADATA(base::string16, Title)
+ADD_READONLY_PROPERTY_METADATA(std::u16string, Title)
 END_METADATA

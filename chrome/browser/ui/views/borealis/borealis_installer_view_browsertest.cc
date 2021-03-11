@@ -132,7 +132,7 @@ class BorealisInstallerViewBrowserTest : public DialogBrowserTest {
   ::testing::StrictMock<BorealisInstallerMock> mock_installer_;
   ::testing::StrictMock<BorealisContextManagerMock> mock_context_manager_;
   BorealisInstallerView* view_;
-  base::string16 app_name_;
+  std::u16string app_name_;
 
  private:
   // Disallow copy and assign.

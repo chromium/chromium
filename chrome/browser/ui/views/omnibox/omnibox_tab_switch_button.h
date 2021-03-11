@@ -19,8 +19,8 @@ class OmniboxTabSwitchButton : public views::MdTextButton {
   OmniboxTabSwitchButton(PressedCallback callback,
                          OmniboxPopupContentsView* popup_contents_view,
                          OmniboxResultView* result_view,
-                         const base::string16& hint,
-                         const base::string16& hint_short,
+                         const std::u16string& hint,
+                         const std::u16string& hint_short,
                          const gfx::VectorIcon& icon);
   OmniboxTabSwitchButton(const OmniboxTabSwitchButton&) = delete;
   OmniboxTabSwitchButton& operator=(const OmniboxTabSwitchButton&) = delete;
@@ -54,8 +54,8 @@ class OmniboxTabSwitchButton : public views::MdTextButton {
   static int full_text_width_;
 
   // Label strings for hint text and its short version (may be same).
-  base::string16 hint_;
-  base::string16 hint_short_;
+  std::u16string hint_;
+  std::u16string hint_short_;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_OMNIBOX_OMNIBOX_TAB_SWITCH_BUTTON_H_

@@ -34,7 +34,7 @@ OneClickSigninDialogView* OneClickSigninDialogView::dialog_view_ = nullptr;
 
 // static
 void OneClickSigninDialogView::ShowDialog(
-    const base::string16& email,
+    const std::u16string& email,
     std::unique_ptr<OneClickSigninLinksDelegate> delegate,
     gfx::NativeWindow window,
     base::OnceCallback<void(bool)> confirmed_callback) {
@@ -72,7 +72,7 @@ bool OneClickSigninDialogView::Accept() {
 }
 
 OneClickSigninDialogView::OneClickSigninDialogView(
-    const base::string16& email,
+    const std::u16string& email,
     std::unique_ptr<OneClickSigninLinksDelegate> delegate,
     base::OnceCallback<void(bool)> confirmed_callback)
     : email_(email), confirmed_callback_(std::move(confirmed_callback)) {

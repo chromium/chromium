@@ -132,10 +132,10 @@ class BubbleHeaderView : public views::View {
   ~BubbleHeaderView() override;
 
   // Sets the security summary for the current page.
-  void SetSummary(const base::string16& summary_text);
+  void SetSummary(const std::u16string& summary_text);
 
   // Sets the security details for the current page.
-  void SetDetails(const base::string16& details_text);
+  void SetDetails(const std::u16string& details_text);
 
   void AddEvCertificateDetailsLabel(
       const PageInfoBubbleView::IdentityInfo& identity_info);
@@ -230,14 +230,14 @@ BubbleHeaderView::BubbleHeaderView(PageInfoBubbleView* bubble, int side_margin)
 
 BubbleHeaderView::~BubbleHeaderView() = default;
 
-void BubbleHeaderView::SetDetails(const base::string16& details_text) {
-  std::vector<base::string16> subst;
+void BubbleHeaderView::SetDetails(const std::u16string& details_text) {
+  std::vector<std::u16string> subst;
   subst.push_back(details_text);
   subst.push_back(l10n_util::GetStringUTF16(IDS_LEARN_MORE));
 
   std::vector<size_t> offsets;
 
-  base::string16 text = base::ReplaceStringPlaceholders(
+  std::u16string text = base::ReplaceStringPlaceholders(
       base::ASCIIToUTF16("$1 $2"), subst, &offsets);
   security_details_label_->SetText(text);
   gfx::Range details_range(offsets[1], text.length());
@@ -256,7 +256,7 @@ void BubbleHeaderView::AddResetDecisionsLabel() {
     reset_decisions_label_container_->RemoveAllChildViews(true);
   }
 
-  std::vector<base::string16> subst;
+  std::vector<std::u16string> subst;
   subst.push_back(
       l10n_util::GetStringUTF16(IDS_PAGE_INFO_INVALID_CERTIFICATE_DESCRIPTION));
   subst.push_back(l10n_util::GetStringUTF16(
@@ -264,7 +264,7 @@ void BubbleHeaderView::AddResetDecisionsLabel() {
 
   std::vector<size_t> offsets;
 
-  base::string16 text = base::ReplaceStringPlaceholders(
+  std::u16string text = base::ReplaceStringPlaceholders(
       base::ASCIIToUTF16("$1 $2"), subst, &offsets);
   views::StyledLabel* reset_cert_decisions_label =
       reset_decisions_label_container_->AddChildView(
@@ -537,7 +537,7 @@ PageInfoBubbleView::PageInfoBubbleView(
     layout->StartRowWithPadding(views::GridLayout::kFixedSize, kColumnId,
                                 views::GridLayout::kFixedSize, 0);
 
-    const base::string16& tooltip =
+    const std::u16string& tooltip =
         l10n_util::GetStringUTF16(IDS_PAGE_INFO_SITE_SETTINGS_TOOLTIP);
     site_settings_link = layout->AddView(std::make_unique<PageInfoHoverButton>(
         base::BindRepeating(
@@ -546,9 +546,9 @@ PageInfoBubbleView::PageInfoBubbleView(
             },
             this),
         PageInfoUI::GetSiteSettingsIcon(GetRelatedTextColor()),
-        IDS_PAGE_INFO_SITE_SETTINGS_LINK, base::string16(),
+        IDS_PAGE_INFO_SITE_SETTINGS_LINK, std::u16string(),
         PageInfoBubbleView::VIEW_ID_PAGE_INFO_LINK_OR_BUTTON_SITE_SETTINGS,
-        tooltip, base::string16()));
+        tooltip, std::u16string()));
   }
 
 #if defined(OS_WIN) && BUILDFLAG(ENABLE_VR)
@@ -625,7 +625,7 @@ void PageInfoBubbleView::SetCookieInfo(const CookieInfoList& cookie_info_list) {
   }
 
   // Get the string to display the number of cookies.
-  const base::string16 num_cookies_text = l10n_util::GetPluralStringFUTF16(
+  const std::u16string num_cookies_text = l10n_util::GetPluralStringFUTF16(
       IDS_PAGE_INFO_NUM_COOKIES_PARENTHESIZED, total_allowed);
 
   // Create the cookie button if it doesn't yet exist. This method gets called
@@ -642,7 +642,7 @@ void PageInfoBubbleView::SetCookieInfo(const CookieInfoList& cookie_info_list) {
     const gfx::ImageSkia icon =
         PageInfoUI::GetPermissionIcon(info, GetRelatedTextColor());
 
-    const base::string16& tooltip =
+    const std::u16string& tooltip =
         l10n_util::GetStringUTF16(IDS_PAGE_INFO_COOKIES_TOOLTIP);
 
     cookie_button_ =
@@ -654,7 +654,7 @@ void PageInfoBubbleView::SetCookieInfo(const CookieInfoList& cookie_info_list) {
                 this),
             icon, IDS_PAGE_INFO_COOKIES_BUTTON_TEXT, num_cookies_text,
             VIEW_ID_PAGE_INFO_LINK_OR_BUTTON_COOKIE_DIALOG, tooltip,
-            base::string16())
+            std::u16string())
             .release();
     site_settings_view_->AddChildView(cookie_button_);
   }
@@ -790,7 +790,7 @@ void PageInfoBubbleView::SetIdentityInfo(const IdentityInfo& identity_info) {
     // validity of the Certificate.
     const bool valid_identity =
         (identity_info.identity_status != PageInfo::SITE_IDENTITY_STATUS_ERROR);
-    base::string16 tooltip;
+    std::u16string tooltip;
     if (valid_identity) {
       tooltip = l10n_util::GetStringFUTF16(
           IDS_PAGE_INFO_CERTIFICATE_VALID_LINK_TOOLTIP,
@@ -803,11 +803,11 @@ void PageInfoBubbleView::SetIdentityInfo(const IdentityInfo& identity_info) {
     // Add the Certificate Section.
     const gfx::ImageSkia icon =
         PageInfoUI::GetCertificateIcon(GetRelatedTextColor());
-    const base::string16 secondary_text = l10n_util::GetStringUTF16(
+    const std::u16string secondary_text = l10n_util::GetStringUTF16(
         valid_identity ? IDS_PAGE_INFO_CERTIFICATE_VALID_PARENTHESIZED
                        : IDS_PAGE_INFO_CERTIFICATE_INVALID_PARENTHESIZED);
 
-    base::string16 subtitle_text;
+    std::u16string subtitle_text;
     if (base::FeatureList::IsEnabled(features::kEvDetailsInPageInfo)) {
       // Only show the EV certificate details if there are no errors or mixed
       // content.
@@ -903,7 +903,7 @@ void PageInfoBubbleView::SetPageFeatureInfo(const PageFeatureInfo& info) {
   auto button = std::make_unique<HoverButton>(
       views::Button::PressedCallback(), std::move(icon),
       l10n_util::GetStringUTF16(IDS_PAGE_INFO_VR_PRESENTING_TEXT),
-      base::string16(), std::move(exit_button),
+      std::u16string(), std::move(exit_button),
       false,  // Try not to change the row height while adding secondary view
       true);  // Secondary view can handle events.
   button->SetID(VIEW_ID_PAGE_INFO_HOVER_BUTTON_VR_PRESENTATION);

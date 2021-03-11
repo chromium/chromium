@@ -35,7 +35,7 @@ using content::WebContents;
 
 namespace {
 
-base::string16 GetMessageTextForOrigin(
+std::u16string GetMessageTextForOrigin(
     const base::Optional<url::Origin>& origin) {
   if (!origin || origin->opaque())
     return l10n_util::GetStringUTF16(IDS_EXTERNAL_PROTOCOL_MESSAGE);
@@ -56,7 +56,7 @@ void ExternalProtocolHandler::RunExternalProtocolDialog(
     const base::Optional<url::Origin>& initiating_origin) {
   DCHECK(web_contents);
 
-  base::string16 program_name =
+  std::u16string program_name =
       shell_integration::GetApplicationNameForProtocol(url);
   if (program_name.empty()) {
     // ShellExecute won't do anything. Don't bother warning the user.
@@ -72,7 +72,7 @@ void ExternalProtocolHandler::RunExternalProtocolDialog(
 ExternalProtocolDialog::ExternalProtocolDialog(
     WebContents* web_contents,
     const GURL& url,
-    const base::string16& program_name,
+    const std::u16string& program_name,
     const base::Optional<url::Origin>& initiating_origin)
     : content::WebContentsObserver(web_contents),
       url_(url),
@@ -143,9 +143,9 @@ bool ExternalProtocolDialog::ShouldShowCloseButton() const {
   return false;
 }
 
-base::string16 ExternalProtocolDialog::GetWindowTitle() const {
+std::u16string ExternalProtocolDialog::GetWindowTitle() const {
   constexpr int kMaxCommandCharsToDisplay = 32;
-  base::string16 elided;
+  std::u16string elided;
   gfx::ElideString(program_name_, kMaxCommandCharsToDisplay, &elided);
   return l10n_util::GetStringFUTF16(IDS_EXTERNAL_PROTOCOL_TITLE, elided);
 }

@@ -30,9 +30,9 @@ class EnterpriseStartupDialogView : public views::DialogDelegateView {
   ~EnterpriseStartupDialogView() override;
 
   void DisplayLaunchingInformationWithThrobber(
-      const base::string16& information);
-  void DisplayErrorMessage(const base::string16& error_message,
-                           const base::Optional<base::string16>& accept_button);
+      const std::u16string& information);
+  void DisplayErrorMessage(const std::u16string& error_message,
+                           const base::Optional<std::u16string>& accept_button);
   void CloseDialog();
 
   void AddWidgetObserver(views::WidgetObserver* observer);
@@ -75,10 +75,10 @@ class EnterpriseStartupDialogImpl : public EnterpriseStartupDialog,
 
   // Override EnterpriseStartupDialog
   void DisplayLaunchingInformationWithThrobber(
-      const base::string16& information) override;
+      const std::u16string& information) override;
   void DisplayErrorMessage(
-      const base::string16& error_message,
-      const base::Optional<base::string16>& accept_button) override;
+      const std::u16string& error_message,
+      const base::Optional<std::u16string>& accept_button) override;
   bool IsShowing() override;
 
   // views::WidgetObserver:

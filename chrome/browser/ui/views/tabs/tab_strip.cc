@@ -2210,10 +2210,10 @@ SkColor TabStrip::GetTabForegroundColor(TabActive active,
 }
 
 // Returns the accessible tab name for the tab.
-base::string16 TabStrip::GetAccessibleTabName(const Tab* tab) const {
+std::u16string TabStrip::GetAccessibleTabName(const Tab* tab) const {
   const int model_index = GetModelIndexOf(tab);
   return IsValidModelIndex(model_index) ? controller_->GetAccessibleTabName(tab)
-                                        : base::string16();
+                                        : std::u16string();
 }
 
 base::Optional<int> TabStrip::GetCustomBackgroundId(
@@ -2249,7 +2249,7 @@ float TabStrip::GetHoverOpacityForRadialHighlight() const {
   return radial_highlight_opacity_;
 }
 
-base::string16 TabStrip::GetGroupTitle(
+std::u16string TabStrip::GetGroupTitle(
     const tab_groups::TabGroupId& group) const {
   return controller_->GetGroupTitle(group);
 }
@@ -2610,7 +2610,7 @@ void TabStrip::NewTabButtonPressed(const ui::Event& event) {
               ui::ClipboardBuffer::kSelection)) {
         ui::Clipboard* clipboard = ui::Clipboard::GetForCurrentThread();
         CHECK(clipboard);
-        base::string16 clipboard_text;
+        std::u16string clipboard_text;
         clipboard->ReadText(ui::ClipboardBuffer::kSelection,
                             /* data_dst = */ nullptr, &clipboard_text);
         if (!clipboard_text.empty())
@@ -3845,8 +3845,8 @@ void TabStrip::OnTouchUiChanged() {
 }
 
 void TabStrip::AnnounceTabAddedToGroup(tab_groups::TabGroupId group_id) {
-  const base::string16 group_title = controller()->GetGroupTitle(group_id);
-  const base::string16 contents_string =
+  const std::u16string group_title = controller()->GetGroupTitle(group_id);
+  const std::u16string contents_string =
       controller()->GetGroupContentString(group_id);
   GetViewAccessibility().AnnounceText(
       group_title.empty()
@@ -3858,8 +3858,8 @@ void TabStrip::AnnounceTabAddedToGroup(tab_groups::TabGroupId group_id) {
 }
 
 void TabStrip::AnnounceTabRemovedFromGroup(tab_groups::TabGroupId group_id) {
-  const base::string16 group_title = controller()->GetGroupTitle(group_id);
-  const base::string16 contents_string =
+  const std::u16string group_title = controller()->GetGroupTitle(group_id);
+  const std::u16string contents_string =
       controller()->GetGroupContentString(group_id);
   GetViewAccessibility().AnnounceText(
       group_title.empty()

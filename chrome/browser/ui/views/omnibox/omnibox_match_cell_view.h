@@ -56,7 +56,7 @@ class OmniboxMatchCellView : public views::View {
     TWO_LINE_SUGGESTION,
   };
 
-  void SetTailSuggestCommonPrefixWidth(const base::string16& common_prefix);
+  void SetTailSuggestCommonPrefixWidth(const std::u16string& common_prefix);
 
   bool is_rich_suggestion_ = false;
   bool is_search_type_ = false;

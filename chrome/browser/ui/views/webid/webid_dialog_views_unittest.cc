@@ -20,9 +20,9 @@
 
 namespace {
 
-const base::string16 kRpHostname = base::ASCIIToUTF16("rp.example");
+const std::u16string kRpHostname = base::ASCIIToUTF16("rp.example");
 const char* kRpUrl = "https://rp.example";
-const base::string16 kIdpHostname = base::ASCIIToUTF16("idp.example");
+const std::u16string kIdpHostname = base::ASCIIToUTF16("idp.example");
 const char* kIdpUrl = "https://idp.example";
 
 }  // namespace

@@ -80,7 +80,7 @@ ShippingAddressEditorViewController::GetFieldDefinitions() {
   return editor_fields_;
 }
 
-base::string16 ShippingAddressEditorViewController::GetInitialValueForType(
+std::u16string ShippingAddressEditorViewController::GetInitialValueForType(
     autofill::ServerFieldType type) {
   return GetValueForType(temporary_profile_, type);
 }
@@ -107,7 +107,7 @@ bool ShippingAddressEditorViewController::ValidateModelAndSave() {
     // guid, etc.).
     for (autofill::ServerFieldType type : all_fields) {
       if (type != autofill::ServerFieldType::EMAIL_ADDRESS) {
-        profile_to_edit_->SetRawInfo(type, base::string16());
+        profile_to_edit_->SetRawInfo(type, std::u16string());
       }
     }
 
@@ -208,7 +208,7 @@ void ShippingAddressEditorViewController::UpdateEditorView() {
   }
 }
 
-base::string16 ShippingAddressEditorViewController::GetSheetTitle() {
+std::u16string ShippingAddressEditorViewController::GetSheetTitle() {
   // TODO(crbug.com/712074): Editor title should reflect the missing information
   // in the case that one or more fields are missing.
   return profile_to_edit_ ? l10n_util::GetStringUTF16(IDS_PAYMENTS_EDIT_ADDRESS)
@@ -233,9 +233,9 @@ bool ShippingAddressEditorViewController::ShippingAddressValidationDelegate::
   return field_.type == autofill::PHONE_HOME_WHOLE_NUMBER;
 }
 
-base::string16
+std::u16string
 ShippingAddressEditorViewController::ShippingAddressValidationDelegate::Format(
-    const base::string16& text) {
+    const std::u16string& text) {
   if (controller_->chosen_country_index_ < controller_->countries_.size()) {
     return base::UTF8ToUTF16(autofill::i18n::FormatPhoneForDisplay(
         base::UTF16ToUTF8(text),
@@ -247,13 +247,13 @@ ShippingAddressEditorViewController::ShippingAddressValidationDelegate::Format(
 
 bool ShippingAddressEditorViewController::ShippingAddressValidationDelegate::
     IsValidTextfield(views::Textfield* textfield,
-                     base::string16* error_message) {
+                     std::u16string* error_message) {
   return ValidateValue(textfield->GetText(), error_message);
 }
 
 bool ShippingAddressEditorViewController::ShippingAddressValidationDelegate::
     IsValidCombobox(ValidatingCombobox* combobox,
-                    base::string16* error_message) {
+                    std::u16string* error_message) {
   return ValidateValue(combobox->GetTextForRow(combobox->GetSelectedIndex()),
                        error_message);
 }
@@ -263,7 +263,7 @@ bool ShippingAddressEditorViewController::ShippingAddressValidationDelegate::
   if (!was_blurred)
     return true;
 
-  base::string16 error_message;
+  std::u16string error_message;
   bool is_valid = ValidateValue(textfield->GetText(), &error_message);
   controller_->DisplayErrorMessageForField(field_.type, error_message);
   return is_valid;
@@ -271,7 +271,7 @@ bool ShippingAddressEditorViewController::ShippingAddressValidationDelegate::
 
 bool ShippingAddressEditorViewController::ShippingAddressValidationDelegate::
     ComboboxValueChanged(ValidatingCombobox* combobox) {
-  base::string16 error_message;
+  std::u16string error_message;
   bool is_valid = ValidateValue(
       combobox->GetTextForRow(combobox->GetSelectedIndex()), &error_message);
   controller_->DisplayErrorMessageForField(field_.type, error_message);
@@ -284,7 +284,7 @@ void ShippingAddressEditorViewController::ShippingAddressValidationDelegate::
 }
 
 bool ShippingAddressEditorViewController::ShippingAddressValidationDelegate::
-    ValidateValue(const base::string16& value, base::string16* error_message) {
+    ValidateValue(const std::u16string& value, std::u16string* error_message) {
   if (!controller_->spec())
     return false;
 
@@ -329,7 +329,7 @@ bool ShippingAddressEditorViewController::ShippingAddressValidationDelegate::
   return !field_.required;
 }
 
-base::string16 ShippingAddressEditorViewController::GetValueForType(
+std::u16string ShippingAddressEditorViewController::GetValueForType(
     const autofill::AutofillProfile& profile,
     autofill::ServerFieldType type) {
   if (type == autofill::PHONE_HOME_WHOLE_NUMBER) {
@@ -340,7 +340,7 @@ base::string16 ShippingAddressEditorViewController::GetValueForType(
   if (type == autofill::ADDRESS_HOME_STATE && region_model_) {
     // For the state, check if the initial value matches either a region code or
     // a region name.
-    base::string16 initial_region =
+    std::u16string initial_region =
         profile.GetInfo(type, state()->GetApplicationLocale());
     autofill::l10n::CaseInsensitiveCompare compare;
 
@@ -397,7 +397,7 @@ void ShippingAddressEditorViewController::UpdateCountries(
   // If there is a profile to edit, make sure to use its country for the initial
   // |chosen_country_index_|.
   if (IsEditingExistingItem()) {
-    base::string16 chosen_country(temporary_profile_.GetInfo(
+    std::u16string chosen_country(temporary_profile_.GetInfo(
         autofill::ADDRESS_HOME_COUNTRY, state()->GetApplicationLocale()));
     for (chosen_country_index_ = 0; chosen_country_index_ < countries_.size();
          ++chosen_country_index_) {
@@ -533,7 +533,7 @@ bool ShippingAddressEditorViewController::SaveFieldsToProfile(
   // The combobox can be null when saving to temporary profile while updating
   // the view.
   if (combobox) {
-    base::string16 country(
+    std::u16string country(
         combobox->GetTextForRow(combobox->GetSelectedIndex()));
     bool success =
         profile->SetInfo(autofill::ADDRESS_HOME_COUNTRY, country, locale);
@@ -596,7 +596,7 @@ void ShippingAddressEditorViewController::OnComboboxModelChanged(
     // and not from the UI.
     OnDataChanged(/*synchronous=*/true);
   } else {
-    base::string16 state_value =
+    std::u16string state_value =
         GetInitialValueForType(autofill::ADDRESS_HOME_STATE);
     if (!state_value.empty()) {
       combobox->SelectValue(state_value);

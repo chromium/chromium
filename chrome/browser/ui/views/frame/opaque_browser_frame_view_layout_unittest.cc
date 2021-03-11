@@ -42,7 +42,7 @@ class TestLayoutDelegate : public OpaqueBrowserFrameViewLayoutDelegate {
   TestLayoutDelegate() : show_caption_buttons_(true), maximized_(false) {}
   ~TestLayoutDelegate() override {}
 
-  void set_window_title(const base::string16& title) { window_title_ = title; }
+  void set_window_title(const std::u16string& title) { window_title_ = title; }
   void set_show_caption_buttons(bool show_caption_buttons) {
     show_caption_buttons_ = show_caption_buttons;
   }
@@ -51,7 +51,7 @@ class TestLayoutDelegate : public OpaqueBrowserFrameViewLayoutDelegate {
   // OpaqueBrowserFrameViewLayoutDelegate:
   bool ShouldShowWindowIcon() const override { return !window_title_.empty(); }
   bool ShouldShowWindowTitle() const override { return !window_title_.empty(); }
-  base::string16 GetWindowTitle() const override { return window_title_; }
+  std::u16string GetWindowTitle() const override { return window_title_; }
   int GetIconSize() const override { return 17; }
   gfx::Size GetBrowserViewMinimumSize() const override {
     return gfx::Size(168, 64);
@@ -79,7 +79,7 @@ class TestLayoutDelegate : public OpaqueBrowserFrameViewLayoutDelegate {
   bool EverHasVisibleBackgroundTabShapes() const override { return false; }
 
  private:
-  base::string16 window_title_;
+  std::u16string window_title_;
   bool show_caption_buttons_;
   bool maximized_;
 

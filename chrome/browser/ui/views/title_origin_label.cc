@@ -7,7 +7,7 @@
 #include "ui/views/accessibility/view_accessibility.h"
 
 std::unique_ptr<views::Label> CreateTitleOriginLabel(
-    const base::string16& text) {
+    const std::u16string& text) {
   auto label =
       std::make_unique<views::Label>(text, views::style::CONTEXT_DIALOG_TITLE);
   label->SetHorizontalAlignment(gfx::ALIGN_LEFT);

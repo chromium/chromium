@@ -44,7 +44,7 @@ CaretBrowsingDialogDelegate::CaretBrowsingDialogDelegate(
   set_margins(ChromeLayoutProvider::Get()->GetDialogInsetsForContentType(
       views::TEXT, views::CONTROL));
 
-  base::string16 message_text =
+  std::u16string message_text =
       l10n_util::GetStringUTF16(IDS_ENABLE_CARET_BROWSING_INFO);
 
   auto* message_label = AddChildView(std::make_unique<views::Label>(

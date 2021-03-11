@@ -62,7 +62,7 @@ IN_PROC_BROWSER_TEST_F(StatusBubbleViewsTest, WidgetLifetime) {
 #if !defined(OS_MAC)
   // Clearing the URL and status closes the widget on platforms other than Mac.
   EXPECT_FALSE(IsDestroyPopupTimerRunning());
-  bubble->SetStatus(base::string16());
+  bubble->SetStatus(std::u16string());
   bubble->SetURL(GURL());
   // The widget is not hidden immediately, instead a task is scheduled. Run that
   // now.
@@ -103,7 +103,7 @@ IN_PROC_BROWSER_TEST_F(StatusBubbleViewsTest, ShowHideDestroyShow) {
   ASSERT_TRUE(widget);
   EXPECT_TRUE(widget->IsVisible());
 
-  bubble->SetStatus(base::string16());
+  bubble->SetStatus(std::u16string());
   // The widget is not hidden immediately, instead a task is scheduled. Run that
   // now.
   task_runner->RunPendingTasks();

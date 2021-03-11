@@ -26,8 +26,8 @@ class ExtensionPermissionsView : public views::View {
 
   // Adds a single pair of |permission_text| and |permission_details| to
   // be rendered in the view.
-  void AddItem(const base::string16& permission_text,
-               const base::string16& permission_details);
+  void AddItem(const std::u16string& permission_text,
+               const std::u16string& permission_details);
 
   // Adds the set of |permissions| to be rendered in the view.
   void AddPermissions(const extensions::InstallPromptPermissions& permissions);

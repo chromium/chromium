@@ -157,7 +157,7 @@ class TranslateLanguageBrowserTest : public InProcessBrowserTest {
     return UrlLanguageHistogramFactory::GetForBrowserContext(browser_context);
   }
 
-  void SetTargetLanguageByDisplayName(const base::string16& name) {
+  void SetTargetLanguageByDisplayName(const std::u16string& name) {
     test_utils::SelectTargetLanguageByDisplayName(browser_, name);
   }
 

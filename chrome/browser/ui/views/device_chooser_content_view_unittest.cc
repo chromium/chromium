@@ -107,11 +107,11 @@ class DeviceChooserContentViewTest : public ChromeViewsTestBase {
          FakeBluetoothChooserController::kSignalStrengthUnknown});
   }
 
-  base::string16 GetUnpairedDeviceTextAtRow(size_t row_index) {
+  std::u16string GetUnpairedDeviceTextAtRow(size_t row_index) {
     return controller()->GetOption(row_index);
   }
 
-  base::string16 GetPairedDeviceTextAtRow(size_t row_index) {
+  std::u16string GetPairedDeviceTextAtRow(size_t row_index) {
     return l10n_util::GetStringFUTF16(
         IDS_DEVICE_CHOOSER_DEVICE_NAME_AND_PAIRED_STATUS_TEXT,
         GetUnpairedDeviceTextAtRow(row_index));

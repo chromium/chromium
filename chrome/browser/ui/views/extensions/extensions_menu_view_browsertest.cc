@@ -644,7 +644,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionsMenuViewBrowserTest,
   int visibility_index = context_menu->GetIndexOfCommandId(
       extensions::ExtensionContextMenuModel::TOGGLE_VISIBILITY);
   ASSERT_GE(visibility_index, 0);
-  base::string16 visibility_label = context_menu->GetLabelAt(visibility_index);
+  std::u16string visibility_label = context_menu->GetLabelAt(visibility_index);
   EXPECT_EQ(base::UTF16ToUTF8(visibility_label), "Unpin");
 }
 
@@ -674,7 +674,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionsMenuViewBrowserTest,
   int visibility_index = context_menu->GetIndexOfCommandId(
       extensions::ExtensionContextMenuModel::TOGGLE_VISIBILITY);
   ASSERT_GE(visibility_index, 0);
-  base::string16 visibility_label = context_menu->GetLabelAt(visibility_index);
+  std::u16string visibility_label = context_menu->GetLabelAt(visibility_index);
   EXPECT_EQ(base::UTF16ToUTF8(visibility_label), "Pin");
 }
 

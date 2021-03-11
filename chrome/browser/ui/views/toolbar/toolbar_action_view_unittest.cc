@@ -201,9 +201,9 @@ TEST_F(ToolbarActionViewUnitTest, MAYBE_BasicToolbarActionViewTest) {
   TestToolbarActionViewDelegate* view_delegate = action_view_delegate();
 
   // Configure the test controller and delegate.
-  base::string16 name = base::ASCIIToUTF16("name");
+  std::u16string name = base::ASCIIToUTF16("name");
   view_controller->SetAccessibleName(name);
-  base::string16 tooltip = base::ASCIIToUTF16("tooltip");
+  std::u16string tooltip = base::ASCIIToUTF16("tooltip");
   view_controller->SetTooltip(tooltip);
   content::WebContents* web_contents =
       web_contents_factory.CreateWebContents(&profile);

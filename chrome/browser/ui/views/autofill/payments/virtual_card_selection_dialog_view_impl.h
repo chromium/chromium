@@ -35,7 +35,7 @@ class VirtualCardSelectionDialogViewImpl
   void AddedToWidget() override;
   bool IsDialogButtonEnabled(ui::DialogButton button) const override;
   View* GetContentsView() override;
-  base::string16 GetWindowTitle() const override;
+  std::u16string GetWindowTitle() const override;
 
  private:
   VirtualCardSelectionDialogController* controller_ = nullptr;

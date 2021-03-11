@@ -32,20 +32,20 @@ class ValidatingTextfieldTest : public ChromeViewsTestBase {
     // ValidationDelegate:
     bool TextfieldValueChanged(views::Textfield* textfield,
                                bool was_blurred) override {
-      base::string16 unused;
+      std::u16string unused;
       return !was_blurred || IsValidTextfield(textfield, &unused);
     }
     bool ComboboxValueChanged(ValidatingCombobox* combobox) override {
-      base::string16 unused;
+      std::u16string unused;
       return IsValidCombobox(combobox, &unused);
     }
     bool IsValidTextfield(views::Textfield* textfield,
-                          base::string16* error_message) override {
+                          std::u16string* error_message) override {
       // We really don't like textfields with more than 5 characters in them.
       return textfield->GetText().size() <= 5u;
     }
     bool IsValidCombobox(ValidatingCombobox* combobox,
-                         base::string16* error_message) override {
+                         std::u16string* error_message) override {
       return true;
     }
     void ComboboxModelChanged(ValidatingCombobox* combobox) override {}

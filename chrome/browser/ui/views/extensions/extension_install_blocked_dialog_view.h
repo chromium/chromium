@@ -28,7 +28,7 @@ class ExtensionInstallBlockedDialogView
  public:
   METADATA_HEADER(ExtensionInstallBlockedDialogView);
   ExtensionInstallBlockedDialogView(const std::string& extension_name,
-                                    const base::string16& custom_error_message,
+                                    const std::u16string& custom_error_message,
                                     const gfx::ImageSkia& icon,
                                     base::OnceClosure done_callback);
   ExtensionInstallBlockedDialogView(const ExtensionInstallBlockedDialogView&) =
@@ -40,7 +40,7 @@ class ExtensionInstallBlockedDialogView
  private:
   // Creates the contents area that contains custom error message that is set by
   // administrator.
-  void AddCustomMessageContents(const base::string16& custom_error_message);
+  void AddCustomMessageContents(const std::u16string& custom_error_message);
 
   base::OnceClosure done_callback_;
 };

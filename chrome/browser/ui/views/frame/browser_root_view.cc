@@ -90,7 +90,7 @@ void OnFindURLMimeType(const GURL& url,
 
 bool GetURLForDrop(const ui::DropTargetEvent& event, GURL* url) {
   DCHECK(url);
-  base::string16 title;
+  std::u16string title;
   return event.data().GetURLAndTitle(ui::FilenameToURLPolicy::CONVERT_FILENAMES,
                                      url, &title) &&
          url->is_valid();
@@ -426,7 +426,7 @@ bool BrowserRootView::GetPasteAndGoURL(const ui::OSExchangeData& data,
   if (!data.HasString())
     return false;
 
-  base::string16 text;
+  std::u16string text;
   if (!data.GetString(&text) || text.empty())
     return false;
   text = AutocompleteMatch::SanitizeString(text);

@@ -81,14 +81,14 @@ class SecurePaymentConfirmationDialogView
   std::unique_ptr<views::View> CreateBodyView();
   std::unique_ptr<views::View> CreateRows();
   std::unique_ptr<views::View> CreateRowView(
-      const base::string16& label,
+      const std::u16string& label,
       DialogViewID label_id,
-      const base::string16& value,
+      const std::u16string& value,
       DialogViewID value_id,
       const SkBitmap* icon = nullptr,
       DialogViewID icon_id = DialogViewID::VIEW_ID_NONE);
 
-  void UpdateLabelView(DialogViewID id, const base::string16& text);
+  void UpdateLabelView(DialogViewID id, const std::u16string& text);
 
   // May be null.
   ObserverForTest* observer_for_test_ = nullptr;

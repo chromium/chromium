@@ -58,7 +58,7 @@ class AppMenu : public views::MenuDelegate,
 
   // MenuDelegate overrides:
   void GetLabelStyle(int command_id, LabelStyle* style) const override;
-  base::string16 GetTooltipText(int command_id,
+  std::u16string GetTooltipText(int command_id,
                                 const gfx::Point& p) const override;
   bool IsTriggerableEvent(views::MenuItemView* menu,
                           const ui::Event& e) override;

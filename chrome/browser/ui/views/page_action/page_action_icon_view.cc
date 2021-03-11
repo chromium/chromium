@@ -96,12 +96,12 @@ void PageActionIconView::ExecuteForTesting() {
 
 void PageActionIconView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
   node_data->role = ax::mojom::Role::kButton;
-  const base::string16 name_text = GetTextForTooltipAndAccessibleName();
+  const std::u16string name_text = GetTextForTooltipAndAccessibleName();
   node_data->SetName(name_text);
 }
 
-base::string16 PageActionIconView::GetTooltipText(const gfx::Point& p) const {
-  return IsBubbleShowing() ? base::string16()
+std::u16string PageActionIconView::GetTooltipText(const gfx::Point& p) const {
+  return IsBubbleShowing() ? std::u16string()
                            : GetTextForTooltipAndAccessibleName();
 }
 

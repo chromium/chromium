@@ -79,10 +79,10 @@ ContactInfoEditorViewController::GetFieldDefinitions() {
   return fields;
 }
 
-base::string16 ContactInfoEditorViewController::GetInitialValueForType(
+std::u16string ContactInfoEditorViewController::GetInitialValueForType(
     autofill::ServerFieldType type) {
   if (!profile_to_edit_)
-    return base::string16();
+    return std::u16string();
   return GetValueForType(*profile_to_edit_, type);
 }
 
@@ -125,7 +125,7 @@ ContactInfoEditorViewController::GetComboboxModelForType(
   return nullptr;
 }
 
-base::string16 ContactInfoEditorViewController::GetSheetTitle() {
+std::u16string ContactInfoEditorViewController::GetSheetTitle() {
   // TODO(crbug.com/712074): Title should reflect the missing information, if
   // applicable.
   return profile_to_edit_ ? l10n_util::GetStringUTF16(
@@ -150,7 +150,7 @@ bool ContactInfoEditorViewController::GetSheetId(DialogViewID* sheet_id) {
   return true;
 }
 
-base::string16 ContactInfoEditorViewController::GetValueForType(
+std::u16string ContactInfoEditorViewController::GetValueForType(
     const autofill::AutofillProfile& profile,
     autofill::ServerFieldType type) {
   if (type == autofill::PHONE_HOME_WHOLE_NUMBER) {
@@ -175,9 +175,9 @@ bool ContactInfoEditorViewController::ContactInfoValidationDelegate::
   return field_.type == autofill::PHONE_HOME_WHOLE_NUMBER;
 }
 
-base::string16
+std::u16string
 ContactInfoEditorViewController::ContactInfoValidationDelegate::Format(
-    const base::string16& text) {
+    const std::u16string& text) {
   return base::UTF8ToUTF16(autofill::i18n::FormatPhoneForDisplay(
       base::UTF16ToUTF8(text),
       autofill::AutofillCountry::CountryCodeForLocale(locale_)));
@@ -185,7 +185,7 @@ ContactInfoEditorViewController::ContactInfoValidationDelegate::Format(
 
 bool ContactInfoEditorViewController::ContactInfoValidationDelegate::
     IsValidTextfield(views::Textfield* textfield,
-                     base::string16* error_message) {
+                     std::u16string* error_message) {
   return ValidateTextfield(textfield, error_message);
 }
 
@@ -194,7 +194,7 @@ bool ContactInfoEditorViewController::ContactInfoValidationDelegate::
   if (!was_blurred)
     return true;
 
-  base::string16 error_message;
+  std::u16string error_message;
   bool is_valid = ValidateTextfield(textfield, &error_message);
   controller_->DisplayErrorMessageForField(field_.type, error_message);
   return is_valid;
@@ -202,7 +202,7 @@ bool ContactInfoEditorViewController::ContactInfoValidationDelegate::
 
 bool ContactInfoEditorViewController::ContactInfoValidationDelegate::
     ValidateTextfield(views::Textfield* textfield,
-                      base::string16* error_message) {
+                      std::u16string* error_message) {
   if (!controller_->spec())
     return false;
 
@@ -269,7 +269,7 @@ bool ContactInfoEditorViewController::ContactInfoValidationDelegate::
 
 bool ContactInfoEditorViewController::ContactInfoValidationDelegate::
     IsValidCombobox(ValidatingCombobox* combobox,
-                    base::string16* error_message) {
+                    std::u16string* error_message) {
   // This UI doesn't contain any comboboxes.
   NOTREACHED();
   return true;

@@ -102,8 +102,8 @@ CrostiniUninstallerView::CrostiniUninstallerView(Profile* profile)
       provider->GetInsetsMetric(views::InsetsMetric::INSETS_DIALOG),
       provider->GetDistanceMetric(views::DISTANCE_RELATED_CONTROL_VERTICAL)));
 
-  const base::string16 device_type = ui::GetChromeOSDeviceName();
-  const base::string16 message =
+  const std::u16string device_type = ui::GetChromeOSDeviceName();
+  const std::u16string message =
       l10n_util::GetStringFUTF16(IDS_CROSTINI_UNINSTALLER_BODY, device_type);
   message_label_ = new views::Label(message);
   message_label_->SetMultiLine(true);
@@ -117,7 +117,7 @@ CrostiniUninstallerView::~CrostiniUninstallerView() {
   g_crostini_uninstaller_view = nullptr;
 }
 
-void CrostiniUninstallerView::HandleError(const base::string16& error_message) {
+void CrostiniUninstallerView::HandleError(const std::u16string& error_message) {
   state_ = State::ERROR;
   SetButtons(ui::DIALOG_BUTTON_CANCEL);
   message_label_->SetVisible(true);

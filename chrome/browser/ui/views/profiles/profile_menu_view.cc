@@ -261,8 +261,8 @@ gfx::ImageSkia ProfileMenuView::GetSyncIcon() const {
   return ColoredImageForMenu(*icon, image_color);
 }
 
-base::string16 ProfileMenuView::GetAccessibleWindowTitle() const {
-  base::string16 title =
+std::u16string ProfileMenuView::GetAccessibleWindowTitle() const {
+  std::u16string title =
       l10n_util::GetStringUTF16(IDS_PROFILES_PROFILE_BUBBLE_ACCESSIBLE_TITLE);
 
   if (!menu_title_.empty()) {
@@ -483,7 +483,7 @@ void ProfileMenuView::BuildIdentity() {
   ProfileAttributesEntry* profile_attributes =
       GetProfileAttributesEntry(profile);
 
-  base::string16 profile_name;
+  std::u16string profile_name;
   base::Optional<EditButtonParams> edit_button_params;
 // Profile names are not supported on ChromeOS.
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
@@ -515,7 +515,7 @@ void ProfileMenuView::BuildIdentity() {
         ui::ImageModel::FromImage(account_info.value().account_image),
         menu_title_, menu_subtitle_);
   } else {
-    menu_title_ = base::string16();
+    menu_title_ = std::u16string();
     menu_subtitle_ =
         l10n_util::GetStringUTF16(IDS_PROFILES_LOCAL_PROFILE_STATE);
     SetProfileIdentityInfo(
@@ -530,7 +530,7 @@ void ProfileMenuView::BuildGuestIdentity() {
   int guest_window_count = BrowserList::GetGuestBrowserCount();
 
   menu_title_ = l10n_util::GetStringUTF16(IDS_GUEST_PROFILE_NAME);
-  menu_subtitle_ = base::string16();
+  menu_subtitle_ = std::u16string();
   if (guest_window_count > 1 &&
       base::FeatureList::IsEnabled(features::kNewProfilePicker)) {
     menu_subtitle_ = l10n_util::GetPluralStringFUTF16(
@@ -540,7 +540,7 @@ void ProfileMenuView::BuildGuestIdentity() {
   ui::ThemedVectorIcon header_art_icon(
       &kGuestMenuArtIcon, ui::NativeTheme::kColorId_AvatarHeaderArt);
   SetProfileIdentityInfo(
-      /*profile_name=*/base::string16(),
+      /*profile_name=*/std::u16string(),
       /*background_color=*/SK_ColorTRANSPARENT,
       /*edit_button=*/base::nullopt, profiles::GetGuestAvatar(), menu_title_,
       menu_subtitle_, header_art_icon);

@@ -58,7 +58,7 @@ class MediaGalleriesInteractiveDialogTest : public DialogBrowserTest {
   }
 
   void ShowUi(const std::string& name) override {
-    std::vector<base::string16> headers = {base::string16(),
+    std::vector<std::u16string> headers = {std::u16string(),
                                            base::ASCIIToUTF16("header2")};
     MediaGalleriesDialogController::Entries attached_permissions = {
         MediaGalleriesDialogController::Entry(MakePrefInfo(1), true),

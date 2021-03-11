@@ -22,7 +22,7 @@ void ConfigureBubbleMenuItem(views::Button* button, int button_id);
 // be futher configured to hold an image and text.
 std::unique_ptr<views::LabelButton> CreateBubbleMenuItem(
     int button_id,
-    const base::string16& name,
+    const std::u16string& name,
     views::Button::PressedCallback callback);
 
 // Convience method for creating a menu item used inside a bubble with an image.

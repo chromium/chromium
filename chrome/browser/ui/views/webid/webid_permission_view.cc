@@ -43,8 +43,8 @@ std::unique_ptr<views::ImageView> CreateImage(int resource_id) {
 }
 
 std::unique_ptr<views::View> CreateInitialMessage(
-    const base::string16& idp_hostname,
-    const base::string16& rp_hostname) {
+    const std::u16string& idp_hostname,
+    const std::u16string& rp_hostname) {
   auto view = std::make_unique<views::View>();
   auto* layout = view->SetLayoutManager(std::make_unique<views::FlexLayout>());
   auto insets = views::LayoutProvider::Get()->GetDialogInsetsForContentType(
@@ -59,7 +59,7 @@ std::unique_ptr<views::View> CreateInitialMessage(
 
   // TODO(majidvp): Use a localized string. http://crbug.com/1141125
   auto message1 = base::ASCIIToUTF16("Sign In with $1.");
-  base::string16 primary_text =
+  std::u16string primary_text =
       base::ReplaceStringPlaceholders(message1, {idp_hostname}, nullptr);
   auto primary_label = std::make_unique<views::StyledLabel>();
   primary_label->SetText(primary_text);
@@ -68,12 +68,12 @@ std::unique_ptr<views::View> CreateInitialMessage(
 
   auto message2 = base::ASCIIToUTF16(
       "By signing in with $1,\nthey will know you visited $2.");
-  std::vector<base::string16> subst;
+  std::vector<std::u16string> subst;
   subst.push_back(idp_hostname);
   subst.push_back(rp_hostname);
 
   std::vector<size_t> offsets;
-  base::string16 secondary_text =
+  std::u16string secondary_text =
       base::ReplaceStringPlaceholders(message2, subst, &offsets);
 
   views::StyledLabel::RangeStyleInfo bold_style;
@@ -92,8 +92,8 @@ std::unique_ptr<views::View> CreateInitialMessage(
 }
 
 std::unique_ptr<views::View> CreateTokenExchangeMessage(
-    base::string16 idp_hostname,
-    base::string16 rp_hostname) {
+    std::u16string idp_hostname,
+    std::u16string rp_hostname) {
   auto view = std::make_unique<views::View>();
   auto* layout = view->SetLayoutManager(std::make_unique<views::FlexLayout>());
   auto insets = views::LayoutProvider::Get()->GetDialogInsetsForContentType(
@@ -119,12 +119,12 @@ std::unique_ptr<views::View> CreateTokenExchangeMessage(
       "$1 could use your name and email provided by\n$2 to identify or track "
       "you across the web.");
 
-  std::vector<base::string16> subst;
+  std::vector<std::u16string> subst;
   subst.push_back(rp_hostname);
   subst.push_back(idp_hostname);
 
   std::vector<size_t> offsets;
-  base::string16 secondary_text =
+  std::u16string secondary_text =
       base::ReplaceStringPlaceholders(message2, subst, &offsets);
 
   auto secondary_label = std::make_unique<views::StyledLabel>();
@@ -145,8 +145,8 @@ std::unique_ptr<views::View> CreateTokenExchangeMessage(
 std::unique_ptr<WebIdPermissionView>
 WebIdPermissionView::CreateForInitialPermission(
     WebIdDialogViews* dialog,
-    const base::string16& idp_hostname,
-    const base::string16& rp_hostname) {
+    const std::u16string& idp_hostname,
+    const std::u16string& rp_hostname) {
   return std::make_unique<WebIdPermissionView>(
       dialog, CreateInitialMessage(idp_hostname, rp_hostname));
 }
@@ -155,8 +155,8 @@ WebIdPermissionView::CreateForInitialPermission(
 std::unique_ptr<WebIdPermissionView>
 WebIdPermissionView::CreateForTokenExchangePermission(
     WebIdDialogViews* dialog,
-    const base::string16& idp_hostname,
-    const base::string16& rp_hostname) {
+    const std::u16string& idp_hostname,
+    const std::u16string& rp_hostname) {
   return std::make_unique<WebIdPermissionView>(
       dialog, CreateTokenExchangeMessage(idp_hostname, rp_hostname));
 }

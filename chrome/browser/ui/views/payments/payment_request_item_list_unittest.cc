@@ -44,11 +44,11 @@ class TestListItem : public PaymentRequestItemList::Item {
 
  private:
   std::unique_ptr<views::View> CreateContentView(
-      base::string16* accessible_content) override {
+      std::u16string* accessible_content) override {
     return std::make_unique<views::View>();
   }
 
-  base::string16 GetNameForDataType() override { return base::string16(); }
+  std::u16string GetNameForDataType() override { return std::u16string(); }
 
   bool CanBeSelected() override { return true; }
 

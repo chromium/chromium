@@ -83,7 +83,7 @@ class PresentationReceiverWindowView final
 
   // views::WidgetDelegateView overrides.
   void DeleteDelegate() final;
-  base::string16 GetWindowTitle() const final;
+  std::u16string GetWindowTitle() const final;
 
   // ui::AcceleratorTarget overrides.
   bool AcceleratorPressed(const ui::Accelerator& accelerator) final;
@@ -126,7 +126,7 @@ class PresentationReceiverWindowView final
 
   PresentationReceiverWindowFrame* const frame_;
   PresentationReceiverWindowDelegate* const delegate_;
-  base::string16 title_;
+  std::u16string title_;
   const std::unique_ptr<LocationBarModelImpl> location_bar_model_;
   CommandUpdaterImpl command_updater_;
   LocationBarView* location_bar_view_ = nullptr;

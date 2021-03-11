@@ -136,10 +136,10 @@ void LocalCardMigrationBubbleViews::AddedToWidget() {
   GetBubbleFrameView()->SetTitleView(std::move(title_container));
 }
 
-base::string16 LocalCardMigrationBubbleViews::GetWindowTitle() const {
+std::u16string LocalCardMigrationBubbleViews::GetWindowTitle() const {
   return controller_ ? l10n_util::GetStringUTF16(
                            IDS_AUTOFILL_LOCAL_CARD_MIGRATION_BUBBLE_TITLE)
-                     : base::string16();
+                     : std::u16string();
 }
 
 void LocalCardMigrationBubbleViews::WindowClosing() {

@@ -93,7 +93,7 @@ CommanderFrontendViews::CommanderFrontendViews(
       ProfileManager::GetSystemProfilePath(),
       base::BindRepeating(&CommanderFrontendViews::OnSystemProfileAvailable,
                           weak_ptr_factory_.GetWeakPtr()),
-      base::string16(), std::string());
+      std::u16string(), std::string());
 #else
   // TODO(lgrey): ChromeOS doesn't have a system profile. Need to find
   // a better way to do this before Commander is hooked up, but doing
@@ -209,7 +209,7 @@ void CommanderFrontendViews::OnWidgetBoundsChanged(
   widget_->SetBounds(bounds);
 }
 
-void CommanderFrontendViews::OnTextChanged(const base::string16& text) {
+void CommanderFrontendViews::OnTextChanged(const std::u16string& text) {
   DCHECK(is_showing());
   backend_->OnTextChanged(text, browser_);
 }

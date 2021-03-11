@@ -28,7 +28,7 @@ class EditAddressProfileView : public AutofillBubbleBase,
   void Hide() override;
 
   // views::WidgetDelegate:
-  base::string16 GetWindowTitle() const override;
+  std::u16string GetWindowTitle() const override;
   void WindowClosing() override;
 
  private:

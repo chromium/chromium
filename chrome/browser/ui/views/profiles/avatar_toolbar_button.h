@@ -74,7 +74,7 @@ class AvatarToolbarButton : public ToolbarButton,
   FRIEND_TEST_ALL_PREFIXES(AvatarToolbarButtonTest,
                            HighlightMeetsMinimumContrast);
 
-  base::string16 GetAvatarTooltipText() const;
+  std::u16string GetAvatarTooltipText() const;
   ui::ImageModel GetAvatarIcon(ButtonState state,
                                const gfx::Image& profile_identity_image) const;
 

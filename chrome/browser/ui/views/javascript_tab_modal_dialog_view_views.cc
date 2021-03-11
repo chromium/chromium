@@ -25,11 +25,11 @@ void JavaScriptTabModalDialogViewViews::CloseDialogWithoutCallback() {
   GetWidget()->Close();
 }
 
-base::string16 JavaScriptTabModalDialogViewViews::GetUserInput() {
+std::u16string JavaScriptTabModalDialogViewViews::GetUserInput() {
   return message_box_view_->GetInputText();
 }
 
-base::string16 JavaScriptTabModalDialogViewViews::GetWindowTitle() const {
+std::u16string JavaScriptTabModalDialogViewViews::GetWindowTitle() const {
   return title_;
 }
 
@@ -51,10 +51,10 @@ void JavaScriptTabModalDialogViewViews::AddedToWidget() {
 JavaScriptTabModalDialogViewViews::JavaScriptTabModalDialogViewViews(
     content::WebContents* parent_web_contents,
     content::WebContents* alerting_web_contents,
-    const base::string16& title,
+    const std::u16string& title,
     content::JavaScriptDialogType dialog_type,
-    const base::string16& message_text,
-    const base::string16& default_prompt_text,
+    const std::u16string& message_text,
+    const std::u16string& default_prompt_text,
     content::JavaScriptDialogManager::DialogClosedCallback dialog_callback,
     base::OnceClosure dialog_force_closed_callback)
     : title_(title),
@@ -81,7 +81,7 @@ JavaScriptTabModalDialogViewViews::JavaScriptTabModalDialogViewViews(
   SetCancelCallback(base::BindOnce(
       [](JavaScriptTabModalDialogViewViews* dialog) {
         if (dialog->dialog_callback_)
-          std::move(dialog->dialog_callback_).Run(false, base::string16());
+          std::move(dialog->dialog_callback_).Run(false, std::u16string());
       },
       base::Unretained(this)));
   SetCloseCallback(base::BindOnce(
@@ -112,10 +112,10 @@ END_METADATA
 base::WeakPtr<javascript_dialogs::TabModalDialogView>
 JavaScriptTabModalDialogManagerDelegateDesktop::CreateNewDialog(
     content::WebContents* alerting_web_contents,
-    const base::string16& title,
+    const std::u16string& title,
     content::JavaScriptDialogType dialog_type,
-    const base::string16& message_text,
-    const base::string16& default_prompt_text,
+    const std::u16string& message_text,
+    const std::u16string& default_prompt_text,
     content::JavaScriptDialogManager::DialogClosedCallback dialog_callback,
     base::OnceClosure dialog_force_closed_callback) {
   return (new JavaScriptTabModalDialogViewViews(

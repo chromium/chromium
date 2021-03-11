@@ -163,7 +163,7 @@ IN_PROC_BROWSER_TEST_F(OmniboxViewViewsTest, DoNotNavigateOnDrop) {
   OmniboxViewViews* omnibox_view_views = static_cast<OmniboxViewViews*>(view);
 
   OSExchangeData data;
-  base::string16 input = base::ASCIIToUTF16("Foo bar baz");
+  std::u16string input = base::ASCIIToUTF16("Foo bar baz");
   EXPECT_FALSE(data.HasString());
   data.SetString(input);
   EXPECT_TRUE(data.HasString());
@@ -548,7 +548,7 @@ IN_PROC_BROWSER_TEST_F(OmniboxViewViewsTest, FragmentUnescapedForDisplay) {
 IN_PROC_BROWSER_TEST_F(OmniboxViewViewsTest, FriendlyAccessibleLabel) {
   OmniboxView* omnibox_view = nullptr;
   ASSERT_NO_FATAL_FAILURE(GetOmniboxViewForBrowser(browser(), &omnibox_view));
-  base::string16 match_url = base::ASCIIToUTF16("https://google.com");
+  std::u16string match_url = base::ASCIIToUTF16("https://google.com");
   AutocompleteMatch match(nullptr, 500, false,
                           AutocompleteMatchType::HISTORY_TITLE);
   match.contents = match_url;
@@ -642,7 +642,7 @@ IN_PROC_BROWSER_TEST_F(OmniboxViewViewsTest, AccessiblePopup) {
       static_cast<OmniboxViewViews*>(omnibox_view);
   chrome::FocusLocationBar(browser());
 
-  base::string16 match_url = base::ASCIIToUTF16("https://google.com");
+  std::u16string match_url = base::ASCIIToUTF16("https://google.com");
   AutocompleteMatch match(nullptr, 500, false,
                           AutocompleteMatchType::HISTORY_TITLE);
   match.contents = match_url;
@@ -731,7 +731,7 @@ IN_PROC_BROWSER_TEST_F(OmniboxViewViewsTest, AlwaysShowFullURLs) {
   ASSERT_TRUE(embedded_test_server()->Start());
   // Use a hostname ("a.test") since IP addresses aren't eligible for eliding.
   GURL url = embedded_test_server()->GetURL("a.test", "/title1.html");
-  base::string16 url_text = base::ASCIIToUTF16(url.spec());
+  std::u16string url_text = base::ASCIIToUTF16(url.spec());
 
   ui_test_utils::NavigateToURL(browser(), url);
 
@@ -786,7 +786,7 @@ IN_PROC_BROWSER_TEST_F(OmniboxViewViewsUIATest, AccessibleOmnibox) {
   ASSERT_NO_FATAL_FAILURE(GetOmniboxViewForBrowser(browser(), &omnibox_view));
   chrome::FocusLocationBar(browser());
 
-  base::string16 match_url = base::ASCIIToUTF16("https://example.com");
+  std::u16string match_url = base::ASCIIToUTF16("https://example.com");
   AutocompleteMatch match(nullptr, 500, false,
                           AutocompleteMatchType::HISTORY_TITLE);
   match.contents = match_url;

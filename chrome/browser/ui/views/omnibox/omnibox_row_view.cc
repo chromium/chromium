@@ -82,7 +82,7 @@ class OmniboxRowView::HeaderView : public views::View {
     }
   }
 
-  void SetHeader(int suggestion_group_id, const base::string16& header_text) {
+  void SetHeader(int suggestion_group_id, const std::u16string& header_text) {
     suggestion_group_id_ = suggestion_group_id;
     header_text_ = header_text;
 
@@ -243,7 +243,7 @@ class OmniboxRowView::HeaderView : public views::View {
   int suggestion_group_id_ = 0;
 
   // The unmodified header text for this header.
-  base::string16 header_text_;
+  std::u16string header_text_;
 
   // Stores whether or not the group was hidden. This is used to fire correct
   // accessibility change events.
@@ -274,15 +274,15 @@ DEFINE_ENUM_CONVERTERS(OmniboxPopupModel::LineState,
 template <>
 struct views::metadata::TypeConverter<OmniboxPopupModel::Selection>
     : public views::metadata::BaseTypeConverter<true> {
-  static base::string16 ToString(
+  static std::u16string ToString(
       views::metadata::ArgType<OmniboxPopupModel::Selection> source_value);
   static base::Optional<OmniboxPopupModel::Selection> FromString(
-      const base::string16& source_value);
+      const std::u16string& source_value);
   static views::metadata::ValidStrings GetValidStrings() { return {}; }
 };
 
 // static
-base::string16
+std::u16string
 views::metadata::TypeConverter<OmniboxPopupModel::Selection>::ToString(
     views::metadata::ArgType<OmniboxPopupModel::Selection> source_value) {
   return u"{" + base::NumberToString16(source_value.line) + u"," +
@@ -294,7 +294,7 @@ views::metadata::TypeConverter<OmniboxPopupModel::Selection>::ToString(
 // static
 base::Optional<OmniboxPopupModel::Selection>
 views::metadata::TypeConverter<OmniboxPopupModel::Selection>::FromString(
-    const base::string16& source_value) {
+    const std::u16string& source_value) {
   const auto values =
       base::SplitString(source_value, base::ASCIIToUTF16("{,}"),
                         base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
@@ -330,7 +330,7 @@ OmniboxRowView::OmniboxRowView(size_t line,
 }
 
 void OmniboxRowView::ShowHeader(int suggestion_group_id,
-                                const base::string16& header_text) {
+                                const std::u16string& header_text) {
   // Create the header (at index 0) if it doesn't exist.
   if (header_view_ == nullptr)
     header_view_ = AddChildViewAt(std::make_unique<HeaderView>(this), 0);

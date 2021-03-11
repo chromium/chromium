@@ -103,7 +103,7 @@ class CustomTabBarTitleOriginView : public views::View {
   CustomTabBarTitleOriginView(SkColor background_color,
                               bool should_show_title) {
     auto location_label = std::make_unique<views::Label>(
-        base::string16(), views::style::CONTEXT_LABEL,
+        std::u16string(), views::style::CONTEXT_LABEL,
         views::style::STYLE_SECONDARY,
         gfx::DirectionalityMode::DIRECTIONALITY_AS_URL);
 
@@ -118,7 +118,7 @@ class CustomTabBarTitleOriginView : public views::View {
 
     if (should_show_title) {
       auto title_label = std::make_unique<views::Label>(
-          base::string16(), views::style::CONTEXT_LABEL);
+          std::u16string(), views::style::CONTEXT_LABEL);
 
       title_label->SetElideBehavior(gfx::ElideBehavior::ELIDE_TAIL);
       title_label->SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_LEFT);
@@ -135,7 +135,7 @@ class CustomTabBarTitleOriginView : public views::View {
         .SetCrossAxisAlignment(views::LayoutAlignment::kStart);
   }
 
-  void Update(const base::string16 title, const base::string16 location) {
+  void Update(const std::u16string title, const std::u16string location) {
     if (title_label_)
       title_label_->SetText(title);
     location_label_->SetText(location);
@@ -362,7 +362,7 @@ void CustomTabBarView::UpdateContents() {
     return;
 
   content::NavigationEntry* entry = contents->GetController().GetVisibleEntry();
-  base::string16 title, location;
+  std::u16string title, location;
   if (entry) {
     title = Browser::FormatTitleForDisplay(entry->GetTitleForDisplay());
     if (ShouldDisplayUrl(contents)) {

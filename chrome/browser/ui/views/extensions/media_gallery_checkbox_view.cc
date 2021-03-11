@@ -43,10 +43,10 @@ MediaGalleryCheckboxView::MediaGalleryCheckboxView(
   if (menu_controller)
     checkbox_->set_context_menu_controller(menu_controller);
   checkbox_->SetElideBehavior(gfx::ELIDE_MIDDLE);
-  base::string16 tooltip_text = pref_info.GetGalleryTooltip();
+  std::u16string tooltip_text = pref_info.GetGalleryTooltip();
   checkbox_->SetTooltipText(tooltip_text);
 
-  base::string16 details = pref_info.GetGalleryAdditionalDetails();
+  std::u16string details = pref_info.GetGalleryAdditionalDetails();
   secondary_text_ = AddChildView(std::make_unique<views::Label>(details));
   if (menu_controller)
     secondary_text_->set_context_menu_controller(menu_controller);

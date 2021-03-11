@@ -18,7 +18,7 @@ class Windows10CaptionButton : public views::Button {
   Windows10CaptionButton(PressedCallback callback,
                          GlassBrowserFrameView* frame_view,
                          ViewID button_type,
-                         const base::string16& accessible_name);
+                         const std::u16string& accessible_name);
   Windows10CaptionButton(const Windows10CaptionButton&) = delete;
   Windows10CaptionButton& operator=(const Windows10CaptionButton&) = delete;
 

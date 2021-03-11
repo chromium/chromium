@@ -23,7 +23,7 @@ PostSaveCompromisedBubbleView::PostSaveCompromisedBubbleView(
       controller_(PasswordsModelDelegateFromWebContents(web_contents)) {
   SetLayoutManager(std::make_unique<views::FillLayout>());
 
-  base::string16 button = controller_.GetButtonText();
+  std::u16string button = controller_.GetButtonText();
   if (button.empty()) {
     SetButtons(ui::DIALOG_BUTTON_NONE);
   } else {

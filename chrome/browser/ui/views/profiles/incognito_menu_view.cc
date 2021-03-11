@@ -56,7 +56,7 @@ void IncognitoMenuView::BuildMenu() {
   ui::ThemedVectorIcon header_art_icon(
       &kIncognitoMenuArtIcon, ui::NativeTheme::kColorId_AvatarHeaderArt);
   SetProfileIdentityInfo(
-      /*profile_name=*/base::string16(),
+      /*profile_name=*/std::u16string(),
       /*background_color=*/SK_ColorTRANSPARENT,
       /*edit_button=*/base::nullopt,
       ui::ImageModel::FromVectorIcon(
@@ -65,7 +65,7 @@ void IncognitoMenuView::BuildMenu() {
       incognito_window_count > 1
           ? l10n_util::GetPluralStringFUTF16(IDS_INCOGNITO_WINDOW_COUNT_MESSAGE,
                                              incognito_window_count)
-          : base::string16(),
+          : std::u16string(),
       header_art_icon);
 
 #if defined(OS_WIN)
@@ -93,7 +93,7 @@ void IncognitoMenuView::BuildMenu() {
       new_menu_design ? vector_icons::kCloseIcon : kCloseAllIcon);
 }
 
-base::string16 IncognitoMenuView::GetAccessibleWindowTitle() const {
+std::u16string IncognitoMenuView::GetAccessibleWindowTitle() const {
   return l10n_util::GetPluralStringFUTF16(
       IDS_INCOGNITO_BUBBLE_ACCESSIBLE_TITLE,
       BrowserList::GetOffTheRecordBrowsersActiveForProfile(

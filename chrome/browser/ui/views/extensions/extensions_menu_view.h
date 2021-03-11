@@ -68,7 +68,7 @@ class ExtensionsMenuView : public views::BubbleDialogDelegateView,
       ToolbarActionViewController::PageInteractionStatus status);
 
   // WidgetDelegate:
-  base::string16 GetAccessibleWindowTitle() const override;
+  std::u16string GetAccessibleWindowTitle() const override;
 
   // TabStripModelObserver:
   void TabChangedAt(content::WebContents* contents,

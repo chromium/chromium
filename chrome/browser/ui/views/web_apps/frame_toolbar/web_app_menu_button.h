@@ -23,7 +23,7 @@ class WebAppMenuButton : public AppMenuButton {
   METADATA_HEADER(WebAppMenuButton);
   static int GetMenuButtonSizeForBrowser(Browser* browser);
   explicit WebAppMenuButton(BrowserView* browser_view,
-                            base::string16 accessible_name = base::string16());
+                            std::u16string accessible_name = std::u16string());
   WebAppMenuButton(const WebAppMenuButton&) = delete;
   WebAppMenuButton& operator=(const WebAppMenuButton&) = delete;
   ~WebAppMenuButton() override;

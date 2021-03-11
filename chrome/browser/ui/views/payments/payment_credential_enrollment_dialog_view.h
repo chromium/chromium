@@ -76,11 +76,11 @@ class PaymentCredentialEnrollmentDialogView
 
   std::unique_ptr<views::View> CreateHeaderView();
   std::unique_ptr<views::View> CreateBodyView();
-  std::unique_ptr<views::View> CreateDescription(const base::string16& text,
+  std::unique_ptr<views::View> CreateDescription(const std::u16string& text,
                                                  DialogViewID view_id);
   std::unique_ptr<views::View> CreateInstrumentRow();
 
-  void UpdateLabelView(DialogViewID id, const base::string16& text);
+  void UpdateLabelView(DialogViewID id, const std::u16string& text);
 
   // May be null.
   ObserverForTest* observer_for_test_ = nullptr;

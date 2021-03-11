@@ -149,7 +149,7 @@ bool ScrollbarTest::IsScrollbarVisible(
 // Tests that a scrollbar _is_ shown for an excessively long extension
 // install prompt.
 IN_PROC_BROWSER_TEST_F(ScrollbarTest, LongPromptScrollbar) {
-  base::string16 permission_string(base::ASCIIToUTF16("Test"));
+  std::u16string permission_string(base::ASCIIToUTF16("Test"));
   PermissionMessages permissions;
   for (int i = 0; i < 20; i++) {
     permissions.push_back(PermissionMessage(permission_string,
@@ -171,8 +171,8 @@ IN_PROC_BROWSER_TEST_F(ScrollbarTest, LongPromptScrollbar) {
 #define MAYBE_ScrollbarRegression ScrollbarRegression
 #endif
 IN_PROC_BROWSER_TEST_F(ScrollbarTest, MAYBE_ScrollbarRegression) {
-  base::string16 permission_string(base::ASCIIToUTF16(
-      "Read and modify your data on *.facebook.com"));
+  std::u16string permission_string(
+      base::ASCIIToUTF16("Read and modify your data on *.facebook.com"));
   PermissionMessages permissions;
   permissions.push_back(PermissionMessage(permission_string,
                                           PermissionIDSet()));
@@ -331,7 +331,7 @@ class ExtensionInstallDialogViewInteractiveBrowserTest
 
   void AddPermissionWithDetails(
       std::string main_permission,
-      std::vector<base::string16> detailed_permissions) {
+      std::vector<std::u16string> detailed_permissions) {
     permission_messages_.push_back(
         PermissionMessage(base::ASCIIToUTF16(main_permission),
                           PermissionIDSet(), std::move(detailed_permissions)));
@@ -344,7 +344,7 @@ class ExtensionInstallDialogViewInteractiveBrowserTest
   std::unique_ptr<PermissionSet> permission_set_;
   PermissionMessages permission_messages_;
   std::vector<base::FilePath> retained_files_;
-  std::vector<base::string16> retained_devices_;
+  std::vector<std::u16string> retained_devices_;
 
   base::test::ScopedFeatureList feature_list_;
 

@@ -28,10 +28,10 @@ class DeepScanningModalDialog : public TabModalConfirmDialogDelegate {
 
  private:
   // TabModalConfirmDialogDelegate implementation.
-  base::string16 GetTitle() override;
-  base::string16 GetDialogMessage() override;
-  base::string16 GetAcceptButtonTitle() override;
-  base::string16 GetLinkText() const override;
+  std::u16string GetTitle() override;
+  std::u16string GetDialogMessage() override;
+  std::u16string GetAcceptButtonTitle() override;
+  std::u16string GetLinkText() const override;
   void OnLinkClicked(WindowOpenDisposition disposition) override;
   void OnAccepted() override;
 

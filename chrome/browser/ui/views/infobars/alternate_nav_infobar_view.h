@@ -35,9 +35,9 @@ class AlternateNavInfoBarView : public InfoBarView {
 
   AlternateNavInfoBarDelegate* GetDelegate();
 
-  base::string16 label_1_text_;
-  base::string16 link_text_;
-  base::string16 label_2_text_;
+  std::u16string label_1_text_;
+  std::u16string link_text_;
+  std::u16string label_2_text_;
 
   views::Label* label_1_ = nullptr;
   views::Link* link_ = nullptr;

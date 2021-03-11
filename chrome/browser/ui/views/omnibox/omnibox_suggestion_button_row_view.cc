@@ -38,7 +38,7 @@ class OmniboxSuggestionRowButton : public views::MdTextButton {
  public:
   METADATA_HEADER(OmniboxSuggestionRowButton);
   OmniboxSuggestionRowButton(PressedCallback callback,
-                             const base::string16& text,
+                             const std::u16string& text,
                              const gfx::VectorIcon& icon,
                              OmniboxPopupContentsView* popup_contents_view,
                              OmniboxPopupModel::Selection selection)
@@ -158,7 +158,7 @@ OmniboxSuggestionButtonRowView::OmniboxSuggestionButtonRowView(
       base::BindRepeating(&OmniboxSuggestionButtonRowView::ButtonPressed,
                           base::Unretained(this),
                           OmniboxPopupModel::KEYWORD_MODE),
-      base::string16(), vector_icons::kSearchIcon, popup_contents_view_,
+      std::u16string(), vector_icons::kSearchIcon, popup_contents_view_,
       OmniboxPopupModel::Selection(model_index_,
                                    OmniboxPopupModel::KEYWORD_MODE)));
   tab_switch_button_ =
@@ -176,7 +176,7 @@ OmniboxSuggestionButtonRowView::OmniboxSuggestionButtonRowView(
       base::BindRepeating(&OmniboxSuggestionButtonRowView::ButtonPressed,
                           base::Unretained(this),
                           OmniboxPopupModel::FOCUSED_BUTTON_PEDAL),
-      base::string16(), omnibox::kProductIcon, popup_contents_view_,
+      std::u16string(), omnibox::kProductIcon, popup_contents_view_,
       OmniboxPopupModel::Selection(model_index_,
                                    OmniboxPopupModel::FOCUSED_BUTTON_PEDAL)));
 }
@@ -187,7 +187,7 @@ void OmniboxSuggestionButtonRowView::UpdateFromModel() {
   SetPillButtonVisibility(keyword_button_, OmniboxPopupModel::KEYWORD_MODE);
   if (keyword_button_->GetVisible()) {
     const OmniboxEditModel* edit_model = model()->edit_model();
-    base::string16 keyword;
+    std::u16string keyword;
     bool is_keyword_hint = false;
     match().GetKeywordUIState(edit_model->client()->GetTemplateURLService(),
                               &keyword, &is_keyword_hint);

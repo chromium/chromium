@@ -193,7 +193,7 @@ std::unique_ptr<views::ImageView> GetStoreIndicatorIconImageView(
 
 // Creates a label with a specific context and style.
 std::unique_ptr<views::Label> CreateLabelWithStyleAndContext(
-    const base::string16& text,
+    const std::u16string& text,
     int text_context,
     int text_style) {
   auto label = std::make_unique<views::Label>(text, text_context, text_style);
@@ -369,8 +369,8 @@ class PasswordPopupSuggestionView : public AutofillPopupSuggestionView {
   PasswordPopupSuggestionView(AutofillPopupViewNativeViews* popup_view,
                               int line_number,
                               int frontend_id);
-  base::string16 origin_;
-  base::string16 masked_password_;
+  std::u16string origin_;
+  std::u16string masked_password_;
 };
 
 BEGIN_METADATA(PasswordPopupSuggestionView, AutofillPopupSuggestionView)
@@ -476,7 +476,7 @@ END_METADATA
 void AutofillPopupItemView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
   AutofillPopupController* controller = popup_view()->controller();
   auto suggestion = controller->GetSuggestionAt(GetLineNumber());
-  std::vector<base::string16> text;
+  std::vector<std::u16string> text;
   text.push_back(suggestion.value);
 
   if (!suggestion.label.empty()) {
@@ -645,7 +645,7 @@ std::unique_ptr<views::Background> AutofillPopupItemView::CreateBackground() {
 AutofillPopupItemView::ViewWithLabel AutofillPopupItemView::CreateValueLabel() {
   // TODO(crbug.com/831603): Remove elision responsibilities from controller.
   ViewWithLabel view_and_label;
-  base::string16 text =
+  std::u16string text =
       popup_view()->controller()->GetSuggestionValueAt(GetLineNumber());
   if (popup_view()
           ->controller()
@@ -745,13 +745,13 @@ AutofillPopupSuggestionView::AutofillPopupSuggestionView(
 
 std::vector<AutofillPopupItemView::ViewWithLabel>
 AutofillPopupSuggestionView::CreateSubtextLabels() {
-  const base::string16& second_row_label =
+  const std::u16string& second_row_label =
       popup_view()->controller()->GetSuggestionAt(GetLineNumber()).label;
-  const base::string16& third_row_label =
+  const std::u16string& third_row_label =
       popup_view()->controller()->GetSuggestionAt(GetLineNumber()).offer_label;
 
   std::vector<AutofillPopupItemView::ViewWithLabel> labels;
-  for (const base::string16& text : {second_row_label, third_row_label}) {
+  for (const std::u16string& text : {second_row_label, third_row_label}) {
     // If a row is missing, do not include any further rows.
     if (text.empty())
       return labels;

@@ -114,7 +114,7 @@ void LocationIconView::OnThemeChanged() {
 int LocationIconView::GetMinimumLabelTextWidth() const {
   int width = 0;
 
-  base::string16 text = GetText();
+  std::u16string text = GetText();
   if (text == label()->GetText()) {
     // Optimize this common case by not creating a new label.
     // GetPreferredSize is not dependent on the label's current
@@ -147,9 +147,9 @@ const views::InkDrop* LocationIconView::get_ink_drop_for_testing() {
   return GetInkDrop();
 }
 
-base::string16 LocationIconView::GetText() const {
+std::u16string LocationIconView::GetText() const {
   if (delegate_->IsEditingOrEmpty())
-    return base::string16();
+    return std::u16string();
 
   if (delegate_->GetLocationBarModel()->GetURL().SchemeIs(
           content::kChromeUIScheme))
@@ -169,7 +169,7 @@ base::string16 LocationIconView::GetText() const {
     // TODO(crbug.com/680329) Remove the null check and make
     // SimpleWebViewDialog::GetWebContents return the proper web contents
     // instead.
-    const base::string16 extension_name =
+    const std::u16string extension_name =
         extensions::ui_util::GetEnabledExtensionNameForUrl(
             delegate_->GetLocationBarModel()->GetURL(),
             delegate_->GetWebContents()->GetBrowserContext());
@@ -232,7 +232,7 @@ void LocationIconView::Update(bool suppress_animations) {
   bool is_editing_or_empty = delegate_->IsEditingOrEmpty();
   // The tooltip should be shown if we are not editing or empty.
   SetTooltipText(is_editing_or_empty
-                     ? base::string16()
+                     ? std::u16string()
                      : l10n_util::GetStringUTF16(IDS_TOOLTIP_LOCATION_ICON));
 
   // We should only enable/disable the InkDrop if the editing state has changed,
@@ -289,7 +289,7 @@ gfx::Size LocationIconView::GetMinimumSizeForPreferredSize(
 
 BEGIN_METADATA(LocationIconView, IconLabelBubbleView)
 ADD_READONLY_PROPERTY_METADATA(int, MinimumLabelTextWidth)
-ADD_READONLY_PROPERTY_METADATA(base::string16, Text)
+ADD_READONLY_PROPERTY_METADATA(std::u16string, Text)
 ADD_READONLY_PROPERTY_METADATA(bool, ShowText)
 ADD_READONLY_PROPERTY_METADATA(bool, AnimateTextVisibilityChange)
 END_METADATA

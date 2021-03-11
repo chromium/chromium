@@ -35,7 +35,7 @@ const int kSubMenuBaseId = 200;
 //  virtual int GetItemCount() const = 0;
 //  virtual ItemType GetTypeAt(int index) const = 0;
 //  virtual int GetCommandIdAt(int index) const = 0;
-//  virtual base::string16 GetLabelAt(int index) const = 0;
+//  virtual std::u16string GetLabelAt(int index) const = 0;
 class CommonMenuModel : public ui::MenuModel {
  public:
   CommonMenuModel() {
@@ -102,7 +102,7 @@ class SubMenuModel : public CommonMenuModel {
     return index + kSubMenuBaseId;
   }
 
-  base::string16 GetLabelAt(int index) const override {
+  std::u16string GetLabelAt(int index) const override {
     return base::ASCIIToUTF16("Item");
   }
 
@@ -137,7 +137,7 @@ class TopMenuModel : public CommonMenuModel {
     return index + kTopMenuBaseId;
   }
 
-  base::string16 GetLabelAt(int index) const override {
+  std::u16string GetLabelAt(int index) const override {
     return base::ASCIIToUTF16("submenu");
   }
 

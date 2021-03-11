@@ -44,7 +44,7 @@ class StarView : public PageActionIconView,
   void ExecuteCommand(ExecuteSource source) override;
   views::BubbleDialogDelegate* GetBubble() const override;
   const gfx::VectorIcon& GetVectorIcon() const override;
-  base::string16 GetTextForTooltipAndAccessibleName() const override;
+  std::u16string GetTextForTooltipAndAccessibleName() const override;
 
  private:
   void EditBookmarksPrefUpdated();

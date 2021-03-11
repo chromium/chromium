@@ -36,8 +36,8 @@ class AvatarToolbarButtonDelegate : public BrowserListObserver,
   void Init(AvatarToolbarButton* button, Profile* profile);
 
   // Called by the AvatarToolbarButton to get information about the profile.
-  base::string16 GetProfileName() const;
-  base::string16 GetShortProfileName() const;
+  std::u16string GetProfileName() const;
+  std::u16string GetShortProfileName() const;
   gfx::Image GetGaiaAccountImage() const;
   gfx::Image GetProfileAvatarImage(gfx::Image gaia_account_image,
                                    int preferred_size) const;
@@ -73,12 +73,12 @@ class AvatarToolbarButtonDelegate : public BrowserListObserver,
   // ProfileAttributesStorage::Observer:
   void OnProfileAdded(const base::FilePath& profile_path) override;
   void OnProfileWasRemoved(const base::FilePath& profile_path,
-                           const base::string16& profile_name) override;
+                           const std::u16string& profile_name) override;
   void OnProfileAvatarChanged(const base::FilePath& profile_path) override;
   void OnProfileHighResAvatarLoaded(
       const base::FilePath& profile_path) override;
   void OnProfileNameChanged(const base::FilePath& profile_path,
-                            const base::string16& old_profile_name) override;
+                            const std::u16string& old_profile_name) override;
 
   // IdentityManager::Observer:
   // Needed if the first sync promo account should be displayed.

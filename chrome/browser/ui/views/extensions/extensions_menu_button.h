@@ -39,7 +39,7 @@ class ExtensionsMenuButton : public HoverButton,
   SkColor GetInkDropBaseColor() const override;
   bool CanShowIconInToolbar() const override;
 
-  const base::string16& label_text_for_testing() const {
+  const std::u16string& label_text_for_testing() const {
     return label()->GetText();
   }
 

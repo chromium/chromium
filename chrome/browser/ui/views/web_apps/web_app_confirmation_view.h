@@ -45,10 +45,10 @@ class WebAppConfirmationView : public views::DialogDelegateView,
 
   // Overridden from views::TextfieldController:
   void ContentsChanged(views::Textfield* sender,
-                       const base::string16& new_contents) override;
+                       const std::u16string& new_contents) override;
 
   // Get the trimmed contents of the title text field.
-  base::string16 GetTrimmedTitle() const;
+  std::u16string GetTrimmedTitle() const;
 
   // The WebApplicationInfo that the user is editing.
   // Cleared when the dialog completes (Accept/WindowClosing).

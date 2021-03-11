@@ -25,7 +25,7 @@ ErrorMessageViewController::ErrorMessageViewController(
 
 ErrorMessageViewController::~ErrorMessageViewController() {}
 
-base::string16 ErrorMessageViewController::GetPrimaryButtonLabel() {
+std::u16string ErrorMessageViewController::GetPrimaryButtonLabel() {
   return l10n_util::GetStringUTF16(IDS_CLOSE);
 }
 
@@ -51,7 +51,7 @@ bool ErrorMessageViewController::ShouldShowSecondaryButton() {
   return false;
 }
 
-base::string16 ErrorMessageViewController::GetSheetTitle() {
+std::u16string ErrorMessageViewController::GetSheetTitle() {
   return l10n_util::GetStringUTF16(IDS_PAYMENTS_ERROR_MESSAGE_DIALOG_TITLE);
 }
 

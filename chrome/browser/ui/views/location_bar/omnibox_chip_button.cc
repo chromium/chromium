@@ -15,7 +15,7 @@
 
 OmniboxChipButton::OmniboxChipButton(PressedCallback callback,
                                      int button_context)
-    : MdTextButton(std::move(callback), base::string16(), button_context) {
+    : MdTextButton(std::move(callback), std::u16string(), button_context) {
   views::InstallPillHighlightPathGenerator(this);
   SetProminent(true);
   SetCornerRadius(GetIconSize());

@@ -51,7 +51,7 @@ void OfferNotificationIconView::UpdateImpl() {
   SetVisible(command_enabled);
 }
 
-base::string16 OfferNotificationIconView::GetTextForTooltipAndAccessibleName()
+std::u16string OfferNotificationIconView::GetTextForTooltipAndAccessibleName()
     const {
   return l10n_util::GetStringUTF16(
       IDS_AUTOFILL_OFFERS_REMINDER_ICON_TOOLTIP_TEXT);

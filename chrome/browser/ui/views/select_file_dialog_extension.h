@@ -83,7 +83,7 @@ class SelectFileDialogExtension
     base::Optional<std::string> lacros_window_id;
   };
   void SelectFileWithFileManagerParams(Type type,
-                                       const base::string16& title,
+                                       const std::u16string& title,
                                        const base::FilePath& default_path,
                                        const FileTypeInfo* file_types,
                                        int file_type_index,
@@ -95,7 +95,7 @@ class SelectFileDialogExtension
  protected:
   // SelectFileDialog implementation.
   void SelectFileImpl(Type type,
-                      const base::string16& title,
+                      const std::u16string& title,
                       const base::FilePath& default_path,
                       const FileTypeInfo* file_types,
                       int file_type_index,

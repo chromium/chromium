@@ -113,10 +113,10 @@ class TestTabModalConfirmDialogDelegate : public TabModalConfirmDialogDelegate {
  public:
   explicit TestTabModalConfirmDialogDelegate(content::WebContents* contents)
       : TabModalConfirmDialogDelegate(contents) {}
-  base::string16 GetTitle() override {
-    return base::string16(base::ASCIIToUTF16("Dialog Title"));
+  std::u16string GetTitle() override {
+    return std::u16string(base::ASCIIToUTF16("Dialog Title"));
   }
-  base::string16 GetDialogMessage() override { return base::string16(); }
+  std::u16string GetDialogMessage() override { return std::u16string(); }
 
   DISALLOW_COPY_AND_ASSIGN(TestTabModalConfirmDialogDelegate);
 };
@@ -283,7 +283,7 @@ IN_PROC_BROWSER_TEST_F(BrowserViewTest, AvoidUnnecessaryVisibilityChanges) {
 // is set before load finishes and the throbber state updates when the title
 // changes. Regression test for crbug.com/752266
 IN_PROC_BROWSER_TEST_F(BrowserViewTest, TitleAndLoadState) {
-  const base::string16 test_title(base::ASCIIToUTF16("Title Of Awesomeness"));
+  const std::u16string test_title(base::ASCIIToUTF16("Title Of Awesomeness"));
   auto* contents = browser()->tab_strip_model()->GetActiveWebContents();
   content::TitleWatcher title_watcher(contents, test_title);
   content::TestNavigationObserver navigation_watcher(
@@ -330,7 +330,7 @@ IN_PROC_BROWSER_TEST_F(BrowserViewTest, ShowFaviconInTab) {
 // Open a tab-modal dialog and check that the accessible window title is the
 // title of the dialog.
 IN_PROC_BROWSER_TEST_F(BrowserViewTest, GetAccessibleTabModalDialogTitle) {
-  base::string16 window_title = base::ASCIIToUTF16("about:blank - ") +
+  std::u16string window_title = base::ASCIIToUTF16("about:blank - ") +
                                 l10n_util::GetStringUTF16(IDS_PRODUCT_NAME);
   EXPECT_TRUE(base::StartsWith(browser_view()->GetAccessibleWindowTitle(),
                                window_title, base::CompareCase::SENSITIVE));

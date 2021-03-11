@@ -79,13 +79,13 @@ class ProfileMenuViewBase : public content::WebContentsDelegate,
 
   struct EditButtonParams {
     EditButtonParams(const gfx::VectorIcon* edit_icon,
-                     const base::string16& edit_tooltip_text,
+                     const std::u16string& edit_tooltip_text,
                      base::RepeatingClosure edit_action);
     EditButtonParams(const EditButtonParams&);
     ~EditButtonParams();
 
     const gfx::VectorIcon* edit_icon;
-    base::string16 edit_tooltip_text;
+    std::u16string edit_tooltip_text;
     base::RepeatingClosure edit_action;
   };
 
@@ -123,33 +123,33 @@ class ProfileMenuViewBase : public content::WebContentsDelegate,
 
   // If |profile_name| is empty, no heading will be displayed.
   void SetProfileIdentityInfo(
-      const base::string16& profile_name,
+      const std::u16string& profile_name,
       SkColor profile_background_color,
       base::Optional<EditButtonParams> edit_button_params,
       const ui::ImageModel& image_model,
-      const base::string16& title,
-      const base::string16& subtitle = base::string16(),
+      const std::u16string& title,
+      const std::u16string& subtitle = std::u16string(),
       const ui::ThemedVectorIcon& avatar_header_art = ui::ThemedVectorIcon());
   void SetSyncInfo(const SyncInfo& sync_info,
                    const base::RepeatingClosure& action,
                    bool show_badge);
   void AddShortcutFeatureButton(const gfx::VectorIcon& icon,
-                                const base::string16& text,
+                                const std::u16string& text,
                                 base::RepeatingClosure action);
-  void AddFeatureButton(const base::string16& text,
+  void AddFeatureButton(const std::u16string& text,
                         base::RepeatingClosure action,
                         const gfx::VectorIcon& icon = gfx::kNoneIcon,
                         float icon_to_image_ratio = 1.0f);
-  void SetProfileManagementHeading(const base::string16& heading);
+  void SetProfileManagementHeading(const std::u16string& heading);
   void AddSelectableProfile(const ui::ImageModel& image_model,
-                            const base::string16& name,
+                            const std::u16string& name,
                             bool is_guest,
                             base::RepeatingClosure action);
   void AddProfileManagementShortcutFeatureButton(const gfx::VectorIcon& icon,
-                                                 const base::string16& text,
+                                                 const std::u16string& text,
                                                  base::RepeatingClosure action);
   void AddProfileManagementFeatureButton(const gfx::VectorIcon& icon,
-                                         const base::string16& text,
+                                         const std::u16string& text,
                                          base::RepeatingClosure action);
 
   gfx::ImageSkia ColoredImageForMenu(const gfx::VectorIcon& icon,
@@ -224,7 +224,7 @@ class ProfileMenuViewBase : public content::WebContentsDelegate,
       SyncInfoContainerBackgroundState::kNoError;
 
   // Actual heading string would be set by children classes.
-  base::string16 profile_mgmt_heading_;
+  std::u16string profile_mgmt_heading_;
 
   std::unique_ptr<AXMenuWidgetObserver> ax_widget_observer_;
 };

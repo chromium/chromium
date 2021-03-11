@@ -50,7 +50,7 @@ class ToolbarActionsBarBubbleViews : public views::BubbleDialogDelegateView,
       ToolbarActionsBarBubbleDelegate::CloseAction action);
 
   // views::BubbleDialogDelegateView:
-  base::string16 GetWindowTitle() const override;
+  std::u16string GetWindowTitle() const override;
   bool ShouldShowCloseButton() const override;
   void AddedToWidget() override;
   void RemovedFromWidget() override;

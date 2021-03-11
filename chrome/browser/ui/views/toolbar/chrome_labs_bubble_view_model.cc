@@ -66,8 +66,8 @@ const std::vector<LabInfo>& GetData() {
 }  // namespace
 
 LabInfo::LabInfo(const std::string& internal_name,
-                 const base::string16& visible_name,
-                 const base::string16& visible_description,
+                 const std::u16string& visible_name,
+                 const std::u16string& visible_description,
                  const std::string& feedback_category_name,
                  version_info::Channel allowed_channel)
     : internal_name(internal_name),

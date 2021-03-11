@@ -60,7 +60,7 @@ std::unique_ptr<views::ImageView> CreateIconView(
 }
 
 // Returns a label containing the app name.
-std::unique_ptr<views::Label> CreateNameLabel(const base::string16& name) {
+std::unique_ptr<views::Label> CreateNameLabel(const std::u16string& name) {
   auto name_label = std::make_unique<views::Label>(
       name, views::style::CONTEXT_DIALOG_BODY_TEXT,
       views::style::TextStyle::STYLE_PRIMARY);

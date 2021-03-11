@@ -61,7 +61,7 @@ bool CrostiniAnsibleSoftwareConfigView::Accept() {
   return true;
 }
 
-base::string16 CrostiniAnsibleSoftwareConfigView::GetSubtextLabel() const {
+std::u16string CrostiniAnsibleSoftwareConfigView::GetSubtextLabel() const {
   switch (state_) {
     case State::CONFIGURING:
       return l10n_util::GetStringUTF16(
@@ -96,7 +96,7 @@ void CrostiniAnsibleSoftwareConfigView::OnAnsibleSoftwareConfigurationFinished(
   GetWidget()->CloseWithReason(views::Widget::ClosedReason::kUnspecified);
 }
 
-base::string16
+std::u16string
 CrostiniAnsibleSoftwareConfigView::GetSubtextLabelStringForTesting() {
   return subtext_label_->GetText();
 }
@@ -148,7 +148,7 @@ CrostiniAnsibleSoftwareConfigView::~CrostiniAnsibleSoftwareConfigView() {
 }
 
 // static
-base::string16 CrostiniAnsibleSoftwareConfigView::GetWindowTitleForState(
+std::u16string CrostiniAnsibleSoftwareConfigView::GetWindowTitleForState(
     State state) {
   switch (state) {
     case State::CONFIGURING:
@@ -186,5 +186,5 @@ void CrostiniAnsibleSoftwareConfigView::OnStateChanged() {
 
 BEGIN_METADATA(CrostiniAnsibleSoftwareConfigView,
                views::BubbleDialogDelegateView)
-ADD_READONLY_PROPERTY_METADATA(base::string16, SubtextLabel)
+ADD_READONLY_PROPERTY_METADATA(std::u16string, SubtextLabel)
 END_METADATA

@@ -19,7 +19,7 @@ class AvatarToolbarButtonBrowserTest : public InProcessBrowserTest {
 
   // Returns the window count in avatar button text, if it exists.
   base::Optional<int> GetWindowCountInAvatarButtonText(Browser* browser) {
-    base::string16 button_text = BrowserView::GetBrowserViewForBrowser(browser)
+    std::u16string button_text = BrowserView::GetBrowserViewForBrowser(browser)
                                      ->toolbar()
                                      ->avatar_->GetText();
 
@@ -30,7 +30,7 @@ class AvatarToolbarButtonBrowserTest : public InProcessBrowserTest {
     size_t after_number = button_text.find(')');
     EXPECT_NE(std::string::npos, after_number);
 
-    base::string16 number_text =
+    std::u16string number_text =
         button_text.substr(before_number + 1, after_number - before_number - 1);
     int window_count;
     return base::StringToInt(number_text, &window_count)

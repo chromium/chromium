@@ -33,10 +33,10 @@ class JavaScriptTabModalDialogViewViews
 
   // JavaScriptDialog:
   void CloseDialogWithoutCallback() override;
-  base::string16 GetUserInput() override;
+  std::u16string GetUserInput() override;
 
   // views::DialogDelegate:
-  base::string16 GetWindowTitle() const override;
+  std::u16string GetWindowTitle() const override;
 
   // views::WidgetDelegate:
   bool ShouldShowCloseButton() const override;
@@ -52,16 +52,16 @@ class JavaScriptTabModalDialogViewViews
   JavaScriptTabModalDialogViewViews(
       content::WebContents* parent_web_contents,
       content::WebContents* alerting_web_contents,
-      const base::string16& title,
+      const std::u16string& title,
       content::JavaScriptDialogType dialog_type,
-      const base::string16& message_text,
-      const base::string16& default_prompt_text,
+      const std::u16string& message_text,
+      const std::u16string& default_prompt_text,
       content::JavaScriptDialogManager::DialogClosedCallback dialog_callback,
       base::OnceClosure dialog_force_closed_callback);
 
-  base::string16 title_;
-  base::string16 message_text_;
-  base::string16 default_prompt_text_;
+  std::u16string title_;
+  std::u16string message_text_;
+  std::u16string default_prompt_text_;
   content::JavaScriptDialogManager::DialogClosedCallback dialog_callback_;
   base::OnceClosure dialog_force_closed_callback_;
 

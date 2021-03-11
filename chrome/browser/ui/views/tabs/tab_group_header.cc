@@ -251,11 +251,11 @@ void TabGroupHeader::GetAccessibleNodeData(ui::AXNodeData* node_data) {
     node_data->RemoveState(ax::mojom::State::kCollapsed);
   }
 
-  base::string16 title =
+  std::u16string title =
       tab_strip_->controller()->GetGroupTitle(group().value());
-  base::string16 contents =
+  std::u16string contents =
       tab_strip_->controller()->GetGroupContentString(group().value());
-  base::string16 collapsed_state = base::string16();
+  std::u16string collapsed_state = std::u16string();
 
 // Windows screen reader properly announces the state set above in |node_data|
 // and will read out the state change when the header's collapsed state is
@@ -361,7 +361,7 @@ int TabGroupHeader::GetDesiredWidth() const {
   // both should look nestled against the group stroke of the tab to the right.
   // This requires a +/- 2px adjustment to the width, which causes the tab to
   // the right to be positioned in the right spot.
-  const base::string16 title =
+  const std::u16string title =
       tab_strip_->controller()->GetGroupTitle(group().value());
   const int right_adjust = title.empty() ? 2 : -2;
 
@@ -381,7 +381,7 @@ void TabGroupHeader::LogCollapseTime() {
 }
 
 void TabGroupHeader::VisualsChanged() {
-  const base::string16 title =
+  const std::u16string title =
       tab_strip_->controller()->GetGroupTitle(group().value());
   const tab_groups::TabGroupColorId color_id =
       tab_strip_->controller()->GetGroupColorId(group().value());

@@ -21,7 +21,7 @@ StatusTrayLinux::~StatusTrayLinux() {
 std::unique_ptr<StatusIcon> StatusTrayLinux::CreatePlatformStatusIcon(
     StatusIconType type,
     const gfx::ImageSkia& image,
-    const base::string16& tool_tip) {
+    const std::u16string& tool_tip) {
   return StatusIconLinuxWrapper::CreateWrappedStatusIcon(image, tool_tip);
 }
 

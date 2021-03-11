@@ -41,7 +41,7 @@ constexpr int kMinColumnWidth = 120;
 constexpr int kTitleBottomSpacing = 13;
 
 std::unique_ptr<views::Label> CreateFormattedLabel(
-    const base::string16& message) {
+    const std::u16string& message) {
   auto label = std::make_unique<views::Label>(
       message, views::style::CONTEXT_LABEL, views::style::STYLE_SECONDARY);
 
@@ -54,7 +54,7 @@ std::unique_ptr<views::Label> CreateFormattedLabel(
 
 // Return a string describing the error code. Keep in sync with the
 // CrashExitCodes in /tools/metrics/histograms/enums.xml.
-base::string16 ErrorToString(int error_code) {
+std::u16string ErrorToString(int error_code) {
   std::string error_string;
   switch (std::abs(error_code)) {
     case 1:

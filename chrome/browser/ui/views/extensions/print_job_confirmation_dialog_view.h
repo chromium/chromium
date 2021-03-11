@@ -25,17 +25,17 @@ class PrintJobConfirmationDialogView : public views::BubbleDialogDelegateView {
 
   static void Show(gfx::NativeWindow parent,
                    const std::string& extension_id,
-                   const base::string16& extension_name,
+                   const std::u16string& extension_name,
                    const gfx::ImageSkia& extension_icon,
-                   const base::string16& print_job_title,
-                   const base::string16& printer_name,
+                   const std::u16string& print_job_title,
+                   const std::u16string& printer_name,
                    base::OnceCallback<void(bool)> callback);
 
   PrintJobConfirmationDialogView(ToolbarActionView* anchor_view,
-                                 const base::string16& extension_name,
+                                 const std::u16string& extension_name,
                                  const gfx::ImageSkia& extension_icon,
-                                 const base::string16& print_job_title,
-                                 const base::string16& printer_name,
+                                 const std::u16string& print_job_title,
+                                 const std::u16string& printer_name,
                                  base::OnceCallback<void(bool)> callback);
   PrintJobConfirmationDialogView(const PrintJobConfirmationDialogView&) =
       delete;
@@ -45,7 +45,7 @@ class PrintJobConfirmationDialogView : public views::BubbleDialogDelegateView {
 
  private:
   // The name of the extension we are showing the dialog for.
-  const base::string16 extension_name_;
+  const std::u16string extension_name_;
 
   // Callback to call after the dialog is accepted or rejected.
   base::OnceCallback<void(bool)> callback_;

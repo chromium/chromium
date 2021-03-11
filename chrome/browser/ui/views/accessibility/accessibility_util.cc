@@ -10,7 +10,7 @@
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "ui/views/accessibility/view_accessibility.h"
 
-void AnnounceInActiveBrowser(const base::string16& message) {
+void AnnounceInActiveBrowser(const std::u16string& message) {
   Browser* const browser = BrowserList::GetInstance()->GetLastActive();
   if (!browser || !browser->is_type_normal() || !browser->window()->IsActive())
     return;

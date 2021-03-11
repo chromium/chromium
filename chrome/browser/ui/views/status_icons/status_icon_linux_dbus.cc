@@ -203,7 +203,7 @@ void StatusIconLinuxDbus::SetIcon(const gfx::ImageSkia& image) {
   SetIconImpl(image, true);
 }
 
-void StatusIconLinuxDbus::SetToolTip(const base::string16& tool_tip) {
+void StatusIconLinuxDbus::SetToolTip(const std::u16string& tool_tip) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   if (!properties_)
     return;

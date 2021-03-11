@@ -64,7 +64,7 @@ class CookieControlsBubbleView : public LocationBarBubbleDelegateView,
   // LocationBarBubbleDelegateView:
   void CloseBubble() override;
   void Init() override;
-  base::string16 GetWindowTitle() const override;
+  std::u16string GetWindowTitle() const override;
   void WindowClosing() override;
   gfx::Size CalculatePreferredSize() const override;
   void AddedToWidget() override;

@@ -40,7 +40,7 @@ class CrostiniForceCloseView : public views::BubbleDialogDelegateView {
                              base::OnceClosure force_close_callback);
 
  private:
-  CrostiniForceCloseView(const base::string16& app_name,
+  CrostiniForceCloseView(const std::u16string& app_name,
                          base::OnceClosure force_close_callback);
 
   ~CrostiniForceCloseView() override;

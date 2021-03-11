@@ -44,7 +44,7 @@ class OfferNotificationBubbleViews : public AutofillBubbleBase,
   // LocationBarBubbleDelegateView:
   void Init() override;
   void AddedToWidget() override;
-  base::string16 GetWindowTitle() const override;
+  std::u16string GetWindowTitle() const override;
   void WindowClosing() override;
   void OnWidgetClosing(views::Widget* widget) override;
 

@@ -10,7 +10,7 @@
 using ExpandableContainerViewTest = ChromeViewsTestBase;
 
 TEST_F(ExpandableContainerViewTest, DetailLevelVisibility) {
-  std::vector<base::string16> details;
+  std::vector<std::u16string> details;
   details.push_back(base::ASCIIToUTF16("Detail 1"));
   details.push_back(base::ASCIIToUTF16("Detail 2"));
   details.push_back(base::ASCIIToUTF16("Detail 2"));

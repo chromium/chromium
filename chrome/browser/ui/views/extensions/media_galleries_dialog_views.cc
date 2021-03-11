@@ -84,7 +84,7 @@ MediaGalleriesDialogViews::MediaGalleriesDialogViews(
   SetShowCloseButton(false);
   SetTitle(controller_->GetHeader());
 
-  base::string16 label = controller_->GetAuxiliaryButtonText();
+  std::u16string label = controller_->GetAuxiliaryButtonText();
   if (!label.empty()) {
     auxiliary_button_ = SetExtraView(std::make_unique<views::MdTextButton>(
         base::BindRepeating(
@@ -163,7 +163,7 @@ void MediaGalleriesDialogViews::InitChildViews() {
   scroll_container->SetBorder(
       views::CreateEmptyBorder(vertical_padding, 0, vertical_padding, 0));
 
-  std::vector<base::string16> section_headers =
+  std::vector<std::u16string> section_headers =
       controller_->GetSectionHeaders();
   for (size_t i = 0; i < section_headers.size(); i++) {
     MediaGalleriesDialogController::Entries entries =
@@ -222,7 +222,7 @@ bool MediaGalleriesDialogViews::AddOrUpdateGallery(
     checkbox->SetChecked(gallery.selected);
     checkbox->SetText(gallery.pref_info.GetGalleryDisplayName());
     checkbox->SetTooltipText(gallery.pref_info.GetGalleryTooltip());
-    base::string16 details = gallery.pref_info.GetGalleryAdditionalDetails();
+    std::u16string details = gallery.pref_info.GetGalleryAdditionalDetails();
     iter->second->secondary_text()->SetText(details);
     iter->second->secondary_text()->SetVisible(details.length() > 0);
     return false;

@@ -82,10 +82,10 @@ bool ShouldChangeStartThrobber(TabStripModel* tab_strip_model,
          tab_strip_model->GetActiveWebContents() != contents[0].contents;
 }
 
-base::string16 GetTabCounterLabelText(int num_tabs) {
+std::u16string GetTabCounterLabelText(int num_tabs) {
   // In the triple-digit case, fall back to ':D' to match Android.
   if (num_tabs >= 100)
-    return base::string16(base::ASCIIToUTF16(":D"));
+    return std::u16string(base::ASCIIToUTF16(":D"));
   return base::FormatNumber(num_tabs);
 }
 
@@ -97,7 +97,7 @@ base::string16 GetTabCounterLabelText(int num_tabs) {
 class NumberLabel : public views::Label {
  public:
   METADATA_HEADER(NumberLabel);
-  NumberLabel() : Label(base::string16(), CONTEXT_TAB_COUNTER) {
+  NumberLabel() : Label(std::u16string(), CONTEXT_TAB_COUNTER) {
     single_digit_font_ = font_list();
     double_digit_font_ = views::style::GetFont(CONTEXT_TAB_COUNTER,
                                                views::style::STYLE_SECONDARY);
@@ -105,7 +105,7 @@ class NumberLabel : public views::Label {
 
   ~NumberLabel() override = default;
 
-  void SetText(const base::string16& text) override {
+  void SetText(const std::u16string& text) override {
     SetFontList(text.length() > 1 ? double_digit_font_ : single_digit_font_);
     Label::SetText(text);
   }

@@ -63,7 +63,7 @@ bool CustomShadowsSupported() {
 
 std::unique_ptr<views::View> CreateAlertView(const TabAlertState& state) {
   auto alert_state_label = std::make_unique<views::Label>(
-      base::string16(), views::style::CONTEXT_DIALOG_BODY_TEXT,
+      std::u16string(), views::style::CONTEXT_DIALOG_BODY_TEXT,
       views::style::STYLE_PRIMARY);
   alert_state_label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
   alert_state_label->SetMultiLine(true);
@@ -122,7 +122,7 @@ class TabHoverCardBubbleView::FadeLabel : public views::Label {
   // higher the percentage the less opaque the label.
   void SetFade(double percent) {
     if (percent >= 1.0)
-      SetText(base::string16());
+      SetText(std::u16string());
     const SkAlpha alpha = base::saturated_cast<SkAlpha>(
         std::numeric_limits<SkAlpha>::max() * (1.0 - percent));
     SetBackgroundColor(SkColorSetA(GetBackgroundColor(), alpha));
@@ -164,7 +164,7 @@ TabHoverCardBubbleView::TabHoverCardBubbleView(Tab* tab)
   set_focus_traversable_from_anchor_view(false);
 
   title_label_ = AddChildView(std::make_unique<views::Label>(
-      base::string16(), CONTEXT_TAB_HOVER_CARD_TITLE,
+      std::u16string(), CONTEXT_TAB_HOVER_CARD_TITLE,
       views::style::STYLE_PRIMARY));
   title_label_->SetHorizontalAlignment(gfx::ALIGN_LEFT);
   title_label_->SetVerticalAlignment(gfx::ALIGN_TOP);
@@ -172,7 +172,7 @@ TabHoverCardBubbleView::TabHoverCardBubbleView(Tab* tab)
   title_label_->SetMaxLines(kHoverCardTitleMaxLines);
 
   title_fade_label_ = AddChildView(std::make_unique<FadeLabel>(
-      base::string16(), CONTEXT_TAB_HOVER_CARD_TITLE,
+      std::u16string(), CONTEXT_TAB_HOVER_CARD_TITLE,
       views::style::STYLE_PRIMARY));
   title_fade_label_->SetHorizontalAlignment(gfx::ALIGN_LEFT);
   title_fade_label_->SetVerticalAlignment(gfx::ALIGN_TOP);
@@ -181,7 +181,7 @@ TabHoverCardBubbleView::TabHoverCardBubbleView(Tab* tab)
   title_fade_label_->GetViewAccessibility().OverrideIsIgnored(true);
 
   domain_label_ = AddChildView(std::make_unique<views::Label>(
-      base::string16(), views::style::CONTEXT_DIALOG_BODY_TEXT,
+      std::u16string(), views::style::CONTEXT_DIALOG_BODY_TEXT,
       views::style::STYLE_SECONDARY,
       gfx::DirectionalityMode::DIRECTIONALITY_AS_URL));
   domain_label_->SetElideBehavior(gfx::ELIDE_MIDDLE);
@@ -189,7 +189,7 @@ TabHoverCardBubbleView::TabHoverCardBubbleView(Tab* tab)
   domain_label_->SetMultiLine(false);
 
   domain_fade_label_ = AddChildView(std::make_unique<FadeLabel>(
-      base::string16(), views::style::CONTEXT_DIALOG_BODY_TEXT,
+      std::u16string(), views::style::CONTEXT_DIALOG_BODY_TEXT,
       views::style::STYLE_SECONDARY,
       gfx::DirectionalityMode::DIRECTIONALITY_AS_URL));
   domain_fade_label_->SetElideBehavior(gfx::ELIDE_MIDDLE);
@@ -286,7 +286,7 @@ void TabHoverCardBubbleView::UpdateCardContent(const Tab* tab) {
   if (preview_image_)
     preview_image_->SetVisible(!tab->IsActive());
 
-  base::string16 title;
+  std::u16string title;
   base::Optional<TabAlertState> old_alert_state = alert_state_;
   GURL domain_url;
   // Use committed URL to determine if no page has yet loaded, since the title
@@ -302,7 +302,7 @@ void TabHoverCardBubbleView::UpdateCardContent(const Tab* tab) {
     title = tab->data().title;
     alert_state_ = Tab::GetAlertStateToShow(tab->data().alert_state);
   }
-  base::string16 domain;
+  std::u16string domain;
   if (domain_url.SchemeIsFile()) {
     title_label_->SetMultiLine(false);
     title_label_->SetElideBehavior(gfx::ELIDE_MIDDLE);

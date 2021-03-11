@@ -31,7 +31,7 @@ namespace autofill {
 class TitleWithIconAndSeparatorView : public views::View {
  public:
   METADATA_HEADER(TitleWithIconAndSeparatorView);
-  explicit TitleWithIconAndSeparatorView(const base::string16& window_title);
+  explicit TitleWithIconAndSeparatorView(const std::u16string& window_title);
   ~TitleWithIconAndSeparatorView() override;
 
  private:

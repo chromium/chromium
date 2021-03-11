@@ -43,10 +43,10 @@ void EditAddressProfileView::Hide() {
   GetWidget()->Close();
 }
 
-base::string16 EditAddressProfileView::GetWindowTitle() const {
+std::u16string EditAddressProfileView::GetWindowTitle() const {
   // |controller_| can be nullptr when the framework calls this method after a
   // button click.
-  return controller_ ? controller_->GetWindowTitle() : base::string16();
+  return controller_ ? controller_->GetWindowTitle() : std::u16string();
 }
 
 void EditAddressProfileView::WindowClosing() {

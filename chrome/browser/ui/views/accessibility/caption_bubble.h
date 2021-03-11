@@ -92,7 +92,7 @@ class CaptionBubble : public views::BubbleDialogDelegateView {
   void OnFocus() override;
   void OnBlur() override;
   void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
-  base::string16 GetAccessibleWindowTitle() const override;
+  std::u16string GetAccessibleWindowTitle() const override;
   void AddedToWidget() override;
 
  private:

@@ -27,7 +27,7 @@
 
 ChosenObjectView::ChosenObjectView(
     std::unique_ptr<PageInfoUI::ChosenObjectInfo> info,
-    base::string16 display_name)
+    std::u16string display_name)
     : info_(std::move(info)) {
   // |ChosenObjectView| layout (fills parent):
   // *------------------------------------*

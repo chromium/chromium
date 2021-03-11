@@ -86,7 +86,7 @@ class DesktopMediaPickerViewsTest : public testing::Test {
     views::NamedWidgetShownWaiter waiter(views::test::AnyWidgetTestPasskey{},
                                          "DesktopMediaPickerDialogView");
 
-    const base::string16 kAppName = base::ASCIIToUTF16("foo");
+    const std::u16string kAppName = base::ASCIIToUTF16("foo");
     DesktopMediaPicker::Params picker_params;
     picker_params.context = test_helper_.GetContext();
     picker_params.app_name = kAppName;

@@ -441,7 +441,7 @@ class BrowserView : public BrowserWindow,
       bool is_user_gesture) override;
 #if BUILDFLAG(ENABLE_ONE_CLICK_SIGNIN)
   void ShowOneClickSigninConfirmation(
-      const base::string16& email,
+      const std::u16string& email,
       base::OnceCallback<void(bool)> confirmed_callback) override;
 #endif
   // TODO(beng): Not an override, move somewhere else.
@@ -506,8 +506,8 @@ class BrowserView : public BrowserWindow,
 
   // views::WidgetDelegate:
   bool CanActivate() const override;
-  base::string16 GetWindowTitle() const override;
-  base::string16 GetAccessibleWindowTitle() const override;
+  std::u16string GetWindowTitle() const override;
+  std::u16string GetAccessibleWindowTitle() const override;
   views::View* GetInitiallyFocusedView() override;
   bool ShouldShowWindowTitle() const override;
   gfx::ImageSkia GetWindowAppIcon() override;
@@ -594,7 +594,7 @@ class BrowserView : public BrowserWindow,
   // Creates an accessible tab label for screen readers that includes the tab
   // status for the given tab index. This takes the form of
   // "Page title - Tab state".
-  base::string16 GetAccessibleTabLabel(bool include_app_name, int index) const;
+  std::u16string GetAccessibleTabLabel(bool include_app_name, int index) const;
 
   // Testing interface:
   views::View* GetContentsContainerForTest() { return contents_container_; }
@@ -735,7 +735,7 @@ class BrowserView : public BrowserWindow,
   void ObserveAppBannerManager(webapps::AppBannerManager* new_manager);
 
   // Called by GetAccessibleWindowTitle, split out to make it testable.
-  base::string16 GetAccessibleWindowTitleForChannelAndProfile(
+  std::u16string GetAccessibleWindowTitleForChannelAndProfile(
       version_info::Channel,
       Profile* profile) const;
 

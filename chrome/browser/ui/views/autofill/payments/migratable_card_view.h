@@ -36,7 +36,7 @@ class MigratableCardView : public views::View {
 
   bool GetSelected() const;
   std::string GetGuid() const;
-  base::string16 GetCardIdentifierString() const;
+  std::u16string GetCardIdentifierString() const;
 
  private:
   std::unique_ptr<views::View> GetMigratableCardDescriptionView(

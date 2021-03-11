@@ -42,8 +42,8 @@ class MediaGalleriesDialogTest : public testing::Test {
   MediaGalleriesDialogTest() {}
   ~MediaGalleriesDialogTest() override {}
   void SetUp() override {
-    std::vector<base::string16> headers;
-    headers.push_back(base::string16());
+    std::vector<std::u16string> headers;
+    headers.push_back(std::u16string());
     headers.push_back(base::ASCIIToUTF16("header2"));
     ON_CALL(controller_, GetSectionHeaders()).
         WillByDefault(Return(headers));

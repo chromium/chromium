@@ -122,10 +122,10 @@ void CredentialLeakDialogView::AddedToWidget() {
   GetBubbleFrameView()->SetHeaderView(std::move(image_view));
 }
 
-base::string16 CredentialLeakDialogView::GetWindowTitle() const {
+std::u16string CredentialLeakDialogView::GetWindowTitle() const {
   // |controller_| can be nullptr when the framework calls this method after a
   // button click.
-  return controller_ ? controller_->GetTitle() : base::string16();
+  return controller_ ? controller_->GetTitle() : std::u16string();
 }
 
 void CredentialLeakDialogView::InitWindow() {

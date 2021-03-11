@@ -104,7 +104,7 @@ void GlobalErrorBubbleView::Init() {
   // |error_| is assumed to be valid, and stay valid, at least until Init()
   // returns.
 
-  std::vector<base::string16> message_strings(error_->GetBubbleViewMessages());
+  std::vector<std::u16string> message_strings(error_->GetBubbleViewMessages());
   std::vector<std::unique_ptr<views::Label>> message_labels;
   for (const auto& message_string : message_strings) {
     auto message_label = std::make_unique<views::Label>(message_string);

@@ -91,7 +91,7 @@ class ProfilePickerView : public views::WidgetDelegateView,
     // the sign-in flow.
     bool is_aborted = false;
 
-    base::string16 name_for_signed_in_profile;
+    std::u16string name_for_signed_in_profile;
     base::OnceClosure on_profile_name_available;
 
     base::CancelableOnceClosure extended_account_info_timeout_closure;
@@ -134,7 +134,7 @@ class ProfilePickerView : public views::WidgetDelegateView,
   void WindowClosing() override;
   views::ClientView* CreateClientView(views::Widget* widget) override;
   views::View* GetContentsView() override;
-  base::string16 GetAccessibleWindowTitle() const override;
+  std::u16string GetAccessibleWindowTitle() const override;
 
   // views::View:
   gfx::Size CalculatePreferredSize() const override;

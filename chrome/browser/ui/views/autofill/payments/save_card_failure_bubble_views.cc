@@ -28,7 +28,7 @@ SaveCardFailureBubbleViews::CreateMainContentView() {
       views::BoxLayout::Orientation::kVertical, gfx::Insets(),
       provider->GetDistanceMetric(views::DISTANCE_UNRELATED_CONTROL_VERTICAL)));
 
-  base::string16 explanation = controller()->GetExplanatoryMessage();
+  std::u16string explanation = controller()->GetExplanatoryMessage();
   if (!explanation.empty()) {
     auto* explanation_label =
         new views::Label(explanation, views::style::CONTEXT_DIALOG_BODY_TEXT,

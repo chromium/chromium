@@ -139,7 +139,7 @@ IN_PROC_BROWSER_TEST_F(MAYBE_PaymentRequestContactInfoEditorTest, Validation) {
 
   // Insert invalid values into fields which have rules more complex than
   // just emptiness, and an empty string into simple required fields.
-  SetEditorTextfieldValue(base::string16(), autofill::NAME_FULL);
+  SetEditorTextfieldValue(std::u16string(), autofill::NAME_FULL);
   SetEditorTextfieldValue(base::ASCIIToUTF16(kPhoneNumberInvalid),
                           autofill::PHONE_HOME_WHOLE_NUMBER);
   SetEditorTextfieldValue(base::ASCIIToUTF16(kEmailAddressInvalid),

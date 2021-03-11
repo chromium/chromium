@@ -44,9 +44,9 @@ class FileSystemAccessUsageBubbleView : public LocationBarBubbleDelegateView {
     ~FilePathListModel() override;
     // ui::TableModel:
     int RowCount() override;
-    base::string16 GetText(int row, int column_id) override;
+    std::u16string GetText(int row, int column_id) override;
     gfx::ImageSkia GetIcon(int row) override;
-    base::string16 GetTooltip(int row) override;
+    std::u16string GetTooltip(int row) override;
     void SetObserver(ui::TableModelObserver*) override;
 
    private:
@@ -66,7 +66,7 @@ class FileSystemAccessUsageBubbleView : public LocationBarBubbleDelegateView {
   ~FileSystemAccessUsageBubbleView() override;
 
   // LocationBarBubbleDelegateView:
-  base::string16 GetAccessibleWindowTitle() const override;
+  std::u16string GetAccessibleWindowTitle() const override;
   bool ShouldShowCloseButton() const override;
   void Init() override;
   void WindowClosing() override;

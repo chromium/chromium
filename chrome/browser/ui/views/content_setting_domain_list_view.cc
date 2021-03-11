@@ -13,7 +13,7 @@
 #include "ui/views/metadata/metadata_impl_macros.h"
 
 ContentSettingDomainListView::ContentSettingDomainListView(
-    const base::string16& title,
+    const std::u16string& title,
     const std::set<std::string>& domains) {
   SetLayoutManager(std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kVertical));

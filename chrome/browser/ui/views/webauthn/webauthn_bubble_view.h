@@ -28,7 +28,7 @@ class WebAuthnBubbleView : public LocationBarBubbleDelegateView {
   WebAuthnBubbleView& operator=(const WebAuthnBubbleView& other) = delete;
 
   // LocationBarBubbleDelegateView:
-  base::string16 GetWindowTitle() const override;
+  std::u16string GetWindowTitle() const override;
   void Init() override;
 
  private:

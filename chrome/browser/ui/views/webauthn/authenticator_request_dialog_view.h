@@ -73,7 +73,7 @@ class AuthenticatorRequestDialogView
   bool Cancel() override;
   bool IsDialogButtonEnabled(ui::DialogButton button) const override;
   View* GetInitiallyFocusedView() override;
-  base::string16 GetWindowTitle() const override;
+  std::u16string GetWindowTitle() const override;
 
   // AuthenticatorRequestDialogModel::Observer:
   void OnModelDestroyed(AuthenticatorRequestDialogModel* model) override;

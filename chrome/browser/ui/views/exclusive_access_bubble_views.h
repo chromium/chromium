@@ -113,7 +113,7 @@ class ExclusiveAccessBubbleViews : public ExclusiveAccessBubble,
 
   // The contents of the popup.
   SubtleNotificationView* view_;
-  base::string16 browser_fullscreen_exit_accelerator_;
+  std::u16string browser_fullscreen_exit_accelerator_;
 
   base::ScopedObservation<FullscreenController, FullscreenObserver>
       fullscreen_observation_{this};

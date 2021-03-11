@@ -75,7 +75,7 @@ class RatingsView : public views::View {
 
   void GetAccessibleNodeData(ui::AXNodeData* node_data) override {
     node_data->role = ax::mojom::Role::kStaticText;
-    base::string16 accessible_text;
+    std::u16string accessible_text;
     if (rating_count_ == 0) {
       accessible_text = l10n_util::GetStringUTF16(
           IDS_EXTENSION_PROMPT_NO_RATINGS_ACCESSIBLE_TEXT);
@@ -120,7 +120,7 @@ END_METADATA
 class RatingLabel : public views::Label {
  public:
   METADATA_HEADER(RatingLabel);
-  RatingLabel(const base::string16& text, int text_context)
+  RatingLabel(const std::u16string& text, int text_context)
       : views::Label(text, text_context, views::style::STYLE_PRIMARY) {}
   RatingLabel(const RatingLabel&) = delete;
   RatingLabel& operator=(const RatingLabel&) = delete;
@@ -181,7 +181,7 @@ END_METADATA
 // Represents one section in the scrollable info area, which could be a block of
 // permissions, a list of retained files, or a list of retained devices.
 struct ExtensionInfoSection {
-  base::string16 header;
+  std::u16string header;
   std::unique_ptr<views::View> contents_view;
 };
 
@@ -410,7 +410,7 @@ bool ExtensionInstallDialogView::IsDialogButtonEnabled(
   return true;
 }
 
-base::string16 ExtensionInstallDialogView::GetAccessibleWindowTitle() const {
+std::u16string ExtensionInstallDialogView::GetAccessibleWindowTitle() const {
   return title_;
 }
 
@@ -482,7 +482,7 @@ void ExtensionInstallDialogView::CreateContents() {
   }
 
   if (prompt_->GetRetainedFileCount()) {
-    std::vector<base::string16> details;
+    std::vector<std::u16string> details;
     for (size_t i = 0; i < prompt_->GetRetainedFileCount(); ++i) {
       details.push_back(prompt_->GetRetainedFile(i));
     }
@@ -492,7 +492,7 @@ void ExtensionInstallDialogView::CreateContents() {
   }
 
   if (prompt_->GetRetainedDeviceCount()) {
-    std::vector<base::string16> details;
+    std::vector<std::u16string> details;
     for (size_t i = 0; i < prompt_->GetRetainedDeviceCount(); ++i) {
       details.push_back(prompt_->GetRetainedDeviceMessageString(i));
     }

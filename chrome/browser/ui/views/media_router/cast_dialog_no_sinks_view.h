@@ -30,7 +30,7 @@ class CastDialogNoSinksView : public views::View {
 
   const base::OneShotTimer& timer_for_testing() const { return timer_; }
   const views::View* icon_for_testing() const { return icon_; }
-  const base::string16& label_text_for_testing() const {
+  const std::u16string& label_text_for_testing() const {
     return label_->GetText();
   }
 

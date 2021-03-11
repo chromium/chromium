@@ -38,8 +38,8 @@ WebIdDialogViews::WebIdDialogViews(content::WebContents* rp_web_contents,
 
 WebIdDialogViews::~WebIdDialogViews() = default;
 
-void WebIdDialogViews::ShowInitialPermission(const base::string16& idp_hostname,
-                                             const base::string16& rp_hostname,
+void WebIdDialogViews::ShowInitialPermission(const std::u16string& idp_hostname,
+                                             const std::u16string& rp_hostname,
                                              PermissionCallback callback) {
   state_ = State::kInitialPermission;
   auto content_view = WebIdPermissionView::CreateForInitialPermission(
@@ -50,8 +50,8 @@ void WebIdDialogViews::ShowInitialPermission(const base::string16& idp_hostname,
 }
 
 void WebIdDialogViews::ShowTokenExchangePermission(
-    const base::string16& idp_hostname,
-    const base::string16& rp_hostname,
+    const std::u16string& idp_hostname,
+    const std::u16string& rp_hostname,
     PermissionCallback callback) {
   state_ = State::kTokenExchangePermission;
   auto content_view = WebIdPermissionView::CreateForTokenExchangePermission(

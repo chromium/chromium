@@ -128,7 +128,7 @@ class PageInfoBubbleViewSyncBrowserTest : public SyncTest {
     ASSERT_TRUE(harness->SetupSync());
   }
 
-  const base::string16 GetPageInfoBubbleViewDetailText() {
+  const std::u16string GetPageInfoBubbleViewDetailText() {
     PageInfoBubbleView* page_info_bubble_view =
         static_cast<PageInfoBubbleView*>(
             PageInfoBubbleView::GetPageInfoBubbleForTesting());

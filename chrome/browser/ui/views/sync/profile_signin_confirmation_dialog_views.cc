@@ -154,13 +154,11 @@ void ProfileSigninConfirmationDialogViews::BuildDefaultView() {
 
   // Create the prompt label.
   size_t offset;
-  const base::string16 domain =
+  const std::u16string domain =
       base::ASCIIToUTF16(gaia::ExtractDomainName(username_));
-  const base::string16 username = base::ASCIIToUTF16(username_);
-  const base::string16 prompt_text =
-      l10n_util::GetStringFUTF16(
-          IDS_ENTERPRISE_SIGNIN_ALERT,
-          domain, &offset);
+  const std::u16string username = base::ASCIIToUTF16(username_);
+  const std::u16string prompt_text =
+      l10n_util::GetStringFUTF16(IDS_ENTERPRISE_SIGNIN_ALERT, domain, &offset);
   auto prompt_label = std::make_unique<views::StyledLabel>();
   prompt_label->SetText(prompt_text);
   prompt_label->SetDisplayedOnBackgroundColor(kPromptBarBackgroundColor);
@@ -180,13 +178,13 @@ void ProfileSigninConfirmationDialogViews::BuildDefaultView() {
 
   // Create the explanation label.
   std::vector<size_t> offsets;
-  const base::string16 learn_more_text =
+  const std::u16string learn_more_text =
       l10n_util::GetStringUTF16(IDS_LEARN_MORE);
-  const base::string16 signin_explanation_text =
-      l10n_util::GetStringFUTF16(prompt_for_new_profile_ ?
-          IDS_ENTERPRISE_SIGNIN_EXPLANATION_WITH_PROFILE_CREATION :
-          IDS_ENTERPRISE_SIGNIN_EXPLANATION_WITHOUT_PROFILE_CREATION,
-          username, learn_more_text, &offsets);
+  const std::u16string signin_explanation_text = l10n_util::GetStringFUTF16(
+      prompt_for_new_profile_
+          ? IDS_ENTERPRISE_SIGNIN_EXPLANATION_WITH_PROFILE_CREATION
+          : IDS_ENTERPRISE_SIGNIN_EXPLANATION_WITHOUT_PROFILE_CREATION,
+      username, learn_more_text, &offsets);
   auto explanation_label = std::make_unique<views::StyledLabel>();
   explanation_label->SetText(signin_explanation_text);
   explanation_label->AddStyleRange(
@@ -280,9 +278,9 @@ void ProfileSigninConfirmationDialogViews::BuildWorkProfileView() {
 
   // Create the explanation label.
   size_t learn_more_offset;
-  const base::string16 learn_more_text =
+  const std::u16string learn_more_text =
       l10n_util::GetStringUTF16(IDS_LEARN_MORE);
-  const base::string16 signin_explanation_text =
+  const std::u16string signin_explanation_text =
       l10n_util::GetStringFUTF16(IDS_ENTERPRISE_SIGNIN_WORK_PROFILE_EXPLANATION,
                                  learn_more_text, &learn_more_offset);
   auto explanation_label = std::make_unique<views::StyledLabel>();

@@ -35,7 +35,7 @@ class WebAuthnIconView : public PageActionIconView,
   // PageActionIconView:
   void OnExecuting(PageActionIconView::ExecuteSource execute_source) override;
   const gfx::VectorIcon& GetVectorIcon() const override;
-  base::string16 GetTextForTooltipAndAccessibleName() const override;
+  std::u16string GetTextForTooltipAndAccessibleName() const override;
 
   // views::WidgetObserver:
   void OnWidgetDestroying(views::Widget* widget) override;

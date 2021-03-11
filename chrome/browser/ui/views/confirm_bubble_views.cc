@@ -78,7 +78,7 @@ ConfirmBubbleViews::ConfirmBubbleViews(
 ConfirmBubbleViews::~ConfirmBubbleViews() {
 }
 
-base::string16 ConfirmBubbleViews::GetWindowTitle() const {
+std::u16string ConfirmBubbleViews::GetWindowTitle() const {
   return model_->GetTitle();
 }
 

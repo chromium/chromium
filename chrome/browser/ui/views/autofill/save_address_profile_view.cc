@@ -55,7 +55,7 @@ void AddAddressSection(views::View* parent_view,
 
 void AddAddressSection(views::View* parent_view,
                        const gfx::VectorIcon& icon,
-                       const base::string16& text) {
+                       const std::u16string& text) {
   auto text_label =
       std::make_unique<views::Label>(text, views::style::CONTEXT_LABEL);
   text_label->SetMultiLine(true);
@@ -79,7 +79,7 @@ std::unique_ptr<views::View> CreateAddressLineView() {
 }
 
 std::unique_ptr<views::Label> CreateAddressComponentLabel(
-    const base::string16& text) {
+    const std::u16string& text) {
   auto text_label =
       std::make_unique<views::Label>(text, views::style::CONTEXT_LABEL);
   text_label->SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_LEFT);
@@ -101,7 +101,7 @@ std::unique_ptr<views::View> CreateStreetAddressView(
       .SetDefault(views::kMarginsKey, gfx::Insets());
 
   const AutofillType kCountryCode(HTML_TYPE_COUNTRY_CODE, HTML_MODE_NONE);
-  const base::string16& country_code = profile.GetInfo(kCountryCode, locale);
+  const std::u16string& country_code = profile.GetInfo(kCountryCode, locale);
 
   base::ListValue components;
   // TODO(crbug.com/1167060): Update this implementation after
@@ -112,7 +112,7 @@ std::unique_ptr<views::View> CreateStreetAddressView(
 
   for (size_t line_index = 0; line_index < components.GetSize(); ++line_index) {
     std::unique_ptr<views::View> line_view = CreateAddressLineView();
-    std::vector<base::string16> components_str;
+    std::vector<std::u16string> components_str;
     const base::ListValue* line = nullptr;
     components.GetList(line_index, &line);
     DCHECK(line);
@@ -132,7 +132,7 @@ std::unique_ptr<views::View> CreateStreetAddressView(
 
       autofill::ServerFieldType server_field_type =
           autofill::GetFieldTypeFromString(field_type);
-      base::string16 component_str = profile.GetInfo(server_field_type, locale);
+      std::u16string component_str = profile.GetInfo(server_field_type, locale);
       if (!component_str.empty())
         line_view->AddChildView(CreateAddressComponentLabel(component_str));
     }
@@ -140,7 +140,7 @@ std::unique_ptr<views::View> CreateStreetAddressView(
       address_view->AddChildView(std::move(line_view));
   }
   // Append the country to the end.
-  base::string16 country = profile.GetInfo(ADDRESS_HOME_COUNTRY, locale);
+  std::u16string country = profile.GetInfo(ADDRESS_HOME_COUNTRY, locale);
   if (!country.empty()) {
     std::unique_ptr<views::View> line_view = CreateAddressLineView();
     line_view->AddChildView(CreateAddressComponentLabel(country));
@@ -206,11 +206,11 @@ SaveAddressProfileView::SaveAddressProfileView(
                       std::move(street_address_view));
   }
 
-  base::string16 phone = profile.GetInfo(PHONE_HOME_WHOLE_NUMBER, locale);
+  std::u16string phone = profile.GetInfo(PHONE_HOME_WHOLE_NUMBER, locale);
   if (!phone.empty())
     AddAddressSection(/*parent_view=*/this, vector_icons::kCallIcon, phone);
 
-  base::string16 email = profile.GetInfo(EMAIL_ADDRESS, locale);
+  std::u16string email = profile.GetInfo(EMAIL_ADDRESS, locale);
   if (!email.empty())
     AddAddressSection(/*parent_view=*/this, kWebIcon, email);
 }
@@ -219,7 +219,7 @@ bool SaveAddressProfileView::ShouldShowCloseButton() const {
   return true;
 }
 
-base::string16 SaveAddressProfileView::GetWindowTitle() const {
+std::u16string SaveAddressProfileView::GetWindowTitle() const {
   return controller_->GetWindowTitle();
 }
 

@@ -92,7 +92,7 @@ class PaymentCredentialEnrollmentDialogViewTest
   }
 
   void ExpectLabelText(
-      const base::string16& text,
+      const std::u16string& text,
       PaymentCredentialEnrollmentDialogView::DialogViewID view_id) {
     EXPECT_EQ(text, static_cast<views::Label*>(
                         dialog_view_->GetViewByID(static_cast<int>(view_id)))

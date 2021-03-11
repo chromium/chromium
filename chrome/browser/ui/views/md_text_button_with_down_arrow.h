@@ -21,7 +21,7 @@ class MdTextButtonWithDownArrow : public MdTextButton {
   METADATA_HEADER(MdTextButtonWithDownArrow);
 
   MdTextButtonWithDownArrow(PressedCallback callback,
-                            const base::string16& text);
+                            const std::u16string& text);
   MdTextButtonWithDownArrow(const MdTextButtonWithDownArrow&) = delete;
   MdTextButtonWithDownArrow& operator=(const MdTextButtonWithDownArrow&) =
       delete;

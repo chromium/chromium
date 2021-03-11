@@ -103,9 +103,9 @@ HomePageUndoBubble::~HomePageUndoBubble() = default;
 void HomePageUndoBubble::Init() {
   SetLayoutManager(std::make_unique<views::FillLayout>());
 
-  base::string16 undo_string =
+  std::u16string undo_string =
       l10n_util::GetStringUTF16(IDS_ONE_CLICK_BUBBLE_UNDO);
-  std::vector<base::string16> message = {
+  std::vector<std::u16string> message = {
       l10n_util::GetStringUTF16(IDS_TOOLBAR_INFORM_SET_HOME_PAGE), undo_string};
   views::StyledLabel* label =
       AddChildView(std::make_unique<views::StyledLabel>());
@@ -183,7 +183,7 @@ ui::mojom::DragOperation HomeButton::OnPerformDrop(
     return ui::mojom::DragOperation::kNone;
 
   GURL new_homepage_url;
-  base::string16 title;
+  std::u16string title;
   if (event.data().GetURLAndTitle(ui::FilenameToURLPolicy::CONVERT_FILENAMES,
                                   &new_homepage_url, &title) &&
       new_homepage_url.is_valid()) {

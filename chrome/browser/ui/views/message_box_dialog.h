@@ -22,16 +22,16 @@ class MessageBoxDialog : public views::DialogDelegate,
 
   static chrome::MessageBoxResult Show(
       gfx::NativeWindow parent,
-      const base::string16& title,
-      const base::string16& message,
+      const std::u16string& title,
+      const std::u16string& message,
       chrome::MessageBoxType type,
-      const base::string16& yes_text,
-      const base::string16& no_text,
-      const base::string16& checkbox_text,
+      const std::u16string& yes_text,
+      const std::u16string& no_text,
+      const std::u16string& checkbox_text,
       MessageBoxResultCallback callback = MessageBoxResultCallback());
 
   // views::DialogDelegate:
-  base::string16 GetWindowTitle() const override;
+  std::u16string GetWindowTitle() const override;
   views::View* GetContentsView() override;
   bool ShouldShowCloseButton() const override;
 
@@ -39,12 +39,12 @@ class MessageBoxDialog : public views::DialogDelegate,
   void OnWidgetActivationChanged(views::Widget* widget, bool active) override;
 
  private:
-  MessageBoxDialog(const base::string16& title,
-                   const base::string16& message,
+  MessageBoxDialog(const std::u16string& title,
+                   const std::u16string& message,
                    chrome::MessageBoxType type,
-                   const base::string16& yes_text,
-                   const base::string16& no_text,
-                   const base::string16& checkbox_text,
+                   const std::u16string& yes_text,
+                   const std::u16string& no_text,
+                   const std::u16string& checkbox_text,
                    bool is_system_modal);
   ~MessageBoxDialog() override;
 
@@ -57,7 +57,7 @@ class MessageBoxDialog : public views::DialogDelegate,
   views::Widget* GetWidget() override;
   const views::Widget* GetWidget() const override;
 
-  const base::string16 window_title_;
+  const std::u16string window_title_;
   const chrome::MessageBoxType type_;
   views::MessageBoxView* message_box_view_;
   MessageBoxResultCallback result_callback_;

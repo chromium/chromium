@@ -46,14 +46,14 @@ class CardUnmaskPromptViews : public CardUnmaskPromptView,
   void Show() override;
   void ControllerGone() override;
   void DisableAndWaitForVerification() override;
-  void GotVerificationResult(const base::string16& error_message,
+  void GotVerificationResult(const std::u16string& error_message,
                              bool allow_retry) override;
 
   // views::BubbleDialogDelegateView:
   View* GetContentsView() override;
   void AddedToWidget() override;
   void OnThemeChanged() override;
-  base::string16 GetWindowTitle() const override;
+  std::u16string GetWindowTitle() const override;
   void DeleteDelegate() override;
   bool IsDialogButtonEnabled(ui::DialogButton button) const override;
   View* GetInitiallyFocusedView() override;
@@ -63,13 +63,13 @@ class CardUnmaskPromptViews : public CardUnmaskPromptView,
 
   // views::TextfieldController
   void ContentsChanged(views::Textfield* sender,
-                       const base::string16& new_contents) override;
+                       const std::u16string& new_contents) override;
 
  private:
   friend class CardUnmaskPromptViewTesterViews;
 
   void InitIfNecessary();
-  void SetRetriableErrorMessage(const base::string16& message);
+  void SetRetriableErrorMessage(const std::u16string& message);
   bool ExpirationDateIsValid() const;
   void SetInputsEnabled(bool enabled);
   void ShowNewCardLink();

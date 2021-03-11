@@ -58,7 +58,7 @@ void RelaunchRequiredDialogView::SetDeadline(base::Time deadline) {
   relaunch_required_timer_.SetDeadline(deadline);
 }
 
-base::string16 RelaunchRequiredDialogView::GetWindowTitle() const {
+std::u16string RelaunchRequiredDialogView::GetWindowTitle() const {
   return relaunch_required_timer_.GetWindowTitle();
 }
 

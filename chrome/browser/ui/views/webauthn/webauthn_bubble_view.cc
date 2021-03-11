@@ -51,7 +51,7 @@ WebAuthnBubbleView::WebAuthnBubbleView(const std::string& relying_party_id,
 
 WebAuthnBubbleView::~WebAuthnBubbleView() = default;
 
-base::string16 WebAuthnBubbleView::GetWindowTitle() const {
+std::u16string WebAuthnBubbleView::GetWindowTitle() const {
   // TODO(crbug.com/1179014): go through ux review and i18n this string.
   return base::UTF8ToUTF16("Sign in with your security key");
 }
@@ -60,7 +60,7 @@ void WebAuthnBubbleView::Init() {
   SetLayoutManager(std::make_unique<views::FillLayout>());
 
   // TODO(crbug.com/1179014): go through ux review and i18n this string.
-  base::string16 label_text = base::ReplaceStringPlaceholders(
+  std::u16string label_text = base::ReplaceStringPlaceholders(
       base::UTF8ToUTF16(
           "To sign in to $1 with your security key, insert it and tap it"),
       webauthn_ui_helpers::RpIdToElidedHost(relying_party_id_, fixed_width()),

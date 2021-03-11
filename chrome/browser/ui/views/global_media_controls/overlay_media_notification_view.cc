@@ -124,7 +124,7 @@ void OverlayMediaNotificationView::CloseNotification() {
   CloseWithReason(ClosedReason::kUnspecified);
 }
 
-void OverlayMediaNotificationView::UpdateTitle(const base::string16& title) {
+void OverlayMediaNotificationView::UpdateTitle(const std::u16string& title) {
   widget_delegate()->SetTitle(title);
 }
 

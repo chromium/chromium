@@ -56,7 +56,7 @@ gfx::Insets GetDialogInsets() {
       views::CONTROL, views::TEXT);
 }
 
-std::unique_ptr<views::Label> CreateText(const base::string16& message) {
+std::unique_ptr<views::Label> CreateText(const std::u16string& message) {
   auto text = std::make_unique<views::Label>(message);
   text->SetFontList(gfx::FontList().Derive(kFontSizeDelta, gfx::Font::NORMAL,
                                            gfx::Font::Weight::MEDIUM));
@@ -119,7 +119,7 @@ EnterpriseStartupDialogView::EnterpriseStartupDialogView(
 EnterpriseStartupDialogView::~EnterpriseStartupDialogView() {}
 
 void EnterpriseStartupDialogView::DisplayLaunchingInformationWithThrobber(
-    const base::string16& information) {
+    const std::u16string& information) {
   ResetDialog(false);
 
   std::unique_ptr<views::Label> text = CreateText(information);
@@ -132,8 +132,8 @@ void EnterpriseStartupDialogView::DisplayLaunchingInformationWithThrobber(
 }
 
 void EnterpriseStartupDialogView::DisplayErrorMessage(
-    const base::string16& error_message,
-    const base::Optional<base::string16>& accept_button) {
+    const std::u16string& error_message,
+    const base::Optional<std::u16string>& accept_button) {
   ResetDialog(accept_button.has_value());
   std::unique_ptr<views::Label> text = CreateText(error_message);
   auto error_icon = std::make_unique<views::ImageView>();
@@ -258,14 +258,14 @@ EnterpriseStartupDialogImpl::~EnterpriseStartupDialogImpl() {
 }
 
 void EnterpriseStartupDialogImpl::DisplayLaunchingInformationWithThrobber(
-    const base::string16& information) {
+    const std::u16string& information) {
   if (dialog_view_)
     dialog_view_->DisplayLaunchingInformationWithThrobber(information);
 }
 
 void EnterpriseStartupDialogImpl::DisplayErrorMessage(
-    const base::string16& error_message,
-    const base::Optional<base::string16>& accept_button) {
+    const std::u16string& error_message,
+    const base::Optional<std::u16string>& accept_button) {
   if (dialog_view_)
     dialog_view_->DisplayErrorMessage(error_message, accept_button);
 }

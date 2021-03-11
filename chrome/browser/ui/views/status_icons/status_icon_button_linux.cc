@@ -43,7 +43,7 @@ void StatusIconButtonLinux::SetIcon(const gfx::ImageSkia& image) {
   SchedulePaint();
 }
 
-void StatusIconButtonLinux::SetToolTip(const base::string16& tool_tip) {
+void StatusIconButtonLinux::SetToolTip(const std::u16string& tool_tip) {
   SetTooltipText(tool_tip);
 }
 

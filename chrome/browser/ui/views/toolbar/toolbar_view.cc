@@ -766,7 +766,7 @@ void ToolbarView::UpdateTypeAndSeverity(
   if (!app_menu_button_)
     return;
 
-  base::string16 accname_app = l10n_util::GetStringUTF16(IDS_ACCNAME_APP);
+  std::u16string accname_app = l10n_util::GetStringUTF16(IDS_ACCNAME_APP);
   if (type_and_severity.type ==
       AppMenuIconController::IconType::UPGRADE_NOTIFICATION) {
     accname_app = l10n_util::GetStringFUTF16(

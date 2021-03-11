@@ -89,7 +89,7 @@ class SecurePaymentConfirmationDialogViewTest
   }
 
   void ExpectLabelText(
-      const base::string16& text,
+      const std::u16string& text,
       SecurePaymentConfirmationDialogView::DialogViewID view_id) {
     EXPECT_EQ(text, static_cast<views::Label*>(
                         test_delegate_->dialog_view()->GetViewByID(

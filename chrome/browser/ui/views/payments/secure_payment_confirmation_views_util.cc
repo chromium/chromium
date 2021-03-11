@@ -49,7 +49,7 @@ CreateSecurePaymentConfirmationProgressBarView() {
 }
 
 std::unique_ptr<views::Label> CreateSecurePaymentConfirmationTitleLabel(
-    const base::string16& title) {
+    const std::u16string& title) {
   std::unique_ptr<views::Label> title_label = std::make_unique<views::Label>(
       title, views::style::CONTEXT_DIALOG_TITLE, views::style::STYLE_PRIMARY);
   title_label->SetHorizontalAlignment(gfx::ALIGN_TO_HEAD);

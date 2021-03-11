@@ -55,7 +55,7 @@ std::wstring AddIdToIconPath(const std::wstring& path) {
 // |browser| are correct.
 void ValidateBrowserWindowProperties(
     const Browser* browser,
-    const base::string16& expected_profile_name) {
+    const std::u16string& expected_profile_name) {
   // Let shortcut creation finish before we validate the results.
   content::RunAllTasksUntilIdle();
 
@@ -168,7 +168,7 @@ class BrowserTestWithProfileShortcutManager : public InProcessBrowserTest {
 IN_PROC_BROWSER_TEST_F(BrowserTestWithProfileShortcutManager,
                        DISABLED_WindowProperties) {
   // Single profile case. The profile name should not be shown.
-  ValidateBrowserWindowProperties(browser(), base::string16());
+  ValidateBrowserWindowProperties(browser(), std::u16string());
 
   // If multiprofile mode is not enabled, we can't test the behavior when there
   // are multiple profiles.
@@ -182,7 +182,7 @@ IN_PROC_BROWSER_TEST_F(BrowserTestWithProfileShortcutManager,
       profile_manager->GenerateNextProfileDirectoryPath();
   profile_manager->CreateProfileAsync(path_profile2,
                                       ProfileManager::CreateCallback(),
-                                      base::string16(), std::string());
+                                      std::u16string(), std::string());
   // The default profile's name should be part of the relaunch name.
   ValidateBrowserWindowProperties(
       browser(), base::UTF8ToUTF16(browser()->profile()->GetProfileUserName()));

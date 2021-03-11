@@ -131,7 +131,7 @@ const gfx::VectorIcon& ReaderModeIconView::GetVectorIcon() const {
   return GetActive() ? kReaderModeIcon : kReaderModeDisabledIcon;
 }
 
-base::string16 ReaderModeIconView::GetTextForTooltipAndAccessibleName() const {
+std::u16string ReaderModeIconView::GetTextForTooltipAndAccessibleName() const {
   return l10n_util::GetStringUTF16(GetActive() ? IDS_EXIT_DISTILLED_PAGE
                                                : IDS_DISTILL_PAGE);
 }

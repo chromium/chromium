@@ -32,9 +32,8 @@ class StatusTrayStateChangerWinTest : public testing::Test {
     bitmap.allocN32Pixels(16, 16);
     bitmap.eraseColor(SK_ColorGREEN);
     status_icon_win_ = (StatusIconWin*)status_tray_->CreateStatusIcon(
-        StatusTray::OTHER_ICON,
-        gfx::ImageSkia::CreateFrom1xBitmap(bitmap),
-        base::string16());
+        StatusTray::OTHER_ICON, gfx::ImageSkia::CreateFrom1xBitmap(bitmap),
+        std::u16string());
     tray_watcher_ = Microsoft::WRL::Make<StatusTrayStateChangerWin>(
         status_icon_win_->icon_id(), status_icon_win_->window());
   }

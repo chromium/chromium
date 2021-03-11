@@ -122,7 +122,7 @@ void AvatarToolbarButton::Layout() {
 
 void AvatarToolbarButton::UpdateText() {
   base::Optional<SkColor> color;
-  base::string16 text;
+  std::u16string text;
 
   switch (delegate_->GetState()) {
     case State::kIncognitoProfile: {
@@ -243,7 +243,7 @@ void AvatarToolbarButton::NotifyClick(const ui::Event& event) {
       event.IsKeyEvent());
 }
 
-base::string16 AvatarToolbarButton::GetAvatarTooltipText() const {
+std::u16string AvatarToolbarButton::GetAvatarTooltipText() const {
   switch (delegate_->GetState()) {
     case State::kIncognitoProfile:
       return l10n_util::GetStringUTF16(IDS_AVATAR_BUTTON_INCOGNITO_TOOLTIP);
@@ -267,7 +267,7 @@ base::string16 AvatarToolbarButton::GetAvatarTooltipText() const {
       return delegate_->GetProfileName();
   }
   NOTREACHED();
-  return base::string16();
+  return std::u16string();
 }
 
 ui::ImageModel AvatarToolbarButton::GetAvatarIcon(

@@ -88,7 +88,7 @@ ExtensionsMenuItemView::ExtensionsMenuItemView(
     auto pin_button = std::make_unique<HoverButton>(
         base::BindRepeating(&ExtensionsMenuItemView::PinButtonPressed,
                             base::Unretained(this)),
-        base::string16());
+        std::u16string());
     pin_button->SetID(EXTENSION_PINNING);
     pin_button->SetBorder(views::CreateEmptyBorder(kSecondaryButtonInsets));
 
@@ -98,7 +98,7 @@ ExtensionsMenuItemView::ExtensionsMenuItemView(
   UpdatePinButton();
 
   auto context_menu_button = std::make_unique<HoverButton>(
-      views::Button::PressedCallback(), base::string16());
+      views::Button::PressedCallback(), std::u16string());
   context_menu_button->SetID(EXTENSION_CONTEXT_MENU);
   context_menu_button->SetBorder(
       views::CreateEmptyBorder(kSecondaryButtonInsets));

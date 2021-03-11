@@ -215,7 +215,7 @@ LRESULT CALLBACK StatusTrayWin::WndProc(HWND hwnd,
 std::unique_ptr<StatusIcon> StatusTrayWin::CreatePlatformStatusIcon(
     StatusTray::StatusIconType type,
     const gfx::ImageSkia& image,
-    const base::string16& tool_tip) {
+    const std::u16string& tool_tip) {
   UINT next_icon_id;
   if (type == StatusTray::OTHER_ICON)
     next_icon_id = NextIconId();

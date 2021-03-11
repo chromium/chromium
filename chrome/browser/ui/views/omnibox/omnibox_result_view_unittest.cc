@@ -224,7 +224,7 @@ TEST_F(OmniboxResultViewTest, MouseEnterAndExitSetsHoveredState) {
 
 TEST_F(OmniboxResultViewTest, AccessibleNodeData) {
   // Check accessibility of result.
-  base::string16 match_url = base::ASCIIToUTF16("https://google.com");
+  std::u16string match_url = base::ASCIIToUTF16("https://google.com");
   AutocompleteMatch match(nullptr, 500, false,
                           AutocompleteMatchType::HISTORY_TITLE);
   match.contents = match_url;

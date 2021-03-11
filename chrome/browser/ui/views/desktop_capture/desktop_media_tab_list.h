@@ -40,7 +40,7 @@ class DesktopMediaTabList : public DesktopMediaListController::ListView {
  public:
   METADATA_HEADER(DesktopMediaTabList);
   DesktopMediaTabList(DesktopMediaListController* controller,
-                      const base::string16& accessible_name);
+                      const std::u16string& accessible_name);
   DesktopMediaTabList(const DesktopMediaTabList&) = delete;
   DesktopMediaTabList& operator=(const DesktopMediaTabList&) = delete;
   ~DesktopMediaTabList() override;

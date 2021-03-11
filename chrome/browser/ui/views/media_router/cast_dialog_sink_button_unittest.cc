@@ -115,9 +115,9 @@ TEST_F(CastDialogSinkButtonTest, SetStatusLabelForDialSinks) {
 TEST_F(CastDialogSinkButtonTest, OverrideStatusText) {
   UIMediaSink sink;
   CastDialogSinkButton button(views::Button::PressedCallback(), sink);
-  base::string16 status0 = base::ASCIIToUTF16("status0");
-  base::string16 status1 = base::ASCIIToUTF16("status1");
-  base::string16 status2 = base::ASCIIToUTF16("status2");
+  std::u16string status0 = base::ASCIIToUTF16("status0");
+  std::u16string status1 = base::ASCIIToUTF16("status1");
+  std::u16string status2 = base::ASCIIToUTF16("status2");
 
   // Calling RestoreStatusText does nothing when status has not been overridden.
   button.subtitle()->SetText(status0);

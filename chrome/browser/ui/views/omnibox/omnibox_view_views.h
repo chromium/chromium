@@ -120,19 +120,18 @@ class OmniboxViewViews : public OmniboxView,
   // OmniboxView:
   void EmphasizeURLComponents() override;
   void Update() override;
-  base::string16 GetText() const override;
+  std::u16string GetText() const override;
   using OmniboxView::SetUserText;
-  void SetUserText(const base::string16& text,
-                   bool update_popup) override;
-  void SetWindowTextAndCaretPos(const base::string16& text,
+  void SetUserText(const std::u16string& text, bool update_popup) override;
+  void SetWindowTextAndCaretPos(const std::u16string& text,
                                 size_t caret_pos,
                                 bool update_popup,
                                 bool notify_text_changed) override;
-  void SetAdditionalText(const base::string16& additional_text) override;
+  void SetAdditionalText(const std::u16string& additional_text) override;
   void EnterKeywordModeForDefaultSearchProvider() override;
   bool IsSelectAll() const override;
-  void GetSelectionBounds(base::string16::size_type* start,
-                          base::string16::size_type* end) const override;
+  void GetSelectionBounds(std::u16string::size_type* start,
+                          std::u16string::size_type* end) const override;
   size_t GetAllSelectionsLength() const override;
   void SelectAll(bool reversed) override;
   void RevertAll() override;
@@ -151,7 +150,7 @@ class OmniboxViewViews : public OmniboxView,
   ui::TextInputType GetTextInputType() const override;
   void AddedToWidget() override;
   void RemovedFromWidget() override;
-  base::string16 GetLabelForCommandId(int command_id) const override;
+  std::u16string GetLabelForCommandId(int command_id) const override;
   bool IsCommandIdEnabled(int command_id) const override;
 
   // content::WebContentsObserver:
@@ -369,13 +368,13 @@ class OmniboxViewViews : public OmniboxView,
   // Update the field with |text| and set the selection. |ranges| should not be
   // empty; even text with no selections must have at least 1 empty range in
   // |ranges| to indicate the cursor position.
-  void SetTextAndSelectedRanges(const base::string16& text,
+  void SetTextAndSelectedRanges(const std::u16string& text,
                                 const std::vector<gfx::Range>& ranges);
 
   void SetSelectedRanges(const std::vector<gfx::Range>& ranges);
 
   // Returns the selected text.
-  base::string16 GetSelectedText() const;
+  std::u16string GetSelectedText() const;
 
   // Paste text from the clipboard into the omnibox.
   // Textfields implementation of Paste() pastes the contents of the clipboard
@@ -389,7 +388,7 @@ class OmniboxViewViews : public OmniboxView,
 
   void ClearAccessibilityLabel();
 
-  void SetAccessibilityLabel(const base::string16& display_text,
+  void SetAccessibilityLabel(const std::u16string& display_text,
                              const AutocompleteMatch& match,
                              bool notify_text_changed) override;
 
@@ -405,15 +404,15 @@ class OmniboxViewViews : public OmniboxView,
   void SetCaretPos(size_t caret_pos) override;
   void UpdatePopup() override;
   void ApplyCaretVisibility() override;
-  void OnTemporaryTextMaybeChanged(const base::string16& display_text,
+  void OnTemporaryTextMaybeChanged(const std::u16string& display_text,
                                    const AutocompleteMatch& match,
                                    bool save_original_selection,
                                    bool notify_text_changed) override;
-  void OnInlineAutocompleteTextMaybeChanged(const base::string16& display_text,
+  void OnInlineAutocompleteTextMaybeChanged(const std::u16string& display_text,
                                             std::vector<gfx::Range> selections,
                                             size_t user_text_length) override;
   void OnInlineAutocompleteTextCleared() override;
-  void OnRevertTemporaryText(const base::string16& display_text,
+  void OnRevertTemporaryText(const std::u16string& display_text,
                              const AutocompleteMatch& match) override;
   void OnBeforePossibleChange() override;
   bool OnAfterPossibleChange(bool allow_keyword_ui_change) override;
@@ -438,7 +437,7 @@ class OmniboxViewViews : public OmniboxView,
   void OnBoundsChanged(const gfx::Rect& previous_bounds) override;
   void OnFocus() override;
   void OnBlur() override;
-  base::string16 GetSelectionClipboardText() const override;
+  std::u16string GetSelectionClipboardText() const override;
   void DoInsertChar(char16_t ch) override;
   bool IsTextEditCommandEnabled(ui::TextEditCommand command) const override;
   void ExecuteTextEditCommand(ui::TextEditCommand command) override;
@@ -454,7 +453,7 @@ class OmniboxViewViews : public OmniboxView,
 
   // views::TextfieldController:
   void ContentsChanged(views::Textfield* sender,
-                       const base::string16& new_contents) override;
+                       const std::u16string& new_contents) override;
   bool HandleKeyEvent(views::Textfield* sender,
                       const ui::KeyEvent& key_event) override;
   void OnBeforeUserAction(views::Textfield* sender) override;
@@ -678,7 +677,7 @@ class OmniboxViewViews : public OmniboxView,
   // such as the document title and the type of search, for example:
   // "Google https://google.com location from bookmark", or
   // "cats are liquid search suggestion".
-  base::string16 friendly_suggestion_text_;
+  std::u16string friendly_suggestion_text_;
 
   // The number of added labelling characters before editable text begins.
   // For example,  "Google https://google.com location from history",

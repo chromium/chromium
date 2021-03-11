@@ -27,14 +27,14 @@ class PromptForScanningModalDialog : public views::DialogDelegateView {
 
   // Show this dialog for the given |web_contents|.
   static void ShowForWebContents(content::WebContents* web_contents,
-                                 const base::string16& filename,
+                                 const std::u16string& filename,
                                  base::OnceClosure accept_callback,
                                  base::OnceClosure open_now_callback);
 
   // Create a PromptForScanningModalDialog attached to |web_contents|. The
   // dialog will call |accept_callback| if the user accepts the prompt.
   PromptForScanningModalDialog(content::WebContents* web_contents,
-                               const base::string16& filename,
+                               const std::u16string& filename,
                                base::OnceClosure accept_callback,
                                base::OnceClosure open_now_callback);
   PromptForScanningModalDialog(const PromptForScanningModalDialog&) = delete;

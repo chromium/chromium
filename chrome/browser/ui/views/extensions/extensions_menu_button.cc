@@ -26,7 +26,7 @@ ExtensionsMenuButton::ExtensionsMenuButton(
     bool allow_pinning)
     : HoverButton(base::BindRepeating(&ExtensionsMenuButton::ButtonPressed,
                                       base::Unretained(this)),
-                  base::string16()),
+                  std::u16string()),
       browser_(browser),
       parent_(parent),
       controller_(controller),

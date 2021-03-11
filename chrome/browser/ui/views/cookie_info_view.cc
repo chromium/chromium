@@ -127,7 +127,7 @@ CookieInfoView::~CookieInfoView() = default;
 
 void CookieInfoView::SetCookie(const std::string& domain,
                                const net::CanonicalCookie& cookie) {
-  const std::unordered_map<CookieProperty, base::string16> strings_map{
+  const std::unordered_map<CookieProperty, std::u16string> strings_map{
       {CookieProperty::kName, base::UTF8ToUTF16(cookie.Name())},
       {CookieProperty::kContent, base::UTF8ToUTF16(cookie.Value())},
       {CookieProperty::kDomain, base::UTF8ToUTF16(domain)},

@@ -23,7 +23,7 @@ namespace {
 
 void ShowFeedbackPage(Browser* browser,
                       std::string feedback_category_name,
-                      base::string16 visible_name) {
+                      std::u16string visible_name) {
   chrome::ShowFeedbackPage(
       browser, chrome::FeedbackSource::kFeedbackSourceChromeLabs,
       /*description_template=*/std::string(),
@@ -46,7 +46,7 @@ class LabsComboboxModel : public ui::ComboboxModel {
   // ui::ComboboxModel:
   int GetItemCount() const override { return feature_entry_->NumOptions(); }
 
-  base::string16 GetItemAt(int index) const override {
+  std::u16string GetItemAt(int index) const override {
     // TODO(elainechien): remove white space for description
     return feature_entry_->DescriptionForOption(index);
   }

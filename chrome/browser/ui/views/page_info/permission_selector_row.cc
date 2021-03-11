@@ -55,7 +55,7 @@ class ComboboxModelAdapter : public ui::ComboboxModel {
 
   // ui::ComboboxModel:
   int GetItemCount() const override;
-  base::string16 GetItemAt(int index) const override;
+  std::u16string GetItemAt(int index) const override;
 
  private:
   PermissionMenuModel* model_;
@@ -87,7 +87,7 @@ int ComboboxModelAdapter::GetItemCount() const {
   return model_->GetItemCount();
 }
 
-base::string16 ComboboxModelAdapter::GetItemAt(int index) const {
+std::u16string ComboboxModelAdapter::GetItemAt(int index) const {
   return model_->GetLabelAt(index);
 }
 
@@ -184,7 +184,7 @@ PermissionSelectorRow::PermissionSelectorRow(
 
   // Show the permission decision reason, if it was not the user.
   auto delegate = ChromePageInfoUiDelegate(profile);
-  base::string16 reason = PageInfoUI::PermissionDecisionReasonToUIString(
+  std::u16string reason = PageInfoUI::PermissionDecisionReasonToUIString(
       &delegate, permission, url);
   if (!reason.empty()) {
     layout->StartRow(1.0, PageInfoBubbleView::kPermissionColumnSetId);

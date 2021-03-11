@@ -56,8 +56,8 @@ class HoverListView : public views::View,
   };
 
   void AppendListItemView(const gfx::VectorIcon* icon,
-                          base::string16 item_text,
-                          base::string16 item_description,
+                          std::u16string item_text,
+                          std::u16string item_description,
                           int item_tag);
   void CreateAndAppendPlaceholderItem();
   void AddListItemView(int item_tag);

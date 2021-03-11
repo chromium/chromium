@@ -32,7 +32,7 @@ class ZoomView : public PageActionIconView {
   void OnExecuting(PageActionIconView::ExecuteSource source) override;
   views::BubbleDialogDelegate* GetBubble() const override;
   const gfx::VectorIcon& GetVectorIcon() const override;
-  base::string16 GetTextForTooltipAndAccessibleName() const override;
+  std::u16string GetTextForTooltipAndAccessibleName() const override;
 
  private:
   bool ShouldBeVisible(bool can_show_bubble) const;

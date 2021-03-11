@@ -31,7 +31,7 @@ class TranslateIconView : public PageActionIconView {
   void OnExecuting(PageActionIconView::ExecuteSource execute_source) override;
   void OnPressed(bool activated) override;
   const gfx::VectorIcon& GetVectorIcon() const override;
-  base::string16 GetTextForTooltipAndAccessibleName() const override;
+  std::u16string GetTextForTooltipAndAccessibleName() const override;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_TRANSLATE_TRANSLATE_ICON_VIEW_H_

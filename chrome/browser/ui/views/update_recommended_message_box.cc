@@ -43,7 +43,7 @@ UpdateRecommendedMessageBox::UpdateRecommendedMessageBox() {
   SetModalType(ui::MODAL_TYPE_WINDOW);
   SetOwnedByWidget(true);
   SetTitle(IDS_UPDATE_RECOMMENDED_DIALOG_TITLE);
-  base::string16 update_message;
+  std::u16string update_message;
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   update_message = l10n_util::GetStringUTF16(IDS_UPDATE_RECOMMENDED);
 #else

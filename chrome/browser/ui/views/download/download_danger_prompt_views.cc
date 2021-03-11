@@ -54,13 +54,13 @@ class DownloadDangerPromptViews : public DownloadDangerPrompt,
   void InvokeActionForTesting(Action action) override;
 
   // views::DialogDelegateView:
-  base::string16 GetWindowTitle() const override;
+  std::u16string GetWindowTitle() const override;
 
   // download::DownloadItem::Observer:
   void OnDownloadUpdated(download::DownloadItem* download) override;
 
  private:
-  base::string16 GetMessageBody() const;
+  std::u16string GetMessageBody() const;
   void RunDone(Action action);
 
   download::DownloadItem* download_;
@@ -152,7 +152,7 @@ void DownloadDangerPromptViews::InvokeActionForTesting(Action action) {
 }
 
 // views::DialogDelegate methods:
-base::string16 DownloadDangerPromptViews::GetWindowTitle() const {
+std::u16string DownloadDangerPromptViews::GetWindowTitle() const {
   if (show_context_ || !download_)  // |download_| may be null in tests.
     return l10n_util::GetStringUTF16(IDS_CONFIRM_KEEP_DANGEROUS_DOWNLOAD_TITLE);
   switch (download_->GetDangerType()) {
@@ -182,7 +182,7 @@ void DownloadDangerPromptViews::OnDownloadUpdated(
   }
 }
 
-base::string16 DownloadDangerPromptViews::GetMessageBody() const {
+std::u16string DownloadDangerPromptViews::GetMessageBody() const {
   if (show_context_) {
     switch (download_->GetDangerType()) {
       case download::DOWNLOAD_DANGER_TYPE_DANGEROUS_FILE: {
@@ -255,7 +255,7 @@ base::string16 DownloadDangerPromptViews::GetMessageBody() const {
     }
   }
   NOTREACHED();
-  return base::string16();
+  return std::u16string();
 }
 
 void DownloadDangerPromptViews::RunDone(Action action) {
@@ -286,7 +286,7 @@ void DownloadDangerPromptViews::RunDone(Action action) {
 }
 
 BEGIN_METADATA(DownloadDangerPromptViews, views::DialogDelegateView)
-ADD_READONLY_PROPERTY_METADATA(base::string16, MessageBody)
+ADD_READONLY_PROPERTY_METADATA(std::u16string, MessageBody)
 END_METADATA
 
 }  // namespace

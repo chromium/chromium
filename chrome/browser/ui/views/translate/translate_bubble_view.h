@@ -115,7 +115,7 @@ class TranslateBubbleView : public LocationBarBubbleDelegateView,
   friend void ::translate::test_utils::PressRevert(::Browser*);
   friend void ::translate::test_utils::SelectTargetLanguageByDisplayName(
       ::Browser*,
-      const ::base::string16&);
+      const ::std::u16string&);
   FRIEND_TEST_ALL_PREFIXES(TranslateBubbleViewTest, TranslateButton);
   FRIEND_TEST_ALL_PREFIXES(TranslateBubbleViewTest,
                            AlwaysTranslateCheckboxShortcut);
@@ -242,8 +242,8 @@ class TranslateBubbleView : public LocationBarBubbleDelegateView,
 
   // Retrieve the names of the from/to languages and reset the language
   // indices.
-  void UpdateLanguageNames(base::string16* source_language_name,
-                           base::string16* target_language_name);
+  void UpdateLanguageNames(std::u16string* source_language_name,
+                           std::u16string* target_language_name);
 
   void UpdateInsets(TranslateBubbleModel::ViewState state);
 

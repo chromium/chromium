@@ -17,11 +17,11 @@ class AppInfoLabel : public views::Label {
  public:
   METADATA_HEADER(AppInfoLabel);
 
-  explicit AppInfoLabel(const base::string16& text);
+  explicit AppInfoLabel(const std::u16string& text);
   ~AppInfoLabel() override;
 
   // See documentation on views::Label::Label().
-  AppInfoLabel(const base::string16& text,
+  AppInfoLabel(const std::u16string& text,
                int text_context,
                int text_style = views::style::STYLE_PRIMARY,
                gfx::DirectionalityMode directionality_mode =

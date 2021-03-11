@@ -47,7 +47,7 @@ constexpr SkColor kTitleSeparatorColor = SkColorSetRGB(0x9E, 0x9E, 0x9E);
 }  // namespace
 
 TitleWithIconAndSeparatorView::TitleWithIconAndSeparatorView(
-    const base::string16& window_title) {
+    const std::u16string& window_title) {
   views::GridLayout* layout =
       SetLayoutManager(std::make_unique<views::GridLayout>());
   views::ColumnSet* columns = layout->AddColumnSet(0);

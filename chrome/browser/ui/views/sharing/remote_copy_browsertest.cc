@@ -121,15 +121,15 @@ class RemoteCopyBrowserTestBase : public InProcessBrowserTest {
     ui::ClipboardMonitor::GetInstance()->RemoveObserver(&observer);
   }
 
-  std::vector<base::string16> GetAvailableClipboardTypes() {
-    std::vector<base::string16> types;
+  std::vector<std::u16string> GetAvailableClipboardTypes() {
+    std::vector<std::u16string> types;
     ui::Clipboard::GetForCurrentThread()->ReadAvailableTypes(
         ui::ClipboardBuffer::kCopyPaste, /* data_dst = */ nullptr, &types);
     return types;
   }
 
   std::string ReadClipboardText() {
-    base::string16 text;
+    std::u16string text;
     ui::Clipboard::GetForCurrentThread()->ReadText(
         ui::ClipboardBuffer::kCopyPaste, /* data_dst = */ nullptr, &text);
     return base::UTF16ToUTF8(text);
@@ -203,7 +203,7 @@ IN_PROC_BROWSER_TEST_F(RemoteCopyBrowserTest, Text) {
   SendTextMessage(kDeviceName, kText);
 
   // The text is in the clipboard and a notification is shown.
-  std::vector<base::string16> types = GetAvailableClipboardTypes();
+  std::vector<std::u16string> types = GetAvailableClipboardTypes();
   ASSERT_EQ(1u, types.size());
   ASSERT_EQ(ui::kMimeTypeText, base::UTF16ToASCII(types[0]));
   ASSERT_EQ(kText, ReadClipboardText());
@@ -227,7 +227,7 @@ IN_PROC_BROWSER_TEST_F(RemoteCopyBrowserTest, ImageUrl) {
   SendImageMessage(kDeviceName, server_->GetURL("/image_decoding/droids.jpg"));
 
   // The image is in the clipboard and a notification is shown.
-  std::vector<base::string16> types = GetAvailableClipboardTypes();
+  std::vector<std::u16string> types = GetAvailableClipboardTypes();
   ASSERT_EQ(1u, types.size());
   ASSERT_EQ(ui::kMimeTypePNG, base::UTF16ToASCII(types[0]));
   SkBitmap bitmap = ReadClipboardImage();
@@ -267,7 +267,7 @@ IN_PROC_BROWSER_TEST_F(RemoteCopyBrowserTest, TextThenImageUrl) {
   SendTextMessage(kDeviceName, kText);
 
   // The text is in the clipboard.
-  std::vector<base::string16> types = GetAvailableClipboardTypes();
+  std::vector<std::u16string> types = GetAvailableClipboardTypes();
   ASSERT_EQ(1u, types.size());
   ASSERT_EQ(ui::kMimeTypeText, base::UTF16ToASCII(types[0]));
   ASSERT_EQ(kText, ReadClipboardText());

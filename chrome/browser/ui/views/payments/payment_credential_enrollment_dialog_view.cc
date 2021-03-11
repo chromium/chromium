@@ -147,7 +147,7 @@ void PaymentCredentialEnrollmentDialogView::OnModelUpdated() {
 
 void PaymentCredentialEnrollmentDialogView::UpdateLabelView(
     DialogViewID id,
-    const base::string16& text) {
+    const std::u16string& text) {
   static_cast<views::Label*>(GetViewByID(static_cast<int>(id)))->SetText(text);
 }
 
@@ -270,7 +270,7 @@ PaymentCredentialEnrollmentDialogView::CreateBodyView() {
 // +~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~+
 std::unique_ptr<views::View>
 PaymentCredentialEnrollmentDialogView::CreateDescription(
-    const base::string16& text,
+    const std::u16string& text,
     DialogViewID view_id) {
   auto description = std::make_unique<views::View>();
 

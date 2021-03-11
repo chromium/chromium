@@ -642,9 +642,9 @@ void Tab::OnGestureEvent(ui::GestureEvent* event) {
   event->SetHandled();
 }
 
-base::string16 Tab::GetTooltipText(const gfx::Point& p) const {
+std::u16string Tab::GetTooltipText(const gfx::Point& p) const {
   // Tab hover cards replace tooltips for tabs.
-  return base::string16();
+  return std::u16string();
 }
 
 void Tab::GetAccessibleNodeData(ui::AXNodeData* node_data) {
@@ -653,7 +653,7 @@ void Tab::GetAccessibleNodeData(ui::AXNodeData* node_data) {
   node_data->AddBoolAttribute(ax::mojom::BoolAttribute::kSelected,
                               IsSelected());
 
-  base::string16 name = controller_->GetAccessibleTabName(this);
+  std::u16string name = controller_->GetAccessibleTabName(this);
   if (!name.empty()) {
     node_data->SetName(name);
   } else {
@@ -818,7 +818,7 @@ void Tab::SetData(TabRendererData data) {
   icon_->SetCanPaintToLayer(controller_->CanPaintThrobberToLayer());
   UpdateTabIconNeedsAttentionBlocked();
 
-  base::string16 title = data_.title;
+  std::u16string title = data_.title;
   if (title.empty() && !data_.should_render_empty_title) {
     title = icon_->GetShowingLoadingAnimation()
                 ? l10n_util::GetStringUTF16(IDS_TAB_LOADING_TITLE)
@@ -872,12 +872,12 @@ void Tab::ReleaseFreezingVoteToken() {
 }
 
 // static
-base::string16 Tab::GetTooltipText(const base::string16& title,
+std::u16string Tab::GetTooltipText(const std::u16string& title,
                                    base::Optional<TabAlertState> alert_state) {
   if (!alert_state)
     return title;
 
-  base::string16 result = title;
+  std::u16string result = title;
   if (!result.empty())
     result.append(1, '\n');
   result.append(chrome::GetTabAlertStateText(alert_state.value()));

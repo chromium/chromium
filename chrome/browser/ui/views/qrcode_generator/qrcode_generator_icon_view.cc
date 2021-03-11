@@ -89,7 +89,7 @@ const gfx::VectorIcon& QRCodeGeneratorIconView::GetVectorIcon() const {
   return kQrcodeGeneratorIcon;
 }
 
-base::string16 QRCodeGeneratorIconView::GetTextForTooltipAndAccessibleName()
+std::u16string QRCodeGeneratorIconView::GetTextForTooltipAndAccessibleName()
     const {
   return l10n_util::GetStringUTF16(IDS_OMNIBOX_QRCODE_GENERATOR_ICON_TOOLTIP);
 }

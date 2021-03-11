@@ -51,7 +51,7 @@ views::Widget* CrostiniForceCloseView::Show(
 }
 
 CrostiniForceCloseView::CrostiniForceCloseView(
-    const base::string16& app_name,
+    const std::u16string& app_name,
     base::OnceClosure force_close_callback) {
   SetShowCloseButton(false);
   SetTitle(

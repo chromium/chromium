@@ -65,7 +65,7 @@ DesktopMediaListView::DesktopMediaListView(
     DesktopMediaListController* controller,
     DesktopMediaSourceViewStyle generic_style,
     DesktopMediaSourceViewStyle single_style,
-    const base::string16& accessible_name)
+    const std::u16string& accessible_name)
     : controller_(controller),
       single_style_(single_style),
       generic_style_(generic_style),

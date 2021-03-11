@@ -947,7 +947,7 @@ gfx::RectF GM2TabStyle::ScaleAndAlignBounds(const gfx::Rect& bounds,
 }  // namespace
 
 // static
-base::string16 views::metadata::TypeConverter<TabStyle::TabColors>::ToString(
+std::u16string views::metadata::TypeConverter<TabStyle::TabColors>::ToString(
     views::metadata::ArgType<TabStyle::TabColors> source_value) {
   return base::ASCIIToUTF16(base::StringPrintf(
       "{%s,%s}",
@@ -957,10 +957,10 @@ base::string16 views::metadata::TypeConverter<TabStyle::TabColors>::ToString(
 
 // static
 base::Optional<TabStyle::TabColors> views::metadata::TypeConverter<
-    TabStyle::TabColors>::FromString(const base::string16& source_value) {
-  base::string16 trimmed_string;
+    TabStyle::TabColors>::FromString(const std::u16string& source_value) {
+  std::u16string trimmed_string;
   base::TrimString(source_value, base::ASCIIToUTF16("{ }"), &trimmed_string);
-  base::string16::const_iterator color_pos = trimmed_string.cbegin();
+  std::u16string::const_iterator color_pos = trimmed_string.cbegin();
   const auto foreground_color = SkColorConverter::GetNextColor(
       color_pos, trimmed_string.cend(), color_pos);
   const auto background_color =

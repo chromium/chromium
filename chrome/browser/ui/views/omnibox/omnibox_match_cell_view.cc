@@ -206,7 +206,7 @@ void OmniboxMatchCellView::OnMatchUpdate(const OmniboxResultView* result_view,
   SetTailSuggestCommonPrefixWidth(
       (match.type == AutocompleteMatchType::SEARCH_SUGGEST_TAIL)
           ? match.tail_suggest_common_prefix  // Used for indent calculation.
-          : base::string16());
+          : std::u16string());
 }
 
 void OmniboxMatchCellView::SetImage(const gfx::ImageSkia& image) {
@@ -299,7 +299,7 @@ gfx::Size OmniboxMatchCellView::CalculatePreferredSize() const {
 }
 
 void OmniboxMatchCellView::SetTailSuggestCommonPrefixWidth(
-    const base::string16& common_prefix) {
+    const std::u16string& common_prefix) {
   InvalidateLayout();
   if (common_prefix.empty()) {
     tail_suggest_common_prefix_width_ = 0;

@@ -33,7 +33,7 @@ ResizeHandleButton::ResizeHandleButton(PressedCallback callback)
   SetImageForQuadrant(OverlayWindowViews::WindowQuadrant::kBottomRight);
 
   // Accessibility.
-  const base::string16 resize_button_label(
+  const std::u16string resize_button_label(
       l10n_util::GetStringUTF16(IDS_PICTURE_IN_PICTURE_RESIZE_HANDLE_TEXT));
   SetAccessibleName(resize_button_label);
   SetTooltipText(resize_button_label);

@@ -213,7 +213,7 @@ void LocationBarView::Init() {
   // Initialize the inline autocomplete view which is visible only when IME is
   // turned on.  Use the same font with the omnibox and highlighted background.
   auto ime_inline_autocomplete_view = std::make_unique<views::Label>(
-      base::string16(), views::Label::CustomFont{font_list});
+      std::u16string(), views::Label::CustomFont{font_list});
   ime_inline_autocomplete_view->SetHorizontalAlignment(gfx::ALIGN_LEFT);
   ime_inline_autocomplete_view->SetAutoColorReadabilityEnabled(false);
   ime_inline_autocomplete_view->SetBackground(views::CreateSolidBackground(
@@ -229,7 +229,7 @@ void LocationBarView::Init() {
   // Initiate the Omnibox additional-text label.
   if (OmniboxFieldTrial::RichAutocompletionShowAdditionalText()) {
     auto omnibox_additional_text_view = std::make_unique<views::Label>(
-        base::string16(), ChromeTextContext::CONTEXT_OMNIBOX_DEEMPHASIZED,
+        std::u16string(), ChromeTextContext::CONTEXT_OMNIBOX_DEEMPHASIZED,
         views::style::STYLE_LINK);
     omnibox_additional_text_view->SetHorizontalAlignment(gfx::ALIGN_LEFT);
     omnibox_additional_text_view_ =
@@ -318,9 +318,9 @@ void LocationBarView::Init() {
   page_action_icon_controller_ = page_action_icon_container_->controller();
 
   auto clear_all_button = views::CreateVectorImageButton(base::BindRepeating(
-      static_cast<void (OmniboxView::*)(const base::string16&)>(
+      static_cast<void (OmniboxView::*)(const std::u16string&)>(
           &OmniboxView::SetUserText),
-      base::Unretained(omnibox_view_), base::string16()));
+      base::Unretained(omnibox_view_), std::u16string()));
   clear_all_button->SetTooltipText(
       l10n_util::GetStringUTF16(IDS_OMNIBOX_CLEAR_ALL));
   clear_all_button_ = AddChildView(std::move(clear_all_button));
@@ -380,7 +380,7 @@ gfx::Point LocationBarView::GetOmniboxViewOrigin() const {
   return origin;
 }
 
-void LocationBarView::SetImeInlineAutocompletion(const base::string16& text) {
+void LocationBarView::SetImeInlineAutocompletion(const std::u16string& text) {
   if (text == GetImeInlineAutocompletion())
     return;
   ime_inline_autocomplete_view_->SetText(text);
@@ -389,7 +389,7 @@ void LocationBarView::SetImeInlineAutocompletion(const base::string16& text) {
                     views::kPropertyEffectsLayout);
 }
 
-base::string16 LocationBarView::GetImeInlineAutocompletion() const {
+std::u16string LocationBarView::GetImeInlineAutocompletion() const {
   return ime_inline_autocomplete_view_->GetText();
 }
 
@@ -521,7 +521,7 @@ void LocationBarView::Layout() {
   LocationBarLayout trailing_decorations(
       LocationBarLayout::Position::kRightEdge, edge_padding);
 
-  const base::string16 keyword(omnibox_view_->model()->keyword());
+  const std::u16string keyword(omnibox_view_->model()->keyword());
   // In some cases (e.g. fullscreen mode) we may have 0 height.  We still want
   // to position our child views in this case, because other things may be
   // positioned relative to them (e.g. the "bookmark added" bubble if the user
@@ -700,7 +700,7 @@ void LocationBarView::ChildPreferredSizeChanged(views::View* child) {
   SchedulePaint();
 }
 
-void LocationBarView::SetOmniboxAdditionalText(const base::string16& text) {
+void LocationBarView::SetOmniboxAdditionalText(const std::u16string& text) {
   DCHECK(OmniboxFieldTrial::IsRichAutocompletionEnabled() || text.empty());
   if (!OmniboxFieldTrial::RichAutocompletionShowAdditionalText())
     return;
@@ -717,7 +717,7 @@ void LocationBarView::SetOmniboxAdditionalText(const base::string16& text) {
                     views::kPropertyEffectsLayout);
 }
 
-base::string16 LocationBarView::GetOmniboxAdditionalText() const {
+std::u16string LocationBarView::GetOmniboxAdditionalText() const {
   return omnibox_additional_text_view_->GetText();
 }
 
@@ -1266,7 +1266,7 @@ void LocationBarView::OnLocationIconPressed(const ui::MouseEvent& event) {
   if (event.IsOnlyMiddleMouseButton() &&
       ui::Clipboard::IsSupportedClipboardBuffer(
           ui::ClipboardBuffer::kSelection)) {
-    base::string16 text;
+    std::u16string text;
     ui::Clipboard::GetForCurrentThread()->ReadText(
         ui::ClipboardBuffer::kSelection, /* data_dst = */ nullptr, &text);
     text = OmniboxView::SanitizeTextForPaste(text);
@@ -1348,8 +1348,8 @@ ADD_READONLY_PROPERTY_METADATA(SkColor,
                                OpaqueBorderColor,
                                views::metadata::SkColorConverter)
 ADD_READONLY_PROPERTY_METADATA(gfx::Point, OmniboxViewOrigin)
-ADD_PROPERTY_METADATA(base::string16, ImeInlineAutocompletion)
-ADD_PROPERTY_METADATA(base::string16, OmniboxAdditionalText)
+ADD_PROPERTY_METADATA(std::u16string, ImeInlineAutocompletion)
+ADD_PROPERTY_METADATA(std::u16string, OmniboxAdditionalText)
 ADD_READONLY_PROPERTY_METADATA(int, MinimumLeadingWidth)
 ADD_READONLY_PROPERTY_METADATA(int, MinimumTrailingWidth)
 ADD_READONLY_PROPERTY_METADATA(SkColor,

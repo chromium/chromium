@@ -117,7 +117,7 @@ void ReloadButton::OnMouseExited(const ui::MouseEvent& event) {
     ChangeMode(intended_mode_, true);
 }
 
-base::string16 ReloadButton::GetTooltipText(const gfx::Point& p) const {
+std::u16string ReloadButton::GetTooltipText(const gfx::Point& p) const {
   int reload_tooltip = menu_enabled_ ?
       IDS_TOOLTIP_RELOAD_WITH_MENU : IDS_TOOLTIP_RELOAD;
   return l10n_util::GetStringUTF16(

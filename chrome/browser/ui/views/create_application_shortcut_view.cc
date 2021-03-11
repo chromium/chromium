@@ -211,7 +211,7 @@ bool CreateChromeApplicationShortcutView::IsDialogButtonEnabled(
          (quick_launch_check_box_ && quick_launch_check_box_->GetChecked());
 }
 
-base::string16 CreateChromeApplicationShortcutView::GetWindowTitle() const {
+std::u16string CreateChromeApplicationShortcutView::GetWindowTitle() const {
   return l10n_util::GetStringUTF16(IDS_CREATE_SHORTCUTS_TITLE);
 }
 
@@ -247,7 +247,7 @@ void CreateChromeApplicationShortcutView::OnDialogAccepted() {
 }
 
 std::unique_ptr<views::Checkbox>
-CreateChromeApplicationShortcutView::AddCheckbox(const base::string16& text,
+CreateChromeApplicationShortcutView::AddCheckbox(const std::u16string& text,
                                                  const std::string& pref_path) {
   auto checkbox =
       std::make_unique<views::Checkbox>(text, views::Button::PressedCallback());

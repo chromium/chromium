@@ -72,7 +72,7 @@ const gfx::VectorIcon& TranslateIconView::GetVectorIcon() const {
   return kTranslateIcon;
 }
 
-base::string16 TranslateIconView::GetTextForTooltipAndAccessibleName() const {
+std::u16string TranslateIconView::GetTextForTooltipAndAccessibleName() const {
   return l10n_util::GetStringUTF16(IDS_TOOLTIP_TRANSLATE);
 }
 

@@ -34,11 +34,11 @@ OmniboxTabSwitchButton::OmniboxTabSwitchButton(
     PressedCallback callback,
     OmniboxPopupContentsView* popup_contents_view,
     OmniboxResultView* result_view,
-    const base::string16& hint,
-    const base::string16& hint_short,
+    const std::u16string& hint,
+    const std::u16string& hint_short,
     const gfx::VectorIcon& icon)
     : MdTextButton(std::move(callback),
-                   base::string16(),
+                   std::u16string(),
                    views::style::CONTEXT_BUTTON_MD),
       popup_contents_view_(popup_contents_view),
       result_view_(result_view),
@@ -77,9 +77,9 @@ OmniboxTabSwitchButton::~OmniboxTabSwitchButton() = default;
 void OmniboxTabSwitchButton::OnBoundsChanged(const gfx::Rect& previous_bounds) {
   MdTextButton::OnBoundsChanged(previous_bounds);
 
-  base::string16 text = hint_;
+  std::u16string text = hint_;
   if (width() <= icon_only_width_)
-    text = base::string16();
+    text = std::u16string();
   else if (width() <= short_text_width_)
     text = hint_short_;
   SetText(text);

@@ -155,7 +155,7 @@ std::unique_ptr<LabelButtonBorder> CreateBookmarkButtonBorder() {
 class BookmarkButtonBase : public views::LabelButton {
  public:
   METADATA_HEADER(BookmarkButtonBase);
-  BookmarkButtonBase(PressedCallback callback, const base::string16& title)
+  BookmarkButtonBase(PressedCallback callback, const std::u16string& title)
       : LabelButton(std::move(callback), title) {
     SetImageLabelSpacing(ChromeLayoutProvider::Get()->GetDistanceMetric(
         DISTANCE_RELATED_LABEL_HORIZONTAL_LIST));
@@ -231,13 +231,13 @@ class BookmarkButton : public BookmarkButtonBase {
   METADATA_HEADER(BookmarkButton);
   BookmarkButton(PressedCallback callback,
                  const GURL& url,
-                 const base::string16& title)
+                 const std::u16string& title)
       : BookmarkButtonBase(std::move(callback), title), url_(url) {}
   BookmarkButton(const BookmarkButton&) = delete;
   BookmarkButton& operator=(const BookmarkButton&) = delete;
 
   // views::View:
-  base::string16 GetTooltipText(const gfx::Point& p) const override {
+  std::u16string GetTooltipText(const gfx::Point& p) const override {
     const views::TooltipManager* tooltip_manager =
         GetWidget()->GetTooltipManager();
     gfx::Point location(p);
@@ -253,7 +253,7 @@ class BookmarkButton : public BookmarkButtonBase {
     return tooltip_text_;
   }
 
-  void SetText(const base::string16& text) override {
+  void SetText(const std::u16string& text) override {
     BookmarkButtonBase::SetText(text);
     tooltip_text_.clear();
   }
@@ -262,7 +262,7 @@ class BookmarkButton : public BookmarkButtonBase {
   // A cached value of maximum width for tooltip to skip generating
   // new tooltip text.
   mutable int max_tooltip_width_ = 0;
-  mutable base::string16 tooltip_text_;
+  mutable std::u16string tooltip_text_;
   const GURL& url_;
 };
 
@@ -276,7 +276,7 @@ END_METADATA
 class ShortcutButton : public BookmarkButtonBase {
  public:
   METADATA_HEADER(ShortcutButton);
-  ShortcutButton(PressedCallback callback, const base::string16& title)
+  ShortcutButton(PressedCallback callback, const std::u16string& title)
       : BookmarkButtonBase(std::move(callback), title) {}
   ShortcutButton(const ShortcutButton&) = delete;
   ShortcutButton& operator=(const ShortcutButton&) = delete;
@@ -293,7 +293,7 @@ class BookmarkMenuButtonBase : public MenuButton {
   METADATA_HEADER(BookmarkMenuButtonBase);
   explicit BookmarkMenuButtonBase(
       PressedCallback callback,
-      const base::string16& title = base::string16())
+      const std::u16string& title = std::u16string())
       : MenuButton(std::move(callback), title) {
     SetImageLabelSpacing(ChromeLayoutProvider::Get()->GetDistanceMetric(
         DISTANCE_RELATED_LABEL_HORIZONTAL_LIST));
@@ -334,7 +334,7 @@ class BookmarkFolderButton : public BookmarkMenuButtonBase {
  public:
   METADATA_HEADER(BookmarkFolderButton);
   explicit BookmarkFolderButton(PressedCallback callback,
-                                const base::string16& title = base::string16())
+                                const std::u16string& title = std::u16string())
       : BookmarkMenuButtonBase(std::move(callback), title) {
     show_animation_ = std::make_unique<gfx::SlideAnimation>(this);
     if (!animations_enabled) {
@@ -352,10 +352,10 @@ class BookmarkFolderButton : public BookmarkMenuButtonBase {
   BookmarkFolderButton(const BookmarkFolderButton&) = delete;
   BookmarkFolderButton& operator=(const BookmarkFolderButton&) = delete;
 
-  base::string16 GetTooltipText(const gfx::Point& p) const override {
+  std::u16string GetTooltipText(const gfx::Point& p) const override {
     return label()->GetPreferredSize().width() > label()->size().width()
                ? GetText()
-               : base::string16();
+               : std::u16string();
   }
 
   bool OnMousePressed(const ui::MouseEvent& event) override {
@@ -671,16 +671,16 @@ void BookmarkBarView::StopThrobbing(bool immediate) {
 }
 
 // static
-base::string16 BookmarkBarView::CreateToolTipForURLAndTitle(
+std::u16string BookmarkBarView::CreateToolTipForURLAndTitle(
     int max_width,
     const gfx::FontList& tt_fonts,
     const GURL& url,
-    const base::string16& title) {
-  base::string16 result;
+    const std::u16string& title) {
+  std::u16string result;
 
   // First the title.
   if (!title.empty()) {
-    base::string16 localized_title = title;
+    std::u16string localized_title = title;
     base::i18n::AdjustStringForLocaleDirection(&localized_title);
     result.append(
         gfx::ElideText(localized_title, tt_fonts, max_width, gfx::ELIDE_TAIL));
@@ -697,7 +697,7 @@ base::string16 BookmarkBarView::CreateToolTipForURLAndTitle(
     // "/http://www.yahoo.com" when rendered, as is, in an RTL context since
     // the Unicode BiDi algorithm puts certain characters on the left by
     // default.
-    base::string16 elided_url(
+    std::u16string elided_url(
         url_formatter::ElideUrl(url, tt_fonts, max_width));
     elided_url = base::i18n::GetDisplayStringInLTRDirectionality(elided_url);
     result.append(elided_url);

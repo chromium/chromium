@@ -61,7 +61,7 @@ class ContentSettingBubbleContents : public content::WebContentsObserver,
 
  protected:
   // views::WidgetDelegate:
-  base::string16 GetWindowTitle() const override;
+  std::u16string GetWindowTitle() const override;
   bool ShouldShowCloseButton() const override;
 
   // views::BubbleDialogDelegateView:

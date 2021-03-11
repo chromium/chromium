@@ -90,7 +90,7 @@ class IconLabelBubbleView : public views::InkDropObserver,
   // Returns true when the label should be visible.
   virtual bool ShouldShowLabel() const;
 
-  void SetLabel(const base::string16& label);
+  void SetLabel(const std::u16string& label);
   void SetFontList(const gfx::FontList& font_list);
 
   const views::ImageView* GetImageView() const { return image(); }

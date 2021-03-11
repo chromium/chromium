@@ -17,7 +17,7 @@
 namespace {
 
 void AddLabelAndField(views::GridLayout* layout,
-                      const base::string16& label_text,
+                      const std::u16string& label_text,
                       std::unique_ptr<views::View> field,
                       int column_set_id,
                       const gfx::FontList& field_font) {
@@ -60,7 +60,7 @@ views::ColumnSet* ConfigureTextfieldStack(views::GridLayout* layout,
 }
 
 views::Textfield* AddFirstTextfieldRow(views::GridLayout* layout,
-                                       const base::string16& label,
+                                       const std::u16string& label,
                                        int column_set_id) {
   auto textfield = std::make_unique<views::Textfield>();
   textfield->SetAccessibleName(label);
@@ -71,7 +71,7 @@ views::Textfield* AddFirstTextfieldRow(views::GridLayout* layout,
 }
 
 views::Textfield* AddTextfieldRow(views::GridLayout* layout,
-                                  const base::string16& label,
+                                  const std::u16string& label,
                                   int column_set_id) {
   layout->AddPaddingRow(views::GridLayout::kFixedSize,
                         ChromeLayoutProvider::Get()->GetDistanceMetric(
@@ -80,7 +80,7 @@ views::Textfield* AddTextfieldRow(views::GridLayout* layout,
 }
 
 views::Combobox* AddComboboxRow(views::GridLayout* layout,
-                                const base::string16& label,
+                                const std::u16string& label,
                                 std::unique_ptr<ui::ComboboxModel> model,
                                 int column_set_id) {
   auto combobox = std::make_unique<views::Combobox>(std::move(model));

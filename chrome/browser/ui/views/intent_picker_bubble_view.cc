@@ -77,7 +77,7 @@ std::unique_ptr<views::Separator> CreateHorizontalSeparator() {
 // different style as it is not shown as a title label.
 std::unique_ptr<views::View> CreateOriginView(const url::Origin& origin,
                                               int text_id) {
-  base::string16 origin_text = l10n_util::GetStringFUTF16(
+  std::u16string origin_text = l10n_util::GetStringFUTF16(
       text_id, url_formatter::FormatOriginForSecurityDisplay(origin));
   auto label = std::make_unique<views::Label>(
       origin_text, ChromeTextContext::CONTEXT_DIALOG_BODY_TEXT_SMALL,
@@ -254,7 +254,7 @@ bool IntentPickerBubbleView::ShouldShowCloseButton() const {
   return true;
 }
 
-base::string16 IntentPickerBubbleView::GetWindowTitle() const {
+std::u16string IntentPickerBubbleView::GetWindowTitle() const {
   if (icon_type_ == PageActionIconType::kClickToCall) {
     return l10n_util::GetStringUTF16(
         IDS_BROWSER_SHARING_CLICK_TO_CALL_DIALOG_TITLE_LABEL);

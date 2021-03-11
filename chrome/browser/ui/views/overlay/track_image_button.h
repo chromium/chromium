@@ -22,7 +22,7 @@ class TrackImageButton : public views::ImageButton {
 
   explicit TrackImageButton(PressedCallback callback,
                             const gfx::VectorIcon& icon,
-                            base::string16 label);
+                            std::u16string label);
   TrackImageButton(const TrackImageButton&) = delete;
   TrackImageButton& operator=(const TrackImageButton&) = delete;
   ~TrackImageButton() override = default;

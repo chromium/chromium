@@ -159,7 +159,7 @@ PluginVmInstallerView::PluginVmInstallerView(Profile* profile)
   upper_container_view->AddChildView(progress_bar_);
 
   download_progress_message_label_ =
-      new views::Label(base::string16(), {kDownloadProgressMessageFont});
+      new views::Label(std::u16string(), {kDownloadProgressMessageFont});
   download_progress_message_label_->SetEnabledColor(gfx::kGoogleGrey700);
   download_progress_message_label_->SetProperty(
       views::kMarginsKey, gfx::Insets(kDownloadProgressMessageHeight -
@@ -298,7 +298,7 @@ void PluginVmInstallerView::OnCancelFinished() {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 }
 
-base::string16 PluginVmInstallerView::GetTitle() const {
+std::u16string PluginVmInstallerView::GetTitle() const {
   switch (state_) {
     case State::kConfirmInstall:
       return l10n_util::GetStringFUTF16(
@@ -325,7 +325,7 @@ base::string16 PluginVmInstallerView::GetTitle() const {
   }
 }
 
-base::string16 PluginVmInstallerView::GetMessage() const {
+std::u16string PluginVmInstallerView::GetMessage() const {
   switch (state_) {
     case State::kConfirmInstall:
       return l10n_util::GetStringFUTF16(
@@ -456,7 +456,7 @@ int PluginVmInstallerView::GetCurrentDialogButtons() const {
   }
 }
 
-base::string16 PluginVmInstallerView::GetCurrentDialogButtonLabel(
+std::u16string PluginVmInstallerView::GetCurrentDialogButtonLabel(
     ui::DialogButton button) const {
   switch (state_) {
     case State::kConfirmInstall:
@@ -522,7 +522,7 @@ void PluginVmInstallerView::OnStateUpdated() {
   }
 }
 
-base::string16 PluginVmInstallerView::GetDownloadProgressMessage(
+std::u16string PluginVmInstallerView::GetDownloadProgressMessage(
     uint64_t bytes_downloaded,
     int64_t content_length) const {
   DCHECK_EQ(installing_state_, InstallingState::kDownloadingImage);
@@ -593,6 +593,6 @@ void PluginVmInstallerView::StartInstallation() {
 }
 
 BEGIN_METADATA(PluginVmInstallerView, views::BubbleDialogDelegateView)
-ADD_READONLY_PROPERTY_METADATA(base::string16, Title)
-ADD_READONLY_PROPERTY_METADATA(base::string16, Message)
+ADD_READONLY_PROPERTY_METADATA(std::u16string, Title)
+ADD_READONLY_PROPERTY_METADATA(std::u16string, Message)
 END_METADATA

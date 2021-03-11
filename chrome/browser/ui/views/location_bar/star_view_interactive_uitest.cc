@@ -130,7 +130,7 @@ IN_PROC_BROWSER_TEST_F(StarViewTest, InkDropHighlighted) {
     GURL url("http://test.com");
     bookmarks::BookmarkModel* model =
         BookmarkModelFactory::GetForBrowserContext(browser()->profile());
-    bookmarks::AddIfNotBookmarked(model, url, /*title=*/base::string16());
+    bookmarks::AddIfNotBookmarked(model, url, /*title=*/std::u16string());
     browser()->window()->ShowBookmarkBubble(url, false);
     EXPECT_EQ(ink_drop_test_api.GetInkDrop()->GetTargetInkDropState(),
               views::InkDropState::ACTIVATED);

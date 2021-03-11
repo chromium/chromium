@@ -86,7 +86,7 @@ void StartNewButtonColumnSet(views::GridLayout* layout,
   layout->StartRow(views::GridLayout::kFixedSize, column_layout_id);
 }
 
-base::string16 GetAnnotationTextForSetting(ContentSetting setting) {
+std::u16string GetAnnotationTextForSetting(ContentSetting setting) {
   switch (setting) {
     case CONTENT_SETTING_BLOCK:
       return l10n_util::GetStringUTF16(IDS_COLLECTED_COOKIES_BLOCKED_AUX_TEXT);
@@ -97,7 +97,7 @@ base::string16 GetAnnotationTextForSetting(ContentSetting setting) {
           IDS_COLLECTED_COOKIES_CLEAR_ON_EXIT_AUX_TEXT);
     default:
       NOTREACHED() << "Unknown ContentSetting value: " << setting;
-      return base::string16();
+      return std::u16string();
   }
 }
 
@@ -127,21 +127,21 @@ class CookiesTreeViewDrawingProvider : public views::TreeViewDrawingProvider {
   CookiesTreeViewDrawingProvider() {}
   ~CookiesTreeViewDrawingProvider() override {}
 
-  void AnnotateNode(ui::TreeModelNode* node, const base::string16& text);
+  void AnnotateNode(ui::TreeModelNode* node, const std::u16string& text);
 
   SkColor GetTextColorForNode(views::TreeView* tree_view,
                               ui::TreeModelNode* node) override;
-  base::string16 GetAuxiliaryTextForNode(views::TreeView* tree_view,
+  std::u16string GetAuxiliaryTextForNode(views::TreeView* tree_view,
                                          ui::TreeModelNode* node) override;
   bool ShouldDrawIconForNode(views::TreeView* tree_view,
                              ui::TreeModelNode* node) override;
 
  private:
-  std::map<ui::TreeModelNode*, base::string16> annotations_;
+  std::map<ui::TreeModelNode*, std::u16string> annotations_;
 };
 
 void CookiesTreeViewDrawingProvider::AnnotateNode(ui::TreeModelNode* node,
-                                                  const base::string16& text) {
+                                                  const std::u16string& text) {
   annotations_[node] = text;
 }
 
@@ -154,7 +154,7 @@ SkColor CookiesTreeViewDrawingProvider::GetTextColorForNode(
   return color;
 }
 
-base::string16 CookiesTreeViewDrawingProvider::GetAuxiliaryTextForNode(
+std::u16string CookiesTreeViewDrawingProvider::GetAuxiliaryTextForNode(
     views::TreeView* tree_view,
     ui::TreeModelNode* node) {
   if (annotations_.find(node) != annotations_.end())
@@ -205,8 +205,8 @@ class InfobarView : public views::View {
 
   // Set the InfobarView label text based on content |setting| and
   // |domain_name|. Ensure InfobarView is visible.
-  void SetLabelText(ContentSetting setting, const base::string16& domain_name) {
-    base::string16 label;
+  void SetLabelText(ContentSetting setting, const std::u16string& domain_name) {
+    std::u16string label;
     switch (setting) {
       case CONTENT_SETTING_BLOCK:
         label = l10n_util::GetStringFUTF16(
@@ -342,9 +342,9 @@ CollectedCookiesViews::CollectedCookiesViews(content::WebContents* web_contents)
       layout->AddView(std::make_unique<views::TabbedPane>());
 
   // NOTE: Panes must be added after |tabbed_pane| has been added to its parent.
-  base::string16 label_allowed = l10n_util::GetStringUTF16(
+  std::u16string label_allowed = l10n_util::GetStringUTF16(
       IDS_COLLECTED_COOKIES_ALLOWED_COOKIES_TAB_LABEL);
-  base::string16 label_blocked = l10n_util::GetStringUTF16(
+  std::u16string label_blocked = l10n_util::GetStringUTF16(
       IDS_COLLECTED_COOKIES_BLOCKED_COOKIES_TAB_LABEL);
   tabbed_pane->AddTab(label_allowed, CreateAllowedPane());
   tabbed_pane->AddTab(label_blocked, CreateBlockedPane());

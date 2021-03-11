@@ -108,7 +108,7 @@ class FindBarMatchCountLabel : public views::Label {
 
   void ClearResult() {
     last_result_.reset();
-    SetText(base::string16());
+    SetText(std::u16string());
   }
 
  private:
@@ -230,14 +230,14 @@ void FindBarView::SetHost(FindBarHost* host) {
 }
 
 void FindBarView::SetFindTextAndSelectedRange(
-    const base::string16& find_text,
+    const std::u16string& find_text,
     const gfx::Range& selected_range) {
   find_text_->SetText(find_text);
   find_text_->SetSelectedRange(selected_range);
   last_searched_text_ = find_text;
 }
 
-base::string16 FindBarView::GetFindText() const {
+std::u16string FindBarView::GetFindText() const {
   return find_text_->GetText();
 }
 
@@ -245,17 +245,17 @@ gfx::Range FindBarView::GetSelectedRange() const {
   return find_text_->GetSelectedRange();
 }
 
-base::string16 FindBarView::GetFindSelectedText() const {
+std::u16string FindBarView::GetFindSelectedText() const {
   return find_text_->GetSelectedText();
 }
 
-base::string16 FindBarView::GetMatchCountText() const {
+std::u16string FindBarView::GetMatchCountText() const {
   return match_count_text_->GetText();
 }
 
 void FindBarView::UpdateForResult(
     const find_in_page::FindNotificationDetails& result,
-    const base::string16& find_text) {
+    const std::u16string& find_text) {
   bool have_valid_range =
       result.number_of_matches() != -1 && result.active_match_ordinal() != -1;
 
@@ -354,7 +354,7 @@ bool FindBarView::HandleKeyEvent(views::Textfield* sender,
   if (key_event.key_code() == ui::VKEY_RETURN &&
       key_event.type() == ui::ET_KEY_PRESSED) {
     // Pressing Return/Enter starts the search (unless text box is empty).
-    base::string16 find_string = find_text_->GetText();
+    std::u16string find_string = find_text_->GetText();
     if (!find_string.empty()) {
       FindBarController* controller = find_bar_host_->GetFindBarController();
       find_in_page::FindTabHelper* find_tab_helper =
@@ -386,7 +386,7 @@ void FindBarView::OnAfterPaste() {
   last_searched_text_.clear();
 }
 
-void FindBarView::Find(const base::string16& search_text) {
+void FindBarView::Find(const std::u16string& search_text) {
   DCHECK(find_bar_host_);
   FindBarController* controller = find_bar_host_->GetFindBarController();
   DCHECK(controller);

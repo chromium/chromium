@@ -65,7 +65,7 @@ class MAYBE_PaymentRequestShippingAddressEditorTest
   MAYBE_PaymentRequestShippingAddressEditorTest() {}
 
   void SetFieldTestValue(autofill::ServerFieldType type) {
-    base::string16 textfield_text;
+    std::u16string textfield_text;
     switch (type) {
       case (autofill::NAME_FULL): {
         textfield_text = base::ASCIIToUTF16(kNameFull);
@@ -108,7 +108,7 @@ class MAYBE_PaymentRequestShippingAddressEditorTest
   // First check if the requested field of |type| exists, if so, set its value
   // in |textfield_text| if it's not null, and return true.
   bool GetEditorTextfieldValueIfExists(autofill::ServerFieldType type,
-                                       base::string16* textfield_text) {
+                                       std::u16string* textfield_text) {
     ValidatingTextfield* textfield =
         static_cast<ValidatingTextfield*>(dialog_view()->GetViewByID(
             EditorViewController::GetInputFieldViewId(type)));
@@ -126,7 +126,7 @@ class MAYBE_PaymentRequestShippingAddressEditorTest
   void ExpectExistingRequiredFields(
       std::set<autofill::ServerFieldType>* unset_types,
       bool accept_empty_phone_number) {
-    base::string16 textfield_text;
+    std::u16string textfield_text;
     if (GetEditorTextfieldValueIfExists(autofill::NAME_FULL, &textfield_text)) {
       EXPECT_EQ(base::ASCIIToUTF16(kNameFull), textfield_text);
     } else if (unset_types) {
@@ -182,7 +182,7 @@ class MAYBE_PaymentRequestShippingAddressEditorTest
     return country_model->countries()[selected_country_row]->country_code();
   }
 
-  void SelectCountryInCombobox(const base::string16& country_name) {
+  void SelectCountryInCombobox(const std::u16string& country_name) {
     ResetEventWaiter(DialogEvent::EDITOR_VIEW_UPDATED);
     views::Combobox* country_combobox = static_cast<views::Combobox*>(
         dialog_view()->GetViewByID(EditorViewController::GetInputFieldViewId(

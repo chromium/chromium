@@ -100,7 +100,7 @@ class BookmarkMenuDelegate : public bookmarks::BaseBookmarkModelObserver,
   bool is_mutating_model() const { return is_mutating_model_; }
 
   // MenuDelegate like methods (see class description for details).
-  base::string16 GetTooltipText(int id, const gfx::Point& p) const;
+  std::u16string GetTooltipText(int id, const gfx::Point& p) const;
   bool IsTriggerableEvent(views::MenuItemView* menu,
                           const ui::Event& e);
   void ExecuteCommand(int id, int mouse_event_flags);
@@ -181,7 +181,7 @@ class BookmarkMenuDelegate : public bookmarks::BaseBookmarkModelObserver,
 
   // Escapes ampersands within |title| if necessary, depending on
   // |menu_uses_mnemonics_|.
-  base::string16 MaybeEscapeLabel(const base::string16& title);
+  std::u16string MaybeEscapeLabel(const std::u16string& title);
 
   Browser* const browser_;
   Profile* profile_;

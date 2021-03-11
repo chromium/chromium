@@ -482,7 +482,7 @@ IN_PROC_BROWSER_TEST_F(ProfilePickerCreationFlowBrowserTest,
               run_loop.Quit();
             }
           }),
-      base::string16(), std::string());
+      std::u16string(), std::string());
   run_loop.Run();
   ProfileAttributesStorage& storage =
       profile_manager->GetProfileAttributesStorage();
@@ -558,7 +558,7 @@ IN_PROC_BROWSER_TEST_F(ProfilePickerCreationFlowBrowserTest,
               run_loop.Quit();
             }
           }),
-      base::string16(), std::string());
+      std::u16string(), std::string());
   run_loop.Run();
   ProfileAttributesStorage& storage =
       profile_manager->GetProfileAttributesStorage();

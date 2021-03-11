@@ -36,7 +36,7 @@ constexpr int kHeaderHeight = 50;
 class TitleAndOriginView : public views::View {
  public:
   METADATA_HEADER(TitleAndOriginView);
-  TitleAndOriginView(const base::string16& page_title, const GURL& origin) {
+  TitleAndOriginView(const std::u16string& page_title, const GURL& origin) {
     // The logic here is mostly based on Payments UI used for
     // `PaymentHandlerWebFlowViewController`.
     constexpr int kLeftPadding = 5;

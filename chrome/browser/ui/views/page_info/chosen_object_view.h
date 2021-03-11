@@ -26,7 +26,7 @@ class ChosenObjectView : public views::View {
  public:
   METADATA_HEADER(ChosenObjectView);
   explicit ChosenObjectView(std::unique_ptr<PageInfoUI::ChosenObjectInfo> info,
-                            base::string16 display_name);
+                            std::u16string display_name);
   ChosenObjectView(const ChosenObjectView&) = delete;
   ChosenObjectView& operator=(const ChosenObjectView&) = delete;
   ~ChosenObjectView() override;

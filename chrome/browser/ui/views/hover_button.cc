@@ -77,7 +77,7 @@ END_METADATA
 
 }  // namespace
 
-HoverButton::HoverButton(PressedCallback callback, const base::string16& text)
+HoverButton::HoverButton(PressedCallback callback, const std::u16string& text)
     : views::LabelButton(callback, text, views::style::CONTEXT_BUTTON) {
   SetButtonController(std::make_unique<HoverButtonController>(
       this, std::move(callback),
@@ -103,19 +103,19 @@ HoverButton::HoverButton(PressedCallback callback, const base::string16& text)
 
 HoverButton::HoverButton(PressedCallback callback,
                          const gfx::ImageSkia& icon,
-                         const base::string16& text)
+                         const std::u16string& text)
     : HoverButton(std::move(callback), text) {
   SetImage(STATE_NORMAL, icon);
 }
 
 HoverButton::HoverButton(PressedCallback callback,
                          std::unique_ptr<views::View> icon_view,
-                         const base::string16& title,
-                         const base::string16& subtitle,
+                         const std::u16string& title,
+                         const std::u16string& subtitle,
                          std::unique_ptr<views::View> secondary_view,
                          bool resize_row_for_secondary_view,
                          bool secondary_view_can_process_events)
-    : HoverButton(std::move(callback), base::string16()) {
+    : HoverButton(std::move(callback), std::u16string()) {
   label()->SetHandlesTooltips(false);
 
   // Set the layout manager to ignore the ink_drop_container to ensure the ink
@@ -231,7 +231,7 @@ void HoverButton::SetTitleTextStyle(views::style::TextStyle text_style,
 }
 
 void HoverButton::SetTooltipAndAccessibleName() {
-  const base::string16 accessible_name =
+  const std::u16string accessible_name =
       subtitle_ == nullptr
           ? title_->GetText()
           : base::JoinString({title_->GetText(), subtitle_->GetText()},
@@ -243,7 +243,7 @@ void HoverButton::SetTooltipAndAccessibleName() {
   // is smaller than its preferred size.
   const bool needs_tooltip =
       label_wrapper_->GetPreferredSize().width() > label_wrapper_->width();
-  SetTooltipText(needs_tooltip ? accessible_name : base::string16());
+  SetTooltipText(needs_tooltip ? accessible_name : std::u16string());
   SetAccessibleName(accessible_name);
 }
 

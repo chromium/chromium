@@ -1854,7 +1854,7 @@ ShowTranslateBubbleResult BrowserView::ShowTranslateBubble(
 
 #if BUILDFLAG(ENABLE_ONE_CLICK_SIGNIN)
 void BrowserView::ShowOneClickSigninConfirmation(
-    const base::string16& email,
+    const std::u16string& email,
     base::OnceCallback<void(bool)> confirmed_callback) {
   std::unique_ptr<OneClickSigninLinksDelegate> delegate(
       new OneClickSigninLinksDelegateImpl(browser()));
@@ -2227,8 +2227,8 @@ bool BrowserView::CanActivate() const {
   return false;
 }
 
-base::string16 BrowserView::GetWindowTitle() const {
-  base::string16 title =
+std::u16string BrowserView::GetWindowTitle() const {
+  std::u16string title =
       browser_->GetWindowTitleForCurrentTab(true /* include_app_name */);
 #if defined(OS_MAC)
   content::WebContents* contents = GetActiveWebContents();
@@ -2248,7 +2248,7 @@ base::string16 BrowserView::GetWindowTitle() const {
   return title;
 }
 
-base::string16 BrowserView::GetAccessibleWindowTitle() const {
+std::u16string BrowserView::GetAccessibleWindowTitle() const {
   // If there is a focused and visible tab-modal dialog, report the dialog's
   // title instead of the page title.
   views::Widget* tab_modal =
@@ -2261,14 +2261,14 @@ base::string16 BrowserView::GetAccessibleWindowTitle() const {
                                                       browser_->profile());
 }
 
-base::string16 BrowserView::GetAccessibleWindowTitleForChannelAndProfile(
+std::u16string BrowserView::GetAccessibleWindowTitleForChannelAndProfile(
     version_info::Channel channel,
     Profile* profile) const {
   // Start with the tab title, which includes properties of the tab
   // like playing audio or network error.
   const bool include_app_name = false;
   int active_index = browser_->tab_strip_model()->active_index();
-  base::string16 title;
+  std::u16string title;
   if (active_index > -1)
     title = GetAccessibleTabLabel(include_app_name, active_index);
   else
@@ -2306,7 +2306,7 @@ base::string16 BrowserView::GetAccessibleWindowTitleForChannelAndProfile(
         IDS_ACCESSIBLE_INCOGNITO_WINDOW_TITLE_FORMAT, title);
   } else if (profile->IsRegularProfile() &&
              profile_manager->GetNumberOfProfiles() > 1) {
-    base::string16 profile_name =
+    std::u16string profile_name =
         profiles::GetAvatarNameForProfile(profile->GetPath());
     if (!profile_name.empty()) {
       title = l10n_util::GetStringFUTF16(
@@ -2317,15 +2317,15 @@ base::string16 BrowserView::GetAccessibleWindowTitleForChannelAndProfile(
   return title;
 }
 
-base::string16 BrowserView::GetAccessibleTabLabel(bool include_app_name,
+std::u16string BrowserView::GetAccessibleTabLabel(bool include_app_name,
                                                   int index) const {
-  base::string16 title =
+  std::u16string title =
       browser_->GetWindowTitleForTab(include_app_name, index);
 
   base::Optional<tab_groups::TabGroupId> group =
       tabstrip_->tab_at(index)->group();
   if (group.has_value()) {
-    base::string16 group_title = tabstrip_->GetGroupTitle(group.value());
+    std::u16string group_title = tabstrip_->GetGroupTitle(group.value());
     if (group_title.empty()) {
       title = l10n_util::GetStringFUTF16(IDS_TAB_AX_LABEL_UNNAMED_GROUP_FORMAT,
                                          title);
@@ -2396,7 +2396,7 @@ base::string16 BrowserView::GetAccessibleTabLabel(bool include_app_name,
   }
 
   NOTREACHED();
-  return base::string16();
+  return std::u16string();
 }
 
 std::vector<views::NativeViewHost*>

@@ -95,7 +95,7 @@ class ZoomValue : public views::Label {
   METADATA_HEADER(ZoomValue);
 
   explicit ZoomValue(const content::WebContents* web_contents)
-      : Label(base::string16(),
+      : Label(std::u16string(),
               views::style::CONTEXT_LABEL,
               views::style::STYLE_PRIMARY),
         max_width_(GetLabelMaxWidth(web_contents)) {
@@ -312,7 +312,7 @@ ZoomBubbleView::~ZoomBubbleView() {
     immersive_mode_controller_->RemoveObserver(this);
 }
 
-base::string16 ZoomBubbleView::GetAccessibleWindowTitle() const {
+std::u16string ZoomBubbleView::GetAccessibleWindowTitle() const {
   Browser* browser = chrome::FindBrowserWithWebContents(web_contents());
   if (!browser)
     return {};

@@ -72,11 +72,11 @@ class MockTranslateBubbleModel : public TranslateBubbleModel {
 
   int GetNumberOfTargetLanguages() const override { return 1000; }
 
-  base::string16 GetSourceLanguageNameAt(int index) const override {
+  std::u16string GetSourceLanguageNameAt(int index) const override {
     return base::ASCIIToUTF16("English");
   }
 
-  base::string16 GetTargetLanguageNameAt(int index) const override {
+  std::u16string GetTargetLanguageNameAt(int index) const override {
     return base::ASCIIToUTF16("English");
   }
 

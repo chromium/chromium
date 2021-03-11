@@ -193,19 +193,19 @@ bool WebAppConfirmationView::IsDialogButtonEnabled(
 
 void WebAppConfirmationView::ContentsChanged(
     views::Textfield* sender,
-    const base::string16& new_contents) {
+    const std::u16string& new_contents) {
   DCHECK_EQ(title_tf_, sender);
   DialogModelChanged();
 }
 
-base::string16 WebAppConfirmationView::GetTrimmedTitle() const {
-  base::string16 title(title_tf_->GetText());
+std::u16string WebAppConfirmationView::GetTrimmedTitle() const {
+  std::u16string title(title_tf_->GetText());
   base::TrimWhitespace(title, base::TRIM_ALL, &title);
   return title;
 }
 
 BEGIN_METADATA(WebAppConfirmationView, views::DialogDelegateView)
-ADD_READONLY_PROPERTY_METADATA(base::string16, TrimmedTitle)
+ADD_READONLY_PROPERTY_METADATA(std::u16string, TrimmedTitle)
 END_METADATA
 
 namespace chrome {

@@ -32,13 +32,13 @@ class ErrorMessageViewController : public PaymentRequestSheetController {
 
  private:
   // PaymentRequestSheetController:
-  base::string16 GetPrimaryButtonLabel() override;
+  std::u16string GetPrimaryButtonLabel() override;
   views::Button::PressedCallback GetPrimaryButtonCallback() override;
   int GetPrimaryButtonId() override;
   bool GetPrimaryButtonEnabled() override;
   bool ShouldShowHeaderBackArrow() override;
   bool ShouldShowSecondaryButton() override;
-  base::string16 GetSheetTitle() override;
+  std::u16string GetSheetTitle() override;
   void FillContentView(views::View* content_view) override;
 
   DISALLOW_COPY_AND_ASSIGN(ErrorMessageViewController);

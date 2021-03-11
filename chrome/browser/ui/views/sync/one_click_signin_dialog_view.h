@@ -29,7 +29,7 @@ class OneClickSigninDialogView : public views::DialogDelegateView {
   OneClickSigninDialogView& operator=(const OneClickSigninDialogView&) = delete;
 
   // Show the one-click signin dialog if not already showing.
-  static void ShowDialog(const base::string16& email,
+  static void ShowDialog(const std::u16string& email,
                          std::unique_ptr<OneClickSigninLinksDelegate> delegate,
                          gfx::NativeWindow window,
                          base::OnceCallback<void(bool)> confirmed_callback);
@@ -49,7 +49,7 @@ class OneClickSigninDialogView : public views::DialogDelegateView {
  protected:
   // Creates a OneClickSigninDialogView.
   OneClickSigninDialogView(
-      const base::string16& email,
+      const std::u16string& email,
       std::unique_ptr<OneClickSigninLinksDelegate> delegate,
       base::OnceCallback<void(bool)> confirmed_callback);
 
@@ -59,7 +59,7 @@ class OneClickSigninDialogView : public views::DialogDelegateView {
   friend class OneClickSigninDialogViewTest;
 
   // The user's email address to be used for sync.
-  const base::string16 email_;
+  const std::u16string email_;
 
   // This callback is nulled once its called, so that it is called only once.
   // It will be called when the bubble is closed if it has not been called

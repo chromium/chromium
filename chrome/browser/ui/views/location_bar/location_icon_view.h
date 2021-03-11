@@ -93,7 +93,7 @@ class LocationIconView : public IconLabelBubbleView {
   // - For extension URLs, returns the extension name.
   // - For chrome:// URLs, returns the short product name (e.g. Chrome).
   // - For file:// URLs, returns the text "File".
-  base::string16 GetText() const;
+  std::u16string GetText() const;
 
   // Determines whether or not text should be shown (e.g Insecure/Secure).
   // Always returns false if the text is empty or currently being edited.

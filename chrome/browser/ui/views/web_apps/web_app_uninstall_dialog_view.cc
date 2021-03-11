@@ -106,7 +106,7 @@ WebAppUninstallDialogDelegateView::WebAppUninstallDialogDelegateView(
       layout_provider->GetDialogInsetsForContentType(views::TEXT, views::TEXT);
   set_margins(insets + gfx::Insets(0, insets.left() + kIconSizeInDip, 0, 0));
 
-  base::string16 checkbox_label = l10n_util::GetStringFUTF16(
+  std::u16string checkbox_label = l10n_util::GetStringFUTF16(
       IDS_EXTENSION_UNINSTALL_PROMPT_REMOVE_DATA_CHECKBOX,
       url_formatter::FormatUrlForSecurityDisplay(
           app_start_url_, url_formatter::SchemeDisplay::OMIT_CRYPTOGRAPHIC));

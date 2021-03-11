@@ -160,7 +160,7 @@ class TipMarqueeOverflowBubbleView : public views::BubbleDialogDelegateView {
  public:
   METADATA_HEADER(TipMarqueeOverflowBubbleView);
   TipMarqueeOverflowBubbleView(TipMarqueeView* tip_marquee_view,
-                               const base::string16& text)
+                               const std::u16string& text)
       : BubbleDialogDelegateView(tip_marquee_view,
                                  views::BubbleBorder::TOP_LEFT),
         tip_marquee_view_(tip_marquee_view) {
@@ -217,11 +217,11 @@ TipMarqueeView::TipMarqueeView(int text_context, int text_style) {
 TipMarqueeView::~TipMarqueeView() = default;
 
 bool TipMarqueeView::SetTip(
-    const base::string16& tip_text,
+    const std::u16string& tip_text,
     LearnMoreLinkClickedCallback learn_more_link_clicked_callback) {
   tip_text_ = tip_text;
-  base::string16 full_tip = tip_text;
-  const base::string16 separator = base::ASCIIToUTF16(kTipMarqueeViewSeparator);
+  std::u16string full_tip = tip_text;
+  const std::u16string separator = base::ASCIIToUTF16(kTipMarqueeViewSeparator);
   const size_t tip_text_length = tip_text.length();
   const bool has_learn_more_link = !learn_more_link_clicked_callback.is_null();
   full_tip.append(separator);
@@ -243,7 +243,7 @@ bool TipMarqueeView::SetTip(
 void TipMarqueeView::ClearTip() {
   if (show_tip_widget_)
     show_tip_widget_->Close();
-  tip_text_label_->SetText(base::string16());
+  tip_text_label_->SetText(std::u16string());
   tip_text_.clear();
   learn_more_link_clicked_callback_.Reset();
   SetVisible(false);
@@ -303,7 +303,7 @@ void TipMarqueeView::OnPaint(gfx::Canvas* canvas) {
                        kTipMarqueeIconSize, kTipMarqueeIconSize, true);
 }
 
-base::string16 TipMarqueeView::GetTooltipText(const gfx::Point& p) const {
+std::u16string TipMarqueeView::GetTooltipText(const gfx::Point& p) const {
   if (!IsPointInIcon(p))
     return View::GetTooltipText(p);
 
@@ -312,7 +312,7 @@ base::string16 TipMarqueeView::GetTooltipText(const gfx::Point& p) const {
     return base::ASCIIToUTF16(kTipMarqueeViewClickToHideTip);
   if (GetFitsInLayout())
     return base::ASCIIToUTF16(kTipMarqueeViewClickToShowTip);
-  base::string16 result = tip_text_;
+  std::u16string result = tip_text_;
   if (learn_more_link_clicked_callback_) {
     result.append(base::ASCIIToUTF16(kTipMarqueeViewSeparator));
     result.append(base::ASCIIToUTF16(kTipMarqueeViewClickToLearnMore));

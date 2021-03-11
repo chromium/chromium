@@ -119,7 +119,7 @@ const gfx::VectorIcon& CookieControlsIconView::GetVectorIcon() const {
   return kEyeCrossedIcon;
 }
 
-base::string16 CookieControlsIconView::GetTextForTooltipAndAccessibleName()
+std::u16string CookieControlsIconView::GetTextForTooltipAndAccessibleName()
     const {
   return l10n_util::GetStringUTF16(IDS_COOKIE_CONTROLS_TOOLTIP);
 }

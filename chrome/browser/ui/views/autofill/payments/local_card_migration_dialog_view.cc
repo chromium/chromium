@@ -105,9 +105,9 @@ std::unique_ptr<views::Label> CreateTitle(
 std::unique_ptr<views::Label> CreateExplanationText(
     LocalCardMigrationDialogState view_state,
     int card_list_size,
-    const base::string16& user_email) {
+    const std::u16string& user_email) {
   auto explanation_text = std::make_unique<views::Label>(
-      base::string16(), views::style::CONTEXT_DIALOG_BODY_TEXT,
+      std::u16string(), views::style::CONTEXT_DIALOG_BODY_TEXT,
       views::style::STYLE_SECONDARY);
   switch (view_state) {
     case LocalCardMigrationDialogState::kOffered:
@@ -174,7 +174,7 @@ std::unique_ptr<views::ScrollView> CreateCardList(
 
 // Create the view containing the |tip_message| shown to the user.
 std::unique_ptr<views::View> CreateTip(
-    const base::string16& tip_message,
+    const std::u16string& tip_message,
     LocalCardMigrationDialogView* dialog_view) {
   ChromeLayoutProvider* provider = ChromeLayoutProvider::Get();
   // Set up the tip text container with inset, background and a solid border.
@@ -246,7 +246,7 @@ std::unique_ptr<views::View> CreateFeedbackContentView(
   const int card_list_size = card_list.size();
 
   feedback_view->AddChildView(
-      CreateExplanationText(view_state, card_list_size, base::string16())
+      CreateExplanationText(view_state, card_list_size, std::u16string())
           .release());
 
   if (card_list_size > 0) {
@@ -491,7 +491,7 @@ void LocalCardMigrationDialogView::ConstructView() {
   }
 }
 
-base::string16 LocalCardMigrationDialogView::GetOkButtonLabel() const {
+std::u16string LocalCardMigrationDialogView::GetOkButtonLabel() const {
   switch (controller_->GetViewState()) {
     case LocalCardMigrationDialogState::kOffered:
       return l10n_util::GetStringUTF16(
@@ -503,7 +503,7 @@ base::string16 LocalCardMigrationDialogView::GetOkButtonLabel() const {
   }
 }
 
-base::string16 LocalCardMigrationDialogView::GetCancelButtonLabel() const {
+std::u16string LocalCardMigrationDialogView::GetCancelButtonLabel() const {
   switch (controller_->GetViewState()) {
     case LocalCardMigrationDialogState::kOffered:
       return l10n_util::GetStringUTF16(
@@ -523,8 +523,8 @@ LocalCardMigrationDialog* CreateLocalCardMigrationDialogView(
 
 BEGIN_METADATA(LocalCardMigrationDialogView, views::BubbleDialogDelegateView)
 ADD_READONLY_PROPERTY_METADATA(bool, EnableOkButton)
-ADD_READONLY_PROPERTY_METADATA(base::string16, OkButtonLabel)
-ADD_READONLY_PROPERTY_METADATA(base::string16, CancelButtonLabel)
+ADD_READONLY_PROPERTY_METADATA(std::u16string, OkButtonLabel)
+ADD_READONLY_PROPERTY_METADATA(std::u16string, CancelButtonLabel)
 END_METADATA
 
 }  // namespace autofill

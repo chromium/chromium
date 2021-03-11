@@ -148,11 +148,11 @@ class BookmarkBarView : public views::AccessiblePaneView,
   //
   // Note that we adjust the direction of both the URL and the title based on
   // the locale so that pure LTR strings are displayed properly in RTL locales.
-  static base::string16 CreateToolTipForURLAndTitle(
+  static std::u16string CreateToolTipForURLAndTitle(
       int max_tooltip_width,
       const gfx::FontList& font_list,
       const GURL& url,
-      const base::string16& title);
+      const std::u16string& title);
 
   // views::View:
   gfx::Size CalculatePreferredSize() const override;

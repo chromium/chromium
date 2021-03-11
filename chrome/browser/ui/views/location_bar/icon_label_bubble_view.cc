@@ -180,7 +180,7 @@ bool IconLabelBubbleView::ShouldShowLabel() const {
   return label()->GetVisible() && !label()->GetText().empty();
 }
 
-void IconLabelBubbleView::SetLabel(const base::string16& label_text) {
+void IconLabelBubbleView::SetLabel(const std::u16string& label_text) {
   SetAccessibleName(label_text);
   label()->SetText(label_text);
   separator_view_->SetVisible(ShouldShowSeparator());
@@ -473,7 +473,7 @@ void IconLabelBubbleView::AnimateIn(base::Optional<int> string_id) {
     // included if visible.
     grow_animation_starting_width_ = GetVisible() ? width() : 0;
     if (string_id) {
-      base::string16 label = l10n_util::GetStringUTF16(string_id.value());
+      std::u16string label = l10n_util::GetStringUTF16(string_id.value());
       SetLabel(label);
 
       // Send an accessibility alert whose text is the label's text. Doing this

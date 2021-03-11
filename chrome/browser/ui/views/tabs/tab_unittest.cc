@@ -115,17 +115,17 @@ class FakeTabController : public TabController {
   gfx::Rect GetTabAnimationTargetBounds(const Tab* tab) override {
     return tab->bounds();
   }
-  base::string16 GetAccessibleTabName(const Tab* tab) const override {
-    return base::string16();
+  std::u16string GetAccessibleTabName(const Tab* tab) const override {
+    return std::u16string();
   }
   float GetHoverOpacityForTab(float range_parameter) const override {
     return 1.0f;
   }
   float GetHoverOpacityForRadialHighlight() const override { return 1.0f; }
 
-  base::string16 GetGroupTitle(
+  std::u16string GetGroupTitle(
       const tab_groups::TabGroupId& group_id) const override {
-    return base::string16();
+    return std::u16string();
   }
 
   tab_groups::TabGroupColorId GetGroupColorId(

@@ -146,15 +146,15 @@ class CollapsibleListView : public views::View {
             gfx::Insets(/*vertical=*/0, indent),
             provider->GetDistanceMetric(
                 views::DISTANCE_RELATED_LABEL_HORIZONTAL)));
-    base::string16 label_text;
+    std::u16string label_text;
     if (model->RowCount() > 0) {
       auto icon = std::make_unique<views::ImageView>();
       icon->SetImage(model->GetIcon(0));
       label_container->AddChildView(std::move(icon));
 
-      base::string16 first_item = model->GetText(0, 0);
-      base::string16 second_item =
-          model->RowCount() > 1 ? model->GetText(1, 0) : base::string16();
+      std::u16string first_item = model->GetText(0, 0);
+      std::u16string second_item =
+          model->RowCount() > 1 ? model->GetText(1, 0) : std::u16string();
 
       label_text = base::i18n::MessageFormatter::FormatWithNumberedArgs(
           l10n_util::GetStringUTF16(
@@ -254,7 +254,7 @@ int FileSystemAccessUsageBubbleView::FilePathListModel::RowCount() {
   return files_.size() + directories_.size();
 }
 
-base::string16 FileSystemAccessUsageBubbleView::FilePathListModel::GetText(
+std::u16string FileSystemAccessUsageBubbleView::FilePathListModel::GetText(
     int row,
     int column_id) {
   if (size_t{row} < files_.size())
@@ -272,7 +272,7 @@ gfx::ImageSkia FileSystemAccessUsageBubbleView::FilePathListModel::GetIcon(
                                kIconSize, icon_color);
 }
 
-base::string16 FileSystemAccessUsageBubbleView::FilePathListModel::GetTooltip(
+std::u16string FileSystemAccessUsageBubbleView::FilePathListModel::GetTooltip(
     int row) {
   if (size_t{row} < files_.size())
     return files_[row].LossyDisplayName();
@@ -365,7 +365,7 @@ FileSystemAccessUsageBubbleView::FileSystemAccessUsageBubbleView(
 
 FileSystemAccessUsageBubbleView::~FileSystemAccessUsageBubbleView() = default;
 
-base::string16 FileSystemAccessUsageBubbleView::GetAccessibleWindowTitle()
+std::u16string FileSystemAccessUsageBubbleView::GetAccessibleWindowTitle()
     const {
   Browser* browser = chrome::FindBrowserWithWebContents(web_contents());
   // Don't crash if the web_contents is destroyed/unloaded.

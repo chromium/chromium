@@ -66,7 +66,7 @@ class BookmarkEditorView : public BookmarkEditor,
         : ui::TreeNodeModel<EditorNode>(std::move(root)) {}
 
     void SetTitle(ui::TreeModelNode* node,
-                  const base::string16& title) override;
+                  const std::u16string& title) override;
 
    private:
     DISALLOW_COPY_AND_ASSIGN(EditorTreeModel);
@@ -93,7 +93,7 @@ class BookmarkEditorView : public BookmarkEditor,
 
   // views::TextfieldController:
   void ContentsChanged(views::Textfield* sender,
-                       const base::string16& new_contents) override;
+                       const std::u16string& new_contents) override;
   bool HandleKeyEvent(views::Textfield* sender,
                       const ui::KeyEvent& key_event) override;
 

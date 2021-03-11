@@ -48,7 +48,7 @@ class CommanderFrontendViews : public commander::CommanderFrontend,
   void Hide() override;
 
   // CommanderHandler::Delegate overrides
-  void OnTextChanged(const base::string16& text) override;
+  void OnTextChanged(const std::u16string& text) override;
   void OnOptionSelected(size_t option_index, int result_set_id) override;
   void OnCompositeCommandCancelled() override;
   void OnDismiss() override;

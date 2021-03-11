@@ -51,7 +51,7 @@ class ChooserBubbleUiViewDelegate : public LocationBarBubbleDelegateView,
   void AddedToWidget() override;
 
   // views::WidgetDelegate:
-  base::string16 GetWindowTitle() const override;
+  std::u16string GetWindowTitle() const override;
 
   // views::DialogDelegate:
   bool IsDialogButtonEnabled(ui::DialogButton button) const override;
@@ -136,7 +136,7 @@ void ChooserBubbleUiViewDelegate::AddedToWidget() {
   GetBubbleFrameView()->SetTitleView(CreateTitleOriginLabel(GetWindowTitle()));
 }
 
-base::string16 ChooserBubbleUiViewDelegate::GetWindowTitle() const {
+std::u16string ChooserBubbleUiViewDelegate::GetWindowTitle() const {
   return device_chooser_content_view_->GetWindowTitle();
 }
 

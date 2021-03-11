@@ -58,7 +58,7 @@ DesktopMediaSourceView::DesktopMediaSourceView(
 
 DesktopMediaSourceView::~DesktopMediaSourceView() {}
 
-void DesktopMediaSourceView::SetName(const base::string16& name) {
+void DesktopMediaSourceView::SetName(const std::u16string& name) {
   label_->SetText(name);
 }
 

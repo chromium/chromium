@@ -86,8 +86,8 @@ class MenuItemViewTestInsert : public MenuTestBase {
     ASSERT_EQ(2u, submenu->GetMenuItems().size());
 
     inserted_item_ = menu()->AddMenuItemAt(
-        INSERT_INDEX, 1000, ASCIIToUTF16("inserted item"), base::string16(),
-        base::string16(), ui::ThemedVectorIcon(), gfx::ImageSkia(),
+        INSERT_INDEX, 1000, ASCIIToUTF16("inserted item"), std::u16string(),
+        std::u16string(), ui::ThemedVectorIcon(), gfx::ImageSkia(),
         ui::ThemedVectorIcon(), views::MenuItemView::Type::kNormal,
         ui::NORMAL_SEPARATOR);
     ASSERT_TRUE(inserted_item_);
@@ -187,8 +187,8 @@ class MenuItemViewTestInsertWithSubmenu : public MenuTestBase {
   // Insert item at INSERT_INDEX.
   void Step2() {
     inserted_item_ = menu()->AddMenuItemAt(
-        INSERT_INDEX, 1000, ASCIIToUTF16("inserted item"), base::string16(),
-        base::string16(), ui::ThemedVectorIcon(), gfx::ImageSkia(),
+        INSERT_INDEX, 1000, ASCIIToUTF16("inserted item"), std::u16string(),
+        std::u16string(), ui::ThemedVectorIcon(), gfx::ImageSkia(),
         ui::ThemedVectorIcon(), views::MenuItemView::Type::kNormal,
         ui::NORMAL_SEPARATOR);
     ASSERT_TRUE(inserted_item_);

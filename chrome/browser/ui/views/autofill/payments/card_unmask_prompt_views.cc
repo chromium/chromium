@@ -103,7 +103,7 @@ void CardUnmaskPromptViews::DisableAndWaitForVerification() {
 }
 
 void CardUnmaskPromptViews::GotVerificationResult(
-    const base::string16& error_message,
+    const std::u16string& error_message,
     bool allow_retry) {
   progress_throbber_->Stop();
   if (error_message.empty()) {
@@ -134,7 +134,7 @@ void CardUnmaskPromptViews::GotVerificationResult(
       // TODO(estade): When do we hide |error_label_|?
       SetRetriableErrorMessage(error_message);
     } else {
-      SetRetriableErrorMessage(base::string16());
+      SetRetriableErrorMessage(std::u16string());
 
       // Rows cannot be replaced in GridLayout, so we reset it.
       overlay_->RemoveAllChildViews(/*delete_children=*/true);
@@ -171,7 +171,7 @@ void CardUnmaskPromptViews::GotVerificationResult(
 }
 
 void CardUnmaskPromptViews::SetRetriableErrorMessage(
-    const base::string16& message) {
+    const std::u16string& message) {
   error_label_->SetMultiLine(!message.empty());
   error_label_->SetText(message);
   temporary_error_->SetVisible(!message.empty());
@@ -226,7 +226,7 @@ void CardUnmaskPromptViews::OnThemeChanged() {
     overlay_label_->SetBackgroundColor(bg_color);
 }
 
-base::string16 CardUnmaskPromptViews::GetWindowTitle() const {
+std::u16string CardUnmaskPromptViews::GetWindowTitle() const {
   return controller_->GetWindowTitle();
 }
 
@@ -266,10 +266,10 @@ bool CardUnmaskPromptViews::Accept() {
       cvc_input_->GetText(),
       month_input_->GetVisible()
           ? month_input_->GetTextForRow(month_input_->GetSelectedIndex())
-          : base::string16(),
+          : std::u16string(),
       year_input_->GetVisible()
           ? year_input_->GetTextForRow(year_input_->GetSelectedIndex())
-          : base::string16(),
+          : std::u16string(),
       storage_checkbox_ ? storage_checkbox_->GetChecked() : false,
       /*enable_fido_auth=*/false);
   return false;
@@ -277,7 +277,7 @@ bool CardUnmaskPromptViews::Accept() {
 
 void CardUnmaskPromptViews::ContentsChanged(
     views::Textfield* sender,
-    const base::string16& new_contents) {
+    const std::u16string& new_contents) {
   if (controller_->InputCvcIsValid(new_contents))
     cvc_input_->SetInvalid(false);
 
@@ -290,7 +290,7 @@ void CardUnmaskPromptViews::DateChanged() {
     if (month_input_->GetInvalid()) {
       month_input_->SetInvalid(false);
       year_input_->SetInvalid(false);
-      SetRetriableErrorMessage(base::string16());
+      SetRetriableErrorMessage(std::u16string());
     }
   } else if (month_input_->GetSelectedIndex() !=
                  month_combobox_model_.GetDefaultIndex() &&
@@ -457,12 +457,12 @@ void CardUnmaskPromptViews::LinkClicked() {
   new_card_link_->SetVisible(false);
   input_row_->InvalidateLayout();
   cvc_input_->SetInvalid(false);
-  cvc_input_->SetText(base::string16());
+  cvc_input_->SetText(std::u16string());
   UpdateButtons();
   DialogModelChanged();
   GetWidget()->UpdateWindowTitle();
   instructions_->SetText(controller_->GetInstructionsMessage());
-  SetRetriableErrorMessage(base::string16());
+  SetRetriableErrorMessage(std::u16string());
 }
 
 CardUnmaskPromptView* CreateCardUnmaskPromptView(

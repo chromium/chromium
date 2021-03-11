@@ -28,7 +28,7 @@
 #include "ui/views/window/hit_test_utils.h"
 
 WebAppMenuButton::WebAppMenuButton(BrowserView* browser_view,
-                                   base::string16 accessible_name)
+                                   std::u16string accessible_name)
     : AppMenuButton(base::BindRepeating(&WebAppMenuButton::ButtonPressed,
                                         base::Unretained(this))),
       browser_view_(browser_view) {
@@ -37,7 +37,7 @@ WebAppMenuButton::WebAppMenuButton(BrowserView* browser_view,
   SetInkDropMode(InkDropMode::ON);
   SetFocusBehavior(FocusBehavior::ALWAYS);
 
-  base::string16 application_name = accessible_name;
+  std::u16string application_name = accessible_name;
   if (application_name.empty() && browser_view->browser()->app_controller()) {
     application_name =
         browser_view->browser()->app_controller()->GetAppShortName();

@@ -150,9 +150,9 @@ void ChromeBrowserMainExtraPartsViews::PreProfileInit() {
   if (command_line.HasSwitch(sandbox::policy::switches::kNoSandbox))
     return;
 
-  base::string16 title = l10n_util::GetStringFUTF16(
+  std::u16string title = l10n_util::GetStringFUTF16(
       IDS_REFUSE_TO_RUN_AS_ROOT, l10n_util::GetStringUTF16(IDS_PRODUCT_NAME));
-  base::string16 message = l10n_util::GetStringFUTF16(
+  std::u16string message = l10n_util::GetStringFUTF16(
       IDS_REFUSE_TO_RUN_AS_ROOT_2, l10n_util::GetStringUTF16(IDS_PRODUCT_NAME));
 
   chrome::ShowWarningMessageBox(NULL, title, message);

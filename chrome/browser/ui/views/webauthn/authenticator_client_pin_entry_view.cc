@@ -103,7 +103,7 @@ void AuthenticatorClientPinEntryView::RequestFocus() {
 
 void AuthenticatorClientPinEntryView::ContentsChanged(
     views::Textfield* sender,
-    const base::string16& new_contents) {
+    const std::u16string& new_contents) {
   DCHECK(sender == pin_text_field_ || sender == confirmation_text_field_);
 
   if (sender == pin_text_field_) {

@@ -56,7 +56,7 @@ class AppInfoFooterPanel
 
   // Overridden from ExtensionUninstallDialog::Delegate:
   void OnExtensionUninstallDialogClosed(bool did_start_uninstall,
-                                        const base::string16& error) override;
+                                        const std::u16string& error) override;
 
   // Create Shortcuts for the app.
   void CreateShortcuts();

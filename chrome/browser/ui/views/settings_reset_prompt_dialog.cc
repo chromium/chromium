@@ -104,8 +104,8 @@ void SettingsResetPromptDialog::Show() {
   controller_->DialogShown();
 }
 
-base::string16 SettingsResetPromptDialog::GetWindowTitle() const {
-  return controller_ ? controller_->GetWindowTitle() : base::string16();
+std::u16string SettingsResetPromptDialog::GetWindowTitle() const {
+  return controller_ ? controller_->GetWindowTitle() : std::u16string();
 }
 
 BEGIN_METADATA(SettingsResetPromptDialog, views::DialogDelegateView)

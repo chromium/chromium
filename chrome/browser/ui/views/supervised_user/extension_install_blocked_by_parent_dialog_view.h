@@ -47,7 +47,7 @@ class ExtensionInstallBlockedByParentDialogView
  private:
   void ConfigureTitle();
   void CreateContents();
-  base::string16 GetExtensionTypeString() const;
+  std::u16string GetExtensionTypeString() const;
 
   const extensions::Extension* extension_ = nullptr;
   chrome::ExtensionInstalledBlockedByParentDialogAction action_;

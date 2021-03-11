@@ -54,17 +54,17 @@
 namespace payments {
 namespace {
 
-base::string16 GetPaymentHandlerDialogTitle(
+std::u16string GetPaymentHandlerDialogTitle(
     content::WebContents* web_contents) {
   if (!web_contents)
-    return base::string16();
+    return std::u16string();
 
-  const base::string16 title = web_contents->GetTitle();
-  const base::string16 https_prefix =
+  const std::u16string title = web_contents->GetTitle();
+  const std::u16string https_prefix =
       base::ASCIIToUTF16(url::kHttpsScheme) +
       base::ASCIIToUTF16(url::kStandardSchemeSeparator);
   return base::StartsWith(title, https_prefix, base::CompareCase::SENSITIVE)
-             ? base::string16()
+             ? std::u16string()
              : title;
 }
 
@@ -73,7 +73,7 @@ base::string16 GetPaymentHandlerDialogTitle(
 class ReadOnlyOriginView : public views::View {
  public:
   METADATA_HEADER(ReadOnlyOriginView);
-  ReadOnlyOriginView(const base::string16& page_title,
+  ReadOnlyOriginView(const std::u16string& page_title,
                      const GURL& origin,
                      const SkBitmap* icon_bitmap,
                      Profile* profile,
@@ -219,7 +219,7 @@ PaymentHandlerWebFlowViewController::~PaymentHandlerWebFlowViewController() {
   state()->OnPaymentAppWindowClosed();
 }
 
-base::string16 PaymentHandlerWebFlowViewController::GetSheetTitle() {
+std::u16string PaymentHandlerWebFlowViewController::GetSheetTitle() {
   return GetPaymentHandlerDialogTitle(web_contents());
 }
 

@@ -52,8 +52,8 @@ class LocalCardMigrationDialogView : public LocalCardMigrationDialog,
   void OnWindowClosing();
   bool GetEnableOkButton() const;
 
-  base::string16 GetOkButtonLabel() const;
-  base::string16 GetCancelButtonLabel() const;
+  std::u16string GetOkButtonLabel() const;
+  std::u16string GetCancelButtonLabel() const;
 
   LocalCardMigrationDialogController* controller_;
 

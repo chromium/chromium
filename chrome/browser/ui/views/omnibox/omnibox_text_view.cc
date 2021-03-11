@@ -153,11 +153,11 @@ void OmniboxTextView::ApplyTextColor(OmniboxPart part) {
   SchedulePaint();
 }
 
-const base::string16& OmniboxTextView::GetText() const {
+const std::u16string& OmniboxTextView::GetText() const {
   return render_text_ ? render_text_->text() : base::EmptyString16();
 }
 
-void OmniboxTextView::SetText(const base::string16& new_text) {
+void OmniboxTextView::SetText(const std::u16string& new_text) {
   if (cached_classifications_) {
     cached_classifications_.reset();
   } else if (GetText() == new_text && !use_deemphasized_font_) {
@@ -173,7 +173,7 @@ void OmniboxTextView::SetText(const base::string16& new_text) {
 }
 
 void OmniboxTextView::SetTextWithStyling(
-    const base::string16& new_text,
+    const std::u16string& new_text,
     const ACMatchClassifications& classifications,
     bool deemphasize) {
   if (GetText() == new_text && cached_classifications_ &&
@@ -197,10 +197,10 @@ void OmniboxTextView::SetTextWithStyling(
   use_deemphasized_font_ = deemphasize;
   cached_classifications_.reset();
   wrap_text_lines_ = line.num_text_lines() > 1;
-  render_text_ = CreateRenderText(base::string16());
+  render_text_ = CreateRenderText(std::u16string());
 
   for (const SuggestionAnswer::TextField& text_field : line.text_fields())
-    AppendText(text_field, base::string16());
+    AppendText(text_field, std::u16string());
   if (!line.text_fields().empty()) {
     constexpr int kMaxDisplayLines = 3;
     const SuggestionAnswer::TextField& first_field = line.text_fields().front();
@@ -218,7 +218,7 @@ void OmniboxTextView::SetTextWithStyling(
 }
 
 void OmniboxTextView::AppendExtraText(const SuggestionAnswer::ImageLine& line) {
-  const base::string16 space(1, char16_t(' '));
+  const std::u16string space(1, char16_t(' '));
   const auto* text_field = line.additional_text();
   if (text_field) {
     AppendText(*text_field, space);
@@ -270,7 +270,7 @@ void OmniboxTextView::ReapplyStyling() {
 }
 
 std::unique_ptr<gfx::RenderText> OmniboxTextView::CreateRenderText(
-    const base::string16& text) const {
+    const std::u16string& text) const {
   std::unique_ptr<gfx::RenderText> render_text =
       gfx::RenderText::CreateRenderText();
   render_text->SetDisplayRect(gfx::Rect(gfx::Size(INT_MAX, 0)));
@@ -286,8 +286,8 @@ std::unique_ptr<gfx::RenderText> OmniboxTextView::CreateRenderText(
 }
 
 void OmniboxTextView::AppendText(const SuggestionAnswer::TextField& field,
-                                 const base::string16& prefix) {
-  const base::string16& append_text =
+                                 const std::u16string& prefix) {
+  const std::u16string& append_text =
       prefix.empty() ? field.text() : (prefix + field.text());
   if (append_text.empty())
     return;
@@ -314,6 +314,6 @@ void OmniboxTextView::OnStyleChanged() {
 }
 
 BEGIN_METADATA(OmniboxTextView, views::View)
-ADD_PROPERTY_METADATA(base::string16, Text)
+ADD_PROPERTY_METADATA(std::u16string, Text)
 ADD_READONLY_PROPERTY_METADATA(int, LineHeight)
 END_METADATA

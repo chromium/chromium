@@ -159,7 +159,7 @@ std::unique_ptr<views::View> PaymentRequestItemList::Item::CreateExtraView() {
 }
 
 void PaymentRequestItemList::Item::UpdateAccessibleName() {
-  base::string16 accessible_content =
+  std::u16string accessible_content =
       selected_ ? l10n_util::GetStringFUTF16(
                       IDS_PAYMENTS_ROW_ACCESSIBLE_NAME_SELECTED_FORMAT,
                       GetNameForDataType(), accessible_item_description_)

@@ -145,8 +145,8 @@ class LocationBarView : public LocationBar,
   // Shows |text| as an inline autocompletion.  This is useful for IMEs, where
   // we can't show the autocompletion inside the actual OmniboxView.  See
   // comments on |ime_inline_autocomplete_view_|.
-  void SetImeInlineAutocompletion(const base::string16& text);
-  base::string16 GetImeInlineAutocompletion() const;
+  void SetImeInlineAutocompletion(const std::u16string& text);
+  std::u16string GetImeInlineAutocompletion() const;
 
   // Select all of the text. Needed when the user tabs through controls
   // in the toolbar in full keyboard accessibility mode.
@@ -162,8 +162,8 @@ class LocationBarView : public LocationBar,
 
   // Sets the additional omnibox text. E.g. the title corresponding to the URL
   // displayed in the OmniboxView.
-  void SetOmniboxAdditionalText(const base::string16& text);
-  base::string16 GetOmniboxAdditionalText() const;
+  void SetOmniboxAdditionalText(const std::u16string& text);
+  std::u16string GetOmniboxAdditionalText() const;
 
   // Updates the controller, and, if |contents| is non-null, restores saved
   // state that the tab holds.

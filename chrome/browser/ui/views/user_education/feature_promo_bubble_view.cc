@@ -78,7 +78,7 @@ class MdIPHBubbleButton : public MdTextButton {
   METADATA_HEADER(MdIPHBubbleButton);
 
   MdIPHBubbleButton(PressedCallback callback,
-                    const base::string16& text,
+                    const std::u16string& text,
                     bool has_border)
       : MdTextButton(callback,
                      text,
@@ -162,7 +162,7 @@ FeaturePromoBubbleView::FeaturePromoBubbleView(
         params.timeout_short ? *params.timeout_short : kDelayShort);
   }
 
-  const base::string16 body_text = std::move(params.body_text);
+  const std::u16string body_text = std::move(params.body_text);
 
   if (params.screenreader_text)
     accessible_name_ = std::move(*params.screenreader_text);
@@ -230,9 +230,9 @@ FeaturePromoBubbleView::FeaturePromoBubbleView(
     button_container->SetProperty(
         views::kMarginsKey, gfx::Insets(button_vertical_spacing, 0, 0, 0));
 
-    const base::string16 snooze_text =
+    const std::u16string snooze_text =
         l10n_util::GetStringUTF16(IDS_PROMO_SNOOZE_BUTTON);
-    const base::string16 dismiss_text =
+    const std::u16string dismiss_text =
         l10n_util::GetStringUTF16(IDS_PROMO_DISMISS_BUTTON);
     bool dismiss_is_leading = views::PlatformStyle::kIsOkButtonLeading;
 
@@ -332,7 +332,7 @@ ax::mojom::Role FeaturePromoBubbleView::GetAccessibleWindowRole() {
   return ax::mojom::Role::kAlert;
 }
 
-base::string16 FeaturePromoBubbleView::GetAccessibleWindowTitle() const {
+std::u16string FeaturePromoBubbleView::GetAccessibleWindowTitle() const {
   return accessible_name_;
 }
 

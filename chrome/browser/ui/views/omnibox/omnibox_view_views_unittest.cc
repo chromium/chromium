@@ -69,10 +69,10 @@ namespace {
 class TestingOmniboxView;
 
 void ExpectElidedToSimplifiedDomain(TestingOmniboxView* view,
-                                    const base::string16& scheme,
-                                    const base::string16& subdomain,
-                                    const base::string16& hostname_and_scheme,
-                                    const base::string16& path,
+                                    const std::u16string& scheme,
+                                    const std::u16string& subdomain,
+                                    const std::u16string& hostname_and_scheme,
+                                    const std::u16string& path,
                                     bool should_elide_to_registrable_domain);
 
 void ExpectUnelidedFromSimplifiedDomain(gfx::RenderText* render_text,
@@ -93,7 +93,7 @@ class TestingOmniboxView : public OmniboxViewViews {
   void ResetEmphasisTestState();
 
   void CheckUpdatePopupCallInfo(size_t call_count,
-                                const base::string16& text,
+                                const std::u16string& text,
                                 const Range& selection_range);
 
   void CheckUpdatePopupNotCalled();
@@ -123,20 +123,20 @@ class TestingOmniboxView : public OmniboxViewViews {
   void NavigateAndExpectElided(const GURL& url,
                                bool is_same_document,
                                const GURL& previous_url,
-                               const base::string16& scheme,
-                               const base::string16& subdomain,
-                               const base::string16& hostname_and_scheme,
-                               const base::string16& path,
+                               const std::u16string& scheme,
+                               const std::u16string& subdomain,
+                               const std::u16string& hostname_and_scheme,
+                               const std::u16string& path,
                                bool should_elide_to_registrable_domain);
 
   // Simluates a navigation and checks that the URL is unelided from the
   // simplified domain afterwards. This simulates a renderer-initiated
   // navigation, in which the display URL is updated between
   // DidStartNavigation() and DidFinishNavigation() calls.
-  void NavigateAndExpectUnelided(const base::string16& url,
+  void NavigateAndExpectUnelided(const std::u16string& url,
                                  bool is_same_document,
                                  const GURL& previous_url,
-                                 const base::string16& scheme);
+                                 const std::u16string& scheme);
 
   using OmniboxView::OnInlineAutocompleteTextMaybeChanged;
 
@@ -151,7 +151,7 @@ class TestingOmniboxView : public OmniboxViewViews {
   void ApplyColor(SkColor color, const gfx::Range& range) override;
 
   size_t update_popup_call_count_ = 0;
-  base::string16 update_popup_text_;
+  std::u16string update_popup_text_;
   Range update_popup_selection_range_;
 
   // Range of the last scheme logged by UpdateSchemeStyle().
@@ -188,7 +188,7 @@ void TestingOmniboxView::ResetEmphasisTestState() {
 
 void TestingOmniboxView::CheckUpdatePopupCallInfo(
     size_t call_count,
-    const base::string16& text,
+    const std::u16string& text,
     const Range& selection_range) {
   EXPECT_EQ(call_count, update_popup_call_count_);
   EXPECT_EQ(text, update_popup_text_);
@@ -279,10 +279,10 @@ void TestingOmniboxView::NavigateAndExpectElided(
     const GURL& url,
     bool is_same_document,
     const GURL& previous_url,
-    const base::string16& scheme,
-    const base::string16& subdomain,
-    const base::string16& hostname_and_scheme,
-    const base::string16& path,
+    const std::u16string& scheme,
+    const std::u16string& subdomain,
+    const std::u16string& hostname_and_scheme,
+    const std::u16string& path,
     bool should_elide_to_registrable_domain) {
   content::MockNavigationHandle navigation;
   navigation.set_is_same_document(is_same_document);
@@ -300,10 +300,10 @@ void TestingOmniboxView::NavigateAndExpectElided(
 }
 
 void TestingOmniboxView::NavigateAndExpectUnelided(
-    const base::string16& url,
+    const std::u16string& url,
     bool is_same_document,
     const GURL& previous_url,
-    const base::string16& scheme) {
+    const std::u16string& scheme) {
   content::MockNavigationHandle navigation;
   navigation.set_is_same_document(is_same_document);
   navigation.set_url(GURL(url));
@@ -334,10 +334,10 @@ void CheckEqualsWithMarginOne(int a, int b) {
 // |subdomain_and_scheme| and |subdomain| should include a trailing ".", and
 // |path| should include a leading "/".
 void ExpectElidedToSimplifiedDomain(TestingOmniboxView* view,
-                                    const base::string16& scheme,
-                                    const base::string16& subdomain,
-                                    const base::string16& hostname_and_scheme,
-                                    const base::string16& path,
+                                    const std::u16string& scheme,
+                                    const std::u16string& subdomain,
+                                    const std::u16string& hostname_and_scheme,
+                                    const std::u16string& path,
                                     bool should_elide_to_registrable_domain) {
   gfx::RenderText* render_text = view->GetRenderText();
   gfx::Rect subdomain_and_scheme_rect;
@@ -489,17 +489,17 @@ class OmniboxViewViewsTestBase : public ChromeViewsTestBase {
 };
 
 // The display URL used in simplified domain display tests.
-const base::string16 kSimplifiedDomainDisplayUrl =
+const std::u16string kSimplifiedDomainDisplayUrl =
     base::ASCIIToUTF16("https://foo.example.test/bar");
-const base::string16 kSimplifiedDomainDisplayUrlHostnameAndScheme =
+const std::u16string kSimplifiedDomainDisplayUrlHostnameAndScheme =
     base::ASCIIToUTF16("https://foo.example.test");
-const base::string16 kSimplifiedDomainDisplayUrlSubdomainAndScheme =
+const std::u16string kSimplifiedDomainDisplayUrlSubdomainAndScheme =
     base::ASCIIToUTF16("https://foo.");
-const base::string16 kSimplifiedDomainDisplayUrlSubdomain =
+const std::u16string kSimplifiedDomainDisplayUrlSubdomain =
     base::ASCIIToUTF16("foo.");
-const base::string16 kSimplifiedDomainDisplayUrlPath =
+const std::u16string kSimplifiedDomainDisplayUrlPath =
     base::ASCIIToUTF16("/bar");
-const base::string16 kSimplifiedDomainDisplayUrlScheme =
+const std::u16string kSimplifiedDomainDisplayUrlScheme =
     base::ASCIIToUTF16("https://");
 
 class OmniboxViewViewsTest : public OmniboxViewViewsTestBase {
@@ -549,7 +549,7 @@ class OmniboxViewViewsTest : public OmniboxViewViewsTestBase {
   }
 
   // Updates the models' URL and display text to |new_url|.
-  void UpdateDisplayURL(const base::string16& new_url) {
+  void UpdateDisplayURL(const std::u16string& new_url) {
     location_bar_model()->set_url(GURL(new_url));
     location_bar_model()->set_url_for_display(new_url);
     omnibox_view()->model()->ResetDisplayTexts();
@@ -708,7 +708,7 @@ TEST_F(OmniboxViewViewsTest, ScheduledTextEditCommand) {
 // take over. Test for crbug.com/863543 and crbug.com/892216.
 TEST_F(OmniboxViewViewsTest, SelectWithShift_863543) {
   location_bar_model()->set_url(GURL("http://www.example.com/?query=1"));
-  const base::string16 text =
+  const std::u16string text =
       base::ASCIIToUTF16("http://www.example.com/?query=1");
   omnibox_view()->SetWindowTextAndCaretPos(text, 23U, false, false);
 
@@ -751,7 +751,7 @@ TEST_F(OmniboxViewViewsTest, OnBlur) {
   // on-screen. Because the domain is RTL, this scrolls to an offset greater
   // than 0.
   omnibox_textfield()->OnFocus();
-  const base::string16 kContentsRtl =
+  const std::u16string kContentsRtl =
       base::WideToUTF16(L"\x05e8\x05e2.\x05e7\x05d5\x05dd/0123/abcd");
   omnibox_view()->SetWindowTextAndCaretPos(kContentsRtl, 0, false, false);
   EXPECT_EQ(gfx::NO_ELIDE, render_text->elide_behavior());
@@ -958,7 +958,7 @@ TEST_F(OmniboxViewViewsTest, PasteAndGoToUrlOrSearchCommand) {
   EXPECT_FALSE(omnibox_view()->IsCommandIdEnabled(IDC_PASTE_AND_GO));
 
   // Test input that's a valid URL.
-  base::string16 expected_text =
+  std::u16string expected_text =
 #if defined(OS_MAC)
       base::ASCIIToUTF16("Pa&ste and Go to https://test.com");
 #else
@@ -966,7 +966,7 @@ TEST_F(OmniboxViewViewsTest, PasteAndGoToUrlOrSearchCommand) {
 #endif
   ui::ScopedClipboardWriter(clipboard_buffer)
       .WriteText(base::ASCIIToUTF16("https://test.com/"));
-  base::string16 returned_text =
+  std::u16string returned_text =
       omnibox_view()->GetLabelForCommandId(IDC_PASTE_AND_GO);
   EXPECT_TRUE(omnibox_view()->IsCommandIdEnabled(IDC_PASTE_AND_GO));
   EXPECT_EQ(expected_text, returned_text);
@@ -1028,7 +1028,7 @@ TEST_F(OmniboxViewViewsTest, SelectAllOnReactivateTabAfterDeleteAll) {
   omnibox_view()->RevertAll();
 
   // Delete all the text.
-  omnibox_view()->SetUserText(base::string16());
+  omnibox_view()->SetUserText(std::u16string());
   EXPECT_TRUE(omnibox_view()->model()->user_input_in_progress());
 
   // Switch back to the first url.
@@ -1161,7 +1161,7 @@ TEST_P(OmniboxViewViewsClipboardTest, ClipboardCopyOrCutURL) {
   ui::TextEditCommand clipboard_command = GetParam();
   textfield_test_api()->ExecuteTextEditCommand(clipboard_command);
 
-  base::string16 expected_text;
+  std::u16string expected_text;
   if (clipboard_command == ui::TextEditCommand::COPY)
     expected_text = base::ASCIIToUTF16("https://test.com/");
   EXPECT_EQ(expected_text, omnibox_view()->GetText());
@@ -1202,7 +1202,7 @@ TEST_P(OmniboxViewViewsClipboardTest, ClipboardCopyOrCutUserText) {
   textfield_test_api()->ExecuteTextEditCommand(clipboard_command);
 
   if (clipboard_command == ui::TextEditCommand::CUT)
-    EXPECT_EQ(base::string16(), omnibox_view()->GetText());
+    EXPECT_EQ(std::u16string(), omnibox_view()->GetText());
 
   // Make sure HTML format isn't written. See
   // BookmarkNodeData::WriteToClipboard() for details.
@@ -1718,7 +1718,7 @@ TEST_F(OmniboxViewViewsSteadyStateElisionsTest, UnelideFromModel) {
 // least part of |path_bounds|, but not the full |display_url|. This is useful
 // for checking the displayed text partway through an animation.
 bool IsPartlyThroughSimplifiedDomainElision(gfx::RenderText* render_text,
-                                            const base::string16& display_url,
+                                            const std::u16string& display_url,
                                             const gfx::Range& path_bounds) {
   // First check if all of |display_url| is showing; if it is, we aren't partly
   // elided.
@@ -1863,17 +1863,17 @@ TEST_P(OmniboxViewViewsRevealOnHoverTest, HoverAndExit) {
 // reveals the unsimplified URL on hover, using an IDN url.
 TEST_P(OmniboxViewViewsRevealOnHoverTest, HoverAndExitIDN) {
   // The display URL used in simplified domain display tests.
-  const base::string16 kSimplifiedDomainDisplayIDNUrl =
+  const std::u16string kSimplifiedDomainDisplayIDNUrl =
       base::UTF8ToUTF16("https://テスト.住所の例.test/bar");
-  const base::string16 kSimplifiedDomainDisplayIDNUrlHostnameAndScheme =
+  const std::u16string kSimplifiedDomainDisplayIDNUrlHostnameAndScheme =
       base::UTF8ToUTF16("https://テスト.住所の例.test");
-  const base::string16 kSimplifiedDomainDisplayIDNUrlSubdomainAndScheme =
+  const std::u16string kSimplifiedDomainDisplayIDNUrlSubdomainAndScheme =
       base::UTF8ToUTF16("https://テスト.");
-  const base::string16 kSimplifiedDomainDisplayIDNUrlSubdomain =
+  const std::u16string kSimplifiedDomainDisplayIDNUrlSubdomain =
       base::UTF8ToUTF16("テスト.");
-  const base::string16 kSimplifiedDomainDisplayIDNUrlPath =
+  const std::u16string kSimplifiedDomainDisplayIDNUrlPath =
       base::UTF8ToUTF16("/bar");
-  const base::string16 kSimplifiedDomainDisplayIDNUrlScheme =
+  const std::u16string kSimplifiedDomainDisplayIDNUrlScheme =
       base::UTF8ToUTF16("https://");
   UpdateDisplayURL(kSimplifiedDomainDisplayIDNUrl);
   // Call OnThemeChanged() to create the animations.
@@ -1941,19 +1941,19 @@ TEST_P(OmniboxViewViewsRevealOnHoverTest, PrivateRegistry) {
   if (!ShouldElideToRegistrableDomain())
     return;
 
-  const base::string16 kSimplifiedDomainDisplayPrivateRegistryUrl =
+  const std::u16string kSimplifiedDomainDisplayPrivateRegistryUrl =
       base::UTF8ToUTF16("https://foo.blogspot.com/bar");
-  const base::string16
+  const std::u16string
       kSimplifiedDomainDisplayPrivateRegistryUrlHostnameAndScheme =
           base::UTF8ToUTF16("https://foo.blogspot.com");
-  const base::string16
+  const std::u16string
       kSimplifiedDomainDisplayPrivateRegistryUrlSubdomainAndScheme =
           base::UTF8ToUTF16("https://foo.");
-  const base::string16 kSimplifiedDomainDisplayPrivateRegistryUrlSubdomain =
+  const std::u16string kSimplifiedDomainDisplayPrivateRegistryUrlSubdomain =
       base::UTF8ToUTF16("foo.");
-  const base::string16 kSimplifiedDomainDisplayPrivateRegistryUrlPath =
+  const std::u16string kSimplifiedDomainDisplayPrivateRegistryUrlPath =
       base::UTF8ToUTF16("/bar");
-  const base::string16 kSimplifiedDomainDisplayPrivateRegistryUrlScheme =
+  const std::u16string kSimplifiedDomainDisplayPrivateRegistryUrlScheme =
       base::UTF8ToUTF16("https://");
   UpdateDisplayURL(kSimplifiedDomainDisplayPrivateRegistryUrl);
   // Call OnThemeChanged() to create the animations.
@@ -1972,17 +1972,17 @@ TEST_P(OmniboxViewViewsRevealOnHoverTest, PrivateRegistry) {
 // the domain name.
 TEST_P(OmniboxViewViewsRevealOnHoverTest, HoverAndExitDomainInPath) {
   // The display URL used in simplified domain display tests.
-  const base::string16 kSimplifiedDomainDisplayRepeatedUrl =
+  const std::u16string kSimplifiedDomainDisplayRepeatedUrl =
       base::UTF8ToUTF16("https://ex.example.test/example.test");
-  const base::string16 kSimplifiedDomainDisplayRepeatedUrlHostnameAndScheme =
+  const std::u16string kSimplifiedDomainDisplayRepeatedUrlHostnameAndScheme =
       base::UTF8ToUTF16("https://ex.example.test");
-  const base::string16 kSimplifiedDomainDisplayRepeatedUrlSubdomainAndScheme =
+  const std::u16string kSimplifiedDomainDisplayRepeatedUrlSubdomainAndScheme =
       base::UTF8ToUTF16("https://ex.");
-  const base::string16 kSimplifiedDomainDisplayRepeatedUrlSubdomain =
+  const std::u16string kSimplifiedDomainDisplayRepeatedUrlSubdomain =
       base::UTF8ToUTF16("ex.");
-  const base::string16 kSimplifiedDomainDisplayRepeatedUrlPath =
+  const std::u16string kSimplifiedDomainDisplayRepeatedUrlPath =
       base::UTF8ToUTF16("/example.test");
-  const base::string16 kSimplifiedDomainDisplayRepeatedUrlScheme =
+  const std::u16string kSimplifiedDomainDisplayRepeatedUrlScheme =
       base::UTF8ToUTF16("https://");
   location_bar_model()->set_url(GURL(kSimplifiedDomainDisplayRepeatedUrl));
   location_bar_model()->set_url_for_display(
@@ -2111,7 +2111,7 @@ TEST_P(OmniboxViewViewsHideOnInteractionAndRevealOnHoverTest,
 
   // Set a longer URL to ensure that the full URL stays visible even if it's
   // longer than the previous URL.
-  const base::string16 kUrlSuffix = base::ASCIIToUTF16("/foobar");
+  const std::u16string kUrlSuffix = base::ASCIIToUTF16("/foobar");
   UpdateDisplayURL(kSimplifiedDomainDisplayUrl + kUrlSuffix);
   ASSERT_NO_FATAL_FAILURE(ExpectUnelidedFromSimplifiedDomain(
       omnibox_view()->GetRenderText(),
@@ -2504,7 +2504,7 @@ TEST_P(OmniboxViewViewsHideOnInteractionAndRevealOnHoverTest,
        SchemeAndTrivialSubdomainElision) {
   // Use custom setup code instead of SetUpSimplifiedDomainTest() to use a URL
   // with a "www." prefix (a trivial subdomain).
-  const base::string16 kFullUrl =
+  const std::u16string kFullUrl =
       base::ASCIIToUTF16("https://www.example.test/foo");
   constexpr size_t kSchemeAndSubdomainSize = 12;  // "https://www."
   UpdateDisplayURL(kFullUrl);
@@ -2624,7 +2624,7 @@ TEST_P(OmniboxViewViewsHideOnInteractionTest, AlwaysShowFullURLs) {
   // because SetUpSimplifiedDomainTest() uses a URL with a foo.example.test
   // hostname, and in this test we want to use a "www." subdomain to test that
   // the URL is displayed properly when trivial subdomain elision is disabled.
-  const base::string16 kFullUrl =
+  const std::u16string kFullUrl =
       base::ASCIIToUTF16("https://www.example.test/foo");
   UpdateDisplayURL(kFullUrl);
   omnibox_view()->OnThemeChanged();
@@ -2717,7 +2717,7 @@ TEST_P(OmniboxViewViewsRevealOnHoverAndMaybeHideOnInteractionTest,
   // because SetUpSimplifiedDomainTest() uses a URL with a foo.example.test
   // hostname, and in this test we want to use a "www." subdomain to test that
   // the URL is displayed properly when trivial subdomain elision is disabled.
-  const base::string16 kFullUrl =
+  const std::u16string kFullUrl =
       base::ASCIIToUTF16("https://www.example.test/foo");
   UpdateDisplayURL(kFullUrl);
   omnibox_view()->OnThemeChanged();
@@ -2836,7 +2836,7 @@ TEST_P(OmniboxViewViewsHideOnInteractionAndRevealOnHoverTest,
 // Tests that in the simplified domain field trials, non-http/https and
 // localhost URLs are not elided.
 TEST_P(OmniboxViewViewsRevealOnHoverTest, UrlsNotEligibleForEliding) {
-  const base::string16 kTestCases[] = {
+  const std::u16string kTestCases[] = {
       // Various URLs that aren't eligible for simplified domain eliding.
       base::ASCIIToUTF16("ftp://foo.bar.test/baz"),
       base::ASCIIToUTF16("javascript:alert(1)"),
@@ -3002,7 +3002,7 @@ TEST_P(OmniboxViewViewsHideOnInteractionTest, SameDocNavigations) {
   omnibox_view()->NavigateAndExpectUnelided(kSimplifiedDomainDisplayUrl,
                                             /*is_same_document=*/false, GURL(),
                                             kSimplifiedDomainDisplayUrlScheme);
-  const base::string16 kUrlSuffix = base::ASCIIToUTF16("/foobar");
+  const std::u16string kUrlSuffix = base::ASCIIToUTF16("/foobar");
 
   // On a same-document navigation before the URL has been simplified, the URL
   // should remain unsimplified after the navigation finishes.
@@ -3576,7 +3576,7 @@ TEST_P(OmniboxViewViewsRevealOnHoverTest, RegistrableDomainRepeated) {
   if (!ShouldElideToRegistrableDomain())
     return;
 
-  const base::string16 kRepeatedRegistrableDomainUrl =
+  const std::u16string kRepeatedRegistrableDomainUrl =
       base::ASCIIToUTF16("https://example.com.example.com/foo");
   gfx::Range registrable_domain_and_path_range(
       20 /* "https://www.example.com." */,

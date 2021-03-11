@@ -115,12 +115,12 @@ TEST_F(HoverButtonTest, TooltipAndAccessibleName) {
 
     // The accessible name should always be the title and subtitle concatenated
     // by \n.
-    base::string16 expected = base::JoinString(
+    std::u16string expected = base::JoinString(
         {base::ASCIIToUTF16(pair.title), base::ASCIIToUTF16(pair.subtitle)},
         base::ASCIIToUTF16("\n"));
     EXPECT_EQ(expected, base::UTF8ToUTF16(accessible_name));
 
-    EXPECT_EQ(pair.tooltip ? expected : base::string16(),
+    EXPECT_EQ(pair.tooltip ? expected : std::u16string(),
               button->GetTooltipText(gfx::Point()));
   }
 }
@@ -145,7 +145,7 @@ TEST_F(HoverButtonTest, ActivatesOnMouseReleased) {
   bool clicked = false;
   HoverButton* button = widget()->SetContentsView(std::make_unique<HoverButton>(
       base::BindRepeating([](bool* clicked) { *clicked = true; }, &clicked),
-      CreateIcon(), base::ASCIIToUTF16("Title"), base::string16()));
+      CreateIcon(), base::ASCIIToUTF16("Title"), std::u16string()));
   button->SetBoundsRect(gfx::Rect(100, 100, 200, 200));
   widget()->Show();
 
@@ -175,7 +175,7 @@ TEST_F(HoverButtonTest, TapGestureThatDeletesTheButton) {
             widget->SetContentsView(std::make_unique<views::View>());
           },
           &clicked, widget()),
-      CreateIcon(), base::ASCIIToUTF16("Title"), base::string16()));
+      CreateIcon(), base::ASCIIToUTF16("Title"), std::u16string()));
   button->SetBoundsRect(gfx::Rect(100, 100, 200, 200));
   widget()->Show();
 

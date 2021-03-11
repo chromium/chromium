@@ -47,7 +47,7 @@ namespace {
 const int kRightColumnWidth = 285;
 constexpr gfx::Size kMaxIconSize{43, 43};
 
-views::Label* CreateLabel(const base::string16& text) {
+views::Label* CreateLabel(const std::u16string& text) {
   views::Label* label = new views::Label(text);
   label->SetMultiLine(true);
   label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
@@ -178,7 +178,7 @@ ExtensionInstalledBubbleView::ExtensionInstalledBubbleView(
   SetShowIcon(true);
   SetShowCloseButton(true);
 
-  base::string16 extension_name = base::UTF8ToUTF16(model_->extension_name());
+  std::u16string extension_name = base::UTF8ToUTF16(model_->extension_name());
   base::i18n::AdjustStringForLocaleDirection(&extension_name);
   SetTitle(l10n_util::GetStringFUTF16(IDS_EXTENSION_INSTALLED_HEADING,
                                       extension_name));

@@ -29,7 +29,7 @@ class TestSheetModel : public AuthenticatorRequestSheetModel {
   ~TestSheetModel() override = default;
 
   // Getters for data on step specific content:
-  base::string16 GetStepSpecificLabelText() {
+  std::u16string GetStepSpecificLabelText() {
     return base::ASCIIToUTF16("Test Label");
   }
 
@@ -38,13 +38,13 @@ class TestSheetModel : public AuthenticatorRequestSheetModel {
   bool IsActivityIndicatorVisible() const override { return true; }
   bool IsBackButtonVisible() const override { return true; }
   bool IsCancelButtonVisible() const override { return true; }
-  base::string16 GetCancelButtonLabel() const override {
+  std::u16string GetCancelButtonLabel() const override {
     return base::ASCIIToUTF16("Test Cancel");
   }
 
   bool IsAcceptButtonVisible() const override { return true; }
   bool IsAcceptButtonEnabled() const override { return true; }
-  base::string16 GetAcceptButtonLabel() const override {
+  std::u16string GetAcceptButtonLabel() const override {
     return base::ASCIIToUTF16("Test OK");
   }
 
@@ -53,21 +53,21 @@ class TestSheetModel : public AuthenticatorRequestSheetModel {
     return gfx::kNoneIcon;
   }
 
-  base::string16 GetStepTitle() const override {
+  std::u16string GetStepTitle() const override {
     return base::ASCIIToUTF16("Test Title");
   }
 
-  base::string16 GetStepDescription() const override {
+  std::u16string GetStepDescription() const override {
     return base::ASCIIToUTF16(
         "Test Description That Is Super Long So That It No Longer Fits On One "
         "Line Because Life Would Be Just Too Simple That Way");
   }
 
-  base::string16 GetAdditionalDescription() const override {
+  std::u16string GetAdditionalDescription() const override {
     return base::ASCIIToUTF16("More description text.");
   }
 
-  base::string16 GetError() const override {
+  std::u16string GetError() const override {
     return base::ASCIIToUTF16("You must construct additional pylons.");
   }
 

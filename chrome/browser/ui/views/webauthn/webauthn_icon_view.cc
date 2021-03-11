@@ -87,7 +87,7 @@ const gfx::VectorIcon& WebAuthnIconView::GetVectorIcon() const {
   return kFingerprintIcon;
 }
 
-base::string16 WebAuthnIconView::GetTextForTooltipAndAccessibleName() const {
+std::u16string WebAuthnIconView::GetTextForTooltipAndAccessibleName() const {
   // TODO(crbug.com/1179014): go through ux review and i18n this string.
   return base::UTF8ToUTF16("Sign in with your security key");
 }

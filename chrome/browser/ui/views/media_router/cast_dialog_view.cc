@@ -106,7 +106,7 @@ views::Widget* CastDialogView::GetCurrentDialogWidget() {
   return instance_ ? instance_->GetWidget() : nullptr;
 }
 
-base::string16 CastDialogView::GetWindowTitle() const {
+std::u16string CastDialogView::GetWindowTitle() const {
   switch (selected_source_) {
     case SourceType::kTab:
       return dialog_title_;
@@ -118,7 +118,7 @@ base::string16 CastDialogView::GetWindowTitle() const {
                                         local_file_name_.value());
     default:
       NOTREACHED();
-      return base::string16();
+      return std::u16string();
   }
 }
 

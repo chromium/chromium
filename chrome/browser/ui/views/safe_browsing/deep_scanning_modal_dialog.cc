@@ -21,23 +21,23 @@ DeepScanningModalDialog::DeepScanningModalDialog(
 
 DeepScanningModalDialog::~DeepScanningModalDialog() {}
 
-base::string16 DeepScanningModalDialog::GetTitle() {
+std::u16string DeepScanningModalDialog::GetTitle() {
   return l10n_util::GetStringUTF16(IDS_DEEP_SCANNING_DIALOG_OPEN_NOW_TITLE);
 }
 
-base::string16 DeepScanningModalDialog::GetDialogMessage() {
+std::u16string DeepScanningModalDialog::GetDialogMessage() {
   return l10n_util::GetStringUTF16(IDS_DEEP_SCANNING_DIALOG_OPEN_NOW_MESSAGE);
 }
 
-base::string16 DeepScanningModalDialog::GetAcceptButtonTitle() {
+std::u16string DeepScanningModalDialog::GetAcceptButtonTitle() {
   return l10n_util::GetStringUTF16(
       IDS_DEEP_SCANNING_DIALOG_OPEN_NOW_ACCEPT_BUTTON);
 }
 
-base::string16 DeepScanningModalDialog::GetLinkText() const {
+std::u16string DeepScanningModalDialog::GetLinkText() const {
   // TODO(drubery): Once we have an FAQ page for download deep scanning, link it
   // here.
-  return base::string16();
+  return std::u16string();
 }
 
 void DeepScanningModalDialog::OnLinkClicked(WindowOpenDisposition disposition) {

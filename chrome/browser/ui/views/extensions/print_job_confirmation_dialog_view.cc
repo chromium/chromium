@@ -30,10 +30,10 @@
 void PrintJobConfirmationDialogView::Show(
     gfx::NativeWindow parent,
     const std::string& extension_id,
-    const base::string16& extension_name,
+    const std::u16string& extension_name,
     const gfx::ImageSkia& extension_icon,
-    const base::string16& print_job_title,
-    const base::string16& printer_name,
+    const std::u16string& print_job_title,
+    const std::u16string& printer_name,
     base::OnceCallback<void(bool)> callback) {
   // TODO (crbug.com/996785): Extract common code with
   // ExtensionUninstallDialogViews::Show() to separate methods: first method to
@@ -68,10 +68,10 @@ void PrintJobConfirmationDialogView::Show(
 
 PrintJobConfirmationDialogView::PrintJobConfirmationDialogView(
     ToolbarActionView* anchor_view,
-    const base::string16& extension_name,
+    const std::u16string& extension_name,
     const gfx::ImageSkia& extension_icon,
-    const base::string16& print_job_title,
-    const base::string16& printer_name,
+    const std::u16string& print_job_title,
+    const std::u16string& printer_name,
     base::OnceCallback<void(bool)> callback)
     : BubbleDialogDelegateView(anchor_view,
                                anchor_view ? views::BubbleBorder::TOP_RIGHT
@@ -139,10 +139,10 @@ namespace chrome {
 
 void ShowPrintJobConfirmationDialog(gfx::NativeWindow parent,
                                     const std::string& extension_id,
-                                    const base::string16& extension_name,
+                                    const std::u16string& extension_name,
                                     const gfx::ImageSkia& extension_icon,
-                                    const base::string16& print_job_title,
-                                    const base::string16& printer_name,
+                                    const std::u16string& print_job_title,
+                                    const std::u16string& printer_name,
                                     base::OnceCallback<void(bool)> callback) {
   PrintJobConfirmationDialogView::Show(parent, extension_id, extension_name,
                                        extension_icon, print_job_title,

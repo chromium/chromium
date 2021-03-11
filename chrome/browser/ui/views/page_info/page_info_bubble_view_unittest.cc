@@ -91,7 +91,7 @@ class PageInfoBubbleViewTestApi {
   bool reload_prompt() const { return *reload_prompt_; }
   views::Widget::ClosedReason closed_reason() const { return *closed_reason_; }
 
-  base::string16 GetWindowTitle() { return view_->GetWindowTitle(); }
+  std::u16string GetWindowTitle() { return view_->GetWindowTitle(); }
   PageInfoUI::SecurityDescriptionType GetSecurityDescriptionType() {
     return view_->GetSecurityDescriptionType();
   }
@@ -102,7 +102,7 @@ class PageInfoBubbleViewTestApi {
 
   // Returns the number of cookies shown on the link or button to open the
   // collected cookies dialog. This should always be shown.
-  base::string16 GetCookiesLinkText() {
+  std::u16string GetCookiesLinkText() {
     EXPECT_TRUE(view_->cookie_button_);
     ui::AXNodeData data;
     view_->cookie_button_->GetAccessibleNodeData(&data);
@@ -111,11 +111,11 @@ class PageInfoBubbleViewTestApi {
     return base::ASCIIToUTF16(name);
   }
 
-  base::string16 GetPermissionLabelTextAt(int index) {
+  std::u16string GetPermissionLabelTextAt(int index) {
     return GetPermissionSelectorAt(index)->label_->GetText();
   }
 
-  base::string16 GetPermissionComboboxTextAt(int index) {
+  std::u16string GetPermissionComboboxTextAt(int index) {
     auto* combobox = GetPermissionSelectorAt(index)->combobox_;
     return combobox->GetTextForRow(combobox->GetSelectedRow());
   }
@@ -137,7 +137,7 @@ class PageInfoBubbleViewTestApi {
     CreateView();
   }
 
-  base::string16 GetCertificateButtonSubtitleText() const {
+  std::u16string GetCertificateButtonSubtitleText() const {
     EXPECT_TRUE(view_->certificate_button_);
     EXPECT_TRUE(view_->certificate_button_->subtitle());
     return view_->certificate_button_->subtitle()->GetText();
@@ -589,7 +589,7 @@ TEST_F(PageInfoBubbleViewTest, UpdatingSiteDataRetainsLayout) {
   EXPECT_EQ(kExpectedChildren, api_->view()->children().size());
 
   // Check the number of cookies shown is correct.
-  base::string16 expected = l10n_util::GetPluralStringFUTF16(
+  std::u16string expected = l10n_util::GetPluralStringFUTF16(
       IDS_PAGE_INFO_NUM_COOKIES_PARENTHESIZED,
       first_party_cookies.allowed + third_party_cookies.allowed);
   size_t index = api_->GetCookiesLinkText().find(expected);

@@ -106,9 +106,9 @@ bool IsIncompatibleDialSink(const UIMediaSink& sink) {
   return sink.provider == MediaRouteProviderId::DIAL && sink.cast_modes.empty();
 }
 
-base::string16 GetStatusTextForSink(const UIMediaSink& sink) {
+std::u16string GetStatusTextForSink(const UIMediaSink& sink) {
   if (!IsEnabledIconType(sink.icon_type))
-    return base::string16();
+    return std::u16string();
 
   if (sink.issue)
     return base::UTF8ToUTF16(sink.issue->info().title);
@@ -124,7 +124,7 @@ base::string16 GetStatusTextForSink(const UIMediaSink& sink) {
     case UIMediaSinkState::CONNECTING:
       return l10n_util::GetStringUTF16(IDS_MEDIA_ROUTER_SINK_CONNECTING);
     default:
-      return base::string16();
+      return std::u16string();
   }
 }
 
@@ -196,10 +196,10 @@ class CastToMeetingDeprecationWarningView : public views::View {
     auto* spacer = AddChildView(std::make_unique<views::View>());
     spacer->SetPreferredSize(gfx::Size(55, 1));
 
-    base::string16 text = l10n_util::GetStringUTF16(
+    std::u16string text = l10n_util::GetStringUTF16(
         CastToMeetingEnabled() ? IDS_MEDIA_ROUTER_CAST_TO_MEETING_DEPRECATED
                                : IDS_MEDIA_ROUTER_CAST_TO_MEETING_REMOVED);
-    std::vector<base::string16> substrings{base::ASCIIToUTF16("Google Meet")};
+    std::vector<std::u16string> substrings{base::ASCIIToUTF16("Google Meet")};
     std::vector<size_t> offsets;
     text = base::ReplaceStringPlaceholders(text, substrings, &offsets);
 
@@ -249,7 +249,7 @@ CastDialogSinkButton::CastDialogSinkButton(PressedCallback callback,
 CastDialogSinkButton::~CastDialogSinkButton() = default;
 
 void CastDialogSinkButton::OverrideStatusText(
-    const base::string16& status_text) {
+    const std::u16string& status_text) {
   if (subtitle()) {
     if (!saved_status_text_)
       saved_status_text_ = subtitle()->GetText();

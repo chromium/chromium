@@ -223,9 +223,9 @@ const gfx::VectorIcon& PermissionChip::GetPermissionIconId() const {
              : permissions::GetIconId(requests[1]->GetRequestType());
 }
 
-base::string16 PermissionChip::GetPermissionMessage() const {
+std::u16string PermissionChip::GetPermissionMessage() const {
   if (!delegate_)
-    return base::string16();
+    return std::u16string();
   auto requests = delegate_->Requests();
 
   return requests.size() == 1
@@ -241,5 +241,5 @@ void PermissionChip::AnnouncePermissionRequested() {
 
 BEGIN_METADATA(PermissionChip, views::View)
 ADD_READONLY_PROPERTY_METADATA(bool, ActiveRequest)
-ADD_READONLY_PROPERTY_METADATA(base::string16, PermissionMessage)
+ADD_READONLY_PROPERTY_METADATA(std::u16string, PermissionMessage)
 END_METADATA

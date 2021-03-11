@@ -53,8 +53,8 @@ class BorealisInstallerView : public views::DialogDelegateView,
   void OnCancelInitiated() override {}
 
   // Public for testing purposes.
-  base::string16 GetPrimaryMessage() const;
-  base::string16 GetSecondaryMessage() const;
+  std::u16string GetPrimaryMessage() const;
+  std::u16string GetSecondaryMessage() const;
 
   void SetInstallingStateForTesting(InstallingState new_state);
 
@@ -75,7 +75,7 @@ class BorealisInstallerView : public views::DialogDelegateView,
 
   // Returns the label for a dialog |button|, based on the current |state_|
   // and error |reason_| (if relevant).
-  base::string16 GetCurrentDialogButtonLabel(ui::DialogButton button) const;
+  std::u16string GetCurrentDialogButtonLabel(ui::DialogButton button) const;
 
   void OnStateUpdated();
 
@@ -88,7 +88,7 @@ class BorealisInstallerView : public views::DialogDelegateView,
 
   void StartInstallation();
 
-  base::string16 app_name_;
+  std::u16string app_name_;
   Profile* profile_ = nullptr;
   views::Label* primary_message_label_ = nullptr;
   views::Label* secondary_message_label_ = nullptr;

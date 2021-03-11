@@ -82,7 +82,7 @@ void AccountChooserDialogView::ControllerGone() {
   controller_ = nullptr;
 }
 
-base::string16 AccountChooserDialogView::GetWindowTitle() const {
+std::u16string AccountChooserDialogView::GetWindowTitle() const {
   return controller_->GetAccoutChooserTitle();
 }
 

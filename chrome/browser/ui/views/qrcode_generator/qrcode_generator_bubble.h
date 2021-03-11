@@ -55,7 +55,7 @@ class QRCodeGeneratorBubble : public QRCodeGeneratorBubbleView,
 
   // Returns a suggested download filename for a given URL.
   // e.g.: www.foo.com may suggest qrcode_foo.png.
-  static const base::string16 GetQRCodeFilenameForURL(const GURL& url);
+  static const std::u16string GetQRCodeFilenameForURL(const GURL& url);
 
  private:
   ~QRCodeGeneratorBubble() override;
@@ -85,7 +85,7 @@ class QRCodeGeneratorBubble : public QRCodeGeneratorBubbleView,
 
   // TextfieldController:
   void ContentsChanged(views::Textfield* sender,
-                       const base::string16& new_contents) override;
+                       const std::u16string& new_contents) override;
   bool HandleKeyEvent(views::Textfield* sender,
                       const ui::KeyEvent& key_event) override;
   bool HandleMouseEvent(views::Textfield* sender,

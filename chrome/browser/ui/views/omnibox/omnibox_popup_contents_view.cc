@@ -189,7 +189,7 @@ void OmniboxPopupContentsView::OpenMatch(
   DCHECK(HasMatchAt(index));
 
   omnibox_view_->OpenMatch(model_->result().match_at(index), disposition,
-                           GURL(), base::string16(), index,
+                           GURL(), std::u16string(), index,
                            match_selection_timestamp);
 }
 

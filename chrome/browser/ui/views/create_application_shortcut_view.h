@@ -51,14 +51,14 @@ class CreateChromeApplicationShortcutView : public views::DialogDelegateView {
   // DialogDelegateView:
   gfx::Size CalculatePreferredSize() const override;
   bool IsDialogButtonEnabled(ui::DialogButton button) const override;
-  base::string16 GetWindowTitle() const override;
+  std::u16string GetWindowTitle() const override;
 
  private:
   CreateChromeApplicationShortcutView(Profile* profile,
                                       base::OnceCallback<void(bool)> cb);
 
   // Creates a new check-box with the given text and checked state.
-  std::unique_ptr<views::Checkbox> AddCheckbox(const base::string16& text,
+  std::unique_ptr<views::Checkbox> AddCheckbox(const std::u16string& text,
                                                const std::string& pref_path);
 
   void CheckboxPressed(std::string pref_path, views::Checkbox* checkbox);

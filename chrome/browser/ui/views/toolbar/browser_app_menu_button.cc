@@ -130,7 +130,7 @@ void BrowserAppMenuButton::HandleMenuClosed() {
 
 void BrowserAppMenuButton::UpdateTextAndHighlightColor() {
   int tooltip_message_id;
-  base::string16 text;
+  std::u16string text;
   if (type_and_severity_.severity == AppMenuIconController::Severity::NONE) {
     tooltip_message_id = IDS_APPMENU_TOOLTIP;
   } else if (type_and_severity_.type ==

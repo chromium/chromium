@@ -45,8 +45,8 @@ class PermissionPromptBubbleView : public views::BubbleDialogDelegateView {
   // views::BubbleDialogDelegateView:
   void AddedToWidget() override;
   bool ShouldShowCloseButton() const override;
-  base::string16 GetAccessibleWindowTitle() const override;
-  base::string16 GetWindowTitle() const override;
+  std::u16string GetAccessibleWindowTitle() const override;
+  std::u16string GetWindowTitle() const override;
 
   void AcceptPermission();
   void AcceptPermissionThisTime();
@@ -60,13 +60,13 @@ class PermissionPromptBubbleView : public views::BubbleDialogDelegateView {
 
   // Returns the origin to be displayed in the permission prompt. May return
   // a non-origin, e.g. extension URLs use the name of the extension.
-  base::string16 GetDisplayName() const;
+  std::u16string GetDisplayName() const;
 
   // Returns whether the display name is an origin.
   bool GetDisplayNameIsOrigin() const;
 
   // Get extra information to display for the permission, if any.
-  base::Optional<base::string16> GetExtraText() const;
+  base::Optional<std::u16string> GetExtraText() const;
 
   // Record UMA Permissions.Prompt.TimeToDecision metric.
   void RecordDecision();

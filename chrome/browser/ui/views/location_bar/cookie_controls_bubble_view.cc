@@ -196,7 +196,7 @@ void CookieControlsBubbleView::Init() {
       views::BoxLayout::Orientation::kVertical, gfx::Insets(),
       provider->GetDistanceMetric(views::DISTANCE_RELATED_CONTROL_VERTICAL)));
 
-  auto text = std::make_unique<views::Label>(base::string16(),
+  auto text = std::make_unique<views::Label>(std::u16string(),
                                              views::style::CONTEXT_LABEL,
                                              views::style::STYLE_SECONDARY);
   text->SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_LEFT);
@@ -236,7 +236,7 @@ gfx::Size CookieControlsBubbleView::CalculatePreferredSize() const {
   return gfx::Size{width, GetHeightForWidth(width)};
 }
 
-base::string16 CookieControlsBubbleView::GetWindowTitle() const {
+std::u16string CookieControlsBubbleView::GetWindowTitle() const {
   switch (intermediate_step_) {
     case IntermediateStep::kTurnOffButton:
       return l10n_util::GetStringUTF16(IDS_COOKIE_CONTROLS_NOT_WORKING_TITLE);
@@ -254,10 +254,10 @@ base::string16 CookieControlsBubbleView::GetWindowTitle() const {
     case CookieControlsStatus::kDisabledForSite:
       return l10n_util::GetStringUTF16(IDS_COOKIE_CONTROLS_DIALOG_TITLE_OFF);
     case CookieControlsStatus::kUninitialized:
-      return base::string16();
+      return std::u16string();
     case CookieControlsStatus::kDisabled:
       NOTREACHED();
-      return base::string16();
+      return std::u16string();
   }
 }
 

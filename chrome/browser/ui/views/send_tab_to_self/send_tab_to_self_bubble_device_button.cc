@@ -36,7 +36,7 @@ std::unique_ptr<views::ColorTrackingIconView> CreateIcon(
   return icon;
 }
 
-base::string16 GetLastUpdatedTime(const TargetDeviceInfo& device_info) {
+std::u16string GetLastUpdatedTime(const TargetDeviceInfo& device_info) {
   int time_in_days =
       (base::Time::Now() - device_info.last_updated_timestamp).InDays();
   if (time_in_days == 0) {

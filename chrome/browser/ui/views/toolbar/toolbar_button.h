@@ -64,7 +64,7 @@ class ToolbarButton : public views::LabelButton,
   // using an animation. If some highlight is already set, it shows the new
   // highlight directly without any animation. To clear the previous highlight
   // (also using an animation), call this function with both parameters empty.
-  void SetHighlight(const base::string16& highlight_text,
+  void SetHighlight(const std::u16string& highlight_text,
                     base::Optional<SkColor> highlight_color);
 
   // Sets the leading margin when the browser is maximized and updates layout to
@@ -103,7 +103,7 @@ class ToolbarButton : public views::LabelButton,
   void OnMouseExited(const ui::MouseEvent& event) override;
   void OnGestureEvent(ui::GestureEvent* event) override;
   void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
-  base::string16 GetTooltipText(const gfx::Point& p) const override;
+  std::u16string GetTooltipText(const gfx::Point& p) const override;
   std::unique_ptr<views::InkDrop> CreateInkDrop() override;
   std::unique_ptr<views::InkDropHighlight> CreateInkDropHighlight()
       const override;
@@ -238,7 +238,7 @@ class ToolbarButton : public views::LabelButton,
   // views::LabelButton:
   // This is private to avoid a foot-shooter. Callers should use SetHighlight()
   // instead which sets an optional color as well.
-  void SetText(const base::string16& text) override;
+  void SetText(const std::u16string& text) override;
 
   // Sets the in product help promo. Called after the kHasInProductHelpPromoKey
   // property changes. When this button has an in product help promo, the button

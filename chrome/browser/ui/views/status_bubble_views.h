@@ -62,13 +62,13 @@ class StatusBubbleViews : public StatusBubble {
   void SetBubbleWidth(int width);
 
   // Gets the width that a bubble should be for a given string
-  int GetWidthForURL(const base::string16& url_string);
+  int GetWidthForURL(const std::u16string& url_string);
 
   // Notifies the bubble's popup that browser's theme is changed.
   void OnThemeChanged();
 
   // Overridden from StatusBubble:
-  void SetStatus(const base::string16& status) override;
+  void SetStatus(const std::u16string& status) override;
   void SetURL(const GURL& url) override;
   void Hide() override;
   void MouseMoved(bool left_content) override;
@@ -124,10 +124,10 @@ class StatusBubbleViews : public StatusBubble {
   bool IsDestroyPopupTimerRunningForTest();
 
   // The status text we want to display when there are no URLs to display.
-  base::string16 status_text_;
+  std::u16string status_text_;
 
   // The url we want to display when there is no status text to display.
-  base::string16 url_text_;
+  std::u16string url_text_;
 
   // The original, non-elided URL.
   GURL url_;

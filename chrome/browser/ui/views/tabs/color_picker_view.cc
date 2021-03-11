@@ -65,7 +65,7 @@ class ColorPickerElementView : public views::Button {
       base::RepeatingCallback<void(ColorPickerElementView*)> selected_callback,
       const views::BubbleDialogDelegateView* bubble_view,
       tab_groups::TabGroupColorId color_id,
-      base::string16 color_name)
+      std::u16string color_name)
       : Button(base::BindRepeating(&ColorPickerElementView::ButtonPressed,
                                    base::Unretained(this))),
         selected_callback_(std::move(selected_callback)),
@@ -122,7 +122,7 @@ class ColorPickerElementView : public views::Button {
                                              : ax::mojom::CheckedState::kFalse);
   }
 
-  base::string16 GetTooltipText(const gfx::Point& p) const override {
+  std::u16string GetTooltipText(const gfx::Point& p) const override {
     return color_name_;
   }
 
@@ -196,7 +196,7 @@ class ColorPickerElementView : public views::Button {
       selected_callback_;
   const views::BubbleDialogDelegateView* bubble_view_;
   const tab_groups::TabGroupColorId color_id_;
-  const base::string16 color_name_;
+  const std::u16string color_name_;
   bool selected_ = false;
 };
 

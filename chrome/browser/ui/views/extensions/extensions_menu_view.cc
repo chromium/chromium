@@ -403,9 +403,9 @@ void ExtensionsMenuView::SanityCheck() {
 #endif
 }
 
-base::string16 ExtensionsMenuView::GetAccessibleWindowTitle() const {
+std::u16string ExtensionsMenuView::GetAccessibleWindowTitle() const {
   // The title is already spoken via the call to SetTitle().
-  return base::string16();
+  return std::u16string();
 }
 
 void ExtensionsMenuView::TabChangedAt(content::WebContents* contents,

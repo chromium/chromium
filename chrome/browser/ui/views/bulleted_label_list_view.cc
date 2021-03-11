@@ -48,10 +48,10 @@ END_METADATA
 }  // namespace
 
 BulletedLabelListView::BulletedLabelListView()
-    : BulletedLabelListView(std::vector<base::string16>()) {}
+    : BulletedLabelListView(std::vector<std::u16string>()) {}
 
 BulletedLabelListView::BulletedLabelListView(
-    const std::vector<base::string16>& texts) {
+    const std::vector<std::u16string>& texts) {
   views::GridLayout* layout =
       SetLayoutManager(std::make_unique<views::GridLayout>());
   views::ColumnSet* columns = layout->AddColumnSet(kColumnSetId);
@@ -70,7 +70,7 @@ BulletedLabelListView::BulletedLabelListView(
 
 BulletedLabelListView::~BulletedLabelListView() {}
 
-void BulletedLabelListView::AddLabel(const base::string16& text) {
+void BulletedLabelListView::AddLabel(const std::u16string& text) {
   views::GridLayout* layout =
       static_cast<views::GridLayout*>(GetLayoutManager());
   layout->StartRow(views::GridLayout::kFixedSize, kColumnSetId);

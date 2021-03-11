@@ -65,7 +65,7 @@ void AutoSigninFirstRunDialogView::ControllerGone() {
   controller_ = nullptr;
 }
 
-base::string16 AutoSigninFirstRunDialogView::GetWindowTitle() const {
+std::u16string AutoSigninFirstRunDialogView::GetWindowTitle() const {
   return controller_->GetAutoSigninPromoTitle();
 }
 

@@ -38,7 +38,7 @@ void PressRevert(Browser* browser) {
 }
 
 void SelectTargetLanguageByDisplayName(Browser* browser,
-                                       const base::string16& display_name) {
+                                       const std::u16string& display_name) {
   DCHECK(browser);
 
   TranslateBubbleView* bubble = TranslateBubbleView::GetCurrentBubble();
@@ -50,7 +50,7 @@ void SelectTargetLanguageByDisplayName(Browser* browser,
   // Get index of the language with the matching display name.
   int language_index = -1;
   for (int i = 0; i < model->GetNumberOfTargetLanguages(); ++i) {
-    const base::string16& language_name = model->GetTargetLanguageNameAt(i);
+    const std::u16string& language_name = model->GetTargetLanguageNameAt(i);
 
     if (language_name == display_name) {
       language_index = i;

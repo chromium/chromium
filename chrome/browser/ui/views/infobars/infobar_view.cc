@@ -262,7 +262,7 @@ void InfoBarView::OnWillChangeFocus(View* focused_before, View* focused_now) {
   }
 }
 
-views::Label* InfoBarView::CreateLabel(const base::string16& text) const {
+views::Label* InfoBarView::CreateLabel(const std::u16string& text) const {
   views::Label* label =
       new views::Label(text, views::style::CONTEXT_DIALOG_BODY_TEXT);
   SetLabelDetails(label);
@@ -271,7 +271,7 @@ views::Label* InfoBarView::CreateLabel(const base::string16& text) const {
   return label;
 }
 
-views::Link* InfoBarView::CreateLink(const base::string16& text) {
+views::Link* InfoBarView::CreateLink(const std::u16string& text) {
   views::Link* link =
       new views::Link(text, views::style::CONTEXT_DIALOG_BODY_TEXT);
   SetLabelDetails(link);

@@ -38,7 +38,7 @@ class TabGroupEditorBubbleView : public views::BubbleDialogDelegateView {
   static constexpr int TAB_GROUP_HEADER_CXMENU_FEEDBACK = 17;
 
   using Colors =
-      std::vector<std::pair<tab_groups::TabGroupColorId, base::string16>>;
+      std::vector<std::pair<tab_groups::TabGroupColorId, std::u16string>>;
 
   // Shows the editor for |group|. Returns a *non-owning* pointer to the
   // bubble's widget.
@@ -85,7 +85,7 @@ class TabGroupEditorBubbleView : public views::BubbleDialogDelegateView {
 
     // views::TextfieldController:
     void ContentsChanged(views::Textfield* sender,
-                         const base::string16& new_contents) override;
+                         const std::u16string& new_contents) override;
     bool HandleKeyEvent(views::Textfield* sender,
                         const ui::KeyEvent& key_event) override;
 
@@ -127,7 +127,7 @@ class TabGroupEditorBubbleView : public views::BubbleDialogDelegateView {
   // is initially selected.
   tab_groups::TabGroupColorId InitColorSet();
 
-  base::string16 title_at_opening_;
+  std::u16string title_at_opening_;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_TABS_TAB_GROUP_EDITOR_BUBBLE_VIEW_H_

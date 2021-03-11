@@ -84,7 +84,7 @@ class DownloadItemView : public views::View,
   void Layout() override;
   bool OnMouseDragged(const ui::MouseEvent& event) override;
   void OnMouseCaptureLost() override;
-  base::string16 GetTooltipText(const gfx::Point& p) const override;
+  std::u16string GetTooltipText(const gfx::Point& p) const override;
   void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
 
   // views::ContextMenuController:
@@ -140,14 +140,14 @@ class DownloadItemView : public views::View,
   void UpdateAccessibleAlertAndAnimationsForNormalMode();
 
   // Update accessible status text, and announce it if desired.
-  void UpdateAccessibleAlert(const base::string16& alert);
+  void UpdateAccessibleAlert(const std::u16string& alert);
 
   // Updates the animation used during deep scanning. The animation is started
   // or stopped depending on the current mode.
   void UpdateAnimationForDeepScanningMode();
 
   // Get the accessible alert text for a download that is currently in progress.
-  base::string16 GetInProgressAccessibleAlertText() const;
+  std::u16string GetInProgressAccessibleAlertText() const;
 
   // Callback for |accessible_update_timer_|, or can be used to ask a screen
   // reader to speak the current alert immediately.
@@ -172,7 +172,7 @@ class DownloadItemView : public views::View,
   gfx::RectF GetIconBounds() const;
 
   // Returns the text and style to use for the status label.
-  std::pair<base::string16, int> GetStatusTextAndStyle() const;
+  std::pair<std::u16string, int> GetStatusTextAndStyle() const;
 
   // Returns the size of any button visible next to the label (all visible
   // buttons are given the same size).
@@ -180,8 +180,8 @@ class DownloadItemView : public views::View,
 
   // Returns the file name to report to the user. It might be elided to fit into
   // the text width. |label| dictates the default text style.
-  base::string16 ElidedFilename(const views::Label& label) const;
-  base::string16 ElidedFilename(const views::StyledLabel& label) const;
+  std::u16string ElidedFilename(const views::Label& label) const;
+  std::u16string ElidedFilename(const views::StyledLabel& label) const;
 
   // Returns the Y coordinate that centers |element_height| within the current
   // height().
@@ -289,9 +289,9 @@ class DownloadItemView : public views::View,
   gfx::ThrobAnimation scanning_animation_{this};
 
   // The tooltip.  Only displayed when not showing a warning dialog.
-  base::string16 tooltip_text_;
+  std::u16string tooltip_text_;
 
-  base::string16 accessible_name_;
+  std::u16string accessible_name_;
 
   // A hidden view for accessible status alerts that are spoken by screen
   // readers when a download changes state.

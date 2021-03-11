@@ -132,12 +132,12 @@ void AvatarToolbarButtonDelegate::Init(AvatarToolbarButton* button,
 #endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
 }
 
-base::string16 AvatarToolbarButtonDelegate::GetProfileName() const {
+std::u16string AvatarToolbarButtonDelegate::GetProfileName() const {
   DCHECK_NE(GetState(), AvatarToolbarButton::State::kIncognitoProfile);
   return profiles::GetAvatarNameForProfile(profile_->GetPath());
 }
 
-base::string16 AvatarToolbarButtonDelegate::GetShortProfileName() const {
+std::u16string AvatarToolbarButtonDelegate::GetShortProfileName() const {
   return signin_ui_util::GetShortProfileIdentityToDisplay(
       *GetProfileAttributesEntry(profile_), profile_);
 }
@@ -302,7 +302,7 @@ void AvatarToolbarButtonDelegate::OnProfileAdded(
 
 void AvatarToolbarButtonDelegate::OnProfileWasRemoved(
     const base::FilePath& profile_path,
-    const base::string16& profile_name) {
+    const std::u16string& profile_name) {
   // Removing a profile changes the profile count, we might go from showing
   // per-profile icons back to a generic avatar icon. Update icon accordingly.
   avatar_toolbar_button_->UpdateIcon();
@@ -320,7 +320,7 @@ void AvatarToolbarButtonDelegate::OnProfileHighResAvatarLoaded(
 
 void AvatarToolbarButtonDelegate::OnProfileNameChanged(
     const base::FilePath& profile_path,
-    const base::string16& old_profile_name) {
+    const std::u16string& old_profile_name) {
   avatar_toolbar_button_->UpdateText();
 }
 

@@ -58,7 +58,7 @@ CreateSecurePaymentConfirmationProgressBarView();
 
 // Creates the label view for the SPC title text.
 std::unique_ptr<views::Label> CreateSecurePaymentConfirmationTitleLabel(
-    const base::string16& title);
+    const std::u16string& title);
 
 /// Creates the image view for the SPC instrument icon.
 std::unique_ptr<views::ImageView>

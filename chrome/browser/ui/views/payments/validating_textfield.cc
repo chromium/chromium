@@ -44,7 +44,7 @@ void ValidatingTextfield::OnContentsChanged() {
 }
 
 bool ValidatingTextfield::IsValid() {
-  base::string16 unused;
+  std::u16string unused;
   return delegate_->IsValidTextfield(this, &unused);
 }
 

@@ -30,7 +30,7 @@ class CastDialogSinkButton : public HoverButton {
   CastDialogSinkButton& operator=(const CastDialogSinkButton&) = delete;
   ~CastDialogSinkButton() override;
 
-  void OverrideStatusText(const base::string16& status_text);
+  void OverrideStatusText(const std::u16string& status_text);
   void RestoreStatusText();
 
   // views::View:
@@ -66,7 +66,7 @@ class CastDialogSinkButton : public HoverButton {
   void OnEnabledChanged();
 
   const UIMediaSink sink_;
-  base::Optional<base::string16> saved_status_text_;
+  base::Optional<std::u16string> saved_status_text_;
   base::CallbackListSubscription enabled_changed_subscription_ =
       AddEnabledChangedCallback(
           base::BindRepeating(&CastDialogSinkButton::OnEnabledChanged,

@@ -45,7 +45,7 @@ class TestTitleObserver : public TabStripModelObserver {
  public:
   // Create a new TitleObserver for the browser of |contents|, waiting for
   // |target_title|.
-  TestTitleObserver(content::WebContents* contents, base::string16 target_title)
+  TestTitleObserver(content::WebContents* contents, std::u16string target_title)
       : contents_(contents), target_title_(target_title) {
     browser_ = chrome::FindBrowserWithWebContents(contents_);
     browser_->tab_strip_model()->AddObserver(this);
@@ -65,7 +65,7 @@ class TestTitleObserver : public TabStripModelObserver {
                     TabChangeType change_type) override {
     content::NavigationEntry* entry =
         contents->GetController().GetVisibleEntry();
-    base::string16 title = entry ? entry->GetTitle() : base::string16();
+    std::u16string title = entry ? entry->GetTitle() : std::u16string();
 
     if (title != target_title_)
       return;
@@ -79,7 +79,7 @@ class TestTitleObserver : public TabStripModelObserver {
 
   content::WebContents* contents_;
   Browser* browser_;
-  base::string16 target_title_;
+  std::u16string target_title_;
   base::RunLoop awaiter_;
 };
 
@@ -111,7 +111,7 @@ void NavigateAndWait(content::WebContents* web_contents,
 // and then sets document.title to be |title| and waits for the change
 // to propogate.
 void SetTitleAndLocation(content::WebContents* web_contents,
-                         const base::string16 title,
+                         const std::u16string title,
                          const GURL& location) {
   NavigateAndWait(web_contents, location);
 
@@ -398,7 +398,7 @@ IN_PROC_BROWSER_TEST_F(CustomTabBarViewBrowserTest,
   EXPECT_NE(app_view, browser_view_);
 
   // Empty title should use location.
-  SetTitleAndLocation(app_view->GetActiveWebContents(), base::string16(),
+  SetTitleAndLocation(app_view->GetActiveWebContents(), std::u16string(),
                       GURL("http://example.test/"));
   EXPECT_EQ(base::ASCIIToUTF16("example.test"),
             app_view->toolbar()->custom_tab_bar()->location_for_testing());
@@ -470,7 +470,7 @@ IN_PROC_BROWSER_TEST_F(CustomTabBarViewBrowserTest,
       ->ActivatedAt(0);
 
   ui::Clipboard* clipboard = ui::Clipboard::GetForCurrentThread();
-  base::string16 result;
+  std::u16string result;
   clipboard->ReadText(ui::ClipboardBuffer::kCopyPaste, /* data_dst = */ nullptr,
                       &result);
   EXPECT_EQ(result, base::UTF8ToUTF16("http://example.test/"));
@@ -692,7 +692,7 @@ IN_PROC_BROWSER_TEST_F(CustomTabBarViewBrowserTest, InterstitialCanHideOrigin) {
   SetTitleAndLocation(contents, base::ASCIIToUTF16("FooBar"),
                       https_server()->GetURL("/simple.html"));
 
-  EXPECT_EQ(base::string16(),
+  EXPECT_EQ(std::u16string(),
             app_view->toolbar()->custom_tab_bar()->location_for_testing());
   EXPECT_FALSE(
       app_view->toolbar()->custom_tab_bar()->IsShowingOriginForTesting());
@@ -702,7 +702,7 @@ IN_PROC_BROWSER_TEST_F(CustomTabBarViewBrowserTest, InterstitialCanHideOrigin) {
   SetTitleAndLocation(contents, base::ASCIIToUTF16("FooBar2"),
                       https_server()->GetURL("/title1.html"));
 
-  EXPECT_NE(base::string16(),
+  EXPECT_NE(std::u16string(),
             app_view->toolbar()->custom_tab_bar()->location_for_testing());
   EXPECT_TRUE(
       app_view->toolbar()->custom_tab_bar()->IsShowingOriginForTesting());

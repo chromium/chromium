@@ -38,7 +38,7 @@ DesktopMediaListController::~DesktopMediaListController() = default;
 std::unique_ptr<views::View> DesktopMediaListController::CreateView(
     DesktopMediaSourceViewStyle generic_style,
     DesktopMediaSourceViewStyle single_style,
-    const base::string16& accessible_name) {
+    const std::u16string& accessible_name) {
   DCHECK(!view_);
 
   auto view = std::make_unique<DesktopMediaListView>(
@@ -49,7 +49,7 @@ std::unique_ptr<views::View> DesktopMediaListController::CreateView(
 }
 
 std::unique_ptr<views::View> DesktopMediaListController::CreateTabListView(
-    const base::string16& accessible_name) {
+    const std::u16string& accessible_name) {
   DCHECK(!view_);
 
   auto view = std::make_unique<DesktopMediaTabList>(this, accessible_name);
@@ -176,7 +176,7 @@ bool DesktopMediaListController::ShouldAutoAccept(
 
   return (!auto_select_source_.empty() &&
           source.name.find(base::ASCIIToUTF16(auto_select_source_)) !=
-              base::string16::npos);
+              std::u16string::npos);
 }
 
 bool DesktopMediaListController::ShouldAutoReject(

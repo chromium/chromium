@@ -113,7 +113,7 @@ class TaskManagerView : public TableViewDelegate,
   std::unique_ptr<views::MenuRunner> menu_runner_;
 
   // We need to own the text of the menu, the Windows API does not copy it.
-  base::string16 always_on_top_menu_text_;
+  std::u16string always_on_top_menu_text_;
 
   views::TableView* tab_table_;
   views::View* tab_table_parent_;

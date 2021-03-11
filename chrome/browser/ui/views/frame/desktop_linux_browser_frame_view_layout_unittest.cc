@@ -43,7 +43,7 @@ class TestLayoutDelegate : public OpaqueBrowserFrameViewLayoutDelegate {
   // OpaqueBrowserFrameViewLayoutDelegate:
   bool ShouldShowWindowIcon() const override { return false; }
   bool ShouldShowWindowTitle() const override { return false; }
-  base::string16 GetWindowTitle() const override { return base::string16(); }
+  std::u16string GetWindowTitle() const override { return std::u16string(); }
   int GetIconSize() const override { return 17; }
   gfx::Size GetBrowserViewMinimumSize() const override {
     return gfx::Size(168, 64);

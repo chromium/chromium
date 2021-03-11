@@ -77,7 +77,7 @@ class PaymentRequestItemList {
     // |accessible_content| with the screen reader string for the returned
     // content. |accessible_content| shouldn't be null.
     virtual std::unique_ptr<views::View> CreateContentView(
-        base::string16* accessible_content) = 0;
+        std::u16string* accessible_content) = 0;
 
     // Creates the view that should be displayed after the checkmark in the
     // item's view, such as the credit card icon.
@@ -86,7 +86,7 @@ class PaymentRequestItemList {
     // Returns a string describing the type of data for which this row
     // represents an instance. e.g., "credit card" or "billing address". Used
     // when describing the row for accessibility.
-    virtual base::string16 GetNameForDataType() = 0;
+    virtual std::u16string GetNameForDataType() = 0;
 
     // Returns whether this item is complete/valid and can be selected by the
     // user. If this returns false when the user attempts to select this item,
@@ -111,7 +111,7 @@ class PaymentRequestItemList {
     base::WeakPtr<PaymentRequestSpec> spec_;
     base::WeakPtr<PaymentRequestState> state_;
     PaymentRequestItemList* list_;
-    base::string16 accessible_item_description_;
+    std::u16string accessible_item_description_;
     bool selected_;
     bool show_edit_button_;
 

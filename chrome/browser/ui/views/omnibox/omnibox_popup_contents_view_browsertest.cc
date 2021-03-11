@@ -339,7 +339,7 @@ IN_PROC_BROWSER_TEST_F(OmniboxPopupContentsViewTest, MAYBE_ClickOmnibox) {
 
   generator.MoveMouseTo(location_bar()->GetBoundsInScreen().CenterPoint());
   generator.ClickLeftButton();
-  EXPECT_EQ(base::string16(), textfield->GetSelectedText());
+  EXPECT_EQ(std::u16string(), textfield->GetSelectedText());
 
   // Clicking the result should dismiss the popup (asynchronously).
   generator.MoveMouseTo(result->GetBoundsInScreen().CenterPoint());
@@ -543,7 +543,7 @@ IN_PROC_BROWSER_TEST_F(OmniboxPopupContentsViewTest,
   popup_model()->autocomplete_controller()->Start(input);
 
   // Create a match to populate the autocomplete.
-  base::string16 match_url = base::ASCIIToUTF16("https://foobar.com");
+  std::u16string match_url = base::ASCIIToUTF16("https://foobar.com");
   AutocompleteMatch match(nullptr, 500, false,
                           AutocompleteMatchType::HISTORY_TITLE);
   match.contents = match_url;

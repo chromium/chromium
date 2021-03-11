@@ -78,8 +78,9 @@ MenuItemView* BookmarkMenuController::context_menu() const {
   return menu_delegate_->context_menu();
 }
 
-base::string16 BookmarkMenuController::GetTooltipText(int id,
-                                                const gfx::Point& p) const {
+std::u16string BookmarkMenuController::GetTooltipText(
+    int id,
+    const gfx::Point& p) const {
   return menu_delegate_->GetTooltipText(id, p);
 }
 

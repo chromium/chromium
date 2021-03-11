@@ -50,13 +50,13 @@ class AppInfoPermissionsPanel : public AppInfoPanel {
   extensions::PermissionMessages GetActivePermissionMessages() const;
 
   int GetRetainedFileCount() const;
-  base::string16 GetRetainedFileHeading() const;
-  const std::vector<base::string16> GetRetainedFilePaths() const;
+  std::u16string GetRetainedFileHeading() const;
+  const std::vector<std::u16string> GetRetainedFilePaths() const;
   void RevokeFilePermissions();
 
   int GetRetainedDeviceCount() const;
-  base::string16 GetRetainedDeviceHeading() const;
-  const std::vector<base::string16> GetRetainedDevices() const;
+  std::u16string GetRetainedDeviceHeading() const;
+  const std::vector<std::u16string> GetRetainedDevices() const;
   void RevokeDevicePermissions();
 };
 

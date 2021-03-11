@@ -145,14 +145,14 @@ void BookmarkMenuDelegate::SetActiveMenu(const BookmarkNode* node,
   menu_ = node_to_menu_map_[node];
 }
 
-base::string16 BookmarkMenuDelegate::GetTooltipText(
+std::u16string BookmarkMenuDelegate::GetTooltipText(
     int id,
     const gfx::Point& screen_loc) const {
   auto i = menu_id_to_node_map_.find(id);
   // When removing bookmarks it may be possible to end up here without a node.
   if (i == menu_id_to_node_map_.end()) {
     DCHECK(is_mutating_model_);
-    return base::string16();
+    return std::u16string();
   }
 
   const BookmarkNode* node = i->second;
@@ -162,7 +162,7 @@ base::string16 BookmarkMenuDelegate::GetTooltipText(
         tooltip_manager->GetMaxWidth(screen_loc),
         tooltip_manager->GetFontList(), node->url(), node->GetTitle());
   }
-  return base::string16();
+  return std::u16string();
 }
 
 bool BookmarkMenuDelegate::IsTriggerableEvent(views::MenuItemView* menu,
@@ -574,7 +574,7 @@ void BookmarkMenuDelegate::AddMenuToMaps(MenuItemView* menu,
   node_to_menu_map_[node] = menu;
 }
 
-base::string16 BookmarkMenuDelegate::MaybeEscapeLabel(
-    const base::string16& label) {
+std::u16string BookmarkMenuDelegate::MaybeEscapeLabel(
+    const std::u16string& label) {
   return menu_uses_mnemonics_ ? ui::EscapeMenuLabelAmpersands(label) : label;
 }

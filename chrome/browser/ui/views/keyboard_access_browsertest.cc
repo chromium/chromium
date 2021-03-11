@@ -488,7 +488,7 @@ IN_PROC_BROWSER_TEST_F(KeyboardAccessTest, BackForwardKeys) {
   ui_test_utils::NavigateToURL(browser(), GURL("chrome://version/"));
   ui_test_utils::NavigateToURL(browser(), GURL("chrome://about/"));
 
-  base::string16 before_back;
+  std::u16string before_back;
   ASSERT_TRUE(ui_test_utils::GetCurrentTabTitle(browser(), &before_back));
   content::WebContents* web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
@@ -500,7 +500,7 @@ IN_PROC_BROWSER_TEST_F(KeyboardAccessTest, BackForwardKeys) {
         browser(), ui::VKEY_BROWSER_BACK, false, false, false, false));
     navigation_observer.Wait();
 
-    base::string16 after_back;
+    std::u16string after_back;
     ASSERT_TRUE(ui_test_utils::GetCurrentTabTitle(browser(), &after_back));
 
     EXPECT_NE(before_back, after_back);
@@ -513,7 +513,7 @@ IN_PROC_BROWSER_TEST_F(KeyboardAccessTest, BackForwardKeys) {
         browser(), ui::VKEY_BROWSER_FORWARD, false, false, false, false));
     navigation_observer.Wait();
 
-    base::string16 after_forward;
+    std::u16string after_forward;
     ASSERT_TRUE(ui_test_utils::GetCurrentTabTitle(browser(), &after_forward));
 
     EXPECT_EQ(before_back, after_forward);

@@ -39,15 +39,15 @@ class PasswordReuseModalWarningDialog
   ~PasswordReuseModalWarningDialog() override;
 
   void CreateSavedPasswordReuseModalWarningDialog(
-      const base::string16 message_body,
-      std::vector<base::string16> placeholders,
+      const std::u16string message_body,
+      std::vector<std::u16string> placeholders,
       std::vector<size_t> placeholder_offsets);
   void CreateGaiaPasswordReuseModalWarningDialog(
       views::Label* message_body_label);
 
   // views::DialogDelegateView:
   gfx::Size CalculatePreferredSize() const override;
-  base::string16 GetWindowTitle() const override;
+  std::u16string GetWindowTitle() const override;
   bool ShouldShowCloseButton() const override;
   gfx::ImageSkia GetWindowIcon() override;
 

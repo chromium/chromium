@@ -30,7 +30,7 @@ namespace safe_browsing {
 /*static*/
 void PromptForScanningModalDialog::ShowForWebContents(
     content::WebContents* web_contents,
-    const base::string16& filename,
+    const std::u16string& filename,
     base::OnceClosure accept_callback,
     base::OnceClosure open_now_callback) {
   constrained_window::ShowWebModalDialogViews(
@@ -42,7 +42,7 @@ void PromptForScanningModalDialog::ShowForWebContents(
 
 PromptForScanningModalDialog::PromptForScanningModalDialog(
     content::WebContents* web_contents,
-    const base::string16& filename,
+    const std::u16string& filename,
     base::OnceClosure accept_callback,
     base::OnceClosure open_now_callback) {
   SetModalType(ui::MODAL_TYPE_CHILD);
@@ -78,7 +78,7 @@ PromptForScanningModalDialog::PromptForScanningModalDialog(
 
   // Create the message label text.
   std::vector<size_t> offsets;
-  base::string16 message_text = base::ReplaceStringPlaceholders(
+  std::u16string message_text = base::ReplaceStringPlaceholders(
       base::ASCIIToUTF16("$1 $2"),
       {l10n_util::GetStringFUTF16(IDS_DEEP_SCANNING_INFO_DIALOG_MESSAGE,
                                   filename),

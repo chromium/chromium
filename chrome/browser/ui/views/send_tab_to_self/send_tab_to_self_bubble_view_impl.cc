@@ -61,7 +61,7 @@ bool SendTabToSelfBubbleViewImpl::ShouldShowCloseButton() const {
   return true;
 }
 
-base::string16 SendTabToSelfBubbleViewImpl::GetWindowTitle() const {
+std::u16string SendTabToSelfBubbleViewImpl::GetWindowTitle() const {
   return controller_->GetWindowTitle();
 }
 

@@ -15,10 +15,10 @@
 template <>
 struct views::metadata::TypeConverter<TabStyle::TabColors>
     : BaseTypeConverter<true> {
-  static base::string16 ToString(
+  static std::u16string ToString(
       views::metadata::ArgType<TabStyle::TabColors> source_value);
   static base::Optional<TabStyle::TabColors> FromString(
-      const base::string16& source_value);
+      const std::u16string& source_value);
   static views::metadata::ValidStrings GetValidStrings();
 };
 

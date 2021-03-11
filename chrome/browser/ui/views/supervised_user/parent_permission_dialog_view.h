@@ -70,11 +70,11 @@ class ParentPermissionDialogView : public views::DialogDelegateView,
   // Removes the observer reference.
   void RemoveObserver();
 
-  void SetSelectedParentPermissionEmail(const base::string16& email_address);
-  base::string16 GetSelectedParentPermissionEmail() const;
+  void SetSelectedParentPermissionEmail(const std::u16string& email_address);
+  std::u16string GetSelectedParentPermissionEmail() const;
 
-  void SetParentPermissionCredential(const base::string16& credential);
-  base::string16 GetParentPermissionCredential() const;
+  void SetParentPermissionCredential(const std::u16string& credential);
+  std::u16string GetParentPermissionCredential() const;
 
   bool GetInvalidCredentialReceived() const;
 
@@ -84,7 +84,7 @@ class ParentPermissionDialogView : public views::DialogDelegateView,
   bool GetRepromptAfterIncorrectCredential() const;
 
  private:
-  base::string16 GetActiveUserFirstName() const;
+  std::u16string GetActiveUserFirstName() const;
 
   // views::View:
   void AddedToWidget() override;
@@ -94,7 +94,7 @@ class ParentPermissionDialogView : public views::DialogDelegateView,
   bool Accept() override;
 
   // views::WidgetDelegate:
-  base::string16 GetAccessibleWindowTitle() const override;
+  std::u16string GetAccessibleWindowTitle() const override;
 
   // Changes the widget size to accommodate the contents' preferred size.
   void ResizeWidget();
@@ -114,7 +114,7 @@ class ParentPermissionDialogView : public views::DialogDelegateView,
   // Given an email address of the child's parent, return the parents'
   // obfuscated gaia id.
   std::string GetParentObfuscatedGaiaID(
-      const base::string16& parent_email) const;
+      const std::u16string& parent_email) const;
 
   // Starts the Reauth-scoped OAuth access token fetch process.
   void StartReauthAccessTokenFetch(const std::string& parent_obfuscated_gaia_id,
@@ -151,7 +151,7 @@ class ParentPermissionDialogView : public views::DialogDelegateView,
   extensions::InstallPromptPermissions prompt_permissions_;
 
   // The email address of the parents to display in the dialog.
-  std::vector<base::string16> parent_permission_email_addresses_;
+  std::vector<std::u16string> parent_permission_email_addresses_;
 
   bool reprompt_after_incorrect_credential_ = true;
 
@@ -164,10 +164,10 @@ class ParentPermissionDialogView : public views::DialogDelegateView,
   bool invalid_credential_received_ = false;
 
   // The currently selected parent email.
-  base::string16 selected_parent_permission_email_;
+  std::u16string selected_parent_permission_email_;
 
   // The currently entered parent credential.
-  base::string16 parent_permission_credential_;
+  std::u16string parent_permission_credential_;
 
   // Parameters for the dialog.
   std::unique_ptr<Params> params_;

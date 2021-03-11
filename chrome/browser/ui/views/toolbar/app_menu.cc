@@ -215,13 +215,13 @@ class InMenuButtonBackground : public views::Background {
   const ButtonType type_;
 };
 
-base::string16 GetAccessibleNameForAppMenuItem(ButtonMenuItemModel* model,
+std::u16string GetAccessibleNameForAppMenuItem(ButtonMenuItemModel* model,
                                                int item_index,
                                                int accessible_string_id,
                                                bool add_accelerator_text) {
-  base::string16 accessible_name =
+  std::u16string accessible_name =
       l10n_util::GetStringUTF16(accessible_string_id);
-  base::string16 accelerator_text;
+  std::u16string accelerator_text;
 
   ui::Accelerator menu_accelerator;
   if (add_accelerator_text &&
@@ -239,7 +239,7 @@ base::string16 GetAccessibleNameForAppMenuItem(ButtonMenuItemModel* model,
 class InMenuButton : public LabelButton {
  public:
   METADATA_HEADER(InMenuButton);
-  InMenuButton(PressedCallback callback, const base::string16& text)
+  InMenuButton(PressedCallback callback, const std::u16string& text)
       : LabelButton(std::move(callback), text) {}
   InMenuButton(const InMenuButton&) = delete;
   InMenuButton& operator=(const InMenuButton&) = delete;
@@ -817,11 +817,11 @@ void AppMenu::GetLabelStyle(int command_id, LabelStyle* style) const {
   }
 }
 
-base::string16 AppMenu::GetTooltipText(int command_id,
+std::u16string AppMenu::GetTooltipText(int command_id,
                                        const gfx::Point& p) const {
   return IsBookmarkCommand(command_id)
              ? bookmark_menu_delegate_->GetTooltipText(command_id, p)
-             : base::string16();
+             : std::u16string();
 }
 
 bool AppMenu::IsTriggerableEvent(views::MenuItemView* menu,

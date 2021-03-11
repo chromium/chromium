@@ -70,7 +70,7 @@ class PaymentRequestShowPromiseTest : public PaymentRequestBrowserTestBase {
     if (!view || !view->GetVisible())
       return;
 
-    EXPECT_EQ(base::string16(), static_cast<views::Label*>(view)->GetText());
+    EXPECT_EQ(std::u16string(), static_cast<views::Label*>(view)->GetText());
   }
 
   // Verifies that the shipping address section has |expected_message| in the

@@ -303,7 +303,7 @@ content::RenderFrameHost* SelectFileDialogExtension::GetMainFrame() {
 
 void SelectFileDialogExtension::SelectFileWithFileManagerParams(
     Type type,
-    const base::string16& title,
+    const std::u16string& title,
     const base::FilePath& default_path,
     const FileTypeInfo* file_types,
     int file_type_index,
@@ -434,7 +434,7 @@ void SelectFileDialogExtension::SelectFileWithFileManagerParams(
 
 void SelectFileDialogExtension::SelectFileImpl(
     Type type,
-    const base::string16& title,
+    const std::u16string& title,
     const base::FilePath& default_path,
     const FileTypeInfo* file_types,
     int file_type_index,

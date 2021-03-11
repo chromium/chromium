@@ -49,7 +49,7 @@ class FileSystemAccessPermissionView : public views::DialogDelegateView {
       content::WebContents* web_contents);
 
   // views::DialogDelegateView:
-  base::string16 GetWindowTitle() const override;
+  std::u16string GetWindowTitle() const override;
   views::View* GetInitiallyFocusedView() override;
 
  private:

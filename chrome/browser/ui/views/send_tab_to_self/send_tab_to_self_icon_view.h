@@ -30,7 +30,7 @@ class SendTabToSelfIconView : public PageActionIconView {
   // PageActionIconView:
   views::BubbleDialogDelegate* GetBubble() const override;
   void UpdateImpl() override;
-  base::string16 GetTextForTooltipAndAccessibleName() const override;
+  std::u16string GetTextForTooltipAndAccessibleName() const override;
 
   // gfx::AnimationDelegate:
   void AnimationProgressed(const gfx::Animation* animation) override;

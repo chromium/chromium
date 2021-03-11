@@ -66,20 +66,20 @@ class BookmarkEditorViewTest : public testing::Test {
                                                    configuration);
   }
 
-  void SetTitleText(const base::string16& title) {
+  void SetTitleText(const std::u16string& title) {
     editor_->title_tf_->SetText(title);
   }
 
-  void SetURLText(const base::string16& text) {
+  void SetURLText(const std::u16string& text) {
     if (editor_->details_.type != BookmarkEditor::EditDetails::NEW_FOLDER)
       editor_->url_tf_->SetText(text);
   }
 
-  base::string16 GetURLText() const {
+  std::u16string GetURLText() const {
     if (editor_->details_.type != BookmarkEditor::EditDetails::NEW_FOLDER)
       return editor_->url_tf_->GetText();
 
-    return base::string16();
+    return std::u16string();
   }
 
   void ApplyEdits() {
@@ -156,7 +156,7 @@ class BookmarkEditorViewTest : public testing::Test {
 TEST_F(BookmarkEditorViewTest, ModelsMatch) {
   CreateEditor(profile_.get(), nullptr,
                BookmarkEditor::EditDetails::AddNodeInFolder(
-                   nullptr, size_t{-1}, GURL(), base::string16()),
+                   nullptr, size_t{-1}, GURL(), std::u16string()),
                BookmarkEditorView::SHOW_TREE);
   BookmarkEditorView::EditorNode* editor_root = editor_tree_model()->GetRoot();
   // The root should have two or three children: bookmark bar, other bookmarks
@@ -285,8 +285,8 @@ TEST_F(BookmarkEditorViewTest, NewURL) {
   const BookmarkNode* bb_node = model_->bookmark_bar_node();
 
   CreateEditor(profile_.get(), bb_node,
-               BookmarkEditor::EditDetails::AddNodeInFolder(
-                   bb_node, 1, GURL(), base::string16()),
+               BookmarkEditor::EditDetails::AddNodeInFolder(bb_node, 1, GURL(),
+                                                            std::u16string()),
                BookmarkEditorView::SHOW_TREE);
 
   SetURLText(UTF8ToUTF16(GURL(base_path() + "a").spec()));
@@ -351,13 +351,13 @@ TEST_F(BookmarkEditorViewTest, EditKeepsScheme) {
 
   CreateEditor(profile_.get(), kBBNode,
                BookmarkEditor::EditDetails::AddNodeInFolder(kBBNode, 1, kUrl,
-                                                            base::string16()),
+                                                            std::u16string()),
                BookmarkEditorView::SHOW_TREE);
 
   // We expect only the trailing / to be trimmed when userinfo is present
   EXPECT_EQ(ASCIIToUTF16(kUrl.spec()), GetURLText() + ASCIIToUTF16("/"));
 
-  const base::string16& kTitle = ASCIIToUTF16("EditingKeepsScheme");
+  const std::u16string& kTitle = ASCIIToUTF16("EditingKeepsScheme");
   SetTitleText(kTitle);
 
   ApplyEdits(editor_tree_model()->GetRoot()->children()[0].get());
@@ -434,8 +434,8 @@ TEST_F(BookmarkEditorViewTest, NewFolderTitleUpdatedOnCommit) {
   const BookmarkNode* parent = model_->bookmark_bar_node()->children()[2].get();
 
   CreateEditor(profile_.get(), parent,
-               BookmarkEditor::EditDetails::AddNodeInFolder(
-                   parent, 1, GURL(), base::string16()),
+               BookmarkEditor::EditDetails::AddNodeInFolder(parent, 1, GURL(),
+                                                            std::u16string()),
                BookmarkEditorView::SHOW_TREE);
   ExpandAndSelect();
 
