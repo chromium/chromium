@@ -17,6 +17,7 @@
 #include "base/mac/bundle_locations.h"
 #include "base/mac/foundation_util.h"
 #include "base/mac/launch_services_util.h"
+#include "base/mac/mac_util.h"
 #include "base/mac/mach_logging.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
@@ -336,6 +337,17 @@ void AppShimController::SendBootstrapOnShimConnected(
           ? chrome::mojom::AppShimLaunchType::kRegisterOnly
           : chrome::mojom::AppShimLaunchType::kNormal;
   app_shim_info->files = launch_files_;
+
+  if (base::mac::WasLaunchedAsHiddenLoginItem()) {
+    app_shim_info->login_item_restore_state =
+        chrome::mojom::AppShimLoginItemRestoreState::kHidden;
+  } else if (base::mac::WasLaunchedAsLoginOrResumeItem()) {
+    app_shim_info->login_item_restore_state =
+        chrome::mojom::AppShimLoginItemRestoreState::kWindowed;
+  } else {
+    app_shim_info->login_item_restore_state =
+        chrome::mojom::AppShimLoginItemRestoreState::kNone;
+  }
 
   host_bootstrap_->OnShimConnected(
       std::move(host_receiver_), std::move(app_shim_info),

@@ -11,6 +11,7 @@
 #include "chrome/browser/web_applications/components/os_integration_manager.h"
 #include "chrome/browser/web_applications/components/web_app_shortcut_mac.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
+#include "chrome/common/chrome_switches.h"
 
 namespace web_app {
 
@@ -86,20 +87,30 @@ void WebAppShimManagerDelegate::EnableExtension(
 void WebAppShimManagerDelegate::LaunchApp(
     Profile* profile,
     const AppId& app_id,
-    const std::vector<base::FilePath>& files) {
+    const std::vector<base::FilePath>& files,
+    chrome::mojom::AppShimLoginItemRestoreState login_item_restore_state) {
   DCHECK(AppIsInstalled(profile, app_id));
   if (UseFallback(profile, app_id)) {
-    fallback_delegate_->LaunchApp(profile, app_id, files);
+    fallback_delegate_->LaunchApp(profile, app_id, files,
+                                  login_item_restore_state);
     return;
   }
   DisplayMode display_mode =
       WebAppProvider::Get(profile)->registrar().GetAppUserDisplayMode(app_id);
   apps::mojom::LaunchContainer launch_container =
       web_app::ConvertDisplayModeToAppLaunchContainer(display_mode);
-  apps::AppLaunchParams params(
-      app_id, launch_container, WindowOpenDisposition::NEW_FOREGROUND_TAB,
-      apps::mojom::AppLaunchSource::kSourceCommandLine);
+  apps::mojom::AppLaunchSource launch_source =
+      apps::mojom::AppLaunchSource::kSourceCommandLine;
+  if (login_item_restore_state !=
+      chrome::mojom::AppShimLoginItemRestoreState::kNone) {
+    launch_source = apps::mojom::AppLaunchSource::kSourceRunOnOsLogin;
+  }
+
+  apps::AppLaunchParams params(app_id, launch_container,
+                               WindowOpenDisposition::NEW_FOREGROUND_TAB,
+                               launch_source);
   params.launch_files = files;
+
   apps::AppServiceProxyFactory::GetForProfile(profile)
       ->BrowserAppLauncher()
       ->LaunchAppWithParams(std::move(params));

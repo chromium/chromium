@@ -329,11 +329,13 @@ void AppShimManager::OnShimProcessConnected(
       const base::FilePath profile_path = bootstrap->GetProfilePath();
       const std::vector<base::FilePath> launch_files =
           bootstrap->GetLaunchFiles();
+      const chrome::mojom::AppShimLoginItemRestoreState
+          login_item_restore_state = bootstrap->GetLoginItemRestoreState();
       LoadAndLaunchAppCallback launch_callback = base::BindOnce(
           &AppShimManager::OnShimProcessConnectedAndAllLaunchesDone,
           weak_factory_.GetWeakPtr(), std::move(bootstrap));
       LoadAndLaunchApp(app_id, profile_path, launch_files,
-                       std::move(launch_callback));
+                       login_item_restore_state, std::move(launch_callback));
       break;
     }
     case chrome::mojom::AppShimLaunchType::kRegisterOnly:
@@ -385,11 +387,13 @@ void AppShimManager::LoadAndLaunchApp(
     const web_app::AppId& app_id,
     const base::FilePath& profile_path,
     const std::vector<base::FilePath>& launch_files,
+    chrome::mojom::AppShimLoginItemRestoreState login_item_restore_state,
     LoadAndLaunchAppCallback launch_callback) {
   // Check to see if the app is already running for a profile compatible with
   // |profile_path|. If so, early-out.
   if (LoadAndLaunchApp_TryExistingProfileStates(
-          app_id, profile_path, launch_files, &launch_callback)) {
+          app_id, profile_path, launch_files, login_item_restore_state,
+          &launch_callback)) {
     // If we used an existing profile, |launch_callback| should have been run.
     DCHECK(!launch_callback);
     return;
@@ -418,7 +422,8 @@ void AppShimManager::LoadAndLaunchApp(
   base::OnceClosure callback =
       base::BindOnce(&AppShimManager::LoadAndLaunchApp_OnProfilesAndAppReady,
                      weak_factory_.GetWeakPtr(), app_id, launch_files,
-                     profile_paths_to_launch, std::move(launch_callback));
+                     login_item_restore_state, profile_paths_to_launch,
+                     std::move(launch_callback));
   {
     // This will update |callback| to be a chain of callbacks that load the
     // profiles in |profile_paths_to_load|, one by one, using
@@ -444,6 +449,7 @@ bool AppShimManager::LoadAndLaunchApp_TryExistingProfileStates(
     const web_app::AppId& app_id,
     const base::FilePath& profile_path,
     const std::vector<base::FilePath>& launch_files,
+    chrome::mojom::AppShimLoginItemRestoreState login_item_restore_state,
     LoadAndLaunchAppCallback* launch_callback) {
   auto found_app = apps_.find(app_id);
   if (found_app == apps_.end())
@@ -477,7 +483,7 @@ bool AppShimManager::LoadAndLaunchApp_TryExistingProfileStates(
 
   // Launch the app, if appropriate.
   LoadAndLaunchApp_LaunchIfAppropriate(profile, profile_state, app_id,
-                                       launch_files);
+                                       launch_files, login_item_restore_state);
 
   std::move(*launch_callback)
       .Run(profile_state, chrome::mojom::AppShimLaunchResult::kSuccess);
@@ -487,6 +493,7 @@ bool AppShimManager::LoadAndLaunchApp_TryExistingProfileStates(
 void AppShimManager::LoadAndLaunchApp_OnProfilesAndAppReady(
     const web_app::AppId& app_id,
     const std::vector<base::FilePath>& launch_files,
+    chrome::mojom::AppShimLoginItemRestoreState login_item_restore_state,
     const std::vector<base::FilePath>& profile_paths_to_launch,
     LoadAndLaunchAppCallback launch_callback) {
   // Launch all of the profiles in |profile_paths_to_launch|. Record the most
@@ -519,8 +526,8 @@ void AppShimManager::LoadAndLaunchApp_OnProfilesAndAppReady(
       profile_state = GetOrCreateProfileState(profile, app_id);
 
     // Launch the app, if appropriate.
-    LoadAndLaunchApp_LaunchIfAppropriate(profile, profile_state, app_id,
-                                         launch_files);
+    LoadAndLaunchApp_LaunchIfAppropriate(
+        profile, profile_state, app_id, launch_files, login_item_restore_state);
 
     // If we successfully created a profile state, save it for |bootstrap| to
     // connect to once all launches are done.
@@ -602,7 +609,8 @@ void AppShimManager::LoadAndLaunchApp_LaunchIfAppropriate(
     Profile* profile,
     ProfileState* profile_state,
     const web_app::AppId& app_id,
-    const std::vector<base::FilePath>& launch_files) {
+    const std::vector<base::FilePath>& launch_files,
+    chrome::mojom::AppShimLoginItemRestoreState login_item_restore_state) {
   // If |launch_files| is non-empty, then always do a launch to open the
   // files.
   bool do_launch = !launch_files.empty();
@@ -618,7 +626,8 @@ void AppShimManager::LoadAndLaunchApp_LaunchIfAppropriate(
   }
 
   if (do_launch)
-    delegate_->LaunchApp(profile, app_id, launch_files);
+    delegate_->LaunchApp(profile, app_id, launch_files,
+                         login_item_restore_state);
 }
 
 // static
@@ -826,7 +835,8 @@ void AppShimManager::OnShimReopen(AppShimHost* host) {
   LoadAndLaunchApp(
       host->GetAppId(),
       app_state->IsMultiProfile() ? base::FilePath() : host->GetProfilePath(),
-      std::vector<base::FilePath>(), base::DoNothing());
+      std::vector<base::FilePath>(),
+      chrome::mojom::AppShimLoginItemRestoreState::kNone, base::DoNothing());
 }
 
 void AppShimManager::OnShimOpenedFiles(
@@ -838,13 +848,15 @@ void AppShimManager::OnShimOpenedFiles(
   LoadAndLaunchApp(
       host->GetAppId(),
       app_state->IsMultiProfile() ? base::FilePath() : host->GetProfilePath(),
-      files, base::DoNothing());
+      files, chrome::mojom::AppShimLoginItemRestoreState::kNone,
+      base::DoNothing());
 }
 
 void AppShimManager::OnShimSelectedProfile(AppShimHost* host,
                                            const base::FilePath& profile_path) {
-  LoadAndLaunchApp(host->GetAppId(), profile_path,
-                   std::vector<base::FilePath>(), base::DoNothing());
+  LoadAndLaunchApp(
+      host->GetAppId(), profile_path, std::vector<base::FilePath>(),
+      chrome::mojom::AppShimLoginItemRestoreState::kNone, base::DoNothing());
 }
 
 void AppShimManager::OnProfileAdded(Profile* profile) {

@@ -91,7 +91,9 @@ class AppShimManager : public AppShimHostBootstrap::Client,
     // is called.
     virtual void LaunchApp(Profile* profile,
                            const web_app::AppId& app_id,
-                           const std::vector<base::FilePath>& files) = 0;
+                           const std::vector<base::FilePath>& files,
+                           chrome::mojom::AppShimLoginItemRestoreState
+                               login_item_restore_state) = 0;
 
     // Launch the shim process for an app. It is guaranteed that |app_id| is
     // installed for |profile| when this method is called.
@@ -257,25 +259,30 @@ class AppShimManager : public AppShimHostBootstrap::Client,
   using LoadAndLaunchAppCallback =
       base::OnceCallback<void(ProfileState* profile_state,
                               chrome::mojom::AppShimLaunchResult result)>;
-  void LoadAndLaunchApp(const web_app::AppId& app_id,
-                        const base::FilePath& profile_path,
-                        const std::vector<base::FilePath>& launch_files,
-                        LoadAndLaunchAppCallback launch_callback);
+  void LoadAndLaunchApp(
+      const web_app::AppId& app_id,
+      const base::FilePath& profile_path,
+      const std::vector<base::FilePath>& launch_files,
+      chrome::mojom::AppShimLoginItemRestoreState login_item_restore_state,
+      LoadAndLaunchAppCallback launch_callback);
   bool LoadAndLaunchApp_TryExistingProfileStates(
       const web_app::AppId& app_id,
       const base::FilePath& profile_path,
       const std::vector<base::FilePath>& launch_files,
+      chrome::mojom::AppShimLoginItemRestoreState login_item_restore_state,
       LoadAndLaunchAppCallback* launch_callback);
   void LoadAndLaunchApp_OnProfilesAndAppReady(
       const web_app::AppId& app_id,
       const std::vector<base::FilePath>& launch_files,
+      chrome::mojom::AppShimLoginItemRestoreState login_item_restore_state,
       const std::vector<base::FilePath>& profile_paths_to_launch,
       LoadAndLaunchAppCallback launch_callback);
   void LoadAndLaunchApp_LaunchIfAppropriate(
       Profile* profile,
       ProfileState* profile_state,
       const web_app::AppId& app_id,
-      const std::vector<base::FilePath>& launch_files);
+      const std::vector<base::FilePath>& launch_files,
+      chrome::mojom::AppShimLoginItemRestoreState login_item_restore_state);
 
   // The final step of both paths for OnShimProcessConnected. This will connect
   // |bootstrap| to |profile_state|'s AppShimHost, if possible. The value of

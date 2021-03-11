@@ -68,6 +68,9 @@ class AppShimHostBootstrap : public chrome::mojom::AppShimHostBootstrap {
   // onto the app bundle or dock icon.
   const std::vector<base::FilePath>& GetLaunchFiles() const;
 
+  // Indicates if the app launched during OS login.
+  chrome::mojom::AppShimLoginItemRestoreState GetLoginItemRestoreState() const;
+
   // Returns true if this app supports multiple profiles. If so, it will not be
   // required that GetProfilePath be a valid profile path.
   bool IsMultiProfile() const;
