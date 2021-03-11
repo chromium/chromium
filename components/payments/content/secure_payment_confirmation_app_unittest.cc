@@ -128,8 +128,7 @@ class SecurePaymentConfirmationAppTest : public testing::Test,
   }
 
   void OnInstrumentDetailsError(const std::string& error_message) override {
-    EXPECT_EQ(error_message,
-              "Authenticator returned AuthenticatorStatus::NOT_ALLOWED_ERROR.");
+    EXPECT_EQ(error_message, "Authenticator returned NOT_ALLOWED_ERROR.");
     on_instrument_details_error_called_ = true;
   }
 

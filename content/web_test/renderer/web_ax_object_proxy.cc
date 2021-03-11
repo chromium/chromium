@@ -31,10 +31,12 @@ namespace {
 // Map role value to string, matching Safari/Mac platform implementation to
 // avoid rebaselining web tests.
 std::string RoleToString(ax::mojom::Role role) {
-  constexpr int kSkipPrefixLen = 7;  /// Length of "Role::k"
+  std::string prefix = "k";
   std::ostringstream result;
   result << role;
-  return "AXRole: AX" + result.str().substr(kSkipPrefixLen);
+  // Check that |result| starts with |prefix|.
+  DCHECK_EQ(result.str().find(prefix), 0ull);
+  return "AXRole: AX" + result.str().substr(prefix.size());
 }
 
 std::string GetStringValue(const blink::WebAXObject& object) {

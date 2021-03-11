@@ -61,7 +61,7 @@ TEST_F(RoutineLogTest, Basic) {
       GetLogLineContents(first_line);
 
   ASSERT_EQ(3u, first_line_contents.size());
-  EXPECT_EQ("RoutineType::kCpuStress", first_line_contents[1]);
+  EXPECT_EQ("kCpuStress", first_line_contents[1]);
   EXPECT_EQ("Started", first_line_contents[2]);
 }
 
@@ -80,7 +80,7 @@ TEST_F(RoutineLogTest, TwoLine) {
       GetLogLineContents(first_line);
 
   ASSERT_EQ(3u, first_line_contents.size());
-  EXPECT_EQ("RoutineType::kMemory", first_line_contents[1]);
+  EXPECT_EQ("kMemory", first_line_contents[1]);
   EXPECT_EQ("Started", first_line_contents[2]);
 
   const std::string second_line = log_lines[1];
@@ -88,8 +88,8 @@ TEST_F(RoutineLogTest, TwoLine) {
       GetLogLineContents(second_line);
 
   ASSERT_EQ(3u, second_line_contents.size());
-  EXPECT_EQ("RoutineType::kMemory", second_line_contents[1]);
-  EXPECT_EQ("StandardRoutineResult::kTestPassed", second_line_contents[2]);
+  EXPECT_EQ("kMemory", second_line_contents[1]);
+  EXPECT_EQ("kTestPassed", second_line_contents[2]);
 }
 
 TEST_F(RoutineLogTest, Cancelled) {

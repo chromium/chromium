@@ -67,7 +67,7 @@ std::string {{enum_name}}ToString({{enum_name}} value) {
   switch(value) {
 {%-   for _, values in enum.fields|groupby('numeric_value') %}
     case {{enum_name}}::{{values[0].name}}:
-      return "{{enum_name}}::
+      return "
 {%-     if values|length > 1 -%}
       {{'{'}}
 {%-     endif -%}

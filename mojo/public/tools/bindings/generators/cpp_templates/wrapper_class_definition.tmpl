@@ -37,8 +37,13 @@ void {{struct.name}}::WriteIntoTracedValue(perfetto::TracedValue context) const 
 {%-  for field in struct.fields %}
   perfetto::WriteIntoTracedValueWithFallback(
     dict.AddItem(
-      "{{field.name}}"), {{'this->'+field.name}}, 
-      "<value of type {{field.kind|cpp_wrapper_param_type}}>");
+      "{{field.name}}"), {{'this->'+field.name}},
+#if BUILDFLAG(MOJO_TRACE_ENABLED)
+      "<value of type {{field.kind|cpp_wrapper_param_type}}>"
+#else
+      "<value>"
+#endif  // BUILDFLAG(MOJO_TRACE_ENABLED)
+    );
 {%-  endfor %}
 }
 

@@ -697,7 +697,7 @@ TEST_F(SystemRoutineControllerTest, RoutineLog) {
 
   std::vector<std::string> log_line_contents = GetLogLineContents(log_lines[0]);
   ASSERT_EQ(3u, log_line_contents.size());
-  EXPECT_EQ("RoutineType::kCpuStress", log_line_contents[1]);
+  EXPECT_EQ("kCpuStress", log_line_contents[1]);
   EXPECT_EQ("Started", log_line_contents[2]);
 
   // Update the status on cros_healthd.
@@ -717,8 +717,8 @@ TEST_F(SystemRoutineControllerTest, RoutineLog) {
 
   log_line_contents = GetLogLineContents(log_lines[1]);
   ASSERT_EQ(3u, log_line_contents.size());
-  EXPECT_EQ("RoutineType::kCpuStress", log_line_contents[1]);
-  EXPECT_EQ("StandardRoutineResult::kTestPassed", log_line_contents[2]);
+  EXPECT_EQ("kCpuStress", log_line_contents[1]);
+  EXPECT_EQ("kTestPassed", log_line_contents[2]);
 
   // Start another routine and cancel it and verify the cancellation appears in
   // logs. Use a unique_ptr for the RoutineRunner so we can easily destroy it.

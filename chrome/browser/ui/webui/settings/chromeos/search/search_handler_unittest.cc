@@ -200,9 +200,8 @@ TEST_F(SearchHandlerTest, UrlModification) {
 
   // The URL should have bee modified according to the FakeOsSettingSection
   // scheme.
-  EXPECT_EQ(
-      std::string("Section::kPrinting::") + mojom::kPrintingDetailsSubpagePath,
-      search_results[0]->url_path_with_parameters);
+  EXPECT_EQ(std::string("kPrinting::") + mojom::kPrintingDetailsSubpagePath,
+            search_results[0]->url_path_with_parameters);
 }
 
 TEST_F(SearchHandlerTest, AltTagMatch) {
