@@ -70,6 +70,7 @@ if exit_code != 0:
   print('stderr was ' + stderr)
   sys.exit(1)
 
+stdout = stdout.decode('utf8')
 SHLIBS_DEPENDS_PREFIX = 'shlibs:Depends='
 deps_str = ''
 for line in stdout.split('\n'):

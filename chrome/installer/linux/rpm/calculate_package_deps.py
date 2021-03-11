@@ -34,13 +34,14 @@ if os.stat(binary).st_mode & 0o111 == 0:
 
 proc = subprocess.Popen(['/usr/lib/rpm/find-requires'], stdin=subprocess.PIPE,
                         stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-(stdout, stderr) = proc.communicate(binary + '\n')
+(stdout, stderr) = proc.communicate((binary + '\n').encode('utf8'))
 exit_code = proc.wait()
 if exit_code != 0:
   print('find-requires failed with exit code ' + str(exit_code))
   print('stderr was ' + stderr)
   sys.exit(1)
 
+stdout = stdout.decode('utf8')
 requires = set([] if stdout == '' else stdout.rstrip('\n').split('\n'))
 
 script_dir = os.path.dirname(os.path.abspath(__file__))
