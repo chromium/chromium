@@ -21,7 +21,6 @@
 #include "services/network/cors/cors_url_loader_factory.h"
 #include "services/network/network_context.h"
 #include "services/network/network_service.h"
-#include "services/network/network_usage_accumulator.h"
 #include "services/network/public/cpp/is_potentially_trustworthy.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/mojom/network_context.mojom.h"
@@ -152,13 +151,10 @@ void URLLoaderFactory::CreateLoaderAndStart(
   }
 
   base::WeakPtr<KeepaliveStatisticsRecorder> keepalive_statistics_recorder;
-  base::WeakPtr<NetworkUsageAccumulator> network_usage_accumulator;
   if (context_->network_service()) {
     keepalive_statistics_recorder = context_->network_service()
                                         ->keepalive_statistics_recorder()
                                         ->AsWeakPtr();
-    network_usage_accumulator =
-        context_->network_service()->network_usage_accumulator()->AsWeakPtr();
   }
 
   bool exhausted = false;
@@ -282,7 +278,6 @@ void URLLoaderFactory::CreateLoaderAndStart(
       request_id, keepalive_request_size,
       context_->require_network_isolation_key(), resource_scheduler_client_,
       std::move(keepalive_statistics_recorder),
-      std::move(network_usage_accumulator),
       header_client_.is_bound() ? header_client_.get() : nullptr,
       context_->origin_policy_manager(), std::move(trust_token_factory),
       context_->cors_origin_access_list(), std::move(cookie_observer),

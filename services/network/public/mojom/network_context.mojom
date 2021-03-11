@@ -493,23 +493,6 @@ struct ClearDataFilter {
   array<url.mojom.Origin> origins;
 };
 
-// Represents the accumulated network usage for a consumer.
-struct NetworkUsage {
-  // |process_id| is 0 for the browser process, otherwise it's the child process
-  // ID.
-  int32 process_id;
-
-  // The ID of the IPC route for the consumer, which identifies the RenderFrame
-  // or like-thing.
-  int32 routing_id;
-
-  // Raw bytes received from the network since the start/restart of the service.
-  int64 total_bytes_received;
-
-  // Raw bytes sent to the network since the start/restart of the service.
-  int64 total_bytes_sent;
-};
-
 // Represents a signed exchange report.
 // Spec: https://wicg.github.io/webpackage/loading.html#queue-report
 struct SignedExchangeReport {

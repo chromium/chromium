@@ -68,7 +68,6 @@ class OriginPolicyManager;
 constexpr size_t kMaxFileUploadRequestsPerBatch = 64;
 
 class NetToMojoPendingBuffer;
-class NetworkUsageAccumulator;
 class KeepaliveStatisticsRecorder;
 class ScopedThrottlingToken;
 struct OriginPolicy;
@@ -128,7 +127,6 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) URLLoader
       bool require_network_isolation_key,
       scoped_refptr<ResourceSchedulerClient> resource_scheduler_client,
       base::WeakPtr<KeepaliveStatisticsRecorder> keepalive_statistics_recorder,
-      base::WeakPtr<NetworkUsageAccumulator> network_usage_accumulator,
       mojom::TrustedURLLoaderHeaderClient* url_loader_header_client,
       mojom::OriginPolicyManager* origin_policy_manager,
       std::unique_ptr<TrustTokenRequestHelperFactory>
@@ -505,8 +503,6 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) URLLoader
   scoped_refptr<ResourceSchedulerClient> resource_scheduler_client_;
 
   base::WeakPtr<KeepaliveStatisticsRecorder> keepalive_statistics_recorder_;
-
-  base::WeakPtr<NetworkUsageAccumulator> network_usage_accumulator_;
 
   bool first_auth_attempt_;
 

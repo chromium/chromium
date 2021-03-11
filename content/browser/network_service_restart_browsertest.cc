@@ -95,41 +95,6 @@ int LoadBasicRequestOnUIThread(
   return simple_loader->NetError();
 }
 
-std::vector<network::mojom::NetworkUsagePtr> GetTotalNetworkUsages() {
-  std::vector<network::mojom::NetworkUsagePtr> network_usages;
-  base::RunLoop run_loop;
-  GetNetworkService()->GetTotalNetworkUsages(base::BindOnce(
-      [](std::vector<network::mojom::NetworkUsagePtr>* p_network_usages,
-         base::OnceClosure quit_closure,
-         std::vector<network::mojom::NetworkUsagePtr> returned_usages) {
-        *p_network_usages = std::move(returned_usages);
-        std::move(quit_closure).Run();
-      },
-      base::Unretained(&network_usages), run_loop.QuitClosure()));
-  run_loop.Run();
-  return network_usages;
-}
-
-bool CheckContainsProcessID(
-    const std::vector<network::mojom::NetworkUsagePtr>& usages,
-    int process_id) {
-  for (const auto& usage : usages) {
-    if ((int)usage->process_id == process_id)
-      return true;
-  }
-  return false;
-}
-
-// Wait until |condition| returns true.
-void WaitForCondition(base::RepeatingCallback<bool()> condition) {
-  while (!condition.Run()) {
-    base::RunLoop run_loop;
-    base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
-        FROM_HERE, run_loop.QuitClosure(), TestTimeouts::tiny_timeout());
-    run_loop.Run();
-  }
-}
-
 class ServiceWorkerStatusObserver : public ServiceWorkerContextCoreObserver {
  public:
   void WaitForStopped() {
@@ -980,48 +945,6 @@ IN_PROC_BROWSER_TEST_F(NetworkServiceRestartBrowserTest, MAYBE_SharedWorker) {
   EXPECT_TRUE(service->worker_hosts_.empty());
 }
 
-// Make sure the entry in |NetworkService::GetTotalNetworkUsages()| was cleared
-// after process closed.
-IN_PROC_BROWSER_TEST_F(NetworkServiceRestartBrowserTest,
-                       GetNetworkUsagesClosed) {
-  if (IsInProcessNetworkService())
-    return;
-  EXPECT_TRUE(NavigateToURL(shell(), GetTestURL()));
-  Shell* shell2 = CreateBrowser();
-  EXPECT_TRUE(NavigateToURL(shell2, GetTestURL()));
-
-  int process_id1 =
-      shell()->web_contents()->GetMainFrame()->GetProcess()->GetID();
-  int process_id2 =
-      shell2->web_contents()->GetMainFrame()->GetProcess()->GetID();
-
-  // Load resource on the renderer to make sure the traffic was recorded.
-  EXPECT_TRUE(CheckCanLoadHttp(shell(), "/title2.html"));
-  EXPECT_TRUE(CheckCanLoadHttp(shell2, "/title3.html"));
-
-  // Both processes should have traffic recorded.
-  auto network_usages = GetTotalNetworkUsages();
-  EXPECT_TRUE(CheckContainsProcessID(network_usages, process_id1));
-  EXPECT_TRUE(CheckContainsProcessID(network_usages, process_id2));
-
-  // Closing |shell2| should cause the entry to be cleared.
-  shell2->Close();
-  shell2 = nullptr;
-
-  // Wait until the Network Service has noticed the change. We don't have a
-  // better way to force a flush on the Network Service side.
-  WaitForCondition(base::BindRepeating(
-      [](int process_id) {
-        auto usages = GetTotalNetworkUsages();
-        return !CheckContainsProcessID(usages, process_id);
-      },
-      process_id2));
-
-  network_usages = GetTotalNetworkUsages();
-  EXPECT_TRUE(CheckContainsProcessID(network_usages, process_id1));
-  EXPECT_FALSE(CheckContainsProcessID(network_usages, process_id2));
-}
-
 // Make sure that kSSLKeyLogFileHistogram is correctly recorded when the
 // network service instance is started and the SSLKEYLOGFILE env var is set or
 // the "--ssl-key-log-file" arg is set.
@@ -1066,43 +989,6 @@ IN_PROC_BROWSER_TEST_F(NetworkServiceRestartBrowserTest, SSLKeyLogFileMetrics) {
     histograms.ExpectBucketCount(kSSLKeyLogFileHistogram,
                                  SSLKeyLogFileAction::kSwitchFound, 1);
   }
-}
-
-// Make sure |NetworkService::GetTotalNetworkUsages()| continues to work after
-// crash. See 'network_usage_accumulator_unittest' for quantified tests.
-IN_PROC_BROWSER_TEST_F(NetworkServiceRestartBrowserTest,
-                       GetNetworkUsagesCrashed) {
-  if (IsInProcessNetworkService())
-    return;
-  EXPECT_TRUE(NavigateToURL(shell(), GetTestURL()));
-  Shell* shell2 = CreateBrowser();
-  EXPECT_TRUE(NavigateToURL(shell2, GetTestURL()));
-
-  int process_id1 =
-      shell()->web_contents()->GetMainFrame()->GetProcess()->GetID();
-  int process_id2 =
-      shell2->web_contents()->GetMainFrame()->GetProcess()->GetID();
-
-  // Load resource on the renderer to make sure the traffic was recorded.
-  EXPECT_TRUE(CheckCanLoadHttp(shell(), "/title2.html"));
-  EXPECT_TRUE(CheckCanLoadHttp(shell2, "/title3.html"));
-
-  // Both processes should have traffic recorded.
-  auto network_usages = GetTotalNetworkUsages();
-  EXPECT_TRUE(CheckContainsProcessID(network_usages, process_id1));
-  EXPECT_TRUE(CheckContainsProcessID(network_usages, process_id2));
-
-  // Crashing Network Service should cause all entries to be cleared.
-  SimulateNetworkServiceCrash();
-  network_usages = GetTotalNetworkUsages();
-  EXPECT_FALSE(CheckContainsProcessID(network_usages, process_id1));
-  EXPECT_FALSE(CheckContainsProcessID(network_usages, process_id2));
-
-  // Should still be able to recored new traffic after crash.
-  EXPECT_TRUE(CheckCanLoadHttp(shell(), "/title2.html"));
-  network_usages = GetTotalNetworkUsages();
-  EXPECT_TRUE(CheckContainsProcessID(network_usages, process_id1));
-  EXPECT_FALSE(CheckContainsProcessID(network_usages, process_id2));
 }
 
 // Make sure cookie access doesn't hang or fail after a network process crash.

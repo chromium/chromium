@@ -64,7 +64,6 @@ class HttpAuthCacheCopier;
 class NetLogProxySink;
 class NetworkContext;
 class NetworkService;
-class NetworkUsageAccumulator;
 class SCTAuditingCache;
 
 class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkService
@@ -149,8 +148,6 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkService
       override;
   void GetDnsConfigChangeManager(
       mojo::PendingReceiver<mojom::DnsConfigChangeManager> receiver) override;
-  void GetTotalNetworkUsages(
-      mojom::NetworkService::GetTotalNetworkUsagesCallback callback) override;
   void GetNetworkList(
       uint32_t policy,
       mojom::NetworkService::GetNetworkListCallback callback) override;
@@ -217,9 +214,6 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkService
   }
   net::HostResolver::Factory* host_resolver_factory() {
     return host_resolver_factory_.get();
-  }
-  NetworkUsageAccumulator* network_usage_accumulator() {
-    return network_usage_accumulator_.get();
   }
   HttpAuthCacheCopier* http_auth_cache_copier() {
     return http_auth_cache_copier_.get();
@@ -303,7 +297,6 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkService
 
   std::unique_ptr<net::HostResolverManager> host_resolver_manager_;
   std::unique_ptr<net::HostResolver::Factory> host_resolver_factory_;
-  std::unique_ptr<NetworkUsageAccumulator> network_usage_accumulator_;
   std::unique_ptr<HttpAuthCacheCopier> http_auth_cache_copier_;
 
   // Members that would store the http auth network_service related params.

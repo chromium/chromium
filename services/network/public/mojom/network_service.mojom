@@ -244,9 +244,6 @@ interface NetworkService {
   GetDnsConfigChangeManager(
       pending_receiver<DnsConfigChangeManager> receiver);
 
-  // Gets the accumulated network usage since the start/restart of the service.
-  GetTotalNetworkUsages() => (array<NetworkUsage> total_network_usages);
-
   // Gets list of network interfaces.
   // The |policy| parameter is a flag that specifies whether to include/exclude
   // network interfaces. Corresponds to enum net::HostAddressSelectionPolicy.

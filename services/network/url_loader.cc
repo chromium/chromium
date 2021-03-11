@@ -47,7 +47,6 @@
 #include "net/url_request/url_request_context_getter.h"
 #include "services/network/chunked_data_pipe_upload_data_stream.h"
 #include "services/network/data_pipe_element_reader.h"
-#include "services/network/network_usage_accumulator.h"
 #include "services/network/origin_policy/origin_policy_constants.h"
 #include "services/network/origin_policy/origin_policy_manager.h"
 #include "services/network/public/cpp/constants.h"
@@ -465,7 +464,6 @@ URLLoader::URLLoader(
     bool require_network_isolation_key,
     scoped_refptr<ResourceSchedulerClient> resource_scheduler_client,
     base::WeakPtr<KeepaliveStatisticsRecorder> keepalive_statistics_recorder,
-    base::WeakPtr<NetworkUsageAccumulator> network_usage_accumulator,
     mojom::TrustedURLLoaderHeaderClient* url_loader_header_client,
     mojom::OriginPolicyManager* origin_policy_manager,
     std::unique_ptr<TrustTokenRequestHelperFactory> trust_token_helper_factory,
@@ -504,7 +502,6 @@ URLLoader::URLLoader(
       request_destination_(request.destination),
       resource_scheduler_client_(std::move(resource_scheduler_client)),
       keepalive_statistics_recorder_(std::move(keepalive_statistics_recorder)),
-      network_usage_accumulator_(std::move(network_usage_accumulator)),
       first_auth_attempt_(true),
       custom_proxy_pre_cache_headers_(request.custom_proxy_pre_cache_headers),
       custom_proxy_post_cache_headers_(request.custom_proxy_post_cache_headers),
@@ -1822,12 +1819,6 @@ void URLLoader::NotifyCompleted(int error_code) {
     upload_progress_tracker_ = nullptr;
   }
 
-  if (network_usage_accumulator_) {
-    network_usage_accumulator_->OnBytesTransferred(
-        factory_params_->process_id, render_frame_id_,
-        url_request_->GetTotalReceivedBytes(),
-        url_request_->GetTotalSentBytes());
-  }
   auto* url_loader_network_observer = GetURLLoaderNetworkServiceObserver();
   if (url_loader_network_observer &&
       (url_request_->GetTotalReceivedBytes() > 0 ||

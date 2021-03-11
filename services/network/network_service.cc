@@ -58,7 +58,6 @@
 #include "services/network/net_log_exporter.h"
 #include "services/network/net_log_proxy_sink.h"
 #include "services/network/network_context.h"
-#include "services/network/network_usage_accumulator.h"
 #include "services/network/public/cpp/crash_keys.h"
 #include "services/network/public/cpp/cross_origin_read_blocking.h"
 #include "services/network/public/cpp/features.h"
@@ -329,8 +328,6 @@ void NetworkService::Initialize(mojom::NetworkServiceParamsPtr params,
       net::NetworkChangeNotifier::GetSystemDnsConfigNotifier(), net_log_);
   host_resolver_factory_ = std::make_unique<net::HostResolver::Factory>();
 
-  network_usage_accumulator_ = std::make_unique<NetworkUsageAccumulator>();
-
   http_auth_cache_copier_ = std::make_unique<HttpAuthCacheCopier>();
 
   crl_set_distributor_ = std::make_unique<CRLSetDistributor>();
@@ -599,11 +596,6 @@ void NetworkService::GetNetworkQualityEstimatorManager(
 void NetworkService::GetDnsConfigChangeManager(
     mojo::PendingReceiver<mojom::DnsConfigChangeManager> receiver) {
   dns_config_change_manager_->AddReceiver(std::move(receiver));
-}
-
-void NetworkService::GetTotalNetworkUsages(
-    mojom::NetworkService::GetTotalNetworkUsagesCallback callback) {
-  std::move(callback).Run(network_usage_accumulator_->GetTotalNetworkUsages());
 }
 
 void NetworkService::GetNetworkList(

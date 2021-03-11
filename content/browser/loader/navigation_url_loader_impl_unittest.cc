@@ -102,9 +102,9 @@ class TestNavigationLoaderInterceptor : public NavigationLoaderInterceptor {
         0 /* keepalive_request_size */,
         false /* require_network_isolation_key */, resource_scheduler_client_,
         nullptr /* keepalive_statistics_recorder */,
-        nullptr /* network_usage_accumulator */, nullptr /* header_client */,
-        nullptr /* origin_policy_manager */, nullptr /* trust_token_helper */,
-        kEmptyOriginAccessList, mojo::NullRemote() /* cookie_observer */,
+        nullptr /* header_client */, nullptr /* origin_policy_manager */,
+        nullptr /* trust_token_helper */, kEmptyOriginAccessList,
+        mojo::NullRemote() /* cookie_observer */,
         mojo::NullRemote() /* url_loader_network_observer */,
         /*devtools_observer=*/mojo::NullRemote());
   }

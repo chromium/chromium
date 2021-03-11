@@ -83,7 +83,6 @@
 #include "services/network/network_service.h"
 #include "services/network/network_service_network_delegate.h"
 #include "services/network/network_service_proxy_delegate.h"
-#include "services/network/network_usage_accumulator.h"
 #include "services/network/p2p/socket_manager.h"
 #include "services/network/proxy_config_service_mojo.h"
 #include "services/network/proxy_lookup_request.h"
@@ -701,23 +700,9 @@ void NetworkContext::DisableQuic() {
 
 void NetworkContext::DestroyURLLoaderFactory(
     cors::CorsURLLoaderFactory* url_loader_factory) {
-  const int32_t process_id = url_loader_factory->process_id();
-
   auto it = url_loader_factories_.find(url_loader_factory);
   DCHECK(it != url_loader_factories_.end());
   url_loader_factories_.erase(it);
-
-  // Reset bytes transferred for the process if |url_loader_factory| is the
-  // last factory associated with the process.
-  if (network_service() &&
-      std::none_of(url_loader_factories_.cbegin(), url_loader_factories_.cend(),
-                   [process_id](const auto& factory) {
-                     return factory->process_id() == process_id;
-                   })) {
-    network_service()
-        ->network_usage_accumulator()
-        ->ClearBytesTransferredForProcess(process_id);
-  }
 }
 
 void NetworkContext::Remove(QuicTransport* transport) {
