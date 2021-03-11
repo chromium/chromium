@@ -238,14 +238,6 @@ class ExistingUserController : public LoginDisplay::Delegate,
   // Updates the `login_display_` attached to this controller.
   void UpdateLoginDisplay(const user_manager::UserList& users);
 
-  // Check if login screen will need to be refreshed when saml online login
-  // policy is set.
-  bool ForceOnlineFlagChanged(const user_manager::UserList& users);
-
-  // Refresh login screen.
-  void CheckSamlOfflineTimeLimitAndUpdateLoginDisplay(
-      const user_manager::UserList& users);
-
   // Sends an accessibility alert event to extension listeners.
   void SendAccessibilityAlert(const std::string& alert_text);
 
@@ -374,10 +366,6 @@ class ExistingUserController : public LoginDisplay::Delegate,
 
   // Timer for the interval to wait for the reboot after TPM error UI was shown.
   base::OneShotTimer reboot_timer_;
-
-  // Timer to update login screen when SAMLOfflineSigninTimeLimit policy forces
-  // online user authentication.
-  std::unique_ptr<base::OneShotTimer> screen_refresh_timer_;
 
   // Collection of verifiers that check validity of password sync token for SAML
   // users.

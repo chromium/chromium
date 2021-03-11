@@ -13,6 +13,7 @@
 #include "ash/public/cpp/session/user_info.h"
 #include "base/compiler_specific.h"
 #include "base/macros.h"
+#include "base/scoped_observation.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "base/values.h"
@@ -20,6 +21,7 @@
 #include "chrome/browser/ash/login/screens/base_screen.h"
 #include "chrome/browser/ash/login/signin/token_handle_util.h"
 #include "chrome/browser/ash/login/ui/login_display.h"
+#include "chrome/browser/ash/login/user_online_signin_notifier.h"
 #include "chrome/browser/ash/system/system_clock.h"
 #include "chromeos/components/proximity_auth/screenlock_bridge.h"
 #include "chromeos/dbus/cryptohome/rpc.pb.h"
@@ -43,7 +45,8 @@ class UserSelectionScreen
     : public proximity_auth::ScreenlockBridge::LockHandler,
       public BaseScreen,
       public session_manager::SessionManagerObserver,
-      public PasswordSyncTokenLoginChecker::Observer {
+      public PasswordSyncTokenLoginChecker::Observer,
+      public UserOnlineSigninNotifier::Observer {
  public:
   explicit UserSelectionScreen(DisplayedScreen display_type);
   ~UserSelectionScreen() override;
@@ -97,6 +100,9 @@ class UserSelectionScreen
 
   // PasswordSyncTokenLoginChecker::Observer
   void OnInvalidSyncToken(const AccountId& account_id) override;
+
+  // UserOnlineSigninNotifier::Observer
+  void OnOnlineSigninEnforced(const AccountId& account_id) override;
 
   // Determines if user auth status requires online sign in.
   static bool ShouldForceOnlineSignIn(const user_manager::User* user);
@@ -174,6 +180,13 @@ class UserSelectionScreen
   // Collection of verifiers that check validity of password sync token for SAML
   // users corresponding to visible pods.
   std::unique_ptr<PasswordSyncTokenCheckersCollection> sync_token_checkers_;
+
+  // Notifies on enforced online signin per user.
+  std::unique_ptr<UserOnlineSigninNotifier> online_signin_notifier_;
+
+  base::ScopedObservation<UserOnlineSigninNotifier,
+                          UserOnlineSigninNotifier::Observer>
+      scoped_observation_{this};
 
   base::WeakPtrFactory<UserSelectionScreen> weak_factory_{this};
 
