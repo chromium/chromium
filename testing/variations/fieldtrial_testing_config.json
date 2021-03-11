@@ -1,19 +1,4 @@
 {
-    "AVFoundationCaptureV2": [
-        {
-            "platforms": [
-                "mac"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "AVFoundationCaptureV2"
-                    ]
-                }
-            ]
-        }
-    ],
     "AbusiveOriginNotificationPermissionRevocation": [
         {
             "platforms": [
