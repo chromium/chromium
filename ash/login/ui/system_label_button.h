@@ -34,6 +34,9 @@ class ASH_EXPORT SystemLabelButton : public views::LabelButton {
   // ALERT_WITH_ICON once it has been set (no UX interest to do so right now).
   void SetDisplayType(DisplayType display_type);
 
+  // views::View:
+  void OnThemeChanged() override;
+
  private:
   // Mode could be either default or alert. This methods set the background and
   // font accordingly.

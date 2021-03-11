@@ -34,13 +34,13 @@ class ArrowButtonView : public LoginButton {
   void PaintButtonContents(gfx::Canvas* canvas) override;
   void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
 
-  // Set background color of the button.
-  void SetBackgroundColor(SkColor color);
-
   // Allows to control the loading animation (disabled by default). The
   // animation is an arc that gradually increases from a point to a full circle;
   // the animation is looped.
   void EnableLoadingAnimation(bool enabled);
+
+  // views::View:
+  void OnThemeChanged() override;
 
  private:
   // Helper class that translates events from the loading animation events into
@@ -60,7 +60,6 @@ class ArrowButtonView : public LoginButton {
     ArrowButtonView* const owner_;
   };
 
-  SkColor background_color_;
   LoadingAnimationDelegate loading_animation_delegate_{this};
   std::unique_ptr<gfx::MultiAnimation> loading_animation_;
 };

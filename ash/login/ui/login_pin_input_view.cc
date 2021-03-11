@@ -194,21 +194,32 @@ void LoginPinInputView::UpdateLength(const size_t pin_length) {
   if (pin_length == 0 || pin_length == length_)
     return;
 
+  length_ = pin_length;
+  UpdateView();
+}
+
+void LoginPinInputView::UpdatePalette(const LoginPalette& palette) {
+  palette_ = palette;
+  UpdateView();
+}
+
+void LoginPinInputView::UpdateView() {
+  bool was_visible = GetVisible();
+
   // Hide the view before deleting.
   SetVisible(false);
 
-  length_ = pin_length;
   RemoveChildView(code_input_);
   delete code_input_;
   code_input_ = AddChildView(std::make_unique<LoginPinInput>(
-      pin_length, palette_,
+      length_, palette_,
       base::BindRepeating(&LoginPinInputView::SubmitPin,
                           base::Unretained(this)),
       base::BindRepeating(&LoginPinInputView::OnChanged,
                           base::Unretained(this))));
   is_read_only_ = false;
   Layout();
-  SetVisible(true);
+  SetVisible(was_visible);
 }
 
 void LoginPinInputView::SetAuthenticateWithEmptyPinOnReturnKey(bool enabled) {

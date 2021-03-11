@@ -222,16 +222,14 @@ class LoginPasswordView::LoginTextfield : public views::Textfield {
                  base::RepeatingClosure on_blur_closure)
       : on_focus_closure_(std::move(on_focus_closure)),
         on_blur_closure_(std::move(on_blur_closure)) {
-    SetTextColor(palette.password_text_color);
     SetTextInputType(ui::TEXT_INPUT_TYPE_PASSWORD);
     UpdateFontListAndCursor();
     set_placeholder_font_list(font_list_visible_);
-    set_placeholder_text_color(palette.password_placeholder_text_color);
     SetObscuredGlyphSpacing(kPasswordGlyphSpacing);
     SetBorder(nullptr);
-    SetBackgroundColor(palette.password_background_color);
     SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_CENTER);
     set_placeholder_text_draw_flags(gfx::Canvas::TEXT_ALIGN_CENTER);
+    UpdatePalette(palette);
   }
   LoginTextfield(const LoginTextfield&) = delete;
   LoginTextfield& operator=(const LoginTextfield&) = delete;
@@ -278,6 +276,13 @@ class LoginPasswordView::LoginTextfield : public views::Textfield {
   // case, the login text field needs to define its size.
   gfx::Size CalculatePreferredSize() const override {
     return gfx::Size(kPasswordTotalWidthDp, kIconSizeDp);
+  }
+
+  void UpdatePalette(const LoginPalette& palette) {
+    SetTextColor(palette.password_text_color);
+    SetBackgroundColor(palette.password_background_color);
+    set_placeholder_text_color(AshColorProvider::Get()->GetContentLayerColor(
+        AshColorProvider::ContentLayerType::kTextColorSecondary));
   }
 
  private:
@@ -448,19 +453,7 @@ class LoginPasswordView::DisplayPasswordButton
   DisplayPasswordButton(const LoginPalette& palette,
                         views::Button::PressedCallback callback)
       : ToggleImageButton(std::move(callback)) {
-    const gfx::ImageSkia invisible_icon =
-        gfx::CreateVectorIcon(kLockScreenPasswordInvisibleIcon, kIconSizeDp,
-                              palette.button_enabled_color);
-    const gfx::ImageSkia visible_icon =
-        gfx::CreateVectorIcon(kLockScreenPasswordVisibleIcon, kIconSizeDp,
-                              palette.button_enabled_color);
-    const gfx::ImageSkia visible_icon_disabled = gfx::CreateVectorIcon(
-        kLockScreenPasswordVisibleIcon, kIconSizeDp,
-        AshColorProvider::GetDisabledColor(palette.button_enabled_color));
-    SetImage(views::Button::STATE_NORMAL, visible_icon);
-    SetImage(views::Button::STATE_DISABLED, visible_icon_disabled);
-    SetToggledImage(views::Button::STATE_NORMAL, &invisible_icon);
-
+    UpdateIcons(palette);
     SetTooltipText(l10n_util::GetStringUTF16(
         IDS_ASH_LOGIN_DISPLAY_PASSWORD_BUTTON_ACCESSIBLE_NAME_SHOW));
     SetToggledTooltipText(l10n_util::GetStringUTF16(
@@ -480,6 +473,20 @@ class LoginPasswordView::DisplayPasswordButton
   void InvertToggled() {
     toggled_ = !toggled_;
     SetToggled(toggled_);
+  }
+
+  void UpdateIcons(const LoginPalette& palette) {
+    auto color = palette.button_enabled_color;
+    const gfx::ImageSkia invisible_icon = gfx::CreateVectorIcon(
+        kLockScreenPasswordInvisibleIcon, kIconSizeDp, color);
+    const gfx::ImageSkia visible_icon = gfx::CreateVectorIcon(
+        kLockScreenPasswordVisibleIcon, kIconSizeDp, color);
+    const gfx::ImageSkia visible_icon_disabled =
+        gfx::CreateVectorIcon(kLockScreenPasswordVisibleIcon, kIconSizeDp,
+                              AshColorProvider::GetDisabledColor(color));
+    SetImage(views::Button::STATE_NORMAL, visible_icon);
+    SetImage(views::Button::STATE_DISABLED, visible_icon_disabled);
+    SetToggledImage(views::Button::STATE_NORMAL, &invisible_icon);
   }
 
  private:
@@ -645,10 +652,6 @@ LoginPasswordView::LoginPasswordView(const LoginPalette& palette)
       base::BindRepeating(&LoginPasswordView::SubmitPassword,
                           base::Unretained(this)),
       kSubmitButtonContentSizeDp));
-  const AshColorProvider* color_provider = AshColorProvider::Get();
-  SkColor color = color_provider->GetControlsLayerColor(
-      AshColorProvider::ControlsLayerType::kControlBackgroundColorInactive);
-  submit_button_->SetBackgroundColor(color);
   submit_button_->SetTooltipText(
       l10n_util::GetStringUTF16(IDS_ASH_LOGIN_SUBMIT_BUTTON_ACCESSIBLE_NAME));
   submit_button_->SetAccessibleName(
@@ -925,8 +928,15 @@ void LoginPasswordView::SubmitPassword() {
   on_submit_.Run(textfield_->GetText());
 }
 
+void LoginPasswordView::UpdatePalette(const LoginPalette& palette) {
+  palette_ = palette;
+  SetCapsLockHighlighted(is_capslock_higlight_);
+  textfield_->UpdatePalette(palette);
+  display_password_button_->UpdateIcons(palette);
+}
+
 void LoginPasswordView::SetCapsLockHighlighted(bool highlight) {
-  is_capslock_higlight_for_testing_ = highlight;
+  is_capslock_higlight_ = highlight;
   SkColor color = palette_.button_enabled_color;
   if (!highlight)
     color = AshColorProvider::GetDisabledColor(color);

@@ -47,10 +47,6 @@ using media_session::mojom::MediaSessionAction;
 
 namespace {
 
-constexpr SkColor kProgressBarForeground = gfx::kGoogleBlue300;
-constexpr SkColor kProgressBarBackground =
-    SkColorSetA(gfx::kGoogleBlue300, 0x4C);  // 30%
-
 // Maximum number of actions that should be displayed on |button_row_|.
 constexpr size_t kMaxActions = 5;
 
@@ -182,10 +178,7 @@ class MediaActionButton : public views::ImageButton {
                  const base::string16& accessible_name) {
     set_tag(static_cast<int>(action));
     SetTooltipText(accessible_name);
-    views::SetImageFromVectorIcon(
-        this, GetVectorIconForMediaAction(action), icon_size_,
-        AshColorProvider::Get()->GetContentLayerColor(
-            AshColorProvider::ContentLayerType::kIconColorPrimary));
+    UpdateIcon();
   }
 
   std::unique_ptr<views::InkDropHighlight> CreateInkDropHighlight()
@@ -194,7 +187,22 @@ class MediaActionButton : public views::ImageButton {
                                                      GetInkDropBaseColor());
   }
 
+  // views::View:
+  void OnThemeChanged() override {
+    views::View::OnThemeChanged();
+    UpdateIcon();
+  }
+
  private:
+  void UpdateIcon() {
+    views::SetImageFromVectorIcon(
+        this,
+        GetVectorIconForMediaAction(static_cast<MediaSessionAction>(tag())),
+        icon_size_,
+        AshColorProvider::Get()->GetContentLayerColor(
+            AshColorProvider::ContentLayerType::kIconColorPrimary));
+  }
+
   int const icon_size_;
 
   DISALLOW_COPY_AND_ASSIGN(MediaActionButton);
@@ -243,10 +251,6 @@ LockScreenMediaControlsView::LockScreenMediaControlsView(
   contents_view_ = AddChildView(std::make_unique<views::View>());
   contents_view_->SetLayoutManager(std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kVertical, kMediaControlsInsets));
-  contents_view_->SetBackground(views::CreateRoundedRectBackground(
-      AshColorProvider::Get()->GetBaseLayerColor(
-          AshColorProvider::BaseLayerType::kTransparent80),
-      kMediaControlsCornerRadius));
 
   contents_view_->SetPaintToLayer();  // Needed for opacity animation.
   contents_view_->layer()->SetFillsBoundsOpaquely(false);
@@ -289,8 +293,6 @@ LockScreenMediaControlsView::LockScreenMediaControlsView(
   auto title_label = std::make_unique<views::Label>();
   title_label->SetFontList(base_font_list.Derive(
       2, gfx::Font::FontStyle::NORMAL, gfx::Font::Weight::BOLD));
-  title_label->SetEnabledColor(AshColorProvider::Get()->GetContentLayerColor(
-      AshColorProvider::ContentLayerType::kTextColorPrimary));
   title_label->SetAutoColorReadabilityEnabled(false);
   title_label->SetElideBehavior(gfx::ELIDE_TAIL);
   title_label->SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_LEFT);
@@ -299,8 +301,6 @@ LockScreenMediaControlsView::LockScreenMediaControlsView(
   auto artist_label = std::make_unique<views::Label>();
   artist_label->SetFontList(base_font_list.Derive(
       0, gfx::Font::FontStyle::NORMAL, gfx::Font::Weight::LIGHT));
-  artist_label->SetEnabledColor(AshColorProvider::Get()->GetContentLayerColor(
-      AshColorProvider::ContentLayerType::kTextColorSecondary));
   artist_label->SetAutoColorReadabilityEnabled(false);
   artist_label->SetElideBehavior(gfx::ELIDE_TAIL);
   artist_label->SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_LEFT);
@@ -314,9 +314,9 @@ LockScreenMediaControlsView::LockScreenMediaControlsView(
       std::make_unique<media_message_center::MediaControlsProgressView>(
           base::BindRepeating(&LockScreenMediaControlsView::SeekTo,
                               base::Unretained(this)));
-  progress_view->SetForegroundColor(kProgressBarForeground);
-  progress_view->SetBackgroundColor(kProgressBarBackground);
   progress_ = contents_view_->AddChildView(std::move(progress_view));
+
+  UpdateColors();
 
   // |button_row_| contains the buttons for controlling playback.
   auto button_row = std::make_unique<NonAccessibleView>();
@@ -486,6 +486,11 @@ void LockScreenMediaControlsView::OnMouseExited(const ui::MouseEvent& event) {
     return;
 
   header_row_->SetCloseButtonVisibility(false);
+}
+
+void LockScreenMediaControlsView::OnThemeChanged() {
+  views::View::OnThemeChanged();
+  UpdateColors();
 }
 
 void LockScreenMediaControlsView::MediaSessionInfoChanged(
@@ -877,6 +882,26 @@ void LockScreenMediaControlsView::RunResetControlsAnimation() {
 
   contents_view_->layer()->SetTransform(gfx::Transform());
   contents_view_->layer()->SetOpacity(1);
+}
+
+void LockScreenMediaControlsView::UpdateColors() {
+  const auto* color_provider = AshColorProvider::Get();
+
+  contents_view_->SetBackground(views::CreateRoundedRectBackground(
+      color_provider->GetBaseLayerColor(
+          AshColorProvider::BaseLayerType::kTransparent80),
+      kMediaControlsCornerRadius));
+
+  title_label_->SetEnabledColor(color_provider->GetContentLayerColor(
+      AshColorProvider::ContentLayerType::kTextColorPrimary));
+
+  artist_label_->SetEnabledColor(color_provider->GetContentLayerColor(
+      AshColorProvider::ContentLayerType::kTextColorSecondary));
+
+  progress_->SetForegroundColor(color_provider->GetContentLayerColor(
+      AshColorProvider::ContentLayerType::kProgressBarColorForeground));
+  progress_->SetBackgroundColor(color_provider->GetContentLayerColor(
+      AshColorProvider::ContentLayerType::kProgressBarColorBackground));
 }
 
 BEGIN_METADATA(LockScreenMediaControlsView, views::View)

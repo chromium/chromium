@@ -142,10 +142,10 @@ void LoginBaseBubbleView::EnsureLayer() {
   SetPaintToLayer();
   SkColor background_color = AshColorProvider::Get()->GetBaseLayerColor(
       AshColorProvider::BaseLayerType::kTransparent80);
-  layer()->SetBackgroundBlur(
-      static_cast<float>(AshColorProvider::LayerBlurSigma::kBlurDefault));
   SetBackground(views::CreateRoundedRectBackground(background_color,
                                                    kBubbleBorderRadius));
+  layer()->SetBackgroundBlur(
+      static_cast<float>(AshColorProvider::LayerBlurSigma::kBlurDefault));
   layer()->SetFillsBoundsOpaquely(false);
 }
 
@@ -274,6 +274,14 @@ void LoginBaseBubbleView::Layout() {
 
 void LoginBaseBubbleView::OnBlur() {
   Hide();
+}
+
+void LoginBaseBubbleView::OnThemeChanged() {
+  views::View::OnThemeChanged();
+  SkColor background_color = AshColorProvider::Get()->GetBaseLayerColor(
+      AshColorProvider::BaseLayerType::kTransparent80);
+  SetBackground(views::CreateRoundedRectBackground(background_color,
+                                                   kBubbleBorderRadius));
 }
 
 void LoginBaseBubbleView::SetPadding(int horizontal_padding,

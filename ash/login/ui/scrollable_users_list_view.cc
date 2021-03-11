@@ -102,6 +102,7 @@ class ScrollBarThumb : public views::BaseScrollBarThumb {
   gfx::Size CalculatePreferredSize() const override {
     return gfx::Size(kScrollThumbThicknessDp, kScrollThumbThicknessDp);
   }
+
   void OnPaint(gfx::Canvas* canvas) override {
     cc::PaintFlags fill_flags;
     fill_flags.setStyle(cc::PaintFlags::kFill_Style);
@@ -428,6 +429,11 @@ void ScrollableUsersListView::OnPaintBackground(gfx::Canvas* canvas) {
         render_bounds, login_constants::kNonBlurredWallpaperBackgroundRadiusDp,
         flags);
   }
+}
+
+void ScrollableUsersListView::OnThemeChanged() {
+  views::View::OnThemeChanged();
+  gradient_params_ = GradientParams::BuildForStyle(display_style_);
 }
 
 // When the active user is updated, the wallpaper changes. The gradient color

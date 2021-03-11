@@ -58,6 +58,7 @@ class ASH_EXPORT LoginUserMenuView : public LoginBaseBubbleView,
   bool HasFocus() const override;
   const char* GetClassName() const override;
   void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
+  void OnThemeChanged() override;
   views::FocusTraversable* GetPaneFocusTraversable() override;
 
   // views::FocusTraversable:

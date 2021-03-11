@@ -79,11 +79,14 @@ class ASH_EXPORT LoginUserView : public views::View,
 
   const LoginUserInfo& current_user() const { return current_user_; }
 
+  void UpdateDropdownIcon();
+
   // views::View:
   const char* GetClassName() const override;
   gfx::Size CalculatePreferredSize() const override;
   void Layout() override;
   void RequestFocus() override;
+  void OnThemeChanged() override;
 
  private:
   class UserImage;

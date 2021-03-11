@@ -492,6 +492,7 @@ WallpaperControllerImpl::WallpaperControllerImpl(PrefService* local_state)
       std::vector<SkColor>(color_profiles_.size(), kInvalidWallpaperColor);
   Shell::Get()->window_tree_host_manager()->AddObserver(this);
   Shell::Get()->AddShellObserver(this);
+  theme_observation_.Observe(ui::NativeTheme::GetInstanceForNativeUi());
 }
 
 WallpaperControllerImpl::~WallpaperControllerImpl() {
@@ -1445,6 +1446,11 @@ void WallpaperControllerImpl::OnTabletModeStarted() {
 }
 
 void WallpaperControllerImpl::OnTabletModeEnded() {
+  RepaintWallpaper();
+}
+
+void WallpaperControllerImpl::OnNativeThemeUpdated(
+    ui::NativeTheme* observed_theme) {
   RepaintWallpaper();
 }
 

@@ -248,7 +248,11 @@ SkColor AshColorProvider::GetContentLayerColor(ContentLayerType type) const {
     case ContentLayerType::kSliderColorActive:
     case ContentLayerType::kRadioColorActive:
     case ContentLayerType::kSwitchKnobColorActive:
+    case ContentLayerType::kProgressBarColorForeground:
       return is_dark_mode ? gfx::kGoogleBlue300 : gfx::kGoogleBlue600;
+    case ContentLayerType::kProgressBarColorBackground:
+      return SkColorSetA(
+          is_dark_mode ? gfx::kGoogleBlue300 : gfx::kGoogleBlue600, 0x4C);
     case ContentLayerType::kSwitchTrackColorActive:
       return GetSecondToneColor(
           GetContentLayerColor(ContentLayerType::kSwitchKnobColorActive));

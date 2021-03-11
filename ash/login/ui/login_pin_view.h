@@ -111,8 +111,11 @@ class ASH_EXPORT LoginPinView : public NonAccessibleView {
   // Called when the password field text changed.
   void OnPasswordTextChanged(bool is_empty);
 
+  void UpdatePalette(const LoginPalette& palette);
+
  private:
   class BackspacePinButton;
+  class DigitPinButton;
   class SubmitPinButton;
 
   // Builds and returns a new view which contains a row of the PIN keyboard.
@@ -124,7 +127,8 @@ class ASH_EXPORT LoginPinView : public NonAccessibleView {
   // The submit button does not exist when no |on_submit| callback is passed.
   SubmitPinButton* submit_button_ = nullptr;
 
-  std::vector<NonAccessibleView*> rows;
+  std::vector<NonAccessibleView*> rows_;
+  std::vector<DigitPinButton*> digit_buttons_;
 
   DISALLOW_COPY_AND_ASSIGN(LoginPinView);
 };

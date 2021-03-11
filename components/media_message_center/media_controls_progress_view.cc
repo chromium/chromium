@@ -57,6 +57,11 @@ MediaControlsProgressView::MediaControlsProgressView(
       .SetCrossAxisAlignment(views::LayoutAlignment::kCenter)
       .SetCollapseMargins(true);
 
+  // TODO(1157582): |progress_time_| and |duration_| should use
+  // AshColorProvider. There is no reason to keep this code in components/
+  // so it can be moved to ash/login/ui, which would allow the usage of Ash
+  // colors.
+
   auto progress_time = std::make_unique<views::Label>();
   progress_time->SetFontList(font_list);
   progress_time->SetEnabledColor(kTimeColor);
@@ -73,7 +78,7 @@ MediaControlsProgressView::MediaControlsProgressView(
 
   auto duration = std::make_unique<views::Label>();
   duration->SetFontList(font_list);
-  duration->SetEnabledColor(SK_ColorWHITE);
+  duration->SetEnabledColor(kTimeColor);
   duration->SetAutoColorReadabilityEnabled(false);
   duration_ = time_view->AddChildView(std::move(duration));
 

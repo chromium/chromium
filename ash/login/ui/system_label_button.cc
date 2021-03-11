@@ -56,19 +56,8 @@ SystemLabelButton::SystemLabelButton(PressedCallback callback,
   SetMinSize(gfx::Size(0, kSystemButtonHeight));
   SetPaintToLayer();
   layer()->SetFillsBoundsOpaquely(false);
-  if (display_type == DisplayType::ALERT_WITH_ICON) {
-    SetImage(
-        views::Button::STATE_NORMAL,
-        CreateVectorIcon(
-            kLockScreenAlertIcon,
-            AshColorProvider::Get()->GetContentLayerColor(
-                AshColorProvider::ContentLayerType::kButtonIconColorPrimary)));
-  }
   SetTextSubpixelRenderingEnabled(false);
   SetInkDropMode(InkDropMode::ON);
-  bool is_alert = display_type == DisplayType::ALERT_WITH_ICON ||
-                  display_type == DisplayType::ALERT_NO_ICON;
-  SetAlertMode(is_alert);
 
   SetFocusBehavior(FocusBehavior::ALWAYS);
   SetInstallFocusRingOnFocus(true);
@@ -98,6 +87,21 @@ void SystemLabelButton::SetDisplayType(DisplayType display_type) {
   display_type_ = display_type;
   bool alert_mode = display_type == DisplayType::ALERT_NO_ICON;
   SetAlertMode(alert_mode);
+}
+
+void SystemLabelButton::OnThemeChanged() {
+  views::View::OnThemeChanged();
+  if (display_type_ == DisplayType::ALERT_WITH_ICON) {
+    SetImage(
+        views::Button::STATE_NORMAL,
+        CreateVectorIcon(
+            kLockScreenAlertIcon,
+            AshColorProvider::Get()->GetContentLayerColor(
+                AshColorProvider::ContentLayerType::kButtonIconColorPrimary)));
+  }
+  bool is_alert = display_type_ == DisplayType::ALERT_WITH_ICON ||
+                  display_type_ == DisplayType::ALERT_NO_ICON;
+  SetAlertMode(is_alert);
 }
 
 void SystemLabelButton::SetAlertMode(bool alert_mode) {

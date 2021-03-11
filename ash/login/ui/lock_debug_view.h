@@ -36,6 +36,7 @@ class LockDebugView : public views::View {
 
   // views::View:
   void Layout() override;
+  void OnThemeChanged() override;
 
   LockContentsView* lock() { return lock_; }
 

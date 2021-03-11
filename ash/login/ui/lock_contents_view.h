@@ -154,6 +154,7 @@ class ASH_EXPORT LockContentsView
   void AboutToRequestFocusFromTabTraversal(bool reverse) override;
   void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
   bool AcceleratorPressed(const ui::Accelerator& accelerator) override;
+  void OnThemeChanged() override;
 
   // LoginDataDispatcher::Observer:
   void OnUsersChanged(const std::vector<LoginUserInfo>& users) override;
@@ -407,6 +408,12 @@ class ASH_EXPORT LockContentsView
   // factors including policy settings, channel and Alt-V accelerator.
   bool GetSystemInfoVisibility() const;
 
+  // Updates the colors of the system info view.
+  void UpdateSystemInfoColors();
+
+  // Updates the colors of the bottom status indicator.
+  void UpdateBottomStatusIndicatorColors();
+
   // Toggles the visibility of the |bottom_status_indicator_| based on its
   // content type and whether the extension UI window is opened.
   void UpdateBottomStatusIndicatorVisibility();
@@ -511,7 +518,7 @@ class ASH_EXPORT LockContentsView
   std::unique_ptr<AutoLoginUserActivityHandler>
       auto_login_user_activity_handler_;
 
-  BottomIndicatorState bottom_status_indicator_status_ =
+  BottomIndicatorState bottom_status_indicator_state_ =
       BottomIndicatorState::kNone;
 
   base::WeakPtrFactory<LockContentsView> weak_ptr_factory_{this};

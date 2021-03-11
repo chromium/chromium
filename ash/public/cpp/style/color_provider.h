@@ -120,6 +120,10 @@ class ASH_PUBLIC_EXPORT ColorProvider {
     // Color for the switch access's back button.
     kSwitchAccessInnerStrokeColor,
     kSwitchAccessOuterStrokeColor,
+
+    // Color for the media controls.
+    kProgressBarColorForeground,
+    kProgressBarColorBackground
   };
 
   // Attributes of ripple, includes the base color, opacity of inkdrop and

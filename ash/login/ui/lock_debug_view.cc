@@ -831,6 +831,11 @@ void LockDebugView::Layout() {
     child->Layout();
 }
 
+void LockDebugView::OnThemeChanged() {
+  views::View::OnThemeChanged();
+  UpdatePerUserActionContainerAndLayout();
+}
+
 void LockDebugView::AddOrRemoveUsersButtonPressed(int delta) {
   debug_data_dispatcher_->SetUserCount(
       std::max(0, debug_data_dispatcher_->GetUserCount() + delta));

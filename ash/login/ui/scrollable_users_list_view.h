@@ -66,6 +66,7 @@ class ASH_EXPORT ScrollableUsersListView : public views::ScrollView,
   // views::View:
   void Layout() override;
   void OnPaintBackground(gfx::Canvas* canvas) override;
+  void OnThemeChanged() override;
 
   // WallpaperControllerObserver:
   void OnWallpaperColorsChanged() override;

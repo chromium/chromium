@@ -115,6 +115,10 @@ class BasePinButton : public views::InkDropHostView {
 
   ~BasePinButton() override = default;
 
+  virtual void UpdatePalette(const LoginPalette& palette) {
+    palette_ = palette;
+  }
+
   // views::InkDropHostView:
   void OnPaint(gfx::Canvas* canvas) override {
     InkDropHostView::OnPaint(canvas);
@@ -190,8 +194,10 @@ class BasePinButton : public views::InkDropHostView {
   DISALLOW_COPY_AND_ASSIGN(BasePinButton);
 };
 
+}  // namespace
+
 // A PIN button that displays a digit number and corresponding letter mapping.
-class DigitPinButton : public BasePinButton {
+class LoginPinView::DigitPinButton : public BasePinButton {
  public:
   DigitPinButton(int value,
                  bool show_sub_label,
@@ -204,36 +210,44 @@ class DigitPinButton : public BasePinButton {
                       base::BindRepeating(on_key, value)) {
     SetID(GetViewIdForPinNumber(value));
     const gfx::FontList& base_font_list = views::Label::GetDefaultFontList();
-    views::Label* label = new views::Label(GetButtonLabelForNumber(value),
+    label_ = AddChildView(new views::Label(GetButtonLabelForNumber(value),
                                            views::style::CONTEXT_BUTTON,
-                                           views::style::STYLE_PRIMARY);
-    label->SetEnabledColor(palette.button_enabled_color);
-    label->SetAutoColorReadabilityEnabled(false);
-    label->SetSubpixelRenderingEnabled(false);
-    label->SetFontList(base_font_list.Derive(8 /*size_delta*/, gfx::Font::FontStyle::NORMAL,
-                                             gfx::Font::Weight::NORMAL));
-    AddChildView(label);
+                                           views::style::STYLE_PRIMARY));
+    label_->SetAutoColorReadabilityEnabled(false);
+    label_->SetSubpixelRenderingEnabled(false);
+    label_->SetFontList(base_font_list.Derive(8 /*size_delta*/,
+                                              gfx::Font::FontStyle::NORMAL,
+                                              gfx::Font::Weight::NORMAL));
 
     if (show_sub_label) {
-      views::Label* sub_label = new views::Label(
+      sub_label_ = AddChildView(new views::Label(
           GetButtonSubLabelForNumber(value), views::style::CONTEXT_BUTTON,
-          views::style::STYLE_SECONDARY);
-      sub_label->SetEnabledColor(palette.button_annotation_color);
-      sub_label->SetAutoColorReadabilityEnabled(false);
-      sub_label->SetSubpixelRenderingEnabled(false);
-      sub_label->SetFontList(base_font_list.Derive(-1 /*size_delta*/, gfx::Font::FontStyle::NORMAL,
-                                                   gfx::Font::Weight::NORMAL));
-      AddChildView(sub_label);
+          views::style::STYLE_SECONDARY));
+      sub_label_->SetAutoColorReadabilityEnabled(false);
+      sub_label_->SetSubpixelRenderingEnabled(false);
+      sub_label_->SetFontList(
+          base_font_list.Derive(-1 /*size_delta*/, gfx::Font::FontStyle::NORMAL,
+                                gfx::Font::Weight::NORMAL));
     }
+
+    UpdatePalette(palette);
   }
 
   ~DigitPinButton() override = default;
 
+  void UpdatePalette(const LoginPalette& palette) override {
+    BasePinButton::UpdatePalette(palette);
+    label_->SetEnabledColor(palette.button_enabled_color);
+    if (sub_label_)
+      sub_label_->SetEnabledColor(palette.button_annotation_color);
+  }
+
  private:
+  views::Label* label_ = nullptr;
+  views::Label* sub_label_ = nullptr;
+
   DISALLOW_COPY_AND_ASSIGN(DigitPinButton);
 };
-
-}  // namespace
 
 // A PIN button that displays backspace icon.
 class LoginPinView::BackspacePinButton : public BasePinButton {
@@ -247,10 +261,7 @@ class LoginPinView::BackspacePinButton : public BasePinButton {
                           IDS_ASH_PIN_KEYBOARD_DELETE_ACCESSIBLE_NAME),
                       on_press),
         palette_(palette) {
-    image_ = new views::ImageView();
-    image_->SetImage(gfx::CreateVectorIcon(kLockScreenBackspaceIcon,
-                                           palette_.button_enabled_color));
-    AddChildView(image_);
+    image_ = AddChildView(new views::ImageView());
     SetEnabled(false);
   }
 
@@ -263,14 +274,17 @@ class LoginPinView::BackspacePinButton : public BasePinButton {
   }
 
   void OnEnabledChanged() {
-    SkColor color = palette_.button_enabled_color;
     if (!GetEnabled()) {
       AnimateInkDrop(views::InkDropState::DEACTIVATED, nullptr);
-      color = AshColorProvider::GetDisabledColor(color);
       CancelRepeat();
     }
+    UpdateImage();
+  }
 
-    image_->SetImage(gfx::CreateVectorIcon(kLockScreenBackspaceIcon, color));
+  // BasePinButton:
+  void UpdatePalette(const LoginPalette& palette) override {
+    BasePinButton::UpdatePalette(palette);
+    UpdateImage();
   }
 
   // BasePinButton:
@@ -349,6 +363,13 @@ class LoginPinView::BackspacePinButton : public BasePinButton {
     SchedulePaint();
   }
 
+  void UpdateImage() {
+    SkColor color = palette_.button_enabled_color;
+    if (!GetEnabled())
+      color = AshColorProvider::GetDisabledColor(color);
+    image_->SetImage(gfx::CreateVectorIcon(kLockScreenBackspaceIcon, color));
+  }
+
   bool is_held_ = false;
   std::unique_ptr<base::OneShotTimer> delay_timer_ =
       std::make_unique<base::OneShotTimer>();
@@ -377,11 +398,8 @@ class LoginPinView::SubmitPinButton : public BasePinButton {
                       l10n_util::GetStringUTF16(
                           IDS_ASH_LOGIN_SUBMIT_BUTTON_ACCESSIBLE_NAME),
                       on_press),
-        image_(new views::ImageView()),
         palette_(palette) {
-    image_->SetImage(gfx::CreateVectorIcon(kLockScreenArrowIcon,
-                                           palette_.button_enabled_color));
-    AddChildView(image_);
+    image_ = AddChildView(std::make_unique<views::ImageView>());
     SetEnabled(false);
   }
 
@@ -389,19 +407,24 @@ class LoginPinView::SubmitPinButton : public BasePinButton {
   SubmitPinButton& operator=(const SubmitPinButton&) = delete;
   ~SubmitPinButton() override = default;
 
-  void OnEnabledChanged() {
-    SkColor color = palette_.button_enabled_color;
-    if (!GetEnabled())
-      color = AshColorProvider::GetDisabledColor(color);
-
-    image_->SetImage(gfx::CreateVectorIcon(kLockScreenArrowIcon, color));
+  // BasePinButton:
+  void UpdatePalette(const LoginPalette& palette) override {
+    BasePinButton::UpdatePalette(palette);
+    UpdateImage();
   }
 
  private:
+  void UpdateImage() {
+    SkColor color = palette_.button_enabled_color;
+    if (!GetEnabled())
+      color = AshColorProvider::GetDisabledColor(color);
+    image_->SetImage(gfx::CreateVectorIcon(kLockScreenArrowIcon, color));
+  }
+
   views::ImageView* image_ = nullptr;
   base::CallbackListSubscription enabled_changed_subscription_ =
       AddEnabledChangedCallback(
-          base::BindRepeating(&LoginPinView::SubmitPinButton::OnEnabledChanged,
+          base::BindRepeating(&LoginPinView::SubmitPinButton::UpdateImage,
                               base::Unretained(this)));
 
   LoginPalette palette_;
@@ -459,8 +482,8 @@ LoginPinView::LoginPinView(Style keyboard_style,
   bool show_letters = keyboard_style == Style::kAlphanumeric;
 
   auto add_digit_button = [&](View* row, int value) {
-    row->AddChildView(
-        new DigitPinButton(value, show_letters, palette_, kButtonSize, on_key));
+    digit_buttons_.push_back(row->AddChildView(new DigitPinButton(
+        value, show_letters, palette_, kButtonSize, on_key)));
   };
 
   // 1-2-3
@@ -499,7 +522,7 @@ LoginPinView::~LoginPinView() = default;
 void LoginPinView::NotifyAccessibilityLocationChanged() {
   this->NotifyAccessibilityEvent(ax::mojom::Event::kLocationChanged,
                                  false /*send_native_event*/);
-  for (NonAccessibleView* row : rows) {
+  for (NonAccessibleView* row : rows_) {
     row->NotifyAccessibilityEvent(ax::mojom::Event::kLocationChanged,
                                   false /*send_native_event*/);
   }
@@ -511,12 +534,22 @@ void LoginPinView::OnPasswordTextChanged(bool is_empty) {
     submit_button_->SetEnabled(!is_empty);
 }
 
+void LoginPinView::UpdatePalette(const LoginPalette& palette) {
+  palette_ = palette;
+  backspace_->UpdatePalette(palette);
+  if (submit_button_)
+    submit_button_->UpdatePalette(palette);
+  for (auto* digit_button : digit_buttons_) {
+    digit_button->UpdatePalette(palette);
+  }
+}
+
 NonAccessibleView* LoginPinView::BuildAndAddRow() {
   auto* row = new NonAccessibleView();
   row->SetLayoutManager(std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kHorizontal));
   AddChildView(row);
-  rows.push_back(row);
+  rows_.push_back(row);
   return row;
 }
 

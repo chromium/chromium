@@ -97,7 +97,7 @@ class ASH_EXPORT LoginPasswordView : public views::View,
     void set_immediately_hover_easy_unlock_icon();
 
     bool is_capslock_highlight_for_testing() {
-      return view_->is_capslock_higlight_for_testing_;
+      return view_->is_capslock_higlight_;
     }
 
    private:
@@ -188,6 +188,10 @@ class ASH_EXPORT LoginPasswordView : public views::View,
   // field.
   void SubmitPassword();
 
+  // When theme changes, palette should be updated and some subviews
+  // recalculated.
+  void UpdatePalette(const LoginPalette& palette);
+
  private:
   class EasyUnlockIcon;
   class DisplayPasswordButton;
@@ -245,7 +249,7 @@ class ASH_EXPORT LoginPasswordView : public views::View,
   EasyUnlockIcon* easy_unlock_icon_ = nullptr;
   bool should_show_easy_unlock_ = false;
 
-  bool is_capslock_higlight_for_testing_ = false;
+  bool is_capslock_higlight_ = false;
 
   DISALLOW_COPY_AND_ASSIGN(LoginPasswordView);
 };

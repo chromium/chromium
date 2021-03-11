@@ -160,19 +160,16 @@ LoginUserMenuView::LoginUserMenuView(
         views::BoxLayout::Orientation::kVertical, gfx::Insets(),
         kUserMenuVerticalMarginUsernameMailDp));
     AddChildView(container);
-    username_label_ = login_views_utils::CreateBubbleLabel(
-        display_username, nullptr,
-        AshColorProvider::Get()->GetContentLayerColor(
-            AshColorProvider::ContentLayerType::kTextColorPrimary),
-        gfx::FontList({kUserMenuFontNameUsername}, gfx::Font::FontStyle::NORMAL,
-                      kUserMenuFontSizeUsername, gfx::Font::Weight::MEDIUM),
-        kUserMenuLineHeightUsername);
-    container->AddChildView(username_label_);
-    email_label_ = login_views_utils::CreateBubbleLabel(
-        email, nullptr,
-        AshColorProvider::Get()->GetContentLayerColor(
-            AshColorProvider::ContentLayerType::kTextColorSecondary));
-    container->AddChildView(email_label_);
+    // Colors should be updated in OnThemeChanged.
+    username_label_ =
+        container->AddChildView(login_views_utils::CreateBubbleLabel(
+            display_username, nullptr, SK_ColorGREEN,
+            gfx::FontList({kUserMenuFontNameUsername},
+                          gfx::Font::FontStyle::NORMAL,
+                          kUserMenuFontSizeUsername, gfx::Font::Weight::MEDIUM),
+            kUserMenuLineHeightUsername));
+    email_label_ =
+        container->AddChildView(login_views_utils::CreateBubbleLabel(email));
   }
 
   // User is managed.
@@ -207,12 +204,11 @@ LoginUserMenuView::LoginUserMenuView(
         email);
     warning_message_ = base::StrCat({part1, base::ASCIIToUTF16(" "), part2});
 
-    remove_user_confirm_data_ = new views::View();
+    remove_user_confirm_data_ = AddChildView(std::make_unique<views::View>());
     remove_user_confirm_data_->SetLayoutManager(
         std::make_unique<views::BoxLayout>(
             views::BoxLayout::Orientation::kVertical, gfx::Insets(),
             kUserMenuVerticalMarginBetweenLabelsDp));
-    AddChildView(remove_user_confirm_data_);
     remove_user_confirm_data_->SetVisible(false);
 
     remove_user_confirm_data_->AddChildView(
@@ -289,6 +285,23 @@ void LoginUserMenuView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
   }
   node_data->role = ax::mojom::Role::kDialog;
   node_data->AddBoolAttribute(ax::mojom::BoolAttribute::kModal, true);
+}
+
+void LoginUserMenuView::OnThemeChanged() {
+  views::View::OnThemeChanged();
+  username_label_->SetEnabledColor(
+      AshColorProvider::Get()->GetContentLayerColor(
+          AshColorProvider::ContentLayerType::kTextColorPrimary));
+  email_label_->SetEnabledColor(AshColorProvider::Get()->GetContentLayerColor(
+      AshColorProvider::ContentLayerType::kTextColorSecondary));
+  if (remove_user_confirm_data_) {
+    DCHECK_EQ(2u, remove_user_confirm_data_->children().size());
+    for (views::View* label : remove_user_confirm_data_->children()) {
+      static_cast<views::Label*>(label)->SetEnabledColor(
+          AshColorProvider::Get()->GetContentLayerColor(
+              AshColorProvider::ContentLayerType::kTextColorPrimary));
+    }
+  }
 }
 
 views::FocusTraversable* LoginUserMenuView::GetPaneFocusTraversable() {

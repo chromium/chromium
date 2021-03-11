@@ -25,9 +25,12 @@
 #include "base/files/file_path.h"
 #include "base/memory/ref_counted.h"
 #include "base/observer_list.h"
+#include "base/scoped_observation.h"
 #include "base/timer/timer.h"
 #include "ui/compositor/compositor_lock.h"
 #include "ui/gfx/image/image_skia.h"
+#include "ui/native_theme/native_theme.h"
+#include "ui/native_theme/native_theme_observer.h"
 
 class PrefRegistrySimple;
 
@@ -69,7 +72,8 @@ class ASH_EXPORT WallpaperControllerImpl
       public SessionObserver,
       public TabletModeObserver,
       public OverviewObserver,
-      public ui::CompositorLockClient {
+      public ui::CompositorLockClient,
+      public ui::NativeThemeObserver {
  public:
   enum WallpaperResolution {
     WALLPAPER_RESOLUTION_LARGE,
@@ -300,6 +304,9 @@ class ASH_EXPORT WallpaperControllerImpl
   // TabletModeObserver:
   void OnTabletModeStarted() override;
   void OnTabletModeEnded() override;
+
+  // ui::NativeThemeObserver:
+  void OnNativeThemeUpdated(ui::NativeTheme* observed_theme) override;
 
   // OverviewObserver:
   void OnOverviewModeWillStart() override;
@@ -588,6 +595,9 @@ class ASH_EXPORT WallpaperControllerImpl
   scoped_refptr<base::SequencedTaskRunner> sequenced_task_runner_;
 
   ScopedSessionObserver scoped_session_observer_{this};
+
+  base::ScopedObservation<ui::NativeTheme, ui::NativeThemeObserver>
+      theme_observation_{this};
 
   std::unique_ptr<ui::CompositorLock> compositor_lock_;
 
