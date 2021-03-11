@@ -1327,7 +1327,7 @@
     },
     {
       name: "ModuleServiceWorker",
-      status: "test",
+      status: "experimental",
     },
     {
       name: "MojoJS",
