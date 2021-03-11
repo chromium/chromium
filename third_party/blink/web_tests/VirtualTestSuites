@@ -34,7 +34,6 @@
               "external/wpt/requestidlecallback",
               "external/wpt/web-animations/timing-model/animations",
               "fast/events/pointerevents/pinch",
-              "fast/scroll-snap",
               "lifecycle",
               "http/tests/devtools/tracing",
               "http/tests/worklet",
@@ -74,6 +73,7 @@
   {
     "prefix": "threaded-prefer-compositing",
     "bases": ["fast/scroll-behavior",
+              "fast/scroll-snap",
               "fast/scrolling",
               "external/wpt/css/cssom-view"],
     "args": ["--enable-threaded-compositing",
