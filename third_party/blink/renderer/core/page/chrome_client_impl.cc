@@ -893,6 +893,13 @@ void ChromeClientImpl::NotifyPresentationTime(LocalFrame& frame,
 
 void ChromeClientImpl::RequestBeginMainFrameNotExpected(LocalFrame& frame,
                                                         bool request) {
+  if (!frame.GetWidgetForLocalRoot()) {
+    // We're about to crash due to crbug.com/838348. Record metrics to trigger
+    // Chrometto. We only expect this to be recorded on Android in any
+    // significant numbers (because we CHECK in RenderFrameImpl::Delete).
+    UMA_HISTOGRAM_BOOLEAN("Navigation.RequestBeginMainFrameNotExpectedCrash",
+                          frame.IsMainFrame());
+  }
   frame.GetWidgetForLocalRoot()->RequestBeginMainFrameNotExpected(request);
 }
 

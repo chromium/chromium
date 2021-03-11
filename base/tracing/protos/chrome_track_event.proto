@@ -59,9 +59,75 @@ message ChromeMessagePumpForUI {
   optional uint32 message_id = 1;
 }
 
+// An enumeration specifying the reason of the RenderFrame deletion.
+// This is copied from content/common/frame.mojom.
+enum FrameDeleteIntention {
+  // The frame being deleted isn't a (speculative) main frame.
+  FRAME_DELETE_INTENTION_NOT_MAIN_FRAME = 0;
+
+  // The frame being deleted is a speculative main frame, and it is being
+  // deleted as part of the shutdown for that WebContents. The entire RenderView
+  // etc will be destroyed by a separate IPC sent later.
+  FRAME_DELETE_INTENTION_SPECULATIVE_MAIN_FRAME_FOR_SHUTDOWN = 1;
+
+  // The frame being deleted is a speculative main frame, and it is being
+  // deleted because the speculative navigation was cancelled. This is not part
+  // of shutdown.
+  FRAME_DELETE_INTENTION_SPECULATIVE_MAIN_FRAME_FOR_NAVIGATION_CANCELLED = 2;
+}
+
+message RenderFrameImplDeletion {
+  // The intent for the deletion.
+  optional FrameDeleteIntention intent = 1;
+
+  // Whether the frame that's about to be deleted has a pending navigation
+  // commit.
+  optional bool has_pending_commit = 2;
+
+  // Whether the frame that's about to be deleted has a pending cross-document
+  // navigation commit.
+  optional bool has_pending_cross_document_commit = 3;
+
+  // The FrameTreeNode ID of the frame that's about to be deleted.
+  optional uint64 frame_tree_node_id = 4;
+}
+
+enum ShouldSwapBrowsingInstance {
+  // No BrowsingInstance swap.
+  SHOULD_SWAP_BROWSING_INSTANCE_NO = 0;
+
+  // Forced BrowsingInstance swap.
+  SHOULD_SWAP_BROWSING_INSTANCE_YES_FORCE_SWAP = 1;
+
+  // Proactive BrowsingInstance swap for cross-site navigation.
+  SHOULD_SWAP_BROWSING_INSTANCE_YES_CROSS_SITE_PROACTIVE_SWAP = 2;
+
+  // Proactive BrowsingInstance swap for same-site navigation.
+  SHOULD_SWAP_BROWSING_INSTANCE_YES_SAME_SITE_PROACTIVE_SWAP = 3;
+}
+
+message ShouldSwapBrowsingInstancesResult {
+  // The FrameTreeNode ID.
+  optional uint64 frame_tree_node_id = 1;
+
+  // Whether a navigation will do a BrowsingInstance swap or not.
+  optional ShouldSwapBrowsingInstance result = 2;
+}
+
+message FrameTreeNodeInfo {
+  // The FrameTreeNode ID.
+  optional uint64 frame_tree_node_id = 1;
+
+  // Whether the frame is a main frame or not.
+  optional bool is_main_frame = 2;
+
+  // Whether there's a speculative RenderFrameHost or not.
+  optional bool has_speculative_render_frame_host = 3;
+}
+
 message ChromeTrackEvent {
   // Extension range for Chrome: 1000-1999
-  // Next ID: 1008
+  // Next ID: 1011
   extend TrackEvent {
     optional ChromeAppState chrome_app_state = 1000;
 
@@ -80,5 +146,12 @@ message ChromeTrackEvent {
     optional ChromeTaskGraphRunner chrome_task_graph_runner = 1006;
 
     optional ChromeMessagePumpForUI chrome_message_pump_for_ui = 1007;
+
+    optional RenderFrameImplDeletion render_frame_impl_deletion = 1008;
+
+    optional ShouldSwapBrowsingInstancesResult
+        should_swap_browsing_instances_result = 1009;
+
+    optional FrameTreeNodeInfo frame_tree_node_info = 1010;
   }
 }

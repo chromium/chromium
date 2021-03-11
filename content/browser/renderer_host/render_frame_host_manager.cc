@@ -20,6 +20,7 @@
 #include "base/memory/ptr_util.h"
 #include "base/notreached.h"
 #include "base/stl_util.h"
+#include "base/trace_event/base_tracing.h"
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
 #include "content/browser/child_process_security_policy_impl.h"
@@ -196,6 +197,46 @@ void AppendReason(std::string* reason, const char* value) {
 
   DCHECK_LT(reason->size(),
             static_cast<size_t>(base::debug::CrashKeySize::Size256));
+}
+
+void WriteFrameTreeNodeInfo(perfetto::EventContext& ctx,
+                            FrameTreeNode* frame_tree_node) {
+  auto* event = ctx.event<perfetto::protos::pbzero::ChromeTrackEvent>();
+  auto* ftn_info = event->set_frame_tree_node_info();
+  ftn_info->set_is_main_frame(frame_tree_node->IsMainFrame());
+  ftn_info->set_frame_tree_node_id(frame_tree_node->frame_tree_node_id());
+  ftn_info->set_has_speculative_render_frame_host(
+      !!frame_tree_node->render_manager()->speculative_frame_host());
+}
+
+perfetto::protos::pbzero::ShouldSwapBrowsingInstance
+ShouldSwapBrowsingInstanceToProto(ShouldSwapBrowsingInstance result) {
+  using ProtoLevel = perfetto::protos::pbzero::ShouldSwapBrowsingInstance;
+  switch (result) {
+    case ShouldSwapBrowsingInstance::kYes_ForceSwap:
+      return ProtoLevel::SHOULD_SWAP_BROWSING_INSTANCE_YES_FORCE_SWAP;
+    case ShouldSwapBrowsingInstance::kYes_CrossSiteProactiveSwap:
+      return ProtoLevel::
+          SHOULD_SWAP_BROWSING_INSTANCE_YES_CROSS_SITE_PROACTIVE_SWAP;
+    case ShouldSwapBrowsingInstance::kYes_SameSiteProactiveSwap:
+      return ProtoLevel::
+          SHOULD_SWAP_BROWSING_INSTANCE_YES_SAME_SITE_PROACTIVE_SWAP;
+    default:
+      return ProtoLevel::SHOULD_SWAP_BROWSING_INSTANCE_NO;
+  }
+}
+
+void TraceShouldSwapBrowsingInstanceResult(int frame_tree_node_id,
+                                           ShouldSwapBrowsingInstance result) {
+  TRACE_EVENT_INSTANT(
+      "navigation",
+      "RenderFrameHostManager::GetSiteInstanceForNavigation_ShouldSwapResult",
+      [&](perfetto::EventContext ctx) {
+        auto* event = ctx.event<perfetto::protos::pbzero::ChromeTrackEvent>();
+        auto* data = event->set_should_swap_browsing_instances_result();
+        data->set_frame_tree_node_id(frame_tree_node_id);
+        data->set_result(ShouldSwapBrowsingInstanceToProto(result));
+      });
 }
 
 }  // namespace
@@ -639,8 +680,11 @@ bool RenderFrameHostManager::DeleteFromPendingList(
 
 void RenderFrameHostManager::RestoreFromBackForwardCache(
     std::unique_ptr<BackForwardCacheImpl::Entry> entry) {
-  TRACE_EVENT0("navigation",
-               "RenderFrameHostManager::RestoreFromBackForwardCache");
+  TRACE_EVENT("navigation",
+              "RenderFrameHostManager::RestoreFromBackForwardCache",
+              [&](perfetto::EventContext ctx) {
+                WriteFrameTreeNodeInfo(ctx, frame_tree_node_);
+              });
   // Matched in CommitPending().
   entry->render_frame_host->GetProcess()->AddPendingView();
 
@@ -685,6 +729,11 @@ bool RenderFrameHostManager::HasPendingCommitForCrossDocumentNavigation()
 
 void RenderFrameHostManager::DidCreateNavigationRequest(
     NavigationRequest* request) {
+  TRACE_EVENT("navigation",
+              "RenderFrameHostManager::DidCreateNavigationRequest",
+              [&](perfetto::EventContext ctx) {
+                WriteFrameTreeNodeInfo(ctx, frame_tree_node_);
+              });
   const bool force_use_current_render_frame_host =
       // Since the frame from the back-forward cache is being committed to the
       // SiteInstance we already have, it is treated as current.
@@ -731,6 +780,11 @@ void RenderFrameHostManager::DidCreateNavigationRequest(
 RenderFrameHostImpl* RenderFrameHostManager::GetFrameHostForNavigation(
     NavigationRequest* request,
     std::string* reason) {
+  TRACE_EVENT("navigation", "RenderFrameHostManager::GetFrameHostForNavigation",
+              [&](perfetto::EventContext ctx) {
+                WriteFrameTreeNodeInfo(ctx, frame_tree_node_);
+              });
+
   DCHECK(!request->common_params().url.SchemeIs(url::kJavaScriptScheme))
       << "Don't call this method for JavaScript URLs as those create a "
          "temporary  NavigationRequest and we don't want to reset an ongoing "
@@ -1035,6 +1089,10 @@ void RenderFrameHostManager::MaybeCleanUpNavigation() {
 }
 
 void RenderFrameHostManager::CleanUpNavigation() {
+  TRACE_EVENT("navigation", "RenderFrameHostManager::CleanUpNavigation",
+              [&](perfetto::EventContext ctx) {
+                WriteFrameTreeNodeInfo(ctx, frame_tree_node_);
+              });
   if (speculative_render_frame_host_) {
     bool was_loading = speculative_render_frame_host_->is_loading();
     DiscardUnusedFrame(UnsetSpeculativeRenderFrameHost());
@@ -1055,6 +1113,11 @@ void RenderFrameHostManager::CleanUpNavigation() {
 
 std::unique_ptr<RenderFrameHostImpl>
 RenderFrameHostManager::UnsetSpeculativeRenderFrameHost() {
+  TRACE_EVENT("navigation",
+              "RenderFrameHostManager::UnsetSpeculativeRenderFrameHost",
+              [&](perfetto::EventContext ctx) {
+                WriteFrameTreeNodeInfo(ctx, frame_tree_node_);
+              });
   speculative_render_frame_host_->GetProcess()->RemovePendingView();
   speculative_render_frame_host_->DeleteRenderFrame(
       frame_tree_node_->parent()
@@ -1655,6 +1718,10 @@ RenderFrameHostManager::GetSiteInstanceForNavigation(
           is_failure, is_reload, is_same_document,
           cross_origin_opener_policy_mismatch, was_server_redirect,
           should_replace_current_entry, is_speculative);
+
+  TraceShouldSwapBrowsingInstanceResult(frame_tree_node_->frame_tree_node_id(),
+                                        should_swap_result);
+
   bool proactive_swap =
       (should_swap_result ==
            ShouldSwapBrowsingInstance::kYes_CrossSiteProactiveSwap ||
@@ -2480,6 +2547,12 @@ std::unique_ptr<RenderFrameHostImpl>
 RenderFrameHostManager::CreateSpeculativeRenderFrame(
     SiteInstance* instance,
     bool recovering_without_early_commit) {
+  TRACE_EVENT("navigation",
+              "RenderFrameHostManager::CreateSpeculativeRenderFrame",
+              [&](perfetto::EventContext ctx) {
+                WriteFrameTreeNodeInfo(ctx, frame_tree_node_);
+              });
+
   CHECK(instance);
   // This DCHECK is going to be fully removed as part of RenderDocument [1].
   //
@@ -3468,6 +3541,12 @@ void RenderFrameHostManager::EnsureRenderFrameHostPageFocusConsistent() {
 }
 
 void RenderFrameHostManager::CreateNewFrameForInnerDelegateAttachIfNecessary() {
+  TRACE_EVENT(
+      "navigation",
+      "RenderFrameHostManager::CreateNewFrameForInnerDelegateAttachIfNecessary",
+      [&](perfetto::EventContext ctx) {
+        WriteFrameTreeNodeInfo(ctx, frame_tree_node_);
+      });
   DCHECK(is_attaching_inner_delegate());
   // Remove all navigations and any speculative frames which might interfere
   // with the loading state.

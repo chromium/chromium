@@ -46,6 +46,7 @@
 #include "base/task_runner_util.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
+#include "base/trace_event/base_tracing.h"
 #include "base/trace_event/trace_event.h"
 #include "base/unguessable_token.h"
 #include "build/build_config.h"
@@ -1132,6 +1133,25 @@ std::string GetUniqueNameOfWebFrame(WebFrame* web_frame) {
     return RenderFrameImpl::FromWebFrame(web_frame)->unique_name();
   return RenderFrameProxy::FromWebFrame(web_frame->ToWebRemoteFrame())
       ->unique_name();
+}
+
+perfetto::protos::pbzero::FrameDeleteIntention FrameDeleteIntentionToProto(
+    mojom::FrameDeleteIntention intent) {
+  using ProtoLevel = perfetto::protos::pbzero::FrameDeleteIntention;
+  switch (intent) {
+    case mojom::FrameDeleteIntention::kNotMainFrame:
+      return ProtoLevel::FRAME_DELETE_INTENTION_NOT_MAIN_FRAME;
+    case mojom::FrameDeleteIntention::kSpeculativeMainFrameForShutdown:
+      return ProtoLevel::
+          FRAME_DELETE_INTENTION_SPECULATIVE_MAIN_FRAME_FOR_SHUTDOWN;
+    case mojom::FrameDeleteIntention::
+        kSpeculativeMainFrameForNavigationCancelled:
+      return ProtoLevel::
+          FRAME_DELETE_INTENTION_SPECULATIVE_MAIN_FRAME_FOR_NAVIGATION_CANCELLED;
+  }
+  // All cases should've been handled by the switch case above.
+  NOTREACHED();
+  return ProtoLevel::FRAME_DELETE_INTENTION_NOT_MAIN_FRAME;
 }
 
 }  // namespace
@@ -2330,6 +2350,12 @@ void RenderFrameImpl::Unload(
 }
 
 void RenderFrameImpl::Delete(mojom::FrameDeleteIntention intent) {
+  TRACE_EVENT(
+      "navigation", "RenderFrameImpl::Delete", [&](perfetto::EventContext ctx) {
+        auto* event = ctx.event<perfetto::protos::pbzero::ChromeTrackEvent>();
+        auto* data = event->set_render_frame_impl_deletion();
+        data->set_intent(FrameDeleteIntentionToProto(intent));
+      });
   // The main frame (when not provisional) is owned by the renderer's frame tree
   // via WebViewImpl. When a provisional main frame is swapped in, the ownership
   // moves from the browser to the renderer, but this happens in the renderer

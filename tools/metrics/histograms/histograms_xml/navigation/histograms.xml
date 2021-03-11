@@ -974,6 +974,17 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="Navigation.RequestBeginMainFrameNotExpectedCrash"
+    enum="BooleanPresent" expires_after="2021-08-22">
+  <owner>rakina@chromium.org</owner>
+  <owner>dcheng@chromium.org</owner>
+  <summary>
+    Logs cases where ChromeClientImpl::RequestBeginMainFrameNotExpected() is
+    about to crash, which will trigger crbug.com/838348. This is used to trigger
+    traces to be uploaded to analyze what happened in these traces.
+  </summary>
+</histogram>
+
 <histogram name="Navigation.RequiresDedicatedProcess"
     enum="NavigationRequiresDedicatedProcess" expires_after="2021-12-21">
   <owner>alexmos@chromium.org</owner>

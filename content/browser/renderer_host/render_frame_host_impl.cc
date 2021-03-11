@@ -35,6 +35,7 @@
 #include "base/task/post_task.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
+#include "base/trace_event/base_tracing.h"
 #include "base/trace_event/optional_trace_event.h"
 #include "base/trace_event/trace_conversion_helper.h"
 #include "base/trace_event/traced_value.h"
@@ -832,6 +833,37 @@ bool ValidateCSPAttribute(const std::string& value) {
     return false;
   }
   return true;
+}
+
+perfetto::protos::pbzero::FrameDeleteIntention FrameDeleteIntentionToProto(
+    mojom::FrameDeleteIntention intent) {
+  using ProtoLevel = perfetto::protos::pbzero::FrameDeleteIntention;
+  switch (intent) {
+    case mojom::FrameDeleteIntention::kNotMainFrame:
+      return ProtoLevel::FRAME_DELETE_INTENTION_NOT_MAIN_FRAME;
+    case mojom::FrameDeleteIntention::kSpeculativeMainFrameForShutdown:
+      return ProtoLevel::
+          FRAME_DELETE_INTENTION_SPECULATIVE_MAIN_FRAME_FOR_SHUTDOWN;
+    case mojom::FrameDeleteIntention::
+        kSpeculativeMainFrameForNavigationCancelled:
+      return ProtoLevel::
+          FRAME_DELETE_INTENTION_SPECULATIVE_MAIN_FRAME_FOR_NAVIGATION_CANCELLED;
+  }
+  // All cases should've been handled by the switch case above.
+  NOTREACHED();
+  return ProtoLevel::FRAME_DELETE_INTENTION_NOT_MAIN_FRAME;
+}
+
+void WriteRenderFrameImplDeletion(perfetto::EventContext& ctx,
+                                  RenderFrameHostImpl* rfh,
+                                  mojom::FrameDeleteIntention intent) {
+  auto* event = ctx.event<perfetto::protos::pbzero::ChromeTrackEvent>();
+  auto* data = event->set_render_frame_impl_deletion();
+  data->set_has_pending_commit(rfh->HasPendingCommitNavigation());
+  data->set_has_pending_cross_document_commit(
+      rfh->HasPendingCommitForCrossDocumentNavigation());
+  data->set_frame_tree_node_id(rfh->GetFrameTreeNodeId());
+  data->set_intent(FrameDeleteIntentionToProto(intent));
 }
 
 }  // namespace
@@ -2393,6 +2425,10 @@ void RenderFrameHostImpl::SetMojomFrameRemote(
 
 void RenderFrameHostImpl::DeleteRenderFrame(
     mojom::FrameDeleteIntention intent) {
+  TRACE_EVENT("navigation", "RenderFrameHostImpl::DeleteRenderFrame",
+              [&](perfetto::EventContext ctx) {
+                WriteRenderFrameImplDeletion(ctx, this, intent);
+              });
   if (IsPendingDeletion())
     return;
 
