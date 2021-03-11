@@ -134,7 +134,7 @@ class ClipboardImageModelRequest : public content::WebContentsDelegate,
   void CopySurface();
 
   // Callback called when the rendered surface is done being copied.
-  void OnCopyComplete(const SkBitmap& bitmap);
+  void OnCopyComplete(float device_scale_factor, const SkBitmap& bitmap);
 
   // Called when the running request takes too long to complete.
   void OnTimeout();

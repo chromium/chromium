@@ -91,7 +91,9 @@ class VIEWS_EXPORT ImageView : public View {
 
   void OnPaintImage(gfx::Canvas* canvas);
 
-  // Gets an ImageSkia to paint that has proper rep for |scale|.
+  // Gets an ImageSkia to paint that has proper rep for |scale|. Note that if
+  // there is no existing rep of `scale`, we will utilize the image resize
+  // operation to create one. The resize may be time consuming for a big image.
   gfx::ImageSkia GetPaintImage(float scale);
 
   // Returns true if |img| is the same as the last image we painted. This is
