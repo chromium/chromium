@@ -86,12 +86,12 @@ class COMPONENT_EXPORT(UI_BASE) Accelerator {
   bool IsRepeat() const;
 
   // Returns a string with the localized shortcut if any.
-  base::string16 GetShortcutText() const;
+  std::u16string GetShortcutText() const;
 
 #if defined(OS_APPLE)
-  base::string16 KeyCodeToMacSymbol() const;
+  std::u16string KeyCodeToMacSymbol() const;
 #endif
-  base::string16 KeyCodeToName() const;
+  std::u16string KeyCodeToName() const;
 
   void set_interrupted_by_mouse_event(bool interrupted_by_mouse_event) {
     interrupted_by_mouse_event_ = interrupted_by_mouse_event;
@@ -102,8 +102,8 @@ class COMPONENT_EXPORT(UI_BASE) Accelerator {
   }
 
  private:
-  base::string16 ApplyLongFormModifiers(base::string16 shortcut) const;
-  base::string16 ApplyShortFormModifiers(base::string16 shortcut) const;
+  std::u16string ApplyLongFormModifiers(std::u16string shortcut) const;
+  std::u16string ApplyShortFormModifiers(std::u16string shortcut) const;
 
   // The keycode (VK_...).
   KeyboardCode key_code_;

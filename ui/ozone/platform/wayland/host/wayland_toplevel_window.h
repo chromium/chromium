@@ -43,7 +43,7 @@ class WaylandToplevelWindow : public WaylandWindow,
   void Show(bool inactive) override;
   void Hide() override;
   bool IsVisible() const override;
-  void SetTitle(const base::string16& title) override;
+  void SetTitle(const std::u16string& title) override;
   void ToggleFullscreen() override;
   void Maximize() override;
   void Minimize() override;
@@ -142,7 +142,7 @@ class WaylandToplevelWindow : public WaylandWindow,
 #endif
 
   // Title of the ShellToplevel.
-  base::string16 window_title_;
+  std::u16string window_title_;
 
   // Max and min sizes of the WaylandToplevelWindow window.
   base::Optional<gfx::Size> min_size_;

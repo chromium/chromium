@@ -47,7 +47,7 @@ class VIEWS_EXPORT TooltipWin : public Tooltip {
   // Tooltip:
   int GetMaxWidth(const gfx::Point& location) const override;
   void SetText(aura::Window* window,
-               const base::string16& tooltip_text,
+               const std::u16string& tooltip_text,
                const gfx::Point& location) override;
   void Show() override;
   void Hide() override;

@@ -21,7 +21,7 @@ int X11MenuUtils::GetCurrentKeyModifiers() const {
 
 std::string X11MenuUtils::ToDBusKeySym(KeyboardCode code) const {
   return base::UTF16ToUTF8(
-      base::string16(1, ui::GetUnicodeCharacterFromXKeySym(
+      std::u16string(1, ui::GetUnicodeCharacterFromXKeySym(
                             XKeysymForWindowsKeyCode(code, false))));
 }
 

@@ -609,27 +609,27 @@ std::unique_ptr<AXTree> AXPositionTest::CreateMultilingualDocument(
   EXPECT_NE(nullptr, text_offsets);
   text_offsets->push_back(0);
 
-  base::string16 english_text;
+  std::u16string english_text;
   for (int i = 0; i < 3; ++i) {
-    base::string16 grapheme = base::WideToUTF16(kGraphemeClusters[i]);
+    std::u16string grapheme = base::WideToUTF16(kGraphemeClusters[i]);
     EXPECT_EQ(1u, grapheme.length())
         << "All English characters should be one UTF16 code unit in length.";
     text_offsets->push_back(text_offsets->back() + int{grapheme.length()});
     english_text.append(grapheme);
   }
 
-  base::string16 hindi_text;
+  std::u16string hindi_text;
   for (int i = 3; i < 5; ++i) {
-    base::string16 grapheme = base::WideToUTF16(kGraphemeClusters[i]);
+    std::u16string grapheme = base::WideToUTF16(kGraphemeClusters[i]);
     EXPECT_LE(2u, grapheme.length()) << "All Hindi characters should be two "
                                         "or more UTF16 code units in length.";
     text_offsets->push_back(text_offsets->back() + int{grapheme.length()});
     hindi_text.append(grapheme);
   }
 
-  base::string16 thai_text;
+  std::u16string thai_text;
   for (int i = 5; i < 8; ++i) {
-    base::string16 grapheme = base::WideToUTF16(kGraphemeClusters[i]);
+    std::u16string grapheme = base::WideToUTF16(kGraphemeClusters[i]);
     EXPECT_LT(0u, grapheme.length())
         << "One of the Thai characters should be one UTF16 code unit, "
            "whilst others should be two or more.";
@@ -11030,7 +11030,7 @@ TEST_F(AXPositionTest, EmptyObjectReplacedByCharacterTextNavigation) {
       ax::mojom::TextAffinity::kDownstream);
 
   // Hello <embedded> world<embedded><embedded>hey<embedded><embedded>
-  base::string16 expected_text =
+  std::u16string expected_text =
       base::StrCat({u"Hello ", AXNode::kEmbeddedCharacter, u" world",
                     AXNode::kEmbeddedCharacter, AXNode::kEmbeddedCharacter,
                     u"hey", AXNode::kEmbeddedCharacter});

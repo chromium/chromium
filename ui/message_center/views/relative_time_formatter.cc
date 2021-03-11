@@ -56,7 +56,7 @@ const RelativeTimeFormat& GetRelativeTimeFormat(TimeDelta delta) {
 }  // namespace
 
 void GetRelativeTimeStringAndNextUpdateTime(TimeDelta delta,
-                                            base::string16* relative_time,
+                                            std::u16string* relative_time,
                                             TimeDelta* next_update) {
   bool past = delta < TimeDelta();
   TimeDelta absolute = past ? -delta : delta;

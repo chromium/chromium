@@ -32,7 +32,7 @@ class VIEWS_EXPORT Tooltip {
 
   // Updates the text on the tooltip and resizes to fit.
   virtual void SetText(aura::Window* window,
-                       const base::string16& tooltip_text,
+                       const std::u16string& tooltip_text,
                        const gfx::Point& location) = 0;
 
   // Shows the tooltip at the specified location (in screen coordinates).

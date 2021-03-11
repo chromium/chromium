@@ -159,7 +159,7 @@ class VIEWS_EXPORT HWNDMessageHandler : public gfx::WindowImpl,
   void SetVisibilityChangedAnimationsEnabled(bool enabled);
 
   // Returns true if the title changed.
-  bool SetTitle(const base::string16& title);
+  bool SetTitle(const std::u16string& title);
 
   void SetCursor(HCURSOR cursor);
 

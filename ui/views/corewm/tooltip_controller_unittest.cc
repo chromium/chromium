@@ -171,14 +171,14 @@ class TooltipControllerTest : public ViewsTestBase {
 
 TEST_F(TooltipControllerTest, ViewTooltip) {
   view_->set_tooltip_text(ASCIIToUTF16("Tooltip Text"));
-  EXPECT_EQ(base::string16(), helper_->GetTooltipText());
+  EXPECT_EQ(std::u16string(), helper_->GetTooltipText());
   EXPECT_EQ(nullptr, helper_->GetTooltipWindow());
 
   generator_->MoveMouseToCenterOf(GetWindow());
 
   EXPECT_EQ(GetWindow(), GetRootWindow()->GetEventHandlerForPoint(
                              generator_->current_screen_location()));
-  base::string16 expected_tooltip = ASCIIToUTF16("Tooltip Text");
+  std::u16string expected_tooltip = ASCIIToUTF16("Tooltip Text");
   EXPECT_EQ(expected_tooltip, wm::GetTooltipText(GetWindow()));
   EXPECT_EQ(expected_tooltip, helper_->GetTooltipText());
   EXPECT_EQ(GetWindow(), helper_->GetTooltipWindow());
@@ -194,7 +194,7 @@ TEST_F(TooltipControllerTest, ViewTooltip) {
 
 TEST_F(TooltipControllerTest, HideEmptyTooltip) {
   view_->set_tooltip_text(ASCIIToUTF16("Tooltip Text"));
-  EXPECT_EQ(base::string16(), helper_->GetTooltipText());
+  EXPECT_EQ(std::u16string(), helper_->GetTooltipText());
   EXPECT_EQ(nullptr, helper_->GetTooltipWindow());
 
   generator_->MoveMouseToCenterOf(GetWindow());
@@ -208,20 +208,20 @@ TEST_F(TooltipControllerTest, HideEmptyTooltip) {
 
 TEST_F(TooltipControllerTest, DontShowTooltipOnTouch) {
   view_->set_tooltip_text(ASCIIToUTF16("Tooltip Text"));
-  EXPECT_EQ(base::string16(), helper_->GetTooltipText());
+  EXPECT_EQ(std::u16string(), helper_->GetTooltipText());
   EXPECT_EQ(nullptr, helper_->GetTooltipWindow());
 
   generator_->PressMoveAndReleaseTouchToCenterOf(GetWindow());
-  EXPECT_EQ(base::string16(), helper_->GetTooltipText());
+  EXPECT_EQ(std::u16string(), helper_->GetTooltipText());
   EXPECT_EQ(nullptr, helper_->GetTooltipWindow());
 
   generator_->MoveMouseToCenterOf(GetWindow());
-  EXPECT_EQ(base::string16(), helper_->GetTooltipText());
+  EXPECT_EQ(std::u16string(), helper_->GetTooltipText());
   EXPECT_EQ(nullptr, helper_->GetTooltipWindow());
 
   generator_->MoveMouseBy(1, 0);
   EXPECT_TRUE(helper_->IsTooltipVisible());
-  base::string16 expected_tooltip = ASCIIToUTF16("Tooltip Text");
+  std::u16string expected_tooltip = ASCIIToUTF16("Tooltip Text");
   EXPECT_EQ(expected_tooltip, wm::GetTooltipText(GetWindow()));
   EXPECT_EQ(expected_tooltip, helper_->GetTooltipText());
   EXPECT_EQ(GetWindow(), helper_->GetTooltipWindow());
@@ -230,7 +230,7 @@ TEST_F(TooltipControllerTest, DontShowTooltipOnTouch) {
 #if !BUILDFLAG(ENABLE_DESKTOP_AURA) || defined(OS_WIN)
 // crbug.com/664370.
 TEST_F(TooltipControllerTest, MaxWidth) {
-  base::string16 text = base::ASCIIToUTF16(
+  std::u16string text = base::ASCIIToUTF16(
       "Really really realy long long long long  long tooltips that exceeds max "
       "width");
   view_->set_tooltip_text(text);
@@ -247,7 +247,7 @@ TEST_F(TooltipControllerTest, MaxWidth) {
 }
 
 TEST_F(TooltipControllerTest, AccessibleNodeData) {
-  base::string16 text = base::ASCIIToUTF16("Tooltip Text");
+  std::u16string text = base::ASCIIToUTF16("Tooltip Text");
   view_->set_tooltip_text(text);
   gfx::Point center = GetWindow()->bounds().CenterPoint();
 
@@ -264,7 +264,7 @@ TEST_F(TooltipControllerTest, AccessibleNodeData) {
 
 TEST_F(TooltipControllerTest, TooltipsInMultipleViews) {
   view_->set_tooltip_text(ASCIIToUTF16("Tooltip Text"));
-  EXPECT_EQ(base::string16(), helper_->GetTooltipText());
+  EXPECT_EQ(std::u16string(), helper_->GetTooltipText());
   EXPECT_EQ(nullptr, helper_->GetTooltipWindow());
 
   PrepareSecondView();
@@ -278,7 +278,7 @@ TEST_F(TooltipControllerTest, TooltipsInMultipleViews) {
     EXPECT_TRUE(helper_->IsTooltipVisible());
     EXPECT_EQ(window, root_window->GetEventHandlerForPoint(
                           generator_->current_screen_location()));
-    base::string16 expected_tooltip = ASCIIToUTF16("Tooltip Text");
+    std::u16string expected_tooltip = ASCIIToUTF16("Tooltip Text");
     EXPECT_EQ(expected_tooltip, wm::GetTooltipText(window));
     EXPECT_EQ(expected_tooltip, helper_->GetTooltipText());
     EXPECT_EQ(window, helper_->GetTooltipWindow());
@@ -288,7 +288,7 @@ TEST_F(TooltipControllerTest, TooltipsInMultipleViews) {
     EXPECT_FALSE(helper_->IsTooltipVisible());
     EXPECT_EQ(window, root_window->GetEventHandlerForPoint(
                           generator_->current_screen_location()));
-    base::string16 expected_tooltip;  // = ""
+    std::u16string expected_tooltip;  // = ""
     EXPECT_EQ(expected_tooltip, wm::GetTooltipText(window));
     EXPECT_EQ(expected_tooltip, helper_->GetTooltipText());
     EXPECT_EQ(window, helper_->GetTooltipWindow());
@@ -297,7 +297,7 @@ TEST_F(TooltipControllerTest, TooltipsInMultipleViews) {
 
 TEST_F(TooltipControllerTest, EnableOrDisableTooltips) {
   view_->set_tooltip_text(ASCIIToUTF16("Tooltip Text"));
-  EXPECT_EQ(base::string16(), helper_->GetTooltipText());
+  EXPECT_EQ(std::u16string(), helper_->GetTooltipText());
   EXPECT_EQ(nullptr, helper_->GetTooltipWindow());
 
   generator_->MoveMouseRelativeTo(GetWindow(), view_->bounds().CenterPoint());
@@ -319,7 +319,7 @@ TEST_F(TooltipControllerTest, EnableOrDisableTooltips) {
 // Verifies tooltip isn't shown if tooltip text consists entirely of whitespace.
 TEST_F(TooltipControllerTest, DontShowEmptyTooltips) {
   view_->set_tooltip_text(ASCIIToUTF16("                     "));
-  EXPECT_EQ(base::string16(), helper_->GetTooltipText());
+  EXPECT_EQ(std::u16string(), helper_->GetTooltipText());
   EXPECT_EQ(nullptr, helper_->GetTooltipWindow());
 
   generator_->MoveMouseRelativeTo(GetWindow(), view_->bounds().CenterPoint());
@@ -328,7 +328,7 @@ TEST_F(TooltipControllerTest, DontShowEmptyTooltips) {
 
 TEST_F(TooltipControllerTest, TooltipUpdateWhenTooltipDeferTimerIsRunning) {
   view_->set_tooltip_text(ASCIIToUTF16("Tooltip Text for view 1"));
-  EXPECT_EQ(base::string16(), helper_->GetTooltipText());
+  EXPECT_EQ(std::u16string(), helper_->GetTooltipText());
   EXPECT_EQ(nullptr, helper_->GetTooltipWindow());
 
   TooltipTestView* view2 = PrepareSecondView();
@@ -348,7 +348,7 @@ TEST_F(TooltipControllerTest, TooltipUpdateWhenTooltipDeferTimerIsRunning) {
   generator_->MoveMouseRelativeTo(window, view2->bounds().CenterPoint());
   EXPECT_FALSE(helper_->IsTooltipVisible());
   EXPECT_FALSE(helper_->IsTooltipShownTimerRunning());
-  base::string16 expected_tooltip = ASCIIToUTF16("Tooltip Text for view 2");
+  std::u16string expected_tooltip = ASCIIToUTF16("Tooltip Text for view 2");
   EXPECT_EQ(expected_tooltip, wm::GetTooltipText(window));
   EXPECT_EQ(expected_tooltip, helper_->GetTooltipText());
   EXPECT_EQ(window, helper_->GetTooltipWindow());
@@ -358,7 +358,7 @@ TEST_F(TooltipControllerTest, TooltipUpdateWhenTooltipDeferTimerIsRunning) {
 
 TEST_F(TooltipControllerTest, TooltipHidesOnKeyPressAndStaysHiddenUntilChange) {
   view_->set_tooltip_text(ASCIIToUTF16("Tooltip Text for view 1"));
-  EXPECT_EQ(base::string16(), helper_->GetTooltipText());
+  EXPECT_EQ(std::u16string(), helper_->GetTooltipText());
   EXPECT_EQ(nullptr, helper_->GetTooltipWindow());
 
   TooltipTestView* view2 = PrepareSecondView();
@@ -382,7 +382,7 @@ TEST_F(TooltipControllerTest, TooltipHidesOnKeyPressAndStaysHiddenUntilChange) {
     EXPECT_FALSE(helper_->IsTooltipShownTimerRunning());
     EXPECT_EQ(window, GetRootWindow()->GetEventHandlerForPoint(
                           generator_->current_screen_location()));
-    base::string16 expected_tooltip = ASCIIToUTF16("Tooltip Text for view 1");
+    std::u16string expected_tooltip = ASCIIToUTF16("Tooltip Text for view 1");
     EXPECT_EQ(expected_tooltip, wm::GetTooltipText(window));
     EXPECT_EQ(expected_tooltip, helper_->GetTooltipText());
     EXPECT_EQ(window, helper_->GetTooltipWindow());
@@ -393,7 +393,7 @@ TEST_F(TooltipControllerTest, TooltipHidesOnKeyPressAndStaysHiddenUntilChange) {
 
   EXPECT_TRUE(helper_->IsTooltipVisible());
   EXPECT_TRUE(helper_->IsTooltipShownTimerRunning());
-  base::string16 expected_tooltip = ASCIIToUTF16("Tooltip Text for view 2");
+  std::u16string expected_tooltip = ASCIIToUTF16("Tooltip Text for view 2");
   EXPECT_EQ(expected_tooltip, wm::GetTooltipText(window));
   EXPECT_EQ(expected_tooltip, helper_->GetTooltipText());
   EXPECT_EQ(window, helper_->GetTooltipWindow());
@@ -401,7 +401,7 @@ TEST_F(TooltipControllerTest, TooltipHidesOnKeyPressAndStaysHiddenUntilChange) {
 
 TEST_F(TooltipControllerTest, TooltipHidesOnTimeoutAndStaysHiddenUntilChange) {
   view_->set_tooltip_text(ASCIIToUTF16("Tooltip Text for view 1"));
-  EXPECT_EQ(base::string16(), helper_->GetTooltipText());
+  EXPECT_EQ(std::u16string(), helper_->GetTooltipText());
   EXPECT_EQ(nullptr, helper_->GetTooltipWindow());
 
   TooltipTestView* view2 = PrepareSecondView();
@@ -426,7 +426,7 @@ TEST_F(TooltipControllerTest, TooltipHidesOnTimeoutAndStaysHiddenUntilChange) {
     EXPECT_FALSE(helper_->IsTooltipShownTimerRunning());
     EXPECT_EQ(window, GetRootWindow()->GetEventHandlerForPoint(
                           generator_->current_screen_location()));
-    base::string16 expected_tooltip = ASCIIToUTF16("Tooltip Text for view 1");
+    std::u16string expected_tooltip = ASCIIToUTF16("Tooltip Text for view 1");
     EXPECT_EQ(expected_tooltip, wm::GetTooltipText(window));
     EXPECT_EQ(expected_tooltip, helper_->GetTooltipText());
     EXPECT_EQ(window, helper_->GetTooltipWindow());
@@ -437,7 +437,7 @@ TEST_F(TooltipControllerTest, TooltipHidesOnTimeoutAndStaysHiddenUntilChange) {
 
   EXPECT_TRUE(helper_->IsTooltipVisible());
   EXPECT_TRUE(helper_->IsTooltipShownTimerRunning());
-  base::string16 expected_tooltip = ASCIIToUTF16("Tooltip Text for view 2");
+  std::u16string expected_tooltip = ASCIIToUTF16("Tooltip Text for view 2");
   EXPECT_EQ(expected_tooltip, wm::GetTooltipText(window));
   EXPECT_EQ(expected_tooltip, helper_->GetTooltipText());
   EXPECT_EQ(window, helper_->GetTooltipWindow());
@@ -447,7 +447,7 @@ TEST_F(TooltipControllerTest, TooltipHidesOnTimeoutAndStaysHiddenUntilChange) {
 TEST_F(TooltipControllerTest, HideOnExit) {
   view_->set_tooltip_text(ASCIIToUTF16("Tooltip Text"));
   generator_->MoveMouseToCenterOf(GetWindow());
-  base::string16 expected_tooltip = ASCIIToUTF16("Tooltip Text");
+  std::u16string expected_tooltip = ASCIIToUTF16("Tooltip Text");
   EXPECT_EQ(expected_tooltip, wm::GetTooltipText(GetWindow()));
   EXPECT_EQ(expected_tooltip, helper_->GetTooltipText());
   EXPECT_EQ(GetWindow(), helper_->GetTooltipWindow());
@@ -468,8 +468,8 @@ TEST_F(TooltipControllerTest, ReshowOnClickAfterEnterExit) {
   v1->SetBoundsRect(view_bounds);
   view_bounds.set_y(view_bounds.height());
   v2->SetBoundsRect(view_bounds);
-  const base::string16 v1_tt(ASCIIToUTF16("v1"));
-  const base::string16 v2_tt(ASCIIToUTF16("v2"));
+  const std::u16string v1_tt(ASCIIToUTF16("v1"));
+  const std::u16string v2_tt(ASCIIToUTF16("v2"));
   v1->set_tooltip_text(v1_tt);
   v2->set_tooltip_text(v2_tt);
 
@@ -512,9 +512,9 @@ TEST_F(TooltipControllerTest, DISABLED_CloseOnCaptureLost) {
   RunPendingMessages();
   view_->set_tooltip_text(ASCIIToUTF16("Tooltip Text"));
   generator_->MoveMouseToCenterOf(GetWindow());
-  base::string16 expected_tooltip = ASCIIToUTF16("Tooltip Text");
+  std::u16string expected_tooltip = ASCIIToUTF16("Tooltip Text");
   EXPECT_EQ(expected_tooltip, wm::GetTooltipText(GetWindow()));
-  EXPECT_EQ(base::string16(), helper_->GetTooltipText());
+  EXPECT_EQ(std::u16string(), helper_->GetTooltipText());
   EXPECT_EQ(GetWindow(), helper_->GetTooltipWindow());
 
   EXPECT_TRUE(helper_->IsTooltipVisible());
@@ -533,8 +533,8 @@ TEST_F(TooltipControllerTest, DISABLED_CloseOnCaptureLost) {
 #endif
 // Verifies the correct window is found for tooltips when there is a capture.
 TEST_F(TooltipControllerTest, MAYBE_Capture) {
-  const base::string16 tooltip_text(ASCIIToUTF16("1"));
-  const base::string16 tooltip_text2(ASCIIToUTF16("2"));
+  const std::u16string tooltip_text(ASCIIToUTF16("1"));
+  const std::u16string tooltip_text2(ASCIIToUTF16("2"));
 
   widget_->SetBounds(gfx::Rect(0, 0, 200, 200));
   view_->set_tooltip_text(tooltip_text);
@@ -582,12 +582,12 @@ class TestTooltip : public Tooltip {
   TestTooltip() = default;
   ~TestTooltip() override = default;
 
-  const base::string16& tooltip_text() const { return tooltip_text_; }
+  const std::u16string& tooltip_text() const { return tooltip_text_; }
 
   // Tooltip:
   int GetMaxWidth(const gfx::Point& location) const override { return 100; }
   void SetText(aura::Window* window,
-               const base::string16& tooltip_text,
+               const std::u16string& tooltip_text,
                const gfx::Point& location) override {
     tooltip_text_ = tooltip_text;
     location_ = location;
@@ -599,7 +599,7 @@ class TestTooltip : public Tooltip {
 
  private:
   bool is_visible_ = false;
-  base::string16 tooltip_text_;
+  std::u16string tooltip_text_;
   gfx::Point location_;
 
   DISALLOW_COPY_AND_ASSIGN(TestTooltip);
@@ -653,7 +653,7 @@ TEST_F(TooltipControllerTest2, VerifyLeadingTrailingWhitespaceStripped) {
   std::unique_ptr<aura::Window> window(
       CreateNormalWindow(100, root_window(), &test_delegate));
   window->SetBounds(gfx::Rect(0, 0, 300, 300));
-  base::string16 tooltip_text(ASCIIToUTF16(" \nx  "));
+  std::u16string tooltip_text(ASCIIToUTF16(" \nx  "));
   wm::SetTooltipText(window.get(), &tooltip_text);
   EXPECT_FALSE(helper_->IsTooltipVisible());
   generator_->MoveMouseToCenterOf(window.get());
@@ -666,7 +666,7 @@ TEST_F(TooltipControllerTest2, CloseOnCancelMode) {
   std::unique_ptr<aura::Window> window(
       CreateNormalWindow(100, root_window(), &test_delegate));
   window->SetBounds(gfx::Rect(0, 0, 300, 300));
-  base::string16 tooltip_text(ASCIIToUTF16("Tooltip Text"));
+  std::u16string tooltip_text(ASCIIToUTF16("Tooltip Text"));
   wm::SetTooltipText(window.get(), &tooltip_text);
   EXPECT_FALSE(helper_->IsTooltipVisible());
   generator_->MoveMouseToCenterOf(window.get());
@@ -769,9 +769,9 @@ TEST_F(TooltipControllerTest3, TooltipPositionChangesOnTwoViewsWithSameLabel) {
   v1->AddChildView(v1_1);
   v2->AddChildView(v2_1);
   v2->AddChildView(v2_2);
-  const base::string16 reference_string(
+  const std::u16string reference_string(
       base::ASCIIToUTF16("Identical Tooltip Text"));
-  const base::string16 alternative_string(
+  const std::u16string alternative_string(
       base::ASCIIToUTF16("Another Shrubbery"));
   v1->set_tooltip_text(reference_string);
   v2->set_tooltip_text(reference_string);

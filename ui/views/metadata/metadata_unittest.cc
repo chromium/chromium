@@ -134,7 +134,7 @@ TEST_F(MetadataTest, TestFloatMetadataPropertyAccess) {
       GetMemberMetaData(&test_obj, "FloatProperty");
 
   ASSERT_TRUE(member_data);
-  base::string16 member_value = member_data->GetValueAsString(&test_obj);
+  std::u16string member_value = member_data->GetValueAsString(&test_obj);
   CHECK_EQ(member_value, base::NumberToString16(start_value));
 }
 
@@ -155,7 +155,7 @@ TEST_F(MetadataTest, TestFloatPropertyChangedCallback) {
 
   CHECK(float_property_changed());
 
-  base::string16 member_value = member_data->GetValueAsString(&test_obj);
+  std::u16string member_value = member_data->GetValueAsString(&test_obj);
   CHECK_EQ(member_value, base::NumberToString16(start_value));
 }
 
@@ -218,7 +218,7 @@ TEST_F(MetadataTest, TestClassPropertyMetaData) {
   ClassPropertyMetaDataTestView view;
   gfx::Insets insets1(8, 8, 8, 8), insets2 = insets1;
 
-  std::map<std::string, base::string16> expected_kv = {
+  std::map<std::string, std::u16string> expected_kv = {
       {"kIntKey", base::ASCIIToUTF16("-1")},
       {"kOwnedInsetsKey1", base::ASCIIToUTF16("(not assigned)")},
       {"kOwnedInsetsKey2", base::ASCIIToUTF16("(not assigned)")},

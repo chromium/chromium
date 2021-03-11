@@ -72,7 +72,7 @@ class MessageCenterImpl : public MessageCenter,
                                  int button_index) override;
   void ClickOnNotificationButtonWithReply(const std::string& id,
                                           int button_index,
-                                          const base::string16& reply) override;
+                                          const std::u16string& reply) override;
   void ClickOnSettingsButton(const std::string& id) override;
   void DisableNotification(const std::string& id) override;
   void MarkSinglePopupAsShown(const std::string& id,
@@ -84,8 +84,8 @@ class MessageCenterImpl : public MessageCenter,
   void EnterQuietModeWithExpire(const base::TimeDelta& expires_in) override;
   void RestartPopupTimers() override;
   void PausePopupTimers() override;
-  const base::string16& GetSystemNotificationAppName() const override;
-  void SetSystemNotificationAppName(const base::string16& name) override;
+  const std::u16string& GetSystemNotificationAppName() const override;
+  void SetSystemNotificationAppName(const std::u16string& name) override;
 
   // NotificationBlocker::Observer overrides:
   void OnBlockingStateChanged(NotificationBlocker* blocker) override;
@@ -105,7 +105,7 @@ class MessageCenterImpl : public MessageCenter,
 
   void ClickOnNotificationUnlocked(const std::string& id,
                                    const base::Optional<int>& button_index,
-                                   const base::Optional<base::string16>& reply);
+                                   const base::Optional<std::u16string>& reply);
 
   const std::unique_ptr<LockScreenController> lock_screen_controller_;
 
@@ -120,7 +120,7 @@ class MessageCenterImpl : public MessageCenter,
   bool has_message_center_view_ = true;
   bool spoken_feedback_enabled_ = false;
 
-  base::string16 system_notification_app_name_;
+  std::u16string system_notification_app_name_;
 
   MessageCenterStatsCollector stats_collector_;
 

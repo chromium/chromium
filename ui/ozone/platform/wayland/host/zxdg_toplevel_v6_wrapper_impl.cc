@@ -95,7 +95,7 @@ void ZXDGToplevelV6WrapperImpl::SurfaceResize(WaylandConnection* connection,
                           wl::IdentifyDirection(*connection, hittest));
 }
 
-void ZXDGToplevelV6WrapperImpl::SetTitle(const base::string16& title) {
+void ZXDGToplevelV6WrapperImpl::SetTitle(const std::u16string& title) {
   DCHECK(zxdg_toplevel_v6_);
   zxdg_toplevel_v6_set_title(zxdg_toplevel_v6_.get(),
                              base::UTF16ToUTF8(title).c_str());

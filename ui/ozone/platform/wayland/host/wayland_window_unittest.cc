@@ -2302,7 +2302,7 @@ TEST_P(WaylandWindowTest, RemovesReattachesBackgroundOnHideShow) {
 // size constraints remain the same.
 TEST_P(WaylandWindowTest, SetsPropertiesOnShow) {
   constexpr char kAppId[] = "wayland_test";
-  const base::string16 kTitle(base::UTF8ToUTF16("WaylandWindowTest"));
+  const std::u16string kTitle(base::UTF8ToUTF16("WaylandWindowTest"));
 
   PlatformWindowInitProperties properties;
   properties.bounds = gfx::Rect(0, 0, 100, 100);

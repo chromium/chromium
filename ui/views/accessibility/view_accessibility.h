@@ -100,9 +100,9 @@ class VIEWS_EXPORT ViewAccessibility {
 
   void OverrideRole(const ax::mojom::Role role);
   void OverrideName(const std::string& name);
-  void OverrideName(const base::string16& name);
+  void OverrideName(const std::u16string& name);
   void OverrideDescription(const std::string& description);
-  void OverrideDescription(const base::string16& description);
+  void OverrideDescription(const std::u16string& description);
 
   // Sets whether this View hides all its descendants from the accessibility
   // tree that is exposed to platform APIs. This is similar, but not exactly
@@ -170,7 +170,7 @@ class VIEWS_EXPORT ViewAccessibility {
 
   // Causes the screen reader to announce |text|. If the current user is not
   // using a screen reader, has no effect.
-  virtual void AnnounceText(const base::string16& text);
+  virtual void AnnounceText(const std::u16string& text);
 
   virtual const ui::AXUniqueId& GetUniqueId() const;
 

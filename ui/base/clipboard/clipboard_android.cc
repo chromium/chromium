@@ -405,7 +405,7 @@ void ClipboardAndroid::Clear(ClipboardBuffer buffer) {
 void ClipboardAndroid::ReadAvailableTypes(
     ClipboardBuffer buffer,
     const DataTransferEndpoint* data_dst,
-    std::vector<base::string16>* types) const {
+    std::vector<std::u16string>* types) const {
   DCHECK(CalledOnValidThread());
   DCHECK_EQ(buffer, ClipboardBuffer::kCopyPaste);
   DCHECK(types);
@@ -430,14 +430,14 @@ void ClipboardAndroid::ReadAvailableTypes(
 
 // |data_dst| is not used. It's only passed to be consistent with other
 // platforms.
-std::vector<base::string16>
+std::vector<std::u16string>
 ClipboardAndroid::ReadAvailablePlatformSpecificFormatNames(
     ClipboardBuffer buffer,
     const DataTransferEndpoint* data_dst) const {
   DCHECK_EQ(buffer, ClipboardBuffer::kCopyPaste);
   std::vector<ClipboardFormatType> formats = g_map.Get().GetFormats();
 
-  std::vector<base::string16> types;
+  std::vector<std::u16string> types;
   types.reserve(formats.size());
   for (const ClipboardFormatType& format : formats)
     types.push_back(base::UTF8ToUTF16(format.GetName()));
@@ -449,7 +449,7 @@ ClipboardAndroid::ReadAvailablePlatformSpecificFormatNames(
 // platforms.
 void ClipboardAndroid::ReadText(ClipboardBuffer buffer,
                                 const DataTransferEndpoint* data_dst,
-                                base::string16* result) const {
+                                std::u16string* result) const {
   DCHECK(CalledOnValidThread());
   DCHECK_EQ(buffer, ClipboardBuffer::kCopyPaste);
   std::string utf8;
@@ -473,7 +473,7 @@ void ClipboardAndroid::ReadAsciiText(ClipboardBuffer buffer,
 // platforms.
 void ClipboardAndroid::ReadHTML(ClipboardBuffer buffer,
                                 const DataTransferEndpoint* data_dst,
-                                base::string16* markup,
+                                std::u16string* markup,
                                 std::string* src_url,
                                 uint32_t* fragment_start,
                                 uint32_t* fragment_end) const {
@@ -494,7 +494,7 @@ void ClipboardAndroid::ReadHTML(ClipboardBuffer buffer,
 // platforms.
 void ClipboardAndroid::ReadSvg(ClipboardBuffer buffer,
                                const DataTransferEndpoint* data_dst,
-                               base::string16* result) const {
+                               std::u16string* result) const {
   DCHECK(CalledOnValidThread());
   DCHECK_EQ(buffer, ClipboardBuffer::kCopyPaste);
   std::string utf8 = g_map.Get().Get(ClipboardFormatType::GetSvgType());
@@ -524,9 +524,9 @@ void ClipboardAndroid::ReadImage(ClipboardBuffer buffer,
 // |data_dst| is not used. It's only passed to be consistent with other
 // platforms.
 void ClipboardAndroid::ReadCustomData(ClipboardBuffer buffer,
-                                      const base::string16& type,
+                                      const std::u16string& type,
                                       const DataTransferEndpoint* data_dst,
-                                      base::string16* result) const {
+                                      std::u16string* result) const {
   DCHECK(CalledOnValidThread());
   NOTIMPLEMENTED();
 }
@@ -543,7 +543,7 @@ void ClipboardAndroid::ReadFilenames(ClipboardBuffer buffer,
 // |data_dst| is not used. It's only passed to be consistent with other
 // platforms.
 void ClipboardAndroid::ReadBookmark(const DataTransferEndpoint* data_dst,
-                                    base::string16* title,
+                                    std::u16string* title,
                                     std::string* url) const {
   DCHECK(CalledOnValidThread());
   NOTIMPLEMENTED();

@@ -206,7 +206,7 @@ gfx::Rect WaylandWindow::GetBounds() const {
   return bounds_px_;
 }
 
-void WaylandWindow::SetTitle(const base::string16& title) {}
+void WaylandWindow::SetTitle(const std::u16string& title) {}
 
 void WaylandWindow::SetCapture() {
   // Wayland doesn't allow explicit grabs. Instead, it sends events to "entered"

@@ -188,7 +188,7 @@ TEST_F(OSExchangeDataWinTest, StringDataWritingViaCOM) {
   OSExchangeData data2(data.provider().Clone());
   EXPECT_TRUE(data2.HasURL(FilenameToURLPolicy::CONVERT_FILENAMES));
   GURL url_from_data;
-  base::string16 title;
+  std::u16string title;
   EXPECT_TRUE(data2.GetURLAndTitle(FilenameToURLPolicy::CONVERT_FILENAMES,
                                    &url_from_data, &title));
   GURL reference_url(base::AsStringPiece16(input));
@@ -236,7 +236,7 @@ TEST_F(OSExchangeDataWinTest, RemoveData) {
   OSExchangeData data2(data.provider().Clone());
   EXPECT_TRUE(data2.HasURL(FilenameToURLPolicy::CONVERT_FILENAMES));
   GURL url_from_data;
-  base::string16 title;
+  std::u16string title;
   EXPECT_TRUE(data2.GetURLAndTitle(FilenameToURLPolicy::CONVERT_FILENAMES,
                                    &url_from_data, &title));
   EXPECT_EQ(GURL(base::AsStringPiece16(input2)).spec(), url_from_data.spec());
@@ -245,7 +245,7 @@ TEST_F(OSExchangeDataWinTest, RemoveData) {
 TEST_F(OSExchangeDataWinTest, URLDataAccessViaCOM) {
   OSExchangeData data;
   GURL url("http://www.google.com/");
-  data.SetURL(url, base::string16());
+  data.SetURL(url, std::u16string());
   Microsoft::WRL::ComPtr<IDataObject> com_data(
       OSExchangeDataProviderWin::GetIDataObject(data));
 
@@ -266,7 +266,7 @@ TEST_F(OSExchangeDataWinTest, MultipleFormatsViaCOM) {
   OSExchangeData data;
   std::string url_spec = "http://www.google.com/";
   GURL url(url_spec);
-  base::string16 text = u"O hai googlz.";
+  std::u16string text = u"O hai googlz.";
   data.SetURL(url, u"Google");
   data.SetString(text);
 
@@ -299,7 +299,7 @@ TEST_F(OSExchangeDataWinTest, MultipleFormatsViaCOM) {
 
 TEST_F(OSExchangeDataWinTest, EnumerationViaCOM) {
   OSExchangeData data;
-  data.SetURL(GURL("http://www.google.com/"), base::string16());
+  data.SetURL(GURL("http://www.google.com/"), std::u16string());
   data.SetString(u"O hai googlz.");
 
   CLIPFORMAT cfstr_file_group_descriptor =
@@ -389,7 +389,7 @@ TEST_F(OSExchangeDataWinTest, TestURLExchangeFormatsViaCOM) {
   OSExchangeData data;
   std::string url_spec = "http://www.google.com/";
   GURL url(url_spec);
-  base::string16 url_title = u"www.google.com";
+  std::u16string url_title = u"www.google.com";
   data.SetURL(url, url_title);
 
   // File contents access via COM
@@ -903,7 +903,7 @@ TEST_F(OSExchangeDataWinTest, VirtualFilesEmptyContents) {
 TEST_F(OSExchangeDataWinTest, CFHtml) {
   OSExchangeData data;
   GURL url("http://www.google.com/");
-  base::string16 html(
+  std::u16string html(
       u"<HTML>\n<BODY>\n"
       u"<b>bold.</b> <i><b>This is bold italic.</b></i>\n"
       u"</BODY>\n</HTML>");
@@ -930,7 +930,7 @@ TEST_F(OSExchangeDataWinTest, CFHtml) {
 
 TEST_F(OSExchangeDataWinTest, SetURLWithMaxPath) {
   OSExchangeData data;
-  base::string16 long_title(MAX_PATH + 1, u'a');
+  std::u16string long_title(MAX_PATH + 1, u'a');
   data.SetURL(GURL("http://google.com"), long_title);
 }
 
@@ -941,7 +941,7 @@ TEST_F(OSExchangeDataWinTest, ProvideURLForPlainTextURL) {
   OSExchangeData data2(data.provider().Clone());
   ASSERT_TRUE(data2.HasURL(FilenameToURLPolicy::CONVERT_FILENAMES));
   GURL read_url;
-  base::string16 title;
+  std::u16string title;
   EXPECT_TRUE(data2.GetURLAndTitle(FilenameToURLPolicy::CONVERT_FILENAMES,
                                    &read_url, &title));
   EXPECT_EQ(GURL("http://google.com"), read_url);

@@ -43,7 +43,7 @@ base::Optional<size_t> OffsetFromUTF8Offset(const base::StringPiece& text,
   if (offset > text.length())
     return base::nullopt;
 
-  base::string16 converted;
+  std::u16string converted;
   if (!base::UTF8ToUTF16(text.data(), offset, &converted))
     return base::nullopt;
 
@@ -136,7 +136,7 @@ bool WaylandInputMethodContext::DispatchKeyEvent(
 }
 
 void WaylandInputMethodContext::UpdatePreeditText(
-    const base::string16& preedit_text) {
+    const std::u16string& preedit_text) {
   CompositionText preedit;
   preedit.text = preedit_text;
   auto length = preedit.text.size();
@@ -177,7 +177,7 @@ void WaylandInputMethodContext::SetCursorLocation(const gfx::Rect& rect) {
 }
 
 void WaylandInputMethodContext::SetSurroundingText(
-    const base::string16& text,
+    const std::u16string& text,
     const gfx::Range& selection_range) {
   if (text_input_)
     text_input_->SetSurroundingText(text, selection_range);

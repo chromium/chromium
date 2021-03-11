@@ -90,7 +90,7 @@ class GetFallbackFontTest
     return gfx::GetFallbackFont(font, language_tag, test_case_.text, result);
   }
 
-  bool EnsuresScriptSupportCodePoints(const base::string16& text,
+  bool EnsuresScriptSupportCodePoints(const std::u16string& text,
                                       UScriptCode script,
                                       const std::string& script_name) {
     size_t i = 0;
@@ -113,7 +113,7 @@ class GetFallbackFontTest
     return true;
   }
 
-  bool DoesFontSupportCodePoints(Font font, const base::string16& text) {
+  bool DoesFontSupportCodePoints(Font font, const std::u16string& text) {
     sk_sp<SkTypeface> skia_face = font.platform_font()->GetNativeSkTypeface();
     if (!skia_face) {
       ADD_FAILURE() << "Cannot create typeface for '" << font.GetFontName()

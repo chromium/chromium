@@ -130,7 +130,7 @@ bool WaylandToplevelWindow::IsVisible() const {
   return !!shell_toplevel_ || state_ == PlatformWindowState::kMinimized;
 }
 
-void WaylandToplevelWindow::SetTitle(const base::string16& title) {
+void WaylandToplevelWindow::SetTitle(const std::u16string& title) {
   if (window_title_ == title)
     return;
 

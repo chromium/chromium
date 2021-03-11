@@ -47,7 +47,7 @@ class InfoBubbleTest : public ViewsTestBase {
 };
 
 TEST_F(InfoBubbleTest, CreateInfoBubble) {
-  base::string16 text = base::ASCIIToUTF16("test message");
+  std::u16string text = base::ASCIIToUTF16("test message");
 
   InfoBubble* info_bubble =
       new InfoBubble(anchor_widget()->GetContentsView(), text);
@@ -68,7 +68,7 @@ TEST_F(InfoBubbleTest, CreateInfoBubble) {
 // Ensure the InfoBubble is still sized if not supplied with a preferred width.
 TEST_F(InfoBubbleTest, TestPreferredWidthNull) {
   InfoBubble* info_bubble =
-      new InfoBubble(anchor_widget()->GetContentsView(), base::string16());
+      new InfoBubble(anchor_widget()->GetContentsView(), std::u16string());
 
   auto child = std::make_unique<View>();
   child->SetPreferredSize(gfx::Size(50, 50));
@@ -85,7 +85,7 @@ TEST_F(InfoBubbleTest, TestPreferredWidth) {
   constexpr int kPreferredWidthSmall = 50;
 
   InfoBubble* info_bubble =
-      new InfoBubble(anchor_widget()->GetContentsView(), base::string16());
+      new InfoBubble(anchor_widget()->GetContentsView(), std::u16string());
   info_bubble->Show();
   info_bubble->set_preferred_width(kPreferredWidthLarge);
   info_bubble->SizeToPreferredSize();
@@ -109,7 +109,7 @@ TEST_F(InfoBubbleTest, TestInfoBubbleVisibilityHiddenAnchor) {
   anchor_widget()->Hide();
 
   InfoBubble* info_bubble =
-      new InfoBubble(anchor_widget()->GetContentsView(), base::string16());
+      new InfoBubble(anchor_widget()->GetContentsView(), std::u16string());
   info_bubble->Show();
 
   EXPECT_FALSE(info_bubble->GetWidget()->IsVisible());

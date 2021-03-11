@@ -86,7 +86,7 @@ class AXPlatformNodeWinTest : public AXPlatformNodeTest {
   void TearDown() override;
 
  protected:
-  static const base::string16 kEmbeddedCharacterAsString;
+  static const std::u16string kEmbeddedCharacterAsString;
 
   AXPlatformNode* AXPlatformNodeFromNode(AXNode* node);
   template <typename T>

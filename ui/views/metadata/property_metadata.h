@@ -73,9 +73,9 @@ class ObjectPropertyReadOnlyMetaData : public MemberMetaDataBase {
       const ObjectPropertyReadOnlyMetaData&) = delete;
   ~ObjectPropertyReadOnlyMetaData() override = default;
 
-  base::string16 GetValueAsString(View* obj) const override {
+  std::u16string GetValueAsString(View* obj) const override {
     if (!kTypeIsSerializable && !kTypeIsReadOnly)
-      return base::string16();
+      return std::u16string();
     return TConverter::ToString((static_cast<TClass*>(obj)->*Get)());
   }
 
@@ -119,7 +119,7 @@ class ObjectPropertyMetaData
   ObjectPropertyMetaData& operator=(const ObjectPropertyMetaData&) = delete;
   ~ObjectPropertyMetaData() override = default;
 
-  void SetValueAsString(View* obj, const base::string16& new_value) override {
+  void SetValueAsString(View* obj, const std::u16string& new_value) override {
     if (!kTypeIsSerializable || kTypeIsReadOnly)
       return;
     if (base::Optional<TValue> result = TConverter::FromString(new_value)) {
@@ -165,7 +165,7 @@ class ClassPropertyMetaData : public MemberMetaDataBase {
   // Returns the property value as a string.
   // If the property value is an pointer of type |TKValue*| and
   // |TKValue| == |TValue|, dereferences the pointer.
-  base::string16 GetValueAsString(View* obj) const override {
+  std::u16string GetValueAsString(View* obj) const override {
     typename TypeHelper::TKValue value = obj->GetProperty(key_);
     if (std::is_pointer<typename TypeHelper::TKValue>::value && !value) {
       return base::ASCIIToUTF16("(not assigned)");
@@ -177,7 +177,7 @@ class ClassPropertyMetaData : public MemberMetaDataBase {
     }
   }
 
-  void SetValueAsString(View* obj, const base::string16& new_value) override {
+  void SetValueAsString(View* obj, const std::u16string& new_value) override {
     base::Optional<TValue> value = TConverter::FromString(new_value);
     if (value)
       obj->SetProperty(key_, *value);

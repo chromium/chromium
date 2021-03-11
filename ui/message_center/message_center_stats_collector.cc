@@ -103,7 +103,7 @@ void MessageCenterStatsCollector::OnNotificationUpdated(
 void MessageCenterStatsCollector::OnNotificationClicked(
     const std::string& notification_id,
     const base::Optional<int>& button_index,
-    const base::Optional<base::string16>& reply) {
+    const base::Optional<std::u16string>& reply) {
   auto iter = stats_.find(notification_id);
   if (iter == stats_.end())
     return;

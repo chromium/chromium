@@ -19,9 +19,9 @@ int EmptyComboboxModel::GetItemCount() const {
   return 0;
 }
 
-base::string16 EmptyComboboxModel::GetItemAt(int index) const {
+std::u16string EmptyComboboxModel::GetItemAt(int index) const {
   NOTREACHED();
-  return base::string16();
+  return std::u16string();
 }
 
 int EmptyComboboxModel::GetDefaultIndex() const {

@@ -41,12 +41,12 @@ using base::UTF16ToUTF8;
 namespace ui {
 namespace {
 
-const base::string16 kSampleText = base::UTF8ToUTF16(
+const std::u16string kSampleText = base::UTF8ToUTF16(
     "\xE3\x81\x82\xE3\x81\x84\xE3\x81\x86\xE3\x81\x88\xE3\x81\x8A");
 
 using KeyEventCallback = IMEEngineHandlerInterface::KeyEventDoneCallback;
 
-uint32_t GetOffsetInUTF16(const base::string16& utf16_string,
+uint32_t GetOffsetInUTF16(const std::u16string& utf16_string,
                           uint32_t utf8_offset) {
   DCHECK_LT(utf8_offset, utf16_string.size());
   base::i18n::UTF16CharIterator char_iterator(utf16_string);
@@ -90,7 +90,7 @@ class TestableInputMethodChromeOS : public InputMethodChromeOS {
     return details;
   }
   void CommitText(
-      const base::string16& text,
+      const std::u16string& text,
       TextInputClient::InsertTextCursorBehavior cursor_behavior) override {
     InputMethodChromeOS::CommitText(text, cursor_behavior);
     text_committed_ = text;
@@ -108,7 +108,7 @@ class TestableInputMethodChromeOS : public InputMethodChromeOS {
     return process_key_event_post_ime_call_count_;
   }
 
-  const base::string16& text_committed() const { return text_committed_; }
+  const std::u16string& text_committed() const { return text_committed_; }
 
   // Change access rights for testing.
   using InputMethodChromeOS::ExtractCompositionText;
@@ -117,7 +117,7 @@ class TestableInputMethodChromeOS : public InputMethodChromeOS {
  private:
   ProcessKeyEventPostIMEArgs process_key_event_post_ime_args_;
   int process_key_event_post_ime_call_count_;
-  base::string16 text_committed_;
+  std::u16string text_committed_;
 };
 
 class SetSurroundingTextVerifier {
@@ -208,7 +208,7 @@ class NiceMockIMEEngine : public chromeos::MockIMEEngineHandler {
   MOCK_METHOD1(FocusIn, void(const InputContext&));
   MOCK_METHOD0(FocusOut, void());
   MOCK_METHOD4(SetSurroundingText,
-               void(const base::string16&, uint32_t, uint32_t, uint32_t));
+               void(const std::u16string&, uint32_t, uint32_t, uint32_t));
 };
 
 class InputMethodChromeOSTest : public internal::InputMethodDelegate,
@@ -286,7 +286,7 @@ class InputMethodChromeOSTest : public internal::InputMethodDelegate,
     composition_text_ = CompositionText();
   }
   void InsertText(
-      const base::string16& text,
+      const std::u16string& text,
       TextInputClient::InsertTextCursorBehavior cursor_behavior) override {
     inserted_text_ = text;
   }
@@ -310,7 +310,7 @@ class InputMethodChromeOSTest : public internal::InputMethodDelegate,
     return true;
   }
   bool GetTextFromRange(const gfx::Range& range,
-                        base::string16* text) const override {
+                        std::u16string* text) const override {
     *text = surrounding_text_.substr(range.GetMin(), range.length());
     return true;
   }
@@ -366,7 +366,7 @@ class InputMethodChromeOSTest : public internal::InputMethodDelegate,
   // ui::TextInputClient functions.
   CompositionText composition_text_;
   CompositionText confirmed_text_;
-  base::string16 inserted_text_;
+  std::u16string inserted_text_;
   char16_t inserted_char_;
   unsigned int on_input_method_changed_call_count_;
   int inserted_char_flags_;
@@ -378,7 +378,7 @@ class InputMethodChromeOSTest : public internal::InputMethodDelegate,
   gfx::Rect caret_bounds_;
   gfx::Range text_range_;
   gfx::Range selection_range_;
-  base::string16 surrounding_text_;
+  std::u16string surrounding_text_;
 
   std::unique_ptr<chromeos::MockIMEEngineHandler> mock_ime_engine_handler_;
   std::unique_ptr<chromeos::MockIMECandidateWindowHandler>
@@ -593,7 +593,7 @@ TEST_F(InputMethodChromeOSTest, OnCaretBoundsChanged) {
 }
 
 TEST_F(InputMethodChromeOSTest, ExtractCompositionTextTest_NoAttribute) {
-  const base::string16 kSampleAsciiText = u"Sample Text";
+  const std::u16string kSampleAsciiText = u"Sample Text";
   const uint32_t kCursorPos = 2UL;
 
   CompositionText chromeos_composition_text;

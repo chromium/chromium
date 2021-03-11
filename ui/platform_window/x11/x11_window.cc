@@ -246,7 +246,7 @@ gfx::Rect X11Window::GetBounds() const {
   return XWindow::bounds();
 }
 
-void X11Window::SetTitle(const base::string16& title) {
+void X11Window::SetTitle(const std::u16string& title) {
   XWindow::SetTitle(title);
 }
 

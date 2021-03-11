@@ -194,11 +194,11 @@ const char* CompactTitleMessageView::GetClassName() const {
 
 CompactTitleMessageView::CompactTitleMessageView() {
   title_ = AddChildView(std::make_unique<views::Label>(
-      base::string16(), views::style::CONTEXT_DIALOG_BODY_TEXT));
+      std::u16string(), views::style::CONTEXT_DIALOG_BODY_TEXT));
   title_->SetHorizontalAlignment(gfx::ALIGN_LEFT);
 
   message_ = AddChildView(std::make_unique<views::Label>(
-      base::string16(), views::style::CONTEXT_DIALOG_BODY_TEXT,
+      std::u16string(), views::style::CONTEXT_DIALOG_BODY_TEXT,
       views::style::STYLE_SECONDARY));
   message_->SetHorizontalAlignment(gfx::ALIGN_RIGHT);
 }
@@ -232,11 +232,11 @@ void CompactTitleMessageView::Layout() {
   message_->SetBounds(width() - message_width, 0, message_width, height());
 }
 
-void CompactTitleMessageView::set_title(const base::string16& title) {
+void CompactTitleMessageView::set_title(const std::u16string& title) {
   title_->SetText(title);
 }
 
-void CompactTitleMessageView::set_message(const base::string16& message) {
+void CompactTitleMessageView::set_message(const std::u16string& message) {
   message_->SetText(message);
 }
 
@@ -306,8 +306,8 @@ gfx::Size LargeImageView::GetResizedImageSize() {
 
 NotificationMdTextButton::NotificationMdTextButton(
     PressedCallback callback,
-    const base::string16& label,
-    const base::Optional<base::string16>& placeholder)
+    const std::u16string& label,
+    const base::Optional<std::u16string>& placeholder)
     : views::MdTextButton(std::move(callback), label),
       placeholder_(placeholder) {
   SetMinSize(kActionButtonMinSize);
@@ -439,7 +439,7 @@ bool NotificationInputContainerMD::HandleKeyEvent(views::Textfield* sender,
       event.key_code() == ui::VKEY_RETURN) {
     delegate_->OnNotificationInputSubmit(
         textfield_->GetProperty(kTextfieldIndexKey), textfield_->GetText());
-    textfield_->SetText(base::string16());
+    textfield_->SetText(std::u16string());
     return true;
   }
   return event.type() == ui::ET_KEY_RELEASED;
@@ -465,7 +465,7 @@ void NotificationInputContainerMD::SetButtonImage() {
 
 class InlineSettingsRadioButton : public views::RadioButton {
  public:
-  explicit InlineSettingsRadioButton(const base::string16& label_text)
+  explicit InlineSettingsRadioButton(const std::u16string& label_text)
       : views::RadioButton(label_text, 1 /* group */) {
     label()->SetTextContext(views::style::CONTEXT_DIALOG_BODY_TEXT);
     label()->SetSubpixelRenderingEnabled(false);
@@ -795,7 +795,7 @@ void NotificationViewMD::UpdateControlButtonsVisibilityWithNotification(
 }
 
 void NotificationViewMD::OnNotificationInputSubmit(size_t index,
-                                                   const base::string16& text) {
+                                                   const std::u16string& text) {
   MessageCenter::Get()->ClickOnNotificationButtonWithReply(notification_id(),
                                                            index, text);
 }
@@ -805,9 +805,9 @@ void NotificationViewMD::CreateOrUpdateContextTitleView(
   header_row_->SetAccentColor(notification.accent_color());
   header_row_->SetTimestamp(notification.timestamp());
   header_row_->SetAppNameElideBehavior(gfx::ELIDE_TAIL);
-  header_row_->SetSummaryText(base::string16());
+  header_row_->SetSummaryText(std::u16string());
 
-  base::string16 app_name;
+  std::u16string app_name;
   if (notification.UseOriginAsContextMessage()) {
     app_name = url_formatter::FormatUrlForSecurityDisplay(
         notification.origin_url(),
@@ -838,7 +838,7 @@ void NotificationViewMD::CreateOrUpdateTitleView(
   int title_character_limit =
       kNotificationWidth * kMaxTitleLines / kMinPixelsPerTitleCharacterMD;
 
-  base::string16 title = gfx::TruncateString(
+  std::u16string title = gfx::TruncateString(
       notification.title(), title_character_limit, gfx::WORD_BREAK);
   if (!title_view_) {
     title_view_ =
@@ -868,7 +868,7 @@ void NotificationViewMD::CreateOrUpdateMessageView(
     return;
   }
 
-  base::string16 text = gfx::TruncateString(
+  std::u16string text = gfx::TruncateString(
       notification.message(), kMessageCharacterLimitMD, gfx::WORD_BREAK);
 
   if (!message_view_) {
@@ -952,7 +952,7 @@ void NotificationViewMD::CreateOrUpdateProgressStatusView(
 
   if (!status_view_) {
     status_view_ = left_content_->AddChildViewAt(
-        std::make_unique<views::Label>(base::string16(),
+        std::make_unique<views::Label>(std::u16string(),
                                        views::style::CONTEXT_DIALOG_BODY_TEXT,
                                        views::style::STYLE_SECONDARY),
         left_content_count_);
@@ -1090,7 +1090,7 @@ void NotificationViewMD::CreateOrUpdateActionButtonViews(
 
   for (size_t i = 0; i < buttons.size(); ++i) {
     ButtonInfo button_info = buttons[i];
-    base::string16 label = base::i18n::ToUpper(button_info.title);
+    std::u16string label = base::i18n::ToUpper(button_info.title);
     if (new_buttons) {
       action_buttons_.push_back(action_buttons_row_->AddChildView(
           std::make_unique<NotificationMdTextButton>(
@@ -1215,7 +1215,7 @@ void NotificationViewMD::HeaderRowPressed() {
 
 void NotificationViewMD::ActionButtonPressed(size_t index,
                                              const ui::Event& event) {
-  const base::Optional<base::string16>& placeholder =
+  const base::Optional<std::u16string>& placeholder =
       action_buttons_[index]->placeholder();
   if (placeholder) {
     inline_reply_->textfield()->SetProperty(kTextfieldIndexKey, int{index});
@@ -1296,7 +1296,7 @@ void NotificationViewMD::UpdateViewForExpandedState(bool expanded) {
   if (list_items_count_ > max_items)
     header_row_->SetOverflowIndicator(list_items_count_ - max_items);
   else if (!item_views_.empty())
-    header_row_->SetSummaryText(base::string16());
+    header_row_->SetSummaryText(std::u16string());
 
   bool has_icon = icon_view_ && (!hide_icon_on_expanded_ || !expanded);
   right_content_->SetVisible(has_icon);

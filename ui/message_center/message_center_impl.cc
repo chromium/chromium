@@ -357,7 +357,7 @@ void MessageCenterImpl::ClickOnNotificationButton(const std::string& id,
 void MessageCenterImpl::ClickOnNotificationButtonWithReply(
     const std::string& id,
     int button_index,
-    const base::string16& reply) {
+    const std::u16string& reply) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   if (!FindVisibleNotificationById(id))
     return;
@@ -371,7 +371,7 @@ void MessageCenterImpl::ClickOnNotificationButtonWithReply(
 void MessageCenterImpl::ClickOnNotificationUnlocked(
     const std::string& id,
     const base::Optional<int>& button_index,
-    const base::Optional<base::string16>& reply) {
+    const base::Optional<std::u16string>& reply) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
   // This method must be called under unlocked screen.
@@ -498,12 +498,12 @@ void MessageCenterImpl::PausePopupTimers() {
     popup_timers_controller_->PauseAll();
 }
 
-const base::string16& MessageCenterImpl::GetSystemNotificationAppName() const {
+const std::u16string& MessageCenterImpl::GetSystemNotificationAppName() const {
   return system_notification_app_name_;
 }
 
 void MessageCenterImpl::SetSystemNotificationAppName(
-    const base::string16& name) {
+    const std::u16string& name) {
   system_notification_app_name_ = name;
 }
 

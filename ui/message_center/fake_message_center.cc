@@ -133,7 +133,7 @@ void FakeMessageCenter::ClickOnNotificationButton(const std::string& id,
 void FakeMessageCenter::ClickOnNotificationButtonWithReply(
     const std::string& id,
     int button_index,
-    const base::string16& reply) {}
+    const std::u16string& reply) {}
 
 void FakeMessageCenter::ClickOnSettingsButton(const std::string& id) {}
 
@@ -171,12 +171,12 @@ void FakeMessageCenter::RestartPopupTimers() {}
 
 void FakeMessageCenter::PausePopupTimers() {}
 
-const base::string16& FakeMessageCenter::GetSystemNotificationAppName() const {
+const std::u16string& FakeMessageCenter::GetSystemNotificationAppName() const {
   return base::EmptyString16();
 }
 
 void FakeMessageCenter::SetSystemNotificationAppName(
-    const base::string16& product_os_name) {}
+    const std::u16string& product_os_name) {}
 
 void FakeMessageCenter::DisableTimersForTest() {}
 

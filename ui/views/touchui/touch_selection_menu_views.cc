@@ -145,9 +145,9 @@ void TouchSelectionMenuViews::CreateButtons() {
 }
 
 LabelButton* TouchSelectionMenuViews::CreateButton(
-    const base::string16& title,
+    const std::u16string& title,
     Button::PressedCallback callback) {
-  base::string16 label = gfx::RemoveAccelerator(title);
+  std::u16string label = gfx::RemoveAccelerator(title);
   auto* button = AddChildView(std::make_unique<LabelButton>(
       std::move(callback), label, style::CONTEXT_TOUCH_MENU));
   constexpr gfx::Size kMenuButtonMinSize = gfx::Size(63, 38);

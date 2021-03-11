@@ -26,7 +26,7 @@ namespace views {
 namespace {
 // The default mesage width same as defined in message_box_view.cc.
 constexpr int kDefaultMessageWidth = 400;
-const base::string16 kDefaultMessage =
+const std::u16string kDefaultMessage =
     base::ASCIIToUTF16("This is a test message for MessageBoxView.");
 }  // namespace
 
@@ -59,7 +59,7 @@ TEST_F(MessageBoxViewTest, CheckMessageOnlySize) {
 }
 
 TEST_F(MessageBoxViewTest, CheckWithOptionalViewsSize) {
-  message_box_->SetPromptField(base::string16());
+  message_box_->SetPromptField(std::u16string());
   message_box_->SizeToPreferredSize();
 
   gfx::Insets box_border =
@@ -103,7 +103,7 @@ TEST_F(MessageBoxViewTest, CheckMessageWidthChange) {
 }
 
 TEST_F(MessageBoxViewTest, CheckInterRowHeightChange) {
-  message_box_->SetPromptField(base::string16());
+  message_box_->SetPromptField(std::u16string());
   message_box_->SizeToPreferredSize();
 
   int scroll_height = message_box_->scroll_view_->height();
@@ -137,7 +137,7 @@ TEST_F(MessageBoxViewTest, CheckGetVisiblePromptField) {
   EXPECT_FALSE(message_box_->GetVisiblePromptField());
 
   // Set the prompt field.
-  message_box_->SetPromptField(base::string16());
+  message_box_->SetPromptField(std::u16string());
   EXPECT_TRUE(message_box_->GetVisiblePromptField());
 }
 
@@ -146,10 +146,10 @@ TEST_F(MessageBoxViewTest, CheckGetInputText) {
 
   // Set the prompt field with an empty string. The returned text is still
   // empty.
-  message_box_->SetPromptField(base::string16());
+  message_box_->SetPromptField(std::u16string());
   EXPECT_TRUE(message_box_->GetInputText().empty());
 
-  const base::string16 prompt = base::ASCIIToUTF16("prompt");
+  const std::u16string prompt = base::ASCIIToUTF16("prompt");
   message_box_->SetPromptField(prompt);
   EXPECT_FALSE(message_box_->GetInputText().empty());
   EXPECT_EQ(prompt, message_box_->GetInputText());
@@ -157,7 +157,7 @@ TEST_F(MessageBoxViewTest, CheckGetInputText) {
   // After user types some text, the returned input text should change to the
   // user input.
   views::Textfield* text_field = message_box_->GetVisiblePromptField();
-  const base::string16 input = base::ASCIIToUTF16("new input");
+  const std::u16string input = base::ASCIIToUTF16("new input");
   text_field->SetText(input);
   EXPECT_FALSE(message_box_->GetInputText().empty());
   EXPECT_EQ(input, message_box_->GetInputText());

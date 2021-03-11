@@ -10,7 +10,7 @@ namespace views {
 
 namespace internal {
 
-LabelButtonLabel::LabelButtonLabel(const base::string16& text, int text_context)
+LabelButtonLabel::LabelButtonLabel(const std::u16string& text, int text_context)
     : Label(text, text_context, style::STYLE_PRIMARY) {}
 
 LabelButtonLabel::~LabelButtonLabel() = default;

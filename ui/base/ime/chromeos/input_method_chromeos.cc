@@ -241,7 +241,7 @@ void InputMethodChromeOS::OnCaretBoundsChanged(const TextInputClient* client) {
 
   gfx::Range text_range;
   gfx::Range selection_range;
-  base::string16 surrounding_text;
+  std::u16string surrounding_text;
   if (!client->GetTextRange(&text_range) ||
       !client->GetTextFromRange(text_range, &surrounding_text) ||
       !client->GetEditableSelectionRange(&selection_range)) {
@@ -580,7 +580,7 @@ void InputMethodChromeOS::MaybeProcessPendingInputMethodResult(
 
   if (result_text_.length()) {
     if (handled && NeedInsertChar()) {
-      for (base::string16::const_iterator i = result_text_.begin();
+      for (std::u16string::const_iterator i = result_text_.begin();
            i != result_text_.end(); ++i) {
         KeyEvent ch_event(ET_KEY_PRESSED, VKEY_UNKNOWN, EF_NONE);
         ch_event.set_character(*i);
@@ -589,14 +589,14 @@ void InputMethodChromeOS::MaybeProcessPendingInputMethodResult(
     } else {
       // Split |result_text_| into two separate commits, one for the substring
       // before |result_text_cursor_| and one for the substring after.
-      const base::string16 before_cursor =
+      const std::u16string before_cursor =
           result_text_.substr(0, result_text_cursor_);
       if (!before_cursor.empty()) {
         client->InsertText(
             before_cursor,
             TextInputClient::InsertTextCursorBehavior::kMoveCursorAfterText);
       }
-      const base::string16 after_cursor =
+      const std::u16string after_cursor =
           result_text_.substr(result_text_cursor_);
       if (!after_cursor.empty()) {
         client->InsertText(
@@ -650,7 +650,7 @@ bool InputMethodChromeOS::HasInputMethodResult() const {
 }
 
 void InputMethodChromeOS::CommitText(
-    const base::string16& text,
+    const std::u16string& text,
     TextInputClient::InsertTextCursorBehavior cursor_behavior) {
   if (text.empty())
     return;
@@ -792,7 +792,7 @@ bool InputMethodChromeOS::ExecuteCharacterComposer(const ui::KeyEvent& event) {
   CompositionText preedit;
   preedit.text = character_composer_.preedit_string();
   UpdateCompositionText(preedit, preedit.text.size(), !preedit.text.empty());
-  base::string16 commit_text = character_composer_.composed_character();
+  std::u16string commit_text = character_composer_.composed_character();
   if (!commit_text.empty()) {
     CommitText(std::move(commit_text),
                TextInputClient::InsertTextCursorBehavior::kMoveCursorAfterText);

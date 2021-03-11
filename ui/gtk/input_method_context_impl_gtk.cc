@@ -166,7 +166,7 @@ void InputMethodContextImplGtk::SetCursorLocation(const gfx::Rect& rect) {
 }
 
 void InputMethodContextImplGtk::SetSurroundingText(
-    const base::string16& text,
+    const std::u16string& text,
     const gfx::Range& selection_range) {}
 
 // private:

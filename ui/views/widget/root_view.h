@@ -99,7 +99,7 @@ class VIEWS_EXPORT RootView : public View,
   // Accessibility -------------------------------------------------------------
 
   // Make an announcement through the screen reader, if present.
-  void AnnounceText(const base::string16& text);
+  void AnnounceText(const std::u16string& text);
 
   // FocusTraversable:
   FocusSearch* GetFocusSearch() override;

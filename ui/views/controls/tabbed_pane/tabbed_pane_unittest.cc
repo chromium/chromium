@@ -25,11 +25,11 @@ namespace views {
 namespace test {
 namespace {
 
-base::string16 DefaultTabTitle() {
+std::u16string DefaultTabTitle() {
   return ASCIIToUTF16("tab");
 }
 
-base::string16 GetAccessibleName(View* view) {
+std::u16string GetAccessibleName(View* view) {
   ui::AXNodeData ax_node_data;
   view->GetViewAccessibility().GetAccessibleNodeData(&ax_node_data);
   return ax_node_data.GetString16Attribute(ax::mojom::StringAttribute::kName);
@@ -281,8 +281,8 @@ TEST_F(TabbedPaneWithWidgetTest, SelectTabWithAccessibleAction) {
 }
 
 TEST_F(TabbedPaneWithWidgetTest, AccessiblePaneTitleTracksActiveTabTitle) {
-  const base::string16 kFirstTitle = ASCIIToUTF16("Tab1");
-  const base::string16 kSecondTitle = ASCIIToUTF16("Tab2");
+  const std::u16string kFirstTitle = ASCIIToUTF16("Tab1");
+  const std::u16string kSecondTitle = ASCIIToUTF16("Tab2");
   tabbed_pane_->AddTab(kFirstTitle, std::make_unique<View>());
   tabbed_pane_->AddTab(kSecondTitle, std::make_unique<View>());
   EXPECT_EQ(kFirstTitle, GetAccessibleName(tabbed_pane_));
@@ -291,8 +291,8 @@ TEST_F(TabbedPaneWithWidgetTest, AccessiblePaneTitleTracksActiveTabTitle) {
 }
 
 TEST_F(TabbedPaneWithWidgetTest, AccessiblePaneContentsTitleTracksTabTitle) {
-  const base::string16 kFirstTitle = ASCIIToUTF16("Tab1");
-  const base::string16 kSecondTitle = ASCIIToUTF16("Tab2");
+  const std::u16string kFirstTitle = ASCIIToUTF16("Tab1");
+  const std::u16string kSecondTitle = ASCIIToUTF16("Tab2");
   View* const tab1_contents =
       tabbed_pane_->AddTab(kFirstTitle, std::make_unique<View>());
   View* const tab2_contents =
@@ -302,8 +302,8 @@ TEST_F(TabbedPaneWithWidgetTest, AccessiblePaneContentsTitleTracksTabTitle) {
 }
 
 TEST_F(TabbedPaneWithWidgetTest, AccessiblePaneContentsRoleIsTab) {
-  const base::string16 kFirstTitle = ASCIIToUTF16("Tab1");
-  const base::string16 kSecondTitle = ASCIIToUTF16("Tab2");
+  const std::u16string kFirstTitle = ASCIIToUTF16("Tab1");
+  const std::u16string kSecondTitle = ASCIIToUTF16("Tab2");
   View* const tab1_contents =
       tabbed_pane_->AddTab(kFirstTitle, std::make_unique<View>());
   View* const tab2_contents =

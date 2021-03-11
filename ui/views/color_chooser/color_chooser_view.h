@@ -57,7 +57,7 @@ class VIEWS_EXPORT ColorChooser : public TextfieldController,
 
   // TextfieldController overrides, public for testing:
   void ContentsChanged(Textfield* sender,
-                       const base::string16& new_contents) override;
+                       const std::u16string& new_contents) override;
   bool HandleKeyEvent(Textfield* sender,
                       const ui::KeyEvent& key_event) override;
 

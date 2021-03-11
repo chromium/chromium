@@ -98,11 +98,11 @@ TEST_F(RadioButtonTest, Focus) {
 }
 
 TEST_F(RadioButtonTest, FocusOnClick) {
-  RadioButton* button1 = new RadioButton(base::string16(), kGroup);
+  RadioButton* button1 = new RadioButton(std::u16string(), kGroup);
   button1->SetSize(gfx::Size(10, 10));
   button_container().AddChildView(button1);
   button1->SetChecked(true);
-  RadioButton* button2 = new RadioButton(base::string16(), kGroup);
+  RadioButton* button2 = new RadioButton(std::u16string(), kGroup);
   button2->SetSize(gfx::Size(10, 10));
   button_container().AddChildView(button2);
 

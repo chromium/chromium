@@ -59,12 +59,12 @@ bool IsOpaque(SkColor color) {
 
 namespace views {
 
-Label::Label() : Label(base::string16()) {}
+Label::Label() : Label(std::u16string()) {}
 
-Label::Label(const base::string16& text)
+Label::Label(const std::u16string& text)
     : Label(text, style::CONTEXT_LABEL, style::STYLE_PRIMARY) {}
 
-Label::Label(const base::string16& text,
+Label::Label(const std::u16string& text,
              int text_context,
              int text_style,
              gfx::DirectionalityMode directionality_mode)
@@ -74,7 +74,7 @@ Label::Label(const base::string16& text,
   Init(text, style::GetFont(text_context, text_style), directionality_mode);
 }
 
-Label::Label(const base::string16& text, const CustomFont& font)
+Label::Label(const std::u16string& text, const CustomFont& font)
     : text_context_(style::CONTEXT_LABEL),
       text_style_(style::STYLE_PRIMARY),
       context_menu_contents_(this) {
@@ -94,11 +94,11 @@ void Label::SetFontList(const gfx::FontList& font_list) {
   PreferredSizeChanged();
 }
 
-const base::string16& Label::GetText() const {
+const std::u16string& Label::GetText() const {
   return full_text_->text();
 }
 
-void Label::SetText(const base::string16& new_text) {
+void Label::SetText(const std::u16string& new_text) {
   if (new_text == GetText())
     return;
   full_text_->SetText(new_text);
@@ -108,7 +108,7 @@ void Label::SetText(const base::string16& new_text) {
   stored_selection_range_ = gfx::Range::InvalidRange();
 }
 
-void Label::SetAccessibleName(const base::string16& name) {
+void Label::SetAccessibleName(const std::u16string& name) {
   if (name == accessible_name_)
     return;
   accessible_name_ = name;
@@ -116,7 +116,7 @@ void Label::SetAccessibleName(const base::string16& name) {
   NotifyAccessibilityEvent(ax::mojom::Event::kTextChanged, true);
 }
 
-const base::string16& Label::GetAccessibleName() const {
+const std::u16string& Label::GetAccessibleName() const {
   return accessible_name_.empty() ? full_text_->GetDisplayText()
                                   : accessible_name_;
 }
@@ -409,11 +409,11 @@ void Label::SetElideBehavior(gfx::ElideBehavior elide_behavior) {
   OnPropertyChanged(&elide_behavior_, kPropertyEffectsPreferredSizeChanged);
 }
 
-base::string16 Label::GetTooltipText() const {
+std::u16string Label::GetTooltipText() const {
   return tooltip_text_;
 }
 
-void Label::SetTooltipText(const base::string16& tooltip_text) {
+void Label::SetTooltipText(const std::u16string& tooltip_text) {
   DCHECK(handles_tooltips_);
   if (tooltip_text_ == tooltip_text)
     return;
@@ -478,9 +478,9 @@ size_t Label::GetRequiredLines() const {
   return full_text_->GetNumLines();
 }
 
-base::string16 Label::GetDisplayTextForTesting() {
+std::u16string Label::GetDisplayTextForTesting() {
   MaybeBuildDisplayText();
-  return display_text_ ? display_text_->GetDisplayText() : base::string16();
+  return display_text_ ? display_text_->GetDisplayText() : std::u16string();
 }
 
 base::i18n::TextDirection Label::GetTextDirectionForTesting() {
@@ -594,7 +594,7 @@ gfx::Size Label::GetMinimumSize() const {
       elide_behavior_ == gfx::ELIDE_TAIL ||
       elide_behavior_ == gfx::ELIDE_EMAIL) {
     size.set_width(gfx::Canvas::GetStringWidth(
-        base::string16(gfx::kEllipsisUTF16), font_list()));
+        std::u16string(gfx::kEllipsisUTF16), font_list()));
   }
 
   if (!GetMultiLine()) {
@@ -667,7 +667,7 @@ void Label::GetAccessibleNodeData(ui::AXNodeData* node_data) {
   node_data->SetName(GetAccessibleName());
 }
 
-base::string16 Label::GetTooltipText(const gfx::Point& p) const {
+std::u16string Label::GetTooltipText(const gfx::Point& p) const {
   if (handles_tooltips_) {
     if (!tooltip_text_.empty())
       return tooltip_text_;
@@ -676,7 +676,7 @@ base::string16 Label::GetTooltipText(const gfx::Point& p) const {
       return full_text_->GetDisplayText();
   }
 
-  return base::string16();
+  return std::u16string();
 }
 
 std::unique_ptr<gfx::RenderText> Label::CreateRenderText() const {
@@ -1068,7 +1068,7 @@ const gfx::RenderText* Label::GetRenderTextForSelectionController() const {
   return display_text_.get();
 }
 
-void Label::Init(const base::string16& text,
+void Label::Init(const std::u16string& text,
                  const gfx::FontList& font_list,
                  gfx::DirectionalityMode directionality_mode) {
   full_text_ = gfx::RenderText::CreateRenderText();
@@ -1215,10 +1215,10 @@ void Label::ClearDisplayText() {
   SchedulePaint();
 }
 
-base::string16 Label::GetSelectedText() const {
+std::u16string Label::GetSelectedText() const {
   const gfx::RenderText* render_text = GetRenderTextForSelectionController();
   return render_text ? render_text->GetTextFromRange(render_text->selection())
-                     : base::string16();
+                     : std::u16string();
 }
 
 void Label::CopyToClipboard() {
@@ -1242,7 +1242,7 @@ void Label::UpdateFullTextElideBehavior() {
 }
 
 BEGIN_METADATA(Label, View)
-ADD_PROPERTY_METADATA(base::string16, Text)
+ADD_PROPERTY_METADATA(std::u16string, Text)
 ADD_PROPERTY_METADATA(int, TextContext)
 ADD_PROPERTY_METADATA(int, TextStyle)
 ADD_PROPERTY_METADATA(bool, AutoColorReadabilityEnabled)
@@ -1263,11 +1263,11 @@ ADD_PROPERTY_METADATA(bool, MultiLine)
 ADD_PROPERTY_METADATA(int, MaxLines)
 ADD_PROPERTY_METADATA(bool, Obscured)
 ADD_PROPERTY_METADATA(bool, AllowCharacterBreak)
-ADD_PROPERTY_METADATA(base::string16, TooltipText)
+ADD_PROPERTY_METADATA(std::u16string, TooltipText)
 ADD_PROPERTY_METADATA(bool, HandlesTooltips)
 ADD_PROPERTY_METADATA(bool, CollapseWhenHidden)
 ADD_PROPERTY_METADATA(int, MaximumWidth)
-ADD_PROPERTY_METADATA(base::string16, AccessibleName)
+ADD_PROPERTY_METADATA(std::u16string, AccessibleName)
 END_METADATA
 
 }  // namespace views

@@ -412,7 +412,7 @@ void PrintDialogGtk::ShowDialog(
 }
 
 void PrintDialogGtk::PrintDocument(const printing::MetafilePlayer& metafile,
-                                   const base::string16& document_name) {
+                                   const std::u16string& document_name) {
   // This runs on the print worker thread, does not block the UI thread.
   DCHECK(!owning_task_runner()->RunsTasksInCurrentSequence());
 
@@ -537,7 +537,7 @@ static void OnJobCompletedThunk(GtkPrintJob* print_job,
   static_cast<PrintDialogGtk*>(user_data)->OnJobCompleted(print_job, error);
 }
 void PrintDialogGtk::SendDocumentToPrinter(
-    const base::string16& document_name) {
+    const std::u16string& document_name) {
   DCHECK(owning_task_runner()->RunsTasksInCurrentSequence());
 
   // If |printer_| is nullptr then somehow the GTK printer list changed out

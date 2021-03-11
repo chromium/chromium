@@ -28,32 +28,32 @@ DEFINE_ENUM_CONVERTERS(TestResult,
 
 TEST_F(TypeConversionTest, TestConversion_IntToString) {
   int from_int = 5;
-  base::string16 to_string = metadata::TypeConverter<int>::ToString(from_int);
+  std::u16string to_string = metadata::TypeConverter<int>::ToString(from_int);
 
   EXPECT_EQ(to_string, base::ASCIIToUTF16("5"));
 }
 
 TEST_F(TypeConversionTest, TestConversion_StringToInt) {
-  base::string16 from_string = base::ASCIIToUTF16("10");
+  std::u16string from_string = base::ASCIIToUTF16("10");
   EXPECT_EQ(metadata::TypeConverter<int>::FromString(from_string), 10);
 }
 
 // This tests whether the converter handles a bogus input string, in which case
 // the return value should be nullopt.
 TEST_F(TypeConversionTest, TestConversion_BogusStringToInt) {
-  base::string16 from_string = base::ASCIIToUTF16("Foo");
+  std::u16string from_string = base::ASCIIToUTF16("Foo");
   EXPECT_EQ(metadata::TypeConverter<int>::FromString(from_string),
             base::nullopt);
 }
 
 TEST_F(TypeConversionTest, TestConversion_BogusStringToFloat) {
-  base::string16 from_string = base::ASCIIToUTF16("1.2");
+  std::u16string from_string = base::ASCIIToUTF16("1.2");
   EXPECT_EQ(metadata::TypeConverter<float>::FromString(from_string), 1.2f);
 }
 
 TEST_F(TypeConversionTest, TestConversion_OptionalIntToString) {
   base::Optional<int> src;
-  base::string16 to_string =
+  std::u16string to_string =
       metadata::TypeConverter<base::Optional<int>>::ToString(src);
   EXPECT_EQ(to_string, metadata::GetNullOptStr());
 
@@ -186,8 +186,8 @@ TEST_F(TypeConversionTest, TestConversion_SkColorConversions) {
 
 TEST_F(TypeConversionTest, TestConversion_ColorParserTest) {
   using converter = metadata::SkColorConverter;
-  base::string16 color;
-  const base::string16 source = base::ASCIIToUTF16(
+  std::u16string color;
+  const std::u16string source = base::ASCIIToUTF16(
       "rgb(0, 128, 192), hsl(90, 100%, 30%), rgba(128, 128, 128, 0.5), "
       "hsla(240, 100%, 50%, 0.5)");
   auto start_pos = source.cbegin();
@@ -207,14 +207,14 @@ TEST_F(TypeConversionTest, TestConversion_ColorParserTest) {
 TEST_F(TypeConversionTest, TestConversion_InsetsToString) {
   constexpr gfx::Insets kInsets(3, 5, 7, 9);
 
-  base::string16 to_string =
+  std::u16string to_string =
       metadata::TypeConverter<gfx::Insets>::ToString(kInsets);
 
   EXPECT_EQ(to_string, base::ASCIIToUTF16(kInsets.ToString()));
 }
 
 TEST_F(TypeConversionTest, TestConversion_StringToInsets) {
-  base::string16 from_string = base::ASCIIToUTF16("2,3,4,5");
+  std::u16string from_string = base::ASCIIToUTF16("2,3,4,5");
   EXPECT_EQ(metadata::TypeConverter<gfx::Insets>::FromString(from_string),
             gfx::Insets(2, 3, 4, 5));
 }
@@ -222,14 +222,14 @@ TEST_F(TypeConversionTest, TestConversion_StringToInsets) {
 TEST_F(TypeConversionTest, TestConversion_VectorToString) {
   const std::vector<int> kVector{3, 5, 7, 9};
 
-  base::string16 to_string =
+  std::u16string to_string =
       metadata::TypeConverter<std::vector<int>>::ToString(kVector);
 
   EXPECT_EQ(to_string, u"{3,5,7,9}");
 }
 
 TEST_F(TypeConversionTest, TestConversion_StringToVector) {
-  base::string16 from_string = base::ASCIIToUTF16("{2,3,4,5}");
+  std::u16string from_string = base::ASCIIToUTF16("{2,3,4,5}");
   EXPECT_EQ(metadata::TypeConverter<std::vector<int>>::FromString(from_string),
             std::vector<int>({2, 3, 4, 5}));
 }
@@ -248,7 +248,7 @@ TEST_F(TypeConversionTest, CheckIsSerializable) {
   EXPECT_TRUE(metadata::TypeConverter<double>::IsSerializable());
   EXPECT_TRUE(metadata::TypeConverter<bool>::IsSerializable());
   EXPECT_TRUE(metadata::TypeConverter<const char*>::IsSerializable());
-  EXPECT_TRUE(metadata::TypeConverter<base::string16>::IsSerializable());
+  EXPECT_TRUE(metadata::TypeConverter<std::u16string>::IsSerializable());
   EXPECT_TRUE(metadata::TypeConverter<gfx::ShadowValues>::IsSerializable());
   EXPECT_TRUE(metadata::TypeConverter<gfx::Size>::IsSerializable());
   EXPECT_TRUE(metadata::TypeConverter<gfx::Range>::IsSerializable());

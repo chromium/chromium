@@ -22,7 +22,7 @@ FallbackFontTestCase::FallbackFontTestCase(const FallbackFontTestCase& other) =
 FallbackFontTestCase::FallbackFontTestCase(
     UScriptCode script_arg,
     std::string language_tag_arg,
-    base::string16 text_arg,
+    std::u16string text_arg,
     std::vector<std::string> fallback_fonts_arg,
     bool is_win10_arg)
     : script(script_arg),

@@ -240,7 +240,7 @@ FormatEtcEnumerator* FormatEtcEnumerator::CloneFromOther(
 
 // static
 bool OSExchangeDataProviderWin::HasPlainTextURL(IDataObject* source) {
-  base::string16 plain_text;
+  std::u16string plain_text;
   return (ClipboardUtil::GetPlainText(source, &plain_text) &&
           !plain_text.empty() && GURL(plain_text).is_valid());
 }
@@ -248,7 +248,7 @@ bool OSExchangeDataProviderWin::HasPlainTextURL(IDataObject* source) {
 // static
 bool OSExchangeDataProviderWin::GetPlainTextURL(IDataObject* source,
                                                 GURL* url) {
-  base::string16 plain_text;
+  std::u16string plain_text;
   if (ClipboardUtil::GetPlainText(source, &plain_text) &&
       !plain_text.empty()) {
     GURL gurl(plain_text);
@@ -302,7 +302,7 @@ bool OSExchangeDataProviderWin::DidOriginateFromRenderer() const {
   return HasCustomFormat(GetRendererTaintFormatType());
 }
 
-void OSExchangeDataProviderWin::SetString(const base::string16& data) {
+void OSExchangeDataProviderWin::SetString(const std::u16string& data) {
   STGMEDIUM storage = CreateStorageForString(data);
   data_->contents_.push_back(DataObjectImpl::StoredDataInfo::TakeStorageMedium(
       ClipboardFormatType::GetPlainTextType().ToFormatEtc(), storage));
@@ -314,7 +314,7 @@ void OSExchangeDataProviderWin::SetString(const base::string16& data) {
 }
 
 void OSExchangeDataProviderWin::SetURL(const GURL& url,
-                                       const base::string16& title) {
+                                       const std::u16string& title) {
   // NOTE WELL:
   // Every time you change the order of the first two CLIPFORMATS that get
   // added here, you need to update the EnumerationViaCOM test case in
@@ -322,7 +322,7 @@ void OSExchangeDataProviderWin::SetURL(const GURL& url,
   // will fail! It assumes an insertion order.
 
   // Add text/x-moz-url for drags from Firefox
-  base::string16 x_moz_url_str = base::UTF8ToUTF16(url.spec());
+  std::u16string x_moz_url_str = base::UTF8ToUTF16(url.spec());
   x_moz_url_str += '\n';
   x_moz_url_str += title;
   STGMEDIUM storage = CreateStorageForString(x_moz_url_str);
@@ -504,7 +504,7 @@ void OSExchangeDataProviderWin::SetFileContents(
       storage_contents));
 }
 
-void OSExchangeDataProviderWin::SetHtml(const base::string16& html,
+void OSExchangeDataProviderWin::SetHtml(const std::u16string& html,
                                         const GURL& base_url) {
   // Add both MS CF_HTML and text/html format.  CF_HTML should be in utf-8.
   std::string utf8_html = base::UTF16ToUTF8(html);
@@ -521,14 +521,14 @@ void OSExchangeDataProviderWin::SetHtml(const base::string16& html,
       ClipboardFormatType::GetTextHtmlType().ToFormatEtc(), storage_plain));
 }
 
-bool OSExchangeDataProviderWin::GetString(base::string16* data) const {
+bool OSExchangeDataProviderWin::GetString(std::u16string* data) const {
   return ClipboardUtil::GetPlainText(source_object_.Get(), data);
 }
 
 bool OSExchangeDataProviderWin::GetURLAndTitle(FilenameToURLPolicy policy,
                                                GURL* url,
-                                               base::string16* title) const {
-  base::string16 url_str;
+                                               std::u16string* title) const {
+  std::u16string url_str;
   bool success = ClipboardUtil::GetUrl(
       source_object_.Get(), url, title,
       policy == FilenameToURLPolicy::CONVERT_FILENAMES ? true : false);
@@ -630,7 +630,7 @@ bool OSExchangeDataProviderWin::GetFileContents(
   return true;
 }
 
-bool OSExchangeDataProviderWin::GetHtml(base::string16* html,
+bool OSExchangeDataProviderWin::GetHtml(std::u16string* html,
                                         GURL* base_url) const {
   std::string url;
   bool success = ClipboardUtil::GetHtml(source_object_.Get(), html, &url);

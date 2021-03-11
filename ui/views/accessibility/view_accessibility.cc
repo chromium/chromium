@@ -220,7 +220,7 @@ void ViewAccessibility::GetAccessibleNodeData(ui::AXNodeData* data) const {
   }
 
   if (!data->HasStringAttribute(ax::mojom::StringAttribute::kDescription)) {
-    base::string16 tooltip = view_->GetTooltipText(gfx::Point());
+    std::u16string tooltip = view_->GetTooltipText(gfx::Point());
     // Some screen readers announce the accessible description right after the
     // accessible name. Only use the tooltip as the accessible description if
     // it's different from the name, otherwise users might be puzzled as to why
@@ -335,7 +335,7 @@ void ViewAccessibility::OverrideName(const std::string& name) {
   custom_data_.SetName(name);
 }
 
-void ViewAccessibility::OverrideName(const base::string16& name) {
+void ViewAccessibility::OverrideName(const std::u16string& name) {
   custom_data_.SetName(name);
 }
 
@@ -343,7 +343,7 @@ void ViewAccessibility::OverrideDescription(const std::string& description) {
   custom_data_.SetDescription(description);
 }
 
-void ViewAccessibility::OverrideDescription(const base::string16& description) {
+void ViewAccessibility::OverrideDescription(const std::u16string& description) {
   custom_data_.SetDescription(description);
 }
 
@@ -457,7 +457,7 @@ void ViewAccessibility::NotifyAccessibilityEvent(ax::mojom::Event event_type) {
     accessibility_events_callback_.Run(nullptr, event_type);
 }
 
-void ViewAccessibility::AnnounceText(const base::string16& text) {
+void ViewAccessibility::AnnounceText(const std::u16string& text) {
   Widget* const widget = view_->GetWidget();
   if (!widget)
     return;

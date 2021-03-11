@@ -54,8 +54,8 @@ bool IsParagraphSeparator(char16_t c) {
 // Splits |text| into a vector of paragraphs.
 // Given an example "\nabc\ndef\n\n\nhij\n", the split results should be:
 // "", "abc", "def", "", "", "hij", and "".
-void SplitStringIntoParagraphs(const base::string16& text,
-                               std::vector<base::string16>* paragraphs) {
+void SplitStringIntoParagraphs(const std::u16string& text,
+                               std::vector<std::u16string>* paragraphs) {
   paragraphs->clear();
 
   size_t start = 0;
@@ -75,7 +75,7 @@ namespace views {
 ///////////////////////////////////////////////////////////////////////////////
 // MessageBoxView, public:
 
-MessageBoxView::MessageBoxView(const base::string16& message,
+MessageBoxView::MessageBoxView(const std::u16string& message,
                                bool detect_directionality)
     : inter_row_vertical_spacing_(LayoutProvider::Get()->GetDistanceMetric(
           DISTANCE_RELATED_CONTROL_VERTICAL)),
@@ -89,7 +89,7 @@ MessageBoxView::MessageBoxView(const base::string16& message,
   message_contents->SetLayoutManager(std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kVertical));
   auto add_label = [&message_contents, this](
-                       const base::string16& text, bool multi_line,
+                       const std::u16string& text, bool multi_line,
                        gfx::HorizontalAlignment alignment) {
     auto message_label =
         std::make_unique<Label>(text, style::CONTEXT_DIALOG_BODY_TEXT);
@@ -100,7 +100,7 @@ MessageBoxView::MessageBoxView(const base::string16& message,
         message_contents->AddChildView(std::move(message_label)));
   };
   if (detect_directionality) {
-    std::vector<base::string16> texts;
+    std::vector<std::u16string> texts;
     SplitStringIntoParagraphs(message, &texts);
     for (const auto& text : texts) {
       // Avoid empty multi-line labels, which have a height of 0.
@@ -139,9 +139,9 @@ views::Textfield* MessageBoxView::GetVisiblePromptField() {
   return prompt_field_ && prompt_field_->GetVisible() ? prompt_field_ : nullptr;
 }
 
-base::string16 MessageBoxView::GetInputText() {
+std::u16string MessageBoxView::GetInputText() {
   return prompt_field_ && prompt_field_->GetVisible() ? prompt_field_->GetText()
-                                                      : base::string16();
+                                                      : std::u16string();
 }
 
 bool MessageBoxView::HasVisibleCheckBox() const {
@@ -152,7 +152,7 @@ bool MessageBoxView::IsCheckBoxSelected() {
   return checkbox_ && checkbox_->GetVisible() && checkbox_->GetChecked();
 }
 
-void MessageBoxView::SetCheckBoxLabel(const base::string16& label) {
+void MessageBoxView::SetCheckBoxLabel(const std::u16string& label) {
   DCHECK(checkbox_);
   if (checkbox_->GetVisible() && checkbox_->GetText() == label)
     return;
@@ -169,7 +169,7 @@ void MessageBoxView::SetCheckBoxSelected(bool selected) {
   checkbox_->SetChecked(selected);
 }
 
-void MessageBoxView::SetLink(const base::string16& text,
+void MessageBoxView::SetLink(const std::u16string& text,
                              Link::ClickedCallback callback) {
   DCHECK(!text.empty());
   DCHECK(!callback.is_null());
@@ -203,7 +203,7 @@ void MessageBoxView::SetMessageWidth(int width) {
   ResetLayoutManager();
 }
 
-void MessageBoxView::SetPromptField(const base::string16& default_prompt) {
+void MessageBoxView::SetPromptField(const std::u16string& default_prompt) {
   DCHECK(prompt_field_);
   if (prompt_field_->GetVisible() && prompt_field_->GetText() == default_prompt)
     return;
@@ -240,8 +240,8 @@ bool MessageBoxView::AcceleratorPressed(const ui::Accelerator& accelerator) {
 
   ui::ScopedClipboardWriter scw(ui::ClipboardBuffer::kCopyPaste);
   scw.WriteText(std::accumulate(message_labels_.cbegin(),
-                                message_labels_.cend(), base::string16(),
-                                [](base::string16& left, Label* right) {
+                                message_labels_.cend(), std::u16string(),
+                                [](std::u16string& left, Label* right) {
                                   return left + right->GetText();
                                 }));
   return true;

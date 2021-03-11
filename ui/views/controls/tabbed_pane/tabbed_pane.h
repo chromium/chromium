@@ -66,7 +66,7 @@ class VIEWS_EXPORT TabbedPane : public View {
   // |contents| is the view displayed when the tab is selected and is owned by
   // the TabbedPane.
   template <typename T>
-  T* AddTab(const base::string16& title, std::unique_ptr<T> contents) {
+  T* AddTab(const std::u16string& title, std::unique_ptr<T> contents) {
     return AddTabAtIndex(GetTabCount(), title, std::move(contents));
   }
 
@@ -75,7 +75,7 @@ class VIEWS_EXPORT TabbedPane : public View {
   // is currently empty, the new tab is selected.
   template <typename T>
   T* AddTabAtIndex(size_t index,
-                   const base::string16& title,
+                   const std::u16string& title,
                    std::unique_ptr<T> contents) {
     T* result = contents.get();
     AddTabInternal(index, title, std::move(contents));
@@ -108,7 +108,7 @@ class VIEWS_EXPORT TabbedPane : public View {
   // when the tab is selected and is owned by the TabbedPane. If the tabbed pane
   // is currently empty, the new tab is selected.
   void AddTabInternal(size_t index,
-                      const base::string16& title,
+                      const std::u16string& title,
                       std::unique_ptr<View> contents);
 
   // Get the Tab (the tabstrip view, not its content) at the selected index.
@@ -143,7 +143,7 @@ class VIEWS_EXPORT Tab : public View {
  public:
   METADATA_HEADER(Tab);
 
-  Tab(TabbedPane* tabbed_pane, const base::string16& title, View* contents);
+  Tab(TabbedPane* tabbed_pane, const std::u16string& title, View* contents);
   ~Tab() override;
 
   View* contents() const { return contents_; }
@@ -151,8 +151,8 @@ class VIEWS_EXPORT Tab : public View {
   bool selected() const { return contents_->GetVisible(); }
   void SetSelected(bool selected);
 
-  const base::string16& GetTitleText() const;
-  void SetTitleText(const base::string16& text);
+  const std::u16string& GetTitleText() const;
+  void SetTitleText(const std::u16string& text);
 
   // Overridden from View:
   bool OnMousePressed(const ui::MouseEvent& event) override;

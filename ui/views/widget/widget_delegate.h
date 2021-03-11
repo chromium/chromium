@@ -57,7 +57,7 @@ class VIEWS_EXPORT WidgetDelegate {
     // The accessible title for the window, often more descriptive than the
     // plain title. If no accessible title is present the result of
     // GetWindowTitle() will be used.
-    base::string16 accessible_title;
+    std::u16string accessible_title;
 
     // Whether the window should display controls for the user to minimize,
     // maximize, or resize it.
@@ -117,7 +117,7 @@ class VIEWS_EXPORT WidgetDelegate {
 
     // The widget's title, if any.
     // TODO(ellyjones): Should it be illegal to have show_title && !title?
-    base::string16 title;
+    std::u16string title;
   };
 
   WidgetDelegate();
@@ -181,10 +181,10 @@ class VIEWS_EXPORT WidgetDelegate {
   virtual ax::mojom::Role GetAccessibleWindowRole();
 
   // Returns the title to be read with screen readers.
-  virtual base::string16 GetAccessibleWindowTitle() const;
+  virtual std::u16string GetAccessibleWindowTitle() const;
 
   // Returns the text to be displayed in the window title.
-  virtual base::string16 GetWindowTitle() const;
+  virtual std::u16string GetWindowTitle() const;
 
   // Returns true if the window should show a title in the title bar.
   virtual bool ShouldShowWindowTitle() const;
@@ -326,7 +326,7 @@ class VIEWS_EXPORT WidgetDelegate {
   // Setters for data parameters of the WidgetDelegate. If you use these
   // setters, there is no need to override the corresponding virtual getters.
   void SetAccessibleRole(ax::mojom::Role role);
-  void SetAccessibleTitle(base::string16 title);
+  void SetAccessibleTitle(std::u16string title);
   void SetCanMaximize(bool can_maximize);
   void SetCanMinimize(bool can_minimize);
   void SetCanResize(bool can_resize);
@@ -340,7 +340,7 @@ class VIEWS_EXPORT WidgetDelegate {
   void SetShowCloseButton(bool show_close_button);
   void SetShowIcon(bool show_icon);
   void SetShowTitle(bool show_title);
-  void SetTitle(const base::string16& title);
+  void SetTitle(const std::u16string& title);
   void SetTitle(int title_message_id);
 #if defined(USE_AURA)
   void SetCenterTitle(bool center_title);

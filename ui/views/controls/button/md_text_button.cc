@@ -31,7 +31,7 @@
 namespace views {
 
 MdTextButton::MdTextButton(PressedCallback callback,
-                           const base::string16& text,
+                           const std::u16string& text,
                            int button_context)
     : LabelButton(std::move(callback), text, button_context) {
   SetInkDropMode(InkDropMode::ON);
@@ -136,7 +136,7 @@ base::Optional<gfx::Insets> MdTextButton::GetCustomPadding() const {
   return custom_padding_.value_or(CalculateDefaultPadding());
 }
 
-void MdTextButton::SetText(const base::string16& text) {
+void MdTextButton::SetText(const std::u16string& text) {
   LabelButton::SetText(text);
   UpdatePadding();
 }

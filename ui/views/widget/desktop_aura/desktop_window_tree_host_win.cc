@@ -407,7 +407,7 @@ bool DesktopWindowTreeHostWin::IsVisibleOnAllWorkspaces() const {
   return false;
 }
 
-bool DesktopWindowTreeHostWin::SetWindowTitle(const base::string16& title) {
+bool DesktopWindowTreeHostWin::SetWindowTitle(const std::u16string& title) {
   return message_handler_->SetTitle(title);
 }
 

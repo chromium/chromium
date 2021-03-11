@@ -45,7 +45,7 @@ class NotificationControlButtonsTest : public testing::Test {
     Test::SetUp();
     Notification notification(
         NOTIFICATION_TYPE_SIMPLE, "id", base::UTF8ToUTF16("title"),
-        base::UTF8ToUTF16("id"), gfx::Image(), base::string16(), GURL(),
+        base::UTF8ToUTF16("id"), gfx::Image(), std::u16string(), GURL(),
         NotifierId(NotifierType::APPLICATION, "notifier_id"),
         RichNotificationData(), nullptr);
     message_view_ = std::make_unique<TestMessageView>(notification);

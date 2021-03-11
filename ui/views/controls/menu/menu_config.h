@@ -38,7 +38,7 @@ struct VIEWS_EXPORT MenuConfig {
   // Returns whether |item_view| should show accelerator text. If so, returns
   // the text to show.
   bool ShouldShowAcceleratorText(const MenuItemView* item_view,
-                                 base::string16* text) const;
+                                 std::u16string* text) const;
 
   // Font list used by menus.
   gfx::FontList font_list;

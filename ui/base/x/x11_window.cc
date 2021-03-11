@@ -742,7 +742,7 @@ void XWindow::SetCursor(scoped_refptr<X11Cursor> cursor) {
     cursor->OnCursorLoaded(on_cursor_loaded_.callback());
 }
 
-bool XWindow::SetTitle(base::string16 title) {
+bool XWindow::SetTitle(std::u16string title) {
   if (window_title_ == title)
     return false;
 

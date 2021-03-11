@@ -25,7 +25,7 @@ namespace internal {
 class VIEWS_EXPORT LabelButtonLabel : public Label {
  public:
   METADATA_HEADER(LabelButtonLabel);
-  LabelButtonLabel(const base::string16& text, int text_context);
+  LabelButtonLabel(const std::u16string& text, int text_context);
   LabelButtonLabel(const LabelButtonLabel&) = delete;
   LabelButtonLabel& operator=(const LabelButtonLabel&) = delete;
   ~LabelButtonLabel() override;

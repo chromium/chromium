@@ -60,7 +60,7 @@ TextServicesContextMenu::TextServicesContextMenu(Delegate* delegate)
       kWritingDirectionRtl, IDS_CONTENT_CONTEXT_WRITING_DIRECTION_RTL);
 }
 
-void TextServicesContextMenu::SpeakText(const base::string16& text) {
+void TextServicesContextMenu::SpeakText(const std::u16string& text) {
   if (IsSpeaking())
     StopSpeaking();
 

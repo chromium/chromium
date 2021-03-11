@@ -39,7 +39,7 @@ class COMPONENT_EXPORT(UI_BASE) TextServicesContextMenu
   class COMPONENT_EXPORT(UI_BASE) Delegate {
    public:
     // Returns the selected text.
-    virtual base::string16 GetSelectedText() const = 0;
+    virtual std::u16string GetSelectedText() const = 0;
 
     // Returns true if |direction| should be enabled in the BiDi submenu.
     virtual bool IsTextDirectionEnabled(
@@ -56,7 +56,7 @@ class COMPONENT_EXPORT(UI_BASE) TextServicesContextMenu
   explicit TextServicesContextMenu(Delegate* delegate);
 
   // Methods for speaking.
-  static void SpeakText(const base::string16& text);
+  static void SpeakText(const std::u16string& text);
   static void StopSpeaking();
   static bool IsSpeaking();
 

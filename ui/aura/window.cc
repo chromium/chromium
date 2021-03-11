@@ -217,12 +217,12 @@ void Window::SetName(const std::string& name) {
     UpdateLayerName();
 }
 
-const base::string16& Window::GetTitle() const {
-  base::string16* title = GetProperty(client::kTitleKey);
+const std::u16string& Window::GetTitle() const {
+  std::u16string* title = GetProperty(client::kTitleKey);
   return title ? *title : base::EmptyString16();
 }
 
-void Window::SetTitle(const base::string16& title) {
+void Window::SetTitle(const std::u16string& title) {
   if (title == GetTitle())
     return;
   SetProperty(client::kTitleKey, title);

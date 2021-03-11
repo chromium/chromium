@@ -59,7 +59,7 @@ class VIEWS_EXAMPLES_EXPORT LayoutExampleBase : public ExampleBase,
    private:
     // TextfieldController
     void ContentsChanged(Textfield* sender,
-                         const base::string16& new_contents) override;
+                         const std::u16string& new_contents) override;
 
     Textfield* CreateTextfield();
 
@@ -87,23 +87,23 @@ class VIEWS_EXAMPLES_EXPORT LayoutExampleBase : public ExampleBase,
 
   // Creates and adds a Combobox with a label with |label_text| to the left.
   // Sets |combobox_callback| as the callback for the created combobox.
-  Combobox* CreateAndAddCombobox(const base::string16& label_text,
+  Combobox* CreateAndAddCombobox(const std::u16string& label_text,
                                  const char* const* items,
                                  int count,
                                  base::RepeatingClosure combobox_callback);
 
   // Creates and adds a Textfield with a label with |label_text| to the left.
-  Textfield* CreateAndAddTextfield(const base::string16& label_text);
+  Textfield* CreateAndAddTextfield(const std::u16string& label_text);
 
   // Creates a set of labeled Textfields with |label_text|, and four text fields
   // arranged at compass points representing a set of insets. |textfields| is
   // populated with the fields that are created.
-  void CreateMarginsTextFields(const base::string16& label_text,
+  void CreateMarginsTextFields(const std::u16string& label_text,
                                InsetTextfields* textfields);
 
   // Creates and adds a Checkbox with label |label_text|. Sets
   // |checkbox_callback| as the callback for the created checkbox.
-  Checkbox* CreateAndAddCheckbox(const base::string16& label_text,
+  Checkbox* CreateAndAddCheckbox(const std::u16string& label_text,
                                  base::RepeatingClosure checkbox_callback);
 
   // ExampleBase:

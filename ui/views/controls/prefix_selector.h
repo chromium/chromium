@@ -48,7 +48,7 @@ class VIEWS_EXPORT PrefixSelector : public ui::TextInputClient {
   void SetCompositionText(const ui::CompositionText& composition) override;
   uint32_t ConfirmCompositionText(bool keep_selection) override;
   void ClearCompositionText() override;
-  void InsertText(const base::string16& text,
+  void InsertText(const std::u16string& text,
                   InsertTextCursorBehavior cursor_behavior) override;
   void InsertChar(const ui::KeyEvent& event) override;
   ui::TextInputType GetTextInputType() const override;
@@ -67,7 +67,7 @@ class VIEWS_EXPORT PrefixSelector : public ui::TextInputClient {
   bool SetEditableSelectionRange(const gfx::Range& range) override;
   bool DeleteRange(const gfx::Range& range) override;
   bool GetTextFromRange(const gfx::Range& range,
-                        base::string16* text) const override;
+                        std::u16string* text) const override;
   void OnInputMethodChanged() override;
   bool ChangeTextDirectionAndLayoutAlignment(
       base::i18n::TextDirection direction) override;
@@ -97,7 +97,7 @@ class VIEWS_EXPORT PrefixSelector : public ui::TextInputClient {
       base::Optional<gfx::Rect>* selection_bounds) override;
   void SetActiveCompositionForAccessibility(
       const gfx::Range& range,
-      const base::string16& active_composition_text,
+      const std::u16string& active_composition_text,
       bool is_composition_committed) override;
 #endif
 
@@ -107,10 +107,10 @@ class VIEWS_EXPORT PrefixSelector : public ui::TextInputClient {
 
  private:
   // Invoked when text is typed. Tries to change the selection appropriately.
-  void OnTextInput(const base::string16& text);
+  void OnTextInput(const std::u16string& text);
 
   // Returns true if the text of the node at |row| starts with |lower_text|.
-  bool TextAtRowMatchesText(int row, const base::string16& lower_text);
+  bool TextAtRowMatchesText(int row, const std::u16string& lower_text);
 
   // Clears |current_text_| and resets |time_of_last_key_|.
   void ClearText();
@@ -122,7 +122,7 @@ class VIEWS_EXPORT PrefixSelector : public ui::TextInputClient {
   // Time OnTextInput() was last invoked.
   base::TimeTicks time_of_last_key_;
 
-  base::string16 current_text_;
+  std::u16string current_text_;
 
   // TickClock used for getting the time of the current keystroke, used for
   // continuing or restarting selections.

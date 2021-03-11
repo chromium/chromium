@@ -619,16 +619,16 @@ void TableView::OnGestureEvent(ui::GestureEvent* event) {
   SetSelectionModel(std::move(new_model));
 }
 
-base::string16 TableView::GetTooltipText(const gfx::Point& p) const {
+std::u16string TableView::GetTooltipText(const gfx::Point& p) const {
   const int row = p.y() / row_height_;
   if (row < 0 || row >= GetRowCount() || visible_columns_.empty())
-    return base::string16();
+    return std::u16string();
 
   const int x = GetMirroredXInView(p.x());
   const int column = GetClosestVisibleColumnIndex(this, x);
   if (x < visible_columns_[column].x ||
       x > (visible_columns_[column].x + visible_columns_[column].width))
-    return base::string16();
+    return std::u16string();
 
   const int model_row = ViewToModel(row);
   if (column == 0 && !model_->GetTooltip(model_row).empty())
@@ -1461,9 +1461,9 @@ void TableView::PopulateAccessibilityCellData(AXVirtualView* ax_cell,
   }
 
   // Set the cell's value since it changes dynamically.
-  base::string16 current_name = base::UTF8ToUTF16(
+  std::u16string current_name = base::UTF8ToUTF16(
       data->GetStringAttribute(ax::mojom::StringAttribute::kName));
-  base::string16 new_name =
+  std::u16string new_name =
       model()->GetText(model_index, GetVisibleColumn(column_index).column.id);
   data->SetName(new_name);
   if (current_name != new_name)

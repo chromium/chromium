@@ -338,9 +338,9 @@ void IMM32Manager::GetCompositionInfo(HIMC imm_context,
 }
 
 bool IMM32Manager::GetString(HIMC imm_context,
-                         WPARAM lparam,
-                         int type,
-                         base::string16* result) {
+                             WPARAM lparam,
+                             int type,
+                             std::u16string* result) {
   if (!(lparam & type))
     return false;
   LONG string_size = ::ImmGetCompositionString(imm_context, type, NULL, 0);
@@ -353,8 +353,9 @@ bool IMM32Manager::GetString(HIMC imm_context,
   return true;
 }
 
-bool IMM32Manager::GetResult(
-    HWND window_handle, LPARAM lparam, base::string16* result) {
+bool IMM32Manager::GetResult(HWND window_handle,
+                             LPARAM lparam,
+                             std::u16string* result) {
   bool ret = false;
   HIMC imm_context = ::ImmGetContext(window_handle);
   if (imm_context) {

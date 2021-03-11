@@ -53,7 +53,7 @@ class TouchSelectionMenuRunnerViewsTest : public ViewsTestBase,
 
   void RunContextMenu() override {}
 
-  base::string16 GetSelectedText() override { return base::string16(); }
+  std::u16string GetSelectedText() override { return std::u16string(); }
 
   bool ShouldShowQuickMenu() override { return false; }
 

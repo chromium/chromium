@@ -436,12 +436,12 @@ HRESULT AXPlatformNodeTextRangeProviderWin::FindText(
   WIN_ACCESSIBILITY_API_PERF_HISTOGRAM(UMA_API_TEXTRANGE_FINDTEXT);
   UIA_VALIDATE_TEXTRANGEPROVIDER_CALL_1_IN_1_OUT(string, result);
 
-  base::string16 search_string = base::WideToUTF16(string);
+  std::u16string search_string = base::WideToUTF16(string);
   if (search_string.length() <= 0)
     return E_INVALIDARG;
 
   size_t appended_newlines_count = 0;
-  base::string16 text_range = GetString(-1, &appended_newlines_count);
+  std::u16string text_range = GetString(-1, &appended_newlines_count);
   size_t find_start;
   size_t find_length;
   if (base::i18n::StringSearch(search_string, text_range, &find_start,
@@ -1057,7 +1057,7 @@ AXPlatformNodeTextRangeProviderWin::GetNextTextBoundaryPosition(
   }
 }
 
-base::string16 AXPlatformNodeTextRangeProviderWin::GetString(
+std::u16string AXPlatformNodeTextRangeProviderWin::GetString(
     int max_count,
     size_t* appended_newlines_count) {
   AXNodeRange range(start()->Clone(), end()->Clone());

@@ -22,7 +22,7 @@ void MockIMECandidateWindowHandler::UpdateLookupTable(
 }
 
 void MockIMECandidateWindowHandler::UpdatePreeditText(
-    const base::string16& text,
+    const std::u16string& text,
     uint32_t cursor_pos,
     bool visible) {}
 

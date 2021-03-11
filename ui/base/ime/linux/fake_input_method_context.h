@@ -23,7 +23,7 @@ class COMPONENT_EXPORT(UI_BASE_IME_LINUX) FakeInputMethodContext
   void Focus() override;
   void Blur() override;
   void SetCursorLocation(const gfx::Rect& rect) override;
-  void SetSurroundingText(const base::string16& text,
+  void SetSurroundingText(const std::u16string& text,
                           const gfx::Range& selection_range) override;
 
  private:

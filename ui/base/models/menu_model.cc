@@ -56,12 +56,12 @@ bool MenuModel::GetModelAndIndexForCommandId(int command_id,
   return false;
 }
 
-base::string16 MenuModel::GetMinorTextAt(int index) const {
-  return base::string16();
+std::u16string MenuModel::GetMinorTextAt(int index) const {
+  return std::u16string();
 }
 
-base::string16 MenuModel::GetSecondaryLabelAt(int index) const {
-  return base::string16();
+std::u16string MenuModel::GetSecondaryLabelAt(int index) const {
+  return std::u16string();
 }
 
 ImageModel MenuModel::GetMinorIconAt(int index) const {

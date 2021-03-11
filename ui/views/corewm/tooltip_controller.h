@@ -101,13 +101,13 @@ class VIEWS_EXPORT TooltipController
   void DisableTooltipShowDelay() { tooltip_show_delayed_ = false; }
 
   aura::Window* tooltip_window_;
-  base::string16 tooltip_text_;
-  base::string16 tooltip_text_whitespace_trimmed_;
+  std::u16string tooltip_text_;
+  std::u16string tooltip_text_whitespace_trimmed_;
   const void* tooltip_id_;
 
   // These fields are for tracking state when the user presses a mouse button.
   aura::Window* tooltip_window_at_mouse_press_;
-  base::string16 tooltip_text_at_mouse_press_;
+  std::u16string tooltip_text_at_mouse_press_;
 
   std::unique_ptr<Tooltip> tooltip_;
 

@@ -31,7 +31,7 @@ namespace button_drag_utils {
 // The image looks like that of the bookmark buttons. |press_pt| is optional
 // offset; otherwise, it centers the drag image.
 VIEWS_EXPORT void SetURLAndDragImage(const GURL& url,
-                                     const base::string16& title,
+                                     const std::u16string& title,
                                      const gfx::ImageSkia& icon,
                                      const gfx::Point* press_pt,
                                      const views::Widget& widget,
@@ -39,7 +39,7 @@ VIEWS_EXPORT void SetURLAndDragImage(const GURL& url,
 
 // As above, but only sets the image.
 VIEWS_EXPORT void SetDragImage(const GURL& url,
-                               const base::string16& title,
+                               const std::u16string& title,
                                const gfx::ImageSkia& icon,
                                const gfx::Point* press_pt,
                                const views::Widget& widget,

@@ -177,7 +177,7 @@ class MockInputMethod : public ui::InputMethodBase {
   void Clear();
 
   void SetCompositionTextForNextKey(const ui::CompositionText& composition);
-  void SetResultTextForNextKey(const base::string16& result);
+  void SetResultTextForNextKey(const std::u16string& result);
 
  private:
   // Overridden from InputMethodBase.
@@ -199,7 +199,7 @@ class MockInputMethod : public ui::InputMethodBase {
 
   // Result text for the next key event. It'll be cleared automatically after
   // dispatching the next key event.
-  base::string16 result_text_;
+  std::u16string result_text_;
 
   // Record call state of corresponding methods. They will be set to false
   // automatically before dispatching a key event.
@@ -309,7 +309,7 @@ void MockInputMethod::SetCompositionTextForNextKey(
   composition_ = composition;
 }
 
-void MockInputMethod::SetResultTextForNextKey(const base::string16& result) {
+void MockInputMethod::SetResultTextForNextKey(const std::u16string& result) {
   result_text_ = result;
 }
 
@@ -421,9 +421,9 @@ ui::ClipboardBuffer TextfieldTest::GetAndResetCopiedToClipboard() {
   return std::exchange(copied_to_clipboard_, ui::ClipboardBuffer::kMaxValue);
 }
 
-base::string16 TextfieldTest::GetClipboardText(
+std::u16string TextfieldTest::GetClipboardText(
     ui::ClipboardBuffer clipboard_buffer) {
-  base::string16 text;
+  std::u16string text;
   ui::Clipboard::GetForCurrentThread()->ReadText(
       clipboard_buffer, /* data_dst = */ nullptr, &text);
   return text;
@@ -435,7 +435,7 @@ void TextfieldTest::SetClipboardText(ui::ClipboardBuffer clipboard_buffer,
 }
 
 void TextfieldTest::ContentsChanged(Textfield* sender,
-                                    const base::string16& new_contents) {
+                                    const std::u16string& new_contents) {
   // Paste calls TextfieldController::ContentsChanged() explicitly even if the
   // paste action did not change the content. So |new_contents| may match
   // |last_contents_|. For more info, see http://crbug.com/79002
@@ -823,7 +823,7 @@ TEST_F(TextfieldTest, ModelChangesTest) {
   EXPECT_STR_EQ("this is a test", textfield_->GetText());
   EXPECT_TRUE(last_contents_.empty());
 
-  EXPECT_EQ(base::string16(), textfield_->GetSelectedText());
+  EXPECT_EQ(std::u16string(), textfield_->GetSelectedText());
   textfield_->SelectAll(false);
   EXPECT_STR_EQ("this is a test", textfield_->GetSelectedText());
   EXPECT_TRUE(last_contents_.empty());
@@ -1868,12 +1868,12 @@ TEST_F(TextfieldTest, DragToSelect) {
 
   // Check that dragging left selects the beginning of the string.
   DragMouseTo(gfx::Point(0, cursor_y));
-  base::string16 text_left = textfield_->GetSelectedText();
+  std::u16string text_left = textfield_->GetSelectedText();
   EXPECT_STR_EQ("hello", text_left);
 
   // Check that dragging right selects the rest of the string.
   DragMouseTo(end_point);
-  base::string16 text_right = textfield_->GetSelectedText();
+  std::u16string text_right = textfield_->GetSelectedText();
   EXPECT_STR_EQ(" world", text_right);
 
   // Check that releasing in the same location does not alter the selection.
@@ -1893,9 +1893,9 @@ TEST_F(TextfieldTest, DragToSelect) {
 TEST_F(TextfieldTest, DragUpOrDownSelectsToEnd) {
   InitTextfield();
   textfield_->SetText(ASCIIToUTF16("hello world"));
-  const base::string16 expected_left = base::ASCIIToUTF16(
+  const std::u16string expected_left = base::ASCIIToUTF16(
       gfx::RenderText::kDragToEndIfOutsideVerticalBounds ? "hello" : "lo");
-  const base::string16 expected_right = base::ASCIIToUTF16(
+  const std::u16string expected_right = base::ASCIIToUTF16(
       gfx::RenderText::kDragToEndIfOutsideVerticalBounds ? " world" : " w");
   const int right_x = GetCursorPositionX(7);
   const int left_x = GetCursorPositionX(3);
@@ -1921,7 +1921,7 @@ TEST_F(TextfieldTest, DragAndDrop_AcceptDrop) {
   textfield_->SetText(ASCIIToUTF16("hello world"));
 
   ui::OSExchangeData data;
-  base::string16 string(ASCIIToUTF16("string "));
+  std::u16string string(ASCIIToUTF16("string "));
   data.SetString(string);
   int formats = 0;
   std::set<ui::ClipboardFormatType> format_types;
@@ -1962,7 +1962,7 @@ TEST_F(TextfieldTest, DragAndDrop_AcceptDrop) {
   ui::ClipboardFormatType fmt = ui::ClipboardFormatType::GetBitmapType();
   bad_data.SetPickledData(fmt, base::Pickle());
   bad_data.SetFileContents(base::FilePath(L"x"), "x");
-  bad_data.SetHtml(base::string16(ASCIIToUTF16("x")), GURL("x.org"));
+  bad_data.SetHtml(std::u16string(ASCIIToUTF16("x")), GURL("x.org"));
   ui::DownloadFileInfo download(base::FilePath(), nullptr);
   bad_data.provider().SetDownloadFileInfo(&download);
   EXPECT_FALSE(textfield_->CanDrop(bad_data));
@@ -1974,7 +1974,7 @@ TEST_F(TextfieldTest, DragAndDrop_InitiateDrag) {
   textfield_->SetText(ASCIIToUTF16("hello string world"));
 
   // Ensure the textfield will provide selected text for drag data.
-  base::string16 string;
+  std::u16string string;
   ui::OSExchangeData data;
   const gfx::Range kStringRange(6, 12);
   textfield_->SetSelectedRange(kStringRange);
@@ -2019,7 +2019,7 @@ TEST_F(TextfieldTest, DragAndDrop_ToTheRight) {
   textfield_->SetText(ASCIIToUTF16("hello world"));
   const int cursor_y = GetCursorYForTesting();
 
-  base::string16 string;
+  std::u16string string;
   ui::OSExchangeData data;
   int formats = 0;
   int operations = 0;
@@ -2070,7 +2070,7 @@ TEST_F(TextfieldTest, DragAndDrop_ToTheLeft) {
   textfield_->SetText(ASCIIToUTF16("hello world"));
   const int cursor_y = GetCursorYForTesting();
 
-  base::string16 string;
+  std::u16string string;
   ui::OSExchangeData data;
   int formats = 0;
   int operations = 0;
@@ -2225,7 +2225,7 @@ TEST_F(TextfieldTest, TextInputClientTest) {
   EXPECT_TRUE(client->GetEditableSelectionRange(&range));
   EXPECT_EQ(gfx::Range(1, 4), range);
 
-  base::string16 substring;
+  std::u16string substring;
   EXPECT_TRUE(client->GetTextFromRange(range, &substring));
   EXPECT_STR_EQ("123", substring);
 
@@ -2569,7 +2569,7 @@ TEST_F(TextfieldTest, CutCopyPaste) {
   // Ensure kPaste, [Ctrl]+[V], and [Shift]+[Insert] pastes;
   // also ensure that [Ctrl]+[Alt]+[V] does nothing.
   SetClipboardText(ui::ClipboardBuffer::kCopyPaste, "abc");
-  textfield_->SetText(base::string16());
+  textfield_->SetText(std::u16string());
   EXPECT_TRUE(textfield_->IsCommandIdEnabled(Textfield::kPaste));
   textfield_->ExecuteCommand(Textfield::kPaste, 0);
   EXPECT_STR_EQ("abc", textfield_->GetText());
@@ -2907,7 +2907,7 @@ TEST_F(TextfieldTest, HitOutsideTextAreaInRTLTest) {
 TEST_F(TextfieldTest, OverflowTest) {
   InitTextfield();
 
-  base::string16 str;
+  std::u16string str;
   for (size_t i = 0; i < 500; ++i)
     SendKeyEvent('a');
   SendKeyEvent(kHebrewLetterSamekh);
@@ -2936,7 +2936,7 @@ TEST_F(TextfieldTest, OverflowInRTLTest) {
 
   InitTextfield();
 
-  base::string16 str;
+  std::u16string str;
   for (size_t i = 0; i < 500; ++i)
     SendKeyEvent('a');
   SendKeyEvent(kHebrewLetterSamekh);
@@ -3411,7 +3411,7 @@ TEST_F(TextfieldTest, CursorBlinkRestartsOnInsertOrReplace) {
 // Verifies setting the accessible name will call NotifyAccessibilityEvent.
 TEST_F(TextfieldTest, SetAccessibleNameNotifiesAccessibilityEvent) {
   InitTextfield();
-  base::string16 test_tooltip_text = ASCIIToUTF16("Test Accessible Name");
+  std::u16string test_tooltip_text = ASCIIToUTF16("Test Accessible Name");
   test::AXEventCounter counter(views::AXEventManager::Get());
   EXPECT_EQ(0, counter.GetCount(ax::mojom::Event::kTextChanged));
   textfield_->SetAccessibleName(test_tooltip_text);
@@ -3753,7 +3753,7 @@ TEST_F(TextfieldTest, SwitchFocusInKeyDown) {
   EXPECT_EQ(focuser, GetFocusedView());
   SendKeyPress(ui::VKEY_SPACE, 0);
   EXPECT_EQ(textfield_, GetFocusedView());
-  EXPECT_EQ(base::string16(), textfield_->GetText());
+  EXPECT_EQ(std::u16string(), textfield_->GetText());
 
   focuser->set_consume(false);
   focuser->RequestFocus();
@@ -3892,7 +3892,7 @@ TEST_F(TextfieldTest, LookUpPassword) {
   InitTextfield();
   textfield_->SetTextInputType(ui::TEXT_INPUT_TYPE_PASSWORD);
 
-  const base::string16 kText = ASCIIToUTF16("Willie Wagtail");
+  const std::u16string kText = ASCIIToUTF16("Willie Wagtail");
 
   textfield_->SetText(kText);
   textfield_->SelectAll(false);
@@ -4030,7 +4030,7 @@ TEST_F(TextfieldTest, ChangeTextDirectionAndLayoutAlignmentTest) {
 
   textfield_->ChangeTextDirectionAndLayoutAlignment(
       base::i18n::TextDirection::RIGHT_TO_LEFT);
-  const base::string16& text = test_api_->GetRenderText()->GetDisplayText();
+  const std::u16string& text = test_api_->GetRenderText()->GetDisplayText();
   base::i18n::TextDirection text_direction =
       base::i18n::GetFirstStrongCharacterDirection(text);
   EXPECT_EQ(textfield_->GetTextDirection(), text_direction);

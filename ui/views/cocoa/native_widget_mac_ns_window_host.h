@@ -162,7 +162,7 @@ class VIEWS_EXPORT NativeWidgetMacNSWindowHost
   void CreateCompositor(const Widget::InitParams& params);
 
   // Set the window's title, returning true if the title has changed.
-  bool SetWindowTitle(const base::string16& title);
+  bool SetWindowTitle(const std::u16string& title);
 
   // Called when the owning Widget's Init method has completed.
   void OnWidgetInitDone();
@@ -272,7 +272,7 @@ class VIEWS_EXPORT NativeWidgetMacNSWindowHost
   bool GetIsDraggableBackgroundAt(const gfx::Point& location_in_content,
                                   bool* is_draggable_background) override;
   bool GetTooltipTextAt(const gfx::Point& location_in_content,
-                        base::string16* new_tooltip_text) override;
+                        std::u16string* new_tooltip_text) override;
   bool GetWidgetIsModal(bool* widget_is_modal) override;
   bool GetIsFocusedViewTextual(bool* is_textual) override;
   void OnWindowGeometryChanged(
@@ -293,7 +293,7 @@ class VIEWS_EXPORT NativeWidgetMacNSWindowHost
   void DoDialogButtonAction(ui::DialogButton button) override;
   bool GetDialogButtonInfo(ui::DialogButton type,
                            bool* button_exists,
-                           base::string16* button_label,
+                           std::u16string* button_label,
                            bool* is_button_enabled,
                            bool* is_button_default) override;
   bool GetDoDialogButtonsExist(bool* buttons_exist) override;
@@ -436,7 +436,7 @@ class VIEWS_EXPORT NativeWidgetMacNSWindowHost
   std::unique_ptr<TooltipManager> tooltip_manager_;
   std::unique_ptr<TextInputHost> text_input_host_;
 
-  base::string16 window_title_;
+  std::u16string window_title_;
 
   // The display that the window is currently on.
   display::Display display_;

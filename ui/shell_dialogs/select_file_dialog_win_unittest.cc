@@ -220,7 +220,7 @@ TEST_F(SelectFileDialogWinTest, CancelAllDialogs) {
       file_type_info_index = 1;
     }
 
-    dialog->SelectFile(test_case.dialog_type, base::string16(),
+    dialog->SelectFile(test_case.dialog_type, std::u16string(),
                        base::FilePath(), file_type_info.get(),
                        file_type_info_index, std::wstring(), native_window(),
                        nullptr);
@@ -248,7 +248,7 @@ TEST_F(SelectFileDialogWinTest, UploadFolderCheckStrings) {
   scoped_refptr<ui::SelectFileDialog> dialog =
       ui::SelectFileDialog::Create(this, nullptr);
   dialog->SelectFile(ui::SelectFileDialog::SELECT_UPLOAD_FOLDER,
-                     base::string16(), default_path, nullptr, 0, L"",
+                     std::u16string(), default_path, nullptr, 0, L"",
                      native_window(), nullptr);
 
   // Wait for the window to open and make sure the window title was changed from
@@ -316,7 +316,7 @@ TEST_F(SelectFileDialogWinTest, TestSelectFile) {
 
   scoped_refptr<ui::SelectFileDialog> dialog =
       ui::SelectFileDialog::Create(this, nullptr);
-  dialog->SelectFile(ui::SelectFileDialog::SELECT_OPEN_FILE, base::string16(),
+  dialog->SelectFile(ui::SelectFileDialog::SELECT_OPEN_FILE, std::u16string(),
                      default_path, nullptr, 0, L"", native_window(), nullptr);
 
   // Wait for the window to open
@@ -343,7 +343,7 @@ TEST_F(SelectFileDialogWinTest, TestSaveFile) {
 
   scoped_refptr<ui::SelectFileDialog> dialog =
       ui::SelectFileDialog::Create(this, nullptr);
-  dialog->SelectFile(ui::SelectFileDialog::SELECT_SAVEAS_FILE, base::string16(),
+  dialog->SelectFile(ui::SelectFileDialog::SELECT_SAVEAS_FILE, std::u16string(),
                      default_path, &file_type_info, 1, L"", native_window(),
                      nullptr);
 
@@ -367,7 +367,7 @@ TEST_F(SelectFileDialogWinTest, OnlyBasename) {
 
   scoped_refptr<ui::SelectFileDialog> dialog =
       ui::SelectFileDialog::Create(this, nullptr);
-  dialog->SelectFile(ui::SelectFileDialog::SELECT_SAVEAS_FILE, base::string16(),
+  dialog->SelectFile(ui::SelectFileDialog::SELECT_SAVEAS_FILE, std::u16string(),
                      default_path, &file_type_info, 1, L"", native_window(),
                      nullptr);
 
@@ -394,7 +394,7 @@ TEST_F(SelectFileDialogWinTest, SaveAsDifferentExtension) {
 
   scoped_refptr<ui::SelectFileDialog> dialog =
       ui::SelectFileDialog::Create(this, nullptr);
-  dialog->SelectFile(ui::SelectFileDialog::SELECT_SAVEAS_FILE, base::string16(),
+  dialog->SelectFile(ui::SelectFileDialog::SELECT_SAVEAS_FILE, std::u16string(),
                      default_path, &file_type_info, 1, L"html", native_window(),
                      nullptr);
 
@@ -421,7 +421,7 @@ TEST_F(SelectFileDialogWinTest, OpenFileDifferentExtension) {
 
   scoped_refptr<ui::SelectFileDialog> dialog =
       ui::SelectFileDialog::Create(this, nullptr);
-  dialog->SelectFile(ui::SelectFileDialog::SELECT_OPEN_FILE, base::string16(),
+  dialog->SelectFile(ui::SelectFileDialog::SELECT_OPEN_FILE, std::u16string(),
                      default_path, &file_type_info, 1, L"html", native_window(),
                      nullptr);
 
@@ -444,7 +444,7 @@ TEST_F(SelectFileDialogWinTest, SelectNonExistingFile) {
 
   scoped_refptr<ui::SelectFileDialog> dialog =
       ui::SelectFileDialog::Create(this, nullptr);
-  dialog->SelectFile(ui::SelectFileDialog::SELECT_OPEN_FILE, base::string16(),
+  dialog->SelectFile(ui::SelectFileDialog::SELECT_OPEN_FILE, std::u16string(),
                      default_path, nullptr, 0, L"", native_window(), nullptr);
 
   HWND window = WaitForDialogWindow(kSelectFileDefaultTitle);
@@ -480,7 +480,7 @@ TEST_F(SelectFileDialogWinTest, SaveFileOverwritePrompt) {
 
   scoped_refptr<ui::SelectFileDialog> dialog =
       ui::SelectFileDialog::Create(this, nullptr);
-  dialog->SelectFile(ui::SelectFileDialog::SELECT_SAVEAS_FILE, base::string16(),
+  dialog->SelectFile(ui::SelectFileDialog::SELECT_SAVEAS_FILE, std::u16string(),
                      default_path, &file_type_info, 1, L"", native_window(),
                      nullptr);
 

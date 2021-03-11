@@ -37,7 +37,7 @@ class COMPONENT_EXPORT(UI_BASE_IME_LINUX) LinuxInputMethodContext {
   virtual void SetCursorLocation(const gfx::Rect& rect) = 0;
 
   // Tells the system IME the surrounding text around the cursor location.
-  virtual void SetSurroundingText(const base::string16& text,
+  virtual void SetSurroundingText(const std::u16string& text,
                                   const gfx::Range& selection_range) = 0;
 
   // Resets the context.  A client needs to call OnTextInputTypeChanged() again
@@ -57,7 +57,7 @@ class COMPONENT_EXPORT(UI_BASE_IME_LINUX) LinuxInputMethodContextDelegate {
   virtual ~LinuxInputMethodContextDelegate() {}
 
   // Commits the |text| to the text input client.
-  virtual void OnCommit(const base::string16& text) = 0;
+  virtual void OnCommit(const std::u16string& text) = 0;
 
   // Deletes the surrounding text at |index| for given |length|.
   virtual void OnDeleteSurroundingText(int32_t index, uint32_t length) = 0;

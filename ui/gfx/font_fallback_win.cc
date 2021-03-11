@@ -57,7 +57,7 @@ void GetFontNamesFromFilename(const std::string& filename,
 
 // Returns true if |text| contains only ASCII digits.
 bool ContainsOnlyDigits(const std::string& text) {
-  return text.find_first_not_of("0123456789") == base::string16::npos;
+  return text.find_first_not_of("0123456789") == std::u16string::npos;
 }
 
 // Appends a Font with the given |name| and |size| to |fonts| unless the last

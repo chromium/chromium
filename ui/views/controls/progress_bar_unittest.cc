@@ -50,7 +50,7 @@ TEST_F(ProgressBarTest, AccessibleNodeData) {
   ui::AXNodeData node_data;
   bar_->GetAccessibleNodeData(&node_data);
   EXPECT_EQ(ax::mojom::Role::kProgressIndicator, node_data.role);
-  EXPECT_EQ(base::string16(),
+  EXPECT_EQ(std::u16string(),
             node_data.GetString16Attribute(ax::mojom::StringAttribute::kName));
   EXPECT_EQ(std::string("62%"),
             node_data.GetStringAttribute(ax::mojom::StringAttribute::kValue));

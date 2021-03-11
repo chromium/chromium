@@ -15,7 +15,7 @@ DragEventAndroid::DragEventAndroid(
     int action,
     const gfx::PointF& location,
     const gfx::PointF& screen_location,
-    const std::vector<base::string16>& mime_types,
+    const std::vector<std::u16string>& mime_types,
     jstring content)
     : action_(action),
       location_(location),

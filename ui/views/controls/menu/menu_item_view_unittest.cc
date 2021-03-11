@@ -231,7 +231,7 @@ class TouchableMenuItemViewTest : public ViewsTestBase {
     ViewsTestBase::TearDown();
   }
 
-  gfx::Size AppendItemAndGetSize(int i, const base::string16& title) {
+  gfx::Size AppendItemAndGetSize(int i, const std::u16string& title) {
     return menu_item_view_->AppendMenuItem(i, title)->GetPreferredSize();
   }
 
@@ -416,23 +416,23 @@ TEST_F(MenuItemViewPaintUnitTest, MinorTextAndIconAssertionCoverage) {
         minor_icon, gfx::ImageSkia(), ui::ThemedVectorIcon(),
         views::MenuItemView::Type::kNormal, ui::NORMAL_SEPARATOR);
   };
-  AddItem("No secondary label, no minor content", base::string16(),
-          base::string16(), ui::ThemedVectorIcon());
-  AddItem("No secondary label, minor text only", base::string16(),
+  AddItem("No secondary label, no minor content", std::u16string(),
+          std::u16string(), ui::ThemedVectorIcon());
+  AddItem("No secondary label, minor text only", std::u16string(),
           base::ASCIIToUTF16("minor text"), ui::ThemedVectorIcon());
-  AddItem("No secondary label, minor icon only", base::string16(),
-          base::string16(), ui::ThemedVectorIcon(&views::kMenuCheckIcon));
-  AddItem("No secondary label, minor text and icon", base::string16(),
+  AddItem("No secondary label, minor icon only", std::u16string(),
+          std::u16string(), ui::ThemedVectorIcon(&views::kMenuCheckIcon));
+  AddItem("No secondary label, minor text and icon", std::u16string(),
           base::ASCIIToUTF16("minor text"),
           ui::ThemedVectorIcon(&views::kMenuCheckIcon));
   AddItem("Secondary label, no minor content",
-          base::ASCIIToUTF16("secondary label"), base::string16(),
+          base::ASCIIToUTF16("secondary label"), std::u16string(),
           ui::ThemedVectorIcon());
   AddItem("Secondary label, minor text only",
           base::ASCIIToUTF16("secondary label"),
           base::ASCIIToUTF16("minor text"), ui::ThemedVectorIcon());
   AddItem("Secondary label, minor icon only",
-          base::ASCIIToUTF16("secondary label"), base::string16(),
+          base::ASCIIToUTF16("secondary label"), std::u16string(),
           ui::ThemedVectorIcon(&views::kMenuCheckIcon));
   AddItem("Secondary label, minor text and icon",
           base::ASCIIToUTF16("secondary label"),

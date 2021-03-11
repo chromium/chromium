@@ -26,7 +26,7 @@ std::unique_ptr<DialogModel> DialogModel::Builder::Build() {
 
 DialogModel::Builder& DialogModel::Builder::AddOkButton(
     base::OnceClosure callback,
-    base::string16 label,
+    std::u16string label,
     const DialogModelButton::Params& params) {
   DCHECK(!model_->accept_callback_);
   model_->accept_callback_ = std::move(callback);
@@ -42,7 +42,7 @@ DialogModel::Builder& DialogModel::Builder::AddOkButton(
 
 DialogModel::Builder& DialogModel::Builder::AddCancelButton(
     base::OnceClosure callback,
-    base::string16 label,
+    std::u16string label,
     const DialogModelButton::Params& params) {
   DCHECK(!model_->cancel_callback_);
   model_->cancel_callback_ = std::move(callback);
@@ -58,7 +58,7 @@ DialogModel::Builder& DialogModel::Builder::AddCancelButton(
 
 DialogModel::Builder& DialogModel::Builder::AddDialogExtraButton(
     base::RepeatingCallback<void(const Event&)> callback,
-    base::string16 label,
+    std::u16string label,
     const DialogModelButton::Params& params) {
   model_->extra_button_.emplace(model_->GetPassKey(), model_.get(),
                                 std::move(callback), std::move(label), params);
@@ -95,15 +95,15 @@ void DialogModel::AddCheckbox(int unique_id,
                                                  label, params));
 }
 
-void DialogModel::AddCombobox(base::string16 label,
+void DialogModel::AddCombobox(std::u16string label,
                               std::unique_ptr<ui::ComboboxModel> combobox_model,
                               const DialogModelCombobox::Params& params) {
   AddField(std::make_unique<DialogModelCombobox>(
       GetPassKey(), this, std::move(label), std::move(combobox_model), params));
 }
 
-void DialogModel::AddTextfield(base::string16 label,
-                               base::string16 text,
+void DialogModel::AddTextfield(std::u16string label,
+                               std::u16string text,
                                const DialogModelTextfield::Params& params) {
   AddField(std::make_unique<DialogModelTextfield>(
       GetPassKey(), this, std::move(label), std::move(text), params));

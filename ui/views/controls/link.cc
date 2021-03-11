@@ -23,7 +23,7 @@
 
 namespace views {
 
-Link::Link(const base::string16& title, int text_context, int text_style)
+Link::Link(const std::u16string& title, int text_context, int text_style)
     : Label(title, text_context, text_style) {
   RecalculateFont();
 
@@ -171,7 +171,7 @@ void Link::SetFontList(const gfx::FontList& font_list) {
   RecalculateFont();
 }
 
-void Link::SetText(const base::string16& text) {
+void Link::SetText(const std::u16string& text) {
   Label::SetText(text);
   ConfigureFocus();
 }

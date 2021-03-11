@@ -330,11 +330,11 @@ class AXPosition {
     if (!IsTextPosition() || text_offset_ > MaxTextOffset())
       return str;
 
-    const base::string16 text = GetText();
+    const std::u16string text = GetText();
     DCHECK_GE(text_offset_, 0);
     const size_t max_text_offset = text.size();
     DCHECK_LE(text_offset_, int{max_text_offset}) << text;
-    base::string16 annotated_text;
+    std::u16string annotated_text;
     if (text_offset_ == int{max_text_offset}) {
       annotated_text = text + base::WideToUTF16(L"<>");
     } else {
@@ -3800,17 +3800,17 @@ class AXPosition {
     std::swap(text_offset_, other.text_offset_);
     std::swap(affinity_, other.affinity_);
     // We explicitly don't swap any cached members.
-    name_ = base::string16();
-    other.name_ = base::string16();
+    name_ = std::u16string();
+    other.name_ = std::u16string();
   }
 
   // Returns the text (in UTF16 format) that is present inside the anchor node,
   // including any text found in descendant text nodes, based on the platform's
   // text representation. Some platforms use an embedded object replacement
   // character that replaces the text coming from most child nodes.
-  base::string16 GetText() const {
+  std::u16string GetText() const {
     if (IsNullPosition())
-      return base::string16();
+      return std::u16string();
 
     // Special case, if a position's anchor node has only ignored descendants,
     // i.e., it appears to be empty to assistive software, on some platforms we
@@ -4965,7 +4965,7 @@ class AXPosition {
 
   // In the case of a leaf position, its inner text (in UTF16 format). Used for
   // initializing a grapheme break iterator.
-  mutable base::string16 name_;
+  mutable std::u16string name_;
 };
 
 template <class AXPositionType, class AXNodeType>

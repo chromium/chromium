@@ -59,13 +59,13 @@ class TextfieldModelTest : public ViewsTestBase,
 
  protected:
   void ResetModel(TextfieldModel* model) const {
-    model->SetText(base::string16(), 0);
+    model->SetText(std::u16string(), 0);
     model->ClearEditHistory();
   }
 
-  const std::vector<base::string16> GetAllSelectionTexts(
+  const std::vector<std::u16string> GetAllSelectionTexts(
       TextfieldModel* model) const {
-    std::vector<base::string16> selected_texts;
+    std::vector<std::u16string> selected_texts;
     for (auto range : model->render_text()->GetAllSelections())
       selected_texts.push_back(model->GetTextFromRange(range));
     return selected_texts;
@@ -74,7 +74,7 @@ class TextfieldModelTest : public ViewsTestBase,
   void VerifyAllSelectionTexts(
       TextfieldModel* model,
       std::vector<std::string> expected_selected_texts) const {
-    std::vector<base::string16> selected_texts = GetAllSelectionTexts(model);
+    std::vector<std::u16string> selected_texts = GetAllSelectionTexts(model);
     EXPECT_EQ(expected_selected_texts.size(), selected_texts.size());
     for (size_t i = 0; i < selected_texts.size(); ++i)
       EXPECT_STR_EQ(expected_selected_texts[i], selected_texts[i]);
@@ -280,8 +280,8 @@ TEST_F(TextfieldModelTest, EditString_ComplexScript) {
 
 TEST_F(TextfieldModelTest, EmptyString) {
   TextfieldModel model(nullptr);
-  EXPECT_EQ(base::string16(), model.text());
-  EXPECT_EQ(base::string16(), model.GetSelectedText());
+  EXPECT_EQ(std::u16string(), model.text());
+  EXPECT_EQ(std::u16string(), model.GetSelectedText());
 
   model.MoveCursor(gfx::CHARACTER_BREAK, gfx::CURSOR_LEFT,
                    gfx::SELECTION_RETAIN);
@@ -290,7 +290,7 @@ TEST_F(TextfieldModelTest, EmptyString) {
                    gfx::SELECTION_RETAIN);
   EXPECT_EQ(0U, model.GetCursorPosition());
 
-  EXPECT_EQ(base::string16(), model.GetSelectedText());
+  EXPECT_EQ(std::u16string(), model.GetSelectedText());
 
   EXPECT_FALSE(model.Delete());
   EXPECT_FALSE(model.Backspace());
@@ -313,7 +313,7 @@ TEST_F(TextfieldModelTest, Selection) {
   model.MoveCursor(gfx::LINE_BREAK, gfx::CURSOR_RIGHT, gfx::SELECTION_RETAIN);
   EXPECT_STR_EQ("ELLO", model.GetSelectedText());
   model.ClearSelection();
-  EXPECT_EQ(base::string16(), model.GetSelectedText());
+  EXPECT_EQ(std::u16string(), model.GetSelectedText());
 
   // SelectAll(false) selects towards the end.
   model.SelectAll(false);
@@ -405,7 +405,7 @@ TEST_F(TextfieldModelTest, Selection_BidiWithNonSpacingMarks) {
             model.GetSelectedText());
 
   model.ClearSelection();
-  EXPECT_EQ(base::string16(), model.GetSelectedText());
+  EXPECT_EQ(std::u16string(), model.GetSelectedText());
   model.SelectAll(false);
   EXPECT_EQ(base::WideToUTF16(L"abc\x05E9\x05BC\x05C1\x05B8\x05E0\x05B8"
                               L"def"),
@@ -470,7 +470,7 @@ TEST_F(TextfieldModelTest, Selection_BidiWithNonSpacingMarks) {
             model.GetSelectedText());
 
   model.ClearSelection();
-  EXPECT_EQ(base::string16(), model.GetSelectedText());
+  EXPECT_EQ(std::u16string(), model.GetSelectedText());
   model.SelectAll(false);
   EXPECT_EQ(base::WideToUTF16(L"a\x05E9"
                               L"b"),
@@ -611,7 +611,7 @@ TEST_F(TextfieldModelTest, Word) {
   model.MoveCursor(gfx::WORD_BREAK, gfx::CURSOR_LEFT, gfx::SELECTION_RETAIN);
   EXPECT_STR_EQ("The answer to Life, ", model.GetSelectedText());
   model.ReplaceChar('4');
-  EXPECT_EQ(base::string16(), model.GetSelectedText());
+  EXPECT_EQ(std::u16string(), model.GetSelectedText());
   EXPECT_STR_EQ("42", model.text());
 #else  // Non-Windows: move right by word does NOT include space/punctuation.
   model.MoveCursor(gfx::WORD_BREAK, gfx::CURSOR_RIGHT, gfx::SELECTION_NONE);
@@ -655,7 +655,7 @@ TEST_F(TextfieldModelTest, Word) {
   model.MoveCursor(gfx::WORD_BREAK, gfx::CURSOR_LEFT, gfx::SELECTION_RETAIN);
   EXPECT_STR_EQ("The answer to Life", model.GetSelectedText());
   model.ReplaceChar('4');
-  EXPECT_EQ(base::string16(), model.GetSelectedText());
+  EXPECT_EQ(std::u16string(), model.GetSelectedText());
   EXPECT_STR_EQ("42", model.text());
 #endif
 }
@@ -686,21 +686,21 @@ TEST_F(TextfieldModelTest, SetText) {
   // the text end.
   model.SetText(base::ASCIIToUTF16("BYE"), 5);
   EXPECT_EQ(3U, model.GetCursorPosition());
-  EXPECT_EQ(base::string16(), model.GetSelectedText());
+  EXPECT_EQ(std::u16string(), model.GetSelectedText());
 
   // SetText with empty string.
-  model.SetText(base::string16(), 0);
+  model.SetText(std::u16string(), 0);
   EXPECT_EQ(0U, model.GetCursorPosition());
 }
 
 TEST_F(TextfieldModelTest, Clipboard) {
   ui::Clipboard* clipboard = ui::Clipboard::GetForCurrentThread();
-  const base::string16 initial_clipboard_text =
+  const std::u16string initial_clipboard_text =
       base::ASCIIToUTF16("initial text");
   ui::ScopedClipboardWriter(ui::ClipboardBuffer::kCopyPaste)
       .WriteText(initial_clipboard_text);
 
-  base::string16 clipboard_text;
+  std::u16string clipboard_text;
   TextfieldModel model(nullptr);
   model.Append(base::ASCIIToUTF16("HELLO WORLD"));
 
@@ -798,12 +798,12 @@ TEST_F(TextfieldModelTest, Clipboard) {
 
 TEST_F(TextfieldModelTest, Clipboard_WithSecondarySelections) {
   ui::Clipboard* clipboard = ui::Clipboard::GetForCurrentThread();
-  const base::string16 initial_clipboard_text =
+  const std::u16string initial_clipboard_text =
       base::ASCIIToUTF16("initial text");
   ui::ScopedClipboardWriter(ui::ClipboardBuffer::kCopyPaste)
       .WriteText(initial_clipboard_text);
 
-  base::string16 clipboard_text;
+  std::u16string clipboard_text;
   TextfieldModel model(nullptr);
   model.Append(base::ASCIIToUTF16("It's time to say HELLO."));
 
@@ -910,7 +910,7 @@ TEST_F(TextfieldModelTest, Clipboard_WithSecondarySelections) {
 
 static void SelectWordTestVerifier(
     const TextfieldModel& model,
-    const base::string16& expected_selected_string,
+    const std::u16string& expected_selected_string,
     size_t expected_cursor_pos) {
   EXPECT_EQ(expected_selected_string, model.GetSelectedText());
   EXPECT_EQ(expected_cursor_pos, model.GetCursorPosition());
@@ -1388,7 +1388,7 @@ TEST_F(TextfieldModelTest, CompositionTextTest) {
   composition_text_confirmed_or_cleared_ = false;
   EXPECT_STR_EQ("1234567890-678-", model.text());
 
-  model.SetText(base::string16(), 0);
+  model.SetText(std::u16string(), 0);
   model.SetCompositionText(composition);
   model.MoveCursor(gfx::CHARACTER_BREAK, gfx::CURSOR_LEFT, gfx::SELECTION_NONE);
   EXPECT_TRUE(composition_text_confirmed_or_cleared_);
@@ -1410,7 +1410,7 @@ TEST_F(TextfieldModelTest, CompositionTextTest) {
   composition_text_confirmed_or_cleared_ = false;
   EXPECT_STR_EQ("676788678", model.text());
 
-  model.SetText(base::string16(), 0);
+  model.SetText(std::u16string(), 0);
   model.SetCompositionText(composition);
   model.MoveCursor(gfx::WORD_BREAK, gfx::CURSOR_RIGHT, gfx::SELECTION_NONE);
   EXPECT_TRUE(composition_text_confirmed_or_cleared_);
@@ -2415,18 +2415,18 @@ TEST_F(TextfieldModelTest, Clipboard_WhiteSpaceStringTest) {
 }
 
 TEST_F(TextfieldModelTest, Transpose) {
-  const base::string16 ltr = base::ASCIIToUTF16("12");
-  const base::string16 rtl = base::WideToUTF16(L"\x0634\x0632");
-  const base::string16 ltr_transposed = base::ASCIIToUTF16("21");
-  const base::string16 rtl_transposed = base::WideToUTF16(L"\x0632\x0634");
+  const std::u16string ltr = base::ASCIIToUTF16("12");
+  const std::u16string rtl = base::WideToUTF16(L"\x0634\x0632");
+  const std::u16string ltr_transposed = base::ASCIIToUTF16("21");
+  const std::u16string rtl_transposed = base::WideToUTF16(L"\x0632\x0634");
 
   // This is a string with an 'a' between two emojis.
-  const base::string16 surrogate_pairs({0xD83D, 0xDE07, 'a', 0xD83D, 0xDE0E});
-  const base::string16 test_strings[] = {ltr, rtl, surrogate_pairs};
+  const std::u16string surrogate_pairs({0xD83D, 0xDE07, 'a', 0xD83D, 0xDE0E});
+  const std::u16string test_strings[] = {ltr, rtl, surrogate_pairs};
 
   struct TestCase {
     gfx::Range range;
-    base::string16 expected_text;
+    std::u16string expected_text;
     gfx::Range expected_selection;
   };
 
@@ -2445,11 +2445,11 @@ TEST_F(TextfieldModelTest, Transpose) {
   // Only test at valid grapheme boundaries.
   std::vector<TestCase> surrogate_pairs_test = {
       {gfx::Range(0), surrogate_pairs, gfx::Range(0)},
-      {gfx::Range(2), base::string16({'a', 0xD83D, 0xDE07, 0xD83D, 0xDE0E}),
+      {gfx::Range(2), std::u16string({'a', 0xD83D, 0xDE07, 0xD83D, 0xDE0E}),
        gfx::Range(3)},
-      {gfx::Range(3), base::string16({0xD83D, 0xDE07, 0xD83D, 0xDE0E, 'a'}),
+      {gfx::Range(3), std::u16string({0xD83D, 0xDE07, 0xD83D, 0xDE0E, 'a'}),
        gfx::Range(5)},
-      {gfx::Range(5), base::string16({0xD83D, 0xDE07, 0xD83D, 0xDE0E, 'a'}),
+      {gfx::Range(5), std::u16string({0xD83D, 0xDE07, 0xD83D, 0xDE0E, 'a'}),
        gfx::Range(5)},
       {gfx::Range(3, 5), surrogate_pairs, gfx::Range(3, 5)}};
 
@@ -2573,7 +2573,7 @@ TEST_F(TextfieldModelTest, SetCompositionFromExistingText_Empty) {
 
 TEST_F(TextfieldModelTest, SetCompositionFromExistingText_OutOfBounds) {
   TextfieldModel model(nullptr);
-  model.SetText(base::string16(), 0);
+  model.SetText(std::u16string(), 0);
 
   model.SetCompositionFromExistingText(gfx::Range(0, 2));
   EXPECT_FALSE(model.HasCompositionText());

@@ -39,7 +39,7 @@
 
 namespace views {
 
-Tab::Tab(TabbedPane* tabbed_pane, const base::string16& title, View* contents)
+Tab::Tab(TabbedPane* tabbed_pane, const std::u16string& title, View* contents)
     : tabbed_pane_(tabbed_pane), contents_(contents) {
   // Calculate the size while the font list is bold.
   auto title_label = std::make_unique<Label>(title, style::CONTEXT_LABEL,
@@ -86,11 +86,11 @@ void Tab::SetSelected(bool selected) {
 #endif
 }
 
-const base::string16& Tab::GetTitleText() const {
+const std::u16string& Tab::GetTitleText() const {
   return title_->GetText();
 }
 
-void Tab::SetTitleText(const base::string16& text) {
+void Tab::SetTitleText(const std::u16string& text) {
   title_->SetText(text);
   UpdatePreferredTitleWidth();
   PreferredSizeChanged();
@@ -527,7 +527,7 @@ size_t TabbedPane::GetTabCount() {
 }
 
 void TabbedPane::AddTabInternal(size_t index,
-                                const base::string16& title,
+                                const std::u16string& title,
                                 std::unique_ptr<View> contents) {
   DCHECK_LE(index, GetTabCount());
   contents->SetVisible(false);

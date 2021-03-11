@@ -570,7 +570,7 @@ void AXNode::ComputeLineStartOffsets(std::vector<int>* line_offsets,
         line_offsets->push_back(*start_offset);
     }
 
-    base::string16 text =
+    std::u16string text =
         child->data().GetString16Attribute(ax::mojom::StringAttribute::kName);
     *start_offset += static_cast<int>(text.length());
   }
@@ -610,7 +610,7 @@ const std::string& AXNode::GetInheritedStringAttribute(
   return base::EmptyString();
 }
 
-base::string16 AXNode::GetInheritedString16Attribute(
+std::u16string AXNode::GetInheritedString16Attribute(
     ax::mojom::StringAttribute attribute) const {
   return base::UTF8ToUTF16(GetInheritedStringAttribute(attribute));
 }
@@ -627,7 +627,7 @@ void AXNode::ClearLanguageInfo() {
   language_info_.reset();
 }
 
-base::string16 AXNode::GetHypertext() const {
+std::u16string AXNode::GetHypertext() const {
   DCHECK(!tree_->GetTreeUpdateInProgressState());
 
   // Hypertext is not exposed for descendants of leaf nodes. For such nodes,
@@ -655,9 +655,9 @@ base::string16 AXNode::GetHypertext() const {
   //
   // Note that the word "hypertext" comes from the IAccessible2 Standard and has
   // nothing to do with HTML.
-  const base::string16 embedded_character_str(kEmbeddedCharacter);
+  const std::u16string embedded_character_str(kEmbeddedCharacter);
   DCHECK_EQ(int{embedded_character_str.length()}, kEmbeddedCharacterLength);
-  base::string16 hypertext;
+  std::u16string hypertext;
   for (auto it = UnignoredChildrenBegin(); it != UnignoredChildrenEnd(); ++it) {
     // Similar to Firefox, we don't expose text nodes in IAccessible2 and ATK
     // hypertext with the embedded object character. We copy all of their text

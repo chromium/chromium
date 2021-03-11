@@ -32,7 +32,7 @@ namespace {
 // Adds a label textfield pair to the login dialog's layout.
 Textfield* AddFormRow(LoginBubbleDialogView* bubble,
                       GridLayout* layout,
-                      const base::string16& label_text) {
+                      const std::u16string& label_text) {
   layout->StartRow(0, 0);
   Label* label = layout->AddView(std::make_unique<Label>(label_text));
   Textfield* textfield = layout->AddView(std::make_unique<Textfield>());
@@ -63,7 +63,7 @@ LoginBubbleDialogView::~LoginBubbleDialogView() = default;
 
 void LoginBubbleDialogView::ContentsChanged(
     Textfield* sender,
-    const base::string16& new_contents) {
+    const std::u16string& new_contents) {
   SetButtonEnabled(ui::DIALOG_BUTTON_OK, !username_->GetText().empty() &&
                                              !password_->GetText().empty());
   DialogModelChanged();
@@ -158,8 +158,8 @@ void LoginBubbleDialogExample::CreateExampleView(View* container) {
   password_input_ = layout->AddView(std::make_unique<Label>());
 }
 
-void LoginBubbleDialogExample::OnSubmit(base::string16 username,
-                                        base::string16 password) {
+void LoginBubbleDialogExample::OnSubmit(std::u16string username,
+                                        std::u16string password) {
   username_label_->SetVisible(true);
   username_input_->SetText(username);
   password_label_->SetVisible(true);

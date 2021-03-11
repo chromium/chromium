@@ -81,7 +81,7 @@ void TableExample::CreateExampleView(View* container) {
   button_panel->SetLayoutManager(std::make_unique<views::FlexLayout>())
       ->SetOrientation(LayoutOrientation::kHorizontal);
 
-  const auto make_checkbox = [&](base::string16 label, int id) {
+  const auto make_checkbox = [&](std::u16string label, int id) {
     auto* const checkbox =
         button_panel->AddChildView(std::make_unique<Checkbox>(
             std::move(label), Button::PressedCallback()));
@@ -110,9 +110,9 @@ int TableExample::RowCount() {
   return 10;
 }
 
-base::string16 TableExample::GetText(int row, int column_id) {
+std::u16string TableExample::GetText(int row, int column_id) {
   if (row == -1)
-    return base::string16();
+    return std::u16string();
 
   const char* const cells[5][4] = {
       {"Orange", "Orange", "South america", "$5"},
@@ -129,9 +129,9 @@ gfx::ImageSkia TableExample::GetIcon(int row) {
   return gfx::ImageSkia::CreateFrom1xBitmap(row_icon);
 }
 
-base::string16 TableExample::GetTooltip(int row) {
+std::u16string TableExample::GetTooltip(int row) {
   if (row == -1)
-    return base::string16();
+    return std::u16string();
 
   const char* const tooltips[5] = {
       "Orange - Orange you glad I didn't say banana?",

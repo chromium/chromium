@@ -64,7 +64,7 @@ bool OSExchangeDataProviderNonBacked::DidOriginateFromRenderer() const {
 #endif
 }
 
-void OSExchangeDataProviderNonBacked::SetString(const base::string16& data) {
+void OSExchangeDataProviderNonBacked::SetString(const std::u16string& data) {
   if (HasString())
     return;
 
@@ -73,7 +73,7 @@ void OSExchangeDataProviderNonBacked::SetString(const base::string16& data) {
 }
 
 void OSExchangeDataProviderNonBacked::SetURL(const GURL& url,
-                                             const base::string16& title) {
+                                             const std::u16string& title) {
   url_ = url;
   title_ = title;
   formats_ |= OSExchangeData::URL;
@@ -100,7 +100,7 @@ void OSExchangeDataProviderNonBacked::SetPickledData(
   formats_ |= OSExchangeData::PICKLED_DATA;
 }
 
-bool OSExchangeDataProviderNonBacked::GetString(base::string16* data) const {
+bool OSExchangeDataProviderNonBacked::GetString(std::u16string* data) const {
 #if defined(OS_LINUX) || defined(OS_CHROMEOS)
   if (HasFile()) {
     // Various Linux file managers both pass a list of file:// URIs and set the
@@ -119,7 +119,7 @@ bool OSExchangeDataProviderNonBacked::GetString(base::string16* data) const {
 bool OSExchangeDataProviderNonBacked::GetURLAndTitle(
     FilenameToURLPolicy policy,
     GURL* url,
-    base::string16* title) const {
+    std::u16string* title) const {
   if ((formats_ & OSExchangeData::URL) == 0) {
     title->clear();
     return GetPlainTextURL(url) ||
@@ -193,14 +193,14 @@ void OSExchangeDataProviderNonBacked::SetFileContents(
 }
 #endif
 
-void OSExchangeDataProviderNonBacked::SetHtml(const base::string16& html,
+void OSExchangeDataProviderNonBacked::SetHtml(const std::u16string& html,
                                               const GURL& base_url) {
   formats_ |= OSExchangeData::HTML;
   html_ = html;
   base_url_ = base_url;
 }
 
-bool OSExchangeDataProviderNonBacked::GetHtml(base::string16* html,
+bool OSExchangeDataProviderNonBacked::GetHtml(std::u16string* html,
                                               GURL* base_url) const {
   if ((formats_ & OSExchangeData::HTML) == 0)
     return false;

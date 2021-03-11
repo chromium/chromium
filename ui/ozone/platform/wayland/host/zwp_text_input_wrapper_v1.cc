@@ -80,7 +80,7 @@ void ZWPTextInputWrapperV1::SetCursorRect(const gfx::Rect& rect) {
 }
 
 void ZWPTextInputWrapperV1::SetSurroundingText(
-    const base::string16& text,
+    const std::u16string& text,
     const gfx::Range& selection_range) {
   static constexpr size_t kWaylandMessageDataMaxLength = 4000;
   const std::string text_utf8 = base::UTF16ToUTF8(text);

@@ -106,7 +106,7 @@ bool IndexInRange(const Range& range, size_t index) {
   return index >= range.start() && index < range.end();
 }
 
-base::string16 GetSelectedText(RenderText* render_text) {
+std::u16string GetSelectedText(RenderText* render_text) {
   return render_text->text().substr(render_text->selection().GetMin(),
                                     render_text->selection().length());
 }
@@ -242,23 +242,23 @@ void VerifyDecoratedWordsAreEqual(const DecoratedText& expected,
 
 // Helper method to return an obscured string of the given |length|, with the
 // |reveal_index| filled with |reveal_char|.
-base::string16 GetObscuredString(size_t length,
+std::u16string GetObscuredString(size_t length,
                                  size_t reveal_index,
                                  char16_t reveal_char) {
   std::vector<char16_t> arr(length, RenderText::kPasswordReplacementChar);
   arr[reveal_index] = reveal_char;
-  return base::string16(arr.begin(), arr.end());
+  return std::u16string(arr.begin(), arr.end());
 }
 
 // Helper method to return an obscured string of the given |length|.
-base::string16 GetObscuredString(size_t length) {
-  return base::string16(length, RenderText::kPasswordReplacementChar);
+std::u16string GetObscuredString(size_t length) {
+  return std::u16string(length, RenderText::kPasswordReplacementChar);
 }
 
 // Converts a vector of UTF8 literals into a vector of (UTF16) string16.
-std::vector<base::string16> ToString16Vec(
+std::vector<std::u16string> ToString16Vec(
     const std::vector<const char*>& utf8_literals) {
-  std::vector<base::string16> vec;
+  std::vector<std::u16string> vec;
   for (auto* const literal : utf8_literals)
     vec.push_back(UTF8ToUTF16(literal));
   return vec;
@@ -527,8 +527,8 @@ class RenderTextTest : public testing::Test {
 
   // Returns a vector of text fragments corresponding to the current list of
   // text runs.
-  std::vector<base::string16> GetRunListStrings() {
-    std::vector<base::string16> runs_as_text;
+  std::vector<std::u16string> GetRunListStrings() {
+    std::vector<std::u16string> runs_as_text;
     for (const auto& span : GetFontSpans()) {
       runs_as_text.push_back(render_text_->text().substr(span.second.GetMin(),
                                                          span.second.length()));
@@ -537,7 +537,7 @@ class RenderTextTest : public testing::Test {
   }
 
   // Sets the text to |text|, then returns GetRunListStrings().
-  std::vector<base::string16> RunsFor(const base::string16& text) {
+  std::vector<std::u16string> RunsFor(const std::u16string& text) {
     render_text_->SetText(text);
     test_api()->EnsureLayout();
     return GetRunListStrings();
@@ -618,7 +618,7 @@ class RenderTextTest : public testing::Test {
     test_api()->SetGlyphHeight(test_height);
   }
 
-  bool ShapeRunWithFont(const base::string16& text,
+  bool ShapeRunWithFont(const std::u16string& text,
                         const Font& font,
                         const FontRenderParams& render_params,
                         internal::TextRunHarfBuzz* run) {
@@ -1176,7 +1176,7 @@ TEST_F(RenderTextTest, SetCompositionRangeColoredGrapheme) {
 
 void TestVisualCursorMotionInObscuredField(
     RenderText* render_text,
-    const base::string16& text,
+    const std::u16string& text,
     SelectionBehavior selection_behavior) {
   const bool select = selection_behavior != SELECTION_NONE;
   ASSERT_TRUE(render_text->obscured());
@@ -1205,8 +1205,8 @@ void TestVisualCursorMotionInObscuredField(
 }
 
 TEST_F(RenderTextTest, ObscuredText) {
-  const base::string16 seuss = ASCIIToUTF16("hop on pop");
-  const base::string16 no_seuss = GetObscuredString(seuss.length());
+  const std::u16string seuss = ASCIIToUTF16("hop on pop");
+  const std::u16string no_seuss = GetObscuredString(seuss.length());
   RenderText* render_text = GetRenderText();
 
   // GetDisplayText() returns a string filled with
@@ -1267,42 +1267,42 @@ TEST_F(RenderTextTest, ObscuredText) {
       "\u05d0\u05d1 \u05d0\u05d2 \u05d1\u05d2",  // Check RTL word boundaries.
   };
   for (size_t i = 0; i < base::size(texts); ++i) {
-    base::string16 text = UTF8ToUTF16(texts[i]);
+    std::u16string text = UTF8ToUTF16(texts[i]);
     TestVisualCursorMotionInObscuredField(render_text, text, SELECTION_NONE);
     TestVisualCursorMotionInObscuredField(render_text, text, SELECTION_RETAIN);
   }
 }
 
 TEST_F(RenderTextTest, ObscuredTextMultiline) {
-  const base::string16 test = ASCIIToUTF16("a\nbc\ndef");
+  const std::u16string test = ASCIIToUTF16("a\nbc\ndef");
   RenderText* render_text = GetRenderText();
   render_text->SetText(test);
   render_text->SetObscured(true);
   render_text->SetMultiline(true);
 
   // Newlines should be kept in multiline mode.
-  base::string16 display_text = render_text->GetDisplayText();
+  std::u16string display_text = render_text->GetDisplayText();
   EXPECT_EQ(display_text[1], '\n');
   EXPECT_EQ(display_text[4], '\n');
 }
 
 TEST_F(RenderTextTest, ObscuredTextMultilineNewline) {
-  const base::string16 test = ASCIIToUTF16("\r\r\n");
+  const std::u16string test = ASCIIToUTF16("\r\r\n");
   RenderText* render_text = GetRenderText();
   render_text->SetText(test);
   render_text->SetObscured(true);
   render_text->SetMultiline(true);
 
   // Newlines should be kept in multiline mode.
-  base::string16 display_text = render_text->GetDisplayText();
+  std::u16string display_text = render_text->GetDisplayText();
   EXPECT_EQ(display_text[0], '\r');
   EXPECT_EQ(display_text[1], '\r');
   EXPECT_EQ(display_text[2], '\n');
 }
 
 TEST_F(RenderTextTest, RevealObscuredText) {
-  const base::string16 seuss = ASCIIToUTF16("hop on pop");
-  const base::string16 no_seuss = GetObscuredString(seuss.length());
+  const std::u16string seuss = ASCIIToUTF16("hop on pop");
+  const std::u16string no_seuss = GetObscuredString(seuss.length());
   RenderText* render_text = GetRenderText();
 
   render_text->SetText(seuss);
@@ -1442,7 +1442,7 @@ TEST_F(RenderTextTest, ObscuredEmoji) {
 TEST_F(RenderTextTest, ObscuredEmojiRevealed) {
   RenderText* render_text = GetRenderText();
 
-  base::string16 text = WideToUTF16(L"123\U0001F4F7\U0001F4F7x\U0001F601-");
+  std::u16string text = WideToUTF16(L"123\U0001F4F7\U0001F4F7x\U0001F601-");
   for (size_t i = 0; i < text.length(); ++i) {
     render_text->SetText(text);
     render_text->SetObscured(true);
@@ -1484,8 +1484,8 @@ TEST_P(RenderTextTestWithTextIndexConversionCase, TextIndexConversion) {
   render_text->SetObscuredRevealIndex(reveal_index);
   render_text->Draw(canvas());
 
-  base::string16 text = render_text->text();
-  base::string16 display_text = render_text->GetDisplayText();
+  std::u16string text = render_text->text();
+  std::u16string display_text = render_text->GetDisplayText();
 
   // Adjust reveal_index to point to the beginning of the surrogate pair, if
   // needed.
@@ -1931,8 +1931,8 @@ TEST_P(RenderTextTestWithElideTextCase, ElideText) {
 
   const ElideTextTestOptions options = std::get<0>(GetParam());
   const ElideTextCase param = std::get<1>(GetParam());
-  const base::string16 text = WideToUTF16(param.text);
-  const base::string16 display_text = WideToUTF16(param.display_text);
+  const std::u16string text = WideToUTF16(param.text);
+  const std::u16string display_text = WideToUTF16(param.display_text);
 
   // Retrieve the display_text width without eliding.
   RenderTextHarfBuzz* render_text = GetRenderText();
@@ -2257,7 +2257,7 @@ TEST_F(RenderTextTest, ElidedText_NoTrimWhitespace) {
   // and not like:
   // [...       ]
   constexpr char kInputString[] = "                     foo";
-  const base::string16 input = ASCIIToUTF16(kInputString);
+  const std::u16string input = ASCIIToUTF16(kInputString);
   render_text->SetText(input);
 
   // Choose a width based on being able to display 12 characters (one of which
@@ -2270,8 +2270,8 @@ TEST_F(RenderTextTest, ElidedText_NoTrimWhitespace) {
   EXPECT_EQ(input, render_text->text());
 
   // Verify that the string is truncated to |kDesiredChars| with the ellipsis.
-  const base::string16 result = render_text->GetDisplayText();
-  const base::string16 expected =
+  const std::u16string result = render_text->GetDisplayText();
+  const std::u16string expected =
       input.substr(0, kDesiredChars - 1) + kEllipsisUTF16[0];
   EXPECT_EQ(expected, result);
 }
@@ -2331,7 +2331,7 @@ TEST_F(RenderTextTest, ElidedObscuredText) {
 
 TEST_F(RenderTextTest, MultilineElide) {
   RenderText* render_text = GetRenderText();
-  base::string16 input_text;
+  std::u16string input_text;
   // Aim for 3 lines of text.
   for (int i = 0; i < 20; ++i)
     input_text.append(ASCIIToUTF16("hello world "));
@@ -2352,7 +2352,7 @@ TEST_F(RenderTextTest, MultilineElide) {
   render_text->GetStringSize();
   EXPECT_EQ(input_text, render_text->GetDisplayText());
 
-  base::string16 actual_text;
+  std::u16string actual_text;
   // Try widening the space gradually, one pixel at a time, trying
   // to trigger a failure in layout. There was an issue where, right at
   // the edge of a word getting truncated, the estimate would be wrong
@@ -2364,7 +2364,7 @@ TEST_F(RenderTextTest, MultilineElide) {
     actual_text = render_text->GetDisplayText();
     EXPECT_LT(actual_text.size(), input_text.size());
     EXPECT_EQ(actual_text, input_text.substr(0, actual_text.size() - 1) +
-                               base::string16(kEllipsisUTF16));
+                               std::u16string(kEllipsisUTF16));
     EXPECT_EQ(3U, render_text->GetNumLines());
   }
   // Now remove line restriction.
@@ -2377,12 +2377,12 @@ TEST_F(RenderTextTest, MultilineElide) {
   render_text->GetStringSize();
   EXPECT_LT(actual_text.size(), input_text.size());
   EXPECT_EQ(actual_text, input_text.substr(0, actual_text.size() - 1) +
-                             base::string16(kEllipsisUTF16));
+                             std::u16string(kEllipsisUTF16));
 }
 
 TEST_F(RenderTextTest, MultilineElideWrap) {
   RenderText* render_text = GetRenderText();
-  base::string16 input_text;
+  std::u16string input_text;
   for (int i = 0; i < 20; ++i)
     input_text.append(ASCIIToUTF16("hello world "));
   render_text->SetText(input_text);
@@ -2398,10 +2398,10 @@ TEST_F(RenderTextTest, MultilineElideWrap) {
   for (auto wrap_behavior : wrap_behaviors) {
     render_text->SetWordWrapBehavior(wrap_behavior);
     render_text->GetStringSize();
-    base::string16 actual_text = render_text->GetDisplayText();
+    std::u16string actual_text = render_text->GetDisplayText();
     EXPECT_LE(actual_text.size(), input_text.size());
     EXPECT_EQ(actual_text, input_text.substr(0, actual_text.size() - 1) +
-                               base::string16(kEllipsisUTF16));
+                               std::u16string(kEllipsisUTF16));
     EXPECT_LE(render_text->GetNumLines(), 3U);
   }
 }
@@ -2412,7 +2412,7 @@ TEST_F(RenderTextTest, MultilineElideWrap) {
 // styles are applied.
 TEST_F(RenderTextTest, DISABLED_MultilineElideWrapWithStyle) {
   RenderText* render_text = GetRenderText();
-  base::string16 input_text;
+  std::u16string input_text;
   for (int i = 0; i < 20; ++i)
     input_text.append(ASCIIToUTF16("hello world "));
   render_text->SetText(input_text);
@@ -2430,17 +2430,17 @@ TEST_F(RenderTextTest, DISABLED_MultilineElideWrapWithStyle) {
   for (auto wrap_behavior : wrap_behaviors) {
     render_text->SetWordWrapBehavior(wrap_behavior);
     render_text->GetStringSize();
-    base::string16 actual_text = render_text->GetDisplayText();
+    std::u16string actual_text = render_text->GetDisplayText();
     EXPECT_LE(actual_text.size(), input_text.size());
     EXPECT_EQ(actual_text, input_text.substr(0, actual_text.size() - 1) +
-                               base::string16(kEllipsisUTF16));
+                               std::u16string(kEllipsisUTF16));
     EXPECT_LE(render_text->GetNumLines(), 3U);
   }
 }
 
 TEST_F(RenderTextTest, MultilineElideWrapStress) {
   RenderText* render_text = GetRenderText();
-  base::string16 input_text;
+  std::u16string input_text;
   for (int i = 0; i < 20; ++i)
     input_text.append(ASCIIToUTF16("hello world "));
   render_text->SetText(input_text);
@@ -2461,7 +2461,7 @@ TEST_F(RenderTextTest, MultilineElideWrapStress) {
       render_text->SetDisplayRect(Rect(i, 0));
       render_text->SetWordWrapBehavior(wrap_behavior);
       render_text->GetStringSize();
-      base::string16 actual_text = render_text->GetDisplayText();
+      std::u16string actual_text = render_text->GetDisplayText();
       EXPECT_LE(actual_text.size(), input_text.size());
       EXPECT_LE(render_text->GetNumLines(), 3U);
     }
@@ -2474,7 +2474,7 @@ TEST_F(RenderTextTest, MultilineElideWrapStress) {
 // styles are applied.
 TEST_F(RenderTextTest, DISABLED_MultilineElideWrapStressWithStyle) {
   RenderText* render_text = GetRenderText();
-  base::string16 input_text;
+  std::u16string input_text;
   for (int i = 0; i < 20; ++i)
     input_text.append(ASCIIToUTF16("hello world "));
   render_text->SetText(input_text);
@@ -2496,7 +2496,7 @@ TEST_F(RenderTextTest, DISABLED_MultilineElideWrapStressWithStyle) {
       render_text->SetDisplayRect(Rect(i, 0));
       render_text->SetWordWrapBehavior(wrap_behavior);
       render_text->GetStringSize();
-      base::string16 actual_text = render_text->GetDisplayText();
+      std::u16string actual_text = render_text->GetDisplayText();
       EXPECT_LE(actual_text.size(), input_text.size());
       EXPECT_LE(render_text->GetNumLines(), 3U);
     }
@@ -2507,7 +2507,7 @@ TEST_F(RenderTextTest, MultilineElideRTL) {
   RenderText* render_text = GetRenderText();
   SetGlyphWidth(5);
 
-  base::string16 input_text(UTF8ToUTF16("זהו המסר של ההודעה"));
+  std::u16string input_text(UTF8ToUTF16("זהו המסר של ההודעה"));
   render_text->SetText(input_text);
   render_text->SetCursorEnabled(false);
   render_text->SetMultiline(true);
@@ -2517,7 +2517,7 @@ TEST_F(RenderTextTest, MultilineElideRTL) {
   render_text->GetStringSize();
 
   EXPECT_EQ(render_text->GetDisplayText(),
-            input_text.substr(0, 8) + base::string16(kEllipsisUTF16));
+            input_text.substr(0, 8) + std::u16string(kEllipsisUTF16));
   EXPECT_EQ(render_text->GetNumLines(), 1U);
 }
 
@@ -2525,7 +2525,7 @@ TEST_F(RenderTextTest, MultilineElideBiDi) {
   RenderText* render_text = GetRenderText();
   SetGlyphWidth(5);
 
-  base::string16 input_text(UTF8ToUTF16("אa\nbcdבגדהefg\nhו"));
+  std::u16string input_text(UTF8ToUTF16("אa\nbcdבגדהefg\nhו"));
   render_text->SetText(input_text);
   render_text->SetCursorEnabled(false);
   render_text->SetMultiline(true);
@@ -2535,7 +2535,7 @@ TEST_F(RenderTextTest, MultilineElideBiDi) {
   test_api()->EnsureLayout();
 
   EXPECT_EQ(render_text->GetDisplayText(),
-            UTF8ToUTF16("אa\nbcdבג") + base::string16(kEllipsisUTF16));
+            UTF8ToUTF16("אa\nbcdבג") + std::u16string(kEllipsisUTF16));
   EXPECT_EQ(render_text->GetNumLines(), 2U);
 }
 
@@ -2543,7 +2543,7 @@ TEST_F(RenderTextTest, MultilineElideLinebreak) {
   RenderText* render_text = GetRenderText();
   SetGlyphWidth(5);
 
-  base::string16 input_text(ASCIIToUTF16("hello\nworld"));
+  std::u16string input_text(ASCIIToUTF16("hello\nworld"));
   render_text->SetText(input_text);
   render_text->SetCursorEnabled(false);
   render_text->SetMultiline(true);
@@ -2553,7 +2553,7 @@ TEST_F(RenderTextTest, MultilineElideLinebreak) {
   render_text->GetStringSize();
 
   EXPECT_EQ(render_text->GetDisplayText(),
-            input_text.substr(0, 5) + base::string16(kEllipsisUTF16));
+            input_text.substr(0, 5) + std::u16string(kEllipsisUTF16));
   EXPECT_EQ(render_text->GetNumLines(), 1U);
 }
 
@@ -2574,7 +2574,7 @@ TEST_F(RenderTextTest, ElidedStyledTextRtl) {
   for (const auto* raw_text : kInputTexts) {
     SCOPED_TRACE(
         base::StringPrintf("ElidedStyledTextRtl text = %s", raw_text));
-    base::string16 input_text(UTF8ToUTF16(raw_text));
+    std::u16string input_text(UTF8ToUTF16(raw_text));
 
     RenderText* render_text = GetRenderText();
     render_text->SetText(input_text);
@@ -2587,7 +2587,7 @@ TEST_F(RenderTextTest, ElidedStyledTextRtl) {
       SCOPED_TRACE(base::StringPrintf("ElidedStyledTextRtl width = %d", i));
       render_text->SetDisplayRect(Rect(i, 20));
       render_text->GetStringSize();
-      base::string16 display_text = render_text->GetDisplayText();
+      std::u16string display_text = render_text->GetDisplayText();
       EXPECT_LE(display_text.size(), input_text.size());
 
       // Every size of content width was tried.
@@ -2602,7 +2602,7 @@ TEST_F(RenderTextTest, ElidedEmail) {
   render_text->SetText(ASCIIToUTF16("test@example.com"));
   const Size size = render_text->GetStringSize();
 
-  const base::string16 long_email =
+  const std::u16string long_email =
       ASCIIToUTF16("longemailaddresstest@example.com");
   render_text->SetText(long_email);
   render_text->SetElideBehavior(ELIDE_EMAIL);
@@ -3858,52 +3858,52 @@ TEST_F(RenderTextTest, GraphemeBoundaries) {
 
 TEST_F(RenderTextTest, GraphemePositions) {
   // LTR कि (DEVANAGARI KA with VOWEL I) (2-char grapheme), LTR abc, and LTR कि.
-  const base::string16 kText1 = UTF8ToUTF16("\u0915\u093fabc\u0915\u093f");
+  const std::u16string kText1 = UTF8ToUTF16("\u0915\u093fabc\u0915\u093f");
 
   // LTR ab, LTR कि (DEVANAGARI KA with VOWEL I) (2-char grapheme), LTR cd.
-  const base::string16 kText2 = UTF8ToUTF16("ab\u0915\u093fcd");
+  const std::u16string kText2 = UTF8ToUTF16("ab\u0915\u093fcd");
 
   // LTR ab, 𝄞 'MUSICAL SYMBOL G CLEF' U+1D11E (surrogate pair), LTR cd.
   // Windows requires wide strings for \Unnnnnnnn universal character names.
-  const base::string16 kText3 = WideToUTF16(L"ab\U0001D11Ecd");
+  const std::u16string kText3 = WideToUTF16(L"ab\U0001D11Ecd");
 
   struct {
-    base::string16 text;
+    std::u16string text;
     size_t index;
     size_t expected_previous;
     size_t expected_next;
   } cases[] = {
-    { base::string16(), 0, 0, 0 },
-    { base::string16(), 1, 0, 0 },
-    { base::string16(), 50, 0, 0 },
-    { kText1, 0, 0, 2 },
-    { kText1, 1, 0, 2 },
-    { kText1, 2, 0, 3 },
-    { kText1, 3, 2, 4 },
-    { kText1, 4, 3, 5 },
-    { kText1, 5, 4, 7 },
-    { kText1, 6, 5, 7 },
-    { kText1, 7, 5, 7 },
-    { kText1, 8, 7, 7 },
-    { kText1, 50, 7, 7 },
-    { kText2, 0, 0, 1 },
-    { kText2, 1, 0, 2 },
-    { kText2, 2, 1, 4 },
-    { kText2, 3, 2, 4 },
-    { kText2, 4, 2, 5 },
-    { kText2, 5, 4, 6 },
-    { kText2, 6, 5, 6 },
-    { kText2, 7, 6, 6 },
-    { kText2, 50, 6, 6 },
-    { kText3, 0, 0, 1 },
-    { kText3, 1, 0, 2 },
-    { kText3, 2, 1, 4 },
-    { kText3, 3, 2, 4 },
-    { kText3, 4, 2, 5 },
-    { kText3, 5, 4, 6 },
-    { kText3, 6, 5, 6 },
-    { kText3, 7, 6, 6 },
-    { kText3, 50, 6, 6 },
+      {std::u16string(), 0, 0, 0},
+      {std::u16string(), 1, 0, 0},
+      {std::u16string(), 50, 0, 0},
+      {kText1, 0, 0, 2},
+      {kText1, 1, 0, 2},
+      {kText1, 2, 0, 3},
+      {kText1, 3, 2, 4},
+      {kText1, 4, 3, 5},
+      {kText1, 5, 4, 7},
+      {kText1, 6, 5, 7},
+      {kText1, 7, 5, 7},
+      {kText1, 8, 7, 7},
+      {kText1, 50, 7, 7},
+      {kText2, 0, 0, 1},
+      {kText2, 1, 0, 2},
+      {kText2, 2, 1, 4},
+      {kText2, 3, 2, 4},
+      {kText2, 4, 2, 5},
+      {kText2, 5, 4, 6},
+      {kText2, 6, 5, 6},
+      {kText2, 7, 6, 6},
+      {kText2, 50, 6, 6},
+      {kText3, 0, 0, 1},
+      {kText3, 1, 0, 2},
+      {kText3, 2, 1, 4},
+      {kText3, 3, 2, 4},
+      {kText3, 4, 2, 5},
+      {kText3, 5, 4, 6},
+      {kText3, 6, 5, 6},
+      {kText3, 7, 6, 6},
+      {kText3, 50, 6, 6},
   };
 
   RenderText* render_text = GetRenderText();
@@ -3925,9 +3925,9 @@ TEST_F(RenderTextTest, GraphemePositions) {
 
 TEST_F(RenderTextTest, MidGraphemeSelectionBounds) {
   // Test that selection bounds may be set amid multi-character graphemes.
-  const base::string16 kHindi = UTF8ToUTF16("\u0915\u093f");
-  const base::string16 kThai = UTF8ToUTF16("\u0e08\u0e33");
-  const base::string16 cases[] = { kHindi, kThai };
+  const std::u16string kHindi = UTF8ToUTF16("\u0915\u093f");
+  const std::u16string kThai = UTF8ToUTF16("\u0e08\u0e33");
+  const std::u16string cases[] = {kHindi, kThai};
 
   RenderText* render_text = GetRenderText();
   render_text->SetDisplayRect(Rect(100, 1000));
@@ -4011,7 +4011,7 @@ TEST_F(RenderTextTest, FindCursorPositionMultiline) {
 // boundaries.
 TEST_F(RenderTextTest, FindCursorPosition_GraphemeBoundaries) {
   struct {
-    base::string16 text;
+    std::u16string text;
     std::set<size_t> expected_cursor_positions;
   } cases[] = {
       // LTR कि (DEVANAGARI KA with VOWEL I) (2-char grapheme), LTR abc, LTR कि.
@@ -4038,26 +4038,26 @@ TEST_F(RenderTextTest, FindCursorPosition_GraphemeBoundaries) {
 
 TEST_F(RenderTextTest, EdgeSelectionModels) {
   // Simple Latin text.
-  const base::string16 kLatin = ASCIIToUTF16("abc");
+  const std::u16string kLatin = ASCIIToUTF16("abc");
   // LTR कि (DEVANAGARI KA with VOWEL I).
-  const base::string16 kLTRGrapheme = UTF8ToUTF16("\u0915\u093f");
+  const std::u16string kLTRGrapheme = UTF8ToUTF16("\u0915\u093f");
   // LTR कि (DEVANAGARI KA with VOWEL I), LTR a, LTR कि.
-  const base::string16 kHindiLatin = UTF8ToUTF16("\u0915\u093fa\u0915\u093f");
+  const std::u16string kHindiLatin = UTF8ToUTF16("\u0915\u093fa\u0915\u093f");
   // RTL נָ (Hebrew letter NUN and point QAMATS).
-  const base::string16 kRTLGrapheme = UTF8ToUTF16("\u05e0\u05b8");
+  const std::u16string kRTLGrapheme = UTF8ToUTF16("\u05e0\u05b8");
   // RTL נָ (Hebrew letter NUN and point QAMATS), LTR a, RTL נָ.
-  const base::string16 kHebrewLatin = UTF8ToUTF16("\u05e0\u05b8a\u05e0\u05b8");
+  const std::u16string kHebrewLatin = UTF8ToUTF16("\u05e0\u05b8a\u05e0\u05b8");
 
   struct {
-    base::string16 text;
+    std::u16string text;
     base::i18n::TextDirection expected_text_direction;
   } cases[] = {
-    { base::string16(), base::i18n::LEFT_TO_RIGHT },
-    { kLatin,       base::i18n::LEFT_TO_RIGHT },
-    { kLTRGrapheme, base::i18n::LEFT_TO_RIGHT },
-    { kHindiLatin,  base::i18n::LEFT_TO_RIGHT },
-    { kRTLGrapheme, base::i18n::RIGHT_TO_LEFT },
-    { kHebrewLatin, base::i18n::RIGHT_TO_LEFT },
+      {std::u16string(), base::i18n::LEFT_TO_RIGHT},
+      {kLatin, base::i18n::LEFT_TO_RIGHT},
+      {kLTRGrapheme, base::i18n::LEFT_TO_RIGHT},
+      {kHindiLatin, base::i18n::LEFT_TO_RIGHT},
+      {kRTLGrapheme, base::i18n::RIGHT_TO_LEFT},
+      {kHebrewLatin, base::i18n::RIGHT_TO_LEFT},
   };
 
   RenderText* render_text = GetRenderText();
@@ -4089,7 +4089,7 @@ TEST_F(RenderTextTest, SelectAll) {
   for (size_t i = 0; i < 2; ++i) {
     SetRTL(!base::i18n::IsRTL());
     // Test that an empty string produces an empty selection model.
-    render_text->SetText(base::string16());
+    render_text->SetText(std::u16string());
     EXPECT_EQ(render_text->selection_model(), SelectionModel());
 
     // Test the weak, LTR, RTL, and Bidi string cases.
@@ -4273,7 +4273,7 @@ TEST_F(RenderTextTest, CenteredDisplayOffset) {
 
 void MoveLeftRightByWordVerifier(RenderText* render_text, const char* str) {
   SCOPED_TRACE(str);
-  const base::string16 str16(UTF8ToUTF16(str));
+  const std::u16string str16(UTF8ToUTF16(str));
   render_text->SetText(str16);
 
   // Test moving by word from left to right.
@@ -4494,7 +4494,7 @@ TEST_F(RenderTextTest, MoveLeftRightByWordInChineseText) {
 TEST_F(RenderTextTest, DirectedSelections) {
   RenderText* render_text = GetRenderText();
 
-  auto ResultAfter = [&](VisualCursorDirection direction) -> base::string16 {
+  auto ResultAfter = [&](VisualCursorDirection direction) -> std::u16string {
     render_text->MoveCursor(CHARACTER_BREAK, direction, SELECTION_RETAIN);
     return GetSelectedText(render_text);
   };
@@ -4547,10 +4547,10 @@ TEST_F(RenderTextTest, DirectedSelections) {
   render_text->MoveCursor(CHARACTER_BREAK, CURSOR_RIGHT, SELECTION_NONE);
   EXPECT_EQ(Range(4, 4), render_text->selection());  // Collapse right.
 
-  auto ToHebrew = [](const char* digits) -> base::string16 {
-    const base::string16 hebrew = UTF8ToUTF16("אבגדח");  // Roughly "abcde".
+  auto ToHebrew = [](const char* digits) -> std::u16string {
+    const std::u16string hebrew = UTF8ToUTF16("אבגדח");  // Roughly "abcde".
     DCHECK_EQ(5u, hebrew.size());
-    base::string16 result;
+    std::u16string result;
     for (const char* d = digits; *d; d++)
       result += hebrew[*d - '0'];
     return result;
@@ -4675,7 +4675,7 @@ TEST_F(RenderTextTest, StringSizeLongStrings) {
   render_text->set_truncate_length(0);
   Size previous_string_size;
   for (size_t length = 10; length < 1000000; length *= 10) {
-    render_text->SetText(base::string16(length, 'a'));
+    render_text->SetText(std::u16string(length, 'a'));
     const Size string_size = render_text->GetStringSize();
     EXPECT_GT(string_size.width(), previous_string_size.width());
     EXPECT_GT(string_size.height(), 0);
@@ -4693,7 +4693,7 @@ TEST_F(RenderTextTest, StringSizeEmptyString) {
 
   // The empty string respects FontList metrics for non-zero height
   // and baseline.
-  render_text->SetText(base::string16());
+  render_text->SetText(std::u16string());
   EXPECT_EQ(font_list.GetHeight(), render_text->GetStringSize().height());
   EXPECT_EQ(0, render_text->GetStringSize().width());
   EXPECT_EQ(font_list.GetBaseline(), render_text->GetBaseline());
@@ -5023,7 +5023,7 @@ TEST_F(RenderTextTest, StringSizeBoldWidth) {
 }
 
 TEST_F(RenderTextTest, StringSizeHeight) {
-  base::string16 cases[] = {
+  std::u16string cases[] = {
       ASCIIToUTF16("Hello World!"),  // English
       UTF8ToUTF16("\u6328\u62f6"),  // Japanese 挨拶 (characters press & near)
       UTF8ToUTF16("\u0915\u093f"),  // Hindi कि (letter KA with vowel I)
@@ -5337,7 +5337,7 @@ TEST_F(RenderTextTest, SameFontForParentheses) {
     { '<', '>' },
   };
   struct {
-    base::string16 text;
+    std::u16string text;
   } cases[] = {
       // English(English)
       {ASCIIToUTF16("Hello World(a)")},
@@ -5368,11 +5368,11 @@ TEST_F(RenderTextTest, SameFontForParentheses) {
 
   RenderText* render_text = GetRenderText();
   for (size_t i = 0; i < base::size(cases); ++i) {
-    base::string16 text = cases[i].text;
+    std::u16string text = cases[i].text;
     const size_t start_paren_char_index = text.find('(');
-    ASSERT_NE(base::string16::npos, start_paren_char_index);
+    ASSERT_NE(std::u16string::npos, start_paren_char_index);
     const size_t end_paren_char_index = text.find(')');
-    ASSERT_NE(base::string16::npos, end_paren_char_index);
+    ASSERT_NE(std::u16string::npos, end_paren_char_index);
 
     for (size_t j = 0; j < base::size(punctuation_pairs); ++j) {
       text[start_paren_char_index] = punctuation_pairs[j].left_char;
@@ -5627,13 +5627,13 @@ TEST_F(RenderTextTest, SelectionKeepsLigatures) {
 TEST_F(RenderTextTest, ScriptExtensionsDoNotBreak) {
   // Apparently ramen restaurants prefer "らーめん" over "らあめん". The "dash"
   // is the long sound symbol and usually just appears in Katakana writing.
-  const base::string16 ramen_hiragana = UTF8ToUTF16("らーめん");
-  const base::string16 ramen_katakana = UTF8ToUTF16("ラーメン");
-  const base::string16 ramen_mixed = UTF8ToUTF16("らあメン");
+  const std::u16string ramen_hiragana = UTF8ToUTF16("らーめん");
+  const std::u16string ramen_katakana = UTF8ToUTF16("ラーメン");
+  const std::u16string ramen_mixed = UTF8ToUTF16("らあメン");
 
-  EXPECT_EQ(std::vector<base::string16>({ramen_hiragana}),
+  EXPECT_EQ(std::vector<std::u16string>({ramen_hiragana}),
             RunsFor(ramen_hiragana));
-  EXPECT_EQ(std::vector<base::string16>({ramen_katakana}),
+  EXPECT_EQ(std::vector<std::u16string>({ramen_katakana}),
             RunsFor(ramen_katakana));
 
   EXPECT_EQ(ToString16Vec({"らあ", "メン"}), RunsFor(ramen_mixed));
@@ -5646,11 +5646,11 @@ TEST_F(RenderTextTest, WhitespaceDoesBreak) {
   // Title of the Wikipedia page for "bit". ASCII spaces. In Hebrew and English.
   // Note that the hyphens that Wikipedia uses are different. English uses
   // ASCII (U+002D) "hyphen minus", Hebrew uses the U+2013 "EN Dash".
-  const base::string16 ascii_space_he = UTF8ToUTF16("סיבית – ויקיפדיה");
-  const base::string16 ascii_space_en = ASCIIToUTF16("Bit - Wikipedia");
+  const std::u16string ascii_space_he = UTF8ToUTF16("סיבית – ויקיפדיה");
+  const std::u16string ascii_space_en = ASCIIToUTF16("Bit - Wikipedia");
 
   // This says "thank you very much" with a full-width non-ascii space (U+3000).
-  const base::string16 full_width_space = UTF8ToUTF16("ども　ありがと");
+  const std::u16string full_width_space = UTF8ToUTF16("ども　ありがと");
 
   EXPECT_EQ(ToString16Vec({"סיבית", " ", "–", " ", "ויקיפדיה"}),
             RunsFor(ascii_space_he));
@@ -5830,11 +5830,11 @@ TEST_F(RenderTextTest, Multiline_IgnoreElide) {
   render_text->SetElideBehavior(ELIDE_TAIL);
   render_text->SetDisplayRect(Rect(20, 1000));
   render_text->SetText(base::ASCIIToUTF16(kTestString));
-  EXPECT_NE(base::string16::npos,
+  EXPECT_NE(std::u16string::npos,
             render_text->GetDisplayText().find(base::UTF8ToUTF16(kEllipsis)));
 
   render_text->SetMultiline(true);
-  EXPECT_EQ(base::string16::npos,
+  EXPECT_EQ(std::u16string::npos,
             render_text->GetDisplayText().find(base::UTF8ToUTF16(kEllipsis)));
 }
 
@@ -5850,7 +5850,7 @@ TEST_F(RenderTextTest, Multiline_NewlineCharacterReplacement) {
     render_text->SetDisplayRect(Rect(200, 1000));
     render_text->SetText(ASCIIToUTF16(kTestStrings[i]));
 
-    base::string16 display_text = render_text->GetDisplayText();
+    std::u16string display_text = render_text->GetDisplayText();
     // If RenderText is not multiline, the newline characters are replaced
     // by symbols, therefore the character should be changed.
     EXPECT_NE(ASCIIToUTF16(kTestStrings[i]), render_text->GetDisplayText());
@@ -5911,8 +5911,8 @@ TEST_F(RenderTextTest, Multiline_HorizontalAlignment) {
       EXPECT_EQ(0, test_api()->GetAlignmentOffset(0).x());
       EXPECT_EQ(0, test_api()->GetAlignmentOffset(1).x());
     } else {
-      std::vector<base::string16> lines = base::SplitString(
-          base::UTF8ToUTF16(kTestStrings[i].text), base::string16(1, '\n'),
+      std::vector<std::u16string> lines = base::SplitString(
+          base::UTF8ToUTF16(kTestStrings[i].text), std::u16string(1, '\n'),
           base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL);
       ASSERT_EQ(2u, lines.size());
 
@@ -6050,19 +6050,19 @@ TEST_F(RenderTextTest, Multiline_SurrogatePairsOrCombiningChars) {
   // Below is 'MUSICAL SYMBOL G CLEF' (U+1D11E), which is represented in UTF-16
   // as two code units forming a surrogate pair: 0xD834 0xDD1E.
   const char16_t kSurrogate[] = {0xD834, 0xDD1E, 0};
-  const base::string16 text_surrogate(kSurrogate);
+  const std::u16string text_surrogate(kSurrogate);
   const int kSurrogateWidth =
       GetStringWidth(kSurrogate, render_text->font_list());
 
   // Below is a Devanagari two-character combining sequence U+0921 U+093F. The
   // sequence forms a single display character and should not be separated.
   const char16_t kCombiningChars[] = {0x921, 0x93F, 0};
-  const base::string16 text_combining(kCombiningChars);
+  const std::u16string text_combining(kCombiningChars);
   const int kCombiningCharsWidth =
       GetStringWidth(kCombiningChars, render_text->font_list());
 
   const struct {
-    const base::string16 text;
+    const std::u16string text;
     const int display_width;
     const Range char_ranges[3];
   } kTestScenarios[] = {
@@ -6098,7 +6098,7 @@ TEST_F(RenderTextTest, Multiline_ZeroWidthChars) {
   render_text->SetWordWrapBehavior(WRAP_LONG_WORDS);
 
   const char16_t kZeroWidthSpace = {0x200B};
-  const base::string16 text(ASCIIToUTF16("test") + kZeroWidthSpace +
+  const std::u16string text(ASCIIToUTF16("test") + kZeroWidthSpace +
                             ASCIIToUTF16("\n") + kZeroWidthSpace +
                             ASCIIToUTF16("test."));
   const int kTestWidth =
@@ -6126,7 +6126,7 @@ TEST_F(RenderTextTest, Multiline_ZeroWidthNewline) {
   RenderTextHarfBuzz* render_text = GetRenderText();
   render_text->SetMultiline(true);
 
-  const base::string16 text(ASCIIToUTF16("\n\n"));
+  const std::u16string text(ASCIIToUTF16("\n\n"));
   render_text->SetText(text);
   EXPECT_EQ(3u, render_text->GetNumLines());
   for (const auto& line : test_api()->lines()) {
@@ -6365,7 +6365,7 @@ TEST_F(RenderTextTest, HarfBuzz_SubglyphGraphemeCases) {
   for (size_t i = 0; i < base::size(cases); ++i) {
     SCOPED_TRACE(base::StringPrintf("Case %" PRIuS, i));
 
-    base::string16 text = UTF8ToUTF16(cases[i]);
+    std::u16string text = UTF8ToUTF16(cases[i]);
     render_text->SetText(text);
     const internal::TextRunList* run_list = GetHarfBuzzRunList();
     ASSERT_EQ(1U, run_list->size());
@@ -6435,7 +6435,7 @@ TEST_F(RenderTextTest, HarfBuzz_SubglyphGraphemePartition) {
 
 TEST_F(RenderTextTest, HarfBuzz_RunDirection) {
   RenderTextHarfBuzz* render_text = GetRenderText();
-  const base::string16 mixed = UTF8ToUTF16("\u05D0\u05D11234\u05D2\u05D3abc");
+  const std::u16string mixed = UTF8ToUTF16("\u05D0\u05D11234\u05D2\u05D3abc");
   render_text->SetText(mixed);
 
   // Get the run list for both display directions.
@@ -6450,7 +6450,7 @@ TEST_F(RenderTextTest, HarfBuzz_RunDirection_URLs) {
   RenderTextHarfBuzz* render_text = GetRenderText();
   // This string, unescaped (logical order):
   // ‭www.אב.גד/הוabc/def?זח=טי‬
-  const base::string16 mixed = UTF8ToUTF16(
+  const std::u16string mixed = UTF8ToUTF16(
       "www.\u05D0\u05D1.\u05D2\u05D3/\u05D4\u05D5"
       "abc/def?\u05D6\u05D7=\u05D8\u05D9");
   render_text->SetText(mixed);
@@ -6675,7 +6675,7 @@ TEST_F(RenderTextTest, EmojiFlagGlyphCount) {
   RenderText* render_text = GetRenderText();
   render_text->SetDisplayRect(Rect(1000, 1000));
   // Two flags: UK and Japan. Note macOS 10.9 only has flags for 10 countries.
-  base::string16 text(UTF8ToUTF16("🇬🇧🇯🇵"));
+  std::u16string text(UTF8ToUTF16("🇬🇧🇯🇵"));
   // Each flag is 4 UTF16 characters (2 surrogate pair code points).
   EXPECT_EQ(8u, text.length());
   render_text->SetText(text);
@@ -6708,7 +6708,7 @@ TEST_F(RenderTextTest, HarfBuzz_ShapeRunsWithMultipleFonts) {
   // different fonts.
   render_text->SetText(
       UTF8ToUTF16(u8"\U0001F3F3\U0000FE0F\U00000020\U0001F308\U000020E0"));
-  std::vector<base::string16> expected;
+  std::vector<std::u16string> expected;
   expected.push_back(WideToUTF16(L"\U0001F3F3\U0000FE0F"));
   expected.push_back(WideToUTF16(L" "));
   expected.push_back(WideToUTF16(L"\U0001F308\U000020E0"));
@@ -6774,7 +6774,7 @@ TEST_F(RenderTextTest, HarfBuzz_EmptyRun) {
 // actual size. See http://crbug.com/470073
 TEST_F(RenderTextTest, HarfBuzz_WordWidthWithDiacritics) {
   RenderTextHarfBuzz* render_text = GetRenderText();
-  const base::string16 kWord = UTF8ToUTF16("\u0906\u092A\u0915\u0947 ");
+  const std::u16string kWord = UTF8ToUTF16("\u0906\u092A\u0915\u0947 ");
   render_text->SetText(kWord);
   const SizeF text_size = render_text->GetStringSizeF();
 
@@ -6790,7 +6790,7 @@ TEST_F(RenderTextTest, HarfBuzz_WordWidthWithDiacritics) {
 // Ensure a string fits in a display rect with a width equal to the string's.
 TEST_F(RenderTextTest, StringFitsOwnWidth) {
   RenderText* render_text = GetRenderText();
-  const base::string16 kString = ASCIIToUTF16("www.example.com");
+  const std::u16string kString = ASCIIToUTF16("www.example.com");
 
   render_text->SetText(kString);
   render_text->ApplyWeight(Font::Weight::BOLD, Range(0, 3));
@@ -7457,7 +7457,7 @@ TEST_F(RenderTextTest, GetWordLookupDataAtPoint_LTR) {
   // TODO(crbug.com/1111044): this shouldn't be necessary once RenderText keeps
   // float precision through GetCursorBounds().
   SetGlyphWidth(5);
-  const base::string16 ltr = ASCIIToUTF16("  ab  c ");
+  const std::u16string ltr = ASCIIToUTF16("  ab  c ");
   const int kWordOneStartIndex = 2;
   const int kWordTwoStartIndex = 6;
 
@@ -7542,7 +7542,7 @@ TEST_F(RenderTextTest, GetWordLookupDataAtPoint_RTL) {
   // TODO(crbug.com/1111044): this shouldn't be necessary once RenderText keeps
   // float precision through GetCursorBounds().
   SetGlyphWidth(5);
-  const base::string16 rtl = UTF8ToUTF16(" \u0634\u0632  \u0634");
+  const std::u16string rtl = UTF8ToUTF16(" \u0634\u0632  \u0634");
   const int kWordOneStartIndex = 1;
   const int kWordTwoStartIndex = 5;
 
@@ -7619,7 +7619,7 @@ TEST_F(RenderTextTest, GetWordLookupDataAtPoint_RTL) {
 
 // Test that GetWordLookupDataAtPoint behaves correctly for multiline text.
 TEST_F(RenderTextTest, GetWordLookupDataAtPoint_Multiline) {
-  const base::string16 text = ASCIIToUTF16("a b\n..\ncd.");
+  const std::u16string text = ASCIIToUTF16("a b\n..\ncd.");
   const size_t kWordOneIndex = 0;    // Index of character 'a'.
   const size_t kWordTwoIndex = 2;    // Index of character 'b'.
   const size_t kWordThreeIndex = 7;  // Index of character 'c'.
@@ -7726,7 +7726,7 @@ TEST_F(RenderTextTest, GetWordLookupDataAtPoint_Return) {
 
 // Test that GetLookupDataAtPoint behaves correctly when the range spans lines.
 TEST_F(RenderTextTest, GetLookupDataAtRange_Multiline) {
-  const base::string16 text = ASCIIToUTF16("a\nb");
+  const std::u16string text = ASCIIToUTF16("a\nb");
   constexpr Range kWordOneRange = Range(0, 1);  // Range of character 'a'.
   constexpr Range kWordTwoRange = Range(2, 3);  // Range of character 'b'.
   constexpr Range kTextRange = Range(0, 3);     // Range of the entire text.
@@ -8165,7 +8165,7 @@ TEST_F(RenderTextTest, MissingFlagEmoji) {
   // but cursor navigation should still behave as though they are joined. To get
   // placeholder glyphs, make up a non-existent country. The codes used are
   // based on ISO 3166-1 alpha-2. Codes starting with X are user-assigned.
-  base::string16 text(WideToUTF16(L"🇽🇽🇽🇽"));
+  std::u16string text(WideToUTF16(L"🇽🇽🇽🇽"));
   // Each flag is 4 UTF16 characters (2 surrogate pair code points).
   EXPECT_EQ(8u, text.length());
 
@@ -8220,7 +8220,7 @@ TEST_F(RenderTextTest, MissingFlagEmoji) {
 
 // Ensures that glyph spacing is correctly applied to obscured text.
 TEST_F(RenderTextTest, ObscuredGlyphSpacing) {
-  const base::string16 seuss = ASCIIToUTF16("hop on pop");
+  const std::u16string seuss = ASCIIToUTF16("hop on pop");
   RenderTextHarfBuzz* render_text = GetRenderText();
   render_text->SetText(seuss);
   render_text->SetObscured(true);
@@ -8241,7 +8241,7 @@ TEST_F(RenderTextTest, ObscuredGlyphSpacing) {
 
 // Ensures that glyph spacing is ignored for non-obscured text.
 TEST_F(RenderTextTest, ObscuredGlyphSpacingOnNonObscuredText) {
-  const base::string16 seuss = ASCIIToUTF16("hop on pop");
+  const std::u16string seuss = ASCIIToUTF16("hop on pop");
   RenderTextHarfBuzz* render_text = GetRenderText();
   render_text->SetText(seuss);
   render_text->SetObscured(false);

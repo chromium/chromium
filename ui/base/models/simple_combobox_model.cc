@@ -8,7 +8,7 @@
 
 namespace ui {
 
-SimpleComboboxModel::SimpleComboboxModel(std::vector<base::string16> items)
+SimpleComboboxModel::SimpleComboboxModel(std::vector<std::u16string> items)
     : items_(std::move(items)) {}
 
 SimpleComboboxModel::~SimpleComboboxModel() {
@@ -18,7 +18,7 @@ int SimpleComboboxModel::GetItemCount() const {
   return items_.size();
 }
 
-base::string16 SimpleComboboxModel::GetItemAt(int index) const {
+std::u16string SimpleComboboxModel::GetItemAt(int index) const {
   return items_[index];
 }
 

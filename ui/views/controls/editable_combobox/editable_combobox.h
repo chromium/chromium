@@ -81,8 +81,8 @@ class VIEWS_EXPORT EditableCombobox
 
   void SetModel(std::unique_ptr<ui::ComboboxModel> model);
 
-  const base::string16& GetText() const;
-  void SetText(const base::string16& text);
+  const std::u16string& GetText() const;
+  void SetText(const std::u16string& text);
 
   const gfx::FontList& GetFontList() const;
 
@@ -95,7 +95,7 @@ class VIEWS_EXPORT EditableCombobox
 
   // Sets the accessible name. Use SetAssociatedLabel instead if there is a
   // label associated with this combobox.
-  void SetAccessibleName(const base::string16& name);
+  void SetAccessibleName(const std::u16string& name);
 
   // Sets the associated label; use this instead of SetAccessibleName if there
   // is a label associated with this combobox.
@@ -108,7 +108,7 @@ class VIEWS_EXPORT EditableCombobox
   // Accessors of private members for tests.
   ui::ComboboxModel* GetComboboxModelForTest() { return combobox_model_.get(); }
   int GetItemCountForTest();
-  base::string16 GetItemForTest(int index);
+  std::u16string GetItemForTest(int index);
   MenuRunner* GetMenuRunnerForTest() { return menu_runner_.get(); }
   Textfield* GetTextfieldForTest() { return textfield_; }
 
@@ -122,7 +122,7 @@ class VIEWS_EXPORT EditableCombobox
   void OnItemSelected(int index);
 
   // Notifies listener of new content and updates the menu items to show.
-  void HandleNewContent(const base::string16& new_content);
+  void HandleNewContent(const std::u16string& new_content);
 
   // Toggles the dropdown menu in response to |event|.
   void ArrowButtonPressed(const ui::Event& event);
@@ -139,7 +139,7 @@ class VIEWS_EXPORT EditableCombobox
 
   // Overridden from TextfieldController:
   void ContentsChanged(Textfield* sender,
-                       const base::string16& new_contents) override;
+                       const std::u16string& new_contents) override;
   bool HandleKeyEvent(Textfield* sender,
                       const ui::KeyEvent& key_event) override;
 

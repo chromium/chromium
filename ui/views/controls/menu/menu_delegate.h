@@ -75,7 +75,7 @@ class VIEWS_EXPORT MenuDelegate {
 
   // The string shown for the menu item. This is only invoked when an item is
   // added with an empty label.
-  virtual base::string16 GetLabel(int id) const;
+  virtual std::u16string GetLabel(int id) const;
 
   // The style for the label with the given |id|. Implementations may update any
   // parts of |style| or leave it unmodified.
@@ -83,7 +83,7 @@ class VIEWS_EXPORT MenuDelegate {
 
   // The tooltip shown for the menu item. This is invoked when the user
   // hovers over the item, and no tooltip text has been set for that item.
-  virtual base::string16 GetTooltipText(int id,
+  virtual std::u16string GetTooltipText(int id,
                                         const gfx::Point& screen_loc) const;
 
   // If there is an accelerator for the menu item with id |id| it is set in
@@ -107,7 +107,7 @@ class VIEWS_EXPORT MenuDelegate {
   virtual bool SupportsCommand(int id) const;
   virtual bool IsCommandEnabled(int id) const;
   virtual bool IsCommandVisible(int id) const;
-  virtual bool GetContextualLabel(int id, base::string16* out) const;
+  virtual bool GetContextualLabel(int id, std::u16string* out) const;
   virtual void ExecuteCommand(int id) {}
 
   // If nested menus are showing (nested menus occur when a menu shows a context

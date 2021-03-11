@@ -19,7 +19,7 @@
 namespace ui {
 
 struct SurroundingTextInfo {
-  base::string16 surrounding_text;
+  std::u16string surrounding_text;
   gfx::Range selection_range;
 };
 
@@ -29,7 +29,7 @@ class COMPONENT_EXPORT(UI_BASE_IME_CHROMEOS) IMEInputContextHandlerInterface {
  public:
   // Called when the engine commit a text.
   virtual void CommitText(
-      const base::string16& text,
+      const std::u16string& text,
       TextInputClient::InsertTextCursorBehavior cursor_behavior) = 0;
 
   // Called when the engine changes the composition range.

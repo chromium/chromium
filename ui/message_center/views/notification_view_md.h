@@ -41,18 +41,18 @@ class MESSAGE_CENTER_EXPORT NotificationMdTextButton
   METADATA_HEADER(NotificationMdTextButton);
 
   NotificationMdTextButton(PressedCallback callback,
-                           const base::string16& label,
-                           const base::Optional<base::string16>& placeholder);
+                           const std::u16string& label,
+                           const base::Optional<std::u16string>& placeholder);
   ~NotificationMdTextButton() override;
 
   // views::MdTextButton:
   void UpdateBackgroundColor() override;
   void OnThemeChanged() override;
 
-  const base::Optional<base::string16>& placeholder() const {
+  const base::Optional<std::u16string>& placeholder() const {
     return placeholder_;
   }
-  void set_placeholder(base::Optional<base::string16> placeholder) {
+  void set_placeholder(base::Optional<std::u16string> placeholder) {
     placeholder_ = std::move(placeholder);
   }
   SkColor enabled_color_for_testing() const {
@@ -62,7 +62,7 @@ class MESSAGE_CENTER_EXPORT NotificationMdTextButton
   void OverrideTextColor(base::Optional<SkColor> text_color);
 
  private:
-  base::Optional<base::string16> placeholder_;
+  base::Optional<std::u16string> placeholder_;
   base::Optional<SkColor> text_color_;
 };
 
@@ -78,8 +78,8 @@ class CompactTitleMessageView : public views::View {
   gfx::Size CalculatePreferredSize() const override;
   void Layout() override;
 
-  void set_title(const base::string16& title);
-  void set_message(const base::string16& message);
+  void set_title(const std::u16string& title);
+  void set_message(const std::u16string& message);
 
  private:
   views::Label* title_ = nullptr;
@@ -112,7 +112,7 @@ class LargeImageView : public views::View {
 class NotificationInputDelegate {
  public:
   virtual void OnNotificationInputSubmit(size_t index,
-                                         const base::string16& text) = 0;
+                                         const std::u16string& text) = 0;
   virtual ~NotificationInputDelegate() = default;
 };
 
@@ -211,7 +211,7 @@ class MESSAGE_CENTER_EXPORT NotificationViewMD
 
   // Overridden from NotificationInputDelegate:
   void OnNotificationInputSubmit(size_t index,
-                                 const base::string16& text) override;
+                                 const std::u16string& text) override;
 
  protected:
   views::View* image_container_view() { return image_container_view_; }

@@ -134,7 +134,7 @@ TEST_F(NotificationHeaderViewTest, AllowsHidingOfAppIcon) {
 
 TEST_F(NotificationHeaderViewTest, SetProgress) {
   int progress = 50;
-  base::string16 expected_summary_text = l10n_util::GetStringFUTF16Int(
+  std::u16string expected_summary_text = l10n_util::GetStringFUTF16Int(
       IDS_MESSAGE_CENTER_NOTIFICATION_PROGRESS_PERCENTAGE, progress);
 
   notification_header_view_->SetProgress(progress);
@@ -146,7 +146,7 @@ TEST_F(NotificationHeaderViewTest, SetProgress) {
 
 TEST_F(NotificationHeaderViewTest, SetOverflowIndicator) {
   int count = 10;
-  base::string16 expected_summary_text = l10n_util::GetStringFUTF16Int(
+  std::u16string expected_summary_text = l10n_util::GetStringFUTF16Int(
       IDS_MESSAGE_CENTER_LIST_NOTIFICATION_HEADER_OVERFLOW_INDICATOR, count);
 
   notification_header_view_->SetOverflowIndicator(count);
@@ -157,7 +157,7 @@ TEST_F(NotificationHeaderViewTest, SetOverflowIndicator) {
 }
 
 TEST_F(NotificationHeaderViewTest, SetSummaryText) {
-  base::string16 expected_summary_text = base::ASCIIToUTF16("summary");
+  std::u16string expected_summary_text = base::ASCIIToUTF16("summary");
 
   notification_header_view_->SetSummaryText(expected_summary_text);
 

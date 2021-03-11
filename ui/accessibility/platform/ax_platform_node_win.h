@@ -1097,7 +1097,7 @@ class AX_EXPORT __declspec(uuid("26f5641a-246d-457b-a96d-07f3fae6acf2"))
   // Updates the active composition range and fires UIA text edit event about
   // composition (active or committed)
   void OnActiveComposition(const gfx::Range& range,
-                           const base::string16& active_composition_text,
+                           const std::u16string& active_composition_text,
                            bool is_composition_committed);
   // Returns true if there is an active composition
   bool HasActiveComposition() const;

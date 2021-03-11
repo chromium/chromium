@@ -78,7 +78,7 @@ class ZWPTextInputWrapper {
   virtual void HideInputPanel() = 0;
 
   virtual void SetCursorRect(const gfx::Rect& rect) = 0;
-  virtual void SetSurroundingText(const base::string16& text,
+  virtual void SetSurroundingText(const std::u16string& text,
                                   const gfx::Range& selection_range) = 0;
 };
 

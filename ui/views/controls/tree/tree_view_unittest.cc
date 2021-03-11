@@ -151,7 +151,7 @@ class TreeViewTest : public ViewsTestBase {
  private:
   std::string InternalNodeAsString(TreeView::InternalNode* node);
 
-  TestNode* GetNodeByTitleImpl(TestNode* node, const base::string16& title);
+  TestNode* GetNodeByTitleImpl(TestNode* node, const std::u16string& title);
 
   // Keeps a record of all accessibility events that have been fired on the tree
   // view.
@@ -346,7 +346,7 @@ int TreeViewTest::GetRowCount() {
 }
 
 TestNode* TreeViewTest::GetNodeByTitleImpl(TestNode* node,
-                                           const base::string16& title) {
+                                           const std::u16string& title) {
   if (node->GetTitle() == title)
     return node;
   for (auto& child : node->children()) {

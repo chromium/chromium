@@ -246,11 +246,11 @@ class SimpleBubbleView : public BubbleDialogDelegateView {
 
 class CustomTooltipView : public View {
  public:
-  CustomTooltipView(const base::string16& tooltip, View* tooltip_handler)
+  CustomTooltipView(const std::u16string& tooltip, View* tooltip_handler)
       : tooltip_(tooltip), tooltip_handler_(tooltip_handler) {}
 
   // View:
-  base::string16 GetTooltipText(const gfx::Point& p) const override {
+  std::u16string GetTooltipText(const gfx::Point& p) const override {
     return tooltip_;
   }
 
@@ -259,7 +259,7 @@ class CustomTooltipView : public View {
   }
 
  private:
-  base::string16 tooltip_;
+  std::u16string tooltip_;
   View* tooltip_handler_;  // Weak
 
   DISALLOW_COPY_AND_ASSIGN(CustomTooltipView);
@@ -629,7 +629,7 @@ TEST_F(NativeWidgetMacTest, AccessibilityIntegration) {
   gfx::Rect screen_rect(50, 50, 100, 100);
   widget->SetBounds(screen_rect);
 
-  const base::string16 test_string = base::ASCIIToUTF16("Green");
+  const std::u16string test_string = base::ASCIIToUTF16("Green");
   views::Label* label = new views::Label(test_string);
   label->SetBounds(0, 0, 100, 100);
   widget->GetContentsView()->AddChildView(label);
@@ -852,7 +852,7 @@ TEST_F(NativeWidgetMacTest, VisibleAfterNativeParentDeminiaturize) {
 
 // Use Native APIs to query the tooltip text that would be shown once the
 // tooltip delay had elapsed.
-base::string16 TooltipTextForWidget(Widget* widget) {
+std::u16string TooltipTextForWidget(Widget* widget) {
   // For Mac, the actual location doesn't matter, since there is only one native
   // view and it fills the window. This just assumes the window is at least big
   // big enough for a constant coordinate to be within it.
@@ -872,9 +872,9 @@ TEST_F(NativeWidgetMacTest, Tooltips) {
   gfx::Rect screen_rect(50, 50, 100, 100);
   widget->SetBounds(screen_rect);
 
-  const base::string16 tooltip_back = base::ASCIIToUTF16("Back");
-  const base::string16 tooltip_front = base::ASCIIToUTF16("Front");
-  const base::string16 long_tooltip(2000, 'W');
+  const std::u16string tooltip_back = base::ASCIIToUTF16("Back");
+  const std::u16string tooltip_front = base::ASCIIToUTF16("Front");
+  const std::u16string long_tooltip(2000, 'W');
 
   // Create a nested layout to test corner cases.
   LabelButton* back =
@@ -935,7 +935,7 @@ TEST_F(NativeWidgetMacTest, TwoWidgetTooltips) {
       CreateChildPlatformWidget(widget_below->GetNativeView());
   widget_above->SetBounds(gfx::Rect(100, 0, 100, 200));
 
-  const base::string16 tooltip_above = base::ASCIIToUTF16("Front");
+  const std::u16string tooltip_above = base::ASCIIToUTF16("Front");
   CustomTooltipView* view_above = new CustomTooltipView(tooltip_above, nullptr);
   view_above->SetBoundsRect(widget_above->GetContentsView()->bounds());
   widget_above->GetContentsView()->AddChildView(view_above);
@@ -1680,18 +1680,18 @@ class CustomTitleWidgetDelegate : public WidgetDelegate {
   CustomTitleWidgetDelegate(Widget* widget)
       : widget_(widget), should_show_title_(true) {}
 
-  void set_title(const base::string16& title) { title_ = title; }
+  void set_title(const std::u16string& title) { title_ = title; }
   void set_should_show_title(bool show) { should_show_title_ = show; }
 
   // WidgetDelegate:
-  base::string16 GetWindowTitle() const override { return title_; }
+  std::u16string GetWindowTitle() const override { return title_; }
   bool ShouldShowWindowTitle() const override { return should_show_title_; }
   Widget* GetWidget() override { return widget_; }
   const Widget* GetWidget() const override { return widget_; }
 
  private:
   Widget* widget_;
-  base::string16 title_;
+  std::u16string title_;
   bool should_show_title_;
 
   DISALLOW_COPY_AND_ASSIGN(CustomTitleWidgetDelegate);
@@ -1714,7 +1714,7 @@ TEST_F(NativeWidgetMacTest, DISABLED_DoesHideTitle) {
   // Disable color correction so we can read unmodified values from the bitmap.
   [ns_window setColorSpace:[NSColorSpace sRGBColorSpace]];
 
-  EXPECT_EQ(base::string16(), delegate.GetWindowTitle());
+  EXPECT_EQ(std::u16string(), delegate.GetWindowTitle());
   EXPECT_NSEQ(@"", [ns_window title]);
   NSData* empty_title_data = WindowContentsAsTIFF(ns_window);
 

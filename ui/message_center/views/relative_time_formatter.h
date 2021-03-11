@@ -18,7 +18,7 @@ namespace message_center {
 // written to |next_update|.
 MESSAGE_CENTER_EXPORT void GetRelativeTimeStringAndNextUpdateTime(
     base::TimeDelta delta,
-    base::string16* relative_time,
+    std::u16string* relative_time,
     base::TimeDelta* next_update);
 
 }  // namespace message_center

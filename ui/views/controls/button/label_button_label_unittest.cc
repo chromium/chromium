@@ -39,7 +39,7 @@ class TestNativeTheme : public ui::NativeThemeBase {
 class TestLabel : public internal::LabelButtonLabel {
  public:
   explicit TestLabel(SkColor* last_color)
-      : LabelButtonLabel(base::string16(), views::style::CONTEXT_BUTTON),
+      : LabelButtonLabel(std::u16string(), views::style::CONTEXT_BUTTON),
         last_color_(last_color) {}
 
   // LabelButtonLabel:

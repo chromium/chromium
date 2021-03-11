@@ -442,7 +442,7 @@ std::unique_ptr<RenderText> RenderText::CreateRenderText() {
 }
 
 std::unique_ptr<RenderText> RenderText::CreateInstanceOfSameStyle(
-    const base::string16& text) const {
+    const std::u16string& text) const {
   std::unique_ptr<RenderText> render_text = CreateRenderText();
   // |SetText()| must be called before styles are set.
   render_text->SetText(text);
@@ -459,7 +459,7 @@ std::unique_ptr<RenderText> RenderText::CreateInstanceOfSameStyle(
   return render_text;
 }
 
-void RenderText::SetText(const base::string16& text) {
+void RenderText::SetText(const std::u16string& text) {
   DCHECK(!composition_range_.IsValid());
   if (text_ == text)
     return;
@@ -488,7 +488,7 @@ void RenderText::SetText(const base::string16& text) {
   OnTextAttributeChanged();
 }
 
-void RenderText::AppendText(const base::string16& text) {
+void RenderText::AppendText(const std::u16string& text) {
   text_ += text;
   UpdateStyleLengths();
   cached_bounds_and_offset_valid_ = false;
@@ -1294,10 +1294,10 @@ bool RenderText::GetLookupDataForRange(const Range& range,
   return true;
 }
 
-base::string16 RenderText::GetTextFromRange(const Range& range) const {
+std::u16string RenderText::GetTextFromRange(const Range& range) const {
   if (range.IsValid() && range.GetMin() < text().length())
     return text().substr(range.GetMin(), range.length());
-  return base::string16();
+  return std::u16string();
 }
 
 Range RenderText::ExpandRangeToGraphemeBoundary(const Range& range) const {
@@ -1317,7 +1317,7 @@ bool RenderText::IsNewlineSegment(const internal::LineSegment& segment) const {
   return IsNewlineSegment(text_, segment);
 }
 
-bool RenderText::IsNewlineSegment(const base::string16& text,
+bool RenderText::IsNewlineSegment(const std::u16string& text,
                                   const internal::LineSegment& segment) const {
   const size_t offset = segment.char_range.start();
   const size_t length = segment.char_range.length();
@@ -1326,7 +1326,7 @@ bool RenderText::IsNewlineSegment(const base::string16& text,
          (length == 2 && text[offset] == '\r' && text[offset + 1] == '\n');
 }
 
-Range RenderText::GetLineRange(const base::string16& text,
+Range RenderText::GetLineRange(const std::u16string& text,
                                const internal::Line& line) const {
   // This will find the logical start and end indices of the given line.
   size_t max_index = 0;
@@ -1603,7 +1603,7 @@ void RenderText::EnsureLayoutTextUpdated() const {
   layout_text_up_to_date_ = true;
 }
 
-const base::string16& RenderText::GetLayoutText() const {
+const std::u16string& RenderText::GetLayoutText() const {
   EnsureLayoutTextUpdated();
   return layout_text_;
 }
@@ -1646,9 +1646,9 @@ void RenderText::UpdateDisplayText(float text_width) {
           layout_text_, render_text->GetShapedText()->lines()[max_lines_ - 1]);
       // Add an ellipsis character in case the last line is short enough to fit
       // on a single line. Otherwise that character will be elided anyway.
-      base::string16 text_to_elide =
+      std::u16string text_to_elide =
           layout_text_.substr(line_range.start(), line_range.length()) +
-          base::string16(kEllipsisUTF16);
+          std::u16string(kEllipsisUTF16);
       display_text_.assign(layout_text_.substr(0, line_range.start()) +
                            Elide(text_to_elide, 0,
                                  static_cast<float>(display_rect_.width()),
@@ -1672,7 +1672,7 @@ const BreakList<size_t>& RenderText::GetLineBreaks() {
   if (line_breaks_.max() != 0)
     return line_breaks_;
 
-  const base::string16& layout_text = GetDisplayText();
+  const std::u16string& layout_text = GetDisplayText();
   const size_t text_length = layout_text.length();
   line_breaks_.SetValue(0);
   line_breaks_.SetMax(text_length);
@@ -1849,7 +1849,7 @@ void RenderText::ApplyTextShadows(internal::SkiaTextRenderer* renderer) {
 }
 
 base::i18n::TextDirection RenderText::GetTextDirectionForGivenText(
-    const base::string16& text) const {
+    const std::u16string& text) const {
   switch (directionality_mode_) {
     case DIRECTIONALITY_FROM_TEXT:
       // Derive the direction from the display text, which differs from text()
@@ -2006,12 +2006,12 @@ void RenderText::OnTextAttributeChanged() {
   OnLayoutTextAttributeChanged(true);
 }
 
-base::string16 RenderText::Elide(const base::string16& text,
+std::u16string RenderText::Elide(const std::u16string& text,
                                  float text_width,
                                  float available_width,
                                  ElideBehavior behavior) {
   if (available_width <= 0 || text.empty())
-    return base::string16();
+    return std::u16string();
   if (behavior == ELIDE_EMAIL)
     return ElideEmail(text, available_width);
   if (text_width > 0 && text_width <= available_width)
@@ -2027,7 +2027,7 @@ base::string16 RenderText::Elide(const base::string16& text,
   if (text_width <= available_width)
     return text;
 
-  const base::string16 ellipsis = base::string16(kEllipsisUTF16);
+  const std::u16string ellipsis = std::u16string(kEllipsisUTF16);
   const bool insert_ellipsis = (behavior != TRUNCATE);
   const bool elide_in_middle = (behavior == ELIDE_MIDDLE);
   const bool elide_at_beginning = (behavior == ELIDE_HEAD);
@@ -2036,7 +2036,7 @@ base::string16 RenderText::Elide(const base::string16& text,
     render_text->SetText(ellipsis);
     const float ellipsis_width = render_text->GetContentWidthF();
     if (ellipsis_width > available_width)
-      return base::string16();
+      return std::u16string();
   }
 
   StringSlicer slicer(text, ellipsis, elide_in_middle, elide_at_beginning,
@@ -2073,7 +2073,7 @@ base::string16 RenderText::Elide(const base::string16& text,
 
     // Restore colors. They will be truncated to size by SetText.
     render_text->colors_ = colors_;
-    base::string16 new_text =
+    std::u16string new_text =
         slicer.CutString(guess, insert_ellipsis && behavior != ELIDE_TAIL);
 
     // This has to be an additional step so that the ellipsis is rendered with
@@ -2145,7 +2145,7 @@ base::string16 RenderText::Elide(const base::string16& text,
   return render_text->text();
 }
 
-base::string16 RenderText::ElideEmail(const base::string16& email,
+std::u16string RenderText::ElideEmail(const std::u16string& email,
                                       float available_width) {
   // The returned string will have at least one character besides the ellipsis
   // on either side of '@'; if that's impossible, a single ellipsis is returned.
@@ -2158,23 +2158,23 @@ base::string16 RenderText::ElideEmail(const base::string16& email,
   // spec allows for @ symbols in the username under some special requirements,
   // but not in the domain part, so splitting at the last @ symbol is safe.
   const size_t split_index = email.find_last_of('@');
-  if (split_index == base::string16::npos)
+  if (split_index == std::u16string::npos)
     return Elide(email, 0, available_width, ELIDE_TAIL);
 
-  base::string16 username = email.substr(0, split_index);
-  base::string16 domain = email.substr(split_index + 1);
+  std::u16string username = email.substr(0, split_index);
+  std::u16string domain = email.substr(split_index + 1);
 
   // TODO(http://crbug.com/1085014): Fix eliding of text with styles.
   DCHECK(IsHomogeneous())
       << "ElideEmail(...) doesn't work with non homogeneous styles.";
-  auto render_text = CreateInstanceOfSameStyle(base::string16());
-  auto get_string_width = [&](const base::string16& text) {
+  auto render_text = CreateInstanceOfSameStyle(std::u16string());
+  auto get_string_width = [&](const std::u16string& text) {
     render_text->SetText(text);
     return render_text->GetStringSizeF().width();
   };
 
   // Subtract the @ symbol from the available width as it is mandatory.
-  const base::string16 kAtSignUTF16 = base::ASCIIToUTF16("@");
+  const std::u16string kAtSignUTF16 = base::ASCIIToUTF16("@");
   float at_width = get_string_width(kAtSignUTF16);
   if (available_width < at_width)
     return Elide(kEllipsisUTF16, 0, available_width, ELIDE_TAIL);
@@ -2263,7 +2263,7 @@ void RenderText::UpdateCachedBoundsAndOffset() {
 }
 
 internal::GraphemeIterator RenderText::GetGraphemeIteratorAtIndex(
-    const base::string16& text,
+    const std::u16string& text,
     const size_t internal::TextToDisplayIndex::*field,
     size_t index) const {
   DCHECK_LE(index, text.length());

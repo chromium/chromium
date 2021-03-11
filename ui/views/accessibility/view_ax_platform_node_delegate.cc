@@ -263,7 +263,7 @@ void ViewAXPlatformNodeDelegate::NotifyAccessibilityEvent(
 }
 
 #if defined(OS_APPLE)
-void ViewAXPlatformNodeDelegate::AnnounceText(const base::string16& text) {
+void ViewAXPlatformNodeDelegate::AnnounceText(const std::u16string& text) {
   ax_platform_node_->AnnounceText(text);
 }
 #endif  // defined(OS_APPLE)
@@ -629,7 +629,7 @@ bool ViewAXPlatformNodeDelegate::IsOffscreen() const {
   return false;
 }
 
-base::string16 ViewAXPlatformNodeDelegate::GetAuthorUniqueId() const {
+std::u16string ViewAXPlatformNodeDelegate::GetAuthorUniqueId() const {
   const View* v = view();
   if (v) {
     const int view_id = v->GetID();
@@ -637,7 +637,7 @@ base::string16 ViewAXPlatformNodeDelegate::GetAuthorUniqueId() const {
       return base::WideToUTF16(L"view_") + base::NumberToString16(view_id);
   }
 
-  return base::string16();
+  return std::u16string();
 }
 
 bool ViewAXPlatformNodeDelegate::IsMinimized() const {

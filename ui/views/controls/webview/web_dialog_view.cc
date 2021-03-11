@@ -189,13 +189,13 @@ bool WebDialogView::CanMaximize() const {
   return false;
 }
 
-base::string16 WebDialogView::GetWindowTitle() const {
+std::u16string WebDialogView::GetWindowTitle() const {
   if (delegate_)
     return delegate_->GetDialogTitle();
-  return base::string16();
+  return std::u16string();
 }
 
-base::string16 WebDialogView::GetAccessibleWindowTitle() const {
+std::u16string WebDialogView::GetAccessibleWindowTitle() const {
   if (delegate_)
     return delegate_->GetAccessibleDialogTitle();
   return GetWindowTitle();
@@ -264,7 +264,7 @@ ui::ModalType WebDialogView::GetDialogModalType() const {
   return ui::MODAL_TYPE_NONE;
 }
 
-base::string16 WebDialogView::GetDialogTitle() const {
+std::u16string WebDialogView::GetDialogTitle() const {
   return GetWindowTitle();
 }
 

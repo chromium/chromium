@@ -34,20 +34,20 @@ class OSExchangeDataTest : public PlatformTest {
 
 TEST_F(OSExchangeDataTest, StringDataGetAndSet) {
   OSExchangeData data;
-  base::string16 input = base::ASCIIToUTF16("I can has cheezburger?");
+  std::u16string input = base::ASCIIToUTF16("I can has cheezburger?");
   EXPECT_FALSE(data.HasString());
   data.SetString(input);
   EXPECT_TRUE(data.HasString());
 
   OSExchangeData data2(
       std::unique_ptr<OSExchangeDataProvider>(data.provider().Clone()));
-  base::string16 output;
+  std::u16string output;
   EXPECT_TRUE(data2.HasString());
   EXPECT_TRUE(data2.GetString(&output));
   EXPECT_EQ(input, output);
   std::string url_spec = "http://www.goats.com/";
   GURL url(url_spec);
-  base::string16 title;
+  std::u16string title;
   EXPECT_FALSE(data2.GetURLAndTitle(
       FilenameToURLPolicy::DO_NOT_CONVERT_FILENAMES, &url, &title));
   // No URLs in |data|, so url should be untouched.
@@ -58,7 +58,7 @@ TEST_F(OSExchangeDataTest, TestURLExchangeFormats) {
   OSExchangeData data;
   std::string url_spec = "http://www.google.com/";
   GURL url(url_spec);
-  base::string16 url_title = base::ASCIIToUTF16("www.google.com");
+  std::u16string url_title = base::ASCIIToUTF16("www.google.com");
   EXPECT_FALSE(data.HasURL(FilenameToURLPolicy::DO_NOT_CONVERT_FILENAMES));
   data.SetURL(url, url_title);
   EXPECT_TRUE(data.HasURL(FilenameToURLPolicy::DO_NOT_CONVERT_FILENAMES));
@@ -68,14 +68,14 @@ TEST_F(OSExchangeDataTest, TestURLExchangeFormats) {
 
   // URL spec and title should match
   GURL output_url;
-  base::string16 output_title;
+  std::u16string output_title;
   EXPECT_TRUE(data2.HasURL(FilenameToURLPolicy::DO_NOT_CONVERT_FILENAMES));
   EXPECT_TRUE(
       data2.GetURLAndTitle(FilenameToURLPolicy::DO_NOT_CONVERT_FILENAMES,
                            &output_url, &output_title));
   EXPECT_EQ(url_spec, output_url.spec());
   EXPECT_EQ(url_title, output_title);
-  base::string16 output_string;
+  std::u16string output_string;
 
   // URL should be the raw text response
   EXPECT_TRUE(data2.GetString(&output_string));
@@ -85,19 +85,19 @@ TEST_F(OSExchangeDataTest, TestURLExchangeFormats) {
 // Test that setting the URL does not overwrite a previously set custom string.
 TEST_F(OSExchangeDataTest, URLAndString) {
   OSExchangeData data;
-  base::string16 string = base::ASCIIToUTF16("I can has cheezburger?");
+  std::u16string string = base::ASCIIToUTF16("I can has cheezburger?");
   data.SetString(string);
   std::string url_spec = "http://www.google.com/";
   GURL url(url_spec);
-  base::string16 url_title = base::ASCIIToUTF16("www.google.com");
+  std::u16string url_title = base::ASCIIToUTF16("www.google.com");
   data.SetURL(url, url_title);
 
-  base::string16 output_string;
+  std::u16string output_string;
   EXPECT_TRUE(data.GetString(&output_string));
   EXPECT_EQ(string, output_string);
 
   GURL output_url;
-  base::string16 output_title;
+  std::u16string output_title;
   EXPECT_TRUE(data.GetURLAndTitle(FilenameToURLPolicy::DO_NOT_CONVERT_FILENAMES,
                                   &output_url, &output_title));
   EXPECT_EQ(url_spec, output_url.spec());
@@ -118,25 +118,25 @@ TEST_F(OSExchangeDataTest, TestFileToURLConversion) {
   {
     EXPECT_FALSE(data.HasURL(FilenameToURLPolicy::DO_NOT_CONVERT_FILENAMES));
     GURL actual_url;
-    base::string16 actual_title;
+    std::u16string actual_title;
     EXPECT_FALSE(
         data.GetURLAndTitle(FilenameToURLPolicy::DO_NOT_CONVERT_FILENAMES,
                             &actual_url, &actual_title));
     EXPECT_EQ(GURL(), actual_url);
-    EXPECT_EQ(base::string16(), actual_title);
+    EXPECT_EQ(std::u16string(), actual_title);
   }
 
   {
     EXPECT_TRUE(data.HasURL(FilenameToURLPolicy::CONVERT_FILENAMES));
     GURL actual_url;
-    base::string16 actual_title;
+    std::u16string actual_title;
     EXPECT_TRUE(data.GetURLAndTitle(FilenameToURLPolicy::CONVERT_FILENAMES,
                                     &actual_url, &actual_title));
     // Some Mac OS versions return the URL in file://localhost form instead
     // of file:///, so we compare the url's path not its absolute string.
     EXPECT_EQ(net::FilePathToFileURL(current_directory).path(),
               actual_url.path());
-    EXPECT_EQ(base::string16(), actual_title);
+    EXPECT_EQ(std::u16string(), actual_title);
   }
   EXPECT_TRUE(data.HasFile());
   base::FilePath actual_path;
@@ -196,7 +196,7 @@ TEST_F(OSExchangeDataTest, TestFilenames) {
 TEST_F(OSExchangeDataTest, TestHTML) {
   OSExchangeData data;
   GURL url("http://www.google.com/");
-  base::string16 html = base::ASCIIToUTF16(
+  std::u16string html = base::ASCIIToUTF16(
       "<HTML>\n<BODY>\n"
       "<b>bold.</b> <i><b>This is bold italic.</b></i>\n"
       "</BODY>\n</HTML>");
@@ -204,7 +204,7 @@ TEST_F(OSExchangeDataTest, TestHTML) {
 
   OSExchangeData copy(
       std::unique_ptr<OSExchangeDataProvider>(data.provider().Clone()));
-  base::string16 read_html;
+  std::u16string read_html;
   EXPECT_TRUE(copy.HasHtml());
   EXPECT_TRUE(copy.GetHtml(&read_html, &url));
   EXPECT_EQ(html, read_html);

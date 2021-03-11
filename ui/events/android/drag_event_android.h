@@ -29,14 +29,14 @@ class EVENTS_EXPORT DragEventAndroid {
                    int action,
                    const gfx::PointF& location,
                    const gfx::PointF& screen_location,
-                   const std::vector<base::string16>& mime_types,
+                   const std::vector<std::u16string>& mime_types,
                    jstring content);
   ~DragEventAndroid();
 
   int action() const { return action_; }
   const gfx::PointF& location_f() const { return location_; }
   const gfx::PointF& screen_location_f() const { return screen_location_; }
-  const std::vector<base::string16>& mime_types() const { return mime_types_; }
+  const std::vector<std::u16string>& mime_types() const { return mime_types_; }
 
   const gfx::Point GetLocation() const;
   const gfx::Point GetScreenLocation() const;
@@ -53,7 +53,7 @@ class EVENTS_EXPORT DragEventAndroid {
   gfx::PointF location_;
   // Location relative to the screen coordinate.
   gfx::PointF screen_location_;
-  const std::vector<base::string16>& mime_types_;
+  const std::vector<std::u16string>& mime_types_;
   // The Java reference to the drop content to avoid unnecessary copying.
   base::android::ScopedJavaGlobalRef<jstring> content_;
 

@@ -39,7 +39,7 @@ gfx::Image DuplicateImage(const gfx::Image& image) {
 
 }  // namespace
 
-ButtonInfo::ButtonInfo(const base::string16& title) : title(title) {}
+ButtonInfo::ButtonInfo(const std::u16string& title) : title(title) {}
 
 ButtonInfo::ButtonInfo(const ButtonInfo& other) = default;
 
@@ -58,10 +58,10 @@ RichNotificationData::~RichNotificationData() = default;
 
 Notification::Notification(NotificationType type,
                            const std::string& id,
-                           const base::string16& title,
-                           const base::string16& message,
+                           const std::u16string& title,
+                           const std::u16string& message,
                            const gfx::Image& icon,
-                           const base::string16& display_source,
+                           const std::u16string& display_source,
                            const GURL& origin_url,
                            const NotifierId& notifier_id,
                            const RichNotificationData& optional_fields,

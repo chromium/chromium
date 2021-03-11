@@ -66,7 +66,7 @@ class ShellToplevelWrapper {
                              uint32_t hittest) = 0;
 
   // Sets a title of a native window.
-  virtual void SetTitle(const base::string16& title) = 0;
+  virtual void SetTitle(const std::u16string& title) = 0;
 
   // Sends acknowledge configure event back to wayland.
   virtual void AckConfigure(uint32_t serial) = 0;

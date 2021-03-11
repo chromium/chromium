@@ -63,7 +63,7 @@ class TestSimpleMenuModelVisibility : public SimpleMenuModel {
     items_[ValidateItemIndex(index)].visible = visible;
   }
 
-  void AddItem(int command_id, const base::string16& label) {
+  void AddItem(int command_id, const std::u16string& label) {
     SimpleMenuModel::AddItem(command_id, label);
     items_.push_back({true, command_id});
   }
@@ -146,18 +146,18 @@ class DynamicDelegate : public Delegate {
  public:
   DynamicDelegate() {}
   bool IsItemForCommandIdDynamic(int command_id) const override { return true; }
-  base::string16 GetLabelForCommandId(int command_id) const override {
+  std::u16string GetLabelForCommandId(int command_id) const override {
     return label_;
   }
   ui::ImageModel GetIconForCommandId(int command_id) const override {
     return icon_.IsEmpty() ? ui::ImageModel()
                            : ui::ImageModel::FromImage(icon_);
   }
-  void SetDynamicLabel(base::string16 label) { label_ = label; }
+  void SetDynamicLabel(std::u16string label) { label_ = label; }
   void SetDynamicIcon(const gfx::Image& icon) { icon_ = icon; }
 
  private:
-  base::string16 label_;
+  std::u16string label_;
   gfx::Image icon_;
 };
 
@@ -461,7 +461,7 @@ TEST_F(MenuControllerTest, PopUpButton) {
                     delegate:nil
       useWithPopUpButtonCell:YES]);
   EXPECT_EQ(4, [[menu menu] numberOfItems]);
-  EXPECT_EQ(base::string16(),
+  EXPECT_EQ(std::u16string(),
             base::SysNSStringToUTF16([[[menu menu] itemAtIndex:0] title]));
 
   // Make sure the tags are still correct (the index no longer matches the tag).
@@ -563,7 +563,7 @@ TEST_F(MenuControllerTest, Dynamic) {
 
   // Create a menu containing a single item whose label is "initial" and who has
   // no icon.
-  base::string16 initial = ASCIIToUTF16("initial");
+  std::u16string initial = ASCIIToUTF16("initial");
   delegate.SetDynamicLabel(initial);
   SimpleMenuModel model(&delegate);
   model.AddItem(1, ASCIIToUTF16("foo"));
@@ -581,7 +581,7 @@ TEST_F(MenuControllerTest, Dynamic) {
   EXPECT_EQ(nil, [item image]);
 
   // Now update the item to have a label of "second" and an icon.
-  base::string16 second = ASCIIToUTF16("second");
+  std::u16string second = ASCIIToUTF16("second");
   delegate.SetDynamicLabel(second);
   const gfx::Image& icon = gfx::test::CreateImage(32, 32);
   delegate.SetDynamicIcon(icon);

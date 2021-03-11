@@ -145,7 +145,7 @@ class COMPONENT_EXPORT(UI_BASE) ResourceBundle {
     // Retrieve a localized string. Return true if a string was provided or
     // false to attempt retrieval of the default string.
     virtual bool GetLocalizedString(int message_id,
-                                    base::string16* value) const = 0;
+                                    std::u16string* value) const = 0;
 
    protected:
     virtual ~Delegate() {}
@@ -305,7 +305,7 @@ class COMPONENT_EXPORT(UI_BASE) ResourceBundle {
 
   // Get a localized string given a message id.  Returns an empty string if the
   // resource_id is not found.
-  base::string16 GetLocalizedString(int resource_id);
+  std::u16string GetLocalizedString(int resource_id);
 
   // Get a localized resource (for example, localized image logo) given a
   // resource id.
@@ -338,7 +338,7 @@ class COMPONENT_EXPORT(UI_BASE) ResourceBundle {
   // the variations service to experiment with different UI strings. This method
   // is not thread safe!
   void OverrideLocaleStringResource(int resource_id,
-                                    const base::string16& string);
+                                    const std::u16string& string);
 
   // Returns the full pathname of the locale file to load, which may be a
   // compressed locale file ending in .gz. Returns an empty path if |app_locale|
@@ -386,7 +386,7 @@ class COMPONENT_EXPORT(UI_BASE) ResourceBundle {
   class ResourceBundleImageSource;
   friend class ResourceBundleImageSource;
 
-  using IdToStringMap = std::unordered_map<int, base::string16>;
+  using IdToStringMap = std::unordered_map<int, std::u16string>;
 
   // Ctor/dtor are private, since we're a singleton.
   explicit ResourceBundle(Delegate* delegate);
@@ -478,14 +478,14 @@ class COMPONENT_EXPORT(UI_BASE) ResourceBundle {
   // If mangling of localized strings is enabled, mangles |str| to make it
   // longer and to add begin and end markers so that any truncation of it is
   // visible and returns the mangled string. If not, returns |str|.
-  base::string16 MaybeMangleLocalizedString(const base::string16& str) const;
+  std::u16string MaybeMangleLocalizedString(const std::u16string& str) const;
 
   // An internal implementation of |GetLocalizedString()| without setting the
   // flag of whether overriding locale strings is supported to false. We don't
   // update this flag only in |InitDefaultFontList()| which is called earlier
   // than the overriding. This is okay, because the font list doesn't need to be
   // overridden by variations.
-  base::string16 GetLocalizedStringImpl(int resource_id) const;
+  std::u16string GetLocalizedStringImpl(int resource_id) const;
 
   // This pointer is guaranteed to outlive the ResourceBundle instance and may
   // be null.

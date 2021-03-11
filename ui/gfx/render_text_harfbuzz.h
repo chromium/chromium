@@ -207,7 +207,7 @@ class GFX_EXPORT RenderTextHarfBuzz : public RenderText {
   ~RenderTextHarfBuzz() override;
 
   // RenderText:
-  const base::string16& GetDisplayText() override;
+  const std::u16string& GetDisplayText() override;
   SizeF GetStringSizeF() override;
   SizeF GetLineSizeF(const SelectionModel& caret) override;
   std::vector<Rect> GetSubstringBounds(const Range& range) override;
@@ -255,7 +255,7 @@ class GFX_EXPORT RenderTextHarfBuzz : public RenderText {
   // Break the text into logical runs in |out_run_list|. Populate
   // |out_commonized_run_map| such that each run is present in the vector
   // corresponding to its FontParams.
-  void ItemizeTextToRuns(const base::string16& string,
+  void ItemizeTextToRuns(const std::u16string& string,
                          internal::TextRunList* out_run_list,
                          CommonizedRunsMap* out_commonized_run_map);
 
@@ -263,7 +263,7 @@ class GFX_EXPORT RenderTextHarfBuzz : public RenderText {
   // will apply a number of fonts to |base_font_params| and assign to each
   // run's FontParams and ShapeOutput the parameters and resulting shape that
   // had the smallest number of missing glyphs.
-  void ShapeRuns(const base::string16& text,
+  void ShapeRuns(const std::u16string& text,
                  const internal::TextRunHarfBuzz::FontParams& base_font_params,
                  std::vector<internal::TextRunHarfBuzz*> runs);
 
@@ -274,13 +274,13 @@ class GFX_EXPORT RenderTextHarfBuzz : public RenderText {
   // runs with no missing glyphs from |in_out_runs| (the caller, ShapeRuns, will
   // terminate when no runs with missing glyphs remain).
   void ShapeRunsWithFont(
-      const base::string16& text,
+      const std::u16string& text,
       const internal::TextRunHarfBuzz::FontParams& font_params,
       std::vector<internal::TextRunHarfBuzz*>* in_out_runs);
 
   // Itemize |text| into runs in |out_run_list|, shape the runs, and populate
   // |out_run_list|'s visual <-> logical maps.
-  void ItemizeAndShapeText(const base::string16& text,
+  void ItemizeAndShapeText(const std::u16string& text,
                            internal::TextRunList* out_run_list);
 
   // Makes sure that text runs for layout text are shaped.

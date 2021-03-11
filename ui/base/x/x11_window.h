@@ -132,7 +132,7 @@ class COMPONENT_EXPORT(UI_BASE_X) XWindow {
   gfx::Rect GetOuterBounds() const;
 
   void SetCursor(scoped_refptr<X11Cursor> cursor);
-  bool SetTitle(base::string16 title);
+  bool SetTitle(std::u16string title);
   void SetXWindowOpacity(float opacity);
   void SetXWindowAspectRatio(const gfx::SizeF& aspect_ratio);
   void SetXWindowIcons(const gfx::ImageSkia& window_icon,
@@ -282,7 +282,7 @@ class COMPONENT_EXPORT(UI_BASE_X) XWindow {
   // Was this window initialized with the override_redirect window attribute?
   bool override_redirect_ = false;
 
-  base::string16 window_title_;
+  std::u16string window_title_;
 
   // Whether the window is visible with respect to Aura.
   bool window_mapped_in_client_ = false;

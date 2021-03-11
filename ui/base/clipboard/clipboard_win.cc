@@ -195,10 +195,10 @@ void MakeBitmapOpaque(SkPixmap* pixmap) {
   }
 }
 
-void ParseBookmarkClipboardFormat(const base::string16& bookmark,
-                                  base::string16* title,
+void ParseBookmarkClipboardFormat(const std::u16string& bookmark,
+                                  std::u16string* title,
                                   std::string* url) {
-  const base::string16 kDelim = base::ASCIIToUTF16("\r\n");
+  const std::u16string kDelim = base::ASCIIToUTF16("\r\n");
 
   const size_t title_end = bookmark.find_first_of(kDelim);
   if (title)
@@ -206,9 +206,9 @@ void ParseBookmarkClipboardFormat(const base::string16& bookmark,
 
   if (url) {
     const size_t url_start = bookmark.find_first_not_of(kDelim, title_end);
-    if (url_start != base::string16::npos) {
+    if (url_start != std::u16string::npos) {
       *url =
-          base::UTF16ToUTF8(bookmark.substr(url_start, base::string16::npos));
+          base::UTF16ToUTF8(bookmark.substr(url_start, std::u16string::npos));
     }
   }
 }
@@ -299,7 +299,7 @@ void ClipboardWin::Clear(ClipboardBuffer buffer) {
 void ClipboardWin::ReadAvailableTypes(
     ClipboardBuffer buffer,
     const DataTransferEndpoint* data_dst,
-    std::vector<base::string16>* types) const {
+    std::vector<std::u16string>* types) const {
   DCHECK(types);
 
   types->clear();
@@ -333,7 +333,7 @@ void ClipboardWin::ReadAvailableTypes(
 
 // |data_dst| is not used. It's only passed to be consistent with other
 // platforms.
-std::vector<base::string16>
+std::vector<std::u16string>
 ClipboardWin::ReadAvailablePlatformSpecificFormatNames(
     ClipboardBuffer buffer,
     const DataTransferEndpoint* data_dst) const {
@@ -341,7 +341,7 @@ ClipboardWin::ReadAvailablePlatformSpecificFormatNames(
   if (!count)
     return {};
 
-  std::vector<base::string16> types;
+  std::vector<std::u16string> types;
   types.reserve(count);
 
   ScopedClipboard clipboard;
@@ -363,7 +363,7 @@ ClipboardWin::ReadAvailablePlatformSpecificFormatNames(
 // platforms.
 void ClipboardWin::ReadText(ClipboardBuffer buffer,
                             const DataTransferEndpoint* data_dst,
-                            base::string16* result) const {
+                            std::u16string* result) const {
   DCHECK_EQ(buffer, ClipboardBuffer::kCopyPaste);
   RecordRead(ClipboardFormatMetric::kText);
   if (!result) {
@@ -421,7 +421,7 @@ void ClipboardWin::ReadAsciiText(ClipboardBuffer buffer,
 // platforms.
 void ClipboardWin::ReadHTML(ClipboardBuffer buffer,
                             const DataTransferEndpoint* data_dst,
-                            base::string16* markup,
+                            std::u16string* markup,
                             std::string* src_url,
                             uint32_t* fragment_start,
                             uint32_t* fragment_end) const {
@@ -482,7 +482,7 @@ void ClipboardWin::ReadHTML(ClipboardBuffer buffer,
 // platforms.
 void ClipboardWin::ReadSvg(ClipboardBuffer buffer,
                            const DataTransferEndpoint* data_dst,
-                           base::string16* result) const {
+                           std::u16string* result) const {
   DCHECK_EQ(buffer, ClipboardBuffer::kCopyPaste);
   RecordRead(ClipboardFormatMetric::kSvg);
 
@@ -518,9 +518,9 @@ void ClipboardWin::ReadImage(ClipboardBuffer buffer,
 // |data_dst| is not used. It's only passed to be consistent with other
 // platforms.
 void ClipboardWin::ReadCustomData(ClipboardBuffer buffer,
-                                  const base::string16& type,
+                                  const std::u16string& type,
                                   const DataTransferEndpoint* data_dst,
-                                  base::string16* result) const {
+                                  std::u16string* result) const {
   DCHECK_EQ(buffer, ClipboardBuffer::kCopyPaste);
   RecordRead(ClipboardFormatMetric::kCustomData);
 
@@ -610,7 +610,7 @@ void ClipboardWin::ReadFilenames(ClipboardBuffer buffer,
 // |data_dst| is not used. It's only passed to be consistent with other
 // platforms.
 void ClipboardWin::ReadBookmark(const DataTransferEndpoint* data_dst,
-                                base::string16* title,
+                                std::u16string* title,
                                 std::string* url) const {
   RecordRead(ClipboardFormatMetric::kBookmark);
   if (title)
@@ -629,7 +629,7 @@ void ClipboardWin::ReadBookmark(const DataTransferEndpoint* data_dst,
   if (!data)
     return;
 
-  base::string16 bookmark(static_cast<const char16_t*>(::GlobalLock(data)),
+  std::u16string bookmark(static_cast<const char16_t*>(::GlobalLock(data)),
                           ::GlobalSize(data) / sizeof(char16_t));
   ::GlobalUnlock(data);
   TrimAfterNull(&bookmark);
@@ -697,7 +697,7 @@ void ClipboardWin::WritePlatformRepresentations(
 }
 
 void ClipboardWin::WriteText(const char* text_data, size_t text_len) {
-  base::string16 text;
+  std::u16string text;
   base::UTF8ToUTF16(text_data, text_len, &text);
   HGLOBAL glob = CreateGlobalData(text);
 
@@ -721,7 +721,7 @@ void ClipboardWin::WriteHTML(const char* markup_data,
 }
 
 void ClipboardWin::WriteSvg(const char* markup_data, size_t markup_len) {
-  base::string16 markup;
+  std::u16string markup;
   base::UTF8ToUTF16(markup_data, markup_len, &markup);
   HGLOBAL glob = CreateGlobalData(markup);
 
@@ -747,7 +747,7 @@ void ClipboardWin::WriteBookmark(const char* title_data,
   bookmark.append(1, L'\n');
   bookmark.append(url_data, url_len);
 
-  base::string16 wide_bookmark = base::UTF8ToUTF16(bookmark);
+  std::u16string wide_bookmark = base::UTF8ToUTF16(bookmark);
   HGLOBAL glob = CreateGlobalData(wide_bookmark);
 
   WriteToClipboard(ClipboardFormatType::GetUrlType(), glob);

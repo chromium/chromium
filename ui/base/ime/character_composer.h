@@ -37,12 +37,12 @@ class COMPONENT_EXPORT(UI_BASE_IME_TYPES) CharacterComposer {
 
   // Returns a string consisting of composed character.
   // Empty string is returned when there is no composition result.
-  const base::string16& composed_character() const {
+  const std::u16string& composed_character() const {
     return composed_character_;
   }
 
   // Returns the preedit string.
-  const base::string16& preedit_string() const { return preedit_string_; }
+  const std::u16string& preedit_string() const { return preedit_string_; }
 
  private:
   // An enum to describe composition mode.
@@ -73,10 +73,10 @@ class COMPONENT_EXPORT(UI_BASE_IME_TYPES) CharacterComposer {
   std::vector<unsigned int> hex_buffer_;
 
   // A string representing the composed character.
-  base::string16 composed_character_;
+  std::u16string composed_character_;
 
   // Preedit string.
-  base::string16 preedit_string_;
+  std::u16string preedit_string_;
 
   // Composition mode which this instance is in.
   CompositionMode composition_mode_;

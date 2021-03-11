@@ -99,7 +99,7 @@ class TestWidgetDelegate : public test::TestDesktopWidgetDelegate {
   static constexpr char kAccessibleWindowTitle[] = "My Accessible Window";
 
   // WidgetDelegate:
-  base::string16 GetAccessibleWindowTitle() const override {
+  std::u16string GetAccessibleWindowTitle() const override {
     return base::ASCIIToUTF16(kAccessibleWindowTitle);
   }
 
@@ -550,10 +550,10 @@ TEST_F(AXNativeWidgetMacTest, TextfieldWritableAttributes) {
             textfield->GetSelectedRange());
 
   // Replace a middle section only (with a backwards selection range).
-  base::string16 front = base::ASCIIToUTF16("Front ");
-  base::string16 middle = base::ASCIIToUTF16("middle");
-  base::string16 back = base::ASCIIToUTF16(" back");
-  base::string16 replacement = base::ASCIIToUTF16("replaced");
+  std::u16string front = base::ASCIIToUTF16("Front ");
+  std::u16string middle = base::ASCIIToUTF16("middle");
+  std::u16string back = base::ASCIIToUTF16(" back");
+  std::u16string replacement = base::ASCIIToUTF16("replaced");
   textfield->SetText(front + middle + back);
   test_range = gfx::Range(front.length() + middle.length(), front.length());
   new_string = base::SysUTF16ToNSString(front + replacement + back);
@@ -772,7 +772,7 @@ class TestComboboxModel : public ui::ComboboxModel {
 
   // ui::ComboboxModel:
   int GetItemCount() const override { return 2; }
-  base::string16 GetItemAt(int index) const override {
+  std::u16string GetItemAt(int index) const override {
     return index == 0 ? base::SysNSStringToUTF16(kTestStringValue)
                       : base::ASCIIToUTF16("Second Item");
   }

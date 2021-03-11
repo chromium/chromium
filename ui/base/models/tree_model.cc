@@ -8,8 +8,7 @@
 
 namespace ui {
 
-void TreeModel::SetTitle(TreeModelNode* node,
-                         const base::string16& title) {
+void TreeModel::SetTitle(TreeModelNode* node, const std::u16string& title) {
   NOTREACHED();
 }
 

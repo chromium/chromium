@@ -90,11 +90,11 @@ bool IsLeaf(const AXNode* node) {
   }
 }
 
-base::string16 GetInnerText(const AXNode* node) {
+std::u16string GetInnerText(const AXNode* node) {
   if (node->IsText()) {
     return node->data().GetString16Attribute(ax::mojom::StringAttribute::kName);
   }
-  base::string16 text;
+  std::u16string text;
   for (size_t i = 0; i < node->GetUnignoredChildCount(); ++i) {
     AXNode* child = node->GetUnignoredChildAtIndex(i);
     text += GetInnerText(child);
@@ -102,8 +102,8 @@ base::string16 GetInnerText(const AXNode* node) {
   return text;
 }
 
-base::string16 GetValue(const AXNode* node) {
-  base::string16 value =
+std::u16string GetValue(const AXNode* node) {
+  std::u16string value =
       node->data().GetString16Attribute(ax::mojom::StringAttribute::kValue);
 
   if (value.empty() &&
@@ -115,25 +115,25 @@ base::string16 GetValue(const AXNode* node) {
 
   // Always obscure passwords.
   if (node->data().HasState(ax::mojom::State::kProtected))
-    value = base::string16(value.size(), kSecurePasswordBullet);
+    value = std::u16string(value.size(), kSecurePasswordBullet);
 
   return value;
 }
 
-base::string16 GetText(const AXNode* node) {
+std::u16string GetText(const AXNode* node) {
   if (node->data().role == ax::mojom::Role::kPdfRoot ||
       node->data().role == ax::mojom::Role::kIframe ||
       node->data().role == ax::mojom::Role::kIframePresentational) {
-    return base::string16();
+    return std::u16string();
   }
 
   ax::mojom::NameFrom name_from = node->data().GetNameFrom();
 
   if (!ui::IsLeaf(node) && name_from == ax::mojom::NameFrom::kContents) {
-    return base::string16();
+    return std::u16string();
   }
 
-  base::string16 value = GetValue(node);
+  std::u16string value = GetValue(node);
 
   if (!value.empty()) {
     if (node->data().HasState(ax::mojom::State::kEditable))
@@ -160,9 +160,9 @@ base::string16 GetText(const AXNode* node) {
         base::StringPrintf("#%02X%02X%02X", red, green, blue));
   }
 
-  base::string16 text =
+  std::u16string text =
       node->data().GetString16Attribute(ax::mojom::StringAttribute::kName);
-  base::string16 description = node->data().GetString16Attribute(
+  std::u16string description = node->data().GetString16Attribute(
       ax::mojom::StringAttribute::kDescription);
   if (!description.empty()) {
     if (!text.empty())
@@ -187,7 +187,7 @@ base::string16 GetText(const AXNode* node) {
 
   if (text.empty() && (ui::IsLink(node->data().role) ||
                        node->data().role == ax::mojom::Role::kImage)) {
-    base::string16 url =
+    std::u16string url =
         node->data().GetString16Attribute(ax::mojom::StringAttribute::kUrl);
     text = AXUrlBaseText(url);
   }
@@ -361,7 +361,7 @@ std::unique_ptr<AssistantTree> CreateAssistantTree(const AXTreeUpdate& update) {
   return assistant_tree;
 }
 
-base::string16 AXUrlBaseText(base::string16 url) {
+std::u16string AXUrlBaseText(std::u16string url) {
   // Given a url like http://foo.com/bar/baz.png, just return the
   // base text, e.g., "baz".
   int trailing_slashes = 0;

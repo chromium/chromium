@@ -85,14 +85,14 @@ class AX_EXPORT AXPlatformNodeDelegate {
   // Only text displayed on screen is included. Text from ARIA and HTML
   // attributes that is either not displayed on screen, or outside this node,
   // e.g. aria-label and HTML title, is not returned.
-  virtual base::string16 GetInnerText() const = 0;
+  virtual std::u16string GetInnerText() const = 0;
 
   // Returns the value of a control such as a text field, a slider, a <select>
   // element, a date picker or an ARIA combo box. In order to minimize
   // cross-process communication between the renderer and the browser, may
   // compute the value from the control's inner text in the case of a text
   // field.
-  virtual base::string16 GetValueForControl() const = 0;
+  virtual std::u16string GetValueForControl() const = 0;
 
   // Get the unignored selection from the tree, meaning the selection whose
   // endpoints are on unignored nodes. (An ignored node means that the node
@@ -211,7 +211,7 @@ class AX_EXPORT AXPlatformNodeDelegate {
   // Returns the text of this node and represent the text of descendant nodes
   // with a special character in place of every embedded object. This represents
   // the concept of text in ATK and IA2 APIs.
-  virtual base::string16 GetHypertext() const = 0;
+  virtual std::u16string GetHypertext() const = 0;
 
   // Set the selection in the hypertext of this node. Depending on the
   // implementation, this may mean the new selection will span multiple nodes.
@@ -338,7 +338,7 @@ class AX_EXPORT AXPlatformNodeDelegate {
   // any instance of the application, regardless of locale. The author ID should
   // be unique among sibling accessibility nodes and is best if unique across
   // the application, however, not meeting this requirement is non-fatal.
-  virtual base::string16 GetAuthorUniqueId() const = 0;
+  virtual std::u16string GetAuthorUniqueId() const = 0;
 
   virtual const AXUniqueId& GetUniqueId() const = 0;
 
@@ -441,13 +441,13 @@ class AX_EXPORT AXPlatformNodeDelegate {
   // Localized strings.
   //
 
-  virtual base::string16 GetLocalizedRoleDescriptionForUnlabeledImage()
+  virtual std::u16string GetLocalizedRoleDescriptionForUnlabeledImage()
       const = 0;
-  virtual base::string16 GetLocalizedStringForImageAnnotationStatus(
+  virtual std::u16string GetLocalizedStringForImageAnnotationStatus(
       ax::mojom::ImageAnnotationStatus status) const = 0;
-  virtual base::string16 GetLocalizedStringForLandmarkType() const = 0;
-  virtual base::string16 GetLocalizedStringForRoleDescription() const = 0;
-  virtual base::string16 GetStyleNameAttributeAsLocalizedString() const = 0;
+  virtual std::u16string GetLocalizedStringForLandmarkType() const = 0;
+  virtual std::u16string GetLocalizedStringForRoleDescription() const = 0;
+  virtual std::u16string GetStyleNameAttributeAsLocalizedString() const = 0;
 
   //
   // Testing.

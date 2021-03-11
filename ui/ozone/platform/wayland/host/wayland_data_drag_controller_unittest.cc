@@ -164,7 +164,7 @@ class WaylandDataDragControllerTest : public WaylandDragDropTest {
 
   WaylandWindow* window() { return window_.get(); }
 
-  base::string16 sample_text_for_dnd() const {
+  std::u16string sample_text_for_dnd() const {
     static auto text = base::ASCIIToUTF16(kSampleTextForDragAndDrop);
     return text;
   }
@@ -481,7 +481,7 @@ TEST_P(WaylandDataDragControllerTest, ValidateDroppedXMozUrl) {
     } else {
       EXPECT_TRUE(dropped_data->HasURL(kFilenameToURLPolicy));
       GURL url;
-      base::string16 title;
+      std::u16string title;
       EXPECT_TRUE(
           dropped_data->GetURLAndTitle(kFilenameToURLPolicy, &url, &title));
       EXPECT_EQ(url.spec(), kCase.expected_url);

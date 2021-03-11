@@ -1221,7 +1221,7 @@ class VIEWS_EXPORT View : public ui::LayerDelegate,
   // Any time the tooltip text that a View is displaying changes, it must
   // invoke TooltipTextChanged.
   // |p| provides the coordinates of the mouse (relative to this view).
-  virtual base::string16 GetTooltipText(const gfx::Point& p) const;
+  virtual std::u16string GetTooltipText(const gfx::Point& p) const;
 
   // Context menus -------------------------------------------------------------
 
@@ -1923,7 +1923,7 @@ class VIEWS_EXPORT View : public ui::LayerDelegate,
   bool GetIsDrawn() const;
 
   // Special property accessor used by metadata to get the ToolTip text.
-  base::string16 GetTooltip() const;
+  std::u16string GetTooltip() const;
 
   //////////////////////////////////////////////////////////////////////////////
 

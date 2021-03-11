@@ -403,7 +403,7 @@ void AXPlatformNodeWin::HtmlAttributeToUIAAriaProperty(
     std::vector<std::wstring>& properties,
     const char* html_attribute_name,
     const char* uia_aria_property) {
-  base::string16 html_attribute_value;
+  std::u16string html_attribute_value;
   if (GetData().GetHtmlAttribute(html_attribute_name, &html_attribute_value)) {
     std::wstring wide_value = base::UTF16ToWide(html_attribute_value);
     SanitizeStringAttributeForUIAAriaProperty(wide_value, &wide_value);
@@ -682,7 +682,7 @@ gfx::Range AXPlatformNodeWin::GetActiveCompositionOffsets() const {
 
 void AXPlatformNodeWin::OnActiveComposition(
     const gfx::Range& range,
-    const base::string16& active_composition_text,
+    const std::u16string& active_composition_text,
     bool is_composition_committed) {
   // Cache the composition range that will be used when
   // GetActiveComposition and GetConversionTarget is called in
@@ -1491,7 +1491,7 @@ IFACEMETHODIMP AXPlatformNodeWin::get_localizedExtendedRole(
   COM_OBJECT_VALIDATE_1_ARG(localized_extended_role);
   AXPlatformNode::NotifyAddAXModeFlags(kScreenReaderAndHTMLAccessibilityModes);
 
-  base::string16 role_description =
+  std::u16string role_description =
       GetRoleDescriptionFromImageAnnotationStatusOrFromAttribute();
   if (base::ContainsOnlyChars(role_description, base::kWhitespaceUTF16))
     return S_FALSE;
@@ -3369,7 +3369,7 @@ IFACEMETHODIMP AXPlatformNodeWin::get_nCharacters(LONG* n_characters) {
   AXPlatformNode::NotifyAddAXModeFlags(kScreenReaderAndHTMLAccessibilityModes |
                                        AXMode::kInlineTextBoxes);
 
-  base::string16 text = GetHypertext();
+  std::u16string text = GetHypertext();
   *n_characters = static_cast<LONG>(text.size());
 
   return S_OK;
@@ -3453,14 +3453,14 @@ IFACEMETHODIMP AXPlatformNodeWin::get_text(LONG start_offset,
   if (start_offset > end_offset)
     std::swap(start_offset, end_offset);
 
-  const base::string16 str = GetHypertext();
+  const std::u16string str = GetHypertext();
   LONG str_len = static_cast<LONG>(str.length());
   if (start_offset < 0 || start_offset > str_len)
     return E_INVALIDARG;
   if (end_offset < 0 || end_offset > str_len)
     return E_INVALIDARG;
 
-  base::string16 substr = str.substr(start_offset, end_offset - start_offset);
+  std::u16string substr = str.substr(start_offset, end_offset - start_offset);
   if (substr.empty())
     return S_FALSE;
 
@@ -3490,7 +3490,7 @@ HRESULT AXPlatformNodeWin::IAccessibleTextGetTextForOffsetType(
   if (offset < 0)
     return E_INVALIDARG;
 
-  const base::string16& text_str = GetHypertext();
+  const std::u16string& text_str = GetHypertext();
   LONG text_len = text_str.length();
 
   // https://accessibility.linuxfoundation.org/a11yspecs/ia2/docs/html/interface_i_accessible_text.html
@@ -4283,7 +4283,7 @@ HRESULT AXPlatformNodeWin::GetPropertyValueImpl(PROPERTYID property_id,
       break;
 
     case UIA_LocalizedControlTypePropertyId: {
-      base::string16 localized_control_type = GetRoleDescription();
+      std::u16string localized_control_type = GetRoleDescription();
       if (!localized_control_type.empty()) {
         result->vt = VT_BSTR;
         result->bstrVal =
@@ -4440,7 +4440,7 @@ HRESULT AXPlatformNodeWin::GetPropertyValueImpl(PROPERTYID property_id,
     }
 
     case UIA_LocalizedLandmarkTypePropertyId: {
-      base::string16 localized_landmark_type =
+      std::u16string localized_landmark_type =
           GetDelegate()->GetLocalizedStringForLandmarkType();
       if (!localized_landmark_type.empty()) {
         result->vt = VT_BSTR;
@@ -4832,7 +4832,7 @@ HRESULT AXPlatformNodeWin::GetAnnotationTypesAttribute(
 }
 
 base::Optional<LCID> AXPlatformNodeWin::GetCultureAttributeAsLCID() const {
-  const base::string16 language =
+  const std::u16string language =
       GetInheritedString16Attribute(ax::mojom::StringAttribute::kLanguage);
   const LCID lcid =
       LocaleNameToLCID(base::as_wcstr(language), LOCALE_ALLOW_NEUTRAL_NAMES);
@@ -7704,7 +7704,7 @@ BSTR AXPlatformNodeWin::GetValueAttributeAsBstr(AXPlatformNodeWin* target) {
 HRESULT AXPlatformNodeWin::GetStringAttributeAsBstr(
     ax::mojom::StringAttribute attribute,
     BSTR* value_bstr) const {
-  base::string16 str;
+  std::u16string str;
 
   if (!GetString16Attribute(attribute, &str))
     return S_FALSE;
@@ -7904,7 +7904,7 @@ BSTR AXPlatformNodeWin::GetFontNameAttributeAsBSTR() const {
 }
 
 BSTR AXPlatformNodeWin::GetStyleNameAttributeAsBSTR() const {
-  base::string16 style_name =
+  std::u16string style_name =
       GetDelegate()->GetStyleNameAttributeAsLocalizedString();
 
   return SysAllocString(base::as_wcstr(style_name));

@@ -117,7 +117,7 @@ class ComboboxModelExampleList : public ui::ComboboxModel {
 
   // ui::ComboboxModel:
   int GetItemCount() const override { return example_list_.size(); }
-  base::string16 GetItemAt(int index) const override {
+  std::u16string GetItemAt(int index) const override {
     return base::UTF8ToUTF16(example_list_[index]->example_title());
   }
 
@@ -185,7 +185,7 @@ class ExamplesWindowContents : public WidgetDelegateView {
 
  private:
   // WidgetDelegateView:
-  base::string16 GetWindowTitle() const override {
+  std::u16string GetWindowTitle() const override {
     return base::ASCIIToUTF16("Views Examples");
   }
   void WindowClosing() override {

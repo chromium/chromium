@@ -34,7 +34,7 @@ struct GFX_EXPORT DecoratedText {
   DecoratedText();
   ~DecoratedText();
 
-  base::string16 text;
+  std::u16string text;
 
   // Vector of RangedAttribute describing styling of non-overlapping ranges
   // in |text|.

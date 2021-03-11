@@ -128,7 +128,7 @@ void AddUrl(PlatformClipboard::Data data, OSExchangeData* os_exchange_data) {
   if (data->data().empty())
     return;
 
-  base::string16 data_as_string16 = BytesTo<base::string16>(data);
+  std::u16string data_as_string16 = BytesTo<std::u16string>(data);
 
   const auto lines =
       base::SplitString(data_as_string16, base::ASCIIToUTF16("\r\n"),
@@ -192,20 +192,20 @@ bool ExtractOSExchangeData(const OSExchangeData& exchange_data,
   if (mime_type == ui::kMimeTypeMozillaURL &&
       exchange_data.HasURL(kFilenameToURLPolicy)) {
     GURL url;
-    base::string16 title;
+    std::u16string title;
     exchange_data.GetURLAndTitle(kFilenameToURLPolicy, &url, &title);
     out_content->append(url.spec());
     return true;
   }
   if (mime_type == ui::kMimeTypeHTML && exchange_data.HasHtml()) {
-    base::string16 data;
+    std::u16string data;
     GURL base_url;
     exchange_data.GetHtml(&data, &base_url);
     out_content->append(base::UTF16ToUTF8(data));
     return true;
   }
   if (exchange_data.HasString()) {
-    base::string16 data;
+    std::u16string data;
     exchange_data.GetString(&data);
     out_content->append(base::UTF16ToUTF8(data));
     return true;

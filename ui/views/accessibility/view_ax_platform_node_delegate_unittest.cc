@@ -80,9 +80,9 @@ class TestTableModel : public ui::TableModel {
   // ui::TableModel:
   int RowCount() override { return 10; }
 
-  base::string16 GetText(int row, int column_id) override {
+  std::u16string GetText(int row, int column_id) override {
     if (row == -1)
-      return base::string16();
+      return std::u16string();
 
     const char* const cells[5][4] = {
         {"Orange", "Orange", "South america", "$5"},

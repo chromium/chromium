@@ -275,7 +275,7 @@ void NotificationHeaderView::ClearAppIcon() {
   UpdateColors();
 }
 
-void NotificationHeaderView::SetAppName(const base::string16& name) {
+void NotificationHeaderView::SetAppName(const std::u16string& name) {
   app_name_view_->SetText(name);
 }
 
@@ -291,7 +291,7 @@ void NotificationHeaderView::SetProgress(int progress) {
   UpdateSummaryTextVisibility();
 }
 
-void NotificationHeaderView::SetSummaryText(const base::string16& text) {
+void NotificationHeaderView::SetSummaryText(const std::u16string& text) {
   summary_text_view_->SetText(text);
   has_progress_ = false;
   UpdateSummaryTextVisibility();
@@ -323,7 +323,7 @@ void NotificationHeaderView::OnThemeChanged() {
 }
 
 void NotificationHeaderView::SetTimestamp(base::Time timestamp) {
-  base::string16 relative_time;
+  std::u16string relative_time;
   base::TimeDelta next_update;
   GetRelativeTimeStringAndNextUpdateTime(timestamp - base::Time::Now(),
                                          &relative_time, &next_update);
@@ -389,7 +389,7 @@ void NotificationHeaderView::SetAppIconVisible(bool visible) {
   app_icon_view_->SetVisible(visible);
 }
 
-const base::string16& NotificationHeaderView::app_name_for_testing() const {
+const std::u16string& NotificationHeaderView::app_name_for_testing() const {
   return app_name_view_->GetText();
 }
 

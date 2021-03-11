@@ -93,7 +93,7 @@ void ScenicWindow::SetBounds(const gfx::Rect& bounds) {
   bounds_ = bounds;
 }
 
-void ScenicWindow::SetTitle(const base::string16& title) {
+void ScenicWindow::SetTitle(const std::u16string& title) {
   NOTIMPLEMENTED();
 }
 

@@ -20,7 +20,7 @@ class VIEWS_EXPORT RadioButton : public Checkbox {
  public:
   METADATA_HEADER(RadioButton);
 
-  explicit RadioButton(const base::string16& label = base::string16(),
+  explicit RadioButton(const std::u16string& label = std::u16string(),
                        int group_id = 0);
   ~RadioButton() override;
 

@@ -11,11 +11,11 @@
 
 namespace ui {
 
-base::string16 SubstituteChromeOSDeviceType(int resource_id) {
+std::u16string SubstituteChromeOSDeviceType(int resource_id) {
   return l10n_util::GetStringFUTF16(resource_id, GetChromeOSDeviceName());
 }
 
-base::string16 GetChromeOSDeviceName() {
+std::u16string GetChromeOSDeviceName() {
   return l10n_util::GetStringUTF16(GetChromeOSDeviceTypeResourceId());
 }
 
@@ -37,7 +37,7 @@ int GetChromeOSDeviceTypeResourceId() {
   return IDS_GENERIC_CHROMEOS_DEVICE_NAME;
 }
 
-base::string16 GetChromeOSDeviceNameInPlural() {
+std::u16string GetChromeOSDeviceNameInPlural() {
   return l10n_util::GetStringUTF16(GetChromeOSDeviceTypeInPluralResourceId());
 }
 

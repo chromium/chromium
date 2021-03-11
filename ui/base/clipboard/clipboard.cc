@@ -252,7 +252,7 @@ void Clipboard::MarkAsConfidential() {}
 void Clipboard::ReadAvailableTypes(ClipboardBuffer buffer,
                                    const DataTransferEndpoint* data_dst,
                                    ReadAvailableTypesCallback callback) const {
-  std::vector<base::string16> types;
+  std::vector<std::u16string> types;
   ReadAvailableTypes(buffer, data_dst, &types);
   std::move(callback).Run(std::move(types));
 }
@@ -268,7 +268,7 @@ void Clipboard::ReadAvailablePlatformSpecificFormatNames(
 void Clipboard::ReadText(ClipboardBuffer buffer,
                          const DataTransferEndpoint* data_dst,
                          ReadTextCallback callback) const {
-  base::string16 result;
+  std::u16string result;
   ReadText(buffer, data_dst, &result);
   std::move(callback).Run(std::move(result));
 }
@@ -284,7 +284,7 @@ void Clipboard::ReadAsciiText(ClipboardBuffer buffer,
 void Clipboard::ReadHTML(ClipboardBuffer buffer,
                          const DataTransferEndpoint* data_dst,
                          ReadHtmlCallback callback) const {
-  base::string16 markup;
+  std::u16string markup;
   std::string src_url;
   uint32_t fragment_start;
   uint32_t fragment_end;
@@ -296,7 +296,7 @@ void Clipboard::ReadHTML(ClipboardBuffer buffer,
 void Clipboard::ReadSvg(ClipboardBuffer buffer,
                         const DataTransferEndpoint* data_dst,
                         ReadSvgCallback callback) const {
-  base::string16 result;
+  std::u16string result;
   ReadSvg(buffer, data_dst, &result);
   std::move(callback).Run(std::move(result));
 }
@@ -310,10 +310,10 @@ void Clipboard::ReadRTF(ClipboardBuffer buffer,
 }
 
 void Clipboard::ReadCustomData(ClipboardBuffer buffer,
-                               const base::string16& type,
+                               const std::u16string& type,
                                const DataTransferEndpoint* data_dst,
                                ReadCustomDataCallback callback) const {
-  base::string16 result;
+  std::u16string result;
   ReadCustomData(buffer, type, data_dst, &result);
   std::move(callback).Run(std::move(result));
 }
@@ -328,7 +328,7 @@ void Clipboard::ReadFilenames(ClipboardBuffer buffer,
 
 void Clipboard::ReadBookmark(const DataTransferEndpoint* data_dst,
                              ReadBookmarkCallback callback) const {
-  base::string16 title;
+  std::u16string title;
   std::string url;
   ReadBookmark(data_dst, &title, &url);
   std::move(callback).Run(std::move(title), GURL(url));

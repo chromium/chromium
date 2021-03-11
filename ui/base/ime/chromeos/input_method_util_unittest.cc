@@ -87,7 +87,7 @@ class InputMethodUtilTest : public testing::Test {
                                  GURL());  // input view page url
   }
 
-  static base::string16 GetDisplayLanguageName(
+  static std::u16string GetDisplayLanguageName(
       const std::string& language_code) {
     return l10n_util::GetDisplayNameForLocale(language_code, "en", true);
   }
@@ -108,7 +108,7 @@ TEST_F(InputMethodUtilTest, GetInputMethodMediumNameTest) {
     };
     for (const char* id : input_method_ids) {
       InputMethodDescriptor desc = GetDesc(id, "", "", {""}, "", true);
-      base::string16 medium_name = util_.GetInputMethodMediumName(desc);
+      std::u16string medium_name = util_.GetInputMethodMediumName(desc);
       EXPECT_EQ(medium_name, desc.GetIndicator());
     }
   }
@@ -120,7 +120,7 @@ TEST_F(InputMethodUtilTest, GetInputMethodMediumNameTest) {
     };
     for (const char* id : input_method_ids) {
       InputMethodDescriptor desc = GetDesc(id, "", "", {""}, "", true);
-      base::string16 medium_name = util_.GetInputMethodMediumName(desc);
+      std::u16string medium_name = util_.GetInputMethodMediumName(desc);
       EXPECT_NE(medium_name, desc.GetIndicator());
     }
   }

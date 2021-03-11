@@ -38,7 +38,7 @@ class UI_TOUCH_SELECTION_EXPORT TouchSelectionMenuClient {
   virtual bool ShouldShowQuickMenu() = 0;
 
   // Returns the current text selection.
-  virtual base::string16 GetSelectedText() = 0;
+  virtual std::u16string GetSelectedText() = 0;
 };
 
 // An interface for the singleton object responsible for running touch selection

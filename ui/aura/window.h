@@ -173,8 +173,8 @@ class AURA_EXPORT Window : public ui::LayerDelegate,
   const std::string& GetName() const;
   void SetName(const std::string& name);
 
-  const base::string16& GetTitle() const;
-  void SetTitle(const base::string16& title);
+  const std::u16string& GetTitle() const;
+  void SetTitle(const std::u16string& title);
 
   bool transparent() const { return transparent_; }
 

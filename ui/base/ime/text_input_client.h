@@ -98,7 +98,7 @@ class COMPONENT_EXPORT(UI_BASE_IME) TextInputClient {
   // Inserts a given text at the insertion point. Current composition text or
   // selection will be removed. This method should never be called when the
   // current text input type is TEXT_INPUT_TYPE_NONE.
-  virtual void InsertText(const base::string16& text,
+  virtual void InsertText(const std::u16string& text,
                           InsertTextCursorBehavior cursor_behavior) = 0;
 
   // Inserts a single char at the insertion point. Unlike above InsertText()
@@ -188,7 +188,7 @@ class COMPONENT_EXPORT(UI_BASE_IME) TextInputClient {
   // Returns false if the operation is not supported or the specified range
   // is out of the text range returned by GetTextRange().
   virtual bool GetTextFromRange(const gfx::Range& range,
-                                base::string16* text) const = 0;
+                                std::u16string* text) const = 0;
 
   // Miscellaneous ------------------------------------------------------------
 
@@ -280,7 +280,7 @@ class COMPONENT_EXPORT(UI_BASE_IME) TextInputClient {
   // composition has been committed or not.
   virtual void SetActiveCompositionForAccessibility(
       const gfx::Range& range,
-      const base::string16& active_composition_text,
+      const std::u16string& active_composition_text,
       bool is_composition_committed) = 0;
 #endif
 

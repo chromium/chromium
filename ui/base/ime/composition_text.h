@@ -38,7 +38,7 @@ struct COMPONENT_EXPORT(UI_BASE_IME_TYPES) CompositionText {
   }
 
   // Content of the composition text.
-  base::string16 text;
+  std::u16string text;
 
   // ImeTextSpan information for the composition text.
   ImeTextSpans ime_text_spans;

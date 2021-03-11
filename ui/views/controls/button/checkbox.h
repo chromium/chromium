@@ -28,7 +28,7 @@ class VIEWS_EXPORT Checkbox : public LabelButton {
  public:
   METADATA_HEADER(Checkbox);
 
-  explicit Checkbox(const base::string16& label = base::string16(),
+  explicit Checkbox(const std::u16string& label = std::u16string(),
                     PressedCallback callback = PressedCallback());
   ~Checkbox() override;
 

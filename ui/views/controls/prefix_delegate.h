@@ -24,7 +24,7 @@ class VIEWS_EXPORT PrefixDelegate {
   virtual void SetSelectedRow(int row) = 0;
 
   // Returns the item at the specified row.
-  virtual base::string16 GetTextForRow(int row) = 0;
+  virtual std::u16string GetTextForRow(int row) = 0;
 };
 
 }  // namespace views

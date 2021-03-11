@@ -170,16 +170,16 @@ class Combobox::ComboboxMenuModel : public ui::MenuModel {
     return index + kFirstMenuItemId;
   }
 
-  base::string16 GetLabelAt(int index) const override {
+  std::u16string GetLabelAt(int index) const override {
     // Inserting the Unicode formatting characters if necessary so that the
     // text is displayed correctly in right-to-left UIs.
-    base::string16 text = model_->GetDropDownTextAt(index);
+    std::u16string text = model_->GetDropDownTextAt(index);
     base::i18n::AdjustStringForLocaleDirection(&text);
     return text;
   }
 
-  base::string16 GetSecondaryLabelAt(int index) const override {
-    base::string16 text = model_->GetDropDownSecondaryTextAt(index);
+  std::u16string GetSecondaryLabelAt(int index) const override {
+    std::u16string text = model_->GetDropDownSecondaryTextAt(index);
     base::i18n::AdjustStringForLocaleDirection(&text);
     return text;
   }
@@ -290,7 +290,7 @@ void Combobox::SetSelectedIndex(int index) {
   }
 }
 
-bool Combobox::SelectValue(const base::string16& value) {
+bool Combobox::SelectValue(const std::u16string& value) {
   for (int i = 0; i < GetModel()->GetItemCount(); ++i) {
     if (value == GetModel()->GetItemAt(i)) {
       SetSelectedIndex(i);
@@ -324,22 +324,22 @@ void Combobox::SetModel(ui::ComboboxModel* model) {
   }
 }
 
-base::string16 Combobox::GetTooltipTextAndAccessibleName() const {
+std::u16string Combobox::GetTooltipTextAndAccessibleName() const {
   return arrow_button_->GetTooltipText();
 }
 
 void Combobox::SetTooltipTextAndAccessibleName(
-    const base::string16& tooltip_text) {
+    const std::u16string& tooltip_text) {
   arrow_button_->SetTooltipText(tooltip_text);
   if (accessible_name_.empty())
     accessible_name_ = tooltip_text;
 }
 
-void Combobox::SetAccessibleName(const base::string16& name) {
+void Combobox::SetAccessibleName(const std::u16string& name) {
   accessible_name_ = name;
 }
 
-base::string16 Combobox::GetAccessibleName() const {
+std::u16string Combobox::GetAccessibleName() const {
   return accessible_name_;
 }
 
@@ -389,8 +389,8 @@ void Combobox::SetSelectedRow(int row) {
     OnPerformAction();
 }
 
-base::string16 Combobox::GetTextForRow(int row) {
-  return GetModel()->IsItemSeparatorAt(row) ? base::string16()
+std::u16string Combobox::GetTextForRow(int row) {
+  return GetModel()->IsItemSeparatorAt(row) ? std::u16string()
                                             : GetModel()->GetItemAt(row);
 }
 
@@ -622,7 +622,7 @@ void Combobox::PaintIconAndText(gfx::Canvas* canvas) {
     NOTREACHED();
     SetSelectedIndex(0);
   }
-  base::string16 text = GetModel()->GetItemAt(selected_index_);
+  std::u16string text = GetModel()->GetItemAt(selected_index_);
 
   int disclosure_arrow_offset = width() - kComboboxArrowContainerWidth;
 
@@ -736,8 +736,8 @@ ADD_PROPERTY_METADATA(ui::ComboboxModel*, Model)
 ADD_PROPERTY_METADATA(int, SelectedIndex)
 ADD_PROPERTY_METADATA(bool, Invalid)
 ADD_PROPERTY_METADATA(bool, SizeToLargestLabel)
-ADD_PROPERTY_METADATA(base::string16, AccessibleName)
-ADD_PROPERTY_METADATA(base::string16, TooltipTextAndAccessibleName)
+ADD_PROPERTY_METADATA(std::u16string, AccessibleName)
+ADD_PROPERTY_METADATA(std::u16string, TooltipTextAndAccessibleName)
 END_METADATA
 
 }  // namespace views

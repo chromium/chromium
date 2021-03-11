@@ -49,7 +49,7 @@ class VIEWS_EXPORT NewBadge {
 
   // Gets the accessible description of the new badge, which can be added to
   // tooltip/screen reader text.
-  static base::string16 GetNewBadgeAccessibleDescription();
+  static std::u16string GetNewBadgeAccessibleDescription();
 
   // Layout Constants
   //

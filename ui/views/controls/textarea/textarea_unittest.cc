@@ -98,7 +98,7 @@ TEST_F(TextareaTest, PasteNewlineTest) {
   textarea_->SetText(base::ASCIIToUTF16(kText));
   textarea_->SelectAll(false);
   textarea_->ExecuteCommand(Textfield::kCopy, 0);
-  textarea_->SetText(base::string16());
+  textarea_->SetText(std::u16string());
   textarea_->ExecuteCommand(Textfield::kPaste, 0);
   EXPECT_STR_EQ(kText, textarea_->GetText());
 }
@@ -261,10 +261,10 @@ TEST_F(TextareaTest, OverflowTest) {
   const size_t count = 50U;
   textarea_->SetBounds(0, 0, 60, 40);
 
-  textarea_->SetText(base::string16(count, 'a'));
+  textarea_->SetText(std::u16string(count, 'a'));
   EXPECT_TRUE(GetDisplayRect().Contains(GetCursorBounds()));
 
-  textarea_->SetText(base::string16(count, kHebrewLetterSamekh));
+  textarea_->SetText(std::u16string(count, kHebrewLetterSamekh));
   EXPECT_TRUE(GetDisplayRect().Contains(GetCursorBounds()));
 }
 
@@ -274,10 +274,10 @@ TEST_F(TextareaTest, OverflowInRTLTest) {
   std::string locale = base::i18n::GetConfiguredLocale();
   base::i18n::SetICUDefaultLocale("he");
 
-  textarea_->SetText(base::string16(count, 'a'));
+  textarea_->SetText(std::u16string(count, 'a'));
   EXPECT_TRUE(GetDisplayRect().Contains(GetCursorBounds()));
 
-  textarea_->SetText(base::string16(count, kHebrewLetterSamekh));
+  textarea_->SetText(std::u16string(count, kHebrewLetterSamekh));
   EXPECT_TRUE(GetDisplayRect().Contains(GetCursorBounds()));
 
   // Reset locale.

@@ -920,7 +920,7 @@ class TestBubbleDialogDelegateView : public BubbleDialogDelegateView {
   }
   ~TestBubbleDialogDelegateView() override = default;
 
-  void ChangeTitle(const base::string16& title) {
+  void ChangeTitle(const std::u16string& title) {
     title_ = title;
     // Note UpdateWindowTitle() always does a layout, which will be invalid if
     // the Widget needs to change size. But also SizeToContents() _only_ does a
@@ -932,7 +932,7 @@ class TestBubbleDialogDelegateView : public BubbleDialogDelegateView {
   // BubbleDialogDelegateView:
   using BubbleDialogDelegateView::SetAnchorView;
   using BubbleDialogDelegateView::SizeToContents;
-  base::string16 GetWindowTitle() const override { return title_; }
+  std::u16string GetWindowTitle() const override { return title_; }
   bool ShouldShowWindowTitle() const override { return !title_.empty(); }
   bool ShouldShowCloseButton() const override { return should_show_close_; }
   void SetShouldShowCloseButton(bool should_show_close) {
@@ -955,7 +955,7 @@ class TestBubbleDialogDelegateView : public BubbleDialogDelegateView {
   }
 
  private:
-  base::string16 title_;
+  std::u16string title_;
   bool destroyed_ = false;
   bool should_show_close_ = false;
 
@@ -1048,7 +1048,7 @@ TEST_F(BubbleFrameViewTest, LayoutEdgeCases) {
   EXPECT_EQ(delegate.size(), delegate.GetPreferredSize());
 
   // Starting with a short title.
-  base::string16 title(1, 'i');
+  std::u16string title(1, 'i');
   delegate.ChangeTitle(title);
   const int min_bubble_height = bubble->GetWindowBoundsInScreen().height();
   EXPECT_LT(delegate.GetPreferredSize().height(), min_bubble_height);
@@ -1130,7 +1130,7 @@ TEST_F(BubbleFrameViewTest, LayoutEdgeCasesWithHeader) {
       std::make_unique<StaticSizedView>(gfx::Size(10, close_margin - 1)));
 
   // Starting with a short title.
-  base::string16 title(1, 'i');
+  std::u16string title(1, 'i');
   delegate.ChangeTitle(title);
   const int min_bubble_height = bubble->GetWindowBoundsInScreen().height();
 
@@ -1206,7 +1206,7 @@ TEST_F(BubbleFrameViewTest, NoElideTitle) {
   // Before changing the title, get the base width of the bubble when there's no
   // title or content in it.
   const int empty_bubble_width = bubble->GetClientAreaBoundsInScreen().width();
-  base::string16 title = base::ASCIIToUTF16("This is a title string");
+  std::u16string title = base::ASCIIToUTF16("This is a title string");
   delegate.ChangeTitle(title);
   Label* title_label =
       static_cast<Label*>(delegate.GetBubbleFrameView()->title());

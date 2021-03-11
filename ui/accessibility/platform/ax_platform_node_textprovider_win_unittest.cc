@@ -615,7 +615,7 @@ TEST_F(AXPlatformNodeTextProviderTest, ITextProviderGetActiveComposition) {
   action_data.target_node_id = 1;
   AXPlatformNodeWin* owner = GetOwner(root_platform_node.Get());
   owner->GetDelegate()->AccessibilityPerformAction(action_data);
-  const base::string16 active_composition_text = u"a";
+  const std::u16string active_composition_text = u"a";
   owner->OnActiveComposition(gfx::Range(0, 1), active_composition_text, false);
 
   root_text_edit_provider->GetActiveComposition(&text_range_provider);
@@ -675,7 +675,7 @@ TEST_F(AXPlatformNodeTextProviderTest, ITextProviderGetConversionTarget) {
   action_data.target_node_id = 1;
   AXPlatformNodeWin* owner = GetOwner(root_platform_node.Get());
   owner->GetDelegate()->AccessibilityPerformAction(action_data);
-  const base::string16 active_composition_text = u"a";
+  const std::u16string active_composition_text = u"a";
   owner->OnActiveComposition(gfx::Range(0, 1), active_composition_text, false);
 
   root_text_edit_provider->GetConversionTarget(&text_range_provider);

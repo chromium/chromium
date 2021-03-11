@@ -19,7 +19,7 @@ int TestTableModel::RowCount() {
   return row_count_;
 }
 
-base::string16 TestTableModel::GetText(int row, int column_id) {
+std::u16string TestTableModel::GetText(int row, int column_id) {
   return base::ASCIIToUTF16(base::NumberToString(row) + "x" +
                             base::NumberToString(column_id));
 }

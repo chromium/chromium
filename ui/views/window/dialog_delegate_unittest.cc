@@ -56,14 +56,14 @@ class TestDialog : public DialogDelegateView {
   bool AcceleratorPressed(const ui::Accelerator& accelerator) override {
     return should_handle_escape_;
   }
-  base::string16 GetWindowTitle() const override { return title_; }
+  std::u16string GetWindowTitle() const override { return title_; }
   View* GetInitiallyFocusedView() override { return input_; }
 
   void TearDown() {
     GetWidget()->Close();
   }
 
-  void set_title(const base::string16& title) { title_ = title; }
+  void set_title(const std::u16string& title) { title_ = title; }
   void set_show_close_button(bool show_close) {
     show_close_button_ = show_close;
   }
@@ -75,7 +75,7 @@ class TestDialog : public DialogDelegateView {
 
  private:
   views::Textfield* input_;
-  base::string16 title_;
+  std::u16string title_;
   bool show_close_button_ = true;
   bool should_handle_escape_ = false;
 

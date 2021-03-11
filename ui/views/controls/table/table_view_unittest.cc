@@ -173,19 +173,19 @@ class TestTableModel2 : public ui::TableModel {
   void MoveRows(int row_from, int length, int row_to);
 
   // Allows overriding the tooltip for testing.
-  void SetTooltip(const base::string16& tooltip);
+  void SetTooltip(const std::u16string& tooltip);
 
   // ui::TableModel:
   int RowCount() override;
-  base::string16 GetText(int row, int column_id) override;
-  base::string16 GetTooltip(int row) override;
+  std::u16string GetText(int row, int column_id) override;
+  std::u16string GetTooltip(int row) override;
   void SetObserver(ui::TableModelObserver* observer) override;
   int CompareValues(int row1, int row2, int column_id) override;
 
  private:
   ui::TableModelObserver* observer_ = nullptr;
 
-  base::Optional<base::string16> tooltip_;
+  base::Optional<std::u16string> tooltip_;
 
   // The data.
   std::vector<std::vector<int>> rows_;
@@ -269,7 +269,7 @@ void TestTableModel2::MoveRows(int row_from, int length, int row_to) {
     observer_->OnItemsMoved(row_from, length, row_to);
 }
 
-void TestTableModel2::SetTooltip(const base::string16& tooltip) {
+void TestTableModel2::SetTooltip(const std::u16string& tooltip) {
   tooltip_ = tooltip;
 }
 
@@ -277,11 +277,11 @@ int TestTableModel2::RowCount() {
   return static_cast<int>(rows_.size());
 }
 
-base::string16 TestTableModel2::GetText(int row, int column_id) {
+std::u16string TestTableModel2::GetText(int row, int column_id) {
   return base::NumberToString16(rows_[row][column_id]);
 }
 
-base::string16 TestTableModel2::GetTooltip(int row) {
+std::u16string TestTableModel2::GetTooltip(int row) {
   return tooltip_ ? *tooltip_
                   : base::ASCIIToUTF16("Tooltip") + base::NumberToString16(row);
 }

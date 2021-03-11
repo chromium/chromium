@@ -36,7 +36,7 @@ class VIEWS_EXPORT TreeViewDrawingProvider {
 
   // The auxiliary text for a node is descriptive text drawn on the trailing end
   // of the node's row in the treeview.
-  virtual base::string16 GetAuxiliaryTextForNode(TreeView* tree_view,
+  virtual std::u16string GetAuxiliaryTextForNode(TreeView* tree_view,
                                                  ui::TreeModelNode* node);
 
   // This method returns whether the icon for |node| should be drawn.

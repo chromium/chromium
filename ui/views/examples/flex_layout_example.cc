@@ -34,7 +34,7 @@ FlexLayoutExample::FlexLayoutExample() : LayoutExampleBase("Flex Layout") {}
 FlexLayoutExample::~FlexLayoutExample() = default;
 
 void FlexLayoutExample::ContentsChanged(Textfield* sender,
-                                        const base::string16& new_contents) {
+                                        const std::u16string& new_contents) {
   layout_->SetInteriorMargin(
       LayoutExampleBase::TextfieldsToInsets(interior_margin_));
   layout_->SetDefault(views::kMarginsKey, LayoutExampleBase::TextfieldsToInsets(

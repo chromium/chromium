@@ -93,14 +93,14 @@ void TabbedPaneExample::SwapLayout() {
   CreateTabbedPane(container, orientation);
 }
 
-void TabbedPaneExample::AddTab(const base::string16& label) {
+void TabbedPaneExample::AddTab(const std::u16string& label) {
   tabbed_pane_->AddTab(
       label, std::make_unique<LabelButton>(Button::PressedCallback(), label));
   PrintCurrentStatus();
 }
 
 void TabbedPaneExample::AddAt() {
-  const base::string16 label = GetStringUTF16(IDS_TABBED_PANE_ADDED_1_LABEL);
+  const std::u16string label = GetStringUTF16(IDS_TABBED_PANE_ADDED_1_LABEL);
   tabbed_pane_->AddTabAtIndex(
       1, label,
       std::make_unique<LabelButton>(Button::PressedCallback(), label));

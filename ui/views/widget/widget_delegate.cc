@@ -113,12 +113,12 @@ ax::mojom::Role WidgetDelegate::GetAccessibleWindowRole() {
   return params_.accessible_role;
 }
 
-base::string16 WidgetDelegate::GetAccessibleWindowTitle() const {
+std::u16string WidgetDelegate::GetAccessibleWindowTitle() const {
   return params_.accessible_title.empty() ? GetWindowTitle()
                                           : params_.accessible_title;
 }
 
-base::string16 WidgetDelegate::GetWindowTitle() const {
+std::u16string WidgetDelegate::GetWindowTitle() const {
   return params_.title;
 }
 
@@ -284,7 +284,7 @@ void WidgetDelegate::SetAccessibleRole(ax::mojom::Role role) {
   params_.accessible_role = role;
 }
 
-void WidgetDelegate::SetAccessibleTitle(base::string16 title) {
+void WidgetDelegate::SetAccessibleTitle(std::u16string title) {
   params_.accessible_title = std::move(title);
 }
 
@@ -355,7 +355,7 @@ void WidgetDelegate::SetShowTitle(bool show_title) {
   params_.show_title = show_title;
 }
 
-void WidgetDelegate::SetTitle(const base::string16& title) {
+void WidgetDelegate::SetTitle(const std::u16string& title) {
   if (params_.title == title)
     return;
   params_.title = title;

@@ -252,7 +252,7 @@ void DialogClientView::UpdateDialogButton(LabelButton** member,
   const bool is_default = delegate->GetDefaultDialogButton() == type &&
                           (type != ui::DIALOG_BUTTON_CANCEL ||
                            PlatformStyle::kDialogDefaultButtonCanBeCancel);
-  const base::string16 title = delegate->GetDialogButtonLabel(type);
+  const std::u16string title = delegate->GetDialogButtonLabel(type);
 
   if (*member) {
     LabelButton* button = *member;

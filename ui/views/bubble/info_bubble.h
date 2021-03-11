@@ -23,7 +23,7 @@ class VIEWS_EXPORT InfoBubble : public BubbleDialogDelegateView {
  public:
   METADATA_HEADER(InfoBubble);
 
-  InfoBubble(View* anchor, const base::string16& message);
+  InfoBubble(View* anchor, const std::u16string& message);
   ~InfoBubble() override;
 
   // Shows the bubble. |widget_| will be NULL until this is called.

@@ -70,17 +70,17 @@ class VIEWS_EXPORT ImageView : public View {
   Alignment GetVerticalAlignment() const;
 
   // Set / Get the accessible name text.
-  void SetAccessibleName(const base::string16& name);
-  const base::string16& GetAccessibleName() const;
+  void SetAccessibleName(const std::u16string& name);
+  const std::u16string& GetAccessibleName() const;
 
   // Set the tooltip text.
-  void SetTooltipText(const base::string16& tooltip);
-  const base::string16& GetTooltipText() const;
+  void SetTooltipText(const std::u16string& tooltip);
+  const std::u16string& GetTooltipText() const;
 
   // Overridden from View:
   void OnPaint(gfx::Canvas* canvas) override;
   void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
-  base::string16 GetTooltipText(const gfx::Point& p) const override;
+  std::u16string GetTooltipText(const gfx::Point& p) const override;
   gfx::Size CalculatePreferredSize() const override;
   views::PaintInfo::ScaleType GetPaintScaleType() const override;
   void OnBoundsChanged(const gfx::Rect& previous_bounds) override;
@@ -108,10 +108,10 @@ class VIEWS_EXPORT ImageView : public View {
   gfx::Point image_origin_;
 
   // The current tooltip text.
-  base::string16 tooltip_text_;
+  std::u16string tooltip_text_;
 
   // The current accessible name text.
-  base::string16 accessible_name_;
+  std::u16string accessible_name_;
 
   // Horizontal alignment.
   Alignment horizontal_alignment_ = Alignment::kCenter;
@@ -162,8 +162,8 @@ BuilderT& SetImage(const gfx::ImageSkia* value) {
 VIEW_BUILDER_PROPERTY(gfx::Size, ImageSize)
 VIEW_BUILDER_PROPERTY(ImageView::Alignment, HorizontalAlignment)
 VIEW_BUILDER_PROPERTY(ImageView::Alignment, VerticalAlignment)
-VIEW_BUILDER_PROPERTY(base::string16, AccessibleName)
-VIEW_BUILDER_PROPERTY(base::string16, TooltipText)
+VIEW_BUILDER_PROPERTY(std::u16string, AccessibleName)
+VIEW_BUILDER_PROPERTY(std::u16string, TooltipText)
 END_VIEW_BUILDER
 
 }  // namespace views

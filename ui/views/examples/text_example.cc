@@ -60,7 +60,7 @@ class TextExample::TextExampleView : public View {
     SchedulePaint();
   }
 
-  void SetText(const base::string16& text) {
+  void SetText(const std::u16string& text) {
     text_ = text;
     SchedulePaint();
   }
@@ -92,7 +92,7 @@ class TextExample::TextExampleView : public View {
   gfx::FontList base_font_;
 
   // The text to draw.
-  base::string16 text_;
+  std::u16string text_;
 
   // Text flags for passing to |DrawStringRect()|.
   int flags_ = 0;

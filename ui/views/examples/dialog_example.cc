@@ -63,7 +63,7 @@ class DialogExample::Delegate : public virtual DialogType {
   }
 
  protected:
-  base::string16 GetWindowTitle() const override {
+  std::u16string GetWindowTitle() const override {
     return parent_->title_->GetText();
   }
 
@@ -199,7 +199,7 @@ void DialogExample::AddCheckbox(GridLayout* layout, Checkbox** member) {
   auto callback = member == &bubble_ ? &DialogExample::BubbleCheckboxPressed
                                      : &DialogExample::OtherCheckboxPressed;
   auto checkbox = std::make_unique<Checkbox>(
-      base::string16(), base::BindRepeating(callback, base::Unretained(this)));
+      std::u16string(), base::BindRepeating(callback, base::Unretained(this)));
   checkbox->SetChecked(true);
   *member = layout->AddView(std::move(checkbox));
 }
@@ -297,7 +297,7 @@ void DialogExample::OtherCheckboxPressed() {
 }
 
 void DialogExample::ContentsChanged(Textfield* sender,
-                                    const base::string16& new_contents) {
+                                    const std::u16string& new_contents) {
   if (!last_dialog_)
     return;
 

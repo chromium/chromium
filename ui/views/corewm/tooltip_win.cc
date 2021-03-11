@@ -132,7 +132,7 @@ int TooltipWin::GetMaxWidth(const gfx::Point& location) const {
 }
 
 void TooltipWin::SetText(aura::Window* window,
-                         const base::string16& tooltip_text,
+                         const std::u16string& tooltip_text,
                          const gfx::Point& location) {
   if (!EnsureTooltipWindow())
     return;
@@ -140,7 +140,7 @@ void TooltipWin::SetText(aura::Window* window,
   // See comment in header for details on why |location_| is needed.
   location_ = location;
 
-  base::string16 adjusted_text(tooltip_text);
+  std::u16string adjusted_text(tooltip_text);
   base::i18n::AdjustStringForLocaleDirection(&adjusted_text);
   toolinfo_.lpszText = base::as_writable_wcstr(adjusted_text);
   SendMessage(tooltip_hwnd_, TTM_SETTOOLINFO, 0,

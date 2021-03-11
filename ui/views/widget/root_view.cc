@@ -67,7 +67,7 @@ class AnnounceTextView : public View {
   METADATA_HEADER(AnnounceTextView);
   ~AnnounceTextView() override = default;
 
-  void Announce(const base::string16& text) {
+  void Announce(const std::u16string& text) {
     // TODO(crbug.com/1024898): Use kLiveRegionChanged when supported across
     // screen readers and platforms. See bug for details.
     announce_text_ = text;
@@ -84,7 +84,7 @@ class AnnounceTextView : public View {
   }
 
  private:
-  base::string16 announce_text_;
+  std::u16string announce_text_;
 };
 
 BEGIN_METADATA(AnnounceTextView, View)
@@ -266,7 +266,7 @@ void RootView::DeviceScaleFactorChanged(float old_device_scale_factor,
 
 // Accessibility ---------------------------------------------------------------
 
-void RootView::AnnounceText(const base::string16& text) {
+void RootView::AnnounceText(const std::u16string& text) {
 #if defined(OS_APPLE)
   gfx::NativeViewAccessible native = GetViewAccessibility().GetNativeObject();
   auto* ax_node = ui::AXPlatformNode::FromNativeViewAccessible(native);

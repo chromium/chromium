@@ -69,7 +69,7 @@ class TestBubbleDialogDelegateView : public BubbleDialogDelegateView {
       GetBubbleFrameView()->SetTitleView(std::move(title_view_));
   }
 
-  base::string16 GetWindowTitle() const override {
+  std::u16string GetWindowTitle() const override {
     return base::ASCIIToUTF16("TITLE TITLE TITLE");
   }
 
@@ -537,7 +537,7 @@ TEST_F(BubbleDialogDelegateViewTest, AttachedWidgetShowsInkDropWhenVisible) {
   std::unique_ptr<Widget> anchor_widget = CreateTestWidget();
   LabelButton* button =
       anchor_widget->SetContentsView(std::make_unique<LabelButton>(
-          Button::PressedCallback(), base::string16()));
+          Button::PressedCallback(), std::u16string()));
   TestInkDrop* ink_drop = new TestInkDrop();
   test::InkDropHostViewTestApi(button).SetInkDrop(base::WrapUnique(ink_drop));
   TestBubbleDialogDelegateView* bubble_delegate =
@@ -566,7 +566,7 @@ TEST_F(BubbleDialogDelegateViewTest, VisibleWidgetShowsInkDropOnAttaching) {
   std::unique_ptr<Widget> anchor_widget = CreateTestWidget();
   LabelButton* button =
       anchor_widget->SetContentsView(std::make_unique<LabelButton>(
-          Button::PressedCallback(), base::string16()));
+          Button::PressedCallback(), std::u16string()));
   TestInkDrop* ink_drop = new TestInkDrop();
   test::InkDropHostViewTestApi(button).SetInkDrop(base::WrapUnique(ink_drop));
   TestBubbleDialogDelegateView* bubble_delegate =

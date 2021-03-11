@@ -98,12 +98,12 @@ class TooltipView : public views::View {
     return view_size;
   }
 
-  void SetText(const base::string16& text) {
+  void SetText(const std::u16string& text) {
     render_text_->SetHorizontalAlignment(gfx::ALIGN_TO_HEAD);
 
     // Replace tabs with whitespace to avoid placeholder character rendering
     // where previously it did not. crbug.com/993100
-    base::string16 newText(text);
+    std::u16string newText(text);
     base::ReplaceChars(newText, base::ASCIIToUTF16("\t"),
                        base::ASCIIToUTF16("        "), &newText);
     render_text_->SetText(newText);
@@ -253,7 +253,7 @@ int TooltipAura::GetMaxWidth(const gfx::Point& location) const {
 }
 
 void TooltipAura::SetText(aura::Window* window,
-                          const base::string16& tooltip_text,
+                          const std::u16string& tooltip_text,
                           const gfx::Point& location) {
   tooltip_window_ = window;
 

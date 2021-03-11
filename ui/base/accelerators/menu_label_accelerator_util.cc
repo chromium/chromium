@@ -9,11 +9,11 @@
 
 namespace ui {
 
-char16_t GetMnemonic(const base::string16& label) {
+char16_t GetMnemonic(const std::u16string& label) {
   size_t index = 0;
   do {
     index = label.find('&', index);
-    if (index != base::string16::npos) {
+    if (index != std::u16string::npos) {
       if (index + 1 != label.size()) {
         if (label[index + 1] != '&') {
           char16_t char_array[] = {label[index + 1], 0};
@@ -28,12 +28,12 @@ char16_t GetMnemonic(const base::string16& label) {
       }
       index++;
     }
-  } while (index != base::string16::npos);
+  } while (index != std::u16string::npos);
   return 0;
 }
 
-base::string16 EscapeMenuLabelAmpersands(const base::string16& label) {
-  base::string16 ret;
+std::u16string EscapeMenuLabelAmpersands(const std::u16string& label) {
+  std::u16string ret;
   static const char16_t kAmps[] = {'&', 0};
   static const char16_t kTwoAmps[] = {'&', '&', 0};
   base::ReplaceChars(label, kAmps, kTwoAmps, &ret);

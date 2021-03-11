@@ -20,7 +20,7 @@ class VIEWS_EXPORT MdTextButton : public LabelButton {
   METADATA_HEADER(MdTextButton);
 
   explicit MdTextButton(PressedCallback callback = PressedCallback(),
-                        const base::string16& text = base::string16(),
+                        const std::u16string& text = std::u16string(),
                         int button_context = style::CONTEXT_BUTTON_MD);
   ~MdTextButton() override;
 
@@ -45,7 +45,7 @@ class VIEWS_EXPORT MdTextButton : public LabelButton {
   void OnThemeChanged() override;
   SkColor GetInkDropBaseColor() const override;
   void SetEnabledTextColors(base::Optional<SkColor> color) override;
-  void SetText(const base::string16& text) override;
+  void SetText(const std::u16string& text) override;
   PropertyEffects UpdateStyleToIndicateDefaultStatus() override;
   void StateChanged(ButtonState old_state) override;
 

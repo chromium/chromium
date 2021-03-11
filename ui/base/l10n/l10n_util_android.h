@@ -15,7 +15,7 @@
 namespace l10n_util {
 
 COMPONENT_EXPORT(UI_BASE)
-base::string16 GetDisplayNameForLocale(const std::string& locale,
+std::u16string GetDisplayNameForLocale(const std::string& locale,
                                        const std::string& display_locale);
 
 COMPONENT_EXPORT(UI_BASE) bool IsLayoutRtl();

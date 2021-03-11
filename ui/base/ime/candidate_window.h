@@ -49,11 +49,11 @@ class COMPONENT_EXPORT(UI_BASE_IME_TYPES) CandidateWindow {
     Entry();
     Entry(const Entry& other);
     virtual ~Entry();
-    base::string16 value;
-    base::string16 label;
-    base::string16 annotation;
-    base::string16 description_title;
-    base::string16 description_body;
+    std::u16string value;
+    std::u16string label;
+    std::u16string annotation;
+    std::u16string description_title;
+    std::u16string description_body;
   };
 
   CandidateWindow();

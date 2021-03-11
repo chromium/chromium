@@ -18,14 +18,14 @@ struct FallbackFontTestCase {
   FallbackFontTestCase();
   FallbackFontTestCase(UScriptCode script_arg,
                        std::string language_tag_arg,
-                       base::string16 text_arg,
+                       std::u16string text_arg,
                        std::vector<std::string> fallback_fonts_arg,
                        bool is_win10_arg = false);
   FallbackFontTestCase(const FallbackFontTestCase& other);
   ~FallbackFontTestCase();
   UScriptCode script;
   std::string language_tag;
-  base::string16 text;
+  std::u16string text;
   std::vector<std::string> fallback_fonts;
   bool is_win10 = false;
 };

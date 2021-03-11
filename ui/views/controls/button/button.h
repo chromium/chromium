@@ -117,8 +117,8 @@ class VIEWS_EXPORT Button : public InkDropHostView,
 
   static ButtonState GetButtonStateFrom(ui::NativeTheme::State state);
 
-  void SetTooltipText(const base::string16& tooltip_text);
-  base::string16 GetTooltipText() const;
+  void SetTooltipText(const std::u16string& tooltip_text);
+  std::u16string GetTooltipText() const;
 
   int tag() const { return tag_; }
   void set_tag(int tag) { tag_ = tag; }
@@ -127,8 +127,8 @@ class VIEWS_EXPORT Button : public InkDropHostView,
     callback_ = std::move(callback);
   }
 
-  void SetAccessibleName(const base::string16& name);
-  const base::string16& GetAccessibleName() const;
+  void SetAccessibleName(const std::u16string& name);
+  const std::u16string& GetAccessibleName() const;
 
   // Get/sets the current display state of the button.
   ButtonState GetState() const;
@@ -198,7 +198,7 @@ class VIEWS_EXPORT Button : public InkDropHostView,
   void OnGestureEvent(ui::GestureEvent* event) override;
   bool AcceleratorPressed(const ui::Accelerator& accelerator) override;
   bool SkipDefaultKeyEventProcessing(const ui::KeyEvent& event) override;
-  base::string16 GetTooltipText(const gfx::Point& p) const override;
+  std::u16string GetTooltipText(const gfx::Point& p) const override;
   void ShowContextMenu(const gfx::Point& p,
                        ui::MenuSourceType source_type) override;
   void OnDragDone() override;
@@ -249,7 +249,7 @@ class VIEWS_EXPORT Button : public InkDropHostView,
   virtual void OnClickCanceled(const ui::Event& event);
 
   // Called when the tooltip is set.
-  virtual void OnSetTooltipText(const base::string16& tooltip_text);
+  virtual void OnSetTooltipText(const std::u16string& tooltip_text);
 
   // Invoked from SetState() when SetState() is passed a value that differs from
   // the current node_data. Button's implementation of StateChanged() does
@@ -301,10 +301,10 @@ class VIEWS_EXPORT Button : public InkDropHostView,
   void OnEnabledChanged();
 
   // The text shown in a tooltip.
-  base::string16 tooltip_text_;
+  std::u16string tooltip_text_;
 
   // Accessibility data.
-  base::string16 accessible_name_;
+  std::u16string accessible_name_;
 
   // The button's listener. Notified when clicked.
   PressedCallback callback_;
@@ -363,7 +363,7 @@ class VIEWS_EXPORT Button : public InkDropHostView,
 };
 
 BEGIN_VIEW_BUILDER(VIEWS_EXPORT, Button, InkDropHostView)
-VIEW_BUILDER_PROPERTY(base::string16, AccessibleName)
+VIEW_BUILDER_PROPERTY(std::u16string, AccessibleName)
 VIEW_BUILDER_PROPERTY(Button::PressedCallback, Callback)
 VIEW_BUILDER_PROPERTY(base::TimeDelta, AnimationDuration)
 VIEW_BUILDER_PROPERTY(bool, AnimateOnStateChange)
@@ -373,7 +373,7 @@ VIEW_BUILDER_PROPERTY(SkColor, InkDropBaseColor)
 VIEW_BUILDER_PROPERTY(bool, InstallFocusRingOnFocus)
 VIEW_BUILDER_PROPERTY(bool, RequestFocusOnPress)
 VIEW_BUILDER_PROPERTY(Button::ButtonState, State)
-VIEW_BUILDER_PROPERTY(base::string16, TooltipText)
+VIEW_BUILDER_PROPERTY(std::u16string, TooltipText)
 VIEW_BUILDER_PROPERTY(int, TriggerableEventFlags)
 END_VIEW_BUILDER
 

@@ -365,7 +365,7 @@ TEST_F(NotificationListTest, GetNotificationsByAppId) {
   const std::string id1("id1");
   std::unique_ptr<Notification> notification(
       new Notification(NOTIFICATION_TYPE_PROGRESS, id1, UTF8ToUTF16("updated"),
-                       UTF8ToUTF16("updated"), gfx::Image(), base::string16(),
+                       UTF8ToUTF16("updated"), gfx::Image(), std::u16string(),
                        GURL(), NotifierId(NotifierType::APPLICATION, app_id1),
                        RichNotificationData(), nullptr));
   notification_list_->AddNotification(std::move(notification));
@@ -386,7 +386,7 @@ TEST_F(NotificationListTest, GetNotificationsByAppId) {
   // Add two notifications for |app_id1| and one for |app_id2|.
   notification.reset(
       new Notification(NOTIFICATION_TYPE_PROGRESS, id1, UTF8ToUTF16("updated"),
-                       UTF8ToUTF16("updated"), gfx::Image(), base::string16(),
+                       UTF8ToUTF16("updated"), gfx::Image(), std::u16string(),
                        GURL(), NotifierId(NotifierType::APPLICATION, app_id1),
                        RichNotificationData(), nullptr));
   notification_list_->AddNotification(std::move(notification));
@@ -394,7 +394,7 @@ TEST_F(NotificationListTest, GetNotificationsByAppId) {
   const std::string id2("id2");
   notification.reset(
       new Notification(NOTIFICATION_TYPE_PROGRESS, id2, UTF8ToUTF16("updated"),
-                       UTF8ToUTF16("updated"), gfx::Image(), base::string16(),
+                       UTF8ToUTF16("updated"), gfx::Image(), std::u16string(),
                        GURL(), NotifierId(NotifierType::APPLICATION, app_id1),
                        RichNotificationData(), nullptr));
   notification_list_->AddNotification(std::move(notification));
@@ -404,7 +404,7 @@ TEST_F(NotificationListTest, GetNotificationsByAppId) {
   const std::string app_id2("app_id2");
   notification.reset(
       new Notification(NOTIFICATION_TYPE_PROGRESS, id3, UTF8ToUTF16("updated"),
-                       UTF8ToUTF16("updated"), gfx::Image(), base::string16(),
+                       UTF8ToUTF16("updated"), gfx::Image(), std::u16string(),
                        GURL(), NotifierId(NotifierType::APPLICATION, app_id2),
                        RichNotificationData(), nullptr));
   notification_list_->AddNotification(std::move(notification));
@@ -696,7 +696,7 @@ TEST_F(NotificationListTest, TestHasNotificationOfType) {
 
   std::unique_ptr<Notification> updated_notification(
       new Notification(NOTIFICATION_TYPE_PROGRESS, id, UTF8ToUTF16("updated"),
-                       UTF8ToUTF16("updated"), gfx::Image(), base::string16(),
+                       UTF8ToUTF16("updated"), gfx::Image(), std::u16string(),
                        GURL(), NotifierId(), RichNotificationData(), nullptr));
   notification_list_->AddNotification(std::move(updated_notification));
 

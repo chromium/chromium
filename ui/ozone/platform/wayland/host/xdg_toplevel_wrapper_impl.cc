@@ -98,7 +98,7 @@ void XDGToplevelWrapperImpl::SurfaceResize(WaylandConnection* connection,
                       wl::IdentifyDirection(*connection, hittest));
 }
 
-void XDGToplevelWrapperImpl::SetTitle(const base::string16& title) {
+void XDGToplevelWrapperImpl::SetTitle(const std::u16string& title) {
   DCHECK(xdg_toplevel_);
   xdg_toplevel_set_title(xdg_toplevel_.get(), base::UTF16ToUTF8(title).c_str());
 }

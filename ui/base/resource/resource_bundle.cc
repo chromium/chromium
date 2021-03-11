@@ -463,7 +463,7 @@ void ResourceBundle::OverrideLocalePakForTest(const base::FilePath& pak_path) {
 
 void ResourceBundle::OverrideLocaleStringResource(
     int resource_id,
-    const base::string16& string) {
+    const std::u16string& string) {
   overridden_locale_strings_[resource_id] = string;
 }
 
@@ -471,8 +471,8 @@ const base::FilePath& ResourceBundle::GetOverriddenPakPath() const {
   return overridden_pak_path_;
 }
 
-base::string16 ResourceBundle::MaybeMangleLocalizedString(
-    const base::string16& str) const {
+std::u16string ResourceBundle::MaybeMangleLocalizedString(
+    const std::u16string& str) const {
   if (!mangle_localized_strings_)
     return str;
 
@@ -492,9 +492,9 @@ base::string16 ResourceBundle::MaybeMangleLocalizedString(
   // For a string S, produce [[ --- S --- ]], where the number of dashes is 1/4
   // of the number of characters in S. This makes S something around 50-75%
   // longer, except for extremely short strings, which get > 100% longer.
-  base::string16 start_marker = base::UTF8ToUTF16("[[");
-  base::string16 end_marker = base::UTF8ToUTF16("]]");
-  base::string16 dashes = base::string16(str.size() / 4, '-');
+  std::u16string start_marker = base::UTF8ToUTF16("[[");
+  std::u16string end_marker = base::UTF8ToUTF16("]]");
+  std::u16string dashes = std::u16string(str.size() / 4, '-');
   return base::JoinString({start_marker, dashes, str, dashes, end_marker},
                           base::UTF8ToUTF16(" "));
 }
@@ -689,7 +689,7 @@ bool ResourceBundle::IsBrotli(int resource_id) const {
   return HasBrotliHeader(raw_data);
 }
 
-base::string16 ResourceBundle::GetLocalizedString(int resource_id) {
+std::u16string ResourceBundle::GetLocalizedString(int resource_id) {
 #if DCHECK_IS_ON()
   {
     base::AutoLock lock_scope(*locale_resources_data_lock_);
@@ -1019,8 +1019,8 @@ gfx::Image& ResourceBundle::GetEmptyImage() {
   return empty_image_;
 }
 
-base::string16 ResourceBundle::GetLocalizedStringImpl(int resource_id) const {
-  base::string16 string;
+std::u16string ResourceBundle::GetLocalizedStringImpl(int resource_id) const {
+  std::u16string string;
   if (delegate_ && delegate_->GetLocalizedString(resource_id, &string))
     return MaybeMangleLocalizedString(string);
 
@@ -1037,7 +1037,7 @@ base::string16 ResourceBundle::GetLocalizedStringImpl(int resource_id) const {
   // string (better than crashing).
   if (!locale_resources_data_.get()) {
     LOG(WARNING) << "locale resources are not loaded";
-    return base::string16();
+    return std::u16string();
   }
 
   base::StringPiece data;
@@ -1060,7 +1060,7 @@ base::string16 ResourceBundle::GetLocalizedStringImpl(int resource_id) const {
       if (data.empty()) {
         LOG(WARNING) << "unable to find resource: " << resource_id;
         NOTREACHED();
-        return base::string16();
+        return std::u16string();
       }
 #endif  // !defined(OS_FUCHSIA)
     }
@@ -1071,9 +1071,9 @@ base::string16 ResourceBundle::GetLocalizedStringImpl(int resource_id) const {
       << "requested localized string from binary pack file";
 
   // Data pack encodes strings as either UTF8 or UTF16.
-  base::string16 msg;
+  std::u16string msg;
   if (encoding == ResourceHandle::UTF16) {
-    msg = base::string16(reinterpret_cast<const char16_t*>(data.data()),
+    msg = std::u16string(reinterpret_cast<const char16_t*>(data.data()),
                          data.length() / 2);
   } else if (encoding == ResourceHandle::UTF8) {
     msg = base::UTF8ToUTF16(data);

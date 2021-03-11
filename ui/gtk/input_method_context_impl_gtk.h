@@ -39,7 +39,7 @@ class InputMethodContextImplGtk : public ui::LinuxInputMethodContext {
   void Reset() override;
   void Focus() override;
   void Blur() override;
-  void SetSurroundingText(const base::string16& text,
+  void SetSurroundingText(const std::u16string& text,
                           const gfx::Range& selection_range) override;
 
  private:

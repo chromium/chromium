@@ -214,7 +214,7 @@ class VIEWS_EXPORT NonClientView : public View, public ViewTargeterDelegate {
   ClientView* client_view() const { return client_view_; }
 
   // Set the accessible name of this view.
-  void SetAccessibleName(const base::string16& name);
+  void SetAccessibleName(const std::u16string& name);
 
   // NonClientView, View overrides:
   gfx::Size CalculatePreferredSize() const override;
@@ -248,7 +248,7 @@ class VIEWS_EXPORT NonClientView : public View, public ViewTargeterDelegate {
   View* overlay_view_ = nullptr;
 
   // The accessible name of this view.
-  base::string16 accessible_name_;
+  std::u16string accessible_name_;
 };
 
 BEGIN_VIEW_BUILDER(VIEWS_EXPORT, NonClientFrameView, View)

@@ -252,22 +252,22 @@ void ToggleImageButton::SetToggledBackground(std::unique_ptr<Background> b) {
   SchedulePaint();
 }
 
-base::string16 ToggleImageButton::GetToggledTooltipText() const {
+std::u16string ToggleImageButton::GetToggledTooltipText() const {
   return toggled_tooltip_text_;
 }
 
-void ToggleImageButton::SetToggledTooltipText(const base::string16& tooltip) {
+void ToggleImageButton::SetToggledTooltipText(const std::u16string& tooltip) {
   if (tooltip == toggled_tooltip_text_)
     return;
   toggled_tooltip_text_ = tooltip;
   OnPropertyChanged(&toggled_tooltip_text_, kPropertyEffectsNone);
 }
 
-base::string16 ToggleImageButton::GetToggledAccessibleName() const {
+std::u16string ToggleImageButton::GetToggledAccessibleName() const {
   return toggled_accessible_name_;
 }
 
-void ToggleImageButton::SetToggledAccessibleName(const base::string16& name) {
+void ToggleImageButton::SetToggledAccessibleName(const std::u16string& name) {
   if (name == toggled_accessible_name_)
     return;
   toggled_accessible_name_ = name;
@@ -308,7 +308,7 @@ void ToggleImageButton::OnPaintBackground(gfx::Canvas* canvas) {
 ////////////////////////////////////////////////////////////////////////////////
 // ToggleImageButton, View overrides:
 
-base::string16 ToggleImageButton::GetTooltipText(const gfx::Point& p) const {
+std::u16string ToggleImageButton::GetTooltipText(const gfx::Point& p) const {
   return (!toggled_ || toggled_tooltip_text_.empty())
              ? Button::GetTooltipText(p)
              : toggled_tooltip_text_;
@@ -358,8 +358,8 @@ END_METADATA
 BEGIN_METADATA(ToggleImageButton, ImageButton)
 ADD_PROPERTY_METADATA(bool, Toggled)
 ADD_PROPERTY_METADATA(std::unique_ptr<Background>, ToggledBackground)
-ADD_PROPERTY_METADATA(base::string16, ToggledTooltipText)
-ADD_PROPERTY_METADATA(base::string16, ToggledAccessibleName)
+ADD_PROPERTY_METADATA(std::u16string, ToggledTooltipText)
+ADD_PROPERTY_METADATA(std::u16string, ToggledAccessibleName)
 END_METADATA
 
 }  // namespace views

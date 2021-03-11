@@ -42,7 +42,7 @@ class RenderTextTestApi {
     render_text_->Draw(canvas, select_all);
   }
 
-  const base::string16& GetLayoutText() {
+  const std::u16string& GetLayoutText() {
     return render_text_->GetLayoutText();
   }
 

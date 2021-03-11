@@ -276,10 +276,10 @@ class AX_EXPORT AXNode final {
   }
 
   bool GetString16Attribute(ax::mojom::StringAttribute attribute,
-                            base::string16* value) const {
+                            std::u16string* value) const {
     return data().GetString16Attribute(attribute, value);
   }
-  base::string16 GetString16Attribute(
+  std::u16string GetString16Attribute(
       ax::mojom::StringAttribute attribute) const {
     return data().GetString16Attribute(attribute);
   }
@@ -308,7 +308,7 @@ class AX_EXPORT AXNode final {
     return data().GetStringListAttribute(attribute, value);
   }
 
-  bool GetHtmlAttribute(const char* attribute, base::string16* value) const {
+  bool GetHtmlAttribute(const char* attribute, std::u16string* value) const {
     return data().GetHtmlAttribute(attribute, value);
   }
   bool GetHtmlAttribute(const char* attribute, std::string* value) const {
@@ -335,7 +335,7 @@ class AX_EXPORT AXNode final {
 
   const std::string& GetInheritedStringAttribute(
       ax::mojom::StringAttribute attribute) const;
-  base::string16 GetInheritedString16Attribute(
+  std::u16string GetInheritedString16Attribute(
       ax::mojom::StringAttribute attribute) const;
 
   // If this node is a leaf, returns the inner text of this node. This is
@@ -348,7 +348,7 @@ class AX_EXPORT AXNode final {
   // ATK and IAccessible2 APIs.
   //
   // TODO(nektar): Consider changing the return value to std::string.
-  base::string16 GetHypertext() const;
+  std::u16string GetHypertext() const;
 
   // Returns the text that is found inside this node and all its descendants;
   // including text found in embedded objects.

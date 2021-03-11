@@ -27,7 +27,7 @@ class VIEWS_EXPORT MenuButton : public LabelButton {
  public:
   METADATA_HEADER(MenuButton);
   explicit MenuButton(PressedCallback callback = PressedCallback(),
-                      const base::string16& text = base::string16(),
+                      const std::u16string& text = std::u16string(),
                       int button_context = style::CONTEXT_BUTTON);
   MenuButton(const MenuButton&) = delete;
   MenuButton& operator=(const MenuButton&) = delete;

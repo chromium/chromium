@@ -13,9 +13,9 @@ bool ButtonMenuItemModel::Delegate::IsItemForCommandIdDynamic(
   return false;
 }
 
-base::string16 ButtonMenuItemModel::Delegate::GetLabelForCommandId(
+std::u16string ButtonMenuItemModel::Delegate::GetLabelForCommandId(
     int command_id) const {
-  return base::string16();
+  return std::u16string();
 }
 
 bool ButtonMenuItemModel::Delegate::IsCommandIdEnabled(int command_id) const {
@@ -36,7 +36,7 @@ bool ButtonMenuItemModel::Delegate::GetAcceleratorForCommandId(
 struct ButtonMenuItemModel::Item {
   int command_id;
   ButtonType type;
-  base::string16 label;
+  std::u16string label;
   bool part_of_group;
 };
 
@@ -58,7 +58,7 @@ void ButtonMenuItemModel::AddGroupItemWithStringId(
 }
 
 void ButtonMenuItemModel::AddImageItem(int command_id) {
-  Item item = {command_id, TYPE_BUTTON, base::string16(), false};
+  Item item = {command_id, TYPE_BUTTON, std::u16string(), false};
   items_.push_back(item);
 }
 
@@ -69,7 +69,7 @@ void ButtonMenuItemModel::AddButtonLabel(int command_id, int string_id) {
 }
 
 void ButtonMenuItemModel::AddSpace() {
-  Item item = {0, TYPE_SPACE, base::string16(), false};
+  Item item = {0, TYPE_SPACE, std::u16string(), false};
   items_.push_back(item);
 }
 
@@ -101,7 +101,7 @@ bool ButtonMenuItemModel::GetAcceleratorAt(int index,
   return false;
 }
 
-base::string16 ButtonMenuItemModel::GetLabelAt(int index) const {
+std::u16string ButtonMenuItemModel::GetLabelAt(int index) const {
   if (IsItemDynamicAt(index))
     return delegate_->GetLabelForCommandId(GetCommandIdAt(index));
   return items_[index].label;

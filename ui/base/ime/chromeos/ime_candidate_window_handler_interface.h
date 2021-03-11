@@ -34,7 +34,7 @@ class COMPONENT_EXPORT(UI_BASE_IME_CHROMEOS)
 
   // Called when the IME updates the preedit text. The |text| is given in
   // UTF-16 encoding.
-  virtual void UpdatePreeditText(const base::string16& text,
+  virtual void UpdatePreeditText(const std::u16string& text,
                                  uint32_t cursor_pos,
                                  bool visible) = 0;
 

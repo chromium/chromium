@@ -102,7 +102,7 @@ gfx::Rect WinWindow::GetBounds() const {
   return gfx::Rect(cr);
 }
 
-void WinWindow::SetTitle(const base::string16& title) {
+void WinWindow::SetTitle(const std::u16string& title) {
   SetWindowText(hwnd(), base::as_wcstr(title));
 }
 

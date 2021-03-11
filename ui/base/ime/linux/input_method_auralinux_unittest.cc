@@ -32,7 +32,7 @@ class TestResult {
     return base::Singleton<TestResult>::get();
   }
 
-  void RecordAction(const base::string16& action) {
+  void RecordAction(const std::u16string& action) {
     recorded_actions_.push_back(action);
   }
 
@@ -51,8 +51,8 @@ class TestResult {
   }
 
  private:
-  std::vector<base::string16> recorded_actions_;
-  std::vector<base::string16> expected_actions_;
+  std::vector<std::u16string> recorded_actions_;
+  std::vector<std::u16string> expected_actions_;
 };
 
 class LinuxInputMethodContextForTesting : public LinuxInputMethodContext {
@@ -91,11 +91,11 @@ class LinuxInputMethodContextForTesting : public LinuxInputMethodContext {
     }
 
     for (const auto& action : actions_) {
-      std::vector<base::string16> parts = base::SplitString(
-          action, base::string16(1, ':'), base::TRIM_WHITESPACE,
-          base::SPLIT_WANT_ALL);
+      std::vector<std::u16string> parts =
+          base::SplitString(action, std::u16string(1, ':'),
+                            base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL);
       char16_t id = parts[0][0];
-      base::string16 param;
+      std::u16string param;
       if (parts.size() > 1)
         param = parts[1];
       if (id == kActionCommit) {
@@ -125,7 +125,7 @@ class LinuxInputMethodContextForTesting : public LinuxInputMethodContext {
     cursor_position_ = rect;
   }
 
-  void SetSurroundingText(const base::string16& text,
+  void SetSurroundingText(const std::u16string& text,
                           const gfx::Range& selection_range) override {
     TestResult::GetInstance()->RecordAction(
         base::ASCIIToUTF16("surroundingtext:") + text);
@@ -140,7 +140,7 @@ class LinuxInputMethodContextForTesting : public LinuxInputMethodContext {
 
  private:
   LinuxInputMethodContextDelegate* delegate_;
-  std::vector<base::string16> actions_;
+  std::vector<std::u16string> actions_;
   bool is_sync_mode_;
   bool eat_key_;
   bool focused_;
@@ -199,10 +199,10 @@ class TextInputClientForTesting : public DummyTextInputClient {
   explicit TextInputClientForTesting(TextInputType text_input_type)
       : DummyTextInputClient(text_input_type) {}
 
-  base::string16 composition_text;
+  std::u16string composition_text;
   gfx::Range text_range;
   gfx::Range selection_range;
-  base::string16 surrounding_text;
+  std::u16string surrounding_text;
 
  protected:
   void SetCompositionText(const CompositionText& composition) override {
@@ -238,7 +238,7 @@ class TextInputClientForTesting : public DummyTextInputClient {
   }
 
   void InsertText(
-      const base::string16& text,
+      const std::u16string& text,
       TextInputClient::InsertTextCursorBehavior cursor_behavior) override {
     if (HasCompositionText()) {
       TestResult::GetInstance()->RecordAction(
@@ -265,7 +265,7 @@ class TextInputClientForTesting : public DummyTextInputClient {
     return true;
   }
   bool GetTextFromRange(const gfx::Range& range,
-                        base::string16* text) const override {
+                        std::u16string* text) const override {
     if (surrounding_text.empty())
       return false;
     *text = surrounding_text.substr(range.GetMin(), range.length());

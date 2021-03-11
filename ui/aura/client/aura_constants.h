@@ -140,7 +140,7 @@ AURA_EXPORT extern const WindowProperty<ui::WindowShowState>* const
 AURA_EXPORT extern const WindowProperty<bool>* const kSkipImeProcessing;
 
 // A property key to store the title of the window; sometimes shown to users.
-AURA_EXPORT extern const WindowProperty<base::string16*>* const kTitleKey;
+AURA_EXPORT extern const WindowProperty<std::u16string*>* const kTitleKey;
 
 // The inset of the topmost view in the client view from the top of the
 // non-client view. The topmost view depends on the window type. The topmost

@@ -76,9 +76,9 @@ class EmptyMenuMenuItem : public MenuItemView {
     SetEnabled(false);
   }
 
-  base::string16 GetTooltipText(const gfx::Point& p) const override {
+  std::u16string GetTooltipText(const gfx::Point& p) const override {
     // Empty menu items shouldn't have a tooltip.
-    return base::string16();
+    return std::u16string();
   }
 
  private:
@@ -122,19 +122,19 @@ void MenuItemView::ChildPreferredSizeChanged(View* child) {
   PreferredSizeChanged();
 }
 
-base::string16 MenuItemView::GetTooltipText(const gfx::Point& p) const {
+std::u16string MenuItemView::GetTooltipText(const gfx::Point& p) const {
   if (!tooltip_.empty())
     return tooltip_;
 
   if (type_ == Type::kSeparator)
-    return base::string16();
+    return std::u16string();
 
   const MenuController* controller = GetMenuController();
   if (!controller ||
       controller->exit_type() != MenuController::ExitType::kNone) {
     // Either the menu has been closed or we're in the process of closing the
     // menu. Don't attempt to query the delegate as it may no longer be valid.
-    return base::string16();
+    return std::u16string();
   }
 
   const MenuItemView* root_menu_item = GetRootMenuItem();
@@ -142,12 +142,12 @@ base::string16 MenuItemView::GetTooltipText(const gfx::Point& p) const {
     // TODO(sky): if |canceled_| is true, controller->exit_type() should be
     // something other than ExitType::kNone, but crash reports seem to indicate
     // otherwise. Figure out why this is needed.
-    return base::string16();
+    return std::u16string();
   }
 
   const MenuDelegate* delegate = GetDelegate();
   if (!delegate)
-    return base::string16();
+    return std::u16string();
 
   gfx::Point location(p);
   ConvertPointToScreen(this, &location);
@@ -168,7 +168,7 @@ void MenuItemView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
       break;
   }
 
-  base::string16 item_text;
+  std::u16string item_text;
   if (IsContainer()) {
     // The first child is taking over, just use its accessible name instead of
     // |title_|.
@@ -210,7 +210,7 @@ void MenuItemView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
   if (mnemonic != '\0') {
     node_data->AddStringAttribute(
         ax::mojom::StringAttribute::kKeyShortcuts,
-        base::UTF16ToUTF8(base::string16(1, mnemonic)));
+        base::UTF16ToUTF8(std::u16string(1, mnemonic)));
   }
 
   if (IsTraversableByKeyboard()) {
@@ -267,16 +267,16 @@ bool MenuItemView::IsBubble(MenuAnchorPosition anchor) {
 }
 
 // static
-base::string16 MenuItemView::GetAccessibleNameForMenuItem(
-    const base::string16& item_text,
-    const base::string16& minor_text,
+std::u16string MenuItemView::GetAccessibleNameForMenuItem(
+    const std::u16string& item_text,
+    const std::u16string& minor_text,
     bool is_new_feature) {
-  base::string16 accessible_name = item_text;
+  std::u16string accessible_name = item_text;
 
   // Filter out the "&" for accessibility clients.
   size_t index = 0;
   const char16_t amp = '&';
-  while ((index = accessible_name.find(amp, index)) != base::string16::npos &&
+  while ((index = accessible_name.find(amp, index)) != std::u16string::npos &&
          index + 1 < accessible_name.length()) {
     accessible_name.replace(index, accessible_name.length() - index,
                             accessible_name.substr(index + 1));
@@ -310,9 +310,9 @@ void MenuItemView::Cancel() {
 MenuItemView* MenuItemView::AddMenuItemAt(
     int index,
     int item_id,
-    const base::string16& label,
-    const base::string16& secondary_label,
-    const base::string16& minor_text,
+    const std::u16string& label,
+    const std::u16string& secondary_label,
+    const std::u16string& minor_text,
     const ui::ThemedVectorIcon& minor_icon,
     const gfx::ImageSkia& icon,
     const ui::ThemedVectorIcon& vector_icon,
@@ -372,25 +372,25 @@ void MenuItemView::RemoveAllMenuItems() {
 }
 
 MenuItemView* MenuItemView::AppendMenuItem(int item_id,
-                                           const base::string16& label,
+                                           const std::u16string& label,
                                            const gfx::ImageSkia& icon) {
   return AppendMenuItemImpl(item_id, label, icon, Type::kNormal);
 }
 
 MenuItemView* MenuItemView::AppendSubMenu(int item_id,
-                                          const base::string16& label,
+                                          const std::u16string& label,
                                           const gfx::ImageSkia& icon) {
   return AppendMenuItemImpl(item_id, label, icon, Type::kSubMenu);
 }
 
 void MenuItemView::AppendSeparator() {
-  AppendMenuItemImpl(0, base::string16(), gfx::ImageSkia(), Type::kSeparator);
+  AppendMenuItemImpl(0, std::u16string(), gfx::ImageSkia(), Type::kSeparator);
 }
 
 void MenuItemView::AddSeparatorAt(int index) {
-  AddMenuItemAt(index, /*item_id=*/0, /*label=*/base::string16(),
-                /*secondary_label=*/base::string16(),
-                /*minor_text=*/base::string16(),
+  AddMenuItemAt(index, /*item_id=*/0, /*label=*/std::u16string(),
+                /*secondary_label=*/std::u16string(),
+                /*minor_text=*/std::u16string(),
                 /*minor_icon=*/ui::ThemedVectorIcon(),
                 /*icon=*/gfx::ImageSkia(),
                 /*vector_icon=*/ui::ThemedVectorIcon(),
@@ -399,12 +399,12 @@ void MenuItemView::AddSeparatorAt(int index) {
 }
 
 MenuItemView* MenuItemView::AppendMenuItemImpl(int item_id,
-                                               const base::string16& label,
+                                               const std::u16string& label,
                                                const gfx::ImageSkia& icon,
                                                Type type) {
   const int index = submenu_ ? int{submenu_->children().size()} : 0;
-  return AddMenuItemAt(index, item_id, label, base::string16(),
-                       base::string16(), ui::ThemedVectorIcon(), icon,
+  return AddMenuItemAt(index, item_id, label, std::u16string(),
+                       std::u16string(), ui::ThemedVectorIcon(), icon,
                        ui::ThemedVectorIcon(), type, ui::NORMAL_SEPARATOR);
 }
 
@@ -443,17 +443,17 @@ bool MenuItemView::SubmenuIsShowing() const {
   return HasSubmenu() && GetSubmenu()->IsShowing();
 }
 
-void MenuItemView::SetTitle(const base::string16& title) {
+void MenuItemView::SetTitle(const std::u16string& title) {
   title_ = title;
   invalidate_dimensions();  // Triggers preferred size recalculation.
 }
 
-void MenuItemView::SetSecondaryTitle(const base::string16& secondary_title) {
+void MenuItemView::SetSecondaryTitle(const std::u16string& secondary_title) {
   secondary_title_ = secondary_title;
   invalidate_dimensions();  // Triggers preferred size recalculation.
 }
 
-void MenuItemView::SetMinorText(const base::string16& minor_text) {
+void MenuItemView::SetMinorText(const std::u16string& minor_text) {
   minor_text_ = minor_text;
   invalidate_dimensions();  // Triggers preferred size recalculation.
 }
@@ -486,7 +486,7 @@ void MenuItemView::SetSelectionOfActionableSubmenu(
   SchedulePaint();
 }
 
-void MenuItemView::SetTooltip(const base::string16& tooltip, int item_id) {
+void MenuItemView::SetTooltip(const std::u16string& tooltip, int item_id) {
   MenuItemView* item = GetMenuItemByID(item_id);
   DCHECK(item);
   item->tooltip_ = tooltip;
@@ -620,7 +620,7 @@ char16_t MenuItemView::GetMnemonic() {
   size_t index = 0;
   do {
     index = title_.find('&', index);
-    if (index != base::string16::npos) {
+    if (index != std::u16string::npos) {
       if (index + 1 != title_.size() && title_[index + 1] != '&') {
         char16_t char_array[] = {title_[index + 1], 0};
         // TODO(jshin): What about Turkish locale? See http://crbug.com/81719.
@@ -631,7 +631,7 @@ char16_t MenuItemView::GetMnemonic() {
       }
       index++;
     }
-  } while (index != base::string16::npos);
+  } while (index != std::u16string::npos);
   return 0;
 }
 
@@ -1119,7 +1119,7 @@ void MenuItemView::PaintBackground(gfx::Canvas* canvas,
 void MenuItemView::PaintMinorIconAndText(
     gfx::Canvas* canvas,
     const MenuDelegate::LabelStyle& style) {
-  base::string16 minor_text = GetMinorText();
+  std::u16string minor_text = GetMinorText();
   const ui::ThemedVectorIcon minor_icon = GetMinorIcon();
   if (minor_text.empty() && minor_icon.empty())
     return;
@@ -1279,7 +1279,7 @@ MenuItemView::MenuItemDimensions MenuItemView::CalculateDimensions() const {
     return dimensions;
   }
 
-  base::string16 minor_text = GetMinorText();
+  std::u16string minor_text = GetMinorText();
 
   dimensions.height = child_size.height();
   // Adjust item content height if menu has both items with and without icons.
@@ -1383,13 +1383,13 @@ int MenuItemView::GetLabelStartForThisItem() const {
   return label_start;
 }
 
-base::string16 MenuItemView::GetMinorText() const {
+std::u16string MenuItemView::GetMinorText() const {
   if (GetID() == kEmptyMenuItemViewID) {
     // Don't query the delegate for menus that represent no children.
-    return base::string16();
+    return std::u16string();
   }
 
-  base::string16 accel_text;
+  std::u16string accel_text;
   if (MenuConfig::instance().ShouldShowAcceleratorText(this, &accel_text))
     return accel_text;
 

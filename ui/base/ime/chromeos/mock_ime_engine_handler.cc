@@ -66,7 +66,7 @@ void MockIMEEngineHandler::PropertyActivate(const std::string& property_name) {
 
 void MockIMEEngineHandler::CandidateClicked(uint32_t index) {}
 
-void MockIMEEngineHandler::SetSurroundingText(const base::string16& text,
+void MockIMEEngineHandler::SetSurroundingText(const std::u16string& text,
                                               uint32_t cursor_pos,
                                               uint32_t anchor_pos,
                                               uint32_t offset_pos) {

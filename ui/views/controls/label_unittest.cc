@@ -95,21 +95,21 @@ void SetRTL(bool rtl) {
   EXPECT_EQ(rtl, base::i18n::IsRTL());
 }
 
-base::string16 GetClipboardText(ui::ClipboardBuffer clipboard_buffer) {
-  base::string16 clipboard_text;
+std::u16string GetClipboardText(ui::ClipboardBuffer clipboard_buffer) {
+  std::u16string clipboard_text;
   ui::Clipboard::GetForCurrentThread()->ReadText(
       clipboard_buffer, /* data_dst = */ nullptr, &clipboard_text);
   return clipboard_text;
 }
 
 // Makes an RTL string by mapping 0..6 to [א,ב,ג,ד,ה,ו,ז].
-base::string16 ToRTL(const char* ascii) {
-  base::string16 rtl;
+std::u16string ToRTL(const char* ascii) {
+  std::u16string rtl;
   for (const char* c = ascii; *c; ++c) {
     if (*c >= '0' && *c <= '6')
       rtl += L'\x5d0' + (*c - '0');
     else
-      rtl += static_cast<base::string16::value_type>(*c);
+      rtl += static_cast<std::u16string::value_type>(*c);
   }
   return rtl;
 }
@@ -226,7 +226,7 @@ class LabelSelectionTest : public LabelTest {
     return label()->GetRenderTextForSelectionController()->GetNumLines();
   }
 
-  base::string16 GetSelectedText() { return label()->GetSelectedText(); }
+  std::u16string GetSelectedText() { return label()->GetSelectedText(); }
 
   ui::test::EventGenerator* event_generator() { return event_generator_.get(); }
 
@@ -271,7 +271,7 @@ TEST_F(LabelTest, FontPropertyArial) {
 }
 
 TEST_F(LabelTest, TextProperty) {
-  base::string16 test_text(ASCIIToUTF16("A random string."));
+  std::u16string test_text(ASCIIToUTF16("A random string."));
   label()->SetText(test_text);
   EXPECT_EQ(test_text, label()->GetText());
 }
@@ -318,7 +318,7 @@ TEST_F(LabelTest, AlignmentProperty) {
 }
 
 TEST_F(LabelTest, MinimumSizeRespectsLineHeight) {
-  base::string16 text(ASCIIToUTF16("This is example text."));
+  std::u16string text(ASCIIToUTF16("This is example text."));
   label()->SetText(text);
 
   const gfx::Size minimum_size = label()->GetMinimumSize();
@@ -328,7 +328,7 @@ TEST_F(LabelTest, MinimumSizeRespectsLineHeight) {
 }
 
 TEST_F(LabelTest, MinimumSizeRespectsLineHeightMultiline) {
-  base::string16 text(ASCIIToUTF16("This is example text."));
+  std::u16string text(ASCIIToUTF16("This is example text."));
   label()->SetText(text);
   label()->SetMultiLine(true);
 
@@ -339,7 +339,7 @@ TEST_F(LabelTest, MinimumSizeRespectsLineHeightMultiline) {
 }
 
 TEST_F(LabelTest, MinimumSizeRespectsLineHeightWithInsets) {
-  base::string16 text(ASCIIToUTF16("This is example text."));
+  std::u16string text(ASCIIToUTF16("This is example text."));
   label()->SetText(text);
 
   const gfx::Size minimum_size = label()->GetMinimumSize();
@@ -352,7 +352,7 @@ TEST_F(LabelTest, MinimumSizeRespectsLineHeightWithInsets) {
 }
 
 TEST_F(LabelTest, MinimumSizeRespectsLineHeightMultilineWithInsets) {
-  base::string16 text(ASCIIToUTF16("This is example text."));
+  std::u16string text(ASCIIToUTF16("This is example text."));
   label()->SetText(text);
   label()->SetMultiLine(true);
 
@@ -366,7 +366,7 @@ TEST_F(LabelTest, MinimumSizeRespectsLineHeightMultilineWithInsets) {
 }
 
 TEST_F(LabelTest, ElideBehavior) {
-  base::string16 text(ASCIIToUTF16("This is example text."));
+  std::u16string text(ASCIIToUTF16("This is example text."));
   label()->SetText(text);
   EXPECT_EQ(gfx::ELIDE_TAIL, label()->GetElideBehavior());
   gfx::Size size = label()->GetPreferredSize();
@@ -384,14 +384,14 @@ TEST_F(LabelTest, ElideBehavior) {
 // Test the minimum width of a Label is correct depending on its ElideBehavior,
 // including |gfx::NO_ELIDE|.
 TEST_F(LabelTest, ElideBehaviorMinimumWidth) {
-  base::string16 text(ASCIIToUTF16("This is example text."));
+  std::u16string text(ASCIIToUTF16("This is example text."));
   label()->SetText(text);
 
   // Default should be |gfx::ELIDE_TAIL|.
   EXPECT_EQ(gfx::ELIDE_TAIL, label()->GetElideBehavior());
   gfx::Size size = label()->GetMinimumSize();
   // Elidable labels have a minimum width that fits |gfx::kEllipsisUTF16|.
-  EXPECT_EQ(gfx::Canvas::GetStringWidth(base::string16(gfx::kEllipsisUTF16),
+  EXPECT_EQ(gfx::Canvas::GetStringWidth(std::u16string(gfx::kEllipsisUTF16),
                                         label()->font_list()),
             size.width());
   label()->SetSize(label()->GetMinimumSize());
@@ -425,7 +425,7 @@ TEST_F(LabelTest, MultiLineProperty) {
 }
 
 TEST_F(LabelTest, ObscuredProperty) {
-  base::string16 test_text(ASCIIToUTF16("Password!"));
+  std::u16string test_text(ASCIIToUTF16("Password!"));
   label()->SetText(test_text);
   label()->SizeToPreferredSize();
 
@@ -437,14 +437,14 @@ TEST_F(LabelTest, ObscuredProperty) {
   label()->SetObscured(true);
   label()->SizeToPreferredSize();
   EXPECT_TRUE(label()->GetObscured());
-  EXPECT_EQ(base::string16(test_text.size(),
+  EXPECT_EQ(std::u16string(test_text.size(),
                            gfx::RenderText::kPasswordReplacementChar),
             label()->GetDisplayTextForTesting());
   EXPECT_EQ(test_text, label()->GetText());
 
   label()->SetText(test_text + test_text);
   label()->SizeToPreferredSize();
-  EXPECT_EQ(base::string16(test_text.size() * 2,
+  EXPECT_EQ(std::u16string(test_text.size() * 2,
                            gfx::RenderText::kPasswordReplacementChar),
             label()->GetDisplayTextForTesting());
   EXPECT_EQ(test_text + test_text, label()->GetText());
@@ -459,11 +459,11 @@ TEST_F(LabelTest, ObscuredProperty) {
 TEST_F(LabelTest, ObscuredSurrogatePair) {
   // 'MUSICAL SYMBOL G CLEF': represented in UTF-16 as two characters
   // forming the surrogate pair 0x0001D11E.
-  base::string16 test_text = base::UTF8ToUTF16("\xF0\x9D\x84\x9E");
+  std::u16string test_text = base::UTF8ToUTF16("\xF0\x9D\x84\x9E");
   label()->SetText(test_text);
   label()->SetObscured(true);
   label()->SizeToPreferredSize();
-  EXPECT_EQ(base::string16(1, gfx::RenderText::kPasswordReplacementChar),
+  EXPECT_EQ(std::u16string(1, gfx::RenderText::kPasswordReplacementChar),
             label()->GetDisplayTextForTesting());
   EXPECT_EQ(test_text, label()->GetText());
 }
@@ -544,7 +544,7 @@ TEST_F(LabelTest, TooltipProperty) {
 
   // When set, custom tooltip text should be returned instead of the label's
   // text.
-  base::string16 tooltip_text(ASCIIToUTF16("The tooltip!"));
+  std::u16string tooltip_text(ASCIIToUTF16("The tooltip!"));
   label()->SetTooltipText(tooltip_text);
   EXPECT_EQ(tooltip_text, label()->GetTooltipText(gfx::Point()));
 
@@ -555,7 +555,7 @@ TEST_F(LabelTest, TooltipProperty) {
 
   // When the tooltip text is set to an empty string, the original behavior is
   // restored.
-  label()->SetTooltipText(base::string16());
+  label()->SetTooltipText(std::u16string());
   EXPECT_EQ(label()->GetText(), label()->GetTooltipText(gfx::Point()));
 
   // While tooltip handling is disabled, GetTooltipText() should fail.
@@ -576,7 +576,7 @@ TEST_F(LabelTest, TooltipProperty) {
   label()->SetTooltipText(tooltip_text);
   EXPECT_EQ(tooltip_text, label()->GetTooltipText(gfx::Point()));
   // Clear out the explicitly set tooltip text.
-  label()->SetTooltipText(base::string16());
+  label()->SetTooltipText(std::u16string());
 
   // Shrink the bounds and the tooltip should come back.
   label()->SetBounds(0, 0, 10, 10);
@@ -601,11 +601,11 @@ TEST_F(LabelTest, TooltipProperty) {
   label()->SetTooltipText(tooltip_text);
   EXPECT_EQ(tooltip_text, label()->GetTooltipText(gfx::Point()));
   // Clear out the tooltip.
-  label()->SetTooltipText(base::string16());
+  label()->SetTooltipText(std::u16string());
 }
 
 TEST_F(LabelTest, Accessibility) {
-  const base::string16 accessible_name = ASCIIToUTF16("A11y text.");
+  const std::u16string accessible_name = ASCIIToUTF16("A11y text.");
 
   label()->SetText(ASCIIToUTF16("Displayed text."));
 
@@ -840,7 +840,7 @@ TEST_F(LabelTest, MultiLineSetMaxLines) {
 // Verifies if the combination of text eliding and multiline doesn't cause
 // any side effects of size / layout calculation.
 TEST_F(LabelTest, MultiLineSizingWithElide) {
-  const base::string16 text =
+  const std::u16string text =
       ASCIIToUTF16("A random string\nwith multiple lines\nand returns!");
   label()->SetText(text);
   label()->SetMultiLine(true);
@@ -1057,7 +1057,7 @@ TEST_F(LabelTest, DefaultDirectionalityIsFromText) {
 }
 
 TEST_F(LabelTest, IsDisplayTextTruncated) {
-  const base::string16 text = ASCIIToUTF16("A random string");
+  const std::u16string text = ASCIIToUTF16("A random string");
   label()->SetText(text);
 
   gfx::Size zero_size;
@@ -1076,7 +1076,7 @@ TEST_F(LabelTest, IsDisplayTextTruncated) {
   label()->SetBoundsRect(gfx::Rect(enough_size));
   EXPECT_FALSE(label()->IsDisplayTextTruncated());
 
-  const base::string16 empty_text;
+  const std::u16string empty_text;
   label()->SetText(empty_text);
   EXPECT_FALSE(label()->IsDisplayTextTruncated());
   label()->SetBoundsRect(gfx::Rect(zero_size));
@@ -1372,8 +1372,8 @@ TEST_F(LabelSelectionTest, MouseDragMultilineRTL) {
   };
 
   // Visual right, so to the beginning of the string for RTL.
-  const base::string16 extend_right = ToRTL("0");
-  const base::string16 extend_left = ToRTL("12\n345");
+  const std::u16string extend_right = ToRTL("0");
+  const std::u16string extend_left = ToRTL("12\n345");
 
   // For multiline, N* extends right, S* extends left.
   PerformMouseDragTo(points[NW]);
@@ -1406,8 +1406,8 @@ TEST_F(LabelSelectionTest, MouseDragSingleLineRTL) {
   };
 
   // Visual right, so to the beginning of the string for RTL.
-  const base::string16 extend_right = ToRTL("0");
-  const base::string16 extend_left = ToRTL("123456");
+  const std::u16string extend_right = ToRTL("0");
+  const std::u16string extend_left = ToRTL("123456");
 
   // For single line, western directions extend left, all others extend right.
   PerformMouseDragTo(points[NW]);
@@ -1470,7 +1470,7 @@ TEST_F(LabelSelectionTest, SelectionClipboard) {
 // Verify that keyboard shortcuts for Copy and Select All work when a selectable
 // label is focused.
 TEST_F(LabelSelectionTest, KeyboardActions) {
-  const base::string16 initial_text = ASCIIToUTF16("Label keyboard actions");
+  const std::u16string initial_text = ASCIIToUTF16("Label keyboard actions");
   label()->SetText(initial_text);
   label()->SizeToPreferredSize();
   ASSERT_TRUE(label()->SetSelectable(true));
@@ -1486,7 +1486,7 @@ TEST_F(LabelSelectionTest, KeyboardActions) {
 
   // The selection should get cleared on changing the text, but focus should not
   // be affected.
-  const base::string16 new_text = ASCIIToUTF16("Label obscured text");
+  const std::u16string new_text = ASCIIToUTF16("Label obscured text");
   label()->SetText(new_text);
   EXPECT_FALSE(label()->HasSelection());
   EXPECT_EQ(label(), GetFocusedView());
@@ -1495,7 +1495,7 @@ TEST_F(LabelSelectionTest, KeyboardActions) {
   label()->SetObscured(true);
   EXPECT_FALSE(label()->GetSelectable());
   event_generator()->PressKey(ui::VKEY_A, kControlCommandModifier);
-  EXPECT_EQ(base::string16(), GetSelectedText());
+  EXPECT_EQ(std::u16string(), GetSelectedText());
 }
 
 // Verify the context menu options are enabled and disabled appropriately.
@@ -1531,7 +1531,7 @@ TEST_F(LabelSelectionTest, ContextMenuContents) {
   label()->SetObscured(false);
 
   // For an empty label, both copy and select-all should be disabled.
-  label()->SetText(base::string16());
+  label()->SetText(std::u16string());
   ASSERT_TRUE(label()->SetSelectable(true));
   EXPECT_FALSE(IsMenuCommandEnabled(Label::MenuCommands::kCopy));
   EXPECT_FALSE(IsMenuCommandEnabled(Label::MenuCommands::kSelectAll));

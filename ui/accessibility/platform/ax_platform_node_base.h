@@ -52,7 +52,7 @@ struct AX_EXPORT AXHypertext {
   // Hypertext.
   std::vector<int32_t> hyperlinks;
 
-  base::string16 hypertext;
+  std::u16string hypertext;
 };
 
 class AX_EXPORT AXPlatformNodeBase : public AXPlatformNode {
@@ -93,7 +93,7 @@ class AX_EXPORT AXPlatformNodeBase : public AXPlatformNode {
   void NotifyAccessibilityEvent(ax::mojom::Event event_type) override;
 
 #if defined(OS_APPLE)
-  void AnnounceText(const base::string16& text) override;
+  void AnnounceText(const std::u16string& text) override;
 #endif
 
   AXPlatformNodeDelegate* GetDelegate() const override;
@@ -133,18 +133,18 @@ class AX_EXPORT AXPlatformNodeBase : public AXPlatformNode {
   bool GetStringAttribute(ax::mojom::StringAttribute attribute,
                           std::string* value) const;
   bool GetString16Attribute(ax::mojom::StringAttribute attribute,
-                            base::string16* value) const;
-  base::string16 GetString16Attribute(
+                            std::u16string* value) const;
+  std::u16string GetString16Attribute(
       ax::mojom::StringAttribute attribute) const;
   bool HasInheritedStringAttribute(ax::mojom::StringAttribute attribute) const;
   const std::string& GetInheritedStringAttribute(
       ax::mojom::StringAttribute attribute) const;
-  base::string16 GetInheritedString16Attribute(
+  std::u16string GetInheritedString16Attribute(
       ax::mojom::StringAttribute attribute) const;
   bool GetInheritedStringAttribute(ax::mojom::StringAttribute attribute,
                                    std::string* value) const;
   bool GetInheritedString16Attribute(ax::mojom::StringAttribute attribute,
-                                     base::string16* value) const;
+                                     std::u16string* value) const;
 
   bool HasIntListAttribute(ax::mojom::IntListAttribute attribute) const;
   const std::vector<int32_t>& GetIntListAttribute(
@@ -280,7 +280,7 @@ class AX_EXPORT AXPlatformNodeBase : public AXPlatformNode {
   // object character", and every textual child node with its visible accessible
   // name. This is how displayed text and embedded objects are represented in
   // ATK and IA2 APIs.
-  base::string16 GetHypertext() const;
+  std::u16string GetHypertext() const;
 
   // Returns the text that is found inside this node and all its descendants;
   // including text found in embedded objects.
@@ -288,14 +288,14 @@ class AX_EXPORT AXPlatformNodeBase : public AXPlatformNode {
   // Only text displayed on screen is included. Text from ARIA and HTML
   // attributes that is either not displayed on screen, or outside this node,
   // e.g. aria-label and HTML title, is not returned.
-  base::string16 GetInnerText() const;
+  std::u16string GetInnerText() const;
 
   // Returns the value of a control such as a text field, a slider, a <select>
   // element, a date picker or an ARIA combo box. In order to minimize
   // cross-process communication between the renderer and the browser, may
   // compute the value from the control's inner text in the case of a text
   // field.
-  base::string16 GetValueForControl() const;
+  std::u16string GetValueForControl() const;
 
   // Represents a non-static text node in IAccessibleHypertext (and ATK in the
   // future). This character is embedded in the response to
@@ -386,8 +386,8 @@ class AX_EXPORT AXPlatformNodeBase : public AXPlatformNode {
 
   // Get the role description from the node data or from the image annotation
   // status.
-  base::string16 GetRoleDescription() const;
-  base::string16 GetRoleDescriptionFromImageAnnotationStatusOrFromAttribute()
+  std::u16string GetRoleDescription() const;
+  std::u16string GetRoleDescriptionFromImageAnnotationStatusOrFromAttribute()
       const;
 
   // Return true if a kImage corresponds to an image map (has children).
@@ -521,7 +521,7 @@ class AX_EXPORT AXPlatformNodeBase : public AXPlatformNode {
 
  private:
   // Returns true if the index represents a text character.
-  bool IsText(const base::string16& text,
+  bool IsText(const std::u16string& text,
               size_t index,
               bool is_indexed_from_end = false);
 

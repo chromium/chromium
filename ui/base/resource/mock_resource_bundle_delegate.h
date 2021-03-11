@@ -33,7 +33,7 @@ class MockResourceBundleDelegate : public ResourceBundle::Delegate {
                           ScaleFactor scale_factor,
                           base::StringPiece* value));
   MOCK_CONST_METHOD2(GetLocalizedString,
-                     bool(int message_id, base::string16* value));
+                     bool(int message_id, std::u16string* value));
 };
 
 }  // namespace ui

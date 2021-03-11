@@ -20,7 +20,7 @@ void FakeTextInputClient::set_text_input_type(TextInputType text_input_type) {
   text_input_type_ = text_input_type;
 }
 
-void FakeTextInputClient::SetTextAndSelection(const base::string16& text,
+void FakeTextInputClient::SetTextAndSelection(const std::u16string& text,
                                               gfx::Range selection) {
   DCHECK_LE(selection_.end(), text.length());
   text_ = text;
@@ -37,7 +37,7 @@ uint32_t FakeTextInputClient::ConfirmCompositionText(bool keep_selection) {
 void FakeTextInputClient::ClearCompositionText() {}
 
 void FakeTextInputClient::InsertText(
-    const base::string16& text,
+    const std::u16string& text,
     TextInputClient::InsertTextCursorBehavior cursor_behavior) {
   text_.insert(selection_.start(), text);
 
@@ -110,7 +110,7 @@ bool FakeTextInputClient::DeleteRange(const gfx::Range& range) {
 }
 
 bool FakeTextInputClient::GetTextFromRange(const gfx::Range& range,
-                                           base::string16* text) const {
+                                           std::u16string* text) const {
   return false;
 }
 
@@ -176,7 +176,7 @@ void FakeTextInputClient::GetActiveTextInputControlLayoutBounds(
 
 void FakeTextInputClient::SetActiveCompositionForAccessibility(
     const gfx::Range& range,
-    const base::string16& active_composition_text,
+    const std::u16string& active_composition_text,
     bool is_composition_committed) {}
 #endif
 

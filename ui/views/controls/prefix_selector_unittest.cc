@@ -34,10 +34,10 @@ class TestPrefixDelegate : public View, public PrefixDelegate {
 
   void SetSelectedRow(int row) override { selected_row_ = row; }
 
-  base::string16 GetTextForRow(int row) override { return rows_[row]; }
+  std::u16string GetTextForRow(int row) override { return rows_[row]; }
 
  private:
-  std::vector<base::string16> rows_;
+  std::vector<std::u16string> rows_;
   int selected_row_ = 0;
 
   DISALLOW_COPY_AND_ASSIGN(TestPrefixDelegate);

@@ -445,20 +445,20 @@ TEST_F(TimeFormatTest, SimpleAndDetailedStringFallback) {
 // crbug.com/159388: This test fails when daylight savings time ends.
 TEST_F(TimeFormatTest, RelativeDate) {
   base::Time now = base::Time::Now();
-  base::string16 today_str = TimeFormat::RelativeDate(now, NULL);
+  std::u16string today_str = TimeFormat::RelativeDate(now, NULL);
   EXPECT_EQ(ASCIIToUTF16("Today"), today_str);
 
   base::Time yesterday = now - TimeDelta::FromDays(1);
-  base::string16 yesterday_str = TimeFormat::RelativeDate(yesterday, NULL);
+  std::u16string yesterday_str = TimeFormat::RelativeDate(yesterday, NULL);
   EXPECT_EQ(ASCIIToUTF16("Yesterday"), yesterday_str);
 
   base::Time two_days_ago = now - TimeDelta::FromDays(2);
-  base::string16 two_days_ago_str =
+  std::u16string two_days_ago_str =
       TimeFormat::RelativeDate(two_days_ago, NULL);
   EXPECT_TRUE(two_days_ago_str.empty());
 
   base::Time a_week_ago = now - TimeDelta::FromDays(7);
-  base::string16 a_week_ago_str = TimeFormat::RelativeDate(a_week_ago, NULL);
+  std::u16string a_week_ago_str = TimeFormat::RelativeDate(a_week_ago, NULL);
   EXPECT_TRUE(a_week_ago_str.empty());
 }
 

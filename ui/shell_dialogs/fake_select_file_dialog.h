@@ -70,7 +70,7 @@ class FakeSelectFileDialog : public SelectFileDialog {
 
   // SelectFileDialog.
   void SelectFileImpl(Type type,
-                      const base::string16& title,
+                      const std::u16string& title,
                       const base::FilePath& default_path,
                       const FileTypeInfo* file_types,
                       int file_type_index,
@@ -82,7 +82,7 @@ class FakeSelectFileDialog : public SelectFileDialog {
   void ListenerDestroyed() override {}
 
   // Returns the file title provided to the dialog.
-  const base::string16& title() const { return title_; }
+  const std::u16string& title() const { return title_; }
   // Returns the file types provided to the dialog.
   const FileTypeInfo& file_types() const { return file_types_; }
   // Returns the default file extension provided to the dialog.
@@ -101,7 +101,7 @@ class FakeSelectFileDialog : public SelectFileDialog {
   ~FakeSelectFileDialog() override;
 
   base::RepeatingClosure opened_;
-  base::string16 title_;
+  std::u16string title_;
   FileTypeInfo file_types_;
   std::string default_extension_;
   void* params_;

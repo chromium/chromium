@@ -94,8 +94,8 @@ class ClipboardTest : public PlatformTest {
  protected:
   Clipboard& clipboard() { return *clipboard_; }
 
-  std::vector<base::string16> GetAvailableTypes(ClipboardBuffer buffer) {
-    std::vector<base::string16> types;
+  std::vector<std::u16string> GetAvailableTypes(ClipboardBuffer buffer) {
+    std::vector<std::u16string> types;
     clipboard().ReadAvailableTypes(buffer, /* data_dst = */ nullptr, &types);
     return types;
   }
@@ -161,7 +161,7 @@ TYPED_TEST(ClipboardTest, ClearTest) {
 }
 
 TYPED_TEST(ClipboardTest, TextTest) {
-  base::string16 text(ASCIIToUTF16("This is a base::string16!#$")), text_result;
+  std::u16string text(ASCIIToUTF16("This is a std::u16string!#$")), text_result;
   std::string ascii_text;
 
   {
@@ -200,8 +200,8 @@ TYPED_TEST(ClipboardTest, TextTest) {
 }
 
 TYPED_TEST(ClipboardTest, HTMLTest) {
-  base::string16 markup(ASCIIToUTF16("<string>Hi!</string>")), markup_result;
-  base::string16 plain(ASCIIToUTF16("Hi!")), plain_result;
+  std::u16string markup(ASCIIToUTF16("<string>Hi!</string>")), markup_result;
+  std::u16string plain(ASCIIToUTF16("Hi!")), plain_result;
   std::string url("http://www.example.com/"), url_result;
 
   {
@@ -231,7 +231,7 @@ TYPED_TEST(ClipboardTest, HTMLTest) {
 }
 
 TYPED_TEST(ClipboardTest, SvgTest) {
-  base::string16 markup(ASCIIToUTF16("<svg> <circle r=\"40\" /> </svg>"));
+  std::u16string markup(ASCIIToUTF16("<svg> <circle r=\"40\" /> </svg>"));
 
   {
     ScopedClipboardWriter clipboard_writer(ClipboardBuffer::kCopyPaste);
@@ -242,7 +242,7 @@ TYPED_TEST(ClipboardTest, SvgTest) {
       ClipboardFormatType::GetSvgType(), ClipboardBuffer::kCopyPaste,
       /* data_dst = */ nullptr));
 
-  base::string16 markup_result;
+  std::u16string markup_result;
   this->clipboard().ReadSvg(ClipboardBuffer::kCopyPaste,
                             /* data_dst = */ nullptr, &markup_result);
 
@@ -284,8 +284,8 @@ TYPED_TEST(ClipboardTest, MultipleBufferTest) {
     return;
   }
 
-  base::string16 text(ASCIIToUTF16("Standard")), text_result;
-  base::string16 markup(ASCIIToUTF16("<string>Selection</string>"));
+  std::u16string text(ASCIIToUTF16("Standard")), text_result;
+  std::u16string markup(ASCIIToUTF16("<string>Selection</string>"));
   std::string url("http://www.example.com/"), url_result;
 
   {
@@ -321,7 +321,7 @@ TYPED_TEST(ClipboardTest, MultipleBufferTest) {
                              /* data_dst = */ nullptr, &text_result);
   EXPECT_EQ(text, text_result);
 
-  base::string16 markup_result;
+  std::u16string markup_result;
   uint32_t fragment_start;
   uint32_t fragment_end;
   this->clipboard().ReadHTML(ClipboardBuffer::kSelection,
@@ -334,10 +334,10 @@ TYPED_TEST(ClipboardTest, MultipleBufferTest) {
 #endif
 
 TYPED_TEST(ClipboardTest, TrickyHTMLTest) {
-  base::string16 markup(ASCIIToUTF16("<em>Bye!<!--EndFragment --></em>")),
+  std::u16string markup(ASCIIToUTF16("<em>Bye!<!--EndFragment --></em>")),
       markup_result;
   std::string url, url_result;
-  base::string16 plain(ASCIIToUTF16("Bye!")), plain_result;
+  std::u16string plain(ASCIIToUTF16("Bye!")), plain_result;
 
   {
     ScopedClipboardWriter clipboard_writer(ClipboardBuffer::kCopyPaste);
@@ -368,7 +368,7 @@ TYPED_TEST(ClipboardTest, TrickyHTMLTest) {
 // Some platforms store HTML as UTF-8 internally. Make sure fragment indices are
 // adjusted appropriately when converting back to UTF-16.
 TYPED_TEST(ClipboardTest, UnicodeHTMLTest) {
-  base::string16 markup(UTF8ToUTF16("<div>A \xc3\xb8 \xe6\xb0\xb4</div>")),
+  std::u16string markup(UTF8ToUTF16("<div>A \xc3\xb8 \xe6\xb0\xb4</div>")),
       markup_result;
   std::string url, url_result;
 
@@ -402,7 +402,7 @@ TYPED_TEST(ClipboardTest, UnicodeHTMLTest) {
 // TODO(estade): Port the following test (decide what target we use for urls)
 #if !defined(OS_POSIX) || defined(OS_APPLE)
 TYPED_TEST(ClipboardTest, BookmarkTest) {
-  base::string16 title(ASCIIToUTF16("The Example Company")), title_result;
+  std::u16string title(ASCIIToUTF16("The Example Company")), title_result;
   std::string url("http://www.example.com/"), url_result;
 
   {
@@ -441,7 +441,7 @@ TYPED_TEST(ClipboardTest, FilenamesTest) {
       ClipboardFormatType::GetFilenamesType(), ClipboardBuffer::kCopyPaste,
       /* data_dst = */ nullptr));
 
-  std::vector<base::string16> types;
+  std::vector<std::u16string> types;
   this->clipboard().ReadAvailableTypes(ClipboardBuffer::kCopyPaste,
                                        /* data_dst = */ nullptr, &types);
   EXPECT_EQ(1u, types.size());
@@ -456,8 +456,8 @@ TYPED_TEST(ClipboardTest, FilenamesTest) {
 #endif  // !defined(OS_ANDROID)
 
 TYPED_TEST(ClipboardTest, MultiFormatTest) {
-  base::string16 text(ASCIIToUTF16("Hi!")), text_result;
-  base::string16 markup(ASCIIToUTF16("<strong>Hi!</string>")), markup_result;
+  std::u16string text(ASCIIToUTF16("Hi!")), text_result;
+  std::u16string markup(ASCIIToUTF16("<strong>Hi!</string>")), markup_result;
   std::string url("http://www.example.com/"), url_result;
   std::string ascii_text;
 
@@ -504,7 +504,7 @@ TYPED_TEST(ClipboardTest, MultiFormatTest) {
 }
 
 TYPED_TEST(ClipboardTest, URLTest) {
-  base::string16 url(ASCIIToUTF16("http://www.google.com/"));
+  std::u16string url(ASCIIToUTF16("http://www.google.com/"));
 
   {
     ScopedClipboardWriter clipboard_writer(ClipboardBuffer::kCopyPaste);
@@ -521,7 +521,7 @@ TYPED_TEST(ClipboardTest, URLTest) {
       ClipboardFormatType::GetPlainTextAType(), ClipboardBuffer::kCopyPaste,
       /* data_dst = */ nullptr));
 #endif
-  base::string16 text_result;
+  std::u16string text_result;
   this->clipboard().ReadText(ClipboardBuffer::kCopyPaste,
                              /* data_dst = */ nullptr, &text_result);
 
@@ -785,14 +785,14 @@ TYPED_TEST(ClipboardTest, MultipleDataTest) {
 #endif
 
 TYPED_TEST(ClipboardTest, ReadAvailablePlatformSpecificFormatNamesTest) {
-  base::string16 text = ASCIIToUTF16("Test String");
+  std::u16string text = ASCIIToUTF16("Test String");
   std::string ascii_text;
   {
     ScopedClipboardWriter clipboard_writer(ClipboardBuffer::kCopyPaste);
     clipboard_writer.WriteText(text);
   }
 
-  const std::vector<base::string16> raw_types =
+  const std::vector<std::u16string> raw_types =
       this->clipboard().ReadAvailablePlatformSpecificFormatNames(
           ClipboardBuffer::kCopyPaste, /* data_dst = */ nullptr);
 #if defined(OS_APPLE)
@@ -866,7 +866,7 @@ TYPED_TEST(ClipboardTest, PlatformSpecificDataTest) {
                                mojo_base::BigBuffer(text_span));
   }
 
-  const std::vector<base::string16> raw_types =
+  const std::vector<std::u16string> raw_types =
       this->clipboard().ReadAvailablePlatformSpecificFormatNames(
           ClipboardBuffer::kCopyPaste, /* data_dst = */ nullptr);
 
@@ -891,7 +891,7 @@ TYPED_TEST(ClipboardTest, PlatformSpecificDataTest) {
   EXPECT_TRUE(this->clipboard().IsFormatAvailable(
       ClipboardFormatType::GetPlainTextType(), ClipboardBuffer::kCopyPaste,
       /* data_dst = */ nullptr));
-  base::string16 text_result16;
+  std::u16string text_result16;
   this->clipboard().ReadText(ClipboardBuffer::kCopyPaste,
                              /* data_dst = */ nullptr, &text_result16);
   EXPECT_EQ(text_result16, base::ASCIIToUTF16(text));
@@ -908,12 +908,12 @@ TYPED_TEST(ClipboardTest, PlatformSpecificDataTest) {
 TYPED_TEST(ClipboardTest, HyperlinkTest) {
   const std::string kTitle("The <Example> Company's \"home page\"");
   const std::string kUrl("http://www.example.com?x=3&lt=3#\"'<>");
-  const base::string16 kExpectedHtml(UTF8ToUTF16(
+  const std::u16string kExpectedHtml(UTF8ToUTF16(
       "<a href=\"http://www.example.com?x=3&amp;lt=3#&quot;&#39;&lt;&gt;\">"
       "The &lt;Example&gt; Company&#39;s &quot;home page&quot;</a>"));
 
   std::string url_result;
-  base::string16 html_result;
+  std::u16string html_result;
   {
     ScopedClipboardWriter clipboard_writer(ClipboardBuffer::kCopyPaste);
     clipboard_writer.WriteHyperlink(ASCIIToUTF16(kTitle), kUrl);
@@ -1037,17 +1037,17 @@ TYPED_TEST(ClipboardTest, GetSequenceNumber) {
 // vector. Not crashing = passing.
 TYPED_TEST(ClipboardTest, WriteTextEmptyParams) {
   ScopedClipboardWriter scw(ClipboardBuffer::kCopyPaste);
-  scw.WriteText(base::string16());
+  scw.WriteText(std::u16string());
 }
 
 TYPED_TEST(ClipboardTest, WriteHTMLEmptyParams) {
   ScopedClipboardWriter scw(ClipboardBuffer::kCopyPaste);
-  scw.WriteHTML(base::string16(), std::string());
+  scw.WriteHTML(std::u16string(), std::string());
 }
 
 TYPED_TEST(ClipboardTest, EmptySvgTest) {
   ScopedClipboardWriter clipboard_writer(ClipboardBuffer::kCopyPaste);
-  clipboard_writer.WriteSvg(base::string16());
+  clipboard_writer.WriteSvg(std::u16string());
 }
 
 TYPED_TEST(ClipboardTest, WriteRTFEmptyParams) {
@@ -1057,12 +1057,12 @@ TYPED_TEST(ClipboardTest, WriteRTFEmptyParams) {
 
 TYPED_TEST(ClipboardTest, WriteBookmarkEmptyParams) {
   ScopedClipboardWriter scw(ClipboardBuffer::kCopyPaste);
-  scw.WriteBookmark(base::string16(), std::string());
+  scw.WriteBookmark(std::u16string(), std::string());
 }
 
 TYPED_TEST(ClipboardTest, WriteHyperlinkEmptyParams) {
   ScopedClipboardWriter scw(ClipboardBuffer::kCopyPaste);
-  scw.WriteHyperlink(base::string16(), std::string());
+  scw.WriteHyperlink(std::u16string(), std::string());
 }
 
 TYPED_TEST(ClipboardTest, WritePickledData) {
@@ -1082,7 +1082,7 @@ TYPED_TEST(ClipboardTest, WriteImageEmptyParams) {
 // restrict the clipboard data.
 TYPED_TEST(ClipboardTest, PolicyAllowDataRead) {
   auto policy_controller = std::make_unique<MockPolicyController>();
-  const base::string16 kTestText(base::UTF8ToUTF16("World"));
+  const std::u16string kTestText(base::UTF8ToUTF16("World"));
   {
     ScopedClipboardWriter writer(
         ClipboardBuffer::kCopyPaste,
@@ -1091,7 +1091,7 @@ TYPED_TEST(ClipboardTest, PolicyAllowDataRead) {
   }
   EXPECT_CALL(*policy_controller, IsClipboardReadAllowed)
       .WillRepeatedly(testing::Return(true));
-  base::string16 read_result;
+  std::u16string read_result;
   this->clipboard().ReadText(ClipboardBuffer::kCopyPaste,
                              /* data_dst = */ nullptr, &read_result);
   ::testing::Mock::VerifyAndClearExpectations(policy_controller.get());
@@ -1102,7 +1102,7 @@ TYPED_TEST(ClipboardTest, PolicyAllowDataRead) {
 // restricted it.
 TYPED_TEST(ClipboardTest, PolicyDisallow_ReadText) {
   auto policy_controller = std::make_unique<MockPolicyController>();
-  const base::string16 kTestText(base::UTF8ToUTF16("World"));
+  const std::u16string kTestText(base::UTF8ToUTF16("World"));
   {
     ScopedClipboardWriter writer(
         ClipboardBuffer::kCopyPaste,
@@ -1111,11 +1111,11 @@ TYPED_TEST(ClipboardTest, PolicyDisallow_ReadText) {
   }
   EXPECT_CALL(*policy_controller, IsClipboardReadAllowed)
       .WillRepeatedly(testing::Return(false));
-  base::string16 read_result;
+  std::u16string read_result;
   this->clipboard().ReadText(ClipboardBuffer::kCopyPaste,
                              /* data_dst = */ nullptr, &read_result);
   ::testing::Mock::VerifyAndClearExpectations(policy_controller.get());
-  EXPECT_EQ(base::string16(), read_result);
+  EXPECT_EQ(std::u16string(), read_result);
 }
 
 TYPED_TEST(ClipboardTest, PolicyDisallow_ReadImage) {

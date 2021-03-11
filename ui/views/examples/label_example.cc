@@ -143,7 +143,7 @@ void LabelExample::SelectableCheckboxPressed() {
 }
 
 void LabelExample::ContentsChanged(Textfield* sender,
-                                   const base::string16& new_contents) {
+                                   const std::u16string& new_contents) {
   custom_label_->SetText(new_contents);
   custom_label_->parent()->parent()->InvalidateLayout();
 }

@@ -45,7 +45,7 @@ void DummyTextInputClient::ClearCompositionText() {
 }
 
 void DummyTextInputClient::InsertText(
-    const base::string16& text,
+    const std::u16string& text,
     InsertTextCursorBehavior cursor_behavior) {
   insert_text_history_.push_back(text);
 }
@@ -115,7 +115,7 @@ bool DummyTextInputClient::DeleteRange(const gfx::Range& range) {
 }
 
 bool DummyTextInputClient::GetTextFromRange(const gfx::Range& range,
-                                            base::string16* text) const {
+                                            std::u16string* text) const {
   return false;
 }
 
@@ -180,7 +180,7 @@ void DummyTextInputClient::GetActiveTextInputControlLayoutBounds(
 
 void DummyTextInputClient::SetActiveCompositionForAccessibility(
     const gfx::Range& range,
-    const base::string16& active_composition_text,
+    const std::u16string& active_composition_text,
     bool is_composition_committed) {}
 #endif
 

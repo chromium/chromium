@@ -69,7 +69,7 @@ struct AX_BASE_EXPORT AXNodeData {
   // need to distinguish between the default value and a missing attribute),
   // and another that returns the default value for that type if the
   // attribute is not present. In addition, strings can be returned as
-  // either std::string or base::string16, for convenience.
+  // either std::string or std::u16string, for convenience.
 
   bool HasBoolAttribute(ax::mojom::BoolAttribute attribute) const;
   bool GetBoolAttribute(ax::mojom::BoolAttribute attribute) const;
@@ -91,8 +91,8 @@ struct AX_BASE_EXPORT AXNodeData {
                           std::string* value) const;
 
   bool GetString16Attribute(ax::mojom::StringAttribute attribute,
-                            base::string16* value) const;
-  base::string16 GetString16Attribute(
+                            std::u16string* value) const;
+  std::u16string GetString16Attribute(
       ax::mojom::StringAttribute attribute) const;
 
   bool HasIntListAttribute(ax::mojom::IntListAttribute attribute) const;
@@ -107,7 +107,7 @@ struct AX_BASE_EXPORT AXNodeData {
   bool GetStringListAttribute(ax::mojom::StringListAttribute attribute,
                               std::vector<std::string>* value) const;
 
-  bool GetHtmlAttribute(const char* attribute, base::string16* value) const;
+  bool GetHtmlAttribute(const char* attribute, std::u16string* value) const;
   bool GetHtmlAttribute(const char* attribute, std::string* value) const;
 
   //
@@ -151,18 +151,18 @@ struct AX_BASE_EXPORT AXNodeData {
   // Adds the name attribute or replaces it if already present. Also sets the
   // NameFrom attribute if not already set.
   void SetName(const std::string& name);
-  void SetName(const base::string16& name);
+  void SetName(const std::u16string& name);
 
   // Allows nameless objects to pass accessibility checks.
   void SetNameExplicitlyEmpty();
 
   // Adds the description attribute or replaces it if already present.
   void SetDescription(const std::string& description);
-  void SetDescription(const base::string16& description);
+  void SetDescription(const std::u16string& description);
 
   // Adds the value attribute or replaces it if already present.
   void SetValue(const std::string& value);
-  void SetValue(const base::string16& value);
+  void SetValue(const std::u16string& value);
 
   // Returns true if the given enum bit is 1.
   bool HasState(ax::mojom::State state) const;

@@ -47,13 +47,13 @@ WM_PUBLIC_EXPORT TooltipClient* GetTooltipClient(aura::Window* root_window);
 // the text does not change. For example, if the tooltip text does not change,
 // but the id does then the position of the tooltip is updated.
 WM_PUBLIC_EXPORT void SetTooltipText(aura::Window* window,
-                                     base::string16* tooltip_text);
+                                     std::u16string* tooltip_text);
 WM_PUBLIC_EXPORT void SetTooltipId(aura::Window* window, void* id);
-WM_PUBLIC_EXPORT const base::string16 GetTooltipText(aura::Window* window);
+WM_PUBLIC_EXPORT const std::u16string GetTooltipText(aura::Window* window);
 WM_PUBLIC_EXPORT const void* GetTooltipId(aura::Window* window);
 
 WM_PUBLIC_EXPORT extern const aura::WindowProperty<void*>* const kTooltipIdKey;
-WM_PUBLIC_EXPORT extern const aura::WindowProperty<base::string16*>* const
+WM_PUBLIC_EXPORT extern const aura::WindowProperty<std::u16string*>* const
     kTooltipTextKey;
 
 }  // namespace wm

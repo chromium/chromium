@@ -102,7 +102,7 @@ class VIEWS_EXPORT SubmenuView : public View,
   int GetRowCount() override;
   int GetSelectedRow() override;
   void SetSelectedRow(int row) override;
-  base::string16 GetTextForRow(int row) override;
+  std::u16string GetTextForRow(int row) override;
 
   // Returns true if the menu is showing.
   virtual bool IsShowing() const;

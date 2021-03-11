@@ -29,26 +29,26 @@ namespace ui {
 COMPONENT_EXPORT(UI_BASE_CLIPBOARD)
 void ReadCustomDataTypes(const void* data,
                          size_t data_length,
-                         std::vector<base::string16>* types);
+                         std::vector<std::u16string>* types);
 COMPONENT_EXPORT(UI_BASE_CLIPBOARD)
 void ReadCustomDataForType(const void* data,
                            size_t data_length,
-                           const base::string16& type,
-                           base::string16* result);
+                           const std::u16string& type,
+                           std::u16string* result);
 COMPONENT_EXPORT(UI_BASE_CLIPBOARD)
 void ReadCustomDataIntoMap(
     const void* data,
     size_t data_length,
-    std::unordered_map<base::string16, base::string16>* result);
+    std::unordered_map<std::u16string, std::u16string>* result);
 
 COMPONENT_EXPORT(UI_BASE_CLIPBOARD)
 void WriteCustomDataToPickle(
-    const std::unordered_map<base::string16, base::string16>& data,
+    const std::unordered_map<std::u16string, std::u16string>& data,
     base::Pickle* pickle);
 
 COMPONENT_EXPORT(UI_BASE_CLIPBOARD)
 void WriteCustomDataToPickle(
-    const base::flat_map<base::string16, base::string16>& data,
+    const base::flat_map<std::u16string, std::u16string>& data,
     base::Pickle* pickle);
 
 }  // namespace ui

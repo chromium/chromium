@@ -26,7 +26,7 @@ int MenuConfig::CornerRadiusForMenu(const MenuController* controller) const {
 }
 
 bool MenuConfig::ShouldShowAcceleratorText(const MenuItemView* item,
-                                           base::string16* text) const {
+                                           std::u16string* text) const {
   if (!show_accelerators || !item->GetDelegate() || !item->GetCommand())
     return false;
   ui::Accelerator accelerator;

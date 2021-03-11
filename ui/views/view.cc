@@ -1682,8 +1682,8 @@ FocusTraversable* View::GetPaneFocusTraversable() {
 
 // Tooltips --------------------------------------------------------------------
 
-base::string16 View::GetTooltipText(const gfx::Point& p) const {
-  return base::string16();
+std::u16string View::GetTooltipText(const gfx::Point& p) const {
+  return std::u16string();
 }
 
 // Context menus ---------------------------------------------------------------
@@ -2303,7 +2303,7 @@ void View::SetHeight(int height) {
   SetBounds(x(), y(), width(), height);
 }
 
-base::string16 View::GetTooltip() const {
+std::u16string View::GetTooltip() const {
   return GetTooltipText(gfx::Point());
 }
 
@@ -3244,7 +3244,7 @@ ADD_READONLY_PROPERTY_METADATA(gfx::Size, MaximumSize)
 ADD_READONLY_PROPERTY_METADATA(gfx::Size, MinimumSize)
 ADD_PROPERTY_METADATA(bool, Mirrored)
 ADD_PROPERTY_METADATA(bool, NotifyEnterExitOnChild)
-ADD_READONLY_PROPERTY_METADATA(base::string16, Tooltip)
+ADD_READONLY_PROPERTY_METADATA(std::u16string, Tooltip)
 ADD_PROPERTY_METADATA(bool, Visible)
 ADD_PROPERTY_METADATA(bool, CanProcessEventsWithinSubtree)
 ADD_PROPERTY_METADATA(bool, UseDefaultFillLayout)

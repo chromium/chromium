@@ -212,7 +212,7 @@ class MESSAGE_CENTER_EXPORT MessageView
   std::string notification_id_;
   views::ScrollView* scroller_ = nullptr;
 
-  base::string16 accessible_name_;
+  std::u16string accessible_name_;
 
   // Tracks whether background should be drawn as active based on gesture
   // events.

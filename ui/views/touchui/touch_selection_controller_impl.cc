@@ -600,8 +600,8 @@ bool TouchSelectionControllerImpl::ShouldShowQuickMenu() {
   return false;
 }
 
-base::string16 TouchSelectionControllerImpl::GetSelectedText() {
-  return base::string16();
+std::u16string TouchSelectionControllerImpl::GetSelectedText() {
+  return std::u16string();
 }
 
 void TouchSelectionControllerImpl::OnWidgetClosing(Widget* widget) {

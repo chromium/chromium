@@ -267,7 +267,7 @@ void TooltipController::OnWindowPropertyChanged(aura::Window* window,
                                                 const void* key,
                                                 intptr_t old) {
   if ((key == wm::kTooltipIdKey || key == wm::kTooltipTextKey) &&
-      wm::GetTooltipText(window) != base::string16() &&
+      wm::GetTooltipText(window) != std::u16string() &&
       (tooltip_text_ != wm::GetTooltipText(window) ||
        tooltip_id_ != wm::GetTooltipId(window)))
     UpdateIfRequired();
@@ -287,7 +287,7 @@ void TooltipController::UpdateIfRequired() {
     return;
   }
 
-  base::string16 tooltip_text;
+  std::u16string tooltip_text;
   if (tooltip_window_)
     tooltip_text = wm::GetTooltipText(tooltip_window_);
 
@@ -314,7 +314,7 @@ void TooltipController::UpdateIfRequired() {
   if (tooltip_text_ != tooltip_text || !tooltip_->IsVisible() || ids_differ) {
     tooltip_shown_timer_.Stop();
     tooltip_text_ = tooltip_text;
-    base::string16 trimmed_text =
+    std::u16string trimmed_text =
         gfx::TruncateString(tooltip_text_, kMaxTooltipLength, gfx::WORD_BREAK);
     // If the string consists entirely of whitespace, then don't both showing it
     // (an empty tooltip is useless).

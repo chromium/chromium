@@ -48,13 +48,13 @@ constexpr int kHueIndicatorSize = 5;
 constexpr int kBorderWidth = 1;
 constexpr int kTextfieldLengthInChars = 14;
 
-base::string16 GetColorText(SkColor color) {
+std::u16string GetColorText(SkColor color) {
   return base::ASCIIToUTF16(
       base::StringPrintf("#%02x%02x%02x", SkColorGetR(color),
                          SkColorGetG(color), SkColorGetB(color)));
 }
 
-bool GetColorFromText(const base::string16& text, SkColor* result) {
+bool GetColorFromText(const std::u16string& text, SkColor* result) {
   if (text.size() != 6 && !(text.size() == 7 && text[0] == '#'))
     return false;
 
@@ -465,7 +465,7 @@ View* ColorChooser::selected_color_patch_for_testing() {
 }
 
 void ColorChooser::ContentsChanged(Textfield* sender,
-                                   const base::string16& new_contents) {
+                                   const std::u16string& new_contents) {
   DCHECK(IsViewAttached());
 
   SkColor color = SK_ColorBLACK;

@@ -27,7 +27,7 @@ class GFX_EXPORT BiDiLineIterator {
 
   // Initializes the bidirectional iterator with the specified text.  Returns
   // whether initialization succeeded.
-  bool Open(const base::string16& text, base::i18n::TextDirection direction);
+  bool Open(const std::u16string& text, base::i18n::TextDirection direction);
 
   // Returns the number of visual runs in the text, or zero on error.
   int CountRuns() const;

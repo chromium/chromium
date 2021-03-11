@@ -16,16 +16,16 @@ bool MenuDelegate::IsItemChecked(int id) const {
   return false;
 }
 
-base::string16 MenuDelegate::GetLabel(int id) const {
-  return base::string16();
+std::u16string MenuDelegate::GetLabel(int id) const {
+  return std::u16string();
 }
 
 void MenuDelegate::GetLabelStyle(int id, LabelStyle* style) const {}
 
-base::string16 MenuDelegate::GetTooltipText(
+std::u16string MenuDelegate::GetTooltipText(
     int id,
     const gfx::Point& screen_loc) const {
-  return base::string16();
+  return std::u16string();
 }
 
 bool MenuDelegate::GetAccelerator(int id, ui::Accelerator* accelerator) const {
@@ -51,7 +51,7 @@ bool MenuDelegate::IsCommandVisible(int id) const {
   return true;
 }
 
-bool MenuDelegate::GetContextualLabel(int id, base::string16* out) const {
+bool MenuDelegate::GetContextualLabel(int id, std::u16string* out) const {
   return false;
 }
 

@@ -37,7 +37,7 @@ using base::win::ScopedVariant;
 
 namespace ui {
 
-const base::string16 AXPlatformNodeWinTest::kEmbeddedCharacterAsString = {
+const std::u16string AXPlatformNodeWinTest::kEmbeddedCharacterAsString = {
     ui::AXPlatformNodeBase::kEmbeddedCharacter};
 
 namespace {

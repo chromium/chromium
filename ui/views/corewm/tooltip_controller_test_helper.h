@@ -33,7 +33,7 @@ class TooltipControllerTestHelper {
   TooltipController* controller() { return controller_; }
 
   // These are mostly cover methods for TooltipController private methods.
-  base::string16 GetTooltipText();
+  std::u16string GetTooltipText();
   aura::Window* GetTooltipWindow();
   void UpdateIfRequired();
   void FireTooltipShownTimer();
@@ -53,15 +53,15 @@ class TooltipTestView : public views::View {
   TooltipTestView();
   ~TooltipTestView() override;
 
-  void set_tooltip_text(base::string16 tooltip_text) {
+  void set_tooltip_text(std::u16string tooltip_text) {
     tooltip_text_ = tooltip_text;
   }
 
   // Overridden from views::View
-  base::string16 GetTooltipText(const gfx::Point& p) const override;
+  std::u16string GetTooltipText(const gfx::Point& p) const override;
 
  private:
-  base::string16 tooltip_text_;
+  std::u16string tooltip_text_;
 
   DISALLOW_COPY_AND_ASSIGN(TooltipTestView);
 };

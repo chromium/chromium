@@ -51,7 +51,7 @@ void GetAtomIntersection(const std::vector<x11::Atom>& desired,
   }
 }
 
-void AddString16ToVector(const base::string16& str,
+void AddString16ToVector(const std::u16string& str,
                          std::vector<unsigned char>* bytes) {
   const unsigned char* front =
       reinterpret_cast<const unsigned char*>(str.data());
@@ -81,19 +81,19 @@ std::string RefCountedMemoryToString(
   return std::string(reinterpret_cast<const char*>(front), size);
 }
 
-base::string16 RefCountedMemoryToString16(
+std::u16string RefCountedMemoryToString16(
     const scoped_refptr<base::RefCountedMemory>& memory) {
   if (!memory.get()) {
     NOTREACHED();
-    return base::string16();
+    return std::u16string();
   }
 
   size_t size = memory->size();
   if (!size)
-    return base::string16();
+    return std::u16string();
 
   const unsigned char* front = memory->front();
-  return base::string16(reinterpret_cast<const char16_t*>(front), size / 2);
+  return std::u16string(reinterpret_cast<const char16_t*>(front), size / 2);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -188,8 +188,8 @@ std::string SelectionData::GetText() const {
   }
 }
 
-base::string16 SelectionData::GetHtml() const {
-  base::string16 markup;
+std::u16string SelectionData::GetHtml() const {
+  std::u16string markup;
 
   if (type_ == x11::GetAtom(kMimeTypeHTML)) {
     const unsigned char* data = GetData();
@@ -219,7 +219,7 @@ void SelectionData::AssignTo(std::string* result) const {
   *result = RefCountedMemoryToString(memory_);
 }
 
-void SelectionData::AssignTo(base::string16* result) const {
+void SelectionData::AssignTo(std::u16string* result) const {
   *result = RefCountedMemoryToString16(memory_);
 }
 

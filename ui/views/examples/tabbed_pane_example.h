@@ -35,7 +35,7 @@ class VIEWS_EXAMPLES_EXPORT TabbedPaneExample : public ExampleBase,
   void CreateTabbedPane(View* container, TabbedPane::Orientation orientation);
   void PrintCurrentStatus();
   void SwapLayout();
-  void AddTab(const base::string16& label);
+  void AddTab(const std::u16string& label);
   void AddAt();
   void SelectAt();
 

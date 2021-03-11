@@ -37,10 +37,10 @@ InputMethodDescriptor::InputMethodDescriptor(
 InputMethodDescriptor::InputMethodDescriptor(
     const InputMethodDescriptor& other) = default;
 
-base::string16 InputMethodDescriptor::GetIndicator() const {
+std::u16string InputMethodDescriptor::GetIndicator() const {
   // Return the empty string for ARC IMEs.
   if (extension_ime_util::IsArcIME(id_))
-    return base::string16();
+    return std::u16string();
 
   // If indicator is empty, use the first two character in its keyboard layout
   // or language code.

@@ -1964,9 +1964,9 @@ TEST_F(ViewTest, NotifyEnterExitOnChild) {
 }
 
 TEST_F(ViewTest, Textfield) {
-  const base::string16 kText = ASCIIToUTF16(
+  const std::u16string kText = ASCIIToUTF16(
       "Reality is that which, when you stop believing it, doesn't go away.");
-  const base::string16 kExtraText = ASCIIToUTF16("Pretty deep, Philip!");
+  const std::u16string kExtraText = ASCIIToUTF16("Pretty deep, Philip!");
 
   Widget* widget = new Widget;
   Widget::InitParams params = CreateParams(Widget::InitParams::TYPE_POPUP);
@@ -1982,7 +1982,7 @@ TEST_F(ViewTest, Textfield) {
   EXPECT_EQ(kText, textfield->GetText());
   textfield->AppendText(kExtraText);
   EXPECT_EQ(kText + kExtraText, textfield->GetText());
-  textfield->SetText(base::string16());
+  textfield->SetText(std::u16string());
   EXPECT_TRUE(textfield->GetText().empty());
 
   // Test selection related methods.
@@ -1998,9 +1998,9 @@ TEST_F(ViewTest, Textfield) {
 
 // Tests that the Textfield view respond appropiately to cut/copy/paste.
 TEST_F(ViewTest, TextfieldCutCopyPaste) {
-  const base::string16 kNormalText = ASCIIToUTF16("Normal");
-  const base::string16 kReadOnlyText = ASCIIToUTF16("Read only");
-  const base::string16 kPasswordText =
+  const std::u16string kNormalText = ASCIIToUTF16("Normal");
+  const std::u16string kReadOnlyText = ASCIIToUTF16("Read only");
+  const std::u16string kPasswordText =
       ASCIIToUTF16("Password! ** Secret stuff **");
 
   ui::Clipboard* clipboard = ui::Clipboard::GetForCurrentThread();
@@ -2031,7 +2031,7 @@ TEST_F(ViewTest, TextfieldCutCopyPaste) {
 
   normal->SelectAll(false);
   normal->ExecuteCommand(Textfield::kCut, 0);
-  base::string16 result;
+  std::u16string result;
   clipboard->ReadText(ui::ClipboardBuffer::kCopyPaste, /* data_dst = */ nullptr,
                       &result);
   EXPECT_EQ(kNormalText, result);
@@ -5380,7 +5380,7 @@ TEST_F(ViewTest, TestEnabledPropertyMetadata) {
   views::metadata::MemberMetaDataBase* enabled_property =
       view_metadata->FindMemberData("Enabled");
   ASSERT_TRUE(enabled_property);
-  base::string16 false_value = base::ASCIIToUTF16("false");
+  std::u16string false_value = base::ASCIIToUTF16("false");
   enabled_property->SetValueAsString(test_view.get(), false_value);
   EXPECT_TRUE(enabled_changed);
   EXPECT_FALSE(test_view->GetEnabled());
@@ -5394,7 +5394,7 @@ TEST_F(ViewTest, TestMarginsPropertyMetadata) {
   views::metadata::MemberMetaDataBase* insets_property =
       view_metadata->FindMemberData("kMarginsKey");
   ASSERT_TRUE(insets_property);
-  base::string16 insets_value = base::ASCIIToUTF16("8,8,8,8");
+  std::u16string insets_value = base::ASCIIToUTF16("8,8,8,8");
   insets_property->SetValueAsString(test_view.get(), insets_value);
   EXPECT_EQ(insets_property->GetValueAsString(test_view.get()), insets_value);
 }

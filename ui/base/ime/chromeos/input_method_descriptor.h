@@ -42,7 +42,7 @@ class COMPONENT_EXPORT(UI_BASE_IME_CHROMEOS) InputMethodDescriptor {
   const std::string& keyboard_layout() const { return keyboard_layout_; }
   bool is_login_keyboard() const { return is_login_keyboard_; }
 
-  base::string16 GetIndicator() const;
+  std::u16string GetIndicator() const;
 
  private:
   // An ID that identifies an input method engine (e.g., "t:latn-post",

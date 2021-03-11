@@ -83,8 +83,8 @@ const int kModifierMask = EF_SHIFT_DOWN | EF_CONTROL_DOWN | EF_ALT_DOWN |
 const int kInterestingFlagsMask =
     kModifierMask | EF_IS_SYNTHESIZED | EF_IS_REPEAT;
 
-base::string16 ApplyModifierToAcceleratorString(
-    const base::string16& accelerator,
+std::u16string ApplyModifierToAcceleratorString(
+    const std::u16string& accelerator,
     int modifier_message_id) {
   return l10n_util::GetStringFUTF16(
       IDS_APP_ACCELERATOR_WITH_MODIFIER,
@@ -196,8 +196,8 @@ bool Accelerator::IsRepeat() const {
   return (modifiers_ & EF_IS_REPEAT) != 0;
 }
 
-base::string16 Accelerator::GetShortcutText() const {
-  base::string16 shortcut;
+std::u16string Accelerator::GetShortcutText() const {
+  std::u16string shortcut;
 
 #if defined(OS_APPLE)
   shortcut = KeyCodeToMacSymbol();
@@ -227,7 +227,7 @@ base::string16 Accelerator::GetShortcutText() const {
         UsLayoutKeyboardCodeToDomCode(key_code_), false);
     if (c != 0)
       shortcut +=
-          static_cast<base::string16::value_type>(base::ToUpperASCII(c));
+          static_cast<std::u16string::value_type>(base::ToUpperASCII(c));
 #endif
   }
 
@@ -238,7 +238,7 @@ base::string16 Accelerator::GetShortcutText() const {
   // If it is not, then we need to adjust the string later on if the locale is
   // right-to-left. See below for more information of why such adjustment is
   // required.
-  base::string16 shortcut_rtl;
+  std::u16string shortcut_rtl;
   bool adjust_shortcut_for_rtl = false;
   if (base::i18n::IsRTL() && shortcut.length() == 1 &&
       !base::IsAsciiAlpha(shortcut[0]) && !base::IsAsciiDigit(shortcut[0])) {
@@ -283,34 +283,34 @@ base::string16 Accelerator::GetShortcutText() const {
 }
 
 #if defined(OS_APPLE)
-base::string16 Accelerator::KeyCodeToMacSymbol() const {
+std::u16string Accelerator::KeyCodeToMacSymbol() const {
   switch (key_code_) {
     case VKEY_CAPITAL:
-      return base::string16({0x21ea});
+      return std::u16string({0x21ea});
     case VKEY_RETURN:
-      return base::string16({0x2324});
+      return std::u16string({0x2324});
     case VKEY_BACK:
-      return base::string16({0x232b});
+      return std::u16string({0x232b});
     case VKEY_ESCAPE:
-      return base::string16({0x238b});
+      return std::u16string({0x238b});
     case VKEY_RIGHT:
-      return base::string16({0x2192});
+      return std::u16string({0x2192});
     case VKEY_LEFT:
-      return base::string16({0x2190});
+      return std::u16string({0x2190});
     case VKEY_UP:
-      return base::string16({0x2191});
+      return std::u16string({0x2191});
     case VKEY_DOWN:
-      return base::string16({0x2193});
+      return std::u16string({0x2193});
     case VKEY_PRIOR:
-      return base::string16({0x21de});
+      return std::u16string({0x21de});
     case VKEY_NEXT:
-      return base::string16({0x21df});
+      return std::u16string({0x21df});
     case VKEY_HOME:
-      return base::string16({0x2196});
+      return std::u16string({0x2196});
     case VKEY_END:
-      return base::string16({0x2198});
+      return std::u16string({0x2198});
     case VKEY_TAB:
-      return base::string16({0x21e5});
+      return std::u16string({0x21e5});
     // Mac has a shift-tab icon (0x21e4) but we don't use it.
     // "Space" and some other keys are written out; fall back to KeyCodeToName()
     // for those (and any other unhandled keys).
@@ -320,7 +320,7 @@ base::string16 Accelerator::KeyCodeToMacSymbol() const {
 }
 #endif  // OS_APPLE
 
-base::string16 Accelerator::KeyCodeToName() const {
+std::u16string Accelerator::KeyCodeToName() const {
   int string_id = 0;
   switch (key_code_) {
     case VKEY_TAB:
@@ -398,11 +398,11 @@ base::string16 Accelerator::KeyCodeToName() const {
     default:
       break;
   }
-  return string_id ? l10n_util::GetStringUTF16(string_id) : base::string16();
+  return string_id ? l10n_util::GetStringUTF16(string_id) : std::u16string();
 }
 
-base::string16 Accelerator::ApplyLongFormModifiers(
-    base::string16 shortcut) const {
+std::u16string Accelerator::ApplyLongFormModifiers(
+    std::u16string shortcut) const {
   if (IsShiftDown())
     shortcut = ApplyModifierToAcceleratorString(shortcut, IDS_APP_SHIFT_KEY);
 
@@ -429,19 +429,19 @@ base::string16 Accelerator::ApplyLongFormModifiers(
   return shortcut;
 }
 
-base::string16 Accelerator::ApplyShortFormModifiers(
-    base::string16 shortcut) const {
+std::u16string Accelerator::ApplyShortFormModifiers(
+    std::u16string shortcut) const {
   const char16_t kCommandSymbol[] = {0x2318, 0};
   const char16_t kCtrlSymbol[] = {0x2303, 0};
   const char16_t kShiftSymbol[] = {0x21e7, 0};
   const char16_t kOptionSymbol[] = {0x2325, 0};
   const char16_t kNoSymbol[] = {0};
 
-  std::vector<base::string16> parts;
-  parts.push_back(base::string16(IsCtrlDown() ? kCtrlSymbol : kNoSymbol));
-  parts.push_back(base::string16(IsAltDown() ? kOptionSymbol : kNoSymbol));
-  parts.push_back(base::string16(IsShiftDown() ? kShiftSymbol : kNoSymbol));
-  parts.push_back(base::string16(IsCmdDown() ? kCommandSymbol : kNoSymbol));
+  std::vector<std::u16string> parts;
+  parts.push_back(std::u16string(IsCtrlDown() ? kCtrlSymbol : kNoSymbol));
+  parts.push_back(std::u16string(IsAltDown() ? kOptionSymbol : kNoSymbol));
+  parts.push_back(std::u16string(IsShiftDown() ? kShiftSymbol : kNoSymbol));
+  parts.push_back(std::u16string(IsCmdDown() ? kCommandSymbol : kNoSymbol));
   parts.push_back(shortcut);
   return base::StrCat(parts);
 }

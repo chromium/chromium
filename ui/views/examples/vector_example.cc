@@ -88,12 +88,12 @@ class VectorIconGallery : public View, public TextfieldController {
 
   // TextfieldController implementation.
   void ContentsChanged(Textfield* sender,
-                       const base::string16& new_contents) override {
+                       const std::u16string& new_contents) override {
     if (sender == size_input_) {
       if (base::StringToInt(new_contents, &size_) && (size_ > 0))
         Update();
       else
-        size_input_->SetText(base::string16());
+        size_input_->SetText(std::u16string());
 
       return;
     }

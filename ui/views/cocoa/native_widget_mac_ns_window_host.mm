@@ -117,7 +117,7 @@ class BridgedNativeWidgetHostDummy
   }
   void GetTooltipTextAt(const gfx::Point& location_in_content,
                         GetTooltipTextAtCallback callback) override {
-    base::string16 new_tooltip_text;
+    std::u16string new_tooltip_text;
     std::move(callback).Run(new_tooltip_text);
   }
   void GetIsFocusedViewTextual(
@@ -132,7 +132,7 @@ class BridgedNativeWidgetHostDummy
   void GetDialogButtonInfo(ui::DialogButton button,
                            GetDialogButtonInfoCallback callback) override {
     bool exists = false;
-    base::string16 label;
+    std::u16string label;
     bool is_enabled = false;
     bool is_default = false;
     std::move(callback).Run(exists, label, is_enabled, is_default);
@@ -565,7 +565,7 @@ void NativeWidgetMacNSWindowHost::DestroyCompositor() {
       std::move(compositor_));
 }
 
-bool NativeWidgetMacNSWindowHost::SetWindowTitle(const base::string16& title) {
+bool NativeWidgetMacNSWindowHost::SetWindowTitle(const std::u16string& title) {
   if (window_title_ == title)
     return false;
   window_title_ = title;
@@ -884,7 +884,7 @@ bool NativeWidgetMacNSWindowHost::GetIsDraggableBackgroundAt(
 
 bool NativeWidgetMacNSWindowHost::GetTooltipTextAt(
     const gfx::Point& location_in_content,
-    base::string16* new_tooltip_text) {
+    std::u16string* new_tooltip_text) {
   views::View* view =
       root_view_->GetTooltipHandlerForPoint(location_in_content);
   if (view) {
@@ -1074,7 +1074,7 @@ void NativeWidgetMacNSWindowHost::DoDialogButtonAction(
 bool NativeWidgetMacNSWindowHost::GetDialogButtonInfo(
     ui::DialogButton button,
     bool* button_exists,
-    base::string16* button_label,
+    std::u16string* button_label,
     bool* is_button_enabled,
     bool* is_button_default) {
   *button_exists = false;
@@ -1241,7 +1241,7 @@ void NativeWidgetMacNSWindowHost::GetIsDraggableBackgroundAt(
 void NativeWidgetMacNSWindowHost::GetTooltipTextAt(
     const gfx::Point& location_in_content,
     GetTooltipTextAtCallback callback) {
-  base::string16 new_tooltip_text;
+  std::u16string new_tooltip_text;
   GetTooltipTextAt(location_in_content, &new_tooltip_text);
   std::move(callback).Run(new_tooltip_text);
 }
@@ -1264,7 +1264,7 @@ void NativeWidgetMacNSWindowHost::GetDialogButtonInfo(
     ui::DialogButton button,
     GetDialogButtonInfoCallback callback) {
   bool exists = false;
-  base::string16 label;
+  std::u16string label;
   bool is_enabled = false;
   bool is_default = false;
   GetDialogButtonInfo(button, &exists, &label, &is_enabled, &is_default);

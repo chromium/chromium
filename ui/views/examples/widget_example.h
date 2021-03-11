@@ -28,7 +28,7 @@ class VIEWS_EXAMPLES_EXPORT WidgetExample : public ExampleBase {
 
  private:
   // Construct a button with the specified |label| in |container|.
-  LabelButton* BuildButton(View* container, const base::string16& label);
+  LabelButton* BuildButton(View* container, const std::u16string& label);
 
   void CreateDialogWidget(View* sender, bool modal);
 

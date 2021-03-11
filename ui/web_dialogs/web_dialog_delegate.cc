@@ -8,7 +8,7 @@
 
 namespace ui {
 
-base::string16 WebDialogDelegate::GetAccessibleDialogTitle() const {
+std::u16string WebDialogDelegate::GetAccessibleDialogTitle() const {
   return GetDialogTitle();
 }
 

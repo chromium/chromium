@@ -44,7 +44,7 @@ class VIEWS_EXPORT BubbleFrameView : public NonClientFrameView {
   ~BubbleFrameView() override;
 
   static std::unique_ptr<Label> CreateDefaultTitleLabel(
-      const base::string16& title_text);
+      const std::u16string& title_text);
 
   // Creates a close button used in the corner of the dialog.
   static std::unique_ptr<Button> CreateCloseButton(

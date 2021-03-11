@@ -437,7 +437,8 @@ std::string MaybeGetLegacyXkbId(const std::string& input_method_id) {
 }
 
 bool InputMethodUtil::TranslateStringInternal(
-    const std::string& english_string, base::string16 *out_string) const {
+    const std::string& english_string,
+    std::u16string* out_string) const {
   DCHECK(out_string);
   // |english_string| could be an input method id. So legacy xkb id is required
   // to get the translated string.
@@ -457,9 +458,9 @@ bool InputMethodUtil::TranslateStringInternal(
   return true;
 }
 
-base::string16 InputMethodUtil::TranslateString(
+std::u16string InputMethodUtil::TranslateString(
     const std::string& english_string) const {
-  base::string16 localized_string;
+  std::u16string localized_string;
   if (TranslateStringInternal(english_string, &localized_string)) {
     return localized_string;
   }
@@ -482,7 +483,7 @@ bool InputMethodUtil::IsKeyboardLayout(const std::string& input_method_id) {
          extension_ime_util::IsKeyboardLayoutExtension(input_method_id);
 }
 
-base::string16 InputMethodUtil::GetInputMethodMediumName(
+std::u16string InputMethodUtil::GetInputMethodMediumName(
     const InputMethodDescriptor& input_method) const {
   // For the "Your input method has changed to..." bubble. In most cases
   // it uses the same name as the short name, unless found in a table
@@ -496,27 +497,28 @@ base::string16 InputMethodUtil::GetInputMethodMediumName(
   return input_method.GetIndicator();
 }
 
-base::string16 InputMethodUtil::GetInputMethodLongNameInternal(
-    const InputMethodDescriptor& input_method, bool short_name) const {
+std::u16string InputMethodUtil::GetInputMethodLongNameInternal(
+    const InputMethodDescriptor& input_method,
+    bool short_name) const {
   std::string localized_display_name = GetLocalizedDisplayName(input_method);
   if (!localized_display_name.empty() && !IsKeyboardLayout(input_method.id())) {
     // If the descriptor has a name, use it.
     return base::UTF8ToUTF16(localized_display_name);
   }
 
-  base::string16 text = (short_name || localized_display_name.empty())
+  std::u16string text = (short_name || localized_display_name.empty())
                             ? TranslateString(input_method.id())
                             : base::UTF8ToUTF16(localized_display_name);
   DCHECK(!text.empty());
   return text;
 }
 
-base::string16 InputMethodUtil::GetInputMethodLongNameStripped(
+std::u16string InputMethodUtil::GetInputMethodLongNameStripped(
     const InputMethodDescriptor& input_method) const {
   return GetInputMethodLongNameInternal(input_method, true /* short_name */);
 }
 
-base::string16 InputMethodUtil::GetInputMethodLongName(
+std::u16string InputMethodUtil::GetInputMethodLongName(
     const InputMethodDescriptor& input_method) const {
   return GetInputMethodLongNameInternal(input_method, false /* short_name */);
 }

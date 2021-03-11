@@ -492,7 +492,7 @@ TEST_F(StyledLabelTest, StyledRangeWithTooltip) {
             styled()->children()[3]->x());
   EXPECT_EQ(0, styled()->children()[4]->x());
 
-  base::string16 tooltip =
+  std::u16string tooltip =
       styled()->children()[1]->GetTooltipText(gfx::Point(1, 1));
   EXPECT_EQ(ASCIIToUTF16("tooltip"), tooltip);
   tooltip = styled()->children()[2]->GetTooltipText(gfx::Point(1, 1));
@@ -566,7 +566,7 @@ TEST_F(StyledLabelTest, CacheSize) {
   const int preferred_height = 50;
   const int preferred_width = 100;
   const std::string text("This is a test block of text.");
-  const base::string16 another_text(base::ASCIIToUTF16(
+  const std::u16string another_text(base::ASCIIToUTF16(
       "This is a test block of text. This text is much longer than previous"));
 
   InitStyledLabel(text);

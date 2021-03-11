@@ -527,7 +527,7 @@ void ClipboardX11::Clear(ClipboardBuffer buffer) {
 void ClipboardX11::ReadAvailableTypes(
     ClipboardBuffer buffer,
     const DataTransferEndpoint* data_dst,
-    std::vector<base::string16>* types) const {
+    std::vector<std::u16string>* types) const {
   DCHECK(CalledOnValidThread());
   DCHECK(types);
 
@@ -557,7 +557,7 @@ void ClipboardX11::ReadAvailableTypes(
 
 // |data_dst| is not used. It's only passed to be consistent with other
 // platforms.
-std::vector<base::string16>
+std::vector<std::u16string>
 ClipboardX11::ReadAvailablePlatformSpecificFormatNames(
     ClipboardBuffer buffer,
     const DataTransferEndpoint* data_dst) const {
@@ -572,7 +572,7 @@ ClipboardX11::ReadAvailablePlatformSpecificFormatNames(
   std::vector<x11::Future<x11::GetAtomNameReply>> futures;
   for (x11::Atom target : target_list)
     futures.push_back(x11::Connection::Get()->GetAtomName({target}));
-  std::vector<base::string16> types;
+  std::vector<std::u16string> types;
   types.reserve(target_list.size());
   for (auto& future : futures) {
     if (auto response = future.Sync())
@@ -588,7 +588,7 @@ ClipboardX11::ReadAvailablePlatformSpecificFormatNames(
 // platforms.
 void ClipboardX11::ReadText(ClipboardBuffer buffer,
                             const DataTransferEndpoint* data_dst,
-                            base::string16* result) const {
+                            std::u16string* result) const {
   DCHECK(CalledOnValidThread());
   RecordRead(ClipboardFormatMetric::kText);
 
@@ -620,7 +620,7 @@ void ClipboardX11::ReadAsciiText(ClipboardBuffer buffer,
 // platforms.
 void ClipboardX11::ReadHTML(ClipboardBuffer buffer,
                             const DataTransferEndpoint* data_dst,
-                            base::string16* markup,
+                            std::u16string* markup,
                             std::string* src_url,
                             uint32_t* fragment_start,
                             uint32_t* fragment_end) const {
@@ -648,7 +648,7 @@ void ClipboardX11::ReadHTML(ClipboardBuffer buffer,
 // platforms.
 void ClipboardX11::ReadSvg(ClipboardBuffer buffer,
                            const DataTransferEndpoint* data_dst,
-                           base::string16* result) const {
+                           std::u16string* result) const {
   DCHECK(CalledOnValidThread());
   RecordRead(ClipboardFormatMetric::kSvg);
 
@@ -690,9 +690,9 @@ void ClipboardX11::ReadImage(ClipboardBuffer buffer,
 // |data_dst| is not used. It's only passed to be consistent with other
 // platforms.
 void ClipboardX11::ReadCustomData(ClipboardBuffer buffer,
-                                  const base::string16& type,
+                                  const std::u16string& type,
                                   const DataTransferEndpoint* data_dst,
-                                  base::string16* result) const {
+                                  std::u16string* result) const {
   DCHECK(CalledOnValidThread());
   RecordRead(ClipboardFormatMetric::kCustomData);
 
@@ -723,7 +723,7 @@ void ClipboardX11::ReadFilenames(ClipboardBuffer buffer,
 // |data_dst| is not used. It's only passed to be consistent with other
 // platforms.
 void ClipboardX11::ReadBookmark(const DataTransferEndpoint* data_dst,
-                                base::string16* title,
+                                std::u16string* title,
                                 std::string* url) const {
   DCHECK(CalledOnValidThread());
   // TODO(erg): This was left NOTIMPLEMENTED() in the gtk port too.
@@ -850,8 +850,8 @@ void ClipboardX11::WriteBookmark(const char* title_data,
                                  const char* url_data,
                                  size_t url_len) {
   // Write as a mozilla url (UTF16: URL, newline, title).
-  base::string16 url = base::UTF8ToUTF16(std::string(url_data, url_len) + "\n");
-  base::string16 title =
+  std::u16string url = base::UTF8ToUTF16(std::string(url_data, url_len) + "\n");
+  std::u16string title =
       base::UTF8ToUTF16(base::StringPiece(title_data, title_len));
 
   std::vector<unsigned char> data;

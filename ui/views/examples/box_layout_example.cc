@@ -34,7 +34,7 @@ BoxLayoutExample::BoxLayoutExample() : LayoutExampleBase("Box Layout") {}
 BoxLayoutExample::~BoxLayoutExample() = default;
 
 void BoxLayoutExample::ContentsChanged(Textfield* textfield,
-                                       const base::string16& new_contents) {
+                                       const std::u16string& new_contents) {
   if (textfield == between_child_spacing_) {
     UpdateLayoutManager();
   } else if (textfield == default_flex_) {

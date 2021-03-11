@@ -860,7 +860,7 @@ TEST_F(RootViewTest, AnnounceTextTest) {
   root_view->SetContentsView(new View());
 
   EXPECT_EQ(1U, root_view->children().size());
-  const base::string16 kText = base::ASCIIToUTF16("Text");
+  const std::u16string kText = base::ASCIIToUTF16("Text");
   root_view->AnnounceText(kText);
   EXPECT_EQ(2U, root_view->children().size());
   root_view->Layout();

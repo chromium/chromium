@@ -232,7 +232,7 @@ void NonClientView::SizeConstraintsChanged() {
   frame_view_->SizeConstraintsChanged();
 }
 
-void NonClientView::SetAccessibleName(const base::string16& name) {
+void NonClientView::SetAccessibleName(const std::u16string& name) {
   accessible_name_ = name;
 }
 

@@ -16,7 +16,7 @@
 
 namespace views {
 
-TooltipIcon::TooltipIcon(const base::string16& tooltip, int tooltip_icon_size)
+TooltipIcon::TooltipIcon(const std::u16string& tooltip, int tooltip_icon_size)
     : tooltip_(tooltip),
       tooltip_icon_size_(tooltip_icon_size),
       mouse_inside_(false),

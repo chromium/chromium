@@ -82,7 +82,7 @@ void TestClipboard::Clear(ClipboardBuffer buffer) {
 void TestClipboard::ReadAvailableTypes(
     ClipboardBuffer buffer,
     const DataTransferEndpoint* data_dst,
-    std::vector<base::string16>* types) const {
+    std::vector<std::u16string>* types) const {
   DCHECK(types);
   types->clear();
   if (!IsReadAllowed(GetStore(buffer).data_src.get(), data_dst))
@@ -103,7 +103,7 @@ void TestClipboard::ReadAvailableTypes(
     types->push_back(base::UTF8ToUTF16(kMimeTypeURIList));
 }
 
-std::vector<base::string16>
+std::vector<std::u16string>
 TestClipboard::ReadAvailablePlatformSpecificFormatNames(
     ClipboardBuffer buffer,
     const ui::DataTransferEndpoint* data_dst) const {
@@ -112,7 +112,7 @@ TestClipboard::ReadAvailablePlatformSpecificFormatNames(
     return {};
 
   const auto& data = store.data;
-  std::vector<base::string16> types;
+  std::vector<std::u16string> types;
   types.reserve(data.size());
   for (const auto& it : data)
     types.push_back(base::UTF8ToUTF16(it.first.GetName()));
@@ -137,7 +137,7 @@ TestClipboard::ReadAvailablePlatformSpecificFormatNames(
 
 void TestClipboard::ReadText(ClipboardBuffer buffer,
                              const DataTransferEndpoint* data_dst,
-                             base::string16* result) const {
+                             std::u16string* result) const {
   if (!IsReadAllowed(GetStore(buffer).data_src.get(), data_dst))
     return;
 
@@ -162,7 +162,7 @@ void TestClipboard::ReadAsciiText(ClipboardBuffer buffer,
 
 void TestClipboard::ReadHTML(ClipboardBuffer buffer,
                              const DataTransferEndpoint* data_dst,
-                             base::string16* markup,
+                             std::u16string* markup,
                              std::string* src_url,
                              uint32_t* fragment_start,
                              uint32_t* fragment_end) const {
@@ -182,7 +182,7 @@ void TestClipboard::ReadHTML(ClipboardBuffer buffer,
 
 void TestClipboard::ReadSvg(ClipboardBuffer buffer,
                             const DataTransferEndpoint* data_dst,
-                            base::string16* result) const {
+                            std::u16string* result) const {
   const DataStore& store = GetStore(buffer);
   if (!IsReadAllowed(store.data_src.get(), data_dst))
     return;
@@ -219,9 +219,9 @@ void TestClipboard::ReadImage(ClipboardBuffer buffer,
 
 // TODO(crbug.com/1103215): |data_dst| should be supported.
 void TestClipboard::ReadCustomData(ClipboardBuffer buffer,
-                                   const base::string16& type,
+                                   const std::u16string& type,
                                    const DataTransferEndpoint* data_dst,
-                                   base::string16* result) const {}
+                                   std::u16string* result) const {}
 
 void TestClipboard::ReadFilenames(ClipboardBuffer buffer,
                                   const DataTransferEndpoint* data_dst,
@@ -235,7 +235,7 @@ void TestClipboard::ReadFilenames(ClipboardBuffer buffer,
 
 // TODO(crbug.com/1103215): |data_dst| should be supported.
 void TestClipboard::ReadBookmark(const DataTransferEndpoint* data_dst,
-                                 base::string16* title,
+                                 std::u16string* title,
                                  std::string* url) const {
   const DataStore& store = GetDefaultStore();
   if (!IsReadAllowed(store.data_src.get(), data_dst))
@@ -317,7 +317,7 @@ void TestClipboard::WriteHTML(const char* markup_data,
                               size_t markup_len,
                               const char* url_data,
                               size_t url_len) {
-  base::string16 markup;
+  std::u16string markup;
   base::UTF8ToUTF16(markup_data, markup_len, &markup);
   GetDefaultStore().data[ClipboardFormatType::GetHtmlType()] =
       base::UTF16ToUTF8(markup);
@@ -325,7 +325,7 @@ void TestClipboard::WriteHTML(const char* markup_data,
 }
 
 void TestClipboard::WriteSvg(const char* markup_data, size_t markup_len) {
-  base::string16 markup;
+  std::u16string markup;
   base::UTF8ToUTF16(markup_data, markup_len, &markup);
   GetDefaultStore().data[ClipboardFormatType::GetSvgType()] =
       base::UTF16ToUTF8(markup);

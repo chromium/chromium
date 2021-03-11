@@ -34,10 +34,10 @@ SkColor TreeViewDrawingProvider::GetTextColorForNode(TreeView* tree_view,
   return tree_view->GetNativeTheme()->GetSystemColor(color_id);
 }
 
-base::string16 TreeViewDrawingProvider::GetAuxiliaryTextForNode(
+std::u16string TreeViewDrawingProvider::GetAuxiliaryTextForNode(
     TreeView* tree_view,
     ui::TreeModelNode* node) {
-  return base::string16();
+  return std::u16string();
 }
 
 bool TreeViewDrawingProvider::ShouldDrawIconForNode(TreeView* tree_view,

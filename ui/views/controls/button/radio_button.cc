@@ -18,7 +18,7 @@
 
 namespace views {
 
-RadioButton::RadioButton(const base::string16& label, int group_id)
+RadioButton::RadioButton(const std::u16string& label, int group_id)
     : Checkbox(label) {
   SetGroup(group_id);
 }

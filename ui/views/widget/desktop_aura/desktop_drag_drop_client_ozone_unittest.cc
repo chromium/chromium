@@ -44,7 +44,7 @@ class FakePlatformWindow : public ui::PlatformWindow, public ui::WmDragHandler {
   void PrepareForShutdown() override {}
   void SetBounds(const gfx::Rect& bounds) override {}
   gfx::Rect GetBounds() const override { return gfx::Rect(); }
-  void SetTitle(const base::string16& title) override {}
+  void SetTitle(const std::u16string& title) override {}
   void SetCapture() override {}
   void ReleaseCapture() override {}
   bool HasCapture() const override { return false; }
@@ -328,7 +328,7 @@ TEST_F(DesktopDragDropClientOzoneTest, ReceiveDrag) {
   dragdrop_delegate_->SetOperation(operation);
 
   // Set the data which will be delivered.
-  const base::string16 sample_data = base::ASCIIToUTF16("ReceiveDrag");
+  const std::u16string sample_data = base::ASCIIToUTF16("ReceiveDrag");
   std::unique_ptr<ui::OSExchangeData> data =
       std::make_unique<ui::OSExchangeData>();
   data->SetString(sample_data);
@@ -348,7 +348,7 @@ TEST_F(DesktopDragDropClientOzoneTest, ReceiveDrag) {
   // 'ui::DragDropTypes::DRAG_MOVE'.
   EXPECT_EQ(static_cast<int>(operation), updated_operation);
 
-  base::string16 string_data;
+  std::u16string string_data;
   dragdrop_delegate_->received_data()->GetString(&string_data);
   EXPECT_EQ(sample_data, string_data);
 
@@ -366,7 +366,7 @@ TEST_F(DesktopDragDropClientOzoneTest, TargetDestroyedDuringDrag) {
   dragdrop_delegate_->SetOperation(DragOperation::kMove);
 
   // Set the data which will be delivered.
-  const base::string16 sample_data = base::ASCIIToUTF16("ReceiveDrag");
+  const std::u16string sample_data = base::ASCIIToUTF16("ReceiveDrag");
   std::unique_ptr<ui::OSExchangeData> data =
       std::make_unique<ui::OSExchangeData>();
   data->SetString(sample_data);

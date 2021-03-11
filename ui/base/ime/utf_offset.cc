@@ -19,7 +19,7 @@ base::Optional<size_t> Utf16OffsetFromUtf8Offset(base::StringPiece text,
 
   // TODO(hidehiko): Update not to depend on UTF8ToUTF16 to avoid
   // unnecessary memory allocation.
-  base::string16 converted;
+  std::u16string converted;
   if (!base::UTF8ToUTF16(text.data(), utf8_offset, &converted))
     return base::nullopt;
   return converted.length();

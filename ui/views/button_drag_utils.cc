@@ -29,7 +29,7 @@ namespace button_drag_utils {
 static constexpr int kLinkDragImageMaxWidth = 150;
 
 void SetURLAndDragImage(const GURL& url,
-                        const base::string16& title,
+                        const std::u16string& title,
                         const gfx::ImageSkia& icon,
                         const gfx::Point* press_pt,
                         const views::Widget& widget,
@@ -41,7 +41,7 @@ void SetURLAndDragImage(const GURL& url,
 }
 
 void SetDragImage(const GURL& url,
-                  const base::string16& title,
+                  const std::u16string& title,
                   const gfx::ImageSkia& icon,
                   const gfx::Point* press_pt,
                   const views::Widget& widget,

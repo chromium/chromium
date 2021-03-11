@@ -66,15 +66,15 @@ class COMPONENT_EXPORT(UI_BASE) MenuModel
   virtual int GetCommandIdAt(int index) const = 0;
 
   // Returns the label of the item at the specified index.
-  virtual base::string16 GetLabelAt(int index) const = 0;
+  virtual std::u16string GetLabelAt(int index) const = 0;
 
   // Returns the secondary label of the item at the specified index. Secondary
   // label is shown below the label.
-  virtual base::string16 GetSecondaryLabelAt(int index) const;
+  virtual std::u16string GetSecondaryLabelAt(int index) const;
 
   // Returns the minor text of the item at the specified index. The minor text
   // is rendered to the right of the label and using the font GetLabelFontAt().
-  virtual base::string16 GetMinorTextAt(int index) const;
+  virtual std::u16string GetMinorTextAt(int index) const;
 
   // Returns the minor icon of the item at the specified index. The minor icon
   // is rendered to the left of the minor text.

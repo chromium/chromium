@@ -63,7 +63,7 @@ class VIEWS_EXPORT NativeMenuWin {
   // Sets the label of the item at the specified index.
   void SetMenuItemLabel(int menu_index,
                         int model_index,
-                        const base::string16& label);
+                        const std::u16string& label);
 
   // Updates the local data structure with the correctly formatted version of
   // |label| at the specified model_index, and adds string data to |mii| if
@@ -71,7 +71,7 @@ class VIEWS_EXPORT NativeMenuWin {
   // of the peculiarities of the Windows menu API.
   void UpdateMenuItemInfoForString(MENUITEMINFO* mii,
                                    int model_index,
-                                   const base::string16& label);
+                                   const std::u16string& label);
 
   // Resets the native menu stored in |menu_| by destroying any old menu then
   // creating a new empty one.

@@ -133,7 +133,7 @@ void EventForwarder::OnDragEvent(JNIEnv* env,
   float dip_scale = view_->GetDipScale();
   gfx::PointF location(x / dip_scale, y / dip_scale);
   gfx::PointF root_location(screen_x / dip_scale, screen_y / dip_scale);
-  std::vector<base::string16> mime_types;
+  std::vector<std::u16string> mime_types;
   AppendJavaStringArrayToStringVector(env, j_mimeTypes, &mime_types);
 
   DragEventAndroid event(env, action, location, root_location, mime_types,

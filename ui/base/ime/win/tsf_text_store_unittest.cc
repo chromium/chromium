@@ -39,7 +39,7 @@ class MockTextInputClient : public TextInputClient {
   MOCK_METHOD0(ClearCompositionText, void());
   MOCK_METHOD2(
       InsertText,
-      void(const base::string16&,
+      void(const std::u16string&,
            ui::TextInputClient::InsertTextCursorBehavior cursor_behavior));
   MOCK_METHOD1(InsertChar, void(const ui::KeyEvent&));
   MOCK_CONST_METHOD0(GetTextInputType, ui::TextInputType());
@@ -58,7 +58,7 @@ class MockTextInputClient : public TextInputClient {
   MOCK_METHOD1(SetEditableSelectionRange, bool(const gfx::Range&));
   MOCK_METHOD1(DeleteRange, bool(const gfx::Range&));
   MOCK_CONST_METHOD2(GetTextFromRange,
-                     bool(const gfx::Range&, base::string16*));
+                     bool(const gfx::Range&, std::u16string*));
   MOCK_METHOD0(OnInputMethodChanged, void());
   MOCK_METHOD1(ChangeTextDirectionAndLayoutAlignment,
                bool(base::i18n::TextDirection));
@@ -70,7 +70,7 @@ class MockTextInputClient : public TextInputClient {
   MOCK_METHOD2(SetCompositionFromExistingText,
                bool(const gfx::Range&, const std::vector<ui::ImeTextSpan>&));
   MOCK_METHOD3(SetActiveCompositionForAccessibility,
-               void(const gfx::Range&, const base::string16&, bool));
+               void(const gfx::Range&, const std::u16string&, bool));
   MOCK_METHOD2(GetActiveTextInputControlLayoutBounds,
                void(base::Optional<gfx::Rect>* control_bounds,
                     base::Optional<gfx::Rect>* selection_bounds));
@@ -158,7 +158,7 @@ class TSFTextStoreTest : public testing::Test {
   }
 
   // Accessors to the internal state of TSFTextStore.
-  base::string16* string_buffer() {
+  std::u16string* string_buffer() {
     return &text_store_->string_buffer_document_;
   }
   size_t* composition_start() { return &text_store_->composition_start_; }
@@ -184,7 +184,7 @@ class TSFTextStoreTestCallback {
     range->set_end(text_range_.end());
     return true;
   }
-  bool GetTextFromRange(const gfx::Range& range, base::string16* text) {
+  bool GetTextFromRange(const gfx::Range& range, std::u16string* text) {
     *text = text_buffer_.substr(range.GetMin(), range.length());
     return true;
   }
@@ -204,10 +204,10 @@ class TSFTextStoreTestCallback {
   // Accessors to the internal state of TSFTextStore.
   bool* edit_flag() { return &text_store_->edit_flag_; }
   bool* new_text_inserted() { return &text_store_->new_text_inserted_; }
-  base::string16* string_buffer() {
+  std::u16string* string_buffer() {
     return &text_store_->string_buffer_document_;
   }
-  base::string16* string_pending_insertion() {
+  std::u16string* string_pending_insertion() {
     return &text_store_->string_pending_insertion_;
   }
   size_t* composition_start() { return &text_store_->composition_start_; }
@@ -216,7 +216,7 @@ class TSFTextStoreTestCallback {
   gfx::Range* composition_range() { return &text_store_->composition_range_; }
   bool* has_composition_range() { return &text_store_->has_composition_range_; }
 
-  void SetInternalState(const base::string16& new_string_buffer,
+  void SetInternalState(const std::u16string& new_string_buffer,
                         LONG new_composition_start,
                         LONG new_selection_start,
                         LONG new_selection_end) {
@@ -411,7 +411,7 @@ class TSFTextStoreTestCallback {
   gfx::Range text_range_;
   gfx::Range selection_range_;
   gfx::Range composition_range_;
-  base::string16 text_buffer_;
+  std::u16string text_buffer_;
   scoped_refptr<TSFTextStore> text_store_;
 
  private:
@@ -433,7 +433,7 @@ TEST_F(TSFTextStoreTest, GetStatusTest) {
 TEST_F(TSFTextStoreTest, QueryInsertTest) {
   LONG result_start = 0;
   LONG result_end = 0;
-  *string_buffer() = base::string16();
+  *string_buffer() = std::u16string();
   *composition_start() = 0;
   EXPECT_EQ(E_INVALIDARG,
             text_store_->QueryInsert(0, 0, 0, nullptr, &result_end));
@@ -666,7 +666,7 @@ class RequestLockTextChangeTestCallback : public TSFTextStoreTestCallback {
   }
 
   void InsertText(
-      const base::string16& text,
+      const std::u16string& text,
       ui::TextInputClient::InsertTextCursorBehavior cursor_behavior) {
     EXPECT_EQ(2, state_);
     EXPECT_EQ(u"012345", text);
@@ -679,8 +679,8 @@ class RequestLockTextChangeTestCallback : public TSFTextStoreTestCallback {
     return true;
   }
 
-  bool GetTextFromRange(const gfx::Range& range, base::string16* text) const {
-    base::string16 string_buffer = u"012345";
+  bool GetTextFromRange(const gfx::Range& range, std::u16string* text) const {
+    std::u16string string_buffer = u"012345";
     *text = string_buffer.substr(range.GetMin(), range.length());
     return true;
   }
@@ -756,7 +756,7 @@ class SelectionTestCallback : public TSFTextStoreTestCallback {
       : TSFTextStoreTestCallback(text_store) {}
 
   HRESULT ReadLockGranted(DWORD flags) {
-    SetInternalState(base::string16(), 0, 0, 0);
+    SetInternalState(std::u16string(), 0, 0, 0);
 
     GetSelectionTest(0, 0);
     SetSelectionTest(0, 0, TF_E_NOLOCK);
@@ -770,7 +770,7 @@ class SelectionTestCallback : public TSFTextStoreTestCallback {
   }
 
   HRESULT ReadWriteLockGranted(DWORD flags) {
-    SetInternalState(base::string16(), 0, 0, 0);
+    SetInternalState(std::u16string(), 0, 0, 0);
 
     SetSelectionTest(0, 0, S_OK);
     GetSelectionTest(0, 0);
@@ -917,10 +917,10 @@ class SetGetTextTestCallback : public TSFTextStoreTestCallback {
   }
 
   HRESULT ReadWriteLockGranted(DWORD flags) {
-    SetInternalState(base::string16(), 0, 0, 0);
+    SetInternalState(std::u16string(), 0, 0, 0);
     SetTextTest(0, 0, L"", S_OK);
 
-    SetInternalState(base::string16(), 0, 0, 0);
+    SetInternalState(std::u16string(), 0, 0, 0);
     SetTextTest(0, 1, L"", TS_E_INVALIDPOS);
 
     SetInternalState(u"0123456", 3, 3, 3);
@@ -1081,7 +1081,7 @@ class InsertTextAtSelectionTestCallback : public TSFTextStoreTestCallback {
     GetSelectionTest(0, 0);
     InsertTextAtSelectionQueryOnlyTest(kBuffer, 0, 0, 0);
 
-    SetInternalState(base::string16(), 0, 0, 0);
+    SetInternalState(std::u16string(), 0, 0, 0);
     InsertTextAtSelectionTest(kBuffer, 10, 0, 10, 0, 0, 10);
     GetSelectionTest(0, 10);
     GetTextTest(0, -1, L"0123456789", 10);
@@ -1197,7 +1197,7 @@ class ScenarioTestCallback : public TSFTextStoreTestCallback {
   }
 
   void InsertText2(
-      const base::string16& text,
+      const std::u16string& text,
       ui::TextInputClient::InsertTextCursorBehavior cursor_behavior) {
     EXPECT_EQ(u"axy", text);
   }
@@ -1225,7 +1225,7 @@ class ScenarioTestCallback : public TSFTextStoreTestCallback {
   }
 
   void InsertText3(
-      const base::string16& text,
+      const std::u16string& text,
       ui::TextInputClient::InsertTextCursorBehavior cursor_behavior) {
     EXPECT_EQ(u"ZCPc", text);
     has_composition_text_ = false;
@@ -1372,7 +1372,7 @@ class GetTextExtTestCallback : public TSFTextStoreTestCallback {
     has_composition_text_ = false;
     GetTextExtTest(view_cookie, 0, 0, 1, 2, 4, 6);
 
-    SetInternalState(base::string16(), 0, 0, 0);
+    SetInternalState(std::u16string(), 0, 0, 0);
     GetTextExtTest(view_cookie, 0, 0, 1, 2, 4, 6);
 
     // Last character is not available due to timing issue of async API.
@@ -1583,7 +1583,7 @@ class KeyEventTestCallback : public TSFTextStoreTestCallback {
   }
 
   void InsertText2(
-      const base::string16& text,
+      const std::u16string& text,
       ui::TextInputClient::InsertTextCursorBehavior cursor_behavior) {
     EXPECT_EQ(u"a", text);
     SetHasCompositionText(false);
@@ -1628,7 +1628,7 @@ class KeyEventTestCallback : public TSFTextStoreTestCallback {
   }
 
   void InsertText3(
-      const base::string16& text,
+      const std::u16string& text,
       ui::TextInputClient::InsertTextCursorBehavior cursor_behavior) {
     EXPECT_EQ(u"B", text);
     SetHasCompositionText(false);
@@ -1740,7 +1740,7 @@ class AccessibilityEventTestCallback : public TSFTextStoreTestCallback {
 
   void SetActiveCompositionForAccessibility1(
       const gfx::Range& range,
-      const base::string16& active_composition_text,
+      const std::u16string& active_composition_text,
       bool committed_composition) {
     EXPECT_EQ(u"a", active_composition_text);
     EXPECT_EQ(0u, range.start());
@@ -1845,7 +1845,7 @@ class DiffingAlgorithmTestCallback : public TSFTextStoreTestCallback {
   }
 
   void InsertText2(
-      const base::string16& text,
+      const std::u16string& text,
       ui::TextInputClient::InsertTextCursorBehavior cursor_behavior) {
     EXPECT_EQ(u"bcde", text);
     SetTextRange(0, 5);
@@ -2553,7 +2553,7 @@ class RegressionTestCallback : public TSFTextStoreTestCallback {
   }
 
   void InsertText2(
-      const base::string16& text,
+      const std::u16string& text,
       ui::TextInputClient::InsertTextCursorBehavior cursor_behavior) {
     EXPECT_EQ(u"a", text);
     SetHasCompositionText(false);
@@ -2587,7 +2587,7 @@ class RegressionTestCallback : public TSFTextStoreTestCallback {
   }
 
   void InsertText3(
-      const base::string16& text,
+      const std::u16string& text,
       ui::TextInputClient::InsertTextCursorBehavior cursor_behavior) {
     EXPECT_EQ(u"a", text);
     SetHasCompositionText(false);
@@ -2625,7 +2625,7 @@ class RegressionTestCallback : public TSFTextStoreTestCallback {
   }
 
   void InsertText4(
-      const base::string16& text,
+      const std::u16string& text,
       ui::TextInputClient::InsertTextCursorBehavior cursor_behavior) {
     EXPECT_EQ(u"c", text);
   }
@@ -2693,7 +2693,7 @@ class RegressionTestCallback : public TSFTextStoreTestCallback {
   }
 
   void InsertText6(
-      const base::string16& text,
+      const std::u16string& text,
       ui::TextInputClient::InsertTextCursorBehavior cursor_behavior) {
     EXPECT_EQ(u"e", text);
     SetHasCompositionText(false);
@@ -2831,7 +2831,7 @@ class RegressionTest2Callback : public TSFTextStoreTestCallback {
   }
 
   void InsertText3(
-      const base::string16& text,
+      const std::u16string& text,
       ui::TextInputClient::InsertTextCursorBehavior cursor_behavior) {
     EXPECT_EQ(u"DE", text);
     SetHasCompositionText(false);
@@ -2933,7 +2933,7 @@ class RegressionTest3Callback : public TSFTextStoreTestCallback {
   }
 
   void SetCompositionText2(const ui::CompositionText& composition) {
-    EXPECT_EQ(base::string16(), composition.text);
+    EXPECT_EQ(std::u16string(), composition.text);
     EXPECT_EQ(0u, composition.selection.start());
     EXPECT_EQ(0u, composition.selection.end());
     ASSERT_EQ(0u, composition.ime_text_spans.size());
@@ -3031,7 +3031,7 @@ class RegressionTest4Callback : public TSFTextStoreTestCallback {
   }
 
   void InsertText2(
-      const base::string16& text,
+      const std::u16string& text,
       ui::TextInputClient::InsertTextCursorBehavior cursor_behavior) {
     EXPECT_EQ(u"a", text);
     SetHasCompositionText(false);
@@ -3175,7 +3175,7 @@ class RegressionTest5Callback : public TSFTextStoreTestCallback {
   }
 
   void InsertText3(
-      const base::string16& text,
+      const std::u16string& text,
       ui::TextInputClient::InsertTextCursorBehavior cursor_behavior) {
     EXPECT_EQ(u"aa", text);
     SetHasCompositionText(false);
@@ -3274,7 +3274,7 @@ class RegressionTest6Callback : public TSFTextStoreTestCallback {
   }
 
   void InsertText2(
-      const base::string16& text,
+      const std::u16string& text,
       ui::TextInputClient::InsertTextCursorBehavior cursor_behavior) {
     EXPECT_EQ(u"a", text);
     SetHasCompositionText(false);
@@ -3441,7 +3441,7 @@ class RegressionTest7Callback : public TSFTextStoreTestCallback {
   }
 
   void InsertText3(
-      const base::string16& text,
+      const std::u16string& text,
       ui::TextInputClient::InsertTextCursorBehavior cursor_behavior) {
     EXPECT_EQ(u"a", text);
     SetHasCompositionText(false);
@@ -3663,7 +3663,7 @@ class RegressionTest9Callback : public TSFTextStoreTestCallback {
   }
 
   void InsertText4(
-      const base::string16& text,
+      const std::u16string& text,
       ui::TextInputClient::InsertTextCursorBehavior cursor_behavior) {
     EXPECT_EQ(u"bbcc", text);
     SetHasCompositionText(false);
@@ -4162,7 +4162,7 @@ class TextInputClientReentrancyTestCallback : public TSFTextStoreTestCallback {
   }
 
   void InsertText2(
-      const base::string16& text,
+      const std::u16string& text,
       ui::TextInputClient::InsertTextCursorBehavior cursor_behavior) {
     EXPECT_EQ(u"a", text);
     SetHasCompositionText(false);

@@ -19,7 +19,7 @@ TooltipControllerTestHelper::TooltipControllerTestHelper(
 
 TooltipControllerTestHelper::~TooltipControllerTestHelper() = default;
 
-base::string16 TooltipControllerTestHelper::GetTooltipText() {
+std::u16string TooltipControllerTestHelper::GetTooltipText() {
   return controller_->tooltip_text_;
 }
 
@@ -53,7 +53,7 @@ TooltipTestView::TooltipTestView() = default;
 
 TooltipTestView::~TooltipTestView() = default;
 
-base::string16 TooltipTestView::GetTooltipText(const gfx::Point& p) const {
+std::u16string TooltipTestView::GetTooltipText(const gfx::Point& p) const {
   return tooltip_text_;
 }
 

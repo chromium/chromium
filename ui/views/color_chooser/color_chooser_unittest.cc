@@ -90,7 +90,7 @@ class ColorChooserTest : public views::ViewsTestBase {
   }
 
   SkColor GetTextualColor() const {
-    base::string16 text = chooser_->textfield_for_testing()->GetText();
+    std::u16string text = chooser_->textfield_for_testing()->GetText();
     if (text.empty() || text[0] != '#')
       return SK_ColorTRANSPARENT;
 

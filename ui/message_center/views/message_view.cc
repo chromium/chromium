@@ -40,14 +40,14 @@ namespace {
 
 // Creates a text for spoken feedback from the data contained in the
 // notification.
-base::string16 CreateAccessibleName(const Notification& notification) {
+std::u16string CreateAccessibleName(const Notification& notification) {
   if (!notification.accessible_name().empty())
     return notification.accessible_name();
 
   // Fall back to a text constructed from the notification.
   // Add non-empty elements.
 
-  std::vector<base::string16> accessible_lines;
+  std::vector<std::u16string> accessible_lines;
   if (!notification.title().empty())
     accessible_lines.push_back(notification.title());
 
@@ -116,7 +116,7 @@ MessageView::~MessageView() {
 
 void MessageView::UpdateWithNotification(const Notification& notification) {
   pinned_ = notification.pinned();
-  base::string16 new_accessible_name = CreateAccessibleName(notification);
+  std::u16string new_accessible_name = CreateAccessibleName(notification);
   if (new_accessible_name != accessible_name_) {
     accessible_name_ = new_accessible_name;
     NotifyAccessibilityEvent(ax::mojom::Event::kTextChanged, true);

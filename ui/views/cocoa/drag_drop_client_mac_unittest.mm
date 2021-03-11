@@ -222,7 +222,7 @@ class DragDropClientMacTest : public WidgetTest {
 TEST_F(DragDropClientMacTest, BasicDragDrop) {
   // Create the drop data
   OSExchangeData data;
-  const base::string16& text = ASCIIToUTF16("text");
+  const std::u16string& text = ASCIIToUTF16("text");
   data.SetString(text);
   SetData(data);
 
@@ -246,7 +246,7 @@ TEST_F(DragDropClientMacTest, ReleaseCapture) {
 
   // Create the drop data
   std::unique_ptr<OSExchangeData> data(std::make_unique<OSExchangeData>());
-  const base::string16& text = ASCIIToUTF16("text");
+  const std::u16string& text = ASCIIToUTF16("text");
   data->SetString(text);
   data->provider().SetDragImage(gfx::test::CreateImageSkia(100, 100),
                                 gfx::Vector2d());
@@ -275,7 +275,7 @@ TEST_F(DragDropClientMacTest, ReleaseCapture) {
 // incorrect format.
 TEST_F(DragDropClientMacTest, InvalidFormatDragDrop) {
   OSExchangeData data;
-  const base::string16& text = ASCIIToUTF16("text");
+  const std::u16string& text = ASCIIToUTF16("text");
   data.SetString(text);
   SetData(data);
 
@@ -324,7 +324,7 @@ class DragDropCloseView : public DragDropView {
 // Tests that closing Widget on OnPerformDrop does not crash.
 TEST_F(DragDropClientMacTest, CloseWidgetOnDrop) {
   OSExchangeData data;
-  const base::string16& text = ASCIIToUTF16("text");
+  const std::u16string& text = ASCIIToUTF16("text");
   data.SetString(text);
   SetData(data);
 

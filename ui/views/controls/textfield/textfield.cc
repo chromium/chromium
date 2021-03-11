@@ -326,11 +326,11 @@ void Textfield::SetTextInputFlags(int flags) {
   OnPropertyChanged(&text_input_flags_, kPropertyEffectsNone);
 }
 
-const base::string16& Textfield::GetText() const {
+const std::u16string& Textfield::GetText() const {
   return model_->text();
 }
 
-void Textfield::SetText(const base::string16& new_text) {
+void Textfield::SetText(const std::u16string& new_text) {
   SetTextWithoutCaretBoundsChangeNotification(new_text, new_text.length());
   // The above call already notified for the text change; fire notifications
   // etc. for the cursor changes as well.
@@ -338,7 +338,7 @@ void Textfield::SetText(const base::string16& new_text) {
 }
 
 void Textfield::SetTextWithoutCaretBoundsChangeNotification(
-    const base::string16& text,
+    const std::u16string& text,
     size_t cursor_position) {
   model_->SetText(text, cursor_position);
   UpdateAfterChange(TextChangeType::kInternal, false, false);
@@ -351,21 +351,21 @@ void Textfield::Scroll(const std::vector<size_t>& positions) {
   }
 }
 
-void Textfield::AppendText(const base::string16& new_text) {
+void Textfield::AppendText(const std::u16string& new_text) {
   if (new_text.empty())
     return;
   model_->Append(new_text);
   UpdateAfterChange(TextChangeType::kInternal, false);
 }
 
-void Textfield::InsertOrReplaceText(const base::string16& new_text) {
+void Textfield::InsertOrReplaceText(const std::u16string& new_text) {
   if (new_text.empty())
     return;
   model_->InsertText(new_text);
   UpdateAfterChange(TextChangeType::kUserTriggered, true);
 }
 
-base::string16 Textfield::GetSelectedText() const {
+std::u16string Textfield::GetSelectedText() const {
   return model_->GetSelectedText();
 }
 
@@ -466,11 +466,11 @@ void Textfield::SetMinimumWidthInChars(int minimum_width) {
   minimum_width_in_chars_ = minimum_width;
 }
 
-base::string16 Textfield::GetPlaceholderText() const {
+std::u16string Textfield::GetPlaceholderText() const {
   return placeholder_text_;
 }
 
-void Textfield::SetPlaceholderText(const base::string16& text) {
+void Textfield::SetPlaceholderText(const std::u16string& text) {
   if (placeholder_text_ == text)
     return;
 
@@ -568,11 +568,11 @@ void Textfield::ClearEditHistory() {
   model_->ClearEditHistory();
 }
 
-base::string16 Textfield::GetAccessibleName() const {
+std::u16string Textfield::GetAccessibleName() const {
   return accessible_name_;
 }
 
-void Textfield::SetAccessibleName(const base::string16& name) {
+void Textfield::SetAccessibleName(const std::u16string& name) {
   if (accessible_name_ == name)
     return;
 
@@ -970,7 +970,7 @@ DragOperation Textfield::OnPerformDrop(const ui::DropTargetEvent& event) {
 
   gfx::SelectionModel drop_destination_model =
       render_text->FindCursorPosition(event.location());
-  base::string16 new_text;
+  std::u16string new_text;
   event.data().GetString(&new_text);
 
   // Delete the current selection for a drag and drop within this view.
@@ -1017,7 +1017,7 @@ void Textfield::GetAccessibleNodeData(ui::AXNodeData* node_data) {
   }
   if (text_input_type_ == ui::TEXT_INPUT_TYPE_PASSWORD) {
     node_data->AddState(ax::mojom::State::kProtected);
-    node_data->SetValue(base::string16(
+    node_data->SetValue(std::u16string(
         GetText().size(), gfx::RenderText::kPasswordReplacementChar));
   } else {
     node_data->SetValue(GetText());
@@ -1168,7 +1168,7 @@ void Textfield::ShowContextMenuForViewImpl(View* source,
 void Textfield::WriteDragDataForView(View* sender,
                                      const gfx::Point& press_pt,
                                      OSExchangeData* data) {
-  const base::string16& selected_text(GetSelectedText());
+  const std::u16string& selected_text(GetSelectedText());
   data->SetString(selected_text);
   Label label(selected_text, {GetFontList()});
   label.SetBackgroundColor(GetBackgroundColor());
@@ -1431,9 +1431,9 @@ void Textfield::ClearCompositionText() {
   OnAfterUserAction();
 }
 
-void Textfield::InsertText(const base::string16& new_text,
+void Textfield::InsertText(const std::u16string& new_text,
                            InsertTextCursorBehavior cursor_behavior) {
-  base::string16 filtered_new_text;
+  std::u16string filtered_new_text;
   std::copy_if(new_text.begin(), new_text.end(),
                std::back_inserter(filtered_new_text), IsValidCharToInsert);
 
@@ -1588,7 +1588,7 @@ bool Textfield::DeleteRange(const gfx::Range& range) {
 }
 
 bool Textfield::GetTextFromRange(const gfx::Range& range,
-                                 base::string16* range_text) const {
+                                 std::u16string* range_text) const {
   if (!ImeEditingAllowed() || !range.IsValid())
     return false;
 
@@ -1645,7 +1645,7 @@ void Textfield::EnsureCaretNotInRect(const gfx::Rect& rect_in_screen) {
 }
 
 bool Textfield::IsTextEditCommandEnabled(ui::TextEditCommand command) const {
-  base::string16 result;
+  std::u16string result;
   bool editable = !GetReadOnly();
   bool readable = text_input_type_ != ui::TEXT_INPUT_TYPE_PASSWORD;
   switch (command) {
@@ -1833,7 +1833,7 @@ void Textfield::GetActiveTextInputControlLayoutBounds(
 // reconversion features on native text fields.
 void Textfield::SetActiveCompositionForAccessibility(
     const gfx::Range& range,
-    const base::string16& active_composition_text,
+    const std::u16string& active_composition_text,
     bool is_composition_committed) {}
 #endif
 
@@ -1858,8 +1858,8 @@ gfx::Point Textfield::GetLastClickRootLocation() const {
   return selection_controller_.last_click_root_location();
 }
 
-base::string16 Textfield::GetSelectionClipboardText() const {
-  base::string16 selection_clipboard_text;
+std::u16string Textfield::GetSelectionClipboardText() const {
+  std::u16string selection_clipboard_text;
   ui::Clipboard::GetForCurrentThread()->ReadText(
       ui::ClipboardBuffer::kSelection, /* data_dst = */ nullptr,
       &selection_clipboard_text);
@@ -2349,7 +2349,7 @@ void Textfield::OnAfterPointerAction(bool text_changed,
 bool Textfield::PasteSelectionClipboard() {
   DCHECK(performing_user_action_);
   DCHECK(!GetReadOnly());
-  const base::string16 selection_clipboard_text = GetSelectionClipboardText();
+  const std::u16string selection_clipboard_text = GetSelectionClipboardText();
   if (selection_clipboard_text.empty())
     return false;
 
@@ -2659,7 +2659,7 @@ void Textfield::OnEnabledChanged() {
 
 BEGIN_METADATA(Textfield, View)
 ADD_PROPERTY_METADATA(bool, ReadOnly)
-ADD_PROPERTY_METADATA(base::string16, Text)
+ADD_PROPERTY_METADATA(std::u16string, Text)
 ADD_PROPERTY_METADATA(ui::TextInputType, TextInputType)
 ADD_PROPERTY_METADATA(int, TextInputFlags)
 ADD_PROPERTY_METADATA(SkColor, TextColor, metadata::SkColorConverter)
@@ -2669,11 +2669,11 @@ ADD_PROPERTY_METADATA(SkColor,
                       SelectionBackgroundColor,
                       metadata::SkColorConverter)
 ADD_PROPERTY_METADATA(bool, CursorEnabled)
-ADD_PROPERTY_METADATA(base::string16, PlaceholderText)
+ADD_PROPERTY_METADATA(std::u16string, PlaceholderText)
 ADD_PROPERTY_METADATA(bool, Invalid)
 ADD_PROPERTY_METADATA(gfx::HorizontalAlignment, HorizontalAlignment)
 ADD_PROPERTY_METADATA(gfx::Range, SelectedRange)
-ADD_PROPERTY_METADATA(base::string16, AccessibleName)
+ADD_PROPERTY_METADATA(std::u16string, AccessibleName)
 END_METADATA
 
 }  // namespace views

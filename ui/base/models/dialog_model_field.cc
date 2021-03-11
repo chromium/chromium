@@ -29,10 +29,10 @@ DialogModelLabel::DialogModelLabel(int message_id, std::vector<Link> links)
   // labels with links.
 }
 
-DialogModelLabel::DialogModelLabel(base::string16 fixed_string)
+DialogModelLabel::DialogModelLabel(std::u16string fixed_string)
     : message_id_(-1), string_(std::move(fixed_string)) {}
 
-const base::string16& DialogModelLabel::GetString(
+const std::u16string& DialogModelLabel::GetString(
     base::PassKey<DialogModelHost>) const {
   DCHECK(links_.empty());
   return string_;
@@ -134,7 +134,7 @@ DialogModelButton::DialogModelButton(
     base::PassKey<DialogModel> pass_key,
     DialogModel* model,
     base::RepeatingCallback<void(const Event&)> callback,
-    base::string16 label,
+    std::u16string label,
     const DialogModelButton::Params& params)
     : DialogModelField(pass_key,
                        model,
@@ -211,7 +211,7 @@ DialogModelCombobox::Params& DialogModelCombobox::Params::AddAccelerator(
 DialogModelCombobox::DialogModelCombobox(
     base::PassKey<DialogModel> pass_key,
     DialogModel* model,
-    base::string16 label,
+    std::u16string label,
     std::unique_ptr<ui::ComboboxModel> combobox_model,
     const DialogModelCombobox::Params& params)
     : DialogModelField(pass_key,
@@ -256,8 +256,8 @@ DialogModelTextfield::Params& DialogModelTextfield::Params::AddAccelerator(
 DialogModelTextfield::DialogModelTextfield(
     base::PassKey<DialogModel> pass_key,
     DialogModel* model,
-    base::string16 label,
-    base::string16 text,
+    std::u16string label,
+    std::u16string text,
     const ui::DialogModelTextfield::Params& params)
     : DialogModelField(pass_key,
                        model,
@@ -271,7 +271,7 @@ DialogModelTextfield::DialogModelTextfield(
 DialogModelTextfield::~DialogModelTextfield() = default;
 
 void DialogModelTextfield::OnTextChanged(base::PassKey<DialogModelHost>,
-                                         base::string16 text) {
+                                         std::u16string text) {
   text_ = std::move(text);
 }
 

@@ -38,7 +38,7 @@ class VIEWS_EXPORT TooltipIcon : public ImageView,
 
   METADATA_HEADER(TooltipIcon);
 
-  explicit TooltipIcon(const base::string16& tooltip,
+  explicit TooltipIcon(const std::u16string& tooltip,
                        int tooltip_icon_size = 16);
   ~TooltipIcon() override;
 
@@ -78,7 +78,7 @@ class VIEWS_EXPORT TooltipIcon : public ImageView,
   void HideBubble();
 
   // The text to show in a bubble when hovered.
-  base::string16 tooltip_;
+  std::u16string tooltip_;
 
   // The size of the tooltip icon, in dip.
   // Must be set in the constructor, otherwise the pre-hovered icon will show

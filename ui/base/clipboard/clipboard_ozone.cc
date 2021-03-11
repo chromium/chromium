@@ -337,7 +337,7 @@ void ClipboardOzone::Clear(ClipboardBuffer buffer) {
 void ClipboardOzone::ReadAvailableTypes(
     ClipboardBuffer buffer,
     const DataTransferEndpoint* data_dst,
-    std::vector<base::string16>* types) const {
+    std::vector<std::u16string>* types) const {
   DCHECK(CalledOnValidThread());
   DCHECK(types);
 
@@ -359,7 +359,7 @@ void ClipboardOzone::ReadAvailableTypes(
 }
 
 // TODO(crbug.com/1103194): |data_dst| should be supported.
-std::vector<base::string16>
+std::vector<std::u16string>
 ClipboardOzone::ReadAvailablePlatformSpecificFormatNames(
     ClipboardBuffer buffer,
     const DataTransferEndpoint* data_dst) const {
@@ -367,7 +367,7 @@ ClipboardOzone::ReadAvailablePlatformSpecificFormatNames(
 
   std::vector<std::string> mime_types =
       async_clipboard_ozone_->RequestMimeTypes(buffer);
-  std::vector<base::string16> types;
+  std::vector<std::u16string> types;
   types.reserve(mime_types.size());
   for (auto& mime_type : mime_types)
     types.push_back(base::UTF8ToUTF16(mime_type));
@@ -377,7 +377,7 @@ ClipboardOzone::ReadAvailablePlatformSpecificFormatNames(
 // TODO(crbug.com/1103194): |data_dst| should be supported.
 void ClipboardOzone::ReadText(ClipboardBuffer buffer,
                               const DataTransferEndpoint* data_dst,
-                              base::string16* result) const {
+                              std::u16string* result) const {
   DCHECK(CalledOnValidThread());
   RecordRead(ClipboardFormatMetric::kText);
 
@@ -402,7 +402,7 @@ void ClipboardOzone::ReadAsciiText(ClipboardBuffer buffer,
 // TODO(crbug.com/1103194): |data_dst| should be supported.
 void ClipboardOzone::ReadHTML(ClipboardBuffer buffer,
                               const DataTransferEndpoint* data_dst,
-                              base::string16* markup,
+                              std::u16string* markup,
                               std::string* src_url,
                               uint32_t* fragment_start,
                               uint32_t* fragment_end) const {
@@ -426,7 +426,7 @@ void ClipboardOzone::ReadHTML(ClipboardBuffer buffer,
 // TODO(crbug.com/1103194): |data_dst| should be supported.
 void ClipboardOzone::ReadSvg(ClipboardBuffer buffer,
                              const DataTransferEndpoint* data_dst,
-                             base::string16* result) const {
+                             std::u16string* result) const {
   DCHECK(CalledOnValidThread());
   RecordRead(ClipboardFormatMetric::kSvg);
 
@@ -458,9 +458,9 @@ void ClipboardOzone::ReadImage(ClipboardBuffer buffer,
 
 // TODO(crbug.com/1103194): |data_dst| should be supported.
 void ClipboardOzone::ReadCustomData(ClipboardBuffer buffer,
-                                    const base::string16& type,
+                                    const std::u16string& type,
                                     const DataTransferEndpoint* data_dst,
-                                    base::string16* result) const {
+                                    std::u16string* result) const {
   DCHECK(CalledOnValidThread());
   RecordRead(ClipboardFormatMetric::kCustomData);
 
@@ -484,7 +484,7 @@ void ClipboardOzone::ReadFilenames(ClipboardBuffer buffer,
 
 // TODO(crbug.com/1103194): |data_dst| should be supported.
 void ClipboardOzone::ReadBookmark(const DataTransferEndpoint* data_dst,
-                                  base::string16* title,
+                                  std::u16string* title,
                                   std::string* url) const {
   DCHECK(CalledOnValidThread());
   // TODO(msisov): This was left NOTIMPLEMENTED() in all the Linux platforms.
@@ -586,7 +586,7 @@ void ClipboardOzone::WriteBookmark(const char* title_data,
                                    const char* url_data,
                                    size_t url_len) {
   // Writes a Mozilla url (UTF16: URL, newline, title)
-  base::string16 bookmark =
+  std::u16string bookmark =
       base::UTF8ToUTF16(base::StringPiece(url_data, url_len)) +
       base::ASCIIToUTF16("\n") +
       base::UTF8ToUTF16(base::StringPiece(title_data, title_len));

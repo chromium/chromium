@@ -15,7 +15,7 @@ namespace views {
 using MdTextButtonTest = ViewsTestBase;
 
 TEST_F(MdTextButtonTest, CustomPadding) {
-  const base::string16 text = base::ASCIIToUTF16("abc");
+  const std::u16string text = base::ASCIIToUTF16("abc");
   auto button = std::make_unique<MdTextButton>(Button::PressedCallback(), text);
 
   const gfx::Insets custom_padding(10, 20);

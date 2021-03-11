@@ -57,7 +57,7 @@ class VIEWS_EXPORT TooltipManagerAura : public TooltipManager {
   aura::Window* GetWindow();
 
   Widget* widget_;
-  base::string16 tooltip_text_;
+  std::u16string tooltip_text_;
 
   DISALLOW_COPY_AND_ASSIGN(TooltipManagerAura);
 };

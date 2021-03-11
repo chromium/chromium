@@ -56,6 +56,6 @@ COMPONENT_EXPORT(UI_BASE)
 #endif  // __OBJC__
 
 // Also provide a c++ interface
-COMPONENT_EXPORT(UI_BASE) base::string16 GetFindPboardText();
+COMPONENT_EXPORT(UI_BASE) std::u16string GetFindPboardText();
 
 #endif  // UI_BASE_COCOA_FIND_PASTEBOARD_H_

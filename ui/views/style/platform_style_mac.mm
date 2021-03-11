@@ -65,7 +65,7 @@ void PlatformStyle::OnTextfieldEditFailed() {
 }
 
 // static
-gfx::Range PlatformStyle::RangeToDeleteBackwards(const base::string16& text,
+gfx::Range PlatformStyle::RangeToDeleteBackwards(const std::u16string& text,
                                                  size_t cursor_position) {
   if (cursor_position == 0)
     return gfx::Range();

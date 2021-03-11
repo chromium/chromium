@@ -40,7 +40,7 @@ namespace {
 void InsertColorRow(GridLayout* layout,
                     base::StringPiece16 label_string,
                     ui::NativeTheme::ColorId color_id) {
-  auto label_view = std::make_unique<Label>(base::string16(label_string));
+  auto label_view = std::make_unique<Label>(std::u16string(label_string));
   label_view->SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_LEFT);
   label_view->SetSelectable(true);
 
