@@ -5,26 +5,63 @@
 #include "third_party/blink/renderer/core/document_transition/document_transition.h"
 
 #include "base/test/scoped_feature_list.h"
+#include "third_party/blink/public/web/web_settings.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_tester.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_testing.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_document_transition_prepare_options.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_document_transition_start_options.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_root_transition_type.h"
 #include "third_party/blink/renderer/core/document_transition/document_transition_supplement.h"
-#include "third_party/blink/renderer/core/testing/core_unit_test_helper.h"
+#include "third_party/blink/renderer/core/frame/frame_test_helpers.h"
+#include "third_party/blink/renderer/core/html/html_element.h"
+#include "third_party/blink/renderer/core/paint/compositing/compositing_state.h"
+#include "third_party/blink/renderer/core/paint/paint_layer.h"
+#include "third_party/blink/renderer/platform/testing/find_cc_layer.h"
+#include "third_party/blink/renderer/platform/testing/paint_test_configurations.h"
 
 namespace blink {
 
-class DocumentTransitionTest : public RenderingTest,
+class DocumentTransitionTest : public testing::Test,
+                               public PaintTestConfigurations,
                                private ScopedDocumentTransitionForTest {
  public:
-  DocumentTransitionTest()
-      : RenderingTest(MakeGarbageCollected<SingleChildLocalFrameClient>()),
-        ScopedDocumentTransitionForTest(true) {}
+  DocumentTransitionTest() : ScopedDocumentTransitionForTest(true) {}
+
+  static void ConfigureCompositingWebView(WebSettings* settings) {
+    settings->SetPreferCompositingToLCDTextEnabled(true);
+  }
 
   void SetUp() override {
-    EnableCompositing();
-    RenderingTest::SetUp();
+    web_view_helper_ = std::make_unique<frame_test_helpers::WebViewHelper>();
+    web_view_helper_->Initialize(nullptr, nullptr,
+                                 &ConfigureCompositingWebView);
+    web_view_helper_->Resize(gfx::Size(200, 200));
+
+    // The paint artifact compositor should have been created as part of the
+    // web view helper setup.
+    DCHECK(paint_artifact_compositor());
+  }
+
+  void TearDown() override { web_view_helper_.reset(); }
+
+  Document& GetDocument() {
+    return *web_view_helper_->GetWebView()
+                ->MainFrameImpl()
+                ->GetFrame()
+                ->GetDocument();
+  }
+
+  bool ElementIsComposited(const char* id) {
+    if (RuntimeEnabledFeatures::CompositeAfterPaintEnabled())
+      return !CcLayersByDOMElementId(RootCcLayer(), id).IsEmpty();
+
+    auto* element = GetDocument().getElementById(id);
+    if (!element)
+      return false;
+
+    auto* box = element->GetLayoutBox();
+    return box && box->HasSelfPaintingLayer() &&
+           box->Layer()->GetCompositingState() == kPaintsIntoOwnBacking;
   }
 
   // Testing the compositor interaction is not in scope for these unittests. So,
@@ -32,11 +69,38 @@ class DocumentTransitionTest : public RenderingTest,
   // callback directly.
   void UpdateAllLifecyclePhasesAndFinishDirectives() {
     UpdateAllLifecyclePhasesForTest();
-    for (auto& request : GetChromeClient()
-                             .layer_tree_host()
-                             ->TakeDocumentTransitionRequestsForTesting()) {
+    for (auto& request :
+         LayerTreeHost()->TakeDocumentTransitionRequestsForTesting()) {
       request->TakeFinishedCallback().Run();
     }
+  }
+
+  cc::LayerTreeHost* LayerTreeHost() {
+    return web_view_helper_->LocalMainFrame()
+        ->FrameWidgetImpl()
+        ->LayerTreeHostForTesting();
+  }
+
+  const cc::Layer* RootCcLayer() {
+    return paint_artifact_compositor()->RootLayer();
+  }
+
+  LocalFrameView* GetLocalFrameView() {
+    return web_view_helper_->LocalMainFrame()->GetFrameView();
+  }
+
+  PaintArtifactCompositor* paint_artifact_compositor() {
+    return GetLocalFrameView()->GetPaintArtifactCompositor();
+  }
+
+  void SetHtmlInnerHTML(const String& content) {
+    GetDocument().body()->setInnerHTML(content);
+    UpdateAllLifecyclePhasesForTest();
+  }
+
+  void UpdateAllLifecyclePhasesForTest() {
+    web_view_helper_->GetWebView()->MainFrameWidget()->UpdateAllLifecyclePhases(
+        DocumentUpdateReason::kTest);
   }
 
   using State = DocumentTransition::State;
@@ -44,9 +108,14 @@ class DocumentTransitionTest : public RenderingTest,
   State GetState(DocumentTransition* transition) const {
     return transition->state_;
   }
+
+ private:
+  std::unique_ptr<frame_test_helpers::WebViewHelper> web_view_helper_;
 };
 
-TEST_F(DocumentTransitionTest, TransitionObjectPersists) {
+INSTANTIATE_PAINT_TEST_SUITE_P(DocumentTransitionTest);
+
+TEST_P(DocumentTransitionTest, TransitionObjectPersists) {
   auto* first_transition =
       DocumentTransitionSupplement::documentTransition(GetDocument());
   auto* second_transition =
@@ -58,7 +127,7 @@ TEST_F(DocumentTransitionTest, TransitionObjectPersists) {
   EXPECT_EQ(first_transition, second_transition);
 }
 
-TEST_F(DocumentTransitionTest, TransitionPreparePromiseResolves) {
+TEST_P(DocumentTransitionTest, TransitionPreparePromiseResolves) {
   DocumentTransitionPrepareOptions options;
   auto* transition =
       DocumentTransitionSupplement::documentTransition(GetDocument());
@@ -81,7 +150,7 @@ TEST_F(DocumentTransitionTest, TransitionPreparePromiseResolves) {
   EXPECT_EQ(GetState(transition), State::kPrepared);
 }
 
-TEST_F(DocumentTransitionTest, AdditionalPrepareRejectsPreviousPromise) {
+TEST_P(DocumentTransitionTest, AdditionalPrepareRejectsPreviousPromise) {
   auto* transition =
       DocumentTransitionSupplement::documentTransition(GetDocument());
 
@@ -109,7 +178,7 @@ TEST_F(DocumentTransitionTest, AdditionalPrepareRejectsPreviousPromise) {
   EXPECT_EQ(GetState(transition), State::kPrepared);
 }
 
-TEST_F(DocumentTransitionTest, EffectParsing) {
+TEST_P(DocumentTransitionTest, EffectParsing) {
   // Test default init.
   auto* transition =
       DocumentTransitionSupplement::documentTransition(GetDocument());
@@ -139,7 +208,7 @@ TEST_F(DocumentTransitionTest, EffectParsing) {
   EXPECT_EQ(directive.effect(), DocumentTransition::Request::Effect::kExplode);
 }
 
-TEST_F(DocumentTransitionTest, DurationParsing) {
+TEST_P(DocumentTransitionTest, DurationParsing) {
   // Test default init.
   auto* transition =
       DocumentTransitionSupplement::documentTransition(GetDocument());
@@ -168,8 +237,12 @@ TEST_F(DocumentTransitionTest, DurationParsing) {
   EXPECT_EQ(directive.duration(), base::TimeDelta::FromMilliseconds(123));
 }
 
-TEST_F(DocumentTransitionTest, PrepareSharedElementsWantToBeComposited) {
+TEST_P(DocumentTransitionTest, PrepareSharedElementsWantToBeComposited) {
   SetHtmlInnerHTML(R"HTML(
+    <style>
+      div { width: 100px; height: 100px; contain: paint }
+    </style>
+
     <div id=e1></div>
     <div id=e2></div>
     <div id=e3></div>
@@ -195,18 +268,77 @@ TEST_F(DocumentTransitionTest, PrepareSharedElementsWantToBeComposited) {
   options.setSharedElements({e1, e3});
   transition->prepare(script_state, &options, exception_state);
 
+  // Update the lifecycle while keeping the transition active.
+  UpdateAllLifecyclePhasesForTest();
+
   EXPECT_TRUE(e1->ShouldCompositeForDocumentTransition());
   EXPECT_FALSE(e2->ShouldCompositeForDocumentTransition());
   EXPECT_TRUE(e3->ShouldCompositeForDocumentTransition());
+
+  EXPECT_TRUE(ElementIsComposited("e1"));
+  EXPECT_FALSE(ElementIsComposited("e2"));
+  EXPECT_TRUE(ElementIsComposited("e3"));
 
   UpdateAllLifecyclePhasesAndFinishDirectives();
 
   EXPECT_FALSE(e1->ShouldCompositeForDocumentTransition());
   EXPECT_FALSE(e2->ShouldCompositeForDocumentTransition());
   EXPECT_FALSE(e3->ShouldCompositeForDocumentTransition());
+
+  // We need to actually run the lifecycle in order to see the full effect of
+  // finishing directives.
+  UpdateAllLifecyclePhasesForTest();
+
+  EXPECT_FALSE(ElementIsComposited("e1"));
+  EXPECT_FALSE(ElementIsComposited("e2"));
+  EXPECT_FALSE(ElementIsComposited("e3"));
 }
 
-TEST_F(DocumentTransitionTest, StartSharedElementCountMismatch) {
+TEST_P(DocumentTransitionTest, UncontainedElementsAreCleared) {
+  SetHtmlInnerHTML(R"HTML(
+    <style>#e1 { width: 100px; height: 100px; contain: paint }</style>
+    <div id=e1></div>
+    <div id=e2></div>
+    <div id=e3></div>
+  )HTML");
+
+  auto* e1 = GetDocument().getElementById("e1");
+  auto* e2 = GetDocument().getElementById("e2");
+  auto* e3 = GetDocument().getElementById("e3");
+
+  auto* transition =
+      DocumentTransitionSupplement::documentTransition(GetDocument());
+
+  V8TestingScope v8_scope;
+  ScriptState* script_state = v8_scope.GetScriptState();
+  ExceptionState& exception_state = v8_scope.GetExceptionState();
+
+  EXPECT_FALSE(e1->ShouldCompositeForDocumentTransition());
+  EXPECT_FALSE(e2->ShouldCompositeForDocumentTransition());
+  EXPECT_FALSE(e3->ShouldCompositeForDocumentTransition());
+
+  DocumentTransitionPrepareOptions options;
+  options.setSharedElements({e1, e2, e3});
+  transition->prepare(script_state, &options, exception_state);
+
+  EXPECT_TRUE(e1->ShouldCompositeForDocumentTransition());
+  EXPECT_TRUE(e2->ShouldCompositeForDocumentTransition());
+  EXPECT_TRUE(e3->ShouldCompositeForDocumentTransition());
+
+  // Update the lifecycle while keeping the transition active.
+  UpdateAllLifecyclePhasesForTest();
+
+  // Since only the first element is contained, the rest should be cleared.
+  EXPECT_TRUE(e1->ShouldCompositeForDocumentTransition());
+  EXPECT_FALSE(e2->ShouldCompositeForDocumentTransition());
+  EXPECT_FALSE(e3->ShouldCompositeForDocumentTransition());
+
+  EXPECT_TRUE(ElementIsComposited("e1"));
+  EXPECT_FALSE(ElementIsComposited("e2"));
+  EXPECT_FALSE(ElementIsComposited("e3"));
+}
+
+TEST_P(DocumentTransitionTest, StartSharedElementCountMismatch) {
   SetHtmlInnerHTML(R"HTML(
     <div id=e1></div>
     <div id=e2></div>
@@ -244,7 +376,7 @@ TEST_F(DocumentTransitionTest, StartSharedElementCountMismatch) {
   EXPECT_FALSE(e3->ShouldCompositeForDocumentTransition());
 }
 
-TEST_F(DocumentTransitionTest, StartSharedElementsWantToBeComposited) {
+TEST_P(DocumentTransitionTest, StartSharedElementsWantToBeComposited) {
   SetHtmlInnerHTML(R"HTML(
     <div id=e1></div>
     <div id=e2></div>
@@ -289,7 +421,7 @@ TEST_F(DocumentTransitionTest, StartSharedElementsWantToBeComposited) {
   EXPECT_FALSE(e3->ShouldCompositeForDocumentTransition());
 }
 
-TEST_F(DocumentTransitionTest, AdditionalPrepareAfterPreparedSucceeds) {
+TEST_P(DocumentTransitionTest, AdditionalPrepareAfterPreparedSucceeds) {
   auto* transition =
       DocumentTransitionSupplement::documentTransition(GetDocument());
 
@@ -319,7 +451,7 @@ TEST_F(DocumentTransitionTest, AdditionalPrepareAfterPreparedSucceeds) {
   EXPECT_EQ(GetState(transition), State::kPrepared);
 }
 
-TEST_F(DocumentTransitionTest, TransitionCleanedUpBeforePromiseResolution) {
+TEST_P(DocumentTransitionTest, TransitionCleanedUpBeforePromiseResolution) {
   V8TestingScope v8_scope;
   ScriptState* script_state = v8_scope.GetScriptState();
   ExceptionState& exception_state = v8_scope.GetExceptionState();
@@ -338,7 +470,7 @@ TEST_F(DocumentTransitionTest, TransitionCleanedUpBeforePromiseResolution) {
   EXPECT_TRUE(tester.IsFulfilled());
 }
 
-TEST_F(DocumentTransitionTest, StartHasNoEffectUnlessPrepared) {
+TEST_P(DocumentTransitionTest, StartHasNoEffectUnlessPrepared) {
   auto* transition =
       DocumentTransitionSupplement::documentTransition(GetDocument());
   EXPECT_EQ(GetState(transition), State::kIdle);
@@ -355,7 +487,7 @@ TEST_F(DocumentTransitionTest, StartHasNoEffectUnlessPrepared) {
   EXPECT_TRUE(exception_state.HadException());
 }
 
-TEST_F(DocumentTransitionTest, StartAfterPrepare) {
+TEST_P(DocumentTransitionTest, StartAfterPrepare) {
   auto* transition =
       DocumentTransitionSupplement::documentTransition(GetDocument());
 
@@ -395,7 +527,7 @@ TEST_F(DocumentTransitionTest, StartAfterPrepare) {
   EXPECT_TRUE(start_tester.IsFulfilled());
 }
 
-TEST_F(DocumentTransitionTest, StartPromiseIsResolved) {
+TEST_P(DocumentTransitionTest, StartPromiseIsResolved) {
   auto* transition =
       DocumentTransitionSupplement::documentTransition(GetDocument());
 

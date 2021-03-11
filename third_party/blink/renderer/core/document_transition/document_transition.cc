@@ -9,7 +9,9 @@
 #include "third_party/blink/renderer/bindings/core/v8/v8_document_transition_start_options.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/frame/local_frame_view.h"
+#include "third_party/blink/renderer/core/layout/layout_box_model_object.h"
 #include "third_party/blink/renderer/core/page/page.h"
+#include "third_party/blink/renderer/core/paint/paint_layer.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_functional.h"
 #include "third_party/blink/renderer/platform/wtf/hash_map.h"
 #include "third_party/blink/renderer/platform/wtf/std_lib_extras.h"
@@ -128,7 +130,7 @@ ScriptPromise DocumentTransition::prepare(
   auto duration = ParseDuration(options);
   auto effect = ParseRootTransition(options);
   if (options->hasSharedElements())
-    active_shared_elements_ = options->sharedElements();
+    SetActiveSharedElements(options->sharedElements());
   prepare_shared_element_count_ = active_shared_elements_.size();
 
   prepare_promise_resolver_ =
@@ -156,9 +158,8 @@ ScriptPromise DocumentTransition::start(
     return ScriptPromise();
   }
 
-  DCHECK(active_shared_elements_.IsEmpty());
   if (options->hasSharedElements())
-    active_shared_elements_ = options->sharedElements();
+    SetActiveSharedElements(options->sharedElements());
 
   // We need to have the same amount of shared elements (even if null) as the
   // prepared ones.
@@ -169,7 +170,7 @@ ScriptPromise DocumentTransition::start(
                        "prepare sharedElement count (%u).",
                        active_shared_elements_.size(),
                        prepare_shared_element_count_));
-    active_shared_elements_.clear();
+    SetActiveSharedElements({});
     return ScriptPromise();
   }
 
@@ -212,7 +213,7 @@ void DocumentTransition::NotifyPrepareFinished(uint32_t sequence_id) {
   prepare_promise_resolver_->Resolve();
   prepare_promise_resolver_ = nullptr;
   state_ = State::kPrepared;
-  active_shared_elements_.clear();
+  SetActiveSharedElements({});
 }
 
 void DocumentTransition::NotifyStartFinished(uint32_t sequence_id) {
@@ -230,7 +231,7 @@ void DocumentTransition::NotifyStartFinished(uint32_t sequence_id) {
   start_promise_resolver_->Resolve();
   start_promise_resolver_ = nullptr;
   state_ = State::kIdle;
-  active_shared_elements_.clear();
+  SetActiveSharedElements({});
 }
 
 std::unique_ptr<DocumentTransition::Request>
@@ -240,6 +241,51 @@ DocumentTransition::TakePendingRequest() {
 
 bool DocumentTransition::IsActiveElement(const Element* element) const {
   return active_shared_elements_.Contains(element);
+}
+
+void DocumentTransition::VerifySharedElements() {
+  for (auto& active_element : active_shared_elements_) {
+    if (!active_element)
+      continue;
+
+    auto* object = active_element->GetLayoutObject();
+
+    // TODO(vmpstr): Should this work for replaced elements as well?
+    if (object && object->ShouldApplyPaintContainment())
+      continue;
+
+    // Clear the shared element. Note that we don't remove the element from the
+    // vector, since we need to preserve the order of the elements and we
+    // support nulls as a valid active element.
+    // TODO(vmpstr): We should issue a console warning here.
+    active_element = nullptr;
+  }
+}
+
+void DocumentTransition::SetActiveSharedElements(
+    HeapVector<Member<Element>> elements) {
+  // The way this is used, we should never be overriding a non-empty set with
+  // another non-empty set of elements.
+  DCHECK(elements.IsEmpty() || active_shared_elements_.IsEmpty());
+
+  InvalidateActiveElements();
+  active_shared_elements_ = std::move(elements);
+  InvalidateActiveElements();
+}
+
+void DocumentTransition::InvalidateActiveElements() {
+  for (auto& element : active_shared_elements_) {
+    // We allow nulls.
+    if (!element)
+      continue;
+
+    auto* box = DynamicTo<LayoutBoxModelObject>(element->GetLayoutObject());
+    if (!box || !box->HasSelfPaintingLayer())
+      continue;
+
+    // We might need to composite or decomposite this layer.
+    box->Layer()->SetNeedsCompositingInputsUpdate();
+  }
 }
 
 }  // namespace blink

@@ -55,6 +55,11 @@ class CORE_EXPORT DocumentTransition
   // Returns true if the given element is active in this transition.
   bool IsActiveElement(const Element*) const;
 
+  // We require shared elements to be contained. This check verifies that and
+  // removes it from the shared list if it isn't. See
+  // https://github.com/vmpstr/shared-element-transitions/issues/17
+  void VerifySharedElements();
+
  private:
   friend class DocumentTransitionTest;
 
@@ -64,6 +69,11 @@ class CORE_EXPORT DocumentTransition
 
   void NotifyPrepareFinished(uint32_t sequence_id);
   void NotifyStartFinished(uint32_t sequence_id);
+
+  // Sets new active shared elements. Note that this is responsible for making
+  // sure we invalidate the right bits both on the old and new elements.
+  void SetActiveSharedElements(HeapVector<Member<Element>> elements);
+  void InvalidateActiveElements();
 
   Member<Document> document_;
 

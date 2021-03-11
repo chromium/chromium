@@ -181,6 +181,11 @@ CompositingReasons CompositingReasonFinder::DirectReasonsForPaintProperties(
 
   reasons |= BackfaceInvisibility3DAncestorReason(*layer);
 
+  if (auto* element = DynamicTo<Element>(object.GetNode())) {
+    if (element->ShouldCompositeForDocumentTransition())
+      reasons |= CompositingReason::kDocumentTransitionSharedElement;
+  }
+
   if (object.CanHaveAdditionalCompositingReasons())
     reasons |= object.AdditionalCompositingReasons();
 
@@ -296,6 +301,11 @@ CompositingReasons CompositingReasonFinder::NonStyleDeterminedDirectReasons(
 
   if (layout_object.CanHaveAdditionalCompositingReasons())
     direct_reasons |= layout_object.AdditionalCompositingReasons();
+
+  if (auto* element = DynamicTo<Element>(layout_object.GetNode())) {
+    if (element->ShouldCompositeForDocumentTransition())
+      direct_reasons |= CompositingReason::kDocumentTransitionSharedElement;
+  }
 
   direct_reasons |= BackfaceInvisibility3DAncestorReason(layer);
 

@@ -86,7 +86,10 @@ using CompositingReasons = uint64_t;
   /* Composited layer painted on top of all other layers as decoration. */    \
   V(LayerForDecoration)                                                       \
   /* Used in CompositeAfterPaint for link highlight, frame overlay, etc. */   \
-  V(LayerForOther)
+  V(LayerForOther)                                                            \
+  /* DocumentTransition shared element.                                       \
+  See third_party/blink/renderer/core/document_transition/README.md. */       \
+  V(DocumentTransitionSharedElement)
 
 class PLATFORM_EXPORT CompositingReason {
   DISALLOW_NEW();
@@ -131,8 +134,9 @@ class PLATFORM_EXPORT CompositingReason {
     kComboAllDirectNonStyleDeterminedReasons =
         kVideo | kCanvas | kPlugin | kIFrame | kSVGRoot |
         kOverflowScrollingParent | kOutOfFlowClipping | kVideoOverlay |
-        kXrOverlay | kRoot | kRootScroller | kScrollDependentPosition | 
-        kAffectedByOuterViewportBoundsDelta | kBackfaceInvisibility3DAncestor,
+        kXrOverlay | kRoot | kRootScroller | kScrollDependentPosition |
+        kAffectedByOuterViewportBoundsDelta | kBackfaceInvisibility3DAncestor |
+        kDocumentTransitionSharedElement,
 
     kComboAllDirectReasons = kComboAllDirectStyleDeterminedReasons |
                              kComboAllDirectNonStyleDeterminedReasons,
@@ -170,7 +174,8 @@ class PLATFORM_EXPORT CompositingReason {
         kRootScroller | kOverflowScrolling,
     kDirectReasonsForEffectProperty =
         kActiveOpacityAnimation | kWillChangeOpacity | kBackdropFilter |
-        kWillChangeBackdropFilter | kActiveBackdropFilterAnimation,
+        kWillChangeBackdropFilter | kActiveBackdropFilterAnimation |
+        kDocumentTransitionSharedElement,
     kDirectReasonsForFilterProperty =
         kActiveFilterAnimation | kWillChangeFilter,
     kDirectReasonsForBackdropFilter = kBackdropFilter |
