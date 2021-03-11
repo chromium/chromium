@@ -249,7 +249,8 @@ void TranslateUIDelegate::UpdateTargetLanguageIndex(size_t language_index) {
   target_language_index_ = language_index;
 
   translate_manager_->GetActiveTranslateMetricsLogger()->LogTargetLanguage(
-      GetLanguageCodeAt(language_index));
+      GetLanguageCodeAt(language_index),
+      TranslateBrowserMetrics::TargetLanguageOrigin::kChangedByUser);
 }
 
 void TranslateUIDelegate::UpdateTargetLanguage(

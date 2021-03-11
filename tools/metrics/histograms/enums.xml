@@ -76792,6 +76792,8 @@ Full version information for the fingerprint enum values:
   <int value="2" label="Application UI"/>
   <int value="3" label="Accept languages"/>
   <int value="4" label="Default English"/>
+  <int value="5" label="Changed by user"/>
+  <int value="6" label="Uninitialized"/>
 </enum>
 
 <enum name="TranslateTriggerDecision">

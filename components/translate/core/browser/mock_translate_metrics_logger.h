@@ -46,7 +46,9 @@ class MockTranslateMetricsLogger : public TranslateMetricsLogger {
   MOCK_METHOD1(LogOmniboxIconChange, void(bool));
   MOCK_METHOD2(LogInitialSourceLanguage, void(const std::string&, bool));
   MOCK_METHOD1(LogSourceLanguage, void(const std::string&));
-  MOCK_METHOD1(LogTargetLanguage, void(const std::string&));
+  MOCK_METHOD2(LogTargetLanguage,
+               void(const std::string&,
+                    TranslateBrowserMetrics::TargetLanguageOrigin));
   MOCK_METHOD1(LogUIInteraction, void(UIInteraction));
   MOCK_METHOD0(GetNextManualTranslationType, TranslationType());
   MOCK_METHOD1(SetHasHrefTranslateTarget, void(bool));

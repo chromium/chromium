@@ -602,6 +602,20 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="Translate.PageLoad.InitialTargetLanguage.Origin"
+    enum="TranslateTargetLanguageOrigin" expires_after="M95">
+  <owner>curranmax@google.com</owner>
+  <owner>megjablon@google.com</owner>
+  <owner>chrome-language@google.com</owner>
+  <summary>
+    Records the origin of the target language at the beginning of the page load.
+    This is the reason why Chrome decided to use the initial target language.
+    This value is logged once the page load is completed or the first time
+    Chrome is backgrounded during the course of the page load, whichever comes
+    first.
+  </summary>
+</histogram>
+
 <histogram
     name="Translate.PageLoad.IsInitialSourceLanguageInUsersContentLanguages"
     enum="Boolean" expires_after="2021-08-29">
@@ -1050,6 +1064,18 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <summary>
     Records the target language used for a translation. This is the langauge
     being translated to.
+
+    This is recorded when a translation (both manual and automatic) is started.
+  </summary>
+</histogram>
+
+<histogram name="Translate.Translation.TargetLanguage.Origin"
+    enum="TranslateTargetLanguageOrigin" expires_after="M95">
+  <owner>curranmax@google.com</owner>
+  <owner>megjablon@google.com</owner>
+  <owner>chrome-language@google.com</owner>
+  <summary>
+    Records the origin of the target language used for a translation.
 
     This is recorded when a translation (both manual and automatic) is started.
   </summary>

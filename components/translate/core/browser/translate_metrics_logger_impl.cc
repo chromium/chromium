@@ -20,6 +20,8 @@ const char kTranslateTranslationSourceLanguage[] =
 const char kTranslateTranslationStatus[] = "Translate.Translation.Status";
 const char kTranslateTranslationTargetLanguage[] =
     "Translate.Translation.TargetLanguage";
+const char kTranslateTranslationTargetLanguageOrigin[] =
+    "Translate.Translation.TargetLanguage.Origin";
 const char kTranslateTranslationType[] = "Translate.Translation.Type";
 
 // UI Interaction frequency UMA histograms.
@@ -40,6 +42,8 @@ const char kTranslatePageLoadInitialSourceLanguage[] =
 const char kTranslatePageLoadInitialState[] = "Translate.PageLoad.InitialState";
 const char kTranslatePageLoadInitialTargetLanguage[] =
     "Translate.PageLoad.InitialTargetLanguage";
+const char kTranslatePageLoadInitialTargetLanguageOrigin[] =
+    "Translate.PageLoad.InitialTargetLanguage.Origin";
 const char kTranslatePageLoadIsInitialSourceLanguageInUsersContentLanguages[] =
     "Translate.PageLoad.IsInitialSourceLanguageInUsersContentLanguages";
 const char kTranslatePageLoadNumTargetLanguageChanges[] =
@@ -221,17 +225,22 @@ void TranslateMetricsLoggerImpl::RecordPageLoadUmaMetrics(
                            base::HashMetricName(current_target_language_));
   base::UmaHistogramCustomCounts(kTranslatePageLoadNumTargetLanguageChanges,
                                  num_target_language_changes_, 1, 50, 20);
+  base::UmaHistogramEnumeration(kTranslatePageLoadInitialTargetLanguageOrigin,
+                                initial_target_language_origin_);
 }
 
 void TranslateMetricsLoggerImpl::RecordTranslationHistograms(
     TranslationType translation_type,
     const std::string& source_language,
-    const std::string& target_language) {
+    const std::string& target_language,
+    TranslateBrowserMetrics::TargetLanguageOrigin target_language_origin) {
   base::UmaHistogramEnumeration(kTranslateTranslationType, translation_type);
   base::UmaHistogramSparse(kTranslateTranslationSourceLanguage,
                            base::HashMetricName(source_language));
   base::UmaHistogramSparse(kTranslateTranslationTargetLanguage,
                            base::HashMetricName(target_language));
+  base::UmaHistogramEnumeration(kTranslateTranslationTargetLanguageOrigin,
+                                target_language_origin);
 }
 
 void TranslateMetricsLoggerImpl::RecordTranslationStatus(
@@ -292,9 +301,9 @@ void TranslateMetricsLoggerImpl::LogTranslationStarted(
 
   time_of_last_translation_start_ = clock_->NowTicks();
 
-  RecordTranslationHistograms(current_translation_type_,
-                              current_source_language_,
-                              current_target_language_);
+  RecordTranslationHistograms(
+      current_translation_type_, current_source_language_,
+      current_target_language_, current_target_language_origin_);
 }
 
 void TranslateMetricsLoggerImpl::LogTranslationFinished(
@@ -379,9 +388,12 @@ void TranslateMetricsLoggerImpl::LogSourceLanguage(
 }
 
 void TranslateMetricsLoggerImpl::LogTargetLanguage(
-    const std::string& target_language_code) {
-  if (initial_target_language_ == "")
+    const std::string& target_language_code,
+    TranslateBrowserMetrics::TargetLanguageOrigin target_language_origin) {
+  if (initial_target_language_ == "") {
     initial_target_language_ = target_language_code;
+    initial_target_language_origin_ = target_language_origin;
+  }
 
   // Only increment |num_target_language_changes_| if |current_target_language_|
   // changes between two languages.
@@ -390,6 +402,7 @@ void TranslateMetricsLoggerImpl::LogTargetLanguage(
     num_target_language_changes_++;
 
   current_target_language_ = target_language_code;
+  current_target_language_origin_ = target_language_origin;
 }
 
 void TranslateMetricsLoggerImpl::LogUIInteraction(

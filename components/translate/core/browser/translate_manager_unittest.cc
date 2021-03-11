@@ -346,13 +346,17 @@ TEST_F(TranslateManagerTest, GetTargetLanguageFromModel) {
 // Test that the language model is used if provided, and that languages that
 // should be skipped actually are.
 TEST_F(TranslateManagerTest, GetTargetLanguageFromModelWithSkippedLanguages) {
+  TranslateBrowserMetrics::TargetLanguageOrigin target_language_origin =
+      TranslateBrowserMetrics::TargetLanguageOrigin::kUninitialized;
+
   // Try with a single, supported language but request it to be skipped. It
   // should still be chosen since there is no fallback.
   ASSERT_TRUE(TranslateDownloadManager::IsSupportedLanguage("es"));
   mock_language_model_.details = {
       MockLanguageModel::LanguageDetails("es", 1.0)};
   EXPECT_EQ("es", TranslateManager::GetTargetLanguage(
-                      &translate_prefs_, &mock_language_model_, {"es"}));
+                      &translate_prefs_, &mock_language_model_, {"es"},
+                      target_language_origin));
 
   // Try with two supported languages and skip the first one.
   ASSERT_TRUE(TranslateDownloadManager::IsSupportedLanguage("de"));
@@ -360,7 +364,8 @@ TEST_F(TranslateManagerTest, GetTargetLanguageFromModelWithSkippedLanguages) {
       MockLanguageModel::LanguageDetails("de", 1.0),
       MockLanguageModel::LanguageDetails("es", 0.5)};
   EXPECT_EQ("es", TranslateManager::GetTargetLanguage(
-                      &translate_prefs_, &mock_language_model_, {"de"}));
+                      &translate_prefs_, &mock_language_model_, {"de"},
+                      target_language_origin));
 
   // Try with first supported language lower in the list but request it to be
   // skipped. It should still be chosen since there is no fallback.
@@ -369,7 +374,8 @@ TEST_F(TranslateManagerTest, GetTargetLanguageFromModelWithSkippedLanguages) {
       MockLanguageModel::LanguageDetails("xx", 1.0),
       MockLanguageModel::LanguageDetails("es", 0.5)};
   EXPECT_EQ("es", TranslateManager::GetTargetLanguage(
-                      &translate_prefs_, &mock_language_model_, {"es"}));
+                      &translate_prefs_, &mock_language_model_, {"es"},
+                      target_language_origin));
 
   // Try non standard codes. Skipping should be specified using the supported
   // language in pairs of synonyms.
@@ -380,13 +386,15 @@ TEST_F(TranslateManagerTest, GetTargetLanguageFromModelWithSkippedLanguages) {
       MockLanguageModel::LanguageDetails("he", 1.0),
       MockLanguageModel::LanguageDetails("es", 0.5)};
   EXPECT_EQ("es", TranslateManager::GetTargetLanguage(
-                      &translate_prefs_, &mock_language_model_, {"iw"}));
+                      &translate_prefs_, &mock_language_model_, {"iw"},
+                      target_language_origin));
 
   mock_language_model_.details = {
       MockLanguageModel::LanguageDetails("iw", 1.0),
       MockLanguageModel::LanguageDetails("es", 0.5)};
   EXPECT_EQ("iw", TranslateManager::GetTargetLanguage(
-                      &translate_prefs_, &mock_language_model_, {"he"}));
+                      &translate_prefs_, &mock_language_model_, {"he"},
+                      target_language_origin));
 }
 
 TEST_F(TranslateManagerTest, OverrideTriggerWithIndiaEnglishExperiment) {
@@ -414,12 +422,15 @@ TEST_F(TranslateManagerTest, OverrideTriggerWithIndiaEnglishExperiment) {
 
   ExpectHighestPriorityTriggerDecision(TriggerDecision::kShowUI);
 
+  TranslateBrowserMetrics::TargetLanguageOrigin target_language_origin =
+      TranslateBrowserMetrics::TargetLanguageOrigin::kUninitialized;
   base::HistogramTester histogram_tester;
   prefs_.SetBoolean(prefs::kOfferTranslateEnabled, true);
   translate_manager_->GetLanguageState()->LanguageDetermined("en", true);
   network_notifier_.SimulateOnline();
   EXPECT_EQ("hi", TranslateManager::GetTargetLanguage(
-                      &translate_prefs_, &mock_language_model_, {"en"}));
+                      &translate_prefs_, &mock_language_model_, {"en"},
+                      target_language_origin));
   translate_manager_->InitiateTranslation("en");
   EXPECT_THAT(histogram_tester.GetAllSamples(kInitiationStatusName),
               ElementsAre(Bucket(metrics::INITIATION_STATUS_SHOW_INFOBAR, 1),
@@ -589,12 +600,15 @@ TEST_F(TranslateManagerTest, ShouldHonorExperimentRankerEnforcement_Enforce) {
 
   ExpectHighestPriorityTriggerDecision(TriggerDecision::kDisabledByRanker);
 
+  TranslateBrowserMetrics::TargetLanguageOrigin target_language_origin =
+      TranslateBrowserMetrics::TargetLanguageOrigin::kUninitialized;
   base::HistogramTester histogram_tester;
   prefs_.SetBoolean(prefs::kOfferTranslateEnabled, true);
   translate_manager_->GetLanguageState()->LanguageDetermined("en", true);
   network_notifier_.SimulateOnline();
   EXPECT_EQ("hi", TranslateManager::GetTargetLanguage(
-                      &translate_prefs_, &mock_language_model_, {"en"}));
+                      &translate_prefs_, &mock_language_model_, {"en"},
+                      target_language_origin));
   translate_manager_->InitiateTranslation("en");
   EXPECT_TRUE(translate_manager_->GetLanguageState()->translate_enabled());
   EXPECT_THAT(
@@ -630,12 +644,15 @@ TEST_F(TranslateManagerTest,
 
   ExpectHighestPriorityTriggerDecision(TriggerDecision::kShowUI);
 
+  TranslateBrowserMetrics::TargetLanguageOrigin target_language_origin =
+      TranslateBrowserMetrics::TargetLanguageOrigin::kUninitialized;
   base::HistogramTester histogram_tester;
   prefs_.SetBoolean(prefs::kOfferTranslateEnabled, true);
   translate_manager_->GetLanguageState()->LanguageDetermined("fr", true);
   network_notifier_.SimulateOnline();
-  EXPECT_EQ("hi", TranslateManager::GetTargetLanguage(
-                      &translate_prefs_, &mock_language_model_, {}));
+  EXPECT_EQ("hi", TranslateManager::GetTargetLanguage(&translate_prefs_,
+                                                      &mock_language_model_, {},
+                                                      target_language_origin));
   translate_manager_->InitiateTranslation("fr");
   EXPECT_TRUE(translate_manager_->GetLanguageState()->translate_enabled());
   EXPECT_THAT(histogram_tester.GetAllSamples(kInitiationStatusName),
@@ -954,8 +971,11 @@ TEST_F(TranslateManagerTest, GetManualSourceAndTargetLanguages) {
   EXPECT_EQ("fr", translate_manager_->GetLanguageState()->current_language());
   mock_language_model_.details = {
       MockLanguageModel::LanguageDetails("es", 1.0)};
-  EXPECT_EQ("es", TranslateManager::GetTargetLanguage(
-                      &translate_prefs_, &mock_language_model_, {}));
+  TranslateBrowserMetrics::TargetLanguageOrigin target_language_origin =
+      TranslateBrowserMetrics::TargetLanguageOrigin::kUninitialized;
+  EXPECT_EQ("es", TranslateManager::GetTargetLanguage(&translate_prefs_,
+                                                      &mock_language_model_, {},
+                                                      target_language_origin));
 
   EXPECT_FALSE(translate_manager_->GetLanguageState()->IsPageTranslated());
 
@@ -978,8 +998,11 @@ TEST_F(TranslateManagerTest,
   EXPECT_EQ("de", translate_manager_->GetLanguageState()->current_language());
   mock_language_model_.details = {
       MockLanguageModel::LanguageDetails("es", 1.0)};
-  EXPECT_EQ("es", TranslateManager::GetTargetLanguage(
-                      &translate_prefs_, &mock_language_model_, {}));
+  TranslateBrowserMetrics::TargetLanguageOrigin target_language_origin =
+      TranslateBrowserMetrics::TargetLanguageOrigin::kUninitialized;
+  EXPECT_EQ("es", TranslateManager::GetTargetLanguage(&translate_prefs_,
+                                                      &mock_language_model_, {},
+                                                      target_language_origin));
 
   EXPECT_TRUE(translate_manager_->GetLanguageState()->IsPageTranslated());
 

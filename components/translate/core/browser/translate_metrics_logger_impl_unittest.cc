@@ -395,7 +395,9 @@ TEST_F(TranslateMetricsLoggerImplTest, RecordUkmMetrics) {
   translate_metrics_logger()->LogInitialSourceLanguage(
       initial_source_language,
       is_initial_source_language_in_users_content_languages);
-  translate_metrics_logger()->LogTargetLanguage(initial_target_language);
+  translate_metrics_logger()->LogTargetLanguage(
+      initial_target_language,
+      TranslateBrowserMetrics::TargetLanguageOrigin::kLanguageModel);
   translate_metrics_logger()->LogRankerMetrics(ranker_decision,
                                                ranker_model_version);
   translate_metrics_logger()->LogTriggerDecision(trigger_decision);
@@ -424,7 +426,9 @@ TEST_F(TranslateMetricsLoggerImplTest, RecordUkmMetrics) {
   translate_metrics_logger()->LogSourceLanguage(final_source_language);
   translate_metrics_logger()->LogUIInteraction(
       UIInteraction::kChangeTargetLanguage);
-  translate_metrics_logger()->LogTargetLanguage(final_target_language);
+  translate_metrics_logger()->LogTargetLanguage(
+      final_target_language,
+      TranslateBrowserMetrics::TargetLanguageOrigin::kChangedByUser);
   translate_metrics_logger()->LogHTMLDocumentLanguage(html_doc_language);
   translate_metrics_logger()->LogHTMLContentLanguage(html_content_language);
   translate_metrics_logger()->LogDetectionReliabilityScore(
@@ -1037,12 +1041,22 @@ TEST_F(TranslateMetricsLoggerImplTest, LogTranslationLanguages) {
   const struct {
     std::string source_language;
     std::string target_language;
+    TranslateBrowserMetrics::TargetLanguageOrigin target_language_origin;
     int num_translations;
-  } kTests[] = {{"a", "b", 1}, {"b", "c", 2}, {"a", "c", 3}, {"d", "a", 4}};
+  } kTests[] = {
+      {"a", "b", TranslateBrowserMetrics::TargetLanguageOrigin::kRecentTarget,
+       1},
+      {"b", "c", TranslateBrowserMetrics::TargetLanguageOrigin::kLanguageModel,
+       2},
+      {"a", "c", TranslateBrowserMetrics::TargetLanguageOrigin::kApplicationUI,
+       3},
+      {"d", "a", TranslateBrowserMetrics::TargetLanguageOrigin::kChangedByUser,
+       4}};
 
   for (const auto& test : kTests) {
     translate_metrics_logger()->LogSourceLanguage(test.source_language);
-    translate_metrics_logger()->LogTargetLanguage(test.target_language);
+    translate_metrics_logger()->LogTargetLanguage(test.target_language,
+                                                  test.target_language_origin);
 
     for (int i = 0; i < test.num_translations; ++i) {
       translate_metrics_logger()->LogTranslationStarted(
@@ -1056,6 +1070,8 @@ TEST_F(TranslateMetricsLoggerImplTest, LogTranslationLanguages) {
 
   histogram_tester()->ExpectTotalCount(kTranslateTranslationSourceLanguage, 10);
   histogram_tester()->ExpectTotalCount(kTranslateTranslationTargetLanguage, 10);
+  histogram_tester()->ExpectTotalCount(
+      kTranslateTranslationTargetLanguageOrigin, 10);
 
   histogram_tester()->ExpectBucketCount(kTranslateTranslationSourceLanguage,
                                         base::HashMetricName("a"), 4);
@@ -1070,6 +1086,19 @@ TEST_F(TranslateMetricsLoggerImplTest, LogTranslationLanguages) {
                                         base::HashMetricName("b"), 1);
   histogram_tester()->ExpectBucketCount(kTranslateTranslationTargetLanguage,
                                         base::HashMetricName("c"), 5);
+
+  histogram_tester()->ExpectBucketCount(
+      kTranslateTranslationTargetLanguageOrigin,
+      TranslateBrowserMetrics::TargetLanguageOrigin::kRecentTarget, 1);
+  histogram_tester()->ExpectBucketCount(
+      kTranslateTranslationTargetLanguageOrigin,
+      TranslateBrowserMetrics::TargetLanguageOrigin::kLanguageModel, 2);
+  histogram_tester()->ExpectBucketCount(
+      kTranslateTranslationTargetLanguageOrigin,
+      TranslateBrowserMetrics::TargetLanguageOrigin::kApplicationUI, 3);
+  histogram_tester()->ExpectBucketCount(
+      kTranslateTranslationTargetLanguageOrigin,
+      TranslateBrowserMetrics::TargetLanguageOrigin::kChangedByUser, 4);
 }
 
 TEST_F(TranslateMetricsLoggerImplTest, LogTranslateErrors) {
@@ -1280,27 +1309,39 @@ TEST_F(TranslateMetricsLoggerImplTest, LogTargetLanguage) {
   std::vector<std::string> target_languages = {"de", "en", "en", "de", "fr",
                                                "fr", "es", "it", "it", "es"};
 
-  // We only care about changes in the target language, so if the language stays
-  // the same, we don't count it.
-  int num_target_language_changes = 6;
+  const struct {
+    std::string target_language;
+    TranslateBrowserMetrics::TargetLanguageOrigin target_language_origin;
+  } kTests[] = {
+      {"de", TranslateBrowserMetrics::TargetLanguageOrigin::kLanguageModel},
+      {"en", TranslateBrowserMetrics::TargetLanguageOrigin::kDefaultEnglish},
+      {"en", TranslateBrowserMetrics::TargetLanguageOrigin::kAcceptLanguages},
+      {"de", TranslateBrowserMetrics::TargetLanguageOrigin::kLanguageModel},
+      {"fr", TranslateBrowserMetrics::TargetLanguageOrigin::kChangedByUser},
+      {"fr", TranslateBrowserMetrics::TargetLanguageOrigin::kRecentTarget},
+      {"es", TranslateBrowserMetrics::TargetLanguageOrigin::kChangedByUser},
+      {"it", TranslateBrowserMetrics::TargetLanguageOrigin::kDefaultEnglish},
+      {"it", TranslateBrowserMetrics::TargetLanguageOrigin::kLanguageModel},
+      {"es", TranslateBrowserMetrics::TargetLanguageOrigin::kApplicationUI}};
 
   // Log the target languages.
-  for (auto target_language : target_languages)
-    translate_metrics_logger()->LogTargetLanguage(target_language);
+  for (const auto& test : kTests)
+    translate_metrics_logger()->LogTargetLanguage(test.target_language,
+                                                  test.target_language_origin);
 
   // Record the stored metrics
   translate_metrics_logger()->RecordMetrics(true);
 
   // Check that the histograms match expectations.
   histogram_tester()->ExpectUniqueSample(
-      kTranslatePageLoadInitialTargetLanguage,
-      base::HashMetricName(target_languages[0]), 1);
+      kTranslatePageLoadInitialTargetLanguage, base::HashMetricName("de"), 1);
+  histogram_tester()->ExpectUniqueSample(kTranslatePageLoadFinalTargetLanguage,
+                                         base::HashMetricName("es"), 1);
   histogram_tester()->ExpectUniqueSample(
-      kTranslatePageLoadFinalTargetLanguage,
-      base::HashMetricName(target_languages[target_languages.size() - 1]), 1);
+      kTranslatePageLoadNumTargetLanguageChanges, 6, 1);
   histogram_tester()->ExpectUniqueSample(
-      kTranslatePageLoadNumTargetLanguageChanges, num_target_language_changes,
-      1);
+      kTranslatePageLoadInitialTargetLanguageOrigin,
+      TranslateBrowserMetrics::TargetLanguageOrigin::kLanguageModel, 1);
 }
 
 TEST_F(TranslateMetricsLoggerImplTest, LogMaxTimeToTranslate) {

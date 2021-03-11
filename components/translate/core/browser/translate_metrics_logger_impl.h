@@ -20,6 +20,7 @@ namespace translate {
 // Translation frequency UMA histograms.
 extern const char kTranslateTranslationSourceLanguage[];
 extern const char kTranslateTranslationTargetLanguage[];
+extern const char kTranslateTranslationTargetLanguageOrigin[];
 extern const char kTranslateTranslationStatus[];
 extern const char kTranslateTranslationType[];
 
@@ -35,6 +36,7 @@ extern const char kTranslatePageLoadHrefTriggerDecision[];
 extern const char kTranslatePageLoadInitialSourceLanguage[];
 extern const char kTranslatePageLoadInitialState[];
 extern const char kTranslatePageLoadInitialTargetLanguage[];
+extern const char kTranslatePageLoadInitialTargetLanguageOrigin[];
 extern const char
     kTranslatePageLoadIsInitialSourceLanguageInUsersContentLanguages[];
 extern const char kTranslatePageLoadNumTargetLanguageChanges[];
@@ -69,7 +71,9 @@ class NullTranslateMetricsLogger : public TranslateMetricsLogger {
   void LogInitialSourceLanguage(const std::string& source_language_code,
                                 bool is_in_users_content_languages) override {}
   void LogSourceLanguage(const std::string& source_language_code) override {}
-  void LogTargetLanguage(const std::string& target_language_code) override {}
+  void LogTargetLanguage(const std::string& target_language_code,
+                         TranslateBrowserMetrics::TargetLanguageOrigin
+                             target_language_origin) override {}
   void LogHTMLDocumentLanguage(const std::string& html_doc_language) override {}
   void LogHTMLContentLanguage(
       const std::string& html_content_language) override {}
@@ -122,7 +126,9 @@ class TranslateMetricsLoggerImpl : public TranslateMetricsLogger {
   void LogInitialSourceLanguage(const std::string& source_language_code,
                                 bool is_in_users_content_languages) override;
   void LogSourceLanguage(const std::string& source_language_code) override;
-  void LogTargetLanguage(const std::string& target_language_code) override;
+  void LogTargetLanguage(const std::string& target_language_code,
+                         TranslateBrowserMetrics::TargetLanguageOrigin
+                             target_language_origin) override;
   void LogHTMLDocumentLanguage(const std::string& html_doc_language) override;
   void LogHTMLContentLanguage(
       const std::string& html_content_language) override;
@@ -143,9 +149,11 @@ class TranslateMetricsLoggerImpl : public TranslateMetricsLogger {
                                 bool current_stat_is_translated);
 
   // Logs all relevant information about a translation.
-  void RecordTranslationHistograms(TranslationType translation_type,
-                                   const std::string& source_language,
-                                   const std::string& target_language);
+  void RecordTranslationHistograms(
+      TranslationType translation_type,
+      const std::string& source_language,
+      const std::string& target_language,
+      TranslateBrowserMetrics::TargetLanguageOrigin target_language_origin);
 
   // Logs the final status of the translation.
   void RecordTranslationStatus(TranslationStatus translation_status);
@@ -240,6 +248,12 @@ class TranslateMetricsLoggerImpl : public TranslateMetricsLogger {
   std::string initial_target_language_;
   std::string current_target_language_;
   int num_target_language_changes_ = 0;
+  TranslateBrowserMetrics::TargetLanguageOrigin
+      initial_target_language_origin_ =
+          TranslateBrowserMetrics::TargetLanguageOrigin::kUninitialized;
+  TranslateBrowserMetrics::TargetLanguageOrigin
+      current_target_language_origin_ =
+          TranslateBrowserMetrics::TargetLanguageOrigin::kUninitialized;
 
   // Tracks this record's HTML language attributes.
   std::string html_doc_language_;

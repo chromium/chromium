@@ -92,8 +92,12 @@ class MockTranslateMetricsLoggerContainer
     mock_translate_metrics_logger_->LogSourceLanguage(source_language_code);
   }
 
-  void LogTargetLanguage(const std::string& target_language_code) override {
-    mock_translate_metrics_logger_->LogTargetLanguage(target_language_code);
+  void LogTargetLanguage(
+      const std::string& target_language_code,
+      translate::TranslateBrowserMetrics::TargetLanguageOrigin
+          target_language_origin) override {
+    mock_translate_metrics_logger_->LogTargetLanguage(target_language_code,
+                                                      target_language_origin);
   }
 
   void LogUIInteraction(translate::UIInteraction ui_interaction) override {

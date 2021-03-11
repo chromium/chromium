@@ -168,8 +168,11 @@ void TranslateManager::InitiateTranslation(const std::string& page_lang) {
   const std::set<std::string>& skipped_languages =
       GetSkippedLanguagesForExperiments(page_language_code,
                                         translate_prefs.get());
-  std::string target_lang = GetTargetLanguage(
-      translate_prefs.get(), language_model_, skipped_languages);
+  TranslateBrowserMetrics::TargetLanguageOrigin target_language_origin =
+      TranslateBrowserMetrics::TargetLanguageOrigin::kUninitialized;
+  std::string target_lang =
+      GetTargetLanguage(translate_prefs.get(), language_model_,
+                        skipped_languages, target_language_origin);
 
   // TODO(crbug.com/924980): The ranker event shouldn't be a global on this
   // object. It should instead be passed around to code that uses it.
@@ -180,7 +183,8 @@ void TranslateManager::InitiateTranslation(const std::string& page_lang) {
   GetActiveTranslateMetricsLogger()->LogInitialSourceLanguage(
       page_language_code,
       translate_prefs->IsBlockedLanguage(page_language_code));
-  GetActiveTranslateMetricsLogger()->LogTargetLanguage(target_lang);
+  GetActiveTranslateMetricsLogger()->LogTargetLanguage(target_lang,
+                                                       target_language_origin);
 
   const TranslateTriggerDecision& decision = ComputePossibleOutcomes(
       translate_prefs.get(), page_language_code, target_lang);
@@ -217,7 +221,10 @@ std::string TranslateManager::GetManualTargetLanguage(
   } else {
     const std::set<std::string>& skipped_languages =
         GetSkippedLanguagesForExperiments(source_code, prefs);
-    return GetTargetLanguage(prefs, language_model, skipped_languages);
+    TranslateBrowserMetrics::TargetLanguageOrigin target_language_origin =
+        TranslateBrowserMetrics::TargetLanguageOrigin::kUninitialized;
+    return GetTargetLanguage(prefs, language_model, skipped_languages,
+                             target_language_origin);
   }
 }
 
@@ -595,15 +602,18 @@ void TranslateManager::OnTranslateScriptFetchComplete(
 std::string TranslateManager::GetTargetLanguage(
     const TranslatePrefs* prefs,
     language::LanguageModel* language_model,
-    const std::set<std::string>& skipped_languages) {
+    const std::set<std::string>& skipped_languages,
+    TranslateBrowserMetrics::TargetLanguageOrigin& target_language_origin) {
   DCHECK(prefs);
   const std::string& recent_target = prefs->GetRecentTargetLanguage();
 
   // If we've recorded the most recent target language, use that.
   if (base::FeatureList::IsEnabled(kTranslateRecentTarget) &&
       !recent_target.empty()) {
+    target_language_origin =
+        TranslateBrowserMetrics::TargetLanguageOrigin::kRecentTarget;
     TranslateBrowserMetrics::ReportTranslateTargetLanguageOrigin(
-        TranslateBrowserMetrics::TargetLanguageOrigin::kRecentTarget);
+        target_language_origin);
     return recent_target;
   }
 
@@ -622,8 +632,10 @@ std::string TranslateManager::GetTargetLanguage(
 
     // Use the first language from the model that translate supports.
     if (!language_codes.empty()) {
+      target_language_origin =
+          TranslateBrowserMetrics::TargetLanguageOrigin::kLanguageModel;
       TranslateBrowserMetrics::ReportTranslateTargetLanguageOrigin(
-          TranslateBrowserMetrics::TargetLanguageOrigin::kLanguageModel);
+          target_language_origin);
       return language_codes[0];
     }
   }
@@ -634,8 +646,10 @@ std::string TranslateManager::GetTargetLanguage(
   // Map 'he', 'nb', 'fil' back to 'iw', 'no', 'tl'
   language::ToTranslateLanguageSynonym(&language);
   if (TranslateDownloadManager::IsSupportedLanguage(language)) {
+    target_language_origin =
+        TranslateBrowserMetrics::TargetLanguageOrigin::kApplicationUI;
     TranslateBrowserMetrics::ReportTranslateTargetLanguageOrigin(
-        TranslateBrowserMetrics::TargetLanguageOrigin::kApplicationUI);
+        target_language_origin);
     return language;
   }
 
@@ -646,8 +660,10 @@ std::string TranslateManager::GetTargetLanguage(
   for (const auto& lang : accept_languages_list) {
     std::string lang_code = TranslateDownloadManager::GetLanguageCode(lang);
     if (TranslateDownloadManager::IsSupportedLanguage(lang_code)) {
+      target_language_origin =
+          TranslateBrowserMetrics::TargetLanguageOrigin::kAcceptLanguages;
       TranslateBrowserMetrics::ReportTranslateTargetLanguageOrigin(
-          TranslateBrowserMetrics::TargetLanguageOrigin::kAcceptLanguages);
+          target_language_origin);
       return lang_code;
     }
   }
@@ -655,8 +671,10 @@ std::string TranslateManager::GetTargetLanguage(
   // If there isn't a target language determined by the above logic, default to
   // English. Otherwise the user can get stuck not being able to translate. See
   // https://crbug.com/1041387.
+  target_language_origin =
+      TranslateBrowserMetrics::TargetLanguageOrigin::kDefaultEnglish;
   TranslateBrowserMetrics::ReportTranslateTargetLanguageOrigin(
-      TranslateBrowserMetrics::TargetLanguageOrigin::kDefaultEnglish);
+      target_language_origin);
   return std::string("en");
 }
 
@@ -664,7 +682,9 @@ std::string TranslateManager::GetTargetLanguage(
 std::string TranslateManager::GetTargetLanguage(
     const TranslatePrefs* prefs,
     language::LanguageModel* language_model) {
-  return GetTargetLanguage(prefs, language_model, {});
+  TranslateBrowserMetrics::TargetLanguageOrigin target_language_origin =
+      TranslateBrowserMetrics::TargetLanguageOrigin::kUninitialized;
+  return GetTargetLanguage(prefs, language_model, {}, target_language_origin);
 }
 
 // static
