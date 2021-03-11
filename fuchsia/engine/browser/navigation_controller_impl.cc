@@ -261,11 +261,8 @@ void NavigationControllerImpl::DidStartNavigation(
 
 void NavigationControllerImpl::DidFinishNavigation(
     content::NavigationHandle* navigation_handle) {
-  if (!navigation_handle->IsInMainFrame() ||
-      navigation_handle->IsSameDocument() ||
-      navigation_handle != active_navigation_) {
+  if (navigation_handle != active_navigation_)
     return;
-  }
 
   active_navigation_ = nullptr;
   uncommitted_load_error_ = !navigation_handle->HasCommitted() &&
