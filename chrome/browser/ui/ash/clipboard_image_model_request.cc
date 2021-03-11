@@ -261,10 +261,12 @@ void ClipboardImageModelRequest::CopySurface() {
   source_view->CopyFromSurface(
       /*src_rect=*/gfx::Rect(), /*output_size=*/gfx::Size(),
       base::BindOnce(&ClipboardImageModelRequest::OnCopyComplete,
-                     weak_ptr_factory_.GetWeakPtr()));
+                     weak_ptr_factory_.GetWeakPtr(),
+                     source_view->GetDeviceScaleFactor()));
 }
 
-void ClipboardImageModelRequest::OnCopyComplete(const SkBitmap& bitmap) {
+void ClipboardImageModelRequest::OnCopyComplete(float device_scale_factor,
+                                                const SkBitmap& bitmap) {
   if (!deliver_image_model_callback_) {
     Stop(RequestStopReason::kMultipleCopyCompletion);
     return;
@@ -272,7 +274,7 @@ void ClipboardImageModelRequest::OnCopyComplete(const SkBitmap& bitmap) {
 
   std::move(deliver_image_model_callback_)
       .Run(ui::ImageModel::FromImageSkia(
-          gfx::ImageSkia::CreateFrom1xBitmap(bitmap)));
+          gfx::ImageSkia(gfx::ImageSkiaRep(bitmap, device_scale_factor))));
   Stop(RequestStopReason::kFulfilled);
 }
 
