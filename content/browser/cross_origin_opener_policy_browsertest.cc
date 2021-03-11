@@ -2791,7 +2791,7 @@ IN_PROC_BROWSER_TEST_P(
                              "/set-header?"
                              "Cross-Origin-Embedder-Policy: require-corp&"
                              "Cross-Origin-Resource-Policy: cross-origin&"
-                             "Feature-Policy: cross-origin-isolated 'none'");
+                             "Permissions-Policy: cross-origin-isolated=()");
   EXPECT_TRUE(NavigateToURL(shell(), main_url));
   EXPECT_TRUE(ExecJs(current_frame_host(),
                      JsReplace("g_iframe = document.createElement('iframe');"
@@ -2838,7 +2838,7 @@ IN_PROC_BROWSER_TEST_P(
                              "/set-header?"
                              "Cross-Origin-Embedder-Policy: require-corp&"
                              "Cross-Origin-Resource-Policy: cross-origin&"
-                             "Feature-Policy: cross-origin-isolated 'none'");
+                             "Permissions-Policy: cross-origin-isolated=()");
   EXPECT_TRUE(NavigateToURL(shell(), main_url));
   EXPECT_TRUE(ExecJs(current_frame_host(),
                      JsReplace("g_iframe = document.createElement('iframe');"

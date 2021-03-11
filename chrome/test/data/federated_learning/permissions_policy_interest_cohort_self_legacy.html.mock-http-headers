@@ -1,2 +1,2 @@
 HTTP/1.1 200 OK
-Feature-Policy: interest-cohort 'self'
+Permissions-Policy: interest-cohort=self

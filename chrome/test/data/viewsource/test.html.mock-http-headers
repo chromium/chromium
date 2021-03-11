@@ -1,2 +1,2 @@
 HTTP/1.1 200 OK
-Feature-Policy: vertical-scroll 'none'
+Permissions-Policy: vertical-scroll=()

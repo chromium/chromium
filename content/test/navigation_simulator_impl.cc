@@ -906,8 +906,8 @@ void NavigationSimulatorImpl::SetIsSignedExchangeInnerResponse(
 
 void NavigationSimulatorImpl::SetPermissionsPolicyHeader(
     blink::ParsedPermissionsPolicy permissions_policy_header) {
-  CHECK_LE(state_, STARTED) << "The Feature-Policy headers cannot be set after "
-                               "the navigation has committed or failed";
+  CHECK_LE(state_, STARTED) << "The Permissions-Policy headers cannot be set "
+                               "after the navigation has committed or failed";
   permissions_policy_header_ = std::move(permissions_policy_header);
 }
 

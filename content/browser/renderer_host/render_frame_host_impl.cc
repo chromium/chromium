@@ -5679,7 +5679,7 @@ void RenderFrameHostImpl::BeginNavigation(
     if (!parent->IsFeatureEnabled(
             blink::mojom::PermissionsPolicyFeature::kTrustTokenRedemption)) {
       mojo::ReportBadMessage(
-          "RFHI: Mandatory Trust Tokens Feature Policy feature is absent");
+          "RFHI: Mandatory Trust Tokens Permissions Policy feature is absent");
       return;
     }
   }

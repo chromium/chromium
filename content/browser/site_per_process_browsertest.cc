@@ -9128,9 +9128,9 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
 IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
                        TestPolicyReplicationOnSameOriginNavigation) {
   GURL start_url(
-      embedded_test_server()->GetURL("a.com", "/feature-policy1.html"));
+      embedded_test_server()->GetURL("a.com", "/permissions-policy1.html"));
   GURL first_nav_url(
-      embedded_test_server()->GetURL("a.com", "/feature-policy2.html"));
+      embedded_test_server()->GetURL("a.com", "/permissions-policy2.html"));
   GURL second_nav_url(embedded_test_server()->GetURL("a.com", "/title2.html"));
 
   EXPECT_TRUE(NavigateToURL(shell(), start_url));
@@ -9160,9 +9160,9 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
 IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
                        TestPolicyReplicationOnCrossOriginNavigation) {
   GURL start_url(
-      embedded_test_server()->GetURL("a.com", "/feature-policy1.html"));
+      embedded_test_server()->GetURL("a.com", "/permissions-policy1.html"));
   GURL first_nav_url(
-      embedded_test_server()->GetURL("b.com", "/feature-policy2.html"));
+      embedded_test_server()->GetURL("b.com", "/permissions-policy2.html"));
   GURL second_nav_url(embedded_test_server()->GetURL("c.com", "/title2.html"));
 
   EXPECT_TRUE(NavigateToURL(shell(), start_url));
@@ -9194,9 +9194,9 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
 IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
                        TestPolicyReplicationFromRemoteFrames) {
   GURL main_url(
-      embedded_test_server()->GetURL("a.com", "/feature-policy-main.html"));
+      embedded_test_server()->GetURL("a.com", "/permissions-policy-main.html"));
   GURL first_nav_url(
-      embedded_test_server()->GetURL("b.com", "/feature-policy2.html"));
+      embedded_test_server()->GetURL("b.com", "/permissions-policy2.html"));
   GURL second_nav_url(embedded_test_server()->GetURL("c.com", "/title2.html"));
 
   EXPECT_TRUE(NavigateToURL(shell(), main_url));
@@ -9245,9 +9245,9 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
   GURL main_url(embedded_test_server()->GetURL(
       "a.com", "/frame_tree/page_with_two_frames.html"));
   GURL first_nav_url(
-      embedded_test_server()->GetURL("a.com", "/feature-policy3.html"));
+      embedded_test_server()->GetURL("a.com", "/permissions-policy3.html"));
   GURL second_nav_url(
-      embedded_test_server()->GetURL("a.com", "/feature-policy4.html"));
+      embedded_test_server()->GetURL("a.com", "/permissions-policy4.html"));
 
   EXPECT_TRUE(NavigateToURL(shell(), main_url));
 
@@ -9549,7 +9549,7 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest, ContainerPolicy) {
 IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest, ContainerPolicyDynamic) {
   GURL main_url(embedded_test_server()->GetURL("/allowed_frames.html"));
   GURL nav_url(
-      embedded_test_server()->GetURL("b.com", "/feature-policy2.html"));
+      embedded_test_server()->GetURL("b.com", "/permissions-policy2.html"));
   EXPECT_TRUE(NavigateToURL(shell(), main_url));
 
   FrameTreeNode* root = web_contents()->GetFrameTree()->root();
@@ -9622,7 +9622,7 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
                        ContainerPolicySandboxDynamic) {
   GURL main_url(embedded_test_server()->GetURL("/allowed_frames.html"));
   GURL nav_url(
-      embedded_test_server()->GetURL("b.com", "/feature-policy2.html"));
+      embedded_test_server()->GetURL("b.com", "/permissions-policy2.html"));
   EXPECT_TRUE(NavigateToURL(shell(), main_url));
 
   FrameTreeNode* root = web_contents()->GetFrameTree()->root();
