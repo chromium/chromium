@@ -78,7 +78,7 @@ content::WebUIDataSource* CreateFlagsUIHTMLSource() {
       base::SysInfo::IsRunningOnChromeOS()) {
     // Set the string to show which user can actually change the flags.
     std::string owner;
-    chromeos::CrosSettings::Get()->GetString(chromeos::kDeviceOwner, &owner);
+    ash::CrosSettings::Get()->GetString(chromeos::kDeviceOwner, &owner);
     source->AddString("owner-warning",
                       l10n_util::GetStringFUTF16(IDS_FLAGS_UI_OWNER_WARNING,
                                                  base::UTF8ToUTF16(owner)));

@@ -117,7 +117,7 @@ CloudExternalDataPolicyObserver::Delegate::~Delegate() {
 }
 
 CloudExternalDataPolicyObserver::CloudExternalDataPolicyObserver(
-    chromeos::CrosSettings* cros_settings,
+    ash::CrosSettings* cros_settings,
     DeviceLocalAccountPolicyService* device_local_account_policy_service,
     const std::string& policy,
     Delegate* delegate)

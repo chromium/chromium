@@ -11,6 +11,8 @@
 
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
+// TODO(https://crbug.com/1164001): move CrosSettings to forward declaration
+// when moved to chrome/browser/ash/.
 #include "chrome/browser/ash/settings/cros_settings.h"
 #include "chromeos/dbus/session_manager/session_manager_client.h"
 #include "components/policy/core/common/cloud/cloud_policy_store.h"
@@ -20,8 +22,6 @@ class BluetoothAdapter;
 }
 
 namespace chromeos {
-
-class CrosSettings;
 
 // Fetches all info we want to show on OOBE/Login screens about system
 // version, boot times and cloud policy.

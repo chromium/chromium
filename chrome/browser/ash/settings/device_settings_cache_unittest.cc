@@ -12,7 +12,7 @@
 
 namespace em = enterprise_management;
 
-namespace chromeos {
+namespace ash {
 
 class DeviceSettingsCacheTest : public testing::Test {
  protected:
@@ -54,4 +54,4 @@ TEST_F(DeviceSettingsCacheTest, CorruptData) {
   EXPECT_FALSE(device_settings_cache::Retrieve(&policy_out, &local_state_));
 }
 
-}  // namespace chromeos
+}  // namespace ash

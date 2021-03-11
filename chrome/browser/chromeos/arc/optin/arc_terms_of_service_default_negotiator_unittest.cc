@@ -67,9 +67,9 @@ class ArcTermsOfServiceDefaultNegotiatorTest
         IdentityManagerFactory::GetForProfile(profile()),
         "testing@account.com");
 
-    chromeos::StatsReportingController::RegisterLocalStatePrefs(
+    ash::StatsReportingController::RegisterLocalStatePrefs(
         local_state_.registry());
-    chromeos::StatsReportingController::Initialize(&local_state_);
+    ash::StatsReportingController::Initialize(&local_state_);
 
     support_host_ = std::make_unique<ArcSupportHost>(profile());
     fake_arc_support_ = std::make_unique<FakeArcSupport>(support_host_.get());
@@ -83,7 +83,7 @@ class ArcTermsOfServiceDefaultNegotiatorTest
     support_host_.reset();
     user_manager_enabler_.reset();
 
-    chromeos::StatsReportingController::Shutdown();
+    ash::StatsReportingController::Shutdown();
     BrowserWithTestWindowTest::TearDown();
   }
 

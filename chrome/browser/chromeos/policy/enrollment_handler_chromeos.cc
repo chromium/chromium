@@ -725,7 +725,7 @@ void EnrollmentHandlerChromeOS::OnDeviceAccountTokenStored() {
     CHECK(install_attributes_->IsActiveDirectoryManaged());
     // Update device settings so that in case of Active Directory unsigned
     // policy is accepted.
-    chromeos::DeviceSettingsService::Get()->SetDeviceMode(
+    ash::DeviceSettingsService::Get()->SetDeviceMode(
         install_attributes_->GetMode());
     chromeos::AuthPolicyClient::Get()->RefreshDevicePolicy(base::BindOnce(
         &EnrollmentHandlerChromeOS::HandleActiveDirectoryPolicyRefreshed,

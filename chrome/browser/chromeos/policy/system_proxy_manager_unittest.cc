@@ -113,7 +113,7 @@ class SystemProxyManagerTest : public testing::Test {
     profile_ = std::make_unique<TestingProfile>();
     chromeos::SystemProxyClient::InitializeFake();
     system_proxy_manager_ = std::make_unique<SystemProxyManager>(
-        chromeos::CrosSettings::Get(), local_state_.Get());
+        ash::CrosSettings::Get(), local_state_.Get());
     // Listen for pref changes for the primary profile.
     system_proxy_manager_->StartObservingPrimaryProfilePrefs(profile_.get());
     chromeos::NetworkHandler::Get()->InitializePrefServices(
@@ -150,10 +150,10 @@ class SystemProxyManagerTest : public testing::Test {
 
   content::BrowserTaskEnvironment task_environment_;
   ScopedTestingLocalState local_state_;
-  chromeos::ScopedTestingCrosSettings scoped_testing_cros_settings_;
+  ash::ScopedTestingCrosSettings scoped_testing_cros_settings_;
   std::unique_ptr<SystemProxyManager> system_proxy_manager_;
   std::unique_ptr<TestingProfile> profile_;
-  chromeos::ScopedDeviceSettingsTestHelper device_settings_test_helper_;
+  ash::ScopedDeviceSettingsTestHelper device_settings_test_helper_;
   chromeos::ScopedStubInstallAttributes test_install_attributes_;
 };
 

@@ -16,7 +16,7 @@
 
 namespace em = enterprise_management;
 
-namespace chromeos {
+namespace ash {
 
 namespace device_settings_cache {
 
@@ -57,4 +57,4 @@ std::string PolicyDataToString(const em::PolicyData& policy) {
 
 }  // namespace device_settings_cache
 
-}  // namespace chromeos
+}  // namespace ash

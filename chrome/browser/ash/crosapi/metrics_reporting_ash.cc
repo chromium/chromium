@@ -30,7 +30,7 @@ class DelegateImpl : public MetricsReportingAsh::Delegate {
     // Use primary profile because Lacros does not support multi-signin.
     Profile* profile = ProfileManager::GetPrimaryUserProfile();
     // Chrome OS uses this wrapper around the underlying metrics pref.
-    chromeos::StatsReportingController::Get()->SetEnabled(profile, enabled);
+    ash::StatsReportingController::Get()->SetEnabled(profile, enabled);
   }
 };
 

@@ -243,7 +243,7 @@ class ProfileManagerTest : public testing::Test {
         profile_helper->GetProfilePathByUserIdHash(user_id_hash));
   }
 
-  chromeos::ScopedCrosSettingsTestHelper cros_settings_test_helper_;
+  ash::ScopedCrosSettingsTestHelper cros_settings_test_helper_;
 #endif
 
   // The path to temporary directory used to contain the test operations. These

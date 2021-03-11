@@ -450,7 +450,7 @@ class LockScreenAppManagerImplTest
   std::unique_ptr<base::test::ScopedCommandLine> command_line_;
   content::BrowserTaskEnvironment task_environment_;
 
-  chromeos::ScopedCrosSettingsTestHelper cros_settings_test_helper_;
+  ash::ScopedCrosSettingsTestHelper cros_settings_test_helper_;
   chromeos::ScopedTestUserManager user_manager_;
 
   TestingProfileManager profile_manager_;

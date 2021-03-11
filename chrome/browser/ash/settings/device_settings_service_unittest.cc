@@ -26,7 +26,7 @@ namespace em = enterprise_management;
 
 using ::testing::Mock;
 
-namespace chromeos {
+namespace ash {
 
 namespace {
 
@@ -507,4 +507,4 @@ TEST_F(DeviceSettingsServiceTest, LoadDeferredDuringOwnershipEstablishment) {
   EXPECT_TRUE(is_owner_);
 }
 
-}  // namespace chromeos
+}  // namespace ash

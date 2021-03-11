@@ -438,7 +438,7 @@ class NetworkConfigurationUpdaterTest : public testing::Test {
     network_configuration_updater_ =
         DeviceNetworkConfigurationUpdater::CreateForDevicePolicy(
             policy_service_.get(), &network_config_handler_,
-            &network_device_handler_, chromeos::CrosSettings::Get(),
+            &network_device_handler_, ash::CrosSettings::Get(),
             testing_device_asset_id_getter);
     return network_configuration_updater_.get();
   }
@@ -450,8 +450,8 @@ class NetworkConfigurationUpdaterTest : public testing::Test {
       network_config_handler_;
   FakeNetworkDeviceHandler network_device_handler_;
   chromeos::ScopedStubInstallAttributes scoped_stub_install_attributes_;
-  chromeos::ScopedTestDeviceSettingsService scoped_device_settings_service_;
-  chromeos::ScopedTestingCrosSettings scoped_testing_cros_settings_;
+  ash::ScopedTestDeviceSettingsService scoped_device_settings_service_;
+  ash::ScopedTestingCrosSettings scoped_testing_cros_settings_;
   chromeos::system::ScopedFakeStatisticsProvider fake_statistics_provider_;
 
   // Ownership of client_certificate_importer_owned_ is passed to the

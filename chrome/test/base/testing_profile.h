@@ -376,7 +376,7 @@ class TestingProfile : public Profile {
   void ChangeAppLocale(const std::string&, AppLocaleChangedVia) override;
   void OnLogin() override {}
   void InitChromeOSPreferences() override {}
-  chromeos::ScopedCrosSettingsTestHelper* ScopedCrosSettingsTestHelper();
+  ash::ScopedCrosSettingsTestHelper* ScopedCrosSettingsTestHelper();
 
   base::Optional<std::string> requested_locale() { return requested_locale_; }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
@@ -506,7 +506,7 @@ class TestingProfile : public Profile {
   base::Optional<OTRProfileID> otr_profile_id_;
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  std::unique_ptr<chromeos::ScopedCrosSettingsTestHelper>
+  std::unique_ptr<ash::ScopedCrosSettingsTestHelper>
       scoped_cros_settings_test_helper_;
 
   base::Optional<std::string> requested_locale_;

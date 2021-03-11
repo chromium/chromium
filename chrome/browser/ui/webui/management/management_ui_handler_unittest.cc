@@ -556,7 +556,7 @@ class ManagementUIHandlerTests : public TestingBaseClass {
   std::unique_ptr<TestDeviceCloudPolicyManagerChromeOS> manager_;
   scoped_refptr<base::TestSimpleTaskRunner> task_runner_;
   policy::ServerBackedStateKeysBroker state_keys_broker_;
-  chromeos::ScopedTestingCrosSettings settings_;
+  ash::ScopedTestingCrosSettings settings_;
   chromeos::system::ScopedFakeStatisticsProvider fake_statistics_provider_;
 #else
   content::BrowserTaskEnvironment task_environment_;

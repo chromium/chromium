@@ -48,7 +48,7 @@ using google::protobuf::RepeatedPtrField;
 
 namespace em = enterprise_management;
 
-namespace chromeos {
+namespace ash {
 
 namespace {
 
@@ -228,7 +228,7 @@ void DecodeLoginPolicies(const em::ChromeDeviceSettingsProto& policy,
         policy.user_allowlist().user_allowlist_size() > 0));
   new_values_cache->SetBoolean(
       kAccountsPrefFamilyLinkAccountsAllowed,
-      chromeos::features::IsFamilyLinkOnSchoolDeviceEnabled() &&
+      features::IsFamilyLinkOnSchoolDeviceEnabled() &&
           user_allowlist_enforced &&
           policy.has_family_link_accounts_allowed() &&
           policy.family_link_accounts_allowed()
@@ -248,7 +248,7 @@ void DecodeLoginPolicies(const em::ChromeDeviceSettingsProto& policy,
           policy.guest_mode_enabled().guest_mode_enabled());
 
   bool supervised_users_enabled = false;
-  if (!InstallAttributes::Get()->IsEnterpriseManaged()) {
+  if (!chromeos::InstallAttributes::Get()->IsEnterpriseManaged()) {
     supervised_users_enabled = true;
   }
   new_values_cache->SetBoolean(kAccountsPrefSupervisedUsersEnabled,
@@ -696,7 +696,8 @@ void DecodeGenericPolicies(const em::ChromeDeviceSettingsProto& policy,
     // If the policy is missing, default to reporting enabled on enterprise-
     // enrolled devices, c.f. crbug/456186.
     new_values_cache->SetBoolean(
-        kStatsReportingPref, InstallAttributes::Get()->IsEnterpriseManaged());
+        kStatsReportingPref,
+        chromeos::InstallAttributes::Get()->IsEnterpriseManaged());
   }
 
   if (!policy.has_release_channel() ||
@@ -1025,7 +1026,7 @@ void DecodeGenericPolicies(const em::ChromeDeviceSettingsProto& policy,
   // Default value of the policy in case it's missing.
   bool show_low_disk_space_notification = true;
   // Disable the notification by default for enrolled devices.
-  if (InstallAttributes::Get()->IsEnterpriseManaged())
+  if (chromeos::InstallAttributes::Get()->IsEnterpriseManaged())
     show_low_disk_space_notification = false;
   if (policy.has_device_show_low_disk_space_notification()) {
     const em::DeviceShowLowDiskSpaceNotificationProto& container(
@@ -1330,7 +1331,8 @@ void DeviceSettingsProvider::UpdateValuesCache(
 bool DeviceSettingsProvider::MitigateMissingPolicy() {
   // First check if the device has been owned already and if not exit
   // immediately.
-  if (InstallAttributes::Get()->GetMode() != policy::DEVICE_MODE_CONSUMER)
+  if (chromeos::InstallAttributes::Get()->GetMode() !=
+      policy::DEVICE_MODE_CONSUMER)
     return false;
 
   // If we are here the policy file were corrupted or missing. This can happen
@@ -1444,4 +1446,4 @@ bool DeviceSettingsProvider::UpdateFromService() {
   return settings_loaded;
 }
 
-}  // namespace chromeos
+}  // namespace ash

@@ -38,7 +38,7 @@
 
 namespace em = enterprise_management;
 
-namespace chromeos {
+namespace ash {
 
 using ::testing::_;
 using ::testing::AnyNumber;
@@ -1193,7 +1193,7 @@ TEST_F(DeviceSettingsProviderTestEnterprise,
 TEST_F(DeviceSettingsProviderTest, DeviceFamilyLinkAccountsAllowedDisabled) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndDisableFeature(
-      chromeos::features::kFamilyLinkOnSchoolDevice);
+      features::kFamilyLinkOnSchoolDevice);
 
   base::Value default_value(false);
   VerifyPolicyValue(kAccountsPrefFamilyLinkAccountsAllowed, &default_value);
@@ -1208,8 +1208,7 @@ TEST_F(DeviceSettingsProviderTest, DeviceFamilyLinkAccountsAllowedDisabled) {
 // Tests DeviceFamilyLinkAccountsAllowed policy with the feature enabled.
 TEST_F(DeviceSettingsProviderTest, DeviceFamilyLinkAccountsAllowedEnabled) {
   base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(
-      chromeos::features::kFamilyLinkOnSchoolDevice);
+  scoped_feature_list.InitAndEnableFeature(features::kFamilyLinkOnSchoolDevice);
 
   base::Value default_value(false);
   VerifyPolicyValue(kAccountsPrefFamilyLinkAccountsAllowed, &default_value);
@@ -1255,4 +1254,4 @@ TEST_F(DeviceSettingsProviderTest, DecodeBorealisDisallowed) {
   EXPECT_EQ(base::Value(false), *provider_->Get(kBorealisAllowedForDevice));
 }
 
-}  // namespace chromeos
+}  // namespace ash

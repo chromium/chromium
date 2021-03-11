@@ -81,8 +81,8 @@ void DeviceInfoService::OnAdaptorConnect(bool success) {
   }
 
   VLOG(3) << "mojom::DeviceInfo Service Adaptor is connected.";
-  CHECK(chromeos::DeviceSettingsService::IsInitialized());
-  chromeos::DeviceSettingsService::Get()->AddObserver(this);
+  CHECK(ash::DeviceSettingsService::IsInitialized());
+  ash::DeviceSettingsService::Get()->AddObserver(this);
 }
 
 void DeviceInfoService::OnAdaptorDisconnect() {
@@ -115,7 +115,7 @@ void DeviceInfoService::AddDeviceSettingsObserver(
 }
 
 void DeviceInfoService::UpdatePolicyInfo() {
-  auto* device_settings = chromeos::DeviceSettingsService::Get();
+  auto* device_settings = ash::DeviceSettingsService::Get();
   if (!device_settings || !device_settings->policy_data()) {
     return;
   }
@@ -205,7 +205,7 @@ DeviceInfoService::~DeviceInfoService() {
 void DeviceInfoService::Reset() {
   receivers_.Clear();
   policy_remotes_.Clear();
-  chromeos::DeviceSettingsService::Get()->RemoveObserver(this);
+  ash::DeviceSettingsService::Get()->RemoveObserver(this);
 }
 
 }  // namespace cfm

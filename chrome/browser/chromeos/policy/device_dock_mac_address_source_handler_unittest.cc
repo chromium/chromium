@@ -27,7 +27,7 @@ class DeviceDockMacAddressHandlerBaseTest : public testing::Test {
 
     device_dock_mac_address_handler_ =
         std::make_unique<DeviceDockMacAddressHandler>(
-            chromeos::CrosSettings::Get(), &network_device_handler_mock_);
+            ash::CrosSettings::Get(), &network_device_handler_mock_);
   }
 
  protected:
@@ -36,7 +36,7 @@ class DeviceDockMacAddressHandlerBaseTest : public testing::Test {
         chromeos::CrosSettingsProvider::TRUSTED);
   }
 
-  chromeos::ScopedCrosSettingsTestHelper scoped_cros_settings_test_helper_;
+  ash::ScopedCrosSettingsTestHelper scoped_cros_settings_test_helper_;
 
   testing::StrictMock<chromeos::MockNetworkDeviceHandler>
       network_device_handler_mock_;

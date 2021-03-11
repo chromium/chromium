@@ -84,7 +84,7 @@ IN_PROC_BROWSER_TEST_P(DisplayRotationDefaultTest, FirstDisplay) {
 
   SetRotationPolicy(policy_rotation);
   int settings_rotation;
-  EXPECT_TRUE(chromeos::CrosSettings::Get()->GetInteger(
+  EXPECT_TRUE(ash::CrosSettings::Get()->GetInteger(
       chromeos::kDisplayRotationDefault, &settings_rotation));
   EXPECT_EQ(policy_rotation, settings_rotation)
       << "Value of CrosSettings after policy value changed";
@@ -216,7 +216,7 @@ IN_PROC_BROWSER_TEST_P(DisplayRotationBootTest, PRE_Reboot) {
       static_cast<em::DisplayRotationDefaultProto::Rotation>(policy_rotation));
   base::RunLoop run_loop;
   base::CallbackListSubscription subscription =
-      chromeos::CrosSettings::Get()->AddSettingsObserver(
+      ash::CrosSettings::Get()->AddSettingsObserver(
           chromeos::kDisplayRotationDefault, run_loop.QuitClosure());
   device_policy->SetDefaultSigningKey();
   device_policy->Build();

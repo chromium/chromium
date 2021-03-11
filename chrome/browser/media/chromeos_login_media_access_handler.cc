@@ -44,7 +44,7 @@ bool ChromeOSLoginMediaAccessHandler::CheckMediaAccessPermission(
   if (security_origin.spec() == chrome::kChromeUIOobeURL)
     return true;
 
-  const chromeos::CrosSettings* const settings = chromeos::CrosSettings::Get();
+  const ash::CrosSettings* const settings = ash::CrosSettings::Get();
   if (!settings)
     return false;
 

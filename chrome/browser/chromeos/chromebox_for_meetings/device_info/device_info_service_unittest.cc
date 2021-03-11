@@ -50,7 +50,7 @@ class CfmDeviceInfoServiceTest : public ::testing::Test {
         new ownership::MockOwnerKeyUtil());
     owner_key_util_->SetPublicKeyFromPrivateKey(
         *device_policy_.GetSigningKey());
-    chromeos::DeviceSettingsService::Get()->SetSessionManager(
+    ash::DeviceSettingsService::Get()->SetSessionManager(
         &session_manager_client_, owner_key_util_);
 
     CfmHotlineClient::InitializeFake();
@@ -62,7 +62,7 @@ class CfmDeviceInfoServiceTest : public ::testing::Test {
   void TearDown() override {
     DeviceInfoService::Shutdown();
     CfmHotlineClient::Shutdown();
-    chromeos::DeviceSettingsService::Get()->UnsetSessionManager();
+    ash::DeviceSettingsService::Get()->UnsetSessionManager();
   }
 
   FakeCfmHotlineClient* GetClient() {
@@ -80,7 +80,7 @@ class CfmDeviceInfoServiceTest : public ::testing::Test {
     device_policy_.policy_data().set_gaia_id(base::NumberToString(gaia_id));
     device_policy_.Build();
     session_manager_client_.set_device_policy(device_policy_.GetBlob());
-    chromeos::DeviceSettingsService::Get()->Load();
+    ash::DeviceSettingsService::Get()->Load();
     content::RunAllTasksUntilIdle();
   }
 
@@ -131,7 +131,7 @@ class CfmDeviceInfoServiceTest : public ::testing::Test {
   mojo::Remote<mojom::MeetDevicesInfo> device_info_remote_;
   mojo::ReceiverSet<mojom::CfmServiceContext> context_receiver_set_;
   mojo::Remote<mojom::CfmServiceAdaptor> adaptor_remote_;
-  chromeos::ScopedTestDeviceSettingsService scoped_device_settings_service_;
+  ash::ScopedTestDeviceSettingsService scoped_device_settings_service_;
   chromeos::FakeSessionManagerClient session_manager_client_;
   FakeServiceConnectionImpl fake_service_connection_;
   policy::DevicePolicyBuilder device_policy_;

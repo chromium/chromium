@@ -80,7 +80,7 @@ namespace {
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 bool IsPrivilegedCrosSetting(const std::string& pref_name) {
-  if (!chromeos::CrosSettings::IsCrosSettings(pref_name))
+  if (!ash::CrosSettings::IsCrosSettings(pref_name))
     return false;
   if (!ash::system::PerUserTimezoneEnabled()) {
     // kSystemTimezone should be changeable by all users.
@@ -97,7 +97,7 @@ bool IsRestrictedCrosSettingForChildUser(Profile* profile,
   if (!profile->IsChild())
     return false;
 
-  return chromeos::CrosSettings::Get()
+  return ash::CrosSettings::Get()
       ->supervised_user_cros_settings_provider()
       ->HandlesSetting(pref_name);
 }
@@ -109,7 +109,7 @@ const base::Value* GetRestrictedCrosSettingValueForChildUser(
   // pre-set.
   DCHECK(IsRestrictedCrosSettingForChildUser(profile, pref_name));
 
-  return chromeos::CrosSettings::Get()
+  return ash::CrosSettings::Get()
       ->supervised_user_cros_settings_provider()
       ->Get(pref_name);
 }

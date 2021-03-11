@@ -599,7 +599,7 @@ void ProfileImpl::LoadPrefsForNormalStartup(bool async_prefs) {
   policy::UserCloudPolicyManager* user_cloud_policy_manager;
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   if (force_immediate_policy_load)
-    chromeos::DeviceSettingsService::Get()->LoadImmediately();
+    ash::DeviceSettingsService::Get()->LoadImmediately();
 
   policy::CreateConfigurationPolicyProvider(
       this, force_immediate_policy_load, io_task_runner_,

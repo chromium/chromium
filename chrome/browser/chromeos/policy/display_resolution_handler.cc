@@ -161,8 +161,8 @@ const char* DisplayResolutionHandler::SettingName() {
 void DisplayResolutionHandler::OnSettingUpdate() {
   policy_enabled_ = false;
   const base::DictionaryValue* resolution_pref = nullptr;
-  chromeos::CrosSettings::Get()->GetDictionary(
-      chromeos::kDeviceDisplayResolution, &resolution_pref);
+  ash::CrosSettings::Get()->GetDictionary(chromeos::kDeviceDisplayResolution,
+                                          &resolution_pref);
   if (!resolution_pref)
     return;
 

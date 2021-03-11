@@ -28,7 +28,7 @@ namespace ent_mgmt = ::enterprise_management;
 // session has been removed from policy since the session started, in which
 // case we won't report its status).
 std::unique_ptr<DeviceLocalAccount> GetCurrentKioskDeviceLocalAccount(
-    chromeos::CrosSettings* settings) {
+    ash::CrosSettings* settings) {
   if (!user_manager::UserManager::Get()->IsLoggedInAsAnyKioskApp()) {
     return nullptr;
   }
@@ -102,7 +102,7 @@ base::Optional<std::string> StatusCollector::GetBootMode(
 }
 
 StatusCollector::StatusCollector(chromeos::system::StatisticsProvider* provider,
-                                 chromeos::CrosSettings* cros_settings,
+                                 ash::CrosSettings* cros_settings,
                                  base::Clock* clock)
     : statistics_provider_(provider),
       cros_settings_(cros_settings),
@@ -113,7 +113,7 @@ StatusCollector::~StatusCollector() = default;
 std::unique_ptr<DeviceLocalAccount>
 StatusCollector::GetAutoLaunchedKioskSessionInfo() {
   std::unique_ptr<DeviceLocalAccount> account =
-      GetCurrentKioskDeviceLocalAccount(chromeos::CrosSettings::Get());
+      GetCurrentKioskDeviceLocalAccount(ash::CrosSettings::Get());
   if (!account) {
     // No auto-launched kiosk session active.
     return nullptr;

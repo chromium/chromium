@@ -62,7 +62,7 @@ bool CanModifyUserList(Profile* profile) {
 }
 
 bool IsExistingUser(const std::string& username) {
-  return chromeos::CrosSettings::Get()->FindEmailInList(
+  return ash::CrosSettings::Get()->FindEmailInList(
       chromeos::kAccountsPrefUsers, username, /*wildcard_match=*/nullptr);
 }
 

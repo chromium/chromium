@@ -209,7 +209,7 @@ std::unique_ptr<Browser> BrowserWithTestWindowTest::CreateBrowser(
 }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-chromeos::ScopedCrosSettingsTestHelper*
+ash::ScopedCrosSettingsTestHelper*
 BrowserWithTestWindowTest::GetCrosSettingsHelper() {
   return &cros_settings_test_helper_;
 }

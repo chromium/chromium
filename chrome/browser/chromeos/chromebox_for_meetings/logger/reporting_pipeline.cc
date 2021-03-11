@@ -47,14 +47,14 @@ ReportingPipeline::~ReportingPipeline() {
 }
 
 void ReportingPipeline::Init() {
-  CHECK(chromeos::DeviceSettingsService::IsInitialized());
-  chromeos::DeviceSettingsService::Get()->AddObserver(this);
+  CHECK(ash::DeviceSettingsService::IsInitialized());
+  ash::DeviceSettingsService::Get()->AddObserver(this);
   // Device settings update may not be triggered in some cases
   DeviceSettingsUpdated();
 }
 
 void ReportingPipeline::Reset() {
-  chromeos::DeviceSettingsService::Get()->RemoveObserver(this);
+  ash::DeviceSettingsService::Get()->RemoveObserver(this);
   dm_token_.clear();
   update_status_callback_.Run(mojom::LoggerState::kUninitialized);
 }
@@ -81,7 +81,7 @@ void ReportingPipeline::Enqueue(const std::string& record,
 }
 
 void ReportingPipeline::DeviceSettingsUpdated() {
-  auto* policy_data = chromeos::DeviceSettingsService::Get()->policy_data();
+  auto* policy_data = ash::DeviceSettingsService::Get()->policy_data();
 
   if (!policy_data || !policy_data->has_request_token() ||
       policy_data->request_token().empty()) {

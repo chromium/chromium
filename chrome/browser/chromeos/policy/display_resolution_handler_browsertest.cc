@@ -64,8 +64,8 @@ const int kDefaultDisplayScale = 100;
 
 PolicyValue GetPolicySetting() {
   const base::DictionaryValue* resolution_pref = nullptr;
-  chromeos::CrosSettings::Get()->GetDictionary(
-      chromeos::kDeviceDisplayResolution, &resolution_pref);
+  ash::CrosSettings::Get()->GetDictionary(chromeos::kDeviceDisplayResolution,
+                                          &resolution_pref);
   EXPECT_TRUE(resolution_pref) << "DeviceDisplayResolution setting is not set";
   const base::Value* width = resolution_pref->FindKeyOfType(
       {chromeos::kDeviceDisplayResolutionKeyExternalWidth},
@@ -343,7 +343,7 @@ IN_PROC_BROWSER_TEST_P(DisplayResolutionBootTest, PRE_Reboot) {
   SetPolicyValue(&proto, policy_value, true);
   base::RunLoop run_loop;
   base::CallbackListSubscription subscription =
-      chromeos::CrosSettings::Get()->AddSettingsObserver(
+      ash::CrosSettings::Get()->AddSettingsObserver(
           chromeos::kDeviceDisplayResolution, run_loop.QuitClosure());
   device_policy->SetDefaultSigningKey();
   device_policy->Build();

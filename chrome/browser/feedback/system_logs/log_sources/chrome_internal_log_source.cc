@@ -241,8 +241,8 @@ std::string GetChromeVersionString() {
   // If the device is receiving LTS updates, add a prefix to the version string.
   // The value of the policy is ignored here.
   std::string value;
-  const bool is_lts = chromeos::CrosSettings::Get()->GetString(
-      chromeos::kReleaseLtsTag, &value);
+  const bool is_lts =
+      ash::CrosSettings::Get()->GetString(chromeos::kReleaseLtsTag, &value);
   if (is_lts)
     browser_version = kLTSChromeVersionPrefix + browser_version;
 

@@ -88,7 +88,7 @@ void ConstructAvatarPolicy(const std::string& file_name,
 }  // namespace
 
 class CloudExternalDataPolicyObserverTest
-    : public chromeos::DeviceSettingsTestBase,
+    : public ash::DeviceSettingsTestBase,
       public CloudExternalDataPolicyObserver::Delegate {
  public:
   typedef std::pair<std::string, std::string> FetchedCall;
@@ -96,7 +96,7 @@ class CloudExternalDataPolicyObserverTest
   CloudExternalDataPolicyObserverTest();
   ~CloudExternalDataPolicyObserverTest() override;
 
-  // chromeos::DeviceSettingsTestBase:
+  // ash::DeviceSettingsTestBase:
   void SetUp() override;
   void TearDown() override;
 
@@ -138,7 +138,7 @@ class CloudExternalDataPolicyObserverTest
   std::string avatar_policy_1_;
   std::string avatar_policy_2_;
 
-  std::unique_ptr<chromeos::CrosSettings> cros_settings_;
+  std::unique_ptr<ash::CrosSettings> cros_settings_;
   std::unique_ptr<DeviceLocalAccountPolicyService>
       device_local_account_policy_service_;
   FakeAffiliatedInvalidationServiceProvider
@@ -179,13 +179,13 @@ CloudExternalDataPolicyObserverTest::~CloudExternalDataPolicyObserverTest() {
 }
 
 void CloudExternalDataPolicyObserverTest::SetUp() {
-  chromeos::DeviceSettingsTestBase::SetUp();
+  ash::DeviceSettingsTestBase::SetUp();
 
   ASSERT_TRUE(profile_manager_.SetUp());
   shared_url_loader_factory_ =
       base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
           &url_loader_factory_);
-  cros_settings_ = std::make_unique<chromeos::CrosSettings>(
+  cros_settings_ = std::make_unique<ash::CrosSettings>(
       device_settings_service_.get(),
       TestingBrowserProcess::GetGlobal()->local_state());
   device_local_account_policy_service_.reset(
@@ -223,7 +223,7 @@ void CloudExternalDataPolicyObserverTest::TearDown() {
   device_local_account_policy_service_->Shutdown();
   device_local_account_policy_service_.reset();
   cros_settings_.reset();
-  chromeos::DeviceSettingsTestBase::TearDown();
+  ash::DeviceSettingsTestBase::TearDown();
 }
 
 

@@ -54,7 +54,7 @@ namespace {
 
 // Device local accounts are always affiliated.
 std::string GetDeviceDMToken(
-    chromeos::DeviceSettingsService* device_settings_service,
+    ash::DeviceSettingsService* device_settings_service,
     const std::vector<std::string>& user_affiliation_ids) {
   return device_settings_service->policy_data()->request_token();
 }
@@ -63,7 +63,7 @@ std::string GetDeviceDMToken(
 // doesn't have credentials in device settings (i.e. is not
 // enterprise-enrolled).
 std::unique_ptr<CloudPolicyClient> CreateClient(
-    chromeos::DeviceSettingsService* device_settings_service,
+    ash::DeviceSettingsService* device_settings_service,
     DeviceManagementService* device_management_service,
     scoped_refptr<network::SharedURLLoaderFactory> system_url_loader_factory) {
   const em::PolicyData* policy_data = device_settings_service->policy_data();
@@ -184,7 +184,7 @@ bool DeviceLocalAccountPolicyBroker::HasInvalidatorForTest() const {
 }
 
 void DeviceLocalAccountPolicyBroker::ConnectIfPossible(
-    chromeos::DeviceSettingsService* device_settings_service,
+    ash::DeviceSettingsService* device_settings_service,
     DeviceManagementService* device_management_service,
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory) {
   if (core_.client())
@@ -251,8 +251,8 @@ void DeviceLocalAccountPolicyBroker::CreateComponentCloudPolicyService(
 
 DeviceLocalAccountPolicyService::DeviceLocalAccountPolicyService(
     chromeos::SessionManagerClient* session_manager_client,
-    chromeos::DeviceSettingsService* device_settings_service,
-    chromeos::CrosSettings* cros_settings,
+    ash::DeviceSettingsService* device_settings_service,
+    ash::CrosSettings* cros_settings,
     AffiliatedInvalidationServiceProvider* invalidation_service_provider,
     scoped_refptr<base::SequencedTaskRunner> store_background_task_runner,
     scoped_refptr<base::SequencedTaskRunner> extension_cache_task_runner,

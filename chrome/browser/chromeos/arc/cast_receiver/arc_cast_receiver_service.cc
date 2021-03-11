@@ -69,12 +69,10 @@ ArcCastReceiverService::ArcCastReceiverService(content::BrowserContext* context,
       base::BindRepeating(&ArcCastReceiverService::OnCastReceiverEnabledChanged,
                           base::Unretained(this)));
 
-  receiver_name_subscription_ =
-      chromeos::CrosSettings::Get()->AddSettingsObserver(
-          chromeos::kCastReceiverName,
-          base::BindRepeating(
-              &ArcCastReceiverService::OnCastReceiverNameChanged,
-              base::Unretained(this)));
+  receiver_name_subscription_ = ash::CrosSettings::Get()->AddSettingsObserver(
+      chromeos::kCastReceiverName,
+      base::BindRepeating(&ArcCastReceiverService::OnCastReceiverNameChanged,
+                          base::Unretained(this)));
 }
 
 ArcCastReceiverService::~ArcCastReceiverService() {
@@ -109,8 +107,8 @@ void ArcCastReceiverService::OnCastReceiverNameChanged() const {
   if (!cast_receiver_instance)
     return;
   std::string name;
-  if (!chromeos::CrosSettings::Get()->GetString(chromeos::kCastReceiverName,
-                                                &name) ||
+  if (!ash::CrosSettings::Get()->GetString(chromeos::kCastReceiverName,
+                                           &name) ||
       name.empty()) {
     return;
   }

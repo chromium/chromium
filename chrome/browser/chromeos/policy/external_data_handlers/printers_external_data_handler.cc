@@ -29,7 +29,7 @@ base::WeakPtr<chromeos::BulkPrintersCalculator> GetBulkPrintersCalculator(
 }  // namespace
 
 PrintersExternalDataHandler::PrintersExternalDataHandler(
-    chromeos::CrosSettings* cros_settings,
+    ash::CrosSettings* cros_settings,
     DeviceLocalAccountPolicyService* policy_service)
     : printers_observer_(cros_settings,
                          policy_service,

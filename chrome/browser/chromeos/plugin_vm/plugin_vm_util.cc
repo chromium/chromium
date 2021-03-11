@@ -74,8 +74,8 @@ std::string GetPluginVmLicenseKey() {
   if (FakeLicenseKeyIsSet())
     return GetFakeLicenseKey();
   std::string plugin_vm_license_key;
-  if (!chromeos::CrosSettings::Get()->GetString(chromeos::kPluginVmLicenseKey,
-                                                &plugin_vm_license_key)) {
+  if (!ash::CrosSettings::Get()->GetString(chromeos::kPluginVmLicenseKey,
+                                           &plugin_vm_license_key)) {
     return std::string();
   }
   return plugin_vm_license_key;
@@ -158,8 +158,8 @@ PluginVmPolicySubscription::PluginVmPolicySubscription(
     Profile* profile,
     base::RepeatingCallback<void(bool)> callback)
     : profile_(profile), callback_(callback) {
-  DCHECK(chromeos::CrosSettings::IsInitialized());
-  chromeos::CrosSettings* cros_settings = chromeos::CrosSettings::Get();
+  DCHECK(ash::CrosSettings::IsInitialized());
+  ash::CrosSettings* cros_settings = ash::CrosSettings::Get();
   // Subscriptions are automatically removed when this object is destroyed.
   pref_change_registrar_ = std::make_unique<PrefChangeRegistrar>();
   pref_change_registrar_->Init(profile->GetPrefs());

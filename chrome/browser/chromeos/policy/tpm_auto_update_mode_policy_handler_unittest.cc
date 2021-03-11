@@ -82,7 +82,7 @@ class TPMAutoUpdateModePolicyHandlerTest : public testing::Test {
   chromeos::ScopedStubInstallAttributes test_install_attributes_{
       chromeos::StubInstallAttributes::CreateCloudManaged("example.com",
                                                           "fake-id")};
-  chromeos::ScopedTestingCrosSettings scoped_testing_cros_settings_;
+  ash::ScopedTestingCrosSettings scoped_testing_cros_settings_;
 
   base::WeakPtrFactory<TPMAutoUpdateModePolicyHandlerTest> weak_factory_{this};
 };
@@ -91,7 +91,7 @@ class TPMAutoUpdateModePolicyHandlerTest : public testing::Test {
 // policy option TPMFirmwareUpdateSettings.AutoUpdateMode.
 TEST_F(TPMAutoUpdateModePolicyHandlerTest, PolicyUpdatesTriggered) {
   TPMAutoUpdateModePolicyHandler tpm_update_policy_handler(
-      chromeos::CrosSettings::Get(), local_state_.Get());
+      ash::CrosSettings::Get(), local_state_.Get());
   tpm_update_policy_handler.SetUpdateCheckerCallbackForTesting(
       base::BindRepeating(&TPMAutoUpdateModePolicyHandlerTest::CheckForUpdate,
                           weak_factory_.GetWeakPtr()));
@@ -129,7 +129,7 @@ TEST_F(TPMAutoUpdateModePolicyHandlerTest, PolicyUpdatesTriggered) {
 // state preserving update is not available.
 TEST_F(TPMAutoUpdateModePolicyHandlerTest, NoUpdatesAvailable) {
   TPMAutoUpdateModePolicyHandler tpm_update_policy_handler(
-      chromeos::CrosSettings::Get(), local_state_.Get());
+      ash::CrosSettings::Get(), local_state_.Get());
   tpm_update_policy_handler.SetUpdateCheckerCallbackForTesting(
       base::BindRepeating(&TPMAutoUpdateModePolicyHandlerTest::CheckForUpdate,
                           weak_factory_.GetWeakPtr()));
@@ -146,7 +146,7 @@ TEST_F(TPMAutoUpdateModePolicyHandlerTest, NoUpdatesAvailable) {
 // after 24 hours is shown.
 TEST_F(TPMAutoUpdateModePolicyHandlerTest, ShowPlannedUpdateNotification) {
   TPMAutoUpdateModePolicyHandler tpm_update_policy_handler(
-      chromeos::CrosSettings::Get(), local_state_.Get());
+      ash::CrosSettings::Get(), local_state_.Get());
   tpm_update_policy_handler.SetUpdateCheckerCallbackForTesting(
       base::BindRepeating(&TPMAutoUpdateModePolicyHandlerTest::CheckForUpdate,
                           weak_factory_.GetWeakPtr()));
@@ -180,7 +180,7 @@ TEST_F(TPMAutoUpdateModePolicyHandlerTest, ShowPlannedUpdateNotification) {
 TEST_F(TPMAutoUpdateModePolicyHandlerTest,
        ShowUpdateOnRebootNotificationNoTimer) {
   TPMAutoUpdateModePolicyHandler tpm_update_policy_handler(
-      chromeos::CrosSettings::Get(), local_state_.Get());
+      ash::CrosSettings::Get(), local_state_.Get());
   tpm_update_policy_handler.SetUpdateCheckerCallbackForTesting(
       base::BindRepeating(&TPMAutoUpdateModePolicyHandlerTest::CheckForUpdate,
                           weak_factory_.GetWeakPtr()));
@@ -218,7 +218,7 @@ TEST_F(TPMAutoUpdateModePolicyHandlerTest,
 TEST_F(TPMAutoUpdateModePolicyHandlerTest,
        ShowUpdateOnRebootNotificationTimer) {
   TPMAutoUpdateModePolicyHandler tpm_update_policy_handler(
-      chromeos::CrosSettings::Get(), local_state_.Get());
+      ash::CrosSettings::Get(), local_state_.Get());
   tpm_update_policy_handler.SetUpdateCheckerCallbackForTesting(
       base::BindRepeating(&TPMAutoUpdateModePolicyHandlerTest::CheckForUpdate,
                           weak_factory_.GetWeakPtr()));
@@ -258,7 +258,7 @@ TEST_F(TPMAutoUpdateModePolicyHandlerTest,
 // TPM update with user acknowlegment triggered.
 TEST_F(TPMAutoUpdateModePolicyHandlerTest, UpdateWithUserAcknowlegment) {
   TPMAutoUpdateModePolicyHandler tpm_update_policy_handler(
-      chromeos::CrosSettings::Get(), local_state_.Get());
+      ash::CrosSettings::Get(), local_state_.Get());
   tpm_update_policy_handler.SetUpdateCheckerCallbackForTesting(
       base::BindRepeating(&TPMAutoUpdateModePolicyHandlerTest::CheckForUpdate,
                           weak_factory_.GetWeakPtr()));

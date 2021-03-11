@@ -34,7 +34,7 @@ void SetMetricsReportingEnabledChromeOS(
   policy_data.set_policy_value(device_settings_proto.SerializeAsString());
   local_state_dict->SetString(
       prefs::kDeviceSettingsCache,
-      chromeos::device_settings_cache::PolicyDataToString(policy_data));
+      ash::device_settings_cache::PolicyDataToString(policy_data));
 }
 
 }  // namespace

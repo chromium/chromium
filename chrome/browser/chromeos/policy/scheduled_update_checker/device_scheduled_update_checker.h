@@ -31,7 +31,7 @@ class DeviceScheduledUpdateChecker
     : public chromeos::system::TimezoneSettings::Observer {
  public:
   DeviceScheduledUpdateChecker(
-      chromeos::CrosSettings* cros_settings,
+      ash::CrosSettings* cros_settings,
       chromeos::NetworkStateHandler* network_state_handler);
   ~DeviceScheduledUpdateChecker() override;
 
@@ -127,7 +127,7 @@ class DeviceScheduledUpdateChecker
   virtual const icu::TimeZone& GetTimeZone();
 
   // Used to retrieve Chrome OS settings. Not owned.
-  chromeos::CrosSettings* const cros_settings_;
+  ash::CrosSettings* const cros_settings_;
 
   // Subscription for callback when settings change.
   base::CallbackListSubscription cros_settings_subscription_;

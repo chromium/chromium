@@ -72,8 +72,8 @@ ChromeVariationsServiceClient::GetNetworkTimeTracker() {
 bool ChromeVariationsServiceClient::OverridesRestrictParameter(
     std::string* parameter) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  chromeos::CrosSettings::Get()->GetString(
-      chromeos::kVariationsRestrictParameter, parameter);
+  ash::CrosSettings::Get()->GetString(chromeos::kVariationsRestrictParameter,
+                                      parameter);
   return true;
 #else
   return false;

@@ -30,7 +30,7 @@ namespace em = enterprise_management;
 using ownership::OwnerKeyUtil;
 using ownership::PublicKey;
 
-namespace chromeos {
+namespace ash {
 
 DeviceSettingsService::Observer::~Observer() {}
 
@@ -97,7 +97,7 @@ DeviceSettingsService::~DeviceSettingsService() {
 }
 
 void DeviceSettingsService::SetSessionManager(
-    SessionManagerClient* session_manager_client,
+    chromeos::SessionManagerClient* session_manager_client,
     scoped_refptr<OwnerKeyUtil> owner_key_util) {
   DCHECK(session_manager_client);
   DCHECK(owner_key_util.get());
@@ -380,4 +380,4 @@ ScopedTestDeviceSettingsService::~ScopedTestDeviceSettingsService() {
   DeviceSettingsService::Shutdown();
 }
 
-}  // namespace chromeos
+}  // namespace ash

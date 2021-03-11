@@ -34,10 +34,10 @@ namespace policy {
 // TODO(tnagel): Either drop "Cloud" from the name or refactor.
 class DeviceCloudPolicyStoreChromeOS
     : public CloudPolicyStore,
-      public chromeos::DeviceSettingsService::Observer {
+      public ash::DeviceSettingsService::Observer {
  public:
   DeviceCloudPolicyStoreChromeOS(
-      chromeos::DeviceSettingsService* device_settings_service,
+      ash::DeviceSettingsService* device_settings_service,
       chromeos::InstallAttributes* install_attributes,
       scoped_refptr<base::SequencedTaskRunner> background_task_runner);
   ~DeviceCloudPolicyStoreChromeOS() override;
@@ -56,7 +56,7 @@ class DeviceCloudPolicyStoreChromeOS
   void InstallInitialPolicy(
       const enterprise_management::PolicyFetchResponse& policy);
 
-  // chromeos::DeviceSettingsService::Observer:
+  // ash::DeviceSettingsService::Observer:
   void DeviceSettingsUpdated() override;
   void OnDeviceSettingsServiceShutdown() override;
 
@@ -89,7 +89,7 @@ class DeviceCloudPolicyStoreChromeOS
   // Whether DM token check has yet been done.
   bool dm_token_checked_ = false;
 
-  chromeos::DeviceSettingsService* device_settings_service_;
+  ash::DeviceSettingsService* device_settings_service_;
   chromeos::InstallAttributes* install_attributes_;
 
   scoped_refptr<base::SequencedTaskRunner> background_task_runner_;

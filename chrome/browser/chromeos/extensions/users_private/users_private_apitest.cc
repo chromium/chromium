@@ -158,7 +158,7 @@ class UsersPrivateApiTest : public ExtensionApiTest {
 
  private:
   chromeos::ScopedStubInstallAttributes scoped_stub_install_attributes_;
-  chromeos::ScopedTestingCrosSettings scoped_testing_cros_settings_;
+  ash::ScopedTestingCrosSettings scoped_testing_cros_settings_;
 
   DISALLOW_COPY_AND_ASSIGN(UsersPrivateApiTest);
 };

@@ -61,7 +61,7 @@ bool GetDeviceAutoUpdateTimeRestrictionsIntervalsInLocalTimezone(
     Clock* clock,
     vector<WeeklyTimeInterval>* intervals_out) {
   const ListValue* intervals_list;
-  if (!chromeos::CrosSettings::Get()->GetList(
+  if (!ash::CrosSettings::Get()->GetList(
           chromeos::kDeviceAutoUpdateTimeRestrictions, &intervals_list)) {
     return false;
   }

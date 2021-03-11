@@ -7,7 +7,7 @@
 #include "ash/public/cpp/shutdown_controller.h"
 #include "chrome/browser/ash/settings/cros_settings.h"
 
-namespace chromeos {
+namespace ash {
 
 ShutdownPolicyForwarder::ShutdownPolicyForwarder()
     : shutdown_policy_handler_(CrosSettings::Get(), this) {
@@ -18,8 +18,8 @@ ShutdownPolicyForwarder::ShutdownPolicyForwarder()
 ShutdownPolicyForwarder::~ShutdownPolicyForwarder() = default;
 
 void ShutdownPolicyForwarder::OnShutdownPolicyChanged(bool reboot_on_shutdown) {
-  // Forward the setting to ash.
-  ash::ShutdownController::Get()->SetRebootOnShutdown(reboot_on_shutdown);
+  // Forward the setting to ShutdownController.
+  ShutdownController::Get()->SetRebootOnShutdown(reboot_on_shutdown);
 }
 
-}  // namespace chromeos
+}  // namespace ash

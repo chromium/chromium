@@ -52,7 +52,7 @@ class TPMAutoUpdateModePolicyHandler {
   using ShowNotificationCallback = base::RepeatingCallback<void(
       chromeos::TpmAutoUpdateUserNotification notification_type)>;
 
-  TPMAutoUpdateModePolicyHandler(chromeos::CrosSettings* cros_settings,
+  TPMAutoUpdateModePolicyHandler(ash::CrosSettings* cros_settings,
                                  PrefService* local_state);
   ~TPMAutoUpdateModePolicyHandler();
 
@@ -96,7 +96,7 @@ class TPMAutoUpdateModePolicyHandler {
 
   void ShowTPMUpdateOnNextRebootNotification();
 
-  chromeos::CrosSettings* cros_settings_;
+  ash::CrosSettings* cros_settings_;
 
   PrefService* local_state_;
 

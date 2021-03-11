@@ -7,6 +7,9 @@
 
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
+// TODO(https://crbug.com/1164001): forward declare StubCrosSettingsProvider
+// after //c/b/c/ownership is moved to ash.
+#include "chrome/browser/ash/settings/stub_cros_settings_provider.h"
 #include "chrome/browser/chromeos/ownership/owner_settings_service_chromeos.h"
 
 class Profile;
@@ -16,8 +19,6 @@ class OwnerKeyUtil;
 }
 
 namespace chromeos {
-
-class StubCrosSettingsProvider;
 
 class FakeOwnerSettingsService : public OwnerSettingsServiceChromeOS {
  public:

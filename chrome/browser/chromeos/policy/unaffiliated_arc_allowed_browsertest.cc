@@ -76,7 +76,7 @@ class UnaffiliatedArcAllowedTest
   void RefreshPolicyAndWaitUntilDeviceSettingsUpdated() {
     base::RunLoop run_loop;
     base::CallbackListSubscription subscription =
-        chromeos::CrosSettings::Get()->AddSettingsObserver(
+        ash::CrosSettings::Get()->AddSettingsObserver(
             chromeos::kUnaffiliatedArcAllowed, run_loop.QuitClosure());
     RefreshDevicePolicy();
     run_loop.Run();

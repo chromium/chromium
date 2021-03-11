@@ -177,7 +177,7 @@ void PlatformVerificationImpl::IsVerifiedAccessEnabled(
   }
 
   bool enabled_for_device = false;
-  if (!chromeos::CrosSettings::Get()->GetBoolean(
+  if (!ash::CrosSettings::Get()->GetBoolean(
           chromeos::kAttestationForContentProtectionEnabled,
           &enabled_for_device)) {
     LOG(ERROR) << "Failed to get device setting.";

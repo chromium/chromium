@@ -78,7 +78,7 @@ struct PerInputEnvironment {
   ~PerInputEnvironment() {
     chromeos::ShutdownDBus();
     chromeos::InstallAttributes::Shutdown();
-    chromeos::DeviceSettingsService::Shutdown();
+    ash::DeviceSettingsService::Shutdown();
   }
 
   base::test::TaskEnvironment task_environment;
@@ -99,12 +99,12 @@ void CheckPolicyToCrosSettingsTranslation(
     const enterprise_management::ChromeDeviceSettingsProto&
         chrome_device_settings) {
   PrefValueMap cros_settings_prefs;
-  chromeos::DeviceSettingsProvider::DecodePolicies(chrome_device_settings,
-                                                   &cros_settings_prefs);
+  ash::DeviceSettingsProvider::DecodePolicies(chrome_device_settings,
+                                              &cros_settings_prefs);
 
   for (const auto& it : cros_settings_prefs) {
     const std::string& pref_name = it.first;
-    CHECK(chromeos::DeviceSettingsProvider::IsDeviceSetting(pref_name));
+    CHECK(ash::DeviceSettingsProvider::IsDeviceSetting(pref_name));
   }
 }
 

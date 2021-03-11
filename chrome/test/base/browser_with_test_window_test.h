@@ -198,7 +198,7 @@ class BrowserWithTestWindowTest : public testing::Test {
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  chromeos::ScopedCrosSettingsTestHelper* GetCrosSettingsHelper();
+  ash::ScopedCrosSettingsTestHelper* GetCrosSettingsHelper();
   chromeos::StubInstallAttributes* GetInstallAttributes();
 #endif
 
@@ -214,7 +214,7 @@ class BrowserWithTestWindowTest : public testing::Test {
   std::unique_ptr<content::BrowserTaskEnvironment> task_environment_;
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  chromeos::ScopedCrosSettingsTestHelper cros_settings_test_helper_;
+  ash::ScopedCrosSettingsTestHelper cros_settings_test_helper_;
   chromeos::ScopedTestUserManager test_user_manager_;
 #endif
 

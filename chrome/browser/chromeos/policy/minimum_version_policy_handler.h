@@ -132,7 +132,7 @@ class MinimumVersionPolicyHandler
   };
 
   explicit MinimumVersionPolicyHandler(Delegate* delegate,
-                                       chromeos::CrosSettings* cros_settings);
+                                       ash::CrosSettings* cros_settings);
   ~MinimumVersionPolicyHandler() override;
 
   // BuildStateObserver:
@@ -295,7 +295,7 @@ class MinimumVersionPolicyHandler
 
   // Non-owning reference to CrosSettings. This class have shorter lifetime than
   // CrosSettings.
-  chromeos::CrosSettings* cros_settings_;
+  ash::CrosSettings* cros_settings_;
 
   base::Clock* const clock_;
 

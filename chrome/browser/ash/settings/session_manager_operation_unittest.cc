@@ -40,7 +40,7 @@ namespace em = enterprise_management;
 using testing::Mock;
 using testing::_;
 
-namespace chromeos {
+namespace ash {
 namespace {
 
 class ObservableFakeSessionManagerClient : public FakeSessionManagerClient {
@@ -292,4 +292,4 @@ TEST_F(SessionManagerOperationTest, StoreSettings) {
             op.device_settings()->SerializeAsString());
 }
 
-}  // namespace chromeos
+}  // namespace ash

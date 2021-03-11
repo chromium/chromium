@@ -37,12 +37,12 @@ const char kValidRsuDeviceId[] = "123";
 const char kValidRsuDeviceIdEncoded[] =
     "MTIz";  // base::Base64Encode(kValidRsuDeviceId, kValidRsuDeviceencoded)
 }
-class LookupKeyUploaderTest : public chromeos::DeviceSettingsTestBase {
+class LookupKeyUploaderTest : public ash::DeviceSettingsTestBase {
  protected:
   LookupKeyUploaderTest() = default;
 
   void SetUp() override {
-    chromeos::DeviceSettingsTestBase::SetUp();
+    ash::DeviceSettingsTestBase::SetUp();
     pref_service_.registry()->RegisterStringPref(
         prefs::kLastRsuDeviceIdUploaded, std::string());
     lookup_key_uploader_ = std::make_unique<LookupKeyUploader>(

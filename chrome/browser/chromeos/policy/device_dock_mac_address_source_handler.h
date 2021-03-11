@@ -22,14 +22,14 @@ namespace policy {
 class DeviceDockMacAddressHandler {
  public:
   DeviceDockMacAddressHandler(
-      chromeos::CrosSettings* cros_settings,
+      ash::CrosSettings* cros_settings,
       chromeos::NetworkDeviceHandler* network_device_handler);
   ~DeviceDockMacAddressHandler();
 
  private:
   void OnDockMacAddressSourcePolicyChanged();
 
-  chromeos::CrosSettings* cros_settings_;
+  ash::CrosSettings* cros_settings_;
   chromeos::NetworkDeviceHandler* network_device_handler_;
   base::CallbackListSubscription dock_mac_address_source_policy_subscription_;
   base::WeakPtrFactory<DeviceDockMacAddressHandler> weak_factory_{this};

@@ -171,7 +171,7 @@ void DevicePolicyCrosTestHelper::RefreshPolicyAndWaitUntilDeviceSettingsUpdated(
   std::vector<base::CallbackListSubscription> subscriptions = {};
   for (auto setting_it = settings.cbegin(); setting_it != settings.cend();
        setting_it++) {
-    subscriptions.push_back(chromeos::CrosSettings::Get()->AddSettingsObserver(
+    subscriptions.push_back(ash::CrosSettings::Get()->AddSettingsObserver(
         *setting_it, run_loop.QuitClosure()));
   }
   RefreshDevicePolicy();

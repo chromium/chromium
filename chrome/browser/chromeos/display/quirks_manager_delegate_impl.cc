@@ -38,8 +38,8 @@ base::FilePath QuirksManagerDelegateImpl::GetDisplayProfileDirectory() const {
 
 bool QuirksManagerDelegateImpl::DevicePolicyEnabled() const {
   bool quirks_enabled = true;
-  chromeos::CrosSettings::Get()->GetBoolean(
-      chromeos::kDeviceQuirksDownloadEnabled, &quirks_enabled);
+  ash::CrosSettings::Get()->GetBoolean(chromeos::kDeviceQuirksDownloadEnabled,
+                                       &quirks_enabled);
   return quirks_enabled;
 }
 

@@ -45,8 +45,7 @@ void CopyLockResult(base::RunLoop* loop,
 
 }  // namespace
 
-class DeviceCloudPolicyStoreChromeOSTest
-    : public chromeos::DeviceSettingsTestBase {
+class DeviceCloudPolicyStoreChromeOSTest : public ash::DeviceSettingsTestBase {
  protected:
   DeviceCloudPolicyStoreChromeOSTest()
       : local_state_(TestingBrowserProcess::GetGlobal()) {}

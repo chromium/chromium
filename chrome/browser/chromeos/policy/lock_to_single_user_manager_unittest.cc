@@ -132,7 +132,7 @@ class LockToSingleUserManagerTest : public BrowserWithTestWindowTest {
   }
 
  private:
-  chromeos::ScopedCrosSettingsTestHelper settings_helper_{
+  ash::ScopedCrosSettingsTestHelper settings_helper_{
       /* create_settings_service= */ false};
   chromeos::FakeChromeUserManager* fake_user_manager_{
       new chromeos::FakeChromeUserManager()};

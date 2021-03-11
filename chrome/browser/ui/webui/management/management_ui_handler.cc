@@ -638,8 +638,8 @@ void ManagementUIHandler::AddUpdateRequiredEolInfo(
                                  base::UTF8ToUTF16(GetDeviceManager()),
                                  ui::GetChromeOSDeviceName()));
   std::string eol_admin_message;
-  chromeos::CrosSettings::Get()->GetString(
-      chromeos::kDeviceMinimumVersionAueMessage, &eol_admin_message);
+  ash::CrosSettings::Get()->GetString(chromeos::kDeviceMinimumVersionAueMessage,
+                                      &eol_admin_message);
   response->SetStringPath("eolAdminMessage", eol_admin_message);
 }
 

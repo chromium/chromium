@@ -22,7 +22,7 @@
 #include "content/public/test/test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace chromeos {
+namespace ash {
 
 ScopedCrosSettingsTestHelper::ScopedCrosSettingsTestHelper(
     bool create_settings_service)
@@ -138,13 +138,14 @@ void ScopedCrosSettingsTestHelper::CopyStoredValue(const std::string& path) {
   }
 }
 
-StubInstallAttributes* ScopedCrosSettingsTestHelper::InstallAttributes() {
+chromeos::StubInstallAttributes*
+ScopedCrosSettingsTestHelper::InstallAttributes() {
   return test_install_attributes_->Get();
 }
 
 void ScopedCrosSettingsTestHelper::Initialize(bool create_settings_service) {
   if (create_settings_service) {
-    test_install_attributes_.reset(new ScopedStubInstallAttributes());
+    test_install_attributes_.reset(new chromeos::ScopedStubInstallAttributes());
     CHECK(!DeviceSettingsService::IsInitialized());
     test_device_settings_service_.reset(new ScopedTestDeviceSettingsService());
     test_cros_settings_.reset(
@@ -152,4 +153,4 @@ void ScopedCrosSettingsTestHelper::Initialize(bool create_settings_service) {
   }
 }
 
-}  // namespace chromeos
+}  // namespace ash

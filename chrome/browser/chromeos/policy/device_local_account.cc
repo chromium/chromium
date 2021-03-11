@@ -233,7 +233,7 @@ void SetDeviceLocalAccounts(chromeos::OwnerSettingsServiceChromeOS* service,
 }
 
 std::vector<DeviceLocalAccount> GetDeviceLocalAccounts(
-    chromeos::CrosSettings* cros_settings) {
+    ash::CrosSettings* cros_settings) {
   // TODO(https://crbug.com/984021): handle TYPE_SAML_PUBLIC_SESSION
   std::vector<DeviceLocalAccount> accounts;
 

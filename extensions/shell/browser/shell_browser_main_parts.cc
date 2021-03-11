@@ -164,7 +164,7 @@ int ShellBrowserMainParts::PreEarlyInitialization() {
 }
 
 int ShellBrowserMainParts::PreCreateThreads() {
-  // TODO(jamescook): Initialize chromeos::CrosSettings here?
+  // TODO(jamescook): Initialize ash::CrosSettings here?
 
   content::ChildProcessSecurityPolicy::GetInstance()->RegisterWebSafeScheme(
       kExtensionScheme);

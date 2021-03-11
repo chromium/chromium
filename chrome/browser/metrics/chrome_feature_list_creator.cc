@@ -154,8 +154,8 @@ void ChromeFeatureListCreator::ConvertFlagsToSwitches() {
   // from signed device settings, while flags for user session are stored in
   // preferences and applied via a chrome restart upon user login, see
   // UserSessionManager::RestartToApplyPerSessionFlagsIfNeed for the latter.
-  chromeos::about_flags::ReadOnlyFlagsStorage flags_storage(
-      chromeos::about_flags::ParseFlagsFromCommandLine());
+  ash::about_flags::ReadOnlyFlagsStorage flags_storage(
+      ash::about_flags::ParseFlagsFromCommandLine());
 #else
   flags_ui::PrefServiceFlagsStorage flags_storage(local_state_.get());
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)

@@ -121,7 +121,7 @@ ChildStatusCollector::ChildStatusCollector(
     chromeos::system::StatisticsProvider* provider,
     const AndroidStatusFetcher& android_status_fetcher,
     TimeDelta activity_day_start)
-    : StatusCollector(provider, chromeos::CrosSettings::Get()),
+    : StatusCollector(provider, ash::CrosSettings::Get()),
       pref_service_(pref_service),
       profile_(profile),
       android_status_fetcher_(android_status_fetcher) {

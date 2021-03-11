@@ -59,7 +59,7 @@ static base::FilePath CreateExtensionFile(const base::FilePath& dir,
 class ExtensionCacheTest : public testing::Test {
  protected:
   content::BrowserTaskEnvironment task_environment_;
-  chromeos::ScopedTestingCrosSettings scoped_testing_cros_settings_;
+  ash::ScopedTestingCrosSettings scoped_testing_cros_settings_;
 };
 
 TEST_F(ExtensionCacheTest, SizePolicy) {

@@ -1323,7 +1323,7 @@ DeviceStatusCollector::DeviceStatusCollector(
     const GraphicsStatusFetcher& graphics_status_fetcher,
     const CrashReportInfoFetcher& crash_report_info_fetcher,
     base::Clock* clock)
-    : StatusCollector(provider, chromeos::CrosSettings::Get(), clock),
+    : StatusCollector(provider, ash::CrosSettings::Get(), clock),
       pref_service_(pref_service),
       firmware_fetch_error_(kFirmwareNotInitialized),
       volume_info_fetcher_(volume_info_fetcher),

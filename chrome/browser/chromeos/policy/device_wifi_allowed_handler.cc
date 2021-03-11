@@ -16,7 +16,7 @@
 namespace policy {
 
 DeviceWiFiAllowedHandler::DeviceWiFiAllowedHandler(
-    chromeos::CrosSettings* cros_settings)
+    ash::CrosSettings* cros_settings)
     : cros_settings_(cros_settings) {
   wifi_policy_subscription_ = cros_settings_->AddSettingsObserver(
       chromeos::kDeviceWiFiAllowed,

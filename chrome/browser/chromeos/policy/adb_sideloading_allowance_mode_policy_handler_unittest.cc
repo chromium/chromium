@@ -44,7 +44,7 @@ class AdbSideloadingAllowanceModePolicyHandlerTest : public testing::Test {
 
     adb_sideloading_allowance_mode_policy_handler_ =
         new AdbSideloadingAllowanceModePolicyHandler(
-            chromeos::CrosSettings::Get(), local_state_.Get(),
+            ash::CrosSettings::Get(), local_state_.Get(),
             chromeos::PowerManagerClient::Get(), mock_notification_);
 
     adb_sideloading_allowance_mode_policy_handler_
@@ -113,7 +113,7 @@ class AdbSideloadingAllowanceModePolicyHandlerTest : public testing::Test {
   chromeos::FakeChromeUserManager* user_manager_;
   user_manager::ScopedUserManager user_manager_enabler_;
 
-  chromeos::ScopedTestingCrosSettings scoped_testing_cros_settings_;
+  ash::ScopedTestingCrosSettings scoped_testing_cros_settings_;
 
   chromeos::MockAdbSideloadingPolicyChangeNotification* mock_notification_;
   AdbSideloadingAllowanceModePolicyHandler*

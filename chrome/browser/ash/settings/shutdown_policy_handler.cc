@@ -9,7 +9,7 @@
 #include "chromeos/settings/cros_settings_names.h"
 #include "chromeos/settings/cros_settings_provider.h"
 
-namespace chromeos {
+namespace ash {
 
 ShutdownPolicyHandler::ShutdownPolicyHandler(CrosSettings* cros_settings,
                                              Delegate* delegate)
@@ -39,4 +39,4 @@ void ShutdownPolicyHandler::NotifyDelegateWithShutdownPolicy() {
   delegate_->OnShutdownPolicyChanged(reboot_on_shutdown);
 }
 
-}  // namespace chromeos
+}  // namespace ash

@@ -8,9 +8,9 @@
 #include "base/macros.h"
 #include "chrome/browser/ash/settings/shutdown_policy_handler.h"
 
-namespace chromeos {
+namespace ash {
 
-// Forwards the current DeviceRebootOnShutdown policy to ash.
+// Forwards the current DeviceRebootOnShutdown policy.
 class ShutdownPolicyForwarder : public ShutdownPolicyHandler::Delegate {
  public:
   ShutdownPolicyForwarder();
@@ -25,6 +25,12 @@ class ShutdownPolicyForwarder : public ShutdownPolicyHandler::Delegate {
   DISALLOW_COPY_AND_ASSIGN(ShutdownPolicyForwarder);
 };
 
+}  // namespace ash
+
+// TODO(https://crbug.com/1164001): remove when Chrome OS code migration is
+// done.
+namespace chromeos {
+using ::ash::ShutdownPolicyForwarder;
 }  // namespace chromeos
 
 #endif  // CHROME_BROWSER_ASH_SETTINGS_SHUTDOWN_POLICY_FORWARDER_H_

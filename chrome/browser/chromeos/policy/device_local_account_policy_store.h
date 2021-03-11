@@ -35,7 +35,7 @@ class DeviceLocalAccountPolicyStore : public UserCloudPolicyStoreBase {
   DeviceLocalAccountPolicyStore(
       const std::string& account_id,
       chromeos::SessionManagerClient* client,
-      chromeos::DeviceSettingsService* device_settings_service,
+      ash::DeviceSettingsService* device_settings_service,
       scoped_refptr<base::SequencedTaskRunner> background_task_runner);
   ~DeviceLocalAccountPolicyStore() override;
 
@@ -96,11 +96,11 @@ class DeviceLocalAccountPolicyStore : public UserCloudPolicyStoreBase {
       std::unique_ptr<enterprise_management::PolicyFetchResponse> policy,
       ValidateCompletionCallback callback,
       bool validate_in_background,
-      chromeos::DeviceSettingsService::OwnershipStatus ownership_status);
+      ash::DeviceSettingsService::OwnershipStatus ownership_status);
 
   const std::string account_id_;
   chromeos::SessionManagerClient* session_manager_client_;
-  chromeos::DeviceSettingsService* device_settings_service_;
+  ash::DeviceSettingsService* device_settings_service_;
 
   scoped_refptr<base::SequencedTaskRunner> background_task_runner_;
 

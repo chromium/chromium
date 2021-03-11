@@ -154,7 +154,7 @@ int MinimumVersionRequirement::Compare(
 
 MinimumVersionPolicyHandler::MinimumVersionPolicyHandler(
     Delegate* delegate,
-    chromeos::CrosSettings* cros_settings)
+    ash::CrosSettings* cros_settings)
     : delegate_(delegate),
       cros_settings_(cros_settings),
       clock_(base::DefaultClock::GetInstance()) {

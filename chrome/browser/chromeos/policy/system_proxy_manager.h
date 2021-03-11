@@ -57,7 +57,7 @@ namespace policy {
 // managed network changes to another class.
 class SystemProxyManager : public chromeos::NetworkStateHandlerObserver {
  public:
-  SystemProxyManager(chromeos::CrosSettings* cros_settings,
+  SystemProxyManager(ash::CrosSettings* cros_settings,
                      PrefService* local_state);
   SystemProxyManager(const SystemProxyManager&) = delete;
 
@@ -194,7 +194,7 @@ class SystemProxyManager : public chromeos::NetworkStateHandlerObserver {
   // Closes the authentication notification or dialog if shown.
   void CloseAuthenticationUI();
 
-  chromeos::CrosSettings* cros_settings_;
+  ash::CrosSettings* cros_settings_;
   base::CallbackListSubscription system_proxy_subscription_;
 
   bool system_proxy_enabled_ = false;

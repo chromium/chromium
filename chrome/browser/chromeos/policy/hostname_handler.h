@@ -21,7 +21,7 @@ namespace policy {
 // setting.
 class HostnameHandler : public chromeos::NetworkStateHandlerObserver {
  public:
-  explicit HostnameHandler(chromeos::CrosSettings* cros_settings);
+  explicit HostnameHandler(ash::CrosSettings* cros_settings);
   ~HostnameHandler() override;
 
   // NetworkStateHandlerObserver overrides
@@ -50,7 +50,7 @@ class HostnameHandler : public chromeos::NetworkStateHandlerObserver {
 
   void OnDeviceHostnamePropertyChangedAndMachineStatisticsLoaded();
 
-  chromeos::CrosSettings* cros_settings_;
+  ash::CrosSettings* cros_settings_;
   base::CallbackListSubscription policy_subscription_;
   std::string hostname_;
   base::WeakPtrFactory<HostnameHandler> weak_factory_{this};

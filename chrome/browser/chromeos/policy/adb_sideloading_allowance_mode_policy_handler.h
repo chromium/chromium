@@ -53,7 +53,7 @@ class AdbSideloadingAllowanceModePolicyHandler
       chromeos::AdbSideloadingPolicyChangeNotification::Type;
 
   AdbSideloadingAllowanceModePolicyHandler(
-      chromeos::CrosSettings* cros_settings,
+      ash::CrosSettings* cros_settings,
       PrefService* local_state,
       chromeos::PowerManagerClient* power_manager_client,
       chromeos::AdbSideloadingPolicyChangeNotification*
@@ -100,7 +100,7 @@ class AdbSideloadingAllowanceModePolicyHandler
   void MaybeShowPowerwashNotification(bool is_sideloading_enabled);
   void MaybeShowPowerwashUponRebootNotification();
 
-  chromeos::CrosSettings* const cros_settings_;
+  ash::CrosSettings* const cros_settings_;
 
   PrefService* const local_state_;
 

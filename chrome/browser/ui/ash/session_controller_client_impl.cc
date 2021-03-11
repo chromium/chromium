@@ -157,9 +157,8 @@ SessionControllerClientImpl::SessionControllerClientImpl() {
       prefs::kSessionLengthLimit,
       base::BindRepeating(&SessionControllerClientImpl::SendSessionLengthLimit,
                           base::Unretained(this)));
-  chromeos::DeviceSettingsService::Get()
-      ->device_off_hours_controller()
-      ->AddObserver(this);
+  ash::DeviceSettingsService::Get()->device_off_hours_controller()->AddObserver(
+      this);
   DCHECK(!g_session_controller_client_instance);
   g_session_controller_client_instance = this;
 }
@@ -180,7 +179,7 @@ SessionControllerClientImpl::~SessionControllerClientImpl() {
   SessionManager::Get()->RemoveObserver(this);
   UserManager::Get()->RemoveObserver(this);
   UserManager::Get()->RemoveSessionStateObserver(this);
-  chromeos::DeviceSettingsService::Get()
+  ash::DeviceSettingsService::Get()
       ->device_off_hours_controller()
       ->RemoveObserver(this);
 }
@@ -602,7 +601,7 @@ void SessionControllerClientImpl::SendSessionLengthLimit() {
   }
 
   policy::off_hours::DeviceOffHoursController* off_hours_controller =
-      chromeos::DeviceSettingsService::Get()->device_off_hours_controller();
+      ash::DeviceSettingsService::Get()->device_off_hours_controller();
   base::Time off_hours_session_end_time;
   // Use "OffHours" end time only if the session will be actually terminated.
   if (off_hours_controller->IsCurrentSessionAllowedOnlyForOffHours())

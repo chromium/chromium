@@ -78,7 +78,7 @@ class SettingsPrivateApiTest : public ExtensionApiTest {
   testing::NiceMock<policy::MockConfigurationPolicyProvider> provider_;
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  chromeos::ScopedTestingCrosSettings scoped_testing_cros_settings_;
+  ash::ScopedTestingCrosSettings scoped_testing_cros_settings_;
 #endif
 
   DISALLOW_COPY_AND_ASSIGN(SettingsPrivateApiTest);

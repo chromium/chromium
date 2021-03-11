@@ -108,7 +108,7 @@ void BrowserProcessPlatformPart::InitializeDeviceDisablingManager() {
   device_disabling_manager_delegate_.reset(
       new ash::system::DeviceDisablingManagerDefaultDelegate);
   device_disabling_manager_.reset(new ash::system::DeviceDisablingManager(
-      device_disabling_manager_delegate_.get(), chromeos::CrosSettings::Get(),
+      device_disabling_manager_delegate_.get(), ash::CrosSettings::Get(),
       user_manager::UserManager::Get()));
   device_disabling_manager_->Init();
 }

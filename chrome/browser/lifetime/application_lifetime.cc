@@ -92,7 +92,7 @@ bool AreAllBrowsersCloseable() {
 // policy or the owner's locale.  Returns true if any pref has been modified.
 bool SetLocaleForNextStart(PrefService* local_state) {
   // If a policy mandates the login screen locale, use it.
-  chromeos::CrosSettings* cros_settings = chromeos::CrosSettings::Get();
+  ash::CrosSettings* cros_settings = ash::CrosSettings::Get();
   const base::ListValue* login_screen_locales = nullptr;
   std::string login_screen_locale;
   if (cros_settings->GetList(chromeos::kDeviceLoginScreenLocales,

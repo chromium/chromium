@@ -761,7 +761,7 @@ void RegisterLocalState(PrefRegistrySimple* registry) {
   chromeos::DemoSetupController::RegisterLocalStatePrefs(registry);
   chromeos::DeviceNameStore::RegisterLocalStatePrefs(registry);
   chromeos::DeviceOAuth2TokenStoreChromeOS::RegisterPrefs(registry);
-  chromeos::device_settings_cache::RegisterPrefs(registry);
+  ash::device_settings_cache::RegisterPrefs(registry);
   chromeos::EasyUnlockService::RegisterPrefs(registry);
   chromeos::echo_offer::RegisterPrefs(registry);
   chromeos::EnableAdbSideloadingScreen::RegisterPrefs(registry);
@@ -790,7 +790,7 @@ void RegisterLocalState(PrefRegistrySimple* registry) {
   chromeos::ServicesCustomizationDocument::RegisterPrefs(registry);
   chromeos::SigninScreenHandler::RegisterPrefs(registry);
   chromeos::StartupUtils::RegisterPrefs(registry);
-  chromeos::StatsReportingController::RegisterLocalStatePrefs(registry);
+  ash::StatsReportingController::RegisterLocalStatePrefs(registry);
   ash::system::AutomaticRebootManager::RegisterPrefs(registry);
   chromeos::TimeZoneResolver::RegisterPrefs(registry);
   chromeos::UserImageManager::RegisterPrefs(registry);

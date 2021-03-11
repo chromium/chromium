@@ -93,7 +93,7 @@ class MinimumVersionPolicyHandlerTest
   bool user_managed_ = true;
   ScopedTestingLocalState local_state_;
   base::test::ScopedFeatureList feature_list_;
-  chromeos::ScopedTestingCrosSettings scoped_testing_cros_settings_;
+  ash::ScopedTestingCrosSettings scoped_testing_cros_settings_;
   chromeos::ScopedStubInstallAttributes scoped_stub_install_attributes_;
   chromeos::FakeUpdateEngineClient* fake_update_engine_client_;
   std::unique_ptr<base::Version> current_version_;
@@ -136,7 +136,7 @@ void MinimumVersionPolicyHandlerTest::TearDown() {
 
 void MinimumVersionPolicyHandlerTest::CreateMinimumVersionHandler() {
   minimum_version_policy_handler_.reset(
-      new MinimumVersionPolicyHandler(this, chromeos::CrosSettings::Get()));
+      new MinimumVersionPolicyHandler(this, ash::CrosSettings::Get()));
 }
 
 const MinimumVersionRequirement* MinimumVersionPolicyHandlerTest::GetState()

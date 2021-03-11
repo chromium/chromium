@@ -185,7 +185,7 @@ class DeviceLocalAccountExternalPolicyLoaderTest : public testing::Test {
   content::InProcessUtilityThreadHelper in_process_utility_thread_helper_;
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  chromeos::ScopedCrosSettingsTestHelper cros_settings_test_helper_;
+  ash::ScopedCrosSettingsTestHelper cros_settings_test_helper_;
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 };
 

@@ -248,7 +248,7 @@ class CrostiniFeaturesAdbSideloadingTest : public testing::Test {
   TestingProfile profile_;
   FakeCrostiniFeatures crostini_features_;
   base::test::ScopedFeatureList scoped_feature_list_;
-  chromeos::ScopedCrosSettingsTestHelper scoped_settings_helper_{
+  ash::ScopedCrosSettingsTestHelper scoped_settings_helper_{
       /* create_settings_service=*/false};
 
   chromeos::FakeChromeUserManager* user_manager_;

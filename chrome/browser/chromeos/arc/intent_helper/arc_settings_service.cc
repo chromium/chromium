@@ -361,7 +361,7 @@ void ArcSettingsServiceImpl::StartObservingSettingsChanges() {
   // ARC setup and therefore are not observed here.
 
   reporting_consent_subscription_ =
-      chromeos::StatsReportingController::Get()->AddObserver(
+      ash::StatsReportingController::Get()->AddObserver(
           base::BindRepeating(&ArcSettingsServiceImpl::SyncReportingConsent,
                               base::Unretained(this), /*initial_sync=*/false));
 

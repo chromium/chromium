@@ -13,7 +13,7 @@
 #include "chromeos/settings/cros_settings_provider.h"
 #include "components/prefs/pref_value_map.h"
 
-namespace chromeos {
+namespace ash {
 
 // CrosSettingsProvider implementation that stores settings in memory unsigned.
 class StubCrosSettingsProvider : public CrosSettingsProvider {
@@ -63,6 +63,12 @@ class StubCrosSettingsProvider : public CrosSettingsProvider {
   DISALLOW_COPY_AND_ASSIGN(StubCrosSettingsProvider);
 };
 
+}  // namespace ash
+
+// TODO(https://crbug.com/1164001): remove when Chrome OS code migration is
+// done.
+namespace chromeos {
+using ::ash::StubCrosSettingsProvider;
 }  // namespace chromeos
 
 #endif  // CHROME_BROWSER_ASH_SETTINGS_STUB_CROS_SETTINGS_PROVIDER_H_

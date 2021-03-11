@@ -216,13 +216,13 @@ void EchoPrivateGetUserConsentFunction::OnMoreInfoLinkClicked() {
 
 void EchoPrivateGetUserConsentFunction::CheckRedeemOffersAllowed() {
   chromeos::CrosSettingsProvider::TrustedStatus status =
-      chromeos::CrosSettings::Get()->PrepareTrustedValues(base::BindOnce(
+      ash::CrosSettings::Get()->PrepareTrustedValues(base::BindOnce(
           &EchoPrivateGetUserConsentFunction::CheckRedeemOffersAllowed, this));
   if (status == chromeos::CrosSettingsProvider::TEMPORARILY_UNTRUSTED)
     return;
 
   bool allow = true;
-  chromeos::CrosSettings::Get()->GetBoolean(
+  ash::CrosSettings::Get()->GetBoolean(
       chromeos::kAllowRedeemChromeOsRegistrationOffers, &allow);
 
   OnRedeemOffersAllowedChecked(allow);

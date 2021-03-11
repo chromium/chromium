@@ -122,7 +122,7 @@ class TestingDeviceCloudPolicyManagerChromeOS
 };
 
 class DeviceCloudPolicyManagerChromeOSTest
-    : public chromeos::DeviceSettingsTestBase,
+    : public ash::DeviceSettingsTestBase,
       public chromeos::SessionManagerClient::Observer {
  protected:
   DeviceCloudPolicyManagerChromeOSTest()

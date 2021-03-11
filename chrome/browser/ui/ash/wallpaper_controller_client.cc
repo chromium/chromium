@@ -121,7 +121,7 @@ user_manager::User* FindPublicSession(const user_manager::UserList& users) {
 WallpaperControllerClient::WallpaperControllerClient() {
   local_state_ = g_browser_process->local_state();
   show_user_names_on_signin_subscription_ =
-      chromeos::CrosSettings::Get()->AddSettingsObserver(
+      ash::CrosSettings::Get()->AddSettingsObserver(
           chromeos::kAccountsPrefShowUserNamesOnSignIn,
           base::BindRepeating(
               &WallpaperControllerClient::ShowWallpaperOnLoginScreen,
@@ -522,7 +522,7 @@ void WallpaperControllerClient::MaybeClosePreviewWallpaper() {
 
 bool WallpaperControllerClient::ShouldShowUserNamesOnLogin() const {
   bool show_user_names = true;
-  chromeos::CrosSettings::Get()->GetBoolean(
+  ash::CrosSettings::Get()->GetBoolean(
       chromeos::kAccountsPrefShowUserNamesOnSignIn, &show_user_names);
   return show_user_names;
 }

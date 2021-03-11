@@ -68,7 +68,7 @@ void LockToSingleUserManager::ActiveUserChanged(user_manager::User* user) {
     return;
 
   int policy_value = -1;
-  if (!chromeos::CrosSettings::Get()->GetInteger(
+  if (!ash::CrosSettings::Get()->GetInteger(
           chromeos::kDeviceRebootOnUserSignout, &policy_value)) {
     return;
   }

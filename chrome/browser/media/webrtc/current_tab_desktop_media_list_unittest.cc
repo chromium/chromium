@@ -184,7 +184,7 @@ class CurrentTabDesktopMediaListTest : public testing::Test {
   std::unique_ptr<base::RunLoop> run_loop_;
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  chromeos::ScopedCrosSettingsTestHelper cros_settings_test_helper_;
+  ash::ScopedCrosSettingsTestHelper cros_settings_test_helper_;
   chromeos::ScopedTestUserManager test_user_manager_;
 #endif
 

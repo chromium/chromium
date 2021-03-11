@@ -150,7 +150,7 @@ class KeyRotationDeviceCloudPolicyTest : public DevicePolicyCrosBrowserTest {
   }
 
   std::string GetOwnerPublicKey() const {
-    return chromeos::DeviceSettingsService::Get()->GetPublicKey()->as_string();
+    return ash::DeviceSettingsService::Get()->GetPublicKey()->as_string();
   }
 
   int GetInstalledPolicyKeyVersion() const {

@@ -383,7 +383,7 @@ TEST_F(CrostiniManagerTest, StartTerminaVmPowerwashRequestError) {
   fake_user_manager()->LoginUser(account_id);
 
   // Set DeviceRebootOnUserSignout to always.
-  chromeos::ScopedCrosSettingsTestHelper settings_helper{
+  ash::ScopedCrosSettingsTestHelper settings_helper{
       /* create_settings_service=*/false};
   settings_helper.ReplaceDeviceSettingsProviderWithStub();
   settings_helper.SetInteger(
@@ -418,7 +418,7 @@ TEST_F(CrostiniManagerTest,
   fake_user_manager()->LoginUser(account_id);
 
   // Set DeviceRebootOnUserSignout to always.
-  chromeos::ScopedCrosSettingsTestHelper settings_helper{
+  ash::ScopedCrosSettingsTestHelper settings_helper{
       /* create_settings_service=*/false};
   settings_helper.ReplaceDeviceSettingsProviderWithStub();
   settings_helper.SetInteger(

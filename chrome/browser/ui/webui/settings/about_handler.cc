@@ -123,8 +123,8 @@ bool CanChangeChannel(Profile* profile) {
     bool value = false;
     // On a managed machine we delegate this setting to the affiliated users
     // only if the policy value is true.
-    chromeos::CrosSettings::Get()->GetBoolean(
-        chromeos::kReleaseChannelDelegated, &value);
+    ash::CrosSettings::Get()->GetBoolean(chromeos::kReleaseChannelDelegated,
+                                         &value);
     if (!value)
       return false;
 
@@ -551,8 +551,8 @@ void AboutHandler::OnGetTargetChannel(std::string callback_id,
   // For the LTS pilot simply check whether the device policy is set and ignore
   // its value.
   std::string value;
-  bool is_lts = chromeos::CrosSettings::Get()->GetString(
-      chromeos::kReleaseLtsTag, &value);
+  bool is_lts =
+      ash::CrosSettings::Get()->GetString(chromeos::kReleaseLtsTag, &value);
   channel_info->SetBoolean("isLts", is_lts);
 
   ResolveJavascriptCallback(base::Value(callback_id), *channel_info);

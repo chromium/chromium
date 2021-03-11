@@ -15,7 +15,7 @@ namespace base {
 class Value;
 }
 
-namespace chromeos {
+namespace ash {
 
 class SupervisedUserCrosSettingsProvider : public CrosSettingsProvider {
  public:
@@ -35,6 +35,6 @@ class SupervisedUserCrosSettingsProvider : public CrosSettingsProvider {
   DISALLOW_COPY_AND_ASSIGN(SupervisedUserCrosSettingsProvider);
 };
 
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // CHROME_BROWSER_ASH_SETTINGS_SUPERVISED_USER_CROS_SETTINGS_PROVIDER_H_

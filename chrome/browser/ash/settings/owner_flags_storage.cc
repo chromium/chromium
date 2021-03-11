@@ -17,7 +17,7 @@
 #include "components/prefs/pref_service.h"
 #include "third_party/cros_system_api/switches/chrome_switches.h"
 
-namespace chromeos {
+namespace ash {
 namespace about_flags {
 
 OwnerFlagsStorage::OwnerFlagsStorage(
@@ -97,4 +97,4 @@ std::set<std::string> ParseFlagsFromCommandLine() {
 }
 
 }  // namespace about_flags
-}  // namespace chromeos
+}  // namespace ash

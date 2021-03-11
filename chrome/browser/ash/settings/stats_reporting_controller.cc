@@ -24,7 +24,7 @@ constexpr char kPendingPref[] = "pending.cros.metrics.reportingEnabled";
 
 }  // namespace
 
-namespace chromeos {
+namespace ash {
 
 static StatsReportingController* g_stats_reporting_controller = nullptr;
 
@@ -240,4 +240,4 @@ bool StatsReportingController::GetSignedStoredValue(bool* result) {
   return CrosSettings::Get()->GetBoolean(kStatsReportingPref, result);
 }
 
-}  // namespace chromeos
+}  // namespace ash

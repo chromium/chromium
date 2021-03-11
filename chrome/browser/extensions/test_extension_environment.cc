@@ -79,7 +79,7 @@ class TestExtensionEnvironment::ChromeOSEnv {
   ChromeOSEnv() {}
 
  private:
-  chromeos::ScopedCrosSettingsTestHelper cros_settings_test_helper_;
+  ash::ScopedCrosSettingsTestHelper cros_settings_test_helper_;
   chromeos::ScopedTestUserManager test_user_manager_;
 
   DISALLOW_COPY_AND_ASSIGN(ChromeOSEnv);
@@ -101,7 +101,7 @@ TestExtensionEnvironment::TestExtensionEnvironment(Type type)
               ? std::make_unique<content::BrowserTaskEnvironment>()
               : nullptr),
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-      chromeos_env_(chromeos::DeviceSettingsService::IsInitialized()
+      chromeos_env_(ash::DeviceSettingsService::IsInitialized()
                         ? nullptr
                         : std::make_unique<ChromeOSEnv>()),
 #endif

@@ -191,13 +191,13 @@ HeartbeatScheduler::HeartbeatScheduler(
     return;
 
   heartbeat_frequency_subscription_ =
-      chromeos::CrosSettings::Get()->AddSettingsObserver(
+      ash::CrosSettings::Get()->AddSettingsObserver(
           chromeos::kHeartbeatFrequency,
           base::BindRepeating(&HeartbeatScheduler::RefreshHeartbeatSettings,
                               base::Unretained(this)));
 
   heartbeat_enabled_subscription_ =
-      chromeos::CrosSettings::Get()->AddSettingsObserver(
+      ash::CrosSettings::Get()->AddSettingsObserver(
           chromeos::kHeartbeatEnabled,
           base::BindRepeating(&HeartbeatScheduler::RefreshHeartbeatSettings,
                               base::Unretained(this)));
@@ -215,7 +215,7 @@ void HeartbeatScheduler::RefreshHeartbeatSettings() {
   // Attempt to fetch the current value of the reporting settings.
   // If trusted values are not available, register this function to be called
   // back when they are available.
-  chromeos::CrosSettings* settings = chromeos::CrosSettings::Get();
+  ash::CrosSettings* settings = ash::CrosSettings::Get();
   if (chromeos::CrosSettingsProvider::TRUSTED !=
       settings->PrepareTrustedValues(
           base::BindOnce(&HeartbeatScheduler::RefreshHeartbeatSettings,

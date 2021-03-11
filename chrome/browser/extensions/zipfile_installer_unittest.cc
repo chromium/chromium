@@ -169,7 +169,7 @@ class ZipFileInstallerTest : public testing::Test {
   MockExtensionRegistryObserver observer_;
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  chromeos::ScopedCrosSettingsTestHelper cros_settings_test_helper_;
+  ash::ScopedCrosSettingsTestHelper cros_settings_test_helper_;
   // ChromeOS needs a user manager to instantiate an extension service.
   chromeos::ScopedTestUserManager test_user_manager_;
 #endif

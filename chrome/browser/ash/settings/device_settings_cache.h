@@ -14,7 +14,7 @@ class PolicyData;
 class PrefService;
 class PrefRegistrySimple;
 
-namespace chromeos {
+namespace ash {
 
 // There is need (metrics at OOBE stage) to store settings (that normally would
 // go into DeviceSettings storage) before owner has been assigned (hence no key
@@ -41,6 +41,6 @@ std::string PolicyDataToString(const enterprise_management::PolicyData& policy);
 
 }  // namespace device_settings_cache
 
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // CHROME_BROWSER_ASH_SETTINGS_DEVICE_SETTINGS_CACHE_H_

@@ -10,11 +10,13 @@
 #include "base/compiler_specific.h"
 #include "base/macros.h"
 #include "chrome/browser/ash/login/users/supervised_user_manager.h"
+// TODO(https://crbug.com/1164001): forward declare CrosSettings when moved to
+// ash.
+#include "chrome/browser/ash/settings/cros_settings.h"
 
 namespace chromeos {
 
 class ChromeUserManagerImpl;
-class CrosSettings;
 class SupervisedUserTestBase;
 
 // TODO(crbug.com/1155729): Check this entire class is not used anymore for

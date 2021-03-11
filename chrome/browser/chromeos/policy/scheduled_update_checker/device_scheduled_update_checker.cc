@@ -266,7 +266,7 @@ std::unique_ptr<icu::Calendar> ConvertUtcToTzIcuTime(base::Time cur_time,
 // |os_and_policies_update_checker_| will be destroyed as part of this object,
 // so it's safe to use "this" with any callbacks.
 DeviceScheduledUpdateChecker::DeviceScheduledUpdateChecker(
-    chromeos::CrosSettings* cros_settings,
+    ash::CrosSettings* cros_settings,
     chromeos::NetworkStateHandler* network_state_handler)
     : cros_settings_(cros_settings),
       cros_settings_subscription_(cros_settings_->AddSettingsObserver(

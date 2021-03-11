@@ -76,7 +76,7 @@ class AutotestPrivateApiTest : public ExtensionApiTest {
         ->set_test_mode(true);
   }
 
-  chromeos::ScopedTestingCrosSettings scoped_testing_cros_settings_;
+  ash::ScopedTestingCrosSettings scoped_testing_cros_settings_;
 
  private:
   DISALLOW_COPY_AND_ASSIGN(AutotestPrivateApiTest);

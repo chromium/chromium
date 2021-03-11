@@ -204,7 +204,7 @@ class ChromeArcUtilTest : public testing::Test {
   std::unique_ptr<base::test::ScopedCommandLine> command_line_;
   base::test::ScopedFeatureList feature_list_;
   content::BrowserTaskEnvironment task_environment_;
-  chromeos::ScopedCrosSettingsTestHelper cros_settings_test_helper_;
+  ash::ScopedCrosSettingsTestHelper cros_settings_test_helper_;
   base::ScopedTempDir data_dir_;
   std::unique_ptr<TestingProfileManager> profile_manager_;
   std::unique_ptr<user_manager::ScopedUserManager> user_manager_enabler_;

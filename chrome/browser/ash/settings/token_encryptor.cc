@@ -19,7 +19,7 @@
 #include "crypto/sha2.h"
 #include "crypto/symmetric_key.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace {
 const size_t kNonceSize = 16;
@@ -122,4 +122,4 @@ std::string CryptohomeTokenEncryptor::DecryptTokenWithKey(
   return token;
 }
 
-}  // namespace chromeos
+}  // namespace ash

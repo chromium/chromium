@@ -172,7 +172,7 @@ class HeartbeatSchedulerTest : public testing::Test {
 
   content::BrowserTaskEnvironment task_environment_;
   MockGCMDriver gcm_driver_;
-  chromeos::ScopedTestingCrosSettings scoped_testing_cros_settings_;
+  ash::ScopedTestingCrosSettings scoped_testing_cros_settings_;
   testing::NiceMock<policy::MockCloudPolicyClient> cloud_policy_client_;
   testing::NiceMock<policy::MockCloudPolicyStore> cloud_policy_store_;
 

@@ -52,7 +52,7 @@ void AddPrintersFromMap(
 class EnterprisePrintersProviderImpl : public EnterprisePrintersProvider,
                                        public BulkPrintersCalculator::Observer {
  public:
-  EnterprisePrintersProviderImpl(CrosSettings* settings, Profile* profile)
+  EnterprisePrintersProviderImpl(ash::CrosSettings* settings, Profile* profile)
       : profile_(profile) {
     // initialization of pref_change_registrar
     pref_change_registrar_.Init(profile->GetPrefs());
@@ -287,7 +287,7 @@ void EnterprisePrintersProvider::RegisterProfilePrefs(
 
 // static
 std::unique_ptr<EnterprisePrintersProvider> EnterprisePrintersProvider::Create(
-    CrosSettings* settings,
+    ash::CrosSettings* settings,
     Profile* profile) {
   return std::make_unique<EnterprisePrintersProviderImpl>(settings, profile);
 }

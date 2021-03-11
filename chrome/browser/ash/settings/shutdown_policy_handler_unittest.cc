@@ -14,7 +14,7 @@
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace chromeos {
+namespace ash {
 
 class ShutdownPolicyHandlerTest : public testing::Test,
                                   public ShutdownPolicyHandler::Delegate {
@@ -25,10 +25,10 @@ class ShutdownPolicyHandlerTest : public testing::Test,
   // testing::Test:
   void SetUp() override {
     testing::Test::SetUp();
-    DBusThreadManager::Initialize();
+    chromeos::DBusThreadManager::Initialize();
   }
 
-  void TearDown() override { DBusThreadManager::Shutdown(); }
+  void TearDown() override { chromeos::DBusThreadManager::Shutdown(); }
 
   void SetRebootOnShutdown(bool reboot_on_shutdown) {
     scoped_testing_cros_settings_.device_settings()->SetBoolean(
@@ -88,4 +88,4 @@ TEST_F(ShutdownPolicyHandlerTest, NotifyDelegateWithShutdownPolicy) {
   EXPECT_FALSE(reboot_on_shutdown_);
 }
 
-}  // namespace chromeos
+}  // namespace ash

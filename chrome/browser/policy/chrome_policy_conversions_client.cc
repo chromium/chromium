@@ -201,7 +201,7 @@ Value ChromePolicyConversionsClient::GetDeviceLocalAccountPolicies() {
   DCHECK(device_local_account_policy_service);  // always non null for
                                                 // affiliated users.
   std::vector<DeviceLocalAccount> device_local_accounts =
-      GetDeviceLocalAccounts(chromeos::CrosSettings::Get());
+      GetDeviceLocalAccounts(ash::CrosSettings::Get());
   for (const auto& account : device_local_accounts) {
     const std::string user_id = account.user_id;
 

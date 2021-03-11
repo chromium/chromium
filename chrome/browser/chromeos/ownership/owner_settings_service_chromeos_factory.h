@@ -10,6 +10,12 @@
 #include "base/memory/ref_counted.h"
 #include "base/memory/singleton.h"
 #include "components/keyed_service/content/browser_context_keyed_service_factory.h"
+// TODO(https://crbug.com/1164001): forward declare DeviceSettingsService when
+// moved to ash.
+#include "chrome/browser/ash/settings/device_settings_service.h"
+// TODO(https://crbug.com/1164001): forward declare StubCrosSettingsProvider
+// when moved to ash.
+#include "chrome/browser/ash/settings/stub_cros_settings_provider.h"
 
 class KeyedService;
 
@@ -23,9 +29,7 @@ class OwnerKeyUtil;
 
 namespace chromeos {
 
-class DeviceSettingsService;
 class OwnerSettingsServiceChromeOS;
-class StubCrosSettingsProvider;
 
 class OwnerSettingsServiceChromeOSFactory
     : public BrowserContextKeyedServiceFactory {

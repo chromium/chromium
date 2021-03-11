@@ -112,7 +112,7 @@ void DeviceOffHoursController::NotifyOffHoursEndTimeChanged() const {
 
 void DeviceOffHoursController::OffHoursModeIsChanged() const {
   VLOG(1) << "OffHours mode is changed to " << off_hours_mode_;
-  chromeos::DeviceSettingsService::Get()->Load();
+  ash::DeviceSettingsService::Get()->Load();
 }
 
 void DeviceOffHoursController::UpdateOffHoursMode() {

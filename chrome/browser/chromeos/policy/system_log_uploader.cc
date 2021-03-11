@@ -333,11 +333,10 @@ SystemLogUploader::SystemLogUploader(
   SYSLOG(INFO) << "Creating system log uploader.";
 
   // Watch for policy changes.
-  upload_enabled_subscription_ =
-      chromeos::CrosSettings::Get()->AddSettingsObserver(
-          chromeos::kSystemLogUploadEnabled,
-          base::BindRepeating(&SystemLogUploader::RefreshUploadSettings,
-                              base::Unretained(this)));
+  upload_enabled_subscription_ = ash::CrosSettings::Get()->AddSettingsObserver(
+      chromeos::kSystemLogUploadEnabled,
+      base::BindRepeating(&SystemLogUploader::RefreshUploadSettings,
+                          base::Unretained(this)));
 
   // Fetch the current value of the policy.
   RefreshUploadSettings();
@@ -410,7 +409,7 @@ void SystemLogUploader::RefreshUploadSettings() {
   // Attempt to fetch the current value of the reporting settings.
   // If trusted values are not available, register this function to be called
   // back when they are available.
-  chromeos::CrosSettings* settings = chromeos::CrosSettings::Get();
+  ash::CrosSettings* settings = ash::CrosSettings::Get();
   auto trust_status = settings->PrepareTrustedValues(base::BindOnce(
       &SystemLogUploader::RefreshUploadSettings, weak_factory_.GetWeakPtr()));
   if (trust_status != chromeos::CrosSettingsProvider::TRUSTED)

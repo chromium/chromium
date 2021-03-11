@@ -32,7 +32,7 @@ constexpr base::TimeDelta kAdbSideloadingPlannedNotificationWaitTime =
     base::TimeDelta::FromDays(1);
 
 base::Optional<policy::AdbSideloadingAllowanceMode>
-GetAdbSideloadingDevicePolicyMode(const chromeos::CrosSettings* cros_settings,
+GetAdbSideloadingDevicePolicyMode(const ash::CrosSettings* cros_settings,
                                   const base::RepeatingClosure callback) {
   auto status = cros_settings->PrepareTrustedValues(callback);
 
@@ -85,7 +85,7 @@ void AdbSideloadingAllowanceModePolicyHandler::RegisterPrefs(
 
 AdbSideloadingAllowanceModePolicyHandler::
     AdbSideloadingAllowanceModePolicyHandler(
-        chromeos::CrosSettings* cros_settings,
+        ash::CrosSettings* cros_settings,
         PrefService* local_state,
         chromeos::PowerManagerClient* power_manager_client,
         chromeos::AdbSideloadingPolicyChangeNotification*

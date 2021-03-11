@@ -92,8 +92,8 @@ bool PluginVmFeatures::IsAllowed(const Profile* profile, std::string* reason) {
 
   // Check that PluginVm is allowed to run by policy.
   bool plugin_vm_allowed_for_device;
-  if (!chromeos::CrosSettings::Get()->GetBoolean(
-          chromeos::kPluginVmAllowed, &plugin_vm_allowed_for_device)) {
+  if (!ash::CrosSettings::Get()->GetBoolean(chromeos::kPluginVmAllowed,
+                                            &plugin_vm_allowed_for_device)) {
     VLOG(1) << "Unable to determine Parallels device-level policy.";
     *reason = "Unable to determine if device-level policy allows running VMs";
     return false;

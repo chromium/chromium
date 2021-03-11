@@ -12,7 +12,7 @@ namespace ownership {
 class OwnerSettingsService;
 }
 
-namespace chromeos {
+namespace ash {
 
 namespace about_flags {
 
@@ -59,6 +59,14 @@ class ReadOnlyFlagsStorage : public ::flags_ui::FlagsStorage {
 // on startup.
 std::set<std::string> ParseFlagsFromCommandLine();
 
+}  // namespace about_flags
+}  // namespace ash
+
+// TODO(https://crbug.com/1164001): remove when Chrome OS code migration is
+// done.
+namespace chromeos {
+namespace about_flags {
+using ::ash::about_flags::OwnerFlagsStorage;
 }  // namespace about_flags
 }  // namespace chromeos
 

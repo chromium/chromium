@@ -26,10 +26,9 @@ ArcOptInPreferenceHandler::ArcOptInPreferenceHandler(
 
 void ArcOptInPreferenceHandler::Start() {
   reporting_consent_subscription_ =
-      chromeos::StatsReportingController::Get()->AddObserver(
-          base::BindRepeating(
-              &ArcOptInPreferenceHandler::OnMetricsPreferenceChanged,
-              base::Unretained(this)));
+      ash::StatsReportingController::Get()->AddObserver(base::BindRepeating(
+          &ArcOptInPreferenceHandler::OnMetricsPreferenceChanged,
+          base::Unretained(this)));
 
   pref_change_registrar_.Init(pref_service_);
   pref_change_registrar_.Add(
@@ -65,7 +64,7 @@ void ArcOptInPreferenceHandler::OnLocationServicePreferenceChanged() {
 
 void ArcOptInPreferenceHandler::SendMetricsMode() {
   if (g_browser_process->local_state()) {
-    bool enabled = chromeos::StatsReportingController::Get()->IsEnabled();
+    bool enabled = ash::StatsReportingController::Get()->IsEnabled();
     observer_->OnMetricsModeChanged(enabled, IsMetricsReportingPolicyManaged());
   }
 }
@@ -95,7 +94,7 @@ void ArcOptInPreferenceHandler::SendLocationServicesMode() {
 }
 
 void ArcOptInPreferenceHandler::EnableMetrics(bool is_enabled) {
-  chromeos::StatsReportingController::Get()->SetEnabled(
+  ash::StatsReportingController::Get()->SetEnabled(
       ProfileManager::GetActiveUserProfile(), is_enabled);
 }
 

@@ -16,7 +16,7 @@ namespace policy {
 
 CrostiniAnsiblePlaybookExternalDataHandler::
     CrostiniAnsiblePlaybookExternalDataHandler(
-        chromeos::CrosSettings* cros_settings,
+        ash::CrosSettings* cros_settings,
         DeviceLocalAccountPolicyService* policy_service)
     : crostini_ansible_observer_(cros_settings,
                                  policy_service,

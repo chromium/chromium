@@ -25,7 +25,7 @@ base::WeakPtr<chromeos::PrintServersProvider> GetPrintServersProvider(
 }  // namespace
 
 PrintServersExternalDataHandler::PrintServersExternalDataHandler(
-    chromeos::CrosSettings* cros_settings,
+    ash::CrosSettings* cros_settings,
     DeviceLocalAccountPolicyService* policy_service)
     : print_servers_observer_(cros_settings,
                               policy_service,

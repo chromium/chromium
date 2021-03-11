@@ -20,7 +20,7 @@
 #include "chromeos/settings/system_settings_provider.h"
 #include "google_apis/gaia/gaia_auth_util.h"
 
-namespace chromeos {
+namespace ash {
 
 static CrosSettings* g_cros_settings = nullptr;
 
@@ -342,4 +342,4 @@ ScopedTestCrosSettings::~ScopedTestCrosSettings() {
   CrosSettings::Shutdown();
 }
 
-}  // namespace chromeos
+}  // namespace ash

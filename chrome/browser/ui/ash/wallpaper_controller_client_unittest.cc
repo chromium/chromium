@@ -21,7 +21,7 @@ class WallpaperControllerClientTest : public testing::Test {
 
  private:
   ScopedTestingLocalState local_state_;
-  chromeos::ScopedCrosSettingsTestHelper cros_settings_test_helper_;
+  ash::ScopedCrosSettingsTestHelper cros_settings_test_helper_;
   base::test::TaskEnvironment task_environment_;
 
   DISALLOW_COPY_AND_ASSIGN(WallpaperControllerClientTest);

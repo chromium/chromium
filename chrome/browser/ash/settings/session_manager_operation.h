@@ -27,7 +27,7 @@ class OwnerKeyUtil;
 class PublicKey;
 }
 
-namespace chromeos {
+namespace ash {
 
 // Handles a single transaction with session manager. This is a virtual base
 // class that contains common infrastructure for key and policy loading. There
@@ -42,7 +42,7 @@ class SessionManagerOperation {
   virtual ~SessionManagerOperation();
 
   // Starts the operation.
-  void Start(SessionManagerClient* session_manager_client,
+  void Start(chromeos::SessionManagerClient* session_manager_client,
              scoped_refptr<ownership::OwnerKeyUtil> owner_key_util,
              scoped_refptr<ownership::PublicKey> public_key);
 
@@ -81,7 +81,7 @@ class SessionManagerOperation {
   // operation should not perform further processing or trigger callbacks.
   void ReportResult(DeviceSettingsService::Status status);
 
-  SessionManagerClient* session_manager_client() {
+  chromeos::SessionManagerClient* session_manager_client() {
     return session_manager_client_;
   }
 
@@ -112,13 +112,13 @@ class SessionManagerOperation {
 
   // Validates device settings after retrieval from session_manager.
   void ValidateDeviceSettings(
-      SessionManagerClient::RetrievePolicyResponseType response_type,
+      chromeos::SessionManagerClient::RetrievePolicyResponseType response_type,
       const std::string& policy_blob);
 
   // Extracts status and device settings from the validator and reports them.
   void ReportValidatorStatus(policy::DeviceCloudPolicyValidator* validator);
 
-  SessionManagerClient* session_manager_client_ = nullptr;
+  chromeos::SessionManagerClient* session_manager_client_ = nullptr;
   scoped_refptr<ownership::OwnerKeyUtil> owner_key_util_;
 
   Callback callback_;
@@ -182,6 +182,6 @@ class StoreSettingsOperation : public SessionManagerOperation {
   DISALLOW_COPY_AND_ASSIGN(StoreSettingsOperation);
 };
 
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // CHROME_BROWSER_ASH_SETTINGS_SESSION_MANAGER_OPERATION_H_

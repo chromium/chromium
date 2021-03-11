@@ -293,8 +293,8 @@ class MultiProfileSupportTest : public ChromeAshTestBase {
 };
 
 void MultiProfileSupportTest::SetUp() {
-  chromeos::DeviceSettingsService::Initialize();
-  chromeos::CrosSettings::Initialize(
+  ash::DeviceSettingsService::Initialize();
+  ash::CrosSettings::Initialize(
       TestingBrowserProcess::GetGlobal()->local_state());
   ChromeAshTestBase::SetUp(std::make_unique<TestShellDelegateChromeOS>());
   ash_test_helper()
@@ -367,8 +367,8 @@ void MultiProfileSupportTest::TearDown() {
   ChromeAshTestBase::TearDown();
   wallpaper_controller_client_.reset();
   profile_manager_.reset();
-  chromeos::CrosSettings::Shutdown();
-  chromeos::DeviceSettingsService::Shutdown();
+  ash::CrosSettings::Shutdown();
+  ash::DeviceSettingsService::Shutdown();
 }
 
 std::string MultiProfileSupportTest::GetStatusImpl(bool follow_transients) {

@@ -10,7 +10,7 @@
 
 #include "chrome/browser/chromeos/ownership/owner_settings_service_chromeos_factory.h"
 
-namespace chromeos {
+namespace ash {
 
 ScopedTestingCrosSettings::ScopedTestingCrosSettings() {
   test_instance_ = std::make_unique<CrosSettings>();
@@ -38,4 +38,4 @@ ScopedTestingCrosSettings::~ScopedTestingCrosSettings() {
   CrosSettings::ShutdownForTesting();
 }
 
-}  // namespace chromeos
+}  // namespace ash

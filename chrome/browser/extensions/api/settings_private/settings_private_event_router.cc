@@ -101,7 +101,7 @@ void SettingsPrivateEventRouter::StartOrStopListeningForPrefsChanges() {
       if (prefs_util_->IsCrosSetting(pref_name)) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
         base::CallbackListSubscription subscription =
-            chromeos::CrosSettings::Get()->AddSettingsObserver(
+            ash::CrosSettings::Get()->AddSettingsObserver(
                 pref_name.c_str(),
                 base::BindRepeating(
                     &SettingsPrivateEventRouter::OnPreferenceChanged,

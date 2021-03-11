@@ -26,7 +26,7 @@ namespace policy {
 
 class AttestationDevicePolicyTest
     : public DevicePolicyCrosBrowserTest,
-      public chromeos::DeviceSettingsService::Observer {
+      public ash::DeviceSettingsService::Observer {
  public:
     // DeviceSettingsService::Observer
   void DeviceSettingsUpdated() override { operation_complete_ = true; }
@@ -41,10 +41,10 @@ class AttestationDevicePolicyTest
 
   // Refreshes device policy and waits for it to be applied.
   virtual void SyncRefreshDevicePolicy() {
-    chromeos::DeviceSettingsService::Get()->AddObserver(this);
+    ash::DeviceSettingsService::Get()->AddObserver(this);
     RefreshDevicePolicy();
     WaitForAsyncOperation();
-    chromeos::DeviceSettingsService::Get()->RemoveObserver(this);
+    ash::DeviceSettingsService::Get()->RemoveObserver(this);
   }
 
   enterprise_management::AttestationSettingsProto* GetDevicePolicyProto() {

@@ -180,7 +180,7 @@ class SystemTrayClientClockUnknownPrefTest
   }
 
  protected:
-  chromeos::ScopedTestingCrosSettings scoped_testing_cros_settings_;
+  ash::ScopedTestingCrosSettings scoped_testing_cros_settings_;
   chromeos::LocalStateMixin local_state_{&mixin_host_, this};
 };
 

@@ -23,7 +23,7 @@ bool IsUpdateOverCellularAllowed(bool interactive) {
       interactive ? true : chromeos::switches::IsCellularFirstDevice();
 
   // Device Policy overrides the defaults.
-  chromeos::CrosSettings* settings = chromeos::CrosSettings::Get();
+  ash::CrosSettings* settings = ash::CrosSettings::Get();
   if (!settings)
     return default_update_over_cellular_allowed;
 

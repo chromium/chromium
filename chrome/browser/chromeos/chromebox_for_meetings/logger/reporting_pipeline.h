@@ -19,7 +19,7 @@ namespace cfm {
 // Implementation of the CfmLoggerService::Delegate usign the chrome encrypted
 // reporting pipeline.
 class ReportingPipeline : public CfmLoggerService::Delegate,
-                          public chromeos::DeviceSettingsService::Observer {
+                          public ash::DeviceSettingsService::Observer {
  public:
   // Args: mojom::MeetDevicesLogger: The current enabled state of the service.
   using UpdateStatusCallback =
@@ -38,7 +38,7 @@ class ReportingPipeline : public CfmLoggerService::Delegate,
                CfmLoggerService::EnqueueCallback callback) override;
 
  protected:
-  // ::chromeos::DeviceSettingsService::Observer impl
+  // ::ash::DeviceSettingsService::Observer impl
   void DeviceSettingsUpdated() override;
   void OnDeviceSettingsServiceShutdown() override;
 

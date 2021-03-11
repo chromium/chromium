@@ -69,7 +69,7 @@ class BluetoothLowEnergyApiTestChromeOs : public PlatformAppBrowserTest {
   chromeos::FakeChromeUserManager* fake_user_manager_;
   std::unique_ptr<user_manager::ScopedUserManager> user_manager_enabler_;
 
-  chromeos::ScopedCrosSettingsTestHelper settings_helper_;
+  ash::ScopedCrosSettingsTestHelper settings_helper_;
   std::unique_ptr<chromeos::FakeOwnerSettingsService> owner_settings_service_;
 };
 

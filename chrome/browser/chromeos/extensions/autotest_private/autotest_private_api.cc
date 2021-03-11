@@ -4376,15 +4376,15 @@ AutotestPrivateSetMetricsEnabledFunction::Run() {
   Profile* profile = Profile::FromBrowserContext(browser_context());
 
   bool value;
-  if (chromeos::CrosSettings::Get()->GetBoolean(chromeos::kStatsReportingPref,
-                                                &value) &&
+  if (ash::CrosSettings::Get()->GetBoolean(chromeos::kStatsReportingPref,
+                                           &value) &&
       value == target_value_) {
     VLOG(1) << "Value at target; returning early";
     return RespondNow(NoArguments());
   }
 
-  chromeos::StatsReportingController* stats_reporting_controller =
-      chromeos::StatsReportingController::Get();
+  ash::StatsReportingController* stats_reporting_controller =
+      ash::StatsReportingController::Get();
 
   stats_reporting_controller->SetOnDeviceSettingsStoredCallBack(base::BindOnce(
       &AutotestPrivateSetMetricsEnabledFunction::OnDeviceSettingsStored, this));
@@ -4397,8 +4397,8 @@ AutotestPrivateSetMetricsEnabledFunction::Run() {
 
 void AutotestPrivateSetMetricsEnabledFunction::OnDeviceSettingsStored() {
   bool actual;
-  if (!chromeos::CrosSettings::Get()->GetBoolean(chromeos::kStatsReportingPref,
-                                                 &actual)) {
+  if (!ash::CrosSettings::Get()->GetBoolean(chromeos::kStatsReportingPref,
+                                            &actual)) {
     NOTREACHED() << "AutotestPrivateSetMetricsEnabledFunction: "
                  << "kStatsReportingPref should be set";
     Respond(Error(base::StrCat(

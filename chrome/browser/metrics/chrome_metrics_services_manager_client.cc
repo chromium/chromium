@@ -103,7 +103,7 @@ bool IsClientInSampleImpl(PrefService* local_state) {
 // Callback to update the metrics reporting state when the Chrome OS metrics
 // reporting setting changes.
 void OnCrosMetricsReportingSettingChange() {
-  bool enable_metrics = chromeos::StatsReportingController::Get()->IsEnabled();
+  bool enable_metrics = ash::StatsReportingController::Get()->IsEnabled();
   ChangeMetricsReportingState(enable_metrics);
 }
 #endif
@@ -219,7 +219,7 @@ bool ChromeMetricsServicesManagerClient::GetSamplingRatePerMille(int* rate) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 void ChromeMetricsServicesManagerClient::OnCrosSettingsCreated() {
   reporting_setting_subscription_ =
-      chromeos::StatsReportingController::Get()->AddObserver(
+      ash::StatsReportingController::Get()->AddObserver(
           base::BindRepeating(&OnCrosMetricsReportingSettingChange));
   // Invoke the callback once initially to set the metrics reporting state.
   OnCrosMetricsReportingSettingChange();

@@ -177,7 +177,7 @@ class StatusUploaderTest : public testing::Test {
 
   content::BrowserTaskEnvironment task_environment_;
   scoped_refptr<base::TestSimpleTaskRunner> task_runner_;
-  chromeos::ScopedTestingCrosSettings scoped_testing_cros_settings_;
+  ash::ScopedTestingCrosSettings scoped_testing_cros_settings_;
   std::unique_ptr<MockDeviceStatusCollector> collector_;
   MockDeviceStatusCollector* collector_ptr_;
   ui::UserActivityDetector detector_;

@@ -67,7 +67,7 @@ class PowerwashRequirementsCheckerTest : public BrowserWithTestWindowTest {
   }
 
  private:
-  chromeos::ScopedCrosSettingsTestHelper settings_helper_{
+  ash::ScopedCrosSettingsTestHelper settings_helper_{
       /* create_settings_service=*/false};
   chromeos::FakeChromeUserManager* fake_user_manager_;
   user_manager::ScopedUserManager scoped_user_manager_;

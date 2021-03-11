@@ -36,7 +36,7 @@
 
 namespace em = enterprise_management;
 
-namespace chromeos {
+namespace ash {
 
 namespace {
 constexpr char kOwner[] = "me@owner";
@@ -143,7 +143,7 @@ class CrosSettingsTest : public testing::Test {
       content::BrowserTaskEnvironment::IO_MAINLOOP};
 
   ScopedTestingLocalState local_state_;
-  ScopedStubInstallAttributes scoped_install_attributes_;
+  chromeos::ScopedStubInstallAttributes scoped_install_attributes_;
   ScopedTestDeviceSettingsService scoped_test_device_settings_;
   ScopedTestCrosSettings scoped_test_cros_settings_;
 
@@ -360,8 +360,7 @@ TEST_F(CrosSettingsTest, FindEmailInListWildcard) {
 // not set.
 TEST_F(CrosSettingsTest, AllowFamilyLinkAccountsWithEmptyAllowlist) {
   base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(
-      chromeos::features::kFamilyLinkOnSchoolDevice);
+  scoped_feature_list.InitAndEnableFeature(features::kFamilyLinkOnSchoolDevice);
 
   device_policy_.payload().mutable_allow_new_users()->set_allow_new_users(
       false);
@@ -386,7 +385,7 @@ TEST_F(CrosSettingsTest, AllowFamilyLinkAccountsWithEmptyAllowlist) {
 TEST_F(CrosSettingsTest, AllowFamilyLinkAccountsWithFeatureDisabled) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndDisableFeature(
-      chromeos::features::kFamilyLinkOnSchoolDevice);
+      features::kFamilyLinkOnSchoolDevice);
 
   device_policy_.payload().mutable_allow_new_users()->set_allow_new_users(
       false);
@@ -411,8 +410,7 @@ TEST_F(CrosSettingsTest, AllowFamilyLinkAccountsWithFeatureDisabled) {
 
 TEST_F(CrosSettingsTest, AllowFamilyLinkAccountsWithAllowlist) {
   base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(
-      chromeos::features::kFamilyLinkOnSchoolDevice);
+  scoped_feature_list.InitAndEnableFeature(features::kFamilyLinkOnSchoolDevice);
 
   device_policy_.payload().mutable_allow_new_users()->set_allow_new_users(
       false);
@@ -435,4 +433,4 @@ TEST_F(CrosSettingsTest, AllowFamilyLinkAccountsWithAllowlist) {
   EXPECT_FALSE(IsUserAllowed(kUser1, user_manager::USER_TYPE_REGULAR));
 }
 
-}  // namespace chromeos
+}  // namespace ash

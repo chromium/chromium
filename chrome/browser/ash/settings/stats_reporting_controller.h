@@ -21,7 +21,7 @@ namespace ownership {
 class OwnerSettingsService;
 }
 
-namespace chromeos {
+namespace ash {
 
 // An extra layer on top of CrosSettings / OwnerSettingsService that allows for
 // writing a setting before ownership is taken, for one setting only:
@@ -157,11 +157,12 @@ class StatsReportingController
   DISALLOW_COPY_AND_ASSIGN(StatsReportingController);
 };
 
-}  // namespace chromeos
+}  // namespace ash
 
-// TODO(https://crbug.com/1164001): remove when moved to ash.
-namespace ash {
-using ::chromeos::StatsReportingController;
-}
+// TODO(https://crbug.com/1164001): remove when Chrome OS code migration is
+// done.
+namespace chromeos {
+using ::ash::StatsReportingController;
+}  // namespace chromeos
 
 #endif  // CHROME_BROWSER_ASH_SETTINGS_STATS_REPORTING_CONTROLLER_H_

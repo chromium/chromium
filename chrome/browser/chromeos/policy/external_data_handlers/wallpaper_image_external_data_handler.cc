@@ -13,7 +13,7 @@
 namespace policy {
 
 WallpaperImageExternalDataHandler::WallpaperImageExternalDataHandler(
-    chromeos::CrosSettings* cros_settings,
+    ash::CrosSettings* cros_settings,
     DeviceLocalAccountPolicyService* policy_service)
     : wallpaper_image_observer_(cros_settings,
                                 policy_service,

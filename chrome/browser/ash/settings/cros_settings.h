@@ -27,7 +27,7 @@ class ListValue;
 class Value;
 }  // namespace base
 
-namespace chromeos {
+namespace ash {
 
 class DeviceSettingsService;
 class SupervisedUserCrosSettingsProvider;
@@ -165,12 +165,12 @@ class ScopedTestCrosSettings {
   DISALLOW_COPY_AND_ASSIGN(ScopedTestCrosSettings);
 };
 
-}  // namespace chromeos
+}  // namespace ash
 
-// TODO(https://crbug.com/1164001): remove after //chrome/browser/chromeos
-// source migration is finished.
-namespace ash {
-using ::chromeos::CrosSettings;
-}
+// TODO(https://crbug.com/1164001): remove when Chrome OS code migration is
+// done.
+namespace chromeos {
+using ::ash::CrosSettings;
+}  // namespace chromeos
 
 #endif  // CHROME_BROWSER_ASH_SETTINGS_CROS_SETTINGS_H_

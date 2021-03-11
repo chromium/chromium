@@ -26,7 +26,7 @@
 #include "content/public/test/test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace chromeos {
+namespace ash {
 
 TestingPrefServiceSimple* RegisterPrefs(TestingPrefServiceSimple* local_state) {
   StatsReportingController::RegisterLocalStatePrefs(local_state->registry());
@@ -95,7 +95,7 @@ class StatsReportingControllerTest : public testing::Test {
   content::BrowserTaskEnvironment task_environment_{
       content::BrowserTaskEnvironment::IO_MAINLOOP};
   TestingPrefServiceSimple local_state_;
-  ScopedStubInstallAttributes scoped_install_attributes_;
+  chromeos::ScopedStubInstallAttributes scoped_install_attributes_;
   FakeSessionManagerClient fake_session_manager_client_;
   ScopedTestDeviceSettingsService scoped_device_settings_;
   ScopedTestCrosSettings scoped_cros_settings_{RegisterPrefs(&local_state_)};
@@ -255,4 +255,4 @@ TEST_F(StatsReportingControllerTest, SetBeforeOwnershipTaken) {
   ExpectThatSignedStoredValueIs(true);
 }
 
-}  // namespace chromeos
+}  // namespace ash

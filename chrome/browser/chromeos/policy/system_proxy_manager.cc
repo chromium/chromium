@@ -87,7 +87,7 @@ class SystemProxyLoginHandler : public content::LoginDelegate {
 
 namespace policy {
 
-SystemProxyManager::SystemProxyManager(chromeos::CrosSettings* cros_settings,
+SystemProxyManager::SystemProxyManager(ash::CrosSettings* cros_settings,
                                        PrefService* local_state)
     : cros_settings_(cros_settings),
       system_proxy_subscription_(cros_settings_->AddSettingsObserver(

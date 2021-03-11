@@ -8,8 +8,11 @@
 #include <string>
 #include <vector>
 
-namespace chromeos {
+namespace ash {
 class CrosSettings;
+}  // namespace ash
+
+namespace chromeos {
 class OwnerSettingsServiceChromeOS;
 }  // namespace chromeos
 
@@ -128,7 +131,7 @@ void SetDeviceLocalAccounts(chromeos::OwnerSettingsServiceChromeOS* service,
 
 // Retrieves a list of device-local accounts from |cros_settings|.
 std::vector<DeviceLocalAccount> GetDeviceLocalAccounts(
-    chromeos::CrosSettings* cros_settings);
+    ash::CrosSettings* cros_settings);
 
 }  // namespace policy
 

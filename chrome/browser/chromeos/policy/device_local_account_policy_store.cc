@@ -29,7 +29,7 @@ namespace policy {
 DeviceLocalAccountPolicyStore::DeviceLocalAccountPolicyStore(
     const std::string& account_id,
     chromeos::SessionManagerClient* session_manager_client,
-    chromeos::DeviceSettingsService* device_settings_service,
+    ash::DeviceSettingsService* device_settings_service,
     scoped_refptr<base::SequencedTaskRunner> background_task_runner)
     : UserCloudPolicyStoreBase(background_task_runner,
                                PolicyScope::POLICY_SCOPE_USER,
@@ -185,7 +185,7 @@ void DeviceLocalAccountPolicyStore::CheckKeyAndValidate(
         valid_timestamp_required, std::move(policy), std::move(callback),
         validate_in_background));
   } else {
-    chromeos::DeviceSettingsService::OwnershipStatus ownership_status =
+    ash::DeviceSettingsService::OwnershipStatus ownership_status =
         device_settings_service_->GetOwnershipStatus();
     Validate(valid_timestamp_required, std::move(policy), std::move(callback),
              validate_in_background, ownership_status);
@@ -197,9 +197,8 @@ void DeviceLocalAccountPolicyStore::Validate(
     std::unique_ptr<em::PolicyFetchResponse> policy_response,
     ValidateCompletionCallback callback,
     bool validate_in_background,
-    chromeos::DeviceSettingsService::OwnershipStatus ownership_status) {
-  DCHECK_NE(chromeos::DeviceSettingsService::OWNERSHIP_UNKNOWN,
-            ownership_status);
+    ash::DeviceSettingsService::OwnershipStatus ownership_status) {
+  DCHECK_NE(ash::DeviceSettingsService::OWNERSHIP_UNKNOWN, ownership_status);
   const em::PolicyData* device_policy_data =
       device_settings_service_->policy_data();
   // Note that the key is obtained through the device settings service instead

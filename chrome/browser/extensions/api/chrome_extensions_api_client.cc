@@ -326,8 +326,8 @@ ChromeExtensionsAPIClient::CreateDevicePermissionsPrompt(
 bool ChromeExtensionsAPIClient::ShouldAllowDetachingUsb(int vid,
                                                         int pid) const {
   const base::ListValue* policy_list;
-  if (chromeos::CrosSettings::Get()->GetList(chromeos::kUsbDetachableAllowlist,
-                                             &policy_list)) {
+  if (ash::CrosSettings::Get()->GetList(chromeos::kUsbDetachableAllowlist,
+                                        &policy_list)) {
     for (const auto& entry : *policy_list) {
       if (entry.FindIntKey(chromeos::kUsbDetachableAllowlistKeyVid) == vid &&
           entry.FindIntKey(chromeos::kUsbDetachableAllowlistKeyPid) == pid) {

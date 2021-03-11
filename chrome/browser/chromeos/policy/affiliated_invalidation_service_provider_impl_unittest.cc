@@ -151,7 +151,7 @@ class AffiliatedInvalidationServiceProviderImplTest : public testing::Test {
   data_decoder::test::InProcessDataDecoder in_process_data_decoder_;
   chromeos::FakeChromeUserManager* fake_user_manager_;
   user_manager::ScopedUserManager user_manager_enabler_;
-  chromeos::ScopedCrosSettingsTestHelper cros_settings_test_helper_;
+  ash::ScopedCrosSettingsTestHelper cros_settings_test_helper_;
   network::TestURLLoaderFactory test_url_loader_factory_;
   TestingProfileManager profile_manager_;
   session_manager::SessionManager session_manager_;

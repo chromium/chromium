@@ -149,8 +149,8 @@ bool IsUnaffiliatedArcAllowed() {
         return true;
     }
   }
-  if (chromeos::CrosSettings::Get()->GetBoolean(
-          chromeos::kUnaffiliatedArcAllowed, &arc_allowed)) {
+  if (ash::CrosSettings::Get()->GetBoolean(chromeos::kUnaffiliatedArcAllowed,
+                                           &arc_allowed)) {
     return arc_allowed;
   }
   // If device policy is not set, allow ARC.
@@ -534,8 +534,7 @@ bool IsArcStatsReportingEnabled() {
   }
 
   bool pref = false;
-  chromeos::CrosSettings::Get()->GetBoolean(chromeos::kStatsReportingPref,
-                                            &pref);
+  ash::CrosSettings::Get()->GetBoolean(chromeos::kStatsReportingPref, &pref);
   return pref;
 }
 

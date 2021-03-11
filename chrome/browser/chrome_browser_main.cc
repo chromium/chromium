@@ -886,8 +886,8 @@ int ChromeBrowserMainParts::PreCreateThreadsImpl() {
   PrefService* local_state = browser_process_->local_state();
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  chromeos::CrosSettings::Initialize(local_state);
-  chromeos::StatsReportingController::Initialize(local_state);
+  ash::CrosSettings::Initialize(local_state);
+  ash::StatsReportingController::Initialize(local_state);
   arc::StabilityMetricsManager::Initialize(local_state);
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
@@ -1836,8 +1836,8 @@ void ChromeBrowserMainParts::PostDestroyThreads() {
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   arc::StabilityMetricsManager::Shutdown();
-  chromeos::StatsReportingController::Shutdown();
-  chromeos::CrosSettings::Shutdown();
+  ash::StatsReportingController::Shutdown();
+  ash::CrosSettings::Shutdown();
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 #endif  // defined(OS_ANDROID)
 }

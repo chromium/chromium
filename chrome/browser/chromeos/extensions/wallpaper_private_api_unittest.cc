@@ -53,7 +53,7 @@ class WallpaperPrivateApiUnittest : public testing::Test {
  private:
   std::unique_ptr<content::BrowserTaskEnvironment> task_environment_;
 
-  chromeos::ScopedCrosSettingsTestHelper cros_settings_test_helper_;
+  ash::ScopedCrosSettingsTestHelper cros_settings_test_helper_;
 
   chromeos::FakeChromeUserManager* fake_user_manager_;
 

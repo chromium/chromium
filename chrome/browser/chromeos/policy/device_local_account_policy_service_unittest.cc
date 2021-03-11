@@ -79,12 +79,12 @@ class MockDeviceLocalAccountPolicyServiceObserver
 };
 
 class DeviceLocalAccountPolicyServiceTestBase
-    : public chromeos::DeviceSettingsTestBase {
+    : public ash::DeviceSettingsTestBase {
  public:
   DeviceLocalAccountPolicyServiceTestBase();
   ~DeviceLocalAccountPolicyServiceTestBase() override;
 
-  // chromeos::DeviceSettingsTestBase:
+  // ash::DeviceSettingsTestBase:
   void SetUp() override;
   void TearDown() override;
 
@@ -99,7 +99,7 @@ class DeviceLocalAccountPolicyServiceTestBase
 
   PolicyMap expected_policy_map_;
   UserPolicyBuilder device_local_account_policy_;
-  std::unique_ptr<chromeos::CrosSettings> cros_settings_;
+  std::unique_ptr<ash::CrosSettings> cros_settings_;
   scoped_refptr<base::TestSimpleTaskRunner> extension_cache_task_runner_;
   MockDeviceManagementService mock_device_management_service_;
   FakeAffiliatedInvalidationServiceProvider
@@ -144,9 +144,9 @@ DeviceLocalAccountPolicyServiceTestBase::
     ~DeviceLocalAccountPolicyServiceTestBase() = default;
 
 void DeviceLocalAccountPolicyServiceTestBase::SetUp() {
-  chromeos::DeviceSettingsTestBase::SetUp();
+  ash::DeviceSettingsTestBase::SetUp();
 
-  cros_settings_ = std::make_unique<chromeos::CrosSettings>(
+  cros_settings_ = std::make_unique<ash::CrosSettings>(
       device_settings_service_.get(),
       TestingBrowserProcess::GetGlobal()->local_state());
   extension_cache_task_runner_ = new base::TestSimpleTaskRunner;
@@ -169,7 +169,7 @@ void DeviceLocalAccountPolicyServiceTestBase::TearDown() {
   service_.reset();
   extension_cache_task_runner_->RunUntilIdle();
   cros_settings_.reset();
-  chromeos::DeviceSettingsTestBase::TearDown();
+  ash::DeviceSettingsTestBase::TearDown();
 }
 
 void DeviceLocalAccountPolicyServiceTestBase::CreatePolicyService() {

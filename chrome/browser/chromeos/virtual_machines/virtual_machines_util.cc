@@ -11,8 +11,8 @@ namespace virtual_machines {
 
 bool AreVirtualMachinesAllowedByPolicy() {
   bool virtual_machines_allowed;
-  if (chromeos::CrosSettings::Get()->GetBoolean(
-          chromeos::kVirtualMachinesAllowed, &virtual_machines_allowed)) {
+  if (ash::CrosSettings::Get()->GetBoolean(chromeos::kVirtualMachinesAllowed,
+                                           &virtual_machines_allowed)) {
     return virtual_machines_allowed;
   }
   // If device policy is not set, allow virtual machines.

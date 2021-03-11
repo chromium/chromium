@@ -58,9 +58,9 @@ class ArcSettingsServiceTest : public BrowserWithTestWindowTest {
     chromeos::NetworkHandler::Initialize();
     network_config_helper_ = std::make_unique<
         chromeos::network_config::CrosNetworkConfigTestHelper>();
-    chromeos::StatsReportingController::RegisterLocalStatePrefs(
+    ash::StatsReportingController::RegisterLocalStatePrefs(
         local_state_.registry());
-    chromeos::StatsReportingController::Initialize(&local_state_);
+    ash::StatsReportingController::Initialize(&local_state_);
 
     arc_service_manager_ = std::make_unique<ArcServiceManager>();
     arc_session_manager_ =
@@ -104,7 +104,7 @@ class ArcSettingsServiceTest : public BrowserWithTestWindowTest {
     arc_session_manager_.reset();
     arc_service_manager_.reset();
 
-    chromeos::StatsReportingController::Shutdown();
+    ash::StatsReportingController::Shutdown();
     chromeos::NetworkHandler::Shutdown();
     chromeos::DBusThreadManager::Shutdown();
   }

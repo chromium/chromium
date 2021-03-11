@@ -415,7 +415,7 @@ class ExtensionGCMAppHandlerTest : public testing::Test {
 
   // This is needed to create extension service under CrOS.
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  chromeos::ScopedCrosSettingsTestHelper cros_settings_test_helper_;
+  ash::ScopedCrosSettingsTestHelper cros_settings_test_helper_;
   std::unique_ptr<chromeos::ScopedTestUserManager> test_user_manager_;
 #endif
 

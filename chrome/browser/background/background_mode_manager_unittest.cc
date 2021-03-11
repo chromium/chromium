@@ -311,7 +311,7 @@ class BackgroundModeManagerWithExtensionsTest : public testing::Test {
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   // ChromeOS needs extra services to run in the following order.
-  chromeos::ScopedCrosSettingsTestHelper cros_settings_test_helper_;
+  ash::ScopedCrosSettingsTestHelper cros_settings_test_helper_;
   chromeos::ScopedTestUserManager test_user_manager_;
 #endif
 

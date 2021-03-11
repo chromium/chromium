@@ -63,7 +63,7 @@ class CloudExternalDataPolicyObserver
   // |device_local_account_policy_service| may be nullptr if unavailable (e.g.
   // Active Directory management mode).
   CloudExternalDataPolicyObserver(
-      chromeos::CrosSettings* cros_settings,
+      ash::CrosSettings* cros_settings,
       DeviceLocalAccountPolicyService* device_local_account_policy_service,
       const std::string& policy,
       Delegate* delegate);
@@ -106,7 +106,7 @@ class CloudExternalDataPolicyObserver
       std::map<std::string, std::unique_ptr<PolicyServiceObserver>>;
   LoggedInUserObserverMap logged_in_user_observers_;
 
-  chromeos::CrosSettings* cros_settings_;
+  ash::CrosSettings* cros_settings_;
   DeviceLocalAccountPolicyService* device_local_account_policy_service_;
 
   // The policy that |this| observes.

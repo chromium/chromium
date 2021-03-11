@@ -2174,7 +2174,7 @@ TEST_F(ArcSessionManagerPowerwashTest, PowerwashRequestBlocksArcStart) {
   GetFakeUserManager()->LoginUser(account_id);
 
   // Set DeviceRebootOnUserSignout to ALWAYS.
-  chromeos::ScopedCrosSettingsTestHelper settings_helper{
+  ash::ScopedCrosSettingsTestHelper settings_helper{
       /* create_settings_service=*/false};
   settings_helper.ReplaceDeviceSettingsProviderWithStub();
   settings_helper.SetInteger(

@@ -380,9 +380,9 @@ void TestingProfile::Init() {
   account_manager->Initialize(profile_path_, GetURLLoaderFactory(),
                               immediate_callback_runner);
   account_manager->SetPrefService(GetPrefs());
-  if (!chromeos::CrosSettings::IsInitialized()) {
+  if (!ash::CrosSettings::IsInitialized()) {
     scoped_cros_settings_test_helper_.reset(
-        new chromeos::ScopedCrosSettingsTestHelper);
+        new ash::ScopedCrosSettingsTestHelper);
   }
   arc::ArcServiceLauncher* launcher = arc::ArcServiceLauncher::Get();
   if (launcher)
@@ -879,7 +879,7 @@ void TestingProfile::ChangeAppLocale(const std::string& locale,
   requested_locale_ = locale;
 }
 
-chromeos::ScopedCrosSettingsTestHelper*
+ash::ScopedCrosSettingsTestHelper*
 TestingProfile::ScopedCrosSettingsTestHelper() {
   return scoped_cros_settings_test_helper_.get();
 }

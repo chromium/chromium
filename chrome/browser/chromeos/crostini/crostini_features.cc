@@ -26,7 +26,7 @@ namespace {
 
 bool IsUnaffiliatedCrostiniAllowedByPolicy() {
   bool unaffiliated_crostini_allowed;
-  if (chromeos::CrosSettings::Get()->GetBoolean(
+  if (ash::CrosSettings::Get()->GetBoolean(
           chromeos::kDeviceUnaffiliatedCrostiniAllowed,
           &unaffiliated_crostini_allowed)) {
     return unaffiliated_crostini_allowed;
@@ -64,7 +64,7 @@ void CanChangeAdbSideloadingOnManagedDevice(
   auto repeating_callback =
       base::AdaptCallbackForRepeating(std::move(callback));
 
-  auto* const cros_settings = chromeos::CrosSettings::Get();
+  auto* const cros_settings = ash::CrosSettings::Get();
   auto status = cros_settings->PrepareTrustedValues(base::BindOnce(
       &CanChangeAdbSideloadingOnManagedDevice, repeating_callback,
       is_profile_enterprise_managed, is_affiliated_user, user_policy));

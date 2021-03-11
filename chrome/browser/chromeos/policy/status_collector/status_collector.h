@@ -20,11 +20,14 @@
 class PrefRegistrySimple;
 class Profile;
 
-namespace chromeos {
+namespace ash {
 class CrosSettings;
+}  // namespace ash
+
+namespace chromeos {
 namespace system {
 class StatisticsProvider;
-}
+}  // namespace system
 }  // namespace chromeos
 
 namespace policy {
@@ -85,7 +88,7 @@ class StatusCollector {
       chromeos::system::StatisticsProvider* statistics_provider);
 
   StatusCollector(chromeos::system::StatisticsProvider* provider,
-                  chromeos::CrosSettings* cros_settings,
+                  ash::CrosSettings* cros_settings,
                   base::Clock* clock = base::DefaultClock::GetInstance());
   virtual ~StatusCollector();
 
@@ -128,7 +131,7 @@ class StatusCollector {
 
   chromeos::system::StatisticsProvider* const statistics_provider_;
 
-  chromeos::CrosSettings* const cros_settings_;
+  ash::CrosSettings* const cros_settings_;
 
   // Cached values of the reporting settings.
   bool report_version_info_ = false;

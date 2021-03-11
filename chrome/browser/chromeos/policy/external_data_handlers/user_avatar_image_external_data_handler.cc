@@ -23,7 +23,7 @@ chromeos::UserImageManager* GetUserImageManager(const std::string& user_id) {
 }  // namespace
 
 UserAvatarImageExternalDataHandler::UserAvatarImageExternalDataHandler(
-    chromeos::CrosSettings* cros_settings,
+    ash::CrosSettings* cros_settings,
     DeviceLocalAccountPolicyService* policy_service)
     : user_avatar_image_observer_(cros_settings,
                                   policy_service,

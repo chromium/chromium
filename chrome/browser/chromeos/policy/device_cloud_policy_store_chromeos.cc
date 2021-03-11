@@ -50,7 +50,7 @@ void RecordDeviceIdValidityMetric(
 }  // namespace
 
 DeviceCloudPolicyStoreChromeOS::DeviceCloudPolicyStoreChromeOS(
-    chromeos::DeviceSettingsService* device_settings_service,
+    ash::DeviceSettingsService* device_settings_service,
     chromeos::InstallAttributes* install_attributes,
     scoped_refptr<base::SequencedTaskRunner> background_task_runner)
     : device_settings_service_(device_settings_service),
@@ -201,9 +201,9 @@ void DeviceCloudPolicyStoreChromeOS::UpdateFromService() {
   CheckDMToken();
   UpdateStatusFromService();
 
-  const chromeos::DeviceSettingsService::Status service_status =
+  const ash::DeviceSettingsService::Status service_status =
       device_settings_service_->status();
-  if (service_status == chromeos::DeviceSettingsService::STORE_SUCCESS) {
+  if (service_status == ash::DeviceSettingsService::STORE_SUCCESS) {
     policy_ = std::make_unique<em::PolicyData>();
     const em::PolicyData* policy_data = device_settings_service_->policy_data();
     if (policy_data) {
@@ -233,18 +233,18 @@ void DeviceCloudPolicyStoreChromeOS::UpdateFromService() {
 
 void DeviceCloudPolicyStoreChromeOS::UpdateStatusFromService() {
   switch (device_settings_service_->status()) {
-    case chromeos::DeviceSettingsService::STORE_SUCCESS:
+    case ash::DeviceSettingsService::STORE_SUCCESS:
       status_ = STATUS_OK;
       return;
-    case chromeos::DeviceSettingsService::STORE_KEY_UNAVAILABLE:
+    case ash::DeviceSettingsService::STORE_KEY_UNAVAILABLE:
       status_ = STATUS_BAD_STATE;
       return;
-    case chromeos::DeviceSettingsService::STORE_OPERATION_FAILED:
+    case ash::DeviceSettingsService::STORE_OPERATION_FAILED:
       status_ = STATUS_STORE_ERROR;
       return;
-    case chromeos::DeviceSettingsService::STORE_NO_POLICY:
-    case chromeos::DeviceSettingsService::STORE_INVALID_POLICY:
-    case chromeos::DeviceSettingsService::STORE_VALIDATION_ERROR:
+    case ash::DeviceSettingsService::STORE_NO_POLICY:
+    case ash::DeviceSettingsService::STORE_INVALID_POLICY:
+    case ash::DeviceSettingsService::STORE_VALIDATION_ERROR:
       status_ = STATUS_LOAD_ERROR;
       return;
   }
@@ -252,17 +252,17 @@ void DeviceCloudPolicyStoreChromeOS::UpdateStatusFromService() {
 }
 
 void DeviceCloudPolicyStoreChromeOS::CheckDMToken() {
-  const chromeos::DeviceSettingsService::Status service_status =
+  const ash::DeviceSettingsService::Status service_status =
       device_settings_service_->status();
   switch (service_status) {
-    case chromeos::DeviceSettingsService::STORE_SUCCESS:
-    case chromeos::DeviceSettingsService::STORE_KEY_UNAVAILABLE:
-    case chromeos::DeviceSettingsService::STORE_NO_POLICY:
-    case chromeos::DeviceSettingsService::STORE_INVALID_POLICY:
-    case chromeos::DeviceSettingsService::STORE_VALIDATION_ERROR:
+    case ash::DeviceSettingsService::STORE_SUCCESS:
+    case ash::DeviceSettingsService::STORE_KEY_UNAVAILABLE:
+    case ash::DeviceSettingsService::STORE_NO_POLICY:
+    case ash::DeviceSettingsService::STORE_INVALID_POLICY:
+    case ash::DeviceSettingsService::STORE_VALIDATION_ERROR:
       // Continue with the check below.
       break;
-    case chromeos::DeviceSettingsService::STORE_OPERATION_FAILED:
+    case ash::DeviceSettingsService::STORE_OPERATION_FAILED:
       // Don't check for write errors or transient read errors.
       return;
   }

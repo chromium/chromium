@@ -78,7 +78,7 @@ void ArcOemCryptoBridge::Connect(
   // OEMCrypto utilizes Attestation as the root of trust for its DRM
   // implementation.
   bool attestation_enabled = false;
-  if (!chromeos::CrosSettings::Get()->GetBoolean(
+  if (!ash::CrosSettings::Get()->GetBoolean(
           chromeos::kAttestationForContentProtectionEnabled,
           &attestation_enabled)) {
     LOG(ERROR) << "Failed to get attestation device setting";

@@ -12,7 +12,7 @@
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ash/settings/cros_settings.h"
 
-namespace chromeos {
+namespace ash {
 
 // This class observes the device setting |DeviceRebootOnShutdown|. Changes to
 // this policy are communicated to the ShutdownPolicyHandler::Delegate by
@@ -48,6 +48,6 @@ class ShutdownPolicyHandler {
   DISALLOW_COPY_AND_ASSIGN(ShutdownPolicyHandler);
 };
 
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // CHROME_BROWSER_ASH_SETTINGS_SHUTDOWN_POLICY_HANDLER_H_

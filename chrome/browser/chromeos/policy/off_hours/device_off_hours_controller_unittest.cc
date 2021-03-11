@@ -99,16 +99,15 @@ void SetOffHoursPolicyToProto(em::ChromeDeviceSettingsProto* proto,
 
 }  // namespace
 
-class DeviceOffHoursControllerSimpleTest
-    : public chromeos::DeviceSettingsTestBase {
+class DeviceOffHoursControllerSimpleTest : public ash::DeviceSettingsTestBase {
  protected:
   DeviceOffHoursControllerSimpleTest()
-      : chromeos::DeviceSettingsTestBase(
+      : ash::DeviceSettingsTestBase(
             base::test::TaskEnvironment::TimeSource::MOCK_TIME) {}
   ~DeviceOffHoursControllerSimpleTest() override = default;
 
   void SetUp() override {
-    chromeos::DeviceSettingsTestBase::SetUp();
+    ash::DeviceSettingsTestBase::SetUp();
     chromeos::SystemClockClient::InitializeFake();
     system_clock_client()->SetServiceIsAvailable(false);
 
@@ -120,7 +119,7 @@ class DeviceOffHoursControllerSimpleTest
 
   void TearDown() override {
     chromeos::SystemClockClient::Shutdown();
-    chromeos::DeviceSettingsTestBase::TearDown();
+    ash::DeviceSettingsTestBase::TearDown();
   }
 
   void UpdateDeviceSettings() {
