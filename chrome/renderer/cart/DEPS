@@ -1,3 +1,6 @@
 include_rules = [
-  "+third_party/re2"
+  "+third_party/re2",
+  "+chrome/browser/signin",
+  "+chrome/browser",
+  "+components/signin/public/identity_manager",
 ]

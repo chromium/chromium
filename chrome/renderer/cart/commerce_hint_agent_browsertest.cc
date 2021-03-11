@@ -5,12 +5,17 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_timeouts.h"
 #include "build/build_config.h"
+#include "chrome/browser/browser_process.h"
 #include "chrome/browser/cart/cart_db_content.pb.h"
 #include "chrome/browser/cart/cart_service.h"
 #include "chrome/browser/persisted_state_db/profile_proto_db.h"
+#include "chrome/browser/profiles/profile_manager.h"
+#include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/test/base/chrome_test_utils.h"
 #include "components/search/ntp_features.h"
+#include "components/signin/public/identity_manager/identity_manager.h"
+#include "components/signin/public/identity_manager/identity_test_utils.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/test_navigation_observer.h"
 #include "net/dns/mock_host_resolver.h"
@@ -33,6 +38,13 @@ cart_db::ChromeCartContentProto BuildProto(const char* domain,
   proto.set_merchant_cart_url(cart_url);
   proto.set_timestamp(base::Time::Now().ToDoubleT());
   return proto;
+}
+
+void UnblockOnProfileCreation(base::RunLoop* run_loop,
+                              Profile* profile,
+                              Profile::CreateStatus status) {
+  if (status == Profile::CREATE_STATUS_INITIALIZED)
+    run_loop->Quit();
 }
 
 const char kMockExample[] = "walmart.com";
@@ -72,8 +84,12 @@ class CommerceHintAgentTest : public PlatformBrowserTest {
 
   void SetUpOnMainThread() override {
     PlatformBrowserTest::SetUpOnMainThread();
-    service_ = CartServiceFactory::GetForProfile(
-        Profile::FromBrowserContext(web_contents()->GetBrowserContext()));
+    Profile* profile =
+        Profile::FromBrowserContext(web_contents()->GetBrowserContext());
+    service_ = CartServiceFactory::GetForProfile(profile);
+    auto* identity_manager = IdentityManagerFactory::GetForProfile(profile);
+    ASSERT_TRUE(identity_manager);
+    signin::SetPrimaryAccount(identity_manager, "user@gmail.com");
 
     // This is necessary to test non-localhost domains. See |NavigateToURL|.
     host_resolver()->AddRule("*", "127.0.0.1");
@@ -213,4 +229,62 @@ IN_PROC_BROWSER_TEST_F(CommerceHintAgentTest, PurchaseByForm) {
   WaitForCartCount(kEmptyExpected);
 }
 
+// TODO(crbug.com/1180268): CrOS multi-profiles implementation is different from
+// the rest and below tests don't work on CrOS yet. Re-enable them on CrOS after
+// figuring out the reason for failure.
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
+
+IN_PROC_BROWSER_TEST_F(CommerceHintAgentTest, NonSignInUser) {
+  Profile* profile =
+      Profile::FromBrowserContext(web_contents()->GetBrowserContext());
+  auto* identity_manager = IdentityManagerFactory::GetForProfile(profile);
+  ASSERT_TRUE(identity_manager);
+  signin::ClearPrimaryAccount(identity_manager);
+  NavigateToURL("https://www.walmart.com/cart");
+  WaitForCartCount(kEmptyExpected);
+
+  NavigateToURL("https://www.walmart.com/");
+  SendXHR("/wp-admin/admin-ajax.php", "action: woocommerce_add_to_cart");
+  WaitForCartCount(kEmptyExpected);
+
+  SendXHR("/add-to-cart", "product: 123");
+  WaitForCartCount(kEmptyExpected);
+
+  signin::SetPrimaryAccount(identity_manager, "user@gmail.com");
+  NavigateToURL("https://www.walmart.com/cart");
+  WaitForCartCount(kExpectedExample);
+}
+
+IN_PROC_BROWSER_TEST_F(CommerceHintAgentTest, MultipleProfiles) {
+  Profile* profile =
+      Profile::FromBrowserContext(web_contents()->GetBrowserContext());
+  auto* identity_manager = IdentityManagerFactory::GetForProfile(profile);
+  ProfileManager* profile_manager = g_browser_process->profile_manager();
+  ASSERT_TRUE(identity_manager);
+  ASSERT_EQ(profile_manager->GetNumberOfProfiles(), 1U);
+  signin::ClearPrimaryAccount(identity_manager);
+  NavigateToURL("https://www.walmart.com/cart");
+  WaitForCartCount(kEmptyExpected);
+
+  NavigateToURL("https://www.walmart.com/");
+  SendXHR("/wp-admin/admin-ajax.php", "action: woocommerce_add_to_cart");
+  WaitForCartCount(kEmptyExpected);
+
+  SendXHR("/add-to-cart", "product: 123");
+  WaitForCartCount(kEmptyExpected);
+
+  // Create another profile.
+  base::FilePath profile_path2 =
+      profile_manager->GenerateNextProfileDirectoryPath();
+  base::RunLoop run_loop;
+  profile_manager->CreateProfileAsync(
+      profile_path2, base::BindRepeating(&UnblockOnProfileCreation, &run_loop),
+      base::string16(), std::string());
+  run_loop.Run();
+  ASSERT_EQ(profile_manager->GetNumberOfProfiles(), 2U);
+
+  NavigateToURL("https://www.walmart.com/cart");
+  WaitForCartCount(kExpectedExample);
+}
+#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
 }  // namespace
