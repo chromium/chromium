@@ -33,6 +33,10 @@
 #include "ui/base/clipboard/clipboard.h"
 #include "ui/views/controls/button/image_button.h"
 
+#if defined(OS_LINUX)
+#include "ui/ozone/public/ozone_switches.h"
+#endif
+
 namespace {
 
 // Waits until the title of any tab in the browser for |contents| has the title
@@ -252,6 +256,18 @@ IN_PROC_BROWSER_TEST_F(CustomTabBarViewBrowserTest,
 
 // Check the custom tab bar is not instantiated for a popup window.
 IN_PROC_BROWSER_TEST_F(CustomTabBarViewBrowserTest, IsNotCreatedInPopup) {
+#if defined(OS_LINUX)
+  {
+    auto* command_line = base::CommandLine::ForCurrentProcess();
+    if (command_line->HasSwitch(switches::kOzonePlatform) &&
+        command_line->GetSwitchValueASCII(switches::kOzonePlatform) ==
+            "wayland") {
+      // TODO(crbug.com/1179071): Test is flaky on Linux Wayland configuration.
+      GTEST_SKIP() << "Flaky on Linux Wayland";
+    }
+  }
+#endif
+
   Browser* popup = OpenPopup(browser_view_->GetActiveWebContents(),
                              GURL("http://example.com"));
   EXPECT_TRUE(popup);
