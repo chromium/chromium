@@ -241,8 +241,28 @@ const CGFloat kOffsetToPinOmnibox = 100;
 
   __weak NewTabPageViewController* weakSelf = self;
 
+  CGFloat yOffsetBeforeRotation =
+      self.discoverFeedWrapperViewController.feedCollectionView.contentOffset.y;
+  BOOL isScrolledToTop =
+      [self adjustedContentSuggestionsHeight] <= (-yOffsetBeforeRotation) + 1;
+
   void (^alongsideBlock)(id<UIViewControllerTransitionCoordinatorContext>) =
       ^(id<UIViewControllerTransitionCoordinatorContext> context) {
+        // Rotating the device to landscape removes the fake omnibox, reducing
+        // the height of the content suggestions. Since the NTP's top scroll
+        // position is dependent on the content suggestions height, rotating
+        // from landscape->portrait would mess up the top scroll position. This
+        // ensures that it is adjusted if necessary.
+        // TODO(crbug.com/1170995): Remove once the Feed supports a custom
+        // header.
+        if (isScrolledToTop &&
+            -yOffsetBeforeRotation <
+                [weakSelf adjustedContentSuggestionsHeight]) {
+          weakSelf.discoverFeedWrapperViewController.feedCollectionView
+              .contentOffset =
+              CGPointMake(0, -[weakSelf adjustedContentSuggestionsHeight]);
+          [weakSelf updateFeedInsetsForContentSuggestions];
+        }
         [weakSelf.headerSynchronizer unfocusOmnibox];
         [weakSelf.contentSuggestionsViewController.collectionView
                 .collectionViewLayout invalidateLayout];
