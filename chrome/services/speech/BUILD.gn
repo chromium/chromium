@@ -30,6 +30,7 @@ source_set("lib") {
     ":buildflags",
     "//base",
     "//chrome/services/speech/soda",
+    "//chrome/services/speech/soda:soda_api_proto",
     "//components/speech",
     "//content/public/browser:proto",
     "//google_apis",

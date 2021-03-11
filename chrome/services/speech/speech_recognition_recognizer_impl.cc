@@ -11,6 +11,7 @@
 #include "base/containers/span.h"
 #include "base/files/file_util.h"
 #include "base/metrics/histogram_functions.h"
+#include "chrome/services/speech/soda/proto/soda_api.pb.h"
 #include "chrome/services/speech/soda/soda_client.h"
 #include "google_apis/google_api_keys.h"
 #include "media/base/audio_buffer.h"
@@ -44,13 +45,29 @@ namespace {
 // which owns the instance of SODA and their sequential destruction order
 // ensures that this callback will never be called with an invalid callback
 // handle to the SpeechRecognitionRecognizerImpl.
-void RecognitionCallback(const char* result,
-                         const bool is_final,
-                         void* callback_handle) {
+void OnSodaResponse(const char* serialized_proto,
+                    int length,
+                    void* callback_handle) {
   DCHECK(callback_handle);
-  static_cast<SpeechRecognitionRecognizerImpl*>(callback_handle)
-      ->recognition_event_callback()
-      .Run(std::string(result), is_final);
+  soda::api::SodaResponse response;
+  if (!response.ParseFromArray(serialized_proto, length)) {
+    LOG(ERROR) << "Unable to parse result from SODA.";
+    return;
+  }
+
+  if (response.soda_type() == soda::api::SodaResponse::RECOGNITION) {
+    soda::api::SodaRecognitionResult result = response.recognition_result();
+    DCHECK(result.hypothesis_size());
+    static_cast<SpeechRecognitionRecognizerImpl*>(callback_handle)
+        ->recognition_event_callback()
+        .Run(std::string(result.hypothesis(0)),
+             result.result_type() == soda::api::SodaRecognitionResult::FINAL);
+  }
+
+  if (response.soda_type() == soda::api::SodaResponse::LANGID) {
+    // TODO(crbug.com/1175357): Use the langid event to prompt users to switch
+    // languages.
+  }
 }
 
 }  // namespace
@@ -99,7 +116,7 @@ SpeechRecognitionRecognizerImpl::SpeechRecognitionRecognizerImpl(
   enable_soda_ = base::FeatureList::IsEnabled(media::kUseSodaForLiveCaption);
   if (enable_soda_) {
     DCHECK(base::PathExists(binary_path));
-    soda_client_ = std::make_unique<soda::SodaClient>(binary_path);
+    soda_client_ = std::make_unique<::soda::SodaClient>(binary_path);
   } else {
     cloud_client_ = std::make_unique<CloudSpeechRecognitionClient>(
         recognition_event_callback(),
@@ -153,14 +170,23 @@ void SpeechRecognitionRecognizerImpl::SendAudioToSpeechRecognitionService(
       // Initialize the SODA instance.
       auto api_key = google_apis::GetSodaAPIKey();
       std::string language_pack_directory = config_path_.AsUTF8Unsafe();
-      SodaConfig config;
-      config.channel_count = channel_count;
-      config.sample_rate = sample_rate;
-      config.language_pack_directory = language_pack_directory.c_str();
-      config.callback = RecognitionCallback;
+
+      // Initialize the SODA instance with the serialized config.
+      soda::api::SerializedSodaConfigMsg config_msg;
+      config_msg.set_channel_count(channel_count);
+      config_msg.set_sample_rate(sample_rate);
+      config_msg.set_api_key(api_key);
+      config_msg.set_language_pack_directory(language_pack_directory);
+      config_msg.set_simulate_realtime_testonly(false);
+      config_msg.set_enable_lang_id(false);
+      auto serialized = config_msg.SerializeAsString();
+
+      SerializedSodaConfig config;
+      config.soda_config = serialized.c_str();
+      config.soda_config_size = serialized.size();
+      config.callback = &OnSodaResponse;
       config.callback_handle = this;
-      config.api_key = api_key.c_str();
-      soda_client_->Reset(config);
+      soda_client_->Reset(config, sample_rate, channel_count);
     }
 
     soda_client_->AddAudio(reinterpret_cast<char*>(buffer->data.data()),
