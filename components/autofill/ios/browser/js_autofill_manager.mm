@@ -116,7 +116,7 @@ using autofill::FormRendererId;
           ? base::SysNSStringToUTF8(forceFillFieldIdentifier)
           : "null";
   int fieldNumericID = forceFillFieldUniqueID ? forceFillFieldUniqueID.value()
-                                              : autofill::kNotSetRendererID;
+                                              : FieldRendererId().value();
   std::vector<base::Value> parameters;
   parameters.push_back(std::move(*data));
   parameters.push_back(base::Value(fieldStringID));
@@ -139,9 +139,9 @@ using autofill::FormRendererId;
   bool useRendererIDs = base::FeatureList::IsEnabled(
       autofill::features::kAutofillUseUniqueRendererIDsOnIOS);
   int formNumericID =
-      formRendererID ? formRendererID.value() : autofill::kNotSetRendererID;
+      formRendererID ? formRendererID.value() : FieldRendererId().value();
   int fieldNumericID =
-      fieldRendererID ? fieldRendererID.value() : autofill::kNotSetRendererID;
+      fieldRendererID ? fieldRendererID.value() : FieldRendererId().value();
 
   std::vector<base::Value> parameters;
   parameters.push_back(base::Value(base::SysNSStringToUTF8(formName)));

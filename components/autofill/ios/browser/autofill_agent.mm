@@ -75,7 +75,6 @@ using autofill::FormRendererId;
 using autofill::FieldDataManager;
 using autofill::FieldRendererId;
 using autofill::FieldPropertiesFlags::kAutofilledOnUserTrigger;
-using autofill::kNotSetRendererID;
 
 namespace {
 
@@ -482,11 +481,9 @@ autofillManagerFromWebState:(web::WebState*)webState
   auto autofillData =
       std::make_unique<base::Value>(base::Value::Type::DICTIONARY);
   autofillData->SetKey("formName", base::Value(base::UTF16ToUTF8(form.name)));
-  uint32_t formRendererID = form.unique_renderer_id
-                                ? form.unique_renderer_id.value()
-                                : autofill::kNotSetRendererID;
-  autofillData->SetKey("formRendererID",
-                       base::Value(static_cast<int>(formRendererID)));
+  autofillData->SetKey(
+      "formRendererID",
+      base::Value(static_cast<int>(form.unique_renderer_id.value())));
 
   bool useRendererIDs = base::FeatureList::IsEnabled(
       autofill::features::kAutofillUseUniqueRendererIDsOnIOS);
@@ -499,11 +496,9 @@ autofillManagerFromWebState:(web::WebState*)webState
     base::Value fieldData(base::Value::Type::DICTIONARY);
     fieldData.SetKey("value", base::Value(field.value));
     fieldData.SetKey("section", base::Value(field.section));
-    uint32_t fieldRendererID = field.unique_renderer_id
-                                   ? field.unique_renderer_id.value()
-                                   : autofill::kNotSetRendererID;
     if (useRendererIDs) {
-      fieldsData.SetKey(NumberToString(fieldRendererID), std::move(fieldData));
+      fieldsData.SetKey(NumberToString(field.unique_renderer_id.value()),
+                        std::move(fieldData));
     } else {
       fieldsData.SetKey(base::UTF16ToUTF8(field.unique_id),
                         std::move(fieldData));
@@ -899,8 +894,7 @@ autofillManagerFromWebState:(web::WebState*)webState
             value:(const base::string16)value
           inFrame:(web::WebFrame*)frame {
   auto data = std::make_unique<base::DictionaryValue>();
-  data->SetInteger("unique_renderer_id",
-                   uniqueFieldID ? uniqueFieldID.value() : kNotSetRendererID);
+  data->SetInteger("unique_renderer_id", uniqueFieldID.value());
   data->SetString("identifier", fieldIdentifier);
   data->SetString("form", formName);
   data->SetString("value", value);

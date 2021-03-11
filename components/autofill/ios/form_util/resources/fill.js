@@ -137,9 +137,6 @@ __gCrWeb.fill.ROLE_ATTRIBUTE_PRESENTATION = 0;
 /**
  * The value for a unique form or field ID not set or missing.
  *
- * This variable is |kNotSetRendererID| from
- * chromium/src/components/autofill/ios/browser/autofill_util.h
- *
  * @const {string}
  */
 __gCrWeb.fill.RENDERER_ID_NOT_SET = '0';

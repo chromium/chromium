@@ -20,17 +20,16 @@ using autofill::CreateBoolCallback;
 using autofill::CreateStringCallback;
 using autofill::FormRendererId;
 using autofill::FieldRendererId;
-using autofill::kNotSetRendererID;
 using base::SysNSStringToUTF8;
 
 // Converts FormRendererId to int value that can be used in Javascript methods.
 int FormRendererIdToJsParameter(FormRendererId formID) {
-  return formID ? formID.value() : kNotSetRendererID;
+  return formID.value();
 }
 
 // Converts FieldRendererId to int value that can be used in Javascript methods.
 int FieldRendererIdToJsParameter(FieldRendererId fieldID) {
-  return fieldID ? fieldID.value() : kNotSetRendererID;
+  return fieldID.value();
 }
 
 namespace password_manager {

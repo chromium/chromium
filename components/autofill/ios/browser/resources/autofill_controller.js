@@ -211,7 +211,7 @@ function controlElementInputListener_(evt) {
  * @param {string} forceFillFieldStringID Identified field will always be
  *     filled even if non-empty. May be null.
  * @param {number} forceFillFieldNumericID Identified field will always be
- *     filled even if non-empty. May be kNotSetRendererId.
+ *     filled even if non-empty. May be __gCrWeb.fill.RENDERER_ID_NOT_SET.
  * @param {bool} useRendererIDs Whether the logic should use numeric renderer
  *     IDs for form filling.
  * @return {string} JSON encoded list of renderer IDs of filled elements.

@@ -119,8 +119,7 @@ bool ExtractFormData(const base::Value& form_value,
 
   std::string unique_renderer_id;
   form_dictionary->GetString("unique_renderer_id", &unique_renderer_id);
-  if (!unique_renderer_id.empty() &&
-      unique_renderer_id != NumberToString(kNotSetRendererID)) {
+  if (!unique_renderer_id.empty()) {
     StringToUint(unique_renderer_id, &form_data->unique_renderer_id.value());
   } else {
     form_data->unique_renderer_id = FormRendererId();
@@ -164,8 +163,7 @@ bool ExtractFormFieldData(const base::DictionaryValue& field,
 
   std::string unique_renderer_id;
   field.GetString("unique_renderer_id", &unique_renderer_id);
-  if (!unique_renderer_id.empty() &&
-      unique_renderer_id != NumberToString(kNotSetRendererID)) {
+  if (!unique_renderer_id.empty()) {
     StringToUint(unique_renderer_id, &field_data->unique_renderer_id.value());
   } else {
     field_data->unique_renderer_id = FieldRendererId();

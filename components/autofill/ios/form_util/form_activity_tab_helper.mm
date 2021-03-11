@@ -100,15 +100,8 @@ bool FormActivityTabHelper::HandleFormActivity(
       !message.GetBoolean("hasUserGesture", &params.has_user_gesture)) {
     params.input_missing = true;
   }
-  if (unique_form_id != NumberToString(kNotSetRendererID))
-    StringToUint(unique_form_id, &params.unique_form_id.value());
-  else
-    params.unique_form_id = FormRendererId();
-
-  if (unique_field_id != NumberToString(kNotSetRendererID))
-    StringToUint(unique_field_id, &params.unique_field_id.value());
-  else
-    params.unique_field_id = FieldRendererId();
+  StringToUint(unique_form_id, &params.unique_form_id.value());
+  StringToUint(unique_field_id, &params.unique_field_id.value());
 
   params.is_main_frame = form_in_main_frame;
   if (!sender_frame) {
