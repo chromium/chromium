@@ -148,10 +148,13 @@ void GetNGramHashIndices(NGramHashParams* params, int32_t* data) {
       //
       // TODO(https://crbug.com/902789): Murmur2 has only 2 remaining uses in
       // Chrome. Migrate to a different hash that's more widely used in future
-      // versions of the model.
+      // versions of the mode and also supports 32/64 bit platforms
+      // seamlessly. Anything over num_bytes = 7 can overflow on 32-bit. By
+      // limiting to 7, this may truncate the last byte of the input and result
+      // in a slightly different hash but impact should be minimal.
       const auto str_hash = MurmurHash64A(
           tokenized_output.str.c_str() + tokenized_output.tokens[start].first,
-          num_bytes, seed);
+          std::min(num_bytes, 7), seed);
       // Map the hash to an index in the vocab.
       data[ngram * max_unicode_length + start] = (str_hash % vocab_size) + 1;
     }
