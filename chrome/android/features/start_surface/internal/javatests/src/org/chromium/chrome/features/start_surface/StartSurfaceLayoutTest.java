@@ -63,6 +63,7 @@ import android.widget.ImageView;
 
 import androidx.annotation.Nullable;
 import androidx.recyclerview.widget.GridLayoutManager;
+import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.test.espresso.Espresso;
 import androidx.test.espresso.NoMatchingViewException;
@@ -286,6 +287,28 @@ public class StartSurfaceLayoutTest {
         enterGTSWithThumbnailRetry();
         // Make sure the grid tab switcher is scrolled down to show the selected tab.
         mRenderTestRule.render(cta.findViewById(R.id.tab_list_view), "10_web_tabs-select_last");
+    }
+
+    @Test
+    @MediumTest
+    @CommandLineFlags.Add({BASE_PARAMS})
+    public void testSwitchTabModel_ScrollToSelectedTab() throws IOException {
+        ChromeTabbedActivity cta = mActivityTestRule.getActivity();
+        prepareTabs(10, 0, "about:blank");
+        assertEquals(9, cta.getCurrentTabModel().index());
+        createTabs(cta, true, 1);
+        CriteriaHelper.pollUiThread(() -> cta.getCurrentTabModel().isIncognito());
+        enterTabSwitcher(cta);
+        switchTabModel(cta, false);
+        TabUiTestHelper.verifyAllTabsHaveThumbnail(cta.getCurrentTabModel());
+        // Make sure the grid tab switcher is scrolled down to show the selected tab.
+        onView(withId(R.id.tab_list_view)).check((v, noMatchException) -> {
+            if (noMatchException != null) throw noMatchException;
+            assertTrue(v instanceof RecyclerView);
+            LinearLayoutManager layoutManager =
+                    (LinearLayoutManager) ((RecyclerView) v).getLayoutManager();
+            assertEquals(9, layoutManager.findLastVisibleItemPosition());
+        });
     }
 
     @Test
