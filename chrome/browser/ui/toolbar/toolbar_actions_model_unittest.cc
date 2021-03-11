@@ -1478,52 +1478,6 @@ TEST_F(ToolbarActionsModelUnitTest, ChangesToPinnedOrderSavedInExtensionPrefs) {
                            browser_action_b()->id()));
 }
 
-TEST_F(ToolbarActionsModelUnitTest,
-       VisibleExtensionsMigrateToPinnedExtensions) {
-  InitializeEmptyExtensionService();
-
-  // Add the three browser action extensions.
-  ASSERT_TRUE(AddBrowserActionExtensions());
-
-  extensions::ExtensionPrefs* const extension_prefs =
-      extensions::ExtensionPrefs::Get(profile());
-  EXPECT_FALSE(extension_prefs->IsPinnedExtensionsMigrationComplete());
-
-  // Initialization of the toolbar model triggers migration of the visible
-  // extensions to pinned extensions.
-  InitToolbarModelAndObserver();
-
-  // Verify that the extensions that were visible are now the pinned extensions.
-  EXPECT_TRUE(extension_prefs->IsPinnedExtensionsMigrationComplete());
-  EXPECT_THAT(
-      extension_prefs->GetPinnedExtensions(),
-      testing::ElementsAre(browser_action_a()->id(), browser_action_b()->id(),
-                           browser_action_c()->id()));
-}
-
-TEST_F(ToolbarActionsModelUnitTest,
-       VisibleExtensionsOfConstrainedToolbarMigrateToPinnedExtensions) {
-  InitializeEmptyExtensionService();
-
-  profile()->GetPrefs()->SetInteger(extensions::pref_names::kToolbarSize, 2);
-  // Add the three browser action extensions.
-  ASSERT_TRUE(AddBrowserActionExtensions());
-
-  extensions::ExtensionPrefs* const extension_prefs =
-      extensions::ExtensionPrefs::Get(profile());
-  EXPECT_FALSE(extension_prefs->IsPinnedExtensionsMigrationComplete());
-
-  // Initialization of the toolbar model triggers migration of the visible
-  // extensions to pinned extensions.
-  InitToolbarModelAndObserver();
-
-  // Verify that the extensions that were visible are now the pinned extensions.
-  EXPECT_TRUE(extension_prefs->IsPinnedExtensionsMigrationComplete());
-  EXPECT_THAT(
-      extension_prefs->GetPinnedExtensions(),
-      testing::ElementsAre(browser_action_a()->id(), browser_action_b()->id()));
-}
-
 TEST_F(ToolbarActionsModelUnitTest, PinStateErasedOnUninstallation) {
   Init();
 

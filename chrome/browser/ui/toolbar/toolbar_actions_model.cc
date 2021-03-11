@@ -521,14 +521,6 @@ void ToolbarActionsModel::InitializeActionList() {
     Populate();
 
   if (base::FeatureList::IsEnabled(features::kExtensionsToolbarMenu)) {
-    if (!extension_prefs_->IsPinnedExtensionsMigrationComplete() &&
-        !profile_->IsOffTheRecord()) {
-      // Migrate extensions visible in the toolbar to pinned extensions.
-      auto new_pinned_action_ids = std::vector<ActionId>(
-          action_ids_.begin(), action_ids_.begin() + visible_icon_count());
-      extension_prefs_->SetPinnedExtensions(new_pinned_action_ids);
-      extension_prefs_->MarkPinnedExtensionsMigrationComplete();
-    }
     // Set |pinned_action_ids_| directly to avoid notifying observers that they
     // have changed even though they haven't.
     pinned_action_ids_ = GetFilteredPinnedActionIds();

@@ -546,6 +546,12 @@ const char kLiteModeUserNeedsNotification[] =
 const char kCartModuleRemoved[] = "cart_module_removed";
 #endif
 
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+// Deprecated 03/2021
+const char kPinnedExtensionsMigrationComplete[] =
+    "extensions.pinned_extension_migration";
+#endif
+
 // Register local state used only for migration (clearing or moving to a new
 // key).
 void RegisterLocalStatePrefsForMigration(PrefRegistrySimple* registry) {
@@ -576,6 +582,10 @@ void RegisterLocalStatePrefsForMigration(PrefRegistrySimple* registry) {
   registry->RegisterIntegerPref(kStabilityBreakpadRegistrationSuccess, 0);
   registry->RegisterIntegerPref(kStabilityDebuggerPresent, 0);
   registry->RegisterIntegerPref(kStabilityDebuggerNotPresent, 0);
+
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+  registry->RegisterBooleanPref(kPinnedExtensionsMigrationComplete, false);
+#endif
 }
 
 // Register prefs used only for migration (clearing or moving to a new key).
@@ -1197,6 +1207,11 @@ void MigrateObsoleteLocalStatePrefs(PrefService* local_state) {
   local_state->ClearPref(kStabilityBreakpadRegistrationSuccess);
   local_state->ClearPref(kStabilityDebuggerPresent);
   local_state->ClearPref(kStabilityDebuggerNotPresent);
+
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+  // Added 03/2021
+  local_state->ClearPref(kPinnedExtensionsMigrationComplete);
+#endif
 
   // Please don't delete the following line. It is used by PRESUBMIT.py.
   // END_MIGRATE_OBSOLETE_LOCAL_STATE_PREFS

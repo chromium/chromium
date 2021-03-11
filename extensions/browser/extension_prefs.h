@@ -417,12 +417,6 @@ class ExtensionPrefs : public KeyedService {
   // reset it. Don't call it unless you mean it!
   bool SetAlertSystemFirstRun();
 
-  // Whether extensions that were previously visible in the toolbar from
-  // |BrowserActionsContainer| have been migrated to pinned extensions in the
-  // |ExtensionsToolbarContainer|.
-  bool IsPinnedExtensionsMigrationComplete();
-  void MarkPinnedExtensionsMigrationComplete();
-
   // Returns the last value set via SetLastPingDay. If there isn't such a
   // pref, the returned Time will return true for is_null().
   base::Time LastPingDay(const std::string& extension_id) const;

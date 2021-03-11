@@ -103,10 +103,6 @@ extern const char kToolbar[];
 // actions toolbar.
 extern const char kToolbarSize[];
 
-// Indicates whether extensions have been migrated from BrowserActionsContainer
-// to the ExtensionsToolbarContainer.
-extern const char kPinnedExtensionsMigrationComplete[];
-
 // A preference for a list of Component extensions that have been
 // uninstalled/removed and should not be reloaded.
 extern const char kDeletedComponentExtensions[];

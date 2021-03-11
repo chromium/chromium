@@ -8,7 +8,6 @@
 #include <string>
 #include <vector>
 
-#include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ui/test/test_browser_dialog.h"
 #include "extensions/common/extension.h"
 
@@ -34,10 +33,7 @@ class ExtensionsToolbarBrowserTest : public DialogBrowserTest {
       delete;
 
  protected:
-  // Note the |enable_flag| parameter exists to test migration of extensions
-  // triggered by the experiment. Pre-migration setup must be done with the flag
-  // disabled.
-  explicit ExtensionsToolbarBrowserTest(bool enable_flag = true);
+  ExtensionsToolbarBrowserTest();
   ~ExtensionsToolbarBrowserTest() override;
 
   void SetUpOnMainThread() override;
@@ -75,7 +71,6 @@ class ExtensionsToolbarBrowserTest : public DialogBrowserTest {
   std::vector<ToolbarActionView*> GetVisibleToolbarActionViews() const;
 
  private:
-  base::test::ScopedFeatureList scoped_feature_list_;
   Browser* incognito_browser_ = nullptr;
   std::vector<scoped_refptr<const extensions::Extension>> extensions_;
 };
