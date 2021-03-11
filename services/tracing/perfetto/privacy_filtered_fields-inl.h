@@ -225,11 +225,25 @@ constexpr int kChromeTaskGraphRunnerIndices[] = {1, -1};
 constexpr MessageInfo kChromeTaskGraphRunner = {kChromeTaskGraphRunnerIndices,
                                                 nullptr};
 
+// Proto Message: RenderFrameImplDeletion
+constexpr int kRenderFrameImplDeletionIndices[] = {1, 2, 3, 4, -1};
+constexpr MessageInfo kRenderFrameImplDeletion = {
+    kRenderFrameImplDeletionIndices, nullptr};
+
+// Proto Message: ShouldSwapBrowsingInstancesResult
+constexpr int kShouldSwapBrowsingInstancesResultIndices[] = {1, 2, -1};
+constexpr MessageInfo kShouldSwapBrowsingInstancesResult = {
+    kShouldSwapBrowsingInstancesResultIndices, nullptr};
+
+// Proto Message: FrameTreeNodeInfo
+constexpr int kFrameTreeNodeInfoIndices[] = {1, 2, 3, -1};
+constexpr MessageInfo kFrameTreeNodeInfo = {kFrameTreeNodeInfoIndices, nullptr};
+
 // Proto Message: TrackEvent
 constexpr int kTrackEventIndices[] = {
-    1,  2,  3,  5,  6,    9,    10,   11,   12,   16,   17, 24, 25,
-    26, 27, 28, 29, 30,   31,   32,   33,   34,   35,   36, 38, 39,
-    40, 41, 42, 43, 1001, 1002, 1003, 1004, 1005, 1006, -1};
+    1,  2,  3,    5,    6,    9,    10,   11,   12,   16,   17,   24, 25, 26,
+    27, 28, 29,   30,   31,   32,   33,   34,   35,   36,   38,   39, 40, 41,
+    42, 43, 1001, 1002, 1003, 1004, 1005, 1006, 1008, 1009, 1010, -1};
 constexpr MessageInfo const* kTrackEventComplexMessages[] = {
     nullptr,
     nullptr,
@@ -266,7 +280,10 @@ constexpr MessageInfo const* kTrackEventComplexMessages[] = {
     &kChromeBrowserContext,
     &kChromeProfileDestroyer,
     &kChromeTaskPostedToDisabledQueue,
-    &kChromeTaskGraphRunner};
+    &kChromeTaskGraphRunner,
+    &kRenderFrameImplDeletion,
+    &kShouldSwapBrowsingInstancesResult,
+    &kFrameTreeNodeInfo};
 constexpr MessageInfo kTrackEvent = {kTrackEventIndices,
                                      kTrackEventComplexMessages};
 
