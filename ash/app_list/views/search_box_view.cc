@@ -234,7 +234,6 @@ void SearchBoxView::SetupCloseButton() {
   views::ImageButton* close = close_button();
   close->SetCallback(base::BindRepeating(
       [](SearchBoxView* view) {
-        view->view_delegate_->LogSearchAbandonHistogram();
         view->SetSearchBoxActive(false, ui::ET_UNKNOWN);
         view->ClearSearch();
       },
@@ -590,8 +589,6 @@ void SearchBoxView::UpdateQuery(const base::string16& new_query) {
 void SearchBoxView::ClearSearchAndDeactivateSearchBox() {
   if (!is_search_box_active())
     return;
-
-  view_delegate_->LogSearchAbandonHistogram();
 
   contents_view_->search_results_page_view()
       ->result_selection_controller()

@@ -1132,10 +1132,6 @@ void AppListControllerImpl::OpenSearchResult(const std::string& result_id,
   ResetHomeLauncherIfShown();
 }
 
-void AppListControllerImpl::LogSearchAbandonHistogram() {
-  RecordSearchAbandonWithQueryLengthHistogram(GetLastQueryLength());
-}
-
 void AppListControllerImpl::InvokeSearchResultAction(
     const std::string& result_id,
     int action_index) {

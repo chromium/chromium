@@ -1037,6 +1037,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Apps.AppListSearchAbandonQueryLength" units="characters"
     expires_after="2021-03-15">
+  <obsolete>
+    Removed March 2021.
+  </obsolete>
   <owner>jennyz@chromium.org</owner>
   <owner>tby@chromium.org</owner>
   <owner>thanhdng@chromium.org</owner>

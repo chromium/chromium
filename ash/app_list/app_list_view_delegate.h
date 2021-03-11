@@ -75,9 +75,6 @@ class ASH_PUBLIC_EXPORT AppListViewDelegate {
                                 int suggestion_index,
                                 bool launch_as_default) = 0;
 
-  // Logs the UMA histogram metrics for user's abandonment of launcher search.
-  virtual void LogSearchAbandonHistogram() = 0;
-
   // Called to invoke a custom action on a result with |result_id|.
   // |action_index| corresponds to the index of an icon in
   // |result.action_icons()|.

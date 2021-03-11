@@ -295,9 +295,6 @@ void RecordZeroStateSearchResultUserActionHistogram(
 void RecordZeroStateSearchResultRemovalHistogram(
     ZeroStateSearchResutRemovalConfirmation removal_decision);
 
-APP_LIST_EXPORT void RecordSearchAbandonWithQueryLengthHistogram(
-    int query_length);
-
 APP_LIST_EXPORT void RecordSearchResultOpenSource(
     const SearchResult* result,
     const AppListModel* model,

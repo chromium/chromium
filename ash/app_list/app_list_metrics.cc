@@ -16,14 +16,6 @@
 #include "ui/compositor/compositor.h"
 
 namespace ash {
-namespace {
-
-// This constant affects logging, and should not be changed without
-// deprecating this UMA histogram:
-//  - Apps.AppListSearchAbandonQueryLength
-constexpr int kMaxLoggedQueryLength = 10;
-
-}  // namespace
 
 // The UMA histogram that logs smoothness of pagination animation.
 constexpr char kPaginationTransitionAnimationSmoothness[] =
@@ -54,12 +46,6 @@ constexpr char kAppListZeroStateSearchResultUserActionHistogram[] =
 // search result removal confirmation.
 constexpr char kAppListZeroStateSearchResultRemovalHistogram[] =
     "Apps.AppList.ZeroStateSearchResultRemovalDecision";
-
-// The UMA histogram that logs the length of the query when user abandons
-// results of a queried search or recommendations of zero state(zero length
-// query) in launcher UI.
-constexpr char kSearchAbandonQueryLengthHistogram[] =
-    "Apps.AppListSearchAbandonQueryLength";
 
 // The base UMA histogram that logs app launches within the AppList and shelf.
 constexpr char kAppListAppLaunched[] = "Apps.AppListAppLaunchedV2";
@@ -152,12 +138,6 @@ APP_LIST_EXPORT void RecordSearchResultOpenSource(
   UMA_HISTOGRAM_ENUMERATION(
       kAppListSearchResultOpenSourceHistogram, source,
       ApplistSearchResultOpenedSource::kMaxApplistSearchResultOpenedSource);
-}
-
-void RecordSearchAbandonWithQueryLengthHistogram(int query_length) {
-  UMA_HISTOGRAM_EXACT_LINEAR(kSearchAbandonQueryLengthHistogram,
-                             std::min(query_length, kMaxLoggedQueryLength),
-                             kMaxLoggedQueryLength);
 }
 
 void RecordZeroStateSearchResultUserActionHistogram(
