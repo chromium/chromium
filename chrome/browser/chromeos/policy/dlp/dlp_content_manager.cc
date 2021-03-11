@@ -313,7 +313,6 @@ void DlpContentManager::RemoveFromConfidential(
 
 void DlpContentManager::MaybeChangeOnScreenRestrictions() {
   DlpContentRestrictionSet new_restriction_set;
-  // TODO(crbug/1111860): Recalculate more effectively.
   for (const auto& entry : confidential_web_contents_) {
     if (entry.first->GetVisibility() == content::Visibility::VISIBLE) {
       new_restriction_set.UnionWith(entry.second);
