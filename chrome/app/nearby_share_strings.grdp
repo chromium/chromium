@@ -347,4 +347,10 @@
   <message name="IDS_NEARBY_NOTIFICATION_SOURCE" desc="Text shown as the source of a Nearby Share notification.">
     Nearby Share
   </message>
+  <message name="IDS_NEARBY_NOTIFICATION_RECEIVER_CANCELLED" desc="Text shown as the title of a notification when the receiver device cancels the Nearby Share tranfer.">
+    <ph name="DEVICE_NAME">$1<ex>Ted's Pixel 2</ex></ph> did not accept the file
+  </message>
+  <message name="IDS_NEARBY_NOTIFICATION_SENDER_CANCELLED" desc="Text shown as the title of a notification when the sender device cancels the Nearby Share tranfer.">
+    <ph name="DEVICE_NAME">$1<ex>Ted's Pixel 2</ex></ph> cancelled the transfer
+  </message>
 </grit-part>

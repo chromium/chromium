@@ -147,9 +147,13 @@ class NearbySharingService : public KeyedService {
   virtual void Reject(const ShareTarget& share_target,
                       StatusCodesCallback status_codes_callback) = 0;
 
-  // Cancels outoing shares to the remote |share_target|.
+  // Cancels outgoing shares to the remote |share_target|.
   virtual void Cancel(const ShareTarget& share_target,
                       StatusCodesCallback status_codes_callback) = 0;
+
+  // Returns true if the local user cancelled the transfer to remote
+  // |share_target|.
+  virtual bool DidLocalUserCancelTransfer(const ShareTarget& share_target) = 0;
 
   // Opens attachments from the remote |share_target|.
   virtual void Open(const ShareTarget& share_target,

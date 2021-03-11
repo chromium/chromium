@@ -820,8 +820,8 @@ TEST_F(NearbyNotificationManagerTest, ProgressNotification_Cancelled) {
                         .set_status(TransferMetadata::Status::kCancelled)
                         .build());
 
-  // Notification should be closed.
-  EXPECT_EQ(0u, GetDisplayedNotifications().size());
+  // Cancelled notification should be shown.
+  EXPECT_EQ(1u, GetDisplayedNotifications().size());
 }
 
 TEST_F(NearbyNotificationManagerTest, ConnectionRequest_Accept) {

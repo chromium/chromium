@@ -786,6 +786,7 @@ void NearbySharingServiceImpl::Cancel(
     const ShareTarget& share_target,
     StatusCodesCallback status_codes_callback) {
   NS_LOG(INFO) << __func__ << ": User canceled transfer";
+  locally_cancelled_share_target_ids_.insert(share_target.id);
   DoCancel(share_target, std::move(status_codes_callback),
            /*write_cancel_frame=*/true);
 }
@@ -806,7 +807,7 @@ void NearbySharingServiceImpl::DoCancel(
   }
 
   // For metrics.
-  cancelled_share_target_ids_.insert(share_target.id);
+  all_cancelled_share_target_ids_.insert(share_target.id);
 
   // Cancel all ongoing payload transfers before invoking the transfer update
   // callback. Invoking the transfer update callback first could result in
@@ -860,6 +861,11 @@ void NearbySharingServiceImpl::DoCancel(
   }
 
   std::move(status_codes_callback).Run(StatusCodes::kOk);
+}
+
+bool NearbySharingServiceImpl::DidLocalUserCancelTransfer(
+    const ShareTarget& share_target) {
+  return base::Contains(locally_cancelled_share_target_ids_, share_target.id);
 }
 
 void NearbySharingServiceImpl::Open(const ShareTarget& share_target,
@@ -938,6 +944,7 @@ void NearbySharingServiceImpl::CleanupAfterNearbyProcessStopped() {
   last_incoming_metadata_.reset();
   last_outgoing_metadata_.reset();
   attachment_info_map_.clear();
+  locally_cancelled_share_target_ids_.clear();
 
   mutual_acceptance_timeout_alarm_.Cancel();
   disconnection_timeout_alarms_.clear();
@@ -2276,7 +2283,7 @@ void NearbySharingServiceImpl::OnOutgoingConnection(
   bool success = info && info->endpoint_id() && connection;
   RecordNearbyShareEstablishConnectionMetrics(
       success, /*cancelled=*/
-      base::Contains(cancelled_share_target_ids_, share_target.id),
+      base::Contains(all_cancelled_share_target_ids_, share_target.id),
       base::TimeTicks::Now() - connect_start_time);
 
   if (!success) {
@@ -2484,7 +2491,7 @@ void NearbySharingServiceImpl::OnCreatePayloads(
       GetBluetoothMacAddressForShareTarget(share_target);
 
   // For metrics.
-  cancelled_share_target_ids_.clear();
+  all_cancelled_share_target_ids_.clear();
 
   // TODO(crbug.com/1111458): Add preferred transfer type.
   nearby_connections_manager_->Connect(
@@ -3776,7 +3783,7 @@ void NearbySharingServiceImpl::UnregisterShareTarget(
                   << share_target.id;
 
   // For metrics.
-  cancelled_share_target_ids_.erase(share_target.id);
+  all_cancelled_share_target_ids_.erase(share_target.id);
 
   if (share_target.is_incoming) {
     if (last_incoming_metadata_ &&

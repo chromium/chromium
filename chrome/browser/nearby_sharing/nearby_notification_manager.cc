@@ -614,9 +614,14 @@ void NearbyNotificationManager::OnTransferUpdate(
       ShowProgress(share_target, transfer_metadata);
       break;
     case TransferMetadata::Status::kRejected:
+    case TransferMetadata::Status::kCancelled:
+      // Only show the notification if the remote Receiver rejected
+      // or the remote Sender cancelled.
+      if (!nearby_service_->DidLocalUserCancelTransfer(share_target))
+        ShowCancelled(share_target);
+      break;
     case TransferMetadata::Status::kAwaitingRemoteAcceptanceFailed:
     case TransferMetadata::Status::kExternalProviderLaunched:
-    case TransferMetadata::Status::kCancelled:
       // Any previous notifications have been closed with the status change
       // check above that called CloseTransfer(). No notification is currently
       // shown for these statuses, so break.
@@ -863,6 +868,26 @@ void NearbyNotificationManager::ShowFailure(
   if (message) {
     notification.set_message(*message);
   }
+
+  delegate_map_.erase(kNearbyNotificationId);
+
+  notification_display_service_->Display(
+      NotificationHandler::Type::NEARBY_SHARE, notification,
+      /*metadata=*/nullptr);
+}
+
+void NearbyNotificationManager::ShowCancelled(const ShareTarget& share_target) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+
+  message_center::Notification notification =
+      CreateNearbyNotification(kNearbyNotificationId);
+
+  notification.set_title(base::ReplaceStringPlaceholders(
+      l10n_util::GetStringUTF16(
+          share_target.is_incoming
+              ? IDS_NEARBY_NOTIFICATION_SENDER_CANCELLED
+              : IDS_NEARBY_NOTIFICATION_RECEIVER_CANCELLED),
+      {base::ASCIIToUTF16(share_target.device_name)}, /*offsets=*/nullptr));
 
   delegate_map_.erase(kNearbyNotificationId);
 

@@ -61,6 +61,10 @@ class MockNearbySharingService : public NearbySharingService {
               Cancel,
               (const ShareTarget&, StatusCodesCallback),
               (override));
+  MOCK_METHOD(bool,
+              DidLocalUserCancelTransfer,
+              (const ShareTarget&),
+              (override));
   MOCK_METHOD(void,
               Open,
               (const ShareTarget&, StatusCodesCallback),

@@ -115,6 +115,7 @@ class NearbySharingServiceImpl
               StatusCodesCallback status_codes_callback) override;
   void Cancel(const ShareTarget& share_target,
               StatusCodesCallback status_codes_callback) override;
+  bool DidLocalUserCancelTransfer(const ShareTarget& share_target) override;
   void Open(const ShareTarget& share_target,
             StatusCodesCallback status_codes_callback) override;
   void OpenURL(GURL url) override;
@@ -446,7 +447,9 @@ class NearbySharingServiceImpl
       outgoing_share_target_info_map_;
   // For metrics. The IDs of ShareTargets that are cancelled while trying to
   // establish an outgoing connection.
-  base::flat_set<base::UnguessableToken> cancelled_share_target_ids_;
+  base::flat_set<base::UnguessableToken> all_cancelled_share_target_ids_;
+  // The IDs of ShareTargets that we cancelled the transfer to.
+  base::flat_set<base::UnguessableToken> locally_cancelled_share_target_ids_;
   // A map from endpoint ID to endpoint info from discovered, contact-based
   // advertisements that could not decrypt any available public certificates.
   // During discovery, if certificates are downloaded, we revist this map and
