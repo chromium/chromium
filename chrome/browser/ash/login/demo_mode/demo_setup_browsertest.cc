@@ -33,6 +33,7 @@
 #include "chrome/browser/ash/login/test/oobe_screen_waiter.h"
 #include "chrome/browser/ash/login/test/oobe_screens_utils.h"
 #include "chrome/browser/ash/login/test/test_condition_waiter.h"
+#include "chrome/browser/ash/login/test/test_predicate_waiter.h"
 #include "chrome/browser/ash/login/ui/login_display_host.h"
 #include "chrome/browser/ash/login/wizard_controller.h"
 #include "chrome/browser/component_updater/cros_component_installer_chromeos.h"
@@ -179,16 +180,18 @@ class DemoSetupTestBase : public OobeBaseTest {
     test::ExecuteOobeJS(query);
   }
 
-  // Returns whether a custom item with `custom_item_name` is shown as a first
-  // element on the network list.
-  bool IsCustomNetworkListElementShown(const std::string& custom_item_name) {
+  // Returns whether a custom offline item is shown as a first element on the
+  // network list.
+  static bool IsOfflineNetworkListElementShown() {
+    const char kOfflineNetworkElement[] = "offlineDemoSetupListItemName";
+
     const std::string element_selector = base::StrCat(
         {test::GetOobeElementPath(kNetworkScreen),
          ".getNetworkListItemWithQueryForTest('network-list-item')"});
     const std::string query =
         base::StrCat({"!!", element_selector, " && ", element_selector,
-                      ".item.customItemName == '", custom_item_name, "' && !",
-                      element_selector, ".hidden"});
+                      ".item.customItemName == '", kOfflineNetworkElement,
+                      "' && !", element_selector, ".hidden"});
     return test::OobeJS().GetBool(query);
   }
 
@@ -636,7 +639,7 @@ IN_PROC_BROWSER_TEST_F(DemoSetupArcSupportedTest, OfflineDemoModeUnavailable) {
 
   // Offline Demo Mode is not available when there are no preinstalled demo
   // resources.
-  EXPECT_FALSE(IsCustomNetworkListElementShown("offlineDemoSetupListItemName"));
+  EXPECT_FALSE(IsOfflineNetworkListElementShown());
 }
 
 IN_PROC_BROWSER_TEST_F(DemoSetupArcSupportedTest, OfflineSetupFlowSuccess) {
@@ -908,9 +911,8 @@ IN_PROC_BROWSER_TEST_F(DemoSetupArcSupportedTest, MAYBE_RetryOnErrorScreen) {
   EXPECT_TRUE(StartupUtils::IsDeviceRegistered());
 }
 
-// Test is flaky: crbug.com/1099402
 IN_PROC_BROWSER_TEST_F(DemoSetupArcSupportedTest,
-                       DISABLED_ShowOfflineSetupOptionOnNetworkList) {
+                       ShowOfflineSetupOptionOnNetworkList) {
   TriggerDemoModeOnWelcomeScreen();
 
   SimulateOfflineEnvironment();
@@ -918,7 +920,9 @@ IN_PROC_BROWSER_TEST_F(DemoSetupArcSupportedTest,
 
   test::WaitForNetworkSelectionScreen();
 
-  EXPECT_TRUE(IsCustomNetworkListElementShown("offlineDemoSetupListItemName"));
+  test::TestPredicateWaiter waiter(
+      base::BindRepeating([]() { return IsOfflineNetworkListElementShown(); }));
+  waiter.Wait();
 }
 
 IN_PROC_BROWSER_TEST_F(DemoSetupArcSupportedTest,
@@ -926,7 +930,7 @@ IN_PROC_BROWSER_TEST_F(DemoSetupArcSupportedTest,
   test::WaitForWelcomeScreen();
   test::TapWelcomeNext();
   test::WaitForNetworkSelectionScreen();
-  EXPECT_FALSE(IsCustomNetworkListElementShown("offlineDemoSetupListItemName"));
+  EXPECT_FALSE(IsOfflineNetworkListElementShown());
 }
 
 class DemoSetupProgressStepsTest : public DemoSetupArcSupportedTest {
