@@ -503,7 +503,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Apps.AppList.UserEvent.Error" enum="AppListSearchResult"
-    expires_after="2021-04-04">
+    expires_after="2021-10-04">
   <owner>tby@chromium.org</owner>
   <owner>thanhdng@chromium.org</owner>
   <summary>
