@@ -37,12 +37,14 @@ class TestSupportingGC : public testing::Test {
  public:
   // Performs a precise garbage collection with eager sweeping.
   static void PreciselyCollectGarbage() {
-    // TODO(1056170): Implement.
+    ThreadState::Current()->CollectAllGarbageForTesting(
+        BlinkGC::kNoHeapPointersOnStack);
   }
 
   // Performs a conservative garbage collection with eager sweeping.
   static void ConservativelyCollectGarbage() {
-    // TODO(1056170): Implement.
+    ThreadState::Current()->CollectAllGarbageForTesting(
+        BlinkGC::kHeapPointersOnStack);
   }
 
  protected:
