@@ -125,10 +125,19 @@ NetworkSpeechRecognizer::EventListener::EventListener(
       locale_(locale),
       session_(kInvalidSessionId) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  NotifyRecognitionStateChanged(SPEECH_RECOGNIZER_READY);
 }
 
 NetworkSpeechRecognizer::EventListener::~EventListener() {
+  // No more callbacks when we are deleting.
+  delegate_.reset();
   DCHECK(!speech_timeout_.IsRunning());
+  if (session_ != kInvalidSessionId) {
+    // Ensure the session is aborted.
+    int session = session_;
+    session_ = kInvalidSessionId;
+    content::SpeechRecognitionManager::GetInstance()->AbortSession(session);
+  }
 }
 
 void NetworkSpeechRecognizer::EventListener::StartOnIOThread(
@@ -177,6 +186,9 @@ void NetworkSpeechRecognizer::EventListener::StopOnIOThread() {
   StopSpeechTimeout();
   content::SpeechRecognitionManager::GetInstance()->StopAudioCaptureForSession(
       session);
+  // Since we no longer have access to this session ID, end the session
+  // associated with it.
+  content::SpeechRecognitionManager::GetInstance()->AbortSession(session);
   weak_factory_.InvalidateWeakPtrs();
 }
 
@@ -253,7 +265,7 @@ void NetworkSpeechRecognizer::EventListener::OnRecognitionError(
     const blink::mojom::SpeechRecognitionError& error) {
   StopOnIOThread();
   if (error.code == blink::mojom::SpeechRecognitionErrorCode::kNetwork) {
-    NotifyRecognitionStateChanged(SPEECH_RECOGNIZER_NETWORK_ERROR);
+    NotifyRecognitionStateChanged(SPEECH_RECOGNIZER_ERROR);
   }
   NotifyRecognitionStateChanged(SPEECH_RECOGNIZER_READY);
 }
@@ -310,6 +322,8 @@ NetworkSpeechRecognizer::NetworkSpeechRecognizer(
 
 NetworkSpeechRecognizer::~NetworkSpeechRecognizer() {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  // Reset the delegate before calling Stop() to avoid any additional callbacks.
+  delegate().reset();
   Stop();
 }
 

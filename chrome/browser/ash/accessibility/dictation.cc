@@ -9,12 +9,14 @@
 #include "chrome/browser/ash/accessibility/accessibility_manager.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/speech/network_speech_recognizer.h"
+#include "chrome/browser/speech/on_device_speech_recognizer.h"
 #include "chrome/common/pref_names.h"
 #include "components/language/core/browser/pref_names.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/storage_partition.h"
 #include "services/audio/public/cpp/sounds/sounds_manager.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
+#include "ui/accessibility/accessibility_switches.h"
 #include "ui/base/ime/chromeos/extension_ime_util.h"
 #include "ui/base/ime/chromeos/ime_bridge.h"
 #include "ui/base/ime/chromeos/ime_input_context_handler_interface.h"
@@ -58,7 +60,9 @@ ui::IMEInputContextHandlerInterface* GetInputContext() {
 }  // namespace
 
 Dictation::Dictation(Profile* profile)
-    : composition_(std::make_unique<ui::CompositionText>()), profile_(profile) {
+    : current_state_(SPEECH_RECOGNIZER_OFF),
+      composition_(std::make_unique<ui::CompositionText>()),
+      profile_(profile) {
   if (GetInputContext() && GetInputContext()->GetInputMethod())
     GetInputContext()->GetInputMethod()->AddObserver(this);
 }
@@ -74,13 +78,20 @@ bool Dictation::OnToggleDictation() {
     return false;
   }
 
-  speech_recognizer_ = std::make_unique<NetworkSpeechRecognizer>(
-      weak_ptr_factory_.GetWeakPtr(),
-      content::BrowserContext::GetDefaultStoragePartition(profile_)
-          ->GetURLLoaderFactoryForBrowserProcessIOThread(),
-      profile_->GetPrefs()->GetString(language::prefs::kAcceptLanguages),
-      GetUserLanguage(profile_));
-  speech_recognizer_->Start();
+  if (OnDeviceSpeechRecognizer::IsOnDeviceSpeechRecognizerAvailable() &&
+      switches::IsExperimentalAccessibilityDictationOfflineEnabled()) {
+    // On-device recognition is behind a flag and then only available if
+    // SODA is installed on-device.
+    speech_recognizer_ = std::make_unique<OnDeviceSpeechRecognizer>(
+        weak_ptr_factory_.GetWeakPtr(), profile_);
+  } else {
+    speech_recognizer_ = std::make_unique<NetworkSpeechRecognizer>(
+        weak_ptr_factory_.GetWeakPtr(),
+        content::BrowserContext::GetDefaultStoragePartition(profile_)
+            ->GetURLLoaderFactoryForBrowserProcessIOThread(),
+        profile_->GetPrefs()->GetString(language::prefs::kAcceptLanguages),
+        GetUserLanguage(profile_));
+  }
   return true;
 }
 
@@ -108,12 +119,26 @@ void Dictation::OnSpeechSoundLevelChanged(int16_t level) {}
 
 void Dictation::OnSpeechRecognitionStateChanged(
     SpeechRecognizerStatus new_state) {
-  if (new_state == SPEECH_RECOGNIZER_RECOGNIZING)
+  SpeechRecognizerStatus next_state = new_state;
+  if (new_state == SPEECH_RECOGNIZER_RECOGNIZING) {
+    // If we are starting to listen to audio, play a tone for the user.
     audio::SoundsManager::Get()->Play(static_cast<int>(Sound::kDictationStart));
-  else if (new_state == SPEECH_RECOGNIZER_READY)
-    // This state is only reached when nothing has been said for a fixed time.
-    // In this case, the expected behavior is for dictation to terminate.
+  } else if (new_state == SPEECH_RECOGNIZER_ERROR) {
     DictationOff();
+    next_state = SPEECH_RECOGNIZER_OFF;
+  } else if (new_state == SPEECH_RECOGNIZER_READY) {
+    if (current_state_ == SPEECH_RECOGNIZER_OFF && speech_recognizer_) {
+      // The SpeechRecognizer was initialized after being created, and
+      // is ready to start recognizing speech.
+      speech_recognizer_->Start();
+    } else {
+      // This state is only reached when nothing has been said for a fixed time.
+      // In this case, the expected behavior is for dictation to terminate.
+      DictationOff();
+      next_state = SPEECH_RECOGNIZER_OFF;
+    }
+  }
+  current_state_ = next_state;
 }
 
 void Dictation::OnTextInputStateChanged(const ui::TextInputClient* client) {
@@ -128,6 +153,7 @@ void Dictation::OnTextInputStateChanged(const ui::TextInputClient* client) {
 }
 
 void Dictation::DictationOff() {
+  current_state_ = SPEECH_RECOGNIZER_OFF;
   if (!speech_recognizer_)
     return;
 

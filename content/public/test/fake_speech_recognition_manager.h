@@ -43,6 +43,9 @@ class FakeSpeechRecognitionManager : public SpeechRecognitionManager,
   }
 
   void WaitForRecognitionStarted();
+  void WaitForRecognitionEnded();
+  void OnRecognitionStarted();
+  void OnRecognitionEnded();
 
   void SetFakeResult(const std::string& result);
 
@@ -90,6 +93,7 @@ class FakeSpeechRecognitionManager : public SpeechRecognitionManager,
   bool did_cancel_all_;
   bool should_send_fake_response_;
   base::OnceClosure recognition_started_closure_;
+  base::OnceClosure recognition_ended_closure_;
   SpeechRecognitionManagerDelegate* delegate_;  // Not owned.
 
   DISALLOW_COPY_AND_ASSIGN(FakeSpeechRecognitionManager);

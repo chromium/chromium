@@ -26,8 +26,8 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
+using ::testing::DoDefault;
 using ::testing::InvokeWithoutArgs;
-using ::testing::Return;
 
 class MockSpeechRecognizerDelegate : public SpeechRecognizerDelegate {
  public:
@@ -86,13 +86,26 @@ IN_PROC_BROWSER_TEST_F(AppListNetworkSpeechRecognizerBrowserTest,
           ->GetURLLoaderFactoryForBrowserProcessIOThread(),
       "en" /* accept_language */, "en" /* locale */);
 
+  testing::InSequence seq;
+
   base::RunLoop run_loop;
+  EXPECT_CALL(*mock_speech_delegate_,
+              OnSpeechRecognitionStateChanged(SPEECH_RECOGNIZER_READY))
+      .Times(1)
+      .RetiresOnSaturation();
+  EXPECT_CALL(*mock_speech_delegate_,
+              OnSpeechRecognitionStateChanged(SPEECH_RECOGNIZER_RECOGNIZING))
+      .Times(1);
+  EXPECT_CALL(*mock_speech_delegate_,
+              OnSpeechRecognitionStateChanged(SPEECH_RECOGNIZER_IN_SPEECH))
+      .Times(1);
   EXPECT_CALL(*mock_speech_delegate_,
               OnSpeechResult(base::ASCIIToUTF16("Pictures of the moon"), true,
                              testing::_));
   EXPECT_CALL(*mock_speech_delegate_,
               OnSpeechRecognitionStateChanged(SPEECH_RECOGNIZER_READY))
-      .WillOnce(InvokeWithoutArgs(&run_loop, &base::RunLoop::Quit));
+      .WillOnce(InvokeWithoutArgs(&run_loop, &base::RunLoop::Quit))
+      .RetiresOnSaturation();
   recognizer.Start();
   run_loop.Run();
 }
