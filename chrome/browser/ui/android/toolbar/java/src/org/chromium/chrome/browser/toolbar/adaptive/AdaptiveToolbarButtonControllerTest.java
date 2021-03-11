@@ -24,6 +24,7 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.toolbar.ButtonData;
+import org.chromium.chrome.browser.toolbar.ButtonDataImpl;
 import org.chromium.chrome.browser.toolbar.ButtonDataProvider;
 import org.chromium.chrome.browser.toolbar.ButtonDataProvider.ButtonDataObserver;
 import org.chromium.chrome.browser.toolbar.adaptive.AdaptiveToolbarFeatures.AdaptiveToolbarButtonVariant;
@@ -37,18 +38,18 @@ public class AdaptiveToolbarButtonControllerTest {
     public TestRule mProcessor = new Features.JUnitProcessor();
 
     @Mock
-    ButtonDataProvider mShareButtonController;
+    private ButtonDataProvider mShareButtonController;
     @Mock
-    ButtonDataProvider mVoiceToolbarButtonController;
+    private ButtonDataProvider mVoiceToolbarButtonController;
     @Mock
-    Tab mTab;
+    private Tab mTab;
 
-    ButtonData mButtonData;
+    private ButtonDataImpl mButtonData;
 
     @Before
     public void setUp() {
         MockitoAnnotations.initMocks(this);
-        mButtonData = new ButtonData(true, null, null, 0, false, null, true);
+        mButtonData = new ButtonDataImpl(true, null, null, 0, false, null, true);
     }
 
     @Test

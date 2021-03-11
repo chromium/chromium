@@ -30,6 +30,7 @@ import static org.chromium.chrome.browser.toolbar.top.StartSurfaceToolbarPropert
 import static org.chromium.chrome.browser.toolbar.top.StartSurfaceToolbarProperties.TRANSLATION_Y;
 
 import android.view.View;
+import android.view.View.OnClickListener;
 
 import androidx.annotation.VisibleForTesting;
 
@@ -46,6 +47,7 @@ import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorObserver;
 import org.chromium.chrome.browser.toolbar.ButtonData;
+import org.chromium.chrome.browser.toolbar.ButtonData.ButtonSpec;
 import org.chromium.chrome.browser.toolbar.TabCountProvider;
 import org.chromium.chrome.browser.toolbar.menu_button.MenuButtonCoordinator;
 import org.chromium.chrome.browser.user_education.IPHCommandBuilder;
@@ -85,7 +87,7 @@ class StartSurfaceToolbarMediator {
             Supplier<ButtonData> identityDiscButtonSupplier,
             ObservableSupplier<Boolean> homepageEnabledSupplier,
             ObservableSupplier<Boolean> homepageManagedByPolicySupplier,
-            View.OnClickListener homeButtonOnClickHandler,
+            OnClickListener homeButtonOnClickHandler,
             boolean shouldShowTabSwitcherButtonOnHomepage) {
         mPropertyModel = model;
         mOverviewModeState = StartSurfaceState.NOT_SHOWN;
@@ -304,16 +306,17 @@ class StartSurfaceToolbarMediator {
 
     @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
     void updateIdentityDisc(ButtonData buttonData) {
-        boolean shouldShow = buttonData.canShow && !mTabModelSelector.isIncognitoSelected();
+        boolean shouldShow = buttonData.canShow() && !mTabModelSelector.isIncognitoSelected();
         if (shouldShow) {
-            mPropertyModel.set(IDENTITY_DISC_CLICK_HANDLER, buttonData.onClickListener);
+            ButtonSpec buttonSpec = buttonData.getButtonSpec();
+            mPropertyModel.set(IDENTITY_DISC_CLICK_HANDLER, buttonSpec.getOnClickListener());
             // Take a defensive copy of the Drawable, since Drawables aren't immutable, and another
             // view mutating our drawable could cause it to display incorrectly.
             mPropertyModel.set(
-                    IDENTITY_DISC_IMAGE, buttonData.drawable.getConstantState().newDrawable());
-            mPropertyModel.set(IDENTITY_DISC_DESCRIPTION, buttonData.contentDescriptionResId);
+                    IDENTITY_DISC_IMAGE, buttonSpec.getDrawable().getConstantState().newDrawable());
+            mPropertyModel.set(IDENTITY_DISC_DESCRIPTION, buttonSpec.getContentDescriptionResId());
             mPropertyModel.set(IDENTITY_DISC_IS_VISIBLE, true);
-            mShowIPHCallback.onResult(buttonData.iphCommandBuilder);
+            mShowIPHCallback.onResult(buttonSpec.getIPHCommandBuilder());
         } else {
             mPropertyModel.set(IDENTITY_DISC_IS_VISIBLE, false);
         }

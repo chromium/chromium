@@ -28,6 +28,8 @@ import org.chromium.chrome.browser.signin.services.ProfileDataCache;
 import org.chromium.chrome.browser.sync.settings.SyncAndServicesSettings;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.toolbar.ButtonData;
+import org.chromium.chrome.browser.toolbar.ButtonData.ButtonSpec;
+import org.chromium.chrome.browser.toolbar.ButtonDataImpl;
 import org.chromium.chrome.browser.toolbar.ButtonDataProvider;
 import org.chromium.chrome.browser.user_education.IPHCommandBuilder;
 import org.chromium.chrome.features.start_surface.StartSurfaceState;
@@ -84,7 +86,7 @@ public class IdentityDiscController implements NativeInitObserver, ProfileDataCa
     @IdentityDiscState
     private int mState = IdentityDiscState.NONE;
 
-    private ButtonData mButtonData;
+    private ButtonDataImpl mButtonData;
     private ObserverList<ButtonDataObserver> mObservers = new ObserverList<>();
     private boolean mNativeIsInitialized;
 
@@ -102,7 +104,7 @@ public class IdentityDiscController implements NativeInitObserver, ProfileDataCa
         mProfileSupplier = profileSupplier;
         mActivityLifecycleDispatcher.register(this);
 
-        mButtonData = new ButtonData(false, null,
+        mButtonData = new ButtonDataImpl(false, null,
                 view
                 -> {
                     recordIdentityDiscUsed();
@@ -146,7 +148,7 @@ public class IdentityDiscController implements NativeInitObserver, ProfileDataCa
     public ButtonData get(Tab tab) {
         boolean isNtp = tab != null && tab.getNativePage() instanceof NewTabPage;
         if (!isNtp) {
-            mButtonData.canShow = false;
+            mButtonData.setCanShow(false);
             return mButtonData;
         }
 
@@ -156,7 +158,7 @@ public class IdentityDiscController implements NativeInitObserver, ProfileDataCa
 
     public ButtonData getForStartSurface(@StartSurfaceState int overviewModeState) {
         if (overviewModeState != StartSurfaceState.SHOWN_HOMEPAGE) {
-            mButtonData.canShow = false;
+            mButtonData.setCanShow(false);
             return mButtonData;
         }
 
@@ -166,7 +168,7 @@ public class IdentityDiscController implements NativeInitObserver, ProfileDataCa
 
     private void calculateButtonData() {
         if (!mNativeIsInitialized) {
-            assert !mButtonData.canShow;
+            assert !mButtonData.canShow();
             return;
         }
 
@@ -175,11 +177,19 @@ public class IdentityDiscController implements NativeInitObserver, ProfileDataCa
         ensureProfileDataCache(email, mState);
 
         if (mState != IdentityDiscState.NONE) {
-            mButtonData.drawable = getProfileImage(email);
-            mButtonData.canShow = true;
+            mButtonData.setButtonSpec(
+                    buttonSpecWithDrawable(mButtonData.getButtonSpec(), getProfileImage(email)));
+            mButtonData.setCanShow(true);
         } else {
-            mButtonData.canShow = false;
+            mButtonData.setCanShow(false);
         }
+    }
+
+    private static ButtonSpec buttonSpecWithDrawable(ButtonSpec buttonSpec, Drawable drawable) {
+        if (buttonSpec.getDrawable() == drawable) return buttonSpec;
+        return new ButtonSpec(drawable, buttonSpec.getOnClickListener(),
+                buttonSpec.getContentDescriptionResId(), buttonSpec.getSupportsTinting(),
+                buttonSpec.getIPHCommandBuilder());
     }
 
     /**

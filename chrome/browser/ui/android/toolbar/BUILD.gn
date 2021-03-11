@@ -9,6 +9,7 @@ import("//chrome/browser/buildflags.gni")
 android_library("java") {
   sources = [
     "java/src/org/chromium/chrome/browser/toolbar/ButtonData.java",
+    "java/src/org/chromium/chrome/browser/toolbar/ButtonDataImpl.java",
     "java/src/org/chromium/chrome/browser/toolbar/ButtonDataProvider.java",
     "java/src/org/chromium/chrome/browser/toolbar/ControlContainer.java",
     "java/src/org/chromium/chrome/browser/toolbar/HomeButton.java",

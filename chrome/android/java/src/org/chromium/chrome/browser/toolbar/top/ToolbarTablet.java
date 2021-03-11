@@ -39,6 +39,7 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.theme.ThemeUtils;
 import org.chromium.chrome.browser.toolbar.ButtonData;
+import org.chromium.chrome.browser.toolbar.ButtonData.ButtonSpec;
 import org.chromium.chrome.browser.toolbar.HomeButton;
 import org.chromium.chrome.browser.toolbar.KeyboardNavigationListener;
 import org.chromium.chrome.browser.toolbar.TabCountProvider;
@@ -559,19 +560,20 @@ public class ToolbarTablet extends ToolbarLayout
             mOptionalButton = (ImageButton) viewStub.inflate();
         }
 
-        mOptionalButtonUsesTint = buttonData.supportsTinting;
+        ButtonSpec buttonSpec = buttonData.getButtonSpec();
+        mOptionalButtonUsesTint = buttonSpec.getSupportsTinting();
         if (mOptionalButtonUsesTint) {
             ApiCompatibilityUtils.setImageTintList(mOptionalButton, getTint());
         } else {
             ApiCompatibilityUtils.setImageTintList(mOptionalButton, null);
         }
 
-        mOptionalButton.setOnClickListener(buttonData.onClickListener);
-        mOptionalButton.setImageDrawable(buttonData.drawable);
+        mOptionalButton.setOnClickListener(buttonSpec.getOnClickListener());
+        mOptionalButton.setImageDrawable(buttonSpec.getDrawable());
         mOptionalButton.setContentDescription(
-                getContext().getResources().getString(buttonData.contentDescriptionResId));
+                getContext().getResources().getString(buttonSpec.getContentDescriptionResId()));
         mOptionalButton.setVisibility(View.VISIBLE);
-        mOptionalButton.setEnabled(buttonData.isEnabled);
+        mOptionalButton.setEnabled(buttonData.isEnabled());
     }
 
     @Override
