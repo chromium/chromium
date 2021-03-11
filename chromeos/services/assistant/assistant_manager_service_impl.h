@@ -20,7 +20,6 @@
 #include "base/threading/thread.h"
 #include "chromeos/assistant/internal/action/assistant_action_observer.h"
 #include "chromeos/assistant/internal/action/cros_action_module.h"
-#include "chromeos/assistant/internal/internal_util.h"
 #include "chromeos/services/assistant/assistant_manager_service.h"
 #include "chromeos/services/assistant/assistant_settings_impl.h"
 #include "chromeos/services/assistant/proxy/assistant_proxy.h"
