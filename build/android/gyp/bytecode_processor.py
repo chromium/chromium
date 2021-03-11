@@ -6,11 +6,10 @@
 """Wraps bin/helper/bytecode_processor and expands @FileArgs."""
 
 import argparse
-import os
-import subprocess
 import sys
 
 from util import build_utils
+from util import server_utils
 
 
 def _AddSwitch(parser, val):
@@ -21,6 +20,7 @@ def _AddSwitch(parser, val):
 def main(argv):
   argv = build_utils.ExpandFileArgs(argv[1:])
   parser = argparse.ArgumentParser()
+  parser.add_argument('--target-name', help='Fully qualified GN target name.')
   parser.add_argument('--script', required=True,
                       help='Path to the java binary wrapper script.')
   parser.add_argument('--gn-target', required=True)
@@ -37,6 +37,11 @@ def main(argv):
                       help='Treat all warnings as errors.')
   _AddSwitch(parser, '--is-prebuilt')
   args = parser.parse_args(argv)
+
+  if server_utils.MaybeRunCommand(name=args.target_name,
+                                  argv=sys.argv,
+                                  stamp_file=args.stamp):
+    return
 
   args.sdk_classpath_jars = build_utils.ParseGnList(args.sdk_classpath_jars)
   args.direct_classpath_jars = build_utils.ParseGnList(

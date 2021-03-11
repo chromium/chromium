@@ -1015,10 +1015,9 @@ if (enable_java_templates) {
         _backported_methods,
       ]
 
-      _target_label = get_label_info(target_name, "dir")
-
       args = [
-        "--target-name=${_target_label}",
+        "--target-name",
+        get_label_info(target_name, "label_no_toolchain"),
         "--depfile",
         rebase_path(depfile, root_build_dir),
         "--lint-binary-path",
@@ -1993,6 +1992,8 @@ if (enable_java_templates) {
           [ "//build/android/bytecode:bytecode_processor($default_toolchain)" ]
       _rebased_build_config = rebase_path(invoker.build_config, root_build_dir)
       args = [
+        "--target-name",
+        get_label_info(target_name, "label_no_toolchain"),
         "--script",
         rebase_path(_bytecode_checker_script, root_build_dir),
         "--gn-target=${invoker.target_label}",
@@ -3108,9 +3109,9 @@ if (enable_java_templates) {
         _dep_name = get_label_info(_errorprone_dep, "name")
         _rebased_errorprone_buildconfig =
             rebase_path("$_dep_gen_dir/$_dep_name.build_config", root_build_dir)
-        _target_label = get_label_info(target_name, "dir")
         args += [
-          "--target-name=${_target_label}",
+          "--target-name",
+          get_label_info(target_name, "label_no_toolchain"),
           "--processorpath=@FileArg($_rebased_errorprone_buildconfig:deps_info:host_classpath)",
           "--enable-errorprone",
         ]
