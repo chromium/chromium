@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+// Next MinVersion: 1
+
 // Top-level API of the Machine Learning Service: loading models for inference.
 
 // NOTE: This mojom exists in two places and must be kept in sync:
@@ -37,7 +39,7 @@ enum LoadModelResult {
 
 // Top-level interface between Chromium and the ML Service daemon.
 // Next ordinal: 8
-[Stable]
+[Stable, Uuid="9e5e4750-40cc-4eda-ac09-3457d06a45ab"]
 interface MachineLearningService {
   // Binds another pipe to this instance.
   Clone@5(pending_receiver<MachineLearningService> receiver);
