@@ -96,7 +96,7 @@ void PointScanLayer::OnPaintLayer(const ui::PaintContext& context) {
   flags.setStrokeWidth(kStrokeWidth);
   int half_stroke_width = kStrokeWidth / 2;
 
-  if (is_moving_) {
+  if (!is_moving_) {
     SkScalar intervals[] = {kDashLengthDips, kGapLengthDips};
     int intervals_length = 2;
     flags.setPathEffect(SkDashPathEffect::Make(intervals, intervals_length, 0));
