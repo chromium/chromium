@@ -35,10 +35,26 @@ public class ProfileKey implements SimpleFactoryKeyHandle {
         return ProfileKeyJni.get().getLastUsedRegularProfileKey();
     }
 
+    /**
+     * Handles type conversion of Java side {@link SimpleFactoryKeyHandle} to {@link ProfileKey}.
+     * @param simpleFactoryKeyHandle Java reference to native SimpleFactoryKey.
+     * @return A strongly typed reference the {@link ProfileKey}.
+     */
+    public static ProfileKey fromSimpleFactoryKeyHandle(
+            SimpleFactoryKeyHandle simpleFactoryKeyHandle) {
+        return (ProfileKey) simpleFactoryKeyHandle;
+    }
+
+    /**
+     * @return The original (not off the record) profile key.
+     */
     public ProfileKey getOriginalKey() {
         return ProfileKeyJni.get().getOriginalKey(mNativeProfileKeyAndroid);
     }
 
+    /**
+     * @return Whether this profile is off the record and should avoid writing to durable records.
+     */
     public boolean isOffTheRecord() {
         return mIsOffTheRecord;
     }

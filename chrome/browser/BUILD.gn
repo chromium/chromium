@@ -3118,6 +3118,8 @@ static_library("browser") {
       "privacy/secure_dns_bridge.cc",
       "privacy_sandbox/android/privacy_sandbox_bridge.cc",
       "profiles/android/profile_manager_utils.cc",
+      "profiles/android/profile_resolver.cc",
+      "profiles/android/profile_resolver.h",
       "profiles/incognito_utils_android.cc",
       "profiles/profile_android.cc",
       "profiles/profile_android.h",
@@ -3193,6 +3195,7 @@ static_library("browser") {
       ":client_discourse_context_proto",
       ":delta_file_proto",
       ":explore_sites_proto",
+      ":profile_token",
       ":usage_stats_proto",
       "//chrome/android:jni_headers",
       "//chrome/android/modules/extra_icu/provider:native",
@@ -3254,6 +3257,7 @@ static_library("browser") {
       "//components/crash/android:crash_android",
       "//components/embedder_support/android:browser_context",
       "//components/embedder_support/android:context_menu",
+      "//components/embedder_support/android:simple_factory_key",
       "//components/embedder_support/android:util",
       "//components/embedder_support/android:web_contents_delegate",
       "//components/external_intents/android",
@@ -6423,6 +6427,10 @@ if (is_android) {
 
   proto_library("explore_sites_proto") {
     sources = [ "android/explore_sites/catalog.proto" ]
+  }
+
+  proto_library("profile_token") {
+    sources = [ "android/proto/profile_token.proto" ]
   }
 
   proto_library("usage_stats_proto") {

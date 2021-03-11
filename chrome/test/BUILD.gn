@@ -4427,6 +4427,7 @@ test("unit_tests") {
       "../browser/password_manager/android/save_password_message_delegate_unittest.cc",
       "../browser/password_manager/android/update_password_infobar_delegate_android_unittest.cc",
       "../browser/permissions/permission_prompt_android_unittest.cc",
+      "../browser/profiles/android/profile_resolver_unittest.cc",
       "../browser/touch_to_fill/touch_to_fill_controller_unittest.cc",
       "../browser/translate/translate_manager_render_view_host_android_unittest.cc",
     ]

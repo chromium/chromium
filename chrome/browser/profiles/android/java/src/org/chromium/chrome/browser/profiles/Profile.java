@@ -65,6 +65,15 @@ public class Profile implements BrowserContextHandle {
     }
 
     /**
+     * Handles type conversion of Java side {@link BrowserContextHandle} to {@link Profile}.
+     * @param browserContextHandle Java reference to native BrowserContext.
+     * @return A strongly typed reference the {@link Profile}.
+     */
+    public static Profile fromBrowserContextHandle(BrowserContextHandle browserContextHandle) {
+        return (Profile) browserContextHandle;
+    }
+
+    /**
      * Returns the {@link BrowserProfileType} for the corresponding profile.
      *
      * Please note {@link BrowserProfileType} is generated from native so, it also contains other

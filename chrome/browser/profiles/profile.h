@@ -146,6 +146,10 @@ class Profile : public content::BrowserContext {
         JNIEnv* env,
         const base::android::JavaRef<jobject>& j_otr_profile_id);
 
+    // Constructs an OTRProfileID based on the string passed in. Should only be
+    // called with values previously returned by Serialize().
+    static OTRProfileID Deserialize(const std::string& value);
+
     // Constructs a string that represents OTRProfileID from the provided
     // OTRProfileID.
     // TODO(crbug.com/1161104): Use one serialize function for both java and

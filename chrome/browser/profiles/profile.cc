@@ -161,12 +161,23 @@ base::android::ScopedJavaLocalRef<jobject> JNI_OTRProfileID_GetPrimaryID(
   return Profile::OTRProfileID::PrimaryID().ConvertToJavaOTRProfileID(env);
 }
 
+// static
+Profile::OTRProfileID Profile::OTRProfileID::Deserialize(
+    const std::string& value) {
+  JNIEnv* env = base::android::AttachCurrentThread();
+  base::android::ScopedJavaLocalRef<jstring> j_value =
+      base::android::ConvertUTF8ToJavaString(env, value);
+  base::android::ScopedJavaLocalRef<jobject> j_otr_profile_id =
+      Java_OTRProfileID_deserializeWithoutVerify(env, j_value);
+  return ConvertFromJavaOTRProfileID(env, j_otr_profile_id);
+}
+
 std::string Profile::OTRProfileID::Serialize() const {
   JNIEnv* env = base::android::AttachCurrentThread();
   return base::android::ConvertJavaStringToUTF8(
       env, Java_OTRProfileID_serialize(env, ConvertToJavaOTRProfileID(env)));
 }
-#endif
+#endif  // defined(OS_ANDROID)
 
 Profile::Profile() {
 #if DCHECK_IS_ON()
