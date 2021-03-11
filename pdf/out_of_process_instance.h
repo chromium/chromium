@@ -245,6 +245,9 @@ class OutOfProcessInstance : public PdfViewPluginBase,
   // or not.
   bool SendInputEventToEngine(const pp::InputEvent& event);
 
+  // Sets the text input type for this plugin based on |form_field_in_focus|.
+  void SetFormFieldInFocus(bool form_field_in_focus);
+
   // The Pepper image data that is in sync with image_data().
   pp::ImageData pepper_image_data_;
 

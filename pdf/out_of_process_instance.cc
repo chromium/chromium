@@ -1423,16 +1423,12 @@ void OutOfProcessInstance::DocumentLoadProgress(uint32_t available,
 }
 
 void OutOfProcessInstance::FormTextFieldFocusChange(bool in_focus) {
-  if (!text_input_)
-    return;
-
   pp::VarDictionary message;
   message.Set(pp::Var(kType), pp::Var(kJSFieldFocusType));
   message.Set(pp::Var(kJSFieldFocus), pp::Var(in_focus));
   PostMessage(message);
 
-  text_input_->SetTextInputType(in_focus ? PP_TEXTINPUT_TYPE_DEV_TEXT
-                                         : PP_TEXTINPUT_TYPE_DEV_NONE);
+  SetFormFieldInFocus(in_focus);
 }
 
 void OutOfProcessInstance::ResetRecentlySentFindUpdate(int32_t /* unused */) {
@@ -1765,6 +1761,15 @@ void OutOfProcessInstance::HistogramCustomCounts(const char* name,
 
 void OutOfProcessInstance::OnPrint(int32_t /*unused_but_required*/) {
   pp::PDF::Print(this);
+}
+
+void OutOfProcessInstance::SetFormFieldInFocus(bool form_field_in_focus) {
+  if (!text_input_)
+    return;
+
+  text_input_->SetTextInputType(form_field_in_focus
+                                    ? PP_TEXTINPUT_TYPE_DEV_TEXT
+                                    : PP_TEXTINPUT_TYPE_DEV_NONE);
 }
 
 void OutOfProcessInstance::PrintSettings::Clear() {
