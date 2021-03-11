@@ -59,7 +59,7 @@ size_t GetValidDeviceCount(Profile* profile);
 
 // Gets the name of the single valid device. Will be called when
 // GetValidDeviceCount() == 1.
-base::string16 GetSingleTargetDeviceName(Profile* profile);
+std::u16string GetSingleTargetDeviceName(Profile* profile);
 
 }  // namespace send_tab_to_self
 

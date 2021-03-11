@@ -68,8 +68,8 @@ IN_PROC_BROWSER_TEST_F(LoginPolicyTestBase, AllowedLanguages) {
   Browser* browser = CreateBrowser(profile);
   EXPECT_EQ("fr", prefs->GetString(language::prefs::kApplicationLocale));
   ui_test_utils::NavigateToURL(browser, GURL(chrome::kChromeUINewTabURL));
-  base::string16 french_title = l10n_util::GetStringUTF16(IDS_NEW_TAB_TITLE);
-  base::string16 title;
+  std::u16string french_title = l10n_util::GetStringUTF16(IDS_NEW_TAB_TITLE);
+  std::u16string title;
   EXPECT_TRUE(ui_test_utils::GetCurrentTabTitle(browser, &title));
   EXPECT_EQ(french_title, title);
 
@@ -78,7 +78,7 @@ IN_PROC_BROWSER_TEST_F(LoginPolicyTestBase, AllowedLanguages) {
   std::string loaded =
       ui::ResourceBundle::GetSharedInstance().ReloadLocaleResources("en-US");
   EXPECT_EQ("en-US", loaded);
-  base::string16 english_title = l10n_util::GetStringUTF16(IDS_NEW_TAB_TITLE);
+  std::u16string english_title = l10n_util::GetStringUTF16(IDS_NEW_TAB_TITLE);
   EXPECT_NE(french_title, english_title);
 
   // Verifiy that the enforced locale is added into the list of

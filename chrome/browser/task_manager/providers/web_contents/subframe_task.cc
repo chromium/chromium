@@ -23,7 +23,7 @@ namespace task_manager {
 SubframeTask::SubframeTask(content::RenderFrameHost* render_frame_host,
                            content::WebContents* web_contents,
                            RendererTask* main_task)
-    : RendererTask(base::string16(), nullptr, render_frame_host),
+    : RendererTask(std::u16string(), nullptr, render_frame_host),
       site_instance_(render_frame_host->GetSiteInstance()),
       main_task_(main_task) {
   set_title(GetTitle());
@@ -53,7 +53,7 @@ void SubframeTask::Activate() {
   main_task_->Activate();
 }
 
-base::string16 SubframeTask::GetTitle() {
+std::u16string SubframeTask::GetTitle() {
   DCHECK(site_instance_);
 
   // By default, subframe rows display the site, like this:

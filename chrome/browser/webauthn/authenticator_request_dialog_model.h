@@ -343,7 +343,7 @@ class AuthenticatorRequestDialogModel {
       base::RepeatingClosure bluetooth_adapter_power_on_callback);
 
   // OnHavePIN is called when the user enters a PIN in the UI.
-  void OnHavePIN(base::string16 pin);
+  void OnHavePIN(std::u16string pin);
 
   // Called when the user needs to retry user verification with the number of
   // |attempts| remaining.
@@ -391,7 +391,7 @@ class AuthenticatorRequestDialogModel {
                   device::pin::PINEntryError error,
                   uint32_t min_pin_length,
                   int attempts,
-                  base::OnceCallback<void(base::string16)> provide_pin_cb);
+                  base::OnceCallback<void(std::u16string)> provide_pin_cb);
   uint32_t min_pin_length() const { return min_pin_length_; }
   device::pin::PINEntryError pin_error() const { return pin_error_; }
   base::Optional<int> pin_attempts() const { return pin_attempts_; }
@@ -489,7 +489,7 @@ class AuthenticatorRequestDialogModel {
   base::Optional<int> bio_samples_remaining_;
   base::OnceClosure bio_enrollment_callback_;
 
-  base::OnceCallback<void(base::string16)> pin_callback_;
+  base::OnceCallback<void(std::u16string)> pin_callback_;
   uint32_t min_pin_length_ = device::kMinPinLength;
   device::pin::PINEntryError pin_error_ = device::pin::PINEntryError::kNoError;
   base::Optional<int> pin_attempts_;

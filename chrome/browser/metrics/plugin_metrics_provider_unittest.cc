@@ -31,10 +31,8 @@ content::WebPluginInfo CreateFakePluginInfo(
     const std::string& name,
     const base::FilePath::CharType* path,
     const std::string& version) {
-  content::WebPluginInfo plugin(base::UTF8ToUTF16(name),
-                                base::FilePath(path),
-                                base::UTF8ToUTF16(version),
-                                base::string16());
+  content::WebPluginInfo plugin(base::UTF8ToUTF16(name), base::FilePath(path),
+                                base::UTF8ToUTF16(version), std::u16string());
   plugin.type = content::WebPluginInfo::PLUGIN_TYPE_PEPPER_IN_PROCESS;
   return plugin;
 }

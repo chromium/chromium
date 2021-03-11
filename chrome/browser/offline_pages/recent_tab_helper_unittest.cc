@@ -203,7 +203,7 @@ std::unique_ptr<OfflinePageArchiver> TestDelegate::CreatePageArchiver(
     content::WebContents* web_contents) {
   std::unique_ptr<OfflinePageTestArchiver> archiver(new OfflinePageTestArchiver(
       observer_, web_contents->GetLastCommittedURL(), archive_result_,
-      base::string16(), kArchiveSizeToReport, std::string(),
+      std::u16string(), kArchiveSizeToReport, std::string(),
       base::ThreadTaskRunnerHandle::Get()));
   return std::move(archiver);
 }

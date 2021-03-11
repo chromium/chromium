@@ -15,9 +15,9 @@ namespace vr {
 // Represent a request to show a text only Toast.
 struct VR_UI_EXPORT PlatformToast {
   PlatformToast();
-  explicit PlatformToast(base::string16 text);
+  explicit PlatformToast(std::u16string text);
 
-  base::string16 text;
+  std::u16string text;
 };
 
 }  // namespace vr

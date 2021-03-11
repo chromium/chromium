@@ -87,9 +87,9 @@ void SavePasswordMessageDelegate::DisplaySavePasswordPromptInternal(
 
   message_->SetTitle(l10n_util::GetStringUTF16(title_message_id));
 
-  const base::string16 masked_password =
-      base::string16(pending_credentials.password_value.size(), L'•');
-  base::string16 description;
+  const std::u16string masked_password =
+      std::u16string(pending_credentials.password_value.size(), L'•');
+  std::u16string description;
   if (account_info.has_value()) {
     description = l10n_util::GetStringFUTF16(
         IDS_SAVE_PASSWORD_SIGNED_IN_MESSAGE_DESCRIPTION_GOOGLE_ACCOUNT,

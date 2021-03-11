@@ -604,7 +604,7 @@ bool ChromeAuthenticatorRequestDelegate::SupportsPIN() const {
 
 void ChromeAuthenticatorRequestDelegate::CollectPIN(
     CollectPINOptions options,
-    base::OnceCallback<void(base::string16)> provide_pin_cb) {
+    base::OnceCallback<void(std::u16string)> provide_pin_cb) {
   if (!weak_dialog_model_)
     return;
 

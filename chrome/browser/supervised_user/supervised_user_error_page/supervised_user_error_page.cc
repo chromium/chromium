@@ -124,9 +124,9 @@ std::string BuildHtml(bool allow_access_requests,
   strings.SetBoolean("alreadySentRequest", already_sent_request);
   strings.SetBoolean("isMainFrame", is_main_frame);
 
-  base::string16 custodian16 = base::UTF8ToUTF16(custodian);
-  base::string16 block_header;
-  base::string16 block_message;
+  std::u16string custodian16 = base::UTF8ToUTF16(custodian);
+  std::u16string block_header;
+  std::u16string block_message;
   if (reason == FilteringBehaviorReason::NOT_SIGNED_IN) {
     block_header =
         l10n_util::GetStringUTF16(IDS_BLOCK_INTERSTITIAL_HEADER_NOT_SIGNED_IN);
@@ -174,8 +174,8 @@ std::string BuildHtml(bool allow_access_requests,
   strings.SetString(
       "hideDetailsLink",
       l10n_util::GetStringUTF16(IDS_BLOCK_INTERSTITIAL_HIDE_DETAILS));
-  base::string16 request_sent_message;
-  base::string16 request_failed_message;
+  std::u16string request_sent_message;
+  std::u16string request_failed_message;
   if (is_child_account) {
     if (second_custodian.empty()) {
       request_sent_message = l10n_util::GetStringUTF16(

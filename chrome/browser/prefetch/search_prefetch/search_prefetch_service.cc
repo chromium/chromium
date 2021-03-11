@@ -152,7 +152,7 @@ bool SearchPrefetchService::MaybePrefetchURL(const GURL& url) {
                                 base::Unretained(this)));
   }
 
-  base::string16 search_terms;
+  std::u16string search_terms;
 
   // Extract the terms directly to make sure this string will match the URL
   // interception string logic.
@@ -222,7 +222,7 @@ void SearchPrefetchService::OnURLOpenedFromOmnibox(OmniboxLog* log) {
   if (!default_search)
     return;
 
-  base::string16 match_search_terms;
+  std::u16string match_search_terms;
 
   default_search->ExtractSearchTermsFromURL(
       opened_url, template_url_service->search_terms_data(),
@@ -238,7 +238,7 @@ void SearchPrefetchService::OnURLOpenedFromOmnibox(OmniboxLog* log) {
 
 base::Optional<SearchPrefetchStatus>
 SearchPrefetchService::GetSearchPrefetchStatusForTesting(
-    base::string16 search_terms) {
+    std::u16string search_terms) {
   if (prefetches_.find(search_terms) == prefetches_.end())
     return base::nullopt;
   return prefetches_[search_terms]->current_status();
@@ -275,7 +275,7 @@ SearchPrefetchService::TakePrefetchResponseFromMemoryCache(
     return nullptr;
   }
 
-  base::string16 search_terms;
+  std::u16string search_terms;
   template_url_service->GetDefaultSearchProvider()->ExtractSearchTermsFromURL(
       navigation_url, template_url_service->search_terms_data(), &search_terms);
 
@@ -377,7 +377,7 @@ void SearchPrefetchService::ClearPrefetches() {
   SaveToPrefs();
 }
 
-void SearchPrefetchService::DeletePrefetch(base::string16 search_terms) {
+void SearchPrefetchService::DeletePrefetch(std::u16string search_terms) {
   DCHECK(prefetches_.find(search_terms) != prefetches_.end());
   DCHECK(prefetch_expiry_timers_.find(search_terms) !=
          prefetch_expiry_timers_.end());
@@ -419,7 +419,7 @@ void SearchPrefetchService::OnResultChanged(
       }
       bool should_cancel_request = true;
       for (const auto& match : result) {
-        base::string16 match_search_terms;
+        std::u16string match_search_terms;
         default_search->ExtractSearchTermsFromURL(
             match.destination_url, template_url_service->search_terms_data(),
             &match_search_terms);
@@ -577,7 +577,7 @@ bool SearchPrefetchService::LoadFromPrefs() {
     }
 
     // Make sure the navigation URL is still a search URL.
-    base::string16 search_terms;
+    std::u16string search_terms;
     template_url_service->GetDefaultSearchProvider()->ExtractSearchTermsFromURL(
         navigation_url, template_url_service->search_terms_data(),
         &search_terms);

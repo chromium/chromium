@@ -390,7 +390,7 @@ TEST_F(RenderViewContextMenuExtensionsTest,
       CreateContextMenu(web_contents.get(), registry_.get()));
 
   const ui::MenuModel& model = menu->menu_model();
-  base::string16 expected_title = base::ASCIIToUTF16("Added by an extension");
+  std::u16string expected_title = base::ASCIIToUTF16("Added by an extension");
   int num_items_found = 0;
   for (int i = 0; i < model.GetItemCount(); ++i) {
     if (expected_title == model.GetLabelAt(i))
@@ -518,7 +518,7 @@ TEST_F(RenderViewContextMenuPrefsTest, LoadBrokenImage) {
 // Verify that the suggested file name is propagated to web contents when save a
 // media file in context menu.
 TEST_F(RenderViewContextMenuPrefsTest, SaveMediaSuggestedFileName) {
-  const base::string16 kTestSuggestedFileName = base::ASCIIToUTF16("test_file");
+  const std::u16string kTestSuggestedFileName = base::ASCIIToUTF16("test_file");
   content::ContextMenuParams params = CreateParams(MenuItem::VIDEO);
   params.suggested_filename = kTestSuggestedFileName;
   auto menu = std::make_unique<TestRenderViewContextMenu>(
@@ -526,7 +526,7 @@ TEST_F(RenderViewContextMenuPrefsTest, SaveMediaSuggestedFileName) {
   menu->ExecuteCommand(IDC_CONTENT_CONTEXT_SAVEAVAS, 0 /* event_flags */);
 
   // Video item should have suggested file name.
-  base::string16 suggested_filename =
+  std::u16string suggested_filename =
       content::WebContentsTester::For(web_contents())->GetSuggestedFileName();
   EXPECT_EQ(kTestSuggestedFileName, suggested_filename);
 
@@ -640,7 +640,7 @@ struct FormatUrlForClipboardTestData {
 class FormatUrlForClipboardTest
     : public testing::TestWithParam<FormatUrlForClipboardTestData> {
  public:
-  static base::string16 FormatUrl(const GURL& url) {
+  static std::u16string FormatUrl(const GURL& url) {
     return RenderViewContextMenu::FormatURLForClipboard(url);
   }
 };
@@ -679,6 +679,6 @@ INSTANTIATE_TEST_SUITE_P(
 TEST_P(FormatUrlForClipboardTest, FormatUrlForClipboard) {
   auto param = GetParam();
   GURL url(param.input);
-  const base::string16 result = FormatUrl(url);
+  const std::u16string result = FormatUrl(url);
   DCHECK_EQ(base::UTF8ToUTF16(param.output), result);
 }

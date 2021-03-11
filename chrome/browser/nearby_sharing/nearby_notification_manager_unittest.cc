@@ -98,7 +98,7 @@ MockNearbySharingService* CreateAndUseMockNearbySharingService(
 }
 
 std::string GetClipboardText() {
-  base::string16 text;
+  std::u16string text;
   ui::Clipboard::GetForCurrentThread()->ReadText(
       ui::ClipboardBuffer::kCopyPaste, /*data_dst=*/nullptr, &text);
   return base::UTF16ToUTF8(text);
@@ -319,7 +319,7 @@ class NearbyNotificationManagerConnectionRequestTest
     : public NearbyNotificationManagerTest,
       public testing::WithParamInterface<ConnectionRequestTestParam> {};
 
-base::string16 FormatNotificationTitle(
+std::u16string FormatNotificationTitle(
     int resource_id,
     const AttachmentsTestParamInternal& param,
     const std::string& device_name,
@@ -383,7 +383,7 @@ TEST_F(NearbyNotificationManagerTest, ShowProgress_ShowsNotification) {
 
   const message_center::Notification& notification = notifications[0];
   EXPECT_EQ(message_center::NOTIFICATION_TYPE_PROGRESS, notification.type());
-  EXPECT_EQ(base::string16(), notification.message());
+  EXPECT_EQ(std::u16string(), notification.message());
   EXPECT_TRUE(notification.icon().IsEmpty());
   EXPECT_EQ(GURL(), notification.origin_url());
   EXPECT_TRUE(notification.never_timeout());
@@ -454,7 +454,7 @@ TEST_P(NearbyNotificationManagerAttachmentsTest, ShowProgress) {
   TransferMetadata transfer_metadata = TransferMetadataBuilder().build();
   manager()->ShowProgress(share_target, transfer_metadata);
 
-  base::string16 expected = FormatNotificationTitle(
+  std::u16string expected = FormatNotificationTitle(
       is_incoming ? IDS_NEARBY_NOTIFICATION_RECEIVE_PROGRESS_TITLE
                   : IDS_NEARBY_NOTIFICATION_SEND_PROGRESS_TITLE,
       param, device_name, /*use_capitalized_resource=*/false);
@@ -484,7 +484,7 @@ TEST_P(NearbyNotificationManagerAttachmentsTest, ShowSuccess) {
 
   manager()->ShowSuccess(share_target);
 
-  base::string16 expected = FormatNotificationTitle(
+  std::u16string expected = FormatNotificationTitle(
       is_incoming ? IDS_NEARBY_NOTIFICATION_RECEIVE_SUCCESS_TITLE
                   : IDS_NEARBY_NOTIFICATION_SEND_SUCCESS_TITLE,
       param, device_name, /*use_capitalized_resource=*/true);
@@ -535,13 +535,13 @@ TEST_P(NearbyNotificationManagerAttachmentsTest, ShowFailure) {
       manager()->OnNearbyProcessStopped();
     }
 
-    base::string16 expected_title = FormatNotificationTitle(
+    std::u16string expected_title = FormatNotificationTitle(
         is_incoming ? IDS_NEARBY_NOTIFICATION_RECEIVE_FAILURE_TITLE
                     : IDS_NEARBY_NOTIFICATION_SEND_FAILURE_TITLE,
         param, device_name, /*use_capitalized_resource=*/false);
-    base::string16 expected_message =
+    std::u16string expected_message =
         error && error->second ? l10n_util::GetStringUTF16(error->second)
-                               : base::string16();
+                               : std::u16string();
 
     std::vector<message_center::Notification> notifications =
         GetDisplayedNotifications();
@@ -590,12 +590,12 @@ TEST_P(NearbyNotificationManagerConnectionRequestTest,
 
   const message_center::Notification& notification = notifications[0];
 
-  base::string16 expected_title = l10n_util::GetStringUTF16(
+  std::u16string expected_title = l10n_util::GetStringUTF16(
       IDS_NEARBY_NOTIFICATION_CONNECTION_REQUEST_TITLE);
-  base::string16 plural_message = l10n_util::GetPluralStringFUTF16(
+  std::u16string plural_message = l10n_util::GetPluralStringFUTF16(
       IDS_NEARBY_NOTIFICATION_CONNECTION_REQUEST_MESSAGE, 1);
 
-  base::string16 expected_message = base::ReplaceStringPlaceholders(
+  std::u16string expected_message = base::ReplaceStringPlaceholders(
       plural_message,
       {base::ASCIIToUTF16(device_name),
        l10n_util::GetPluralStringFUTF16(
@@ -620,7 +620,7 @@ TEST_P(NearbyNotificationManagerConnectionRequestTest,
   EXPECT_EQ(l10n_util::GetStringUTF16(IDS_NEARBY_NOTIFICATION_SOURCE),
             notification.display_source());
 
-  std::vector<base::string16> expected_button_titles;
+  std::vector<std::u16string> expected_button_titles;
   if (status == TransferMetadata::Status::kAwaitingLocalConfirmation) {
     expected_button_titles.push_back(
         l10n_util::GetStringUTF16(IDS_NEARBY_NOTIFICATION_RECEIVE_ACTION));
@@ -678,7 +678,7 @@ TEST_F(NearbyNotificationManagerTest, ShowSuccess_ShowsNotification) {
   const message_center::Notification& notification = notifications[0];
   EXPECT_EQ(message_center::NOTIFICATION_TYPE_SIMPLE, notification.type());
 
-  EXPECT_EQ(base::string16(), notification.message());
+  EXPECT_EQ(std::u16string(), notification.message());
   EXPECT_TRUE(notification.icon().IsEmpty());
   EXPECT_EQ(GURL(), notification.origin_url());
   EXPECT_FALSE(notification.never_timeout());
@@ -699,7 +699,7 @@ TEST_F(NearbyNotificationManagerTest, ShowFailure_ShowsNotification) {
   const message_center::Notification& notification = notifications[0];
   EXPECT_EQ(message_center::NOTIFICATION_TYPE_SIMPLE, notification.type());
 
-  EXPECT_EQ(base::string16(), notification.message());
+  EXPECT_EQ(std::u16string(), notification.message());
   EXPECT_TRUE(notification.icon().IsEmpty());
   EXPECT_EQ(GURL(), notification.origin_url());
   EXPECT_FALSE(notification.never_timeout());

@@ -50,7 +50,7 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
     return 0;
 
   url::Parsed parsed;
-  const base::string16 text = vr::FormatUrlForVr(gurl, &parsed);
+  const std::u16string text = vr::FormatUrlForVr(gurl, &parsed);
   CHECK(text.length());
 
   gfx::FontList font_list;

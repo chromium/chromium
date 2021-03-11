@@ -231,7 +231,7 @@ void AppShortcutManager::OnShortcutsMenuIconsReadRegisterShortcutsMenu(
 }
 
 void AppShortcutManager::OnShortcutInfoRetrievedUpdateShortcuts(
-    base::string16 old_name,
+    std::u16string old_name,
     std::unique_ptr<ShortcutInfo> shortcut_info) {
   if (GetShortcutUpdateCallbackForTesting())
     std::move(GetShortcutUpdateCallbackForTesting()).Run(shortcut_info.get());

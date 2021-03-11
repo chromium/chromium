@@ -102,7 +102,7 @@ CurrentTabDesktopMediaList::CurrentTabDesktopMediaList(
   }
 
   // The source never changes - it always applies to the current tab.
-  UpdateSourcesList({SourceDescription(media_id_, base::string16())});
+  UpdateSourcesList({SourceDescription(media_id_, std::u16string())});
 }
 
 CurrentTabDesktopMediaList::~CurrentTabDesktopMediaList() = default;

@@ -44,20 +44,20 @@ void PasswordReuseControllerAndroid::CloseDialog() {
   delete this;
 }
 
-base::string16 PasswordReuseControllerAndroid::GetButtonText() const {
+std::u16string PasswordReuseControllerAndroid::GetButtonText() const {
   return l10n_util::GetStringUTF16(IDS_CLOSE);
 }
 
-base::string16 PasswordReuseControllerAndroid::GetWarningDetailText(
+std::u16string PasswordReuseControllerAndroid::GetWarningDetailText(
     std::vector<size_t>* placeholder_offsets) const {
   return service_->GetWarningDetailText(password_type_, placeholder_offsets);
 }
 
-base::string16 PasswordReuseControllerAndroid::GetTitle() const {
+std::u16string PasswordReuseControllerAndroid::GetTitle() const {
   return l10n_util::GetStringUTF16(IDS_PAGE_INFO_CHANGE_PASSWORD_SUMMARY);
 }
 
-const std::vector<base::string16>
+const std::vector<std::u16string>
 PasswordReuseControllerAndroid::GetPlaceholdersForSavedPasswordWarningText()
     const {
   return service_->GetPlaceholdersForSavedPasswordWarningText();

@@ -154,7 +154,7 @@ void AddPdfViewerStrings(base::Value* dict) {
     dict->SetStringKey(resource.name, l10n_util::GetStringUTF16(resource.id));
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  base::string16 edit_string = l10n_util::GetStringUTF16(IDS_EDIT);
+  std::u16string edit_string = l10n_util::GetStringUTF16(IDS_EDIT);
   base::Erase(edit_string, '&');
   dict->SetStringKey("editButton", edit_string);
 #endif

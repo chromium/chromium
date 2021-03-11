@@ -141,7 +141,7 @@ class AnnouncementNotificationServiceTest : public testing::Test {
     std::string gaia_id = sign_in ? "dummy_gaia_id" : std::string();
     test_profile_manager_->profile_attributes_storage()->AddProfile(
         test_profile_manager_->profiles_dir().AppendASCII(kProfileId),
-        base::ASCIIToUTF16("dummy_name"), gaia_id, base::string16(),
+        base::ASCIIToUTF16("dummy_name"), gaia_id, std::u16string(),
         sign_in /*is_consented_primary_account*/, 0, std::string(),
         EmptyAccountId());
 

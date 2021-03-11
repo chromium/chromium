@@ -65,13 +65,13 @@ class OfflinePageMHTMLArchiver : public OfflinePageArchiver {
   // Callback for Generating MHTML.
   void OnGenerateMHTMLDone(const GURL& url,
                            const base::FilePath& file_path,
-                           const base::string16& title,
+                           const std::u16string& title,
                            const std::string& name_space,
                            base::Time mhtml_start_time,
                            const content::MHTMLGenerationResult& result);
   void OnComputeDigestDone(const GURL& url,
                            const base::FilePath& file_path,
-                           const base::string16& title,
+                           const std::u16string& title,
                            const std::string& name_space,
                            base::Time digest_start_time,
                            int64_t file_size,

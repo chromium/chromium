@@ -22,7 +22,7 @@ static void JNI_BitmapDownloadRequest_DownloadBitmap(
     JNIEnv* env,
     const JavaParamRef<jstring>& j_filename,
     const JavaParamRef<jobject>& j_bitmap) {
-  base::string16 filename(ConvertJavaStringToUTF16(env, j_filename));
+  std::u16string filename(ConvertJavaStringToUTF16(env, j_filename));
   SkBitmap bitmap =
       gfx::CreateSkBitmapFromJavaBitmap(gfx::JavaBitmap(j_bitmap));
 

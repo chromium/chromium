@@ -105,7 +105,7 @@ class PluginMetricsProvider : public metrics::MetricsProvider,
   std::vector<content::WebPluginInfo> plugins_;
 
   // Buffer of child process notifications for quick access.
-  std::map<base::string16, ChildProcessStats> child_process_stats_buffer_;
+  std::map<std::u16string, ChildProcessStats> child_process_stats_buffer_;
 
   base::WeakPtrFactory<PluginMetricsProvider> weak_ptr_factory_{this};
 

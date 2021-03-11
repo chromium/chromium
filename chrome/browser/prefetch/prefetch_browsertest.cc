@@ -86,7 +86,7 @@ class PrefetchBrowserTest : public InProcessBrowserTest {
   bool RunPrefetchExperiment(bool expect_success, Browser* browser) {
     GURL url = embedded_test_server()->GetURL(kPrefetchPage);
 
-    const base::string16 expected_title =
+    const std::u16string expected_title =
         expect_success ? base::ASCIIToUTF16("link onload")
                        : base::ASCIIToUTF16("link onerror");
     content::TitleWatcher title_watcher(
@@ -182,7 +182,7 @@ IN_PROC_BROWSER_TEST_F(PrefetchBrowserTest, RedirectedPrefetch) {
   ASSERT_TRUE(https_server.Start());
 
   GURL url = https_server.GetURL("www.google.com", kRedirectPrefetchPage);
-  const base::string16 expected_title = base::ASCIIToUTF16("done");
+  const std::u16string expected_title = base::ASCIIToUTF16("done");
   content::TitleWatcher title_watcher(
       browser()->tab_strip_model()->GetActiveWebContents(), expected_title);
   ui_test_utils::NavigateToURL(browser(), url);
@@ -249,7 +249,7 @@ IN_PROC_BROWSER_TEST_F(PrefetchBrowserTest, PrefetchCachingPeriod) {
   ASSERT_TRUE(http_server.Start());
 
   GURL url = http_server.GetURL("localhost", kPrefetchCachingPeriodPage);
-  const base::string16 expected_title = base::ASCIIToUTF16("done");
+  const std::u16string expected_title = base::ASCIIToUTF16("done");
   content::TitleWatcher title_watcher(
       browser()->tab_strip_model()->GetActiveWebContents(), expected_title);
   ui_test_utils::NavigateToURL(browser(), url);
@@ -299,7 +299,7 @@ IN_PROC_BROWSER_TEST_F(PrefetchBrowserTest, PrefetchCachingPeriodWithAge) {
   ASSERT_TRUE(http_server.Start());
 
   GURL url = http_server.GetURL("localhost", kPrefetchCachingPeriodPage);
-  const base::string16 expected_title = base::ASCIIToUTF16("done");
+  const std::u16string expected_title = base::ASCIIToUTF16("done");
   content::TitleWatcher title_watcher(
       browser()->tab_strip_model()->GetActiveWebContents(), expected_title);
   ui_test_utils::NavigateToURL(browser(), url);

@@ -16,7 +16,7 @@ class PasswordManagerInfoBarDelegate : public ConfirmInfoBarDelegate {
 
   // Getter for the message displayed in adition to the title. If no message
   // was set, this returns and empty string.
-  base::string16 GetDetailsMessageText() const;
+  std::u16string GetDetailsMessageText() const;
 
   // ConfirmInfoBarDelegate:
   InfoBarAutomationType GetInfoBarAutomationType() const override;
@@ -24,21 +24,21 @@ class PasswordManagerInfoBarDelegate : public ConfirmInfoBarDelegate {
   GURL GetLinkURL() const override;
   bool ShouldExpire(const NavigationDetails& details) const override;
   bool LinkClicked(WindowOpenDisposition disposition) override;
-  base::string16 GetMessageText() const override;
+  std::u16string GetMessageText() const override;
 
  protected:
   PasswordManagerInfoBarDelegate();
 
-  void SetMessage(const base::string16& message);
-  void SetDetailsMessage(const base::string16& details_message);
+  void SetMessage(const std::u16string& message);
+  void SetDetailsMessage(const std::u16string& details_message);
 
  private:
   // Message for the infobar: branded as a part of Google Smart Lock for signed
   // users.
-  base::string16 message_;
+  std::u16string message_;
 
   // Used to display aditional information about where the passwords were saved.
-  base::string16 details_message_;
+  std::u16string details_message_;
 
   DISALLOW_COPY_AND_ASSIGN(PasswordManagerInfoBarDelegate);
 };

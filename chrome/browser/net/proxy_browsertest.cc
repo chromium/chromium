@@ -123,7 +123,7 @@ IN_PROC_BROWSER_TEST_F(ProxyBrowserTest, BasicAuthWSConnect) {
                                ws_server.GetURL("proxied_request_check.html")
                                    .ReplaceComponents(replacements));
 
-  const base::string16 result = watcher.WaitAndGetTitle();
+  const std::u16string result = watcher.WaitAndGetTitle();
   EXPECT_TRUE(base::EqualsASCII(result, "PASS"));
   EXPECT_TRUE(observer.auth_handled());
 }

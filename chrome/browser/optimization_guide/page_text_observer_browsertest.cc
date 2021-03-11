@@ -57,7 +57,7 @@ class TestConsumer : public PageTextObserver::Consumer {
 
   bool was_called() const { return was_called_; }
 
-  const base::Optional<base::string16>& text() const { return text_; }
+  const base::Optional<std::u16string>& text() const { return text_; }
 
   // PageTextObserver::Consumer:
   std::unique_ptr<PageTextObserver::ConsumerTextDumpRequest>
@@ -67,7 +67,7 @@ class TestConsumer : public PageTextObserver::Consumer {
   }
 
  private:
-  void OnGotTextDump(const base::string16& text) {
+  void OnGotTextDump(const std::u16string& text) {
     text_ = text;
     if (on_page_text_closure_) {
       std::move(on_page_text_closure_).Run();
@@ -80,7 +80,7 @@ class TestConsumer : public PageTextObserver::Consumer {
 
   base::OnceClosure on_page_text_closure_;
 
-  base::Optional<base::string16> text_;
+  base::Optional<std::u16string> text_;
 };
 
 // This tests code in

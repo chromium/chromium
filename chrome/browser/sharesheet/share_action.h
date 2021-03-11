@@ -23,7 +23,7 @@ class ShareAction {
  public:
   virtual ~ShareAction() = default;
 
-  virtual const base::string16 GetActionName() = 0;
+  virtual const std::u16string GetActionName() = 0;
 
   virtual const gfx::VectorIcon& GetActionIcon() = 0;
 

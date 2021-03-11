@@ -154,9 +154,9 @@ TEST_F(UpdatePasswordInfoBarDelegateTest, EmptyDetailsMessageForNotSignedIn) {
 }
 
 TEST_F(UpdatePasswordInfoBarDelegateTest, NoCurrentForms) {
-  std::vector<base::string16> usernames;
+  std::vector<std::u16string> usernames;
   std::vector<std::unique_ptr<password_manager::PasswordForm>> current_forms;
-  base::string16 default_username = base::ASCIIToUTF16("username");
+  std::u16string default_username = base::ASCIIToUTF16("username");
   unsigned int selected_username =
       UpdatePasswordInfoBarDelegate::GetDisplayUsernames(
           current_forms, default_username, &usernames);
@@ -173,9 +173,9 @@ TEST_F(UpdatePasswordInfoBarDelegateTest, MultipleCurrentForms) {
   current_forms.push_back(
       std::make_unique<password_manager::PasswordForm>(additional_form));
 
-  base::string16 default_username = base::ASCIIToUTF16("another username");
+  std::u16string default_username = base::ASCIIToUTF16("another username");
 
-  std::vector<base::string16> usernames;
+  std::vector<std::u16string> usernames;
   unsigned int selected_username =
       UpdatePasswordInfoBarDelegate::GetDisplayUsernames(
           current_forms, default_username, &usernames);
@@ -192,13 +192,13 @@ TEST_F(UpdatePasswordInfoBarDelegateTest, EmptyUsername) {
   current_forms.push_back(
       std::make_unique<password_manager::PasswordForm>(additional_form));
 
-  base::string16 default_username = test_form_.username_value;
+  std::u16string default_username = test_form_.username_value;
 
-  std::vector<base::string16> usernames;
+  std::vector<std::u16string> usernames;
   unsigned int selected_username =
       UpdatePasswordInfoBarDelegate::GetDisplayUsernames(
           current_forms, default_username, &usernames);
-  base::string16 empty_username =
+  std::u16string empty_username =
       l10n_util::GetStringUTF16(IDS_PASSWORD_MANAGER_EMPTY_LOGIN);
 
   EXPECT_EQ(default_username, usernames[selected_username]);

@@ -48,8 +48,8 @@ class PasswordCheckManager
     CompromisedCredentialForUI& operator=(CompromisedCredentialForUI&& other);
     ~CompromisedCredentialForUI();
 
-    base::string16 display_username;
-    base::string16 display_origin;
+    std::u16string display_username;
+    std::u16string display_origin;
     std::string package_name;
     std::string change_password_url;
     bool has_startable_script = false;

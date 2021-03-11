@@ -330,7 +330,7 @@ class SearchPrefetchBaseBrowserTest : public InProcessBrowserTest {
     return search_suggest_server_->GetURL(kSuggestDomain, path);
   }
 
-  void WaitUntilStatusChangesTo(base::string16 search_terms,
+  void WaitUntilStatusChangesTo(std::u16string search_terms,
                                 base::Optional<SearchPrefetchStatus> status) {
     auto* search_prefetch_service =
         SearchPrefetchServiceFactory::GetForProfile(browser()->profile());
@@ -2732,7 +2732,7 @@ IN_PROC_BROWSER_TEST_F(GooglePFTest, BaseGoogleSearchHasPFForPrefetch) {
   auto* default_search = template_url_service->GetDefaultSearchProvider();
 
   TemplateURLRef::SearchTermsArgs search_terms_args =
-      TemplateURLRef::SearchTermsArgs(base::string16());
+      TemplateURLRef::SearchTermsArgs(std::u16string());
   search_terms_args.is_prefetch = true;
 
   std::string generated_url = default_search->url_ref().ReplaceSearchTerms(
@@ -2746,7 +2746,7 @@ IN_PROC_BROWSER_TEST_F(GooglePFTest, BaseGoogleSearchNoPFForNonPrefetch) {
   auto* default_search = template_url_service->GetDefaultSearchProvider();
 
   TemplateURLRef::SearchTermsArgs search_terms_args =
-      TemplateURLRef::SearchTermsArgs(base::string16());
+      TemplateURLRef::SearchTermsArgs(std::u16string());
   search_terms_args.is_prefetch = false;
 
   std::string generated_url = default_search->url_ref().ReplaceSearchTerms(

@@ -89,9 +89,9 @@ password_manager::PasswordForm ConvertImportedPasswordForm(
 
 // Attempts to create a TemplateURL from the provided data. |title| is optional.
 // If TemplateURL creation fails, returns null.
-std::unique_ptr<TemplateURL> CreateTemplateURL(const base::string16& url,
-                                               const base::string16& keyword,
-                                               const base::string16& title) {
+std::unique_ptr<TemplateURL> CreateTemplateURL(const std::u16string& url,
+                                               const std::u16string& keyword,
+                                               const std::u16string& title) {
   if (url.empty() || keyword.empty())
     return nullptr;
   TemplateURLData data;
@@ -113,7 +113,7 @@ InProcessImporterBridge::InProcessImporterBridge(
 
 void InProcessImporterBridge::AddBookmarks(
     const std::vector<ImportedBookmarkEntry>& bookmarks,
-    const base::string16& first_folder_name) {
+    const std::u16string& first_folder_name) {
   writer_->AddBookmarks(bookmarks, first_folder_name);
 }
 
@@ -160,8 +160,8 @@ void InProcessImporterBridge::SetAutofillFormData(
   for (size_t i = 0; i < entries.size(); ++i) {
     // Using method c_str() in order to avoid data which contains null
     // terminating symbols.
-    const base::string16 name = entries[i].name.c_str();
-    const base::string16 value = entries[i].value.c_str();
+    const std::u16string name = entries[i].name.c_str();
+    const std::u16string value = entries[i].value.c_str();
     if (name.empty() || value.empty())
       continue;
     autofill_entries.push_back(
@@ -188,7 +188,7 @@ void InProcessImporterBridge::NotifyEnded() {
   host_->NotifyImportEnded();
 }
 
-base::string16 InProcessImporterBridge::GetLocalizedString(int message_id) {
+std::u16string InProcessImporterBridge::GetLocalizedString(int message_id) {
   return l10n_util::GetStringUTF16(message_id);
 }
 

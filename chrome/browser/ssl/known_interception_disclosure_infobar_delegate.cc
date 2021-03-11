@@ -102,7 +102,7 @@ KnownInterceptionDisclosureInfoBarDelegate::GetIdentifier() const {
   return KNOWN_INTERCEPTION_DISCLOSURE_INFOBAR_DELEGATE;
 }
 
-base::string16 KnownInterceptionDisclosureInfoBarDelegate::GetLinkText() const {
+std::u16string KnownInterceptionDisclosureInfoBarDelegate::GetLinkText() const {
   return l10n_util::GetStringUTF16(IDS_LEARN_MORE);
 }
 
@@ -120,7 +120,7 @@ void KnownInterceptionDisclosureInfoBarDelegate::InfoBarDismissed() {
   Cancel();
 }
 
-base::string16 KnownInterceptionDisclosureInfoBarDelegate::GetMessageText()
+std::u16string KnownInterceptionDisclosureInfoBarDelegate::GetMessageText()
     const {
   return l10n_util::GetStringUTF16(IDS_KNOWN_INTERCEPTION_HEADER);
 }
@@ -144,12 +144,12 @@ int KnownInterceptionDisclosureInfoBarDelegate::GetIconId() const {
   return IDR_ANDROID_INFOBAR_WARNING;
 }
 
-base::string16 KnownInterceptionDisclosureInfoBarDelegate::GetButtonLabel(
+std::u16string KnownInterceptionDisclosureInfoBarDelegate::GetButtonLabel(
     InfoBarButton button) const {
   return l10n_util::GetStringUTF16(IDS_KNOWN_INTERCEPTION_INFOBAR_BUTTON_TEXT);
 }
 
-base::string16 KnownInterceptionDisclosureInfoBarDelegate::GetDescriptionText()
+std::u16string KnownInterceptionDisclosureInfoBarDelegate::GetDescriptionText()
     const {
   return l10n_util::GetStringUTF16(IDS_KNOWN_INTERCEPTION_BODY1);
 }

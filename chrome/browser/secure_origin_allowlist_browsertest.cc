@@ -142,8 +142,8 @@ IN_PROC_BROWSER_TEST_P(SecureOriginAllowlistBrowsertest, Simple) {
       "example.com", "/secure_origin_allowlist_browsertest.html");
   ui_test_utils::NavigateToURL(browser(), url);
 
-  base::string16 secure(base::ASCIIToUTF16("secure context"));
-  base::string16 insecure(base::ASCIIToUTF16("insecure context"));
+  std::u16string secure(base::ASCIIToUTF16("secure context"));
+  std::u16string insecure(base::ASCIIToUTF16("insecure context"));
 
   content::TitleWatcher title_watcher(
       browser()->tab_strip_model()->GetActiveWebContents(), secure);

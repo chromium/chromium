@@ -182,7 +182,7 @@ class SupervisedUserNavigationThrottleTest
 bool SupervisedUserNavigationThrottleTest::IsInterstitialBeingShownInMainFrame(
     Browser* browser) {
   WebContents* tab = browser->tab_strip_model()->GetActiveWebContents();
-  base::string16 title;
+  std::u16string title;
   ui_test_utils::GetCurrentTabTitle(browser, &title);
   return tab->GetController().GetLastCommittedEntry()->GetPageType() ==
              content::PAGE_TYPE_ERROR &&

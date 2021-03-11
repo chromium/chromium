@@ -15,14 +15,14 @@ NearbyShareProfileInfoProviderImpl::NearbyShareProfileInfoProviderImpl(
 NearbyShareProfileInfoProviderImpl::~NearbyShareProfileInfoProviderImpl() =
     default;
 
-base::Optional<base::string16>
+base::Optional<std::u16string>
 NearbyShareProfileInfoProviderImpl::GetGivenName() const {
   const user_manager::User* user =
       chromeos::ProfileHelper::Get()->GetUserByProfile(profile_);
   if (!user)
     return base::nullopt;
 
-  base::string16 name = user->GetGivenName();
+  std::u16string name = user->GetGivenName();
   return name.empty() ? base::nullopt : base::make_optional(name);
 }
 

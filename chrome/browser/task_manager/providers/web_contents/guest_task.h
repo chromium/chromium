@@ -23,7 +23,7 @@ class GuestTask : public RendererTask {
   Type GetType() const override;
 
  private:
-  base::string16 GetCurrentTitle(content::WebContents* web_contents) const;
+  std::u16string GetCurrentTitle(content::WebContents* web_contents) const;
 
   DISALLOW_COPY_AND_ASSIGN(GuestTask);
 };

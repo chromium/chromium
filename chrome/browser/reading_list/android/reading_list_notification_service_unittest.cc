@@ -44,8 +44,8 @@ class MockDelegate : public ReadingListNotificationDelegate {
  public:
   MockDelegate() = default;
   ~MockDelegate() override = default;
-  MOCK_METHOD(base::string16, getNotificationTitle, (), (override));
-  MOCK_METHOD(base::string16, getNotificationSubTitle, (int), (override));
+  MOCK_METHOD(std::u16string, getNotificationTitle, (), (override));
+  MOCK_METHOD(std::u16string, getNotificationSubTitle, (int), (override));
   MOCK_METHOD(void, OpenReadingListPage, (), (override));
 };
 

@@ -11,7 +11,7 @@ namespace task_manager {
 
 namespace {
 
-base::string16 PrefixPrintTitle(const base::string16& title) {
+std::u16string PrefixPrintTitle(const std::u16string& title) {
   return l10n_util::GetStringFUTF16(IDS_TASK_MANAGER_PRINT_PREFIX, title);
 }
 

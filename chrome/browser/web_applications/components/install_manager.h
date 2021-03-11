@@ -107,7 +107,7 @@ class InstallManager {
     GURL fallback_start_url;
 
     // App name to be used if manifest is unavailable.
-    base::Optional<base::string16> fallback_app_name;
+    base::Optional<std::u16string> fallback_app_name;
 
     bool locally_installed = true;
     // These OS shortcut fields can't be true if |locally_installed| is false.

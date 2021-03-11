@@ -54,7 +54,7 @@ class PluginObserver::PluginPlaceholderHost : public PluginInstallerObserver {
  public:
   PluginPlaceholderHost(
       PluginObserver* observer,
-      base::string16 plugin_name,
+      std::u16string plugin_name,
       PluginInstaller* installer,
       mojo::PendingRemote<chrome::mojom::PluginRenderer> plugin_renderer_remote)
       : PluginInstallerObserver(installer),
@@ -86,9 +86,9 @@ void PluginObserver::PluginCrashed(const base::FilePath& plugin_path,
                                    base::ProcessId plugin_pid) {
   DCHECK(!plugin_path.value().empty());
 
-  base::string16 plugin_name =
+  std::u16string plugin_name =
       PluginService::GetInstance()->GetPluginDisplayNameByPath(plugin_path);
-  base::string16 infobar_text;
+  std::u16string infobar_text;
 #if defined(OS_WIN)
   // Find out whether the plugin process is still alive.
   // Note: Although the chances are slim, it is possible that after the plugin
@@ -135,7 +135,7 @@ void PluginObserver::PluginCrashed(const base::FilePath& plugin_path,
 // static
 void PluginObserver::CreatePluginObserverInfoBar(
     InfoBarService* infobar_service,
-    const base::string16& plugin_name) {
+    const std::u16string& plugin_name) {
   SimpleAlertInfoBarDelegate::Create(
       infobar_service,
       infobars::InfoBarDelegate::PLUGIN_OBSERVER_INFOBAR_DELEGATE,
@@ -179,7 +179,7 @@ void PluginObserver::ShowFlashPermissionBubble() {
 void PluginObserver::CouldNotLoadPlugin(const base::FilePath& plugin_path) {
   g_browser_process->GetMetricsServicesManager()->OnPluginLoadingError(
       plugin_path);
-  base::string16 plugin_name =
+  std::u16string plugin_name =
       PluginService::GetInstance()->GetPluginDisplayNameByPath(plugin_path);
   CreatePluginObserverInfoBar(InfoBarService::FromWebContents(web_contents()),
                               plugin_name);

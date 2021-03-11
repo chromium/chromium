@@ -189,7 +189,7 @@ class FileChooserDelegate : public content::WebContentsDelegate {
     // Send the selected file to the renderer process.
     std::vector<blink::mojom::FileChooserFileInfoPtr> files;
     files.push_back(blink::mojom::FileChooserFileInfo::NewNativeFile(
-        blink::mojom::NativeFileInfo::New(file_, base::string16())));
+        blink::mojom::NativeFileInfo::New(file_, std::u16string())));
     listener->FileSelected(std::move(files), base::FilePath(),
                            blink::mojom::FileChooserParams::Mode::kOpen);
 
@@ -264,7 +264,7 @@ void CheckBrokenSecurityStyle(const SecurityStyleTestObserver& observer,
   EXPECT_EQ(l10n_util::GetStringUTF8(IDS_CERTIFICATE_CHAIN_ERROR),
             expired_explanation.insecure_explanations[0].summary);
 
-  base::string16 error_string = base::UTF8ToUTF16(net::ErrorToString(error));
+  std::u16string error_string = base::UTF8ToUTF16(net::ErrorToString(error));
   EXPECT_EQ(l10n_util::GetStringFUTF8(
                 IDS_CERTIFICATE_CHAIN_ERROR_DESCRIPTION_FORMAT, error_string),
             expired_explanation.insecure_explanations[0].description);
@@ -2106,7 +2106,7 @@ IN_PROC_BROWSER_TEST_P(SignedExchangeSecurityStateTest, SecurityLevelIsSecure) {
   const GURL inner_url("https://test.example.org/test/");
   const GURL sxg_url =
       embedded_test_server()->GetURL("/sxg/test.example.org_test.sxg");
-  base::string16 expected_title = base::ASCIIToUTF16(inner_url.spec());
+  std::u16string expected_title = base::ASCIIToUTF16(inner_url.spec());
   content::TitleWatcher title_watcher(contents, expected_title);
   ui_test_utils::NavigateToURL(browser(), sxg_url);
   // The inner content of test.example.org_test.sxg has
@@ -2140,14 +2140,14 @@ IN_PROC_BROWSER_TEST_P(SignedExchangeSecurityStateTest,
   const GURL prefetch_html_url = embedded_test_server()->GetURL(
       std::string("/sxg/prefetch.html#") + sxg_url.spec());
   {
-    base::string16 expected_title = base::ASCIIToUTF16("OK");
+    std::u16string expected_title = base::ASCIIToUTF16("OK");
     content::TitleWatcher title_watcher(contents, expected_title);
     ui_test_utils::NavigateToURL(browser(), prefetch_html_url);
     EXPECT_EQ(expected_title, title_watcher.WaitAndGetTitle());
   }
 
   {
-    base::string16 expected_title = base::ASCIIToUTF16(inner_url.spec());
+    std::u16string expected_title = base::ASCIIToUTF16(inner_url.spec());
     content::TitleWatcher title_watcher(contents, expected_title);
     // Execute the JavaScript code to trigger the followup navigation from the
     // current page.

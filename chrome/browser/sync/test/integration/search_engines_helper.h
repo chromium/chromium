@@ -58,7 +58,7 @@ void AddSearchEngine(int profile_index, const std::string& keyword);
 // to the verifier, if it is used.
 void EditSearchEngine(int profile_index,
                       const std::string& keyword,
-                      const base::string16& short_name,
+                      const std::u16string& short_name,
                       const std::string& new_keyword,
                       const std::string& url);
 
@@ -111,7 +111,7 @@ class HasSearchEngineChecker : public StatusChangeChecker,
 
  private:
   TemplateURLService* const service_;
-  const base::string16 keyword_;
+  const std::u16string keyword_;
   ScopedObserver<TemplateURLService, TemplateURLServiceObserver> observer_{
       this};
 };

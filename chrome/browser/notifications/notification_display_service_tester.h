@@ -63,7 +63,7 @@ class NotificationDisplayServiceTester {
   void SimulateClick(NotificationHandler::Type notification_type,
                      const std::string& notification_id,
                      base::Optional<int> action_index,
-                     base::Optional<base::string16> reply);
+                     base::Optional<std::u16string> reply);
 
   // Simulates a click on the settings button of the notification identified by
   // |notification_id|.

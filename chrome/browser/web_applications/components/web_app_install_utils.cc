@@ -201,7 +201,7 @@ void UpdateWebAppInfoFromManifest(const blink::Manifest& manifest,
                                   const GURL& manifest_url,
                                   WebApplicationInfo* web_app_info) {
   // Give the full length name priority if it's not empty.
-  base::string16 name = manifest.name.value_or(base::string16());
+  std::u16string name = manifest.name.value_or(std::u16string());
   if (!name.empty())
     web_app_info->title = name;
   else if (manifest.short_name)

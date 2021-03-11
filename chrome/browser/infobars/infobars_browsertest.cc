@@ -293,7 +293,7 @@ void InfoBarUiTest::ShowUi(const std::string& name) {
       break;
 
     case IBD::INSTALLATION_ERROR_INFOBAR_DELEGATE: {
-      const base::string16 msg =
+      const std::u16string msg =
           l10n_util::GetStringUTF16(IDS_EXTENSION_INSTALL_DISALLOWED_ON_SITE);
       InstallationErrorInfoBarDelegate::Create(
           GetInfoBarService(),

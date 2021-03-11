@@ -44,13 +44,13 @@ class SharesheetServiceDelegate : public SharesheetController {
   void ShowBubble(std::vector<TargetInfo> targets,
                   apps::mojom::IntentPtr intent,
                   sharesheet::CloseCallback close_callback);
-  void OnBubbleClosed(const base::string16& active_action);
-  void OnTargetSelected(const base::string16& target_name,
+  void OnBubbleClosed(const std::u16string& active_action);
+  void OnTargetSelected(const std::u16string& target_name,
                         const TargetType type,
                         apps::mojom::IntentPtr intent,
                         views::View* share_action_view);
   void OnActionLaunched();
-  const gfx::VectorIcon* GetVectorIcon(const base::string16& display_name);
+  const gfx::VectorIcon* GetVectorIcon(const std::u16string& display_name);
   gfx::NativeWindow GetNativeWindow();
 
   // SharesheetController overrides
@@ -65,7 +65,7 @@ class SharesheetServiceDelegate : public SharesheetController {
   // SharesheetServiceDelegate.
   gfx::NativeWindow native_window_;
 
-  base::string16 active_action_;
+  std::u16string active_action_;
   std::unique_ptr<SharesheetBubbleView> sharesheet_bubble_view_;
   SharesheetService* sharesheet_service_;
 };

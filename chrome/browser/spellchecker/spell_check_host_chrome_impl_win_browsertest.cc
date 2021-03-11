@@ -62,7 +62,7 @@ class SpellCheckHostChromeImplWinBrowserTest : public InProcessBrowserTest {
   }
 
   void OnSuggestionResult(
-      const std::vector<std::vector<::base::string16>>& suggestions) {
+      const std::vector<std::vector<::std::u16string>>& suggestions) {
     received_result_ = true;
     suggestion_result_ = suggestions;
     if (quit_)
@@ -97,7 +97,7 @@ class SpellCheckHostChromeImplWinBrowserTest : public InProcessBrowserTest {
 
   bool received_result_ = false;
   std::vector<SpellCheckResult> result_;
-  std::vector<std::vector<::base::string16>> suggestion_result_;
+  std::vector<std::vector<::std::u16string>> suggestion_result_;
   base::OnceClosure quit_;
 };
 

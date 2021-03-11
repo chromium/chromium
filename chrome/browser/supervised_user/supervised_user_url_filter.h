@@ -190,7 +190,7 @@ class SupervisedUserURLFilter {
 
   // Gets all the allowlists that the url is part of. Returns id->name of each
   // allowlist.
-  std::map<std::string, base::string16> GetMatchingAllowlistTitles(
+  std::map<std::string, std::u16string> GetMatchingAllowlistTitles(
       const GURL& url) const;
 
   // Sets the filtering behavior for pages not on a list (default is ALLOW).

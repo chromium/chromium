@@ -65,7 +65,7 @@ class TestPlatformInputHandler : public PlatformInputHandler {
     web_input_text_requests.emplace(std::move(callback));
   }
 
-  void report_text_state(const base::string16& text) {
+  void report_text_state(const std::u16string& text) {
     while (!web_input_text_requests.empty()) {
       auto callback = std::move(web_input_text_requests.front());
       web_input_text_requests.pop();

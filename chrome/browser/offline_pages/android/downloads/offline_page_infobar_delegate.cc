@@ -32,8 +32,8 @@ void OfflinePageInfoBarDelegate::Create(base::OnceClosure confirm_continuation,
   // infobar.
   const size_t kMaxLengthOfDisplayedPageUrl = 150;
 
-  base::string16 formatted_url = url_formatter::FormatUrl(page_to_download);
-  base::string16 elided_url;
+  std::u16string formatted_url = url_formatter::FormatUrl(page_to_download);
+  std::u16string elided_url;
   gfx::ElideString(formatted_url, kMaxLengthOfDisplayedPageUrl, &elided_url);
 
   InfoBarService::FromWebContents(web_contents)

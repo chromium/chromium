@@ -55,7 +55,7 @@ class UsbChooserContext : public permissions::ChooserContextBase,
   void RevokeObjectPermission(const url::Origin& origin,
                               const base::Value& object) override;
   bool IsValidObject(const base::Value& object) override;
-  base::string16 GetObjectDisplayName(const base::Value& object) override;
+  std::u16string GetObjectDisplayName(const base::Value& object) override;
 
   // Grants |origin| access to the USB device.
   void GrantDevicePermission(const url::Origin& origin,

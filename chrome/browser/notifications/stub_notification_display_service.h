@@ -37,7 +37,7 @@ class StubNotificationDisplayService : public NotificationDisplayServiceImpl {
       const GURL& origin,
       const std::string& notification_id,
       const base::Optional<int>& action_index,
-      const base::Optional<base::string16>& reply,
+      const base::Optional<std::u16string>& reply,
       const base::Optional<bool>& by_user)>
       ProcessNotificationOperationCallback;
 
@@ -69,7 +69,7 @@ class StubNotificationDisplayService : public NotificationDisplayServiceImpl {
   void SimulateClick(NotificationHandler::Type notification_type,
                      const std::string& notification_id,
                      base::Optional<int> action_index,
-                     base::Optional<base::string16> reply);
+                     base::Optional<std::u16string> reply);
 
   // Simulates a click on the settings button of the notification identified by
   // |notification_id|.
@@ -107,7 +107,7 @@ class StubNotificationDisplayService : public NotificationDisplayServiceImpl {
       const GURL& origin,
       const std::string& notification_id,
       const base::Optional<int>& action_index,
-      const base::Optional<base::string16>& reply,
+      const base::Optional<std::u16string>& reply,
       const base::Optional<bool>& by_user) override;
 
  private:

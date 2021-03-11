@@ -436,7 +436,7 @@ bool OsIntegrationManager::UnregisterShortcutsMenu(const AppId& app_id) {
 void OsIntegrationManager::UnregisterRunOnOsLogin(
     const AppId& app_id,
     const base::FilePath& profile_path,
-    const base::string16& shortcut_title,
+    const std::u16string& shortcut_title,
     UnregisterRunOnOsLoginCallback callback) {
   ScheduleUnregisterRunOnOsLogin(app_id, profile_path, shortcut_title,
                                  std::move(callback));

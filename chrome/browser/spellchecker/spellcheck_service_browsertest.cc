@@ -314,7 +314,7 @@ class SpellcheckServiceHostBrowserTest : public SpellcheckServiceBrowserTest {
   }
 
   bool spelling_service_done_called_ = false;
-  base::string16 word_;
+  std::u16string word_;
 
   DISALLOW_COPY_AND_ASSIGN(SpellcheckServiceHostBrowserTest);
 };

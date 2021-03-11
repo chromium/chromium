@@ -92,7 +92,7 @@ TEST_F(NotificationPlatformBridgeMacUtilsTest, TestCreateNotificationTitle) {
       "Title", "Subtitle", "https://moe.example.com",
       message_center::NOTIFICATION_TYPE_SIMPLE, /*progress=*/0,
       /*contextMessage=*/base::nullopt);
-  base::string16 createdTitle = CreateMacNotificationTitle(notification);
+  std::u16string createdTitle = CreateMacNotificationTitle(notification);
   EXPECT_EQ(base::UTF8ToUTF16("Title"), createdTitle);
 }
 
@@ -102,7 +102,7 @@ TEST_F(NotificationPlatformBridgeMacUtilsTest,
       "Title", "Subtitle", "https://moe.example.com",
       message_center::NOTIFICATION_TYPE_PROGRESS, /*progress=*/50,
       /*contextMessage=*/base::nullopt);
-  base::string16 createdTitle = CreateMacNotificationTitle(notification);
+  std::u16string createdTitle = CreateMacNotificationTitle(notification);
   EXPECT_EQ(base::UTF8ToUTF16("50% - Title"), createdTitle);
 }
 
@@ -112,7 +112,7 @@ TEST_F(NotificationPlatformBridgeMacUtilsTest,
       "Title", "Subtitle", "https://moe.example.com",
       message_center::NOTIFICATION_TYPE_SIMPLE, /*progress=*/0,
       /*contextMessage=*/base::nullopt);
-  base::string16 createdContext = CreateMacNotificationContext(
+  std::u16string createdContext = CreateMacNotificationContext(
       /*isPersistent=*/false, notification, /*requiresAttribution=*/true);
   EXPECT_EQ(base::UTF8ToUTF16("moe.example.com"), createdContext);
 }
@@ -123,7 +123,7 @@ TEST_F(NotificationPlatformBridgeMacUtilsTest,
       "Title", "Subtitle", "https://moe.example.com",
       message_center::NOTIFICATION_TYPE_SIMPLE, /*progress=*/0,
       /*contextMessage=*/base::nullopt);
-  base::string16 createdContext = CreateMacNotificationContext(
+  std::u16string createdContext = CreateMacNotificationContext(
       /*isPersistent=*/true, notification, /*requiresAttribution=*/true);
   EXPECT_EQ(base::UTF8ToUTF16("moe.example.com"), createdContext);
 }
@@ -135,7 +135,7 @@ TEST_F(NotificationPlatformBridgeMacUtilsTest,
                          message_center::NOTIFICATION_TYPE_SIMPLE,
                          /*progress=*/0,
                          /*contextMessage=*/"moe");
-  base::string16 createdContext = CreateMacNotificationContext(
+  std::u16string createdContext = CreateMacNotificationContext(
       /*isPersistent=*/false, notification, /*requiresAttribution=*/false);
   EXPECT_EQ(base::UTF8ToUTF16("moe"), createdContext);
 }
@@ -147,7 +147,7 @@ TEST_F(NotificationPlatformBridgeMacUtilsTest,
       "https://thisisareallyreallyreaaalllyyylongorigin.moe.example.com/",
       message_center::NOTIFICATION_TYPE_SIMPLE, /*progress=*/0,
       /*contextMessage=*/base::nullopt);
-  base::string16 createdContext = CreateMacNotificationContext(
+  std::u16string createdContext = CreateMacNotificationContext(
       /*isPersistent=*/false, notification, /*requiresAttribution=*/true);
   EXPECT_EQ(base::UTF8ToUTF16("example.com"), createdContext);
 
@@ -165,7 +165,7 @@ TEST_F(NotificationPlatformBridgeMacUtilsTest,
       "Title", "Subtitle", "https://thisisalongorigin.moe.co.uk",
       message_center::NOTIFICATION_TYPE_SIMPLE, /*progress=*/0,
       /*contextMessage=*/base::nullopt);
-  base::string16 createdContext = CreateMacNotificationContext(
+  std::u16string createdContext = CreateMacNotificationContext(
       /*isPersistent=*/true, notification, /*requiresAttribution=*/true);
   EXPECT_EQ(base::UTF8ToUTF16("moe.co.uk"), createdContext);
 
@@ -181,7 +181,7 @@ TEST_F(NotificationPlatformBridgeMacUtilsTest,
       "Title", "Subtitle", "https://thisisareallylongorigin.moe.co.uk",
       message_center::NOTIFICATION_TYPE_SIMPLE, /*progress=*/0,
       /*contextMessage=*/base::nullopt);
-  base::string16 createdContext = CreateMacNotificationContext(
+  std::u16string createdContext = CreateMacNotificationContext(
       /*isPersistent=*/true, notification, /*requiresAttribution=*/true);
   EXPECT_EQ(base::UTF8ToUTF16("moe.co.uk"), createdContext);
 

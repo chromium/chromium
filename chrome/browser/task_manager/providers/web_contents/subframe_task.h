@@ -34,7 +34,7 @@ class SubframeTask : public RendererTask {
   Task* GetParentTask() const override;
 
  private:
-  base::string16 GetTitle();
+  std::u16string GetTitle();
 
   content::SiteInstance* site_instance_;
 

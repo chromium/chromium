@@ -56,11 +56,10 @@ class SpellingMenuObserver : public RenderViewContextMenuObserver {
 
   // A callback function called when the Spelling service finishes checking a
   // misspelled word.
-  void OnTextCheckComplete(
-      SpellingServiceClient::ServiceType type,
-      bool success,
-      const base::string16& text,
-      const std::vector<SpellCheckResult>& results);
+  void OnTextCheckComplete(SpellingServiceClient::ServiceType type,
+                           bool success,
+                           const std::u16string& text,
+                           const std::vector<SpellCheckResult>& results);
 
  private:
   // The callback function for base::RepeatingTimer. This function updates the
@@ -74,12 +73,12 @@ class SpellingMenuObserver : public RenderViewContextMenuObserver {
   // Suggested words from the local spellchecker. If the spelling service
   // returns a word in this list, we hide the context-menu item to prevent
   // showing the same word twice.
-  std::vector<base::string16> suggestions_;
+  std::vector<std::u16string> suggestions_;
 
   // The string used for animation until we receive a response from the Spelling
   // service. The current animation just adds periods at the end of this string:
   //   'Loading' -> 'Loading.' -> 'Loading..' -> 'Loading...' (-> 'Loading')
-  base::string16 loading_message_;
+  std::u16string loading_message_;
   size_t loading_frame_;
 
   // A flag represending whether a JSON-RPC call to the Spelling service
@@ -90,7 +89,7 @@ class SpellingMenuObserver : public RenderViewContextMenuObserver {
 
   // The misspelled word. When we choose the "Add to dictionary" item, we add
   // this word to the custom-word dictionary.
-  base::string16 misspelled_word_;
+  std::u16string misspelled_word_;
 
   // The string representing the result of this call. This string is a
   // suggestion when this call finished successfully. Otherwise it is error
@@ -98,7 +97,7 @@ class SpellingMenuObserver : public RenderViewContextMenuObserver {
   // stores the input string. (Since the Spelling service sends only misspelled
   // words, we replace these misspelled words in the input text with the
   // suggested words to create suggestion text.
-  base::string16 result_;
+  std::u16string result_;
 
   // The URLFetcher object used for sending a JSON-RPC request.
   std::unique_ptr<SpellingServiceClient> client_;

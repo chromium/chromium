@@ -41,19 +41,19 @@ AccessibilityLabelsBubbleModel::AccessibilityLabelsBubbleModel(
 
 AccessibilityLabelsBubbleModel::~AccessibilityLabelsBubbleModel() {}
 
-base::string16 AccessibilityLabelsBubbleModel::GetTitle() const {
+std::u16string AccessibilityLabelsBubbleModel::GetTitle() const {
   return l10n_util::GetStringUTF16(
       IDS_CONTENT_CONTEXT_ACCESSIBILITY_LABELS_DIALOG_TITLE);
 }
 
-base::string16 AccessibilityLabelsBubbleModel::GetMessageText() const {
+std::u16string AccessibilityLabelsBubbleModel::GetMessageText() const {
   return l10n_util::GetStringUTF16(
       enable_always_
           ? IDS_CONTENT_CONTEXT_ACCESSIBILITY_LABELS_BUBBLE_TEXT
           : IDS_CONTENT_CONTEXT_ACCESSIBILITY_LABELS_BUBBLE_TEXT_ONCE);
 }
 
-base::string16 AccessibilityLabelsBubbleModel::GetButtonLabel(
+std::u16string AccessibilityLabelsBubbleModel::GetButtonLabel(
     ui::DialogButton button) const {
   return l10n_util::GetStringUTF16(
       button == ui::DIALOG_BUTTON_OK
@@ -82,7 +82,7 @@ void AccessibilityLabelsBubbleModel::Cancel() {
   RecordModalDialogAccepted(/* not accepted */ false);
 }
 
-base::string16 AccessibilityLabelsBubbleModel::GetLinkText() const {
+std::u16string AccessibilityLabelsBubbleModel::GetLinkText() const {
   return l10n_util::GetStringUTF16(IDS_LEARN_MORE);
 }
 

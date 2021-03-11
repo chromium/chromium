@@ -123,8 +123,8 @@ ScopedJavaLocalRef<jobject> PasswordUIViewAndroid::GetSavedPasswordEntry(
   if (!form) {
     return Java_PasswordUIView_createSavedPasswordEntry(
         env, ConvertUTF8ToJavaString(env, std::string()),
-        ConvertUTF16ToJavaString(env, base::string16()),
-        ConvertUTF16ToJavaString(env, base::string16()));
+        ConvertUTF16ToJavaString(env, std::u16string()),
+        ConvertUTF16ToJavaString(env, std::u16string()));
   }
   return Java_PasswordUIView_createSavedPasswordEntry(
       env,

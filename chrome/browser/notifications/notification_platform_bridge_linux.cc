@@ -125,9 +125,9 @@ enum class ConnectionInitializationStatusCode {
   NUM_ITEMS
 };
 
-base::string16 CreateNotificationTitle(
+std::u16string CreateNotificationTitle(
     const message_center::Notification& notification) {
-  base::string16 title;
+  std::u16string title;
   if (notification.type() == message_center::NOTIFICATION_TYPE_PROGRESS) {
     title += base::FormatPercent(notification.progress());
     title += base::UTF8ToUTF16(" - ");
@@ -204,7 +204,7 @@ void ForwardNotificationOperationOnUiThread(
     const std::string& notification_id,
     const base::Optional<int>& action_index,
     const base::Optional<bool>& by_user,
-    const base::Optional<base::string16>& reply,
+    const base::Optional<std::u16string>& reply,
     const std::string& profile_id,
     bool is_incognito) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
@@ -691,7 +691,7 @@ class NotificationPlatformBridgeLinuxImpl
     // Even-indexed elements in this vector are action IDs passed back to
     // us in OnActionInvoked().  Odd-indexed ones contain the button text.
     std::vector<std::string> actions;
-    base::Optional<base::string16> inline_reply_placeholder;
+    base::Optional<std::u16string> inline_reply_placeholder;
     if (base::Contains(capabilities_, kCapabilityActions)) {
       const bool has_support_for_inline_reply =
           base::Contains(capabilities_, kCapabilityInlineReply);
@@ -898,7 +898,7 @@ class NotificationPlatformBridgeLinuxImpl
       NotificationCommon::Operation operation,
       const base::Optional<int>& action_index,
       const base::Optional<bool>& by_user,
-      const base::Optional<base::string16>& reply) {
+      const base::Optional<std::u16string>& reply) {
     DCHECK(task_runner_->RunsTasksInCurrentSequence());
     base::PostTask(
         location, {content::BrowserThread::UI},

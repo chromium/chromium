@@ -44,13 +44,13 @@ class MockApp : public PaymentApp {
   MOCK_CONST_METHOD0(IsCompleteForPayment, bool());
   MOCK_CONST_METHOD0(GetCompletenessScore, uint32_t());
   MOCK_CONST_METHOD0(CanPreselect, bool());
-  MOCK_CONST_METHOD0(GetMissingInfoLabel, base::string16());
+  MOCK_CONST_METHOD0(GetMissingInfoLabel, std::u16string());
   MOCK_CONST_METHOD0(HasEnrolledInstrument, bool());
   MOCK_METHOD0(RecordUse, void());
   MOCK_CONST_METHOD0(NeedsInstallation, bool());
   MOCK_CONST_METHOD0(GetId, std::string());
-  MOCK_CONST_METHOD0(GetLabel, base::string16());
-  MOCK_CONST_METHOD0(GetSublabel, base::string16());
+  MOCK_CONST_METHOD0(GetLabel, std::u16string());
+  MOCK_CONST_METHOD0(GetSublabel, std::u16string());
   MOCK_CONST_METHOD3(IsValidForModifier,
                      bool(const std::string& method,
                           bool supported_networks_specified,

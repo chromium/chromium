@@ -798,7 +798,7 @@ IN_PROC_BROWSER_TEST_F(ErrorPageAutoReloadTest,
 
   content::WebContents* web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
-  const base::string16 kExpectedTitle = base::ASCIIToUTF16("Test One");
+  const std::u16string kExpectedTitle = base::ASCIIToUTF16("Test One");
   content::TitleWatcher title_watcher(web_contents, kExpectedTitle);
 
   // Same-document navigation on an error page should not interrupt the

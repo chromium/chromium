@@ -469,7 +469,7 @@ IN_PROC_BROWSER_TEST_F(TwoClientAutofillProfileSyncTest, MaxLength) {
   AddProfile(0, CreateAutofillProfile(PROFILE_HOMER));
   ASSERT_TRUE(AutofillProfileChecker(0, 1, /*expected_count=*/1U).Wait());
 
-  base::string16 max_length_string(AutofillTable::kMaxDataLength, '.');
+  std::u16string max_length_string(AutofillTable::kMaxDataLength, '.');
   UpdateProfile(0, GetAllAutoFillProfiles(0)[0]->guid(),
                 AutofillType(autofill::NAME_FULL), max_length_string);
   UpdateProfile(0, GetAllAutoFillProfiles(0)[0]->guid(),
@@ -486,7 +486,7 @@ IN_PROC_BROWSER_TEST_F(TwoClientAutofillProfileSyncTest, ExceedsMaxLength) {
   AddProfile(0, CreateAutofillProfile(PROFILE_HOMER));
   ASSERT_TRUE(AutofillProfileChecker(0, 1, /*expected_count=*/1U).Wait());
 
-  base::string16 exceeds_max_length_string(AutofillTable::kMaxDataLength + 1,
+  std::u16string exceeds_max_length_string(AutofillTable::kMaxDataLength + 1,
                                            '.');
   UpdateProfile(0, GetAllAutoFillProfiles(0)[0]->guid(),
                 AutofillType(autofill::NAME_FIRST), exceeds_max_length_string);

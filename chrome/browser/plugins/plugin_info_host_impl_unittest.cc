@@ -188,7 +188,7 @@ TEST_F(PluginInfoHostImplTest, FindEnabledPlugin) {
     content::WebPluginInfo plugin;
     std::string actual_mime_type;
     std::string identifier;
-    base::string16 plugin_name;
+    std::u16string plugin_name;
     EXPECT_FALSE(context()->FindEnabledPlugin(0, GURL(), url::Origin(),
                                               "foo/bar", &status, &plugin,
                                               &actual_mime_type, NULL));

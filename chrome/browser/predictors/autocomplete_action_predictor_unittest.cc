@@ -43,9 +43,9 @@ namespace {
 
 struct TestUrlInfo {
   GURL url;
-  base::string16 title;
+  std::u16string title;
   int days_from_now;
-  base::string16 user_text;
+  std::u16string user_text;
   int number_of_hits;
   int number_of_misses;
   AutocompleteActionPredictor::Action expected_action;
@@ -72,7 +72,7 @@ const std::vector<TestUrlInfo>& TestUrlDb() {
         ASCIIToUTF16("Test - site - just a test"), 8, ASCIIToUTF16("just"), 3,
         0, AutocompleteActionPredictor::ACTION_PRERENDER},
        {GURL("http://www.testsite.com/g.html"),
-        ASCIIToUTF16("Test - site - just a test"), 12, base::string16(), 5, 0,
+        ASCIIToUTF16("Test - site - just a test"), 12, std::u16string(), 5, 0,
         AutocompleteActionPredictor::ACTION_NONE},
        {GURL("http://www.testsite.com/h.html"),
         ASCIIToUTF16("Test - site - just a test"), 21,
@@ -534,26 +534,26 @@ TEST_F(AutocompleteActionPredictorTest, RecommendActionSearch) {
 
 TEST_F(AutocompleteActionPredictorTest,
        RegisterTransitionalMatchesUserTextSizeLimits) {
-  auto test = [this](const base::string16& user_text,
+  auto test = [this](const std::u16string& user_text,
                      bool should_be_registered) {
     predictor()->RegisterTransitionalMatches(user_text, AutocompleteResult());
     bool registered = base::Contains(*transitional_matches(), user_text);
     EXPECT_EQ(registered, should_be_registered);
   };
 
-  base::string16 short_text =
+  std::u16string short_text =
       ASCIIToUTF16(std::string(minimum_user_text_length(), 'g'));
   test(short_text, true);
 
-  base::string16 too_short_text =
+  std::u16string too_short_text =
       ASCIIToUTF16(std::string(minimum_user_text_length() - 1, 'g'));
   test(too_short_text, false);
 
-  base::string16 long_text =
+  std::u16string long_text =
       ASCIIToUTF16(std::string(maximum_string_length(), 'g'));
   test(long_text, true);
 
-  base::string16 too_long_text =
+  std::u16string too_long_text =
       ASCIIToUTF16(std::string(maximum_string_length() + 1, 'g'));
   test(too_long_text, false);
 }
@@ -571,7 +571,7 @@ TEST_F(AutocompleteActionPredictorTest,
   }
   AutocompleteResult result;
   result.AppendMatches(AutocompleteInput(), matches);
-  base::string16 user_text = ASCIIToUTF16("google");
+  std::u16string user_text = ASCIIToUTF16("google");
   predictor()->RegisterTransitionalMatches(user_text, result);
   auto it = std::find(transitional_matches()->begin(),
                       transitional_matches()->end(), user_text);

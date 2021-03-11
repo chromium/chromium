@@ -49,7 +49,7 @@ void FakeDesktopMediaList::SetSourceThumbnail(int index) {
   observer_->OnSourceThumbnailChanged(this, index);
 }
 
-void FakeDesktopMediaList::SetSourceName(int index, base::string16 name) {
+void FakeDesktopMediaList::SetSourceName(int index, std::u16string name) {
   sources_[index].name = name;
   observer_->OnSourceNameChanged(this, index);
 }

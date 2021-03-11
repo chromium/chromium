@@ -66,9 +66,9 @@ class SharesheetService : public KeyedService {
                   SharesheetMetrics::LaunchSource source,
                   CloseCallback close_callback);
   void OnBubbleClosed(gfx::NativeWindow native_window,
-                      const base::string16& active_action);
+                      const std::u16string& active_action);
   void OnTargetSelected(gfx::NativeWindow native_window,
-                        const base::string16& target_name,
+                        const std::u16string& target_name,
                         const TargetType type,
                         apps::mojom::IntentPtr intent,
                         views::View* share_action_view);
@@ -81,9 +81,9 @@ class SharesheetService : public KeyedService {
   bool HasShareTargets(const apps::mojom::IntentPtr& intent,
                        bool contains_hosted_document);
   Profile* GetProfile();
-  const gfx::VectorIcon* GetVectorIcon(const base::string16& display_name);
+  const gfx::VectorIcon* GetVectorIcon(const std::u16string& display_name);
 
-  static void SetSelectedAppForTesting(const base::string16& target_name);
+  static void SetSelectedAppForTesting(const std::u16string& target_name);
 
  private:
   using SharesheetServiceIconLoaderCallback =
@@ -94,7 +94,7 @@ class SharesheetService : public KeyedService {
                     size_t index,
                     SharesheetServiceIconLoaderCallback callback);
 
-  void LaunchApp(const base::string16& target_name,
+  void LaunchApp(const std::u16string& target_name,
                  apps::mojom::IntentPtr intent);
 
   void OnIconLoaded(std::vector<apps::IntentLaunchInfo> intent_launch_info,
@@ -113,7 +113,7 @@ class SharesheetService : public KeyedService {
                               bool contains_hosted_document,
                               CloseCallback close_callback);
 
-  void RecordActionMetrics(const base::string16& target_name);
+  void RecordActionMetrics(const std::u16string& target_name);
 
   Profile* profile_;
   std::unique_ptr<SharesheetActionCache> sharesheet_action_cache_;

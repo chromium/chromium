@@ -74,7 +74,7 @@ namespace {
 using PrintSettingsCallback =
     base::OnceCallback<void(std::unique_ptr<PrinterQuery>)>;
 
-void ShowWarningMessageBox(const base::string16& message) {
+void ShowWarningMessageBox(const std::u16string& message) {
   // Runs always on the UI thread.
   static bool is_dialog_shown = false;
   if (is_dialog_shown)
@@ -82,7 +82,7 @@ void ShowWarningMessageBox(const base::string16& message) {
   // Block opening dialog from nested task.
   base::AutoReset<bool> auto_reset(&is_dialog_shown, true);
 
-  chrome::ShowWarningMessageBox(nullptr, base::string16(), message);
+  chrome::ShowWarningMessageBox(nullptr, std::u16string(), message);
 }
 
 #if BUILDFLAG(ENABLE_PRINT_PREVIEW)
@@ -497,8 +497,8 @@ void PrintViewManagerBase::NavigationStopped() {
   TerminatePrintJob(true);
 }
 
-base::string16 PrintViewManagerBase::RenderSourceName() {
-  base::string16 name(web_contents()->GetTitle());
+std::u16string PrintViewManagerBase::RenderSourceName() {
+  std::u16string name(web_contents()->GetTitle());
   if (name.empty())
     name = l10n_util::GetStringUTF16(IDS_DEFAULT_PRINT_DOCUMENT_TITLE);
   return name;

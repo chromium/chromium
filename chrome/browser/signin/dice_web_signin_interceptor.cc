@@ -472,7 +472,7 @@ void DiceWebSigninInterceptor::OnProfileCreationChoice(
 
   DCHECK(interception_bubble_handle_);
   profile_creation_start_time_ = base::TimeTicks::Now();
-  base::string16 profile_name;
+  std::u16string profile_name;
   profile_name = profiles::GetDefaultNameForNewSignedInProfile(account_info);
 
   DCHECK(!dice_signed_in_profile_creator_);

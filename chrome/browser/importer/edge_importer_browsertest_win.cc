@@ -72,7 +72,7 @@ class TestObserver : public ProfileWriter,
   bool TemplateURLServiceIsLoaded() const override { return true; }
 
   void AddBookmarks(const std::vector<ImportedBookmarkEntry>& bookmarks,
-                    const base::string16& top_level_folder_name) override {
+                    const std::u16string& top_level_folder_name) override {
     ASSERT_EQ(expected_bookmark_entries_.size(), bookmarks.size());
     for (size_t i = 0; i < bookmarks.size(); ++i) {
       EXPECT_NO_FATAL_FAILURE(

@@ -14,7 +14,7 @@
 
 PasswordManagerInfoBarDelegate::~PasswordManagerInfoBarDelegate() = default;
 
-base::string16 PasswordManagerInfoBarDelegate::GetDetailsMessageText() const {
+std::u16string PasswordManagerInfoBarDelegate::GetDetailsMessageText() const {
   return details_message_;
 }
 
@@ -42,17 +42,17 @@ bool PasswordManagerInfoBarDelegate::LinkClicked(
   return true;
 }
 
-base::string16 PasswordManagerInfoBarDelegate::GetMessageText() const {
+std::u16string PasswordManagerInfoBarDelegate::GetMessageText() const {
   return message_;
 }
 
 PasswordManagerInfoBarDelegate::PasswordManagerInfoBarDelegate() = default;
 
-void PasswordManagerInfoBarDelegate::SetMessage(const base::string16& message) {
+void PasswordManagerInfoBarDelegate::SetMessage(const std::u16string& message) {
   message_ = message;
 }
 
 void PasswordManagerInfoBarDelegate::SetDetailsMessage(
-    const base::string16& details_message) {
+    const std::u16string& details_message) {
   details_message_ = details_message;
 }

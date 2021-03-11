@@ -72,7 +72,7 @@ HidChooserContext::~HidChooserContext() {
 }
 
 // static
-base::string16 HidChooserContext::DisplayNameFromDeviceInfo(
+std::u16string HidChooserContext::DisplayNameFromDeviceInfo(
     const device::mojom::HidDeviceInfo& device) {
   auto vendor_id_string =
       base::ASCIIToUTF16(base::StringPrintf("0x%04x", device.vendor_id));
@@ -93,7 +93,7 @@ bool HidChooserContext::CanStorePersistentEntry(
   return !device.serial_number.empty() && !device.product_name.empty();
 }
 
-base::string16 HidChooserContext::GetObjectDisplayName(
+std::u16string HidChooserContext::GetObjectDisplayName(
     const base::Value& object) {
   const std::string* name = object.FindStringKey(kHidDeviceNameKey);
   DCHECK(name);

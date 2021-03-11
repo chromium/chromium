@@ -28,7 +28,7 @@ class SpellCheckMockPanelHost : public spellcheck::mojom::SpellCheckPanelHost {
   // spellcheck::mojom::SpellCheckPanelHost:
   void ShowSpellingPanel(bool show) override;
   void UpdateSpellingPanelWithMisspelledWord(
-      const base::string16& word) override;
+      const std::u16string& word) override;
 
   mojo::ReceiverSet<spellcheck::mojom::SpellCheckPanelHost> receivers_;
   content::RenderProcessHost* process_host_;

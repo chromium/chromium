@@ -34,8 +34,8 @@ namespace sharesheet {
 
 namespace {
 
-base::string16& GetSelectedApp() {
-  static base::NoDestructor<base::string16> selected_app;
+std::u16string& GetSelectedApp() {
+  static base::NoDestructor<std::u16string> selected_app;
 
   return *selected_app;
 }
@@ -76,7 +76,7 @@ void SharesheetService::ShowBubble(content::WebContents* web_contents,
 
 // Cleanup delegate when bubble closes.
 void SharesheetService::OnBubbleClosed(gfx::NativeWindow native_window,
-                                       const base::string16& active_action) {
+                                       const std::u16string& active_action) {
   auto iter = active_delegates_.begin();
   while (iter != active_delegates_.end()) {
     if ((*iter)->GetNativeWindow() == native_window) {
@@ -94,7 +94,7 @@ void SharesheetService::OnBubbleClosed(gfx::NativeWindow native_window,
 }
 
 void SharesheetService::OnTargetSelected(gfx::NativeWindow native_window,
-                                         const base::string16& target_name,
+                                         const std::u16string& target_name,
                                          const TargetType type,
                                          apps::mojom::IntentPtr intent,
                                          views::View* share_action_view) {
@@ -155,13 +155,13 @@ Profile* SharesheetService::GetProfile() {
 }
 
 const gfx::VectorIcon* SharesheetService::GetVectorIcon(
-    const base::string16& display_name) {
+    const std::u16string& display_name) {
   return sharesheet_action_cache_->GetVectorIconFromName(display_name);
 }
 
 // static
 void SharesheetService::SetSelectedAppForTesting(
-    const base::string16& target_name) {
+    const std::u16string& target_name) {
   GetSelectedApp() = target_name;
 }
 
@@ -190,7 +190,7 @@ void SharesheetService::LoadAppIcons(
                      std::move(targets), index, std::move(callback)));
 }
 
-void SharesheetService::LaunchApp(const base::string16& target_name,
+void SharesheetService::LaunchApp(const std::u16string& target_name,
                                   apps::mojom::IntentPtr intent) {
   auto launch_source = apps::mojom::LaunchSource::kFromSharesheet;
   app_service_proxy_->LaunchAppWithIntent(
@@ -228,7 +228,7 @@ void SharesheetService::OnAppIconsLoaded(SharesheetServiceDelegate* delegate,
                                          CloseCallback close_callback,
                                          std::vector<TargetInfo> targets) {
   // If SetSelectedAppForTesting() has been called, immediately launch the app.
-  const base::string16 selected_app = GetSelectedApp();
+  const std::u16string selected_app = GetSelectedApp();
   if (!selected_app.empty()) {
     SharesheetResult result = SharesheetResult::kCancel;
     auto iter = std::find_if(targets.begin(), targets.end(),
@@ -242,7 +242,7 @@ void SharesheetService::OnAppIconsLoaded(SharesheetServiceDelegate* delegate,
     }
 
     std::move(close_callback).Run(result);
-    delegate->OnBubbleClosed(/*active_action=*/base::string16());
+    delegate->OnBubbleClosed(/*active_action=*/std::u16string());
     return;
   }
 
@@ -277,7 +277,7 @@ void SharesheetService::ShowBubbleWithDelegate(
                               std::move(intent), std::move(close_callback)));
 }
 
-void SharesheetService::RecordActionMetrics(const base::string16& target_name) {
+void SharesheetService::RecordActionMetrics(const std::u16string& target_name) {
   if (target_name == l10n_util::GetStringUTF16(IDS_NEARBY_SHARE_FEATURE_NAME)) {
     SharesheetMetrics::RecordSharesheetActionMetrics(
         SharesheetMetrics::UserAction::kNearbyAction);

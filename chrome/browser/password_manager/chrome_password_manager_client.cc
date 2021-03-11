@@ -434,7 +434,7 @@ void ChromePasswordManagerClient::ShowTouchToFill(
 
 #if defined(OS_ANDROID)
 void ChromePasswordManagerClient::OnPasswordSelected(
-    const base::string16& text) {
+    const std::u16string& text) {
   password_reuse_detection_manager_.OnPaste(text);
 }
 #endif
@@ -559,7 +559,7 @@ void ChromePasswordManagerClient::NotifyUserCredentialsWereLeaked(
     password_manager::CredentialLeakType leak_type,
     password_manager::CompromisedSitesCount saved_sites,
     const GURL& origin,
-    const base::string16& username) {
+    const std::u16string& username) {
 #if defined(OS_ANDROID)
   if (base::FeatureList::IsEnabled(
           password_manager::features::kPasswordScriptsFetching) &&
@@ -971,7 +971,7 @@ void ChromePasswordManagerClient::ShowPasswordEditingPopup(
     const gfx::RectF& bounds,
     const autofill::FormData& form_data,
     autofill::FieldRendererId field_renderer_id,
-    const base::string16& password_value) {
+    const std::u16string& password_value) {
   if (!password_manager::bad_message::CheckChildProcessSecurityPolicyForURL(
           password_generation_driver_receivers_.GetCurrentTargetFrame(),
           form_data.url,
@@ -984,7 +984,7 @@ void ChromePasswordManagerClient::ShowPasswordEditingPopup(
           password_generation_driver_receivers_.GetCurrentTargetFrame(),
           bounds));
   autofill::password_generation::PasswordGenerationUIData ui_data(
-      bounds, /*max_length=*/0, /*generation_element=*/base::string16(),
+      bounds, /*max_length=*/0, /*generation_element=*/std::u16string(),
       field_renderer_id, /*is_generation_element_password_type=*/true,
       base::i18n::TextDirection(), form_data);
   popup_controller_ = PasswordGenerationPopupControllerImpl::GetOrCreate(
@@ -1004,7 +1004,7 @@ void ChromePasswordManagerClient::PasswordGenerationRejectedByTyping() {
 
 void ChromePasswordManagerClient::PresaveGeneratedPassword(
     const autofill::FormData& form_data,
-    const base::string16& password_value) {
+    const std::u16string& password_value) {
   if (!password_manager::bad_message::CheckChildProcessSecurityPolicyForURL(
           password_generation_driver_receivers_.GetCurrentTargetFrame(),
           form_data.url,
@@ -1054,12 +1054,12 @@ void ChromePasswordManagerClient::GenerationElementLostFocus() {
 
 #if defined(OS_ANDROID)
 void ChromePasswordManagerClient::OnImeTextCommittedEvent(
-    const base::string16& text_str) {
+    const std::u16string& text_str) {
   password_reuse_detection_manager_.OnKeyPressedCommitted(text_str);
 }
 
 void ChromePasswordManagerClient::OnImeSetComposingTextEvent(
-    const base::string16& text_str) {
+    const std::u16string& text_str) {
   last_composing_text_ = text_str;
   password_reuse_detection_manager_.OnKeyPressedUncommitted(
       last_composing_text_);
@@ -1252,7 +1252,7 @@ void ChromePasswordManagerClient::WebContentsDestroyed() {
 
 #if !defined(OS_ANDROID)
 void ChromePasswordManagerClient::OnPaste() {
-  base::string16 text;
+  std::u16string text;
   bool used_crosapi_workaround = false;
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
   // On Lacros, the ozone/wayland clipboard implementation is asynchronous by

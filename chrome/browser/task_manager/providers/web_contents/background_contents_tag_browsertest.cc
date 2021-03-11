@@ -32,7 +32,7 @@ class BackgroundContentsTagTest : public extensions::ExtensionBrowserTest {
     return extension;
   }
 
-  base::string16 GetBackgroundTaskExpectedName(
+  std::u16string GetBackgroundTaskExpectedName(
       const extensions::Extension* extension) {
     return l10n_util::GetStringFUTF16(IDS_TASK_MANAGER_BACKGROUND_APP_PREFIX,
                                       base::UTF8ToUTF16(extension->name()));

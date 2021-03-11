@@ -136,7 +136,7 @@ void NotificationDisplayServiceImpl::ProcessNotificationOperation(
     const GURL& origin,
     const std::string& notification_id,
     const base::Optional<int>& action_index,
-    const base::Optional<base::string16>& reply,
+    const base::Optional<std::u16string>& reply,
     const base::Optional<bool>& by_user) {
   NotificationHandler* handler = GetNotificationHandler(notification_type);
   DCHECK(handler);
@@ -273,7 +273,7 @@ void NotificationDisplayServiceImpl::ProfileLoadedCallback(
     const GURL& origin,
     const std::string& notification_id,
     const base::Optional<int>& action_index,
-    const base::Optional<base::string16>& reply,
+    const base::Optional<std::u16string>& reply,
     const base::Optional<bool>& by_user,
     Profile* profile) {
   if (!profile) {

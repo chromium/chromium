@@ -110,7 +110,7 @@ class TaskManagerBrowserTest : public extensions::ExtensionBrowserTest {
         base::FilePath(kTitle1File));
   }
 
-  int FindResourceIndex(const base::string16& title) {
+  int FindResourceIndex(const std::u16string& title) {
     for (int i = 0; i < model_->GetRowCount(); ++i) {
       if (title == model_->GetRowTitle(i))
         return i;

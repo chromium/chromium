@@ -42,7 +42,7 @@ void SharesheetServiceDelegate::ShowBubble(
 }
 
 void SharesheetServiceDelegate::OnBubbleClosed(
-    const base::string16& active_action) {
+    const std::u16string& active_action) {
   sharesheet_bubble_view_.release();
   sharesheet_service_->OnBubbleClosed(native_window_, active_action);
   // This object is now deleted and nothing can be accessed any more.
@@ -54,7 +54,7 @@ void SharesheetServiceDelegate::OnActionLaunched() {
 }
 
 void SharesheetServiceDelegate::OnTargetSelected(
-    const base::string16& target_name,
+    const std::u16string& target_name,
     const TargetType type,
     apps::mojom::IntentPtr intent,
     views::View* share_action_view) {
@@ -82,7 +82,7 @@ void SharesheetServiceDelegate::CloseSharesheet() {
 }
 
 const gfx::VectorIcon* SharesheetServiceDelegate::GetVectorIcon(
-    const base::string16& display_name) {
+    const std::u16string& display_name) {
   return sharesheet_service_->GetVectorIcon(display_name);
 }
 

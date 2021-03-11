@@ -71,7 +71,7 @@ void PolicyTest::CheckURLIsBlockedInWebContents(
     const GURL& url) {
   EXPECT_EQ(url, web_contents->GetURL());
 
-  base::string16 blocked_page_title;
+  std::u16string blocked_page_title;
   if (url.has_host()) {
     blocked_page_title = base::UTF8ToUTF16(url.host());
   } else {

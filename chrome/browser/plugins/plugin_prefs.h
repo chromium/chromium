@@ -49,7 +49,7 @@ class PluginPrefs : public RefcountedKeyedService {
 
   // Returns whether there is a policy enabling or disabling plugins of the
   // given name.
-  PolicyStatus PolicyStatusForPlugin(const base::string16& name) const;
+  PolicyStatus PolicyStatusForPlugin(const std::u16string& name) const;
 
   // Returns whether the plugin is enabled or not.
   bool IsPluginEnabled(const content::WebPluginInfo& plugin) const;

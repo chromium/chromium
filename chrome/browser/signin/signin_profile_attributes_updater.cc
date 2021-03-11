@@ -67,7 +67,7 @@ void SigninProfileAttributesUpdater::UpdateProfileAttributes() {
 
   if (clear_profile) {
     entry->SetLocalAuthCredentials(std::string());
-    entry->SetAuthInfo(std::string(), base::string16(),
+    entry->SetAuthInfo(std::string(), std::u16string(),
                        /*is_consented_primary_account=*/false);
     if (!signin_util::IsForceSigninEnabled())
       entry->SetIsSigninRequired(false);

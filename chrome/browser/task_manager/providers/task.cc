@@ -34,7 +34,7 @@ base::ProcessId DetermineProcessId(base::ProcessHandle handle,
 
 }  // namespace
 
-Task::Task(const base::string16& title,
+Task::Task(const std::u16string& title,
            const gfx::ImageSkia* icon,
            base::ProcessHandle handle,
            base::ProcessId process_id)
@@ -53,14 +53,14 @@ Task::Task(const base::string16& title,
 Task::~Task() = default;
 
 // static
-base::string16 Task::GetProfileNameFromProfile(Profile* profile) {
+std::u16string Task::GetProfileNameFromProfile(Profile* profile) {
   DCHECK(profile);
   ProfileAttributesEntry* entry =
       g_browser_process->profile_manager()
           ->GetProfileAttributesStorage()
           .GetProfileAttributesWithPath(
               profile->GetOriginalProfile()->GetPath());
-  return entry ? entry->GetName() : base::string16();
+  return entry ? entry->GetName() : std::u16string();
 }
 
 void Task::Activate() {
@@ -138,8 +138,8 @@ void Task::GetTerminationStatus(base::TerminationStatus* out_status,
   *out_error_code = 0;
 }
 
-base::string16 Task::GetProfileName() const {
-  return base::string16();
+std::u16string Task::GetProfileName() const {
+  return std::u16string();
 }
 
 SessionID Task::GetTabId() const {

@@ -36,14 +36,14 @@ class PrefetchNotificationServiceImpl : public PrefetchNotificationService {
 
  private:
   // PrefetchNotificationService implementation.
-  void Schedule(const base::string16& title,
-                const base::string16& body) override;
+  void Schedule(const std::u16string& title,
+                const std::u16string& body) override;
   void OnClick() override;
   void GetThrottleConfig(ThrottleConfigCallback callback) override;
 
   // Called after querying the client status, and execute schedule actual task.
-  void ScheduleInternal(const base::string16& title,
-                        const base::string16& body,
+  void ScheduleInternal(const std::u16string& title,
+                        const std::u16string& body,
                         notifications::ClientOverview);
   // Called when client_overview is queried, and determine the custom throttle
   // config.

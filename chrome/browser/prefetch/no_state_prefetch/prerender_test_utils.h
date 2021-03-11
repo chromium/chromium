@@ -313,10 +313,10 @@ class PrerenderInProcessBrowserTest : virtual public InProcessBrowserTest {
   const base::HistogramTester& histogram_tester() { return histogram_tester_; }
 
   // Returns a string for pattern-matching TaskManager tab entries.
-  base::string16 MatchTaskManagerTab(const char* page_title);
+  std::u16string MatchTaskManagerTab(const char* page_title);
 
   // Returns a string for pattern-matching TaskManager prerender entries.
-  base::string16 MatchTaskManagerPrerender(const char* page_title);
+  std::u16string MatchTaskManagerPrerender(const char* page_title);
 
   // Returns a GURL for an EmbeddedTestServer that will serves the file
   // |url_file| with |replacement_text| replacing |replacement_variable|.

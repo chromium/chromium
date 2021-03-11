@@ -40,8 +40,8 @@ struct ShortcutInfo {
   // is still used to generate the app id (windows app id, not chrome app id).
   // TODO(loyso): Rename it to app_id.
   std::string extension_id;
-  base::string16 title;
-  base::string16 description;
+  std::u16string title;
+  std::u16string description;
   gfx::ImageFamily favicon;
   base::FilePath profile_path;
   std::string profile_name;
@@ -183,7 +183,7 @@ void DeleteMultiProfileShortcutsForApp(const std::string& app_id);
 // platform specific implementation of the UpdateAllShortcuts function, and
 // is executed on the FILE thread.
 void UpdatePlatformShortcuts(const base::FilePath& shortcut_data_path,
-                             const base::string16& old_app_title,
+                             const std::u16string& old_app_title,
                              const ShortcutInfo& shortcut_info);
 
 // Run an IO task on a worker thread. Ownership of |shortcut_info| transfers

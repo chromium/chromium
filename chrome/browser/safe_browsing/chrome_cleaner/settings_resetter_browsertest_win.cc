@@ -54,7 +54,7 @@ Profile* CreateProfile() {
       profile_manager->GenerateNextProfileDirectoryPath(),
       base::BindRepeating(&CreateProfileCallback, &profile,
                           run_loop.QuitClosure()),
-      base::string16(), std::string());
+      std::u16string(), std::string());
   run_loop.Run();
   return profile;
 }

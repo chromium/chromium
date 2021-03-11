@@ -361,8 +361,8 @@ bool AuthenticateUser(gfx::NativeWindow window,
   // Build the strings to display in the credential UI.  If these strings are
   // left empty on domain joined machines, CredUIPromptForWindowsCredentials()
   // fails to run.
-  base::string16 product_name = l10n_util::GetStringUTF16(IDS_PRODUCT_NAME);
-  base::string16 password_prompt;
+  std::u16string product_name = l10n_util::GetStringUTF16(IDS_PRODUCT_NAME);
+  std::u16string password_prompt;
   switch (purpose) {
     case password_manager::ReauthPurpose::VIEW_PASSWORD:
       password_prompt =

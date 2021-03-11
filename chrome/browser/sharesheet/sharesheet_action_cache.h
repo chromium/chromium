@@ -32,7 +32,7 @@ class SharesheetActionCache {
   SharesheetActionCache(const SharesheetActionCache&) = delete;
   SharesheetActionCache& operator=(const SharesheetActionCache&) = delete;
 
-  ShareAction* GetActionFromName(const base::string16& action_name);
+  ShareAction* GetActionFromName(const std::u16string& action_name);
 
   const std::vector<std::unique_ptr<ShareAction>>& GetShareActions();
 
@@ -41,7 +41,7 @@ class SharesheetActionCache {
 
   // Returns null if |display_name| is not a valid ShareAction.
   const gfx::VectorIcon* GetVectorIconFromName(
-      const base::string16& display_name);
+      const std::u16string& display_name);
 
  private:
   void AddShareAction(std::unique_ptr<ShareAction> action);

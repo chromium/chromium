@@ -50,7 +50,7 @@ void MockRenderViewContextMenu::ExecuteCommand(int command_id,
 }
 
 void MockRenderViewContextMenu::AddMenuItem(int command_id,
-                                            const base::string16& title) {
+                                            const std::u16string& title) {
   MockMenuItem item;
   item.command_id = command_id;
   item.enabled = observer_->IsCommandIdEnabled(command_id);
@@ -62,7 +62,7 @@ void MockRenderViewContextMenu::AddMenuItem(int command_id,
 
 void MockRenderViewContextMenu::AddMenuItemWithIcon(
     int command_id,
-    const base::string16& title,
+    const std::u16string& title,
     const ui::ImageModel& icon) {
   MockMenuItem item;
   item.command_id = command_id;
@@ -75,7 +75,7 @@ void MockRenderViewContextMenu::AddMenuItemWithIcon(
 }
 
 void MockRenderViewContextMenu::AddCheckItem(int command_id,
-                                             const base::string16& title) {
+                                             const std::u16string& title) {
   MockMenuItem item;
   item.command_id = command_id;
   item.enabled = observer_->IsCommandIdEnabled(command_id);
@@ -95,7 +95,7 @@ void MockRenderViewContextMenu::AddSeparator() {
 }
 
 void MockRenderViewContextMenu::AddSubMenu(int command_id,
-                                           const base::string16& label,
+                                           const std::u16string& label,
                                            ui::MenuModel* model) {
   MockMenuItem item;
   item.command_id = command_id;
@@ -147,7 +147,7 @@ void MockRenderViewContextMenu::AppendSubMenuItems(ui::MenuModel* model) {
 void MockRenderViewContextMenu::UpdateMenuItem(int command_id,
                                                bool enabled,
                                                bool hidden,
-                                               const base::string16& title) {
+                                               const std::u16string& title) {
   for (auto& item : items_) {
     if (item.command_id == command_id) {
       item.enabled = enabled;

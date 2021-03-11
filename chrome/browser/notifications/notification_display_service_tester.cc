@@ -135,7 +135,7 @@ void NotificationDisplayServiceTester::SimulateClick(
     NotificationHandler::Type notification_type,
     const std::string& notification_id,
     base::Optional<int> action_index,
-    base::Optional<base::string16> reply) {
+    base::Optional<std::u16string> reply) {
   display_service_->SimulateClick(notification_type, notification_id,
                                   std::move(action_index), std::move(reply));
 }

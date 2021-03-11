@@ -87,7 +87,7 @@ const char kXmlVersionHeader[] = "<?xml version=\"1.0\"?>\n";
 
 // Formats the |origin| for display in the notification template.
 std::string FormatOrigin(const GURL& origin) {
-  base::string16 origin_string = url_formatter::FormatOriginForSecurityDisplay(
+  std::u16string origin_string = url_formatter::FormatOriginForSecurityDisplay(
       url::Origin::Create(origin),
       url_formatter::SchemeDisplay::OMIT_HTTP_AND_HTTPS);
   DCHECK(origin_string.size());

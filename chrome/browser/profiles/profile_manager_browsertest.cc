@@ -318,7 +318,7 @@ IN_PROC_BROWSER_TEST_F(ProfileManagerBrowserTest, DeleteInactiveProfile) {
   base::RunLoop run_loop;
   profile_manager->CreateProfileAsync(
       new_path, base::BindRepeating(&OnUnblockOnProfileCreation, &run_loop),
-      base::string16(), std::string());
+      std::u16string(), std::string());
   run_loop.Run();
 
   ASSERT_EQ(2u, storage.GetNumberOfProfiles());
@@ -348,7 +348,7 @@ IN_PROC_BROWSER_TEST_F(ProfileManagerBrowserTest, DeleteCurrentProfile) {
   base::RunLoop run_loop;
   profile_manager->CreateProfileAsync(
       new_path, base::BindRepeating(&OnUnblockOnProfileCreation, &run_loop),
-      base::string16(), std::string());
+      std::u16string(), std::string());
   run_loop.Run();
 
   ASSERT_EQ(2u, storage.GetNumberOfProfiles());
@@ -378,7 +378,7 @@ IN_PROC_BROWSER_TEST_F(ProfileManagerBrowserTest, DeleteAllProfiles) {
   base::RunLoop run_loop;
   profile_manager->CreateProfileAsync(
       new_path, base::BindRepeating(&OnUnblockOnProfileCreation, &run_loop),
-      base::string16(), std::string());
+      std::u16string(), std::string());
 
   // Run the message loop to allow profile creation to take place; the loop is
   // terminated by OnUnblockOnProfileCreation when the profile is created.
@@ -422,7 +422,7 @@ IN_PROC_BROWSER_TEST_F(ProfileManagerBrowserTest, ProfileFromProfileKey) {
   base::RunLoop run_loop;
   profile_manager->CreateProfileAsync(
       new_path, base::BindRepeating(&OnUnblockOnProfileCreation, &run_loop),
-      base::string16(), std::string());
+      std::u16string(), std::string());
 
   // Run the message loop to allow profile creation to take place; the loop is
   // terminated by OnUnblockOnProfileCreation when the profile is created.
@@ -498,7 +498,7 @@ IN_PROC_BROWSER_TEST_F(ProfileManagerBrowserTest,
   // invoked (so they can do things like sign in the profile, etc).
   base::RunLoop run_loop;
   ProfileManager::CreateMultiProfileAsync(
-      base::string16(),  // name
+      std::u16string(),  // name
       std::string(),     // icon url
       base::BindRepeating(&ProfileCreationComplete,
                           run_loop.QuitWhenIdleClosure()));
@@ -536,7 +536,7 @@ IN_PROC_BROWSER_TEST_F(ProfileManagerBrowserTest, SwitchToProfile) {
   profile_manager->CreateProfileAsync(
       path_profile2,
       base::BindRepeating(&OnUnblockOnProfileCreation, &run_loop),
-      base::string16(), std::string());
+      std::u16string(), std::string());
 
   // Run the message loop to allow profile creation to take place; the loop is
   // terminated by OnUnblockOnProfileCreation when the profile is created.
@@ -587,7 +587,7 @@ IN_PROC_BROWSER_TEST_F(ProfileManagerBrowserTest, PRE_AddMultipleProfiles) {
   profile_manager->CreateProfileAsync(
       path_profile2,
       base::BindRepeating(&OnUnblockOnProfileCreation, &run_loop),
-      base::string16(), std::string());
+      std::u16string(), std::string());
   // Run the message loop to allow profile creation to take place; the loop is
   // terminated by OnUnblockOnProfileCreation when the profile is created.
   run_loop.Run();
@@ -640,7 +640,7 @@ IN_PROC_BROWSER_TEST_F(ProfileManagerBrowserTest, MAYBE_EphemeralProfile) {
       path_profile2,
       base::BindRepeating(&EphemeralProfileCreationComplete,
                           run_loop.QuitWhenIdleClosure()),
-      base::string16(), std::string());
+      std::u16string(), std::string());
   run_loop.Run();
 
   BrowserList* browser_list = BrowserList::GetInstance();
@@ -801,7 +801,7 @@ IN_PROC_BROWSER_TEST_F(ProfileManagerEphemeralGuestProfileBrowserTest,
       ephemeral_profile_path,
       base::BindRepeating(&EphemeralProfileCreationComplete,
                           run_loop.QuitWhenIdleClosure()),
-      base::string16(), std::string());
+      std::u16string(), std::string());
   run_loop.Run();
 
   // Create an ephemeral guest profile.
@@ -811,7 +811,7 @@ IN_PROC_BROWSER_TEST_F(ProfileManagerEphemeralGuestProfileBrowserTest,
       guest_path,
       base::BindRepeating(&ProfileCreationComplete,
                           run_loop2.QuitWhenIdleClosure()),
-      base::string16(), std::string());
+      std::u16string(), std::string());
   run_loop2.Run();
   Profile* guest = profile_manager->GetProfileByPath(guest_path);
   EXPECT_TRUE(guest->IsEphemeralGuestProfile());

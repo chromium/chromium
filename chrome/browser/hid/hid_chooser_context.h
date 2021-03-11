@@ -52,7 +52,7 @@ class HidChooserContext : public permissions::ChooserContextBase,
   ~HidChooserContext() override;
 
   // Returns a human-readable string identifier for |device|.
-  static base::string16 DisplayNameFromDeviceInfo(
+  static std::u16string DisplayNameFromDeviceInfo(
       const device::mojom::HidDeviceInfo& device);
 
   // Returns true if a persistent permission can be granted for |device|.
@@ -68,7 +68,7 @@ class HidChooserContext : public permissions::ChooserContextBase,
   std::vector<std::unique_ptr<Object>> GetAllGrantedObjects() override;
   void RevokeObjectPermission(const url::Origin& origin,
                               const base::Value& object) override;
-  base::string16 GetObjectDisplayName(const base::Value& object) override;
+  std::u16string GetObjectDisplayName(const base::Value& object) override;
 
   // HID-specific interface for granting and checking permissions.
   void GrantDevicePermission(const url::Origin& origin,

@@ -56,11 +56,11 @@ uint64_t WaitForWindow(std::string title) {
 
   base::RunLoop run_loop;
   uint64_t window_id;
-  base::string16 tab_title(base::ASCIIToUTF16(title));
+  std::u16string tab_title(base::ASCIIToUTF16(title));
   auto look_for_window = base::BindRepeating(
       [](mojo::Remote<crosapi::mojom::SnapshotCapturer>* capturer,
          base::RunLoop* run_loop, uint64_t* window_id,
-         base::string16 tab_title) {
+         std::u16string tab_title) {
         std::string expected_window_title = l10n_util::GetStringFUTF8(
             IDS_BROWSER_WINDOW_TITLE_FORMAT, tab_title);
         std::vector<crosapi::mojom::SnapshotSourcePtr> windows;

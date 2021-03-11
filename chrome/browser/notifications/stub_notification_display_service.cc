@@ -80,7 +80,7 @@ void StubNotificationDisplayService::SimulateClick(
     NotificationHandler::Type notification_type,
     const std::string& notification_id,
     base::Optional<int> action_index,
-    base::Optional<base::string16> reply) {
+    base::Optional<std::u16string> reply) {
   auto iter = FindNotification(notification_type, notification_id);
   if (iter == notifications_.end())
     return;
@@ -231,7 +231,7 @@ void StubNotificationDisplayService::ProcessNotificationOperation(
     const GURL& origin,
     const std::string& notification_id,
     const base::Optional<int>& action_index,
-    const base::Optional<base::string16>& reply,
+    const base::Optional<std::u16string>& reply,
     const base::Optional<bool>& by_user) {
   if (process_notification_operation_delegate_) {
     process_notification_operation_delegate_.Run(operation, notification_type,

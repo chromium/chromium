@@ -42,7 +42,7 @@ bool RegisterRunOnOsLogin(const ShortcutInfo& shortcut_info);
 // See web_app_run_on_os_login_win.cc for Windows implementation as example.
 bool UnregisterRunOnOsLogin(const std::string& app_id,
                             const base::FilePath& profile_path,
-                            const base::string16& shortcut_title);
+                            const std::u16string& shortcut_title);
 
 }  // namespace internals
 
@@ -57,7 +57,7 @@ void ScheduleRegisterRunOnOsLogin(std::unique_ptr<ShortcutInfo> shortcut_info,
 // thread.
 void ScheduleUnregisterRunOnOsLogin(const std::string& app_id,
                                     const base::FilePath& profile_path,
-                                    const base::string16& shortcut_title,
+                                    const std::u16string& shortcut_title,
                                     UnregisterRunOnOsLoginCallback callback);
 
 }  // namespace web_app

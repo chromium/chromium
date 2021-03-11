@@ -26,7 +26,7 @@ bool RegisterRunOnOsLogin(const ShortcutInfo& shortcut_info) {
 
 bool UnregisterRunOnOsLogin(const std::string& app_id,
                             const base::FilePath& profile_path,
-                            const base::string16& shortcut_title) {
+                            const std::u16string& shortcut_title) {
   ShortcutLocations all_shortcut_locations;
   all_shortcut_locations.in_startup = true;
   std::vector<base::FilePath> all_paths =

@@ -102,8 +102,8 @@ IN_PROC_BROWSER_TEST_F(ChromeSpeechRecognitionTest, BasicTearDown) {
   EXPECT_TRUE(web_contents);
   SpeechWebContentsObserver speech_contents_observer(web_contents);
 
-  base::string16 success_title(base::ASCIIToUTF16("PASS"));
-  base::string16 failure_title(base::ASCIIToUTF16("FAIL"));
+  std::u16string success_title(base::ASCIIToUTF16("PASS"));
+  std::u16string failure_title(base::ASCIIToUTF16("FAIL"));
 
   const char kRetriveTranscriptScript[] =
       "window.domAutomationController.send(window.getFirstTranscript())";

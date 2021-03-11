@@ -66,7 +66,7 @@ class OfflinePageAutoFetcherService : public KeyedService,
    public:
     // Calls |offline_pages::ShowAutoFetchCompleteNotification()|.
     virtual void ShowAutoFetchCompleteNotification(
-        const base::string16& pageTitle,
+        const std::u16string& pageTitle,
         const std::string& original_url,
         const std::string& final_url,
         int android_tab_id,

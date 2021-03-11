@@ -52,7 +52,7 @@ class PdfToEmfConverterClientImpl : public mojom::PdfToEmfConverterClient {
   // mojom::PdfToEmfConverterClient implementation.
   void PreCacheFontCharacters(
       const std::vector<uint8_t>& logfont_data,
-      const base::string16& characters,
+      const std::u16string& characters,
       PreCacheFontCharactersCallback callback) override {
     // TODO(scottmg): pdf/ppapi still require the renderer to be able to
     // precache GDI fonts (http://crbug.com/383227), even when using

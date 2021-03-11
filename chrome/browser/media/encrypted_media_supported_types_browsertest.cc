@@ -292,7 +292,7 @@ class EncryptedMediaSupportedTypesTest : public InProcessBrowserTest {
         base::ASCIIToUTF16(kUnsupportedPlatformResult));
     title_watcher.AlsoWaitForTitle(base::ASCIIToUTF16(kUnexpectedResult));
     EXPECT_TRUE(content::ExecuteScript(contents, command));
-    base::string16 result = title_watcher.WaitAndGetTitle();
+    std::u16string result = title_watcher.WaitAndGetTitle();
     return base::UTF16ToASCII(result);
   }
 

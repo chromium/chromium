@@ -38,7 +38,7 @@ std::string FirstPackage(const std::vector<std::string>& packages) {
   return packages.empty() ? std::string() : packages[0];
 }
 
-base::string16 MakeTitle(const arc::ArcProcess& arc_process) {
+std::u16string MakeTitle(const arc::ArcProcess& arc_process) {
   int name_template = IDS_TASK_MANAGER_ARC_PREFIX;
   switch (arc_process.process_state()) {
     case arc::mojom::ProcessState::PERSISTENT:
@@ -59,7 +59,7 @@ base::string16 MakeTitle(const arc::ArcProcess& arc_process) {
     default:
       break;
   }
-  base::string16 title = l10n_util::GetStringFUTF16(
+  std::u16string title = l10n_util::GetStringFUTF16(
       name_template, base::UTF8ToUTF16(arc_process.process_name()));
   base::i18n::AdjustStringForLocaleDirection(&title);
   return title;

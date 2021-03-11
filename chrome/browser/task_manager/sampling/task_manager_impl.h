@@ -65,8 +65,8 @@ class TaskManagerImpl : public TaskManagerInterface,
                       int64_t* peak) const override;
   int GetOpenFdCount(TaskId task_id) const override;
   bool IsTaskOnBackgroundedProcess(TaskId task_id) const override;
-  const base::string16& GetTitle(TaskId task_id) const override;
-  base::string16 GetProfileName(TaskId task_id) const override;
+  const std::u16string& GetTitle(TaskId task_id) const override;
+  std::u16string GetProfileName(TaskId task_id) const override;
   const gfx::ImageSkia& GetIcon(TaskId task_id) const override;
   const base::ProcessHandle& GetProcessHandle(TaskId task_id) const override;
   const base::ProcessId& GetProcessId(TaskId task_id) const override;

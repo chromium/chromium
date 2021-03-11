@@ -189,7 +189,7 @@ void BookmarkAppInstallFinalizer::UninstallExtension(
     return;
   }
 
-  base::string16 error;
+  std::u16string error;
   bool uninstalled =
       ExtensionSystem::Get(profile_)->extension_service()->UninstallExtension(
           app_id, UNINSTALL_REASON_ORPHANED_EXTERNAL_EXTENSION, &error);

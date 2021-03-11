@@ -166,10 +166,10 @@ bool IsValidCustomProtocol(const std::wstring& scheme) {
 // Windows 8 introduced a new protocol->executable binding system which cannot
 // be retrieved in the HKCR registry subkey method implemented below. We call
 // AssocQueryString with the new Win8-only flag ASSOCF_IS_PROTOCOL instead.
-base::string16 GetAppForProtocolUsingAssocQuery(const GURL& url) {
+std::u16string GetAppForProtocolUsingAssocQuery(const GURL& url) {
   const std::wstring url_scheme = base::ASCIIToWide(url.scheme());
   if (!IsValidCustomProtocol(url_scheme))
-    return base::string16();
+    return std::u16string();
 
   // Query AssocQueryString for a human-readable description of the program
   // that will be invoked given the provided URL spec. This is used only to
@@ -182,15 +182,15 @@ base::string16 GetAppForProtocolUsingAssocQuery(const GURL& url) {
                        url_scheme.c_str(), NULL, out_buffer, &buffer_size);
   if (FAILED(hr)) {
     DLOG(WARNING) << "AssocQueryString failed!";
-    return base::string16();
+    return std::u16string();
   }
   return base::AsString16(std::wstring(out_buffer));
 }
 
-base::string16 GetAppForProtocolUsingRegistry(const GURL& url) {
+std::u16string GetAppForProtocolUsingRegistry(const GURL& url) {
   const std::wstring url_scheme = base::ASCIIToWide(url.scheme());
   if (!IsValidCustomProtocol(url_scheme))
-    return base::string16();
+    return std::u16string();
 
   // First, try and extract the application's display name.
   std::wstring command_to_launch;
@@ -212,7 +212,7 @@ base::string16 GetAppForProtocolUsingRegistry(const GURL& url) {
     return command_line.GetProgram().BaseName().AsUTF16Unsafe();
   }
 
-  return base::string16();
+  return std::u16string();
 }
 
 DefaultWebClientState GetDefaultWebClientStateFromShellUtilDefaultState(
@@ -592,10 +592,10 @@ bool IsElevationNeededForSettingDefaultProtocolClient() {
   return base::win::GetVersion() < base::win::Version::WIN8;
 }
 
-base::string16 GetApplicationNameForProtocol(const GURL& url) {
+std::u16string GetApplicationNameForProtocol(const GURL& url) {
   // Windows 8 or above has a new protocol association query.
   if (base::win::GetVersion() >= base::win::Version::WIN8) {
-    base::string16 application_name = GetAppForProtocolUsingAssocQuery(url);
+    std::u16string application_name = GetAppForProtocolUsingAssocQuery(url);
     if (!application_name.empty())
       return application_name;
   }

@@ -41,7 +41,7 @@ chrome_browser_sharing::SharingMessage SharedClipboardTestBase::CreateMessage(
 }
 
 std::string SharedClipboardTestBase::GetClipboardText() {
-  base::string16 text;
+  std::u16string text;
   ui::Clipboard::GetForCurrentThread()->ReadText(
       ui::ClipboardBuffer::kCopyPaste, /* data_dst = */ nullptr, &text);
   return base::UTF16ToUTF8(text);

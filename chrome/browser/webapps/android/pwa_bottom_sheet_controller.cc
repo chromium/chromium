@@ -63,12 +63,12 @@ jboolean JNI_PwaBottomSheetController_RequestOrExpandBottomSheetInstaller(
 // static
 bool PwaBottomSheetController::MaybeShow(
     content::WebContents* web_contents,
-    const base::string16& app_name,
+    const std::u16string& app_name,
     const SkBitmap& primary_icon,
     const bool is_primary_icon_maskable,
     const GURL& start_url,
     const std::vector<SkBitmap>& screenshots,
-    const base::string16& description,
+    const std::u16string& description,
     bool expand_sheet,
     std::unique_ptr<AddToHomescreenParams> a2hs_params,
     base::RepeatingCallback<void(AddToHomescreenInstaller::Event,
@@ -97,12 +97,12 @@ bool PwaBottomSheetController::MaybeShow(
 }
 
 PwaBottomSheetController::PwaBottomSheetController(
-    const base::string16& app_name,
+    const std::u16string& app_name,
     const SkBitmap& primary_icon,
     const bool is_primary_icon_maskable,
     const GURL& start_url,
     const std::vector<SkBitmap>& screenshots,
-    const base::string16& description,
+    const std::u16string& description,
     std::unique_ptr<AddToHomescreenParams> a2hs_params,
     base::RepeatingCallback<void(AddToHomescreenInstaller::Event,
                                  const AddToHomescreenParams&)>

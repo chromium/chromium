@@ -30,8 +30,8 @@ void EditSavedPasswords(
     Profile* profile,
     base::span<const std::unique_ptr<password_manager::PasswordForm>>
         forms_to_change,
-    const base::string16& new_username,
-    const base::Optional<base::string16>& new_password);
+    const std::u16string& new_username,
+    const base::Optional<std::u16string>& new_password);
 
 // Returns the password store associated with the currently active profile.
 scoped_refptr<password_manager::PasswordStore> GetPasswordStore(

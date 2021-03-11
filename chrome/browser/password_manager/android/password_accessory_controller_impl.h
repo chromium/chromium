@@ -132,7 +132,7 @@ class PasswordAccessoryControllerImpl
   void ChangeCurrentOriginSavePasswordsStatus(bool enabled);
 
   // Returns true if |suggestion| matches a credential for |origin|.
-  bool AppearsInSuggestions(const base::string16& suggestion,
+  bool AppearsInSuggestions(const std::u16string& suggestion,
                             bool is_password,
                             const url::Origin& origin) const;
 

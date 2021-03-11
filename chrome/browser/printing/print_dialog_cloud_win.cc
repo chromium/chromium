@@ -73,7 +73,7 @@ class PrintDataSetter : public content::WebContentsObserver {
   void DOMContentLoaded(content::RenderFrameHost* render_frame_host) override {
     GURL url = web_contents()->GetURL();
     if (cloud_devices::IsCloudPrintURL(url)) {
-      base::string16 origin = base::UTF8ToUTF16(url.GetOrigin().spec());
+      std::u16string origin = base::UTF8ToUTF16(url.GetOrigin().spec());
       content::MessagePortProvider::PostMessageToFrame(web_contents(), origin,
                                                        origin, message_data_);
     }
@@ -81,7 +81,7 @@ class PrintDataSetter : public content::WebContentsObserver {
 
   void WebContentsDestroyed() override { delete this; }
 
-  base::string16 message_data_;
+  std::u16string message_data_;
   DISALLOW_COPY_AND_ASSIGN(PrintDataSetter);
 };
 

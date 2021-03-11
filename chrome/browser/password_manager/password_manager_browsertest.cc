@@ -150,7 +150,7 @@ class PasswordManagerBackForwardCacheBrowserTest
 class MockHttpAuthObserver : public password_manager::HttpAuthObserver {
  public:
   MOCK_METHOD2(OnAutofillDataAvailable,
-               void(const base::string16&, const base::string16&));
+               void(const std::u16string&, const std::u16string&));
 
   MOCK_METHOD0(OnLoginModelDestroying, void());
 };
@@ -3990,7 +3990,7 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerBrowserTest,
       factory->GetDriverForFrame(WebContents()->GetMainFrame());
 
   // Instruct Chrome to show the password dropdown.
-  driver->ShowPasswordSuggestions(base::i18n::LEFT_TO_RIGHT, base::string16(),
+  driver->ShowPasswordSuggestions(base::i18n::LEFT_TO_RIGHT, std::u16string(),
                                   0, gfx::RectF());
   autofill::ChromeAutofillClient* autofill_client =
       autofill::ChromeAutofillClient::FromWebContents(WebContents());
@@ -4013,7 +4013,7 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerBrowserTest,
   EXPECT_FALSE(autofill_client->popup_controller_for_testing());
   WaitForPasswordStore();
   // Reshow the dropdown.
-  driver->ShowPasswordSuggestions(base::i18n::LEFT_TO_RIGHT, base::string16(),
+  driver->ShowPasswordSuggestions(base::i18n::LEFT_TO_RIGHT, std::u16string(),
                                   0, gfx::RectF());
   controller = autofill_client->popup_controller_for_testing().get();
   ASSERT_TRUE(controller);
@@ -4032,7 +4032,7 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerBrowserTest,
   EXPECT_FALSE(autofill_client->popup_controller_for_testing());
   WaitForPasswordStore();
   // Reshow the dropdown won't work because there is nothing to suggest.
-  driver->ShowPasswordSuggestions(base::i18n::LEFT_TO_RIGHT, base::string16(),
+  driver->ShowPasswordSuggestions(base::i18n::LEFT_TO_RIGHT, std::u16string(),
                                   0, gfx::RectF());
   EXPECT_FALSE(autofill_client->popup_controller_for_testing());
 

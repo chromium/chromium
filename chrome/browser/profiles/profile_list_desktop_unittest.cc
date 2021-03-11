@@ -78,7 +78,7 @@ class ProfileListDesktopTest : public testing::Test {
     ProfileAttributesStorage* storage = manager()->profile_attributes_storage();
     base::FilePath profile_path = manager()->profiles_dir().AppendASCII(name);
     storage->AddProfile(profile_path, ASCIIToUTF16(name), std::string(),
-                        base::string16(), false, 0, std::string(),
+                        std::u16string(), false, 0, std::string(),
                         EmptyAccountId());
     ProfileAttributesEntry* entry =
         storage->GetProfileAttributesWithPath(profile_path);

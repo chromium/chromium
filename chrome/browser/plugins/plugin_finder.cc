@@ -39,7 +39,7 @@ std::string GetIdentifier(const content::WebPluginInfo& plugin) {
 
 // Gets the plugin group name as the plugin name if it is not empty or
 // the filename without extension if the name is empty.
-static base::string16 GetGroupName(const content::WebPluginInfo& plugin) {
+static std::u16string GetGroupName(const content::WebPluginInfo& plugin) {
   if (!plugin.name.empty())
     return plugin.name;
 
@@ -76,12 +76,12 @@ std::unique_ptr<PluginMetadata> CreatePluginMetadata(
   bool success = plugin_dict->GetString("url", &url);
   std::string help_url;
   plugin_dict->GetString("help_url", &help_url);
-  base::string16 name;
+  std::u16string name;
   success = plugin_dict->GetString("name", &name);
   DCHECK(success);
   bool display_url = true;
   plugin_dict->GetBoolean("displayurl", &display_url);
-  base::string16 group_name_matcher;
+  std::u16string group_name_matcher;
   success = plugin_dict->GetString("group_name_matcher", &group_name_matcher);
   DCHECK(success);
   std::string language_str;

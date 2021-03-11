@@ -44,8 +44,8 @@ struct SharingDialogData {
   std::vector<std::unique_ptr<syncer::DeviceInfo>> devices;
   std::vector<SharingApp> apps;
 
-  base::string16 title;
-  base::string16 error_text;
+  std::u16string title;
+  std::u16string error_text;
   int help_text_id = 0;
   int help_text_origin_id = 0;
   base::Optional<HeaderIcons> header_icons;

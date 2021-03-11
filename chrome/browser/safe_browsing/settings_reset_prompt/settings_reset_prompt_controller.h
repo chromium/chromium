@@ -31,8 +31,8 @@ class SettingsResetPromptController {
       std::unique_ptr<SettingsResetPromptModel> model,
       std::unique_ptr<BrandcodedDefaultSettings> default_settings);
 
-  base::string16 GetWindowTitle() const;
-  base::string16 GetMainText() const;
+  std::u16string GetWindowTitle() const;
+  std::u16string GetMainText() const;
   // Returns the offset into the main text string where a URL was inserted. To
   // be used by the dialog to apply an appropriate style to the URL text.
   gfx::Range GetMainTextUrlRange() const;
@@ -61,7 +61,7 @@ class SettingsResetPromptController {
 
   std::unique_ptr<SettingsResetPromptModel> model_;
   std::unique_ptr<BrandcodedDefaultSettings> default_settings_;
-  base::string16 main_text_;
+  std::u16string main_text_;
   gfx::Range main_text_url_range_;
 
   // Used for metrics reporting.

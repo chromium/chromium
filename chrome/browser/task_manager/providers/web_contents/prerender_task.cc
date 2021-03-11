@@ -30,7 +30,7 @@ gfx::ImageSkia* GetPrerenderIcon() {
   return g_prerender_icon;
 }
 
-base::string16 PrefixPrerenderTitle(const base::string16& title) {
+std::u16string PrefixPrerenderTitle(const std::u16string& title) {
   return l10n_util::GetStringFUTF16(IDS_TASK_MANAGER_PRERENDER_PREFIX, title);
 }
 

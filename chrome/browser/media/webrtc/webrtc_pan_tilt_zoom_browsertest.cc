@@ -585,7 +585,7 @@ IN_PROC_BROWSER_TEST_F(WebRtcPanTiltZoomFakeCameraDevicesBrowserTest,
 
   // Hide page.
   tab->WasHidden();
-  base::string16 expected_title = base::ASCIIToUTF16("hidden");
+  std::u16string expected_title = base::ASCIIToUTF16("hidden");
   EXPECT_EQ(expected_title,
             content::TitleWatcher(tab, expected_title).WaitAndGetTitle());
 

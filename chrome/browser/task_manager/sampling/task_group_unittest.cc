@@ -29,10 +29,7 @@ namespace {
 class FakeTask : public Task {
  public:
   FakeTask(base::ProcessId process_id, Type type, bool is_running_in_vm)
-      : Task(base::string16(),
-             nullptr,
-             base::kNullProcessHandle,
-             process_id),
+      : Task(std::u16string(), nullptr, base::kNullProcessHandle, process_id),
         type_(type),
         is_running_in_vm_(is_running_in_vm) {}
 

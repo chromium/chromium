@@ -251,7 +251,7 @@ void SupervisedUserInterstitial::ShowFeedback() {
   std::string second_custodian =
       supervised_user_service->GetSecondCustodianName();
 
-  base::string16 reason =
+  std::u16string reason =
       l10n_util::GetStringUTF16(supervised_user_error_page::GetBlockMessageID(
           reason_, is_child_account, second_custodian.empty()));
   std::string message = l10n_util::GetStringFUTF8(

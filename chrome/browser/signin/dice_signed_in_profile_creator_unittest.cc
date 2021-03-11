@@ -174,7 +174,7 @@ TEST_P(DiceSignedInProfileCreatorTest, CreateWithTokensLoaded) {
   AccountInfo account_info =
       identity_test_env()->MakeAccountAvailable("bob@example.com");
   size_t kTestIcon = profiles::GetModernAvatarIconStartIndex();
-  base::string16 kProfileTestName16 = base::UTF8ToUTF16(kProfileTestName);
+  std::u16string kProfileTestName16 = base::UTF8ToUTF16(kProfileTestName);
 
   base::RunLoop loop;
   std::unique_ptr<DiceSignedInProfileCreator> creator =
@@ -225,7 +225,7 @@ TEST_P(DiceSignedInProfileCreatorTest, CreateWithTokensNotLoaded) {
   set_profile_added_closure(profile_added_loop.QuitClosure());
   std::unique_ptr<DiceSignedInProfileCreator> creator =
       std::make_unique<DiceSignedInProfileCreator>(
-          profile(), account_info.account_id, base::string16(), base::nullopt,
+          profile(), account_info.account_id, std::u16string(), base::nullopt,
           use_guest_profile(),
           base::BindOnce(&DiceSignedInProfileCreatorTest::OnProfileCreated,
                          base::Unretained(this), creator_loop.QuitClosure()));
@@ -261,7 +261,7 @@ TEST_P(DiceSignedInProfileCreatorTest, DeleteWhileCreating) {
       identity_test_env()->MakeAccountAvailable("bob@example.com");
   std::unique_ptr<DiceSignedInProfileCreator> creator =
       std::make_unique<DiceSignedInProfileCreator>(
-          profile(), account_info.account_id, base::string16(), base::nullopt,
+          profile(), account_info.account_id, std::u16string(), base::nullopt,
           use_guest_profile(),
           base::BindOnce(&DiceSignedInProfileCreatorTest::OnProfileCreated,
                          base::Unretained(this), base::OnceClosure()));
@@ -281,7 +281,7 @@ TEST_P(DiceSignedInProfileCreatorTest, DeleteProfile) {
   set_profile_added_closure(profile_added_loop.QuitClosure());
   std::unique_ptr<DiceSignedInProfileCreator> creator =
       std::make_unique<DiceSignedInProfileCreator>(
-          profile(), account_info.account_id, base::string16(), base::nullopt,
+          profile(), account_info.account_id, std::u16string(), base::nullopt,
           use_guest_profile(),
           base::BindOnce(&DiceSignedInProfileCreatorTest::OnProfileCreated,
                          base::Unretained(this), creator_loop.QuitClosure()));

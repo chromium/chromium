@@ -126,7 +126,7 @@ void NotificationPlatformBridgeMac::Display(
   [builder setTitle:base::SysUTF16ToNSString(
                         CreateMacNotificationTitle(notification))];
 
-  base::string16 context_message =
+  std::u16string context_message =
       notification.items().empty()
           ? notification.message()
           : (notification.items().at(0).title + base::UTF8ToUTF16(" - ") +

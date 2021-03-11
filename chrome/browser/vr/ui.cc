@@ -294,7 +294,7 @@ void Ui::OnSpeechRecognitionEnded() {
   }
 }
 
-void Ui::SetRecognitionResult(const base::string16& result) {
+void Ui::SetRecognitionResult(const std::u16string& result) {
   model_->speech.recognition_result = result;
 }
 
@@ -379,7 +379,7 @@ void Ui::SetDialogFloating(bool floating) {
   model_->hosted_platform_ui.floating = floating;
 }
 
-void Ui::ShowPlatformToast(const base::string16& text) {
+void Ui::ShowPlatformToast(const std::u16string& text) {
   model_->platform_toast = std::make_unique<PlatformToast>(text);
 }
 

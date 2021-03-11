@@ -18,10 +18,10 @@ class Notification;
 // This file is a combination of methods that are shared between the macOS
 // notification bridges.
 
-base::string16 CreateMacNotificationTitle(
+std::u16string CreateMacNotificationTitle(
     const message_center::Notification& notification);
 
-base::string16 CreateMacNotificationContext(
+std::u16string CreateMacNotificationContext(
     bool is_persistent,
     const message_center::Notification& notification,
     bool requires_attribution);

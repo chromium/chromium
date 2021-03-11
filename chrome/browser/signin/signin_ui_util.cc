@@ -164,7 +164,7 @@ std::string GetReauthAccessPointHistogramSuffix(
 
 namespace signin_ui_util {
 
-base::string16 GetAuthenticatedUsername(Profile* profile) {
+std::u16string GetAuthenticatedUsername(Profile* profile) {
   DCHECK(profile);
   std::string user_display_name;
   auto* identity_manager = IdentityManagerFactory::GetForProfile(profile);
@@ -325,7 +325,7 @@ AccountInfo GetSingleAccountForDicePromos(Profile* profile) {
 
 #endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 
-base::string16 GetShortProfileIdentityToDisplay(
+std::u16string GetShortProfileIdentityToDisplay(
     const ProfileAttributesEntry& profile_attributes_entry,
     Profile* profile) {
   DCHECK(profile);

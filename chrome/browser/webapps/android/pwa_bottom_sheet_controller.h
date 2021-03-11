@@ -35,12 +35,12 @@ class PwaBottomSheetController {
   // Otherwise does nothing and returns false.
   static bool MaybeShow(
       content::WebContents* web_contents,
-      const base::string16& app_name,
+      const std::u16string& app_name,
       const SkBitmap& primary_icon,
       const bool is_primary_icon_maskable,
       const GURL& start_url,
       const std::vector<SkBitmap>& screenshots,
-      const base::string16& description,
+      const std::u16string& description,
       bool expand_sheet,
       std::unique_ptr<AddToHomescreenParams> a2hs_params,
       base::RepeatingCallback<void(AddToHomescreenInstaller::Event,
@@ -68,12 +68,12 @@ class PwaBottomSheetController {
 
  private:
   PwaBottomSheetController(
-      const base::string16& app_name,
+      const std::u16string& app_name,
       const SkBitmap& primary_icon,
       const bool is_primary_icon_maskable,
       const GURL& start_url,
       const std::vector<SkBitmap>& screenshots,
-      const base::string16& description,
+      const std::u16string& description,
       std::unique_ptr<AddToHomescreenParams> a2hs_params,
       base::RepeatingCallback<void(AddToHomescreenInstaller::Event,
                                    const AddToHomescreenParams&)>
@@ -90,12 +90,12 @@ class PwaBottomSheetController {
   void UpdateScreenshot(const SkBitmap& screenshot,
                         content::WebContents* web_contents);
 
-  const base::string16 app_name_;
+  const std::u16string app_name_;
   const SkBitmap primary_icon_;
   const bool is_primary_icon_maskable_ = false;
   const GURL& start_url_;
   const std::vector<SkBitmap>& screenshots_;
-  const base::string16 description_;
+  const std::u16string description_;
   // Contains app parameters such as its type and the install source used that
   // will be passed to |a2hs_event_callback_| eventually.
   std::unique_ptr<AddToHomescreenParams> a2hs_params_;

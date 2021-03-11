@@ -137,8 +137,8 @@ void GAIAInfoUpdateService::ClearProfileEntry() {
     return;
   }
   gaia_id_of_profile_attribute_entry_ = "";
-  entry->SetGAIAName(base::string16());
-  entry->SetGAIAGivenName(base::string16());
+  entry->SetGAIAName(std::u16string());
+  entry->SetGAIAGivenName(std::u16string());
   entry->SetGAIAPicture(std::string(), gfx::Image());
   entry->SetHostedDomain(std::string());
 }

@@ -92,7 +92,7 @@ class ReferrerPolicyTest : public InProcessBrowserTest {
 
   // Returns the expected title for the tab with the given (full) referrer and
   // the expected modification of it.
-  base::string16 GetExpectedTitle(const GURL& url,
+  std::u16string GetExpectedTitle(const GURL& url,
                                   ExpectedReferrer expected_referrer) {
     std::string referrer;
     switch (expected_referrer) {
@@ -211,7 +211,7 @@ class ReferrerPolicyTest : public InProcessBrowserTest {
 
     ui_test_utils::AllBrowserTabAddedWaiter add_tab;
 
-    base::string16 expected_title =
+    std::u16string expected_title =
         GetExpectedTitle(start_url, expected_referrer);
     content::WebContents* tab =
         browser()->tab_strip_model()->GetActiveWebContents();
@@ -545,7 +545,7 @@ IN_PROC_BROWSER_TEST_F(ReferrerPolicyTest, History) {
   ui_test_utils::NavigateToURL(browser(),
                                embedded_test_server()->GetURL("/title1.html"));
 
-  base::string16 expected_title =
+  std::u16string expected_title =
       GetExpectedTitle(start_url, EXPECT_ORIGIN_AS_REFERRER);
   content::WebContents* tab =
       browser()->tab_strip_model()->GetActiveWebContents();
@@ -582,7 +582,7 @@ IN_PROC_BROWSER_TEST_F(ReferrerPolicyTest, RequestTabletSite) {
       SERVER_REDIRECT_FROM_HTTP_TO_HTTP, WindowOpenDisposition::CURRENT_TAB,
       blink::WebMouseEvent::Button::kLeft, EXPECT_ORIGIN_AS_REFERRER);
 
-  base::string16 expected_title =
+  std::u16string expected_title =
       GetExpectedTitle(start_url, EXPECT_EMPTY_REFERRER);
   content::WebContents* tab =
       browser()->tab_strip_model()->GetActiveWebContents();
@@ -598,7 +598,7 @@ IN_PROC_BROWSER_TEST_F(ReferrerPolicyTest, RequestTabletSite) {
   // is complete, so the title change is missed because the title is checked on
   // load. Clearing the title ensures that TitleWatcher will wait for the actual
   // title setting.
-  tab->GetController().GetVisibleEntry()->SetTitle(base::string16());
+  tab->GetController().GetVisibleEntry()->SetTitle(std::u16string());
 
   // Request tablet version.
   chrome::ToggleRequestTabletSite(browser());
@@ -613,7 +613,7 @@ IN_PROC_BROWSER_TEST_F(ReferrerPolicyTest, IFrame) {
       prefs::kWebKitAllowRunningInsecureContent, true);
   content::WebContents* tab =
       browser()->tab_strip_model()->GetActiveWebContents();
-  base::string16 expected_title(base::ASCIIToUTF16("loaded"));
+  std::u16string expected_title(base::ASCIIToUTF16("loaded"));
   std::unique_ptr<content::TitleWatcher> title_watcher(
       new content::TitleWatcher(tab, expected_title));
 
@@ -876,7 +876,7 @@ class ReferrerOverrideTest
     lock.Release();
 
     // set by referrer-policy-subresource.html JS after the embedded image loads
-    base::string16 expected_title(base::ASCIIToUTF16("loaded"));
+    std::u16string expected_title(base::ASCIIToUTF16("loaded"));
     std::unique_ptr<content::TitleWatcher> title_watcher(
         new content::TitleWatcher(tab, expected_title));
     ui_test_utils::NavigateToURL(browser(), start_url);

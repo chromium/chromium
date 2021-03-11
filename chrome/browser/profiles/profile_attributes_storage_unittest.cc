@@ -86,10 +86,10 @@ class ProfileAttributesTestObserver
                void(const base::FilePath& profile_path));
   MOCK_METHOD2(OnProfileWasRemoved,
                void(const base::FilePath& profile_path,
-                    const base::string16& profile_name));
+                    const std::u16string& profile_name));
   MOCK_METHOD2(OnProfileNameChanged,
                void(const base::FilePath& profile_path,
-                    const base::string16& old_profile_name));
+                    const std::u16string& old_profile_name));
   MOCK_METHOD1(OnProfileAuthInfoChanged,
                void(const base::FilePath& profile_path));
   MOCK_METHOD1(OnProfileAvatarChanged,
@@ -152,7 +152,7 @@ class ProfileAttributesStorageTest : public testing::Test {
   void AddCallExpectationsForRemoveProfile(size_t profile_number) {
     base::FilePath profile_path = GetProfilePath(
         base::StringPrintf("testing_profile_path%" PRIuS, profile_number));
-    base::string16 profile_name = base::ASCIIToUTF16(
+    std::u16string profile_name = base::ASCIIToUTF16(
         base::StringPrintf("testing_profile_name%" PRIuS, profile_number));
 
     ::testing::InSequence dummy;
@@ -439,14 +439,14 @@ TEST_F(ProfileAttributesStorageTest, EntryInternalAccessors) {
   // If previous data is not there, setters should returns true even if the
   // defaults (empty string, 0.0, or false) are written.
   EXPECT_TRUE(entry->SetString("test1", std::string()));
-  EXPECT_TRUE(entry->SetString16("test2", base::string16()));
+  EXPECT_TRUE(entry->SetString16("test2", std::u16string()));
   EXPECT_TRUE(entry->SetDouble("test3", 0.0));
   EXPECT_TRUE(entry->SetBool("test4", false));
 
   // If previous data is in a wrong type, setters should returns true even if
   // the defaults (empty string, 0.0, or false) are written.
   EXPECT_TRUE(entry->SetString("test3", std::string()));
-  EXPECT_TRUE(entry->SetString16("test4", base::string16()));
+  EXPECT_TRUE(entry->SetString16("test4", std::u16string()));
   EXPECT_TRUE(entry->SetDouble("test1", 0.0));
   EXPECT_TRUE(entry->SetBool("test2", false));
 }
@@ -495,10 +495,10 @@ TEST_F(ProfileAttributesStorageTest, AuthInfo) {
   ASSERT_NE(entry, nullptr);
 
   EXPECT_CALL(observer(), OnProfileAuthInfoChanged(path)).Times(1);
-  entry->SetAuthInfo("", base::string16(), false);
+  entry->SetAuthInfo("", std::u16string(), false);
   VerifyAndResetCallExpectations();
   ASSERT_EQ(entry->GetSigninState(), SigninState::kNotSignedIn);
-  EXPECT_EQ(base::string16(), entry->GetUserName());
+  EXPECT_EQ(std::u16string(), entry->GetUserName());
   EXPECT_EQ("", entry->GetGAIAId());
 
   EXPECT_CALL(observer(), OnProfileAuthInfoChanged(path)).Times(1);
@@ -655,8 +655,8 @@ TEST_F(ProfileAttributesStorageTest, ChooseAvatarIconIndexForNewProfile) {
     base::FilePath profile_path =
         GetProfilePath(base::StringPrintf("testing_profile_path%" PRIuS, i));
     EXPECT_CALL(observer(), OnProfileAdded(profile_path)).Times(1);
-    storage()->AddProfile(profile_path, base::string16(), std::string(),
-                          base::string16(), false, icon_index, std::string(),
+    storage()->AddProfile(profile_path, std::u16string(), std::string(),
+                          std::u16string(), false, icon_index, std::string(),
                           EmptyAccountId());
     VerifyAndResetCallExpectations();
   }
@@ -730,7 +730,7 @@ TEST_F(ProfileAttributesStorageTest, DownloadHighResAvatarTest) {
   base::FilePath profile_path = GetProfilePath("path_1");
   EXPECT_CALL(observer(), OnProfileAdded(profile_path)).Times(1);
   storage()->AddProfile(profile_path, base::ASCIIToUTF16("name_1"),
-                        std::string(), base::string16(), false, kIconIndex,
+                        std::string(), std::u16string(), false, kIconIndex,
                         std::string(), EmptyAccountId());
   ASSERT_EQ(1U, storage()->GetNumberOfProfiles());
   VerifyAndResetCallExpectations();
@@ -816,7 +816,7 @@ TEST_F(ProfileAttributesStorageTest, NothingToDownloadHighResAvatarTest) {
   base::FilePath profile_path = GetProfilePath("path_1");
   EXPECT_CALL(observer(), OnProfileAdded(profile_path)).Times(1);
   storage()->AddProfile(profile_path, base::ASCIIToUTF16("name_1"),
-                        std::string(), base::string16(), false, kIconIndex,
+                        std::string(), std::u16string(), false, kIconIndex,
                         std::string(), EmptyAccountId());
   EXPECT_EQ(1U, storage()->GetNumberOfProfiles());
   content::RunAllTasksUntilIdle();
@@ -851,7 +851,7 @@ TEST_F(ProfileAttributesStorageTest, LoadAvatarFromDiskTest) {
   base::FilePath profile_path = GetProfilePath("path_1");
   EXPECT_CALL(observer(), OnProfileAdded(profile_path)).Times(1);
   storage()->AddProfile(profile_path, base::ASCIIToUTF16("name_1"),
-                        std::string(), base::string16(), false, kIconIndex,
+                        std::string(), std::u16string(), false, kIconIndex,
                         std::string(), EmptyAccountId());
   EXPECT_EQ(1U, storage()->GetNumberOfProfiles());
   VerifyAndResetCallExpectations();

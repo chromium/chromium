@@ -18,13 +18,13 @@ namespace task_manager {
 
 namespace {
 
-base::string16 GetCurrentTitle(content::WebContents* web_contents) {
+std::u16string GetCurrentTitle(content::WebContents* web_contents) {
   DCHECK(web_contents);
 
   // Imitate the UI style of Subframe task.
   content::SiteInstance* site_instance =
       web_contents->GetMainFrame()->GetSiteInstance();
-  base::string16 site_url =
+  std::u16string site_url =
       base::UTF8ToUTF16(site_instance->GetSiteURL().spec());
   int message_id = site_instance->GetBrowserContext()->IsOffTheRecord()
                        ? IDS_TASK_MANAGER_PORTAL_INCOGNITO_PREFIX

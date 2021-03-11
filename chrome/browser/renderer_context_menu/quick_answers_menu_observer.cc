@@ -144,7 +144,7 @@ void QuickAnswersMenuObserver::OnEligibilityChanged(bool eligible) {
 
 void QuickAnswersMenuObserver::OnTextSurroundingSelectionAvailable(
     const std::string& selected_text,
-    const base::string16& surrounding_text,
+    const std::u16string& surrounding_text,
     uint32_t start_offset,
     uint32_t end_offset) {
   PrefService* prefs =

@@ -98,8 +98,8 @@ TEST(ModuleInfoUtilTest, GetEnvironmentVariablesMapping) {
 }
 
 const struct CollapsePathList {
-  base::string16 expected_result;
-  base::string16 test_case;
+  std::u16string expected_result;
+  std::u16string test_case;
 } kCollapsePathList[] = {
     // Negative testing (should not collapse this path).
     {u"c:\\a\\a.dll", u"c:\\a\\a.dll"},
@@ -117,7 +117,7 @@ TEST(ModuleInfoUtilTest, CollapseMatchingPrefixInPath) {
   };
 
   for (size_t i = 0; i < base::size(kCollapsePathList); ++i) {
-    base::string16 test_case = kCollapsePathList[i].test_case;
+    std::u16string test_case = kCollapsePathList[i].test_case;
     CollapseMatchingPrefixInPath(string_mapping, &test_case);
     EXPECT_EQ(kCollapsePathList[i].expected_result, test_case);
   }

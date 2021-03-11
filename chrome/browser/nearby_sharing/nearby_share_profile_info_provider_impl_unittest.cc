@@ -43,7 +43,7 @@ class NearbyShareProfileInfoProviderImplTest : public ::testing::Test {
   void SetUserGivenName(const std::string& name) {
     user_manager_->UpdateUserAccountData(
         account_id_, user_manager::UserManager::UserAccountData(
-                         /*display_name=*/base::string16(),
+                         /*display_name=*/std::u16string(),
                          /*given_name=*/base::UTF8ToUTF16(name),
                          /*locale=*/std::string()));
   }

@@ -107,7 +107,7 @@ class SpeechRecognizerOnIO : public content::SpeechRecognitionEventListener {
   std::string locale_;
   std::unique_ptr<base::OneShotTimer> speech_timeout_;
   int session_;
-  base::string16 last_result_str_;
+  std::u16string last_result_str_;
 
   base::WeakPtrFactory<SpeechRecognizerOnIO> weak_factory_{this};
 
@@ -211,7 +211,7 @@ void SpeechRecognizerOnIO::OnRecognitionEnd(int session_id) {
 void SpeechRecognizerOnIO::OnRecognitionResults(
     int session_id,
     const std::vector<blink::mojom::SpeechRecognitionResultPtr>& results) {
-  base::string16 result_str;
+  std::u16string result_str;
   size_t final_count = 0;
   // The number of results with |is_provisional| false. If |final_count| ==
   // results.size(), then all results are non-provisional and the recognition is
@@ -346,7 +346,7 @@ void SpeechRecognizer::Stop() {
   }
 }
 
-void SpeechRecognizer::OnSpeechResult(const base::string16& query,
+void SpeechRecognizer::OnSpeechResult(const std::u16string& query,
                                       bool is_final) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   if (!is_final)

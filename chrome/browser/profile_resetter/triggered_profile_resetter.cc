@@ -24,6 +24,6 @@ void TriggeredProfileResetter::ClearResetTrigger() {
   has_reset_trigger_ = false;
 }
 
-base::string16 TriggeredProfileResetter::GetResetToolName() {
+std::u16string TriggeredProfileResetter::GetResetToolName() {
   return tool_name_;
 }

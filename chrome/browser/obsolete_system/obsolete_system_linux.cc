@@ -29,7 +29,7 @@ bool ObsoleteSystem::IsObsoleteNowOrSoon() {
 }
 
 // static
-base::string16 ObsoleteSystem::LocalizedObsoleteString() {
+std::u16string ObsoleteSystem::LocalizedObsoleteString() {
   return l10n_util::GetStringUTF16(IDS_CPU_X86_SSE2_OBSOLETE_SOON);
 }
 

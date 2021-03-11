@@ -153,7 +153,7 @@ ProfilePrefStoreManager::CreateTrackedPrefStoreConfiguration(
                            ? *g_preference_validation_registry_path_for_testing
                            : install_static::GetRegistryPath()),
 #else
-      base::string16(),
+      std::u16string(),
 #endif
       std::move(validation_delegate), std::move(reset_on_load_observer));
 }

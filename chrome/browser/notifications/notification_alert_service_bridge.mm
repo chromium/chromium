@@ -157,11 +157,11 @@ void DispatchGetAllNotificationsReply(
       std::move(notificationIdentifier), type, std::move(originUrl),
       creatorPid);
 
-  base::string16 title = base::SysNSStringToUTF16([notificationData
+  std::u16string title = base::SysNSStringToUTF16([notificationData
       objectForKey:notification_constants::kNotificationTitle]);
-  base::string16 subtitle = base::SysNSStringToUTF16([notificationData
+  std::u16string subtitle = base::SysNSStringToUTF16([notificationData
       objectForKey:notification_constants::kNotificationSubTitle]);
-  base::string16 body = base::SysNSStringToUTF16([notificationData
+  std::u16string body = base::SysNSStringToUTF16([notificationData
       objectForKey:notification_constants::kNotificationInformativeText]);
   bool renotify = [[notificationData
       objectForKey:notification_constants::kNotificationRenotify] boolValue];
@@ -172,7 +172,7 @@ void DispatchGetAllNotificationsReply(
   std::vector<mac_notifications::mojom::NotificationActionButtonPtr> buttons;
   if ([notificationData
           objectForKey:notification_constants::kNotificationButtonOne]) {
-    base::string16 title = base::SysNSStringToUTF16([notificationData
+    std::u16string title = base::SysNSStringToUTF16([notificationData
         objectForKey:notification_constants::kNotificationButtonOne]);
     auto button = mac_notifications::mojom::NotificationActionButton::New(
         std::move(title), /*placeholder=*/base::nullopt);
@@ -180,7 +180,7 @@ void DispatchGetAllNotificationsReply(
   }
   if ([notificationData
           objectForKey:notification_constants::kNotificationButtonTwo]) {
-    base::string16 title = base::SysNSStringToUTF16([notificationData
+    std::u16string title = base::SysNSStringToUTF16([notificationData
         objectForKey:notification_constants::kNotificationButtonTwo]);
     auto button = mac_notifications::mojom::NotificationActionButton::New(
         std::move(title), /*placeholder=*/base::nullopt);

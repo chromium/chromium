@@ -833,7 +833,7 @@ int64_t OfflinePageRequestHandlerTest::SavePage(const GURL& url,
 
   auto archiver = std::make_unique<OfflinePageTestArchiver>(
       nullptr, url, OfflinePageArchiver::ArchiverResult::SUCCESSFULLY_CREATED,
-      base::string16(), file_size, digest, base::ThreadTaskRunnerHandle::Get());
+      std::u16string(), file_size, digest, base::ThreadTaskRunnerHandle::Get());
   archiver->set_filename(file_path);
 
   async_operation_completed_ = false;

@@ -36,7 +36,7 @@ constexpr bool kLocallyInstallWebAppsOnSync = false;
 
 InstallManager::InstallParams CreateSyncInstallParams(
     const GURL& start_url,
-    const base::string16& app_name,
+    const std::u16string& app_name,
     DisplayMode user_display_mode) {
   InstallManager::InstallParams params;
   params.user_display_mode = user_display_mode;

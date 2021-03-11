@@ -316,7 +316,7 @@ void SpellingMenuObserver::ExecuteCommand(int command_id) {
 void SpellingMenuObserver::OnTextCheckComplete(
     SpellingServiceClient::ServiceType type,
     bool success,
-    const base::string16& text,
+    const std::u16string& text,
     const std::vector<SpellCheckResult>& results) {
   animation_timer_.Stop();
 
@@ -333,8 +333,8 @@ void SpellingMenuObserver::OnTextCheckComplete(
       if (it->replacements.size() == 1)
         result_.replace(it->location, it->length, it->replacements[0]);
     }
-    base::string16 result = base::i18n::ToLower(result_);
-    for (std::vector<base::string16>::const_iterator it = suggestions_.begin();
+    std::u16string result = base::i18n::ToLower(result_);
+    for (std::vector<std::u16string>::const_iterator it = suggestions_.begin();
          it != suggestions_.end(); ++it) {
       if (result == base::i18n::ToLower(*it)) {
         succeeded_ = false;
@@ -358,8 +358,8 @@ void SpellingMenuObserver::OnTextCheckComplete(
 void SpellingMenuObserver::OnAnimationTimerExpired() {
   // Append '.' characters to the end of "Checking".
   loading_frame_ = (loading_frame_ + 1) & 3;
-  base::string16 loading_message =
-      loading_message_ + base::string16(loading_frame_,'.');
+  std::u16string loading_message =
+      loading_message_ + std::u16string(loading_frame_, '.');
 
   // Update the menu item with the text. We disable this item to prevent users
   // from selecting it.

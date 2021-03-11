@@ -41,7 +41,7 @@ class StatusTray {
   // StatusIcon. Returns NULL if the StatusIcon could not be created.
   StatusIcon* CreateStatusIcon(StatusIconType type,
                                const gfx::ImageSkia& image,
-                               const base::string16& tool_tip);
+                               const std::u16string& tool_tip);
 
   // Removes |icon| from this status tray.
   void RemoveStatusIcon(StatusIcon* icon);
@@ -55,7 +55,7 @@ class StatusTray {
   virtual std::unique_ptr<StatusIcon> CreatePlatformStatusIcon(
       StatusIconType type,
       const gfx::ImageSkia& image,
-      const base::string16& tool_tip) = 0;
+      const std::u16string& tool_tip) = 0;
 
   // Returns the list of active status icons so subclasses can operate on them.
   const StatusIcons& status_icons() const { return status_icons_; }

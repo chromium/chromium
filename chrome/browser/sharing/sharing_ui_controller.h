@@ -46,7 +46,7 @@ class SharingUiController {
   virtual ~SharingUiController();
 
   // Title of the dialog.
-  virtual base::string16 GetTitle(SharingDialogType dialog_type);
+  virtual std::u16string GetTitle(SharingDialogType dialog_type);
   // Called when user chooses a synced device to complete the task.
   virtual void OnDeviceChosen(const syncer::DeviceInfo& device) = 0;
   // Called when user chooses a local app to complete the task.
@@ -55,14 +55,14 @@ class SharingUiController {
   virtual sync_pb::SharingSpecificFields::EnabledFeatures
   GetRequiredFeature() = 0;
   virtual const gfx::VectorIcon& GetVectorIcon() const = 0;
-  virtual base::string16 GetTextForTooltipAndAccessibleName() const = 0;
+  virtual std::u16string GetTextForTooltipAndAccessibleName() const = 0;
   // Get the name of the feature to be used as a prefix for the metric name.
   virtual SharingFeatureName GetFeatureMetricsPrefix() const = 0;
   // Describes the content type of shared data.
-  virtual base::string16 GetContentType() const = 0;
+  virtual std::u16string GetContentType() const = 0;
   // Returns the message to be shown in the body of error dialog based on
   // |send_result_|.
-  virtual base::string16 GetErrorDialogText() const;
+  virtual std::u16string GetErrorDialogText() const;
 
   // Called by the SharingDialog when it is being closed.
   virtual void OnDialogClosed(SharingDialog* dialog);
@@ -114,7 +114,7 @@ class SharingUiController {
   // Shows a new SharingDialog and closes the old one.
   void ShowNewDialog(SharingDialogData dialog_data);
 
-  base::string16 GetTargetDeviceName() const;
+  std::u16string GetTargetDeviceName() const;
 
   // Called after a message got sent to a device. Shows a new error dialog if
   // |success| is false and updates the omnibox icon.

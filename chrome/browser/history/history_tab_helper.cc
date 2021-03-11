@@ -108,7 +108,7 @@ history::HistoryAddPageArgs HistoryTabHelper::CreateHistoryAddPageArgs(
       history::SOURCE_BROWSED, navigation_handle->DidReplaceEntry(),
       !content_suggestions_navigation, /*floc_allowed=*/false,
       navigation_handle->IsSameDocument()
-          ? base::Optional<base::string16>(
+          ? base::Optional<std::u16string>(
                 navigation_handle->GetWebContents()->GetTitle())
           : base::nullopt);
 

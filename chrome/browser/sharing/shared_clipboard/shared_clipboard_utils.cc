@@ -13,7 +13,7 @@
 #include "content/public/browser/browser_context.h"
 
 bool ShouldOfferSharedClipboard(content::BrowserContext* browser_context,
-                                const base::string16& text) {
+                                const std::u16string& text) {
   // Check Chrome enterprise policy for Shared Clipboard.
   Profile* profile = Profile::FromBrowserContext(browser_context);
   if (profile &&

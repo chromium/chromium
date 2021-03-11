@@ -59,9 +59,9 @@ DesktopMediaIDToDisplayMediaInformation(
                                                     logical_surface, cursor);
 }
 
-base::string16 GetStopSharingUIString(
-    const base::string16& application_title,
-    const base::string16& registered_extension_name,
+std::u16string GetStopSharingUIString(
+    const std::u16string& application_title,
+    const std::u16string& registered_extension_name,
     bool capture_audio,
     content::DesktopMediaID::Type capture_type) {
   if (!capture_audio) {
@@ -128,7 +128,7 @@ base::string16 GetStopSharingUIString(
       }
     }
   }
-  return base::string16();
+  return std::u16string();
 }
 
 std::string DeviceNamePrefix(
@@ -166,8 +166,8 @@ std::unique_ptr<content::MediaStreamUI> GetDevicesForDesktopCapture(
     bool capture_audio,
     bool disable_local_echo,
     bool display_notification,
-    const base::string16& application_title,
-    const base::string16& registered_extension_name) {
+    const std::u16string& application_title,
+    const std::u16string& registered_extension_name) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   DVLOG(2) << __func__ << ": media_id " << media_id.ToString()

@@ -34,7 +34,7 @@ bool ObsoleteSystem::IsObsoleteNowOrSoon() {
 }
 
 // static
-base::string16 ObsoleteSystem::LocalizedObsoleteString() {
+std::u16string ObsoleteSystem::LocalizedObsoleteString() {
   // We check for an obsolete CPU first so that we don't nudge users through
   // an OS upgrade, only to find out that they need a new computer anyway.
   return IsObsoleteCpu()

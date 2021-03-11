@@ -328,7 +328,7 @@ TEST_F(PlatformNotificationServiceTest, NextPersistentNotificationId) {
 #if BUILDFLAG(ENABLE_EXTENSIONS)
 
 TEST_F(PlatformNotificationServiceTest, DisplayNameForContextMessage) {
-  base::string16 display_name =
+  std::u16string display_name =
       service()->DisplayNameForContextMessage(GURL("https://chrome.com/"));
 
   EXPECT_TRUE(display_name.empty());

@@ -266,7 +266,7 @@ TEST_F(NotificationPlatformBridgeMacTest, TestDisplayProgress) {
   ASSERT_EQ(1u, [displayedAlerts count]);
 
   NSDictionary* deliveredNotification = [displayedAlerts objectAtIndex:0];
-  base::string16 expected =
+  std::u16string expected =
       base::FormatPercent(kSamplePercent) + base::UTF8ToUTF16(" - Title");
   EXPECT_NSEQ(base::SysUTF16ToNSString(expected),
               [deliveredNotification objectForKey:@"title"]);

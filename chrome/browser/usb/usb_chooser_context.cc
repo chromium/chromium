@@ -68,7 +68,7 @@ std::pair<int, int> GetDeviceIds(const base::Value& object) {
   return std::make_pair(vendor_id, product_id);
 }
 
-base::string16 GetDeviceNameFromIds(int vendor_id, int product_id) {
+std::u16string GetDeviceNameFromIds(int vendor_id, int product_id) {
 #if !defined(OS_ANDROID)
   const char* product_name =
       device::UsbIds::GetProductName(vendor_id, product_id);
@@ -106,7 +106,7 @@ base::string16 GetDeviceNameFromIds(int vendor_id, int product_id) {
 
 base::Value DeviceIdsToValue(int vendor_id, int product_id) {
   base::Value device_value(base::Value::Type::DICTIONARY);
-  base::string16 device_name = GetDeviceNameFromIds(vendor_id, product_id);
+  std::u16string device_name = GetDeviceNameFromIds(vendor_id, product_id);
 
   device_value.SetStringKey(kDeviceNameKey, device_name);
   device_value.SetIntKey(kVendorIdKey, vendor_id);
@@ -421,7 +421,7 @@ bool UsbChooserContext::IsValidObject(const base::Value& object) {
           object.FindStringKey(kGuidKey));
 }
 
-base::string16 UsbChooserContext::GetObjectDisplayName(
+std::u16string UsbChooserContext::GetObjectDisplayName(
     const base::Value& object) {
   const std::string* name = object.FindStringKey(kDeviceNameKey);
   DCHECK(name);

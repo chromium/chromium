@@ -123,7 +123,7 @@ bool SerialChooserContext::IsValidObject(const base::Value& object) {
 #endif  // defined(OS_WIN)
 }
 
-base::string16 SerialChooserContext::GetObjectDisplayName(
+std::u16string SerialChooserContext::GetObjectDisplayName(
     const base::Value& object) {
   const std::string* name = object.FindStringKey(kPortNameKey);
   DCHECK(name);

@@ -141,7 +141,7 @@ class ProfileManager : public content::NotificationObserver,
   // immediately. Should be called on the UI thread.
   void CreateProfileAsync(const base::FilePath& profile_path,
                           const CreateCallback& callback,
-                          const base::string16& name,
+                          const std::u16string& name,
                           const std::string& icon_url);
 
   // Returns true if the profile pointer is known to point to an existing
@@ -191,7 +191,7 @@ class ProfileManager : public content::NotificationObserver,
   // and CREATE_STATUS_CREATED) so binding parameters with bind::Passed() is
   // prohibited. Returns the file path to the profile that will be created
   // asynchronously.
-  static base::FilePath CreateMultiProfileAsync(const base::string16& name,
+  static base::FilePath CreateMultiProfileAsync(const std::u16string& name,
                                                 const std::string& icon_url,
                                                 const CreateCallback& callback);
 

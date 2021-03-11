@@ -301,8 +301,8 @@ bool RenameDesktopShortcut(const base::FilePath& old_shortcut_path,
 // This function updates |profile_shortcuts| and |desktop_contents| respectively
 // when renaming occurs.
 void RenameChromeDesktopShortcutForProfile(
-    const base::string16& old_profile_name,
-    const base::string16& new_profile_name,
+    const std::u16string& old_profile_name,
+    const std::u16string& new_profile_name,
     std::set<base::FilePath>* profile_shortcuts,
     std::set<base::FilePath>* desktop_contents) {
   DCHECK(profile_shortcuts);
@@ -400,9 +400,9 @@ struct CreateOrUpdateShortcutsParams {
   // The path for this profile.
   base::FilePath profile_path;
   // The profile name before this update. Empty on create.
-  base::string16 old_profile_name;
+  std::u16string old_profile_name;
   // The new profile name.
-  base::string16 profile_name;
+  std::u16string profile_name;
 
   // If true, this is for a shortcut to a single profile, which won't have a
   // badged icon or the name of profile in the shortcut name.
@@ -459,14 +459,14 @@ void CreateOrUpdateDesktopShortcutsAndIconForProfile(
   if (params.old_profile_name != params.profile_name || params.single_profile) {
     RenameChromeDesktopShortcutForProfile(
         params.old_profile_name,
-        params.single_profile ? base::string16() : params.profile_name,
+        params.single_profile ? std::u16string() : params.profile_name,
         &shortcuts, &desktop_contents);
   }
   // Rename default named profile shortcuts as well, e.g., Chrome.lnk, by
   // passing "" for the old profile name.
   if (params.action ==
       ProfileShortcutManagerWin::UPDATE_NON_PROFILE_SHORTCUTS) {
-    RenameChromeDesktopShortcutForProfile(base::string16(), params.profile_name,
+    RenameChromeDesktopShortcutForProfile(std::u16string(), params.profile_name,
                                           &shortcuts, &desktop_contents);
   }
 
@@ -489,7 +489,7 @@ void CreateOrUpdateDesktopShortcutsAndIconForProfile(
       shortcuts.empty()) {
     const std::wstring shortcut_name =
         profiles::internal::GetUniqueShortcutFilenameForProfile(
-            params.single_profile ? base::string16() : params.profile_name,
+            params.single_profile ? std::u16string() : params.profile_name,
             desktop_contents);
     shortcuts.insert(base::FilePath(shortcut_name));
     operation = ShellUtil::SHELL_SHORTCUT_CREATE_IF_NO_SYSTEM_LEVEL;
@@ -570,7 +570,7 @@ void DeleteDesktopShortcuts(
           default_profile_path.value()));
     }
     properties.set_shortcut_name(
-        profiles::internal::GetShortcutFilenameForProfile(base::string16()));
+        profiles::internal::GetShortcutFilenameForProfile(std::u16string()));
     ShellUtil::CreateOrUpdateShortcut(
         ShellUtil::SHORTCUT_LOCATION_DESKTOP, properties,
         ShellUtil::SHELL_SHORTCUT_CREATE_IF_NO_SYSTEM_LEVEL);
@@ -603,10 +603,10 @@ bool HasAnyProfileShortcuts(const base::FilePath& profile_path) {
 // instead of limiting the profile's name to |kMaxProfileShortcutFileNameLength|
 // characters.
 std::wstring SanitizeShortcutProfileNameString(
-    const base::string16& profile_name) {
-  base::string16 sanitized = profile_name;
+    const std::u16string& profile_name) {
+  std::u16string sanitized = profile_name;
   size_t pos = sanitized.find_first_of(kReservedCharacters);
-  while (pos != base::string16::npos) {
+  while (pos != std::u16string::npos) {
     sanitized[pos] = L' ';
     pos = sanitized.find_first_of(kReservedCharacters, pos + 1);
   }
@@ -632,7 +632,7 @@ base::FilePath GetProfileIconPath(const base::FilePath& profile_path) {
   return profile_path.Append(kProfileIconFileName);
 }
 
-std::wstring GetShortcutFilenameForProfile(const base::string16& profile_name) {
+std::wstring GetShortcutFilenameForProfile(const std::u16string& profile_name) {
   std::wstring shortcut_name;
   if (!profile_name.empty()) {
     shortcut_name.append(SanitizeShortcutProfileNameString(profile_name));
@@ -646,7 +646,7 @@ std::wstring GetShortcutFilenameForProfile(const base::string16& profile_name) {
 }
 
 std::wstring GetUniqueShortcutFilenameForProfile(
-    const base::string16& profile_name,
+    const std::u16string& profile_name,
     const std::set<base::FilePath>& excludes) {
   std::set<std::wstring> excludes_names;
   std::transform(excludes.begin(), excludes.end(),
@@ -665,7 +665,7 @@ std::wstring GetUniqueShortcutFilenameForProfile(
 
 // Corresponds to GetUniqueShortcutFilenameForProfile.
 ShortcutFilenameMatcher::ShortcutFilenameMatcher(
-    const base::string16& profile_name)
+    const std::u16string& profile_name)
     : profile_shortcut_filename_(GetShortcutFilenameForProfile(profile_name)),
       lnk_ext_(installer::kLnkExt),
       profile_shortcut_name_(profile_shortcut_filename_) {
@@ -816,7 +816,7 @@ void ProfileShortcutManagerWin::GetShortcutProperties(
   DCHECK(entry);
 
   // The shortcut shouldn't include the profile name if there is only 1 profile.
-  base::string16 shortcut_profile_name;
+  std::u16string shortcut_profile_name;
   if (storage.GetNumberOfProfiles() > 1u)
     shortcut_profile_name = entry->GetName();
 
@@ -848,7 +848,7 @@ void ProfileShortcutManagerWin::OnProfileAdded(
 
 void ProfileShortcutManagerWin::OnProfileWasRemoved(
     const base::FilePath& profile_path,
-    const base::string16& profile_name) {
+    const std::u16string& profile_name) {
   ProfileAttributesStorage& storage =
       profile_manager_->GetProfileAttributesStorage();
   // If there is only one profile remaining, remove the badging information
@@ -877,7 +877,7 @@ void ProfileShortcutManagerWin::OnProfileWasRemoved(
 
 void ProfileShortcutManagerWin::OnProfileNameChanged(
     const base::FilePath& profile_path,
-    const base::string16& old_profile_name) {
+    const std::u16string& old_profile_name) {
   CreateOrUpdateShortcutsForProfileAtPath(profile_path, UPDATE_EXISTING_ONLY,
                                           IGNORE_NON_PROFILE_SHORTCUTS,
                                           /*incognito=*/false);

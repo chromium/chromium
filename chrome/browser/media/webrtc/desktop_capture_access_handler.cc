@@ -69,7 +69,7 @@ namespace {
 
 // Helper to get title of the calling application shown in the screen capture
 // notification.
-base::string16 GetApplicationTitle(content::WebContents* web_contents,
+std::u16string GetApplicationTitle(content::WebContents* web_contents,
                                    const extensions::Extension* extension) {
   // Use extension name as title for extensions and host/origin for drive-by
   // web.
@@ -197,7 +197,7 @@ void DesktopCaptureAccessHandler::ProcessScreenCaptureAccessRequest(
     // chrome::ShowQuestionMessageBox() starts a nested run loop which may
     // allow |web_contents| to be destroyed on the UI thread before the messag
     // box is closed. See http://crbug.com/326690.
-    base::string16 application_title =
+    std::u16string application_title =
         GetApplicationTitle(web_contents, extension);
 #if !defined(OS_ANDROID)
     gfx::NativeWindow parent_window =
@@ -210,11 +210,11 @@ void DesktopCaptureAccessHandler::ProcessScreenCaptureAccessRequest(
     // own user approval UI.
     bool is_approved = IsDefaultApproved(extension);
     if (!is_approved) {
-      base::string16 application_name =
+      std::u16string application_name =
           base::UTF8ToUTF16(request.security_origin.spec());
       if (extension)
         application_name = base::UTF8ToUTF16(extension->name());
-      base::string16 confirmation_text = l10n_util::GetStringFUTF16(
+      std::u16string confirmation_text = l10n_util::GetStringFUTF16(
           request.audio_type == blink::mojom::MediaStreamType::NO_SERVICE
               ? IDS_MEDIA_SCREEN_CAPTURE_CONFIRMATION_TEXT
               : IDS_MEDIA_SCREEN_AND_AUDIO_CAPTURE_CONFIRMATION_TEXT,

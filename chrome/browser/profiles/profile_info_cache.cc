@@ -68,7 +68,7 @@ ProfileInfoCache::ProfileInfoCache(PrefService* prefs,
        !it.IsAtEnd(); it.Advance()) {
     base::DictionaryValue* info = nullptr;
     cache->GetDictionaryWithoutPathExpansion(it.key(), &info);
-    base::string16 name;
+    std::u16string name;
     info->GetString(ProfileAttributesEntry::kNameKey, &name);
 
     bool using_default_name;
@@ -122,9 +122,9 @@ ProfileInfoCache::ProfileInfoCache(PrefService* prefs,
 ProfileInfoCache::~ProfileInfoCache() = default;
 
 void ProfileInfoCache::AddProfileToCache(const base::FilePath& profile_path,
-                                         const base::string16& name,
+                                         const std::u16string& name,
                                          const std::string& gaia_id,
-                                         const base::string16& user_name,
+                                         const std::u16string& user_name,
                                          bool is_consented_primary_account,
                                          size_t icon_index,
                                          const std::string& supervised_user_id,
@@ -179,7 +179,7 @@ void ProfileInfoCache::DisableProfileMetricsForTesting() {
 void ProfileInfoCache::NotifyIfProfileNamesHaveChanged() {
   std::vector<ProfileAttributesEntry*> entries = GetAllProfilesAttributes();
   for (ProfileAttributesEntry* entry : entries) {
-    base::string16 old_display_name = entry->GetLastNameToDisplay();
+    std::u16string old_display_name = entry->GetLastNameToDisplay();
     if (entry->HasProfileNameChanged()) {
       for (auto& observer : observer_list_)
         observer.OnProfileNameChanged(entry->GetPath(), old_display_name);
@@ -219,7 +219,7 @@ void ProfileInfoCache::DeleteProfileFromCache(
     return;
   }
 
-  base::string16 name = entry->GetName();
+  std::u16string name = entry->GetName();
 
   for (auto& observer : observer_list_)
     observer.OnProfileWillBeRemoved(profile_path);
@@ -561,7 +561,7 @@ void ProfileInfoCache::InitEntryWithKey(const std::string& key) {
 void ProfileInfoCache::MigrateLegacyProfileNamesAndRecomputeIfNeeded() {
   std::vector<ProfileAttributesEntry*> entries = GetAllProfilesAttributes();
   for (size_t i = 0; i < entries.size(); i++) {
-    base::string16 profile_name = entries[i]->GetLocalProfileName();
+    std::u16string profile_name = entries[i]->GetLocalProfileName();
     if (!entries[i]->IsUsingDefaultName())
       continue;
 
@@ -608,9 +608,9 @@ void ProfileInfoCache::DownloadAvatars() {
 }
 
 void ProfileInfoCache::AddProfile(const base::FilePath& profile_path,
-                                  const base::string16& name,
+                                  const std::u16string& name,
                                   const std::string& gaia_id,
-                                  const base::string16& user_name,
+                                  const std::u16string& user_name,
                                   bool is_consented_primary_account,
                                   size_t icon_index,
                                   const std::string& supervised_user_id,

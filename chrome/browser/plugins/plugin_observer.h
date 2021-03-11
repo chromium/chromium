@@ -37,7 +37,7 @@ class PluginObserver : public content::WebContentsObserver,
 
   // Public for tests only.
   static void CreatePluginObserverInfoBar(InfoBarService* infobar_service,
-                                          const base::string16& plugin_name);
+                                          const std::u16string& plugin_name);
 
  private:
   class PluginPlaceholderHost;

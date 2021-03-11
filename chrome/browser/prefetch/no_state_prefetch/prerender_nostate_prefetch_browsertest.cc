@@ -1442,7 +1442,7 @@ IN_PROC_BROWSER_TEST_F(NoStatePrefetchBrowserTest, IssuesIdlePriorityRequests) {
 // will intercepts a prefetch request.
 IN_PROC_BROWSER_TEST_F(NoStatePrefetchBrowserTest, ServiceWorkerIntercept) {
   // Register and launch a SW.
-  base::string16 expected_title = base::ASCIIToUTF16("SW READY");
+  std::u16string expected_title = base::ASCIIToUTF16("SW READY");
   content::TitleWatcher title_watcher(GetActiveWebContents(), expected_title);
   ui_test_utils::NavigateToURL(current_browser(),
                                src_server()->GetURL(kServiceWorkerLoader));
@@ -1758,9 +1758,9 @@ IN_PROC_BROWSER_TEST_F(NoStatePrefetchOmniboxBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(NoStatePrefetchBrowserTest, OpenTaskManager) {
-  const base::string16 any_tab = MatchTaskManagerTab("*");
-  const base::string16 original = MatchTaskManagerTab("Prefetch Loader");
-  const base::string16 prefetch_page = MatchTaskManagerTab("Prefetch Page");
+  const std::u16string any_tab = MatchTaskManagerTab("*");
+  const std::u16string original = MatchTaskManagerTab("Prefetch Loader");
+  const std::u16string prefetch_page = MatchTaskManagerTab("Prefetch Page");
 
   // Show the task manager. This populates the model.
   chrome::OpenTaskManager(current_browser());

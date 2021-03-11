@@ -117,12 +117,12 @@ class TaskManagerInterface {
   virtual bool IsTaskOnBackgroundedProcess(TaskId task_id) const = 0;
 
   // Returns the title of the task with |task_id|.
-  virtual const base::string16& GetTitle(TaskId task_id) const = 0;
+  virtual const std::u16string& GetTitle(TaskId task_id) const = 0;
 
   // Returns the name of the profile associated with the browser context of the
   // render view host that the task with |task_id| represents (if that task
   // represents a renderer).
-  virtual base::string16 GetProfileName(TaskId task_id) const = 0;
+  virtual std::u16string GetProfileName(TaskId task_id) const = 0;
 
   // Returns the favicon of the task with |task_id|.
   virtual const gfx::ImageSkia& GetIcon(TaskId task_id) const = 0;

@@ -32,7 +32,7 @@ std::unique_ptr<RendererTask> BackgroundContentsTag::CreateTask(
       extensions::ExtensionRegistry::Get(profile)->enabled_extensions();
   const extensions::Extension* extension =
       extensions_set.GetByID(application_id);
-  base::string16 application_name;
+  std::u16string application_name;
   if (extension)
     application_name = base::UTF8ToUTF16(extension->name());
 

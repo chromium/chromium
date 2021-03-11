@@ -16,7 +16,7 @@ infobars::InfoBar* HungPluginInfoBarDelegate::Create(
     InfoBarService* infobar_service,
     HungPluginTabHelper* helper,
     int plugin_child_id,
-    const base::string16& plugin_name) {
+    const std::u16string& plugin_name) {
   return infobar_service->AddInfoBar(infobar_service->CreateConfirmInfoBar(
       std::unique_ptr<ConfirmInfoBarDelegate>(new HungPluginInfoBarDelegate(
           helper, plugin_child_id, plugin_name))));
@@ -25,7 +25,7 @@ infobars::InfoBar* HungPluginInfoBarDelegate::Create(
 HungPluginInfoBarDelegate::HungPluginInfoBarDelegate(
     HungPluginTabHelper* helper,
     int plugin_child_id,
-    const base::string16& plugin_name)
+    const std::u16string& plugin_name)
     : ConfirmInfoBarDelegate(),
       helper_(helper),
       plugin_child_id_(plugin_child_id),
@@ -46,7 +46,7 @@ const gfx::VectorIcon& HungPluginInfoBarDelegate::GetVectorIcon() const {
   return kExtensionCrashedIcon;
 }
 
-base::string16 HungPluginInfoBarDelegate::GetMessageText() const {
+std::u16string HungPluginInfoBarDelegate::GetMessageText() const {
   return message_;
 }
 
@@ -54,7 +54,7 @@ int HungPluginInfoBarDelegate::GetButtons() const {
   return BUTTON_OK;
 }
 
-base::string16 HungPluginInfoBarDelegate::GetButtonLabel(
+std::u16string HungPluginInfoBarDelegate::GetButtonLabel(
     InfoBarButton button) const {
   return button_text_;
 }

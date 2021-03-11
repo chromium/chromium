@@ -47,7 +47,7 @@ class VR_UI_EXPORT TextInput : public UiElement {
   void RequestUnfocus() override;
   void UpdateInput(const EditedText& info) override;
 
-  void SetHintText(const base::string16& text);
+  void SetHintText(const std::u16string& text);
   void SetTextColor(SkColor color);
   void SetHintColor(SkColor color);
   void SetSelectionColors(const TextSelectionColors& colors);

@@ -78,7 +78,7 @@ class GeneratedIconImageSource : public gfx::CanvasImageSource {
     // The text rect's size needs to be odd to center the text correctly.
     gfx::Rect text_rect(icon_inset, icon_inset, icon_size + 1, icon_size + 1);
     canvas->DrawStringRectWithFlags(
-        base::string16(1, icon_letter_),
+        std::u16string(1, icon_letter_),
         gfx::FontList(gfx::Font(font_name, font_size)),
         color_utils::GetColorWithMaxContrast(color_), text_rect,
         gfx::Canvas::TEXT_ALIGN_CENTER);
@@ -192,14 +192,14 @@ char16_t GenerateIconLetterFromUrl(const GURL& app_url) {
   }
 
   // Translate punycode into unicode before retrieving the first letter.
-  const base::string16 string_for_display =
+  const std::u16string string_for_display =
       url_formatter::IDNToUnicode(app_url_part);
 
   char16_t icon_letter = base::i18n::ToUpper(string_for_display)[0];
   return icon_letter;
 }
 
-char16_t GenerateIconLetterFromAppName(const base::string16& app_name) {
+char16_t GenerateIconLetterFromAppName(const std::u16string& app_name) {
   CHECK(!app_name.empty());
   return base::i18n::ToUpper(app_name)[0];
 }
@@ -246,7 +246,7 @@ SizeToBitmap ResizeIconsAndGenerateMissing(
 
 SizeToBitmap GenerateIcons(const std::string& app_name,
                            SkColor background_icon_color) {
-  const base::string16 app_name_utf16 = base::UTF8ToUTF16(app_name);
+  const std::u16string app_name_utf16 = base::UTF8ToUTF16(app_name);
   const char16_t icon_letter = GenerateIconLetterFromAppName(app_name_utf16);
 
   SizeToBitmap icons;

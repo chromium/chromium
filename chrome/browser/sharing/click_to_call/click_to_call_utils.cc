@@ -91,5 +91,5 @@ std::string GetUnescapedURLContent(const GURL& url) {
                                 url::DecodeURLMode::kUTF8OrIsomorphic,
                                 &unescaped_content);
   return base::UTF16ToUTF8(
-      base::string16(unescaped_content.data(), unescaped_content.length()));
+      std::u16string(unescaped_content.data(), unescaped_content.length()));
 }

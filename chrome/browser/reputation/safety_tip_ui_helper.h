@@ -28,9 +28,9 @@ void OpenHelpCenterFromSafetyTip(content::WebContents* web_contents);
 // Get the titles, descriptions, and button strings or IDs needed to describe
 // the applicable warning type.  Handles both Android and desktop warnings.
 // |suggested_url| is the suggested URL to navigate to, used in some strings.
-base::string16 GetSafetyTipTitle(security_state::SafetyTipStatus warning_type,
+std::u16string GetSafetyTipTitle(security_state::SafetyTipStatus warning_type,
                                  const GURL& suggested_url);
-base::string16 GetSafetyTipDescription(
+std::u16string GetSafetyTipDescription(
     security_state::SafetyTipStatus warning_type,
     const GURL& suggested_url);
 int GetSafetyTipLeaveButtonId(security_state::SafetyTipStatus warning_type);

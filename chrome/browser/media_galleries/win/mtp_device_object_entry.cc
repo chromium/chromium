@@ -10,7 +10,7 @@ MTPDeviceObjectEntry::MTPDeviceObjectEntry() : is_directory(false), size(0) {
 }
 
 MTPDeviceObjectEntry::MTPDeviceObjectEntry(const std::wstring& object_id,
-                                           const base::string16& object_name,
+                                           const std::u16string& object_name,
                                            bool is_directory,
                                            int64_t size,
                                            const base::Time& last_modified_time)

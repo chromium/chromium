@@ -23,7 +23,7 @@ class TabContentsTask : public RendererTask {
   Type GetType() const override;
 
  private:
-  base::string16 GetCurrentTitle() const;
+  std::u16string GetCurrentTitle() const;
 
   DISALLOW_COPY_AND_ASSIGN(TabContentsTask);
 };

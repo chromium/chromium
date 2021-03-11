@@ -42,7 +42,7 @@ IN_PROC_BROWSER_TEST_F(NotificationPlatformBridgeChromeOsBrowserTest,
                        Shutdown) {
   message_center::Notification notification(
       message_center::NOTIFICATION_TYPE_SIMPLE, "notification-id",
-      base::string16(), base::string16(), gfx::Image(), base::string16(),
+      std::u16string(), std::u16string(), gfx::Image(), std::u16string(),
       GURL(), message_center::NotifierId(),
       message_center::RichNotificationData(),
       base::MakeRefCounted<message_center::ThunkNotificationDelegate>(

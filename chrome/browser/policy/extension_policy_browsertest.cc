@@ -2382,7 +2382,7 @@ class ExtensionPolicyTest2Contexts : public PolicyTest {
     profile_manager->CreateProfileAsync(
         path_profile,
         base::BindRepeating(&policy::OnProfileInitialized, &profile, &run_loop),
-        base::string16(), std::string());
+        std::u16string(), std::string());
 
     // Run the message loop to allow profile creation to take place; the loop is
     // terminated by OnProfileInitialized calling the loop's QuitClosure when

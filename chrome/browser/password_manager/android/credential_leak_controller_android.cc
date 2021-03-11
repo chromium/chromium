@@ -21,7 +21,7 @@ CredentialLeakControllerAndroid::CredentialLeakControllerAndroid(
     password_manager::CredentialLeakType leak_type,
     password_manager::CompromisedSitesCount saved_sites,
     const GURL& origin,
-    const base::string16& username,
+    const std::u16string& username,
     ui::WindowAndroid* window_android)
     : leak_type_(leak_type),
       saved_sites_(saved_sites),
@@ -77,20 +77,20 @@ void CredentialLeakControllerAndroid::OnCloseDialog() {
   delete this;
 }
 
-base::string16 CredentialLeakControllerAndroid::GetAcceptButtonLabel() const {
+std::u16string CredentialLeakControllerAndroid::GetAcceptButtonLabel() const {
   return password_manager::GetAcceptButtonLabel(leak_type_);
 }
 
-base::string16 CredentialLeakControllerAndroid::GetCancelButtonLabel() const {
+std::u16string CredentialLeakControllerAndroid::GetCancelButtonLabel() const {
   return password_manager::GetCancelButtonLabel();
 }
 
-base::string16 CredentialLeakControllerAndroid::GetDescription() const {
-    return password_manager::GetDescriptionWithCount(leak_type_, origin_,
-                                                     saved_sites_);
+std::u16string CredentialLeakControllerAndroid::GetDescription() const {
+  return password_manager::GetDescriptionWithCount(leak_type_, origin_,
+                                                   saved_sites_);
 }
 
-base::string16 CredentialLeakControllerAndroid::GetTitle() const {
+std::u16string CredentialLeakControllerAndroid::GetTitle() const {
   return password_manager::GetTitle(leak_type_);
 }
 

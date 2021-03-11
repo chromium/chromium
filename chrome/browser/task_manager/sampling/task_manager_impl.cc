@@ -214,11 +214,11 @@ bool TaskManagerImpl::IsTaskOnBackgroundedProcess(TaskId task_id) const {
   return GetTaskGroupByTaskId(task_id)->is_backgrounded();
 }
 
-const base::string16& TaskManagerImpl::GetTitle(TaskId task_id) const {
+const std::u16string& TaskManagerImpl::GetTitle(TaskId task_id) const {
   return GetTaskByTaskId(task_id)->title();
 }
 
-base::string16 TaskManagerImpl::GetProfileName(TaskId task_id) const {
+std::u16string TaskManagerImpl::GetProfileName(TaskId task_id) const {
   return GetTaskByTaskId(task_id)->GetProfileName();
 }
 

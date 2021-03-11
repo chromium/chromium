@@ -39,7 +39,7 @@ class SerialChooserContext : public permissions::ChooserContextBase,
 
   // ChooserContextBase:
   bool IsValidObject(const base::Value& object) override;
-  base::string16 GetObjectDisplayName(const base::Value& object) override;
+  std::u16string GetObjectDisplayName(const base::Value& object) override;
 
   // In addition these methods from ChooserContextBase are overridden in order
   // to expose ephemeral devices through the public interface.

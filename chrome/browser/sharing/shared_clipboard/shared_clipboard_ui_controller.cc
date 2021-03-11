@@ -38,13 +38,13 @@ SharedClipboardUiController::SharedClipboardUiController(
 SharedClipboardUiController::~SharedClipboardUiController() = default;
 
 void SharedClipboardUiController::OnDeviceSelected(
-    const base::string16& text,
+    const std::u16string& text,
     const syncer::DeviceInfo& device) {
   text_ = text;
   OnDeviceChosen(device);
 }
 
-base::string16 SharedClipboardUiController::GetTitle(
+std::u16string SharedClipboardUiController::GetTitle(
     SharingDialogType dialog_type) {
   // Shared clipboard only shows error dialogs.
   DCHECK_EQ(SharingDialogType::kErrorDialog, dialog_type);
@@ -84,11 +84,11 @@ void SharedClipboardUiController::OnAppChosen(const SharingApp& app) {
   // Do nothing - there is no apps
 }
 
-base::string16 SharedClipboardUiController::GetContentType() const {
+std::u16string SharedClipboardUiController::GetContentType() const {
   return l10n_util::GetStringUTF16(IDS_BROWSER_SHARING_CONTENT_TYPE_TEXT);
 }
 
-base::string16 SharedClipboardUiController::GetErrorDialogText() const {
+std::u16string SharedClipboardUiController::GetErrorDialogText() const {
   if (send_result() == SharingSendMessageResult::kPayloadTooLarge) {
     return l10n_util::GetStringUTF16(
         IDS_BROWSER_SHARING_SHARED_CLIPBOARD_ERROR_DIALOG_TEXT_PAYLOAD_TOO_LARGE);
@@ -101,7 +101,7 @@ const gfx::VectorIcon& SharedClipboardUiController::GetVectorIcon() const {
   return kCopyIcon;
 }
 
-base::string16 SharedClipboardUiController::GetTextForTooltipAndAccessibleName()
+std::u16string SharedClipboardUiController::GetTextForTooltipAndAccessibleName()
     const {
   return l10n_util::GetStringUTF16(IDS_OMNIBOX_TOOLTIP_SHARED_CLIPBOARD);
 }

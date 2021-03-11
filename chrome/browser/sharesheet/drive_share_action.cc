@@ -23,7 +23,7 @@ DriveShareAction::DriveShareAction() = default;
 
 DriveShareAction::~DriveShareAction() = default;
 
-const base::string16 DriveShareAction::GetActionName() {
+const std::u16string DriveShareAction::GetActionName() {
   return l10n_util::GetStringUTF16(IDS_FILE_BROWSER_SHARE_BUTTON_LABEL);
 }
 

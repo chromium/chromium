@@ -129,46 +129,46 @@ class MockPasswordManagerClient
   PasswordStore* password_store_;
 };
 
-base::string16 password_for_str(const base::string16& user) {
+std::u16string password_for_str(const std::u16string& user) {
   return l10n_util::GetStringFUTF16(
       IDS_PASSWORD_MANAGER_ACCESSORY_PASSWORD_DESCRIPTION, user);
 }
 
-base::string16 password_for_str(const std::string& user) {
+std::u16string password_for_str(const std::string& user) {
   return password_for_str(ASCIIToUTF16(user));
 }
 
-base::string16 passwords_empty_str(const std::string& domain) {
+std::u16string passwords_empty_str(const std::string& domain) {
   return l10n_util::GetStringFUTF16(
       IDS_PASSWORD_MANAGER_ACCESSORY_PASSWORD_LIST_EMPTY_MESSAGE,
       ASCIIToUTF16(domain));
 }
 
-base::string16 passwords_title_str(const std::string& domain) {
+std::u16string passwords_title_str(const std::string& domain) {
   return l10n_util::GetStringFUTF16(
       IDS_PASSWORD_MANAGER_ACCESSORY_PASSWORD_LIST_TITLE, ASCIIToUTF16(domain));
 }
 
-base::string16 no_user_str() {
+std::u16string no_user_str() {
   return l10n_util::GetStringUTF16(IDS_PASSWORD_MANAGER_EMPTY_LOGIN);
 }
 
-base::string16 show_other_passwords_str() {
+std::u16string show_other_passwords_str() {
   return l10n_util::GetStringUTF16(
       IDS_PASSWORD_MANAGER_ACCESSORY_USE_OTHER_PASSWORD);
 }
 
-base::string16 show_other_username_str() {
+std::u16string show_other_username_str() {
   return l10n_util::GetStringUTF16(
       IDS_PASSWORD_MANAGER_ACCESSORY_USE_OTHER_USERNAME);
 }
 
-base::string16 manage_passwords_str() {
+std::u16string manage_passwords_str() {
   return l10n_util::GetStringUTF16(
       IDS_PASSWORD_MANAGER_ACCESSORY_ALL_PASSWORDS_LINK);
 }
 
-base::string16 generate_password_str() {
+std::u16string generate_password_str() {
   return l10n_util::GetStringUTF16(
       IDS_PASSWORD_MANAGER_ACCESSORY_GENERATE_PASSWORD_BUTTON_TITLE);
 }
@@ -176,7 +176,7 @@ base::string16 generate_password_str() {
 // Creates a AccessorySheetDataBuilder object with a "Manage passwords..."
 // footer.
 AccessorySheetData::Builder PasswordAccessorySheetDataBuilder(
-    const base::string16& title) {
+    const std::u16string& title) {
   return AccessorySheetData::Builder(AccessoryTabType::PASSWORDS, title)
       .AppendFooterCommand(manage_passwords_str(),
                            autofill::AccessoryAction::MANAGE_PASSWORDS);
@@ -323,7 +323,7 @@ TEST_F(PasswordAccessoryControllerTest, SortsAlphabeticalDuringTransform) {
       CredentialCache::IsOriginBlocklisted(false),
       url::Origin::Create(GURL(kExampleSite)));
 
-  AccessorySheetData result(AccessoryTabType::PASSWORDS, base::string16());
+  AccessorySheetData result(AccessoryTabType::PASSWORDS, std::u16string());
   EXPECT_CALL(mock_manual_filling_controller_, RefreshSuggestions)
       .WillOnce(SaveArg<0>(&result));
 
@@ -482,7 +482,7 @@ TEST_F(PasswordAccessoryControllerTest, HidesEntriesForPSLMatchedOriginsInV1) {
       CredentialCache::IsOriginBlocklisted(false),
       url::Origin::Create(GURL(kExampleSite)));
 
-  AccessorySheetData result(AccessoryTabType::PASSWORDS, base::string16());
+  AccessorySheetData result(AccessoryTabType::PASSWORDS, std::u16string());
   EXPECT_CALL(mock_manual_filling_controller_, RefreshSuggestions)
       .WillOnce(SaveArg<0>(&result));
 
@@ -913,7 +913,7 @@ TEST_F(PasswordAccessoryControllerWithTestStoreTest, AddsShowOtherPasswords) {
   CreateSheetController();
 
   // Trigger suggestion refresh(es) and store the latest refresh only.
-  AccessorySheetData last_sheet(AccessoryTabType::COUNT, base::string16());
+  AccessorySheetData last_sheet(AccessoryTabType::COUNT, std::u16string());
   EXPECT_CALL(mock_manual_filling_controller_, RefreshSuggestions)
       .WillRepeatedly(testing::SaveArg<0>(&last_sheet));
   controller()->RefreshSuggestionsForField(
@@ -938,7 +938,7 @@ TEST_F(PasswordAccessoryControllerWithTestStoreTest, AddsShowOtherUsername) {
   CreateSheetController();
 
   // Trigger suggestion refresh(es) and store the latest refresh only.
-  AccessorySheetData last_sheet(AccessoryTabType::COUNT, base::string16());
+  AccessorySheetData last_sheet(AccessoryTabType::COUNT, std::u16string());
   EXPECT_CALL(mock_manual_filling_controller_, RefreshSuggestions)
       .WillRepeatedly(testing::SaveArg<0>(&last_sheet));
   controller()->RefreshSuggestionsForField(
@@ -967,7 +967,7 @@ TEST_F(PasswordAccessoryControllerWithTestStoreTest,
   FocusWebContentsOnMainFrame();
 
   // Trigger suggestion refresh(es) and store the latest refresh only.
-  AccessorySheetData last_sheet(AccessoryTabType::COUNT, base::string16());
+  AccessorySheetData last_sheet(AccessoryTabType::COUNT, std::u16string());
   EXPECT_CALL(mock_manual_filling_controller_, RefreshSuggestions)
       .WillRepeatedly(testing::SaveArg<0>(&last_sheet));
   controller()->RefreshSuggestionsForField(
@@ -992,7 +992,7 @@ TEST_F(PasswordAccessoryControllerWithTestStoreTest,
   CreateSheetController();
 
   // Trigger suggestion refresh(es) and store the latest refresh only.
-  AccessorySheetData last_sheet(AccessoryTabType::COUNT, base::string16());
+  AccessorySheetData last_sheet(AccessoryTabType::COUNT, std::u16string());
   EXPECT_CALL(mock_manual_filling_controller_, RefreshSuggestions)
       .WillRepeatedly(testing::SaveArg<0>(&last_sheet));
   controller()->RefreshSuggestionsForField(
@@ -1016,7 +1016,7 @@ TEST_F(PasswordAccessoryControllerWithTestStoreTest,
   CreateSheetController(security_state::WARNING);
 
   // Trigger suggestion refresh(es) and store the latest refresh only.
-  AccessorySheetData last_sheet(AccessoryTabType::COUNT, base::string16());
+  AccessorySheetData last_sheet(AccessoryTabType::COUNT, std::u16string());
   EXPECT_CALL(mock_manual_filling_controller_, RefreshSuggestions)
       .WillRepeatedly(testing::SaveArg<0>(&last_sheet));
   controller()->RefreshSuggestionsForField(
@@ -1038,7 +1038,7 @@ TEST_F(PasswordAccessoryControllerWithTestStoreTest,
   CreateSheetController();
 
   // Trigger suggestion refresh(es) and store the latest refresh only.
-  AccessorySheetData last_sheet(AccessoryTabType::COUNT, base::string16());
+  AccessorySheetData last_sheet(AccessoryTabType::COUNT, std::u16string());
   EXPECT_CALL(mock_manual_filling_controller_, RefreshSuggestions)
       .WillRepeatedly(testing::SaveArg<0>(&last_sheet));
   controller()->RefreshSuggestionsForField(

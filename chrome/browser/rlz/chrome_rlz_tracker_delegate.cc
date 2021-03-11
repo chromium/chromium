@@ -142,7 +142,7 @@ bool ChromeRLZTrackerDelegate::ShouldEnableZeroDelayForTesting() {
       ::switches::kTestType);
 }
 
-bool ChromeRLZTrackerDelegate::GetLanguage(base::string16* language) {
+bool ChromeRLZTrackerDelegate::GetLanguage(std::u16string* language) {
 #if defined(OS_WIN)
   std::wstring wide_language;
   bool result = GoogleUpdateSettings::GetLanguage(&wide_language);
@@ -157,7 +157,7 @@ bool ChromeRLZTrackerDelegate::GetLanguage(base::string16* language) {
 #endif
 }
 
-bool ChromeRLZTrackerDelegate::GetReferral(base::string16* referral) {
+bool ChromeRLZTrackerDelegate::GetReferral(std::u16string* referral) {
 #if defined(OS_WIN)
   std::wstring wide_referral;
   bool result = GoogleUpdateSettings::GetReferral(&wide_referral);

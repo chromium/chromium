@@ -52,7 +52,7 @@ UpdatePasswordInfoBarDelegate::~UpdatePasswordInfoBarDelegate() {
   }
 }
 
-base::string16 UpdatePasswordInfoBarDelegate::GetBranding() const {
+std::u16string UpdatePasswordInfoBarDelegate::GetBranding() const {
   return l10n_util::GetStringUTF16(is_smartlock_branding_enabled_
                                        ? IDS_PASSWORD_MANAGER_SMART_LOCK
                                        : IDS_PASSWORD_MANAGER_TITLE_BRAND);
@@ -67,7 +67,7 @@ UpdatePasswordInfoBarDelegate::GetCurrentForms() const {
   return passwords_state_.GetCurrentForms();
 }
 
-const base::string16& UpdatePasswordInfoBarDelegate::GetDefaultUsername()
+const std::u16string& UpdatePasswordInfoBarDelegate::GetDefaultUsername()
     const {
   return passwords_state_.form_manager()
       ->GetPendingCredentials()
@@ -75,7 +75,7 @@ const base::string16& UpdatePasswordInfoBarDelegate::GetDefaultUsername()
 }
 
 unsigned int UpdatePasswordInfoBarDelegate::GetDisplayUsernames(
-    std::vector<base::string16>* usernames) {
+    std::vector<std::u16string>* usernames) {
   return UpdatePasswordInfoBarDelegate::GetDisplayUsernames(
       GetCurrentForms(), GetDefaultUsername(), usernames);
 }
@@ -84,8 +84,8 @@ unsigned int UpdatePasswordInfoBarDelegate::GetDisplayUsernames(
 unsigned int UpdatePasswordInfoBarDelegate::GetDisplayUsernames(
     const std::vector<std::unique_ptr<password_manager::PasswordForm>>&
         current_forms,
-    const base::string16& default_username,
-    std::vector<base::string16>* usernames) {
+    const std::u16string& default_username,
+    std::vector<std::u16string>* usernames) {
   unsigned int selected_username = 0;
   // TODO(crbug.com/1054410): Fix the update logic to use all best matches,
   // rather than current_forms which is best_matches without PSL-matched
@@ -141,7 +141,7 @@ int UpdatePasswordInfoBarDelegate::GetButtons() const {
   return BUTTON_OK;
 }
 
-base::string16 UpdatePasswordInfoBarDelegate::GetButtonLabel(
+std::u16string UpdatePasswordInfoBarDelegate::GetButtonLabel(
     InfoBarButton button) const {
   return l10n_util::GetStringUTF16(IDS_PASSWORD_MANAGER_UPDATE_BUTTON);
 }

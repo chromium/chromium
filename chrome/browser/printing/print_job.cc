@@ -85,7 +85,7 @@ PrintJob::~PrintJob() {
 }
 
 void PrintJob::Initialize(std::unique_ptr<PrinterQuery> query,
-                          const base::string16& name,
+                          const std::u16string& name,
                           uint32_t page_count) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   DCHECK(!worker_);

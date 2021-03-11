@@ -514,7 +514,7 @@ Profile* SyncTest::MakeProfileForUISignin(base::FilePath profile_path) {
   ProfileManager::CreateCallback create_callback =
       base::BindRepeating(&CreateProfileCallback, run_loop.QuitClosure());
   profile_manager->CreateProfileAsync(profile_path, create_callback,
-                                      base::string16(), std::string());
+                                      std::u16string(), std::string());
   run_loop.Run();
   return profile_manager->GetProfileByPath(profile_path);
 }

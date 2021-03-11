@@ -207,7 +207,7 @@ class OsIntegrationManager {
   virtual bool UnregisterShortcutsMenu(const AppId& app_id);
   virtual void UnregisterRunOnOsLogin(const AppId& app_id,
                                       const base::FilePath& profile_path,
-                                      const base::string16& shortcut_title,
+                                      const std::u16string& shortcut_title,
                                       UnregisterRunOnOsLoginCallback callback);
   virtual void DeleteShortcuts(const AppId& app_id,
                                const base::FilePath& shortcuts_data_dir,

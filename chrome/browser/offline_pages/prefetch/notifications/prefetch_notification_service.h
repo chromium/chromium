@@ -28,8 +28,8 @@ class PrefetchNotificationService : public KeyedService {
       base::OnceCallback<void(std::unique_ptr<notifications::ThrottleConfig>)>;
 
   // Schedules an prefetch notification.
-  virtual void Schedule(const base::string16& title,
-                        const base::string16& body) = 0;
+  virtual void Schedule(const std::u16string& title,
+                        const std::u16string& body) = 0;
 
   // Called when the notification is clicked by the user.
   virtual void OnClick() = 0;

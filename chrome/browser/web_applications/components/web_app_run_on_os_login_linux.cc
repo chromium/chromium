@@ -33,7 +33,7 @@ bool RegisterRunOnOsLogin(const ShortcutInfo& shortcut_info) {
 
 bool UnregisterRunOnOsLogin(const std::string& app_id,
                             const base::FilePath& profile_path,
-                            const base::string16& shortcut_title) {
+                            const std::u16string& shortcut_title) {
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
   base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,
                                                 base::BlockingType::MAY_BLOCK);

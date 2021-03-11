@@ -33,14 +33,14 @@ class ProfileNameVerifierObserver : public ProfileInfoCacheObserver {
   void OnProfileAdded(const base::FilePath& profile_path) override;
   void OnProfileWillBeRemoved(const base::FilePath& profile_path) override;
   void OnProfileWasRemoved(const base::FilePath& profile_path,
-                           const base::string16& profile_name) override;
+                           const std::u16string& profile_name) override;
   void OnProfileNameChanged(const base::FilePath& profile_path,
-                            const base::string16& old_profile_name) override;
+                            const std::u16string& old_profile_name) override;
   void OnProfileAvatarChanged(const base::FilePath& profile_path) override;
 
  private:
   ProfileInfoCache* GetCache();
-  std::map<base::FilePath, base::string16> profile_names_;
+  std::map<base::FilePath, std::u16string> profile_names_;
   TestingProfileManager* testing_profile_manager_;
 };
 
@@ -56,8 +56,8 @@ class ProfileInfoCacheTest : public testing::Test {
   base::FilePath GetProfilePath(const std::string& base_name);
   void ResetCache();
   void RemoveObserver();
-  base::string16 GetConcatenation(const base::string16& gaia_name,
-                                  const base::string16 profile_name);
+  std::u16string GetConcatenation(const std::u16string& gaia_name,
+                                  const std::u16string profile_name);
 
  private:
   // BrowserTaskEnvironment needs to be up through the destruction of the

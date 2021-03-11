@@ -76,8 +76,8 @@ gfx::NativeView AllPasswordsBottomSheetController::GetNativeView() {
 }
 
 void AllPasswordsBottomSheetController::OnCredentialSelected(
-    const base::string16 username,
-    const base::string16 password) {
+    const std::u16string username,
+    const std::u16string password) {
   const bool is_password_field =
       focused_field_type_ == FocusedFieldType::kFillablePasswordField;
   DCHECK(driver_);

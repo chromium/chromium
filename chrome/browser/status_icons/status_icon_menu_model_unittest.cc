@@ -95,7 +95,7 @@ TEST_F(StatusIconMenuModelTest, SetProperties) {
 
   // Ensure changes to one menu item does not affect the other menu item.
   EXPECT_FALSE(menu_model()->GetAcceleratorForCommandId(1, &accel_arg));
-  EXPECT_EQ(base::string16(), menu_model()->GetLabelForCommandId(1));
+  EXPECT_EQ(std::u16string(), menu_model()->GetLabelForCommandId(1));
   EXPECT_TRUE(menu_model()->GetIconForCommandId(0).IsEmpty());
 
   // Menu state should have changed 6 times in this test.

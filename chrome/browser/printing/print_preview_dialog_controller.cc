@@ -85,8 +85,8 @@ class PrintPreviewDialogDelegate : public ui::WebDialogDelegate,
   ~PrintPreviewDialogDelegate() override;
 
   ui::ModalType GetDialogModalType() const override;
-  base::string16 GetDialogTitle() const override;
-  base::string16 GetAccessibleDialogTitle() const override;
+  std::u16string GetDialogTitle() const override;
+  std::u16string GetAccessibleDialogTitle() const override;
   GURL GetDialogContentURL() const override;
   void GetWebUIMessageHandlers(
       std::vector<WebUIMessageHandler*>* handlers) const override;
@@ -116,12 +116,12 @@ ui::ModalType PrintPreviewDialogDelegate::GetDialogModalType() const {
   return ui::MODAL_TYPE_WINDOW;
 }
 
-base::string16 PrintPreviewDialogDelegate::GetDialogTitle() const {
+std::u16string PrintPreviewDialogDelegate::GetDialogTitle() const {
   // Only used on Windows? UI folks prefer no title.
-  return base::string16();
+  return std::u16string();
 }
 
-base::string16 PrintPreviewDialogDelegate::GetAccessibleDialogTitle() const {
+std::u16string PrintPreviewDialogDelegate::GetAccessibleDialogTitle() const {
   return l10n_util::GetStringUTF16(IDS_PRINT_PREVIEW_TITLE);
 }
 

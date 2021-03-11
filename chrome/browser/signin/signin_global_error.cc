@@ -61,11 +61,11 @@ int SigninGlobalError::MenuItemCommandID() {
   return IDC_SHOW_SIGNIN_ERROR;
 }
 
-base::string16 SigninGlobalError::MenuItemLabel() {
+std::u16string SigninGlobalError::MenuItemLabel() {
   // Notify the user if there's an auth error the user should know about.
   if (error_controller_->HasError())
     return l10n_util::GetStringUTF16(IDS_SYNC_SIGN_IN_ERROR_WRENCH_MENU_ITEM);
-  return base::string16();
+  return std::u16string();
 }
 
 void SigninGlobalError::ExecuteMenuItem(Browser* browser) {
@@ -100,12 +100,12 @@ bool SigninGlobalError::HasBubbleView() {
   return !GetBubbleViewMessages().empty();
 }
 
-base::string16 SigninGlobalError::GetBubbleViewTitle() {
+std::u16string SigninGlobalError::GetBubbleViewTitle() {
   return l10n_util::GetStringUTF16(IDS_SIGNIN_ERROR_BUBBLE_VIEW_TITLE);
 }
 
-std::vector<base::string16> SigninGlobalError::GetBubbleViewMessages() {
-  std::vector<base::string16> messages;
+std::vector<std::u16string> SigninGlobalError::GetBubbleViewMessages() {
+  std::vector<std::u16string> messages;
 
   // If the user isn't signed in, no need to display an error bubble.
   auto* identity_manager =
@@ -142,7 +142,7 @@ std::vector<base::string16> SigninGlobalError::GetBubbleViewMessages() {
   return messages;
 }
 
-base::string16 SigninGlobalError::GetBubbleViewAcceptButtonLabel() {
+std::u16string SigninGlobalError::GetBubbleViewAcceptButtonLabel() {
   // If the auth service is unavailable, don't give the user the option to try
   // signing in again.
   if (error_controller_->auth_error().state() ==
@@ -154,8 +154,8 @@ base::string16 SigninGlobalError::GetBubbleViewAcceptButtonLabel() {
   }
 }
 
-base::string16 SigninGlobalError::GetBubbleViewCancelButtonLabel() {
-  return base::string16();
+std::u16string SigninGlobalError::GetBubbleViewCancelButtonLabel() {
+  return std::u16string();
 }
 
 void SigninGlobalError::OnBubbleViewDidClose(Browser* browser) {

@@ -49,8 +49,8 @@ constexpr char kNearbyNotifier[] = "nearby";
 message_center::Notification CreateNearbyNotification(const std::string& id) {
   message_center::Notification notification(
       message_center::NOTIFICATION_TYPE_SIMPLE, id,
-      /*title=*/base::string16(),
-      /*message=*/base::string16(),
+      /*title=*/std::u16string(),
+      /*message=*/std::u16string(),
       /*icon=*/gfx::Image(),
       l10n_util::GetStringUTF16(IDS_NEARBY_NOTIFICATION_SOURCE),
       /*origin_url=*/GURL(),
@@ -155,7 +155,7 @@ int GetTextAttachmentsNotCapitalizedStringId(
   }
 }
 
-base::string16 GetAttachmentsString(const ShareTarget& share_target,
+std::u16string GetAttachmentsString(const ShareTarget& share_target,
                                     bool use_capitalized_attachments) {
   size_t file_count = share_target.file_attachments.size();
   size_t text_count = share_target.text_attachments.size();
@@ -180,13 +180,13 @@ base::string16 GetAttachmentsString(const ShareTarget& share_target,
   return l10n_util::GetPluralStringFUTF16(resource_id, text_count + file_count);
 }
 
-base::string16 FormatNotificationTitle(const ShareTarget& share_target,
+std::u16string FormatNotificationTitle(const ShareTarget& share_target,
                                        int resource_id,
                                        bool use_capitalized_attachments) {
-  base::string16 attachments =
+  std::u16string attachments =
       GetAttachmentsString(share_target, use_capitalized_attachments);
 
-  base::string16 device_name = base::ASCIIToUTF16(share_target.device_name);
+  std::u16string device_name = base::ASCIIToUTF16(share_target.device_name);
   size_t attachment_count = share_target.file_attachments.size() +
                             share_target.text_attachments.size();
 
@@ -195,7 +195,7 @@ base::string16 FormatNotificationTitle(const ShareTarget& share_target,
       {attachments, device_name}, /*offsets=*/nullptr);
 }
 
-base::string16 GetProgressNotificationTitle(const ShareTarget& share_target) {
+std::u16string GetProgressNotificationTitle(const ShareTarget& share_target) {
   return FormatNotificationTitle(
       share_target,
       share_target.is_incoming ? IDS_NEARBY_NOTIFICATION_RECEIVE_PROGRESS_TITLE
@@ -203,7 +203,7 @@ base::string16 GetProgressNotificationTitle(const ShareTarget& share_target) {
       /*use_capitalized_attachments=*/false);
 }
 
-base::string16 GetSuccessNotificationTitle(const ShareTarget& share_target) {
+std::u16string GetSuccessNotificationTitle(const ShareTarget& share_target) {
   return FormatNotificationTitle(
       share_target,
       share_target.is_incoming ? IDS_NEARBY_NOTIFICATION_RECEIVE_SUCCESS_TITLE
@@ -211,7 +211,7 @@ base::string16 GetSuccessNotificationTitle(const ShareTarget& share_target) {
       /*use_capitalized_attachments=*/true);
 }
 
-base::string16 GetFailureNotificationTitle(const ShareTarget& share_target) {
+std::u16string GetFailureNotificationTitle(const ShareTarget& share_target) {
   return FormatNotificationTitle(
       share_target,
       share_target.is_incoming ? IDS_NEARBY_NOTIFICATION_RECEIVE_FAILURE_TITLE
@@ -219,7 +219,7 @@ base::string16 GetFailureNotificationTitle(const ShareTarget& share_target) {
       /*use_capitalized_attachments=*/false);
 }
 
-base::Optional<base::string16> GetFailureNotificationMessage(
+base::Optional<std::u16string> GetFailureNotificationMessage(
     TransferMetadata::Status status) {
   switch (status) {
     case TransferMetadata::Status::kTimedOut:
@@ -233,22 +233,22 @@ base::Optional<base::string16> GetFailureNotificationMessage(
   }
 }
 
-base::string16 GetConnectionRequestNotificationMessage(
+std::u16string GetConnectionRequestNotificationMessage(
     const ShareTarget& share_target,
     const TransferMetadata& transfer_metadata) {
-  base::string16 attachments =
+  std::u16string attachments =
       GetAttachmentsString(share_target, /*use_capitalized_attachments=*/false);
-  base::string16 device_name = base::ASCIIToUTF16(share_target.device_name);
+  std::u16string device_name = base::ASCIIToUTF16(share_target.device_name);
 
   size_t attachment_count = share_target.file_attachments.size() +
                             share_target.text_attachments.size();
-  base::string16 message = base::ReplaceStringPlaceholders(
+  std::u16string message = base::ReplaceStringPlaceholders(
       l10n_util::GetPluralStringFUTF16(
           IDS_NEARBY_NOTIFICATION_CONNECTION_REQUEST_MESSAGE, attachment_count),
       {device_name, attachments}, /*offsets=*/nullptr);
 
   if (transfer_metadata.token()) {
-    base::string16 token = l10n_util::GetStringFUTF16(
+    std::u16string token = l10n_util::GetStringFUTF16(
         IDS_NEARBY_SECURE_CONNECTION_ID,
         base::UTF8ToUTF16(*transfer_metadata.token()));
     message = base::StrCat({message, base::UTF8ToUTF16("\n"), token});
@@ -865,7 +865,7 @@ void NearbyNotificationManager::ShowFailure(
       CreateNearbyNotification(kNearbyNotificationId);
   notification.set_title(GetFailureNotificationTitle(share_target));
 
-  base::Optional<base::string16> message =
+  base::Optional<std::u16string> message =
       GetFailureNotificationMessage(transfer_metadata.status());
   if (message) {
     notification.set_message(*message);

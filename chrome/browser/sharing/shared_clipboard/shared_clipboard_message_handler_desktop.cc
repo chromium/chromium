@@ -34,7 +34,7 @@ void SharedClipboardMessageHandlerDesktop::ShowNotification(
 
   std::string notification_id = base::GenerateGUID();
 
-  base::string16 notification_title =
+  std::u16string notification_title =
       device_name.empty()
           ? l10n_util::GetStringUTF16(
                 IDS_CONTENT_CONTEXT_SHARING_SHARED_CLIPBOARD_NOTIFICATION_TITLE_UNKNOWN_DEVICE)
@@ -48,7 +48,7 @@ void SharedClipboardMessageHandlerDesktop::ShowNotification(
       l10n_util::GetStringUTF16(
           IDS_CONTENT_CONTEXT_SHARING_SHARED_CLIPBOARD_NOTIFICATION_DESCRIPTION),
       /* icon= */ gfx::Image(),
-      /* display_source= */ base::string16(),
+      /* display_source= */ std::u16string(),
       /* origin_url= */ GURL(), message_center::NotifierId(),
       message_center::RichNotificationData(),
       /* delegate= */ nullptr);

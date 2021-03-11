@@ -100,7 +100,7 @@ TEST(PrintJobTest, SimplePrint) {
                 content::NotificationService::AllSources());
   volatile bool check = false;
   scoped_refptr<PrintJob> job(new TestPrintJob(&check));
-  job->Initialize(std::make_unique<TestQuery>(), base::string16(), 1);
+  job->Initialize(std::make_unique<TestQuery>(), std::u16string(), 1);
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   job->SetSource(PrintJob::Source::PRINT_PREVIEW, /*source_id=*/"");
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)

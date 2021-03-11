@@ -39,7 +39,7 @@ class TaskManagerTester {
   int GetRowCount();
 
   // Get the title text of a particular |row|.
-  base::string16 GetRowTitle(int row);
+  std::u16string GetRowTitle(int row);
 
   // Hide or show a column. If a column is not visible its stats are not
   // necessarily gathered.

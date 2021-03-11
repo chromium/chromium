@@ -153,7 +153,7 @@ class NotificationPlatformBridgeWinUITest : public InProcessBrowserTest {
                        const GURL& origin,
                        const std::string& notification_id,
                        const base::Optional<int>& action_index,
-                       const base::Optional<base::string16>& reply,
+                       const base::Optional<std::u16string>& reply,
                        const base::Optional<bool>& by_user) {
     last_operation_ = operation;
     last_notification_type_ = notification_type;
@@ -206,7 +206,7 @@ class NotificationPlatformBridgeWinUITest : public InProcessBrowserTest {
                                   const GURL& origin,
                                   const std::string& notification_id,
                                   const base::Optional<int>& action_index,
-                                  const base::Optional<base::string16>& reply,
+                                  const base::Optional<std::u16string>& reply,
                                   const base::Optional<bool>& by_user) {
     return operation == last_operation_ &&
            notification_type == last_notification_type_ &&
@@ -222,7 +222,7 @@ class NotificationPlatformBridgeWinUITest : public InProcessBrowserTest {
   GURL last_origin_;
   std::string last_notification_id_;
   base::Optional<int> last_action_index_;
-  base::Optional<base::string16> last_reply_;
+  base::Optional<std::u16string> last_reply_;
   base::Optional<bool> last_by_user_;
 
   std::set<std::string> displayed_notifications_;
@@ -565,7 +565,7 @@ IN_PROC_BROWSER_TEST_F(NotificationPlatformBridgeWinUITest,
   // Show a new notification.
   message_center::Notification notification(
       message_center::NOTIFICATION_TYPE_SIMPLE, "notification_id", u"Text1",
-      u"Text2", gfx::Image(), base::string16(), GURL("https://example.com/"),
+      u"Text2", gfx::Image(), std::u16string(), GURL("https://example.com/"),
       message_center::NotifierId(), message_center::RichNotificationData(),
       nullptr);
   base::RunLoop display_run_loop;
@@ -609,7 +609,7 @@ IN_PROC_BROWSER_TEST_F(NotificationPlatformBridgeWinUITest, DisplayWithFakeAC) {
 
   auto notification = std::make_unique<message_center::Notification>(
       message_center::NOTIFICATION_TYPE_SIMPLE, "notification_id", u"Text1",
-      u"Text2", gfx::Image(), base::string16(), GURL("https://example.com/"),
+      u"Text2", gfx::Image(), std::u16string(), GURL("https://example.com/"),
       message_center::NotifierId(), message_center::RichNotificationData(),
       nullptr);
 

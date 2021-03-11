@@ -57,7 +57,7 @@ class SpeechRecognizerDelegate {
   // May include word timing information in |timing| if the speech recognizer is
   // an on device speech recognizer.
   virtual void OnSpeechResult(
-      const base::string16& text,
+      const std::u16string& text,
       bool is_final,
       const base::Optional<TranscriptTiming>& timing) = 0;
 

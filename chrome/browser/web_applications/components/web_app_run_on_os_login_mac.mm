@@ -22,7 +22,7 @@ bool RegisterRunOnOsLogin(const ShortcutInfo& shortcut_info) {
 
 bool UnregisterRunOnOsLogin(const std::string& app_id,
                             const base::FilePath& profile_path,
-                            const base::string16& shortcut_title) {
+                            const std::u16string& shortcut_title) {
   RemoveAppShimFromLoginItems(app_id);
   return true;
 }

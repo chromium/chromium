@@ -244,11 +244,11 @@ void PrivetNotificationService::AddNotification(
       message_center::ButtonInfo(l10n_util::GetStringUTF16(
           IDS_LOCAL_DISCOVERY_NOTIFICATIONS_DISABLE_BUTTON_LABEL)));
 
-  base::string16 title = l10n_util::GetPluralStringFUTF16(
+  std::u16string title = l10n_util::GetPluralStringFUTF16(
       IDS_LOCAL_DISCOVERY_NOTIFICATION_TITLE_PRINTER, devices_active);
-  base::string16 body = l10n_util::GetPluralStringFUTF16(
+  std::u16string body = l10n_util::GetPluralStringFUTF16(
       IDS_LOCAL_DISCOVERY_NOTIFICATION_CONTENTS_PRINTER, devices_active);
-  base::string16 product_name =
+  std::u16string product_name =
       l10n_util::GetStringUTF16(IDS_LOCAL_DISCOVERY_SERVICE_NAME_PRINTER);
 
   Profile* profile = Profile::FromBrowserContext(profile_);
@@ -349,7 +349,7 @@ PrivetNotificationDelegate::~PrivetNotificationDelegate() {
 
 void PrivetNotificationDelegate::Click(
     const base::Optional<int>& button_index,
-    const base::Optional<base::string16>& reply) {
+    const base::Optional<std::u16string>& reply) {
   if (!button_index)
     return;
 

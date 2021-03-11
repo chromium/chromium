@@ -19,8 +19,8 @@ namespace task_manager {
 
 namespace {
 
-base::string16 MakeTitle(int ids_vm_prefix, const std::string& vm_name) {
-  base::string16 title =
+std::u16string MakeTitle(int ids_vm_prefix, const std::string& vm_name) {
+  std::u16string title =
       l10n_util::GetStringFUTF16(ids_vm_prefix, base::UTF8ToUTF16(vm_name));
   base::i18n::AdjustStringForLocaleDirection(&title);
   return title;

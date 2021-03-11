@@ -51,7 +51,7 @@ class MockPasswordManagerDriver
  public:
   MOCK_METHOD(void,
               FillIntoFocusedField,
-              (bool, const base::string16&),
+              (bool, const std::u16string&),
               (override));
 };
 
@@ -67,7 +67,7 @@ class MockAllPasswordsBottomSheetView : public AllPasswordsBottomSheetView {
 class MockPasswordManagerClient
     : public password_manager::StubPasswordManagerClient {
  public:
-  MOCK_METHOD(void, OnPasswordSelected, (const base::string16&), (override));
+  MOCK_METHOD(void, OnPasswordSelected, (const std::u16string&), (override));
 };
 
 UiCredential MakeUiCredential(const std::string& username,

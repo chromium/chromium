@@ -48,10 +48,10 @@ class NotificationBuilder {
   explicit NotificationBuilder(const std::string& id)
       : notification_(message_center::NOTIFICATION_TYPE_SIMPLE,
                       id,
-                      base::string16(),
-                      base::string16(),
+                      std::u16string(),
+                      std::u16string(),
                       gfx::Image(),
-                      base::string16(),
+                      std::u16string(),
                       GURL(),
                       message_center::NotifierId(GURL()),
                       message_center::RichNotificationData(),
@@ -72,7 +72,7 @@ class NotificationBuilder {
     return *this;
   }
 
-  NotificationBuilder& SetMessage(const base::string16& message) {
+  NotificationBuilder& SetMessage(const std::u16string& message) {
     notification_.set_message(message);
     return *this;
   }
@@ -102,7 +102,7 @@ class NotificationBuilder {
     return *this;
   }
 
-  NotificationBuilder& SetTitle(const base::string16& title) {
+  NotificationBuilder& SetTitle(const std::u16string& title) {
     notification_.set_title(title);
     return *this;
   }
@@ -352,7 +352,7 @@ class NotificationPlatformBridgeLinuxTest : public BrowserWithTestWindowTest {
                        const GURL& origin,
                        const std::string& notification_id,
                        const base::Optional<int>& action_index,
-                       const base::Optional<base::string16>& reply,
+                       const base::Optional<std::u16string>& reply,
                        const base::Optional<bool>& by_user) {
     last_operation_ = operation;
     last_action_index_ = action_index;
@@ -453,7 +453,7 @@ class NotificationPlatformBridgeLinuxTest : public BrowserWithTestWindowTest {
 
   base::Optional<NotificationCommon::Operation> last_operation_;
   base::Optional<int> last_action_index_;
-  base::Optional<base::string16> last_reply_;
+  base::Optional<std::u16string> last_reply_;
 
  private:
   void DoInvokeAction(uint32_t dbus_id, const std::string& action) {

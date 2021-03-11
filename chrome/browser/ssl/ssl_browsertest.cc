@@ -1508,8 +1508,8 @@ IN_PROC_BROWSER_TEST_F(SSLUITestIgnoreLocalhostCertErrors,
 
   // We should see that the script tag in the page loaded and ran (and
   // wasn't blocked by the certificate error).
-  base::string16 title;
-  base::string16 expected_title = base::ASCIIToUTF16("This script has loaded");
+  std::u16string title;
+  std::u16string expected_title = base::ASCIIToUTF16("This script has loaded");
   ui_test_utils::GetCurrentTabTitle(browser(), &title);
   EXPECT_EQ(title, expected_title);
 }
@@ -1894,7 +1894,7 @@ IN_PROC_BROWSER_TEST_F(SSLUITest, TestWSSInvalidCertAndClose) {
   // Visit a page which waits for one TLS handshake failure.
   // The title will be changed to 'PASS'.
   ui_test_utils::NavigateToURL(browser(), wss_close_url);
-  const base::string16 result = watcher.WaitAndGetTitle();
+  const std::u16string result = watcher.WaitAndGetTitle();
   EXPECT_TRUE(base::LowerCaseEqualsASCII(result, "pass"));
 
   // Close tabs which contains the test page.
@@ -1930,7 +1930,7 @@ IN_PROC_BROWSER_TEST_F(SSLUITest, TestWSSInvalidCert) {
 
   // Test page run a WebSocket wss connection test. The result will be shown
   // as page title.
-  const base::string16 result = watcher.WaitAndGetTitle();
+  const std::u16string result = watcher.WaitAndGetTitle();
   EXPECT_TRUE(base::LowerCaseEqualsASCII(result, "pass"));
 }
 
@@ -1995,7 +1995,7 @@ IN_PROC_BROWSER_TEST_F(SSLUITestWithClientCert, TestWSSClientCert) {
   }
   EXPECT_EQ(net::OK,
             cert_db_->ImportFromPKCS12(public_slot.get(), pkcs12_data,
-                                       base::string16(), true, nullptr));
+                                       std::u16string(), true, nullptr));
 
   // Start WebSocket test server with TLS and client cert authentication.
   net::SpawnedTestServer::SSLOptions options(
@@ -2038,7 +2038,7 @@ IN_PROC_BROWSER_TEST_F(SSLUITestWithClientCert, TestWSSClientCert) {
 
   // Test page runs a WebSocket wss connection test. The result will be shown
   // as page title.
-  const base::string16 result = watcher.WaitAndGetTitle();
+  const std::u16string result = watcher.WaitAndGetTitle();
   EXPECT_TRUE(base::LowerCaseEqualsASCII(result, "pass"));
 }
 #endif  // defined(USE_NSS_CERTS)
@@ -3514,8 +3514,8 @@ class SSLUIWorkerFetchTest
                               strict_mixed_content_checking,
                               strictly_block_blockable_mixed_content);
 
-    const base::string16 loaded_title = base::ASCIIToUTF16("LOADED");
-    const base::string16 failed_title = base::ASCIIToUTF16("FAILED");
+    const std::u16string loaded_title = base::ASCIIToUTF16("LOADED");
+    const std::u16string failed_title = base::ASCIIToUTF16("FAILED");
 
     {
       // First load.
@@ -3617,8 +3617,8 @@ IN_PROC_BROWSER_TEST_P(SSLUIWorkerFetchTest,
 
   WebContents* tab = browser()->tab_strip_model()->GetActiveWebContents();
 
-  const base::string16 loaded_title = base::ASCIIToUTF16("LOADED");
-  const base::string16 failed_title = base::ASCIIToUTF16("FAILED");
+  const std::u16string loaded_title = base::ASCIIToUTF16("LOADED");
+  const std::u16string failed_title = base::ASCIIToUTF16("FAILED");
   content::TitleWatcher watcher(tab, loaded_title);
   watcher.AlsoWaitForTitle(failed_title);
 
@@ -3680,8 +3680,8 @@ IN_PROC_BROWSER_TEST_P(SSLUIWorkerFetchTest,
   EXPECT_FALSE(visible_security_state->ran_content_with_cert_errors);
   EXPECT_FALSE(visible_security_state->displayed_content_with_cert_errors);
 
-  const base::string16 loaded_title = base::ASCIIToUTF16("LOADED");
-  const base::string16 failed_title = base::ASCIIToUTF16("FAILED");
+  const std::u16string loaded_title = base::ASCIIToUTF16("LOADED");
+  const std::u16string failed_title = base::ASCIIToUTF16("FAILED");
   content::TitleWatcher watcher(tab, loaded_title);
   watcher.AlsoWaitForTitle(failed_title);
 
@@ -4075,7 +4075,7 @@ IN_PROC_BROWSER_TEST_F(SSLUITestIgnoreCertErrors, TestWSS) {
 
   // Test page run a WebSocket wss connection test. The result will be shown
   // as page title.
-  const base::string16 result = watcher.WaitAndGetTitle();
+  const std::u16string result = watcher.WaitAndGetTitle();
   EXPECT_TRUE(base::LowerCaseEqualsASCII(result, "pass"));
 }
 
@@ -4110,7 +4110,7 @@ IN_PROC_BROWSER_TEST_F(SSLUITestIgnoreCertErrorsBySPKIWSS,
 
   // Test page run a WebSocket wss connection test. The result will be shown
   // as page title.
-  const base::string16 result = watcher.WaitAndGetTitle();
+  const std::u16string result = watcher.WaitAndGetTitle();
   EXPECT_TRUE(base::LowerCaseEqualsASCII(result, "pass"));
 }
 #endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
@@ -4130,7 +4130,7 @@ IN_PROC_BROWSER_TEST_F(SSLUITestIgnoreCertErrorsBySPKIHTTPS, TestHTTPS) {
   // We should see no interstitial. The script tag in the page should have
   // loaded and ran (and wasn't blocked by the certificate error).
   ssl_test_util::CheckAuthenticatedState(tab, AuthState::NONE);
-  base::string16 title;
+  std::u16string title;
   ui_test_utils::GetCurrentTabTitle(browser(), &title);
   EXPECT_EQ(title, base::ASCIIToUTF16("This script has loaded"));
 }

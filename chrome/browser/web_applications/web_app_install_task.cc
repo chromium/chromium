@@ -580,8 +580,8 @@ void WebAppInstallTask::CheckForPlayStoreIntentOrGetIcons(
       !background_installation_ && manifest) {
     for (const auto& application : manifest->related_applications) {
       std::string id =
-          base::UTF16ToUTF8(application.id.value_or(base::string16()));
-      if (!base::EqualsASCII(application.platform.value_or(base::string16()),
+          base::UTF16ToUTF8(application.id.value_or(std::u16string()));
+      if (!base::EqualsASCII(application.platform.value_or(std::u16string()),
                              kChromeOsPlayPlatform)) {
         continue;
       }

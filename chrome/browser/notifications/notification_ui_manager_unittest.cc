@@ -52,8 +52,8 @@ class NotificationUIManagerTest : public BrowserWithTestWindowTest {
 
   const Notification GetANotification(const std::string& id) {
     return Notification(
-        message_center::NOTIFICATION_TYPE_SIMPLE, id, base::string16(),
-        base::string16(), gfx::Image(), base::string16(),
+        message_center::NOTIFICATION_TYPE_SIMPLE, id, std::u16string(),
+        std::u16string(), gfx::Image(), std::u16string(),
         GURL("chrome-extension://adflkjsdflkdsfdsflkjdsflkdjfs"),
         NotifierId(NotifierType::APPLICATION, "adflkjsdflkdsfdsflkjdsflkdjfs"),
         message_center::RichNotificationData(),

@@ -176,8 +176,8 @@ InsecureCredential MakeInsecureCredential(
 
 // Creates matcher for a given compromised credential
 auto ExpectCompromisedCredentialForUI(
-    const base::string16& display_username,
-    const base::string16& display_origin,
+    const std::u16string& display_username,
+    const std::u16string& display_origin,
     const GURL& url,
     const base::Optional<std::string>& package_name,
     const base::Optional<std::string>& change_password_url,

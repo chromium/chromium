@@ -534,9 +534,9 @@ bool SupervisedUserURLFilter::GetFilteringBehaviorForSubFrameURLWithAsyncChecks(
   return RunAsyncChecker(url, std::move(callback));
 }
 
-std::map<std::string, base::string16>
+std::map<std::string, std::u16string>
 SupervisedUserURLFilter::GetMatchingAllowlistTitles(const GURL& url) const {
-  std::map<std::string, base::string16> allowlists;
+  std::map<std::string, std::u16string> allowlists;
 
   std::set<URLMatcherConditionSet::ID> matching_ids =
       contents_->url_matcher.MatchURL(url);

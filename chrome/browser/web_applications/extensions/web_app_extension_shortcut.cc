@@ -65,7 +65,7 @@ void OnImageLoaded(std::unique_ptr<ShortcutInfo> shortcut_info,
 }
 
 void UpdateAllShortcutsForShortcutInfo(
-    const base::string16& old_app_title,
+    const std::u16string& old_app_title,
     base::OnceClosure callback,
     std::unique_ptr<ShortcutInfo> shortcut_info) {
   base::FilePath shortcut_data_dir =
@@ -271,7 +271,7 @@ void DeleteAllShortcuts(Profile* profile, const extensions::Extension* app) {
       shortcut_data_dir, std::move(shortcut_info), base::DoNothing());
 }
 
-void UpdateAllShortcuts(const base::string16& old_app_title,
+void UpdateAllShortcuts(const std::u16string& old_app_title,
                         Profile* profile,
                         const extensions::Extension* app,
                         base::OnceClosure callback) {

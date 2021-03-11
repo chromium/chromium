@@ -1911,7 +1911,7 @@ TEST_F(UkmPageLoadMetricsObserverTest, IsExistingBookmark) {
       BookmarkModelFactory::GetForBrowserContext(browser_context());
   ASSERT_TRUE(model);
   ASSERT_TRUE(
-      model->AddURL(model->bookmark_bar_node(), 0, base::string16(), url));
+      model->AddURL(model->bookmark_bar_node(), 0, std::u16string(), url));
 
   NavigateAndCommit(url);
 
@@ -1938,7 +1938,7 @@ TEST_F(UkmPageLoadMetricsObserverTest, IsNewBookmark) {
       BookmarkModelFactory::GetForBrowserContext(browser_context());
   ASSERT_TRUE(model);
   ASSERT_TRUE(
-      model->AddURL(model->bookmark_bar_node(), 0, base::string16(), url));
+      model->AddURL(model->bookmark_bar_node(), 0, std::u16string(), url));
 
   // Simulate closing the tab.
   DeleteContents();

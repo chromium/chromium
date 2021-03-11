@@ -93,7 +93,7 @@ class MockOsIntegrationManager : public OsIntegrationManager {
               UnregisterRunOnOsLogin,
               (const AppId& app_id,
                const base::FilePath& profile_path,
-               const base::string16& shortcut_title,
+               const std::u16string& shortcut_title,
                UnregisterRunOnOsLoginCallback callback),
               (override));
   MOCK_METHOD(void,

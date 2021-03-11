@@ -48,7 +48,7 @@ class VR_BASE_EXPORT BrowserUiInterface {
   virtual void SetSpeechRecognitionEnabled(bool enabled) = 0;
   virtual void SetHasOrCanRequestRecordAudioPermission(
       bool has_or_can_request_record_audio) = 0;
-  virtual void SetRecognitionResult(const base::string16& result) = 0;
+  virtual void SetRecognitionResult(const std::u16string& result) = 0;
   virtual void OnSpeechRecognitionStateChanged(int new_state) = 0;
   virtual void SetOmniboxSuggestions(
       std::vector<OmniboxSuggestion> suggestions) = 0;
@@ -68,7 +68,7 @@ class VR_BASE_EXPORT BrowserUiInterface {
   virtual void OnSwapContents(int new_content_id) = 0;
   virtual void SetDialogLocation(float x, float y) = 0;
   virtual void SetDialogFloating(bool floating) = 0;
-  virtual void ShowPlatformToast(const base::string16& text) = 0;
+  virtual void ShowPlatformToast(const std::u16string& text) = 0;
   virtual void CancelPlatformToast() = 0;
   virtual void OnContentBoundsChanged(int width, int height) = 0;
   virtual void PerformKeyboardInputForTesting(

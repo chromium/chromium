@@ -33,7 +33,7 @@ class UpdatePasswordInfoBarDelegate : public PasswordManagerInfoBarDelegate {
 
   ~UpdatePasswordInfoBarDelegate() override;
 
-  base::string16 GetBranding() const;
+  std::u16string GetBranding() const;
   bool is_smartlock_branding_enabled() const {
     return is_smartlock_branding_enabled_;
   }
@@ -47,18 +47,18 @@ class UpdatePasswordInfoBarDelegate : public PasswordManagerInfoBarDelegate {
   GetCurrentForms() const;
 
   // Returns the username of the saved credentials to be updated by default.
-  const base::string16& GetDefaultUsername() const;
+  const std::u16string& GetDefaultUsername() const;
 
   // Determines the usernames to be displayed in the update infobar and returns
   // the index of the one selected by default.
-  unsigned int GetDisplayUsernames(std::vector<base::string16>* usernames);
+  unsigned int GetDisplayUsernames(std::vector<std::u16string>* usernames);
 
   // Exposed for testing.
   static unsigned int GetDisplayUsernames(
       const std::vector<std::unique_ptr<password_manager::PasswordForm>>&
           current_forms,
-      const base::string16& default_username,
-      std::vector<base::string16>* usernames);
+      const std::u16string& default_username,
+      std::vector<std::u16string>* usernames);
 
  protected:
   // Makes a ctor available in tests.
@@ -75,13 +75,13 @@ class UpdatePasswordInfoBarDelegate : public PasswordManagerInfoBarDelegate {
   // ConfirmInfoBarDelegate:
   infobars::InfoBarDelegate::InfoBarIdentifier GetIdentifier() const override;
   int GetButtons() const override;
-  base::string16 GetButtonLabel(InfoBarButton button) const override;
+  std::u16string GetButtonLabel(InfoBarButton button) const override;
   bool Accept() override;
   void InfoBarDismissed() override;
   bool Cancel() override;
 
   ManagePasswordsState passwords_state_;
-  base::string16 branding_;
+  std::u16string branding_;
   bool is_smartlock_branding_enabled_;
 
   DISALLOW_COPY_AND_ASSIGN(UpdatePasswordInfoBarDelegate);

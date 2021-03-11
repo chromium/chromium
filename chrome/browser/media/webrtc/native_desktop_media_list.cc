@@ -174,7 +174,7 @@ void NativeDesktopMediaList::Worker::Refresh(
   }
 
   bool mutiple_sources = sources.size() > 1;
-  base::string16 title;
+  std::u16string title;
   for (size_t i = 0; i < sources.size(); ++i) {
     DesktopMediaID::Type type = DesktopMediaID::Type::TYPE_NONE;
     switch (type_) {

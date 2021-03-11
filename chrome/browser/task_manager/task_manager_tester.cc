@@ -90,7 +90,7 @@ int TaskManagerTester::GetRowCount() {
   return model_->RowCount();
 }
 
-base::string16 TaskManagerTester::GetRowTitle(int row) {
+std::u16string TaskManagerTester::GetRowTitle(int row) {
   return model_->GetText(row, IDS_TASK_MANAGER_TASK_COLUMN);
 }
 

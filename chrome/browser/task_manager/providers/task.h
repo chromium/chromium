@@ -62,14 +62,14 @@ class Task {
   // Create a task with the given |title| and the given favicon |icon|. This
   // task runs on a process whose handle is |handle|.
   // If |process_id| is not supplied, it will be determined by |handle|.
-  Task(const base::string16& title,
+  Task(const std::u16string& title,
        const gfx::ImageSkia* icon,
        base::ProcessHandle handle,
        base::ProcessId process_id = base::kNullProcessId);
   virtual ~Task();
 
   // Gets the name of the given |profile| from the ProfileAttributesStorage.
-  static base::string16 GetProfileNameFromProfile(Profile* profile);
+  static std::u16string GetProfileNameFromProfile(Profile* profile);
 
   // Activates this TaskManager's task by bringing its container to the front
   // (if possible).
@@ -121,7 +121,7 @@ class Task {
                                     int* out_error_code) const;
 
   // The name of the profile owning this task.
-  virtual base::string16 GetProfileName() const;
+  virtual std::u16string GetProfileName() const;
 
   // Returns the unique ID of the tab if this task represents a renderer
   // WebContents used for a tab. Returns SessionID::InvalidValue() if this task
@@ -172,7 +172,7 @@ class Task {
     return cumulative_bytes_sent_ + cumulative_bytes_read_;
   }
 
-  const base::string16& title() const { return title_; }
+  const std::u16string& title() const { return title_; }
   const gfx::ImageSkia& icon() const { return icon_; }
   const base::ProcessHandle& process_handle() const { return process_handle_; }
   const base::ProcessId& process_id() const { return process_id_; }
@@ -182,7 +182,7 @@ class Task {
   // |id| from the resource database and put in |*result_image|.
   // Returns |*result_image|.
   static gfx::ImageSkia* FetchIcon(int id, gfx::ImageSkia** result_image);
-  void set_title(const base::string16& new_title) { title_ = new_title; }
+  void set_title(const std::u16string& new_title) { title_ = new_title; }
   void set_icon(const gfx::ImageSkia& new_icon) { icon_ = new_icon; }
 
  private:
@@ -216,7 +216,7 @@ class Task {
   int64_t network_read_rate_;
 
   // The title of the task.
-  base::string16 title_;
+  std::u16string title_;
 
   // The favicon.
   gfx::ImageSkia icon_;

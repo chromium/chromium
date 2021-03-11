@@ -29,7 +29,7 @@ namespace {
 // succeeded.
 bool SyncToBookmark(const ReadingListEntry& entry, BookmarkNode* bookmark) {
   DCHECK(bookmark);
-  base::string16 title;
+  std::u16string title;
   if (!base::UTF8ToUTF16(entry.Title().c_str(), entry.Title().size(), &title)) {
     LOG(ERROR) << "Failed to convert the following title to string16:"
                << entry.Title();

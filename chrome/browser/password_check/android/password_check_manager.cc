@@ -27,7 +27,7 @@
 
 namespace {
 
-base::string16 GetDisplayUsername(const base::string16& username) {
+std::u16string GetDisplayUsername(const std::u16string& username) {
   return username.empty()
              ? l10n_util::GetStringUTF16(IDS_PASSWORD_MANAGER_EMPTY_LOGIN)
              : username;

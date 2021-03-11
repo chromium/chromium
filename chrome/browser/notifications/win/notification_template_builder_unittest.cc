@@ -70,7 +70,7 @@ class NotificationTemplateBuilderTest : public ::testing::Test {
         message_center::NOTIFICATION_TYPE_SIMPLE, kNotificationId,
         base::UTF8ToUTF16(kNotificationTitle),
         base::UTF8ToUTF16(kNotificationMessage), gfx::Image() /* icon */,
-        base::string16() /* display_source */, origin_url,
+        std::u16string() /* display_source */, origin_url,
         NotifierId(origin_url), RichNotificationData(), nullptr /* delegate */);
     // Set a fixed timestamp, to avoid having to test against current timestamp.
     notification.set_timestamp(FixedTime());

@@ -65,10 +65,10 @@ class MockEnterpriseStartupDialog : public EnterpriseStartupDialog {
   }
 
   MOCK_METHOD1(DisplayLaunchingInformationWithThrobber,
-               void(const base::string16&));
+               void(const std::u16string&));
   MOCK_METHOD2(DisplayErrorMessage,
-               void(const base::string16&,
-                    const base::Optional<base::string16>&));
+               void(const std::u16string&,
+                    const base::Optional<std::u16string>&));
   MOCK_METHOD0(IsShowing, bool());
 
   void SetCallback(EnterpriseStartupDialog::DialogResultCallback callback) {

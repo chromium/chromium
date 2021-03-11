@@ -145,7 +145,7 @@ class ProfileAttributesSortComparator {
   }
 
  private:
-  base::string16 GetValue(const ProfileAttributesEntry* const entry) const {
+  std::u16string GetValue(const ProfileAttributesEntry* const entry) const {
     if (use_local_name_)
       return entry->GetLocalProfileName();
 
@@ -288,9 +288,9 @@ ProfileAttributesStorage::GetAllProfilesAttributesSortedByLocalProfilName() {
   return GetAllProfilesAttributesSorted(true);
 }
 
-base::string16 ProfileAttributesStorage::ChooseNameForNewProfile(
+std::u16string ProfileAttributesStorage::ChooseNameForNewProfile(
     size_t icon_index) const {
-  base::string16 name;
+  std::u16string name;
   for (int name_index = 1; ; ++name_index) {
 #if !BUILDFLAG(IS_CHROMEOS_ASH) && !defined(OS_ANDROID)
     // Using native digits will break IsDefaultProfileName() below because
@@ -330,7 +330,7 @@ base::string16 ProfileAttributesStorage::ChooseNameForNewProfile(
 }
 
 bool ProfileAttributesStorage::IsDefaultProfileName(
-    const base::string16& name,
+    const std::u16string& name,
     bool include_check_for_legacy_profile_name) const {
   // Check whether it's one of the "Person %d" style names.
   std::string default_name_format = l10n_util::GetStringFUTF8(

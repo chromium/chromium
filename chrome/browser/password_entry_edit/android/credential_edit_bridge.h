@@ -22,7 +22,7 @@ class CredentialEditBridge {
   // shared.
   static std::unique_ptr<CredentialEditBridge> MaybeCreate(
       const password_manager::PasswordForm* credential,
-      std::vector<base::string16> existing_usernames,
+      std::vector<std::u16string> existing_usernames,
       password_manager::SavedPasswordsPresenter* saved_passwords_presenter,
       base::OnceClosure dismissal_callback,
       const base::android::JavaRef<jobject>& context,
@@ -49,7 +49,7 @@ class CredentialEditBridge {
  private:
   CredentialEditBridge(
       const password_manager::PasswordForm* credential,
-      std::vector<base::string16> existing_usernames,
+      std::vector<std::u16string> existing_usernames,
       password_manager::SavedPasswordsPresenter* saved_passwords_presenter,
       base::OnceClosure dismissal_callback,
       const base::android::JavaRef<jobject>& context,
@@ -58,18 +58,18 @@ class CredentialEditBridge {
 
   // Returns the URL or app for which the credential was saved, formatted
   // for display.
-  base::string16 GetDisplayURLOrAppName();
+  std::u16string GetDisplayURLOrAppName();
 
   // If the credential to be edited is a federated credential, it returns
   // the identity provider formatted for display. Otherwise, it returns an empty
   // string.
-  base::string16 GetDisplayFederationOrigin();
+  std::u16string GetDisplayFederationOrigin();
 
   // The credential to be edited.
   const password_manager::PasswordForm* credential_ = nullptr;
 
   // All the usernames saved for the current site/app.
-  std::vector<base::string16> existing_usernames_;
+  std::vector<std::u16string> existing_usernames_;
 
   // The backend to route the edit event to. Should be owned by the the owner of
   // the bridge.

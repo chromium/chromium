@@ -100,7 +100,7 @@ IN_PROC_BROWSER_TEST_F(TemplateURLScraperTest, ScrapeWithOnSubmit) {
   ui_test_utils::NavigateToURLBlockUntilNavigationsComplete(
       browser(), GURL("http://www.foo.com:" + port + "/"), 1);
 
-  base::string16 title;
+  std::u16string title;
   ui_test_utils::GetCurrentTabTitle(browser(), &title);
   ASSERT_EQ(base::ASCIIToUTF16("Submit handler TemplateURL scraping test"),
             title);

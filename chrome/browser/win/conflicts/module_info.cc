@@ -49,8 +49,8 @@ void PopulateModuleInfoData(const base::FilePath& module_path,
 // Returns the long path name given a short path name. A short path name is a
 // path that follows the 8.3 convention and has ~x in it. If the path is already
 // a long path name, the function returns the current path without modification.
-bool ConvertToLongPath(const base::string16& short_path,
-                       base::string16* long_path) {
+bool ConvertToLongPath(const std::u16string& short_path,
+                       std::u16string* long_path) {
   wchar_t long_path_buf[MAX_PATH];
   DWORD return_value =
       ::GetLongPathName(base::as_wcstr(short_path), long_path_buf, MAX_PATH);
@@ -153,7 +153,7 @@ bool IsBlockingEnabledInProcessTypes(uint32_t process_types) {
 namespace internal {
 
 void NormalizeInspectionResult(ModuleInspectionResult* inspection_result) {
-  base::string16 path = inspection_result->location;
+  std::u16string path = inspection_result->location;
   if (!ConvertToLongPath(path, &inspection_result->location))
     inspection_result->location = path;
 
@@ -163,7 +163,7 @@ void NormalizeInspectionResult(ModuleInspectionResult* inspection_result) {
   // Location contains the filename, so the last slash is where the path
   // ends.
   size_t last_slash = inspection_result->location.find_last_of('\\');
-  if (last_slash != base::string16::npos) {
+  if (last_slash != std::u16string::npos) {
     inspection_result->basename =
         inspection_result->location.substr(last_slash + 1);
     inspection_result->location =
@@ -180,7 +180,7 @@ void NormalizeInspectionResult(ModuleInspectionResult* inspection_result) {
   // Some version strings have things like (win7_rtm.090713-1255) appended
   // to them. Remove that.
   size_t first_space = inspection_result->version.find_first_of(u" ");
-  if (first_space != base::string16::npos)
+  if (first_space != std::u16string::npos)
     inspection_result->version =
         inspection_result->version.substr(0, first_space);
 }

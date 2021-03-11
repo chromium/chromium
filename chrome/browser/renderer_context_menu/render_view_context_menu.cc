@@ -698,13 +698,13 @@ void RenderViewContextMenu::AppendAllExtensionItems() {
   if (!menu_manager)
     return;
 
-  base::string16 printable_selection_text = PrintableSelectionText();
+  std::u16string printable_selection_text = PrintableSelectionText();
   EscapeAmpersands(&printable_selection_text);
 
   // Get a list of extension id's that have context menu items, and sort by the
   // top level context menu title of the extension.
-  std::vector<base::string16> sorted_menu_titles;
-  std::map<base::string16, std::vector<const Extension*>>
+  std::vector<std::u16string> sorted_menu_titles;
+  std::map<std::u16string, std::vector<const Extension*>>
       title_to_extensions_map;
   for (const auto& id : menu_manager->ExtensionIds()) {
     const Extension* extension = registry->GetExtensionById(
@@ -712,7 +712,7 @@ void RenderViewContextMenu::AppendAllExtensionItems() {
     // Platform apps have their context menus created directly in
     // AppendPlatformAppItems.
     if (extension && !extension->is_platform_app()) {
-      base::string16 menu_title = extension_items_.GetTopLevelContextMenuTitle(
+      std::u16string menu_title = extension_items_.GetTopLevelContextMenuTitle(
           id, printable_selection_text);
       title_to_extensions_map[menu_title].push_back(extension);
       sorted_menu_titles.push_back(menu_title);
@@ -769,7 +769,7 @@ void RenderViewContextMenu::AppendCurrentExtensionItems() {
 }
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
-base::string16 RenderViewContextMenu::FormatURLForClipboard(const GURL& url) {
+std::u16string RenderViewContextMenu::FormatURLForClipboard(const GURL& url) {
   DCHECK(!url.is_empty());
   DCHECK(url.is_valid());
 
@@ -1588,7 +1588,7 @@ void RenderViewContextMenu::AppendPageItems() {
             GetPrefs(browser_context_)));
     std::string locale = translate::TranslateManager::GetTargetLanguage(
         prefs.get(), language_model);
-    base::string16 language =
+    std::u16string language =
         l10n_util::GetDisplayNameForLocale(locale, locale, true);
     menu_model_.AddItem(
         IDC_CONTENT_CONTEXT_TRANSLATE,
@@ -1676,7 +1676,7 @@ void RenderViewContextMenu::AppendSearchProvider() {
   if (!selection_navigation_url_.is_valid())
     return;
 
-  base::string16 printable_selection_text = PrintableSelectionText();
+  std::u16string printable_selection_text = PrintableSelectionText();
   EscapeAmpersands(&printable_selection_text);
 
   if (AutocompleteMatch::IsSearchType(match.type)) {
@@ -2604,12 +2604,12 @@ void RenderViewContextMenu::NotifyMenuShown() {
     std::move(*cb).Run(this);
 }
 
-base::string16 RenderViewContextMenu::PrintableSelectionText() {
+std::u16string RenderViewContextMenu::PrintableSelectionText() {
   return gfx::TruncateString(params_.selection_text, kMaxSelectionTextLength,
                              gfx::WORD_BREAK);
 }
 
-void RenderViewContextMenu::EscapeAmpersands(base::string16* text) {
+void RenderViewContextMenu::EscapeAmpersands(std::u16string* text) {
   base::ReplaceChars(*text, base::ASCIIToUTF16("&"), base::ASCIIToUTF16("&&"),
                      text);
 }
@@ -2766,7 +2766,7 @@ bool RenderViewContextMenu::IsPasteEnabled() const {
   if (!(params_.edit_flags & ContextMenuDataEditFlags::kCanPaste))
     return false;
 
-  std::vector<base::string16> types;
+  std::vector<std::u16string> types;
   ui::Clipboard::GetForCurrentThread()->ReadAvailableTypes(
       ui::ClipboardBuffer::kCopyPaste,
       CreateDataEndpoint(/*notify_if_restricted=*/false).get(), &types);

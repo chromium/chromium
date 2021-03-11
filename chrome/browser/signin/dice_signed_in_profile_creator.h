@@ -47,7 +47,7 @@ class DiceSignedInProfileCreator {
   // If |icon_index| is nullopt, a random icon will be selected.
   DiceSignedInProfileCreator(Profile* source_profile,
                              CoreAccountId account_id,
-                             const base::string16& local_profile_name,
+                             const std::u16string& local_profile_name,
                              base::Optional<size_t> icon_index,
                              bool use_guest_profile,
                              base::OnceCallback<void(Profile*)> callback);

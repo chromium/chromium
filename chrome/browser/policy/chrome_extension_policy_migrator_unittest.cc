@@ -113,7 +113,7 @@ TEST(ChromeExtensionPolicyMigratorTest, DeprecatedWarnings) {
   // Policies in kMigrations should be renamed + copied into the Chrome domain.
   EXPECT_EQ(1u, chrome_map.size());
   ASSERT_TRUE(chrome_map.GetValue(kNewPolicy1));
-  base::RepeatingCallback<base::string16(int)> l10nlookup =
+  base::RepeatingCallback<std::u16string(int)> l10nlookup =
       base::BindRepeating(&l10n_util::GetStringUTF16);
   EXPECT_FALSE(
       chrome_map.Get(kNewPolicy1)

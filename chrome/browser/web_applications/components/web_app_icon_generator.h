@@ -61,7 +61,7 @@ char16_t GenerateIconLetterFromUrl(const GURL& app_url);
 
 // Returns the first letter from |app_name| that will be painted on the
 // generated icon.
-char16_t GenerateIconLetterFromAppName(const base::string16& app_name);
+char16_t GenerateIconLetterFromAppName(const std::u16string& app_name);
 
 // Resize icons to the accepted sizes, and generate any that are missing.
 // Note that |icon_letter| is the first letter of app name if available

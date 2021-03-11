@@ -178,19 +178,19 @@ TEST_F(ReadingListManagerImplTest, GetMatchingNodes) {
   std::vector<const BookmarkNode*> results;
   bookmarks::QueryFields query;
   query.word_phrase_query.reset(
-      new base::string16(base::ASCIIToUTF16("dog cat")));
+      new std::u16string(base::ASCIIToUTF16("dog cat")));
   manager()->GetMatchingNodes(query, 5, &results);
   EXPECT_EQ(1u, results.size());
 
   // Search with a single word query text.
   results.clear();
-  query.word_phrase_query.reset(new base::string16(base::ASCIIToUTF16("dog")));
+  query.word_phrase_query.reset(new std::u16string(base::ASCIIToUTF16("dog")));
   manager()->GetMatchingNodes(query, 5, &results);
   EXPECT_EQ(2u, results.size());
 
   // Search with empty string. Shouldn't match anything.
   results.clear();
-  query.word_phrase_query.reset(new base::string16());
+  query.word_phrase_query.reset(new std::u16string());
   manager()->GetMatchingNodes(query, 5, &results);
   EXPECT_EQ(0u, results.size());
 }
@@ -203,7 +203,7 @@ TEST_F(ReadingListManagerImplTest, GetMatchingNodesWithMaxCount) {
   // Search with a query text.
   std::vector<const BookmarkNode*> results;
   bookmarks::QueryFields query;
-  query.word_phrase_query.reset(new base::string16(base::ASCIIToUTF16("dog")));
+  query.word_phrase_query.reset(new std::u16string(base::ASCIIToUTF16("dog")));
   manager()->GetMatchingNodes(query, 5, &results);
   EXPECT_EQ(2u, results.size());
 
@@ -234,7 +234,7 @@ TEST_F(ReadingListManagerImplTest, AddInvalidTitle) {
   GURL url(kURL);
 
   // Use an invalid UTF8 string.
-  base::string16 dummy;
+  std::u16string dummy;
   EXPECT_FALSE(
       base::UTF8ToUTF16(kInvalidUTF8, base::size(kInvalidUTF8), &dummy));
   const auto* new_node = Add(url, std::string(kInvalidUTF8));

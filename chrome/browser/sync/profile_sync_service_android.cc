@@ -434,7 +434,7 @@ ProfileSyncServiceAndroid::GetSyncEnterGooglePassphraseBodyWithDateText(
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   base::Time passphrase_time =
       sync_service_->GetUserSettings()->GetExplicitPassphraseTime();
-  base::string16 passphrase_time_str =
+  std::u16string passphrase_time_str =
       base::TimeFormatShortDate(passphrase_time);
   return base::android::ConvertUTF16ToJavaString(
       env, l10n_util::GetStringFUTF16(
@@ -449,7 +449,7 @@ ProfileSyncServiceAndroid::GetSyncEnterCustomPassphraseBodyWithDateText(
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   base::Time passphrase_time =
       sync_service_->GetUserSettings()->GetExplicitPassphraseTime();
-  base::string16 passphrase_time_str =
+  std::u16string passphrase_time_str =
       base::TimeFormatShortDate(passphrase_time);
   return base::android::ConvertUTF16ToJavaString(
       env, l10n_util::GetStringFUTF16(

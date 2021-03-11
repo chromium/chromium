@@ -34,9 +34,9 @@ using content::WebContents;
 
 namespace {
 
-base::string16 FormatUsbDeviceName(
+std::u16string FormatUsbDeviceName(
     const device::mojom::UsbDeviceInfo& device_info) {
-  base::string16 device_name;
+  std::u16string device_name;
   if (device_info.product_name)
     device_name = *device_info.product_name;
 
@@ -111,15 +111,15 @@ UsbChooserController::~UsbChooserController() {
     std::move(callback_).Run(nullptr);
 }
 
-base::string16 UsbChooserController::GetNoOptionsText() const {
+std::u16string UsbChooserController::GetNoOptionsText() const {
   return l10n_util::GetStringUTF16(IDS_DEVICE_CHOOSER_NO_DEVICES_FOUND_PROMPT);
 }
 
-base::string16 UsbChooserController::GetOkButtonLabel() const {
+std::u16string UsbChooserController::GetOkButtonLabel() const {
   return l10n_util::GetStringUTF16(IDS_USB_DEVICE_CHOOSER_CONNECT_BUTTON_TEXT);
 }
 
-std::pair<base::string16, base::string16>
+std::pair<std::u16string, std::u16string>
 UsbChooserController::GetThrobberLabelAndTooltip() const {
   return {
       l10n_util::GetStringUTF16(IDS_USB_DEVICE_CHOOSER_LOADING_LABEL),
@@ -130,9 +130,9 @@ size_t UsbChooserController::NumOptions() const {
   return devices_.size();
 }
 
-base::string16 UsbChooserController::GetOption(size_t index) const {
+std::u16string UsbChooserController::GetOption(size_t index) const {
   DCHECK_LT(index, devices_.size());
-  const base::string16& device_name = devices_[index].second;
+  const std::u16string& device_name = devices_[index].second;
   const auto& it = device_name_map_.find(device_name);
   DCHECK(it != device_name_map_.end());
 
@@ -206,7 +206,7 @@ void UsbChooserController::OpenHelpCenterUrl() const {
 void UsbChooserController::OnDeviceAdded(
     const device::mojom::UsbDeviceInfo& device_info) {
   if (DisplayDevice(device_info)) {
-    base::string16 device_name = FormatUsbDeviceName(device_info);
+    std::u16string device_name = FormatUsbDeviceName(device_info);
     devices_.push_back(std::make_pair(device_info.guid, device_name));
     ++device_name_map_[device_name];
     if (view())
@@ -241,7 +241,7 @@ void UsbChooserController::GotUsbDeviceList(
   for (auto& device_info : devices) {
     DCHECK(device_info);
     if (DisplayDevice(*device_info)) {
-      base::string16 device_name = FormatUsbDeviceName(*device_info);
+      std::u16string device_name = FormatUsbDeviceName(*device_info);
       devices_.push_back(std::make_pair(device_info->guid, device_name));
       ++device_name_map_[device_name];
     }

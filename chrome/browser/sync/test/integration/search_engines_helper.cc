@@ -201,7 +201,7 @@ void AddSearchEngine(int profile_index, const std::string& keyword) {
 
 void EditSearchEngine(int profile_index,
                       const std::string& keyword,
-                      const base::string16& short_name,
+                      const std::u16string& short_name,
                       const std::string& new_keyword,
                       const std::string& url) {
   ASSERT_FALSE(url.empty());

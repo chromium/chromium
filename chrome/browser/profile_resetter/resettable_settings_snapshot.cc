@@ -41,7 +41,7 @@ namespace {
 
 template <class StringType>
 void AddPair(base::ListValue* list,
-             const base::string16& key,
+             const std::u16string& key,
              const StringType& value) {
   std::unique_ptr<base::DictionaryValue> results(new base::DictionaryValue());
   results->SetString("key", key);
@@ -259,7 +259,7 @@ std::unique_ptr<base::ListValue> GetReadableFeedbackForSnapshot(
             startup_urls);
   }
 
-  base::string16 startup_type;
+  std::u16string startup_type;
   switch (snapshot.startup_type()) {
     case SessionStartupPref::DEFAULT:
       startup_type =
@@ -312,7 +312,7 @@ std::unique_ptr<base::ListValue> GetReadableFeedbackForSnapshot(
   }
 
   if (snapshot.shortcuts_determined()) {
-    base::string16 shortcut_targets;
+    std::u16string shortcut_targets;
     const std::vector<ShortcutCommand>& shortcuts = snapshot.shortcuts();
     for (auto i = shortcuts.begin(); i != shortcuts.end(); ++i) {
       if (!shortcut_targets.empty())

@@ -27,7 +27,7 @@ class PasswordGenerationDialogViewInterface {
   // |manual| whether the dialog is shown for manual or automatic generation.
   // Used for metrics.
   virtual void Show(
-      base::string16& password,
+      std::u16string& password,
       base::WeakPtr<password_manager::PasswordManagerDriver>
           target_frame_driver,
       autofill::password_generation::PasswordGenerationType type) = 0;

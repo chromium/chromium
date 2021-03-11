@@ -41,7 +41,7 @@ namespace policy {
 IN_PROC_BROWSER_TEST_F(PolicyTest, DefaultSearchProvider) {
   // Verifies that a default search is made using the provider configured via
   // policy. Also checks that default search can be completely disabled.
-  const base::string16 kKeyword(base::ASCIIToUTF16("testsearch"));
+  const std::u16string kKeyword(base::ASCIIToUTF16("testsearch"));
   const std::string kSearchURL("http://search.example/search?q={searchTerms}");
   const std::string kAlternateURL0(
       "http://search.example/search#q={searchTerms}");

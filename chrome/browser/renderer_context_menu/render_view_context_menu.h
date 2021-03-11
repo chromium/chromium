@@ -100,10 +100,10 @@ class RenderViewContextMenu : public RenderViewContextMenuBase {
 
   // Returns a (possibly truncated) version of the current selection text
   // suitable for putting in the title of a menu item.
-  base::string16 PrintableSelectionText();
+  std::u16string PrintableSelectionText();
 
   // Helper function to escape "&" as "&&".
-  void EscapeAmpersands(base::string16* text);
+  void EscapeAmpersands(std::u16string* text);
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
   extensions::ContextMenuMatcher extension_items_;
@@ -137,7 +137,7 @@ class RenderViewContextMenu : public RenderViewContextMenuBase {
   // string. Used by WriteURLToClipboard(), but kept in a separate function so
   // the formatting behavior can be tested without having to initialize the
   // clipboard. |url| must be valid and non-empty.
-  static base::string16 FormatURLForClipboard(const GURL& url);
+  static std::u16string FormatURLForClipboard(const GURL& url);
 
   // Writes the specified text/url to the system clipboard.
   void WriteURLToClipboard(const GURL& url);

@@ -14,7 +14,7 @@ ExampleAction::ExampleAction() {
 
 ExampleAction::~ExampleAction() = default;
 
-const base::string16 ExampleAction::GetActionName() {
+const std::u16string ExampleAction::GetActionName() {
   return base::ASCIIToUTF16(name_);
 }
 

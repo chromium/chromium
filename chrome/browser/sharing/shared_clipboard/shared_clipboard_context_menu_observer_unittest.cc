@@ -62,7 +62,7 @@ class SharedClipboardContextMenuObserverTest : public testing::Test {
     menu_.SetObserver(observer_.get());
   }
 
-  void InitMenu(const base::string16 text) {
+  void InitMenu(const std::u16string text) {
     content::ContextMenuParams params;
     params.selection_text = text;
     observer_->InitMenu(params);

@@ -596,13 +596,13 @@ bool ProfileManager::LoadProfileByPath(const base::FilePath& profile_path,
                           // |callback| will be called only once.
                           base::AdaptCallbackForRepeating(std::move(callback)),
                           incognito),
-      base::string16() /* name */, std::string() /* icon_url */);
+      std::u16string() /* name */, std::string() /* icon_url */);
   return true;
 }
 
 void ProfileManager::CreateProfileAsync(const base::FilePath& profile_path,
                                         const CreateCallback& callback,
-                                        const base::string16& name,
+                                        const std::u16string& name,
                                         const std::string& icon_url) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   TRACE_EVENT1("browser,startup",
@@ -639,7 +639,7 @@ void ProfileManager::CreateProfileAsync(const base::FilePath& profile_path,
     if (profiles::IsDefaultAvatarIconUrl(icon_url, &icon_index)) {
       // add profile to cache with user selected name and avatar
       GetProfileAttributesStorage().AddProfile(
-          profile_path, name, std::string(), base::string16(),
+          profile_path, name, std::string(), std::u16string(),
           /*is_consented_primary_account=*/false, icon_index,
           /*supervised_user_id=*/std::string(), EmptyAccountId());
     }
@@ -828,7 +828,7 @@ Profile* ProfileManager::GetProfileFromProfileKey(ProfileKey* profile_key) {
 
 // static
 base::FilePath ProfileManager::CreateMultiProfileAsync(
-    const base::string16& name,
+    const std::u16string& name,
     const std::string& icon_url,
     const CreateCallback& callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
@@ -1708,7 +1708,7 @@ void ProfileManager::EnsureActiveProfileExistsBeforeDeletion(
   // If we're deleting the last profile, then create a new profile in its place.
   // Load existing profile otherwise.
   std::string new_avatar_url;
-  base::string16 new_profile_name;
+  std::u16string new_profile_name;
   if (fallback_profile_path.empty()) {
     fallback_profile_path = GenerateNextProfileDirectoryPath();
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
@@ -1884,7 +1884,7 @@ void ProfileManager::AddProfileToStorage(Profile* profile) {
   CoreAccountInfo account_info = identity_manager->GetPrimaryAccountInfo(
       signin::ConsentLevel::kNotRequired);
 
-  base::string16 username = base::UTF8ToUTF16(account_info.email);
+  std::u16string username = base::UTF8ToUTF16(account_info.email);
 
   ProfileAttributesStorage& storage = GetProfileAttributesStorage();
   // |entry| below is put inside a pair of brackets for scoping, to avoid
@@ -1931,7 +1931,7 @@ void ProfileManager::AddProfileToStorage(Profile* profile) {
 
   // Profile name and avatar are set by InitProfileUserPrefs and stored in the
   // profile. Use those values to setup the entry in profile attributes storage.
-  base::string16 profile_name =
+  std::u16string profile_name =
       base::UTF8ToUTF16(profile->GetPrefs()->GetString(prefs::kProfileName));
 
   size_t icon_index =

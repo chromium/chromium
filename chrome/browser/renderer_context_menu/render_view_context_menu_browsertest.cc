@@ -134,7 +134,7 @@ class ContextMenuBrowserTest : public InProcessBrowserTest {
   std::unique_ptr<TestRenderViewContextMenu> CreateContextMenuMediaTypeNone(
       const GURL& unfiltered_url,
       const GURL& url) {
-    return CreateContextMenu(unfiltered_url, url, base::string16(),
+    return CreateContextMenu(unfiltered_url, url, std::u16string(),
                              blink::mojom::ContextMenuDataMediaType::kNone,
                              ui::MENU_SOURCE_NONE);
   }
@@ -144,13 +144,13 @@ class ContextMenuBrowserTest : public InProcessBrowserTest {
                                               const GURL& unfiltered_url,
                                               const GURL& url) {
     return CreateContextMenuInWebContents(
-        web_contents, unfiltered_url, url, base::string16(),
+        web_contents, unfiltered_url, url, std::u16string(),
         blink::mojom::ContextMenuDataMediaType::kNone, ui::MENU_SOURCE_NONE);
   }
 
   std::unique_ptr<TestRenderViewContextMenu> CreateContextMenuMediaTypeImage(
       const GURL& url) {
-    return CreateContextMenu(GURL(), url, base::string16(),
+    return CreateContextMenu(GURL(), url, std::u16string(),
                              blink::mojom::ContextMenuDataMediaType::kImage,
                              ui::MENU_SOURCE_NONE);
   }
@@ -158,7 +158,7 @@ class ContextMenuBrowserTest : public InProcessBrowserTest {
   std::unique_ptr<TestRenderViewContextMenu> CreateContextMenu(
       const GURL& unfiltered_url,
       const GURL& url,
-      const base::string16& link_text,
+      const std::u16string& link_text,
       blink::mojom::ContextMenuDataMediaType media_type,
       ui::MenuSourceType source_type) {
     return CreateContextMenuInWebContents(
@@ -170,7 +170,7 @@ class ContextMenuBrowserTest : public InProcessBrowserTest {
       WebContents* web_contents,
       const GURL& unfiltered_url,
       const GURL& url,
-      const base::string16& link_text,
+      const std::u16string& link_text,
       blink::mojom::ContextMenuDataMediaType media_type,
       ui::MenuSourceType source_type) {
     content::ContextMenuParams params;
@@ -987,7 +987,7 @@ IN_PROC_BROWSER_TEST_F(ContextMenuBrowserTest, SuggestedFileName) {
   menu_observer.WaitForMenuOpenAndClose();
 
   // Compare filename.
-  base::string16 suggested_filename = menu_observer.params().suggested_filename;
+  std::u16string suggested_filename = menu_observer.params().suggested_filename;
   ASSERT_EQ(kSuggestedFilename, base::UTF16ToUTF8(suggested_filename).c_str());
 }
 
@@ -1162,7 +1162,7 @@ IN_PROC_BROWSER_TEST_F(ContextMenuBrowserTest, SuggestedFileNameCrossOrigin) {
   menu_observer.WaitForMenuOpenAndClose();
 
   // Compare filename.
-  base::string16 suggested_filename = menu_observer.params().suggested_filename;
+  std::u16string suggested_filename = menu_observer.params().suggested_filename;
   ASSERT_TRUE(suggested_filename.empty());
 }
 

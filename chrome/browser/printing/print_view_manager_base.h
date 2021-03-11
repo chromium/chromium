@@ -70,7 +70,7 @@ class PrintViewManagerBase : public content::NotificationObserver,
   void SystemDialogCancelled();
 #endif
 
-  base::string16 RenderSourceName();
+  std::u16string RenderSourceName();
 
   content::RenderFrameHost* GetPrintingRFHForTesting() const {
     return printing_rfh_;

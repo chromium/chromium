@@ -230,18 +230,18 @@ TEST_F(RemoteCopyMessageHandlerTest, ProgressNotificationWithProgressFlag) {
 
 #if defined(OS_MAC)
   // On macOS the progress status is shown in the message.
-  base::string16 progress_status = notification.message();
+  std::u16string progress_status = notification.message();
 #else
-  base::string16 progress_status = notification.progress_status();
+  std::u16string progress_status = notification.progress_status();
 #endif  // defined(OS_MAC)
 
 #if defined(OS_WIN)
-  base::string16 expected_status = l10n_util::GetStringUTF16(
+  std::u16string expected_status = l10n_util::GetStringUTF16(
       NotificationPlatformBridgeWin::SystemNotificationEnabled()
           ? IDS_SHARING_REMOTE_COPY_NOTIFICATION_PROCESSING_IMAGE
           : IDS_SHARING_REMOTE_COPY_NOTIFICATION_PREPARING_DOWNLOAD);
 #else
-  base::string16 expected_status = l10n_util::GetStringUTF16(
+  std::u16string expected_status = l10n_util::GetStringUTF16(
       IDS_SHARING_REMOTE_COPY_NOTIFICATION_PREPARING_DOWNLOAD);
 #endif  // defined(OS_WIN)
 

@@ -21,9 +21,9 @@ class RepostFormWarningController : public TabModalConfirmDialogDelegate,
 
  private:
   // TabModalConfirmDialogDelegate methods:
-  base::string16 GetTitle() override;
-  base::string16 GetDialogMessage() override;
-  base::string16 GetAcceptButtonTitle() override;
+  std::u16string GetTitle() override;
+  std::u16string GetDialogMessage() override;
+  std::u16string GetAcceptButtonTitle() override;
   void OnAccepted() override;
   void OnCanceled() override;
   void OnClosed() override;

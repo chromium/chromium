@@ -143,7 +143,7 @@ void CheckForNewOfflineContentCallback(
     const ScopedJavaGlobalRef<jobject>& j_callback_obj,
     const OfflinePageModel::MultipleOfflinePageItemResult& result) {
   JNIEnv* env = base::android::AttachCurrentThread();
-  base::string16 relevant_host =
+  std::u16string relevant_host =
       ExtractRelevantHostFromOfflinePageItemList(pages_created_after, result);
   ScopedJavaLocalRef<jstring> j_result =
       base::android::ConvertUTF16ToJavaString(env, relevant_host);

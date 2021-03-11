@@ -489,7 +489,7 @@ TEST_F(DiceSigninUiUtilTest,
       profile_manager()->profiles_dir().AppendASCII(kSecondProfile);
   profile_manager()->profile_attributes_storage()->AddProfile(
       profile_path, base::ASCIIToUTF16(kSecondProfile), std::string(),
-      base::string16(), false, 0, std::string(), EmptyAccountId());
+      std::u16string(), false, 0, std::string(), EmptyAccountId());
 
   EXPECT_TRUE(ShouldShowAnimatedIdentityOnOpeningWindow(
       *profile_manager()->profile_attributes_storage(), profile()));

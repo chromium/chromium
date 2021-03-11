@@ -35,7 +35,7 @@ using content::BrowserThread;
 
 namespace {
 
-bool IsPDFViewerPlugin(const base::string16& plugin_name) {
+bool IsPDFViewerPlugin(const std::u16string& plugin_name) {
   return (plugin_name ==
           base::ASCIIToUTF16(ChromeContentClient::kPDFExtensionPluginName)) ||
          (plugin_name ==
@@ -61,8 +61,7 @@ scoped_refptr<PluginPrefs> PluginPrefs::GetForTestingProfile(
 }
 
 PluginPrefs::PolicyStatus PluginPrefs::PolicyStatusForPlugin(
-    const base::string16& name) const {
-
+    const std::u16string& name) const {
   // Special handling for PDF based on its specific policy.
   if (IsPDFViewerPlugin(name) && always_open_pdf_externally_)
     return POLICY_DISABLED;
@@ -73,7 +72,7 @@ PluginPrefs::PolicyStatus PluginPrefs::PolicyStatusForPlugin(
 bool PluginPrefs::IsPluginEnabled(const content::WebPluginInfo& plugin) const {
   std::unique_ptr<PluginMetadata> plugin_metadata(
       PluginFinder::GetInstance()->GetPluginMetadata(plugin));
-  base::string16 group_name = plugin_metadata->name();
+  std::u16string group_name = plugin_metadata->name();
 
   // Check if the plugin or its group is enabled by policy.
   PolicyStatus plugin_status = PolicyStatusForPlugin(plugin.name);

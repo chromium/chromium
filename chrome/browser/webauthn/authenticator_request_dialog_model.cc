@@ -480,7 +480,7 @@ void AuthenticatorRequestDialogModel::SetBluetoothAdapterPowerOnCallback(
   bluetooth_adapter_power_on_callback_ = bluetooth_adapter_power_on_callback;
 }
 
-void AuthenticatorRequestDialogModel::OnHavePIN(base::string16 pin) {
+void AuthenticatorRequestDialogModel::OnHavePIN(std::u16string pin) {
   if (!pin_callback_) {
     // Protect against the view submitting a PIN more than once without
     // receiving a matching response first. |CollectPIN| is called again if
@@ -616,7 +616,7 @@ void AuthenticatorRequestDialogModel::CollectPIN(
     device::pin::PINEntryError error,
     uint32_t min_pin_length,
     int attempts,
-    base::OnceCallback<void(base::string16)> provide_pin_cb) {
+    base::OnceCallback<void(std::u16string)> provide_pin_cb) {
   pin_callback_ = std::move(provide_pin_cb);
   min_pin_length_ = min_pin_length;
   pin_error_ = error;

@@ -36,12 +36,12 @@ class UsbChooserController : public ChooserController,
   ~UsbChooserController() override;
 
   // ChooserController:
-  base::string16 GetNoOptionsText() const override;
-  base::string16 GetOkButtonLabel() const override;
-  std::pair<base::string16, base::string16> GetThrobberLabelAndTooltip()
+  std::u16string GetNoOptionsText() const override;
+  std::u16string GetOkButtonLabel() const override;
+  std::pair<std::u16string, std::u16string> GetThrobberLabelAndTooltip()
       const override;
   size_t NumOptions() const override;
-  base::string16 GetOption(size_t index) const override;
+  std::u16string GetOption(size_t index) const override;
   bool IsPaired(size_t index) const override;
   void Select(const std::vector<size_t>& indices) override;
   void Cancel() override;
@@ -68,9 +68,9 @@ class UsbChooserController : public ChooserController,
       observer_;
 
   // Each pair is a (device guid, device name).
-  std::vector<std::pair<std::string, base::string16>> devices_;
+  std::vector<std::pair<std::string, std::u16string>> devices_;
   // Maps from device name to number of devices.
-  std::unordered_map<base::string16, int> device_name_map_;
+  std::unordered_map<std::u16string, int> device_name_map_;
   base::WeakPtrFactory<UsbChooserController> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(UsbChooserController);

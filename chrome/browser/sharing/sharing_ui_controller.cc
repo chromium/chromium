@@ -51,7 +51,7 @@ SharingUiController::SharingUiController(content::WebContents* web_contents)
 
 SharingUiController::~SharingUiController() = default;
 
-base::string16 SharingUiController::GetTitle(SharingDialogType dialog_type) {
+std::u16string SharingUiController::GetTitle(SharingDialogType dialog_type) {
   // We only handle error messages generically.
   DCHECK_EQ(SharingDialogType::kErrorDialog, dialog_type);
   switch (send_result()) {
@@ -76,7 +76,7 @@ base::string16 SharingUiController::GetTitle(SharingDialogType dialog_type) {
   }
 }
 
-base::string16 SharingUiController::GetErrorDialogText() const {
+std::u16string SharingUiController::GetErrorDialogText() const {
   switch (send_result()) {
     case SharingSendMessageResult::kDeviceNotFound:
       return l10n_util::GetStringFUTF16(
@@ -94,7 +94,7 @@ base::string16 SharingUiController::GetErrorDialogText() const {
           GetTargetDeviceName());
 
     case SharingSendMessageResult::kSuccessful:
-      return base::string16();
+      return std::u16string();
 
     case SharingSendMessageResult::kPayloadTooLarge:
     case SharingSendMessageResult::kInternalError:
@@ -217,7 +217,7 @@ void SharingUiController::ShowNewDialog(SharingDialogData dialog_data) {
   OnDialogShown(has_devices, has_apps);
 }
 
-base::string16 SharingUiController::GetTargetDeviceName() const {
+std::u16string SharingUiController::GetTargetDeviceName() const {
   return base::UTF8ToUTF16(target_device_name_);
 }
 

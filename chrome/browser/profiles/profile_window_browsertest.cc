@@ -280,7 +280,7 @@ IN_PROC_BROWSER_TEST_P(GuestProfileWindowBrowserTest,
   Browser* guest_browser = CreateGuestBrowser();
   Profile* guest_profile = guest_browser->profile();
 
-  base::string16 fip_text =
+  std::u16string fip_text =
       base::ASCIIToUTF16("first guest session search text");
   FindBarStateFactory::GetForBrowserContext(guest_profile)
       ->SetLastSearchText(fip_text);
@@ -312,7 +312,7 @@ IN_PROC_BROWSER_TEST_P(GuestProfileWindowBrowserTest,
         guest_profile, chrome::startup::IS_NOT_PROCESS_STARTUP,
         chrome::startup::IS_NOT_FIRST_RUN, true /*always_create*/);
   }
-  EXPECT_EQ(base::string16(),
+  EXPECT_EQ(std::u16string(),
             FindBarStateFactory::GetForBrowserContext(guest_profile)
                 ->GetSearchPrepopulateText());
 }

@@ -22,7 +22,7 @@
 
 std::unique_ptr<CredentialEditBridge> CredentialEditBridge::MaybeCreate(
     const password_manager::PasswordForm* credential,
-    std::vector<base::string16> existing_usernames,
+    std::vector<std::u16string> existing_usernames,
     password_manager::SavedPasswordsPresenter* saved_passwords_presenter,
     base::OnceClosure dismissal_callback,
     const base::android::JavaRef<jobject>& context,
@@ -41,7 +41,7 @@ std::unique_ptr<CredentialEditBridge> CredentialEditBridge::MaybeCreate(
 
 CredentialEditBridge::CredentialEditBridge(
     const password_manager::PasswordForm* credential,
-    std::vector<base::string16> existing_usernames,
+    std::vector<std::u16string> existing_usernames,
     password_manager::SavedPasswordsPresenter* saved_passwords_presenter,
     base::OnceClosure dismissal_callback,
     const base::android::JavaRef<jobject>& context,
@@ -91,7 +91,7 @@ void CredentialEditBridge::OnUIDismissed(JNIEnv* env) {
   std::move(dismissal_callback_).Run();
 }
 
-base::string16 CredentialEditBridge::GetDisplayURLOrAppName() {
+std::u16string CredentialEditBridge::GetDisplayURLOrAppName() {
   auto facet = password_manager::FacetURI::FromPotentiallyInvalidSpec(
       credential_->signon_realm);
 
@@ -116,7 +116,7 @@ base::string16 CredentialEditBridge::GetDisplayURLOrAppName() {
       net::UnescapeRule::SPACES, nullptr, nullptr, nullptr);
 }
 
-base::string16 CredentialEditBridge::GetDisplayFederationOrigin() {
+std::u16string CredentialEditBridge::GetDisplayFederationOrigin() {
   return credential_->IsFederatedCredential()
              ? url_formatter::FormatUrl(
                    credential_->federation_origin.GetURL(),
@@ -125,5 +125,5 @@ base::string16 CredentialEditBridge::GetDisplayFederationOrigin() {
                        url_formatter::kFormatUrlOmitTrivialSubdomains |
                        url_formatter::kFormatUrlTrimAfterHost,
                    net::UnescapeRule::SPACES, nullptr, nullptr, nullptr)
-             : base::string16();
+             : std::u16string();
 }

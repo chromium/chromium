@@ -1194,7 +1194,7 @@ bool KeystoneEnabled() {
   return [KeystoneGlue defaultKeystoneGlue] != nil;
 }
 
-base::string16 CurrentlyInstalledVersion() {
+std::u16string CurrentlyInstalledVersion() {
   KeystoneGlue* keystoneGlue = [KeystoneGlue defaultKeystoneGlue];
   NSString* version = [keystoneGlue currentlyInstalledVersion];
   return base::SysNSStringToUTF16(version);

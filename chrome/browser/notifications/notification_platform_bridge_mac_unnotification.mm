@@ -102,7 +102,7 @@ void NotificationPlatformBridgeMacUNNotification::Display(
            settingsLabel:l10n_util::GetNSString(
                              IDS_NOTIFICATION_BUTTON_SETTINGS)]);
 
-  base::string16 context_message =
+  std::u16string context_message =
       notification.items().empty()
           ? notification.message()
           : (notification.items().at(0).title + base::UTF8ToUTF16(" - ") +
@@ -171,7 +171,7 @@ void NotificationPlatformBridgeMacUNNotification::Display(
   }
 
   // Create a new category from the desired action buttons.
-  std::vector<base::string16> button_titles;
+  std::vector<std::u16string> button_titles;
   for (const message_center::ButtonInfo& button : notification.buttons())
     button_titles.push_back(button.title);
   NSString* category = category_manager_.GetOrCreateCategory(

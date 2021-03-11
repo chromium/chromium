@@ -28,7 +28,7 @@ void OmniboxTextField::SetAutocompletion(const Autocompletion& autocompletion) {
     return;
 
   TextInputInfo current = edited_text().current;
-  base::string16 current_base = current.text.substr(0, current.selection_end);
+  std::u16string current_base = current.text.substr(0, current.selection_end);
   if (current_base != autocompletion.input)
     return;
 

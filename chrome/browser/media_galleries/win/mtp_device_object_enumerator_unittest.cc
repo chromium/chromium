@@ -22,7 +22,7 @@ namespace {
 
 struct MTPDeviceObjectEntryData {
   // Friendly name of the object, e.g. "IMG_9911.jpeg".
-  base::string16 name;
+  std::u16string name;
 
   // The object identifier, e.g. "o299".
   std::wstring object_id;

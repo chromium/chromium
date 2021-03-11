@@ -125,7 +125,7 @@ class WebUsbNotificationDelegate : public TabStripModelObserver,
   }
 
   void Click(const base::Optional<int>& button_index,
-             const base::Optional<base::string16>& reply) override {
+             const base::Optional<std::u16string>& reply) override {
     disposition_ = WEBUSB_NOTIFICATION_CLOSED_CLICKED;
 
     // If the URL is already open, activate that tab.
@@ -210,7 +210,7 @@ void WebUsbDetector::OnDeviceAdded(
   if (!device_info->product_name || !device_info->webusb_landing_page)
     return;
 
-  const base::string16& product_name = *device_info->product_name;
+  const std::u16string& product_name = *device_info->product_name;
   if (product_name.empty())
     return;
 
@@ -240,7 +240,7 @@ void WebUsbDetector::OnDeviceAdded(
               landing_page, url_formatter::SchemeDisplay::OMIT_CRYPTOGRAPHIC)),
       gfx::Image(gfx::CreateVectorIcon(vector_icons::kUsbIcon, 64,
                                        gfx::kChromeIconGrey)),
-      base::string16(), GURL(),
+      std::u16string(), GURL(),
       message_center::NotifierId(message_center::NotifierType::SYSTEM_COMPONENT,
                                  kNotifierWebUsb),
       rich_notification_data,

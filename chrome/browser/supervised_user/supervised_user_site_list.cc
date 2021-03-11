@@ -85,7 +85,7 @@ size_t SupervisedUserSiteList::HostnameHash::hash() const {
 }
 
 void SupervisedUserSiteList::Load(const std::string& id,
-                                  const base::string16& title,
+                                  const std::u16string& title,
                                   const base::FilePath& large_icon_path,
                                   const base::FilePath& path,
                                   const LoadedCallback& callback) {
@@ -100,7 +100,7 @@ void SupervisedUserSiteList::Load(const std::string& id,
 
 SupervisedUserSiteList::SupervisedUserSiteList(
     const std::string& id,
-    const base::string16& title,
+    const std::u16string& title,
     const GURL& entry_point,
     const base::FilePath& large_icon_path,
     const base::ListValue* patterns,
@@ -114,7 +114,7 @@ SupervisedUserSiteList::SupervisedUserSiteList(
 
 SupervisedUserSiteList::SupervisedUserSiteList(
     const std::string& id,
-    const base::string16& title,
+    const std::u16string& title,
     const GURL& entry_point,
     const base::FilePath& large_icon_path,
     const std::vector<std::string>& patterns,
@@ -142,7 +142,7 @@ SupervisedUserSiteList::~SupervisedUserSiteList() {
 // static
 void SupervisedUserSiteList::OnJsonLoaded(
     const std::string& id,
-    const base::string16& title,
+    const std::u16string& title,
     const base::FilePath& large_icon_path,
     const base::FilePath& path,
     const SupervisedUserSiteList::LoadedCallback& callback,

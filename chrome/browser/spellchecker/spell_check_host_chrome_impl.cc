@@ -85,7 +85,7 @@ void SpellCheckHostChromeImpl::RequestDictionary() {
   // more than once if we get requests from different renderers.
 }
 
-void SpellCheckHostChromeImpl::NotifyChecked(const base::string16& word,
+void SpellCheckHostChromeImpl::NotifyChecked(const std::u16string& word,
                                              bool misspelled) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
@@ -98,7 +98,7 @@ void SpellCheckHostChromeImpl::NotifyChecked(const base::string16& word,
 
 #if BUILDFLAG(USE_RENDERER_SPELLCHECKER)
 void SpellCheckHostChromeImpl::CallSpellingService(
-    const base::string16& text,
+    const std::u16string& text,
     CallSpellingServiceCallback callback) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
@@ -126,7 +126,7 @@ void SpellCheckHostChromeImpl::CallSpellingService(
 void SpellCheckHostChromeImpl::CallSpellingServiceDone(
     CallSpellingServiceCallback callback,
     bool success,
-    const base::string16& text,
+    const std::u16string& text,
     const std::vector<SpellCheckResult>& service_results) const {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
@@ -191,7 +191,7 @@ std::vector<SpellCheckResult> SpellCheckHostChromeImpl::FilterCustomWordResults(
 #endif  // BUILDFLAG(USE_RENDERER_SPELLCHECKER)
 
 #if BUILDFLAG(USE_BROWSER_SPELLCHECKER) && BUILDFLAG(ENABLE_SPELLING_SERVICE)
-void SpellCheckHostChromeImpl::CheckSpelling(const base::string16& word,
+void SpellCheckHostChromeImpl::CheckSpelling(const std::u16string& word,
                                              int route_id,
                                              CheckSpellingCallback callback) {
   bool correct = spellcheck_platform::CheckSpelling(word, route_id);
@@ -199,15 +199,15 @@ void SpellCheckHostChromeImpl::CheckSpelling(const base::string16& word,
 }
 
 void SpellCheckHostChromeImpl::FillSuggestionList(
-    const base::string16& word,
+    const std::u16string& word,
     FillSuggestionListCallback callback) {
-  std::vector<base::string16> suggestions;
+  std::vector<std::u16string> suggestions;
   spellcheck_platform::FillSuggestionList(word, &suggestions);
   std::move(callback).Run(suggestions);
 }
 
 void SpellCheckHostChromeImpl::RequestTextCheck(
-    const base::string16& text,
+    const std::u16string& text,
     int route_id,
     RequestTextCheckCallback callback) {
   DCHECK(!text.empty());
@@ -234,7 +234,7 @@ void SpellCheckHostChromeImpl::RequestTextCheck(
 
 #if defined(OS_WIN)
 void SpellCheckHostChromeImpl::GetPerLanguageSuggestions(
-    const base::string16& word,
+    const std::u16string& word,
     GetPerLanguageSuggestionsCallback callback) {
   SpellcheckService* spellcheck = GetSpellcheckService();
 

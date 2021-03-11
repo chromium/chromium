@@ -1622,8 +1622,8 @@ IN_PROC_BROWSER_TEST_F(InstallableManagerBrowserTest,
     EXPECT_FALSE(tester->manifest().IsEmpty());
     EXPECT_EQ(std::vector<InstallableStatusCode>{}, tester->errors());
     EXPECT_EQ(base::ASCIIToUTF16("Manifest test app"), tester->manifest().name);
-    EXPECT_EQ(base::string16(),
-              tester->manifest().short_name.value_or(base::string16()));
+    EXPECT_EQ(std::u16string(),
+              tester->manifest().short_name.value_or(std::u16string()));
   }
 
   {
@@ -1653,8 +1653,8 @@ IN_PROC_BROWSER_TEST_F(InstallableManagerBrowserTest,
     run_loop.Run();
 
     EXPECT_FALSE(tester->manifest().IsEmpty());
-    EXPECT_EQ(base::string16(),
-              tester->manifest().name.value_or(base::string16()));
+    EXPECT_EQ(std::u16string(),
+              tester->manifest().name.value_or(std::u16string()));
     EXPECT_EQ(base::ASCIIToUTF16("Manifest"), tester->manifest().short_name);
     EXPECT_EQ(std::vector<InstallableStatusCode>{}, tester->errors());
   }

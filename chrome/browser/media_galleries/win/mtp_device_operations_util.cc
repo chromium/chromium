@@ -111,7 +111,7 @@ bool IsDirectory(IPortableDeviceValues* properties_values) {
 
 // Returns the name of the object from |properties_values|. If the object has
 // no filename, try to use a friendly name instead. e.g. with MTP storage roots.
-base::string16 GetObjectName(IPortableDeviceValues* properties_values) {
+std::u16string GetObjectName(IPortableDeviceValues* properties_values) {
   DCHECK(properties_values);
   base::win::ScopedCoMem<wchar_t> buffer;
   HRESULT hr = properties_values->GetStringValue(WPD_OBJECT_ORIGINAL_FILE_NAME,
@@ -119,7 +119,7 @@ base::string16 GetObjectName(IPortableDeviceValues* properties_values) {
   if (FAILED(hr))
     hr = properties_values->GetStringValue(WPD_OBJECT_NAME, &buffer);
   if (FAILED(hr))
-    return base::string16();
+    return std::u16string();
   return base::WideToUTF16(std::wstring(buffer));
 }
 
@@ -173,7 +173,7 @@ int64_t GetObjectSize(IPortableDeviceValues* properties_values) {
 // but failure to get it doesn't prevent success.
 bool GetObjectDetails(IPortableDevice* device,
                       const std::wstring object_id,
-                      base::string16* name,
+                      std::u16string* name,
                       bool* is_directory,
                       int64_t* size,
                       base::Time* last_modified_time) {
@@ -248,7 +248,7 @@ MTPDeviceObjectEntry GetMTPDeviceObjectEntry(IPortableDevice* device,
                                                 base::BlockingType::MAY_BLOCK);
   DCHECK(device);
   DCHECK(!object_id.empty());
-  base::string16 name;
+  std::u16string name;
   bool is_directory;
   int64_t size;
   base::Time last_modified_time;
@@ -267,7 +267,7 @@ MTPDeviceObjectEntry GetMTPDeviceObjectEntry(IPortableDevice* device,
 // success returns true and set |object_entries|.
 bool GetMTPDeviceObjectEntries(IPortableDevice* device,
                                const std::wstring& directory_object_id,
-                               const base::string16& object_name,
+                               const std::u16string& object_name,
                                MTPDeviceObjectEntries* object_entries) {
   base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,
                                                 base::BlockingType::MAY_BLOCK);
@@ -354,7 +354,7 @@ bool GetDirectoryEntries(IPortableDevice* device,
                          const std::wstring& directory_object_id,
                          MTPDeviceObjectEntries* object_entries) {
   return GetMTPDeviceObjectEntries(device, directory_object_id,
-                                   base::string16(), object_entries);
+                                   std::u16string(), object_entries);
 }
 
 HRESULT GetFileStreamForObject(IPortableDevice* device,
@@ -410,7 +410,7 @@ DWORD CopyDataChunkToLocalFile(IStream* stream,
 
 std::wstring GetObjectIdFromName(IPortableDevice* device,
                                  const std::wstring& parent_id,
-                                 const base::string16& object_name) {
+                                 const std::u16string& object_name) {
   MTPDeviceObjectEntries object_entries;
   if (!GetMTPDeviceObjectEntries(device, parent_id, object_name,
                                  &object_entries) ||

@@ -146,7 +146,7 @@ void PasswordGenerationControllerImpl::OnGenerationRequested(
 }
 
 void PasswordGenerationControllerImpl::GeneratedPasswordAccepted(
-    const base::string16& password,
+    const std::u16string& password,
     base::WeakPtr<password_manager::PasswordManagerDriver> driver,
     PasswordGenerationType type) {
   if (!driver)
@@ -220,7 +220,7 @@ void PasswordGenerationControllerImpl::ShowDialog(PasswordGenerationType type) {
 
   dialog_view_ = create_dialog_factory_.Run(this);
 
-  base::string16 password =
+  std::u16string password =
       active_frame_driver_->GetPasswordGenerationHelper()->GeneratePassword(
           web_contents_->GetLastCommittedURL().GetOrigin(),
           generation_element_data_->form_signature,

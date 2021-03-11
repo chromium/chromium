@@ -79,7 +79,7 @@ NearbyShareAction::NearbyShareAction() = default;
 
 NearbyShareAction::~NearbyShareAction() = default;
 
-const base::string16 NearbyShareAction::GetActionName() {
+const std::u16string NearbyShareAction::GetActionName() {
   return l10n_util::GetStringUTF16(IDS_NEARBY_SHARE_FEATURE_NAME);
 }
 

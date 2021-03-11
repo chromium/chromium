@@ -42,10 +42,10 @@ class DesktopMediaListBase : public DesktopMediaList {
   using RefreshCallback = UpdateCallback;
 
   struct SourceDescription {
-    SourceDescription(content::DesktopMediaID id, const base::string16& name);
+    SourceDescription(content::DesktopMediaID id, const std::u16string& name);
 
     content::DesktopMediaID id;
-    base::string16 name;
+    std::u16string name;
   };
 
   DesktopMediaListBase(base::TimeDelta update_period,

@@ -135,7 +135,7 @@ void UpdateShortcutsForAllApps(Profile* profile, base::OnceClosure callback) {
   for (auto& extension_refptr : *candidates) {
     const extensions::Extension* extension = extension_refptr.get();
     if (ShouldUpgradeShortcutFor(profile, extension)) {
-      UpdateAllShortcuts(base::string16(), profile, extension,
+      UpdateAllShortcuts(std::u16string(), profile, extension,
                          latch->NoOpClosure());
     }
   }

@@ -228,7 +228,7 @@ void OnSuggestionModelAdded(UiScene* scene,
   background->AddChild(std::move(suggestion_layout));
 
   element_binding->bindings().push_back(
-      VR_BIND_FUNC(base::string16, SuggestionBinding, element_binding,
+      VR_BIND_FUNC(std::u16string, SuggestionBinding, element_binding,
                    model->model()->contents, Text, p_content_text, SetText));
   element_binding->bindings().push_back(
       std::make_unique<Binding<TextFormatting>>(
@@ -246,12 +246,12 @@ void OnSuggestionModelAdded(UiScene* scene,
               },
               base::Unretained(p_content_text))));
   element_binding->bindings().push_back(
-      std::make_unique<Binding<base::string16>>(
+      std::make_unique<Binding<std::u16string>>(
           VR_BIND_LAMBDA(
               [](SuggestionBinding* m) { return m->model()->description; },
               base::Unretained(element_binding)),
           VR_BIND_LAMBDA(
-              [](Text* v, const base::string16& text) {
+              [](Text* v, const std::u16string& text) {
                 v->SetVisible(!text.empty());
                 v->SetText(text);
               },
@@ -412,7 +412,7 @@ typedef typename ControllerSetBinding::ElementBinding ControllerBinding;
 std::unique_ptr<UiElement> CreateControllerLabel(
     UiElementName name,
     float z_offset,
-    const base::string16& text,
+    const std::u16string& text,
     Model* model,
     ControllerBinding* element_binding) {
   auto layout = Create<LinearLayout>(name, kPhaseNone, LinearLayout::kLeft);
@@ -906,7 +906,7 @@ std::unique_ptr<TransientElement> CreateTextToast(
     UiElementName transient_parent_name,
     UiElementName toast_name,
     Model* model,
-    const base::string16& text) {
+    const std::u16string& text) {
   auto parent =
       CreateTransientParent(transient_parent_name, kToastTimeoutSeconds, false);
   parent->set_bounds_contain_children(true);
@@ -1949,7 +1949,7 @@ void UiSceneCreator::CreateVoiceSearchUiGroup() {
   speech_result->SetAlignment(kTextAlignmentCenter);
   VR_BIND_COLOR(model_, speech_result.get(), &ColorScheme::prompt_foreground,
                 &Text::SetColor);
-  speech_result->AddBinding(VR_BIND_FUNC(base::string16, Model, model_,
+  speech_result->AddBinding(VR_BIND_FUNC(std::u16string, Model, model_,
                                          model->speech.recognition_result, Text,
                                          speech_result.get(), SetText));
   speech_result_parent->AddChild(std::move(speech_result));
@@ -2805,17 +2805,17 @@ void UiSceneCreator::CreateOmnibox() {
   parent->AddChild(std::move(scaler));
 
   // This binding must run whether or not the omnibox is visible.
-  parent->AddBinding(std::make_unique<Binding<std::pair<bool, base::string16>>>(
+  parent->AddBinding(std::make_unique<Binding<std::pair<bool, std::u16string>>>(
       VR_BIND_LAMBDA(
           [](Model* m) {
             bool editing_omnibox = m->has_mode_in_stack(kModeEditingOmnibox);
-            base::string16 url_text =
+            std::u16string url_text =
                 FormatUrlForVr(m->location_bar_state.gurl, nullptr);
             return std::make_pair(editing_omnibox, url_text);
           },
           base::Unretained(model_)),
       VR_BIND_LAMBDA(
-          [](Model* m, const std::pair<bool, base::string16>& value) {
+          [](Model* m, const std::pair<bool, std::u16string>& value) {
             if (value.first /* editing_omnibox */) {
               EditedText omnibox_text = m->omnibox_text_field_info;
               omnibox_text.current =
@@ -3036,7 +3036,7 @@ void UiSceneCreator::CreateWebVrOverlayElements() {
 
 void UiSceneCreator::CreateToasts() {
   auto platform_toast = CreateTextToast(
-      kPlatformToastTransientParent, kPlatformToast, model_, base::string16());
+      kPlatformToastTransientParent, kPlatformToast, model_, std::u16string());
   platform_toast->set_contributes_to_parent_bounds(false);
   platform_toast->set_y_anchoring(BOTTOM);
   platform_toast->set_y_centering(TOP);

@@ -74,7 +74,7 @@ class ForwardingNotificationDelegate
   }
 
   void Click(const base::Optional<int>& button_index,
-             const base::Optional<base::string16>& reply) override {
+             const base::Optional<std::u16string>& reply) override {
     if (button_index) {
       delegate_->HandleNotificationButtonClicked(notification_id_,
                                                  *button_index, reply);

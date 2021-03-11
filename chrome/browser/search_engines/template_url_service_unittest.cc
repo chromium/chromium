@@ -710,8 +710,8 @@ TEST_F(TemplateURLServiceTest, Reset) {
   model()->set_clock(std::move(clock));
 
   // Reset the short name, keyword, url and make sure it takes.
-  const base::string16 new_short_name(ASCIIToUTF16("a"));
-  const base::string16 new_keyword(ASCIIToUTF16("b"));
+  const std::u16string new_short_name(ASCIIToUTF16("a"));
+  const std::u16string new_keyword(ASCIIToUTF16("b"));
   const std::string new_url("c");
   model()->ResetTemplateURL(t_url, new_short_name, new_keyword, new_url);
   ASSERT_EQ(new_short_name, t_url->short_name());
@@ -739,8 +739,8 @@ TEST_F(TemplateURLServiceTest, CreateFromPlayAPI) {
   test_util()->VerifyLoad();
   const size_t initial_count = model()->GetTemplateURLs().size();
 
-  const base::string16 short_name = ASCIIToUTF16("google");
-  const base::string16 keyword = ASCIIToUTF16("keyword");
+  const std::u16string short_name = ASCIIToUTF16("google");
+  const std::u16string keyword = ASCIIToUTF16("keyword");
   const std::string search_url = "http://www.google.com/foo/bar";
   const std::string suggest_url = "http://www.google.com/suggest";
   const std::string favicon_url = "http://favicon.url";
@@ -766,7 +766,7 @@ TEST_F(TemplateURLServiceTest, CreateFromPlayAPI) {
 }
 
 TEST_F(TemplateURLServiceTest, UpdateFromPlayAPI) {
-  base::string16 keyword = ASCIIToUTF16("keyword");
+  std::u16string keyword = ASCIIToUTF16("keyword");
 
   // Add a new TemplateURL.
   test_util()->VerifyLoad();
@@ -791,7 +791,7 @@ TEST_F(TemplateURLServiceTest, UpdateFromPlayAPI) {
   model()->set_clock(std::move(clock));
 
   // Reset the short name and url and make sure it takes.
-  const base::string16 new_short_name = ASCIIToUTF16("new_name");
+  const std::u16string new_short_name = ASCIIToUTF16("new_name");
   const std::string new_search_url = "new_url";
   const std::string new_suggest_url = "new_suggest_url";
   const std::string new_favicon_url = "new_favicon_url";
@@ -1205,19 +1205,19 @@ TEST_F(TemplateURLServiceTest,
 TEST_F(TemplateURLServiceTest, UpdateKeywordSearchTermsForURL) {
   struct TestData {
     const std::string url;
-    const base::string16 term;
+    const std::u16string term;
   } data[] = {
-    { "http://foo/", base::string16() },
-    { "http://foo/foo?q=xx", base::string16() },
-    { "http://x/bar?q=xx", base::string16() },
-    { "http://x/foo?y=xx", base::string16() },
-    { "http://x/foo?q=xx", ASCIIToUTF16("xx") },
-    { "http://x/foo?a=b&q=xx", ASCIIToUTF16("xx") },
-    { "http://x/foo?q=b&q=xx", base::string16() },
-    { "http://x/foo#query=xx", ASCIIToUTF16("xx") },
-    { "http://x/foo?q=b#query=xx", ASCIIToUTF16("xx") },
-    { "http://x/foo?q=b#q=xx", ASCIIToUTF16("b") },
-    { "http://x/foo?query=b#q=xx", base::string16() },
+      {"http://foo/", std::u16string()},
+      {"http://foo/foo?q=xx", std::u16string()},
+      {"http://x/bar?q=xx", std::u16string()},
+      {"http://x/foo?y=xx", std::u16string()},
+      {"http://x/foo?q=xx", ASCIIToUTF16("xx")},
+      {"http://x/foo?a=b&q=xx", ASCIIToUTF16("xx")},
+      {"http://x/foo?q=b&q=xx", std::u16string()},
+      {"http://x/foo#query=xx", ASCIIToUTF16("xx")},
+      {"http://x/foo?q=b#query=xx", ASCIIToUTF16("xx")},
+      {"http://x/foo?q=b#q=xx", ASCIIToUTF16("b")},
+      {"http://x/foo?query=b#q=xx", std::u16string()},
   };
 
   test_util()->ChangeModelToLoadState();
@@ -1252,7 +1252,7 @@ TEST_F(TemplateURLServiceTest, DontUpdateKeywordSearchForNonReplaceable) {
       GURL(data[i].url), false
     };
     model()->UpdateKeywordSearchTermsForURL(details);
-    ASSERT_EQ(base::string16(), test_util()->GetAndClearSearchTerm());
+    ASSERT_EQ(std::u16string(), test_util()->GetAndClearSearchTerm());
   }
 }
 
@@ -1967,7 +1967,7 @@ TEST_F(TemplateURLServiceTest, KeywordConflictFavorsPrepopulatedEngines) {
 TEST_F(TemplateURLServiceTest, CheckNonreplaceableEnginesKeywordsConflicts) {
   test_util()->VerifyLoad();
 
-  const base::string16 kCommonKeyword = ASCIIToUTF16("common_keyword");
+  const std::u16string kCommonKeyword = ASCIIToUTF16("common_keyword");
   // 1. Add non replaceable user engine.
   const TemplateURL* user1 =
       AddKeywordWithDate("nonreplaceable", "common_keyword", "http://test1",
@@ -2016,7 +2016,7 @@ TEST_F(TemplateURLServiceTest, CheckNonreplaceableEnginesKeywordsConflicts) {
 TEST_F(TemplateURLServiceTest, CheckReplaceableEnginesKeywordsConflicts) {
   test_util()->VerifyLoad();
 
-  const base::string16 kCommonKeyword = ASCIIToUTF16("common_keyword");
+  const std::u16string kCommonKeyword = ASCIIToUTF16("common_keyword");
   // 1. Add non replaceable user engine with common keyword.
   const TemplateURL* user1 =
       AddKeywordWithDate("nonreplaceable", "common_keyword", "http://test1",
@@ -2033,7 +2033,7 @@ TEST_F(TemplateURLServiceTest, CheckReplaceableEnginesKeywordsConflicts) {
   EXPECT_FALSE(user2);
   EXPECT_FALSE(model()->GetTemplateURLForHost("test2"));
 
-  const base::string16 kCommonKeyword2 = ASCIIToUTF16("common_keyword2");
+  const std::u16string kCommonKeyword2 = ASCIIToUTF16("common_keyword2");
   // 3. Add replaceable user engine with non conflicting keyword.
   const TemplateURL* user3 =
       AddKeywordWithDate("replaceable2", "common_keyword2", "http://test3",

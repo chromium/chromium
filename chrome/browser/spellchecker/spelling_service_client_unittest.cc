@@ -66,10 +66,10 @@ class TestingSpellingServiceClient : public SpellingServiceClient {
   }
 
   void VerifyResponse(bool success,
-                      const base::string16& request_text,
+                      const std::u16string& request_text,
                       const std::vector<SpellCheckResult>& results) {
     EXPECT_EQ(success_, success);
-    base::string16 text(base::UTF8ToUTF16(sanitized_request_text_));
+    std::u16string text(base::UTF8ToUTF16(sanitized_request_text_));
     for (auto it = results.begin(); it != results.end(); ++it) {
       text.replace(it->location, it->length, it->replacements[0]);
     }
@@ -88,7 +88,7 @@ class TestingSpellingServiceClient : public SpellingServiceClient {
  private:
   bool success_;
   std::string sanitized_request_text_;
-  base::string16 corrected_text_;
+  std::u16string corrected_text_;
   network::TestURLLoaderFactory test_url_loader_factory_;
   scoped_refptr<network::SharedURLLoaderFactory> test_shared_loader_factory_;
 };
@@ -101,7 +101,7 @@ class SpellingServiceClientTest
  public:
   void OnTextCheckComplete(int tag,
                            bool success,
-                           const base::string16& text,
+                           const std::u16string& text,
                            const std::vector<SpellCheckResult>& results) {
     client_.VerifyResponse(success, text, results);
   }

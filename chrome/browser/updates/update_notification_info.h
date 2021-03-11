@@ -19,10 +19,10 @@ struct UpdateNotificationInfo {
   ~UpdateNotificationInfo();
 
   // The title of the notification.
-  base::string16 title;
+  std::u16string title;
 
   // The body text of the notification.
-  base::string16 message;
+  std::u16string message;
 
   // Update state enum value. Align with |UpdateState| in
   // UpdateStatusProvider.java

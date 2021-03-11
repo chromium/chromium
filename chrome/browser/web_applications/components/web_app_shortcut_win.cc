@@ -175,7 +175,7 @@ bool CreateShortcutsInPaths(const base::FilePath& web_app_path,
   std::wstring wide_switches(cmd_line.GetCommandLineString());
 
   // Sanitize description.
-  base::string16 description = shortcut_info.description;
+  std::u16string description = shortcut_info.description;
   if (description.length() >= MAX_PATH)
     description.resize(MAX_PATH - 1);
 
@@ -246,7 +246,7 @@ bool CreateShortcutsInPaths(const base::FilePath& web_app_path,
 bool GetShortcutLocationsAndDeleteShortcuts(
     const base::FilePath& web_app_path,
     const base::FilePath& profile_path,
-    const base::string16& title,
+    const std::u16string& title,
     bool* was_pinned_to_taskbar,
     std::vector<base::FilePath>* shortcut_paths) {
   bool result = true;
@@ -317,7 +317,7 @@ void CreateIconAndSetRelaunchDetails(const base::FilePath& web_app_path,
 
 }  // namespace
 
-base::FilePath GetSanitizedFileName(const base::string16& name) {
+base::FilePath GetSanitizedFileName(const std::u16string& name) {
   std::wstring file_name = base::AsWString(name);
   base::i18n::ReplaceIllegalCharactersInPath(&file_name, '_');
   return base::FilePath(file_name);
@@ -326,7 +326,7 @@ base::FilePath GetSanitizedFileName(const base::string16& name) {
 std::vector<base::FilePath> FindAppShortcutsByProfileAndTitle(
     const base::FilePath& shortcut_path,
     const base::FilePath& profile_path,
-    const base::string16& shortcut_name) {
+    const std::u16string& shortcut_name) {
   std::vector<base::FilePath> shortcut_paths;
 
   if (shortcut_name.empty()) {
@@ -449,7 +449,7 @@ bool CreatePlatformShortcuts(const base::FilePath& web_app_path,
 }
 
 void UpdatePlatformShortcuts(const base::FilePath& web_app_path,
-                             const base::string16& old_app_title,
+                             const std::u16string& old_app_title,
                              const ShortcutInfo& shortcut_info) {
   base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,
                                                 base::BlockingType::MAY_BLOCK);
@@ -508,7 +508,7 @@ void DeleteAllShortcutsForProfile(const base::FilePath& profile_path) {
   base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,
                                                 base::BlockingType::MAY_BLOCK);
   GetShortcutLocationsAndDeleteShortcuts(base::FilePath(), profile_path,
-                                         base::string16(), nullptr, nullptr);
+                                         std::u16string(), nullptr, nullptr);
 
   // If there are no more shortcuts in the Chrome Apps subdirectory, remove it.
   base::FilePath chrome_apps_dir;
@@ -556,7 +556,7 @@ std::vector<base::FilePath> GetShortcutPaths(
 }
 
 base::FilePath GetIconFilePath(const base::FilePath& web_app_path,
-                               const base::string16& title) {
+                               const std::u16string& title) {
   return web_app_path.Append(GetSanitizedFileName(title))
       .AddExtension(FILE_PATH_LITERAL(".ico"));
 }

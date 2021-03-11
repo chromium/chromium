@@ -67,7 +67,7 @@ void OpenHelpCenterFromSafetyTip(content::WebContents* web_contents) {
       false /*is_renderer_initiated*/));
 }
 
-base::string16 GetSafetyTipTitle(
+std::u16string GetSafetyTipTitle(
     security_state::SafetyTipStatus safety_tip_status,
     const GURL& suggested_url) {
   switch (safety_tip_status) {
@@ -88,10 +88,10 @@ base::string16 GetSafetyTipTitle(
   }
 
   NOTREACHED();
-  return base::string16();
+  return std::u16string();
 }
 
-base::string16 GetSafetyTipDescription(
+std::u16string GetSafetyTipDescription(
     security_state::SafetyTipStatus warning_type,
     const GURL& suggested_url) {
   switch (warning_type) {
@@ -106,7 +106,7 @@ base::string16 GetSafetyTipDescription(
       NOTREACHED();
   }
   NOTREACHED();
-  return base::string16();
+  return std::u16string();
 }
 
 int GetSafetyTipLeaveButtonId(security_state::SafetyTipStatus warning_type) {

@@ -117,7 +117,7 @@ class AppShortcutManager {
       std::unique_ptr<ShortcutInfo> info);
 
   void OnShortcutInfoRetrievedUpdateShortcuts(
-      base::string16 old_name,
+      std::u16string old_name,
       std::unique_ptr<ShortcutInfo> info);
 
   void OnShortcutsMenuIconsReadRegisterShortcutsMenu(

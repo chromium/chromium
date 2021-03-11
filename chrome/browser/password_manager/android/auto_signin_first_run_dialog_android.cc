@@ -50,16 +50,16 @@ void AutoSigninFirstRunDialogAndroid::ShowDialog() {
   JNIEnv* env = AttachCurrentThread();
   Profile* profile =
       Profile::FromBrowserContext(web_contents_->GetBrowserContext());
-  base::string16 explanation = l10n_util::GetStringFUTF16(
+  std::u16string explanation = l10n_util::GetStringFUTF16(
       IDS_AUTO_SIGNIN_FIRST_RUN_TEXT,
       l10n_util::GetStringUTF16(IDS_PASSWORD_MANAGER_TITLE_BRAND));
-  base::string16 message = l10n_util::GetStringUTF16(
+  std::u16string message = l10n_util::GetStringUTF16(
       IsSyncingAutosignSetting(profile)
           ? IDS_AUTO_SIGNIN_FIRST_RUN_TITLE_MANY_DEVICES
           : IDS_AUTO_SIGNIN_FIRST_RUN_TITLE_LOCAL_DEVICE);
-  base::string16 ok_button_text =
+  std::u16string ok_button_text =
       l10n_util::GetStringUTF16(IDS_AUTO_SIGNIN_FIRST_RUN_OK);
-  base::string16 turn_off_button_text = l10n_util::GetStringUTF16(IDS_TURN_OFF);
+  std::u16string turn_off_button_text = l10n_util::GetStringUTF16(IDS_TURN_OFF);
 
   base::android::ScopedJavaLocalRef<jobject> java_dialog =
       native_window->GetJavaObject();

@@ -27,7 +27,7 @@ class ShellLinkItem : public base::RefCountedThreadSafe<ShellLinkItem> {
  public:
   ShellLinkItem();
 
-  const base::string16& title() const { return title_; }
+  const std::u16string& title() const { return title_; }
   const base::FilePath& icon_path() const { return icon_path_; }
   const std::string& url() const { return url_; }
   int icon_index() const { return icon_index_; }
@@ -36,7 +36,7 @@ class ShellLinkItem : public base::RefCountedThreadSafe<ShellLinkItem> {
   std::wstring GetArguments() const;
   base::CommandLine* GetCommandLine();
 
-  void set_title(const base::string16& title) { title_ = title; }
+  void set_title(const std::u16string& title) { title_ = title; }
   void set_icon(const base::FilePath& path, int index) {
     icon_path_ = path;
     icon_index_ = index;
@@ -55,7 +55,7 @@ class ShellLinkItem : public base::RefCountedThreadSafe<ShellLinkItem> {
   base::CommandLine command_line_;
 
   // The string to be displayed in a JumpList.
-  base::string16 title_;
+  std::u16string title_;
 
   // The absolute path to an icon to be displayed in a JumpList.
   base::FilePath icon_path_;
@@ -123,7 +123,7 @@ class JumpListUpdater {
   // because special steps are required for updating them.
   // |max_items| specifies the maximum number of items from |link_items| to add
   // to the JumpList.
-  bool AddCustomCategory(const base::string16& category_name,
+  bool AddCustomCategory(const std::u16string& category_name,
                          const ShellLinkItemList& link_items,
                          size_t max_items);
 

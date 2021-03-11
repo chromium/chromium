@@ -256,7 +256,7 @@ void RPHReferenceManager::OnWebContentsDestroyedOrNavigated(
 
 }  // namespace
 
-MediaFileSystemInfo::MediaFileSystemInfo(const base::string16& fs_name,
+MediaFileSystemInfo::MediaFileSystemInfo(const std::u16string& fs_name,
                                          const base::FilePath& fs_path,
                                          const std::string& filesystem_id,
                                          MediaGalleryPrefId pref_id,
@@ -269,8 +269,7 @@ MediaFileSystemInfo::MediaFileSystemInfo(const base::string16& fs_name,
       pref_id(pref_id),
       transient_device_id(transient_device_id),
       removable(removable),
-      media_device(media_device) {
-}
+      media_device(media_device) {}
 
 MediaFileSystemInfo::MediaFileSystemInfo() {}
 MediaFileSystemInfo::MediaFileSystemInfo(const MediaFileSystemInfo& other) =

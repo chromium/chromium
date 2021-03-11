@@ -38,7 +38,7 @@ using storage_monitor::TestStorageMonitor;
 namespace {
 
 std::string GalleryName(const MediaGalleryPrefInfo& gallery) {
-  base::string16 name = gallery.GetGalleryDisplayName();
+  std::u16string name = gallery.GetGalleryDisplayName();
   return base::UTF16ToASCII(name);
 }
 
@@ -264,7 +264,7 @@ TEST_F(MediaGalleriesPermissionControllerTest, TestNameGeneration) {
   gallery.display_name = base::ASCIIToUTF16("override");
   EXPECT_EQ("override", GalleryName(gallery));
 
-  gallery.display_name = base::string16();
+  gallery.display_name = std::u16string();
   gallery.volume_label = base::ASCIIToUTF16("label");
   EXPECT_EQ(galleryName, GalleryName(gallery));
 
@@ -291,10 +291,10 @@ TEST_F(MediaGalleriesPermissionControllerTest, TestNameGeneration) {
   gallery.model_name = base::ASCIIToUTF16("model");
   EXPECT_EQ("override", GalleryName(gallery));
 
-  gallery.display_name = base::string16();
+  gallery.display_name = std::u16string();
   EXPECT_EQ("volume", GalleryName(gallery));
 
-  gallery.volume_label = base::string16();
+  gallery.volume_label = std::u16string();
   EXPECT_EQ("vendor, model", GalleryName(gallery));
 
   gallery.total_size_in_bytes = 1000000;

@@ -43,7 +43,7 @@ class ExtensionTask
  private:
   // If |extension| is nullptr, this method will get the title from
   // the |web_contents|.
-  base::string16 GetExtensionTitle(content::WebContents* web_contents,
+  std::u16string GetExtensionTitle(content::WebContents* web_contents,
                                    const extensions::Extension* extension,
                                    extensions::mojom::ViewType view_type) const;
 

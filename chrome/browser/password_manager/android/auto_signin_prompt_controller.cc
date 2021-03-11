@@ -18,8 +18,8 @@
 using base::android::ScopedJavaLocalRef;
 
 void ShowAutoSigninPrompt(content::WebContents* web_contents,
-                          const base::string16& username) {
-  base::string16 message = l10n_util::GetStringFUTF16(
+                          const std::u16string& username) {
+  std::u16string message = l10n_util::GetStringFUTF16(
       IDS_MANAGE_PASSWORDS_AUTO_SIGNIN_TITLE, username);
 
   JNIEnv* env = base::android::AttachCurrentThread();

@@ -69,7 +69,7 @@ class LifecycleUnit {
 
   // Returns a title describing this LifecycleUnit, or an empty string if no
   // title is available.
-  virtual base::string16 GetTitle() const = 0;
+  virtual std::u16string GetTitle() const = 0;
 
   // Returns the last time at which the LifecycleUnit was focused, or
   // base::TimeTicks::Max() if the LifecycleUnit is currently focused.

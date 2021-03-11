@@ -60,12 +60,12 @@ ContentSettingsType GroupedPermissionInfoBarDelegate::GetContentSettingType(
   return permission_prompt_->GetContentSettingType(position);
 }
 
-base::string16 GroupedPermissionInfoBarDelegate::GetCompactMessageText() const {
+std::u16string GroupedPermissionInfoBarDelegate::GetCompactMessageText() const {
   return l10n_util::GetStringUTF16(
       IDS_NOTIFICATION_QUIET_PERMISSION_MINI_INFOBAR_MESSAGE);
 }
 
-base::string16 GroupedPermissionInfoBarDelegate::GetCompactLinkText() const {
+std::u16string GroupedPermissionInfoBarDelegate::GetCompactLinkText() const {
   switch (QuietNotificationPermissionUiConfig::GetMiniInfobarExpandLinkText()) {
     case QuietNotificationPermissionUiConfig::InfobarLinkTextVariation::kManage:
       return l10n_util::GetStringUTF16(IDS_NOTIFICATION_BUTTON_MANAGE);
@@ -76,18 +76,18 @@ base::string16 GroupedPermissionInfoBarDelegate::GetCompactLinkText() const {
   }
 
   NOTREACHED();
-  return base::string16();
+  return std::u16string();
 }
 
 // TODO(crbug.com/1082737): Many methods of this class switches on the quiet UI
 // reason. Refactor this into separate subclasses instead.
-base::string16 GroupedPermissionInfoBarDelegate::GetDescriptionText() const {
+std::u16string GroupedPermissionInfoBarDelegate::GetDescriptionText() const {
   auto* manager = permissions::PermissionRequestManager::FromWebContents(
       permission_prompt_->web_contents());
 
   auto quiet_ui_reason = manager->ReasonForUsingQuietUi();
   if (!quiet_ui_reason)
-    return base::string16();
+    return std::u16string();
   switch (*quiet_ui_reason) {
     case QuietUiReason::kEnabledInPrefs:
       return l10n_util::GetStringUTF16(
@@ -105,7 +105,7 @@ base::string16 GroupedPermissionInfoBarDelegate::GetDescriptionText() const {
   }
 
   NOTREACHED();
-  return base::string16();
+  return std::u16string();
 }
 
 bool GroupedPermissionInfoBarDelegate::ShouldSecondaryButtonOpenSettings()
@@ -134,26 +134,26 @@ int GroupedPermissionInfoBarDelegate::GetIconId() const {
   return IDR_ANDROID_INFOBAR_NOTIFICATIONS_OFF;
 }
 
-base::string16 GroupedPermissionInfoBarDelegate::GetLinkText() const {
+std::u16string GroupedPermissionInfoBarDelegate::GetLinkText() const {
   auto* manager = permissions::PermissionRequestManager::FromWebContents(
       permission_prompt_->web_contents());
 
   // This will be used as the text of the link in the expanded state.
   auto quiet_ui_reason = manager->ReasonForUsingQuietUi();
   if (!quiet_ui_reason)
-    return base::string16();
+    return std::u16string();
   switch (*quiet_ui_reason) {
     case QuietUiReason::kEnabledInPrefs:
     case QuietUiReason::kPredictedVeryUnlikelyGrant:
     case QuietUiReason::kTriggeredByCrowdDeny:
-      return base::string16();
+      return std::u16string();
     case QuietUiReason::kTriggeredDueToAbusiveRequests:
     case QuietUiReason::kTriggeredDueToAbusiveContent:
       return l10n_util::GetStringUTF16(IDS_LEARN_MORE);
   }
 
   NOTREACHED();
-  return base::string16();
+  return std::u16string();
 }
 
 GURL GroupedPermissionInfoBarDelegate::GetLinkURL() const {
@@ -179,7 +179,7 @@ void GroupedPermissionInfoBarDelegate::InfoBarDismissed() {
     permission_prompt_->Closing();
 }
 
-base::string16 GroupedPermissionInfoBarDelegate::GetMessageText() const {
+std::u16string GroupedPermissionInfoBarDelegate::GetMessageText() const {
   return l10n_util::GetStringUTF16(
       IDS_NOTIFICATION_QUIET_PERMISSION_INFOBAR_TITLE);
 }
@@ -266,14 +266,14 @@ int GroupedPermissionInfoBarDelegate::GetButtons() const {
   return BUTTON_OK | BUTTON_CANCEL;
 }
 
-base::string16 GroupedPermissionInfoBarDelegate::GetButtonLabel(
+std::u16string GroupedPermissionInfoBarDelegate::GetButtonLabel(
     InfoBarButton button) const {
   auto* manager = permissions::PermissionRequestManager::FromWebContents(
       permission_prompt_->web_contents());
 
   auto quiet_ui_reason = manager->ReasonForUsingQuietUi();
   if (!quiet_ui_reason)
-    return base::string16();
+    return std::u16string();
   switch (*quiet_ui_reason) {
     case QuietUiReason::kEnabledInPrefs:
     case QuietUiReason::kPredictedVeryUnlikelyGrant:
@@ -291,7 +291,7 @@ base::string16 GroupedPermissionInfoBarDelegate::GetButtonLabel(
   }
 
   NOTREACHED();
-  return base::string16();
+  return std::u16string();
 }
 
 bool GroupedPermissionInfoBarDelegate::EqualsDelegate(

@@ -100,7 +100,7 @@ void ForwardNotificationOperationOnUiThread(
     const std::string& profile_id,
     bool incognito,
     const base::Optional<int>& action_index,
-    const base::Optional<base::string16>& reply,
+    const base::Optional<std::u16string>& reply,
     const base::Optional<bool>& by_user) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   if (!g_browser_process)
@@ -978,7 +978,7 @@ bool NotificationPlatformBridgeWin::HandleActivation(
     return false;
   }
 
-  base::Optional<base::string16> reply;
+  base::Optional<std::u16string> reply;
   std::wstring inline_reply =
       command_line.GetSwitchValueNative(switches::kNotificationInlineReply);
   if (!inline_reply.empty())

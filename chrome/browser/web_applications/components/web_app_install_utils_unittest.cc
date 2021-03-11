@@ -189,7 +189,7 @@ TEST(WebAppInstallUtils, UpdateWebAppInfoFromManifest_EmptyName) {
   WebApplicationInfo web_app_info;
 
   blink::Manifest manifest;
-  manifest.name = base::string16();
+  manifest.name = std::u16string();
   manifest.short_name = base::ASCIIToUTF16(kAppShortName);
 
   UpdateWebAppInfoFromManifest(manifest, AppManifestUrl(), &web_app_info);

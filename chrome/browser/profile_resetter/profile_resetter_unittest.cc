@@ -347,7 +347,7 @@ class MockInstantService : public InstantService {
 
 // helper functions -----------------------------------------------------------
 
-scoped_refptr<Extension> CreateExtension(const base::string16& name,
+scoped_refptr<Extension> CreateExtension(const std::u16string& name,
                                          const base::FilePath& path,
                                          Manifest::Location location,
                                          extensions::Manifest::Type type,
@@ -1013,15 +1013,16 @@ TEST_F(ProfileResetterTest, GetReadableFeedback) {
     std::string value;
     ASSERT_TRUE(dict->GetString("key", &value));
     if (value == "Extensions") {
-      base::string16 extensions;
+      std::u16string extensions;
       EXPECT_TRUE(dict->GetString("value", &extensions));
       EXPECT_EQ(base::WideToUTF16(L"Tiësto"), extensions);
       checked_extensions = true;
     } else if (value == "Shortcut targets") {
-      base::string16 targets;
+      std::u16string targets;
       EXPECT_TRUE(dict->GetString("value", &targets));
-      EXPECT_NE(base::string16::npos,
-                targets.find(base::ASCIIToUTF16("foo.com"))) << targets;
+      EXPECT_NE(std::u16string::npos,
+                targets.find(base::ASCIIToUTF16("foo.com")))
+          << targets;
       checked_shortcuts = true;
     }
   }

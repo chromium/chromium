@@ -163,7 +163,7 @@ class PageTitleChecker : public StatusChangeChecker,
 
   // StatusChangeChecker overrides.
   bool IsExitConditionSatisfied(std::ostream* os) override {
-    const base::string16 actual_title = web_contents()->GetTitle();
+    const std::u16string actual_title = web_contents()->GetTitle();
     *os << "Waiting for page title \"" << base::UTF16ToUTF8(expected_title_)
         << "\"; actual=\"" << base::UTF16ToUTF8(actual_title) << "\"";
     return actual_title == expected_title_;
@@ -176,7 +176,7 @@ class PageTitleChecker : public StatusChangeChecker,
   }
 
  private:
-  const base::string16 expected_title_;
+  const std::u16string expected_title_;
 
   DISALLOW_COPY_AND_ASSIGN(PageTitleChecker);
 };

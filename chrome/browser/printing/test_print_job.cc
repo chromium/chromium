@@ -17,7 +17,7 @@
 namespace printing {
 
 void TestPrintJob::Initialize(std::unique_ptr<PrinterQuery> query,
-                              const base::string16& name,
+                              const std::u16string& name,
                               uint32_t page_count) {
   // Since we do not actually print in these tests, just let this get destroyed
   // when this function exits.

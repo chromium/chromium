@@ -115,7 +115,7 @@ class PlatformNotificationServiceImpl
       const blink::NotificationResources& notification_resources) const;
 
   // Returns a display name for an origin, to be used in the context message
-  base::string16 DisplayNameForContextMessage(const GURL& origin) const;
+  std::u16string DisplayNameForContextMessage(const GURL& origin) const;
 
   // Clears |closed_notifications_|. Should only be used for testing purposes.
   void ClearClosedNotificationsForTesting() { closed_notifications_.clear(); }

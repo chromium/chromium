@@ -40,7 +40,7 @@ constexpr char kExampleCom[] = "https://example.com/";
 
 struct MockPasswordManagerDriver : password_manager::StubPasswordManagerDriver {
   MOCK_METHOD2(FillSuggestion,
-               void(const base::string16&, const base::string16&));
+               void(const std::u16string&, const std::u16string&));
   MOCK_METHOD1(TouchToFillClosed, void(ShowVirtualKeyboard));
   MOCK_CONST_METHOD0(GetLastCommittedURL, const GURL&());
 };

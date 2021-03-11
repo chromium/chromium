@@ -86,7 +86,7 @@ sync_pb::ModelTypeState GetWalletModelTypeState(syncer::ModelType type,
 
 void UnmaskServerCard(int profile,
                       const autofill::CreditCard& credit_card,
-                      const base::string16& full_number);
+                      const std::u16string& full_number);
 
 sync_pb::SyncEntity CreateDefaultSyncWalletCard();
 

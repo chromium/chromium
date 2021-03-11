@@ -198,8 +198,8 @@ class AutoLogin : public content::NotificationObserver {
   bool logged_in() const { return logged_in_; }
 
  private:
-  const base::string16 username_;
-  const base::string16 password_;
+  const std::u16string username_;
+  const std::u16string password_;
   bool logged_in_;
 
   content::NotificationRegistrar registrar_;
@@ -254,7 +254,7 @@ IN_PROC_BROWSER_TEST_F(WebSocketBrowserTest, SendCloseFrameWhenTabIsClosed) {
         raw_new_tab, base::ASCIIToUTF16("CONNECTED"));
     connected_title_watcher.AlsoWaitForTitle(base::ASCIIToUTF16("CLOSED"));
     NavigateToHTTP("connect_and_be_observed.html");
-    const base::string16 result = connected_title_watcher.WaitAndGetTitle();
+    const std::u16string result = connected_title_watcher.WaitAndGetTitle();
     EXPECT_TRUE(base::EqualsASCII(result, "CONNECTED"));
 
     content::WebContentsDestroyedWatcher destroyed_watcher(raw_new_tab);
@@ -413,7 +413,7 @@ IN_PROC_BROWSER_TEST_F(WebSocketBrowserTest, MAYBE_WebSocketAppliesHSTS) {
       base::ASCIIToUTF16("SET"));
   ui_test_utils::NavigateToURL(browser(),
                                https_server.GetURL("/websocket/set-hsts.html"));
-  const base::string16 result = title_watcher.WaitAndGetTitle();
+  const std::u16string result = title_watcher.WaitAndGetTitle();
   EXPECT_TRUE(base::EqualsASCII(result, "SET"));
 
   // Verify that it applies to WebSockets.

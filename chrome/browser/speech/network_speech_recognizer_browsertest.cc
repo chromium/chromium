@@ -39,7 +39,7 @@ class MockSpeechRecognizerDelegate : public SpeechRecognizerDelegate {
 
   MOCK_METHOD3(
       OnSpeechResult,
-      void(const base::string16& text,
+      void(const std::u16string& text,
            bool is_final,
            const base::Optional<SpeechRecognizerDelegate::TranscriptTiming>&
                timing));

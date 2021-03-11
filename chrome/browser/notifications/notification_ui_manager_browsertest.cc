@@ -60,7 +60,7 @@ class NotificationUIManagerBrowserTest : public InProcessBrowserTest {
       log_ += (by_user ? "by_user_" : "programmatically_");
     }
     void Click(const base::Optional<int>& button_index,
-               const base::Optional<base::string16>& reply) override {
+               const base::Optional<std::u16string>& reply) override {
       if (button_index) {
         log_ += "ButtonClick_";
         log_ += base::NumberToString(*button_index) + "_";

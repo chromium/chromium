@@ -495,7 +495,7 @@ void PrivetLocalPrintOperationImpl::DoSubmitdoc() {
                                     user_);
   }
 
-  base::string16 shortened_jobname;
+  std::u16string shortened_jobname;
   gfx::ElideString(base::UTF8ToUTF16(jobname_),
                    kPrivetLocalPrintMaxJobNameLength,
                    &shortened_jobname);

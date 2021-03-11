@@ -62,7 +62,7 @@ ScreenCaptureInfoBarDelegateAndroid::GetIdentifier() const {
   return SCREEN_CAPTURE_INFOBAR_DELEGATE_ANDROID;
 }
 
-base::string16 ScreenCaptureInfoBarDelegateAndroid::GetMessageText() const {
+std::u16string ScreenCaptureInfoBarDelegateAndroid::GetMessageText() const {
   return l10n_util::GetStringFUTF16(
       IDS_MEDIA_CAPTURE_SCREEN_INFOBAR_TEXT,
       url_formatter::FormatUrlForSecurityDisplay(request_.security_origin));
@@ -72,7 +72,7 @@ int ScreenCaptureInfoBarDelegateAndroid::GetIconId() const {
   return IDR_ANDROID_INFOBAR_MEDIA_STREAM_SCREEN;
 }
 
-base::string16 ScreenCaptureInfoBarDelegateAndroid::GetButtonLabel(
+std::u16string ScreenCaptureInfoBarDelegateAndroid::GetButtonLabel(
     InfoBarButton button) const {
   return l10n_util::GetStringUTF16((button == BUTTON_OK) ? IDS_PERMISSION_ALLOW
                                                          : IDS_PERMISSION_DENY);

@@ -61,7 +61,7 @@ class VR_BASE_EXPORT ContentInputDelegate : public PlatformUiInputDelegate {
   };
   bool ContentGestureIsLocked(InputEvent::Type type);
   void OnWebInputTextChanged(TextInputInfo pending_input_info,
-                             const base::string16& text);
+                             const std::u16string& text);
 
   int content_id_ = 0;
   int locked_content_id_ = 0;

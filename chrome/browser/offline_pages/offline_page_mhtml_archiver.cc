@@ -92,7 +92,7 @@ void OfflinePageMHTMLArchiver::GenerateMHTML(
   }
 
   GURL url(web_contents->GetLastCommittedURL());
-  base::string16 title(web_contents->GetTitle());
+  std::u16string title(web_contents->GetTitle());
   base::FilePath file_path(
       archives_dir.Append(base::GenerateGUID())
           .AddExtension(OfflinePageUtils::kMHTMLExtension));
@@ -112,7 +112,7 @@ void OfflinePageMHTMLArchiver::GenerateMHTML(
 void OfflinePageMHTMLArchiver::OnGenerateMHTMLDone(
     const GURL& url,
     const base::FilePath& file_path,
-    const base::string16& title,
+    const std::u16string& title,
     const std::string& name_space,
     base::Time mhtml_start_time,
     const content::MHTMLGenerationResult& result) {
@@ -143,7 +143,7 @@ void OfflinePageMHTMLArchiver::OnGenerateMHTMLDone(
 void OfflinePageMHTMLArchiver::OnComputeDigestDone(
     const GURL& url,
     const base::FilePath& file_path,
-    const base::string16& title,
+    const std::u16string& title,
     const std::string& name_space,
     base::Time digest_start_time,
     int64_t file_size,
@@ -180,7 +180,7 @@ void OfflinePageMHTMLArchiver::ReportFailure(ArchiverResult result) {
   base::ThreadTaskRunnerHandle::Get()->PostTask(
       FROM_HERE,
       base::BindOnce(std::move(callback_), result, GURL(), base::FilePath(),
-                     base::string16(), 0, std::string()));
+                     std::u16string(), 0, std::string()));
 }
 
 }  // namespace offline_pages

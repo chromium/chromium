@@ -67,7 +67,7 @@ class TriggeredProfileResetter : public KeyedService {
 
   // Returns the name of the tool that performed the reset. This string will be
   // truncated to a length of |kMaxToolNameLength|.
-  virtual base::string16 GetResetToolName();
+  virtual std::u16string GetResetToolName();
 
  private:
 #if defined(OS_WIN)
@@ -77,7 +77,7 @@ class TriggeredProfileResetter : public KeyedService {
   bool has_reset_trigger_ = false;
   bool activate_called_ = false;
 
-  base::string16 tool_name_;
+  std::u16string tool_name_;
 
   DISALLOW_COPY_AND_ASSIGN(TriggeredProfileResetter);
 };

@@ -13,7 +13,7 @@ namespace vr {
 
 namespace {
 
-size_t CommonPrefixLength(const base::string16 a, const base::string16 b) {
+size_t CommonPrefixLength(const std::u16string a, const std::u16string b) {
   size_t a_len = a.length();
   size_t b_len = b.length();
   size_t i = 0;
@@ -32,21 +32,21 @@ TextInputInfo::TextInputInfo()
                     kDefaultCompositionIndex,
                     kDefaultCompositionIndex) {}
 
-TextInputInfo::TextInputInfo(base::string16 t)
+TextInputInfo::TextInputInfo(std::u16string t)
     : TextInputInfo(t,
                     t.length(),
                     t.length(),
                     kDefaultCompositionIndex,
                     kDefaultCompositionIndex) {}
 
-TextInputInfo::TextInputInfo(base::string16 t, int sel_start, int sel_end)
+TextInputInfo::TextInputInfo(std::u16string t, int sel_start, int sel_end)
     : TextInputInfo(t,
                     sel_start,
                     sel_end,
                     kDefaultCompositionIndex,
                     kDefaultCompositionIndex) {}
 
-TextInputInfo::TextInputInfo(base::string16 t,
+TextInputInfo::TextInputInfo(std::u16string t,
                              int sel_start,
                              int sel_end,
                              int comp_start,
@@ -85,13 +85,13 @@ size_t TextInputInfo::CompositionSize() const {
   return composition_end - composition_start;
 }
 
-base::string16 TextInputInfo::CommittedTextBeforeCursor() const {
+std::u16string TextInputInfo::CommittedTextBeforeCursor() const {
   if (composition_start == composition_end)
     return text.substr(0, selection_start);
   return text.substr(0, composition_start);
 }
 
-base::string16 TextInputInfo::ComposingText() const {
+std::u16string TextInputInfo::ComposingText() const {
   if (composition_start == composition_end)
     return base::UTF8ToUTF16("");
   return text.substr(composition_start, CompositionSize());
@@ -129,7 +129,7 @@ EditedText::EditedText(const TextInputInfo& new_current,
                        const TextInputInfo& new_previous)
     : current(new_current), previous(new_previous) {}
 
-EditedText::EditedText(base::string16 t) : current(t) {}
+EditedText::EditedText(std::u16string t) : current(t) {}
 
 bool EditedText::operator==(const EditedText& other) const {
   return current == other.current && previous == other.previous;
@@ -201,7 +201,7 @@ TextEdits EditedText::GetDiff() const {
   return edits;
 }
 
-static_assert(sizeof(base::string16) + 16 == sizeof(TextInputInfo),
+static_assert(sizeof(std::u16string) + 16 == sizeof(TextInputInfo),
               "If new fields are added to TextInputInfo, we must explicitly "
               "bump this size and update operator==");
 

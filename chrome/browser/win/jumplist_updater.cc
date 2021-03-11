@@ -195,7 +195,7 @@ bool JumpListUpdater::AddTasks(const ShellLinkItemList& link_items) {
   return SUCCEEDED(destination_list_->AddUserTasks(object_array.Get()));
 }
 
-bool JumpListUpdater::AddCustomCategory(const base::string16& category_name,
+bool JumpListUpdater::AddCustomCategory(const std::u16string& category_name,
                                         const ShellLinkItemList& link_items,
                                         size_t max_items) {
   if (!destination_list_.Get())

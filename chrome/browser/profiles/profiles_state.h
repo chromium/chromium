@@ -56,19 +56,19 @@ void SetLastUsedProfile(const std::string& profile_dir);
 // there is only one local profile present, it will return
 // IDS_SINGLE_PROFILE_DISPLAY_NAME, unless the profile has a user entered
 // custom name.
-base::string16 GetAvatarNameForProfile(const base::FilePath& profile_path);
+std::u16string GetAvatarNameForProfile(const base::FilePath& profile_path);
 
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
 // Returns the string to use in the fast user switcher menu for the specified
 // menu item. Adds a supervision indicator to the profile name if appropriate.
-base::string16 GetProfileSwitcherTextForItem(const AvatarMenu::Item& item);
+std::u16string GetProfileSwitcherTextForItem(const AvatarMenu::Item& item);
 
 // Update the name of |profile| to |new_profile_name|. This updates the profile
 // preferences, which triggers an update in the ProfileAttributesStorage. This
 // method should be called when the user is explicitely changing the profile
 // name, as it will always set |prefs::kProfileUsingDefaultName| to false.
 void UpdateProfileName(Profile* profile,
-                       const base::string16& new_profile_name);
+                       const std::u16string& new_profile_name);
 
 #endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
 
@@ -127,16 +127,16 @@ bool ArePublicSessionRestrictionsEnabled();
 
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
 // Returns the default name for a new enterprise profile.
-base::string16 GetDefaultNameForNewEnterpriseProfile(
+std::u16string GetDefaultNameForNewEnterpriseProfile(
     const std::string& hosted_domain = std::string());
 
 // Returns the default name for a new signed-in profile, based on
 // `account_info`.
-base::string16 GetDefaultNameForNewSignedInProfile(
+std::u16string GetDefaultNameForNewSignedInProfile(
     const AccountInfo& account_info);
 
 // The same as above but using incomplete account info.
-base::string16 GetDefaultNameForNewSignedInProfileWithIncompleteInfo(
+std::u16string GetDefaultNameForNewSignedInProfileWithIncompleteInfo(
     const CoreAccountInfo& account_info);
 #endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
 

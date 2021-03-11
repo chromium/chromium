@@ -202,12 +202,12 @@ class ProfileManagerTest : public testing::Test {
   // ProfileAttributesStorage, and return the profile created.
   Profile* AddProfileToStorage(ProfileManager* profile_manager,
                                const std::string& path_suffix,
-                               const base::string16& profile_name) {
+                               const std::u16string& profile_name) {
     ProfileAttributesStorage& storage =
         profile_manager->GetProfileAttributesStorage();
     size_t num_profiles = storage.GetNumberOfProfiles();
     base::FilePath path = temp_dir_.GetPath().AppendASCII(path_suffix);
-    storage.AddProfile(path, profile_name, std::string(), base::string16(),
+    storage.AddProfile(path, profile_name, std::string(), std::u16string(),
                        false, 0, std::string(), EmptyAccountId());
     EXPECT_EQ(num_profiles + 1u, storage.GetNumberOfProfiles());
     return profile_manager->GetProfile(path);
@@ -700,13 +700,13 @@ TEST_F(ProfileManagerTest, AutoloadProfilesWithBackgroundApps) {
   EXPECT_EQ(0u, storage.GetNumberOfProfiles());
 
   storage.AddProfile(profile_manager->user_data_dir().AppendASCII("path_1"),
-                     ASCIIToUTF16("name_1"), "12345", base::string16(), true, 0,
+                     ASCIIToUTF16("name_1"), "12345", std::u16string(), true, 0,
                      std::string(), EmptyAccountId());
   storage.AddProfile(profile_manager->user_data_dir().AppendASCII("path_2"),
-                     ASCIIToUTF16("name_2"), "23456", base::string16(), true, 0,
+                     ASCIIToUTF16("name_2"), "23456", std::u16string(), true, 0,
                      std::string(), EmptyAccountId());
   storage.AddProfile(profile_manager->user_data_dir().AppendASCII("path_3"),
-                     ASCIIToUTF16("name_3"), "34567", base::string16(), false,
+                     ASCIIToUTF16("name_3"), "34567", std::u16string(), false,
                      0, std::string(), EmptyAccountId());
 
   ASSERT_EQ(3u, storage.GetNumberOfProfiles());
@@ -731,10 +731,10 @@ TEST_F(ProfileManagerTest, DoNotAutoloadProfilesIfBackgroundModeOff) {
   EXPECT_EQ(0u, storage.GetNumberOfProfiles());
 
   storage.AddProfile(profile_manager->user_data_dir().AppendASCII("path_1"),
-                     ASCIIToUTF16("name_1"), "12345", base::string16(), true, 0,
+                     ASCIIToUTF16("name_1"), "12345", std::u16string(), true, 0,
                      std::string(), EmptyAccountId());
   storage.AddProfile(profile_manager->user_data_dir().AppendASCII("path_2"),
-                     ASCIIToUTF16("name_2"), "23456", base::string16(), true, 0,
+                     ASCIIToUTF16("name_2"), "23456", std::u16string(), true, 0,
                      std::string(), EmptyAccountId());
 
   ASSERT_EQ(2u, storage.GetNumberOfProfiles());
@@ -1595,16 +1595,16 @@ TEST_F(ProfileManagerTest, ProfileDisplayNameResetsDefaultName) {
   EXPECT_EQ(0u, storage.GetNumberOfProfiles());
 
   // Only one local profile means we display IDS_SINGLE_PROFILE_DISPLAY_NAME.
-  const base::string16 default_profile_name =
+  const std::u16string default_profile_name =
       l10n_util::GetStringUTF16(IDS_SINGLE_PROFILE_DISPLAY_NAME);
-  const base::string16 profile_name1 = storage.ChooseNameForNewProfile(0u);
+  const std::u16string profile_name1 = storage.ChooseNameForNewProfile(0u);
   Profile* profile1 = AddProfileToStorage(profile_manager,
                                           "path_1", profile_name1);
   EXPECT_EQ(default_profile_name,
             profiles::GetAvatarNameForProfile(profile1->GetPath()));
 
   // Multiple profiles means displaying the actual profile names.
-  const base::string16 profile_name2 = storage.ChooseNameForNewProfile(1u);
+  const std::u16string profile_name2 = storage.ChooseNameForNewProfile(1u);
   Profile* profile2 = AddProfileToStorage(profile_manager,
                                           "path_2", profile_name2);
   EXPECT_EQ(profile_name1,
@@ -1630,9 +1630,9 @@ TEST_F(ProfileManagerTest, ProfileDisplayNamePreservesCustomName) {
   EXPECT_EQ(0u, storage.GetNumberOfProfiles());
 
   // Only one local profile means we display IDS_SINGLE_PROFILE_DISPLAY_NAME.
-  const base::string16 default_profile_name =
+  const std::u16string default_profile_name =
       l10n_util::GetStringUTF16(IDS_SINGLE_PROFILE_DISPLAY_NAME);
-  const base::string16 profile_name1 = storage.ChooseNameForNewProfile(0u);
+  const std::u16string profile_name1 = storage.ChooseNameForNewProfile(0u);
   Profile* profile1 = AddProfileToStorage(profile_manager,
                                           "path_1", profile_name1);
   EXPECT_EQ(default_profile_name,
@@ -1640,7 +1640,7 @@ TEST_F(ProfileManagerTest, ProfileDisplayNamePreservesCustomName) {
   ASSERT_EQ(1u, storage.GetNumberOfProfiles());
 
   // We should display custom names for local profiles.
-  const base::string16 custom_profile_name = ASCIIToUTF16("Batman");
+  const std::u16string custom_profile_name = ASCIIToUTF16("Batman");
   ProfileAttributesEntry* entry = storage.GetAllProfilesAttributes()[0];
   entry->SetLocalProfileName(custom_profile_name, false);
   EXPECT_EQ(custom_profile_name, entry->GetName());
@@ -1648,7 +1648,7 @@ TEST_F(ProfileManagerTest, ProfileDisplayNamePreservesCustomName) {
             profiles::GetAvatarNameForProfile(profile1->GetPath()));
 
   // Multiple profiles means displaying the actual profile names.
-  const base::string16 profile_name2 = storage.ChooseNameForNewProfile(1u);
+  const std::u16string profile_name2 = storage.ChooseNameForNewProfile(1u);
   Profile* profile2 = AddProfileToStorage(profile_manager,
                                           "path_2", profile_name2);
   EXPECT_EQ(custom_profile_name,
@@ -1674,9 +1674,9 @@ TEST_F(ProfileManagerTest, ProfileDisplayNamePreservesSignedInName) {
   EXPECT_EQ(0u, storage.GetNumberOfProfiles());
 
   // Only one local profile means we display IDS_SINGLE_PROFILE_DISPLAY_NAME.
-  const base::string16 default_profile_name =
+  const std::u16string default_profile_name =
       l10n_util::GetStringUTF16(IDS_SINGLE_PROFILE_DISPLAY_NAME);
-  const base::string16 profile_name1 = storage.ChooseNameForNewProfile(0u);
+  const std::u16string profile_name1 = storage.ChooseNameForNewProfile(0u);
   Profile* profile1 = AddProfileToStorage(profile_manager,
                                           "path_1", profile_name1);
   EXPECT_EQ(default_profile_name,
@@ -1694,14 +1694,14 @@ TEST_F(ProfileManagerTest, ProfileDisplayNamePreservesSignedInName) {
   // For a signed in profile with a non-default Gaia given name we display the
   // Gaia given name.
   entry->SetAuthInfo("12345", ASCIIToUTF16("user@gmail.com"), true);
-  const base::string16 gaia_given_name(ASCIIToUTF16("given name"));
+  const std::u16string gaia_given_name(ASCIIToUTF16("given name"));
   entry->SetGAIAGivenName(gaia_given_name);
   EXPECT_EQ(gaia_given_name, entry->GetName());
   EXPECT_EQ(gaia_given_name,
             profiles::GetAvatarNameForProfile(profile1->GetPath()));
 
   // Multiple profiles means displaying the actual profile names.
-  const base::string16 profile_name2 = storage.ChooseNameForNewProfile(1u);
+  const std::u16string profile_name2 = storage.ChooseNameForNewProfile(1u);
   Profile* profile2 = AddProfileToStorage(profile_manager,
                                           "path_2", profile_name2);
   EXPECT_EQ(gaia_given_name,
@@ -1732,23 +1732,23 @@ TEST_F(ProfileManagerTest, ProfileDisplayNameIsEmailIfDefaultName) {
                                           ASCIIToUTF16("Person 1"));
   Profile* profile2 = AddProfileToStorage(profile_manager, "path_2",
                                           ASCIIToUTF16("Default Profile"));
-  const base::string16 profile_name3(ASCIIToUTF16("Batman"));
+  const std::u16string profile_name3(ASCIIToUTF16("Batman"));
   Profile* profile3 = AddProfileToStorage(profile_manager, "path_3",
                                           profile_name3);
   EXPECT_EQ(3u, storage.GetNumberOfProfiles());
 
   // Sign in all profiles, and make sure they do not have a Gaia name set.
-  const base::string16 email1(ASCIIToUTF16("user1@gmail.com"));
-  const base::string16 email2(ASCIIToUTF16("user2@gmail.com"));
-  const base::string16 email3(ASCIIToUTF16("user3@gmail.com"));
+  const std::u16string email1(ASCIIToUTF16("user1@gmail.com"));
+  const std::u16string email2(ASCIIToUTF16("user2@gmail.com"));
+  const std::u16string email3(ASCIIToUTF16("user3@gmail.com"));
 
   ProfileAttributesEntry* entry =
       storage.GetProfileAttributesWithPath(profile1->GetPath());
 
   ASSERT_NE(entry, nullptr);
   entry->SetAuthInfo("12345", email1, true);
-  entry->SetGAIAGivenName(base::string16());
-  entry->SetGAIAName(base::string16());
+  entry->SetGAIAGivenName(std::u16string());
+  entry->SetGAIAName(std::u16string());
 
   entry = storage.GetProfileAttributesWithPath(profile2->GetPath());
   ASSERT_NE(entry, nullptr);
@@ -1761,15 +1761,15 @@ TEST_F(ProfileManagerTest, ProfileDisplayNameIsEmailIfDefaultName) {
 #endif  // !defined(OS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH)
 
   entry->SetAuthInfo("23456", email2, true);
-  entry->SetGAIAGivenName(base::string16());
-  entry->SetGAIAName(base::string16());
+  entry->SetGAIAGivenName(std::u16string());
+  entry->SetGAIAName(std::u16string());
 
   entry = storage.GetProfileAttributesWithPath(profile3->GetPath());
   ASSERT_NE(entry, nullptr);
 
   entry->SetAuthInfo("34567", email3, true);
-  entry->SetGAIAGivenName(base::string16());
-  entry->SetGAIAName(base::string16());
+  entry->SetGAIAGivenName(std::u16string());
+  entry->SetGAIAName(std::u16string());
 
   // The profiles with default names should display the email address.
   EXPECT_EQ(email1, profiles::GetAvatarNameForProfile(profile1->GetPath()));
@@ -1781,7 +1781,7 @@ TEST_F(ProfileManagerTest, ProfileDisplayNameIsEmailIfDefaultName) {
 
   // Adding a Gaia name to a profile that previously had a default name should
   // start displaying it.
-  const base::string16 gaia_given_name(ASCIIToUTF16("Robin"));
+  const std::u16string gaia_given_name(ASCIIToUTF16("Robin"));
   entry = storage.GetProfileAttributesWithPath(profile1->GetPath());
   ASSERT_NE(entry, nullptr);
   entry->SetGAIAGivenName(gaia_given_name);
@@ -1813,7 +1813,7 @@ TEST_F(ProfileManagerTest, ActiveProfileDeletedNeedsToLoadNextProfile) {
   ProfileAttributesStorage& storage =
       profile_manager->GetProfileAttributesStorage();
   storage.AddProfile(dest_path2, ASCIIToUTF16(profile_name2), "23456",
-                     base::string16(), true, 0, std::string(),
+                     std::u16string(), true, 0, std::string(),
                      EmptyAccountId());
   content::RunAllTasksUntilIdle();
 

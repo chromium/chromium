@@ -34,7 +34,7 @@ class SpellCheckPanelHostImpl : public spellcheck::mojom::SpellCheckPanelHost {
   // spellcheck::mojom::SpellCheckPanelHost:
   void ShowSpellingPanel(bool show) override;
   void UpdateSpellingPanelWithMisspelledWord(
-      const base::string16& word) override;
+      const std::u16string& word) override;
 
   DISALLOW_COPY_AND_ASSIGN(SpellCheckPanelHostImpl);
 };

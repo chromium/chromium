@@ -30,7 +30,7 @@ class AttestationPermissionRequest : public permissions::PermissionRequest {
     return permissions::RequestType::kSecurityAttestation;
   }
 
-  base::string16 GetMessageTextFragment() const override {
+  std::u16string GetMessageTextFragment() const override {
     return l10n_util::GetStringUTF16(
         IDS_SECURITY_KEY_ATTESTATION_PERMISSION_FRAGMENT);
   }

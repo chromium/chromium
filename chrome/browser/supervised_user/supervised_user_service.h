@@ -152,7 +152,7 @@ class SupervisedUserService : public KeyedService,
 
   // Returns a message saying that extensions can only be modified by the
   // custodian.
-  base::string16 GetExtensionsLockedMessage() const;
+  std::u16string GetExtensionsLockedMessage() const;
 
   bool IsSupervisedUserIframeFilterEnabled() const;
 
@@ -253,10 +253,10 @@ class SupervisedUserService : public KeyedService,
   // extensions::ManagementPolicy::Provider implementation:
   std::string GetDebugPolicyProviderName() const override;
   bool UserMayLoad(const extensions::Extension* extension,
-                   base::string16* error) const override;
+                   std::u16string* error) const override;
   bool MustRemainDisabled(const extensions::Extension* extension,
                           extensions::disable_reason::DisableReason* reason,
-                          base::string16* error) const override;
+                          std::u16string* error) const override;
 
   // extensions::ExtensionRegistryObserver overrides:
   void OnExtensionInstalled(content::BrowserContext* browser_context,

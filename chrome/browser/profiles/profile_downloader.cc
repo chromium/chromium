@@ -71,15 +71,15 @@ void ProfileDownloader::StartForAccount(const CoreAccountId& account_id) {
   StartFetchingOAuth2AccessToken();
 }
 
-base::string16 ProfileDownloader::GetProfileHostedDomain() const {
+std::u16string ProfileDownloader::GetProfileHostedDomain() const {
   return base::UTF8ToUTF16(account_info_.hosted_domain);
 }
 
-base::string16 ProfileDownloader::GetProfileFullName() const {
+std::u16string ProfileDownloader::GetProfileFullName() const {
   return base::UTF8ToUTF16(account_info_.full_name);
 }
 
-base::string16 ProfileDownloader::GetProfileGivenName() const {
+std::u16string ProfileDownloader::GetProfileGivenName() const {
   return base::UTF8ToUTF16(account_info_.given_name);
 }
 

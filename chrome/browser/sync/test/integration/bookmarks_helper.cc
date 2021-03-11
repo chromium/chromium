@@ -177,7 +177,7 @@ class FaviconChangeObserver : public bookmarks::BookmarkModelObserver {
 // titles match the string |title|.
 size_t CountNodesWithTitlesMatching(BookmarkModel* model,
                                     BookmarkNode::Type node_type,
-                                    const base::string16& title) {
+                                    const std::u16string& title) {
   ui::TreeNodeIterator<const BookmarkNode> iterator(model->root_node());
   // Walk through the model tree looking for bookmark nodes of node type
   // |node_type| whose titles match |title|.

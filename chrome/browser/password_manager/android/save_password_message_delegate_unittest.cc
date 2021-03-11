@@ -47,7 +47,7 @@ class SavePasswordMessageDelegateTest : public ChromeRenderViewHostTestHarness {
 
   std::unique_ptr<MockPasswordFormManagerForUI> CreateFormManager(
       const GURL& url);
-  void SetUsernameAndPassword(base::string16 username, base::string16 password);
+  void SetUsernameAndPassword(std::u16string username, std::u16string password);
 
   void EnqueueMessage(std::unique_ptr<PasswordFormManagerForUI> form_to_save,
                       bool user_signed_in);
@@ -114,8 +114,8 @@ SavePasswordMessageDelegateTest::CreateFormManager(
 }
 
 void SavePasswordMessageDelegateTest::SetUsernameAndPassword(
-    base::string16 username,
-    base::string16 password) {
+    std::u16string username,
+    std::u16string password) {
   form_.username_value = std::move(username);
   form_.password_value = std::move(password);
 }
@@ -199,11 +199,11 @@ TEST_F(SavePasswordMessageDelegateTest, MessagePropertyValues) {
 
   EXPECT_EQ(l10n_util::GetStringUTF16(IDS_SAVE_PASSWORD),
             GetMessageWrapper()->GetTitle());
-  EXPECT_NE(base::string16::npos, GetMessageWrapper()->GetDescription().find(
+  EXPECT_NE(std::u16string::npos, GetMessageWrapper()->GetDescription().find(
                                       base::ASCIIToUTF16(kUsername)));
-  EXPECT_EQ(base::string16::npos, GetMessageWrapper()->GetDescription().find(
+  EXPECT_EQ(std::u16string::npos, GetMessageWrapper()->GetDescription().find(
                                       base::ASCIIToUTF16(kPassword)));
-  EXPECT_EQ(base::string16::npos, GetMessageWrapper()->GetDescription().find(
+  EXPECT_EQ(std::u16string::npos, GetMessageWrapper()->GetDescription().find(
                                       base::ASCIIToUTF16(kAccountEmail)));
 
   EXPECT_EQ(l10n_util::GetStringUTF16(IDS_PASSWORD_MANAGER_SAVE_BUTTON),
@@ -226,11 +226,11 @@ TEST_F(SavePasswordMessageDelegateTest, SignedInDescription) {
   auto form_manager = CreateFormManager(GURL(kDefaultUrl));
   EnqueueMessage(std::move(form_manager), true /*user_signed_in*/);
 
-  EXPECT_NE(base::string16::npos, GetMessageWrapper()->GetDescription().find(
+  EXPECT_NE(std::u16string::npos, GetMessageWrapper()->GetDescription().find(
                                       base::ASCIIToUTF16(kUsername)));
-  EXPECT_EQ(base::string16::npos, GetMessageWrapper()->GetDescription().find(
+  EXPECT_EQ(std::u16string::npos, GetMessageWrapper()->GetDescription().find(
                                       base::ASCIIToUTF16(kPassword)));
-  EXPECT_NE(base::string16::npos, GetMessageWrapper()->GetDescription().find(
+  EXPECT_NE(std::u16string::npos, GetMessageWrapper()->GetDescription().find(
                                       base::ASCIIToUTF16(kAccountEmail)));
 
   DismissMessage(messages::DismissReason::UNKNOWN);

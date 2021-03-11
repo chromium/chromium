@@ -69,7 +69,7 @@ class SharedClipboardContextMenuObserver
 
   SubMenuDelegate sub_menu_delegate_{this};
 
-  base::string16 text_;
+  std::u16string text_;
 
   std::unique_ptr<ui::SimpleMenuModel> sub_menu_model_;
 

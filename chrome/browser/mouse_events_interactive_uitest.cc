@@ -43,7 +43,7 @@ class MouseEventsTest : public InProcessBrowserTest {
   void WaitForTitle(const std::string& title) {
     // Logging added temporarily to track down flakiness cited below.
     LOG(INFO) << "Waiting for title: " << title;
-    const base::string16 expected_title(base::ASCIIToUTF16(title));
+    const std::u16string expected_title(base::ASCIIToUTF16(title));
     content::TitleWatcher title_watcher(GetActiveWebContents(), expected_title);
     ASSERT_EQ(expected_title, title_watcher.WaitAndGetTitle());
   }
@@ -159,8 +159,8 @@ IN_PROC_BROWSER_TEST_F(MouseEventsTest, MAYBE_ContextMenu) {
   content::WebContents* tab = GetActiveWebContents();
   tab->GetMainFrame()->ExecuteJavaScriptForTests(base::ASCIIToUTF16("done()"),
                                                  base::NullCallback());
-  const base::string16 success_title = base::ASCIIToUTF16("without mouseleave");
-  const base::string16 failure_title = base::ASCIIToUTF16("with mouseleave");
+  const std::u16string success_title = base::ASCIIToUTF16("without mouseleave");
+  const std::u16string failure_title = base::ASCIIToUTF16("with mouseleave");
   content::TitleWatcher done_title_watcher(tab, success_title);
   done_title_watcher.AlsoWaitForTitle(failure_title);
   EXPECT_EQ(success_title, done_title_watcher.WaitAndGetTitle());
@@ -197,8 +197,8 @@ IN_PROC_BROWSER_TEST_F(MouseEventsTest, MAYBE_ModalDialog) {
 
   tab->GetMainFrame()->ExecuteJavaScriptForTests(base::ASCIIToUTF16("done()"),
                                                  base::NullCallback());
-  const base::string16 success_title = base::ASCIIToUTF16("without mouseleave");
-  const base::string16 failure_title = base::ASCIIToUTF16("with mouseleave");
+  const std::u16string success_title = base::ASCIIToUTF16("without mouseleave");
+  const std::u16string failure_title = base::ASCIIToUTF16("with mouseleave");
   content::TitleWatcher done_title_watcher(tab, success_title);
   done_title_watcher.AlsoWaitForTitle(failure_title);
   EXPECT_EQ(success_title, done_title_watcher.WaitAndGetTitle());

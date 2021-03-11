@@ -20,6 +20,6 @@ class WebContents;
 // the user in order to login to the web site, it can be email, telephone number
 // or any string.
 void ShowAutoSigninPrompt(content::WebContents* web_contents,
-                          const base::string16& username);
+                          const std::u16string& username);
 
 #endif  // CHROME_BROWSER_PASSWORD_MANAGER_ANDROID_AUTO_SIGNIN_PROMPT_CONTROLLER_H_

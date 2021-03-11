@@ -41,7 +41,7 @@ class SystemFeaturesPolicyTest : public PolicyTest {
   SystemFeaturesPolicyTest() = default;
 
  protected:
-  base::string16 GetWebUITitle(const GURL& url,
+  std::u16string GetWebUITitle(const GURL& url,
                                bool using_navigation_throttle) {
     content::WebContents* web_contents =
         browser()->tab_strip_model()->GetActiveWebContents();

@@ -48,7 +48,7 @@ class ModuleListBuilder {
   }
 
   // Adds a module to the allowlist.
-  void AddAllowlistedModule(base::Optional<base::string16> basename,
+  void AddAllowlistedModule(base::Optional<std::u16string> basename,
                             base::Optional<std::string> code_id) {
     CHECK(basename.has_value() || code_id.has_value());
 
@@ -171,7 +171,7 @@ class ModuleListFilterTest : public ::testing::Test {
 };
 
 TEST_F(ModuleListFilterTest, IsAllowlistedStringPieceVersion) {
-  base::string16 basename = u"basename.dll";  // Must be lowercase.
+  std::u16string basename = u"basename.dll";  // Must be lowercase.
   std::string code_id = GetCodeId(12u, 32u);
 
   ModuleListBuilder module_list_builder(module_list_path());

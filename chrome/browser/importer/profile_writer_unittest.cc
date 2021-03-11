@@ -106,7 +106,7 @@ class ProfileWriterTest : public testing::Test {
 
   // Helper function to create history entries.
   history::URLRow MakeURLRow(const char* url,
-                             base::string16 title,
+                             std::u16string title,
                              int visit_count,
                              int days_since_last_visit,
                              int typed_count) {
@@ -151,7 +151,7 @@ class ProfileWriterTest : public testing::Test {
     base::CancelableTaskTracker history_task_tracker;
     base::RunLoop loop;
     history_service->QueryHistory(
-        base::string16(), options,
+        std::u16string(), options,
         base::BindLambdaForTesting([&](history::QueryResults results) {
           history_count_ = results.size();
           loop.Quit();
@@ -171,7 +171,7 @@ class ProfileWriterTest : public testing::Test {
   size_t history_count_;
 
  private:
-  void AddImportedBookmarkEntry(const GURL& url, const base::string16& title) {
+  void AddImportedBookmarkEntry(const GURL& url, const std::u16string& title) {
     base::Time date;
     ImportedBookmarkEntry entry;
     entry.creation_time = date;

@@ -259,7 +259,7 @@ TabLifecycleUnitSource::TabLifecycleUnit::AsTabLifecycleUnitExternal() {
   return external_impl_.get();
 }
 
-base::string16 TabLifecycleUnitSource::TabLifecycleUnit::GetTitle() const {
+std::u16string TabLifecycleUnitSource::TabLifecycleUnit::GetTitle() const {
   return web_contents()->GetTitle();
 }
 

@@ -113,13 +113,13 @@ AutocompleteActionPredictor::~AutocompleteActionPredictor() {
 }
 
 void AutocompleteActionPredictor::RegisterTransitionalMatches(
-    const base::string16& user_text,
+    const std::u16string& user_text,
     const AutocompleteResult& result) {
   if (user_text.length() < kMinimumUserTextLength ||
       user_text.length() > kMaximumStringLength) {
     return;
   }
-  const base::string16 lower_user_text(base::i18n::ToLower(user_text));
+  const std::u16string lower_user_text(base::i18n::ToLower(user_text));
 
   // Merge this in to an existing match if we already saw |user_text|
   auto match_it = std::find(transitional_matches_.begin(),
@@ -180,9 +180,9 @@ void AutocompleteActionPredictor::StartPrerendering(
 }
 
 AutocompleteActionPredictor::Action
-    AutocompleteActionPredictor::RecommendAction(
-        const base::string16& user_text,
-        const AutocompleteMatch& match) const {
+AutocompleteActionPredictor::RecommendAction(
+    const std::u16string& user_text,
+    const AutocompleteMatch& match) const {
   bool is_in_db = false;
   const double confidence = CalculateConfidence(user_text, match, &is_in_db);
   DCHECK(confidence >= 0.0 && confidence <= 1.0);
@@ -255,7 +255,7 @@ void AutocompleteActionPredictor::OnOmniboxOpenedUrl(const OmniboxLog& log) {
 
   const AutocompleteMatch& match = log.result.match_at(log.selected_index);
   const GURL& opened_url = match.destination_url;
-  const base::string16 lower_user_text(base::i18n::ToLower(log.text));
+  const std::u16string lower_user_text(base::i18n::ToLower(log.text));
 
   // Traverse transitional matches for those that have a user_text that is a
   // prefix of |lower_user_text|.
@@ -559,7 +559,7 @@ void AutocompleteActionPredictor::FinishInitialization() {
 }
 
 double AutocompleteActionPredictor::CalculateConfidence(
-    const base::string16& user_text,
+    const std::u16string& user_text,
     const AutocompleteMatch& match,
     bool* is_in_db) const {
   const DBCacheKey key = { user_text, match.destination_url };
@@ -629,7 +629,7 @@ AutocompleteActionPredictor::TransitionalMatch::TransitionalMatch() {
 }
 
 AutocompleteActionPredictor::TransitionalMatch::TransitionalMatch(
-    const base::string16 in_user_text)
+    const std::u16string in_user_text)
     : user_text(in_user_text) {}
 
 AutocompleteActionPredictor::TransitionalMatch::TransitionalMatch(

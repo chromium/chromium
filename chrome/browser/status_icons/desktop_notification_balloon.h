@@ -28,8 +28,8 @@ class DesktopNotificationBalloon {
   virtual ~DesktopNotificationBalloon();
 
   void DisplayBalloon(const gfx::ImageSkia& icon,
-                      const base::string16& title,
-                      const base::string16& contents,
+                      const std::u16string& title,
+                      const std::u16string& contents,
                       const message_center::NotifierId& notifier_id);
 
  private:

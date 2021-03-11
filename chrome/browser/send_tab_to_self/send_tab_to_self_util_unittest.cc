@@ -70,7 +70,7 @@ class SendTabToSelfUtilTest : public BrowserWithTestWindowTest {
   base::test::ScopedFeatureList scoped_feature_list_;
   Profile* incognito_profile_;
   GURL url_;
-  base::string16 title_;
+  std::u16string title_;
 };
 
 TEST_F(SendTabToSelfUtilTest, HasValidTargetDevice) {

@@ -275,7 +275,7 @@ void NearbyShareSchedulerBase::PrintSchedulerState() const {
 
   ss << "\n  Time until next request: ";
   if (time_until_next_request) {
-    base::string16 next_request_delay;
+    std::u16string next_request_delay;
     bool success = base::TimeDurationFormatWithSeconds(
         *time_until_next_request,
         base::DurationFormatWidth::DURATION_WIDTH_NARROW, &next_request_delay);

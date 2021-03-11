@@ -343,9 +343,9 @@ IN_PROC_BROWSER_TEST_F(PrintPreviewDialogControllerBrowserTest,
 
 namespace {
 
-base::string16 GetExpectedPrefix() {
+std::u16string GetExpectedPrefix() {
   return l10n_util::GetStringFUTF16(IDS_TASK_MANAGER_PRINT_PREFIX,
-                                    base::string16());
+                                    std::u16string());
 }
 
 const std::vector<task_manager::WebContentsTag*>& GetTrackedTags() {
@@ -370,8 +370,8 @@ IN_PROC_BROWSER_TEST_F(PrintPreviewDialogControllerBrowserTest,
   ASSERT_EQ(3U, task_manager.tasks().size());
   const task_manager::Task* pre_existing_task = task_manager.tasks().back();
   EXPECT_EQ(task_manager::Task::RENDERER, pre_existing_task->GetType());
-  const base::string16 pre_existing_title = pre_existing_task->title();
-  const base::string16 expected_prefix = GetExpectedPrefix();
+  const std::u16string pre_existing_title = pre_existing_task->title();
+  const std::u16string expected_prefix = GetExpectedPrefix();
   EXPECT_TRUE(base::StartsWith(pre_existing_title,
                                expected_prefix,
                                base::CompareCase::INSENSITIVE_ASCII));
@@ -392,7 +392,7 @@ IN_PROC_BROWSER_TEST_F(PrintPreviewDialogControllerBrowserTest,
   ASSERT_EQ(3U, task_manager.tasks().size());
   const task_manager::Task* task = task_manager.tasks().back();
   EXPECT_EQ(task_manager::Task::RENDERER, task->GetType());
-  const base::string16 title = task->title();
+  const std::u16string title = task->title();
   EXPECT_TRUE(base::StartsWith(title,
                                expected_prefix,
                                base::CompareCase::INSENSITIVE_ASCII));

@@ -106,7 +106,7 @@ namespace profiles {
 
 base::FilePath GetPathOfProfileWithEmail(ProfileManager* profile_manager,
                                          const std::string& email) {
-  base::string16 profile_email = base::UTF8ToUTF16(email);
+  std::u16string profile_email = base::UTF8ToUTF16(email);
   std::vector<ProfileAttributesEntry*> entries =
       profile_manager->GetProfileAttributesStorage().GetAllProfilesAttributes();
   for (ProfileAttributesEntry* entry : entries) {
@@ -218,7 +218,7 @@ void LoadProfileAsync(const base::FilePath& path,
                       ProfileManager::CreateCallback callback) {
   g_browser_process->profile_manager()->CreateProfileAsync(
       path, base::BindRepeating(&ProfileLoadedCallback, callback),
-      base::string16(), std::string());
+      std::u16string(), std::string());
 }
 
 void SwitchToProfile(const base::FilePath& path,
@@ -228,7 +228,7 @@ void SwitchToProfile(const base::FilePath& path,
       path,
       base::BindRepeating(&profiles::OpenBrowserWindowForProfile, callback,
                           always_create, false, false),
-      base::string16(), std::string());
+      std::u16string(), std::string());
 }
 
 void SwitchToGuestProfile(ProfileManager::CreateCallback callback) {
@@ -236,7 +236,7 @@ void SwitchToGuestProfile(ProfileManager::CreateCallback callback) {
       ProfileManager::GetGuestProfilePath(),
       base::BindRepeating(&profiles::OpenBrowserWindowForProfile, callback,
                           false, false, false),
-      base::string16(), std::string());
+      std::u16string(), std::string());
 }
 #endif
 

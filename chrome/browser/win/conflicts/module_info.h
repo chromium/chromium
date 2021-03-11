@@ -57,20 +57,20 @@ struct ModuleInspectionResult {
   ~ModuleInspectionResult();
 
   // The lowercase module path, not including the basename.
-  base::string16 location;
+  std::u16string location;
 
   // The basename of the module.
-  base::string16 basename;
+  std::u16string basename;
 
   // The name of the product the module belongs to.
-  base::string16 product_name;
+  std::u16string product_name;
 
   // The module file description.
-  base::string16 description;
+  std::u16string description;
 
   // The module version. This is usually in the form a.b.c.d (where a, b, c and
   // d are integers), but may also have fewer than 4 components.
-  base::string16 version;
+  std::u16string version;
 
   // The certificate info for the module.
   CertificateInfo certificate_info;

@@ -379,11 +379,11 @@ TEST_F(SupervisedUserServiceExtensionTest,
   {
     scoped_refptr<const extensions::Extension> theme = MakeThemeExtension();
 
-    base::string16 error_1;
+    std::u16string error_1;
     EXPECT_TRUE(supervised_user_service->UserMayLoad(theme.get(), &error_1));
     EXPECT_TRUE(error_1.empty());
 
-    base::string16 error_2;
+    std::u16string error_2;
     EXPECT_FALSE(
         supervised_user_service->MustRemainInstalled(theme.get(), &error_2));
     EXPECT_TRUE(error_2.empty());
@@ -394,17 +394,17 @@ TEST_F(SupervisedUserServiceExtensionTest,
   {
     scoped_refptr<const extensions::Extension> extension = MakeExtension();
 
-    base::string16 error_1;
+    std::u16string error_1;
     EXPECT_FALSE(
         supervised_user_service->UserMayLoad(extension.get(), &error_1));
     EXPECT_FALSE(error_1.empty());
 
-    base::string16 error_2;
+    std::u16string error_2;
     EXPECT_FALSE(
         supervised_user_service->UserMayInstall(extension.get(), &error_2));
     EXPECT_FALSE(error_2.empty());
 
-    base::string16 error_3;
+    std::u16string error_3;
     EXPECT_FALSE(supervised_user_service->MustRemainInstalled(extension.get(),
                                                               &error_3));
     EXPECT_TRUE(error_3.empty());
@@ -432,16 +432,16 @@ TEST_F(SupervisedUserServiceExtensionTest,
   {
     scoped_refptr<const extensions::Extension> extension = MakeExtension();
 
-    base::string16 error;
+    std::u16string error;
     EXPECT_TRUE(supervised_user_service->UserMayLoad(extension.get(), &error));
     EXPECT_TRUE(error.empty());
 
-    base::string16 error_2;
+    std::u16string error_2;
     EXPECT_FALSE(supervised_user_service->MustRemainInstalled(extension.get(),
                                                               &error_2));
     EXPECT_TRUE(error_2.empty());
 
-    base::string16 error_3;
+    std::u16string error_3;
     extensions::disable_reason::DisableReason reason =
         extensions::disable_reason::DISABLE_NONE;
     EXPECT_TRUE(supervised_user_service->MustRemainDisabled(extension.get(),
@@ -451,12 +451,12 @@ TEST_F(SupervisedUserServiceExtensionTest,
               reason);
     EXPECT_FALSE(error_3.empty());
 
-    base::string16 error_4;
+    std::u16string error_4;
     EXPECT_TRUE(supervised_user_service->UserMayModifySettings(extension.get(),
                                                                &error_4));
     EXPECT_TRUE(error_4.empty());
 
-    base::string16 error_5;
+    std::u16string error_5;
     EXPECT_TRUE(
         supervised_user_service->UserMayInstall(extension.get(), &error_5));
     EXPECT_TRUE(error_5.empty());

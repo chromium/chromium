@@ -45,7 +45,7 @@ bool RegisterRunOnOsLogin(const ShortcutInfo& shortcut_info) {
 // Login. Currently the feature is supported on Windows, Linux and MacOS.
 bool UnregisterRunOnOsLogin(const std::string& app_id,
                             const base::FilePath& profile_path,
-                            const base::string16& shortcut_title) {
+                            const std::u16string& shortcut_title) {
   return true;
 }
 #endif
@@ -63,7 +63,7 @@ void ScheduleRegisterRunOnOsLogin(std::unique_ptr<ShortcutInfo> shortcut_info,
 
 void ScheduleUnregisterRunOnOsLogin(const std::string& app_id,
                                     const base::FilePath& profile_path,
-                                    const base::string16& shortcut_title,
+                                    const std::u16string& shortcut_title,
                                     UnregisterRunOnOsLoginCallback callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 

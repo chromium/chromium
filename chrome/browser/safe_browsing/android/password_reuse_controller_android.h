@@ -47,14 +47,14 @@ class PasswordReuseControllerAndroid
 
   // The following functions are called from |PasswordReuseDialogViewAndroid|,
   // to get text shown on the dialog.
-  base::string16 GetButtonText() const;
+  std::u16string GetButtonText() const;
   // Get the detailed warning text that should show in the modal warning dialog.
   // |placeholder_offsets| are the start points/indices of the placeholders that
   // are passed into the resource string.
-  base::string16 GetWarningDetailText(
+  std::u16string GetWarningDetailText(
       std::vector<size_t>* placeholder_offsets) const;
-  base::string16 GetTitle() const;
-  const std::vector<base::string16> GetPlaceholdersForSavedPasswordWarningText()
+  std::u16string GetTitle() const;
+  const std::vector<std::u16string> GetPlaceholdersForSavedPasswordWarningText()
       const;
 
   // ChromePasswordProtectionService::Observer:

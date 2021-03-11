@@ -41,7 +41,7 @@ class IconLoaderHelper {
   void StartReadIconRequest();
   void OnConnectionError();
   void OnReadIconExecuted(const gfx::ImageSkia& icon,
-                          const base::string16& group);
+                          const std::u16string& group);
 
   using IconLoaderHelperCallback =
       base::OnceCallback<void(gfx::Image image,
@@ -114,7 +114,7 @@ void IconLoaderHelper::OnConnectionError() {
 }
 
 void IconLoaderHelper::OnReadIconExecuted(const gfx::ImageSkia& icon,
-                                          const base::string16& group) {
+                                          const std::u16string& group) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   std::wstring icon_group = base::AsWString(group);

@@ -179,7 +179,7 @@ class BetterSessionRestoreTest : public InProcessBrowserTest {
     title_watcher.AlsoWaitForTitle(title_error_empty_);
     ui_test_utils::NavigateToURL(
         browser, GURL(fake_server_address_ + test_path_ + filename));
-    base::string16 final_title = title_watcher.WaitAndGetTitle();
+    std::u16string final_title = title_watcher.WaitAndGetTitle();
     EXPECT_EQ(title_storing_, final_title);
   }
 
@@ -199,7 +199,7 @@ class BetterSessionRestoreTest : public InProcessBrowserTest {
     title_watcher.AlsoWaitForTitle(title_error_empty_);
     ui_test_utils::NavigateToURL(
         browser, GURL(fake_server_address_ + test_path_ + filename));
-    base::string16 final_title = title_watcher.WaitAndGetTitle();
+    std::u16string final_title = title_watcher.WaitAndGetTitle();
     EXPECT_EQ(title_pass_, final_title);
   }
 
@@ -219,7 +219,7 @@ class BetterSessionRestoreTest : public InProcessBrowserTest {
     CheckTitle(browser, title_storing_);
   }
 
-  void CheckTitle(Browser* browser, const base::string16& expected_title) {
+  void CheckTitle(Browser* browser, const std::u16string& expected_title) {
     content::WebContents* web_contents =
         browser->tab_strip_model()->GetWebContentsAt(0);
     content::TitleWatcher title_watcher(web_contents, expected_title);
@@ -229,12 +229,12 @@ class BetterSessionRestoreTest : public InProcessBrowserTest {
     title_watcher.AlsoWaitForTitle(title_error_empty_);
     // It's possible that the title was already the right one before
     // title_watcher was created.
-    base::string16 first_title = web_contents->GetTitle();
+    std::u16string first_title = web_contents->GetTitle();
     if (first_title != title_pass_ &&
         first_title != title_storing_ &&
         first_title != title_error_write_failed_ &&
         first_title != title_error_empty_) {
-      base::string16 final_title = title_watcher.WaitAndGetTitle();
+      std::u16string final_title = title_watcher.WaitAndGetTitle();
       EXPECT_EQ(expected_title, final_title);
     } else {
       EXPECT_EQ(expected_title, first_title);
@@ -255,7 +255,7 @@ class BetterSessionRestoreTest : public InProcessBrowserTest {
     content::TitleWatcher title_watcher(web_contents, title_pass_);
     ui_test_utils::NavigateToURL(
         browser(), GURL(fake_server_address_ + test_path_ + filename));
-    base::string16 final_title = title_watcher.WaitAndGetTitle();
+    std::u16string final_title = title_watcher.WaitAndGetTitle();
     EXPECT_EQ(title_pass_, final_title);
     EXPECT_TRUE(DidLastUploadContain("posted-text"));
     EXPECT_TRUE(DidLastUploadContain("text-entered"));
@@ -335,10 +335,10 @@ class BetterSessionRestoreTest : public InProcessBrowserTest {
   std::string last_upload_bytes_;
   std::vector<std::string> test_files_;
   const std::string test_path_;
-  const base::string16 title_pass_;
-  const base::string16 title_storing_;
-  const base::string16 title_error_write_failed_;
-  const base::string16 title_error_empty_;
+  const std::u16string title_pass_;
+  const std::u16string title_storing_;
+  const std::u16string title_error_write_failed_;
+  const std::u16string title_error_empty_;
 
   std::unique_ptr<content::URLLoaderInterceptor> url_loader_interceptor_;
 

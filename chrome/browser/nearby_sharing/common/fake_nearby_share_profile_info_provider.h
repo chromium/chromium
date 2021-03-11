@@ -14,10 +14,10 @@ class FakeNearbyShareProfileInfoProvider
   ~FakeNearbyShareProfileInfoProvider() override;
 
   // NearbyShareProfileInfoProvider:
-  base::Optional<base::string16> GetGivenName() const override;
+  base::Optional<std::u16string> GetGivenName() const override;
   base::Optional<std::string> GetProfileUserName() const override;
 
-  void set_given_name(const base::Optional<base::string16>& given_name) {
+  void set_given_name(const base::Optional<std::u16string>& given_name) {
     given_name_ = given_name;
   }
   void set_profile_user_name(
@@ -26,7 +26,7 @@ class FakeNearbyShareProfileInfoProvider
   }
 
  private:
-  base::Optional<base::string16> given_name_;
+  base::Optional<std::u16string> given_name_;
   base::Optional<std::string> profile_user_name_;
 };
 

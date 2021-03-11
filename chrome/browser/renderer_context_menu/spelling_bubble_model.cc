@@ -28,15 +28,15 @@ SpellingBubbleModel::SpellingBubbleModel(Profile* profile,
 SpellingBubbleModel::~SpellingBubbleModel() {
 }
 
-base::string16 SpellingBubbleModel::GetTitle() const {
+std::u16string SpellingBubbleModel::GetTitle() const {
   return l10n_util::GetStringUTF16(IDS_CONTENT_CONTEXT_SPELLING_BUBBLE_TITLE);
 }
 
-base::string16 SpellingBubbleModel::GetMessageText() const {
+std::u16string SpellingBubbleModel::GetMessageText() const {
   return l10n_util::GetStringUTF16(IDS_CONTENT_CONTEXT_SPELLING_BUBBLE_TEXT);
 }
 
-base::string16 SpellingBubbleModel::GetButtonLabel(
+std::u16string SpellingBubbleModel::GetButtonLabel(
     ui::DialogButton button) const {
   return l10n_util::GetStringUTF16(
       button == ui::DIALOG_BUTTON_OK
@@ -52,7 +52,7 @@ void SpellingBubbleModel::Cancel() {
   SetPref(false);
 }
 
-base::string16 SpellingBubbleModel::GetLinkText() const {
+std::u16string SpellingBubbleModel::GetLinkText() const {
   return l10n_util::GetStringUTF16(IDS_LEARN_MORE);
 }
 

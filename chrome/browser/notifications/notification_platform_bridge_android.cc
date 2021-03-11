@@ -172,7 +172,7 @@ void NotificationPlatformBridgeAndroid::OnNotificationClicked(
   std::string webapk_package =
       ConvertJavaStringToUTF8(env, java_webapk_package);
 
-  base::Optional<base::string16> reply;
+  base::Optional<std::u16string> reply;
   if (java_reply)
     reply = ConvertJavaStringToUTF16(env, java_reply);
 

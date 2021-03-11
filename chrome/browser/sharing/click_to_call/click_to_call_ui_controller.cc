@@ -74,7 +74,7 @@ void ClickToCallUiController::OnDialogClosed(SharingDialog* dialog) {
   SharingUiController::OnDialogClosed(dialog);
 }
 
-base::string16 ClickToCallUiController::GetTitle(
+std::u16string ClickToCallUiController::GetTitle(
     SharingDialogType dialog_type) {
   switch (dialog_type) {
     case SharingDialogType::kErrorDialog:
@@ -105,7 +105,7 @@ void ClickToCallUiController::DoUpdateApps(UpdateAppsCallback callback) {
     return;
   }
 
-  base::string16 app_name =
+  std::u16string app_name =
       shell_integration::GetApplicationNameForProtocol(phone_url_);
 
   if (!app_name.empty()) {
@@ -152,7 +152,7 @@ void ClickToCallUiController::OnDialogShown(bool has_devices, bool has_apps) {
   SharingUiController::OnDialogShown(has_devices, has_apps);
 }
 
-base::string16 ClickToCallUiController::GetContentType() const {
+std::u16string ClickToCallUiController::GetContentType() const {
   return l10n_util::GetStringUTF16(IDS_BROWSER_SHARING_CONTENT_TYPE_NUMBER);
 }
 
@@ -160,7 +160,7 @@ const gfx::VectorIcon& ClickToCallUiController::GetVectorIcon() const {
   return vector_icons::kCallIcon;
 }
 
-base::string16 ClickToCallUiController::GetTextForTooltipAndAccessibleName()
+std::u16string ClickToCallUiController::GetTextForTooltipAndAccessibleName()
     const {
   return l10n_util::GetStringUTF16(
       IDS_BROWSER_SHARING_CLICK_TO_CALL_DIALOG_TITLE_LABEL);

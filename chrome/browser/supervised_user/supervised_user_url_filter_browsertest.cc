@@ -67,7 +67,7 @@ class SupervisedUserURLFilterTest : public MixinBasedInProcessBrowserTest {
   bool ShownPageIsInterstitial(Browser* browser) {
     WebContents* tab = browser->tab_strip_model()->GetActiveWebContents();
     EXPECT_FALSE(tab->IsCrashed());
-    base::string16 title;
+    std::u16string title;
     ui_test_utils::GetCurrentTabTitle(browser, &title);
     return tab->GetController().GetLastCommittedEntry()->GetPageType() ==
                content::PAGE_TYPE_ERROR &&

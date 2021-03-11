@@ -77,7 +77,7 @@ class MockPasswordManagerDriver
  public:
   MockPasswordManagerDriver() = default;
 
-  MOCK_METHOD1(GeneratedPasswordAccepted, void(const base::string16&));
+  MOCK_METHOD1(GeneratedPasswordAccepted, void(const std::u16string&));
   MOCK_METHOD0(GetPasswordGenerationHelper,
                password_manager::PasswordGenerationFrameHelper*());
   MOCK_METHOD0(GetPasswordManager, password_manager::PasswordManager*());
@@ -96,7 +96,7 @@ class MockPasswordGenerationHelper
       : password_manager::PasswordGenerationFrameHelper(client, driver) {}
 
   MOCK_METHOD4(GeneratePassword,
-               base::string16(const GURL&,
+               std::u16string(const GURL&,
                               autofill::FormSignature,
                               autofill::FieldSignature,
                               uint32_t));
@@ -112,7 +112,7 @@ class MockPasswordGenerationDialogView
   MockPasswordGenerationDialogView() = default;
 
   MOCK_METHOD3(Show,
-               void(base::string16&,
+               void(std::u16string&,
                     base::WeakPtr<password_manager::PasswordManagerDriver>,
                     PasswordGenerationType));
   MOCK_METHOD0(Destroy, void());
@@ -207,10 +207,10 @@ class PasswordGenerationControllerTest
  protected:
   // Sets up mocks needed by the generation flow and signals the
   // |PasswordGenerationController| that generation is available.
-  void InitializeAutomaticGeneration(const base::string16& password);
+  void InitializeAutomaticGeneration(const std::u16string& password);
 
   // Sets up mocks needed by the generation flow.
-  void InitializeManualGeneration(const base::string16& password);
+  void InitializeManualGeneration(const std::u16string& password);
 
   StrictMock<MockManualFillingController> mock_manual_filling_controller_;
 
@@ -232,7 +232,7 @@ class PasswordGenerationControllerTest
 };
 
 void PasswordGenerationControllerTest::InitializeAutomaticGeneration(
-    const base::string16& password) {
+    const std::u16string& password) {
   ON_CALL(*mock_password_manager_driver_, GetPasswordGenerationHelper())
       .WillByDefault(Return(mock_generation_helper_.get()));
 
@@ -248,7 +248,7 @@ void PasswordGenerationControllerTest::InitializeAutomaticGeneration(
 }
 
 void PasswordGenerationControllerTest::InitializeManualGeneration(
-    const base::string16& password) {
+    const std::u16string& password) {
   ON_CALL(*mock_password_manager_driver_, GetPasswordGenerationHelper())
       .WillByDefault(Return(mock_generation_helper_.get()));
 
@@ -295,7 +295,7 @@ TEST_F(PasswordGenerationControllerTest,
       autofill::CalculateFieldSignatureByNameAndType(
           new_ui_data.generation_element, "password");
 
-  base::string16 generated_password = ASCIIToUTF16("t3stp@ssw0rd");
+  std::u16string generated_password = ASCIIToUTF16("t3stp@ssw0rd");
   NiceMock<MockPasswordGenerationDialogView>* raw_dialog_view =
       mock_dialog_.get();
   EXPECT_CALL(mock_dialog_factory(), Run)
@@ -416,7 +416,7 @@ TEST_F(PasswordGenerationControllerTest,
 }
 
 TEST_F(PasswordGenerationControllerTest, HidesDialogWhenFocusChanges) {
-  base::string16 test_password = ASCIIToUTF16("t3stp@ssw0rd");
+  std::u16string test_password = ASCIIToUTF16("t3stp@ssw0rd");
   InitializeManualGeneration(test_password);
   controller()->OnGenerationRequested(PasswordGenerationType::kManual);
 
@@ -440,7 +440,7 @@ TEST_F(PasswordGenerationControllerTest, HidesDialogWhenFocusChanges) {
 }
 
 TEST_F(PasswordGenerationControllerTest, ShowManualDialogForActiveFrame) {
-  base::string16 test_password = ASCIIToUTF16("t3stp@ssw0rd");
+  std::u16string test_password = ASCIIToUTF16("t3stp@ssw0rd");
   InitializeManualGeneration(test_password);
   controller()->OnGenerationRequested(PasswordGenerationType::kManual);
 
@@ -465,7 +465,7 @@ TEST_F(PasswordGenerationControllerTest,
 }
 
 TEST_F(PasswordGenerationControllerTest, DontShowDialogIfAlreadyShown) {
-  base::string16 test_password = ASCIIToUTF16("t3stp@ssw0rd");
+  std::u16string test_password = ASCIIToUTF16("t3stp@ssw0rd");
   InitializeManualGeneration(test_password);
   controller()->OnGenerationRequested(PasswordGenerationType::kManual);
 

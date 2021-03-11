@@ -62,7 +62,7 @@ bool IsElevationNeededForSettingDefaultProtocolClient();
 // protocol of the requested url. This string may be a name or a path, but
 // neither is guaranteed and it should only be used as a display string.
 // Returns an empty string on failure.
-base::string16 GetApplicationNameForProtocol(const GURL& url);
+std::u16string GetApplicationNameForProtocol(const GURL& url);
 
 // Chrome's default web client state as a browser as a protocol client. If the
 // current install mode is not default, the brand's other modes are
@@ -138,7 +138,7 @@ void AppendProfileArgs(const base::FilePath& profile_path,
 #if !defined(OS_WIN)
 // Gets the name of the Chrome Apps menu folder in which to place app
 // shortcuts. This is needed for Mac and Linux.
-base::string16 GetAppShortcutsSubdirName();
+std::u16string GetAppShortcutsSubdirName();
 #endif
 
 // The type of callback used to communicate processing state to consumers of

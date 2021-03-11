@@ -468,7 +468,7 @@ PlatformNotificationServiceImpl::CreateNotificationFromData(
   return notification;
 }
 
-base::string16 PlatformNotificationServiceImpl::DisplayNameForContextMessage(
+std::u16string PlatformNotificationServiceImpl::DisplayNameForContextMessage(
     const GURL& origin) const {
 #if BUILDFLAG(ENABLE_EXTENSIONS)
   // If the source is an extension, lookup the display name.
@@ -482,5 +482,5 @@ base::string16 PlatformNotificationServiceImpl::DisplayNameForContextMessage(
   }
 #endif
 
-  return base::string16();
+  return std::u16string();
 }

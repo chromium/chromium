@@ -221,8 +221,8 @@ void NearbyShareLocalDeviceDataManagerImpl::OnStop() {
 
 std::string NearbyShareLocalDeviceDataManagerImpl::GetDefaultDeviceName()
     const {
-  base::string16 device_type = ui::GetChromeOSDeviceName();
-  base::Optional<base::string16> given_name =
+  std::u16string device_type = ui::GetChromeOSDeviceName();
+  base::Optional<std::u16string> given_name =
       profile_info_provider_->GetGivenName();
   if (!given_name)
     return base::UTF16ToUTF8(device_type);

@@ -19,7 +19,7 @@ class FakeDesktopMediaList : public DesktopMediaList {
   void RemoveSource(int index);
   void MoveSource(int old_index, int new_index);
   void SetSourceThumbnail(int index);
-  void SetSourceName(int index, base::string16 name);
+  void SetSourceName(int index, std::u16string name);
 
   // DesktopMediaList implementation:
   void SetUpdatePeriod(base::TimeDelta period) override;

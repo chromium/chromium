@@ -48,7 +48,7 @@ class TestPlatformBridgeDelegate : public NotificationPlatformBridgeDelegate {
   void HandleNotificationButtonClicked(
       const std::string& id,
       int button_index,
-      const base::Optional<base::string16>& reply) override {
+      const base::Optional<std::u16string>& reply) override {
     ++button_clicked_count_;
     last_button_index_ = button_index;
   }
@@ -199,8 +199,8 @@ TEST_F(NotificationPlatformBridgeLacrosTest, SerializationImage) {
   message_center::RichNotificationData rich_data;
   rich_data.image = image;
   message_center::Notification ui_notification(
-      message_center::NOTIFICATION_TYPE_IMAGE, "test_id", base::string16(),
-      base::string16(), gfx::Image(), base::string16(), GURL(),
+      message_center::NOTIFICATION_TYPE_IMAGE, "test_id", std::u16string(),
+      std::u16string(), gfx::Image(), std::u16string(), GURL(),
       message_center::NotifierId(), rich_data, nullptr);
 
   // Show the notification.
@@ -227,8 +227,8 @@ TEST_F(NotificationPlatformBridgeLacrosTest, SerializationList) {
   message_center::RichNotificationData rich_data;
   rich_data.items = {item1, item2};
   message_center::Notification ui_notification(
-      message_center::NOTIFICATION_TYPE_MULTIPLE, "test_id", base::string16(),
-      base::string16(), gfx::Image(), base::string16(), GURL(),
+      message_center::NOTIFICATION_TYPE_MULTIPLE, "test_id", std::u16string(),
+      std::u16string(), gfx::Image(), std::u16string(), GURL(),
       message_center::NotifierId(), rich_data, nullptr);
 
   // Show the notification.
@@ -253,8 +253,8 @@ TEST_F(NotificationPlatformBridgeLacrosTest, SerializationProgress) {
   rich_data.progress = 55;
   rich_data.progress_status = ASCIIToUTF16("status");
   message_center::Notification ui_notification(
-      message_center::NOTIFICATION_TYPE_PROGRESS, "test_id", base::string16(),
-      base::string16(), gfx::Image(), base::string16(), GURL(),
+      message_center::NOTIFICATION_TYPE_PROGRESS, "test_id", std::u16string(),
+      std::u16string(), gfx::Image(), std::u16string(), GURL(),
       message_center::NotifierId(), rich_data, nullptr);
 
   // Show the notification.
@@ -273,8 +273,8 @@ TEST_F(NotificationPlatformBridgeLacrosTest, SerializationProgress) {
 TEST_F(NotificationPlatformBridgeLacrosTest, UserActions) {
   // Create a test notification.
   message_center::Notification ui_notification(
-      message_center::NOTIFICATION_TYPE_SIMPLE, "test_id", base::string16(),
-      base::string16(), gfx::Image(), base::string16(), GURL(),
+      message_center::NOTIFICATION_TYPE_SIMPLE, "test_id", std::u16string(),
+      std::u16string(), gfx::Image(), std::u16string(), GURL(),
       message_center::NotifierId(), {}, nullptr);
 
   // Show the notification.

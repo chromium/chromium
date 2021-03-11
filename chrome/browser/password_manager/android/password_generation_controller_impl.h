@@ -52,7 +52,7 @@ class PasswordGenerationControllerImpl
   void OnGenerationRequested(
       autofill::password_generation::PasswordGenerationType type) override;
   void GeneratedPasswordAccepted(
-      const base::string16& password,
+      const std::u16string& password,
       base::WeakPtr<password_manager::PasswordManagerDriver> driver,
       autofill::password_generation::PasswordGenerationType type) override;
   void GeneratedPasswordRejected(

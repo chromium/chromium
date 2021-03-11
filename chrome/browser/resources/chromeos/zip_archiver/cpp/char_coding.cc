@@ -46,7 +46,7 @@ const char16_t kCp437ToUnicodeTable[256] = {
 };
 
 std::string Cp437ToUtf8(const std::string& source) {
-  base::string16 utf16string;
+  std::u16string utf16string;
   for (size_t i = 0; i < source.length(); i++) {
     utf16string.push_back(kCp437ToUnicodeTable[static_cast<size_t>(
         static_cast<unsigned char>(source.at(i)))]);

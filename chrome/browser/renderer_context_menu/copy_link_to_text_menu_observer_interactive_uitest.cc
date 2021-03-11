@@ -122,7 +122,7 @@ IN_PROC_BROWSER_TEST_P(CopyLinkToTextMenuObserverTest, CopiesLinkToText) {
   menu()->ExecuteCommand(IDC_CONTENT_CONTEXT_COPYLINKTOTEXT, 0);
 
   ui::Clipboard* clipboard = ui::Clipboard::GetForCurrentThread();
-  base::string16 text;
+  std::u16string text;
   clipboard->ReadText(ui::ClipboardBuffer::kCopyPaste, nullptr, &text);
   EXPECT_EQ(base::UTF8ToUTF16("http://foo.com/#:~:text=hello%20world"), text);
 }
@@ -142,7 +142,7 @@ IN_PROC_BROWSER_TEST_P(CopyLinkToTextMenuObserverTest,
   } else {
     menu()->ExecuteCommand(IDC_CONTENT_CONTEXT_COPYLINKTOTEXT, 0);
     ui::Clipboard* clipboard = ui::Clipboard::GetForCurrentThread();
-    base::string16 text;
+    std::u16string text;
     clipboard->ReadText(ui::ClipboardBuffer::kCopyPaste, nullptr, &text);
     EXPECT_EQ(base::UTF8ToUTF16("http://foo.com/"), text);
   }
@@ -158,7 +158,7 @@ IN_PROC_BROWSER_TEST_P(CopyLinkToTextMenuObserverTest, ReplacesRefInURL) {
   menu()->ExecuteCommand(IDC_CONTENT_CONTEXT_COPYLINKTOTEXT, 0);
 
   ui::Clipboard* clipboard = ui::Clipboard::GetForCurrentThread();
-  base::string16 text;
+  std::u16string text;
   clipboard->ReadText(ui::ClipboardBuffer::kCopyPaste, nullptr, &text);
   EXPECT_EQ(base::UTF8ToUTF16("http://foo.com/#:~:text=hello"), text);
 }
@@ -192,7 +192,7 @@ IN_PROC_BROWSER_TEST_P(CopyLinkToTextMenuObserverTest,
   } else {
     menu()->ExecuteCommand(IDC_CONTENT_CONTEXT_COPYLINKTOTEXT, 0);
     ui::Clipboard* clipboard = ui::Clipboard::GetForCurrentThread();
-    base::string16 text;
+    std::u16string text;
     clipboard->ReadText(ui::ClipboardBuffer::kCopyPaste, nullptr, &text);
     EXPECT_EQ(base::UTF8ToUTF16(main_url.spec()), text);
   }
@@ -225,7 +225,7 @@ IN_PROC_BROWSER_TEST_P(CopyLinkToTextMenuObserverTest, Blocklist) {
   } else {
     menu()->ExecuteCommand(IDC_CONTENT_CONTEXT_COPYLINKTOTEXT, 0);
     ui::Clipboard* clipboard = ui::Clipboard::GetForCurrentThread();
-    base::string16 text;
+    std::u16string text;
     clipboard->ReadText(ui::ClipboardBuffer::kCopyPaste, nullptr, &text);
     EXPECT_EQ(base::UTF8ToUTF16("http://facebook.com/my-profile"), text);
   }

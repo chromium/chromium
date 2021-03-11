@@ -15,7 +15,7 @@
 void ReloadPluginInfoBarDelegate::Create(
     InfoBarService* infobar_service,
     content::NavigationController* controller,
-    const base::string16& message) {
+    const std::u16string& message) {
   infobar_service->AddInfoBar(infobar_service->CreateConfirmInfoBar(
       std::unique_ptr<ConfirmInfoBarDelegate>(
           new ReloadPluginInfoBarDelegate(controller, message))));
@@ -23,7 +23,7 @@ void ReloadPluginInfoBarDelegate::Create(
 
 ReloadPluginInfoBarDelegate::ReloadPluginInfoBarDelegate(
     content::NavigationController* controller,
-    const base::string16& message)
+    const std::u16string& message)
     : controller_(controller), message_(message) {}
 
 ReloadPluginInfoBarDelegate::~ReloadPluginInfoBarDelegate() {}
@@ -37,7 +37,7 @@ const gfx::VectorIcon& ReloadPluginInfoBarDelegate::GetVectorIcon() const {
   return kExtensionCrashedIcon;
 }
 
-base::string16 ReloadPluginInfoBarDelegate::GetMessageText() const {
+std::u16string ReloadPluginInfoBarDelegate::GetMessageText() const {
   return message_;
 }
 
@@ -45,7 +45,7 @@ int ReloadPluginInfoBarDelegate::GetButtons() const {
   return BUTTON_OK;
 }
 
-base::string16 ReloadPluginInfoBarDelegate::GetButtonLabel(
+std::u16string ReloadPluginInfoBarDelegate::GetButtonLabel(
     InfoBarButton button) const {
   DCHECK_EQ(BUTTON_OK, button);
   return l10n_util::GetStringUTF16(IDS_RELOAD_PAGE_WITH_PLUGIN);

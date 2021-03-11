@@ -78,7 +78,7 @@ DesktopMediaList::Type DesktopMediaListBase::GetMediaListType() const {
 
 DesktopMediaListBase::SourceDescription::SourceDescription(
     DesktopMediaID id,
-    const base::string16& name)
+    const std::u16string& name)
     : id(id), name(name) {}
 
 void DesktopMediaListBase::UpdateSourcesList(

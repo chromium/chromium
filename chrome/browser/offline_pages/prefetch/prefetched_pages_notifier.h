@@ -24,7 +24,7 @@ void ShowPrefetchedContentNotification(const GURL& origin);
 // Finds the most recent hostname from a list of pages with the constraint that
 // the hostname corresponds to a page created after |pages_created_after|.
 // Returns the empty string if no matches are found.
-base::string16 ExtractRelevantHostFromOfflinePageItemList(
+std::u16string ExtractRelevantHostFromOfflinePageItemList(
     const base::Time& pages_created_after,
     const MultipleOfflinePageItemResult page_list);
 

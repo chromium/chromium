@@ -341,7 +341,7 @@ void PrintJobWorker::StartPrinting(PrintedDocument* new_document) {
     return;
   }
 
-  base::string16 document_name = SimplifyDocumentTitle(document_->name());
+  std::u16string document_name = SimplifyDocumentTitle(document_->name());
   if (document_name.empty()) {
     document_name = SimplifyDocumentTitle(
         l10n_util::GetStringUTF16(IDS_DEFAULT_PRINT_DOCUMENT_TITLE));

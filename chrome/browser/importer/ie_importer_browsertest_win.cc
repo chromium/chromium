@@ -277,7 +277,7 @@ class TestObserver : public ProfileWriter,
   }
 
   void AddBookmarks(const std::vector<ImportedBookmarkEntry>& bookmarks,
-                    const base::string16& top_level_folder_name) override {
+                    const std::u16string& top_level_folder_name) override {
     ASSERT_LE(bookmark_count_ + bookmarks.size(), base::size(kIEBookmarks));
     // Importer should import the IE Favorites folder the same as the list,
     // in the same order.
@@ -354,7 +354,7 @@ class MalformedFavoritesRegistryTestObserver
   void AddKeywords(TemplateURLService::OwnedTemplateURLVector template_urls,
                    bool unique_on_host_and_path) override {}
   void AddBookmarks(const std::vector<ImportedBookmarkEntry>& bookmarks,
-                    const base::string16& top_level_folder_name) override {
+                    const std::u16string& top_level_folder_name) override {
     ASSERT_LE(bookmark_count_ + bookmarks.size(),
               base::size(kIESortedBookmarks));
     for (size_t i = 0; i < bookmarks.size(); ++i) {

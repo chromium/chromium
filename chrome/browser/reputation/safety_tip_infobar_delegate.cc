@@ -45,7 +45,7 @@ SafetyTipInfoBarDelegate::~SafetyTipInfoBarDelegate() {
   std::move(close_callback_).Run(action_taken_);
 }
 
-base::string16 SafetyTipInfoBarDelegate::GetMessageText() const {
+std::u16string SafetyTipInfoBarDelegate::GetMessageText() const {
   return GetSafetyTipTitle(safety_tip_status_, suggested_url_);
 }
 
@@ -53,7 +53,7 @@ int SafetyTipInfoBarDelegate::GetButtons() const {
   return BUTTON_OK;
 }
 
-base::string16 SafetyTipInfoBarDelegate::GetButtonLabel(
+std::u16string SafetyTipInfoBarDelegate::GetButtonLabel(
     InfoBarButton button) const {
   switch (button) {
     case BUTTON_OK:
@@ -64,7 +64,7 @@ base::string16 SafetyTipInfoBarDelegate::GetButtonLabel(
       NOTREACHED();
   }
   NOTREACHED();
-  return base::string16();
+  return std::u16string();
 }
 
 bool SafetyTipInfoBarDelegate::Accept() {
@@ -90,7 +90,7 @@ void SafetyTipInfoBarDelegate::InfoBarDismissed() {
   action_taken_ = SafetyTipInteraction::kDismissWithClose;
 }
 
-base::string16 SafetyTipInfoBarDelegate::GetLinkText() const {
+std::u16string SafetyTipInfoBarDelegate::GetLinkText() const {
   return l10n_util::GetStringUTF16(IDS_PAGE_INFO_SAFETY_TIP_MORE_INFO_LINK);
 }
 
@@ -99,6 +99,6 @@ bool SafetyTipInfoBarDelegate::LinkClicked(WindowOpenDisposition disposition) {
   return false;
 }
 
-base::string16 SafetyTipInfoBarDelegate::GetDescriptionText() const {
+std::u16string SafetyTipInfoBarDelegate::GetDescriptionText() const {
   return GetSafetyTipDescription(safety_tip_status_, suggested_url_);
 }

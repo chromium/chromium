@@ -171,7 +171,7 @@ std::string MemoryDetails::ToLogString(bool include_tab_title) {
          include_tab_title) &&
         !iter1->titles.empty()) {
       log += " [";
-      for (std::vector<base::string16>::const_iterator iter2 =
+      for (std::vector<std::u16string>::const_iterator iter2 =
                iter1->titles.begin();
            iter2 != iter1->titles.end(); ++iter2) {
         if (iter2 != iter1->titles.begin())
@@ -317,7 +317,7 @@ void MemoryDetails::CollectChildInfoOnUIThread() {
                 ->enabled_extensions()
                 .GetByID(page_url.host());
         if (extension) {
-          base::string16 title = base::UTF8ToUTF16(extension->name());
+          std::u16string title = base::UTF8ToUTF16(extension->name());
           process.titles.push_back(title);
           process.renderer_type =
               ProcessMemoryInformation::RENDERER_EXTENSION;
@@ -334,7 +334,7 @@ void MemoryDetails::CollectChildInfoOnUIThread() {
       }
 #endif
 
-      base::string16 title = contents->GetTitle();
+      std::u16string title = contents->GetTitle();
       if (!title.length())
         title = l10n_util::GetStringUTF16(IDS_DEFAULT_TAB_TITLE);
       process.titles.push_back(title);

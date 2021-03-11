@@ -101,7 +101,7 @@ DefaultWebClientSetPermission GetDefaultWebClientSetPermission() {
   return SET_DEFAULT_UNATTENDED;
 }
 
-base::string16 GetApplicationNameForProtocol(const GURL& url) {
+std::u16string GetApplicationNameForProtocol(const GURL& url) {
   NSURL* ns_url = [NSURL URLWithString:
       base::SysUTF8ToNSString(url.possibly_invalid_spec())];
   base::ScopedCFTypeRef<CFErrorRef> out_err;
@@ -109,7 +109,7 @@ base::string16 GetApplicationNameForProtocol(const GURL& url) {
       (CFURLRef)ns_url, kLSRolesAll, out_err.InitializeInto()));
   if (out_err) {
     // likely kLSApplicationNotFoundErr
-    return base::string16();
+    return std::u16string();
   }
   NSString* appPath = [base::mac::CFToNSCast(openingApp.get()) path];
   NSString* appDisplayName =

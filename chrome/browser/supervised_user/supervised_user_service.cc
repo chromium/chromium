@@ -259,7 +259,7 @@ std::string SupervisedUserService::GetSecondCustodianName() const {
   return name.empty() ? GetSecondCustodianEmailAddress() : name;
 }
 
-base::string16 SupervisedUserService::GetExtensionsLockedMessage() const {
+std::u16string SupervisedUserService::GetExtensionsLockedMessage() const {
   return l10n_util::GetStringFUTF16(IDS_EXTENSIONS_LOCKED_SUPERVISED_USER,
                                     base::UTF8ToUTF16(GetCustodianName()));
 }
@@ -830,7 +830,7 @@ std::string SupervisedUserService::GetDebugPolicyProviderName() const {
 }
 
 bool SupervisedUserService::UserMayLoad(const Extension* extension,
-                                        base::string16* error) const {
+                                        std::u16string* error) const {
   DCHECK(IsChild());
   ExtensionState result = GetExtensionState(*extension);
   bool may_load = result != ExtensionState::BLOCKED;
@@ -842,7 +842,7 @@ bool SupervisedUserService::UserMayLoad(const Extension* extension,
 bool SupervisedUserService::MustRemainDisabled(
     const Extension* extension,
     extensions::disable_reason::DisableReason* reason,
-    base::string16* error) const {
+    std::u16string* error) const {
   DCHECK(IsChild());
   ExtensionState state = GetExtensionState(*extension);
   // Only extensions that require approval should be disabled.

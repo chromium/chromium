@@ -96,15 +96,15 @@ void ExtensionTask::OnExtensionIconImageChanged(extensions::IconImage* image) {
     set_icon(image->image_skia());
 }
 
-base::string16 ExtensionTask::GetExtensionTitle(
+std::u16string ExtensionTask::GetExtensionTitle(
     content::WebContents* web_contents,
     const extensions::Extension* extension,
     extensions::mojom::ViewType view_type) const {
   DCHECK(web_contents);
 
-  base::string16 title = extension ?
-      base::UTF8ToUTF16(extension->name()) :
-      RendererTask::GetTitleFromWebContents(web_contents);
+  std::u16string title =
+      extension ? base::UTF8ToUTF16(extension->name())
+                : RendererTask::GetTitleFromWebContents(web_contents);
 
   bool is_background =
       view_type == extensions::mojom::ViewType::kExtensionBackgroundPage;

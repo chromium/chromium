@@ -134,10 +134,10 @@ TEST_F(WebUsbDetectorTest, UsbDeviceAddedAndRemoved) {
   base::Optional<message_center::Notification> notification =
       display_service_->GetNotification(device->guid());
   ASSERT_TRUE(notification);
-  base::string16 expected_title =
+  std::u16string expected_title =
       base::ASCIIToUTF16("Google Product A detected");
   EXPECT_EQ(expected_title, notification->title());
-  base::string16 expected_message =
+  std::u16string expected_message =
       base::ASCIIToUTF16("Go to www.google.com to connect.");
   EXPECT_EQ(expected_message, notification->message());
   EXPECT_TRUE(notification->delegate() != nullptr);
@@ -332,10 +332,10 @@ TEST_F(WebUsbDetectorTest,
   base::Optional<message_center::Notification> notification =
       display_service_->GetNotification(guid_2);
   ASSERT_TRUE(notification);
-  base::string16 expected_title =
+  std::u16string expected_title =
       base::ASCIIToUTF16("Google Product B detected");
   EXPECT_EQ(expected_title, notification->title());
-  base::string16 expected_message =
+  std::u16string expected_message =
       base::ASCIIToUTF16("Go to www.google.com to connect.");
   EXPECT_EQ(expected_message, notification->message());
   EXPECT_TRUE(notification->delegate() != nullptr);
@@ -369,10 +369,10 @@ TEST_F(WebUsbDetectorTest, ThreeUsbDevicesAddedAndRemoved) {
   base::Optional<message_center::Notification> notification_1 =
       display_service_->GetNotification(guid_1);
   ASSERT_TRUE(notification_1);
-  base::string16 expected_title_1 =
+  std::u16string expected_title_1 =
       base::ASCIIToUTF16("Google Product A detected");
   EXPECT_EQ(expected_title_1, notification_1->title());
-  base::string16 expected_message_1 =
+  std::u16string expected_message_1 =
       base::ASCIIToUTF16("Go to www.google.com to connect.");
   EXPECT_EQ(expected_message_1, notification_1->message());
   EXPECT_TRUE(notification_1->delegate() != nullptr);
@@ -386,10 +386,10 @@ TEST_F(WebUsbDetectorTest, ThreeUsbDevicesAddedAndRemoved) {
   base::Optional<message_center::Notification> notification_2 =
       display_service_->GetNotification(guid_2);
   ASSERT_TRUE(notification_2);
-  base::string16 expected_title_2 =
+  std::u16string expected_title_2 =
       base::ASCIIToUTF16("Google Product B detected");
   EXPECT_EQ(expected_title_2, notification_2->title());
-  base::string16 expected_message_2 =
+  std::u16string expected_message_2 =
       base::ASCIIToUTF16("Go to www.google.com to connect.");
   EXPECT_EQ(expected_message_2, notification_2->message());
   EXPECT_TRUE(notification_2->delegate() != nullptr);
@@ -403,10 +403,10 @@ TEST_F(WebUsbDetectorTest, ThreeUsbDevicesAddedAndRemoved) {
   base::Optional<message_center::Notification> notification_3 =
       display_service_->GetNotification(guid_3);
   ASSERT_TRUE(notification_3);
-  base::string16 expected_title_3 =
+  std::u16string expected_title_3 =
       base::ASCIIToUTF16("Google Product C detected");
   EXPECT_EQ(expected_title_3, notification_3->title());
-  base::string16 expected_message_3 =
+  std::u16string expected_message_3 =
       base::ASCIIToUTF16("Go to www.google.com to connect.");
   EXPECT_EQ(expected_message_3, notification_3->message());
   EXPECT_TRUE(notification_3->delegate() != nullptr);
@@ -440,10 +440,10 @@ TEST_F(WebUsbDetectorTest, ThreeUsbDeviceAddedAndRemovedDifferentOrder) {
   base::Optional<message_center::Notification> notification_1 =
       display_service_->GetNotification(guid_1);
   ASSERT_TRUE(notification_1);
-  base::string16 expected_title_1 =
+  std::u16string expected_title_1 =
       base::ASCIIToUTF16("Google Product A detected");
   EXPECT_EQ(expected_title_1, notification_1->title());
-  base::string16 expected_message_1 =
+  std::u16string expected_message_1 =
       base::ASCIIToUTF16("Go to www.google.com to connect.");
   EXPECT_EQ(expected_message_1, notification_1->message());
   EXPECT_TRUE(notification_1->delegate() != nullptr);
@@ -453,10 +453,10 @@ TEST_F(WebUsbDetectorTest, ThreeUsbDeviceAddedAndRemovedDifferentOrder) {
   base::Optional<message_center::Notification> notification_2 =
       display_service_->GetNotification(guid_2);
   ASSERT_TRUE(notification_2);
-  base::string16 expected_title_2 =
+  std::u16string expected_title_2 =
       base::ASCIIToUTF16("Google Product B detected");
   EXPECT_EQ(expected_title_2, notification_2->title());
-  base::string16 expected_message_2 =
+  std::u16string expected_message_2 =
       base::ASCIIToUTF16("Go to www.google.com to connect.");
   EXPECT_EQ(expected_message_2, notification_2->message());
   EXPECT_TRUE(notification_2->delegate() != nullptr);
@@ -470,10 +470,10 @@ TEST_F(WebUsbDetectorTest, ThreeUsbDeviceAddedAndRemovedDifferentOrder) {
   base::Optional<message_center::Notification> notification_3 =
       display_service_->GetNotification(guid_3);
   ASSERT_TRUE(notification_3);
-  base::string16 expected_title_3 =
+  std::u16string expected_title_3 =
       base::ASCIIToUTF16("Google Product C detected");
   EXPECT_EQ(expected_title_3, notification_3->title());
-  base::string16 expected_message_3 =
+  std::u16string expected_message_3 =
       base::ASCIIToUTF16("Go to www.google.com to connect.");
   EXPECT_EQ(expected_message_3, notification_3->message());
   EXPECT_TRUE(notification_3->delegate() != nullptr);
@@ -636,10 +636,10 @@ TEST_F(WebUsbDetectorTest, TwoDevicesSameLandingPageAddedRemovedAndAddedAgain) {
   base::Optional<message_center::Notification> notification_1 =
       display_service_->GetNotification(guid_1);
   ASSERT_TRUE(notification_1);
-  base::string16 expected_title_1 =
+  std::u16string expected_title_1 =
       base::ASCIIToUTF16("Google Product A detected");
   EXPECT_EQ(expected_title_1, notification_1->title());
-  base::string16 expected_message_1 =
+  std::u16string expected_message_1 =
       base::ASCIIToUTF16("Go to www.google.com to connect.");
   EXPECT_EQ(expected_message_1, notification_1->message());
   EXPECT_TRUE(notification_1->delegate() != nullptr);
@@ -661,10 +661,10 @@ TEST_F(WebUsbDetectorTest, TwoDevicesSameLandingPageAddedRemovedAndAddedAgain) {
   base::Optional<message_center::Notification> notification_2 =
       display_service_->GetNotification(guid_2);
   ASSERT_TRUE(notification_2);
-  base::string16 expected_title_2 =
+  std::u16string expected_title_2 =
       base::ASCIIToUTF16("Google Product B detected");
   EXPECT_EQ(expected_title_2, notification_2->title());
-  base::string16 expected_message_2 =
+  std::u16string expected_message_2 =
       base::ASCIIToUTF16("Go to www.google.com to connect.");
   EXPECT_EQ(expected_message_2, notification_2->message());
   EXPECT_TRUE(notification_2->delegate() != nullptr);

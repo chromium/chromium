@@ -249,7 +249,7 @@ class MockVoiceSearchDelegate : public VoiceResultDelegate {
   MockVoiceSearchDelegate() = default;
   ~MockVoiceSearchDelegate() override = default;
 
-  MOCK_METHOD1(OnVoiceResults, void(const base::string16& result));
+  MOCK_METHOD1(OnVoiceResults, void(const std::u16string& result));
 
  private:
   DISALLOW_COPY_AND_ASSIGN(MockVoiceSearchDelegate);

@@ -102,7 +102,7 @@ struct WebApplicationShortcutsMenuItemInfo {
       WebApplicationShortcutsMenuItemInfo&&) noexcept;
 
   // Title of shortcut item in App Icon Shortcut Menu.
-  base::string16 name;
+  std::u16string name;
 
   // URL launched when shortcut item is selected.
   GURL url;
@@ -125,10 +125,10 @@ struct WebApplicationInfo {
   ~WebApplicationInfo();
 
   // Title of the application.
-  base::string16 title;
+  std::u16string title;
 
   // Description of the application.
-  base::string16 description;
+  std::u16string description;
 
   // The start_url for the app.
   // https://www.w3.org/TR/appmanifest/#start_url-member
