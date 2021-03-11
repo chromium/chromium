@@ -880,8 +880,8 @@ void LocalFrame::Reload(WebFrameLoadType load_type) {
                static_cast<int>(load_type));
 
   FrameLoadRequest request(
-      nullptr, loader_.ResourceRequestForReload(
-                   load_type, ClientRedirectPolicy::kClientRedirect));
+      DomWindow(), loader_.ResourceRequestForReload(
+                       load_type, ClientRedirectPolicy::kClientRedirect));
   request.SetClientRedirectReason(ClientNavigationReason::kReload);
   probe::FrameScheduledNavigation(this, request.GetResourceRequest().Url(),
                                   base::TimeDelta(),

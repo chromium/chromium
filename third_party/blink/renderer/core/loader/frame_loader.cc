@@ -86,6 +86,7 @@
 #include "third_party/blink/renderer/core/loader/document_loader.h"
 #include "third_party/blink/renderer/core/loader/form_submission.h"
 #include "third_party/blink/renderer/core/loader/frame_load_request.h"
+#include "third_party/blink/renderer/core/loader/frame_loader_types.h"
 #include "third_party/blink/renderer/core/loader/mixed_content_checker.h"
 #include "third_party/blink/renderer/core/loader/progress_tracker.h"
 #include "third_party/blink/renderer/core/page/chrome_client.h"
@@ -153,7 +154,6 @@ ResourceRequest FrameLoader::ResourceRequestForReload(
 
   ResourceRequest request =
       document_loader_->GetHistoryItem()->GenerateResourceRequest(cache_mode);
-  request.SetRequestorOrigin(frame_->GetSecurityContext()->GetSecurityOrigin());
 
   // ClientRedirectPolicy is an indication that this load was triggered by some
   // direct interaction with the page. If this reload is not a client redirect,
@@ -445,6 +445,7 @@ WebFrameLoadType FrameLoader::DetermineFrameLoadType(
     const KURL& url,
     const AtomicString& http_method,
     bool has_origin_window,
+    bool is_client_reload,
     const KURL& failing_url,
     WebFrameLoadType frame_load_type) {
   // TODO(dgozman): this method is rewriting the load type, which makes it hard
@@ -471,7 +472,7 @@ WebFrameLoadType FrameLoader::DetermineFrameLoadType(
   if (url == document_loader_->UrlForHistory()) {
     if (http_method == http_names::kPOST)
       return WebFrameLoadType::kStandard;
-    if (!has_origin_window)
+    if (!has_origin_window || is_client_reload)
       return WebFrameLoadType::kReload;
     return WebFrameLoadType::kReplaceCurrentItem;
   }
@@ -605,7 +606,7 @@ void FrameLoader::StartNavigation(FrameLoadRequest& request,
     return;
 
   // Block renderer-initiated loads of data: and filesystem: URLs in the top
-  // frame.
+  // frame (unless they are reload requests).
   //
   // If the mime type of the data URL is supported, the URL will
   // eventually be rendered, so block it here. Otherwise, the load might be
@@ -613,6 +614,7 @@ void FrameLoader::StartNavigation(FrameLoadRequest& request,
   // embedder figure out what to do with it. Navigations to filesystem URLs are
   // always blocked here.
   if (frame_->IsMainFrame() && origin_window &&
+      request.ClientRedirectReason() != ClientNavigationReason::kReload &&
       !frame_->Client()->AllowContentInitiatedDataUrlNavigations(
           origin_window->Url()) &&
       (url.ProtocolIs("filesystem") ||
@@ -636,7 +638,8 @@ void FrameLoader::StartNavigation(FrameLoadRequest& request,
 
   frame_load_type = DetermineFrameLoadType(
       resource_request.Url(), resource_request.HttpMethod(), origin_window,
-      KURL(), frame_load_type);
+      request.ClientRedirectReason() == ClientNavigationReason::kReload, KURL(),
+      frame_load_type);
 
   bool same_document_navigation =
       request.GetNavigationPolicy() == kNavigationPolicyCurrentTab &&
@@ -952,8 +955,8 @@ void FrameLoader::CommitNavigation(
 
   navigation_params->frame_load_type = DetermineFrameLoadType(
       navigation_params->url, navigation_params->http_method,
-      false /* has_origin_window */, navigation_params->unreachable_url,
-      navigation_params->frame_load_type);
+      false /* has_origin_window */, false /* is_client_reload */,
+      navigation_params->unreachable_url, navigation_params->frame_load_type);
 
   // Note: we might actually classify this navigation as same document
   // right here in the following circumstances:

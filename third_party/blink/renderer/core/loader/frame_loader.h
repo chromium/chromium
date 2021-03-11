@@ -234,6 +234,7 @@ class CORE_EXPORT FrameLoader final {
   WebFrameLoadType DetermineFrameLoadType(const KURL& url,
                                           const AtomicString& http_method,
                                           bool has_origin_window,
+                                          bool is_client_reload,
                                           const KURL& failing_url,
                                           WebFrameLoadType);
 

@@ -1055,11 +1055,10 @@ void WebLocalFrameImpl::StartReload(WebFrameLoadType frame_load_type) {
       GetFrame()->Loader().ResourceRequestForReload(frame_load_type);
   if (request.IsNull())
     return;
-  request.SetRequestorOrigin(GetFrame()->DomWindow()->GetSecurityOrigin());
   if (GetTextFinder())
     GetTextFinder()->ClearActiveFindMatch();
 
-  FrameLoadRequest frame_load_request(nullptr, request);
+  FrameLoadRequest frame_load_request(GetFrame()->DomWindow(), request);
   GetFrame()->Loader().StartNavigation(frame_load_request, frame_load_type);
 }
 
