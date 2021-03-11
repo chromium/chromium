@@ -955,13 +955,11 @@ void CrasAudioHandler::SetupAudioOutputState() {
   // Mute the output during HDMI re-discovering grace period.
   if (hdmi_rediscovering_ && !IsHDMIPrimaryOutputDevice()) {
     VLOG(1) << "Mute the output during HDMI re-discovering grace period";
-    output_mute_on_ = true;
+    SetOutputMuteInternal(true);
   } else {
-    output_mute_on_ = audio_pref_handler_->GetMuteValue(*device);
+    SetOutputMuteInternal(audio_pref_handler_->GetMuteValue(*device));
   }
   output_volume_ = audio_pref_handler_->GetOutputVolumeValue(device);
-
-  SetOutputMuteInternal(output_mute_on_);
 
   if (initializing_audio_state_) {
     // During power up, InitializeAudioState() could be called twice, first
