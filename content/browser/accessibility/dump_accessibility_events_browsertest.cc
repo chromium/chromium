@@ -532,8 +532,16 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTest,
   RunEventTest(FILE_PATH_LITERAL("caret-move.html"));
 }
 
+// Flaky on Windows: https://crbug.com/1186887
+#if defined(OS_WIN)
+#define MAYBE_AccessibilityEventsCaretMoveHiddenInput \
+  DISABLED_AccessibilityEventsCaretMoveHiddenInput
+#else
+#define MAYBE_AccessibilityEventsCaretMoveHiddenInput \
+  AccessibilityEventsCaretMoveHiddenInput
+#endif
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTest,
-                       AccessibilityEventsCaretMoveHiddenInput) {
+                       MAYBE_AccessibilityEventsCaretMoveHiddenInput) {
   RunEventTest(FILE_PATH_LITERAL("caret-move-hidden-input.html"));
 }
 
