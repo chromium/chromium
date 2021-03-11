@@ -11,7 +11,6 @@
 #include "base/macros.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/test/gmock_move_support.h"
-#include "base/test/metrics/histogram_tester.h"
 #include "base/test/test_simple_task_runner.h"
 #include "chrome/browser/ash/settings/scoped_testing_cros_settings.h"
 #include "chrome/browser/ash/settings/stub_cros_settings_provider.h"
@@ -181,8 +180,6 @@ class HeartbeatSchedulerTest : public testing::Test {
 
   // The HeartbeatScheduler instance under test.
   policy::HeartbeatScheduler scheduler_;
-
-  base::HistogramTester histogram_tester_;
 };
 
 TEST_F(HeartbeatSchedulerTest, Basic) {
