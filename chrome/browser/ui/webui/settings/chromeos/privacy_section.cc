@@ -10,6 +10,7 @@
 #include "base/no_destructor.h"
 #include "build/branding_buildflags.h"
 #include "chrome/browser/ash/login/quick_unlock/quick_unlock_utils.h"
+#include "chrome/browser/ui/webui/settings/chromeos/os_settings_features_util.h"
 #include "chrome/browser/ui/webui/settings/chromeos/peripheral_data_access_handler.h"
 #include "chrome/browser/ui/webui/settings/chromeos/search/search_tag_registry.h"
 #include "chrome/browser/ui/webui/settings/shared_settings_localized_strings_provider.h"
@@ -44,7 +45,8 @@ const std::vector<SearchConcept>& GetPrivacySearchConcepts() {
          {.section = mojom::Section::kPrivacyAndSecurity}},
     });
 
-    if (chromeos::features::IsAccountManagementFlowsV2Enabled()) {
+    if (chromeos::features::IsAccountManagementFlowsV2Enabled() &&
+        !features::IsGuestModeActive()) {
       all_tags.insert(
           all_tags.end(),
           {{IDS_OS_SETTINGS_TAG_GUEST_BROWSING,
@@ -185,7 +187,7 @@ PrivacySection::PrivacySection(Profile* profile,
 
   // Fingerprint search tags are added if necessary. Remove fingerprint search
   // tags update dynamically during a user session.
-  if (AreFingerprintSettingsAllowed() &&
+  if (!features::IsGuestModeActive() && AreFingerprintSettingsAllowed() &&
       chromeos::features::IsAccountManagementFlowsV2Enabled()) {
     updater.AddSearchTags(GetFingerprintSearchConcepts());
 
