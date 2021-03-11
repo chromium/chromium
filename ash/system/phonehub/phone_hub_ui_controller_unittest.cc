@@ -7,6 +7,8 @@
 #include "ash/system/phonehub/phone_hub_view_ids.h"
 #include "ash/test/ash_test_base.h"
 #include "base/optional.h"
+#include "base/test/task_environment.h"
+#include "base/time/time.h"
 #include "chromeos/components/phonehub/fake_phone_hub_manager.h"
 #include "chromeos/components/phonehub/fake_tether_controller.h"
 #include "chromeos/components/phonehub/phone_model_test_util.h"
@@ -20,17 +22,22 @@ namespace ash {
 
 constexpr char kUser1Email[] = "user1@test.com";
 constexpr char kUser2Email[] = "user2@test.com";
+constexpr base::TimeDelta kConnectingViewGracePeriod =
+    base::TimeDelta::FromSeconds(40);
 
-class PhoneHubUiControllerTest : public NoSessionAshTestBase,
+class PhoneHubUiControllerTest : public AshTestBase,
                                  public PhoneHubUiController::Observer {
  public:
-  PhoneHubUiControllerTest() = default;
+  PhoneHubUiControllerTest()
+      : AshTestBase(base::test::TaskEnvironment::TimeSource::MOCK_TIME) {
+    set_start_session(false);
+  }
 
   ~PhoneHubUiControllerTest() override { controller_->RemoveObserver(this); }
 
   // AshTestBase:
   void SetUp() override {
-    NoSessionAshTestBase::SetUp();
+    AshTestBase::SetUp();
 
     // Create user 1 session and simulate its login.
     SimulateUserLogin(kUser1Email);
@@ -74,6 +81,13 @@ class PhoneHubUiControllerTest : public NoSessionAshTestBase,
   }
 
   void CallHandleBubbleOpened() { controller_->HandleBubbleOpened(); }
+
+  // When first connecting, the connecting view is shown for 30 seconds when
+  // disconnected, so in order to show the disconnecting view, we need to fast
+  // forward time.
+  void FastForwardByConnectingViewGracePeriod() {
+    task_environment()->FastForwardBy(kConnectingViewGracePeriod);
+  }
 
  protected:
   // PhoneHubUiController::Observer:
@@ -143,15 +157,6 @@ TEST_F(PhoneHubUiControllerTest, BluetoothOff) {
 
   auto content_view = controller_->CreateContentView(/*delegate=*/nullptr);
   EXPECT_EQ(PhoneHubViewID::kBluetoothDisabledView, content_view->GetID());
-}
-
-TEST_F(PhoneHubUiControllerTest, PhoneDisconnected) {
-  GetFeatureStatusProvider()->SetStatus(FeatureStatus::kEnabledButDisconnected);
-  EXPECT_EQ(PhoneHubUiController::UiState::kPhoneDisconnected,
-            controller_->ui_state());
-
-  auto content_view = controller_->CreateContentView(/*delegate=*/nullptr);
-  EXPECT_EQ(PhoneHubViewID::kDisconnectedView, content_view->GetID());
 }
 
 TEST_F(PhoneHubUiControllerTest, PhoneConnecting) {
@@ -263,6 +268,44 @@ TEST_F(PhoneHubUiControllerTest, NumScanForAvailableConnectionCalls) {
   CallHandleBubbleOpened();
   EXPECT_EQ(GetTetherController()->num_scan_for_available_connection_calls(),
             num_scan_for_connection_calls + 1);
+}
+
+TEST_F(PhoneHubUiControllerTest,
+       DisconnectedViewWhenDisconnectedGreaterThan30Seconds) {
+  GetFeatureStatusProvider()->SetStatus(FeatureStatus::kEnabledButDisconnected);
+  EXPECT_TRUE(ui_state_changed_);
+  ui_state_changed_ = false;
+  FastForwardByConnectingViewGracePeriod();
+  EXPECT_EQ(PhoneHubUiController::UiState::kPhoneDisconnected,
+            controller_->ui_state());
+
+  auto content_view = controller_->CreateContentView(/*delegate=*/nullptr);
+  EXPECT_EQ(PhoneHubViewID::kDisconnectedView, content_view->GetID());
+}
+
+TEST_F(PhoneHubUiControllerTest,
+       ConnectingViewWhenDisconnectedLessThan30Seconds) {
+  GetFeatureStatusProvider()->SetStatus(FeatureStatus::kEnabledAndConnecting);
+  GetFeatureStatusProvider()->SetStatus(FeatureStatus::kEnabledButDisconnected);
+  EXPECT_EQ(PhoneHubUiController::UiState::kPhoneDisconnected,
+            controller_->ui_state());
+
+  auto content_view = controller_->CreateContentView(/*delegate=*/nullptr);
+  EXPECT_EQ(PhoneHubViewID::kPhoneConnectingView, content_view->GetID());
+}
+
+TEST_F(PhoneHubUiControllerTest, TimerExpiresBluetoothDisconnectedView) {
+  GetFeatureStatusProvider()->SetStatus(FeatureStatus::kEnabledButDisconnected);
+  EXPECT_TRUE(ui_state_changed_);
+  ui_state_changed_ = false;
+  GetFeatureStatusProvider()->SetStatus(
+      FeatureStatus::kUnavailableBluetoothOff);
+  FastForwardByConnectingViewGracePeriod();
+  EXPECT_EQ(PhoneHubUiController::UiState::kBluetoothDisabled,
+            controller_->ui_state());
+
+  auto content_view = controller_->CreateContentView(/*delegate=*/nullptr);
+  EXPECT_EQ(PhoneHubViewID::kBluetoothDisabledView, content_view->GetID());
 }
 
 }  // namespace ash

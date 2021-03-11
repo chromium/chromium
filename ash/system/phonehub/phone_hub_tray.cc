@@ -117,12 +117,17 @@ void PhoneHubTray::OnPhoneHubUiStateChanged() {
   }
 
   if (content_view_) {
+    // If we are already showing the same content_view, no need to remove and
+    // update the tray.
+    // TODO(crbug.com/1185316) : Find way to update views without work around
+    // when same view is removed and added.
+    if (content_view->GetID() == content_view_->GetID())
+      return;
+
     bubble_view->RemoveChildView(content_view_);
     delete content_view_;
   }
-
-  content_view_ = content_view.get();
-  bubble_view->AddChildView(std::move(content_view));
+  content_view_ = bubble_view->AddChildView(std::move(content_view));
 
   // Updates bubble to handle possible size change with a different child view.
   bubble_view->UpdateBubble();

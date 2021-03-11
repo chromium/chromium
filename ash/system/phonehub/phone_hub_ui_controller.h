@@ -12,6 +12,7 @@
 #include "ash/system/phonehub/phone_status_view.h"
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
+#include "base/timer/timer.h"
 #include "chromeos/components/phonehub/feature_status_provider.h"
 #include "chromeos/components/phonehub/onboarding_ui_tracker.h"
 #include "chromeos/components/phonehub/phone_model.h"
@@ -106,6 +107,10 @@ class ASH_EXPORT PhoneHubUiController
   // Cleans up |phone_hub_manager_| by removing all observers.
   void CleanUpPhoneHubManager();
 
+  // When |connecting_view_grace_period_timer_| ends, triggers a change in
+  // the content view to show a disconnected view.
+  void OnConnectingViewTimerEnd();
+
   // The PhoneHubManager that provides data for the UI.
   chromeos::phonehub::PhoneHubManager* phone_hub_manager_ = nullptr;
 
@@ -119,6 +124,12 @@ class ASH_EXPORT PhoneHubUiController
 
   // Registered observers.
   base::ObserverList<Observer> observer_list_;
+
+  // The timer that dictates how long to show |kConnecting| after disconnect
+  // so when the connection fails on the first attempt and retries, it is not
+  // confusing to users when it shows disconnecting view, rather, it will show
+  // connecting view on this occasion.
+  base::OneShotTimer connecting_view_grace_period_timer_;
 };
 
 }  // namespace ash

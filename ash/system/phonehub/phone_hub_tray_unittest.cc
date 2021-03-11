@@ -14,6 +14,8 @@
 #include "ash/system/status_area_widget_test_helper.h"
 #include "ash/test/ash_test_base.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/task_environment.h"
+#include "base/time/time.h"
 #include "chromeos/components/phonehub/fake_connection_scheduler.h"
 #include "chromeos/components/phonehub/fake_notification_access_manager.h"
 #include "chromeos/components/phonehub/fake_phone_hub_manager.h"
@@ -25,6 +27,9 @@
 namespace ash {
 
 namespace {
+
+constexpr base::TimeDelta kConnectingViewGracePeriod =
+    base::TimeDelta::FromSeconds(40);
 
 // A mock implementation of |NewWindowDelegate| for use in tests.
 class MockNewWindowDelegate : public testing::NiceMock<TestNewWindowDelegate> {
@@ -40,7 +45,8 @@ class MockNewWindowDelegate : public testing::NiceMock<TestNewWindowDelegate> {
 
 class PhoneHubTrayTest : public AshTestBase {
  public:
-  PhoneHubTrayTest() = default;
+  PhoneHubTrayTest()
+      : AshTestBase(base::test::TaskEnvironment::TimeSource::MOCK_TIME) {}
   ~PhoneHubTrayTest() override = default;
 
   // AshTestBase:
@@ -93,6 +99,13 @@ class PhoneHubTrayTest : public AshTestBase {
   }
 
   void ClickTrayButton() { ClickOnAndWait(phone_hub_tray_); }
+
+  // When first connecting, the connecting view is shown for 30 seconds when
+  // disconnected, so in order to show the disconnecting view, we need to fast
+  // forward time.
+  void FastForwardByConnectingViewGracePeriod() {
+    task_environment()->FastForwardBy(kConnectingViewGracePeriod);
+  }
 
   MockNewWindowDelegate& new_window_delegate() { return new_window_delegate_; }
 
@@ -313,6 +326,7 @@ TEST_F(PhoneHubTrayTest, TransitionContentView) {
 
   GetFeatureStatusProvider()->SetStatus(
       chromeos::phonehub::FeatureStatus::kEnabledButDisconnected);
+  FastForwardByConnectingViewGracePeriod();
 
   EXPECT_TRUE(content_view());
   EXPECT_EQ(PhoneHubViewID::kDisconnectedView, content_view()->GetID());
@@ -400,6 +414,7 @@ TEST_F(PhoneHubTrayTest, ClickButtonsOnDisconnectedView) {
   // Simulates a phone disconnected error state to show the disconnected view.
   GetFeatureStatusProvider()->SetStatus(
       chromeos::phonehub::FeatureStatus::kEnabledButDisconnected);
+  FastForwardByConnectingViewGracePeriod();
 
   EXPECT_EQ(0u, GetConnectionScheduler()->num_schedule_connection_now_calls());
 
@@ -450,6 +465,21 @@ TEST_F(PhoneHubTrayTest, ClickButtonOnBluetoothDisabledView) {
       });
   // Simulate a click on "Learn more" button.
   ClickOnAndWait(bluetooth_disabled_learn_more_button());
+}
+
+TEST_F(PhoneHubTrayTest, CloseBubbleWhileShowingSameView) {
+  // Simulate the views returned to PhoneHubTray are the same and open and
+  // close tray.
+  GetFeatureStatusProvider()->SetStatus(
+      chromeos::phonehub::FeatureStatus::kEnabledAndConnecting);
+  ClickTrayButton();
+  EXPECT_TRUE(phone_hub_tray_->is_active());
+  EXPECT_EQ(PhoneHubViewID::kPhoneConnectingView, content_view()->GetID());
+  ClickTrayButton();
+  EXPECT_FALSE(phone_hub_tray_->is_active());
+  GetFeatureStatusProvider()->SetStatus(
+      chromeos::phonehub::FeatureStatus::kEnabledButDisconnected);
+  EXPECT_FALSE(content_view());
 }
 
 }  // namespace ash
