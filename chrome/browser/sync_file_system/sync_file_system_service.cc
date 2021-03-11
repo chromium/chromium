@@ -162,8 +162,8 @@ class LocalSyncRunner : public SyncProcessRunner,
 
   void StartSync(SyncStatusCallback callback) override {
     GetSyncService()->local_service_->ProcessLocalChange(
-        base::Bind(&LocalSyncRunner::DidProcessLocalChange,
-                   factory_.GetWeakPtr(), base::Passed(&callback)));
+        base::BindOnce(&LocalSyncRunner::DidProcessLocalChange,
+                       factory_.GetWeakPtr(), std::move(callback)));
   }
 
   // LocalFileSyncService::Observer overrides.
@@ -207,8 +207,8 @@ class RemoteSyncRunner : public SyncProcessRunner,
 
   void StartSync(SyncStatusCallback callback) override {
     remote_service_->ProcessRemoteChange(
-        base::Bind(&RemoteSyncRunner::DidProcessRemoteChange,
-                   factory_.GetWeakPtr(), base::Passed(&callback)));
+        base::BindOnce(&RemoteSyncRunner::DidProcessRemoteChange,
+                       factory_.GetWeakPtr(), std::move(callback)));
   }
 
   SyncServiceState GetServiceState() override {
@@ -243,8 +243,8 @@ class RemoteSyncRunner : public SyncProcessRunner,
 
     if (status == SYNC_STATUS_FILE_BUSY) {
       GetSyncService()->local_service_->RegisterURLForWaitingSync(
-          url, base::Bind(&RemoteSyncRunner::Schedule,
-                          factory_.GetWeakPtr()));
+          url,
+          base::BindOnce(&RemoteSyncRunner::Schedule, factory_.GetWeakPtr()));
     }
     std::move(callback).Run(status);
   }
@@ -297,8 +297,8 @@ void SyncFileSystemService::InitializeForApp(
 
   local_service_->MaybeInitializeFileSystemContext(
       app_origin, file_system_context,
-      base::Bind(&SyncFileSystemService::DidInitializeFileSystem, AsWeakPtr(),
-                 app_origin, base::Passed(&callback)));
+      base::BindOnce(&SyncFileSystemService::DidInitializeFileSystem,
+                     AsWeakPtr(), app_origin, std::move(callback)));
 }
 
 void SyncFileSystemService::GetExtensionStatusMap(
@@ -367,9 +367,9 @@ void SyncFileSystemService::OnSyncIdle() {
   promoting_demoted_changes_ = true;
 
   int* job_count = new int(1);
-  base::Closure promote_completion_callback =
-      base::Bind(&SyncFileSystemService::OnPromotionCompleted,
-                 AsWeakPtr(), base::Owned(job_count));
+  base::RepeatingClosure promote_completion_callback =
+      base::BindRepeating(&SyncFileSystemService::OnPromotionCompleted,
+                          AsWeakPtr(), base::Owned(job_count));
 
   int64_t remote_changes = 0;
   for (size_t i = 0; i < remote_sync_runners_.size(); ++i)
@@ -501,8 +501,8 @@ void SyncFileSystemService::DidInitializeFileSystem(const GURL& app_origin,
   }
 
   remote_service_->RegisterOrigin(
-      app_origin, base::Bind(&SyncFileSystemService::DidRegisterOrigin,
-                             AsWeakPtr(), app_origin, base::Passed(&callback)));
+      app_origin, base::BindOnce(&SyncFileSystemService::DidRegisterOrigin,
+                                 AsWeakPtr(), app_origin, std::move(callback)));
 }
 
 void SyncFileSystemService::DidRegisterOrigin(const GURL& app_origin,
@@ -674,8 +674,7 @@ void SyncFileSystemService::OnExtensionUnloaded(
   DVLOG(1) << "Handle extension notification for UNLOAD(DISABLE): "
            << app_origin;
   remote_service_->DisableOrigin(
-      app_origin,
-      base::Bind(&DidHandleUnloadedEvent, app_origin));
+      app_origin, base::BindOnce(&DidHandleUnloadedEvent, app_origin));
   local_service_->SetOriginEnabled(app_origin, false);
 }
 
@@ -697,8 +696,7 @@ void SyncFileSystemService::OnExtensionUninstalled(
   DVLOG(1) << "Handle extension notification for UNINSTALLED: "
            << app_origin;
   remote_service_->UninstallOrigin(
-      app_origin, flag,
-      base::Bind(&DidHandleUninstalledEvent, app_origin));
+      app_origin, flag, base::BindOnce(&DidHandleUninstalledEvent, app_origin));
   local_service_->SetOriginEnabled(app_origin, false);
 }
 
@@ -708,8 +706,7 @@ void SyncFileSystemService::OnExtensionLoaded(
   GURL app_origin = Extension::GetBaseURLFromExtensionId(extension->id());
   DVLOG(1) << "Handle extension notification for LOADED: " << app_origin;
   remote_service_->EnableOrigin(
-      app_origin,
-      base::Bind(&DidHandleLoadEvent, app_origin));
+      app_origin, base::BindOnce(&DidHandleLoadEvent, app_origin));
   local_service_->SetOriginEnabled(app_origin, true);
 }
 

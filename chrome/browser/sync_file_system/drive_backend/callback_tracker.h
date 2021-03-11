@@ -25,7 +25,8 @@ namespace drive_backend {
 //   };
 //
 //   void DoSomethingAsync(const SomeCallbackType& callback) {
-//     base::Closure abort_case_handler = base::Bind(callback, ABORT_ERROR);
+//     base::OnceClosure abort_case_handler =
+//         base::BindOnce(callback, ABORT_ERROR);
 //
 //     SomeCallbackType wrapped_callback =
 //         callback_tracker_.Register(

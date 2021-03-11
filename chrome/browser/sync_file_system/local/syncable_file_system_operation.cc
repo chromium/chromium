@@ -322,10 +322,10 @@ void SyncableFileSystemOperation::CopyInForeignFile(
   completion_callback_ = std::move(callback);
   auto task = std::make_unique<QueueableTask>(
       weak_factory_.GetWeakPtr(),
-      base::BindOnce(&FileSystemOperation::CopyInForeignFile,
-                     base::Unretained(impl_.get()), src_local_disk_path,
-                     dest_url,
-                     base::Bind(&self::DidFinish, weak_factory_.GetWeakPtr())));
+      base::BindOnce(
+          &FileSystemOperation::CopyInForeignFile,
+          base::Unretained(impl_.get()), src_local_disk_path, dest_url,
+          base::BindOnce(&self::DidFinish, weak_factory_.GetWeakPtr())));
   operation_runner_->PostOperationTask(std::move(task));
 }
 

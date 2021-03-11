@@ -282,97 +282,75 @@ TEST_F(SyncWorkerTest, UpdateServiceState) {
   EXPECT_EQ(REMOTE_SERVICE_OK, sync_worker()->GetCurrentState());
 
   GetSyncTaskManager()->ScheduleTask(
-      FROM_HERE,
-      base::Bind(&EmptyTask, SYNC_STATUS_AUTHENTICATION_FAILED),
+      FROM_HERE, base::BindOnce(&EmptyTask, SYNC_STATUS_AUTHENTICATION_FAILED),
       SyncTaskManager::PRIORITY_MED,
-      base::Bind(&SyncWorkerTest::CheckServiceState,
-                 AsWeakPtr(),
-                 SYNC_STATUS_AUTHENTICATION_FAILED,
-                 REMOTE_SERVICE_AUTHENTICATION_REQUIRED));
+      base::BindOnce(&SyncWorkerTest::CheckServiceState, AsWeakPtr(),
+                     SYNC_STATUS_AUTHENTICATION_FAILED,
+                     REMOTE_SERVICE_AUTHENTICATION_REQUIRED));
+
+  GetSyncTaskManager()->ScheduleTask(
+      FROM_HERE, base::BindOnce(&EmptyTask, SYNC_STATUS_ACCESS_FORBIDDEN),
+      SyncTaskManager::PRIORITY_MED,
+      base::BindOnce(&SyncWorkerTest::CheckServiceState, AsWeakPtr(),
+                     SYNC_STATUS_ACCESS_FORBIDDEN,
+                     REMOTE_SERVICE_ACCESS_FORBIDDEN));
 
   GetSyncTaskManager()->ScheduleTask(
       FROM_HERE,
-      base::Bind(&EmptyTask, SYNC_STATUS_ACCESS_FORBIDDEN),
+      base::BindOnce(&EmptyTask, SYNC_STATUS_SERVICE_TEMPORARILY_UNAVAILABLE),
       SyncTaskManager::PRIORITY_MED,
-      base::Bind(&SyncWorkerTest::CheckServiceState,
-                 AsWeakPtr(),
-                 SYNC_STATUS_ACCESS_FORBIDDEN,
-                 REMOTE_SERVICE_ACCESS_FORBIDDEN));
+      base::BindOnce(&SyncWorkerTest::CheckServiceState, AsWeakPtr(),
+                     SYNC_STATUS_SERVICE_TEMPORARILY_UNAVAILABLE,
+                     REMOTE_SERVICE_TEMPORARY_UNAVAILABLE));
 
   GetSyncTaskManager()->ScheduleTask(
-      FROM_HERE,
-      base::Bind(&EmptyTask, SYNC_STATUS_SERVICE_TEMPORARILY_UNAVAILABLE),
+      FROM_HERE, base::BindOnce(&EmptyTask, SYNC_STATUS_NETWORK_ERROR),
       SyncTaskManager::PRIORITY_MED,
-      base::Bind(&SyncWorkerTest::CheckServiceState,
-                 AsWeakPtr(),
-                 SYNC_STATUS_SERVICE_TEMPORARILY_UNAVAILABLE,
-                 REMOTE_SERVICE_TEMPORARY_UNAVAILABLE));
+      base::BindOnce(&SyncWorkerTest::CheckServiceState, AsWeakPtr(),
+                     SYNC_STATUS_NETWORK_ERROR,
+                     REMOTE_SERVICE_TEMPORARY_UNAVAILABLE));
 
   GetSyncTaskManager()->ScheduleTask(
-      FROM_HERE,
-      base::Bind(&EmptyTask, SYNC_STATUS_NETWORK_ERROR),
+      FROM_HERE, base::BindOnce(&EmptyTask, SYNC_STATUS_ABORT),
       SyncTaskManager::PRIORITY_MED,
-      base::Bind(&SyncWorkerTest::CheckServiceState,
-                 AsWeakPtr(),
-                 SYNC_STATUS_NETWORK_ERROR,
-                 REMOTE_SERVICE_TEMPORARY_UNAVAILABLE));
+      base::BindOnce(&SyncWorkerTest::CheckServiceState, AsWeakPtr(),
+                     SYNC_STATUS_ABORT, REMOTE_SERVICE_TEMPORARY_UNAVAILABLE));
 
   GetSyncTaskManager()->ScheduleTask(
-      FROM_HERE,
-      base::Bind(&EmptyTask, SYNC_STATUS_ABORT),
+      FROM_HERE, base::BindOnce(&EmptyTask, SYNC_STATUS_FAILED),
       SyncTaskManager::PRIORITY_MED,
-      base::Bind(&SyncWorkerTest::CheckServiceState,
-                 AsWeakPtr(),
-                 SYNC_STATUS_ABORT,
-                 REMOTE_SERVICE_TEMPORARY_UNAVAILABLE));
+      base::BindOnce(&SyncWorkerTest::CheckServiceState, AsWeakPtr(),
+                     SYNC_STATUS_FAILED, REMOTE_SERVICE_TEMPORARY_UNAVAILABLE));
 
   GetSyncTaskManager()->ScheduleTask(
-      FROM_HERE,
-      base::Bind(&EmptyTask, SYNC_STATUS_FAILED),
+      FROM_HERE, base::BindOnce(&EmptyTask, SYNC_DATABASE_ERROR_CORRUPTION),
       SyncTaskManager::PRIORITY_MED,
-      base::Bind(&SyncWorkerTest::CheckServiceState,
-                 AsWeakPtr(),
-                 SYNC_STATUS_FAILED,
-                 REMOTE_SERVICE_TEMPORARY_UNAVAILABLE));
+      base::BindOnce(&SyncWorkerTest::CheckServiceState, AsWeakPtr(),
+                     SYNC_DATABASE_ERROR_CORRUPTION, REMOTE_SERVICE_DISABLED));
 
   GetSyncTaskManager()->ScheduleTask(
-      FROM_HERE,
-      base::Bind(&EmptyTask, SYNC_DATABASE_ERROR_CORRUPTION),
+      FROM_HERE, base::BindOnce(&EmptyTask, SYNC_DATABASE_ERROR_IO_ERROR),
       SyncTaskManager::PRIORITY_MED,
-      base::Bind(&SyncWorkerTest::CheckServiceState,
-                 AsWeakPtr(),
-                 SYNC_DATABASE_ERROR_CORRUPTION,
-                 REMOTE_SERVICE_DISABLED));
+      base::BindOnce(&SyncWorkerTest::CheckServiceState, AsWeakPtr(),
+                     SYNC_DATABASE_ERROR_IO_ERROR, REMOTE_SERVICE_DISABLED));
 
   GetSyncTaskManager()->ScheduleTask(
-      FROM_HERE,
-      base::Bind(&EmptyTask, SYNC_DATABASE_ERROR_IO_ERROR),
+      FROM_HERE, base::BindOnce(&EmptyTask, SYNC_DATABASE_ERROR_FAILED),
       SyncTaskManager::PRIORITY_MED,
-      base::Bind(&SyncWorkerTest::CheckServiceState,
-                 AsWeakPtr(),
-                 SYNC_DATABASE_ERROR_IO_ERROR,
-                 REMOTE_SERVICE_DISABLED));
-
-  GetSyncTaskManager()->ScheduleTask(
-      FROM_HERE,
-      base::Bind(&EmptyTask, SYNC_DATABASE_ERROR_FAILED),
-      SyncTaskManager::PRIORITY_MED,
-      base::Bind(&SyncWorkerTest::CheckServiceState,
-                 AsWeakPtr(),
-                 SYNC_DATABASE_ERROR_FAILED,
-                 REMOTE_SERVICE_DISABLED));
+      base::BindOnce(&SyncWorkerTest::CheckServiceState, AsWeakPtr(),
+                     SYNC_DATABASE_ERROR_FAILED, REMOTE_SERVICE_DISABLED));
 
   GetSyncTaskManager()->ScheduleSyncTask(
       FROM_HERE, std::unique_ptr<SyncTask>(new MockSyncTask(false)),
       SyncTaskManager::PRIORITY_MED,
-      base::Bind(&SyncWorkerTest::CheckServiceState, AsWeakPtr(),
-                 SYNC_STATUS_OK, REMOTE_SERVICE_DISABLED));
+      base::BindOnce(&SyncWorkerTest::CheckServiceState, AsWeakPtr(),
+                     SYNC_STATUS_OK, REMOTE_SERVICE_DISABLED));
 
   GetSyncTaskManager()->ScheduleSyncTask(
       FROM_HERE, std::unique_ptr<SyncTask>(new MockSyncTask(true)),
       SyncTaskManager::PRIORITY_MED,
-      base::Bind(&SyncWorkerTest::CheckServiceState, AsWeakPtr(),
-                 SYNC_STATUS_OK, REMOTE_SERVICE_OK));
+      base::BindOnce(&SyncWorkerTest::CheckServiceState, AsWeakPtr(),
+                     SYNC_STATUS_OK, REMOTE_SERVICE_OK));
 
   base::RunLoop().RunUntilIdle();
 }

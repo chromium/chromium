@@ -141,9 +141,8 @@ void ConflictResolver::DetachFromNonPrimaryParents(
 
   drive_service()->RemoveResourceFromDirectory(
       parent_folder_id, target_file_id_,
-      base::Bind(&ConflictResolver::DidDetachFromParent,
-                 weak_ptr_factory_.GetWeakPtr(),
-                 base::Passed(&token)));
+      base::BindOnce(&ConflictResolver::DidDetachFromParent,
+                     weak_ptr_factory_.GetWeakPtr(), std::move(token)));
 }
 
 void ConflictResolver::DidDetachFromParent(
@@ -244,9 +243,9 @@ void ConflictResolver::RemoveNonPrimaryFiles(
   // the folder identified by |target_file_id_|.
   drive_service()->DeleteResource(
       file_id, etag,
-      base::Bind(&ConflictResolver::DidRemoveFile,
-                 weak_ptr_factory_.GetWeakPtr(),
-                 base::Passed(&token), file_id));
+      base::BindOnce(&ConflictResolver::DidRemoveFile,
+                     weak_ptr_factory_.GetWeakPtr(), std::move(token),
+                     file_id));
 }
 
 void ConflictResolver::DidRemoveFile(std::unique_ptr<SyncTaskToken> token,

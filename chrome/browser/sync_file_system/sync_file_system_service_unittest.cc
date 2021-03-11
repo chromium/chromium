@@ -76,10 +76,9 @@ void AssignValueAndQuit(base::RunLoop* run_loop,
 }
 
 // This is called on IO thread. Posts |callback| to be called on UI thread.
-void VerifyFileError(base::Closure callback,
-                     base::File::Error error) {
+void VerifyFileError(base::OnceClosure callback, base::File::Error error) {
   EXPECT_EQ(base::File::FILE_OK, error);
-  content::GetUIThreadTaskRunner({})->PostTask(FROM_HERE, callback);
+  content::GetUIThreadTaskRunner({})->PostTask(FROM_HERE, std::move(callback));
 }
 
 }  // namespace
@@ -430,8 +429,8 @@ TEST_F(SyncFileSystemServiceTest, SimpleSyncFlowWithFileBusy) {
       FROM_HERE,
       base::BindOnce(&CannedSyncableFileSystem::DoCreateFile,
                      base::Unretained(file_system_.get()), kFile,
-                     base::Bind(&VerifyFileError,
-                                verify_file_error_run_loop.QuitClosure())));
+                     base::BindOnce(&VerifyFileError,
+                                    verify_file_error_run_loop.QuitClosure())));
 
   run_loop.Run();
 
@@ -461,9 +460,8 @@ TEST_F(SyncFileSystemServiceTest, MAYBE_GetFileSyncStatus) {
     status = SYNC_STATUS_UNKNOWN;
     sync_file_status = SYNC_FILE_STATUS_UNKNOWN;
     sync_service_->GetFileSyncStatus(
-        kFile,
-        base::Bind(&AssignValueAndQuit<SyncFileStatus>,
-                   &run_loop, &status, &sync_file_status));
+        kFile, base::BindOnce(&AssignValueAndQuit<SyncFileStatus>, &run_loop,
+                              &status, &sync_file_status));
     run_loop.Run();
 
     EXPECT_EQ(SYNC_STATUS_OK, status);
@@ -478,9 +476,8 @@ TEST_F(SyncFileSystemServiceTest, MAYBE_GetFileSyncStatus) {
     status = SYNC_STATUS_UNKNOWN;
     sync_file_status = SYNC_FILE_STATUS_UNKNOWN;
     sync_service_->GetFileSyncStatus(
-        kFile,
-        base::Bind(&AssignValueAndQuit<SyncFileStatus>,
-                   &run_loop, &status, &sync_file_status));
+        kFile, base::BindOnce(&AssignValueAndQuit<SyncFileStatus>, &run_loop,
+                              &status, &sync_file_status));
     run_loop.Run();
 
     EXPECT_EQ(SYNC_STATUS_OK, status);

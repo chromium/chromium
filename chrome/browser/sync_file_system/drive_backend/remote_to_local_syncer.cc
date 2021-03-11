@@ -147,8 +147,8 @@ void RemoteToLocalSyncer::ResolveRemoteChange(
 
     MoveToBackground(
         std::move(token),
-        base::Bind(&RemoteToLocalSyncer::HandleMissingRemoteMetadata,
-                   weak_ptr_factory_.GetWeakPtr()));
+        base::BindOnce(&RemoteToLocalSyncer::HandleMissingRemoteMetadata,
+                       weak_ptr_factory_.GetWeakPtr()));
     return;
   }
 
@@ -209,8 +209,8 @@ void RemoteToLocalSyncer::ResolveRemoteChange(
     if (!synced_details.missing()) {
       token->RecordLog("Remote file deletion.");
       MoveToBackground(std::move(token),
-                       base::Bind(&RemoteToLocalSyncer::HandleDeletion,
-                                  weak_ptr_factory_.GetWeakPtr()));
+                       base::BindOnce(&RemoteToLocalSyncer::HandleDeletion,
+                                      weak_ptr_factory_.GetWeakPtr()));
       return;
     }
 
@@ -253,8 +253,8 @@ void RemoteToLocalSyncer::ResolveRemoteChange(
     token->RecordLog("Detected file rename.");
 
     MoveToBackground(std::move(token),
-                     base::Bind(&RemoteToLocalSyncer::HandleFileMove,
-                                weak_ptr_factory_.GetWeakPtr()));
+                     base::BindOnce(&RemoteToLocalSyncer::HandleFileMove,
+                                    weak_ptr_factory_.GetWeakPtr()));
     return;
   }
   DCHECK_EQ(synced_details.title(), remote_details.title());
@@ -274,8 +274,8 @@ void RemoteToLocalSyncer::ResolveRemoteChange(
     token->RecordLog("Detected file reorganize.");
 
     MoveToBackground(std::move(token),
-                     base::Bind(&RemoteToLocalSyncer::HandleFileMove,
-                                weak_ptr_factory_.GetWeakPtr()));
+                     base::BindOnce(&RemoteToLocalSyncer::HandleFileMove,
+                                    weak_ptr_factory_.GetWeakPtr()));
     return;
   }
 
@@ -283,8 +283,8 @@ void RemoteToLocalSyncer::ResolveRemoteChange(
     if (synced_details.md5() != remote_details.md5()) {
       token->RecordLog("Detected file content update.");
       MoveToBackground(std::move(token),
-                       base::Bind(&RemoteToLocalSyncer::HandleContentUpdate,
-                                  weak_ptr_factory_.GetWeakPtr()));
+                       base::BindOnce(&RemoteToLocalSyncer::HandleContentUpdate,
+                                      weak_ptr_factory_.GetWeakPtr()));
       return;
     }
   } else {
@@ -292,15 +292,15 @@ void RemoteToLocalSyncer::ResolveRemoteChange(
     if (synced_details.missing()) {
       token->RecordLog("Detected folder update.");
       MoveToBackground(std::move(token),
-                       base::Bind(&RemoteToLocalSyncer::HandleFolderUpdate,
-                                  weak_ptr_factory_.GetWeakPtr()));
+                       base::BindOnce(&RemoteToLocalSyncer::HandleFolderUpdate,
+                                      weak_ptr_factory_.GetWeakPtr()));
       return;
     }
     if (dirty_tracker_->needs_folder_listing()) {
       token->RecordLog("Needs listing folder.");
       MoveToBackground(std::move(token),
-                       base::Bind(&RemoteToLocalSyncer::ListFolderContent,
-                                  weak_ptr_factory_.GetWeakPtr()));
+                       base::BindOnce(&RemoteToLocalSyncer::ListFolderContent,
+                                      weak_ptr_factory_.GetWeakPtr()));
       return;
     }
     SyncCompleted(std::move(token), SYNC_STATUS_OK);
@@ -504,9 +504,8 @@ void RemoteToLocalSyncer::HandleFolderUpdate(
   DCHECK(!remote_metadata_->details().missing());
   DCHECK_EQ(FILE_KIND_FOLDER, remote_metadata_->details().file_kind());
 
-  Prepare(base::Bind(&RemoteToLocalSyncer::DidPrepareForFolderUpdate,
-                     weak_ptr_factory_.GetWeakPtr(),
-                     base::Passed(&token)));
+  Prepare(base::BindOnce(&RemoteToLocalSyncer::DidPrepareForFolderUpdate,
+                         weak_ptr_factory_.GetWeakPtr(), std::move(token)));
 }
 
 void RemoteToLocalSyncer::DidPrepareForFolderUpdate(
@@ -561,9 +560,8 @@ void RemoteToLocalSyncer::HandleDeletion(std::unique_ptr<SyncTaskToken> token) {
   DCHECK(remote_metadata_->has_details());
   DCHECK(remote_metadata_->details().missing());
 
-  Prepare(base::Bind(&RemoteToLocalSyncer::DidPrepareForDeletion,
-                     weak_ptr_factory_.GetWeakPtr(),
-                     base::Passed(&token)));
+  Prepare(base::BindOnce(&RemoteToLocalSyncer::DidPrepareForDeletion,
+                         weak_ptr_factory_.GetWeakPtr(), std::move(token)));
 }
 
 void RemoteToLocalSyncer::HandleFileMove(std::unique_ptr<SyncTaskToken> token) {
@@ -576,9 +574,8 @@ void RemoteToLocalSyncer::HandleFileMove(std::unique_ptr<SyncTaskToken> token) {
   DCHECK(remote_metadata_->has_details());
   DCHECK(!remote_metadata_->details().missing());
 
-  Prepare(base::Bind(&RemoteToLocalSyncer::DidPrepareForDeletion,
-                     weak_ptr_factory_.GetWeakPtr(),
-                     base::Passed(&token)));
+  Prepare(base::BindOnce(&RemoteToLocalSyncer::DidPrepareForDeletion,
+                         weak_ptr_factory_.GetWeakPtr(), std::move(token)));
 }
 
 void RemoteToLocalSyncer::DidPrepareForDeletion(
@@ -630,8 +627,8 @@ void RemoteToLocalSyncer::HandleContentUpdate(
   DCHECK_NE(dirty_tracker_->synced_details().md5(),
             remote_metadata_->details().md5());
 
-  Prepare(base::Bind(&RemoteToLocalSyncer::DidPrepareForAddOrUpdateFile,
-                     weak_ptr_factory_.GetWeakPtr(), base::Passed(&token)));
+  Prepare(base::BindOnce(&RemoteToLocalSyncer::DidPrepareForAddOrUpdateFile,
+                         weak_ptr_factory_.GetWeakPtr(), std::move(token)));
 }
 
 void RemoteToLocalSyncer::ListFolderContent(
@@ -651,9 +648,9 @@ void RemoteToLocalSyncer::ListFolderContent(
   // TODO(tzik): Replace this call with ChildList version.
   drive_service()->GetFileListInDirectory(
       dirty_tracker_->file_id(),
-      base::Bind(&RemoteToLocalSyncer::DidListFolderContent,
-                 weak_ptr_factory_.GetWeakPtr(), base::Passed(&token),
-                 base::Passed(base::WrapUnique(new FileIDList))));
+      base::BindOnce(&RemoteToLocalSyncer::DidListFolderContent,
+                     weak_ptr_factory_.GetWeakPtr(), std::move(token),
+                     base::WrapUnique(new FileIDList)));
 }
 
 void RemoteToLocalSyncer::DidListFolderContent(
@@ -681,9 +678,9 @@ void RemoteToLocalSyncer::DidListFolderContent(
   if (!file_list->next_link().is_empty()) {
     drive_service()->GetRemainingFileList(
         file_list->next_link(),
-        base::Bind(&RemoteToLocalSyncer::DidListFolderContent,
-                   weak_ptr_factory_.GetWeakPtr(),
-                   base::Passed(&token), base::Passed(&children)));
+        base::BindOnce(&RemoteToLocalSyncer::DidListFolderContent,
+                       weak_ptr_factory_.GetWeakPtr(), std::move(token),
+                       std::move(children)));
     return;
   }
 
@@ -741,8 +738,8 @@ void RemoteToLocalSyncer::FinalizeSync(std::unique_ptr<SyncTaskToken> token,
   if (prepared_) {
     remote_change_processor()->FinalizeRemoteSync(
         url_, false /* clear_local_change */,
-        base::Bind(SyncTaskManager::NotifyTaskDone,
-                   base::Passed(&token), status));
+        base::BindOnce(SyncTaskManager::NotifyTaskDone, std::move(token),
+                       status));
     return;
   }
 
@@ -755,8 +752,8 @@ void RemoteToLocalSyncer::Prepare(SyncStatusCallback callback) {
   // parameters when this is converted to base::BindOnce.
   remote_change_processor()->PrepareForProcessRemoteChange(
       url_,
-      base::Bind(&RemoteToLocalSyncer::DidPrepare,
-                 weak_ptr_factory_.GetWeakPtr(), base::Passed(&callback)));
+      base::BindOnce(&RemoteToLocalSyncer::DidPrepare,
+                     weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
 }
 
 void RemoteToLocalSyncer::DidPrepare(SyncStatusCallback callback,
@@ -791,11 +788,10 @@ void RemoteToLocalSyncer::DownloadFile(std::unique_ptr<SyncTaskToken> token) {
   base::FilePath path = file.path();
   drive_service()->DownloadFile(
       path, remote_metadata_->file_id(),
-      base::Bind(&RemoteToLocalSyncer::DidDownloadFile,
-                 weak_ptr_factory_.GetWeakPtr(),
-                 base::Passed(&token), base::Passed(&file)),
-      google_apis::GetContentCallback(),
-      google_apis::ProgressCallback());
+      base::BindOnce(&RemoteToLocalSyncer::DidDownloadFile,
+                     weak_ptr_factory_.GetWeakPtr(), std::move(token),
+                     std::move(file)),
+      google_apis::GetContentCallback(), google_apis::ProgressCallback());
 }
 
 void RemoteToLocalSyncer::DidDownloadFile(std::unique_ptr<SyncTaskToken> token,
@@ -826,9 +822,9 @@ void RemoteToLocalSyncer::DidDownloadFile(std::unique_ptr<SyncTaskToken> token,
   remote_change_processor()->ApplyRemoteChange(
       FileChange(FileChange::FILE_CHANGE_ADD_OR_UPDATE, SYNC_FILE_TYPE_FILE),
       path, url_,
-      base::Bind(&RemoteToLocalSyncer::DidApplyDownload,
-                 weak_ptr_factory_.GetWeakPtr(),
-                 base::Passed(&token), base::Passed(&file)));
+      base::BindOnce(&RemoteToLocalSyncer::DidApplyDownload,
+                     weak_ptr_factory_.GetWeakPtr(), std::move(token),
+                     std::move(file)));
 }
 
 void RemoteToLocalSyncer::DidApplyDownload(std::unique_ptr<SyncTaskToken> token,
@@ -859,9 +855,8 @@ RemoteChangeProcessor* RemoteToLocalSyncer::remote_change_processor() {
 
 SyncStatusCallback RemoteToLocalSyncer::SyncCompletedCallback(
     std::unique_ptr<SyncTaskToken> token) {
-  return base::Bind(&RemoteToLocalSyncer::SyncCompleted,
-                    weak_ptr_factory_.GetWeakPtr(),
-                    base::Passed(&token));
+  return base::BindOnce(&RemoteToLocalSyncer::SyncCompleted,
+                        weak_ptr_factory_.GetWeakPtr(), std::move(token));
 }
 
 }  // namespace drive_backend

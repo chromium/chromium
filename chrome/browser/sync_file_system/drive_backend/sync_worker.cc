@@ -37,7 +37,7 @@ namespace drive_backend {
 
 namespace {
 
-void InvokeIdleCallback(const base::Closure& idle_callback,
+void InvokeIdleCallback(base::RepeatingClosure idle_callback,
                         SyncStatusCallback callback) {
   idle_callback.Run();
   std::move(callback).Run(SYNC_STATUS_OK);
@@ -106,8 +106,8 @@ void SyncWorker::EnableOrigin(const GURL& origin, SyncStatusCallback callback) {
 
   task_manager_->ScheduleTask(
       FROM_HERE,
-      base::Bind(&SyncWorker::DoEnableApp, weak_ptr_factory_.GetWeakPtr(),
-                 origin.host()),
+      base::BindOnce(&SyncWorker::DoEnableApp, weak_ptr_factory_.GetWeakPtr(),
+                     origin.host()),
       SyncTaskManager::PRIORITY_HIGH, std::move(callback));
 }
 
@@ -117,8 +117,8 @@ void SyncWorker::DisableOrigin(const GURL& origin,
 
   task_manager_->ScheduleTask(
       FROM_HERE,
-      base::Bind(&SyncWorker::DoDisableApp, weak_ptr_factory_.GetWeakPtr(),
-                 origin.host()),
+      base::BindOnce(&SyncWorker::DoDisableApp, weak_ptr_factory_.GetWeakPtr(),
+                     origin.host()),
       SyncTaskManager::PRIORITY_HIGH, std::move(callback));
 }
 
@@ -259,9 +259,8 @@ void SyncWorker::MaybeScheduleNextTask() {
     return;
 
   if (!call_on_idle_callback_.is_null()) {
-    base::Closure callback = call_on_idle_callback_;
-    call_on_idle_callback_.Reset();
-    callback.Run();
+    // Consumes the callback.
+    std::move(call_on_idle_callback_).Run();
   }
 }
 
@@ -356,8 +355,8 @@ void SyncWorker::PostInitializeTask() {
   task_manager_->ScheduleSyncTask(
       FROM_HERE, std::unique_ptr<SyncTask>(initializer),
       SyncTaskManager::PRIORITY_HIGH,
-      base::Bind(&SyncWorker::DidInitialize, weak_ptr_factory_.GetWeakPtr(),
-                 initializer));
+      base::BindOnce(&SyncWorker::DidInitialize, weak_ptr_factory_.GetWeakPtr(),
+                     initializer));
 }
 
 void SyncWorker::DidInitialize(SyncEngineInitializer* initializer,
@@ -395,21 +394,21 @@ void SyncWorker::UpdateRegisteredApps() {
   metadata_db->GetRegisteredAppIDs(app_ids.get());
 
   AppStatusMap* app_status = new AppStatusMap;
-  base::Closure callback =
-      base::Bind(&SyncWorker::DidQueryAppStatus,
-                 weak_ptr_factory_.GetWeakPtr(),
-                 base::Owned(app_status));
+  base::RepeatingClosure callback = base::BindRepeating(
+      &SyncWorker::DidQueryAppStatus, weak_ptr_factory_.GetWeakPtr(),
+      base::Owned(app_status));
 
   context_->GetUITaskRunner()->PostTask(
       FROM_HERE,
-      base::BindOnce(&SyncWorker::QueryAppStatusOnUIThread, extension_service_,
-                     // This is protected by checking the extension_service_
-                     // weak pointer, since the underlying ExtensionService
-                     // also relies on the ExtensionRegistry.
-                     base::Unretained(extension_registry_),
-                     base::Owned(app_ids.release()), app_status,
-                     RelayCallbackToTaskRunner(context_->GetWorkerTaskRunner(),
-                                               FROM_HERE, callback)));
+      base::BindOnce(
+          &SyncWorker::QueryAppStatusOnUIThread, extension_service_,
+          // This is protected by checking the extension_service_
+          // weak pointer, since the underlying ExtensionService
+          // also relies on the ExtensionRegistry.
+          base::Unretained(extension_registry_), base::Owned(app_ids.release()),
+          app_status,
+          RelayCallbackToTaskRunner(context_->GetWorkerTaskRunner(), FROM_HERE,
+                                    std::move(callback))));
 }
 
 void SyncWorker::QueryAppStatusOnUIThread(
@@ -418,11 +417,11 @@ void SyncWorker::QueryAppStatusOnUIThread(
     extensions::ExtensionRegistry* extension_registry,
     const std::vector<std::string>* app_ids,
     AppStatusMap* status,
-    const base::Closure& callback) {
+    base::OnceClosure callback) {
   extensions::ExtensionServiceInterface* extension_service =
       extension_service_ptr.get();
   if (!extension_service) {
-    callback.Run();
+    std::move(callback).Run();
     return;
   }
 
@@ -436,7 +435,7 @@ void SyncWorker::QueryAppStatusOnUIThread(
       (*status)[app_id] = APP_STATUS_ENABLED;
   }
 
-  callback.Run();
+  std::move(callback).Run();
 }
 
 void SyncWorker::DidQueryAppStatus(const AppStatusMap* app_status) {
@@ -538,8 +537,8 @@ void SyncWorker::DidApplyLocalChange(LocalToRemoteSyncer* syncer,
         FROM_HERE,
         std::unique_ptr<SyncTask>(new ListChangesTask(context_.get())),
         SyncTaskManager::PRIORITY_HIGH,
-        base::Bind(&SyncWorker::DidFetchChanges,
-                   weak_ptr_factory_.GetWeakPtr()));
+        base::BindOnce(&SyncWorker::DidFetchChanges,
+                       weak_ptr_factory_.GetWeakPtr()));
     should_check_remote_change_ = false;
     listing_remote_changes_ = true;
     time_to_check_changes_ =
@@ -573,8 +572,8 @@ bool SyncWorker::MaybeStartFetchChanges() {
       return task_manager_->ScheduleSyncTaskIfIdle(
           FROM_HERE,
           std::unique_ptr<SyncTask>(new ConflictResolver(context_.get())),
-          base::Bind(&SyncWorker::DidResolveConflict,
-                     weak_ptr_factory_.GetWeakPtr()));
+          base::BindOnce(&SyncWorker::DidResolveConflict,
+                         weak_ptr_factory_.GetWeakPtr()));
     }
     return false;
   }
@@ -582,8 +581,8 @@ bool SyncWorker::MaybeStartFetchChanges() {
   if (task_manager_->ScheduleSyncTaskIfIdle(
           FROM_HERE,
           std::unique_ptr<SyncTask>(new ListChangesTask(context_.get())),
-          base::Bind(&SyncWorker::DidFetchChanges,
-                     weak_ptr_factory_.GetWeakPtr()))) {
+          base::BindOnce(&SyncWorker::DidFetchChanges,
+                         weak_ptr_factory_.GetWeakPtr()))) {
     should_check_remote_change_ = false;
     listing_remote_changes_ = true;
     time_to_check_changes_ =
@@ -670,15 +669,14 @@ void SyncWorker::UpdateServiceState(RemoteServiceState state,
     observer.UpdateServiceState(GetCurrentState(), description);
 }
 
-void SyncWorker::CallOnIdleForTesting(const base::Closure& callback) {
+void SyncWorker::CallOnIdleForTesting(const base::RepeatingClosure& callback) {
   if (task_manager_->ScheduleTaskIfIdle(
-          FROM_HERE, base::Bind(&InvokeIdleCallback, callback),
+          FROM_HERE, base::BindOnce(&InvokeIdleCallback, callback),
           base::DoNothing()))
     return;
-  call_on_idle_callback_ = base::Bind(
-      &SyncWorker::CallOnIdleForTesting,
-      weak_ptr_factory_.GetWeakPtr(),
-      callback);
+  call_on_idle_callback_ =
+      base::BindOnce(&SyncWorker::CallOnIdleForTesting,
+                     weak_ptr_factory_.GetWeakPtr(), std::move(callback));
 }
 
 drive::DriveServiceInterface* SyncWorker::GetDriveService() {

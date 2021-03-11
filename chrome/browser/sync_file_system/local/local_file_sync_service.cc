@@ -46,7 +46,8 @@ void PrepareForProcessRemoteChangeCallbackAdapter(
                           sync_file_info.changes);
 }
 
-void InvokeCallbackOnNthInvocation(int* count, const base::Closure& callback) {
+void InvokeCallbackOnNthInvocation(int* count,
+                                   base::RepeatingClosure callback) {
   --*count;
   if (*count <= 0)
     callback.Run();
@@ -198,16 +199,16 @@ void LocalFileSyncService::HasPendingLocalChanges(
 }
 
 void LocalFileSyncService::PromoteDemotedChanges(
-    const base::Closure& callback) {
+    base::RepeatingClosure callback) {
   if (origin_to_contexts_.empty()) {
     callback.Run();
     return;
   }
 
-  base::Closure completion_callback =
-      base::Bind(&InvokeCallbackOnNthInvocation,
-                 base::Owned(new int(origin_to_contexts_.size() + 1)),
-                 callback);
+  base::RepeatingClosure completion_callback =
+      base::BindRepeating(&InvokeCallbackOnNthInvocation,
+                          base::Owned(new int(origin_to_contexts_.size() + 1)),
+                          std::move(callback));
   for (auto iter = origin_to_contexts_.begin();
        iter != origin_to_contexts_.end(); ++iter)
     sync_context_->PromoteDemotedChanges(iter->first, iter->second,

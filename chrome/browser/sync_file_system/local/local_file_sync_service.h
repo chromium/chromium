@@ -125,7 +125,7 @@ class LocalFileSyncService
   void HasPendingLocalChanges(const storage::FileSystemURL& url,
                               HasPendingLocalChangeCallback callback);
 
-  void PromoteDemotedChanges(const base::Closure& callback);
+  void PromoteDemotedChanges(base::RepeatingClosure callback);
 
   // Returns the metadata of a remote file pointed by |url|.
   virtual void GetLocalFileMetadata(const storage::FileSystemURL& url,

@@ -100,8 +100,8 @@ class LocalToRemoteSyncerTest : public testing::Test {
     sync_task_manager_->ScheduleSyncTask(
         FROM_HERE, std::unique_ptr<SyncTask>(initializer),
         SyncTaskManager::PRIORITY_MED,
-        base::Bind(&LocalToRemoteSyncerTest::DidInitializeMetadataDatabase,
-                   base::Unretained(this), initializer, &status));
+        base::BindOnce(&LocalToRemoteSyncerTest::DidInitializeMetadataDatabase,
+                       base::Unretained(this), initializer, &status));
 
     base::RunLoop().RunUntilIdle();
     EXPECT_EQ(SYNC_STATUS_OK, status);

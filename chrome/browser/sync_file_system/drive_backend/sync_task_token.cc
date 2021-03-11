@@ -65,7 +65,7 @@ SyncTaskToken::~SyncTaskToken() {}
 // static
 SyncStatusCallback SyncTaskToken::WrapToCallback(
     std::unique_ptr<SyncTaskToken> token) {
-  return base::Bind(&SyncTaskManager::NotifyTaskDone, base::Passed(&token));
+  return base::BindOnce(&SyncTaskManager::NotifyTaskDone, std::move(token));
 }
 
 void SyncTaskToken::set_task_blocker(

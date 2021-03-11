@@ -186,8 +186,8 @@ void LocalToRemoteSyncer::RunPreflight(std::unique_ptr<SyncTaskToken> token) {
       token->RecordLog("Detected missing parent folder.");
 
       retry_on_success_ = true;
-      MoveToBackground(base::Bind(&LocalToRemoteSyncer::CreateRemoteFolder,
-                                  weak_ptr_factory_.GetWeakPtr()),
+      MoveToBackground(base::BindOnce(&LocalToRemoteSyncer::CreateRemoteFolder,
+                                      weak_ptr_factory_.GetWeakPtr()),
                        std::move(token));
       return;
     }
@@ -201,8 +201,8 @@ void LocalToRemoteSyncer::RunPreflight(std::unique_ptr<SyncTaskToken> token) {
     token->RecordLog("Detected non-folder file in its path.");
 
     retry_on_success_ = true;
-    MoveToBackground(base::Bind(&LocalToRemoteSyncer::DeleteRemoteFile,
-                                weak_ptr_factory_.GetWeakPtr()),
+    MoveToBackground(base::BindOnce(&LocalToRemoteSyncer::DeleteRemoteFile,
+                                    weak_ptr_factory_.GetWeakPtr()),
                      std::move(token));
     return;
   }
@@ -240,15 +240,15 @@ void LocalToRemoteSyncer::RunPreflight(std::unique_ptr<SyncTaskToken> token) {
   DCHECK(target_path_ == active_ancestor_path.Append(missing_components[0]));
   if (local_change_.file_type() == SYNC_FILE_TYPE_FILE) {
     token->RecordLog("Detected a new file.");
-    MoveToBackground(base::Bind(&LocalToRemoteSyncer::UploadNewFile,
-                                weak_ptr_factory_.GetWeakPtr()),
+    MoveToBackground(base::BindOnce(&LocalToRemoteSyncer::UploadNewFile,
+                                    weak_ptr_factory_.GetWeakPtr()),
                      std::move(token));
     return;
   }
 
   token->RecordLog("Detected a new folder.");
-  MoveToBackground(base::Bind(&LocalToRemoteSyncer::CreateRemoteFolder,
-                              weak_ptr_factory_.GetWeakPtr()),
+  MoveToBackground(base::BindOnce(&LocalToRemoteSyncer::CreateRemoteFolder,
+                                  weak_ptr_factory_.GetWeakPtr()),
                    std::move(token));
 }
 
@@ -350,8 +350,8 @@ void LocalToRemoteSyncer::HandleConflict(std::unique_ptr<SyncTaskToken> token) {
   if (local_change_.IsFile()) {
     // Upload the conflicting file as a new file and let ConflictResolver
     // resolve it.
-    MoveToBackground(base::Bind(&LocalToRemoteSyncer::UploadNewFile,
-                                weak_ptr_factory_.GetWeakPtr()),
+    MoveToBackground(base::BindOnce(&LocalToRemoteSyncer::UploadNewFile,
+                                    weak_ptr_factory_.GetWeakPtr()),
                      std::move(token));
     return;
   }
@@ -362,8 +362,8 @@ void LocalToRemoteSyncer::HandleConflict(std::unique_ptr<SyncTaskToken> token) {
   if (!metadata_database()->FindFileByFileID(
           remote_file_tracker_->file_id(), &remote_file_metadata)) {
     NOTREACHED();
-    MoveToBackground(base::Bind(&LocalToRemoteSyncer::CreateRemoteFolder,
-                                weak_ptr_factory_.GetWeakPtr()),
+    MoveToBackground(base::BindOnce(&LocalToRemoteSyncer::CreateRemoteFolder,
+                                    weak_ptr_factory_.GetWeakPtr()),
                      std::move(token));
     return;
   }
@@ -376,14 +376,14 @@ void LocalToRemoteSyncer::HandleConflict(std::unique_ptr<SyncTaskToken> token) {
       HasFileAsParent(remote_details,
                       remote_parent_folder_tracker_->file_id())) {
     MoveToBackground(
-        base::Bind(&LocalToRemoteSyncer::UpdateTrackerForReusedFolder,
-                   weak_ptr_factory_.GetWeakPtr(), remote_details),
+        base::BindOnce(&LocalToRemoteSyncer::UpdateTrackerForReusedFolder,
+                       weak_ptr_factory_.GetWeakPtr(), remote_details),
         std::move(token));
     return;
   }
 
-  MoveToBackground(base::Bind(&LocalToRemoteSyncer::CreateRemoteFolder,
-                              weak_ptr_factory_.GetWeakPtr()),
+  MoveToBackground(base::BindOnce(&LocalToRemoteSyncer::CreateRemoteFolder,
+                                  weak_ptr_factory_.GetWeakPtr()),
                    std::move(token));
 }
 
@@ -404,8 +404,8 @@ void LocalToRemoteSyncer::HandleExistingRemoteFile(
 
   if (local_is_missing_) {
     // Local file deletion for existing remote file.
-    MoveToBackground(base::Bind(&LocalToRemoteSyncer::DeleteRemoteFile,
-                                weak_ptr_factory_.GetWeakPtr()),
+    MoveToBackground(base::BindOnce(&LocalToRemoteSyncer::DeleteRemoteFile,
+                                    weak_ptr_factory_.GetWeakPtr()),
                      std::move(token));
     return;
   }
@@ -419,8 +419,8 @@ void LocalToRemoteSyncer::HandleExistingRemoteFile(
   if (local_change_.IsFile()) {
     if (synced_details.file_kind() == FILE_KIND_FILE) {
       // Non-conflicting local file update to existing remote regular file.
-      MoveToBackground(base::Bind(&LocalToRemoteSyncer::UploadExistingFile,
-                                  weak_ptr_factory_.GetWeakPtr()),
+      MoveToBackground(base::BindOnce(&LocalToRemoteSyncer::UploadExistingFile,
+                                      weak_ptr_factory_.GetWeakPtr()),
                        std::move(token));
       return;
     }
@@ -430,8 +430,8 @@ void LocalToRemoteSyncer::HandleExistingRemoteFile(
     // Assuming this case as local folder deletion + local file creation, delete
     // the remote folder and upload the file.
     retry_on_success_ = true;
-    MoveToBackground(base::Bind(&LocalToRemoteSyncer::DeleteRemoteFile,
-                                weak_ptr_factory_.GetWeakPtr()),
+    MoveToBackground(base::BindOnce(&LocalToRemoteSyncer::DeleteRemoteFile,
+                                    weak_ptr_factory_.GetWeakPtr()),
                      std::move(token));
     return;
   }
@@ -442,8 +442,8 @@ void LocalToRemoteSyncer::HandleExistingRemoteFile(
     // Assuming this case as local file deletion + local folder creation, delete
     // the remote file and create a remote folder.
     retry_on_success_ = true;
-    MoveToBackground(base::Bind(&LocalToRemoteSyncer::DeleteRemoteFile,
-                                weak_ptr_factory_.GetWeakPtr()),
+    MoveToBackground(base::BindOnce(&LocalToRemoteSyncer::DeleteRemoteFile,
+                                    weak_ptr_factory_.GetWeakPtr()),
                      std::move(token));
     return;
   }
@@ -474,8 +474,8 @@ void LocalToRemoteSyncer::DeleteRemoteFile(
   drive_service()->DeleteResource(
       remote_file_tracker_->file_id(),
       remote_file_tracker_->synced_details().etag(),
-      base::Bind(&LocalToRemoteSyncer::DidDeleteRemoteFile,
-                 weak_ptr_factory_.GetWeakPtr(), base::Passed(&token)));
+      base::BindOnce(&LocalToRemoteSyncer::DidDeleteRemoteFile,
+                     weak_ptr_factory_.GetWeakPtr(), std::move(token)));
 }
 
 void LocalToRemoteSyncer::DidDeleteRemoteFile(
@@ -689,10 +689,9 @@ void LocalToRemoteSyncer::CreateRemoteFolder(
       drive_service(), metadata_database(),
       remote_parent_folder_tracker_->file_id(),
       title.AsUTF8Unsafe()));
-  folder_creator_->Run(base::Bind(
-      &LocalToRemoteSyncer::DidCreateRemoteFolder,
-      weak_ptr_factory_.GetWeakPtr(),
-      base::Passed(&token)));
+  folder_creator_->Run(
+      base::BindOnce(&LocalToRemoteSyncer::DidCreateRemoteFolder,
+                     weak_ptr_factory_.GetWeakPtr(), std::move(token)));
 }
 
 void LocalToRemoteSyncer::DidCreateRemoteFolder(
@@ -723,8 +722,9 @@ void LocalToRemoteSyncer::DidCreateRemoteFolder(
       // active folder.
       drive_service()->RemoveResourceFromDirectory(
           remote_parent_folder_tracker_->file_id(), file_id,
-          base::Bind(&LocalToRemoteSyncer::DidDetachResourceForCreationConflict,
-                     weak_ptr_factory_.GetWeakPtr(), base::Passed(&token)));
+          base::BindOnce(
+              &LocalToRemoteSyncer::DidDetachResourceForCreationConflict,
+              weak_ptr_factory_.GetWeakPtr(), std::move(token)));
       return;
   }
 

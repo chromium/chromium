@@ -129,7 +129,7 @@ class SyncWorker : public SyncWorkerInterface,
       extensions::ExtensionRegistry* extension_registry,
       const std::vector<std::string>* app_ids,
       AppStatusMap* status,
-      const base::Closure& callback);
+      base::OnceClosure callback);
   void DidQueryAppStatus(const AppStatusMap* app_status);
   void DidProcessRemoteChange(RemoteToLocalSyncer* syncer,
                               SyncFileCallback callback,
@@ -148,7 +148,7 @@ class SyncWorker : public SyncWorkerInterface,
   void UpdateServiceState(RemoteServiceState state,
                           const std::string& description);
 
-  void CallOnIdleForTesting(const base::Closure& callback);
+  void CallOnIdleForTesting(const base::RepeatingClosure& callback);
 
   drive::DriveServiceInterface* GetDriveService();
   drive::DriveUploaderInterface* GetDriveUploader();
@@ -167,7 +167,7 @@ class SyncWorker : public SyncWorkerInterface,
   base::TimeTicks time_to_check_changes_;
 
   bool sync_enabled_;
-  base::Closure call_on_idle_callback_;
+  base::OnceClosure call_on_idle_callback_;
 
   std::unique_ptr<SyncTaskManager> task_manager_;
 

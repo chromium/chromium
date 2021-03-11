@@ -46,16 +46,16 @@ TEST(DriveBackendCallbackHelperTest, BasicTest) {
   base::test::SingleThreadTaskEnvironment task_environment;
 
   bool called = false;
-  RelayCallbackToCurrentThread(
-      FROM_HERE,
-      base::Bind(&SimpleCallback, &called)).Run(0);
+  RelayCallbackToCurrentThread(FROM_HERE,
+                               base::BindOnce(&SimpleCallback, &called))
+      .Run(0);
   EXPECT_FALSE(called);
   base::RunLoop().RunUntilIdle();
   EXPECT_TRUE(called);
 
   called = false;
   RelayCallbackToCurrentThread(FROM_HERE,
-                               base::Bind(&CallbackWithPassed, &called))
+                               base::BindOnce(&CallbackWithPassed, &called))
       .Run(std::unique_ptr<int>(new int));
   EXPECT_FALSE(called);
   base::RunLoop().RunUntilIdle();
@@ -75,10 +75,11 @@ TEST(DriveBackendCallbackHelperTest, RunOnOtherThreadTest) {
   bool called = false;
   base::RunLoop run_loop;
   worker_task_runner->PostTask(
-      FROM_HERE, RelayCallbackToTaskRunner(
-                     ui_task_runner.get(), FROM_HERE,
-                     base::Bind(&VerifyCalledOnTaskRunner,
-                                base::RetainedRef(ui_task_runner), &called)));
+      FROM_HERE,
+      RelayCallbackToTaskRunner(
+          ui_task_runner.get(), FROM_HERE,
+          base::BindOnce(&VerifyCalledOnTaskRunner,
+                         base::RetainedRef(ui_task_runner), &called)));
   worker_task_runner->PostTask(
       FROM_HERE,
       RelayCallbackToTaskRunner(
@@ -92,9 +93,8 @@ TEST(DriveBackendCallbackHelperTest, RunOnOtherThreadTest) {
 
 TEST(DriveBackendCallbackHelperTest, PassNullFunctionTest) {
   base::test::SingleThreadTaskEnvironment task_environment;
-  base::Closure closure = RelayCallbackToCurrentThread(
-      FROM_HERE,
-      base::Closure());
+  base::OnceClosure closure =
+      RelayCallbackToCurrentThread(FROM_HERE, base::OnceClosure());
   EXPECT_TRUE(closure.is_null());
 }
 
