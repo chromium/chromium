@@ -2115,6 +2115,28 @@ IN_PROC_BROWSER_TEST_F(DeviceLocalAccountTest, TermsOfServiceWithLocaleSwitch) {
                 .id());
 }
 
+IN_PROC_BROWSER_TEST_F(DeviceLocalAccountTest, PublicSessionWithLocaleSwitch) {
+  UploadAndInstallDeviceLocalAccountPolicy();
+  AddPublicSessionToDevicePolicy(kAccountId1);
+
+  WaitForPolicy();
+  ExpandPublicSessionPod(false);
+
+  // Select a different locale.
+  EXPECT_NE(kPublicSessionLocale, g_browser_process->GetApplicationLocale());
+  ash::LoginScreenTestApi::SetPublicSessionLocale(kPublicSessionLocale);
+
+  // Submit the locale change.
+  ash::LoginScreenTestApi::ClickPublicExpandedSubmitButton();
+
+  WaitForSessionStart();
+
+  // Verify that the locale.
+  EXPECT_EQ(kPublicSessionLocale, g_browser_process->GetApplicationLocale());
+  EXPECT_EQ(l10n_util::GetLanguage(kPublicSessionLocale),
+            icu::Locale::getDefault().getLanguage());
+}
+
 IN_PROC_BROWSER_TEST_F(DeviceLocalAccountTest, PolicyForExtensions) {
   // Set up a test update server for the Show Managed Storage app.
   ASSERT_TRUE(embedded_test_server()->InitializeAndListen());
