@@ -514,6 +514,9 @@ void PasswordSaveUpdateWithAccountStoreView::DestinationChanged() {
   controller_.OnToggleAccountStore(is_account_store_selected);
   // Saving in account and local stores have different header images.
   UpdateHeaderImage();
+  // Saving in account and local stores have action button text for non-opted-in
+  // users (Next vs. Save).
+  UpdateBubbleUIElements();
   // If the user explicitly switched to "save on this device only",
   // record this with the IPH tracker (so it can decide not to show the
   // IPH again). It may be null in tests, so handle that case.
