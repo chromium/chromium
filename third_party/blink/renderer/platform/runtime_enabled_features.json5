@@ -1051,7 +1051,7 @@
     },
     {
       name: "IgnoreCrossOriginWindowWhenNamedAccessOnWindow",
-      status: "experimental",
+      status: "stable",
     },
     {
       name: "ImplicitRootScroller",

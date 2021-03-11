@@ -1036,11 +1036,14 @@ IN_PROC_BROWSER_TEST_P(
   ASSERT_TRUE(ExecJs(node3, "window.name = 'node3'"));
   ASSERT_TRUE(ExecJs(node4, "window.name = 'node4'"));
 
+  ASSERT_TRUE(ExecJs(node1, "window.node2 = window[0]"));
+  ASSERT_TRUE(ExecJs(node1, "window.node3 = window[0][0]"));
+  ASSERT_TRUE(ExecJs(node1, "window.node4 = window[1]"));
+
   // Test sanity check.
-  EXPECT_EQ(true, EvalJs(node1, "!!top.node2.node3"));
-  EXPECT_EQ(true, EvalJs(node2, "!!top.node2.node3"));
-  EXPECT_EQ(true, EvalJs(node3, "!!top.node2.node3"));
-  EXPECT_EQ(true, EvalJs(node4, "!!top.node2.node3"));
+  EXPECT_EQ(true, EvalJs(node1, "!!window.node2"));
+  EXPECT_EQ(true, EvalJs(node1, "!!window.node3"));
+  EXPECT_EQ(true, EvalJs(node1, "!!window.node4"));
 
   // Simulate a long-running unload handler in |node3|.
   node3->DoNotDeleteForTesting();
@@ -1057,7 +1060,7 @@ IN_PROC_BROWSER_TEST_P(
 
           var can_node3_be_found = false;
           try {
-            can_node3_be_found = !!top.node2.node3;
+            can_node3_be_found = !!top[0][0];  // top.node2.node3
           } catch(e) {
             can_node3_be_found = false;
           }
@@ -1078,7 +1081,7 @@ IN_PROC_BROWSER_TEST_P(
       var node2_frame = document.getElementsByTagName('iframe')[0];
       node2_frame.onload = function() {
           console.log('node2_frame.onload ...');
-          node4.postMessage('try to find node3', '*');
+          window.node4.postMessage('try to find node3', '*');
       };
       node2_frame.src = $1;
   )";
@@ -1127,11 +1130,14 @@ IN_PROC_BROWSER_TEST_P(
   ASSERT_TRUE(ExecJs(node3, "window.name = 'node3'"));
   ASSERT_TRUE(ExecJs(node4, "window.name = 'node4'"));
 
+  ASSERT_TRUE(ExecJs(node1, "window.node2 = window[0]"));
+  ASSERT_TRUE(ExecJs(node1, "window.node3 = window[0][0]"));
+  ASSERT_TRUE(ExecJs(node1, "window.node4 = window[1]"));
+
   // Test sanity check.
-  EXPECT_EQ(true, EvalJs(node1, "!!top.node2.node3"));
-  EXPECT_EQ(true, EvalJs(node2, "!!top.node2.node3"));
-  EXPECT_EQ(true, EvalJs(node3, "!!top.node2.node3"));
-  EXPECT_EQ(true, EvalJs(node4, "!!top.node2.node3"));
+  EXPECT_EQ(true, EvalJs(node1, "!!window.node2"));
+  EXPECT_EQ(true, EvalJs(node1, "!!window.node3"));
+  EXPECT_EQ(true, EvalJs(node1, "!!window.node4"));
 
   // Add a long-running unload handler to |node3|.
   node3->DoNotDeleteForTesting();
@@ -1148,7 +1154,7 @@ IN_PROC_BROWSER_TEST_P(
 
           var can_node3_be_found = false;
           try {
-            can_node3_be_found = !!top.node2.node3;
+            can_node3_be_found = !!top[0][0];  // top.node2.node3
           } catch(e) {
             can_node3_be_found = false;
           }
@@ -1169,7 +1175,7 @@ IN_PROC_BROWSER_TEST_P(
       var node2_frame = document.getElementsByTagName('iframe')[0];
       node2_frame.onload = function() {
           console.log('node2_frame.onload ...');
-          node4.postMessage('try to find node3', '*');
+          window.node4.postMessage('try to find node3', '*');
       };
       node2_frame.src = $1;
   )";
