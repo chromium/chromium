@@ -4,9 +4,7 @@
 
 package org.chromium.chrome.browser.subresource_filter;
 
-import android.support.test.InstrumentationRegistry;
-
-import androidx.test.filters.MediumTest;
+import androidx.test.filters.LargeTest;
 
 import org.junit.After;
 import org.junit.Assert;
@@ -18,7 +16,6 @@ import org.junit.runner.RunWith;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
-import org.chromium.base.test.util.DisabledTest;
 import org.chromium.chrome.browser.MockSafeBrowsingApiHandler;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.infobar.InfoBarContainer;
@@ -35,17 +32,25 @@ import org.chromium.components.safe_browsing.SafeBrowsingApiBridge;
 import org.chromium.components.subresource_filter.AdsBlockedInfoBar;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.net.test.EmbeddedTestServer;
+import org.chromium.net.test.EmbeddedTestServerRule;
 
 import java.util.List;
 
 /**
  * End to end tests of SubresourceFilter ad filtering on Android.
+ *
+ * Since these tests take a while to set up (averaging 12 seconds between activity startup and
+ * ruleset publishing), prefer to limit the number of test cases where possible.
  */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 public final class SubresourceFilterTest {
     @Rule
     public ChromeTabbedActivityTestRule mActivityTestRule = new ChromeTabbedActivityTestRule();
+
+    @Rule
+    public EmbeddedTestServerRule mTestServerRule = new EmbeddedTestServerRule();
+
     private EmbeddedTestServer mTestServer;
 
     private static final String PAGE_WITH_JPG =
@@ -60,14 +65,18 @@ public final class SubresourceFilterTest {
     private void createAndPublishRulesetDisallowingSuffix(String suffix) {
         TestRulesetPublisher publisher = new TestRulesetPublisher();
         TestThreadUtils.runOnUiThreadBlocking(
-                (Runnable) ()
-                        -> publisher.createAndPublishRulesetDisallowingSuffixForTesting(suffix));
-        CriteriaHelper.pollUiThread(() -> publisher.isPublished());
+                () -> publisher.createAndPublishRulesetDisallowingSuffixForTesting(suffix));
+
+        // This takes an average of 6 seconds but can range anywhere from 2-10 seconds on occasion.
+        // Since we are testing startup events, ensuring that they fire, this delay is unavoidable.
+        // Increase the timeout to 15 seconds to remove flakiness.
+        CriteriaHelper.pollUiThread(
+                publisher::isPublished, 15000L, CriteriaHelper.DEFAULT_POLLING_INTERVAL);
     }
 
     @Before
     public void setUp() throws Exception {
-        mTestServer = EmbeddedTestServer.createAndStartServer(InstrumentationRegistry.getContext());
+        mTestServer = mTestServerRule.getServer();
 
         // Create a new temporary instance to ensure the Class is loaded. Otherwise we will get a
         // ClassNotFoundException when trying to instantiate during startup.
@@ -81,13 +90,11 @@ public final class SubresourceFilterTest {
 
     @After
     public void tearDown() {
-        mTestServer.stopAndDestroyServer();
         MockSafeBrowsingApiHandler.clearMockResponses();
     }
 
     @Test
-    @MediumTest
-    @DisabledTest(message = "crbug.com/899903")
+    @LargeTest
     public void resourceNotFiltered() throws Exception {
         String url = mTestServer.getURL(PAGE_WITH_JPG);
         mActivityTestRule.loadUrl(url);
@@ -101,8 +108,7 @@ public final class SubresourceFilterTest {
     }
 
     @Test
-    @MediumTest
-    @DisabledTest(message = "crbug.com/899903")
+    @LargeTest
     public void resourceFilteredClose() throws Exception {
         String url = mTestServer.getURL(PAGE_WITH_JPG);
         MockSafeBrowsingApiHandler.addMockResponse(url, METADATA_FOR_ENFORCEMENT);
@@ -129,8 +135,7 @@ public final class SubresourceFilterTest {
     }
 
     @Test
-    @MediumTest
-    @DisabledTest(message = "crbug.com/899903")
+    @LargeTest
     public void resourceFilteredClickLearnMore() throws Exception {
         String url = mTestServer.getURL(PAGE_WITH_JPG);
         MockSafeBrowsingApiHandler.addMockResponse(url, METADATA_FOR_ENFORCEMENT);
@@ -174,8 +179,7 @@ public final class SubresourceFilterTest {
     }
 
     @Test
-    @MediumTest
-    @DisabledTest(message = "crbug.com/899903")
+    @LargeTest
     public void resourceFilteredReload() throws Exception {
         String url = mTestServer.getURL(PAGE_WITH_JPG);
         MockSafeBrowsingApiHandler.addMockResponse(url, METADATA_FOR_ENFORCEMENT);
@@ -207,8 +211,7 @@ public final class SubresourceFilterTest {
     }
 
     @Test
-    @DisabledTest(message = "crbug.com/899903")
-    @MediumTest
+    @LargeTest
     public void resourceNotFilteredWithWarning() throws Exception {
         String url = mTestServer.getURL(PAGE_WITH_JPG);
         MockSafeBrowsingApiHandler.addMockResponse(url, METADATA_FOR_WARNING);

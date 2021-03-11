@@ -10,6 +10,7 @@
 #include "base/android/scoped_java_ref.h"
 #include "base/bind.h"
 #include "base/strings/string_number_conversions.h"
+#include "chrome/browser/after_startup_task_utils.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/subresource_filter/jni_headers/TestRulesetPublisher_jni.h"
 #include "components/subresource_filter/content/browser/ruleset_service.h"
@@ -34,6 +35,9 @@ void JNI_TestRulesetPublisher_CreateAndPublishRulesetDisallowingSuffixForTesting
     JNIEnv* env,
     const base::android::JavaParamRef<jobject>& publisher_param,
     const base::android::JavaParamRef<jstring>& suffix) {
+  // Remove the random delay in posting after startup tasks to reduce test time.
+  AfterStartupTaskUtils::DisableScheduleTaskDelayForTesting();
+
   subresource_filter::testing::TestRulesetPair test_ruleset_pair;
   auto creator =
       std::make_unique<subresource_filter::testing::TestRulesetCreator>();
@@ -54,4 +58,9 @@ void JNI_TestRulesetPublisher_CreateAndPublishRulesetDisallowingSuffixForTesting
       &OnRulesetPublished, base::Passed(&creator), ruleset_service, publisher));
   ruleset_service->IndexAndStoreAndPublishRulesetIfNeeded(
       unindexed_ruleset_info);
+
+  // Set browser startup complete to start processing BEST_EFFORT task queues.
+  // This combined with disabling the delay reduces the time needed to publish
+  // the ruleset to 2-8 seconds on average.
+  AfterStartupTaskUtils::SetBrowserStartupIsCompleteForTesting();
 }
