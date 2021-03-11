@@ -4,6 +4,8 @@
 
 static_library("common") {
   sources = [
+    "alt_game_images.cc",
+    "alt_game_images.h",
     "error.cc",
     "error.h",
     "error_page_switches.cc",
