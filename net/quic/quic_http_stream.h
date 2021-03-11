@@ -35,8 +35,9 @@ class QuicHttpStreamPeer;
 }  // namespace test
 
 // The QuicHttpStream is a QUIC-specific HttpStream subclass.  It holds a
-// non-owning pointer to a QuicChromiumClientStream which it uses to
-// send and receive data.
+// handle of QuicChromiumClientStream which it uses to send and receive data.
+// The handle hides the details of the underlying stream's lifetime and can be
+// used even after the underlying stream is destroyed.
 class NET_EXPORT_PRIVATE QuicHttpStream : public MultiplexedHttpStream {
  public:
   explicit QuicHttpStream(
