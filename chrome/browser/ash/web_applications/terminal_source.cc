@@ -49,7 +49,6 @@ void ReadFile(const std::string& relative_path,
   if (!result) {
     static const base::NoDestructor<base::flat_map<std::string, std::string>>
         kTestFiles({
-            {"html/crosh.html", ""},
             {"html/terminal.html", "<script src='/js/terminal.js'></script>"},
             {"js/terminal.js",
              "chrome.terminalPrivate.openVmshellProcess([], () => {})"},
@@ -71,20 +70,18 @@ void ReadFile(const std::string& relative_path,
 
 // static
 std::unique_ptr<TerminalSource> TerminalSource::ForCrosh(Profile* profile) {
-  return base::WrapUnique(new TerminalSource(
-      profile, chrome::kChromeUIUntrustedCroshURL, "html/crosh.html"));
+  return base::WrapUnique(
+      new TerminalSource(profile, chrome::kChromeUIUntrustedCroshURL));
 }
 
 // static
 std::unique_ptr<TerminalSource> TerminalSource::ForTerminal(Profile* profile) {
-  return base::WrapUnique(new TerminalSource(
-      profile, chrome::kChromeUIUntrustedTerminalURL, "html/terminal.html"));
+  return base::WrapUnique(
+      new TerminalSource(profile, chrome::kChromeUIUntrustedTerminalURL));
 }
 
-TerminalSource::TerminalSource(Profile* profile,
-                               std::string source,
-                               std::string default_file)
-    : profile_(profile), source_(source), default_file_(default_file) {
+TerminalSource::TerminalSource(Profile* profile, std::string source)
+    : profile_(profile), source_(source) {
   auto* webui_allowlist = WebUIAllowlist::GetOrCreate(profile);
   const url::Origin terminal_origin = url::Origin::Create(GURL(source));
   CHECK(!terminal_origin.opaque());
@@ -115,7 +112,7 @@ void TerminalSource::StartDataRequest(
   // skip first '/' in path.
   std::string path = url.path().substr(1);
   if (path.empty())
-    path = default_file_;
+    path = "html/terminal.html";
 
   // Replace $i8n{themeColor} in *.html.
   if (base::EndsWith(path, ".html", base::CompareCase::INSENSITIVE_ASCII)) {

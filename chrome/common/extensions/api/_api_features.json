@@ -818,6 +818,7 @@
     "channel": "stable",
     "contexts": ["webui_untrusted"],
     "matches": [
+      "chrome-untrusted://crosh/*",
       "chrome-untrusted://terminal/*"
     ],
     "platforms": ["chromeos"]
@@ -969,6 +970,7 @@
     "channel": "stable",
     "contexts": ["webui_untrusted"],
     "matches": [
+      "chrome-untrusted://crosh/*",
       "chrome-untrusted://terminal/*"
     ],
     "platforms": ["chromeos"]

@@ -27,9 +27,7 @@ class TerminalSource : public content::URLDataSource {
   ~TerminalSource() override;
 
  private:
-  explicit TerminalSource(Profile* profile,
-                          std::string source,
-                          std::string default_file);
+  explicit TerminalSource(Profile* profile, std::string source);
 
   // content::URLDataSource:
   std::string GetSource() override;
@@ -48,7 +46,6 @@ class TerminalSource : public content::URLDataSource {
 
   Profile* profile_;
   std::string source_;
-  std::string default_file_;
   ui::TemplateReplacements replacements_;
 
   DISALLOW_COPY_AND_ASSIGN(TerminalSource);
