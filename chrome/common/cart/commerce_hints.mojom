@@ -6,6 +6,13 @@ module cart.mojom;
 
 import "url/mojom/url.mojom";
 
+struct Product {
+  // The URL of the product image.
+  url.mojom.Url image_url;
+  // The product name.
+  string name;
+};
+
 // This service is implemented in the browser process and is used by the
 // renderer to notify the CommerceHint events.
 interface CommerceHintObserver {
@@ -14,6 +21,9 @@ interface CommerceHintObserver {
 
   // Shopping cart page is visited.
   OnVisitCart();
+
+  // Products in the shopping cart are updated.
+  OnCartProductUpdated(array<Product> products);
 
   // Checkout page is visited.
   OnVisitCheckout();

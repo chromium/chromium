@@ -4,12 +4,17 @@
 
 #include "chrome/renderer/cart/commerce_hint_agent.h"
 
+#include "base/json/json_writer.h"
 #include "base/no_destructor.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/values.h"
 #include "chrome/common/cart/commerce_hints.mojom.h"
+#include "chrome/common/chrome_isolated_world_ids.h"
+#include "chrome/grit/renderer_resources.h"
 #include "content/public/renderer/render_frame.h"
 #include "content/public/renderer/render_thread.h"
+#include "content/public/renderer/v8_value_converter.h"
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
 #include "third_party/blink/public/common/browser_interface_broker_proxy.h"
 #include "third_party/blink/public/common/loader/http_body_element_type.h"
@@ -113,32 +118,31 @@ base::Optional<GURL> ScanCartURL(content::RenderFrame* render_frame) {
 void OnAddToCart(content::RenderFrame* render_frame) {
   mojo::Remote<mojom::CommerceHintObserver> observer =
       GetObserver(render_frame);
-  if (!observer.is_bound())
-    return;
   observer->OnAddToCart(ScanCartURL(render_frame));
 }
 
 void OnVisitCart(content::RenderFrame* render_frame) {
   mojo::Remote<mojom::CommerceHintObserver> observer =
       GetObserver(render_frame);
-  if (!observer.is_bound())
-    return;
   observer->OnVisitCart();
+}
+
+void OnCartProductUpdated(content::RenderFrame* render_frame,
+                          std::vector<mojom::ProductPtr> products) {
+  mojo::Remote<mojom::CommerceHintObserver> observer =
+      GetObserver(render_frame);
+  observer->OnCartProductUpdated(std::move(products));
 }
 
 void OnVisitCheckout(content::RenderFrame* render_frame) {
   mojo::Remote<mojom::CommerceHintObserver> observer =
       GetObserver(render_frame);
-  if (!observer.is_bound())
-    return;
   observer->OnVisitCheckout();
 }
 
 void OnPurchase(content::RenderFrame* render_frame) {
   mojo::Remote<mojom::CommerceHintObserver> observer =
       GetObserver(render_frame);
-  if (!observer.is_bound())
-    return;
   observer->OnPurchase();
 }
 
@@ -330,6 +334,65 @@ std::string CommerceHintAgent::ExtractButtonText(
 
 void CommerceHintAgent::ExtractProducts() {
   // TODO(crbug/1164236): Implement rate control.
+  blink::WebLocalFrame* main_frame = render_frame()->GetWebFrame();
+
+  std::string script =
+      ui::ResourceBundle::GetSharedInstance().LoadDataResourceString(
+          IDR_CART_PRODUCT_EXTRACTION_JS);
+
+  v8::HandleScope handle_scope(v8::Isolate::GetCurrent());
+  blink::WebScriptSource source =
+      blink::WebScriptSource(WebString::FromUTF8(script));
+
+  JavaScriptRequest* request =
+      new JavaScriptRequest(weak_factory_.GetWeakPtr());
+  main_frame->RequestExecuteScriptInIsolatedWorld(
+      ISOLATED_WORLD_ID_CHROME_INTERNAL, &source, 1, false,
+      blink::WebLocalFrame::kAsynchronous, request);
+}
+
+CommerceHintAgent::JavaScriptRequest::JavaScriptRequest(
+    base::WeakPtr<CommerceHintAgent> agent)
+    : agent_(std::move(agent)) {}
+
+CommerceHintAgent::JavaScriptRequest::~JavaScriptRequest() = default;
+
+void CommerceHintAgent::JavaScriptRequest::Completed(
+    const blink::WebVector<v8::Local<v8::Value>>& result) {
+  if (!agent_)
+    return;
+  blink::WebLocalFrame* main_frame = agent_->render_frame()->GetWebFrame();
+  if (result.empty() || result.begin()->IsEmpty())
+    return;
+  agent_->OnProductsExtracted(content::V8ValueConverter::Create()->FromV8Value(
+      result[0], main_frame->MainWorldScriptContext()));
+}
+
+void CommerceHintAgent::OnProductsExtracted(
+    std::unique_ptr<base::Value> results) {
+  if (!results) {
+    DLOG(ERROR) << "OnProductsExtracted() got empty results";
+    return;
+  }
+  DVLOG(2) << "OnProductsExtracted: " << *results;
+  // Don't update cart when the return value is not a list. This could be due to
+  // that the cart is not loaded.
+  if (!results->is_list())
+    return;
+  std::vector<mojom::ProductPtr> products;
+  for (const auto& product : results->GetList()) {
+    if (!product.is_dict())
+      continue;
+    const auto* image_url = product.FindKey("imageUrl");
+    const auto* product_name = product.FindKey("title");
+    mojom::ProductPtr product_ptr(mojom::Product::New());
+    product_ptr->image_url = GURL(image_url->GetString());
+    product_ptr->name = product_name->GetString();
+    DVLOG(1) << "image_url = " << product_ptr->image_url;
+    DVLOG(1) << "name = " << product_ptr->name;
+    products.push_back(std::move(product_ptr));
+  }
+  OnCartProductUpdated(render_frame(), std::move(products));
 }
 
 void CommerceHintAgent::OnDestruct() {
