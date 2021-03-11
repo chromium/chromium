@@ -19,6 +19,9 @@
 namespace content {
 class BrowserAccessibilityWin;
 
+using UiaRaiseActiveTextPositionChangedEventFunction =
+    HRESULT(WINAPI*)(IRawElementProviderSimple*, ITextRangeProvider*);
+
 // Manages a tree of BrowserAccessibilityWin objects.
 class CONTENT_EXPORT BrowserAccessibilityManagerWin
     : public BrowserAccessibilityManager {
@@ -29,6 +32,7 @@ class CONTENT_EXPORT BrowserAccessibilityManagerWin
   ~BrowserAccessibilityManagerWin() override;
 
   static ui::AXTreeUpdate GetEmptyDocument();
+  static bool IsUiaActiveTextPositionChangedEventSupported();
 
   // Get the closest containing HWND.
   HWND GetParentHWND();
@@ -52,6 +56,7 @@ class CONTENT_EXPORT BrowserAccessibilityManagerWin
                                    BrowserAccessibility* node);
   void FireUiaStructureChangedEvent(StructureChangeType change_type,
                                     BrowserAccessibility* node);
+  void FireUiaActiveTextPositionChangedEvent(BrowserAccessibility* node);
 
   // Do event pre-processing
   void BeforeAccessibilityEvents() override;
@@ -91,7 +96,6 @@ class CONTENT_EXPORT BrowserAccessibilityManagerWin
       base::RepeatingCallback<void(BrowserAccessibility*,
                                    BrowserAccessibility*,
                                    const SelectionEvents&)>;
-
   static bool IsIA2NodeSelected(BrowserAccessibility* node);
   static bool IsUIANodeSelected(BrowserAccessibility* node);
 
@@ -111,6 +115,10 @@ class CONTENT_EXPORT BrowserAccessibilityManagerWin
       SelectionEventsMap& selection_events_map,
       IsSelectedPredicate is_selected_predicate,
       FirePlatformSelectionEventsCallback fire_platform_events_callback);
+
+  // Retrieve UIA RaiseActiveTextPositionChangedEvent function if supported.
+  static UiaRaiseActiveTextPositionChangedEventFunction
+  GetUiaActiveTextPositionChangedEventFunction();
 
   void HandleAriaPropertiesChangedEvent(BrowserAccessibility& node);
   void EnqueueTextChangedEvent(BrowserAccessibility& node);

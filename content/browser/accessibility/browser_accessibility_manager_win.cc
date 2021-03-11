@@ -23,6 +23,7 @@
 #include "ui/accessibility/ax_role_properties.h"
 #include "ui/accessibility/platform/ax_fragment_root_win.h"
 #include "ui/accessibility/platform/ax_platform_node_delegate_utils_win.h"
+#include "ui/accessibility/platform/ax_platform_node_textprovider_win.h"
 #include "ui/accessibility/platform/uia_registrar_win.h"
 #include "ui/base/win/atl_module.h"
 
@@ -138,9 +139,11 @@ void BrowserAccessibilityManagerWin::FireBlinkEvent(
     case ax::mojom::Event::kLocationChanged:
       FireWinAccessibilityEvent(IA2_EVENT_VISIBLE_DATA_CHANGED, node);
       break;
-    case ax::mojom::Event::kScrolledToAnchor:
+    case ax::mojom::Event::kScrolledToAnchor: {
       FireWinAccessibilityEvent(EVENT_SYSTEM_SCROLLINGSTART, node);
+      FireUiaActiveTextPositionChangedEvent(node);
       break;
+    }
     case ax::mojom::Event::kTextChanged:
       // TODO(crbug.com/1049261) Remove when Views are exposed in the AXTree
       // which will fire generated text-changed events.
@@ -647,6 +650,46 @@ void BrowserAccessibilityManagerWin::FireUiaStructureChangedEvent(
       UiaRaiseStructureChangedEvent(provider_com, change_type, nullptr, 0);
     }
   }
+}
+
+// static
+bool BrowserAccessibilityManagerWin::
+    IsUiaActiveTextPositionChangedEventSupported() {
+  return GetUiaActiveTextPositionChangedEventFunction();
+}
+
+// static
+UiaRaiseActiveTextPositionChangedEventFunction
+BrowserAccessibilityManagerWin::GetUiaActiveTextPositionChangedEventFunction() {
+  // This API is only supported from Win8.1 onwards. On older platforms (such as
+  // Windows 7), we will return nullptr for the querying result for the address
+  // of the method "UiaRaiseActiveTextPositionChangedEvent" in
+  // uiautomationcore.dll.
+  return reinterpret_cast<UiaRaiseActiveTextPositionChangedEventFunction>(
+      ::GetProcAddress(::GetModuleHandle(L"uiautomationcore.dll"),
+                       "UiaRaiseActiveTextPositionChangedEvent"));
+}
+
+void BrowserAccessibilityManagerWin::FireUiaActiveTextPositionChangedEvent(
+    BrowserAccessibility* node) {
+  if (!ShouldFireEventForNode(node))
+    return;
+
+  UiaRaiseActiveTextPositionChangedEventFunction
+      active_text_position_changed_func =
+          GetUiaActiveTextPositionChangedEventFunction();
+
+  if (!active_text_position_changed_func)
+    return;
+
+  // Create the text range contained by the target node.
+  auto* target_node = ToBrowserAccessibilityWin(node)->GetCOM();
+  Microsoft::WRL::ComPtr<ITextRangeProvider> text_range =
+      ui::AXPlatformNodeTextProviderWin::CreateDegenerateRangeAtStart(
+          target_node);
+
+  // Fire the UiaRaiseActiveTextPositionChangedEvent.
+  active_text_position_changed_func(target_node, text_range.Get());
 }
 
 bool BrowserAccessibilityManagerWin::CanFireEvents() const {

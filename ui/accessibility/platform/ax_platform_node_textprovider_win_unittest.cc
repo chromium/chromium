@@ -52,6 +52,105 @@ class AXPlatformNodeTextProviderTest : public AXPlatformNodeWinTest {
   }
 };
 
+TEST_F(AXPlatformNodeTextProviderTest, CreateDegenerateRangeFromStart) {
+  AXNodeData text1_data;
+  text1_data.id = 3;
+  text1_data.role = ax::mojom::Role::kStaticText;
+  text1_data.SetName("some text");
+
+  AXNodeData text2_data;
+  text2_data.id = 4;
+  text2_data.role = ax::mojom::Role::kStaticText;
+  text2_data.SetName("more text");
+
+  AXNodeData link_data;
+  link_data.id = 2;
+  link_data.role = ax::mojom::Role::kLink;
+  link_data.child_ids = {3, 4};
+
+  AXNodeData root_data;
+  root_data.id = 1;
+  root_data.role = ax::mojom::Role::kRootWebArea;
+  root_data.SetName("Document");
+  root_data.child_ids = {2};
+
+  AXTreeUpdate update;
+  AXTreeData tree_data;
+  tree_data.tree_id = AXTreeID::CreateNewAXTreeID();
+  update.tree_data = tree_data;
+  update.has_tree_data = true;
+  update.root_id = root_data.id;
+  update.nodes = {root_data, link_data, text1_data, text2_data};
+
+  Init(update);
+  AXNode* root_node = GetRootAsAXNode();
+  AXNode* link_node = root_node->children()[0];
+  AXNode* text2_node = link_node->children()[1];
+
+  ComPtr<IRawElementProviderSimple> root_node_raw =
+      QueryInterfaceFromNode<IRawElementProviderSimple>(root_node);
+  ComPtr<IRawElementProviderSimple> link_node_raw =
+      QueryInterfaceFromNode<IRawElementProviderSimple>(link_node);
+  ComPtr<IRawElementProviderSimple> text2_node_raw =
+      QueryInterfaceFromNode<IRawElementProviderSimple>(text2_node);
+
+  ComPtr<AXPlatformNodeWin> root_platform_node;
+  EXPECT_HRESULT_SUCCEEDED(
+      root_node_raw->QueryInterface(IID_PPV_ARGS(&root_platform_node)));
+  ComPtr<AXPlatformNodeWin> link_platform_node;
+  EXPECT_HRESULT_SUCCEEDED(
+      link_node_raw->QueryInterface(IID_PPV_ARGS(&link_platform_node)));
+  ComPtr<AXPlatformNodeWin> text2_platform_node;
+  EXPECT_HRESULT_SUCCEEDED(
+      text2_node_raw->QueryInterface(IID_PPV_ARGS(&text2_platform_node)));
+
+  // Degenerate range created on root node should be:
+  // <>some textmore text
+  ComPtr<ITextRangeProvider> text_range_provider =
+      AXPlatformNodeTextProviderWin::CreateDegenerateRangeAtStart(
+          root_platform_node.Get());
+  base::win::ScopedBstr text_content;
+  EXPECT_HRESULT_SUCCEEDED(
+      text_range_provider->GetText(-1, text_content.Receive()));
+  EXPECT_EQ(0, wcscmp(text_content.Get(), L""));
+
+  ComPtr<AXPlatformNodeTextRangeProviderWin> actual_range;
+  text_range_provider->QueryInterface(IID_PPV_ARGS(&actual_range));
+  AXNodePosition::AXPositionInstance expected_start, expected_end;
+  expected_start = root_platform_node->GetDelegate()->CreateTextPositionAt(0);
+  expected_end = expected_start->Clone();
+  EXPECT_EQ(*GetStart(actual_range.Get()), *expected_start);
+  EXPECT_EQ(*GetEnd(actual_range.Get()), *expected_end);
+  text_content.Release();
+
+  // Degenerate range created on link node should be:
+  // <>some textmore text
+  text_range_provider =
+      AXPlatformNodeTextProviderWin::CreateDegenerateRangeAtStart(
+          link_platform_node.Get());
+  EXPECT_HRESULT_SUCCEEDED(
+      text_range_provider->GetText(-1, text_content.Receive()));
+  EXPECT_EQ(0, wcscmp(text_content.Get(), L""));
+  text_range_provider->QueryInterface(IID_PPV_ARGS(&actual_range));
+  EXPECT_EQ(*GetStart(actual_range.Get()), *expected_start);
+  EXPECT_EQ(*GetEnd(actual_range.Get()), *expected_end);
+  text_content.Release();
+
+  // Degenerate range created on more text node should be:
+  // some text<>more text
+  text_range_provider =
+      AXPlatformNodeTextProviderWin::CreateDegenerateRangeAtStart(
+          text2_platform_node.Get());
+  EXPECT_HRESULT_SUCCEEDED(
+      text_range_provider->GetText(-1, text_content.Receive()));
+  EXPECT_EQ(0, wcscmp(text_content.Get(), L""));
+  text_range_provider->QueryInterface(IID_PPV_ARGS(&actual_range));
+  expected_start = text2_platform_node->GetDelegate()->CreateTextPositionAt(0);
+  expected_end = expected_start->Clone();
+  EXPECT_EQ(*GetStart(actual_range.Get()), *expected_start);
+  EXPECT_EQ(*GetEnd(actual_range.Get()), *expected_end);
+  text_content.Release();
+}
 
 TEST_F(AXPlatformNodeTextProviderTest, ITextProviderRangeFromChild) {
   AXNodeData text_data;

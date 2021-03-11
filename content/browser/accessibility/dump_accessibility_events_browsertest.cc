@@ -32,6 +32,9 @@
 #include "content/shell/browser/shell.h"
 #include "third_party/blink/public/common/renderer_preferences/renderer_preferences.h"
 #include "ui/accessibility/platform/inspect/ax_tree_formatter.h"
+#if defined(OS_WIN)
+#include "content/browser/accessibility/browser_accessibility_manager_win.h"
+#endif
 
 namespace content {
 
@@ -861,6 +864,16 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTest,
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTest,
                        AccessibilityEventsRemoveHiddenAttributeSubtree) {
   RunEventTest(FILE_PATH_LITERAL("remove-hidden-attribute-subtree.html"));
+}
+
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTest,
+                       AccessibilityEventsSamePageLinkNavigation) {
+#if defined(OS_WIN)
+  if (!BrowserAccessibilityManagerWin::
+          IsUiaActiveTextPositionChangedEventSupported())
+    return;
+#endif
+  RunEventTest(FILE_PATH_LITERAL("same-page-link-navigation.html"));
 }
 
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTest,

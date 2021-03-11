@@ -323,6 +323,19 @@ ITextRangeProvider* AXPlatformNodeTextProviderWin::GetRangeFromChild(
       ancestor, std::move(start), std::move(end));
 }
 
+ITextRangeProvider* AXPlatformNodeTextProviderWin::CreateDegenerateRangeAtStart(
+    ui::AXPlatformNodeWin* node) {
+  DCHECK(node);
+  DCHECK(node->GetDelegate());
+
+  // Create a degenerate range positioned at the node's start.
+  AXNodePosition::AXPositionInstance start, end;
+  start = node->GetDelegate()->CreateTextPositionAt(0)->AsLeafTextPosition();
+  end = start->Clone();
+  return AXPlatformNodeTextRangeProviderWin::CreateTextRangeProvider(
+      node, std::move(start), std::move(end));
+}
+
 ui::AXPlatformNodeWin* AXPlatformNodeTextProviderWin::owner() const {
   return owner_.Get();
 }
