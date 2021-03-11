@@ -446,11 +446,15 @@ const CGFloat kOffsetToPinOmnibox = 100;
 // ContentSuggestions.
 - (BOOL)gestureRecognizer:(UIGestureRecognizer*)gestureRecognizer
        shouldReceiveTouch:(UITouch*)touch {
-  CGRect discBoundsInView =
-      [self.identityDiscButton convertRect:self.identityDiscButton.bounds
-                                    toView:self.view];
-  return (
-      CGRectContainsPoint(discBoundsInView, [touch locationInView:self.view]));
+  // Ignore all touches inside the Feed CollectionView, which includes
+  // ContentSuggestions.
+  UIView* viewToIgnoreTouches =
+      self.discoverFeedWrapperViewController.feedCollectionView;
+  CGRect ignoreBoundsInView =
+      [viewToIgnoreTouches convertRect:viewToIgnoreTouches.bounds
+                                toView:self.view];
+  return !(CGRectContainsPoint(ignoreBoundsInView,
+                               [touch locationInView:self.view]));
 }
 
 #pragma mark - Private
@@ -569,6 +573,8 @@ const CGFloat kOffsetToPinOmnibox = 100;
   if (CGRectContainsPoint(discBoundsInView, location)) {
     [self.identityDiscButton
         sendActionsForControlEvents:UIControlEventTouchUpInside];
+  } else {
+    [self.headerSynchronizer unfocusOmnibox];
   }
 }
 
