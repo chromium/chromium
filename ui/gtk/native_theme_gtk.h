@@ -25,10 +25,7 @@ class NativeThemeGtk : public ui::NativeThemeBase {
  public:
   static NativeThemeGtk* instance();
 
-  // Overridden from ui::NativeThemeBase:
-  SkColor GetSystemColor(
-      ColorId color_id,
-      ColorScheme color_scheme = ColorScheme::kDefault) const override;
+  // ui::NativeThemeBase:
   void PaintArrowButton(cc::PaintCanvas* canvas,
                         const gfx::Rect& rect,
                         Part direction,
@@ -74,6 +71,13 @@ class NativeThemeGtk : public ui::NativeThemeBase {
   void NotifyObservers() override;
 
   void OnThemeChanged(GtkSettings* settings, GtkParamSpec* param);
+
+ protected:
+  // ui::NativeThemeBase:
+  bool AllowColorPipelineRedirection(ColorScheme color_scheme) const override;
+  SkColor GetSystemColorDeprecated(ColorId color_id,
+                                   ColorScheme color_scheme,
+                                   bool apply_processing) const override;
 
  private:
   friend class base::NoDestructor<NativeThemeGtk>;

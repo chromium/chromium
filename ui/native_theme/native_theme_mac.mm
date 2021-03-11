@@ -142,15 +142,9 @@ SkColor NativeThemeMac::ApplySystemControlTint(SkColor color) {
   return ui::IsSystemGraphiteTinted() ? ui::ColorToGrayscale(color) : color;
 }
 
-SkColor NativeThemeMac::GetSystemColorImpl(ColorId color_id,
-                                           ColorScheme color_scheme,
-                                           bool apply_tint) const {
-  if (color_scheme == ColorScheme::kDefault)
-    color_scheme = GetDefaultSystemColorScheme();
-
-  if (auto color = GetColorProviderColor(color_id, color_scheme))
-    return color.value();
-
+SkColor NativeThemeMac::GetSystemColorDeprecated(ColorId color_id,
+                                                 ColorScheme color_scheme,
+                                                 bool apply_processing) const {
   if (UserHasContrastPreference()) {
     switch (color_id) {
       case kColorId_SelectedMenuItemForegroundColor:
@@ -168,19 +162,9 @@ SkColor NativeThemeMac::GetSystemColorImpl(ColorId color_id,
   if (os_color.has_value())
     return os_color.value();
 
-  SkColor color = NativeTheme::GetSystemColor(color_id, color_scheme);
-  return apply_tint ? ApplySystemControlTint(color) : color;
-}
-
-SkColor NativeThemeMac::GetSystemColor(ColorId color_id,
-                                       ColorScheme color_scheme) const {
-  return GetSystemColorImpl(color_id, color_scheme, /* apply_tint = */ true);
-}
-
-SkColor NativeThemeMac::GetUnprocessedSystemColor(
-    ColorId color_id,
-    ColorScheme color_scheme) const {
-  return GetSystemColorImpl(color_id, color_scheme, /* apply_tint = */ false);
+  SkColor color = NativeTheme::GetSystemColorDeprecated(color_id, color_scheme,
+                                                        apply_processing);
+  return apply_processing ? ApplySystemControlTint(color) : color;
 }
 
 base::Optional<SkColor> NativeThemeMac::GetOSColor(

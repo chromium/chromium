@@ -22,8 +22,9 @@ class TestNativeTheme : public ui::NativeThemeBase {
   void Set(ColorId id, SkColor color) { colors_[id] = color; }
 
   // NativeThemeBase:
-  SkColor GetSystemColor(ColorId color_id,
-                         ColorScheme color_scheme) const override {
+  SkColor GetSystemColorDeprecated(ColorId color_id,
+                                   ColorScheme color_scheme,
+                                   bool apply_processing) const override {
     return colors_.count(color_id) ? colors_.find(color_id)->second
                                    : SK_ColorMAGENTA;
   }

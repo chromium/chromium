@@ -183,20 +183,12 @@ bool NativeTheme::SystemDarkModeSupported() {
 
 SkColor NativeTheme::GetSystemColor(ColorId color_id,
                                     ColorScheme color_scheme) const {
-  SCOPED_UMA_HISTOGRAM_TIMER("NativeTheme.GetSystemColor");
-  if (color_scheme == NativeTheme::ColorScheme::kDefault)
-    color_scheme = GetDefaultSystemColorScheme();
-
-  if (auto color = GetColorProviderColor(color_id, color_scheme))
-    return color.value();
-
-  ReportHistogramBooleanUsesColorProvider(false);
-  return GetAuraColor(color_id, this, color_scheme);
+  return GetSystemColorCommon(color_id, color_scheme, true);
 }
 
 SkColor NativeTheme::GetUnprocessedSystemColor(ColorId color_id,
                                                ColorScheme color_scheme) const {
-  return GetSystemColor(color_id, color_scheme);
+  return GetSystemColorCommon(color_id, color_scheme, false);
 }
 
 SkColor NativeTheme::GetSystemButtonPressedColor(SkColor base_color) const {
@@ -262,16 +254,8 @@ NativeTheme::~NativeTheme() = default;
 base::Optional<SkColor> NativeTheme::GetColorProviderColor(
     ColorId color_id,
     ColorScheme color_scheme) const {
-  // TODO(http://crbug.com/1057754): Remove the restriction below for
-  //                                 non-Windows platforms.
-  const bool allow_high_contrast_redirection =
-#if defined(OS_WIN)
-      true;
-#else
-      color_scheme != ColorScheme::kPlatformHighContrast;
-#endif
   if (base::FeatureList::IsEnabled(features::kColorProviderRedirection) &&
-      allow_high_contrast_redirection) {
+      AllowColorPipelineRedirection(color_scheme)) {
     if (auto provider_color_id = NativeThemeColorIdToColorId(color_id)) {
       auto color_mode = (color_scheme == NativeTheme::ColorScheme::kDark)
                             ? ColorProviderManager::ColorMode::kDark
@@ -343,6 +327,17 @@ NativeTheme::PreferredColorScheme NativeTheme::CalculatePreferredColorScheme()
 NativeTheme::PreferredContrast NativeTheme::CalculatePreferredContrast() const {
   return IsForcedHighContrast() ? PreferredContrast::kMore
                                 : PreferredContrast::kNoPreference;
+}
+
+bool NativeTheme::AllowColorPipelineRedirection(
+    ColorScheme color_scheme) const {
+  return color_scheme != ColorScheme::kPlatformHighContrast;
+}
+
+SkColor NativeTheme::GetSystemColorDeprecated(ColorId color_id,
+                                              ColorScheme color_scheme,
+                                              bool apply_processing) const {
+  return GetAuraColor(color_id, this, color_scheme);
 }
 
 base::Optional<CaptionStyle> NativeTheme::GetSystemCaptionStyle() const {
@@ -440,6 +435,20 @@ void NativeTheme::ColorSchemeNativeThemeObserver::OnNativeThemeUpdated(
 
 NativeTheme::ColorScheme NativeTheme::GetDefaultSystemColorScheme() const {
   return ShouldUseDarkColors() ? ColorScheme::kDark : ColorScheme::kLight;
+}
+
+SkColor NativeTheme::GetSystemColorCommon(ColorId color_id,
+                                          ColorScheme color_scheme,
+                                          bool apply_processing) const {
+  SCOPED_UMA_HISTOGRAM_TIMER("NativeTheme.GetSystemColor");
+  if (color_scheme == NativeTheme::ColorScheme::kDefault)
+    color_scheme = GetDefaultSystemColorScheme();
+
+  if (auto color = GetColorProviderColor(color_id, color_scheme))
+    return color.value();
+
+  ReportHistogramBooleanUsesColorProvider(false);
+  return GetSystemColorDeprecated(color_id, color_scheme, apply_processing);
 }
 
 }  // namespace ui

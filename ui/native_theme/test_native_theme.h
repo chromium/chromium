@@ -16,8 +16,6 @@ class TestNativeTheme : public NativeTheme {
   ~TestNativeTheme() override;
 
   // NativeTheme:
-  SkColor GetSystemColor(ColorId color_id,
-                         ColorScheme color_scheme) const override;
   gfx::Size GetPartSize(Part part,
                         State state,
                         const ExtraParams& extra) const override;
@@ -43,6 +41,11 @@ class TestNativeTheme : public NativeTheme {
     is_platform_high_contrast_ = is_platform_high_contrast;
   }
   void AddColorSchemeNativeThemeObserver(NativeTheme* theme_to_update);
+
+ protected:
+  SkColor GetSystemColorDeprecated(ColorId color_id,
+                                   ColorScheme color_scheme,
+                                   bool apply_processing) const override;
 
  private:
   bool dark_mode_ = false;

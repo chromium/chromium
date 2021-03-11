@@ -37,11 +37,13 @@ class TestDarkTheme : public ui::TestNativeTheme {
   ~TestDarkTheme() override = default;
 
   // ui::NativeTheme implementation.
-  SkColor GetSystemColor(ColorId color_id,
-                         ColorScheme color_scheme) const override {
-    if (color_id == kColorId_BubbleBackground)
-      return kDarkBackgroundColor;
-    return ui::TestNativeTheme::GetSystemColor(color_id, color_scheme);
+  SkColor GetSystemColorDeprecated(ColorId color_id,
+                                   ColorScheme color_scheme,
+                                   bool apply_processing) const override {
+    return (color_id == kColorId_BubbleBackground)
+               ? kDarkBackgroundColor
+               : ui::TestNativeTheme::GetSystemColorDeprecated(
+                     color_id, color_scheme, apply_processing);
   }
 };
 

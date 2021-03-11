@@ -26,6 +26,7 @@
 #include "ui/message_center/views/notification_header_view.h"
 #include "ui/message_center/views/padded_button.h"
 #include "ui/message_center/views/proportional_image_view.h"
+#include "ui/native_theme/native_theme.h"
 #include "ui/views/animation/ink_drop_impl.h"
 #include "ui/views/animation/ink_drop_observer.h"
 #include "ui/views/animation/test/ink_drop_impl_test_api.h"

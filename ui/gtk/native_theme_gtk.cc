@@ -521,13 +521,22 @@ void NativeThemeGtk::OnThemeChanged(GtkSettings* settings,
   NotifyObservers();
 }
 
-SkColor NativeThemeGtk::GetSystemColor(ColorId color_id,
-                                       ColorScheme color_scheme) const {
+bool NativeThemeGtk::AllowColorPipelineRedirection(
+    ColorScheme color_scheme) const {
+  // TODO(crbug.com/1186781): Remove this override.
+  return false;
+}
+
+SkColor NativeThemeGtk::GetSystemColorDeprecated(ColorId color_id,
+                                                 ColorScheme color_scheme,
+                                                 bool apply_processing) const {
   base::Optional<SkColor> color = color_cache_[color_id];
   if (!color) {
     color = SkColorFromColorId(color_id, this, color_scheme);
-    if (!color)
-      color = ui::NativeThemeBase::GetSystemColor(color_id, color_scheme);
+    if (!color) {
+      color = ui::NativeThemeBase::GetSystemColorDeprecated(
+          color_id, color_scheme, apply_processing);
+    }
     color_cache_[color_id] = color;
   }
   DCHECK(color);

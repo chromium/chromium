@@ -41,8 +41,10 @@ gfx::Size NativeThemeAndroid::GetPartSize(Part part,
   return NativeThemeBase::GetPartSize(part, state, extra);
 }
 
-SkColor NativeThemeAndroid::GetSystemColor(ColorId color_id,
-                                           ColorScheme color_scheme) const {
+SkColor NativeThemeAndroid::GetSystemColorDeprecated(
+    ColorId color_id,
+    ColorScheme color_scheme,
+    bool apply_processing) const {
   NOTIMPLEMENTED();
   return SK_ColorBLACK;
 }

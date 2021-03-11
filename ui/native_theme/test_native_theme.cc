@@ -9,11 +9,6 @@ namespace ui {
 TestNativeTheme::TestNativeTheme() : NativeTheme(false) {}
 TestNativeTheme::~TestNativeTheme() = default;
 
-SkColor TestNativeTheme::GetSystemColor(ColorId color_id,
-                                        ColorScheme color_scheme) const {
-  return SK_ColorRED;
-}
-
 gfx::Size TestNativeTheme::GetPartSize(Part part,
                                        State state,
                                        const ExtraParams& extra) const {
@@ -64,6 +59,12 @@ void TestNativeTheme::AddColorSchemeNativeThemeObserver(
       std::make_unique<ui::NativeTheme::ColorSchemeNativeThemeObserver>(
           theme_to_update);
   AddObserver(color_scheme_observer_.get());
+}
+
+SkColor TestNativeTheme::GetSystemColorDeprecated(ColorId color_id,
+                                                  ColorScheme color_scheme,
+                                                  bool apply_processing) const {
+  return SK_ColorRED;
 }
 
 }  // namespace ui

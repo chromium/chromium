@@ -56,8 +56,9 @@ class TestNativeTheme : public ui::NativeThemeBase {
   TestNativeTheme& operator=(const TestNativeTheme&) = delete;
 
   // NativeThemeBase:
-  SkColor GetSystemColor(ColorId color_id,
-                         ColorScheme color_scheme) const override {
+  SkColor GetSystemColorDeprecated(ColorId color_id,
+                                   ColorScheme color_scheme,
+                                   bool apply_processing) const override {
     return kSystemColor;
   }
 };

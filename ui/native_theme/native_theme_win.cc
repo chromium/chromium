@@ -322,6 +322,24 @@ void NativeThemeWin::ConfigureWebInstance() {
   web_instance->set_system_colors(GetSystemColors());
 }
 
+bool NativeThemeWin::AllowColorPipelineRedirection(
+    ColorScheme color_scheme) const {
+  // TODO(crbug.com/1178910): Return true here (until this is removed entirely).
+  return NativeTheme::AllowColorPipelineRedirection(color_scheme);
+}
+
+SkColor NativeThemeWin::GetSystemColorDeprecated(ColorId color_id,
+                                                 ColorScheme color_scheme,
+                                                 bool apply_processing) const {
+  base::Optional<SkColor> color;
+  if (color_scheme == ColorScheme::kPlatformHighContrast &&
+      (color = GetPlatformHighContrastColor(color_id))) {
+    return color.value();
+  }
+  return NativeTheme::GetSystemColorDeprecated(color_id, color_scheme,
+                                               apply_processing);
+}
+
 NativeThemeWin::~NativeThemeWin() {
   // TODO(https://crbug.com/787692): Calling CloseHandles() here breaks
   // certain tests and the reliability bots.
@@ -588,19 +606,6 @@ void NativeThemeWin::PaintDirect(SkCanvas* destination_canvas,
     case kMaxPart:
       NOTREACHED();
   }
-}
-
-SkColor NativeThemeWin::GetSystemColor(ColorId color_id,
-                                       ColorScheme color_scheme) const {
-  if (color_scheme == ColorScheme::kDefault)
-    color_scheme = GetDefaultSystemColorScheme();
-
-  base::Optional<SkColor> color;
-  if (color_scheme == ColorScheme::kPlatformHighContrast &&
-      (color = GetPlatformHighContrastColor(color_id))) {
-    return color.value();
-  }
-  return NativeTheme::GetSystemColor(color_id, color_scheme);
 }
 
 base::Optional<SkColor> NativeThemeWin::GetPlatformHighContrastColor(

@@ -392,15 +392,15 @@ class NATIVE_THEME_EXPORT NativeTheme {
     kMaxValue = kWindowText,
   };
 
-  // Return a color from the system theme.
-  virtual SkColor GetSystemColor(
+  // Returns a color from the system theme.
+  SkColor GetSystemColor(
       ColorId color_id,
       ColorScheme color_scheme = ColorScheme::kDefault) const;
 
   // Returns an un-tinted or unprocessed color from the system theme before
   // processing.
-  virtual SkColor GetUnprocessedSystemColor(ColorId color_id,
-                                            ColorScheme color_scheme) const;
+  SkColor GetUnprocessedSystemColor(ColorId color_id,
+                                    ColorScheme color_scheme) const;
 
   // Returns a shared instance of the native theme that should be used for web
   // rendering. Do not use it in a normal application context (i.e. browser).
@@ -526,6 +526,14 @@ class NATIVE_THEME_EXPORT NativeTheme {
   // platform behaviors.
   virtual void ConfigureWebInstance() {}
 
+  // TODO(http://crbug.com/1057754): Remove this.
+  virtual bool AllowColorPipelineRedirection(ColorScheme color_scheme) const;
+
+  // Returns a color from the system theme, pre-Color Pipeline.
+  virtual SkColor GetSystemColorDeprecated(ColorId color_id,
+                                           ColorScheme color_scheme,
+                                           bool apply_processing) const;
+
   // Allows one native theme to observe changes in another. For example, the
   // web native theme for Windows observes the corresponding ui native theme in
   // order to receive changes regarding the state of dark mode, forced colors
@@ -549,6 +557,10 @@ class NATIVE_THEME_EXPORT NativeTheme {
   mutable std::map<SystemThemeColor, SkColor> system_colors_;
 
  private:
+  SkColor GetSystemColorCommon(ColorId color_id,
+                               ColorScheme color_scheme,
+                               bool apply_processing) const;
+
   // Observers to notify when the native theme changes.
   base::ObserverList<NativeThemeObserver>::Unchecked native_theme_observers_;
 
