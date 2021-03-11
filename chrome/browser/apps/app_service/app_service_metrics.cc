@@ -150,6 +150,10 @@ void RecordDefaultAppLaunch(DefaultAppName default_app_name,
       base::UmaHistogramEnumeration("Apps.DefaultAppLaunch.FromFullRestore",
                                     default_app_name);
       break;
+    case apps::mojom::LaunchSource::kFromSmartTextContextMenu:
+      base::UmaHistogramEnumeration(
+          "Apps.DefaultAppLaunch.FromSmartTextContextMenu", default_app_name);
+      break;
   }
 }
 
@@ -184,6 +188,7 @@ void RecordBuiltInAppLaunch(apps::BuiltInAppName built_in_app_name,
     case apps::mojom::LaunchSource::kFromSharesheet:
     case apps::mojom::LaunchSource::kFromReleaseNotesNotification:
     case apps::mojom::LaunchSource::kFromFullRestore:
+    case apps::mojom::LaunchSource::kFromSmartTextContextMenu:
       break;
   }
 }

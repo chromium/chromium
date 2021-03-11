@@ -4814,6 +4814,8 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <suffix name="FromOtherApp" label="From another app."/>
   <suffix name="FromSharesheet" label="From sharesheet."/>
   <suffix name="FromShelf" label="From shelf."/>
+  <suffix name="FromSmartTextContextMenu"
+      label="From Smart text selection context menu."/>
   <affected-histogram name="Apps.DefaultAppLaunch"/>
 </histogram_suffixes>
 

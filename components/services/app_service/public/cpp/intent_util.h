@@ -105,6 +105,12 @@ base::Optional<std::string> GetStringValueFromDict(
     const base::DictionaryValue& dict,
     const std::string& key_name);
 
+// Gets the apps::mojom::OptionalBool value from base::DictionaryValue, e.g. {
+// "key": "value" } returns "value".
+apps::mojom::OptionalBool GetBoolValueFromDict(
+    const base::DictionaryValue& dict,
+    const std::string& key_name);
+
 // Gets GURL from base::DictionaryValue, e.g. { "url": "abc.com" } returns
 // "abc.com".
 base::Optional<GURL> GetGurlValueFromDict(const base::DictionaryValue& dict,

@@ -194,8 +194,7 @@ struct IconValue {
 };
 
 // Enumeration of possible app launch sources.
-// Note the enumeration is used in UMA histogram so entries
-// should not be re-ordered or removed.
+// This should be kept in sync with histogram_suffixes_list.xml.
 enum LaunchSource {
   kUnknown = 0,
   kFromAppListGrid = 1,               // Grid of apps, not the search box.
@@ -221,6 +220,7 @@ enum LaunchSource {
   kFromSharesheet = 18,               // Sharesheet.
   kFromReleaseNotesNotification = 19, // Release Notes Notification.
   kFromFullRestore = 20,              // Full restore.
+  kFromSmartTextContextMenu = 21,     // Smart text selection context menu.
 };
 
 enum TriState {
@@ -340,6 +340,10 @@ struct Intent {
   string? share_text; // Text to share. e.g. Share link to other app.
   string? share_title; // Title for the share.
   string? start_type; // Start type.
+  array<string>? categories;
+  string? data;  // URI
+  OptionalBool ui_bypassed; // Whether or not the user saw the UI.
+  map<string, string>? extras; // Optional string extras.
 };
 
 // Represents a group of |app_ids| that is no longer preferred app of their

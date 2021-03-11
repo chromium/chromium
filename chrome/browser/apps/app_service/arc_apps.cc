@@ -216,6 +216,10 @@ base::Optional<arc::UserInteractionType> GetUserInterationType(
       user_interaction_type =
           arc::UserInteractionType::APP_STARTED_FROM_FULL_RESTORE;
       break;
+    case apps::mojom::LaunchSource::kFromSmartTextContextMenu:
+      user_interaction_type = arc::UserInteractionType::
+          APP_STARTED_FROM_SMART_TEXT_SELECTION_CONTEXT_MENU;
+      break;
     default:
       NOTREACHED();
       return base::nullopt;

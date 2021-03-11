@@ -19,6 +19,7 @@ namespace {
 constexpr char kIntentExtraText[] = "android.intent.extra.TEXT";
 constexpr char kIntentExtraSubject[] = "android.intent.extra.SUBJECT";
 constexpr char kIntentExtraStartType[] = "org.chromium.arc.start_type";
+constexpr char kIntentActionPrefix[] = "android.intent.action";
 
 const char* GetArcIntentAction(const std::string& action) {
   if (action == apps_util::kIntentActionMain) {
@@ -29,6 +30,9 @@ const char* GetArcIntentAction(const std::string& action) {
     return arc::kIntentActionSend;
   } else if (action == apps_util::kIntentActionSendMultiple) {
     return arc::kIntentActionSendMultiple;
+  } else if (action.compare(0, strlen(kIntentActionPrefix),
+                            kIntentActionPrefix) == 0) {
+    return action.c_str();
   } else {
     return arc::kIntentActionView;
   }
@@ -59,6 +63,28 @@ apps::mojom::IntentPtr CreateShareIntentFromFiles(
                                     share_title);
 }
 
+apps::mojom::IntentPtr CreateIntentForArcIntentAndActivity(
+    arc::mojom::IntentInfoPtr arc_intent,
+    arc::mojom::ActivityNamePtr activity) {
+  auto intent = apps::mojom::Intent::New();
+  if (arc_intent) {
+    intent->action = std::move(arc_intent->action);
+    intent->data = std::move(arc_intent->data);
+    intent->mime_type = std::move(arc_intent->type);
+    intent->categories = std::move(arc_intent->categories);
+    intent->ui_bypassed = arc_intent->ui_bypassed
+                              ? apps::mojom::OptionalBool::kTrue
+                              : apps::mojom::OptionalBool::kFalse;
+    intent->extras = std::move(arc_intent->extras);
+  }
+
+  if (activity) {
+    intent->activity_name = std::move(activity->activity_name);
+  }
+
+  return intent;
+}
+
 base::flat_map<std::string, std::string> CreateArcIntentExtras(
     const apps::mojom::IntentPtr& intent) {
   auto extras = base::flat_map<std::string, std::string>();
@@ -79,10 +105,11 @@ base::flat_map<std::string, std::string> CreateArcIntentExtras(
 arc::mojom::IntentInfoPtr CreateArcIntent(
     const apps::mojom::IntentPtr& intent) {
   arc::mojom::IntentInfoPtr arc_intent;
-  if (!intent->url.has_value() && !intent->share_text.has_value() &&
-      !intent->activity_name.has_value()) {
+  if (!intent->action.has_value() && !intent->url.has_value() &&
+      !intent->share_text.has_value() && !intent->activity_name.has_value()) {
     return arc_intent;
   }
+
   arc_intent = arc::mojom::IntentInfo::New();
   if (intent->action.has_value()) {
     arc_intent->action = GetArcIntentAction(intent->action.value());
@@ -95,6 +122,22 @@ arc::mojom::IntentInfoPtr CreateArcIntent(
   if (intent->share_text.has_value() || intent->share_title.has_value() ||
       intent->start_type.has_value()) {
     arc_intent->extras = CreateArcIntentExtras(intent);
+  }
+  if (intent->categories.has_value()) {
+    arc_intent->categories = intent->categories;
+  }
+  if (intent->data.has_value()) {
+    arc_intent->data = intent->data;
+  }
+  if (intent->mime_type.has_value()) {
+    arc_intent->type = intent->mime_type;
+  }
+  if (intent->ui_bypassed != apps::mojom::OptionalBool::kUnknown) {
+    arc_intent->ui_bypassed =
+        intent->ui_bypassed == apps::mojom::OptionalBool::kTrue ? true : false;
+  }
+  if (intent->extras.has_value()) {
+    arc_intent->extras = intent->extras;
   }
   return arc_intent;
 }

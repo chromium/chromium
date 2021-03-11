@@ -33,14 +33,20 @@ class IntentUtilTest : public testing::Test {
     return intent;
   }
 
-  apps::mojom::IntentPtr CreateIntent(const std::string& action,
-                                      const GURL& url,
-                                      const std::string& mime_type,
-                                      const std::vector<::GURL>& file_urls,
-                                      const std::string& activity_name,
-                                      const GURL& drive_share_url,
-                                      const std::string& share_text,
-                                      const std::string& share_title) {
+  apps::mojom::IntentPtr CreateIntent(
+      const std::string& action,
+      const GURL& url,
+      const std::string& mime_type,
+      const std::vector<::GURL>& file_urls,
+      const std::string& activity_name,
+      const GURL& drive_share_url,
+      const std::string& share_text,
+      const std::string& share_title,
+      const std::string& start_type,
+      const std::vector<std::string>& categories,
+      const std::string& data,
+      apps::mojom::OptionalBool ui_bypassed,
+      const base::flat_map<std::string, std::string>& extras) {
     auto intent = apps::mojom::Intent::New();
     intent->action = action;
     intent->url = url;
@@ -50,6 +56,11 @@ class IntentUtilTest : public testing::Test {
     intent->drive_share_url = drive_share_url;
     intent->share_text = share_text;
     intent->share_title = share_title;
+    intent->start_type = start_type;
+    intent->categories = categories;
+    intent->data = data;
+    intent->ui_bypassed = ui_bypassed;
+    intent->extras = extras;
     return intent;
   }
 };
@@ -441,10 +452,18 @@ TEST_F(IntentUtilTest, Convert) {
   const std::string activity_name = "test";
   const std::string share_text = "share text";
   const std::string share_title = "share title";
+  const std::string start_type = "start type";
+  const std::string category1 = "category1";
+  const std::string data = "data";
+  const apps::mojom::OptionalBool ui_bypassed =
+      apps::mojom::OptionalBool::kTrue;
+  base::flat_map<std::string, std::string> extras = {
+      {"key1", "value1"}, {"key2", "value2"}, {"key3", "value3"}};
 
   auto src_intent =
       CreateIntent(action, test_url1, mime_type, {test_url1, test_url2},
-                   activity_name, test_url3, share_text, share_title);
+                   activity_name, test_url3, share_text, share_title,
+                   start_type, {category1}, data, ui_bypassed, extras);
   base::Value value = apps_util::ConvertIntentToValue(src_intent);
   auto dst_intent = apps_util::ConvertValueToIntent(std::move(value));
 
@@ -458,6 +477,14 @@ TEST_F(IntentUtilTest, Convert) {
   EXPECT_EQ(test_url3, dst_intent->drive_share_url.value());
   EXPECT_EQ(share_text, dst_intent->share_text.value());
   EXPECT_EQ(share_title, dst_intent->share_title.value());
+  EXPECT_EQ(start_type, dst_intent->start_type.value());
+  EXPECT_EQ(1u, dst_intent->categories->size());
+  EXPECT_EQ(category1, dst_intent->categories.value()[0]);
+  EXPECT_EQ(data, dst_intent->data.value());
+  EXPECT_EQ(ui_bypassed, dst_intent->ui_bypassed);
+  EXPECT_TRUE(dst_intent->extras.has_value());
+  EXPECT_EQ(3u, dst_intent->extras->size());
+  EXPECT_EQ(extras, dst_intent->extras.value());
 }
 
 TEST_F(IntentUtilTest, ConvertEmptyIntent) {
@@ -473,4 +500,9 @@ TEST_F(IntentUtilTest, ConvertEmptyIntent) {
   EXPECT_FALSE(dst_intent->drive_share_url.has_value());
   EXPECT_FALSE(dst_intent->share_text.has_value());
   EXPECT_FALSE(dst_intent->share_title.has_value());
+  EXPECT_FALSE(dst_intent->start_type.has_value());
+  EXPECT_FALSE(dst_intent->categories.has_value());
+  EXPECT_FALSE(dst_intent->data.has_value());
+  EXPECT_EQ(apps::mojom::OptionalBool::kUnknown, dst_intent->ui_bypassed);
+  EXPECT_FALSE(dst_intent->extras.has_value());
 }

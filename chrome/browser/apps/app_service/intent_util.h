@@ -7,6 +7,7 @@
 
 #include <vector>
 
+#include "components/arc/mojom/intent_common.mojom.h"
 #include "components/arc/mojom/intent_helper.mojom-forward.h"
 #include "components/services/app_service/public/mojom/types.mojom.h"
 
@@ -24,7 +25,7 @@ namespace apps_util {
 // Create an intent struct from the file paths and mime types
 // of a list of files.
 // This util has to live under chrome/ because it uses fileapis
-// and cannot be inlucded in components/.
+// and cannot be included in components/.
 apps::mojom::IntentPtr CreateShareIntentFromFiles(
     Profile* profile,
     const std::vector<base::FilePath>& file_paths,
@@ -33,13 +34,18 @@ apps::mojom::IntentPtr CreateShareIntentFromFiles(
 // Create an intent struct from the file paths, mime types
 // of a list of files, and the share text and title.
 // This util has to live under chrome/ because it uses fileapis
-// and cannot be inlucded in components/.
+// and cannot be included in components/.
 apps::mojom::IntentPtr CreateShareIntentFromFiles(
     Profile* profile,
     const std::vector<base::FilePath>& file_paths,
     const std::vector<std::string>& mime_types,
     const std::string& share_text,
     const std::string& share_title);
+
+// Create an intent struct from the arc intent and arc activity.
+apps::mojom::IntentPtr CreateIntentForArcIntentAndActivity(
+    arc::mojom::IntentInfoPtr arc_intent,
+    arc::mojom::ActivityNamePtr activity);
 
 // Convert between App Service and ARC IntentFilters.
 arc::IntentFilter CreateArcIntentFilter(

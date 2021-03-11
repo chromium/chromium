@@ -4,7 +4,12 @@
 
 #include "components/services/app_service/public/cpp/intent_util.h"
 
+#include <string>
+#include <utility>
+#include <vector>
+
 #include "base/compiler_specific.h"
+#include "base/containers/flat_map.h"
 #include "base/optional.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
@@ -23,6 +28,11 @@ const char kActivityNameKey[] = "activity_name";
 const char kDriveShareUrlKey[] = "drive_share_url";
 const char kShareTextKey[] = "share_text";
 const char kShareTitleKey[] = "share_title";
+const char kStartTypeKey[] = "start_type";
+const char kCategoriesKey[] = "categories";
+const char kDataKey[] = "data";
+const char kUiBypassedKey[] = "ui_bypassed";
+const char kExtrasKey[] = "extras";
 
 // Get the intent condition value based on the condition type.
 base::Optional<std::string> GetIntentConditionValueByType(
@@ -406,6 +416,34 @@ base::Value ConvertIntentToValue(const apps::mojom::IntentPtr& intent) {
   if (intent->share_title.has_value() && !intent->share_title.value().empty())
     intent_value.SetStringKey(kShareTitleKey, intent->share_title.value());
 
+  if (intent->start_type.has_value() && !intent->start_type.value().empty())
+    intent_value.SetStringKey(kStartTypeKey, intent->start_type.value());
+
+  if (intent->categories.has_value() && !intent->categories.value().empty()) {
+    base::Value categories(base::Value::Type::LIST);
+    for (const auto& category : intent->categories.value()) {
+      categories.Append(base::Value(category));
+    }
+    intent_value.SetKey(kCategoriesKey, std::move(categories));
+  }
+
+  if (intent->data.has_value() && !intent->data.value().empty())
+    intent_value.SetStringKey(kDataKey, intent->data.value());
+
+  if (intent->ui_bypassed != apps::mojom::OptionalBool::kUnknown) {
+    intent_value.SetBoolKey(
+        kUiBypassedKey,
+        intent->ui_bypassed == apps::mojom::OptionalBool::kTrue ? true : false);
+  }
+
+  if (intent->extras.has_value() && !intent->extras.value().empty()) {
+    base::Value extras(base::Value::Type::DICTIONARY);
+    for (const auto& extra : intent->extras.value()) {
+      extras.SetStringKey(extra.first, extra.second);
+    }
+    intent_value.SetKey(kExtrasKey, std::move(extras));
+  }
+
   return intent_value;
 }
 
@@ -420,6 +458,20 @@ base::Optional<std::string> GetStringValueFromDict(
     return base::nullopt;
 
   return *value;
+}
+
+apps::mojom::OptionalBool GetBoolValueFromDict(
+    const base::DictionaryValue& dict,
+    const std::string& key_name) {
+  if (!dict.HasKey(key_name))
+    return apps::mojom::OptionalBool::kUnknown;
+
+  base::Optional<bool> value = dict.FindBoolKey(key_name);
+  if (!value.has_value())
+    return apps::mojom::OptionalBool::kUnknown;
+
+  return value.value() ? apps::mojom::OptionalBool::kTrue
+                       : apps::mojom::OptionalBool::kFalse;
 }
 
 base::Optional<GURL> GetGurlValueFromDict(const base::DictionaryValue& dict,
@@ -457,6 +509,43 @@ base::Optional<std::vector<::GURL>> GetFileUrlsFromDict(
   return file_urls;
 }
 
+base::Optional<std::vector<std::string>> GetCategoriesFromDict(
+    const base::DictionaryValue& dict,
+    const std::string& key_name) {
+  if (!dict.HasKey(key_name))
+    return base::nullopt;
+
+  const base::Value* value = dict.FindListKey(key_name);
+  if (!value || !value->is_list() || value->GetList().empty())
+    return base::nullopt;
+
+  std::vector<std::string> categories;
+  for (const auto& item : value->GetList())
+    categories.push_back(item.GetString());
+
+  return categories;
+}
+
+base::Optional<base::flat_map<std::string, std::string>> GetExtrasFromDict(
+    const base::DictionaryValue& dict,
+    const std::string& key_name) {
+  if (!dict.HasKey(key_name))
+    return base::nullopt;
+
+  const base::Value* value = dict.FindDictKey(key_name);
+  if (!value || !value->is_dict())
+    return base::nullopt;
+
+  base::flat_map<std::string, std::string> extras;
+  for (const auto& pair : value->DictItems()) {
+    std::string value;
+    if (pair.second.GetAsString(&value))
+      extras[pair.first] = value;
+  }
+
+  return extras;
+}
+
 apps::mojom::IntentPtr ConvertValueToIntent(base::Value&& value) {
   auto intent = apps::mojom::Intent::New();
 
@@ -472,6 +561,11 @@ apps::mojom::IntentPtr ConvertValueToIntent(base::Value&& value) {
   intent->drive_share_url = GetGurlValueFromDict(*dict, kDriveShareUrlKey);
   intent->share_text = GetStringValueFromDict(*dict, kShareTextKey);
   intent->share_title = GetStringValueFromDict(*dict, kShareTitleKey);
+  intent->start_type = GetStringValueFromDict(*dict, kStartTypeKey);
+  intent->categories = GetCategoriesFromDict(*dict, kCategoriesKey);
+  intent->data = GetStringValueFromDict(*dict, kDataKey);
+  intent->ui_bypassed = GetBoolValueFromDict(*dict, kUiBypassedKey);
+  intent->extras = GetExtrasFromDict(*dict, kExtrasKey);
 
   return intent;
 }

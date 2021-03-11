@@ -9,12 +9,18 @@
 #include <utility>
 
 #include "base/bind.h"
-#include "base/metrics/histogram_macros.h"
 #include "base/metrics/user_metrics.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/apps/app_service/app_icon_factory.h"
+#include "chrome/browser/apps/app_service/app_service_proxy.h"
+#include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
+#include "chrome/browser/apps/app_service/intent_util.h"
+#include "chrome/browser/apps/app_service/launch_utils.h"
+#include "chrome/browser/chromeos/arc/session/arc_session_manager.h"
+#include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/app_list/arc/arc_app_list_prefs.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/arc/arc_service_manager.h"
@@ -25,6 +31,9 @@
 #include "components/renderer_context_menu/render_view_context_menu_proxy.h"
 #include "content/public/browser/context_menu_params.h"
 #include "ui/base/models/image_model.h"
+#include "ui/display/display.h"
+#include "ui/display/screen.h"
+#include "ui/gfx/geometry/point.h"
 #include "ui/gfx/image/image_skia_operations.h"
 
 namespace arc {
@@ -98,13 +107,22 @@ void StartSmartSelectionActionMenu::ExecuteCommand(int command_id) {
   if (!instance)
     return;
 
-  instance->HandleIntent(std::move(actions_[index]->action_intent),
-                         std::move(actions_[index]->activity));
+  gfx::Point point = display::Screen::GetScreen()->GetCursorScreenPoint();
+  display::Display display =
+      display::Screen::GetScreen()->GetDisplayNearestPoint(point);
 
-  UMA_HISTOGRAM_ENUMERATION(
-      "Arc.UserInteraction",
-      arc::UserInteractionType::
-          APP_STARTED_FROM_SMART_TEXT_SELECTION_CONTEXT_MENU);
+  Profile* profile = ArcSessionManager::Get()->profile();
+  apps::AppServiceProxy* proxy =
+      apps::AppServiceProxyFactory::GetForProfile(profile);
+  proxy->LaunchAppWithIntent(
+      ArcAppListPrefs::Get(profile)->GetAppIdByPackageName(
+          actions_[index]->activity->package_name),
+      ui::EF_NONE,
+      apps_util::CreateIntentForArcIntentAndActivity(
+          std::move(actions_[index]->action_intent),
+          std::move(actions_[index]->activity)),
+      apps::mojom::LaunchSource::kFromSmartTextContextMenu,
+      apps::MakeWindowInfo(display.id()));
 }
 
 void StartSmartSelectionActionMenu::HandleTextSelectionActions(
