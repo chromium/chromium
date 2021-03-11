@@ -211,13 +211,21 @@ by a child template that "extends" this file.
                 <data android:scheme="https" />
                 <data android:scheme="about" />
                 <data android:scheme="javascript" />
-                {% endblock %}
                 <category android:name="android.intent.category.BROWSABLE" />
+                {% endblock %}
             </intent-filter>
             <!-- Same filter as above but with MIME types.  Intents that
                  do not specify a MIME type won't match. -->
-            <intent-filter tools:ignore="AppLinkUrlError">
+            <intent-filter>
                 {{ self.common_view_intent_shared_filter_body() }}
+                <data android:mimeType="text/html"/>
+                <data android:mimeType="text/plain"/>
+                <data android:mimeType="application/xhtml+xml"/>
+            </intent-filter>
+            <!-- content URI support. -->
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
                 <data android:scheme="content" />
                 <data android:mimeType="text/html"/>
                 <data android:mimeType="text/plain"/>

@@ -628,19 +628,6 @@
         android:exported="true"
         android:name="com.google.android.apps.chrome.IntentDispatcher"
         android:targetActivity="org.chromium.chrome.browser.document.ChromeLauncherActivity">
-      <intent-filter tools:ignore="AppLinkUrlError">  # DIFF-ANCHOR: 13c9b0a8
-        <action android:name="android.intent.action.VIEW"/>
-        <category android:name="android.intent.category.DEFAULT"/>
-        <data android:mimeType="application/xhtml+xml"/>
-        <data android:mimeType="text/html"/>
-        <data android:mimeType="text/plain"/>
-        <data android:scheme="about"/>
-        <data android:scheme="content"/>
-        <data android:scheme="googlechrome"/>
-        <data android:scheme="http"/>
-        <data android:scheme="https"/>
-        <data android:scheme="javascript"/>
-      </intent-filter>  # DIFF-ANCHOR: 13c9b0a8
       <intent-filter>  # DIFF-ANCHOR: a5330430
         <action android:name="android.intent.action.MAIN"/>
         <category android:name="android.intent.category.NOTIFICATION_PREFERENCES"/>
@@ -652,6 +639,19 @@
       <intent-filter>  # DIFF-ANCHOR: 8f70c92f
         <action android:name="android.intent.action.SEARCH"/>
       </intent-filter>  # DIFF-ANCHOR: 8f70c92f
+      <intent-filter>  # DIFF-ANCHOR: 13c9b0a8
+        <action android:name="android.intent.action.VIEW"/>
+        <category android:name="android.intent.category.BROWSABLE"/>
+        <category android:name="android.intent.category.DEFAULT"/>
+        <data android:mimeType="application/xhtml+xml"/>
+        <data android:mimeType="text/html"/>
+        <data android:mimeType="text/plain"/>
+        <data android:scheme="about"/>
+        <data android:scheme="googlechrome"/>
+        <data android:scheme="http"/>
+        <data android:scheme="https"/>
+        <data android:scheme="javascript"/>
+      </intent-filter>  # DIFF-ANCHOR: 13c9b0a8
       <intent-filter>  # DIFF-ANCHOR: 13c9b0a8
         <action android:name="android.intent.action.VIEW"/>
         <category android:name="android.intent.category.BROWSABLE"/>
@@ -723,6 +723,14 @@
         <data android:scheme="http"/>
         <data android:scheme="https"/>
         <data android:scheme="javascript"/>
+      </intent-filter>  # DIFF-ANCHOR: 13c9b0a8
+      <intent-filter>  # DIFF-ANCHOR: 13c9b0a8
+        <action android:name="android.intent.action.VIEW"/>
+        <category android:name="android.intent.category.DEFAULT"/>
+        <data android:mimeType="application/xhtml+xml"/>
+        <data android:mimeType="text/html"/>
+        <data android:mimeType="text/plain"/>
+        <data android:scheme="content"/>
       </intent-filter>  # DIFF-ANCHOR: 13c9b0a8
       <intent-filter>  # DIFF-ANCHOR: 13c9b0a8
         <action android:name="android.intent.action.VIEW"/>
