@@ -741,11 +741,11 @@ void HandleShowKeyboardShortcutViewer() {
   NewWindowDelegate::GetInstance()->ShowKeyboardShortcutViewer();
 }
 
-bool CanHandleScreenshot() {
+bool CanHandleScreenshot(AcceleratorAction action) {
   // The old screenshot code will handle the different sessions in its own code.
-  if (!features::IsCaptureModeEnabled())
+  // |TAKE_SCREENSHOT| is allowed when user session is blocked.
+  if (!features::IsCaptureModeEnabled() || action == TAKE_SCREENSHOT)
     return true;
-
   return !Shell::Get()->session_controller()->IsUserSessionBlocked();
 }
 
@@ -793,9 +793,11 @@ void HandleTakeScreenshot(ui::KeyboardCode key_code) {
     return;
   }
 
-  // If it is the snip key, toggle capture mode.
+  // If it is the snip key, toggle capture mode unless the session is blocked,
+  // in which case, it behaves like a fullscreen screenshot.
   auto* capture_mode_controller = CaptureModeController::Get();
-  if (key_code == ui::VKEY_SNAPSHOT) {
+  if (key_code == ui::VKEY_SNAPSHOT &&
+      !Shell::Get()->session_controller()->IsUserSessionBlocked()) {
     if (capture_mode_controller->IsActive())
       capture_mode_controller->Stop();
     else
@@ -2034,7 +2036,7 @@ bool AcceleratorControllerImpl::CanPerformAction(
     case TAKE_PARTIAL_SCREENSHOT:
     case TAKE_SCREENSHOT:
     case TAKE_WINDOW_SCREENSHOT:
-      return CanHandleScreenshot();
+      return CanHandleScreenshot(action);
 
     // The following are always enabled.
     case BRIGHTNESS_DOWN:

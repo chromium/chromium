@@ -34,7 +34,7 @@ class TestCaptureModeDelegate : public CaptureModeDelegate {
   gfx::Size GetCurrentVideoSize() const;
 
   // CaptureModeDelegate:
-  base::FilePath GetActiveUserDownloadsDir() const override;
+  base::FilePath GetScreenCaptureDir() const override;
   void ShowScreenCaptureItemInFolder(const base::FilePath& file_path) override;
   void OpenScreenshotInImageEditor(const base::FilePath& file_path) override;
   bool Uses24HourFormat() const override;

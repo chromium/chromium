@@ -952,7 +952,7 @@ void CaptureModeController::ShowPreviewNotification(
   message_center::RichNotificationData optional_fields;
   message_center::ButtonInfo edit_button(
       l10n_util::GetStringUTF16(IDS_ASH_SCREEN_CAPTURE_BUTTON_EDIT));
-  if (!for_video)
+  if (!for_video && !Shell::Get()->session_controller()->IsUserSessionBlocked())
     optional_fields.buttons.push_back(edit_button);
   message_center::ButtonInfo delete_button(
       l10n_util::GetStringUTF16(IDS_ASH_SCREEN_CAPTURE_BUTTON_DELETE));
@@ -1032,7 +1032,7 @@ base::FilePath CaptureModeController::BuildImagePathForDisplay(
 base::FilePath CaptureModeController::BuildPathNoExtension(
     const char* const format_string,
     base::Time timestamp) const {
-  const base::FilePath path = delegate_->GetActiveUserDownloadsDir();
+  const base::FilePath path = delegate_->GetScreenCaptureDir();
   base::Time::Exploded exploded_time;
   timestamp.LocalExplode(&exploded_time);
 

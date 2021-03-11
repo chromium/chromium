@@ -129,7 +129,7 @@ gfx::Size TestCaptureModeDelegate::GetCurrentVideoSize() const {
   return fake_service_ ? fake_service_->video_size() : gfx::Size();
 }
 
-base::FilePath TestCaptureModeDelegate::GetActiveUserDownloadsDir() const {
+base::FilePath TestCaptureModeDelegate::GetScreenCaptureDir() const {
   return fake_downloads_dir_;
 }
 
