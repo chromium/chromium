@@ -530,6 +530,9 @@ WebAXObject WebAXObject::HitTest(const gfx::Point& point) const {
     return WebAXObject();
   }
 
+  if (IsDetached())
+    return WebAXObject();  // Updating lifecycle could detach object.
+
   AXObject* hit = private_->AccessibilityHitTest(contents_point);
 
   if (hit)
@@ -592,6 +595,9 @@ bool WebAXObject::PerformAction(const ui::AXActionData& action_data) const {
 
   document->View()->UpdateAllLifecyclePhasesExceptPaint(
       DocumentUpdateReason::kAccessibility);
+
+  if (IsDetached())
+    return false;  // Updating lifecycle could detach object.
 
   ScopedActionAnnotator annotater(private_.Get());
   return private_->PerformAction(action_data);
