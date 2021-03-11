@@ -103,13 +103,24 @@ class VideoDecoderPipelineTest
   }
   MOCK_METHOD1(OnInit, void(Status));
   MOCK_METHOD1(OnOutput, void(scoped_refptr<VideoFrame>));
+  MOCK_METHOD0(OnResetDone, void());
 
   void SetCreateDecoderFunctionCB(
       VideoDecoderPipeline::CreateDecoderFunctionCB function) {
     decoder_->create_decoder_function_cb_ = std::move(function);
   }
 
-  void InitializeDecoder() {
+  // Constructs |decoder_| with a given |create_decoder_function_cb| and
+  // verifying |status_code| is received back in OnInit().
+  void InitializeDecoder(
+      VideoDecoderPipeline::CreateDecoderFunctionCB create_decoder_function_cb,
+      StatusCode status_code) {
+    SetCreateDecoderFunctionCB(create_decoder_function_cb);
+
+    base::RunLoop run_loop;
+    EXPECT_CALL(*this, OnInit(MatchesStatusCode(status_code)))
+        .WillOnce(RunClosure(run_loop.QuitClosure()));
+
     decoder_->Initialize(
         config_, false /* low_delay */, nullptr /* cdm_context */,
         base::BindOnce(&VideoDecoderPipelineTest::OnInit,
@@ -117,6 +128,7 @@ class VideoDecoderPipelineTest
         base::BindRepeating(&VideoDecoderPipelineTest::OnOutput,
                             base::Unretained(this)),
         base::DoNothing());
+    run_loop.Run();
   }
 
   static std::unique_ptr<DecoderInterface> CreateNullMockDecoder(
@@ -162,14 +174,8 @@ class VideoDecoderPipelineTest
 
 // Verifies the status code for several typical CreateDecoderFunctionCB cases.
 TEST_P(VideoDecoderPipelineTest, Initialize) {
-  SetCreateDecoderFunctionCB(GetParam().create_decoder_function_cb);
-
-  base::RunLoop run_loop;
-  EXPECT_CALL(*this, OnInit(MatchesStatusCode(GetParam().status_code)))
-      .WillOnce(RunClosure(run_loop.QuitClosure()));
-
-  InitializeDecoder();
-  run_loop.Run();
+  InitializeDecoder(GetParam().create_decoder_function_cb,
+                    GetParam().status_code);
 
   EXPECT_EQ(GetParam().status_code == StatusCode::kOk,
             !!GetUnderlyingDecoder());
@@ -196,4 +202,25 @@ INSTANTIATE_TEST_SUITE_P(All,
                          VideoDecoderPipelineTest,
                          testing::ValuesIn(kDecoderPipelineTestParams));
 
+// Verifies the Reset sequence.
+TEST_F(VideoDecoderPipelineTest, Reset) {
+  InitializeDecoder(
+      base::BindRepeating(&VideoDecoderPipelineTest::CreateGoodMockDecoder),
+      StatusCode::kOk);
+
+  // When we call Reset(), we expect GetUnderlyingDecoder()'s Reset() method to
+  // be called, and when that method Run()s its argument closure, then
+  // OnResetDone() is expected to be called.
+
+  base::RunLoop run_loop;
+  EXPECT_CALL(*reinterpret_cast<MockDecoder*>(GetUnderlyingDecoder()), Reset(_))
+      .WillOnce(::testing::WithArgs<0>(
+          [](base::OnceClosure closure) { std::move(closure).Run(); }));
+
+  EXPECT_CALL(*this, OnResetDone())
+      .WillOnce(RunClosure(run_loop.QuitClosure()));
+
+  decoder_->Reset(base::BindOnce(&VideoDecoderPipelineTest::OnResetDone,
+                                 base::Unretained(this)));
+}
 }  // namespace media

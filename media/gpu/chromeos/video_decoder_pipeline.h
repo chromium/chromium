@@ -157,7 +157,7 @@ class MEDIA_GPU_EXPORT VideoDecoderPipeline : public VideoDecoder,
                   InitCB init_cb,
                   const OutputCB& output_cb,
                   const WaitingCB& waiting_cb) override;
-  void Reset(base::OnceClosure closure) override;
+  void Reset(base::OnceClosure reset_cb) override;
   void Decode(scoped_refptr<DecoderBuffer> buffer, DecodeCB decode_cb) override;
 
   // DecoderInterface::Client implementation.
@@ -184,13 +184,13 @@ class MEDIA_GPU_EXPORT VideoDecoderPipeline : public VideoDecoder,
                       InitCB init_cb,
                       const OutputCB& output_cb,
                       const WaitingCB& waiting_cb);
-  void ResetTask(base::OnceClosure closure);
+  void ResetTask(base::OnceClosure reset_cb);
   void DecodeTask(scoped_refptr<DecoderBuffer> buffer, DecodeCB decode_cb);
 
   void OnInitializeDone(Status status);
 
   void OnDecodeDone(bool eos_buffer, DecodeCB decode_cb, Status status);
-  void OnResetDone();
+  void OnResetDone(base::OnceClosure reset_cb);
   void OnError(const std::string& msg);
 
   // Called when |decoder_| finishes decoding a frame.
@@ -250,7 +250,6 @@ class MEDIA_GPU_EXPORT VideoDecoderPipeline : public VideoDecoder,
   InitCB init_cb_;
   OutputCB client_output_cb_;
   DecodeCB client_flush_cb_;
-  base::OnceClosure client_reset_cb_;
 
   // True if we need to notify |decoder_| that the pipeline is flushed via
   // DecoderInterface::ApplyResolutionChange().

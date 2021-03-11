@@ -262,30 +262,26 @@ void VideoDecoderPipeline::OnInitializeDone(Status status) {
                                 base::BindOnce(std::move(init_cb_), status));
 }
 
-void VideoDecoderPipeline::Reset(base::OnceClosure closure) {
+void VideoDecoderPipeline::Reset(base::OnceClosure reset_cb) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(client_sequence_checker_);
   DVLOGF(3);
 
   decoder_task_runner_->PostTask(
       FROM_HERE, base::BindOnce(&VideoDecoderPipeline::ResetTask,
-                                decoder_weak_this_, std::move(closure)));
+                                decoder_weak_this_, std::move(reset_cb)));
 }
 
-void VideoDecoderPipeline::ResetTask(base::OnceClosure closure) {
+void VideoDecoderPipeline::ResetTask(base::OnceClosure reset_cb) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(decoder_sequence_checker_);
-  DCHECK(decoder_);
-  DCHECK(!client_reset_cb_);
   DVLOGF(3);
 
   need_apply_new_resolution = false;
-  client_reset_cb_ = std::move(closure);
-  decoder_->Reset(
-      base::BindOnce(&VideoDecoderPipeline::OnResetDone, decoder_weak_this_));
+  decoder_->Reset(base::BindOnce(&VideoDecoderPipeline::OnResetDone,
+                                 decoder_weak_this_, std::move(reset_cb)));
 }
 
-void VideoDecoderPipeline::OnResetDone() {
+void VideoDecoderPipeline::OnResetDone(base::OnceClosure reset_cb) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(decoder_sequence_checker_);
-  DCHECK(client_reset_cb_);
   DVLOGF(3);
 
   if (image_processor_)
@@ -294,7 +290,7 @@ void VideoDecoderPipeline::OnResetDone() {
 
   CallFlushCbIfNeeded(DecodeStatus::ABORTED);
 
-  client_task_runner_->PostTask(FROM_HERE, std::move(client_reset_cb_));
+  client_task_runner_->PostTask(FROM_HERE, std::move(reset_cb));
 }
 
 void VideoDecoderPipeline::Decode(scoped_refptr<DecoderBuffer> buffer,
