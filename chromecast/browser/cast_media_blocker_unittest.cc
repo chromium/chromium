@@ -57,6 +57,9 @@ class MockMediaSession : public content::MediaSession {
   MOCK_METHOD0(EnterPictureInPicture, void());
   MOCK_METHOD0(ExitPictureInPicture, void());
   MOCK_METHOD1(SetAudioSinkId, void(const base::Optional<std::string>& id));
+  MOCK_METHOD0(ToggleMicrophone, void());
+  MOCK_METHOD0(ToggleCamera, void());
+  MOCK_METHOD0(HangUp, void());
 
  private:
   DISALLOW_COPY_AND_ASSIGN(MockMediaSession);

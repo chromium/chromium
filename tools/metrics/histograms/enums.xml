@@ -50507,6 +50507,10 @@ Called by update_use_counter_css.py.-->
   <int value="12" label="Scrub to"/>
   <int value="13" label="Enter picture-in-picture"/>
   <int value="14" label="Exit picture-in-picture"/>
+  <int value="15" label="Switch audio device"/>
+  <int value="16" label="Toggle microphone"/>
+  <int value="17" label="Toggle camera"/>
+  <int value="18" label="Hang up"/>
 </enum>
 
 <enum name="MediaSinkType">

@@ -53,6 +53,9 @@ class MediaController : public mojom::MediaController,
   void EnterPictureInPicture() override;
   void ExitPictureInPicture() override;
   void SetAudioSinkId(const base::Optional<std::string>& id) override;
+  void ToggleMicrophone() override;
+  void ToggleCamera() override;
+  void HangUp() override;
 
   // mojom::MediaSessionObserver overrides.
   void MediaSessionInfoChanged(
