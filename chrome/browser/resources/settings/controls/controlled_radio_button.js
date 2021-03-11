@@ -11,7 +11,7 @@ import {CrRadioButtonBehavior} from '//resources/cr_elements/cr_radio_button/cr_
 import {assert} from '//resources/js/assert.m.js';
 import {html, Polymer} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {prefToString} from '../prefs/pref_util.m.js';
+import {prefToString} from '../prefs/pref_util.js';
 
 import {PrefControlBehavior} from './pref_control_behavior.js';
 

@@ -63,7 +63,7 @@ js_library("autofill_page") {
     "..:open_window_proxy",
     "..:route",
     "..:router.m",
-    "../prefs:prefs_behavior.m",
+    "../prefs:prefs_behavior",
   ]
   externs_list = [
     "$externs_path/passwords_private.js",
@@ -129,7 +129,7 @@ js_library("password_check") {
     ":password_check_behavior",
     ":password_manager_proxy",
     "..:route",
-    "../prefs:prefs_behavior.m",
+    "../prefs:prefs_behavior",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
     "//ui/webui/resources/js:assert.m",
     "//ui/webui/resources/js:i18n_behavior.m",
@@ -302,7 +302,7 @@ js_library("passwords_section") {
     "..:route",
     "../people_page:profile_info_browser_proxy.m",
     "../people_page:sync_browser_proxy.m",
-    "../prefs:prefs_behavior.m",
+    "../prefs:prefs_behavior",
     "//third_party/polymer/v3_0/components-chromium/iron-a11y-announcer:iron-a11y-announcer",
     "//third_party/polymer/v3_0/components-chromium/iron-a11y-keys-behavior:iron-a11y-keys-behavior",
     "//ui/webui/resources/cr_elements/cr_action_menu:cr_action_menu.m",

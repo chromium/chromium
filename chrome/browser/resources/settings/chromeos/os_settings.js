@@ -85,7 +85,7 @@ export {pageVisibility} from '../page_visibility.js';
 export {AccountManagerBrowserProxy, AccountManagerBrowserProxyImpl} from '../people_page/account_manager_browser_proxy.m.js';
 export {ProfileInfoBrowserProxy, ProfileInfoBrowserProxyImpl} from '../people_page/profile_info_browser_proxy.m.js';
 export {PageStatus, StatusAction, StoredAccount, SyncBrowserProxy, SyncBrowserProxyImpl, SyncStatus} from '../people_page/sync_browser_proxy.m.js';
-export {CrSettingsPrefs} from '../prefs/prefs_types.m.js';
+export {CrSettingsPrefs} from '../prefs/prefs_types.js';
 export {Route, Router} from '../router.m.js';
 export {SearchEngine, SearchEnginesBrowserProxy, SearchEnginesBrowserProxyImpl, SearchEnginesInfo} from '../search_engines_page/search_engines_browser_proxy.js';
 export {getSearchManager, SearchRequest, SearchResult, setSearchManagerForTesting} from '../search_settings.m.js';

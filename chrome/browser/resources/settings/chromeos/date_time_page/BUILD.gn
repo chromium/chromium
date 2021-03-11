@@ -24,7 +24,7 @@ js_library("date_time_page.m") {
   deps = [
     "..:deep_linking_behavior.m",
     "..:os_settings_routes.m",
-    "../../prefs:prefs_behavior.m",
+    "../../prefs:prefs_behavior",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
     "//ui/webui/resources/cr_elements/policy:cr_policy_indicator.m",
     "//ui/webui/resources/cr_elements/policy:cr_policy_pref_indicator.m",
@@ -57,8 +57,8 @@ js_library("timezone_selector.m") {
   deps = [
     ":timezone_browser_proxy.m",
     "../../controls:settings_dropdown_menu",
-    "../../prefs:prefs_behavior.m",
-    "../../prefs:prefs_types.m",
+    "../../prefs:prefs_behavior",
+    "../../prefs:prefs_types",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
     "//ui/webui/resources/js:load_time_data.m",
   ]
@@ -73,7 +73,7 @@ js_library("timezone_subpage.m") {
     "..:deep_linking_behavior.m",
     "..:os_settings_routes.m",
     "../..:router.m",
-    "../../prefs:prefs_behavior.m",
+    "../../prefs:prefs_behavior",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
     "//ui/webui/resources/js:load_time_data.m",
     "//ui/webui/resources/js:web_ui_listener_behavior.m",

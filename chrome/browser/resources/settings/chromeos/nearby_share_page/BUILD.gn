@@ -14,7 +14,11 @@ js_type_check("closure_compile_module") {
   # TODO(crbug.com/1121865): browser_resolver_prefix_replacements allows path
   # from ../../shared/* to resolve to ../../../nearby_share/shared/* for closure
   # purposes.
-  closure_flags = default_closure_args + [ "browser_resolver_prefix_replacements=\"../../shared/=../../../nearby_share/shared/\"" ]
+  closure_flags = os_settings_closure_flags + [
+                    "js_module_root=../../chrome/browser/resources/nearby_share",
+                    "js_module_root=./gen/chrome/browser/resources/nearby_share",
+                    "browser_resolver_prefix_replacements=\"../../shared/=../../../nearby_share/shared/\"",
+                  ]
   deps = [
     ":nearby_share_confirm_page.m",
     ":nearby_share_contact_visibility_dialog.m",
@@ -55,8 +59,8 @@ js_library("nearby_share_data_usage_dialog.m") {
   deps = [
     ":types.m",
     "../../prefs:prefs.m",
-    "../../prefs:prefs_behavior.m",
-    "../../prefs:prefs_types.m",
+    "../../prefs:prefs_behavior",
+    "../../prefs:prefs_types",
     "//ui/webui/resources/cr_elements/cr_button:cr_button.m",
     "//ui/webui/resources/cr_elements/cr_dialog:cr_dialog.m",
     "//ui/webui/resources/cr_elements/cr_radio_button:cr_radio_button.m",
@@ -137,8 +141,8 @@ js_library("nearby_share_subpage.m") {
     "..:os_route.m",
     "../..:router.m",
     "../../prefs:prefs.m",
-    "../../prefs:prefs_behavior.m",
-    "../../prefs:prefs_types.m",
+    "../../prefs:prefs_behavior",
+    "../../prefs:prefs_types",
     "//chrome/browser/resources/nearby_share/shared:nearby_onboarding_page.m",
     "//chrome/browser/resources/nearby_share/shared:nearby_share_settings_behavior.m",
     "//chrome/browser/resources/nearby_share/shared:nearby_visibility_page.m",

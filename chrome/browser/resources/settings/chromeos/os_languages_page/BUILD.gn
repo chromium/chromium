@@ -188,7 +188,7 @@ js_library("smart_inputs_page.m") {
     "..:deep_linking_behavior.m",
     "..:os_route.m",
     "../..:router.m",
-    "../../prefs:prefs_behavior.m",
+    "../../prefs:prefs_behavior",
     "//ui/webui/resources/js:load_time_data.m",
   ]
   extra_deps = [ ":smart_inputs_page_module" ]

@@ -21,7 +21,7 @@ import {flush, html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/poly
 
 import {GlobalScrollTargetBehavior} from '../global_scroll_target_behavior.m.js';
 import {loadTimeData} from '../i18n_setup.js';
-import {PrefsBehavior} from '../prefs/prefs_behavior.m.js';
+import {PrefsBehavior} from '../prefs/prefs_behavior.js';
 import {routes} from '../route.js';
 
 import {LanguagesBrowserProxyImpl} from './languages_browser_proxy.js';

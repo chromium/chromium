@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {CrSettingsPrefs} from '../prefs/prefs_types.m.js';
+import {CrSettingsPrefs} from '../prefs/prefs_types.js';
 
 /**
  * @polymerBehavior Tracks the initialization of a specified preference and

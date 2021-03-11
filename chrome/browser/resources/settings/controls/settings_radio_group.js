@@ -18,7 +18,7 @@ import '../settings_shared_css.m.js';
 
 import {html, Polymer} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {prefToString, stringToPrefValue} from '../prefs/pref_util.m.js';
+import {prefToString, stringToPrefValue} from '../prefs/pref_util.js';
 
 import {PrefControlBehavior} from './pref_control_behavior.js';
 

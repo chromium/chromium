@@ -44,7 +44,7 @@ js_library("peripheral_data_access_browser_proxy.m") {
 js_library("peripheral_data_access_protection_dialog.m") {
   sources = [ "$root_gen_dir/chrome/browser/resources/settings/chromeos/os_privacy_page/peripheral_data_access_protection_dialog.m.js" ]
   deps = [
-    "../../prefs:prefs_behavior.m",
+    "../../prefs:prefs_behavior",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
     "//ui/webui/resources/js:load_time_data.m",
   ]

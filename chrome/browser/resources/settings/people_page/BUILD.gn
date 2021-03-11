@@ -50,7 +50,7 @@ if (!is_chromeos_ash) {
     deps = [
       ":import_data_browser_proxy",
       "../controls:settings_checkbox",
-      "../prefs:prefs_behavior.m",
+      "../prefs:prefs_behavior",
       "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
       "//ui/webui/resources/js:i18n_behavior.m",
       "//ui/webui/resources/js:web_ui_listener_behavior.m",
@@ -122,7 +122,7 @@ js_library("sync_account_control.m") {
     ":sync_browser_proxy.m",
     "..:i18n_setup",
     "..:router.m",
-    "../prefs:prefs_behavior.m",
+    "../prefs:prefs_behavior",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
     "//ui/webui/resources/cr_elements/cr_action_menu:cr_action_menu.m",
     "//ui/webui/resources/js:assert.m",

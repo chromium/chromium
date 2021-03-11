@@ -21,7 +21,7 @@ js_library("recent_site_permissions") {
     "..:route",
     "..:router.m",
     "../people_page:sync_browser_proxy.m",
-    "../prefs:prefs_behavior.m",
+    "../prefs:prefs_behavior",
     "../site_settings:constants",
     "../site_settings:site_settings_behavior",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",

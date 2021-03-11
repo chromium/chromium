@@ -18,8 +18,8 @@ import {loadTimeData} from '//resources/js/load_time_data.m.js';
 import {PromiseResolver} from '//resources/js/promise_resolver.m.js';
 import {html, Polymer} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {PrefsBehavior} from '../prefs/prefs_behavior.m.js';
-import {CrSettingsPrefs} from '../prefs/prefs_types.m.js';
+import {PrefsBehavior} from '../prefs/prefs_behavior.js';
+import {CrSettingsPrefs} from '../prefs/prefs_types.js';
 
 import {LanguagesBrowserProxy, LanguagesBrowserProxyImpl} from './languages_browser_proxy.js';
 

@@ -39,7 +39,7 @@ js_library("controlled_button") {
 js_library("controlled_radio_button") {
   deps = [
     ":pref_control_behavior",
-    "../prefs:pref_util.m",
+    "../prefs:pref_util",
     "//third_party/polymer/v3_0/components-chromium/iron-a11y-keys-behavior:iron-a11y-keys-behavior",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
     "//ui/webui/resources/cr_elements/cr_radio_button:cr_radio_button_behavior.m",
@@ -69,13 +69,13 @@ js_library("password_prompt_dialog") {
 }
 
 js_library("pref_control_behavior") {
-  deps = [ "../prefs:prefs_types.m" ]
+  deps = [ "../prefs:prefs_types" ]
 }
 
 js_library("settings_boolean_control_behavior") {
   deps = [
     ":pref_control_behavior",
-    "../prefs:prefs_types.m",
+    "../prefs:prefs_types",
     "//ui/webui/resources/cr_elements/policy:cr_policy_pref_behavior.m",
     "//ui/webui/resources/js:assert.m",
   ]
@@ -91,7 +91,7 @@ js_library("settings_checkbox") {
 js_library("settings_dropdown_menu") {
   deps = [
     ":pref_control_behavior",
-    "../prefs:pref_util.m",
+    "../prefs:pref_util",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
     "//ui/webui/resources/cr_elements/policy:cr_policy_indicator_behavior.m",
     "//ui/webui/resources/cr_elements/policy:cr_policy_pref_behavior.m",
@@ -111,7 +111,7 @@ js_library("settings_idle_load") {
 js_library("settings_radio_group") {
   deps = [
     ":pref_control_behavior",
-    "../prefs:pref_util.m",
+    "../prefs:pref_util",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
     "//ui/webui/resources/js:assert.m",
     "//ui/webui/resources/js:cr.m",

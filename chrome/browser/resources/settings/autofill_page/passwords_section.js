@@ -35,7 +35,7 @@ import {GlobalScrollTargetBehavior} from '../global_scroll_target_behavior.m.js'
 import {loadTimeData} from '../i18n_setup.js';
 import {SyncBrowserProxyImpl, SyncPrefs, SyncStatus} from '../people_page/sync_browser_proxy.m.js';
 import '../prefs/prefs.m.js';
-import {PrefsBehavior} from '../prefs/prefs_behavior.m.js';
+import {PrefsBehavior} from '../prefs/prefs_behavior.js';
 import {routes} from '../route.js';
 import {MergeExceptionsStoreCopiesBehavior} from './merge_exceptions_store_copies_behavior.js';
 import {MergePasswordsStoreCopiesBehavior} from './merge_passwords_store_copies_behavior.js';

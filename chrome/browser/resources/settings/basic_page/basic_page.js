@@ -36,7 +36,7 @@ import {beforeNextRender, html, Polymer} from 'chrome://resources/polymer/v3_0/p
 import {loadTimeData} from '../i18n_setup.js';
 import {PageVisibility} from '../page_visibility.js';
 // <if expr="chromeos or lacros">
-import {PrefsBehavior} from '../prefs/prefs_behavior.m.js';
+import {PrefsBehavior} from '../prefs/prefs_behavior.js';
 // </if>
 import {routes} from '../route.js';
 import {Route, RouteObserverBehavior, Router} from '../router.m.js';

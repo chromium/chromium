@@ -230,7 +230,7 @@ js_library("network_proxy_section.m") {
     "//chrome/browser/resources/settings/chromeos:os_route.m",
     "//chrome/browser/resources/settings/controls:extension_controlled_indicator",
     "//chrome/browser/resources/settings/controls:settings_toggle_button",
-    "//chrome/browser/resources/settings/prefs:prefs_behavior.m",
+    "//chrome/browser/resources/settings/prefs:prefs_behavior",
     "//third_party/polymer/v3_0/components-chromium/iron-flex-layout:iron-flex-layout-classes",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
     "//ui/webui/resources/cr_components/chromeos/network:cr_policy_network_behavior_mojo.m",

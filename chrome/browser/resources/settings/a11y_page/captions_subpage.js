@@ -19,7 +19,7 @@ import {html, Polymer} from '//resources/polymer/v3_0/polymer/polymer_bundled.mi
 import {FontsBrowserProxy, FontsBrowserProxyImpl, FontsData} from '../appearance_page/fonts_browser_proxy.js';
 import {DropdownMenuOptionList} from '../controls/settings_dropdown_menu.js';
 import {loadTimeData} from '../i18n_setup.js';
-import {PrefsBehavior} from '../prefs/prefs_behavior.m.js';
+import {PrefsBehavior} from '../prefs/prefs_behavior.js';
 
 
 Polymer({
