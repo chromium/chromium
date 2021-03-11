@@ -260,10 +260,16 @@ PhysicalRect NGLayoutOverflowCalculator::LayoutOverflowForPropagation(
 
   PhysicalRect overflow = {{}, child_fragment.Size()};
   const auto& child_style = child_fragment.Style();
-  if (!child_fragment.ShouldApplyLayoutContainment() &&
-      (!child_fragment.ShouldClipOverflowAlongBothAxis() ||
-       child_style.OverflowClipMargin() != LayoutUnit()) &&
-      !child_fragment.IsInlineBox()) {
+
+  // Collapsed table rows/sections set IsHiddenForPaint flag.
+  bool ignore_layout_overflow =
+      child_fragment.ShouldApplyLayoutContainment() ||
+      child_fragment.IsInlineBox() ||
+      (child_fragment.ShouldClipOverflowAlongBothAxis() &&
+       child_style.OverflowClipMargin() == LayoutUnit()) ||
+      child_fragment.IsHiddenForPaint();
+
+  if (!ignore_layout_overflow) {
     PhysicalRect child_overflow = child_fragment.LayoutOverflow();
     if (child_fragment.HasNonVisibleOverflow()) {
       const OverflowClipAxes overflow_clip_axes =
