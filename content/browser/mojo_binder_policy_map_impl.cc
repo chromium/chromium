@@ -10,6 +10,7 @@
 #include "content/public/common/content_client.h"
 #include "device/gamepad/public/mojom/gamepad.mojom.h"
 #include "services/network/public/mojom/restricted_cookie_manager.mojom.h"
+#include "third_party/blink/public/mojom/clipboard/clipboard.mojom.h"
 #include "third_party/blink/public/mojom/indexeddb/indexeddb.mojom.h"
 
 namespace content {
@@ -23,6 +24,12 @@ void RegisterContentBinderPoliciesForSameOriginPrerendering(
   map.SetPolicy<device::mojom::GamepadHapticsManager>(
       MojoBinderPolicy::kCancel);
   map.SetPolicy<device::mojom::GamepadMonitor>(MojoBinderPolicy::kCancel);
+
+  // ClipboardHost has sync messages, so it cannot be kDefer. However, the
+  // renderer is not expected to request the interface because it only does so
+  // after blink::mojom::PermissionService is bound, which is a deferred
+  // interface.
+  map.SetPolicy<blink::mojom::ClipboardHost>(MojoBinderPolicy::kUnexpected);
 
   map.SetPolicy<blink::mojom::IDBFactory>(MojoBinderPolicy::kGrant);
   map.SetPolicy<network::mojom::RestrictedCookieManager>(

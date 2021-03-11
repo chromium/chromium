@@ -42,6 +42,7 @@
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "net/test/embedded_test_server/http_request.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/mojom/browser_interface_broker.mojom.h"
 #include "ui/shell_dialogs/select_file_dialog.h"
@@ -1426,6 +1427,35 @@ IN_PROC_BROWSER_TEST_P(PrerenderBrowserTest, RenderDocumentHostUserData) {
 }
 
 // - End: Tests for Mojo capability control methodology restrictions ===========
+
+// Tests that prerendering pages cannot access Clipboard.
+// This cannot be upstreamed as a WPT test because the spec (probably) will
+// require that no error is thrown until activation.
+IN_PROC_BROWSER_TEST_P(PrerenderBrowserTest, ClipboardAccessError) {
+  const GURL kInitialUrl = GetUrl("/prerender/add_prerender.html");
+  const GURL kPrerenderingUrl = GetUrl("/empty.html");
+
+  // Navigate to an initial page.
+  ASSERT_TRUE(NavigateToURL(shell(), kInitialUrl));
+
+  // Make a prerendered page.
+  AddPrerender(kPrerenderingUrl);
+
+  PrerenderHostRegistry& registry = GetPrerenderHostRegistry();
+  PrerenderHost* prerender_host =
+      registry.FindHostByUrlForTesting(kPrerenderingUrl);
+  ASSERT_TRUE(prerender_host);
+  RenderFrameHostImpl* prerendered_render_frame_host =
+      prerender_host->GetPrerenderedMainFrameHostForTesting();
+
+  // Accessing Clipboard on prerendering pages should fail because the
+  // prerendering documents are not focused.
+  // (https://w3c.github.io/clipboard-apis/#privacy-async)
+  auto result = EvalJs(prerendered_render_frame_host,
+                       "navigator.clipboard.writeText(location.href);");
+  EXPECT_THAT(result.error, ::testing::HasSubstr(
+                                "NotAllowedError: Document is not focused."));
+}
 
 // End: Tests for feature restrictions in prerendered pages ====================
 
