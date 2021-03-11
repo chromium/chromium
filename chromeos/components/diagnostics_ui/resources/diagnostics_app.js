@@ -90,6 +90,7 @@ Polymer({
     this.systemDataProvider_.getSystemInfo().then((result) => {
       this.onSystemInfoReceived_(result.systemInfo);
     });
+    setTimeout(() => this.recordLateSystemInfo_(), 3000);
   },
 
   /**
@@ -99,6 +100,15 @@ Polymer({
   onSystemInfoReceived_(systemInfo) {
     this.systemInfoReceived_ = true;
     this.showBatteryStatusCard_ = systemInfo.deviceCapabilities.hasBattery;
+  },
+
+  /**
+   * @private
+   */
+  recordLateSystemInfo_() {
+    if (!this.systemInfoReceived_) {
+      console.warn('system info not received within three seconds.');
+    }
   },
 
   /** @protected */
