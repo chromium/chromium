@@ -320,6 +320,13 @@ void CartService::DeleteRemovedCartsContent(
 void CartService::OnLoadCarts(CartDB::LoadCallback callback,
                               bool success,
                               std::vector<CartDB::KeyAndValue> proto_pairs) {
+  if ((IsHidden() || IsRemoved()) &&
+      base::GetFieldTrialParamValueByFeature(
+          ntp_features::kNtpChromeCartModule,
+          ntp_features::kNtpChromeCartModuleDataParam) != "fake") {
+    std::move(callback).Run(success, {});
+    return;
+  }
   std::set<std::string> expired_merchants;
   for (CartDB::KeyAndValue kv : proto_pairs) {
     if (IsExpired(kv.second)) {
@@ -383,6 +390,8 @@ void CartService::OnAddCart(const std::string& domain,
   if (!success) {
     return;
   }
+  // Restore module visibility anytime a cart-related action happens.
+  RestoreHidden();
   std::string* merchant_name = domain_name_mapping_->FindStringKey(domain);
   if (merchant_name) {
     proto.set_merchant(*merchant_name);

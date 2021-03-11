@@ -822,3 +822,32 @@ TEST_F(CartServiceTest, TestExpiredDataDeleted) {
                      run_loop[2].QuitClosure(), result));
   run_loop[2].Run();
 }
+
+// Tests cart-related actions would reshow hidden module.
+TEST_F(CartServiceTest, TestHiddenFlipedByCartAction) {
+  base::RunLoop run_loop[3];
+  cart_db::ChromeCartContentProto merchant_proto =
+      BuildProto(kMockMerchantA, kMockMerchantURLA);
+  const ShoppingCarts result = {{kMockMerchantA, merchant_proto}};
+  service_->AddCart(kMockMerchantA, base::nullopt, merchant_proto);
+  task_environment_.RunUntilIdle();
+  service_->LoadAllActiveCarts(
+      base::BindOnce(&CartServiceTest::GetEvaluationURL, base::Unretained(this),
+                     run_loop[0].QuitClosure(), result));
+  run_loop[0].Run();
+
+  service_->Hide();
+  ASSERT_TRUE(service_->IsHidden());
+  service_->LoadAllActiveCarts(
+      base::BindOnce(&CartServiceTest::GetEvaluationURL, base::Unretained(this),
+                     run_loop[1].QuitClosure(), kEmptyExpected));
+  run_loop[1].Run();
+
+  service_->AddCart(kMockMerchantA, base::nullopt, merchant_proto);
+  task_environment_.RunUntilIdle();
+  ASSERT_FALSE(service_->IsHidden());
+  service_->LoadAllActiveCarts(
+      base::BindOnce(&CartServiceTest::GetEvaluationURL, base::Unretained(this),
+                     run_loop[2].QuitClosure(), result));
+  run_loop[2].Run();
+}
