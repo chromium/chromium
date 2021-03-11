@@ -10,6 +10,7 @@
 #include "base/command_line.h"
 #include "base/feature_list.h"
 #include "base/metrics/histogram_functions.h"
+#include "chrome/browser/accessibility/caption_host_impl.h"
 #include "chrome/browser/accessibility/caption_util.h"
 #include "chrome/browser/accessibility/soda_installer.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
@@ -25,7 +26,6 @@
 #include "components/soda/constants.h"
 #include "components/sync_preferences/pref_service_syncable.h"
 #include "content/public/browser/browser_accessibility_state.h"
-#include "content/public/browser/web_contents.h"
 #include "media/base/media_switches.h"
 
 namespace {
@@ -246,20 +246,30 @@ void CaptionController::OnBrowserRemoved(Browser* browser) {
 }
 
 bool CaptionController::DispatchTranscription(
-    content::WebContents* web_contents,
+    CaptionHostImpl* caption_host_impl,
     const chrome::mojom::TranscriptionResultPtr& transcription_result) {
-  Browser* browser = chrome::FindBrowserWithWebContents(web_contents);
+  Browser* browser =
+      chrome::FindBrowserWithWebContents(caption_host_impl->GetWebContents());
   if (!browser || !caption_bubble_controllers_.count(browser))
     return false;
   return caption_bubble_controllers_[browser]->OnTranscription(
-      transcription_result, web_contents);
+      caption_host_impl, transcription_result);
 }
 
-void CaptionController::OnError(content::WebContents* web_contents) {
-  Browser* browser = chrome::FindBrowserWithWebContents(web_contents);
+void CaptionController::OnError(CaptionHostImpl* caption_host_impl) {
+  Browser* browser =
+      chrome::FindBrowserWithWebContents(caption_host_impl->GetWebContents());
   if (!browser || !caption_bubble_controllers_.count(browser))
     return;
-  return caption_bubble_controllers_[browser]->OnError(web_contents);
+  caption_bubble_controllers_[browser]->OnError(caption_host_impl);
+}
+
+void CaptionController::OnAudioStreamEnd(CaptionHostImpl* caption_host_impl) {
+  Browser* browser =
+      chrome::FindBrowserWithWebContents(caption_host_impl->GetWebContents());
+  if (!browser || !caption_bubble_controllers_.count(browser))
+    return;
+  caption_bubble_controllers_[browser]->OnAudioStreamEnd(caption_host_impl);
 }
 
 CaptionBubbleController*
