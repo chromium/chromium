@@ -21,8 +21,13 @@
           },
         },
       };
-      const request = new PaymentRequest(methodData, details);
-      const result = await request.canMakePayment();
+      let result = '';
+      try {
+        const request = new PaymentRequest(methodData, details);
+        result = await request.canMakePayment();
+      } catch (error) {
+        result = error.toString();
+      }
       document.querySelector("#output").innerText = "canMakePayment: " + result;
       return result;
     }
@@ -30,8 +35,9 @@
     </script>
   </head>
   <body>
-    <p>This page is a regression test for <a href="https://crbug.com/1055360">
-      crbug/1055360</a>.</p>
+    <p>This page is a regression test for <a
+      href="https://crbug.com/1055360">crbug/1055360</a> and <a
+      href="https://crbug.com/1013080">crbug/1013080</a>.</p>
     <div id="output"></div>
   </body>
 </html>
