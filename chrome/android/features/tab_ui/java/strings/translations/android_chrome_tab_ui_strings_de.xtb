@@ -21,6 +21,7 @@
 <translation id="3291470810748040983">Sie erhalten eine Benachrichtigung, wenn auf einem offenen Tab ein günstigerer Preis verfügbar ist</translation>
 <translation id="3328308545011660196">Vorschlag: <ph name="NUMBER_OF_TABS" /> Tabs scheinen zusammenzugehören. Sollen sie gruppiert werden?</translation>
 <translation id="3819916404117584598">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> Tab minimieren}other{Tabgruppe "<ph name="TITLE_OF_GROUP" />" mit <ph name="TABS_COUNT_MANY" /> Tabs minimieren}}</translation>
+<translation id="3882834874697329510">Falls Sie benachrichtigt werden möchten, wenn auf einem offenen Tab ein günstigerer Preis verfügbar ist, aktivieren Sie Benachrichtigungen in den Einstellungen.</translation>
 <translation id="3940195383040445971">Preise auf Tabs beobachten</translation>
 <translation id="3996880007329611795">Benachrichtigungen erhalten</translation>
 <translation id="4133493477912226187"><ph name="NUMBER_OF_TABS" /> Tabs scheinen zusammenzugehören. Sollen sie gruppiert werden?</translation>

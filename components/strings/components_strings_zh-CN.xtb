@@ -534,6 +534,7 @@
 <translation id="3037605927509011580">喔唷，崩溃啦！</translation>
 <translation id="3041612393474885105">证书信息</translation>
 <translation id="3060227939791841287">C9 (Envelope)</translation>
+<translation id="3060557858482803256"><ph name="RUN_CHROME_SAFETY_CHECK_FOCUSED_FRIENDLY_MATCH_TEXT" />，依次按 Tab 键和 Enter 键即可从 Chrome 设置中运行安全检查</translation>
 <translation id="3061707000357573562">修补服务</translation>
 <translation id="3064966200440839136">将要退出隐身模式，以便通过外部应用付款。是否继续？</translation>
 <translation id="3080254622891793721">图形</translation>
@@ -767,6 +768,7 @@
 <translation id="3964661563329879394">{COUNT,plural, =0{无}=1{来自 1 个网站}other{来自 # 个网站}}</translation>
 <translation id="397105322502079400">正在计算...</translation>
 <translation id="3973234410852337861"><ph name="HOST_NAME" /> 已被屏蔽</translation>
+<translation id="3973357910713125165">“运行 Chrome 安全检查”按钮，按 Enter 键即可从 Chrome 设置中运行安全检查</translation>
 <translation id="3987405730340719549">Chrome 已确定此网站可能是虚假网站或欺诈性网站。
 
     如果您认为系统不该向您显示这条提示，请访问 https://bugs.chromium.org/p/chromium/issues/entry?template=Safety+Tips+Appeals。</translation>
@@ -843,6 +845,7 @@
     &lt;h4&gt;第 5 步：获取额外帮助&lt;/h4&gt;
     &lt;p&gt;如果您仍会看到这条错误消息，请与网站所有者联系。&lt;/p&gt;</translation>
 <translation id="4226937834893929579"><ph name="BEGIN_LINK" />尝试运行网络诊断<ph name="END_LINK" />。</translation>
+<translation id="4229544452621580519">从 Chrome 设置中运行安全检查</translation>
 <translation id="4234495348042597185"><ph name="BEGIN_LINK" />继续前往 <ph name="SITE" /><ph name="END_LINK" /></translation>
 <translation id="4235360514405112390">有效</translation>
 <translation id="4250431568374086873">您与此网站之间建立的连接并非完全安全</translation>
@@ -970,6 +973,7 @@
 <translation id="4756388243121344051">历史记录(&amp;H)</translation>
 <translation id="4758311279753947758">添加联系信息</translation>
 <translation id="4761104368405085019">使用您的麦克风</translation>
+<translation id="4761869838909035636">运行 Chrome 安全检查</translation>
 <translation id="4764776831041365478">网址为 <ph name="URL" /> 的网页可能暂时无法连接，或者它已永久性地移动到了新网址。</translation>
 <translation id="4766713847338118463">双钉（底部）</translation>
 <translation id="4768815695067202997"><ph name="BEGIN_BOLD" />

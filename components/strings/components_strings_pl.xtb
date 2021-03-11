@@ -536,7 +536,7 @@ Jeśli się nie zgodzisz, zostaną one zablokowane ze względu na Twoje ustawien
 <translation id="3037605927509011580">Kurza twarz!</translation>
 <translation id="3041612393474885105">Informacje o certyfikacie</translation>
 <translation id="3060227939791841287">C9 (koperta)</translation>
-<translation id="3060557858482803256"><ph name="RUN_CHROME_SAFETY_CHECK_FOCUSED_FRIENDLY_MATCH_TEXT" />, naciśnij Tab, a potem Enter, aby uruchomić potwierdzenie bezpieczeństwa w ustawieniach Chrome</translation>
+<translation id="3060557858482803256"><ph name="RUN_CHROME_SAFETY_CHECK_FOCUSED_FRIENDLY_MATCH_TEXT" />; aby uruchomić potwierdzenie bezpieczeństwa w ustawieniach Chrome, naciśnij Tab, a potem Enter</translation>
 <translation id="3061707000357573562">Zastosowanie poprawki do usługi</translation>
 <translation id="3064966200440839136">Opuszczasz tryb incognito, by zapłacić w aplikacji zewnętrznej. Kontynuować?</translation>
 <translation id="3080254622891793721">Grafika</translation>
@@ -774,7 +774,7 @@ Jeśli się nie zgodzisz, zostaną one zablokowane ze względu na Twoje ustawien
 <translation id="3964661563329879394">{COUNT,plural, =0{Brak}=1{Z 1 witryny }few{Z # witryn }many{Z # witryn }other{Z # witryny }}</translation>
 <translation id="397105322502079400">Obliczanie...</translation>
 <translation id="3973234410852337861">Strona <ph name="HOST_NAME" /> jest zablokowana</translation>
-<translation id="3973357910713125165">Przycisk Uruchom potwierdzenie bezpieczeństwa Chrome; naciśnij Enter, aby uruchomić potwierdzenie bezpieczeństwa w ustawieniach Chrome</translation>
+<translation id="3973357910713125165">Przycisk Uruchom potwierdzenie bezpieczeństwa Chrome; aby uruchomić potwierdzenie bezpieczeństwa w ustawieniach Chrome, naciśnij Enter</translation>
 <translation id="3987405730340719549">Według Chrome ta strona może być fałszywa.
 
     Jeśli uważasz, że ten komunikat pojawił się w wyniku pomyłki, wejdź na https://bugs.chromium.org/p/chromium/issues/entry?template=Safety+Tips+Appeals</translation>

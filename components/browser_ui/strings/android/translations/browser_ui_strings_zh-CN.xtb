@@ -23,6 +23,7 @@
 <translation id="1509960214886564027">很多网站上的功能可能会无法正常运作</translation>
 <translation id="1620510694547887537">摄像头</translation>
 <translation id="1644574205037202324">历史记录</translation>
+<translation id="1647582022260550163">确定要重置权限并清除 Cookie 和网站数据吗？</translation>
 <translation id="1660204651932907780">允许网站播放声音（推荐）</translation>
 <translation id="1677097821151855053">系统会使用 Cookie 和其他网站数据来记住您，以便实现某些功能或目的（例如帮您登录或向您展示个性化广告）。如需管理所有网站的 Cookie，请参阅<ph name="BEGIN_LINK" />设置<ph name="END_LINK" />。</translation>
 <translation id="1688867105868176567">要清除网站数据吗？</translation>
@@ -309,6 +310,7 @@
 <translation id="9074739597929991885">蓝牙</translation>
 <translation id="9109747640384633967">{PERMISSIONS_SUMMARY_MIXED,plural, =1{“<ph name="PERMISSION_1" />”权限、“<ph name="PERMISSION_2" />”权限和另外 <ph name="NUM_MORE" /> 项权限}other{“<ph name="PERMISSION_1" />”权限、“<ph name="PERMISSION_2" />”权限和另外 <ph name="NUM_MORE" /> 项权限}}</translation>
 <translation id="913657688200966289">在 <ph name="BEGIN_LINK" />Android 设置<ph name="END_LINK" />中为 <ph name="APP_NAME" /> 开启这些权限。</translation>
+<translation id="930525582205581608">移除此网站？</translation>
 <translation id="965817943346481315">屏蔽会展示侵扰性或误导性广告的网站（推荐）</translation>
 <translation id="967624055006145463">已存储的数据</translation>
 </translationbundle>

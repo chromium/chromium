@@ -4439,7 +4439,7 @@ Assegureu-vos que no es pugui accedir a informació sensible.</translation>
 <translation id="6043994281159824495">Tanca la sessió ara</translation>
 <translation id="6044805581023976844"><ph name="APP_NAME" /> està compartint una pestanya de Chrome i àudio amb <ph name="TAB_NAME" />.</translation>
 <translation id="6045114302329202345">Botó TrackPoint principal</translation>
-<translation id="6047632800149092791">La sincronització no funciona. Prova de tancar la sessió i tornar a iniciar-la.</translation>
+<translation id="6047632800149092791">La sincronització no funciona. Tanca la sessió i torna-la a iniciar.</translation>
 <translation id="6049004884579590341">Mantén premut |<ph name="ACCELERATOR" />| per sortir del mode de pantalla completa</translation>
 <translation id="6051354611314852653">El sistema no ha pogut autoritzar l'accés a l'API per a aquest dispositiu.</translation>
 <translation id="6052976518993719690">Entitat emissora de certificats SSL</translation>
@@ -4532,7 +4532,7 @@ Assegureu-vos que no es pugui accedir a informació sensible.</translation>
 <translation id="6143186082490678276">Obtén ajuda</translation>
 <translation id="6143366292569327983">Tria l'idioma de la pàgina des del qual vulguis traduir</translation>
 <translation id="6144938890088808325">Contribuïu a millorar els dispositius Chromebook</translation>
-<translation id="6146409560350811147">La sincronització no funciona. Prova de tornar a iniciar la sessió.</translation>
+<translation id="6146409560350811147">La sincronització no funciona. Torna a iniciar la sessió.</translation>
 <translation id="6147020289383635445">La previsualització d'impressió ha fallat.</translation>
 <translation id="6148576794665275391">Obre ara</translation>
 <translation id="6149015141270619212">No es pot connectar a Internet</translation>

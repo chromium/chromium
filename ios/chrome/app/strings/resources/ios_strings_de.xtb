@@ -538,6 +538,8 @@ Es empfiehlt sich aber, für jede Website ein eigenes Passwort zu verwenden.</tr
 <translation id="6524918542306337007">Inkognitomodus ist nicht verfügbar</translation>
 <translation id="6561262006871132942">Heranzoomen</translation>
 <translation id="6585618849026997638">Sie können Lesezeichen setzen, damit Sie zu Seiten zurückfinden, die für Sie interessant sind</translation>
+<translation id="6603393121510733479">Ihre Organisation hat das private Surfen deaktiviert.
+<ph name="BEGIN_LINK" />Weitere Informationen<ph name="END_LINK" /></translation>
 <translation id="6610002944194042868">Übersetzungsoptionen</translation>
 <translation id="6620279676667515405">Abbrechen</translation>
 <translation id="6624219055418309072">Im Inkognitomodus blockieren</translation>
@@ -582,6 +584,8 @@ Es empfiehlt sich aber, für jede Website ein eigenes Passwort zu verwenden.</tr
 <translation id="6988572888918530647">Google-Konto verwalten</translation>
 <translation id="6995899638241819463">Warnen, wenn Passwörter durch eine Datenpanne preisgegeben werden</translation>
 <translation id="6998989275928107238">An</translation>
+<translation id="7004032350256606903">Ihre Organisation verlangt, dass Sie im privaten Modus surfen.
+<ph name="BEGIN_LINK" />Weitere Informationen<ph name="END_LINK" /></translation>
 <translation id="7004499039102548441">Zuletzt geöffnete Tabs</translation>
 <translation id="7006788746334555276">Inhaltseinstellungen</translation>
 <translation id="7015203776128479407">Die erstmalige Einrichtung der Synchronisierung wurde nicht abgeschlossen. Synchronisierung ist deaktiviert.</translation>
@@ -743,6 +747,8 @@ Websites können Cookies verwenden, um Ihre Browseraktivitäten auf anderen Webs
 <translation id="8756969031206844760">Passwort aktualisieren?</translation>
 <translation id="8775144690796719618">Ungültige URL</translation>
 <translation id="8803639129939845298">Sicher</translation>
+<translation id="8806823403540278281">Ihre Organisation verlangt, dass Sie im privaten Modus surfen. Tabs werden im Inkognitomodus nicht gespeichert.
+<ph name="BEGIN_LINK" />Weitere Informationen<ph name="END_LINK" /></translation>
 <translation id="8820817407110198400">Lesezeichen</translation>
 <translation id="8840513115188359703">Sie werden nicht von Ihrem Google-Konto abgemeldet.</translation>
 <translation id="8870413625673593573">Kürzlich geschlossen</translation>

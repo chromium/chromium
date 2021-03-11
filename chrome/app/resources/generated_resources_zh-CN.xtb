@@ -572,6 +572,7 @@
 <translation id="1627408615528139100">已下载</translation>
 <translation id="1628948239858170093">打开前，先扫描文件？</translation>
 <translation id="1629314197035607094">密码已过期</translation>
+<translation id="1629521517399325891">用户证书不适用于网络身份验证。</translation>
 <translation id="163072119192489970">允许完成数据收发操作</translation>
 <translation id="1630768113285622200">重启并继续</translation>
 <translation id="1632082166874334883">您的 Google 帐号中存储的密码</translation>
@@ -1176,6 +1177,7 @@
 <translation id="2300383962156589922">自定义和控制<ph name="APP_NAME" /></translation>
 <translation id="2301382460326681002">扩展程序根目录无效。</translation>
 <translation id="23030561267973084">“<ph name="EXTENSION_NAME" />”请求获得更多权限。</translation>
+<translation id="230529452743010958">这项内容是系统根据您曾在使用 Google 服务时进行的活动向您显示的。您可在 <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> 上查看/删除您的数据以及更改您的设置。</translation>
 <translation id="23055578400314116">选择用户名</translation>
 <translation id="2307462900900812319">配置网络</translation>
 <translation id="230927227160767054">此页面想要安装一个服务处理程序。</translation>
@@ -1401,6 +1403,7 @@
 <translation id="2541706104884128042">已设定新的就寝时间</translation>
 <translation id="2542050502251273923">使用 ff_debug 设定网络连接管理器和其他服务的调试级别。</translation>
 <translation id="2544292303401268586">您的管理员请求重启您的设备以更新应用。这可能需要几分钟才能完成。</translation>
+<translation id="2544352060595557290">此标签页</translation>
 <translation id="2544853746127077729">身份验证证书遭到网络拒绝</translation>
 <translation id="2546283357679194313">Cookie 和网站数据</translation>
 <translation id="2548347166720081527">已允许使用<ph name="PERMISSION" /></translation>
@@ -1566,6 +1569,7 @@
 <translation id="2734760316755174687"><ph name="SITE_GROUP_NAME" /> 下的网站也会重置。</translation>
 <translation id="2735712963799620190">排定时间</translation>
 <translation id="2737363922397526254">收起...</translation>
+<translation id="2737916598897808047"><ph name="APP_NAME" />想与 <ph name="TARGET_NAME" /> 分享您屏幕上的内容。</translation>
 <translation id="2738771556149464852">不晚于</translation>
 <translation id="2739191690716947896">调试</translation>
 <translation id="2739240477418971307">更改您的无障碍设置</translation>
@@ -2394,6 +2398,7 @@
 <translation id="3677911431265050325">请求切换到移动版网站</translation>
 <translation id="3677959414150797585">包括应用、网页等。仅当您已选择分享使用情况数据时，才会发送统计信息以完善建议。</translation>
 <translation id="3678156199662914018">扩展程序：<ph name="EXTENSION_NAME" /></translation>
+<translation id="3678188444105291936">当您退出访客模式后，您在此窗口中查看过的网页将不会显示在浏览器历史记录中，也不会在计算机上留下其他痕迹（例如 Cookie）。系统不会保留您下载的文件和创建的书签。</translation>
 <translation id="3680683624079082902">文字转语音的语音偏好</translation>
 <translation id="3681311097828166361">感谢您提交反馈。您目前处于离线状态，系统将在您上线后提交您的反馈报告。</translation>
 <translation id="3682824389861648626">鼠标移动阈值</translation>
@@ -2595,6 +2600,7 @@
 <translation id="3884152383786131369">能以多种语言显示的网页内容将会使用此列表中第一项受支持的语言。这些偏好设置会与您的浏览器设置同步。<ph name="BEGIN_LINK_LEARN_MORE" />了解详情<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="3886446263141354045">系统已将您想访问此网站的请求发送给<ph name="NAME" /></translation>
 <translation id="3888550877729210209">使用“<ph name="LOCK_SCREEN_APP_NAME" />”创建记事</translation>
+<translation id="3888586133700543064">这些信息有助于我们更好地了解您所遇到的 Google 助理问题。这些信息最多会存储 90 天，且仅限相关的工程团队和反馈团队访问。</translation>
 <translation id="3890064827463908288">您需要开启 Chrome 同步才能使用 Wi-Fi 同步功能</translation>
 <translation id="3892414795099177503">添加 OpenVPN / L2TP…</translation>
 <translation id="3893536212201235195">读取和更改您的无障碍设置</translation>
@@ -2626,6 +2632,7 @@
 <translation id="3916445069167113093">此类型的文件可能会损害您的计算机。您仍然要保留 <ph name="FILE_NAME" /> 吗？</translation>
 <translation id="3918972485393593704">向 Google 报告详细信息</translation>
 <translation id="3919145445993746351">若想在您的所有计算机上使用您的扩展程序，请开启同步功能</translation>
+<translation id="3919798653937160644">当您关闭以访客身份打开的所有窗口后，您在此窗口中查看过的网页将不会显示在浏览器历史记录中，也不会在计算机上留下其他痕迹（例如 Cookie）。不过，系统会保留您下载的所有文件。</translation>
 <translation id="3920504717067627103">证书政策</translation>
 <translation id="392089482157167418">启用 ChromeVox（语音反馈）</translation>
 <translation id="3920909973552939961">不允许安装付款处理程序</translation>
@@ -2960,6 +2967,7 @@
 <translation id="4332976768901252016">设置“家长控制”功能</translation>
 <translation id="4333854382783149454">PKCS #1，带有 RSA 加密的 SHA-1</translation>
 <translation id="4336434711095810371">清除所有数据</translation>
+<translation id="4340125850502689798">用户名无效</translation>
 <translation id="4340515029017875942"><ph name="ORIGIN" /> 希望与“<ph name="EXTENSION_NAME" />”应用通信</translation>
 <translation id="4341577178275615435">如需开启或关闭光标浏览模式，请使用快捷键 F7</translation>
 <translation id="434198521554309404">快速、安全、易用。</translation>
@@ -3573,6 +3581,7 @@
 <translation id="5057110919553308744">当您点击此扩展程序时</translation>
 <translation id="5057403786441168405">管理您登录过的帐号。Chrome 和 Google Play 中的网站、应用和扩展程序可能会使用这些帐号为您定制专属体验，具体取决于所获权限。<ph name="LINK_BEGIN" />了解详情<ph name="LINK_END" /></translation>
 <translation id="5059241099014281248">限制登录</translation>
+<translation id="5059526285558225588">选择要分享什么</translation>
 <translation id="5060332552815861872">有 1 台可保存的打印机。</translation>
 <translation id="5061347216700970798">{NUM_BOOKMARKS,plural, =1{此文件夹包含 1 个书签。确定要删除此文件夹吗？}other{此文件夹包含 # 个书签。确定要删除此文件夹吗？}}</translation>
 <translation id="5062930723426326933">登录失败，请连接到互联网，然后重试。</translation>
@@ -3689,6 +3698,7 @@
 <translation id="5187826826541650604"><ph name="KEY_NAME" /> (<ph name="DEVICE" />)</translation>
 <translation id="5190187232518914472">重现您的美好回忆。如需添加或编辑影集，请转至 <ph name="LINK_BEGIN" />Google 相册<ph name="LINK_END" />。</translation>
 <translation id="5190926251776387065">启用此端口</translation>
+<translation id="5191094172448199359">您输入的 PIN 码不一致</translation>
 <translation id="5191251636205085390">了解和掌控旨在取代第三方 Cookie 的新技术</translation>
 <translation id="51918995459521422"><ph name="ORIGIN" /> 想下载多个文件</translation>
 <translation id="5192062846343383368">打开 Family Link 应用，查看您的监管设置</translation>
@@ -3701,6 +3711,7 @@
 <translation id="5204673965307125349">请对此设备执行 Powerwash，然后重试。</translation>
 <translation id="5204967432542742771">输入密码</translation>
 <translation id="5205484256512407285">一律不使用移动数据进行传输</translation>
+<translation id="520568280985468584">已成功添加网络。不过，您的移动网络可能要过几分钟才可用。</translation>
 <translation id="5206215183583316675">要删除“<ph name="CERTIFICATE_NAME" />”吗？</translation>
 <translation id="520621735928254154">导入证书时出现错误</translation>
 <translation id="5206787458656075734">{COUNT,plural, =1{已成功更改这个已泄露的密码。您还有 # 个已泄露的密码。Chrome 建议您立即检查这个密码。}other{已成功更改这个已泄露的密码。您还有 # 个已泄露的密码。Chrome 建议您立即检查这些密码。}}</translation>
@@ -4335,6 +4346,7 @@
 <translation id="5935656526031444304">管理安全浏览设置</translation>
 <translation id="5938002010494270685">可进行安全性升级</translation>
 <translation id="5939518447894949180">重置</translation>
+<translation id="5939719276406088041">无法创建快捷方式</translation>
 <translation id="5941153596444580863">添加用户…</translation>
 <translation id="5941343993301164315">请登录 <ph name="TOKEN_NAME" />。</translation>
 <translation id="5941711191222866238">最小化</translation>
@@ -4422,6 +4434,7 @@
 <translation id="6043994281159824495">立即退出</translation>
 <translation id="6044805581023976844"><ph name="APP_NAME" /> 正在与 <ph name="TAB_NAME" /> 共享 Chrome 标签页和音频。</translation>
 <translation id="6045114302329202345">TrackPoint 主按钮</translation>
+<translation id="6047632800149092791">同步功能无法正常运行。请尝试退出帐号并重新登录。</translation>
 <translation id="6049004884579590341">按住 |<ph name="ACCELERATOR" />| 即可退出全屏模式</translation>
 <translation id="6051354611314852653">糟糕！系统无法将 API 访问权限授予此设备。</translation>
 <translation id="6052976518993719690">SSL 证书授权中心</translation>
@@ -4514,6 +4527,7 @@
 <translation id="6143186082490678276">获取帮助</translation>
 <translation id="6143366292569327983">选择要翻译的网页语言</translation>
 <translation id="6144938890088808325">帮助我们改进 Chromebook</translation>
+<translation id="6146409560350811147">同步功能无法正常运行。请尝试重新登录。</translation>
 <translation id="6147020289383635445">打印预览失败。</translation>
 <translation id="6148576794665275391">立即打开</translation>
 <translation id="6149015141270619212">无法连接到互联网</translation>
@@ -4581,6 +4595,7 @@
 <translation id="6232017090690406397">电池</translation>
 <translation id="6232116551750539448">与“<ph name="NAME" />”的连接已中断</translation>
 <translation id="6233154960150021497">默认为使用语音（而非键盘）</translation>
+<translation id="6234108445915742946">Chrome 的《服务条款》将于 3 月 31 日变更</translation>
 <translation id="6234474535228214774">正等待安装</translation>
 <translation id="6237474966939441970">触控笔记事应用</translation>
 <translation id="6237816943013845465">可让您调整屏幕分辨率</translation>
@@ -4879,6 +4894,7 @@
 <translation id="656293578423618167">该文件的路径或名称过长。请以较短的名称保存或保存到其他位置。</translation>
 <translation id="6563469144985748109">您的管理员尚未批准此网站</translation>
 <translation id="6569934958368283244">其他人</translation>
+<translation id="6573497332121198392">无法移除快捷方式</translation>
 <translation id="657402800789773160">重新加载此页(&amp;R)</translation>
 <translation id="6577284282025554716">已取消下载“<ph name="FILE_NAME" />”</translation>
 <translation id="657866106756413002">网络状况概要</translation>
@@ -4886,6 +4902,7 @@
 <translation id="6579705087617859690"><ph name="WINDOW_TITLE" /> - 已分享桌面内容</translation>
 <translation id="6580203076670148210">扫描速度</translation>
 <translation id="6582080224869403177">请重置您的 <ph name="DEVICE_TYPE" />，以进行安全性升级。</translation>
+<translation id="6582274660680936615">您正在以访客身份浏览</translation>
 <translation id="6584878029876017575">Microsoft 生存时间签名</translation>
 <translation id="6586099239452884121">访客浏览</translation>
 <translation id="6586451623538375658">切换鼠标主按钮</translation>
@@ -5055,6 +5072,7 @@
 <translation id="6782468519961184511">您的管理员不允许添加其他 Google 帐号</translation>
 <translation id="6785518634832172390">PIN 码不得超过 12 位数</translation>
 <translation id="6786747875388722282">扩展程序</translation>
+<translation id="6787097042755590313">另一标签页</translation>
 <translation id="6787839852456839824">键盘快捷键</translation>
 <translation id="6788210894632713004">未封装的扩展程序</translation>
 <translation id="6789592661892473991">水平分割</translation>
@@ -5065,6 +5083,7 @@
 <translation id="6793723358811598107">“<ph name="CURRENTKEY" />”键已分配给“<ph name="ACTION" />”操作。按任意键即可退出。</translation>
 <translation id="6795884519221689054">熊猫</translation>
 <translation id="6797493596609571643">糟糕，出问题了。</translation>
+<translation id="6798420440063423019">此安全密钥已被锁定，因为您输错 PIN 码的次数过多。您需要重置此安全密钥。</translation>
 <translation id="6798578729981748444">要想顺利完成导入，请关闭所有 Firefox 窗口。</translation>
 <translation id="6798780071646309401">已开启大写锁定模式</translation>
 <translation id="6798954102094737107">插件：<ph name="PLUGIN_NAME" /></translation>
@@ -5410,6 +5429,7 @@
 <translation id="7180865173735832675">自定义</translation>
 <translation id="7182791023900310535">移动您的密码</translation>
 <translation id="7186088072322679094">固定在工具栏中</translation>
+<translation id="7186303001964993981"><ph name="ORIGIN" /> 无法打开此文件夹，因为其中含有系统文件</translation>
 <translation id="7187428571767585875">要移除或要更改的注册表项：</translation>
 <translation id="7187855807420906517">在您退出或离线后，网站通常会保持同步以完成各项任务（例如上传照片或发送聊天消息）</translation>
 <translation id="7189234443051076392">确保您的设备上有足够的空间</translation>
@@ -6029,6 +6049,7 @@
 <translation id="7871109039747854576">用 <ph name="COMMA" /> 键和 <ph name="PERIOD" /> 键在候选字词列表中翻页</translation>
 <translation id="787268756490971083">已关闭</translation>
 <translation id="7874257161694977650">Chrome 背景</translation>
+<translation id="7876027585589532670">无法修改快捷方式</translation>
 <translation id="7877451762676714207">未知服务器错误。请重试或与服务器管理员联系。</translation>
 <translation id="7879631849810108578">已成功设置快捷键：<ph name="IDS_SHORT_SET_COMMAND" /></translation>
 <translation id="7880823633812189969">系统会在您重启设备时删除本地数据</translation>
@@ -6314,6 +6335,7 @@
 <translation id="8189750580333936930">隐私沙盒</translation>
 <translation id="8190193592390505034">正在连接到<ph name="PROVIDER_NAME" /></translation>
 <translation id="8191230140820435481">管理您的应用、扩展程序和主题背景</translation>
+<translation id="8192944472786724289"><ph name="APP_NAME" />想分享您屏幕上的内容。</translation>
 <translation id="8195027750202970175">占用的存储空间</translation>
 <translation id="8198323535106903877">我们将为您安装这 <ph name="NUMBER_OF_APPS" /> 款应用</translation>
 <translation id="8199300056570174101">网络（服务）和设备属性</translation>
@@ -6963,6 +6985,7 @@
 <translation id="8931475688782629595">管理您的同步数据</translation>
 <translation id="8932654652795262306">“即时网络共享”的网络详细信息</translation>
 <translation id="8932894639908691771">开关控制选项</translation>
+<translation id="893298445929867520">购物车已隐藏。当您做出更改时，它们会再次现身。</translation>
 <translation id="8933960630081805351">在 Finder 中显示(&amp;S)</translation>
 <translation id="8934732568177537184">继续</translation>
 <translation id="8938306522009698937">处理程序</translation>
@@ -7239,6 +7262,7 @@
 <translation id="942532530371314860"><ph name="APP_NAME" /> 正在共享 Chrome 标签页和音频。</translation>
 <translation id="945522503751344254">发送反馈</translation>
 <translation id="947329552760389097">检查元素(&amp;I)</translation>
+<translation id="947667444780368238"><ph name="ORIGIN" /> 无法打开此文件夹内的文件，因为此文件夹含有系统文件</translation>
 <translation id="951991426597076286">拒绝</translation>
 <translation id="956500788634395331">系统会保护您免受可能有害的扩展程序的威胁</translation>
 <translation id="957960681186851048">此网站试图自动下载多个文件</translation>

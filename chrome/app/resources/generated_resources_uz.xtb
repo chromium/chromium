@@ -2400,7 +2400,7 @@ Oʻz qurilmangizda Family Link ilovasini oʻrnatib, bu hisob sozlamalarini boshq
 <translation id="3677911431265050325">Mobil versiya</translation>
 <translation id="3677959414150797585">Ilova, veb sahifa va boshqalardan iborat. Takliflarni yaxshilash maqsadida faqat siz tanlagan statistik axborotlar yuboriladi.</translation>
 <translation id="3678156199662914018">Kengaytma: <ph name="EXTENSION_NAME" /></translation>
-<translation id="3678188444105291936">Bu oynada ko‘riladigan sahifalar brauzer tarixida qolmaydi, barcha ochiq turgan Mehmon oynalarini yopganingizdan keyin ular kompyuterda cookie fayllari singari iz ham qoldirmaydi. Ammo, yuklab olingan fayllar saqlanib qoladi.</translation>
+<translation id="3678188444105291936">Bu oynada ochiladigan sahifalar brauzer tarixida qolmaydi, barcha ochiq turgan Mehmon oynalarini yopganingizdan keyin ular kompyuterda cookie fayllari singari iz ham qoldirmaydi. Ammo, yuklab olingan fayllar saqlanib qoladi.</translation>
 <translation id="3680683624079082902">Matnni nutqqa aylantirish ovozi</translation>
 <translation id="3681311097828166361">Fikr-mulohaza uchun rahmat! Hozir internet bilan aloqa yo‘qligi sababli xabaringiz keyinroq yuboriladi.</translation>
 <translation id="3682824389861648626">Harakat chegarasi</translation>
@@ -2634,7 +2634,7 @@ Oʻz qurilmangizda Family Link ilovasini oʻrnatib, bu hisob sozlamalarini boshq
 <translation id="3916445069167113093">Bunday turdagi fayl kompyuteringizga zarar yetkazishi mumkin. <ph name="FILE_NAME" /> baribir saqlansinmi?</translation>
 <translation id="3918972485393593704">Tafsilotlarni Google’ga yuborish</translation>
 <translation id="3919145445993746351">Kengaytmalardan barcha qurilmalaringizda foydalanish uchun sinxronizatsiyani yoqing</translation>
-<translation id="3919798653937160644">Bu oynada ko‘riladigan sahifalar brauzer tarixida qolmaydi, barcha ochiq turgan Mehmon oynalarini yopganingizdan keyin ular kompyuterda cookie fayli singari iz ham qoldirmaydi. Ammo, yuklab olingan fayllar saqlanib qoladi.</translation>
+<translation id="3919798653937160644">Bu oynada ochiladigan sahifalar brauzer tarixida qolmaydi, barcha ochiq turgan Mehmon oynalarini yopganingizdan keyin ular kompyuterda cookie fayli singari iz ham qoldirmaydi. Ammo, yuklab olingan fayllar saqlanib qoladi.</translation>
 <translation id="3920504717067627103">Sertifikat siyosati</translation>
 <translation id="392089482157167418">ChromeVox (ovozli ta’rif) kengaytmasini yoqish</translation>
 <translation id="3920909973552939961">Toʻlov vositalarini oʻrnatish taqiqlangan</translation>
@@ -4437,7 +4437,7 @@ Ochiq eksponenta (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bit):
 <translation id="6043994281159824495">Chiqish</translation>
 <translation id="6044805581023976844">“<ph name="APP_NAME" />” ilovasi <ph name="TAB_NAME" /> saytiga Chrome sahifasi va audioga kirish uchun ruxsat berdi.</translation>
 <translation id="6045114302329202345">Asosiy TrackPoint tugmasi</translation>
-<translation id="6047632800149092791">Sinxronizatsiya ishlamayapti. Profilingizdan chiqing va qaytadan urinib ko‘ring.</translation>
+<translation id="6047632800149092791">Sinxronizatsiya ishlamayapti. Profilingizdan chiqing va qaytadan urining.</translation>
 <translation id="6049004884579590341">To‘liq ekran rejimidan chiqish uchun |<ph name="ACCELERATOR" />| tugmasini bosib turing</translation>
 <translation id="6051354611314852653">Bu qurilmada API ruxsatini berib bo‘lmadi.</translation>
 <translation id="6052976518993719690">SSL sertifikatlash markazi</translation>
@@ -4905,7 +4905,7 @@ Ochiq eksponenta (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bit):
 <translation id="6579705087617859690"><ph name="WINDOW_TITLE" /> - Ekran namoyish qilinmoqda</translation>
 <translation id="6580203076670148210">Tekshirish tezligi</translation>
 <translation id="6582080224869403177">Xavfsizlik maqsadlarida <ph name="DEVICE_TYPE" /> qurilmangizni ilk sozlamalarga qaytaring.</translation>
-<translation id="6582274660680936615">Siz mehmon rejimida kirdingiz</translation>
+<translation id="6582274660680936615">Siz Mehmon rejimidasiz</translation>
 <translation id="6584878029876017575">Microsoft doimiy imzolash vositasi</translation>
 <translation id="6586099239452884121">Mehmon rejimi</translation>
 <translation id="6586451623538375658">Sichqoncha tugmalarining o‘rnini almashtirish</translation>
@@ -5086,7 +5086,7 @@ Ochiq eksponenta (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bit):
 <translation id="6793723358811598107">“<ph name="CURRENTKEY" />” tugmasi allaqachon “<ph name="ACTION" />” amaliga biriktirilgan. Chiqish uchun istalgan tugmani bosing.</translation>
 <translation id="6795884519221689054">Panda</translation>
 <translation id="6797493596609571643">Xatolik sodir bo‘ldi.</translation>
-<translation id="6798420440063423019">PIN kod koʻp marta xato kiritilganligi uchun elektron kalit qulflandi. Elektron kalit sozlamalarini qayta tiklang.</translation>
+<translation id="6798420440063423019">PIN kod juda koʻp marta xato kiritilganligi uchun elektron kalit qulflandi. Elektron kalit sozlamalarini asliga qaytaring.</translation>
 <translation id="6798578729981748444">Importni yakunlash uchun barcha Firefox oynalarini yoping.</translation>
 <translation id="6798780071646309401">caps lock yoniq</translation>
 <translation id="6798954102094737107">Plagin: <ph name="PLUGIN_NAME" /></translation>
@@ -6987,7 +6987,7 @@ Tayinlovni bekor qilish uchun belgilangan tugmani bosing.</translation>
 <translation id="8931475688782629595">Sinxronlanadigan maʼlumotlarni boshqarish</translation>
 <translation id="8932654652795262306">Modem rejimi axboroti</translation>
 <translation id="8932894639908691771">Switch Access parametrlari</translation>
-<translation id="893298445929867520">Savatlar yashirildi. Oʻzgarishlar kiritsangiz, ular yana chiqadi.</translation>
+<translation id="893298445929867520">Savatlar berkitildi. Oʻzgarishlar kiritsangiz, ular yana chiqadi.</translation>
 <translation id="8933960630081805351">Finder’da ko‘rsatish</translation>
 <translation id="8934732568177537184">Davom etish</translation>
 <translation id="8938306522009698937">ishlov berish vositalari</translation>

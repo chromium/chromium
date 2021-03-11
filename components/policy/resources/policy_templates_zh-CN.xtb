@@ -894,6 +894,9 @@
       这些建议是系统从 Google 服务器远程获取的。
 
       如果此政策设为 false，系统将不会获取或显示这类建议。</translation>
+<translation id="2246011554082893079">控制该设备能否使用 <ph name="BOREALIS_NAME" />。
+
+      如果此政策设为 false，该设备的所有用户都将无法使用 <ph name="BOREALIS_NAME" />。否则（如果此政策未设置或设为 true），仅当未被任何其他政策或设置停用时，<ph name="BOREALIS_NAME" /> 才可用。</translation>
 <translation id="225340736558643885">启用针对不安全表单的警告</translation>
 <translation id="2258126710006312594">允许远程访问用户将文件传到主机或接收从主机传出的文件</translation>
 <translation id="2261329877420573811">如果为 <ph name="DEVICE_PRINTERS_ACCESS_MODE_POLICY_NAME" /> 选择了 <ph name="PRINTERS_WHITELIST" />，您便可通过设置 <ph name="DEVICE_NATIVE_PRINTERS_WHITELIST_POLICY_NAME" /> 来指定用户可以使用哪些打印机。用户将只能使用那些符合条件（ID 与此政策中所列的值匹配）的打印机。ID 必须与 <ph name="DEVICE_PRINTERS_POLICY_NAME" /> 所指定文件内的<ph name="ID_FIELD" />或<ph name="GUID_FIELD" />字段相符。
@@ -1114,13 +1117,13 @@
           如果未设置此政策，则“插入符号突出显示”最初会处于停用状态，但用户可以随时启用该功能。</translation>
 <translation id="2509919237512982967">在 M84 之前的版本中使用旧版表单控件。</translation>
 <translation id="2515699738406900920">在 Chrome 启动时是否显示个人资料选择器</translation>
-<translation id="2515914624025258624">此设置允许用户在 <ph name="LACROS_NAME" /> 浏览器中创建辅助个人资料以及使用访客模式。
+<translation id="2515914624025258624">此设置允许用户在 <ph name="LACROS_NAME" /> 浏览器中创建次级个人资料以及使用访客模式。
 
-      与 BrowserAddPersonEnabled 和 BrowserGuestModeEnabled 这两项政策类似，如果此政策设为 false 或未设置，用户将无法创建辅助个人资料，也无法使用访客模式。
+      与 BrowserAddPersonEnabled 和 BrowserGuestModeEnabled 这两项政策类似，如果此政策设为 false 或未设置，用户将无法创建次级个人资料，也无法使用访客模式。
 
-      如果此政策设为 true，用户将能够创建辅助个人资料以及使用访客模式。
+      如果此政策设为 true，用户将能够创建次级个人资料以及使用访客模式。
 
-      请注意，如果此政策设为 true 但 BrowserAddPersonEnabled 设为 false，用户将无法创建辅助个人资料。同理，如果此政策设为 true 但 BrowserGuestModeEnabled 设为 false，用户将无法使用访客模式。</translation>
+      请注意，如果此政策设为 true 但 BrowserAddPersonEnabled 设为 false，用户将无法创建次级个人资料。同理，如果此政策设为 true 但 BrowserGuestModeEnabled 设为 false，用户将无法使用访客模式。</translation>
 <translation id="2517466659416174529">允许系统冻结后台标签页</translation>
 <translation id="2518231489509538392">允许播放视频</translation>
 <translation id="2521581787935130926">在书签栏中显示应用快捷方式</translation>
@@ -1446,6 +1449,9 @@
 <translation id="2960013482187484833">在打印预览中将上次使用的打印机设为默认选项</translation>
 <translation id="2960128438010718932">分阶段应用新更新的时间表</translation>
 <translation id="2960691910306063964">针对远程访问主机启用或停用无 PIN 码身份验证</translation>
+<translation id="2964056138564883247">控制该用户能否使用 <ph name="BOREALIS_NAME" />。
+
+      如果此政策设为 false，<ph name="BOREALIS_NAME" /> 会处于不可用状态。否则（如果此政策未设置或设为 true），仅当未被任何其他政策或设置停用时，<ph name="BOREALIS_NAME" /> 才可用。</translation>
 <translation id="2964373560810620158">阻止用户使用 <ph name="LACROS_NAME" /> 浏览器</translation>
 <translation id="2969797921412053304">此政策用于配置哪些网址有权在登录屏幕上的 SAML 流程中对设备身份执行远程认证。
 
@@ -2705,6 +2711,7 @@
       如果您设置了此政策，用户便无法更改它。如果您不设置此政策，用户可以决定是否让工具栏自动隐藏。</translation>
 <translation id="4812714598405913256">为 DeviceMinimumVersion 政策配置自动更新期限已过消息</translation>
 <translation id="4816674326202173458">允许企业用户以主用户或次要用户的身份登录多个人资料会话（非托管用户的默认行为）</translation>
+<translation id="4820432864264617413">禁止用户运行 <ph name="BOREALIS_NAME" /></translation>
 <translation id="4826326557828204741">当闲置延迟时间已过且使用电池供电时应执行的操作</translation>
 <translation id="482803100714220060">显示完整网址</translation>
 <translation id="4832852360828533362">用户和设备报告</translation>
@@ -2718,6 +2725,7 @@
       如果此政策未设置或包含无效值，系统功能的停用模式将会是“已禁用”。</translation>
 <translation id="4835470005923546373">默认停用背景图片打印模式</translation>
 <translation id="4835622243021053389">启用 NTLMv2 身份验证。</translation>
+<translation id="485419696366295465">控制与 <ph name="BOREALIS_NAME" /> 子系统相关的政策。</translation>
 <translation id="4855636880814771207">如果此政策已启用或未设置，用户将可以开启或关闭蓝牙。
 
       如果此政策已停用，<ph name="PRODUCT_OS_NAME" />会关闭蓝牙，而且用户无法开启它。
@@ -3185,7 +3193,7 @@
 
           如果此政策已停用，系统会强制停用该功能。
           </translation>
-<translation id="5432043531153963184">禁止用户在 <ph name="LACROS_NAME" /> 浏览器中创建辅助个人资料以及使用访客模式</translation>
+<translation id="5432043531153963184">禁止用户在 <ph name="LACROS_NAME" /> 浏览器中创建次级个人资料以及使用访客模式</translation>
 <translation id="5442026853063570579">此政策亦用于控制对 Android 开发者选项的访问权限。如果此政策设为“DeveloperToolsDisallowed”（值为 2），用户将无法访问开发者选项。如果此政策设为其他值或未设置，用户只需在 Android 的“设置”应用中连续点按 7 次版本号即可访问开发者选项。</translation>
 <translation id="5445596354079213552">仅当设备的自动更新期限已过且不符合允许使用的最低 <ph name="PRODUCT_OS_NAME" />版本（通过 <ph name="DEVICE_MINIMUM_VERSION_POLICY_NAME" /> 政策设置）的要求时，此政策才有效。
 
@@ -3269,6 +3277,7 @@
 <translation id="554903022911579950">Kerberos</translation>
 <translation id="555022085242359084">在登录屏幕上启用高对比度模式</translation>
 <translation id="555077880566103058">允许所有网站自动运行 <ph name="FLASH_PLUGIN_NAME" /> 插件</translation>
+<translation id="5556607617517096419">Borealis</translation>
 <translation id="5559079916187891399">此政策对 Android 应用没有任何影响。</translation>
 <translation id="5560039246134246593">在提取 <ph name="PRODUCT_NAME" /> 中的变体种子的方法中添加参数。
 
@@ -3472,6 +3481,7 @@
 <translation id="5814301096961727113">设置登录屏幕上语音反馈的默认状态</translation>
 <translation id="5815129011704381141">更新后自动重启</translation>
 <translation id="582857022372205358">启用短边双面打印</translation>
+<translation id="5830196507442186669">允许搭载 <ph name="PRODUCT_OS_NAME" />的设备使用 <ph name="BOREALIS_NAME" /></translation>
 <translation id="5832274826894536455">已弃用的政策</translation>
 <translation id="5835253272509953988">如果此政策已启用，用户便可让 <ph name="PRODUCT_NAME" /> 检查所输入的用户名和密码是否已泄露。
 
@@ -3669,13 +3679,14 @@
 <translation id="6097601282776163274">启用以网址为键的匿名化数据收集功能</translation>
 <translation id="6099853574908182288">默认打印颜色模式</translation>
 <translation id="6102342563050263313">允许滚动至网址片段指定的文本所在的位置</translation>
+<translation id="6102449843040973938">允许 <ph name="BOREALIS_NAME" /> 在设备上运行</translation>
 <translation id="6107642964266628393">控制何时以何种方式应用 Chrome 操作系统更新。</translation>
 <translation id="6111936128861357925">允许用户玩恐龙复活节彩蛋游戏</translation>
 <translation id="6123052603197028610">不允许向 Google 服务器发送检索时间戳的查询</translation>
 <translation id="6132506775968708399">禁用第三方 Cookie</translation>
 <translation id="6133088669883929098">允许所有网站使用密钥生成功能</translation>
 <translation id="6135398260575578389">“安全浏览”功能会处于开启状态且会在增强模式下运行。此模式可提高安全性，但需与 Google 分享更多浏览信息。</translation>
-<translation id="6135895880862759946">允许用户在 <ph name="LACROS_NAME" /> 浏览器中创建辅助个人资料以及使用访客模式</translation>
+<translation id="6135895880862759946">允许用户在 <ph name="LACROS_NAME" /> 浏览器中创建次级个人资料以及使用访客模式</translation>
 <translation id="6138636318340561140">实时查看网址的安全浏览状态</translation>
 <translation id="6141402445226505817">一律使用粗略式时区检测方式</translation>
 <translation id="6144046700495610112">如果此政策已启用，当首次运行浏览器时，系统将会从先前的默认浏览器导入自动填充表单数据。如果此政策已停用或未设置，当首次运行浏览器时，系统不会导入任何自动填充表单数据。
@@ -3733,6 +3744,7 @@
       运行未采用沙盒机制的音频子系统会致使用户面临安全风险。
       如果此政策未设置，系统将使用音频沙盒的默认配置（此配置可能会因平台而异）。
       借助此政策，当企业使用的安全软件设置会干扰音频沙盒时，他们就能够灵活地停用沙盒。</translation>
+<translation id="6252773211180267325">允许用户运行 <ph name="BOREALIS_NAME" /></translation>
 <translation id="6261643884958898336">报告机器标识信息</translation>
 <translation id="6265892395051519509">允许在这些网站上使用传感器</translation>
 <translation id="6273015149273504999">
@@ -4202,6 +4214,7 @@
 <translation id="6856743875250214792">我们已在 M66 中弃用并移除了此政策，因为它仅用于内部测试且存在安全隐患。
 
       指定要在 <ph name="PRODUCT_NAME" /> 启动时向其应用的实验性设置。指定的实验性设置仅会应用于登录屏幕。通过此政策设定的实验性设置不会反映在用户会话中。</translation>
+<translation id="6857240169209507953">禁止 <ph name="BOREALIS_NAME" /> 在设备上运行</translation>
 <translation id="685769593149966548">强制启用 YouTube“严格”受限模式</translation>
 <translation id="686079137349561371">Microsoft Windows 7 或更高版本</translation>
 <translation id="68818134518270542">通过设置此政策，您可以指定用户能在 <ph name="PRODUCT_OS_NAME" />锁定屏幕中将哪些应用作为笔记应用开启。
@@ -4624,6 +4637,7 @@
       如果此政策设为“RemoveLRUIfDormant”，自动清理将按最近最少登录顺序移除至少已有3个月未登录的用户，直至系统有足够的可用空间。
 
       如果此政策未设置，自动清理将使用默认的内置策略（目前为“RemoveLRUIfDormant”策略）。</translation>
+<translation id="7334517274921831425">允许用户在搭载 <ph name="PRODUCT_OS_NAME" />的设备上使用 <ph name="BOREALIS_NAME" /></translation>
 <translation id="7336785017449297672">控制时钟和时区设置。</translation>
 <translation id="7336878834592315572">在会话期间保留 Cookie</translation>
 <translation id="7338217396351647423">设置此政策可指定要传递给 ARC 运行时的一组政策。管理员可以使用此政策选择要自动安装的 Android 应用。请以有效的 JSON 格式输入所需值。

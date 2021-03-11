@@ -484,7 +484,7 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="1526335046150927198">Włącz szybkie przewijanie na touchpadzie</translation>
 <translation id="1526560967942511387">Dokument bez tytułu</translation>
 <translation id="1527336312600375509">Częstotliwość odświeżania monitora</translation>
-<translation id="152913213824448541">Udostępnianie w pobliżu kontakty</translation>
+<translation id="152913213824448541">Kontakty wykorzystywane przez Udostępnianie w pobliżu</translation>
 <translation id="1529891865407786369">Źródło zasilania</translation>
 <translation id="1530838837447122178">Otwórz ustawienia myszy i touchpada</translation>
 <translation id="1531275250079031713">Pokaż okno „Dodaj nową sieć Wi-Fi”</translation>
@@ -3584,7 +3584,7 @@ Jeśli Twoje dziecko nie używa w szkole Chromebooka lub jeśli wolisz zarządz
 <translation id="5057110919553308744">Gdy klikniesz rozszerzenie</translation>
 <translation id="5057403786441168405">Zarządzanie kontami zalogowanych użytkowników. Witryny, aplikacje i rozszerzenia w Chrome i Google Play mogą używać tych kont do dostosowywania swojego wyglądu i działania (jeśli mają odpowiednie uprawnienia). <ph name="LINK_BEGIN" />Więcej informacji<ph name="LINK_END" /></translation>
 <translation id="5059241099014281248">Ograniczanie logowania się</translation>
-<translation id="5059526285558225588">Wybierz udostępniane dane</translation>
+<translation id="5059526285558225588">Wybierz, co chcesz udostępnić</translation>
 <translation id="5060332552815861872">Dostępna do zapisania jest jedna drukarka.</translation>
 <translation id="5061347216700970798">{NUM_BOOKMARKS,plural, =1{Ten folder zawiera zakładkę. Na pewno chcesz go usunąć?}few{Ten folder zawiera # zakładki. Na pewno chcesz go usunąć?}many{Ten folder zawiera # zakładek. Na pewno chcesz go usunąć?}other{Ten folder zawiera # zakładki. Na pewno chcesz go usunąć?}}</translation>
 <translation id="5062930723426326933">Logowanie nieudane. Połącz się z internetem i spróbuj ponownie.</translation>
@@ -3714,7 +3714,7 @@ Jeśli Twoje dziecko nie używa w szkole Chromebooka lub jeśli wolisz zarządz
 <translation id="5204673965307125349">Wykonaj Powerwash urządzenia i spróbuj jeszcze raz.</translation>
 <translation id="5204967432542742771">Wpisz hasło</translation>
 <translation id="5205484256512407285">Nigdy nie używaj mobilnej transmisji danych</translation>
-<translation id="520568280985468584">Sieć komórkowa została dodana. Może stać się aktywna po kilku minutach.</translation>
+<translation id="520568280985468584">Sieć komórkowa została dodana. Może minąć kilka minut, zanim się uaktywni.</translation>
 <translation id="5206215183583316675">Usunąć „<ph name="CERTIFICATE_NAME" />”?</translation>
 <translation id="520621735928254154">Błąd importowania certyfikatu</translation>
 <translation id="5206787458656075734">{COUNT,plural, =1{Zmieniono przejęte hasło. Masz jeszcze # przejęte hasło. Chrome zaleca, by jak najszybciej je sprawdzić.}few{Zmieniono przejęte hasło. Masz jeszcze # przejęte hasła. Chrome zaleca, by jak najszybciej je sprawdzić.}many{Zmieniono przejęte hasło. Masz jeszcze # przejętych haseł. Chrome zaleca, by jak najszybciej je sprawdzić.}other{Zmieniono przejęte hasło. Masz jeszcze # przejętego hasła. Chrome zaleca, by jak najszybciej je sprawdzić.}}</translation>
@@ -4437,7 +4437,7 @@ Jeśli Twoje dziecko nie używa w szkole Chromebooka lub jeśli wolisz zarządz
 <translation id="6043994281159824495">Wyloguj się teraz</translation>
 <translation id="6044805581023976844"><ph name="APP_NAME" /> udostępnia kartę i dźwięk z Chrome karcie <ph name="TAB_NAME" />.</translation>
 <translation id="6045114302329202345">Podstawowy przycisk TrackPointa</translation>
-<translation id="6047632800149092791">Synchronizacja nie działa. Wyloguj się i zaloguj się ponownie.</translation>
+<translation id="6047632800149092791">Synchronizacja nie działa. Wyloguj się i zaloguj ponownie.</translation>
 <translation id="6049004884579590341">Naciśnij i przytrzymaj |<ph name="ACCELERATOR" />|, by zamknąć pełny ekran</translation>
 <translation id="6051354611314852653">Ups. System nie może autoryzować dostępu do interfejsu API dla tego urządzenia.</translation>
 <translation id="6052976518993719690">Urząd certyfikacji protokołu SSL</translation>
@@ -5086,7 +5086,7 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="6793723358811598107">Klawisz „<ph name="CURRENTKEY" />” jest już przypisany do czynności „<ph name="ACTION" />”. Naciśnij dowolny klawisz, by zakończyć.</translation>
 <translation id="6795884519221689054">Panda</translation>
 <translation id="6797493596609571643">Ups, coś poszło nie tak.</translation>
-<translation id="6798420440063423019">Klucz bezpieczeństwa jest zablokowany z powodu wprowadzenia nieprawidłowego kodu PIN zbyt wiele razy. Musisz zresetować klucz bezpieczeństwa.</translation>
+<translation id="6798420440063423019">Klucz bezpieczeństwa został zablokowany z powodu wprowadzenia nieprawidłowego kodu PIN zbyt wiele razy. Musisz zresetować klucz bezpieczeństwa.</translation>
 <translation id="6798578729981748444">Aby zakończyć importowanie, zamknij wszystkie okna Firefoksa.</translation>
 <translation id="6798780071646309401">caps lock włączony</translation>
 <translation id="6798954102094737107">Wtyczka: <ph name="PLUGIN_NAME" /></translation>

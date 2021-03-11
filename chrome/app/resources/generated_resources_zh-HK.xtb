@@ -5087,7 +5087,7 @@
 <translation id="6793723358811598107">「<ph name="CURRENTKEY" />」鍵已指派給「<ph name="ACTION" />」動作。請按任何按鍵以離開。</translation>
 <translation id="6795884519221689054">熊貓</translation>
 <translation id="6797493596609571643">糟糕，發生錯誤。</translation>
-<translation id="6798420440063423019">由於您輸入太多次錯誤的 PIN，因此安全密鑰已被鎖定。您需要重設安全密鑰。</translation>
+<translation id="6798420440063423019">您輸入錯誤 PIN 的次數過多，因此安全密鑰已被鎖定。您需要重設安全密鑰。</translation>
 <translation id="6798578729981748444">如要完成匯入，請關閉所有 Firefox 視窗。</translation>
 <translation id="6798780071646309401">大寫鎖定已開啟</translation>
 <translation id="6798954102094737107">外掛程式：<ph name="PLUGIN_NAME" /></translation>

@@ -21,7 +21,7 @@
 <translation id="3291470810748040983">Коли на відкритій вкладці знизиться ціна, ви отримаєте сповіщення</translation>
 <translation id="3328308545011660196">Підказка: схоже, ви відкрили кілька пов'язаних вкладок (<ph name="NUMBER_OF_TABS" />). Додати їх у групу?</translation>
 <translation id="3819916404117584598">{TABS_COUNT,plural, =1{Згорнути <ph name="TABS_COUNT_ONE" /> вкладку}one{Згорнути групу "<ph name="TITLE_OF_GROUP" />" з <ph name="TABS_COUNT_MANY" /> вкладкою}few{Згорнути групу "<ph name="TITLE_OF_GROUP" />" з <ph name="TABS_COUNT_MANY" /> вкладками}many{Згорнути групу "<ph name="TITLE_OF_GROUP" />" з <ph name="TABS_COUNT_MANY" /> вкладками}other{Згорнути групу "<ph name="TITLE_OF_GROUP" />" з <ph name="TABS_COUNT_MANY" /> вкладки}}</translation>
-<translation id="3882834874697329510">Щоб отримувати сповіщення, коли на відкритій вкладці знижується ціна, перейдіть у налаштування й увімкніть їх.</translation>
+<translation id="3882834874697329510">Увімкніть їх у налаштуваннях, щоб дізнаватися, коли на відкритій вкладці знижуватиметься ціна.</translation>
 <translation id="3940195383040445971">Відстежувати ціни на вкладках</translation>
 <translation id="3996880007329611795">Отримувати сповіщення</translation>
 <translation id="4133493477912226187">Схоже, ви відкрили кілька пов'язаних вкладок (<ph name="NUMBER_OF_TABS" />). Додати їх у групу?</translation>

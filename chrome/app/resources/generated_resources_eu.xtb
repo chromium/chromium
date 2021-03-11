@@ -575,7 +575,7 @@ Txartel adimenduna sartuta edukitzea eskatzen du <ph name="DOMAIN" /> domeinuak.
 <translation id="1627408615528139100">Deskargatu da jada</translation>
 <translation id="1628948239858170093">Ireki aurretik aztertu egin nahi al duzu fitxategia?</translation>
 <translation id="1629314197035607094">Pasahitza iraungi egin da</translation>
-<translation id="1629521517399325891">Erabiltzailearen ziurtagiria ez dago erabilgarri sarea autentifikatzeko.</translation>
+<translation id="1629521517399325891">Erabiltzaile-ziurtagiria ez dago erabilgarri sarea autentifikatzeko.</translation>
 <translation id="163072119192489970">Datuak bidaltzen eta jasotzen amai dezakete</translation>
 <translation id="1630768113285622200">Berrabiarazi eta egin aurrera</translation>
 <translation id="1632082166874334883">Google-ko kontuan gordetako pasahitza</translation>
@@ -1180,7 +1180,7 @@ Kontu honen ezarpenak kudeatzeko, instalatu Family Link aplikazioa zure gailuan.
 <translation id="2300383962156589922">Pertsonalizatu eta kontrolatu <ph name="APP_NAME" /></translation>
 <translation id="2301382460326681002">Luzapenaren erro-direktorioak ez du balio.</translation>
 <translation id="23030561267973084">"<ph name="EXTENSION_NAME" />" luzapenak baimen gehigarriak eskatu ditu.</translation>
-<translation id="230529452743010958">Google-ren zerbitzuak erabiltzean egin dituzun jardueretan oinarrituta ari gara erakusten produktua. Jarduera horiei buruzko datuak ikusi eta ezabatu nahi badituzu, eta haiei buruzko ezarpenak aldatu, joan <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> webgunera.</translation>
+<translation id="230529452743010958">Google-ren zerbitzuak erabiltzean egin dituzun jardueretan oinarrituta ari gara erakusten produktua. Jarduera horiei buruzko datuak ikusi eta ezabatu nahi badituzu eta haiei buruzko ezarpenak aldatu, joan <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> webgunera.</translation>
 <translation id="23055578400314116">Hautatu erabiltzaile-izen bat</translation>
 <translation id="2307462900900812319">Konfiguratu sarea</translation>
 <translation id="230927227160767054">Orri honek zerbitzu-kudeatzaile bat instalatu nahi du.</translation>
@@ -3703,7 +3703,7 @@ Haurrak ikastetxean ez badu Chromebook-ik erabiltzen, edo nahiago baduzu etxean 
 <translation id="5187826826541650604"><ph name="KEY_NAME" /> (<ph name="DEVICE" />)</translation>
 <translation id="5190187232518914472">Ekarri gogora gogoko oroitzapenak. Albumak gehitu edo editatzeko, joan <ph name="LINK_BEGIN" />Google Argazkiak<ph name="LINK_END" /> zerbitzura.</translation>
 <translation id="5190926251776387065">Aktibatu ataka</translation>
-<translation id="5191094172448199359">Idatzi dituzun PIN kodeak ez datoz bat</translation>
+<translation id="5191094172448199359">Idatzi dituzun PINak ez datoz bat</translation>
 <translation id="5191251636205085390">Kontrolatu hirugarrenen cookieak ordezteko helburua duten teknologia berriak eta lortu haiei buruzko informazio gehiago</translation>
 <translation id="51918995459521422"><ph name="ORIGIN" /> webguneak fitxategi bat baino gehiago deskargatu nahi ditu</translation>
 <translation id="5192062846343383368">Zabaldu Family Link aplikazioa gainbegiratze-ezarpenak ikusteko.</translation>
@@ -5088,7 +5088,7 @@ Txartel adimenduna sartuta edukitzea eskatzen du <ph name="DOMAIN" /> domeinuak.
 <translation id="6793723358811598107">"<ph name="CURRENTKEY" />" tekla "<ph name="ACTION" />" ekintzari esleituta dago dagoeneko. Irteteko, sakatu edozein tekla.</translation>
 <translation id="6795884519221689054">Panda</translation>
 <translation id="6797493596609571643">Arazoren bat izan da.</translation>
-<translation id="6798420440063423019">Segurtasun-giltza blokeatuta dago PIN kodea gehiegitan idatzi delako oker. Segurtasun-giltza berrezarri beharko duzu.</translation>
+<translation id="6798420440063423019">Segurtasun-giltza blokeatuta dago PINa gehiegitan idatzi delako oker. Segurtasun-giltza berrezarri beharko duzu.</translation>
 <translation id="6798578729981748444">Inportazioa amaitzeko, itxi Firefox-eko leiho guztiak.</translation>
 <translation id="6798780071646309401">maiuskulak aktibatuta daude</translation>
 <translation id="6798954102094737107"><ph name="PLUGIN_NAME" /> plugina</translation>
@@ -5434,7 +5434,7 @@ Txartel adimenduna sartuta edukitzea eskatzen du <ph name="DOMAIN" /> domeinuak.
 <translation id="7180865173735832675">Pertsonalizatu</translation>
 <translation id="7182791023900310535">Eraman pasahitza</translation>
 <translation id="7186088072322679094">Mantendu tresna-barran</translation>
-<translation id="7186303001964993981"><ph name="ORIGIN" /> webguneak ezin du ireki karpeta sistemaren fitxategiak dituelako</translation>
+<translation id="7186303001964993981"><ph name="ORIGIN" /> webguneak ezin du ireki karpeta sistemaren fitxategiak daudelako</translation>
 <translation id="7187428571767585875">Erregistroan kendu edo aldatu beharreko sarrerak:</translation>
 <translation id="7187855807420906517">Irteten edo deskonektatzen zarenean, webguneek sinkronizatzen jarraitzen dute zereginak amaitzeko, hala nola argazkiak kargatzeko edo txat-mezuak bidaltzeko</translation>
 <translation id="7189234443051076392">Ziurtatu gailuan behar adina toki duzula</translation>

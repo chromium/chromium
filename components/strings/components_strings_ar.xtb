@@ -540,7 +540,7 @@
 <translation id="3037605927509011580">عذرًا!</translation>
 <translation id="3041612393474885105">معلومات الشهادة</translation>
 <translation id="3060227939791841287">‏C9 (مغلف)</translation>
-<translation id="3060557858482803256">‏<ph name="RUN_CHROME_SAFETY_CHECK_FOCUSED_FRIENDLY_MATCH_TEXT" />، اضغط على مفتاح التبويب (Tab) ثم Enter لتفعيل ميزة "تأكيد السلامة" في إعدادات Chrome.</translation>
+<translation id="3060557858482803256">‏<ph name="RUN_CHROME_SAFETY_CHECK_FOCUSED_FRIENDLY_MATCH_TEXT" />، اضغط على مفتاح التبويب (Tab) ثم Enter لتشغيل ميزة "تأكيد السلامة" في إعدادات Chrome.</translation>
 <translation id="3061707000357573562">خدمة رمز التصحيح</translation>
 <translation id="3064966200440839136">ستتم مغادرة وضع التصفح المتخفي للدفع عبر تطبيق خارجي. هل تريد المتابعة؟</translation>
 <translation id="3080254622891793721">الرسم البياني</translation>
@@ -778,7 +778,7 @@
 <translation id="3964661563329879394">{COUNT,plural, =0{بدون}=1{من موقع واحد }two{من موقعين (#) }few{من # مواقع }many{من # موقعًا }other{من # موقع }}</translation>
 <translation id="397105322502079400">جارٍ الحساب...</translation>
 <translation id="3973234410852337861">تم حظر <ph name="HOST_NAME" /></translation>
-<translation id="3973357910713125165">‏زر تفعيل ميزة "تأكيد السلامة" في Chrome، اضغط على مفتاح Enter لتفعيل هذه الميزة في إعدادات Chrome.</translation>
+<translation id="3973357910713125165">‏زر تشغيل ميزة "تأكيد السلامة" في Chrome، اضغط على مفتاح Enter لتشغيل هذه الميزة في إعدادات Chrome.</translation>
 <translation id="3987405730340719549">‏تبيّن لمتصفح Chrome أن هذا الموقع الإلكتروني قد يكون مزيفًا أو احتياليًا.
 
     إذا كنت تعتقد أنّه تم عرض هذه الرسالة عن طريق الخطأ، يُرجى الانتقال إلى https://bugs.chromium.org/p/chromium/issues/entry?template=Safety+Tips+Appeals.</translation>
@@ -860,7 +860,7 @@
     &lt;h4&gt;الخطوة 5: الحصول على مساعدة إضافية&lt;/h4&gt;
     &lt;p&gt;في حال استمرار ظهور هذا الخطأ، اتصِل بمالك الموقع الإلكتروني.&lt;/p&gt;</translation>
 <translation id="4226937834893929579"><ph name="BEGIN_LINK" />تجربة تشغيل بيانات تشخيص الشبكة<ph name="END_LINK" />.</translation>
-<translation id="4229544452621580519">‏تفعيل ميزة "تأكيد السلامة" في إعدادات Chrome</translation>
+<translation id="4229544452621580519">‏تشغيل ميزة "تأكيد السلامة" في إعدادات Chrome</translation>
 <translation id="4234495348042597185"><ph name="BEGIN_LINK" />المتابعة إلى <ph name="SITE" /><ph name="END_LINK" /></translation>
 <translation id="4235360514405112390">صالح</translation>
 <translation id="4250431568374086873">إن اتصالك بهذا الموقع غير آمن تمامًا</translation>
@@ -988,7 +988,7 @@
 <translation id="4756388243121344051">ال&amp;سجل</translation>
 <translation id="4758311279753947758">إضافة معلومات الاتصال</translation>
 <translation id="4761104368405085019">استخدام الميكروفون</translation>
-<translation id="4761869838909035636">‏تفعيل ميزة "تأكيد السلامة" في Chrome</translation>
+<translation id="4761869838909035636">‏تشغيل ميزة "تأكيد السلامة" في Chrome</translation>
 <translation id="4764776831041365478">قد تكون صفحة الويب على العنوان <ph name="URL" /> غير متاحة مؤقتًا أو قد يكون تم نقلها نهائيًا إلى عنوان ويب جديد.</translation>
 <translation id="4766713847338118463">وضع دبوسَين بالأسفل</translation>
 <translation id="4768815695067202997"><ph name="BEGIN_BOLD" />

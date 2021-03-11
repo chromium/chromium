@@ -893,6 +893,9 @@ Ist die Richtlinie auf "False" gesetzt, können Nutzer keine eigenen Drucker hin
       Diese Vorschläge werden per Remotezugriff von Google-Servern abgerufen.
 
       Wird die Richtlinie auf "false" gesetzt, werden keine Vorschläge abgerufen oder angezeigt.</translation>
+<translation id="2246011554082893079">Steuert die Verfügbarkeit von <ph name="BOREALIS_NAME" /> für dieses Gerät.
+
+      Wenn die Richtlinie auf „false“ gesetzt ist, steht <ph name="BOREALIS_NAME" /> Nutzern dieses Geräts nicht zur Verfügung. Wenn die Richtlinie nicht konfiguriert oder auf „true“ gesetzt ist, ist <ph name="BOREALIS_NAME" /> verfügbar, sofern die Richtlinie nicht durch eine andere Richtlinie oder Einstellung außer Kraft gesetzt wird.</translation>
 <translation id="225340736558643885">Warnmeldungen für nicht sichere Formulare aktivieren</translation>
 <translation id="2258126710006312594">Nutzern mit Remotezugriff die Übertragung von Dateien vom/zum Host gestatten</translation>
 <translation id="2261329877420573811">Wenn <ph name="PRINTERS_WHITELIST" /> für <ph name="DEVICE_PRINTERS_ACCESS_MODE_POLICY_NAME" /> ausgewählt ist, wird durch Festlegen von <ph name="DEVICE_NATIVE_PRINTERS_WHITELIST_POLICY_NAME" /> angegeben, welche Drucker die Nutzer verwenden können. Den Nutzern stehen nur die Drucker zur Verfügung, deren IDs mit den Werten in dieser Richtlinie übereinstimmen. Die IDs müssen dem Feld <ph name="ID_FIELD" /> oder dem Feld <ph name="GUID_FIELD" /> in der Datei entsprechen, die in <ph name="DEVICE_PRINTERS_POLICY_NAME" /> angegeben ist.
@@ -1113,6 +1116,13 @@ Ist sie nicht konfiguriert, ist der Datenschutzbildschirm anfangs deaktiviert, N
           Ist die Richtlinie nicht konfiguriert, ist "Textcursor hervorheben" anfangs deaktiviert, kann jedoch vom Nutzer jederzeit aktiviert werden.</translation>
 <translation id="2509919237512982967">Verwenden Sie alte Formularsteuerelemente bis M84.</translation>
 <translation id="2515699738406900920">Verfügbarkeit von Profil-Picker beim Start</translation>
+<translation id="2515914624025258624">Diese Einstellung erlaubt Nutzern, sekundäre Profile zu erstellen und den Gastmodus im <ph name="LACROS_NAME" />-Browser zu verwenden.
+
+      Wenn diese Richtlinie auf „false“ gesetzt oder nicht konfiguriert ist, kann der Nutzer ähnlich wie bei BrowserAddPersonEnabled und BrowserGuestModeEnabled keine sekundären Profile erstellen und den Gastmodus nicht verwenden.
+
+      Ist diese Richtlinie auf „true“ festgelegt, kann der Nutzer sekundäre Profile erstellen und den Gastmodus verwenden.
+
+      Beachten Sie, dass der Nutzer keine sekundären Profile erstellen kann, wenn diese Richtlinie auf „true“ gesetzt ist, BrowserAddPersonEnabled jedoch auf „false“. Dasselbe gilt für BrowserGuestModeEnabled und den Gastmodus.</translation>
 <translation id="2517466659416174529">Deaktivieren von Tabs im Hintergrund zulassen</translation>
 <translation id="2518231489509538392">Wiedergabe von Audioinhalten zulassen</translation>
 <translation id="2521581787935130926">App-Verknüpfung in der Lesezeichenleiste anzeigen</translation>
@@ -1438,6 +1448,9 @@ Ist sie nicht konfiguriert, ist der Datenschutzbildschirm anfangs deaktiviert, N
 <translation id="2960013482187484833">Zuletzt genutzten Drucker als Standarddrucker in der Druckvorschau verwenden</translation>
 <translation id="2960128438010718932">Staging-Zeitplan zum Anwenden eines neuen Updates</translation>
 <translation id="2960691910306063964">Authentifizierung ohne PIN für Hosts für den Remotezugriff aktivieren oder deaktivieren</translation>
+<translation id="2964056138564883247">Steuert die Verfügbarkeit von <ph name="BOREALIS_NAME" /> für diesen Nutzer.
+
+      Wenn die Richtlinie auf „false“ gesetzt ist, steht <ph name="BOREALIS_NAME" /> nicht zur Verfügung. Wenn die Richtlinie nicht konfiguriert oder auf „true“ gesetzt ist, ist <ph name="BOREALIS_NAME" /> verfügbar, sofern die Richtlinie nicht durch eine andere Richtlinie oder Einstellung außer Kraft gesetzt wird.</translation>
 <translation id="2964373560810620158">Verhindern, dass Nutzer den <ph name="LACROS_NAME" />-Browser verwenden</translation>
 <translation id="2969797921412053304">Mit dieser Richtlinie wird festgelegt, welche URLs während des SAML-Flows auf dem Anmeldebildschirm die Remote-Attestierung der Geräteidentität verwenden dürfen.
 
@@ -2710,6 +2723,7 @@ Wird die Richtlinie auf „False“ gesetzt, verwendet <ph name="PRODUCT_NAME" /
       Wenn Sie diese Richtlinie konfigurieren, kann sie von Nutzern nicht geändert werden. Falls die Richtlinie nicht konfiguriert ist, können Nutzer selbst entscheiden, ob die Ablage automatisch ausgeblendet werden soll.</translation>
 <translation id="4812714598405913256">Meldung zum Ablaufdatum für die automatische Aktualisierung für die Richtlinie DeviceMinimumVersion konfigurieren</translation>
 <translation id="4816674326202173458">Unternehmensnutzer sowohl als primären als auch als sekundären Nutzer zulassen (Standardverhalten für nicht verwaltete Nutzer)</translation>
+<translation id="4820432864264617413">Ausführung von <ph name="BOREALIS_NAME" /> für einen Nutzer verhindern</translation>
 <translation id="4826326557828204741">Auszuführende Aktion beim Erreichen der Leerlaufverzögerung während des Akkubetriebs</translation>
 <translation id="482803100714220060">Vollständige URLs anzeigen</translation>
 <translation id="4832852360828533362">Berichte zu Nutzern und Geräten</translation>
@@ -2723,6 +2737,7 @@ Wird die Richtlinie auf „False“ gesetzt, verwendet <ph name="PRODUCT_NAME" /
       Wenn sie nicht konfiguriert ist oder einen ungültigen Wert enthält, ist der Deaktivierungsmodus in den Systemfunktionen auf „blockiert“ gesetzt.</translation>
 <translation id="4835470005923546373">Standardmäßig Druckmodus mit Hintergrundgrafiken deaktivieren</translation>
 <translation id="4835622243021053389">NTLMv2-Authentifizierung aktivieren.</translation>
+<translation id="485419696366295465">Steuert zum <ph name="BOREALIS_NAME" />-Subsystem gehörige Richtlinien.</translation>
 <translation id="4855636880814771207">Wenn die Richtlinie aktiviert oder nicht konfiguriert ist, können Nutzer Bluetooth aktivieren oder deaktivieren.
 
       Wenn die Richtlinie deaktiviert ist, wird Bluetooth von <ph name="PRODUCT_OS_NAME" /> deaktiviert und Nutzer können es nicht aktivieren.
@@ -3194,6 +3209,7 @@ wird die Funktion "<ph name="PRODUCT_NAME" />" aktiviert.
 
           Wenn die Richtlinie deaktiviert wird, ist die Funktion standardmäßig deaktiviert.
           </translation>
+<translation id="5432043531153963184">Nutzer daran hindern, sekundäre Profile zu erstellen und den Gastmodus im <ph name="LACROS_NAME" />-Browser zu verwenden</translation>
 <translation id="5442026853063570579">Mit dieser Richtlinie wird außerdem der Zugriff auf Android-Entwickleroptionen festgelegt. Wenn Sie diese Richtlinie auf "DeveloperToolsDisallowed" (Wert 2) setzen, können Nutzer nicht auf die Entwickleroptionen zugreifen. Wenn Sie diese Richtlinie auf einen anderen Wert setzen oder sie nicht festlegen, können Nutzer auf die Entwickleroptionen zugreifen, indem sie in der Android-App "Einstellungen" siebenmal auf die Build-Nummer tippen.</translation>
 <translation id="5445596354079213552">Diese Richtlinie wird nur angewendet, wenn das Gerät das Ablaufdatum für die automatische Aktualisierung erreicht hat und die durch die Richtlinie <ph name="DEVICE_MINIMUM_VERSION_POLICY_NAME" /> festgelegte Mindestanforderung im Hinblick auf die <ph name="PRODUCT_OS_NAME" />-Version nicht mehr erfüllt.
 
@@ -3277,6 +3293,7 @@ Wenn die in der Richtlinie <ph name="DEVICE_MINIMUM_VERSION_POLICY_NAME" /> ange
 <translation id="554903022911579950">Kerberos</translation>
 <translation id="555022085242359084">Hohen Kontrast auf dem Anmeldebildschirm aktivieren</translation>
 <translation id="555077880566103058">Automatische Ausführung des Plug-ins "<ph name="FLASH_PLUGIN_NAME" />" für alle Websites zulassen</translation>
+<translation id="5556607617517096419">Borealis</translation>
 <translation id="5559079916187891399">Diese Richtlinie hat keine Auswirkung auf Android-Apps.</translation>
 <translation id="5560039246134246593">Hiermit fügen Sie beim Abrufen des Varianten-Seeds in <ph name="PRODUCT_NAME" /> einen Parameter hinzu.
 
@@ -3481,6 +3498,7 @@ Wenn die Richtlinie auf "True" gesetzt oder nicht konfiguriert ist, können Nutz
 <translation id="5814301096961727113">Standardstatus für das gesprochene Feedback auf der Anmeldeseite festlegen</translation>
 <translation id="5815129011704381141">Nach Update automatisch neu starten</translation>
 <translation id="582857022372205358">Duplexdruck (kurze Kante) aktivieren</translation>
+<translation id="5830196507442186669">Geräten die Verwendung von <ph name="BOREALIS_NAME" /> unter <ph name="PRODUCT_OS_NAME" /> erlauben</translation>
 <translation id="5832274826894536455">Veraltete Richtlinien</translation>
 <translation id="5835253272509953988">Wenn die Richtlinie aktiviert ist, können Nutzer von <ph name="PRODUCT_NAME" /> prüfen lassen, ob die eingegebenen Nutzernamen und Passwörter Teil eines Datenlecks sind.
 
@@ -3693,12 +3711,14 @@ Wenn der Wert für <ph name="CHROMEOS_VERSION_PROPERTY_NAME" /> bei keinem Eintr
 <translation id="6097601282776163274">Anonymisierte URL-Datenerfassung aktivieren</translation>
 <translation id="6099853574908182288">Standardmäßiger Farbdruckmodus</translation>
 <translation id="6102342563050263313">Scrollen zu in URL-Fragmenten angegebenem Text aktivieren</translation>
+<translation id="6102449843040973938">Ausführung von <ph name="BOREALIS_NAME" /> auf einem Gerät nicht verhindern</translation>
 <translation id="6107642964266628393">Legt fest, wie und wann Chrome OS-Updates angewendet werden.</translation>
 <translation id="6111936128861357925">Easter Egg-Dinosaurierspiel zulassen</translation>
 <translation id="6123052603197028610">Anfragen an Google-Server dürfen keine Zeitstempel abrufen</translation>
 <translation id="6132506775968708399">Drittanbieter-Cookies blockieren</translation>
 <translation id="6133088669883929098">Schlüsselgenerierung für alle Websites zulassen</translation>
 <translation id="6135398260575578389">Safe Browsing ist im erweiterten Modus aktiv. Dieser bietet einen besseren Schutz. Es müssen jedoch mehr Browserdaten mit Google geteilt werden.</translation>
+<translation id="6135895880862759946">Nutzern erlauben, sekundäre Profile zu erstellen und den Gastmodus im <ph name="LACROS_NAME" />-Browser zu verwenden</translation>
 <translation id="6138636318340561140">Safe Browsing-Status von URLs in Echtzeit prüfen</translation>
 <translation id="6141402445226505817">Immer die ungefähre Erkennung der Zeitzone verwenden</translation>
 <translation id="6144046700495610112">Wenn die Richtlinie aktiviert ist, werden Formulardaten zum automatischen Ausfüllen bei der ersten Ausführung aus dem Standardbrowser importiert. Ist die Richtlinie deaktiviert oder nicht konfiguriert, werden bei der ersten Ausführung keine Formulardaten zum automatischen Ausfüllen importiert.
@@ -3759,6 +3779,7 @@ Wenn der Wert für <ph name="CHROMEOS_VERSION_PROPERTY_NAME" /> bei keinem Eintr
       Dadurch entstehen Sicherheitsrisiken für den Nutzer, die auf die Ausführung des Audiosubsystems ohne Sandbox zurückzuführen sind.
       Wenn die Richtlinie nicht konfiguriert wird, kommt die Standardkonfiguration für die Audio-Sandbox zum Einsatz, die je nach Plattform variiert.
       Mit dieser Richtlinie sollen Unternehmen die Möglichkeit erhalten, die Audio-Sandbox zu deaktivieren, falls sie Softwarekonfigurationen für die Sicherheit einsetzen, die mit der Sandbox in Konflikt stehen könnten.</translation>
+<translation id="6252773211180267325">Ausführung von <ph name="BOREALIS_NAME" /> für einen Nutzer nicht verhindern</translation>
 <translation id="6261643884958898336">Gerätebezogene Daten erfassen</translation>
 <translation id="6265892395051519509">Diesen Websites den Zugriff auf Sensoren erlauben</translation>
 <translation id="6273015149273504999">
@@ -4229,6 +4250,7 @@ Hinweis: Nutzer können Cookies blockieren und so auf Google-Dienste zugreifen, 
 
 
       Hiermit werden die Parameter angegeben, die beim Starten von <ph name="PRODUCT_NAME" /> angewendet werden sollen. Sie gelten nur auf dem Anmeldebildschirm. Über diese Richtlinie festgelegte Parameter haben keine Auswirkungen auf Nutzersitzungen.</translation>
+<translation id="6857240169209507953">Ausführung von <ph name="BOREALIS_NAME" /> auf einem Gerät verhindern</translation>
 <translation id="685769593149966548">Strikt eingeschränkten Modus auf YouTube erzwingen</translation>
 <translation id="686079137349561371">Microsoft Windows 7 oder höher</translation>
 <translation id="68818134518270542">Mit der Konfiguration der Richtlinie werden die Apps festgelegt, die Nutzer als Notizen-App auf dem Sperrbildschirm von <ph name="PRODUCT_OS_NAME" /> aktivieren können.
@@ -4651,6 +4673,7 @@ Wenn diese Richtlinie nicht festgelegt ist oder absichtlich leer gelassen wird, 
       Wenn für diese Richtlinie "RemoveLRUIfDormant" festgelegt ist, entfernt die automatische Bereinigungsfunktion nur diejenigen Nutzer vom Gerät, die seit mindestens drei Monaten nicht mehr angemeldet waren. Diese Nutzer werden in der chronologischen Reihenfolge ihrer letzten Anmeldung vom Gerät gelöscht, bis wieder genügend freier Speicher vorhanden ist.
 
       Ist die Richtlinie nicht konfiguriert, erfolgt die automatische Bereinigung auf Grundlage der integrierten Standardstrategie. Zurzeit handelt es sich dabei um die "RemoveLRUIfDormant"-Strategie.</translation>
+<translation id="7334517274921831425">Nutzern die Verwendung von <ph name="BOREALIS_NAME" /> unter <ph name="PRODUCT_OS_NAME" /> erlauben</translation>
 <translation id="7336785017449297672">Legt die Einstellungen für die Uhrzeit und Zeitzone fest.</translation>
 <translation id="7336878834592315572">Cookies für die Dauer der Sitzung beibehalten</translation>
 <translation id="7338217396351647423">Über eine Konfiguration dieser Richtlinie wird eine Reihe von Richtlinien angegeben, die für die ARC-Laufzeit übergeben werden. Damit können Administratoren Android-Apps für die automatische Installation festlegen. Geben Sie einen gültigen JSON-Wert an.
@@ -5071,6 +5094,12 @@ Wenn die Richtlinie nicht festgelegt ist, werden keine Einschränkungen angewend
 <translation id="7933141401888114454">Erstellung von betreuten Nutzern aktivieren</translation>
 <translation id="793473937901685727">Verfügbarkeit von Zertifikaten für ARC-Apps festlegen</translation>
 <translation id="7937766917976512374">Videoaufzeichnung gestatten oder ablehnen</translation>
+<translation id="7940359358774136765">Aktiviert eine Seite auf chrome://password-change, auf der SAML-Nutzer ihre SAML-Passwörter bei laufender Sitzung ändern können. Hierdurch wird dafür gesorgt, dass das SAML-Passwort und das Passwort für den Sperrbildschirm des Geräts synchronisiert bleiben.
+
+      Außerdem ermöglicht diese Richtlinie Benachrichtigungen, mit denen SAML-Nutzer gewarnt werden, wenn ihre SAML-Passwörter bald ablaufen. Sie können dann direkt bei laufender Sitzung ihr Passwort ändern.
+      Allerdings werden diese Benachrichtigungen nur angezeigt, wenn vom SAML-Identitätsanbieter während des SAML-Anmeldeablaufs Informationen zum Ablauf des Passworts an das Gerät gesendet werden.
+
+      Ist die Richtlinie deaktiviert oder nicht konfiguriert, kann das SAML-Passwort auf chrome://password-change nicht geändert werden und Sie erhalten keine Benachrichtigung, wenn SAML-Passwörter bald ablaufen.</translation>
 <translation id="7941975817681987555">Netzwerkaktionen nicht über Netzwerkverbindungen vervollständigen</translation>
 <translation id="7951605113561734721">Diese Richtlinie gibt geräteübergreifende Clientzertifikate an, die über das Geräteverwaltungsprotokoll registriert werden sollen.</translation>
 <translation id="7952007677054834789">Hiermit werden die Seiten konfiguriert, die beim Start geladen werden: die standardmäßige Startseite und die Standardseite "Neuer Tab" in <ph name="PRODUCT_NAME" />. Außerdem wird verhindert, dass Nutzer diese Einstellungen ändern.

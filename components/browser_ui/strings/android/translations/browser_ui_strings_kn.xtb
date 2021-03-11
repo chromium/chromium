@@ -310,7 +310,7 @@
 <translation id="9074739597929991885">ಬ್ಲೂಟೂತ್‌</translation>
 <translation id="9109747640384633967">{PERMISSIONS_SUMMARY_MIXED,plural, =1{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> ಮತ್ತು ಇನ್ನೂ <ph name="NUM_MORE" />}one{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> ಮತ್ತು ಇನ್ನೂ <ph name="NUM_MORE" />}other{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> ಮತ್ತು ಇನ್ನೂ <ph name="NUM_MORE" />}}</translation>
 <translation id="913657688200966289"><ph name="BEGIN_LINK" />Android ಸೆಟ್ಟಿಂಗ್‌ಗಳಲ್ಲಿ<ph name="END_LINK" /> <ph name="APP_NAME" /> ಗಾಗಿ ಅನುಮತಿಗಳನ್ನು ಆನ್ ಮಾಡಿ.</translation>
-<translation id="930525582205581608">ಈ ಸೈಟ್ ಅನ್ನು ಮರೆಯುವುದೇ?</translation>
+<translation id="930525582205581608">ಈ ಸೈಟ್ ಅನ್ನು ಮರೆಯಬೇಕೇ?</translation>
 <translation id="965817943346481315">ಅತಿಕ್ರಮಣಕಾರಿಯಾಗಿರುವ ಅಥವಾ ತಪ್ಪುದಾರಿಗೆಳೆಯುವ ಜಾಹೀರಾತುಗಳನ್ನು ಸೈಟ್ ತೋರಿಸಿದರೆ ಅದನ್ನು ನಿರ್ಬಂಧಿಸಿ (ಶಿಫಾರಸು ಮಾಡಲಾಗಿದೆ)</translation>
 <translation id="967624055006145463">ಸಂಗ್ರಹಣೆ ಮಾಡಿರುವ ಡೇಟಾ</translation>
 </translationbundle>
