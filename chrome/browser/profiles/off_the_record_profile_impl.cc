@@ -86,6 +86,7 @@
 #endif  // defined(OS_ANDROID)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/chromeos/preferences.h"
 #endif
 
@@ -225,6 +226,12 @@ OffTheRecordProfileImpl::~OffTheRecordProfileImpl() {
   // other profile-related destroy notifications are dispatched.
   ShutdownStoragePartitions();
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  // Bypass profile lifetime recording for ChromeOS helper profiles (sign-in,
+  // lockscreen, etc).
+  if (!chromeos::ProfileHelper::IsRegularProfile(profile_))
+    return;
+#endif
   // Store incognito lifetime and navigations count histogram.
   if (IsIncognitoProfile()) {
     auto duration = base::Time::Now() - start_time_;
