@@ -37,7 +37,8 @@ class MEDIA_EXPORT OpenH264VideoEncoder : public VideoEncoder {
   void Flush(StatusCB done_cb) override;
 
  private:
-  void DrainOutputs();
+  Status DrainOutputs(const SFrameBSInfo& frame_info,
+                      base::TimeDelta timestamp);
 
   class ISVCEncoderDeleter {
    public:

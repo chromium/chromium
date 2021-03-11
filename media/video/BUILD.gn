@@ -125,6 +125,7 @@ source_set("unit_tests") {
     "h264_parser_unittest.cc",
     "h264_poc_unittest.cc",
     "half_float_maker_unittest.cc",
+    "software_video_encoder_test.cc",
     "video_encode_accelerator_adapter_test.cc",
   ]
   if (enable_platform_hevc) {

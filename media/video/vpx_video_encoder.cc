@@ -4,11 +4,13 @@
 
 #include "media/video/vpx_video_encoder.h"
 
+#include "base/logging.h"
 #include "base/numerics/checked_math.h"
 #include "base/numerics/ranges.h"
 #include "base/strings/stringprintf.h"
 #include "base/system/sys_info.h"
 #include "base/time/time.h"
+#include "base/trace_event/trace_event.h"
 #include "media/base/bind_to_current_loop.h"
 #include "media/base/video_frame.h"
 #include "media/base/video_util.h"
@@ -18,6 +20,44 @@
 namespace media {
 
 namespace {
+
+constexpr vpx_enc_frame_flags_t VP8_UPDATE_NOTHING =
+    VP8_EFLAG_NO_UPD_ARF | VP8_EFLAG_NO_UPD_GF | VP8_EFLAG_NO_UPD_LAST;
+
+// Frame Pattern:
+// Layer Index 0: |0| |2| |4| |6| |8|
+// Layer Index 1: | |1| |3| |5| |7| |
+vpx_enc_frame_flags_t vp8_2layers_temporal_flags[] = {
+    // Layer 0 : update and reference only last frame
+    VP8_EFLAG_NO_REF_GF | VP8_EFLAG_NO_REF_ARF | VP8_EFLAG_NO_UPD_GF |
+        VP8_EFLAG_NO_UPD_ARF,
+
+    // Layer 1: only reference last frame, no updates
+    VP8_UPDATE_NOTHING | VP8_EFLAG_NO_REF_ARF | VP8_EFLAG_NO_REF_GF};
+
+// Frame Pattern:
+// Layer Index 0: |0| | | |4| | | |8| |  |  |12|
+// Layer Index 1: | | |2| | | |6| | | |10|  |  |
+// Layer Index 2: | |1| |3| |5| |7| |9|  |11|  |
+vpx_enc_frame_flags_t vp8_3layers_temporal_flags[] = {
+    // Layer 0 : update and reference only last frame
+    // It only depends on layer 0
+    VP8_EFLAG_NO_REF_GF | VP8_EFLAG_NO_REF_ARF | VP8_EFLAG_NO_UPD_GF |
+        VP8_EFLAG_NO_UPD_ARF,
+
+    // Layer 2: only reference last frame, no updates
+    // It only depends on layer 0
+    VP8_UPDATE_NOTHING | VP8_EFLAG_NO_REF_ARF | VP8_EFLAG_NO_REF_GF,
+
+    // Layer 1: only reference last frame, update gold frame
+    // It only depends on layer 0
+    VP8_EFLAG_NO_REF_GF | VP8_EFLAG_NO_REF_ARF | VP8_EFLAG_NO_UPD_ARF |
+        VP8_EFLAG_NO_UPD_LAST,
+
+    // Layer 2: reference last frame and gold frame, no updates
+    // It depends on layer 0 and layer 1
+    VP8_UPDATE_NOTHING | VP8_EFLAG_NO_REF_ARF,
+};
 
 // Returns the number of threads.
 int GetNumberOfThreads(int width) {
@@ -51,6 +91,8 @@ Status SetUpVpxConfig(const VideoEncoder::Options& opts,
 
   config->g_pass = VPX_RC_ONE_PASS;
   config->g_lag_in_frames = 0;
+  config->rc_max_quantizer = 58;
+  config->rc_min_quantizer = 2;
   config->rc_resize_allowed = 0;
   config->rc_dropframe_thresh = 0;  // Don't drop frames
   config->g_timebase.num = 1;
@@ -78,6 +120,58 @@ Status SetUpVpxConfig(const VideoEncoder::Options& opts,
 
   config->g_w = opts.frame_size.width();
   config->g_h = opts.frame_size.height();
+
+  switch (opts.temporal_layers) {
+    case 1:
+      break;
+    case 2:
+      // Frame Pattern:
+      // Layer Index 0: |0| |2| |4| |6| |8|
+      // Layer Index 1: | |1| |3| |5| |7| |
+      config->ts_number_layers = 2;
+      config->ts_periodicity = 2;
+      DCHECK_EQ(config->ts_periodicity,
+                sizeof(vp8_2layers_temporal_flags) /
+                    sizeof(vp8_2layers_temporal_flags[0]));
+      config->ts_layer_id[0] = 0;
+      config->ts_layer_id[1] = 1;
+      config->ts_rate_decimator[0] = 2;
+      config->ts_rate_decimator[1] = 1;
+      // Bitrate allocation L0: 60% L1: 40%
+      config->ts_target_bitrate[0] = 60 * config->rc_target_bitrate / 100;
+      config->ts_target_bitrate[1] = config->rc_target_bitrate;
+      config->temporal_layering_mode = VP9E_TEMPORAL_LAYERING_MODE_0101;
+      config->g_error_resilient = VPX_ERROR_RESILIENT_DEFAULT;
+      break;
+    case 3:
+      // Frame Pattern:
+      // Layer Index 0: |0| | | |4| | | |8| |  |  |12|
+      // Layer Index 1: | | |2| | | |6| | | |10|  |  |
+      // Layer Index 2: | |1| |3| |5| |7| |9|  |11|  |
+      config->ts_number_layers = 3;
+      config->ts_periodicity = 4;
+      DCHECK_EQ(config->ts_periodicity,
+                sizeof(vp8_3layers_temporal_flags) /
+                    sizeof(vp8_3layers_temporal_flags[0]));
+      config->ts_layer_id[0] = 0;
+      config->ts_layer_id[1] = 2;
+      config->ts_layer_id[2] = 1;
+      config->ts_layer_id[3] = 2;
+      config->ts_rate_decimator[0] = 4;
+      config->ts_rate_decimator[1] = 2;
+      config->ts_rate_decimator[2] = 1;
+      // Bitrate allocation L0: 50% L1: 20% L2: 30%
+      config->ts_target_bitrate[0] = 50 * config->rc_target_bitrate / 100;
+      config->ts_target_bitrate[1] = 70 * config->rc_target_bitrate / 100;
+      config->ts_target_bitrate[2] = config->rc_target_bitrate;
+      config->temporal_layering_mode = VP9E_TEMPORAL_LAYERING_MODE_0212;
+      config->g_error_resilient = VPX_ERROR_RESILIENT_DEFAULT;
+      break;
+    default: {
+      return Status(StatusCode::kEncoderUnsupportedConfig,
+                    "Unsupported number of temporal layers.");
+    }
+  }
 
   return Status();
 }
@@ -188,20 +282,24 @@ void VpxVideoEncoder::Initialize(VideoCodecProfile profile,
     std::string msg = base::StringPrintf(
         "VPX encoder initialization error: %s %s",
         vpx_codec_err_to_string(vpx_error), codec->err_detail);
-
+    DLOG(ERROR) << msg;
     status = Status(StatusCode::kEncoderInitializationError, msg);
     std::move(done_cb).Run(status);
     return;
   }
 
-  // Due to https://bugs.chromium.org/p/webm/issues/detail?id=1684
-  // values less than 5 crash VP9 encoder.
-  vpx_error = vpx_codec_control(codec.get(), VP8E_SET_CPUUSED, 5);
+  // For VP9 the values used for real-time encoding mode are 5, 6, 7,
+  // 8, 9. Higher means faster encoding, but lower quality.
+  // For VP8 typical values used for real-time encoding are -4, -6,
+  // -8, -10. Again larger magnitude means faster encoding but lower
+  // quality.
+  int cpu_used = is_vp9 ? 7 : -6;
+  vpx_error = vpx_codec_control(codec.get(), VP8E_SET_CPUUSED, cpu_used);
   if (vpx_error != VPX_CODEC_OK) {
     std::string msg =
         base::StringPrintf("VPX encoder VP8E_SET_CPUUSED error: %s",
                            vpx_codec_err_to_string(vpx_error));
-
+    DLOG(ERROR) << msg;
     status = Status(StatusCode::kEncoderInitializationError, msg);
     std::move(done_cb).Run(status);
     return;
@@ -227,6 +325,10 @@ void VpxVideoEncoder::Initialize(VideoCodecProfile profile,
 
     // Turn on row level multi-threading.
     vpx_codec_control(codec.get(), VP9E_SET_ROW_MT, 1);
+
+    // In CBR mode use aq-mode=3 is enabled for quality improvement
+    if (codec_config_.rc_end_usage == VPX_CBR)
+      vpx_codec_control(codec.get(), VP9E_SET_AQ_MODE, 3);
   }
 
   options_ = options;
@@ -359,6 +461,26 @@ void VpxVideoEncoder::Encode(scoped_refptr<VideoFrame> frame,
   last_frame_timestamp_ = frame->timestamp();
   auto deadline = VPX_DL_REALTIME;
   vpx_codec_flags_t flags = key_frame ? VPX_EFLAG_FORCE_KF : 0;
+
+  int temporal_id = 0;
+  if (codec_config_.ts_number_layers > 1) {
+    if (key_frame)
+      temporal_svc_frame_index = 0;
+    int index_in_temp_cycle =
+        temporal_svc_frame_index % codec_config_.ts_periodicity;
+    temporal_id = codec_config_.ts_layer_id[index_in_temp_cycle];
+    temporal_svc_frame_index++;
+
+    if (profile_ == VP8PROFILE_ANY) {
+      auto* vp8_layers_flags = codec_config_.ts_number_layers == 2
+                                   ? vp8_2layers_temporal_flags
+                                   : vp8_3layers_temporal_flags;
+      flags |= vp8_layers_flags[index_in_temp_cycle];
+      vpx_codec_control(codec_.get(), VP8E_SET_TEMPORAL_LAYER_ID, temporal_id);
+    }
+  }
+
+  TRACE_EVENT0("media", "vpx_codec_encode");
   auto vpx_error = vpx_codec_encode(codec_.get(), &vpx_image_, timestamp_us,
                                     duration_us, flags, deadline);
 
@@ -366,13 +488,14 @@ void VpxVideoEncoder::Encode(scoped_refptr<VideoFrame> frame,
     std::string msg = base::StringPrintf("VPX encoding error: %s (%s)",
                                          vpx_codec_err_to_string(vpx_error),
                                          vpx_codec_error_detail(codec_.get()));
+    DLOG(ERROR) << msg;
     status = Status(StatusCode::kEncoderFailedEncode, msg)
                  .WithData("vpx_error", vpx_error);
     std::move(done_cb).Run(std::move(status));
     return;
   }
 
-  DrainOutputs();
+  DrainOutputs(temporal_id);
   std::move(done_cb).Run(Status());
 }
 
@@ -492,22 +615,33 @@ void VpxVideoEncoder::Flush(StatusCB done_cb) {
     std::string msg = base::StringPrintf("VPX flushing error: %s (%s)",
                                          vpx_codec_err_to_string(vpx_error),
                                          vpx_codec_error_detail(codec_.get()));
+    DLOG(ERROR) << msg;
     Status status = Status(StatusCode::kEncoderFailedEncode, msg)
                         .WithData("vpx_error", vpx_error);
     std::move(done_cb).Run(std::move(status));
     return;
   }
-  DrainOutputs();
+  DrainOutputs(0);
   std::move(done_cb).Run(Status());
 }
 
-void VpxVideoEncoder::DrainOutputs() {
+void VpxVideoEncoder::DrainOutputs(int temporal_id) {
   vpx_codec_iter_t iter = nullptr;
   const vpx_codec_cx_pkt_t* pkt = nullptr;
   while ((pkt = vpx_codec_get_cx_data(codec_.get(), &iter))) {
     if (pkt->kind == VPX_CODEC_CX_FRAME_PKT) {
       VideoEncoderOutput result;
       result.key_frame = (pkt->data.frame.flags & VPX_FRAME_IS_KEY) != 0;
+
+      if (result.key_frame) {
+        // If we got an unexpected key frame, temporal_svc_frame_index needs to
+        // be adjusted, because the next frame should have index 1.
+        temporal_svc_frame_index = 1;
+        result.temporal_id = 0;
+      } else {
+        result.temporal_id = temporal_id;
+      }
+
       result.timestamp = base::TimeDelta::FromMicroseconds(pkt->data.frame.pts);
       result.size = pkt->data.frame.sz;
       result.data.reset(new uint8_t[result.size]);

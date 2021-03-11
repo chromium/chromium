@@ -30,6 +30,7 @@ struct MEDIA_EXPORT VideoEncoderOutput {
 
   base::TimeDelta timestamp;
   bool key_frame = false;
+  int temporal_id = 0;
 };
 
 class MEDIA_EXPORT VideoEncoder {
@@ -49,6 +50,9 @@ class MEDIA_EXPORT VideoEncoder {
     gfx::Size frame_size;
 
     base::Optional<int> keyframe_interval = 10000;
+
+    // Requested number of SVC temporal layers.
+    int temporal_layers = 1;
 
     // Only used for H264 encoding.
     AvcOptions avc;
