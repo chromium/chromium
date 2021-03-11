@@ -12,6 +12,7 @@
 #include "base/mac/mach_logging.h"
 #include "base/mac/scoped_nsautorelease_pool.h"
 #include "base/posix/eintr_wrapper.h"
+#include "base/time/time_override.h"
 
 namespace base {
 
@@ -21,9 +22,21 @@ namespace {
 // port sets. MessagePumpKqueue will directly use Mach ports in the kqueue if
 // it is possible.
 bool KqueueNeedsPortSet() {
-  static bool kqueue_needs_port_set = mac::IsAtMostOS10_11();
+  static const bool kqueue_needs_port_set = mac::IsAtMostOS10_11();
   return kqueue_needs_port_set;
 }
+
+#if DCHECK_IS_ON()
+// Prior to macOS 10.14, kqueue timers may spuriously wake up, because earlier
+// wake ups race with timer resets in the kernel. As of macOS 10.14, updating a
+// timer from the thread that reads the kqueue does not cause spurious wakeups.
+// Note that updating a kqueue timer from one thread while another thread is
+// waiting in a kevent64 invocation is still (inherently) racy.
+bool KqueueTimersSpuriouslyWakeUp() {
+  static const bool kqueue_timers_spuriously_wakeup = mac::IsAtMostOS10_13();
+  return kqueue_timers_spuriously_wakeup;
+}
+#endif
 
 int ChangeOneEvent(const ScopedFD& kqueue, kevent64_s* event) {
   return HANDLE_EINTR(kevent64(kqueue.get(), event, 1, nullptr, 0, 0, nullptr));
@@ -365,25 +378,13 @@ bool MessagePumpKqueue::DoInternalWork(Delegate* delegate,
 
   bool poll = next_work_info == nullptr;
   int flags = poll ? KEVENT_FLAG_IMMEDIATE : 0;
-  bool indefinite =
-      next_work_info != nullptr && next_work_info->delayed_run_time.is_max();
+  if (!poll && scheduled_wakeup_time_ != next_work_info->delayed_run_time) {
+    UpdateWakeupTimer(next_work_info->delayed_run_time);
+    DCHECK_EQ(scheduled_wakeup_time_, next_work_info->delayed_run_time);
+  }
 
-  int rv = 0;
-  do {
-    timespec timeout{};
-    if (!indefinite && !poll) {
-      if (rv != 0) {
-        // The wait was interrupted and made |next_work_info|'s view of
-        // TimeTicks::Now() stale. Refresh it before doing another wait.
-        next_work_info->recent_now = TimeTicks::Now();
-      }
-      timeout = next_work_info->remaining_delay().ToTimeSpec();
-    }
-    // This does not use HANDLE_EINTR, since retrying the syscall requires
-    // adjusting the timeout to account for time already waited.
-    rv = kevent64(kqueue_.get(), nullptr, 0, events_.data(), events_.size(),
-                  flags, indefinite ? nullptr : &timeout);
-  } while (rv < 0 && errno == EINTR);
+  int rv = HANDLE_EINTR(kevent64(kqueue_.get(), nullptr, 0, events_.data(),
+                                 events_.size(), flags, nullptr));
 
   PCHECK(rv >= 0) << "kevent64";
   return ProcessEvents(delegate, rv);
@@ -448,12 +449,74 @@ bool MessagePumpKqueue::ProcessEvents(Delegate* delegate, int count) {
         auto scoped_do_native_work = delegate->BeginNativeWork();
         controller->watcher()->OnMachMessageReceived(port);
       }
+    } else if (event->filter == EVFILT_TIMER) {
+      // The wakeup timer fired.
+#if DCHECK_IS_ON()
+      // On macOS 10.13 and earlier, kqueue timers may spuriously wake up.
+      // When this happens, the timer will be re-scheduled the next time
+      // DoInternalWork is entered, which means this doesn't lead to a
+      // spinning wait.
+      // When clock overrides are active, TimeTicks::Now may be decoupled from
+      // wall-clock time, and can therefore not be used to validate whether the
+      // expected wall-clock time has passed.
+      if (!KqueueTimersSpuriouslyWakeUp() &&
+          !subtle::ScopedTimeClockOverrides::overrides_active()) {
+        // Given the caveats above, assert that the timer didn't fire early.
+        DCHECK_LE(scheduled_wakeup_time_, base::TimeTicks::Now());
+      }
+#endif
+      DCHECK_NE(scheduled_wakeup_time_, base::TimeTicks::Max());
+      scheduled_wakeup_time_ = base::TimeTicks::Max();
+      --event_count_;
     } else {
       NOTREACHED() << "Unexpected event for filter " << event->filter;
     }
   }
 
   return did_work;
+}
+
+void MessagePumpKqueue::UpdateWakeupTimer(const base::TimeTicks& wakeup_time) {
+  DCHECK_NE(wakeup_time, scheduled_wakeup_time_);
+
+  // The ident of the wakeup timer. There's only the one timer as the pair
+  // (ident, filter) is the identity of the event.
+  constexpr uint64_t kWakeupTimerIdent = 0x0;
+  if (wakeup_time == base::TimeTicks::Max()) {
+    // Clear the timer.
+    kevent64_s timer{};
+    timer.ident = kWakeupTimerIdent;
+    timer.filter = EVFILT_TIMER;
+    timer.flags = EV_DELETE;
+
+    int rv = ChangeOneEvent(kqueue_, &timer);
+    PCHECK(rv == 0) << "kevent64, delete timer";
+    --event_count_;
+  } else {
+    // Set/reset the timer.
+    kevent64_s timer{};
+    timer.ident = kWakeupTimerIdent;
+    timer.filter = EVFILT_TIMER;
+    // This updates the timer if it already exists in |kqueue_|.
+    timer.flags = EV_ADD | EV_ONESHOT;
+    // Specify the sleep in microseconds to avoid undersleeping due to
+    // numeric problems. The sleep is computed from TimeTicks::Now rather than
+    // NextWorkInfo::recent_now because recent_now is strictly earlier than
+    // current wall-clock. Using an earlier wall clock time  to compute the
+    // delta to the next wakeup wall-clock time would guarantee oversleep.
+    // If wakeup_time is in the past, the delta below will be negative and the
+    // timer is set immediately.
+    timer.fflags = NOTE_USECONDS;
+    timer.data = (wakeup_time - base::TimeTicks::Now()).InMicroseconds();
+    int rv = ChangeOneEvent(kqueue_, &timer);
+    PCHECK(rv == 0) << "kevent64, set timer";
+
+    // Bump the event count if we just added the timer.
+    if (scheduled_wakeup_time_ == base::TimeTicks::Max())
+      ++event_count_;
+  }
+
+  scheduled_wakeup_time_ = wakeup_time;
 }
 
 }  // namespace base
