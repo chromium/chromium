@@ -4268,6 +4268,7 @@ test("unit_tests") {
     "//components/safe_browsing/core/db:test_database_manager",
     "//components/safe_search_api:test_support",
     "//components/schema_org/common:improved_mojom",
+    "//components/services/app_service/public/cpp:protocol_handling",
     "//components/services/patch/content",
     "//components/services/unzip/content",
     "//components/spellcheck:buildflags",

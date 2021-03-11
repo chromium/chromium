@@ -91,12 +91,11 @@ TEST_F(WebAppProtocolHandlerRegistrationWinTest, RegisterHandlers) {
   base::ThreadPoolInstance::Get()->FlushForTesting();
   base::RunLoop().RunUntilIdle();
 
-  // TODO(crbug.com/1019239): Flip when call into registry is implemented.
-  EXPECT_FALSE(protocol_handler_registry()->IsRegistered(handler1));
-  EXPECT_FALSE(protocol_handler_registry()->IsDefault(handler1));
+  EXPECT_TRUE(protocol_handler_registry()->IsRegistered(handler1));
+  EXPECT_TRUE(protocol_handler_registry()->IsDefault(handler1));
 
-  EXPECT_FALSE(protocol_handler_registry()->IsRegistered(handler2));
-  EXPECT_FALSE(protocol_handler_registry()->IsDefault(handler2));
+  EXPECT_TRUE(protocol_handler_registry()->IsRegistered(handler2));
+  EXPECT_TRUE(protocol_handler_registry()->IsDefault(handler2));
 }
 
 TEST_F(WebAppProtocolHandlerRegistrationWinTest,
@@ -121,15 +120,14 @@ TEST_F(WebAppProtocolHandlerRegistrationWinTest,
   base::ThreadPoolInstance::Get()->FlushForTesting();
   base::RunLoop().RunUntilIdle();
 
-  // TODO(crbug.com/1019239): Flip when call into registry is implemented.
-  EXPECT_FALSE(protocol_handler_registry()->IsRegistered(handler1));
-  EXPECT_FALSE(protocol_handler_registry()->IsDefault(handler1));
+  EXPECT_TRUE(protocol_handler_registry()->IsRegistered(handler1));
+  EXPECT_TRUE(protocol_handler_registry()->IsDefault(handler1));
 
-  EXPECT_FALSE(protocol_handler_registry()->IsRegistered(handler2));
+  EXPECT_TRUE(protocol_handler_registry()->IsRegistered(handler2));
   EXPECT_FALSE(protocol_handler_registry()->IsDefault(handler2));
 }
 
-TEST_F(WebAppProtocolHandlerRegistrationWinTest, UnRegisterHandler) {
+TEST_F(WebAppProtocolHandlerRegistrationWinTest, UnregisterHandler) {
   apps::ProtocolHandlerInfo handler_info;
   handler_info.protocol = "mailto";
   handler_info.url = GURL(kApp1Url);
@@ -140,9 +138,8 @@ TEST_F(WebAppProtocolHandlerRegistrationWinTest, UnRegisterHandler) {
   base::ThreadPoolInstance::Get()->FlushForTesting();
   base::RunLoop().RunUntilIdle();
 
-  // TODO(crbug.com/1019239): Flip when call into registry is implemented.
-  ASSERT_FALSE(protocol_handler_registry()->IsRegistered(handler));
-  ASSERT_FALSE(protocol_handler_registry()->IsDefault(handler));
+  ASSERT_TRUE(protocol_handler_registry()->IsRegistered(handler));
+  ASSERT_TRUE(protocol_handler_registry()->IsDefault(handler));
 
   UnregisterProtocolHandlersWithOs(kApp1Id, GetProfile(), {handler_info});
   base::ThreadPoolInstance::Get()->FlushForTesting();

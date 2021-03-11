@@ -19,6 +19,7 @@
 #include "chrome/browser/shell_integration.h"
 #include "chrome/common/custom_handlers/protocol_handler.h"
 #include "components/keyed_service/core/keyed_service.h"
+#include "components/services/app_service/public/cpp/protocol_handler_info.h"
 #include "content/public/browser/browser_thread.h"
 
 namespace user_prefs {
@@ -41,9 +42,9 @@ class ProtocolHandlerRegistry : public KeyedService {
   typedef std::vector<ProtocolHandler> ProtocolHandlerList;
   typedef std::map<std::string, ProtocolHandlerList> ProtocolHandlerMultiMap;
 
-  // |Delegate| provides an interface for interacting asynchronously
-  // with the underlying OS for the purposes of registering Chrome
-  // as the default handler for specific protocols.
+  // |Delegate| provides an interface for interacting asynchronously with the
+  // underlying OS for the purposes of registering Chrome and web apps as
+  // default handlers for specific protocols.
   class Delegate {
    public:
     virtual ~Delegate();
@@ -56,6 +57,18 @@ class ProtocolHandlerRegistry : public KeyedService {
     virtual void CheckDefaultClientWithOS(
         const std::string& protocol,
         shell_integration::DefaultWebClientWorkerCallback callback);
+    virtual void RegisterAppProtocolsWithOS(
+        const base::FilePath& app_profile_path,
+        const shell_integration::AppProtocolMap app_protocols,
+        base::OnceCallback<void(bool)> registration_complete_callback);
+    virtual void DeregisterAppProtocolsWithOS(
+        const base::FilePath& app_profile_path,
+        const std::vector<std::string>& app_protocols);
+    virtual void CheckAppIsDefaultClientWithOS(
+        const std::string& app_id,
+        const base::FilePath& app_profile_path,
+        const std::string& protocol,
+        base::OnceCallback<void(bool)> check_complete_callback);
   };
 
   class Observer : public base::CheckedObserver {
@@ -86,6 +99,18 @@ class ProtocolHandlerRegistry : public KeyedService {
   // Called when the user indicates that they don't want to be asked about the
   // given protocol handler again.
   void OnIgnoreRegisterProtocolHandler(const ProtocolHandler& handler);
+
+  // Registers each web app protocol handler as a non default handler if another
+  // handler exists for its scheme or as a default handler for uncontested
+  // schemes.
+  void RegisterAppProtocolHandlers(
+      const std::string& app_id,
+      const std::vector<apps::ProtocolHandlerInfo>& handler_infos);
+
+  // Removes each web app protocol handler from the registry and OS.
+  void DeregisterAppProtocolHandlers(
+      const std::string& app_id,
+      const std::vector<apps::ProtocolHandlerInfo>& handler_infos);
 
   // Removes all handlers that have the same origin and protocol as the given
   // one and installs the given handler. Returns true if any protocol handlers
@@ -294,6 +319,13 @@ class ProtocolHandlerRegistry : public KeyedService {
   // Erases the handler that is guaranteed to exist from the list.
   void EraseHandler(const ProtocolHandler& handler, ProtocolHandlerList* list);
 
+  // Updates the OS registration for each protocol based on the registry state
+  // of corresponding app handlers. For each protocol, the resulting OS
+  // registration may be the associated app, the browser (for disambiguation),
+  // or no registration if the app handler is not present in the registry.
+  // |protocols| is expected to contain a list of unique protocols.
+  void UpdateAppProtocolsWithOS(const std::vector<std::string>& protocols);
+
   // Called with the default state when the default protocol client worker is
   // done.
   void OnSetAsDefaultProtocolClientFinished(
@@ -303,6 +335,16 @@ class ProtocolHandlerRegistry : public KeyedService {
   // Gets the callback for DefaultProtocolClientWorker.
   shell_integration::DefaultWebClientWorkerCallback GetDefaultWebClientCallback(
       const std::string& protocol);
+
+  // Called with success flag when an asynchronous app protocols operation is
+  // complete.
+  void OnAppProtocolOperationFinished(
+      const shell_integration::AppProtocolMap& app_protocols,
+      bool operation_success);
+
+  // Gets the callback for AppProtocolWorkerCallback.
+  base::OnceCallback<void(bool)> GetAppProtocolWorkerCallback(
+      const shell_integration::AppProtocolMap& protocols);
 
   // Map from protocols (strings) to protocol handlers.
   ProtocolHandlerMultiMap protocol_handlers_;

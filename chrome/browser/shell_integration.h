@@ -5,12 +5,14 @@
 #ifndef CHROME_BROWSER_SHELL_INTEGRATION_H_
 #define CHROME_BROWSER_SHELL_INTEGRATION_H_
 
+#include <map>
 #include <string>
 
 #include "base/callback.h"
 #include "base/files/file_path.h"
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
+#include "base/optional.h"
 #include "base/strings/string16.h"
 #include "build/build_config.h"
 #include "ui/gfx/image/image_family.h"
@@ -32,6 +34,11 @@ bool SetAsDefaultBrowser();
 // Prefer to use the DefaultProtocolClientWorker class below since it works on
 // all OSs.
 bool SetAsDefaultProtocolClient(const std::string& protocol);
+
+// Maps protocols to handler app ids. A protocol with no app id (base::nullopt)
+// will be handled by the browser which is useful for app protocols requiring
+// disambiguation.
+using AppProtocolMap = std::map<std::string, base::Optional<std::string>>;
 
 // The different types of permissions required to set a default web client.
 enum DefaultWebClientSetPermission {

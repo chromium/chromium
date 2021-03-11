@@ -15,6 +15,7 @@
 #include "base/scoped_observer.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/post_task.h"
+#include "base/task/thread_pool/thread_pool_instance.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "build/build_config.h"
 #include "chrome/common/custom_handlers/protocol_handler.h"
@@ -28,6 +29,7 @@
 #include "content/public/test/test_renderer_host.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/security/protocol_handler_security_level.h"
+#include "url/gurl.h"
 
 using content::BrowserThread;
 
@@ -90,9 +92,43 @@ class FakeDelegate : public ProtocolHandlerRegistry::Delegate {
         os_registered_protocols_.end();
   }
 
+  void RegisterAppProtocolsWithOS(
+      const base::FilePath& app_profile_path,
+      const shell_integration::AppProtocolMap app_protocols,
+      base::OnceCallback<void(bool)> registration_complete_callback) override {
+    // Do as-if the registration has to run on another sequence and post back
+    // the result with a task to the current thread.
+    base::ThreadTaskRunnerHandle::Get()->PostTask(
+        FROM_HERE, base::BindOnce(std::move(registration_complete_callback),
+                                  !force_os_failure_));
+
+    if (!force_os_failure_) {
+      for (const auto& protocol_pair : app_protocols) {
+        os_registered_app_protocols_[protocol_pair.first] =
+            protocol_pair.second;
+      }
+    }
+  }
+
+  void DeregisterAppProtocolsWithOS(
+      const base::FilePath& app_profile_path,
+      const std::vector<std::string>& app_protocols) override {
+    for (const auto& protocol : app_protocols) {
+      os_registered_app_protocols_.erase(protocol);
+    }
+  }
+
+  bool IsFakeAppHandlerRegisteredWithOS(const std::string& protocol,
+                                        base::Optional<std::string> app_id) {
+    auto handler_iter = os_registered_app_protocols_.find(protocol);
+    return handler_iter != os_registered_app_protocols_.end() &&
+           handler_iter->second == app_id;
+  }
+
   void Reset() {
     registered_protocols_.clear();
     os_registered_protocols_.clear();
+    os_registered_app_protocols_.clear();
     force_os_failure_ = false;
   }
 
@@ -103,6 +139,7 @@ class FakeDelegate : public ProtocolHandlerRegistry::Delegate {
  private:
   std::set<std::string> registered_protocols_;
   std::set<std::string> os_registered_protocols_;
+  shell_integration::AppProtocolMap os_registered_app_protocols_;
   bool force_os_failure_;
 };
 
@@ -155,6 +192,21 @@ class QueryProtocolHandlerOnChange : public ProtocolHandlerRegistry::Observer {
   DISALLOW_COPY_AND_ASSIGN(QueryProtocolHandlerOnChange);
 };
 
+apps::ProtocolHandlerInfo GetProtocolHandlerInfo(const std::string& protocol,
+                                                 const GURL& url) {
+  apps::ProtocolHandlerInfo handler_info;
+  handler_info.protocol = protocol;
+  handler_info.url = url;
+  return handler_info;
+}
+
+ProtocolHandler GetProtocolHandler(
+    const apps::ProtocolHandlerInfo& handler_info,
+    const std::string& app_id) {
+  return ProtocolHandler::CreateWebAppProtocolHandler(handler_info.protocol,
+                                                      handler_info.url, app_id);
+}
+
 }  // namespace
 
 class ProtocolHandlerRegistryTest : public testing::Test {
@@ -181,6 +233,12 @@ class ProtocolHandlerRegistryTest : public testing::Test {
   ProtocolHandler CreateProtocolHandler(const std::string& protocol,
                                         const std::string& name) {
     return CreateProtocolHandler(protocol, GURL("http://" + name + "/%s"));
+  }
+
+  ProtocolHandler CreateWebAppProtocolHandler(const std::string& protocol,
+                                              const GURL& url,
+                                              const std::string& app_id) {
+    return ProtocolHandler::CreateWebAppProtocolHandler(protocol, url, app_id);
   }
 
   bool ProtocolHandlerCanRegisterProtocol(
@@ -328,13 +386,14 @@ TEST_F(ProtocolHandlerRegistryTest, SaveAndLoad) {
 
 TEST_F(ProtocolHandlerRegistryTest, Encode) {
   base::Time now = base::Time::Now();
-  ProtocolHandler handler("news", GURL("http://example.com"), now,
+  ProtocolHandler handler("news", GURL("http://example.com"), "app_id", now,
                           blink::ProtocolHandlerSecurityLevel::kStrict);
   auto value = handler.Encode();
   ProtocolHandler recreated =
       ProtocolHandler::CreateProtocolHandler(value.get());
   EXPECT_EQ("news", recreated.protocol());
   EXPECT_EQ(GURL("http://example.com"), recreated.url());
+  EXPECT_EQ("app_id", recreated.web_app_id());
   EXPECT_EQ(now, recreated.last_modified());
 }
 
@@ -1202,4 +1261,138 @@ TEST_F(ProtocolHandlerRegistryTest, ProtocolHandlerSecurityLevels) {
   EXPECT_TRUE(ProtocolHandlerCanRegisterProtocol(
       "ext+foo", https_handler_url,
       blink::ProtocolHandlerSecurityLevel::kExtensionFeatures));
+}
+
+TEST_F(ProtocolHandlerRegistryTest, TestRegisterWebAppHandlers) {
+  EXPECT_FALSE(delegate()->IsExternalHandlerRegistered("mailto"));
+  EXPECT_FALSE(delegate()->IsExternalHandlerRegistered("web+test"));
+
+  apps::ProtocolHandlerInfo ph1_info =
+      GetProtocolHandlerInfo("mailto", GURL("https://test1.com/%s"));
+  ProtocolHandler ph1 = GetProtocolHandler(ph1_info, "app_id1");
+
+  apps::ProtocolHandlerInfo ph2_info =
+      GetProtocolHandlerInfo("web+test", GURL("https://test2.com/%s"));
+  ProtocolHandler ph2 = GetProtocolHandler(ph2_info, "app_id1");
+
+  registry()->RegisterAppProtocolHandlers("app_id1", {ph1_info, ph2_info});
+
+  // After registration, both handlers should be externally registered with the
+  // OS and registered as defaults in the ProtocolHandlerRegistsry.
+  EXPECT_TRUE(delegate()->IsExternalHandlerRegistered("mailto"));
+  EXPECT_TRUE(delegate()->IsExternalHandlerRegistered("web+test"));
+
+  EXPECT_TRUE(registry()->IsRegistered(ph1));
+  EXPECT_TRUE(registry()->IsDefault(ph1));
+  EXPECT_TRUE(delegate()->IsFakeAppHandlerRegisteredWithOS(ph1.protocol(),
+                                                           ph1.web_app_id()));
+
+  EXPECT_TRUE(registry()->IsRegistered(ph2));
+  EXPECT_TRUE(registry()->IsDefault(ph2));
+  EXPECT_TRUE(delegate()->IsFakeAppHandlerRegisteredWithOS(ph2.protocol(),
+                                                           ph2.web_app_id()));
+}
+
+TEST_F(ProtocolHandlerRegistryTest,
+       TestDuplicateSchemeAppHandlersAreNonDefault) {
+  ProtocolHandler ph1 = ProtocolHandler::CreateProtocolHandler(
+      "mailto", GURL("https://test1.com/%s"));
+  registry()->OnAcceptRegisterProtocolHandler(ph1);
+
+  EXPECT_TRUE(registry()->IsRegistered(ph1));
+  EXPECT_TRUE(registry()->IsDefault(ph1));
+  EXPECT_TRUE(delegate()->IsFakeRegisteredWithOS(ph1.protocol()));
+
+  apps::ProtocolHandlerInfo ph2_info =
+      GetProtocolHandlerInfo("mailto", GURL("https://test2.com/%s"));
+  ProtocolHandler ph2 = GetProtocolHandler(ph2_info, "app_id1");
+
+  registry()->RegisterAppProtocolHandlers("app_id1", {ph2_info});
+
+  // Because ph2 was registered second and has the same scheme as ph1, it should
+  // be registered as non default with the ProtocolHandlerRegistry and not
+  // registered with the OS.
+  EXPECT_TRUE(registry()->IsRegistered(ph2));
+  EXPECT_FALSE(registry()->IsDefault(ph2));
+  EXPECT_FALSE(delegate()->IsFakeAppHandlerRegisteredWithOS(ph2.protocol(),
+                                                            ph2.web_app_id()));
+}
+
+TEST_F(ProtocolHandlerRegistryTest,
+       TestDuplicateSchemeAppHandlersAreRegisteredForDisambiguation) {
+  apps::ProtocolHandlerInfo ph1_info =
+      GetProtocolHandlerInfo("mailto", GURL("https://test1.com/%s"));
+  ProtocolHandler ph1 = GetProtocolHandler(ph1_info, "app_id1");
+
+  registry()->RegisterAppProtocolHandlers("app_id1", {ph1_info});
+  EXPECT_TRUE(
+      delegate()->IsFakeAppHandlerRegisteredWithOS(ph1.protocol(), "app_id1"));
+
+  apps::ProtocolHandlerInfo ph2_info =
+      GetProtocolHandlerInfo("mailto", GURL("https://test2.com/%s"));
+  ProtocolHandler ph2 = GetProtocolHandler(ph2_info, "app_id2");
+
+  registry()->RegisterAppProtocolHandlers("app_id2", {ph2_info});
+  // The protocol should be registered for disambiguation with a null app_id.
+  EXPECT_TRUE(delegate()->IsFakeAppHandlerRegisteredWithOS(ph2.protocol(),
+                                                           base::nullopt));
+}
+
+TEST_F(ProtocolHandlerRegistryTest, TestRemoveWebAppHandlers) {
+  // Register a single handler for web+testing and multiple handlers for mailto.
+  apps::ProtocolHandlerInfo ph1_info =
+      GetProtocolHandlerInfo("mailto", GURL("https://test1.com/%s"));
+  ProtocolHandler ph1 = GetProtocolHandler(ph1_info, "app_id1");
+  apps::ProtocolHandlerInfo ph2_info =
+      GetProtocolHandlerInfo("web+testing", GURL("https://test1.com/%s"));
+  ProtocolHandler ph2 = GetProtocolHandler(ph2_info, "app_id1");
+  registry()->RegisterAppProtocolHandlers("app_id1", {ph1_info, ph2_info});
+
+  apps::ProtocolHandlerInfo ph3_info =
+      GetProtocolHandlerInfo("mailto", GURL("https://test2.com/%s"));
+  ProtocolHandler ph3 = GetProtocolHandler(ph3_info, "app_id2");
+  registry()->RegisterAppProtocolHandlers("app_id2", {ph3_info});
+
+  EXPECT_TRUE(
+      delegate()->IsFakeAppHandlerRegisteredWithOS("mailto", base::nullopt));
+  EXPECT_TRUE(
+      delegate()->IsFakeAppHandlerRegisteredWithOS("web+testing", "app_id1"));
+
+  // Deregister a single handler for both web+testing and mailto, leaving no
+  // registered web+testing and handlers and one registered mailto handler.
+  registry()->DeregisterAppProtocolHandlers("app_id1", {ph1_info, ph2_info});
+
+  EXPECT_FALSE(registry()->IsRegistered(ph1));
+  EXPECT_FALSE(registry()->IsRegistered(ph2));
+  EXPECT_TRUE(registry()->IsRegistered(ph3));
+  EXPECT_TRUE(registry()->IsDefault(ph3));
+
+  // web+testing should be removed from the OS while mailto should remain
+  // registered with the OS since ph3 was promoted to default.
+  EXPECT_FALSE(
+      delegate()->IsFakeAppHandlerRegisteredWithOS("web+testing", "app_id1"));
+  EXPECT_FALSE(delegate()->IsExternalHandlerRegistered("web+testing"));
+  EXPECT_TRUE(
+      delegate()->IsFakeAppHandlerRegisteredWithOS("mailto", "app_id2"));
+  EXPECT_TRUE(delegate()->IsExternalHandlerRegistered("mailto"));
+}
+
+TEST_F(ProtocolHandlerRegistryTest, TestRegisterHandlersWithOSFailure) {
+  delegate()->set_force_os_failure(true);
+
+  apps::ProtocolHandlerInfo ph1_info =
+      GetProtocolHandlerInfo("mailto", GURL("https://test1.com/%s"));
+  ProtocolHandler ph1 = GetProtocolHandler(ph1_info, "app_id1");
+  registry()->RegisterAppProtocolHandlers("app_id1", {ph1_info});
+  base::RunLoop().RunUntilIdle();
+  base::ThreadPoolInstance::Get()->FlushForTesting();
+
+  EXPECT_TRUE(delegate()->IsExternalHandlerRegistered(ph1.protocol()));
+  EXPECT_TRUE(registry()->IsRegistered(ph1));
+
+#if defined(OS_WIN) || defined(OS_MAC)
+  // Default handlers that failed OS registration should no longer be default.
+  // TODO(crbug.com/1019239): Investigate Linux assumptions.
+  EXPECT_FALSE(registry()->IsDefault(ph1));
+#endif
 }

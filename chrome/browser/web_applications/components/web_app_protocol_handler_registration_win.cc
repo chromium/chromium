@@ -77,7 +77,10 @@ void RegisterProtocolHandlersWithOSInBackground(
       base::BindOnce(
           [](Profile* profile, const web_app::AppId& app_id,
              std::vector<apps::ProtocolHandlerInfo> protocol_handlers) {
-            // TODO(crbug.com/1019239): call into ProtocolHandlerRegistry
+            ProtocolHandlerRegistry* registry =
+                ProtocolHandlerRegistryFactory::GetForBrowserContext(profile);
+
+            registry->RegisterAppProtocolHandlers(app_id, protocol_handlers);
           },
           profile, app_id, std::move(protocol_handlers)));
 }
@@ -130,7 +133,10 @@ void UnregisterProtocolHandlersWithOs(
     const AppId& app_id,
     Profile* profile,
     std::vector<apps::ProtocolHandlerInfo> protocol_handlers) {
-  // TODO(crbug.com/1019239): call into ProtocolHandlerRegistry
+  ProtocolHandlerRegistry* registry =
+      ProtocolHandlerRegistryFactory::GetForBrowserContext(profile);
+
+  registry->DeregisterAppProtocolHandlers(app_id, protocol_handlers);
 
   base::ThreadPool::PostTaskAndReply(
       FROM_HERE,
