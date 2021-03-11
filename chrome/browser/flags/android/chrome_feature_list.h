@@ -12,7 +12,6 @@ namespace chrome {
 namespace android {
 
 // Alphabetical:
-extern const base::Feature kAdjustWebApkInstallationSpace;
 extern const base::Feature kAllowNewIncognitoTabIntents;
 extern const base::Feature kAllowRemoteContextForNotifications;
 extern const base::Feature kAndroidDefaultBrowserPromo;

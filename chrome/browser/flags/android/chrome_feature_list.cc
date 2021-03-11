@@ -126,7 +126,6 @@ const base::Feature* kFeaturesExposedToJava[] = {
     &feed::kWebFeed,
     &feed::kXsurfaceMetricsReporting,
     &history::kHideFromApi3Transitions,
-    &kAdjustWebApkInstallationSpace,
     &kAllowNewIncognitoTabIntents,
     &kAllowRemoteContextForNotifications,
     &kAndroidDefaultBrowserPromo,
@@ -323,9 +322,6 @@ const base::Feature* FindFeatureExposedToJava(const std::string& feature_name) {
 }  // namespace
 
 // Alphabetical:
-const base::Feature kAdjustWebApkInstallationSpace = {
-    "AdjustWebApkInstallationSpace", base::FEATURE_DISABLED_BY_DEFAULT};
-
 const base::Feature kAndroidDefaultBrowserPromo{
     "AndroidDefaultBrowserPromo", base::FEATURE_DISABLED_BY_DEFAULT};
 
