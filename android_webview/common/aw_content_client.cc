@@ -4,6 +4,7 @@
 
 #include "android_webview/common/aw_content_client.h"
 
+#include "android_webview/common/aw_features.h"
 #include "android_webview/common/aw_media_drm_bridge_client.h"
 #include "android_webview/common/aw_resource.h"
 #include "android_webview/common/crash_reporter/crash_keys.h"
@@ -12,6 +13,7 @@
 #include "base/command_line.h"
 #include "base/debug/crash_logging.h"
 #include "base/no_destructor.h"
+#include "components/embedder_support/origin_trials/origin_trial_policy_impl.h"
 #include "components/services/heap_profiling/public/cpp/profiling_client.h"
 #include "components/version_info/version_info.h"
 #include "content/public/common/content_switches.h"
@@ -23,6 +25,9 @@
 #include "ui/base/resource/resource_bundle.h"
 
 namespace android_webview {
+
+AwContentClient::AwContentClient() = default;
+AwContentClient::~AwContentClient() = default;
 
 void AwContentClient::AddAdditionalSchemes(Schemes* schemes) {
   schemes->local_schemes.push_back(url::kContentScheme);
@@ -79,6 +84,21 @@ void AwContentClient::ExposeInterfacesToBrowser(
             profiling_client->BindToInterface(std::move(receiver));
           }),
       io_task_runner);
+}
+
+blink::OriginTrialPolicy* AwContentClient::GetOriginTrialPolicy() {
+  if (!base::FeatureList::IsEnabled(features::kWebViewOriginTrials)) {
+    return nullptr;
+  }
+
+  // Prevent initialization race (see crbug.com/721144). There may be a
+  // race when the policy is needed for worker startup (which happens on a
+  // separate worker thread).
+  base::AutoLock auto_lock(origin_trial_policy_lock_);
+  if (!origin_trial_policy_)
+    origin_trial_policy_ =
+        std::make_unique<embedder_support::OriginTrialPolicyImpl>();
+  return origin_trial_policy_.get();
 }
 
 }  // namespace android_webview

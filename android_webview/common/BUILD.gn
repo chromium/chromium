@@ -36,6 +36,7 @@ source_set("common") {
     "//components/cdm/common",
     "//components/crash/core/app",
     "//components/crash/core/common:crash_key",
+    "//components/embedder_support/origin_trials",
     "//components/gwp_asan/common",
     "//components/services/heap_profiling/public/cpp",
     "//components/version_info",
