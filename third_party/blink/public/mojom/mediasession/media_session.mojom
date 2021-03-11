@@ -59,12 +59,6 @@ interface MediaSessionService {
   // on the UI.
   SetMetadata(SpecMediaMetadata? metadata);
 
-  // Notifies the browser that the page specified its current microphone state.
-  SetMicrophoneState(media_session.mojom.MicrophoneState microphone_state);
-
-  // Notifies the browser that the page specified its current camera state.
-  SetCameraState(media_session.mojom.CameraState camera_state);
-
   // Notifies the browser that the event handler for |action| has been set,
   // browser needs to show a media button in the UI or register listeners to the
   // platform.

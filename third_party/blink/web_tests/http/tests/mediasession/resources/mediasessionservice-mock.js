@@ -76,24 +76,6 @@ export class MediaSessionServiceMock {
     this.setPositionStateCallback_ = callback;
   }
 
-  setMicrophoneState(microphoneState) {
-    if (!!this.setMicrophoneStateCallback_)
-      this.setMicrophoneStateCallback_(microphoneState);
-  }
-
-  setMicrophoneStateCallback(callback) {
-    this.setMicrophoneStateCallback_ = callback;
-  }
-
-  setCameraState(cameraState) {
-    if (!!this.setCameraStateCallback_)
-      this.setCameraStateCallback_(cameraState);
-  }
-
-  setCameraStateCallback(callback) {
-    this.setCameraStateCallback_ = callback;
-  }
-
   enableAction(action) {
     if (!!this.enableDisableActionCallback_)
       this.enableDisableActionCallback_(action, true);

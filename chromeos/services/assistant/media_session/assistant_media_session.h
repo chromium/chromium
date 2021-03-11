@@ -54,9 +54,6 @@ class COMPONENT_EXPORT(ASSISTANT_SERVICE) AssistantMediaSession
   void EnterPictureInPicture() override {}
   void ExitPictureInPicture() override {}
   void SetAudioSinkId(const base::Optional<std::string>& sink_id) override {}
-  void ToggleMicrophone() override {}
-  void ToggleCamera() override {}
-  void HangUp() override {}
 
   // Requests/abandons audio focus to the AudioFocusManager.
   void RequestAudioFocus(media_session::mojom::AudioFocusType audio_focus_type);

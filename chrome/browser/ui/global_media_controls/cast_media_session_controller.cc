@@ -64,9 +64,6 @@ void CastMediaSessionController::Send(
     case media_session::mojom::MediaSessionAction::kEnterPictureInPicture:
     case media_session::mojom::MediaSessionAction::kExitPictureInPicture:
     case media_session::mojom::MediaSessionAction::kSwitchAudioDevice:
-    case media_session::mojom::MediaSessionAction::kToggleMicrophone:
-    case media_session::mojom::MediaSessionAction::kToggleCamera:
-    case media_session::mojom::MediaSessionAction::kHangUp:
       NOTREACHED();
       return;
   }

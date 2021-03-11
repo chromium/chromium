@@ -160,9 +160,6 @@ class COMPONENT_EXPORT(MEDIA_SESSION_TEST_SUPPORT_CPP) MockMediaSession
   void EnterPictureInPicture() override;
   void ExitPictureInPicture() override;
   void SetAudioSinkId(const base::Optional<std::string>& id) override {}
-  void ToggleMicrophone() override {}
-  void ToggleCamera() override {}
-  void HangUp() override {}
 
   void SetIsControllable(bool value);
   void SetPreferStop(bool value) { prefer_stop_ = value; }

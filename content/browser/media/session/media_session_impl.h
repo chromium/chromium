@@ -157,14 +157,9 @@ class MediaSessionImpl : public MediaSession,
   // Called when the metadata of a MediaSessionService has changed. Will notify
   // observers if the service is currently routed.
   void OnMediaSessionMetadataChanged(MediaSessionServiceImpl* service);
-
   // Called when the actions of a MediaSessionService has changed. Will notify
   // observers if the service is currently routed.
   void OnMediaSessionActionsChanged(MediaSessionServiceImpl* service);
-
-  // Called when the info of a MediaSessionService has changed. Will notify
-  // observers if the service is currently routed.
-  void OnMediaSessionInfoChanged(MediaSessionServiceImpl* service);
 
   // Requests audio focus to the AudioFocusDelegate.
   // Returns whether the request was granted.
@@ -266,15 +261,6 @@ class MediaSessionImpl : public MediaSession,
   // renderer reports an audio sink change to a device different from |id|, or
   // this method is called again.
   void SetAudioSinkId(const base::Optional<std::string>& id) override;
-
-  // Mute/Unmute the microphone for a WebRTC session.
-  void ToggleMicrophone() override;
-
-  // Turn on or off the camera for a WebRTC session.
-  void ToggleCamera() override;
-
-  // Hang up a WebRTC session.
-  void HangUp() override;
 
   // Downloads the bitmap version of a MediaImage at least |minimum_size_px|
   // and closest to |desired_size_px|. If the download failed, was too small or

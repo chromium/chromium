@@ -191,9 +191,6 @@ void ActiveMediaSessionController::PerformAction(MediaSessionAction action) {
     case MediaSessionAction::kEnterPictureInPicture:
     case MediaSessionAction::kExitPictureInPicture:
     case MediaSessionAction::kSwitchAudioDevice:
-    case MediaSessionAction::kToggleMicrophone:
-    case MediaSessionAction::kToggleCamera:
-    case MediaSessionAction::kHangUp:
       NOTREACHED();
       return;
   }
@@ -242,9 +239,6 @@ ActiveMediaSessionController::MediaSessionActionToKeyCode(
     case MediaSessionAction::kEnterPictureInPicture:
     case MediaSessionAction::kExitPictureInPicture:
     case MediaSessionAction::kSwitchAudioDevice:
-    case MediaSessionAction::kToggleMicrophone:
-    case MediaSessionAction::kToggleCamera:
-    case MediaSessionAction::kHangUp:
       return base::nullopt;
   }
 }

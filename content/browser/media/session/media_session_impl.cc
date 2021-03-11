@@ -138,12 +138,6 @@ MediaSessionUserAction MediaSessionActionToUserAction(
       return MediaSessionUserAction::ExitPictureInPicture;
     case media_session::mojom::MediaSessionAction::kSwitchAudioDevice:
       return MediaSessionUserAction::SwitchAudioDevice;
-    case media_session::mojom::MediaSessionAction::kToggleMicrophone:
-      return MediaSessionUserAction::ToggleMicrophone;
-    case media_session::mojom::MediaSessionAction::kToggleCamera:
-      return MediaSessionUserAction::ToggleCamera;
-    case media_session::mojom::MediaSessionAction::kHangUp:
-      return MediaSessionUserAction::HangUp;
   }
   NOTREACHED();
   return MediaSessionUserAction::Play;
@@ -984,14 +978,6 @@ MediaSessionImpl::GetMediaSessionInfoSync() {
   if (shared_audio_device_id != media::AudioDeviceDescription::kDefaultDeviceId)
     info->audio_sink_id = shared_audio_device_id;
 
-  if (routed_service_) {
-    info->microphone_state = routed_service_->microphone_state();
-    info->camera_state = routed_service_->camera_state();
-  } else {
-    info->microphone_state = media_session::mojom::MicrophoneState::kUnknown;
-    info->camera_state = media_session::mojom::CameraState::kUnknown;
-  }
-
   return info;
 }
 
@@ -1114,18 +1100,6 @@ void MediaSessionImpl::SetAudioSinkId(const base::Optional<std::string>& id) {
         it.first.player_id,
         id.value_or(media::AudioDeviceDescription::kDefaultDeviceId));
   }
-}
-
-void MediaSessionImpl::ToggleMicrophone() {
-  DidReceiveAction(media_session::mojom::MediaSessionAction::kToggleMicrophone);
-}
-
-void MediaSessionImpl::ToggleCamera() {
-  DidReceiveAction(media_session::mojom::MediaSessionAction::kToggleCamera);
-}
-
-void MediaSessionImpl::HangUp() {
-  DidReceiveAction(media_session::mojom::MediaSessionAction::kHangUp);
 }
 
 void MediaSessionImpl::GetMediaImageBitmap(
@@ -1300,14 +1274,6 @@ void MediaSessionImpl::OnMediaSessionActionsChanged(
     return;
 
   RebuildAndNotifyActionsChanged();
-}
-
-void MediaSessionImpl::OnMediaSessionInfoChanged(
-    MediaSessionServiceImpl* service) {
-  if (service != routed_service_)
-    return;
-
-  RebuildAndNotifyMediaSessionInfoChanged();
 }
 
 void MediaSessionImpl::DidReceiveAction(
