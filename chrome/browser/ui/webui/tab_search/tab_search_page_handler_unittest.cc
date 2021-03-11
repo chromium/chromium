@@ -10,11 +10,14 @@
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/extensions/extension_tab_util.h"
+#include "chrome/browser/sessions/chrome_tab_restore_service_client.h"
+#include "chrome/browser/sessions/tab_restore_service_factory.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/test/base/browser_with_test_window_test.h"
 #include "chrome/test/base/test_browser_window.h"
 #include "chrome/test/base/testing_profile_manager.h"
+#include "components/sessions/core/tab_restore_service_impl.h"
 #include "components/sync_preferences/pref_service_syncable.h"
 #include "content/public/test/test_web_ui.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -69,6 +72,13 @@ void ExpectNewTab(const tab_search::mojom::Tab* tab,
   EXPECT_TRUE(tab->is_default_favicon);
   EXPECT_TRUE(tab->show_icon);
   EXPECT_GT(tab->last_active_time_ticks, base::TimeTicks());
+}
+
+void ExpectRecentlyClosedTab(const tab_search::mojom::RecentlyClosedTab* tab,
+                             const std::string url,
+                             const std::string title) {
+  EXPECT_EQ(url, tab->url);
+  EXPECT_EQ(title, tab->title);
 }
 
 void ExpectProfileTabs(tab_search::mojom::ProfileData* profile_tabs) {
@@ -161,6 +171,14 @@ class TabSearchPageHandlerTest : public BrowserWithTestWindowTest {
   TestTabSearchPageHandler* handler() { return handler_.get(); }
   void FireTimer() { handler_->mock_debounce_timer()->Fire(); }
   bool IsTimerRunning() { return handler_->mock_debounce_timer()->IsRunning(); }
+
+  static std::unique_ptr<KeyedService> GetTabRestoreService(
+      content::BrowserContext* browser_context) {
+    return std::make_unique<sessions::TabRestoreServiceImpl>(
+        std::make_unique<ChromeTabRestoreServiceClient>(
+            Profile::FromBrowserContext(browser_context)),
+        nullptr, nullptr);
+  }
 
  protected:
   void AddTabWithTitle(Browser* browser,
@@ -349,6 +367,35 @@ TEST_F(TabSearchPageHandlerTest, CloseTab) {
   handler()->CloseTab(tab_id);
   ASSERT_EQ(1, browser1()->tab_strip_model()->count());
   ASSERT_EQ(1, browser2()->tab_strip_model()->count());
+}
+
+TEST_F(TabSearchPageHandlerTest, RecentlyClosedTab) {
+  TabRestoreServiceFactory::GetInstance()->SetTestingFactory(
+      profile(),
+      base::BindRepeating(&TabSearchPageHandlerTest::GetTabRestoreService));
+  AddTabWithTitle(browser1(), GURL(kTabUrl1), kTabName1);
+  AddTabWithTitle(browser1(), GURL(kTabUrl2), kTabName2);
+  AddTabWithTitle(browser2(), GURL(kTabUrl3), kTabName3);
+  AddTabWithTitle(browser2(), GURL(kTabUrl4), kTabName4);
+  AddTabWithTitle(browser3(), GURL(kTabUrl5), kTabName5);
+
+  int tab_id = extensions::ExtensionTabUtil::GetTabId(
+      browser1()->tab_strip_model()->GetWebContentsAt(0));
+  handler()->CloseTab(tab_id);
+  browser2()->tab_strip_model()->CloseAllTabs();
+  browser3()->tab_strip_model()->CloseAllTabs();
+  tab_search::mojom::PageHandler::GetProfileDataCallback callback =
+      base::BindLambdaForTesting(
+          [&](tab_search::mojom::ProfileDataPtr profile_tabs) {
+            auto& tabs = profile_tabs->recently_closed_tabs;
+            ASSERT_EQ(3u, tabs.size());
+            ExpectRecentlyClosedTab(tabs[0].get(), kTabUrl4, kTabName4);
+            ExpectRecentlyClosedTab(tabs[1].get(), kTabUrl3, kTabName3);
+            ExpectRecentlyClosedTab(tabs[2].get(), kTabUrl2, kTabName2);
+          });
+  handler()->GetProfileData(std::move(callback));
+  EXPECT_CALL(page_, TabUpdated(_)).Times(2);
+  EXPECT_CALL(page_, TabsRemoved(_)).Times(3);
 }
 
 // TODO(crbug.com/1128855): Fix the test for Lacros build.
