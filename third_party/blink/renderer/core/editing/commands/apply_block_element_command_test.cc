@@ -110,7 +110,7 @@ TEST_F(ApplyBlockElementCommandTest, IndentHeadingIntoBlockquote) {
       "<h6><button></button></h6>"
       "<h6><button><table></table></button></h6>"
       "</blockquote>"
-      "<h6><button></button></h6><br>"
+      "<br>"
       "<object></object>"
       "</div>",
       GetDocument().body()->innerHTML());

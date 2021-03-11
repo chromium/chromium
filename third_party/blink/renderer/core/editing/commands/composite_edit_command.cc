@@ -1992,13 +1992,15 @@ Node* CompositeEditCommand::SplitTreeToNode(Node* start,
     GetDocument().UpdateStyleAndLayout(DocumentUpdateReason::kEditing);
 
     // Do not split a node when doing so introduces an empty node.
-    VisiblePosition position_in_parent =
-        VisiblePosition::FirstPositionInNode(*parent_element);
-    VisiblePosition position_in_node =
-        CreateVisiblePosition(FirstPositionInOrBeforeNode(*node));
-    if (position_in_parent.DeepEquivalent() !=
-        position_in_node.DeepEquivalent())
-      SplitElement(parent_element, node);
+    if (node->previousSibling()) {
+      const Position& first_in_parent =
+          Position::FirstPositionInNode(*parent_element);
+      const Position& before_node =
+          Position::BeforeNode(*node).ToOffsetInAnchor();
+      if (MostBackwardCaretPosition(first_in_parent) !=
+          MostBackwardCaretPosition(before_node))
+        SplitElement(parent_element, node);
+    }
   }
 
   return node;
