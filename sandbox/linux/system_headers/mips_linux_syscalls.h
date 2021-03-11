@@ -1433,4 +1433,12 @@
 #define __NR_memfd_create (__NR_Linux + 354)
 #endif
 
+#if !defined(__NR_clock_gettime64)
+#define __NR_clock_gettime64 (__NR_Linux + 403)
+#endif
+
+#if !defined(__NR_clock_nanosleep_time64)
+#define __NR_clock_nanosleep_time64 (__NR_Linux + 407)
+#endif
+
 #endif  // SANDBOX_LINUX_SYSTEM_HEADERS_MIPS_LINUX_SYSCALLS_H_

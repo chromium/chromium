@@ -159,7 +159,7 @@ ResultExpr EvaluateSyscallImpl(int fs_denied_errno,
     return Allow();
 #endif
 
-  if (sysno == __NR_clock_gettime || sysno == __NR_clock_nanosleep) {
+  if (SyscallSets::IsClockApi(sysno)) {
     return RestrictClockID();
   }
 

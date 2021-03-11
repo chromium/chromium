@@ -1441,6 +1441,14 @@
 #define __NR_io_pgetevents (__NR_SYSCALL_BASE+399)
 #endif
 
+#if !defined(__NR_clock_gettime64)
+#define __NR_clock_gettime64 (__NR_SYSCALL_BASE+403)
+#endif
+
+#if !defined(__NR_clock_nanosleep_time64)
+#define __NR_clock_nanosleep_time64 (__NR_SYSCALL_BASE+407)
+#endif
+
 // ARM private syscalls.
 #if !defined(__ARM_NR_BASE)
 #define __ARM_NR_BASE (__NR_SYSCALL_BASE + 0xF0000)

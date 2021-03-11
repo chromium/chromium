@@ -38,7 +38,13 @@ bool SyscallSets::IsAllowedGettime(int sysno) {
     case __NR_clock_getres:     // Allowed only on Android with parameters
                                 // filtered by RestrictClokID().
     case __NR_clock_gettime:    // Parameters filtered by RestrictClockID().
+#if defined(__NR_clock_gettime64)
+    case __NR_clock_gettime64:  // Parameters filtered by RestrictClockID().
+#endif
     case __NR_clock_nanosleep:  // Parameters filtered by RestrictClockID().
+#if defined(__NR_clock_nanosleep_time64)
+    case __NR_clock_nanosleep_time64:  // Parameters filtered by RestrictClockID().
+#endif
     case __NR_clock_settime:    // Privileged.
 #if defined(__i386__) || \
     (defined(ARCH_CPU_MIPS_FAMILY) && defined(ARCH_CPU_32_BITS))
@@ -969,6 +975,22 @@ bool SyscallSets::IsAdvancedTimer(int sysno) {
     case __NR_timerfd_create:
     case __NR_timerfd_gettime:
     case __NR_timerfd_settime:
+      return true;
+    default:
+      return false;
+  }
+}
+
+bool SyscallSets::IsClockApi(int sysno) {
+  switch (sysno) {
+    case __NR_clock_gettime:
+#if defined(__NR_clock_gettime64)
+    case __NR_clock_gettime64:
+#endif
+    case __NR_clock_nanosleep:
+#if defined(__NR_clock_nanosleep_time64)
+    case __NR_clock_nanosleep_time64:
+#endif
       return true;
     default:
       return false;
