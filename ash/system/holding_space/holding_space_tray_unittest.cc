@@ -42,6 +42,9 @@ namespace ash {
 
 namespace {
 
+using testing::_;
+using testing::ElementsAre;
+
 constexpr char kTestUser[] = "user@test";
 
 // Helpers ---------------------------------------------------------------------
@@ -57,6 +60,14 @@ void Click(const views::View* view, int flags = ui::EF_NONE) {
   event_generator.MoveMouseTo(view->GetBoundsInScreen().CenterPoint());
   event_generator.set_flags(flags);
   event_generator.ClickLeftButton();
+}
+
+void DoubleClick(const views::View* view, int flags = ui::EF_NONE) {
+  auto* root_window = view->GetWidget()->GetNativeWindow()->GetRootWindow();
+  ui::test::EventGenerator event_generator(root_window);
+  event_generator.MoveMouseTo(view->GetBoundsInScreen().CenterPoint());
+  event_generator.set_flags(flags);
+  event_generator.DoubleClickLeftButton();
 }
 
 void GestureTap(const views::View* view) {
@@ -2365,6 +2376,100 @@ TEST_P(HoldingSpaceTrayTest, SelectionUi) {
   EXPECT_TRUE(item_views[0]->selected());
   expect_checkmark_visible(item_views[0], false);
   expect_image_visible(item_views[0], true);
+}
+
+// Verifies that attempting to open holding space items via double click works
+// as expected with event modifiers.
+TEST_P(HoldingSpaceTrayTest, OpenItemsViaDoubleClickWithEventModifiers) {
+  ui::ScopedAnimationDurationScaleMode scoped_animation_duration_scale_mode(
+      ui::ScopedAnimationDurationScaleMode::ZERO_DURATION);
+
+  StartSession();
+
+  // Add multiple holding space items.
+  AddItem(HoldingSpaceItem::Type::kPinnedFile, base::FilePath("/tmp/fake1"));
+  AddItem(HoldingSpaceItem::Type::kPinnedFile, base::FilePath("/tmp/fake2"));
+
+  const auto show_holding_space_and_cache_views =
+      [&](std::vector<HoldingSpaceItemView*>* item_views) {
+        // Show holding space UI.
+        test_api()->Show();
+        ASSERT_TRUE(test_api()->IsShowing());
+
+        // Cache holding space item views.
+        const std::vector<views::View*> views =
+            test_api()->GetPinnedFileChips();
+        ASSERT_EQ(views.size(), 2u);
+        *item_views = {HoldingSpaceItemView::Cast(views[0]),
+                       HoldingSpaceItemView::Cast(views[1])};
+      };
+
+  std::vector<HoldingSpaceItemView*> item_views;
+  show_holding_space_and_cache_views(&item_views);
+
+  // Double click an item with the control key down. Expect the clicked holding
+  // space item to be opened.
+  EXPECT_CALL(*client(), OpenItems(ElementsAre(item_views[0]->item()), _));
+  DoubleClick(item_views[0], ui::EF_CONTROL_DOWN);
+  testing::Mock::VerifyAndClearExpectations(client());
+
+  // Reset.
+  test_api()->Close();
+  show_holding_space_and_cache_views(&item_views);
+
+  // Double click an item with the shift key down. Expect the clicked holding
+  // space item to be opened.
+  EXPECT_CALL(*client(), OpenItems(ElementsAre(item_views[0]->item()), _));
+  DoubleClick(item_views[0], ui::EF_SHIFT_DOWN);
+  testing::Mock::VerifyAndClearExpectations(client());
+
+  // Reset.
+  test_api()->Close();
+  show_holding_space_and_cache_views(&item_views);
+
+  // Click a holding space item. Then double click the same item with the
+  // control key down. Expect the clicked holding space item to be opened.
+  EXPECT_CALL(*client(), OpenItems(ElementsAre(item_views[0]->item()), _));
+  Click(item_views[0]);
+  DoubleClick(item_views[0], ui::EF_CONTROL_DOWN);
+  testing::Mock::VerifyAndClearExpectations(client());
+
+  // Reset.
+  test_api()->Close();
+  show_holding_space_and_cache_views(&item_views);
+
+  // Click a holding space item. Then double click the same item with the
+  // shift key down. Expect the clicked holding space item to be opened.
+  EXPECT_CALL(*client(), OpenItems(ElementsAre(item_views[0]->item()), _));
+  Click(item_views[0]);
+  DoubleClick(item_views[0], ui::EF_SHIFT_DOWN);
+  testing::Mock::VerifyAndClearExpectations(client());
+
+  // Reset.
+  test_api()->Close();
+  show_holding_space_and_cache_views(&item_views);
+
+  // Click a holding space item. Then double click a different item with the
+  // control key down. Expect both holding space items to be opened.
+  EXPECT_CALL(
+      *client(),
+      OpenItems(ElementsAre(item_views[0]->item(), item_views[1]->item()), _));
+  Click(item_views[0]);
+  DoubleClick(item_views[1], ui::EF_CONTROL_DOWN);
+  testing::Mock::VerifyAndClearExpectations(client());
+
+  // Reset.
+  test_api()->Close();
+  show_holding_space_and_cache_views(&item_views);
+
+  // Click a holding space item. Then double click a different item with the
+  // shift key down. Expect both holding space items to be opened.
+  EXPECT_CALL(
+      *client(),
+      OpenItems(ElementsAre(item_views[0]->item(), item_views[1]->item()), _));
+  Click(item_views[0]);
+  DoubleClick(item_views[1], ui::EF_SHIFT_DOWN);
+  testing::Mock::VerifyAndClearExpectations(client());
 }
 
 INSTANTIATE_TEST_SUITE_P(All, HoldingSpaceTrayTest, testing::Bool());
