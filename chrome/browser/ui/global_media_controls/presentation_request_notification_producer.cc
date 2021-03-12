@@ -91,36 +91,36 @@ void PresentationRequestNotificationProducer::OnMediaDialogClosed() {
       FROM_HERE,
       base::BindOnce(
           &PresentationRequestNotificationProducer::AfterMediaDialogClosed,
-          base::Unretained(this), GetActiveWebContentsPresentationManager()));
+          base::Unretained(this)));
 }
 
 void PresentationRequestNotificationProducer::AfterMediaDialogOpened(
     base::WeakPtr<media_router::WebContentsPresentationManager>
         presentation_manager) {
+  presentation_manager_ = presentation_manager;
   // It's possible the presentation manager was deleted since the call to
   // this method was scheduled.
-  if (!presentation_manager)
+  if (!presentation_manager_)
     return;
 
-  presentation_manager->AddObserver(this);
+  presentation_manager_->AddObserver(this);
 
   // Handle any request that was created while we weren't watching, first
   // making sure the dialog hasn't been closed since the we found out it was
   // opening. This is the normal way notifications are created for a default
   // presentation request.
-  if (presentation_manager->HasDefaultPresentationRequest() &&
+  if (presentation_manager_->HasDefaultPresentationRequest() &&
       notification_service_->HasOpenDialog()) {
     OnDefaultPresentationChanged(
-        &presentation_manager->GetDefaultPresentationRequest());
+        &presentation_manager_->GetDefaultPresentationRequest());
   }
 }
 
-void PresentationRequestNotificationProducer::AfterMediaDialogClosed(
-    base::WeakPtr<media_router::WebContentsPresentationManager>
-        presentation_manager) {
+void PresentationRequestNotificationProducer::AfterMediaDialogClosed() {
   item_.reset();
-  if (presentation_manager)
-    presentation_manager->RemoveObserver(this);
+  if (presentation_manager_)
+    presentation_manager_->RemoveObserver(this);
+  presentation_manager_ = nullptr;
 }
 
 void PresentationRequestNotificationProducer::OnDefaultPresentationChanged(

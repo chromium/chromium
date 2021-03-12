@@ -69,9 +69,7 @@ class PresentationRequestNotificationProducer final
   void AfterMediaDialogOpened(
       base::WeakPtr<media_router::WebContentsPresentationManager>
           presentation_manager);
-  void AfterMediaDialogClosed(
-      base::WeakPtr<media_router::WebContentsPresentationManager>
-          presentation_manager);
+  void AfterMediaDialogClosed();
 
   // WebContentsPresentationManager::Observer:
   void OnDefaultPresentationChanged(
@@ -86,6 +84,13 @@ class PresentationRequestNotificationProducer final
   bool HasItemForNonDefaultRequest() const { return item_ && item_->context(); }
 
   MediaNotificationService* const notification_service_;
+
+  // A copy of the WebContentsPresentationManager associated with the web
+  // page where the media dialog is opened. The value is nullptr if the media
+  // dialog is closed.
+  // It is used to remove |this| from |presentation_manager_|'s observers.
+  base::WeakPtr<media_router::WebContentsPresentationManager>
+      presentation_manager_ = nullptr;
 
   // The notification managed by this producer, if there is one.
   base::Optional<PresentationRequestNotificationItem> item_;
