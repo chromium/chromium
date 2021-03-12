@@ -264,6 +264,7 @@ TEST_F(BoxCreateUpstreamFolderApiCallFlowTest, ProcessApiCallFailure) {
   flow_->ProcessApiCallFailure(net::OK, http_head.get(), {});
   base::RunLoop().RunUntilIdle();
   ASSERT_FALSE(processed_success_);
+  ASSERT_EQ(response_code_, net::HTTP_BAD_REQUEST);
   ASSERT_EQ(processed_folder_id_, "");
 }
 
@@ -630,5 +631,118 @@ TEST_F(BoxCreateUploadSessionApiCallFlowTest, ProcessApiCallFailure) {
   ASSERT_EQ(response_code_, net::HTTP_BAD_REQUEST);
   ASSERT_FALSE(processed_success_);
 }
+
+////////////////////////////////////////////////////////////////////////////////
+// CommitUploadSession
+////////////////////////////////////////////////////////////////////////////////
+
+class BoxCommitUploadSessionApiCallFlowForTest
+    : public BoxCommitUploadSessionApiCallFlow {
+ public:
+  using BoxCommitUploadSessionApiCallFlow::BoxCommitUploadSessionApiCallFlow;
+  using BoxCommitUploadSessionApiCallFlow::CreateApiCallBody;
+  using BoxCommitUploadSessionApiCallFlow::CreateApiCallHeaders;
+  using BoxCommitUploadSessionApiCallFlow::CreateApiCallUrl;
+  using BoxCommitUploadSessionApiCallFlow::IsExpectedSuccessCode;
+  using BoxCommitUploadSessionApiCallFlow::ProcessApiCallFailure;
+  using BoxCommitUploadSessionApiCallFlow::ProcessApiCallSuccess;
+};
+
+class BoxCommitUploadSessionApiCallFlowTest
+    : public BoxApiCallFlowTest<BoxCommitUploadSessionApiCallFlowForTest> {
+ protected:
+  BoxCommitUploadSessionApiCallFlowTest()
+      : upload_session_parts_(base::Value::Type::DICTIONARY) {
+    base::Value part1(base::Value::Type::DICTIONARY);
+    part1.SetStringKey("part_id", "BFDF5379");
+    part1.SetIntKey("offset", 0);
+    part1.SetIntKey("size", 8388608);
+    part1.SetStringKey("sha1", "134b65991ed521fcfe4724b7d814ab8ded5185dc");
+
+    base::Value part2(base::Value::Type::DICTIONARY);
+    part2.SetStringKey("part_id", "E8A3ED8E");
+    part2.SetIntKey("offset", 8388608);
+    part2.SetIntKey("size", 1611392);
+    part2.SetStringKey("sha1", "234b65934ed521fcfe3424b7d814ab8ded5185dc");
+
+    base::Value parts(base::Value::Type::LIST);
+    parts.Append(std::move(part1));
+    parts.Append(std::move(part2));
+
+    upload_session_parts_.SetKey("parts", std::move(parts));
+    base::JSONWriter::Write(upload_session_parts_, &expected_body_);
+  }
+
+  void SetUp() override {
+    flow_ = std::make_unique<BoxCommitUploadSessionApiCallFlowForTest>(
+        base::BindOnce(&BoxCommitUploadSessionApiCallFlowTest::OnResponse,
+                       factory_.GetWeakPtr()),
+        kFileSystemBoxChunkedUploadCommitUrl, upload_session_parts_,
+        kFileSystemBoxChunkedUploadSha);
+  }
+
+  void OnResponse(bool success, int response_code) {
+    processed_success_ = success;
+    response_code_ = response_code;
+    if (quit_closure_)
+      std::move(quit_closure_).Run();
+  }
+
+  base::Value upload_session_parts_;
+  std::string expected_body_;
+
+  base::test::TaskEnvironment task_environment_;
+  base::OnceClosure quit_closure_;
+  base::WeakPtrFactory<BoxCommitUploadSessionApiCallFlowTest> factory_{this};
+};
+
+TEST_F(BoxCommitUploadSessionApiCallFlowTest, CreateApiCallUrl) {
+  ASSERT_EQ(flow_->CreateApiCallUrl(), kFileSystemBoxChunkedUploadCommitUrl);
+}
+
+TEST_F(BoxCommitUploadSessionApiCallFlowTest, CreateApiCallHeaders) {
+  net::HttpRequestHeaders headers = flow_->CreateApiCallHeaders();
+  std::string digest;
+  headers.GetHeader("digest", &digest);
+  ASSERT_EQ(digest, kFileSystemBoxChunkedUploadSha);
+}
+
+TEST_F(BoxCommitUploadSessionApiCallFlowTest, CreateApiCallBody) {
+  std::string body = flow_->CreateApiCallBody();
+  ASSERT_EQ(body, expected_body_);
+}
+
+TEST_F(BoxCommitUploadSessionApiCallFlowTest, IsExpectedSuccessCode) {
+  ASSERT_TRUE(flow_->IsExpectedSuccessCode(201));
+  ASSERT_TRUE(flow_->IsExpectedSuccessCode(202));
+  ASSERT_FALSE(flow_->IsExpectedSuccessCode(400));
+  ASSERT_FALSE(flow_->IsExpectedSuccessCode(404));
+  ASSERT_FALSE(flow_->IsExpectedSuccessCode(409));
+  ASSERT_FALSE(flow_->IsExpectedSuccessCode(412));
+}
+
+TEST_F(BoxCommitUploadSessionApiCallFlowTest, ProcessApiCallFailure) {
+  auto http_head = network::CreateURLResponseHead(net::HTTP_CONFLICT);
+  flow_->ProcessApiCallFailure(net::OK, http_head.get(), {});
+  base::RunLoop().RunUntilIdle();
+  ASSERT_FALSE(processed_success_);
+  ASSERT_EQ(response_code_, net::HTTP_CONFLICT);
+}
+
+class ProcessApiCallSuccessTest
+    : public BoxCommitUploadSessionApiCallFlowTest,
+      public testing::WithParamInterface<net::HttpStatusCode> {};
+
+TEST_P(ProcessApiCallSuccessTest, SuccessCodes) {
+  auto http_head = network::CreateURLResponseHead(GetParam());
+  flow_->ProcessApiCallSuccess(http_head.get(), {});
+  base::RunLoop().RunUntilIdle();
+  ASSERT_TRUE(processed_success_);
+  ASSERT_EQ(response_code_, GetParam());
+}
+
+INSTANTIATE_TEST_CASE_P(BoxCommitUploadSessionApiCallFlow,
+                        ProcessApiCallSuccessTest,
+                        testing::Values(net::HTTP_CREATED, net::HTTP_ACCEPTED));
 
 }  // namespace enterprise_connectors

@@ -185,6 +185,37 @@ class BoxCreateUploadSessionApiCallFlow : public BoxApiCallFlow {
   base::WeakPtrFactory<BoxCreateUploadSessionApiCallFlow> factory_{this};
 };
 
+// Helper for committing an upload session once all the parts are uploaded
+// successfully.
+class BoxCommitUploadSessionApiCallFlow : public BoxApiCallFlow {
+ public:
+  using Callback = base::OnceCallback<void(bool, int)>;
+  BoxCommitUploadSessionApiCallFlow(Callback callback,
+                                    const std::string& commit_endpoint,
+                                    const base::Value& parts,
+                                    const std::string digest);
+  ~BoxCommitUploadSessionApiCallFlow() override;
+
+ protected:
+  // BoxApiCallFlow interface.
+  GURL CreateApiCallUrl() override;
+  net::HttpRequestHeaders CreateApiCallHeaders() override;
+  std::string CreateApiCallBody() override;
+  bool IsExpectedSuccessCode(int code) const override;
+  void ProcessApiCallSuccess(const network::mojom::URLResponseHead* head,
+                             std::unique_ptr<std::string> body) override;
+  void ProcessApiCallFailure(int net_error,
+                             const network::mojom::URLResponseHead* head,
+                             std::unique_ptr<std::string> body) override;
+
+ private:
+  Callback callback_;
+  const std::string commit_endpoint_;
+  const base::Value upload_session_parts_;
+  const std::string sha_digest_;
+  base::WeakPtrFactory<BoxCommitUploadSessionApiCallFlow> factory_{this};
+};
+
 }  // namespace enterprise_connectors
 
 #endif  // CHROME_BROWSER_ENTERPRISE_CONNECTORS_FILE_SYSTEM_BOX_API_CALL_FLOW_H_

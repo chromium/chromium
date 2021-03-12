@@ -33,6 +33,8 @@ extern const char kFileSystemBoxChunkedUploadPartUploadUrl[];
 extern const char kFileSystemBoxChunkedUploadAbortUrl[];
 extern const char kFileSystemBoxChunkedUploadCommitUrl[];
 
+extern const char kFileSystemBoxChunkedUploadSha[];
+
 // Expected response from kFileSystemBoxChunkedUploadCreateSessionUrl.
 extern const char kFileSystemBoxCreateUploadSessionResponseBody[];
 }  // namespace enterprise_connectors

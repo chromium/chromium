@@ -68,6 +68,18 @@ base::Value CreateSingleFieldDict(const std::string& key,
   return dict;
 }
 
+bool VerifyChunkedUploadParts(const base::Value& parts) {
+  auto parts_list = parts.FindPath("parts")->GetList();
+  DCHECK(!parts_list.empty());
+  for (auto p = parts_list.begin(); p != parts_list.end(); ++p) {
+    DCHECK(p->FindPath("part_id")) << parts;
+    DCHECK(p->FindPath("offset")) << parts;
+    DCHECK(p->FindPath("size")) << parts;
+    DCHECK(p->FindPath("sha1")) << parts;
+  }
+  return true;
+}
+
 }  // namespace
 
 namespace enterprise_connectors {
@@ -509,6 +521,64 @@ void BoxCreateUploadSessionApiCallFlow::OnJsonParsed(
   std::move(callback_).Run(
       valid_endpoints, net::HTTP_CREATED,
       session_endpoints ? std::move(*session_endpoints) : CreateEmptyDict());
+}
+
+////////////////////////////////////////////////////////////////////////////////
+// ChunkedUpload: CommitUploadSession
+////////////////////////////////////////////////////////////////////////////////
+// BoxApiCallFlow interface.
+// API reference:
+// https://developer.box.com/reference/post-files-upload-sessions-id-commit/
+BoxCommitUploadSessionApiCallFlow::BoxCommitUploadSessionApiCallFlow(
+    Callback callback,
+    const std::string& commit_endpoint,
+    const base::Value& parts,
+    const std::string digest)
+    : callback_(std::move(callback)),
+      commit_endpoint_(commit_endpoint),
+      upload_session_parts_(parts.Clone()),
+      sha_digest_(digest) {}
+
+BoxCommitUploadSessionApiCallFlow::~BoxCommitUploadSessionApiCallFlow() =
+    default;
+
+GURL BoxCommitUploadSessionApiCallFlow::CreateApiCallUrl() {
+  return GURL(commit_endpoint_);
+}
+
+net::HttpRequestHeaders
+BoxCommitUploadSessionApiCallFlow::CreateApiCallHeaders() {
+  net::HttpRequestHeaders headers;
+  headers.SetHeader("digest", sha_digest_);
+  return headers;
+}
+
+std::string BoxCommitUploadSessionApiCallFlow::CreateApiCallBody() {
+  DCHECK(VerifyChunkedUploadParts(upload_session_parts_));
+  std::string body;
+  base::JSONWriter::Write(upload_session_parts_, &body);
+  return body;
+}
+
+bool BoxCommitUploadSessionApiCallFlow::IsExpectedSuccessCode(int code) const {
+  return code == net::HTTP_CREATED || code == net::HTTP_ACCEPTED;
+}
+
+void BoxCommitUploadSessionApiCallFlow::ProcessApiCallSuccess(
+    const network::mojom::URLResponseHead* head,
+    std::unique_ptr<std::string> body) {
+  auto response_code = head->headers->response_code();
+  std::move(callback_).Run(true, response_code);
+}
+
+void BoxCommitUploadSessionApiCallFlow::ProcessApiCallFailure(
+    int net_error,
+    const network::mojom::URLResponseHead* head,
+    std::unique_ptr<std::string> body) {
+  auto response_code = head->headers->response_code();
+  LOG(ERROR) << "[BoxApiCallFlow] CommitUploadSession failed. Error code "
+             << response_code;
+  std::move(callback_).Run(false, response_code);
 }
 
 }  // namespace enterprise_connectors

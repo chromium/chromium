@@ -24,7 +24,7 @@ const char kFileSystemBoxFindFolderResponseBody[] = R"({
 
 const char kFileSystemBoxFindFolderResponseFolderId[] = "12345";
 // Should match id in kFileSystemBoxFindFolderResponseBody, as it's used to
-// verify extracted folder_id from body above
+// verify extracted folder_id from body above.
 
 const char kFileSystemBoxFindFolderResponseEmptyEntriesList[] = R"({
     "entries": [
@@ -68,7 +68,7 @@ const char kFileSystemBoxCreateFolderResponseBody[] = R"({
 
 const char kFileSystemBoxCreateFolderResponseFolderId[] = "67890";
 // Should match id in kFileSystemBoxCreateFolderResponseBody, as it's used to
-// verify extracted folder_id from body above
+// verify extracted folder_id from body above.
 
 const char kFileSystemBoxChunkedUploadCreateSessionUrl[] =
     "https://upload.box.com/api/2.0/files/upload_sessions/";
@@ -81,7 +81,8 @@ const char kFileSystemBoxChunkedUploadAbortUrl[] =
 const char kFileSystemBoxChunkedUploadCommitUrl[] =
     "https://upload.box.com/api/2.0/files/upload_sessions/"
     "F971964745A5CD0C001BBE4E58196BFD/commit";
-
+const char kFileSystemBoxChunkedUploadSha[] =
+    "sha=fpRyg5eVQletdZqEKaFlqwBXJzM=";
 // Endpoints should match the corresponding const char url's above.
 const char kFileSystemBoxCreateUploadSessionResponseBody[] = R"({
   "id": "F971964745A5CD0C001BBE4E58196BFD",
