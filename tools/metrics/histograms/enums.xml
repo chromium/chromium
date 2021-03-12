@@ -54505,6 +54505,9 @@ Called by update_net_trust_anchors.py.-->
 </enum>
 
 <enum name="NetworkCellularActivationState">
+  <obsolete>
+    Removed and renamed to NetworkCellularPSimActivationState 2/2021
+  </obsolete>
   <int value="0" label="Activated"/>
   <int value="1" label="Activating"/>
   <int value="2" label="NotActivated"/>
@@ -54517,10 +54520,25 @@ Called by update_net_trust_anchors.py.-->
   <int value="1" label="Disconnected"/>
 </enum>
 
+<enum name="NetworkCellularESimProfileStatus">
+  <int value="0" label="Active"/>
+  <int value="1" label="ActiveWithPendingProfiles"/>
+  <int value="2" label="PendingProfilesOnly"/>
+  <int value="3" label="NoProfiles"/>
+</enum>
+
 <enum name="NetworkCellularOutOfCreditsReason">
   <int value="0" label="Connect-Disconnect Loop"/>
   <int value="1" label="TX-Queue Congestion"/>
   <int value="2" label="Elongated Time Wait"/>
+</enum>
+
+<enum name="NetworkCellularPSimActivationState">
+  <int value="0" label="Activated"/>
+  <int value="1" label="Activating"/>
+  <int value="2" label="NotActivated"/>
+  <int value="3" label="PartiallyActivated"/>
+  <int value="4" label="Unknown"/>
 </enum>
 
 <enum name="NetworkCellularTechnology">

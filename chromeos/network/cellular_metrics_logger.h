@@ -17,10 +17,11 @@
 
 namespace chromeos {
 
-class NetworkStateHandler;
-class NetworkState;
+class CellularESimProfileHandler;
 class CellularMetricsLoggerTest;
 class NetworkConnectionHandler;
+class NetworkState;
+class NetworkStateHandler;
 
 // Class for tracking cellular network related metrics.
 //
@@ -42,7 +43,8 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) CellularMetricsLogger
   ~CellularMetricsLogger() override;
 
   void Init(NetworkStateHandler* network_state_handler,
-            NetworkConnectionHandler* network_connection_handler);
+            NetworkConnectionHandler* network_connection_handler,
+            CellularESimProfileHandler* cellular_esim_profile_handler);
 
   // LoginState::Observer:
   void LoggedInStateChanged() override;
@@ -59,12 +61,14 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) CellularMetricsLogger
  private:
   friend class CellularMetricsLoggerTest;
   FRIEND_TEST_ALL_PREFIXES(CellularMetricsLoggerTest,
+                           CellularESimProfileStatusAtLoginTest);
+  FRIEND_TEST_ALL_PREFIXES(CellularMetricsLoggerTest,
                            CellularServiceAtLoginTest);
   FRIEND_TEST_ALL_PREFIXES(CellularMetricsLoggerTest, CellularUsageCountTest);
   FRIEND_TEST_ALL_PREFIXES(CellularMetricsLoggerTest,
                            CellularUsageCountDongleTest);
   FRIEND_TEST_ALL_PREFIXES(CellularMetricsLoggerTest,
-                           CellularActivationStateAtLoginTest);
+                           CellularPSimActivationStateAtLoginTest);
   FRIEND_TEST_ALL_PREFIXES(CellularMetricsLoggerTest,
                            CellularTimeToConnectedTest);
   FRIEND_TEST_ALL_PREFIXES(CellularMetricsLoggerTest,
@@ -105,16 +109,27 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) CellularMetricsLogger
     kMaxValue = kNotConnected
   };
 
-  // Activation state for cellular network.
+  // Activation state for PSim cellular network.
   // These values are persisted to logs. Entries should not be renumbered
   // and numeric values should never be reused.
-  enum class ActivationState {
+  enum class PSimActivationState {
     kActivated = 0,
     kActivating = 1,
     kNotActivated = 2,
     kPartiallyActivated = 3,
     kUnknown = 4,
     kMaxValue = kUnknown
+  };
+
+  // Profile status for ESim cellular network.
+  // These values are persisted to logs. Entries should not be renumbered
+  // and numeric values should never be reused.
+  enum class ESimProfileStatus {
+    kActive = 0,
+    kActiveWithPendingProfiles = 1,
+    kPendingProfilesOnly = 2,
+    kNoProfiles = 3,
+    kMaxValue = kNoProfiles
   };
 
   // Cellular connection state. These values are persisted to logs.
@@ -126,15 +141,11 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) CellularMetricsLogger
     kMaxValue = kDisconnected
   };
 
-  // Convert shill activation state string to ActivationState enum.
-  static ActivationState ActivationStateToEnum(const std::string& state);
-
-  // Checks whether the current logged in user type is an owner or regular.
-  static bool IsLoggedInUserOwnerOrRegular();
+  // Convert shill activation state string to PSimActivationState enum
+  PSimActivationState PSimActivationStateToEnum(const std::string& state);
 
   // Helper method to save cellular disconnections histogram.
-  static void LogCellularDisconnectionsHistogram(
-      ConnectionState connection_state);
+  void LogCellularDisconnectionsHistogram(ConnectionState connection_state);
 
   void OnInitializationTimeout();
 
@@ -145,9 +156,13 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) CellularMetricsLogger
   // disconnections.
   void CheckForConnectionStateMetric(const NetworkState* network);
 
-  // Tracks the activation state of cellular network if available and
-  // if |log_activation_state_| is true.
-  void CheckForActivationStateMetric();
+  // Tracks the activation state of the PSim cellular network if available and
+  // if |is_psim_activation_state_logged_| is false.
+  void CheckForPSimActivationStateMetric();
+
+  // Tracks the activation state of ESim cellular networks if available and
+  // if |is_esim_profile_status_logged_| is false.
+  void CheckForESimProfileStatusMetric();
 
   // This checks the state of connected networks and logs
   // cellular network usage histogram. Histogram is only logged
@@ -178,14 +193,20 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) CellularMetricsLogger
 
   NetworkConnectionHandler* network_connection_handler_ = nullptr;
 
+  CellularESimProfileHandler* cellular_esim_profile_handler_ = nullptr;
+
   // A timer to wait for cellular initialization. This is useful
   // to avoid tracking intermediate states when cellular network is
   // starting up.
   base::OneShotTimer initialization_timer_;
 
-  // Tracks whether activation state is already logged for this
+  // Tracks whether the PSim activation state is already logged for this
   // session.
-  bool is_activation_state_logged_ = false;
+  bool is_psim_activation_state_logged_ = false;
+
+  // Tracks whether the ESim profile status is already logged for this
+  // session.
+  bool is_esim_profile_status_logged_ = false;
 
   // Tracks whether service count is already logged for this session.
   bool is_service_count_logged_ = false;

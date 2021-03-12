@@ -6,38 +6,18 @@
 
 #include "base/metrics/histogram_macros.h"
 #include "base/task/post_task.h"
+#include "chromeos/network/cellular_esim_profile.h"
+#include "chromeos/network/cellular_esim_profile_handler.h"
 #include "chromeos/network/network_connection_handler.h"
 #include "chromeos/network/network_event_log.h"
 #include "chromeos/network/network_state_handler.h"
 #include "third_party/cros_system_api/dbus/service_constants.h"
 
 namespace chromeos {
+namespace {
 
-// static
-const base::TimeDelta CellularMetricsLogger::kInitializationTimeout =
-    base::TimeDelta::FromSeconds(15);
-
-// static
-const base::TimeDelta CellularMetricsLogger::kDisconnectRequestTimeout =
-    base::TimeDelta::FromSeconds(5);
-
-// static
-CellularMetricsLogger::ActivationState
-CellularMetricsLogger::ActivationStateToEnum(const std::string& state) {
-  if (state == shill::kActivationStateActivated)
-    return ActivationState::kActivated;
-  else if (state == shill::kActivationStateActivating)
-    return ActivationState::kActivating;
-  else if (state == shill::kActivationStateNotActivated)
-    return ActivationState::kNotActivated;
-  else if (state == shill::kActivationStatePartiallyActivated)
-    return ActivationState::kPartiallyActivated;
-
-  return ActivationState::kUnknown;
-}
-
-// static
-bool CellularMetricsLogger::IsLoggedInUserOwnerOrRegular() {
+// Checks whether the current logged in user type is an owner or regular.
+bool IsLoggedInUserOwnerOrRegular() {
   if (!LoginState::IsInitialized())
     return false;
 
@@ -47,12 +27,15 @@ bool CellularMetricsLogger::IsLoggedInUserOwnerOrRegular() {
          user_type == LoginState::LoggedInUserType::LOGGED_IN_USER_REGULAR;
 }
 
+}  // namespace
+
 // static
-void CellularMetricsLogger::LogCellularDisconnectionsHistogram(
-    ConnectionState connection_state) {
-  UMA_HISTOGRAM_ENUMERATION("Network.Cellular.Connection.Disconnections",
-                            connection_state);
-}
+const base::TimeDelta CellularMetricsLogger::kInitializationTimeout =
+    base::TimeDelta::FromSeconds(15);
+
+// static
+const base::TimeDelta CellularMetricsLogger::kDisconnectRequestTimeout =
+    base::TimeDelta::FromSeconds(5);
 
 CellularMetricsLogger::ConnectionInfo::ConnectionInfo(
     const std::string& network_guid,
@@ -82,8 +65,10 @@ CellularMetricsLogger::~CellularMetricsLogger() {
 
 void CellularMetricsLogger::Init(
     NetworkStateHandler* network_state_handler,
-    NetworkConnectionHandler* network_connection_handler) {
+    NetworkConnectionHandler* network_connection_handler,
+    CellularESimProfileHandler* cellular_esim_profile_handler) {
   network_state_handler_ = network_state_handler;
+  cellular_esim_profile_handler_ = cellular_esim_profile_handler;
   network_state_handler_->AddObserver(this, FROM_HERE);
 
   if (network_connection_handler) {
@@ -149,19 +134,25 @@ void CellularMetricsLogger::NetworkListChanged() {
 }
 
 void CellularMetricsLogger::OnInitializationTimeout() {
-  CheckForActivationStateMetric();
+  CheckForPSimActivationStateMetric();
+  CheckForESimProfileStatusMetric();
   CheckForCellularUsageCountMetric();
   CheckForCellularServiceCountMetric();
 }
 
 void CellularMetricsLogger::LoggedInStateChanged() {
-  if (!CellularMetricsLogger::IsLoggedInUserOwnerOrRegular())
+  if (!IsLoggedInUserOwnerOrRegular())
     return;
 
   // This flag enures that activation state is only logged once when
   // the user logs in.
-  is_activation_state_logged_ = false;
-  CheckForActivationStateMetric();
+  is_psim_activation_state_logged_ = false;
+  CheckForPSimActivationStateMetric();
+
+  // This flag enures that activation state is only logged once when
+  // the user logs in.
+  is_esim_profile_status_logged_ = false;
+  CheckForESimProfileStatusMetric();
 
   // This flag ensures that the service count is only logged once when
   // the user logs in.
@@ -233,6 +224,26 @@ void CellularMetricsLogger::DisconnectRequested(
   connection_info->last_disconnect_request_time = base::TimeTicks::Now();
 }
 
+CellularMetricsLogger::PSimActivationState
+CellularMetricsLogger::PSimActivationStateToEnum(const std::string& state) {
+  if (state == shill::kActivationStateActivated)
+    return PSimActivationState::kActivated;
+  else if (state == shill::kActivationStateActivating)
+    return PSimActivationState::kActivating;
+  else if (state == shill::kActivationStateNotActivated)
+    return PSimActivationState::kNotActivated;
+  else if (state == shill::kActivationStatePartiallyActivated)
+    return PSimActivationState::kPartiallyActivated;
+
+  return PSimActivationState::kUnknown;
+}
+
+void CellularMetricsLogger::LogCellularDisconnectionsHistogram(
+    ConnectionState connection_state) {
+  UMA_HISTOGRAM_ENUMERATION("Network.Cellular.Connection.Disconnections",
+                            connection_state);
+}
+
 void CellularMetricsLogger::CheckForConnectionStateMetric(
     const NetworkState* network) {
   ConnectionInfo* connection_info =
@@ -272,28 +283,78 @@ void CellularMetricsLogger::CheckForConnectionStateMetric(
   LogCellularDisconnectionsHistogram(ConnectionState::kDisconnected);
 }
 
-void CellularMetricsLogger::CheckForActivationStateMetric() {
-  if (!is_cellular_available_ || is_activation_state_logged_ ||
-      !CellularMetricsLogger::IsLoggedInUserOwnerOrRegular())
+void CellularMetricsLogger::CheckForESimProfileStatusMetric() {
+  if (!cellular_esim_profile_handler_ || !is_cellular_available_ ||
+      is_esim_profile_status_logged_ || !IsLoggedInUserOwnerOrRegular()) {
     return;
+  }
 
-  const NetworkState* cellular_network =
-      network_state_handler_->FirstNetworkByType(
-          NetworkTypePattern::Cellular());
+  std::vector<CellularESimProfile> esim_profiles =
+      cellular_esim_profile_handler_->GetESimProfiles();
 
-  if (!cellular_network)
-    return;
+  bool pending_profiles_exist = false;
+  bool active_profiles_exist = false;
+  for (const auto& profile : esim_profiles) {
+    switch (profile.state()) {
+      case CellularESimProfile::State::kPending:
+        FALLTHROUGH;
+      case CellularESimProfile::State::kInstalling:
+        pending_profiles_exist = true;
+        break;
 
-  ActivationState activation_state =
-      ActivationStateToEnum(cellular_network->activation_state());
-  UMA_HISTOGRAM_ENUMERATION("Network.Cellular.Activation.StatusAtLogin",
+      case CellularESimProfile::State::kInactive:
+        FALLTHROUGH;
+      case CellularESimProfile::State::kActive:
+        active_profiles_exist = true;
+        break;
+    }
+  }
+
+  ESimProfileStatus activation_state;
+  if (active_profiles_exist && !pending_profiles_exist)
+    activation_state = ESimProfileStatus::kActive;
+  else if (active_profiles_exist && pending_profiles_exist)
+    activation_state = ESimProfileStatus::kActiveWithPendingProfiles;
+  else if (!active_profiles_exist && pending_profiles_exist)
+    activation_state = ESimProfileStatus::kPendingProfilesOnly;
+  else
+    activation_state = ESimProfileStatus::kNoProfiles;
+
+  UMA_HISTOGRAM_ENUMERATION("Network.Cellular.ESim.StatusAtLogin",
                             activation_state);
-  is_activation_state_logged_ = true;
+  is_esim_profile_status_logged_ = true;
+}
+
+void CellularMetricsLogger::CheckForPSimActivationStateMetric() {
+  if (!is_cellular_available_ || is_psim_activation_state_logged_ ||
+      !IsLoggedInUserOwnerOrRegular())
+    return;
+
+  NetworkStateHandler::NetworkStateList network_list;
+  network_state_handler_->GetVisibleNetworkListByType(
+      NetworkTypePattern::Cellular(), &network_list);
+
+  if (network_list.size() == 0)
+    return;
+
+  base::Optional<std::string> psim_activation_state;
+  for (const auto* network : network_list) {
+    if (network->eid().empty())
+      psim_activation_state = network->activation_state();
+  }
+
+  // No PSim networks exist.
+  if (!psim_activation_state.has_value())
+    return;
+
+  UMA_HISTOGRAM_ENUMERATION("Network.Cellular.PSim.StatusAtLogin",
+                            PSimActivationStateToEnum(*psim_activation_state));
+  is_psim_activation_state_logged_ = true;
 }
 
 void CellularMetricsLogger::CheckForCellularServiceCountMetric() {
   if (!is_cellular_available_ || is_service_count_logged_ ||
-      !CellularMetricsLogger::IsLoggedInUserOwnerOrRegular()) {
+      !IsLoggedInUserOwnerOrRegular()) {
     return;
   }
 

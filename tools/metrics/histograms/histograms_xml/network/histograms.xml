@@ -90,6 +90,10 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Network.Cellular.Activation.StatusAtLogin"
     enum="NetworkCellularActivationState" expires_after="2021-08-29">
+  <obsolete>
+    Split into Network.Cellular.PSim.StatusAtLogin and
+    Network.Cellular.ESim.StatusAtLogin on 3/2021 in M91.
+  </obsolete>
   <owner>azeemarshad@chromium.org</owner>
   <owner>cros-system-services-networking@google.com</owner>
   <summary>
@@ -154,6 +158,17 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="Network.Cellular.ESim.StatusAtLogin"
+    enum="NetworkCellularESimProfileStatus" expires_after="2022-03-01">
+  <owner>azeemarshad@chromium.org</owner>
+  <owner>cros-connectivity@google.com</owner>
+  <owner>hsuregan@chromium.org</owner>
+  <summary>
+    Tracks the ESim Cellular network profile status when the primary user
+    logs-in to the device.
+  </summary>
+</histogram>
+
 <histogram name="Network.Cellular.ESim.Usage.Count" enum="NetworkCellularUsage"
     expires_after="2022-03-01">
   <owner>azeemarshad@chromium.org</owner>
@@ -182,6 +197,17 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <summary>
     Tracks the result of the physical SIM card setup flow when the setup dialog
     closes.
+  </summary>
+</histogram>
+
+<histogram name="Network.Cellular.PSim.StatusAtLogin"
+    enum="NetworkCellularPSimActivationState" expires_after="2022-03-01">
+  <owner>azeemarshad@chromium.org</owner>
+  <owner>cros-connectivity@google.com</owner>
+  <owner>hsuregan@chromium.org</owner>
+  <summary>
+    Tracks the PSim Cellular network activation state when the primary user
+    logs-in to the device.
   </summary>
 </histogram>
 

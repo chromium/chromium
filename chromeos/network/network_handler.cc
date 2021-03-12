@@ -97,7 +97,10 @@ void NetworkHandler::Init() {
         network_connection_handler_.get(), network_state_handler_.get());
   }
   cellular_metrics_logger_->Init(network_state_handler_.get(),
-                                 network_connection_handler_.get());
+                                 network_connection_handler_.get(),
+                                 features::IsCellularActivationUiEnabled()
+                                     ? cellular_esim_profile_handler_.get()
+                                     : nullptr);
   if (network_cert_migrator_)
     network_cert_migrator_->Init(network_state_handler_.get());
   if (client_cert_resolver_) {
