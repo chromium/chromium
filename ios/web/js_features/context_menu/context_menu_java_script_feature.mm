@@ -104,6 +104,9 @@ void ContextMenuJavaScriptFeature::ScriptMessageReceived(
   }
 
   ElementDetailsCallback callback = std::move(callback_it->second);
+  if (callback.is_null()) {
+    return;
+  }
 
   web::ContextMenuParams params =
       web::ContextMenuParamsFromElementDictionary(message.body());
