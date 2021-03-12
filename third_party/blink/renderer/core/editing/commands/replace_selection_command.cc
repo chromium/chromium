@@ -213,7 +213,7 @@ ReplacementFragment::ReplacementFragment(Document* document,
       String original_text = fragment_->textContent();
       auto* event =
           MakeGarbageCollected<BeforeTextInsertedEvent>(original_text);
-      editable_root->DispatchEvent(*event);
+      editable_root->DefaultEventHandler(*event);
       if (original_text != event->GetText()) {
         fragment_ = CreateFragmentFromText(
             selection.ToNormalizedEphemeralRange(), event->GetText());
@@ -245,7 +245,7 @@ ReplacementFragment::ReplacementFragment(Document* document,
 
   // Give the root a chance to change the text.
   auto* evt = MakeGarbageCollected<BeforeTextInsertedEvent>(text);
-  editable_root->DispatchEvent(*evt);
+  editable_root->DefaultEventHandler(*evt);
   if (text != evt->GetText() || !HasRichlyEditableStyle(*editable_root)) {
     RestoreAndRemoveTestRenderingNodesToFragment(holder);
 

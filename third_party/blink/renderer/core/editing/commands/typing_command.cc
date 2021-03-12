@@ -81,7 +81,7 @@ String DispatchBeforeTextInsertedEvent(const String& text,
   // necessary.
   const Document& document = start_node->GetDocument();
   auto* evt = MakeGarbageCollected<BeforeTextInsertedEvent>(text);
-  RootEditableElement(*start_node)->DispatchEvent(*evt);
+  RootEditableElement(*start_node)->DefaultEventHandler(*evt);
   if (IsValidDocument(document) && selection_as_undo_step.IsValidFor(document))
     return evt->GetText();
   // editing/inserting/webkitBeforeTextInserted-removes-frame.html
@@ -156,7 +156,7 @@ bool CanAppendNewLineFeedToSelection(const SelectionInDOMTree& selection,
 
   const Document& document = element->GetDocument();
   auto* event = MakeGarbageCollected<BeforeTextInsertedEvent>(String("\n"));
-  element->DispatchEvent(*event);
+  element->DefaultEventHandler(*event);
   // event may invalidate frame or selection
   if (IsValidDocument(document) && selection_as_undo_step.IsValidFor(document))
     return event->GetText().length();

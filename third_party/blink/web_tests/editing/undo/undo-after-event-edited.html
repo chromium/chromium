@@ -29,7 +29,7 @@ function event_handler_webkitEditableContentChanged() {
     testRunner.notifyDone();
 }
 
-document.addEventListener("webkitEditableContentChanged", event_handler_webkitEditableContentChanged, true);
+document.addEventListener("input", event_handler_webkitEditableContentChanged, true);
 
 function event_handler_DOMCharacterDataModified() {
   document.execCommand('InsertParagraph',false,false);

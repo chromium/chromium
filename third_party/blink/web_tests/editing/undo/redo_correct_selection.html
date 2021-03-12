@@ -14,7 +14,7 @@ test(() => assert_selection(
       }
       // Move SELECT into OPTION before calling |FrameSelection::setSelection()|
       // in |Editor::reappliedEditing()|.
-      div.addEventListener('webkitEditableContentChanged', () => {
+      div.addEventListener('input', () => {
         if (currentCommand !== 'redo')
           return;
         const div = selection.document.querySelector('div');
