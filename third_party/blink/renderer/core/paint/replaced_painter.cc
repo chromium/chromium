@@ -155,7 +155,8 @@ void ReplacedPainter::Paint(const PaintInfo& paint_info) {
                                    content_paint_state.PaintOffset());
   }
 
-  if (layout_replaced_.CanResize()) {
+  if (layout_replaced_.StyleRef().Visibility() == EVisibility::kVisible &&
+      layout_replaced_.CanResize()) {
     auto* scrollable_area = layout_replaced_.GetScrollableArea();
     DCHECK(scrollable_area);
     if (!scrollable_area->HasLayerForScrollCorner()) {

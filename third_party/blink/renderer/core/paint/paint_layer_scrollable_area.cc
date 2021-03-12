@@ -419,7 +419,7 @@ IntRect PaintLayerScrollableArea::ScrollCornerRect() const {
   // (b) Both scrollbars are present.
   bool has_horizontal_bar = HorizontalScrollbar();
   bool has_vertical_bar = VerticalScrollbar();
-  bool has_resizer = GetLayoutBox()->StyleRef().HasResize();
+  bool has_resizer = GetLayoutBox()->CanResize();
   if ((has_horizontal_bar && has_vertical_bar) ||
       (has_resizer && (has_horizontal_bar || has_vertical_bar))) {
     return CornerRect();
@@ -1975,7 +1975,7 @@ bool PaintLayerScrollableArea::HitTestOverflowControls(
     return false;
 
   IntRect resize_control_rect;
-  if (GetLayoutBox()->StyleRef().HasResize()) {
+  if (GetLayoutBox()->CanResize()) {
     resize_control_rect = ResizerCornerRect(kResizerForPointer);
     if (resize_control_rect.Contains(local_point))
       return true;
@@ -2026,7 +2026,7 @@ bool PaintLayerScrollableArea::HitTestOverflowControls(
 
 IntRect PaintLayerScrollableArea::ResizerCornerRect(
     ResizerHitTestType resizer_hit_test_type) const {
-  if (!GetLayoutBox()->StyleRef().HasResize())
+  if (!GetLayoutBox()->CanResize())
     return IntRect();
   IntRect corner = CornerRect();
 
@@ -2055,7 +2055,8 @@ IntRect PaintLayerScrollableArea::ScrollCornerAndResizerRect() const {
 bool PaintLayerScrollableArea::IsPointInResizeControl(
     const IntPoint& absolute_point,
     ResizerHitTestType resizer_hit_test_type) const {
-  if (!GetLayoutBox()->CanResize())
+  if (GetLayoutBox()->StyleRef().Visibility() != EVisibility::kVisible ||
+      !GetLayoutBox()->CanResize())
     return false;
 
   IntPoint local_point = RoundedIntPoint(
@@ -2066,7 +2067,8 @@ bool PaintLayerScrollableArea::IsPointInResizeControl(
 bool PaintLayerScrollableArea::HitTestResizerInFragments(
     const PaintLayerFragments& layer_fragments,
     const HitTestLocation& hit_test_location) const {
-  if (!GetLayoutBox()->CanResize())
+  if (GetLayoutBox()->StyleRef().Visibility() != EVisibility::kVisible ||
+      !GetLayoutBox()->CanResize())
     return false;
 
   if (layer_fragments.IsEmpty())
