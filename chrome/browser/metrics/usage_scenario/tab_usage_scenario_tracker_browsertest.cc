@@ -12,6 +12,7 @@
 #include "base/test/simple_test_tick_clock.h"
 #include "base/test/test_mock_time_task_runner.h"
 #include "base/time/time.h"
+#include "build/build_config.h"
 #include "chrome/browser/metrics/tab_stats/tab_stats_tracker.h"
 #include "chrome/browser/metrics/usage_scenario/usage_scenario_data_store.h"
 #include "chrome/browser/resource_coordinator/tab_lifecycle_unit_external.h"
@@ -403,8 +404,14 @@ IN_PROC_BROWSER_TEST_F(TabUsageScenarioTrackerBrowserTest, FullScreenVideo) {
             interval_data.source_id_for_longest_visible_origin_duration);
 }
 
+// TODO(1183746): Fix the flakiness on MacOS and re-enable the test.
+#if defined(OS_MAC)
+#define MAYBE_FullScreenVideoClosed DISABLED_FullScreenVideoClosed
+#else
+#define MAYBE_FullScreenVideoClosed FullScreenVideoClosed
+#endif
 IN_PROC_BROWSER_TEST_F(TabUsageScenarioTrackerBrowserTest,
-                       FullScreenVideoClosed) {
+                       MAYBE_FullScreenVideoClosed) {
   // Play fullscreen video in a tab and close it while it's playing, ensure that
   // things are tracked properly.
   EXPECT_TRUE(
@@ -454,8 +461,14 @@ IN_PROC_BROWSER_TEST_F(TabUsageScenarioTrackerBrowserTest,
             interval_data.source_id_for_longest_visible_origin_duration);
 }
 
+// TODO(1183746): Fix the flakiness on MacOS and re-enable the test.
+#if defined(OS_MAC)
+#define MAYBE_FullScreenVideoCrash DISABLED_FullScreenVideoCrash
+#else
+#define MAYBE_FullScreenVideoCrash FullScreenVideoCrash
+#endif
 IN_PROC_BROWSER_TEST_F(TabUsageScenarioTrackerBrowserTest,
-                       FullScreenVideoCrash) {
+                       MAYBE_FullScreenVideoCrash) {
   // Play fullscreen video in a tab and make the tab crash, ensure that things
   // are tracked properly.
   auto* contents = browser()->tab_strip_model()->GetWebContentsAt(0);
