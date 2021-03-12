@@ -164,6 +164,15 @@
       "use_rbe": true
     }
   },
+  "Linux Builder (runsc-exp) (reclient)": {
+    "gn_args": {
+      "ffmpeg_branding": "Chrome",
+      "is_component_build": false,
+      "is_debug": false,
+      "proprietary_codecs": true,
+      "use_rbe": true
+    }
+  },
   "Linux TSan Builder (goma cache silo)": {
     "gn_args": {
       "enable_nacl": false,
