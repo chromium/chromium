@@ -12,6 +12,7 @@
 #include "base/bind.h"
 #include "base/command_line.h"
 #include "base/location.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/ptr_util.h"
 #include "base/optional.h"
 #include "base/run_loop.h"
@@ -130,11 +131,11 @@ class TestProvider : public AutocompleteProvider {
       AutocompleteMatch::Type type,
       const TemplateURLRef::SearchTermsArgs& search_terms_args);
 
-  AutocompleteProviderListener* listener_;
+  CheckedPtr<AutocompleteProviderListener> listener_;
   int relevance_;
   const base::string16 prefix_;
   const base::string16 match_keyword_;
-  AutocompleteProviderClient* client_;
+  CheckedPtr<AutocompleteProviderClient> client_;
 };
 
 void TestProvider::Start(const AutocompleteInput& input, bool minimal_changes) {
@@ -348,7 +349,7 @@ class AutocompleteProviderTest : public testing::Test {
   TestingPrefServiceSimple pref_service_;
   std::unique_ptr<AutocompleteController> controller_;
   // Owned by |controller_|.
-  AutocompleteProviderClientWithClosure* client_;
+  CheckedPtr<AutocompleteProviderClientWithClosure> client_;
   // Used to ensure that |client_| ownership has been passed to |controller_|
   // exactly once.
   bool client_owned_;
@@ -495,7 +496,7 @@ void AutocompleteProviderTest::ResetControllerWithKeywordProvider() {
 void AutocompleteProviderTest::ResetControllerWithType(int type) {
   EXPECT_FALSE(client_owned_);
   controller_.reset(
-      new AutocompleteController(base::WrapUnique(client_), type));
+      new AutocompleteController(base::WrapUnique(client_.get()), type));
   client_owned_ = true;
 }
 

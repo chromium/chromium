@@ -21,6 +21,7 @@
 #include "base/i18n/base_i18n_switches.h"
 #include "base/i18n/character_encoding.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/no_destructor.h"
@@ -967,7 +968,7 @@ class CertificateReportingServiceCertReporter : public SSLCertReporter {
   }
 
  private:
-  CertificateReportingService* service_;
+  CheckedPtr<CertificateReportingService> service_;
 
   DISALLOW_COPY_AND_ASSIGN(CertificateReportingServiceCertReporter);
 };
@@ -4398,7 +4399,7 @@ class ProtocolHandlerThrottle : public blink::URLLoaderThrottle {
       *url = translated_url;
   }
 
-  ProtocolHandlerRegistry* protocol_handler_registry_;
+  CheckedPtr<ProtocolHandlerRegistry> protocol_handler_registry_;
 };
 }  // namespace
 

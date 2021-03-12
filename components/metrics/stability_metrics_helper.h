@@ -8,6 +8,7 @@
 #include <string>
 
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/process/kill.h"
 
 class PrefRegistrySimple;
@@ -99,7 +100,7 @@ class StabilityMetricsHelper {
   // Records that a renderer launch failed.
   void LogRendererLaunchFailed(bool was_extension_process);
 
-  PrefService* local_state_;
+  CheckedPtr<PrefService> local_state_;
 
   DISALLOW_COPY_AND_ASSIGN(StabilityMetricsHelper);
 };

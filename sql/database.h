@@ -20,6 +20,7 @@
 #include "base/feature_list.h"
 #include "base/gtest_prod_util.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/optional.h"
 #include "base/sequence_checker.h"
@@ -660,8 +661,8 @@ class COMPONENT_EXPORT(SQL) Database {
 
     ~StatementRef();
 
-    Database* database_;
-    sqlite3_stmt* stmt_;
+    CheckedPtr<Database> database_;
+    CheckedPtr<sqlite3_stmt> stmt_;
     bool was_valid_;
 
     DISALLOW_COPY_AND_ASSIGN(StatementRef);
@@ -799,7 +800,7 @@ class COMPONENT_EXPORT(SQL) Database {
   std::string histogram_tag_;
 
   // Linear histogram for RecordEvent().
-  base::HistogramBase* stats_histogram_ = nullptr;
+  CheckedPtr<base::HistogramBase> stats_histogram_ = nullptr;
 
   // Stores the dump provider object when db is open.
   std::unique_ptr<DatabaseMemoryDumpProvider> memory_dump_provider_;

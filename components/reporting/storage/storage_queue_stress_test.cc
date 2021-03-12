@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/memory/checked_ptr.h"
 #include "components/reporting/storage/storage_queue.h"
 
 #include <cstdint>
@@ -114,7 +115,7 @@ class TestUploadClient : public UploaderInterface {
 
  private:
   base::Optional<int64_t> generation_id_;
-  LastRecordDigestMap* const last_record_digest_map_;
+  const CheckedPtr<LastRecordDigestMap> last_record_digest_map_;
 
   Sequence test_upload_sequence_;
 };

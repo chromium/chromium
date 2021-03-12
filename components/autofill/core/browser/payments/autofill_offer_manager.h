@@ -11,6 +11,7 @@
 #include <tuple>
 #include <vector>
 
+#include "base/memory/checked_ptr.h"
 #include "base/strings/string16.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
@@ -66,7 +67,7 @@ class AutofillOfferManager : public KeyedService,
   // Offers.
   OffersMap CreateOffersMap(const GURL& last_committed_url_origin) const;
 
-  PersonalDataManager* personal_data_;
+  CheckedPtr<PersonalDataManager> personal_data_;
   std::set<GURL> eligible_merchant_domains_ = {};
 };
 

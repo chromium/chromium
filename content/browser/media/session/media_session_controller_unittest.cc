@@ -5,6 +5,7 @@
 #include <memory>
 #include <tuple>
 
+#include "base/memory/checked_ptr.h"
 #include "base/test/scoped_feature_list.h"
 #include "content/browser/media/media_web_contents_observer.h"
 #include "content/browser/media/session/audio_focus_delegate.h"
@@ -294,7 +295,7 @@ class MediaSessionControllerTest : public RenderViewHostImplTestHarness {
   MediaPlayerId id_ = MediaPlayerId::CreateMediaPlayerIdForTests();
   std::unique_ptr<MediaSessionController> controller_;
   std::unique_ptr<MockMediaPlayerReceiverForTesting> media_player_receiver_;
-  FakeAudioFocusDelegate* audio_focus_delegate_ = nullptr;
+  CheckedPtr<FakeAudioFocusDelegate> audio_focus_delegate_ = nullptr;
 };
 
 TEST_F(MediaSessionControllerTest, NoAudioNoSession) {

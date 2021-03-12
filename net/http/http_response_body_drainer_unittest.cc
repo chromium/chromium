@@ -13,6 +13,7 @@
 #include "base/compiler_specific.h"
 #include "base/location.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/no_destructor.h"
 #include "base/run_loop.h"
@@ -268,8 +269,8 @@ class HttpResponseBodyDrainerTest : public TestWithTaskEnvironment {
   QuicContext quic_context_;
   const std::unique_ptr<HttpNetworkSession> session_;
   CloseResultWaiter result_waiter_;
-  MockHttpStream* const mock_stream_;  // Owned by |drainer_|.
-  HttpResponseBodyDrainer* const drainer_;  // Deletes itself.
+  const CheckedPtr<MockHttpStream> mock_stream_;       // Owned by |drainer_|.
+  const CheckedPtr<HttpResponseBodyDrainer> drainer_;  // Deletes itself.
 };
 
 TEST_F(HttpResponseBodyDrainerTest, DrainBodySyncSingleOK) {

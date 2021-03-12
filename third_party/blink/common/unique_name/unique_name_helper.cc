@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "base/check_op.h"
+#include "base/memory/checked_ptr.h"
 #include "base/notreached.h"
 #include "base/stl_util.h"
 #include "base/strings/string_number_conversions.h"
@@ -55,7 +56,7 @@ class PendingChildFrameAdapter : public UniqueNameHelper::FrameAdapter {
   }
 
  private:
-  FrameAdapter* const parent_;
+  const CheckedPtr<FrameAdapter> parent_;
 };
 
 constexpr char kFramePathPrefix[] = "<!--framePath /";

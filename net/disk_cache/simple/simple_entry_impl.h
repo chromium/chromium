@@ -12,6 +12,7 @@
 
 #include "base/containers/queue.h"
 #include "base/files/file_path.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/sequence_checker.h"
 #include "net/base/cache_type.h"
@@ -372,7 +373,7 @@ class NET_EXPORT_PRIVATE SimpleEntryImpl : public Entry,
   SEQUENCE_CHECKER(sequence_checker_);
 
   const base::WeakPtr<SimpleBackendImpl> backend_;
-  SimpleFileTracker* const file_tracker_;
+  const CheckedPtr<SimpleFileTracker> file_tracker_;
   const net::CacheType cache_type_;
   const base::FilePath path_;
   const uint64_t entry_hash_;
@@ -427,7 +428,7 @@ class NET_EXPORT_PRIVATE SimpleEntryImpl : public Entry,
   // an operation is being executed no one owns the synchronous entry. Therefore
   // SimpleEntryImpl should not be deleted while an operation is running as that
   // would leak the SimpleSynchronousEntry.
-  SimpleSynchronousEntry* synchronous_entry_ = nullptr;
+  CheckedPtr<SimpleSynchronousEntry> synchronous_entry_ = nullptr;
 
   scoped_refptr<net::PrioritizedTaskRunner> prioritized_task_runner_;
 

@@ -4,6 +4,7 @@
 
 #include "components/autofill_assistant/browser/website_login_manager_impl.h"
 
+#include "base/memory/checked_ptr.h"
 #include "base/stl_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/password_manager/content/browser/content_password_manager_driver.h"
@@ -219,7 +220,7 @@ class WebsiteLoginManagerImpl::UpdatePasswordRequest
  private:
   const password_manager::PasswordForm password_form_;
   const autofill::FormData form_data_;
-  password_manager::PasswordManagerClient* const client_ = nullptr;
+  const CheckedPtr<password_manager::PasswordManagerClient> client_ = nullptr;
   // This callback will execute when presaving is completed.
   base::OnceCallback<void()> presaving_completed_callback_;
   const std::unique_ptr<password_manager::PasswordSaveManager>

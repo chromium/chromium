@@ -9,6 +9,7 @@
 #include <map>
 #include <string>
 
+#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/strings/string16.h"
@@ -259,12 +260,12 @@ class OmniboxPopupModel {
 
   std::map<int, SkBitmap> rich_suggestion_bitmaps_;
 
-  OmniboxPopupView* view_;
+  CheckedPtr<OmniboxPopupView> view_;
 
-  OmniboxEditModel* edit_model_;
+  CheckedPtr<OmniboxEditModel> edit_model_;
 
   // Non-owning reference to the pref service. Can be nullptr in tests or iOS.
-  PrefService* const pref_service_;
+  const CheckedPtr<PrefService> pref_service_;
 
   Selection selection_;
 

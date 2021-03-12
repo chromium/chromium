@@ -9,6 +9,7 @@
 #include <string>
 
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/strings/string16.h"
 #include "url/gurl.h"
 
@@ -81,7 +82,7 @@ class SecurityInterstitialPage {
   // The WebContents with which this interstitial page is
   // associated. Not available in ~SecurityInterstitialPage, since it
   // can be destroyed before this class is destroyed.
-  content::WebContents* web_contents_;
+  CheckedPtr<content::WebContents> web_contents_;
   const GURL request_url_;
   // Whether the interstitial should create a view.
   bool create_view_;

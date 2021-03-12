@@ -11,6 +11,7 @@
 
 #include "base/gtest_prod_util.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/strings/string16.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/form_parsing/autofill_parsing_utils.h"
@@ -28,7 +29,7 @@ class LogManager;
 // chrome://autofill-internals explaining which regular expressions
 // were matched by local heuristics.
 struct RegExLogging {
-  LogManager* const log_manager = nullptr;
+  const CheckedPtr<LogManager> log_manager = nullptr;
   const char* regex_name = "";
 };
 

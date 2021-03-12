@@ -9,6 +9,7 @@
 #include <stdint.h>
 
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/timer/timer.h"
 #include "components/search_engines/keyword_table.h"
@@ -57,7 +58,7 @@ class KeywordWebDataService : public WebDataServiceBase {
     ~BatchModeScoper();
 
    private:
-    KeywordWebDataService* service_;
+    CheckedPtr<KeywordWebDataService> service_;
 
     DISALLOW_COPY_AND_ASSIGN(BatchModeScoper);
   };

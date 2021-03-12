@@ -9,6 +9,7 @@
 #include <queue>
 #include <vector>
 
+#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/common/offline_page_auto_fetcher.mojom.h"
 #include "components/offline_pages/core/background/request_queue_results.h"
@@ -42,7 +43,7 @@ class OfflinePageAutoFetcher : public chrome::mojom::OfflinePageAutoFetcher {
 
   GURL last_committed_url_;
   int android_tab_id_;
-  OfflinePageAutoFetcherService* auto_fetcher_service_ = nullptr;
+  CheckedPtr<OfflinePageAutoFetcherService> auto_fetcher_service_ = nullptr;
 };
 
 }  // namespace offline_pages

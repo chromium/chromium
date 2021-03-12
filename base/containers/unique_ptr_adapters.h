@@ -7,6 +7,8 @@
 
 #include <memory>
 
+#include "base/memory/checked_ptr.h"
+
 namespace base {
 
 // This transparent comparator allows to lookup by raw pointer in
@@ -65,7 +67,7 @@ struct UniquePtrMatcher {
   }
 
  private:
-  T* const t_;
+  const CheckedPtr<T> t_;
 };
 
 template <class T, class Deleter = std::default_delete<T>>

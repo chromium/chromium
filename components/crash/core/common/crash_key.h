@@ -10,6 +10,7 @@
 #include <string>
 
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/strings/string_piece.h"
 #include "build/build_config.h"
 #include "components/crash/core/common/crash_buildflags.h"
@@ -257,7 +258,7 @@ class ScopedCrashKeyString {
   ~ScopedCrashKeyString() { crash_key_->Clear(); }
 
  private:
-  CrashKeyType* const crash_key_;
+  const CheckedPtr<CrashKeyType> crash_key_;
   DISALLOW_COPY_AND_ASSIGN(ScopedCrashKeyString);
 };
 

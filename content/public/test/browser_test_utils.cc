@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "content/public/test/browser_test_utils.h"
+#include "base/memory/checked_ptr.h"
 
 #include <stddef.h>
 
@@ -590,7 +591,7 @@ class ResizeObserver : public RenderWidgetHostObserver {
   }
 
  private:
-  RenderWidgetHost* widget_host_;
+  CheckedPtr<RenderWidgetHost> widget_host_;
   base::RunLoop run_loop_;
   base::RepeatingCallback<bool()> is_complete_callback_;
 };
@@ -2882,7 +2883,7 @@ class FrameFocusedObserver::FrameTreeNodeObserverImpl
   }
 
  private:
-  FrameTreeNode* owner_;
+  CheckedPtr<FrameTreeNode> owner_;
   base::RunLoop run_loop_;
 };
 
@@ -2913,7 +2914,7 @@ class FrameDeletedObserver::FrameTreeNodeObserverImpl
       run_loop_.Quit();
   }
 
-  FrameTreeNode* owner_;
+  CheckedPtr<FrameTreeNode> owner_;
   base::RunLoop run_loop_;
 };
 

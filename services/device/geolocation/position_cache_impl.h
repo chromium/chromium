@@ -11,6 +11,7 @@
 #include <vector>
 
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/strings/string16.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
@@ -81,7 +82,7 @@ class PositionCacheImpl
   static Hash MakeKey(const WifiData& wifi_data);
   void EvictEntry(const Hash& hash);
 
-  const base::TickClock* clock_;
+  CheckedPtr<const base::TickClock> clock_;
   std::vector<CacheEntry> data_;
   mojom::Geoposition last_used_position_;
   DISALLOW_COPY_AND_ASSIGN(PositionCacheImpl);

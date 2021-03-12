@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "google_apis/gaia/gaia_auth_consumer.h"
 #include "google_apis/gaia/gaia_oauth_client.h"
@@ -50,9 +51,9 @@ class AccountInfoFetcher : public OAuth2AccessTokenManager::Consumer,
   void OnNetworkError(int response_code) override;
 
  private:
-  ProfileOAuth2TokenService* token_service_;
+  CheckedPtr<ProfileOAuth2TokenService> token_service_;
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
-  AccountFetcherService* service_;
+  CheckedPtr<AccountFetcherService> service_;
   const CoreAccountId account_id_;
 
   std::unique_ptr<OAuth2AccessTokenManager::Request> login_token_request_;

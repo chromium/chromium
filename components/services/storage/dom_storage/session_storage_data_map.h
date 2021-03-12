@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/callback.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/optional.h"
 #include "components/services/storage/dom_storage/session_storage_metadata.h"
@@ -94,7 +95,7 @@ class SessionStorageDataMap final
 
   static StorageAreaImpl::Options GetOptions();
 
-  Listener* listener_;
+  CheckedPtr<Listener> listener_;
   int binding_count_ = 0;
 
   // If we're cloning from another map, we need to keep it alive while it forks.
@@ -109,7 +110,7 @@ class SessionStorageDataMap final
   // called and need access  to the StorageAreaImpl instance. The
   // unique_ptr could already be null, but this field should still be valid.
   // TODO(dmurph): Change delegate ownership so this doesn't have to be done.
-  StorageAreaImpl* storage_area_ptr_;
+  CheckedPtr<StorageAreaImpl> storage_area_ptr_;
 
   DISALLOW_COPY_AND_ASSIGN(SessionStorageDataMap);
 };

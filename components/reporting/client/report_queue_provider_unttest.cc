@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include <memory>
+#include "base/memory/checked_ptr.h"
 #include "components/reporting/client/report_queue_provider.h"
 
 #include "base/bind.h"
@@ -82,7 +83,7 @@ class MockReportQueueProvider : public ReportQueueProvider {
     void OnCompleted() override { provider_->storage_ = std::move(storage_); }
 
     scoped_refptr<StorageModuleInterface> storage_;
-    MockReportQueueProvider* const provider_;
+    const CheckedPtr<MockReportQueueProvider> provider_;
   };
 
   scoped_refptr<StorageModuleInterface> storage_;

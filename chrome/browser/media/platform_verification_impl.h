@@ -8,6 +8,7 @@
 #include <string>
 
 #include "base/callback.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "build/chromeos_buildflags.h"
 #include "content/public/browser/frame_service_base.h"
@@ -63,7 +64,7 @@ class PlatformVerificationImpl final
       platform_verification_flow_;
 #endif
 
-  content::RenderFrameHost* const render_frame_host_;
+  const CheckedPtr<content::RenderFrameHost> render_frame_host_;
   base::WeakPtrFactory<PlatformVerificationImpl> weak_factory_{this};
 };
 

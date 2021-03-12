@@ -8,6 +8,7 @@
 #include <memory>
 #include <vector>
 
+#include "base/memory/checked_ptr.h"
 #include "components/viz/service/display_embedder/skia_output_device.h"
 
 namespace viz {
@@ -50,7 +51,7 @@ class SkiaOutputDeviceVulkanSecondaryCB final : public SkiaOutputDevice {
             sk_sp<const SkDeferredDisplayList> ddl) override;
 
  private:
-  VulkanContextProvider* const context_provider_;
+  const CheckedPtr<VulkanContextProvider> context_provider_;
   gfx::Size size_;
 };
 

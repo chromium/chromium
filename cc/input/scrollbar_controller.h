@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/memory/checked_ptr.h"
 #include "cc/cc_export.h"
 #include "cc/input/input_handler.h"
 #include "cc/input/scrollbar.h"
@@ -276,7 +277,7 @@ class CC_EXPORT ScrollbarController {
   // for root viewport scrollbar scrolling.
   float GetPageScaleFactorForScroll() const;
 
-  LayerTreeHostImpl* layer_tree_host_impl_;
+  CheckedPtr<LayerTreeHostImpl> layer_tree_host_impl_;
 
   // Used to safeguard against firing GSE without firing GSB and GSU. For
   // example, if mouse is pressed outside the scrollbar but released after

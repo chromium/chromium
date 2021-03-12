@@ -8,6 +8,7 @@
 #include <string>
 
 #include "base/callback.h"
+#include "base/memory/checked_ptr.h"
 #include "base/strings/string16.h"
 #include "content/public/browser/identity_request_dialog_controller.h"
 #include "url/gurl.h"
@@ -62,7 +63,7 @@ class WebIdDialog {
   virtual ~WebIdDialog() = default;
 
  private:
-  content::WebContents* rp_web_contents_;
+  CheckedPtr<content::WebContents> rp_web_contents_;
 };
 
 #endif  // CHROME_BROWSER_UI_WEBID_WEBID_DIALOG_H_

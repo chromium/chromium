@@ -9,6 +9,7 @@
 #include <memory>
 
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "components/page_load_metrics/browser/layout_shift_normalization.h"
@@ -238,10 +239,10 @@ class PageLoadMetricsUpdateDispatcher {
   void UpdateHasSeenInputOrScroll(const mojom::PageLoadTiming& new_timing);
 
   // The client is guaranteed to outlive this object.
-  Client* const client_;
+  const CheckedPtr<Client> client_;
 
   // Interface to chrome features. Must outlive the class.
-  PageLoadMetricsEmbedderInterface* const embedder_interface_;
+  const CheckedPtr<PageLoadMetricsEmbedderInterface> embedder_interface_;
 
   std::unique_ptr<base::OneShotTimer> timer_;
 

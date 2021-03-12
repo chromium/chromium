@@ -9,6 +9,7 @@
 #include <string>
 #include <vector>
 
+#include "base/memory/checked_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/observer_list.h"
 #include "base/sequenced_task_runner.h"
@@ -106,7 +107,7 @@ class FeedStream : public FeedStreamApi,
     }
 
    private:
-    FeedStore* store_;
+    CheckedPtr<FeedStore> store_;
     feedstore::Metadata metadata_;
   };
 

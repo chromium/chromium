@@ -11,6 +11,7 @@
 #include <vector>
 
 #include "base/bits.h"
+#include "base/memory/checked_ptr.h"
 #include "base/process/process_metrics.h"
 #include "base/test/bind.h"
 #include "base/test/gtest_util.h"
@@ -219,8 +220,8 @@ class ThreadedAllocCountDelegate : public base::DelegateSimpleThread::Delegate {
   }
 
  private:
-  GuardedPageAllocator* gpa_;
-  std::array<void*, kMaxMetadata>* allocations_;
+  CheckedPtr<GuardedPageAllocator> gpa_;
+  CheckedPtr<std::array<void*, kMaxMetadata>> allocations_;
 
   DISALLOW_COPY_AND_ASSIGN(ThreadedAllocCountDelegate);
 };
@@ -281,7 +282,7 @@ class ThreadedHighContentionDelegate
   }
 
  private:
-  GuardedPageAllocator* gpa_;
+  CheckedPtr<GuardedPageAllocator> gpa_;
 
   DISALLOW_COPY_AND_ASSIGN(ThreadedHighContentionDelegate);
 };

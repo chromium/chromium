@@ -5,6 +5,7 @@
 #ifndef CC_TILES_TILING_SET_RASTER_QUEUE_REQUIRED_H_
 #define CC_TILES_TILING_SET_RASTER_QUEUE_REQUIRED_H_
 
+#include "base/memory/checked_ptr.h"
 #include "cc/cc_export.h"
 #include "cc/tiles/picture_layer_tiling_set.h"
 #include "cc/tiles/raster_tile_priority_queue.h"
@@ -42,8 +43,8 @@ class CC_EXPORT TilingSetRasterQueueRequired {
     TilingIterator& operator++();
 
    private:
-    PictureLayerTiling* tiling_;
-    TilingData* tiling_data_;
+    CheckedPtr<PictureLayerTiling> tiling_;
+    CheckedPtr<TilingData> tiling_data_;
 
     PrioritizedTile current_tile_;
     TilingData::Iterator visible_iterator_;

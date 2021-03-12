@@ -9,6 +9,7 @@
 
 #include "base/bind.h"
 #include "base/check.h"
+#include "base/memory/checked_ptr.h"
 #include "media/learning/impl/distribution_reporter.h"
 #include "media/learning/impl/learning_task_controller_impl.h"
 
@@ -99,7 +100,7 @@ class WeakLearningTaskController : public LearningTaskController {
   }
 
   base::WeakPtr<LearningSessionImpl> weak_session_;
-  base::SequenceBound<LearningTaskController>* controller_;
+  CheckedPtr<base::SequenceBound<LearningTaskController>> controller_;
   LearningTask task_;
 
   // Set of ids that have been started but not completed / cancelled yet, and

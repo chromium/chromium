@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/browser/web_ui_controller.h"
 #include "content/public/browser/web_ui_data_source.h"
@@ -46,7 +47,7 @@ class AccessibilityUIObserver : public content::WebContentsObserver {
       const content::AXEventNotificationDetails& details) override;
 
  private:
-  std::vector<std::string>* event_logs_;
+  CheckedPtr<std::vector<std::string>> event_logs_;
 };
 
 // Manages messages sent from accessibility.js via json.

@@ -12,6 +12,7 @@
 #include <vector>
 
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/optional.h"
 #include "base/strings/string_piece_forward.h"
 #include "components/url_pattern_index/closed_hash_map.h"
@@ -124,7 +125,7 @@ class UrlPatternIndexBuilder {
   MutableUrlRuleList fallback_rules_;
 
   // Must outlive this instance.
-  flatbuffers::FlatBufferBuilder* flat_builder_;
+  CheckedPtr<flatbuffers::FlatBufferBuilder> flat_builder_;
 
   DISALLOW_COPY_AND_ASSIGN(UrlPatternIndexBuilder);
 };
