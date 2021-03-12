@@ -9,6 +9,8 @@
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/scoped_feature_list.h"
+#include "components/shared_highlighting/core/common/shared_highlighting_features.h"
 #include "components/shared_highlighting/core/common/shared_highlighting_metrics.h"
 #include "components/ukm/test_ukm_recorder.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
@@ -31,11 +33,21 @@ const char kSuccessUkmMetric[] = "Success";
 const char kErrorUkmMetric[] = "Error";
 }  // namespace
 
-class TextFragmentSelectorGeneratorTest : public SimTest {
+class TextFragmentSelectorGeneratorTest
+    : public SimTest,
+      public ::testing::WithParamInterface<bool> {
  public:
   void SetUp() override {
     SimTest::SetUp();
     WebView().MainFrameViewWidget()->Resize(gfx::Size(800, 600));
+    preemptive_generation_enabled_ = GetParam();
+    if (preemptive_generation_enabled_) {
+      feature_list_.InitAndEnableFeature(
+          shared_highlighting::kPreemptiveLinkToTextGeneration);
+    } else {
+      feature_list_.InitAndDisableFeature(
+          shared_highlighting::kPreemptiveLinkToTextGeneration);
+    }
   }
 
   void VerifySelector(Position selected_start,
@@ -47,7 +59,11 @@ class TextFragmentSelectorGeneratorTest : public SimTest {
     // Should not have logged errors in a success case.
     histogram_tester_.ExpectTotalCount("SharedHighlights.LinkGenerated.Error",
                                        0);
+    histogram_tester_.ExpectTotalCount(
+        "SharedHighlights.LinkGenerated.Error.Requested", 0);
 
+    histogram_tester_.ExpectTotalCount("SharedHighlights.LinkGenerated",
+                                       generate_call_count_);
     auto entries = ukm_recorder()->GetEntriesByName(
         ukm::builders::SharedHighlights_LinkGenerated::kEntryName);
     ASSERT_EQ(1u, entries.size());
@@ -63,9 +79,10 @@ class TextFragmentSelectorGeneratorTest : public SimTest {
     String generated_selector = GenerateSelector(selected_start, selected_end);
     EXPECT_EQ("", generated_selector);
 
+    histogram_tester_.ExpectTotalCount("SharedHighlights.LinkGenerated",
+                                       generate_call_count_);
     histogram_tester_.ExpectBucketCount("SharedHighlights.LinkGenerated.Error",
                                         error, 1);
-
     auto entries = ukm_recorder()->GetEntriesByName(
         ukm::builders::SharedHighlights_LinkGenerated::kEntryName);
     ASSERT_EQ(1u, entries.size());
@@ -77,6 +94,7 @@ class TextFragmentSelectorGeneratorTest : public SimTest {
   }
 
   String GenerateSelector(Position selected_start, Position selected_end) {
+    generate_call_count_++;
     GetDocument()
         .GetFrame()
         ->GetTextFragmentSelectorGenerator()
@@ -103,6 +121,44 @@ class TextFragmentSelectorGeneratorTest : public SimTest {
     return selector;
   }
 
+  void VerifyPreemptiveGenerationMetrics(bool success) {
+    if (!preemptive_generation_enabled_) {
+      histogram_tester_.ExpectTotalCount(
+          "SharedHighlights.LinkGenerated.Error.Requested", 0);
+      histogram_tester_.ExpectTotalCount(
+          "SharedHighlights.LinkGenerated.RequestedAfterReady", 0);
+      histogram_tester_.ExpectTotalCount(
+          "SharedHighlights.LinkGenerated.RequestedBeforeReady", 0);
+    } else {
+      EXPECT_EQ(
+          1u, histogram_tester_
+                      .GetAllSamples(
+                          "SharedHighlights.LinkGenerated.RequestedAfterReady")
+                      .size() +
+                  histogram_tester_
+                      .GetAllSamples(
+                          "SharedHighlights.LinkGenerated.RequestedBeforeReady")
+                      .size());
+
+      if (!success) {
+        histogram_tester_.ExpectTotalCount(
+            "SharedHighlights.LinkGenerated.Error.Requested", 1);
+      } else {
+        histogram_tester_.ExpectTotalCount(
+            "SharedHighlights.LinkGenerated.Error.Requested", 0);
+      }
+    }
+
+    // Check async task metrics.
+    EXPECT_LT(0u, histogram_tester_
+                      .GetAllSamples("SharedHighlights.AsyncTask.Iterations")
+                      .size());
+    EXPECT_LT(0u,
+              histogram_tester_
+                  .GetAllSamples("SharedHighlights.AsyncTask.SearchDuration")
+                  .size());
+  }
+
  protected:
   ukm::TestUkmRecorder* ukm_recorder() {
     return scoped_ukm_recorder_.recorder();
@@ -110,10 +166,13 @@ class TextFragmentSelectorGeneratorTest : public SimTest {
 
   base::HistogramTester histogram_tester_;
   ScopedFakeUkmRecorder scoped_ukm_recorder_;
+  int generate_call_count_ = 0;
+  bool preemptive_generation_enabled_;
+  base::test::ScopedFeatureList feature_list_;
 };
 
 // Basic exact selector case.
-TEST_F(TextFragmentSelectorGeneratorTest, EmptySelection) {
+TEST_P(TextFragmentSelectorGeneratorTest, EmptySelection) {
   SimRequest request("https://example.com/test.html", "text/html");
   LoadURL("https://example.com/test.html");
   request.Complete(R"HTML(
@@ -130,7 +189,7 @@ TEST_F(TextFragmentSelectorGeneratorTest, EmptySelection) {
 }
 
 // Basic exact selector case.
-TEST_F(TextFragmentSelectorGeneratorTest, ExactTextSelector) {
+TEST_P(TextFragmentSelectorGeneratorTest, ExactTextSelector) {
   SimRequest request("https://example.com/test.html", "text/html");
   LoadURL("https://example.com/test.html");
   request.Complete(R"HTML(
@@ -150,7 +209,7 @@ TEST_F(TextFragmentSelectorGeneratorTest, ExactTextSelector) {
 }
 
 // Exact selector test where selection contains nested <i> node.
-TEST_F(TextFragmentSelectorGeneratorTest, ExactTextWithNestedTextNodes) {
+TEST_P(TextFragmentSelectorGeneratorTest, ExactTextWithNestedTextNodes) {
   SimRequest request("https://example.com/test.html", "text/html");
   LoadURL("https://example.com/test.html");
   request.Complete(R"HTML(
@@ -171,7 +230,7 @@ TEST_F(TextFragmentSelectorGeneratorTest, ExactTextWithNestedTextNodes) {
 }
 
 // Exact selector test where selection contains multiple spaces.
-TEST_F(TextFragmentSelectorGeneratorTest, ExactTextWithExtraSpace) {
+TEST_P(TextFragmentSelectorGeneratorTest, ExactTextWithExtraSpace) {
   SimRequest request("https://example.com/test.html", "text/html");
   LoadURL("https://example.com/test.html");
   request.Complete(R"HTML(
@@ -192,7 +251,7 @@ TEST_F(TextFragmentSelectorGeneratorTest, ExactTextWithExtraSpace) {
 
 // Exact selector where selection is too short, in which case context is
 // required.
-TEST_F(TextFragmentSelectorGeneratorTest,
+TEST_P(TextFragmentSelectorGeneratorTest,
        ExactTextSelector_TooShortNeedsContext) {
   SimRequest request("https://example.com/test.html", "text/html");
   LoadURL("https://example.com/test.html");
@@ -214,7 +273,7 @@ TEST_F(TextFragmentSelectorGeneratorTest,
 
 // Exact selector with context test. Case when only one word for prefix and
 // suffix is enough to disambiguate the selection.
-TEST_F(TextFragmentSelectorGeneratorTest,
+TEST_P(TextFragmentSelectorGeneratorTest,
        ExactTextSelector_WithOneWordContext) {
   SimRequest request("https://example.com/test.html", "text/html");
   LoadURL("https://example.com/test.html");
@@ -236,7 +295,7 @@ TEST_F(TextFragmentSelectorGeneratorTest,
 
 // Exact selector with context test. Case when multiple words for prefix and
 // suffix is necessary to disambiguate the selection.
-TEST_F(TextFragmentSelectorGeneratorTest,
+TEST_P(TextFragmentSelectorGeneratorTest,
        ExactTextSelector_MultipleWordContext) {
   SimRequest request("https://example.com/test.html", "text/html");
   LoadURL("https://example.com/test.html");
@@ -260,7 +319,7 @@ TEST_F(TextFragmentSelectorGeneratorTest,
 // Exact selector with context test. Case when multiple words for prefix and
 // suffix is necessary to disambiguate the selection and prefix and suffix
 // contain extra space.
-TEST_F(TextFragmentSelectorGeneratorTest,
+TEST_P(TextFragmentSelectorGeneratorTest,
        ExactTextSelector_MultipleWordContext_ExtraSpace) {
   SimRequest request("https://example.com/test.html", "text/html");
   LoadURL("https://example.com/test.html");
@@ -284,7 +343,7 @@ TEST_F(TextFragmentSelectorGeneratorTest,
 // Exact selector with context test. Case when available prefix for all the
 // occurrences of selected text is the same. In this case suffix should be
 // extended until unique selector is found.
-TEST_F(TextFragmentSelectorGeneratorTest, ExactTextSelector_SamePrefix) {
+TEST_P(TextFragmentSelectorGeneratorTest, ExactTextSelector_SamePrefix) {
   SimRequest request("https://example.com/test.html", "text/html");
   LoadURL("https://example.com/test.html");
   request.Complete(R"HTML(
@@ -307,7 +366,7 @@ TEST_F(TextFragmentSelectorGeneratorTest, ExactTextSelector_SamePrefix) {
 // Exact selector with context test. Case when available suffix for all the
 // occurrences of selected text is the same. In this case prefix should be
 // extended until unique selector is found.
-TEST_F(TextFragmentSelectorGeneratorTest, ExactTextSelector_SameSuffix) {
+TEST_P(TextFragmentSelectorGeneratorTest, ExactTextSelector_SameSuffix) {
   SimRequest request("https://example.com/test.html", "text/html");
   LoadURL("https://example.com/test.html");
   request.Complete(R"HTML(
@@ -330,7 +389,7 @@ TEST_F(TextFragmentSelectorGeneratorTest, ExactTextSelector_SameSuffix) {
 // Exact selector with context test. Case when available prefix and suffix for
 // all the occurrences of selected text are the same. In this case generation
 // should be unsuccessful.
-TEST_F(TextFragmentSelectorGeneratorTest, ExactTextSelector_SamePrefixSuffix) {
+TEST_P(TextFragmentSelectorGeneratorTest, ExactTextSelector_SamePrefixSuffix) {
   SimRequest request("https://example.com/test.html", "text/html");
   LoadURL("https://example.com/test.html");
   request.Complete(R"HTML(
@@ -352,7 +411,7 @@ TEST_F(TextFragmentSelectorGeneratorTest, ExactTextSelector_SamePrefixSuffix) {
 // Exact selector with context test. Case when available prefix and suffix for
 // all the occurrences of selected text are the same for the first 10 words. In
 // this case generation should be unsuccessful.
-TEST_F(TextFragmentSelectorGeneratorTest,
+TEST_P(TextFragmentSelectorGeneratorTest,
        ExactTextSelector_SimilarLongPreffixSuffix) {
   SimRequest request("https://example.com/test.html", "text/html");
   LoadURL("https://example.com/test.html");
@@ -375,7 +434,7 @@ TEST_F(TextFragmentSelectorGeneratorTest,
 }
 
 // Exact selector with context test. Case when no prefix is available.
-TEST_F(TextFragmentSelectorGeneratorTest, ExactTextSelector_NoPrefix) {
+TEST_P(TextFragmentSelectorGeneratorTest, ExactTextSelector_NoPrefix) {
   SimRequest request("https://example.com/test.html", "text/html");
   LoadURL("https://example.com/test.html");
   request.Complete(R"HTML(
@@ -394,7 +453,7 @@ TEST_F(TextFragmentSelectorGeneratorTest, ExactTextSelector_NoPrefix) {
 }
 
 // Exact selector with context test. Case when no suffix is available.
-TEST_F(TextFragmentSelectorGeneratorTest, ExactTextSelector_NoSuffix) {
+TEST_P(TextFragmentSelectorGeneratorTest, ExactTextSelector_NoSuffix) {
   SimRequest request("https://example.com/test.html", "text/html");
   LoadURL("https://example.com/test.html");
   request.Complete(R"HTML(
@@ -416,7 +475,7 @@ TEST_F(TextFragmentSelectorGeneratorTest, ExactTextSelector_NoSuffix) {
 
 // Exact selector with context test. Case when available prefix is the
 // preceding block.
-TEST_F(TextFragmentSelectorGeneratorTest, ExactTextSelector_PrevNodePrefix) {
+TEST_P(TextFragmentSelectorGeneratorTest, ExactTextSelector_PrevNodePrefix) {
   SimRequest request("https://example.com/test.html", "text/html");
   LoadURL("https://example.com/test.html");
   request.Complete(R"HTML(
@@ -437,7 +496,7 @@ TEST_F(TextFragmentSelectorGeneratorTest, ExactTextSelector_PrevNodePrefix) {
 
 // Exact selector with context test. Case when available prefix is the
 // preceding block, which is a text node.
-TEST_F(TextFragmentSelectorGeneratorTest,
+TEST_P(TextFragmentSelectorGeneratorTest,
        ExactTextSelector_PrevTextNodePrefix) {
   SimRequest request("https://example.com/test.html", "text/html");
   LoadURL("https://example.com/test.html");
@@ -460,7 +519,7 @@ TEST_F(TextFragmentSelectorGeneratorTest,
 
 // Exact selector with context test. Case when available suffix is the next
 // block.
-TEST_F(TextFragmentSelectorGeneratorTest, ExactTextSelector_NextNodeSuffix) {
+TEST_P(TextFragmentSelectorGeneratorTest, ExactTextSelector_NextNodeSuffix) {
   SimRequest request("https://example.com/test.html", "text/html");
   LoadURL("https://example.com/test.html");
   request.Complete(R"HTML(
@@ -482,7 +541,7 @@ TEST_F(TextFragmentSelectorGeneratorTest, ExactTextSelector_NextNodeSuffix) {
 
 // Exact selector with context test. Case when available suffix is the next
 // block, which is a text node.
-TEST_F(TextFragmentSelectorGeneratorTest,
+TEST_P(TextFragmentSelectorGeneratorTest,
        ExactTextSelector_NexttextNodeSuffix) {
   SimRequest request("https://example.com/test.html", "text/html");
   LoadURL("https://example.com/test.html");
@@ -503,7 +562,7 @@ TEST_F(TextFragmentSelectorGeneratorTest,
                  "First%20paragraph%20with-,not%20unique%20snippet,-text");
 }
 
-TEST_F(TextFragmentSelectorGeneratorTest, RangeSelector) {
+TEST_P(TextFragmentSelectorGeneratorTest, RangeSelector) {
   SimRequest request("https://example.com/test.html", "text/html");
   LoadURL("https://example.com/test.html");
   request.Complete(R"HTML(
@@ -525,7 +584,7 @@ TEST_F(TextFragmentSelectorGeneratorTest, RangeSelector) {
 
 // It should be more than 300 characters selected from the same node so that
 // ranges are used.
-TEST_F(TextFragmentSelectorGeneratorTest, RangeSelector_SameNode) {
+TEST_P(TextFragmentSelectorGeneratorTest, RangeSelector_SameNode) {
   SimRequest request("https://example.com/test.html", "text/html");
   LoadURL("https://example.com/test.html");
   request.Complete(R"HTML(
@@ -554,7 +613,7 @@ text text text text text text text text text and last text",
 
 // It should be more than 300 characters selected from the same node so that
 // ranges are used.
-TEST_F(TextFragmentSelectorGeneratorTest,
+TEST_P(TextFragmentSelectorGeneratorTest,
        RangeSelector_SameNode_MultipleSelections) {
   SimRequest request("https://example.com/test.html", "text/html");
   LoadURL("https://example.com/test.html");
@@ -604,7 +663,7 @@ text text text text text text text text text text and last text",
 
 // When using all the selected text for the range is not enough for unique
 // match, context should be added.
-TEST_F(TextFragmentSelectorGeneratorTest, RangeSelector_RangeNotUnique) {
+TEST_P(TextFragmentSelectorGeneratorTest, RangeSelector_RangeNotUnique) {
   SimRequest request("https://example.com/test.html", "text/html");
   LoadURL("https://example.com/test.html");
   request.Complete(R"HTML(
@@ -626,7 +685,7 @@ TEST_F(TextFragmentSelectorGeneratorTest, RangeSelector_RangeNotUnique) {
 
 // When using all the selected text for the range is not enough for unique
 // match, context should be added, but only prefxi and no suffix is available.
-TEST_F(TextFragmentSelectorGeneratorTest,
+TEST_P(TextFragmentSelectorGeneratorTest,
        RangeSelector_RangeNotUnique_NoSuffix) {
   SimRequest request("https://example.com/test.html", "text/html");
   LoadURL("https://example.com/test.html");
@@ -649,7 +708,7 @@ TEST_F(TextFragmentSelectorGeneratorTest,
 // When no range end is available it should return empty selector.
 // There is no range end available because there is no word break in the second
 // half of the selection.
-TEST_F(TextFragmentSelectorGeneratorTest, RangeSelector_NoRangeEnd) {
+TEST_P(TextFragmentSelectorGeneratorTest, RangeSelector_NoRangeEnd) {
   SimRequest request("https://example.com/test.html", "text/html");
   LoadURL("https://example.com/test.html");
   request.Complete(R"HTML(
@@ -675,7 +734,7 @@ text_text_text_text_text_text_text_text_text_and_last_text",
 }
 
 // Selection should be autocompleted to contain full words.
-TEST_F(TextFragmentSelectorGeneratorTest, WordLimit) {
+TEST_P(TextFragmentSelectorGeneratorTest, WordLimit) {
   SimRequest request("https://example.com/test.html", "text/html");
   LoadURL("https://example.com/test.html");
   request.Complete(R"HTML(
@@ -695,7 +754,7 @@ TEST_F(TextFragmentSelectorGeneratorTest, WordLimit) {
 
 // Selection should be autocompleted to contain full words. The autocompletion
 // should work with extra spaces.
-TEST_F(TextFragmentSelectorGeneratorTest, WordLimit_ExtraSpaces) {
+TEST_P(TextFragmentSelectorGeneratorTest, WordLimit_ExtraSpaces) {
   SimRequest request("https://example.com/test.html", "text/html");
   LoadURL("https://example.com/test.html");
   request.Complete(R"HTML(
@@ -717,7 +776,7 @@ TEST_F(TextFragmentSelectorGeneratorTest, WordLimit_ExtraSpaces) {
 
 // When selection starts at the end of a word, selection shouldn't be
 // autocompleted to contain extra words.
-TEST_F(TextFragmentSelectorGeneratorTest,
+TEST_P(TextFragmentSelectorGeneratorTest,
        WordLimit_SelectionStartsAndEndsAtWordLimit) {
   SimRequest request("https://example.com/test.html", "text/html");
   LoadURL("https://example.com/test.html");
@@ -737,7 +796,7 @@ TEST_F(TextFragmentSelectorGeneratorTest,
 }
 
 // Check the case when selections starts with an non text node.
-TEST_F(TextFragmentSelectorGeneratorTest, StartsWithImage) {
+TEST_P(TextFragmentSelectorGeneratorTest, StartsWithImage) {
   SimRequest request("https://example.com/test.html", "text/html");
   LoadURL("https://example.com/test.html");
   request.Complete(R"HTML(
@@ -756,7 +815,7 @@ TEST_F(TextFragmentSelectorGeneratorTest, StartsWithImage) {
 }
 
 // Check the case when selections starts with an non text node.
-TEST_F(TextFragmentSelectorGeneratorTest, StartsWithBlockWithImage) {
+TEST_P(TextFragmentSelectorGeneratorTest, StartsWithBlockWithImage) {
   SimRequest request("https://example.com/test.html", "text/html");
   LoadURL("https://example.com/test.html");
   request.Complete(R"HTML(
@@ -778,7 +837,7 @@ TEST_F(TextFragmentSelectorGeneratorTest, StartsWithBlockWithImage) {
 
 // Check the case when selections starts with a node nested in "inline-block"
 // node. crbug.com/1151474
-TEST_F(TextFragmentSelectorGeneratorTest, StartsWithInlineBlockChild) {
+TEST_P(TextFragmentSelectorGeneratorTest, StartsWithInlineBlockChild) {
   SimRequest request("https://example.com/test.html", "text/html");
   LoadURL("https://example.com/test.html");
   request.Complete(R"HTML(
@@ -814,7 +873,7 @@ TEST_F(TextFragmentSelectorGeneratorTest, StartsWithInlineBlockChild) {
 }
 
 // Check the case when selections ends with an non text node.
-TEST_F(TextFragmentSelectorGeneratorTest, EndswithImage) {
+TEST_P(TextFragmentSelectorGeneratorTest, EndswithImage) {
   SimRequest request("https://example.com/test.html", "text/html");
   LoadURL("https://example.com/test.html");
   request.Complete(R"HTML(
@@ -834,7 +893,7 @@ TEST_F(TextFragmentSelectorGeneratorTest, EndswithImage) {
 }
 
 // Check the case when selections starts at the end of the previous block.
-TEST_F(TextFragmentSelectorGeneratorTest, StartIsEndofPrevBlock) {
+TEST_P(TextFragmentSelectorGeneratorTest, StartIsEndofPrevBlock) {
   SimRequest request("https://example.com/test.html", "text/html");
   LoadURL("https://example.com/test.html");
   request.Complete(R"HTML(
@@ -852,7 +911,7 @@ TEST_F(TextFragmentSelectorGeneratorTest, StartIsEndofPrevBlock) {
 }
 
 // Check the case when selections starts at the end of the previous block.
-TEST_F(TextFragmentSelectorGeneratorTest, EndIsStartofNextBlock) {
+TEST_P(TextFragmentSelectorGeneratorTest, EndIsStartofNextBlock) {
   SimRequest request("https://example.com/test.html", "text/html");
   LoadURL("https://example.com/test.html");
   request.Complete(R"HTML(
@@ -882,7 +941,7 @@ TEST_F(TextFragmentSelectorGeneratorTest, EndIsStartofNextBlock) {
 // want to ensure it correctly traverses the tree back to the previous text node
 // and not to the <div>(sibling of second <p>).
 // See crbug.com/1154308 for more context.
-TEST_F(TextFragmentSelectorGeneratorTest, PrevNodeIsSiblingsChild) {
+TEST_P(TextFragmentSelectorGeneratorTest, PrevNodeIsSiblingsChild) {
   SimRequest request("https://example.com/test.html", "text/html");
   LoadURL("https://example.com/test.html");
 
@@ -916,7 +975,7 @@ TEST_F(TextFragmentSelectorGeneratorTest, PrevNodeIsSiblingsChild) {
 // want to ensure it correctly traverses the tree back to the previous text by
 // correctly skipping the invisible div but not skipping the second <p>.
 // See crbug.com/1154308 for more context.
-TEST_F(TextFragmentSelectorGeneratorTest, PrevPrevNodeIsSiblingsChild) {
+TEST_P(TextFragmentSelectorGeneratorTest, PrevPrevNodeIsSiblingsChild) {
   SimRequest request("https://example.com/test.html", "text/html");
   LoadURL("https://example.com/test.html");
   // HTML is intentionally not formatted. Adding new lines and indentation
@@ -937,7 +996,7 @@ TEST_F(TextFragmentSelectorGeneratorTest, PrevPrevNodeIsSiblingsChild) {
 
 // Checks that for short selection that have nested block element range selector
 // is used.
-TEST_F(TextFragmentSelectorGeneratorTest, RangeSelector_SameNode_Interrupted) {
+TEST_P(TextFragmentSelectorGeneratorTest, RangeSelector_SameNode_Interrupted) {
   SimRequest request("https://example.com/test.html", "text/html");
   LoadURL("https://example.com/test.html");
   request.Complete(R"HTML(
@@ -954,7 +1013,7 @@ TEST_F(TextFragmentSelectorGeneratorTest, RangeSelector_SameNode_Interrupted) {
 }
 
 // Check min number of words is used for context if possible.
-TEST_F(TextFragmentSelectorGeneratorTest, MultiwordContext) {
+TEST_P(TextFragmentSelectorGeneratorTest, MultiwordContext) {
   SimRequest request("https://example.com/test.html", "text/html");
   LoadURL("https://example.com/test.html");
   request.Complete(R"HTML(
@@ -974,7 +1033,7 @@ TEST_F(TextFragmentSelectorGeneratorTest, MultiwordContext) {
 }
 
 // Check min number of words is used for range if possible.
-TEST_F(TextFragmentSelectorGeneratorTest, MultiWordRangeSelector) {
+TEST_P(TextFragmentSelectorGeneratorTest, MultiWordRangeSelector) {
   SimRequest request("https://example.com/test.html", "text/html");
   LoadURL("https://example.com/test.html");
   request.Complete(R"HTML(
@@ -995,7 +1054,7 @@ TEST_F(TextFragmentSelectorGeneratorTest, MultiWordRangeSelector) {
 }
 
 // Checks the case when selection end position is a non text node.
-TEST_F(TextFragmentSelectorGeneratorTest, SelectionEndsWithNonText) {
+TEST_P(TextFragmentSelectorGeneratorTest, SelectionEndsWithNonText) {
   SimRequest request("https://example.com/test.html", "text/html");
   LoadURL("https://example.com/test.html");
   request.Complete(R"HTML(
@@ -1017,7 +1076,7 @@ TEST_F(TextFragmentSelectorGeneratorTest, SelectionEndsWithNonText) {
 
 // Checks the case when selection end position is a non text node which doesn't
 // have text child node.
-TEST_F(TextFragmentSelectorGeneratorTest,
+TEST_P(TextFragmentSelectorGeneratorTest,
        SelectionEndsWithNonTextWithNoTextChild) {
   SimRequest request("https://example.com/test.html", "text/html");
   LoadURL("https://example.com/test.html");
@@ -1040,7 +1099,7 @@ TEST_F(TextFragmentSelectorGeneratorTest,
 
 // Checks the case when selection end position is a non text node which doesn't
 // have text child node.
-TEST_F(TextFragmentSelectorGeneratorTest, SelectionEndsWithImageDiv) {
+TEST_P(TextFragmentSelectorGeneratorTest, SelectionEndsWithImageDiv) {
   SimRequest request("https://example.com/test.html", "text/html");
   LoadURL("https://example.com/test.html");
   request.Complete(R"HTML(
@@ -1062,7 +1121,7 @@ TEST_F(TextFragmentSelectorGeneratorTest, SelectionEndsWithImageDiv) {
 
 // Checks the case when selected range contains a range with same start and end.
 // The problematic case should have both range end and suffix.
-TEST_F(TextFragmentSelectorGeneratorTest, OverlappingRange) {
+TEST_P(TextFragmentSelectorGeneratorTest, OverlappingRange) {
   SimRequest request("https://example.com/test.html", "text/html");
   LoadURL("https://example.com/test.html");
   request.Complete(R"HTML(
@@ -1080,7 +1139,7 @@ TEST_F(TextFragmentSelectorGeneratorTest, OverlappingRange) {
 }
 
 // Checks selection across table cells.
-TEST_F(TextFragmentSelectorGeneratorTest, Table) {
+TEST_P(TextFragmentSelectorGeneratorTest, Table) {
   SimRequest request("https://example.com/test.html", "text/html");
   LoadURL("https://example.com/test.html");
   request.Complete(R"HTML(
@@ -1109,7 +1168,7 @@ TEST_F(TextFragmentSelectorGeneratorTest, Table) {
 }
 
 // Checks selection across an input element.
-TEST_F(TextFragmentSelectorGeneratorTest, Input) {
+TEST_P(TextFragmentSelectorGeneratorTest, Input) {
   SimRequest request("https://example.com/test.html", "text/html");
   LoadURL("https://example.com/test.html");
   request.Complete(R"HTML(
@@ -1128,7 +1187,7 @@ TEST_F(TextFragmentSelectorGeneratorTest, Input) {
 }
 
 // Basic test case for |GetNextTextBlock|.
-TEST_F(TextFragmentSelectorGeneratorTest, GetPreviousTextBlock) {
+TEST_P(TextFragmentSelectorGeneratorTest, GetPreviousTextBlock) {
   SimRequest request("https://example.com/test.html", "text/html");
   LoadURL("https://example.com/test.html");
   request.Complete(R"HTML(
@@ -1147,7 +1206,7 @@ TEST_F(TextFragmentSelectorGeneratorTest, GetPreviousTextBlock) {
 }
 
 // Check the case when available prefix contains collapsible space.
-TEST_F(TextFragmentSelectorGeneratorTest, GetPreviousTextBlock_ExtraSpace) {
+TEST_P(TextFragmentSelectorGeneratorTest, GetPreviousTextBlock_ExtraSpace) {
   SimRequest request("https://example.com/test.html", "text/html");
   LoadURL("https://example.com/test.html");
   request.Complete(R"HTML(
@@ -1169,7 +1228,7 @@ TEST_F(TextFragmentSelectorGeneratorTest, GetPreviousTextBlock_ExtraSpace) {
 
 // Check the case when available prefix complete text content of the previous
 // block.
-TEST_F(TextFragmentSelectorGeneratorTest, GetPreviousTextBlock_PrevNode) {
+TEST_P(TextFragmentSelectorGeneratorTest, GetPreviousTextBlock_PrevNode) {
   SimRequest request("https://example.com/test.html", "text/html");
   LoadURL("https://example.com/test.html");
   request.Complete(R"HTML(
@@ -1191,7 +1250,7 @@ TEST_F(TextFragmentSelectorGeneratorTest, GetPreviousTextBlock_PrevNode) {
 
 // Check the case when there is a commented block between selection and the
 // available prefix.
-TEST_F(TextFragmentSelectorGeneratorTest,
+TEST_P(TextFragmentSelectorGeneratorTest,
        GetPreviousTextBlock_PrevNode_WithComment) {
   SimRequest request("https://example.com/test.html", "text/html");
   LoadURL("https://example.com/test.html");
@@ -1217,7 +1276,7 @@ TEST_F(TextFragmentSelectorGeneratorTest,
 
 // Check the case when available prefix is a text node outside of selection
 // block.
-TEST_F(TextFragmentSelectorGeneratorTest, GetPreviousTextBlock_PrevTextNode) {
+TEST_P(TextFragmentSelectorGeneratorTest, GetPreviousTextBlock_PrevTextNode) {
   SimRequest request("https://example.com/test.html", "text/html");
   LoadURL("https://example.com/test.html");
   request.Complete(R"HTML(
@@ -1238,7 +1297,7 @@ TEST_F(TextFragmentSelectorGeneratorTest, GetPreviousTextBlock_PrevTextNode) {
 
 // Check the case when available prefix is a parent node text content outside of
 // selection block.
-TEST_F(TextFragmentSelectorGeneratorTest, GetPreviousTextBlock_ParentNode) {
+TEST_P(TextFragmentSelectorGeneratorTest, GetPreviousTextBlock_ParentNode) {
   SimRequest request("https://example.com/test.html", "text/html");
   LoadURL("https://example.com/test.html");
   request.Complete(R"HTML(
@@ -1258,7 +1317,7 @@ TEST_F(TextFragmentSelectorGeneratorTest, GetPreviousTextBlock_ParentNode) {
 }
 
 // Check the case when available prefix contains non-block tag(e.g. <b>).
-TEST_F(TextFragmentSelectorGeneratorTest, GetPreviousTextBlock_NestedTextNode) {
+TEST_P(TextFragmentSelectorGeneratorTest, GetPreviousTextBlock_NestedTextNode) {
   SimRequest request("https://example.com/test.html", "text/html");
   LoadURL("https://example.com/test.html");
   request.Complete(R"HTML(
@@ -1278,7 +1337,7 @@ TEST_F(TextFragmentSelectorGeneratorTest, GetPreviousTextBlock_NestedTextNode) {
 }
 
 // Check the case when available prefix is collected until nested block.
-TEST_F(TextFragmentSelectorGeneratorTest, GetPreviousTextBlock_NestedBlock) {
+TEST_P(TextFragmentSelectorGeneratorTest, GetPreviousTextBlock_NestedBlock) {
   SimRequest request("https://example.com/test.html", "text/html");
   LoadURL("https://example.com/test.html");
   request.Complete(R"HTML(
@@ -1298,7 +1357,7 @@ TEST_F(TextFragmentSelectorGeneratorTest, GetPreviousTextBlock_NestedBlock) {
 
 // Check the case when available prefix includes non-block element but stops at
 // nested block.
-TEST_F(TextFragmentSelectorGeneratorTest,
+TEST_P(TextFragmentSelectorGeneratorTest,
        GetPreviousTextBlock_NestedBlockInNestedText) {
   SimRequest request("https://example.com/test.html", "text/html");
   LoadURL("https://example.com/test.html");
@@ -1318,7 +1377,7 @@ TEST_F(TextFragmentSelectorGeneratorTest,
 }
 
 // Check the case when available prefix includes invisible block.
-TEST_F(TextFragmentSelectorGeneratorTest,
+TEST_P(TextFragmentSelectorGeneratorTest,
        GetPreviousTextBlock_NestedInvisibleBlock) {
   SimRequest request("https://example.com/test.html", "text/html");
   LoadURL("https://example.com/test.html");
@@ -1339,7 +1398,7 @@ TEST_F(TextFragmentSelectorGeneratorTest,
 
 // Check the case when previous node is used for available prefix when selection
 // is not at index=0 but there is only space before it.
-TEST_F(TextFragmentSelectorGeneratorTest,
+TEST_P(TextFragmentSelectorGeneratorTest,
        GetPreviousTextBlock_SpacesBeforeSelection) {
   SimRequest request("https://example.com/test.html", "text/html");
   LoadURL("https://example.com/test.html");
@@ -1364,7 +1423,7 @@ TEST_F(TextFragmentSelectorGeneratorTest,
 
 // Check the case when previous node is used for available prefix when selection
 // is not at index=0 but there is only invisible block.
-TEST_F(TextFragmentSelectorGeneratorTest,
+TEST_P(TextFragmentSelectorGeneratorTest,
        GetPreviousTextBlock_InvisibleBeforeSelection) {
   SimRequest request("https://example.com/test.html", "text/html");
   LoadURL("https://example.com/test.html");
@@ -1394,7 +1453,7 @@ TEST_F(TextFragmentSelectorGeneratorTest,
 // Similar test for suffix.
 
 // Basic test case for |GetNextTextBlock|.
-TEST_F(TextFragmentSelectorGeneratorTest, GetNextTextBlock) {
+TEST_P(TextFragmentSelectorGeneratorTest, GetNextTextBlock) {
   SimRequest request("https://example.com/test.html", "text/html");
   LoadURL("https://example.com/test.html");
   request.Complete(R"HTML(
@@ -1413,7 +1472,7 @@ TEST_F(TextFragmentSelectorGeneratorTest, GetNextTextBlock) {
 }
 
 // Check the case when available suffix contains collapsible space.
-TEST_F(TextFragmentSelectorGeneratorTest, GetNextTextBlock_ExtraSpace) {
+TEST_P(TextFragmentSelectorGeneratorTest, GetNextTextBlock_ExtraSpace) {
   SimRequest request("https://example.com/test.html", "text/html");
   LoadURL("https://example.com/test.html");
   request.Complete(R"HTML(
@@ -1436,7 +1495,7 @@ TEST_F(TextFragmentSelectorGeneratorTest, GetNextTextBlock_ExtraSpace) {
 
 // Check the case when available suffix is complete text content of the next
 // block.
-TEST_F(TextFragmentSelectorGeneratorTest, GetNextTextBlock_NextNode) {
+TEST_P(TextFragmentSelectorGeneratorTest, GetNextTextBlock_NextNode) {
   SimRequest request("https://example.com/test.html", "text/html");
   LoadURL("https://example.com/test.html");
   request.Complete(R"HTML(
@@ -1457,7 +1516,7 @@ TEST_F(TextFragmentSelectorGeneratorTest, GetNextTextBlock_NextNode) {
 
 // Check the case when there is a commented block between selection and the
 // available suffix.
-TEST_F(TextFragmentSelectorGeneratorTest,
+TEST_P(TextFragmentSelectorGeneratorTest,
        GetNextTextBlock_NextNode_WithComment) {
   SimRequest request("https://example.com/test.html", "text/html");
   LoadURL("https://example.com/test.html");
@@ -1482,7 +1541,7 @@ TEST_F(TextFragmentSelectorGeneratorTest,
 
 // Check the case when available suffix is a text node outside of selection
 // block.
-TEST_F(TextFragmentSelectorGeneratorTest, GetNextTextBlock_NextTextNode) {
+TEST_P(TextFragmentSelectorGeneratorTest, GetNextTextBlock_NextTextNode) {
   SimRequest request("https://example.com/test.html", "text/html");
   LoadURL("https://example.com/test.html");
   request.Complete(R"HTML(
@@ -1503,7 +1562,7 @@ TEST_F(TextFragmentSelectorGeneratorTest, GetNextTextBlock_NextTextNode) {
 
 // Check the case when available suffix is a parent node text content outside of
 // selection block.
-TEST_F(TextFragmentSelectorGeneratorTest, GetNextTextBlock_ParentNode) {
+TEST_P(TextFragmentSelectorGeneratorTest, GetNextTextBlock_ParentNode) {
   SimRequest request("https://example.com/test.html", "text/html");
   LoadURL("https://example.com/test.html");
   request.Complete(R"HTML(
@@ -1522,7 +1581,7 @@ TEST_F(TextFragmentSelectorGeneratorTest, GetNextTextBlock_ParentNode) {
 }
 
 // Check the case when available suffix contains non-block tag(e.g. <b>).
-TEST_F(TextFragmentSelectorGeneratorTest, GetNextTextBlock_NestedTextNode) {
+TEST_P(TextFragmentSelectorGeneratorTest, GetNextTextBlock_NestedTextNode) {
   SimRequest request("https://example.com/test.html", "text/html");
   LoadURL("https://example.com/test.html");
   request.Complete(R"HTML(
@@ -1541,7 +1600,7 @@ TEST_F(TextFragmentSelectorGeneratorTest, GetNextTextBlock_NestedTextNode) {
 }
 
 // Check the case when available suffix is collected until nested block.
-TEST_F(TextFragmentSelectorGeneratorTest, GetNextTextBlock_NestedBlock) {
+TEST_P(TextFragmentSelectorGeneratorTest, GetNextTextBlock_NestedBlock) {
   SimRequest request("https://example.com/test.html", "text/html");
   LoadURL("https://example.com/test.html");
   request.Complete(R"HTML(
@@ -1561,7 +1620,7 @@ TEST_F(TextFragmentSelectorGeneratorTest, GetNextTextBlock_NestedBlock) {
 
 // Check the case when available suffix includes non-block element but stops at
 // nested block.
-TEST_F(TextFragmentSelectorGeneratorTest,
+TEST_P(TextFragmentSelectorGeneratorTest,
        GetNextTextBlock_NestedBlockInNestedText) {
   SimRequest request("https://example.com/test.html", "text/html");
   LoadURL("https://example.com/test.html");
@@ -1581,7 +1640,7 @@ TEST_F(TextFragmentSelectorGeneratorTest,
 }
 
 // Check the case when available suffix includes invisible block.
-TEST_F(TextFragmentSelectorGeneratorTest,
+TEST_P(TextFragmentSelectorGeneratorTest,
        GetNextTextBlock_NestedInvisibleBlock) {
   SimRequest request("https://example.com/test.html", "text/html");
   LoadURL("https://example.com/test.html");
@@ -1602,7 +1661,7 @@ TEST_F(TextFragmentSelectorGeneratorTest,
 
 // Check the case when next node is used for available suffix when selection is
 // not at last index but there is only space after it.
-TEST_F(TextFragmentSelectorGeneratorTest,
+TEST_P(TextFragmentSelectorGeneratorTest,
        GetNextTextBlock_SpacesAfterSelection) {
   SimRequest request("https://example.com/test.html", "text/html");
   LoadURL("https://example.com/test.html");
@@ -1628,7 +1687,7 @@ TEST_F(TextFragmentSelectorGeneratorTest,
 
 // Check the case when next node is used for available suffix when selection is
 // not at last index but there is only invisible block after it.
-TEST_F(TextFragmentSelectorGeneratorTest,
+TEST_P(TextFragmentSelectorGeneratorTest,
        GetNextTextBlock_InvisibleAfterSelection) {
   SimRequest request("https://example.com/test.html", "text/html");
   LoadURL("https://example.com/test.html");
@@ -1658,7 +1717,7 @@ TEST_F(TextFragmentSelectorGeneratorTest,
 // Check the case when previous node is used for available prefix when selection
 // is not at last index but there is only invisible block. Invisible block
 // contains another block which also should be invisible.
-TEST_F(TextFragmentSelectorGeneratorTest,
+TEST_P(TextFragmentSelectorGeneratorTest,
        GetNextTextBlock_InvisibleAfterSelection_WithNestedInvisible) {
   SimRequest request("https://example.com/test.html", "text/html");
   LoadURL("https://example.com/test.html");
@@ -1695,4 +1754,50 @@ TEST_F(TextFragmentSelectorGeneratorTest,
                                          ->GetNextTextBlockForTesting(end));
 }
 
+TEST_P(TextFragmentSelectorGeneratorTest, CheckMetrics_Success) {
+  base::test::ScopedFeatureList feature_list;
+  // Basic exact selector case.
+  SimRequest request("https://example.com/test.html", "text/html");
+  LoadURL("https://example.com/test.html");
+  request.Complete(R"HTML(
+    <!DOCTYPE html>
+    <div>Test page</div>
+    <p id='first'>First paragraph text that is longer than 20 chars</p>
+    <p id='second'>Second paragraph text</p>
+  )HTML");
+  Node* first_paragraph = GetDocument().getElementById("first")->firstChild();
+  const auto& selected_start = Position(first_paragraph, 0);
+  const auto& selected_end = Position(first_paragraph, 28);
+  ASSERT_EQ("First paragraph text that is",
+            PlainText(EphemeralRange(selected_start, selected_end)));
+
+  VerifySelector(selected_start, selected_end,
+                 "First%20paragraph%20text%20that%20is");
+  VerifyPreemptiveGenerationMetrics(true);
+}
+
+TEST_P(TextFragmentSelectorGeneratorTest, CheckMetrics_Failure) {
+  SimRequest request("https://example.com/test.html", "text/html");
+  LoadURL("https://example.com/test.html");
+  request.Complete(R"HTML(
+    <!DOCTYPE html>
+    <div>Test page</div>
+    <p id='first'>First paragraph prefix one two three four five six seven
+     eight nine ten to not unique snippet of text followed by suffix</p>
+    <p id='second'>Second paragraph prefix one two three four five six seven
+     eight nine ten to not unique snippet of text followed by suffix</p>
+  )HTML");
+  Node* first_paragraph = GetDocument().getElementById("first")->firstChild();
+  const auto& selected_start = Position(first_paragraph, 80);
+  const auto& selected_end = Position(first_paragraph, 106);
+  ASSERT_EQ("not unique snippet of text",
+            PlainText(EphemeralRange(selected_start, selected_end)));
+  VerifySelectorFails(selected_start, selected_end,
+                      LinkGenerationError::kContextLimitReached);
+  VerifyPreemptiveGenerationMetrics(false);
+}
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         TextFragmentSelectorGeneratorTest,
+                         ::testing::Bool());
 }  // namespace blink
