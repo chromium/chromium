@@ -37,7 +37,6 @@ import org.chromium.chrome.browser.bookmarks.BookmarkBridge;
 import org.chromium.chrome.browser.compositor.layouts.OverviewModeBehavior;
 import org.chromium.chrome.browser.enterprise.util.ManagedBrowserUtils;
 import org.chromium.chrome.browser.enterprise.util.ManagedBrowserUtilsJni;
-import org.chromium.chrome.browser.feed.webfeed.WebFeedBridge;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.multiwindow.MultiWindowModeStateDispatcher;
 import org.chromium.chrome.browser.preferences.Pref;
@@ -67,7 +66,6 @@ import java.util.List;
  * Unit tests for {@link TabbedAppMenuPropertiesDelegate}.
  */
 @RunWith(BaseRobolectricTestRunner.class)
-@Features.EnableFeatures({ChromeFeatureList.WEB_FEED})
 public class TabbedAppMenuPropertiesDelegateUnitTest {
     @Rule
     public JniMocker jniMocker = new JniMocker();
@@ -109,8 +107,6 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
     private PrefService mPrefServiceMock;
     @Mock
     private ContentFeatureListImpl.Natives mContentFeatureListJniMock;
-    @Mock
-    private WebFeedBridge mWebFeedBridge;
 
     private OneshotSupplierImpl<OverviewModeBehavior> mOverviewModeSupplier =
             new OneshotSupplierImpl<>();
@@ -141,13 +137,12 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
         when(mContentFeatureListJniMock.isEnabled(
                      ContentFeatureList.EXPERIMENTAL_ACCESSIBILITY_LABELS))
                 .thenReturn(false);
-        when(mWebFeedBridge.getFollowedIds(any())).thenReturn(null);
         FeatureList.setTestCanUseDefaultsForTesting();
 
         mTabbedAppMenuPropertiesDelegate = Mockito.spy(new TabbedAppMenuPropertiesDelegate(
                 ContextUtils.getApplicationContext(), mActivityTabProvider,
                 mMultiWindowModeStateDispatcher, mTabModelSelector, mToolbarManager, mDecorView,
-                mAppMenuDelegate, mOverviewModeSupplier, mBookmarkBridgeSupplier, mWebFeedBridge));
+                mAppMenuDelegate, mOverviewModeSupplier, mBookmarkBridgeSupplier));
     }
 
     @Test
@@ -176,9 +171,9 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
                 R.id.new_incognito_tab_menu_id, R.id.divider_line_id, R.id.open_history_menu_id,
                 R.id.downloads_row_menu_id, R.id.all_bookmarks_row_menu_id,
                 R.id.recent_tabs_menu_id, R.id.divider_line_id, R.id.translate_id,
-                R.id.share_row_menu_id, R.id.feed_follow_id, R.id.find_in_page_id,
-                R.id.add_to_homescreen_id, R.id.request_desktop_site_row_menu_id,
-                R.id.divider_line_id, R.id.preferences_id, R.id.help_id, R.id.managed_by_menu_id};
+                R.id.share_row_menu_id, R.id.find_in_page_id, R.id.add_to_homescreen_id,
+                R.id.request_desktop_site_row_menu_id, R.id.divider_line_id, R.id.preferences_id,
+                R.id.help_id, R.id.managed_by_menu_id};
         assertMenuItemsAreEqual(menu, expectedItems);
     }
 

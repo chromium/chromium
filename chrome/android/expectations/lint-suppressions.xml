@@ -264,6 +264,8 @@ https://chromium.googlesource.com/chromium/src/+/master/build/android/docs/lint.
     <ignore regexp="The resource `R.string.price_drop_alerts_card_get_notified` appears to be unused"/>
     <ignore regexp="The resource `R.string.price_drop_alerts_card_go_to_settings_content` appears to be unused"/>
     <ignore regexp="The resource `R.string.price_drop_alerts_card_go_to_settings` appears to be unused"/>
+    <!-- 1: Temporarily suppressed until replaced by new implementation, see https://crbug.com/1152592. -->
+    <ignore regexp="The resource `R.string.menu_following` appears to be unused"/>
     <!-- Endnote: Please specify number of suppressions when adding more -->
   </issue>
   <issue id="VectorPath" severity="ignore"/>

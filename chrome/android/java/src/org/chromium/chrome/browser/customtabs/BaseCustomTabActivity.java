@@ -40,7 +40,6 @@ import org.chromium.chrome.browser.customtabs.dependency_injection.BaseCustomTab
 import org.chromium.chrome.browser.customtabs.dependency_injection.BaseCustomTabActivityModule;
 import org.chromium.chrome.browser.customtabs.features.toolbar.CustomTabToolbarCoordinator;
 import org.chromium.chrome.browser.dependency_injection.ChromeActivityCommonsModule;
-import org.chromium.chrome.browser.feed.webfeed.WebFeedBridge;
 import org.chromium.chrome.browser.flags.ActivityType;
 import org.chromium.chrome.browser.night_mode.NightModeStateProvider;
 import org.chromium.chrome.browser.night_mode.PowerSavingModeMonitor;
@@ -349,7 +348,7 @@ public abstract class BaseCustomTabActivity extends ChromeActivity<BaseCustomTab
                 mIntentDataProvider.shouldShowShareMenuItem(),
                 mIntentDataProvider.shouldShowStarButton(),
                 mIntentDataProvider.shouldShowDownloadButton(), mIntentDataProvider.isIncognito(),
-                new WebFeedBridge(), mIntentDataProvider.shouldShowOpenInChromeMenuItem());
+                mIntentDataProvider.shouldShowOpenInChromeMenuItem());
     }
 
     @Override

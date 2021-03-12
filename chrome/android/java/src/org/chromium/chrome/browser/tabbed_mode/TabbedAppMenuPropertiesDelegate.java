@@ -17,7 +17,6 @@ import org.chromium.chrome.browser.compositor.layouts.OverviewModeBehavior;
 import org.chromium.chrome.browser.datareduction.DataReductionMainMenuItem;
 import org.chromium.chrome.browser.enterprise.util.ManagedBrowserUtils;
 import org.chromium.chrome.browser.feed.shared.FeedFeatures;
-import org.chromium.chrome.browser.feed.webfeed.WebFeedBridge;
 import org.chromium.chrome.browser.feed.webfeed.WebFeedMainMenuItem;
 import org.chromium.chrome.browser.flags.CachedFeatureFlags;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -42,11 +41,9 @@ public class TabbedAppMenuPropertiesDelegate extends AppMenuPropertiesDelegateIm
             TabModelSelector tabModelSelector, ToolbarManager toolbarManager, View decorView,
             AppMenuDelegate appMenuDelegate,
             OneshotSupplier<OverviewModeBehavior> overviewModeBehaviorSupplier,
-            ObservableSupplier<BookmarkBridge> bookmarkBridgeSupplier,
-            WebFeedBridge webFeedBridge) {
+            ObservableSupplier<BookmarkBridge> bookmarkBridgeSupplier) {
         super(context, activityTabProvider, multiWindowModeStateDispatcher, tabModelSelector,
-                toolbarManager, decorView, overviewModeBehaviorSupplier, bookmarkBridgeSupplier,
-                webFeedBridge);
+                toolbarManager, decorView, overviewModeBehaviorSupplier, bookmarkBridgeSupplier);
         mAppMenuDelegate = appMenuDelegate;
     }
 
@@ -56,8 +53,8 @@ public class TabbedAppMenuPropertiesDelegate extends AppMenuPropertiesDelegateIm
     }
 
     private boolean shouldShowWebFeedMenuItem() {
-        // TODO(crbug/1152592): Add menu variation to flag and show only one variation. Also,
-        // restrict when to show the footer based on tab (eg. not on chrome:// etc.).
+        // TODO(crbug/1152592): Restrict when to show the footer based on tab (eg. not on chrome://
+        // etc.).
         return FeedFeatures.isWebFeedUIEnabled() && mActivityTabProvider.get() != null
                 && !mActivityTabProvider.get().isIncognito();
     }

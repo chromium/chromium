@@ -39,8 +39,6 @@ import org.chromium.chrome.browser.compositor.layouts.OverviewModeBehavior;
 import org.chromium.chrome.browser.device.DeviceClassManager;
 import org.chromium.chrome.browser.device.DeviceConditions;
 import org.chromium.chrome.browser.download.DownloadUtils;
-import org.chromium.chrome.browser.feed.shared.FeedFeatures;
-import org.chromium.chrome.browser.feed.webfeed.WebFeedBridge;
 import org.chromium.chrome.browser.flags.CachedFeatureFlags;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
@@ -106,7 +104,6 @@ public class AppMenuPropertiesDelegateImpl implements AppMenuPropertiesDelegate 
     private ShareUtils mShareUtils;
     // Keeps track of which menu item was shown when installable app is detected.
     private int mAddAppTitleShown;
-    private final WebFeedBridge mWebFeedBridge;
 
     // The keys of the Map are menuitem ids, the first elements in the Pair are menuitem ids,
     // and the second elements in the Pair are AppMenuSimilarSelectionType. If users first
@@ -171,14 +168,12 @@ public class AppMenuPropertiesDelegateImpl implements AppMenuPropertiesDelegate 
      *         {@link OverviewModeBehavior} associated with the containing activity.
      * @param bookmarkBridgeSupplier An {@link ObservableSupplier} for the {@link BookmarkBridge}
      *         associated with the containing activity.
-     * @param webFeedBridge The {@link WebFeedBridge} used to show the Web Feed follow option.
      */
     public AppMenuPropertiesDelegateImpl(Context context, ActivityTabProvider activityTabProvider,
             MultiWindowModeStateDispatcher multiWindowModeStateDispatcher,
             TabModelSelector tabModelSelector, ToolbarManager toolbarManager, View decorView,
             @Nullable OneshotSupplier<OverviewModeBehavior> overviewModeBehaviorSupplier,
-            ObservableSupplier<BookmarkBridge> bookmarkBridgeSupplier,
-            WebFeedBridge webFeedBridge) {
+            ObservableSupplier<BookmarkBridge> bookmarkBridgeSupplier) {
         mContext = context;
         mIsTablet = DeviceFormFactor.isNonMultiDisplayContextOnTablet(mContext);
         mActivityTabProvider = activityTabProvider;
@@ -186,7 +181,6 @@ public class AppMenuPropertiesDelegateImpl implements AppMenuPropertiesDelegate 
         mTabModelSelector = tabModelSelector;
         mToolbarManager = toolbarManager;
         mDecorView = decorView;
-        mWebFeedBridge = webFeedBridge;
 
         if (overviewModeBehaviorSupplier != null) {
             overviewModeBehaviorSupplier.onAvailable(mCallbackController.makeCancelable(
@@ -411,20 +405,6 @@ public class AppMenuPropertiesDelegateImpl implements AppMenuPropertiesDelegate 
             menu.findItem(R.id.get_image_descriptions_id).setTitle(titleId);
         } else {
             menu.findItem(R.id.get_image_descriptions_id).setVisible(false);
-        }
-
-        // Enable web feed follow menu item if WebFeed feature is enabled.
-        MenuItem followMenuItem = menu.findItem(R.id.feed_follow_id);
-        if (FeedFeatures.isWebFeedUIEnabled()) {
-            followMenuItem.setVisible(true);
-            WebFeedBridge.FollowedIds followedIds =
-                    mWebFeedBridge.getFollowedIds(currentTab.getUrl());
-            if (followedIds != null) {
-                followMenuItem.setIcon(R.drawable.ic_checkmark_24dp);
-                followMenuItem.setTitle(R.string.menu_following);
-            }
-        } else {
-            followMenuItem.setVisible(false);
         }
 
         // Disable find in page on the native NTP.

@@ -14,7 +14,6 @@ import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.chrome.browser.tab.CurrentTabObserver;
 import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.Tab;
-import org.chromium.chrome.browser.ui.appmenu.AppMenuHandler;
 import org.chromium.chrome.browser.util.ChromeAccessibilityUtil;
 import org.chromium.components.browser_ui.widget.highlight.ViewHighlighter;
 import org.chromium.components.browser_ui.widget.textbubble.ClickableTextBubble;
@@ -26,7 +25,6 @@ import org.chromium.url.GURL;
  */
 public class WebFeedFollowIntroController {
     private final Activity mActivity;
-    private final AppMenuHandler mAppMenuHandler;
     private final Handler mHandler = new Handler();
     private final View mMenuButtonAnchorView;
 
@@ -36,14 +34,12 @@ public class WebFeedFollowIntroController {
      * Constructs an instance of {@link WebFeedFollowIntroController}.
      *
      * @param activity The current {@link Activity}.
-     * @param appMenuHandler The {@link AppMenuHandler} to control menu item highlights.
      * @param tabSupplier The supplier for the currently active {@link Tab}.
      * @param menuButtonAnchorView The menu button {@link View} to serve as an anchor.
      */
-    public WebFeedFollowIntroController(Activity activity, AppMenuHandler appMenuHandler,
-            ObservableSupplier<Tab> tabSupplier, View menuButtonAnchorView) {
+    public WebFeedFollowIntroController(
+            Activity activity, ObservableSupplier<Tab> tabSupplier, View menuButtonAnchorView) {
         mActivity = activity;
-        mAppMenuHandler = appMenuHandler;
         mMenuButtonAnchorView = menuButtonAnchorView;
 
         mCurrentTabObserver = new CurrentTabObserver(tabSupplier, new EmptyTabObserver() {
@@ -98,10 +94,8 @@ public class WebFeedFollowIntroController {
     }
 
     private void turnOnHighlightForFollowMenuItem() {
-        mAppMenuHandler.setMenuHighlight(R.id.feed_follow_id);
+        // TODO(crbug/1152592): Figure out how to highlight footer.
     }
 
-    private void turnOffHighlightForFollowMenuItem() {
-        mAppMenuHandler.clearMenuHighlight();
-    }
+    private void turnOffHighlightForFollowMenuItem() {}
 }
