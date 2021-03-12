@@ -846,10 +846,28 @@ public class VoiceRecognitionHandlerTest {
             "force-fieldtrial-params=Study.Group:"
                     + VoiceRecognitionHandler.ASSISTANT_EXPERIMENT_ID_PARAM_NAME + "/test"})
     public void
-    testStartVoiceRecognition_IncludeExperimentIdInAssistantIntent() {
+    testStartVoiceRecognition_IncludeExperimentIdInAssistantIntentFromToolbar() {
         doReturn(true).when(mAssistantVoiceSearchService).canRequestAssistantVoiceSearch();
         doReturn(true).when(mAssistantVoiceSearchService).shouldRequestAssistantVoiceSearch();
         startVoiceRecognition(VoiceInteractionSource.TOOLBAR);
+
+        Assert.assertTrue(mWindowAndroid.wasCancelableIntentShown());
+        verify(mIntent).putExtra(VoiceRecognitionHandler.EXTRA_EXPERIMENT_ID, "test");
+    }
+
+    @Test
+    @SmallTest
+    @Feature("AssistantIntentExperimentId")
+    @EnableFeatures({ChromeFeatureList.OMNIBOX_ASSISTANT_VOICE_SEARCH + "<Study",
+            ChromeFeatureList.ASSISTANT_INTENT_EXPERIMENT_ID + "<Study"})
+    @CommandLineFlags.Add({"force-fieldtrials=Study/Group",
+            "force-fieldtrial-params=Study.Group:"
+                    + VoiceRecognitionHandler.ASSISTANT_EXPERIMENT_ID_PARAM_NAME + "/test"})
+    public void
+    testStartVoiceRecognition_IncludeExperimentIdInAssistantIntentFromNonToolbar() {
+        doReturn(true).when(mAssistantVoiceSearchService).canRequestAssistantVoiceSearch();
+        doReturn(true).when(mAssistantVoiceSearchService).shouldRequestAssistantVoiceSearch();
+        startVoiceRecognition(VoiceInteractionSource.OMNIBOX);
 
         Assert.assertTrue(mWindowAndroid.wasCancelableIntentShown());
         verify(mIntent).putExtra(VoiceRecognitionHandler.EXTRA_EXPERIMENT_ID, "test");

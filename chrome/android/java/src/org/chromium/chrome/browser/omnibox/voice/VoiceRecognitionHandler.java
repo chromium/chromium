@@ -825,6 +825,11 @@ public class VoiceRecognitionHandler implements ProfileManager.Observer {
         intent.putExtra(EXTRA_INTENT_SENT_TIMESTAMP, System.currentTimeMillis());
         intent.putExtra(EXTRA_INTENT_USER_EMAIL, assistantVoiceSearchService.getUserEmail());
 
+        if (FeatureList.isInitialized()
+                && ChromeFeatureList.isEnabled(ChromeFeatureList.ASSISTANT_INTENT_EXPERIMENT_ID)) {
+            attachAssistantExperimentId(intent);
+        }
+
         if (shouldAddPageUrl(source)) {
             String url = getUrl();
             if (url != null) {
@@ -832,14 +837,10 @@ public class VoiceRecognitionHandler implements ProfileManager.Observer {
             }
         }
 
-        if (source == VoiceInteractionSource.TOOLBAR && FeatureList.isInitialized()) {
-            if (ChromeFeatureList.isEnabled(ChromeFeatureList.ASSISTANT_INTENT_TRANSLATE_INFO)) {
-                boolean attached = attachTranslateExtras(intent);
-                recordTranslateExtrasAttachResult(attached);
-            }
-            if (ChromeFeatureList.isEnabled(ChromeFeatureList.ASSISTANT_INTENT_EXPERIMENT_ID)) {
-                attachAssistantExperimentId(intent);
-            }
+        if (source == VoiceInteractionSource.TOOLBAR && FeatureList.isInitialized()
+                && ChromeFeatureList.isEnabled(ChromeFeatureList.ASSISTANT_INTENT_TRANSLATE_INFO)) {
+            boolean attached = attachTranslateExtras(intent);
+            recordTranslateExtrasAttachResult(attached);
         }
 
         if (!showSpeechRecognitionIntent(
