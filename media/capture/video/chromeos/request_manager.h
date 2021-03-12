@@ -107,7 +107,7 @@ class CAPTURE_EXPORT RequestManager final
                  std::unique_ptr<CameraBufferFactory> camera_buffer_factory,
                  BlobifyCallback blobify_callback,
                  scoped_refptr<base::SingleThreadTaskRunner> ipc_task_runner,
-                 CameraAppDeviceImpl* camera_app_device);
+                 base::WeakPtr<CameraAppDeviceImpl> camera_app_device);
   ~RequestManager() override;
 
   // Sets up the stream context and allocate buffers according to the
@@ -366,7 +366,7 @@ class CAPTURE_EXPORT RequestManager final
   // duplicate or out of order of frames.
   std::map<StreamType, uint32_t> last_received_frame_number_map_;
 
-  CameraAppDeviceImpl* camera_app_device_;  // Weak.
+  base::WeakPtr<CameraAppDeviceImpl> camera_app_device_;
 
   base::WeakPtrFactory<RequestManager> weak_ptr_factory_{this};
 

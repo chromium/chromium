@@ -15,6 +15,7 @@
 #include "base/threading/platform_thread.h"
 #include "base/trace_event/trace_event.h"
 #include "media/base/bind_to_current_loop.h"
+#include "media/capture/video/chromeos/camera_app_device_bridge_impl.h"
 #include "media/capture/video/chromeos/camera_device_delegate.h"
 #include "media/capture/video/chromeos/camera_hal_delegate.h"
 #include "ui/display/display.h"
@@ -27,7 +28,6 @@ VideoCaptureDeviceChromeOSDelegate::VideoCaptureDeviceChromeOSDelegate(
     scoped_refptr<base::SingleThreadTaskRunner> ui_task_runner,
     const VideoCaptureDeviceDescriptor& device_descriptor,
     scoped_refptr<CameraHalDelegate> camera_hal_delegate,
-    CameraAppDeviceImpl* camera_app_device,
     base::OnceClosure cleanup_callback)
     : device_descriptor_(device_descriptor),
       camera_hal_delegate_(std::move(camera_hal_delegate)),
@@ -42,7 +42,6 @@ VideoCaptureDeviceChromeOSDelegate::VideoCaptureDeviceChromeOSDelegate(
       rotates_with_device_(lens_facing_ !=
                            VideoFacingMode::MEDIA_VIDEO_FACING_NONE),
       rotation_(0),
-      camera_app_device_(camera_app_device),
       cleanup_callback_(std::move(cleanup_callback)),
       device_closed_(base::WaitableEvent::ResetPolicy::MANUAL,
                      base::WaitableEvent::InitialState::NOT_SIGNALED) {
@@ -95,9 +94,11 @@ void VideoCaptureDeviceChromeOSDelegate::AllocateAndStart(
       capture_params_[client_type] = params;
       camera_device_delegate_ = std::make_unique<CameraDeviceDelegate>(
           device_descriptor_, camera_hal_delegate_,
-          camera_device_ipc_thread_.task_runner(), camera_app_device_);
+          camera_device_ipc_thread_.task_runner());
       OpenDevice();
     }
+    CameraAppDeviceBridgeImpl::GetInstance()->OnVideoCaptureDeviceCreated(
+        device_descriptor_.device_id, camera_device_ipc_thread_.task_runner());
   } else {
     if (device_context_->AddClient(client_type, std::move(client))) {
       capture_params_[client_type] = params;
@@ -113,6 +114,8 @@ void VideoCaptureDeviceChromeOSDelegate::StopAndDeAllocate(
   device_context_->RemoveClient(client_type);
   if (!HasDeviceClient()) {
     CloseDevice();
+    CameraAppDeviceBridgeImpl::GetInstance()->OnVideoCaptureDeviceClosing(
+        device_descriptor_.device_id);
     camera_device_ipc_thread_.Stop();
     camera_device_delegate_.reset();
     device_context_.reset();

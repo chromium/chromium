@@ -132,14 +132,6 @@ export class DeviceOperator {
      */
     this.devices_ = new Map();
 
-    /**
-     * Map which maps from device id to the events which will be triggered when
-     * the corresponding device is stopped.
-     * @type {!Map<string, !WaitableEvent>}
-     * @private
-     */
-    this.onDeviceStoppedEvents_ = new Map();
-
     closeWhenUnload(this.deviceProvider_);
   }
 
@@ -165,15 +157,9 @@ export class DeviceOperator {
       throw new Error('Unknown error');
     }
     device.onConnectionError.addListener(() => {
-      this.devices_.delete(deviceId);
-      const event = this.onDeviceStoppedEvents_.get(deviceId);
-      assert(event !== undefined);
-      if (!event.isSignaled()) {
-        event.signal();
-      }
+      this.dropConnection(deviceId);
     });
     this.devices_.set(deviceId, device);
-    this.onDeviceStoppedEvents_.set(deviceId, new WaitableEvent());
     return device;
   }
 
@@ -512,14 +498,11 @@ export class DeviceOperator {
   }
 
   /**
-   * Waits until the connection to the device is dropped.
+   * Drops the connection to the video capture device in Chrome.
    * @param {string} deviceId Id of the target device.
-   * @return {!Promise}
    */
-  async waitForDeviceClose(deviceId) {
-    const event = this.onDeviceStoppedEvents_.get(deviceId);
-    assert(event !== undefined);
-    return event.wait();
+  dropConnection(deviceId) {
+    this.devices_.delete(deviceId);
   }
 
   /**

@@ -23,17 +23,18 @@ gpu::GpuMemoryBufferManager* g_gpu_buffer_manager = nullptr;
 }  // namespace
 
 VideoCaptureDeviceFactoryChromeOS::VideoCaptureDeviceFactoryChromeOS(
-    scoped_refptr<base::SingleThreadTaskRunner> task_runner_for_screen_observer,
-    CameraAppDeviceBridgeImpl* camera_app_device_bridge)
+    scoped_refptr<base::SingleThreadTaskRunner> task_runner_for_screen_observer)
     : task_runner_for_screen_observer_(task_runner_for_screen_observer),
       camera_hal_ipc_thread_("CameraHalIpcThread"),
-      camera_app_device_bridge_(camera_app_device_bridge),
       initialized_(Init()) {}
 
 VideoCaptureDeviceFactoryChromeOS::~VideoCaptureDeviceFactoryChromeOS() {
-  if (camera_app_device_bridge_) {
-    camera_app_device_bridge_->UnsetCameraInfoGetter();
-  }
+  CameraAppDeviceBridgeImpl::GetInstance()->UnsetCameraInfoGetter();
+
+  auto* camera_app_device_bridge = CameraAppDeviceBridgeImpl::GetInstance();
+  camera_app_device_bridge->UnsetCameraInfoGetter();
+  camera_app_device_bridge->UnsetVirtualDeviceController();
+
   camera_hal_delegate_->Reset();
   camera_hal_ipc_thread_.Stop();
 }
@@ -46,8 +47,7 @@ VideoCaptureDeviceFactoryChromeOS::CreateDevice(
     return std::unique_ptr<VideoCaptureDevice>();
   }
   return camera_hal_delegate_->CreateDevice(task_runner_for_screen_observer_,
-                                            device_descriptor,
-                                            camera_app_device_bridge_);
+                                            device_descriptor);
 }
 
 void VideoCaptureDeviceFactoryChromeOS::GetDevicesInfo(
@@ -93,24 +93,17 @@ bool VideoCaptureDeviceFactoryChromeOS::Init() {
     return false;
   }
 
-  // Since the |camera_hal_delegate_| is initialized on the constructor of this
-  // object and is destroyed after |camera_app_device_bridge_| unsetting its
-  // reference, it is safe to use base::Unretained() here.
-  if (camera_app_device_bridge_) {
-    camera_app_device_bridge_->SetCameraInfoGetter(
-        base::BindRepeating(&CameraHalDelegate::GetCameraInfoFromDeviceId,
-                            base::Unretained(camera_hal_delegate_.get())));
-    camera_app_device_bridge_->SetVirtualDeviceController(
-        base::BindRepeating(&CameraHalDelegate::EnableVirtualDevice,
-                            base::Unretained(camera_hal_delegate_.get())));
-  }
+  // Since we will unset camera info getter and virtual device controller before
+  // invalidate |camera_hal_delegate_| in the destructor, it should be safe to
+  // use base::Unretained() here.
+  auto* camera_app_device_bridge = CameraAppDeviceBridgeImpl::GetInstance();
+  camera_app_device_bridge->SetCameraInfoGetter(
+      base::BindRepeating(&CameraHalDelegate::GetCameraInfoFromDeviceId,
+                          base::Unretained(camera_hal_delegate_.get())));
+  camera_app_device_bridge->SetVirtualDeviceController(
+      base::BindRepeating(&CameraHalDelegate::EnableVirtualDevice,
+                          base::Unretained(camera_hal_delegate_.get())));
   return true;
 }
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-bool VideoCaptureDeviceFactoryChromeOS::IsSupportedCameraAppDeviceBridge() {
-  return true;
-}
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 }  // namespace media

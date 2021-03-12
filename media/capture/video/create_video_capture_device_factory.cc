@@ -14,7 +14,6 @@
 #if defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
 #include "media/capture/video/linux/video_capture_device_factory_linux.h"
 #elif BUILDFLAG(IS_CHROMEOS_ASH)
-#include "media/capture/video/chromeos/camera_app_device_bridge_impl.h"
 #include "media/capture/video/chromeos/public/cros_features.h"
 #include "media/capture/video/chromeos/video_capture_device_factory_chromeos.h"
 #include "media/capture/video/linux/video_capture_device_factory_linux.h"
@@ -60,8 +59,7 @@ CreateFakeVideoCaptureDeviceFactory() {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 std::unique_ptr<VideoCaptureDeviceFactory>
 CreateChromeOSVideoCaptureDeviceFactory(
-    scoped_refptr<base::SingleThreadTaskRunner> ui_task_runner,
-    media::CameraAppDeviceBridgeImpl* camera_app_device_bridge) {
+    scoped_refptr<base::SingleThreadTaskRunner> ui_task_runner) {
   // On Chrome OS we have to support two use cases:
   //
   // 1. For devices that have the camera HAL v3 service running on Chrome OS,
@@ -72,8 +70,7 @@ CreateChromeOSVideoCaptureDeviceFactory(
   //    some special devices that may never be able to implement a camera HAL
   //    v3.
   if (ShouldUseCrosCameraService()) {
-    return std::make_unique<VideoCaptureDeviceFactoryChromeOS>(
-        ui_task_runner, camera_app_device_bridge);
+    return std::make_unique<VideoCaptureDeviceFactoryChromeOS>(ui_task_runner);
   } else {
     return std::make_unique<VideoCaptureDeviceFactoryLinux>(ui_task_runner);
   }
@@ -86,7 +83,7 @@ CreatePlatformSpecificVideoCaptureDeviceFactory(
 #if defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
   return std::make_unique<VideoCaptureDeviceFactoryLinux>(ui_task_runner);
 #elif BUILDFLAG(IS_CHROMEOS_ASH)
-  return CreateChromeOSVideoCaptureDeviceFactory(ui_task_runner, {});
+  return CreateChromeOSVideoCaptureDeviceFactory(ui_task_runner);
 #elif defined(OS_WIN)
   return std::make_unique<VideoCaptureDeviceFactoryWin>();
 #elif defined(OS_MAC)
@@ -114,21 +111,5 @@ std::unique_ptr<VideoCaptureDeviceFactory> CreateVideoCaptureDeviceFactory(
     return CreatePlatformSpecificVideoCaptureDeviceFactory(ui_task_runner);
   }
 }
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-std::unique_ptr<VideoCaptureDeviceFactory> CreateVideoCaptureDeviceFactory(
-    scoped_refptr<base::SingleThreadTaskRunner> ui_task_runner,
-    media::CameraAppDeviceBridgeImpl* camera_app_device_bridge) {
-  auto fake_device_factory = CreateFakeVideoCaptureDeviceFactory();
-  if (fake_device_factory) {
-    return fake_device_factory;
-  } else {
-    // |ui_task_runner| is needed for the Linux ChromeOS factory to retrieve
-    // screen rotations.
-    return CreateChromeOSVideoCaptureDeviceFactory(ui_task_runner,
-                                                   camera_app_device_bridge);
-  }
-}
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 }  // namespace media
