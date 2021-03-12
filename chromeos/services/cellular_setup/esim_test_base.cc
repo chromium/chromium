@@ -13,12 +13,12 @@
 #include "chromeos/dbus/shill/shill_manager_client.h"
 #include "chromeos/network/cellular_esim_connection_handler.h"
 #include "chromeos/network/cellular_esim_uninstall_handler.h"
-#include "chromeos/network/cellular_inhibitor.h"
 #include "chromeos/network/fake_network_connection_handler.h"
 #include "chromeos/network/network_configuration_handler.h"
 #include "chromeos/network/network_device_handler.h"
 #include "chromeos/network/network_state_handler.h"
 #include "chromeos/network/test_cellular_esim_profile_handler.h"
+#include "chromeos/network/test_cellular_inhibitor.h"
 #include "chromeos/services/cellular_setup/esim_manager.h"
 #include "chromeos/services/cellular_setup/esim_test_utils.h"
 #include "chromeos/services/cellular_setup/public/mojom/esim_manager.mojom-forward.h"
@@ -51,7 +51,7 @@ void ESimTestBase::SetUp() {
           network_state_handler_.get(), network_device_handler_.get()));
   network_connection_handler_ =
       std::make_unique<FakeNetworkConnectionHandler>();
-  cellular_inhibitor_ = std::make_unique<CellularInhibitor>();
+  cellular_inhibitor_ = std::make_unique<TestCellularInhibitor>();
   cellular_inhibitor_->Init(network_state_handler_.get(),
                             network_device_handler_.get());
   cellular_esim_connection_handler_ =

@@ -76,6 +76,13 @@ class CellularInhibitorTest : public testing::Test {
         }));
   }
 
+  void SetScanning(bool is_scanning) {
+    helper_.network_device_handler()->SetDeviceProperty(
+        kDefaultCellularDevicePath, shill::kScanningProperty,
+        base::Value(is_scanning), base::DoNothing(), base::DoNothing());
+    base::RunLoop().RunUntilIdle();
+  }
+
   GetInhibitedPropertyResult GetInhibitedProperty() {
     properties_.reset();
     helper_.network_device_handler()->GetDeviceProperties(
@@ -124,7 +131,7 @@ TEST_F(CellularInhibitorTest, SuccessSingleRequest) {
   EXPECT_EQ(GetInhibitedPropertyResult::kTrue, GetInhibitedProperty());
 
   // Ensure that deleting lock uninhibits the Cellular device.
-  inhibit_lock = nullptr;
+  inhibit_lock.reset();
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(GetInhibitedPropertyResult::kFalse, GetInhibitedProperty());
 }
@@ -144,14 +151,29 @@ TEST_F(CellularInhibitorTest, SuccessMultipleRequests) {
   EXPECT_FALSE(inhibit_lock2);
   EXPECT_EQ(GetInhibitedPropertyResult::kTrue, GetInhibitedProperty());
 
-  // Ensure that second lock is granted when first is deleted.
-  inhibit_lock = nullptr;
+  // Release the first lock; though this causes the Inhibited property to false,
+  // it should not yet start the next (queued) Inhibit flow, since the scanning
+  // flow has not yet started.
+  inhibit_lock.reset();
   base::RunLoop().RunUntilIdle();
+  EXPECT_EQ(GetInhibitedPropertyResult::kFalse, GetInhibitedProperty());
+  EXPECT_FALSE(inhibit_lock2);
+
+  // Set the Cellular device's scanning property to true, simulating the
+  // inhibit flow within Shill. This still should not start the next inhibit
+  // flow.
+  SetScanning(true);
+  EXPECT_EQ(GetInhibitedPropertyResult::kFalse, GetInhibitedProperty());
+  EXPECT_FALSE(inhibit_lock2);
+
+  // Change scanning back to false, which should trigger the second lock being
+  // set.
+  SetScanning(false);
   EXPECT_TRUE(inhibit_lock2);
   EXPECT_EQ(GetInhibitedPropertyResult::kTrue, GetInhibitedProperty());
 
   // Ensure that inhibited property is set to false when all locks are deleted.
-  inhibit_lock2 = nullptr;
+  inhibit_lock2.reset();
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(GetInhibitedPropertyResult::kFalse, GetInhibitedProperty());
 }

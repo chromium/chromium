@@ -15,12 +15,12 @@
 #include "chromeos/dbus/shill/shill_device_client.h"
 #include "chromeos/dbus/shill/shill_profile_client.h"
 #include "chromeos/dbus/shill/shill_service_client.h"
-#include "chromeos/network/cellular_inhibitor.h"
 #include "chromeos/network/fake_network_connection_handler.h"
 #include "chromeos/network/network_configuration_handler.h"
 #include "chromeos/network/network_connection_handler.h"
 #include "chromeos/network/network_device_handler.h"
 #include "chromeos/network/network_state_handler.h"
+#include "chromeos/network/test_cellular_inhibitor.h"
 #include "dbus/object_path.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/cros_system_api/dbus/service_constants.h"
@@ -62,7 +62,7 @@ class CellularESimUninstallHandlerTest : public testing::Test {
             network_state_handler_.get(), network_device_handler_.get()));
     network_connection_handler_ =
         std::make_unique<FakeNetworkConnectionHandler>();
-    cellular_inhibitor_ = std::make_unique<CellularInhibitor>();
+    cellular_inhibitor_ = std::make_unique<TestCellularInhibitor>();
     cellular_inhibitor_->Init(network_state_handler_.get(),
                               network_device_handler_.get());
 
@@ -76,6 +76,7 @@ class CellularESimUninstallHandlerTest : public testing::Test {
   }
 
   void TearDown() override {
+    cellular_inhibitor_.reset();
     network_device_handler_.reset();
     network_state_handler_.reset();
     network_configuration_handler_.reset();
@@ -147,9 +148,9 @@ class CellularESimUninstallHandlerTest : public testing::Test {
 
   base::test::SingleThreadTaskEnvironment task_environment_;
 
-  std::unique_ptr<CellularInhibitor> cellular_inhibitor_;
   std::unique_ptr<NetworkStateHandler> network_state_handler_;
   std::unique_ptr<NetworkDeviceHandler> network_device_handler_;
+  std::unique_ptr<CellularInhibitor> cellular_inhibitor_;
   std::unique_ptr<NetworkConfigurationHandler> network_configuration_handler_;
   std::unique_ptr<FakeNetworkConnectionHandler> network_connection_handler_;
   std::unique_ptr<CellularESimUninstallHandler>

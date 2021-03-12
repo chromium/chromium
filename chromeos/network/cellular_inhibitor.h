@@ -9,6 +9,7 @@
 #include "base/containers/queue.h"
 #include "base/memory/weak_ptr.h"
 #include "chromeos/network/network_handler_callbacks.h"
+#include "chromeos/network/network_state_handler_observer.h"
 
 namespace chromeos {
 
@@ -25,12 +26,13 @@ class NetworkDeviceHandler;
 //
 // This class is intended to be used when performing such actions to ensure that
 // these transient states never occur.
-class COMPONENT_EXPORT(CHROMEOS_NETWORK) CellularInhibitor {
+class COMPONENT_EXPORT(CHROMEOS_NETWORK) CellularInhibitor
+    : public NetworkStateHandlerObserver {
  public:
   CellularInhibitor();
   CellularInhibitor(const CellularInhibitor&) = delete;
   CellularInhibitor& operator=(const CellularInhibitor&) = delete;
-  ~CellularInhibitor();
+  ~CellularInhibitor() override;
 
   void Init(NetworkStateHandler* network_state_handler,
             NetworkDeviceHandler* network_device_handler);
@@ -59,12 +61,34 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) CellularInhibitor {
   void InhibitCellularScanning(InhibitCallback callback);
 
  private:
+  enum class State {
+    kIdle,
+    kInhibiting,
+    kInhibited,
+    kUninhibiting,
+    kWaitingForScanningToStart,
+    kWaitingForScanningToStop,
+  };
+  friend std::ostream& operator<<(std::ostream& stream, const State& state);
+
+  // NetworkStateHandlerObserver:
+  void DeviceListChanged() override;
+  void DevicePropertiesUpdated(const DeviceState* device) override;
+
   const DeviceState* GetCellularDevice() const;
 
+  void TransitionToState(State state);
   void ProcessRequests();
   void OnInhibit(bool success);
   void AttemptUninhibit(size_t attempts_so_far);
   void OnUninhibit(size_t attempts_so_far, bool success);
+
+  void CheckScanningIfNeeded();
+  void CheckForScanningStarted();
+  virtual bool HasScanningStarted();
+  void CheckForScanningStopped();
+  virtual bool HasScanningStopped();
+
   void PopRequestAndProcessNext();
 
   using SuccessCallback = base::OnceCallback<void(bool)>;
@@ -80,7 +104,7 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) CellularInhibitor {
   NetworkStateHandler* network_state_handler_ = nullptr;
   NetworkDeviceHandler* network_device_handler_ = nullptr;
 
-  bool is_locked_ = false;
+  State state_ = State::kIdle;
   base::queue<InhibitCallback> inhibit_requests_;
 
   base::WeakPtrFactory<CellularInhibitor> weak_ptr_factory_{this};

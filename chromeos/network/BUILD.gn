@@ -229,6 +229,8 @@ source_set("test_support") {
     "portal_detector/mock_network_portal_detector.h",
     "test_cellular_esim_profile_handler.cc",
     "test_cellular_esim_profile_handler.h",
+    "test_cellular_inhibitor.cc",
+    "test_cellular_inhibitor.h",
   ]
 }
 

@@ -13,10 +13,10 @@
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
-#include "chromeos/network/cellular_inhibitor.h"
 #include "chromeos/network/network_connection_handler.h"
 #include "chromeos/network/network_state_handler.h"
 #include "chromeos/network/network_state_test_helper.h"
+#include "chromeos/network/test_cellular_inhibitor.h"
 #include "components/prefs/testing_pref_service.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/cros_system_api/dbus/shill/dbus-constants.h"
@@ -207,7 +207,7 @@ class CellularESimConnectionHandlerTest : public testing::Test {
   base::test::SingleThreadTaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   NetworkStateTestHelper helper_;
-  CellularInhibitor inhibitor_;
+  TestCellularInhibitor inhibitor_;
   CellularESimConnectionHandler handler_;
 
   base::OnceClosure on_success_callback_;
