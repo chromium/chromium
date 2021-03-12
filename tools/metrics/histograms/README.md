@@ -514,6 +514,14 @@ logged on Mac.
 Histogram descriptions should clearly state when the histogram is emitted
 (profile open? network request received? etc.).
 
+Some histograms record error conditions. These should be clear about whether
+all errors are recorded or only the first. If only the first, the histogram
+description should have text like:
+```
+In the case of multiple errors, only the first reason encountered is recorded. Refer
+to Class::FunctionImplementingLogic() for details.
+```
+
 ### Provide Clear Units or Enum Labels
 
 For enumerated histograms, including boolean and sparse histograms, provide an
