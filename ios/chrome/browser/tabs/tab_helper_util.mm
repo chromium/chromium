@@ -73,7 +73,7 @@
 #import "ios/chrome/browser/web/invalid_url_tab_helper.h"
 #import "ios/chrome/browser/web/load_timing_tab_helper.h"
 #import "ios/chrome/browser/web/page_placeholder_tab_helper.h"
-#import "ios/chrome/browser/web/print_tab_helper.h"
+#import "ios/chrome/browser/web/print/print_tab_helper.h"
 #import "ios/chrome/browser/web/sad_tab_tab_helper.h"
 #import "ios/chrome/browser/web/tab_id_tab_helper.h"
 #import "ios/chrome/browser/web/web_state_delegate_tab_helper.h"

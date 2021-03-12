@@ -10,6 +10,7 @@
 #import "base/ios/ios_util.h"
 #import "base/ios/ns_error_util.h"
 #include "base/mac/bundle_locations.h"
+#include "base/no_destructor.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/sys_string_conversions.h"
 #include "components/dom_distiller/core/url_constants.h"
@@ -36,6 +37,7 @@
 #include "ios/chrome/browser/web/features.h"
 #import "ios/chrome/browser/web/java_script_console/java_script_console_feature.h"
 #import "ios/chrome/browser/web/java_script_console/java_script_console_feature_factory.h"
+#include "ios/chrome/browser/web/print/print_java_script_feature.h"
 #import "ios/components/security_interstitials/ios_blocking_page_tab_helper.h"
 #import "ios/components/security_interstitials/legacy_tls/legacy_tls_blocking_page.h"
 #import "ios/components/security_interstitials/legacy_tls/legacy_tls_controller_client.h"
@@ -286,6 +288,7 @@ void ChromeWebClient::PostBrowserURLRewriterCreation(
 
 std::vector<web::JavaScriptFeature*> ChromeWebClient::GetJavaScriptFeatures(
     web::BrowserState* browser_state) const {
+  static base::NoDestructor<PrintJavaScriptFeature> print_feature;
   std::vector<web::JavaScriptFeature*> features;
   if (base::FeatureList::IsEnabled(
           password_manager::features::kPasswordReuseDetectionEnabled) &&
@@ -297,6 +300,8 @@ std::vector<web::JavaScriptFeature*> ChromeWebClient::GetJavaScriptFeatures(
       JavaScriptConsoleFeatureFactory::GetInstance()->GetForBrowserState(
           browser_state);
   features.push_back(java_script_console_feature);
+
+  features.push_back(print_feature.get());
 
   return features;
 }

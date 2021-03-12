@@ -20,6 +20,6 @@ __gCrWeb['print'] = {};
 new function() {
   // Overwrites window.print function to invoke chrome command.
   window.print = function() {
-    __gCrWeb.message.invokeOnHost({'command': 'print.window.print'});
+    __gCrWeb.common.sendWebKitMessage('PrintMessageHandler', {});
   };
 }

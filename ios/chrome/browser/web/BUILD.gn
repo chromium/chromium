@@ -185,7 +185,6 @@ js_compile_bundle("chrome_bundle_all_frames") {
     "//components/autofill/ios/form_util/resources/form_handlers.js",
     "resources/accessibility.js",
     "resources/chrome_bundle_all_frames.js",
-    "resources/print.js",
   ]
 }
 
@@ -226,9 +225,6 @@ source_set("web_internal") {
     "blocked_popup_tab_helper.mm",
     "chrome_web_client.h",
     "chrome_web_client.mm",
-    "print_tab_helper.h",
-    "print_tab_helper.mm",
-    "web_state_printer.h",
   ]
   deps = [
     ":chrome_bundle_all_frames",
@@ -263,6 +259,7 @@ source_set("web_internal") {
     "//ios/chrome/browser/ui/util",
     "//ios/chrome/browser/web:feature_flags",
     "//ios/chrome/browser/web/java_script_console",
+    "//ios/chrome/browser/web/print",
     "//ios/components/security_interstitials",
     "//ios/components/security_interstitials/legacy_tls",
     "//ios/components/security_interstitials/lookalikes",

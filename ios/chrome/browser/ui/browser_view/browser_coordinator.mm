@@ -78,7 +78,7 @@
 #import "ios/chrome/browser/url_loading/url_loading_params.h"
 #import "ios/chrome/browser/web/features.h"
 #import "ios/chrome/browser/web/font_size_tab_helper.h"
-#import "ios/chrome/browser/web/print_tab_helper.h"
+#import "ios/chrome/browser/web/print/print_tab_helper.h"
 #import "ios/chrome/browser/web/repost_form_tab_helper.h"
 #import "ios/chrome/browser/web/repost_form_tab_helper_delegate.h"
 #import "ios/chrome/browser/web/web_navigation_browser_agent.h"
