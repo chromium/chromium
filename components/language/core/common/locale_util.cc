@@ -8,19 +8,11 @@
 
 #include <algorithm>
 
-#include "build/build_config.h"
 #include "ui/base/l10n/l10n_util.h"
 
 namespace language {
 
 namespace {
-
-#if defined(OS_IOS)
-// iOS uses a different name for es-419 (es-MX).
-const char* const kEs419 = "es-MX";
-#else
-const char* const kEs419 = "es-419";
-#endif
 
 // Pair of locales, where the first element should fallback to the second one.
 struct LocaleUIFallbackPair {
@@ -41,16 +33,16 @@ const LocaleUIFallbackPair kLocaleUIFallbackTable[] = {
     {"en-IN", "en-GB"},
     {"en-NZ", "en-GB"},
     {"en-ZA", "en-GB"},
-    {"es-AR", kEs419},
-    {"es-CL", kEs419},
-    {"es-CO", kEs419},
-    {"es-CR", kEs419},
-    {"es-HN", kEs419},
-    {"es-MX", kEs419},
-    {"es-PE", kEs419},
-    {"es-US", kEs419},
-    {"es-UY", kEs419},
-    {"es-VE", kEs419},
+    {"es-AR", "es-419"},
+    {"es-CL", "es-419"},
+    {"es-CO", "es-419"},
+    {"es-CR", "es-419"},
+    {"es-HN", "es-419"},
+    {"es-MX", "es-419"},
+    {"es-PE", "es-419"},
+    {"es-US", "es-419"},
+    {"es-UY", "es-419"},
+    {"es-VE", "es-419"},
     {"it-CH", "it"},
     {"no", "nb"},
     {"pt", "pt-PT"}
@@ -70,7 +62,7 @@ base::StringPiece GetUIFallbackLocale(base::StringPiece input) {
 
 // Checks if |locale| is one of the actual locales supported as a UI languages.
 bool IsAvailableUILocale(base::StringPiece locale) {
-  for (const auto& ui_locale : l10n_util::GetLocalesWithStrings()) {
+  for (const auto& ui_locale : l10n_util::GetAvailableLocales()) {
     if (ui_locale == locale)
       return true;
   }
@@ -104,8 +96,6 @@ base::StringPiece ExtractBaseLanguage(base::StringPiece language_code) {
   return SplitIntoMainAndTail(language_code).first;
 }
 
-// TODO(mlcui): Replace this with l10n_util::CheckAndResolveLocale.
-// Note that CheckAndResolveLocale has different behaviour for "pt".
 bool ConvertToActualUILocale(std::string* input_locale) {
   if (ConvertToFallbackUILocale(input_locale))
     return true;

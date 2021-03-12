@@ -8,7 +8,6 @@ import("//build/config/compiler/compiler.gni")
 import("//build/config/dcheck_always_on.gni")
 import("//build/config/linux/gtk/gtk.gni")
 import("//build/config/linux/pangocairo/pangocairo.gni")
-import("//build/config/locales.gni")
 import("//build/config/ozone.gni")
 import("//build/config/sanitizers/sanitizers.gni")
 import("//build/config/ui.gni")
@@ -430,7 +429,6 @@ component("base") {
   ]
 
   deps = [
-    ":locales_list",
     "//base:base_static",
     "//base:i18n",
     "//base/third_party/dynamic_annotations",
@@ -1233,15 +1231,4 @@ fuzzer_test("file_info_fuzzer") {
     "//base",
     "//ui/base/clipboard:file_info",
   ]
-}
-
-action("locales_list_gen") {
-  script = "//tools/l10n/generate_locales_list.py"
-  outputs = [ "$root_gen_dir/ui/base/l10n/l10n_util_locales_list.inc" ]
-  args = rebase_path(outputs, root_build_dir) + locales
-}
-
-source_set("locales_list") {
-  deps = [ ":locales_list_gen" ]
-  sources = [ "$root_gen_dir/ui/base/l10n/l10n_util_locales_list.inc" ]
 }

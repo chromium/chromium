@@ -1098,7 +1098,6 @@ if (!is_android) {
       "../browser/infobars/infobars_browsertest.cc",
       "../browser/installable/installable_manager_browsertest.cc",
       "../browser/invalidation/profile_invalidation_provider_factory_browsertest.cc",
-      "../browser/l10n_util_browsertest.cc",
       "../browser/lazyload/lazyload_browsertest.cc",
       "../browser/lifetime/browser_close_manager_browsertest.cc",
       "../browser/lifetime/browser_shutdown_browsertest.cc",
