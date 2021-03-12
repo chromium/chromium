@@ -374,7 +374,7 @@ vm_tools::concierge::StartArcVmRequest CreateStartArcVmRequest(
   request.set_ignore_dev_conf(IsArcVmDevConfIgnored());
 
   // Add enable_rt_vcpu.
-  request.set_enable_rt_vcpu(IsArcVmRtVcpuEnabled());
+  request.set_enable_rt_vcpu(IsArcVmRtVcpuEnabled(cpus));
   return request;
 }
 

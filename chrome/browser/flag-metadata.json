@@ -194,6 +194,16 @@
     "expiry_milestone": 95
   },
   {
+    "name": "arc-rt-vcpu-dual-core",
+    "owners": [ "kansho" ],
+    "expiry_milestone": 95
+  },
+  {
+    "name": "arc-rt-vcpu-quad-core",
+    "owners": [ "kansho" ],
+    "expiry_milestone": 95
+  },
+  {
     "name": "arc-usb-host",
     "owners": [ "lgcheng" ],
     "expiry_milestone": 76

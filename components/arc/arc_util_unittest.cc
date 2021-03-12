@@ -22,6 +22,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "chromeos/dbus/upstart/fake_upstart_client.h"
 #include "components/account_id/account_id.h"
+#include "components/arc/arc_features.h"
 #include "components/user_manager/fake_user_manager.h"
 #include "components/user_manager/scoped_user_manager.h"
 #include "components/user_manager/user.h"
@@ -51,6 +52,32 @@ class ScopedArcFeature {
  private:
   base::test::ScopedFeatureList feature_list;
   DISALLOW_COPY_AND_ASSIGN(ScopedArcFeature);
+};
+
+class ScopedRtVcpuFeature {
+ public:
+  ScopedRtVcpuFeature(bool dual_core_enabled, bool quad_core_enabled) {
+    std::vector<base::Feature> enabled_features;
+    std::vector<base::Feature> disabled_features;
+
+    if (dual_core_enabled)
+      enabled_features.push_back(kRtVcpuDualCore);
+    else
+      disabled_features.push_back(kRtVcpuDualCore);
+
+    if (quad_core_enabled)
+      enabled_features.push_back(kRtVcpuQuadCore);
+    else
+      disabled_features.push_back(kRtVcpuQuadCore);
+
+    feature_list.InitWithFeatures(enabled_features, disabled_features);
+  }
+  ~ScopedRtVcpuFeature() = default;
+  ScopedRtVcpuFeature(const ScopedRtVcpuFeature&) = delete;
+  ScopedRtVcpuFeature& operator=(const ScopedRtVcpuFeature&) = delete;
+
+ private:
+  base::test::ScopedFeatureList feature_list;
 };
 
 // Fake user that can be created with a specified type.
@@ -247,11 +274,30 @@ TEST_F(ArcUtilTest, IsArcVmEnabled) {
 }
 
 TEST_F(ArcUtilTest, IsArcVmRtVcpuEnabled) {
-  EXPECT_FALSE(IsArcVmRtVcpuEnabled());
-
-  auto* command_line = base::CommandLine::ForCurrentProcess();
-  command_line->InitFromArgv({"", "--enable-arcvm-rt-vcpu"});
-  EXPECT_TRUE(IsArcVmRtVcpuEnabled());
+  {
+    ScopedRtVcpuFeature feature(false, false);
+    EXPECT_FALSE(IsArcVmRtVcpuEnabled(2));
+    EXPECT_FALSE(IsArcVmRtVcpuEnabled(4));
+    EXPECT_FALSE(IsArcVmRtVcpuEnabled(8));
+  }
+  {
+    ScopedRtVcpuFeature feature(true, false);
+    EXPECT_TRUE(IsArcVmRtVcpuEnabled(2));
+    EXPECT_FALSE(IsArcVmRtVcpuEnabled(4));
+    EXPECT_FALSE(IsArcVmRtVcpuEnabled(8));
+  }
+  {
+    ScopedRtVcpuFeature feature(false, true);
+    EXPECT_FALSE(IsArcVmRtVcpuEnabled(2));
+    EXPECT_TRUE(IsArcVmRtVcpuEnabled(4));
+    EXPECT_TRUE(IsArcVmRtVcpuEnabled(8));
+  }
+  {
+    ScopedRtVcpuFeature feature(true, true);
+    EXPECT_TRUE(IsArcVmRtVcpuEnabled(2));
+    EXPECT_TRUE(IsArcVmRtVcpuEnabled(4));
+    EXPECT_TRUE(IsArcVmRtVcpuEnabled(8));
+  }
 }
 
 TEST_F(ArcUtilTest, IsArcVmDevConfIgnored) {

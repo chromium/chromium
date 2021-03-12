@@ -66,6 +66,16 @@ const base::Feature kNativeBridgeToggleFeature{
 const base::Feature kPictureInPictureFeature{"ArcPictureInPicture",
                                              base::FEATURE_ENABLED_BY_DEFAULT};
 
+// Controls ARCVM real time vcpu feature on a device with 2 logical cores
+// online.
+const base::Feature kRtVcpuDualCore{"ArcRtVcpuDualCore",
+                                    base::FEATURE_DISABLED_BY_DEFAULT};
+
+// Controls ARCVM real time vcpu feature on a device with 3+ logical cores
+// online.
+const base::Feature kRtVcpuQuadCore{"ArcRtVcpuQuadCore",
+                                    base::FEATURE_ENABLED_BY_DEFAULT};
+
 // Controls ARC high-memory dalvik profile in ARCVM.
 // When enabled, Android tries to use dalvik memory profile tuned for
 // high-memory devices like 8G and 16G. This is enabled without conditions

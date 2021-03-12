@@ -43491,6 +43491,7 @@ from previous Chrome versions.
   <int value="-2111196530" label="EnableAssistantLauncherUI:disabled"/>
   <int value="-2108564200" label="AutofillUpstream:disabled"/>
   <int value="-2106960993" label="HarfBuzzPDFSubsetter:disabled"/>
+  <int value="-2106763275" label="ArcRtVcpuQuadCore:enabled"/>
   <int value="-2105498697" label="EnableImeSandbox:disabled"/>
   <int value="-2105133782" label="GesturePropertiesDBusService:enabled"/>
   <int value="-2104950596" label="HandwritingGesture:enabled"/>
@@ -44148,6 +44149,7 @@ from previous Chrome versions.
   <int value="-1529631789" label="enable-unsafe-fast-js-calls"/>
   <int value="-1529140321" label="ReadLater:enabled"/>
   <int value="-1528455406" label="OmniboxPedalSuggestions:enabled"/>
+  <int value="-1527094429" label="ArcRtVcpuQuadCore:disabled"/>
   <int value="-1525129540"
       label="OmniboxUIExperimentRevealSteadyStateUrlPathQueryAndRefOnHover:disabled"/>
   <int value="-1524323669" label="InstalledAppsInCbd:enabled"/>
@@ -44754,6 +44756,7 @@ from previous Chrome versions.
   <int value="-1026192558" label="OopRasterizationDDL:enabled"/>
   <int value="-1025125875" label="AssistantTimersV2:disabled"/>
   <int value="-1022971520" label="enable-search-button-in-omnibox-for-str"/>
+  <int value="-1022281869" label="ArcRtVcpuDualCore:enabled"/>
   <int value="-1022165708" label="BreakingNewsPush:disabled"/>
   <int value="-1021097344" label="PolicyAtomicGroup:disabled"/>
   <int value="-1020450980" label="gesture-deletion"/>
@@ -46029,6 +46032,7 @@ from previous Chrome versions.
   <int value="155977192" label="EnableFileManagerFormatDialog:disabled"/>
   <int value="157217034" label="enable-tab-for-desktop-share"/>
   <int value="157318016" label="AutomaticTabDiscarding:enabled"/>
+  <int value="160506687" label="ArcRtVcpuDualCore:disabled"/>
   <int value="160524775" label="PDFTwoUpView:disabled"/>
   <int value="160838658" label="SmartDimModelV3:enabled"/>
   <int value="161409456" label="AutofillUseMobileLabelDisambiguation:disabled"/>

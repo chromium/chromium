@@ -3855,6 +3855,18 @@ const char kArcNativeBridge64BitSupportExperimentName[] =
 const char kArcNativeBridge64BitSupportExperimentDescription[] =
     "Enable experimental 64-bit native bridge support for ARC where available.";
 
+const char kArcRtVcpuDualCoreName[] =
+    "Enable ARC real time vcpu on a device with 2 logical cores online.";
+const char kArcRtVcpuDualCoreDesc[] =
+    "Enable ARC real time vcpu on a device with 2 logical cores online to "
+    "reduce media playback glitch.";
+
+const char kArcRtVcpuQuadCoreName[] =
+    "Enable ARC real time vcpu on a device with 3+ logical cores online.";
+const char kArcRtVcpuQuadCoreDesc[] =
+    "Enable ARC real time vcpu on a device with 3+ logical cores online to "
+    "reduce media playback glitch.";
+
 const char kArcUseHighMemoryDalvikProfileName[] =
     "Enable ARC high-memory dalvik profile";
 const char kArcUseHighMemoryDalvikProfileDesc[] =
