@@ -2949,19 +2949,6 @@
       ]
     },
     {
-      "id": 310,
-      "description": "Context lost recovery often fails on Mali on CrOS.",
-      "cr_bugs": [992286],
-      "os": {
-        "type": "chromeos"
-      },
-      "gl_vendor": "ARM.*",
-      "gl_renderer": ".*Mali-.*",
-      "features": [
-        "exit_on_context_lost"
-      ]
-    },
-    {
       "id": 311,
       "cr_bugs": [998038],
       "description": "Don't use IOSurface backed GMBs for half float textures with swiftshader",
@@ -3717,6 +3704,17 @@
       "features": [
         "max_msaa_sample_count_4",
         "use_eqaa_storage_samples_2"
+      ]
+    },
+    {
+      "id": 370,
+      "description": "Context loss recovery often fails on Chrome OS",
+      "cr_bugs": [992286, 1177986],
+      "os": {
+        "type": "chromeos"
+      },
+      "features": [
+        "exit_on_context_lost"
       ]
     }
   ]
