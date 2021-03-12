@@ -12,6 +12,7 @@
 #include "chrome/browser/ui/tabs/tab_change_type.h"
 #include "components/tab_groups/tab_group_id.h"
 #include "components/tab_groups/tab_group_visual_data.h"
+#include "third_party/perfetto/include/perfetto/tracing/traced_value_forward.h"
 #include "ui/base/models/list_selection_model.h"
 
 class TabStripModel;
@@ -42,6 +43,8 @@ class TabStripModelChange {
   // but C++17 features are not yet approved for use in chromium.
   struct Delta {
     virtual ~Delta() = default;
+
+    virtual void WriteIntoTracedValue(perfetto::TracedValue context) const = 0;
   };
 
   struct ContentsWithIndexAndWillBeDeleted {
@@ -52,11 +55,15 @@ class TabStripModelChange {
     // TODO(https://crbug.com/1149549): Make will_be_deleted into enum to
     // consider the case for ClosedTabCache feature separtely.
     bool will_be_deleted;
+
+    void WriteIntoTracedValue(perfetto::TracedValue context) const;
   };
 
   struct ContentsWithIndex {
     content::WebContents* contents;
     int index;
+
+    void WriteIntoTracedValue(perfetto::TracedValue context) const;
   };
 
   // WebContents were inserted. This implicitly changes the existing selection
@@ -90,6 +97,8 @@ class TabStripModelChange {
     // not do index-based queries based on their own internally-stored indices
     // until after processing all of |contents|.
     std::vector<ContentsWithIndex> contents;
+
+    void WriteIntoTracedValue(perfetto::TracedValue context) const override;
   };
 
   // WebContents were removed at |indices_before_removal|. This implicitly
@@ -125,6 +134,8 @@ class TabStripModelChange {
     // not do index-based queries based on their own internally-stored indices
     // until after processing all of |contents|.
     std::vector<ContentsWithIndexAndWillBeDeleted> contents;
+
+    void WriteIntoTracedValue(perfetto::TracedValue context) const override;
   };
 
   // A WebContents was moved from |from_index| to |to_index|. This implicitly
@@ -134,6 +145,8 @@ class TabStripModelChange {
     content::WebContents* contents;
     int from_index;
     int to_index;
+
+    void WriteIntoTracedValue(perfetto::TracedValue context) const override;
   };
 
   // The WebContents was replaced at the specified index. This is invoked when
@@ -142,6 +155,8 @@ class TabStripModelChange {
     content::WebContents* old_contents;
     content::WebContents* new_contents;
     int index;
+
+    void WriteIntoTracedValue(perfetto::TracedValue context) const override;
   };
 
   TabStripModelChange();
@@ -158,6 +173,8 @@ class TabStripModelChange {
   const Remove* GetRemove() const;
   const Move* GetMove() const;
   const Replace* GetReplace() const;
+
+  void WriteIntoTracedValue(perfetto::TracedValue context) const;
 
  private:
   TabStripModelChange(Type type, std::unique_ptr<Delta> delta);

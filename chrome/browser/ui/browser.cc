@@ -1148,7 +1148,8 @@ WebContents* Browser::OpenURL(const OpenURLParams& params) {
 void Browser::OnTabStripModelChanged(TabStripModel* tab_strip_model,
                                      const TabStripModelChange& change,
                                      const TabStripSelectionChange& selection) {
-  TRACE_EVENT0("ui", "Browser::OnTabStripModelChanged");
+  TRACE_EVENT2("ui", "Browser::OnTabStripModelChanged", "tab_strip_model",
+               tab_strip_model, "change", change);
   switch (change.type()) {
     case TabStripModelChange::kInserted: {
       for (const auto& contents : change.GetInsert()->contents)
@@ -1530,6 +1531,7 @@ void Browser::OnWindowDidShow() {
 
 WebContents* Browser::OpenURLFromTab(WebContents* source,
                                      const OpenURLParams& params) {
+  TRACE_EVENT1("navigation", "Browser::OpenURLFromTab", "source", source);
 #if DCHECK_IS_ON()
   DCHECK(params.Valid());
 #endif
@@ -1575,6 +1577,10 @@ WebContents* Browser::OpenURLFromTab(WebContents* source,
         params.triggering_event_info !=
         blink::mojom::TriggeringEventInfo::kFromUntrustedEvent);
   }
+
+  TRACE_EVENT_INSTANT1(
+      "navigation", "Browser::OpenURLFromTab_Result", TRACE_EVENT_SCOPE_THREAD,
+      "navigated_or_inserted_contents", navigated_or_inserted_contents);
 
   return navigated_or_inserted_contents;
 }

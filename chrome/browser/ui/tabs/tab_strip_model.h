@@ -29,6 +29,7 @@
 #include "chrome/browser/ui/tabs/tab_switch_event_latency_recorder.h"
 #include "components/tab_groups/tab_group_id.h"
 #include "components/tab_groups/tab_group_visual_data.h"
+#include "third_party/perfetto/include/perfetto/tracing/traced_value_forward.h"
 #include "ui/base/models/list_selection_model.h"
 #include "ui/base/page_transition_types.h"
 
@@ -581,6 +582,9 @@ class TabStripModel : public TabGroupController {
   // reset when _any_ active tab change occurs (rather than just one outside the
   // current tree of openers).
   bool ShouldResetOpenerOnActiveTabChange(content::WebContents* contents) const;
+
+  // Serialise this object into a trace.
+  void WriteIntoTracedValue(perfetto::TracedValue context) const;
 
  private:
   FRIEND_TEST_ALL_PREFIXES(TabStripModelTest, GetIndicesClosedByCommand);

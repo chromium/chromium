@@ -55,6 +55,7 @@
 #include "content/public/browser/render_widget_host_view.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_observer.h"
+#include "third_party/perfetto/include/perfetto/tracing/traced_value.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/gfx/range/range.h"
 #include "ui/gfx/text_elider.h"
@@ -194,6 +195,13 @@ class TabStripModel::WebContentsData : public content::WebContentsObserver {
   base::Optional<tab_groups::TabGroupId> group() const { return group_; }
   void set_group(base::Optional<tab_groups::TabGroupId> value) {
     group_ = value;
+  }
+
+  void WriteIntoTracedValue(perfetto::TracedValue context) const {
+    auto dict = std::move(context).WriteDictionary();
+    dict.Add("web_contents", contents_);
+    dict.Add("pinned", pinned_);
+    dict.Add("blocked", blocked_);
   }
 
  private:
@@ -1610,6 +1618,12 @@ bool TabStripModel::ShouldResetOpenerOnActiveTabChange(
   const int index = GetIndexOfWebContents(contents);
   DCHECK(ContainsIndex(index));
   return contents_data_[index]->reset_opener_on_active_tab_change();
+}
+
+void TabStripModel::WriteIntoTracedValue(perfetto::TracedValue context) const {
+  auto dict = std::move(context).WriteDictionary();
+  dict.Add("active_index", active_index());
+  dict.Add("tabs", contents_data_);
 }
 
 ///////////////////////////////////////////////////////////////////////////////

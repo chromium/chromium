@@ -556,6 +556,7 @@ class CONTENT_EXPORT WebContentsImpl : public WebContents,
   bool HasRecentInteractiveInputEvent() override;
   void SetIgnoreInputEvents(bool ignore_input_events) override;
   bool HasActiveEffectivelyFullscreenVideo() override;
+  void WriteIntoTracedValue(perfetto::TracedValue context) override;
 
   // Implementation of PageNavigator.
   WebContents* OpenURL(const OpenURLParams& params) override;

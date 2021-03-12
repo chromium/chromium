@@ -38,6 +38,7 @@
 #include "third_party/blink/public/mojom/frame/find_in_page.mojom-forward.h"
 #include "third_party/blink/public/mojom/input/pointer_lock_result.mojom.h"
 #include "third_party/blink/public/mojom/loader/pause_subresource_loading_handle.mojom-forward.h"
+#include "third_party/perfetto/include/perfetto/tracing/traced_value_forward.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/accessibility/ax_mode.h"
 #include "ui/accessibility/ax_tree_update.h"
@@ -1192,6 +1193,9 @@ class WebContents : public PageNavigator,
   // content of a fullscreen page (in other words, a fullscreen video with
   // custom controls).
   virtual bool HasActiveEffectivelyFullscreenVideo() = 0;
+
+  // Serialise this object into a trace.
+  virtual void WriteIntoTracedValue(perfetto::TracedValue context) = 0;
 
  private:
   // This interface should only be implemented inside content.

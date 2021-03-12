@@ -1623,6 +1623,7 @@ if (!is_android) {
       "base/in_process_browser_test_browsertest.cc",
       "base/memory_tracing_browsertest.cc",
       "base/test_chrome_web_ui_controller_factory_browsertest.cc",
+      "base/ui_test_utils_browsertest.cc",
       "base/web_ui_browser_test_browsertest.cc",
       "data/webui/async_gen.cc",
       "data/webui/async_gen.h",
