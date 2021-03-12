@@ -3,6 +3,8 @@
 # found in the LICENSE file.
 """Script for checking if we're running Python 2 or 3."""
 
+from __future__ import print_function
+
 import subprocess
 import sys
 
