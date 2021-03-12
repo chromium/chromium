@@ -249,6 +249,17 @@ inline bool IsValidSurrogatePair(const TextRun& run, unsigned index) {
   return U16_IS_TRAIL(run[index + 1]);
 }
 
+unsigned CountCodePoints(const TextRun& run,
+                         unsigned index,
+                         unsigned end_index) {
+  unsigned num_codepoints = 0;
+  while (index < end_index) {
+    index += IsValidSurrogatePair(run, index) ? 2 : 1;
+    num_codepoints++;
+  }
+  return num_codepoints;
+}
+
 TextRun ConstructTextRun(LayoutSVGInlineText& text,
                          unsigned position,
                          unsigned length,
@@ -294,28 +305,29 @@ void SynthesizeGraphemeWidths(const TextRun& run,
     CharacterRange& current_range = ranges[range_index];
     if (current_range.Width() == 0) {
       distribute_count++;
-    } else if (distribute_count != 0) {
-      // Only count surrogate pairs as a single character.
-      bool surrogate_pair = IsValidSurrogatePair(run, range_index);
-      if (!surrogate_pair)
-        distribute_count++;
-
-      float new_width = current_range.Width() / distribute_count;
-      current_range.end = current_range.start + new_width;
-      float last_end_position = current_range.end;
-      for (unsigned distribute = 1; distribute < distribute_count;
-           distribute++) {
-        // This surrogate pair check will skip processing of the second
-        // character forming the surrogate pair.
-        unsigned distribute_index =
-            range_index + distribute + (surrogate_pair ? 1 : 0);
-        ranges[distribute_index].start = last_end_position;
-        ranges[distribute_index].end = last_end_position + new_width;
-        last_end_position = ranges[distribute_index].end;
-      }
-
-      distribute_count = 0;
+      continue;
     }
+    if (distribute_count == 0)
+      continue;
+    distribute_count++;
+
+    // Distribute the width evenly among the code points.
+    const unsigned distribute_end = range_index + distribute_count;
+    unsigned num_codepoints = CountCodePoints(run, range_index, distribute_end);
+    DCHECK_GT(num_codepoints, 0u);
+    float new_width = current_range.Width() / num_codepoints;
+
+    float last_end_position = current_range.start;
+    unsigned distribute_index = range_index;
+    do {
+      CharacterRange& range = ranges[distribute_index];
+      range.start = last_end_position;
+      range.end = last_end_position + new_width;
+      last_end_position = range.end;
+      distribute_index += IsValidSurrogatePair(run, distribute_index) ? 2 : 1;
+    } while (distribute_index < distribute_end);
+
+    distribute_count = 0;
   }
 }
 
