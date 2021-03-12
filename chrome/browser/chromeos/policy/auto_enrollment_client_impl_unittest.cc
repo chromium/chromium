@@ -1544,8 +1544,11 @@ class PsmHelperTest : public AutoEnrollmentClientImplTest {
     return psm_test_case_.is_positive_membership_expected();
   }
 
-  // Expects a sample for kUMAPsmRequestStatus to be recorded once with value
-  // |status|.
+  // Expects list of samples |status_list| for kUMAPsmRequestStatus and each one
+  // of them to be recorded once.
+  // If |success_time_recorded| is true it expects one sample for
+  // kUMAPsmSuccessTime. Otherwise, expects no sample to be recorded for
+  // kUMAPsmSuccessTime.
   void ExpectPsmHistograms(const std::vector<PsmStatus> status_list,
                            bool success_time_recorded) const {
     for (PsmStatus status : status_list) {
@@ -1554,11 +1557,6 @@ class PsmHelperTest : public AutoEnrollmentClientImplTest {
     }
     histogram_tester_.ExpectTotalCount(kUMAPsmSuccessTime,
                                        success_time_recorded ? 1 : 0);
-  }
-
-  // Expects a sample for kUMAPsmSuccessTime to be recorded |count| times.
-  void ExpectPsmSuccessTimeRecorded(int count) const {
-    histogram_tester_.ExpectTotalCount(kUMAPsmSuccessTime, count);
   }
 
   // Expects a sample for kUMAPsmHashDanceComparison to be recorded once with
