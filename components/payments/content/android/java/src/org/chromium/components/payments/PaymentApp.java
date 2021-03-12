@@ -26,6 +26,9 @@ import java.util.Set;
  * The base class for a single payment app, e.g., a payment handler.
  */
 public abstract class PaymentApp extends EditableOption {
+    /** Arbitrarily chosen maximum length of a payment app name. */
+    private static final int APP_NAME_ELIDE_LENGTH = 64;
+
     /**
      * Whether complete and valid autofill data for merchant's request is available, e.g., if
      * merchant specifies `requestPayerEmail: true`, then this variable is true only if the autofill
@@ -74,12 +77,12 @@ public abstract class PaymentApp extends EditableOption {
     }
 
     protected PaymentApp(String id, String label, String sublabel, Drawable icon) {
-        super(id, removeLineTerminators(label), sublabel, icon);
+        super(id, maybeElide(removeLineTerminators(label)), sublabel, icon);
     }
 
     protected PaymentApp(
             String id, String label, String sublabel, String tertiarylabel, Drawable icon) {
-        super(id, removeLineTerminators(label), sublabel, tertiarylabel, icon);
+        super(id, maybeElide(removeLineTerminators(label)), sublabel, tertiarylabel, icon);
     }
 
     private static String removeLineTerminators(String text) {
@@ -93,6 +96,14 @@ public abstract class PaymentApp extends EditableOption {
         // X+ - X, one or more times, a greedy quantifier.
         // See: https://docs.oracle.com/javase/7/docs/api/java/util/regex/Pattern.html
         return text.replaceAll("[\n\f\r\u0085\u2028\u2029]+", "");
+    }
+
+    private static String maybeElide(String text) {
+        // 2026 is the unicode horizontal ellipsis.
+        // See https://util.unicode.org/UnicodeJsps/character.jsp?a=2026.
+        return text.length() <= APP_NAME_ELIDE_LENGTH
+                ? text
+                : text.substring(0, APP_NAME_ELIDE_LENGTH) + "\u2026";
     }
 
     /**
