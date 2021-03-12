@@ -959,7 +959,7 @@ ci.android_fyi_builder(
     goma_jobs = goma.jobs.MANY_JOBS_FOR_CI,
     execution_timeout = 5 * time.hour,
     main_console_view = main_console_if_on_branch(),
-    reclient_instance = "goma-rbe-chromium",
+    reclient_instance = "rbe-chromium-trusted",
     configure_kitchen = True,
     kitchen_emulate_gce = True,
     os = os.LINUX_DEFAULT,
@@ -974,7 +974,7 @@ ci.android_fyi_builder(
     # Higher build timeout since dbg ASAN builds can take a while on a clobber
     # build.
     execution_timeout = 4 * time.hour,
-    reclient_instance = "goma-rbe-chromium",
+    reclient_instance = "rbe-chromium-trusted",
     configure_kitchen = True,
     kitchen_emulate_gce = True,
     os = os.LINUX_DEFAULT,
