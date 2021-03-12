@@ -207,6 +207,14 @@ class AppListPresenterDelegateTest : public AshTestBase,
         ->search_results_page_view();
   }
 
+  AppsGridView* apps_grid_view() {
+    return GetAppListView()
+        ->app_list_main_view()
+        ->contents_view()
+        ->apps_container_view()
+        ->apps_grid_view();
+  }
+
   void ShowZeroStateSearchInHalfState() {
     GetAppListTestHelper()->ShowAndRunLoop(GetPrimaryDisplayId());
     GetEventGenerator()->GestureTapAt(GetPointInsideSearchbox());
@@ -2333,6 +2341,42 @@ TEST_P(AppListPresenterDelegateTest,
   GetAppListTestHelper()->CheckVisibility(false);
 }
 
+// Regression test for crash due to use-after-free. https://crbug.com/1163332
+TEST_F(AppListPresenterDelegateTest,
+       ShouldNotCrashOnItemClickAfterMonitorDisconnect) {
+  // Set up two displays.
+  UpdateDisplay("1024x768,1200x900");
+  AppListModel* model = Shell::Get()->app_list_controller()->GetModel();
+  model->AddItem(std::make_unique<AppListItem>("item 0"));
+  model->AddItem(std::make_unique<AppListItem>("item 1"));
+
+  // Open and close app list on secondary display.
+  AppListTestHelper* helper = GetAppListTestHelper();
+  helper->ShowAndRunLoop(GetSecondaryDisplay().id());
+  helper->DismissAndRunLoop();
+
+  // Open and close app list on primary display.
+  helper->ShowAndRunLoop(GetPrimaryDisplayId());
+  helper->DismissAndRunLoop();
+
+  // Disconnect secondary display.
+  UpdateDisplay("1024x768");
+
+  // Open app list to fullscreen.
+  helper->ShowAndRunLoop(GetPrimaryDisplayId());
+  helper->GetAppListView()->SetState(AppListViewState::kFullscreenAllApps);
+  helper->WaitUntilIdle();
+
+  // Click on an item.
+  AppListItemView* item_view = apps_grid_view()->GetItemViewAt(0);
+  gfx::Point item_center = item_view->GetBoundsInScreen().CenterPoint();
+  ui::test::EventGenerator* generator = GetEventGenerator();
+  generator->MoveMouseTo(item_center);
+  generator->ClickLeftButton();
+
+  // No crash. No use-after-free detected by ASAN.
+}
+
 // Tests that the app list window's bounds height (from the shelf) in kPeeking
 // state is the same whether the app list is shown on the primary display
 // or the secondary display fir different display placements.
@@ -3102,14 +3146,6 @@ class AppListPresenterDelegateLayoutTest : public AppListPresenterDelegateTest {
 
   ContentsView* contents_view() {
     return GetAppListView()->app_list_main_view()->contents_view();
-  }
-
-  AppsGridView* apps_grid_view() {
-    return GetAppListView()
-        ->app_list_main_view()
-        ->contents_view()
-        ->apps_container_view()
-        ->apps_grid_view();
   }
 
  private:

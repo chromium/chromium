@@ -834,6 +834,7 @@ class APP_LIST_EXPORT AppsGridView : public views::View,
   base::OneShotTimer host_drag_start_timer_;
 
   // An application target drag and drop host which accepts dnd operations.
+  // Usually the shelf (e.g. ShelfView or ScrollableShelfView).
   ApplicationDragAndDropHost* drag_and_drop_host_ = nullptr;
 
   // The drag operation is currently inside the dnd host and events get
