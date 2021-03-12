@@ -565,6 +565,11 @@ void ShellSurfaceBase::DisableMovement() {
     widget_->set_movement_disabled(true);
 }
 
+void ShellSurfaceBase::UpdateCanResize() {
+  SetCanResize(!movement_disabled_ &&
+               (minimum_size_.IsEmpty() || minimum_size_ != maximum_size_));
+}
+
 std::unique_ptr<base::trace_event::TracedValue>
 ShellSurfaceBase::AsTracedValue() const {
   std::unique_ptr<base::trace_event::TracedValue> value(
@@ -1263,8 +1268,7 @@ void ShellSurfaceBase::CommitWidget() {
                                  maximum_size_ != pending_maximum_size_;
   minimum_size_ = pending_minimum_size_;
   maximum_size_ = pending_maximum_size_;
-  SetCanResize(!movement_disabled_ &&
-               (minimum_size_.IsEmpty() || minimum_size_ != maximum_size_));
+  UpdateCanResize();
 
   if (!widget_)
     return;

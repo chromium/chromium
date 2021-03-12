@@ -641,12 +641,12 @@ void remote_surface_set_system_gesture_exclusion(wl_client* client,
 }
 
 void remote_surface_set_resize_lock(wl_client* client, wl_resource* resource) {
-  NOTIMPLEMENTED();
+  GetUserDataAs<ClientControlledShellSurface>(resource)->SetResizeLock(true);
 }
 
 void remote_surface_unset_resize_lock(wl_client* client,
                                       wl_resource* resource) {
-  NOTIMPLEMENTED();
+  GetUserDataAs<ClientControlledShellSurface>(resource)->SetResizeLock(false);
 }
 
 const struct zcr_remote_surface_v1_interface remote_surface_implementation = {

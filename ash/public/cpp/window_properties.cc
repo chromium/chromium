@@ -22,6 +22,7 @@ namespace ash {
 
 DEFINE_OWNED_UI_CLASS_PROPERTY_KEY(std::string, kAppIDKey, nullptr)
 DEFINE_OWNED_UI_CLASS_PROPERTY_KEY(std::string, kArcPackageNameKey, nullptr)
+DEFINE_UI_CLASS_PROPERTY_KEY(bool, kArcResizeLockKey, false)
 DEFINE_OWNED_UI_CLASS_PROPERTY_KEY(WindowBackdrop, kWindowBackdropKey, nullptr)
 DEFINE_UI_CLASS_PROPERTY_KEY(bool, kCanAttachToAnotherWindowKey, true)
 DEFINE_UI_CLASS_PROPERTY_KEY(bool, kCanConsumeSystemKeysKey, false)

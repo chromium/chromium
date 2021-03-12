@@ -1125,13 +1125,21 @@
     <!-- Version 31 additions -->
     <request name="set_resize_lock" since="31">
       <description summary="set resize lock state">
-          Enable the resize lock and put restrictions related to resizing on the shell surface.
+          Enable the resize lock and put restrictions related to resizing on
+          the shell surface.
+
+          The resize lock state is double buffered, and will be applied at the
+          time wl_surface.commit of the corresponding wl_surface is called.
       </description>
     </request>
 
     <request name="unset_resize_lock" since="31">
       <description summary="unset resize lock state">
-          Disable the resize lock and allow the shell surface to be resized freely.
+          Disable the resize lock and allow the shell surface to be resized
+          freely.
+
+          The resize lock state is double buffered, and will be applied at the
+          time wl_surface.commit of the corresponding wl_surface is called.
       </description>
     </request>
   </interface>

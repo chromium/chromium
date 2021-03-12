@@ -720,6 +720,25 @@ float ClientControlledShellSurface::GetClientToDpScale() const {
   return 1.f / scale_;
 }
 
+void ClientControlledShellSurface::SetResizeLock(bool resize_lock) {
+  TRACE_EVENT1("exo", "ClientControlledShellSurface::SetResizeLock",
+               "resize_lock", resize_lock);
+  pending_resize_lock_ = resize_lock;
+}
+
+void ClientControlledShellSurface::UpdateCanResize() {
+  TRACE_EVENT0("exo", "ClientControlledShellSurface::updateCanResize");
+  widget_->GetNativeWindow()->SetProperty(ash::kArcResizeLockKey,
+                                          pending_resize_lock_);
+  // If resize lock is enabled, the window is explicitly marded as unresizable.
+  // Otherwise, the decision is deferred to the parent class.
+  if (pending_resize_lock_) {
+    SetCanResize(false);
+    return;
+  }
+  ShellSurfaceBase::UpdateCanResize();
+}
+
 ////////////////////////////////////////////////////////////////////////////////
 // SurfaceDelegate overrides:
 
@@ -1205,6 +1224,8 @@ void ClientControlledShellSurface::OnPostWidgetCommit() {
                                           pending_always_on_top_
                                               ? ui::ZOrderLevel::kFloatingWindow
                                               : ui::ZOrderLevel::kNormal);
+
+  UpdateCanResize();
 
   ash::WindowState* window_state = GetWindowState();
   // For PIP, the snap fraction is used to specify the ideal position. Usually

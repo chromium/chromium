@@ -44,6 +44,10 @@ ASH_PUBLIC_EXPORT extern const aura::WindowProperty<std::string*>* const
 ASH_PUBLIC_EXPORT extern const aura::WindowProperty<std::string*>* const
     kArcPackageNameKey;
 
+// If true, the ARC window can not be resized freely.
+ASH_PUBLIC_EXPORT extern const aura::WindowProperty<bool>* const
+    kArcResizeLockKey;
+
 // A property key to specify whether the window should have backdrop and if
 // it has backdrop, the backdrop's mode and type. The backdrop is typically a
 // black window that covers the entire workspace placed behind the window.

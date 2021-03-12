@@ -235,6 +235,12 @@ class ClientControlledShellSurface : public ShellSurfaceBase,
   // Used to scale incoming coordinates from the client to DP.
   float GetClientToDpScale() const;
 
+  // Sets the resize lock state to the surface.
+  void SetResizeLock(bool resize_lock);
+
+  // Update the resizability based on the resize lock state.
+  void UpdateCanResize() override;
+
  protected:
   // Overridden from ShellSurfaceBase:
   float GetScale() const override;
@@ -363,6 +369,8 @@ class ClientControlledShellSurface : public ShellSurfaceBase,
 
   // Accessibility ID provided by client.
   base::Optional<int32_t> client_accessibility_id_;
+
+  bool pending_resize_lock_ = false;
 
   DISALLOW_COPY_AND_ASSIGN(ClientControlledShellSurface);
 };

@@ -133,6 +133,9 @@ class ShellSurfaceBase : public SurfaceTreeHost,
   // Prevents shell surface from being moved.
   void DisableMovement();
 
+  // Update the resizability for the surface.
+  virtual void UpdateCanResize();
+
   // Returns a trace value representing the state of the surface.
   std::unique_ptr<base::trace_event::TracedValue> AsTracedValue() const;
 

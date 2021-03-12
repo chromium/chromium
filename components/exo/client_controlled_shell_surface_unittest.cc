@@ -2660,4 +2660,27 @@ TEST_F(ClientControlledShellSurfaceTest, SnappedClientBounds) {
   surface->Commit();
 }
 
+// The shell surface with resize lock on should be unresizable.
+TEST_F(ClientControlledShellSurfaceTest,
+       ShellSurfaceWithResizeLockOnIsUnresizable) {
+  gfx::Size buffer_size(256, 256);
+  std::unique_ptr<Buffer> buffer(
+      new Buffer(exo_test_helper()->CreateGpuMemoryBuffer(buffer_size)));
+  std::unique_ptr<Surface> surface(new Surface);
+  auto shell_surface =
+      exo_test_helper()->CreateClientControlledShellSurface(surface.get());
+  surface->Attach(buffer.get());
+  surface->Commit();
+
+  EXPECT_TRUE(shell_surface->CanResize());
+
+  shell_surface->SetResizeLock(true);
+  surface->Commit();
+  EXPECT_FALSE(shell_surface->CanResize());
+
+  shell_surface->SetResizeLock(false);
+  surface->Commit();
+  EXPECT_TRUE(shell_surface->CanResize());
+}
+
 }  // namespace exo
