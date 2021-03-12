@@ -896,6 +896,26 @@ IN_PROC_BROWSER_TEST_F(SecurePaymentConfirmationCreationTest,
   ExpectJourneyLoggerEvent(/*spc_confirm_logged=*/false);
 }
 
+// Expect that an error is returned when there is no RP ID. This is a regression
+// test for crbug.com/1183559.
+IN_PROC_BROWSER_TEST_F(SecurePaymentConfirmationCreationTest, MissingRpId) {
+  NavigateTo("a.com", "/secure_payment_confirmation.html");
+
+  EXPECT_EQ(
+      "a JavaScript error: \"NotSupportedError: Required parameters missing in "
+      "`options.payment`.\"\n",
+      content::EvalJs(GetActiveWebContents(),
+                      content::JsReplace("createCredentialWithNoRpId($1)",
+                                         GetDefaultIconURL()))
+          .error);
+
+  ExpectNoEnrollDialogShown();
+  ExpectNoEnrollDialogResult();
+  ExpectNoEnrollSystemPromptResult();
+  ExpectNoFunnelCount();
+  ExpectJourneyLoggerEvent(/*spc_confirm_logged=*/false);
+}
+
 #endif  // !defined(OS_ANDROID)
 
 }  // namespace

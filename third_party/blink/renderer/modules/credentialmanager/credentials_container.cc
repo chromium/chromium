@@ -787,7 +787,7 @@ void CreatePublicKeyCredentialForPaymentCredential(
   // for SecurePaymentConfirmation because this is subject to a lot of change
   // and possibly removal.
 
-  if (!options->rp() || !options->instrument() ||
+  if (!options->rp() || !options->rp()->hasId() || !options->instrument() ||
       !options->instrument()->displayName() || !options->instrument()->icon()) {
     resolver->Reject(MakeGarbageCollected<DOMException>(
         DOMExceptionCode::kNotSupportedError,
