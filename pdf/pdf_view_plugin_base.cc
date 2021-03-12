@@ -18,6 +18,7 @@
 #include "base/check_op.h"
 #include "base/containers/fixed_flat_map.h"
 #include "base/feature_list.h"
+#include "base/i18n/time_formatting.h"
 #include "base/memory/weak_ptr.h"
 #include "base/notreached.h"
 #include "base/numerics/ranges.h"
@@ -32,14 +33,17 @@
 #include "pdf/accessibility.h"
 #include "pdf/accessibility_structs.h"
 #include "pdf/document_layout.h"
+#include "pdf/document_metadata.h"
 #include "pdf/paint_ready_rect.h"
 #include "pdf/pdf_features.h"
 #include "pdf/pdfium/pdfium_engine.h"
 #include "pdf/ppapi_migration/image.h"
 #include "pdf/ppapi_migration/url_loader.h"
+#include "pdf/ui/document_properties.h"
 #include "pdf/ui/file_name.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "third_party/skia/include/core/SkColor.h"
+#include "ui/base/text/bytes_formatting.h"
 #include "ui/gfx/geometry/point_f.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
@@ -386,6 +390,59 @@ void PdfViewPluginBase::SendBookmarks() {
   base::Value message(base::Value::Type::DICTIONARY);
   message.SetStringKey("type", "bookmarks");
   message.SetKey("bookmarksData", std::move(bookmarks));
+  SendMessage(std::move(message));
+}
+
+void PdfViewPluginBase::SendMetadata() {
+  base::Value metadata(base::Value::Type::DICTIONARY);
+  const DocumentMetadata& document_metadata = engine()->GetDocumentMetadata();
+
+  const std::u16string version = FormatPdfVersion(document_metadata.version);
+  if (!version.empty())
+    metadata.SetStringKey("version", version);
+
+  metadata.SetStringKey("fileSize",
+                        ui::FormatBytes(document_metadata.size_bytes));
+
+  metadata.SetBoolKey("linearized", document_metadata.linearized);
+
+  if (!document_metadata.title.empty())
+    metadata.SetStringKey("title", document_metadata.title);
+
+  if (!document_metadata.author.empty())
+    metadata.SetStringKey("author", document_metadata.author);
+
+  if (!document_metadata.subject.empty())
+    metadata.SetStringKey("subject", document_metadata.subject);
+
+  if (!document_metadata.keywords.empty())
+    metadata.SetStringKey("keywords", document_metadata.keywords);
+
+  if (!document_metadata.creator.empty())
+    metadata.SetStringKey("creator", document_metadata.creator);
+
+  if (!document_metadata.producer.empty())
+    metadata.SetStringKey("producer", document_metadata.producer);
+
+  if (!document_metadata.creation_date.is_null()) {
+    metadata.SetStringKey("creationDate", base::TimeFormatShortDateAndTime(
+                                              document_metadata.creation_date));
+  }
+
+  if (!document_metadata.mod_date.is_null()) {
+    metadata.SetStringKey("modDate", base::TimeFormatShortDateAndTime(
+                                         document_metadata.mod_date));
+  }
+
+  metadata.SetStringKey("pageSize",
+                        FormatPageSize(engine()->GetUniformPageSizePoints()));
+
+  metadata.SetBoolKey("canSerializeDocument",
+                      IsSaveDataSizeValid(engine()->GetLoadedByteSize()));
+
+  base::Value message(base::Value::Type::DICTIONARY);
+  message.SetStringKey("type", "metadata");
+  message.SetKey("metadataData", std::move(metadata));
   SendMessage(std::move(message));
 }
 

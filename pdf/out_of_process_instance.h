@@ -203,9 +203,6 @@ class OutOfProcessInstance : public PdfViewPluginBase,
   // Send a notification that the print preview has loaded.
   void SendPrintPreviewLoadedNotification();
 
-  // Send document metadata.
-  void SendMetadata();
-
   // Sends the thumbnail image data.
   void SendThumbnail(const std::string& message_id, Thumbnail thumbnail);
 

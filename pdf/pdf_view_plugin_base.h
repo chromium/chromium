@@ -161,6 +161,9 @@ class PdfViewPluginBase : public PDFEngine::Client,
   // Sends the bookmarks data.
   void SendBookmarks();
 
+  // Send document metadata data.
+  void SendMetadata();
+
   // Sends the loading progress, where `percentage` represents the progress, or
   // -1 for loading error.
   void SendLoadingProgress(double percentage);
