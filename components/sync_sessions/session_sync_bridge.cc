@@ -13,7 +13,6 @@
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/location.h"
-#include "base/memory/checked_ptr.h"
 #include "base/sequenced_task_runner.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "base/time/time.h"
@@ -92,7 +91,7 @@ class LocalSessionWriteBatch : public LocalSessionEventHandlerImpl::WriteBatch {
  private:
   const SessionStore::SessionInfo session_info_;
   std::unique_ptr<SessionStore::WriteBatch> batch_;
-  const CheckedPtr<syncer::ModelTypeChangeProcessor> processor_;
+  syncer::ModelTypeChangeProcessor* const processor_;
 };
 
 }  // namespace

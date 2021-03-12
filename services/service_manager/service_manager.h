@@ -12,7 +12,6 @@
 #include "base/containers/unique_ptr_adapters.h"
 #include "base/files/file_path.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/optional.h"
 #include "base/process/process.h"
 #include "base/token.h"
@@ -203,7 +202,7 @@ class ServiceManager : public Service {
 
   // Always points to the ServiceManager's own Instance. Note that this
   // ServiceInstance still has an entry in |instances_|.
-  CheckedPtr<ServiceInstance> service_manager_instance_;
+  ServiceInstance* service_manager_instance_;
 
   mojo::RemoteSet<mojom::ServiceManagerListener> listeners_;
 

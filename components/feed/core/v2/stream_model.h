@@ -11,7 +11,6 @@
 #include <vector>
 
 #include "base/containers/flat_map.h"
-#include "base/memory/checked_ptr.h"
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
 #include "components/feed/core/proto/v2/store.pb.h"
@@ -154,7 +153,7 @@ class StreamModel {
   StreamType stream_type_;
 
   base::ObserverList<Observer> observers_;
-  CheckedPtr<StoreObserver> store_observer_ = nullptr;  // Unowned.
+  StoreObserver* store_observer_ = nullptr;  // Unowned.
   stream_model::ContentMap content_map_;
   stream_model::FeatureTree base_feature_tree_{&content_map_};
   // |base_feature_tree_| with |ephemeral_changes_| applied.

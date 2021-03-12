@@ -11,7 +11,6 @@
 #include <utility>
 #include <vector>
 
-#include "base/memory/checked_ptr.h"
 #include "base/strings/string16.h"
 #include "components/autofill/core/browser/autofill_client.h"
 #include "components/autofill/core/browser/autofill_metrics.h"
@@ -167,11 +166,11 @@ class LocalCardMigrationManager {
       std::unique_ptr<std::unordered_map<std::string, std::string>> save_result,
       const std::string& display_text);
 
-  const CheckedPtr<AutofillClient> client_;
+  AutofillClient* const client_;
 
   // Handles Payments service requests.
   // Owned by AutofillManager.
-  CheckedPtr<payments::PaymentsClient> payments_client_;
+  payments::PaymentsClient* payments_client_;
 
  private:
   friend class LocalCardMigrationBrowserTest;
@@ -221,7 +220,7 @@ class LocalCardMigrationManager {
   // web database.  This is overridden by the AutofillManagerTest.
   // Weak reference.
   // May be NULL.  NULL indicates OTR.
-  CheckedPtr<PersonalDataManager> personal_data_manager_;
+  PersonalDataManager* personal_data_manager_;
 
   // The imported credit card number from the form submission.
   base::Optional<std::u16string> imported_credit_card_number_;
@@ -246,7 +245,7 @@ class LocalCardMigrationManager {
   AutofillMetrics::LocalCardMigrationOrigin local_card_migration_origin_;
 
   // Initialized only during tests.
-  CheckedPtr<ObserverForTest> observer_for_testing_ = nullptr;
+  ObserverForTest* observer_for_testing_ = nullptr;
 
   std::unique_ptr<LocalCardMigrationStrikeDatabase>
       local_card_migration_strike_database_;

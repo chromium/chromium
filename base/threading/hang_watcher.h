@@ -19,7 +19,6 @@
 #include "base/compiler_specific.h"
 #include "base/debug/crash_logging.h"
 #include "base/feature_list.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/memory_pressure_listener.h"
 #include "base/synchronization/lock.h"
 #include "base/thread_annotations.h"
@@ -359,7 +358,7 @@ class BASE_EXPORT HangWatcher : public DelegateSimpleThread::Delegate {
   base::Lock capture_lock_ ACQUIRED_AFTER(watch_state_lock_);
   std::atomic<bool> capture_in_progress_{false};
 
-  CheckedPtr<const base::TickClock> tick_clock_;
+  const base::TickClock* tick_clock_;
 
   // Registration to receive memory pressure signals.
   base::MemoryPressureListener memory_pressure_listener_;

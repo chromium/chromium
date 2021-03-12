@@ -12,7 +12,6 @@
 #include "base/callback_helpers.h"
 #include "base/location.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/ref_counted.h"
 #include "base/run_loop.h"
@@ -107,7 +106,7 @@ class GeolocationProviderTest : public testing::Test {
       : task_environment_(
             base::test::SingleThreadTaskEnvironment::MainThreadType::UI),
         arbitrator_(new FakeLocationProvider) {
-    provider()->SetArbitratorForTesting(base::WrapUnique(arbitrator_.get()));
+    provider()->SetArbitratorForTesting(base::WrapUnique(arbitrator_));
   }
 
   ~GeolocationProviderTest() override = default;
@@ -136,7 +135,7 @@ class GeolocationProviderTest : public testing::Test {
   base::ThreadChecker thread_checker_;
 
   // Owned by the GeolocationProviderImpl class.
-  CheckedPtr<FakeLocationProvider> arbitrator_;
+  FakeLocationProvider* arbitrator_;
 
   // True if |arbitrator_| is started.
   bool is_started_;

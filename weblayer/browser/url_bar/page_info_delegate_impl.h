@@ -7,7 +7,6 @@
 
 #include <string>
 
-#include "base/memory/checked_ptr.h"
 #include "base/strings/string16.h"
 #include "build/build_config.h"
 #include "components/browsing_data/content/local_shared_objects_container.h"
@@ -60,7 +59,7 @@ class PageInfoDelegateImpl : public PageInfoDelegate {
  private:
   content::BrowserContext* GetBrowserContext() const;
 
-  CheckedPtr<content::WebContents> web_contents_;
+  content::WebContents* web_contents_;
 };
 
 }  //  namespace weblayer

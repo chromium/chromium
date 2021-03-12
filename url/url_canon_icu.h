@@ -9,7 +9,6 @@
 
 #include "base/compiler_specific.h"
 #include "base/component_export.h"
-#include "base/memory/checked_ptr.h"
 #include "url/url_canon.h"
 
 typedef struct UConverter UConverter;
@@ -33,7 +32,7 @@ class COMPONENT_EXPORT(URL) ICUCharsetConverter : public CharsetConverter {
 
  private:
   // The ICU converter, not owned by this class.
-  CheckedPtr<UConverter> converter_;
+  UConverter* converter_;
 };
 
 }  // namespace url

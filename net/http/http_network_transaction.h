@@ -12,7 +12,6 @@
 
 #include "base/gtest_prod_util.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/time/time.h"
 #include "build/buildflag.h"
@@ -317,12 +316,12 @@ class NET_EXPORT_PRIVATE HttpNetworkTransaction
   CompletionRepeatingCallback io_callback_;
   CompletionOnceCallback callback_;
 
-  CheckedPtr<HttpNetworkSession> session_;
+  HttpNetworkSession* session_;
 
   NetLogWithSource net_log_;
 
   // Reset to null at the start of the Read state machine.
-  CheckedPtr<const HttpRequestInfo> request_;
+  const HttpRequestInfo* request_;
 
   // The requested URL.
   GURL url_;
@@ -415,7 +414,7 @@ class NET_EXPORT_PRIVATE HttpNetworkTransaction
 
   // The helper object to use to create WebSocketHandshakeStreamBase
   // objects. Only relevant when establishing a WebSocket connection.
-  CheckedPtr<WebSocketHandshakeStreamBase::CreateHelper>
+  WebSocketHandshakeStreamBase::CreateHelper*
       websocket_handshake_stream_base_create_helper_;
 
   BeforeNetworkStartCallback before_network_start_callback_;

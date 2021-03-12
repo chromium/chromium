@@ -9,7 +9,6 @@
 
 #include "base/command_line.h"
 #include "base/feature_list.h"
-#include "base/memory/checked_ptr.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/optional.h"
@@ -418,7 +417,7 @@ struct ClientHintsExtendedData {
   url::Origin resource_origin;
   bool is_main_frame = false;
   GURL main_frame_url;
-  CheckedPtr<const blink::PermissionsPolicy> permissions_policy = nullptr;
+  const blink::PermissionsPolicy* permissions_policy = nullptr;
   bool is_1p_origin = false;
 };
 

@@ -5,7 +5,6 @@
 #ifndef CONTENT_BROWSER_BROWSER_INTERFACE_BROKER_IMPL_H_
 #define CONTENT_BROWSER_BROWSER_INTERFACE_BROKER_IMPL_H_
 
-#include "base/memory/checked_ptr.h"
 #include "content/browser/browser_interface_binders.h"
 #include "content/browser/mojo_binder_policy_applier.h"
 #include "mojo/public/cpp/bindings/binder_map.h"
@@ -101,7 +100,7 @@ class BrowserInterfaceBrokerImpl : public blink::mojom::BrowserInterfaceBroker {
     }
   }
 
-  const CheckedPtr<ExecutionContextHost> host_;
+  ExecutionContextHost* const host_;
   mojo::BinderMap binder_map_;
   mojo::BinderMapWithContext<InterfaceBinderContext> binder_map_with_context_;
   std::unique_ptr<MojoBinderPolicyApplier> policy_applier_;

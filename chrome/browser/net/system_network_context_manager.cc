@@ -13,7 +13,6 @@
 #include "base/command_line.h"
 #include "base/feature_list.h"
 #include "base/logging.h"
-#include "base/memory/checked_ptr.h"
 #include "base/process/process_handle.h"
 #include "base/sequence_checker.h"
 #include "base/strings/string_split.h"
@@ -249,7 +248,7 @@ class SystemNetworkContextManager::URLLoaderFactoryForSystem
   ~URLLoaderFactoryForSystem() override = default;
 
   SEQUENCE_CHECKER(sequence_checker_);
-  CheckedPtr<SystemNetworkContextManager> manager_;
+  SystemNetworkContextManager* manager_;
 
   DISALLOW_COPY_AND_ASSIGN(URLLoaderFactoryForSystem);
 };
@@ -352,8 +351,7 @@ SystemNetworkContextManager::SystemNetworkContextManager(
   pref_change_registrar_.Init(local_state_);
 
   PrefChangeRegistrar::NamedChangeCallback auth_pref_callback =
-      base::BindRepeating(&OnAuthPrefsChanged,
-                          base::Unretained(local_state_.get()));
+      base::BindRepeating(&OnAuthPrefsChanged, base::Unretained(local_state_));
 
   pref_change_registrar_.Add(prefs::kAuthServerAllowlist, auth_pref_callback);
   pref_change_registrar_.Add(prefs::kAuthNegotiateDelegateAllowlist,

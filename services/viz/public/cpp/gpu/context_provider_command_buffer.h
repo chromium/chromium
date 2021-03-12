@@ -11,7 +11,6 @@
 #include <vector>
 
 #include "base/compiler_specific.h"
-#include "base/memory/checked_ptr.h"
 #include "base/observer_list.h"
 #include "base/single_thread_task_runner.h"
 #include "base/synchronization/lock.h"
@@ -149,7 +148,7 @@ class ContextProviderCommandBuffer
   const command_buffer_metrics::ContextType context_type_;
 
   scoped_refptr<gpu::GpuChannelHost> channel_;
-  CheckedPtr<gpu::GpuMemoryBufferManager> gpu_memory_buffer_manager_;
+  gpu::GpuMemoryBufferManager* gpu_memory_buffer_manager_;
   scoped_refptr<base::SingleThreadTaskRunner> default_task_runner_;
 
   // |shared_image_interface_| must be torn down after |command_buffer_| to
@@ -163,7 +162,7 @@ class ContextProviderCommandBuffer
   std::unique_ptr<gpu::TransferBuffer> transfer_buffer_;
 
   // Owned by either gles2_impl_ or raster_interface_, not both.
-  CheckedPtr<gpu::ImplementationBase> impl_;
+  gpu::ImplementationBase* impl_;
   std::unique_ptr<gpu::gles2::GLES2Implementation> gles2_impl_;
   std::unique_ptr<gpu::gles2::GLES2TraceImplementation> trace_impl_;
   std::unique_ptr<gpu::raster::RasterInterface> raster_interface_;

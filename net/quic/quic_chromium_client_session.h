@@ -20,7 +20,6 @@
 
 #include "base/containers/mru_cache.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/observer_list_types.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
@@ -335,7 +334,7 @@ class NET_EXPORT_PRIVATE QuicChromiumClientSession
     quic::QuicServerId server_id_;
     quic::ParsedQuicVersion quic_version_;
     LoadTimingInfo::ConnectTiming connect_timing_;
-    CheckedPtr<quic::QuicClientPushPromiseIndex> push_promise_index_;
+    quic::QuicClientPushPromiseIndex* push_promise_index_;
 
     // |quic::QuicClientPromisedInfo| owns this. It will be set when |Try()|
     // is asynchronous, i.e. it returned quic::QUIC_PENDING, and remains valid
@@ -463,7 +462,7 @@ class NET_EXPORT_PRIVATE QuicChromiumClientSession
 
    private:
     // |session_| owns |this| and should out live |this|.
-    CheckedPtr<QuicChromiumClientSession> session_;
+    QuicChromiumClientSession* session_;
   };
 
   // This class implements Chrome logic for path validation events associated
@@ -482,7 +481,7 @@ class NET_EXPORT_PRIVATE QuicChromiumClientSession
 
    private:
     // |session_| owns |this| and should out live |this|.
-    CheckedPtr<QuicChromiumClientSession> session_;
+    QuicChromiumClientSession* session_;
   };
 
   // This class is used to handle writer events that occur on the probing path.

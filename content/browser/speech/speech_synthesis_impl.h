@@ -5,7 +5,6 @@
 #ifndef CONTENT_BROWSER_SPEECH_SPEECH_SYNTHESIS_IMPL_H_
 #define CONTENT_BROWSER_SPEECH_SPEECH_SYNTHESIS_IMPL_H_
 
-#include "base/memory/checked_ptr.h"
 #include "content/public/browser/tts_controller.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "mojo/public/cpp/bindings/remote_set.h"
@@ -46,8 +45,8 @@ class SpeechSynthesisImpl : public blink::mojom::SpeechSynthesis,
   void OnVoicesChanged() override;
 
  private:
-  CheckedPtr<BrowserContext> browser_context_;
-  CheckedPtr<WebContents> web_contents_;
+  BrowserContext* browser_context_;
+  WebContents* web_contents_;
 
   mojo::ReceiverSet<blink::mojom::SpeechSynthesis> receiver_set_;
   mojo::RemoteSet<blink::mojom::SpeechSynthesisVoiceListObserver> observer_set_;

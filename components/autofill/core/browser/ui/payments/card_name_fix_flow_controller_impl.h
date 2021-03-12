@@ -9,7 +9,6 @@
 
 #include "base/callback.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/strings/string16.h"
 #include "components/autofill/core/browser/ui/payments/card_name_fix_flow_controller.h"
 
@@ -44,7 +43,7 @@ class CardNameFixFlowControllerImpl : public CardNameFixFlowController {
   std::u16string inferred_cardholder_name_;
 
   // View that displays the fix flow prompt.
-  CheckedPtr<CardNameFixFlowView> card_name_fix_flow_view_ = nullptr;
+  CardNameFixFlowView* card_name_fix_flow_view_ = nullptr;
 
   // The callback to call once user confirms their name through the fix flow.
   base::OnceCallback<void(const std::u16string&)> name_accepted_callback_;

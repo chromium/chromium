@@ -14,7 +14,6 @@
 #include "base/bind.h"
 #include "base/check_op.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted_memory.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
@@ -115,7 +114,7 @@ class WebUIDataSourceImpl::InternalDataSource : public URLDataSource {
   }
 
  private:
-  CheckedPtr<WebUIDataSourceImpl> parent_;
+  WebUIDataSourceImpl* parent_;
 };
 
 WebUIDataSourceImpl::WebUIDataSourceImpl(const std::string& source_name)

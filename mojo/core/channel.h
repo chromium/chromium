@@ -9,7 +9,6 @@
 
 #include "base/containers/span.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/nonscannable_memory.h"
 #include "base/memory/ref_counted.h"
 #include "base/process/process.h"
@@ -427,7 +426,7 @@ class MOJO_SYSTEM_IMPL_EXPORT Channel
 
   class ReadBuffer;
 
-  CheckedPtr<Delegate> delegate_;
+  Delegate* delegate_;
   HandlePolicy handle_policy_;
   const std::unique_ptr<ReadBuffer> read_buffer_;
 

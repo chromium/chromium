@@ -13,7 +13,6 @@
 #include "base/callback_forward.h"
 #include "base/cancelable_callback.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/strings/string16.h"
 #include "base/time/time.h"
@@ -103,8 +102,7 @@ class LocationArbitrator : public LocationProvider {
                            bool from_same_provider) const;
 
   const CustomLocationProviderCallback custom_location_provider_getter_;
-  CheckedPtr<GeolocationSystemPermissionManager>
-      geolocation_system_permission_manager_;
+  GeolocationSystemPermissionManager* geolocation_system_permission_manager_;
   scoped_refptr<base::SingleThreadTaskRunner> main_task_runner_;
   const scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
   const std::string api_key_;
@@ -114,7 +112,7 @@ class LocationArbitrator : public LocationProvider {
   std::vector<std::unique_ptr<LocationProvider>> providers_;
   bool enable_high_accuracy_;
   // The provider which supplied the current |position_|
-  CheckedPtr<const LocationProvider> position_provider_;
+  const LocationProvider* position_provider_;
   bool is_permission_granted_;
   // The current best estimate of our position.
   mojom::Geoposition position_;

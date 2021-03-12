@@ -7,7 +7,6 @@
 
 #include <vector>
 
-#include "base/memory/checked_ptr.h"
 #include "ui/views/layout/layout_types.h"
 #include "ui/views/views_export.h"
 
@@ -106,7 +105,7 @@ class VIEWS_EXPORT LayoutManager {
 
  private:
   friend class views::View;
-  CheckedPtr<View> view_setting_visibility_on_ = nullptr;
+  View* view_setting_visibility_on_ = nullptr;
 };
 
 }  // namespace views

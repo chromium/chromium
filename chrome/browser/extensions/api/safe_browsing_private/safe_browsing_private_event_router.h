@@ -11,7 +11,6 @@
 #include "base/callback_forward.h"
 #include "base/feature_list.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/timer/timer.h"
 #include "base/values.h"
@@ -314,15 +313,15 @@ class SafeBrowsingPrivateEventRouter
 
   void RemoveDmTokenFromRejectedSet(const std::string& dm_token);
 
-  CheckedPtr<content::BrowserContext> context_;
-  CheckedPtr<signin::IdentityManager> identity_manager_ = nullptr;
-  CheckedPtr<EventRouter> event_router_ = nullptr;
+  content::BrowserContext* context_;
+  signin::IdentityManager* identity_manager_ = nullptr;
+  EventRouter* event_router_ = nullptr;
 
   // The cloud policy clients used to upload browser events and profile events
   // to the cloud. These clients are never used to fetch policies. These
   // pointers are not owned by the class.
-  CheckedPtr<policy::CloudPolicyClient> browser_client_ = nullptr;
-  CheckedPtr<policy::CloudPolicyClient> profile_client_ = nullptr;
+  policy::CloudPolicyClient* browser_client_ = nullptr;
+  policy::CloudPolicyClient* profile_client_ = nullptr;
 
   // The private clients are used on platforms where we cannot just get a
   // client and we create our own (used through the above client pointers).

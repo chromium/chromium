@@ -10,7 +10,6 @@
 
 #include "base/callback.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/strings/string16.h"
 #include "build/build_config.h"
 #include "components/autofill/core/browser/autofill_client.h"
@@ -125,7 +124,7 @@ class AutofillSaveCardInfoBarDelegateMobile : public ConfirmInfoBarDelegate {
   AutofillClient::LocalSaveCardPromptCallback local_save_card_prompt_callback_;
 
   // Weak reference to read & write |kAutofillAcceptSaveCreditCardPromptState|,
-  CheckedPtr<PrefService> pref_service_;
+  PrefService* pref_service_;
 
   // Did the user ever explicitly accept or dismiss this infobar?
   bool had_user_interaction_;

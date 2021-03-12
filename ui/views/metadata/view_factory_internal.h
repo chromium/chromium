@@ -12,7 +12,6 @@
 #include <utility>
 #include <vector>
 
-#include "base/memory/checked_ptr.h"
 #include "base/strings/string16.h"
 #include "ui/base/class_property.h"
 #include "ui/views/metadata/type_conversion.h"
@@ -101,7 +100,7 @@ class ClassPropertyMoveSetter : public PropertySetterBase {
   }
 
  private:
-  CheckedPtr<const ui::ClassProperty<TValue*>> property_;
+  const ui::ClassProperty<TValue*>* property_;
   TValue value_;
 };
 

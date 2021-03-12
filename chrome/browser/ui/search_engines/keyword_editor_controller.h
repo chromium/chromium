@@ -9,7 +9,6 @@
 #include <string>
 
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/strings/string16.h"
 
 class Profile;
@@ -66,7 +65,7 @@ class KeywordEditorController {
   }
 
  private:
-  CheckedPtr<TemplateURLService> url_model_;
+  TemplateURLService* url_model_;
 
   // Model for the TableView.
   std::unique_ptr<TemplateURLTableModel> table_model_;

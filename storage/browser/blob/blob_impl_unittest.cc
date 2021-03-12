@@ -10,7 +10,6 @@
 #include <utility>
 
 #include "base/bind.h"
-#include "base/memory/checked_ptr.h"
 #include "base/run_loop.h"
 #include "base/task/post_task.h"
 #include "base/test/task_environment.h"
@@ -40,7 +39,7 @@ class DataPipeReader : public mojo::DataPipeDrainer::Client {
   void OnDataComplete() override { std::move(done_callback_).Run(); }
 
  private:
-  CheckedPtr<std::string> data_out_;
+  std::string* data_out_;
   base::OnceClosure done_callback_;
 };
 

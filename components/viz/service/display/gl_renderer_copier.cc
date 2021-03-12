@@ -8,7 +8,6 @@
 #include <utility>
 
 #include "base/bind.h"
-#include "base/memory/checked_ptr.h"
 #include "base/process/memory.h"
 #include "base/stl_util.h"
 #include "base/threading/sequenced_task_runner_handle.h"
@@ -496,7 +495,7 @@ class GLPixelBufferRGBAResult final : public CopyOutputResult {
  private:
   const gfx::ColorSpace color_space_;
   base::WeakPtr<GLRendererCopier> copier_weak_ptr_;
-  CheckedPtr<ContextProvider> context_provider_;
+  ContextProvider* context_provider_;
   mutable GLuint transfer_buffer_;
   const bool is_upside_down_;
   const bool swap_red_and_blue_;
@@ -712,9 +711,9 @@ class GLPixelBufferI420Result final : public CopyOutputResult {
  private:
   const gfx::Rect aligned_rect_;
   base::WeakPtr<GLRendererCopier> copier_weak_ptr_;
-  const CheckedPtr<ContextProvider> context_provider_;
+  ContextProvider* const context_provider_;
   const GLuint transfer_buffer_;
-  CheckedPtr<uint8_t> pixels_;
+  uint8_t* pixels_;
 };
 }  // namespace
 

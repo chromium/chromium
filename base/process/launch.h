@@ -17,7 +17,6 @@
 #include "base/command_line.h"
 #include "base/environment.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/process/process.h"
 #include "base/process/process_handle.h"
 #include "base/strings/string_piece.h"
@@ -294,13 +293,13 @@ struct BASE_EXPORT LaunchOptions {
   // WARNING: If LaunchProcess is called in the presence of multiple threads,
   // code running in this delegate essentially needs to be async-signal safe
   // (see man 7 signal for a list of allowed functions).
-  CheckedPtr<PreExecDelegate> pre_exec_delegate = nullptr;
+  PreExecDelegate* pre_exec_delegate = nullptr;
 #endif  // !defined(OS_APPLE)
 
   // Each element is an RLIMIT_* constant that should be raised to its
   // rlim_max.  This pointer is owned by the caller and must live through
   // the call to LaunchProcess().
-  CheckedPtr<const std::vector<int>> maximize_rlimits = nullptr;
+  const std::vector<int>* maximize_rlimits = nullptr;
 
   // If true, start the process in a new process group, instead of
   // inheriting the parent's process group.  The pgid of the child process

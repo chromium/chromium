@@ -10,7 +10,6 @@
 #include <vector>
 
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/optional.h"
 #include "base/threading/thread_checker.h"
 #include "base/types/pass_key.h"
@@ -326,7 +325,7 @@ class SkiaOutputSurfaceImplOnGpu
     void EndAccess();
 
    private:
-    const CheckedPtr<SkiaOutputSurfaceImplOnGpu> impl_on_gpu_;
+    SkiaOutputSurfaceImplOnGpu* const impl_on_gpu_;
     base::flat_set<ImageContextImpl*> image_contexts_;
 
     DISALLOW_COPY_AND_ASSIGN(PromiseImageAccessHelper);

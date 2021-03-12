@@ -12,7 +12,6 @@
 #include "base/callback.h"
 #include "base/containers/flat_map.h"
 #include "base/gtest_prod_util.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "chrome/browser/media/router/discovery/dial/dial_url_fetcher.h"
@@ -123,7 +122,7 @@ class DialAppDiscoveryService {
     DialAppInfoCallback app_info_cb_;
 
     // Raw pointer to DialAppDiscoveryService that owns |this|.
-    const CheckedPtr<DialAppDiscoveryService> service_;
+    DialAppDiscoveryService* const service_;
 
     SEQUENCE_CHECKER(sequence_checker_);
     base::WeakPtrFactory<PendingRequest> weak_ptr_factory_{this};

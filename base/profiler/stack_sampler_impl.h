@@ -10,7 +10,6 @@
 #include "base/base_export.h"
 #include "base/callback.h"
 #include "base/containers/circular_deque.h"
-#include "base/memory/checked_ptr.h"
 #include "base/profiler/frame.h"
 #include "base/profiler/register_context.h"
 #include "base/profiler/stack_copier.h"
@@ -60,9 +59,9 @@ class BASE_EXPORT StackSamplerImpl : public StackSampler {
   // Unwinders are stored in decreasing priority order.
   base::circular_deque<std::unique_ptr<Unwinder>> unwinders_;
 
-  const CheckedPtr<ModuleCache> module_cache_;
+  ModuleCache* const module_cache_;
   const RepeatingClosure record_sample_callback_;
-  const CheckedPtr<StackSamplerTestDelegate> test_delegate_;
+  StackSamplerTestDelegate* const test_delegate_;
 
   // True if ownership of the object has been passed to the profiling thread and
   // initialization has occurred there. If that's the case then any further aux

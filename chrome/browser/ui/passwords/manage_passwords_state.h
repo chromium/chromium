@@ -11,7 +11,6 @@
 
 #include "base/callback.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/strings/string16.h"
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_store_change.h"
@@ -162,7 +161,7 @@ class ManagePasswordsState {
   password_manager::ui::State state_;
 
   // The client used for logging.
-  CheckedPtr<password_manager::PasswordManagerClient> client_;
+  password_manager::PasswordManagerClient* client_;
 
   // Whether the last attempt to authenticate to opt-in using password account
   // storage failed.

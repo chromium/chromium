@@ -13,7 +13,6 @@
 #include <vector>
 
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/optional.h"
 #include "base/time/clock.h"
@@ -429,7 +428,7 @@ class PasswordFormMetricsRecorder
 
   // Not owned. Points to base::DefaultClock::GetInstance() by default, but can
   // be overridden for testing.
-  CheckedPtr<base::Clock> clock_;
+  base::Clock* clock_;
 
   // True if the main frame's committed URL, at the time PasswordFormManager
   // was created, is secure.
@@ -473,7 +472,7 @@ class PasswordFormMetricsRecorder
   // Holds URL keyed metrics (UKMs) to be recorded on destruction.
   ukm::builders::PasswordForm ukm_entry_builder_;
 
-  const CheckedPtr<PrefService> pref_service_;
+  PrefService* const pref_service_;
 
   // Counter for DetailedUserActions observed during the lifetime of a
   // PasswordFormManager. Reported upon destruction.

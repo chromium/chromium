@@ -14,7 +14,6 @@
 #include "base/files/file.h"
 #include "base/files/file_path.h"
 #include "base/logging.h"
-#include "base/memory/checked_ptr.h"
 #include "base/process/memory.h"
 
 #ifndef NDEBUG
@@ -500,7 +499,7 @@ class NoThrowBuffer {
   }
 
  protected:
-  CheckedPtr<T> buffer_;
+  T* buffer_;
   size_t size_;  // how much of the buffer we're using.
   size_t alloc_size_;  // how much space we have allocated.
   Allocator alloc_;

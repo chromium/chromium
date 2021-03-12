@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "base/callback.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "components/payments/content/payment_credential_enrollment_model.h"
 #include "components/payments/core/secure_payment_confirmation_metrics.h"
@@ -111,7 +110,7 @@ class PaymentCredentialEnrollmentController
   // views::Widget.
   base::WeakPtr<PaymentCredentialEnrollmentView> view_;
 
-  CheckedPtr<ObserverForTest> observer_for_test_ = nullptr;
+  ObserverForTest* observer_for_test_ = nullptr;
   base::WeakPtr<ScopedToken> token_;
 
   bool is_user_response_recorded_ = false;

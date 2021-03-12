@@ -8,7 +8,6 @@
 #include <stdint.h>
 
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "content/browser/service_worker/service_worker_context_core_observer.h"
 
 class GURL;
@@ -33,7 +32,7 @@ class PushMessagingContext : public ServiceWorkerContextCoreObserver {
   void OnStorageWiped() override;
 
  private:
-  CheckedPtr<BrowserContext> browser_context_;
+  BrowserContext* browser_context_;
 
   scoped_refptr<ServiceWorkerContextWrapper> service_worker_context_;
 

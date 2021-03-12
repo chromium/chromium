@@ -8,7 +8,6 @@
 #include <string>
 
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/strings/string16.h"
 #include "build/build_config.h"
 #include "ui/base/window_open_disposition.h"
@@ -288,7 +287,7 @@ class InfoBarDelegate {
 
  private:
   // The InfoBar associated with us.
-  CheckedPtr<InfoBar> infobar_ = nullptr;
+  InfoBar* infobar_ = nullptr;
 
   // The ID of the active navigation entry at the time we became owned.
   int nav_entry_id_ = 0;

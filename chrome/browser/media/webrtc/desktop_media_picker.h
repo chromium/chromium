@@ -11,7 +11,6 @@
 
 #include "base/callback_forward.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/optional.h"
 #include "base/strings/string16.h"
@@ -44,7 +43,7 @@ class DesktopMediaPicker {
     ~Params();
 
     // WebContents this picker is relative to, can be null.
-    CheckedPtr<content::WebContents> web_contents = nullptr;
+    content::WebContents* web_contents = nullptr;
     // The context whose root window is used for dialog placement, cannot be
     // null for Aura.
     gfx::NativeWindow context = nullptr;

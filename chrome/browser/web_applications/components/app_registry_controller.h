@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_WEB_APPLICATIONS_COMPONENTS_APP_REGISTRY_CONTROLLER_H_
 
 #include "base/callback_forward.h"
-#include "base/memory/checked_ptr.h"
 #include "chrome/browser/web_applications/components/os_integration_manager.h"
 #include "chrome/browser/web_applications/components/web_app_constants.h"
 #include "chrome/browser/web_applications/components/web_app_id.h"
@@ -75,9 +74,9 @@ class AppRegistryController {
   }
 
  private:
-  const CheckedPtr<Profile> profile_;
+  Profile* const profile_;
 
-  CheckedPtr<OsIntegrationManager> os_integration_manager_ = nullptr;
+  OsIntegrationManager* os_integration_manager_ = nullptr;
 };
 
 }  // namespace web_app

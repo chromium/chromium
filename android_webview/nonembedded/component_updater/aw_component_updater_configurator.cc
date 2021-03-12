@@ -9,7 +9,6 @@
 #include <vector>
 
 #include "base/bind.h"
-#include "base/memory/checked_ptr.h"
 #include "base/version.h"
 #include "components/component_updater/component_updater_command_line_config_policy.h"
 #include "components/component_updater/configurator_impl.h"
@@ -71,8 +70,7 @@ class AwConfigurator : public update_client::Configurator {
   friend class base::RefCountedThreadSafe<AwConfigurator>;
 
   component_updater::ConfiguratorImpl configurator_impl_;
-  CheckedPtr<PrefService>
-      pref_service_;  // This member is not owned by this class.
+  PrefService* pref_service_;  // This member is not owned by this class.
   scoped_refptr<update_client::NetworkFetcherFactory> network_fetcher_factory_;
   scoped_refptr<update_client::CrxDownloaderFactory> crx_downloader_factory_;
   scoped_refptr<update_client::UnzipperFactory> unzip_factory_;

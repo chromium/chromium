@@ -4,7 +4,6 @@
 
 #include "components/performance_manager/public/mechanisms/tab_loading_frame_navigation_scheduler.h"
 
-#include "base/memory/checked_ptr.h"
 #include "base/no_destructor.h"
 #include "base/trace_event/trace_event.h"
 #include "components/performance_manager/public/graph/policies/tab_loading_frame_navigation_policy.h"
@@ -134,7 +133,7 @@ class TabLoadingFrameNavigationScheduler::Throttle
   }
 
  private:
-  CheckedPtr<TabLoadingFrameNavigationScheduler> scheduler_ = nullptr;
+  TabLoadingFrameNavigationScheduler* scheduler_ = nullptr;
 };
 
 WEB_CONTENTS_USER_DATA_KEY_IMPL(TabLoadingFrameNavigationScheduler)

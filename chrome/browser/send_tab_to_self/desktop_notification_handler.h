@@ -9,7 +9,6 @@
 #include <vector>
 
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "chrome/browser/notifications/notification_handler.h"
 #include "chrome/browser/send_tab_to_self/receiving_ui_handler.h"
 
@@ -58,7 +57,7 @@ class DesktopNotificationHandler : public NotificationHandler,
   const Profile* GetProfile() const;
 
  protected:
-  const CheckedPtr<Profile> profile_;
+  Profile* const profile_;
   DISALLOW_COPY_AND_ASSIGN(DesktopNotificationHandler);
 };
 

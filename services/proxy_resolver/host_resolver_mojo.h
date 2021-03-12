@@ -9,7 +9,6 @@
 #include <string>
 
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/threading/thread_checker.h"
 #include "net/dns/host_cache.h"
@@ -51,7 +50,7 @@ class HostResolverMojo : public ProxyHostResolver {
   class Job;
   class RequestImpl;
 
-  const CheckedPtr<Impl> impl_;
+  Impl* const impl_;
 
   std::unique_ptr<net::HostCache> host_cache_;
   base::WeakPtrFactory<net::HostCache> host_cache_weak_factory_;

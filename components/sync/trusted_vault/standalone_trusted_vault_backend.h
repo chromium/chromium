@@ -13,7 +13,6 @@
 
 #include "base/callback.h"
 #include "base/files/file_path.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "components/signin/public/identity_manager/account_info.h"
@@ -173,7 +172,7 @@ class StandaloneTrustedVaultBackend
 
   // Used to determine current time, set to base::DefaultClock in prod and can
   // be overridden in tests.
-  CheckedPtr<base::Clock> clock_;
+  base::Clock* clock_;
 
   bool is_recoverability_degraded_for_testing_ = false;
 };

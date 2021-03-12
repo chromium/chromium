@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_BROWSING_DATA_COUNTERS_DOWNLOADS_COUNTER_H_
 #define CHROME_BROWSER_BROWSING_DATA_COUNTERS_DOWNLOADS_COUNTER_H_
 
-#include "base/memory/checked_ptr.h"
 #include "components/browsing_data/core/counters/browsing_data_counter.h"
 
 class Profile;
@@ -23,7 +22,7 @@ class DownloadsCounter : public browsing_data::BrowsingDataCounter {
   // BrowsingDataRemover implementation.
   void Count() override;
 
-  CheckedPtr<Profile> profile_;
+  Profile* profile_;
 
   DISALLOW_COPY_AND_ASSIGN(DownloadsCounter);
 };

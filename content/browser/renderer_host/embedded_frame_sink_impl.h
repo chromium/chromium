@@ -7,7 +7,6 @@
 
 #include "base/callback.h"
 #include "base/compiler_specific.h"
-#include "base/memory/checked_ptr.h"
 #include "base/time/time.h"
 #include "components/viz/common/surfaces/frame_sink_id.h"
 #include "components/viz/common/surfaces/surface_info.h"
@@ -61,7 +60,7 @@ class CONTENT_EXPORT EmbeddedFrameSinkImpl : public viz::HostFrameSinkClient {
                            base::TimeTicks activation_time) override;
 
  private:
-  const CheckedPtr<viz::HostFrameSinkManager> host_frame_sink_manager_;
+  viz::HostFrameSinkManager* const host_frame_sink_manager_;
 
   mojo::Remote<blink::mojom::EmbeddedFrameSinkClient> client_;
 

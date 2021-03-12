@@ -9,7 +9,6 @@
 
 #include "base/containers/flat_set.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/strings/string16.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
@@ -59,12 +58,12 @@ class PasswordReuseDetectionManager : public PasswordReuseDetectorConsumer {
 
   void CheckStoresForReuse(const base::string16& input);
 
-  CheckedPtr<PasswordManagerClient> client_;
+  PasswordManagerClient* client_;
   base::string16 input_characters_;
   GURL main_frame_url_;
   base::Time last_keystroke_time_;
   // Used to retrieve the current time, in base::Time units.
-  CheckedPtr<base::Clock> clock_;
+  base::Clock* clock_;
   bool reuse_on_this_page_was_found_ = false;
 
   // Caches the results returned from each store until all stores

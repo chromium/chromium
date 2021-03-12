@@ -11,7 +11,6 @@
 #include "base/callback.h"
 #include "base/gtest_prod_util.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/optional.h"
@@ -49,7 +48,7 @@ class LoginHandler : public content::LoginDelegate,
     LoginModelData(password_manager::HttpAuthManager* login_model,
                    const password_manager::PasswordForm& observed_form);
 
-    const CheckedPtr<password_manager::HttpAuthManager> model;
+    password_manager::HttpAuthManager* const model;
     const password_manager::PasswordForm& form;
   };
 
@@ -231,7 +230,7 @@ class LoginNotificationDetails {
  private:
   LoginNotificationDetails() {}
 
-  CheckedPtr<LoginHandler> handler_;  // Where to send the response.
+  LoginHandler* handler_;  // Where to send the response.
 
   DISALLOW_COPY_AND_ASSIGN(LoginNotificationDetails);
 };

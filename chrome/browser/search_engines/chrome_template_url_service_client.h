@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_SEARCH_ENGINES_CHROME_TEMPLATE_URL_SERVICE_CLIENT_H_
 
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/scoped_observer.h"
 #include "components/history/core/browser/history_service.h"
 #include "components/history/core/browser/history_service_observer.h"
@@ -38,10 +37,10 @@ class ChromeTemplateURLServiceClient : public TemplateURLServiceClient,
                     base::Time visit_time) override;
 
  private:
-  CheckedPtr<TemplateURLService> owner_;
+  TemplateURLService* owner_;
   ScopedObserver<history::HistoryService, history::HistoryServiceObserver>
       history_service_observer_{this};
-  CheckedPtr<history::HistoryService> history_service_;
+  history::HistoryService* history_service_;
 
   DISALLOW_COPY_AND_ASSIGN(ChromeTemplateURLServiceClient);
 };

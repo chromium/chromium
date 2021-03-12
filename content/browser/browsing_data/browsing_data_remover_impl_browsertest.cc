@@ -2,7 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/memory/checked_ptr.h"
 #include "content/public/browser/browsing_data_remover.h"
 
 #include <memory>
@@ -393,7 +392,7 @@ class TrustTokensTester {
   }
 
  private:
-  CheckedPtr<network::mojom::NetworkContext> network_context_;
+  network::mojom::NetworkContext* network_context_;
 };
 
 }  // namespace

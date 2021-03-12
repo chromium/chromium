@@ -8,7 +8,6 @@
 #include <string>
 
 #include "base/callback.h"
-#include "base/memory/checked_ptr.h"
 #include "base/strings/string16.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/resource_context.h"
@@ -46,7 +45,7 @@ class CONTENT_EXPORT SharedWorkerContentSettingsProxyImpl
 
  private:
   const url::Origin origin_;
-  CheckedPtr<SharedWorkerHost> owner_;
+  SharedWorkerHost* owner_;
   mojo::Receiver<blink::mojom::WorkerContentSettingsProxy> receiver_;
 
   DISALLOW_COPY_AND_ASSIGN(SharedWorkerContentSettingsProxyImpl);

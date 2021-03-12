@@ -8,7 +8,6 @@
 #include <string>
 
 #include "base/callback_forward.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/singleton.h"
 #include "base/strings/string16.h"
 #include "components/content_settings/core/common/content_settings.h"
@@ -153,9 +152,9 @@ class SearchPermissionsService : public KeyedService {
   void SetSearchEngineDelegateForTest(
       std::unique_ptr<SearchEngineDelegate> delegate);
 
-  CheckedPtr<Profile> profile_;
-  CheckedPtr<PrefService> pref_service_;
-  CheckedPtr<HostContentSettingsMap> host_content_settings_map_;
+  Profile* profile_;
+  PrefService* pref_service_;
+  HostContentSettingsMap* host_content_settings_map_;
   std::unique_ptr<SearchEngineDelegate> delegate_;
 };
 

@@ -8,7 +8,6 @@
 #include <string>
 #include <vector>
 
-#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "net/cert/x509_cert_types.h"
 #include "net/cert/x509_certificate.h"
@@ -110,7 +109,7 @@ class ScopedTestEVPolicy {
 
  private:
   SHA256HashValue fingerprint_;
-  const CheckedPtr<EVRootCAMetadata> ev_root_ca_metadata_;
+  EVRootCAMetadata* const ev_root_ca_metadata_;
 };
 
 }  // namespace net

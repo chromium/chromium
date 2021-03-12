@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/memory/checked_ptr.h"
 #include "base/optional.h"
 #include "components/subresource_filter/content/browser/subresource_filter_content_settings_manager.h"
 #include "components/subresource_filter/core/mojom/subresource_filter.mojom.h"
@@ -104,10 +103,9 @@ class AdsInterventionManager {
  private:
   // The SubresourceFilterContentSettingsManager is guaranteed to outlive the
   // AdsInterventionManager. Both are bound to the profile.
-  CheckedPtr<SubresourceFilterContentSettingsManager> settings_manager_ =
-      nullptr;
+  SubresourceFilterContentSettingsManager* settings_manager_ = nullptr;
 
-  CheckedPtr<base::Clock> clock_;
+  base::Clock* clock_;
 };
 
 }  // namespace subresource_filter

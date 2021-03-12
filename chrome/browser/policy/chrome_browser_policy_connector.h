@@ -11,7 +11,6 @@
 #include <vector>
 
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -88,7 +87,7 @@ class ChromeBrowserPolicyConnector : public BrowserPolicyConnector {
   std::unique_ptr<ConfigurationPolicyProvider> CreatePlatformProvider();
 
   // Owned by base class.
-  CheckedPtr<ConfigurationPolicyProvider> platform_provider_ = nullptr;
+  ConfigurationPolicyProvider* platform_provider_ = nullptr;
 
 #if !defined(OS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH)
   std::unique_ptr<ChromeBrowserCloudManagementController>
@@ -98,7 +97,7 @@ class ChromeBrowserPolicyConnector : public BrowserPolicyConnector {
       nullptr;
 #endif
 
-  CheckedPtr<ConfigurationPolicyProvider> command_line_provider_ = nullptr;
+  ConfigurationPolicyProvider* command_line_provider_ = nullptr;
 
 #if defined(OS_ANDROID)
   std::unique_ptr<android::PolicyCacheUpdater> pollicy_cache_updater_;

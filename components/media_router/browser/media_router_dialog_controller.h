@@ -10,7 +10,6 @@
 
 #include "base/callback.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "components/media_router/common/mojom/media_router.mojom.h"
 #include "content/public/browser/presentation_request.h"
 #include "content/public/browser/presentation_service_delegate.h"
@@ -103,7 +102,7 @@ class MediaRouterDialogController {
   // An observer for the |initiator_| that closes the dialog when |initiator_|
   // is destroyed or navigated.
   std::unique_ptr<InitiatorWebContentsObserver> initiator_observer_;
-  const CheckedPtr<content::WebContents> initiator_;
+  content::WebContents* const initiator_;
 
   DISALLOW_COPY_AND_ASSIGN(MediaRouterDialogController);
 };

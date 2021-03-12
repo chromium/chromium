@@ -11,7 +11,6 @@
 
 #include "base/callback_forward.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/strings/string16.h"
 #include "components/keyed_service/core/keyed_service.h"
@@ -70,7 +69,7 @@ class TemplateURLFetcher : public KeyedService {
  private:
   friend class RequestDelegate;
 
-  CheckedPtr<TemplateURLService> template_url_service_;
+  TemplateURLService* template_url_service_;
 
   // In progress requests.
   std::vector<std::unique_ptr<RequestDelegate>> requests_;

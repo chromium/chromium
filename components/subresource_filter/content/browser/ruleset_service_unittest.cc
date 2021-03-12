@@ -20,7 +20,6 @@
 #include "base/files/scoped_temp_dir.h"
 #include "base/logging.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/run_loop.h"
@@ -69,7 +68,7 @@ class ScopedFunctionOverride {
   ~ScopedFunctionOverride() { std::swap(*target_, replacement_); }
 
  private:
-  CheckedPtr<Fun> target_;
+  Fun* target_;
   Fun replacement_;
 
   DISALLOW_COPY_AND_ASSIGN(ScopedFunctionOverride);

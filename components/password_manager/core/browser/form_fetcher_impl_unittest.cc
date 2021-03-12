@@ -11,7 +11,6 @@
 #include <vector>
 
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/stl_util.h"
 #include "base/strings/string16.h"
 #include "base/strings/string_piece.h"
@@ -128,7 +127,7 @@ class FakePasswordManagerClient : public StubPasswordManagerClient {
   PasswordStore* GetAccountPasswordStore() const override { return nullptr; }
 
   std::unique_ptr<CredentialsFilter> filter_;
-  CheckedPtr<PasswordStore> store_ = nullptr;
+  PasswordStore* store_ = nullptr;
   mutable FakeNetworkContext network_context_;
 
   DISALLOW_COPY_AND_ASSIGN(FakePasswordManagerClient);
