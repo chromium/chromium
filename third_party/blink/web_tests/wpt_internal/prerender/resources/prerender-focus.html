@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<title>Check the focus state of prerendering pages</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<body>
+<input type="text" id = "prerenderTextField">
+<script>
+
+// Check this page is being prerendered.
+assert_true(document.prerendering);
+
+// Post the focus state to the initiator page.
+const bc = new BroadcastChannel('prerender-channel');
+
+// Try to set focus.
+document.getElementById('prerenderTextField').focus();
+
+bc.postMessage(document.hasFocus());
+bc.close();
+</script>
+</body>
