@@ -19,7 +19,6 @@ import androidx.annotation.WorkerThread;
 import org.chromium.base.CommandLine;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
-import org.chromium.base.PowerMonitor;
 import org.chromium.base.SysUtils;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.TraceEvent;
@@ -306,8 +305,6 @@ public class ProcessInitializationHandler {
                                         UrlUtilities.isNTPUrl(homepageUrl), homepageUrl);
                             }
                         });
-
-                PowerMonitor.create();
 
                 ShareImageFileUtils.clearSharedImages();
 
