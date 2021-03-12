@@ -13,8 +13,6 @@ import org.gradle.api.artifacts.component.ComponentIdentifier
 import org.gradle.api.artifacts.result.ArtifactResult
 import org.gradle.api.artifacts.result.ResolvedArtifactResult
 import org.gradle.api.logging.Logger
-import org.gradle.maven.MavenModule
-import org.gradle.maven.MavenPomArtifact
 
 /**
  * Parses the project dependencies and generates a graph of
@@ -420,31 +418,6 @@ class ChromiumDepGraph {
         }
     }
 
-    private ResolvedArtifactResult getPomFromArtifact(ComponentIdentifier componentId) {
-        for (Project project : projects) {
-          def components = project.dependencies.createArtifactResolutionQuery()
-                  .forComponents(componentId)
-                  .withArtifacts(MavenModule, MavenPomArtifact)
-                  .execute()
-                  .resolvedComponents
-          if (components[0]) {
-            def artifacts = components[0].getArtifacts(MavenPomArtifact)
-
-            for (ArtifactResult artifact : artifacts) {
-              if (artifact instanceof ResolvedArtifactResult) {
-                return artifact
-              } else {
-                def errorMsg = "Unresolved artifact for ${componentId.displayName} " +
-                    "${project.name} Num components ${components.size()} Num artifacts " +
-                    "${artifacts.size()} ${artifact.getFailure().toString()}"
-                throw new IllegalStateException(errorMsg)
-              }
-            }
-          }
-       }
-       return null
-    }
-
     private void collectDependenciesInternal(ResolvedDependency dependency) {
         def id = makeModuleId(dependency.module)
         if (dependencies.containsKey(id)) {
@@ -515,14 +488,17 @@ class ChromiumDepGraph {
 
     private buildDepDescription(String id, ResolvedDependency dependency, ResolvedArtifact artifact,
                                 List<String> childModules) {
-        def pom = getPomFromArtifact(artifact.id.componentIdentifier).file
-        def pomContent = new XmlSlurper(false, false).parse(pom)
+        def pomUrl, pomContent
+        (pomUrl, pomContent) = computePomFromArtifact(artifact)
+
         def licenses = []
         if (!skipLicenses) {
             licenses = resolveLicenseInformation(id, pomContent)
         }
 
-        def fileUrl = getFileUrlFromArtifact(artifact)
+        // Build |fileUrl| by swapping '.pom' file extension with artifact file extension.
+        def fileUrl = pomUrl.substring(0, pomUrl.length() - 3) + artifact.extension
+        checkDownloadable(fileUrl)
 
         // Get rid of irrelevant indent that might be present in the XML file.
         def description = pomContent.description?.text()?.trim()?.replaceAll(/\s+/, " ")
@@ -654,7 +630,7 @@ class ChromiumDepGraph {
       return out
     }
 
-    private getFileUrlFromArtifact(ResolvedArtifact artifact) {
+    private computePomFromArtifact(ResolvedArtifact artifact) {
         for (Project project : projects) {
             for (ArtifactRepository repository : project.repositories.asList()) {
                 def repoUrl = repository.properties.get('url').toString()
@@ -664,16 +640,15 @@ class ChromiumDepGraph {
                     repoUrl = repoUrl.substring(0, repoUrl.length() - 1)
                 }
                 def component = artifact.id.componentIdentifier
-                // Constructs the file url for a artifact. For example, with
+                // Constructs the file url for pom. For example, with
                 //   * repoUrl as "https://maven.google.com"
                 //   * component.group as "android.arch.core"
                 //   * component.module as "common"
                 //   * component.version as "1.1.1"
-                //   * artifact.extension as "jar"
                 //
                 // The file url will be:
-                // https://maven.google.com/android/arch/core/common/1.1.1/common-1.1.1.jar
-                def fileUrl = String.format("%s/%s/%s/%s/%s-%s.%s",
+                // https://maven.google.com/android/arch/core/common/1.1.1/common-1.1.1.pom
+                def fileUrl = String.format("%s/%s/%s/%s/%s-%s.pom",
                         repoUrl,
                         component.group.replace('.', '/'),
                         component.module,
@@ -682,22 +657,28 @@ class ChromiumDepGraph {
                         // While maven central and maven.google.com use "version",
                         // https://androidx.dev uses "timestampedVersion" as part
                         // of the file url
-                        component.hasProperty("timestampedVersion") ? component.timestampedVersion : component.version,
-                        artifact.extension)
+                        component.hasProperty("timestampedVersion") ? component.timestampedVersion : component.version)
                 try {
-                    def url = new URL(fileUrl)
-                    def inStream = url.openStream()
-                    if (inStream != null) {
-                        inStream.close()
-                        logger.debug("Succeeded in resolving url ${fileUrl}")
-                        return fileUrl
-                    }
+                    def content = new XmlSlurper(false /* validating */, false /* namespaceAware */).parse(fileUrl)
+                    logger.debug("Succeeded in resolving url ${fileUrl}")
+                    return [fileUrl, content]
                 } catch (Exception ignored) {
                     logger.debug("Failed in resolving url ${fileUrl}")
                 }
             }
         }
-        return null
+        return [null, null]
+    }
+
+    private void checkDownloadable(String url) {
+        try {
+            def inStream = new URL(url).openStream()
+            if (inStream != null) {
+                logger.debug("Succeeded in resolving url ${url}")
+                return
+            }
+        } catch (Exception ignored) {}
+        throw new RuntimeException("Resolved POM but could not resolve ${url}")
     }
 
     static class DependencyDescription {
