@@ -31,10 +31,13 @@ const wchar_t kRegCFOptInCmdField[] = L"CFOptInCmd";
 const wchar_t kRegCFOptOutCmdField[] = L"CFOptOutCmd";
 const wchar_t kRegCFTempOptOutCmdField[] = L"CFTempOptOutCmd";
 const wchar_t kRegChannelField[] = L"channel";
+const wchar_t kRegCleanInstallRequiredForVersionBelowField[] =
+    L"CleanInstallRequiredForVersionBelow";
 const wchar_t kRegClientField[] = L"client";
 const wchar_t kRegCommandLineField[] = L"CommandLine";
 const wchar_t kRegCriticalVersionField[] = L"cpv";
 const wchar_t kRegDidRunField[] = L"dr";
+const wchar_t kRegDowngradeCleanupCommandField[] = L"DowngradeCleanupCommand";
 const wchar_t kRegEulaAceptedField[] = L"eulaaccepted";
 const wchar_t kRegGoogleUpdateVersion[] = L"version";
 const wchar_t kRegInstallerProgress[] = L"InstallerProgress";

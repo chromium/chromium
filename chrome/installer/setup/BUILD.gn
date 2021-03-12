@@ -57,6 +57,8 @@ if (is_win) {
       "archive_patch_helper.cc",
       "archive_patch_helper.h",
       "brand_behaviors.h",
+      "downgrade_cleanup.cc",
+      "downgrade_cleanup.h",
       "install.cc",
       "install.h",
       "install_params.h",
@@ -68,6 +70,8 @@ if (is_win) {
       "installer_crash_reporting.h",
       "installer_state.cc",
       "installer_state.h",
+      "last_breaking_installer_version.cc",
+      "last_breaking_installer_version.h",
       "launch_chrome.cc",
       "launch_chrome.h",
       "modify_params.h",
@@ -124,6 +128,7 @@ if (is_win) {
   test("setup_unittests") {
     sources = [
       "archive_patch_helper_unittest.cc",
+      "downgrade_cleanup_unittest.cc",
       "install_unittest.cc",
       "install_worker_unittest.cc",
       "installer_state_unittest.cc",

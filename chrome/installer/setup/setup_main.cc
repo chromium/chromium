@@ -57,6 +57,7 @@
 #include "chrome/installer/setup/archive_patch_helper.h"
 #include "chrome/installer/setup/brand_behaviors.h"
 #include "chrome/installer/setup/buildflags.h"
+#include "chrome/installer/setup/downgrade_cleanup.h"
 #include "chrome/installer/setup/install.h"
 #include "chrome/installer/setup/install_params.h"
 #include "chrome/installer/setup/install_worker.h"
@@ -452,9 +453,12 @@ installer::InstallStatus RenameChromeExecutables(
                                     temp_path.path(), WorkItem::ALWAYS_MOVE);
   install_list->AddDeleteTreeWorkItem(chrome_proxy_new_exe, temp_path.path());
 
+  AddFinalizeUpdateWorkItems(base::Version(chrome::kChromeVersion),
+                             *installer_state, setup_exe, install_list.get());
+
   // Add work items to delete Chrome's "opv", "cpv", and "cmd" values.
   // TODO(grt): Clean this up; https://crbug.com/577816.
-  HKEY reg_root = installer_state->root_key();
+  const HKEY reg_root = installer_state->root_key();
   const std::wstring clients_key = install_static::GetClientsKeyPath();
 
   install_list->AddDeleteRegValueWorkItem(reg_root, clients_key,
@@ -934,6 +938,21 @@ bool HandleNonInstallCmdLineOptions(installer::ModifyParams& modify_params,
       DCHECK(cmd_line.HasSwitch(installer::switches::kRenameChromeExe));
       *exit_code =
           RenameChromeExecutables(setup_exe, *original_state, installer_state);
+    }
+  } else if (cmd_line.HasSwitch(
+                 installer::switches::kCleanupForDowngradeVersion)) {
+    // The version being downgraded to.
+    std::string new_version = cmd_line.GetSwitchValueASCII(
+        installer::switches::kCleanupForDowngradeVersion);
+    std::wstring operation = cmd_line.GetSwitchValueNative(
+        installer::switches::kCleanupForDowngradeOperation);
+    if (operation == L"cleanup" || operation == L"revert") {
+      *exit_code = installer::ProcessCleanupForDowngrade(
+          base::Version(new_version), /*revert=*/operation == L"revert");
+    } else {
+      LOG(ERROR) << "Ignoring \"" << cmd_line.GetCommandLineString()
+                 << "\" because of invalid \"operation\" argument.";
+      *exit_code = installer::DOWNGRADE_CLEANUP_UNKNOWN_OPERATION;
     }
   } else if (cmd_line.HasSwitch(
                  installer::switches::kRemoveChromeRegistration)) {
