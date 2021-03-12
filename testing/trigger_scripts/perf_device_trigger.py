@@ -59,6 +59,12 @@ import random
 
 import base_test_triggerer
 
+SRC_DIR = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(
+    __file__))))
+sys.path.append(os.path.join(SRC_DIR, 'tools', 'perf'))
+
+import generate_perf_sharding
+
 class Bot(object):
   """Eligible bots to run the task."""
   def __init__(self, bot_id, is_alive):
@@ -92,6 +98,19 @@ class PerfDeviceTriggerer(base_test_triggerer.BaseTestTriggerer):
       # configurations.
       self._eligible_bots_by_ids = (
           self._query_swarming_for_eligible_bot_configs(self._dimensions))
+
+  def generate_shard_map(self, args, buildername, selected_config, verbose):
+    shard_map = None
+    num_of_shards = len(selected_config)
+    if args.use_dynamic_shards and buildername and num_of_shards:
+      if verbose:
+        print('Generating dynamic shardmap for builder: %s with %d shards'
+              % (buildername, num_of_shards))
+      shard_map = generate_perf_sharding.GenerateShardMap(
+          builder=buildername,
+          num_of_shards=num_of_shards
+      )
+    return shard_map
 
   def append_additional_args(self, args, shard_index):
     # Append a tag to the swarming task with the shard number
