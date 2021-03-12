@@ -176,6 +176,7 @@ in the following files and directories to avoid breakage.
   - [chrome/browser/extensions/api/web_request/web_request_apitest.cc](https://cs.chromium.org/chromium/src/chrome/browser/extensions/api/web_request/web_request_apitest.cc)
   - [chrome/browser/ssl/ssl_browsertest.cc](https://cs.chromium.org/chromium/src/chrome/browser/ssl/ssl_browsertest.cc)
   - [chrome/browser/subresource_filter/subresource_filter_browsertest.cc](https://cs.chromium.org/chromium/src/chrome/browser/subresource_filter/subresource_filter_browsertest.cc)
+  - [content/browser/do_not_track_browsertest.cc](https://cs.chromium.org/chromium/src/content/browser/do_not_track_browsertest.cc)
 
 # References
 
