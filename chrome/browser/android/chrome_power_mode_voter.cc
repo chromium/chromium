@@ -20,3 +20,21 @@ static void JNI_ChromePowerModeVoter_OnChromeActivityStateChange(
   (*voter)->VoteFor(active ? power_scheduler::PowerMode::kIdle
                            : power_scheduler::PowerMode::kNonWebActivity);
 }
+
+static void JNI_ChromePowerModeVoter_OnViewTreeDraw(JNIEnv* env) {
+  static base::NoDestructor<std::unique_ptr<power_scheduler::PowerModeVoter>>
+      voter(power_scheduler::PowerModeArbiter::GetInstance()->NewVoter(
+          "PowerModeVoter.Animation.Java"));
+  (*voter)->VoteFor(power_scheduler::PowerMode::kAnimation);
+  (*voter)->ResetVoteAfterTimeout(
+      power_scheduler::PowerModeVoter::kAnimationTimeout);
+}
+
+static void JNI_ChromePowerModeVoter_OnCoordinatorTouchEvent(JNIEnv* env) {
+  static base::NoDestructor<std::unique_ptr<power_scheduler::PowerModeVoter>>
+      voter(power_scheduler::PowerModeArbiter::GetInstance()->NewVoter(
+          "PowerModeVoter.Input.Java"));
+  (*voter)->VoteFor(power_scheduler::PowerMode::kResponse);
+  (*voter)->ResetVoteAfterTimeout(
+      power_scheduler::PowerModeVoter::kResponseTimeout);
+}
