@@ -349,7 +349,7 @@
   [self.sharingCoordinator stop];
   self.sharingCoordinator = nil;
   self.headerController = nil;
-  if (IsDiscoverFeedEnabled()) {
+  if (IsDiscoverFeedEnabled() && !IsRefactoredNTP()) {
     ios::GetChromeBrowserProvider()
         ->GetDiscoverFeedProvider()
         ->RemoveFeedViewController(self.discoverFeedViewController);
