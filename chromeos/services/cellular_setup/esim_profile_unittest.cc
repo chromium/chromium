@@ -7,6 +7,7 @@
 #include "base/strings/string16.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "chromeos/dbus/hermes/hermes_euicc_client.h"
 #include "chromeos/dbus/hermes/hermes_profile_client.h"
 #include "chromeos/network/fake_network_connection_handler.h"
@@ -18,6 +19,11 @@ namespace chromeos {
 namespace cellular_setup {
 
 namespace {
+
+const char kProfileUninstallationResultHistogram[] =
+    "Network.Cellular.ESim.ProfileUninstallationResult";
+const char kProfileRenameResultHistogram[] =
+    "Network.Cellular.ESim.ProfileRenameResult";
 
 mojom::ESimOperationResult UninstallProfile(
     const mojo::Remote<mojom::ESimProfile>& esim_profile) {
@@ -232,6 +238,8 @@ TEST_F(ESimProfileTest, InstallConnectFailure) {
 }
 
 TEST_F(ESimProfileTest, UninstallProfile) {
+  base::HistogramTester histogram_tester;
+
   HermesEuiccClient::TestInterface* euicc_test =
       HermesEuiccClient::Get()->GetTestInterface();
   dbus::ObjectPath active_profile_path = euicc_test->AddFakeCarrierProfile(
@@ -247,6 +255,7 @@ TEST_F(ESimProfileTest, UninstallProfile) {
       HermesProfileClient::Get()->GetProperties(pending_profile_path);
   HermesProfileClient::Properties* active_profile_dbus_properties =
       HermesProfileClient::Get()->GetProperties(active_profile_path);
+  histogram_tester.ExpectTotalCount(kProfileUninstallationResultHistogram, 0);
 
   // Verify that uninstall error codes are returned properly.
   euicc_test->QueueHermesErrorStatus(
@@ -258,6 +267,9 @@ TEST_F(ESimProfileTest, UninstallProfile) {
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(mojom::ESimOperationResult::kFailure, result);
   EXPECT_EQ(0u, observer()->profile_list_change_calls().size());
+  histogram_tester.ExpectTotalCount(kProfileUninstallationResultHistogram, 1);
+  histogram_tester.ExpectBucketCount(kProfileUninstallationResultHistogram,
+                                     false, 1);
 
   // Verify that pending profiles cannot be uninstalled
   observer()->Reset();
@@ -269,6 +281,9 @@ TEST_F(ESimProfileTest, UninstallProfile) {
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(mojom::ESimOperationResult::kFailure, result);
   EXPECT_EQ(0u, observer()->profile_list_change_calls().size());
+  histogram_tester.ExpectTotalCount(kProfileUninstallationResultHistogram, 1);
+  histogram_tester.ExpectBucketCount(kProfileUninstallationResultHistogram,
+                                     false, 1);
 
   // Verify that uninstall removes the profile and notifies observers properly.
   observer()->Reset();
@@ -277,6 +292,9 @@ TEST_F(ESimProfileTest, UninstallProfile) {
   EXPECT_EQ(mojom::ESimOperationResult::kSuccess, result);
   ASSERT_EQ(1u, observer()->profile_list_change_calls().size());
   EXPECT_EQ(1u, GetProfileList(GetEuiccForEid(ESimTestBase::kTestEid)).size());
+  histogram_tester.ExpectTotalCount(kProfileUninstallationResultHistogram, 2);
+  histogram_tester.ExpectBucketCount(kProfileUninstallationResultHistogram,
+                                     true, 1);
 }
 
 TEST_F(ESimProfileTest, EnableProfile) {
@@ -368,6 +386,8 @@ TEST_F(ESimProfileTest, DisableProfile) {
 
 TEST_F(ESimProfileTest, SetProfileNickName) {
   const std::u16string test_nickname = base::UTF8ToUTF16("Test nickname");
+  base::HistogramTester histogram_tester;
+
   HermesEuiccClient::TestInterface* euicc_test =
       HermesEuiccClient::Get()->GetTestInterface();
   dbus::ObjectPath active_profile_path = euicc_test->AddFakeCarrierProfile(
@@ -396,12 +416,15 @@ TEST_F(ESimProfileTest, SetProfileNickName) {
   EXPECT_EQ(0u, observer()->profile_change_calls().size());
 
   // Verify that nickname can be set on active profiles.
+  histogram_tester.ExpectTotalCount(kProfileRenameResultHistogram, 0);
   mojo::Remote<mojom::ESimProfile> active_esim_profile = GetESimProfileForIccid(
       ESimTestBase::kTestEid, active_profile_dbus_properties->iccid().value());
   ASSERT_TRUE(active_esim_profile.is_bound());
   result = SetProfileNickname(active_esim_profile, test_nickname);
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(mojom::ESimOperationResult::kSuccess, result);
+  histogram_tester.ExpectTotalCount(kProfileRenameResultHistogram, 1);
+  histogram_tester.ExpectBucketCount(kProfileRenameResultHistogram, true, 1);
 
   mojom::ESimProfilePropertiesPtr active_profile_mojo_properties =
       GetESimProfileProperties(active_esim_profile);

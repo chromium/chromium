@@ -118,6 +118,22 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="Network.Cellular.ESim.ProfileRenameResult"
+    enum="BooleanSuccess" expires_after="2022-03-01">
+  <owner>azeemarshad@chromium.org</owner>
+  <owner>cros-connectivity@google.com</owner>
+  <owner>hsuregan@chromium.org</owner>
+  <summary>Tracks the rate of success of setting a profile nickname.</summary>
+</histogram>
+
+<histogram name="Network.Cellular.ESim.ProfileUninstallationResult"
+    enum="BooleanSuccess" expires_after="2022-03-01">
+  <owner>azeemarshad@chromium.org</owner>
+  <owner>cros-connectivity@google.com</owner>
+  <owner>hsuregan@chromium.org</owner>
+  <summary>Tracks the rate of success of uninstalling a profile.</summary>
+</histogram>
+
 <histogram name="Network.Cellular.ESim.ServiceAtLogin.Count" units="units"
     expires_after="2022-03-01">
   <owner>azeemarshad@chromium.org</owner>

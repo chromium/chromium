@@ -4,6 +4,7 @@
 
 #include "chromeos/services/cellular_setup/esim_profile.h"
 
+#include "base/metrics/histogram_functions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chromeos/dbus/hermes/hermes_euicc_client.h"
 #include "chromeos/dbus/hermes/hermes_profile_client.h"
@@ -100,7 +101,16 @@ void ESimProfile::UninstallProfile(UninstallProfileCallback callback) {
   }
 
   NET_LOG(USER) << "Uninstalling profile with path " << path().value();
-  uninstall_callback_ = std::move(callback);
+  uninstall_callback_ = base::BindOnce(
+      [](UninstallProfileCallback callback,
+         mojom::ESimOperationResult result) -> void {
+        base::UmaHistogramBoolean(
+            "Network.Cellular.ESim.ProfileUninstallationResult",
+            result == mojom::ESimOperationResult::kSuccess);
+        std::move(callback).Run(result);
+      },
+      std::move(callback));
+
   esim_manager_->cellular_esim_uninstall_handler()->UninstallESim(
       properties_->iccid, path_, euicc_->path(),
       base::BindOnce(&ESimProfile::OnProfileUninstallResult,
@@ -155,7 +165,16 @@ void ESimProfile::SetProfileNickname(const std::u16string& nickname,
   }
 
   NET_LOG(USER) << "Setting profile nickname for path " << path().value();
-  set_profile_nickname_callback_ = std::move(callback);
+  set_profile_nickname_callback_ = base::BindOnce(
+      [](SetProfileNicknameCallback callback,
+         mojom::ESimOperationResult result) -> void {
+        base::UmaHistogramBoolean(
+            "Network.Cellular.ESim.ProfileRenameResult",
+            result == mojom::ESimOperationResult::kSuccess);
+        std::move(callback).Run(result);
+      },
+      std::move(callback));
+
   EnsureProfileExistsOnEuiccCallback perform_set_profile_nickname_callback =
       base::BindOnce(&ESimProfile::PerformSetProfileNickname,
                      weak_ptr_factory_.GetWeakPtr(), nickname);
