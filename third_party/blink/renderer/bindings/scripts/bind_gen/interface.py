@@ -11,6 +11,7 @@ from .blink_v8_bridge import blink_class_name
 from .blink_v8_bridge import blink_type_info
 from .blink_v8_bridge import make_v8_to_blink_value
 from .blink_v8_bridge import make_v8_to_blink_value_variadic
+from .blink_v8_bridge import native_value_tag
 from .blink_v8_bridge import v8_bridge_class_name
 from .code_node import EmptyNode
 from .code_node import ListNode
@@ -434,6 +435,23 @@ def bind_callback_local_vars(code_node, cg_context):
         local_vars.append(
             S("v8_receiver",
               "v8::Local<v8::Object> ${v8_receiver} = ${info}.Holder();"))
+
+    def create_definition_of_v8_return_value(symbol_node):
+        # TODO(crbug.com/1186968): Write condition directly in cond=T()
+        condition = _format(
+            "!ToV8Traits<{}>::ToV8(${script_state}, ${return_value})"
+            ".ToLocal(&${v8_return_value})",
+            native_value_tag(cg_context.return_type))
+        return SymbolDefinitionNode(symbol_node, [
+            T("v8::Local<v8::Value> ${v8_return_value};"),
+            CxxUnlikelyIfNode(cond=T(condition), body=T("return;"))
+        ])
+
+    # v8_return_value
+    if cg_context.return_type and not cg_context.return_type.unwrap().is_void:
+        local_vars.append(
+            S("v8_return_value",
+              definition_constructor=create_definition_of_v8_return_value))
 
     # throw_security_error
     template_vars["throw_security_error"] = T(
@@ -1614,12 +1632,11 @@ bindings::V8SetReturnValue(
             args.append("${blink_receiver}")
         return T("bindings::V8SetReturnValue({});".format(", ".join(args)))
 
+    if return_type.is_sequence:
+        return T("bindings::V8SetReturnValue(${info}, ${v8_return_value});")
+
     if return_type.is_frozen_array:
-        return T(
-            "bindings::V8SetReturnValue("
-            "${info}, "
-            "ToV8(${return_value}, ${creation_context_object}, ${isolate}), "
-            "bindings::V8ReturnValue::kFrozen);")
+        return T("bindings::V8SetReturnValue(${info}, ${v8_return_value});")
 
     if return_type.is_promise:
         return T("bindings::V8SetReturnValue"
@@ -6987,6 +7004,7 @@ def generate_class_like(class_like):
     impl_source_node.accumulator.add_include_headers([
         "third_party/blink/renderer/bindings/core/v8/generated_code_helper.h",
         "third_party/blink/renderer/bindings/core/v8/native_value_traits_impl.h",
+        "third_party/blink/renderer/bindings/core/v8/to_v8_traits.h",
         "third_party/blink/renderer/bindings/core/v8/v8_set_return_value_for_core.h",
         "third_party/blink/renderer/platform/bindings/exception_messages.h",
         "third_party/blink/renderer/platform/bindings/idl_member_installer.h",

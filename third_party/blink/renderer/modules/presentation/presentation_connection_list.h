@@ -32,13 +32,13 @@ class MODULES_EXPORT PresentationConnectionList final
   }
 
   // PresentationConnectionList.idl implementation.
-  const HeapVector<Member<ReceiverPresentationConnection>>& connections() const;
+  const HeapVector<Member<PresentationConnection>>& connections() const;
   DEFINE_ATTRIBUTE_EVENT_LISTENER(connectionavailable, kConnectionavailable)
 
-  void AddConnection(ReceiverPresentationConnection*);
+  void AddConnection(PresentationConnection*);
   // Remove connection from connection list. Returns true if connection is
   // successfully removed; Returns false if connection does not exist.
-  bool RemoveConnection(ReceiverPresentationConnection*);
+  bool RemoveConnection(PresentationConnection*);
   void DispatchConnectionAvailableEvent(PresentationConnection*);
   bool IsEmpty();
 
@@ -52,7 +52,7 @@ class MODULES_EXPORT PresentationConnectionList final
  private:
   friend class PresentationReceiverTest;
 
-  HeapVector<Member<ReceiverPresentationConnection>> connections_;
+  HeapVector<Member<PresentationConnection>> connections_;
 };
 
 }  // namespace blink
