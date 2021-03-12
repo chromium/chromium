@@ -20,7 +20,7 @@ if (is_nacl) {
 }
 
 declare_args() {
-  # Enables whitelist generation for IDR_ grit defines seen by the compiler.
+  # Enables allowlist generation for IDR_ grit defines seen by the compiler.
   # Currently works only on some platforms and enabled by default for official
   # builds. Requires debug info.
   enable_resource_allowlist_generation =
