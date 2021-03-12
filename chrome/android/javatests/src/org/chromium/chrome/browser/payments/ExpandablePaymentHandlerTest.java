@@ -37,10 +37,12 @@ import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.app.ChromeActivity;
+import org.chromium.chrome.browser.compositor.bottombar.OverlayPanel.StateChangeReason;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.payments.handler.PaymentHandlerCoordinator;
 import org.chromium.chrome.browser.payments.handler.PaymentHandlerCoordinator.PaymentHandlerUiObserver;
 import org.chromium.chrome.test.ChromeJUnit4RunnerDelegate;
+import org.chromium.components.browser_ui.bottomsheet.BottomSheetTestSupport;
 import org.chromium.components.page_info.PageInfoFeatureList;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.content_public.browser.WebContents;
@@ -76,6 +78,7 @@ public class ExpandablePaymentHandlerTest {
     private UiDevice mDevice;
     private boolean mDefaultIsIncognito;
     private ChromeActivity mDefaultActivity;
+    private BottomSheetTestSupport mBottomSheetTestSupport;
 
     /**
      * A list of bad server-certificates used for parameterized tests.
@@ -127,6 +130,8 @@ public class ExpandablePaymentHandlerTest {
     public void setUp() throws Throwable {
         mDevice = UiDevice.getInstance(InstrumentationRegistry.getInstrumentation());
         mDefaultActivity = mRule.getActivity();
+        mBottomSheetTestSupport = new BottomSheetTestSupport(
+                mRule.getActivity().getRootUiCoordinatorForTesting().getBottomSheetController());
     }
 
     private PaymentHandlerCoordinator createPaymentHandlerAndShow(boolean isIncognito)
@@ -416,6 +421,21 @@ public class ExpandablePaymentHandlerTest {
                 .check(matches(withContentDescription("Connection is secure. Site information")));
 
         mRule.runOnUiThread(() -> paymentHandler.hide());
+        waitForUiClosed();
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"Payments"})
+    public void testBottomSheetSuppressedFailsShow() {
+        startDefaultServer();
+        PaymentHandlerCoordinator paymentHandler = new PaymentHandlerCoordinator();
+        mBottomSheetTestSupport.suppressSheet(StateChangeReason.UNKNOWN);
+        mRule.runOnUiThread(
+                ()
+                        -> Assert.assertNull(paymentHandler.show(
+                                mDefaultActivity.getCurrentWebContents(), defaultPaymentAppUrl(),
+                                mDefaultIsIncognito, defaultUiObserver())));
         waitForUiClosed();
     }
 }

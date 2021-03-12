@@ -114,7 +114,12 @@ public class PaymentHandlerCoordinator {
             mPaymentHandlerWebContents.destroy();
         };
         boolean isShowSuccess = bottomSheetController.requestShowContent(view, /*animate=*/true);
-        return isShowSuccess ? mPaymentHandlerWebContents : null;
+        if (!isShowSuccess) {
+            mHider.run();
+            mHider = null;
+            return null;
+        }
+        return mPaymentHandlerWebContents;
     }
 
     private void initializeWebContents(
