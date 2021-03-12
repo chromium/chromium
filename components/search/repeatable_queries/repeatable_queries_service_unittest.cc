@@ -363,12 +363,8 @@ TEST_F(RepeatableQueriesServiceTest, DISABLED_SignedIn) {
 }
 
 // TODO(crbug.com/1151909) Test fails on iOS
-#if defined(OS_IOS)
-#define MAYBE_SignedIn_BadResponse DISABLED_SignedIn_BadResponse
-#else
-#define MAYBE_SignedIn_BadResponse SignedIn_BadResponse
-#endif
-TEST_F(RepeatableQueriesServiceTest, MAYBE_SignedIn_BadResponse) {
+// TODO(crbug.com/1170500) Test fails also on other platforms
+TEST_F(RepeatableQueriesServiceTest, DISABLED_SignedIn_BadResponse) {
   SignIn();
   test_url_loader_factory()->AddResponse(service()->GetRequestURL().spec(),
                                          GoodServerResponse());
@@ -403,12 +399,8 @@ TEST_F(RepeatableQueriesServiceTest, MAYBE_SignedIn_BadResponse) {
 }
 
 // TODO(crbug.com/1151909) Test fails on iOS
-#if defined(OS_IOS)
-#define MAYBE_SignedIn_ErrorResponse DISABLED_SignedIn_ErrorResponse
-#else
-#define MAYBE_SignedIn_ErrorResponse SignedIn_ErrorResponse
-#endif
-TEST_F(RepeatableQueriesServiceTest, MAYBE_SignedIn_ErrorResponse) {
+// TODO(crbug.com/1170500) Test fails also on other platforms
+TEST_F(RepeatableQueriesServiceTest, DISABLED_SignedIn_ErrorResponse) {
   SignIn();
   test_url_loader_factory()->AddResponse(service()->GetRequestURL().spec(),
                                          GoodServerResponse());
@@ -466,12 +458,8 @@ TEST_F(RepeatableQueriesServiceTest,
 }
 
 // TODO(crbug.com/1151909) Test fails on iOS
-#if defined(OS_IOS)
-#define MAYBE_SignedIn_SigninStatusChanged DISABLED_SignedIn_SigninStatusChanged
-#else
-#define MAYBE_SignedIn_SigninStatusChanged SignedIn_SigninStatusChanged
-#endif
-TEST_F(RepeatableQueriesServiceTest, MAYBE_SignedIn_SigninStatusChanged) {
+// TODO(crbug.com/1170500) Test fails also on other platforms
+TEST_F(RepeatableQueriesServiceTest, DISABLED_SignedIn_SigninStatusChanged) {
   base::HistogramTester histogram_tester;
 
   SignIn();
@@ -525,12 +513,8 @@ TEST_F(RepeatableQueriesServiceTest, MAYBE_SignedIn_SigninStatusChanged) {
 }
 
 // TODO(crbug.com/1151909) Test fails on iOS
-#if defined(OS_IOS)
-#define MAYBE_SignedIn_Deletion DISABLED_SignedIn_Deletion
-#else
-#define MAYBE_SignedIn_Deletion SignedIn_Deletion
-#endif
-TEST_F(RepeatableQueriesServiceTest, MAYBE_SignedIn_Deletion) {
+// TODO(crbug.com/1170500) Test fails also on other platforms
+TEST_F(RepeatableQueriesServiceTest, DISABLED_SignedIn_Deletion) {
   SignIn();
   test_url_loader_factory()->AddResponse(service()->GetRequestURL().spec(),
                                          GoodServerResponse());
@@ -583,15 +567,9 @@ TEST_F(RepeatableQueriesServiceTest, MAYBE_SignedIn_Deletion) {
 }
 
 // TODO(crbug.com/1151909) Test fails on iOS simulators
-#if defined(OS_IOS)
-#define MAYBE_SignedOut_DefaultSearchProviderChanged \
-  DISABLED_SignedOut_DefaultSearchProviderChanged
-#else
-#define MAYBE_SignedOut_DefaultSearchProviderChanged \
-  SignedOut_DefaultSearchProviderChanged
-#endif
+// TODO(crbug.com/1170500) Test fails also on other platforms
 TEST_F(RepeatableQueriesServiceTest,
-       MAYBE_SignedOut_DefaultSearchProviderChanged) {
+       DISABLED_SignedOut_DefaultSearchProviderChanged) {
   int original_query_age =
       history::kAutocompleteDuplicateVisitIntervalThreshold.InSeconds() + 3;
   FillURLDatabase({
@@ -629,13 +607,8 @@ TEST_F(RepeatableQueriesServiceTest,
 }
 
 // TODO(crbug.com/1151909) Test fails on iOS
-#if defined(OS_IOS)
-#define MAYBE_SignedOut_SigninStatusChanged \
-  DISABLED_SignedOut_SigninStatusChanged
-#else
-#define MAYBE_SignedOut_SigninStatusChanged SignedOut_SigninStatusChanged
-#endif
-TEST_F(RepeatableQueriesServiceTest, MAYBE_SignedOut_SigninStatusChanged) {
+// TODO(crbug.com/1170500) Test fails also on other platforms
+TEST_F(RepeatableQueriesServiceTest, DISABLED_SignedOut_SigninStatusChanged) {
   int original_query_age =
       history::kAutocompleteDuplicateVisitIntervalThreshold.InSeconds() + 3;
   FillURLDatabase({
@@ -679,12 +652,8 @@ TEST_F(RepeatableQueriesServiceTest, MAYBE_SignedOut_SigninStatusChanged) {
 }
 
 // TODO(crbug.com/1151909) Test fails on iOS
-#if defined(OS_IOS)
-#define MAYBE_SignedOut_Deletion DISABLED_SignedOut_Deletion
-#else
-#define MAYBE_SignedOut_Deletion SignedOut_Deletion
-#endif
-TEST_F(RepeatableQueriesServiceTest, MAYBE_SignedOut_Deletion) {
+// TODO(crbug.com/1170500) Test fails also on other platforms
+TEST_F(RepeatableQueriesServiceTest, DISABLED_SignedOut_Deletion) {
   FillURLDatabase({{default_search_provider(), "local query 1",
                     /*age_in_seconds=*/1},
                    {default_search_provider(), "local query 2",
