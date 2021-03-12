@@ -560,9 +560,11 @@ void WebURLLoader::Context::Start(
       throttles.push_back(std::move(throttle));
   }
 
-  // TODO(minggang): Remove the useage of render frame id.
-  Platform::Current()->AppendVariationsThrottles(request->render_frame_id,
-                                                 &throttles);
+  // TODO(falken): WebURLLoader should be able to get the top frame origin via
+  // some plumbing such as through ResourceLoader -> FetchContext -> LocalFrame
+  // -> RenderHostImpl instead of needing WebURLRequestExtraData.
+  Platform::Current()->AppendVariationsThrottles(
+      url_request_extra_data->top_frame_origin(), &throttles);
 
   uint32_t loader_options = network::mojom::kURLLoadOptionNone;
   if (!no_mime_sniffing) {

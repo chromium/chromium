@@ -99,7 +99,7 @@ class CONTENT_EXPORT RendererBlinkPlatformImpl : public BlinkPlatformImpl {
   blink::WebResourceRequestSenderDelegate* GetResourceRequestSenderDelegate()
       override;
   void AppendVariationsThrottles(
-      int routing_id,
+      const url::Origin& top_origin,
       std::vector<std::unique_ptr<blink::URLLoaderThrottle>>* throttles)
       override;
   blink::WebString DefaultLocale() override;

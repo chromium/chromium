@@ -369,16 +369,9 @@ RendererBlinkPlatformImpl::GetResourceRequestSenderDelegate() {
 }
 
 void RendererBlinkPlatformImpl::AppendVariationsThrottles(
-    int routing_id,
+    const url::Origin& top_origin,
     std::vector<std::unique_ptr<blink::URLLoaderThrottle>>* throttles) {
-  url::Origin origin;
-  if (RenderThread::IsMainThread()) {
-    RenderFrameImpl* frame = RenderFrameImpl::FromRoutingID(routing_id);
-    if (frame)
-      origin = frame->GetSecurityOriginOfTopFrame();
-  }
-
-  VariationsRenderThreadObserver::AppendThrottleIfNeeded(origin, throttles);
+  VariationsRenderThreadObserver::AppendThrottleIfNeeded(top_origin, throttles);
 }
 
 void RendererBlinkPlatformImpl::CacheMetadataInCacheStorage(

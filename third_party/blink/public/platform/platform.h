@@ -341,7 +341,7 @@ class BLINK_PLATFORM_EXPORT Platform {
   // Appends throttles if the browser has sent a variations header to the
   // renderer.
   virtual void AppendVariationsThrottles(
-      int routing_id,
+      const url::Origin& top_origin,
       std::vector<std::unique_ptr<blink::URLLoaderThrottle>>* throttles) {}
 
   // Public Suffix List --------------------------------------------------
