@@ -211,6 +211,7 @@ void ViewAccessibility::GetAccessibleNodeData(ui::AXNodeData* data) const {
   }
 
   static constexpr ax::mojom::IntListAttribute kOverridableIntListAttributes[]{
+      ax::mojom::IntListAttribute::kLabelledbyIds,
       ax::mojom::IntListAttribute::kDescribedbyIds,
   };
   for (auto attribute : kOverridableIntListAttributes) {
@@ -403,8 +404,15 @@ void ViewAccessibility::OverrideBounds(const gfx::RectF& bounds) {
   custom_data_.relative_bounds.bounds = bounds;
 }
 
+void ViewAccessibility::OverrideLabelledBy(View* labelled_by_view) {
+  int32_t labelled_by_id =
+      labelled_by_view->GetViewAccessibility().GetUniqueId().Get();
+  custom_data_.AddIntListAttribute(ax::mojom::IntListAttribute::kLabelledbyIds,
+                                   {labelled_by_id});
+}
+
 void ViewAccessibility::OverrideDescribedBy(View* described_by_view) {
-  int described_by_id =
+  int32_t described_by_id =
       described_by_view->GetViewAccessibility().GetUniqueId().Get();
   custom_data_.AddIntListAttribute(ax::mojom::IntListAttribute::kDescribedbyIds,
                                    {described_by_id});

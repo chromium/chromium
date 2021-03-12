@@ -274,9 +274,11 @@ Textfield::~Textfield() {
 
 void Textfield::SetAssociatedLabel(View* labelling_view) {
   DCHECK(labelling_view);
-  label_ax_id_ = labelling_view->GetViewAccessibility().GetUniqueId().Get();
+  GetViewAccessibility().OverrideLabelledBy(labelling_view);
   ui::AXNodeData node_data;
   labelling_view->GetAccessibleNodeData(&node_data);
+  // Labelled-by relations are not common practice in native UI, so we also
+  // set the accessible name for ATs which don't support that.
   // TODO(aleventhal) automatically handle setting the name from the related
   // label in ViewAccessibility and have it update the name if the text of the
   // associated label changes.
@@ -999,11 +1001,6 @@ void Textfield::OnDragDone() {
 
 void Textfield::GetAccessibleNodeData(ui::AXNodeData* node_data) {
   node_data->role = ax::mojom::Role::kTextField;
-
-  if (label_ax_id_) {
-    node_data->AddIntListAttribute(ax::mojom::IntListAttribute::kLabelledbyIds,
-                                   {label_ax_id_});
-  }
 
   node_data->SetName(accessible_name_);
   // Editable state indicates support of editable interface, and is always set

@@ -136,6 +136,7 @@ class VIEWS_EXPORT ViewAccessibility {
   virtual bool IsAccessibilityEnabled() const;
 
   void OverrideBounds(const gfx::RectF& bounds);
+  void OverrideLabelledBy(View* labelled_by_view);
   void OverrideDescribedBy(View* described_by_view);
   void OverrideHasPopup(const ax::mojom::HasPopup has_popup);
 

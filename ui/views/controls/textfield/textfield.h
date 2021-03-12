@@ -690,9 +690,6 @@ class VIEWS_EXPORT Textfield : public View,
   // such.
   bool invalid_ = false;
 
-  // The unique id for the associated label's accessible object.
-  int32_t label_ax_id_ = 0;
-
   // The accessible name of the text field.
   std::u16string accessible_name_;
 
