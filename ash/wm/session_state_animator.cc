@@ -84,12 +84,6 @@ base::TimeDelta SessionStateAnimator::GetDuration(
       return base::TimeDelta();
     case ANIMATION_SPEED_UNDOABLE:
       return base::TimeDelta::FromMilliseconds(400);
-    case ANIMATION_SPEED_REVERT:
-      return base::TimeDelta::FromMilliseconds(150);
-    case ANIMATION_SPEED_FAST:
-      return base::TimeDelta::FromMilliseconds(150);
-    case ANIMATION_SPEED_SHOW_LOCK_SCREEN:
-      return base::TimeDelta::FromMilliseconds(200);
     case ANIMATION_SPEED_MOVE_WINDOWS:
       return base::TimeDelta::FromMilliseconds(350);
     case ANIMATION_SPEED_UNDO_MOVE_WINDOWS:
