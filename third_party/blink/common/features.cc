@@ -727,7 +727,7 @@ bool IsParkableStringsToDiskEnabled() {
 
 // Controls whether to auto select on contextual menu click in Chrome OS.
 const base::Feature kCrOSAutoSelect{"CrOSAutoSelect",
-                                    base::FEATURE_DISABLED_BY_DEFAULT};
+                                    base::FEATURE_ENABLED_BY_DEFAULT};
 
 const base::Feature kCompositingOptimizations{
     "CompositingOptimizations", base::FEATURE_DISABLED_BY_DEFAULT};
