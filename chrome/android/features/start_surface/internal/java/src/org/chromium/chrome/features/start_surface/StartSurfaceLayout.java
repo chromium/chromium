@@ -119,7 +119,13 @@ public class StartSurfaceLayout extends Layout {
                     new Handler().postDelayed(() -> {
                         Tab currentTab = mTabModelSelector.getCurrentTab();
                         if (currentTab != null) mTabContentManager.cacheTabThumbnail(currentTab);
+                        mLayoutTabs = null;
                     }, ZOOMING_DURATION);
+                } else {
+                    // crbug.com/1176548, mLayoutTabs is used to capture thumbnail, null it in a
+                    // post delay handler to avoid creating a new pending surface in native, which
+                    // will hold the thumbnail capturing task.
+                    new Handler().postDelayed(() -> { mLayoutTabs = null; }, ZOOMING_DURATION);
                 }
             }
 
