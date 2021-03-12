@@ -5,20 +5,30 @@
 #import <Foundation/Foundation.h>
 
 #include "base/threading/thread.h"
+#include "components/sync_preferences/pref_service_mock_factory.h"
+#include "components/sync_preferences/pref_service_syncable.h"
 #import "ios/chrome/app/application_delegate/app_state.h"
 #include "ios/chrome/app/application_delegate/startup_information.h"
 #import "ios/chrome/app/application_delegate/tab_opening.h"
 #import "ios/chrome/app/application_delegate/url_opener.h"
 #import "ios/chrome/app/application_delegate/url_opener_params.h"
+#include "ios/chrome/browser/browser_state/test_chrome_browser_state.h"
+#import "ios/chrome/browser/prefs/browser_prefs.h"
 #import "ios/chrome/browser/ui/main/scene_controller.h"
 #import "ios/chrome/browser/ui/main/scene_state.h"
+#import "ios/chrome/browser/ui/main/test/stub_browser_interface.h"
 #import "ios/testing/scoped_block_swizzler.h"
+#include "ios/web/public/test/web_task_environment.h"
 #include "testing/platform_test.h"
 #import "third_party/ocmock/OCMock/OCMock.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
 #endif
+
+@interface SceneController (Testing)
+- (id<BrowserInterface>)currentInterface;
+@end
 
 namespace {
 
@@ -60,21 +70,46 @@ class TabOpenerTest : public PlatformTest {
         [URLOpener class],
         @selector(handleLaunchOptions:
                             tabOpener:connectionInformation:startupInformation
-                                     :appState:inIncognitoMode:),
+                                     :appState:prefService:),
         swizzle_block_));
   }
 
   SceneController* GetSceneController() {
     if (!scene_controller_) {
-      scene_controller_ =
+      StubBrowserInterface* browser_interface =
+          [[StubBrowserInterface alloc] init];
+
+      sync_preferences::PrefServiceMockFactory factory;
+      scoped_refptr<user_prefs::PrefRegistrySyncable> registry(
+          new user_prefs::PrefRegistrySyncable);
+      RegisterBrowserStatePrefs(registry.get());
+
+      TestChromeBrowserState::Builder builder;
+      builder.SetPrefService(factory.CreateSyncable(registry.get()));
+      browser_state_ = builder.Build();
+
+      browser_interface.browserState =
+          (ChromeBrowserState*)browser_state_.get();
+
+      SceneController* controller =
           [[SceneController alloc] initWithSceneState:scene_state_];
+
+      mockController_ = OCMPartialMock(controller);
+      OCMStub([mockController_ currentInterface]).andReturn(browser_interface);
+
+      scene_controller_ = controller;
     }
     return scene_controller_;
   }
 
  private:
-  SceneController* scene_controller_;
+  web::WebTaskEnvironment task_environment_;
+  // Keep the partial mock object alive to avoid automatic deallocation when out
+  // of scope.
+  id mockController_;
+  std::unique_ptr<TestChromeBrowserState> browser_state_;
   SceneState* scene_state_;
+  SceneController* scene_controller_;
 
   __block BOOL swizzle_block_executed_;
   HandleLaunchOptions swizzle_block_;

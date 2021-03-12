@@ -20,6 +20,7 @@
 #import "ios/chrome/app/chrome_overlay_window.h"
 #import "ios/chrome/app/main_application_delegate_testing.h"
 #import "ios/chrome/app/main_controller.h"
+#include "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/ui/main/scene_controller.h"
 #import "ios/chrome/browser/ui/main/scene_delegate.h"
 #import "ios/chrome/browser/ui/main/scene_state.h"
@@ -434,7 +435,8 @@ const int kMainIntentCheckDelay = 1;
                   tabOpener:_tabOpener
       connectionInformation:self.sceneController
          startupInformation:_startupInformation
-            inIncognitoMode:[self.sceneController isIncognitoForced]];
+                prefService:_mainController.interfaceProvider.currentInterface
+                                .browserState->GetPrefs()];
 }
 
 #pragma mark - Testing methods
