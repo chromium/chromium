@@ -309,7 +309,8 @@
       "target_cpu": "arm64",
       "target_os": "android",
       "use_clang_coverage": true,
-      "use_goma": true
+      "use_goma": true,
+      "v8_target_cpu": "arm64"
     }
   },
   "android-pie-arm64-coverage-rel": {
