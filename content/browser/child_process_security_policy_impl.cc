@@ -288,6 +288,10 @@ std::string ProcessLock::ToString() const {
   return ret;
 }
 
+std::ostream& operator<<(std::ostream& out, const ProcessLock& process_lock) {
+  return out << process_lock.ToString();
+}
+
 ChildProcessSecurityPolicyImpl::Handle::Handle()
     : child_id_(ChildProcessHost::kInvalidUniqueID) {}
 

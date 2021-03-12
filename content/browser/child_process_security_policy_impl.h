@@ -184,6 +184,9 @@ class CONTENT_EXPORT ProcessLock {
   base::Optional<SiteInfo> site_info_;
 };
 
+CONTENT_EXPORT std::ostream& operator<<(std::ostream& out,
+                                        const ProcessLock& process_lock);
+
 class CONTENT_EXPORT ChildProcessSecurityPolicyImpl
     : public ChildProcessSecurityPolicy {
  public:
