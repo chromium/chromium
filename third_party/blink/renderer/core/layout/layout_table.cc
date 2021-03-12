@@ -686,7 +686,6 @@ void LayoutTable::RecalcVisualOverflow() {
       section->RecalcVisualOverflow();
   }
 
-  RecalcPositionedDescendantsVisualOverflow();
   RecalcSelfVisualOverflow();
 }
 
