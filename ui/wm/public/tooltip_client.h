@@ -9,6 +9,10 @@
 #include "ui/gfx/font.h"
 #include "ui/wm/public/wm_public_export.h"
 
+namespace base {
+class TimeDelta;
+}
+
 namespace gfx {
 class Point;
 }
@@ -27,8 +31,8 @@ class WM_PUBLIC_EXPORT TooltipClient {
 
   // Sets the time after which the tooltip is hidden for Window |target|. If
   // |timeout_in_ms| is <= 0, the tooltip is shown indefinitely.
-  virtual void SetTooltipShownTimeout(aura::Window* target,
-                                      int timeout_in_ms) = 0;
+  virtual void SetHideTooltipTimeout(aura::Window* target,
+                                     base::TimeDelta timeout) = 0;
 
  protected:
   // Enables/Disables tooltips. This is treated as a reference count. Consumers

@@ -2776,7 +2776,8 @@
           'EditableComboboxTest*:'
           'MenuRunnerTest*:'
           'TextfieldTest*:'
-          'TooltipControllerTest*',
+          'TooltipControllerTest*:'
+          'TooltipStateManagerTest*'
         ],
       },
     },
