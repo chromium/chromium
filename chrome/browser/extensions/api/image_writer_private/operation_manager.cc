@@ -40,16 +40,15 @@ using content::BrowserThread;
 
 OperationManager::OperationManager(content::BrowserContext* context)
     : browser_context_(context) {
-  extension_registry_observer_.Add(ExtensionRegistry::Get(browser_context_));
+  extension_registry_observation_.Observe(
+      ExtensionRegistry::Get(browser_context_));
+  process_manager_observation_.Observe(ProcessManager::Get(browser_context_));
   Profile* profile = Profile::FromBrowserContext(browser_context_);
   registrar_.Add(this,
                  extensions::NOTIFICATION_EXTENSION_PROCESS_TERMINATED,
                  content::Source<Profile>(profile));
   registrar_.Add(this,
                  extensions::NOTIFICATION_EXTENSION_HOST_VIEW_SHOULD_CLOSE,
-                 content::Source<Profile>(profile));
-  registrar_.Add(this,
-                 extensions::NOTIFICATION_EXTENSION_HOST_DESTROYED,
                  content::Source<Profile>(profile));
 }
 
@@ -244,6 +243,20 @@ void OperationManager::OnExtensionUnloaded(
   DeleteOperation(extension->id());
 }
 
+void OperationManager::OnShutdown(ExtensionRegistry* registry) {
+  DCHECK(extension_registry_observation_.IsObservingSource(registry));
+  extension_registry_observation_.Reset();
+}
+
+void OperationManager::OnBackgroundHostClose(const std::string& extension_id) {
+  DeleteOperation(extension_id);
+}
+
+void OperationManager::OnProcessManagerShutdown(ProcessManager* manager) {
+  DCHECK(process_manager_observation_.IsObservingSource(manager));
+  process_manager_observation_.Reset();
+}
+
 void OperationManager::Observe(int type,
                                const content::NotificationSource& source,
                                const content::NotificationDetails& details) {
@@ -253,8 +266,6 @@ void OperationManager::Observe(int type,
       break;
     }
     case extensions::NOTIFICATION_EXTENSION_HOST_VIEW_SHOULD_CLOSE:
-      // Intentional fall-through.
-    case extensions::NOTIFICATION_EXTENSION_HOST_DESTROYED:
       // Note: |ExtensionHost::extension()| can be null if the extension was
       // already unloaded, use ExtensionHost::extension_id() instead.
       DeleteOperation(

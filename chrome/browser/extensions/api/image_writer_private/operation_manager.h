@@ -11,7 +11,7 @@
 #include "base/callback.h"
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
-#include "base/scoped_observer.h"
+#include "base/scoped_observation.h"
 #include "chrome/browser/extensions/api/image_writer_private/image_writer_private_api.h"
 #include "chrome/browser/extensions/api/image_writer_private/operation.h"
 #include "chrome/common/extensions/api/image_writer_private.h"
@@ -20,6 +20,8 @@
 #include "extensions/browser/browser_context_keyed_api_factory.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_registry_observer.h"
+#include "extensions/browser/process_manager.h"
+#include "extensions/browser/process_manager_observer.h"
 #include "extensions/common/extension_id.h"
 #include "url/gurl.h"
 
@@ -39,7 +41,8 @@ class Operation;
 // and message routing.
 class OperationManager : public BrowserContextKeyedAPI,
                          public content::NotificationObserver,
-                         public extensions::ExtensionRegistryObserver,
+                         public ExtensionRegistryObserver,
+                         public ProcessManagerObserver,
                          public base::SupportsWeakPtr<OperationManager> {
  public:
   explicit OperationManager(content::BrowserContext* context);
@@ -91,15 +94,20 @@ class OperationManager : public BrowserContextKeyedAPI,
     return "OperationManager";
   }
 
-  // NotificationObserver implementation.
+  // NotificationObserver:
   void Observe(int type,
                const content::NotificationSource& source,
                const content::NotificationDetails& details) override;
 
-  // ExtensionRegistryObserver implementation.
+  // ExtensionRegistryObserver:
   void OnExtensionUnloaded(content::BrowserContext* browser_context,
                            const Extension* extension,
                            UnloadedExtensionReason reason) override;
+  void OnShutdown(ExtensionRegistry* registry) override;
+
+  // ProcessManagerObserver:
+  void OnBackgroundHostClose(const std::string& extension_id) override;
+  void OnProcessManagerShutdown(ProcessManager* manager) override;
 
   Operation* GetOperation(const ExtensionId& extension_id);
   void DeleteOperation(const ExtensionId& extension_id);
@@ -115,8 +123,12 @@ class OperationManager : public BrowserContextKeyedAPI,
   content::NotificationRegistrar registrar_;
 
   // Listen to extension unloaded notification.
-  ScopedObserver<ExtensionRegistry, ExtensionRegistryObserver>
-      extension_registry_observer_{this};
+  base::ScopedObservation<ExtensionRegistry, ExtensionRegistryObserver>
+      extension_registry_observation_{this};
+
+  // Listen to ProcessManagerObserver for ExtensionHost.
+  base::ScopedObservation<ProcessManager, ProcessManagerObserver>
+      process_manager_observation_{this};
 
   base::WeakPtrFactory<OperationManager> weak_factory_{this};
 
