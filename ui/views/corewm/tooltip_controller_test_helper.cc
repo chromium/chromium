@@ -5,6 +5,7 @@
 #include "ui/views/corewm/tooltip_controller_test_helper.h"
 
 #include "ui/aura/window.h"
+#include "ui/views/corewm/tooltip_controller.h"
 
 namespace views {
 namespace corewm {
@@ -13,48 +14,39 @@ namespace test {
 TooltipControllerTestHelper::TooltipControllerTestHelper(
     TooltipController* controller)
     : controller_(controller) {
-  controller_->state_manager_->SetTooltipShowDelayedForTesting(false);
+  controller_->DisableTooltipShowDelay();
 }
 
 TooltipControllerTestHelper::~TooltipControllerTestHelper() = default;
 
-const std::u16string& TooltipControllerTestHelper::GetTooltipText() {
-  return controller_->state_manager_->tooltip_text();
+std::u16string TooltipControllerTestHelper::GetTooltipText() {
+  return controller_->tooltip_text_;
 }
 
-const aura::Window* TooltipControllerTestHelper::GetTooltipParentWindow() {
-  return controller_->state_manager_->tooltip_parent_window();
-}
-
-const aura::Window* TooltipControllerTestHelper::GetObservedWindow() {
-  return controller_->observed_window_;
-}
-
-const gfx::Point& TooltipControllerTestHelper::GetTooltipPosition() {
-  return controller_->state_manager_->position_;
+aura::Window* TooltipControllerTestHelper::GetTooltipWindow() {
+  return controller_->tooltip_window_;
 }
 
 void TooltipControllerTestHelper::UpdateIfRequired() {
   controller_->UpdateIfRequired();
 }
 
-void TooltipControllerTestHelper::FireHideTooltipTimer() {
-  controller_->state_manager_->StopWillHideTooltipTimer();
-  controller_->state_manager_->HideAndReset();
+void TooltipControllerTestHelper::FireTooltipShownTimer() {
+  controller_->tooltip_shown_timer_.Stop();
+  controller_->TooltipShownTimerFired();
 }
 
-bool TooltipControllerTestHelper::IsHideTooltipTimerRunning() {
-  return controller_->state_manager_->IsWillHideTooltipTimerRunningForTesting();
+bool TooltipControllerTestHelper::IsTooltipShownTimerRunning() {
+  return controller_->tooltip_shown_timer_.IsRunning();
 }
 
 bool TooltipControllerTestHelper::IsTooltipVisible() {
-  return controller_->state_manager_->IsVisible();
+  return controller_->IsTooltipVisible();
 }
 
 void TooltipControllerTestHelper::SetTooltipShowDelayEnable(
     bool tooltip_show_delay) {
-  controller_->state_manager_->SetTooltipShowDelayedForTesting(
-      tooltip_show_delay);
+  controller_->tooltip_show_delayed_ = tooltip_show_delay;
 }
 
 TooltipTestView::TooltipTestView() = default;

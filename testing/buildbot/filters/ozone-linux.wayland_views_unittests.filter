@@ -44,9 +44,6 @@
 -TooltipControllerTest.TooltipHidesOnTimeoutAndStaysHiddenUntilChange
 -TooltipControllerTest.TooltipsInMultipleViews
 -TooltipControllerTest.ViewTooltip
--TooltipStateManagerTest.ShowAndHideTooltip
--TooltipStateManagerTest.ShowTooltipWithDelay
--TooltipStateManagerTest.UpdatePositionWhileWillShowTooltipTimerIsRunning
 
 # Crashed tests.
 -DesktopWidgetTest.MinimumSizeConstraints

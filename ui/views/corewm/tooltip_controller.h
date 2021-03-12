@@ -9,7 +9,10 @@
 #include <memory>
 #include <string>
 
+#include "base/macros.h"
 #include "base/strings/string16.h"
+#include "base/strings/string_piece.h"
+#include "base/timer/timer.h"
 #include "ui/aura/client/cursor_client_observer.h"
 #include "ui/aura/window_observer.h"
 #include "ui/events/event_handler.h"
@@ -25,14 +28,12 @@ namespace views {
 namespace corewm {
 
 class Tooltip;
-class TooltipStateManager;
 
 namespace test {
 class TooltipControllerTestHelper;
 }  // namespace test
 
-// TooltipController listens for events that can have an impact on the
-// tooltip state.
+// TooltipController provides tooltip functionality for aura.
 class VIEWS_EXPORT TooltipController
     : public wm::TooltipClient,
       public ui::EventHandler,
@@ -45,8 +46,7 @@ class VIEWS_EXPORT TooltipController
   // Overridden from wm::TooltipClient.
   int GetMaxWidth(const gfx::Point& location) const override;
   void UpdateTooltip(aura::Window* target) override;
-  void SetHideTooltipTimeout(aura::Window* target,
-                             base::TimeDelta timeout) override;
+  void SetTooltipShownTimeout(aura::Window* target, int timeout_in_ms) override;
   void SetTooltipsEnabled(bool enable) override;
 
   // Overridden from ui::EventHandler.
@@ -66,82 +66,70 @@ class VIEWS_EXPORT TooltipController
                                const void* key,
                                intptr_t old) override;
 
+  const gfx::Point& mouse_location() const { return curr_mouse_loc_; }
+
  private:
   friend class test::TooltipControllerTestHelper;
 
-  // Reset the window and calls `TooltipStateManager::HideAndReset`.
-  void HideAndReset();
+  void TooltipShownTimerFired();
+
+  // Show the tooltip.
+  void ShowTooltip();
+
+  // Hide the tooltip, clear timers, and reset controller states.
+  void HideTooltipAndResetStates();
 
   // Updates the tooltip if required (if there is any change in the tooltip
   // text, tooltip id or the aura::Window).
   void UpdateIfRequired();
 
-  // Returns true if there's a drag-and-drop in progress.
-  bool IsDragDropInProgress() const;
+  // Only used in tests.
+  bool IsTooltipVisible();
+
+  bool IsDragDropInProgress();
 
   // Returns true if the cursor is visible.
-  bool IsCursorVisible() const;
+  bool IsCursorVisible();
 
-  // Get the delay after which the tooltip should be hidden.
-  base::TimeDelta GetHideTooltipTimeout();
+  int GetTooltipShownTimeout();
 
-  // Sets observed window to |target| if it is different from existing window.
+  // Sets tooltip window to |target| if it is different from existing window.
   // Calls RemoveObserver on the existing window if it is not NULL.
   // Calls AddObserver on the new window if it is not NULL.
-  void SetObservedWindow(aura::Window* target);
+  void SetTooltipWindow(aura::Window* target);
 
-  // Returns true if the tooltip id stored on the state manager and the one
-  // stored on the window are different.
-  bool IsTooltipIdUpdateNeeded() const;
+  void DisableTooltipShowDelay() { tooltip_show_delayed_ = false; }
 
-  // Returns true if the tooltip text stored on the state manager and the one
-  // stored on the window are different.
-  bool IsTooltipTextUpdateNeeded() const;
-
-  // The opposite of SetHideTooltipTimeout.
-  void RemoveHideTooltipTimeoutFromMap(aura::Window* window);
-
-  // Stop tracking the window on which the cursor was when the mouse was pressed
-  // if we're on another window.
-  void ResetWindowAtMousePressedIfNeeded(aura::Window* target);
-
-  // To prevent the tooltip to show again after a mouse press event, we want
-  // to hide it until the cursor moves to another window.
-  bool ShouldHideBecauseMouseWasOncePressed();
-
-  // The window on which we are currently listening for events. For the moment,
-  // the |observed_window_| follows the window on which the mouse is.
-  // TODO(bebeaudr): Update comment above when we'll have keyboard-triggered
-  // tooltip because it won't always follow the cursor anymore.
-  aura::Window* observed_window_ = nullptr;
+  aura::Window* tooltip_window_;
+  std::u16string tooltip_text_;
+  std::u16string tooltip_text_whitespace_trimmed_;
+  const void* tooltip_id_;
 
   // These fields are for tracking state when the user presses a mouse button.
-  // The tooltip should stay hidden after a mouse press event on the view until
-  // the cursor moves to another view.
+  aura::Window* tooltip_window_at_mouse_press_;
   std::u16string tooltip_text_at_mouse_press_;
-  aura::Window* tooltip_window_at_mouse_press_ = nullptr;
+
+  std::unique_ptr<Tooltip> tooltip_;
+
+  // Timer for requesting delayed updates of the tooltip.
+  base::OneShotTimer tooltip_defer_timer_;
+
+  // Timer to timeout the life of an on-screen tooltip. We hide the tooltip when
+  // this timer fires.
+  base::OneShotTimer tooltip_shown_timer_;
 
   // Location of the last events in |tooltip_window_|'s coordinates.
-  gfx::Point last_mouse_loc_;
+  gfx::Point curr_mouse_loc_;
   gfx::Point last_touch_loc_;
 
-  // Whether tooltips can be displayed or not.
-  bool tooltips_enabled_ = true;
+  bool tooltips_enabled_;
 
-  // Web content tooltips should be shown indefinitely and those added on Views
-  // should be hidden automatically after a timeout. This map stores the timeout
-  // value for each aura::Window.
-  // TODO(bebeaudr): Currently, all Views tooltips are hidden after the same
-  // timeout and all web content views should be shown indefinitely. If this
-  // general rule is always true, then we don't need a complex map here. A set
-  // of aura::Window* would be enough with an attribute named
-  // "disabled_hide_timeout_views_set_" or something like that.
-  std::map<aura::Window*, base::TimeDelta> hide_tooltip_timeout_map_;
+  // An indicator of whether tooltip appears with delay or not.
+  // If the flag is true, tooltip shows up with delay;
+  // otherwise there is no delay, which is used in unit tests only.
+  bool tooltip_show_delayed_;
 
-  // The TooltipStateManager is responsible for keeping track of the current
-  // tooltip state (its text, position, id, etc.) and to modify it when asked
-  // by the TooltipController or the show/hide timers.
-  std::unique_ptr<TooltipStateManager> state_manager_;
+  std::map<aura::Window*, int> tooltip_shown_timeout_map_;
 
   DISALLOW_COPY_AND_ASSIGN(TooltipController);
 };

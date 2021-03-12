@@ -770,7 +770,7 @@ void RenderWidgetHostViewAura::DisplayTooltipText(
   if (tooltip_client) {
     tooltip_client->UpdateTooltip(window_);
     // Content tooltips should be visible indefinitely.
-    tooltip_client->SetHideTooltipTimeout(window_, {});
+    tooltip_client->SetTooltipShownTimeout(window_, 0);
   }
 }
 

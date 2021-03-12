@@ -9,8 +9,6 @@
 
 #include "base/macros.h"
 #include "base/strings/string16.h"
-#include "ui/views/corewm/tooltip_controller.h"
-#include "ui/views/corewm/tooltip_state_manager.h"
 #include "ui/views/view.h"
 #include "ui/views/views_export.h"
 
@@ -21,6 +19,7 @@ class Window;
 namespace views {
 namespace corewm {
 
+class TooltipController;
 
 namespace test {
 
@@ -33,18 +32,12 @@ class TooltipControllerTestHelper {
 
   TooltipController* controller() { return controller_; }
 
-  TooltipStateManager* state_manager() {
-    return controller_->state_manager_.get();
-  }
-
   // These are mostly cover methods for TooltipController private methods.
-  const std::u16string& GetTooltipText();
-  const aura::Window* GetTooltipParentWindow();
-  const aura::Window* GetObservedWindow();
-  const gfx::Point& GetTooltipPosition();
+  std::u16string GetTooltipText();
+  aura::Window* GetTooltipWindow();
   void UpdateIfRequired();
-  void FireHideTooltipTimer();
-  bool IsHideTooltipTimerRunning();
+  void FireTooltipShownTimer();
+  bool IsTooltipShownTimerRunning();
   bool IsTooltipVisible();
   void SetTooltipShowDelayEnable(bool tooltip_show_delay);
 
