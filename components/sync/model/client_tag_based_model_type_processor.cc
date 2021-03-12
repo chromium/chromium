@@ -21,6 +21,7 @@
 #include "components/sync/base/time.h"
 #include "components/sync/engine/commit_queue.h"
 #include "components/sync/engine/data_type_activation_response.h"
+#include "components/sync/engine/model_type_processor_metrics.h"
 #include "components/sync/engine/model_type_processor_proxy.h"
 #include "components/sync/model/client_tag_based_remote_update_handler.h"
 #include "components/sync/model/model_type_change_processor.h"
@@ -716,6 +717,10 @@ void ClientTagBasedModelTypeProcessor::OnUpdateReceived(
   DCHECK(model_ready_to_sync_);
   DCHECK(!model_error_);
 
+  const bool is_initial_sync = !IsTrackingMetadata();
+  LogUpdatesReceivedByProcessorHistogram(type_, is_initial_sync,
+                                         updates.size());
+
   if (!ValidateUpdate(model_type_state, updates)) {
     return;
   }
@@ -729,7 +734,6 @@ void ClientTagBasedModelTypeProcessor::OnUpdateReceived(
   // always clear all data. We do this to allow the server to replace all data
   // on the client, without having to know exactly which entities the client
   // has.
-  const bool is_initial_sync = !IsTrackingMetadata();
   const bool treating_as_full_update =
       is_initial_sync || HasClearAllDirective(model_type_state);
   if (treating_as_full_update) {

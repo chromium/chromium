@@ -12,6 +12,7 @@
 #include "base/guid.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
@@ -297,12 +298,13 @@ class BookmarkModelTypeProcessorTest : public testing::Test {
   std::unique_ptr<bookmarks::BookmarkModel> bookmark_model_;
 };
 
-TEST_F(BookmarkModelTypeProcessorTest, ShouldUpdateModelAfterRemoteCreation) {
-  SimulateModelReadyToSync();
-  SimulateOnSyncStarting();
-  syncer::UniquePosition kRandomPosition =
+TEST_F(BookmarkModelTypeProcessorTest, ShouldDoInitialMerge) {
+  const syncer::UniquePosition kRandomPosition =
       syncer::UniquePosition::InitialPosition(
           syncer::UniquePosition::RandomSuffix());
+
+  SimulateModelReadyToSync();
+  SimulateOnSyncStarting();
 
   syncer::UpdateResponseDataList updates;
   // Add update for the permanent folders.
@@ -319,33 +321,56 @@ TEST_F(BookmarkModelTypeProcessorTest, ShouldUpdateModelAfterRemoteCreation) {
        kMobileBookmarksTag},
       kRandomPosition, /*response_version=*/0));
 
+  ASSERT_THAT(processor()->GetTrackerForTest(), IsNull());
+
+  base::HistogramTester histogram_tester;
+  processor()->OnUpdateReceived(CreateDummyModelTypeState(),
+                                std::move(updates));
+  EXPECT_THAT(processor()->GetTrackerForTest(), NotNull());
+
+  histogram_tester.ExpectUniqueSample(
+      "Sync.ModelTypeInitialUpdateReceived",
+      /*sample=*/syncer::ModelTypeHistogramValue(syncer::BOOKMARKS),
+      /*expected_count=*/3);
+}
+
+TEST_F(BookmarkModelTypeProcessorTest, ShouldUpdateModelAfterRemoteCreation) {
+  SimulateModelReadyToSync();
+  SimulateOnSyncStarting();
+  InitWithSyncedBookmarks(/*bookmarks=*/{}, processor());
+
   // Add update for another node under the bookmarks bar.
   const std::string kNodeId = "node_id";
   const std::string kTitle = "title";
   const std::string kUrl = "http://www.url.com";
+  const syncer::UniquePosition kRandomPosition =
+      syncer::UniquePosition::InitialPosition(
+          syncer::UniquePosition::RandomSuffix());
+
+  syncer::UpdateResponseDataList updates;
   updates.push_back(
       CreateUpdateResponseData({kNodeId, kTitle, kUrl, kBookmarkBarId,
                                 /*server_tag=*/std::string()},
                                kRandomPosition, /*response_version=*/0));
 
-  const bookmarks::BookmarkNode* bookmarkbar =
+  const bookmarks::BookmarkNode* bookmark_bar =
       bookmark_model()->bookmark_bar_node();
-  EXPECT_TRUE(bookmarkbar->children().empty());
+  ASSERT_TRUE(bookmark_bar->children().empty());
 
   processor()->OnUpdateReceived(CreateDummyModelTypeState(),
                                 std::move(updates));
 
-  ASSERT_THAT(bookmarkbar->children().front().get(), NotNull());
-  EXPECT_THAT(bookmarkbar->children().front()->GetTitle(),
+  ASSERT_THAT(bookmark_bar->children().front().get(), NotNull());
+  EXPECT_THAT(bookmark_bar->children().front()->GetTitle(),
               Eq(ASCIIToUTF16(kTitle)));
-  EXPECT_THAT(bookmarkbar->children().front()->url(), Eq(GURL(kUrl)));
+  EXPECT_THAT(bookmark_bar->children().front()->url(), Eq(GURL(kUrl)));
 }
 
 TEST_F(BookmarkModelTypeProcessorTest, ShouldUpdateModelAfterRemoteUpdate) {
   const std::string kNodeId = "node_id";
   const std::string kTitle = "title";
   const std::string kUrl = "http://www.url.com";
-  syncer::UniquePosition kRandomPosition =
+  const syncer::UniquePosition kRandomPosition =
       syncer::UniquePosition::InitialPosition(
           syncer::UniquePosition::RandomSuffix());
 
@@ -374,6 +399,7 @@ TEST_F(BookmarkModelTypeProcessorTest, ShouldUpdateModelAfterRemoteUpdate) {
        /*server_tag=*/std::string()},
       kRandomPosition, /*response_version=*/1, bookmark_node->guid()));
 
+  base::HistogramTester histogram_tester;
   processor()->OnUpdateReceived(CreateDummyModelTypeState(),
                                 std::move(updates));
 
@@ -381,6 +407,11 @@ TEST_F(BookmarkModelTypeProcessorTest, ShouldUpdateModelAfterRemoteUpdate) {
   EXPECT_THAT(bookmark_bar->children().front().get(), Eq(bookmark_node));
   EXPECT_THAT(bookmark_node->GetTitle(), Eq(ASCIIToUTF16(kNewTitle)));
   EXPECT_THAT(bookmark_node->url(), Eq(GURL(kNewUrl)));
+
+  histogram_tester.ExpectUniqueSample(
+      "Sync.ModelTypeIncrementalUpdateReceived",
+      /*sample=*/syncer::ModelTypeHistogramValue(syncer::BOOKMARKS),
+      /*expected_count=*/1);
 }
 
 TEST_F(
@@ -389,7 +420,7 @@ TEST_F(
   const std::string kNodeId = "node_id";
   const std::string kTitle = "title";
   const std::string kUrl = "http://www.url.com";
-  syncer::UniquePosition kRandomPosition =
+  const syncer::UniquePosition kRandomPosition =
       syncer::UniquePosition::InitialPosition(
           syncer::UniquePosition::RandomSuffix());
 

@@ -11,6 +11,7 @@
 #include "components/sync/base/time.h"
 #include "components/sync/engine/commit_queue.h"
 #include "components/sync/engine/forwarding_model_type_processor.h"
+#include "components/sync/engine/model_type_processor_metrics.h"
 #include "components/sync/model/processor_entity.h"
 #include "components/sync/model/type_entities_count.h"
 #include "components/sync/nigori/nigori_sync_bridge.h"
@@ -125,7 +126,10 @@ void NigoriModelTypeProcessor::OnUpdateReceived(
 
   base::Optional<ModelError> error;
 
-  bool is_initial_sync = !model_type_state_.initial_sync_done();
+  const bool is_initial_sync = !model_type_state_.initial_sync_done();
+  LogUpdatesReceivedByProcessorHistogram(NIGORI, is_initial_sync,
+                                         updates.size());
+
   model_type_state_ = type_state;
 
   if (is_initial_sync) {

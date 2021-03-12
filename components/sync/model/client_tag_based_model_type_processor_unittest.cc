@@ -572,8 +572,14 @@ TEST_F(ClientTagBasedModelTypeProcessorTest, ShouldMergeLocalAndRemoteChanges) {
 
   EXPECT_EQ(0, bridge()->merge_call_count());
   // Initial sync with one server item.
+  base::HistogramTester histogram_tester;
   worker()->UpdateFromServer(GetHash(kKey2), GenerateSpecifics(kKey2, kValue2));
   EXPECT_EQ(1, bridge()->merge_call_count());
+
+  histogram_tester.ExpectUniqueSample(
+      "Sync.ModelTypeInitialUpdateReceived",
+      /*sample=*/syncer::ModelTypeHistogramValue(GetModelType()),
+      /*expected_count=*/1);
 
   // Now have data and metadata for both items, as well as a commit request for
   // the local item.
@@ -629,11 +635,17 @@ TEST_F(ClientTagBasedModelTypeProcessorTest, ShouldApplyIncrementalUpdates) {
 
   // Check that data coming from sync is treated as a normal GetUpdates.
   OnSyncStarting();
+  base::HistogramTester histogram_tester;
   worker()->UpdateFromServer(GetHash(kKey2), GenerateSpecifics(kKey2, kValue2));
   EXPECT_EQ(0, bridge()->merge_call_count());
   EXPECT_EQ(1, bridge()->apply_call_count());
   EXPECT_EQ(2U, db()->data_count());
   EXPECT_EQ(2U, db()->metadata_count());
+
+  histogram_tester.ExpectUniqueSample(
+      "Sync.ModelTypeIncrementalUpdateReceived",
+      /*sample=*/syncer::ModelTypeHistogramValue(GetModelType()),
+      /*expected_count=*/1);
 }
 
 // Test that an error during the merge is propagated to the error handler.

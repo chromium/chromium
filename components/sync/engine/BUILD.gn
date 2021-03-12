@@ -101,6 +101,8 @@ static_library("engine") {
     "model_type_connector_proxy.cc",
     "model_type_connector_proxy.h",
     "model_type_processor.h",
+    "model_type_processor_metrics.cc",
+    "model_type_processor_metrics.h",
     "model_type_processor_proxy.cc",
     "model_type_processor_proxy.h",
     "model_type_registry.cc",
