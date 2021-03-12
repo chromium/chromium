@@ -21,7 +21,7 @@
 #include "pdf/pdfium/pdfium_test_base.h"
 #include "pdf/ppapi_migration/geometry_conversions.h"
 #include "pdf/test/test_client.h"
-#include "pdf/thumbnail.h"
+#include "pdf/ui/thumbnail.h"
 #include "ppapi/c/private/ppb_pdf.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/pdfium/public/fpdf_formfill.h"

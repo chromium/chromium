@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef PDF_THUMBNAIL_H_
-#define PDF_THUMBNAIL_H_
+#ifndef PDF_UI_THUMBNAIL_H_
+#define PDF_UI_THUMBNAIL_H_
 
 #include "third_party/skia/include/core/SkBitmap.h"
 
@@ -38,4 +38,4 @@ class Thumbnail final {
 
 }  // namespace chrome_pdf
 
-#endif  // PDF_THUMBNAIL_H_
+#endif  // PDF_UI_THUMBNAIL_H_
