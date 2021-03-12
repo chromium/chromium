@@ -1392,6 +1392,9 @@ class Module(object):
                                   rhs.imports, rhs.constants, rhs.enums,
                                   rhs.structs, rhs.unions, rhs.interfaces))
 
+  def __hash__(self):
+    return id(self)
+
   def Repr(self, as_ref=True):
     if as_ref:
       return '<%s path=%r mojom_namespace=%r>' % (
