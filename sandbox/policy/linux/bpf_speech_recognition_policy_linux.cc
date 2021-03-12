@@ -5,6 +5,7 @@
 #include "sandbox/policy/linux/bpf_speech_recognition_policy_linux.h"
 
 #include "sandbox/linux/bpf_dsl/bpf_dsl.h"
+#include "sandbox/linux/seccomp-bpf-helpers/syscall_parameters_restrictions.h"
 #include "sandbox/linux/syscall_broker/broker_process.h"
 #include "sandbox/linux/system_headers/linux_syscalls.h"
 #include "sandbox/policy/linux/sandbox_linux.h"
@@ -33,6 +34,9 @@ ResultExpr SpeechRecognitionProcessPolicy::EvaluateSyscall(
     case __NR_getdents:
       return Allow();
 #endif
+    case __NR_sched_setscheduler:
+      // Used for starting an AudioStream when recognizing microphone data.
+      return RestrictSchedTarget(GetPolicyPid(), system_call_number);
     default:
       auto* sandbox_linux = SandboxLinux::GetInstance();
       if (sandbox_linux->ShouldBrokerHandleSyscall(system_call_number))

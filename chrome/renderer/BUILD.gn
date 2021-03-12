@@ -204,6 +204,7 @@ static_library("renderer") {
     "//media",
     "//media:media_buildflags",
     "//media/capture",
+    "//media/mojo/common",
     "//mojo/public/cpp/bindings",
     "//net",
     "//pdf:buildflags",

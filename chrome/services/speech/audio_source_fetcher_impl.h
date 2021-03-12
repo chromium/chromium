@@ -7,6 +7,7 @@
 
 #include "base/memory/weak_ptr.h"
 #include "media/base/audio_capturer_source.h"
+#include "media/mojo/common/audio_data_s16_converter.h"
 #include "media/mojo/mojom/speech_recognition_service.mojom.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -20,7 +21,10 @@ class SpeechRecognitionRecognizerImpl;
 // Chrome OS and Speech Recognition Service on Chrome or web speech fallback.
 // TODO(crbug.com/1173135): Override from
 // media::AudioCapturerSource::CaptureCallback to capture audio.
-class AudioSourceFetcherImpl : public media::mojom::AudioSourceFetcher {
+class AudioSourceFetcherImpl
+    : public media::mojom::AudioSourceFetcher,
+      public media::AudioCapturerSource::CaptureCallback,
+      public media::AudioDataS16Converter {
  public:
   AudioSourceFetcherImpl(
       mojo::PendingRemote<media::mojom::AudioStreamFactory> stream_factory,
@@ -35,16 +39,49 @@ class AudioSourceFetcherImpl : public media::mojom::AudioSourceFetcher {
       std::unique_ptr<SpeechRecognitionRecognizerImpl> recognition_recognizer);
 
   // media::mojom::AudioSourceFetcher:
+  void Start() override;
   void Stop() override;
 
+  // media::AudioCapturerSource::CaptureCallback:
+  void OnCaptureStarted() final {}
+  void Capture(const media::AudioBus* audio_source,
+               base::TimeTicks audio_capture_time,
+               double volume,
+               bool key_pressed) final;
+  void OnCaptureError(const std::string& message) final;
+  void OnCaptureMuted(bool is_muted) final {}
+
+  void set_audio_capturer_source_for_tests(
+      media::AudioCapturerSource* audio_capturer_source_for_tests) {
+    audio_capturer_source_for_tests_ = audio_capturer_source_for_tests;
+  }
+
  private:
-  // Audio capturerer source for microphone recording.
+  using SendAudioToSpeechRecognitionServiceCallback =
+      base::RepeatingCallback<void(media::mojom::AudioDataS16Ptr audio_data)>;
+
+  void SendAudioToSpeechRecognitionService(
+      media::mojom::AudioDataS16Ptr buffer);
+
+  media::AudioCapturerSource* GetAudioCapturerSource();
+
+  // Sends audio to the speech recognition recognizer.
+  SendAudioToSpeechRecognitionServiceCallback send_audio_callback_;
+
+  // Audio capturer source for microphone recording.
   scoped_refptr<media::AudioCapturerSource> audio_capturer_source_;
+  media::AudioCapturerSource* audio_capturer_source_for_tests_ = nullptr;
+
+  // Audio parameters will be used when recording audio.
+  media::AudioParameters audio_parameters_;
 
   // Owned SpeechRecognitionRecognizerImpl was constructed by the
   // SpeechRecognitionService as appropriate for the platform.
   std::unique_ptr<SpeechRecognitionRecognizerImpl>
       speech_recognition_recognizer_;
+
+  // Whether audio capture is started.
+  bool is_started_;
 
   base::WeakPtrFactory<AudioSourceFetcherImpl> weak_factory_{this};
 };

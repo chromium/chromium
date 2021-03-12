@@ -66,7 +66,7 @@ OnDeviceSpeechRecognizer::~OnDeviceSpeechRecognizer() {
 }
 
 void OnDeviceSpeechRecognizer::Start() {
-  // TODO(crbug.com/1173135): Call audio_source_fetcher_->Start();
+  audio_source_fetcher_->Start();
   UpdateStatus(SpeechRecognizerStatus::SPEECH_RECOGNIZER_RECOGNIZING);
 }
 

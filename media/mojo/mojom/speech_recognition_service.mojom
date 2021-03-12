@@ -57,10 +57,12 @@ interface SpeechRecognitionService {
 
 // The interface used to start and stop fetching audio from the microphone
 // for speech recognition.
-// TODO(crbug.com/1173135): Add Start() to begin fetching audio. Results will
-// be returned using the Remote<SpeechRecognitionRecognizerClient> which was
-// passed in BindAudioSourceFetcher.
 interface AudioSourceFetcher {
+  // Begin fetching audio. Results will be returned using the
+  // Remote<SpeechRecognitionRecognizerClient> which was passed in
+  // BindAudioSourceFetcher.
+  Start();
+
   // Stops audio fetching.
   Stop();
 };

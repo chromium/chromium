@@ -90,11 +90,7 @@ class SpeechRecognitionService;
 template <>
 inline sandbox::policy::SandboxType
 content::GetServiceSandboxType<media::mojom::SpeechRecognitionService>() {
-  if (base::FeatureList::IsEnabled(media::kUseSodaForLiveCaption)) {
-    return sandbox::policy::SandboxType::kSpeechRecognition;
-  } else {
-    return sandbox::policy::SandboxType::kUtility;
-  }
+  return sandbox::policy::SandboxType::kSpeechRecognition;
 }
 #endif  // !defined(OS_ANDROID)
 

@@ -1650,6 +1650,7 @@ if (!is_android) {
       "../browser/speech/network_speech_recognizer_browsertest.cc",
       "../browser/speech/speech_recognition_browsertest.cc",
     ]
+    deps += [ "//services/audio/public/cpp:test_support" ]
 
     if (is_mac) {
       sources += [
