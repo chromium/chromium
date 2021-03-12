@@ -5682,12 +5682,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kPrintServerScalingDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(chromeos::features::kPrintServerScaling)},
 
-    {"disable-peripheral-data-access-protection",
-     flag_descriptions::kDisablePeripheralDataAccessProtectionName,
-     flag_descriptions::kDisablePeripheralDataAccessProtectionDescription,
-     kOsCrOS,
-     FEATURE_VALUE_TYPE(
-         chromeos::features::kDisablePeripheralDataAccessProtection)},
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
     {"enable-portals", flag_descriptions::kEnablePortalsName,

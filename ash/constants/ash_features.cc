@@ -315,9 +315,6 @@ const base::Feature kExoPointerLock{"ExoPointerLock",
 const base::Feature kExoLockNotification{"ExoLockNotification",
                                          base::FEATURE_DISABLED_BY_DEFAULT};
 
-const base::Feature kDisablePeripheralDataAccessProtection{
-    "DisablePeripheralDataAccessProtection", base::FEATURE_DISABLED_BY_DEFAULT};
-
 // Enables policy that controls feature to allow Family Link accounts on school
 // owned devices.
 const base::Feature kFamilyLinkOnSchoolDevice{"FamilyLinkOnSchoolDevice",
@@ -766,10 +763,6 @@ bool IsDiagnosticsAppEnabled() {
 
 bool IsEcheSWAEnabled() {
   return base::FeatureList::IsEnabled(kEcheSWA);
-}
-
-bool IsPeripheralDataAccessProtectionEnabled() {
-  return !base::FeatureList::IsEnabled(kDisablePeripheralDataAccessProtection);
 }
 
 bool IsHostnameSettingEnabled() {
