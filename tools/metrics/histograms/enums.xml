@@ -76322,6 +76322,12 @@ would be helpful to identify which type is being sent.
   <int value="2051" label="TPM_E_DEFEND_LOCK_RUNNING"/>
 </enum>
 
+<enum name="TPMSupport">
+  <int value="0" label="None"/>
+  <int value="1" label="RSA"/>
+  <int value="2" label="ECDSA"/>
+</enum>
+
 <enum name="TPMVersionFingerprint">
 <!--
 Full version information for the fingerprint enum values:

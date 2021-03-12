@@ -16335,6 +16335,15 @@ should be kept until we use this API.  -->
   </summary>
 </histogram>
 
+<histogram name="TPM.Support" enum="TPMSupport" expires_after="2021-04-01">
+  <owner>agl@chromium.org</owner>
+  <owner>davidben@chromium.org</owner>
+  <summary>
+    Collected on Windows at startup. Records whether a TPM is present and, if
+    so, what the best supported algorithm is.
+  </summary>
+</histogram>
+
 <histogram name="Tracing.Background.FinalizationDisallowedReason"
     enum="TracingFinalizationDisallowedReason" expires_after="2021-08-09">
   <owner>ssid@chromium.org</owner>
