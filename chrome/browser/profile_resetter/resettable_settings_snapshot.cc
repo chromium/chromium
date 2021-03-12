@@ -240,7 +240,7 @@ std::unique_ptr<base::ListValue> GetReadableFeedbackForSnapshot(
   AddPair(list.get(), l10n_util::GetStringUTF16(IDS_VERSION_UI_USER_AGENT),
           embedder_support::GetUserAgent());
   std::string version = version_info::GetVersionNumber();
-  version += chrome::GetChannelName();
+  version += chrome::GetChannelName(chrome::WithExtendedStable(true));
   AddPair(list.get(),
           l10n_util::GetStringUTF16(IDS_PRODUCT_NAME),
           version);
