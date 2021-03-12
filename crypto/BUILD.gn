@@ -46,6 +46,8 @@ component("crypto") {
     "signature_verifier.h",
     "symmetric_key.cc",
     "symmetric_key.h",
+    "unexportable_key.cc",
+    "unexportable_key.h",
   ]
 
   deps = [
@@ -101,7 +103,9 @@ component("crypto") {
     sources += [
       "capi_util.cc",
       "capi_util.h",
+      "unexportable_key_win.cc",
     ]
+    libs = [ "ncrypt.lib" ]
   }
 
   # Some files are built when NSS is used for the platform certificate library.
@@ -150,6 +154,7 @@ test("crypto_unittests") {
     "signature_creator_unittest.cc",
     "signature_verifier_unittest.cc",
     "symmetric_key_unittest.cc",
+    "unexportable_key_unittest.cc",
   ]
 
   # Some files are built when NSS is used for the platform certificate library.
@@ -172,10 +177,12 @@ test("crypto_unittests") {
   ]
 }
 
-# This has no sources in some cases so can't be a static library.
-source_set("test_support") {
+static_library("test_support") {
   testonly = true
-  sources = []
+  sources = [
+    "scoped_mock_unexportable_key_provider.cc",
+    "scoped_mock_unexportable_key_provider.h",
+  ]
 
   if (use_nss_certs) {
     sources += [
