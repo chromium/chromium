@@ -463,6 +463,11 @@
     "expiry_milestone": 86
   },
   {
+    "name": "bluetooth-sessionized-metrics",
+    "owners": [ "yudiliu", "chromeos-bluetooth@google.com" ],
+    "expiry_milestone": 93
+  },
+  {
     "name": "bluetooth-wbs-dogfood",
     "owners": [ "hychao" ],
     "expiry_milestone": 95

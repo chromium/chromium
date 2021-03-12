@@ -22,6 +22,8 @@ static_library("structured") {
     "persistent_proto.h",
     "recorder.cc",
     "recorder.h",
+    "structured_metrics_features.cc",
+    "structured_metrics_features.h",
     "structured_metrics_provider.cc",
     "structured_metrics_provider.h",
   ]

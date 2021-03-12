@@ -45374,6 +45374,7 @@ from previous Chrome versions.
       label="AutofillSaveCreditCardUsesImprovedMessaging:disabled"/>
   <int value="-449465495" label="disable-browser-task-scheduler"/>
   <int value="-447148659" label="ContextMenuTranslateWithGoogleLens:enabled"/>
+  <int value="-446879089" label="BluetoothSessionizedMetrics:enabled"/>
   <int value="-446560063" label="finch-seed-min-update-period"/>
   <int value="-446220201" label="EnableIncognitoShortcutOnDesktop:enabled"/>
   <int value="-444867364" label="Metal:enabled"/>
@@ -45872,6 +45873,7 @@ from previous Chrome versions.
   <int value="7533886" label="disable-offer-store-unmasked-wallet-cards"/>
   <int value="8891567" label="CaptionSettings:enabled"/>
   <int value="9609535" label="BrowsingDataLifetimeManager:disabled"/>
+  <int value="10405060" label="BluetoothSessionizedMetrics:disabled"/>
   <int value="10458238" label="disable-print-preview-simplify"/>
   <int value="11698808" label="enable-dom-distiller-button-animation"/>
   <int value="12016364" label="OmniboxBubbleUrlSuggestions:enabled"/>

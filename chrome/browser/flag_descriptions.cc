@@ -4717,6 +4717,11 @@ const char kEnableBluetoothVerboseLogsForGooglersName[] =
 const char kEnableBluetoothVerboseLogsForGooglersDescription[] =
     "Enables Bluetooth verbose logs for Googlers in feedback reports.";
 
+const char kBluetoothSessionizedMetricsName[] =
+    "Enable Bluetooth sessionized metrics";
+const char kBluetoothSessionizedMetricsDescription[] =
+    "Enables collecting and processing Bluetooth sessionized metrics.";
+
 const char kShowDateInTrayName[] = "Enable Show Date In Tray";
 const char kShowDateInTrayDescription[] =
     "Showing date in status area when the screen is sufficiently large.";
