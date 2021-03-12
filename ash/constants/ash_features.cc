@@ -554,7 +554,7 @@ const base::Feature kProjectorFeaturePod{"ProjectorFeaturePod",
 
 // Controls whether to enable quick answers.
 const base::Feature kQuickAnswers{"QuickAnswers",
-                                  base::FEATURE_DISABLED_BY_DEFAULT};
+                                  base::FEATURE_ENABLED_BY_DEFAULT};
 
 // Controls whether dogfood version of quick answers.
 const base::Feature kQuickAnswersDogfood{"QuickAnswersDogfood",
@@ -562,19 +562,19 @@ const base::Feature kQuickAnswersDogfood{"QuickAnswersDogfood",
 
 // Controls whether to enable quick answers text annotator.
 const base::Feature kQuickAnswersTextAnnotator{
-    "QuickAnswersTextAnnotator", base::FEATURE_DISABLED_BY_DEFAULT};
+    "QuickAnswersTextAnnotator", base::FEATURE_ENABLED_BY_DEFAULT};
 
 // Controls whether to enable quick answers translation.
 const base::Feature kQuickAnswersTranslation{"QuickAnswersTranslation",
-                                             base::FEATURE_DISABLED_BY_DEFAULT};
+                                             base::FEATURE_ENABLED_BY_DEFAULT};
 
 // Controls whether to enable quick answers translation using Cloud API.
 const base::Feature kQuickAnswersTranslationCloudAPI{
-    "QuickAnswersTranslationCloudAPI", base::FEATURE_DISABLED_BY_DEFAULT};
+    "QuickAnswersTranslationCloudAPI", base::FEATURE_ENABLED_BY_DEFAULT};
 
 // Controls whether to trigger quick answers on editable text selection.
 const base::Feature kQuickAnswersOnEditableText{
-    "QuickAnswersOnEditableText", base::FEATURE_DISABLED_BY_DEFAULT};
+    "QuickAnswersOnEditableText", base::FEATURE_ENABLED_BY_DEFAULT};
 
 // Controls whether the PIN auto submit feature is enabled.
 const base::Feature kQuickUnlockPinAutosubmit{"QuickUnlockPinAutosubmit",

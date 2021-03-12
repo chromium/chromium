@@ -33,8 +33,8 @@ gfx::Rect BoundsWithXPosition(int x) {
 class QuickAnswersControllerTest : public AshTestBase {
  protected:
   QuickAnswersControllerTest() {
-    scoped_feature_list_.InitAndEnableFeature(
-        chromeos::features::kQuickAnswers);
+    scoped_feature_list_.InitAndDisableFeature(
+        chromeos::features::kQuickAnswersTextAnnotator);
   }
   QuickAnswersControllerTest(const QuickAnswersControllerTest&) = delete;
   QuickAnswersControllerTest& operator=(const QuickAnswersControllerTest&) =
