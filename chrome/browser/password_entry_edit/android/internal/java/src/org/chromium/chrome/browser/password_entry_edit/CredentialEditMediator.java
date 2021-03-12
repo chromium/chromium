@@ -10,15 +10,18 @@ import static org.chromium.chrome.browser.password_entry_edit.CredentialEditProp
 import static org.chromium.chrome.browser.password_entry_edit.CredentialEditProperties.PASSWORD;
 import static org.chromium.chrome.browser.password_entry_edit.CredentialEditProperties.PASSWORD_VISIBLE;
 import static org.chromium.chrome.browser.password_entry_edit.CredentialEditProperties.UI_DISMISSED_BY_NATIVE;
+import static org.chromium.chrome.browser.password_entry_edit.CredentialEditProperties.URL_OR_APP;
 import static org.chromium.chrome.browser.password_entry_edit.CredentialEditProperties.USERNAME;
 
 import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
+import android.content.res.Resources;
 
 import org.chromium.base.Callback;
 import org.chromium.chrome.browser.password_entry_edit.CredentialEditCoordinator.CredentialActionDelegate;
 import org.chromium.chrome.browser.password_entry_edit.CredentialEditFragmentView.UiActionHandler;
+import org.chromium.chrome.browser.password_manager.ConfirmationDialogHelper;
 import org.chromium.chrome.browser.password_manager.settings.PasswordAccessReauthenticationHelper;
 import org.chromium.chrome.browser.password_manager.settings.PasswordAccessReauthenticationHelper.ReauthReason;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -35,14 +38,17 @@ import java.util.Set;
  */
 public class CredentialEditMediator implements UiActionHandler {
     private final PasswordAccessReauthenticationHelper mReauthenticationHelper;
+    private final ConfirmationDialogHelper mDeleteDialogHelper;
     private final CredentialActionDelegate mCredentialActionDelegate;
     private PropertyModel mModel;
     private String mOriginalUsername;
     private Set<String> mExistingUsernames;
 
     CredentialEditMediator(PasswordAccessReauthenticationHelper reauthenticationHelper,
+            ConfirmationDialogHelper deleteDialogHelper,
             CredentialActionDelegate credentialActionDelegate) {
         mReauthenticationHelper = reauthenticationHelper;
+        mDeleteDialogHelper = deleteDialogHelper;
         mCredentialActionDelegate = credentialActionDelegate;
     };
 
@@ -104,6 +110,19 @@ public class CredentialEditMediator implements UiActionHandler {
         Toast.makeText(context, R.string.password_entry_viewer_username_copied_into_clipboard,
                      Toast.LENGTH_SHORT)
                 .show();
+    }
+
+    @Override
+    public void onDelete() {
+        Resources resources = mDeleteDialogHelper.getResources();
+        if (resources == null) return;
+        String title =
+                resources.getString(R.string.password_entry_edit_delete_credential_dialog_title);
+        String message = resources.getString(
+                R.string.password_entry_edit_deletion_dialog_body, mModel.get(URL_OR_APP));
+        mDeleteDialogHelper.showConfirmation(title, message,
+                R.string.password_entry_edit_delete_credential_dialog_confirm,
+                mCredentialActionDelegate::deleteCredential);
     }
 
     @Override

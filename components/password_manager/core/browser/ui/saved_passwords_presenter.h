@@ -64,6 +64,9 @@ class SavedPasswordsPresenter : public PasswordStore::Observer,
   // saved passwords.
   void Init();
 
+  // Removes the credential and all its duplicates from the store.
+  void RemovePassword(const PasswordForm& form);
+
   // Tries to edit |password|. After checking whether |form| is present in
   // |passwords_|, this will ask the password store to change the underlying
   // password_value to |new_password| in case it was found. This will also
@@ -72,7 +75,10 @@ class SavedPasswordsPresenter : public PasswordStore::Observer,
   bool EditPassword(const PasswordForm& form, std::u16string new_password);
 
   // Modifies the provided password form and its duplicates
-  // with |new_username| and |new_password|.
+  // with `new_username` and `new_password`.
+  //
+  // Note: this will only change credentials in the store that `form` comes
+  // from.
   bool EditSavedPasswords(const PasswordForm& form,
                           const std::u16string& new_username,
                           const std::u16string& new_password);

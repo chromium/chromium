@@ -87,6 +87,11 @@ void CredentialEditBridge::SaveChanges(
       base::android::ConvertJavaStringToUTF16(password));
 }
 
+void CredentialEditBridge::DeleteCredential(JNIEnv* env) {
+  saved_passwords_presenter_->RemovePassword(*credential_);
+  std::move(dismissal_callback_).Run();
+}
+
 void CredentialEditBridge::OnUIDismissed(JNIEnv* env) {
   std::move(dismissal_callback_).Run();
 }

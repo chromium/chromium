@@ -10,6 +10,9 @@ import android.text.Editable;
 import android.text.InputType;
 import android.text.TextWatcher;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
@@ -36,9 +39,14 @@ public class CredentialEditFragmentView extends PreferenceFragmentCompat {
     private TextInputEditText mPasswordField;
     private ButtonCompat mDoneButton;
 
+    private Runnable mDeleteDelegate;
+
     interface UiActionHandler {
         /** Called when the user clicks the button to mask/unmask the password */
         void onMaskOrUnmaskPassword();
+
+        /** Called when the user clicks the button to delete the credential */
+        void onDelete();
 
         /** Called when the text in the username field changes */
         void onUsernameTextChanged(String username);
@@ -104,6 +112,23 @@ public class CredentialEditFragmentView extends PreferenceFragmentCompat {
     }
 
     @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        inflater.inflate(R.menu.credential_edit_action_bar_menu, menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        int id = item.getItemId();
+        if (id == R.id.action_delete_saved_password) {
+            if (mDeleteDelegate != null) {
+                mDeleteDelegate.run();
+            }
+            return true;
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
+    @Override
     public void onStart() {
         super.onStart();
         mUsernameInputLayout = getView().findViewById(R.id.username_text_input_layout);
@@ -115,9 +140,6 @@ public class CredentialEditFragmentView extends PreferenceFragmentCompat {
         mPasswordField = getView().findViewById(R.id.password);
         View passwordIcons = getView().findViewById(R.id.password_icons);
         addLayoutChangeListener(mPasswordField, passwordIcons);
-
-        // TODO(crbug.com/1175785): Use this string for the deletion dialog body.
-        getString(R.string.password_entry_edit_deletion_dialog_body);
 
         mDoneButton = getView().findViewById(R.id.button_primary);
 
@@ -192,6 +214,8 @@ public class CredentialEditFragmentView extends PreferenceFragmentCompat {
             @Override
             public void afterTextChanged(Editable editable) {}
         });
+
+        mDeleteDelegate = uiActionHandler::onDelete;
     }
 
     void setUrlOrApp(String urlOrApp) {

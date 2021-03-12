@@ -500,4 +500,49 @@ TEST_F(SavedPasswordsPresenterWithTwoStoresTest, EditUsername) {
                                ElementsAre(profile_store_form))));
 }
 
+// Tests that removing a credential stored in any of the stores also removes
+// duplicate credential from the other store.
+TEST_F(SavedPasswordsPresenterWithTwoStoresTest, DeleteCredential) {
+  PasswordForm profile_store_form;
+  profile_store_form.signon_realm = "https://example.com";
+  profile_store_form.username_value = u"example@gmail.com";
+  profile_store_form.password_value = u"password";
+  profile_store_form.in_store = PasswordForm::Store::kProfileStore;
+
+  PasswordForm duplicate_profile_store_form = profile_store_form;
+  duplicate_profile_store_form.signon_realm = "https://m.example.com";
+
+  PasswordForm account_store_form;
+  account_store_form.signon_realm = "https://example.com";
+  account_store_form.username_value = u"example@gmail.com";
+  account_store_form.password_value = u"password";
+  account_store_form.in_store = PasswordForm::Store::kAccountStore;
+
+  PasswordForm duplicate_account_store_form = account_store_form;
+  duplicate_account_store_form.signon_realm = "https://m.example.com";
+
+  profile_store().AddLogin(profile_store_form);
+  profile_store().AddLogin(duplicate_profile_store_form);
+  account_store().AddLogin(account_store_form);
+  account_store().AddLogin(duplicate_account_store_form);
+  RunUntilIdle();
+
+  ASSERT_THAT(profile_store().stored_passwords(),
+              ElementsAre(Pair(profile_store_form.signon_realm,
+                               ElementsAre(profile_store_form)),
+                          Pair(duplicate_profile_store_form.signon_realm,
+                               ElementsAre(duplicate_profile_store_form))));
+  ASSERT_THAT(account_store().stored_passwords(),
+              ElementsAre(Pair(account_store_form.signon_realm,
+                               ElementsAre(account_store_form)),
+                          Pair(duplicate_account_store_form.signon_realm,
+                               ElementsAre(duplicate_account_store_form))));
+
+  presenter().RemovePassword(profile_store_form);
+  RunUntilIdle();
+
+  EXPECT_TRUE(profile_store().IsEmpty());
+  EXPECT_TRUE(account_store().IsEmpty());
+}
+
 }  // namespace password_manager

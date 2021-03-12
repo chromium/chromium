@@ -10,9 +10,12 @@ import static org.chromium.chrome.browser.password_entry_edit.CredentialEditProp
 import static org.chromium.chrome.browser.password_entry_edit.CredentialEditProperties.URL_OR_APP;
 
 import org.chromium.chrome.browser.password_entry_edit.CredentialEditFragmentView.ComponentStateDelegate;
+import org.chromium.chrome.browser.password_manager.ConfirmationDialogHelper;
 import org.chromium.chrome.browser.password_manager.settings.PasswordAccessReauthenticationHelper;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
+
+import java.lang.ref.WeakReference;
 
 /**
  * Creates the credential edit UI and is responsible for managing it.
@@ -33,8 +36,15 @@ class CredentialEditCoordinator implements ComponentStateDelegate {
     }
 
     interface CredentialActionDelegate {
-        /** Called when the user has decided to save the changes to the credential.*/
+        /**
+         * Called when the user has decided to save the changes to the credential.
+         */
         void saveChanges(String username, String password);
+
+        /**
+         * Called when the user has confirmed the credential deletion.
+         */
+        void deleteCredential();
     }
 
     CredentialEditCoordinator(CredentialEditFragmentView fragmentView,
@@ -43,7 +53,9 @@ class CredentialEditCoordinator implements ComponentStateDelegate {
         mFragmentView = fragmentView;
         mReauthenticationHelper = new PasswordAccessReauthenticationHelper(
                 mFragmentView.getActivity(), mFragmentView.getParentFragmentManager());
-        mMediator = new CredentialEditMediator(mReauthenticationHelper, credentialActionDelegate);
+        mMediator = new CredentialEditMediator(mReauthenticationHelper,
+                new ConfirmationDialogHelper(new WeakReference<>(mFragmentView.getContext())),
+                credentialActionDelegate);
         mDismissalHandler = dismissalHandler;
         mFragmentView.setComponentStateDelegate(this);
     }

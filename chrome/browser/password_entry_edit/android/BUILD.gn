@@ -44,6 +44,7 @@ android_library("java") {
 android_resources("java_resources") {
   sources = [
     "java/res/layout/credential_edit_view.xml",
+    "java/res/menu/credential_edit_action_bar_menu.xml",
     "java/res/values/dimens.xml",
   ]
   deps = [

@@ -67,6 +67,17 @@ void SavedPasswordsPresenter::Init() {
     account_store_->GetAllLoginsWithAffiliationAndBrandingInformation(this);
 }
 
+void SavedPasswordsPresenter::RemovePassword(const PasswordForm& form) {
+  std::string current_form_key = CreateSortKey(form, IgnoreStore(true));
+  for (const auto& saved_form : passwords_) {
+    if (CreateSortKey(saved_form, IgnoreStore(true)) == current_form_key) {
+      PasswordStore& store =
+          saved_form.IsUsingAccountStore() ? *account_store_ : *profile_store_;
+      store.RemoveLogin(saved_form);
+    }
+  }
+}
+
 bool SavedPasswordsPresenter::EditPassword(const PasswordForm& form,
                                            std::u16string new_password) {
   auto is_equal = [&form](const PasswordForm& form_to_check) {

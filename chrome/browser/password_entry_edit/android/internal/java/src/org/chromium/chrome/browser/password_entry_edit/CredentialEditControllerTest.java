@@ -30,6 +30,7 @@ import static org.chromium.chrome.browser.password_entry_edit.CredentialEditProp
 import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
+import android.content.res.Resources;
 
 import androidx.test.core.app.ApplicationProvider;
 
@@ -43,6 +44,7 @@ import org.robolectric.annotation.Config;
 import org.chromium.base.Callback;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.password_entry_edit.CredentialEditCoordinator.CredentialActionDelegate;
+import org.chromium.chrome.browser.password_manager.ConfirmationDialogHelper;
 import org.chromium.chrome.browser.password_manager.settings.PasswordAccessReauthenticationHelper;
 import org.chromium.chrome.browser.password_manager.settings.PasswordAccessReauthenticationHelper.ReauthReason;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -63,6 +65,9 @@ public class CredentialEditControllerTest {
     private PasswordAccessReauthenticationHelper mReauthenticationHelper;
 
     @Mock
+    private ConfirmationDialogHelper mDeleteDialogHelper;
+
+    @Mock
     private CredentialActionDelegate mCredentialActionDelegate;
 
     CredentialEditMediator mMediator;
@@ -71,7 +76,8 @@ public class CredentialEditControllerTest {
     @Before
     public void setUp() {
         MockitoAnnotations.initMocks(this);
-        mMediator = new CredentialEditMediator(mReauthenticationHelper, mCredentialActionDelegate);
+        mMediator = new CredentialEditMediator(
+                mReauthenticationHelper, mDeleteDialogHelper, mCredentialActionDelegate);
         mModel = new PropertyModel.Builder(ALL_KEYS)
                          .with(UI_ACTION_HANDLER, mMediator)
                          .with(URL_OR_APP, TEST_URL)
@@ -230,5 +236,33 @@ public class CredentialEditControllerTest {
 
         mMediator.onUsernameTextChanged(TEST_USERNAME);
         assertFalse(mModel.get(DUPLICATE_USERNAME_ERROR));
+    }
+
+    @Test
+    public void testDeletingCredentialPromptsConfirmation() {
+        mMediator.setCredential(TEST_USERNAME, TEST_PASSWORD);
+        Resources resources = ApplicationProvider.getApplicationContext().getResources();
+        when(mDeleteDialogHelper.getResources()).thenReturn(resources);
+
+        String title =
+                resources.getString(R.string.password_entry_edit_delete_credential_dialog_title);
+        String message =
+                resources.getString(R.string.password_entry_edit_deletion_dialog_body, TEST_URL);
+        int confirmButtonTextId = R.string.password_entry_edit_delete_credential_dialog_confirm;
+        doAnswer((invocation) -> {
+            Runnable callback = (Runnable) invocation.getArguments()[3];
+            callback.run();
+            return null;
+        })
+                .when(mDeleteDialogHelper)
+                .showConfirmation(
+                        eq(title), eq(message), eq(confirmButtonTextId), any(Runnable.class));
+
+        mMediator.onDelete();
+
+        verify(mDeleteDialogHelper)
+                .showConfirmation(
+                        eq(title), eq(message), eq(confirmButtonTextId), any(Runnable.class));
+        verify(mCredentialActionDelegate).deleteCredential();
     }
 }

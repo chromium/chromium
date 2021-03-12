@@ -43,6 +43,9 @@ class CredentialEditBridge {
                    const base::android::JavaParamRef<jstring>& username,
                    const base::android::JavaParamRef<jstring>& password);
 
+  // Called by Java to remove the credential from the store.
+  void DeleteCredential(JNIEnv* env);
+
   // Called by Java to signal that the UI was dismissed.
   void OnUIDismissed(JNIEnv* env);
 

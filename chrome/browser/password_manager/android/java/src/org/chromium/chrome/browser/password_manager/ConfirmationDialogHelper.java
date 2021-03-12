@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.password_manager;
 
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.res.Resources;
 
 import androidx.appcompat.app.AlertDialog;
 
@@ -34,6 +35,14 @@ public class ConfirmationDialogHelper implements DialogInterface.OnClickListener
      */
     public void dismiss() {
         if (mConfirmationDialog != null) mConfirmationDialog.dismiss();
+    }
+
+    /**
+     * Returns the resources associated with the context used to launch the dialog.
+     */
+    public Resources getResources() {
+        if (mContext.get() == null) return null;
+        return mContext.get().getResources();
     }
 
     /**
