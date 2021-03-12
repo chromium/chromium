@@ -69,7 +69,7 @@ content::WebUIDataSource* CreateFeedbackHTMLSource() {
   return source;
 }
 
-FeedbackUI::FeedbackUI(content::WebUI* web_ui) : WebUIController(web_ui) {
+FeedbackUI::FeedbackUI(content::WebUI* web_ui) : WebDialogUI(web_ui) {
   Profile* profile = Profile::FromWebUI(web_ui);
   content::WebUIDataSource::Add(profile, CreateFeedbackHTMLSource());
 }

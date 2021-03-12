@@ -1375,6 +1375,8 @@ static_library("ui") {
       "webui/extensions/extensions_ui.h",
       "webui/favicon_source.cc",
       "webui/favicon_source.h",
+      "webui/feedback/feedback_dialog.cc",
+      "webui/feedback/feedback_dialog.h",
       "webui/feedback/feedback_ui.cc",
       "webui/feedback/feedback_ui.h",
       "webui/help/version_updater.h",

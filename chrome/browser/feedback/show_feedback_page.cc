@@ -10,9 +10,12 @@
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/feedback/feedback_dialog_utils.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chrome/browser/ui/ui_features.h"
+#include "chrome/browser/ui/webui/feedback/feedback_dialog.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/pref_names.h"
 #include "components/prefs/pref_service.h"
@@ -109,12 +112,23 @@ void RequestFeedbackFlow(const GURL& page_url,
   }
 #endif
 
-  api->RequestFeedbackForFlow(
-      description_template, description_placeholder_text, category_tag,
-      extra_diagnostics, page_url, flow, source == kFeedbackSourceAssistant,
-      include_bluetooth_logs,
-      source == kFeedbackSourceChromeLabs ||
-          source == kFeedbackSourceKaleidoscope);
+  if (base::FeatureList::IsEnabled(features::kWebUIFeedback)) {
+    auto info = api->CreateFeedbackInfo(
+        description_template, description_placeholder_text, category_tag,
+        extra_diagnostics, page_url, flow, source == kFeedbackSourceAssistant,
+        include_bluetooth_logs,
+        source == kFeedbackSourceChromeLabs ||
+            source == kFeedbackSourceKaleidoscope);
+
+    FeedbackDialog::CreateOrShow(*info);
+  } else {
+    api->RequestFeedbackForFlow(
+        description_template, description_placeholder_text, category_tag,
+        extra_diagnostics, page_url, flow, source == kFeedbackSourceAssistant,
+        include_bluetooth_logs,
+        source == kFeedbackSourceChromeLabs ||
+            source == kFeedbackSourceKaleidoscope);
+  }
 }
 #endif  // !BUILDFLAG(IS_CHROMEOS_LACROS)
 
