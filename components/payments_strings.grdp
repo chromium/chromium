@@ -627,10 +627,10 @@
     <message name="IDS_SECURE_PAYMENT_CONFIRMATION_VERIFY_PURCHASE" desc="The title string on a payment confirmation dialog that confirms the details of the payment that the user is about to verify. The user has the option to click 'Cancel' or 'Verify', and clicking 'Verify' will open the system interface to verify their identity with the Touch ID fingerprint sensor.">
         Use Touch ID to verify and complete your purchase?
     </message>
-    <message name="IDS_PAYMENT_CREDENTIAL_ENROLLMENT_DESCRIPTION" translateable="false" desc="Description on a dialog that asks for the user's permission to set up Touch ID on a website to verify card payments.">
+    <message name="IDS_PAYMENT_CREDENTIAL_ENROLLMENT_DESCRIPTION" desc="Description on a dialog that asks for the user's permission to set up Touch ID on a website to verify card payments.">
         You can use Touch ID to quickly verify it's you the next time you use this device to make a purchase with this payment method.
     </message>
-    <message name="IDS_PAYMENT_CREDENTIAL_ENROLLMENT_ACCEPT_BUTTON_LABEL" translateable="false" desc="Accept button label on a dialog that asks for the user's permission to set up Touch ID on a website to verify card payments.">
+    <message name="IDS_PAYMENT_CREDENTIAL_ENROLLMENT_ACCEPT_BUTTON_LABEL" desc="Accept button label on a dialog that asks for the user's permission to set up Touch ID on a website to verify card payments.">
         Use Touch ID
     </message>
   </if>  <!-- not is_win -->
@@ -638,10 +638,10 @@
     <message name="IDS_SECURE_PAYMENT_CONFIRMATION_VERIFY_PURCHASE" desc="The title string on a payment confirmation dialog that confirms the details of the payment that the user is about to verify. The user has the option to click 'Cancel' or 'Verify', and clicking 'Verify' will open the system interface to verify their identity with the Windows Hello biometric sensor, such as fingerprint or face recognition.">
         Use Windows Hello to verify and complete your purchase?
     </message>
-    <message name="IDS_PAYMENT_CREDENTIAL_ENROLLMENT_DESCRIPTION" translateable="false" desc="Description on a dialog that asks for the user's permission to set up Windows Hello on a website to verify card payments.">
+    <message name="IDS_PAYMENT_CREDENTIAL_ENROLLMENT_DESCRIPTION" desc="Description on a dialog that asks for the user's permission to set up Windows Hello on a website to verify card payments.">
         You can use Windows Hello to quickly verify it's you the next time you use this device to make a purchase with this payment method.
     </message>
-    <message name="IDS_PAYMENT_CREDENTIAL_ENROLLMENT_ACCEPT_BUTTON_LABEL" translateable="false" desc="Accept button label on a dialog that asks for the user's permission to set up Windows Hello on a website to verify card payments.">
+    <message name="IDS_PAYMENT_CREDENTIAL_ENROLLMENT_ACCEPT_BUTTON_LABEL" desc="Accept button label on a dialog that asks for the user's permission to set up Windows Hello on a website to verify card payments.">
         Use Windows Hello
     </message>
   </if>  <!-- is_win -->
@@ -654,13 +654,13 @@
   <message name="IDS_SECURE_PAYMENT_CONFIRMATION_VERIFY_BUTTON_LABEL" desc="As in 'Verify my identity', this is the label of the affirmitive button in a payment confirmation dialog that asks the user to verify their identity with a platform authenticator such as a fingerprint reader.">
     Verify
   </message>
-  <message name="IDS_PAYMENT_CREDENTIAL_ENROLLMENT_TITLE" translateable="false" desc="Title of a dialog that asks for the user's permission to set up device-based sign-in (i.e., using their computer's biometric sensor or screen unlock/PIN) on a website to verify card payments.">
+  <message name="IDS_PAYMENT_CREDENTIAL_ENROLLMENT_TITLE" desc="Title of a dialog that asks for the user's permission to set up device-based sign-in (i.e., using their computer's biometric sensor or screen unlock/PIN) on a website to verify card payments.">
     Check out faster next time
   </message>
-  <message name="IDS_PAYMENT_CREDENTIAL_ENROLLMENT_OFF_THE_RECORD_DESCRIPTION" translateable="false" desc="Extra description at the bottom of a dialog that asks for the user's permission to set up device-based sign-in (i.e., using their computer's biometric sensor or screen unlock/PIN) to verify card payments. This is shown only in Incognito mode and explains that the sign-in data will be stored to the device.">
+  <message name="IDS_PAYMENT_CREDENTIAL_ENROLLMENT_OFF_THE_RECORD_DESCRIPTION" desc="Extra description at the bottom of a dialog that asks for the user's permission to set up device-based sign-in (i.e., using their computer's biometric sensor or screen unlock/PIN) to verify card payments. This is shown only in Incognito mode and explains that the sign-in data will be stored to the device.">
     Sign-in data will be stored on this device after you exit incognito mode.
   </message>
-  <message name="IDS_PAYMENT_CREDENTIAL_ENROLLMENT_CANCEL_BUTTON_LABEL" translateable="false" desc="Cancel button label on a dialog that asks for the user's permission to set up device-based sign-in (i.e., using their computer's biometric sensor or screen unlock/PIN) to verify card payments.">
+  <message name="IDS_PAYMENT_CREDENTIAL_ENROLLMENT_CANCEL_BUTTON_LABEL" desc="Cancel button label on a dialog that asks for the user's permission to set up device-based sign-in (i.e., using their computer's biometric sensor or screen unlock/PIN) to verify card payments.">
     No thanks
   </message>
 </grit-part>
