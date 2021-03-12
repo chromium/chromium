@@ -112,7 +112,9 @@ std::string UIThreadSearchTermsData::GoogleImageSearchSource() const {
   if (version_info::IsOfficialBuild())
     version += " (Official)";
   version += " " + version_info::GetOSType();
-  std::string modifier(chrome::GetChannelName());
+  // Do not distinguish extended from regular stable in image search queries.
+  std::string modifier(
+      chrome::GetChannelName(chrome::WithExtendedStable(false)));
   if (!modifier.empty())
     version += " " + modifier;
   return version;
