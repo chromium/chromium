@@ -9,6 +9,7 @@
 #include "base/metrics/user_metrics.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/strings/utf_string_conversions.h"
+#include "components/signin/ios/browser/features.h"
 #import "components/signin/public/identity_manager/identity_manager.h"
 #import "components/signin/public/identity_manager/objc/identity_manager_observer_bridge.h"
 #include "components/strings/grit/components_strings.h"
@@ -437,17 +438,20 @@ typedef NS_ENUM(NSInteger, ItemType) {
                               rect:itemView.frame
                               view:itemView];
 
-    [_alertCoordinator
-        addItemWithTitle:l10n_util::GetNSString(
-                             IDS_IOS_MANAGE_YOUR_GOOGLE_ACCOUNT_TITLE)
-                  action:^{
-                    _dimissAccountDetailsViewControllerBlock =
-                        ios::GetChromeBrowserProvider()
-                            ->GetChromeIdentityService()
-                            ->PresentAccountDetailsController(identity, self,
-                                                              /*animated=*/YES);
-                  }
-                   style:UIAlertActionStyleDefault];
+    if (signin::IsSSOEditingEnabled()) {
+      [_alertCoordinator
+          addItemWithTitle:l10n_util::GetNSString(
+                               IDS_IOS_MANAGE_YOUR_GOOGLE_ACCOUNT_TITLE)
+                    action:^{
+                      _dimissAccountDetailsViewControllerBlock =
+                          ios::GetChromeBrowserProvider()
+                              ->GetChromeIdentityService()
+                              ->PresentAccountDetailsController(
+                                  identity, self,
+                                  /*animated=*/YES);
+                    }
+                     style:UIAlertActionStyleDefault];
+    }
 
     self.removeAccountCoordinator = [[AlertCoordinator alloc]
         initWithBaseViewController:self

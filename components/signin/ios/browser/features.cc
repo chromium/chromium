@@ -19,4 +19,11 @@ const base::Feature kRestoreGaiaCookiesIfDeleted{
 const char kDelayThresholdMinutesToUpdateGaiaCookie[] =
     "minutes-delay-to-restore-gaia-cookies-if-deleted";
 
+const base::Feature kDisableSSOEditing{"DisableSSOEditing",
+                                       base::FEATURE_DISABLED_BY_DEFAULT};
+
+bool IsSSOEditingEnabled() {
+  return !base::FeatureList::IsEnabled(signin::kDisableSSOEditing);
+}
+
 }  // namespace signin
