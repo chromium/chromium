@@ -25,30 +25,22 @@ class PageLoadMetricsObserver
   ~PageLoadMetricsObserver() override = default;
 
   // page_load_metrics::PageLoadMetricsObserver implementation:
-  void OnFirstPaintInPage(
-      const page_load_metrics::mojom::PageLoadTiming& timing) override {
-    on_first_paint_seen_ = true;
-    QuitRunLoopIfReady();
-  }
-
   void OnFirstContentfulPaintInPage(
       const page_load_metrics::mojom::PageLoadTiming& timing) override {
-    on_first_contentful_paint_seen_ = true;
-    QuitRunLoopIfReady();
+    quit_closure_.Run();
   }
 
  private:
-  void QuitRunLoopIfReady() {
-    if (on_first_paint_seen_ && on_first_contentful_paint_seen_)
-      quit_closure_.Run();
-  }
-
-  bool on_first_paint_seen_ = false;
-  bool on_first_contentful_paint_seen_ = false;
   base::RepeatingClosure quit_closure_;
 };
 
-IN_PROC_BROWSER_TEST_F(PageLoadMetricsBrowserTest, Heartbeat) {
+// Constant failure over android tablet tester. See https://crbug.com/1179052.
+#if defined(OS_ANDROID)
+#define MAYBE_Heartbeat DISABLED_Heartbeat
+#else
+#define MAYBE_Heartbeat Heartbeat
+#endif
+IN_PROC_BROWSER_TEST_F(PageLoadMetricsBrowserTest, MAYBE_Heartbeat) {
   base::HistogramTester histogram_tester;
   ASSERT_TRUE(embedded_test_server()->Start());
 
