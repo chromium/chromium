@@ -148,7 +148,7 @@ void LocalMouseInputMonitorX11::Core::StartOnInputThread() {
   connection_->xinput().XIQueryVersion(
       {x11::Input::major_version, x11::Input::minor_version});
 
-  x11::Input::XIEventMask mask;
+  x11::Input::XIEventMask mask{};
   ui::SetXinputMask(&mask, x11::Input::RawDeviceEvent::RawMotion);
   connection_->xinput().XISelectEvents(
       {connection_->default_root(),
@@ -180,7 +180,10 @@ void LocalMouseInputMonitorX11::Core::OnEvent(const x11::Event& event) {
   DCHECK(input_task_runner_->BelongsToCurrentThread());
 
   auto* raw = event.As<x11::Input::RawDeviceEvent>();
-  DCHECK(raw);
+  // The X server may send unsolicited MappingNotify events without having
+  // selected them.
+  if (!raw)
+    return;
   DCHECK(raw->opcode == x11::Input::RawDeviceEvent::RawMotion);
 
   connection_->QueryPointer({connection_->default_root()})

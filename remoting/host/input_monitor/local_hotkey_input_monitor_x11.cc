@@ -152,7 +152,7 @@ void LocalHotkeyInputMonitorX11::Core::StartOnInputThread() {
   connection_->xinput().XIQueryVersion(
       {x11::Input::major_version, x11::Input::minor_version});
 
-  x11::Input::XIEventMask mask;
+  x11::Input::XIEventMask mask{};
   ui::SetXinputMask(&mask, x11::Input::RawDeviceEvent::RawKeyPress);
   ui::SetXinputMask(&mask, x11::Input::RawDeviceEvent::RawKeyRelease);
   connection_->xinput().XISelectEvents(
@@ -189,7 +189,10 @@ void LocalHotkeyInputMonitorX11::Core::OnEvent(const x11::Event& event) {
     return;
 
   const auto* raw = event.As<x11::Input::RawDeviceEvent>();
-  DCHECK(raw);
+  // The X server may send unsolicited MappingNotify events without having
+  // selected them.
+  if (!raw)
+    return;
   DCHECK(raw->opcode == x11::Input::RawDeviceEvent::RawKeyPress ||
          raw->opcode == x11::Input::RawDeviceEvent::RawKeyRelease);
 
