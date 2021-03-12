@@ -61,8 +61,8 @@ ui::ModalType FeedbackDialog::GetDialogModalType() const {
   return ui::MODAL_TYPE_NONE;
 }
 
-base::string16 FeedbackDialog::GetDialogTitle() const {
-  return base::string16();
+std::u16string FeedbackDialog::GetDialogTitle() const {
+  return std::u16string();
 }
 
 GURL FeedbackDialog::GetDialogContentURL() const {

@@ -123,7 +123,7 @@ views::View* AddressEditorView::CreateInputField(views::GridLayout* layout,
   switch (field.control_type) {
     case EditorField::ControlType::TEXTFIELD:
     case EditorField::ControlType::TEXTFIELD_NUMBER: {
-      base::string16 initial_value = controller_->GetProfileInfo(field.type);
+      std::u16string initial_value = controller_->GetProfileInfo(field.type);
 
       auto text_field = std::make_unique<views::Textfield>();
       // Set the initial value and validity state.
@@ -167,7 +167,7 @@ std::unique_ptr<views::Combobox> AddressEditorView::CreateComboboxForField(
                                      weak_ptr_factory_.GetWeakPtr())));
   combobox->SetAccessibleName(field.label);
 
-  base::string16 initial_value = controller_->GetProfileInfo(field.type);
+  std::u16string initial_value = controller_->GetProfileInfo(field.type);
 
   if (!initial_value.empty())
     combobox->SelectValue(initial_value);
@@ -210,7 +210,7 @@ void AddressEditorView::SaveFieldsToProfile() {
   // The combobox can be null when saving to temporary profile while updating
   // the view.
   if (combobox) {
-    base::string16 country(
+    std::u16string country(
         combobox->GetTextForRow(combobox->GetSelectedIndex()));
     controller_->SetProfileInfo(autofill::ADDRESS_HOME_COUNTRY, country);
   }

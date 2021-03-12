@@ -36,7 +36,7 @@ struct EditorField {
   enum class ControlType : int { TEXTFIELD, TEXTFIELD_NUMBER, COMBOBOX };
 
   EditorField(autofill::ServerFieldType type,
-              base::string16 label,
+              std::u16string label,
               LengthHint length_hint,
               ControlType control_type = ControlType::TEXTFIELD)
       : type(type),
@@ -47,7 +47,7 @@ struct EditorField {
   // Data type in the field.
   autofill::ServerFieldType type;
   // Label to be shown alongside the field.
-  base::string16 label;
+  std::u16string label;
   // Hint about the length of this field's contents.
   LengthHint length_hint;
   // The control type.
@@ -78,9 +78,9 @@ class AddressEditorController {
   void OnSelectedCountryChanged();
 
   void SetProfileInfo(autofill::ServerFieldType type,
-                      const base::string16& value);
+                      const std::u16string& value);
 
-  base::string16 GetProfileInfo(autofill::ServerFieldType type);
+  std::u16string GetProfileInfo(autofill::ServerFieldType type);
 
  private:
   // Updates |countries_| with the content of |model| if it's not null,
@@ -105,7 +105,7 @@ class AddressEditorController {
 
   // The list of country codes and names as ordered in the country combobox
   // model.
-  std::vector<std::pair<std::string, base::string16>> countries_;
+  std::vector<std::pair<std::string, std::u16string>> countries_;
 
   // The language code to be format this address, reset every time the current
   // country changes.

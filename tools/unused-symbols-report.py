@@ -43,10 +43,9 @@ def Unyuck(sym):
                     'std::allocator<char> >', 'std::string')
   sym = sym.replace('std::basic_string<wchar_t, std::char_traits<wchar_t>, '
                     'std::allocator<wchar_t> >', 'std::wstring')
-  sym = sym.replace('std::basic_string<unsigned short, '
-                    'base::string16_internals::'
-                    'string16_char_traits, '
-                    'std::allocator<unsigned short> >', 'string16')
+  sym = sym.replace(
+      'std::basic_string<char16_t, std::char_traits<char16_t>, '
+      'std::allocator<char16_t> >', 'std::u16string')
   sym = re.sub(r', std::allocator<\S+\s+>', '', sym)
   return sym
 
