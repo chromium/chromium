@@ -20,9 +20,11 @@ bool StructTraits<gpu::mojom::GpuDeviceDataView, gpu::GPUInfo::GPUDevice>::Read(
     gpu::GPUInfo::GPUDevice* out) {
   out->vendor_id = data.vendor_id();
   out->device_id = data.device_id();
+#if defined(OS_WIN) || defined(OS_CHROMEOS)
+  out->revision = data.revision();
+#endif  // OS_WIN || OS_CHROMEOS
 #if defined(OS_WIN)
   out->sub_sys_id = data.sub_sys_id();
-  out->revision = data.revision();
 #endif  // OS_WIN
   out->active = data.active();
   out->cuda_compute_capability_major = data.cuda_compute_capability_major();

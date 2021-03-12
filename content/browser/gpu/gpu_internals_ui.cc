@@ -162,11 +162,14 @@ std::string GPUDeviceToString(const gpu::GPUInfo::GPUDevice& gpu) {
   std::string rt = base::StringPrintf("VENDOR= %s, DEVICE=%s", vendor.c_str(),
                                       device.c_str());
 #if defined(OS_WIN)
-  if (gpu.sub_sys_id || gpu.revision) {
-    rt += base::StringPrintf(", SUBSYS=0x%08x, REV=%u", gpu.sub_sys_id,
-                             gpu.revision);
-  }
-
+  if (gpu.sub_sys_id)
+    rt += base::StringPrintf(", SUBSYS=0x%08x", gpu.sub_sys_id);
+#endif
+#if defined(OS_WIN) || defined(OS_CHROMEOS)
+  if (gpu.revision)
+    rt += base::StringPrintf(", REV=%u", gpu.revision);
+#endif
+#if defined(OS_WIN)
   rt += base::StringPrintf(", LUID={%ld,%lu}", gpu.luid.HighPart,
                            gpu.luid.LowPart);
 #endif

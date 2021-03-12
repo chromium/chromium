@@ -469,17 +469,17 @@ bool GpuControlList::Conditions::Contains(OsType target_os_type,
       } else {
         for (size_t ii = 0; !found && ii < device_size; ++ii) {
           uint32_t device_id = devices[ii].device_id;
-#if defined(OS_WIN)
+#if defined(OS_WIN) || defined(OS_CHROMEOS)
           uint32_t revision = devices[ii].revision;
-#endif  // OS_WIN
+#endif  // OS_WIN || OS_CHROMEOS
           for (auto& candidate : candidates) {
             if (vendor_id != candidate.vendor_id ||
                 device_id != candidate.device_id)
               continue;
-#if defined(OS_WIN)
+#if defined(OS_WIN) || defined(OS_CHROMEOS)
             if (revision && revision != candidate.revision)
               continue;
-#endif  // OS_WIN
+#endif  // OS_WIN || OS_CHROMEOS
             found = true;
             break;
           }
