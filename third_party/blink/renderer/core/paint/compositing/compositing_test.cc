@@ -2339,4 +2339,42 @@ TEST_P(CompositingSimTest, FullCompositingUpdateForUncachableChunks) {
             PaintArtifactCompositor::PreviousUpdateType::kFull);
 }
 
+TEST_P(CompositingSimTest, DecompositeScrollerInHiddenIframe) {
+  if (RuntimeEnabledFeatures::CompositeAfterPaintEnabled())
+    return;
+  SimRequest top_resource("https://example.com/top.html", "text/html");
+  SimRequest middle_resource("https://example.com/middle.html", "text/html");
+  SimRequest bottom_resource("https://example.com/bottom.html", "text/html");
+
+  LoadURL("https://example.com/top.html");
+  top_resource.Complete(R"HTML(
+    <iframe id='middle' src='https://example.com/middle.html'></iframe>
+  )HTML");
+  middle_resource.Complete(R"HTML(
+    <iframe id='bottom' src='bottom.html'></iframe>
+  )HTML");
+  bottom_resource.Complete(R"HTML(
+    <div id='scroller' style='overflow:scroll;max-height:100px;background-color:#888'>
+      <div style='height:1000px;'>Hello, world!</div>
+    </div>
+  )HTML");
+
+  LocalFrame& middle_frame =
+      *To<LocalFrame>(GetDocument().GetFrame()->Tree().FirstChild());
+  LocalFrame& bottom_frame = *To<LocalFrame>(middle_frame.Tree().FirstChild());
+  middle_frame.View()->BeginLifecycleUpdates();
+  bottom_frame.View()->BeginLifecycleUpdates();
+  Compositor().BeginFrame();
+  LayoutBox* scroller = To<LayoutBox>(bottom_frame.GetDocument()
+                                          ->getElementById("scroller")
+                                          ->GetLayoutObject());
+  ASSERT_TRUE(scroller->GetScrollableArea()->NeedsCompositedScrolling());
+
+  // Hide the iframes. Scroller should be decomposited.
+  GetDocument().getElementById("middle")->SetInlineStyleProperty(
+      CSSPropertyID::kVisibility, CSSValueID::kHidden);
+  Compositor().BeginFrame();
+  EXPECT_FALSE(scroller->GetScrollableArea()->NeedsCompositedScrolling());
+}
+
 }  // namespace blink

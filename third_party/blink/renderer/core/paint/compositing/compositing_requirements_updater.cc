@@ -245,7 +245,7 @@ static void CheckSubtreeHasNoCompositing(PaintLayer* layer) {
   while (PaintLayer* cur_layer = iterator.Next()) {
     DCHECK(cur_layer->GetCompositingState() == kNotComposited);
     DCHECK(!cur_layer->DirectCompositingReasons() ||
-           !layer->Compositor()->CanBeComposited(cur_layer));
+           !cur_layer->CanBeComposited());
     CheckSubtreeHasNoCompositing(cur_layer);
   }
 }
@@ -280,7 +280,7 @@ void CompositingRequirementsUpdater::UpdateRecursive(
 
   bool use_clipped_bounding_rect = !has_non_root_composited_scrolling_ancestor;
 
-  const bool layer_can_be_composited = compositor->CanBeComposited(layer);
+  const bool layer_can_be_composited = layer->CanBeComposited();
 
   CompositingReasons direct_from_paint_layer = 0;
   if (layer_can_be_composited)
@@ -303,7 +303,7 @@ void CompositingRequirementsUpdater::UpdateRecursive(
       layer->GetScrollableArea()->NeedsCompositedScrolling())
     direct_reasons |= CompositingReason::kOverflowScrolling;
 
-  bool can_be_composited = compositor->CanBeComposited(layer);
+  bool can_be_composited = layer->CanBeComposited();
   if (can_be_composited)
     reasons_to_composite |= direct_reasons;
 

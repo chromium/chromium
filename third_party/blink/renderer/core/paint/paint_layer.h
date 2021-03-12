@@ -749,6 +749,9 @@ class CORE_EXPORT PaintLayer : public DisplayItemClient {
 
   bool CanBeCompositedForDirectReasons() const;
 
+  // Whether the layer could ever be composited.
+  bool CanBeComposited() const;
+
   CompositingReasons PotentialCompositingReasonsFromStyle() const {
     return rare_data_ ? rare_data_->potential_compositing_reasons_from_style
                       : CompositingReason::kNone;

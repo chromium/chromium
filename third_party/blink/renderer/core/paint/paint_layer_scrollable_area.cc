@@ -2562,6 +2562,9 @@ bool PaintLayerScrollableArea::ComputeNeedsCompositedScrollingInternal(
   DCHECK_EQ(background_paint_location_if_composited,
             GetLayoutBox()->ComputeBackgroundPaintLocationIfComposited());
 
+  if (!Layer()->GetLayoutObject().GetFrameView()->IsVisible())
+    return false;
+
   if (CompositingReasonFinder::RequiresCompositingForRootScroller(*layer_))
     return true;
 

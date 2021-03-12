@@ -105,7 +105,7 @@ bool CompositingLayerAssigner::SquashingWouldExceedSparsityTolerance(
 }
 
 bool CompositingLayerAssigner::NeedsOwnBacking(const PaintLayer* layer) const {
-  if (!compositor_->CanBeComposited(layer))
+  if (!layer->CanBeComposited())
     return false;
 
   return RequiresCompositing(layer->GetCompositingReasons()) ||
@@ -123,7 +123,7 @@ CompositingLayerAssigner::ComputeCompositedLayerUpdate(PaintLayer* layer) {
     if (layer->HasCompositedLayerMapping())
       update = kRemoveOwnCompositedLayerMapping;
 
-    if (!layer->SubtreeIsInvisible() && compositor_->CanBeComposited(layer) &&
+    if (!layer->SubtreeIsInvisible() && layer->CanBeComposited() &&
         RequiresSquashing(layer->GetCompositingReasons())) {
       // We can't compute at this time whether the squashing layer update is a
       // no-op, since that requires walking the paint layer tree.

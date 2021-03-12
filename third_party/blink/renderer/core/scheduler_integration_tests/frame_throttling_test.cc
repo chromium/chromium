@@ -536,8 +536,7 @@ TEST_P(FrameThrottlingTest, ThrottledFrameCompositing) {
   auto* frame_view = frame_element->contentDocument()->View();
   EXPECT_FALSE(frame_view->CanThrottleRendering());
   auto* frame_layout_view = frame_view->GetLayoutView();
-  EXPECT_TRUE(frame_layout_view->Compositor()->CanBeComposited(
-      frame_layout_view->Layer()));
+  EXPECT_TRUE(frame_layout_view->Layer()->CanBeComposited());
   auto* frame_graphics_layer =
       frame_layout_view->Layer()->GraphicsLayerBacking(frame_layout_view);
   EXPECT_TRUE(frame_graphics_layer);
@@ -566,8 +565,7 @@ TEST_P(FrameThrottlingTest, ThrottledFrameCompositing) {
   CompositeFrame();
   EXPECT_FALSE(frame_view->CanThrottleRendering());
   ASSERT_EQ(frame_layout_view, frame_view->GetLayoutView());
-  EXPECT_TRUE(frame_layout_view->Compositor()->CanBeComposited(
-      frame_layout_view->Layer()));
+  EXPECT_TRUE(frame_layout_view->Layer()->CanBeComposited());
   EXPECT_EQ(container->GetCompositingState(), kNotComposited);
   EXPECT_EQ(
       frame_graphics_layer,

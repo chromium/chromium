@@ -196,21 +196,19 @@ void PaintLayerCompositor::UpdateAssignmentsIfNeededRecursiveInternal(
   if (target_state == DocumentLifecycle::kCompositingInputsClean)
     return;
 
-  if (layout_view_->GetFrameView()->ShouldThrottleRendering()) {
+  {
+    // TODO(szager): Remove this after diagnosing crash.
+    DisableCompositingQueryAsserts query_assert_disabler;
+    CHECK_EQ(InCompositingMode(), (bool)RootGraphicsLayer());
     if (auto* owner = layout_view_->GetFrame()->OwnerLayoutObject()) {
       auto* parent_compositor = owner->View()->Compositor();
-      DCHECK(parent_compositor);
-      DisableCompositingQueryAsserts query_assert_disabler;
-      // TODO(szager): It's not clear how this can happen. Even if the child
-      // frame is throttled, if the child compositor has a root graphics layer,
-      // then the parent compositor should be in compositing mode.
-      DCHECK(parent_compositor->StaleInCompositingMode() ||
-             !RootGraphicsLayer());
-      if (!parent_compositor->StaleInCompositingMode() && RootGraphicsLayer())
-        root_layer_attachment_dirty_ = true;
+      CHECK(parent_compositor->StaleInCompositingMode() ||
+            !RootGraphicsLayer());
     }
-    return;
   }
+
+  if (layout_view_->GetFrameView()->ShouldThrottleRendering())
+    return;
 
   if (DisplayLockUtilities::PrePaintBlockedInParentFrame(layout_view_))
     return;
@@ -234,12 +232,6 @@ void PaintLayerCompositor::UpdateAssignmentsIfNeededRecursiveInternal(
           target_state, compositing_reasons_stats);
       if (child_compositor->root_layer_attachment_dirty_)
         SetNeedsCompositingUpdate(kCompositingUpdateRebuildTree);
-#if DCHECK_IS_ON()
-      // Even if the child frame is throttled, this should be consistent.
-      DisableCompositingQueryAsserts query_assert_disabler;
-      DCHECK_EQ(child_compositor->InCompositingMode(),
-                (bool)child_compositor->RootGraphicsLayer());
-#endif
     }
   }
 
@@ -508,34 +500,6 @@ void PaintLayerCompositor::UpdatePotentialCompositingReasonsFromStyle(
   auto reasons = CompositingReasonFinder::PotentialCompositingReasonsFromStyle(
       layer.GetLayoutObject());
   layer.SetPotentialCompositingReasonsFromStyle(reasons);
-}
-
-bool PaintLayerCompositor::CanBeComposited(const PaintLayer* layer) const {
-  LocalFrameView* frame_view = layer->GetLayoutObject().GetFrameView();
-  // Elements within an invisible frame must not be composited because they are
-  // not drawn.
-  if (frame_view && !frame_view->IsVisible())
-    return false;
-
-  DCHECK(!frame_view->ShouldThrottleRendering());
-
-  const bool has_compositor_animation =
-      CompositingReasonFinder::CompositingReasonsForAnimation(
-          layer->GetLayoutObject()) != CompositingReason::kNone;
-
-  return layout_view_->GetDocument()
-             .GetSettings()
-             ->GetAcceleratedCompositingEnabled() &&
-         (has_compositor_animation || !layer->SubtreeIsInvisible()) &&
-         layer->IsSelfPaintingLayer() &&
-         !layer->GetLayoutObject().IsLayoutFlowThread() &&
-         // Don't composite <foreignObject> for the moment, to reduce instances
-         // of the "fundamental compositing bug" breaking painting order.
-         // With CompositeSVG, foreignObjects will be correctly composited after
-         // paint in PaintArtifactCompositor without a GraphicsLayer.
-         // Composited descendants of foreignObject will still break painting
-         // order which will be fixed in CompositeAfterPaint.
-         !layer->GetLayoutObject().IsSVGForeignObject();
 }
 
 // If an element has composited negative z-index children, those children paint

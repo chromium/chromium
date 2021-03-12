@@ -134,17 +134,10 @@ void GraphicsLayerTreeBuilder::RebuildRecursive(
       DisableCompositingQueryAsserts disabler;
       if (GraphicsLayer* inner_root_graphics_layer =
               inner_compositor->RootGraphicsLayer()) {
-        // If inner_root_graphics_layer is non-null, then either the inner frame
-        // is up-to-date and in compositing mode; or the inner frame is
-        // throttled and we're using its pre-existing root graphics layer.
-        DCHECK(inner_compositor->RootLayer()
-                   ->GetLayoutObject()
-                   .GetFrameView()
-                   ->ShouldThrottleRendering() ||
-               inner_compositor->InCompositingMode());
+        // TODO(szager); Remove this after diagnosing crash
+        CHECK_EQ(inner_compositor->InCompositingMode(),
+                 (bool)inner_root_graphics_layer);
         layer_vector_for_children->push_back(inner_root_graphics_layer);
-        CHECK(layer.Compositor()->RootLayer()->GetCompositingReasons() &
-              CompositingReason::kRoot);
       }
       inner_compositor->ClearRootLayerAttachmentDirty();
     }

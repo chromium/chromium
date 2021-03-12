@@ -39,27 +39,16 @@ CompositingInputsUpdater::~CompositingInputsUpdater() = default;
 bool CompositingInputsUpdater::LayerOrDescendantShouldBeComposited(
     PaintLayer* layer) {
   if (auto* layout_view = DynamicTo<LayoutView>(layer->GetLayoutObject())) {
-    if (layout_view->AdditionalCompositingReasons())
-      return true;
-    // The containing frame may call this function for the root layer of a
-    // throttled frame. In that case, look for a pre-existing root GraphicsLayer
-    // in the iframe's compositor.
     if (layout_view->GetFrameView()->ShouldThrottleRendering()) {
-      DisableCompositingQueryAsserts disabler;
-      if (auto* inner_compositor = layout_view->Compositor()) {
-        if (inner_compositor->RootGraphicsLayer())
-          return true;
-      }
+      if (auto* inner_compositor = layout_view->Compositor())
+        return inner_compositor->StaleInCompositingMode();
       return false;
     }
   }
   DCHECK(!layer->GetLayoutObject().GetFrameView()->ShouldThrottleRendering());
-  PaintLayerCompositor* compositor =
-      layer->GetLayoutObject().View()->Compositor();
   return layer->DescendantHasDirectOrScrollingCompositingReason() ||
          layer->NeedsCompositedScrolling() ||
-         (compositor->CanBeComposited(layer) &&
-          layer->DirectCompositingReasons());
+         (layer->CanBeComposited() && layer->DirectCompositingReasons());
 }
 
 void CompositingInputsUpdater::Update() {
@@ -147,8 +136,7 @@ void CompositingInputsUpdater::UpdateSelfAndDescendantsRecursively(
 
   if (layer->GetScrollableArea()) {
     layer->GetScrollableArea()->UpdateNeedsCompositedScrolling(
-        compositor->CanBeComposited(layer) &&
-        layer->DirectCompositingReasons());
+        layer->CanBeComposited() && layer->DirectCompositingReasons());
   }
 
   // Note that prepaint may use the compositing information, so only skip
@@ -226,13 +214,9 @@ void CompositingInputsUpdater::UpdateSelfAndDescendantsRecursively(
 
 bool CompositingInputsUpdater::NeedsPaintOffsetTranslationForCompositing(
     PaintLayer* layer) {
-  PaintLayerCompositor* compositor =
-      layer->GetLayoutObject().View()->Compositor();
-
   /// Allocate when the developer indicated compositing via a direct
   // method.
-  if ((compositor->CanBeComposited(layer) &&
-       layer->DirectCompositingReasons()) ||
+  if ((layer->CanBeComposited() && layer->DirectCompositingReasons()) ||
       layer->NeedsCompositedScrolling())
     return true;
 
