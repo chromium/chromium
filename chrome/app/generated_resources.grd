@@ -10332,12 +10332,8 @@ Please help our engineers fix this problem. Tell us what happened right before y
       <message name="IDS_HID_CHOOSER_PROMPT_EXTENSION_NAME" desc="The label that is used to introduce Human Interface Device (HID) chooser details to the user in a popup when it is from a Chrome extension.">
         "<ph name="CHROME_EXTENSION_NAME">$1<ex>Chrome Extension Name</ex></ph>" wants to connect to a HID device
       </message>
-      <message name="IDS_HID_CHOOSER_ITEM_WITHOUT_NAME" desc="User option displaying the vendor ID and product ID for a Human Interface Device (HID) without a device name.">
-        Unknown Device (Vendor: <ph name="VENDOR_ID">$1<ex>0x1234</ex></ph>, Product: <ph name="PRODUCT_ID">$2<ex>0xabcd</ex></ph>)
-      </message>
-      <message name="IDS_HID_CHOOSER_ITEM_WITH_NAME" desc="User option displaying the device name, vendor ID, and product ID for a Human Interface Device (HID).">
-        <ph name="DEVICE_NAME">$1<ex>Wireless Controller</ex></ph> (Vendor: <ph name="VENDOR_ID">$2<ex>0x1234</ex></ph>, Product: <ph name="PRODUCT_ID">$3<ex>0xabcd</ex></ph>)
-      </message>
+      <message name="IDS_HID_CHOOSER_ITEM_WITHOUT_NAME" desc="User option displaying the device IDs for a Human Interface Device (HID) without a device name.">
+        Unknown Device (<ph name="DEVICE_ID">$1<ex>1234:abcd</ex></ph>) </message>
       <message name="IDS_HID_CHOOSER_LOADING_LABEL" desc="Text on label that the browser is loading the list of HID devices.">
         Finding devices...
       </message>

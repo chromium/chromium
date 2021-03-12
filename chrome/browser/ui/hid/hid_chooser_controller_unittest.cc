@@ -226,8 +226,7 @@ TEST_F(HidChooserControllerTest, BlockedFidoDeviceAllowedWithFlag) {
   options_initialized_loop.Run();
 
   EXPECT_EQ(1u, hid_chooser_controller->NumOptions());
-  EXPECT_EQ(base::ASCIIToUTF16("gnubby (Vendor: 0x1050, Product: 0x0200)"),
-            hid_chooser_controller->GetOption(0));
+  EXPECT_EQ(base::ASCIIToUTF16("gnubby"), hid_chooser_controller->GetOption(0));
 }
 
 TEST_F(HidChooserControllerTest, AddNamedDevice) {
@@ -249,8 +248,7 @@ TEST_F(HidChooserControllerTest, AddNamedDevice) {
   options_initialized_loop.Run();
 
   EXPECT_EQ(1u, hid_chooser_controller->NumOptions());
-  EXPECT_EQ(base::ASCIIToUTF16("a (Vendor: 0x0001, Product: 0x0001)"),
-            hid_chooser_controller->GetOption(0));
+  EXPECT_EQ(base::ASCIIToUTF16("a"), hid_chooser_controller->GetOption(0));
 }
 
 TEST_F(HidChooserControllerTest, AddUnnamedDevice) {
@@ -272,9 +270,8 @@ TEST_F(HidChooserControllerTest, AddUnnamedDevice) {
   options_initialized_loop.Run();
 
   EXPECT_EQ(1u, hid_chooser_controller->NumOptions());
-  EXPECT_EQ(
-      base::ASCIIToUTF16("Unknown Device (Vendor: 0x0001, Product: 0x0001)"),
-      hid_chooser_controller->GetOption(0));
+  EXPECT_EQ(base::ASCIIToUTF16("Unknown Device (0001:0001)"),
+            hid_chooser_controller->GetOption(0));
 }
 
 TEST_F(HidChooserControllerTest, DeviceIdFilterVendorOnly) {
@@ -314,10 +311,8 @@ TEST_F(HidChooserControllerTest, DeviceIdFilterVendorOnly) {
 
   std::set<std::u16string> options{hid_chooser_controller->GetOption(0),
                                    hid_chooser_controller->GetOption(1)};
-  EXPECT_THAT(options,
-              testing::UnorderedElementsAre(
-                  base::ASCIIToUTF16("a (Vendor: 0x0001, Product: 0x0001)"),
-                  base::ASCIIToUTF16("b (Vendor: 0x0001, Product: 0x0002)")));
+  EXPECT_THAT(options, testing::UnorderedElementsAre(base::ASCIIToUTF16("a"),
+                                                     base::ASCIIToUTF16("b")));
 }
 
 TEST_F(HidChooserControllerTest, DeviceIdFilterVendorAndProduct) {
@@ -354,8 +349,7 @@ TEST_F(HidChooserControllerTest, DeviceIdFilterVendorAndProduct) {
   options_initialized_loop.Run();
 
   EXPECT_EQ(1u, hid_chooser_controller->NumOptions());
-  EXPECT_EQ(base::ASCIIToUTF16("a (Vendor: 0x0001, Product: 0x0001)"),
-            hid_chooser_controller->GetOption(0));
+  EXPECT_EQ(base::ASCIIToUTF16("a"), hid_chooser_controller->GetOption(0));
 }
 
 TEST_F(HidChooserControllerTest, UsageFilterUsagePageOnly) {
@@ -389,8 +383,7 @@ TEST_F(HidChooserControllerTest, UsageFilterUsagePageOnly) {
   options_initialized_loop.Run();
 
   EXPECT_EQ(1u, hid_chooser_controller->NumOptions());
-  EXPECT_EQ(base::ASCIIToUTF16("a (Vendor: 0x0001, Product: 0x0001)"),
-            hid_chooser_controller->GetOption(0));
+  EXPECT_EQ(base::ASCIIToUTF16("a"), hid_chooser_controller->GetOption(0));
 }
 
 TEST_F(HidChooserControllerTest, UsageFilterUsageAndPage) {
@@ -434,8 +427,7 @@ TEST_F(HidChooserControllerTest, UsageFilterUsageAndPage) {
   options_initialized_loop.Run();
 
   EXPECT_EQ(1u, hid_chooser_controller->NumOptions());
-  EXPECT_EQ(base::ASCIIToUTF16("a (Vendor: 0x0001, Product: 0x0001)"),
-            hid_chooser_controller->GetOption(0));
+  EXPECT_EQ(base::ASCIIToUTF16("a"), hid_chooser_controller->GetOption(0));
 }
 
 TEST_F(HidChooserControllerTest, DeviceIdAndUsageFilterIntersection) {
@@ -482,8 +474,7 @@ TEST_F(HidChooserControllerTest, DeviceIdAndUsageFilterIntersection) {
   options_initialized_loop.Run();
 
   EXPECT_EQ(1u, hid_chooser_controller->NumOptions());
-  EXPECT_EQ(base::ASCIIToUTF16("a (Vendor: 0x0001, Product: 0x0001)"),
-            hid_chooser_controller->GetOption(0));
+  EXPECT_EQ(base::ASCIIToUTF16("a"), hid_chooser_controller->GetOption(0));
 }
 
 TEST_F(HidChooserControllerTest, DeviceIdAndUsageFilterUnion) {
@@ -572,8 +563,7 @@ TEST_F(HidChooserControllerTest, OneOptionForSamePhysicalDevice) {
   options_initialized_loop.Run();
 
   EXPECT_EQ(1u, hid_chooser_controller->NumOptions());
-  EXPECT_EQ(base::ASCIIToUTF16("a (Vendor: 0x0001, Product: 0x0001)"),
-            hid_chooser_controller->GetOption(0));
+  EXPECT_EQ(base::ASCIIToUTF16("a"), hid_chooser_controller->GetOption(0));
 
   // 4. Select the chooser option. The returned device list should include both
   // devices.
@@ -588,8 +578,7 @@ TEST_F(HidChooserControllerTest, OneOptionForSamePhysicalDevice) {
   // Regression test for https://crbug.com/1069057. Ensure that the
   // set of options is still valid after the callback is run.
   EXPECT_EQ(1u, hid_chooser_controller->NumOptions());
-  EXPECT_EQ(base::ASCIIToUTF16("a (Vendor: 0x0001, Product: 0x0001)"),
-            hid_chooser_controller->GetOption(0));
+  EXPECT_EQ(base::ASCIIToUTF16("a"), hid_chooser_controller->GetOption(0));
 }
 
 TEST_F(HidChooserControllerTest, NoMergeWithDifferentPhysicalDeviceIds) {

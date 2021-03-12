@@ -74,17 +74,13 @@ HidChooserContext::~HidChooserContext() {
 // static
 std::u16string HidChooserContext::DisplayNameFromDeviceInfo(
     const device::mojom::HidDeviceInfo& device) {
-  auto vendor_id_string =
-      base::ASCIIToUTF16(base::StringPrintf("0x%04x", device.vendor_id));
-  auto product_id_string =
-      base::ASCIIToUTF16(base::StringPrintf("0x%04x", device.product_id));
   if (device.product_name.empty()) {
+    auto device_id_string = base::ASCIIToUTF16(
+        base::StringPrintf("%04X:%04X", device.vendor_id, device.product_id));
     return l10n_util::GetStringFUTF16(IDS_HID_CHOOSER_ITEM_WITHOUT_NAME,
-                                      vendor_id_string, product_id_string);
+                                      device_id_string);
   }
-  return l10n_util::GetStringFUTF16(IDS_HID_CHOOSER_ITEM_WITH_NAME,
-                                    base::UTF8ToUTF16(device.product_name),
-                                    vendor_id_string, product_id_string);
+  return base::UTF8ToUTF16(device.product_name);
 }
 
 // static
