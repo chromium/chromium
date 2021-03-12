@@ -42,6 +42,7 @@
 #include "chrome/browser/chromeos/base/locale_util.h"
 #include "chrome/browser/chromeos/boot_times_recorder.h"
 #include "chrome/browser/chromeos/child_accounts/child_policy_observer.h"
+#include "chrome/browser/chromeos/crosapi/browser_util.h"
 #include "chrome/browser/chromeos/first_run/first_run.h"
 #include "chrome/browser/chromeos/full_restore/full_restore_service.h"
 #include "chrome/browser/chromeos/logging.h"
@@ -1852,6 +1853,15 @@ void UserSessionManager::OnRestoreActiveSessions(
     return;
   }
 
+  if (sessions->size() > 1 && crosapi::browser_util::IsLacrosEnabled()) {
+    LOG(ERROR) << "Multiple sessions are disabled when Lacros is enabled";
+    // If we could not get list of active user sessions it is safer to just
+    // sign out so that we don't get in the inconsistent state.
+    SessionTerminationManager::Get()->StopSession(
+        login_manager::SessionStopReason::RESTORE_ACTIVE_SESSIONS);
+    return;
+  }
+
   // One profile has been already loaded on browser start.
   user_manager::UserManager* user_manager = user_manager::UserManager::Get();
   DCHECK_EQ(1u, user_manager->GetLoggedInUsers().size());
@@ -1936,6 +1946,10 @@ void UserSessionManager::NotifyPendingUserSessionsRestoreFinished() {
   user_sessions_restore_in_progress_ = false;
   for (auto& observer : session_state_observer_list_)
     observer.PendingUserSessionsRestoreFinished();
+
+  if (crosapi::browser_util::IsLacrosEnabled()) {
+    CHECK_LE(user_manager::UserManager::Get()->GetLoggedInUsers().size(), 1);
+  }
 }
 
 void UserSessionManager::UpdateEasyUnlockKeys(const UserContext& user_context) {
