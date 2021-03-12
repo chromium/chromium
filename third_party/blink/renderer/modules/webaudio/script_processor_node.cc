@@ -144,10 +144,20 @@ void ScriptProcessorHandler::Initialize() {
 }
 
 void ScriptProcessorHandler::Process(uint32_t frames_to_process) {
-  // The main thread might be accessing the shared buffers. If so, silience
+  TRACE_EVENT_BEGIN0(TRACE_DISABLED_BY_DEFAULT("webaudio.audionode"),
+                     "ScriptProcessorHandler::Process");
+
+  // The main thread might be accessing the shared buffers. If so, silence
   // the output and return.
   MutexTryLocker try_locker(process_event_lock_);
   if (!try_locker.Locked()) {
+    TRACE_EVENT_INSTANT0(
+        TRACE_DISABLED_BY_DEFAULT("webaudio.audionode"),
+        "ScriptProcessorHandler::Process - tryLock failed (silence)",
+        TRACE_EVENT_SCOPE_THREAD);
+    TRACE_EVENT_END0(TRACE_DISABLED_BY_DEFAULT("webaudio.audionode"),
+                     "ScriptProcessorHandler::Process");
+
     Output(0).Bus()->Zero();
     return;
   }
@@ -247,6 +257,9 @@ void ScriptProcessorHandler::Process(uint32_t frames_to_process) {
 
     SwapBuffers();
   }
+
+  TRACE_EVENT_END0(TRACE_DISABLED_BY_DEFAULT("webaudio.audionode"),
+                   "ScriptProcessorHandler::Process");
 }
 
 void ScriptProcessorHandler::FireProcessEvent(uint32_t double_buffer_index) {
@@ -514,6 +527,9 @@ void ScriptProcessorNode::DispatchEvent(double playback_time,
                                         uint32_t double_buffer_index) {
   DCHECK(IsMainThread());
 
+  TRACE_EVENT0(TRACE_DISABLED_BY_DEFAULT("webaudio.audionode"),
+               "ScriptProcessorNode::DispatchEvent");
+
   AudioBuffer* backing_input_buffer =
       input_buffers_.at(double_buffer_index).Get();
 
@@ -525,6 +541,9 @@ void ScriptProcessorNode::DispatchEvent(double playback_time,
     if (IsAudioBufferDetached(external_input_buffer_) ||
         !BufferTopologyMatches(backing_input_buffer,
                                external_input_buffer_)) {
+      TRACE_EVENT0(
+          TRACE_DISABLED_BY_DEFAULT("webaudio.audionode"),
+          "ScriptProcessorNode::DispatchEvent (create input AudioBuffer)");
       external_input_buffer_ = AudioBuffer::Create(
           backing_input_buffer->numberOfChannels(),
           backing_input_buffer->length(),
@@ -552,6 +571,9 @@ void ScriptProcessorNode::DispatchEvent(double playback_time,
     if (IsAudioBufferDetached(external_output_buffer_) ||
         !BufferTopologyMatches(backing_output_buffer,
                                external_output_buffer_)) {
+      TRACE_EVENT0(
+          TRACE_DISABLED_BY_DEFAULT("webaudio.audionode"),
+          "ScriptProcessorNode::DispatchEvent (create output AudioBuffer)");
       external_output_buffer_ = AudioBuffer::Create(
           backing_output_buffer->numberOfChannels(),
           backing_output_buffer->length(),
