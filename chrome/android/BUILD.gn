@@ -19,6 +19,7 @@ import("//chrome/android/feed/feed_java_sources.gni")
 import("//chrome/android/modules/chrome_bundle_tmpl.gni")
 import("//chrome/android/modules/chrome_feature_module_tmpl.gni")
 import("//chrome/android/monochrome_android_manifest_jinja_variables.gni")
+import("//chrome/browser/commerce/price_tracking/android/java_sources.gni")
 import("//chrome/browser/share/android/java_sources.gni")
 import("//chrome/chrome_paks.gni")
 import("//chrome/common/features.gni")
@@ -626,6 +627,10 @@ android_library("chrome_java") {
   # dependency when circular deps is resolved.
   sources += share_java_sources
   deps += share_java_deps
+
+  # TODO(crbug/1186003): Instead of adding source files, add it as a separate
+  # dependency when circular deps is resolved.
+  sources += price_tracking_java_sources
 }
 
 # Template for strict mode detection enabling/disabling so that proguard strips out
