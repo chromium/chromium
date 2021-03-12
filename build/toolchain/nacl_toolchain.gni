@@ -59,7 +59,12 @@ template("nacl_toolchain") {
       coverage_instrumentation_input_file = ""
 
       if (use_rbe) {
-        rbe_cc_cfg_file = "${rbe_cfg_dir}/rewrapper_linux_nacl.cfg"
+        if (is_win) {
+          rbe_cc_cfg_file = "${rbe_cfg_dir}/rewrapper_windows_nacl.cfg"
+        } else {
+          # TODO(ukai): non linux?
+          rbe_cc_cfg_file = "${rbe_cfg_dir}/rewrapper_linux_nacl.cfg"
+        }
       }
     }
   }
