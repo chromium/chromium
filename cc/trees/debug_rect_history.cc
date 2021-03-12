@@ -76,6 +76,7 @@ void DebugRectHistory::SaveLayoutShiftRects(HeadsUpDisplayLayerImpl* hud) {
         LAYOUT_SHIFT_RECT_TYPE,
         MathUtil::MapEnclosingClippedRect(hud->ScreenSpaceTransform(), rect)));
   }
+  hud->ClearLayoutShiftRects();
 }
 
 void DebugRectHistory::SavePaintRects(LayerTreeImpl* tree_impl) {

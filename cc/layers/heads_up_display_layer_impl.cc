@@ -555,6 +555,10 @@ void HeadsUpDisplayLayerImpl::SetLayoutShiftRects(
   layout_shift_rects_ = rects;
 }
 
+void HeadsUpDisplayLayerImpl::ClearLayoutShiftRects() {
+  layout_shift_rects_.clear();
+}
+
 void HeadsUpDisplayLayerImpl::SetWebVitalMetrics(
     std::unique_ptr<WebVitalMetrics> web_vital_metrics) {
   web_vital_metrics_ = std::move(web_vital_metrics);
@@ -1077,7 +1081,6 @@ void HeadsUpDisplayLayerImpl::DrawDebugRects(
                     DebugColors::PaintRectBorderWidth(), "");
     }
   }
-
   if (new_layout_shift_rects.size()) {
     layout_shift_debug_rects_.swap(new_layout_shift_rects);
     layout_shift_rects_fade_step_ = DebugColors::kFadeSteps;

@@ -68,6 +68,7 @@ class CC_EXPORT HeadsUpDisplayLayerImpl : public LayerImpl {
 
   void SetHUDTypeface(sk_sp<SkTypeface> typeface);
   void SetLayoutShiftRects(const std::vector<gfx::Rect>& rects);
+  void ClearLayoutShiftRects();
   const std::vector<gfx::Rect>& LayoutShiftRects() const;
   void SetWebVitalMetrics(std::unique_ptr<WebVitalMetrics> web_vital_metrics);
 
