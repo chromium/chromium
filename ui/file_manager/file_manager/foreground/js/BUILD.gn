@@ -28,6 +28,12 @@ group("closure_compile") {
 
 js_type_check("closure_compile_jsmodules") {
   is_polymer3 = true
+  closure_flags = default_closure_args + [
+                    "js_module_root=gen/ui/file_manager/",
+                    "browser_resolver_prefix_replacements=\"chrome-extension://hhaomjibdihmijegdhdafkllkbggdgoj/=./file_manager/\"",
+                    "browser_resolver_prefix_replacements=\"chrome-extension://pmfjbimdmchhbnneeidfognadeopoehp/=./image_loader/\"",
+                  ]
+
   deps = [
     ":actions_controller.m",
     ":actions_model.m",
@@ -2098,6 +2104,8 @@ js_test_gen_html("js_test_gen_html_modules") {
         "js_module_root=../../ui",
         "jscomp_off=duplicate",
         "browser_resolver_prefix_replacements=\"chrome://test/=./\"",
+        "browser_resolver_prefix_replacements=\"chrome-extension://hhaomjibdihmijegdhdafkllkbggdgoj/=./file_manager/\"",
+        "browser_resolver_prefix_replacements=\"chrome-extension://pmfjbimdmchhbnneeidfognadeopoehp/=./image_loader/\"",
         "hide_warnings_for=third_party/",
         "hide_warnings_for=third_party/",
       ]

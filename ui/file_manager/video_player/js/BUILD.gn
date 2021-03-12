@@ -19,6 +19,11 @@ group("closure_compile") {
 
 js_type_check("closure_compile_jsmodules") {
   is_polymer3 = true
+  closure_flags = default_closure_args + [
+                    "js_module_root=gen/ui/file_manager/",
+                    "browser_resolver_prefix_replacements=\"chrome-extension://hhaomjibdihmijegdhdafkllkbggdgoj/=./file_manager/\"",
+                    "browser_resolver_prefix_replacements=\"chrome-extension://pmfjbimdmchhbnneeidfognadeopoehp/=./image_loader/\"",
+                  ]
   deps = [
     ":background.m",
     ":error_util.m",
@@ -182,9 +187,12 @@ js_test_gen_html("js_test_gen_html_modules") {
   closure_flags =
       strict_error_checking_closure_args + [
         "generate_exports=false",
+        "js_module_root=gen/ui/file_manager/",
         "js_module_root=./gen/ui",
         "js_module_root=../../ui",
         "browser_resolver_prefix_replacements=\"chrome://test/=./\"",
+        "browser_resolver_prefix_replacements=\"chrome-extension://hhaomjibdihmijegdhdafkllkbggdgoj/=./file_manager/\"",
+        "browser_resolver_prefix_replacements=\"chrome-extension://pmfjbimdmchhbnneeidfognadeopoehp/=./image_loader/\"",
         "hide_warnings_for=third_party/",
       ]
 }

@@ -9,6 +9,11 @@ import("//ui/file_manager/base/gn/js_test_gen_html.gni")
 import("//ui/webui/resources/tools/js_modulizer.gni")
 
 js_type_check("closure_compile_jsmodules") {
+  closure_flags = default_closure_args + [
+                    "jscomp_error=strictCheckTypes",
+                    "js_module_root=gen/ui/file_manager/",
+                    "browser_resolver_prefix_replacements=\"chrome-extension://hhaomjibdihmijegdhdafkllkbggdgoj/=./file_manager/\"",
+                  ]
   deps = [
     ":background.m",
     ":cache.m",
@@ -231,12 +236,13 @@ js_test_gen_html("js_test_gen_html_modules") {
   ]
   js_module = true
 
-  closure_flags =
-      strict_error_checking_closure_args + [
-        "js_module_root=./gen/ui",
-        "js_module_root=../../ui",
-        "browser_resolver_prefix_replacements=\"chrome://test/=./\"",
-      ]
+  closure_flags = strict_error_checking_closure_args + [
+                    "js_module_root=./gen/ui",
+                    "js_module_root=../../ui/file_manager/",
+                    "js_module_root=./gen/ui/file_manager/",
+                    "browser_resolver_prefix_replacements=\"chrome://test/=./\"",
+                    "browser_resolver_prefix_replacements=\"chrome-extension://hhaomjibdihmijegdhdafkllkbggdgoj/=./file_manager/\"",
+                  ]
 }
 
 group("closure_compile") {

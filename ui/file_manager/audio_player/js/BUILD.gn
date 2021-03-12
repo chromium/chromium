@@ -36,7 +36,12 @@ js_type_check("closure_compile_jsmodules") {
 
 js_type_check("closure_compile_polymer") {
   is_polymer3 = true
-  closure_flags = default_closure_args + [ "browser_resolver_prefix_replacements=\"chrome-extension://hhaomjibdihmijegdhdafkllkbggdgoj/=../../ui/file_manager/file_manager/\"" ]
+  closure_flags = default_closure_args + [
+                    "js_module_root=gen/ui/file_manager/",
+                    "browser_resolver_prefix_replacements=\"chrome-extension://hhaomjibdihmijegdhdafkllkbggdgoj/=./file_manager/\"",
+                    "browser_resolver_prefix_replacements=\"chrome-extension://pmfjbimdmchhbnneeidfognadeopoehp/=./image_loader/\"",
+                  ]
+
   deps = [
     ":audio_player.m",
     ":main.m",
