@@ -64,13 +64,6 @@ namespace {
 
 constexpr base::TimeDelta kShortDelay = base::TimeDelta::FromSeconds(1);
 
-bool ObserveNavEntryCommitted(const GURL& expected_url,
-                              const content::NotificationSource& source,
-                              const content::NotificationDetails& details) {
-  return content::Details<content::LoadCommittedDetails>(details)
-             ->entry->GetURL() == expected_url;
-}
-
 bool IsTabDiscarded(content::WebContents* web_contents) {
   return TabLifecycleUnitExternal::FromWebContents(web_contents)->IsDiscarded();
 }
@@ -221,64 +214,38 @@ class TabManagerTestWithTwoTabs : public TabManagerTest {
 
 IN_PROC_BROWSER_TEST_F(TabManagerTest, TabManagerBasics) {
   ASSERT_TRUE(embedded_test_server()->Start());
-
-  using content::WindowedNotificationObserver;
+  const GURL url1 = embedded_test_server()->GetURL("a.com", "/title1.html");
+  const GURL url2 = embedded_test_server()->GetURL("a.com", "/title2.html");
+  const GURL url3 = embedded_test_server()->GetURL("a.com", "/title3.html");
 
   // Get three tabs open.
 
   test_clock_.Advance(kShortDelay);
-  WindowedNotificationObserver load1(
-      content::NOTIFICATION_NAV_ENTRY_COMMITTED,
-      content::NotificationService::AllSources());
-  OpenURLParams open1(embedded_test_server()->GetURL("a.com", "/title1.html"),
-                      content::Referrer(), WindowOpenDisposition::CURRENT_TAB,
-                      ui::PAGE_TRANSITION_TYPED, false);
-  browser()->OpenURL(open1);
-  load1.Wait();
+  NavigateToURLWithDisposition(browser(), url1,
+                               WindowOpenDisposition::CURRENT_TAB,
+                               ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
 
   test_clock_.Advance(kShortDelay);
-  WindowedNotificationObserver load2(
-      content::NOTIFICATION_NAV_ENTRY_COMMITTED,
-      content::NotificationService::AllSources());
-  OpenURLParams open2(embedded_test_server()->GetURL("a.com", "/title1.html"),
-                      content::Referrer(),
-                      WindowOpenDisposition::NEW_FOREGROUND_TAB,
-                      ui::PAGE_TRANSITION_TYPED, false);
-  browser()->OpenURL(open2);
-  load2.Wait();
+  NavigateToURLWithDisposition(browser(), url1,
+                               WindowOpenDisposition::NEW_FOREGROUND_TAB,
+                               ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
 
   test_clock_.Advance(kShortDelay);
-  WindowedNotificationObserver load3(
-      content::NOTIFICATION_NAV_ENTRY_COMMITTED,
-      content::NotificationService::AllSources());
-  OpenURLParams open3(embedded_test_server()->GetURL("a.com", "/title1.html"),
-                      content::Referrer(),
-                      WindowOpenDisposition::NEW_FOREGROUND_TAB,
-                      ui::PAGE_TRANSITION_TYPED, false);
-  browser()->OpenURL(open3);
-  load3.Wait();
+  NavigateToURLWithDisposition(browser(), url1,
+                               WindowOpenDisposition::NEW_FOREGROUND_TAB,
+                               ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
   EXPECT_EQ(3, tsm()->count());
 
   // Navigate the current (third) tab to a different URL, so we can test
   // back/forward later.
-  WindowedNotificationObserver load4(
-      content::NOTIFICATION_NAV_ENTRY_COMMITTED,
-      content::NotificationService::AllSources());
-  OpenURLParams open4(embedded_test_server()->GetURL("a.com", "/title2.html"),
-                      content::Referrer(), WindowOpenDisposition::CURRENT_TAB,
-                      ui::PAGE_TRANSITION_TYPED, false);
-  browser()->OpenURL(open4);
-  load4.Wait();
+  NavigateToURLWithDisposition(browser(), url2,
+                               WindowOpenDisposition::CURRENT_TAB,
+                               ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
 
   // Navigate the third tab again, such that we have three navigation entries.
-  WindowedNotificationObserver load5(
-      content::NOTIFICATION_NAV_ENTRY_COMMITTED,
-      content::NotificationService::AllSources());
-  OpenURLParams open5(embedded_test_server()->GetURL("a.com", "/title3.html"),
-                      content::Referrer(), WindowOpenDisposition::CURRENT_TAB,
-                      ui::PAGE_TRANSITION_TYPED, false);
-  browser()->OpenURL(open5);
-  load5.Wait();
+  NavigateToURLWithDisposition(browser(), url3,
+                               WindowOpenDisposition::CURRENT_TAB,
+                               ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
   EXPECT_EQ(3, tsm()->count());
 
   // Advance time so everything is urgent discardable.
@@ -331,13 +298,9 @@ IN_PROC_BROWSER_TEST_F(TabManagerTest, TabManagerBasics) {
   browser()->GetFindBarController();
 
   // Select the first tab.  It should reload.
-  WindowedNotificationObserver reload1(
-      content::NOTIFICATION_NAV_ENTRY_COMMITTED,
-      base::BindRepeating(
-          &ObserveNavEntryCommitted,
-          embedded_test_server()->GetURL("a.com", "/title1.html")));
   chrome::SelectNumberedTab(browser(), 0);
-  reload1.Wait();
+  content::WaitForLoadStop(
+      browser()->tab_strip_model()->GetActiveWebContents());
   // Make sure the FindBarController gets the right WebContents.
   EXPECT_EQ(browser()->GetFindBarController()->web_contents(),
             tsm()->GetActiveWebContents());
@@ -347,13 +310,9 @@ IN_PROC_BROWSER_TEST_F(TabManagerTest, TabManagerBasics) {
   EXPECT_TRUE(IsTabDiscarded(GetWebContentsAt(2)));
 
   // Select the third tab. It should reload.
-  WindowedNotificationObserver reload2(
-      content::NOTIFICATION_NAV_ENTRY_COMMITTED,
-      base::BindRepeating(
-          &ObserveNavEntryCommitted,
-          embedded_test_server()->GetURL("a.com", "/title3.html")));
   chrome::SelectNumberedTab(browser(), 2);
-  reload2.Wait();
+  content::WaitForLoadStop(
+      browser()->tab_strip_model()->GetActiveWebContents());
   EXPECT_EQ(2, tsm()->active_index());
   EXPECT_FALSE(IsTabDiscarded(GetWebContentsAt(0)));
   EXPECT_FALSE(IsTabDiscarded(GetWebContentsAt(1)));
@@ -363,22 +322,14 @@ IN_PROC_BROWSER_TEST_F(TabManagerTest, TabManagerBasics) {
   // crbug.com/121373.
   EXPECT_TRUE(chrome::CanGoBack(browser()));
   EXPECT_FALSE(chrome::CanGoForward(browser()));
-  WindowedNotificationObserver back1(
-      content::NOTIFICATION_NAV_ENTRY_COMMITTED,
-      base::BindRepeating(
-          &ObserveNavEntryCommitted,
-          embedded_test_server()->GetURL("a.com", "/title2.html")));
   chrome::GoBack(browser(), WindowOpenDisposition::CURRENT_TAB);
-  back1.Wait();
+  content::WaitForLoadStop(
+      browser()->tab_strip_model()->GetActiveWebContents());
   EXPECT_TRUE(chrome::CanGoBack(browser()));
   EXPECT_TRUE(chrome::CanGoForward(browser()));
-  WindowedNotificationObserver back2(
-      content::NOTIFICATION_NAV_ENTRY_COMMITTED,
-      base::BindRepeating(
-          &ObserveNavEntryCommitted,
-          embedded_test_server()->GetURL("a.com", "/title1.html")));
   chrome::GoBack(browser(), WindowOpenDisposition::CURRENT_TAB);
-  back2.Wait();
+  content::WaitForLoadStop(
+      browser()->tab_strip_model()->GetActiveWebContents());
   EXPECT_FALSE(chrome::CanGoBack(browser()));
   EXPECT_TRUE(chrome::CanGoForward(browser()));
 }
@@ -386,22 +337,13 @@ IN_PROC_BROWSER_TEST_F(TabManagerTest, TabManagerBasics) {
 IN_PROC_BROWSER_TEST_F(TabManagerTest, InvalidOrEmptyURL) {
   // Open two tabs. Wait for the foreground one to load but do not wait for the
   // background one.
-  content::WindowedNotificationObserver load1(
-      content::NOTIFICATION_NAV_ENTRY_COMMITTED,
-      content::NotificationService::AllSources());
-  OpenURLParams open1(GURL(chrome::kChromeUIAboutURL), content::Referrer(),
-                      WindowOpenDisposition::CURRENT_TAB,
-                      ui::PAGE_TRANSITION_TYPED, false);
-  browser()->OpenURL(open1);
-  load1.Wait();
+  NavigateToURLWithDisposition(browser(), GURL(chrome::kChromeUIAboutURL),
+                               WindowOpenDisposition::CURRENT_TAB,
+                               ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
 
-  content::WindowedNotificationObserver load2(
-      content::NOTIFICATION_NAV_ENTRY_COMMITTED,
-      content::NotificationService::AllSources());
-  OpenURLParams open2(GURL(chrome::kChromeUICreditsURL), content::Referrer(),
-                      WindowOpenDisposition::NEW_BACKGROUND_TAB,
-                      ui::PAGE_TRANSITION_TYPED, false);
-  browser()->OpenURL(open2);
+  NavigateToURLWithDisposition(browser(), GURL(chrome::kChromeUICreditsURL),
+                               WindowOpenDisposition::NEW_BACKGROUND_TAB,
+                               ui_test_utils::BROWSER_TEST_NONE);
 
   ASSERT_EQ(2, tsm()->count());
 
@@ -411,7 +353,7 @@ IN_PROC_BROWSER_TEST_F(TabManagerTest, InvalidOrEmptyURL) {
       tab_manager()->DiscardTabImpl(LifecycleUnitDiscardReason::EXTERNAL));
 
   // Wait for the background tab to load which then allows it to be discarded.
-  load2.Wait();
+  content::WaitForLoadStop(browser()->tab_strip_model()->GetWebContentsAt(1));
   EXPECT_TRUE(
       tab_manager()->DiscardTabImpl(LifecycleUnitDiscardReason::EXTERNAL));
 }
@@ -419,25 +361,14 @@ IN_PROC_BROWSER_TEST_F(TabManagerTest, InvalidOrEmptyURL) {
 // Makes sure that the TabDiscardDoneCB callback is called after
 // DiscardTabImpl() returns.
 IN_PROC_BROWSER_TEST_F(TabManagerTest, TabDiscardDoneCallback) {
-  // Open two tabs. Wait for the foreground one to load but do not wait for the
-  // background one.
-  content::WindowedNotificationObserver load1(
-      content::NOTIFICATION_NAV_ENTRY_COMMITTED,
-      content::NotificationService::AllSources());
-  OpenURLParams open1(GURL(chrome::kChromeUIAboutURL), content::Referrer(),
-                      WindowOpenDisposition::CURRENT_TAB,
-                      ui::PAGE_TRANSITION_TYPED, false);
-  browser()->OpenURL(open1);
-  load1.Wait();
+  // Open two tabs.
+  NavigateToURLWithDisposition(browser(), GURL(chrome::kChromeUIAboutURL),
+                               WindowOpenDisposition::CURRENT_TAB,
+                               ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
 
-  content::WindowedNotificationObserver load2(
-      content::NOTIFICATION_NAV_ENTRY_COMMITTED,
-      content::NotificationService::AllSources());
-  OpenURLParams open2(GURL(chrome::kChromeUICreditsURL), content::Referrer(),
-                      WindowOpenDisposition::NEW_BACKGROUND_TAB,
-                      ui::PAGE_TRANSITION_TYPED, false);
-  browser()->OpenURL(open2);
-  load2.Wait();
+  NavigateToURLWithDisposition(browser(), GURL(chrome::kChromeUICreditsURL),
+                               WindowOpenDisposition::NEW_BACKGROUND_TAB,
+                               ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
 
   ASSERT_EQ(2, tsm()->count());
 
@@ -601,26 +532,14 @@ IN_PROC_BROWSER_TEST_F(TabManagerTest, ProtectDevToolsTabsFromDiscarding) {
 }
 
 IN_PROC_BROWSER_TEST_F(TabManagerTest, AutoDiscardable) {
-  using content::WindowedNotificationObserver;
-
   // Get two tabs open.
-  WindowedNotificationObserver load1(
-      content::NOTIFICATION_NAV_ENTRY_COMMITTED,
-      content::NotificationService::AllSources());
-  OpenURLParams open1(GURL(chrome::kChromeUIAboutURL), content::Referrer(),
-                      WindowOpenDisposition::CURRENT_TAB,
-                      ui::PAGE_TRANSITION_TYPED, false);
-  browser()->OpenURL(open1);
-  load1.Wait();
+  NavigateToURLWithDisposition(browser(), GURL(chrome::kChromeUIAboutURL),
+                               WindowOpenDisposition::CURRENT_TAB,
+                               ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
 
-  WindowedNotificationObserver load2(
-      content::NOTIFICATION_NAV_ENTRY_COMMITTED,
-      content::NotificationService::AllSources());
-  OpenURLParams open2(GURL(chrome::kChromeUICreditsURL), content::Referrer(),
-                      WindowOpenDisposition::NEW_FOREGROUND_TAB,
-                      ui::PAGE_TRANSITION_TYPED, false);
-  browser()->OpenURL(open2);
-  load2.Wait();
+  NavigateToURLWithDisposition(browser(), GURL(chrome::kChromeUICreditsURL),
+                               WindowOpenDisposition::NEW_FOREGROUND_TAB,
+                               ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
   ASSERT_EQ(2, tsm()->count());
 
   // Set the auto-discardable state of the first tab to false.
@@ -1068,23 +987,13 @@ class TabManagerMemoryPressureTest : public TabManagerTest {
 // discard upon |MEMORY_PRESSURE_LEVEL_CRITICAL| event.
 IN_PROC_BROWSER_TEST_F(TabManagerMemoryPressureTest, OomPressureListener) {
   // Get two tabs open.
-  content::WindowedNotificationObserver load1(
-      content::NOTIFICATION_NAV_ENTRY_COMMITTED,
-      content::NotificationService::AllSources());
-  OpenURLParams open1(GURL(chrome::kChromeUIAboutURL), content::Referrer(),
-                      WindowOpenDisposition::CURRENT_TAB,
-                      ui::PAGE_TRANSITION_TYPED, false);
-  browser()->OpenURL(open1);
-  load1.Wait();
+  NavigateToURLWithDisposition(browser(), GURL(chrome::kChromeUIAboutURL),
+                               WindowOpenDisposition::CURRENT_TAB,
+                               ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
 
-  content::WindowedNotificationObserver load2(
-      content::NOTIFICATION_NAV_ENTRY_COMMITTED,
-      content::NotificationService::AllSources());
-  OpenURLParams open2(GURL(chrome::kChromeUICreditsURL), content::Referrer(),
-                      WindowOpenDisposition::NEW_FOREGROUND_TAB,
-                      ui::PAGE_TRANSITION_TYPED, false);
-  browser()->OpenURL(open2);
-  load2.Wait();
+  NavigateToURLWithDisposition(browser(), GURL(chrome::kChromeUICreditsURL),
+                               WindowOpenDisposition::NEW_FOREGROUND_TAB,
+                               ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
 
   ASSERT_EQ(tsm()->count(), 2);
 
@@ -1121,25 +1030,14 @@ IN_PROC_BROWSER_TEST_F(TabManagerMemoryPressureTest, OomPressureListener) {
 
 IN_PROC_BROWSER_TEST_F(TabManagerMemoryPressureTest,
                        RegisterMemoryPressureListener) {
-  // Open two tabs. Wait for the foreground one to load but do not wait for the
-  // background one.
-  content::WindowedNotificationObserver load1(
-      content::NOTIFICATION_NAV_ENTRY_COMMITTED,
-      content::NotificationService::AllSources());
-  OpenURLParams open1(GURL(chrome::kChromeUIAboutURL), content::Referrer(),
-                      WindowOpenDisposition::CURRENT_TAB,
-                      ui::PAGE_TRANSITION_TYPED, false);
-  browser()->OpenURL(open1);
-  load1.Wait();
+  // Open two tabs.
+  NavigateToURLWithDisposition(browser(), GURL(chrome::kChromeUIAboutURL),
+                               WindowOpenDisposition::CURRENT_TAB,
+                               ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
 
-  content::WindowedNotificationObserver load2(
-      content::NOTIFICATION_NAV_ENTRY_COMMITTED,
-      content::NotificationService::AllSources());
-  OpenURLParams open2(GURL(chrome::kChromeUICreditsURL), content::Referrer(),
-                      WindowOpenDisposition::NEW_BACKGROUND_TAB,
-                      ui::PAGE_TRANSITION_TYPED, false);
-  browser()->OpenURL(open2);
-  load2.Wait();
+  NavigateToURLWithDisposition(browser(), GURL(chrome::kChromeUICreditsURL),
+                               WindowOpenDisposition::NEW_BACKGROUND_TAB,
+                               ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
 
   ASSERT_EQ(2, tsm()->count());
   EXPECT_FALSE(IsTabDiscarded(GetWebContentsAt(0)));
@@ -1161,15 +1059,11 @@ IN_PROC_BROWSER_TEST_F(TabManagerMemoryPressureTest,
   EXPECT_FALSE(IsTabDiscarded(GetWebContentsAt(0)));
   EXPECT_TRUE(IsTabDiscarded(GetWebContentsAt(1)));
 
-  // Open another background tab.
-  content::WindowedNotificationObserver load3(
-      content::NOTIFICATION_NAV_ENTRY_COMMITTED,
-      content::NotificationService::AllSources());
-  OpenURLParams open3(GURL(chrome::kChromeUICreditsURL), content::Referrer(),
-                      WindowOpenDisposition::NEW_BACKGROUND_TAB,
-                      ui::PAGE_TRANSITION_TYPED, false);
-  browser()->OpenURL(open3);
-  load3.Wait();
+  // Open another background tab. Wait for navigation to commit, but do not wait
+  // for the load to finish as the tab might be discarded before that.
+  NavigateToURLWithDisposition(browser(), GURL(chrome::kChromeUICreditsURL),
+                               WindowOpenDisposition::NEW_BACKGROUND_TAB,
+                               ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
 
   ASSERT_EQ(3, tsm()->count());
 
