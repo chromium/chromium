@@ -22,6 +22,7 @@
 #include "components/media_router/browser/media_router_factory.h"
 #include "components/media_router/browser/media_routes_observer.h"
 #include "components/media_router/browser/media_sinks_observer.h"
+#include "components/media_router/common/media_sink.h"
 #include "components/media_router/common/media_source.h"
 #include "components/user_manager/user_manager.h"
 #include "content/public/browser/notification_service.h"
@@ -207,6 +208,13 @@ void CastConfigControllerMediaRouter::RequestDeviceRefresh() {
   devices_.clear();
 
   for (const media_router::MediaSink& sink : device_cache()->sinks()) {
+    // TODO(crbug.com/1154342): Remove this if-statement once the toolbar's Cast
+    // dialog no longer needs Meet sinks and they are disabled in the backend.
+    if (sink.IsMaybeCloudSink() &&
+        !base::FeatureList::IsEnabled(
+            media_router::kCastToMeetingFromCastDialog)) {
+      continue;
+    }
     ash::SinkAndRoute device;
     device.sink.id = sink.id();
     device.sink.name = sink.name();
