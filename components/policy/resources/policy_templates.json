@@ -24810,7 +24810,7 @@ If you disable this policy, web page scrolling to specific text fragments via UR
 
       The <ph name="ENTERPRISE_CONNECTOR_SERVICE_PROVIDER_FIELD">service_provider</ph> field identifies which analysis service provider the settings correspond to.
 
-      The <ph name="ENTERPRISE_CONNECTOR_ENTERPRISE_ID_FIELD">enterprise_id</ph> field identifies the enterprise with the service provider.  When the user is asked to sign in as part of setting up the <ph name="FILE_SYSTEM_ENTERPRISE_CONNECTOR">File System Enterprise Connector</ph>, only user accounts associated with this enterprise are permitted.
+      The <ph name="ENTERPRISE_CONNECTOR_ENTERPRISE_ID_FIELD">enterprise_id</ph> field is a unique ID for a partner service provider that identifies the customer's account with the service provider. When the user is asked to sign in as part of setting up the <ph name="FILE_SYSTEM_ENTERPRISE_CONNECTOR">File System Enterprise Connector</ph>, only user accounts associated with this customer's service provider account are permitted.
 
       This policy can only be set from the <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME">Google Admin console</ph>.'''
     },
