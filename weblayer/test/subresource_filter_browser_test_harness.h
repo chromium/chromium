@@ -38,6 +38,8 @@ class SubresourceFilterBrowserTest : public WebLayerBrowserTest {
   void SetRulesetWithRules(
       const std::vector<url_pattern_index::proto::UrlRule>& rules);
 
+  content::WebContents* web_contents();
+
 #if !defined(OS_ANDROID)
   // Installs a fake database manager so that the safe browsing activation
   // throttle will be created (WebLayer currently has a safe browsing database

@@ -13,6 +13,8 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "weblayer/browser/browser_process.h"
 #include "weblayer/browser/subresource_filter_client_impl.h"
+#include "weblayer/browser/tab_impl.h"
+#include "weblayer/shell/browser/shell.h"
 #include "weblayer/test/weblayer_browser_test_utils.h"
 
 namespace weblayer {
@@ -84,6 +86,10 @@ void SubresourceFilterBrowserTest::SetRulesetWithRules(
       BrowserProcess::GetInstance()->subresource_filter_ruleset_service());
   ASSERT_NO_FATAL_FAILURE(
       test_ruleset_publisher.SetRuleset(test_ruleset_pair.unindexed));
+}
+
+content::WebContents* SubresourceFilterBrowserTest::web_contents() {
+  return static_cast<TabImpl*>(shell()->tab())->web_contents();
 }
 
 #if !defined(OS_ANDROID)

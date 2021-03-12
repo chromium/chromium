@@ -6,8 +6,6 @@
 
 #include "base/bind.h"
 #include "base/callback.h"
-#include "base/strings/stringprintf.h"
-#include "base/strings/utf_string_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/subresource_filter/subresource_filter_browser_test_harness.h"
@@ -22,6 +20,7 @@
 #include "components/page_load_metrics/browser/observers/ad_metrics/ads_page_load_metrics_observer.h"
 #include "components/page_load_metrics/browser/observers/ad_metrics/frame_data.h"
 #include "components/page_load_metrics/browser/page_load_metrics_test_waiter.h"
+#include "components/subresource_filter/content/browser/ad_tagging_browser_test_utils.h"
 #include "components/subresource_filter/content/browser/subresource_filter_observer_test_utils.h"
 #include "components/subresource_filter/core/common/test_ruleset_utils.h"
 #include "components/ukm/content/source_url_recorder.h"
@@ -126,28 +125,6 @@ class AdTaggingBrowserTest : public SubresourceFilterBrowserTest {
     return browser()->tab_strip_model()->GetActiveWebContents();
   }
 
-  // Used for giving identifiers to frames that can easily be searched for
-  // with content::FrameMatchingPredicate.
-  std::string GetUniqueFrameName() {
-    return base::StringPrintf("frame_%d", frame_count_++);
-  }
-
-  // Create a frame that navigates via the src attribute. It's created by ad
-  // script. Returns after navigation has completed.
-  content::RenderFrameHost* CreateSrcFrameFromAdScript(
-      const content::ToRenderFrameHost& adapter,
-      const GURL& url) {
-    return CreateFrameImpl(adapter, url, true /* ad_script */);
-  }
-
-  // Create a frame that navigates via the src attribute. Returns after
-  // navigation has completed.
-  content::RenderFrameHost* CreateSrcFrame(
-      const content::ToRenderFrameHost& adapter,
-      const GURL& url) {
-    return CreateFrameImpl(adapter, url, false /* ad_script */);
-  }
-
   // Creates a frame and doc.writes the frame into it. Returns after
   // navigation has completed.
   content::RenderFrameHost* CreateDocWrittenFrame(
@@ -210,11 +187,6 @@ class AdTaggingBrowserTest : public SubresourceFilterBrowserTest {
   }
 
  private:
-  content::RenderFrameHost* CreateFrameImpl(
-      const content::ToRenderFrameHost& adapter,
-      const GURL& url,
-      bool ad_script);
-
   content::RenderFrameHost* CreateDocWrittenFrameImpl(
       const content::ToRenderFrameHost& adapter,
       bool ad_script);
@@ -227,30 +199,8 @@ class AdTaggingBrowserTest : public SubresourceFilterBrowserTest {
       const content::ToRenderFrameHost& adapter,
       bool ad_script);
 
-  uint32_t frame_count_ = 0;
-
   DISALLOW_COPY_AND_ASSIGN(AdTaggingBrowserTest);
 };
-
-content::RenderFrameHost* AdTaggingBrowserTest::CreateFrameImpl(
-    const content::ToRenderFrameHost& adapter,
-    const GURL& url,
-    bool ad_script) {
-  content::RenderFrameHost* rfh = adapter.render_frame_host();
-  std::string name = GetUniqueFrameName();
-  std::string script = base::StringPrintf(
-      "%s('%s','%s');", ad_script ? "createAdFrame" : "createFrame",
-      url.spec().c_str(), name.c_str());
-  content::WebContents* web_contents =
-      content::WebContents::FromRenderFrameHost(rfh);
-  content::TestNavigationObserver navigation_observer(web_contents, 1);
-  EXPECT_TRUE(content::ExecuteScript(rfh, script));
-  navigation_observer.Wait();
-  EXPECT_TRUE(navigation_observer.last_navigation_succeeded())
-      << navigation_observer.last_net_error_code();
-  return content::FrameMatchingPredicate(
-      web_contents, base::BindRepeating(&content::FrameMatchesName, name));
-}
 
 content::RenderFrameHost* AdTaggingBrowserTest::CreateDocWrittenFrameImpl(
     const content::ToRenderFrameHost& adapter,

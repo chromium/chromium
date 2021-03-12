@@ -221,6 +221,10 @@ void ContentRendererClientImpl::
   // (for both Chrome and WebLayer).
   blink::WebRuntimeFeatures::EnableWebShare(true);
 #endif
+
+  if (base::FeatureList::IsEnabled(subresource_filter::kAdTagging)) {
+    blink::WebRuntimeFeatures::EnableAdTagging(true);
+  }
 }
 
 bool ContentRendererClientImpl::IsPrefetchOnly(

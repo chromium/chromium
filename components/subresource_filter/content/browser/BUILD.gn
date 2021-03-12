@@ -79,6 +79,8 @@ static_library("browser") {
 static_library("test_support") {
   testonly = true
   sources = [
+    "ad_tagging_browser_test_utils.cc",
+    "ad_tagging_browser_test_utils.h",
     "async_document_subresource_filter_test_utils.cc",
     "async_document_subresource_filter_test_utils.h",
     "fake_safe_browsing_database_manager.cc",
