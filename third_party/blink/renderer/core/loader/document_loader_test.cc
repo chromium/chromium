@@ -280,7 +280,11 @@ TEST_F(DocumentLoaderTest, CommitsDeferredOnSameOriginNavigation) {
   EXPECT_TRUE(local_frame->GetDocument()->DeferredCompositorCommitIsAllowed());
 }
 
-TEST_F(DocumentLoaderTest, CommitsNotDeferredOnDifferentOriginNavigation) {
+TEST_F(DocumentLoaderTest,
+       CommitsNotDeferredOnDifferentOriginNavigationWithCrossOriginDisabled) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(features::kPaintHoldingCrossOrigin);
+
   const KURL& requestor_url =
       KURL(NullURL(), "https://www.example.com/foo.html");
   WebViewImpl* web_view_impl =
@@ -322,7 +326,11 @@ TEST_F(DocumentLoaderTest,
   EXPECT_TRUE(local_frame->GetDocument()->DeferredCompositorCommitIsAllowed());
 }
 
-TEST_F(DocumentLoaderTest, CommitsNotDeferredOnDifferentPortNavigation) {
+TEST_F(DocumentLoaderTest,
+       CommitsNotDeferredOnDifferentPortNavigationWithCrossOriginDisabled) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(features::kPaintHoldingCrossOrigin);
+
   const KURL& requestor_url =
       KURL(NullURL(), "https://www.example.com:8000/foo.html");
   WebViewImpl* web_view_impl =

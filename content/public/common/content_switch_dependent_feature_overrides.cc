@@ -10,6 +10,7 @@
 #include "services/network/public/cpp/features.h"
 #include "services/network/public/cpp/network_switches.h"
 #include "third_party/blink/public/common/features.h"
+#include "ui/gfx/switches.h"
 
 namespace content {
 
@@ -106,6 +107,10 @@ GetSwitchDependentFeatureOverrides(const base::CommandLine& command_line) {
       {network::switches::kUseFirstPartySet,
        std::cref(net::features::kFirstPartySets),
        base::FeatureList::OVERRIDE_ENABLE_FEATURE},
+
+      // Overrides for headless
+      {::switches::kHeadless, std::cref(blink::features::kPaintHolding),
+       base::FeatureList::OVERRIDE_DISABLE_FEATURE},
   };
 
   std::vector<base::FeatureList::FeatureOverrideInfo> overrides;

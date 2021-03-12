@@ -227,7 +227,10 @@ bool HeadlessContentMainDelegate::BasicStartupComplete(int* exit_code) {
   }
 
   // When running headless there is no need to suppress input until content
-  // is ready for display (because it isn't displayed to users).
+  // is ready for display (because it isn't displayed to users). Nor is it
+  // necessary to delay compositor commits in any way via PaintHolding,
+  // but we disable that feature based on the --headless switch. The code is
+  // in content/public/common/content_switch_dependent_feature_overrides.cc
   command_line->AppendSwitch(::blink::switches::kAllowPreCommitInput);
 
 #if defined(OS_WIN)
