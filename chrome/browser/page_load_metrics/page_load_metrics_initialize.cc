@@ -5,6 +5,7 @@
 #include "chrome/browser/page_load_metrics/page_load_metrics_initialize.h"
 
 #include <memory>
+#include <string>
 #include <utility>
 
 #include "base/bind.h"
@@ -68,6 +69,10 @@
 namespace chrome {
 
 namespace {
+
+std::string GetApplicationLocale() {
+  return g_browser_process->GetApplicationLocale();
+}
 
 class PageLoadMetricsEmbedder
     : public page_load_metrics::PageLoadMetricsEmbedderBase {
@@ -136,8 +141,7 @@ void PageLoadMetricsEmbedder::RegisterEmbedderObservers(
             tracker->GetWebContents(),
             HeavyAdServiceFactory::GetForBrowserContext(
                 tracker->GetWebContents()->GetBrowserContext()),
-            base::BindRepeating(&BrowserProcess::GetApplicationLocale,
-                                base::Unretained(g_browser_process)));
+            base::BindRepeating(&GetApplicationLocale));
     if (ads_observer)
       tracker->AddObserver(std::move(ads_observer));
 

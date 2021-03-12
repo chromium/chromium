@@ -119,6 +119,7 @@ test("weblayer_browsertests") {
     "//components/no_state_prefetch/browser",
     "//components/page_load_metrics/browser:browser",
     "//components/page_load_metrics/browser:test_support",
+    "//components/page_load_metrics/browser/observers/ad_metrics",
     "//components/permissions",
     "//components/prefs",
     "//components/security_interstitials/content:security_interstitial_page",

@@ -803,8 +803,6 @@ class AdsPageLoadMetricsObserverTest
   }
 
  private:
-  const std::string& application_locale() { return application_locale_; }
-
   // SubresourceFilterTestHarness::
   void AppendCustomNavigationThrottles(
       content::NavigationHandle* navigation_handle,
@@ -819,8 +817,7 @@ class AdsPageLoadMetricsObserverTest
   void RegisterObservers(page_load_metrics::PageLoadTracker* tracker) {
     auto observer = std::make_unique<AdsPageLoadMetricsObserver>(
         /*heavy_ad_service=*/nullptr,
-        base::BindRepeating(&AdsPageLoadMetricsObserverTest::application_locale,
-                            base::Unretained(this)),
+        base::BindRepeating([]() { return std::string("en-US"); }),
         clock_.get(), test_blocklist_.get());
     ads_observer_ = observer.get();
 
@@ -837,7 +834,6 @@ class AdsPageLoadMetricsObserverTest
     }
   }
 
-  std::string application_locale_ = "en-US";
   std::unique_ptr<HeavyAdBlocklist> test_blocklist_;
   base::HistogramTester histogram_tester_;
   ukm::TestAutoSetUkmRecorder test_ukm_recorder_;

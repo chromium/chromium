@@ -429,6 +429,7 @@ source_set("weblayer_lib_base") {
     "//components/omnibox/browser:browser",
     "//components/page_info",
     "//components/page_load_metrics/browser",
+    "//components/page_load_metrics/browser/observers/ad_metrics",
     "//components/page_load_metrics/renderer",
     "//components/password_manager/content/browser",
     "//components/payments/core",

@@ -44,7 +44,7 @@ class AdsPageLoadMetricsObserver
   using AggregateFrameData = ad_metrics::AggregateFrameData;
   using FrameTreeData = ad_metrics::FrameTreeData;
   using ResourceMimeType = ad_metrics::ResourceMimeType;
-  using ApplicationLocaleGetter = base::RepeatingCallback<const std::string&()>;
+  using ApplicationLocaleGetter = base::RepeatingCallback<std::string()>;
 
   // Helper class that generates a random amount of noise to apply to thresholds
   // for heavy ads. A different noise should be generated for each frame.
