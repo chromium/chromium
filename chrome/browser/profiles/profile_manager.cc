@@ -559,6 +559,17 @@ void ProfileManager::RemoveObserver(ProfileManagerObserver* observer) {
 Profile* ProfileManager::GetProfile(const base::FilePath& profile_dir) {
   TRACE_EVENT0("browser", "ProfileManager::GetProfile");
 
+  // If Epehemral Guest profile is enabled and OTR Guest profile is requested,
+  // deny it.
+  // This can specifically happen if user is browsing in OTR Guest mode and
+  // either enable Ephemeral Guest profile through flags and relaunches the
+  // browser, or restarts browser and finch enables Ephemeral Guest profile.
+  // crbug.com/1183755.
+  if (Profile::IsEphemeralGuestProfileEnabled() &&
+      profile_dir == user_data_dir().Append(chrome::kGuestProfileDir)) {
+    return nullptr;
+  }
+
   // If the profile is already loaded (e.g., chrome.exe launched twice), just
   // return it.
   Profile* profile = GetProfileByPath(profile_dir);
