@@ -6,7 +6,6 @@
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
-#include "base/metrics/histogram_macros.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/chromeos/policy/policy_oauth2_token_fetcher.h"
 #include "chrome/browser/net/system_network_context_manager.h"
@@ -21,14 +20,6 @@ namespace {
 // on a hosted domain.
 const char kHostedDomainKey[] = "hd";
 
-// UMA histogram names.
-const char kUMADelayPolicyTokenFetch[] =
-    "Enterprise.WildcardLoginCheck.DelayPolicyTokenFetch";
-const char kUMADelayUserInfoFetch[] =
-    "Enterprise.WildcardLoginCheck.DelayUserInfoFetch";
-const char kUMADelayTotal[] =
-    "Enterprise.WildcardLoginCheck.DelayTotal";
-
 }  // namespace
 
 WildcardLoginChecker::WildcardLoginChecker() {}
@@ -41,7 +32,6 @@ void WildcardLoginChecker::StartWithRefreshToken(
   CHECK(!token_fetcher_);
   CHECK(!user_info_fetcher_);
 
-  start_timestamp_ = base::Time::Now();
   callback_ = std::move(callback);
 
   token_fetcher_ = PolicyOAuth2TokenFetcher::CreateInstance();
@@ -58,7 +48,6 @@ void WildcardLoginChecker::StartWithAccessToken(const std::string& access_token,
   CHECK(!token_fetcher_);
   CHECK(!user_info_fetcher_);
 
-  start_timestamp_ = base::Time::Now();
   callback_ = std::move(callback);
 
   StartUserInfoFetcher(access_token);
@@ -66,14 +55,6 @@ void WildcardLoginChecker::StartWithAccessToken(const std::string& access_token,
 
 void WildcardLoginChecker::OnGetUserInfoSuccess(
     const base::DictionaryValue* response) {
-  if (!start_timestamp_.is_null()) {
-    base::Time now = base::Time::Now();
-    UMA_HISTOGRAM_MEDIUM_TIMES(kUMADelayUserInfoFetch,
-                               now - token_available_timestamp_);
-    UMA_HISTOGRAM_MEDIUM_TIMES(kUMADelayTotal,
-                               now - start_timestamp_);
-  }
-
   OnCheckCompleted(response->HasKey(kHostedDomainKey) ? RESULT_ALLOWED
                                                       : RESULT_BLOCKED);
 }
@@ -91,12 +72,6 @@ void WildcardLoginChecker::OnPolicyTokenFetched(
     LOG(ERROR) << "Failed to fetch policy token " << error.ToString();
     OnCheckCompleted(RESULT_FAILED);
     return;
-  }
-
-  if (!start_timestamp_.is_null()) {
-    token_available_timestamp_ = base::Time::Now();
-    UMA_HISTOGRAM_MEDIUM_TIMES(kUMADelayPolicyTokenFetch,
-                               token_available_timestamp_ - start_timestamp_);
   }
 
   token_fetcher_.reset();

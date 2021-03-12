@@ -1732,6 +1732,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Enterprise.WildcardLoginCheck.DelayPolicyTokenFetch"
     units="ms" expires_after="M77">
+  <obsolete>
+    Removed in M91 since the data is not monitored.
+  </obsolete>
   <owner>mnissler@chromium.org</owner>
   <summary>
     Delay incurred by the token fetching step of the wildcard login check.
@@ -1740,12 +1743,18 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Enterprise.WildcardLoginCheck.DelayTotal" units="ms"
     expires_after="M77">
+  <obsolete>
+    Removed in M91 since the data is not monitored.
+  </obsolete>
   <owner>mnissler@chromium.org</owner>
   <summary>Total delay incurred by the wildcard login check.</summary>
 </histogram>
 
 <histogram name="Enterprise.WildcardLoginCheck.DelayUserInfoFetch" units="ms"
     expires_after="M77">
+  <obsolete>
+    Removed in M91 since the data is not monitored.
+  </obsolete>
   <owner>mnissler@chromium.org</owner>
   <summary>
     Delay incurred by the user info fetching step of the wildcard login check.
