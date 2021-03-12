@@ -426,6 +426,16 @@ be describing additional metrics about the same event.
       https://goo.gl/tr1oTZ for a detailed explanation. In milliseconds.
     </summary>
   </metric>
+  <metric
+      name="SubFrame.LayoutInstability.AverageCumulativeShiftScore.SessionWindow.Gap5000ms">
+    <summary>
+      Measures the average cumulative layout shift (bit.ly/cls-explainer) that
+      has occurred in a session window, in the AMP subframe. The gap between two
+      consecutive shifts in a window is not bigger than 5000ms. This metric's
+      integral value is 100x the fractional cumulative layout shift score
+      described in the explainer.
+    </summary>
+  </metric>
   <metric name="SubFrame.LayoutInstability.CumulativeShiftScore">
     <summary>
       Measures the cumulative layout shift (bit.ly/lsm-explainer) that has
@@ -441,6 +451,44 @@ be describing additional metrics about the same event.
       occurred in the AMP subframe, before any user input or document scroll.
       This metric's integral value is 100x the fractional cumulative layout
       shift score described in the explainer.
+    </summary>
+  </metric>
+  <metric
+      name="SubFrame.LayoutInstability.MaxCumulativeShiftScore.SessionWindow.Gap1000ms">
+    <summary>
+      Measures the maximum cumulative layout shift (bit.ly/cls-explainer) that
+      has occurred in a session window, in the AMP subframe. The gap between two
+      consecutive shifts in a window is not bigger than 1000ms. This metric's
+      integral value is 100x the fractional cumulative layout shift score
+      described in the explainer.
+    </summary>
+  </metric>
+  <metric
+      name="SubFrame.LayoutInstability.MaxCumulativeShiftScore.SessionWindow.Gap1000ms.Max5000ms">
+    <summary>
+      Measures the maximum cumulative layout shift (bit.ly/cls-explainer) that
+      has occurred in a session window, in the AMP subframe. The gap between two
+      consecutive shifts in a window is not bigger than 1000ms and the maximum
+      window size is 5000ms. This metric's integral value is 100x the fractional
+      cumulative layout shift score described in the explainer.
+    </summary>
+  </metric>
+  <metric
+      name="SubFrame.LayoutInstability.MaxCumulativeShiftScore.SlidingWindow.Duration1000ms">
+    <summary>
+      Measures the maximum cumulative layout shift (bit.ly/cls-explainer) that
+      has occurred in a 1000ms sliding window, in the AMP subframe. This
+      metric's integral value is 100x the fractional cumulative layout shift
+      score described in the explainer.
+    </summary>
+  </metric>
+  <metric
+      name="SubFrame.LayoutInstability.MaxCumulativeShiftScore.SlidingWindow.Duration300ms">
+    <summary>
+      Measures the maximum cumulative layout shift (bit.ly/cls-explainer) that
+      has occurred in a 300ms sliding window, in the AMP subframe. This metric's
+      integral value is 100x the fractional cumulative layout shift score
+      described in the explainer.
     </summary>
   </metric>
   <metric name="SubFrame.LayoutStability.JankScore">
@@ -6871,6 +6919,16 @@ be describing additional metrics about the same event.
     metrics are recorded for history navigations, but not for same-document
     navigations.
   </summary>
+  <metric
+      name="AverageCumulativeShiftScoreAfterBackForwardCacheRestore.SessionWindow.Gap5000ms">
+    <summary>
+      Measures the average cumulative layout shift (bit.ly/cls-explainer) that
+      has occurred in a session window, after the page is restored from the
+      back-forward. The gap between two consecutive shifts in a window is not
+      bigger than 5000ms. This metric's integral value is 100x the fractional
+      cumulative layout shift score described in the explainer.
+    </summary>
+  </metric>
   <metric name="BackForwardCache.BlocklistedFeatures"
       enum="WebSchedulerTrackedFeature">
     <summary>
@@ -6951,6 +7009,45 @@ be describing additional metrics about the same event.
       Bitmask of features used by the main frames of the previous page load. See
       blink::SchedulingPolicy::Feature for the meaning for the individual
       features.
+    </summary>
+  </metric>
+  <metric
+      name="MaxCumulativeShiftScoreAfterBackForwardCacheRestore.SessionWindow.Gap1000ms">
+    <summary>
+      Measures the maximum cumulative layout shift (bit.ly/cls-explainer) that
+      has occurred in a session window, after the page is restored from the
+      back-forward. The gap between two consecutive shifts in a window is not
+      bigger than 1000ms. This metric's integral value is 100x the fractional
+      cumulative layout shift score described in the explainer.
+    </summary>
+  </metric>
+  <metric
+      name="MaxCumulativeShiftScoreAfterBackForwardCacheRestore.SessionWindow.Gap1000ms.Max5000ms">
+    <summary>
+      Measures the maximum cumulative layout shift (bit.ly/cls-explainer) that
+      has occurred in a session window, after the page is restored from the
+      back-forward. The gap between two consecutive shifts in a window is not
+      bigger than 1000ms and the maximum window size is 5000ms. This metric's
+      integral value is 100x the fractional cumulative layout shift score
+      described in the explainer.
+    </summary>
+  </metric>
+  <metric
+      name="MaxCumulativeShiftScoreAfterBackForwardCacheRestore.SlidingWindow.Duration1000ms">
+    <summary>
+      Measures the maximum cumulative layout shift (bit.ly/cls-explainer) that
+      has occurred in a 1000ms sliding window, after the page is restored from
+      the back-forward. This metric's integral value is 100x the fractional
+      cumulative layout shift score described in the explainer.
+    </summary>
+  </metric>
+  <metric
+      name="MaxCumulativeShiftScoreAfterBackForwardCacheRestore.SlidingWindow.Duration300ms">
+    <summary>
+      Measures the maximum cumulative layout shift (bit.ly/cls-explainer) that
+      has occurred in a 300ms sliding window, after the page is restored from
+      the back-forward. This metric's integral value is 100x the fractional
+      cumulative layout shift score described in the explainer.
     </summary>
   </metric>
   <metric name="NavigatedToTheMostRecentEntryForDocument">

@@ -454,3 +454,128 @@ IN_PROC_BROWSER_TEST_F(
         url_a, "ThirdRequestAnimationFrameAfterBackForwardCacheRestore", 1);
   }
 }
+
+IN_PROC_BROWSER_TEST_F(BackForwardCachePageLoadMetricsObserverBrowserTest,
+                       LayoutShiftNormalization_AfterBackForwardCacheRestore) {
+  Start();
+
+  const char path[] = "/layout-instability/simple-block-movement.html";
+  GURL url_a(embedded_test_server()->GetURL("a.com", path));
+  GURL url_b(embedded_test_server()->GetURL("b.com", "/title1.html"));
+
+  // Navigate to A.
+  {
+    auto waiter = CreatePageLoadMetricsTestWaiter();
+    waiter->AddPageExpectation(
+        page_load_metrics::PageLoadMetricsTestWaiter::TimingField::kFirstPaint);
+    waiter->AddPageExpectation(page_load_metrics::PageLoadMetricsTestWaiter::
+                                   TimingField::kLayoutShift);
+    EXPECT_TRUE(ui_test_utils::NavigateToURL(browser(), url_a));
+    waiter->Wait();
+  }
+
+  content::RenderFrameHost* rfh_a = top_frame_host();
+
+  // Navigate to B.
+  EXPECT_TRUE(ui_test_utils::NavigateToURL(browser(), url_b));
+  EXPECT_TRUE(rfh_a->IsInBackForwardCache());
+
+  // Go back to A.
+  double next_score;
+  {
+    auto waiter = CreatePageLoadMetricsTestWaiter();
+    waiter->AddPageExpectation(
+        page_load_metrics::PageLoadMetricsTestWaiter::TimingField::
+            kFirstPaintAfterBackForwardCacheRestore);
+    waiter->AddPageExpectation(page_load_metrics::PageLoadMetricsTestWaiter::
+                                   TimingField::kLayoutShift);
+    web_contents()->GetController().GoBack();
+    EXPECT_TRUE(WaitForLoadStop(web_contents()));
+    EXPECT_EQ(rfh_a, top_frame_host());
+    EXPECT_FALSE(rfh_a->IsInBackForwardCache());
+
+    base::ListValue expectations =
+        EvalJs(web_contents(), "cls_run_tests").ExtractList();
+    next_score = EvalJs(web_contents(),
+                        R"((async() => {
+const shifter = document.querySelector('#shifter');
+const currentTop =
+  parseInt(getComputedStyle(shifter).getPropertyValue('top'), 10);
+// With too big newTop (e.g., 320), the calculated score and the actual score
+// can differ probably due to the window height. Use 300 here.
+const newTop = 300;
+shifter.style.top = newTop + 'px';
+const score = computeExpectedScore(
+    300 * (200 + newTop - currentTop), newTop - currentTop);
+return score;
+})())")
+                     .ExtractDouble();
+    waiter->Wait();
+  }
+
+  // The RenderFrameHost for the page B was likely in the back-forward cache
+  // just after the history navigation, but now this might be evicted due to
+  // outstanding-network request.
+  //
+  // TODO(hajimehoshi): This is not 100% sure. Evict B explicitly?
+
+  // Navigate to B again.
+  EXPECT_TRUE(ui_test_utils::NavigateToURL(browser(), url_b));
+  EXPECT_TRUE(rfh_a->IsInBackForwardCache());
+
+  ExpectMetricValueForUrl(url_a,
+                          "CumulativeShiftScoreAfterBackForwardCacheRestore",
+                          page_load_metrics::LayoutShiftUkmValue(next_score));
+  ExpectMetricValueForUrl(url_a,
+                          "AverageCumulativeShiftScoreAfterBackForwardCacheRest"
+                          "ore.SessionWindow.Gap5000ms",
+                          page_load_metrics::LayoutShiftUkmValue(next_score));
+  ExpectMetricValueForUrl(url_a,
+                          "MaxCumulativeShiftScoreAfterBackForwardCacheRestore."
+                          "SessionWindow.Gap1000ms",
+                          page_load_metrics::LayoutShiftUkmValue(next_score));
+  ExpectMetricValueForUrl(url_a,
+                          "MaxCumulativeShiftScoreAfterBackForwardCacheRestore."
+                          "SessionWindow.Gap1000ms.Max5000ms",
+                          page_load_metrics::LayoutShiftUkmValue(next_score));
+  ExpectMetricValueForUrl(url_a,
+                          "MaxCumulativeShiftScoreAfterBackForwardCacheRestore."
+                          "SlidingWindow.Duration1000ms",
+                          page_load_metrics::LayoutShiftUkmValue(next_score));
+  ExpectMetricValueForUrl(url_a,
+                          "MaxCumulativeShiftScoreAfterBackForwardCacheRestore."
+                          "SlidingWindow.Duration1000ms",
+                          page_load_metrics::LayoutShiftUkmValue(next_score));
+  // Go back to A again.
+  web_contents()->GetController().GoBack();
+  EXPECT_TRUE(WaitForLoadStop(web_contents()));
+  EXPECT_EQ(rfh_a, top_frame_host());
+  EXPECT_FALSE(rfh_a->IsInBackForwardCache());
+
+  // Navigate to B again.
+  EXPECT_TRUE(ui_test_utils::NavigateToURL(browser(), url_b));
+  EXPECT_TRUE(rfh_a->IsInBackForwardCache());
+
+  ExpectMetricCountForUrl(
+      url_a, "CumulativeShiftScoreAfterBackForwardCacheRestore", 2);
+  ExpectMetricCountForUrl(url_a,
+                          "AverageCumulativeShiftScoreAfterBackForwardCacheRest"
+                          "ore.SessionWindow.Gap5000ms",
+                          2);
+  ExpectMetricCountForUrl(url_a,
+                          "MaxCumulativeShiftScoreAfterBackForwardCacheRestore."
+                          "SessionWindow.Gap1000ms",
+                          2);
+  ExpectMetricCountForUrl(url_a,
+                          "MaxCumulativeShiftScoreAfterBackForwardCacheRestore."
+                          "SessionWindow.Gap1000ms.Max5000ms",
+                          2);
+  ExpectMetricCountForUrl(url_a,
+                          "MaxCumulativeShiftScoreAfterBackForwardCacheRestore."
+                          "SlidingWindow.Duration1000ms",
+                          2);
+  ExpectMetricCountForUrl(url_a,
+                          "MaxCumulativeShiftScoreAfterBackForwardCacheRestore."
+                          "SlidingWindow.Duration1000ms",
+                          2);
+}

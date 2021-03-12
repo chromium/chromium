@@ -9,6 +9,7 @@
 #include <memory>
 
 #include "base/macros.h"
+#include "components/page_load_metrics/browser/layout_shift_normalization.h"
 #include "components/page_load_metrics/browser/page_load_metrics_observer.h"
 #include "services/metrics/public/cpp/ukm_source.h"
 
@@ -103,6 +104,7 @@ class AMPPageLoadMetricsObserver
     // Performance metrics observed in the AMP iframe.
     page_load_metrics::mojom::PageLoadTimingPtr timing;
     page_load_metrics::PageRenderData render_data;
+    page_load_metrics::LayoutShiftNormalization layout_shift_normalization;
 
     // Whether an AMP document was loaded, based on observed
     // LoadingBehaviorFlags for this frame.

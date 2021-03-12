@@ -1000,33 +1000,29 @@ void UkmPageLoadMetricsObserver::ReportLayoutStability() {
                   .GetMainFrameRenderData()
                   .layout_shift_score_before_input_or_scroll));
   // Record CLS normalization UKM.
+  const page_load_metrics::NormalizedCLSData& normalized_cls_data =
+      GetDelegate().GetNormalizedCLSData(
+          page_load_metrics::PageLoadMetricsObserverDelegate::BfcacheStrategy::
+              ACCUMULATE);
   if (base::FeatureList::IsEnabled(kLayoutShiftNormalizationRecordUKM) &&
-      !GetDelegate().GetNormalizedCLSData().data_tainted) {
+      !normalized_cls_data.data_tainted) {
     builder
         .SetLayoutInstability_MaxCumulativeShiftScore_SessionWindow_Gap1000ms(
             page_load_metrics::LayoutShiftUkmValue(
-                GetDelegate()
-                    .GetNormalizedCLSData()
-                    .session_windows_gap1000ms_maxMax_max_cls))
+                normalized_cls_data.session_windows_gap1000ms_maxMax_max_cls))
         .SetLayoutInstability_MaxCumulativeShiftScore_SessionWindow_Gap1000ms_Max5000ms(
             page_load_metrics::LayoutShiftUkmValue(
-                GetDelegate()
-                    .GetNormalizedCLSData()
+                normalized_cls_data
                     .session_windows_gap1000ms_max5000ms_max_cls))
         .SetLayoutInstability_MaxCumulativeShiftScore_SlidingWindow_Duration1000ms(
             page_load_metrics::LayoutShiftUkmValue(
-                GetDelegate()
-                    .GetNormalizedCLSData()
-                    .sliding_windows_duration1000ms_max_cls))
+                normalized_cls_data.sliding_windows_duration1000ms_max_cls))
         .SetLayoutInstability_MaxCumulativeShiftScore_SlidingWindow_Duration300ms(
             page_load_metrics::LayoutShiftUkmValue(
-                GetDelegate()
-                    .GetNormalizedCLSData()
-                    .sliding_windows_duration300ms_max_cls))
+                normalized_cls_data.sliding_windows_duration300ms_max_cls))
         .SetLayoutInstability_AverageCumulativeShiftScore_SessionWindow_Gap5000ms(
             page_load_metrics::LayoutShiftUkmValue(
-                GetDelegate()
-                    .GetNormalizedCLSData()
+                normalized_cls_data
                     .session_windows_gap5000ms_maxMax_average_cls));
   }
   builder.Record(ukm::UkmRecorder::Get());

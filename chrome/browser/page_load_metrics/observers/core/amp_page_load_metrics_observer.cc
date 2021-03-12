@@ -197,6 +197,10 @@ void AMPPageLoadMetricsObserver::OnSubFrameRenderDataUpdate(
   it->second.render_data.layout_shift_score += render_data.layout_shift_delta;
   it->second.render_data.layout_shift_score_before_input_or_scroll +=
       render_data.layout_shift_delta_before_input_or_scroll;
+
+  it->second.layout_shift_normalization.AddNewLayoutShifts(
+      render_data.new_layout_shifts, base::TimeTicks::Now(),
+      it->second.render_data.layout_shift_score);
 }
 
 void AMPPageLoadMetricsObserver::OnComplete(
@@ -451,6 +455,29 @@ void AMPPageLoadMetricsObserver::MaybeRecordAmpDocumentMetrics() {
       .SetSubFrame_LayoutInstability_CumulativeShiftScore_BeforeInputOrScroll(
           static_cast<int>(
               roundf(clamped_shift_score_before_input_or_scroll * 100.0f)));
+
+  const page_load_metrics::NormalizedCLSData& normalized_cls_data =
+      subframe_info.layout_shift_normalization.normalized_cls_data();
+  if (!normalized_cls_data.data_tainted) {
+    builder
+        .SetSubFrame_LayoutInstability_AverageCumulativeShiftScore_SessionWindow_Gap5000ms(
+            page_load_metrics::LayoutShiftUkmValue(
+                normalized_cls_data
+                    .session_windows_gap5000ms_maxMax_average_cls))
+        .SetSubFrame_LayoutInstability_MaxCumulativeShiftScore_SessionWindow_Gap1000ms(
+            page_load_metrics::LayoutShiftUkmValue(
+                normalized_cls_data.session_windows_gap1000ms_maxMax_max_cls))
+        .SetSubFrame_LayoutInstability_MaxCumulativeShiftScore_SessionWindow_Gap1000ms_Max5000ms(
+            page_load_metrics::LayoutShiftUkmValue(
+                normalized_cls_data
+                    .session_windows_gap1000ms_max5000ms_max_cls))
+        .SetSubFrame_LayoutInstability_MaxCumulativeShiftScore_SlidingWindow_Duration300ms(
+            page_load_metrics::LayoutShiftUkmValue(
+                normalized_cls_data.sliding_windows_duration300ms_max_cls))
+        .SetSubFrame_LayoutInstability_MaxCumulativeShiftScore_SlidingWindow_Duration1000ms(
+            page_load_metrics::LayoutShiftUkmValue(
+                normalized_cls_data.sliding_windows_duration1000ms_max_cls));
+  }
 
   // For UMA, report (shift_score * 10) an an int in the range [0,100].
   int32_t uma_value = static_cast<int>(roundf(clamped_shift_score * 10.0f));

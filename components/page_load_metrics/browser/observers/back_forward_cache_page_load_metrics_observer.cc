@@ -228,6 +228,27 @@ void BackForwardCachePageLoadMetricsObserver::
       GetLastUkmSourceIdForBackForwardCacheRestore());
   builder.SetCumulativeShiftScoreAfterBackForwardCacheRestore(
       page_load_metrics::LayoutShiftUkmValue(layout_shift_score));
+  page_load_metrics::NormalizedCLSData normalized_cls_data =
+      GetDelegate().GetNormalizedCLSData(
+          page_load_metrics::PageLoadMetricsObserverDelegate::BfcacheStrategy::
+              RESET);
+  builder
+      .SetAverageCumulativeShiftScoreAfterBackForwardCacheRestore_SessionWindow_Gap5000ms(
+          page_load_metrics::LayoutShiftUkmValue(
+              normalized_cls_data.session_windows_gap5000ms_maxMax_average_cls))
+      .SetMaxCumulativeShiftScoreAfterBackForwardCacheRestore_SessionWindow_Gap1000ms(
+          page_load_metrics::LayoutShiftUkmValue(
+              normalized_cls_data.session_windows_gap1000ms_maxMax_max_cls))
+      .SetMaxCumulativeShiftScoreAfterBackForwardCacheRestore_SessionWindow_Gap1000ms_Max5000ms(
+          page_load_metrics::LayoutShiftUkmValue(
+              normalized_cls_data.session_windows_gap1000ms_max5000ms_max_cls))
+      .SetMaxCumulativeShiftScoreAfterBackForwardCacheRestore_SlidingWindow_Duration1000ms(
+          page_load_metrics::LayoutShiftUkmValue(
+              normalized_cls_data.sliding_windows_duration1000ms_max_cls))
+      .SetMaxCumulativeShiftScoreAfterBackForwardCacheRestore_SlidingWindow_Duration300ms(
+          page_load_metrics::LayoutShiftUkmValue(
+              normalized_cls_data.sliding_windows_duration300ms_max_cls));
+
   builder.Record(ukm::UkmRecorder::Get());
 
   last_main_frame_layout_shift_score_ =

@@ -914,8 +914,9 @@ const PageRenderData& PageLoadTracker::GetPageRenderData() const {
   return metrics_update_dispatcher_.page_render_data();
 }
 
-const NormalizedCLSData& PageLoadTracker::GetNormalizedCLSData() const {
-  return metrics_update_dispatcher_.normalized_cls_data();
+const NormalizedCLSData& PageLoadTracker::GetNormalizedCLSData(
+    BfcacheStrategy bfcache_strategy) const {
+  return metrics_update_dispatcher_.normalized_cls_data(bfcache_strategy);
 }
 
 const mojom::InputTiming& PageLoadTracker::GetPageInputTiming() const {
@@ -964,7 +965,7 @@ void PageLoadTracker::OnEnterBackForwardCache() {
   // entering BackForwardCache on navigation.
   INVOKE_AND_PRUNE_OBSERVERS(observers_, OnEnterBackForwardCache,
                              metrics_update_dispatcher_.timing());
-
+  metrics_update_dispatcher_.UpdateLayoutShiftNormalizationForBfcache();
   if (GetWebContents()->GetVisibility() == content::Visibility::VISIBLE) {
     PageHidden();
   }
