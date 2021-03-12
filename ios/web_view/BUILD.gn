@@ -417,6 +417,7 @@ test("ios_web_view_unittests") {
     "internal/cwv_preview_element_info_unittest.mm",
     "internal/cwv_ssl_status_unittest.mm",
     "internal/cwv_web_view_configuration_unittest.mm",
+    "internal/cwv_web_view_unittest.mm",
     "internal/metrics/cwv_metrics_provider_unittest.mm",
     "internal/passwords/cwv_password_unittest.mm",
     "internal/passwords/web_view_password_manager_client_unittest.mm",

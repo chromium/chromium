@@ -37,8 +37,6 @@
 #import "ios/web/public/ui/crw_web_view_scroll_view_proxy.h"
 #import "ios/web/public/web_client.h"
 #import "ios/web/public/web_state.h"
-#import "ios/web/public/web_state_delegate_bridge.h"
-#import "ios/web/public/web_state_observer_bridge.h"
 #import "ios/web/public/web_view_only/wk_web_view_configuration_util.h"
 #include "ios/web_view/internal/app/application_context.h"
 #import "ios/web_view/internal/autofill/cwv_autofill_controller_internal.h"
@@ -110,7 +108,7 @@ class WebViewHolder : public web::WebStateUserData<WebViewHolder> {
 WEB_STATE_USER_DATA_KEY_IMPL(WebViewHolder)
 }  // namespace
 
-@interface CWVWebView ()<CRWWebStateDelegate, CRWWebStateObserver> {
+@interface CWVWebView () {
   CWVWebViewConfiguration* _configuration;
   std::unique_ptr<web::WebState> _webState;
   std::unique_ptr<web::WebStateDelegateBridge> _webStateDelegate;
@@ -595,6 +593,15 @@ BOOL gChromeLongPressAndForceTouchHandlingEnabled = YES;
   if ([_UIDelegate respondsToSelector:@selector(webView:didLoadFavicons:)]) {
     [_UIDelegate webView:self
          didLoadFavicons:[CWVFavicon faviconsFromFaviconURLs:candidates]];
+  }
+}
+
+- (id<CRWResponderInputView>)webStateInputViewProvider:
+    (web::WebState*)webState {
+  if (self.inputAccessoryView != nil) {
+    return self;
+  } else {
+    return nil;
   }
 }
 

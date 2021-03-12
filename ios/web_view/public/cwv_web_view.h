@@ -131,6 +131,17 @@ CWV_EXPORT
 // CWVWebViewConfiguration instance is initialized.
 @property(nonatomic, class) BOOL chromeLongPressAndForceTouchHandlingEnabled;
 
+// Set this to customize the underlying WKWebView's inputAccessoryView. Setting
+// to nil means to use the WKWebView's default inputAccessoryView instead.
+//
+// In order to be displayed properly, this UIView must:
+// - Set |translatesAutoresizingMaskIntoConstraints| to |NO|.
+// - Return a non-zero CGSize in |intrinsicContentSize|.
+//
+// Explicitly redeclared this property to allow customization according to
+// https://developer.apple.com/documentation/uikit/uiresponder/1621119-inputaccessoryview?language=objc
+@property(nonatomic, strong, nullable) UIView* inputAccessoryView;
+
 // The User Agent product string used to build the full User Agent.
 + (NSString*)userAgentProduct;
 
