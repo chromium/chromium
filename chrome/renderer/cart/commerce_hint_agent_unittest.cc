@@ -4,7 +4,9 @@
 
 #include "chrome/renderer/cart/commerce_hint_agent.h"
 
+#include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
+#include "components/search/ntp_features.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 
@@ -100,7 +102,24 @@ const char* kNotPurchaseText[] = {
   "replace order",
   "Pay nowadays",
 };
+
+const char* kSkipText[] = {
+  "Skipped",
+  "A skipped product",
+  "萬國碼",
+  "一個萬國碼產品",
+};
+
+const char* kNotSkipText[] = {
+  "",
+  "A normal product",
+};
 // clang-format on
+
+// Cannot use \b, or non-alphabetical words would fail.
+const char kSkipPattern[] = "(^|\\W)(?i)(skipped|萬國碼)(\\W|$)";
+std::map<std::string, std::string> kSkipParams = {
+    {"product-skip-pattern", kSkipPattern}};
 
 }  // namespace
 
@@ -148,6 +167,19 @@ TEST(CommerceHintAgentTest, IsPurchaseByForm) {
   }
   for (auto* str : kNotPurchaseText) {
     EXPECT_FALSE(CommerceHintAgent::IsPurchase(str)) << str;
+  }
+}
+
+TEST(CommerceHintAgentTest, ShouldSkip) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeatureWithParameters(
+      ntp_features::kNtpChromeCartModule, kSkipParams);
+
+  for (auto* str : kSkipText) {
+    EXPECT_TRUE(CommerceHintAgent::ShouldSkip(str)) << str;
+  }
+  for (auto* str : kNotSkipText) {
+    EXPECT_FALSE(CommerceHintAgent::ShouldSkip(str)) << str;
   }
 }
 
@@ -203,6 +235,23 @@ float BenchmarkIsPurchase(base::StringPiece str) {
   return elapsed_us;
 }
 
+float BenchmarkShouldSkip(base::StringPiece str) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeatureWithParameters(
+      ntp_features::kNtpChromeCartModule, kSkipParams);
+
+  const base::TimeTicks now = base::TimeTicks::Now();
+  for (int i = 0; i < kTestIterations; ++i) {
+    CommerceHintAgent::ShouldSkip(str);
+  }
+  const base::TimeTicks end = base::TimeTicks::Now();
+  float elapsed_us =
+      static_cast<float>((end - now).InMicroseconds()) / kTestIterations;
+  LOG(INFO) << "ShouldSkip(" << str.size() << " chars) took: " << elapsed_us
+            << " µs";
+  return elapsed_us;
+}
+
 // TSAN builds are 20~50X slower than Release build.
 #if defined(THREAD_SANITIZER) || defined(ADDRESS_SANITIZER) || \
     defined(MEMORY_SANITIZER)
@@ -245,6 +294,10 @@ TEST(CommerceHintAgentTest, MAYBE_RegexBenchmark) {
     elapsed_us = BenchmarkIsPurchase(str);
     // Typical value is ~0.1us.
     EXPECT_LT(elapsed_us, 1.0 * slow_factor);
+
+    elapsed_us = BenchmarkShouldSkip(str);
+    // Typical value is ~10us.
+    EXPECT_LT(elapsed_us, 50.0 * slow_factor);
 
     str += str;
     str += str;

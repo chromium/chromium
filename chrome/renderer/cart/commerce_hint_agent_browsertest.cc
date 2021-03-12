@@ -118,8 +118,9 @@ std::unique_ptr<net::test_server::HttpResponse> BasicResponse(
 class CommerceHintAgentTest : public PlatformBrowserTest {
  public:
   void SetUpInProcessBrowserTestFixture() override {
-    scoped_feature_list_.InitAndEnableFeature(
-        ntp_features::kNtpChromeCartModule);
+    scoped_feature_list_.InitAndEnableFeatureWithParameters(
+        ntp_features::kNtpChromeCartModule,
+        {{"product-skip-pattern", "(^|\\W)(?i)(skipped)(\\W|$)"}});
   }
 
   void SetUpOnMainThread() override {
