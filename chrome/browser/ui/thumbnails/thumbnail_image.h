@@ -12,6 +12,7 @@
 
 #include "base/callback.h"
 #include "base/containers/flat_set.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
@@ -116,7 +117,7 @@ class ThumbnailImage : public base::RefCounted<ThumbnailImage> {
 
    private:
     friend class ThumbnailImage;
-    ThumbnailImage* thumbnail_ = nullptr;
+    CheckedPtr<ThumbnailImage> thumbnail_ = nullptr;
   };
 
   explicit ThumbnailImage(Delegate* delegate);
@@ -191,7 +192,7 @@ class ThumbnailImage : public base::RefCounted<ThumbnailImage> {
 
   void HandleSubscriptionDestroyed(Subscription* subscription);
 
-  Delegate* delegate_;
+  CheckedPtr<Delegate> delegate_;
 
   // This is a scoped_refptr to immutable data. Once set, the wrapped
   // data must not be modified; it is referenced by other threads.

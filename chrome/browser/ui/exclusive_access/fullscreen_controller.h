@@ -8,6 +8,7 @@
 #include <set>
 
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "chrome/browser/ui/exclusive_access/exclusive_access_controller_base.h"
@@ -199,7 +200,7 @@ class FullscreenController : public ExclusiveAccessControllerBase {
 
   // Set in OnTabDeactivated(). Used to see if we're in the middle of
   // deactivation of a tab.
-  content::WebContents* deactivated_contents_ = nullptr;
+  CheckedPtr<content::WebContents> deactivated_contents_ = nullptr;
 
   // Used in testing to set the state to tab fullscreen.
   bool is_tab_fullscreen_for_testing_ = false;

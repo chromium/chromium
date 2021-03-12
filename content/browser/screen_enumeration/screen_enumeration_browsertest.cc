@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "base/command_line.h"
+#include "base/memory/checked_ptr.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/strings/string_number_conversions.h"
 #include "build/build_config.h"
@@ -159,9 +160,9 @@ class FakeScreenEnumerationTest : public ScreenEnumerationTest {
   Shell* test_shell() { return test_shell_; }
 
  private:
-  display::Screen* original_screen_ = nullptr;
+  CheckedPtr<display::Screen> original_screen_ = nullptr;
   display::ScreenBase screen_;
-  Shell* test_shell_ = nullptr;
+  CheckedPtr<Shell> test_shell_ = nullptr;
 };
 
 // TODO(crbug.com/1042990): Windows crashes static casting to ScreenWin.

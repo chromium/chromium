@@ -10,6 +10,7 @@
 #include "base/callback_helpers.h"
 #include "base/compiler_specific.h"
 #include "base/location.h"
+#include "base/memory/checked_ptr.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/single_thread_task_runner.h"
 #include "base/strings/string_number_conversions.h"
@@ -74,7 +75,7 @@ class URLRequestJob::URLRequestJobSourceStream : public SourceStream {
   // It is safe to keep a raw pointer because |job_| owns the last stream which
   // indirectly owns |this|. Therefore, |job_| will not be destroyed when |this|
   // is alive.
-  URLRequestJob* const job_;
+  const CheckedPtr<URLRequestJob> job_;
 
   DISALLOW_COPY_AND_ASSIGN(URLRequestJobSourceStream);
 };

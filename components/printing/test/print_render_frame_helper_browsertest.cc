@@ -11,6 +11,7 @@
 #include <utility>
 
 #include "base/command_line.h"
+#include "base/memory/checked_ptr.h"
 #include "base/run_loop.h"
 #include "base/stl_util.h"
 #include "base/strings/string_piece.h"
@@ -476,7 +477,7 @@ class TestPrintManagerHost
   uint32_t number_pages_ = 0;
   bool is_setup_scripted_print_preview_ = false;
   bool is_printed_ = false;
-  MockPrinter* printer_;
+  CheckedPtr<MockPrinter> printer_;
 #if BUILDFLAG(ENABLE_PRINT_PREVIEW)
   FakePrintPreviewUI* preview_ui_;
 #endif

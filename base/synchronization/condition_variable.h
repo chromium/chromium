@@ -62,6 +62,8 @@
 #ifndef BASE_SYNCHRONIZATION_CONDITION_VARIABLE_H_
 #define BASE_SYNCHRONIZATION_CONDITION_VARIABLE_H_
 
+#include "base/memory/checked_ptr.h"
+
 #if defined(OS_POSIX) || defined(OS_FUCHSIA)
 #include <pthread.h>
 #endif
@@ -116,7 +118,7 @@ class BASE_EXPORT ConditionVariable {
   CHROME_SRWLOCK* const srwlock_;
 #elif defined(OS_POSIX) || defined(OS_FUCHSIA)
   pthread_cond_t condition_;
-  pthread_mutex_t* user_mutex_;
+  CheckedPtr<pthread_mutex_t> user_mutex_;
 #endif
 
 #if DCHECK_IS_ON()

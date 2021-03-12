@@ -7,6 +7,7 @@
 
 #include "base/cancelable_callback.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/time/time.h"
 #include "components/policy/core/common/policy_details.h"
@@ -56,8 +57,8 @@ class POLICY_EXPORT PolicyStatisticsCollector {
 
   GetChromePolicyDetailsCallback get_details_;
   Schema chrome_schema_;
-  PolicyService* policy_service_;
-  PrefService* prefs_;
+  CheckedPtr<PolicyService> policy_service_;
+  CheckedPtr<PrefService> prefs_;
 
   base::CancelableOnceClosure update_callback_;
 

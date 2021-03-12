@@ -10,6 +10,7 @@
 
 #include "base/compiler_specific.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "ui/events/gesture_detection/gesture_event_data_packet.h"
 #include "ui/events/gesture_detection/gesture_provider.h"
 #include "ui/events/gesture_detection/touch_disposition_gesture_filter.h"
@@ -66,7 +67,7 @@ class GESTURE_DETECTION_EXPORT FilteredGestureProvider final
   // TouchDispositionGestureFilterClient implementation.
   void ForwardGestureEvent(const ui::GestureEventData& event) override;
 
-  GestureProviderClient* const client_;
+  const CheckedPtr<GestureProviderClient> client_;
 
   std::unique_ptr<ui::GestureProvider> gesture_provider_;
   ui::TouchDispositionGestureFilter gesture_filter_;

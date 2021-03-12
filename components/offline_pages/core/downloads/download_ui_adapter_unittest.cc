@@ -16,6 +16,7 @@
 #include "base/callback.h"
 #include "base/callback_helpers.h"
 #include "base/files/file_path.h"
+#include "base/memory/checked_ptr.h"
 #include "base/run_loop.h"
 #include "base/single_thread_task_runner.h"
 #include "base/strings/string_number_conversions.h"
@@ -210,8 +211,8 @@ class MockOfflinePageModel : public StubOfflinePageModel {
   std::unique_ptr<OfflinePageVisuals> visuals_by_offline_id_result;
 
  private:
-  OfflinePageModel::Observer* observer_;
-  base::TestMockTimeTaskRunner* task_runner_;
+  CheckedPtr<OfflinePageModel::Observer> observer_;
+  CheckedPtr<base::TestMockTimeTaskRunner> task_runner_;
 
   DISALLOW_COPY_AND_ASSIGN(MockOfflinePageModel);
 };
@@ -257,10 +258,10 @@ class DownloadUIAdapterTest : public testing::Test,
   std::vector<std::string> added_guids, updated_guids, deleted_guids;
   int64_t download_progress_bytes;
   std::unique_ptr<MockOfflinePageModel> model;
-  DownloadUIAdapterDelegate* adapter_delegate;
+  CheckedPtr<DownloadUIAdapterDelegate> adapter_delegate;
   std::unique_ptr<DownloadUIAdapter> adapter;
-  OfflinerStub* offliner_stub;
-  MockVisualsDecoder* visuals_decoder;
+  CheckedPtr<OfflinerStub> offliner_stub;
+  CheckedPtr<MockVisualsDecoder> visuals_decoder;
 
  private:
   std::unique_ptr<RequestCoordinatorStubTaco> request_coordinator_taco_;

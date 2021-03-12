@@ -111,8 +111,8 @@ TestResultsTracker::~TestResultsTracker() {
     all_tests_aggregator.Add(result);
   }
 
-  fprintf(out_, "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n");
-  fprintf(out_,
+  fprintf(out_.get(), "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n");
+  fprintf(out_.get(),
           "<testsuites name=\"AllTests\" tests=\"%d\" failures=\"%d\""
           " disabled=\"%d\" errors=\"%d\" time=\"%.3f\" timestamp=\"%s\">\n",
           all_tests_aggregator.tests, all_tests_aggregator.failures,
@@ -128,7 +128,7 @@ TestResultsTracker::~TestResultsTracker() {
     for (const TestResult& result : results) {
       aggregator.Add(result);
     }
-    fprintf(out_,
+    fprintf(out_.get(),
             "  <testsuite name=\"%s\" tests=\"%d\" "
             "failures=\"%d\" disabled=\"%d\" errors=\"%d\" time=\"%.3f\" "
             "timestamp=\"%s\">\n",
@@ -138,23 +138,24 @@ TestResultsTracker::~TestResultsTracker() {
             FormatTimeAsIso8601(Time::Now()).c_str());
 
     for (const TestResult& result : results) {
-      fprintf(out_, "    <testcase name=\"%s\" status=\"run\" time=\"%.3f\""
+      fprintf(out_.get(),
+              "    <testcase name=\"%s\" status=\"run\" time=\"%.3f\""
               " classname=\"%s\">\n",
-              result.GetTestName().c_str(),
-              result.elapsed_time.InSecondsF(),
+              result.GetTestName().c_str(), result.elapsed_time.InSecondsF(),
               result.GetTestCaseName().c_str());
       if (result.status != TestResult::TEST_SUCCESS) {
         // The actual failure message is not propagated up to here, as it's too
         // much work to escape it properly, and in case of failure, almost
         // always one needs to look into full log anyway.
-        fprintf(out_, "      <failure message=\"\" type=\"\"></failure>\n");
+        fprintf(out_.get(),
+                "      <failure message=\"\" type=\"\"></failure>\n");
       }
-      fprintf(out_, "    </testcase>\n");
+      fprintf(out_.get(), "    </testcase>\n");
     }
-    fprintf(out_, "  </testsuite>\n");
+    fprintf(out_.get(), "  </testsuite>\n");
   }
 
-  fprintf(out_, "</testsuites>\n");
+  fprintf(out_.get(), "</testsuites>\n");
   fclose(out_);
 }
 

@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "content/browser/appcache/appcache_cache_test_helper.h"
+#include "base/memory/checked_ptr.h"
 
 #include <stddef.h>
 #include <stdint.h>
@@ -200,7 +201,7 @@ class MockFrontend : public blink::mojom::AppCacheFrontend {
 
   // Add ability for frontend to add master entries to an inprogress update.
   blink::mojom::AppCacheEventID start_update_trigger_;
-  AppCacheUpdateJob* update_;
+  CheckedPtr<AppCacheUpdateJob> update_;
   std::vector<AppCacheHost*> update_hosts_;
 };
 

@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "base/bind.h"
+#include "base/memory/checked_ptr.h"
 #include "base/stl_util.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/profiles/profile.h"
@@ -40,9 +41,9 @@ class WebUsbServiceImpl::UsbDeviceClient
       : service_(service),
         device_guid_(device_guid),
         receiver_(this, std::move(receiver)) {
-    receiver_.set_disconnect_handler(
-        base::BindOnce(&WebUsbServiceImpl::RemoveDeviceClient,
-                       base::Unretained(service_), base::Unretained(this)));
+    receiver_.set_disconnect_handler(base::BindOnce(
+        &WebUsbServiceImpl::RemoveDeviceClient,
+        base::Unretained(service_.get()), base::Unretained(this)));
   }
 
   ~UsbDeviceClient() override {
@@ -70,7 +71,7 @@ class WebUsbServiceImpl::UsbDeviceClient
   }
 
  private:
-  WebUsbServiceImpl* const service_;
+  const CheckedPtr<WebUsbServiceImpl> service_;
   const std::string device_guid_;
   bool opened_ = false;
   mojo::Receiver<device::mojom::UsbDeviceClient> receiver_;

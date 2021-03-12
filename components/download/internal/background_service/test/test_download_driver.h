@@ -9,6 +9,7 @@
 #include <memory>
 
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "components/download/internal/background_service/download_driver.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 
@@ -53,7 +54,7 @@ class TestDownloadDriver : public DownloadDriver {
 
  private:
   bool is_ready_;
-  DownloadDriver::Client* client_;
+  CheckedPtr<DownloadDriver::Client> client_;
 
   // Map of guid --> DriverEntry.
   std::map<std::string, DriverEntry> entries_;

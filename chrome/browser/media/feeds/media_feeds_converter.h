@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_MEDIA_FEEDS_MEDIA_FEEDS_CONVERTER_H_
 #define CHROME_BROWSER_MEDIA_FEEDS_MEDIA_FEEDS_CONVERTER_H_
 
+#include "base/memory/checked_ptr.h"
 #include "chrome/browser/media/feeds/media_feeds_store.mojom.h"
 #include "chrome/browser/media/history/media_history_keyed_service.h"
 #include "components/schema_org/common/improved_metadata.mojom.h"
@@ -33,7 +34,7 @@ class MediaFeedsConverter {
   // Represents a candidate for use as the item's main episode or play next
   // candidate.
   struct EpisodeCandidate {
-    schema_org::improved::mojom::Entity* entity;
+    CheckedPtr<schema_org::improved::mojom::Entity> entity;
     mojom::MediaFeedItemActionStatus action_status;
     int season_number;
     int episode_number;

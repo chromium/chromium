@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_POLICY_CLOUD_REMOTE_COMMANDS_INVALIDATOR_H_
 
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/threading/thread_checker.h"
 #include "components/invalidation/public/invalidation_handler.h"
 #include "components/invalidation/public/invalidation_util.h"
@@ -103,7 +104,7 @@ class RemoteCommandsInvalidator : public invalidation::InvalidationHandler {
   const std::string owner_name_;
 
   // The invalidation service.
-  invalidation::InvalidationService* invalidation_service_ = nullptr;
+  CheckedPtr<invalidation::InvalidationService> invalidation_service_ = nullptr;
 
   // Whether the invalidator currently has the ability to receive invalidations.
   // This is true if the invalidation service is enabled and the invalidator

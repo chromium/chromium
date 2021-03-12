@@ -13,6 +13,7 @@
 #include "base/containers/circular_deque.h"
 #include "base/containers/flat_map.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/optional.h"
 #include "build/build_config.h"
 #include "components/viz/common/delegated_ink_metadata.h"
@@ -108,9 +109,10 @@ class VIZ_SERVICE_EXPORT DirectRenderer {
     DrawingFrame();
     ~DrawingFrame();
 
-    const AggregatedRenderPassList* render_passes_in_draw_order = nullptr;
-    const AggregatedRenderPass* root_render_pass = nullptr;
-    const AggregatedRenderPass* current_render_pass = nullptr;
+    CheckedPtr<const AggregatedRenderPassList> render_passes_in_draw_order =
+        nullptr;
+    CheckedPtr<const AggregatedRenderPass> root_render_pass = nullptr;
+    CheckedPtr<const AggregatedRenderPass> current_render_pass = nullptr;
 
     gfx::Rect root_damage_rect;
     std::vector<gfx::Rect> root_content_bounds;
@@ -273,15 +275,15 @@ class VIZ_SERVICE_EXPORT DirectRenderer {
   gfx::ColorSpace RootRenderPassColorSpace() const;
   gfx::ColorSpace CurrentRenderPassColorSpace() const;
 
-  const RendererSettings* const settings_;
+  const CheckedPtr<const RendererSettings> settings_;
   // Points to the viz-global singleton.
-  const DebugRendererSettings* const debug_settings_;
-  OutputSurface* const output_surface_;
-  DisplayResourceProvider* const resource_provider_;
+  const CheckedPtr<const DebugRendererSettings> debug_settings_;
+  const CheckedPtr<OutputSurface> output_surface_;
+  const CheckedPtr<DisplayResourceProvider> resource_provider_;
   // This can be replaced by test implementations.
   // TODO(weiliangc): For SoftwareRenderer and tests where overlay is not used,
   // use OverlayProcessorStub so this pointer is never null.
-  OverlayProcessorInterface* overlay_processor_;
+  CheckedPtr<OverlayProcessorInterface> overlay_processor_;
 
   // Whether it's valid to SwapBuffers with an empty rect. Trivially true when
   // using partial swap.

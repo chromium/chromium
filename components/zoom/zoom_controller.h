@@ -9,6 +9,7 @@
 
 #include "base/compiler_specific.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/observer_list.h"
 #include "components/prefs/pref_member.h"
@@ -81,7 +82,7 @@ class ZoomController : public content::WebContentsObserver,
           new_zoom_level(new_zoom_level),
           zoom_mode(zoom_mode),
           can_show_bubble(can_show_bubble) {}
-    content::WebContents* web_contents;
+    CheckedPtr<content::WebContents> web_contents;
     double old_zoom_level;
     double new_zoom_level;
     ZoomController::ZoomMode zoom_mode;
@@ -190,9 +191,9 @@ class ZoomController : public content::WebContentsObserver,
   // Observer receiving notifications on state changes.
   base::ObserverList<ZoomObserver>::Unchecked observers_;
 
-  content::BrowserContext* browser_context_;
+  CheckedPtr<content::BrowserContext> browser_context_;
   // Keep track of the HostZoomMap we're currently subscribed to.
-  content::HostZoomMap* host_zoom_map_;
+  CheckedPtr<content::HostZoomMap> host_zoom_map_;
 
   base::CallbackListSubscription zoom_subscription_;
 

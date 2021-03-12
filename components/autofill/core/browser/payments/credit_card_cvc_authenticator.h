@@ -8,6 +8,7 @@
 #include <memory>
 #include <string>
 
+#include "base/memory/checked_ptr.h"
 #include "base/strings/string16.h"
 #include "build/build_config.h"
 #include "components/autofill/core/browser/autofill_client.h"
@@ -54,7 +55,7 @@ class CreditCardCVCAuthenticator
       return *this;
     }
     bool did_succeed = false;
-    const CreditCard* card = nullptr;
+    CheckedPtr<const CreditCard> card = nullptr;
     std::u16string cvc = std::u16string();
     base::Optional<base::Value> creation_options = base::nullopt;
     base::Optional<base::Value> request_options = base::nullopt;

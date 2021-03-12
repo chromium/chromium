@@ -12,6 +12,7 @@
 #include <vector>
 
 #include "base/check_op.h"
+#include "base/memory/checked_ptr.h"
 #include "base/optional.h"
 #include "chrome/browser/profiles/profile_manager_observer.h"
 #include "chrome/browser/web_applications/components/app_registrar.h"
@@ -146,7 +147,7 @@ class WebAppRegistrar : public AppRegistrar, public ProfileManagerObserver {
     const_iterator end() const;
 
    private:
-    const WebAppRegistrar* const registrar_;
+    const CheckedPtr<const WebAppRegistrar> registrar_;
     const Filter filter_;
 #if DCHECK_IS_ON()
     const size_t mutations_count_;

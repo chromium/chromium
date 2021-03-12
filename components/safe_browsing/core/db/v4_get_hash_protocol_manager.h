@@ -22,6 +22,7 @@
 
 #include "base/gtest_prod_util.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/time/default_clock.h"
 #include "base/time/time.h"
@@ -346,7 +347,7 @@ class V4GetHashProtocolManager {
   int number_of_hits_ = 0;
 
   // The clock used to vend times.
-  base::Clock* clock_;
+  CheckedPtr<base::Clock> clock_;
 
   // The following sets represent the combination of lists that we would always
   // request from the server, irrespective of which list we found the hash

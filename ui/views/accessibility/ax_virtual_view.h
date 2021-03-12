@@ -12,6 +12,7 @@
 #include <vector>
 
 #include "base/callback_forward.h"
+#include "base/memory/checked_ptr.h"
 #include "base/strings/string16.h"
 #include "ui/accessibility/ax_enums.mojom-forward.h"
 #include "ui/accessibility/ax_node_data.h"
@@ -207,15 +208,15 @@ class VIEWS_EXPORT AXVirtualView : public ui::AXPlatformNodeDelegateBase {
 
   // We own this, but it is reference-counted on some platforms so we can't use
   // a unique_ptr. It is destroyed in the destructor.
-  ui::AXPlatformNode* ax_platform_node_;
+  CheckedPtr<ui::AXPlatformNode> ax_platform_node_;
 
   // Weak. Owns us if not nullptr.
   // Either |parent_view_| or |virtual_parent_view_| should be set but not both.
-  ViewAccessibility* parent_view_ = nullptr;
+  CheckedPtr<ViewAccessibility> parent_view_ = nullptr;
 
   // Weak. Owns us if not nullptr.
   // Either |parent_view_| or |virtual_parent_view_| should be set but not both.
-  AXVirtualView* virtual_parent_view_ = nullptr;
+  CheckedPtr<AXVirtualView> virtual_parent_view_ = nullptr;
 
   // We own our children.
   AXVirtualViews children_;

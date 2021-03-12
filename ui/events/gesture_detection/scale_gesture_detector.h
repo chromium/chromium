@@ -6,6 +6,7 @@
 #define UI_EVENTS_GESTURE_DETECTION_SCALE_GESTURE_DETECTOR_H_
 
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/time/time.h"
 #include "ui/events/gesture_detection/gesture_detection_export.h"
 
@@ -88,7 +89,7 @@ class GESTURE_DETECTION_EXPORT ScaleGestureDetector {
 
   void ResetScaleWithSpan(float span);
 
-  ScaleGestureListener* const listener_;
+  const CheckedPtr<ScaleGestureListener> listener_;
   bool stylus_scale_enabled_;
 
   float focus_x_;

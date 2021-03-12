@@ -13,6 +13,7 @@
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequenced_task_runner.h"
 #include "base/time/time.h"
@@ -142,13 +143,13 @@ class CastAppDiscoveryServiceImpl : public CastAppDiscoveryService,
   base::flat_map<MediaSource::Id, std::unique_ptr<SinkQueryCallbackList>>
       sink_queries_;
 
-  cast_channel::CastMessageHandler* const message_handler_;
-  cast_channel::CastSocketService* const socket_service_;
-  MediaSinkServiceBase* const media_sink_service_;
+  const CheckedPtr<cast_channel::CastMessageHandler> message_handler_;
+  const CheckedPtr<cast_channel::CastSocketService> socket_service_;
+  const CheckedPtr<MediaSinkServiceBase> media_sink_service_;
 
   CastAppAvailabilityTracker availability_tracker_;
 
-  const base::TickClock* const clock_;
+  const CheckedPtr<const base::TickClock> clock_;
   // Mojo Remote to the logger owned by the Media Router. The Remote is not
   // bound until |BindLogger()| is called. Always check if |logger_.is_bound()|
   // is true before using.

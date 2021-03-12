@@ -7,6 +7,7 @@
 
 #include "base/base_export.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/sequenced_task_runner.h"
 #include "build/build_config.h"
 
@@ -142,7 +143,7 @@ class BASE_EXPORT WaitableEventWatcher
   scoped_refptr<Flag> cancel_flag_;
 
   // Enqueued in the wait list of the watched WaitableEvent.
-  AsyncWaiter* waiter_ = nullptr;
+  CheckedPtr<AsyncWaiter> waiter_ = nullptr;
 
   // Kernel of the watched WaitableEvent.
   scoped_refptr<WaitableEvent::WaitableEventKernel> kernel_;

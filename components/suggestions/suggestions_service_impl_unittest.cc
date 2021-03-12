@@ -12,6 +12,7 @@
 
 #include "base/bind.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/ptr_util.h"
 #include "base/test/mock_callback.h"
 #include "base/test/task_environment.h"
@@ -129,8 +130,8 @@ class SuggestionsServiceTest : public testing::Test {
         identity_test_env_.identity_manager(), sync_service(),
         base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
             url_loader_factory()),
-        base::WrapUnique(test_suggestions_store_),
-        base::WrapUnique(mock_blocklist_store_),
+        base::WrapUnique(test_suggestions_store_.get()),
+        base::WrapUnique(mock_blocklist_store_.get()),
         task_environment_.GetMockTickClock());
   }
 
@@ -199,8 +200,8 @@ class SuggestionsServiceTest : public testing::Test {
   network::TestURLLoaderFactory url_loader_factory_;
 
   // Owned by the SuggestionsService.
-  MockBlocklistStore* mock_blocklist_store_ = nullptr;
-  TestSuggestionsStore* test_suggestions_store_ = nullptr;
+  CheckedPtr<MockBlocklistStore> mock_blocklist_store_ = nullptr;
+  CheckedPtr<TestSuggestionsStore> test_suggestions_store_ = nullptr;
 
   std::unique_ptr<SuggestionsServiceImpl> suggestions_service_;
 

@@ -10,6 +10,7 @@
 
 #include "base/callback_forward.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 
 namespace autofill {
 
@@ -52,7 +53,7 @@ class AutofillDriverFactory {
   void DeleteForKey(void* key);
 
  private:
-  AutofillClient* const client_;
+  const CheckedPtr<AutofillClient> client_;
 
   std::unordered_map<void*, std::unique_ptr<AutofillDriver>> driver_map_;
 

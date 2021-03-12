@@ -54,6 +54,7 @@
 #include "base/json/json_writer.h"
 #include "base/location.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/memory_pressure_listener.h"
 #include "base/no_destructor.h"
 #include "base/pickle.h"
@@ -147,11 +148,11 @@ class AwContentsUserData : public base::SupportsUserData::Data {
       return NULL;
     AwContentsUserData* data = static_cast<AwContentsUserData*>(
         web_contents->GetUserData(kAwContentsUserDataKey));
-    return data ? data->contents_ : NULL;
+    return data ? data->contents_.get() : NULL;
   }
 
  private:
-  AwContents* contents_;
+  CheckedPtr<AwContents> contents_;
 };
 
 base::subtle::Atomic32 g_instance_count = 0;

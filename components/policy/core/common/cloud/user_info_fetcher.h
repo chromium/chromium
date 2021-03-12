@@ -9,6 +9,7 @@
 #include <string>
 
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "components/policy/policy_export.h"
 
@@ -57,7 +58,7 @@ class POLICY_EXPORT UserInfoFetcher {
   void OnFetchComplete(std::unique_ptr<std::string> body);
 
  private:
-  Delegate* delegate_;
+  CheckedPtr<Delegate> delegate_;
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
   std::unique_ptr<network::SimpleURLLoader> url_loader_;
 

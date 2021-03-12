@@ -7,6 +7,7 @@
 
 #include <string>
 
+#include "base/memory/checked_ptr.h"
 #include "base/strings/string16.h"
 #include "build/build_config.h"
 #include "components/find_in_page/find_notification_details.h"
@@ -134,7 +135,7 @@ class FindTabHelper : public content::WebContentsUserData<FindTabHelper> {
   static int find_request_id_counter_;
 
   // The WebContents which owns this helper.
-  content::WebContents* web_contents_ = nullptr;
+  CheckedPtr<content::WebContents> web_contents_ = nullptr;
 
   // True if the Find UI is active for this Tab.
   bool find_ui_active_ = false;
@@ -186,7 +187,7 @@ class FindTabHelper : public content::WebContentsUserData<FindTabHelper> {
   bool should_find_match_ = false;
 
   // The optional delegate that remembers recent search text state.
-  Delegate* delegate_ = nullptr;
+  CheckedPtr<Delegate> delegate_ = nullptr;
 
   base::ObserverList<FindResultObserver> observers_;
 

@@ -8,6 +8,7 @@
 #include <string>
 
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/metrics/field_trial.h"
 
 namespace base {
@@ -40,7 +41,7 @@ class ChildProcessFieldTrialSyncer {
                             const std::string& group_name);
 
  private:
-  base::FieldTrialList::Observer* const observer_;
+  const CheckedPtr<base::FieldTrialList::Observer> observer_;
 
   DISALLOW_COPY_AND_ASSIGN(ChildProcessFieldTrialSyncer);
 };

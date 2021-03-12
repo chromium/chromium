@@ -8,6 +8,7 @@
 #include "base/callback_helpers.h"
 #include "base/command_line.h"
 #include "base/json/json_reader.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/stl_util.h"
@@ -117,7 +118,7 @@ class TestInputEventObserver : public RenderWidgetHost::InputEventObserver {
   }
 
  private:
-  RenderWidgetHost* host_;
+  CheckedPtr<RenderWidgetHost> host_;
   std::vector<blink::WebInputEvent::Type> events_received_;
   std::vector<blink::mojom::InputEventResultSource> events_acked_;
   ui::WebScopedInputEvent event_;
@@ -638,8 +639,8 @@ class SetMouseCaptureInterceptor
   std::unique_ptr<base::RunLoop> run_loop_;
   bool msg_received_;
   bool capturing_;
-  RenderWidgetHostImpl* host_;
-  blink::mojom::WidgetInputHandlerHost* impl_;
+  CheckedPtr<RenderWidgetHostImpl> host_;
+  CheckedPtr<blink::mojom::WidgetInputHandlerHost> impl_;
 
   DISALLOW_COPY_AND_ASSIGN(SetMouseCaptureInterceptor);
 };

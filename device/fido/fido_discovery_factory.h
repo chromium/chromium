@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/component_export.h"
+#include "base/memory/checked_ptr.h"
 #include "base/optional.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -128,7 +129,7 @@ class COMPONENT_EXPORT(DEVICE_FIDO) FidoDiscoveryFactory {
   base::Optional<mojo::Remote<device::mojom::UsbDeviceManager>>
       usb_device_manager_;
   std::string aoa_request_description_;
-  network::mojom::NetworkContext* network_context_ = nullptr;
+  CheckedPtr<network::mojom::NetworkContext> network_context_ = nullptr;
   base::Optional<std::vector<CableDiscoveryData>> cable_data_;
   base::Optional<std::array<uint8_t, cablev2::kQRKeySize>> qr_generator_key_;
   std::vector<std::unique_ptr<cablev2::Pairing>> v2_pairings_;

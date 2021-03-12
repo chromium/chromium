@@ -10,6 +10,7 @@
 
 #include "base/callback.h"
 #include "base/gtest_prod_util.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/optional.h"
 #include "base/strings/string_piece.h"
@@ -152,7 +153,7 @@ class ChromeAuthenticatorRequestDelegate
 
   void HandleCablePairingEvent(device::cablev2::PairingEvent pairing);
 
-  content::RenderFrameHost* const render_frame_host_;
+  const CheckedPtr<content::RenderFrameHost> render_frame_host_;
   // Holds ownership of AuthenticatorRequestDialogModel until
   // OnTransportAvailabilityEnumerated() is invoked, at which point the
   // ownership of the model is transferred to AuthenticatorRequestDialogView and
@@ -160,7 +161,7 @@ class ChromeAuthenticatorRequestDelegate
   // |weak_dialog_model_|.
   std::unique_ptr<AuthenticatorRequestDialogModel>
       transient_dialog_model_holder_;
-  AuthenticatorRequestDialogModel* weak_dialog_model_ = nullptr;
+  CheckedPtr<AuthenticatorRequestDialogModel> weak_dialog_model_ = nullptr;
   base::OnceClosure cancel_callback_;
   base::RepeatingClosure start_over_callback_;
   device::FidoRequestHandlerBase::RequestCallback request_callback_;
