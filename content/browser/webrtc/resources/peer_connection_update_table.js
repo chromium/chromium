@@ -170,6 +170,16 @@ export class PeerConnectionUpdateTable {
     // RTCSessionDescription is serialized as 'type: <type>, sdp:'
     if (update.value.indexOf(', sdp:') !== -1) {
       const [type, sdp] = update.value.substr(6).split(', sdp: ');
+
+      // Create a copy-to-clipboard button.
+      const copyBtn = document.createElement('button');
+      copyBtn.textContent = 'Copy description to clipboard';
+      copyBtn.onclick = () => {
+        navigator.clipboard.writeText(JSON.stringify({type, sdp}));
+      };
+      valueContainer.appendChild(copyBtn);
+
+      // Fold the SDP sections.
       const sections = sdp.split('\nm=')
         .map((part, index) => (index > 0 ?
           'm=' + part : part).trim() + '\r\n');
@@ -182,7 +192,7 @@ export class PeerConnectionUpdateTable {
         sectionDetails.textContent = lines.slice(1).join('\n');
 
         const sectionSummary = document.createElement('summary');
-        sectionSummary.innerText =
+        sectionSummary.textContent =
           lines[0].trim() + ' (' + (lines.length - 1) + ' more lines)';
         sectionDetails.appendChild(sectionSummary);
 
