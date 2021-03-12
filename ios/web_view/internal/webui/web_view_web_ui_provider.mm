@@ -23,6 +23,10 @@ syncer::SyncService* GetSyncServiceForWebUI(web::WebUIIOS* web_ui) {
       browser_state->GetRecordingBrowserState());
 }
 
+std::string GetChannelString() {
+  return std::string();
+}
+
 version_info::Channel GetChannel() {
   return version_info::Channel::STABLE;
 }

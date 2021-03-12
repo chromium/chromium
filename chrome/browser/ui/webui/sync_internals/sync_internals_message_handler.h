@@ -16,7 +16,6 @@
 #include "components/sync/invalidations/invalidations_listener.h"
 #include "components/sync/js/js_controller.h"
 #include "components/sync/js/js_event_handler.h"
-#include "components/version_info/channel.h"
 #include "content/public/browser/web_ui_message_handler.h"
 
 namespace syncer {
@@ -95,7 +94,7 @@ class SyncInternalsMessageHandler : public content::WebUIMessageHandler,
   using AboutSyncDataDelegate =
       base::RepeatingCallback<std::unique_ptr<base::DictionaryValue>(
           syncer::SyncService* service,
-          version_info::Channel channel)>;
+          const std::string& channel)>;
 
   // Constructor used for unit testing to override dependencies.
   explicit SyncInternalsMessageHandler(

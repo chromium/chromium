@@ -16,6 +16,10 @@ syncer::SyncService* GetSyncServiceForWebUI(web::WebUIIOS* web_ui) {
       browser_state->GetOriginalChromeBrowserState());
 }
 
+std::string GetChannelString() {
+  return ::GetChannelString();
+}
+
 version_info::Channel GetChannel() {
   return ::GetChannel();
 }

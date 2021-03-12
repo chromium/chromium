@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/webui/sync_internals/sync_internals_message_handler.h"
 
 #include <memory>
+#include <string>
 #include <utility>
 
 #include "base/bind.h"
@@ -129,7 +130,7 @@ class SyncInternalsMessageHandlerTest : public ChromeRenderViewHostTestHarness {
   // Returns copies of the same constant dictionary, |about_information_|.
   std::unique_ptr<DictionaryValue> ConstructFakeAboutInformation(
       SyncService* service,
-      version_info::Channel channel) {
+      const std::string& channel) {
     ++about_sync_data_delegate_call_count_;
     last_delegate_sync_service_ = service;
     return base::DictionaryValue::From(

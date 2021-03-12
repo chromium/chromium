@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include <memory>
+#include <string>
 
 #include "base/values.h"
 #include "components/sync/driver/sync_internals_util.h"
@@ -19,7 +20,7 @@ TEST(SyncUIUtilTestAbout, ConstructAboutInformationWithUnrecoverableErrorTest) {
       syncer::SyncService::DISABLE_REASON_UNRECOVERABLE_ERROR);
 
   std::unique_ptr<base::DictionaryValue> strings(ConstructAboutInformation(
-      IncludeSensitiveData(true), &service, version_info::Channel::UNKNOWN));
+      IncludeSensitiveData(true), &service, std::string()));
 
   EXPECT_TRUE(strings->HasKey("unrecoverable_error_detected"));
 }

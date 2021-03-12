@@ -398,7 +398,7 @@ void ChromeInternalLogSource::PopulateSyncLogs(SystemLogsResponse* response) {
       syncer::sync_ui_util::ConstructAboutInformation(
           syncer::sync_ui_util::IncludeSensitiveData(false),
           ProfileSyncServiceFactory::GetForProfile(profile),
-          chrome::GetChannel());
+          chrome::GetChannelName(chrome::WithExtendedStable(true)));
   std::string serialized_sync_logs;
   JSONStringValueSerializer(&serialized_sync_logs).Serialize(*sync_logs);
   response->emplace(kSyncDataKey, serialized_sync_logs);

@@ -264,7 +264,7 @@ void SyncInternalsMessageHandler::SendAboutInfoAndEntityCounts() {
   std::unique_ptr<base::DictionaryValue> value =
       syncer::sync_ui_util::ConstructAboutInformation(
           syncer::sync_ui_util::IncludeSensitiveData(true), GetSyncService(),
-          web_ui::GetChannel());
+          web_ui::GetChannelString());
   DispatchEvent(syncer::sync_ui_util::kOnAboutInfoUpdated, *value);
 
   if (syncer::SyncService* service = GetSyncService()) {

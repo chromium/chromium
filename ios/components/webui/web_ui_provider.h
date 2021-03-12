@@ -5,6 +5,8 @@
 #ifndef IOS_COMPONENTS_WEBUI_WEB_UI_PROVIDER_H_
 #define IOS_COMPONENTS_WEBUI_WEB_UI_PROVIDER_H_
 
+#include <string>
+
 namespace syncer {
 class SyncService;
 }  // namespace syncer
@@ -24,7 +26,10 @@ namespace web_ui {
 // Gets the SyncService of the underlying original profile. May return null.
 syncer::SyncService* GetSyncServiceForWebUI(web::WebUIIOS* web_ui);
 
-// Returns the app channel .
+// Returns the human-readable name of the app channel.
+std::string GetChannelString();
+
+// Returns the app channel.
 version_info::Channel GetChannel();
 
 }  // namespace web_ui

@@ -23,6 +23,7 @@
 #include "components/sync/engine/sync_string_conversions.h"
 #include "components/sync/model/time.h"
 #include "components/sync/protocol/proto_enum_conversions.h"
+#include "components/version_info/version_info.h"
 #include "url/gurl.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -244,15 +245,15 @@ std::string GetTransportStateString(syncer::SyncService::TransportState state) {
 // If version information is unavailable, returns "invalid."
 // TODO(zea): this approximately matches syncer::MakeUserAgentForSync in
 // sync_util.h. Unify the two if possible.
-std::string GetVersionString(version_info::Channel channel) {
+std::string GetVersionString(const std::string& channel) {
   // Build a version string that matches syncer::MakeUserAgentForSync with the
   // addition of channel info and proper OS names.
-  // chrome::GetChannelName() returns empty string for stable channel or
-  // unofficial builds, the channel string otherwise. We want to have "-devel"
-  // for unofficial builds only.
-  std::string version_modifier = version_info::GetChannelString(channel);
+  // |channel| will be an empty string for stable channel or unofficial builds,
+  // the channel string otherwise. We want to have "-devel" for unofficial
+  // builds only.
+  std::string version_modifier = channel;
   if (version_modifier.empty()) {
-    if (channel != version_info::Channel::STABLE) {
+    if (!version_info::IsOfficialBuild()) {
       version_modifier = "-devel";
     }
   } else {
@@ -321,7 +322,7 @@ std::string GetConnectionStatus(const SyncTokenStatus& status) {
 std::unique_ptr<base::DictionaryValue> ConstructAboutInformation(
     IncludeSensitiveData include_sensitive_data,
     SyncService* service,
-    version_info::Channel channel) {
+    const std::string& channel) {
   auto about_info = std::make_unique<base::DictionaryValue>();
 
   SectionList section_list;

@@ -6,10 +6,10 @@
 #define COMPONENTS_SYNC_DRIVER_SYNC_INTERNALS_UTIL_H_
 
 #include <memory>
+#include <string>
 
 #include "base/types/strong_alias.h"
 #include "components/signin/public/identity_manager/account_info.h"
-#include "components/version_info/version_info.h"
 
 namespace base {
 class DictionaryValue;
@@ -83,7 +83,7 @@ using IncludeSensitiveData =
 std::unique_ptr<base::DictionaryValue> ConstructAboutInformation(
     IncludeSensitiveData include_sensitive_data,
     SyncService* service,
-    version_info::Channel channel);
+    const std::string& channel);
 
 }  // namespace sync_ui_util
 

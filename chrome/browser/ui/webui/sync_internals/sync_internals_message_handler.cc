@@ -374,8 +374,9 @@ void SyncInternalsMessageHandler::HandleJsEvent(
 }
 
 void SyncInternalsMessageHandler::SendAboutInfoAndEntityCounts() {
-  std::unique_ptr<DictionaryValue> value =
-      about_sync_data_delegate_.Run(GetSyncService(), chrome::GetChannel());
+  std::unique_ptr<DictionaryValue> value = about_sync_data_delegate_.Run(
+      GetSyncService(),
+      chrome::GetChannelName(chrome::WithExtendedStable(true)));
   DispatchEvent(syncer::sync_ui_util::kOnAboutInfoUpdated, *value);
 
   if (SyncService* service = GetSyncService()) {
