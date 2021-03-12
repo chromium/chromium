@@ -35,7 +35,6 @@
 #include "chromeos/services/assistant/media_host.h"
 #include "chromeos/services/assistant/platform/audio_output_delegate_impl.h"
 #include "chromeos/services/assistant/platform/platform_delegate_impl.h"
-#include "chromeos/services/assistant/proxy/conversation_controller_proxy.h"
 #include "chromeos/services/assistant/proxy/service_controller_proxy.h"
 #include "chromeos/services/assistant/public/cpp/assistant_client.h"
 #include "chromeos/services/assistant/public/cpp/assistant_enums.h"
@@ -410,7 +409,7 @@ void AssistantManagerServiceImpl::StopActiveInteraction(
 
 void AssistantManagerServiceImpl::StartEditReminderInteraction(
     const std::string& client_id) {
-  conversation_controller_proxy().StartEditReminderInteraction(client_id);
+  conversation_controller().StartEditReminderInteraction(client_id);
 }
 
 void AssistantManagerServiceImpl::StartScreenContextInteraction(
@@ -468,13 +467,12 @@ void AssistantManagerServiceImpl::RemoveAssistantInteractionSubscriber(
 void AssistantManagerServiceImpl::RetrieveNotification(
     const AssistantNotification& notification,
     int action_index) {
-  conversation_controller_proxy().RetrieveNotification(notification,
-                                                       action_index);
+  conversation_controller().RetrieveNotification(notification, action_index);
 }
 
 void AssistantManagerServiceImpl::DismissNotification(
     const AssistantNotification& notification) {
-  conversation_controller_proxy().DismissNotification(notification);
+  conversation_controller().DismissNotification(notification);
 }
 
 void AssistantManagerServiceImpl::OnInteractionStarted(
@@ -738,7 +736,7 @@ void AssistantManagerServiceImpl::ResumeTimer(const std::string& id) {
 
 void AssistantManagerServiceImpl::AddRemoteConversationObserver(
     ConversationObserver* observer) {
-  conversation_controller_proxy().AddConversationObserver(
+  conversation_controller().AddRemoteObserver(
       observer->BindNewPipeAndPassRemote());
 }
 
@@ -797,7 +795,7 @@ AssistantQueryResponseType AssistantManagerServiceImpl::GetQueryResponseType()
 
 void AssistantManagerServiceImpl::SendAssistantFeedback(
     const AssistantFeedback& assistant_feedback) {
-  conversation_controller_proxy().SendAssistantFeedback(assistant_feedback);
+  conversation_controller().SendAssistantFeedback(assistant_feedback);
 }
 
 ash::AssistantNotificationController*
@@ -851,21 +849,16 @@ void AssistantManagerServiceImpl::SetMicState(bool mic_open) {
   audio_input_host_->SetMicState(mic_open);
 }
 
-ConversationControllerProxy&
-AssistantManagerServiceImpl::conversation_controller_proxy() {
-  return assistant_proxy_->conversation_controller_proxy();
-}
-
-::chromeos::libassistant::mojom::ConversationController&
+chromeos::libassistant::mojom::ConversationController&
 AssistantManagerServiceImpl::conversation_controller() {
-  return conversation_controller_proxy().controller();
+  return assistant_proxy_->conversation_controller();
 }
 
 ServiceControllerProxy& AssistantManagerServiceImpl::service_controller() {
   return assistant_proxy_->service_controller();
 }
 
-::chromeos::libassistant::mojom::SettingsController&
+chromeos::libassistant::mojom::SettingsController&
 AssistantManagerServiceImpl::settings_controller() {
   return assistant_proxy_->settings_controller();
 }

@@ -23,7 +23,6 @@
 #include "chromeos/services/assistant/assistant_manager_service.h"
 #include "chromeos/services/assistant/assistant_settings_impl.h"
 #include "chromeos/services/assistant/proxy/assistant_proxy.h"
-#include "chromeos/services/assistant/proxy/conversation_controller_proxy.h"
 #include "chromeos/services/assistant/proxy/libassistant_service_host.h"
 #include "chromeos/services/assistant/proxy/service_controller_proxy.h"
 #include "chromeos/services/assistant/public/cpp/assistant_service.h"
@@ -243,9 +242,8 @@ class COMPONENT_EXPORT(ASSISTANT_SERVICE) AssistantManagerServiceImpl
   DeviceActions* device_actions();
   scoped_refptr<base::SequencedTaskRunner> main_task_runner();
 
-  ::chromeos::libassistant::mojom::ConversationController&
+  chromeos::libassistant::mojom::ConversationController&
   conversation_controller();
-  ConversationControllerProxy& conversation_controller_proxy();
   chromeos::libassistant::mojom::DisplayController& display_controller();
   ServiceControllerProxy& service_controller();
   const ServiceControllerProxy& service_controller() const;

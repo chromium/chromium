@@ -13,8 +13,6 @@ source_set("proxy") {
     sources += [
       "assistant_proxy.cc",
       "assistant_proxy.h",
-      "conversation_controller_proxy.cc",
-      "conversation_controller_proxy.h",
       "libassistant_service_host.h",
       "service_controller_proxy.cc",
       "service_controller_proxy.h",

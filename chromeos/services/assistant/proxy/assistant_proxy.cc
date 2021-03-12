@@ -8,7 +8,6 @@
 
 #include "base/bind.h"
 #include "base/check.h"
-#include "chromeos/services/assistant/proxy/conversation_controller_proxy.h"
 #include "chromeos/services/assistant/proxy/libassistant_service_host.h"
 #include "chromeos/services/assistant/proxy/service_controller_proxy.h"
 #include "chromeos/services/libassistant/libassistant_service.h"
@@ -48,9 +47,9 @@ void AssistantProxy::LaunchLibassistantService() {
           // This is safe because we own the background thread,
           // so when we're deleted the background thread is stopped.
           base::Unretained(this),
-          // |libassistant_service_remote_| runs on the current thread, so must
+          // |libassistant_service_| runs on the current thread, so must
           // be bound here and not on the background thread.
-          libassistant_service_remote_.BindNewPipeAndPassReceiver()));
+          libassistant_service_.BindNewPipeAndPassReceiver()));
 }
 
 void AssistantProxy::LaunchLibassistantServiceOnBackgroundThread(
@@ -84,8 +83,6 @@ void AssistantProxy::BindControllers(
       pending_audio_output_delegate_remote;
   mojo::PendingRemote<chromeos::libassistant::mojom::DeviceSettingsDelegate>
       pending_device_settings_delegate_remote;
-  mojo::PendingRemote<chromeos::libassistant::mojom::ConversationController>
-      pending_conversation_controller_remote;
   mojo::PendingRemote<chromeos::libassistant::mojom::MediaDelegate>
       pending_media_delegate_remote;
   mojo::PendingRemote<chromeos::libassistant::mojom::PlatformDelegate>
@@ -112,13 +109,13 @@ void AssistantProxy::BindControllers(
       pending_audio_output_delegate_remote.InitWithNewPipeAndPassReceiver();
   pending_device_settings_delegate_receiver_ =
       pending_device_settings_delegate_remote.InitWithNewPipeAndPassReceiver();
-  libassistant_service_remote_->Bind(
+  libassistant_service_->Bind(
       pending_audio_input_controller_remote.InitWithNewPipeAndPassReceiver(),
-      pending_conversation_controller_remote.InitWithNewPipeAndPassReceiver(),
-      display_controller_remote_.BindNewPipeAndPassReceiver(),
-      media_controller_remote_.BindNewPipeAndPassReceiver(),
+      conversation_controller_.BindNewPipeAndPassReceiver(),
+      display_controller_.BindNewPipeAndPassReceiver(),
+      media_controller_.BindNewPipeAndPassReceiver(),
       pending_service_controller_remote.InitWithNewPipeAndPassReceiver(),
-      settings_controller_remote_.BindNewPipeAndPassReceiver(),
+      settings_controller_.BindNewPipeAndPassReceiver(),
       pending_speaker_id_enrollment_controller_remote
           .InitWithNewPipeAndPassReceiver(),
       timer_controller_.BindNewPipeAndPassReceiver(),
@@ -128,9 +125,6 @@ void AssistantProxy::BindControllers(
       std::move(pending_platform_delegate_remote),
       std::move(pending_timer_delegate_remote));
 
-  conversation_controller_proxy_ =
-      std::make_unique<ConversationControllerProxy>(
-          std::move(pending_conversation_controller_remote));
   service_controller_proxy_ = std::make_unique<ServiceControllerProxy>(
       std::move(pending_url_loader_factory),
       std::move(pending_service_controller_remote));
@@ -196,27 +190,28 @@ AssistantProxy::ExtractTimerDelegate() {
   return std::move(timer_delegate_);
 }
 
-ConversationControllerProxy& AssistantProxy::conversation_controller_proxy() {
-  DCHECK(conversation_controller_proxy_);
-  return *conversation_controller_proxy_;
+chromeos::libassistant::mojom::ConversationController&
+AssistantProxy::conversation_controller() {
+  DCHECK(conversation_controller_.is_bound());
+  return *conversation_controller_;
 }
 
 chromeos::libassistant::mojom::DisplayController&
 AssistantProxy::display_controller() {
-  DCHECK(display_controller_remote_.is_bound());
-  return *display_controller_remote_.get();
+  DCHECK(display_controller_.is_bound());
+  return *display_controller_.get();
 }
 
 chromeos::libassistant::mojom::MediaController&
 AssistantProxy::media_controller() {
-  DCHECK(media_controller_remote_.is_bound());
-  return *media_controller_remote_.get();
+  DCHECK(media_controller_.is_bound());
+  return *media_controller_.get();
 }
 
 chromeos::libassistant::mojom::SettingsController&
 AssistantProxy::settings_controller() {
-  DCHECK(settings_controller_remote_.is_bound());
-  return *settings_controller_remote_;
+  DCHECK(settings_controller_.is_bound());
+  return *settings_controller_;
 }
 
 chromeos::libassistant::mojom::TimerController&
@@ -228,15 +223,13 @@ AssistantProxy::timer_controller() {
 void AssistantProxy::AddSpeechRecognitionObserver(
     mojo::PendingRemote<
         chromeos::libassistant::mojom::SpeechRecognitionObserver> observer) {
-  libassistant_service_remote_->AddSpeechRecognitionObserver(
-      std::move(observer));
+  libassistant_service_->AddSpeechRecognitionObserver(std::move(observer));
 }
 
 void AssistantProxy::AddAuthenticationStateObserver(
     mojo::PendingRemote<
         chromeos::libassistant::mojom::AuthenticationStateObserver> observer) {
-  libassistant_service_remote_->AddAuthenticationStateObserver(
-      std::move(observer));
+  libassistant_service_->AddAuthenticationStateObserver(std::move(observer));
 }
 
 }  // namespace assistant

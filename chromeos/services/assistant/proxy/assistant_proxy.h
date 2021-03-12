@@ -30,7 +30,6 @@ class PendingSharedURLLoaderFactory;
 namespace chromeos {
 namespace assistant {
 
-class ConversationControllerProxy;
 class LibassistantServiceHost;
 class ServiceControllerProxy;
 
@@ -52,7 +51,8 @@ class AssistantProxy {
   ServiceControllerProxy& service_controller();
 
   // Returns the controller that manages conversations with Libassistant.
-  ConversationControllerProxy& conversation_controller_proxy();
+  chromeos::libassistant::mojom::ConversationController&
+  conversation_controller();
 
   // Returns the controller that manages display related settings.
   chromeos::libassistant::mojom::DisplayController& display_controller();
@@ -113,17 +113,19 @@ class AssistantProxy {
   LibassistantServiceHost* libassistant_service_host_ = nullptr;
 
   mojo::Remote<chromeos::libassistant::mojom::LibassistantService>
-      libassistant_service_remote_;
+      libassistant_service_;
+
+  mojo::Remote<chromeos::libassistant::mojom::ConversationController>
+      conversation_controller_;
   mojo::Remote<chromeos::libassistant::mojom::DisplayController>
-      display_controller_remote_;
+      display_controller_;
   mojo::Remote<chromeos::libassistant::mojom::MediaController>
-      media_controller_remote_;
+      media_controller_;
   mojo::Remote<chromeos::libassistant::mojom::SettingsController>
-      settings_controller_remote_;
+      settings_controller_;
   mojo::Remote<chromeos::libassistant::mojom::TimerController>
       timer_controller_;
 
-  std::unique_ptr<ConversationControllerProxy> conversation_controller_proxy_;
   std::unique_ptr<ServiceControllerProxy> service_controller_proxy_;
 
   // Will be unbound after they are extracted.
