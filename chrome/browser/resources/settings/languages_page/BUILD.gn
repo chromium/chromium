@@ -42,7 +42,7 @@ js_library("edit_dictionary_page") {
     ":languages_browser_proxy",
     "..:global_scroll_target_behavior.m",
     "..:route",
-    "../prefs:prefs.m",
+    "../prefs:prefs",
     "//third_party/polymer/v3_0/components-chromium/iron-list:iron-list",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
     "//ui/webui/resources/cr_elements/cr_button:cr_button.m",
@@ -54,7 +54,7 @@ js_library("languages") {
   deps = [
     ":languages_browser_proxy",
     ":languages_types",
-    "../prefs:prefs.m",
+    "../prefs:prefs",
     "../prefs:prefs_behavior",
     "../prefs:prefs_types",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",

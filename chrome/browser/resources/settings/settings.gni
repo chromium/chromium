@@ -78,6 +78,7 @@ settings_migrated_imports = [
   "chrome/browser/resources/settings/languages_page/languages_browser_proxy.html",
   "chrome/browser/resources/settings/languages_page/languages.html",
   "chrome/browser/resources/settings/prefs/prefs_behavior.html",
+  "chrome/browser/resources/settings/prefs/prefs.html",
   "chrome/browser/resources/settings/prefs/prefs_types.html",
   "chrome/browser/resources/settings/prefs/pref_util.html",
   "chrome/browser/resources/settings/privacy_page/personalization_options.html",

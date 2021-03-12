@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import '../prefs/prefs.m.js';
+import '../prefs/prefs.js';
 import './ambient_mode_page/ambient_mode_page.m.js';
 import './bluetooth_page/bluetooth_device_list_item.m.js';
 import './bluetooth_page/bluetooth_page.m.js';

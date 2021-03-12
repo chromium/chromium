@@ -8,7 +8,7 @@
  */
 
 import '../icons.m.js';
-import '../prefs/prefs.m.js';
+import '../prefs/prefs.js';
 import '../settings_page/settings_section.js';
 import '../settings_page_css.m.js';
 import '../settings_shared_css.m.js';

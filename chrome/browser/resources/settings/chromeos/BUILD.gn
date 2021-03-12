@@ -210,6 +210,7 @@ preprocess_if_expr("preprocess_v3") {
     "languages_page/languages_browser_proxy.js",
     "page_visibility.js",
     "prefs/prefs_behavior.js",
+    "prefs/prefs.js",
     "prefs/prefs_types.js",
     "prefs/pref_util.js",
     "privacy_page/privacy_page_browser_proxy.js",
@@ -479,7 +480,6 @@ preprocess_if_expr("preprocess_gen_v3") {
     "people_page/sync_controls.m.js",
     "people_page/sync_encryption_options.m.js",
     "people_page/sync_page.m.js",
-    "prefs/prefs.m.js",
     "privacy_page/personalization_options.js",
     "router.m.js",
     "search_settings.m.js",
@@ -689,7 +689,6 @@ group("polymer3_elements") {
     "..:settings_vars_css_module",
     "../../settings:settings_page_css_module",
     "../a11y_page:web_components",
-    "../prefs:prefs_module",
     "../settings_page:web_components",
   ]
 }

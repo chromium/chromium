@@ -11,7 +11,7 @@ import '//resources/cr_elements/cr_button/cr_button.m.js';
 import '//resources/cr_elements/cr_toggle/cr_toggle.m.js';
 import '../controls/settings_toggle_button.js';
 import '../people_page/signout_dialog.m.js';
-import '../prefs/prefs.m.js';
+import '../prefs/prefs.js';
 import '../settings_shared_css.m.js';
 // <if expr="not chromeos">
 import '//resources/cr_elements/cr_toast/cr_toast.m.js';

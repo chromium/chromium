@@ -20,7 +20,7 @@ import '../icons.m.js';
 import '../settings_main/settings_main.js';
 import '../settings_menu/settings_menu.js';
 import '../settings_shared_css.m.js';
-import '../prefs/prefs.m.js';
+import '../prefs/prefs.js';
 import '../settings_vars_css.m.js';
 
 import {CrContainerShadowBehavior} from 'chrome://resources/cr_elements/cr_container_shadow_behavior.m.js';

@@ -12,7 +12,7 @@ import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
 import 'chrome://resources/polymer/v3_0/iron-list/iron-list.js';
 import 'chrome://resources/polymer/v3_0/paper-spinner/paper-spinner-lite.js';
 import '../route.js';
-import '../prefs/prefs.m.js';
+import '../prefs/prefs.js';
 import './password_check_edit_dialog.js';
 import './password_check_edit_disclaimer_dialog.js';
 import './password_check_list_item.js';

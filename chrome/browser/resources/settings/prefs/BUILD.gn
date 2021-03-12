@@ -3,14 +3,13 @@
 # found in the LICENSE file.
 
 import("//third_party/closure_compiler/compile_js.gni")
-import("//tools/polymer/polymer.gni")
 import("../settings.gni")
 
 js_type_check("closure_compile_module") {
   is_polymer3 = true
   deps = [
     ":pref_util",
-    ":prefs.m",
+    ":prefs",
     ":prefs_behavior",
     ":prefs_types",
   ]
@@ -21,16 +20,13 @@ js_library("pref_util") {
   externs_list = [ "$externs_path/settings_private.js" ]
 }
 
-js_library("prefs.m") {
-  sources =
-      [ "$root_gen_dir/chrome/browser/resources/settings/prefs/prefs.m.js" ]
+js_library("prefs") {
   deps = [
     ":pref_util",
     ":prefs_types",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
   ]
   externs_list = [ "$externs_path/settings_private.js" ]
-  extra_deps = [ ":prefs_module" ]
   extra_sources = [ "$interfaces_path/settings_private_interface.js" ]
 }
 
@@ -40,17 +36,4 @@ js_library("prefs_behavior") {
 }
 
 js_library("prefs_types") {
-}
-
-group("polymer3_elements") {
-  public_deps = [ ":prefs_module" ]
-}
-
-polymer_modulizer("prefs") {
-  js_file = "prefs.js"
-  html_file = "prefs.html"
-  html_type = "dom-module"
-  auto_imports =
-      settings_auto_imports + [ "ui/webui/resources/html/assert.html|assert" ]
-  migrated_imports = settings_migrated_imports
 }

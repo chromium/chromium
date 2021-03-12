@@ -10,7 +10,7 @@
  * this class via languageHelper.
  */
 
-import '../prefs/prefs.m.js';
+import '../prefs/prefs.js';
 
 import {assert} from '//resources/js/assert.m.js';
 import {isChromeOS, isWindows} from '//resources/js/cr.m.js';

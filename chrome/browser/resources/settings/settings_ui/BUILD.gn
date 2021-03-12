@@ -19,7 +19,7 @@ js_library("settings_ui") {
     "..:route",
     "..:router.m",
     "../basic_page:basic_page",
-    "../prefs:prefs.m",
+    "../prefs:prefs",
     "../settings_main:settings_main",
     "../settings_menu:settings_menu",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",

@@ -9,7 +9,7 @@
  */
 import 'chrome://resources/cr_elements/cr_link_row/cr_link_row.m.js';
 import 'chrome://resources/cr_elements/shared_vars_css.m.js';
-import '../prefs/prefs.m.js';
+import '../prefs/prefs.js';
 import '../settings_page/settings_animated_pages.js';
 import '../settings_page/settings_subpage.js';
 import '../settings_shared_css.m.js';

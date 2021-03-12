@@ -54,7 +54,7 @@ js_library("input_method_options_page.m") {
   sources = [ "$root_gen_dir/chrome/browser/resources/settings/chromeos/os_languages_page/input_method_options_page.m.js" ]
   deps = [
     ":input_method_util.m",
-    "../../prefs:prefs.m",
+    "../../prefs:prefs",
     "//ui/webui/resources/js:i18n_behavior.m",
   ]
   extra_deps = [ ":input_method_options_page_module" ]

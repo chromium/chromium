@@ -13,7 +13,7 @@ import 'chrome://resources/polymer/v3_0/paper-spinner/paper-spinner-lite.js';
 import 'chrome://resources/polymer/v3_0/paper-styles/color.js';
 import '../controls/controlled_button.js';
 import '../controls/settings_checkbox.js';
-import '../prefs/prefs.m.js';
+import '../prefs/prefs.js';
 import '../settings_shared_css.m.js';
 
 import {assert} from 'chrome://resources/js/assert.m.js';

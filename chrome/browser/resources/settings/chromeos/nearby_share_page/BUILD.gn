@@ -58,7 +58,7 @@ js_library("nearby_share_data_usage_dialog.m") {
   sources = [ "$root_gen_dir/chrome/browser/resources/settings/chromeos/nearby_share_page/nearby_share_data_usage_dialog.m.js" ]
   deps = [
     ":types.m",
-    "../../prefs:prefs.m",
+    "../../prefs:prefs",
     "../../prefs:prefs_behavior",
     "../../prefs:prefs_types",
     "//ui/webui/resources/cr_elements/cr_button:cr_button.m",
@@ -140,7 +140,7 @@ js_library("nearby_share_subpage.m") {
     "..:deep_linking_behavior.m",
     "..:os_route.m",
     "../..:router.m",
-    "../../prefs:prefs.m",
+    "../../prefs:prefs",
     "../../prefs:prefs_behavior",
     "../../prefs:prefs_types",
     "//chrome/browser/resources/nearby_share/shared:nearby_onboarding_page.m",
@@ -184,7 +184,6 @@ group("polymer3_elements") {
     ":nearby_share_receive_dialog_module",
     ":nearby_share_subpage_module",
     "../../controls:web_components",
-    "../../prefs:polymer3_elements",
     "//chrome/browser/ui/webui/nearby_share:mojom_js",
   ]
 }

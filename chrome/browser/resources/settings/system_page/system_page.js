@@ -13,7 +13,7 @@ import 'chrome://resources/cr_elements/policy/cr_policy_pref_indicator.m.js';
 import 'chrome://resources/polymer/v3_0/iron-flex-layout/iron-flex-layout-classes.js';
 import '../controls/extension_controlled_indicator.js';
 import '../controls/settings_toggle_button.js';
-import '../prefs/prefs.m.js';
+import '../prefs/prefs.js';
 import '../settings_shared_css.m.js';
 
 import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';

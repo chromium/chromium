@@ -13,7 +13,7 @@ import 'chrome://resources/cr_elements/cr_input/cr_input.m.js';
 import 'chrome://resources/cr_elements/icons.m.js';
 import 'chrome://resources/polymer/v3_0/iron-a11y-keys/iron-a11y-keys.js';
 import 'chrome://resources/polymer/v3_0/iron-list/iron-list.js';
-import '../prefs/prefs.m.js';
+import '../prefs/prefs.js';
 import '../settings_shared_css.m.js';
 import '../settings_vars_css.m.js';
 

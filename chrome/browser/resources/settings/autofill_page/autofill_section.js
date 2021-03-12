@@ -15,7 +15,7 @@ import 'chrome://resources/polymer/v3_0/iron-flex-layout/iron-flex-layout-classe
 import '../settings_shared_css.m.js';
 import '../controls/extension_controlled_indicator.js';
 import '../controls/settings_toggle_button.js';
-import '../prefs/prefs.m.js';
+import '../prefs/prefs.js';
 import './address_edit_dialog.js';
 import './address_remove_confirmation_dialog.js';
 import './passwords_shared_css.js';
