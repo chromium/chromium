@@ -58,7 +58,12 @@ TEST_F(LocaleUtilTest, ConvertToActualUILocale) {
     locale = es_locale;
     is_ui = ConvertToActualUILocale(&locale);
     EXPECT_TRUE(is_ui) << es_locale;
+#if defined(OS_IOS)
+    // iOS uses a different name for es-419 (es-MX).
+    EXPECT_EQ("es-MX", locale) << es_locale;
+#else
     EXPECT_EQ("es-419", locale) << es_locale;
+#endif
   }
 
   // English falls back to US.

@@ -174,7 +174,7 @@ std::vector<ash::LocaleInfo> GetSupportedLocales() {
        "nb", "nl", "sv"});
 
   const std::vector<std::string>& available_locales =
-      l10n_util::GetAvailableLocales();
+      l10n_util::GetLocalesWithStrings();
   const std::string current_locale_iso_code =
       ProfileManager::GetActiveUserProfile()->GetPrefs()->GetString(
           language::prefs::kApplicationLocale);
