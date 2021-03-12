@@ -97,9 +97,6 @@
             <h1 class="product-title">$i18n{aboutOsProductTitle}</h1>
           </div>
           <div class="settings-box two-line">
-            <!-- TODO(dpapad): Investigate why vulcanize does not handle well
-              a new line after "getThrobberSrcIfUpdating_(", causes incorrect
-              src URL -->
             <!-- Set the icon from the iconset (when it's obsolete/EOL and
               when update is done) or set the src (when it's updating). -->
             <div class="icon-container"
@@ -108,7 +105,8 @@
               <iron-icon
                   icon$="[[getUpdateStatusIcon_(
                       hasEndOfLife_, currentUpdateStatusEvent_)]]"
-                  src="[[getThrobberSrcIfUpdating_(hasEndOfLife_, currentUpdateStatusEvent_)]]">
+                  src="[[getThrobberSrcIfUpdating_(
+                      hasEndOfLife_, currentUpdateStatusEvent_)]]">
               </iron-icon>
             </div>
             <div class="start padded">
