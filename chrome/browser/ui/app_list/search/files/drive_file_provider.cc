@@ -65,7 +65,7 @@ ash::AppListSearchResultType DriveFileProvider::ResultType() {
   return ash::AppListSearchResultType::kDriveFile;
 }
 
-void DriveFileProvider::Start(const std::u16string& query) {
+void DriveFileProvider::Start(const base::string16& query) {
   // Clear results and cancel any outgoing requests.
   ClearResultsSilently();
   weak_factory_.InvalidateWeakPtrs();

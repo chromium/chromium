@@ -59,7 +59,7 @@ struct GroupMatch {
 struct TabMatch {
   TabMatch(int index,
            int session_id,
-           const std::u16string& title,
+           const base::string16& title,
            double score);
   ~TabMatch();
 
@@ -73,7 +73,7 @@ struct TabMatch {
   // As obtained by sessions::SessionTabHelper::IdForTab. Used to ensure that
   // the tab at `index` is the one we expect for destructive actions.
   int session_id;
-  std::u16string title;
+  base::string16 title;
   std::vector<gfx::Range> matched_ranges;
   double score;
 };
@@ -117,7 +117,7 @@ struct TabSearchOptions {
 // Returns tabs in `browser` whose titles fuzzy match `input`. If input is
 // empty, returns all groups in the order they appear in the tab strip.
 std::vector<TabMatch> TabsMatchingInput(const Browser* browser,
-                                        const std::u16string& input,
+                                        const base::string16& input,
                                         const TabSearchOptions& options = {});
 
 }  // namespace commander

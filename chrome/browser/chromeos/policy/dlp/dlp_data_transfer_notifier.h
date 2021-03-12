@@ -31,7 +31,7 @@ class DlpDataTransferNotifier : public views::WidgetObserver {
 
  protected:
   // Virtual for tests to override.
-  virtual void ShowBlockBubble(const std::u16string& text);
+  virtual void ShowBlockBubble(const base::string16& text);
   virtual void ShowWarningBubble(
       const std::u16string& text,
       base::RepeatingCallback<void(views::Widget*)> proceed_cb,

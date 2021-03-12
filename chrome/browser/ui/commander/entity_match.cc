@@ -51,7 +51,7 @@ std::unique_ptr<CommandItem> GroupMatch::ToCommandItem() const {
 
 TabMatch::TabMatch(int index,
                    int session_id,
-                   const std::u16string& title,
+                   const base::string16& title,
                    double score)
     : index(index), session_id(session_id), title(title), score(score) {}
 TabMatch::~TabMatch() = default;
@@ -68,7 +68,7 @@ TabSearchOptions::TabSearchOptions() = default;
 TabSearchOptions::~TabSearchOptions() = default;
 
 std::vector<TabMatch> TabsMatchingInput(const Browser* browser,
-                                        const std::u16string& input,
+                                        const base::string16& input,
                                         const TabSearchOptions& options) {
   DCHECK(browser);
   DCHECK(!(options.only_pinned && options.only_unpinned));
