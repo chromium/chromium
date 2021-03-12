@@ -53,6 +53,7 @@ class PageTimingMetricsSender {
   void DidObserveNewCssPropertyUsage(blink::mojom::CSSSampleId css_property,
                                      bool is_animated);
   void DidObserveLayoutShift(double score, bool after_input_or_scroll);
+  void DidObserveInputForLayoutShiftTracking(base::TimeTicks timestamp);
   void DidObserveLayoutNg(uint32_t all_block_count,
                           uint32_t ng_block_count,
                           uint32_t all_call_count,

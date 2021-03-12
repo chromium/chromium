@@ -715,6 +715,12 @@ void LocalFrameClientImpl::DidObserveLayoutShift(double score,
     client->DidObserveLayoutShift(score, after_input_or_scroll);
 }
 
+void LocalFrameClientImpl::DidObserveInputForLayoutShiftTracking(
+    base::TimeTicks timestamp) {
+  if (WebLocalFrameClient* client = web_frame_->Client())
+    client->DidObserveInputForLayoutShiftTracking(timestamp);
+}
+
 void LocalFrameClientImpl::DidObserveLayoutNg(uint32_t all_block_count,
                                               uint32_t ng_block_count,
                                               uint32_t all_call_count,

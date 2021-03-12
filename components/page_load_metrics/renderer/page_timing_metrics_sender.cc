@@ -29,6 +29,7 @@ const base::Feature kLayoutShiftNormalizationEmitShiftsForKeyMetrics{
 namespace {
 const int kInitialTimerDelayMillis = 50;
 const int64_t kInputDelayAdjustmentMillis = int64_t(50);
+constexpr auto MAX_INPUT_TIMESTAMPS_SIZE = 300;
 }  // namespace
 
 PageTimingMetricsSender::PageTimingMetricsSender(
@@ -113,6 +114,13 @@ void PageTimingMetricsSender::DidObserveLayoutShift(
   }
   if (!after_input_or_scroll)
     render_data_.layout_shift_delta_before_input_or_scroll += score;
+  EnsureSendTimer();
+}
+
+void PageTimingMetricsSender::DidObserveInputForLayoutShiftTracking(
+    base::TimeTicks timestamp) {
+  if (render_data_.input_timestamps.size() < MAX_INPUT_TIMESTAMPS_SIZE)
+    render_data_.input_timestamps.push_back(timestamp);
   EnsureSendTimer();
 }
 
@@ -339,6 +347,8 @@ void PageTimingMetricsSender::SendNow() {
       page_resource_data_use_.erase(resource->resource_id());
     }
   }
+  std::sort(render_data_.input_timestamps.begin(),
+            render_data_.input_timestamps.end());
   sender_->SendTiming(last_timing_, metadata_, std::move(new_features_),
                       std::move(resources), render_data_, last_cpu_timing_,
                       std::move(new_deferred_resource_data_),
@@ -350,6 +360,7 @@ void PageTimingMetricsSender::SendNow() {
   last_cpu_timing_->task_time = base::TimeDelta();
   modified_resources_.clear();
   render_data_.new_layout_shifts.clear();
+  render_data_.input_timestamps.clear();
   render_data_.layout_shift_delta = 0;
   render_data_.layout_shift_delta_before_input_or_scroll = 0;
   render_data_.all_layout_block_count_delta = 0;
