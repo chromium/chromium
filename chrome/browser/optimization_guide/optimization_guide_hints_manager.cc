@@ -664,7 +664,7 @@ void OptimizationGuideHintsManager::ScheduleTopHostsHintsFetch() {
 void OptimizationGuideHintsManager::FetchTopHostsHints() {
   DCHECK(top_host_provider_);
 
-  if (registered_optimization_types_.empty())
+  if (!HasOptimizationTypeToFetchFor())
     return;
 
   std::vector<std::string> top_hosts = top_host_provider_->GetTopHosts();
