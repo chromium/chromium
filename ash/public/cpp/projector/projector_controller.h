@@ -37,6 +37,16 @@ class ASH_PUBLIC_EXPORT ProjectorController {
                                base::TimeDelta end_time,
                                const std::vector<base::TimeDelta>& word_offsets,
                                bool is_final) = 0;
+
+  // Sets projector toolbar visibility.
+  virtual void SetProjectorToolsVisible(bool is_visible) = 0;
+
+  // Starts a projector session.
+  // TODO(yilkal) : Pass the scope of the selection.
+  virtual void StartProjectorSession() = 0;
+
+  // Returns true if Projector is eligible to start a new session.
+  virtual bool IsEligible() const = 0;
 };
 
 }  // namespace ash

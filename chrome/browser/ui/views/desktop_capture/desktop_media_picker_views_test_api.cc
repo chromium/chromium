@@ -122,6 +122,10 @@ views::Checkbox* DesktopMediaPickerViewsTestApi::GetAudioShareCheckbox() {
   return picker_->dialog_->audio_share_checkbox_;
 }
 
+views::Checkbox* DesktopMediaPickerViewsTestApi::GetPresenterToolsCheckbox() {
+  return picker_->dialog_->presenter_tools_checkbox_;
+}
+
 const views::View* DesktopMediaPickerViewsTestApi::GetSourceAtIndex(
     size_t index) const {
   views::View* list = picker_->dialog_->GetSelectedController()->view_;

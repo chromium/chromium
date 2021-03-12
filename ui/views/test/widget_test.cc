@@ -243,8 +243,13 @@ void WidgetClosingObserver::OnWidgetClosing(Widget* widget) {
     run_loop_.Quit();
 }
 
-WidgetDestroyedWaiter::WidgetDestroyedWaiter(Widget* widget) {
+WidgetDestroyedWaiter::WidgetDestroyedWaiter(Widget* widget) : widget_(widget) {
   widget->AddObserver(this);
+}
+
+WidgetDestroyedWaiter::~WidgetDestroyedWaiter() {
+  if (widget_)
+    widget_->RemoveObserver(this);
 }
 
 void WidgetDestroyedWaiter::Wait() {
@@ -253,6 +258,7 @@ void WidgetDestroyedWaiter::Wait() {
 
 void WidgetDestroyedWaiter::OnWidgetDestroyed(Widget* widget) {
   widget->RemoveObserver(this);
+  widget_ = nullptr;
   run_loop_.Quit();
 }
 
