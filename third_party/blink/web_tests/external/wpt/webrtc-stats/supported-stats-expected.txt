@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 307 tests; 179 PASS, 128 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 307 tests; 180 PASS, 127 FAIL, 0 TIMEOUT, 0 NOTRUN.
 PASS getStats succeeds
 PASS Validating stats
 PASS codec's payloadType
@@ -202,7 +202,7 @@ FAIL media-source's echoReturnLossEnhancement assert_true: Is echoReturnLossEnha
 PASS media-source's width
 PASS media-source's height
 FAIL media-source's bitDepth assert_true: Is bitDepth present expected true got false
-FAIL media-source's frames assert_true: Is frames present expected true got false
+PASS media-source's frames
 PASS media-source's framesPerSecond
 PASS media-source's trackIdentifier
 PASS media-source's kind
