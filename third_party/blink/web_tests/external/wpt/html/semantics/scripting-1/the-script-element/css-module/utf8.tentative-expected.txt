@@ -1,8 +1,0 @@
-This is a testharness.js-based test.
-Harness Error. harness_status.status = 1 , harness_status.message = Uncaught SyntaxError: Unexpected identifier
-FAIL utf-8 assert_unreached: Unexpected error 'Uncaught SyntaxError: Unexpected identifier' during test Reached unreachable code
-FAIL shift-jis assert_unreached: Unexpected error 'Uncaught SyntaxError: Unexpected identifier' during test Reached unreachable code
-FAIL windows-1252 assert_unreached: Unexpected error 'Uncaught SyntaxError: Unexpected identifier' during test Reached unreachable code
-FAIL utf-7 assert_unreached: Unexpected error 'Uncaught SyntaxError: Unexpected identifier' during test Reached unreachable code
-Harness: the test ran to completion.
-

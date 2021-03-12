@@ -1,4 +1,8 @@
 This is a testharness.js-based test.
-Harness Error. harness_status.status = 1 , harness_status.message = Unhandled rejection: Failed to register a ServiceWorker for scope ('https://web-platform.test:8444/html/semantics/scripting-1/the-script-element/json-module/does/not/exist') with script ('https://web-platform.test:8444/html/semantics/scripting-1/the-script-element/json-module/non-object.tentative.any.worker.js'): ServiceWorker script evaluation failed
+FAIL Non-object: null promise_test: Unhandled rejection with value: object "TypeError: import() is disallowed on ServiceWorkerGlobalScope by the HTML specification. See https://github.com/w3c/ServiceWorker/issues/1356."
+FAIL Non-object: true promise_test: Unhandled rejection with value: object "TypeError: import() is disallowed on ServiceWorkerGlobalScope by the HTML specification. See https://github.com/w3c/ServiceWorker/issues/1356."
+FAIL Non-object: false promise_test: Unhandled rejection with value: object "TypeError: import() is disallowed on ServiceWorkerGlobalScope by the HTML specification. See https://github.com/w3c/ServiceWorker/issues/1356."
+FAIL Non-object: string promise_test: Unhandled rejection with value: object "TypeError: import() is disallowed on ServiceWorkerGlobalScope by the HTML specification. See https://github.com/w3c/ServiceWorker/issues/1356."
+FAIL Non-object: array promise_test: Unhandled rejection with value: object "TypeError: import() is disallowed on ServiceWorkerGlobalScope by the HTML specification. See https://github.com/w3c/ServiceWorker/issues/1356."
 Harness: the test ran to completion.
 

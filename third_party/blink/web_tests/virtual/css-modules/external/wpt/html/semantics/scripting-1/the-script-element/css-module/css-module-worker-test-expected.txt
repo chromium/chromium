@@ -1,6 +1,0 @@
-This is a testharness.js-based test.
-PASS A static import CSS Module within a web worker should not load.
-PASS A dynamic import CSS Module within a web worker should not load.
-PASS A CSS Module within a web worker should not load.
-Harness: the test ran to completion.
-

@@ -5631,14 +5631,6 @@ crbug.com/1176286 [ Linux ] http/tests/devtools/a11y-axe-core/settings/blackbox-
 crbug.com/1176286 [ Linux ] http/tests/devtools/network/network-serviceworker-timing-view.js [ Failure Pass ]
 crbug.com/1176286 [ Linux ] http/tests/devtools/network/subresource-integrity-number-of-requests-for-stylesheet.js [ Failure Pass ]
 
-# The non-virtual versions of these tests time out due to syntax errors in script without import assertions enabled
-crbug.com/1132413 external/wpt/html/semantics/scripting-1/the-script-element/css-module/css-module-worker-test.html [ Pass Timeout ]
-crbug.com/1132413 external/wpt/html/semantics/scripting-1/the-script-element/css-module/utf8.tentative.html [ Pass Timeout ]
-crbug.com/1132413 external/wpt/html/semantics/scripting-1/the-script-element/json-module/module.tentative.html [ Pass Timeout ]
-crbug.com/1132413 external/wpt/html/semantics/scripting-1/the-script-element/json-module/non-object.tentative.any.sharedworker.html [ Pass Timeout ]
-crbug.com/1132413 external/wpt/html/semantics/scripting-1/the-script-element/json-module/utf8.tentative.html [ Pass Timeout ]
-crbug.com/1132413 external/wpt/html/semantics/scripting-1/the-script-element/json-module/valid-content-type.tentative.html [ Pass Timeout ]
-
 # Sheriff 2021-02-11
 crbug.com/1177573 http/tests/inspector-protocol/animation/animation-pause.js [ Failure Pass ]
 crbug.com/1177573 http/tests/inspector-protocol/animation/animation-pause-infinite.js [ Failure Pass ]

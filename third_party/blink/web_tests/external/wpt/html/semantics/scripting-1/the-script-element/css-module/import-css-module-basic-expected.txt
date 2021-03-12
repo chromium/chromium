@@ -1,8 +1,0 @@
-This is a testharness.js-based test.
-FAIL A CSS Module should load assert_equals: CSS module import should succeed expected "rgb(255, 0, 0)" but got "rgba(0, 0, 0, 0)"
-FAIL A large CSS Module should load assert_equals: CSS module import should succeed expected "rgb(255, 0, 0)" but got "rgba(0, 0, 0, 0)"
-FAIL An @import CSS Module should not load, but should not throw an exception assert_equals: expected (undefined) undefined but got (string) "SyntaxError"
-PASS Malformed CSS should not load
-PASS CSS module without type assertion should result in a fetch error
-Harness: the test ran to completion.
-
