@@ -1045,7 +1045,7 @@ void FragmentPaintPropertyTreeBuilder::UpdateTransform() {
     }
     if (transform->IsIdentityOr2DTranslation()) {
       context_.translation_2d_to_layout_shift_root_delta +=
-          transform->Translation2D();
+          PhysicalOffset::FromFloatSizeRound(transform->Translation2D());
     }
   } else if (RuntimeEnabledFeatures::TransformInteropEnabled() &&
              !object_.IsAnonymous()) {
@@ -1988,12 +1988,6 @@ static MainThreadScrollingReasons GetMainThreadScrollingReasons(
 void FragmentPaintPropertyTreeBuilder::UpdateScrollAndScrollTranslation() {
   DCHECK(properties_);
 
-  FloatSize old_scroll_offset;
-  if (const auto* old_scroll_translation = properties_->ScrollTranslation()) {
-    DCHECK(full_context_.was_layout_shift_root);
-    old_scroll_offset = old_scroll_translation->Translation2D();
-  }
-
   if (NeedsPaintPropertyUpdate()) {
     if (object_.IsBox() && To<LayoutBox>(object_).NeedsScrollNode(
                                full_context_.direct_compositing_reasons)) {
@@ -2144,17 +2138,12 @@ void FragmentPaintPropertyTreeBuilder::UpdateScrollAndScrollTranslation() {
   if (properties_->Scroll())
     context_.current.scroll = properties_->Scroll();
 
-  if (const auto* scroll_translation = properties_->ScrollTranslation()) {
-    context_.current.transform = scroll_translation;
+  if (properties_->ScrollTranslation()) {
+    context_.current.transform = properties_->ScrollTranslation();
     // See comments for ScrollTranslation in object_paint_properties.h for the
     // reason of adding ScrollOrigin().
     context_.current.paint_offset +=
         PhysicalOffset(To<LayoutBox>(object_).ScrollOrigin());
-
-    // A scroller creates a layout shift root, so we just calculate one scroll
-    // offset delta without accumulation.
-    context_.current.scroll_offset_to_layout_shift_root_delta =
-        scroll_translation->Translation2D() - old_scroll_offset;
   }
 }
 
@@ -2713,13 +2702,10 @@ void FragmentPaintPropertyTreeBuilder::UpdateForSelf() {
   // For LayoutView, additional_offset_to_layout_shift_root_delta applies to
   // neither itself nor descendants. For other layout shift roots, we clear the
   // delta at the end of UpdateForChildren() because the delta still applies to
-  // the object itself. Same for translation_2d_to_layout_shift_delta and
-  // scroll_offset_to_layout_shift_root_delta.
+  // the object itself.
   if (IsA<LayoutView>(object_)) {
     context_.current.additional_offset_to_layout_shift_root_delta =
-        PhysicalOffset();
-    context_.translation_2d_to_layout_shift_root_delta = FloatSize();
-    context_.current.scroll_offset_to_layout_shift_root_delta = FloatSize();
+        context_.translation_2d_to_layout_shift_root_delta = PhysicalOffset();
   }
 }
 
@@ -2754,11 +2740,7 @@ void FragmentPaintPropertyTreeBuilder::UpdateForChildren() {
     // additional_offset_to_layout_shift_root_delta.
     context_.current.additional_offset_to_layout_shift_root_delta =
         context_.old_paint_offset - fragment_data_.PaintOffset();
-    context_.translation_2d_to_layout_shift_root_delta = FloatSize();
-    // Don't reset scroll_offset_to_layout_shift_root_delta if this object has
-    // scroll translation because we need to propagate the delta to descendants.
-    if (!properties_ || !properties_->ScrollTranslation())
-      context_.current.scroll_offset_to_layout_shift_root_delta = FloatSize();
+    context_.translation_2d_to_layout_shift_root_delta = PhysicalOffset();
   }
 
 #if DCHECK_IS_ON()
@@ -2797,7 +2779,7 @@ void PaintPropertyTreeBuilder::InitFragmentPaintProperties(
     if (const auto* transform = properties->Transform()) {
       if (transform->IsIdentityOr2DTranslation()) {
         context.translation_2d_to_layout_shift_root_delta -=
-            transform->Translation2D();
+            PhysicalOffset::FromFloatSizeRound(transform->Translation2D());
       }
     }
   }
