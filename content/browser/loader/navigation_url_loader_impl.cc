@@ -432,7 +432,8 @@ void NavigationURLLoaderImpl::CreateInterceptors(
     CHECK(appcache_handle->host());
     std::unique_ptr<NavigationLoaderInterceptor> appcache_interceptor =
         AppCacheRequestHandler::InitializeForMainResourceNetworkService(
-            *resource_request_, appcache_handle->host()->GetWeakPtr());
+            *resource_request_, appcache_handle->host()->GetWeakPtr(),
+            frame_tree_node_id_);
     if (appcache_interceptor)
       interceptors_.push_back(std::move(appcache_interceptor));
   }

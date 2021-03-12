@@ -131,7 +131,8 @@ class CONTENT_EXPORT AppCacheHost : public blink::mojom::AppCacheHost,
   std::unique_ptr<AppCacheRequestHandler> CreateRequestHandler(
       std::unique_ptr<AppCacheRequest> request,
       network::mojom::RequestDestination request_destination,
-      bool should_reset_appcache);
+      bool should_reset_appcache,
+      int frame_tree_node_id);
 
   // Support for devtools inspecting appcache resources.
   void GetResourceListSync(

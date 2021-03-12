@@ -706,7 +706,8 @@ class AppCacheRequestHandlerTest : public ::testing::Test {
     auto request = std::make_unique<AppCacheRequest>(resource_request);
     request_ = request.get();
     handler_ =
-        host->CreateRequestHandler(std::move(request), destination, false);
+        host->CreateRequestHandler(std::move(request), destination, false,
+                                   FrameTreeNode::kFrameTreeNodeInvalidId);
   }
 
   // Data members --------------------------------------------------

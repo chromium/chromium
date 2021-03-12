@@ -46,7 +46,8 @@ AppCacheRequestHandler::AppCacheRequestHandler(
     AppCacheHost* host,
     network::mojom::RequestDestination request_destination,
     bool should_reset_appcache,
-    std::unique_ptr<AppCacheRequest> request)
+    std::unique_ptr<AppCacheRequest> request,
+    int frame_tree_node_id)
     : host_(host),
       request_destination_(request_destination),
       should_reset_appcache_(should_reset_appcache),
@@ -59,7 +60,8 @@ AppCacheRequestHandler::AppCacheRequestHandler(
       maybe_load_resource_executed_(false),
       cache_id_(blink::mojom::kAppCacheNoCacheId),
       service_(host_->service()),
-      request_(std::move(request)) {
+      request_(std::move(request)),
+      frame_tree_node_id_(frame_tree_node_id) {
   DCHECK(host_);
   DCHECK(service_);
   host_->AddObserver(this);
@@ -231,11 +233,12 @@ void AppCacheRequestHandler::GetExtraResponseInfo(int64_t* cache_id,
 std::unique_ptr<AppCacheRequestHandler>
 AppCacheRequestHandler::InitializeForMainResourceNetworkService(
     const network::ResourceRequest& request,
-    base::WeakPtr<AppCacheHost> appcache_host) {
+    base::WeakPtr<AppCacheHost> appcache_host,
+    int frame_tree_node_id) {
   std::unique_ptr<AppCacheRequestHandler> handler =
       appcache_host->CreateRequestHandler(
           std::make_unique<AppCacheRequest>(request), request.destination,
-          request.should_reset_appcache);
+          request.should_reset_appcache, frame_tree_node_id);
   if (handler)
     handler->appcache_host_ = std::move(appcache_host);
   return handler;
@@ -422,7 +425,6 @@ void AppCacheRequestHandler::OnMainResponseFound(
 
 // NetworkService loading:
 void AppCacheRequestHandler::RunLoaderCallbackForMainResource(
-    int frame_tree_node_id,
     BrowserContext* browser_context,
     LoaderCallback callback,
     SingleRequestURLLoaderFactory::RequestHandler handler) {
@@ -436,7 +438,7 @@ void AppCacheRequestHandler::RunLoaderCallbackForMainResource(
     single_request_factory =
         base::MakeRefCounted<SingleRequestURLLoaderFactory>(std::move(handler));
     FrameTreeNode* frame_tree_node =
-        FrameTreeNode::GloballyFindByID(frame_tree_node_id);
+        FrameTreeNode::GloballyFindByID(frame_tree_node_id_);
     if (frame_tree_node && frame_tree_node->navigation_request()) {
       mojo::PendingRemote<network::mojom::URLLoaderFactory> pending_factory;
       auto factory_receiver = pending_factory.InitWithNewPipeAndPassReceiver();
@@ -569,7 +571,6 @@ void AppCacheRequestHandler::MaybeCreateLoader(
       tentative_resource_request,
       base::BindOnce(&AppCacheRequestHandler::RunLoaderCallbackForMainResource,
                      weak_factory_.GetWeakPtr(),
-                     tentative_resource_request.render_frame_id,
                      browser_context, std::move(callback)));
 }
 

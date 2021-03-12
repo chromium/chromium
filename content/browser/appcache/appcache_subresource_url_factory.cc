@@ -84,7 +84,7 @@ class SubresourceLoader : public network::mojom::URLLoader,
     }
     handler_ = host_->CreateRequestHandler(
         std::make_unique<AppCacheRequest>(request_), request_.destination,
-        request_.should_reset_appcache);
+        request_.should_reset_appcache, FrameTreeNode::kFrameTreeNodeInvalidId);
     if (!handler_) {
       CreateAndStartNetworkLoader();
       return;

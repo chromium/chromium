@@ -59,7 +59,8 @@ WorkerScriptLoader::WorkerScriptLoader(
   if (appcache_host) {
     std::unique_ptr<NavigationLoaderInterceptor> appcache_interceptor =
         AppCacheRequestHandler::InitializeForMainResourceNetworkService(
-            resource_request_, appcache_host);
+            resource_request_, appcache_host,
+            RenderFrameHost::kNoFrameTreeNodeId);
     if (appcache_interceptor)
       interceptors_.push_back(std::move(appcache_interceptor));
   }
