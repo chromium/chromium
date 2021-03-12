@@ -46,6 +46,11 @@
 #include "base/files/file_descriptor_watcher_posix.h"
 #endif  // defined(OS_POSIX)
 
+#if defined(OS_LINUX) || defined(OS_CHROMEOS)
+#include "base/files/file_path_watcher_linux.h"
+#include "base/format_macros.h"
+#endif
+
 namespace base {
 
 namespace {
@@ -895,6 +900,137 @@ TEST_F(FilePathWatcherTest, RacyRecursiveWatch) {
 
     // There should be no outstanding watchers.
     ASSERT_FALSE(FilePathWatcher::HasWatchesForTest());
+  }
+}
+
+// Verify that "Watch()" returns false and callback is not invoked when limit is
+// hit during setup.
+TEST_F(FilePathWatcherTest, InotifyLimitInWatch) {
+  auto watcher = std::make_unique<FilePathWatcher>();
+
+  // "test_file()" is like "/tmp/__unique_path__/FilePathWatcherTest" and has 4
+  // dir components ("/" + 3 named parts). "Watch()" creates inotify watches
+  // for each dir component of the given dir. It would fail with limit set to 1.
+  ScopedMaxNumberOfInotifyWatchesOverrideForTest max_inotify_watches(1);
+  ASSERT_FALSE(watcher->Watch(
+      test_file(), FilePathWatcher::Type::kNonRecursive,
+      base::BindLambdaForTesting(
+          [&](const FilePath& path, bool error) { ADD_FAILURE(); })));
+
+  // Triggers update but callback should not be invoked.
+  ASSERT_TRUE(WriteFile(test_file(), "content"));
+
+  // Ensures that the callback did not happen.
+  base::RunLoop().RunUntilIdle();
+}
+
+// Verify that "error=true" callback happens when limit is hit during update.
+TEST_F(FilePathWatcherTest, InotifyLimitInUpdate) {
+  enum kTestType {
+    // Destroy watcher in "error=true" callback.
+    // No crash/deadlock when releasing watcher in the callback.
+    kDestroyWatcher,
+
+    // Do not destroy watcher in "error=true" callback.
+    kDoNothing,
+  };
+
+  for (auto callback_type : {kDestroyWatcher, kDoNothing}) {
+    SCOPED_TRACE(testing::Message() << "type=" << callback_type);
+
+    base::RunLoop run_loop;
+    auto watcher = std::make_unique<FilePathWatcher>();
+
+    bool error_callback_called = false;
+    auto watcher_callback =
+        base::BindLambdaForTesting([&](const FilePath& path, bool error) {
+          // No callback should happen after "error=true" one.
+          ASSERT_FALSE(error_callback_called);
+
+          if (!error)
+            return;
+
+          error_callback_called = true;
+
+          if (callback_type == kDestroyWatcher)
+            watcher.reset();
+
+          run_loop.Quit();
+        });
+    ASSERT_TRUE(watcher->Watch(
+        test_file(), FilePathWatcher::Type::kNonRecursive, watcher_callback));
+
+    ScopedMaxNumberOfInotifyWatchesOverrideForTest max_inotify_watches(1);
+
+    // Triggers update and over limit.
+    ASSERT_TRUE(WriteFile(test_file(), "content"));
+
+    run_loop.Run();
+
+    // More update but no more callback should happen.
+    ASSERT_TRUE(DeleteFile(test_file()));
+    base::RunLoop().RunUntilIdle();
+  }
+}
+
+// Similar to InotifyLimitInUpdate but test a recursive watcher.
+TEST_F(FilePathWatcherTest, InotifyLimitInUpdateRecursive) {
+  enum kTestType {
+    // Destroy watcher in "error=true" callback.
+    // No crash/deadlock when releasing watcher in the callback.
+    kDestroyWatcher,
+
+    // Do not destroy watcher in "error=true" callback.
+    kDoNothing,
+  };
+
+  FilePath dir(temp_dir_.GetPath().AppendASCII("dir"));
+
+  for (auto callback_type : {kDestroyWatcher, kDoNothing}) {
+    SCOPED_TRACE(testing::Message() << "type=" << callback_type);
+
+    base::RunLoop run_loop;
+    auto watcher = std::make_unique<FilePathWatcher>();
+
+    bool error_callback_called = false;
+    auto watcher_callback =
+        base::BindLambdaForTesting([&](const FilePath& path, bool error) {
+          // No callback should happen after "error=true" one.
+          ASSERT_FALSE(error_callback_called);
+
+          if (!error)
+            return;
+
+          error_callback_called = true;
+
+          if (callback_type == kDestroyWatcher)
+            watcher.reset();
+
+          run_loop.Quit();
+        });
+    ASSERT_TRUE(watcher->Watch(dir, FilePathWatcher::Type::kRecursive,
+                               watcher_callback));
+
+    constexpr size_t kMaxLimit = 10u;
+    ScopedMaxNumberOfInotifyWatchesOverrideForTest max_inotify_watches(
+        kMaxLimit);
+
+    // Triggers updates and over limit.
+    for (size_t i = 0; i < kMaxLimit; ++i) {
+      base::FilePath subdir =
+          dir.AppendASCII(base::StringPrintf("subdir_%" PRIuS, i));
+      ASSERT_TRUE(CreateDirectory(subdir));
+    }
+
+    run_loop.Run();
+
+    // More update but no more callback should happen.
+    for (size_t i = 0; i < kMaxLimit; ++i) {
+      base::FilePath subdir =
+          dir.AppendASCII(base::StringPrintf("subdir_%" PRIuS, i));
+      ASSERT_TRUE(DeleteFile(subdir));
+    }
+    base::RunLoop().RunUntilIdle();
   }
 }
 
