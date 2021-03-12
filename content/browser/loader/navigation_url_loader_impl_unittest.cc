@@ -16,6 +16,7 @@
 #include "content/browser/loader/navigation_loader_interceptor.h"
 #include "content/browser/loader/navigation_url_loader.h"
 #include "content/browser/loader/single_request_url_loader_factory.h"
+#include "content/browser/renderer_host/frame_tree_node.h"
 #include "content/browser/renderer_host/navigation_request_info.h"
 #include "content/browser/web_package/prefetched_signed_exchange_cache.h"
 #include "content/common/navigation_params.h"
@@ -199,20 +200,20 @@ class NavigationURLLoaderImplTest : public testing::Test {
     url::Origin origin = url::Origin::Create(url);
 
     std::unique_ptr<NavigationRequestInfo> request_info(
-        new NavigationRequestInfo(
+        std::make_unique<NavigationRequestInfo>(
             std::move(common_params), std::move(begin_params),
             net::IsolationInfo::Create(
                 net::IsolationInfo::RequestType::kMainFrame, origin, origin,
                 net::SiteForCookies::FromUrl(url)),
-            is_main_frame, false /* parent_is_main_frame */,
-            false /* are_ancestors_secure */, -1 /* frame_tree_node_id */,
-            false /* is_for_guests_only */, false /* report_raw_headers */,
-            false /* is_prerenering */,
+            is_main_frame, false /* are_ancestors_secure */,
+            FrameTreeNode::kFrameTreeNodeInvalidId /* frame_tree_node_id */,
+            false /* report_raw_headers */, false /* is_prerenering */,
             upgrade_if_insecure /* upgrade_if_insecure */,
             nullptr /* blob_url_loader_factory */,
             base::UnguessableToken::Create() /* devtools_navigation_token */,
             base::UnguessableToken::Create() /* devtools_frame_token */,
-            false /* obey_origin_policy */, {} /* cors_exempt_headers */,
+            false /* obey_origin_policy */,
+            net::HttpRequestHeaders() /* cors_exempt_headers */,
             nullptr /* client_security_state */));
     std::vector<std::unique_ptr<NavigationLoaderInterceptor>> interceptors;
     most_recent_resource_request_ = base::nullopt;

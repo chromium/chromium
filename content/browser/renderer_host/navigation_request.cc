@@ -3096,10 +3096,6 @@ void NavigationRequest::OnStartChecksComplete(
   // Mark the fetch_start (Navigation Timing API).
   commit_params_->navigation_timing->fetch_start = base::TimeTicks::Now();
 
-  bool parent_is_main_frame = !frame_tree_node_->parent()
-                                  ? false
-                                  : frame_tree_node_->parent()->is_main_frame();
-
   std::unique_ptr<NavigationUIData> navigation_ui_data;
   if (navigation_ui_data_)
     navigation_ui_data = navigation_ui_data_->Clone();
@@ -3164,10 +3160,9 @@ void NavigationRequest::OnStartChecksComplete(
       browser_context, partition,
       std::make_unique<NavigationRequestInfo>(
           common_params_->Clone(), begin_params_.Clone(), GetIsolationInfo(),
-          frame_tree_node_->IsMainFrame(), parent_is_main_frame,
+          frame_tree_node_->IsMainFrame(),
           IsSecureFrame(frame_tree_node_->parent()),
-          frame_tree_node_->frame_tree_node_id(),
-          starting_site_instance_->IsGuest(), report_raw_headers,
+          frame_tree_node_->frame_tree_node_id(), report_raw_headers,
           navigating_frame_host->GetVisibilityState() ==
               PageVisibilityState::kHiddenButPainting,
           upgrade_if_insecure_,

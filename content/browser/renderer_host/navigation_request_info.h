@@ -31,10 +31,8 @@ struct CONTENT_EXPORT NavigationRequestInfo {
       mojom::BeginNavigationParamsPtr begin_params,
       const net::IsolationInfo& isolation_info,
       bool is_main_frame,
-      bool parent_is_main_frame,
       bool are_ancestors_secure,
       int frame_tree_node_id,
-      bool is_for_guests_only,
       bool report_raw_headers,
       bool is_prerendering,
       bool upgrade_if_insecure,
@@ -60,15 +58,12 @@ struct CONTENT_EXPORT NavigationRequestInfo {
   const net::IsolationInfo isolation_info;
 
   const bool is_main_frame;
-  const bool parent_is_main_frame;
 
   // Whether all ancestor frames of the frame that is navigating have a secure
   // origin. True for main frames.
   const bool are_ancestors_secure;
 
   const int frame_tree_node_id;
-
-  const bool is_for_guests_only;
 
   const bool report_raw_headers;
 

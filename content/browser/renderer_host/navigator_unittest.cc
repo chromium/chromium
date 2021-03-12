@@ -463,7 +463,6 @@ TEST_F(NavigatorTest, BeginNavigation) {
           .IsEqualForTesting(subframe_loader->request_info()->isolation_info));
 
   EXPECT_FALSE(subframe_loader->request_info()->is_main_frame);
-  EXPECT_TRUE(subframe_loader->request_info()->parent_is_main_frame);
   EXPECT_TRUE(subframe_request->browser_initiated());
   EXPECT_FALSE(GetSpeculativeRenderFrameHost(root_node));
 
@@ -505,7 +504,6 @@ TEST_F(NavigatorTest, BeginNavigation) {
           net::SiteForCookies::FromUrl(kUrl3), std::set<net::SchemefulSite>())
           .IsEqualForTesting(main_loader->request_info()->isolation_info));
   EXPECT_TRUE(main_loader->request_info()->is_main_frame);
-  EXPECT_FALSE(main_loader->request_info()->parent_is_main_frame);
   EXPECT_TRUE(main_request->browser_initiated());
   // BeforeUnloadCompleted callback was invoked by the renderer so the
   // navigation should have started.
