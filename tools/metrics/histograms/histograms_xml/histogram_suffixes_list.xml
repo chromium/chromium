@@ -860,6 +860,21 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <affected-histogram name="Signin.AndroidGetAccountsTimeUiThread"/>
 </histogram_suffixes>
 
+<histogram_suffixes name="AndroidProcessExitReasons" separator=".">
+  <owner>boliu@google.com</owner>
+  <owner>ssid@chromium.org</owner>
+  <suffix name="Browser" label="Recorded for Browser crashes."/>
+  <suffix name="GpuForegroundOom"
+      label="Recorded for foreground GPU process OOM crashes."/>
+  <suffix name="UtilityForegroundOom"
+      label="Recorded for foreground utility process OOM crashes."/>
+  <suffix name="VisibleMainFrameOom"
+      label="Recorded for visible main frame renderer OOM crashes."/>
+  <suffix name="VisibleSubframeOom"
+      label="Recorded for visible subframe renderer OOM crashes."/>
+  <affected-histogram name="Stability.Android.SystemExitReason"/>
+</histogram_suffixes>
+
 <histogram_suffixes name="AndroidProcessType" separator=".">
   <suffix name="Browser" label="Browser process"/>
   <suffix name="ChildService"

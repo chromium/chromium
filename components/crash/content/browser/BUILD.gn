@@ -52,6 +52,8 @@ source_set("browser") {
       "crash_memory_metrics_collector_android.h",
       "crash_metrics_reporter_android.cc",
       "crash_metrics_reporter_android.h",
+      "process_exit_reason_from_system_android.cc",
+      "process_exit_reason_from_system_android.h",
     ]
     deps += [
       "//components/crash/android:jni_headers",

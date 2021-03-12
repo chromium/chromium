@@ -8,6 +8,7 @@ _jni_sources = [
   "java/src/org/chromium/components/crash/CrashKeys.java",
   "java/src/org/chromium/components/crash/browser/ChildProcessCrashObserver.java",
   "java/src/org/chromium/components/crash/browser/PackagePaths.java",
+  "java/src/org/chromium/components/crash/browser/ProcessExitReasonFromSystem.java",
 ]
 
 generate_jni("jni_headers") {

@@ -10,6 +10,7 @@ import android.content.ComponentName;
 import android.content.Intent;
 import android.os.Build;
 import android.os.PersistableBundle;
+import android.os.Process;
 
 import androidx.annotation.StringDef;
 import androidx.annotation.VisibleForTesting;
@@ -19,8 +20,11 @@ import org.chromium.base.Log;
 import org.chromium.base.StreamUtil;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.metrics.RecordHistogram;
+import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
+import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
 import org.chromium.chrome.browser.privacy.settings.PrivacyPreferencesManagerImpl;
 import org.chromium.components.background_task_scheduler.TaskIds;
+import org.chromium.components.crash.browser.ProcessExitReasonFromSystem;
 import org.chromium.components.minidump_uploader.CrashFileManager;
 import org.chromium.components.minidump_uploader.MinidumpUploadCallable;
 import org.chromium.components.minidump_uploader.MinidumpUploadCallable.MinidumpUploadStatus;
@@ -121,6 +125,15 @@ public class MinidumpUploadServiceImpl extends MinidumpUploadService.Impl {
      */
     public static void storeBreakpadUploadStatsInUma(CrashUploadCountStore pref) {
         sBrowserCrashMetricsInitialized.set(true);
+
+        SharedPreferencesManager sharedPrefs = SharedPreferencesManager.getInstance();
+        int previous_pid = sharedPrefs.readInt(ChromePreferenceKeys.LAST_SESSION_BROWSER_PID);
+        sharedPrefs.writeInt(ChromePreferenceKeys.LAST_SESSION_BROWSER_PID, Process.myPid());
+        if (previous_pid != 0) {
+            ProcessExitReasonFromSystem.recordExitReasonToUma(
+                    previous_pid, "Stability.Android.SystemExitReason.Browser");
+        }
+
         for (String type : TYPES) {
             for (int success = pref.getCrashSuccessUploadCount(type); success > 0; success--) {
                 RecordHistogram.recordEnumeratedHistogram(

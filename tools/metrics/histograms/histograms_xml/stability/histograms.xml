@@ -46,8 +46,12 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Stability.Android.ProcessedCrashCounts"
-    enum="AndroidProcessedCrashCounts" expires_after="2021-07-11">
+    enum="AndroidProcessedCrashCounts" expires_after="never">
+<!-- expires-never: Critical stability metric that includes OOM rate. -->
+
   <owner>boliu@chromium.org</owner>
+  <owner>ssid@chromium.org</owner>
+  <owner>wnwen@chromium.org</owner>
   <summary>
     Individual enum counts specific conditions of child process terminations.
     There are too many individual states to enumerate into a single histogram,
@@ -116,6 +120,16 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
     with strong binding is OOM killed by Android. Recorded when such a OOM kill
     is detected by browser. Note this does not distinguish process type, and is
     for example count both GPU and renderer process.
+  </summary>
+</histogram>
+
+<histogram base="true" name="Stability.Android.SystemExitReason"
+    enum="AndroidProcessExitReason" expires_after="2022-03-01">
+  <owner>boliu@chromium.org</owner>
+  <owner>ssid@chromium.org</owner>
+  <owner>wnwen@chromium.org</owner>
+  <summary>
+    Reason given by Android ActivityManager for the exit of the process.
   </summary>
 </histogram>
 

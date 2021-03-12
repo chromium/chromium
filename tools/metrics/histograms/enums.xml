@@ -2100,6 +2100,23 @@ Unknown properties are collapsed to zero. -->
   <int value="3" label="Gpu"/>
 </enum>
 
+<enum name="AndroidProcessExitReason">
+  <int value="0" label="ANR"/>
+  <int value="1" label="Crash"/>
+  <int value="2" label="Native Crash"/>
+  <int value="3" label="Dependency Died"/>
+  <int value="4" label="Excessive resource usage"/>
+  <int value="5" label="Exit self"/>
+  <int value="6" label="Initialiaztion Failure"/>
+  <int value="7" label="Low memory"/>
+  <int value="8" label="Other reason"/>
+  <int value="9" label="Permission change"/>
+  <int value="10" label="Exit signalled"/>
+  <int value="11" label="Unknown reason"/>
+  <int value="12" label="User requested"/>
+  <int value="13" label="User stopped"/>
+</enum>
+
 <enum name="AndroidResourceBundleLocaleFailures">
   <int value="0" label="Locale Pak file was not found"/>
   <int value="1" label="LoadDataPackFromLocalePak() primary call failed"/>
