@@ -109,6 +109,26 @@ class MockTranslateMetricsLoggerContainer
         has_href_translate_target);
   }
 
+  void LogHTMLDocumentLanguage(const std::string& html_doc_language) override {
+    mock_translate_metrics_logger_->LogHTMLDocumentLanguage(html_doc_language);
+  }
+
+  void LogHTMLContentLanguage(
+      const std::string& html_content_language) override {
+    mock_translate_metrics_logger_->LogHTMLDocumentLanguage(
+        html_content_language);
+  }
+
+  void LogDetectedLanguage(const std::string& detected_language) override {
+    mock_translate_metrics_logger_->LogDetectedLanguage(detected_language);
+  }
+
+  void LogDetectionReliabilityScore(
+      const float& model_detection_reliability_score) override {
+    mock_translate_metrics_logger_->LogDetectionReliabilityScore(
+        model_detection_reliability_score);
+  }
+
  private:
   translate::testing::MockTranslateMetricsLogger*
       mock_translate_metrics_logger_;  // Weak.

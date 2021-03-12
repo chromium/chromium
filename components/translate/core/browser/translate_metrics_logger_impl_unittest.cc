@@ -43,7 +43,11 @@ const char* kAllUkmMetricNames[] = {
     ukm::builders::TranslatePageLoad::kNumTranslateErrorsName,
     ukm::builders::TranslatePageLoad::kTotalTimeTranslatedName,
     ukm::builders::TranslatePageLoad::kTotalTimeNotTranslatedName,
-    ukm::builders::TranslatePageLoad::kMaxTimeToTranslateName};
+    ukm::builders::TranslatePageLoad::kMaxTimeToTranslateName,
+    ukm::builders::TranslatePageLoad::kHTMLDocumentLanguageName,
+    ukm::builders::TranslatePageLoad::kHTMLContentLanguageName,
+    ukm::builders::TranslatePageLoad::kModelDetectedLanguageName,
+    ukm::builders::TranslatePageLoad::kModelDetectionReliabilityScoreName};
 }  // namespace
 
 class TranslateMetricsLoggerImplTest : public ::testing::Test {
@@ -211,6 +215,41 @@ class TranslateMetricsLoggerImplTest : public ::testing::Test {
               int(base::HashMetricName(expected_initial_target_language)));
   }
 
+  void CheckUkmEntryHTMLDocumentLanguage(
+      const ukm::TestUkmRecorder::HumanReadableUkmEntry& ukm_entry,
+      const std::string& expected_html_doc_language) {
+    EXPECT_EQ(ukm_entry.metrics.at(
+                  ukm::builders::TranslatePageLoad::kHTMLDocumentLanguageName),
+              int(base::HashMetricName(expected_html_doc_language)));
+  }
+
+  void CheckUkmEntryHTMLContentLanguage(
+      const ukm::TestUkmRecorder::HumanReadableUkmEntry& ukm_entry,
+      const std::string& expected_html_content_language) {
+    EXPECT_EQ(ukm_entry.metrics.at(
+                  ukm::builders::TranslatePageLoad::kHTMLContentLanguageName),
+              int(base::HashMetricName(expected_html_content_language)));
+  }
+
+  void CheckUkmEntryModelDetectionReliabilityScore(
+      const ukm::TestUkmRecorder::HumanReadableUkmEntry& ukm_entry,
+      const float& expected_model_detection_reliability_score) {
+    EXPECT_EQ(ukm_entry.metrics.at(ukm::builders::TranslatePageLoad::
+                                       kModelDetectionReliabilityScoreName),
+              ukm::GetLinearBucketMin(
+                  static_cast<int64_t>(
+                      100 * expected_model_detection_reliability_score),
+                  5));
+  }
+
+  void CheckUkmEntryModelDetectedLanguage(
+      const ukm::TestUkmRecorder::HumanReadableUkmEntry& ukm_entry,
+      const std::string& expected_model_detected_language) {
+    EXPECT_EQ(ukm_entry.metrics.at(
+                  ukm::builders::TranslatePageLoad::kModelDetectedLanguageName),
+              int(base::HashMetricName(expected_model_detected_language)));
+  }
+
   void CheckUkmEntryFinalTargetLanguage(
       const ukm::TestUkmRecorder::HumanReadableUkmEntry& ukm_entry,
       const std::string& expected_final_target_language) {
@@ -337,6 +376,11 @@ TEST_F(TranslateMetricsLoggerImplTest, RecordUkmMetrics) {
   const std::string initial_target_language = "de";
   const std::string final_target_language = "fr";
 
+  const std::string html_doc_language = "es";
+  const std::string html_content_language = "es";
+  const std::string model_detected_language = "es";
+  const float model_detection_reliability_score = .5;
+
   // Simulate a page load where the following happens: the Ranker decides to
   // show the translate UI, the user initiates a manual translation which
   // finishes without an error, the user reverts the translations, the user
@@ -381,6 +425,11 @@ TEST_F(TranslateMetricsLoggerImplTest, RecordUkmMetrics) {
   translate_metrics_logger()->LogUIInteraction(
       UIInteraction::kChangeTargetLanguage);
   translate_metrics_logger()->LogTargetLanguage(final_target_language);
+  translate_metrics_logger()->LogHTMLDocumentLanguage(html_doc_language);
+  translate_metrics_logger()->LogHTMLContentLanguage(html_content_language);
+  translate_metrics_logger()->LogDetectionReliabilityScore(
+      model_detection_reliability_score);
+  translate_metrics_logger()->LogDetectedLanguage(model_detected_language);
   translate_metrics_logger()->LogUIInteraction(UIInteraction::kTranslate);
 
   translate_metrics_logger()->LogTranslationStarted(
@@ -435,6 +484,11 @@ TEST_F(TranslateMetricsLoggerImplTest, RecordUkmMetrics) {
   CheckUkmEntryInitialSourceLanguageInContentLanguages(
       ukm_entries[0], is_initial_source_language_in_users_content_languages);
   CheckUkmEntryInitialTargetLanguage(ukm_entries[0], initial_target_language);
+  CheckUkmEntryHTMLDocumentLanguage(ukm_entries[0], html_doc_language);
+  CheckUkmEntryHTMLDocumentLanguage(ukm_entries[0], html_content_language);
+  CheckUkmEntryModelDetectionReliabilityScore(
+      ukm_entries[0], model_detection_reliability_score);
+  CheckUkmEntryModelDetectedLanguage(ukm_entries[0], model_detected_language);
   CheckUkmEntryFinalTargetLanguage(ukm_entries[0], final_target_language);
   CheckUkmEntryNumTargetLanguageChanges(ukm_entries[0], 1);
   CheckUkmEntryFirstUIInteraction(ukm_entries[0], UIInteraction::kTranslate);
