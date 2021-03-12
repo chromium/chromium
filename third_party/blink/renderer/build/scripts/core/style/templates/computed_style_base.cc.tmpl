@@ -1,5 +1,5 @@
 {% from 'templates/macros.tmpl' import license, print_if, source_files_for_generated_file %}
-{% from 'templates/fields/field.tmpl' import encode, getter_expression, setter_expression, fieldwise_copy, fieldwise_diff %}
+{% from 'templates/fields/field.tmpl' import encode, getter_expression, setter_expression, fieldwise_debug_diff, fieldwise_copy, fieldwise_diff %}
 {% from 'templates/fields/group.tmpl' import define_field_group_class %}
 {{license()}}
 
@@ -72,6 +72,16 @@ bool ComputedStyleBase::{{name}}(const ComputedStyle& a, const ComputedStyle& b)
 }
 
 {% endfor %}
+
+#if DCHECK_IS_ON()
+
+Vector<String> ComputedStyleBase::DebugDiffFields(const ComputedStyleBase& o) const {
+  Vector<String> diff;
+  {{fieldwise_debug_diff(computed_style, computed_style.all_fields)|indent(2)}}
+  return diff;
+}
+
+#endif // DCHECK_IS_ON()
 
 {% for group in computed_style.subgroups %}
 {{define_field_group_class(group)}}

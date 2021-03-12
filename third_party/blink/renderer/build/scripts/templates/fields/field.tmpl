@@ -109,6 +109,17 @@ const {{field.type_name}}&
 {% endfor %}
 {% endmacro %}
 
+{% macro fieldwise_debug_diff(group, fields_to_compare) %}
+{% for subgroup in group.subgroups %}
+  {{fieldwise_debug_diff(subgroup, fields_to_compare)}}
+{% endfor %}
+// Group: {{group.name}}
+{% for field in group.fields|rejectattr("custom_compare")|select("in", fields_to_compare) -%}
+  if (!({{compare(field.wrapper_pointer_name, getter_expression(field), "o")}}))
+    diff.push_back("{{field.name}}");
+{% endfor %}
+{% endmacro %}
+
 {% macro fieldwise_copy(group, fields_to_copy) %}
 {% for subgroup in group.subgroups %}
   {% set group_expression = group_getter_expression(subgroup) %}

@@ -168,6 +168,12 @@ class ComputedStyleBase {
   {{field_templates[field.field_template].decl_public_methods(field)|indent(2)}}
 
   {% endfor %}
+
+#if DCHECK_IS_ON()
+  // Returns a list of all field names that differ between |this| and |o|.
+  CORE_EXPORT Vector<String> DebugDiffFields(const ComputedStyleBase& o) const;
+#endif // DCHECK_IS_ON()
+
  private:
   {% for subgroup in computed_style.subgroups %}
   {{declare_field_group_class(subgroup)|indent(2)}}

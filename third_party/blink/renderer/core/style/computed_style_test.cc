@@ -1165,4 +1165,22 @@ TEST(ComputedStyleTest, SvgMiscStyleShouldCompareValue) {
   TEST_STYLE_VALUE_NO_DIFF(BaselineShift);
 }
 
+#if DCHECK_IS_ON()
+
+TEST(ComputedStyleTest, DebugDiffFields) {
+  scoped_refptr<ComputedStyle> style1 = ComputedStyle::Create();
+  scoped_refptr<ComputedStyle> style2 = ComputedStyle::Create();
+
+  style1->SetWidth(Length(100.0, Length::kFixed));
+  style2->SetWidth(Length(200.0, Length::kFixed));
+
+  EXPECT_EQ(0u, style1->DebugDiffFields(*style1).size());
+  EXPECT_EQ(0u, style2->DebugDiffFields(*style2).size());
+
+  EXPECT_EQ(1u, style1->DebugDiffFields(*style2).size());
+  EXPECT_EQ("width_", style1->DebugDiffFields(*style2)[0]);
+}
+
+#endif  // #if DCHECK_IS_ON()
+
 }  // namespace blink
