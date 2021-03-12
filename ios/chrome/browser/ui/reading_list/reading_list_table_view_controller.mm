@@ -975,13 +975,12 @@ ReadingListSelectionState GetSelectionStateForSelectedCounts(
       }
     }
   };
-  void (^completion)(BOOL) = ^(BOOL) {
-    if (!self.dataSource.hasElements)
-      [self tableIsEmpty];
-    else
-      [self updateToolbarItems];
-  };
-  [self performBatchTableViewUpdates:updates completion:completion];
+
+  [self performBatchTableViewUpdates:updates completion:nil];
+  if (!self.dataSource.hasElements)
+    [self tableIsEmpty];
+  else
+    [self updateToolbarItems];
   return removedSectionCount;
 }
 
