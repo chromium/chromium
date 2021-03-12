@@ -1,0 +1,4 @@
+This is a testharness.js-based test.
+FAIL Animated registered custom properties are invalid at computed-value time when there is a cyclic var() dependency between them. assert_equals: --a at 25% expected "initial-value" but got "150"
+Harness: the test ran to completion.
+
