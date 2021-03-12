@@ -1116,6 +1116,39 @@ TEST_F(WindowCycleControllerTest, AltKeyRelease) {
   EXPECT_FALSE(base::Contains(currently_pressed_keys, ui::VKEY_MENU));
 }
 
+// Test alt-tab will be shown on the display where the cursor is located
+// when there are 2 displays,
+TEST_F(WindowCycleControllerTest, AltTabMultiDisplay) {
+  // |features::kWindowsFollowCursor| enables alt-tab based on cursor position
+  // when there's multiple displays.
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures({features::kWindowsFollowCursor}, {});
+  UpdateDisplay("400x400,401+0-800x800");
+
+  std::unique_ptr<Window> w0 = CreateTestWindow(gfx::Rect(200, 200));
+  std::unique_ptr<Window> w1 = CreateTestWindow(gfx::Rect(420, 10, 200, 200));
+  // |w0| needs to be activated to ensure it is the display for new windows.
+  wm::ActivateWindow(w0.get());
+  // TODO(crbug.com/990589): Unit tests should be able to simulate mouse input
+  // without having to call |CursorManager::SetDisplay|.
+  Shell::Get()->cursor_manager()->SetDisplay(
+      display::Screen::GetScreen()->GetDisplayNearestWindow(w1.get()));
+
+  // Test alt-tab activates on second display where the cursor point at, not
+  // the display for new windows.
+  WindowCycleController* cycle_controller =
+      Shell::Get()->window_cycle_controller();
+  cycle_controller->StartCycling();
+  EXPECT_TRUE(cycle_controller->IsCycling());
+  auto preview_items = GetWindowCycleItemViews();
+  ASSERT_EQ(2u, preview_items.size());
+  // Ensure preview is generated in secondary display where cursor is at.
+  auto preview_display = display::Screen::GetScreen()->GetDisplayNearestWindow(
+      GetWindowCycleListWidget()->GetNativeWindow());
+  EXPECT_EQ(Shell::Get()->cursor_manager()->GetDisplay(), preview_display);
+  CompleteCycling(cycle_controller);
+}
+
 class LimitedWindowCycleControllerTest : public WindowCycleControllerTest {
  public:
   LimitedWindowCycleControllerTest() = default;

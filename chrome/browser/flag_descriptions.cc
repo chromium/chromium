@@ -58,6 +58,12 @@ const char kAllowSyncXHRInPageDismissalDescription[] =
     "Allows synchronous XHR requests during page dismissal when the page is "
     "being navigated away or closed by the user.";
 
+const char kWindowsFollowCursorName[] =
+    "Windows open on the display with the cursor";
+const char kWindowsFollowCursorDescription[] =
+    "When there are multiple displays, windows open on the display where "
+    "cursor is located.";
+
 const char kAnimatedImageResumeName[] = "Use animated image resume behavior";
 const char kAnimatedImageResumeDescription[] =
     "Resumes animated images from the last frame drawn rather than attempt "

@@ -153,6 +153,19 @@ gfx::Point ConvertEventToScreen(const ui::LocatedEvent* event) {
   return event_screen_point;
 }
 
+aura::Window* GetRootWindowForCycleView() {
+  // Returns the root window for initializing cycle view if tablet mode is
+  // enabled, or if the feature for alt-tab to follow the cursor is disabled.
+  if (Shell::Get()->tablet_mode_controller()->InTabletMode() ||
+      !features::DoWindowsFollowCursor()) {
+    return Shell::GetRootWindowForNewWindows();
+  }
+
+  // Return the root window the cursor is currently on.
+  return Shell::GetRootWindowForDisplayId(
+      Shell::Get()->cursor_manager()->GetDisplay().id());
+}
+
 }  // namespace
 
 // This view represents a single aura::Window by displaying a title and a
@@ -262,7 +275,9 @@ class WindowCycleView : public views::WidgetDelegateView,
                         public ui::ImplicitAnimationObserver,
                         public ui::CompositorAnimationObserver {
  public:
-  explicit WindowCycleView(const WindowCycleList::WindowList& windows) {
+  explicit WindowCycleView(aura::Window* root_window,
+                           const WindowCycleList::WindowList& windows)
+      : root_window_(root_window) {
     DCHECK(!windows.empty());
 
     // Start the occlusion tracker pauser. It's used to increase smoothness for
@@ -414,8 +429,7 @@ class WindowCycleView : public views::WidgetDelegateView,
     // widget as some previews will be offscreen. In Layout() of |cycle_view_|
     // the mirror container will be slid back and forth depending on the target
     // window.
-    aura::Window* root_window = Shell::GetRootWindowForNewWindows();
-    gfx::Rect widget_rect = root_window->GetBoundsInScreen();
+    gfx::Rect widget_rect = root_window_->GetBoundsInScreen();
     widget_rect.ClampToCenteredSize(GetPreferredSize());
     return widget_rect;
   }
@@ -566,12 +580,9 @@ class WindowCycleView : public views::WidgetDelegateView,
     // screen, but the window cycle view with a bandshield, cropping the
     // overflow window list, should remain within the specified horizontal
     // insets of the screen width.
-    size.set_width(
-        std::min(size.width(), Shell::GetRootWindowForNewWindows()
-                                       ->GetBoundsInScreen()
-                                       .size()
-                                       .width() -
-                                   2 * kBackgroundHorizontalInsetDp));
+    size.set_width(std::min(size.width(),
+                            root_window_->GetBoundsInScreen().size().width() -
+                                2 * kBackgroundHorizontalInsetDp));
     if (Shell::Get()
             ->window_cycle_controller()
             ->IsInteractiveAltTabModeAllowed()) {
@@ -768,6 +779,7 @@ class WindowCycleView : public views::WidgetDelegateView,
   }
 
  private:
+  aura::Window* const root_window_;
   std::map<aura::Window*, WindowCycleItemView*> window_view_map_;
   views::View* mirror_container_ = nullptr;
 
@@ -1049,8 +1061,8 @@ void WindowCycleList::RemoveAllWindows() {
 void WindowCycleList::InitWindowCycleView() {
   if (cycle_view_)
     return;
-
-  cycle_view_ = new WindowCycleView(windows_);
+  aura::Window* root_window = GetRootWindowForCycleView();
+  cycle_view_ = new WindowCycleView(root_window, windows_);
   cycle_view_->SetTargetWindow(windows_[current_index_]);
   cycle_view_->ScrollToWindow(windows_[current_index_]);
 
@@ -1075,7 +1087,6 @@ void WindowCycleList::InitWindowCycleView() {
   params.name = "WindowCycleList (Alt+Tab)";
   // TODO(estade): make sure nothing untoward happens when the lock screen
   // or a system modal dialog is shown.
-  aura::Window* root_window = Shell::GetRootWindowForNewWindows();
   params.parent = root_window->GetChildById(kShellWindowId_OverlayContainer);
   params.bounds = cycle_view_->GetTargetBounds();
 

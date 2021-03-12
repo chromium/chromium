@@ -1534,6 +1534,9 @@ extern const char kWebXrRuntimeChoiceOpenXR[];
 extern const char kWebXrIncubationsName[];
 extern const char kWebXrIncubationsDescription[];
 
+extern const char kWindowsFollowCursorName[];
+extern const char kWindowsFollowCursorDescription[];
+
 extern const char kWindowNamingName[];
 extern const char kWindowNamingDescription[];
 

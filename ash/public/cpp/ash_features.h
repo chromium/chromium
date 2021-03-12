@@ -175,6 +175,10 @@ ASH_PUBLIC_EXPORT extern const base::Feature kStylusBatteryStatus;
 // right now since it is under development.
 ASH_PUBLIC_EXPORT extern const base::Feature kWebUITabStripTabDragIntegration;
 
+// Change window creation to be based on cursor position
+// when there are multiple displays.
+ASH_PUBLIC_EXPORT extern const base::Feature kWindowsFollowCursor;
+
 // Enables notifications to be shown within context menus.
 ASH_PUBLIC_EXPORT extern const base::Feature kNotificationsInContextMenu;
 
@@ -284,6 +288,8 @@ ASH_PUBLIC_EXPORT bool IsShowDateInTrayButtonEnabled();
 // whether "WebUITabStrip" feature is enabled from Chrome.
 ASH_PUBLIC_EXPORT void SetWebUITabStripEnabled(bool enabled);
 ASH_PUBLIC_EXPORT bool IsWebUITabStripEnabled();
+
+ASH_PUBLIC_EXPORT bool DoWindowsFollowCursor();
 
 }  // namespace features
 }  // namespace ash

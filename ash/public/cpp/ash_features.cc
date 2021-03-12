@@ -128,6 +128,9 @@ const base::Feature kStylusBatteryStatus{"StylusBatteryStatus",
 const base::Feature kWebUITabStripTabDragIntegration{
     "WebUITabStripTabDragIntegration", base::FEATURE_DISABLED_BY_DEFAULT};
 
+const base::Feature kWindowsFollowCursor{"WindowsFollowCursor",
+                                         base::FEATURE_DISABLED_BY_DEFAULT};
+
 const base::Feature kNotificationsInContextMenu{
     "NotificationsInContextMenu", base::FEATURE_DISABLED_BY_DEFAULT};
 
@@ -330,6 +333,10 @@ bool IsScalableStatusAreaEnabled() {
 bool IsShowDateInTrayButtonEnabled() {
   return IsScalableStatusAreaEnabled() &&
          base::FeatureList::IsEnabled(kShowDateInTrayButton);
+}
+
+bool DoWindowsFollowCursor() {
+  return base::FeatureList::IsEnabled(kWindowsFollowCursor);
 }
 
 namespace {
