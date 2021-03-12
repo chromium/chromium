@@ -99,7 +99,8 @@ constexpr char kSandboxUnpackFailureReason[] =
 constexpr char kFailureSessionStats[] =
     "Extensions.ForceInstalledFailureSessionType";
 constexpr char kStuckInCreateStageSessionType[] =
-    "Extensions.ForceInstalledFailureSessionType.ExtensionStuckInCreatedStage";
+    "Extensions.ForceInstalledFailureSessionType."
+    "ExtensionStuckInInitialCreationStage";
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 constexpr char kPossibleNonMisconfigurationFailures[] =
     "Extensions.ForceInstalledSessionsWithNonMisconfigurationFailureOccured";
@@ -132,7 +133,8 @@ constexpr char kCrxHeaderInvalidFailureIsCWS[] =
 constexpr char kCrxHeaderInvalidFailureFromCache[] =
     "Extensions.ForceInstalledFailureWithCrxHeaderInvalidIsFromCache";
 constexpr char kStuckInCreatedStageAreExtensionsEnabled[] =
-    "Extensions.ForceInstalledFailureStuckInCreatedStageAreExtensionsEnabled";
+    "Extensions."
+    "ForceInstalledFailureStuckInInitialCreationStageAreExtensionsEnabled";
 
 }  // namespace
 

@@ -1510,12 +1510,43 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <token key="FailureReason">
     <variant name="" summary="Any type of failure"/>
     <variant name=".ExtensionStuckInCreatedStage"
-        summary="Extensions stuck in CREATED stage"/>
+        summary="Extensions stuck in CREATED stage">
+      <obsolete>
+        Replaced as of 03/2021 by
+        &quot;.ExtensionStuckInInitialCreationStage&quot; variant.
+      </obsolete>
+    </variant>
+    <variant name=".ExtensionStuckInInitialCreationStage"
+        summary="Extensions stuck in
+                 NOTIFIED_FROM_MANAGEMENT_INITIAL_CREATION_FORCED stage.
+                 Replaced &quot;.ExtensionStuckInCreatedStage&quot; variant
+                 as the histogram collects data about extensions stuck in
+                 NOTIFIED_FROM_MANAGEMENT_INITIAL_CREATION_FORCED stage but
+                 the name suggested that the data is collected for extensions
+                 stuck in CREATED stage."/>
   </token>
 </histogram>
 
 <histogram
     name="Extensions.ForceInstalledFailureStuckInCreatedStageAreExtensionsEnabled"
+    enum="BooleanEnabled" expires_after="2021-08-01">
+  <obsolete>
+    Replaced as of 03/2021 by
+    &quot;Extensions.ForceInstalledFailureStuckInInitialCreationStageAreExtensionsEnabled&quot;.
+  </obsolete>
+  <owner>swapnilgupta@google.com</owner>
+  <owner>burunduk@chromium.org</owner>
+  <owner>managed-devices@google.com</owner>
+  <summary>
+    Records whether the extensions are enabled or not. Recorded for each forced
+    extension that failed to install after 5 minutes with
+    Extensions.ForceInstalledCreationStage equal to
+    NOTIFIED_FROM_MANAGEMENT_INITIAL_CREATION_FORCED.
+  </summary>
+</histogram>
+
+<histogram
+    name="Extensions.ForceInstalledFailureStuckInInitialCreationStageAreExtensionsEnabled"
     enum="BooleanEnabled" expires_after="2021-08-01">
   <owner>swapnilgupta@google.com</owner>
   <owner>burunduk@chromium.org</owner>
@@ -1525,6 +1556,12 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
     extension that failed to install after 5 minutes with
     Extensions.ForceInstalledCreationStage equal to
     NOTIFIED_FROM_MANAGEMENT_INITIAL_CREATION_FORCED.
+
+    Replaced
+    &quot;Extensions.ForceInstalledFailureStuckInCreatedStageAreExtensionsEnabled&quot;
+    because the histogram collects data about extensions stuck in
+    NOTIFIED_FROM_MANAGEMENT_INITIAL_CREATION_FORCED stage but the name
+    suggested that the data is collected for extensions stuck in CREATED stage.
   </summary>
 </histogram>
 

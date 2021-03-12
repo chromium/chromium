@@ -272,7 +272,7 @@ void ReportDetailedFailureReasons(
               NOTIFIED_FROM_MANAGEMENT_INITIAL_CREATION_FORCED) {
     base::UmaHistogramBoolean(
         "Extensions."
-        "ForceInstalledFailureStuckInCreatedStageAreExtensionsEnabled",
+        "ForceInstalledFailureStuckInInitialCreationStageAreExtensionsEnabled",
         ExtensionSystem::Get(profile)
             ->extension_service()
             ->extensions_enabled());
@@ -296,7 +296,7 @@ void ReportUserType(Profile* profile, bool is_stuck_in_initial_creation_stage) {
   if (is_stuck_in_initial_creation_stage) {
     base::UmaHistogramEnumeration(
         "Extensions.ForceInstalledFailureSessionType."
-        "ExtensionStuckInCreatedStage",
+        "ExtensionStuckInInitialCreationStage",
         user_type);
   }
 }
