@@ -74,6 +74,8 @@ class CONTENT_EXPORT ServiceWorkerNewScriptFetcher
   scoped_refptr<ServiceWorkerVersion> version_;
   scoped_refptr<network::SharedURLLoaderFactory> loader_factory_;
   blink::mojom::FetchClientSettingsObjectPtr fetch_client_settings_object_;
+  // Request ID for a browser-initiated request.
+  const int request_id_;
 
   // Stores the response header until the data pipe for the body is received.
   network::mojom::URLResponseHeadPtr response_head_;

@@ -64,6 +64,8 @@ EmbeddedSharedWorkerStub::EmbeddedSharedWorkerStub(
   // the browser process.
   auto worker_main_script_load_params =
       std::make_unique<blink::WorkerMainScriptLoadParameters>();
+  worker_main_script_load_params->request_id =
+      main_script_load_params->request_id;
   worker_main_script_load_params->response_head =
       std::move(main_script_load_params->response_head);
   worker_main_script_load_params->response_body =

@@ -67,7 +67,8 @@ ServiceWorkerNewScriptFetcher::ServiceWorkerNewScriptFetcher(
     : context_(context),
       version_(std::move(version)),
       loader_factory_(std::move(loader_factory)),
-      fetch_client_settings_object_(std::move(fetch_client_settings_object)) {}
+      fetch_client_settings_object_(std::move(fetch_client_settings_object)),
+      request_id_(GlobalRequestID::MakeBrowserInitiated().request_id) {}
 
 ServiceWorkerNewScriptFetcher::~ServiceWorkerNewScriptFetcher() = default;
 
@@ -99,8 +100,7 @@ void ServiceWorkerNewScriptFetcher::StartScriptLoadingWithNewResourceID(
 
   mojo::MakeSelfOwnedReceiver(
       ServiceWorkerNewScriptLoader::CreateAndStart(
-          MSG_ROUTING_NONE, GlobalRequestID::MakeBrowserInitiated().request_id,
-          options, request,
+          MSG_ROUTING_NONE, request_id_, options, request,
           url_loader_client_receiver_.BindNewPipeAndPassRemote(),
           std::move(version_), std::move(loader_factory_),
           net::MutableNetworkTrafficAnnotationTag(
@@ -120,7 +120,7 @@ void ServiceWorkerNewScriptFetcher::OnStartLoadingResponseBody(
 
   blink::mojom::WorkerMainScriptLoadParamsPtr main_script_load_params =
       blink::mojom::WorkerMainScriptLoadParams::New();
-  // Fill in params for loading worker's main script.
+  main_script_load_params->request_id = request_id_;
   main_script_load_params->response_head = std::move(response_head_);
   main_script_load_params->response_body = std::move(response_body);
   main_script_load_params->url_loader_client_endpoints =

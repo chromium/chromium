@@ -23,12 +23,12 @@ struct BLINK_COMMON_EXPORT WorkerMainScriptLoadParameters {
   WorkerMainScriptLoadParameters() = default;
   ~WorkerMainScriptLoadParameters() = default;
 
-  std::vector<GURL> redirects;
-  std::vector<network::mojom::URLResponseHeadPtr> redirect_responses;
-  std::vector<net::RedirectInfo> redirect_infos;
+  int request_id;
   network::mojom::URLResponseHeadPtr response_head;
   mojo::ScopedDataPipeConsumerHandle response_body;
   network::mojom::URLLoaderClientEndpointsPtr url_loader_client_endpoints;
+  std::vector<net::RedirectInfo> redirect_infos;
+  std::vector<network::mojom::URLResponseHeadPtr> redirect_responses;
 };
 
 }  // namespace blink

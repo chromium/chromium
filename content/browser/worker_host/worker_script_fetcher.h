@@ -78,6 +78,9 @@ class WorkerScriptFetcher : public network::mojom::URLLoaderClient {
 
   std::unique_ptr<WorkerScriptLoaderFactory> script_loader_factory_;
 
+  // Request ID for a browser-initiated request.
+  const int request_id_;
+
   std::unique_ptr<network::ResourceRequest> resource_request_;
   CreateAndStartCallback callback_;
 

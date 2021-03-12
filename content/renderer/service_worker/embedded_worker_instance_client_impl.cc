@@ -74,6 +74,8 @@ void EmbeddedWorkerInstanceClientImpl::StartWorker(
   if (params->main_script_load_params) {
     start_data->main_script_load_params =
         std::make_unique<blink::WorkerMainScriptLoadParameters>();
+    start_data->main_script_load_params->request_id =
+        params->main_script_load_params->request_id;
     start_data->main_script_load_params->response_head =
         std::move(params->main_script_load_params->response_head);
     start_data->main_script_load_params->response_body =

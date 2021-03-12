@@ -99,6 +99,7 @@ class PLATFORM_EXPORT WorkerMainScriptLoader final
   Member<WorkerMainScriptLoaderClient> client_;
   Member<ResourceLoadObserver> resource_load_observer_;
 
+  int request_id_;
   ResourceRequestHead initial_request_;
   ResourceLoaderOptions resource_loader_options_{nullptr /* world */};
   KURL initial_request_url_;
