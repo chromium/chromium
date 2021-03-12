@@ -317,8 +317,8 @@ public class LibraryLoader {
         mUseChromiumLinker = useChromiumLinker;
         mUseModernLinker = useModernLinker;
 
-        Log.d(TAG, "Configuration, useChromiumLinker = %b, useModernLinker = %b",
-                mUseChromiumLinker, mUseModernLinker);
+        Log.d(TAG, "Configuration: useChromiumLinker() = %b, mUseModernLinker = %b",
+                useChromiumLinker(), mUseModernLinker);
         mConfigurationSet = true;
     }
 
@@ -476,7 +476,7 @@ public class LibraryLoader {
     public void preloadNowOverridePackageName(String packageName) {
         synchronized (mLock) {
             setLinkerImplementationIfNeededAlreadyLocked();
-            if (mUseChromiumLinker) return;
+            if (useChromiumLinker()) return;
             preloadAlreadyLocked(packageName, false /* inZygote */);
         }
     }
@@ -803,7 +803,7 @@ public class LibraryLoader {
     // Called after all native initializations are complete.
     public void onBrowserNativeInitializationComplete() {
         synchronized (mLock) {
-            if (mUseChromiumLinker) {
+            if (useChromiumLinker()) {
                 RecordHistogram.recordTimesHistogram(
                         "ChromiumAndroidLinker.BrowserLoadTime", mLibraryLoadTimeMs);
             }
@@ -815,7 +815,7 @@ public class LibraryLoader {
     // time they are captured. This function stores a pending value, so that a later call to
     // RecordChromiumAndroidLinkerRendererHistogram() will record it correctly.
     public void registerRendererProcessHistogram() {
-        if (!mUseChromiumLinker) return;
+        if (!useChromiumLinker()) return;
         synchronized (mLock) {
             LibraryLoaderJni.get().recordRendererLibraryLoadTime(mLibraryLoadTimeMs);
         }
