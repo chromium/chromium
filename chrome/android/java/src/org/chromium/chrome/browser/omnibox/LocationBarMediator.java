@@ -585,17 +585,19 @@ class LocationBarMediator implements LocationBarDataProvider.Observer, FakeboxDe
      * Handles any actions to be performed after all other actions triggered by the URL focus
      * change.  This will be called after any animations are performed to transition from one
      * focus state to the other.
-     * @param hasFocus Whether the URL field has gained focus.
-     * @param shouldShowKeyboard Whether the keyboard should be shown. This value should be the same
-     *         as hasFocus by default.
+     * @param showExpandedState Whether the url bar is expanded.
+     * @param shouldShowKeyboard Whether the keyboard should be shown. This value is determined by
+     *         whether url bar has got focus. Most of the time this is the same as
+     *         showExpandedState, but in some cases, e.g. url bar is scrolled to the top of the
+     *         screen on homepage but not focused, we set it differently.
      */
-    /* package */ void finishUrlFocusChange(boolean hasFocus, boolean shouldShowKeyboard) {
+    /* package */ void finishUrlFocusChange(boolean showExpandedState, boolean shouldShowKeyboard) {
         if (mUrlCoordinator == null) return;
-        mUrlCoordinator.setKeyboardVisibility(hasFocus && shouldShowKeyboard, true);
+        mUrlCoordinator.setKeyboardVisibility(shouldShowKeyboard, true);
         setUrlFocusChangeInProgress(false);
         updateShouldAnimateIconChanges();
-        mStatusCoordinator.onUrlAnimationFinished(hasFocus);
-        if (!mIsTablet && !hasFocus) {
+        mStatusCoordinator.onUrlAnimationFinished(showExpandedState);
+        if (!mIsTablet && !showExpandedState) {
             mLocationBarLayout.setUrlActionContainerVisibility(View.GONE);
         }
     }

@@ -147,9 +147,9 @@ public class StatusCoordinator implements View.OnClickListener, LocationBarDataP
         updateVerboseStatusVisibility();
     }
 
-    /** @param urlHasFocus Whether the url currently has focus. */
-    public void onUrlAnimationFinished(boolean urlHasFocus) {
-        mMediator.setUrlAnimationFinished(urlHasFocus);
+    /** @param showExpandedState Whether the url bar is expanded currently. */
+    public void onUrlAnimationFinished(boolean showExpandedState) {
+        mMediator.setUrlAnimationFinished(showExpandedState);
     }
 
     /** @param show Whether the status icon should be VISIBLE, otherwise GONE. */

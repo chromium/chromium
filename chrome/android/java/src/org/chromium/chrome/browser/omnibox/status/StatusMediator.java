@@ -279,9 +279,12 @@ public class StatusMediator implements PermissionDialogController.Observer {
         if (!mUrlHasFocus) updateLocationBarIconForDefaultMatchCategory(true);
     }
 
-    // Extra logic to support extra NTP use cases which show the status icon when animating and when
-    // focused, but hide it when unfocused.
-    void setUrlAnimationFinished(boolean urlHasFocus) {
+    /**
+     * Extra logic to support extra NTP use cases which show the status icon when animating and when
+     * focused, but hide it when unfocused.
+     * @param showExpandedState Whether the url bar is expanded currently.
+     */
+    void setUrlAnimationFinished(boolean showExpandedState) {
         if (mIsTablet
                 || !mSearchEngineLogoUtils.shouldShowSearchEngineLogo(
                         mLocationBarDataProvider.isIncognito())) {
@@ -291,7 +294,7 @@ public class StatusMediator implements PermissionDialogController.Observer {
         // Hide the icon when the url unfocus animation finishes.
         // Note: When mUrlFocusPercent is non-zero, that means we're still in the focused state from
         // scrolling on the NTP.
-        if (!urlHasFocus && MathUtils.areFloatsEqual(mUrlFocusPercent, 0f)
+        if (!showExpandedState && MathUtils.areFloatsEqual(mUrlFocusPercent, 0f)
                 && mSearchEngineLogoUtils.currentlyOnNTP(mLocationBarDataProvider)) {
             setStatusIconShown(false);
         }

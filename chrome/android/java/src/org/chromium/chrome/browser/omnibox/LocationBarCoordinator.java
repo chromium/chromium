@@ -473,15 +473,17 @@ public final class LocationBarCoordinator implements LocationBar, NativeInitObse
      * change. This will be called after any animations are performed to transition from one
      * focus state to the other.
      *
-     * @param hasFocus Whether the URL field has gained focus.
-     * @param shouldShowKeyboard Whether the keyboard should be shown. This value should be the same
-     *         as hasFocus by default.
+     * @param showExpandedState Whether the url bar is expanded.
+     * @param shouldShowKeyboard Whether the keyboard should be shown. This value is determined by
+     *         whether url bar has got focus. Most of the time this is the same as
+     *         showExpandedState, but in some cases, e.g. url bar is scrolled to the top of the
+     *         screen on homepage but not focused, we set it differently.
      * @param shouldShowInOverviewMode Whether the location bar should be shown when in overview
      *         mode.
      */
-    public void finishUrlFocusChange(
-            boolean hasFocus, boolean shouldShowKeyboard, boolean shouldShowInOverviewMode) {
-        mLocationBarMediator.finishUrlFocusChange(hasFocus, shouldShowKeyboard);
+    public void finishUrlFocusChange(boolean showExpandedState, boolean shouldShowKeyboard,
+            boolean shouldShowInOverviewMode) {
+        mLocationBarMediator.finishUrlFocusChange(showExpandedState, shouldShowKeyboard);
         if (shouldShowInOverviewMode) {
             mStatusCoordinator.onSecurityStateChanged();
         }
