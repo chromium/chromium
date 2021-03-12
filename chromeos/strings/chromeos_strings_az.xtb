@@ -222,7 +222,6 @@
 <translation id="5916084858004523819">Qadağan olunub</translation>
 <translation id="5921506667911082617">{COUNT,plural, =1{Faylınız uğurla skanlandı və <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" /> qovluğunda saxlanıldı.}other{Fayllarınız uğurla skanlandı və <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" /> qovluğunda saxlanıldı.}}</translation>
 <translation id="5931523347251946569">Fayl tapılmadı</translation>
-<translation id="5982592372228113572">(<ph name="BOARD_NAME" />, versiya <ph name="MILESTONE_VERSION" />)</translation>
 <translation id="6040143037577758943">Qapat</translation>
 <translation id="6040852767465482106">Anonim Kimlik</translation>
 <translation id="604124094241169006">Avtomatik</translation>

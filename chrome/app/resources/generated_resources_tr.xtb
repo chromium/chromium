@@ -5109,6 +5109,7 @@ Hassas bilgileri vermediğinizden emin olun.</translation>
 <translation id="6811332638216701903">DHCP Ana Makine Adı</translation>
 <translation id="6812349420832218321"><ph name="PRODUCT_NAME" /> kök olarak çalıştırılamaz.</translation>
 <translation id="6812841287760418429">Değişiklikleri koru</translation>
+<translation id="6813907279658683733">Tüm Ekran</translation>
 <translation id="681584224457905309">{COUNT,plural, =1{dosya}other{# dosya}}</translation>
 <translation id="6817174620439930047">Bir site MIDI cihazlarına erişmek için sisteme özgü mesajları kullanmak istediğinde sor (önerilen)</translation>
 <translation id="6818198425579322765">Çevrilecek Sayfanın Dili</translation>
@@ -5619,6 +5620,7 @@ Hassas bilgileri vermediğinizden emin olun.</translation>
 <translation id="7392118418926456391">Virüs taraması başarısız oldu</translation>
 <translation id="7392915005464253525">Kapatılan p&amp;encereyi yeniden aç</translation>
 <translation id="7393073300870882456">{COUNT,plural, =1{1 öğe kopyalandı}other{{COUNT} öğe kopyalandı}}</translation>
+<translation id="7395774987022469191">Tüm ekran</translation>
 <translation id="7396017167185131589">Paylaşılan klasörler burada görünür</translation>
 <translation id="7396845648024431313"><ph name="APP_NAME" />, sistem açıldığında başlayacak ve diğer tüm <ph name="PRODUCT_NAME" /> pencerelerini kapatsanız da arka planda çalışmaya devam edecektir.</translation>
 <translation id="7399045143794278225">Senkronizasyonu özelleştir</translation>

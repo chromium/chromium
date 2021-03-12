@@ -51,6 +51,7 @@
 <translation id="1999615961760456652">Portal captiu</translation>
 <translation id="2008685064673031089">Cerca principal</translation>
 <translation id="2080070583977670716">Més opcions de configuració</translation>
+<translation id="2119172414412204879"><ph name="BOARD_NAME" />, versió <ph name="MILESTONE_VERSION" /></translation>
 <translation id="2126937207024182736"><ph name="AVAILABLE_MEMORY" /> GB de <ph name="TOTAL_MEMORY" /> GB disponibles</translation>
 <translation id="2141644705054017895"><ph name="PERCENTAGE_VALUE" />%</translation>
 <translation id="2157959690810728433">S'HA POSAT A LA CUA</translation>
@@ -193,6 +194,7 @@ Toca el micròfon per demanar-me qualsevol cosa.</translation>
 <translation id="5267975978099728568"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="ERROR_STATUS" /></translation>
 <translation id="5275828089655680674">Torna a executar les rutines</translation>
 <translation id="5286252187236914003">L2TP/IPsec</translation>
+<translation id="5294769550414936029">versió <ph name="MILESTONE_VERSION" /></translation>
 <translation id="5315873049536339193">Identitat</translation>
 <translation id="5317780077021120954">Desa</translation>
 <translation id="5318334351163689047">Errors en la sol·licitud de TCP</translation>
@@ -223,7 +225,6 @@ Toca el micròfon per demanar-me qualsevol cosa.</translation>
 <translation id="5916084858004523819">Prohibit</translation>
 <translation id="5921506667911082617">{COUNT,plural, =1{El fitxer s'ha escanejat correctament i s'ha desat a <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}other{Els fitxers s'han escanejat correctament i s'han desat a <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}}</translation>
 <translation id="5931523347251946569">No s'ha trobat el fitxer</translation>
-<translation id="5982592372228113572">(<ph name="BOARD_NAME" />, versió <ph name="MILESTONE_VERSION" />)</translation>
 <translation id="6040143037577758943">Tanca</translation>
 <translation id="6040852767465482106">Identitat anònima</translation>
 <translation id="604124094241169006">Automàtic</translation>

@@ -223,7 +223,6 @@
 <translation id="5916084858004523819">තහනම්</translation>
 <translation id="5921506667911082617">{COUNT,plural, =1{ඔබගේ ගොනුව සාර්ථකව ස්කෑන් කර <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" /> වෙත සුරැක ඇත.}one{ඔබගේ ගොනු සාර්ථකව ස්කෑන් කර <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" /> වෙත සුරැක ඇත.}other{ඔබගේ ගොනු සාර්ථකව ස්කෑන් කර <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" /> වෙත සුරැක ඇත.}}</translation>
 <translation id="5931523347251946569">ගොනුව හමු නොවිණි</translation>
-<translation id="5982592372228113572">(<ph name="BOARD_NAME" />, අනුවාදය <ph name="MILESTONE_VERSION" />)</translation>
 <translation id="6040143037577758943">වසන්න</translation>
 <translation id="6040852767465482106">නිර්නාමික අනන්‍යතාව</translation>
 <translation id="604124094241169006">ස්වයංක්‍රීය</translation>

@@ -222,7 +222,6 @@
 <translation id="5916084858004523819">ត្រូវបាន​ហាមឃាត់</translation>
 <translation id="5921506667911082617">{COUNT,plural, =1{ឯកសាររបស់អ្នកត្រូវបានស្កេន និងរក្សាទុកនៅក្នុង <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" /> ដោយជោគជ័យហើយ។}other{ឯកសាររបស់អ្នកត្រូវបានស្កេន និងរក្សាទុកនៅក្នុង <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" /> ដោយជោគជ័យហើយ។}}</translation>
 <translation id="5931523347251946569">រក​មិន​ឃើញ​ឯកសារទេ</translation>
-<translation id="5982592372228113572">(<ph name="BOARD_NAME" />, កំណែ <ph name="MILESTONE_VERSION" />)</translation>
 <translation id="6040143037577758943">បិទ</translation>
 <translation id="6040852767465482106">អត្តសញ្ញាណអនាមិក</translation>
 <translation id="604124094241169006">ស្វ័យប្រវត្តិ</translation>

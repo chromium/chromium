@@ -5108,6 +5108,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="6811332638216701903">DHCP hostname</translation>
 <translation id="6812349420832218321"><ph name="PRODUCT_NAME" /> cannot be run as root.</translation>
 <translation id="6812841287760418429">Keep changes</translation>
+<translation id="6813907279658683733">Entire screen</translation>
 <translation id="681584224457905309">{COUNT,plural, =1{file}other{# files}}</translation>
 <translation id="6817174620439930047">Ask when a site wants to use system exclusive messages to access MIDI devices (recommended)</translation>
 <translation id="6818198425579322765">Page language to translate</translation>
@@ -5618,6 +5619,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="7392118418926456391">Virus scan failed</translation>
 <translation id="7392915005464253525">R&amp;eopen closed window</translation>
 <translation id="7393073300870882456">{COUNT,plural, =1{1 item copied}other{{COUNT} items copied}}</translation>
+<translation id="7395774987022469191">Entire screen</translation>
 <translation id="7396017167185131589">Shared folders will appear here</translation>
 <translation id="7396845648024431313"><ph name="APP_NAME" /> will launch at system startup and continue to run in the background, even once you've closed all other <ph name="PRODUCT_NAME" /> windows.</translation>
 <translation id="7399045143794278225">Customise sync</translation>

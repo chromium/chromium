@@ -223,7 +223,6 @@
 <translation id="5916084858004523819">தடைசெய்யப்பட்டது</translation>
 <translation id="5921506667911082617">{COUNT,plural, =1{உங்கள் கோப்பு ஸ்கேன் செய்யப்பட்டு <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" /> கோப்புறையில் சேமிக்கப்பட்டது.}other{உங்கள் கோப்புகள் ஸ்கேன் செய்யப்பட்டு <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" /> கோப்புறையில் சேமிக்கப்பட்டன.}}</translation>
 <translation id="5931523347251946569">கோப்பு இல்லை</translation>
-<translation id="5982592372228113572">(<ph name="BOARD_NAME" />, பதிப்பு <ph name="MILESTONE_VERSION" />)</translation>
 <translation id="6040143037577758943">மூடு</translation>
 <translation id="6040852767465482106">அநாமதேய அடையாளம்</translation>
 <translation id="604124094241169006">தானியங்கு</translation>

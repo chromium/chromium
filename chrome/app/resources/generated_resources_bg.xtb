@@ -5107,6 +5107,7 @@
 <translation id="6811332638216701903">Име на хоста в DHCP</translation>
 <translation id="6812349420832218321"><ph name="PRODUCT_NAME" /> не може да се изпълнява като „root“.</translation>
 <translation id="6812841287760418429">Запазване на промените</translation>
+<translation id="6813907279658683733">Цял екран</translation>
 <translation id="681584224457905309">{COUNT,plural, =1{файл}other{# файла}}</translation>
 <translation id="6817174620439930047">Получаване на запитване, когато сайт иска да използва специални системни съобщения за достъп до MIDI устройствата (препоръчително)</translation>
 <translation id="6818198425579322765">Изходен език на страницата</translation>
@@ -5617,6 +5618,7 @@
 <translation id="7392118418926456391">Сканирането за вируси не бе успешно</translation>
 <translation id="7392915005464253525">По&amp;вторно отваряне на затворен прозорец</translation>
 <translation id="7393073300870882456">{COUNT,plural, =1{Копирахте 1 елемент}other{Копирахте {COUNT} елемента}}</translation>
+<translation id="7395774987022469191">Цял екран</translation>
 <translation id="7396017167185131589">Споделените папки ще се показват тук</translation>
 <translation id="7396845648024431313"><ph name="APP_NAME" /> ще се изпълнява при стартиране на системата и ще продължи да работи на заден план дори след като затворите всички други прозорци на <ph name="PRODUCT_NAME" />.</translation>
 <translation id="7399045143794278225">Персонализиране на синхронизирането</translation>

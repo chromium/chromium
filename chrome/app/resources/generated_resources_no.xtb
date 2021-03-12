@@ -5103,6 +5103,7 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="6811332638216701903">DHCP-vertsnavn</translation>
 <translation id="6812349420832218321"><ph name="PRODUCT_NAME" /> kan ikke kjøres som rot.</translation>
 <translation id="6812841287760418429">Behold endringene</translation>
+<translation id="6813907279658683733">Hele skjermen</translation>
 <translation id="681584224457905309">{COUNT,plural, =1{fil}other{# filer}}</translation>
 <translation id="6817174620439930047">Spør meg når nettsteder vil bruke systemeksklusive meldinger for å få tilgang til MIDI-enheter (anbefales)</translation>
 <translation id="6818198425579322765">Sidespråket du vil oversette</translation>
@@ -5613,6 +5614,7 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="7392118418926456391">Virusskanningen mislyktes</translation>
 <translation id="7392915005464253525">Gj&amp;enåpne det lukkede vinduet</translation>
 <translation id="7393073300870882456">{COUNT,plural, =1{1 element er kopiert}other{{COUNT} elementer er kopiert}}</translation>
+<translation id="7395774987022469191">Hele skjermen</translation>
 <translation id="7396017167185131589">Delte mapper vises her</translation>
 <translation id="7396845648024431313"><ph name="APP_NAME" /> starter ved systemoppstart, og fortsetter å kjøre i bakgrunnen selv når du har lukket alle andre vinduer for <ph name="PRODUCT_NAME" />.</translation>
 <translation id="7399045143794278225">Tilpass synkronisering</translation>

@@ -51,6 +51,7 @@
 <translation id="1999615961760456652">ವೈ-ಫೈ ಪ್ರಾರಂಭ ಪೋರ್ಟಲ್</translation>
 <translation id="2008685064673031089">ಪ್ರೈಮ್ ಹುಡುಕಾಟ</translation>
 <translation id="2080070583977670716">ಇನ್ನಷ್ಟು ಸೆಟ್ಟಿಂಗ್‌ಗಳು</translation>
+<translation id="2119172414412204879"><ph name="BOARD_NAME" />, ಆವೃತ್ತಿ <ph name="MILESTONE_VERSION" /></translation>
 <translation id="2126937207024182736"><ph name="TOTAL_MEMORY" /> GB ಯಲ್ಲಿನ <ph name="AVAILABLE_MEMORY" /> GB ಲಭ್ಯವಿದೆ</translation>
 <translation id="2141644705054017895"><ph name="PERCENTAGE_VALUE" />%</translation>
 <translation id="2157959690810728433">ಸರದಿಯಲ್ಲಿರಿಸಲಾಗಿದೆ</translation>
@@ -192,6 +193,7 @@
 <translation id="5267975978099728568"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="ERROR_STATUS" /></translation>
 <translation id="5275828089655680674">ದಿನಚರಿಗಳನ್ನು ಪುನಃ ರನ್ ಮಾಡಿ</translation>
 <translation id="5286252187236914003">L2TP/IPsec</translation>
+<translation id="5294769550414936029">ಆವೃತ್ತಿ <ph name="MILESTONE_VERSION" /></translation>
 <translation id="5315873049536339193">ಗುರುತು</translation>
 <translation id="5317780077021120954">ಉಳಿಸು</translation>
 <translation id="5318334351163689047">TCP ವಿನಂತಿ ವೈಫಲ್ಯಗಳು</translation>
@@ -222,7 +224,6 @@
 <translation id="5916084858004523819">ನಿಷೇಧಿಸಲಾಗಿದೆ</translation>
 <translation id="5921506667911082617">{COUNT,plural, =1{ನಿಮ್ಮ ಫೈಲ್ ಅನ್ನು ಯಶಸ್ವಿಯಾಗಿ ಸ್ಕ್ಯಾನ್ ಮಾಡಲಾಗಿದೆ ಮತ್ತು <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" /> ಗೆ ಉಳಿಸಲಾಗಿದೆ.}one{ನಿಮ್ಮ ಫೈಲ್‌ಗಳನ್ನು ಯಶಸ್ವಿಯಾಗಿ ಸ್ಕ್ಯಾನ್ ಮಾಡಲಾಗಿದೆ ಮತ್ತು <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" /> ಗೆ ಉಳಿಸಲಾಗಿದೆ.}other{ನಿಮ್ಮ ಫೈಲ್‌ಗಳನ್ನು ಯಶಸ್ವಿಯಾಗಿ ಸ್ಕ್ಯಾನ್ ಮಾಡಲಾಗಿದೆ ಮತ್ತು <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" /> ಗೆ ಉಳಿಸಲಾಗಿದೆ.}}</translation>
 <translation id="5931523347251946569">ಫೈಲ್ ಕಂಡುಬಂದಿಲ್ಲ</translation>
-<translation id="5982592372228113572">(<ph name="BOARD_NAME" />, ಆವೃತ್ತಿ <ph name="MILESTONE_VERSION" />)</translation>
 <translation id="6040143037577758943">ಮುಚ್ಚಿರಿ</translation>
 <translation id="6040852767465482106">ಅನಾಮಧೇಯ ಗುರುತಿಸುವಿಕೆ</translation>
 <translation id="604124094241169006">ಸ್ವಯಂಚಾಲಿತ</translation>

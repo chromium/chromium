@@ -222,7 +222,6 @@
 <translation id="5916084858004523819">Prohibida</translation>
 <translation id="5921506667911082617">{COUNT,plural, =1{Tu archivo se ha escaneado correctamente y se ha guardado en <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}other{Tus archivos se han escaneado correctamente y se han guardado en <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}}</translation>
 <translation id="5931523347251946569">Archivo no encontrado</translation>
-<translation id="5982592372228113572">(<ph name="BOARD_NAME" />, versión <ph name="MILESTONE_VERSION" />)</translation>
 <translation id="6040143037577758943">Cerrar</translation>
 <translation id="6040852767465482106">Identidad anónima</translation>
 <translation id="604124094241169006">Automático</translation>

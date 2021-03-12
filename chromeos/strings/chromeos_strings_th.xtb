@@ -51,6 +51,7 @@
 <translation id="1999615961760456652">แคพทีฟพอร์ทัล</translation>
 <translation id="2008685064673031089">Prime Search</translation>
 <translation id="2080070583977670716">การตั้งค่าเพิ่มเติม</translation>
+<translation id="2119172414412204879"><ph name="BOARD_NAME" /> เวอร์ชัน <ph name="MILESTONE_VERSION" /></translation>
 <translation id="2126937207024182736">ใช้ได้ <ph name="AVAILABLE_MEMORY" /> GB จาก <ph name="TOTAL_MEMORY" /> GB</translation>
 <translation id="2141644705054017895"><ph name="PERCENTAGE_VALUE" />%</translation>
 <translation id="2157959690810728433">อยู่ในคิว</translation>
@@ -193,6 +194,7 @@
 <translation id="5267975978099728568"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="ERROR_STATUS" /></translation>
 <translation id="5275828089655680674">เรียกใช้กิจวัตรอีกครั้ง</translation>
 <translation id="5286252187236914003">L2TP/IPsec</translation>
+<translation id="5294769550414936029">เวอร์ชัน <ph name="MILESTONE_VERSION" /></translation>
 <translation id="5315873049536339193">ข้อมูลประจำตัว</translation>
 <translation id="5317780077021120954">บันทึก</translation>
 <translation id="5318334351163689047">ขอ TCP ไม่สำเร็จ</translation>
@@ -223,7 +225,6 @@
 <translation id="5916084858004523819">ห้ามใช้</translation>
 <translation id="5921506667911082617">{COUNT,plural, =1{สแกนไฟล์และบันทึกไว้ใน <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" /> เรียบร้อยแล้ว}other{สแกนไฟล์และบันทึกไว้ใน <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" /> เรียบร้อยแล้ว}}</translation>
 <translation id="5931523347251946569">ไม่พบไฟล์</translation>
-<translation id="5982592372228113572">(<ph name="BOARD_NAME" /> เวอร์ชัน <ph name="MILESTONE_VERSION" />)</translation>
 <translation id="6040143037577758943">ปิด</translation>
 <translation id="6040852767465482106">ข้อมูลประจำตัวที่ไม่ระบุตัวตน</translation>
 <translation id="604124094241169006">อัตโนมัติ</translation>

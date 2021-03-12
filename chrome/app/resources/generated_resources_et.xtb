@@ -5108,6 +5108,7 @@ kasutades juhtpaneeli funktsiooni <ph name="CONTROL_PANEL_APPLET_NAME" />.
 <translation id="6811332638216701903">DHCP hostinimi</translation>
 <translation id="6812349420832218321">Toodet <ph name="PRODUCT_NAME" /> ei saa juurkasutajana käitada.</translation>
 <translation id="6812841287760418429">Säilita muudatused</translation>
+<translation id="6813907279658683733">Kogu ekraan</translation>
 <translation id="681584224457905309">{COUNT,plural, =1{fail}other{# faili}}</translation>
 <translation id="6817174620439930047">Küsi, kui sait tahab kasutada MIDI-seadmetele juurdepääsu saamiseks süsteemi eksklusiivseid sõnumeid (soovitatav)</translation>
 <translation id="6818198425579322765">Lehel tõlgitav keel</translation>
@@ -5618,6 +5619,7 @@ kasutades juhtpaneeli funktsiooni <ph name="CONTROL_PANEL_APPLET_NAME" />.
 <translation id="7392118418926456391">Viiruste skannimine ebaõnnestus</translation>
 <translation id="7392915005464253525">A&amp;va suletud aken uuesti</translation>
 <translation id="7393073300870882456">{COUNT,plural, =1{1 üksus kopeeriti}other{{COUNT} üksust kopeeriti}}</translation>
+<translation id="7395774987022469191">Kogu ekraan</translation>
 <translation id="7396017167185131589">Jagatud kaustad kuvatakse siin</translation>
 <translation id="7396845648024431313"><ph name="APP_NAME" /> käivitub süsteemi käivitamisel ja jätkab tööd taustal ka siis, kui sulgete kõik muud rakenduse <ph name="PRODUCT_NAME" /> aknad.</translation>
 <translation id="7399045143794278225">Kohanda sünkroonimist</translation>

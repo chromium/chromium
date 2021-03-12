@@ -5108,6 +5108,7 @@ Assegureu-vos que no es pugui accedir a informació sensible.</translation>
 <translation id="6811332638216701903">Nom d'amfitrió de DHCP</translation>
 <translation id="6812349420832218321"><ph name="PRODUCT_NAME" /> no pot executar-se com a arrel.</translation>
 <translation id="6812841287760418429">Mantén els canvis</translation>
+<translation id="6813907279658683733">Tota la pantalla</translation>
 <translation id="681584224457905309">{COUNT,plural, =1{fitxer}other{# fitxers}}</translation>
 <translation id="6817174620439930047">Pregunta'm quan un lloc web vulgui utilitzar els missatges exclusius del sistema per accedir a dispositius MIDI (opció recomanada)</translation>
 <translation id="6818198425579322765">Idioma de la pàgina que cal traduir</translation>
@@ -5618,6 +5619,7 @@ Assegureu-vos que no es pugui accedir a informació sensible.</translation>
 <translation id="7392118418926456391">S'ha produït un error en l'anàlisi antivirus</translation>
 <translation id="7392915005464253525">T&amp;orna a obrir la finestra tancada</translation>
 <translation id="7393073300870882456">{COUNT,plural, =1{S'ha copiat 1 element}other{S'han copiat {COUNT} elements}}</translation>
+<translation id="7395774987022469191">Tota la pantalla</translation>
 <translation id="7396017167185131589">Les carpetes compartides es mostraran aquí</translation>
 <translation id="7396845648024431313"><ph name="APP_NAME" /> s'iniciarà quan s'iniciï el sistema i continuarà executant-se en segon pla, fins i tot quan hàgiu tancat la resta de finestres de <ph name="PRODUCT_NAME" />.</translation>
 <translation id="7399045143794278225">Personalitza la sincronització</translation>

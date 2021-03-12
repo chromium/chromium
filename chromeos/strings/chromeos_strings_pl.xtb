@@ -51,6 +51,7 @@
 <translation id="1999615961760456652">Portal przechwytujący</translation>
 <translation id="2008685064673031089">Znajdowanie liczb pierwszych</translation>
 <translation id="2080070583977670716">Więcej ustawień</translation>
+<translation id="2119172414412204879"><ph name="BOARD_NAME" />, wersja <ph name="MILESTONE_VERSION" /></translation>
 <translation id="2126937207024182736">Dostępne: <ph name="AVAILABLE_MEMORY" /> GB z <ph name="TOTAL_MEMORY" /> GB</translation>
 <translation id="2141644705054017895"><ph name="PERCENTAGE_VALUE" />%</translation>
 <translation id="2157959690810728433">W KOLEJCE</translation>
@@ -193,6 +194,7 @@ Kliknij mikrofon i zadaj pytanie.</translation>
 <translation id="5267975978099728568"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="ERROR_STATUS" /></translation>
 <translation id="5275828089655680674">Uruchom ponownie testy</translation>
 <translation id="5286252187236914003">L2TP/IPsec</translation>
+<translation id="5294769550414936029">wersja <ph name="MILESTONE_VERSION" /></translation>
 <translation id="5315873049536339193">Tożsamość</translation>
 <translation id="5317780077021120954">Zapisz</translation>
 <translation id="5318334351163689047">Nieudane żądania TCP</translation>
@@ -223,7 +225,6 @@ Kliknij mikrofon i zadaj pytanie.</translation>
 <translation id="5916084858004523819">Niedozwolone</translation>
 <translation id="5921506667911082617">{COUNT,plural, =1{Plik został zeskanowany i zapisany w folderze <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}few{Pliki zostały zeskanowane i zapisane w folderze <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}many{Pliki zostały zeskanowane i zapisane w folderze <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}other{Pliki zostały zeskanowane i zapisane w folderze <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}}</translation>
 <translation id="5931523347251946569">Nie znaleziono pliku</translation>
-<translation id="5982592372228113572">(<ph name="BOARD_NAME" />, wersja <ph name="MILESTONE_VERSION" />)</translation>
 <translation id="6040143037577758943">Zamknij</translation>
 <translation id="6040852767465482106">Tożsamość anonimowa</translation>
 <translation id="604124094241169006">Automatyczne</translation>

@@ -223,7 +223,6 @@ Ketuk mikrofon untuk bertanya apa saja.</translation>
 <translation id="5916084858004523819">Terlarang</translation>
 <translation id="5921506667911082617">{COUNT,plural, =1{File Anda berhasil dipindai dan disimpan ke <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}other{File Anda berhasil dipindai dan disimpan ke <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}}</translation>
 <translation id="5931523347251946569">File tidak ditemukan</translation>
-<translation id="5982592372228113572">(<ph name="BOARD_NAME" />, versi <ph name="MILESTONE_VERSION" />)</translation>
 <translation id="6040143037577758943">Tutup</translation>
 <translation id="6040852767465482106">Identitas Anonim</translation>
 <translation id="604124094241169006">Otomatis</translation>

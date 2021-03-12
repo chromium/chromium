@@ -223,7 +223,6 @@
 <translation id="5916084858004523819">禁止</translation>
 <translation id="5921506667911082617">{COUNT,plural, =1{ファイルは正常にスキャンされ、<ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" /> に保存されました。}other{ファイルは正常にスキャンされ、<ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" /> に保存されました。}}</translation>
 <translation id="5931523347251946569">ファイルが見つかりません</translation>
-<translation id="5982592372228113572">（<ph name="BOARD_NAME" />、バージョン <ph name="MILESTONE_VERSION" />）</translation>
 <translation id="6040143037577758943">閉じる</translation>
 <translation id="6040852767465482106">匿名 ID</translation>
 <translation id="604124094241169006">自動設定</translation>

@@ -5102,6 +5102,7 @@
 <translation id="6811332638216701903">DHCP хостны нэр</translation>
 <translation id="6812349420832218321"><ph name="PRODUCT_NAME" /> нь үндэс хэлбэрээр ажиллаж чадахгүй.</translation>
 <translation id="6812841287760418429">Өөрчлөлтийг хадгал</translation>
+<translation id="6813907279658683733">Бүтэн дэлгэц</translation>
 <translation id="681584224457905309">{COUNT,plural, =1{файл}other{# файл}}</translation>
 <translation id="6817174620439930047">Сайт MIDI төхөөрөмжид хандахын тулд системийн тусгай мессежийг ашиглахыг хүссэн тохиолдолд асуух (санал болгосон)</translation>
 <translation id="6818198425579322765">Хуудсыг орчуулах хэл</translation>
@@ -5612,6 +5613,7 @@
 <translation id="7392118418926456391">Вирус шалгалт амжилтгүй боллоо</translation>
 <translation id="7392915005464253525">Хаагдсан цонхийг дахин нээ</translation>
 <translation id="7393073300870882456">{COUNT,plural, =1{1 зүйл хуулсан}other{{COUNT} зүйл хуулсан.}}</translation>
+<translation id="7395774987022469191">Бүтэн дэлгэц</translation>
 <translation id="7396017167185131589">Хуваалцсан фолдерууд энд харагдана</translation>
 <translation id="7396845648024431313"><ph name="APP_NAME" /> программыг систем эхлэхэд эхлүүлээд бусад <ph name="PRODUCT_NAME" /> цонхууд хаагдсан байсан ч программыг үргэлжлүүл.</translation>
 <translation id="7399045143794278225">Синк хийхийг өөрчлөх</translation>

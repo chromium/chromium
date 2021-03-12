@@ -51,6 +51,7 @@
 <translation id="1999615961760456652">Portail captif</translation>
 <translation id="2008685064673031089">Recherche de numéros premiers</translation>
 <translation id="2080070583977670716">Plus de paramètres</translation>
+<translation id="2119172414412204879"><ph name="BOARD_NAME" />, version <ph name="MILESTONE_VERSION" /></translation>
 <translation id="2126937207024182736">Espace disponible : <ph name="AVAILABLE_MEMORY" /> Go sur <ph name="TOTAL_MEMORY" /> Go</translation>
 <translation id="2141644705054017895"><ph name="PERCENTAGE_VALUE" /> %</translation>
 <translation id="2157959690810728433">PLACÉ EN FILE D'ATTENTE</translation>
@@ -193,6 +194,7 @@ Essayez de toucher le micro pour me demander ce que vous souhaitez.</translation
 <translation id="5267975978099728568"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="ERROR_STATUS" /></translation>
 <translation id="5275828089655680674">Relancer les routines</translation>
 <translation id="5286252187236914003">L2TP/IPsec</translation>
+<translation id="5294769550414936029">version <ph name="MILESTONE_VERSION" /></translation>
 <translation id="5315873049536339193">Identité</translation>
 <translation id="5317780077021120954">Enregistrer</translation>
 <translation id="5318334351163689047">Échecs des demandes TCP</translation>
@@ -223,7 +225,6 @@ Essayez de toucher le micro pour me demander ce que vous souhaitez.</translation
 <translation id="5916084858004523819">Interdit</translation>
 <translation id="5921506667911082617">{COUNT,plural, =1{Votre fichier a été numérisé et enregistré dans le dossier <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}one{Votre fichier a été numérisé et enregistré dans le dossier <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}other{Vos fichiers ont été numérisés et enregistrés dans le dossier <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}}</translation>
 <translation id="5931523347251946569">Fichier introuvable</translation>
-<translation id="5982592372228113572">(<ph name="BOARD_NAME" />, version <ph name="MILESTONE_VERSION" />)</translation>
 <translation id="6040143037577758943">Fermer</translation>
 <translation id="6040852767465482106">Authentification anonyme</translation>
 <translation id="604124094241169006">Automatique</translation>

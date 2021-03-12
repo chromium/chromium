@@ -5109,6 +5109,7 @@
 <translation id="6811332638216701903">Όνομα κεντρικού υπολογιστή DHCP</translation>
 <translation id="6812349420832218321">Δεν είναι δυνατή η εκτέλεση του <ph name="PRODUCT_NAME" /> ως ρίζα</translation>
 <translation id="6812841287760418429">Διατήρηση αλλαγών</translation>
+<translation id="6813907279658683733">Πλήρης οθόνη</translation>
 <translation id="681584224457905309">{COUNT,plural, =1{αρχείο}other{# αρχεία}}</translation>
 <translation id="6817174620439930047">Να γίνεται ερώτηση όταν ένας ιστότοπος θέλει να χρησιμοποιήσει αποκλειστικά μηνύματα συστήματος για την πρόσβαση σε συσκευές MIDI (συνιστάται)</translation>
 <translation id="6818198425579322765">Γλώσσα σελίδας προς μετάφραση</translation>
@@ -5619,6 +5620,7 @@
 <translation id="7392118418926456391">Απέτυχε η σάρωση για ιούς</translation>
 <translation id="7392915005464253525">Ε&amp;παναφορά παραθύρου που έχει κλείσει</translation>
 <translation id="7393073300870882456">{COUNT,plural, =1{1 στοιχείο αντιγράφηκε}other{{COUNT} στοιχεία αντιγράφηκαν}}</translation>
+<translation id="7395774987022469191">Πλήρης οθόνη</translation>
 <translation id="7396017167185131589">Οι κοινόχρηστοι φάκελοι θα εμφανίζονται εδώ.</translation>
 <translation id="7396845648024431313">Η εφαρμογή <ph name="APP_NAME" /> θα εκκινείται κατά την εκκίνηση του συστήματος και θα συνεχίζει να εκτελείται στο παρασκήνιο αφού πρώτα κλείσετε όλα τα υπόλοιπα παράθυρα του <ph name="PRODUCT_NAME" />.</translation>
 <translation id="7399045143794278225">Προσαρμογή συγχρονισμού</translation>

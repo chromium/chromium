@@ -5106,6 +5106,7 @@ Ochiq eksponenta (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bit):
 <translation id="6811332638216701903">DHCP host nomi</translation>
 <translation id="6812349420832218321"><ph name="PRODUCT_NAME" />‘dan superfoydalanuvchi sifatida foydalanib bo‘lmaydi.</translation>
 <translation id="6812841287760418429">O‘zgarishlarni saqlash</translation>
+<translation id="6813907279658683733">Butun ekran</translation>
 <translation id="681584224457905309">{COUNT,plural, =1{fayl}other{# ta fayl}}</translation>
 <translation id="6817174620439930047">Saytlar MIDI qurilmalarga ruxsat olish uchun tizim xabarlaridan foydalanmoqchi bo‘layotganda xabar berilsin (tavsiya etiladi)</translation>
 <translation id="6818198425579322765">Tarjima qilinadigan sahifa tili</translation>
@@ -5616,6 +5617,7 @@ Ochiq eksponenta (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bit):
 <translation id="7392118418926456391">Virusdan tekshirish amalga oshmadi</translation>
 <translation id="7392915005464253525">Yopilgan oynani &amp;qayta ochish</translation>
 <translation id="7393073300870882456">{COUNT,plural, =1{1 ta element nusxalandi}other{{COUNT} ta element nusxalandi}}</translation>
+<translation id="7395774987022469191">Butun ekran</translation>
 <translation id="7396017167185131589">Ulashilgan jildlar shu yerda chiqadi</translation>
 <translation id="7396845648024431313"><ph name="APP_NAME" /> ilovasi tizim yuklanishida ishga tushadi va orqa fonda hatto barcha <ph name="PRODUCT_NAME" /> oynalari yopilganda ham ishlashda davom etadi.</translation>
 <translation id="7399045143794278225">Sinxronizatsiya parametrlari</translation>

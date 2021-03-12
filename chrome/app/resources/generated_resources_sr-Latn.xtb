@@ -5108,6 +5108,7 @@ Vodite računa da ne otkrijete nikakve osetljive informacije.</translation>
 <translation id="6811332638216701903">Ime DHCP hosta</translation>
 <translation id="6812349420832218321"><ph name="PRODUCT_NAME" /> ne može da se pokreće kao osnovni proizvod.</translation>
 <translation id="6812841287760418429">Zadrži promene</translation>
+<translation id="6813907279658683733">Ceo ekran</translation>
 <translation id="681584224457905309">{COUNT,plural, =1{fajl}one{# fajl}few{# fajla}other{# fajlova}}</translation>
 <translation id="6817174620439930047">Pitaj kada sajt želi da koristi ekskluzivne poruke sistema za pristup MIDI uređajima (preporučeno)</translation>
 <translation id="6818198425579322765">Jezik stranice sa kog želite da prevodite</translation>
@@ -5618,6 +5619,7 @@ Vodite računa da ne otkrijete nikakve osetljive informacije.</translation>
 <translation id="7392118418926456391">Skeniranje virusa nije uspelo</translation>
 <translation id="7392915005464253525">P&amp;onovo otvori zatvoren prozor</translation>
 <translation id="7393073300870882456">{COUNT,plural, =1{1 stavka je kopirana}one{{COUNT} stavka je kopirana}few{{COUNT} stavke su kopirane}other{{COUNT} stavki je kopirano}}</translation>
+<translation id="7395774987022469191">Ceo ekran</translation>
 <translation id="7396017167185131589">Ovde se prikazuju deljeni direktorijumi</translation>
 <translation id="7396845648024431313"><ph name="APP_NAME" /> će se pokrenuti prilikom pokretanja sistema i nastaviti da radi u pozadini čak i kada zatvorite sve ostale <ph name="PRODUCT_NAME" /> prozore.</translation>
 <translation id="7399045143794278225">Prilagodite sinhronizaciju</translation>

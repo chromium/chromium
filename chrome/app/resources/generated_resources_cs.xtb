@@ -5108,6 +5108,7 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="6811332638216701903">Název hostitele DHCP</translation>
 <translation id="6812349420832218321">Aplikaci <ph name="PRODUCT_NAME" /> nelze spustit jako uživatel root.</translation>
 <translation id="6812841287760418429">Uchovat změny</translation>
+<translation id="6813907279658683733">Celá obrazovka</translation>
 <translation id="681584224457905309">{COUNT,plural, =1{soubor}few{# soubory}many{# souboru}other{# souborů}}</translation>
 <translation id="6817174620439930047">Zeptat se, když chce web využít exkluzivní zprávy systému pro přístup k zařízením MIDI (doporučeno)</translation>
 <translation id="6818198425579322765">Jazyk stránky k překladu</translation>
@@ -5618,6 +5619,7 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="7392118418926456391">Při vyhledávání virů došlo k chybě</translation>
 <translation id="7392915005464253525">Znovu ot&amp;evřít zavřené okno</translation>
 <translation id="7393073300870882456">{COUNT,plural, =1{Byla zkopírována 1 položka}few{Byly zkopírovány {COUNT} položky}many{Bylo zkopírováno {COUNT} položky}other{Bylo zkopírováno {COUNT} položek}}</translation>
+<translation id="7395774987022469191">Celá obrazovka</translation>
 <translation id="7396017167185131589">Zde se budou zobrazovat sdílené složky</translation>
 <translation id="7396845648024431313">Aplikace <ph name="APP_NAME" /> se spustí při zapnutí systému a poběží na pozadí i v případě, že zavřete všechna okna prohlížeče <ph name="PRODUCT_NAME" />.</translation>
 <translation id="7399045143794278225">Personalizovat synchronizaci</translation>

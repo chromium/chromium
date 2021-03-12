@@ -222,7 +222,6 @@
 <translation id="5916084858004523819">တားမြစ်ထားသည်</translation>
 <translation id="5921506667911082617">{COUNT,plural, =1{သင်၏ဖိုင်ကို စကင်ဖတ်ပြီး <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" /> တွင် သိမ်းပြီးပြီ။}other{သင်၏ဖိုင်များကို စကင်ဖတ်ပြီး <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" /> တွင် သိမ်းပြီးပြီ။}}</translation>
 <translation id="5931523347251946569">ဖိုင်ကို ရှာမတွေ့ပါ</translation>
-<translation id="5982592372228113572">(<ph name="BOARD_NAME" />၊ ဗားရှင်း <ph name="MILESTONE_VERSION" />)</translation>
 <translation id="6040143037577758943">ပိတ်ရန်</translation>
 <translation id="6040852767465482106">အမည်မသိ အထောက်အထား:</translation>
 <translation id="604124094241169006">အလိုအလျောက်</translation>
