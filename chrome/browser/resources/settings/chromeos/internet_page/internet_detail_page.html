@@ -266,7 +266,6 @@
           restamp>
         <div class="settings-box single-column stretch">
           <network-siminfo id="cellularSimInfo"
-              network-state="[[getNetworkState_(managedProperties_)]]"
               device-state="[[deviceState_]]">
           </network-siminfo>
         </div>
@@ -306,9 +305,7 @@
             <template is="dom-if"
                 if="[[showCellularSimUpdatedUi_(managedProperties_)]]" restamp>
               <div class="single-column stretch">
-                <network-siminfo
-                    network-state="[[getNetworkState_(managedProperties_)]]"
-                    device-state="[[deviceState_]]">
+                <network-siminfo device-state="[[deviceState_]]">
                 </network-siminfo>
               </div>
             </template>

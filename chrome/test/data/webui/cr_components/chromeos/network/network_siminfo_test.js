@@ -7,36 +7,14 @@
 // #import 'chrome://resources/cr_components/chromeos/network/network_siminfo.m.js';
 
 // #import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-// #import {OncMojo} from 'chrome://resources/cr_components/chromeos/network/onc_mojo.m.js';
 // clang-format on
 
 suite('NetworkSiminfoTest', function() {
   /** @type {!NetworkSiminfo|undefined} */
   let simInfo;
 
-  const TEST_ICCID = '11111111111111111';
-  const mojom = chromeos.networkConfig.mojom;
-  let deviceState;
-
   setup(function() {
     simInfo = document.createElement('network-simInfo');
-
-    deviceState = {
-      simInfos: [{
-        iccid: TEST_ICCID,
-        isPrimary: true,
-      }],
-      simLockStatus: {lockEnabled: true, lockType: '', retriesLeft: 3}
-    };
-
-    const cellularNetwork =
-        OncMojo.getDefaultNetworkState(mojom.NetworkType.kCellular, 'cellular');
-    cellularNetwork.typeState.cellular.iccid = TEST_ICCID;
-
-    simInfo.networkState = cellularNetwork;
-    simInfo.deviceState = deviceState;
-
-    simInfo.deviceState = deviceState;
     document.body.appendChild(simInfo);
     Polymer.dom.flush();
   });
@@ -53,7 +31,8 @@ suite('NetworkSiminfoTest', function() {
    * @param {string} dialogName
    * @param {OncMojo.DeviceStateProperties} deviceState
    */
-  async function verifyDialogShown(buttonName) {
+  async function verifyDialogShown(deviceState, buttonName) {
+    simInfo.deviceState = deviceState;
     let btn = simInfo.$$(`#${buttonName}`);
     assertTrue(!!btn);
 
@@ -86,32 +65,18 @@ suite('NetworkSiminfoTest', function() {
   });
 
   test('Show sim lock dialog when toggle is clicked', async function() {
-    deviceState.simLockStatus.lockEnabled = false;
-    simInfo.deviceState = {...deviceState};
-    await flushAsync();
-    verifyDialogShown('simLockButton');
+    const deviceState = {
+      simLockStatus: {lockEnabled: false, lockType: '', retriesLeft: 3}
+    };
+
+    verifyDialogShown(deviceState, 'simLockButton');
   });
 
-  test('Show sim lock dialog when change button is clicked', function() {
-    verifyDialogShown('changePinButton');
+  test('Show sim lock dialog when change button is clicked', async function() {
+    const deviceState = {
+      simLockStatus: {lockEnabled: true, lockType: '', retriesLeft: 3}
+    };
+
+    verifyDialogShown(deviceState, 'changePinButton');
   });
-
-  test(
-      'Hide change pin button and disable sim lock toggle if current slot is not primary',
-      async function() {
-        let changePinButton = simInfo.$$('#changePinButton');
-        let simLockButton = simInfo.$$('#simLockButton');
-        assertFalse(changePinButton.hidden);
-        assertFalse(simLockButton.disabled);
-
-        deviceState.simInfos[0].isPrimary = false;
-        // Trigger deevice state change
-        simInfo.deviceState = {...deviceState};
-        await flushAsync();
-
-        changePinButton = simInfo.$$('#changePinButton');
-        simLockButton = simInfo.$$('#simLockButton');
-        assertTrue(changePinButton.hidden);
-        assertTrue(simLockButton.disabled);
-      });
 });

@@ -54,7 +54,7 @@
 
     <!-- SIM locked -->
     <div id="simLocked" class="property-box two-line"
-        hidden$="[[!showSimLocked_(deviceState, isActiveSim_)]]">
+        hidden$="[[!showSimLocked_(deviceState)]]">
       <div class="start layout horizontal center">
         <iron-icon icon="cr:sim-lock"></iron-icon>
         <div class="error">[[i18n('networkSimCardLocked')]]</div>
@@ -72,11 +72,10 @@
         [[i18n('networkSimLockEnable')]]
       </div>
       <cr-button id="changePinButton" on-click="onChangePinTap_"
-          hidden$="[[!showChangePinButton_(deviceState, isActiveSim_)]]">
+          hidden$="[[!deviceState.simLockStatus.lockEnabled]]">
         [[i18n('networkSimChangePin')]]
       </cr-button>
       <cr-toggle id="simLockButton"
-          disabled$="[[!isActiveSim_]]"
           on-change="onSimLockEnabledChange_" checked="{{lockEnabled_}}"
           aria-labelledby="simLockToggleLabel">
       </cr-toggle>

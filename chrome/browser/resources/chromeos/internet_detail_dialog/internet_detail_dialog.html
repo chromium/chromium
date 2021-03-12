@@ -47,9 +47,7 @@
 <template is="dom-if" if="[[showCellularSim_(managedProperties_)]]"
     restamp>
   <div class="cr-row">
-    <network-siminfo class="flex"
-        network-state="[[getNetworkState_(managedProperties_)]]"
-        device-state="[[deviceState_]]">
+    <network-siminfo class="flex" device-state="[[deviceState_]]">
     </network-siminfo>
   </div>
 </template>
