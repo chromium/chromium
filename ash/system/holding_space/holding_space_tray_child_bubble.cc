@@ -324,11 +324,16 @@ void HoldingSpaceTrayChildBubble::AnimateIn(
     ui::LayerAnimationObserver* observer) {
   DCHECK(!is_animating_out_);
 
+  // Animation is only necessary if this view is visible to the user.
+  const base::TimeDelta animation_duration =
+      IsDrawn() ? kAnimationDuration : base::TimeDelta();
+
   // Delay in animations to give the holding space bubble time to animate its
   // layout changes. This ensures that there is sufficient space to display the
   // child bubble before it is displayed to the user.
-  const base::TimeDelta animation_delay = kAnimationDuration;
-  holding_space_util::AnimateIn(this, kAnimationDuration, animation_delay,
+  const base::TimeDelta animation_delay =
+      IsDrawn() ? kAnimationDuration : base::TimeDelta();
+  holding_space_util::AnimateIn(this, animation_duration, animation_delay,
                                 observer);
 }
 
