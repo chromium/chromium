@@ -67,7 +67,8 @@ class StubWebThemeEngine : public WebThemeEngine {
              State,
              const gfx::Rect&,
              const ExtraParams*,
-             mojom::blink::ColorScheme color_scheme) override {
+             mojom::blink::ColorScheme color_scheme,
+             const base::Optional<SkColor>& accent_color) override {
     // Make  sure we don't overflow the array.
     DCHECK(part <= kPartProgressBar);
     painted_color_scheme_[part] = color_scheme;

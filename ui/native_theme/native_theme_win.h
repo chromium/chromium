@@ -64,7 +64,8 @@ class NATIVE_THEME_EXPORT NativeThemeWin : public NativeTheme,
              State state,
              const gfx::Rect& rect,
              const ExtraParams& extra,
-             ColorScheme color_scheme) const override;
+             ColorScheme color_scheme,
+             const base::Optional<SkColor>& accent_color) const override;
   bool SupportsNinePatch(Part part) const override;
   gfx::Size GetNinePatchCanvasSize(Part part) const override;
   gfx::Rect GetNinePatchAperture(Part part) const override;

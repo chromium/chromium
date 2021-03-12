@@ -247,7 +247,8 @@ void NativeThemeWin::Paint(cc::PaintCanvas* canvas,
                            State state,
                            const gfx::Rect& rect,
                            const ExtraParams& extra,
-                           ColorScheme color_scheme) const {
+                           ColorScheme color_scheme,
+                           const base::Optional<SkColor>& accent_color) const {
   if (rect.IsEmpty())
     return;
 

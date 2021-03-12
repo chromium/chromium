@@ -191,13 +191,14 @@ void WebThemeEngineDefault::Paint(
     WebThemeEngine::State state,
     const gfx::Rect& rect,
     const WebThemeEngine::ExtraParams* extra_params,
-    blink::mojom::ColorScheme color_scheme) {
+    blink::mojom::ColorScheme color_scheme,
+    const base::Optional<SkColor>& accent_color) {
   ui::NativeTheme::ExtraParams native_theme_extra_params;
   GetNativeThemeExtraParams(
       part, state, extra_params, &native_theme_extra_params);
   ui::NativeTheme::GetInstanceForWeb()->Paint(
       canvas, NativeThemePart(part), NativeThemeState(state), rect,
-      native_theme_extra_params, NativeColorScheme(color_scheme));
+      native_theme_extra_params, NativeColorScheme(color_scheme), accent_color);
 }
 
 void WebThemeEngineDefault::GetOverlayScrollbarStyle(ScrollbarStyle* style) {

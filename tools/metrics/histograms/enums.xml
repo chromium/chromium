@@ -49710,6 +49710,7 @@ Called by update_use_counter_css.py.-->
   <int value="692" label="border-start-end-radius"/>
   <int value="693" label="border-end-start-radius"/>
   <int value="694" label="border-end-end-radius"/>
+  <int value="695" label="accent-color"/>
 </enum>
 
 <enum name="MappedEditingCommands">

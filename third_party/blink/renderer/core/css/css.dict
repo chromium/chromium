@@ -959,6 +959,7 @@
 "border-color"
 "border-image"
 "color"
+"accent-color"
 "align-content"
 "align-items"
 "align-self"

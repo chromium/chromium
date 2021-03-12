@@ -327,6 +327,8 @@ WebkitUserDrag
 WebkitUserModify
 WebkitUserSelect
 WebkitWritingMode
+accent-color
+accentColor
 additive-symbols
 additiveSymbols
 advance-override

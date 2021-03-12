@@ -29,6 +29,7 @@
 #include "third_party/blink/public/resources/grit/blink_image_resources.h"
 #include "third_party/blink/renderer/core/frame/local_frame_view.h"
 #include "third_party/blink/renderer/core/html/forms/html_input_element.h"
+#include "third_party/blink/renderer/core/html/forms/slider_thumb_element.h"
 #include "third_party/blink/renderer/core/html/forms/spin_button_element.h"
 #include "third_party/blink/renderer/core/html/shadow/shadow_element_names.h"
 #include "third_party/blink/renderer/core/layout/layout_object.h"
@@ -148,6 +149,13 @@ IntRect ConvertToPaintingRect(const LayoutObject& input_layout_object,
   return PixelSnappedIntRect(part_rect);
 }
 
+base::Optional<SkColor> BlinkToSkColor(
+    const base::Optional<Color> blink_color) {
+  if (!blink_color)
+    return base::nullopt;
+  return blink_color->Rgb();
+}
+
 }  // namespace
 
 ThemePainterDefault::ThemePainterDefault(LayoutThemeDefault& theme)
@@ -172,7 +180,8 @@ bool ThemePainterDefault::PaintCheckbox(const Element& element,
 
   Platform::Current()->ThemeEngine()->Paint(
       canvas, WebThemeEngine::kPartCheckbox, GetWebThemeState(element),
-      gfx::Rect(unzoomed_rect), &extra_params, style.UsedColorScheme());
+      gfx::Rect(unzoomed_rect), &extra_params, style.UsedColorScheme(),
+      BlinkToSkColor(style.AccentColorResolved()));
   return false;
 }
 
@@ -196,7 +205,8 @@ bool ThemePainterDefault::PaintRadio(const Element& element,
 
   Platform::Current()->ThemeEngine()->Paint(
       canvas, WebThemeEngine::kPartRadio, GetWebThemeState(element),
-      gfx::Rect(unzoomed_rect), &extra_params, style.UsedColorScheme());
+      gfx::Rect(unzoomed_rect), &extra_params, style.UsedColorScheme(),
+      BlinkToSkColor(style.AccentColorResolved()));
   return false;
 }
 
@@ -217,7 +227,8 @@ bool ThemePainterDefault::PaintButton(const Element& element,
   }
   Platform::Current()->ThemeEngine()->Paint(
       canvas, WebThemeEngine::kPartButton, GetWebThemeState(element),
-      gfx::Rect(rect), &extra_params, style.UsedColorScheme());
+      gfx::Rect(rect), &extra_params, style.UsedColorScheme(),
+      BlinkToSkColor(style.AccentColorResolved()));
   return false;
 }
 
@@ -257,7 +268,8 @@ bool ThemePainterDefault::PaintTextField(const Element& element,
 
   Platform::Current()->ThemeEngine()->Paint(
       canvas, WebThemeEngine::kPartTextField, GetWebThemeState(element),
-      gfx::Rect(rect), &extra_params, style.UsedColorScheme());
+      gfx::Rect(rect), &extra_params, style.UsedColorScheme(),
+      BlinkToSkColor(style.AccentColorResolved()));
   return false;
 }
 
@@ -292,7 +304,8 @@ bool ThemePainterDefault::PaintMenuList(const Element& element,
   cc::PaintCanvas* canvas = i.context.Canvas();
   Platform::Current()->ThemeEngine()->Paint(
       canvas, WebThemeEngine::kPartMenuList, GetWebThemeState(element),
-      gfx::Rect(rect), &extra_params, style.UsedColorScheme());
+      gfx::Rect(rect), &extra_params, style.UsedColorScheme(),
+      BlinkToSkColor(style.AccentColorResolved()));
   return false;
 }
 
@@ -311,7 +324,8 @@ bool ThemePainterDefault::PaintMenuListButton(const Element& element,
   cc::PaintCanvas* canvas = paint_info.context.Canvas();
   Platform::Current()->ThemeEngine()->Paint(
       canvas, WebThemeEngine::kPartMenuList, GetWebThemeState(element),
-      gfx::Rect(rect), &extra_params, style.UsedColorScheme());
+      gfx::Rect(rect), &extra_params, style.UsedColorScheme(),
+      BlinkToSkColor(style.AccentColorResolved()));
   return false;
 }
 
@@ -345,7 +359,8 @@ void ThemePainterDefault::SetupMenuListArrow(
 bool ThemePainterDefault::PaintSliderTrack(const Element& element,
                                            const LayoutObject& o,
                                            const PaintInfo& i,
-                                           const IntRect& rect) {
+                                           const IntRect& rect,
+                                           const ComputedStyle& style) {
   WebThemeEngine::ExtraParams extra_params;
   cc::PaintCanvas* canvas = i.context.Canvas();
   extra_params.slider.vertical =
@@ -402,7 +417,8 @@ bool ThemePainterDefault::PaintSliderTrack(const Element& element,
 
   Platform::Current()->ThemeEngine()->Paint(
       canvas, WebThemeEngine::kPartSliderTrack, GetWebThemeState(element),
-      gfx::Rect(unzoomed_rect), &extra_params, o.StyleRef().UsedColorScheme());
+      gfx::Rect(unzoomed_rect), &extra_params, o.StyleRef().UsedColorScheme(),
+      BlinkToSkColor(style.AccentColorResolved()));
   return false;
 }
 
@@ -429,9 +445,22 @@ bool ThemePainterDefault::PaintSliderThumb(const Element& element,
     paint_info.context.Translate(-unzoomed_rect.X(), -unzoomed_rect.Y());
   }
 
+  // The element passed in is inside the user agent shadowdom of the input
+  // element, so we have to access the parent input element in order to get the
+  // accent-color style set by the page.
+  const SliderThumbElement* slider_element =
+      DynamicTo<SliderThumbElement>(&element);
+  DCHECK(slider_element);  // PaintSliderThumb should always be passed a
+                           // SliderThumbElement
+  base::Optional<SkColor> accent_color =
+      BlinkToSkColor(slider_element->HostInput()
+                         ->EnsureComputedStyle()
+                         ->AccentColorResolved());
+
   Platform::Current()->ThemeEngine()->Paint(
       canvas, WebThemeEngine::kPartSliderThumb, GetWebThemeState(element),
-      gfx::Rect(unzoomed_rect), &extra_params, style.UsedColorScheme());
+      gfx::Rect(unzoomed_rect), &extra_params, style.UsedColorScheme(),
+      accent_color);
   return false;
 }
 
@@ -457,14 +486,16 @@ bool ThemePainterDefault::PaintInnerSpinButton(const Element& element,
 
   Platform::Current()->ThemeEngine()->Paint(
       canvas, WebThemeEngine::kPartInnerSpinButton, GetWebThemeState(element),
-      gfx::Rect(rect), &extra_params, style.UsedColorScheme());
+      gfx::Rect(rect), &extra_params, style.UsedColorScheme(),
+      BlinkToSkColor(style.AccentColorResolved()));
   return false;
 }
 
 bool ThemePainterDefault::PaintProgressBar(const Element& element,
                                            const LayoutObject& o,
                                            const PaintInfo& i,
-                                           const IntRect& rect) {
+                                           const IntRect& rect,
+                                           const ComputedStyle& style) {
   if (!o.IsProgress())
     return true;
 
@@ -483,7 +514,8 @@ bool ThemePainterDefault::PaintProgressBar(const Element& element,
   cc::PaintCanvas* canvas = i.context.Canvas();
   Platform::Current()->ThemeEngine()->Paint(
       canvas, WebThemeEngine::kPartProgressBar, GetWebThemeState(element),
-      gfx::Rect(rect), &extra_params, o.StyleRef().UsedColorScheme());
+      gfx::Rect(rect), &extra_params, o.StyleRef().UsedColorScheme(),
+      BlinkToSkColor(style.AccentColorResolved()));
   return false;
 }
 

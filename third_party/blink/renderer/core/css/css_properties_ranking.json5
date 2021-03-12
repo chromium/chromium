@@ -734,6 +734,7 @@
         "subtree-visibility",
         "math-superscript-shift-style",
         "start"
+        "accent-color",
     ],
     "properties": {}
 }

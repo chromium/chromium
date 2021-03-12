@@ -385,6 +385,8 @@ bool CSSPropertyEquality::PropertiesEqual(const PropertyHandle& property,
       return a.AspectRatio() == b.AspectRatio();
     case CSSPropertyID::kMathDepth:
       return a.MathDepth() == b.MathDepth();
+    case CSSPropertyID::kAccentColor:
+      return a.AccentColor() == b.AccentColor();
     default:
       NOTREACHED();
       return true;

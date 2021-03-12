@@ -22,7 +22,8 @@ class WebThemeEngineDefault : public blink::WebThemeEngine {
              blink::WebThemeEngine::State state,
              const gfx::Rect& rect,
              const blink::WebThemeEngine::ExtraParams* extra_params,
-             blink::mojom::ColorScheme color_scheme) override;
+             blink::mojom::ColorScheme color_scheme,
+             const base::Optional<SkColor>& accent_color) override;
   void GetOverlayScrollbarStyle(
       blink::WebThemeEngine::ScrollbarStyle*) override;
   bool SupportsNinePatch(Part part) const override;

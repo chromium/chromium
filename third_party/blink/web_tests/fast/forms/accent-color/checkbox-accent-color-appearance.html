@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<style>
+input {
+  /* This is needed in order to override the user-agent stylesheet's color */
+  color: currentcolor;
+}
+</style>
+<body>
+<script>
+function addAccentColor(style, text) {
+  const div = document.createElement('div');
+  document.body.appendChild(div);
+  const span = document.createElement('span');
+  span.style = style;
+  div.appendChild(span);
+  span.innerHTML = `
+    <input type=checkbox>
+    <input type=checkbox disabled>
+    <input type=checkbox checked>
+    <input type=checkbox disabled checked>
+    <input type=checkbox class=indeterminate>
+    <input type=checkbox disabled class=indeterminate>`;
+  div.appendChild(document.createTextNode(text ? text : style));
+  div.querySelectorAll('.indeterminate').forEach(checkbox => checkbox.indeterminate = true);
+}
+
+addAccentColor('', 'no accent-color');
+addAccentColor('accent-color: auto');
+addAccentColor('accent-color: red');
+addAccentColor('accent-color: green');
+addAccentColor('accent-color: #111111');
+addAccentColor('accent-color: #eeeeee');
+addAccentColor('color-scheme: dark');
+addAccentColor('accent-color: currentcolor; color: red');
+</script>

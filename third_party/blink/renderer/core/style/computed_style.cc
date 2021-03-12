@@ -2431,6 +2431,13 @@ const AtomicString& ComputedStyle::ListStyleStringValue() const {
   return GetListStyleType()->GetStringValue();
 }
 
+base::Optional<Color> ComputedStyle::AccentColorResolved() const {
+  const StyleAutoColor& auto_color = AccentColor();
+  if (auto_color.IsAutoColor())
+    return base::nullopt;
+  return auto_color.Resolve(GetCurrentColor(), UsedColorScheme());
+}
+
 static const int kPaintOrderBitwidth = 2;
 
 static unsigned PaintOrderSequence(EPaintOrderType first,

@@ -95,6 +95,7 @@ typedef Vector<scoped_refptr<const ComputedStyle>, 4> PseudoElementStyleCache;
 
 namespace css_longhand {
 
+class AccentColor;
 class Appearance;
 class BackgroundColor;
 class BorderBottomColor;
@@ -1120,6 +1121,11 @@ class ComputedStyle : public ComputedStyleBase,
   }
   bool HasDashArray() const { return !StrokeDashArray()->data.IsEmpty(); }
   bool StrokeDashArrayDataEquivalent(const ComputedStyle&) const;
+
+  // accent-color
+  const StyleAutoColor& AccentColor() const { return AccentColorInternal(); }
+  // An empty optional means the accent-color is 'auto'
+  base::Optional<Color> AccentColorResolved() const;
 
   // Comparison operators
   // FIXME: Replace callers of operator== wth a named method instead, e.g.

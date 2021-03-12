@@ -225,7 +225,8 @@ void NativeThemeMac::Paint(cc::PaintCanvas* canvas,
                            State state,
                            const gfx::Rect& rect,
                            const ExtraParams& extra,
-                           ColorScheme color_scheme) const {
+                           ColorScheme color_scheme,
+                           const base::Optional<SkColor>& accent_color) const {
   ColorScheme color_scheme_updated = color_scheme;
   if (color_scheme_updated == ColorScheme::kDefault)
     color_scheme_updated = GetDefaultSystemColorScheme();
@@ -249,7 +250,8 @@ void NativeThemeMac::Paint(cc::PaintCanvas* canvas,
                                      rect, color_scheme_updated, true);
       break;
     default:
-      NativeThemeBase::Paint(canvas, part, state, rect, extra, color_scheme);
+      NativeThemeBase::Paint(canvas, part, state, rect, extra, color_scheme,
+                             accent_color);
       break;
   }
 }

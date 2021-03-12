@@ -279,6 +279,10 @@
             method: "UsedColorScheme()",
             field_dependencies: ["color-scheme"]
           },
+          {
+            method: "AccentColor()",
+            field_dependencies: ["accent-color"]
+          }
         ],
         predicates_to_test: [
           {

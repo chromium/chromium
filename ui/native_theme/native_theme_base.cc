@@ -143,6 +143,21 @@ SkColor BrightenColor(const color_utils::HSL& hsl, SkAlpha alpha,
   return color_utils::HSLToSkColor(adjusted, alpha);
 }
 
+// This returns a color scheme which provides enough contrast with the custom
+// accent-color to make it easy to see.
+// TODO(crbug.com/1092093): Use separate hard coded colors instead of deferring
+// to the dark color scheme for contrast.
+ui::NativeTheme::ColorScheme ColorSchemeForAccentColor(
+    const base::Optional<SkColor>& accent_color,
+    const ui::NativeTheme::ColorScheme& color_scheme) {
+  if (!accent_color)
+    return color_scheme;
+
+  return color_utils::GetRelativeLuminance(*accent_color) < 0.5
+             ? ui::NativeTheme::ColorScheme::kLight
+             : ui::NativeTheme::ColorScheme::kDark;
+}
+
 }  // namespace
 
 namespace ui {
@@ -243,7 +258,8 @@ void NativeThemeBase::Paint(cc::PaintCanvas* canvas,
                             State state,
                             const gfx::Rect& rect,
                             const ExtraParams& extra,
-                            ColorScheme color_scheme) const {
+                            ColorScheme color_scheme,
+                            const base::Optional<SkColor>& accent_color) const {
   if (rect.IsEmpty())
     return;
 
@@ -253,7 +269,8 @@ void NativeThemeBase::Paint(cc::PaintCanvas* canvas,
   switch (part) {
     // Please keep these in the order of NativeTheme::Part.
     case kCheckbox:
-      PaintCheckbox(canvas, state, rect, extra.button, color_scheme);
+      PaintCheckbox(canvas, state, rect, extra.button, color_scheme,
+                    accent_color);
       break;
 // TODO(crbug.com/1052397): Revisit the macro expression once build flag switch
 // of lacros-chrome is complete.
@@ -282,13 +299,14 @@ void NativeThemeBase::Paint(cc::PaintCanvas* canvas,
                               color_scheme);
       break;
     case kProgressBar:
-      PaintProgressBar(canvas, state, rect, extra.progress_bar, color_scheme);
+      PaintProgressBar(canvas, state, rect, extra.progress_bar, color_scheme,
+                       accent_color);
       break;
     case kPushButton:
       PaintButton(canvas, state, rect, extra.button, color_scheme);
       break;
     case kRadio:
-      PaintRadio(canvas, state, rect, extra.button, color_scheme);
+      PaintRadio(canvas, state, rect, extra.button, color_scheme, accent_color);
       break;
     case kScrollbarDownArrow:
     case kScrollbarUpArrow:
@@ -317,10 +335,12 @@ void NativeThemeBase::Paint(cc::PaintCanvas* canvas,
       PaintScrollbarCorner(canvas, state, rect, color_scheme);
       break;
     case kSliderTrack:
-      PaintSliderTrack(canvas, state, rect, extra.slider, color_scheme);
+      PaintSliderTrack(canvas, state, rect, extra.slider, color_scheme,
+                       accent_color);
       break;
     case kSliderThumb:
-      PaintSliderThumb(canvas, state, rect, extra.slider, color_scheme);
+      PaintSliderThumb(canvas, state, rect, extra.slider, color_scheme,
+                       accent_color);
       break;
     case kTabPanelBackground:
       NOTIMPLEMENTED();
@@ -596,16 +616,22 @@ void NativeThemeBase::PaintScrollbarCorner(cc::PaintCanvas* canvas,
                                            const gfx::Rect& rect,
                                            ColorScheme color_scheme) const {}
 
-void NativeThemeBase::PaintCheckbox(cc::PaintCanvas* canvas,
-                                    State state,
-                                    const gfx::Rect& rect,
-                                    const ButtonExtraParams& button,
-                                    ColorScheme color_scheme) const {
+void NativeThemeBase::PaintCheckbox(
+    cc::PaintCanvas* canvas,
+    State state,
+    const gfx::Rect& rect,
+    const ButtonExtraParams& button,
+    ColorScheme color_scheme,
+    const base::Optional<SkColor>& accent_color) const {
   if (features::IsFormControlsRefreshEnabled()) {
+    color_scheme = ColorSchemeForAccentColor(accent_color, color_scheme);
+
     const float border_radius =
         GetBorderRadiusForPart(kCheckbox, rect.width(), rect.height());
-    SkRect skrect = PaintCheckboxRadioCommon(canvas, state, rect, button, true,
-                                             border_radius, color_scheme);
+
+    SkRect skrect =
+        PaintCheckboxRadioCommon(canvas, state, rect, button, true,
+                                 border_radius, color_scheme, accent_color);
 
     if (!skrect.isEmpty()) {
       cc::PaintFlags flags;
@@ -623,7 +649,11 @@ void NativeThemeBase::PaintCheckbox(cc::PaintCanvas* canvas,
       } else if (button.checked) {
         // Draw the accent background.
         flags.setStyle(cc::PaintFlags::kFill_Style);
-        flags.setColor(ControlsAccentColorForState(state, color_scheme));
+        if (accent_color && state != kDisabled) {
+          flags.setColor(*accent_color);
+        } else {
+          flags.setColor(ControlsAccentColorForState(state, color_scheme));
+        }
         canvas->drawRoundRect(skrect, border_radius, border_radius, flags);
 
         // Draw the checkmark.
@@ -643,8 +673,9 @@ void NativeThemeBase::PaintCheckbox(cc::PaintCanvas* canvas,
     return;
   }
 
-  SkRect skrect = PaintCheckboxRadioCommon(canvas, state, rect, button, true,
-                                           SkIntToScalar(2), color_scheme);
+  SkRect skrect =
+      PaintCheckboxRadioCommon(canvas, state, rect, button, true,
+                               SkIntToScalar(2), color_scheme, accent_color);
   if (!skrect.isEmpty()) {
     // Draw the checkmark / dash.
     cc::PaintFlags flags;
@@ -683,8 +714,11 @@ SkRect NativeThemeBase::PaintCheckboxRadioCommon(
     const ButtonExtraParams& button,
     bool is_checkbox,
     const SkScalar border_radius,
-    ColorScheme color_scheme) const {
+    ColorScheme color_scheme,
+    const base::Optional<SkColor>& accent_color) const {
   if (features::IsFormControlsRefreshEnabled()) {
+    color_scheme = ColorSchemeForAccentColor(accent_color, color_scheme);
+
     SkRect skrect = gfx::RectToSkRect(rect);
 
     // Use the largest square that fits inside the provided rectangle.
@@ -700,7 +734,11 @@ SkRect NativeThemeBase::PaintCheckboxRadioCommon(
     // or underflow.
     if (skrect.width() <= 2) {
       cc::PaintFlags flags;
-      flags.setColor(GetControlColor(kBorder, color_scheme));
+      if (accent_color && state != kDisabled) {
+        flags.setColor(*accent_color);
+      } else {
+        flags.setColor(GetControlColor(kBorder, color_scheme));
+      }
       flags.setStyle(cc::PaintFlags::kFill_Style);
       canvas->drawRect(skrect, flags);
       // Too small to draw anything more.
@@ -729,10 +767,17 @@ SkRect NativeThemeBase::PaintCheckboxRadioCommon(
       // within the rectangle.
       const auto border_rect =
           skrect.makeInset(kBorderWidth / 2, kBorderWidth / 2);
-      SkColor border_color =
-          (button.checked && !button.indeterminate)
-              ? ControlsAccentColorForState(state, color_scheme)
-              : ControlsBorderColorForState(state, color_scheme);
+
+      SkColor border_color;
+      if (button.checked && !button.indeterminate) {
+        if (accent_color && state != kDisabled) {
+          border_color = *accent_color;
+        } else {
+          border_color = ControlsAccentColorForState(state, color_scheme);
+        }
+      } else {
+        border_color = ControlsBorderColorForState(state, color_scheme);
+      }
       flags.setColor(border_color);
       flags.setStyle(cc::PaintFlags::kStroke_Style);
       flags.setStrokeWidth(kBorderWidth);
@@ -831,24 +876,33 @@ SkRect NativeThemeBase::PaintCheckboxRadioCommon(
   return skrect;
 }
 
-void NativeThemeBase::PaintRadio(cc::PaintCanvas* canvas,
-                                 State state,
-                                 const gfx::Rect& rect,
-                                 const ButtonExtraParams& button,
-                                 ColorScheme color_scheme) const {
+void NativeThemeBase::PaintRadio(
+    cc::PaintCanvas* canvas,
+    State state,
+    const gfx::Rect& rect,
+    const ButtonExtraParams& button,
+    ColorScheme color_scheme,
+    const base::Optional<SkColor>& accent_color) const {
   if (features::IsFormControlsRefreshEnabled()) {
+    color_scheme = ColorSchemeForAccentColor(accent_color, color_scheme);
+
     // Most of a radio button is the same as a checkbox, except the the rounded
     // square is a circle (i.e. border radius >= 100%).
     const float border_radius =
         GetBorderRadiusForPart(kRadio, rect.width(), rect.height());
-    SkRect skrect = PaintCheckboxRadioCommon(canvas, state, rect, button, false,
-                                             border_radius, color_scheme);
+    SkRect skrect =
+        PaintCheckboxRadioCommon(canvas, state, rect, button, false,
+                                 border_radius, color_scheme, accent_color);
     if (!skrect.isEmpty() && button.checked) {
       // Draw the dot.
       cc::PaintFlags flags;
       flags.setAntiAlias(true);
       flags.setStyle(cc::PaintFlags::kFill_Style);
-      flags.setColor(ControlsAccentColorForState(state, color_scheme));
+      if (accent_color && state != kDisabled) {
+        flags.setColor(*accent_color);
+      } else {
+        flags.setColor(ControlsAccentColorForState(state, color_scheme));
+      }
 
       skrect.inset(skrect.width() * 0.2, skrect.height() * 0.2);
       // Use drawRoundedRect instead of drawOval to be completely consistent
@@ -863,7 +917,7 @@ void NativeThemeBase::PaintRadio(cc::PaintCanvas* canvas,
   const SkScalar radius = SkFloatToScalar(
       static_cast<float>(std::max(rect.width(), rect.height())) / 2);
   SkRect skrect = PaintCheckboxRadioCommon(canvas, state, rect, button, false,
-                                           radius, color_scheme);
+                                           radius, color_scheme, accent_color);
   if (!skrect.isEmpty() && button.checked) {
     // Draw the dot.
     cc::PaintFlags flags;
@@ -1139,12 +1193,16 @@ void NativeThemeBase::PaintMenuSeparator(
   canvas->drawRect(gfx::RectToSkRect(*menu_separator.paint_rect), flags);
 }
 
-void NativeThemeBase::PaintSliderTrack(cc::PaintCanvas* canvas,
-                                       State state,
-                                       const gfx::Rect& rect,
-                                       const SliderExtraParams& slider,
-                                       ColorScheme color_scheme) const {
+void NativeThemeBase::PaintSliderTrack(
+    cc::PaintCanvas* canvas,
+    State state,
+    const gfx::Rect& rect,
+    const SliderExtraParams& slider,
+    ColorScheme color_scheme,
+    const base::Optional<SkColor>& accent_color) const {
   if (features::IsFormControlsRefreshEnabled()) {
+    color_scheme = ColorSchemeForAccentColor(accent_color, color_scheme);
+
     // Paint the entire slider track.
     cc::PaintFlags flags;
     flags.setAntiAlias(true);
@@ -1168,7 +1226,13 @@ void NativeThemeBase::PaintSliderTrack(cc::PaintCanvas* canvas,
     canvas->clipRRect(rounded_rect, SkClipOp::kIntersect, true);
 
     // Paint the value slider track.
-    flags.setColor(ControlsSliderColorForState(state, color_scheme));
+    if (accent_color && state != kDisabled) {
+      // TODO(crbug.com/1092093): Decide what to do when state is kHovered or
+      // kPressed.
+      flags.setColor(*accent_color);
+    } else {
+      flags.setColor(ControlsSliderColorForState(state, color_scheme));
+    }
     SkRect value_rect = AlignSliderTrack(rect, slider, true, track_height);
     canvas->drawRect(value_rect, flags);
 
@@ -1202,12 +1266,16 @@ void NativeThemeBase::PaintSliderTrack(cc::PaintCanvas* canvas,
   canvas->drawRect(skrect, flags);
 }
 
-void NativeThemeBase::PaintSliderThumb(cc::PaintCanvas* canvas,
-                                       State state,
-                                       const gfx::Rect& rect,
-                                       const SliderExtraParams& slider,
-                                       ColorScheme color_scheme) const {
+void NativeThemeBase::PaintSliderThumb(
+    cc::PaintCanvas* canvas,
+    State state,
+    const gfx::Rect& rect,
+    const SliderExtraParams& slider,
+    ColorScheme color_scheme,
+    const base::Optional<SkColor>& accent_color) const {
   if (features::IsFormControlsRefreshEnabled()) {
+    color_scheme = ColorSchemeForAccentColor(accent_color, color_scheme);
+
     const float radius =
         GetBorderRadiusForPart(kSliderThumb, rect.width(), rect.height());
     SkRect thumb_rect = gfx::RectToSkRect(rect);
@@ -1221,7 +1289,13 @@ void NativeThemeBase::PaintSliderThumb(cc::PaintCanvas* canvas,
 
     // Paint the background (is not visible behind the rounded corners).
     thumb_rect.inset(border_width / 2, border_width / 2);
-    flags.setColor(ControlsSliderColorForState(state, color_scheme));
+    if (accent_color && state != kDisabled) {
+      // TODO(crbug.com/1092093): Decide what to do when state is kHovered or
+      // kPressed.
+      flags.setColor(*accent_color);
+    } else {
+      flags.setColor(ControlsSliderColorForState(state, color_scheme));
+    }
     flags.setStyle(cc::PaintFlags::kFill_Style);
     canvas->drawRoundRect(thumb_rect, radius, radius, flags);
     return;
@@ -1298,9 +1372,12 @@ void NativeThemeBase::PaintProgressBar(
     State state,
     const gfx::Rect& rect,
     const ProgressBarExtraParams& progress_bar,
-    ColorScheme color_scheme) const {
+    ColorScheme color_scheme,
+    const base::Optional<SkColor>& accent_color) const {
   if (features::IsFormControlsRefreshEnabled()) {
     DCHECK(!rect.IsEmpty());
+
+    color_scheme = ColorSchemeForAccentColor(accent_color, color_scheme);
 
     // Paint the track.
     cc::PaintFlags flags;
@@ -1330,7 +1407,11 @@ void NativeThemeBase::PaintProgressBar(
                                   progress_bar.value_rect_height);
     SkRect value_rect =
         AlignSliderTrack(original_value_rect, slider, false, track_height);
-    flags.setColor(GetControlColor(kAccent, color_scheme));
+    if (accent_color) {
+      flags.setColor(*accent_color);
+    } else {
+      flags.setColor(GetControlColor(kAccent, color_scheme));
+    }
     if (progress_bar.determinate) {
       canvas->drawRect(value_rect, flags);
     } else {

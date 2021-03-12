@@ -244,12 +244,14 @@ class WebThemeEngine {
   }
 
   // Paint the given the given theme part.
-  virtual void Paint(cc::PaintCanvas*,
-                     Part,
-                     State,
-                     const gfx::Rect&,
-                     const ExtraParams*,
-                     blink::mojom::ColorScheme) {}
+  virtual void Paint(
+      cc::PaintCanvas*,
+      Part,
+      State,
+      const gfx::Rect&,
+      const ExtraParams*,
+      blink::mojom::ColorScheme,
+      const base::Optional<SkColor>& accent_color = base::nullopt) {}
 
   virtual base::Optional<SkColor> GetSystemColor(
       SystemThemeColor system_theme) const {

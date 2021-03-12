@@ -4904,6 +4904,29 @@ const CSSValue* OutlineColor::ParseSingleValue(
   return css_parsing_utils::ConsumeColor(range, context);
 }
 
+const CSSValue* AccentColor::ParseSingleValue(
+    CSSParserTokenRange& range,
+    const CSSParserContext& context,
+    const CSSParserLocalContext&) const {
+  if (range.Peek().Id() == CSSValueID::kAuto)
+    return css_parsing_utils::ConsumeIdent(range);
+  return css_parsing_utils::ConsumeColor(range, context);
+}
+
+void AccentColor::ApplyInitial(StyleResolverState& state) const {
+  state.Style()->SetAccentColor(StyleAutoColor::AutoColor());
+}
+
+void AccentColor::ApplyInherit(StyleResolverState& state) const {
+  state.Style()->SetAccentColor(state.ParentStyle()->AccentColor());
+}
+
+void AccentColor::ApplyValue(StyleResolverState& state,
+                             const CSSValue& value) const {
+  state.Style()->SetAccentColor(
+      StyleBuilderConverter::ConvertStyleAutoColor(state, value));
+}
+
 const blink::Color OutlineColor::ColorIncludingFallback(
     bool visited_link,
     const ComputedStyle& style) const {

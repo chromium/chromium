@@ -1189,6 +1189,8 @@ interface CSSStyleDeclaration
     getter WebkitUserModify
     getter WebkitUserSelect
     getter WebkitWritingMode
+    getter accent-color
+    getter accentColor
     getter additive-symbols
     getter additiveSymbols
     getter advance-override
@@ -2461,6 +2463,8 @@ interface CSSStyleDeclaration
     setter WebkitUserModify
     setter WebkitUserSelect
     setter WebkitWritingMode
+    setter accent-color
+    setter accentColor
     setter additive-symbols
     setter additiveSymbols
     setter advance-override

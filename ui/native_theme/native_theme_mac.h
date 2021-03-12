@@ -50,7 +50,8 @@ class NATIVE_THEME_EXPORT NativeThemeMac : public NativeThemeBase {
              State state,
              const gfx::Rect& rect,
              const ExtraParams& extra,
-             ColorScheme color_scheme) const override;
+             ColorScheme color_scheme,
+             const base::Optional<SkColor>& accent_color) const override;
   void PaintMenuPopupBackground(
       cc::PaintCanvas* canvas,
       const gfx::Size& size,

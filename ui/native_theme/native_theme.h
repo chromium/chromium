@@ -336,13 +336,13 @@ class NATIVE_THEME_EXPORT NativeTheme {
                                        float height) const;
 
   // Paint the part to the canvas.
-  virtual void Paint(
-      cc::PaintCanvas* canvas,
-      Part part,
-      State state,
-      const gfx::Rect& rect,
-      const ExtraParams& extra,
-      ColorScheme color_scheme = ColorScheme::kDefault) const = 0;
+  virtual void Paint(cc::PaintCanvas* canvas,
+                     Part part,
+                     State state,
+                     const gfx::Rect& rect,
+                     const ExtraParams& extra,
+                     ColorScheme color_scheme = ColorScheme::kDefault,
+                     const base::Optional<SkColor>& accent_color = 0) const = 0;
 
   // Paint part during state transition, used for overlay scrollbar state
   // transition animation.
