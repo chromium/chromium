@@ -61,7 +61,8 @@ class CONTENT_EXPORT NativeIOManager {
   //
   // `receiver` must belong to a frame or worker serving `origin`.
   void BindReceiver(const url::Origin& origin,
-                    mojo::PendingReceiver<blink::mojom::NativeIOHost> receiver);
+                    mojo::PendingReceiver<blink::mojom::NativeIOHost> receiver,
+                    mojo::ReportBadMessageCallback bad_message_callback);
 
   // Removes an origin's data and closes any open files.
   void DeleteOriginData(

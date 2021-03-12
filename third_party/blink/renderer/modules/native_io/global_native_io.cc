@@ -45,8 +45,12 @@ class GlobalNativeIOImpl final : public GarbageCollected<GlobalNativeIOImpl<T>>,
   NativeIOFileManager* GetNativeIOFileManager(T& scope) {
     if (!native_io_file_manager_) {
       ExecutionContext* execution_context = scope.GetExecutionContext();
+      // TODO(rstz): Consider throwing a security error on opaque origins
+      // instead.
       if (&execution_context->GetBrowserInterfaceBroker() ==
-          &GetEmptyBrowserInterfaceBroker()) {
+              &GetEmptyBrowserInterfaceBroker() ||
+          !execution_context->GetSecurityOrigin()
+               ->CanAccessStorageFoundation()) {
         return nullptr;
       }
 
