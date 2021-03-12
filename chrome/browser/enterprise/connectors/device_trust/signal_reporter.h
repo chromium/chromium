@@ -27,7 +27,8 @@ class DeviceTrustSignalReporter {
   // Init() must have completed and |done_cb| above must have been called
   // without error before calling SendReport(), otherwise browser will crash.
   // ReportQueue::Enqueue with |sent_cb|.
-  void SendReport(base::Value value, base::OnceCallback<void(bool)> sent_cb);
+  virtual void SendReport(base::Value value,
+                          base::OnceCallback<void(bool)> sent_cb);
 
  protected:
   void OnCreateReportQueueResponse(
