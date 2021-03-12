@@ -22034,11 +22034,28 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="SharingHubAndroid.LinkGeneration.Failure.TextShared">
+  <owner>cheickcisse@google.com</owner>
+  <description>
+    The user shared only the text because the link generation failed.
+  </description>
+</action>
+
 <action name="SharingHubAndroid.LinkGeneration.Link">
   <owner>cheickcisse@google.com</owner>
   <description>
     The user requested sharing the link-to-text in the sharing hub.
   </description>
+</action>
+
+<action name="SharingHubAndroid.LinkGeneration.Success.LinkToTextShared">
+  <owner>cheickcisse@google.com</owner>
+  <description>The user shared link-to-text.</description>
+</action>
+
+<action name="SharingHubAndroid.LinkGeneration.Success.TextShared">
+  <owner>cheickcisse@google.com</owner>
+  <description>The user shared only the text.</description>
 </action>
 
 <action name="SharingHubAndroid.LinkGeneration.Text">

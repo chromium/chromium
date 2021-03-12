@@ -137,6 +137,11 @@ class ShareSheetBottomSheetContent implements BottomSheetContent, OnItemClickLis
         mParams = params;
     }
 
+    @LinkGeneration
+    int getLinkGenerationState() {
+        return mLinkGenerationState;
+    }
+
     private void populateView(List<PropertyModel> models, RecyclerView view, boolean firstParty) {
         ModelList modelList = new ModelList();
         for (PropertyModel model : models) {

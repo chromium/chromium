@@ -72,6 +72,7 @@ public class ShareSheetCoordinator implements ActivityStateObserver, ChromeOptio
     private final BottomSheetObserver mBottomSheetObserver;
     private final LargeIconBridge mIconBridge;
     private final Tracker mFeatureEngagementTracker;
+    private String mShareDetailsForMetrics;
 
     /**
      * Constructs a new ShareSheetCoordinator.
@@ -152,6 +153,9 @@ public class ShareSheetCoordinator implements ActivityStateObserver, ChromeOptio
         mBottomSheet = new ShareSheetBottomSheetContent(mActivity, mIconBridge, this, params);
 
         mShareStartTime = shareStartTime;
+        if (ChromeFeatureList.isEnabled(ChromeFeatureList.PREEMPTIVE_LINK_TO_TEXT_GENERATION)) {
+            setShareMetrics(mBottomSheet.getLinkGenerationState());
+        }
         updateShareSheet();
 
         boolean shown = mBottomSheetController.requestShowContent(mBottomSheet, true);
@@ -176,7 +180,25 @@ public class ShareSheetCoordinator implements ActivityStateObserver, ChromeOptio
 
         mShareParams = mLinkToTextCoordinator.getShareParams(state);
         mBottomSheet.updateShareParams(mShareParams);
+        setShareMetrics(state);
         updateShareSheet();
+    }
+
+    private void setShareMetrics(@LinkGeneration int state) {
+        switch (state) {
+            case LinkGeneration.LINK:
+                mShareDetailsForMetrics =
+                        "SharingHubAndroid.LinkGeneration.Success.LinkToTextShared";
+                break;
+            case LinkGeneration.TEXT:
+                mShareDetailsForMetrics = "SharingHubAndroid.LinkGeneration.Success.TextShared";
+                break;
+            case LinkGeneration.FAILURE:
+                mShareDetailsForMetrics = "SharingHubAndroid.LinkGeneration.Failure.TextShared";
+                break;
+            default:
+                break;
+        }
     }
 
     private void updateShareSheet() {
@@ -234,7 +256,8 @@ public class ShareSheetCoordinator implements ActivityStateObserver, ChromeOptio
                 mImageEditorModuleProvider, mFeatureEngagementTracker,
                 getUrlToShare(shareParams, chromeShareExtras,
                         mTabProvider.get().isInitialized() ? mTabProvider.get().getUrl().getSpec()
-                                                           : ""));
+                                                           : ""),
+                mShareDetailsForMetrics);
         mIsMultiWindow = ApiCompatibilityUtils.isInMultiWindowMode(activity);
 
         return mChromeProvidedSharingOptionsProvider.getPropertyModels(
@@ -254,6 +277,11 @@ public class ShareSheetCoordinator implements ActivityStateObserver, ChromeOptio
                 (shareParams)
                         -> {
                     RecordUserAction.record("SharingHubAndroid.MoreSelected");
+                    if (ChromeFeatureList.isEnabled(
+                                ChromeFeatureList.PREEMPTIVE_LINK_TO_TEXT_GENERATION)
+                            && mShareDetailsForMetrics != null) {
+                        RecordUserAction.record(mShareDetailsForMetrics);
+                    }
                     mBottomSheetController.hideContent(mBottomSheet, true);
                     ShareHelper.showDefaultShareUi(params, saveLastUsed);
                 },

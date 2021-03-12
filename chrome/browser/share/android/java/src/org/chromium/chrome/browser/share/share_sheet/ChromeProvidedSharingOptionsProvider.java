@@ -11,6 +11,7 @@ import android.content.Context;
 import android.graphics.drawable.Drawable;
 import android.view.View;
 
+import androidx.annotation.Nullable;
 import androidx.appcompat.content.res.AppCompatResources;
 
 import org.chromium.base.Callback;
@@ -70,6 +71,7 @@ class ChromeProvidedSharingOptionsProvider {
     private final String mUrl;
     private final ImageEditorModuleProvider mImageEditorModuleProvider;
     private final Tracker mFeatureEngagementTracker;
+    private String mShareDetailsForMetrics;
 
     /**
      * Constructs a new {@link ChromeProvidedSharingOptionsProvider}.
@@ -87,6 +89,10 @@ class ChromeProvidedSharingOptionsProvider {
      * Chrome-provided sharing options.
      * @param imageEditorModuleProvider Image Editor module entry point if present in the APK.
      * @param featureEngagementTracker feature engagement tracker.
+     * @param url Url to share.
+     * @param shareDetailsForMetrics User action of sharing text from failed link-to-text
+     *         generation,
+     * sharing text from successful link-to-text generation, or sharing link-to-text.
      */
     ChromeProvidedSharingOptionsProvider(Activity activity, Supplier<Tab> tabProvider,
             BottomSheetController bottomSheetController,
@@ -95,7 +101,7 @@ class ChromeProvidedSharingOptionsProvider {
             SettingsLauncher settingsLauncher, boolean isSyncEnabled, long shareStartTime,
             ChromeOptionShareCallback chromeOptionShareCallback,
             ImageEditorModuleProvider imageEditorModuleProvider, Tracker featureEngagementTracker,
-            String url) {
+            String url, @Nullable String shareDetailsForMetrics) {
         mActivity = activity;
         mTabProvider = tabProvider;
         mBottomSheetController = bottomSheetController;
@@ -111,6 +117,7 @@ class ChromeProvidedSharingOptionsProvider {
         initializeFirstPartyOptionsInOrder();
         mChromeOptionShareCallback = chromeOptionShareCallback;
         mUrl = url;
+        mShareDetailsForMetrics = shareDetailsForMetrics;
     }
 
     /**
@@ -187,6 +194,11 @@ class ChromeProvidedSharingOptionsProvider {
                     AppCompatResources.getDrawable(mActivity, mIcon),
                     mActivity.getResources().getString(mIconLabel), (view) -> {
                         RecordUserAction.record(mFeatureNameForMetrics);
+                        if (ChromeFeatureList.isEnabled(
+                                    ChromeFeatureList.PREEMPTIVE_LINK_TO_TEXT_GENERATION)
+                                && mShareDetailsForMetrics != null) {
+                            RecordUserAction.record(mShareDetailsForMetrics);
+                        }
                         recordTimeToShare(mShareStartTime);
                         mBottomSheetController.hideContent(mBottomSheetContent, true);
                         mOnClickCallback.onResult(view);
