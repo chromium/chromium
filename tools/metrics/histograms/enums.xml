@@ -1456,6 +1456,16 @@ Unknown properties are collapsed to zero. -->
   <int value="4" label="Not QUIC, destination different from origin"/>
 </enum>
 
+<enum name="AltTabMode">
+  <int value="0" label="All Desks"/>
+  <int value="1" label="Current Desk"/>
+</enum>
+
+<enum name="AltTabModeSwitchSource">
+  <int value="0" label="Click"/>
+  <int value="1" label="Keyboard"/>
+</enum>
+
 <enum name="AmbientModePhotoSource">
   <int value="0" label="Default">
     This is when user clicked on the top level Screen Saver toggle but did not

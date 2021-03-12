@@ -27,7 +27,7 @@
 #include "ash/wm/window_cycle/window_cycle_list.h"
 #include "ash/wm/window_state.h"
 #include "ash/wm/window_util.h"
-#include "base/metrics/histogram_macros.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/metrics/user_metrics.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "components/prefs/pref_change_registrar.h"
@@ -37,6 +37,27 @@
 namespace ash {
 
 namespace {
+
+constexpr char kAltTabDesksSwitchDistanceHistogramName[] =
+    "Ash.WindowCycleController.DesksSwitchDistance";
+constexpr char kAltTabInitialModeHistogramName[] =
+    "Ash.WindowCycleController.InitialMode";
+constexpr char kAltTabItemsHistogramName[] = "Ash.WindowCycleController.Items";
+constexpr char kAltTabSwitchModeHistogramName[] =
+    "Ash.WindowCycleController.SwitchMode";
+constexpr char kAltTabModeSwitchSourceHistogramName[] =
+    "Ash.WindowCycleController.ModeSwitchSource";
+
+// Enumeration of the alt-tab modes to record initial mode and mode switch.
+// Note that these values are persisted to histograms so existing values should
+// remain unchanged and new values should be added to the end.
+enum class AltTabMode {
+  // The window list includes all windows from all desks.
+  kAllDesks,
+  // The window list only includes windows from the active desk.
+  kCurrentDesk,
+  kMaxValue = kCurrentDesk,
+};
 
 // Returns the most recently active window from the |window_list| or nullptr
 // if the list is empty.
@@ -68,9 +89,9 @@ void ReportPossibleDesksSwitchStats(int active_desk_container_id_before_cycle) {
   const int desks_switch_distance =
       std::abs(active_desk_container_id_after_cycle -
                active_desk_container_id_before_cycle);
-  UMA_HISTOGRAM_EXACT_LINEAR("Ash.WindowCycleController.DesksSwitchDistance",
-                             desks_switch_distance,
-                             desks_util::GetMaxNumberOfDesks());
+  base::UmaHistogramExactLinear(kAltTabDesksSwitchDistanceHistogramName,
+                                desks_switch_distance,
+                                desks_util::GetMaxNumberOfDesks());
 }
 
 }  // namespace
@@ -232,8 +253,15 @@ void WindowCycleController::StartCycling() {
   window_cycle_list_ = std::make_unique<WindowCycleList>(window_list);
   event_filter_ = std::make_unique<WindowCycleEventFilter>();
   base::RecordAction(base::UserMetricsAction("WindowCycleController_Cycle"));
-  UMA_HISTOGRAM_COUNTS_100("Ash.WindowCycleController.Items",
-                           window_list.size());
+  base::UmaHistogramCounts100(kAltTabItemsHistogramName, window_list.size());
+  if (IsInteractiveAltTabModeAllowed()) {
+    // When alt-tab interactive mode is available, report the initial alt-tab
+    // mode which indicates the user's preferred mode.
+    base::UmaHistogramEnumeration(kAltTabInitialModeHistogramName,
+                                  IsAltTabPerActiveDesk()
+                                      ? AltTabMode::kCurrentDesk
+                                      : AltTabMode::kAllDesks);
+  }
 }
 
 void WindowCycleController::CompleteCycling() {
@@ -319,6 +347,12 @@ void WindowCycleController::OnModeChanged(bool per_desk,
   if (per_desk == prefs->GetBoolean(prefs::kAltTabPerDesk))
     return;
   prefs->SetBoolean(prefs::kAltTabPerDesk, per_desk);
+
+  // Report the alt-tab mode the user switches to and the source of switch.
+  base::UmaHistogramEnumeration(
+      kAltTabSwitchModeHistogramName,
+      per_desk ? AltTabMode::kCurrentDesk : AltTabMode::kAllDesks);
+  base::UmaHistogramEnumeration(kAltTabModeSwitchSourceHistogramName, source);
 
   // Announce the new mode and the updated window selection via ChromeVox.
   aura::Window* target_window = window_cycle_list_->GetTargetWindow();
