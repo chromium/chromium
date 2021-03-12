@@ -473,6 +473,9 @@ const base::Feature kUnifiedAutoplay{"UnifiedAutoplay",
 // chromeos, but needs an experiment on linux.
 const base::Feature kVaapiVideoDecodeLinux{"VaapiVideoDecoder",
                                            base::FEATURE_DISABLED_BY_DEFAULT};
+
+const base::Feature kVaapiVideoEncodeLinux{"VaapiVideoEncoder",
+                                           base::FEATURE_DISABLED_BY_DEFAULT};
 #endif  // defined(OS_LINUX)
 
 // Enable VA-API hardware decode acceleration for AV1.

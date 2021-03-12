@@ -186,6 +186,7 @@ MEDIA_EXPORT extern const base::Feature kUseR16Texture;
 MEDIA_EXPORT extern const base::Feature kUseSodaForLiveCaption;
 #if defined(OS_LINUX)
 MEDIA_EXPORT extern const base::Feature kVaapiVideoDecodeLinux;
+MEDIA_EXPORT extern const base::Feature kVaapiVideoEncodeLinux;
 #endif  // defined(OS_LINUX)
 MEDIA_EXPORT extern const base::Feature kVaapiAV1Decoder;
 MEDIA_EXPORT extern const base::Feature kVaapiLowPowerEncoderGen9x;
