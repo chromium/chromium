@@ -26,7 +26,7 @@ def main(request, response):
             background-color: maroon;
         }
     </style>
-    <script nonce="abc"> 
+    <script nonce="abc">
         var response = {};
         response["id"] = "%s";
         response["loaded"] = true;

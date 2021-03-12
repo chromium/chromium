@@ -12,7 +12,6 @@ INDENT TABS: encoding/legacy*/*
 
 TRAILING WHITESPACE: html/canvas/tools/current-work-canvas.xhtml
 TRAILING WHITESPACE: conformance-checkers/*
-TRAILING WHITESPACE: content-security-policy/*
 TRAILING WHITESPACE: WebIDL/valid/*
 
 ## File types that should never be checked ##

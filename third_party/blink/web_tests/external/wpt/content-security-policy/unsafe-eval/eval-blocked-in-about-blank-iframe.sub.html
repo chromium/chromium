@@ -19,7 +19,7 @@
         log("violated-directive=" + e.violatedDirective);
     });
     window.onmessage = function(e) {
-        log(e.data);    
+        log(e.data);
     }
     window.onload = function() {
         frames[0].document.write("<script>eval('window.parent.postMessage(\"FAIL\", \"*\");'); window.parent.postMessage(\"PASS\", \"*\");</sc" + "ript>");
