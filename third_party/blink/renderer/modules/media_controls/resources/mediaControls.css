@@ -1457,3 +1457,198 @@ audio::-webkit-media-controls.test-mode input[pseudo="-webkit-media-controls-tim
 video::-webkit-media-controls.test-mode input[pseudo="-webkit-media-controls-overlay-play-button" i]::-internal-media-controls-overlay-play-button-internal {
   transition: none !important;
 }
+
+@media ua-forced-colors {
+
+  /* The backplate of the main controls */
+  video::-webkit-media-controls:not(.audio-only) div[pseudo="-webkit-media-controls-panel" i] {
+    background:
+      -webkit-image-set(url('background_line.svg') 1x)
+      repeat-x bottom left;
+  }
+
+  audio::-webkit-media-controls-enclosure,
+  video::-webkit-media-controls.audio-only [pseudo="-webkit-media-controls-enclosure"] {
+    border: 1px solid ButtonText;
+  }
+
+  /* The background for hovered icons */
+  audio::-webkit-media-controls-volume-control-hover-background,
+  video::-webkit-media-controls-volume-control-hover-background {
+    background-color: Window;
+    opacity: 1;
+  }
+  audio::-webkit-media-controls input[pseudo="-webkit-media-controls-play-button" i]:enabled:hover::-internal-media-controls-button-hover-background,
+  audio::-webkit-media-controls input[pseudo="-webkit-media-controls-play-button" i]:enabled:focus::-internal-media-controls-button-hover-background,
+  video::-webkit-media-controls input[pseudo="-webkit-media-controls-play-button" i]:enabled:hover::-internal-media-controls-button-hover-background,
+  video::-webkit-media-controls input[pseudo="-webkit-media-controls-play-button" i]:enabled:focus::-internal-media-controls-button-hover-background,
+  video::-webkit-media-controls input[pseudo="-webkit-media-controls-fullscreen-button" i]:enabled:hover::-internal-media-controls-button-hover-background,
+  video::-webkit-media-controls input[pseudo="-webkit-media-controls-fullscreen-button" i]:enabled:focus::-internal-media-controls-button-hover-background,
+  audio::-webkit-media-controls input[pseudo="-internal-media-controls-overflow-button" i]:enabled:hover::-internal-media-controls-button-hover-background,
+  audio::-webkit-media-controls input[pseudo="-internal-media-controls-overflow-button" i]:enabled:focus::-internal-media-controls-button-hover-background,
+  video::-webkit-media-controls input[pseudo="-internal-media-controls-overflow-button" i]:enabled:hover::-internal-media-controls-button-hover-background,
+  video::-webkit-media-controls input[pseudo="-internal-media-controls-overflow-button" i]:enabled:focus::-internal-media-controls-button-hover-background {
+    background-color: highlight;
+    transition: background-color 0s;
+  }
+
+  /* In high contrast mode, the icons are inverted, i.e. non-white svgs become white svgs, white become non-white.  */
+  video::-webkit-media-controls:not(.audio-only) [pseudo="-webkit-media-controls-panel"] [pseudo="-webkit-media-controls-play-button"] {
+    background-image: -webkit-image-set(url(ic_play_arrow.svg) 1x);
+  }
+  video::-webkit-media-controls:not(.audio-only) [pseudo="-webkit-media-controls-panel"] [pseudo="-webkit-media-controls-mute-button"] {
+    background-image: -webkit-image-set(url(ic_volume_up.svg) 1x);
+  }
+  video::-webkit-media-controls:not(.audio-only) [pseudo="-webkit-media-controls-panel"] [pseudo="-webkit-media-controls-mute-button"].muted {
+    background-image: -webkit-image-set(url(ic_volume_off.svg) 1x);
+  }
+  audio::-webkit-media-controls.state-playing input[pseudo="-webkit-media-controls-play-button" i],
+  video::-webkit-media-controls.state-playing input[pseudo="-webkit-media-controls-play-button" i],
+  video::-webkit-media-controls.state-playing input[pseudo="-webkit-media-controls-overlay-play-button" i]::-internal-media-controls-overlay-play-button-internal,
+  audio::-webkit-media-controls.state-loading-metadata-playing input[pseudo="-webkit-media-controls-play-button" i],
+  video::-webkit-media-controls.state-loading-metadata-playing input[pseudo="-webkit-media-controls-play-button" i],
+  video::-webkit-media-controls.state-loading-metadata-playing input[pseudo="-webkit-media-controls-overlay-play-button" i]::-internal-media-controls-overlay-play-button-internal,
+  audio::-webkit-media-controls.state-buffering input[pseudo="-webkit-media-controls-play-button" i],
+  video::-webkit-media-controls.state-buffering input[pseudo="-webkit-media-controls-play-button" i],
+  video::-webkit-media-controls.state-buffering input[pseudo="-webkit-media-controls-overlay-play-button" i]::-internal-media-controls-overlay-play-button-internal {
+    background-image: -webkit-image-set(url(ic_pause_white.svg) 1x);
+  }
+  video::-webkit-media-controls.state-buffering [pseudo="-internal-media-controls-button-panel"] input[pseudo="-webkit-media-controls-play-button" i],
+  video::-webkit-media-controls.state-loading-metadata-playing [pseudo="-internal-media-controls-button-panel"] input[pseudo="-webkit-media-controls-play-button" i],
+  video::-webkit-media-controls.state-playing [pseudo="-internal-media-controls-button-panel"] input[pseudo="-webkit-media-controls-play-button" i] {
+    background-image: -webkit-image-set(url(ic_pause.svg) 1x);
+  }
+  video::-webkit-media-controls:not(.audio-only) [pseudo="-webkit-media-controls-panel"] [pseudo="-webkit-media-controls-fullscreen-button"] {
+    background-image: -webkit-image-set(url(ic_fullscreen.svg) 1x);
+  }
+  video::-webkit-media-controls:not(.audio-only) [pseudo="-webkit-media-controls-panel"] [pseudo="-internal-media-controls-overflow-button"] {
+    background-image: -webkit-image-set(url(ic_menu.svg) 1x);
+  }
+  video::-webkit-media-controls:not(.audio-only) [pseudo="-webkit-media-controls-panel"] [pseudo="-webkit-media-controls-fullscreen-button"].fullscreen {
+    background-image: -webkit-image-set(url(ic_fullscreen_exit.svg) 1x);
+  }
+
+  /* Change icons' color when hovered in the main UI */
+  audio::-webkit-media-controls input[pseudo="-webkit-media-controls-play-button" i]:enabled:hover,
+  video::-webkit-media-controls input[pseudo="-webkit-media-controls-play-button" i]:enabled:hover {
+    background-image: -webkit-image-set(url(ic_play_arrow_white.svg) 1x);
+  }
+  audio::-webkit-media-controls.state-buffering input[pseudo="-webkit-media-controls-play-button" i]:enabled:hover,
+  audio::-webkit-media-controls.state-loading-metadata-playing input[pseudo="-webkit-media-controls-play-button" i]:enabled:hover,
+  audio::-webkit-media-controls.state-playing input[pseudo="-webkit-media-controls-play-button" i]:enabled:hover,
+  video::-webkit-media-controls.state-buffering input[pseudo="-webkit-media-controls-play-button" i]:enabled:hover,
+  video::-webkit-media-controls.state-loading-metadata-playing input[pseudo="-webkit-media-controls-play-button" i]:enabled:hover,
+  video::-webkit-media-controls.state-playing input[pseudo="-webkit-media-controls-play-button" i]:enabled:hover {
+    background-image: -webkit-image-set(url(ic_pause_white.svg) 1x);
+  }
+  video::-webkit-media-controls input[pseudo="-webkit-media-controls-fullscreen-button" i]:enabled:hover {
+    background-image: -webkit-image-set(url(ic_fullscreen_white.svg) 1x);
+  }
+  video::-webkit-media-controls:not(.audio-only) [pseudo="-webkit-media-controls-panel"] [pseudo="-webkit-media-controls-fullscreen-button"].fullscreen:enabled:hover {
+    background-image: -webkit-image-set(url(ic_fullscreen_exit_white.svg) 1x);
+  }
+  audio::-webkit-media-controls [pseudo="-webkit-media-controls-panel"] [pseudo="-internal-media-controls-overflow-button"]:enabled:hover,
+  video::-webkit-media-controls [pseudo="-webkit-media-controls-panel"] [pseudo="-internal-media-controls-overflow-button"]:enabled:hover {
+    background-image: -webkit-image-set(url(ic_menu_white.svg) 1x);
+  }
+
+  /* Icons shouldn't change color when hovered in the overflow menu */
+  video::-webkit-media-controls label[pseudo="-internal-media-controls-overflow-menu-list-item" i] input[pseudo="-webkit-media-controls-play-button" i]:enabled:hover {
+    background-image: -webkit-image-set(url(ic_play_arrow.svg) 1x);
+  }
+  video::-webkit-media-controls.state-buffering label[pseudo="-internal-media-controls-overflow-menu-list-item" i] input[pseudo="-webkit-media-controls-play-button" i]:enabled:hover,
+  video::-webkit-media-controls.state-loading-metadata-playing label[pseudo="-internal-media-controls-overflow-menu-list-item" i] input[pseudo="-webkit-media-controls-play-button" i]:enabled:hover,
+  video::-webkit-media-controls.state-playing label[pseudo="-internal-media-controls-overflow-menu-list-item" i] input[pseudo="-webkit-media-controls-play-button" i]:enabled:hover {
+    background-image: -webkit-image-set(url(ic_pause.svg) 1x);
+  }
+  video::-webkit-media-controls label[pseudo="-internal-media-controls-overflow-menu-list-item" i] input[pseudo="-webkit-media-controls-fullscreen-button" i]:enabled:hover {
+    background-image: -webkit-image-set(url(ic_fullscreen.svg) 1x);
+  }
+
+  /* Overflow menu */
+  audio::-internal-media-controls-text-track-list,
+  video::-internal-media-controls-text-track-list,
+  audio::-internal-media-controls-overflow-menu-list,
+  video::-internal-media-controls-overflow-menu-list {
+    background: Window;
+    border-color: WindowText;
+    border: 1px solid WindowText;
+    box-shadow: unset;
+  }
+  audio::-internal-media-controls-text-track-list-header,
+  video::-internal-media-controls-text-track-list-header,
+  audio::-internal-media-controls-text-track-list-item,
+  video::-internal-media-controls-text-track-list-item,
+  audio::-internal-media-controls-overflow-menu-list-item,
+  video::-internal-media-controls-overflow-menu-list-item {
+    background-color: Window;
+    color: WindowText;
+  }
+  audio::-internal-media-controls-overflow-menu-list-item,
+  video::-internal-media-controls-overflow-menu-list-item {
+    border: 1px solid Window;
+    margin: 2px;
+  }
+  audio::-internal-media-controls-overflow-menu-list-item:focus,
+  video::-internal-media-controls-overflow-menu-list-item:focus {
+    border: 1px solid Highlight;
+  }
+  label[pseudo="-internal-media-controls-overflow-menu-list-item"] div span.subtitle {
+    color: WindowText;
+  }
+
+  /* Timeline and volume sliders. */
+  audio::-webkit-media-controls input[pseudo="-webkit-media-controls-timeline" i]::-webkit-slider-thumb,
+  audio::-webkit-media-controls input[pseudo="-webkit-media-controls-volume-slider" i]::-webkit-slider-thumb,
+  audio::-webkit-media-controls input[pseudo="-webkit-media-controls-timeline" i]::-internal-track-segment-highlight-before,
+  audio::-webkit-media-controls input[pseudo="-webkit-media-controls-volume-slider" i]::-internal-track-segment-highlight-after,
+  video::-webkit-media-controls.audio-only input[pseudo="-webkit-media-controls-timeline" i]::-webkit-slider-thumb,
+  video::-webkit-media-controls.audio-only input[pseudo="-webkit-media-controls-volume-slider" i]::-webkit-slider-thumb,
+  video::-webkit-media-controls.audio-only input[pseudo="-webkit-media-controls-timeline" i]::-internal-track-segment-highlight-before,
+  video::-webkit-media-controls.audio-only input[pseudo="-webkit-media-controls-volume-slider" i]::-internal-track-segment-highlight-after,
+  video::-webkit-media-controls:not(.audio-only) input[pseudo="-webkit-media-controls-timeline" i]::-webkit-slider-thumb,
+  video::-webkit-media-controls:not(.audio-only) input[pseudo="-webkit-media-controls-volume-slider" i]::-webkit-slider-thumb,
+  video::-webkit-media-controls:not(.audio-only) input[pseudo="-webkit-media-controls-timeline" i]::-internal-track-segment-highlight-before,
+  video::-webkit-media-controls:not(.audio-only) input[pseudo="-webkit-media-controls-volume-slider" i]::-internal-track-segment-highlight-after {
+    background: Highlight;
+    opacity: 1;
+    box-shadow: unset;
+  }
+  audio::-webkit-media-controls input[pseudo="-webkit-media-controls-timeline" i]::-internal-track-segment-highlight-after,
+  video::-webkit-media-controls.audio-only input[pseudo="-webkit-media-controls-timeline" i]::-internal-track-segment-highlight-after,
+  video::-webkit-media-controls:not(.audio-only) input[pseudo="-webkit-media-controls-timeline" i]::-internal-track-segment-highlight-after {
+    opacity: 0;
+  }
+  audio::-webkit-media-controls input[pseudo="-webkit-media-controls-timeline" i]::-internal-media-controls-segmented-track,
+  audio::-webkit-media-controls input[pseudo="-webkit-media-controls-volume-slider" i]::-internal-media-controls-segmented-track,
+  video::-webkit-media-controls.audio-only input[pseudo="-webkit-media-controls-timeline" i]::-internal-media-controls-segmented-track,
+  video::-webkit-media-controls.audio-only input[pseudo="-webkit-media-controls-volume-slider" i]::-internal-media-controls-segmented-track,
+  video::-webkit-media-controls:not(.audio-only) input[pseudo="-webkit-media-controls-timeline" i]::-internal-media-controls-segmented-track,
+  video::-webkit-media-controls:not(.audio-only) input[pseudo="-webkit-media-controls-volume-slider" i]::-internal-media-controls-segmented-track {
+    background: WindowText;
+    box-shadow: unset;
+  }
+
+  /* time display */
+  audio::-webkit-media-controls-current-time-display,
+  video::-webkit-media-controls-current-time-display,
+  audio::-webkit-media-controls-time-remaining-display,
+  video::-webkit-media-controls-time-remaining-display {
+    color: WindowText;
+    text-shadow: unset;
+  }
+
+  video::-webkit-media-controls:not(.audio-only) [pseudo="-webkit-media-controls-current-time-display"],
+  video::-webkit-media-controls:not(.audio-only) [pseudo="-webkit-media-controls-time-remaining-display"] {
+    forced-color-adjust: none;
+    color: WindowText;
+    text-shadow: unset;
+  }
+
+    /* Audio main UI background */
+    audio::-webkit-media-controls-enclosure,
+    video::-webkit-media-controls.audio-only [pseudo="-webkit-media-controls-enclosure"] {
+      background: Window;
+      border: 1px solid WindowText;
+    }
+}
