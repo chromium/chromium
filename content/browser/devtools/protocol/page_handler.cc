@@ -506,10 +506,15 @@ void PageHandler::Navigate(const std::string& url,
   params.frame_tree_node_id = frame_tree_node->frame_tree_node_id();
   frame_tree_node->navigator().controller().LoadURLWithParams(params);
 
+  base::UnguessableToken frame_token = frame_tree_node->devtools_frame_token();
+  auto navigate_callback = navigate_callbacks_.find(frame_token);
+  if (navigate_callback != navigate_callbacks_.end()) {
+    std::string error_string = net::ErrorToString(net::ERR_ABORTED);
+    navigate_callback->second->sendSuccess(out_frame_id, Maybe<std::string>(),
+                                           Maybe<std::string>(error_string));
+  }
   if (frame_tree_node->navigation_request()) {
-    navigate_callbacks_[frame_tree_node->navigation_request()
-                            ->devtools_navigation_token()] =
-        std::move(callback);
+    navigate_callbacks_[frame_token] = std::move(callback);
   } else {
     callback->sendSuccess(out_frame_id, Maybe<std::string>(),
                           Maybe<std::string>());
@@ -517,29 +522,20 @@ void PageHandler::Navigate(const std::string& url,
 }
 
 void PageHandler::NavigationReset(NavigationRequest* navigation_request) {
-  auto navigate_callback =
-      navigate_callbacks_.find(navigation_request->devtools_navigation_token());
+  auto navigate_callback = navigate_callbacks_.find(
+      navigation_request->frame_tree_node()->devtools_frame_token());
   if (navigate_callback == navigate_callbacks_.end())
     return;
   std::string frame_id =
       navigation_request->frame_tree_node()->devtools_frame_token().ToString();
-  // A new NavigationRequest may have been created before |navigation_request|
-  // started, in which case it is not marked as aborted. We report this as an
-  // abort to DevTools anyway.
-  if (!navigation_request->IsNavigationStarted()) {
-    navigate_callback->second->sendSuccess(
-        frame_id, Maybe<std::string>(),
-        Maybe<std::string>(net::ErrorToString(net::ERR_ABORTED)));
-  } else {
-    bool success = navigation_request->GetNetErrorCode() == net::OK;
-    std::string error_string =
-        net::ErrorToString(navigation_request->GetNetErrorCode());
-    navigate_callback->second->sendSuccess(
-        frame_id,
-        Maybe<std::string>(
-            navigation_request->devtools_navigation_token().ToString()),
-        success ? Maybe<std::string>() : Maybe<std::string>(error_string));
-  }
+  bool success = navigation_request->GetNetErrorCode() == net::OK;
+  std::string error_string =
+      net::ErrorToString(navigation_request->GetNetErrorCode());
+  navigate_callback->second->sendSuccess(
+      frame_id,
+      Maybe<std::string>(
+          navigation_request->devtools_navigation_token().ToString()),
+      success ? Maybe<std::string>() : Maybe<std::string>(error_string));
   navigate_callbacks_.erase(navigate_callback);
 }
 
