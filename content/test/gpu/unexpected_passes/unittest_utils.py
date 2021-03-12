@@ -27,6 +27,23 @@ def CreateGenericQuerier(suite=None,
   return queries.BigQueryQuerier(suite, project, num_samples, large_query_mode)
 
 
+def GetArgsForMockCall(call_args_list, call_number):
+  """Helper to more sanely get call args from a mocked method.
+
+  Args:
+    call_args_list: The call_args_list member from the mock in question.
+    call_number: The call number to pull args from, starting at 0 for the first
+        call to the method.
+
+  Returns:
+    A tuple (args, kwargs). |args| is a list of arguments passed to the method.
+    |kwargs| is a dict containing the keyword arguments padded to the method.
+  """
+  args = call_args_list[call_number][0]
+  kwargs = call_args_list[call_number][1]
+  return args, kwargs
+
+
 class FakePool(object):
   """A fake pathos.pools.ProcessPool instance.
 
@@ -61,10 +78,18 @@ class FakeAsyncResult(object):
 class FakeProcess(object):
   """A fake subprocess Process object."""
 
-  def __init__(self, returncode=None, stdout=None, stderr=None):
-    self.returncode = returncode or 0
+  def __init__(self, returncode=None, stdout=None, stderr=None, finish=True):
+    if finish:
+      self.returncode = returncode or 0
+    else:
+      self.returncode = None
     self.stdout = stdout or ''
     self.stderr = stderr or ''
+    self.finish = finish
 
   def communicate(self, _):
     return self.stdout, self.stderr
+
+  def terminate(self):
+    if self.finish:
+      raise OSError('Tried to terminate a finished process')
