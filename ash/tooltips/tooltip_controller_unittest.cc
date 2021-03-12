@@ -96,7 +96,7 @@ class TooltipControllerTest : public AshTestBase {
 TEST_F(TooltipControllerTest, NonNullTooltipClient) {
   EXPECT_TRUE(::wm::GetTooltipClient(Shell::GetPrimaryRootWindow()) != NULL);
   EXPECT_EQ(std::u16string(), helper_->GetTooltipText());
-  EXPECT_EQ(NULL, helper_->GetTooltipWindow());
+  EXPECT_EQ(NULL, helper_->GetTooltipParentWindow());
   EXPECT_FALSE(helper_->IsTooltipVisible());
 }
 
@@ -106,7 +106,7 @@ TEST_F(TooltipControllerTest, HideTooltipWhenCursorHidden) {
   AddViewToWidgetAndResize(widget.get(), view);
   view->set_tooltip_text(base::ASCIIToUTF16("Tooltip Text"));
   EXPECT_EQ(std::u16string(), helper_->GetTooltipText());
-  EXPECT_EQ(NULL, helper_->GetTooltipWindow());
+  EXPECT_EQ(NULL, helper_->GetTooltipParentWindow());
 
   ui::test::EventGenerator generator(Shell::GetPrimaryRootWindow());
   generator.MoveMouseRelativeTo(widget->GetNativeView(),
