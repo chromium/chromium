@@ -4762,6 +4762,9 @@ TEST_P(QuicStreamFactoryTest,
 // is detected, even if NetworkHandle is not supported.
 TEST_P(QuicStreamFactoryTest, MigratePortOnPathDegrading_WithoutNetworkHandle) {
   quic_params_->allow_port_migration = true;
+  FLAGS_quic_reloadable_flag_quic_pass_path_response_to_validator = false;
+  FLAGS_quic_reloadable_flag_quic_send_path_response = false;
+  FLAGS_quic_reloadable_flag_quic_start_peer_migration_earlier = false;
   socket_factory_ = std::make_unique<TestPortMigrationSocketFactory>();
   Initialize();
 
@@ -4776,6 +4779,9 @@ TEST_P(QuicStreamFactoryTest, PortMigrationProbingReceivedStatelessReset) {
     return;
   }
   quic_params_->allow_port_migration = true;
+  FLAGS_quic_reloadable_flag_quic_pass_path_response_to_validator = false;
+  FLAGS_quic_reloadable_flag_quic_send_path_response = false;
+  FLAGS_quic_reloadable_flag_quic_start_peer_migration_earlier = false;
   socket_factory_ = std::make_unique<TestPortMigrationSocketFactory>();
   Initialize();
   ProofVerifyDetailsChromium verify_details = DefaultProofVerifyDetails();
@@ -5062,6 +5068,9 @@ TEST_P(QuicStreamFactoryTest, MigratePortOnPathDegrading_WithNetworkHandle) {
   mock_ncn->ForceNetworkHandlesSupported();
   mock_ncn->SetConnectedNetworksList({kDefaultNetworkForTests});
   quic_params_->allow_port_migration = true;
+  FLAGS_quic_reloadable_flag_quic_pass_path_response_to_validator = false;
+  FLAGS_quic_reloadable_flag_quic_send_path_response = false;
+  FLAGS_quic_reloadable_flag_quic_start_peer_migration_earlier = false;
   socket_factory_ = std::make_unique<TestPortMigrationSocketFactory>();
   Initialize();
 
@@ -5085,6 +5094,9 @@ TEST_P(QuicStreamFactoryTest, MigratePortOnPathDegrading_WithMigration) {
   // Enable migration on network change.
   quic_params_->migrate_sessions_on_network_change_v2 = true;
   quic_params_->allow_port_migration = true;
+  FLAGS_quic_reloadable_flag_quic_pass_path_response_to_validator = false;
+  FLAGS_quic_reloadable_flag_quic_send_path_response = false;
+  FLAGS_quic_reloadable_flag_quic_start_peer_migration_earlier = false;
   socket_factory_ = std::make_unique<TestPortMigrationSocketFactory>();
   Initialize();
 
@@ -5313,6 +5325,9 @@ void QuicStreamFactoryTestBase::TestSimplePortMigrationOnPathDegrading() {
 // Regression test for https://crbug.com/1014092.
 TEST_P(QuicStreamFactoryTest, MultiplePortMigrationsExceedsMaxLimit) {
   quic_params_->allow_port_migration = true;
+  FLAGS_quic_reloadable_flag_quic_pass_path_response_to_validator = false;
+  FLAGS_quic_reloadable_flag_quic_send_path_response = false;
+  FLAGS_quic_reloadable_flag_quic_start_peer_migration_earlier = false;
   socket_factory_ = std::make_unique<TestPortMigrationSocketFactory>();
   Initialize();
 
