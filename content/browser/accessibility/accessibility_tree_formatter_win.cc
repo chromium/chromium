@@ -238,31 +238,18 @@ void AccessibilityTreeFormatterWin::RecursiveBuildTree(
   AddProperties(node, dict, root_x, root_y);
 
   base::Value child_list(base::Value::Type::LIST);
-
-  LONG child_count;
-  if (S_OK != node->get_accChildCount(&child_count))
-    return;
-
-  std::unique_ptr<VARIANT[]> children_array(new VARIANT[child_count]);
-  LONG obtained_count = 0;
-  HRESULT hr = AccessibleChildren(node.Get(), 0, child_count,
-                                  children_array.get(), &obtained_count);
-  if (hr != S_OK)
-    return;
-
-  for (LONG index = 0; index < obtained_count; index++) {
-    base::win::ScopedVariant child_variant;
-    child_variant.Reset(
-        children_array[index]);  // Sets without adding another reference.
+  for (const ui::MSAAChild& msaa_child : ui::MSAAChildren(node)) {
     base::Value child_dict(base::Value::Type::DICTIONARY);
-    Microsoft::WRL::ComPtr<IDispatch> dispatch;
-    if (child_variant.type() == VT_DISPATCH) {
-      dispatch = V_DISPATCH(child_variant.ptr());
-    } else if (child_variant.type() == VT_I4) {
-      hr = node->get_accChild(child_variant, &dispatch);
-      if (FAILED(hr)) {
+
+    Microsoft::WRL::ComPtr<IAccessible> child = msaa_child.AsIAccessible();
+    if (child) {
+      RecursiveBuildTree(child, &child_dict, root_x, root_y);
+    } else {
+      const base::win::ScopedVariant& child_variant = msaa_child.AsVariant();
+      if (child_variant.type() == VT_EMPTY ||
+          child_variant.type() == VT_DISPATCH) {
         child_dict.SetStringPath("error", "[Error retrieving child]");
-      } else if (!dispatch) {
+      } else if (child_variant.type() == VT_I4) {
         // Partial child does not have its own object.
         // Add minimal info -- role and name.
         base::win::ScopedVariant role_variant;
@@ -276,14 +263,9 @@ void AccessibilityTreeFormatterWin::RecursiveBuildTree(
         if (S_OK == node->get_accName(child_variant, name.Receive())) {
           child_dict.SetStringPath("name", base::WideToUTF8(name.Get()));
         }
+      } else {
+        child_dict.SetStringPath("error", "[Unknown child type]");
       }
-    } else {
-      child_dict.SetStringPath("error", "[Unknown child type]");
-    }
-    if (dispatch) {
-      Microsoft::WRL::ComPtr<IAccessible> accessible;
-      if (SUCCEEDED(dispatch.As(&accessible)))
-        RecursiveBuildTree(accessible, &child_dict, root_x, root_y);
     }
     child_list.Append(std::move(child_dict));
   }

@@ -11,7 +11,11 @@
 #include <string>
 #include <vector>
 
+#include <oleacc.h>
+#include <wrl/client.h>
+
 #include "base/process/process_handle.h"
+#include "base/win/scoped_variant.h"
 #include "ui/accessibility/ax_export.h"
 #include "ui/gfx/win/hwnd_util.h"
 
@@ -43,6 +47,74 @@ AX_EXPORT HWND GetHwndForProcess(base::ProcessId pid);
 
 // Returns HWND of window matching a given tree selector.
 AX_EXPORT HWND GetHWNDBySelector(const ui::AXTreeSelector& selector);
+
+// Represent MSAA child, either as IAccessible object or as VARIANT.
+class AX_EXPORT MSAAChild final {
+ public:
+  MSAAChild();
+  MSAAChild(IAccessible* parent, VARIANT&& child);
+  MSAAChild(MSAAChild&&);
+  ~MSAAChild();
+
+  MSAAChild& operator=(MSAAChild&& rhs) = default;
+
+  IAccessible* AsIAccessible() const { return child_.Get(); }
+  const base::win::ScopedVariant& AsVariant() const { return child_variant_; }
+
+  IAccessible* Parent() const { return parent_.Get(); }
+
+ private:
+  Microsoft::WRL::ComPtr<IAccessible> parent_;
+  Microsoft::WRL::ComPtr<IAccessible> child_;
+  base::win::ScopedVariant child_variant_;
+};
+
+// Represents MSAA children of an IAccessible object.
+class AX_EXPORT MSAAChildren final {
+ public:
+  MSAAChildren(IAccessible* parent);
+  MSAAChildren(const Microsoft::WRL::ComPtr<IAccessible>& parent);
+  ~MSAAChildren();
+
+  const MSAAChild& ChildAt(LONG index) const { return children_[index]; }
+  IAccessible* Parent() const { return parent_.Get(); }
+
+  class AX_EXPORT Iterator final
+      : public std::iterator<std::input_iterator_tag, MSAAChild> {
+   public:
+    Iterator(MSAAChildren*);
+    Iterator(MSAAChildren*, LONG);
+    Iterator(const Iterator&);
+    ~Iterator();
+
+    Iterator& operator++() {
+      ++index_;
+      return *this;
+    }
+    Iterator operator++(int) {
+      Iterator tmp(*this);
+      operator++();
+      return tmp;
+    }
+    bool operator==(const Iterator& rhs) const {
+      return children_ == rhs.children_ && index_ == rhs.index_;
+    }
+    bool operator!=(const Iterator& rhs) const { return !operator==(rhs); }
+    const MSAAChild& operator*() { return children_->ChildAt(index_); }
+
+   private:
+    LONG index_{0};
+    MSAAChildren* children_{nullptr};
+  };
+
+  Iterator begin() { return {this}; }
+  Iterator end() { return {this, count_}; }
+
+ private:
+  LONG count_{-1};
+  Microsoft::WRL::ComPtr<IAccessible> parent_{nullptr};
+  std::vector<MSAAChild> children_;
+};
 
 }  // namespace ui
 

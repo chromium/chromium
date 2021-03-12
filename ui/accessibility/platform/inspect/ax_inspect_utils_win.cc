@@ -4,7 +4,6 @@
 
 #include "ui/accessibility/platform/inspect/ax_inspect_utils_win.h"
 
-#include <oleacc.h>
 #include <uiautomation.h>
 
 #include <map>
@@ -772,5 +771,54 @@ AX_EXPORT HWND GetHWNDBySelector(const AXTreeSelector& selector) {
 
   return info.matched_hwnd;
 }
+
+MSAAChild::MSAAChild() = default;
+MSAAChild::MSAAChild(IAccessible* parent, VARIANT&& variant) : parent_(parent) {
+  child_variant_.Reset(variant);
+
+  Microsoft::WRL::ComPtr<IDispatch> dispatch;
+  if (child_variant_.type() == VT_DISPATCH) {
+    dispatch = V_DISPATCH(child_variant_.ptr());
+  } else if (child_variant_.type() == VT_I4) {
+    if (FAILED(parent->get_accChild(child_variant_, &dispatch))) {
+      child_variant_.Reset();
+    }
+  }
+
+  if (dispatch) {
+    if (FAILED(dispatch.As(&child_))) {
+      child_ = nullptr;
+    }
+  }
+}
+MSAAChild::MSAAChild(MSAAChild&&) = default;
+MSAAChild::~MSAAChild() = default;
+
+MSAAChildren::MSAAChildren(IAccessible* parent) {
+  if (FAILED(parent->get_accChildCount(&count_)))
+    return;
+
+  std::unique_ptr<VARIANT[]> children_variants(new VARIANT[count_]);
+  if (FAILED(AccessibleChildren(parent, 0, count_, children_variants.get(),
+                                &count_))) {
+    count_ = 0;
+    return;
+  }
+
+  children_.reserve(count_);
+  for (LONG i = 0; i < count_; i++)
+    children_.emplace_back(parent, std::move(children_variants[i]));
+}
+
+MSAAChildren::MSAAChildren(const Microsoft::WRL::ComPtr<IAccessible>& parent)
+    : MSAAChildren(parent.Get()) {}
+MSAAChildren::~MSAAChildren() = default;
+
+MSAAChildren::Iterator::Iterator(MSAAChildren* children)
+    : children_(children) {}
+MSAAChildren::Iterator::Iterator(MSAAChildren* children, LONG index)
+    : index_(index), children_(children) {}
+MSAAChildren::Iterator::Iterator(const Iterator&) = default;
+MSAAChildren::Iterator::~Iterator() = default;
 
 }  // namespace ui
