@@ -184,6 +184,13 @@ public class TranslateBridge {
         return list;
     }
 
+    /** @return List of languages that translation should not be prompted for. */
+    public static List<String> getNeverTranslateLanguages() {
+        List<String> list = new ArrayList<>();
+        TranslateBridgeJni.get().getNeverTranslateLanguages(list);
+        return list;
+    }
+
     public static void setLanguageAlwaysTranslateState(
             String languageCode, boolean alwaysTranslate) {
         TranslateBridgeJni.get().setLanguageAlwaysTranslateState(languageCode, alwaysTranslate);
@@ -267,6 +274,7 @@ public class TranslateBridge {
         void getChromeAcceptLanguages(List<LanguageItem> list);
         void getUserAcceptLanguages(List<String> list);
         void getAlwaysTranslateLanguages(List<String> list);
+        void getNeverTranslateLanguages(List<String> list);
         void setLanguageAlwaysTranslateState(String language, boolean alwaysTranslate);
         void updateUserAcceptLanguages(String language, boolean add);
         void moveAcceptLanguage(String language, int offset);

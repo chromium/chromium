@@ -42,6 +42,9 @@ class LanguagePrefs {
   void ResetFluentLanguagesToDefaults();
   // Get the default fluent languages for the user.
   static base::Value GetDefaultFluentLanguages();
+  // Get the current list of fluent languages for the user formatted as Chrome
+  // language codes.
+  std::vector<std::string> GetFluentLanguages() const;
   // If the list of fluent languages is empty, reset it to defaults.
   void ResetEmptyFluentLanguagesToDefault();
   // Gets the language list of the language settings. Language settings list
@@ -52,10 +55,6 @@ class LanguagePrefs {
   void SetAcceptLanguagesList(const std::vector<std::string>& languages);
 
  private:
-  base::Value* GetFluentLanguages();
-
-  const base::Value* GetFluentLanguages() const;
-
   size_t NumFluentLanguages() const;
 
   PrefService* prefs_;  // Weak.

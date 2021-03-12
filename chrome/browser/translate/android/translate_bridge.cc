@@ -254,6 +254,18 @@ static void JNI_TranslateBridge_GetAlwaysTranslateLanguages(
                            translate_prefs->GetAlwaysTranslateLanguages()));
 }
 
+// Gets all languages for which translation should not be prompted.
+static void JNI_TranslateBridge_GetNeverTranslateLanguages(
+    JNIEnv* env,
+    const base::android::JavaParamRef<jobject>& list) {
+  std::unique_ptr<translate::TranslatePrefs> translate_prefs =
+      ChromeTranslateClient::CreateTranslatePrefs(GetPrefService());
+
+  Java_TranslateBridge_copyStringArrayToList(
+      env, list,
+      ToJavaArrayOfStrings(env, translate_prefs->GetNeverTranslateLanguages()));
+}
+
 // Sets the always translate state for a language.
 // The always translate language list is actually a dict mapping
 // source_language -> target_language.  We use the current target language when

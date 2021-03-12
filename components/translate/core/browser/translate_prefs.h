@@ -254,6 +254,10 @@ class TranslatePrefs {
   // language codes.
   std::vector<std::string> GetAlwaysTranslateLanguages() const;
 
+  // Get the languages that for which translation should never be prompted
+  // formatted as Chrome language codes.
+  std::vector<std::string> GetNeverTranslateLanguages() const;
+
   // These methods are used to track how many times the user has denied the
   // translation for a specific language. (So we can present a UI to blocklist
   // that language if the user keeps denying translations).

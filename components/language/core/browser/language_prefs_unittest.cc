@@ -21,6 +21,8 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
+using testing::ElementsAreArray;
+
 namespace language {
 
 static void ExpectEqualLanguageLists(
@@ -157,6 +159,23 @@ TEST_F(LanguagePrefsTest, ResetEmptyFluentLanguagesToDefaultTest) {
   ExpectFluentLanguageListContent({});
   language_prefs_->ResetEmptyFluentLanguagesToDefault();
   ExpectFluentLanguageListContent({"en"});
+}
+
+TEST_F(LanguagePrefsTest, GetFluentLanguagesTest) {
+  // Default Fluent language is "en".
+  EXPECT_THAT(language_prefs_->GetFluentLanguages(), ElementsAreArray({"en"}));
+
+  // Add two languages with the same base.
+  language_prefs_->SetFluent("fr-FR");
+  language_prefs_->SetFluent("fr-CA");
+  EXPECT_THAT(language_prefs_->GetFluentLanguages(),
+              ElementsAreArray({"en", "fr"}));
+
+  // Add language that comes before English alphabetically. It should be
+  // appended to the list.
+  language_prefs_->SetFluent("af");
+  EXPECT_THAT(language_prefs_->GetFluentLanguages(),
+              ElementsAreArray({"en", "fr", "af"}));
 }
 
 TEST_F(LanguagePrefsTest, GetFirstLanguageTest) {

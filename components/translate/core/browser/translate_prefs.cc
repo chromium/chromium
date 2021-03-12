@@ -598,6 +598,10 @@ std::vector<std::string> TranslatePrefs::GetAlwaysTranslateLanguages() const {
   return languages;
 }
 
+std::vector<std::string> TranslatePrefs::GetNeverTranslateLanguages() const {
+  return language_prefs_->GetFluentLanguages();
+}
+
 void TranslatePrefs::ResetBlockedLanguagesToDefault() {
   language_prefs_->ResetFluentLanguagesToDefaults();
 }

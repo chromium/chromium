@@ -82,6 +82,22 @@ void LanguagePrefs::ResetFluentLanguagesToDefaults() {
   prefs_->ClearPref(language::prefs::kFluentLanguages);
 }
 
+std::vector<std::string> LanguagePrefs::GetFluentLanguages() const {
+  const base::Value* fluent_languages_value =
+      prefs_->GetList(language::prefs::kFluentLanguages);
+  if (!fluent_languages_value) {
+    NOTREACHED() << "Fluent languages pref is unregistered";
+  }
+
+  std::vector<std::string> languages;
+  for (const auto& language : fluent_languages_value->GetList()) {
+    std::string chrome_language(language.GetString());
+    language::ToChromeLanguageSynonym(&chrome_language);
+    languages.push_back(chrome_language);
+  }
+  return languages;
+}
+
 void LanguagePrefs::ResetEmptyFluentLanguagesToDefault() {
   if (NumFluentLanguages() == 0)
     ResetFluentLanguagesToDefaults();
