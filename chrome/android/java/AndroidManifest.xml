@@ -1182,10 +1182,6 @@ by a child template that "extends" this file.
 
       {% endfor %}
 
-      <!-- Downloads Google Sans from GMS Core -->
-      <meta-data android:name="preloaded_fonts"
-          android:resource="@array/chrome_preloaded_google_sans_fonts" />
-
       <meta-data android:name="android.allow_multiple_resumed_activities" android:value="true" />
 
       <!-- Samsung MultiWindow Support -->

@@ -23,6 +23,7 @@ import org.chromium.chrome.browser.dependency_injection.DaggerChromeAppComponent
 import org.chromium.chrome.browser.dependency_injection.ModuleFactoryOverrides;
 import org.chromium.chrome.browser.flags.CachedFeatureFlags;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.fonts.FontPreloader;
 import org.chromium.chrome.browser.night_mode.SystemNightModeMonitor;
 import org.chromium.chrome.browser.vr.OnExitVrRequestListener;
 import org.chromium.chrome.browser.vr.VrModuleProvider;
@@ -54,6 +55,8 @@ public class ChromeApplication extends SplitCompatApplication {
             super.onCreate();
 
             if (isBrowserProcess()) {
+                FontPreloader.getInstance().load(getApplication());
+
                 if (CachedFeatureFlags.isEnabled(ChromeFeatureList.EARLY_LIBRARY_LOAD)) {
                     // Kick off library loading in a separate thread so it's ready when we need it.
                     new Thread(() -> LibraryLoader.getInstance().ensureMainDexInitialized())

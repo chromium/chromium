@@ -112,6 +112,17 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <affected-histogram name="Startup.Android.Cold.TimeToFirstNavigationCommit"/>
 </histogram_suffixes>
 
+<histogram_suffixes name="ActivityType" separator=".">
+  <suffix name="ChromeTabbedActivity" label="ChromeTabbedActivity"/>
+  <suffix name="FirstRunActivity" label="FirstRunActivity"/>
+  <affected-histogram
+      name="Android.Fonts.TimeDownloadableFontsRetrievedAfterPostInflationStartup"/>
+  <affected-histogram
+      name="Android.Fonts.TimeDownloadableFontsRetrievedBeforePostInflationStartup"/>
+  <affected-histogram
+      name="Android.Fonts.TimeToRetrieveDownloadableFontsAfterOnCreate"/>
+</histogram_suffixes>
+
 <histogram_suffixes name="AdapterDecision" separator="." ordering="prefix,2">
   <suffix name="BrightnessChange" label=""/>
   <suffix name="NoBrightnessChange" label=""/>

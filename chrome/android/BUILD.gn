@@ -162,7 +162,6 @@ android_resources("chrome_base_module_resources") {
     "java/res_base/font/chrome_google_sans_medium.xml",
     "java/res_base/values/ic_launcher_alias.xml",
     "java/res_base/values/ic_launcher_round_alias.xml",
-    "java/res_base/values/preloaded_fonts.xml",
     "java/res_base/values/values.xml",
     "java/res_base/xml/network_security_config.xml",
     "java/res_chromium_base/mipmap-hdpi/app_icon.png",

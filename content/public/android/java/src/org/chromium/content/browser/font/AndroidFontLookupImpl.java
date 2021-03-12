@@ -73,7 +73,7 @@ public class AndroidFontLookupImpl implements AndroidFontLookup {
     /**
      * Collection of fonts (by ICU case folded full font name) that may be available
      * locally from GMS Core. This collection of Android Downloadable fonts should initially match
-     * the fonts listed in preloaded_fonts.xml. If/when fonts are determined to be unavailable
+     * the fonts listed in {@link FontPreloader}. If/when fonts are determined to be unavailable
      * on-device they will be removed from this set.
      */
     private final Set<String> mExpectedFonts;
@@ -262,9 +262,8 @@ public class AndroidFontLookupImpl implements AndroidFontLookup {
      * for a selected subset of Android Downloadable fonts.
      *
      * When adding additional fonts to this map:
-     * 1. Add the font to preloaded_fonts.xml, or consider alternatives to prefetch new fonts
-     *    programmatically at a different time in initialization as this may affect startup
-     *    performance.
+     * 1. Add the font to the array in {@link FontPreloader} to prefetch new fonts programmatically
+     *    async during startup.
      * 2. Keys should be ICU case folded full font name. This can be done manually with
      *    icu_fold_case_util.cc, or in Java by importing the ICU4J third_party library. (The
      *    CaseMap.Fold Java API is only available in Android API 29+.)
