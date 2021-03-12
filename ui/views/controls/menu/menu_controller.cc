@@ -3034,9 +3034,6 @@ void MenuController::ExitMenu() {
   bool nested = delegate_stack_.size() > 1;
   // ExitTopMostMenu unwinds nested delegates
   internal::MenuControllerDelegate* delegate = delegate_;
-  // MenuController may have been deleted when releasing ViewsDelegate ref.
-  // However as |delegate| can outlive this, it must still be notified of the
-  // menu closing so that it can perform teardown.
   int accept_event_flags = accept_event_flags_;
   base::WeakPtr<MenuController> this_ref = AsWeakPtr();
   MenuItemView* result = ExitTopMostMenu();
@@ -3048,15 +3045,12 @@ void MenuController::ExitMenu() {
 }
 
 MenuItemView* MenuController::ExitTopMostMenu() {
-  base::WeakPtr<MenuController> this_ref = AsWeakPtr();
-
   // Release the lock which prevents Chrome from shutting down while the menu is
   // showing.
-  ViewsDelegate::GetInstance()->ReleaseRef();
-
-  // Releasing the lock can result in Chrome shutting down, deleting this.
-  if (!this_ref)
-    return nullptr;
+  base::ThreadTaskRunnerHandle::Get()->PostTask(
+      FROM_HERE,
+      base::BindOnce(&ViewsDelegate::ReleaseRef,
+                     base::Unretained(ViewsDelegate::GetInstance())));
 
   // Close any open menus.
   SetSelection(nullptr, SELECTION_UPDATE_IMMEDIATELY | SELECTION_EXIT);
