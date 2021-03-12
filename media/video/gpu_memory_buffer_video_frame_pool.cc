@@ -159,13 +159,15 @@ class GpuMemoryBufferVideoFramePool::PoolImpl
                                         FrameResources* frame_resources);
 
   // Called when all the data has been copied.
-  void OnCopiesDone(scoped_refptr<VideoFrame> video_frame,
+  void OnCopiesDone(bool copy_failed,
+                    scoped_refptr<VideoFrame> video_frame,
                     FrameResources* frame_resources);
 
   // Prepares GL resources, mailboxes and calls |frame_ready_cb| with the new
   // VideoFrame. This has to be run on |media_task_runner_| where
   // |frame_ready_cb| associated with video_frame will also be run.
   void BindAndCreateMailboxesHardwareFrameResources(
+      bool copy_failed,
       scoped_refptr<VideoFrame> video_frame,
       FrameResources* frame_resources);
 
@@ -769,16 +771,19 @@ void GpuMemoryBufferVideoFramePool::PoolImpl::Abort() {
 }
 
 void GpuMemoryBufferVideoFramePool::PoolImpl::OnCopiesDone(
+    bool copy_failed,
     scoped_refptr<VideoFrame> video_frame,
     FrameResources* frame_resources) {
-  for (const auto& plane_resource : frame_resources->plane_resources) {
-    if (plane_resource.gpu_memory_buffer) {
-      plane_resource.gpu_memory_buffer->Unmap();
-      plane_resource.gpu_memory_buffer->SetColorSpace(
-          video_frame->ColorSpace());
-      if (video_frame->hdr_metadata()) {
-        plane_resource.gpu_memory_buffer->SetHDRMetadata(
-            video_frame->hdr_metadata().value());
+  if (!copy_failed) {
+    for (const auto& plane_resource : frame_resources->plane_resources) {
+      if (plane_resource.gpu_memory_buffer) {
+        plane_resource.gpu_memory_buffer->Unmap();
+        plane_resource.gpu_memory_buffer->SetColorSpace(
+            video_frame->ColorSpace());
+        if (video_frame->hdr_metadata()) {
+          plane_resource.gpu_memory_buffer->SetHDRMetadata(
+              video_frame->hdr_metadata().value());
+        }
       }
     }
   }
@@ -789,7 +794,8 @@ void GpuMemoryBufferVideoFramePool::PoolImpl::OnCopiesDone(
   media_task_runner_->PostTask(
       FROM_HERE,
       base::BindOnce(&PoolImpl::BindAndCreateMailboxesHardwareFrameResources,
-                     this, std::move(video_frame), frame_resources));
+                     this, copy_failed, std::move(video_frame),
+                     frame_resources));
 }
 
 void GpuMemoryBufferVideoFramePool::PoolImpl::StartCopy() {
@@ -839,22 +845,25 @@ void GpuMemoryBufferVideoFramePool::PoolImpl::CopyVideoFrameToGpuMemoryBuffers(
       ++copies;
   }
 
-  // |barrier| keeps refptr of |video_frame| until all copy tasks are done.
-  const base::RepeatingClosure barrier = base::BarrierClosure(
-      copies, base::BindOnce(&PoolImpl::OnCopiesDone, this, video_frame,
-                             frame_resources));
-
-  // Map the buffers.
-  for (size_t i = 0; i < NumGpuMemoryBuffers(output_format_); i++) {
+  for (size_t i = 0; i < NumGpuMemoryBuffers(output_format_); ++i) {
     gfx::GpuMemoryBuffer* buffer =
         frame_resources->plane_resources[i].gpu_memory_buffer.get();
 
     if (!buffer || !buffer->Map()) {
       DLOG(ERROR) << "Could not get or Map() buffer";
-      frame_resources->MarkUnused(tick_clock_->NowTicks());
+      for (size_t j = 0; j < i; ++j)
+        frame_resources->plane_resources[j].gpu_memory_buffer->Unmap();
+      OnCopiesDone(/*copy_failed=*/true, std::move(video_frame),
+                   frame_resources);
       return;
     }
   }
+
+  // |barrier| keeps refptr of |video_frame| until all copy tasks are done.
+  const base::RepeatingClosure barrier = base::BarrierClosure(
+      copies,
+      base::BindOnce(&PoolImpl::OnCopiesDone, this, /*copy_failed=*/false,
+                     video_frame, frame_resources));
 
   TRACE_EVENT_ASYNC_BEGIN0("media", "CopyVideoFrameToGpuMemoryBuffers",
                            video_frame->timestamp().InNanoseconds() /* id */);
@@ -964,8 +973,22 @@ void GpuMemoryBufferVideoFramePool::PoolImpl::CopyVideoFrameToGpuMemoryBuffers(
 
 void GpuMemoryBufferVideoFramePool::PoolImpl::
     BindAndCreateMailboxesHardwareFrameResources(
+        bool copy_failed,
         scoped_refptr<VideoFrame> video_frame,
         FrameResources* frame_resources) {
+  if (copy_failed) {
+    // Drop the resources if there was an error with them.
+    auto it = std::find(resources_pool_.begin(), resources_pool_.end(),
+                        frame_resources);
+    DCHECK(it != resources_pool_.end());
+    resources_pool_.erase(it);
+    DeleteFrameResources(gpu_factories_, frame_resources);
+    delete frame_resources;
+
+    CompleteCopyRequestAndMaybeStartNextCopy(std::move(video_frame));
+    return;
+  }
+
   gpu::SharedImageInterface* sii = gpu_factories_->SharedImageInterface();
   if (!sii) {
     frame_resources->MarkUnused(tick_clock_->NowTicks());

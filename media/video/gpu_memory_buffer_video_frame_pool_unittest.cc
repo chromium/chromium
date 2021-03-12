@@ -509,7 +509,8 @@ TEST_F(GpuMemoryBufferVideoFramePoolTest, CreateGpuMemoryBufferFail) {
 
   RunUntilIdle();
 
-  EXPECT_NE(software_frame.get(), frame.get());
+  // Software frame should be returned if mapping fails.
+  EXPECT_EQ(software_frame.get(), frame.get());
   EXPECT_EQ(0u, sii_->shared_image_count());
 }
 
