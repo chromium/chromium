@@ -420,14 +420,7 @@ class TestRunner(object):
     Returns:
       An implementation of GTestsApp for the current run to execute.
     """
-    if self.xctest:
-      raise XCTestConfigError('Wrong config. TestRunner.launch() called from'
-                              ' an unexpected class.')
-    return test_apps.GTestsApp(
-        self.app_path,
-        included_tests=self.test_cases,
-        env_vars=self.env_vars,
-        test_args=self.test_args)
+    raise NotImplementedError
 
   def start_proc(self, cmd):
     """Starts a process with cmd command and os.environ.
@@ -955,6 +948,14 @@ class SimulatorTestRunner(TestRunner):
     Returns:
       A SimulatorXCTestUnitTestsApp for the current run to execute.
     """
+    # Non iOS Chrome users have unit tests not built with XCTest.
+    if not self.xctest:
+      return test_apps.GTestsApp(
+          self.app_path,
+          included_tests=self.test_cases,
+          env_vars=self.env_vars,
+          test_args=self.test_args)
+
     return test_apps.SimulatorXCTestUnitTestsApp(
         self.app_path,
         included_tests=self.test_cases,
@@ -1164,6 +1165,14 @@ class DeviceTestRunner(TestRunner):
     Returns:
       A DeviceXCTestUnitTestsApp  for the current run to execute.
     """
+    # Non iOS Chrome users have unit tests not built with XCTest.
+    if not self.xctest:
+      return test_apps.GTestsApp(
+          self.app_path,
+          included_tests=self.test_cases,
+          env_vars=self.env_vars,
+          test_args=self.test_args)
+
     return test_apps.DeviceXCTestUnitTestsApp(
         self.app_path,
         included_tests=self.test_cases,
