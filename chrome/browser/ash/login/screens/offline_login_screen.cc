@@ -8,6 +8,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/time/default_clock.h"
 #include "base/time/time.h"
+#include "chrome/browser/ash/login/existing_user_controller.h"
 #include "chrome/browser/ash/login/helper.h"
 #include "chrome/browser/ash/login/screen_manager.h"
 #include "chrome/browser/ash/login/ui/login_display_host.h"
@@ -164,7 +165,14 @@ void OfflineLoginScreen::HandleCompleteAuth(const std::string& email,
         << user_context.GetUserType();
   }
   user_context.SetIsUsingOAuth(false);
-  LoginDisplayHost::default_host()->CompleteLogin(user_context);
+  // TODO(dkuzmin): call Login through delegate.
+  if (ExistingUserController::current_controller()) {
+    ExistingUserController::current_controller()->Login(user_context,
+                                                        SigninSpecifics());
+  } else {
+    LOG(ERROR) << "OfflineLoginScreen::HandleCompleteAuth: "
+               << "ExistingUserController not available.";
+  }
 }
 
 void OfflineLoginScreen::HandleEmailSubmitted(const std::string& email) {
