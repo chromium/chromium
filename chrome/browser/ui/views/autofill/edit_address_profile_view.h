@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_AUTOFILL_EDIT_ADDRESS_PROFILE_VIEW_H_
 #define CHROME_BROWSER_UI_VIEWS_AUTOFILL_EDIT_ADDRESS_PROFILE_VIEW_H_
 
+#include "chrome/browser/ui/autofill/address_editor_controller.h"
 #include "chrome/browser/ui/autofill/autofill_bubble_base.h"
 #include "ui/views/window/dialog_delegate.h"
 
@@ -23,6 +24,7 @@ class EditAddressProfileView : public AutofillBubbleBase,
 
   EditAddressProfileView(const EditAddressProfileView&) = delete;
   EditAddressProfileView& operator=(const EditAddressProfileView&) = delete;
+  ~EditAddressProfileView() override;
 
   // AutofillBubbleBase:
   void Hide() override;
@@ -33,6 +35,7 @@ class EditAddressProfileView : public AutofillBubbleBase,
 
  private:
   SaveAddressProfileBubbleController* controller_;
+  std::unique_ptr<AddressEditorController> address_editor_controller_;
 };
 
 }  // namespace autofill

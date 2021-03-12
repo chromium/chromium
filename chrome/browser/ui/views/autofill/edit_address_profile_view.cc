@@ -4,10 +4,13 @@
 
 #include "chrome/browser/ui/views/autofill/edit_address_profile_view.h"
 
+#include "chrome/browser/ui/autofill/address_editor_controller.h"
 #include "chrome/browser/ui/autofill/save_address_profile_bubble_controller.h"
+#include "chrome/browser/ui/views/autofill/address_editor_view.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/constrained_window/constrained_window_views.h"
+#include "ui/views/layout/fill_layout.h"
 
 namespace autofill {
 
@@ -35,8 +38,16 @@ EditAddressProfileView::EditAddressProfileView(
       base::Unretained(controller_),
       AutofillClient::SaveAddressProfileOfferUserDecision::kDeclined));
 
+  SetLayoutManager(std::make_unique<views::FillLayout>());
+  address_editor_controller_ = std::make_unique<AddressEditorController>(
+      controller_->GetProfileToSave(), web_contents);
+  AddChildView(
+      std::make_unique<AddressEditorView>(address_editor_controller_.get()));
+
   constrained_window::ShowWebModalDialogViews(this, web_contents);
 }
+
+EditAddressProfileView::~EditAddressProfileView() = default;
 
 void EditAddressProfileView::Hide() {
   controller_ = nullptr;

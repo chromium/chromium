@@ -3461,6 +3461,8 @@ static_library("ui") {
 
   if (toolkit_views) {
     sources += [
+      "autofill/address_editor_controller.cc",
+      "autofill/address_editor_controller.h",
       "autofill/autofill_bubble_base.h",
       "autofill/autofill_bubble_controller_base.cc",
       "autofill/autofill_bubble_controller_base.h",
@@ -3539,6 +3541,8 @@ static_library("ui") {
       "views/apps/app_info_dialog/app_info_summary_panel.h",
       "views/apps/chrome_native_app_window_views.cc",
       "views/apps/chrome_native_app_window_views.h",
+      "views/autofill/address_editor_view.cc",
+      "views/autofill/address_editor_view.h",
       "views/autofill/autofill_bubble_handler_impl.cc",
       "views/autofill/autofill_bubble_handler_impl.h",
       "views/autofill/autofill_popup_base_view.cc",
