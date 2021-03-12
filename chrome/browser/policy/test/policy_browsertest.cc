@@ -205,11 +205,10 @@ const int kThreeHoursInMs = 180 * 60 * 1000;
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 int CountScreenshots() {
-  DownloadPrefs* download_prefs = DownloadPrefs::FromBrowserContext(
-      ProfileManager::GetActiveUserProfile());
-  base::FileEnumerator enumerator(download_prefs->DownloadPath(),
-                                  false, base::FileEnumerator::FILES,
-                                  "Screenshot*");
+  DownloadPrefs* download_prefs =
+      DownloadPrefs::FromBrowserContext(ProfileManager::GetActiveUserProfile());
+  base::FileEnumerator enumerator(download_prefs->DownloadPath(), false,
+                                  base::FileEnumerator::FILES, "Screenshot*");
   int count = 0;
   while (!enumerator.Next().empty())
     count++;
@@ -330,10 +329,10 @@ IN_PROC_BROWSER_TEST_F(PolicyTest, MAYBE_Disable3DAPIs) {
 IN_PROC_BROWSER_TEST_F(PolicyTest, MAYBE_HomepageLocation) {
   // Verifies that the homepage can be configured with policies.
   // Set a default, and check that the home button navigates there.
-  browser()->profile()->GetPrefs()->SetString(
-      prefs::kHomePage, chrome::kChromeUIPolicyURL);
-  browser()->profile()->GetPrefs()->SetBoolean(
-      prefs::kHomePageIsNewTabPage, false);
+  browser()->profile()->GetPrefs()->SetString(prefs::kHomePage,
+                                              chrome::kChromeUIPolicyURL);
+  browser()->profile()->GetPrefs()->SetBoolean(prefs::kHomePageIsNewTabPage,
+                                               false);
   EXPECT_EQ(GURL(chrome::kChromeUIPolicyURL),
             browser()->profile()->GetHomePage());
   content::WebContents* contents =

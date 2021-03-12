@@ -1,0 +1,5 @@
+This directory contains tests which extend PolicyTest class.
+//chrome/browser/policy/test/policy_browsertest.cc file used to contain browser tests related to different
+policies. These tests were split (crbug/1002483) into specialized browser test files testing one area each.
+These browser test files were initially placed at //chrome/browser/policy/ and were later moved to
+//chrome/browser/policy/test/ to keep the code structure clean.
