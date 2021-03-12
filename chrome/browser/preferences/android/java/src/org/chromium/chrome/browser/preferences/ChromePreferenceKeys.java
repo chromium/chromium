@@ -548,12 +548,29 @@ public final class ChromePreferenceKeys {
     public static final String OFFLINE_MEASUREMENTS_LAST_CHECK_MILLIS =
             "Chrome.OfflineMeasurements.LastCheckMillis";
 
+    /** Parameters that control the HTTP probe of the Offline Measurements Background task */
+    public static final String OFFLINE_MEASUREMENTS_USER_AGENT_STRING =
+            "Chrome.OfflineMeasurements.UserAgentString";
+    public static final String OFFLINE_MEASUREMENTS_HTTP_PROBE_URL =
+            "Chrome.OfflineMeasurements.HttpProbeUrl";
+    public static final String OFFLINE_MEASUREMENTS_HTTP_PROBE_TIMEOUT_MS =
+            "Chrome.OfflineMeasurements.HttpProbeTimeoutMs";
+    public static final String OFFLINE_MEASUREMENTS_HTTP_PROBE_METHOD =
+            "Chrome.OfflineMeasurements.HttpProbeMethod";
+
     /**
      * Comma separated list of time between OfflineMeasurementsBackgroundTask checks. When possible
      * these values will be recorded to UMA.
      */
     public static final String OFFLINE_MEASUREMENTS_TIME_BETWEEN_CHECKS_MILLIS_LIST =
             "Chrome.OfflineMeasurements.TimeBetweenChecksMillisList";
+
+    /**
+     * Comma separated list of the results of HTTP probes from OfflineMeasurementsBackgroundTask.
+     * When possible values will be recorded to UMA then cleared.
+     */
+    public static final String OFFLINE_MEASUREMENTS_HTTP_PROBE_RESULTS_LIST =
+            "Chrome.OfflineMeasurements.HttpProbeResultsList";
 
     /** The shared preference for the 'save card to device' checkbox status. */
     public static final String PAYMENTS_CHECK_SAVE_CARD_TO_DEVICE = "check_save_card_to_device";
@@ -894,6 +911,11 @@ public final class ChromePreferenceKeys {
                 OFFLINE_INDICATOR_V2_FIRST_TIME_IN_FOREGROUND_MS,
                 OFFLINE_INDICATOR_V2_NUM_TIMES_BACKGROUNDED,
                 OFFLINE_MEASUREMENTS_CURRENT_TASK_MEASUREMENT_INTERVAL_IN_MINUTES,
+                OFFLINE_MEASUREMENTS_HTTP_PROBE_METHOD,
+                OFFLINE_MEASUREMENTS_HTTP_PROBE_TIMEOUT_MS,
+                OFFLINE_MEASUREMENTS_HTTP_PROBE_URL,
+                OFFLINE_MEASUREMENTS_HTTP_PROBE_RESULTS_LIST,
+                OFFLINE_MEASUREMENTS_USER_AGENT_STRING,
                 OFFLINE_MEASUREMENTS_LAST_CHECK_MILLIS,
                 OFFLINE_MEASUREMENTS_TIME_BETWEEN_CHECKS_MILLIS_LIST,
                 PERSISTENT_OFFLINE_CONTENT_AVAILABILITY_STATUS,

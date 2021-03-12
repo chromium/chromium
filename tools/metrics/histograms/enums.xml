@@ -55900,6 +55900,17 @@ Called by update_net_trust_anchors.py.-->
   <int value="3" label="Pending another download completion"/>
 </enum>
 
+<enum name="OfflineMeasurementsHttpProbeResult">
+  <int value="0" label="Invalid"/>
+  <int value="1" label="No internet"/>
+  <int value="2" label="Server error"/>
+  <int value="3" label="Not validated"/>
+  <int value="4" label="Validated with no content"/>
+  <int value="5" label="Validated with OK, but zero content length"/>
+  <int value="6" label="Validated with OK, but no content length"/>
+  <int value="7" label="Cancelled"/>
+</enum>
+
 <enum name="OfflinePagePrefetchNotificationAction">
   <int value="0" label="Attempt to show pending content check"/>
   <int value="1" label="Showed notification"/>

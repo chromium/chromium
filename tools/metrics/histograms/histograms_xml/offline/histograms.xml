@@ -21,6 +21,20 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histograms>
 
+<histogram name="Offline.Measurements.HttpProbeResult"
+    enum="OfflineMeasurementsHttpProbeResult" expires_after="M94">
+  <owner>curranmax@chromium.org</owner>
+  <owner>tbansal@chromium.org</owner>
+  <summary>
+    The result of the HTTP probe of the offline measurements experiment.
+
+    Each time the Offline Measurements background task runs, one value is stored
+    to prefs. At a later time, when Chrome is starting up, all stored results
+    from past unreported HTTP probes are recorded to the histogram. The stored
+    values are then cleared so they are only recorded once each.
+  </summary>
+</histogram>
+
 <histogram name="Offline.Measurements.MeasurementInterval" units="minutes"
     expires_after="2021-04-04">
   <owner>curranmax@chromium.org</owner>
