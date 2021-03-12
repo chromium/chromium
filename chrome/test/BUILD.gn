@@ -1802,6 +1802,7 @@ if (!is_android) {
         "../browser/policy/test/system_features_policy_browsertest.cc",
         "../browser/renderer_context_menu/quick_answers_menu_observer_browsertest.cc",
         "../browser/ui/webui/nearby_share/nearby_share_dialog_ui_browsertest.cc",
+        "../browser/ui/webui/signin/inline_login_dialog_chromeos_browsertest.cc",
         "../browser/webshare/chromeos/sharesheet_client_browsertest.cc",
       ]
     }
