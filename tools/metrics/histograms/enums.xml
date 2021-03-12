@@ -31663,9 +31663,9 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="3713" label="TextDetectorDetect"/>
   <int value="3714" label="LocalStorageFirstUsedBeforeFcp"/>
   <int value="3715" label="LocalStorageFirstUsedAfterFcp"/>
-  <int value="3716" label="CSSPseudoHostCompoundList"/>
-  <int value="3717" label="CSSPseudoHostContextCompoundList"/>
-  <int value="3718" label="CSSPseudoHostDynamicSpecificity"/>
+  <int value="3716" label="OBSOLETE_CSSPseudoHostCompoundList"/>
+  <int value="3717" label="OBSOLETE_CSSPseudoHostContextCompoundList"/>
+  <int value="3718" label="OBSOLETE_CSSPseudoHostDynamicSpecificity"/>
   <int value="3719" label="GetCurrentBrowsingContextMedia"/>
   <int value="3720" label="MouseEventRelativePositionForInlineElement"/>
   <int value="3721" label="V8SharedArrayBufferConstructedWithoutIsolation"/>

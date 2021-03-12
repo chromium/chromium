@@ -19,7 +19,7 @@ var host3 = document.getElementById("host3");
 host3.attachShadow({mode: 'open'}).innerHTML = "<style>:host(#host3:not(.c3)) { background-color: green }</style><div></div><div></div><div></div><div></div>";
 
 var host4 = document.getElementById("host4");
-host4.attachShadow({mode: 'open'}).innerHTML = "<style>:host(.nomatch, .c4) { background-color: green }</style><div></div><div></div><div></div><div></div>";
+host4.attachShadow({mode: 'open'}).innerHTML = "<style>:host(:is(.nomatch, .c4)) { background-color: green }</style><div></div><div></div><div></div><div></div>";
 
 var transparent = "rgba(0, 0, 0, 0)";
 var green = "rgb(0, 128, 0)";

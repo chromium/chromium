@@ -235,10 +235,8 @@ SelectorChecker::MatchStatus SelectorChecker::MatchSelector(
   if (sub_result.dynamic_pseudo != kPseudoIdNone)
     result.dynamic_pseudo = sub_result.dynamic_pseudo;
 
-  if (context.selector->IsLastInTagHistory()) {
-    result.specificity += sub_result.specificity;
+  if (context.selector->IsLastInTagHistory())
     return kSelectorMatches;
-  }
 
   MatchStatus match;
   if (context.selector->Relation() != CSSSelector::kSubSelector) {
@@ -255,8 +253,6 @@ SelectorChecker::MatchStatus SelectorChecker::MatchSelector(
   } else {
     match = MatchForSubSelector(context, result);
   }
-  if (match == kSelectorMatches)
-    result.specificity += sub_result.specificity;
   return match;
 }
 
@@ -1156,61 +1152,34 @@ bool SelectorChecker::CheckPseudoHost(const SelectorCheckingContext& context,
   DCHECK(element.GetShadowRoot());
 
   // For the case with no parameters, i.e. just :host.
-  if (!selector.SelectorList()) {
-    result.specificity += CSSSelector::kClassLikeSpecificity;
+  if (!selector.SelectorList())
     return true;
-  }
+
+  DCHECK(selector.SelectorList()->HasOneSelector());
 
   SelectorCheckingContext sub_context(context);
   sub_context.is_sub_selector = true;
+  sub_context.selector = selector.SelectorList()->First();
+  sub_context.treat_shadow_host_as_normal_scope = true;
+  sub_context.scope = context.scope;
+  // Use FlatTreeTraversal to traverse a composed ancestor list of a given
+  // element.
+  Element* next_element = &element;
+  SelectorCheckingContext host_context(sub_context);
+  do {
+    MatchResult sub_result;
+    host_context.element = next_element;
+    if (MatchSelector(host_context, sub_result) == kSelectorMatches)
+      return true;
+    host_context.treat_shadow_host_as_normal_scope = false;
+    host_context.scope = nullptr;
 
-  bool matched = false;
-  unsigned max_specificity = 0;
+    if (selector.GetPseudoType() == CSSSelector::kPseudoHost)
+      break;
 
-  // If one of simple selectors matches an element, returns SelectorMatches.
-  // Just "OR".
-  for (sub_context.selector = selector.SelectorList()->First();
-       sub_context.selector;
-       sub_context.selector = CSSSelectorList::Next(*sub_context.selector)) {
-    sub_context.treat_shadow_host_as_normal_scope = true;
-    sub_context.scope = context.scope;
-    // Use FlatTreeTraversal to traverse a composed ancestor list of a given
-    // element.
-    Element* next_element = &element;
-    SelectorCheckingContext host_context(sub_context);
-    do {
-      MatchResult sub_result;
-      host_context.element = next_element;
-      if (MatchSelector(host_context, sub_result) == kSelectorMatches) {
-        matched = true;
-        // Consider div:host(div:host(div:host(div:host...))).
-        max_specificity =
-            std::max(max_specificity, host_context.selector->Specificity() +
-                                          sub_result.specificity);
-        break;
-      }
-      host_context.treat_shadow_host_as_normal_scope = false;
-      host_context.scope = nullptr;
-
-      if (selector.GetPseudoType() == CSSSelector::kPseudoHost)
-        break;
-
-      host_context.in_rightmost_compound = false;
-      next_element = FlatTreeTraversal::ParentElement(*next_element);
-    } while (next_element);
-  }
-  if (matched) {
-    result.specificity += max_specificity + CSSSelector::kClassLikeSpecificity;
-
-    if (result.specificity !=
-        selector.Specificity(
-            CSSSelector::SpecificityMode::kIncludeHostPseudos)) {
-      UseCounter::Count(context.element->GetDocument(),
-                        WebFeature::kCSSPseudoHostDynamicSpecificity);
-    }
-
-    return true;
-  }
+    host_context.in_rightmost_compound = false;
+    next_element = FlatTreeTraversal::ParentElement(*next_element);
+  } while (next_element);
 
   // FIXME: this was a fallthrough condition.
   return false;

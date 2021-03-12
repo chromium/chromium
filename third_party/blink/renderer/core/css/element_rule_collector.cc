@@ -409,9 +409,8 @@ void ElementRuleCollector::DidMatchRule(
     if (!rule_data->Rule()->Properties().IsEmpty())
       style_->SetHasPseudoElementStyle(dynamic_pseudo);
   } else {
-    matched_rules_.push_back(MatchedRule(rule_data, result.specificity,
-                                         match_request.style_sheet_index,
-                                         match_request.style_sheet));
+    matched_rules_.push_back(MatchedRule(
+        rule_data, match_request.style_sheet_index, match_request.style_sheet));
   }
 }
 

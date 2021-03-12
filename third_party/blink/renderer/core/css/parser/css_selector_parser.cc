@@ -713,9 +713,9 @@ std::unique_ptr<CSSParserSelector> CSSSelectorParser::ConsumePseudo(
 
       if (!selector_list->HasOneSelector()) {
         if (selector->GetPseudoType() == CSSSelector::kPseudoHost)
-          context_->Count(WebFeature::kCSSPseudoHostCompoundList);
+          return nullptr;
         if (selector->GetPseudoType() == CSSSelector::kPseudoHostContext)
-          context_->Count(WebFeature::kCSSPseudoHostContextCompoundList);
+          return nullptr;
       }
 
       selector->SetSelectorList(std::move(selector_list));

@@ -124,7 +124,6 @@ class CORE_EXPORT SelectorChecker {
 
    public:
     PseudoId dynamic_pseudo{kPseudoIdNone};
-    unsigned specificity{0};
   };
 
   bool Match(const SelectorCheckingContext& context, MatchResult& result) const;

@@ -127,6 +127,18 @@ TEST(CSSSelector, Specificity_Slotted) {
   EXPECT_EQ(Specificity("::slotted(*)"), Specificity("::first-line"));
 }
 
+TEST(CSSSelector, Specificity_Host) {
+  EXPECT_EQ(Specificity(":host"), Specificity(".host"));
+  EXPECT_EQ(Specificity(":host(.a)"), Specificity(".host .a"));
+  EXPECT_EQ(Specificity(":host(div#a.b)"), Specificity(".host div#a.b"));
+}
+
+TEST(CSSSelector, Specificity_HostContext) {
+  EXPECT_EQ(Specificity(":host-context(.a)"), Specificity(".host-context .a"));
+  EXPECT_EQ(Specificity(":host-context(div#a.b)"),
+            Specificity(".host-context div#a.b"));
+}
+
 TEST(CSSSelector, Specificity_Not) {
   EXPECT_EQ(Specificity(":not(div)"), Specificity(":is(div)"));
   EXPECT_EQ(Specificity(":not(.a)"), Specificity(":is(.a)"));
