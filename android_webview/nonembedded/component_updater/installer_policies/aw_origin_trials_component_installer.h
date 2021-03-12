@@ -25,8 +25,7 @@ namespace android_webview {
 class AwOriginTrialsComponentInstallerPolicy
     : public component_updater::OriginTrialsComponentInstallerPolicy {
  public:
-  explicit AwOriginTrialsComponentInstallerPolicy(
-      std::unique_ptr<AwComponentInstallerPolicyDelegate> delegate);
+  AwOriginTrialsComponentInstallerPolicy();
   ~AwOriginTrialsComponentInstallerPolicy() override;
   AwOriginTrialsComponentInstallerPolicy(
       const AwOriginTrialsComponentInstallerPolicy&) = delete;

@@ -5,6 +5,8 @@
 #ifndef ANDROID_WEBVIEW_NONEMBEDDED_COMPONENT_UPDATER_AW_COMPONENT_INSTALLER_POLICY_DELEGATE_H_
 #define ANDROID_WEBVIEW_NONEMBEDDED_COMPONENT_UPDATER_AW_COMPONENT_INSTALLER_POLICY_DELEGATE_H_
 
+#include <stdint.h>
+
 #include <memory>
 #include <string>
 #include <vector>
@@ -25,7 +27,9 @@ namespace android_webview {
 // otherwise their components won't be installed as expected in WebView.
 class AwComponentInstallerPolicyDelegate {
  public:
-  AwComponentInstallerPolicyDelegate();
+  // `hash` is the raw byte SHA256 public key hash of the component.
+  explicit AwComponentInstallerPolicyDelegate(const std::vector<uint8_t>& hash);
+
   ~AwComponentInstallerPolicyDelegate();
 
   AwComponentInstallerPolicyDelegate(
@@ -36,12 +40,14 @@ class AwComponentInstallerPolicyDelegate {
   // These methods should match the methods in ComponentInstallerPolicy
   update_client::CrxInstaller::Result OnCustomInstall(
       const base::DictionaryValue& manifest,
-      const base::FilePath& install_dir,
-      const std::vector<uint8_t>& hash);
+      const base::FilePath& install_dir);
   void OnCustomUninstall();
   void ComponentReady(const base::Version& version,
                       const base::FilePath& install_dir,
                       std::unique_ptr<base::DictionaryValue> manifest);
+
+ private:
+  const std::string component_id_;
 };
 
 }  // namespace android_webview

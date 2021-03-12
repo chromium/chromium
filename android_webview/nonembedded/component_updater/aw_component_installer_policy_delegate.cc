@@ -21,8 +21,9 @@
 
 namespace android_webview {
 
-AwComponentInstallerPolicyDelegate::AwComponentInstallerPolicyDelegate() =
-    default;
+AwComponentInstallerPolicyDelegate::AwComponentInstallerPolicyDelegate(
+    const std::vector<uint8_t>& hash)
+    : component_id_(update_client::GetCrxIdFromPublicKeyHash(hash)) {}
 
 AwComponentInstallerPolicyDelegate::~AwComponentInstallerPolicyDelegate() =
     default;
@@ -30,8 +31,7 @@ AwComponentInstallerPolicyDelegate::~AwComponentInstallerPolicyDelegate() =
 update_client::CrxInstaller::Result
 AwComponentInstallerPolicyDelegate::OnCustomInstall(
     const base::DictionaryValue& manifest,
-    const base::FilePath& install_dir,
-    const std::vector<uint8_t>& hash) {
+    const base::FilePath& install_dir) {
   std::string version_ascii;
   manifest.GetStringASCII("version", &version_ascii);
   const base::Version version(version_ascii);
@@ -62,7 +62,7 @@ AwComponentInstallerPolicyDelegate::OnCustomInstall(
 
   // ComponentProviderService should take ownership of the temp path.
   if (AwComponentUpdateService::GetInstance()->NotifyNewVersion(
-          update_client::GetCrxIdFromPublicKeyHash(hash), temp_path, version)) {
+          component_id_, temp_path, version)) {
     return update_client::CrxInstaller::Result(
         update_client::InstallError::NONE);
   }

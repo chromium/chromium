@@ -30,8 +30,7 @@ class AwTrustTokenKeyCommitmentsComponentInstallerPolicy
     : public component_updater::
           TrustTokenKeyCommitmentsComponentInstallerPolicy {
  public:
-  explicit AwTrustTokenKeyCommitmentsComponentInstallerPolicy(
-      std::unique_ptr<AwComponentInstallerPolicyDelegate> delegate);
+  AwTrustTokenKeyCommitmentsComponentInstallerPolicy();
   ~AwTrustTokenKeyCommitmentsComponentInstallerPolicy() override;
 
   AwTrustTokenKeyCommitmentsComponentInstallerPolicy(

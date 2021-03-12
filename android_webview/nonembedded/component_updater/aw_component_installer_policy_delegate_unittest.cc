@@ -57,9 +57,11 @@ void AssertTestFiles(const base::FilePath& install_dir) {
 
 class MockInstallerPolicy : public component_updater::ComponentInstallerPolicy {
  public:
-  explicit MockInstallerPolicy(
-      std::unique_ptr<AwComponentInstallerPolicyDelegate> delegate)
-      : delegate_(std::move(delegate)) {}
+  MockInstallerPolicy() {
+    std::vector<uint8_t> hash;
+    GetHash(&hash);
+    delegate_ = std::make_unique<AwComponentInstallerPolicyDelegate>(hash);
+  }
   ~MockInstallerPolicy() override = default;
 
   MockInstallerPolicy(const MockInstallerPolicy&) = delete;
@@ -68,9 +70,7 @@ class MockInstallerPolicy : public component_updater::ComponentInstallerPolicy {
   update_client::CrxInstaller::Result OnCustomInstall(
       const base::DictionaryValue& manifest,
       const base::FilePath& install_dir) override {
-    std::vector<uint8_t> hash;
-    GetHash(&hash);
-    return delegate_->OnCustomInstall(manifest, install_dir, hash);
+    return delegate_->OnCustomInstall(manifest, install_dir);
   }
 
   void ComponentReady(
@@ -150,8 +150,7 @@ class AwComponentInstallerPolicyDelegateTest : public testing::Test {
 
   // Override from testing::Test
   void SetUp() override {
-    mock_policy_ = std::make_unique<MockInstallerPolicy>(
-        std::make_unique<AwComponentInstallerPolicyDelegate>());
+    mock_policy_ = std::make_unique<MockInstallerPolicy>();
     ASSERT_TRUE(scoped_temp_dir_.CreateUniqueTempDir());
   }
 
