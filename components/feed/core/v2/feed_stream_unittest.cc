@@ -21,6 +21,7 @@
 #include "base/strings/string_util.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/metrics/user_action_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/scoped_run_loop_timeout.h"
 #include "base/test/task_environment.h"
@@ -534,9 +535,10 @@ class TestMetricsReporter : public MetricsReporter {
   explicit TestMetricsReporter(PrefService* prefs) : MetricsReporter(prefs) {}
 
   // MetricsReporter.
-  void ContentSliceViewed(SurfaceId surface_id, int index_in_stream) override {
+  void ContentSliceViewed(const StreamType& stream_type,
+                          int index_in_stream) override {
     slice_viewed_index = index_in_stream;
-    MetricsReporter::ContentSliceViewed(surface_id, index_in_stream);
+    MetricsReporter::ContentSliceViewed(stream_type, index_in_stream);
   }
   void OnLoadStream(LoadStreamStatus load_from_store_status,
                     LoadStreamStatus final_status,
@@ -1609,6 +1611,22 @@ TEST_F(FeedStreamTest, ReportSliceViewedIdentifiesCorrectIndex) {
       surface.GetSurfaceId(), surface.GetStreamType(),
       surface.initial_state->updated_slices(1).slice().slice_id());
   EXPECT_EQ(1, metrics_reporter_->slice_viewed_index);
+}
+
+TEST_F(FeedStreamTest, ReportOpenInNewTabAction) {
+  store_->OverwriteStream(kForYouStream, MakeTypicalInitialModelState(),
+                          base::DoNothing());
+  TestForYouSurface surface(stream_.get());
+  WaitForIdleTaskQueue();
+
+  base::UserActionTester user_actions;
+
+  stream_->ReportOpenInNewTabAction(
+      surface.GetStreamType(),
+      surface.initial_state->updated_slices(1).slice().slice_id());
+
+  EXPECT_EQ(1, user_actions.GetActionCount(
+                   "ContentSuggestions.Feed.CardAction.OpenInNewTab"));
 }
 
 TEST_P(FeedStreamTestForAllStreamTypes, LoadMoreAppendsContent) {
@@ -3164,6 +3182,34 @@ TEST_F(FeedStreamTest, ExperimentsAreClearedOnClearAll) {
   Experiments empty;
   Experiments got = prefs::GetExperiments(profile_prefs_);
   EXPECT_EQ(got, empty);
+}
+
+TEST_F(FeedStreamTest, CreateAndCommitEphemeralChange) {
+  response_translator_.InjectResponse(MakeTypicalInitialModelState());
+  TestForYouSurface surface(stream_.get());
+  WaitForIdleTaskQueue();
+
+  EphemeralChangeId change_id = stream_->CreateEphemeralChange(
+      surface.GetStreamType(), {MakeOperation(MakeClearAll())});
+  stream_->CommitEphemeralChange(surface.GetStreamType(), change_id);
+  WaitForIdleTaskQueue();
+
+  ASSERT_EQ("loading -> 2 slices -> no-cards -> no-cards",
+            surface.DescribeUpdates());
+}
+
+TEST_F(FeedStreamTest, RejectEphemeralChange) {
+  response_translator_.InjectResponse(MakeTypicalInitialModelState());
+  TestForYouSurface surface(stream_.get());
+  WaitForIdleTaskQueue();
+
+  EphemeralChangeId change_id = stream_->CreateEphemeralChange(
+      surface.GetStreamType(), {MakeOperation(MakeClearAll())});
+  stream_->RejectEphemeralChange(surface.GetStreamType(), change_id);
+  WaitForIdleTaskQueue();
+
+  ASSERT_EQ("loading -> 2 slices -> no-cards -> 2 slices",
+            surface.DescribeUpdates());
 }
 
 // Keep instantiations at the bottom.

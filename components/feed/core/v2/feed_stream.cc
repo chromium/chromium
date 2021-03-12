@@ -466,7 +466,8 @@ EphemeralChangeId FeedStream::CreateEphemeralChange(
     DLOG(ERROR) << "Calling CreateEphemeralChange before the model is loaded";
     return {};
   }
-  metrics_reporter_->OtherUserAction(FeedUserActionType::kEphemeralChange);
+  metrics_reporter_->OtherUserAction(stream_type,
+                                     FeedUserActionType::kEphemeralChange);
   return model->CreateEphemeralChange(std::move(operations));
 }
 
@@ -485,7 +486,7 @@ bool FeedStream::CommitEphemeralChange(const StreamType& stream_type,
   if (!model)
     return false;
   metrics_reporter_->OtherUserAction(
-      FeedUserActionType::kEphemeralChangeCommited);
+      stream_type, FeedUserActionType::kEphemeralChangeCommited);
   return model->CommitEphemeralChange(id);
 }
 
@@ -495,7 +496,7 @@ bool FeedStream::RejectEphemeralChange(const StreamType& stream_type,
   if (!model)
     return false;
   metrics_reporter_->OtherUserAction(
-      FeedUserActionType::kEphemeralChangeRejected);
+      stream_type, FeedUserActionType::kEphemeralChangeRejected);
   return model->RejectEphemeralChange(id);
 }
 
@@ -968,7 +969,7 @@ void FeedStream::ReportOpenAction(const StreamType& stream_type,
   int index = stream.surface_updater->GetSliceIndexFromSliceId(slice_id);
   if (index < 0)
     index = MetricsReporter::kUnknownCardIndex;
-  metrics_reporter_->OpenAction(index);
+  metrics_reporter_->OpenAction(stream_type, index);
   if (stream_type.IsForYou()) {
     notice_card_tracker_.OnOpenAction(index);
   }
@@ -982,7 +983,7 @@ void FeedStream::ReportOpenInNewTabAction(const StreamType& stream_type,
   int index = stream.surface_updater->GetSliceIndexFromSliceId(slice_id);
   if (index < 0)
     index = MetricsReporter::kUnknownCardIndex;
-  metrics_reporter_->OpenInNewTabAction(index);
+  metrics_reporter_->OpenInNewTabAction(stream_type, index);
   if (stream_type.IsForYou()) {
     notice_card_tracker_.OnOpenAction(index);
   }
@@ -997,7 +998,7 @@ void FeedStream::ReportSliceViewed(SurfaceId surface_id,
       UpdateShownSlicesUploadCondition(index);
       notice_card_tracker_.OnSliceViewed(index);
     }
-    metrics_reporter_->ContentSliceViewed(surface_id, index);
+    metrics_reporter_->ContentSliceViewed(stream_type, index);
   }
 }
 // TODO(crbug/1147237): Rename this method and related members?
@@ -1068,14 +1069,16 @@ void FeedStream::ReportFeedViewed(SurfaceId surface_id) {
 void FeedStream::ReportPageLoaded() {
   metrics_reporter_->PageLoaded();
 }
-void FeedStream::ReportStreamScrolled(int distance_dp) {
-  metrics_reporter_->StreamScrolled(distance_dp);
+void FeedStream::ReportStreamScrolled(const StreamType& stream_type,
+                                      int distance_dp) {
+  metrics_reporter_->StreamScrolled(stream_type, distance_dp);
 }
 void FeedStream::ReportStreamScrollStart() {
   metrics_reporter_->StreamScrollStart();
 }
-void FeedStream::ReportOtherUserAction(FeedUserActionType action_type) {
-  metrics_reporter_->OtherUserAction(action_type);
+void FeedStream::ReportOtherUserAction(const StreamType& stream_type,
+                                       FeedUserActionType action_type) {
+  metrics_reporter_->OtherUserAction(stream_type, action_type);
 }
 
 }  // namespace feed

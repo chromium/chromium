@@ -336,7 +336,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <owner>freedjm@chromium.org</owner>
   <owner>feed@chromium.org</owner>
   <summary>
-    Android: The position of the suggestion card on the NTP, that is clicked
+    Android: The position of the For-You card on the NTP, that is clicked
     through to the host website of the content. We track the position the card
     had in the list when it was first seen by the user. This tracked position
     can be different from the position observed by the user, e.g. when the user
@@ -430,12 +430,12 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <owner>freedjm@chromium.org</owner>
   <owner>feed@chromium.org</owner>
   <summary>
-    Android: The position of a suggestion card that was shown on the NTP. A card
-    is considered shown when at least 2/3 of its height is visible on the
-    screen. For each card, at most one impression is recorded per NTP instance.
-    We track the position the card had in the list when it was first seen by the
-    user. This tracked position can be different from the position observed by
-    the user, e.g. when the user dismissed some suggestions from the list or
+    Android: The position of a For-You card that was shown on the NTP. A card is
+    considered shown when at least 2/3 of its height is visible on the screen.
+    For each card, at most one impression is recorded per NTP instance. We track
+    the position the card had in the list when it was first seen by the user.
+    This tracked position can be different from the position observed by the
+    user, e.g. when the user dismissed some suggestions from the list or
     requested more that got inserted in the middle of the feed.
   </summary>
 </histogram>

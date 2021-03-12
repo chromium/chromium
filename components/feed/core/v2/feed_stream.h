@@ -173,9 +173,11 @@ class FeedStream : public FeedStreamApi,
   void ReportOpenVisitComplete(base::TimeDelta visit_time) override;
   void ReportOpenInNewTabAction(const StreamType& stream_type,
                                 const std::string& slice_id) override;
-  void ReportStreamScrolled(int distance_dp) override;
+  void ReportStreamScrolled(const StreamType& stream_type,
+                            int distance_dp) override;
   void ReportStreamScrollStart() override;
-  void ReportOtherUserAction(FeedUserActionType action_type) override;
+  void ReportOtherUserAction(const StreamType& stream_type,
+                             FeedUserActionType action_type) override;
 
   // offline_pages::TaskQueue::Delegate.
   void OnTaskQueueIsIdle() override;

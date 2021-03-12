@@ -13,9 +13,11 @@
 #include "base/time/time.h"
 #include "components/feed/core/v2/common_enums.h"
 #include "components/feed/core/v2/prefs.h"
+#include "components/feed/core/v2/public/feed_stream_api.h"
 
 namespace feed {
 namespace {
+const StreamType kStreamTypes[] = {kForYouStream, kWebFeedStream};
 using feed::FeedEngagementType;
 using feed::FeedUserActionType;
 const int kMaxSuggestionsTotal = 50;
@@ -33,14 +35,28 @@ constexpr base::TimeDelta kOpenTimeout = base::TimeDelta::FromSeconds(20);
 constexpr base::TimeDelta kTimeSpentInFeedInteractionTimeout =
     base::TimeDelta::FromSeconds(30);
 
-void ReportEngagementTypeHistogram(FeedEngagementType engagement_type) {
-  base::UmaHistogramEnumeration("ContentSuggestions.Feed.EngagementType",
-                                engagement_type);
+void ReportEngagementTypeHistogram(const StreamType& stream_type,
+                                   FeedEngagementType engagement_type) {
+  if (stream_type.IsForYou()) {
+    base::UmaHistogramEnumeration("ContentSuggestions.Feed.EngagementType",
+                                  engagement_type);
+  } else {
+    DCHECK(stream_type.IsWebFeed());
+    base::UmaHistogramEnumeration(
+        "ContentSuggestions.Feed.WebFeed.EngagementType", engagement_type);
+  }
 }
 
-void ReportContentSuggestionsOpened(int index_in_stream) {
-  base::UmaHistogramExactLinear("NewTabPage.ContentSuggestions.Opened",
-                                index_in_stream, kMaxSuggestionsTotal);
+void ReportContentSuggestionsOpened(const StreamType& stream_type,
+                                    int index_in_stream) {
+  if (stream_type.IsForYou()) {
+    base::UmaHistogramExactLinear("NewTabPage.ContentSuggestions.Opened",
+                                  index_in_stream, kMaxSuggestionsTotal);
+  } else {
+    DCHECK(stream_type.IsWebFeed());
+    base::UmaHistogramExactLinear("ContentSuggestions.Feed.WebFeed.Opened",
+                                  index_in_stream, kMaxSuggestionsTotal);
+  }
 }
 
 void ReportUserActionHistogram(FeedUserActionType action_type) {
@@ -90,9 +106,10 @@ void MetricsReporter::OnEnterBackground() {
 
 // Engagement Tracking.
 
-void MetricsReporter::RecordInteraction() {
-  RecordEngagement(/*scroll_distance_dp=*/0, /*interacted=*/true);
-  ReportEngagementTypeHistogram(FeedEngagementType::kFeedInteracted);
+void MetricsReporter::RecordInteraction(const StreamType& stream_type) {
+  RecordEngagement(stream_type, /*scroll_distance_dp=*/0, /*interacted=*/true);
+  ReportEngagementTypeHistogram(stream_type,
+                                FeedEngagementType::kFeedInteracted);
 }
 
 void MetricsReporter::TrackTimeSpentInFeed(bool interacted_or_scrolled) {
@@ -110,15 +127,22 @@ void MetricsReporter::TrackTimeSpentInFeed(bool interacted_or_scrolled) {
 }
 
 void MetricsReporter::FinalizeVisit() {
-  if (!engaged_simple_reported_)
-    return;
-  engaged_reported_ = false;
-  engaged_simple_reported_ = false;
-  scrolled_reported_ = false;
-  TrackTimeSpentInFeed(false);
+  bool has_engagement = false;
+  for (const StreamType& stream_type : kStreamTypes) {
+    StreamStats& data = ForStream(stream_type);
+    if (!data.engaged_simple_reported_)
+      continue;
+    has_engagement = true;
+    data.engaged_reported_ = false;
+    data.engaged_simple_reported_ = false;
+    data.scrolled_reported_ = false;
+  }
+  if (has_engagement)
+    TrackTimeSpentInFeed(false);
 }
 
-void MetricsReporter::RecordEngagement(int scroll_distance_dp,
+void MetricsReporter::RecordEngagement(const StreamType& stream_type,
+                                       int scroll_distance_dp,
                                        bool interacted) {
   scroll_distance_dp = std::abs(scroll_distance_dp);
   // Determine if this interaction is part of a new 'session'.
@@ -132,22 +156,26 @@ void MetricsReporter::RecordEngagement(int scroll_distance_dp,
 
   TrackTimeSpentInFeed(true);
 
+  StreamStats& data = ForStream(stream_type);
   // Report the user as engaged-simple if they have scrolled any amount or
   // interacted with the card, and we have not already reported it for this
   // chrome run.
-  if (!engaged_simple_reported_ && (scroll_distance_dp > 0 || interacted)) {
-    ReportEngagementTypeHistogram(FeedEngagementType::kFeedEngagedSimple);
-    engaged_simple_reported_ = true;
+  if (!data.engaged_simple_reported_ &&
+      (scroll_distance_dp > 0 || interacted)) {
+    ReportEngagementTypeHistogram(stream_type,
+                                  FeedEngagementType::kFeedEngagedSimple);
+    data.engaged_simple_reported_ = true;
   }
 
   // Report the user as engaged if they have scrolled more than the threshold or
   // interacted with the card, and we have not already reported it this chrome
   // run.
   const int kMinScrollThresholdDp = 160;  // 1 inch.
-  if (!engaged_reported_ &&
+  if (!data.engaged_reported_ &&
       (scroll_distance_dp > kMinScrollThresholdDp || interacted)) {
-    ReportEngagementTypeHistogram(FeedEngagementType::kFeedEngaged);
-    engaged_reported_ = true;
+    ReportEngagementTypeHistogram(stream_type,
+                                  FeedEngagementType::kFeedEngaged);
+    data.engaged_reported_ = true;
   }
 }
 
@@ -158,19 +186,28 @@ void MetricsReporter::StreamScrollStart() {
   TrackTimeSpentInFeed(true);
 }
 
-void MetricsReporter::StreamScrolled(int distance_dp) {
-  RecordEngagement(distance_dp, /*interacted=*/false);
+void MetricsReporter::StreamScrolled(const StreamType& stream_type,
+                                     int distance_dp) {
+  RecordEngagement(stream_type, distance_dp, /*interacted=*/false);
 
-  if (!scrolled_reported_) {
-    ReportEngagementTypeHistogram(FeedEngagementType::kFeedScrolled);
-    scrolled_reported_ = true;
+  StreamStats& data = ForStream(stream_type);
+  if (!data.scrolled_reported_) {
+    ReportEngagementTypeHistogram(stream_type,
+                                  FeedEngagementType::kFeedScrolled);
+    data.scrolled_reported_ = true;
   }
 }
 
-void MetricsReporter::ContentSliceViewed(SurfaceId surface_id,
+void MetricsReporter::ContentSliceViewed(const StreamType& stream_type,
                                          int index_in_stream) {
-  base::UmaHistogramExactLinear("NewTabPage.ContentSuggestions.Shown",
-                                index_in_stream, kMaxSuggestionsTotal);
+  if (stream_type.IsForYou()) {
+    base::UmaHistogramExactLinear("NewTabPage.ContentSuggestions.Shown",
+                                  index_in_stream, kMaxSuggestionsTotal);
+  } else {
+    DCHECK(stream_type.IsWebFeed());
+    base::UmaHistogramExactLinear("ContentSuggestions.Feed.WebFeed.Shown",
+                                  index_in_stream, kMaxSuggestionsTotal);
+  }
 }
 
 void MetricsReporter::FeedViewed(SurfaceId surface_id) {
@@ -198,13 +235,14 @@ void MetricsReporter::FeedViewed(SurfaceId surface_id) {
   ReportOpenFeedIfNeeded(surface_id, true);
 }
 
-void MetricsReporter::OpenAction(int index_in_stream) {
+void MetricsReporter::OpenAction(const StreamType& stream_type,
+                                 int index_in_stream) {
   CardOpenBegin();
   ReportUserActionHistogram(FeedUserActionType::kTappedOnCard);
   base::RecordAction(
       base::UserMetricsAction("ContentSuggestions.Feed.CardAction.Open"));
-  ReportContentSuggestionsOpened(index_in_stream);
-  RecordInteraction();
+  ReportContentSuggestionsOpened(stream_type, index_in_stream);
+  RecordInteraction(stream_type);
 }
 
 void MetricsReporter::OpenVisitComplete(base::TimeDelta visit_time) {
@@ -212,20 +250,22 @@ void MetricsReporter::OpenVisitComplete(base::TimeDelta visit_time) {
                               visit_time);
 }
 
-void MetricsReporter::OpenInNewTabAction(int index_in_stream) {
+void MetricsReporter::OpenInNewTabAction(const StreamType& stream_type,
+                                         int index_in_stream) {
   CardOpenBegin();
   ReportUserActionHistogram(FeedUserActionType::kTappedOpenInNewTab);
   base::RecordAction(base::UserMetricsAction(
       "ContentSuggestions.Feed.CardAction.OpenInNewTab"));
-  ReportContentSuggestionsOpened(index_in_stream);
-  RecordInteraction();
+  ReportContentSuggestionsOpened(stream_type, index_in_stream);
+  RecordInteraction(stream_type);
 }
 
 void MetricsReporter::PageLoaded() {
   ReportCardOpenEndIfNeeded(true);
 }
 
-void MetricsReporter::OtherUserAction(FeedUserActionType action_type) {
+void MetricsReporter::OtherUserAction(const StreamType& stream_type,
+                                      FeedUserActionType action_type) {
   ReportUserActionHistogram(action_type);
   switch (action_type) {
     case FeedUserActionType::kTappedOnCard:
@@ -244,36 +284,36 @@ void MetricsReporter::OtherUserAction(FeedUserActionType action_type) {
     case FeedUserActionType::kTappedSendFeedback:
       base::RecordAction(base::UserMetricsAction(
           "ContentSuggestions.Feed.CardAction.SendFeedback"));
-      RecordInteraction();
+      RecordInteraction(stream_type);
       break;
     case FeedUserActionType::kTappedLearnMore:
       base::RecordAction(base::UserMetricsAction(
           "ContentSuggestions.Feed.CardAction.LearnMore"));
-      RecordInteraction();
+      RecordInteraction(stream_type);
       break;
     case FeedUserActionType::kTappedHideStory:
       // TODO(crbug.com/1111101): This action is not visible to client code, so
       // not yet used.
       base::RecordAction(base::UserMetricsAction(
           "ContentSuggestions.Feed.CardAction.HideStory"));
-      RecordInteraction();
+      RecordInteraction(stream_type);
       break;
     case FeedUserActionType::kTappedNotInterestedIn:
       // TODO(crbug.com/1111101): This action is not visible to client code, so
       // not yet used.
       base::RecordAction(base::UserMetricsAction(
           "ContentSuggestions.Feed.CardAction.NotInterestedIn"));
-      RecordInteraction();
+      RecordInteraction(stream_type);
       break;
     case FeedUserActionType::kTappedManageInterests:
       base::RecordAction(base::UserMetricsAction(
           "ContentSuggestions.Feed.CardAction.ManageInterests"));
-      RecordInteraction();
+      RecordInteraction(stream_type);
       break;
     case FeedUserActionType::kTappedDownload:
       base::RecordAction(base::UserMetricsAction(
           "ContentSuggestions.Feed.CardAction.Download"));
-      RecordInteraction();
+      RecordInteraction(stream_type);
       break;
     case FeedUserActionType::kOpenedContextMenu:
       base::RecordAction(base::UserMetricsAction(
@@ -282,18 +322,17 @@ void MetricsReporter::OtherUserAction(FeedUserActionType action_type) {
     case FeedUserActionType::kTappedOpenInNewIncognitoTab:
       base::RecordAction(base::UserMetricsAction(
           "ContentSuggestions.Feed.CardAction.OpenInNewIncognitoTab"));
-      RecordInteraction();
+      RecordInteraction(stream_type);
       break;
-
     case FeedUserActionType::kTappedManageActivity:
       base::RecordAction(base::UserMetricsAction(
           "ContentSuggestions.Feed.CardAction.ManageActivity"));
-      RecordInteraction();
+      RecordInteraction(stream_type);
       break;
     case FeedUserActionType::kTappedManageReactions:
       base::RecordAction(base::UserMetricsAction(
           "ContentSuggestions.Feed.CardAction.ManageReactions"));
-      RecordInteraction();
+      RecordInteraction(stream_type);
       break;
     case FeedUserActionType::kEphemeralChange:
     case FeedUserActionType::kEphemeralChangeRejected:
@@ -580,6 +619,14 @@ void MetricsReporter::ReportPersistentDataIfDayIsDone() {
     persistent_data_.current_day_start = base::Time::Now().LocalMidnight();
     prefs::SetPersistentMetricsData(persistent_data_, *profile_prefs_);
   }
+}
+
+MetricsReporter::StreamStats& MetricsReporter::ForStream(
+    const StreamType& stream_type) {
+  if (stream_type.IsForYou())
+    return for_you_stats_;
+  DCHECK(stream_type.IsWebFeed());
+  return web_feed_stats_;
 }
 
 }  // namespace feed

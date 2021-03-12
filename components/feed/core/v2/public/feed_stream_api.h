@@ -211,13 +211,15 @@ class FeedStreamApi {
   virtual void ReportOpenInNewTabAction(const StreamType& stream_type,
                                         const std::string& slice_id) = 0;
   // The user scrolled the feed by |distance_dp| and then stopped.
-  virtual void ReportStreamScrolled(int distance_dp) = 0;
+  virtual void ReportStreamScrolled(const StreamType& stream_type,
+                                    int distance_dp) = 0;
   // The user started scrolling the feed. Typically followed by a call to
   // |ReportStreamScrolled()|.
   virtual void ReportStreamScrollStart() = 0;
   // Report that some user action occurred which does not have a specific
   // reporting function above..
-  virtual void ReportOtherUserAction(FeedUserActionType action_type) = 0;
+  virtual void ReportOtherUserAction(const StreamType& stream_type,
+                                     FeedUserActionType action_type) = 0;
 
   // The following methods are used for the internals page.
 

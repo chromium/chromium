@@ -233,7 +233,7 @@ void FeedStreamSurface::ReportStreamScrolled(JNIEnv* env,
                                              int distance_dp) {
   if (!feed_stream_api_)
     return;
-  feed_stream_api_->ReportStreamScrolled(distance_dp);
+  feed_stream_api_->ReportStreamScrolled(GetStreamType(), distance_dp);
 }
 
 void FeedStreamSurface::ReportStreamScrollStart(
@@ -248,7 +248,7 @@ void FeedStreamSurface::ReportOtherUserAction(JNIEnv* env,
                                               const JavaParamRef<jobject>& obj,
                                               int action_type) {
   feed_stream_api_->ReportOtherUserAction(
-      static_cast<FeedUserActionType>(action_type));
+      GetStreamType(), static_cast<FeedUserActionType>(action_type));
 }
 
 }  // namespace android

@@ -733,31 +733,6 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
-<histogram name="ContentSuggestions.Feed.EngagementType"
-    enum="FeedEngagementType" expires_after="never">
-<!-- expires-never: key feature metric.  We will need the Engagement
-       type as long as we have a feed, and it will be removed with the
-       feed code if the feed is ever removed. -->
-
-  <owner>petewil@chromium.org</owner>
-  <owner>harringtond@chromium.org</owner>
-  <owner>feed@chromium.org</owner>
-  <summary>
-    Tracks each instance of user engagement with the feed, by scrolling or
-    interacting with a card (opening the URL or using the menu). Note that each
-    event type reports samples very differently and buckets can't be directly
-    compared. We're mostly interested in unique user counts. We track every
-    interaction, and we report ENGAGED and ENGAGED_SIMPLE once per user visit. A
-    user visit is when the user scrolls or interacts with the NTP more than 5
-    minutes after the previous visit. The SCROLLED engagement type represents a
-    single instance of the user scrolling, and is reported once per Feed visit.
-    The INTERACTED engagement type represents one instance of using the menu or
-    opening a feed article into its own tab. SCROLLED and INTERACTED are
-    reported for every occurrence, thus we could end up with more scrolled and
-    interected than ENGAGED or ENGAGED_SIMPLE samples.
-  </summary>
-</histogram>
-
 <histogram name="ContentSuggestions.Feed.FetchPendingSpinner.Shown"
     enum="FeedSpinnerType" expires_after="M89">
   <obsolete>
@@ -1487,6 +1462,43 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="ContentSuggestions.Feed.WebFeed.Opened" units="index"
+    expires_after="never">
+<!-- expires-never: key feature metric.  We will need the Opened
+     metric as long as we have a feed, and it will be removed with the
+     feed code if the feed is ever removed. -->
+
+  <owner>freedjm@chromium.org</owner>
+  <owner>feed@chromium.org</owner>
+  <summary>
+    Android: The position of the WebFeed card on the NTP, that is clicked
+    through to the host website of the content. We track the position the card
+    had in the list when it was first seen by the user. This tracked position
+    can be different from the position observed by the user, e.g. when the user
+    dismissed some suggestions from the list or requested more that got inserted
+    in the middle of the feed.
+  </summary>
+</histogram>
+
+<histogram name="ContentSuggestions.Feed.WebFeed.Shown" units="index"
+    expires_after="never">
+<!-- expires-never: key feature metric.  We will need the Shown
+       metric as long as we have a feed, and it will be removed with
+       the feed code if the feed is ever removed. -->
+
+  <owner>freedjm@chromium.org</owner>
+  <owner>feed@chromium.org</owner>
+  <summary>
+    Android: The position of a WebFeed card that was shown on the NTP. A card is
+    considered shown when at least 2/3 of its height is visible on the screen.
+    For each card, at most one impression is recorded per NTP instance. We track
+    the position the card had in the list when it was first seen by the user.
+    This tracked position can be different from the position observed by the
+    user, e.g. when the user dismissed some suggestions from the list or
+    requested more that got inserted in the middle of the feed.
+  </summary>
+</histogram>
+
 <histogram
     name="ContentSuggestions.Feed.ZeroStateRefreshCompleted.ContentCount"
     units="count" expires_after="M89">
@@ -1527,6 +1539,35 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <owner>harringtond@chromium.org</owner>
   <owner>feed@chromium.org</owner>
   <summary>The reason the zero state (no articles) is shown to a user.</summary>
+</histogram>
+
+<histogram name="ContentSuggestions.{FeedType}.EngagementType"
+    enum="FeedEngagementType" expires_after="never">
+<!-- expires-never: key feature metric.  We will need the Engagement
+       type as long as we have a feed, and it will be removed with the
+       feed code if the feed is ever removed. -->
+
+  <owner>petewil@chromium.org</owner>
+  <owner>harringtond@chromium.org</owner>
+  <owner>feed@chromium.org</owner>
+  <summary>
+    Tracks each instance of user engagement with the {FeedType}, by scrolling or
+    interacting with a card (opening the URL or using the menu). Note that each
+    event type reports samples very differently and buckets can't be directly
+    compared. We're mostly interested in unique user counts. We track every
+    interaction, and we report ENGAGED and ENGAGED_SIMPLE once per user visit. A
+    user visit is when the user scrolls or interacts with the NTP more than 5
+    minutes after the previous visit. The SCROLLED engagement type represents a
+    single instance of the user scrolling, and is reported once per Feed visit.
+    The INTERACTED engagement type represents one instance of using the menu or
+    opening a feed article into its own tab. SCROLLED and INTERACTED are
+    reported for every occurrence, thus we could end up with more scrolled and
+    interected than ENGAGED or ENGAGED_SIMPLE samples.
+  </summary>
+  <token key="FeedType">
+    <variant name="Feed" summary="For-You Feed"/>
+    <variant name="Feed.WebFeed" summary="Web Feed"/>
+  </token>
 </histogram>
 
 </histograms>
