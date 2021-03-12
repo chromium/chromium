@@ -9,6 +9,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/dom/dom_high_res_time_stamp.h"
+#include "third_party/blink/renderer/core/dom/events/event_target.h"
 #include "third_party/blink/renderer/core/timing/profiler_group.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
 #include "third_party/blink/renderer/platform/heap/member.h"
@@ -23,7 +24,7 @@ class ScriptState;
 // A web-exposed JS sampling profiler created via blink::ProfilerGroup,
 // wrapping a handle to v8::CpuProfiler. Records samples periodically from the
 // isolate until stopped.
-class CORE_EXPORT Profiler final : public ScriptWrappable {
+class CORE_EXPORT Profiler final : public EventTargetWithInlineData {
   DEFINE_WRAPPERTYPEINFO();
   USING_PRE_FINALIZER(Profiler, DisposeAsync);
 
@@ -51,6 +52,10 @@ class CORE_EXPORT Profiler final : public ScriptWrappable {
   int TargetSampleRate() const { return target_sample_rate_; }
   const SecurityOrigin* SourceOrigin() const { return source_origin_.get(); }
   base::TimeTicks TimeOrigin() const { return time_origin_; }
+
+  // Overrides from extending EventTargetWithInlineData
+  const AtomicString& InterfaceName() const override;
+  ExecutionContext* GetExecutionContext() const override;
 
   DOMHighResTimeStamp sampleInterval() { return target_sample_rate_; }
   bool stopped() const { return !profiler_group_; }

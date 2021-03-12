@@ -1208,7 +1208,7 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     getter stride
 [Worker]     method constructor
 [Worker]     method readInto
-[Worker] interface Profiler
+[Worker] interface Profiler : EventTarget
 [Worker]     attribute @@toStringTag
 [Worker]     getter sampleInterval
 [Worker]     getter stopped

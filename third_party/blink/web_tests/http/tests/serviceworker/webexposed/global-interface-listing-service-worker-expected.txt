@@ -1200,7 +1200,7 @@ interface Permissions
     method request
     method requestAll
     method revoke
-interface Profiler
+interface Profiler : EventTarget
     attribute @@toStringTag
     getter sampleInterval
     getter stopped

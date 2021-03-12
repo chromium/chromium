@@ -8889,7 +8889,7 @@ interface ProcessingInstruction : CharacterData
     getter sheet
     getter target
     method constructor
-interface Profiler
+interface Profiler : EventTarget
     attribute @@toStringTag
     getter sampleInterval
     getter stopped

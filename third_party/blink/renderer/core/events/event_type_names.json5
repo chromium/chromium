@@ -255,6 +255,7 @@
     "resourcetimingbufferfull",
     "result",
     "resume",
+    "samplebufferfull",
     "screenschange",
     "scroll",
     "scrollend",

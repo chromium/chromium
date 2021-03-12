@@ -10,6 +10,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/profiler_trace_builder.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_profiler_init_options.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_profiler_trace.h"
+#include "third_party/blink/renderer/core/dom/events/event.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/timing/profiler.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
@@ -60,6 +61,19 @@ ProfilerGroup::ProfilerGroup(v8::Isolate* isolate)
       num_active_profilers_(0) {
 }
 
+void DiscardedSamplesDelegate::Notify() {
+  if (profiler_group_) {
+    profiler_group_->DispatchSampleBufferFullEvent();
+  }
+}
+
+void ProfilerGroup::DispatchSampleBufferFullEvent() {
+  for (const auto& profiler : profilers_) {
+    profiler->DispatchEvent(
+        *Event::Create(event_type_names::kSamplebufferfull));
+  }
+}
+
 Profiler* ProfilerGroup::CreateProfiler(ScriptState* script_state,
                                         const ProfilerInitOptions& init_options,
                                         base::TimeTicks time_origin,
@@ -84,14 +98,16 @@ Profiler* ProfilerGroup::CreateProfiler(ScriptState* script_state,
   DCHECK(cpu_profiler_);
 
   String profiler_id = NextProfilerId();
-  v8::CpuProfilingOptions options(v8::kLeafNodeLineNumbers,
-                                  init_options.hasMaxBufferSize()
-                                      ? init_options.maxBufferSize()
-                                      : v8::CpuProfilingOptions::kNoSampleLimit,
-                                  static_cast<int>(sample_interval_us));
 
-  v8::CpuProfilingStatus status =
-      cpu_profiler_->StartProfiling(V8String(isolate_, profiler_id), options);
+  v8::CpuProfilingOptions options(
+      v8::kLeafNodeLineNumbers,
+      init_options.hasMaxBufferSize() ? init_options.maxBufferSize()
+                                      : v8::CpuProfilingOptions::kNoSampleLimit,
+      static_cast<int>(sample_interval_us), v8::MaybeLocal<v8::Context>());
+
+  v8::CpuProfilingStatus status = cpu_profiler_->StartProfiling(
+      V8String(isolate_, profiler_id), options,
+      std::make_unique<DiscardedSamplesDelegate>(this));
 
   switch (status) {
     case v8::CpuProfilingStatus::kErrorTooManyProfilers: {
@@ -128,8 +144,8 @@ Profiler* ProfilerGroup::CreateProfiler(ScriptState* script_state,
       auto* profiler = MakeGarbageCollected<Profiler>(
           this, script_state, profiler_id, effective_sample_interval_ms,
           source_origin, time_origin);
-      profilers_.insert(profiler);
 
+      profilers_.insert(profiler);
       num_active_profilers_++;
       return profiler;
     }

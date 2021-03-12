@@ -28,6 +28,14 @@ void Profiler::DisposeAsync() {
   }
 }
 
+const AtomicString& Profiler::InterfaceName() const {
+  return event_target_names::kProfiler;
+}
+
+ExecutionContext* Profiler::GetExecutionContext() const {
+  return ExecutionContext::From(script_state_);
+}
+
 ScriptPromise Profiler::stop(ScriptState* script_state) {
   auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
   ScriptPromise promise = resolver->Promise();

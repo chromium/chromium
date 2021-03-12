@@ -34,6 +34,7 @@
     "EventSource",
     "Performance",
     "PortalHost",
+    "Profiler",
     {
       name: "VisualViewport",
       ImplementedAs: "DOMVisualViewport",
