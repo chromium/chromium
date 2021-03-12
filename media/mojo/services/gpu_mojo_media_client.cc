@@ -54,8 +54,8 @@
 
 #if defined(OS_ANDROID)
 #include "media/mojo/services/android_mojo_util.h"
-using media::android_mojo_util::CreateProvisionFetcher;
 using media::android_mojo_util::CreateMediaDrmStorage;
+using media::android_mojo_util::CreateProvisionFetcher;
 #endif  // defined(OS_ANDROID)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -313,6 +313,10 @@ std::unique_ptr<VideoDecoder> GpuMojoMediaClient::CreateVideoDecoder(
         if (!d3d11_supported_configs_)
           GetSupportedVideoDecoderConfigs();
 
+        const bool enable_hdr =
+            gl::DirectCompositionSurfaceWin::IsHDRSupported() ||
+            base::FeatureList::IsEnabled(kD3D11VideoDecoderForceEnableHDR);
+
         video_decoder = D3D11VideoDecoder::Create(
             gpu_task_runner_, media_log->Clone(), gpu_preferences_,
             gpu_workarounds_,
@@ -320,11 +324,10 @@ std::unique_ptr<VideoDecoder> GpuMojoMediaClient::CreateVideoDecoder(
                                 media_gpu_channel_manager_,
                                 command_buffer_id->channel_token,
                                 command_buffer_id->route_id),
-            GetD3D11DeviceCallback(), *d3d11_supported_configs_,
-            gl::DirectCompositionSurfaceWin::IsHDRSupported());
+            GetD3D11DeviceCallback(), *d3d11_supported_configs_, enable_hdr);
       }
 #endif  // defined(OS_WIN)
-  break;
+      break;
   };  // switch
 
   // |video_decoder| may be null if we don't support |implementation|.

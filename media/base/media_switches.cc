@@ -360,6 +360,10 @@ const base::Feature kD3D11VideoDecoderAlwaysCopy{
 const base::Feature kD3D11VideoDecoderAllowOverlay{
     "D3D11VideoDecoderAllowOverlay", base::FEATURE_ENABLED_BY_DEFAULT};
 
+// If enabled, D3D11VideoDecoder will enable HDR support even if the OS doesn't.
+const base::Feature kD3D11VideoDecoderForceEnableHDR{
+    "D3D11VideoDecoderForceEnableHDR", base::FEATURE_DISABLED_BY_DEFAULT};
+
 // Falls back to other decoders after audio/video decode error happens. The
 // implementation may choose different strategies on when to fallback. See
 // DecoderStream for details. When disabled, playback will fail immediately
