@@ -240,7 +240,7 @@ class CONTENT_EXPORT ChildProcessSecurityPolicyImpl
     // This can only return false for processes locked to a particular origin,
     // which can happen for any origin when the --site-per-process flag is used,
     // or for isolated origins that require a dedicated process (see
-    // AddIsolatedOrigins).
+    // AddFutureIsolatedOrigins and AddIsolatedOriginForBrowsingInstance).
     bool CanAccessDataForOrigin(const url::Origin& origin);
 
    private:
@@ -308,12 +308,14 @@ class CONTENT_EXPORT ChildProcessSecurityPolicyImpl
   bool HasWebUIBindings(int child_id) override;
   void GrantSendMidiSysExMessage(int child_id) override;
   bool CanAccessDataForOrigin(int child_id, const url::Origin& origin) override;
-  void AddIsolatedOrigins(base::StringPiece origins_list,
-                          IsolatedOriginSource source,
-                          BrowserContext* browser_context = nullptr) override;
-  void AddIsolatedOrigins(const std::vector<url::Origin>& origins,
-                          IsolatedOriginSource source,
-                          BrowserContext* browser_context = nullptr) override;
+  void AddFutureIsolatedOrigins(
+      base::StringPiece origins_list,
+      IsolatedOriginSource source,
+      BrowserContext* browser_context = nullptr) override;
+  void AddFutureIsolatedOrigins(
+      const std::vector<url::Origin>& origins,
+      IsolatedOriginSource source,
+      BrowserContext* browser_context = nullptr) override;
   bool IsGloballyIsolatedOriginForTesting(const url::Origin& origin) override;
   std::vector<url::Origin> GetIsolatedOrigins(
       base::Optional<IsolatedOriginSource> source = base::nullopt,
@@ -650,7 +652,8 @@ class CONTENT_EXPORT ChildProcessSecurityPolicyImpl
   FRIEND_TEST_ALL_PREFIXES(ChildProcessSecurityPolicyInProcessBrowserTest,
                            NoLeak);
   FRIEND_TEST_ALL_PREFIXES(ChildProcessSecurityPolicyTest, FilePermissions);
-  FRIEND_TEST_ALL_PREFIXES(ChildProcessSecurityPolicyTest, AddIsolatedOrigins);
+  FRIEND_TEST_ALL_PREFIXES(ChildProcessSecurityPolicyTest,
+                           AddFutureIsolatedOrigins);
   FRIEND_TEST_ALL_PREFIXES(ChildProcessSecurityPolicyTest,
                            DynamicIsolatedOrigins);
   FRIEND_TEST_ALL_PREFIXES(ChildProcessSecurityPolicyTest,
@@ -840,13 +843,14 @@ class CONTENT_EXPORT ChildProcessSecurityPolicyImpl
   // Convert a list of comma separated isolated origins in |pattern_list|,
   // specified either as wildcard origins, non-wildcard origins or a mix of the
   // two into IsolatedOriginPatterns, suitable for addition via
-  // AddIsolatedOrigins().
+  // AddFutureIsolatedOrigins().
   static std::vector<IsolatedOriginPattern> ParseIsolatedOrigins(
       base::StringPiece pattern_list);
 
-  void AddIsolatedOrigins(const std::vector<IsolatedOriginPattern>& patterns,
-                          IsolatedOriginSource source,
-                          BrowserContext* browser_context = nullptr);
+  void AddFutureIsolatedOrigins(
+      const std::vector<IsolatedOriginPattern>& patterns,
+      IsolatedOriginSource source,
+      BrowserContext* browser_context = nullptr);
 
   // Internal helper used for adding a particular isolated origin.  See
   // IsolatedOriginEntry for descriptions of various parameters.

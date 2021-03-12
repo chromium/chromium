@@ -202,7 +202,7 @@ void IsolateOriginsForTesting(
   }
 
   auto* policy = ChildProcessSecurityPolicyImpl::GetInstance();
-  policy->AddIsolatedOrigins(
+  policy->AddFutureIsolatedOrigins(
       origins_to_isolate,
       ChildProcessSecurityPolicy::IsolatedOriginSource::TEST);
 

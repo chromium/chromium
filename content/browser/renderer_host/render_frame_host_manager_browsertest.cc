@@ -8381,7 +8381,7 @@ IN_PROC_BROWSER_TEST_P(RenderFrameHostManagerTest,
   // that it requires a process lock on all platforms.
   GURL foo_url(embedded_test_server()->GetURL("foo.com", "/title1.html"));
   auto* policy = ChildProcessSecurityPolicyImpl::GetInstance();
-  policy->AddIsolatedOrigins(
+  policy->AddFutureIsolatedOrigins(
       {url::Origin::Create(foo_url)},
       ChildProcessSecurityPolicy::IsolatedOriginSource::TEST);
 

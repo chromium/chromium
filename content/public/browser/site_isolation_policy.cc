@@ -186,18 +186,18 @@ void SiteIsolationPolicy::ApplyGlobalIsolatedOrigins() {
       ChildProcessSecurityPolicy::GetInstance();
 
   std::string from_cmdline = GetIsolatedOriginsFromCommandLine();
-  policy->AddIsolatedOrigins(
+  policy->AddFutureIsolatedOrigins(
       from_cmdline,
       ChildProcessSecurityPolicy::IsolatedOriginSource::COMMAND_LINE);
 
   std::string from_trial = GetIsolatedOriginsFromFieldTrial();
-  policy->AddIsolatedOrigins(
+  policy->AddFutureIsolatedOrigins(
       from_trial,
       ChildProcessSecurityPolicy::IsolatedOriginSource::FIELD_TRIAL);
 
   std::vector<url::Origin> from_embedder =
       GetContentClient()->browser()->GetOriginsRequiringDedicatedProcess();
-  policy->AddIsolatedOrigins(
+  policy->AddFutureIsolatedOrigins(
       from_embedder,
       ChildProcessSecurityPolicy::IsolatedOriginSource::BUILT_IN);
 }

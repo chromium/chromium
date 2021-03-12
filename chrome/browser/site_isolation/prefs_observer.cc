@@ -40,14 +40,15 @@ void SiteIsolationPrefsObserver::OnChangeInIsolatedOriginsPref() {
   if (!site_isolation::SiteIsolationPolicy::IsEnterprisePolicyApplicable())
     return;
 
-  // Add isolated origins based on the policy.  Note that the policy may only
+  // Add isolated origins based on the policy.  The added origins will only be
+  // isolated in future browsing context groups.  Note that the policy may only
   // *add* origins (e.g. if policy changes from isolating A,B,C to isolating
   // B,C,D origins then *all* of A,B,C,D will be isolated until the next Chrome
   // restart).
   std::string isolated_origins =
       pref_change_registrar_.prefs()->GetString(prefs::kIsolateOrigins);
   auto* policy = content::ChildProcessSecurityPolicy::GetInstance();
-  policy->AddIsolatedOrigins(
+  policy->AddFutureIsolatedOrigins(
       isolated_origins,
       content::ChildProcessSecurityPolicy::IsolatedOriginSource::POLICY,
       /* browser_context = */ nullptr);

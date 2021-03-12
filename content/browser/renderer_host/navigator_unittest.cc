@@ -1135,7 +1135,7 @@ TEST_F(NavigatorTest, DataUrls) {
   // Isolate kUrl1 so it can't be mapped into a default SiteInstance along with
   // kUrl2. This ensures that the speculative RenderFrameHost will always be
   // used because the URLs map to different SiteInstances.
-  ChildProcessSecurityPolicy::GetInstance()->AddIsolatedOrigins(
+  ChildProcessSecurityPolicy::GetInstance()->AddFutureIsolatedOrigins(
       {url::Origin::Create(kUrl1)},
       ChildProcessSecurityPolicy::IsolatedOriginSource::TEST,
       browser_context());
@@ -1188,7 +1188,7 @@ TEST_F(NavigatorTest, SiteInstanceDescriptionConversion) {
   GURL kUrl1("http://a.com");
   // Isolate one of the sites so the both can't be mapped to the default
   // site instance.
-  ChildProcessSecurityPolicy::GetInstance()->AddIsolatedOrigins(
+  ChildProcessSecurityPolicy::GetInstance()->AddFutureIsolatedOrigins(
       {url::Origin::Create(kUrl1)},
       ChildProcessSecurityPolicy::IsolatedOriginSource::TEST,
       browser_context());

@@ -319,7 +319,7 @@ class RenderFrameHostManagerTest
     if (IsIsolatedOriginRequiredToGuaranteeDedicatedProcess()) {
       // Isolate |isolated_cross_site_url()|so it cannot share a process
       // with another site.
-      ChildProcessSecurityPolicyImpl::GetInstance()->AddIsolatedOrigins(
+      ChildProcessSecurityPolicyImpl::GetInstance()->AddFutureIsolatedOrigins(
           {url::Origin::Create(isolated_cross_site_url())},
           ChildProcessSecurityPolicy::IsolatedOriginSource::TEST,
           browser_context());

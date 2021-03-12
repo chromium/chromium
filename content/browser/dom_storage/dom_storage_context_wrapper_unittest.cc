@@ -34,7 +34,7 @@ class DOMStorageContextWrapperTest : public testing::Test {
     auto* security_policy = ChildProcessSecurityPolicyImpl::GetInstance();
     security_policy->Add(kTestProcessIdOrigin1, &browser_context_);
     security_policy->Add(kTestProcessIdOrigin2, &browser_context_);
-    security_policy->AddIsolatedOrigins(
+    security_policy->AddFutureIsolatedOrigins(
         {test_origin1_, test_origin2_},
         ChildProcessSecurityPolicy::IsolatedOriginSource::TEST);
     IsolationContext isolation_context(BrowsingInstanceId(1),

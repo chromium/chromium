@@ -1880,7 +1880,7 @@ bool ChildProcessSecurityPolicyImpl::CanSendMidiSysExMessage(int child_id) {
   return state->second->can_send_midi_sysex();
 }
 
-void ChildProcessSecurityPolicyImpl::AddIsolatedOrigins(
+void ChildProcessSecurityPolicyImpl::AddFutureIsolatedOrigins(
     const std::vector<url::Origin>& origins_to_add,
     IsolatedOriginSource source,
     BrowserContext* browser_context) {
@@ -1891,19 +1891,19 @@ void ChildProcessSecurityPolicyImpl::AddIsolatedOrigins(
                  [](const url::Origin& o) -> IsolatedOriginPattern {
                    return IsolatedOriginPattern(o);
                  });
-  AddIsolatedOrigins(patterns, source, browser_context);
+  AddFutureIsolatedOrigins(patterns, source, browser_context);
 }
 
-void ChildProcessSecurityPolicyImpl::AddIsolatedOrigins(
+void ChildProcessSecurityPolicyImpl::AddFutureIsolatedOrigins(
     base::StringPiece origins_to_add,
     IsolatedOriginSource source,
     BrowserContext* browser_context) {
   std::vector<IsolatedOriginPattern> patterns =
       ParseIsolatedOrigins(origins_to_add);
-  AddIsolatedOrigins(patterns, source, browser_context);
+  AddFutureIsolatedOrigins(patterns, source, browser_context);
 }
 
-void ChildProcessSecurityPolicyImpl::AddIsolatedOrigins(
+void ChildProcessSecurityPolicyImpl::AddFutureIsolatedOrigins(
     const std::vector<IsolatedOriginPattern>& patterns,
     IsolatedOriginSource source,
     BrowserContext* browser_context) {
@@ -2442,7 +2442,8 @@ void ChildProcessSecurityPolicyImpl::AddIsolatedOriginForBrowsingInstance(
     // Explicitly set `applies_to_future_browsing_instances` to false to only
     // isolate `origin` within the provided BrowsingInstance, but not future
     // ones.  Note that it's possible for `origin` to also become isolated for
-    // future BrowsingInstances if AddIsolatedOrigins() is called for it later.
+    // future BrowsingInstances if AddFutureIsolatedOrigins() is called for it
+    // later.
     AddIsolatedOriginInternal(
         isolation_context.browser_or_resource_context().ToBrowserContext(),
         origin, false /* applies_to_future_browsing_instances */,

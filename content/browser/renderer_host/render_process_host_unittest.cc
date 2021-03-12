@@ -449,7 +449,7 @@ TEST_F(RenderProcessHostUnitTest, DoNotReuseError) {
   const GURL kUrl2("http://bar.com");
 
   // Isolate |kUrl1| so we can't get a default SiteInstance for it.
-  ChildProcessSecurityPolicyImpl::GetInstance()->AddIsolatedOrigins(
+  ChildProcessSecurityPolicyImpl::GetInstance()->AddFutureIsolatedOrigins(
       {url::Origin::Create(kUrl1)},
       ChildProcessSecurityPolicy::IsolatedOriginSource::TEST,
       browser_context());

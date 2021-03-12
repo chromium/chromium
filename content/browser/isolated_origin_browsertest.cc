@@ -3554,8 +3554,8 @@ IN_PROC_BROWSER_TEST_F(DynamicIsolatedOriginTest,
 
   // Start isolating foo.com.
   auto* policy = ChildProcessSecurityPolicyImpl::GetInstance();
-  policy->AddIsolatedOrigins({url::Origin::Create(foo_url)},
-                             IsolatedOriginSource::TEST);
+  policy->AddFutureIsolatedOrigins({url::Origin::Create(foo_url)},
+                                   IsolatedOriginSource::TEST);
 
   // The isolation shouldn't take effect in the current frame tree, so that it
   // doesn't break same-site scripting.  Navigate iframe to a foo.com URL and
@@ -3654,8 +3654,8 @@ IN_PROC_BROWSER_TEST_F(DynamicIsolatedOriginTest, MainFrameNavigations) {
   // Start isolating bar.com.
   GURL bar_url(embedded_test_server()->GetURL("bar.com", "/title2.html"));
   auto* policy = ChildProcessSecurityPolicyImpl::GetInstance();
-  policy->AddIsolatedOrigins({url::Origin::Create(bar_url)},
-                             IsolatedOriginSource::TEST);
+  policy->AddFutureIsolatedOrigins({url::Origin::Create(bar_url)},
+                                   IsolatedOriginSource::TEST);
 
   // Do a renderer-initiated navigation in each of the existing three windows.
   // None of them should swap to a new process, since bar.com shouldn't be
@@ -3728,8 +3728,8 @@ IN_PROC_BROWSER_TEST_F(DynamicIsolatedOriginTest, OldProcessCanAccessCookies) {
           .allows_any_site());
 
   // Start isolating foo.com.
-  policy->AddIsolatedOrigins({url::Origin::Create(foo_url)},
-                             IsolatedOriginSource::TEST);
+  policy->AddFutureIsolatedOrigins({url::Origin::Create(foo_url)},
+                                   IsolatedOriginSource::TEST);
 
   // Create an unrelated window, which will be in a new BrowsingInstance.
   // foo.com will become an isolated origin in that window.
@@ -3762,8 +3762,8 @@ IN_PROC_BROWSER_TEST_F(DynamicIsolatedOriginTest, OldProcessCanAccessCookies) {
             second_root->current_frame_host()->GetProcess()->GetID());
 
   // Now, start isolating sub.foo.com.
-  policy->AddIsolatedOrigins({url::Origin::Create(sub_foo_url)},
-                             IsolatedOriginSource::TEST);
+  policy->AddFutureIsolatedOrigins({url::Origin::Create(sub_foo_url)},
+                                   IsolatedOriginSource::TEST);
 
   // Make sure the process locked to foo.com, which currently has sub.foo.com
   // committed in it, can still access sub.foo.com cookies.
@@ -3806,8 +3806,8 @@ IN_PROC_BROWSER_TEST_F(DynamicIsolatedOriginTest, IsolatedSubdomain) {
   GURL sub_foo_url(
       embedded_test_server()->GetURL("sub.foo.com", "/title1.html"));
   auto* policy = ChildProcessSecurityPolicyImpl::GetInstance();
-  policy->AddIsolatedOrigins({url::Origin::Create(sub_foo_url)},
-                             IsolatedOriginSource::TEST);
+  policy->AddFutureIsolatedOrigins({url::Origin::Create(sub_foo_url)},
+                                   IsolatedOriginSource::TEST);
 
   // Navigate to foo.com and then to sub.foo.com in a new BrowsingInstance.
   // foo.com and sub.foo.com should now be considered cross-site for the
@@ -3876,8 +3876,8 @@ IN_PROC_BROWSER_TEST_F(DynamicIsolatedOriginTest,
 
   // Start isolating bar.com.
   auto* policy = ChildProcessSecurityPolicyImpl::GetInstance();
-  policy->AddIsolatedOrigins({url::Origin::Create(bar_url)},
-                             IsolatedOriginSource::TEST);
+  policy->AddFutureIsolatedOrigins({url::Origin::Create(bar_url)},
+                                   IsolatedOriginSource::TEST);
 
   // Open a new window in a new BrowsingInstance.  Navigate to foo.com and
   // check that the old foo.com process is reused.
@@ -3985,8 +3985,8 @@ IN_PROC_BROWSER_TEST_F(DynamicIsolatedOriginTest,
 
   // Start isolating foo.com.
   auto* policy = ChildProcessSecurityPolicyImpl::GetInstance();
-  policy->AddIsolatedOrigins({url::Origin::Create(foo_url)},
-                             IsolatedOriginSource::TEST);
+  policy->AddFutureIsolatedOrigins({url::Origin::Create(foo_url)},
+                                   IsolatedOriginSource::TEST);
 
   // Create a new window, forcing a new BrowsingInstance, and navigate it to
   // foo.com, which will spin up a process locked to foo.com.
@@ -4033,8 +4033,8 @@ IN_PROC_BROWSER_TEST_F(DynamicIsolatedOriginTest, PerProfileIsolation) {
   GURL foo_url(
       embedded_test_server()->GetURL("foo.com", "/page_with_iframe.html"));
   auto* policy = ChildProcessSecurityPolicyImpl::GetInstance();
-  policy->AddIsolatedOrigins({url::Origin::Create(foo_url)},
-                             IsolatedOriginSource::TEST, other_context);
+  policy->AddFutureIsolatedOrigins({url::Origin::Create(foo_url)},
+                                   IsolatedOriginSource::TEST, other_context);
 
   // Verify that foo.com is indeed isolated in |other_shell|, by navigating to
   // it in a new BrowsingInstance and checking that a bar.com subframe becomes
@@ -4100,8 +4100,8 @@ IN_PROC_BROWSER_TEST_F(DynamicIsolatedOriginTest, ForceBrowsingInstanceSwap) {
 
   // Start isolating foo.com.
   BrowserContext* context = shell()->web_contents()->GetBrowserContext();
-  policy->AddIsolatedOrigins({url::Origin::Create(foo_url)},
-                             IsolatedOriginSource::TEST, context);
+  policy->AddFutureIsolatedOrigins({url::Origin::Create(foo_url)},
+                                   IsolatedOriginSource::TEST, context);
 
   // Try navigating to another foo URL.
   GURL foo2_url(embedded_test_server()->GetURL(
@@ -4152,8 +4152,8 @@ IN_PROC_BROWSER_TEST_F(DynamicIsolatedOriginTest,
 
   // Start isolating foo.com.
   BrowserContext* context = shell()->web_contents()->GetBrowserContext();
-  policy->AddIsolatedOrigins({url::Origin::Create(foo_url)},
-                             IsolatedOriginSource::TEST, context);
+  policy->AddFutureIsolatedOrigins({url::Origin::Create(foo_url)},
+                                   IsolatedOriginSource::TEST, context);
 
   // Do a renderer-initiated navigation to another foo URL.
   GURL foo2_url(embedded_test_server()->GetURL(
@@ -4198,8 +4198,8 @@ IN_PROC_BROWSER_TEST_F(DynamicIsolatedOriginTest,
   // Start isolating foo.com.
   BrowserContext* context = shell()->web_contents()->GetBrowserContext();
   auto* policy = ChildProcessSecurityPolicyImpl::GetInstance();
-  policy->AddIsolatedOrigins({url::Origin::Create(foo_url)},
-                             IsolatedOriginSource::TEST, context);
+  policy->AddFutureIsolatedOrigins({url::Origin::Create(foo_url)},
+                                   IsolatedOriginSource::TEST, context);
 
   // Open a popup.
   GURL popup_url(embedded_test_server()->GetURL("a.com", "/title1.html"));
@@ -4243,8 +4243,8 @@ IN_PROC_BROWSER_TEST_F(
   // Start isolating foo.com.
   BrowserContext* context = shell()->web_contents()->GetBrowserContext();
   auto* policy = ChildProcessSecurityPolicyImpl::GetInstance();
-  policy->AddIsolatedOrigins({url::Origin::Create(foo_url)},
-                             IsolatedOriginSource::TEST, context);
+  policy->AddFutureIsolatedOrigins({url::Origin::Create(foo_url)},
+                                   IsolatedOriginSource::TEST, context);
 
   // Navigate the main frame to another foo URL.
   GURL foo2_url(embedded_test_server()->GetURL("foo.com", "/title2.html"));

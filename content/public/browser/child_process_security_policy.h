@@ -212,12 +212,13 @@ class ChildProcessSecurityPolicy {
   // This can only return false for processes locked to a particular origin,
   // which can happen for any origin when the --site-per-process flag is used,
   // or for isolated origins that require a dedicated process (see
-  // AddIsolatedOrigin).
+  // AddFutureIsolatedOrigins).
   virtual bool CanAccessDataForOrigin(int child_id,
                                       const url::Origin& origin) = 0;
 
   // Defines available sources of isolated origins.  This should be specified
-  // when adding isolated origins with the AddIsolatedOrigins() call below.
+  // when adding isolated origins with the AddFutureIsolatedOrigins() call
+  // below.
   enum class IsolatedOriginSource {
     // Used for origins that are hardcoded into the browser.
     BUILT_IN,
@@ -286,7 +287,7 @@ class ChildProcessSecurityPolicy {
   // BrowserContexts for which this function has been called.  However,
   // attempts to re-add an origin for the same |browser_context| will be
   // ignored.
-  virtual void AddIsolatedOrigins(
+  virtual void AddFutureIsolatedOrigins(
       const std::vector<url::Origin>& origins,
       IsolatedOriginSource source,
       BrowserContext* browser_context = nullptr) = 0;
@@ -302,8 +303,8 @@ class ChildProcessSecurityPolicy {
   // implies breaking document.domain for all of its subdomains.
   //
   // Note that wildcards can only be added using this version of
-  // AddIsolatedOrigins; they cannot be specified in a url::Origin().
-  virtual void AddIsolatedOrigins(
+  // AddFutureIsolatedOrigins(); they cannot be specified in a url::Origin().
+  virtual void AddFutureIsolatedOrigins(
       base::StringPiece origins_to_add,
       IsolatedOriginSource source,
       BrowserContext* browser_context = nullptr) = 0;
