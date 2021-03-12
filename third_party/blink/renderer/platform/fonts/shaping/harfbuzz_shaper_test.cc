@@ -7,6 +7,7 @@
 #include <unicode/uscript.h>
 
 #include "base/stl_util.h"
+#include "base/test/bind.h"
 #include "base/test/task_environment.h"
 #include "build/build_config.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -107,6 +108,14 @@ class HarfBuzzShaperTest : public testing::Test {
     return blink::test::CreateTestFont(
         "Ahem", blink::test::PlatformTestDataPath("Ahem.woff"), size,
         &ligatures);
+  }
+
+  Font CreateNotoColorEmoji() {
+    return blink::test::CreateTestFont(
+        "NotoColorEmoji",
+        blink::test::BlinkRootDir() +
+            "/web_tests/third_party/NotoColorEmoji/NotoColorEmoji.ttf",
+        12);
   }
 
   scoped_refptr<ShapeResult> SplitRun(scoped_refptr<ShapeResult> shape_result,
@@ -1814,6 +1823,41 @@ TEST_F(HarfBuzzShaperTest, ShapeVerticalWithSubpixelPositionIsRounded) {
     EXPECT_EQ(round(position), position)
         << "Position not rounded at offset " << i;
   }
+}
+
+TEST_F(HarfBuzzShaperTest, EmojiPercentage) {
+  // This test relies on Noto Color Emoji from the third_party directory to not
+  // contain sequences and single codepoint emoji from Unicode 13 and 13.1 such
+  // as:
+  // * Couple with Heart: Woman, Man, Medium-Light Skin Tone, Medium-Dark Skin
+  // Tone
+  // * Disguised Face U+1F978
+  // * Anatomical Heart U+1FAC0
+  String string(
+      u"aa👩🏼‍❤️‍👨🏾😶👩🏼‍❤️‍👨🏾aa👩🏼‍❤️‍👨🏾😶"
+      u"👩🏼‍❤️‍👨🏾aa🫀🫀🥸🥸😶😶");
+
+  struct Expectation {
+    unsigned expected_clusters;
+    unsigned expected_broken_clusters;
+  };
+
+  const Expectation expectations[] = {{3, 2}, {3, 2}, {6, 4}};
+  unsigned num_calls = 0;
+  HarfBuzzShaper::EmojiMetricsCallback metrics_callback =
+      base::BindLambdaForTesting(
+          [&](unsigned num_clusters, unsigned num_broken_clusters) {
+            CHECK_EQ(num_clusters, expectations[num_calls].expected_clusters);
+            CHECK_EQ(num_broken_clusters,
+                     expectations[num_calls].expected_broken_clusters);
+
+            num_calls++;
+          });
+  HarfBuzzShaper shaper(string, metrics_callback);
+  Font emoji_font = CreateNotoColorEmoji();
+  scoped_refptr<ShapeResult> result =
+      shaper.Shape(&emoji_font, TextDirection::kLtr);
+  CHECK_EQ(num_calls, base::size(expectations));
 }
 
 }  // namespace blink
