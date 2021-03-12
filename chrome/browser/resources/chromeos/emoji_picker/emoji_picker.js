@@ -199,6 +199,7 @@ export class EmojiPicker extends PolymerElement {
     this.recentEmojiStore.bumpEmoji(emoji);
     this.set(
         ['history', 'emoji'], makeRecentlyUsed(this.recentEmojiStore.data));
+
     this.apiProxy_.insertEmoji(emoji, isVariant);
   }
 

@@ -93,6 +93,7 @@ void EmojiUI::Show(Profile* profile) {
   auto weak_ptr = bubble_view->GetWeakPtr();
   views::BubbleDialogDelegateView::CreateBubble(std::move(bubble_view));
   weak_ptr->SetAnchorRect(anchor_rect);
+  weak_ptr->set_adjust_if_offscreen(true);
 }
 
 WEB_UI_CONTROLLER_TYPE_IMPL(EmojiUI)
