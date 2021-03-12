@@ -7,6 +7,8 @@ package org.chromium.chrome.browser.webapps.launchpad;
 import android.app.Activity;
 import android.view.ViewGroup;
 
+import androidx.recyclerview.widget.RecyclerView;
+
 import java.util.List;
 
 /**
@@ -14,16 +16,22 @@ import java.util.List;
  * for the launchpad ui.
  */
 class LaunchpadCoordinator {
+    /** Main view for the Launchpad UI. */
     private final ViewGroup mMainView;
+    /** The coordinator for displaying the app list in Launchpad. */
+    private AppListCoordinator mAppListCoordinator;
 
     /**
      * Creates a new LaunchpadCoordinator.
-     * @param context The context associated with the LaunchpadCoordinator.
+     * @param activity The activity associated with the LaunchpadCoordinator.
      * @param items The list of LaunchpadItems to be displayed.
      */
     LaunchpadCoordinator(Activity activity, List<LaunchpadItem> items) {
         mMainView = (ViewGroup) activity.getLayoutInflater().inflate(
                 R.layout.launchpad_page_layout, null);
+
+        RecyclerView appListRecyclerView = getView().findViewById(R.id.launchpad_recycler);
+        mAppListCoordinator = new AppListCoordinator(appListRecyclerView, items);
     }
 
     /**
@@ -33,5 +41,8 @@ class LaunchpadCoordinator {
         return mMainView;
     }
 
-    void destroy() {}
+    void destroy() {
+        mAppListCoordinator.destroy();
+        mAppListCoordinator = null;
+    }
 }

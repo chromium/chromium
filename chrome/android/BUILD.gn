@@ -1097,6 +1097,8 @@ android_library("chrome_test_java") {
     "//chrome/browser/android/lifecycle:java",
     "//chrome/browser/android/metrics:ukm_java_test_support",
     "//chrome/browser/android/metrics:ukm_javatests",
+    "//chrome/browser/android/webapps/launchpad:java",
+    "//chrome/browser/android/webapps/launchpad:javatests",
     "//chrome/browser/banners/android:java",
     "//chrome/browser/browser_controls/android:java",
     "//chrome/browser/contextmenu:java",
