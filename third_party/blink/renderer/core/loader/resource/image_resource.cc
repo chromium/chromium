@@ -166,14 +166,23 @@ ImageResource* ImageResource::Fetch(FetchParameters& params,
     params.SetRequestDestination(network::mojom::RequestDestination::kImage);
   }
 
+  // If the fetch originated from user agent CSS we do not need to check CSP.
+  bool is_user_agent_resource = params.Options().initiator_info.name ==
+                                fetch_initiator_type_names::kUacss;
+  if (is_user_agent_resource) {
+    params.SetContentSecurityCheck(
+        network::mojom::CSPDisposition::DO_NOT_CHECK);
+  }
+
   auto* resource = To<ImageResource>(
       fetcher->RequestResource(params, ImageResourceFactory(), nullptr));
 
   // If the fetch originated from user agent CSS we should mark it as a user
   // agent resource.
-  if (params.Options().initiator_info.name ==
-      fetch_initiator_type_names::kUacss)
+  if (is_user_agent_resource) {
     resource->FlagAsUserAgentResource();
+  }
+
   return resource;
 }
 
