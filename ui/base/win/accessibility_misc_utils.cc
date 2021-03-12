@@ -17,7 +17,7 @@ UIATextProvider::~UIATextProvider() {
 }
 
 // static
-bool UIATextProvider::CreateTextProvider(const string16& value,
+bool UIATextProvider::CreateTextProvider(const std::u16string& value,
                                          bool editable,
                                          IUnknown** provider) {
   // Make sure ATL is initialized in this module.

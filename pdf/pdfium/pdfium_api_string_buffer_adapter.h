@@ -20,7 +20,7 @@ namespace internal {
 
 // Helper to deal with the fact that many PDFium APIs write the null-terminator
 // into string buffers that are passed to them, but the PDF code likes to use
-// std::strings / base::string16s, where one should not count on the internal
+// std::strings / std::u16strings, where one should not count on the internal
 // string buffers to be null-terminated.
 template <class StringType>
 class PDFiumAPIStringBufferAdapter {
@@ -63,7 +63,7 @@ class PDFiumAPIStringBufferAdapter {
 
 // Helper to deal with the fact that many PDFium APIs write the null-terminator
 // into string buffers that are passed to them, but the PDF code likes to use
-// std::strings / base::string16s, where one should not count on the internal
+// std::strings / std::u16strings, where one should not count on the internal
 // string buffers to be null-terminated. This version is suitable for APIs that
 // work in terms of number of bytes instead of the number of characters. Though
 // for std::strings, PDFiumAPIStringBufferAdapter is equivalent.

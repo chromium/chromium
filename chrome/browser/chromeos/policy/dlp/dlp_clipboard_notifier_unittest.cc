@@ -65,7 +65,7 @@ class MockDlpClipboardNotifier : public DlpClipboardNotifier {
                     base::RepeatingCallback<void(views::Widget*)> proceed_cb,
                     base::RepeatingCallback<void(views::Widget*)> cancel_cb));
   MOCK_CONST_METHOD2(ShowToast,
-                     void(const std::string& id, const base::string16& text));
+                     void(const std::string& id, const std::u16string& text));
   MOCK_METHOD2(CloseWidget,
                void(views::Widget* widget, views::Widget::ClosedReason reason));
 
