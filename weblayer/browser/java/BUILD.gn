@@ -96,6 +96,7 @@ java_cpp_enum("generated_enums") {
 
 android_library("base_module_java") {
   sources = [
+    "org/chromium/weblayer_private/BackgroundFetchHelper.java",
     "org/chromium/weblayer_private/ChildProcessServiceImpl.java",
     "org/chromium/weblayer_private/WebViewCompatibilityHelperImpl.java",
   ]
@@ -117,7 +118,6 @@ android_library("java") {
   sources = [
     "org/chromium/weblayer_private/ActionModeCallback.java",
     "org/chromium/weblayer_private/AutocompleteSchemeClassifierImpl.java",
-    "org/chromium/weblayer_private/BackgroundFetchHelper.java",
     "org/chromium/weblayer_private/BrowserControlsContainerView.java",
     "org/chromium/weblayer_private/BrowserFragmentImpl.java",
     "org/chromium/weblayer_private/BrowserImpl.java",
