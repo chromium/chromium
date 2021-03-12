@@ -2450,6 +2450,10 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Net.QuicHpackDecoder.IndexedEntryAge" units="ms"
     expires_after="2021-05-11">
+  <obsolete>
+    Removed in M91. This experiment has concluded, header compression algorithm
+    for HTTP/3 has been standardized.
+  </obsolete>
   <owner>dschinazi@chromium.org</owner>
   <owner>src/net/quic/OWNERS</owner>
   <summary>
@@ -2472,6 +2476,10 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Net.QuicHpackEncoder.IndexedEntryAge" units="ms"
     expires_after="2021-05-11">
+  <obsolete>
+    Removed in M91. This experiment has concluded, header compression algorithm
+    for HTTP/3 has been standardized.
+  </obsolete>
   <owner>dschinazi@chromium.org</owner>
   <owner>src/net/quic/OWNERS</owner>
   <summary>
