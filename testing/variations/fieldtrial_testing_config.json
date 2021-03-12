@@ -2283,23 +2283,6 @@
             ]
         }
     ],
-    "DeepScanningForAppUsers": [
-        {
-            "platforms": [
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Prompt for scanning",
-                    "enable_features": [
-                        "SafeBrowsingPromptAppForDeepScanning"
-                    ]
-                }
-            ]
-        }
-    ],
     "DefaultPassthroughCommandDecoder": [
         {
             "platforms": [
