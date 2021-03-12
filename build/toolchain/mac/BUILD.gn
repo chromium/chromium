@@ -158,8 +158,8 @@ template("mac_toolchain") {
                       root_build_dir) + " --files-to-instrument=" +
           rebase_path(toolchain_coverage_instrumentation_input_file,
                       root_build_dir) + " --target-os=" + target_os
-      cc = _coverage_wrapper + " ${cc}"
-      cxx = _coverage_wrapper + " ${cxx}"
+      cc = "$python_path $_coverage_wrapper ${cc}"
+      cxx = "$python_path $_coverage_wrapper ${cxx}"
     }
 
     linker_driver =
@@ -282,7 +282,7 @@ template("mac_toolchain") {
 
         # Specify explicit path for libtool.
         libtool = mac_bin_path + "libtool"
-        command = "rm -f {{output}} && TOOL_VERSION=${tool_versions.filter_libtool} python $script $libtool -static -D {{arflags}} -o {{output}} -filelist $rspfile"
+        command = "rm -f {{output}} && TOOL_VERSION=${tool_versions.filter_libtool} $python_path $script $libtool -static -D {{arflags}} -o {{output}} -filelist $rspfile"
         description = "LIBTOOL-STATIC {{output}}"
       } else {
         rspfile_content = "{{inputs}}"
@@ -528,7 +528,7 @@ template("mac_toolchain") {
         command =
             "rm -f \"{{output}}\" && " +
             "TOOL_VERSION=${tool_versions.compile_xcassets} " +
-            "python $_tool$_compress_pngs -p \"$_sdk_name\" " +
+            "$python_path $_tool$_compress_pngs -p \"$_sdk_name\" " +
             "-t \"$_min_deployment_target\" -T \"{{bundle_product_type}}\" " +
             "-P \"{{bundle_partial_info_plist}}\" -o {{output}} {{inputs}}"
 
