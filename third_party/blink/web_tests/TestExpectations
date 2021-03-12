@@ -4847,6 +4847,7 @@ crbug.com/834302 external/wpt/permissions-policy/permissions-policy-opaque-origi
 crbug.com/1029489 http/tests/devtools/elements/elements-linkify-attributes.js [ Pass Failure Timeout ]
 crbug.com/1030258 http/tests/devtools/network/network-cookies-pane.js [ Pass Failure ]
 crbug.com/1041830 http/tests/devtools/tracing/timeline-js/timeline-js-line-level-profile.js [ Pass Failure ]
+crbug.com/1186049 http/tests/devtools/cache-storage/cache-data.js [ Pass Failure ]
 
 # Sheriff 2019-12-13
 crbug.com/1032451 [ Win7 ] virtual/webrtc-wpt-plan-b/external/wpt/webrtc/idlharness.https.window.html [ Failure Pass ]
