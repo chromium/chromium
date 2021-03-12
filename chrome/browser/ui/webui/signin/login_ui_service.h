@@ -96,10 +96,6 @@ class LoginUIService : public KeyedService {
   // Set the profile blocking modal error dialog message.
   virtual void SetProfileBlockingErrorMessage();
 
-  // Gets whether the Modal Signin Error dialog should display profile blocking
-  // error message.
-  bool IsDisplayingProfileBlockedErrorMessage() const;
-
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
   // Gets the last error set through |DisplayLoginResult|.
   const SigninUIError& GetLastLoginError() const;
@@ -115,9 +111,6 @@ class LoginUIService : public KeyedService {
 
   // List of observers.
   base::ObserverList<Observer>::Unchecked observer_list_;
-
-  // TODO(https://crbug.com/1133189): merge into SigninUIError.
-  bool is_displaying_profile_blocking_error_message_ = false;
 
   DISALLOW_COPY_AND_ASSIGN(LoginUIService);
 };

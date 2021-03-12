@@ -86,7 +86,7 @@ void SigninErrorUI::Initialize(Browser* browser, bool is_system_profile) {
       LoginUIServiceFactory::GetForProfile(signin_profile);
   const SigninUIError last_login_error = login_ui_service->GetLastLoginError();
   const bool is_profile_blocked =
-      login_ui_service->IsDisplayingProfileBlockedErrorMessage();
+      last_login_error.type() == SigninUIError::Type::kProfileIsBlocked;
   if (is_profile_blocked) {
     source->AddLocalizedString("signinErrorTitle",
                                IDS_OLD_PROFILES_DISABLED_TITLE);

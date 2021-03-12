@@ -82,6 +82,12 @@ SigninUIError SigninUIError::FromCredentialProviderUiExitCode(
 }
 #endif
 
+// static
+SigninUIError SigninUIError::ProfileIsBlocked() {
+  return SigninUIError(Type::kProfileIsBlocked, /*email=*/std::string(),
+                       /*error_message=*/std::u16string());
+}
+
 SigninUIError::SigninUIError(const SigninUIError& other) = default;
 SigninUIError& SigninUIError::operator=(const SigninUIError& other) = default;
 

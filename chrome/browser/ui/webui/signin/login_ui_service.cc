@@ -99,7 +99,6 @@ void LoginUIService::DisplayLoginResult(Browser* browser,
   // ChromeOS doesn't have the avatar bubble so it never calls this function.
   NOTREACHED();
 #else
-  is_displaying_profile_blocking_error_message_ = false;
   last_login_error_ = error;
   if (!error.message().empty()) {
     if (browser) {
@@ -119,14 +118,11 @@ void LoginUIService::DisplayLoginResult(Browser* browser,
 }
 
 void LoginUIService::SetProfileBlockingErrorMessage() {
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
-  last_login_error_ = SigninUIError::Ok();
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  NOTREACHED();
+#else
+  last_login_error_ = SigninUIError::ProfileIsBlocked();
 #endif
-  is_displaying_profile_blocking_error_message_ = true;
-}
-
-bool LoginUIService::IsDisplayingProfileBlockedErrorMessage() const {
-  return is_displaying_profile_blocking_error_message_;
 }
 
 #if !BUILDFLAG(IS_CHROMEOS_ASH)

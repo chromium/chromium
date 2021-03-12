@@ -32,6 +32,7 @@ class SigninUIError {
     kProfileWasUsedByAnotherAccount,
     kFromGoogleServiceAuthError,
     kFromCredentialProviderUiExitCode,
+    kProfileIsBlocked,
   };
 
   // Following static functions construct a `SigninUIError` with a corresponding
@@ -56,6 +57,7 @@ class SigninUIError {
       const std::string& email,
       credential_provider::UiExitCodes exit_code);
 #endif
+  static SigninUIError ProfileIsBlocked();
 
   SigninUIError(const SigninUIError& other);
   SigninUIError& operator=(const SigninUIError& other);
