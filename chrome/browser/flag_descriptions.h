@@ -345,6 +345,9 @@ extern const char kDeviceDiscoveryNotificationsDescription[];
 extern const char kDisallowDocWrittenScriptsUiName[];
 extern const char kDisallowDocWrittenScriptsUiDescription[];
 
+extern const char kDocumentTransitionName[];
+extern const char kDocumentTransitionDescription[];
+
 extern const char kEnableAccessibilityObjectModelName[];
 extern const char kEnableAccessibilityObjectModelDescription[];
 

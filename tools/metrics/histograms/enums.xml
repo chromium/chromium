@@ -43461,6 +43461,7 @@ from previous Chrome versions.
   <int value="-2131746498"
       label="AutofillUseImprovedLabelDisambiguation:enabled"/>
   <int value="-2129940395" label="WebAssemblySimd:disabled"/>
+  <int value="-2129013032" label="DocumentTransition:enabled"/>
   <int value="-2128705444" label="AssistantAppSupport:enabled"/>
   <int value="-2127319228" label="enable-media-internals:disabled"/>
   <int value="-2126697213" label="EnablePalmSuppression:disabled"/>
@@ -44433,6 +44434,7 @@ from previous Chrome versions.
   <int value="-1295288468" label="MemoriesDebug:enabled"/>
   <int value="-1294050129" label="ContentFullscreen:disabled"/>
   <int value="-1293987566" label="OmniboxZeroSuggestionsOnNTPRealbox:disabled"/>
+  <int value="-1293566107" label="DocumentTransition:disabled"/>
   <int value="-1292615467"
       label="OmniboxSuggestionTransparencyOptions:disabled"/>
   <int value="-1291963295" label="ComputePressure:disabled"/>

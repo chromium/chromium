@@ -1164,6 +1164,11 @@
     "expiry_milestone": 88
   },
   {
+    "name": "document-transition",
+    "owners": [ "vmpstr", "chrishtr" ],
+    "expiry_milestone" : 94
+  },
+  {
     "name": "double-buffer-compositing",
     "owners": [ "chromeos-gfx@google.com" ],
     "expiry_milestone": 88

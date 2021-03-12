@@ -3775,6 +3775,9 @@ const FeatureEntry kFeatureEntries[] = {
          "disallowFetchForDocWrittenScriptsInMainFrame=true",
          blink::switches::kBlinkSettings,
          "disallowFetchForDocWrittenScriptsInMainFrame=false")},
+    {"document-transition", flag_descriptions::kDocumentTransitionName,
+     flag_descriptions::kDocumentTransitionDescription, kOsAll,
+     FEATURE_VALUE_TYPE(features::kDocumentTransition)},
 #if defined(OS_WIN)
     {"use-winrt-midi-api", flag_descriptions::kUseWinrtMidiApiName,
      flag_descriptions::kUseWinrtMidiApiDescription, kOsWin,
