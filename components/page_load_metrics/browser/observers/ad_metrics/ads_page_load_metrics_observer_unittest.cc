@@ -529,8 +529,7 @@ class AdsPageLoadMetricsObserverTest
                           ResourceCached resource_cached,
                           int resource_size_in_kbyte,
                           std::string mime_type = "",
-                          bool is_ad_resource = false,
-                          bool is_main_frame_resource = false) {
+                          bool is_ad_resource = false) {
     std::vector<page_load_metrics::mojom::ResourceDataUpdatePtr> resources;
     page_load_metrics::mojom::ResourceDataUpdatePtr resource =
         page_load_metrics::mojom::ResourceDataUpdate::New();
