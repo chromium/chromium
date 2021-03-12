@@ -48,6 +48,7 @@
 #include "ui/base/models/menu_model.h"
 #include "ui/base/models/simple_menu_model.h"
 #include "ui/compositor/scoped_layer_animation_settings.h"
+#include "ui/display/manager/display_configurator.h"
 #include "ui/events/types/event_type.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/color_palette.h"
@@ -76,6 +77,9 @@ namespace ash {
 namespace {
 
 const char* kLoginShelfButtonClassName = "LoginShelfButton";
+
+// Skip only that many to avoid blocking users in case of any subtle bugs.
+const int kMaxDroppedCallsWhenDisplaysOff = 3;
 
 constexpr LoginShelfView::ButtonId kButtonIds[] = {
     LoginShelfView::kShutdown,
@@ -484,6 +488,16 @@ class LoginShelfView::ScopedGuestButtonBlockerImpl
 
 LoginShelfView::TestUiUpdateDelegate::~TestUiUpdateDelegate() = default;
 
+void LoginShelfView::CallIfDisplayIsOn(const base::RepeatingClosure& closure) {
+  if (!Shell::Get()->display_configurator()->IsDisplayOn() &&
+      dropped_calls_when_displays_off_ < kMaxDroppedCallsWhenDisplaysOff) {
+    ++dropped_calls_when_displays_off_;
+    return;
+  }
+  dropped_calls_when_displays_off_ = 0;
+  closure.Run();
+}
+
 LoginShelfView::LoginShelfView(
     LockScreenActionBackgroundController* lock_screen_action_background)
     : lock_screen_action_background_(lock_screen_action_background) {
@@ -506,15 +520,21 @@ LoginShelfView::LoginShelfView(
       &LockStateController::RequestShutdown,
       base::Unretained(Shell::Get()->lock_state_controller()),
       ShutdownReason::LOGIN_SHUT_DOWN_BUTTON);
-  add_button(kShutdown, shutdown_restart_callback,
+  add_button(kShutdown,
+             base::BindRepeating(&LoginShelfView::CallIfDisplayIsOn,
+                                 weak_ptr_factory_.GetWeakPtr(),
+                                 shutdown_restart_callback),
              IDS_ASH_SHELF_SHUTDOWN_BUTTON, kShelfShutdownButtonIcon);
   add_button(kRestart, std::move(shutdown_restart_callback),
              IDS_ASH_SHELF_RESTART_BUTTON, kShelfShutdownButtonIcon);
   add_button(
-      kSignOut, base::BindRepeating([]() {
-        base::RecordAction(base::UserMetricsAction("ScreenLocker_Signout"));
-        Shell::Get()->session_controller()->RequestSignOut();
-      }),
+      kSignOut,
+      base::BindRepeating(
+          &LoginShelfView::CallIfDisplayIsOn, weak_ptr_factory_.GetWeakPtr(),
+          base::BindRepeating([]() {
+            base::RecordAction(base::UserMetricsAction("ScreenLocker_Signout"));
+            Shell::Get()->session_controller()->RequestSignOut();
+          })),
       IDS_ASH_SHELF_SIGN_OUT_BUTTON, kShelfSignOutButtonIcon);
   kiosk_apps_button_ = new KioskAppsButton();
   kiosk_apps_button_->SetID(kApps);

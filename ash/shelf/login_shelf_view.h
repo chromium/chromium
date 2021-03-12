@@ -176,6 +176,10 @@ class ASH_EXPORT LoginShelfView : public views::View,
 
   bool ShouldShowGuestAndAppsButtons() const;
 
+  // Helper function which calls `closure` when device display is on. Or if the
+  // number of dropped calls exceeds 'kMaxDroppedCallsWhenDisplaysOff'
+  void CallIfDisplayIsOn(const base::RepeatingClosure& closure);
+
   OobeDialogState dialog_state_ = OobeDialogState::HIDDEN;
   bool allow_guest_ = true;
   bool is_first_signin_step_ = false;
@@ -217,6 +221,9 @@ class ASH_EXPORT LoginShelfView : public views::View,
 
   // Whether shelf buttons are temporarily disabled due to opened modal dialog.
   bool is_shelf_temp_disabled_ = false;
+
+  // Counter for dropped shutdown and signout calls due to turned off displays.
+  int dropped_calls_when_displays_off_ = 0;
 
   // Set of the tray buttons which are in disabled state. It is used to record
   // and recover the states of tray buttons after temporarily disable of the
