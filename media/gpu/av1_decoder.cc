@@ -10,7 +10,6 @@
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "base/stl_util.h"
-#include "build/chromeos_buildflags.h"
 #include "media/base/limits.h"
 #include "media/gpu/av1_picture.h"
 #include "third_party/libgav1/src/src/decoder_state.h"
@@ -226,13 +225,6 @@ AcceleratedVideoDecoder::DecodeResult AV1Decoder::DecodeInternal() {
                    << ", profile=" << GetProfileName(new_profile);
           return kDecodeError;
         }
-#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
-        if (new_bit_depth != 8u) {
-          // TODO(b/174722425): Decode 10 bits streams once it is fixed.
-          DVLOG(1) << "10 and 12 bits streams are not supported";
-          return kDecodeError;
-        }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
 
         const gfx::Size new_frame_size(
             base::strict_cast<int>(current_sequence_header_->max_frame_width),
