@@ -4,10 +4,10 @@
   "version": "1.0.0.0",
   "manifest_version": 2,
   "name": "native messaging test",
-  "description": "Tests one time messaging functionality of passing native messages.",
+  "description": "Tests long lived native messaging functionality in persistent extension",
   "background": {
-    "scripts": ["test.js"],
-    "persistent": false
+    "scripts": ["lazy/test.js"],
+    "persistent": true
   },
   "permissions": [
     "nativeMessaging"

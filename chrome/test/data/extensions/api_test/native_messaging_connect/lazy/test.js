@@ -14,8 +14,6 @@ function checkMessageUrl(url) {
   }
 }
 
-// NOTE: These tests are based on (copied from =P)
-// chrome/test/data/extensions/api_test/native_messaging/test.js.
 chrome.test.getConfig(function(config) {
   chrome.test.runTests([
     function connect() {

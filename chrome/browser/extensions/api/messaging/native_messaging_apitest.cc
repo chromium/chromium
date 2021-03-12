@@ -32,61 +32,55 @@ namespace {
 
 using ContextType = ExtensionApiTest::ContextType;
 
-class NativeMessagingApiTest : public ExtensionApiTest {
+class NativeMessagingApiTestBase : public ExtensionApiTest {
  protected:
   extensions::ScopedTestNativeMessagingHost test_host_;
 };
 
-IN_PROC_BROWSER_TEST_F(NativeMessagingApiTest, NativeMessagingBasic) {
-  ASSERT_NO_FATAL_FAILURE(test_host_.RegisterTestHost(false));
-  ASSERT_TRUE(RunExtensionTest("native_messaging")) << message_;
-}
-
-IN_PROC_BROWSER_TEST_F(NativeMessagingApiTest, UserLevelNativeMessaging) {
-  ASSERT_NO_FATAL_FAILURE(test_host_.RegisterTestHost(true));
-  ASSERT_TRUE(RunExtensionTest("native_messaging")) << message_;
-}
-
-// TODO(crbug.com/1094027): Clean up duplicate test coverage.
-class NativeMessagingLazyApiTest
-    : public NativeMessagingApiTest,
-      public testing::WithParamInterface<ContextType> {
+class NativeMessagingApiTest : public NativeMessagingApiTestBase,
+                               public testing::WithParamInterface<ContextType> {
  protected:
-  bool RunLazyTest(const std::string& extension_name) {
+  bool RunTest(const char* extension_name) {
+    if (GetParam() == ContextType::kPersistentBackground)
+      return RunExtensionTest({.name = extension_name});
+    std::string lazy_exension_name = base::StrCat({extension_name, "/lazy"});
     return RunExtensionTest(
-        {.name = extension_name.c_str()},
+        {.name = lazy_exension_name.c_str()},
         {.load_as_service_worker = GetParam() == ContextType::kServiceWorker});
   }
 };
 
+INSTANTIATE_TEST_SUITE_P(PersistentBackground,
+                         NativeMessagingApiTest,
+                         ::testing::Values(ContextType::kPersistentBackground));
 INSTANTIATE_TEST_SUITE_P(EventPage,
-                         NativeMessagingLazyApiTest,
+                         NativeMessagingApiTest,
                          ::testing::Values(ContextType::kEventPage));
 INSTANTIATE_TEST_SUITE_P(ServiceWorker,
-                         NativeMessagingLazyApiTest,
+                         NativeMessagingApiTest,
                          ::testing::Values(ContextType::kServiceWorker));
 
 // Tests chrome.runtime.sendNativeMessage to a native messaging host.
-IN_PROC_BROWSER_TEST_P(NativeMessagingLazyApiTest, NativeMessagingBasic) {
+IN_PROC_BROWSER_TEST_P(NativeMessagingApiTest, NativeMessagingBasic) {
   ASSERT_NO_FATAL_FAILURE(test_host_.RegisterTestHost(false));
-  ASSERT_TRUE(RunLazyTest("native_messaging_lazy")) << message_;
+  ASSERT_TRUE(RunTest("native_messaging")) << message_;
 }
 
-IN_PROC_BROWSER_TEST_P(NativeMessagingLazyApiTest, UserLevelNativeMessaging) {
+IN_PROC_BROWSER_TEST_P(NativeMessagingApiTest, UserLevelNativeMessaging) {
   ASSERT_NO_FATAL_FAILURE(test_host_.RegisterTestHost(true));
-  ASSERT_TRUE(RunLazyTest("native_messaging_lazy")) << message_;
+  ASSERT_TRUE(RunTest("native_messaging")) << message_;
 }
 
 // Tests chrome.runtime.connectNative to a native messaging host.
-IN_PROC_BROWSER_TEST_P(NativeMessagingLazyApiTest, ConnectNative) {
+IN_PROC_BROWSER_TEST_P(NativeMessagingApiTest, ConnectNative) {
   ASSERT_NO_FATAL_FAILURE(test_host_.RegisterTestHost(false));
-  ASSERT_TRUE(RunLazyTest("native_messaging_connect_lazy")) << message_;
+  ASSERT_TRUE(RunTest("native_messaging_connect")) << message_;
 }
 
-IN_PROC_BROWSER_TEST_P(NativeMessagingLazyApiTest,
+IN_PROC_BROWSER_TEST_P(NativeMessagingApiTest,
                        UserLevelNativeMessagingConnectNative) {
   ASSERT_NO_FATAL_FAILURE(test_host_.RegisterTestHost(true));
-  ASSERT_TRUE(RunLazyTest("native_messaging_connect_lazy")) << message_;
+  ASSERT_TRUE(RunTest("native_messaging_connect")) << message_;
 }
 
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
@@ -141,7 +135,7 @@ base::CommandLine CreateNativeMessagingConnectCommandLine(
   return command_line;
 }
 
-class NativeMessagingLaunchApiTest : public NativeMessagingApiTest {
+class NativeMessagingLaunchApiTest : public NativeMessagingApiTestBase {
  public:
   NativeMessagingLaunchApiTest() {
     feature_list_.InitAndEnableFeature(features::kOnConnectNative);
