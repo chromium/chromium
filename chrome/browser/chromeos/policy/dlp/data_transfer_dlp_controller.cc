@@ -241,6 +241,7 @@ void DataTransferDlpController::NotifyBlockedPaste(
 void DataTransferDlpController::WarnOnPaste(
     const ui::DataTransferEndpoint* const data_src,
     const ui::DataTransferEndpoint* const data_dst) {
+  DCHECK(!(data_dst && data_dst->IsUrlType()));
   clipboard_notifier_.WarnOnPaste(data_src, data_dst);
 }
 

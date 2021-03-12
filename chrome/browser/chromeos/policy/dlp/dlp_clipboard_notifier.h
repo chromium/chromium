@@ -53,19 +53,20 @@ class DlpClipboardNotifier : public DlpDataTransferNotifier,
   // `data_dst` before.
   bool DidUserCancelDst(const ui::DataTransferEndpoint* const data_dst);
 
+  void SetBlinkPasteCallbackForTesting(base::OnceCallback<void(bool)> paste_cb);
+
  protected:
+  // Exposed for tests to override.
   void ProceedPressed(const ui::DataTransferEndpoint& data_dst,
                       views::Widget* widget);
-
   void BlinkProceedPressed(const ui::DataTransferEndpoint& data_dst,
                            views::Widget* widget);
-
   void CancelWarningPressed(const ui::DataTransferEndpoint& data_dst,
                             views::Widget* widget);
-
   void ResetUserWarnSelection();
 
  private:
+  // Virtual for tests to override.
   virtual void ShowToast(const std::string& id,
                          const std::u16string& text) const;
 

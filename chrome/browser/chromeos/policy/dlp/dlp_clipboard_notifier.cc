@@ -155,7 +155,6 @@ void DlpClipboardNotifier::WarnOnPaste(
                     l10n_util::GetStringUTF16(IDS_POLICY_DLP_ANDROID_APPS)));
       return;
     }
-    DCHECK(!data_dst->IsUrlType());
   }
 
   auto proceed_cb =
@@ -206,6 +205,11 @@ bool DlpClipboardNotifier::DidUserApproveDst(
 bool DlpClipboardNotifier::DidUserCancelDst(
     const ui::DataTransferEndpoint* const data_dst) {
   return HasEndpoint(cancelled_dsts_, data_dst);
+}
+
+void DlpClipboardNotifier::SetBlinkPasteCallbackForTesting(
+    base::OnceCallback<void(bool)> paste_cb) {
+  blink_paste_cb_ = std::move(paste_cb);
 }
 
 void DlpClipboardNotifier::ProceedPressed(
@@ -266,6 +270,7 @@ void DlpClipboardNotifier::OnWidgetDestroyed(views::Widget* widget) {
 }
 
 void DlpClipboardNotifier::WebContentsDestroyed() {
+  std::move(blink_paste_cb_);
   CloseWidget(widget_.get(), views::Widget::ClosedReason::kUnspecified);
 }
 

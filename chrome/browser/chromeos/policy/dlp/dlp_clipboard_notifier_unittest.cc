@@ -4,6 +4,7 @@
 
 #include "chrome/browser/chromeos/policy/dlp/dlp_clipboard_notifier.h"
 
+#include <memory>
 #include <string>
 
 #include "base/optional.h"
@@ -30,7 +31,9 @@ namespace policy {
 
 namespace {
 
-constexpr char kUrl[] = "https://example.com";
+constexpr char kExampleUrl[] = "https://example.com";
+constexpr char kExample2Url[] = "https://example2.com";
+constexpr char kExample3Url[] = "https://example3.com";
 
 struct ToastTest {
   ToastTest(ui::EndpointType dst_type, int dst_name_id)
@@ -47,7 +50,12 @@ std::unique_ptr<content::WebContents> CreateTestWebContents(
       browser_context, std::move(site_instance));
 }
 
-}  // namespace
+ui::DataTransferEndpoint CreateEndpoint(ui::EndpointType type) {
+  if (type == ui::EndpointType::kUrl)
+    return ui::DataTransferEndpoint(url::Origin::Create(GURL(kExampleUrl)));
+  else
+    return ui::DataTransferEndpoint(type);
+}
 
 class MockDlpClipboardNotifier : public DlpClipboardNotifier {
  public:
@@ -57,7 +65,9 @@ class MockDlpClipboardNotifier : public DlpClipboardNotifier {
                     base::RepeatingCallback<void(views::Widget*)> proceed_cb,
                     base::RepeatingCallback<void(views::Widget*)> cancel_cb));
   MOCK_CONST_METHOD2(ShowToast,
-                     void(const std::string& id, const std::u16string& text));
+                     void(const std::string& id, const base::string16& text));
+  MOCK_METHOD2(CloseWidget,
+               void(views::Widget* widget, views::Widget::ClosedReason reason));
 
   using DlpClipboardNotifier::BlinkProceedPressed;
   using DlpClipboardNotifier::CancelWarningPressed;
@@ -65,102 +75,168 @@ class MockDlpClipboardNotifier : public DlpClipboardNotifier {
   using DlpClipboardNotifier::ResetUserWarnSelection;
 };
 
-class DlpClipboardBubbleTest
-    : public ::testing::TestWithParam<base::Optional<ui::EndpointType>> {
- private:
-  content::BrowserTaskEnvironment task_environment_;
-};
+}  // namespace
 
-TEST_P(DlpClipboardBubbleTest, BlockBubble) {
+class BubbleTestWithParam
+    : public ::testing::TestWithParam<base::Optional<ui::EndpointType>> {};
+
+TEST_P(BubbleTestWithParam, BlockBubble) {
   ::testing::StrictMock<MockDlpClipboardNotifier> notifier;
-  url::Origin origin = url::Origin::Create(GURL(kUrl));
-  ui::DataTransferEndpoint data_src(origin);
+  ui::DataTransferEndpoint data_src(url::Origin::Create(GURL(kExampleUrl)));
   base::Optional<ui::DataTransferEndpoint> data_dst;
   auto param = GetParam();
-  if (param.has_value()) {
-    if (param.value() == ui::EndpointType::kUrl)
-      data_dst.emplace(url::Origin::Create(GURL(kUrl)));
-    else
-      data_dst.emplace(param.value());
-  }
+  if (param.has_value())
+    data_dst.emplace(CreateEndpoint(param.value()));
 
   EXPECT_CALL(notifier, ShowBlockBubble);
 
   notifier.NotifyBlockedAction(&data_src, base::OptionalOrNullptr(data_dst));
 }
 
-TEST_P(DlpClipboardBubbleTest, WarnBubble) {
+TEST_P(BubbleTestWithParam, WarnBubble) {
   ::testing::StrictMock<MockDlpClipboardNotifier> notifier;
-  url::Origin origin = url::Origin::Create(GURL(kUrl));
+  url::Origin origin = url::Origin::Create(GURL(kExampleUrl));
   ui::DataTransferEndpoint data_src(origin);
   base::Optional<ui::DataTransferEndpoint> data_dst;
   auto param = GetParam();
-  if (param.has_value() && param.value() == ui::EndpointType::kUrl)
-    return;
-
   if (param.has_value())
-    data_dst.emplace(param.value());
+    data_dst.emplace(CreateEndpoint(param.value()));
 
+  EXPECT_CALL(notifier, CloseWidget(testing::_,
+                                    views::Widget::ClosedReason::kUnspecified));
   EXPECT_CALL(notifier, ShowWarningBubble);
 
-  const ui::DataTransferEndpoint* dst_ptr = base::OptionalOrNullptr(data_dst);
-  notifier.WarnOnPaste(&data_src, dst_ptr);
+  notifier.WarnOnPaste(&data_src, base::OptionalOrNullptr(data_dst));
 }
 
-TEST_P(DlpClipboardBubbleTest, ProceedPressed) {
-  ::testing::StrictMock<MockDlpClipboardNotifier> notifier;
-  base::Optional<ui::DataTransferEndpoint> data_dst;
-  auto param = GetParam();
-  // ProceedOnWarn gets called with const reference to DataTransferEndpoint.
-  if (!param.has_value())
-    return;
-
-  if (param.value() == ui::EndpointType::kUrl)
-    data_dst.emplace(url::Origin::Create(GURL(kUrl)));
-  else
-    data_dst.emplace(param.value());
-
-  const ui::DataTransferEndpoint* dst_ptr = base::OptionalOrNullptr(data_dst);
-  notifier.ProceedPressed(*dst_ptr, nullptr);
-  EXPECT_TRUE(notifier.DidUserApproveDst(dst_ptr));
-}
-
-INSTANTIATE_TEST_SUITE_P(DlpClipboard,
-                         DlpClipboardBubbleTest,
+INSTANTIATE_TEST_SUITE_P(DlpClipboardNotifierTest,
+                         BubbleTestWithParam,
                          ::testing::Values(base::nullopt,
                                            ui::EndpointType::kDefault,
                                            ui::EndpointType::kUnknownVm,
                                            ui::EndpointType::kBorealis,
                                            ui::EndpointType::kUrl));
 
-TEST_F(DlpClipboardBubbleTest, BlinkWarn) {
+class BubbleButtonsTestWithParam
+    : public ::testing::TestWithParam<ui::EndpointType> {};
+
+TEST_P(BubbleButtonsTestWithParam, ProceedPressed) {
   ::testing::StrictMock<MockDlpClipboardNotifier> notifier;
-  url::Origin origin = url::Origin::Create(GURL(kUrl));
+  ui::DataTransferEndpoint data_dst(CreateEndpoint(GetParam()));
+
+  EXPECT_CALL(notifier,
+              CloseWidget(testing::_,
+                          views::Widget::ClosedReason::kAcceptButtonClicked));
+
+  notifier.ProceedPressed(data_dst, nullptr);
+
+  EXPECT_TRUE(notifier.DidUserApproveDst(&data_dst));
+}
+
+TEST_P(BubbleButtonsTestWithParam, CancelPressed) {
+  ::testing::StrictMock<MockDlpClipboardNotifier> notifier;
+  ui::DataTransferEndpoint data_dst(CreateEndpoint(GetParam()));
+
+  EXPECT_CALL(notifier,
+              CloseWidget(testing::_,
+                          views::Widget::ClosedReason::kCancelButtonClicked));
+
+  notifier.CancelWarningPressed(data_dst, nullptr);
+
+  EXPECT_TRUE(notifier.DidUserCancelDst(&data_dst));
+}
+
+INSTANTIATE_TEST_SUITE_P(DlpClipboardNotifierTest,
+                         BubbleButtonsTestWithParam,
+                         ::testing::Values(ui::EndpointType::kDefault,
+                                           ui::EndpointType::kUnknownVm,
+                                           ui::EndpointType::kBorealis,
+                                           ui::EndpointType::kUrl));
+
+class DlpClipboardNotifierTest : public testing::Test {
+ private:
+  content::BrowserTaskEnvironment task_environment_;
+};
+
+TEST_F(DlpClipboardNotifierTest, BlinkWarn) {
+  ::testing::StrictMock<MockDlpClipboardNotifier> notifier;
+  url::Origin origin = url::Origin::Create(GURL(kExampleUrl));
   ui::DataTransferEndpoint data_src(origin);
   ui::DataTransferEndpoint data_dst(origin);
 
+  EXPECT_CALL(notifier, CloseWidget(testing::_,
+                                    views::Widget::ClosedReason::kUnspecified));
   EXPECT_CALL(notifier, ShowWarningBubble);
 
   std::unique_ptr<TestingProfile> testing_profile =
       TestingProfile::Builder().Build();
-  auto web_contents = CreateTestWebContents(testing_profile.get());
+  std::unique_ptr<content::WebContents> web_contents =
+      CreateTestWebContents(testing_profile.get());
   ::testing::StrictMock<base::MockOnceCallback<void(bool)>> callback;
 
   notifier.WarnOnBlinkPaste(&data_src, &data_dst, web_contents.get(),
                             callback.Get());
 
-  EXPECT_CALL(callback, Run(true));
-  notifier.BlinkProceedPressed(data_dst, nullptr);
+  testing::Mock::VerifyAndClearExpectations(&notifier);
 
-  EXPECT_TRUE(notifier.DidUserApproveDst(&data_dst));
+  EXPECT_CALL(notifier, CloseWidget(testing::_,
+                                    views::Widget::ClosedReason::kUnspecified));
+  web_contents.reset();
 }
 
-TEST_F(DlpClipboardBubbleTest, ProceedSavedHistory) {
+TEST_F(DlpClipboardNotifierTest, BlinkProceedSavedHistory) {
   ::testing::StrictMock<MockDlpClipboardNotifier> notifier;
-  const ui::DataTransferEndpoint url_dst(url::Origin::Create(GURL(kUrl)));
+  const ui::DataTransferEndpoint url_dst1(
+      url::Origin::Create(GURL(kExampleUrl)));
+  const ui::DataTransferEndpoint url_dst2(
+      url::Origin::Create(GURL(kExample2Url)));
+  const ui::DataTransferEndpoint url_dst3(
+      url::Origin::Create(GURL(kExample3Url)));
+
+  ::testing::StrictMock<base::MockOnceCallback<void(bool)>> callback;
+
+  EXPECT_CALL(notifier,
+              CloseWidget(testing::_,
+                          views::Widget::ClosedReason::kAcceptButtonClicked))
+      .Times(3);
+
+  notifier.SetBlinkPasteCallbackForTesting(callback.Get());
+  EXPECT_CALL(callback, Run(true));
+  notifier.BlinkProceedPressed(url_dst1, nullptr);
+
+  notifier.SetBlinkPasteCallbackForTesting(callback.Get());
+  EXPECT_CALL(callback, Run(true));
+  notifier.BlinkProceedPressed(url_dst2, nullptr);
+
+  notifier.SetBlinkPasteCallbackForTesting(callback.Get());
+  EXPECT_CALL(callback, Run(true));
+  notifier.BlinkProceedPressed(url_dst3, nullptr);
+
+  testing::Mock::VerifyAndClearExpectations(&notifier);
+
+  EXPECT_TRUE(notifier.DidUserApproveDst(&url_dst1));
+  EXPECT_TRUE(notifier.DidUserApproveDst(&url_dst2));
+  EXPECT_TRUE(notifier.DidUserApproveDst(&url_dst3));
+
+  notifier.ResetUserWarnSelection();
+
+  EXPECT_FALSE(notifier.DidUserApproveDst(&url_dst1));
+  EXPECT_FALSE(notifier.DidUserApproveDst(&url_dst2));
+  EXPECT_FALSE(notifier.DidUserApproveDst(&url_dst3));
+}
+
+TEST_F(DlpClipboardNotifierTest, ProceedSavedHistory) {
+  ::testing::StrictMock<MockDlpClipboardNotifier> notifier;
+  const ui::DataTransferEndpoint url_dst(
+      url::Origin::Create(GURL(kExampleUrl)));
   const ui::DataTransferEndpoint default_dst(ui::EndpointType::kDefault);
   const ui::DataTransferEndpoint arc_dst(ui::EndpointType::kArc);
   const ui::DataTransferEndpoint crostini_dst(ui::EndpointType::kCrostini);
+
+  EXPECT_CALL(notifier,
+              CloseWidget(testing::_,
+                          views::Widget::ClosedReason::kAcceptButtonClicked))
+      .Times(4);
 
   notifier.ProceedPressed(url_dst, nullptr);
   notifier.ProceedPressed(default_dst, nullptr);
@@ -180,12 +256,18 @@ TEST_F(DlpClipboardBubbleTest, ProceedSavedHistory) {
   EXPECT_FALSE(notifier.DidUserApproveDst(&crostini_dst));
 }
 
-TEST_F(DlpClipboardBubbleTest, CancelSavedHistory) {
+TEST_F(DlpClipboardNotifierTest, CancelSavedHistory) {
   ::testing::StrictMock<MockDlpClipboardNotifier> notifier;
-  const ui::DataTransferEndpoint url_dst(url::Origin::Create(GURL(kUrl)));
+  const ui::DataTransferEndpoint url_dst(
+      url::Origin::Create(GURL(kExampleUrl)));
   const ui::DataTransferEndpoint default_dst(ui::EndpointType::kDefault);
   const ui::DataTransferEndpoint arc_dst(ui::EndpointType::kArc);
   const ui::DataTransferEndpoint crostini_dst(ui::EndpointType::kCrostini);
+
+  EXPECT_CALL(notifier,
+              CloseWidget(testing::_,
+                          views::Widget::ClosedReason::kCancelButtonClicked))
+      .Times(4);
 
   notifier.CancelWarningPressed(url_dst, nullptr);
   notifier.CancelWarningPressed(default_dst, nullptr);
@@ -205,11 +287,11 @@ TEST_F(DlpClipboardBubbleTest, CancelSavedHistory) {
   EXPECT_FALSE(notifier.DidUserCancelDst(&crostini_dst));
 }
 
-class DlpClipboardToastTest : public ::testing::TestWithParam<ToastTest> {};
+class ToastTestWithParam : public ::testing::TestWithParam<ToastTest> {};
 
-TEST_P(DlpClipboardToastTest, BlockToast) {
+TEST_P(ToastTestWithParam, BlockToast) {
   ::testing::StrictMock<MockDlpClipboardNotifier> notifier;
-  url::Origin origin = url::Origin::Create(GURL(kUrl));
+  url::Origin origin = url::Origin::Create(GURL(kExampleUrl));
   ui::DataTransferEndpoint data_src(origin);
   ui::DataTransferEndpoint data_dst(GetParam().dst_type);
 
@@ -223,9 +305,9 @@ TEST_P(DlpClipboardToastTest, BlockToast) {
   notifier.NotifyBlockedAction(&data_src, &data_dst);
 }
 
-TEST_P(DlpClipboardToastTest, WarnToast) {
+TEST_P(ToastTestWithParam, WarnToast) {
   ::testing::StrictMock<MockDlpClipboardNotifier> notifier;
-  url::Origin origin = url::Origin::Create(GURL(kUrl));
+  url::Origin origin = url::Origin::Create(GURL(kExampleUrl));
   ui::DataTransferEndpoint data_src(origin);
   ui::DataTransferEndpoint data_dst(GetParam().dst_type);
 
@@ -235,12 +317,14 @@ TEST_P(DlpClipboardToastTest, WarnToast) {
 
   EXPECT_CALL(notifier, ShowToast(testing::_, expected_toast_str));
 
+  EXPECT_CALL(notifier, CloseWidget(testing::_,
+                                    views::Widget::ClosedReason::kUnspecified));
   notifier.WarnOnPaste(&data_src, &data_dst);
 }
 
 INSTANTIATE_TEST_SUITE_P(
-    DlpClipboard,
-    DlpClipboardToastTest,
+    DlpClipboardNotifierTest,
+    ToastTestWithParam,
     ::testing::Values(
         ToastTest(ui::EndpointType::kCrostini, IDS_CROSTINI_LINUX),
         ToastTest(ui::EndpointType::kPluginVm, IDS_PLUGIN_VM_APP_NAME),
