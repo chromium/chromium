@@ -34,7 +34,7 @@
 #include "base/strings/string_util.h"
 #include "base/task/post_task.h"
 #include "base/task_runner.h"
-#include "components/reporting/encryption/encryption_module.h"
+#include "components/reporting/encryption/encryption_module_interface.h"
 #include "components/reporting/proto/record.pb.h"
 #include "components/reporting/storage/resources/resource_interface.h"
 #include "components/reporting/storage/storage_configuration.h"
@@ -76,7 +76,7 @@ struct RecordHeader {
 void StorageQueue::Create(
     const QueueOptions& options,
     StartUploadCb start_upload_cb,
-    scoped_refptr<EncryptionModule> encryption_module,
+    scoped_refptr<EncryptionModuleInterface> encryption_module,
     base::OnceCallback<void(StatusOr<scoped_refptr<StorageQueue>>)>
         completion_cb) {
   // Initialize StorageQueue object loading the data.
@@ -121,9 +121,10 @@ void StorageQueue::Create(
                                  std::move(completion_cb));
 }
 
-StorageQueue::StorageQueue(const QueueOptions& options,
-                           StartUploadCb start_upload_cb,
-                           scoped_refptr<EncryptionModule> encryption_module)
+StorageQueue::StorageQueue(
+    const QueueOptions& options,
+    StartUploadCb start_upload_cb,
+    scoped_refptr<EncryptionModuleInterface> encryption_module)
     : options_(options),
       start_upload_cb_(std::move(start_upload_cb)),
       encryption_module_(encryption_module),

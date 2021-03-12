@@ -17,6 +17,7 @@
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/synchronization/waitable_event.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "components/reporting/encryption/test_encryption_module.h"
 #include "components/reporting/proto/record.pb.h"
@@ -122,6 +123,10 @@ class TestUploadClient : public UploaderInterface {
 class StorageQueueStressTest : public ::testing::TestWithParam<size_t> {
  public:
   void SetUp() override {
+    // Enable encryption.
+    scoped_feature_list_.InitFromCommandLine(
+        {EncryptionModuleInterface::kEncryptedReporting}, {});
+
     ASSERT_TRUE(location_.CreateUniqueTempDir());
     options_.set_directory(base::FilePath(location_.GetPath()))
         .set_single_file_size(GetParam());
@@ -140,13 +145,19 @@ class StorageQueueStressTest : public ::testing::TestWithParam<size_t> {
     ASSERT_FALSE(storage_queue_) << "StorageQueue already assigned";
     test_encryption_module_ =
         base::MakeRefCounted<test::TestEncryptionModule>();
-    test::TestEvent<StatusOr<scoped_refptr<StorageQueue>>> e;
+    test::TestEvent<Status> key_update_event;
+    test_encryption_module_->UpdateAsymmetricKey("DUMMY KEY", 0,
+                                                 key_update_event.cb());
+    ASSERT_OK(key_update_event.result());
+    test::TestEvent<StatusOr<scoped_refptr<StorageQueue>>>
+        storage_queue_create_event;
     StorageQueue::Create(
         options,
         base::BindRepeating(&StorageQueueStressTest::BuildTestUploader,
                             base::Unretained(this)),
-        test_encryption_module_, e.cb());
-    StatusOr<scoped_refptr<StorageQueue>> storage_queue_result = e.result();
+        test_encryption_module_, storage_queue_create_event.cb());
+    StatusOr<scoped_refptr<StorageQueue>> storage_queue_result =
+        storage_queue_create_event.result();
     ASSERT_OK(storage_queue_result) << "Failed to create StorageQueue, error="
                                     << storage_queue_result.status();
     storage_queue_ = std::move(storage_queue_result.ValueOrDie());
@@ -186,6 +197,10 @@ class StorageQueueStressTest : public ::testing::TestWithParam<size_t> {
     storage_queue_->Write(std::move(record), std::move(cb));
   }
 
+  base::test::TaskEnvironment task_environment_{
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
+
+  base::test::ScopedFeatureList scoped_feature_list_;
   base::ScopedTempDir location_;
   StorageOptions options_;
   scoped_refptr<test::TestEncryptionModule> test_encryption_module_;
@@ -194,9 +209,6 @@ class StorageQueueStressTest : public ::testing::TestWithParam<size_t> {
   // Test-wide global mapping of <generation id, sequencing id> to record
   // digest. Serves all TestUploadClients created by test fixture.
   TestUploadClient::LastRecordDigestMap last_record_digest_map_;
-
-  base::test::TaskEnvironment task_environment_{
-      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
 };
 
 TEST_P(StorageQueueStressTest,

@@ -10,7 +10,7 @@
 #include "base/callback.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/scoped_refptr.h"
-#include "components/reporting/encryption/encryption_module.h"
+#include "components/reporting/encryption/encryption_module_interface.h"
 #include "components/reporting/proto/record.pb.h"
 #include "components/reporting/proto/record_constants.pb.h"
 #include "components/reporting/storage/storage.h"
@@ -28,7 +28,7 @@ class StorageModule : public StorageModuleInterface {
   static void Create(
       const StorageOptions& options,
       UploaderInterface::StartCb start_upload_cb,
-      scoped_refptr<EncryptionModule> encryption_module,
+      scoped_refptr<EncryptionModuleInterface> encryption_module,
       base::OnceCallback<void(StatusOr<scoped_refptr<StorageModuleInterface>>)>
           callback);
 

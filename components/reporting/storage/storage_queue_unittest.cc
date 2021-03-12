@@ -15,6 +15,7 @@
 #include "base/optional.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "components/reporting/encryption/test_encryption_module.h"
 #include "components/reporting/proto/record.pb.h"
@@ -252,6 +253,10 @@ class MockUploadClient : public ::testing::NiceMock<UploaderInterface> {
 class StorageQueueTest : public ::testing::TestWithParam<size_t> {
  protected:
   void SetUp() override {
+    // Enable encryption.
+    scoped_feature_list_.InitFromCommandLine(
+        {EncryptionModuleInterface::kEncryptedReporting}, {});
+
     ASSERT_TRUE(location_.CreateUniqueTempDir());
     options_.set_directory(base::FilePath(location_.GetPath()))
         .set_single_file_size(GetParam());
@@ -270,13 +275,19 @@ class StorageQueueTest : public ::testing::TestWithParam<size_t> {
     ASSERT_FALSE(storage_queue_) << "StorageQueue already assigned";
     test_encryption_module_ =
         base::MakeRefCounted<test::TestEncryptionModule>();
-    test::TestEvent<StatusOr<scoped_refptr<StorageQueue>>> e;
+    test::TestEvent<Status> key_update_event;
+    test_encryption_module_->UpdateAsymmetricKey("DUMMY KEY", 0,
+                                                 key_update_event.cb());
+    ASSERT_OK(key_update_event.result());
+    test::TestEvent<StatusOr<scoped_refptr<StorageQueue>>>
+        storage_queue_create_event;
     StorageQueue::Create(
         options,
         base::BindRepeating(&StorageQueueTest::BuildMockUploader,
                             base::Unretained(this)),
-        test_encryption_module_, e.cb());
-    StatusOr<scoped_refptr<StorageQueue>> storage_queue_result = e.result();
+        test_encryption_module_, storage_queue_create_event.cb());
+    StatusOr<scoped_refptr<StorageQueue>> storage_queue_result =
+        storage_queue_create_event.result();
     ASSERT_OK(storage_queue_result) << "Failed to create StorageQueue, error="
                                     << storage_queue_result.status();
     storage_queue_ = std::move(storage_queue_result.ValueOrDie());
@@ -337,6 +348,10 @@ class StorageQueueTest : public ::testing::TestWithParam<size_t> {
     ASSERT_OK(c_result) << c_result;
   }
 
+  base::test::TaskEnvironment task_environment_{
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
+
+  base::test::ScopedFeatureList scoped_feature_list_;
   base::ScopedTempDir location_;
   StorageOptions options_;
   scoped_refptr<test::TestEncryptionModule> test_encryption_module_;
@@ -348,9 +363,6 @@ class StorageQueueTest : public ::testing::TestWithParam<size_t> {
 
   ::testing::MockFunction<void(MockUploadClient*)>
       set_mock_uploader_expectations_;
-
-  base::test::TaskEnvironment task_environment_{
-      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
 };
 
 constexpr std::array<const char*, 3> kData = {"Rec1111", "Rec222", "Rec33"};
@@ -964,7 +976,7 @@ TEST_P(StorageQueueTest, WriteAndRepeatedlyImmediateUploadWithConfirmations) {
 TEST_P(StorageQueueTest, WriteEncryptFailure) {
   CreateTestStorageQueueOrDie(BuildStorageQueueOptionsPeriodic());
   DCHECK(test_encryption_module_);
-  EXPECT_CALL(*test_encryption_module_, EncryptRecord(_, _))
+  EXPECT_CALL(*test_encryption_module_, EncryptRecordImpl(_, _))
       .WillOnce(WithArg<1>(
           Invoke([](base::OnceCallback<void(StatusOr<EncryptedRecord>)> cb) {
             std::move(cb).Run(Status(error::UNKNOWN, "Failing for tests"));

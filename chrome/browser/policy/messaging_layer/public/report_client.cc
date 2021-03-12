@@ -30,6 +30,7 @@
 #include "components/policy/core/common/cloud/machine_level_user_cloud_policy_manager.h"
 #include "components/policy/core/common/cloud/user_cloud_policy_manager.h"
 #include "components/reporting/client/report_queue_configuration.h"
+#include "components/reporting/encryption/encryption_module.h"
 #include "components/reporting/encryption/verification.h"
 #include "components/reporting/proto/record.pb.h"
 #include "components/reporting/storage/storage_configuration.h"
@@ -241,7 +242,7 @@ void ReportingClient::ClientInitializingContext::ConfigureStorageModule() {
           .set_directory(reporting_path)
           .set_signature_verification_public_key(
               SignatureVerifier::VerificationKey()),
-      std::move(start_upload_cb_), base::MakeRefCounted<EncryptionModule>(),
+      std::move(start_upload_cb_), EncryptionModule::Create(),
       base::BindOnce(&ClientInitializingContext::OnStorageModuleConfigured,
                      base::Unretained(this)));
 }

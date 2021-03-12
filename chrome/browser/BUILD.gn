@@ -2137,6 +2137,7 @@ static_library("browser") {
     "//components/reporting/client:report_queue_configuration",
     "//components/reporting/client:report_queue_provider",
     "//components/reporting/encryption:encryption_module",
+    "//components/reporting/encryption:encryption_module_interface",
     "//components/reporting/encryption:verification",
     "//components/reporting/proto:record_constants",
     "//components/reporting/proto:record_proto",

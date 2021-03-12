@@ -4,6 +4,18 @@
 
 import("//build/config/features.gni")
 
+static_library("encryption_module_interface") {
+  sources = [
+    "encryption_module_interface.cc",
+    "encryption_module_interface.h",
+  ]
+  deps = [
+    "//base",
+    "//components/reporting/proto:record_proto",
+    "//components/reporting/util:status",
+  ]
+}
+
 static_library("encryption_module") {
   sources = [
     "encryption_module.cc",
@@ -11,6 +23,7 @@ static_library("encryption_module") {
   ]
   deps = [
     ":encryption",
+    ":encryption_module_interface",
     "//base",
     "//components/reporting/proto:record_proto",
     "//components/reporting/util:status",
@@ -70,6 +83,7 @@ static_library("test_support") {
     ":decryption",
     ":encryption",
     ":encryption_module",
+    ":encryption_module_interface",
     ":verification",
     "//base",
     "//base/test:test_support",
@@ -95,6 +109,7 @@ source_set("unit_tests") {
     ":decryption",
     ":encryption",
     ":encryption_module",
+    ":encryption_module_interface",
     ":test_support",
     ":verification",
     "//base",

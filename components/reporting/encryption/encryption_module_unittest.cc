@@ -15,6 +15,7 @@
 #include "base/time/time.h"
 #include "components/reporting/encryption/decryption.h"
 #include "components/reporting/encryption/encryption.h"
+#include "components/reporting/encryption/encryption_module_interface.h"
 #include "components/reporting/proto/record.pb.h"
 #include "components/reporting/util/status.h"
 #include "components/reporting/util/status_macros.h"
@@ -34,9 +35,9 @@ class EncryptionModuleTest : public ::testing::Test {
   void SetUp() override {
     // Enable encryption.
     scoped_feature_list_.InitFromCommandLine(
-        {EncryptionModule::kEncryptedReporting}, {});
+        {EncryptionModuleInterface::kEncryptedReporting}, {});
 
-    encryption_module_ = base::MakeRefCounted<EncryptionModule>();
+    encryption_module_ = EncryptionModule::Create();
 
     auto decryptor_result = Decryptor::Create();
     ASSERT_OK(decryptor_result.status()) << decryptor_result.status();
@@ -121,7 +122,7 @@ class EncryptionModuleTest : public ::testing::Test {
   base::test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
 
-  scoped_refptr<EncryptionModule> encryption_module_;
+  scoped_refptr<EncryptionModuleInterface> encryption_module_;
   scoped_refptr<Decryptor> decryptor_;
 
  private:
@@ -159,7 +160,7 @@ TEST_F(EncryptionModuleTest, EncryptionDisabled) {
   // Disable encryption.
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitFromCommandLine(
-      {}, {EncryptionModule::kEncryptedReporting});
+      {}, {EncryptionModuleInterface::kEncryptedReporting});
 
   // Encrypt the test string.
   const auto encrypted_result = EncryptSync(kTestString);
@@ -277,7 +278,7 @@ TEST_F(EncryptionModuleTest, EncryptAndDecryptMultipleParallel) {
         base::StringPiece test_string,
         base::StringPiece public_key,
         Encryptor::PublicKeyId public_key_id,
-        scoped_refptr<EncryptionModule> encryption_module,
+        scoped_refptr<EncryptionModuleInterface> encryption_module,
         base::OnceCallback<void(StatusOr<EncryptedRecord>)> response)
         : test_string_(test_string),
           public_key_(public_key),
@@ -338,7 +339,7 @@ TEST_F(EncryptionModuleTest, EncryptAndDecryptMultipleParallel) {
     const std::string test_string_;
     const std::string public_key_;
     const Encryptor::PublicKeyId public_key_id_;
-    const scoped_refptr<EncryptionModule> encryption_module_;
+    const scoped_refptr<EncryptionModuleInterface> encryption_module_;
     base::OnceCallback<void(StatusOr<EncryptedRecord>)> response_;
   };
 

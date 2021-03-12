@@ -16,7 +16,7 @@
 #include "base/memory/ref_counted.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/strings/string_piece.h"
-#include "components/reporting/encryption/encryption_module.h"
+#include "components/reporting/encryption/encryption_module_interface.h"
 #include "components/reporting/proto/record.pb.h"
 #include "components/reporting/proto/record_constants.pb.h"
 #include "components/reporting/storage/storage_configuration.h"
@@ -35,7 +35,7 @@ class Storage : public base::RefCountedThreadSafe<Storage> {
   static void Create(
       const StorageOptions& options,
       UploaderInterface::StartCb start_upload_cb,
-      scoped_refptr<EncryptionModule> encryption_module,
+      scoped_refptr<EncryptionModuleInterface> encryption_module,
       base::OnceCallback<void(StatusOr<scoped_refptr<Storage>>)> completion_cb);
 
   // Wraps and serializes Record (taking ownership of it), encrypts and writes
@@ -85,7 +85,7 @@ class Storage : public base::RefCountedThreadSafe<Storage> {
   // Private constructor, to be called by Create factory method only.
   // Queues need to be added afterwards.
   Storage(const StorageOptions& options,
-          scoped_refptr<EncryptionModule> encryption_module,
+          scoped_refptr<EncryptionModuleInterface> encryption_module,
           UploaderInterface::StartCb start_upload_cb);
 
   // Initializes the object by adding all queues for all priorities.
@@ -103,7 +103,7 @@ class Storage : public base::RefCountedThreadSafe<Storage> {
   const StorageOptions options_;
 
   // Encryption module.
-  scoped_refptr<EncryptionModule> encryption_module_;
+  scoped_refptr<EncryptionModuleInterface> encryption_module_;
 
   // Internal key management module.
   std::unique_ptr<KeyInStorage> key_in_storage_;

@@ -11,7 +11,7 @@
 #include "base/callback.h"
 #include "base/containers/span.h"
 #include "base/memory/ptr_util.h"
-#include "components/reporting/encryption/encryption_module.h"
+#include "components/reporting/encryption/encryption_module_interface.h"
 #include "components/reporting/proto/record.pb.h"
 #include "components/reporting/proto/record_constants.pb.h"
 #include "components/reporting/storage/storage.h"
@@ -53,7 +53,7 @@ void StorageModule::UpdateEncryptionKey(
 void StorageModule::Create(
     const StorageOptions& options,
     UploaderInterface::StartCb start_upload_cb,
-    scoped_refptr<EncryptionModule> encryption_module,
+    scoped_refptr<EncryptionModuleInterface> encryption_module,
     base::OnceCallback<void(StatusOr<scoped_refptr<StorageModuleInterface>>)>
         callback) {
   scoped_refptr<StorageModule> instance =

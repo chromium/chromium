@@ -17,6 +17,8 @@
 #include "base/test/task_environment.h"
 #include "components/reporting/encryption/decryption.h"
 #include "components/reporting/encryption/encryption.h"
+#include "components/reporting/encryption/encryption_module.h"
+#include "components/reporting/encryption/encryption_module_interface.h"
 #include "components/reporting/encryption/test_encryption_module.h"
 #include "components/reporting/proto/record.pb.h"
 #include "components/reporting/proto/record_constants.pb.h"
@@ -482,11 +484,11 @@ class StorageTest
   void SetUp() override {
     ASSERT_TRUE(location_.CreateUniqueTempDir());
     // Encryption is disabled by default.
-    ASSERT_FALSE(EncryptionModule::is_enabled());
+    ASSERT_FALSE(EncryptionModuleInterface::is_enabled());
     if (is_encryption_enabled()) {
       // Enable encryption.
       scoped_feature_list_.InitFromCommandLine(
-          {EncryptionModule::kEncryptedReporting}, {});
+          {EncryptionModuleInterface::kEncryptedReporting}, {});
       // Generate signing key pair.
       ED25519_keypair(signature_verification_public_key_, signing_private_key_);
       // Create decryption module.
@@ -509,7 +511,7 @@ class StorageTest
 
   StatusOr<scoped_refptr<Storage>> CreateTestStorage(
       const StorageOptions& options,
-      scoped_refptr<EncryptionModule> encryption_module) {
+      scoped_refptr<EncryptionModuleInterface> encryption_module) {
     if (expect_to_need_key_) {
       // Set uploader expectations for any queue; expect no records and need
       // key. Make sure no uploads happen, and key is requested.
@@ -537,8 +539,8 @@ class StorageTest
 
   void CreateTestStorageOrDie(
       const StorageOptions& options,
-      scoped_refptr<EncryptionModule> encryption_module =
-          base::MakeRefCounted<EncryptionModule>(
+      scoped_refptr<EncryptionModuleInterface> encryption_module =
+          EncryptionModule::Create(
               /*renew_encryption_key_period=*/base::TimeDelta::FromMinutes(
                   30))) {
     ASSERT_FALSE(storage_) << "StorageTest already assigned";
@@ -734,9 +736,8 @@ TEST_P(StorageTest, WriteIntoNewStorageAndUploadWithKeyUpdate) {
   }
 
   static constexpr auto kKeyRenewalTime = base::TimeDelta::FromSeconds(5);
-  CreateTestStorageOrDie(
-      BuildTestStorageOptions(),
-      base::MakeRefCounted<EncryptionModule>(kKeyRenewalTime));
+  CreateTestStorageOrDie(BuildTestStorageOptions(),
+                         EncryptionModule::Create(kKeyRenewalTime));
   WriteStringOrDie(MANUAL_BATCH, kData[0]);
   WriteStringOrDie(MANUAL_BATCH, kData[1]);
   WriteStringOrDie(MANUAL_BATCH, kData[2]);
@@ -1172,10 +1173,17 @@ TEST_P(StorageTest, WriteAndRepeatedlyUploadMultipleQueues) {
 }
 
 TEST_P(StorageTest, WriteEncryptFailure) {
+  if (!is_encryption_enabled()) {
+    return;  // No need to test when encryption is disabled.
+  }
   auto test_encryption_module =
       base::MakeRefCounted<test::TestEncryptionModule>();
+  test::TestEvent<Status> key_update_event;
+  test_encryption_module->UpdateAsymmetricKey("DUMMY KEY", 0,
+                                              key_update_event.cb());
+  ASSERT_OK(key_update_event.result());
   CreateTestStorageOrDie(BuildTestStorageOptions(), test_encryption_module);
-  EXPECT_CALL(*test_encryption_module, EncryptRecord(_, _))
+  EXPECT_CALL(*test_encryption_module, EncryptRecordImpl(_, _))
       .WillOnce(WithArg<1>(
           Invoke([](base::OnceCallback<void(StatusOr<EncryptedRecord>)> cb) {
             std::move(cb).Run(Status(error::UNKNOWN, "Failing for tests"));

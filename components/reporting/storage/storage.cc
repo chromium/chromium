@@ -22,7 +22,7 @@
 #include "base/task_runner.h"
 #include "base/threading/thread.h"
 #include "base/threading/thread_task_runner_handle.h"
-#include "components/reporting/encryption/encryption_module.h"
+#include "components/reporting/encryption/encryption_module_interface.h"
 #include "components/reporting/encryption/verification.h"
 #include "components/reporting/proto/record.pb.h"
 #include "components/reporting/storage/storage_configuration.h"
@@ -124,7 +124,7 @@ class Storage::QueueUploaderInterface : public UploaderInterface {
     ASSIGN_OR_RETURN(
         std::unique_ptr<UploaderInterface> uploader,
         storage->start_upload_cb_.Run(
-            priority, EncryptionModule::is_enabled() &&
+            priority, EncryptionModuleInterface::is_enabled() &&
                           storage->encryption_module_->need_encryption_key()));
     return std::make_unique<QueueUploaderInterface>(priority,
                                                     std::move(uploader));
@@ -184,7 +184,8 @@ class Storage::KeyInStorage {
   // Atomically sets |next_key_file_index_| to the a value larger than any found
   // file. Returns key and key id pair, or error status (NOT_FOUND if no valid
   // file has been found). Called once during initialization only.
-  StatusOr<std::pair<std::string, Encryptor::PublicKeyId>> DownloadKeyFile() {
+  StatusOr<std::pair<std::string, EncryptionModuleInterface::PublicKeyId>>
+  DownloadKeyFile() {
     // Make sure the assigned directory exists.
     base::File::Error error;
     if (!base::CreateDirectoryAndGetError(directory_, &error)) {
@@ -228,12 +229,13 @@ class Storage::KeyInStorage {
         X25519_PUBLIC_VALUE_LEN) {
       return Status{error::FAILED_PRECONDITION, "Key size mismatch"};
     }
-    char value_to_verify[sizeof(Encryptor::PublicKeyId) +
+    char value_to_verify[sizeof(EncryptionModuleInterface::PublicKeyId) +
                          X25519_PUBLIC_VALUE_LEN];
-    const Encryptor::PublicKeyId public_key_id =
+    const EncryptionModuleInterface::PublicKeyId public_key_id =
         signed_encryption_key.public_key_id();
-    memcpy(value_to_verify, &public_key_id, sizeof(Encryptor::PublicKeyId));
-    memcpy(value_to_verify + sizeof(Encryptor::PublicKeyId),
+    memcpy(value_to_verify, &public_key_id,
+           sizeof(EncryptionModuleInterface::PublicKeyId));
+    memcpy(value_to_verify + sizeof(EncryptionModuleInterface::PublicKeyId),
            signed_encryption_key.public_asymmetric_key().data(),
            X25519_PUBLIC_VALUE_LEN);
     return verifier_.Verify(
@@ -430,7 +432,7 @@ class Storage::KeyInStorage {
 void Storage::Create(
     const StorageOptions& options,
     UploaderInterface::StartCb start_upload_cb,
-    scoped_refptr<EncryptionModule> encryption_module,
+    scoped_refptr<EncryptionModuleInterface> encryption_module,
     base::OnceCallback<void(StatusOr<scoped_refptr<Storage>>)> completion_cb) {
   // Initialize Storage object, populating all the queues.
   class StorageInitContext
@@ -484,7 +486,7 @@ void Storage::Create(
         // Encryption key has been found and set up. Must be available now.
         DCHECK(storage_->encryption_module_->has_encryption_key());
       } else {
-        if (EncryptionModule::is_enabled()) {
+        if (EncryptionModuleInterface::is_enabled()) {
           // Encryptor enabled - we cannot proceed with no keys.
           // Send Upload with need_encryption_key flag and no records.
           StatusOr<std::unique_ptr<UploaderInterface>> uploader =
@@ -567,7 +569,7 @@ void Storage::Create(
 }
 
 Storage::Storage(const StorageOptions& options,
-                 scoped_refptr<EncryptionModule> encryption_module,
+                 scoped_refptr<EncryptionModuleInterface> encryption_module,
                  UploaderInterface::StartCb start_upload_cb)
     : options_(options),
       encryption_module_(encryption_module),

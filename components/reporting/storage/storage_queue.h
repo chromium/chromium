@@ -24,7 +24,7 @@
 #include "base/threading/thread.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/timer/timer.h"
-#include "components/reporting/encryption/encryption_module.h"
+#include "components/reporting/encryption/encryption_module_interface.h"
 #include "components/reporting/proto/record.pb.h"
 #include "components/reporting/storage/storage_configuration.h"
 #include "components/reporting/storage/storage_uploader_interface.h"
@@ -51,7 +51,7 @@ class StorageQueue : public base::RefCountedThreadSafe<StorageQueue> {
   static void Create(
       const QueueOptions& options,
       StartUploadCb start_upload_cb,
-      scoped_refptr<EncryptionModule> encryption_module,
+      scoped_refptr<EncryptionModuleInterface> encryption_module,
       base::OnceCallback<void(StatusOr<scoped_refptr<StorageQueue>>)>
           completion_cb);
 
@@ -188,7 +188,7 @@ class StorageQueue : public base::RefCountedThreadSafe<StorageQueue> {
   // Private constructor, to be called by Create factory method only.
   StorageQueue(const QueueOptions& options,
                StartUploadCb start_upload_cb,
-               scoped_refptr<EncryptionModule> encryption_module);
+               scoped_refptr<EncryptionModuleInterface> encryption_module);
 
   // Initializes the object by enumerating files in the assigned directory
   // and determines the sequencing information of the last record.
@@ -332,7 +332,7 @@ class StorageQueue : public base::RefCountedThreadSafe<StorageQueue> {
   const StartUploadCb start_upload_cb_;
 
   // Encryption module.
-  scoped_refptr<EncryptionModule> encryption_module_;
+  scoped_refptr<EncryptionModuleInterface> encryption_module_;
 
   // Test only: records specified to fail on reading.
   base::flat_set<int64_t> test_injected_fail_sequencing_ids_;

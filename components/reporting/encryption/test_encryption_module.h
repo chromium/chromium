@@ -7,8 +7,7 @@
 
 #include "base/callback.h"
 #include "base/strings/string_piece.h"
-#include "components/reporting/encryption/encryption.h"
-#include "components/reporting/encryption/encryption_module.h"
+#include "components/reporting/encryption/encryption_module_interface.h"
 #include "components/reporting/proto/record.pb.h"
 #include "components/reporting/util/statusor.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -17,20 +16,20 @@
 namespace reporting {
 namespace test {
 
-// An |EncryptionModule| that does no encryption.
-class TestEncryptionModuleStrict : public EncryptionModule {
+// An |EncryptionModuleInterface| that does no encryption.
+class TestEncryptionModuleStrict : public EncryptionModuleInterface {
  public:
   TestEncryptionModuleStrict();
 
   MOCK_METHOD(void,
-              EncryptRecord,
+              EncryptRecordImpl,
               (base::StringPiece record,
                base::OnceCallback<void(StatusOr<EncryptedRecord>)> cb),
               (const override));
 
-  void UpdateAsymmetricKey(
+  void UpdateAsymmetricKeyImpl(
       base::StringPiece new_public_key,
-      Encryptor::PublicKeyId new_public_key_id,
+      PublicKeyId new_public_key_id,
       base::OnceCallback<void(Status)> response_cb) override;
 
  protected:
