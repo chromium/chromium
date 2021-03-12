@@ -474,13 +474,15 @@ typedef NS_ENUM(NSInteger, ItemType) {
                             rect:itemView.frame
                             view:itemView];
   __weak __typeof(self) weakSelf = self;
-  [_alertCoordinator
-      addItemWithTitle:l10n_util::GetNSString(
-                           IDS_IOS_MANAGE_YOUR_GOOGLE_ACCOUNT_TITLE)
-                action:^{
-                  [weakSelf handleManageGoogleAccountWithIdentity:identity];
-                }
-                 style:UIAlertActionStyleDefault];
+  if (signin::IsSSOEditingEnabled()) {
+    [_alertCoordinator
+        addItemWithTitle:l10n_util::GetNSString(
+                             IDS_IOS_MANAGE_YOUR_GOOGLE_ACCOUNT_TITLE)
+                  action:^{
+                    [weakSelf handleManageGoogleAccountWithIdentity:identity];
+                  }
+                   style:UIAlertActionStyleDefault];
+  }
   [_alertCoordinator
       addItemWithTitle:l10n_util::GetNSString(
                            IDS_IOS_REMOVE_GOOGLE_ACCOUNT_TITLE)
