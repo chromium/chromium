@@ -194,6 +194,8 @@
       'ToTAndroidOfficial': 'android_clang_tot_official_arm64',
       'ToTAndroid64': 'android_clang_tot_release_arm64',
       'ToTAndroid x64': 'android_clang_tot_x64',
+      'ToTFuchsia x64': 'fuchsia_clang_tot_release_x64',
+      'ToTFuchsiaOfficial': 'fuchsia_clang_tot_official_arm64',
       'ToTLinuxOfficial': 'clang_tot_official',
       'ToTLinux': 'clang_tot_linux_full_symbols_shared_release',
       'ToTLinuxCoverage': 'clang_tot_coverage_minimal_symbols_release',
@@ -2000,6 +2002,14 @@
 
     'fuchsia_clang_code_coverage': [
       'fuchsia', 'release_bot', 'clang', 'use_clang_coverage', 'no_symbols'
+    ],
+
+    'fuchsia_clang_tot_official_arm64': [
+      'official_optimize_goma', 'fuchsia', 'arm64', 'clang_tot',
+    ],
+
+    'fuchsia_clang_tot_release_x64': [
+      'fuchsia', 'release_bot', 'clang_tot',
     ],
 
     'fuchsia_official_arm64_size': [
