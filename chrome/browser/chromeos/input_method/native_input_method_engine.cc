@@ -159,11 +159,14 @@ void NativeInputMethodEngine::Initialize(
   chrome_keyboard_controller_client_observer_.Observe(
       ChromeKeyboardControllerClient::Get());
 
-  pref_change_registrar_.Init(profile->GetPrefs());
-  pref_change_registrar_.Add(
-      prefs::kLanguageInputMethodSpecificSettings,
-      base::BindRepeating(&NativeInputMethodEngine::OnInputMethodPrefsChanged,
-                          base::Unretained(this)));
+  if (base::FeatureList::IsEnabled(
+          chromeos::features::kSystemLatinPhysicalTyping)) {
+    pref_change_registrar_.Init(profile->GetPrefs());
+    pref_change_registrar_.Add(
+        prefs::kLanguageInputMethodSpecificSettings,
+        base::BindRepeating(&NativeInputMethodEngine::OnInputMethodPrefsChanged,
+                            base::Unretained(this)));
+  }
 
   // Wrap the given observer in our observer that will decide whether to call
   // Mojo directly or forward to the extension.
