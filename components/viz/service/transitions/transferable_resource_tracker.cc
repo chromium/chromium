@@ -83,6 +83,7 @@ ResourceId TransferableResourceTracker::GetNextAvailableResourceId() {
       ++next_id_;
     }
   }
+  DCHECK_GE(result, kVizReservedRangeStartId.GetUnsafeValue());
   return ResourceId(result);
 }
 
