@@ -13,6 +13,7 @@
 #include "base/stl_util.h"
 #include "base/syslog_logging.h"
 #include "base/threading/thread_task_runner_handle.h"
+#include "chrome/browser/chromeos/policy/dlp/dlp_histogram_helper.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_notification_helper.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_rules_manager.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_rules_manager_factory.h"
@@ -67,6 +68,7 @@ bool DlpContentManager::IsScreenshotRestricted(
       IsAreaRestricted(area, DlpContentRestriction::kScreenshot);
   if (restricted)
     SYSLOG(INFO) << "DLP blocked taking a screenshot";
+  DlpBooleanHistogram(dlp::kScreenshotBlockedUMA, restricted);
   return restricted;
 }
 
@@ -76,6 +78,7 @@ bool DlpContentManager::IsVideoCaptureRestricted(
       IsAreaRestricted(area, DlpContentRestriction::kVideoCapture);
   if (restricted)
     SYSLOG(INFO) << "DLP blocked taking a video capture";
+  DlpBooleanHistogram(dlp::kVideoCaptureBlockedUMA, restricted);
   return restricted;
 }
 
@@ -92,6 +95,7 @@ bool DlpContentManager::IsPrintingRestricted(
                               .HasRestriction(DlpContentRestriction::kPrint);
   if (restricted)
     SYSLOG(INFO) << "DLP blocked printing";
+  DlpBooleanHistogram(dlp::kPrintingBlockedUMA, restricted);
   return restricted;
 }
 
@@ -102,6 +106,7 @@ bool DlpContentManager::IsScreenCaptureRestricted(
         DlpContentRestriction::kScreenShare);
     if (restricted)
       SYSLOG(INFO) << "DLP blocked screen sharing";
+    DlpBooleanHistogram(dlp::kScreenShareBlockedUMA, restricted);
     return restricted;
   }
 
@@ -117,12 +122,14 @@ bool DlpContentManager::IsScreenCaptureRestricted(
             .HasRestriction(DlpContentRestriction::kScreenShare);
     if (restricted)
       SYSLOG(INFO) << "DLP blocked screen sharing";
+    DlpBooleanHistogram(dlp::kScreenShareBlockedUMA, restricted);
     return restricted;
   }
 
   DCHECK_EQ(media_id.type, content::DesktopMediaID::Type::TYPE_WINDOW);
   aura::Window* window = content::DesktopMediaID::GetNativeWindowById(media_id);
   if (!window) {
+    DlpBooleanHistogram(dlp::kScreenShareBlockedUMA, false);
     return false;
   }
   for (auto& entry : confidential_web_contents_) {
@@ -130,10 +137,12 @@ bool DlpContentManager::IsScreenCaptureRestricted(
     if (entry.second.HasRestriction(DlpContentRestriction::kScreenShare) &&
         window->Contains(web_contents_window)) {
       SYSLOG(INFO) << "DLP blocked screen sharing";
+      DlpBooleanHistogram(dlp::kScreenShareBlockedUMA, true);
       return true;
     }
   }
 
+  DlpBooleanHistogram(dlp::kScreenShareBlockedUMA, false);
   return false;
 }
 
@@ -158,6 +167,7 @@ bool DlpContentManager::IsCaptureModeInitRestricted() const {
                               DlpContentRestriction::kVideoCapture);
   if (restricted)
     SYSLOG(INFO) << "DLP blocked taking a screen capture";
+  DlpBooleanHistogram(dlp::kCaptureModeInitBlockedUMA, restricted);
   return restricted;
 }
 
@@ -331,6 +341,7 @@ void DlpContentManager::OnScreenRestrictionsChanged(
   if (added_restrictions.HasRestriction(
           DlpContentRestriction::kPrivacyScreen)) {
     SYSLOG(INFO) << "DLP enforced privacy screen";
+    DlpBooleanHistogram(dlp::kPrivacyScreenEnforcedUMA, true);
     ash::PrivacyScreenDlpHelper::Get()->SetEnforced(true);
   }
 
@@ -348,6 +359,7 @@ void DlpContentManager::MaybeRemovePrivacyScreenEnforcement() const {
   if (!GetOnScreenPresentRestrictions().HasRestriction(
           DlpContentRestriction::kPrivacyScreen)) {
     SYSLOG(INFO) << "DLP removed enforcement of privacy screen";
+    DlpBooleanHistogram(dlp::kPrivacyScreenEnforcedUMA, false);
     ash::PrivacyScreenDlpHelper::Get()->SetEnforced(false);
   }
 }
@@ -414,6 +426,7 @@ void DlpContentManager::CheckRunningVideoCapture() {
                        DlpContentRestriction::kVideoCapture)) {
     if (ash::features::IsCaptureModeEnabled()) {
       SYSLOG(INFO) << "DLP interrupted screen recording";
+      DlpBooleanHistogram(dlp::kVideoCaptureInterruptedUMA, true);
       ChromeCaptureModeDelegate::Get()->InterruptVideoRecordingIfAny();
     }
     running_video_capture_area_.reset();
@@ -457,6 +470,7 @@ void DlpContentManager::CheckRunningScreenCaptures() {
     if (is_allowed != capture.is_running) {
       SYSLOG(INFO) << "DLP " << (is_allowed ? "resumed" : "paused")
                    << " running screen share";
+      DlpBooleanHistogram(dlp::kScreenSharePausedOrResumedUMA, !is_allowed);
       capture.state_change_callback.Run(
           capture.media_id, capture.is_running
                                 ? blink::mojom::MediaStreamStateChange::PAUSE

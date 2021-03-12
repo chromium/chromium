@@ -526,6 +526,138 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="Enterprise.Dlp.CaptureModeInitBlocked" enum="BooleanBlocked"
+    expires_after="2022-03-01">
+  <owner>poromov@chromium.org</owner>
+  <owner>chromeos-dlp@google.com</owner>
+  <summary>
+    Recorded when capture mode initialization was blocked by Data Leak
+    Prevention.
+  </summary>
+</histogram>
+
+<histogram name="Enterprise.Dlp.ClipboardReadBlocked" enum="BooleanBlocked"
+    expires_after="2022-03-01">
+  <owner>poromov@chromium.org</owner>
+  <owner>chromeos-dlp@google.com</owner>
+  <summary>
+    Result of Data Leak Prevention evaluation for a data read from the
+    clipboard.
+  </summary>
+</histogram>
+
+<histogram name="Enterprise.Dlp.DataTransferControllerStarted" enum="Boolean"
+    expires_after="2022-03-01">
+  <owner>poromov@chromium.org</owner>
+  <owner>chromeos-dlp@google.com</owner>
+  <summary>
+    Recorded when DataTransferController is initialized, meaning that all
+    clipboard and drag-n-drop operations will be affected by Data Leak
+    Prevention checks.
+  </summary>
+</histogram>
+
+<histogram name="Enterprise.Dlp.DlpPolicyPresent" enum="Boolean"
+    expires_after="2022-03-01">
+  <owner>poromov@chromium.org</owner>
+  <owner>chromeos-dlp@google.com</owner>
+  <summary>
+    Recorded when non-empty Data Leak Prevention policy is present and due to
+    that Data Leak Prevention infrastructure is initialized on the client.
+  </summary>
+</histogram>
+
+<histogram name="Enterprise.Dlp.DragDropBlocked" enum="BooleanBlocked"
+    expires_after="2022-03-01">
+  <owner>poromov@chromium.org</owner>
+  <owner>chromeos-dlp@google.com</owner>
+  <summary>
+    Result of Data Leak Prevention evaluation for a drag-n-drop operation.
+  </summary>
+</histogram>
+
+<histogram name="Enterprise.Dlp.FilesDaemonStarted" enum="Boolean"
+    expires_after="2022-03-01">
+  <owner>poromov@chromium.org</owner>
+  <owner>chromeos-dlp@google.com</owner>
+  <summary>
+    Recorded when Data Leak Prevention policy contains Files restrictions and
+    DLP Files daemon is started because of that.
+  </summary>
+</histogram>
+
+<histogram name="Enterprise.Dlp.PrintingBlocked" enum="BooleanBlocked"
+    expires_after="2022-03-01">
+  <owner>poromov@chromium.org</owner>
+  <owner>chromeos-dlp@google.com</owner>
+  <summary>Result of Data Leak Prevention evaluation for printing.</summary>
+</histogram>
+
+<histogram name="Enterprise.Dlp.PrivacyScreenEnforced" enum="BooleanForced"
+    expires_after="2022-03-01">
+  <owner>poromov@chromium.org</owner>
+  <owner>chromeos-dlp@google.com</owner>
+  <summary>
+    Recorded when privacy screen was enforced by Data Leak Prevention.
+  </summary>
+</histogram>
+
+<histogram name="Enterprise.Dlp.RestrictionConfigured"
+    enum="EnterpriseDlpPolicyRestriction" expires_after="2022-03-01">
+  <owner>poromov@chromium.org</owner>
+  <owner>chromeos-dlp@google.com</owner>
+  <summary>
+    Records which types of restrictions are present in Data Leak Prevention
+    policy.
+  </summary>
+</histogram>
+
+<histogram name="Enterprise.Dlp.ScreenShareBlocked" enum="BooleanBlocked"
+    expires_after="2022-03-01">
+  <owner>poromov@chromium.org</owner>
+  <owner>chromeos-dlp@google.com</owner>
+  <summary>
+    Result of Data Leak Prevention evaluation for a screen share.
+  </summary>
+</histogram>
+
+<histogram name="Enterprise.Dlp.ScreenSharePausedOrResumed" enum="Boolean"
+    expires_after="2022-03-01">
+  <owner>poromov@chromium.org</owner>
+  <owner>chromeos-dlp@google.com</owner>
+  <summary>
+    Recorded when screen share was paused (True) or resumed (False) by Data Leak
+    Prevention.
+  </summary>
+</histogram>
+
+<histogram name="Enterprise.Dlp.ScreenshotBlocked" enum="BooleanBlocked"
+    expires_after="2022-03-01">
+  <owner>poromov@chromium.org</owner>
+  <owner>chromeos-dlp@google.com</owner>
+  <summary>
+    Result of Data Leak Prevention evaluation for taking a screenshot.
+  </summary>
+</histogram>
+
+<histogram name="Enterprise.Dlp.VideoCaptureBlocked" enum="BooleanBlocked"
+    expires_after="2022-03-01">
+  <owner>poromov@chromium.org</owner>
+  <owner>chromeos-dlp@google.com</owner>
+  <summary>
+    Result of Data Leak Prevention evaluation for a taking a video capture.
+  </summary>
+</histogram>
+
+<histogram name="Enterprise.Dlp.VideoCaptureInterrupted" enum="Boolean"
+    expires_after="2022-03-01">
+  <owner>poromov@chromium.org</owner>
+  <owner>chromeos-dlp@google.com</owner>
+  <summary>
+    Recorded when video capture was interrupted by Data Leak Prevention.
+  </summary>
+</histogram>
+
 <histogram name="Enterprise.DMServerRequestSuccess"
     enum="EnterpriseDMServerRequestSuccess" expires_after="2021-08-09">
   <owner>poromov@chromium.org</owner>

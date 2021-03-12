@@ -17,6 +17,10 @@ namespace policy {
 class DlpRulesManager : public KeyedService {
  public:
   // A restriction that can be set by DataLeakPreventionRulesList policy.
+  // These values are persisted to logs. Entries should not be renumbered and
+  // numeric values should never be reused.
+  // When new entries are added, EnterpriseDlpPolicyRestriction enum in
+  // histograms/enums.xml should be updated.
   enum class Restriction {
     kUnknownRestriction = 0,
     kClipboard = 1,      // Restricts sharing the data via clipboard and

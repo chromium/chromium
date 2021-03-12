@@ -5,7 +5,9 @@
 #include "chrome/browser/chromeos/policy/dlp/dlp_content_manager.h"
 
 #include "ash/public/cpp/privacy_screen_dlp_helper.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
+#include "chrome/browser/chromeos/policy/dlp/dlp_histogram_helper.h"
 #include "chrome/test/base/testing_profile.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_renderer_host.h"
@@ -70,6 +72,7 @@ class DlpContentManagerTest : public testing::Test {
   DlpContentManager manager_;
   content::BrowserTaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
+  base::HistogramTester histogram_tester_;
 
  private:
   content::RenderViewHostTestEnabler rvh_test_enabler_;
@@ -196,22 +199,38 @@ TEST_F(DlpContentManagerTest, PrivacyScreenEnforcement) {
   testing::Mock::VerifyAndClearExpectations(&mock_privacy_screen_helper);
   EXPECT_CALL(mock_privacy_screen_helper, SetEnforced(true)).Times(1);
   ChangeConfidentiality(web_contents.get(), kPrivacyScreenEnforced);
+  histogram_tester_.ExpectBucketCount(
+      GetDlpHistogramPrefix() + dlp::kPrivacyScreenEnforcedUMA, true, 1);
+  histogram_tester_.ExpectBucketCount(
+      GetDlpHistogramPrefix() + dlp::kPrivacyScreenEnforcedUMA, false, 0);
 
   testing::Mock::VerifyAndClearExpectations(&mock_privacy_screen_helper);
   EXPECT_CALL(mock_privacy_screen_helper, SetEnforced(false)).Times(1);
   web_contents->WasHidden();
   ChangeVisibility(web_contents.get(), /*visible=*/false);
   task_environment_.FastForwardBy(GetPrivacyScreenOffDelay());
+  histogram_tester_.ExpectBucketCount(
+      GetDlpHistogramPrefix() + dlp::kPrivacyScreenEnforcedUMA, true, 1);
+  histogram_tester_.ExpectBucketCount(
+      GetDlpHistogramPrefix() + dlp::kPrivacyScreenEnforcedUMA, false, 1);
 
   testing::Mock::VerifyAndClearExpectations(&mock_privacy_screen_helper);
   EXPECT_CALL(mock_privacy_screen_helper, SetEnforced(true)).Times(1);
   web_contents->WasShown();
   ChangeVisibility(web_contents.get(), /*visible=*/true);
+  histogram_tester_.ExpectBucketCount(
+      GetDlpHistogramPrefix() + dlp::kPrivacyScreenEnforcedUMA, true, 2);
+  histogram_tester_.ExpectBucketCount(
+      GetDlpHistogramPrefix() + dlp::kPrivacyScreenEnforcedUMA, false, 1);
 
   testing::Mock::VerifyAndClearExpectations(&mock_privacy_screen_helper);
   EXPECT_CALL(mock_privacy_screen_helper, SetEnforced(false)).Times(1);
   DestroyWebContents(web_contents.get());
   task_environment_.FastForwardBy(GetPrivacyScreenOffDelay());
+  histogram_tester_.ExpectBucketCount(
+      GetDlpHistogramPrefix() + dlp::kPrivacyScreenEnforcedUMA, true, 2);
+  histogram_tester_.ExpectBucketCount(
+      GetDlpHistogramPrefix() + dlp::kPrivacyScreenEnforcedUMA, false, 2);
 }
 
 TEST_F(DlpContentManagerTest, PrintingRestricted) {
@@ -219,15 +238,27 @@ TEST_F(DlpContentManagerTest, PrintingRestricted) {
   EXPECT_EQ(manager_.GetConfidentialRestrictions(web_contents.get()),
             kEmptyRestrictionSet);
   EXPECT_FALSE(manager_.IsPrintingRestricted(web_contents.get()));
+  histogram_tester_.ExpectBucketCount(
+      GetDlpHistogramPrefix() + dlp::kPrintingBlockedUMA, true, 0);
+  histogram_tester_.ExpectBucketCount(
+      GetDlpHistogramPrefix() + dlp::kPrintingBlockedUMA, false, 1);
 
   ChangeConfidentiality(web_contents.get(), kPrintingRestricted);
   EXPECT_EQ(manager_.GetConfidentialRestrictions(web_contents.get()),
             kPrintingRestricted);
   EXPECT_TRUE(manager_.IsPrintingRestricted(web_contents.get()));
+  histogram_tester_.ExpectBucketCount(
+      GetDlpHistogramPrefix() + dlp::kPrintingBlockedUMA, true, 1);
+  histogram_tester_.ExpectBucketCount(
+      GetDlpHistogramPrefix() + dlp::kPrintingBlockedUMA, false, 1);
 
   DestroyWebContents(web_contents.get());
   EXPECT_EQ(manager_.GetConfidentialRestrictions(web_contents.get()),
             kEmptyRestrictionSet);
   EXPECT_FALSE(manager_.IsPrintingRestricted(web_contents.get()));
+  histogram_tester_.ExpectBucketCount(
+      GetDlpHistogramPrefix() + dlp::kPrintingBlockedUMA, true, 1);
+  histogram_tester_.ExpectBucketCount(
+      GetDlpHistogramPrefix() + dlp::kPrintingBlockedUMA, false, 2);
 }
 }  // namespace policy
