@@ -15,12 +15,10 @@
 #elif defined(OS_ANDROID)
 #include "services/device/generic_sensor/platform_sensor_provider_android.h"
 #elif defined(OS_WIN)
-#include "base/feature_list.h"
 #include "base/win/windows_version.h"
 #include "build/build_config.h"
 #include "services/device/generic_sensor/platform_sensor_provider_win.h"
 #include "services/device/generic_sensor/platform_sensor_provider_winrt.h"
-#include "services/device/public/cpp/device_features.h"
 #elif BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
 #if BUILDFLAG(USE_IIOSERVICE)
 #include "services/device/generic_sensor/platform_sensor_provider_chromeos.h"
@@ -71,8 +69,7 @@ bool PlatformSensorProvider::UseWindowsWinrt() {
   // because a previous version (RS5) contains an access violation
   // issue in the WinRT APIs which causes the client code to crash.
   // See http://crbug.com/1063124
-  return base::FeatureList::IsEnabled(features::kWinrtSensorsImplementation) &&
-         base::win::GetVersion() >= base::win::Version::WIN10_19H1;
+  return base::win::GetVersion() >= base::win::Version::WIN10_19H1;
 }
 #endif
 

@@ -2682,11 +2682,6 @@
     "expiry_milestone": 100
   },
   {
-    "name": "enable-winrt-sensor-implementation",
-    "owners": [ "wensh@microsoft.com" ],
-    "expiry_milestone": 84
-  },
-  {
     "name": "enable-zero-copy",
     "owners": [ "ccameron", "chrome-gpu@google.com" ],
     // This flag is commonly used when asking users to help gather debug info.

@@ -491,9 +491,6 @@ extern const char kNotificationsViaHelperAppDescription[];
 extern const char kWinrtGeolocationImplementationName[];
 extern const char kWinrtGeolocationImplementationDescription[];
 
-extern const char kWinrtSensorsImplementationName[];
-extern const char kWinrtSensorsImplementationDescription[];
-
 extern const char kEnableGenericSensorExtraClassesName[];
 extern const char kEnableGenericSensorExtraClassesDescription[];
 
