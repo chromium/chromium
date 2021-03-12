@@ -127,10 +127,9 @@ void CloseSigninManagedAccountDialogIfAny(FakeChromeIdentity* fakeIdentity) {
 
 + (void)tapSettingsLink {
   [[EarlGrey
-      selectElementWithMatcher:grey_allOf(grey_accessibilityLabel(@"settings"),
-                                          grey_accessibilityTrait(
-                                              UIAccessibilityTraitLink),
-                                          nil)] performAction:grey_tap()];
+      selectElementWithMatcher:grey_accessibilityID(
+                                   kAdvancedSigninSettingsLinkIdentifier)]
+      performAction:grey_tap()];
 }
 
 + (void)tapSigninConfirmationDialog {
