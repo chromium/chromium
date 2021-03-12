@@ -102,6 +102,18 @@ class TextFieldApi extends PolymerElementApi {
   }
 }
 
+class HIDDetectionScreen extends ScreenElementApi {
+  constructor() {
+    super('hid-detection');
+    this.nextButton = new PolymerElementApi(this, '#hid-continue-button');
+  }
+
+  // Must be called to enable the next button
+  emulateDevicesConnected() {
+    chrome.send('HIDDetectionScreen.emulateDevicesConnectedForTesting');
+  }
+}
+
 class WelcomeScreen extends ScreenElementApi {
   constructor() {
     super('connect');
@@ -219,6 +231,7 @@ class PinSetupScreen extends ScreenElementApi {
 class OobeApiProvider {
   constructor() {
     this.screens = {
+      HIDDetectionScreen: new HIDDetectionScreen(),
       WelcomeScreen: new WelcomeScreen(),
       NetworkScreen: new NetworkScreen(),
       EulaScreen: new EulaScreen(),

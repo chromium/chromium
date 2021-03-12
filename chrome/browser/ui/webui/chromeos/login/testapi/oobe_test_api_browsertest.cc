@@ -4,6 +4,7 @@
 
 #include "ash/constants/ash_switches.h"
 #include "build/branding_buildflags.h"
+#include "chrome/browser/ash/login/test/hid_controller_mixin.h"
 #include "chrome/browser/ash/login/test/oobe_base_test.h"
 #include "chrome/browser/ash/login/test/test_condition_waiter.h"
 #include "content/public/test/browser_test.h"
@@ -39,6 +40,31 @@ IN_PROC_BROWSER_TEST_F(OobeTestApiTest, OobeAPI) {
 #else
   test::OobeJS().ExpectTrue("OobeAPI.screens.EulaScreen.shouldSkip()");
 #endif
+}
+
+class OobeTestApiTestChromebox : public OobeTestApiTest {
+ public:
+  OobeTestApiTestChromebox() {
+    base::SysInfo::SetChromeOSVersionInfoForTest("DEVICETYPE=CHROMEBASE",
+                                                 base::Time::Now());
+  }
+  ~OobeTestApiTestChromebox() override {}
+
+ protected:
+  test::HIDControllerMixin hid_controller_{&mixin_host_};
+};
+
+IN_PROC_BROWSER_TEST_F(OobeTestApiTestChromebox, HIDDetectionScreen) {
+  test::OobeJS().CreateWaiter("window.OobeAPI")->Wait();
+  test::OobeJS()
+      .CreateWaiter("OobeAPI.screens.HIDDetectionScreen.isVisible()")
+      ->Wait();
+  test::OobeJS().Evaluate(
+      "OobeAPI.screens.HIDDetectionScreen.emulateDevicesConnected()");
+  test::OobeJS()
+      .CreateWaiter("OobeAPI.screens.HIDDetectionScreen.isEnabled()")
+      ->Wait();
+  test::OobeJS().Evaluate("OobeAPI.screens.HIDDetectionScreen.clickNext()");
 }
 
 class NoOobeTestApiTest : public OobeBaseTest {

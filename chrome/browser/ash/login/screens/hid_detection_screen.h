@@ -67,6 +67,7 @@ class HIDDetectionScreen : public BaseScreen,
   static void OverrideInputDeviceManagerBinderForTesting(
       InputDeviceManagerBinder binder);
 
+  void InputDeviceAddedForTesting(InputDeviceInfoPtr info);
   const base::Optional<Result>& get_exit_result_for_testing() const {
     return exit_result_for_testing_;
   }

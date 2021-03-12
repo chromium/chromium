@@ -494,6 +494,10 @@ void HIDDetectionScreen::InputDeviceAdded(InputDeviceInfoPtr info) {
   }
 }
 
+void HIDDetectionScreen::InputDeviceAddedForTesting(InputDeviceInfoPtr info) {
+  InputDeviceAdded(std::move(info));
+}
+
 void HIDDetectionScreen::InputDeviceRemoved(const std::string& id) {
   devices_.erase(id);
   if (is_hidden())

@@ -69,10 +69,14 @@ class HIDDetectionScreenHandler
   // BaseScreenHandler implementation:
   void DeclareLocalizedValues(
       ::login::LocalizedValuesBuilder* builder) override;
+  void DeclareJSCallbacks() override;
   void Initialize() override;
 
   // Registers the preference for derelict state.
   static void RegisterPrefs(PrefRegistrySimple* registry);
+
+  // Emulate that a USB Mouse and a USB Keyboard are connected for testing.
+  void HandleEmulateDevicesConnectedForTesting();
 
   // State that has been exported to JS. Used by tests.
   std::string keyboard_state_for_test() const { return keyboard_state_; }
