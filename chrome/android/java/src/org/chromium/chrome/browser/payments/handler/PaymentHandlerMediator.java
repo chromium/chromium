@@ -150,17 +150,18 @@ import java.lang.annotation.RetentionPolicy;
     public void onSheetOffsetChanged(float heightFraction, float offsetPx) {}
 
     /**
-     * Set whether PaymentHandler UI is obscuring all tabs.
+     * Set whether to obscure all tabs. Note the difference between scrim and obscure, while scrims
+     * reduces the background visibility, obscure makes the background invisible to screen readers.
      * @param activity The ChromeActivity of the tab.
-     * @param isObscuring Whether PaymentHandler UI is considered to be obscuring.
+     * @param obscure Whether to obscure all tabs.
      */
-    private void setIsObscuringAllTabs(ChromeActivity activity, boolean isObscuring) {
+    private void setObscureState(ChromeActivity activity, boolean obscure) {
         TabObscuringHandler obscuringHandler = activity.getTabObscuringHandler();
         if (obscuringHandler == null) return;
-        if (isObscuring) {
-            assert mTabObscuringToken == TokenHolder.INVALID_TOKEN;
+
+        if (obscure && mTabObscuringToken == TokenHolder.INVALID_TOKEN) {
             mTabObscuringToken = obscuringHandler.obscureAllTabs();
-        } else {
+        } else if (!obscure && mTabObscuringToken != TokenHolder.INVALID_TOKEN) {
             obscuringHandler.unobscureAllTabs(mTabObscuringToken);
             mTabObscuringToken = TokenHolder.INVALID_TOKEN;
         }
@@ -171,11 +172,12 @@ import java.lang.annotation.RetentionPolicy;
         ChromeActivity activity = ChromeActivity.fromWebContents(mPaymentHandlerWebContents);
         assert activity != null;
 
-        PropertyModel params = mBottomSheetController.createScrimParams();
         ScrimCoordinator coordinator = mBottomSheetController.getScrimCoordinator();
-        coordinator.showScrim(params);
-
-        setIsObscuringAllTabs(activity, true);
+        if (coordinator != null && !coordinator.isShowingScrim()) {
+            PropertyModel params = mBottomSheetController.createScrimParams();
+            coordinator.showScrim(params);
+        }
+        setObscureState(activity, true);
     }
 
     // Implement BottomSheetObserver:
@@ -240,11 +242,12 @@ import java.lang.annotation.RetentionPolicy;
         // activity would be null when this method is triggered by activity being destroyed.
         if (activity == null) return;
 
-        setIsObscuringAllTabs(activity, false);
+        setObscureState(activity, false);
 
         ScrimCoordinator coordinator = mBottomSheetController.getScrimCoordinator();
-        if (coordinator == null) return;
-        coordinator.hideScrim(/*animate=*/true);
+        if (coordinator != null && coordinator.isShowingScrim()) {
+            coordinator.hideScrim(/*animate=*/true);
+        }
     }
 
     // Implement WebContentsObserver:
