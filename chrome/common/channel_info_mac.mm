@@ -93,9 +93,10 @@ bool SideBySideCapable() {
     }
 
     if (GetChannelState().name.empty()) {
-      // For the stable channel, GetChannelName() returns the empty string.
-      // Stable Chromes are what side-by-side capable Chromes are running
-      // side-by-side *to* and by definition are side-by-side capable.
+      // GetChannelState() returns an empty name for the regular and extended
+      // stable channels. These stable Chromes are what side-by-side capable
+      // Chromes are running side-by-side *to* and by definition are
+      // side-by-side capable.
       return true;
     }
 
@@ -128,7 +129,7 @@ std::string GetChannelName(WithExtendedStable with_extended_stable) {
 
 version_info::Channel GetChannelByName(const std::string& channel) {
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-  if (channel.empty())
+  if (channel.empty() || channel == "extended")
     return version_info::Channel::STABLE;
   if (channel == "beta")
     return version_info::Channel::BETA;
