@@ -122,6 +122,9 @@ class PLATFORM_EXPORT AudioDestination
   // Sets the detect silence flag for |web_audio_device_|.
   void SetDetectSilence(bool detect_silence);
 
+  // This should only be called from the audio thread.
+  unsigned RenderQuantumFrames() const { return render_quantum_frames_; }
+
  private:
   // Represents the current state of the underlying |WebAudioDevice| object
   // (RendererWebAudioDeviceImpl).
@@ -141,8 +144,6 @@ class PLATFORM_EXPORT AudioDestination
 
   size_t HardwareBufferSize();
 
-  // This should only be called from the audio thread.
-  unsigned RenderQuantumFrames() const { return render_quantum_frames_; }
   unsigned render_quantum_frames_;
 
   // Accessed by the main thread.

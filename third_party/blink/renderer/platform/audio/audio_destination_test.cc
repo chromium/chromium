@@ -90,8 +90,8 @@ void CountWASamplesProcessedForRate(base::Optional<float> sample_rate) {
                 Platform::Current()->AudioHardwareSampleRate());
   int expected_frames_processed =
       std::ceil(exact_frames_required /
-                static_cast<double>(audio_utilities::kRenderQuantumFrames)) *
-      audio_utilities::kRenderQuantumFrames;
+                static_cast<double>(destination->RenderQuantumFrames())) *
+      destination->RenderQuantumFrames();
 
   EXPECT_EQ(expected_frames_processed, callback.frames_processed_);
 }

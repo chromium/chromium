@@ -25,6 +25,8 @@ TEST(PushPullFIFOBasicTest, BasicTests) {
   // the test execution time, but this specific test is very short and simple.
   testing::FLAGS_gtest_death_test_style = "threadsafe";
 
+  const unsigned kRenderQuantumFrames = 128;
+
   // FIFO length exceeding the maximum length allowed will cause crash.
   // i.e.) fifo_length_ <= kMaxFIFOLength
   EXPECT_DEATH(new PushPullFIFO(2, PushPullFIFO::kMaxFIFOLength + 1), "");
@@ -35,10 +37,10 @@ TEST(PushPullFIFOBasicTest, BasicTests) {
   // The input bus length must be |audio_utilities::kRenderQuantumFrames|.
   // i.e.) input_bus->length() == kRenderQuantumFrames
   scoped_refptr<AudioBus> input_bus_129_frames =
-      AudioBus::Create(2, audio_utilities::kRenderQuantumFrames + 1);
+      AudioBus::Create(2, kRenderQuantumFrames + 1);
   EXPECT_DEATH(test_fifo->Push(input_bus_129_frames.get()), "");
   scoped_refptr<AudioBus> input_bus_127_frames =
-      AudioBus::Create(2, audio_utilities::kRenderQuantumFrames - 1);
+      AudioBus::Create(2, kRenderQuantumFrames - 1);
   EXPECT_DEATH(test_fifo->Push(input_bus_127_frames.get()), "");
 
   // Pull request frames cannot exceed the length of output bus.
