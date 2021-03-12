@@ -568,7 +568,7 @@ const base::Feature kOfflineMeasurementsBackgroundTask{
     "OfflineMeasurementsBackgroundTask", base::FEATURE_DISABLED_BY_DEFAULT};
 
 const base::Feature kOmniboxSpareRenderer{"OmniboxSpareRenderer",
-                                          base::FEATURE_DISABLED_BY_DEFAULT};
+                                          base::FEATURE_ENABLED_BY_DEFAULT};
 
 const base::Feature kPageAnnotationsService{"PageAnnotationsService",
                                             base::FEATURE_DISABLED_BY_DEFAULT};

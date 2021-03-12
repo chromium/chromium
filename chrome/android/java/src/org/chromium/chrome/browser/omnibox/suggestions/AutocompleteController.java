@@ -39,6 +39,13 @@ public class AutocompleteController {
     // Maximum number of voice suggestions to show.
     private static final int MAX_VOICE_SUGGESTION_COUNT = 3;
 
+    // The delay between the Omnibox being opened and a spare renderer being started. Starting a
+    // spare renderer is a very expensive operation, so this value must always be great enough for
+    // the Omnibox to be fully rendered and otherwise not doing anything important but not so great
+    // that the user navigates before it occurs. Experimentation between 1s, 2s, 3s found that 1s
+    // was the most ideal.
+    private static final int OMNIBOX_SPARE_RENDERER_DELAY_MS = 1000;
+
     private long mNativeAutocompleteControllerAndroid;
     private long mCurrentNativeAutocompleteResult;
     private OnSuggestionsReceivedListener mListener;
@@ -184,15 +191,18 @@ public class AutocompleteController {
         // spare renderer will probably get used anyways by a later navigation.
         if (!profile.isOffTheRecord() && !UrlUtilities.isNTPUrl(url)
                 && ChromeFeatureList.isEnabled(ChromeFeatureList.OMNIBOX_SPARE_RENDERER)) {
+            // It is ok for this to get called multiple times since all the requests will get
+            // de-duplicated to the first one.
             PostTask.postDelayedTask(UiThreadTaskTraits.BEST_EFFORT,
-                    ()
-                            -> {
+                    // clang-format off
+                    () -> {
                         ThreadUtils.assertOnUiThread();
                         WarmupManager.getInstance().createSpareRenderProcessHost(profile);
                     },
+                    // clang-format on
                     ChromeFeatureList.getFieldTrialParamByFeatureAsInt(
                             ChromeFeatureList.OMNIBOX_SPARE_RENDERER,
-                            "omnibox_spare_renderer_delay_ms", 0));
+                            "omnibox_spare_renderer_delay_ms", OMNIBOX_SPARE_RENDERER_DELAY_MS));
         }
         mNativeAutocompleteControllerAndroid =
                 AutocompleteControllerJni.get().init(AutocompleteController.this, profile);

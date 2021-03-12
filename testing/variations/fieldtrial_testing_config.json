@@ -4863,21 +4863,6 @@
             ]
         }
     ],
-    "OmniboxSpareRendererGWS": [
-        {
-            "platforms": [
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "OmniboxSpareRenderer"
-                    ]
-                }
-            ]
-        }
-    ],
     "OneCopyRasterBufferPlaybackNormalThreadPriority": [
         {
             "platforms": [
