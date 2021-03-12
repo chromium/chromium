@@ -188,7 +188,7 @@ TEST(UTFStringConversionsTest, ConvertMultiString) {
     'b', 'a', 'z', '\0',
     '\0'
   };
-  string16 multistring16;
+  std::u16string multistring16;
   memcpy(WriteInto(&multistring16, base::size(multi16)), multi16,
          sizeof(multi16));
   EXPECT_EQ(base::size(multi16) - 1, multistring16.length());

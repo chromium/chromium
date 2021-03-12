@@ -12,12 +12,12 @@ NullableString16::NullableString16() = default;
 NullableString16::NullableString16(const NullableString16& other) = default;
 NullableString16::NullableString16(NullableString16&& other) = default;
 
-NullableString16::NullableString16(const string16& string, bool is_null) {
+NullableString16::NullableString16(const std::u16string& string, bool is_null) {
   if (!is_null)
     string_.emplace(string);
 }
 
-NullableString16::NullableString16(Optional<string16> optional_string16)
+NullableString16::NullableString16(Optional<std::u16string> optional_string16)
     : string_(std::move(optional_string16)) {}
 
 NullableString16::~NullableString16() = default;

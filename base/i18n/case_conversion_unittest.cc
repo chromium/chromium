@@ -31,11 +31,13 @@ const wchar_t kNonASCIIUpper[] =
 
 // Test upper and lower case string conversion.
 TEST(CaseConversionTest, UpperLower) {
-  const string16 mixed(ASCIIToUTF16("Text with UPPer & lowER casE."));
-  const string16 expected_lower(ASCIIToUTF16("text with upper & lower case."));
-  const string16 expected_upper(ASCIIToUTF16("TEXT WITH UPPER & LOWER CASE."));
+  const std::u16string mixed(ASCIIToUTF16("Text with UPPer & lowER casE."));
+  const std::u16string expected_lower(
+      ASCIIToUTF16("text with upper & lower case."));
+  const std::u16string expected_upper(
+      ASCIIToUTF16("TEXT WITH UPPER & LOWER CASE."));
 
-  string16 result = ToLower(mixed);
+  std::u16string result = ToLower(mixed);
   EXPECT_EQ(expected_lower, result);
 
   result = ToUpper(mixed);
@@ -43,11 +45,11 @@ TEST(CaseConversionTest, UpperLower) {
 }
 
 TEST(CaseConversionTest, NonASCII) {
-  const string16 mixed(WideToUTF16(kNonASCIIMixed));
-  const string16 expected_lower(WideToUTF16(kNonASCIILower));
-  const string16 expected_upper(WideToUTF16(kNonASCIIUpper));
+  const std::u16string mixed(WideToUTF16(kNonASCIIMixed));
+  const std::u16string expected_lower(WideToUTF16(kNonASCIILower));
+  const std::u16string expected_upper(WideToUTF16(kNonASCIIUpper));
 
-  string16 result = ToLower(mixed);
+  std::u16string result = ToLower(mixed);
   EXPECT_EQ(expected_lower, result);
 
   result = ToUpper(mixed);
@@ -55,14 +57,14 @@ TEST(CaseConversionTest, NonASCII) {
 }
 
 TEST(CaseConversionTest, TurkishLocaleConversion) {
-  const string16 mixed(WideToUTF16(L"\x49\x131"));
-  const string16 expected_lower(WideToUTF16(L"\x69\x131"));
-  const string16 expected_upper(WideToUTF16(L"\x49\x49"));
+  const std::u16string mixed(WideToUTF16(L"\x49\x131"));
+  const std::u16string expected_lower(WideToUTF16(L"\x69\x131"));
+  const std::u16string expected_upper(WideToUTF16(L"\x49\x49"));
 
   test::ScopedRestoreICUDefaultLocale restore_locale;
   i18n::SetICUDefaultLocale("en_US");
 
-  string16 result = ToLower(mixed);
+  std::u16string result = ToLower(mixed);
   EXPECT_EQ(expected_lower, result);
 
   result = ToUpper(mixed);
@@ -70,8 +72,8 @@ TEST(CaseConversionTest, TurkishLocaleConversion) {
 
   i18n::SetICUDefaultLocale("tr");
 
-  const string16 expected_lower_turkish(WideToUTF16(L"\x131\x131"));
-  const string16 expected_upper_turkish(WideToUTF16(L"\x49\x49"));
+  const std::u16string expected_lower_turkish(WideToUTF16(L"\x131\x131"));
+  const std::u16string expected_upper_turkish(WideToUTF16(L"\x49\x49"));
 
   result = ToLower(mixed);
   EXPECT_EQ(expected_lower_turkish, result);
@@ -93,8 +95,8 @@ TEST(CaseConversionTest, FoldCase) {
 
   // Turkish cases from above. This is the lower-case expected result from the
   // US locale. It should be the same even when the current locale is Turkish.
-  const string16 turkish(WideToUTF16(L"\x49\x131"));
-  const string16 turkish_expected(WideToUTF16(L"\x69\x131"));
+  const std::u16string turkish(WideToUTF16(L"\x49\x131"));
+  const std::u16string turkish_expected(WideToUTF16(L"\x69\x131"));
 
   test::ScopedRestoreICUDefaultLocale restore_locale;
   i18n::SetICUDefaultLocale("en_US");

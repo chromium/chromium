@@ -249,7 +249,7 @@ PlatformSharedMemoryRegion PlatformSharedMemoryRegion::Create(Mode mode,
     return {};
   }
 
-  string16 name;
+  std::u16string name;
   if (win::GetVersion() < win::Version::WIN8_1) {
     // Windows < 8.1 ignores DACLs on certain unnamed objects (like shared
     // sections). So, we generate a random name when we need to enforce

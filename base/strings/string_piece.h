@@ -117,7 +117,7 @@ template <typename STRING_TYPE> class BasicStringPiece {
  public:
   // We provide non-explicit singleton constructors so users can pass
   // in a "const char*" or a "string" wherever a "StringPiece" is
-  // expected (likewise for char16_t, string16, StringPiece16).
+  // expected (likewise for char16_t, std::u16string, StringPiece16).
   constexpr BasicStringPiece() : ptr_(nullptr), length_(0) {}
   // TODO(crbug.com/1049498): Construction from nullptr is not allowed for
   // std::basic_string_view, so remove the special handling for it.
@@ -430,7 +430,7 @@ BasicStringPiece<STRING_TYPE>::npos =
 // MSVC doesn't like complex extern templates and DLLs.
 #if !defined(COMPILER_MSVC)
 extern template class BASE_EXPORT BasicStringPiece<std::string>;
-extern template class BASE_EXPORT BasicStringPiece<string16>;
+extern template class BASE_EXPORT BasicStringPiece<std::u16string>;
 #endif
 
 // Comparison operators --------------------------------------------------------
@@ -570,7 +570,7 @@ BASE_EXPORT std::ostream& operator<<(std::ostream& o, WStringPiece piece);
 // be used as keys in hash sets and maps.
 
 // This hash function is copied from base/strings/string16.h. We don't use the
-// ones already defined for string and string16 directly because it would
+// ones already defined for string and std::u16string directly because it would
 // require the string constructors to be called, which we don't want.
 
 template <typename StringPieceType>

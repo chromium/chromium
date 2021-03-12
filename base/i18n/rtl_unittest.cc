@@ -278,7 +278,7 @@ TEST_F(RTLTest, WrapPathWithLTRFormatting) {
     path = FilePath(base::SysWideToNativeMB(i));
     std::wstring wrapped_expected = std::wstring(L"\x202a") + i + L"\x202c";
 #endif
-    string16 localized_file_path_string;
+    std::u16string localized_file_path_string;
     WrapPathWithLTRFormatting(path, &localized_file_path_string);
 
     std::wstring wrapped_actual = UTF16ToWide(localized_file_path_string);
@@ -304,21 +304,21 @@ TEST_F(RTLTest, WrapString) {
     // Toggle the application default text direction (to try each direction).
     SetRTLForTesting(!IsRTL());
 
-    string16 empty;
+    std::u16string empty;
     WrapStringWithLTRFormatting(&empty);
     EXPECT_TRUE(empty.empty());
     WrapStringWithRTLFormatting(&empty);
     EXPECT_TRUE(empty.empty());
 
     for (auto*& test_case : cases) {
-      string16 input = WideToUTF16(test_case);
-      string16 ltr_wrap = input;
+      std::u16string input = WideToUTF16(test_case);
+      std::u16string ltr_wrap = input;
       WrapStringWithLTRFormatting(&ltr_wrap);
       EXPECT_EQ(ltr_wrap[0], kLeftToRightEmbeddingMark);
       EXPECT_EQ(ltr_wrap.substr(1, ltr_wrap.length() - 2), input);
       EXPECT_EQ(ltr_wrap[ltr_wrap.length() -1], kPopDirectionalFormatting);
 
-      string16 rtl_wrap = input;
+      std::u16string rtl_wrap = input;
       WrapStringWithRTLFormatting(&rtl_wrap);
       EXPECT_EQ(rtl_wrap[0], kRightToLeftEmbeddingMark);
       EXPECT_EQ(rtl_wrap.substr(1, rtl_wrap.length() - 2), input);
@@ -352,8 +352,8 @@ TEST_F(RTLTest, GetDisplayStringInLTRDirectionality) {
     // Toggle the application default text direction (to try each direction).
     SetRTLForTesting(!IsRTL());
     for (auto& test_case : cases) {
-      string16 input = WideToUTF16(test_case.path);
-      string16 output = GetDisplayStringInLTRDirectionality(input);
+      std::u16string input = WideToUTF16(test_case.path);
+      std::u16string output = GetDisplayStringInLTRDirectionality(input);
       // Test the expected wrapping behavior for the current UI directionality.
       if (IsRTL() ? test_case.wrap_rtl : test_case.wrap_ltr)
         EXPECT_NE(output, input);
@@ -440,8 +440,8 @@ TEST_F(RTLTest, UnadjustStringForLocaleDirection) {
     SetRTLForTesting(!IsRTL());
 
     for (auto*& test_case : cases) {
-      string16 unadjusted_string = WideToUTF16(test_case);
-      string16 adjusted_string = unadjusted_string;
+      std::u16string unadjusted_string = WideToUTF16(test_case);
+      std::u16string adjusted_string = unadjusted_string;
 
       if (!AdjustStringForLocaleDirection(&adjusted_string))
         continue;
@@ -491,8 +491,8 @@ TEST_F(RTLTest, EnsureTerminatedDirectionalFormatting) {
     // Toggle the application default text direction (to try each direction).
     SetRTLForTesting(!IsRTL());
     for (auto& test_case : cases) {
-      string16 unsanitized_text = WideToUTF16(test_case.unformated_text);
-      string16 sanitized_text = WideToUTF16(test_case.formatted_text);
+      std::u16string unsanitized_text = WideToUTF16(test_case.unformated_text);
+      std::u16string sanitized_text = WideToUTF16(test_case.formatted_text);
       EnsureTerminatedDirectionalFormatting(&unsanitized_text);
       EXPECT_EQ(sanitized_text, unsanitized_text);
     }
@@ -525,13 +525,14 @@ TEST_F(RTLTest, SanitizeUserSuppliedString) {
 
   for (auto& i : cases) {
     // On Windows for an LTR locale, no changes to the string are made.
-    string16 prefix, suffix = WideToUTF16(L"");
+    std::u16string prefix, suffix = WideToUTF16(L"");
 #if !defined(OS_WIN)
     prefix = WideToUTF16(L"\x200e\x202b");
     suffix = WideToUTF16(L"\x202c\x200e");
 #endif  // !OS_WIN
-    string16 unsanitized_text = WideToUTF16(i.unformatted_text);
-    string16 sanitized_text = prefix + WideToUTF16(i.formatted_text) + suffix;
+    std::u16string unsanitized_text = WideToUTF16(i.unformatted_text);
+    std::u16string sanitized_text =
+        prefix + WideToUTF16(i.formatted_text) + suffix;
     SanitizeUserSuppliedString(&unsanitized_text);
     EXPECT_EQ(sanitized_text, unsanitized_text);
   }

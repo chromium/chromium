@@ -103,11 +103,11 @@ TEST_F(FileUtilICUTest, ReplaceIllegalCharactersInPathTest) {
 #endif
 
 TEST_F(FileUtilICUTest, IsFilenameLegalTest) {
-  EXPECT_TRUE(IsFilenameLegal(string16()));
+  EXPECT_TRUE(IsFilenameLegal(std::u16string()));
 
   for (const auto& test_case : kIllegalCharacterCases) {
-    string16 bad_name = test_case.bad_name;
-    string16 good_name = test_case.good_name;
+    std::u16string bad_name = test_case.bad_name;
+    std::u16string good_name = test_case.good_name;
 
     EXPECT_TRUE(IsFilenameLegal(good_name)) << good_name;
     if (good_name != bad_name)

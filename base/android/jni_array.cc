@@ -194,7 +194,7 @@ ScopedJavaLocalRef<jobjectArray> ToJavaArrayOfStrings(
 
 ScopedJavaLocalRef<jobjectArray> ToJavaArrayOfStringArray(
     JNIEnv* env,
-    base::span<const std::vector<string16>> vec_outer) {
+    base::span<const std::vector<std::u16string>> vec_outer) {
   ScopedJavaLocalRef<jclass> string_array_clazz =
       GetClass(env, "[Ljava/lang/String;");
 
@@ -213,7 +213,7 @@ ScopedJavaLocalRef<jobjectArray> ToJavaArrayOfStringArray(
 
 ScopedJavaLocalRef<jobjectArray> ToJavaArrayOfStrings(
     JNIEnv* env,
-    base::span<const string16> v) {
+    base::span<const std::u16string> v) {
   ScopedJavaLocalRef<jclass> string_clazz = GetClass(env, "java/lang/String");
   jobjectArray joa = env->NewObjectArray(v.size(), string_clazz.obj(), nullptr);
   CheckException(env);
@@ -227,7 +227,7 @@ ScopedJavaLocalRef<jobjectArray> ToJavaArrayOfStrings(
 
 void AppendJavaStringArrayToStringVector(JNIEnv* env,
                                          const JavaRef<jobjectArray>& array,
-                                         std::vector<string16>* out) {
+                                         std::vector<std::u16string>* out) {
   DCHECK(out);
   if (!array)
     return;
@@ -398,7 +398,7 @@ void JavaArrayOfByteArrayToBytesVector(JNIEnv* env,
 void Java2dStringArrayTo2dStringVector(
     JNIEnv* env,
     const JavaRef<jobjectArray>& array,
-    std::vector<std::vector<string16>>* out) {
+    std::vector<std::vector<std::u16string>>* out) {
   DCHECK(out);
   size_t len = SafeGetArrayLength(env, array);
   out->resize(len);

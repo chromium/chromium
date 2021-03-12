@@ -163,9 +163,9 @@ std::string SysCFStringRefToUTF8(CFStringRef ref) {
                                                        kNarrowStringEncoding);
 }
 
-string16 SysCFStringRefToUTF16(CFStringRef ref) {
-  return CFStringToSTLStringWithEncodingT<string16>(ref,
-                                                    kMediumStringEncoding);
+std::u16string SysCFStringRefToUTF16(CFStringRef ref) {
+  return CFStringToSTLStringWithEncodingT<std::u16string>(
+      ref, kMediumStringEncoding);
 }
 
 std::string SysNSStringToUTF8(NSString* nsstring) {
@@ -174,9 +174,9 @@ std::string SysNSStringToUTF8(NSString* nsstring) {
   return SysCFStringRefToUTF8(reinterpret_cast<CFStringRef>(nsstring));
 }
 
-string16 SysNSStringToUTF16(NSString* nsstring) {
+std::u16string SysNSStringToUTF16(NSString* nsstring) {
   if (!nsstring)
-    return string16();
+    return std::u16string();
   return SysCFStringRefToUTF16(reinterpret_cast<CFStringRef>(nsstring));
 }
 

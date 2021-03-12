@@ -834,7 +834,7 @@ bool Value::GetAsString(std::string* out_value) const {
   return is_string();
 }
 
-bool Value::GetAsString(string16* out_value) const {
+bool Value::GetAsString(std::u16string* out_value) const {
   if (out_value && is_string()) {
     *out_value = UTF8ToUTF16(GetString());
     return true;
@@ -1144,7 +1144,8 @@ Value* DictionaryValue::SetString(StringPiece path, StringPiece in_value) {
   return Set(path, std::make_unique<Value>(in_value));
 }
 
-Value* DictionaryValue::SetString(StringPiece path, const string16& in_value) {
+Value* DictionaryValue::SetString(StringPiece path,
+                                  const std::u16string& in_value) {
   return Set(path, std::make_unique<Value>(in_value));
 }
 
@@ -1219,7 +1220,8 @@ bool DictionaryValue::GetString(StringPiece path,
   return value->GetAsString(out_value);
 }
 
-bool DictionaryValue::GetString(StringPiece path, string16* out_value) const {
+bool DictionaryValue::GetString(StringPiece path,
+                                std::u16string* out_value) const {
   const Value* value;
   if (!Get(path, &value))
     return false;
@@ -1351,8 +1353,9 @@ bool DictionaryValue::GetStringWithoutPathExpansion(
   return value->GetAsString(out_value);
 }
 
-bool DictionaryValue::GetStringWithoutPathExpansion(StringPiece key,
-                                                    string16* out_value) const {
+bool DictionaryValue::GetStringWithoutPathExpansion(
+    StringPiece key,
+    std::u16string* out_value) const {
   const Value* value;
   if (!GetWithoutPathExpansion(key, &value))
     return false;
@@ -1558,7 +1561,7 @@ bool ListValue::GetString(size_t index, std::string* out_value) const {
   return value->GetAsString(out_value);
 }
 
-bool ListValue::GetString(size_t index, string16* out_value) const {
+bool ListValue::GetString(size_t index, std::u16string* out_value) const {
   const Value* value;
   if (!Get(index, &value))
     return false;
@@ -1656,7 +1659,7 @@ void ListValue::AppendString(StringPiece in_value) {
   list().emplace_back(in_value);
 }
 
-void ListValue::AppendString(const string16& in_value) {
+void ListValue::AppendString(const std::u16string& in_value) {
   list().emplace_back(in_value);
 }
 

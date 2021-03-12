@@ -48,7 +48,7 @@ void AppendFormattedDateTime(const std::unique_ptr<icu::DateFormat>& df,
 }  // namespace
 
 TEST_F(MessageFormatterTest, PluralNamedArgs) {
-  const string16 pattern = ASCIIToUTF16(
+  const std::u16string pattern = ASCIIToUTF16(
       "{num_people, plural, "
       "=0 {I met nobody in {place}.}"
       "=1 {I met a person in {place}.}"
@@ -66,7 +66,7 @@ TEST_F(MessageFormatterTest, PluralNamedArgs) {
 }
 
 TEST_F(MessageFormatterTest, PluralNamedArgsWithOffset) {
-  const string16 pattern = ASCIIToUTF16(
+  const std::u16string pattern = ASCIIToUTF16(
       "{num_people, plural, offset:1 "
       "=0 {I met nobody in {place}.}"
       "=1 {I met {person} in {place}.}"
@@ -96,7 +96,7 @@ TEST_F(MessageFormatterTest, PluralNamedArgsWithOffset) {
 }
 
 TEST_F(MessageFormatterTest, PluralNumberedArgs) {
-  const string16 pattern = ASCIIToUTF16(
+  const std::u16string pattern = ASCIIToUTF16(
       "{1, plural, "
       "=1 {The cert for {0} expired yesterday.}"
       "=7 {The cert for {0} expired a week ago.}"
@@ -114,7 +114,7 @@ TEST_F(MessageFormatterTest, PluralNumberedArgs) {
 }
 
 TEST_F(MessageFormatterTest, PluralNumberedArgsWithDate) {
-  const string16 pattern = ASCIIToUTF16(
+  const std::u16string pattern = ASCIIToUTF16(
       "{1, plural, "
       "=1 {The cert for {0} expired yesterday. Today is {2,date,full}}"
       "other {The cert for {0} expired # days ago. Today is {2,date,full}}}");
@@ -138,7 +138,7 @@ TEST_F(MessageFormatterTest, PluralNumberedArgsWithDate) {
 
 TEST_F(MessageFormatterTest, DateTimeAndNumber) {
   // Note that using 'mph' for all locales is not a good i18n practice.
-  const string16 pattern = ASCIIToUTF16(
+  const std::u16string pattern = ASCIIToUTF16(
       "At {0,time, short} on {0,date, medium}, "
       "there was {1} at building {2,number,integer}. "
       "The speed of the wind was {3,number,###.#} mph.");
@@ -162,7 +162,7 @@ TEST_F(MessageFormatterTest, DateTimeAndNumber) {
 }
 
 TEST_F(MessageFormatterTest, SelectorSingleOrMultiple) {
-  const string16 pattern = ASCIIToUTF16(
+  const std::u16string pattern = ASCIIToUTF16(
       "{0, select,"
       "single {Select a file to upload.}"
       "multiple {Select files to upload.}"

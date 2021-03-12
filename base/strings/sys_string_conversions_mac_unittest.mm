@@ -18,7 +18,7 @@ TEST(SysStrings, ConversionsFromNSString) {
 
   // Conversions should be able to handle a NULL value without crashing.
   EXPECT_STREQ("", SysNSStringToUTF8(nil).c_str());
-  EXPECT_EQ(string16(), SysNSStringToUTF16(nil));
+  EXPECT_EQ(std::u16string(), SysNSStringToUTF16(nil));
 }
 
 std::vector<std::string> GetRoundTripStrings() {

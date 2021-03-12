@@ -43,8 +43,8 @@ class BASE_EXPORT FileVersionInfoWin : public FileVersionInfo {
   // modified if GetValue() returns true.
   bool GetValue(const char16_t* name, std::u16string* value) const;
 
-  // Similar to GetValue but returns a string16 (empty string if the property
-  // does not exist).
+  // Similar to GetValue but returns a std::u16string (empty string if the
+  // property does not exist).
   std::u16string GetStringValue(const char16_t* name) const;
 
   // Get file version number in dotted version format.

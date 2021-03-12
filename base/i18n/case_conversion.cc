@@ -47,9 +47,10 @@ int32_t FoldCaseMapper(UChar* dest, int32_t dest_capacity,
                        U_FOLD_CASE_DEFAULT, error);
 }
 
-// Provides similar functionality as UnicodeString::caseMap but on string16.
-string16 CaseMap(StringPiece16 string, CaseMapperFunction case_mapper) {
-  string16 dest;
+// Provides similar functionality as UnicodeString::caseMap but on
+// std::u16string.
+std::u16string CaseMap(StringPiece16 string, CaseMapperFunction case_mapper) {
+  std::u16string dest;
   if (string.empty())
     return dest;
 
@@ -75,15 +76,15 @@ string16 CaseMap(StringPiece16 string, CaseMapperFunction case_mapper) {
 
 }  // namespace
 
-string16 ToLower(StringPiece16 string) {
+std::u16string ToLower(StringPiece16 string) {
   return CaseMap(string, &ToLowerMapper);
 }
 
-string16 ToUpper(StringPiece16 string) {
+std::u16string ToUpper(StringPiece16 string) {
   return CaseMap(string, &ToUpperMapper);
 }
 
-string16 FoldCase(StringPiece16 string) {
+std::u16string FoldCase(StringPiece16 string) {
   return CaseMap(string, &FoldCaseMapper);
 }
 

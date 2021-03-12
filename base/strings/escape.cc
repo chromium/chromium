@@ -336,11 +336,11 @@ std::string UnescapeURLComponent(StringPiece escaped_text,
   return UnescapeURLWithAdjustmentsImpl(escaped_text, rules, nullptr);
 }
 
-string16 UnescapeAndDecodeUTF8URLComponentWithAdjustments(
+std::u16string UnescapeAndDecodeUTF8URLComponentWithAdjustments(
     StringPiece text,
     UnescapeRule::Type rules,
     OffsetAdjuster::Adjustments* adjustments) {
-  string16 result;
+  std::u16string result;
   OffsetAdjuster::Adjustments unescape_adjustments;
   std::string unescaped_url(
       UnescapeURLWithAdjustmentsImpl(text, rules, &unescape_adjustments));

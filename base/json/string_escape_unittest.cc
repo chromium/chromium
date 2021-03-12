@@ -161,7 +161,7 @@ TEST(JSONStringEscapeTest, EscapeUTF16) {
   };
 
   for (const auto& i : cases) {
-    string16 in = WideToUTF16(i.to_escape);
+    std::u16string in = WideToUTF16(i.to_escape);
 
     std::string out;
     EscapeJSONString(in, false, &out);
@@ -173,7 +173,7 @@ TEST(JSONStringEscapeTest, EscapeUTF16) {
     EXPECT_TRUE(IsStringUTF8AllowingNoncharacters(out));
   }
 
-  string16 in = WideToUTF16(cases[0].to_escape);
+  std::u16string in = WideToUTF16(cases[0].to_escape);
   std::string out;
   EscapeJSONString(in, false, &out);
   EXPECT_TRUE(IsStringUTF8AllowingNoncharacters(out));
@@ -186,7 +186,7 @@ TEST(JSONStringEscapeTest, EscapeUTF16) {
   EXPECT_TRUE(IsStringUTF8AllowingNoncharacters(out));
 
   // now try with a NULL in the string
-  string16 null_prepend = WideToUTF16(L"test");
+  std::u16string null_prepend = WideToUTF16(L"test");
   null_prepend.push_back(0);
   in = null_prepend + in;
   std::string expected = "test\\u0000";
@@ -200,7 +200,7 @@ TEST(JSONStringEscapeTest, EscapeUTF16) {
 TEST(JSONStringEscapeTest, EscapeUTF16OutsideBMP) {
   {
     // {a, U+10300, !}, SMP.
-    string16 test;
+    std::u16string test;
     test.push_back('a');
     test.push_back(0xD800);
     test.push_back(0xDF00);
@@ -211,7 +211,7 @@ TEST(JSONStringEscapeTest, EscapeUTF16OutsideBMP) {
   }
   {
     // {U+20021, U+2002B}, SIP.
-    string16 test;
+    std::u16string test;
     test.push_back(0xD840);
     test.push_back(0xDC21);
     test.push_back(0xD840);
@@ -222,7 +222,7 @@ TEST(JSONStringEscapeTest, EscapeUTF16OutsideBMP) {
   }
   {
     // {?, U+D800, @}, lone surrogate.
-    string16 test;
+    std::u16string test;
     test.push_back('?');
     test.push_back(0xD800);
     test.push_back('@');

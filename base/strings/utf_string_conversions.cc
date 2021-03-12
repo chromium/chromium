@@ -211,12 +211,12 @@ bool UTFConversion(const InputString& src_str, DestString* dest_str) {
 
 // UTF16 <-> UTF8 --------------------------------------------------------------
 
-bool UTF8ToUTF16(const char* src, size_t src_len, string16* output) {
+bool UTF8ToUTF16(const char* src, size_t src_len, std::u16string* output) {
   return UTFConversion(StringPiece(src, src_len), output);
 }
 
-string16 UTF8ToUTF16(StringPiece utf8) {
-  string16 ret;
+std::u16string UTF8ToUTF16(StringPiece utf8) {
+  std::u16string ret;
   // Ignore the success flag of this call, it will do the best it can for
   // invalid input, which is what we want here.
   UTF8ToUTF16(utf8.data(), utf8.size(), &ret);
@@ -240,13 +240,13 @@ std::string UTF16ToUTF8(StringPiece16 utf16) {
 #if defined(WCHAR_T_IS_UTF16)
 // When wide == UTF-16 the conversions are a NOP.
 
-bool WideToUTF16(const wchar_t* src, size_t src_len, string16* output) {
+bool WideToUTF16(const wchar_t* src, size_t src_len, std::u16string* output) {
   output->assign(src, src + src_len);
   return true;
 }
 
-string16 WideToUTF16(WStringPiece wide) {
-  return string16(wide.begin(), wide.end());
+std::u16string WideToUTF16(WStringPiece wide) {
+  return std::u16string(wide.begin(), wide.end());
 }
 
 bool UTF16ToWide(const char16_t* src, size_t src_len, std::wstring* output) {
@@ -260,12 +260,12 @@ std::wstring UTF16ToWide(StringPiece16 utf16) {
 
 #elif defined(WCHAR_T_IS_UTF32)
 
-bool WideToUTF16(const wchar_t* src, size_t src_len, string16* output) {
+bool WideToUTF16(const wchar_t* src, size_t src_len, std::u16string* output) {
   return UTFConversion(base::WStringPiece(src, src_len), output);
 }
 
-string16 WideToUTF16(WStringPiece wide) {
-  string16 ret;
+std::u16string WideToUTF16(WStringPiece wide) {
+  std::u16string ret;
   // Ignore the success flag of this call, it will do the best it can for
   // invalid input, which is what we want here.
   WideToUTF16(wide.data(), wide.length(), &ret);
@@ -329,9 +329,9 @@ std::string WideToUTF8(WStringPiece wide) {
 
 #endif  // defined(WCHAR_T_IS_UTF32)
 
-string16 ASCIIToUTF16(StringPiece ascii) {
+std::u16string ASCIIToUTF16(StringPiece ascii) {
   DCHECK(IsStringASCII(ascii)) << ascii;
-  return string16(ascii.begin(), ascii.end());
+  return std::u16string(ascii.begin(), ascii.end());
 }
 
 std::string UTF16ToASCII(StringPiece16 utf16) {

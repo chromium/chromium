@@ -182,7 +182,7 @@ void CheckFloatConversion(
 }
 
 TEST(JniArray, ArrayOfStringArrayConversion) {
-  std::vector<std::vector<string16>> kArrays = {
+  std::vector<std::vector<std::u16string>> kArrays = {
       {ASCIIToUTF16("a"), ASCIIToUTF16("f")},
       {ASCIIToUTF16("a"), ASCIIToUTF16("")},
       {},
@@ -191,7 +191,7 @@ TEST(JniArray, ArrayOfStringArrayConversion) {
   JNIEnv* env = AttachCurrentThread();
   ScopedJavaLocalRef<jobjectArray> joa = ToJavaArrayOfStringArray(env, kArrays);
 
-  std::vector<std::vector<string16>> out;
+  std::vector<std::vector<std::u16string>> out;
   Java2dStringArrayTo2dStringVector(env, joa, &out);
   ASSERT_TRUE(kArrays == out);
 }
@@ -429,7 +429,7 @@ TEST(JniArray, JavaArrayOfByteArrayToBytesVector) {
 }
 
 TEST(JniArray, JavaArrayOfStringArrayToVectorOfStringVector) {
-  const std::vector<std::vector<string16>> kArrays = {
+  const std::vector<std::vector<std::u16string>> kArrays = {
       {ASCIIToUTF16("a"), ASCIIToUTF16("f")},
       {ASCIIToUTF16("a"), ASCIIToUTF16("")},
       {},
@@ -447,7 +447,7 @@ TEST(JniArray, JavaArrayOfStringArrayToVectorOfStringVector) {
   ASSERT_TRUE(string_clazz);
 
   for (size_t i = 0; i < kArrays.size(); ++i) {
-    const std::vector<string16>& child_data = kArrays[i];
+    const std::vector<std::u16string>& child_data = kArrays[i];
 
     ScopedJavaLocalRef<jobjectArray> child_array(
         env, env->NewObjectArray(child_data.size(), string_clazz.obj(), NULL));
@@ -462,7 +462,7 @@ TEST(JniArray, JavaArrayOfStringArrayToVectorOfStringVector) {
     env->SetObjectArrayElement(array.obj(), i, child_array.obj());
   }
 
-  std::vector<std::vector<string16>> vec;
+  std::vector<std::vector<std::u16string>> vec;
   Java2dStringArrayTo2dStringVector(env, array, &vec);
 
   ASSERT_EQ(kArrays, vec);

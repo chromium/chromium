@@ -326,7 +326,7 @@ void InitializeIcuTimeZone() {
   // time zone and set the ICU default time zone accordingly in advance of
   // actual use. See crbug.com/722821 and
   // https://ssl.icu-project.org/trac/ticket/13208 .
-  string16 zone_id = android::GetDefaultTimeZoneId();
+  std::u16string zone_id = android::GetDefaultTimeZoneId();
   icu::TimeZone::adoptDefault(icu::TimeZone::createTimeZone(
       icu::UnicodeString(false, zone_id.data(), zone_id.length())));
 #elif defined(OS_FUCHSIA)

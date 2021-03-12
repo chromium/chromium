@@ -30,7 +30,7 @@ const Time::Exploded kTestDateTimeExploded = {
 // Returns difference between the local time and GMT formatted as string.
 // This function gets |time| because the difference depends on time,
 // see https://en.wikipedia.org/wiki/Daylight_saving_time for details.
-string16 GetShortTimeZone(const Time& time) {
+std::u16string GetShortTimeZone(const Time& time) {
   UErrorCode status = U_ZERO_ERROR;
   std::unique_ptr<icu::TimeZone> zone(icu::TimeZone::createDefault());
   std::unique_ptr<icu::TimeZoneFormat> zone_formatter(
@@ -45,9 +45,9 @@ string16 GetShortTimeZone(const Time& time) {
 
 // Calls TimeDurationFormat() with |delta| and |width| and returns the resulting
 // string. On failure, adds a failed expectation and returns an empty string.
-string16 TimeDurationFormatString(const TimeDelta& delta,
-                                  DurationFormatWidth width) {
-  string16 str;
+std::u16string TimeDurationFormatString(const TimeDelta& delta,
+                                        DurationFormatWidth width) {
+  std::u16string str;
   EXPECT_TRUE(TimeDurationFormat(delta, width, &str))
       << "Failed to format " << delta.ToInternalValue() << " with width "
       << width;
@@ -57,9 +57,9 @@ string16 TimeDurationFormatString(const TimeDelta& delta,
 // Calls TimeDurationFormatWithSeconds() with |delta| and |width| and returns
 // the resulting string. On failure, adds a failed expectation and returns an
 // empty string.
-string16 TimeDurationFormatWithSecondsString(const TimeDelta& delta,
-                                             DurationFormatWidth width) {
-  string16 str;
+std::u16string TimeDurationFormatWithSecondsString(const TimeDelta& delta,
+                                                   DurationFormatWidth width) {
+  std::u16string str;
   EXPECT_TRUE(TimeDurationFormatWithSeconds(delta, width, &str))
       << "Failed to format " << delta.ToInternalValue() << " with width "
       << width;
@@ -75,10 +75,10 @@ TEST(TimeFormattingTest, TimeFormatTimeOfDayDefault12h) {
 
   Time time;
   EXPECT_TRUE(Time::FromUTCExploded(kTestDateTimeExploded, &time));
-  string16 clock24h(ASCIIToUTF16("15:42"));
-  string16 clock12h_pm(ASCIIToUTF16("3:42 PM"));
-  string16 clock12h(ASCIIToUTF16("3:42"));
-  string16 clock24h_millis(ASCIIToUTF16("15:42:07.000"));
+  std::u16string clock24h(ASCIIToUTF16("15:42"));
+  std::u16string clock12h_pm(ASCIIToUTF16("3:42 PM"));
+  std::u16string clock12h(ASCIIToUTF16("3:42"));
+  std::u16string clock24h_millis(ASCIIToUTF16("15:42:07.000"));
 
   // The default is 12h clock.
   EXPECT_EQ(clock12h_pm, TimeFormatTimeOfDay(time));
@@ -113,10 +113,10 @@ TEST(TimeFormattingTest, TimeFormatTimeOfDayDefault24h) {
 
   Time time;
   EXPECT_TRUE(Time::FromUTCExploded(kTestDateTimeExploded, &time));
-  string16 clock24h(ASCIIToUTF16("15:42"));
-  string16 clock12h_pm(ASCIIToUTF16("3:42 pm"));
-  string16 clock12h(ASCIIToUTF16("3:42"));
-  string16 clock24h_millis(ASCIIToUTF16("15:42:07.000"));
+  std::u16string clock24h(ASCIIToUTF16("15:42"));
+  std::u16string clock12h_pm(ASCIIToUTF16("3:42 pm"));
+  std::u16string clock12h(ASCIIToUTF16("3:42"));
+  std::u16string clock24h_millis(ASCIIToUTF16("15:42:07.000"));
 
   // The default is 24h clock.
   EXPECT_EQ(clock24h, TimeFormatTimeOfDay(time));
@@ -151,9 +151,9 @@ TEST(TimeFormattingTest, TimeFormatTimeOfDayJP) {
 
   Time time;
   EXPECT_TRUE(Time::FromUTCExploded(kTestDateTimeExploded, &time));
-  string16 clock24h(ASCIIToUTF16("15:42"));
-  string16 clock12h_pm(UTF8ToUTF16(u8"午後3:42"));
-  string16 clock12h(ASCIIToUTF16("3:42"));
+  std::u16string clock24h(ASCIIToUTF16("15:42"));
+  std::u16string clock12h_pm(UTF8ToUTF16(u8"午後3:42"));
+  std::u16string clock12h(ASCIIToUTF16("3:42"));
 
   // The default is 24h clock.
   EXPECT_EQ(clock24h, TimeFormatTimeOfDay(time));
@@ -178,9 +178,9 @@ TEST(TimeFormattingTest, TimeFormatTimeOfDayDE) {
 
   Time time;
   EXPECT_TRUE(Time::FromUTCExploded(kTestDateTimeExploded, &time));
-  string16 clock24h(ASCIIToUTF16("15:42"));
-  string16 clock12h_pm(UTF8ToUTF16("3:42 PM"));
-  string16 clock12h(ASCIIToUTF16("3:42"));
+  std::u16string clock24h(ASCIIToUTF16("15:42"));
+  std::u16string clock12h_pm(UTF8ToUTF16("3:42 PM"));
+  std::u16string clock12h(ASCIIToUTF16("3:42"));
 
   // The default is 24h clock.
   EXPECT_EQ(clock24h, TimeFormatTimeOfDay(time));
@@ -337,16 +337,16 @@ TEST(TimeFormattingTest, TimeDurationFormat) {
 
   // Persian, with non-Arabic numbers.
   i18n::SetICUDefaultLocale("fa");
-  string16 fa_wide = UTF8ToUTF16(
+  std::u16string fa_wide = UTF8ToUTF16(
       u8"\u06f1\u06f5 \u0633\u0627\u0639\u062a \u0648 \u06f4\u06f2 \u062f\u0642"
       u8"\u06cc\u0642\u0647");
-  string16 fa_short = UTF8ToUTF16(
+  std::u16string fa_short = UTF8ToUTF16(
       u8"\u06f1\u06f5 \u0633\u0627\u0639\u062a\u060c\u200f \u06f4\u06f2 \u062f"
       u8"\u0642\u06cc\u0642\u0647");
-  string16 fa_narrow = UTF8ToUTF16(
+  std::u16string fa_narrow = UTF8ToUTF16(
       u8"\u06f1\u06f5 \u0633\u0627\u0639\u062a \u06f4\u06f2 \u062f\u0642\u06cc"
       u8"\u0642\u0647");
-  string16 fa_numeric = UTF8ToUTF16(u8"\u06f1\u06f5:\u06f4\u06f2");
+  std::u16string fa_numeric = UTF8ToUTF16(u8"\u06f1\u06f5:\u06f4\u06f2");
   EXPECT_EQ(fa_wide, TimeDurationFormatString(delta, DURATION_WIDTH_WIDE));
   EXPECT_EQ(fa_short, TimeDurationFormatString(delta, DURATION_WIDTH_SHORT));
   EXPECT_EQ(fa_narrow, TimeDurationFormatString(delta, DURATION_WIDTH_NARROW));

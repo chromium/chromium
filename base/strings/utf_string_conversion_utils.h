@@ -74,7 +74,8 @@ BASE_EXPORT size_t WriteUnicodeCharacter(uint32_t code_point,
 
 // Appends the given code point as a UTF-16 character to the given 16-bit
 // string.  Returns the number of 16-bit values written.
-BASE_EXPORT size_t WriteUnicodeCharacter(uint32_t code_point, string16* output);
+BASE_EXPORT size_t WriteUnicodeCharacter(uint32_t code_point,
+                                         std::u16string* output);
 
 #if defined(WCHAR_T_IS_UTF32)
 // Appends the given UTF-32 character to the given 32-bit string.  Returns the

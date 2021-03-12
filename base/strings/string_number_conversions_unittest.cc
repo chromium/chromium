@@ -145,7 +145,7 @@ TEST(StringNumberConversionsTest, StringToInt) {
     EXPECT_EQ(i.success, StringToInt(i.input, &output));
     EXPECT_EQ(i.output, output);
 
-    string16 utf16_input = UTF8ToUTF16(i.input);
+    std::u16string utf16_input = UTF8ToUTF16(i.input);
     output = i.output ^ 1;  // Ensure StringToInt wrote something.
     EXPECT_EQ(i.success, StringToInt(utf16_input, &output));
     EXPECT_EQ(i.output, output);
@@ -160,14 +160,14 @@ TEST(StringNumberConversionsTest, StringToInt) {
   EXPECT_FALSE(StringToInt(input_string, &output));
   EXPECT_EQ(6, output);
 
-  string16 utf16_input = UTF8ToUTF16(input_string);
+  std::u16string utf16_input = UTF8ToUTF16(input_string);
   output = 0;
   EXPECT_FALSE(StringToInt(utf16_input, &output));
   EXPECT_EQ(6, output);
 
   output = 0;
   const char16_t negative_wide_input[] = {0xFF4D, '4', '2', 0};
-  EXPECT_FALSE(StringToInt(string16(negative_wide_input), &output));
+  EXPECT_FALSE(StringToInt(std::u16string(negative_wide_input), &output));
   EXPECT_EQ(0, output);
 }
 
@@ -211,7 +211,7 @@ TEST(StringNumberConversionsTest, StringToUint) {
     EXPECT_EQ(i.success, StringToUint(i.input, &output));
     EXPECT_EQ(i.output, output);
 
-    string16 utf16_input = UTF8ToUTF16(i.input);
+    std::u16string utf16_input = UTF8ToUTF16(i.input);
     output = i.output ^ 1;  // Ensure StringToUint wrote something.
     EXPECT_EQ(i.success, StringToUint(utf16_input, &output));
     EXPECT_EQ(i.output, output);
@@ -226,14 +226,14 @@ TEST(StringNumberConversionsTest, StringToUint) {
   EXPECT_FALSE(StringToUint(input_string, &output));
   EXPECT_EQ(6U, output);
 
-  string16 utf16_input = UTF8ToUTF16(input_string);
+  std::u16string utf16_input = UTF8ToUTF16(input_string);
   output = 0;
   EXPECT_FALSE(StringToUint(utf16_input, &output));
   EXPECT_EQ(6U, output);
 
   output = 0;
   const char16_t negative_wide_input[] = {0xFF4D, '4', '2', 0};
-  EXPECT_FALSE(StringToUint(string16(negative_wide_input), &output));
+  EXPECT_FALSE(StringToUint(std::u16string(negative_wide_input), &output));
   EXPECT_EQ(0U, output);
 }
 
@@ -281,7 +281,7 @@ TEST(StringNumberConversionsTest, StringToInt64) {
     EXPECT_EQ(i.success, StringToInt64(i.input, &output));
     EXPECT_EQ(i.output, output);
 
-    string16 utf16_input = UTF8ToUTF16(i.input);
+    std::u16string utf16_input = UTF8ToUTF16(i.input);
     output = 0;
     EXPECT_EQ(i.success, StringToInt64(utf16_input, &output));
     EXPECT_EQ(i.output, output);
@@ -296,7 +296,7 @@ TEST(StringNumberConversionsTest, StringToInt64) {
   EXPECT_FALSE(StringToInt64(input_string, &output));
   EXPECT_EQ(6, output);
 
-  string16 utf16_input = UTF8ToUTF16(input_string);
+  std::u16string utf16_input = UTF8ToUTF16(input_string);
   output = 0;
   EXPECT_FALSE(StringToInt64(utf16_input, &output));
   EXPECT_EQ(6, output);
@@ -348,7 +348,7 @@ TEST(StringNumberConversionsTest, StringToUint64) {
     EXPECT_EQ(i.success, StringToUint64(i.input, &output));
     EXPECT_EQ(i.output, output);
 
-    string16 utf16_input = UTF8ToUTF16(i.input);
+    std::u16string utf16_input = UTF8ToUTF16(i.input);
     output = 0;
     EXPECT_EQ(i.success, StringToUint64(utf16_input, &output));
     EXPECT_EQ(i.output, output);
@@ -363,7 +363,7 @@ TEST(StringNumberConversionsTest, StringToUint64) {
   EXPECT_FALSE(StringToUint64(input_string, &output));
   EXPECT_EQ(6U, output);
 
-  string16 utf16_input = UTF8ToUTF16(input_string);
+  std::u16string utf16_input = UTF8ToUTF16(input_string);
   output = 0;
   EXPECT_FALSE(StringToUint64(utf16_input, &output));
   EXPECT_EQ(6U, output);
@@ -417,7 +417,7 @@ TEST(StringNumberConversionsTest, StringToSizeT) {
     EXPECT_EQ(i.success, StringToSizeT(i.input, &output));
     EXPECT_EQ(i.output, output);
 
-    string16 utf16_input = UTF8ToUTF16(i.input);
+    std::u16string utf16_input = UTF8ToUTF16(i.input);
     output = 0;
     EXPECT_EQ(i.success, StringToSizeT(utf16_input, &output));
     EXPECT_EQ(i.output, output);
@@ -432,7 +432,7 @@ TEST(StringNumberConversionsTest, StringToSizeT) {
   EXPECT_FALSE(StringToSizeT(input_string, &output));
   EXPECT_EQ(6U, output);
 
-  string16 utf16_input = UTF8ToUTF16(input_string);
+  std::u16string utf16_input = UTF8ToUTF16(input_string);
   output = 0;
   EXPECT_FALSE(StringToSizeT(utf16_input, &output));
   EXPECT_EQ(6U, output);

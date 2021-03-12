@@ -19,56 +19,56 @@ std::string NumberToString(int value) {
   return internal::IntToStringT<std::string>(value);
 }
 
-string16 NumberToString16(int value) {
-  return internal::IntToStringT<string16>(value);
+std::u16string NumberToString16(int value) {
+  return internal::IntToStringT<std::u16string>(value);
 }
 
 std::string NumberToString(unsigned value) {
   return internal::IntToStringT<std::string>(value);
 }
 
-string16 NumberToString16(unsigned value) {
-  return internal::IntToStringT<string16>(value);
+std::u16string NumberToString16(unsigned value) {
+  return internal::IntToStringT<std::u16string>(value);
 }
 
 std::string NumberToString(long value) {
   return internal::IntToStringT<std::string>(value);
 }
 
-string16 NumberToString16(long value) {
-  return internal::IntToStringT<string16>(value);
+std::u16string NumberToString16(long value) {
+  return internal::IntToStringT<std::u16string>(value);
 }
 
 std::string NumberToString(unsigned long value) {
   return internal::IntToStringT<std::string>(value);
 }
 
-string16 NumberToString16(unsigned long value) {
-  return internal::IntToStringT<string16>(value);
+std::u16string NumberToString16(unsigned long value) {
+  return internal::IntToStringT<std::u16string>(value);
 }
 
 std::string NumberToString(long long value) {
   return internal::IntToStringT<std::string>(value);
 }
 
-string16 NumberToString16(long long value) {
-  return internal::IntToStringT<string16>(value);
+std::u16string NumberToString16(long long value) {
+  return internal::IntToStringT<std::u16string>(value);
 }
 
 std::string NumberToString(unsigned long long value) {
   return internal::IntToStringT<std::string>(value);
 }
 
-string16 NumberToString16(unsigned long long value) {
-  return internal::IntToStringT<string16>(value);
+std::u16string NumberToString16(unsigned long long value) {
+  return internal::IntToStringT<std::u16string>(value);
 }
 
 std::string NumberToString(double value) {
   return internal::DoubleToStringT<std::string>(value);
 }
 
-string16 NumberToString16(double value) {
-  return internal::DoubleToStringT<string16>(value);
+std::u16string NumberToString16(double value) {
+  return internal::DoubleToStringT<std::u16string>(value);
 }
 
 bool StringToInt(StringPiece input, int* output) {

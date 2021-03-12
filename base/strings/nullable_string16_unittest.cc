@@ -11,7 +11,7 @@ namespace base {
 TEST(NullableString16Test, DefaultConstructor) {
   NullableString16 s;
   EXPECT_TRUE(s.is_null());
-  EXPECT_EQ(string16(), s.string());
+  EXPECT_EQ(std::u16string(), s.string());
 }
 
 TEST(NullableString16Test, Equals) {

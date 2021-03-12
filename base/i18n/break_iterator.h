@@ -100,9 +100,9 @@ class BASE_I18N_EXPORT BreakIterator {
   BreakIterator(const StringPiece16& str, BreakType break_type);
   // Make a rule-based iterator. BreakType == RULE_BASED is implied.
   // TODO(andrewhayden): This signature could easily be misinterpreted as
-  // "(const string16& str, const string16& locale)". We should do something
-  // better.
-  BreakIterator(const StringPiece16& str, const string16& rules);
+  // "(const std::u16string& str, const std::u16string& locale)". We should do
+  // something better.
+  BreakIterator(const StringPiece16& str, const std::u16string& rules);
   ~BreakIterator();
 
   // Init() must be called before any of the iterators are valid.
@@ -158,7 +158,7 @@ class BASE_I18N_EXPORT BreakIterator {
   // Returns the string between prev() and pos().
   // Advance() must have been called successfully at least once for pos() to
   // have advanced to somewhere useful.
-  string16 GetString() const;
+  std::u16string GetString() const;
 
   StringPiece16 GetStringPiece() const;
 
@@ -180,7 +180,7 @@ class BASE_I18N_EXPORT BreakIterator {
   StringPiece16 string_;
 
   // Rules for our iterator. Mutually exclusive with break_type_.
-  const string16 rules_;
+  const std::u16string rules_;
 
   // The breaking style (word/space/newline). Mutually exclusive with rules_
   BreakType break_type_;

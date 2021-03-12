@@ -121,9 +121,9 @@ TEST(StringSearchTest, ASCII) {
                            4U, 6U);
 
   EXPECT_MISS_IGNORE_CASE(ASCIIToUTF16("searching within empty string"),
-                          string16());
+                          std::u16string());
 
-  EXPECT_MATCH_IGNORE_CASE(string16(),
+  EXPECT_MATCH_IGNORE_CASE(std::u16string(),
                            ASCIIToUTF16("searching for empty string"), 0U, 0U);
 
   EXPECT_MATCH_IGNORE_CASE(ASCIIToUTF16("case insensitivity"),
@@ -133,10 +133,10 @@ TEST(StringSearchTest, ASCII) {
                          6U);
 
   EXPECT_MISS_SENSITIVE(ASCIIToUTF16("searching within empty string"),
-                        string16());
+                        std::u16string());
 
-  EXPECT_MATCH_SENSITIVE(string16(), ASCIIToUTF16("searching for empty string"),
-                         0U, 0U);
+  EXPECT_MATCH_SENSITIVE(std::u16string(),
+                         ASCIIToUTF16("searching for empty string"), 0U, 0U);
 
   EXPECT_MISS_SENSITIVE(ASCIIToUTF16("case insensitivity"),
                         ASCIIToUTF16("CaSe InSeNsItIvItY"));
@@ -147,23 +147,23 @@ TEST(StringSearchTest, ASCII) {
 
 TEST(StringSearchTest, UnicodeLocaleIndependent) {
   // Base characters
-  const string16 e_base = WideToUTF16(L"e");
-  const string16 E_base = WideToUTF16(L"E");
-  const string16 a_base = WideToUTF16(L"a");
+  const std::u16string e_base = WideToUTF16(L"e");
+  const std::u16string E_base = WideToUTF16(L"E");
+  const std::u16string a_base = WideToUTF16(L"a");
 
   // Composed characters
-  const string16 e_with_acute_accent = WideToUTF16(L"\u00e9");
-  const string16 E_with_acute_accent = WideToUTF16(L"\u00c9");
-  const string16 e_with_grave_accent = WideToUTF16(L"\u00e8");
-  const string16 E_with_grave_accent = WideToUTF16(L"\u00c8");
-  const string16 a_with_acute_accent = WideToUTF16(L"\u00e1");
+  const std::u16string e_with_acute_accent = WideToUTF16(L"\u00e9");
+  const std::u16string E_with_acute_accent = WideToUTF16(L"\u00c9");
+  const std::u16string e_with_grave_accent = WideToUTF16(L"\u00e8");
+  const std::u16string E_with_grave_accent = WideToUTF16(L"\u00c8");
+  const std::u16string a_with_acute_accent = WideToUTF16(L"\u00e1");
 
   // Decomposed characters
-  const string16 e_with_acute_combining_mark = WideToUTF16(L"e\u0301");
-  const string16 E_with_acute_combining_mark = WideToUTF16(L"E\u0301");
-  const string16 e_with_grave_combining_mark = WideToUTF16(L"e\u0300");
-  const string16 E_with_grave_combining_mark = WideToUTF16(L"E\u0300");
-  const string16 a_with_acute_combining_mark = WideToUTF16(L"a\u0301");
+  const std::u16string e_with_acute_combining_mark = WideToUTF16(L"e\u0301");
+  const std::u16string E_with_acute_combining_mark = WideToUTF16(L"E\u0301");
+  const std::u16string e_with_grave_combining_mark = WideToUTF16(L"e\u0300");
+  const std::u16string E_with_grave_combining_mark = WideToUTF16(L"E\u0300");
+  const std::u16string a_with_acute_combining_mark = WideToUTF16(L"a\u0301");
 
   std::string default_locale(uloc_getDefault());
   bool locale_is_posix = (default_locale == "en_US_POSIX");
@@ -269,10 +269,10 @@ TEST(StringSearchTest, UnicodeLocaleIndependent) {
 
 TEST(StringSearchTest, UnicodeLocaleDependent) {
   // Base characters
-  const string16 a_base = WideToUTF16(L"a");
+  const std::u16string a_base = WideToUTF16(L"a");
 
   // Composed characters
-  const string16 a_with_ring = WideToUTF16(L"\u00e5");
+  const std::u16string a_with_ring = WideToUTF16(L"\u00e5");
 
   EXPECT_TRUE(StringSearchIgnoringCaseAndAccents(a_base, a_with_ring, nullptr,
                                                  nullptr));

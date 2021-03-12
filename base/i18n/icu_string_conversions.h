@@ -45,7 +45,7 @@ BASE_I18N_EXPORT bool UTF16ToCodepage(base::StringPiece16 utf16,
 BASE_I18N_EXPORT bool CodepageToUTF16(base::StringPiece encoded,
                                       const char* codepage_name,
                                       OnStringConversionError::Type on_error,
-                                      string16* utf16);
+                                      std::u16string* utf16);
 
 // Converts from any codepage to UTF-8 and ensures the resulting UTF-8 is
 // normalized.

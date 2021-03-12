@@ -56,61 +56,62 @@ enum DateFormat {
 };
 
 // Returns the time of day, e.g., "3:07 PM".
-BASE_I18N_EXPORT string16 TimeFormatTimeOfDay(const Time& time);
+BASE_I18N_EXPORT std::u16string TimeFormatTimeOfDay(const Time& time);
 
 // Returns the time of day in 24-hour clock format with millisecond accuracy,
 // e.g., "15:07:30.568"
-BASE_I18N_EXPORT string16 TimeFormatTimeOfDayWithMilliseconds(const Time& time);
+BASE_I18N_EXPORT std::u16string TimeFormatTimeOfDayWithMilliseconds(
+    const Time& time);
 
 // Returns the time of day in the specified hour clock type. e.g.
 // "3:07 PM" (type == k12HourClock, ampm == kKeepAmPm).
 // "3:07"    (type == k12HourClock, ampm == kDropAmPm).
 // "15:07"   (type == k24HourClock).
-BASE_I18N_EXPORT string16 TimeFormatTimeOfDayWithHourClockType(
+BASE_I18N_EXPORT std::u16string TimeFormatTimeOfDayWithHourClockType(
     const Time& time,
     HourClockType type,
     AmPmClockType ampm);
 
 // Returns a shortened date, e.g. "Nov 7, 2007"
-BASE_I18N_EXPORT string16 TimeFormatShortDate(const Time& time);
+BASE_I18N_EXPORT std::u16string TimeFormatShortDate(const Time& time);
 
 // Returns a numeric date such as 12/13/52.
-BASE_I18N_EXPORT string16 TimeFormatShortDateNumeric(const Time& time);
+BASE_I18N_EXPORT std::u16string TimeFormatShortDateNumeric(const Time& time);
 
 // Returns a numeric date and time such as "12/13/52 2:44:30 PM".
-BASE_I18N_EXPORT string16 TimeFormatShortDateAndTime(const Time& time);
+BASE_I18N_EXPORT std::u16string TimeFormatShortDateAndTime(const Time& time);
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 // Returns a month and year, e.g. "November 2007"
 // Note: If `time_zone` is non-null, the time will be formatted in the provided
 // time zone. Otherwise, it will default to local time.
-BASE_I18N_EXPORT string16
-TimeFormatMonthAndYear(const Time& time,
-                       const icu::TimeZone* time_zone = nullptr);
+BASE_I18N_EXPORT std::u16string TimeFormatMonthAndYear(
+    const Time& time,
+    const icu::TimeZone* time_zone = nullptr);
 #else
 // Returns a month and year, e.g. "November 2007"
-BASE_I18N_EXPORT string16 TimeFormatMonthAndYear(const Time& time);
+BASE_I18N_EXPORT std::u16string TimeFormatMonthAndYear(const Time& time);
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 // Returns a numeric date and time with time zone such as
 // "12/13/52 2:44:30 PM PST".
-BASE_I18N_EXPORT string16
-TimeFormatShortDateAndTimeWithTimeZone(const Time& time);
+BASE_I18N_EXPORT std::u16string TimeFormatShortDateAndTimeWithTimeZone(
+    const Time& time);
 
 // Formats a time in a friendly sentence format, e.g.
 // "Monday, March 6, 2008 2:44:30 PM".
-BASE_I18N_EXPORT string16 TimeFormatFriendlyDateAndTime(const Time& time);
+BASE_I18N_EXPORT std::u16string TimeFormatFriendlyDateAndTime(const Time& time);
 
 // Formats a time in a friendly sentence format, e.g.
 // "Monday, March 6, 2008".
-BASE_I18N_EXPORT string16 TimeFormatFriendlyDate(const Time& time);
+BASE_I18N_EXPORT std::u16string TimeFormatFriendlyDate(const Time& time);
 
 // Formats a time using a skeleton to produce a format for different locales
 // when an unusual time format is needed, e.g. "Feb. 2, 18:00".
 //
 // See http://userguide.icu-project.org/formatparse/datetime for details.
-BASE_I18N_EXPORT string16 TimeFormatWithPattern(const Time& time,
-                                                const char* pattern);
+BASE_I18N_EXPORT std::u16string TimeFormatWithPattern(const Time& time,
+                                                      const char* pattern);
 
 // Formats a time duration of hours and minutes into various formats, e.g.,
 // "3:07" or "3 hours, 7 minutes", and returns true on success. See
@@ -123,7 +124,8 @@ BASE_I18N_EXPORT string16 TimeFormatWithPattern(const Time& time,
 // DURATION_WIDTH_NUMERIC.
 BASE_I18N_EXPORT bool TimeDurationFormat(const TimeDelta time,
                                          const DurationFormatWidth width,
-                                         string16* out) WARN_UNUSED_RESULT;
+                                         std::u16string* out)
+    WARN_UNUSED_RESULT;
 
 // Formats a time duration of hours, minutes and seconds into various formats,
 // e.g., "3:07:30" or "3 hours, 7 minutes, 30 seconds", and returns true on
@@ -137,13 +139,13 @@ BASE_I18N_EXPORT bool TimeDurationFormat(const TimeDelta time,
 BASE_I18N_EXPORT bool TimeDurationFormatWithSeconds(
     const TimeDelta time,
     const DurationFormatWidth width,
-    string16* out) WARN_UNUSED_RESULT;
+    std::u16string* out) WARN_UNUSED_RESULT;
 
 // Formats a date interval into various formats, e.g. "2 December - 4 December"
 // or "March 2016 - December 2016". See DateFormat for details.
-BASE_I18N_EXPORT string16 DateIntervalFormat(const Time& begin_time,
-                                             const Time& end_time,
-                                             DateFormat format);
+BASE_I18N_EXPORT std::u16string DateIntervalFormat(const Time& begin_time,
+                                                   const Time& end_time,
+                                                   DateFormat format);
 
 // Gets the hour clock type of the current locale. e.g.
 // k12HourClock (en-US).

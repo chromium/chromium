@@ -53,8 +53,8 @@ bool IsRosettaInstalled() {
 }
 
 void RequestRosettaInstallation(
-    const string16& title_text,
-    const string16& body_text,
+    const std::u16string& title_text,
+    const std::u16string& body_text,
     OnceCallback<void(RosettaInstallationResult)> callback) {
   DCHECK([NSThread isMainThread]);
 

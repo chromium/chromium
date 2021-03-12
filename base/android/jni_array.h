@@ -85,17 +85,17 @@ BASE_EXPORT ScopedJavaLocalRef<jobjectArray> ToJavaArrayOfStrings(
 
 BASE_EXPORT ScopedJavaLocalRef<jobjectArray> ToJavaArrayOfStrings(
     JNIEnv* env,
-    base::span<const string16> v);
+    base::span<const std::u16string> v);
 
 BASE_EXPORT ScopedJavaLocalRef<jobjectArray> ToJavaArrayOfStringArray(
     JNIEnv* env,
-    base::span<const std::vector<string16>> v);
+    base::span<const std::vector<std::u16string>> v);
 
 // Converts a Java string array to a native array.
 BASE_EXPORT void AppendJavaStringArrayToStringVector(
     JNIEnv* env,
     const JavaRef<jobjectArray>& array,
-    std::vector<string16>* out);
+    std::vector<std::u16string>* out);
 
 BASE_EXPORT void AppendJavaStringArrayToStringVector(
     JNIEnv* env,
@@ -177,7 +177,7 @@ BASE_EXPORT void JavaArrayOfByteArrayToBytesVector(
 BASE_EXPORT void Java2dStringArrayTo2dStringVector(
     JNIEnv* env,
     const JavaRef<jobjectArray>& array,
-    std::vector<std::vector<string16>>* out);
+    std::vector<std::vector<std::u16string>>* out);
 
 // Assuming |array| is an int[][] (array of int arrays), replaces the
 // contents of |out| with the corresponding vectors of ints.

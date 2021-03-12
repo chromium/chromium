@@ -15,7 +15,7 @@ namespace base {
 
 namespace {
 
-static const size_t kNpos = string16::npos;
+static const size_t kNpos = std::u16string::npos;
 
 }  // namespace
 

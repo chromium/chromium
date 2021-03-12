@@ -25,8 +25,8 @@ namespace i18n {
 // accent differences are ignored. Please refer to 'primary level' in
 // http://userguide.icu-project.org/collation/concepts for additional details.
 BASE_I18N_EXPORT
-bool StringSearchIgnoringCaseAndAccents(const string16& find_this,
-                                        const string16& in_this,
+bool StringSearchIgnoringCaseAndAccents(const std::u16string& find_this,
+                                        const std::u16string& in_this,
                                         size_t* match_index,
                                         size_t* match_length);
 
@@ -41,8 +41,8 @@ bool StringSearchIgnoringCaseAndAccents(const string16& find_this,
 // When |forward_search| is true, finds the first instance of |find_this|,
 // otherwise finds the last instance
 BASE_I18N_EXPORT
-bool StringSearch(const string16& find_this,
-                  const string16& in_this,
+bool StringSearch(const std::u16string& find_this,
+                  const std::u16string& in_this,
                   size_t* match_index,
                   size_t* match_length,
                   bool case_sensitive,
@@ -53,20 +53,20 @@ bool StringSearch(const string16& find_this,
 // argument, and precomputation for searching is done only at that time.
 class BASE_I18N_EXPORT FixedPatternStringSearch {
  public:
-  explicit FixedPatternStringSearch(const string16& find_this,
+  explicit FixedPatternStringSearch(const std::u16string& find_this,
                                     bool case_sensitive);
   ~FixedPatternStringSearch();
 
   // Returns true if |in_this| contains |find_this|. If |match_index| or
   // |match_length| are non-NULL, they are assigned the start position and total
   // length of the match.
-  bool Search(const string16& in_this,
+  bool Search(const std::u16string& in_this,
               size_t* match_index,
               size_t* match_length,
               bool forward_search);
 
  private:
-  string16 find_this_;
+  std::u16string find_this_;
   UStringSearch* search_;
 };
 
@@ -76,12 +76,12 @@ class BASE_I18N_EXPORT FixedPatternStringSearch {
 class BASE_I18N_EXPORT FixedPatternStringSearchIgnoringCaseAndAccents {
  public:
   explicit FixedPatternStringSearchIgnoringCaseAndAccents(
-      const string16& find_this);
+      const std::u16string& find_this);
 
   // Returns true if |in_this| contains |find_this|. If |match_index| or
   // |match_length| are non-NULL, they are assigned the start position and total
   // length of the match.
-  bool Search(const string16& in_this,
+  bool Search(const std::u16string& in_this,
               size_t* match_index,
               size_t* match_length);
 

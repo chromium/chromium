@@ -16,7 +16,7 @@ namespace base {
 template <typename STRING_TYPE>
 class BasicStringPiece;
 typedef BasicStringPiece<std::string> StringPiece;
-typedef BasicStringPiece<string16> StringPiece16;
+typedef BasicStringPiece<std::u16string> StringPiece16;
 typedef BasicStringPiece<std::wstring> WStringPiece;
 
 }  // namespace base

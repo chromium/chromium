@@ -38,7 +38,7 @@ inline void BuildLookupTable(StringPiece characters_wanted, bool* table) {
 // MSVC doesn't like complex extern templates and DLLs.
 #if !defined(COMPILER_MSVC)
 template class BasicStringPiece<std::string>;
-template class BasicStringPiece<string16>;
+template class BasicStringPiece<std::u16string>;
 template class BasicStringPiece<std::wstring>;
 #endif
 

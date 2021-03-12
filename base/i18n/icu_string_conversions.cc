@@ -160,7 +160,7 @@ bool UTF16ToCodepage(base::StringPiece16 utf16,
 bool CodepageToUTF16(base::StringPiece encoded,
                      const char* codepage_name,
                      OnStringConversionError::Type on_error,
-                     string16* utf16) {
+                     std::u16string* utf16) {
   utf16->clear();
 
   UErrorCode status = U_ZERO_ERROR;
@@ -197,7 +197,7 @@ bool ConvertToUtf8AndNormalize(base::StringPiece text,
                                const std::string& charset,
                                std::string* result) {
   result->clear();
-  string16 utf16;
+  std::u16string utf16;
   if (!CodepageToUTF16(text, charset.c_str(), OnStringConversionError::FAIL,
                        &utf16))
     return false;

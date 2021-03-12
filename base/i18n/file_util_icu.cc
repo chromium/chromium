@@ -43,7 +43,7 @@ class IllegalCharacters {
     return !!illegal_at_ends_.contains(ucs4);
   }
 
-  bool IsAllowedName(const string16& s) const {
+  bool IsAllowedName(const std::u16string& s) const {
     return s.empty() || (!!illegal_anywhere_.containsNone(
                              icu::UnicodeString(s.c_str(), s.size())) &&
                          !illegal_at_ends_.contains(*s.begin()) &&
@@ -98,7 +98,7 @@ IllegalCharacters::IllegalCharacters() {
 
 }  // namespace
 
-bool IsFilenameLegal(const string16& file_name) {
+bool IsFilenameLegal(const std::u16string& file_name) {
   return IllegalCharacters::GetInstance()->IsAllowedName(file_name);
 }
 

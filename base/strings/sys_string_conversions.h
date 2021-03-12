@@ -82,12 +82,13 @@ BASE_EXPORT NSString* SysUTF16ToNSString(StringPiece16 utf16)
 // Converts a CFStringRef to an STL string. Returns an empty string on failure.
 BASE_EXPORT std::string SysCFStringRefToUTF8(CFStringRef ref)
     WARN_UNUSED_RESULT;
-BASE_EXPORT string16 SysCFStringRefToUTF16(CFStringRef ref) WARN_UNUSED_RESULT;
+BASE_EXPORT std::u16string SysCFStringRefToUTF16(CFStringRef ref)
+    WARN_UNUSED_RESULT;
 
 // Same, but accepts NSString input. Converts nil NSString* to the appropriate
 // string type of length 0.
 BASE_EXPORT std::string SysNSStringToUTF8(NSString* ref) WARN_UNUSED_RESULT;
-BASE_EXPORT string16 SysNSStringToUTF16(NSString* ref) WARN_UNUSED_RESULT;
+BASE_EXPORT std::u16string SysNSStringToUTF16(NSString* ref) WARN_UNUSED_RESULT;
 
 #endif  // defined(OS_APPLE)
 

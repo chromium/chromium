@@ -74,7 +74,9 @@ ScopedJavaLocalRef<jstring> ConvertUTF8ToJavaString(JNIEnv* env,
       env, UTF8ToUTF16(str)));
 }
 
-void ConvertJavaStringToUTF16(JNIEnv* env, jstring str, string16* result) {
+void ConvertJavaStringToUTF16(JNIEnv* env,
+                              jstring str,
+                              std::u16string* result) {
   DCHECK(str);
   if (!str) {
     LOG(WARNING) << "ConvertJavaStringToUTF16 called with null string.";
@@ -96,17 +98,18 @@ void ConvertJavaStringToUTF16(JNIEnv* env, jstring str, string16* result) {
   CheckException(env);
 }
 
-string16 ConvertJavaStringToUTF16(JNIEnv* env, jstring str) {
-  string16 result;
+std::u16string ConvertJavaStringToUTF16(JNIEnv* env, jstring str) {
+  std::u16string result;
   ConvertJavaStringToUTF16(env, str, &result);
   return result;
 }
 
-string16 ConvertJavaStringToUTF16(const JavaRef<jstring>& str) {
+std::u16string ConvertJavaStringToUTF16(const JavaRef<jstring>& str) {
   return ConvertJavaStringToUTF16(AttachCurrentThread(), str.obj());
 }
 
-string16 ConvertJavaStringToUTF16(JNIEnv* env, const JavaRef<jstring>& str) {
+std::u16string ConvertJavaStringToUTF16(JNIEnv* env,
+                                        const JavaRef<jstring>& str) {
   return ConvertJavaStringToUTF16(env, str.obj());
 }
 

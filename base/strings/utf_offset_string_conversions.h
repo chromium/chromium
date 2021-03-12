@@ -35,7 +35,7 @@ class BASE_EXPORT OffsetAdjuster {
 
   // Adjusts all offsets in |offsets_for_adjustment| to reflect the adjustments
   // recorded in |adjustments|.  Adjusted offsets greater than |limit| will be
-  // set to string16::npos.
+  // set to std::u16string::npos.
   //
   // Offsets represents insertion/selection points between characters: if |src|
   // is "abcd", then 0 is before 'a', 2 is between 'b' and 'c', and 4 is at the
@@ -43,23 +43,24 @@ class BASE_EXPORT OffsetAdjuster {
   // exit, each offset will have been modified to point at the same logical
   // position in the output string.  If an offset cannot be successfully
   // adjusted (e.g., because it points into the middle of a multibyte sequence),
-  // it will be set to string16::npos.
+  // it will be set to std::u16string::npos.
   static void AdjustOffsets(const Adjustments& adjustments,
                             std::vector<size_t>* offsets_for_adjustment,
-                            size_t limit = string16::npos);
+                            size_t limit = std::u16string::npos);
 
   // Adjusts the single |offset| to reflect the adjustments recorded in
   // |adjustments|.
   static void AdjustOffset(const Adjustments& adjustments,
                            size_t* offset,
-                           size_t limit = string16::npos);
+                           size_t limit = std::u16string::npos);
 
   // Adjusts all offsets in |offsets_for_unadjustment| to reflect the reverse
   // of the adjustments recorded in |adjustments|.  In other words, the offsets
   // provided represent offsets into an adjusted string and the caller wants
   // to know the offsets they correspond to in the original string.  If an
   // offset cannot be successfully unadjusted (e.g., because it points into
-  // the middle of a multibyte sequence), it will be set to string16::npos.
+  // the middle of a multibyte sequence), it will be set to
+  // std::u16string::npos.
   static void UnadjustOffsets(const Adjustments& adjustments,
                               std::vector<size_t>* offsets_for_unadjustment);
 
@@ -94,15 +95,16 @@ class BASE_EXPORT OffsetAdjuster {
 BASE_EXPORT bool UTF8ToUTF16WithAdjustments(
     const char* src,
     size_t src_len,
-    string16* output,
+    std::u16string* output,
     base::OffsetAdjuster::Adjustments* adjustments);
-BASE_EXPORT string16 UTF8ToUTF16WithAdjustments(
+BASE_EXPORT std::u16string UTF8ToUTF16WithAdjustments(
     const base::StringPiece& utf8,
     base::OffsetAdjuster::Adjustments* adjustments) WARN_UNUSED_RESULT;
 // As above, but instead internally examines the adjustments and applies them
 // to |offsets_for_adjustment|.  Input offsets greater than the length of the
-// input string will be set to string16::npos.  See comments by AdjustOffsets().
-BASE_EXPORT string16 UTF8ToUTF16AndAdjustOffsets(
+// input string will be set to std::u16string::npos.  See comments by
+// AdjustOffsets().
+BASE_EXPORT std::u16string UTF8ToUTF16AndAdjustOffsets(
     const base::StringPiece& utf8,
     std::vector<size_t>* offsets_for_adjustment);
 BASE_EXPORT std::string UTF16ToUTF8AndAdjustOffsets(

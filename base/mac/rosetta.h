@@ -43,8 +43,8 @@ enum class RosettaInstallationResult {
   kInstallationSuccess,
 };
 BASE_EXPORT void RequestRosettaInstallation(
-    const string16& title_text,
-    const string16& body_text,
+    const std::u16string& title_text,
+    const std::u16string& body_text,
     OnceCallback<void(RosettaInstallationResult)> callback);
 
 #endif  // ARCH_CPU_ARM64

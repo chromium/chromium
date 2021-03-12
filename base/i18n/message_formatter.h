@@ -35,7 +35,7 @@ class BASE_I18N_EXPORT MessageArg {
   MessageArg(const char* s);
   MessageArg(StringPiece s);
   MessageArg(const std::string& s);
-  MessageArg(const string16& s);
+  MessageArg(const std::u16string& s);
   MessageArg(int i);
   MessageArg(int64_t i);
   MessageArg(double d);
@@ -90,7 +90,7 @@ class BASE_I18N_EXPORT MessageArg {
 
 class BASE_I18N_EXPORT MessageFormatter {
  public:
-  static string16 FormatWithNamedArgs(
+  static std::u16string FormatWithNamedArgs(
       StringPiece16 msg,
       StringPiece name0 = StringPiece(),
       const internal::MessageArg& arg0 = internal::MessageArg(),
@@ -107,7 +107,7 @@ class BASE_I18N_EXPORT MessageFormatter {
       StringPiece name6 = StringPiece(),
       const internal::MessageArg& arg6 = internal::MessageArg());
 
-  static string16 FormatWithNumberedArgs(
+  static std::u16string FormatWithNumberedArgs(
       StringPiece16 msg,
       const internal::MessageArg& arg0 = internal::MessageArg(),
       const internal::MessageArg& arg1 = internal::MessageArg(),

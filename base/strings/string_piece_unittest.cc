@@ -25,17 +25,17 @@ class CommonStringPieceTest : public ::testing::Test {
 };
 
 template <>
-class CommonStringPieceTest<string16> : public ::testing::Test {
+class CommonStringPieceTest<std::u16string> : public ::testing::Test {
  public:
-  static const string16 as_string(const char* input) {
+  static const std::u16string as_string(const char* input) {
     return ASCIIToUTF16(input);
   }
-  static const string16 as_string(const std::string& input) {
+  static const std::u16string as_string(const std::string& input) {
     return ASCIIToUTF16(input);
   }
 };
 
-typedef ::testing::Types<std::string, string16> SupportedStringTypes;
+typedef ::testing::Types<std::string, std::u16string> SupportedStringTypes;
 
 TYPED_TEST_SUITE(CommonStringPieceTest, SupportedStringTypes);
 
@@ -630,10 +630,10 @@ TYPED_TEST(CommonStringPieceTest, HeterogenousStringPieceEquals) {
   ASSERT_EQ(hello.c_str(), BasicStringPiece<TypeParam>(hello));
 }
 
-// string16-specific stuff
+// std::u16string-specific stuff
 TEST(StringPiece16Test, CheckSTL) {
   // Check some non-ascii characters.
-  string16 fifth(ASCIIToUTF16("123"));
+  std::u16string fifth(ASCIIToUTF16("123"));
   fifth.push_back(0x0000);
   fifth.push_back(0xd8c5);
   fifth.push_back(0xdffe);

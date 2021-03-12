@@ -78,10 +78,10 @@ BASE_EXPORT std::string UnescapeURLComponent(StringPiece escaped_text,
 // Unescapes the given substring as a URL, and then tries to interpret the
 // result as being encoded as UTF-8. If the result is convertible into UTF-8, it
 // will be returned as converted. If it is not, the original escaped string will
-// be converted into a string16 and returned.  |adjustments| provides
+// be converted into a std::u16string and returned.  |adjustments| provides
 // information on how the original string was adjusted to get the string
 // returned.
-BASE_EXPORT string16 UnescapeAndDecodeUTF8URLComponentWithAdjustments(
+BASE_EXPORT std::u16string UnescapeAndDecodeUTF8URLComponentWithAdjustments(
     StringPiece text,
     UnescapeRule::Type rules,
     OffsetAdjuster::Adjustments* adjustments);

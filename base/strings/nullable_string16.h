@@ -15,7 +15,7 @@
 
 namespace base {
 
-// This class is a simple wrapper for string16 which also contains a null
+// This class is a simple wrapper for std::u16string which also contains a null
 // state.  This should be used only where the difference between null and
 // empty is meaningful.
 class BASE_EXPORT NullableString16 {
@@ -23,21 +23,23 @@ class BASE_EXPORT NullableString16 {
   NullableString16();
   NullableString16(const NullableString16& other);
   NullableString16(NullableString16&& other);
-  NullableString16(const string16& string, bool is_null);
-  explicit NullableString16(Optional<string16> optional_string16);
+  NullableString16(const std::u16string& string, bool is_null);
+  explicit NullableString16(Optional<std::u16string> optional_string16);
   ~NullableString16();
 
   NullableString16& operator=(const NullableString16& other);
   NullableString16& operator=(NullableString16&& other);
 
-  const string16& string() const {
+  const std::u16string& string() const {
     return string_ ? *string_ : EmptyString16();
   }
   bool is_null() const { return !string_; }
-  const Optional<string16>& as_optional_string16() const { return string_; }
+  const Optional<std::u16string>& as_optional_string16() const {
+    return string_;
+  }
 
  private:
-  Optional<string16> string_;
+  Optional<std::u16string> string_;
 };
 
 inline bool operator==(const NullableString16& a, const NullableString16& b) {

@@ -258,7 +258,7 @@ TEST(JSONValueSerializerTest, Roundtrip) {
 }
 
 TEST(JSONValueSerializerTest, StringEscape) {
-  string16 all_chars;
+  std::u16string all_chars;
   for (int i = 1; i < 256; ++i) {
     all_chars += static_cast<char16_t>(i);
   }
@@ -306,7 +306,7 @@ TEST(JSONValueSerializerTest, StringEscape) {
 TEST(JSONValueSerializerTest, UnicodeStrings) {
   // unicode string json -> escaped ascii text
   Value root(Value::Type::DICTIONARY);
-  string16 test(WideToUTF16(L"\x7F51\x9875"));
+  std::u16string test(WideToUTF16(L"\x7F51\x9875"));
   root.SetStringKey("web", test);
 
   static const char kExpected[] = "{\"web\":\"\xE7\xBD\x91\xE9\xA1\xB5\"}";
@@ -329,7 +329,7 @@ TEST(JSONValueSerializerTest, UnicodeStrings) {
 TEST(JSONValueSerializerTest, HexStrings) {
   // hex string json -> escaped ascii text
   Value root(Value::Type::DICTIONARY);
-  string16 test(WideToUTF16(L"\x01\x02"));
+  std::u16string test(WideToUTF16(L"\x01\x02"));
   root.SetStringKey("test", test);
 
   static const char kExpected[] = "{\"test\":\"\\u0001\\u0002\"}";

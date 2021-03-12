@@ -75,7 +75,7 @@ TEST(EstimateMemoryUsageTest, String) {
 }
 
 TEST(EstimateMemoryUsageTest, String16) {
-  string16 string(777, 'a');
+  std::u16string string(777, 'a');
   EXPECT_EQ(sizeof(char16_t) * (string.capacity() + 1),
             EstimateMemoryUsage(string));
 }

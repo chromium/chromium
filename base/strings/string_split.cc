@@ -55,12 +55,12 @@ std::vector<std::string> SplitString(StringPiece input,
                                              result_type);
 }
 
-std::vector<string16> SplitString(StringPiece16 input,
-                                  StringPiece16 separators,
-                                  WhitespaceHandling whitespace,
-                                  SplitResult result_type) {
-  return internal::SplitStringT<string16>(input, separators, whitespace,
-                                          result_type);
+std::vector<std::u16string> SplitString(StringPiece16 input,
+                                        StringPiece16 separators,
+                                        WhitespaceHandling whitespace,
+                                        SplitResult result_type) {
+  return internal::SplitStringT<std::u16string>(input, separators, whitespace,
+                                                result_type);
 }
 
 std::vector<StringPiece> SplitStringPiece(StringPiece input,
@@ -110,12 +110,13 @@ bool SplitStringIntoKeyValuePairsUsingSubstr(
   return success;
 }
 
-std::vector<string16> SplitStringUsingSubstr(StringPiece16 input,
-                                             StringPiece16 delimiter,
-                                             WhitespaceHandling whitespace,
-                                             SplitResult result_type) {
-  return internal::SplitStringUsingSubstrT<string16>(input, delimiter,
-                                                     whitespace, result_type);
+std::vector<std::u16string> SplitStringUsingSubstr(
+    StringPiece16 input,
+    StringPiece16 delimiter,
+    WhitespaceHandling whitespace,
+    SplitResult result_type) {
+  return internal::SplitStringUsingSubstrT<std::u16string>(
+      input, delimiter, whitespace, result_type);
 }
 
 std::vector<std::string> SplitStringUsingSubstr(StringPiece input,

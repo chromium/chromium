@@ -60,7 +60,7 @@ inline wchar_t* as_writable_wcstr(char16_t* str) {
   return reinterpret_cast<wchar_t*>(str);
 }
 
-inline wchar_t* as_writable_wcstr(string16& str) {
+inline wchar_t* as_writable_wcstr(std::u16string& str) {
   return reinterpret_cast<wchar_t*>(data(str));
 }
 
@@ -104,8 +104,8 @@ inline std::wstring AsWString(StringPiece16 str) {
   return std::wstring(as_wcstr(str.data()), str.size());
 }
 
-inline string16 AsString16(WStringPiece str) {
-  return string16(as_u16cstr(str.data()), str.size());
+inline std::u16string AsString16(WStringPiece str) {
+  return std::u16string(as_u16cstr(str.data()), str.size());
 }
 
 // The following section contains overloads of the cross-platform APIs for

@@ -83,10 +83,10 @@ BASE_I18N_EXPORT TextDirection GetTextDirectionForLocale(
 // character types L, LRE, LRO, R, AL, RLE, and RLO are considered as strong
 // directionality characters. Please refer to http://unicode.org/reports/tr9/
 // for more information.
-BASE_I18N_EXPORT TextDirection GetFirstStrongCharacterDirection(
-    const string16& text);
-BASE_I18N_EXPORT TextDirection GetLastStrongCharacterDirection(
-    const string16& text);
+BASE_I18N_EXPORT TextDirection
+GetFirstStrongCharacterDirection(const std::u16string& text);
+BASE_I18N_EXPORT TextDirection
+GetLastStrongCharacterDirection(const std::u16string& text);
 
 // Given the string in |text|, returns LEFT_TO_RIGHT or RIGHT_TO_LEFT if all the
 // strong directionality characters in the string are of the same
@@ -94,7 +94,7 @@ BASE_I18N_EXPORT TextDirection GetLastStrongCharacterDirection(
 // LTR and RTL strong directionality characters. Defaults to LEFT_TO_RIGHT if
 // the string does not contain directionality characters. Please refer to
 // http://unicode.org/reports/tr9/ for more information.
-BASE_I18N_EXPORT TextDirection GetStringDirection(const string16& text);
+BASE_I18N_EXPORT TextDirection GetStringDirection(const std::u16string& text);
 
 // Given the string in |text|, this function modifies the string in place with
 // the appropriate Unicode formatting marks that mark the string direction
@@ -118,52 +118,53 @@ BASE_I18N_EXPORT TextDirection GetStringDirection(const string16& text);
 // installed. Since the English version of Windows doesn't have right-to-left
 // language support installed by default, inserting the direction Unicode mark
 // results in Windows displaying squares.
-BASE_I18N_EXPORT bool AdjustStringForLocaleDirection(string16* text);
+BASE_I18N_EXPORT bool AdjustStringForLocaleDirection(std::u16string* text);
 
 // Undoes the actions of the above function (AdjustStringForLocaleDirection).
-BASE_I18N_EXPORT bool UnadjustStringForLocaleDirection(string16* text);
+BASE_I18N_EXPORT bool UnadjustStringForLocaleDirection(std::u16string* text);
 
 // Ensures |text| contains no unterminated directional formatting characters, by
 // appending the appropriate pop-directional-formatting characters to the end of
 // |text|.
-BASE_I18N_EXPORT void EnsureTerminatedDirectionalFormatting(string16* text);
+BASE_I18N_EXPORT void EnsureTerminatedDirectionalFormatting(
+    std::u16string* text);
 
 // Sanitizes the |text| by terminating any directional override/embedding
 // characters and then adjusting the string for locale direction.
-BASE_I18N_EXPORT void SanitizeUserSuppliedString(string16* text);
+BASE_I18N_EXPORT void SanitizeUserSuppliedString(std::u16string* text);
 
 // Returns true if the string contains at least one character with strong right
 // to left directionality; that is, a character with either R or AL Unicode
 // BiDi character type.
-BASE_I18N_EXPORT bool StringContainsStrongRTLChars(const string16& text);
+BASE_I18N_EXPORT bool StringContainsStrongRTLChars(const std::u16string& text);
 
 // Wraps a string with an LRE-PDF pair which essentialy marks the string as a
 // Left-To-Right string. Doing this is useful in order to make sure LTR
 // strings are rendered properly in an RTL context.
-BASE_I18N_EXPORT void WrapStringWithLTRFormatting(string16* text);
+BASE_I18N_EXPORT void WrapStringWithLTRFormatting(std::u16string* text);
 
 // Wraps a string with an RLE-PDF pair which essentialy marks the string as a
 // Right-To-Left string. Doing this is useful in order to make sure RTL
 // strings are rendered properly in an LTR context.
-BASE_I18N_EXPORT void WrapStringWithRTLFormatting(string16* text);
+BASE_I18N_EXPORT void WrapStringWithRTLFormatting(std::u16string* text);
 
 // Wraps file path to get it to display correctly in RTL UI. All filepaths
 // should be passed through this function before display in UI for RTL locales.
 BASE_I18N_EXPORT void WrapPathWithLTRFormatting(const FilePath& path,
-                                                string16* rtl_safe_path);
+                                                std::u16string* rtl_safe_path);
 
 // Return the string in |text| wrapped with LRE (Left-To-Right Embedding) and
 // PDF (Pop Directional Formatting) marks, if needed for UI display purposes.
-BASE_I18N_EXPORT string16 GetDisplayStringInLTRDirectionality(
-    const string16& text) WARN_UNUSED_RESULT;
+BASE_I18N_EXPORT std::u16string GetDisplayStringInLTRDirectionality(
+    const std::u16string& text) WARN_UNUSED_RESULT;
 
 // Strip the beginning (U+202A..U+202B, U+202D..U+202E) and/or ending (U+202C)
 // explicit bidi control characters from |text|, if there are any. Otherwise,
 // return the text itself. Explicit bidi control characters display and have
 // semantic effect. They can be deleted so they might not always appear in a
 // pair.
-BASE_I18N_EXPORT string16 StripWrappingBidiControlCharacters(
-    const string16& text) WARN_UNUSED_RESULT;
+BASE_I18N_EXPORT std::u16string StripWrappingBidiControlCharacters(
+    const std::u16string& text) WARN_UNUSED_RESULT;
 
 }  // namespace i18n
 }  // namespace base

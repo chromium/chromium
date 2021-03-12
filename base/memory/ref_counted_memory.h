@@ -146,13 +146,14 @@ class BASE_EXPORT RefCountedString : public RefCountedMemory {
 };
 
 // An implementation of RefCountedMemory, where the bytes are stored in a
-// string16.
+// std::u16string.
 class BASE_EXPORT RefCountedString16 : public base::RefCountedMemory {
  public:
   RefCountedString16();
 
   // Constructs a RefCountedString16 object by performing a swap.
-  static scoped_refptr<RefCountedString16> TakeString(string16* to_destroy);
+  static scoped_refptr<RefCountedString16> TakeString(
+      std::u16string* to_destroy);
 
   // RefCountedMemory:
   const unsigned char* front() const override;
@@ -162,7 +163,7 @@ class BASE_EXPORT RefCountedString16 : public base::RefCountedMemory {
   ~RefCountedString16() override;
 
  private:
-  string16 data_;
+  std::u16string data_;
 
   DISALLOW_COPY_AND_ASSIGN(RefCountedString16);
 };

@@ -165,7 +165,7 @@ bool PickleIterator::ReadStringPiece(StringPiece* result) {
   return true;
 }
 
-bool PickleIterator::ReadString16(string16* result) {
+bool PickleIterator::ReadString16(std::u16string* result) {
   int len;
   if (!ReadInt(&len))
     return false;

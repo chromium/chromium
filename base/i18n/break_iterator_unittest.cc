@@ -20,7 +20,7 @@ namespace base {
 namespace i18n {
 
 TEST(BreakIteratorTest, BreakWordEmpty) {
-  string16 empty;
+  std::u16string empty;
   BreakIterator iter(empty, BreakIterator::BREAK_WORD);
   ASSERT_TRUE(iter.Init());
   EXPECT_FALSE(iter.Advance());
@@ -30,8 +30,8 @@ TEST(BreakIteratorTest, BreakWordEmpty) {
 }
 
 TEST(BreakIteratorTest, BreakWord) {
-  string16 space(UTF8ToUTF16(" "));
-  string16 str(UTF8ToUTF16(" foo bar! \npouet boom"));
+  std::u16string space(UTF8ToUTF16(" "));
+  std::u16string str(UTF8ToUTF16(" foo bar! \npouet boom"));
   BreakIterator iter(str, BreakIterator::BREAK_WORD);
   ASSERT_TRUE(iter.Init());
   EXPECT_TRUE(iter.Advance());
@@ -72,11 +72,11 @@ TEST(BreakIteratorTest, BreakWord) {
 
 TEST(BreakIteratorTest, BreakWordWide16) {
   // Two greek words separated by space.
-  const string16 str(WideToUTF16(
-      L"\x03a0\x03b1\x03b3\x03ba\x03cc\x03c3\x03bc\x03b9"
-      L"\x03bf\x03c2\x0020\x0399\x03c3\x03c4\x03cc\x03c2"));
-  const string16 word1(str.substr(0, 10));
-  const string16 word2(str.substr(11, 5));
+  const std::u16string str(
+      WideToUTF16(L"\x03a0\x03b1\x03b3\x03ba\x03cc\x03c3\x03bc\x03b9"
+                  L"\x03bf\x03c2\x0020\x0399\x03c3\x03c4\x03cc\x03c2"));
+  const std::u16string word1(str.substr(0, 10));
+  const std::u16string word2(str.substr(11, 5));
   BreakIterator iter(str, BreakIterator::BREAK_WORD);
   ASSERT_TRUE(iter.Init());
   EXPECT_TRUE(iter.Advance());
@@ -97,9 +97,9 @@ TEST(BreakIteratorTest, BreakWordWide16) {
 TEST(BreakIteratorTest, BreakWordWide32) {
   // U+1D49C MATHEMATICAL SCRIPT CAPITAL A
   const char very_wide_char[] = "\xF0\x9D\x92\x9C";
-  const string16 str(
+  const std::u16string str(
       UTF8ToUTF16(base::StringPrintf("%s a", very_wide_char)));
-  const string16 very_wide_word(str.substr(0, 2));
+  const std::u16string very_wide_word(str.substr(0, 2));
 
   BreakIterator iter(str, BreakIterator::BREAK_WORD);
   ASSERT_TRUE(iter.Init());
@@ -123,7 +123,8 @@ TEST(BreakIteratorTest, BreakWordThai) {
   const char term1[] = "พิมพ์";
   const char term2[] = "น้อย";
   const char term3[] = "ลง";
-  const string16 str(UTF8ToUTF16(base::JoinString({term1, term2, term3}, "")));
+  const std::u16string str(
+      UTF8ToUTF16(base::JoinString({term1, term2, term3}, "")));
 
   BreakIterator iter(str, BreakIterator::BREAK_WORD);
   ASSERT_TRUE(iter.Init());
@@ -151,7 +152,8 @@ TEST(BreakIteratorTest, BreakWordChinese) {
   const char term1[] = "瀏覽";
   const char term2[] = "速度";
   const char term3[] = "飛快";
-  const string16 str(UTF8ToUTF16(base::JoinString({term1, term2, term3}, "")));
+  const std::u16string str(
+      UTF8ToUTF16(base::JoinString({term1, term2, term3}, "")));
 
   BreakIterator iter(str, BreakIterator::BREAK_WORD);
   ASSERT_TRUE(iter.Init());
@@ -172,7 +174,7 @@ TEST(BreakIteratorTest, BreakWordJapanese) {
   // Terms in Japanese, without spaces in between.
   const char term1[] = "モバイル";
   const char term2[] = "でも";
-  const string16 str(UTF8ToUTF16(base::JoinString({term1, term2}, "")));
+  const std::u16string str(UTF8ToUTF16(base::JoinString({term1, term2}, "")));
 
   BreakIterator iter(str, BreakIterator::BREAK_WORD);
   ASSERT_TRUE(iter.Init());
@@ -188,14 +190,14 @@ TEST(BreakIteratorTest, BreakWordJapanese) {
 
 TEST(BreakIteratorTest, BreakWordChineseEnglish) {
   // Terms in Simplified Chinese mixed with English and wide punctuations.
-  string16 space(UTF8ToUTF16(" "));
+  std::u16string space(UTF8ToUTF16(" "));
   const char token1[] = "下载";
   const char token2[] = "Chrome";
   const char token3[] = "（";
   const char token4[] = "Mac";
   const char token5[] = "版";
   const char token6[] = "）";
-  const string16 str(UTF8ToUTF16(base::JoinString(
+  const std::u16string str(UTF8ToUTF16(base::JoinString(
       {token1, " ", token2, token3, token4, " ", token5, token6}, "")));
 
   BreakIterator iter(str, BreakIterator::BREAK_WORD);
@@ -240,7 +242,7 @@ TEST(BreakIteratorTest, BreakWordChineseEnglish) {
 #endif  // !(defined(OS_IOS) || defined(OS_ANDROID))
 
 TEST(BreakIteratorTest, BreakSpaceEmpty) {
-  string16 empty;
+  std::u16string empty;
   BreakIterator iter(empty, BreakIterator::BREAK_SPACE);
   ASSERT_TRUE(iter.Init());
   EXPECT_FALSE(iter.Advance());
@@ -250,7 +252,7 @@ TEST(BreakIteratorTest, BreakSpaceEmpty) {
 }
 
 TEST(BreakIteratorTest, BreakSpace) {
-  string16 str(UTF8ToUTF16(" foo bar! \npouet boom"));
+  std::u16string str(UTF8ToUTF16(" foo bar! \npouet boom"));
   BreakIterator iter(str, BreakIterator::BREAK_SPACE);
   ASSERT_TRUE(iter.Init());
   EXPECT_TRUE(iter.Advance());
@@ -275,7 +277,7 @@ TEST(BreakIteratorTest, BreakSpace) {
 }
 
 TEST(BreakIteratorTest, BreakSpaceSP) {
-  string16 str(UTF8ToUTF16(" foo bar! \npouet boom "));
+  std::u16string str(UTF8ToUTF16(" foo bar! \npouet boom "));
   BreakIterator iter(str, BreakIterator::BREAK_SPACE);
   ASSERT_TRUE(iter.Init());
   EXPECT_TRUE(iter.Advance());
@@ -301,11 +303,11 @@ TEST(BreakIteratorTest, BreakSpaceSP) {
 
 TEST(BreakIteratorTest, BreakSpacekWide16) {
   // Two Greek words.
-  const string16 str(WideToUTF16(
-      L"\x03a0\x03b1\x03b3\x03ba\x03cc\x03c3\x03bc\x03b9"
-      L"\x03bf\x03c2\x0020\x0399\x03c3\x03c4\x03cc\x03c2"));
-  const string16 word1(str.substr(0, 11));
-  const string16 word2(str.substr(11, 5));
+  const std::u16string str(
+      WideToUTF16(L"\x03a0\x03b1\x03b3\x03ba\x03cc\x03c3\x03bc\x03b9"
+                  L"\x03bf\x03c2\x0020\x0399\x03c3\x03c4\x03cc\x03c2"));
+  const std::u16string word1(str.substr(0, 11));
+  const std::u16string word2(str.substr(11, 5));
   BreakIterator iter(str, BreakIterator::BREAK_SPACE);
   ASSERT_TRUE(iter.Init());
   EXPECT_TRUE(iter.Advance());
@@ -323,9 +325,9 @@ TEST(BreakIteratorTest, BreakSpacekWide16) {
 TEST(BreakIteratorTest, BreakSpaceWide32) {
   // U+1D49C MATHEMATICAL SCRIPT CAPITAL A
   const char very_wide_char[] = "\xF0\x9D\x92\x9C";
-  const string16 str(
+  const std::u16string str(
       UTF8ToUTF16(base::StringPrintf("%s a", very_wide_char)));
-  const string16 very_wide_word(str.substr(0, 3));
+  const std::u16string very_wide_word(str.substr(0, 3));
 
   BreakIterator iter(str, BreakIterator::BREAK_SPACE);
   ASSERT_TRUE(iter.Init());
@@ -342,7 +344,7 @@ TEST(BreakIteratorTest, BreakSpaceWide32) {
 }
 
 TEST(BreakIteratorTest, BreakLineEmpty) {
-  string16 empty;
+  std::u16string empty;
   BreakIterator iter(empty, BreakIterator::BREAK_NEWLINE);
   ASSERT_TRUE(iter.Init());
   EXPECT_FALSE(iter.Advance());
@@ -352,8 +354,8 @@ TEST(BreakIteratorTest, BreakLineEmpty) {
 }
 
 TEST(BreakIteratorTest, BreakLine) {
-  string16 nl(UTF8ToUTF16("\n"));
-  string16 str(UTF8ToUTF16("\nfoo bar!\n\npouet boom"));
+  std::u16string nl(UTF8ToUTF16("\n"));
+  std::u16string str(UTF8ToUTF16("\nfoo bar!\n\npouet boom"));
   BreakIterator iter(str, BreakIterator::BREAK_NEWLINE);
   ASSERT_TRUE(iter.Init());
   EXPECT_TRUE(iter.Advance());
@@ -375,8 +377,8 @@ TEST(BreakIteratorTest, BreakLine) {
 }
 
 TEST(BreakIteratorTest, BreakSentence) {
-  string16 nl(UTF8ToUTF16("\n"));
-  string16 str(UTF8ToUTF16(
+  std::u16string nl(UTF8ToUTF16("\n"));
+  std::u16string str(UTF8ToUTF16(
       "\nFoo bar!\nOne sentence.\n\n\tAnother sentence?One more thing"));
   BreakIterator iter(str, BreakIterator::BREAK_SENTENCE);
   ASSERT_TRUE(iter.Init());
@@ -403,7 +405,7 @@ TEST(BreakIteratorTest, BreakSentence) {
 }
 
 TEST(BreakIteratorTest, IsSentenceBoundary) {
-  string16 str(UTF8ToUTF16(
+  std::u16string str(UTF8ToUTF16(
       "Foo bar!\nOne sentence.\n\n\tAnother sentence?One more thing"));
   BreakIterator iter(str, BreakIterator::BREAK_SENTENCE);
   ASSERT_TRUE(iter.Init());
@@ -424,8 +426,8 @@ TEST(BreakIteratorTest, IsSentenceBoundary) {
 }
 
 TEST(BreakIteratorTest, BreakLineNL) {
-  string16 nl(UTF8ToUTF16("\n"));
-  string16 str(UTF8ToUTF16("\nfoo bar!\n\npouet boom\n"));
+  std::u16string nl(UTF8ToUTF16("\n"));
+  std::u16string str(UTF8ToUTF16("\nfoo bar!\n\npouet boom\n"));
   BreakIterator iter(str, BreakIterator::BREAK_NEWLINE);
   ASSERT_TRUE(iter.Init());
   EXPECT_TRUE(iter.Advance());
@@ -448,11 +450,11 @@ TEST(BreakIteratorTest, BreakLineNL) {
 
 TEST(BreakIteratorTest, BreakLineWide16) {
   // Two Greek words separated by newline.
-  const string16 str(WideToUTF16(
-      L"\x03a0\x03b1\x03b3\x03ba\x03cc\x03c3\x03bc\x03b9"
-      L"\x03bf\x03c2\x000a\x0399\x03c3\x03c4\x03cc\x03c2"));
-  const string16 line1(str.substr(0, 11));
-  const string16 line2(str.substr(11, 5));
+  const std::u16string str(
+      WideToUTF16(L"\x03a0\x03b1\x03b3\x03ba\x03cc\x03c3\x03bc\x03b9"
+                  L"\x03bf\x03c2\x000a\x0399\x03c3\x03c4\x03cc\x03c2"));
+  const std::u16string line1(str.substr(0, 11));
+  const std::u16string line2(str.substr(11, 5));
   BreakIterator iter(str, BreakIterator::BREAK_NEWLINE);
   ASSERT_TRUE(iter.Init());
   EXPECT_TRUE(iter.Advance());
@@ -470,9 +472,9 @@ TEST(BreakIteratorTest, BreakLineWide16) {
 TEST(BreakIteratorTest, BreakLineWide32) {
   // U+1D49C MATHEMATICAL SCRIPT CAPITAL A
   const char very_wide_char[] = "\xF0\x9D\x92\x9C";
-  const string16 str(
+  const std::u16string str(
       UTF8ToUTF16(base::StringPrintf("%s\na", very_wide_char)));
-  const string16 very_wide_line(str.substr(0, 3));
+  const std::u16string very_wide_line(str.substr(0, 3));
   BreakIterator iter(str, BreakIterator::BREAK_NEWLINE);
   ASSERT_TRUE(iter.Init());
   EXPECT_TRUE(iter.Advance());
@@ -507,8 +509,8 @@ TEST(BreakIteratorTest, BreakCharacter) {
       "\u0E01",
       " ",
   };
-  std::vector<string16> characters;
-  string16 text;
+  std::vector<std::u16string> characters;
+  std::u16string text;
   for (auto*& i : kCharacters) {
     characters.push_back(base::UTF8ToUTF16(i));
     text.append(characters.back());
@@ -525,11 +527,11 @@ TEST(BreakIteratorTest, BreakCharacter) {
 // We should be able to get valid substrings with GetString() function
 // after setting new content by calling SetText().
 TEST(BreakIteratorTest, GetStringAfterSetText) {
-  const string16 initial_string(ASCIIToUTF16("str"));
+  const std::u16string initial_string(ASCIIToUTF16("str"));
   BreakIterator iter(initial_string, BreakIterator::BREAK_WORD);
   ASSERT_TRUE(iter.Init());
 
-  const string16 long_string(ASCIIToUTF16("another,string"));
+  const std::u16string long_string(ASCIIToUTF16("another,string"));
   EXPECT_TRUE(iter.SetText(long_string.c_str(), long_string.size()));
   EXPECT_TRUE(iter.Advance());
   EXPECT_TRUE(iter.Advance());  // Advance to ',' in |long_string|
@@ -542,7 +544,7 @@ TEST(BreakIteratorTest, GetStringAfterSetText) {
 }
 
 TEST(BreakIteratorTest, GetStringPiece) {
-  const string16 initial_string(ASCIIToUTF16("some string"));
+  const std::u16string initial_string(ASCIIToUTF16("some string"));
   BreakIterator iter(initial_string, BreakIterator::BREAK_WORD);
   ASSERT_TRUE(iter.Init());
 

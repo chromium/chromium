@@ -19,7 +19,7 @@ template <typename Str>
 BasicStringPiece<Str> WhitespaceForType();
 
 template <>
-inline StringPiece16 WhitespaceForType<string16>() {
+inline StringPiece16 WhitespaceForType<std::u16string>() {
   return kWhitespaceUTF16;
 }
 template <>

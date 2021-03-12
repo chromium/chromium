@@ -513,8 +513,8 @@ inline typename string_type::value_type* WriteIntoT(string_type* str,
 
 // Generic version for all JoinString overloads. |list_type| must be a sequence
 // (base::span or std::initializer_list) of strings/StringPieces (std::string,
-// string16, StringPiece or StringPiece16). |string_type| is either std::string
-// or string16.
+// std::u16string, StringPiece or StringPiece16). |string_type| is either
+// std::string or std::u16string.
 template <typename list_type, typename string_type>
 static string_type JoinStringT(list_type parts,
                                BasicStringPiece<string_type> sep) {

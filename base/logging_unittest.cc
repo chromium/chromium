@@ -861,8 +861,8 @@ TEST_F(LoggingTest, LogCrosSyslogFormat) {
 }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
-// We define a custom operator<< for string16 so we can use it with logging.
-// This tests that conversion.
+// We define a custom operator<< for std::u16string so we can use it with
+// logging. This tests that conversion.
 TEST_F(LoggingTest, String16) {
   // Basic stream test.
   {

@@ -351,7 +351,8 @@ class StringTokenizerT {
 
 typedef StringTokenizerT<std::string, std::string::const_iterator>
     StringTokenizer;
-typedef StringTokenizerT<string16, string16::const_iterator> String16Tokenizer;
+typedef StringTokenizerT<std::u16string, std::u16string::const_iterator>
+    String16Tokenizer;
 typedef StringTokenizerT<std::string, const char*> CStringTokenizer;
 
 }  // namespace base

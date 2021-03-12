@@ -11,12 +11,13 @@
 namespace base {
 namespace i18n {
 
-FixedPatternStringSearch::FixedPatternStringSearch(const string16& find_this,
-                                                   bool case_sensitive)
+FixedPatternStringSearch::FixedPatternStringSearch(
+    const std::u16string& find_this,
+    bool case_sensitive)
     : find_this_(find_this) {
   // usearch_open requires a valid string argument to be searched, even if we
   // want to set it by usearch_setText afterwards. So, supplying a dummy text.
-  const string16& dummy = find_this_;
+  const std::u16string& dummy = find_this_;
 
   UErrorCode status = U_ZERO_ERROR;
   search_ = usearch_open(find_this_.data(), find_this_.size(), dummy.data(),
@@ -43,7 +44,7 @@ FixedPatternStringSearch::~FixedPatternStringSearch() {
     usearch_close(search_);
 }
 
-bool FixedPatternStringSearch::Search(const string16& in_this,
+bool FixedPatternStringSearch::Search(const std::u16string& in_this,
                                       size_t* match_index,
                                       size_t* match_length,
                                       bool forward_search) {
@@ -56,7 +57,7 @@ bool FixedPatternStringSearch::Search(const string16& in_this,
   // substring search will give the correct return value.
   if (!U_SUCCESS(status)) {
     size_t index = in_this.find(find_this_);
-    if (index == string16::npos)
+    if (index == std::u16string::npos)
       return false;
     if (match_index)
       *match_index = index;
@@ -77,27 +78,28 @@ bool FixedPatternStringSearch::Search(const string16& in_this,
 }
 
 FixedPatternStringSearchIgnoringCaseAndAccents::
-    FixedPatternStringSearchIgnoringCaseAndAccents(const string16& find_this)
+    FixedPatternStringSearchIgnoringCaseAndAccents(
+        const std::u16string& find_this)
     : base_search_(find_this, /*case_sensitive=*/false) {}
 
 bool FixedPatternStringSearchIgnoringCaseAndAccents::Search(
-    const string16& in_this,
+    const std::u16string& in_this,
     size_t* match_index,
     size_t* match_length) {
   return base_search_.Search(in_this, match_index, match_length,
                              /*forward_search=*/true);
 }
 
-bool StringSearchIgnoringCaseAndAccents(const string16& find_this,
-                                        const string16& in_this,
+bool StringSearchIgnoringCaseAndAccents(const std::u16string& find_this,
+                                        const std::u16string& in_this,
                                         size_t* match_index,
                                         size_t* match_length) {
   return FixedPatternStringSearchIgnoringCaseAndAccents(find_this).Search(
       in_this, match_index, match_length);
 }
 
-bool StringSearch(const string16& find_this,
-                  const string16& in_this,
+bool StringSearch(const std::u16string& find_this,
+                  const std::u16string& in_this,
                   size_t* match_index,
                   size_t* match_length,
                   bool case_sensitive,

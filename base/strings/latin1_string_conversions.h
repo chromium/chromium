@@ -20,14 +20,15 @@ namespace base {
 typedef unsigned char Latin1Char;
 
 // This somewhat odd function is designed to help us convert from Blink Strings
-// to string16. A Blink string is either backed by an array of Latin-1
+// to std::u16string. A Blink string is either backed by an array of Latin-1
 // characters or an array of UTF-16 characters. This function is called by
-// WebString::operator string16() to convert one or the other character array
-// to string16. This function is defined here rather than in WebString.h to
-// avoid binary bloat in all the callers of the conversion operator.
-BASE_EXPORT string16 Latin1OrUTF16ToUTF16(size_t length,
-                                          const Latin1Char* latin1,
-                                          const char16_t* utf16);
+// WebString::operator std::u16string() to convert one or the other character
+// array to std::u16string. This function is defined here rather than in
+// WebString.h to avoid binary bloat in all the callers of the conversion
+// operator.
+BASE_EXPORT std::u16string Latin1OrUTF16ToUTF16(size_t length,
+                                                const Latin1Char* latin1,
+                                                const char16_t* utf16);
 
 }  // namespace base
 

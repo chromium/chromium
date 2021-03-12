@@ -21,9 +21,9 @@ TEST(JniString, BasicConversionsUTF8) {
 }
 
 TEST(JniString, BasicConversionsUTF16) {
-  const string16 kSimpleString = UTF8ToUTF16("SimpleTest16");
+  const std::u16string kSimpleString = UTF8ToUTF16("SimpleTest16");
   JNIEnv* env = AttachCurrentThread();
-  string16 result =
+  std::u16string result =
       ConvertJavaStringToUTF16(ConvertUTF16ToJavaString(env, kSimpleString));
   EXPECT_EQ(kSimpleString, result);
 }
@@ -37,9 +37,9 @@ TEST(JniString, EmptyConversionUTF8) {
 }
 
 TEST(JniString, EmptyConversionUTF16) {
-  const string16 kEmptyString;
+  const std::u16string kEmptyString;
   JNIEnv* env = AttachCurrentThread();
-  string16 result =
+  std::u16string result =
       ConvertJavaStringToUTF16(ConvertUTF16ToJavaString(env, kEmptyString));
   EXPECT_EQ(kEmptyString, result);
 }

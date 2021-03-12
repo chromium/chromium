@@ -222,7 +222,7 @@ TextDirection GetTextDirectionForLocale(const char* locale_name) {
   return (layout_dir != ULOC_LAYOUT_RTL) ? LEFT_TO_RIGHT : RIGHT_TO_LEFT;
 }
 
-TextDirection GetFirstStrongCharacterDirection(const string16& text) {
+TextDirection GetFirstStrongCharacterDirection(const std::u16string& text) {
   const char16_t* string = text.c_str();
   size_t length = text.length();
   size_t position = 0;
@@ -238,7 +238,7 @@ TextDirection GetFirstStrongCharacterDirection(const string16& text) {
   return LEFT_TO_RIGHT;
 }
 
-TextDirection GetLastStrongCharacterDirection(const string16& text) {
+TextDirection GetLastStrongCharacterDirection(const std::u16string& text) {
   const char16_t* string = text.c_str();
   size_t position = text.length();
   while (position > 0) {
@@ -253,7 +253,7 @@ TextDirection GetLastStrongCharacterDirection(const string16& text) {
   return LEFT_TO_RIGHT;
 }
 
-TextDirection GetStringDirection(const string16& text) {
+TextDirection GetStringDirection(const std::u16string& text) {
   const char16_t* string = text.c_str();
   size_t length = text.length();
   size_t position = 0;
@@ -281,7 +281,7 @@ TextDirection GetStringDirection(const string16& text) {
 }
 
 #if defined(OS_WIN)
-bool AdjustStringForLocaleDirection(string16* text) {
+bool AdjustStringForLocaleDirection(std::u16string* text) {
   if (!IsRTL() || text->empty())
     return false;
 
@@ -296,7 +296,7 @@ bool AdjustStringForLocaleDirection(string16* text) {
   return true;
 }
 
-bool UnadjustStringForLocaleDirection(string16* text) {
+bool UnadjustStringForLocaleDirection(std::u16string* text) {
   if (!IsRTL() || text->empty())
     return false;
 
@@ -304,7 +304,7 @@ bool UnadjustStringForLocaleDirection(string16* text) {
   return true;
 }
 #else
-bool AdjustStringForLocaleDirection(string16* text) {
+bool AdjustStringForLocaleDirection(std::u16string* text) {
   // On OS X & GTK the directionality of a label is determined by the first
   // strongly directional character.
   // However, we want to make sure that in an LTR-language-UI all strings are
@@ -358,7 +358,7 @@ bool AdjustStringForLocaleDirection(string16* text) {
   return true;
 }
 
-bool UnadjustStringForLocaleDirection(string16* text) {
+bool UnadjustStringForLocaleDirection(std::u16string* text) {
   if (text->empty())
     return false;
 
@@ -376,7 +376,7 @@ bool UnadjustStringForLocaleDirection(string16* text) {
     --end_index;
   }
 
-  string16 unmarked_text =
+  std::u16string unmarked_text =
       text->substr(begin_index, end_index - begin_index + 1);
   *text = StripWrappingBidiControlCharacters(unmarked_text);
   return true;
@@ -384,7 +384,7 @@ bool UnadjustStringForLocaleDirection(string16* text) {
 
 #endif  // !OS_WIN
 
-void EnsureTerminatedDirectionalFormatting(string16* text) {
+void EnsureTerminatedDirectionalFormatting(std::u16string* text) {
   int count = 0;
   for (auto c : *text) {
     if (c == kLeftToRightEmbeddingMark || c == kRightToLeftEmbeddingMark ||
@@ -398,12 +398,12 @@ void EnsureTerminatedDirectionalFormatting(string16* text) {
     text->push_back(kPopDirectionalFormatting);
 }
 
-void SanitizeUserSuppliedString(string16* text) {
+void SanitizeUserSuppliedString(std::u16string* text) {
   EnsureTerminatedDirectionalFormatting(text);
   AdjustStringForLocaleDirection(text);
 }
 
-bool StringContainsStrongRTLChars(const string16& text) {
+bool StringContainsStrongRTLChars(const std::u16string& text) {
   const char16_t* string = text.c_str();
   size_t length = text.length();
   size_t position = 0;
@@ -424,7 +424,7 @@ bool StringContainsStrongRTLChars(const string16& text) {
   return false;
 }
 
-void WrapStringWithLTRFormatting(string16* text) {
+void WrapStringWithLTRFormatting(std::u16string* text) {
   if (text->empty())
     return;
 
@@ -436,7 +436,7 @@ void WrapStringWithLTRFormatting(string16* text) {
   text->push_back(kPopDirectionalFormatting);
 }
 
-void WrapStringWithRTLFormatting(string16* text) {
+void WrapStringWithRTLFormatting(std::u16string* text) {
   if (text->empty())
     return;
 
@@ -449,7 +449,7 @@ void WrapStringWithRTLFormatting(string16* text) {
 }
 
 void WrapPathWithLTRFormatting(const FilePath& path,
-                               string16* rtl_safe_path) {
+                               std::u16string* rtl_safe_path) {
   // Wrap the overall path with LRE-PDF pair which essentialy marks the
   // string as a Left-To-Right string.
   // Inserting an LRE (Left-To-Right Embedding) mark as the first character.
@@ -466,18 +466,18 @@ void WrapPathWithLTRFormatting(const FilePath& path,
   rtl_safe_path->push_back(kPopDirectionalFormatting);
 }
 
-string16 GetDisplayStringInLTRDirectionality(const string16& text) {
+std::u16string GetDisplayStringInLTRDirectionality(const std::u16string& text) {
   // Always wrap the string in RTL UI (it may be appended to RTL string).
   // Also wrap strings with an RTL first strong character direction in LTR UI.
   if (IsRTL() || GetFirstStrongCharacterDirection(text) == RIGHT_TO_LEFT) {
-    string16 text_mutable(text);
+    std::u16string text_mutable(text);
     WrapStringWithLTRFormatting(&text_mutable);
     return text_mutable;
   }
   return text;
 }
 
-string16 StripWrappingBidiControlCharacters(const string16& text) {
+std::u16string StripWrappingBidiControlCharacters(const std::u16string& text) {
   if (text.empty())
     return text;
   size_t begin_index = 0;

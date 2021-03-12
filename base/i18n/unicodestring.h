@@ -18,7 +18,8 @@
 namespace base {
 namespace i18n {
 
-inline string16 UnicodeStringToString16(const icu::UnicodeString& unistr) {
+inline std::u16string UnicodeStringToString16(
+    const icu::UnicodeString& unistr) {
 #if U_ICU_VERSION_MAJOR_NUM >= 59
   return std::u16string(icu::toUCharPtr(unistr.getBuffer()),
                         static_cast<size_t>(unistr.length()));

@@ -39,19 +39,19 @@ namespace base {
 
 // Ignores locale! see warning above.
 BASE_EXPORT std::string NumberToString(int value);
-BASE_EXPORT string16 NumberToString16(int value);
+BASE_EXPORT std::u16string NumberToString16(int value);
 BASE_EXPORT std::string NumberToString(unsigned int value);
-BASE_EXPORT string16 NumberToString16(unsigned int value);
+BASE_EXPORT std::u16string NumberToString16(unsigned int value);
 BASE_EXPORT std::string NumberToString(long value);
-BASE_EXPORT string16 NumberToString16(long value);
+BASE_EXPORT std::u16string NumberToString16(long value);
 BASE_EXPORT std::string NumberToString(unsigned long value);
-BASE_EXPORT string16 NumberToString16(unsigned long value);
+BASE_EXPORT std::u16string NumberToString16(unsigned long value);
 BASE_EXPORT std::string NumberToString(long long value);
-BASE_EXPORT string16 NumberToString16(long long value);
+BASE_EXPORT std::u16string NumberToString16(long long value);
 BASE_EXPORT std::string NumberToString(unsigned long long value);
-BASE_EXPORT string16 NumberToString16(unsigned long long value);
+BASE_EXPORT std::u16string NumberToString16(unsigned long long value);
 BASE_EXPORT std::string NumberToString(double value);
-BASE_EXPORT string16 NumberToString16(double value);
+BASE_EXPORT std::u16string NumberToString16(double value);
 
 // String -> number conversions ------------------------------------------------
 

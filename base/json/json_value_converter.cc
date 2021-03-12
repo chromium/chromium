@@ -27,8 +27,8 @@ bool BasicValueConverter<std::string>::Convert(
   return true;
 }
 
-bool BasicValueConverter<string16>::Convert(
-    const base::Value& value, string16* field) const {
+bool BasicValueConverter<std::u16string>::Convert(const base::Value& value,
+                                                  std::u16string* field) const {
   if (!value.is_string())
     return false;
   if (field)

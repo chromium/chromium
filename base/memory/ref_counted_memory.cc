@@ -89,7 +89,7 @@ RefCountedString16::~RefCountedString16() = default;
 
 // static
 scoped_refptr<RefCountedString16> RefCountedString16::TakeString(
-    string16* to_destroy) {
+    std::u16string* to_destroy) {
   auto self = MakeRefCounted<RefCountedString16>();
   to_destroy->swap(self->data_);
   return self;

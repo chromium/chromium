@@ -34,15 +34,15 @@ namespace i18n {
 // the input.
 
 // Returns the lower case equivalent of string. Uses ICU's current locale.
-BASE_I18N_EXPORT string16 ToLower(StringPiece16 string);
+BASE_I18N_EXPORT std::u16string ToLower(StringPiece16 string);
 
 // Returns the upper case equivalent of string. Uses ICU's current locale.
-BASE_I18N_EXPORT string16 ToUpper(StringPiece16 string);
+BASE_I18N_EXPORT std::u16string ToUpper(StringPiece16 string);
 
 // Convert the given string to a canonical case, independent of the current
 // locale. For ASCII the canonical form is lower case.
 // See http://unicode.org/faq/casemap_charprop.html#2
-BASE_I18N_EXPORT string16 FoldCase(StringPiece16 string);
+BASE_I18N_EXPORT std::u16string FoldCase(StringPiece16 string);
 
 }  // namespace i18n
 }  // namespace base
