@@ -17,7 +17,7 @@
 #include "base/posix/safe_strerror.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/trace_event/trace_event.h"
-#include "media/capture/video/chromeos/camera_app_device_impl.h"
+#include "media/capture/video/chromeos/camera_app_device_bridge_impl.h"
 #include "media/capture/video/chromeos/camera_buffer_factory.h"
 #include "media/capture/video/chromeos/camera_metadata_utils.h"
 #include "media/capture/video/chromeos/video_capture_features_chromeos.h"
@@ -35,6 +35,7 @@ constexpr std::initializer_list<StreamType> kYUVReprocessStreams = {
 }  // namespace
 
 RequestManager::RequestManager(
+    const std::string& device_id,
     mojo::PendingReceiver<cros::mojom::Camera3CallbackOps>
         callback_ops_receiver,
     std::unique_ptr<StreamCaptureInterface> capture_interface,
@@ -42,9 +43,9 @@ RequestManager::RequestManager(
     VideoCaptureBufferType buffer_type,
     std::unique_ptr<CameraBufferFactory> camera_buffer_factory,
     BlobifyCallback blobify_callback,
-    scoped_refptr<base::SingleThreadTaskRunner> ipc_task_runner,
-    base::WeakPtr<CameraAppDeviceImpl> camera_app_device)
-    : callback_ops_(this, std::move(callback_ops_receiver)),
+    scoped_refptr<base::SingleThreadTaskRunner> ipc_task_runner)
+    : device_id_(device_id),
+      callback_ops_(this, std::move(callback_ops_receiver)),
       capture_interface_(std::move(capture_interface)),
       device_context_(device_context),
       video_capture_use_gmb_(buffer_type ==
@@ -57,8 +58,7 @@ RequestManager::RequestManager(
       ipc_task_runner_(std::move(ipc_task_runner)),
       capturing_(false),
       partial_result_count_(1),
-      first_frame_shutter_time_(base::TimeTicks()),
-      camera_app_device_(camera_app_device) {
+      first_frame_shutter_time_(base::TimeTicks()) {
   DCHECK(ipc_task_runner_->BelongsToCurrentThread());
   DCHECK(callback_ops_.is_bound());
   DCHECK(device_context_);
@@ -702,8 +702,12 @@ void RequestManager::Notify(cros::mojom::Camera3NotifyMsgPtr message) {
       first_frame_shutter_time_ = reference_time;
     }
     pending_result.timestamp = reference_time - first_frame_shutter_time_;
-    if (camera_app_device_ && pending_result.still_capture_callback) {
-      camera_app_device_->OnShutterDone();
+
+    auto camera_app_device =
+        CameraAppDeviceBridgeImpl::GetInstance()->GetWeakCameraAppDevice(
+            device_id_);
+    if (camera_app_device && pending_result.still_capture_callback) {
+      camera_app_device->OnShutterDone();
     }
 
     TrySubmitPendingBuffers(frame_number);
@@ -797,8 +801,11 @@ void RequestManager::SubmitCaptureResult(
     observer->OnResultMetadataAvailable(frame_number, pending_result.metadata);
   }
 
-  if (camera_app_device_) {
-    camera_app_device_->OnResultMetadataAvailable(
+  auto camera_app_device =
+      CameraAppDeviceBridgeImpl::GetInstance()->GetWeakCameraAppDevice(
+          device_id_);
+  if (camera_app_device) {
+    camera_app_device->OnResultMetadataAvailable(
         pending_result.metadata,
         static_cast<cros::mojom::StreamType>(stream_type));
   }
