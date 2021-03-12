@@ -16,8 +16,6 @@ namespace content {
 // - Cross-origin prerendering
 // - Cross-origin redirection during prerendering
 // - Cross-origin navigation from a prerendered page
-//
-// TODO(toyoshim): Defer cross-origin navigation/redirection on iframes.
 class PrerenderNavigationThrottle : public NavigationThrottle {
  public:
   ~PrerenderNavigationThrottle() override;

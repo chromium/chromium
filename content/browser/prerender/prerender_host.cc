@@ -269,6 +269,9 @@ PrerenderHost::PrerenderHost(blink::mojom::PrerenderAttributesPtr attributes,
 // TODO(https://crbug.com/1132746): Abort ongoing prerendering and notify the
 // mojo capability controller in the destructor.
 PrerenderHost::~PrerenderHost() {
+  for (auto& observer : observers_)
+    observer.OnHostDestroyed();
+
   if (!final_status_)
     RecordFinalStatus(FinalStatus::kDestroyed);
 }
@@ -321,14 +324,17 @@ bool PrerenderHost::ActivatePrerenderedContents(
   // TODO(https://crbug.com/1142658): Notify renderer processes that the
   // contents get activated.
 
-  bool success = page_holder_->Activate(current_render_frame_host);
+  if (!page_holder_->Activate(current_render_frame_host)) {
+    // TODO(https://crbug.com/1126305): Record the final status also for
+    // activation failure.
+    return false;
+  }
 
-  // TODO(https://crbug.com/1126305): Record the final status for activation
-  // failure.
-  if (success)
-    RecordFinalStatus(FinalStatus::kActivated);
+  for (auto& observer : observers_)
+    observer.OnActivated();
 
-  return success;
+  RecordFinalStatus(FinalStatus::kActivated);
+  return true;
 }
 
 RenderFrameHostImpl* PrerenderHost::GetPrerenderedMainFrameHostForTesting() {
@@ -374,6 +380,14 @@ void PrerenderHost::RecordFinalStatus(FinalStatus status) {
 
 const GURL& PrerenderHost::GetInitialUrl() const {
   return attributes_->url;
+}
+
+void PrerenderHost::AddObserver(Observer* observer) {
+  observers_.AddObserver(observer);
+}
+
+void PrerenderHost::RemoveObserver(Observer* observer) {
+  observers_.RemoveObserver(observer);
 }
 
 }  // namespace content

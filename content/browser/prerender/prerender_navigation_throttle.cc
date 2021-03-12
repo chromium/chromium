@@ -22,8 +22,6 @@ PrerenderNavigationThrottle::MaybeCreateThrottleFor(
     NavigationHandle* navigation_handle) {
   auto* navigation_request = NavigationRequest::From(navigation_handle);
   FrameTreeNode* frame_tree_node = navigation_request->frame_tree_node();
-  // For now this throttle works only for the main frame navigation.
-  // TODO(toyoshim): Defer cross-origin navigation/redirection on iframes.
   if (!blink::features::IsPrerender2Enabled() ||
       !frame_tree_node->IsMainFrame() ||
       !frame_tree_node->frame_tree()->is_prerendering()) {

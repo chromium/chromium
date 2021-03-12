@@ -1239,6 +1239,8 @@ source_set("browser") {
     "prerender/prerender_navigation_throttle.h",
     "prerender/prerender_processor.cc",
     "prerender/prerender_processor.h",
+    "prerender/prerender_subframe_navigation_throttle.cc",
+    "prerender/prerender_subframe_navigation_throttle.h",
     "presentation/presentation_service_impl.cc",
     "presentation/presentation_service_impl.h",
     "process_internals/process_internals_handler_impl.cc",

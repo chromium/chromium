@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/observer_list_types.h"
 #include "base/optional.h"
 #include "base/types/pass_key.h"
 #include "content/common/content_export.h"
@@ -39,6 +40,16 @@ class WebContentsImpl;
 // but will eventually completely replace the WebContents approach.
 class CONTENT_EXPORT PrerenderHost : public WebContentsObserver {
  public:
+  class Observer : public base::CheckedObserver {
+   public:
+    // Called on the page activation.
+    virtual void OnActivated() {}
+
+    // Called from the PrerenderHost's destructor. The observer should drop any
+    // reference to the host.
+    virtual void OnHostDestroyed() {}
+  };
+
   // These values are persisted to logs. Entries should not be renumbered and
   // numeric values should never be reused.
   enum class FinalStatus {
@@ -87,6 +98,9 @@ class CONTENT_EXPORT PrerenderHost : public WebContentsObserver {
 
   const GURL& GetInitialUrl() const;
 
+  void AddObserver(Observer* observer);
+  void RemoveObserver(Observer* observer);
+
   url::Origin initiator_origin() const { return initiator_origin_; }
 
   int frame_tree_node_id() const { return frame_tree_node_id_; }
@@ -126,6 +140,8 @@ class CONTENT_EXPORT PrerenderHost : public WebContentsObserver {
   base::Optional<FinalStatus> final_status_;
 
   std::unique_ptr<PageHolderInterface> page_holder_;
+
+  base::ObserverList<Observer> observers_;
 };
 
 }  // namespace content

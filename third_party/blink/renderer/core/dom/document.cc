@@ -8435,6 +8435,13 @@ const Node* Document::GetFindInPageActiveMatchNode() const {
 void Document::ActivateForPrerendering() {
   DCHECK(RuntimeEnabledFeatures::Prerender2Enabled());
 
+  // For subframes, this can be called before the navigation commit, and this
+  // document may be the initial empty one with `is_prerendering_` being false.
+  if (is_initial_empty_document_) {
+    DCHECK(!is_prerendering_);
+    return;
+  }
+
   // TODO(bokan): Portals will change this assumption since they mean an active
   // document can be "adopted" into a portal.
   DCHECK(is_prerendering_);

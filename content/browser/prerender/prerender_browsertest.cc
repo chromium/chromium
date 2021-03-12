@@ -52,6 +52,15 @@
 namespace content {
 namespace {
 
+RenderFrameHost* FindRenderFrameHost(RenderFrameHost& root, const GURL& url) {
+  std::vector<RenderFrameHost*> rfhs = root.GetFramesInSubtree();
+  for (auto* rfh : rfhs) {
+    if (rfh->GetLastCommittedURL() == url)
+      return rfh;
+  }
+  return nullptr;
+}
+
 // Example class which inherits the RenderDocumentHostUserData, all the data is
 // associated to the lifetime of the document.
 class DocumentData : public RenderDocumentHostUserData<DocumentData> {
@@ -543,6 +552,104 @@ IN_PROC_BROWSER_TEST_P(PrerenderBrowserTest, Activation_iFrame) {
 
   // Activation shouldn't happen, so the prerender host should not be consumed.
   EXPECT_EQ(registry.FindHostByUrlForTesting(kPrerenderingUrl), prerender_host);
+}
+
+// Makes sure that cross-origin subframe navigations are deferred during
+// prerendering.
+// TODO(crbug.com/1186209): Add redirect test cases.
+IN_PROC_BROWSER_TEST_P(PrerenderBrowserTest,
+                       DeferCrossOriginSubframeNavigation) {
+  // TODO(toyoshim, bokan): Enable this test with MPArch.
+  // It seems NavigationThrottles are not constructed for iframe navigation
+  // under MPArch environment. It needs some investigation to enable this with
+  // MPArch.
+  if (IsMPArchActive())
+    return;
+
+  // Navigate to an initial page.
+  const GURL kInitialUrl = GetUrl("/prerender/add_prerender.html?initial");
+  ASSERT_TRUE(NavigateToURL(shell(), kInitialUrl));
+
+  // Start a prerender.
+  const GURL kPrerenderingUrl =
+      GetUrl("/prerender/add_prerender.html?prerender");
+  AddPrerender(kPrerenderingUrl);
+  PrerenderHostRegistry& registry = GetPrerenderHostRegistry();
+  PrerenderHost* prerender_host =
+      registry.FindHostByUrlForTesting(kPrerenderingUrl);
+  ASSERT_TRUE(prerender_host);
+
+  const GURL kSameOriginSubframeUrl =
+      GetUrl("/prerender/add_prerender.html?same_origin_iframe");
+  const GURL kCrossOriginSubframeUrl =
+      GetCrossOriginUrl("/prerender/add_prerender.html?cross_origin_iframe");
+
+  ASSERT_EQ(GetRequestCount(kPrerenderingUrl), 1);
+  ASSERT_EQ(GetRequestCount(kSameOriginSubframeUrl), 0);
+  ASSERT_EQ(GetRequestCount(kCrossOriginSubframeUrl), 0);
+
+  // Add a cross-origin iframe to the prerendering page.
+  RenderFrameHost* prerender_frame_host =
+      prerender_host->GetPrerenderedMainFrameHostForTesting();
+  // Use ExecuteScriptAsync instead of EvalJs as inserted cross-origin iframe
+  // navigation would be deferred and script execution does not finish until
+  // the activation.
+  ExecuteScriptAsync(prerender_frame_host, JsReplace("add_iframe_async($1)",
+                                                     kCrossOriginSubframeUrl));
+  base::RunLoop().RunUntilIdle();
+
+  // Add a same-origin iframe to the prerendering page.
+  ASSERT_EQ("LOADED",
+            EvalJs(prerender_frame_host,
+                   JsReplace("add_iframe($1)", kSameOriginSubframeUrl)));
+  ASSERT_EQ(GetRequestCount(kPrerenderingUrl), 1);
+  ASSERT_EQ(GetRequestCount(kSameOriginSubframeUrl), 1);
+  ASSERT_EQ(GetRequestCount(kCrossOriginSubframeUrl), 0);
+
+  // Activate.
+  NavigateWithLocation(kPrerenderingUrl);
+  ASSERT_EQ(shell()->web_contents()->GetURL(), kPrerenderingUrl);
+  ASSERT_EQ("LOADED",
+            EvalJs(prerender_frame_host, JsReplace("wait_iframe_async($1)",
+                                                   kCrossOriginSubframeUrl)));
+  ASSERT_EQ(GetRequestCount(kPrerenderingUrl), 1);
+  ASSERT_EQ(GetRequestCount(kSameOriginSubframeUrl), 1);
+  EXPECT_EQ(GetRequestCount(kCrossOriginSubframeUrl), 1);
+
+  const char kInitialDocumentPrerenderingScript[] =
+      "initial_document_prerendering";
+  const char kCurrentDocumentPrerenderingScript[] = "document.prerendering";
+  const char kOnprerenderingchangeObservedScript[] =
+      "onprerenderingchange_observed";
+  EXPECT_EQ(true,
+            EvalJs(prerender_frame_host, kInitialDocumentPrerenderingScript));
+  EXPECT_EQ(false,
+            EvalJs(prerender_frame_host, kCurrentDocumentPrerenderingScript));
+  EXPECT_EQ(true,
+            EvalJs(prerender_frame_host, kOnprerenderingchangeObservedScript));
+
+  RenderFrameHost* same_origin_render_frame_host =
+      FindRenderFrameHost(*prerender_frame_host, kSameOriginSubframeUrl);
+  DCHECK(same_origin_render_frame_host);
+  EXPECT_EQ(true, EvalJs(same_origin_render_frame_host,
+                         kInitialDocumentPrerenderingScript));
+  EXPECT_EQ(false, EvalJs(same_origin_render_frame_host,
+                          kCurrentDocumentPrerenderingScript));
+  EXPECT_EQ(true, EvalJs(same_origin_render_frame_host,
+                         kOnprerenderingchangeObservedScript));
+
+  RenderFrameHost* cross_origin_render_frame_host =
+      FindRenderFrameHost(*prerender_frame_host, kCrossOriginSubframeUrl);
+  DCHECK(cross_origin_render_frame_host);
+  // TODO(toyoshim): Enable the following EXPECT_EQs once the relevant bug is
+  // fixed. Currently, deferred frame creates a document after the activation,
+  // but with is_prerendering being true due to an existing bug.
+  //EXPECT_EQ(false, EvalJs(cross_origin_render_frame_host,
+  //                        kInitialDocumentPrerenderingScript));
+  //EXPECT_EQ(false, EvalJs(cross_origin_render_frame_host,
+  //                        kCurrentDocumentPrerenderingScript));
+  EXPECT_EQ(false, EvalJs(cross_origin_render_frame_host,
+                          kOnprerenderingchangeObservedScript));
 }
 
 // Makes sure that activation on navigation for a pop-up window doesn't happen.
