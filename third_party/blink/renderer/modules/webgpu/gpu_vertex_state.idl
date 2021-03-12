@@ -1,0 +1,16 @@
+// Copyright 2021 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// https://gpuweb.github.io/gpuweb/
+
+// TODO: This should inerit from GPUProgrammableStage. For some reason that
+// prevents the use of "object buffers;" below, though.
+dictionary GPUVertexState {
+  required GPUShaderModule module;
+  required USVString entryPoint;
+
+  // TODO(crbug.com/951629): Make this a sequence of nullables, like so:
+  //sequence<GPUVertexBufferLayout?> buffers = [];
+  object buffers; // We validate this is an array of nullable GPUVertexBufferLayout
+};

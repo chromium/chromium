@@ -41,10 +41,57 @@ struct OwnedRenderPipelineDescriptor {
   std::unique_ptr<WGPUColorStateDescriptor[]> color_states;
 };
 
+struct OwnedFragmentState {
+ public:
+  OwnedFragmentState() = default;
+
+  //  This struct should be non-copyable non-movable because it contains
+  //  self-referencing pointers that would be invalidated when moved / copied.
+  OwnedFragmentState(const OwnedRenderPipelineDescriptor& desc) = delete;
+  OwnedFragmentState(OwnedFragmentState&& desc) = delete;
+  OwnedFragmentState& operator=(const OwnedFragmentState& desc) = delete;
+  OwnedFragmentState& operator=(OwnedFragmentState&& desc) = delete;
+
+  WGPUFragmentState dawn_desc = {};
+  std::string entry_point;
+  std::unique_ptr<WGPUColorTargetState[]> targets;
+  Vector<WGPUBlendState> blend_states;
+};
+
+struct OwnedRenderPipelineDescriptor2 {
+ public:
+  OwnedRenderPipelineDescriptor2() = default;
+
+  //  This struct should be non-copyable non-movable because it contains
+  //  self-referencing pointers that would be invalidated when moved / copied.
+  OwnedRenderPipelineDescriptor2(const OwnedRenderPipelineDescriptor& desc) =
+      delete;
+  OwnedRenderPipelineDescriptor2(OwnedRenderPipelineDescriptor2&& desc) =
+      delete;
+  OwnedRenderPipelineDescriptor2& operator=(
+      const OwnedRenderPipelineDescriptor2& desc) = delete;
+  OwnedRenderPipelineDescriptor2& operator=(
+      OwnedRenderPipelineDescriptor2&& desc) = delete;
+
+  WGPURenderPipelineDescriptor2 dawn_desc = {};
+  std::string label;
+  std::string vertex_entry_point;
+  Vector<WGPUVertexBufferLayout> buffers;
+  Vector<WGPUVertexAttribute> attributes;
+  WGPUDepthStencilState depth_stencil;
+  OwnedFragmentState fragment;
+};
+
 void ConvertToDawnType(v8::Isolate* isolate,
                        GPUDevice* device,
                        const GPURenderPipelineDescriptor* webgpu_desc,
                        OwnedRenderPipelineDescriptor* dawn_desc_info,
+                       ExceptionState& exception_state);
+
+void ConvertToDawnType(v8::Isolate* isolate,
+                       GPUDevice* device,
+                       const GPURenderPipelineDescriptor* webgpu_desc,
+                       OwnedRenderPipelineDescriptor2* dawn_desc_info,
                        ExceptionState& exception_state);
 
 class GPURenderPipeline : public DawnObject<WGPURenderPipeline> {
