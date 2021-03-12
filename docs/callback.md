@@ -608,7 +608,10 @@ Sometimes you want to call a function that returns a value in a callback that
 doesn't expect a return value.
 
 ```cpp
-int DoSomething(int arg) { cout << arg << endl; }
+int DoSomething(int arg) {
+  cout << arg << endl;
+  return arg;
+}
 base::RepeatingCallback<void(int)> cb =
     base::BindRepeating(IgnoreResult(&DoSomething));
 ```
