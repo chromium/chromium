@@ -20,6 +20,7 @@ import "chromeos/crosapi/mojom/screen_manager.mojom";
 import "chromeos/crosapi/mojom/select_file.mojom";
 import "chromeos/crosapi/mojom/test_controller.mojom";
 import "chromeos/crosapi/mojom/url_handler.mojom";
+import "chromeos/services/machine_learning/public/mojom/machine_learning_service.mojom";
 import "mojo/public/mojom/base/big_string.mojom";
 import "mojo/public/mojom/base/file_path.mojom";
 import "mojo/public/mojom/base/token.mojom";
@@ -48,8 +49,8 @@ struct BrowserInfo {
 // please note the milestone when you added it, to help us reason about
 // compatibility between the client applications and older ash-chrome binaries.
 //
-// Next version: 17
-// Next method id: 22
+// Next version: 18
+// Next method id: 23
 [Stable, Uuid="8b79c34f-2bf8-4499-979a-b17cac522c1e",
  RenamedFrom="crosapi.mojom.AshChromeService"]
 interface Crosapi {
@@ -97,6 +98,11 @@ interface Crosapi {
   // Binds the KeystoreService interface for challenging keys.
   // Added in M87.
   BindKeystoreService@2(pending_receiver<KeystoreService> receiver);
+
+  // Binds the machine learning service.
+  // Added in M90.
+  [MinVersion=17] BindMachineLearningService@22(
+      pending_receiver<chromeos.machine_learning.mojom.MachineLearningService> receiver);
 
   // Binds the MessageCenter interface for showing notification messages.
   // Added in M86.

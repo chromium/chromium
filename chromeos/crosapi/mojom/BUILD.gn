@@ -29,6 +29,7 @@ mojom("mojom") {
 
   public_deps = [
     "//chromeos/components/sensors/mojom",
+    "//chromeos/services/machine_learning/public/mojom",
     "//mojo/public/mojom/base",
     "//services/device/public/mojom:mojom",
     "//services/media_session/public/mojom:mojom",

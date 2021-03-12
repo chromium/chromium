@@ -91,6 +91,10 @@ class CrosapiAsh : public mojom::Crosapi {
       mojo::PendingReceiver<mojom::TestController> receiver) override;
   void BindUrlHandler(
       mojo::PendingReceiver<mojom::UrlHandler> receiver) override;
+  void BindMachineLearningService(
+      mojo::PendingReceiver<
+          chromeos::machine_learning::mojom::MachineLearningService> receiver)
+      override;
 
   BrowserServiceHostAsh* browser_service_host_ash() {
     return browser_service_host_ash_.get();

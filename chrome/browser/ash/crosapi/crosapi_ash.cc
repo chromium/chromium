@@ -39,6 +39,8 @@
 #include "chromeos/crosapi/mojom/message_center.mojom.h"
 #include "chromeos/crosapi/mojom/screen_manager.mojom.h"
 #include "chromeos/crosapi/mojom/select_file.mojom.h"
+#include "chromeos/services/machine_learning/public/cpp/service_connection.h"
+#include "chromeos/services/machine_learning/public/mojom/machine_learning_service.mojom.h"
 #include "components/user_manager/user_manager.h"
 #include "content/public/browser/device_service.h"
 #include "content/public/browser/media_session_service.h"
@@ -217,6 +219,13 @@ void CrosapiAsh::BindPrefs(mojo::PendingReceiver<mojom::Prefs> receiver) {
 void CrosapiAsh::BindUrlHandler(
     mojo::PendingReceiver<mojom::UrlHandler> receiver) {
   url_handler_ash_->BindReceiver(std::move(receiver));
+}
+
+void CrosapiAsh::BindMachineLearningService(
+    mojo::PendingReceiver<
+        chromeos::machine_learning::mojom::MachineLearningService> receiver) {
+  chromeos::machine_learning::ServiceConnection::GetInstance()
+      ->BindMachineLearningService(std::move(receiver));
 }
 
 void CrosapiAsh::OnBrowserStartup(mojom::BrowserInfoPtr browser_info) {
