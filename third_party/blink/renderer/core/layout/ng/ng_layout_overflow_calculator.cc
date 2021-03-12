@@ -107,7 +107,8 @@ const PhysicalRect NGLayoutOverflowCalculator::Result(
   PhysicalRect normal_overflow = layout_overflow_;
   normal_overflow.UniteEvenIfEmpty(inflow_overflow);
 
-  if (node_.IsInlineFormattingContextRoot() || node_.IsGrid())
+  if (node_.IsInlineFormattingContextRoot() || node_.IsFlexibleBox() ||
+      node_.IsGrid())
     return normal_overflow;
 
   WritingModeConverter converter(writing_direction_, size_);

@@ -75,6 +75,8 @@ crbug.com/1033476 external/wpt/css/css-flexbox/flex-minimum-height-flex-items-02
 crbug.com/1033476 external/wpt/css/css-flexbox/flex-minimum-height-flex-items-026.html [ Pass ]
 crbug.com/1033476 external/wpt/css/css-flexbox/flex-minimum-width-flex-items-015.html [ Pass ]
 crbug.com/1173843 external/wpt/css/css-flexbox/frameset-crash.html [ Skip ]
+crbug.com/1069614 external/wpt/css/css-flexbox/overflow-area-001.html [ Failure ]
+crbug.com/1069614 external/wpt/css/css-flexbox/overflow-area-002.html [ Failure ]
 
 ### external/wpt/css/css-fonts/
 crbug.com/591099 external/wpt/css/css-fonts/font-features-across-space-1.html [ Failure ]

@@ -756,8 +756,6 @@ crbug.com/591099 external/wpt/css/css-ui/text-overflow-015.html [ Failure ]
 # [css-flexbox]
 
 crbug.com/1003506 external/wpt/css/css-flexbox/percentage-heights-007.html [ Failure ]
-crbug.com/1081802 external/wpt/css/css-flexbox/overflow-area-001.html [ Failure ]
-crbug.com/1081802 external/wpt/css/css-flexbox/overflow-area-002.html [ Failure ]
 crbug.com/807497 external/wpt/css/css-flexbox/anonymous-flex-item-005.html [ Failure ]
 crbug.com/1155036 external/wpt/css/css-flexbox/contain-size-layout-abspos-flex-container-crash.html [ Crash Pass ]
 
@@ -765,6 +763,12 @@ crbug.com/1155036 external/wpt/css/css-flexbox/contain-size-layout-abspos-flex-c
 crbug.com/1181403 external/wpt/css/css-flexbox/table-as-item-specified-height.html [ Failure ]
 crbug.com/1181403 external/wpt/css/css-flexbox/table-as-item-inflexible-in-column-2.html [ Failure ]
 crbug.com/1181403 external/wpt/css/css-flexbox/table-as-item-stretch-cross-size-3.html [ Failure ]
+
+# These tests are in conflict with overflow-area-*, update them if our change is web compatible.
+crbug.com/1069614 external/wpt/css/css-flexbox/overflow-top-left.html [ Failure ]
+crbug.com/1069614 external/wpt/css/css-flexbox/scrollbars-auto.html [ Failure ]
+crbug.com/1069614 external/wpt/css/css-flexbox/scrollbars.html [ Failure ]
+crbug.com/1069614 css3/flexbox/overflow-and-padding.html [ Failure ]
 
 # These require css-align-3 positional keywords that Blink doesn't yet support for flexbox.
 crbug.com/1011718 external/wpt/css/css-flexbox/flexbox-justify-content-horiz-001a.xhtml [ Failure ]
