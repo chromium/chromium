@@ -13,9 +13,11 @@
 
 class Browser;
 
-namespace captions {
+namespace content {
+class WebContents;
+}
 
-class CaptionHostImpl;
+namespace captions {
 
 ///////////////////////////////////////////////////////////////////////////////
 // Caption Bubble Controller
@@ -39,14 +41,11 @@ class CaptionBubbleController {
   // the transcription result was set on the caption bubble successfully.
   // Transcriptions will halt if this returns false.
   virtual bool OnTranscription(
-      CaptionHostImpl* caption_host_impl,
-      const chrome::mojom::TranscriptionResultPtr& transcription_result) = 0;
+      const chrome::mojom::TranscriptionResultPtr& transcription_result,
+      content::WebContents* web_contents) = 0;
 
   // Called when the speech service has an error.
-  virtual void OnError(CaptionHostImpl* caption_host_impl) = 0;
-
-  // Called when the audio stream has ended.
-  virtual void OnAudioStreamEnd(CaptionHostImpl* caption_host_impl) = 0;
+  virtual void OnError(content::WebContents* web_contents) = 0;
 
   // Called when the caption style changes.
   virtual void UpdateCaptionStyle(

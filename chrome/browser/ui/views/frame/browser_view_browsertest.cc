@@ -10,7 +10,6 @@
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/accessibility/caption_controller.h"
 #include "chrome/browser/accessibility/caption_controller_factory.h"
-#include "chrome/browser/accessibility/caption_host_impl.h"
 #include "chrome/browser/devtools/devtools_window_testing.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
@@ -402,10 +401,8 @@ IN_PROC_BROWSER_TEST_F(BrowserViewTest, F6CyclesThroughCaptionBubbleToo) {
           caption_controller->GetCaptionBubbleControllerForBrowser(browser()));
   EXPECT_FALSE(bubble_controller->GetFocusableCaptionBubble());
 
-  auto caption_host_impl = std::make_unique<captions::CaptionHostImpl>(
-      browser()->tab_strip_model()->GetActiveWebContents()->GetMainFrame());
   caption_controller->DispatchTranscription(
-      caption_host_impl.get(),
+      browser()->tab_strip_model()->GetActiveWebContents(),
       chrome::mojom::TranscriptionResult::New("Hello, world", false));
   // Now the caption bubble exists but is not focused.
   views::View* bubble = bubble_controller->GetFocusableCaptionBubble();

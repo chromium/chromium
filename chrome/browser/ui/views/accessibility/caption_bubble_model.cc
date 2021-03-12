@@ -5,6 +5,8 @@
 #include "chrome/browser/ui/views/accessibility/caption_bubble_model.h"
 
 #include "chrome/browser/ui/views/accessibility/caption_bubble.h"
+#include "content/public/browser/navigation_handle.h"
+#include "content/public/browser/web_contents.h"
 
 namespace {
 // The caption bubble contains 2 lines of text in its normal size and 8 lines
@@ -14,7 +16,8 @@ constexpr int kMaxLines = 9;
 
 namespace captions {
 
-CaptionBubbleModel::CaptionBubbleModel() = default;
+CaptionBubbleModel::CaptionBubbleModel(content::WebContents* web_contents)
+    : content::WebContentsObserver(web_contents) {}
 
 CaptionBubbleModel::~CaptionBubbleModel() {
   if (observer_)
@@ -65,6 +68,19 @@ void CaptionBubbleModel::ClearText() {
   partial_text_.clear();
   final_text_.clear();
   OnTextChanged();
+}
+
+void CaptionBubbleModel::DidFinishNavigation(
+    content::NavigationHandle* navigation_handle) {
+  if (!navigation_handle->IsInMainFrame())
+    return;
+
+  // Reset caption bubble to it's starting state.
+  is_closed_ = false;
+  has_error_ = false;
+  ClearText();
+  if (observer_)
+    observer_->OnErrorChanged();
 }
 
 void CaptionBubbleModel::CommitPartialText() {

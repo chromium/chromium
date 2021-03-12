@@ -634,11 +634,8 @@ void CaptionBubble::SetModel(CaptionBubbleModel* model) {
   if (model_)
     model_->RemoveObserver();
   model_ = model;
-  if (model_) {
+  if (model_)
     model_->SetObserver(this);
-  } else {
-    UpdateBubbleVisibility();
-  }
 }
 
 void CaptionBubble::OnTextChanged() {
@@ -815,8 +812,7 @@ void CaptionBubble::OnInactivityTimeout() {
   // recognition phrase, and the caption bubble regains activity (such as if the
   // audio stream restarts), the speech service will emit partial results that
   // contain text cleared by the UI.
-  if (model_)
-    model_->ClearText();
+  model_->ClearText();
 }
 
 bool CaptionBubble::HasActivity() {

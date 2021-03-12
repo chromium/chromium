@@ -44,18 +44,17 @@ class CaptionHostImpl : public chrome::mojom::CaptionHost,
       OnTranscriptionCallback reply) override;
   void OnError() override;
 
-  // Returns the WebContents if it exists. If it does not exist, sets the
-  // RenderFrameHost reference to nullptr and returns nullptr.
-  content::WebContents* GetWebContents();
-
- protected:
   // content::WebContentsObserver:
   void RenderFrameDeleted(content::RenderFrameHost* frame_host) override;
 
  private:
-  // Returns the CaptionController for frame_host_. Returns nullptr if it does
-  // not exist.
-  CaptionController* GetCaptionController();
+  // Returns the WebContents if it exists. If it does not exist, sets the
+  // RenderFrameHost reference to nullptr and returns nullptr.
+  content::WebContents* GetWebContents();
+
+  // Returns the CaptionController for this WebContents. Returns nullptr if
+  // it does not exist.
+  CaptionController* GetCaptionController(content::WebContents*);
 
   content::RenderFrameHost* frame_host_;
 };

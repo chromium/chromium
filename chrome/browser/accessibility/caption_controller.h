@@ -18,6 +18,10 @@ class Browser;
 class Profile;
 class PrefChangeRegistrar;
 
+namespace content {
+class WebContents;
+}
+
 namespace user_prefs {
 class PrefRegistrySyncable;
 }
@@ -25,7 +29,6 @@ class PrefRegistrySyncable;
 namespace captions {
 
 class CaptionBubbleController;
-class CaptionHostImpl;
 
 ///////////////////////////////////////////////////////////////////////////////
 // Caption Controller
@@ -53,16 +56,12 @@ class CaptionController : public BrowserListObserver,
   // appropriate browser. Returns whether the transcription result was routed
   // successfully. Transcriptions will halt if this returns false.
   bool DispatchTranscription(
-      CaptionHostImpl* caption_host_impl,
+      content::WebContents* web_contents,
       const chrome::mojom::TranscriptionResultPtr& transcription_result);
 
   // Alerts the CaptionBubbleController that belongs to the appropriate browser
   // that there is an error in the speech recognition service.
-  void OnError(CaptionHostImpl* caption_host_impl);
-
-  // Alerts the CaptionBubbleController that belongs to the appropriate browser
-  // that the audio stream has ended.
-  void OnAudioStreamEnd(CaptionHostImpl* caption_host_impl);
+  void OnError(content::WebContents* web_contents);
 
   CaptionBubbleController* GetCaptionBubbleControllerForBrowser(
       Browser* browser);
