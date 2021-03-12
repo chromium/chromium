@@ -649,7 +649,7 @@ IN_PROC_BROWSER_TEST_P(SpokenFeedbackTest, NavigateSystemTray) {
   sm_.Call([this]() {
     (PerformAcceleratorAction(AcceleratorAction::TOGGLE_SYSTEM_TRAY_BUBBLE));
   });
-  sm_.ExpectSpeechPattern(
+  sm_.ExpectSpeech(
       "Quick Settings, Press search plus left to access the notification "
       "center., window");
 
