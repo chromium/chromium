@@ -13,6 +13,7 @@
 #include "chromeos/services/libassistant/public/mojom/media_controller.mojom.h"
 #include "chromeos/services/libassistant/public/mojom/platform_delegate.mojom.h"
 #include "chromeos/services/libassistant/public/mojom/service.mojom.h"
+#include "chromeos/services/libassistant/public/mojom/service_controller.mojom.h"
 #include "chromeos/services/libassistant/public/mojom/speaker_id_enrollment_controller.mojom-forward.h"
 #include "chromeos/services/libassistant/public/mojom/timer_controller.mojom.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -23,15 +24,10 @@ class LibassistantService;
 }  // namespace libassistant
 }  // namespace chromeos
 
-namespace network {
-class PendingSharedURLLoaderFactory;
-}  // namespace network
-
 namespace chromeos {
 namespace assistant {
 
 class LibassistantServiceHost;
-class ServiceControllerProxy;
 
 // The proxy to the Assistant service, which serves as the main
 // access point to the entire Assistant API.
@@ -42,13 +38,7 @@ class AssistantProxy {
   AssistantProxy& operator=(AssistantProxy&) = delete;
   ~AssistantProxy();
 
-  void Initialize(LibassistantServiceHost* host,
-                  std::unique_ptr<network::PendingSharedURLLoaderFactory>
-                      pending_url_loader_factory);
-
-  // Returns the controller that manages starting and stopping of the Assistant
-  // service.
-  ServiceControllerProxy& service_controller();
+  void Initialize(LibassistantServiceHost* host);
 
   // Returns the controller that manages conversations with Libassistant.
   chromeos::libassistant::mojom::ConversationController&
@@ -59,6 +49,9 @@ class AssistantProxy {
 
   // Returns the controller that manages media related settings.
   chromeos::libassistant::mojom::MediaController& media_controller();
+
+  // Returns the controller that manages the lifetime of the service.
+  chromeos::libassistant::mojom::ServiceController& service_controller();
 
   // Returns the controller that manages Libassistant settings.
   chromeos::libassistant::mojom::SettingsController& settings_controller();
@@ -106,8 +99,7 @@ class AssistantProxy {
   void StopLibassistantService();
   void StopLibassistantServiceOnBackgroundThread();
 
-  void BindControllers(std::unique_ptr<network::PendingSharedURLLoaderFactory>
-                           pending_url_loader_factory);
+  void BindControllers();
 
   // Owned by |AssistantManagerServiceImpl|.
   LibassistantServiceHost* libassistant_service_host_ = nullptr;
@@ -121,12 +113,13 @@ class AssistantProxy {
       display_controller_;
   mojo::Remote<chromeos::libassistant::mojom::MediaController>
       media_controller_;
+  mojo::Remote<chromeos::libassistant::mojom::ServiceController>
+      service_controller_;
   mojo::Remote<chromeos::libassistant::mojom::SettingsController>
       settings_controller_;
   mojo::Remote<chromeos::libassistant::mojom::TimerController>
       timer_controller_;
 
-  std::unique_ptr<ServiceControllerProxy> service_controller_proxy_;
 
   // Will be unbound after they are extracted.
   mojo::PendingRemote<chromeos::libassistant::mojom::AudioInputController>

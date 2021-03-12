@@ -14,8 +14,6 @@ source_set("proxy") {
       "assistant_proxy.cc",
       "assistant_proxy.h",
       "libassistant_service_host.h",
-      "service_controller_proxy.cc",
-      "service_controller_proxy.h",
     ]
 
     public_deps = [ "//chromeos/services/libassistant/public/mojom" ]

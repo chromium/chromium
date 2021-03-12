@@ -9,7 +9,6 @@
 #include "base/bind.h"
 #include "base/check.h"
 #include "chromeos/services/assistant/proxy/libassistant_service_host.h"
-#include "chromeos/services/assistant/proxy/service_controller_proxy.h"
 #include "chromeos/services/libassistant/libassistant_service.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 
@@ -24,15 +23,12 @@ AssistantProxy::~AssistantProxy() {
   StopLibassistantService();
 }
 
-void AssistantProxy::Initialize(
-    LibassistantServiceHost* host,
-    std::unique_ptr<network::PendingSharedURLLoaderFactory>
-        pending_url_loader_factory) {
+void AssistantProxy::Initialize(LibassistantServiceHost* host) {
   DCHECK(host);
   libassistant_service_host_ = host;
   LaunchLibassistantService();
 
-  BindControllers(std::move(pending_url_loader_factory));
+  BindControllers();
 }
 
 void AssistantProxy::LaunchLibassistantService() {
@@ -74,9 +70,7 @@ void AssistantProxy::StopLibassistantServiceOnBackgroundThread() {
   libassistant_service_host_->Stop();
 }
 
-void AssistantProxy::BindControllers(
-    std::unique_ptr<network::PendingSharedURLLoaderFactory>
-        pending_url_loader_factory) {
+void AssistantProxy::BindControllers() {
   mojo::PendingRemote<chromeos::libassistant::mojom::AudioInputController>
       pending_audio_input_controller_remote;
   mojo::PendingRemote<chromeos::libassistant::mojom::AudioOutputDelegate>
@@ -87,8 +81,6 @@ void AssistantProxy::BindControllers(
       pending_media_delegate_remote;
   mojo::PendingRemote<chromeos::libassistant::mojom::PlatformDelegate>
       pending_platform_delegate_remote;
-  mojo::PendingRemote<chromeos::libassistant::mojom::ServiceController>
-      pending_service_controller_remote;
   mojo::PendingRemote<
       chromeos::libassistant::mojom::SpeakerIdEnrollmentController>
       pending_speaker_id_enrollment_controller_remote;
@@ -114,7 +106,7 @@ void AssistantProxy::BindControllers(
       conversation_controller_.BindNewPipeAndPassReceiver(),
       display_controller_.BindNewPipeAndPassReceiver(),
       media_controller_.BindNewPipeAndPassReceiver(),
-      pending_service_controller_remote.InitWithNewPipeAndPassReceiver(),
+      service_controller_.BindNewPipeAndPassReceiver(),
       settings_controller_.BindNewPipeAndPassReceiver(),
       pending_speaker_id_enrollment_controller_remote
           .InitWithNewPipeAndPassReceiver(),
@@ -124,10 +116,6 @@ void AssistantProxy::BindControllers(
       std::move(pending_media_delegate_remote),
       std::move(pending_platform_delegate_remote),
       std::move(pending_timer_delegate_remote));
-
-  service_controller_proxy_ = std::make_unique<ServiceControllerProxy>(
-      std::move(pending_url_loader_factory),
-      std::move(pending_service_controller_remote));
 
   audio_input_controller_ = std::move(pending_audio_input_controller_remote);
   speaker_id_enrollment_controller_ =
@@ -140,11 +128,6 @@ void AssistantProxy::BindControllers(
 scoped_refptr<base::SingleThreadTaskRunner>
 AssistantProxy::background_task_runner() {
   return background_thread_.task_runner();
-}
-
-ServiceControllerProxy& AssistantProxy::service_controller() {
-  DCHECK(service_controller_proxy_);
-  return *service_controller_proxy_;
 }
 
 mojo::PendingRemote<chromeos::libassistant::mojom::AudioInputController>
@@ -200,6 +183,12 @@ chromeos::libassistant::mojom::DisplayController&
 AssistantProxy::display_controller() {
   DCHECK(display_controller_.is_bound());
   return *display_controller_.get();
+}
+
+chromeos::libassistant::mojom::ServiceController&
+AssistantProxy::service_controller() {
+  DCHECK(service_controller_.is_bound());
+  return *service_controller_.get();
 }
 
 chromeos::libassistant::mojom::MediaController&

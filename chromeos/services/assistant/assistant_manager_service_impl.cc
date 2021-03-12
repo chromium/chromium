@@ -35,7 +35,6 @@
 #include "chromeos/services/assistant/media_host.h"
 #include "chromeos/services/assistant/platform/audio_output_delegate_impl.h"
 #include "chromeos/services/assistant/platform/platform_delegate_impl.h"
-#include "chromeos/services/assistant/proxy/service_controller_proxy.h"
 #include "chromeos/services/assistant/public/cpp/assistant_client.h"
 #include "chromeos/services/assistant/public/cpp/assistant_enums.h"
 #include "chromeos/services/assistant/public/cpp/device_actions.h"
@@ -204,6 +203,8 @@ AssistantManagerServiceImpl::AssistantManagerServiceImpl(
               &interaction_subscribers_)),
       bootup_config_(
           CreateBootupConfig(s3_server_uri_override, device_id_override)),
+      url_loader_factory_(network::SharedURLLoaderFactory::Create(
+          std::move(pending_url_loader_factory))),
       weak_factory_(this) {
   if (libassistant_service_host) {
     // During unittests a custom host is passed in, so we'll use that one.
@@ -214,10 +215,9 @@ AssistantManagerServiceImpl::AssistantManagerServiceImpl(
         std::make_unique<LibassistantServiceHostImpl>(delegate_.get());
   }
 
-  assistant_proxy_->Initialize(libassistant_service_host_.get(),
-                               std::move(pending_url_loader_factory));
+  assistant_proxy_->Initialize(libassistant_service_host_.get());
 
-  assistant_proxy_->service_controller().AddAndFireStateObserver(
+  service_controller().AddAndFireStateObserver(
       state_observer_receiver_.BindNewPipeAndPassRemote());
   assistant_proxy_->AddSpeechRecognitionObserver(
       speech_recognition_observer_->BindNewPipeAndPassRemote());
@@ -619,7 +619,9 @@ void AssistantManagerServiceImpl::InitAssistant(
   bootup_config->locale = assistant_state()->locale().value();
   bootup_config->spoken_feedback_enabled = spoken_feedback_enabled_;
 
-  service_controller().Start(std::move(bootup_config));
+  service_controller().Initialize(std::move(bootup_config),
+                                  BindURLLoaderFactory());
+  service_controller().Start();
 }
 
 base::Thread& AssistantManagerServiceImpl::GetBackgroundThreadForTesting() {
@@ -650,6 +652,13 @@ bool AssistantManagerServiceImpl::IsServiceStarted() const {
     case State::RUNNING:
       return true;
   }
+}
+
+mojo::PendingRemote<network::mojom::URLLoaderFactory>
+AssistantManagerServiceImpl::BindURLLoaderFactory() {
+  mojo::PendingRemote<network::mojom::URLLoaderFactory> pending_remote;
+  url_loader_factory_->Clone(pending_remote.InitWithNewPipeAndPassReceiver());
+  return pending_remote;
 }
 
 void AssistantManagerServiceImpl::OnServiceRunning() {
@@ -826,6 +835,11 @@ AssistantManagerServiceImpl::display_controller() {
   return assistant_proxy_->display_controller();
 }
 
+chromeos::libassistant::mojom::ServiceController&
+AssistantManagerServiceImpl::service_controller() {
+  return assistant_proxy_->service_controller();
+}
+
 assistant_client::AssistantManager*
 AssistantManagerServiceImpl::assistant_manager() {
   auto* api = LibassistantV1Api::Get();
@@ -854,18 +868,9 @@ AssistantManagerServiceImpl::conversation_controller() {
   return assistant_proxy_->conversation_controller();
 }
 
-ServiceControllerProxy& AssistantManagerServiceImpl::service_controller() {
-  return assistant_proxy_->service_controller();
-}
-
 chromeos::libassistant::mojom::SettingsController&
 AssistantManagerServiceImpl::settings_controller() {
   return assistant_proxy_->settings_controller();
-}
-
-const ServiceControllerProxy& AssistantManagerServiceImpl::service_controller()
-    const {
-  return assistant_proxy_->service_controller();
 }
 
 base::Thread& AssistantManagerServiceImpl::background_thread() {
