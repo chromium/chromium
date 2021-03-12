@@ -65,6 +65,7 @@ class AwProxyingURLLoaderFactory : public network::mojom::URLLoaderFactory {
   // target factory.
   AwProxyingURLLoaderFactory(
       int process_id,
+      int frame_tree_node_id,
       mojo::PendingReceiver<network::mojom::URLLoaderFactory> loader_receiver,
       mojo::PendingRemote<network::mojom::URLLoaderFactory>
           target_factory_remote,
@@ -76,6 +77,7 @@ class AwProxyingURLLoaderFactory : public network::mojom::URLLoaderFactory {
   // static
   static void CreateProxy(
       int process_id,
+      int frame_tree_node_id,
       mojo::PendingReceiver<network::mojom::URLLoaderFactory> loader,
       mojo::PendingRemote<network::mojom::URLLoaderFactory>
           target_factory_remote,
@@ -99,6 +101,7 @@ class AwProxyingURLLoaderFactory : public network::mojom::URLLoaderFactory {
   void OnProxyBindingError();
 
   const int process_id_;
+  const int frame_tree_node_id_;
   mojo::ReceiverSet<network::mojom::URLLoaderFactory> proxy_receivers_;
   mojo::Remote<network::mojom::URLLoaderFactory> target_factory_;
 

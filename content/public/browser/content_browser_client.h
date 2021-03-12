@@ -1724,6 +1724,7 @@ class CONTENT_EXPORT ContentBrowserClient {
       const GURL& url,
       base::OnceCallback<WebContents*()> web_contents_getter,
       int child_id,
+      int frame_tree_node_id,
       NavigationUIData* navigation_data,
       bool is_main_frame,
       ui::PageTransition page_transition,

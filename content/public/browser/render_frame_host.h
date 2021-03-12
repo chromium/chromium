@@ -95,7 +95,7 @@ class CONTENT_EXPORT RenderFrameHost : public IPC::Listener,
                                        public IPC::Sender {
  public:
   // Constant used to denote that a lookup of a FrameTreeNode ID has failed.
-  static const int kNoFrameTreeNodeId = -1;
+  enum { kNoFrameTreeNodeId = -1 };
 
   // Returns the RenderFrameHost given its ID and the ID of its render process.
   // Returns nullptr if the IDs do not correspond to a live RenderFrameHost.

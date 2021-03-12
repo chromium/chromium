@@ -624,7 +624,8 @@ NavigationURLLoaderImpl::PrepareForNonInterceptedRequest(
       mojo::PendingRemote<network::mojom::URLLoaderFactory> loader_factory;
       bool handled = GetContentClient()->browser()->HandleExternalProtocol(
           resource_request_->url, web_contents_getter_,
-          ChildProcessHost::kInvalidUniqueID, navigation_ui_data_.get(),
+          ChildProcessHost::kInvalidUniqueID, frame_tree_node_id_,
+          navigation_ui_data_.get(),
           resource_request_->resource_type ==
               static_cast<int>(blink::mojom::ResourceType::kMainFrame),
           static_cast<ui::PageTransition>(resource_request_->transition_type),
