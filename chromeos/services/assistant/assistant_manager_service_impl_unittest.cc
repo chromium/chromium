@@ -24,7 +24,6 @@
 #include "chromeos/services/assistant/proxy/libassistant_service_host.h"
 #include "chromeos/services/assistant/public/cpp/assistant_service.h"
 #include "chromeos/services/assistant/public/cpp/features.h"
-#include "chromeos/services/assistant/public/cpp/migration/fake_assistant_manager_service_delegate.h"
 #include "chromeos/services/assistant/public/cpp/migration/libassistant_v1_api.h"
 #include "chromeos/services/assistant/service_context.h"
 #include "chromeos/services/assistant/test_support/fake_libassistant_service.h"
@@ -62,8 +61,7 @@ using UserInfo = AssistantManagerService::UserInfo;
 
 namespace {
 
-const char* kNoValue = FakeAssistantManager::kNoValue;
-
+const char* kNoValue = FakeServiceController::kNoValue;
 #define EXPECT_STATE(_state) \
   EXPECT_EQ(_state, assistant_manager_service()->GetState());
 
@@ -155,9 +153,15 @@ class AssistantManagerServiceImplTest : public testing::Test {
         ->set_main_task_runner(task_environment().GetMainThreadTaskRunner())
         .set_power_manager_client(PowerManagerClient::Get())
         .set_assistant_state(&assistant_state_)
+        .set_cras_audio_handler(&cras_audio_handler_.Get())
         .set_assistant_alarm_timer_controller(alarm_timer_controller_.get());
 
     CreateAssistantManagerServiceImpl();
+  }
+
+  void TearDown() override {
+    assistant_manager_service_.reset();
+    PowerManagerClient::Shutdown();
   }
 
   void CreateAssistantManagerServiceImpl(
@@ -168,16 +172,9 @@ class AssistantManagerServiceImplTest : public testing::Test {
     assistant_manager_service_.reset();
 
     assistant_manager_service_ = std::make_unique<AssistantManagerServiceImpl>(
-        service_context_.get(),
-        std::make_unique<FakeAssistantManagerServiceDelegate>(),
-        shared_url_loader_factory_->Clone(), s3_server_uri_override,
-        device_id_override,
+        service_context_.get(), shared_url_loader_factory_->Clone(),
+        s3_server_uri_override, device_id_override,
         std::make_unique<FakeLibassistantServiceHost>(&libassistant_service_));
-  }
-
-  void TearDown() override {
-    assistant_manager_service_.reset();
-    PowerManagerClient::Shutdown();
   }
 
   FakeServiceController& mojom_service_controller() {
@@ -277,6 +274,7 @@ class AssistantManagerServiceImplTest : public testing::Test {
   base::test::SingleThreadTaskEnvironment task_environment_;
 
   ScopedAssistantClient assistant_client_;
+  ash::ScopedCrasAudioHandlerForTesting cras_audio_handler_;
   ScopedDeviceActions device_actions_;
   FullyInitializedAssistantState assistant_state_;
 

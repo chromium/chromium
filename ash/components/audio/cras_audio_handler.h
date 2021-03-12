@@ -134,6 +134,8 @@ class COMPONENT_EXPORT(ASH_COMPONENTS_AUDIO) CrasAudioHandler
       scoped_refptr<AudioDevicesPrefHandler> audio_pref_handler);
 
   // Sets the global instance for testing.
+  // Consider using |ScopedCrasAudioHandlerForTesting| instead, as that
+  // guarantees things get properly cleaned up.
   static void InitializeForTesting();
 
   // Destroys the global instance.
@@ -672,6 +674,20 @@ class COMPONENT_EXPORT(ASH_COMPONENTS_AUDIO) CrasAudioHandler
   base::WeakPtrFactory<CrasAudioHandler> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(CrasAudioHandler);
+};
+
+// Helper class that will initialize the |CrasAudioHandler| for testing in its
+// constructor, and clean things up in its destructor.
+class COMPONENT_EXPORT(ASH_COMPONENTS_AUDIO) ScopedCrasAudioHandlerForTesting {
+ public:
+  ScopedCrasAudioHandlerForTesting();
+  ScopedCrasAudioHandlerForTesting(const ScopedCrasAudioHandlerForTesting&) =
+      delete;
+  ScopedCrasAudioHandlerForTesting& operator=(
+      const ScopedCrasAudioHandlerForTesting&) = delete;
+  ~ScopedCrasAudioHandlerForTesting();
+
+  CrasAudioHandler& Get();
 };
 
 }  // namespace ash

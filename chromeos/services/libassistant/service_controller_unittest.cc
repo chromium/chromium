@@ -12,12 +12,12 @@
 #include "base/test/task_environment.h"
 #include "chromeos/assistant/internal/test_support/fake_assistant_manager.h"
 #include "chromeos/assistant/internal/test_support/fake_assistant_manager_internal.h"
-#include "chromeos/services/assistant//public/cpp/migration/fake_assistant_manager_service_delegate.h"
 #include "chromeos/services/assistant/public/cpp/migration/libassistant_v1_api.h"
 #include "chromeos/services/libassistant/assistant_manager_observer.h"
 #include "chromeos/services/libassistant/public/mojom/service_controller.mojom.h"
 #include "chromeos/services/libassistant/public/mojom/settings_controller.mojom.h"
 #include "chromeos/services/libassistant/settings_controller.h"
+#include "chromeos/services/libassistant/test_support/fake_libassistant_factory.h"
 #include "libassistant/shared/internal_api/assistant_manager_internal.h"
 #include "libassistant/shared/public/device_state_listener.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -129,8 +129,7 @@ class AssistantServiceControllerTest : public testing::Test {
  public:
   AssistantServiceControllerTest()
       : service_controller_(
-            std::make_unique<ServiceController>(&delegate_,
-                                                /*platform_api=*/nullptr)) {
+            std::make_unique<ServiceController>(&libassistant_factory_)) {
     service_controller_->Bind(client_.BindNewPipeAndPassReceiver(),
                               &settings_controller_);
   }
@@ -177,7 +176,7 @@ class AssistantServiceControllerTest : public testing::Test {
 
   void SendOnStartFinished() {
     auto* device_state_listener =
-        delegate().assistant_manager()->device_state_listener();
+        libassistant_factory_.assistant_manager().device_state_listener();
     ASSERT_NE(device_state_listener, nullptr);
     device_state_listener->OnStartFinished();
     RunUntilIdle();
@@ -194,8 +193,8 @@ class AssistantServiceControllerTest : public testing::Test {
     return assistant::LibassistantV1Api::Get();
   }
 
-  assistant::FakeAssistantManagerServiceDelegate& delegate() {
-    return delegate_;
+  std::string libassistant_config() {
+    return libassistant_factory_.libassistant_config();
   }
 
   SettingsControllerMock& settings_controller_mock() {
@@ -213,7 +212,7 @@ class AssistantServiceControllerTest : public testing::Test {
 
   network::TestURLLoaderFactory url_loader_factory_;
 
-  assistant::FakeAssistantManagerServiceDelegate delegate_;
+  FakeLibassistantFactory libassistant_factory_;
   testing::NiceMock<SettingsControllerMock> settings_controller_;
   mojo::Remote<mojom::ServiceController> client_;
   std::unique_ptr<ServiceController> service_controller_;
@@ -443,7 +442,7 @@ TEST_F(AssistantServiceControllerTest,
   bootup_config->s3_server_uri_override = "the-s3-server-uri-override";
   Initialize(std::move(bootup_config));
 
-  EXPECT_HAS_PATH_WITH_VALUE(delegate().libassistant_config(),
+  EXPECT_HAS_PATH_WITH_VALUE(libassistant_config(),
                              "testing.s3_grpc_server_uri",
                              "the-s3-server-uri-override");
 }

@@ -35,6 +35,7 @@ class FakeServiceContext : public ServiceContext {
   FakeServiceContext& set_assistant_state(ash::AssistantStateBase*);
   FakeServiceContext& set_assistant_notification_controller(
       ash::AssistantNotificationController*);
+  FakeServiceContext& set_cras_audio_handler(ash::CrasAudioHandler*);
 
   // ServiceContext implementation:
   ash::AssistantAlarmTimerController* assistant_alarm_timer_controller()
@@ -45,7 +46,7 @@ class FakeServiceContext : public ServiceContext {
   ash::AssistantScreenContextController* assistant_screen_context_controller()
       override;
   ash::AssistantStateBase* assistant_state() override;
-  CrasAudioHandler* cras_audio_handler() override;
+  ash::CrasAudioHandler* cras_audio_handler() override;
   DeviceActions* device_actions() override;
   scoped_refptr<base::SequencedTaskRunner> main_task_runner() override;
   PowerManagerClient* power_manager_client() override;
@@ -60,6 +61,7 @@ class FakeServiceContext : public ServiceContext {
       nullptr;
   ash::AssistantNotificationController* assistant_notification_controller_ =
       nullptr;
+  ash::CrasAudioHandler* cras_audio_handler_ = nullptr;
 };
 }  // namespace assistant
 }  // namespace chromeos

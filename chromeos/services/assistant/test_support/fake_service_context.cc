@@ -53,6 +53,12 @@ FakeServiceContext& FakeServiceContext::set_assistant_notification_controller(
   return *this;
 }
 
+FakeServiceContext& FakeServiceContext::set_cras_audio_handler(
+    ash::CrasAudioHandler* value) {
+  cras_audio_handler_ = value;
+  return *this;
+}
+
 ash::AssistantAlarmTimerController*
 FakeServiceContext::assistant_alarm_timer_controller() {
   DCHECK(assistant_alarm_timer_controller_ != nullptr);
@@ -81,9 +87,9 @@ ash::AssistantStateBase* FakeServiceContext::assistant_state() {
   return assistant_state_;
 }
 
-CrasAudioHandler* FakeServiceContext::cras_audio_handler() {
-  NOTIMPLEMENTED();
-  return nullptr;
+ash::CrasAudioHandler* FakeServiceContext::cras_audio_handler() {
+  DCHECK(cras_audio_handler_ != nullptr);
+  return cras_audio_handler_;
 }
 
 DeviceActions* FakeServiceContext::device_actions() {

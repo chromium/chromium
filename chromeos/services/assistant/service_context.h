@@ -52,7 +52,7 @@ class ServiceContext {
 
   virtual ash::AssistantStateBase* assistant_state() = 0;
 
-  virtual CrasAudioHandler* cras_audio_handler() = 0;
+  virtual ash::CrasAudioHandler* cras_audio_handler() = 0;
 
   virtual DeviceActions* device_actions() = 0;
 

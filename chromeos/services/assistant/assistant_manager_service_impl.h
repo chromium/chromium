@@ -52,7 +52,6 @@ class AssistantManagerInternal;
 namespace chromeos {
 namespace assistant {
 
-class AssistantManagerServiceDelegate;
 class AssistantMediaSession;
 class AssistantProxy;
 class AudioInputHost;
@@ -108,7 +107,6 @@ class COMPONENT_EXPORT(ASSISTANT_SERVICE) AssistantManagerServiceImpl
   // |service| owns this class and must outlive this class.
   AssistantManagerServiceImpl(
       ServiceContext* context,
-      std::unique_ptr<AssistantManagerServiceDelegate> delegate,
       std::unique_ptr<network::PendingSharedURLLoaderFactory>
           pending_url_loader_factory,
       base::Optional<std::string> s3_server_uri_override,
@@ -264,7 +262,6 @@ class COMPONENT_EXPORT(ASSISTANT_SERVICE) AssistantManagerServiceImpl
   // Owned by the parent |Service| which will destroy |this| before |context_|.
   ServiceContext* const context_;
 
-  std::unique_ptr<AssistantManagerServiceDelegate> delegate_;
   std::unique_ptr<LibassistantServiceHost> libassistant_service_host_;
   std::unique_ptr<DeviceSettingsHost> device_settings_host_;
   std::unique_ptr<MediaHost> media_host_;

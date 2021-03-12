@@ -5,6 +5,7 @@
 #include "chromeos/services/libassistant/test_support/libassistant_service_tester.h"
 
 #include "base/base_paths.h"
+#include "chromeos/services/libassistant/test_support/fake_libassistant_factory.h"
 #include "services/network/test/test_url_loader_factory.h"
 
 namespace chromeos {
@@ -22,13 +23,28 @@ mojo::PendingRemote<network::mojom::URLLoaderFactory> BindURLLoaderFactory() {
 }  // namespace
 
 LibassistantServiceTester::LibassistantServiceTester()
-    : home_dir_override_(base::DIR_HOME),
-      service_(service_remote_.BindNewPipeAndPassReceiver(),
-               &assistant_manager_service_delegate_) {
+    : home_dir_override_(base::DIR_HOME) {
+  auto factory = std::make_unique<FakeLibassistantFactory>();
+  // Keep a pointer around.
+  libassistant_factory_ = factory.get();
+
+  service_ = std::make_unique<LibassistantService>(
+      service_remote_.BindNewPipeAndPassReceiver(), std::move(factory));
+
   BindControllers();
 }
 
 LibassistantServiceTester::~LibassistantServiceTester() = default;
+
+assistant::FakeAssistantManager&
+LibassistantServiceTester::assistant_manager() {
+  return libassistant_factory_->assistant_manager();
+}
+
+assistant::FakeAssistantManagerInternal&
+LibassistantServiceTester::assistant_manager_internal() {
+  return libassistant_factory_->assistant_manager_internal();
+}
 
 void LibassistantServiceTester::Start() {
   service_controller_->Initialize(mojom::BootupConfig::New(),
@@ -57,19 +73,19 @@ void LibassistantServiceTester::BindControllers() {
   pending_timer_delegate_ =
       pending_timer_delegate_remote.InitWithNewPipeAndPassReceiver();
 
-  service_.Bind(audio_input_controller_.BindNewPipeAndPassReceiver(),
-                conversation_controller_.BindNewPipeAndPassReceiver(),
-                display_controller_.BindNewPipeAndPassReceiver(),
-                media_controller_.BindNewPipeAndPassReceiver(),
-                service_controller_.BindNewPipeAndPassReceiver(),
-                settings_controller_.BindNewPipeAndPassReceiver(),
-                speaker_id_enrollment_controller_.BindNewPipeAndPassReceiver(),
-                timer_controller_.BindNewPipeAndPassReceiver(),
-                std::move(pending_audio_output_delegate_remote),
-                std::move(pending_device_settings_delegate_remote),
-                std::move(pending_media_delegate_remote),
-                std::move(pending_platform_delegate_remote),
-                std::move(pending_timer_delegate_remote));
+  service_->Bind(audio_input_controller_.BindNewPipeAndPassReceiver(),
+                 conversation_controller_.BindNewPipeAndPassReceiver(),
+                 display_controller_.BindNewPipeAndPassReceiver(),
+                 media_controller_.BindNewPipeAndPassReceiver(),
+                 service_controller_.BindNewPipeAndPassReceiver(),
+                 settings_controller_.BindNewPipeAndPassReceiver(),
+                 speaker_id_enrollment_controller_.BindNewPipeAndPassReceiver(),
+                 timer_controller_.BindNewPipeAndPassReceiver(),
+                 std::move(pending_audio_output_delegate_remote),
+                 std::move(pending_device_settings_delegate_remote),
+                 std::move(pending_media_delegate_remote),
+                 std::move(pending_platform_delegate_remote),
+                 std::move(pending_timer_delegate_remote));
 }
 
 void LibassistantServiceTester::FlushForTesting() {

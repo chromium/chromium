@@ -9,9 +9,9 @@
 #include "base/check.h"
 #include "chromeos/assistant/internal/internal_util.h"
 #include "chromeos/services/assistant/public/cpp/features.h"
-#include "chromeos/services/assistant/public/cpp/migration/assistant_manager_service_delegate.h"
 #include "chromeos/services/assistant/public/cpp/migration/libassistant_v1_api.h"
 #include "chromeos/services/libassistant/chromium_api_delegate.h"
+#include "chromeos/services/libassistant/libassistant_factory.h"
 #include "chromeos/services/libassistant/settings_controller.h"
 #include "chromeos/services/libassistant/util.h"
 #include "libassistant/shared/internal_api/assistant_manager_internal.h"
@@ -120,10 +120,10 @@ class ServiceController::DeviceStateListener
 //  ServiceController
 ////////////////////////////////////////////////////////////////////////////////
 
-ServiceController::ServiceController(
-    assistant::AssistantManagerServiceDelegate* delegate,
-    assistant_client::PlatformApi* platform_api)
-    : delegate_(delegate), platform_api_(platform_api) {}
+ServiceController::ServiceController(LibassistantFactory* factory)
+    : libassistant_factory_(*factory) {
+  DCHECK(factory);
+}
 
 ServiceController::~ServiceController() {
   // Ensure all our observers know this service is no longer running.
@@ -147,10 +147,11 @@ void ServiceController::Initialize(
     return;
   }
 
-  assistant_manager_ = delegate_->CreateAssistantManager(
-      platform_api_, ToLibassistantConfig(*config));
+  assistant_manager_ = libassistant_factory_.CreateAssistantManager(
+      ToLibassistantConfig(*config));
   assistant_manager_internal_ =
-      delegate_->UnwrapAssistantManagerInternal(assistant_manager_.get());
+      libassistant_factory_.UnwrapAssistantManagerInternal(
+          assistant_manager_.get());
 
   DCHECK(settings_controller_);
   settings_controller_->SetAuthenticationTokens(

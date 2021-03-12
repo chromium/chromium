@@ -19,6 +19,7 @@ component("libassistant") {
     ":internal",
     "//chromeos/services/assistant/public/cpp/migration",
     "//chromeos/services/libassistant/public/mojom",
+    "//libassistant/shared/internal_api:assistant_manager_internal",
   ]
 
   defines = [ "IS_LIBASSISTANT_SERVICE_IMPL" ]
@@ -55,6 +56,7 @@ source_set("internal") {
     "fake_auth_provider.h",
     "file_provider_impl.cc",
     "file_provider_impl.h",
+    "libassistant_factory.h",
     "media_controller.cc",
     "media_controller.h",
     "network_provider_impl.cc",
@@ -163,6 +165,8 @@ source_set("test_support") {
   testonly = true
 
   sources = [
+    "test_support/fake_libassistant_factory.cc",
+    "test_support/fake_libassistant_factory.h",
     "test_support/fake_platform_delegate.cc",
     "test_support/fake_platform_delegate.h",
     "test_support/libassistant_service_tester.cc",
@@ -173,8 +177,8 @@ source_set("test_support") {
     ":internal",
     ":libassistant",
     "//base/test:test_support",
+    "//chromeos/assistant/internal:test_support",
     "//chromeos/services/assistant/public/cpp/migration",
-    "//chromeos/services/assistant/public/cpp/migration:test_support",
     "//chromeos/services/libassistant/public/mojom",
     "//services/network:test_support",
   ]
@@ -213,7 +217,6 @@ source_set("unit_tests") {
     "//chromeos/dbus/power",
     "//chromeos/services/assistant/public/cpp",
     "//chromeos/services/assistant/public/cpp/migration",
-    "//chromeos/services/assistant/public/cpp/migration:test_support",
     "//chromeos/services/libassistant/public/mojom",
     "//libassistant/shared/internal_api:assistant_manager_internal",
     "//libassistant/shared/internal_api/c:api_wrappers",

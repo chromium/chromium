@@ -11,10 +11,7 @@
 namespace chromeos {
 namespace assistant {
 
-LibassistantServiceHostImpl::LibassistantServiceHostImpl(
-    AssistantManagerServiceDelegate* delegate)
-    : delegate_(delegate) {
-  DCHECK(delegate_);
+LibassistantServiceHostImpl::LibassistantServiceHostImpl() {
   DETACH_FROM_SEQUENCE(sequence_checker_);
 }
 
@@ -27,7 +24,7 @@ void LibassistantServiceHostImpl::Launch(
   DCHECK(!libassistant_service_);
   libassistant_service_ =
       std::make_unique<chromeos::libassistant::LibassistantService>(
-          std::move(receiver), delegate_);
+          std::move(receiver));
 }
 
 void LibassistantServiceHostImpl::Stop() {

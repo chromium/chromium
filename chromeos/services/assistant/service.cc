@@ -30,7 +30,6 @@
 #include "chromeos/dbus/power_manager/power_supply_properties.pb.h"
 #include "chromeos/services/assistant/assistant_interaction_logger.h"
 #include "chromeos/services/assistant/assistant_manager_service.h"
-#include "chromeos/services/assistant/assistant_manager_service_delegate_impl.h"
 #include "chromeos/services/assistant/fake_assistant_manager_service_impl.h"
 #include "chromeos/services/assistant/fake_assistant_settings_impl.h"
 #include "chromeos/services/assistant/public/cpp/assistant_client.h"
@@ -506,14 +505,13 @@ Service::CreateAndReturnAssistantManagerService() {
   if (assistant_manager_service_for_testing_)
     return std::move(assistant_manager_service_for_testing_);
 
+    // TODO(jeroendh) Remove this '#if' and the FakeAssistantManagerServiceImpl
+    // when the Libassistant migration is complete.
 #if BUILDFLAG(ENABLE_CROS_LIBASSISTANT)
-  auto delegate =
-      std::make_unique<AssistantManagerServiceDelegateImpl>(context());
-
   // |assistant_manager_service_| is only created once.
   DCHECK(pending_url_loader_factory_);
   return std::make_unique<AssistantManagerServiceImpl>(
-      context(), std::move(delegate), std::move(pending_url_loader_factory_),
+      context(), std::move(pending_url_loader_factory_),
       GetS3ServerUriOverride(), GetDeviceIdOverride());
 #else
   return std::make_unique<FakeAssistantManagerServiceImpl>();

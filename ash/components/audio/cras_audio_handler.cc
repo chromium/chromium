@@ -69,13 +69,11 @@ CrasAudioHandler::AudioObserver::~AudioObserver() = default;
 
 void CrasAudioHandler::AudioObserver::OnOutputNodeVolumeChanged(
     uint64_t /* node_id */,
-    int /* volume */) {
-}
+    int /* volume */) {}
 
 void CrasAudioHandler::AudioObserver::OnInputNodeGainChanged(
     uint64_t /* node_id */,
-    int /* gain */) {
-}
+    int /* gain */) {}
 
 void CrasAudioHandler::AudioObserver::OnOutputMuteChanged(bool /* mute_on */) {}
 
@@ -1075,7 +1073,7 @@ void CrasAudioHandler::SetOutputNodeVolumePercent(uint64_t node_id,
     SetOutputNodeVolume(node_id, volume_percent);
 }
 
-bool  CrasAudioHandler::SetOutputMuteInternal(bool mute_on) {
+bool CrasAudioHandler::SetOutputMuteInternal(bool mute_on) {
   if (output_mute_locked_)
     return false;
 
@@ -1702,8 +1700,9 @@ void CrasAudioHandler::StartHDMIRediscoverGracePeriod() {
   hdmi_rediscovering_ = true;
   hdmi_rediscover_timer_.Stop();
   hdmi_rediscover_timer_.Start(
-      FROM_HERE, base::TimeDelta::FromMilliseconds(
-                     hdmi_rediscover_grace_period_duration_in_ms_),
+      FROM_HERE,
+      base::TimeDelta::FromMilliseconds(
+          hdmi_rediscover_grace_period_duration_in_ms_),
       this, &CrasAudioHandler::UpdateAudioAfterHDMIRediscoverGracePeriod);
 }
 
@@ -1891,6 +1890,18 @@ void CrasAudioHandler::HandleGetSystemAecGroupId(
     return;
   }
   system_aec_group_id_ = system_aec_group_id.value();
+}
+
+ScopedCrasAudioHandlerForTesting::ScopedCrasAudioHandlerForTesting() {
+  CrasAudioHandler::InitializeForTesting();
+}
+
+ScopedCrasAudioHandlerForTesting::~ScopedCrasAudioHandlerForTesting() {
+  CrasAudioHandler::Shutdown();
+}
+
+CrasAudioHandler& ScopedCrasAudioHandlerForTesting::Get() {
+  return *CrasAudioHandler::Get();
 }
 
 }  // namespace ash

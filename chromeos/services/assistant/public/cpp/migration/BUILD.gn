@@ -11,7 +11,6 @@ component("migration") {
   defines = [ "IS_ASSISTANT_SERVICE_PUBLIC_MIGRATION_IMPL" ]
 
   sources = [
-    "assistant_manager_service_delegate.h",
     "audio_input_host.h",
     "libassistant_v1_api.cc",
     "libassistant_v1_api.h",
@@ -23,26 +22,5 @@ component("migration") {
     "//base",
     "//chromeos/services/libassistant/public/mojom",
     "//mojo/public/cpp/bindings",
-  ]
-}
-
-component("test_support") {
-  testonly = true
-
-  output_name = "migration_test_support"
-  defines = [ "IS_ASSISTANT_SERVICE_MIGRATION_TEST_SUPPORT_IMPL" ]
-
-  sources = [
-    "fake_assistant_manager_service_delegate.cc",
-    "fake_assistant_manager_service_delegate.h",
-  ]
-
-  deps = [
-    ":migration",
-    "//base",
-    "//chromeos/assistant/internal:test_support",
-    "//chromeos/assistant/internal/proto/google3",
-    "//chromeos/services/libassistant/public/mojom",
-    "//libassistant/shared/public",
   ]
 }

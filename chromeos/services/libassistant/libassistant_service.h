@@ -13,6 +13,7 @@
 #include "chromeos/services/libassistant/conversation_state_listener_impl.h"
 #include "chromeos/services/libassistant/device_settings_controller.h"
 #include "chromeos/services/libassistant/display_controller.h"
+#include "chromeos/services/libassistant/libassistant_factory.h"
 #include "chromeos/services/libassistant/media_controller.h"
 #include "chromeos/services/libassistant/platform_api.h"
 #include "chromeos/services/libassistant/public/mojom/service.mojom.h"
@@ -25,20 +26,15 @@
 #include "mojo/public/cpp/bindings/remote_set.h"
 
 namespace chromeos {
-namespace assistant {
-class AssistantManagerServiceDelegate;
-}  // namespace assistant
-}  // namespace chromeos
-
-namespace chromeos {
 namespace libassistant {
 
 class COMPONENT_EXPORT(LIBASSISTANT_SERVICE) LibassistantService
     : public mojom::LibassistantService {
  public:
-  LibassistantService(
+  explicit LibassistantService(
       mojo::PendingReceiver<mojom::LibassistantService> receiver,
-      assistant::AssistantManagerServiceDelegate* delegate);
+      // Allows to inject a custom instance during unittests.
+      std::unique_ptr<LibassistantFactory> factory = nullptr);
   LibassistantService(LibassistantService&) = delete;
   LibassistantService& operator=(LibassistantService&) = delete;
   ~LibassistantService() override;
@@ -82,6 +78,7 @@ class COMPONENT_EXPORT(LIBASSISTANT_SERVICE) LibassistantService
   PlatformApi platform_api_;
   AudioInputController audio_input_controller_;
 
+  std::unique_ptr<LibassistantFactory> libassistant_factory_;
   ServiceController service_controller_;
 
   // These controllers call Libassistant, and thus they must *not* outlive

@@ -19,12 +19,9 @@ class LibassistantService;
 namespace chromeos {
 namespace assistant {
 
-class AssistantManagerServiceDelegate;
-
 class LibassistantServiceHostImpl : public LibassistantServiceHost {
  public:
-  explicit LibassistantServiceHostImpl(
-      AssistantManagerServiceDelegate* delegate);
+  LibassistantServiceHostImpl();
   LibassistantServiceHostImpl(LibassistantServiceHostImpl&) = delete;
   LibassistantServiceHostImpl& operator=(LibassistantServiceHostImpl&) = delete;
   ~LibassistantServiceHostImpl() override;
@@ -36,9 +33,6 @@ class LibassistantServiceHostImpl : public LibassistantServiceHost {
   void Stop() override;
 
  private:
-  // Owned by |AssistantManagerServiceImpl| which also owns |this|.
-  AssistantManagerServiceDelegate* const delegate_;
-
   SEQUENCE_CHECKER(sequence_checker_);
   std::unique_ptr<chromeos::libassistant::LibassistantService>
       libassistant_service_ GUARDED_BY_CONTEXT(sequence_checker_);

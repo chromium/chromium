@@ -9,28 +9,66 @@
 
 #include "base/check.h"
 #include "base/logging.h"
+#include "base/memory/ptr_util.h"
+#include "chromeos/services/libassistant/libassistant_factory.h"
+#include "libassistant/shared/internal_api/assistant_manager_internal.h"
+#include "libassistant/shared/public/assistant_manager.h"
 
 namespace chromeos {
 namespace libassistant {
 
+namespace {
+
+class LibassistantFactoryImpl : public LibassistantFactory {
+ public:
+  explicit LibassistantFactoryImpl(assistant_client::PlatformApi* platform_api)
+      : platform_api_(platform_api) {}
+  LibassistantFactoryImpl(const LibassistantFactoryImpl&) = delete;
+  LibassistantFactoryImpl& operator=(const LibassistantFactoryImpl&) = delete;
+  ~LibassistantFactoryImpl() override = default;
+
+  // LibassistantFactory implementation:
+
+  std::unique_ptr<assistant_client::AssistantManager> CreateAssistantManager(
+      const std::string& lib_assistant_config) override {
+    return base::WrapUnique(assistant_client::AssistantManager::Create(
+        platform_api_, lib_assistant_config));
+  }
+
+  assistant_client::AssistantManagerInternal* UnwrapAssistantManagerInternal(
+      assistant_client::AssistantManager* assistant_manager) override {
+    return assistant_client::UnwrapAssistantManagerInternal(assistant_manager);
+  }
+
+ private:
+  assistant_client::PlatformApi* const platform_api_;
+};
+
+std::unique_ptr<LibassistantFactory> FactoryOrDefault(
+    std::unique_ptr<LibassistantFactory> factory,
+    assistant_client::PlatformApi* platform_api) {
+  if (factory)
+    return factory;
+
+  return std::make_unique<LibassistantFactoryImpl>(platform_api);
+}
+
+}  // namespace
+
 LibassistantService::LibassistantService(
     mojo::PendingReceiver<mojom::LibassistantService> receiver,
-    assistant::AssistantManagerServiceDelegate* delegate)
+    std::unique_ptr<LibassistantFactory> factory)
     : receiver_(this, std::move(receiver)),
-      platform_api_(),
-      audio_input_controller_(),
-      service_controller_(delegate, &platform_api_),
+      libassistant_factory_(
+          FactoryOrDefault(std::move(factory), &platform_api_)),
+      service_controller_(libassistant_factory_.get()),
       conversation_controller_(&service_controller_),
       conversation_state_listener_(
           &speech_recognition_observers_,
           conversation_controller_.conversation_observers(),
           &audio_input_controller_),
-      device_settings_controller_(),
       display_controller_(&speech_recognition_observers_),
-      media_controller_(),
-      settings_controller_(),
-      speaker_id_enrollment_controller_(&audio_input_controller_),
-      timer_controller_() {
+      speaker_id_enrollment_controller_(&audio_input_controller_) {
   service_controller_.AddAndFireAssistantManagerObserver(
       &conversation_controller_);
   service_controller_.AddAndFireAssistantManagerObserver(

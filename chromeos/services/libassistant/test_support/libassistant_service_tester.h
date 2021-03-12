@@ -6,7 +6,8 @@
 #define CHROMEOS_SERVICES_LIBASSISTANT_TEST_SUPPORT_LIBASSISTANT_SERVICE_TESTER_H_
 
 #include "base/test/scoped_path_override.h"
-#include "chromeos/services/assistant/public/cpp/migration/fake_assistant_manager_service_delegate.h"
+#include "chromeos/assistant/internal/test_support/fake_assistant_manager.h"
+#include "chromeos/assistant/internal/test_support/fake_assistant_manager_internal.h"
 #include "chromeos/services/libassistant/libassistant_service.h"
 #include "chromeos/services/libassistant/public/mojom/audio_input_controller.mojom.h"
 #include "chromeos/services/libassistant/public/mojom/audio_output_delegate.mojom-forward.h"
@@ -20,14 +21,9 @@
 #include "mojo/public/cpp/bindings/remote.h"
 
 namespace chromeos {
-namespace assistant {
-class FakeAssistantManager;
-class FakeAssistantManagerInternal;
-}  // namespace assistant
-}  // namespace chromeos
-
-namespace chromeos {
 namespace libassistant {
+
+class FakeLibassistantFactory;
 
 // Helper class that makes it easier to test |LibassistantService|.
 class LibassistantServiceTester {
@@ -41,15 +37,10 @@ class LibassistantServiceTester {
   // Initialize and start Libassistant.
   void Start();
 
-  LibassistantService& service() { return service_; }
+  LibassistantService& service() { return *service_; }
 
-  assistant::FakeAssistantManager& assistant_manager() {
-    return *assistant_manager_service_delegate_.assistant_manager();
-  }
-
-  assistant::FakeAssistantManagerInternal& assistant_manager_internal() {
-    return *assistant_manager_service_delegate_.assistant_manager_internal();
-  }
+  assistant::FakeAssistantManager& assistant_manager();
+  assistant::FakeAssistantManagerInternal& assistant_manager_internal();
 
   mojom::AudioInputController& audio_input_controller() {
     return *audio_input_controller_.get();
@@ -90,11 +81,10 @@ class LibassistantServiceTester {
   mojo::PendingReceiver<mojom::TimerDelegate> pending_timer_delegate_;
 
   mojo::Remote<mojom::LibassistantService> service_remote_;
-  assistant::FakeAssistantManagerServiceDelegate
-      assistant_manager_service_delegate_;
   // Our file provider requires the home dir to be overridden.
   base::ScopedPathOverride home_dir_override_;
-  LibassistantService service_;
+  FakeLibassistantFactory* libassistant_factory_ = nullptr;
+  std::unique_ptr<LibassistantService> service_;
 };
 
 }  // namespace libassistant

@@ -76,8 +76,6 @@ component("lib") {
 
   if (enable_cros_libassistant) {
     sources += [
-      "assistant_manager_service_delegate_impl.cc",
-      "assistant_manager_service_delegate_impl.h",
       "assistant_manager_service_impl.cc",
       "assistant_manager_service_impl.h",
       "assistant_settings_impl.cc",
@@ -173,7 +171,6 @@ source_set("tests") {
       "//chromeos/assistant/test_support",
       "//chromeos/services/assistant/proxy",
       "//chromeos/services/assistant/public/cpp/migration",
-      "//chromeos/services/assistant/public/cpp/migration:test_support",
     ]
   }
 }
