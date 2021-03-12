@@ -5044,6 +5044,7 @@ static_library("browser") {
       "//chrome/services/mac_notifications/public/mojom",
       "//components/crash/core/app",
       "//components/metal_util",
+      "//components/remote_cocoa/browser:browser",
       "//sandbox/mac:seatbelt",
       "//sandbox/policy",
       "//services/device/public/cpp/geolocation",

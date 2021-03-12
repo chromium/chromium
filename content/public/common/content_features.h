@@ -222,6 +222,7 @@ CONTENT_EXPORT extern const base::Feature kWebNfc;
 
 #if defined(OS_MAC)
 CONTENT_EXPORT extern const base::Feature kDesktopCaptureMacV2;
+CONTENT_EXPORT extern const base::Feature kWindowCaptureMacV2;
 CONTENT_EXPORT extern const base::Feature kDeviceMonitorMac;
 CONTENT_EXPORT extern const base::Feature kIOSurfaceCapturer;
 CONTENT_EXPORT extern const base::Feature kMacSyscallSandbox;

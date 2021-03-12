@@ -36,8 +36,8 @@ class NativeDesktopMediaList : public DesktopMediaListBase {
   // thumbnails and schedules next refresh.
   void Refresh(bool update_thumnails) override;
 
-  void RefreshForAuraWindows(std::vector<SourceDescription> sources,
-                             bool update_thumnails);
+  void RefreshForVizFrameSinkWindows(std::vector<SourceDescription> sources,
+                                     bool update_thumnails);
   void UpdateNativeThumbnailsFinished();
 
 #if defined(USE_AURA)

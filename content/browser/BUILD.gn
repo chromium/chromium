@@ -2315,6 +2315,8 @@ source_set("browser") {
         "media/capture/desktop_capture_device_mac.cc",
         "media/capture/desktop_capture_device_mac.h",
         "media/capture/mouse_cursor_overlay_controller_mac.mm",
+        "media/capture/views_widget_video_capture_device_mac.cc",
+        "media/capture/views_widget_video_capture_device_mac.h",
       ]
       deps += [
         "//sandbox/mac:seatbelt",
