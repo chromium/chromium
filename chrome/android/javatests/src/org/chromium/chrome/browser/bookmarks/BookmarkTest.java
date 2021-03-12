@@ -1858,6 +1858,7 @@ public class BookmarkTest {
 
     @Test
     @MediumTest
+    @DisabledTest(message = "crbug.com/1187193")
     public void testRecordsHistogramWhenBookmarkManagerOpened_InRegular() throws Throwable {
         Assert.assertEquals(0,
                 RecordHistogram.getHistogramTotalCountForTesting(
@@ -1879,6 +1880,7 @@ public class BookmarkTest {
 
     @Test
     @MediumTest
+    @DisabledTest(message = "crbug.com/1187193")
     public void testRecordsHistogramWhenBookmarkManagerOpened_InIncognito() throws Throwable {
         Assert.assertEquals(0,
                 RecordHistogram.getHistogramTotalCountForTesting(
