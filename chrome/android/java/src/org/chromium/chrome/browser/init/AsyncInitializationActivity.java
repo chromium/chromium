@@ -99,6 +99,9 @@ public abstract class AsyncInitializationActivity extends ChromeBaseAppCompatAct
     private Runnable mOnInflationCompleteCallback;
     private boolean mInitialLayoutInflationComplete;
 
+    private boolean mInterceptMoveTaskToBackForTesting;
+    private boolean mBackInterceptedForTesting;
+
     public AsyncInitializationActivity() {
         mHandler = new Handler();
     }
@@ -888,5 +891,27 @@ public abstract class AsyncInitializationActivity extends ChromeBaseAppCompatAct
                 return true;
             }
         };
+    }
+
+    @Override
+    public boolean moveTaskToBack(boolean nonRoot) {
+        // On Android L moving the task to the background flakily stops the
+        // Activity from being finished, breaking tests. Trying to bring the
+        // task back to the foreground after also happens to be flaky, so just
+        // allow tests to prevent actually moving to the background.
+        if (mInterceptMoveTaskToBackForTesting) {
+            mBackInterceptedForTesting = true;
+            return false;
+        }
+        return super.moveTaskToBack(nonRoot);
+    }
+
+    public void interceptMoveTaskToBackForTesting() {
+        mInterceptMoveTaskToBackForTesting = true;
+        mBackInterceptedForTesting = false;
+    }
+
+    public boolean wasMoveTaskToBackInterceptedForTesting() {
+        return mBackInterceptedForTesting;
     }
 }
