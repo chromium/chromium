@@ -213,6 +213,48 @@ TEST_F(VideoEncodeAcceleratorAdapterTest, InitializeAfterFirstFrame) {
   EXPECT_EQ(outputs_count, 1);
 }
 
+TEST_F(VideoEncodeAcceleratorAdapterTest, TemporalSvc) {
+  VideoEncoder::Options options;
+  options.frame_size = gfx::Size(640, 480);
+  options.temporal_layers = 3;
+  int outputs_count = 0;
+  auto pixel_format = PIXEL_FORMAT_I420;
+  VideoEncoder::OutputCB output_cb = base::BindLambdaForTesting(
+      [&](VideoEncoderOutput output,
+          base::Optional<VideoEncoder::CodecDescription>) {
+        if (output.timestamp == base::TimeDelta::FromMilliseconds(1))
+          EXPECT_EQ(output.temporal_id, 1);
+        else
+          EXPECT_EQ(output.temporal_id, 2);
+        outputs_count++;
+      });
+
+  vea()->SetEncodingCallback(base::BindLambdaForTesting(
+      [&](BitstreamBuffer&, bool keyframe, scoped_refptr<VideoFrame> frame) {
+        BitstreamBufferMetadata result(1, keyframe, frame->timestamp());
+        if (frame->timestamp() == base::TimeDelta::FromMilliseconds(1)) {
+          result.vp8 = Vp8Metadata();
+          result.vp8->temporal_idx = 1;
+        } else {
+          result.vp9 = Vp9Metadata();
+          result.vp9->temporal_idx = 2;
+        }
+        return result;
+      }));
+  adapter()->Initialize(profile_, options, std::move(output_cb),
+                        ValidatingStatusCB());
+
+  auto frame1 = CreateGreenFrame(options.frame_size, pixel_format,
+                                 base::TimeDelta::FromMilliseconds(1));
+  auto frame2 = CreateGreenFrame(options.frame_size, pixel_format,
+                                 base::TimeDelta::FromMilliseconds(2));
+  adapter()->Encode(frame1, true, ValidatingStatusCB());
+  RunUntilIdle();
+  adapter()->Encode(frame2, true, ValidatingStatusCB());
+  RunUntilIdle();
+  EXPECT_EQ(outputs_count, 2);
+}
+
 TEST_F(VideoEncodeAcceleratorAdapterTest, FlushDuringInitialize) {
   VideoEncoder::Options options;
   options.frame_size = gfx::Size(640, 480);

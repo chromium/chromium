@@ -47,6 +47,17 @@ VideoEncodeAccelerator::Config SetUpVeaConfig(
                             kVEADefaultBitratePerPixel),
       initial_framerate);
 
+  if (opts.temporal_layers > 1) {
+    VideoEncodeAccelerator::Config::SpatialLayer layer;
+    layer.width = opts.frame_size.width();
+    layer.height = opts.frame_size.height();
+    layer.bitrate_bps = config.initial_bitrate;
+    if (initial_framerate.has_value())
+      layer.framerate = initial_framerate.value();
+    layer.num_of_temporal_layers = opts.temporal_layers;
+    config.spatial_layers.push_back(layer);
+  }
+
   const bool is_rgb =
       format == PIXEL_FORMAT_XBGR || format == PIXEL_FORMAT_XRGB ||
       format == PIXEL_FORMAT_ABGR || format == PIXEL_FORMAT_ARGB;
@@ -432,6 +443,10 @@ void VideoEncodeAcceleratorAdapter::BitstreamBufferReady(
   result.key_frame = metadata.key_frame;
   result.timestamp = metadata.timestamp;
   result.size = metadata.payload_size_bytes;
+  if (metadata.vp9.has_value())
+    result.temporal_id = metadata.vp9.value().temporal_idx;
+  else if (metadata.vp8.has_value())
+    result.temporal_id = metadata.vp8.value().temporal_idx;
 
   DCHECK_EQ(buffer_id, 0);
   // There is always one output buffer.
