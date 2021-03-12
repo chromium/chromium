@@ -454,11 +454,10 @@ void ContentDirectoryLoaderFactory::CreateLoaderAndStart(
 
   // Load the resource on a blocking-capable TaskRunner.
   task_runner_->PostTask(
-      FROM_HERE, base::BindOnce(&ContentDirectoryURLLoader::CreateAndStart,
-                                base::Passed(std::move(loader)), request,
-                                base::Passed(std::move(client)),
-                                base::Passed(std::move(file_handle)),
-                                base::Passed(std::move(metadata_handle))));
+      FROM_HERE,
+      base::BindOnce(&ContentDirectoryURLLoader::CreateAndStart,
+                     std::move(loader), request, std::move(client),
+                     std::move(file_handle), std::move(metadata_handle)));
 }
 
 void ContentDirectoryLoaderFactory::SetContentDirectoriesForTest(

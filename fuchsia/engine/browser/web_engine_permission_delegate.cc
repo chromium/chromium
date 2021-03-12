@@ -4,6 +4,8 @@
 
 #include "fuchsia/engine/browser/web_engine_permission_delegate.h"
 
+#include <utility>
+
 #include "base/callback.h"
 #include "base/check_op.h"
 #include "base/notreached.h"
@@ -30,7 +32,7 @@ int WebEnginePermissionDelegate::RequestPermission(
             DCHECK_EQ(state.size(), 1U);
             std::move(callback).Run(state[0]);
           },
-          base::Passed(std::move(callback))));
+          std::move(callback)));
 
   return content::PermissionController::kNoPendingOperation;
 }
