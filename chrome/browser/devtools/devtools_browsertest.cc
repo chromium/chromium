@@ -2256,13 +2256,7 @@ IN_PROC_BROWSER_TEST_F(DevToolsNetInfoTest, EmulateNetworkConditions) {
   RunTest("testEmulateNetworkConditions", kEmulateNetworkConditionsPage);
 }
 
-#if defined(MEMORY_SANITIZER)
-// Flaking on MSan runs: crbug.com/1184201
-#define MAYBE_OfflineNetworkConditions DISABLED_OfflineNetworkConditions
-#else
-#define MAYBE_OfflineNetworkConditions OfflineNetworkConditions
-#endif
-IN_PROC_BROWSER_TEST_F(DevToolsNetInfoTest, MAYBE_OfflineNetworkConditions) {
+IN_PROC_BROWSER_TEST_F(DevToolsNetInfoTest, OfflineNetworkConditions) {
   RunTest("testOfflineNetworkConditions", kEmulateNetworkConditionsPage);
 }
 
