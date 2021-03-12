@@ -43,6 +43,7 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part.h"
 #include "chrome/browser/chrome_notification_types.h"
+#include "chrome/browser/chromeos/crosapi/browser_util.h"
 #include "chrome/browser/chromeos/extensions/active_tab_permission_granter_delegate_chromeos.h"
 #include "chrome/browser/chromeos/extensions/extension_tab_util_delegate_chromeos.h"
 #include "chrome/browser/chromeos/extensions/permissions_updater_delegate_chromeos.h"
@@ -468,6 +469,10 @@ user_manager::UserList ChromeUserManagerImpl::GetUsersAllowedForMultiProfile()
   policy::BrowserPolicyConnectorChromeOS* connector =
       g_browser_process->platform_part()->browser_policy_connector_chromeos();
   if (connector->IsActiveDirectoryManaged())
+    return user_manager::UserList();
+
+  // Multiprofile mode is not allowed when Lacros is enabled.
+  if (crosapi::browser_util::IsLacrosEnabled())
     return user_manager::UserList();
 
   user_manager::UserList result;
