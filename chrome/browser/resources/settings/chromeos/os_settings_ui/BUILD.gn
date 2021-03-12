@@ -20,7 +20,7 @@ js_library("os_settings_ui.m") {
     "..:os_page_visibility.m",
     "..:os_route.m",
     "..:pref_to_setting_metric_converter.m",
-    "../..:router.m",
+    "../..:router",
     "../../prefs:prefs",
     "../os_settings_main:os_settings_main.m",
     "../os_toolbar:os_toolbar.m",
@@ -43,7 +43,7 @@ polymer_modulizer("os_settings_ui") {
   js_file = "os_settings_ui.js"
   html_file = "os_settings_ui.html"
   html_type = "dom-module"
-  migrated_imports = settings_migrated_imports
+  migrated_imports = os_settings_migrated_imports
   auto_imports = os_settings_auto_imports
   namespace_rewrites = os_settings_namespace_rewrites
 }

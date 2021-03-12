@@ -13,10 +13,10 @@ export {PasswordManagerImpl, PasswordManagerProxy} from './autofill_page/passwor
 // <if expr="not chromeos and not lacros">
 export {DefaultBrowserBrowserProxyImpl} from './default_browser_page/default_browser_browser_proxy.js';
 // </if>
-export {ExtensionControlBrowserProxyImpl} from './extension_control_browser_proxy.m.js';
+export {ExtensionControlBrowserProxyImpl} from './extension_control_browser_proxy.js';
 export {HatsBrowserProxy, HatsBrowserProxyImpl} from './hats_browser_proxy.js';
 export {loadTimeData} from './i18n_setup.js';
-export {LifetimeBrowserProxy, LifetimeBrowserProxyImpl} from './lifetime_browser_proxy.m.js';
+export {LifetimeBrowserProxy, LifetimeBrowserProxyImpl} from './lifetime_browser_proxy.js';
 export {MetricsBrowserProxy, MetricsBrowserProxyImpl, PrivacyElementInteractions, SafeBrowsingInteractions, SafetyCheckInteractions} from './metrics_browser_proxy.js';
 export {OnStartupBrowserProxy, OnStartupBrowserProxyImpl} from './on_startup_page/on_startup_browser_proxy.js';
 export {EDIT_STARTUP_URL_EVENT} from './on_startup_page/startup_url_entry.js';
@@ -35,8 +35,8 @@ export {CrSettingsPrefs} from './prefs/prefs_types.js';
 export {MetricsReporting, PrivacyPageBrowserProxy, PrivacyPageBrowserProxyImpl, ResolverOption, SecureDnsMode, SecureDnsSetting, SecureDnsUiManagementMode} from './privacy_page/privacy_page_browser_proxy.js';
 export {ResetBrowserProxyImpl} from './reset_page/reset_browser_proxy.js';
 export {buildRouter, routes} from './route.js';
-export {Route, Router} from './router.m.js';
+export {Route, Router} from './router.js';
 export {SafetyCheckBrowserProxy, SafetyCheckBrowserProxyImpl, SafetyCheckCallbackConstants, SafetyCheckChromeCleanerStatus, SafetyCheckExtensionsStatus, SafetyCheckParentStatus, SafetyCheckPasswordsStatus, SafetyCheckSafeBrowsingStatus, SafetyCheckUpdatesStatus} from './safety_check_page/safety_check_browser_proxy.js';
 export {SafetyCheckIconStatus} from './safety_check_page/safety_check_child.js';
 export {SearchEngine, SearchEnginesBrowserProxy, SearchEnginesBrowserProxyImpl, SearchEnginesInfo} from './search_engines_page/search_engines_browser_proxy.js';
-export {getSearchManager, SearchRequest, setSearchManagerForTesting} from './search_settings.m.js';
+export {getSearchManager, SearchRequest, setSearchManagerForTesting} from './search_settings.js';

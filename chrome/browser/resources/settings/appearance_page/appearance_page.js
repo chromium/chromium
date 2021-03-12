@@ -24,7 +24,7 @@ import {DropdownMenuOptionList} from '../controls/settings_dropdown_menu.js';
 import {loadTimeData} from '../i18n_setup.js';
 import {AppearancePageVisibility} from '../page_visibility.js';
 import {routes} from '../route.js';
-import {Router} from '../router.m.js';
+import {Router} from '../router.js';
 
 import {AppearanceBrowserProxy, AppearanceBrowserProxyImpl} from './appearance_browser_proxy.js';
 

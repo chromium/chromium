@@ -50,7 +50,7 @@ js_library("controlled_radio_button") {
 
 js_library("extension_controlled_indicator") {
   deps = [
-    "..:extension_control_browser_proxy.m",
+    "..:extension_control_browser_proxy",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
     "//ui/webui/resources/js:assert.m",
     "//ui/webui/resources/js:i18n_behavior.m",
@@ -59,7 +59,7 @@ js_library("extension_controlled_indicator") {
 
 js_library("password_prompt_dialog") {
   deps = [
-    "..:router.m",
+    "..:router",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
     "//ui/webui/resources/cr_elements/cr_dialog:cr_dialog.m",
     "//ui/webui/resources/cr_elements/cr_input:cr_input.m",

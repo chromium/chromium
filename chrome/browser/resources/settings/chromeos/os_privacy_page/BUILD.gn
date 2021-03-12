@@ -23,7 +23,7 @@ js_library("os_privacy_page.m") {
     ":peripheral_data_access_protection_dialog.m",
     "..:deep_linking_behavior.m",
     "..:os_route.m",
-    "../..:router.m",
+    "../..:router",
     "../os_people_page:lock_screen.m",
     "../os_people_page:lock_state_behavior.m",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",

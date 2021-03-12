@@ -59,7 +59,7 @@ if (!is_chromeos_ash) {
       ":sync_browser_proxy",
       "..:i18n_setup",
       "..:route",
-      "..:router.m",
+      "..:router",
       "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
       "//ui/webui/resources/cr_components/customize_themes",
     ]
@@ -82,7 +82,7 @@ js_library("people_page") {
     "..:open_window_proxy",
     "..:page_visibility",
     "..:route",
-    "..:router.m",
+    "..:router",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
     "//ui/webui/resources/cr_elements/chromeos/cr_picture:png.m",
     "//ui/webui/resources/cr_elements/cr_toast:cr_toast.m",
@@ -112,7 +112,7 @@ js_library("sync_account_control") {
   deps = [
     ":sync_browser_proxy",
     "..:i18n_setup",
-    "..:router.m",
+    "..:router",
     "../prefs:prefs_behavior",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
     "//ui/webui/resources/cr_elements/cr_action_menu:cr_action_menu.m",
@@ -129,7 +129,7 @@ js_library("sync_controls") {
   deps = [
     ":sync_browser_proxy",
     "..:i18n_setup",
-    "..:router.m",
+    "..:router",
     "//ui/webui/resources/js:assert.m",
     "//ui/webui/resources/js:web_ui_listener_behavior.m",
   ]
@@ -149,7 +149,7 @@ js_library("sync_page") {
     ":sync_browser_proxy",
     ":sync_encryption_options",
     "..:i18n_setup",
-    "..:router.m",
+    "..:router",
     "../privacy_page:personalization_options",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
     "//ui/webui/resources/cr_elements/cr_dialog:cr_dialog.m",

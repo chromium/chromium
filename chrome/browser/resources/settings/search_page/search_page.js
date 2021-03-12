@@ -22,7 +22,7 @@ import {addWebUIListener} from 'chrome://resources/js/cr.m.js';
 import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {routes} from '../route.js';
-import {Router} from '../router.m.js';
+import {Router} from '../router.js';
 import {SearchEngine, SearchEnginesBrowserProxy, SearchEnginesBrowserProxyImpl} from '../search_engines_page/search_engines_browser_proxy.js';
 
 Polymer({

@@ -14,10 +14,10 @@ js_type_check("closure_compile_module") {
 
 js_library("settings_ui") {
   deps = [
-    "..:global_scroll_target_behavior.m",
+    "..:global_scroll_target_behavior",
     "..:page_visibility",
     "..:route",
-    "..:router.m",
+    "..:router",
     "../basic_page:basic_page",
     "../prefs:prefs",
     "../settings_main:settings_main",

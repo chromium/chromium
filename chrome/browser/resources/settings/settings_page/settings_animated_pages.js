@@ -21,8 +21,8 @@ import {focusWithoutInk} from '//resources/js/cr/ui/focus_without_ink.m.js';
 import {loadTimeData} from '//resources/js/load_time_data.m.js';
 import {afterNextRender, dom, DomIf, html, Polymer} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {Route, RouteObserverBehavior, Router} from '../router.m.js';
-import {getSettingIdParameter} from '../setting_id_param_util.m.js';
+import {Route, RouteObserverBehavior, Router} from '../router.js';
+import {getSettingIdParameter} from '../setting_id_param_util.js';
 
 Polymer({
   is: 'settings-animated-pages',

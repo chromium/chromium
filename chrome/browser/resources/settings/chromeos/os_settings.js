@@ -80,15 +80,15 @@ import './os_toolbar/os_toolbar.m.js';
 import './parental_controls_page/parental_controls_page.m.js';
 
 export {AboutPageBrowserProxyImpl, BrowserChannel, UpdateStatus} from '../about_page/about_page_browser_proxy.js';
-export {LifetimeBrowserProxy, LifetimeBrowserProxyImpl} from '../lifetime_browser_proxy.m.js';
+export {LifetimeBrowserProxy, LifetimeBrowserProxyImpl} from '../lifetime_browser_proxy.js';
 export {pageVisibility} from '../page_visibility.js';
 export {AccountManagerBrowserProxy, AccountManagerBrowserProxyImpl} from '../people_page/account_manager_browser_proxy.js';
 export {ProfileInfoBrowserProxy, ProfileInfoBrowserProxyImpl} from '../people_page/profile_info_browser_proxy.js';
 export {PageStatus, StatusAction, StoredAccount, SyncBrowserProxy, SyncBrowserProxyImpl, SyncStatus} from '../people_page/sync_browser_proxy.js';
 export {CrSettingsPrefs} from '../prefs/prefs_types.js';
-export {Route, Router} from '../router.m.js';
+export {Route, Router} from '../router.js';
 export {SearchEngine, SearchEnginesBrowserProxy, SearchEnginesBrowserProxyImpl, SearchEnginesInfo} from '../search_engines_page/search_engines_browser_proxy.js';
-export {getSearchManager, SearchRequest, SearchResult, setSearchManagerForTesting} from '../search_settings.m.js';
+export {getSearchManager, SearchRequest, SearchResult, setSearchManagerForTesting} from '../search_settings.js';
 export {getContactManager, observeContactManager, setContactManagerForTesting} from '../shared/nearby_contact_manager.m.js';
 export {getNearbyShareSettings, observeNearbyShareSettings, setNearbyShareSettingsForTesting} from '../shared/nearby_share_settings.m.js';
 export {NearbySettings, NearbyShareSettingsBehavior} from '../shared/nearby_share_settings_behavior.m.js';

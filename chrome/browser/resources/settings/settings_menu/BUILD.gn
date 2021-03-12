@@ -15,7 +15,7 @@ js_type_check("closure_compile_module") {
 js_library("settings_menu") {
   deps = [
     "..:page_visibility",
-    "..:router.m",
+    "..:router",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
     "//ui/webui/resources/js:assert.m",
   ]

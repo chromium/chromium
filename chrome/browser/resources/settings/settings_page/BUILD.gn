@@ -20,7 +20,7 @@ js_type_check("closure_compile_module") {
 js_library("main_page_behavior") {
   deps = [
     ":settings_section",
-    "..:router.m",
+    "..:router",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
     "//ui/webui/resources/js:assert.m",
     "//ui/webui/resources/js:util.m",
@@ -30,8 +30,8 @@ js_library("main_page_behavior") {
 js_library("settings_animated_pages") {
   deps = [
     ":settings_subpage",
-    "..:router.m",
-    "..:setting_id_param_util.m",
+    "..:router",
+    "..:setting_id_param_util",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
     "//ui/webui/resources/js:assert.m",
     "//ui/webui/resources/js:load_time_data.m",
@@ -47,8 +47,8 @@ js_library("settings_section") {
 
 js_library("settings_subpage") {
   deps = [
-    "..:router.m",
-    "..:setting_id_param_util.m",
+    "..:router",
+    "..:setting_id_param_util",
     "//third_party/polymer/v3_0/components-chromium/iron-resizable-behavior:iron-resizable-behavior",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
     "//ui/webui/resources/cr_elements:find_shortcut_behavior.m",

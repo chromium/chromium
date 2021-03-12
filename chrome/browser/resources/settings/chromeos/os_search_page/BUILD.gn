@@ -19,7 +19,7 @@ js_type_check("closure_compile_module") {
 js_library("os_search_page.m") {
   sources = [ "$root_gen_dir/chrome/browser/resources/settings/chromeos/os_search_page/os_search_page.m.js" ]
   deps = [
-    "//chrome/browser/resources/settings:router.m",
+    "//chrome/browser/resources/settings:router",
     "//chrome/browser/resources/settings/chromeos:deep_linking_behavior.m",
     "//chrome/browser/resources/settings/chromeos:os_route.m",
     "//chrome/browser/resources/settings/chromeos/google_assistant_page:google_assistant_page.m",

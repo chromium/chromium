@@ -17,7 +17,7 @@ js_library("os_settings_menu.m") {
   sources = [ "$root_gen_dir/chrome/browser/resources/settings/chromeos/os_settings_menu/os_settings_menu.m.js" ]
   deps = [
     "..:os_route.m",
-    "../..:router.m",
+    "../..:router",
     "//third_party/polymer/v3_0/components-chromium/iron-collapse:iron-collapse",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
   ]

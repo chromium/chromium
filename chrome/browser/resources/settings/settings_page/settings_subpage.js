@@ -24,8 +24,8 @@ import {IronResizableBehavior} from '//resources/polymer/v3_0/iron-resizable-beh
 import {afterNextRender, html, Polymer} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {loadTimeData} from '../i18n_setup.js';
-import {RouteObserverBehavior, Router} from '../router.m.js';
-import {getSettingIdParameter} from '../setting_id_param_util.m.js';
+import {RouteObserverBehavior, Router} from '../router.js';
+import {getSettingIdParameter} from '../setting_id_param_util.js';
 
 Polymer({
   is: 'settings-subpage',

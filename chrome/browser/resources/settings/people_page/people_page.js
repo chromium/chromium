@@ -37,7 +37,7 @@ import {loadTimeData} from '../i18n_setup.js';
 import {OpenWindowProxyImpl} from '../open_window_proxy.js';
 import {PageVisibility} from '../page_visibility.js';
 import {routes} from '../route.js';
-import {RouteObserverBehavior, Router} from '../router.m.js';
+import {RouteObserverBehavior, Router} from '../router.js';
 
 // <if expr="chromeos">
 import {AccountManagerBrowserProxyImpl} from './account_manager_browser_proxy.js';

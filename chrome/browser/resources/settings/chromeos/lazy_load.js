@@ -54,7 +54,7 @@ import './os_files_page/smb_shares_page.m.js';
 
 export {SmbBrowserProxyImpl, SmbMountResult} from 'chrome://resources/cr_components/chromeos/smb_shares/smb_browser_proxy.m.js';
 export {LanguagesBrowserProxy, LanguagesBrowserProxyImpl} from '../languages_page/languages_browser_proxy.js';
-export {LifetimeBrowserProxyImpl} from '../lifetime_browser_proxy.m.js';
+export {LifetimeBrowserProxyImpl} from '../lifetime_browser_proxy.js';
 export {CrostiniBrowserProxy, CrostiniBrowserProxyImpl} from './crostini_page/crostini_browser_proxy.m.js';
 export {TimeZoneAutoDetectMethod} from './date_time_page/date_time_types.m.js';
 export {TimeZoneBrowserProxyImpl} from './date_time_page/timezone_browser_proxy.m.js';

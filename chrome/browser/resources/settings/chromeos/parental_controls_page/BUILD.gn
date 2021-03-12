@@ -25,7 +25,7 @@ js_library("parental_controls_page.m") {
   sources = [ "$root_gen_dir/chrome/browser/resources/settings/chromeos/parental_controls_page/parental_controls_page.m.js" ]
   deps = [
     ":parental_controls_browser_proxy.m",
-    "../..:router.m",
+    "../..:router",
     "//ui/webui/resources/cr_elements/cr_button:cr_button.m",
     "//ui/webui/resources/js:i18n_behavior.m",
     "//ui/webui/resources/js:web_ui_listener_behavior.m",

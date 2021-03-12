@@ -13,7 +13,7 @@ import 'chrome://resources/cr_elements/cr_dialog/cr_dialog.m.js';
 import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {routes} from '../route.js';
-import {Router} from '../router.m.js';
+import {Router} from '../router.js';
 
 import {ResetBrowserProxyImpl} from './reset_browser_proxy.js';
 

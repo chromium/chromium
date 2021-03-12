@@ -36,7 +36,7 @@ js_library("manage_a11y_page.m") {
   sources = [ "$root_gen_dir/chrome/browser/resources/settings/chromeos/os_a11y_page/manage_a11y_page.m.js" ]
   deps = [
     ":manage_a11y_page_browser_proxy.m",
-    "//chrome/browser/resources/settings:router.m",
+    "//chrome/browser/resources/settings:router",
     "//chrome/browser/resources/settings/chromeos:deep_linking_behavior.m",
     "//chrome/browser/resources/settings/chromeos:os_route.m",
     "//chrome/browser/resources/settings/chromeos:route_origin_behavior.m",
@@ -60,7 +60,7 @@ js_library("os_a11y_page.m") {
   sources = [ "$root_gen_dir/chrome/browser/resources/settings/chromeos/os_a11y_page/os_a11y_page.m.js" ]
   deps = [
     ":os_a11y_page_browser_proxy.m",
-    "//chrome/browser/resources/settings:router.m",
+    "//chrome/browser/resources/settings:router",
     "//chrome/browser/resources/settings/a11y_page:captions_subpage",
     "//chrome/browser/resources/settings/a11y_page:live_caption_section",
     "//chrome/browser/resources/settings/appearance_page:fonts_browser_proxy",
@@ -124,7 +124,7 @@ js_library("switch_access_subpage.m") {
   deps = [
     ":switch_access_constants.m",
     ":switch_access_subpage_browser_proxy.m",
-    "//chrome/browser/resources/settings:router.m",
+    "//chrome/browser/resources/settings:router",
     "//chrome/browser/resources/settings/chromeos:deep_linking_behavior.m",
     "//chrome/browser/resources/settings/chromeos:os_route.m",
     "//chrome/browser/resources/settings/prefs:prefs_behavior",
@@ -146,7 +146,7 @@ js_library("tts_subpage.m") {
   sources = [ "$root_gen_dir/chrome/browser/resources/settings/chromeos/os_a11y_page/tts_subpage.m.js" ]
   deps = [
     ":tts_subpage_browser_proxy.m",
-    "//chrome/browser/resources/settings:router.m",
+    "//chrome/browser/resources/settings:router",
     "//chrome/browser/resources/settings/chromeos:deep_linking_behavior.m",
     "//chrome/browser/resources/settings/chromeos:os_route.m",
     "//chrome/browser/resources/settings/controls:settings_slider",

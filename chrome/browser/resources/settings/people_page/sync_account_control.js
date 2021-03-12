@@ -23,7 +23,7 @@ import {loadTimeData} from '../i18n_setup.js';
 import '../icons.m.js';
 import '../prefs/prefs.js';
 import {PrefsBehavior} from '../prefs/prefs_behavior.js';
-import {Route, Router} from '../router.m.js';
+import {Route, Router} from '../router.js';
 import '../settings_shared_css.m.js';
 
   /** @const {number} */

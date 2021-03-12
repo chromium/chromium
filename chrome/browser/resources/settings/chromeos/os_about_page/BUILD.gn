@@ -38,7 +38,7 @@ js_library("detailed_build_info.m") {
     ":edit_hostname_dialog.m",
     "..:deep_linking_behavior.m",
     "..:os_route.m",
-    "../..:router.m",
+    "../..:router",
     "../../about_page:about_page_browser_proxy",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
     "//ui/webui/resources/cr_elements/policy:cr_policy_indicator_behavior.m",
@@ -72,8 +72,8 @@ js_library("os_about_page.m") {
     "..:deep_linking_behavior.m",
     "..:os_route.m",
     "../..:i18n_setup",
-    "../..:lifetime_browser_proxy.m",
-    "../..:router.m",
+    "../..:lifetime_browser_proxy",
+    "../..:router",
     "../../about_page:about_page_browser_proxy",
     "../os_settings_page:main_page_behavior.m",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
@@ -110,7 +110,7 @@ polymer_modulizer("channel_switcher_dialog") {
   js_file = "channel_switcher_dialog.js"
   html_file = "channel_switcher_dialog.html"
   html_type = "dom-module"
-  migrated_imports = settings_migrated_imports
+  migrated_imports = os_settings_migrated_imports
   namespace_rewrites = os_settings_namespace_rewrites
   auto_imports = os_settings_auto_imports
 }
@@ -119,7 +119,7 @@ polymer_modulizer("detailed_build_info") {
   js_file = "detailed_build_info.js"
   html_file = "detailed_build_info.html"
   html_type = "dom-module"
-  migrated_imports = settings_migrated_imports
+  migrated_imports = os_settings_migrated_imports
   namespace_rewrites = os_settings_namespace_rewrites
   auto_imports = os_settings_auto_imports
 }
@@ -128,7 +128,7 @@ polymer_modulizer("edit_hostname_dialog") {
   js_file = "edit_hostname_dialog.js"
   html_file = "edit_hostname_dialog.html"
   html_type = "dom-module"
-  migrated_imports = settings_migrated_imports
+  migrated_imports = os_settings_migrated_imports
   namespace_rewrites = os_settings_namespace_rewrites
   auto_imports = os_settings_auto_imports
 }
@@ -137,7 +137,7 @@ polymer_modulizer("os_about_page") {
   js_file = "os_about_page.js"
   html_file = "os_about_page.html"
   html_type = "dom-module"
-  migrated_imports = settings_migrated_imports
+  migrated_imports = os_settings_migrated_imports
   namespace_rewrites = os_settings_namespace_rewrites
   auto_imports = os_settings_auto_imports
 }
@@ -146,7 +146,7 @@ polymer_modulizer("update_warning_dialog") {
   js_file = "update_warning_dialog.js"
   html_file = "update_warning_dialog.html"
   html_type = "dom-module"
-  migrated_imports = settings_migrated_imports
+  migrated_imports = os_settings_migrated_imports
   namespace_rewrites = os_settings_namespace_rewrites
   auto_imports = os_settings_auto_imports
 }

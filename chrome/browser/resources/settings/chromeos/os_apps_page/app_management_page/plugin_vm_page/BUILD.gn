@@ -9,6 +9,7 @@ import("../../../os_settings.gni")
 
 js_type_check("closure_compile_module") {
   is_polymer3 = true
+  closure_flags = os_settings_closure_flags
   deps = [
     ":plugin_vm_browser_proxy.m",
     ":plugin_vm_detail_view.m",
@@ -30,7 +31,7 @@ js_library("plugin_vm_detail_view.m") {
     "../:store_client.m",
     "../:util.m",
     "../../..:os_route.m",
-    "../../../..:router.m",
+    "../../../..:router",
     "//ui/webui/resources/js:assert.m",
     "//ui/webui/resources/js:load_time_data.m",
     "//ui/webui/resources/js:web_ui_listener_behavior.m",
@@ -49,7 +50,7 @@ polymer_modulizer("plugin_vm_detail_view") {
   js_file = "plugin_vm_detail_view.js"
   html_file = "plugin_vm_detail_view.html"
   html_type = "dom-module"
-  migrated_imports = settings_migrated_imports
+  migrated_imports = os_settings_migrated_imports
   namespace_rewrites = os_settings_namespace_rewrites
   auto_imports = os_settings_auto_imports
 }

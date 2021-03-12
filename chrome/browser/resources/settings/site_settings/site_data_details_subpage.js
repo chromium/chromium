@@ -15,7 +15,7 @@ import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bun
 import {loadTimeData} from '../i18n_setup.js';
 import {MetricsBrowserProxyImpl, PrivacyElementInteractions} from '../metrics_browser_proxy.js';
 import {routes} from '../route.js';
-import {Route, RouteObserverBehavior, Router} from '../router.m.js';
+import {Route, RouteObserverBehavior, Router} from '../router.js';
 
 import {CookieDataForDisplay, CookieDetails, getCookieData} from './cookie_info.js';
 import {LocalDataBrowserProxy, LocalDataBrowserProxyImpl} from './local_data_browser_proxy.js';

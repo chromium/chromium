@@ -10,7 +10,6 @@ import("//ui/webui/resources/tools/generate_grd.gni")
 import("//ui/webui/resources/tools/js_modulizer.gni")
 import("//ui/webui/webui_features.gni")
 import("../../tools/optimize_webui.gni")
-import("../settings.gni")
 import("./os_settings.gni")
 
 preprocess_folder_v3 = "preprocess_v3"
@@ -206,9 +205,12 @@ preprocess_if_expr("preprocess_v3") {
     "chromeos/os_settings.js",
     "controls/pref_control_behavior.js",
     "controls/settings_boolean_control_behavior.js",
+    "extension_control_browser_proxy.js",
+    "global_scroll_target_behavior.js",
     "i18n_setup.js",
     "languages_page/languages.js",
     "languages_page/languages_browser_proxy.js",
+    "lifetime_browser_proxy.js",
     "page_visibility.js",
     "people_page/account_manager_browser_proxy.js",
     "people_page/profile_info_browser_proxy.js",
@@ -218,7 +220,10 @@ preprocess_if_expr("preprocess_v3") {
     "prefs/prefs_types.js",
     "prefs/pref_util.js",
     "privacy_page/privacy_page_browser_proxy.js",
+    "router.js",
     "search_engines_page/search_engines_browser_proxy.js",
+    "search_settings.js",
+    "setting_id_param_util.js",
   ]
 }
 
@@ -472,19 +477,13 @@ preprocess_if_expr("preprocess_gen_v3") {
     "controls/settings_slider.js",
     "controls/settings_textarea.js",
     "controls/settings_toggle_button.js",
-    "extension_control_browser_proxy.m.js",
-    "global_scroll_target_behavior.m.js",
     "icons.m.js",
-    "lifetime_browser_proxy.m.js",
     "people_page/signout_dialog.js",
     "people_page/sync_account_control.js",
     "people_page/sync_controls.js",
     "people_page/sync_encryption_options.js",
     "people_page/sync_page.js",
     "privacy_page/personalization_options.js",
-    "router.m.js",
-    "search_settings.m.js",
-    "setting_id_param_util.m.js",
     "settings_page/settings_animated_pages.js",
     "settings_page/settings_section.js",
     "settings_page/settings_subpage.js",
@@ -535,7 +534,7 @@ group("closure_compile_module") {
 
 js_type_check("closure_compile_local_module") {
   is_polymer3 = true
-  closure_flags = settings_closure_flags
+  closure_flags = os_settings_closure_flags
   deps = [
     ":lazy_load",
     ":metrics_recorder.m",
@@ -560,8 +559,8 @@ js_library("lazy_load") {
 js_library("deep_linking_behavior.m") {
   sources = [ "$root_gen_dir/chrome/browser/resources/settings/chromeos/deep_linking_behavior.m.js" ]
   deps = [
-    "..:router.m",
-    "..:setting_id_param_util.m",
+    "..:router",
+    "..:setting_id_param_util",
     "//chrome/browser/ui/webui/settings/chromeos/constants:mojom_js_library_for_compile",
     "//ui/webui/resources/js:assert.m",
     "//ui/webui/resources/js:load_time_data.m",
@@ -597,7 +596,7 @@ js_library("os_route.m") {
   ]
   deps = [
     ":os_settings_routes.m",
-    "..:router.m",
+    "..:router",
     "//chrome/browser/ui/webui/settings/chromeos/constants:mojom_js_library_for_compile",
     "//ui/webui/resources/js:cr.m",
     "//ui/webui/resources/js:load_time_data.m",
@@ -612,7 +611,10 @@ js_library("os_settings_icons_css.m") {
 
 js_library("os_settings_routes.m") {
   sources = [ "$root_gen_dir/chrome/browser/resources/settings/chromeos/os_settings_routes.m.js" ]
-  deps = [ "//ui/webui/resources/js:load_time_data.m" ]
+  deps = [
+    "..:router",
+    "//ui/webui/resources/js:load_time_data.m",
+  ]
   extra_deps = [ ":modulize" ]
 }
 
@@ -685,7 +687,6 @@ group("polymer3_elements") {
     ":os_settings_icons_css_module",
 
     # Shared with browser settings
-    "..:modulize",
     "..:settings_shared_css_module",
     "..:settings_vars_css_module",
     "../../settings:settings_page_css_module",

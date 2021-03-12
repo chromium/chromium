@@ -72,7 +72,7 @@ js_library("timezone_subpage.m") {
     ":timezone_browser_proxy.m",
     "..:deep_linking_behavior.m",
     "..:os_settings_routes.m",
-    "../..:router.m",
+    "../..:router",
     "../../prefs:prefs_behavior",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
     "//ui/webui/resources/js:load_time_data.m",

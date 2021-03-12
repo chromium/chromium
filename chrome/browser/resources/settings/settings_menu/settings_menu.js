@@ -21,7 +21,7 @@ import {assert} from 'chrome://resources/js/assert.m.js';
 import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {PageVisibility} from '../page_visibility.js';
-import {Route, RouteObserverBehavior, Router} from '../router.m.js';
+import {Route, RouteObserverBehavior, Router} from '../router.js';
 
 Polymer({
   is: 'settings-menu',

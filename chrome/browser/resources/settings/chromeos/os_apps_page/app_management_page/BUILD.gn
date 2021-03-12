@@ -9,6 +9,7 @@ import("../../os_settings.gni")
 
 js_type_check("closure_compile_module") {
   is_polymer3 = true
+  closure_flags = os_settings_closure_flags
   deps = [
     ":actions.m",
     ":api_listener.m",
@@ -65,7 +66,7 @@ js_library("app_detail_view.m") {
     ":dom_switch.m",
     ":store_client.m",
     "../..:os_route.m",
-    "../../..:router.m",
+    "../../..:router",
     "./plugin_vm_page:plugin_vm_detail_view.m",
     "//ui/webui/resources/js:assert.m",
   ]
@@ -91,6 +92,7 @@ js_library("app_management_page.m") {
     ":main_view.m",
     ":store.m",
     ":store_client.m",
+    "../../..:router",
     "//ui/webui/resources/js/cr/ui:focus_without_ink.m",
   ]
   extra_deps = [ ":app_management_page_module" ]
@@ -167,7 +169,7 @@ js_library("main_view.m") {
     ":store_client.m",
     ":util.m",
     "../..:os_route.m",
-    "../../..:router.m",
+    "../../..:router",
     "//ui/webui/resources/js:assert.m",
     "//ui/webui/resources/js:load_time_data.m",
   ]
@@ -292,7 +294,7 @@ js_library("util.m") {
   sources = [ "$root_gen_dir/chrome/browser/resources/settings/chromeos/os_apps_page/app_management_page/util.m.js" ]
   deps = [
     "../..:os_route.m",
-    "../../..:router.m",
+    "../../..:router",
   ]
   extra_deps = [ ":modulize" ]
 }
@@ -322,7 +324,7 @@ polymer_modulizer("app_detail_view") {
   js_file = "app_detail_view.js"
   html_file = "app_detail_view.html"
   html_type = "dom-module"
-  migrated_imports = settings_migrated_imports
+  migrated_imports = os_settings_migrated_imports
   namespace_rewrites = os_settings_namespace_rewrites
   auto_imports = os_settings_auto_imports
 }
@@ -331,7 +333,7 @@ polymer_modulizer("app_item") {
   js_file = "app_item.js"
   html_file = "app_item.html"
   html_type = "dom-module"
-  migrated_imports = settings_migrated_imports
+  migrated_imports = os_settings_migrated_imports
   namespace_rewrites = os_settings_namespace_rewrites
   auto_imports = os_settings_auto_imports
 }
@@ -340,7 +342,7 @@ polymer_modulizer("app_management_page") {
   js_file = "app_management_page.js"
   html_file = "app_management_page.html"
   html_type = "dom-module"
-  migrated_imports = settings_migrated_imports
+  migrated_imports = os_settings_migrated_imports
   namespace_rewrites = os_settings_namespace_rewrites
   auto_imports = os_settings_auto_imports
 }
@@ -349,7 +351,7 @@ polymer_modulizer("arc_detail_view") {
   js_file = "arc_detail_view.js"
   html_file = "arc_detail_view.html"
   html_type = "dom-module"
-  migrated_imports = settings_migrated_imports
+  migrated_imports = os_settings_migrated_imports
   namespace_rewrites = os_settings_namespace_rewrites
   auto_imports = os_settings_auto_imports
 }
@@ -358,7 +360,7 @@ polymer_modulizer("chrome_app_detail_view") {
   js_file = "chrome_app_detail_view.js"
   html_file = "chrome_app_detail_view.html"
   html_type = "dom-module"
-  migrated_imports = settings_migrated_imports
+  migrated_imports = os_settings_migrated_imports
   namespace_rewrites = os_settings_namespace_rewrites
   auto_imports = os_settings_auto_imports
 }
@@ -367,7 +369,7 @@ polymer_modulizer("dom_switch") {
   js_file = "dom_switch.js"
   html_file = "dom_switch.html"
   html_type = "dom-module"
-  migrated_imports = settings_migrated_imports
+  migrated_imports = os_settings_migrated_imports
   namespace_rewrites = os_settings_namespace_rewrites
   auto_imports = os_settings_auto_imports
 }
@@ -382,7 +384,7 @@ polymer_modulizer("main_view") {
   js_file = "main_view.js"
   html_file = "main_view.html"
   html_type = "dom-module"
-  migrated_imports = settings_migrated_imports
+  migrated_imports = os_settings_migrated_imports
   namespace_rewrites = os_settings_namespace_rewrites
   auto_imports = os_settings_auto_imports
 }
@@ -391,7 +393,7 @@ polymer_modulizer("permission_item") {
   js_file = "permission_item.js"
   html_file = "permission_item.html"
   html_type = "dom-module"
-  migrated_imports = settings_migrated_imports
+  migrated_imports = os_settings_migrated_imports
   namespace_rewrites = os_settings_namespace_rewrites
   auto_imports = os_settings_auto_imports
 }
@@ -400,7 +402,7 @@ polymer_modulizer("pin_to_shelf_item") {
   js_file = "pin_to_shelf_item.js"
   html_file = "pin_to_shelf_item.html"
   html_type = "dom-module"
-  migrated_imports = settings_migrated_imports
+  migrated_imports = os_settings_migrated_imports
   namespace_rewrites = os_settings_namespace_rewrites
   auto_imports = os_settings_auto_imports
 }
@@ -409,7 +411,7 @@ polymer_modulizer("pwa_detail_view") {
   js_file = "pwa_detail_view.js"
   html_file = "pwa_detail_view.html"
   html_type = "dom-module"
-  migrated_imports = settings_migrated_imports
+  migrated_imports = os_settings_migrated_imports
   namespace_rewrites = os_settings_namespace_rewrites
   auto_imports = os_settings_auto_imports
 }
@@ -430,7 +432,7 @@ polymer_modulizer("toggle_row") {
   js_file = "toggle_row.js"
   html_file = "toggle_row.html"
   html_type = "dom-module"
-  migrated_imports = settings_migrated_imports
+  migrated_imports = os_settings_migrated_imports
   namespace_rewrites = os_settings_namespace_rewrites
   auto_imports = os_settings_auto_imports
 }
@@ -439,7 +441,7 @@ polymer_modulizer("uninstall_button") {
   js_file = "uninstall_button.js"
   html_file = "uninstall_button.html"
   html_type = "dom-module"
-  migrated_imports = settings_migrated_imports
+  migrated_imports = os_settings_migrated_imports
   namespace_rewrites = os_settings_namespace_rewrites
   auto_imports = os_settings_auto_imports
 }

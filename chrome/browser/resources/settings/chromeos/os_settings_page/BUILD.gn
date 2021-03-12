@@ -24,8 +24,8 @@ js_library("os_settings_page.m") {
     ":settings_idle_load.m",
     "..:os_page_visibility.m",
     "..:os_route.m",
-    "../..:router.m",
-    "../..:search_settings.m",
+    "../..:router",
+    "../..:search_settings",
     "../../settings_page:settings_section",
     "../bluetooth_page:bluetooth_page.m",
     "../crostini_page:crostini_page.m",
@@ -53,7 +53,7 @@ js_library("os_settings_page.m") {
 js_library("main_page_behavior.m") {
   sources = [ "$root_gen_dir/chrome/browser/resources/settings/chromeos/os_settings_page/main_page_behavior.m.js" ]
   deps = [
-    "../..:router.m",
+    "../..:router",
     "../../settings_page:settings_section",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
     "//ui/webui/resources/js:assert.m",

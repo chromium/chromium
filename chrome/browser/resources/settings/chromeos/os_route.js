@@ -6,7 +6,7 @@
 // #import '../constants/routes.mojom-lite.js';
 
 // #import {OsSettingsRoutes} from './os_settings_routes.m.js';
-// #import {Route, Router} from '../router.m.js';
+// #import {Route, Router} from '../router.js';
 // #import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 
 cr.define('settings', function() {

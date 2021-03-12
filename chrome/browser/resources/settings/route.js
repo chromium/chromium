@@ -5,7 +5,7 @@
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 
 import {pageVisibility} from './page_visibility.js';
-import {Route, Router} from './router.m.js';
+import {Route, Router} from './router.js';
 import {SettingsRoutes} from './settings_routes.js';
 
 /**

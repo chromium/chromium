@@ -139,7 +139,7 @@ js_library("nearby_share_subpage.m") {
     ":types.m",
     "..:deep_linking_behavior.m",
     "..:os_route.m",
-    "../..:router.m",
+    "../..:router",
     "../../prefs:prefs",
     "../../prefs:prefs_behavior",
     "../../prefs:prefs_types",

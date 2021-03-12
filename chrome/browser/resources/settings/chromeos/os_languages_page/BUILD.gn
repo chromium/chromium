@@ -35,7 +35,7 @@ js_library("add_input_methods_dialog.m") {
 js_library("change_device_language_dialog.m") {
   sources = [ "$root_gen_dir/chrome/browser/resources/settings/chromeos/os_languages_page/change_device_language_dialog.m.js" ]
   deps = [
-    "../..:lifetime_browser_proxy.m",
+    "../..:lifetime_browser_proxy",
     "../../languages_page:languages",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
     "//ui/webui/resources/cr_elements:cr_scrollable_behavior.m",
@@ -70,7 +70,7 @@ js_library("input_page.m") {
     "..:deep_linking_behavior.m",
     "..:os_route.m",
     "../..:i18n_setup",
-    "../..:router.m",
+    "../..:router",
     "//ui/webui/resources/js:assert.m",
     "//ui/webui/resources/js:i18n_behavior.m",
     "//ui/webui/resources/js:load_time_data.m",
@@ -108,7 +108,7 @@ js_library("os_edit_dictionary_page.m") {
   sources = [ "$root_gen_dir/chrome/browser/resources/settings/chromeos/os_languages_page/os_edit_dictionary_page.m.js" ]
   deps = [
     "..:os_route.m",
-    "../..:global_scroll_target_behavior.m",
+    "../..:global_scroll_target_behavior",
     "../../languages_page:languages_browser_proxy",
     "//third_party/polymer/v3_0/components-chromium/iron-list:iron-list",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
@@ -127,8 +127,8 @@ js_library("os_languages_page.m") {
     "..:metrics_recorder.m",
     "..:os_route.m",
     "../..:i18n_setup",
-    "../..:lifetime_browser_proxy.m",
-    "../..:router.m",
+    "../..:lifetime_browser_proxy",
+    "../..:router",
     "../localized_link:localized_link.m",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
     "//ui/webui/resources/cr_elements/cr_action_menu:cr_action_menu.m",
@@ -150,7 +150,7 @@ js_library("os_languages_page_v2.m") {
     "..:metrics_recorder.m",
     "..:os_route.m",
     "../..:i18n_setup",
-    "../..:router.m",
+    "../..:router",
     "../localized_link:localized_link.m",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
     "//ui/webui/resources/cr_elements/cr_action_menu:cr_action_menu.m",
@@ -170,7 +170,7 @@ js_library("os_languages_section.m") {
     ":manage_input_methods_page.m",
     ":os_languages_page.m",
     "..:os_route.m",
-    "../..:router.m",
+    "../..:router",
     "../../languages_page:languages",
     "../../settings_page:settings_animated_pages",
     "../../settings_page:settings_subpage",
@@ -187,7 +187,7 @@ js_library("smart_inputs_page.m") {
   deps = [
     "..:deep_linking_behavior.m",
     "..:os_route.m",
-    "../..:router.m",
+    "../..:router",
     "../../prefs:prefs_behavior",
     "//ui/webui/resources/js:load_time_data.m",
   ]
@@ -217,7 +217,7 @@ polymer_modulizer("add_input_methods_dialog") {
   js_file = "add_input_methods_dialog.js"
   html_file = "add_input_methods_dialog.html"
   html_type = "dom-module"
-  migrated_imports = settings_migrated_imports
+  migrated_imports = os_settings_migrated_imports
   namespace_rewrites = os_settings_namespace_rewrites
   auto_imports = os_settings_auto_imports
 }
@@ -226,7 +226,7 @@ polymer_modulizer("change_device_language_dialog") {
   js_file = "change_device_language_dialog.js"
   html_file = "change_device_language_dialog.html"
   html_type = "dom-module"
-  migrated_imports = settings_migrated_imports
+  migrated_imports = os_settings_migrated_imports
   namespace_rewrites = os_settings_namespace_rewrites
   auto_imports = os_settings_auto_imports
 }
@@ -235,7 +235,7 @@ polymer_modulizer("manage_input_methods_page") {
   js_file = "manage_input_methods_page.js"
   html_file = "manage_input_methods_page.html"
   html_type = "dom-module"
-  migrated_imports = settings_migrated_imports
+  migrated_imports = os_settings_migrated_imports
   namespace_rewrites = os_settings_namespace_rewrites
   auto_imports = os_settings_auto_imports
 }
@@ -244,7 +244,7 @@ polymer_modulizer("os_add_languages_dialog") {
   js_file = "os_add_languages_dialog.js"
   html_file = "os_add_languages_dialog.html"
   html_type = "dom-module"
-  migrated_imports = settings_migrated_imports
+  migrated_imports = os_settings_migrated_imports
   namespace_rewrites = os_settings_namespace_rewrites
   auto_imports = os_settings_auto_imports
 }
@@ -253,7 +253,7 @@ polymer_modulizer("os_edit_dictionary_page") {
   js_file = "os_edit_dictionary_page.js"
   html_file = "os_edit_dictionary_page.html"
   html_type = "dom-module"
-  migrated_imports = settings_migrated_imports
+  migrated_imports = os_settings_migrated_imports
   namespace_rewrites = os_settings_namespace_rewrites
   auto_imports = os_settings_auto_imports
 }
@@ -262,7 +262,7 @@ polymer_modulizer("os_languages_page") {
   js_file = "os_languages_page.js"
   html_file = "os_languages_page.html"
   html_type = "dom-module"
-  migrated_imports = settings_migrated_imports
+  migrated_imports = os_settings_migrated_imports
   namespace_rewrites = os_settings_namespace_rewrites
   auto_imports = os_settings_auto_imports
 }
@@ -271,7 +271,7 @@ polymer_modulizer("os_languages_page_v2") {
   js_file = "os_languages_page_v2.js"
   html_file = "os_languages_page_v2.html"
   html_type = "dom-module"
-  migrated_imports = settings_migrated_imports
+  migrated_imports = os_settings_migrated_imports
   namespace_rewrites = os_settings_namespace_rewrites
   auto_imports = os_settings_auto_imports
 }
@@ -280,7 +280,7 @@ polymer_modulizer("os_languages_section") {
   js_file = "os_languages_section.js"
   html_file = "os_languages_section.html"
   html_type = "dom-module"
-  migrated_imports = settings_migrated_imports
+  migrated_imports = os_settings_migrated_imports
   namespace_rewrites = os_settings_namespace_rewrites
   auto_imports = os_settings_auto_imports
 }
@@ -289,7 +289,7 @@ polymer_modulizer("input_method_options_page") {
   js_file = "input_method_options_page.js"
   html_file = "input_method_options_page.html"
   html_type = "dom-module"
-  migrated_imports = settings_migrated_imports
+  migrated_imports = os_settings_migrated_imports
   namespace_rewrites = os_settings_namespace_rewrites
   auto_imports = os_settings_auto_imports
 }
@@ -298,7 +298,7 @@ polymer_modulizer("input_page") {
   js_file = "input_page.js"
   html_file = "input_page.html"
   html_type = "dom-module"
-  migrated_imports = settings_migrated_imports
+  migrated_imports = os_settings_migrated_imports
   namespace_rewrites = os_settings_namespace_rewrites
   auto_imports = os_settings_auto_imports
 }
@@ -319,7 +319,7 @@ polymer_modulizer("smart_inputs_page") {
   js_file = "smart_inputs_page.js"
   html_file = "smart_inputs_page.html"
   html_type = "dom-module"
-  migrated_imports = settings_migrated_imports
+  migrated_imports = os_settings_migrated_imports
   namespace_rewrites = os_settings_namespace_rewrites
   auto_imports = os_settings_auto_imports
 }

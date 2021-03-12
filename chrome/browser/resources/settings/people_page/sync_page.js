@@ -24,7 +24,7 @@ import './sync_encryption_options.js';
 import {SyncBrowserProxy, SyncBrowserProxyImpl, PageStatus, StatusAction, SyncStatus, SyncPrefs} from './sync_browser_proxy.js';
 import {loadTimeData} from '../i18n_setup.js';
 import '../privacy_page/personalization_options.js';
-import {Route, Router, RouteObserverBehavior} from '../router.m.js';
+import {Route, Router, RouteObserverBehavior} from '../router.js';
 import '../settings_shared_css.m.js';
 import '../settings_vars_css.m.js';
 

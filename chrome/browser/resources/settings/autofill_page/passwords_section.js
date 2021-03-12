@@ -31,7 +31,7 @@ import 'chrome://resources/polymer/v3_0/iron-list/iron-list.js';
 
 import '../controls/extension_controlled_indicator.js';
 import '../controls/settings_toggle_button.js';
-import {GlobalScrollTargetBehavior} from '../global_scroll_target_behavior.m.js';
+import {GlobalScrollTargetBehavior} from '../global_scroll_target_behavior.js';
 import {loadTimeData} from '../i18n_setup.js';
 import {SyncBrowserProxyImpl, SyncPrefs, SyncStatus} from '../people_page/sync_browser_proxy.js';
 import '../prefs/prefs.js';
@@ -40,7 +40,7 @@ import {routes} from '../route.js';
 import {MergeExceptionsStoreCopiesBehavior} from './merge_exceptions_store_copies_behavior.js';
 import {MergePasswordsStoreCopiesBehavior} from './merge_passwords_store_copies_behavior.js';
 import {MultiStorePasswordUiEntry} from './multi_store_password_ui_entry.js';
-import {Router} from '../router.m.js';
+import {Router} from '../router.js';
 import '../settings_shared_css.m.js';
 import '../site_favicon.js';
 import {PasswordCheckBehavior} from './password_check_behavior.js';

@@ -18,7 +18,7 @@ import '../settings_shared_css.m.js';
 
 import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {LifetimeBrowserProxyImpl} from '../lifetime_browser_proxy.m.js';
+import {LifetimeBrowserProxyImpl} from '../lifetime_browser_proxy.js';
 
 import {SystemPageBrowserProxyImpl} from './system_page_browser_proxy.js';
 

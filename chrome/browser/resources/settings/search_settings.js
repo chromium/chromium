@@ -3,15 +3,14 @@
 // found in the LICENSE file.
 
 // clang-format off
-// #import {assert} from 'chrome://resources/js/assert.m.js';
-// #import {createEmptySearchBubble, findAndRemoveHighlights, highlight, removeHighlights, stripDiacritics} from 'chrome://resources/js/search_highlight_utils.m.js';
-// #import {findAncestor} from 'chrome://resources/js/util.m.js';
-// #import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
-// #import {DomIf} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-// #import {PromiseResolver} from 'chrome://resources/js/promise_resolver.m.js';
+import {assert} from 'chrome://resources/js/assert.m.js';
+import {createEmptySearchBubble, findAndRemoveHighlights, highlight, removeHighlights, stripDiacritics} from 'chrome://resources/js/search_highlight_utils.m.js';
+import {findAncestor} from 'chrome://resources/js/util.m.js';
+import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
+import {DomIf} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {PromiseResolver} from 'chrome://resources/js/promise_resolver.m.js';
 // clang-format on
 
-cr.define('settings', function() {
   /**
    * A data structure used by callers to combine the results of multiple search
    * requests.
@@ -22,7 +21,7 @@ cr.define('settings', function() {
    *   wasClearSearch: Boolean,
    * }}
    */
-  /* #export */ let SearchResult;
+  export let SearchResult;
 
   /**
    * A CSS attribute indicating that a node should be ignored during searching.
@@ -59,7 +58,7 @@ cr.define('settings', function() {
    * ensures that <settings-section> instances become visible if any matches
    * occurred under their subtree.
    *
-   * @param {!settings.SearchRequest} request
+   * @param {!SearchRequest} request
    * @param {!Node} root The root of the sub-tree to be searched
    * @return {boolean} Whether or not matches were found.
    * @private
@@ -105,7 +104,7 @@ cr.define('settings', function() {
         }
 
         const strippedText =
-            cr.search_highlight_utils.stripDiacritics(textContent);
+            stripDiacritics(textContent);
         const ranges = [];
         for (let match; match = request.regExp.exec(strippedText);) {
           ranges.push({start: match.index, length: match[0].length});
@@ -134,7 +133,7 @@ cr.define('settings', function() {
                 /*horizontallyCenter=*/ true);
           } else {
             request.addTextObserver(node);
-            highlights.push(cr.search_highlight_utils.highlight(node, ranges));
+            highlights.push(highlight(node, ranges));
           }
         }
 
@@ -208,7 +207,7 @@ cr.define('settings', function() {
    * @param {boolean} horizontallyCenter
    */
   function showBubble_(control, numResults, bubbles, horizontallyCenter) {
-    const bubble = cr.search_highlight_utils.createEmptySearchBubble(
+    const bubble = createEmptySearchBubble(
         control, horizontallyCenter);
     const numHits = numResults + (bubbles.get(bubble) || 0);
     bubbles.set(bubble, numHits);
@@ -220,11 +219,11 @@ cr.define('settings', function() {
   /** @abstract */
   class Task {
     /**
-     * @param {!settings.SearchRequest} request
+     * @param {!SearchRequest} request
      * @param {!Node} node
      */
     constructor(request, node) {
-      /** @protected {!settings.SearchRequest} */
+      /** @protected {!SearchRequest} */
       this.request = request;
 
       /** @protected {!Node} */
@@ -245,7 +244,7 @@ cr.define('settings', function() {
      * SearchAndHighlightTask is posted for the newly rendered subtree, once
      * rendering is done.
      *
-     * @param {!settings.SearchRequest} request
+     * @param {!SearchRequest} request
      * @param {!Node} node
      */
     constructor(request, node) {
@@ -261,7 +260,7 @@ cr.define('settings', function() {
             @type {!{_contentForTemplate:
                 function(!HTMLTemplateElement):!HTMLElement}}
           */
-          (Polymer.DomIf)
+          (DomIf)
               ._contentForTemplate(
                   /** @type {!HTMLTemplateElement} */ (
                       this.node.firstElementChild));
@@ -287,7 +286,7 @@ cr.define('settings', function() {
 
   class SearchAndHighlightTask extends Task {
     /**
-     * @param {!settings.SearchRequest} request
+     * @param {!SearchRequest} request
      * @param {!Node} node
      */
     constructor(request, node) {
@@ -304,7 +303,7 @@ cr.define('settings', function() {
 
   class TopLevelSearchTask extends Task {
     /**
-     * @param {!settings.SearchRequest} request
+     * @param {!SearchRequest} request
      * @param {!Node} page
      */
     constructor(request, page) {
@@ -337,9 +336,9 @@ cr.define('settings', function() {
   }
 
   class TaskQueue {
-    /** @param {!settings.SearchRequest} request */
+    /** @param {!SearchRequest} request */
     constructor(request) {
-      /** @private {!settings.SearchRequest} */
+      /** @private {!SearchRequest} */
       this.request_ = request;
 
       /**
@@ -431,7 +430,7 @@ cr.define('settings', function() {
     }
   }
 
-  /* #export */ class SearchRequest {
+  export class SearchRequest {
     /**
      * @param {string} rawQuery
      * @param {!Element} root
@@ -487,7 +486,7 @@ cr.define('settings', function() {
     }
 
     removeAllHighlightsAndBubbles() {
-      cr.search_highlight_utils.removeHighlights(this.highlights_);
+      removeHighlights(this.highlights_);
       this.bubbles.forEach((count, bubble) => bubble.remove());
       this.highlights_ = [];
       this.bubbles.clear();
@@ -502,7 +501,7 @@ cr.define('settings', function() {
         if (oldValue !== newValue) {
           observer.disconnect();
           this.textObservers_.delete(observer);
-          cr.search_highlight_utils.findAndRemoveHighlights(originalParentNode);
+          findAndRemoveHighlights(originalParentNode);
         }
       });
       observer.observe(
@@ -527,7 +526,7 @@ cr.define('settings', function() {
       // Generate search text by escaping any characters that would be
       // problematic for regular expressions.
       const strippedQuery =
-          cr.search_highlight_utils.stripDiacritics(this.rawQuery_.trim());
+          stripDiacritics(this.rawQuery_.trim());
       const sanitizedQuery = strippedQuery.replace(SANITIZE_REGEX, '\\$&');
       if (sanitizedQuery.length > 0) {
         regExp = new RegExp(`(${sanitizedQuery})`, 'ig');
@@ -566,7 +565,7 @@ cr.define('settings', function() {
     /**
      * @param {string} text The text to search for.
      * @param {!Element} page
-     * @return {!Promise<!settings.SearchRequest>} A signal indicating that
+     * @return {!Promise<!SearchRequest>} A signal indicating that
      *     searching finished.
      */
     search(text, page) {}
@@ -575,10 +574,10 @@ cr.define('settings', function() {
   /** @implements {SearchManager} */
   class SearchManagerImpl {
     constructor() {
-      /** @private {!Set<!settings.SearchRequest>} */
+      /** @private {!Set<!SearchRequest>} */
       this.activeRequests_ = new Set();
 
-      /** @private {!Set<!settings.SearchRequest>} */
+      /** @private {!Set<!SearchRequest>} */
       this.completedRequests_ = new Set();
 
       /** @private {?string} */
@@ -620,7 +619,7 @@ cr.define('settings', function() {
   let instance = null;
 
   /** @return {!SearchManager} */
-  /* #export */ function getSearchManager() {
+  export function getSearchManager() {
     if (instance === null) {
       instance = new SearchManagerImpl();
     }
@@ -631,15 +630,7 @@ cr.define('settings', function() {
    * Sets the SearchManager singleton instance, useful for testing.
    * @param {!SearchManager} searchManager
    */
-  /* #export */ function setSearchManagerForTesting(searchManager) {
+  export function setSearchManagerForTesting(searchManager) {
     instance = searchManager;
   }
 
-  // #cr_define_end
-  return {
-    getSearchManager,
-    setSearchManagerForTesting,
-    SearchRequest,
-    SearchResult,
-  };
-});

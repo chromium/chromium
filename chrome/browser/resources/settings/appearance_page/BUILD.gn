@@ -46,7 +46,7 @@ js_library("appearance_page") {
     ":appearance_browser_proxy",
     "..:page_visibility",
     "..:route",
-    "..:router.m",
+    "..:router",
     "../controls:settings_dropdown_menu",
     "../settings_page:settings_animated_pages",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",

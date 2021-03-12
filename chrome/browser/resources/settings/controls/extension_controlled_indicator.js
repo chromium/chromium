@@ -10,7 +10,7 @@ import {assert} from '//resources/js/assert.m.js';
 import {I18nBehavior} from '//resources/js/i18n_behavior.m.js';
 import {html, Polymer} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {ExtensionControlBrowserProxyImpl} from '../extension_control_browser_proxy.m.js';
+import {ExtensionControlBrowserProxyImpl} from '../extension_control_browser_proxy.js';
 
 Polymer({
   is: 'extension-controlled-indicator',

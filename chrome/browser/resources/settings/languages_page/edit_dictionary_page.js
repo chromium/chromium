@@ -19,7 +19,7 @@ import '../settings_vars_css.m.js';
 
 import {flush, html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {GlobalScrollTargetBehavior} from '../global_scroll_target_behavior.m.js';
+import {GlobalScrollTargetBehavior} from '../global_scroll_target_behavior.js';
 import {loadTimeData} from '../i18n_setup.js';
 import {PrefsBehavior} from '../prefs/prefs_behavior.js';
 import {routes} from '../route.js';

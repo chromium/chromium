@@ -152,6 +152,16 @@ os_settings_namespace_rewrites = settings_namespace_rewrites +
                                    "settings.recordNavigation|recordNavigation",
                                  ]
 
+settings_auto_imports = [
+  "chrome/browser/resources/settings/controls/pref_control_behavior.html|PrefControlBehavior",
+  "chrome/browser/resources/settings/controls/settings_boolean_control_behavior.html|SettingsBooleanControlBehavior",
+  "chrome/browser/resources/settings/extension_control_browser_proxy.html|ExtensionControlBrowserProxyImpl,ExtensionControlBrowserProxy",
+  "chrome/browser/resources/settings/i18n_setup.html|loadTimeData",
+  "chrome/browser/resources/settings/prefs/prefs_behavior.html|PrefsBehavior",
+  "chrome/browser/resources/settings/prefs/prefs_types.html|CrSettingsPrefs",
+  "chrome/browser/resources/settings/router.html|Router,Route,RouteObserverBehavior",
+]
+
 os_settings_auto_imports = settings_auto_imports +
                            cr_components_chromeos_auto_imports +
                            cr_elements_chromeos_auto_imports + [
@@ -243,4 +253,47 @@ os_settings_auto_imports = settings_auto_imports +
 
 os_settings_closure_flags = settings_closure_flags
 
-os_settings_migrated_imports = settings_migrated_imports
+os_settings_migrated_imports = [
+  "chrome/browser/resources/settings/a11y_page/captions_subpage.html",
+  "chrome/browser/resources/settings/about_page/about_page_browser_proxy.html",
+  "chrome/browser/resources/settings/appearance_page/fonts_browser_proxy.html",
+  "chrome/browser/resources/settings/controls/controlled_button.html",
+  "chrome/browser/resources/settings/controls/controlled_radio_button.html",
+  "chrome/browser/resources/settings/controls/extension_controlled_indicator.html",
+  "chrome/browser/resources/settings/controls/password_prompt_dialog.html",
+  "chrome/browser/resources/settings/controls/pref_control_behavior.html",
+  "chrome/browser/resources/settings/controls/settings_boolean_control_behavior.html",
+  "chrome/browser/resources/settings/controls/settings_dropdown_menu.html",
+  "chrome/browser/resources/settings/controls/settings_radio_group.html",
+  "chrome/browser/resources/settings/controls/settings_slider.html",
+  "chrome/browser/resources/settings/controls/settings_textarea.html",
+  "chrome/browser/resources/settings/controls/settings_toggle_button.html",
+  "chrome/browser/resources/settings/ensure_lazy_loaded.html",
+  "chrome/browser/resources/settings/extension_control_browser_proxy.html",
+  "chrome/browser/resources/settings/global_scroll_target_behavior.html",
+  "chrome/browser/resources/settings/i18n_setup.html",
+  "chrome/browser/resources/settings/languages_page/languages_browser_proxy.html",
+  "chrome/browser/resources/settings/languages_page/languages.html",
+  "chrome/browser/resources/settings/lifetime_browser_proxy.html",
+  "chrome/browser/resources/settings/people_page/account_manager_browser_proxy.html",
+  "chrome/browser/resources/settings/people_page/profile_info_browser_proxy.html",
+  "chrome/browser/resources/settings/people_page/signout_dialog.html",
+  "chrome/browser/resources/settings/people_page/sync_browser_proxy.html",
+  "chrome/browser/resources/settings/people_page/sync_controls.html",
+  "chrome/browser/resources/settings/people_page/sync_page.html",
+  "chrome/browser/resources/settings/prefs/prefs_behavior.html",
+  "chrome/browser/resources/settings/prefs/prefs.html",
+  "chrome/browser/resources/settings/prefs/prefs_types.html",
+  "chrome/browser/resources/settings/prefs/pref_util.html",
+  "chrome/browser/resources/settings/privacy_page/personalization_options.html",
+  "chrome/browser/resources/settings/router.html",
+  "chrome/browser/resources/settings/search_engines_page/search_engines_browser_proxy.html",
+  "chrome/browser/resources/settings/search_settings.html",
+  "chrome/browser/resources/settings/setting_id_param_util.html",
+  "chrome/browser/resources/settings/settings_main/settings_main.html",
+  "chrome/browser/resources/settings/settings_menu/settings_menu.html",
+  "chrome/browser/resources/settings/settings_page/settings_animated_pages.html",
+  "chrome/browser/resources/settings/settings_page/settings_section.html",
+  "chrome/browser/resources/settings/settings_page/settings_subpage.html",
+  "ui/webui/resources/html/plural_string_proxy.html",
+]

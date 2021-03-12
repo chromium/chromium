@@ -15,7 +15,7 @@ import {WebUIListenerBehavior} from 'chrome://resources/js/web_ui_listener_behav
 import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {routes} from '../route.js';
-import {Route, RouteObserverBehavior, Router} from '../router.m.js';
+import {Route, RouteObserverBehavior, Router} from '../router.js';
 import {AllSitesAction2, ContentSetting, ContentSettingsTypes, SiteSettingSource} from '../site_settings/constants.js';
 import {SiteSettingsBehavior} from '../site_settings/site_settings_behavior.js';
 import {RawSiteException, RecentSitePermissions} from '../site_settings/site_settings_prefs_browser_proxy.js';

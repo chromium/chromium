@@ -7,8 +7,8 @@
  * from the Url parameter.
  */
 
-// #import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
-// #import {Router} from './router.m.js';
+import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
+import {Router} from './router.js';
 
 /** @type {string} */
 const SETTING_ID_URL_PARAM_NAME = 'settingId';
@@ -18,13 +18,13 @@ const SETTING_ID_URL_PARAM_NAME = 'settingId';
  * setting ID is unavailable.
  * @return {?string}
  */
-/* #export */ function getSettingIdParameter() {
+export function getSettingIdParameter() {
   // This flag must be enabled for the setting ID to be available.
   if (!loadTimeData.valueExists('isDeepLinkingEnabled') ||
       !loadTimeData.getBoolean('isDeepLinkingEnabled')) {
     return null;
   }
 
-  return settings.Router.getInstance().getQueryParameters().get(
+  return Router.getInstance().getQueryParameters().get(
       SETTING_ID_URL_PARAM_NAME);
 }

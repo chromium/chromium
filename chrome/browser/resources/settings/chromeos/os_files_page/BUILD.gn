@@ -20,7 +20,7 @@ js_library("os_files_page.m") {
   deps = [
     "..:deep_linking_behavior.m",
     "..:os_route.m",
-    "../..:router.m",
+    "../..:router",
   ]
   extra_deps = [ ":os_files_page_module" ]
 }
@@ -29,7 +29,7 @@ js_library("smb_shares_page.m") {
   sources = [ "$root_gen_dir/chrome/browser/resources/settings/chromeos/os_files_page/smb_shares_page.m.js" ]
   deps = [
     "..:os_route.m",
-    "../..:router.m",
+    "../..:router",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
   ]
   extra_deps = [ ":smb_shares_page_module" ]

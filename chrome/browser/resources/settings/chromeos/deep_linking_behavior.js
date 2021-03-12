@@ -14,9 +14,9 @@
 
 // #import {afterNextRender, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 // #import {assert} from 'chrome://resources/js/assert.m.js';
-// #import {getSettingIdParameter} from '../setting_id_param_util.m.js';
+// #import {getSettingIdParameter} from '../setting_id_param_util.js';
 // #import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
-// #import {Router} from '../router.m.js';
+// #import {Router} from '../router.js';
 // clang-format on
 
 /** @type {string} */

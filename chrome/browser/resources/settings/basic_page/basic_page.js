@@ -39,8 +39,8 @@ import {PageVisibility} from '../page_visibility.js';
 import {PrefsBehavior} from '../prefs/prefs_behavior.js';
 // </if>
 import {routes} from '../route.js';
-import {Route, RouteObserverBehavior, Router} from '../router.m.js';
-import {getSearchManager, SearchResult} from '../search_settings.m.js';
+import {Route, RouteObserverBehavior, Router} from '../router.js';
+import {getSearchManager, SearchResult} from '../search_settings.js';
 import {MainPageBehavior} from '../settings_page/main_page_behavior.js';
 
 // <if expr="chromeos or lacros">

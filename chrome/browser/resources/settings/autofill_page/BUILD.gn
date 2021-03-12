@@ -62,7 +62,7 @@ js_library("autofill_page") {
     ":password_check_behavior",
     "..:open_window_proxy",
     "..:route",
-    "..:router.m",
+    "..:router",
     "../prefs:prefs_behavior",
   ]
   externs_list = [
@@ -298,7 +298,7 @@ js_library("passwords_section") {
     ":password_list_item",
     ":password_manager_proxy",
     ":passwords_list_handler",
-    "..:global_scroll_target_behavior.m",
+    "..:global_scroll_target_behavior",
     "..:route",
     "../people_page:profile_info_browser_proxy",
     "../people_page:sync_browser_proxy",

@@ -24,10 +24,10 @@ import {I18nBehavior} from 'chrome://resources/js/i18n_behavior.m.js';
 import {WebUIListenerBehavior} from 'chrome://resources/js/web_ui_listener_behavior.m.js';
 import {afterNextRender, html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {GlobalScrollTargetBehavior, GlobalScrollTargetBehaviorImpl} from '../global_scroll_target_behavior.m.js';
+import {GlobalScrollTargetBehavior, GlobalScrollTargetBehaviorImpl} from '../global_scroll_target_behavior.js';
 import {loadTimeData} from '../i18n_setup.js';
 import {routes} from '../route.js';
-import {Route, RouteObserverBehavior, Router} from '../router.m.js';
+import {Route, RouteObserverBehavior, Router} from '../router.js';
 
 import {ALL_SITES_DIALOG, AllSitesAction2, ContentSetting, ContentSettingsTypes, SortMethod} from './constants.js';
 import {LocalDataBrowserProxy, LocalDataBrowserProxyImpl} from './local_data_browser_proxy.js';

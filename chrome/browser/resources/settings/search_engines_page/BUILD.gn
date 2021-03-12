@@ -22,7 +22,7 @@ js_type_check("closure_compile_module") {
 js_library("omnibox_extension_entry") {
   deps = [
     ":search_engines_browser_proxy",
-    "..:extension_control_browser_proxy.m",
+    "..:extension_control_browser_proxy",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
     "//ui/webui/resources/cr_elements/cr_action_menu:cr_action_menu.m",
     "//ui/webui/resources/js:assert.m",
@@ -64,7 +64,7 @@ js_library("search_engines_list") {
 js_library("search_engines_page") {
   deps = [
     ":search_engines_browser_proxy",
-    "..:global_scroll_target_behavior.m",
+    "..:global_scroll_target_behavior",
     "..:settings_routes",
     "//third_party/polymer/v3_0/components-chromium/iron-list",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",

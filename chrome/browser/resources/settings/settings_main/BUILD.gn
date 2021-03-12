@@ -16,8 +16,8 @@ js_library("settings_main") {
   deps = [
     "..:page_visibility",
     "..:route",
-    "..:router.m",
-    "..:search_settings.m",
+    "..:router",
+    "..:search_settings",
     "../about_page:about_page",
     "../about_page:about_page_browser_proxy",
     "../basic_page:basic_page",
