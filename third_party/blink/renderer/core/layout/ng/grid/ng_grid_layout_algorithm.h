@@ -339,6 +339,10 @@ class CORE_EXPORT NGGridLayoutAlgorithm
 
   GridTrackSizingDirection AutoFlowDirection() const;
 
+  NGGridData::TrackCollectionGeometry ConvertSetGeometry(
+      const SetGeometry& set_geometry,
+      const NGGridLayoutAlgorithmTrackCollection& track_collection) const;
+
   LogicalSize border_box_size_;
 
   LogicalSize grid_available_size_;

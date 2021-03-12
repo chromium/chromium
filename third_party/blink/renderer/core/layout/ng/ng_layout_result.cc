@@ -110,6 +110,8 @@ NGLayoutResult::NGLayoutResult(
     EnsureRareData()->table_column_count_ = *builder->table_column_count_;
   if (builder->math_data_.has_value())
     EnsureRareData()->math_layout_data_ = builder->math_data_;
+  if (builder->grid_data_)
+    EnsureRareData()->grid_layout_data_ = std::move(builder->grid_data_);
 }
 
 NGLayoutResult::NGLayoutResult(

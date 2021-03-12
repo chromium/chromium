@@ -341,6 +341,7 @@ class CORE_EXPORT NGGridLayoutAlgorithmTrackCollection
 
   GridTrackSizingDirection Direction() const { return direction_; }
   bool IsForColumns() const { return direction_ == kForColumns; }
+  const Vector<Range>& Ranges() const { return ranges_; }
 
  protected:
   // NGGridTrackCollectionBase overrides.

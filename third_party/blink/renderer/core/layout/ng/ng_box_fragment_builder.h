@@ -526,6 +526,10 @@ class CORE_EXPORT NGBoxFragmentBuilder final
     table_cell_column_index_ = table_cell_column_index;
   }
 
+  void TransferGridData(std::unique_ptr<NGGridData> grid_data) {
+    grid_data_ = std::move(grid_data);
+  }
+
   // The |NGFragmentItemsBuilder| for the inline formatting context of this box.
   NGFragmentItemsBuilder* ItemsBuilder() { return items_builder_; }
   void SetItemsBuilder(NGFragmentItemsBuilder* builder) {
@@ -637,6 +641,9 @@ class CORE_EXPORT NGBoxFragmentBuilder final
 
   // Table cell specific types.
   base::Optional<wtf_size_t> table_cell_column_index_;
+
+  // Grid specific types.
+  std::unique_ptr<NGGridData> grid_data_;
 
   LogicalBoxSides sides_to_include_;
 

@@ -7,11 +7,14 @@
 
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/layout/layout_block.h"
+#include "third_party/blink/renderer/core/layout/ng/grid/layout_ng_grid_interface.h"
+#include "third_party/blink/renderer/core/layout/ng/grid/ng_grid_data.h"
 #include "third_party/blink/renderer/core/layout/ng/layout_ng_mixin.h"
 
 namespace blink {
 
-class CORE_EXPORT LayoutNGGrid : public LayoutNGMixin<LayoutBlock> {
+class CORE_EXPORT LayoutNGGrid : public LayoutNGMixin<LayoutBlock>,
+                                 public LayoutNGGridInterface {
  public:
   explicit LayoutNGGrid(Element*);
 
@@ -19,11 +22,35 @@ class CORE_EXPORT LayoutNGGrid : public LayoutNGMixin<LayoutBlock> {
 
   const char* GetName() const override { return "LayoutNGGrid"; }
 
+  const LayoutNGGridInterface* ToLayoutNGGridInterface() const final;
+
+  size_t ExplicitGridStartForDirection(
+      GridTrackSizingDirection direction) const final;
+  size_t ExplicitGridEndForDirection(
+      GridTrackSizingDirection direction) const final;
+  size_t AutoRepeatCountForDirection(
+      GridTrackSizingDirection direction) const final;
+  LayoutUnit GridGap(GridTrackSizingDirection) const final;
+  LayoutUnit GridItemOffset(GridTrackSizingDirection) const final;
+  Vector<LayoutUnit> TrackSizesForComputedStyle(
+      GridTrackSizingDirection direction) const final;
+  Vector<LayoutUnit> RowPositions() const final;
+  Vector<LayoutUnit> ColumnPositions() const final;
+
  protected:
   bool IsOfType(LayoutObjectType type) const override {
     return type == kLayoutObjectNGGrid ||
            LayoutNGMixin<LayoutBlock>::IsOfType(type);
   }
+
+ private:
+  const NGGridData* GetGridData() const;
+  Vector<LayoutUnit> ComputeTrackSizesInRange(
+      GridTrackSizingDirection direction,
+      const NGGridData::RangeData range,
+      LayoutUnit gutter_size) const;
+  Vector<LayoutUnit> ComputeExpandedPositions(
+      GridTrackSizingDirection direction) const;
 };
 
 }  // namespace blink

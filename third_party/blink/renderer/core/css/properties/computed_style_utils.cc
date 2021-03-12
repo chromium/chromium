@@ -40,6 +40,7 @@
 #include "third_party/blink/renderer/core/layout/layout_block.h"
 #include "third_party/blink/renderer/core/layout/layout_box.h"
 #include "third_party/blink/renderer/core/layout/layout_grid.h"
+#include "third_party/blink/renderer/core/layout/ng/grid/layout_ng_grid_interface.h"
 #include "third_party/blink/renderer/core/layout/svg/transform_helper.h"
 #include "third_party/blink/renderer/core/style/computed_style_constants.h"
 #include "third_party/blink/renderer/core/style/style_svg_resource.h"
@@ -1341,8 +1342,8 @@ CSSValue* ComputedStyleUtils::ValueForGridTrackList(
   const Vector<GridTrackSize>& auto_repeat_track_sizes =
       is_row_axis ? style.GridAutoRepeatColumns() : style.GridAutoRepeatRows();
 
-  // TODO(crbug.com/1045599): Implement similar logic for GridNG.
-  bool is_layout_grid = layout_object && layout_object->IsLayoutGrid();
+  bool is_layout_grid =
+      layout_object && layout_object->IsLayoutGridIncludingNG();
 
   // Handle the 'none' case.
   bool track_list_is_empty =
@@ -1351,8 +1352,10 @@ CSSValue* ComputedStyleUtils::ValueForGridTrackList(
     // For grids we should consider every listed track, whether implicitly or
     // explicitly created. Empty grids have a sole grid line per axis.
     const Vector<LayoutUnit> positions =
-        is_row_axis ? To<LayoutGrid>(layout_object)->ColumnPositions()
-                    : To<LayoutGrid>(layout_object)->RowPositions();
+        is_row_axis
+            ? ToInterface<LayoutNGGridInterface>(layout_object)
+                  ->ColumnPositions()
+            : ToInterface<LayoutNGGridInterface>(layout_object)->RowPositions();
     track_list_is_empty = positions.size() == 1;
   }
 
@@ -1364,7 +1367,7 @@ CSSValue* ComputedStyleUtils::ValueForGridTrackList(
   // If the element is a grid container, the resolved value is the used value,
   // specifying track sizes in pixels and expanding the repeat() notation.
   if (is_layout_grid) {
-    const auto* grid = To<LayoutGrid>(layout_object);
+    const auto* grid = ToInterface<LayoutNGGridInterface>(layout_object);
     OrderedNamedLinesCollectorInGridLayout collector(
         style, is_row_axis, grid->AutoRepeatCountForDirection(direction),
         auto_repeat_track_sizes.size());

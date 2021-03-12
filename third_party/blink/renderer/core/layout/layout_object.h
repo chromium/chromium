@@ -81,6 +81,7 @@ class LayoutBlockFlow;
 class LayoutFlowThread;
 class LayoutGeometryMap;
 class LayoutMultiColumnSpannerPlaceholder;
+class LayoutNGGridInterface;
 class LayoutNGTableInterface;
 class LayoutNGTableRowInterface;
 class LayoutNGTableSectionInterface;
@@ -1062,27 +1063,31 @@ class CORE_EXPORT LayoutObject : public ImageResourceObserver,
   }
   virtual const LayoutNGTableInterface* ToLayoutNGTableInterface() const {
     NOT_DESTROYED();
-    DCHECK(false);
+    NOTREACHED();
     return nullptr;
   }
   virtual const LayoutNGTableSectionInterface* ToLayoutNGTableSectionInterface()
       const {
     NOT_DESTROYED();
-    DCHECK(false);
+    NOTREACHED();
     return nullptr;
   }
   virtual const LayoutNGTableRowInterface* ToLayoutNGTableRowInterface() const {
     NOT_DESTROYED();
-    DCHECK(false);
+    NOTREACHED();
     return nullptr;
   }
   virtual const LayoutNGTableCellInterface* ToLayoutNGTableCellInterface()
       const {
     NOT_DESTROYED();
-    DCHECK(false);
+    NOTREACHED();
     return nullptr;
   }
-
+  virtual const LayoutNGGridInterface* ToLayoutNGGridInterface() const {
+    NOT_DESTROYED();
+    NOTREACHED();
+    return nullptr;
+  }
   inline bool IsBeforeContent() const;
   inline bool IsAfterContent() const;
   inline bool IsMarkerContent() const;
