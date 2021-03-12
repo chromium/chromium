@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/webui/chromeos/emoji/emoji_ui.h"
 
+#include "ash/public/cpp/tablet_mode.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/views/bubble/bubble_contents_wrapper.h"
 #include "chrome/browser/ui/views/bubble/bubble_contents_wrapper_service.h"
@@ -17,6 +18,7 @@
 #include "content/public/browser/url_data_source.h"
 #include "content/public/browser/web_ui.h"
 #include "content/public/browser/web_ui_data_source.h"
+#include "ui/base/emoji/emoji_panel_helper.h"
 #include "ui/base/ime/chromeos/ime_bridge.h"
 #include "ui/resources/grit/webui_generated_resources.h"
 
@@ -59,6 +61,10 @@ EmojiUI::EmojiUI(content::WebUI* web_ui)
 EmojiUI::~EmojiUI() = default;
 
 void EmojiUI::Show(Profile* profile) {
+  if (ash::TabletMode::Get()->InTabletMode()) {
+    ui::ShowTabletModeEmojiPanel();
+    return;
+  }
   ui::InputMethod* input_method =
       ui::IMEBridge::Get()->GetInputContextHandler()->GetInputMethod();
   const ui::TextInputClient* input_client =

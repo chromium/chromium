@@ -59,6 +59,9 @@ VirtualKeyboardController::VirtualKeyboardController()
         &VirtualKeyboardController::ForceShowKeyboardWithKeyset,
         base::Unretained(this), chromeos::input_method::ImeKeyset::kEmoji));
   }
+  ui::SetTabletModeShowEmojiKeyboardCallback(base::BindRepeating(
+      &VirtualKeyboardController::ForceShowKeyboardWithKeyset,
+      base::Unretained(this), chromeos::input_method::ImeKeyset::kEmoji));
   keyboard::KeyboardUIController::Get()->AddObserver(this);
 
   bluetooth_devices_observer_ =
