@@ -104,14 +104,14 @@ struct UsernamePasswordsState {
 // |submitted_form|.
 UsernamePasswordsState CalculateUsernamePasswordsState(
     const FormData& submitted_form,
-    const std::set<std::pair<base::string16, PasswordForm::Store>>&
+    const std::set<std::pair<std::u16string, PasswordForm::Store>>&
         saved_usernames,
-    const std::set<std::pair<base::string16, PasswordForm::Store>>&
+    const std::set<std::pair<std::u16string, PasswordForm::Store>>&
         saved_passwords) {
   UsernamePasswordsState result;
 
   for (const FormFieldData& field : submitted_form.fields) {
-    const base::string16& value =
+    const std::u16string& value =
         field.user_input.empty() ? field.value : field.user_input;
 
     bool user_typed = field.properties_mask & FieldPropertiesFlags::kUserTyped;
@@ -177,7 +177,7 @@ bool BlocklistedBySmartBubble(
   const int show_threshold =
       password_bubble_experiment::GetSmartBubbleDismissalThreshold();
   for (const FormFieldData& field : submitted_form.fields) {
-    const base::string16& value =
+    const std::u16string& value =
         field.user_input.empty() ? field.value : field.user_input;
     for (const InteractionsStats& stat : interactions_stats) {
       if (stat.username_value == value &&
@@ -512,9 +512,9 @@ void PasswordFormMetricsRecorder::RecordFirstWaitForUsernameReason(
 
 void PasswordFormMetricsRecorder::CalculateFillingAssistanceMetric(
     const FormData& submitted_form,
-    const std::set<std::pair<base::string16, PasswordForm::Store>>&
+    const std::set<std::pair<std::u16string, PasswordForm::Store>>&
         saved_usernames,
-    const std::set<std::pair<base::string16, PasswordForm::Store>>&
+    const std::set<std::pair<std::u16string, PasswordForm::Store>>&
         saved_passwords,
     bool is_blocklisted,
     const std::vector<InteractionsStats>& interactions_stats,

@@ -27,7 +27,7 @@ AutocompleteMatch VerbatimMatchForURL(
     AutocompleteProviderClient* client,
     const AutocompleteInput& input,
     const GURL& destination_url,
-    const base::string16& destination_description,
+    const std::u16string& destination_description,
     int verbatim_relevance);
 
 // Returns a match representing a navigation to |destination_url|, highlighted

@@ -40,9 +40,9 @@ class FakeLocationBarModelDelegate : public LocationBarModelDelegate {
   }
 
   // LocationBarModelDelegate:
-  base::string16 FormattedStringWithEquivalentMeaning(
+  std::u16string FormattedStringWithEquivalentMeaning(
       const GURL& url,
-      const base::string16& formatted_url) const override {
+      const std::u16string& formatted_url) const override {
     return formatted_url + base::ASCIIToUTF16("/TestSuffix");
   }
 
@@ -220,8 +220,8 @@ TEST_F(LocationBarModelImplTest, FormatsReaderModeUrls) {
   const GURL http_url("http://www.example.com/article.html");
   // Get the real article's URL shown to the user.
   delegate()->SetURL(http_url);
-  base::string16 originalDisplayUrl = model()->GetURLForDisplay();
-  base::string16 originalFormattedFullUrl = model()->GetFormattedFullURL();
+  std::u16string originalDisplayUrl = model()->GetURLForDisplay();
+  std::u16string originalFormattedFullUrl = model()->GetFormattedFullURL();
   // We expect that they don't start with "http://." We want the reader mode
   // URL shown to the user to be the same as this original URL.
 #if defined(OS_IOS)

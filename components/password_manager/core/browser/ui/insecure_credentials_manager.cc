@@ -81,7 +81,7 @@ InsecureCredentialTypeFlags ConvertInsecureType(InsecureType type) {
 // InsecureCredentialTypeFlags as values.
 CredentialPasswordsMap JoinInsecureCredentialsWithSavedPasswords(
     const std::vector<InsecureCredential>& insecure_credentials,
-    const base::flat_set<base::string16>& weak_passwords,
+    const base::flat_set<std::u16string>& weak_passwords,
     SavedPasswordsPresenter::SavedPasswordsView saved_passwords) {
   CredentialPasswordsMap credentials_to_forms;
 
@@ -163,22 +163,22 @@ std::vector<CredentialWithPassword> ExtractInsecureCredentials(
   return credentials;
 }
 
-base::flat_set<base::string16> ExtractPasswords(
+base::flat_set<std::u16string> ExtractPasswords(
     SavedPasswordsPresenter::SavedPasswordsView password_forms) {
-  std::vector<base::string16> passwords;
+  std::vector<std::u16string> passwords;
   passwords.reserve(password_forms.size());
   for (const auto& form : password_forms) {
     passwords.push_back(form.password_value);
   }
-  return base::flat_set<base::string16>(std::move(passwords));
+  return base::flat_set<std::u16string>(std::move(passwords));
 }
 
 }  // namespace
 
 CredentialView::CredentialView(std::string signon_realm,
                                GURL url,
-                               base::string16 username,
-                               base::string16 password)
+                               std::u16string username,
+                               std::u16string password)
     : signon_realm(std::move(signon_realm)),
       url(std::move(url)),
       username(std::move(username)),
@@ -253,7 +253,7 @@ void InsecureCredentialsManager::SaveInsecureCredential(
     const LeakCheckCredential& credential) {
   // Iterate over all currently saved credentials and mark those as insecure
   // that have the same canonicalized username and password.
-  const base::string16 canonicalized_username =
+  const std::u16string canonicalized_username =
       CanonicalizeUsername(credential.username());
   for (const PasswordForm& saved_password : presenter_->GetSavedPasswords()) {
     if (saved_password.password_value == credential.password() &&
@@ -345,7 +345,7 @@ void InsecureCredentialsManager::UpdateInsecureCredentials() {
 
 void InsecureCredentialsManager::OnWeakCheckDone(
     base::ElapsedTimer timer_since_weak_check_start,
-    base::flat_set<base::string16> weak_passwords) {
+    base::flat_set<std::u16string> weak_passwords) {
   base::UmaHistogramTimes("PasswordManager.WeakCheck.Time",
                           timer_since_weak_check_start.Elapsed());
   weak_passwords_ = std::move(weak_passwords);
@@ -366,7 +366,7 @@ void InsecureCredentialsManager::OnEdited(const PasswordForm& form) {
   // The WeakCheck is a Desktop only feature for now. Disable on Mobile to avoid
   // pulling in a big dependency on zxcvbn.
 #if !defined(OS_ANDROID) && !defined(OS_IOS)
-  const base::string16& password = form.password_value;
+  const std::u16string& password = form.password_value;
   if (weak_passwords_.contains(password) || !IsWeak(password)) {
     // Either the password is already known to be weak, or it is not weak at
     // all. In both cases there is nothing to do.

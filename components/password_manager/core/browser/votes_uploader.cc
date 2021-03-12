@@ -127,7 +127,7 @@ bool IsAddingUsernameToExistingMatch(
     const std::vector<const PasswordForm*>& matches) {
   if (credentials.username_value.empty())
     return false;
-  const PasswordForm* match = FindFormByUsername(matches, base::string16());
+  const PasswordForm* match = FindFormByUsername(matches, std::u16string());
   return match && !match->is_public_suffix_match &&
          match->password_value == credentials.password_value;
 }
@@ -160,7 +160,7 @@ int GetRandomSpecialSymbol() {
 
 // Returns a random special symbol used in |password|.
 // It is expected that |password| contains at least one special symbol.
-int GetRandomSpecialSymbolFromPassword(const base::string16& password) {
+int GetRandomSpecialSymbolFromPassword(const std::u16string& password) {
   std::vector<int> symbols;
   std::copy_if(password.begin(), password.end(), std::back_inserter(symbols),
                &IsSpecialSymbol);
@@ -168,7 +168,7 @@ int GetRandomSpecialSymbolFromPassword(const base::string16& password) {
   return symbols[base::RandGenerator(symbols.size())];
 }
 
-size_t GetLowEntropyHashValue(const base::string16& value) {
+size_t GetLowEntropyHashValue(const std::u16string& value) {
   return base::PersistentHash(base::UTF16ToUTF8(value)) %
          kNumberOfLowEntropyHashValues;
 }
@@ -454,9 +454,9 @@ void VotesUploader::SetInitialHashValueOfUsernameField(
 
   for (const auto& field : *form_structure) {
     if (field && field->unique_renderer_id == username_element_renderer_id) {
-      const base::string16 form_signature =
+      const std::u16string form_signature =
           base::UTF8ToUTF16(form_structure->FormSignatureAsStr());
-      const base::string16 seeded_input = it->second.append(form_signature);
+      const std::u16string seeded_input = it->second.append(form_signature);
       field->set_initial_value_hash(GetLowEntropyHashValue(seeded_input));
       break;
     }
@@ -565,8 +565,8 @@ void VotesUploader::SetKnownValueFlag(
     const PasswordForm& pending_credentials,
     const std::vector<const PasswordForm*>& best_matches,
     FormStructure* form) {
-  const base::string16& known_username = pending_credentials.username_value;
-  base::string16 known_password;
+  const std::u16string& known_username = pending_credentials.username_value;
+  std::u16string known_password;
   if (password_overridden_) {
     // If we are updating a password, the known value should be the old
     // password, not the new one.
@@ -594,7 +594,7 @@ void VotesUploader::SetKnownValueFlag(
 
 bool VotesUploader::FindUsernameInOtherPossibleUsernames(
     const PasswordForm& match,
-    const base::string16& username) {
+    const std::u16string& username) {
   DCHECK(!username_correction_vote_);
 
   for (const ValueElementPair& pair : match.all_possible_usernames) {
@@ -609,8 +609,8 @@ bool VotesUploader::FindUsernameInOtherPossibleUsernames(
 
 bool VotesUploader::FindCorrectedUsernameElement(
     const std::vector<const PasswordForm*>& matches,
-    const base::string16& username,
-    const base::string16& password) {
+    const std::u16string& username,
+    const std::u16string& password) {
   if (username.empty())
     return false;
   for (const PasswordForm* match : matches) {
@@ -623,7 +623,7 @@ bool VotesUploader::FindCorrectedUsernameElement(
 }
 
 void VotesUploader::GeneratePasswordAttributesVote(
-    const base::string16& password_value,
+    const std::u16string& password_value,
     FormStructure* form_structure) {
   // Don't crowdsource password attributes for non-ascii passwords.
   for (const auto& e : password_value) {

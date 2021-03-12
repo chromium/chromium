@@ -125,7 +125,7 @@ OmniboxFieldTrial::NumMatchesScores*
 ScoredHistoryMatch::ScoredHistoryMatch()
     : ScoredHistoryMatch(history::URLRow(),
                          VisitInfoVector(),
-                         base::string16(),
+                         std::u16string(),
                          String16Vector(),
                          WordStarts(),
                          RowWordStarts(),
@@ -136,7 +136,7 @@ ScoredHistoryMatch::ScoredHistoryMatch()
 ScoredHistoryMatch::ScoredHistoryMatch(
     const history::URLRow& row,
     const VisitInfoVector& visits,
-    const base::string16& lower_string,
+    const std::u16string& lower_string,
     const String16Vector& terms_vector,
     const WordStarts& terms_to_word_starts_offsets,
     const RowWordStarts& word_starts,
@@ -161,9 +161,9 @@ ScoredHistoryMatch::ScoredHistoryMatch(
   // so that we can score as well as provide autocomplete highlighting.
   base::OffsetAdjuster::Adjustments adjustments;
   GURL gurl = row.url();
-  base::string16 cleaned_up_url_for_matching =
+  std::u16string cleaned_up_url_for_matching =
       bookmarks::CleanUpUrlForMatching(gurl, &adjustments);
-  base::string16 title = bookmarks::CleanUpTitleForMatching(row.title());
+  std::u16string title = bookmarks::CleanUpTitleForMatching(row.title());
   int term_num = 0;
   for (const auto& term : terms_vector) {
     TermMatches url_term_matches =
@@ -210,7 +210,7 @@ ScoredHistoryMatch::ScoredHistoryMatch(
   bool likely_can_inline = false;
   if (!url_matches.empty() && (terms_vector.size() == 1) &&
       !base::IsUnicodeWhitespace(*lower_string.rbegin())) {
-    const base::string16 gurl_spec = base::UTF8ToUTF16(gurl.spec());
+    const std::u16string gurl_spec = base::UTF8ToUTF16(gurl.spec());
     const URLPrefix* best_inlineable_prefix =
         URLPrefix::BestURLPrefix(gurl_spec, terms_vector[0]);
     if (best_inlineable_prefix) {
@@ -229,7 +229,7 @@ ScoredHistoryMatch::ScoredHistoryMatch(
       size_t offset =
         best_inlineable_prefix->prefix.length() + terms_vector[0].length();
       base::OffsetAdjuster::UnadjustOffset(adjustments, &offset);
-      if (offset != base::string16::npos) {
+      if (offset != std::u16string::npos) {
         // Initialize innermost_match.
         // The idea here is that matches that occur in the scheme or
         // "www." are worse than matches which don't.  For the URLs
@@ -253,7 +253,7 @@ ScoredHistoryMatch::ScoredHistoryMatch(
         // Now, the code that implements this.
         // The deepest prefix for this URL regardless of where the match is.
         const URLPrefix* best_prefix =
-            URLPrefix::BestURLPrefix(gurl_spec, base::string16());
+            URLPrefix::BestURLPrefix(gurl_spec, std::u16string());
         DCHECK(best_prefix);
         // If the URL is likely to be inlineable, we must have a match.  Note
         // the prefix that makes it inlineable may be empty.

@@ -43,7 +43,7 @@ bool IsCharInClass(char16_t c, const std::string& class_name) {
   return false;
 }
 
-size_t CountCharsInClass(const base::string16& password,
+size_t CountCharsInClass(const std::u16string& password,
                          const std::string& class_name) {
   size_t num = 0;
   for (char16_t c : password) {
@@ -155,7 +155,7 @@ TEST_F(PasswordGeneratorTest, MinCharFrequenciesRespected) {
     char_class_config->set_min(10);
     char_class_config->set_max(1000);
 
-    base::string16 password = GeneratePassword(spec_);
+    std::u16string password = GeneratePassword(spec_);
     EXPECT_GE(CountCharsInClass(password, char_class), 10u);
   }
 }
@@ -172,7 +172,7 @@ TEST_F(PasswordGeneratorTest, MinCharFrequenciesInsane) {
     char_class_config->set_min(1000);
     char_class_config->set_max(1000);
 
-    base::string16 password = GeneratePassword(spec_);
+    std::u16string password = GeneratePassword(spec_);
     // At least some of the characters should be there.
     EXPECT_GE(CountCharsInClass(password, char_class), 1u);
     // But the password length does not change by minimum length requirements.
@@ -190,7 +190,7 @@ TEST_F(PasswordGeneratorTest, MinCharFrequenciesBiggerThanMax) {
     char_class_config->set_max(5);
   }
 
-  base::string16 password = GeneratePassword(spec_);
+  std::u16string password = GeneratePassword(spec_);
 
   for (std::string char_class : kAllClassesButSymbolsAndAlphabetic) {
     SCOPED_TRACE(char_class);
@@ -210,7 +210,7 @@ TEST_F(PasswordGeneratorTest, MaxFrequenciesRespected) {
     auto* char_class_config = GetMutableCharClass(&spec_, char_class);
     char_class_config->set_max(2);
 
-    base::string16 password = GeneratePassword(spec_);
+    std::u16string password = GeneratePassword(spec_);
     EXPECT_LE(CountCharsInClass(password, char_class), 2u);
     // Ensure that the other character classes that are not limited fill up the
     // password to the desired length.
@@ -236,7 +236,7 @@ TEST_F(PasswordGeneratorTest, CharacterSetCanBeOverridden) {
   spec_.mutable_lower_case()->set_character_set("ab");
   spec_.mutable_lower_case()->set_min(5);
   spec_.mutable_lower_case()->set_max(5);
-  base::string16 password = GeneratePassword(spec_);
+  std::u16string password = GeneratePassword(spec_);
   // Then ensure that 'a's and 'b's are generated at the expected frequencies
   // as an indicator that the override was respected.
   size_t num_as_and_bs = 0;
@@ -259,7 +259,7 @@ TEST_F(PasswordGeneratorTest, AllCharactersAreGenerated) {
   // generator does not fully use the character set (probably due to an
   // off-by-one error).
   for (size_t attempt = 0; attempt < 100; ++attempt) {
-    base::string16 password = GeneratePassword(spec_);
+    std::u16string password = GeneratePassword(spec_);
     size_t num_as = 0;
     size_t num_bs = 0;
     for (char16_t c : password) {
@@ -281,7 +281,7 @@ TEST_F(PasswordGeneratorTest, PasswordCanBeGeneratedWithEmptyCharSet) {
   spec_.mutable_lower_case()->set_character_set("");
   spec_.mutable_lower_case()->set_min(5);
   spec_.mutable_lower_case()->set_max(5);
-  base::string16 password = GeneratePassword(spec_);
+  std::u16string password = GeneratePassword(spec_);
   EXPECT_EQ(0u, CountCharsInClass(password, kLowerCase));
   EXPECT_EQ(kDefaultPasswordLength, GeneratePassword(spec_).length());
 }

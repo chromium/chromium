@@ -59,13 +59,13 @@ class MockPasswordManagerClient : public StubPasswordManagerClient {
                void(password_manager::CredentialLeakType,
                     password_manager::CompromisedSitesCount,
                     const GURL&,
-                    const base::string16& username));
+                    const std::u16string& username));
   MOCK_CONST_METHOD0(GetProfilePasswordStore, PasswordStore*());
 };
 
 class MockLeakDetectionCheck : public LeakDetectionCheck {
  public:
-  MOCK_METHOD3(Start, void(const GURL&, base::string16, base::string16));
+  MOCK_METHOD3(Start, void(const GURL&, std::u16string, std::u16string));
 };
 
 }  // namespace

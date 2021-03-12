@@ -101,7 +101,7 @@ TEST_F(BaseSearchProviderTest, PreserveAnswersWhenDeduplicating) {
   auto template_url = std::make_unique<TemplateURL>(data);
 
   TestBaseSearchProvider::MatchMap map;
-  base::string16 query = base::ASCIIToUTF16("weather los angeles");
+  std::u16string query = base::ASCIIToUTF16("weather los angeles");
   SuggestionAnswer answer;
   answer.set_type(2334);
 
@@ -186,14 +186,14 @@ TEST_F(BaseSearchProviderTest, MatchTailSuggestionProperly) {
   EXPECT_CALL(*provider_, GetTemplateURL(_))
       .WillRepeatedly(Return(template_url.get()));
 
-  base::string16 query = base::ASCIIToUTF16("angeles now");
-  base::string16 suggestion = base::ASCIIToUTF16("weather los ") + query;
+  std::u16string query = base::ASCIIToUTF16("angeles now");
+  std::u16string suggestion = base::ASCIIToUTF16("weather los ") + query;
   SearchSuggestionParser::SuggestResult suggest_result(
       suggestion, AutocompleteMatchType::SEARCH_SUGGEST_TAIL,
       /*subtypes=*/{},
       /*match_contents=*/query,
       /*match_contents_prefix=*/base::ASCIIToUTF16("..."),
-      /*annotation=*/base::string16(),
+      /*annotation=*/std::u16string(),
       /*suggest_query_params=*/std::string(),
       /*deletion_url=*/std::string(),
       /*image_dominant_color=*/std::string(),
@@ -225,7 +225,7 @@ TEST_F(BaseSearchProviderTest, DeleteDuplicateMatch) {
   auto template_url = std::make_unique<TemplateURL>(data);
 
   TestBaseSearchProvider::MatchMap map;
-  base::string16 query = base::ASCIIToUTF16("site.com");
+  std::u16string query = base::ASCIIToUTF16("site.com");
 
   EXPECT_CALL(*provider_, GetInput(_))
       .WillRepeatedly(Return(AutocompleteInput()));

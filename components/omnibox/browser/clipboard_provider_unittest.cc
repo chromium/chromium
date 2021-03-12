@@ -58,7 +58,7 @@ class ClipboardProviderTest : public testing::Test,
     clipboard_content_.SetClipboardURL(url, base::TimeDelta::FromMinutes(9));
   }
 
-  void SetClipboardText(const base::string16& text) {
+  void SetClipboardText(const std::u16string& text) {
     clipboard_content_.SetClipboardText(text, base::TimeDelta::FromMinutes(9));
   }
 
@@ -74,7 +74,7 @@ class ClipboardProviderTest : public testing::Test,
   }
 
   AutocompleteInput CreateAutocompleteInput(OmniboxFocusType focus_type) {
-    AutocompleteInput input(base::string16(), metrics::OmniboxEventProto::OTHER,
+    AutocompleteInput input(std::u16string(), metrics::OmniboxEventProto::OTHER,
                             classifier_);
     input.set_current_url(GURL(kCurrentURL));
     input.set_focus_type(focus_type);

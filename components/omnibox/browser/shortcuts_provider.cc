@@ -74,7 +74,7 @@ struct ShortcutMatch {
   size_t subrelevance = 0;
   GURL stripped_destination_url;
   const ShortcutsDatabase::Shortcut* shortcut;
-  base::string16 contents;
+  std::u16string contents;
   AutocompleteMatch::Type type;
 
   AutocompleteMatch::Type GetDemotionType() const { return type; }
@@ -170,7 +170,7 @@ void ShortcutsProvider::GetMatches(const AutocompleteInput& input) {
     return;
   // Get the URLs from the shortcuts database with keys that partially or
   // completely match the search term.
-  base::string16 term_string(base::i18n::ToLower(input.text()));
+  std::u16string term_string(base::i18n::ToLower(input.text()));
   DCHECK(!term_string.empty());
 
   int max_relevance;
@@ -178,7 +178,7 @@ void ShortcutsProvider::GetMatches(const AutocompleteInput& input) {
           input.current_page_classification(), &max_relevance))
     max_relevance = kShortcutsProviderDefaultMaxRelevance;
   TemplateURLService* template_url_service = client_->GetTemplateURLService();
-  const base::string16 fixed_up_input(FixupUserInput(input).second);
+  const std::u16string fixed_up_input(FixupUserInput(input).second);
 
   std::vector<ShortcutMatch> shortcut_matches;
   for (auto it = FindFirstMatch(term_string, backend.get());
@@ -243,8 +243,8 @@ AutocompleteMatch ShortcutsProvider::ShortcutToACMatch(
     const ShortcutsDatabase::Shortcut& shortcut,
     int relevance,
     const AutocompleteInput& input,
-    const base::string16& fixed_up_input_text,
-    const base::string16 term_string) {
+    const std::u16string& fixed_up_input_text,
+    const std::u16string term_string) {
   DCHECK(!input.text().empty());
   AutocompleteMatch match;
   match.provider = this;
@@ -322,7 +322,7 @@ AutocompleteMatch ShortcutsProvider::ShortcutToACMatch(
       const size_t inline_autocomplete_offset =
           URLPrefix::GetInlineAutocompleteOffset(
               input.text(), fixed_up_input_text, true, match.fill_into_edit);
-      if (inline_autocomplete_offset != base::string16::npos) {
+      if (inline_autocomplete_offset != std::u16string::npos) {
         match.inline_autocompletion =
             match.fill_into_edit.substr(inline_autocomplete_offset);
         match.SetAllowedToBeDefault(input);
@@ -343,7 +343,7 @@ AutocompleteMatch ShortcutsProvider::ShortcutToACMatch(
 }
 
 ShortcutsBackend::ShortcutMap::const_iterator ShortcutsProvider::FindFirstMatch(
-    const base::string16& keyword,
+    const std::u16string& keyword,
     ShortcutsBackend* backend) {
   DCHECK(backend);
   auto it = backend->shortcuts_map().lower_bound(keyword);
@@ -356,7 +356,7 @@ ShortcutsBackend::ShortcutMap::const_iterator ShortcutsProvider::FindFirstMatch(
 }
 
 int ShortcutsProvider::CalculateScore(
-    const base::string16& terms,
+    const std::u16string& terms,
     const ShortcutsDatabase::Shortcut& shortcut,
     int max_relevance) {
   DCHECK(!terms.empty());

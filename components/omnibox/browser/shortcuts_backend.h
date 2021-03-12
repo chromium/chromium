@@ -46,7 +46,7 @@ class ShortcutsDatabase;
 class ShortcutsBackend : public RefcountedKeyedService,
                          public history::HistoryServiceObserver {
  public:
-  typedef std::multimap<base::string16, const ShortcutsDatabase::Shortcut>
+  typedef std::multimap<std::u16string, const ShortcutsDatabase::Shortcut>
       ShortcutMap;
 
   // For unit testing, set |suppress_db| to true to prevent creation
@@ -93,7 +93,7 @@ class ShortcutsBackend : public RefcountedKeyedService,
 
   // Looks for an existing shortcut to match.destination_url that starts with
   // |text|.  Updates that shortcut if found, otherwise adds a new shortcut.
-  void AddOrUpdateShortcut(const base::string16& text,
+  void AddOrUpdateShortcut(const std::u16string& text,
                            const AutocompleteMatch& match);
 
  private:

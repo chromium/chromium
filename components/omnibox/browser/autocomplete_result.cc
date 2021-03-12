@@ -322,12 +322,12 @@ void AutocompleteResult::SortAndCull(
   // not typed a query yet.
   auto* default_match = this->default_match();
   if (default_match && default_match->destination_url.is_valid()) {
-    const base::string16 debug_info =
+    const std::u16string debug_info =
         base::ASCIIToUTF16("fill_into_edit=") + default_match->fill_into_edit +
         base::ASCIIToUTF16(", provider=") +
         ((default_match->provider != nullptr)
              ? base::ASCIIToUTF16(default_match->provider->GetName())
-             : base::string16()) +
+             : std::u16string()) +
         base::ASCIIToUTF16(", input=") + input.text();
 
     if (AutocompleteMatch::IsSearchType(default_match->type)) {
@@ -360,7 +360,7 @@ void AutocompleteResult::GroupAndDemoteMatchesWithHeaders() {
       // additional_info field for chrome://omnibox.
       int group_id = it->suggestion_group_id.value();
       it->RecordAdditionalInfo("suggestion_group_id", group_id);
-      const base::string16 header = GetHeaderForGroupId(group_id);
+      const std::u16string header = GetHeaderForGroupId(group_id);
       if (!header.empty()) {
         it->RecordAdditionalInfo("header string", header);
       } else {
@@ -807,7 +807,7 @@ void AutocompleteResult::DeduplicateMatches(ACMatches* matches) {
 }
 
 void AutocompleteResult::InlineTailPrefixes() {
-  base::string16 common_prefix;
+  std::u16string common_prefix;
 
   for (const auto& match : matches_) {
     if (match.type == ACMatchType::SEARCH_SUGGEST_TAIL) {
@@ -839,12 +839,12 @@ AutocompleteResult::GetMatchDedupComparators() const {
   return comparators;
 }
 
-base::string16 AutocompleteResult::GetHeaderForGroupId(
+std::u16string AutocompleteResult::GetHeaderForGroupId(
     int suggestion_group_id) const {
   const auto& it = headers_map_.find(suggestion_group_id);
   if (it != headers_map_.end())
     return it->second;
-  return base::string16();
+  return std::u16string();
 }
 
 bool AutocompleteResult::IsSuggestionGroupIdHidden(

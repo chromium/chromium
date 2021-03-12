@@ -21,7 +21,7 @@ std::vector<InsecureCredential> StatementToInsecureCredential(
   while (s->Step()) {
     int parent_key = s->ColumnInt64(0);
     std::string signon_realm = s->ColumnString(1);
-    base::string16 username = s->ColumnString16(2);
+    std::u16string username = s->ColumnString16(2);
     InsecureType insecurity_type = static_cast<InsecureType>(s->ColumnInt64(3));
     base::Time create_time = base::Time::FromDeltaSinceWindowsEpoch(
         (base::TimeDelta::FromMicroseconds(s->ColumnInt64(4))));
@@ -39,7 +39,7 @@ std::vector<InsecureCredential> StatementToInsecureCredential(
 InsecureCredential::InsecureCredential() = default;
 
 InsecureCredential::InsecureCredential(std::string signon_realm,
-                                       base::string16 username,
+                                       std::u16string username,
                                        base::Time create_time,
                                        InsecureType insecurity_type,
                                        IsMuted is_muted)
@@ -117,7 +117,7 @@ bool InsecureCredentialsTable::AddRow(
 
 bool InsecureCredentialsTable::RemoveRow(
     const std::string& signon_realm,
-    const base::string16& username,
+    const std::u16string& username,
     RemoveInsecureCredentialsReason reason) {
   DCHECK(db_);
   if (signon_realm.empty())

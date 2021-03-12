@@ -26,7 +26,7 @@ namespace {
 template <typename StringT>
 StringT CanonicalizeUsernameT(base::BasicStringPiece<StringT> username) {
   // String literal containing a single period (i.e. "."). Spelt out explicitly,
-  // because there is no short-form syntax for base::string16.
+  // because there is no short-form syntax for std::u16string.
   static constexpr typename StringT::value_type kPeriod[] = {'.', '\0'};
 
   StringT email_lower = base::ToLowerASCII(username);
@@ -43,7 +43,7 @@ std::string CanonicalizeUsername(base::StringPiece username) {
   return CanonicalizeUsernameT(username);
 }
 
-base::string16 CanonicalizeUsername(base::StringPiece16 username) {
+std::u16string CanonicalizeUsername(base::StringPiece16 username) {
   return CanonicalizeUsernameT(username);
 }
 

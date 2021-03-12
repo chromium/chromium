@@ -70,11 +70,11 @@ void PopulateShortcutsBackendWithTestData(
 
 void RunShortcutsProviderTest(
     scoped_refptr<ShortcutsProvider> provider,
-    const base::string16 text,
+    const std::u16string text,
     bool prevent_inline_autocomplete,
     const std::vector<ExpectedURLAndAllowedToBeDefault>& expected_urls,
     std::string expected_top_result,
-    base::string16 top_result_inline_autocompletion) {
+    std::u16string top_result_inline_autocompletion) {
   base::RunLoop().RunUntilIdle();
   AutocompleteInput input(text, metrics::OmniboxEventProto::OTHER,
                           TestSchemeClassifier());

@@ -40,7 +40,7 @@ ValueElementPair PasswordToSave(const PasswordForm& form) {
 PasswordForm PendingCredentialsForNewCredentials(
     const PasswordForm& parsed_submitted_form,
     const FormData* observed_form,
-    const base::string16& password_element,
+    const std::u16string& password_element,
     bool is_http_auth,
     bool is_credential_api_save) {
   if (is_http_auth || is_credential_api_save)
@@ -62,7 +62,7 @@ PasswordForm PendingCredentialsForNewCredentials(
 
 // Helper to get the platform specific identifier by which autofill and password
 // manager refer to a field. See http://crbug.com/896594
-base::string16 GetPlatformSpecificIdentifier(const FormFieldData& field) {
+std::u16string GetPlatformSpecificIdentifier(const FormFieldData& field) {
 #if defined(OS_IOS)
   return field.unique_id;
 #else
@@ -96,7 +96,7 @@ void SanitizePossibleUsernames(PasswordForm* form) {
                   usernames.end());
 
   // Filter out |form->username_value| and sensitive information.
-  const base::string16& username_value = form->username_value;
+  const std::u16string& username_value = form->username_value;
   base::EraseIf(usernames, [&username_value](const ValueElementPair& pair) {
     return pair.first == username_value ||
            autofill::IsValidCreditCardNumber(pair.first) ||
@@ -133,7 +133,7 @@ const PasswordForm& PasswordSaveManagerImpl::GetPendingCredentials() const {
   return pending_credentials_;
 }
 
-const base::string16& PasswordSaveManagerImpl::GetGeneratedPassword() const {
+const std::u16string& PasswordSaveManagerImpl::GetGeneratedPassword() const {
   DCHECK(generation_manager_);
   return generation_manager_->generated_password();
 }
@@ -163,7 +163,7 @@ void PasswordSaveManagerImpl::CreatePendingCredentials(
   std::tie(similar_saved_form, pending_credentials_state_) =
       FindSimilarSavedFormAndComputeState(parsed_submitted_form);
 
-  base::Optional<base::string16> generated_password;
+  base::Optional<std::u16string> generated_password;
   if (HasGeneratedPassword())
     generated_password = generation_manager_->generated_password();
 
@@ -240,7 +240,7 @@ void PasswordSaveManagerImpl::Update(
     const PasswordForm& credentials_to_update,
     const FormData* observed_form,
     const PasswordForm& parsed_submitted_form) {
-  base::string16 password_to_save = pending_credentials_.password_value;
+  std::u16string password_to_save = pending_credentials_.password_value;
   bool skip_zero_click = pending_credentials_.skip_zero_click;
   pending_credentials_ = credentials_to_update;
   pending_credentials_.password_value = password_to_save;
@@ -374,7 +374,7 @@ PasswordForm PasswordSaveManagerImpl::BuildPendingCredentials(
     const PasswordForm& parsed_submitted_form,
     const FormData* observed_form,
     const FormData& submitted_form,
-    const base::Optional<base::string16>& generated_password,
+    const base::Optional<std::u16string>& generated_password,
     bool is_http_auth,
     bool is_credential_api_save,
     const PasswordForm* similar_saved_form) {
@@ -471,7 +471,7 @@ void PasswordSaveManagerImpl::SavePendingToStore(
 void PasswordSaveManagerImpl::SavePendingToStoreImpl(
     const PasswordForm& parsed_submitted_form) {
   auto matches = form_fetcher_->GetAllRelevantMatches();
-  base::string16 old_password = GetOldPassword(parsed_submitted_form);
+  std::u16string old_password = GetOldPassword(parsed_submitted_form);
   if (IsNewLogin()) {
     form_saver_->Save(pending_credentials_, matches, old_password);
   } else {
@@ -482,12 +482,12 @@ void PasswordSaveManagerImpl::SavePendingToStoreImpl(
   }
 }
 
-base::string16 PasswordSaveManagerImpl::GetOldPassword(
+std::u16string PasswordSaveManagerImpl::GetOldPassword(
     const PasswordForm& parsed_submitted_form) const {
   const PasswordForm* similar_saved_form =
       FindSimilarSavedFormAndComputeState(parsed_submitted_form).first;
   return similar_saved_form ? similar_saved_form->password_value
-                            : base::string16();
+                            : std::u16string();
 }
 
 void PasswordSaveManagerImpl::UploadVotesAndMetrics(

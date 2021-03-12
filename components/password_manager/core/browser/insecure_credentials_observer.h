@@ -15,7 +15,7 @@ namespace password_manager {
 // password store. The parameters match those in RemoveInsecureCredentials.
 using RemoveInsecureCallback =
     base::RepeatingCallback<void(const std::string&,
-                                 const base::string16&,
+                                 const std::u16string&,
                                  RemoveInsecureCredentialsReason)>;
 
 // Called when the content of the password store changes.

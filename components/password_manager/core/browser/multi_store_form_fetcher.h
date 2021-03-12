@@ -25,7 +25,7 @@ class MultiStoreFormFetcher : public FormFetcherImpl {
   void Fetch() override;
   bool IsBlocklisted() const override;
   bool IsMovingBlocked(const autofill::GaiaIdHash& destination,
-                       const base::string16& username) const override;
+                       const std::u16string& username) const override;
   std::unique_ptr<FormFetcher> Clone() override;
 
   // PasswordStoreConsumer:

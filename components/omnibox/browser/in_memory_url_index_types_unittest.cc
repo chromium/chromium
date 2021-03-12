@@ -35,7 +35,7 @@ class InMemoryURLIndexTypesTest : public testing::Test {
 
 TEST_F(InMemoryURLIndexTypesTest, StaticFunctions) {
   // Test String16VectorFromString16
-  base::string16 string_a(
+  std::u16string string_a(
       base::UTF8ToUTF16("http://www.google.com/ frammy  the brammy"));
   WordStarts actual_starts_a;
   String16Vector string_vec =
@@ -66,7 +66,7 @@ TEST_F(InMemoryURLIndexTypesTest, StaticFunctions) {
   EXPECT_TRUE(IntArraysEqual(expected_starts_b, base::size(expected_starts_b),
                              actual_starts_b));
 
-  base::string16 string_c(base::ASCIIToUTF16(
+  std::u16string string_c(base::ASCIIToUTF16(
       " funky%20string-with=@strange   sequences, intended(to exceed)"));
   WordStarts actual_starts_c;
   string_vec = String16VectorFromString16(string_c, false, &actual_starts_c);
@@ -76,7 +76,7 @@ TEST_F(InMemoryURLIndexTypesTest, StaticFunctions) {
   EXPECT_TRUE(IntArraysEqual(expected_starts_c, base::size(expected_starts_c),
                              actual_starts_c));
 
-  base::string16 string_d(
+  std::u16string string_d(
       base::UTF8ToUTF16("http://www.google.com/frammy_the_brammy"));
   WordStarts actual_starts_d;
   string_vec = String16VectorFromString16(string_d, false, &actual_starts_d);
@@ -93,8 +93,8 @@ TEST_F(InMemoryURLIndexTypesTest, StaticFunctions) {
                              actual_starts_d));
 
   // Test String16SetFromString16
-  base::string16 string_e(base::ASCIIToUTF16(
-      "http://web.google.com/search Google Web Search"));
+  std::u16string string_e(
+      base::ASCIIToUTF16("http://web.google.com/search Google Web Search"));
   WordStarts actual_starts_e;
   String16Set string_set = String16SetFromString16(string_e, &actual_starts_e);
   EXPECT_EQ(5U, string_set.size());
@@ -157,7 +157,7 @@ TEST_F(InMemoryURLIndexTypesTest, DISABLED_OffsetsAndTermMatches) {
     EXPECT_EQ(expected_offsets_a[i], offsets[i]);
 
   // Test ReplaceOffsetsInTermMatches
-  offsets[4] = base::string16::npos;  // offset of third term
+  offsets[4] = std::u16string::npos;  // offset of third term
   TermMatches matches_b = ReplaceOffsetsInTermMatches(matches_a, offsets);
   const size_t expected_offsets_b[] = {1, 4, 10, 14};
   ASSERT_EQ(base::size(expected_offsets_b), matches_b.size());

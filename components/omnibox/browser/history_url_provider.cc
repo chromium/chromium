@@ -251,7 +251,7 @@ bool CanPromoteMatchForInlineAutocomplete(const history::HistoryMatch& match) {
 // URL to just a host.  If this host still matches the user input, return it.
 // Returns the empty string on failure.
 GURL ConvertToHostOnly(const history::HistoryMatch& match,
-                       const base::string16& input) {
+                       const std::u16string& input) {
   // See if we should try to do host-only suggestions for this URL. Nonstandard
   // schemes means there's no authority section, so suggesting the host name
   // is useless. File URLs are standard, but host suggestion is not useful for
@@ -266,7 +266,7 @@ GURL ConvertToHostOnly(const history::HistoryMatch& match,
   if ((host.spec().length() < (match.input_location + input.length())))
     return GURL();  // User typing is longer than this host suggestion.
 
-  const base::string16 spec = base::UTF8ToUTF16(host.spec());
+  const std::u16string spec = base::UTF8ToUTF16(host.spec());
   if (spec.compare(match.input_location, input.length(), input))
     return GURL();  // User typing is no longer a prefix.
 
@@ -292,7 +292,7 @@ class SearchTermsDataSnapshot : public SearchTermsData {
 
   std::string GoogleBaseURLValue() const override;
   std::string GetApplicationLocale() const override;
-  base::string16 GetRlzParameterValue(bool from_app_list) const override;
+  std::u16string GetRlzParameterValue(bool from_app_list) const override;
   std::string GetSearchClient() const override;
   std::string GoogleImageSearchSource() const override;
 
@@ -303,7 +303,7 @@ class SearchTermsDataSnapshot : public SearchTermsData {
  private:
   std::string google_base_url_value_;
   std::string application_locale_;
-  base::string16 rlz_parameter_value_;
+  std::u16string rlz_parameter_value_;
   std::string search_client_;
   std::string google_image_search_source_;
 };
@@ -330,7 +330,7 @@ std::string SearchTermsDataSnapshot::GetApplicationLocale() const {
   return application_locale_;
 }
 
-base::string16 SearchTermsDataSnapshot::GetRlzParameterValue(
+std::u16string SearchTermsDataSnapshot::GetRlzParameterValue(
     bool from_app_list) const {
   return rlz_parameter_value_;
 }
@@ -523,7 +523,7 @@ void HistoryURLProvider::Start(const AutocompleteInput& input,
   url::Parsed parts;
   url_formatter::SegmentURL(fixup_return.second, &parts);
   AutocompleteInput fixed_up_input(input);
-  fixed_up_input.UpdateText(fixup_return.second, base::string16::npos, parts);
+  fixed_up_input.UpdateText(fixup_return.second, std::u16string::npos, parts);
 
   // Create a match for what the user typed.
   const bool trim_http = !AutocompleteInput::HasHTTPScheme(input.text());
@@ -675,8 +675,8 @@ int HistoryURLProvider::CalculateRelevance(MatchType match_type,
 
 // static
 ACMatchClassifications HistoryURLProvider::ClassifyDescription(
-    const base::string16& input_text,
-    const base::string16& description) {
+    const std::u16string& input_text,
+    const std::u16string& description) {
   TermMatches term_matches = FindTermMatches(input_text, description);
   return ClassifyTermMatches(term_matches, description.size(),
                              ACMatchClassification::MATCH,
@@ -718,7 +718,7 @@ void HistoryURLProvider::DoAutocomplete(history::HistoryBackend* backend,
         }
         const GURL& row_url = j->url();
         const URLPrefix* best_prefix = URLPrefix::BestURLPrefix(
-            base::UTF8ToUTF16(row_url.spec()), base::string16());
+            base::UTF8ToUTF16(row_url.spec()), std::u16string());
         DCHECK(best_prefix);
         history::HistoryMatch match;
         match.url_info = *j;
@@ -1219,7 +1219,7 @@ AutocompleteMatch HistoryURLProvider::HistoryMatchToACMatch(
   if (match.TryRichAutocompletion(match.contents, match.description,
                                   params.input_before_fixup)) {
     // If rich autocompletion applies, we skip trying the alternatives below.
-  } else if (inline_autocomplete_offset != base::string16::npos) {
+  } else if (inline_autocomplete_offset != std::u16string::npos) {
     DCHECK(inline_autocomplete_offset <= match.fill_into_edit.length());
     match.inline_autocompletion =
         match.fill_into_edit.substr(inline_autocomplete_offset);

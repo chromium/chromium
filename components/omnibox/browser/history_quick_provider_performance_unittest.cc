@@ -100,7 +100,7 @@ class HQPPerfTestOnePopularURL : public testing::Test {
   }
 
  private:
-  base::TimeDelta RunTest(const base::string16& text);
+  base::TimeDelta RunTest(const std::u16string& text);
 
   base::test::TaskEnvironment task_environment_;
   std::unique_ptr<FakeAutocompleteProviderClient> client_;
@@ -168,7 +168,7 @@ void HQPPerfTestOnePopularURL::PrintMeasurements(
   reporter.AddResultList(".duration", durations);
 }
 
-base::TimeDelta HQPPerfTestOnePopularURL::RunTest(const base::string16& text) {
+base::TimeDelta HQPPerfTestOnePopularURL::RunTest(const std::u16string& text) {
   base::RunLoop().RunUntilIdle();
   AutocompleteInput input(text, metrics::OmniboxEventProto::OTHER,
                           TestSchemeClassifier());

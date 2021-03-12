@@ -53,10 +53,10 @@ namespace {
 
 // Extracts the search terms from |url|. Collapses whitespaces, converts them to
 // lowercase and returns them. |template_url_service| must not be null.
-base::string16 GetSearchTermsFromURL(const GURL& url,
+std::u16string GetSearchTermsFromURL(const GURL& url,
                                      TemplateURLService* template_url_service) {
   DCHECK(template_url_service);
-  base::string16 search_terms;
+  std::u16string search_terms;
   template_url_service->GetDefaultSearchProvider()->ExtractSearchTermsFromURL(
       url, template_url_service->search_terms_data(), &search_terms);
   return base::i18n::ToLower(base::CollapseWhitespace(search_terms, false));
@@ -280,7 +280,7 @@ void LocalHistoryZeroSuggestProvider::QueryURLDatabase(
 }
 
 void LocalHistoryZeroSuggestProvider::OnHistoryQueryResults(
-    const base::string16& suggestion,
+    const std::u16string& suggestion,
     const base::TimeTicks& query_time,
     history::QueryResults results) {
   history::HistoryService* history_service = client_->GetHistoryService();
@@ -296,7 +296,7 @@ void LocalHistoryZeroSuggestProvider::OnHistoryQueryResults(
   // Delete the matching URLs that would generate |suggestion|.
   std::vector<GURL> urls_to_delete;
   for (const auto& result : results) {
-    base::string16 search_terms =
+    std::u16string search_terms =
         GetSearchTermsFromURL(result.url(), template_url_service);
     if (search_terms == suggestion)
       urls_to_delete.push_back(result.url());

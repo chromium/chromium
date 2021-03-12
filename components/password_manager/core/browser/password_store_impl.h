@@ -61,7 +61,7 @@ class PasswordStoreImpl : public PasswordStore {
   std::vector<std::unique_ptr<PasswordForm>> FillMatchingLogins(
       const FormDigest& form) override;
   std::vector<std::unique_ptr<PasswordForm>> FillMatchingLoginsByPassword(
-      const base::string16& plain_text_password) override;
+      const std::u16string& plain_text_password) override;
   bool FillAutofillableLogins(
       std::vector<std::unique_ptr<PasswordForm>>* forms) override;
   bool FillBlocklistLogins(
@@ -76,7 +76,7 @@ class PasswordStoreImpl : public PasswordStore {
       const InsecureCredential& insecure_credential) override;
   PasswordStoreChangeList RemoveInsecureCredentialsImpl(
       const std::string& signon_realm,
-      const base::string16& username,
+      const std::u16string& username,
       RemoveInsecureCredentialsReason reason) override;
   std::vector<InsecureCredential> GetAllInsecureCredentialsImpl() override;
   std::vector<InsecureCredential> GetMatchingInsecureCredentialsImpl(

@@ -30,7 +30,7 @@ AutocompleteMatch TitledUrlMatchToAutocompleteMatch(
     AutocompleteProvider* provider,
     const AutocompleteSchemeClassifier& scheme_classifier,
     const AutocompleteInput& input,
-    const base::string16& fixed_up_input_text);
+    const std::u16string& fixed_up_input_text);
 
 }  // namespace bookmarks
 

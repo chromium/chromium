@@ -33,7 +33,7 @@ class TestOmniboxClient : public OmniboxClient {
   std::unique_ptr<AutocompleteProviderClient> CreateAutocompleteProviderClient()
       override;
   std::unique_ptr<OmniboxNavigationObserver> CreateOmniboxNavigationObserver(
-      const base::string16& text,
+      const std::u16string& text,
       const AutocompleteMatch& match,
       const AutocompleteMatch& alternate_nav_match) override;
   bool IsPasteAndGoEnabled() const override;

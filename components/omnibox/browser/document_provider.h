@@ -65,8 +65,8 @@ class DocumentProvider : public AutocompleteProvider {
   // ^           ^ ^^   ^            ^  ^
   // NONE        M |M   |            |  NONE
   //               NONE NONE         MATCH
-  static ACMatchClassifications Classify(const base::string16& input_text,
-                                         const base::string16& text);
+  static ACMatchClassifications Classify(const std::u16string& input_text,
+                                         const std::u16string& text);
 
   // Builds a GURL to use for deduping against other document/history
   // suggestions. Multiple URLs may refer to the same document.
@@ -162,17 +162,17 @@ class DocumentProvider : public AutocompleteProvider {
   // Full date for old files, mm/dd within the same calendar year, or time-of-
   // day if a file was modified on the same date.
   // |now| should generally be base::Time::Now() but is passed in for testing.
-  static base::string16 GenerateLastModifiedString(
+  static std::u16string GenerateLastModifiedString(
       const std::string& modified_timestamp_string,
       base::Time now);
 
   // Convert mimetype (e.g. "application/vnd.google-apps.document") to a string
   // that can be used in the match description (e.g. "Google Docs").
-  static base::string16 GetProductDescriptionString(
+  static std::u16string GetProductDescriptionString(
       const std::string& mimetype);
 
   // Construct match description; e.g. "Jan 12 - First Last - Google Docs".
-  static base::string16 GetMatchDescription(const std::string& update_time,
+  static std::u16string GetMatchDescription(const std::string& update_time,
                                             const std::string& mimetype,
                                             const std::string& owner);
 

@@ -39,11 +39,11 @@ class MockFormSaver : public StubFormSaver {
   MOCK_METHOD3(Save,
                void(PasswordForm pending,
                     const std::vector<const PasswordForm*>& matches,
-                    const base::string16& old_password));
+                    const std::u16string& old_password));
   MOCK_METHOD3(Update,
                void(PasswordForm pending,
                     const std::vector<const PasswordForm*>& matches,
-                    const base::string16& old_password));
+                    const std::u16string& old_password));
 
   // Convenience downcasting method.
   static MockFormSaver& Get(PasswordFormManager* form_manager) {

@@ -28,21 +28,21 @@ class LocationBarModelImpl : public LocationBarModel {
   ~LocationBarModelImpl() override;
 
   // LocationBarModel:
-  base::string16 GetFormattedFullURL() const override;
-  base::string16 GetURLForDisplay() const override;
+  std::u16string GetFormattedFullURL() const override;
+  std::u16string GetURLForDisplay() const override;
   GURL GetURL() const override;
   security_state::SecurityLevel GetSecurityLevel() const override;
   metrics::OmniboxEventProto::PageClassification GetPageClassification(
       OmniboxFocusSource focus_source) override;
   const gfx::VectorIcon& GetVectorIcon() const override;
-  base::string16 GetSecureDisplayText() const override;
-  base::string16 GetSecureAccessibilityText() const override;
+  std::u16string GetSecureDisplayText() const override;
+  std::u16string GetSecureAccessibilityText() const override;
   bool ShouldDisplayURL() const override;
   bool IsOfflinePage() const override;
   bool ShouldPreventElision() const override;
 
  private:
-  base::string16 GetFormattedURL(
+  std::u16string GetFormattedURL(
       url_formatter::FormatUrlTypes format_types) const;
 
   LocationBarModelDelegate* delegate_;

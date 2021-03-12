@@ -28,7 +28,7 @@ class HashPasswordManager {
   ~HashPasswordManager();
 
   bool SavePasswordHash(const std::string username,
-                        const base::string16& password,
+                        const std::u16string& password,
                         bool is_gaia_password = true);
   bool SavePasswordHash(const PasswordHashData& password_hash_data);
   void ClearSavedPasswordHash();

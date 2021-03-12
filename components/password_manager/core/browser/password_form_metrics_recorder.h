@@ -377,9 +377,9 @@ class PasswordFormMetricsRecorder
   // the successful submission is detected.
   void CalculateFillingAssistanceMetric(
       const autofill::FormData& submitted_form,
-      const std::set<std::pair<base::string16, PasswordForm::Store>>&
+      const std::set<std::pair<std::u16string, PasswordForm::Store>>&
           saved_usernames,
-      const std::set<std::pair<base::string16, PasswordForm::Store>>&
+      const std::set<std::pair<std::u16string, PasswordForm::Store>>&
           saved_passwords,
       bool is_blocklisted,
       const std::vector<InteractionsStats>& interactions_stats,

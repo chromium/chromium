@@ -102,7 +102,7 @@ void VoiceSuggestProvider::ClearCache() {
   voice_matches_.clear();
 }
 
-void VoiceSuggestProvider::AddVoiceSuggestion(base::string16 voice_match,
+void VoiceSuggestProvider::AddVoiceSuggestion(std::u16string voice_match,
                                               float confidence_score) {
   voice_matches_.emplace_back(confidence_score, std::move(voice_match));
 }

@@ -90,16 +90,16 @@ void DatabaseErrorCallback(sql::Database* db,
 // ShortcutsDatabase::Shortcut::MatchCore -------------------------------------
 
 ShortcutsDatabase::Shortcut::MatchCore::MatchCore(
-    const base::string16& fill_into_edit,
+    const std::u16string& fill_into_edit,
     const GURL& destination_url,
     AutocompleteMatch::DocumentType document_type,
-    const base::string16& contents,
+    const std::u16string& contents,
     const std::string& contents_class,
-    const base::string16& description,
+    const std::u16string& description,
     const std::string& description_class,
     ui::PageTransition transition,
     AutocompleteMatchType::Type type,
-    const base::string16& keyword)
+    const std::u16string& keyword)
     : fill_into_edit(fill_into_edit),
       destination_url(destination_url),
       document_type(document_type),
@@ -119,33 +119,31 @@ ShortcutsDatabase::Shortcut::MatchCore::~MatchCore() {
 
 // ShortcutsDatabase::Shortcut ------------------------------------------------
 
-ShortcutsDatabase::Shortcut::Shortcut(
-    const std::string& id,
-    const base::string16& text,
-    const MatchCore& match_core,
-    const base::Time& last_access_time,
-    int number_of_hits)
+ShortcutsDatabase::Shortcut::Shortcut(const std::string& id,
+                                      const std::u16string& text,
+                                      const MatchCore& match_core,
+                                      const base::Time& last_access_time,
+                                      int number_of_hits)
     : id(id),
       text(text),
       match_core(match_core),
       last_access_time(last_access_time),
-      number_of_hits(number_of_hits) {
-}
+      number_of_hits(number_of_hits) {}
 
 ShortcutsDatabase::Shortcut::Shortcut()
-    : match_core(base::string16(),
+    : match_core(std::u16string(),
                  GURL(),
                  AutocompleteMatch::DocumentType::NONE,
-                 base::string16(),
+                 std::u16string(),
                  std::string(),
-                 base::string16(),
+                 std::u16string(),
                  std::string(),
                  ui::PageTransition::PAGE_TRANSITION_FIRST,
                  // AutocompleteMatchType doesn't have a sentinel or null value,
                  // so we just use the value equal to 0. This constructor is
                  // only used by STL anyways, so this is harmless.
                  AutocompleteMatchType::Type::URL_WHAT_YOU_TYPED,
-                 base::string16()),
+                 std::u16string()),
       last_access_time(base::Time::Now()),
       number_of_hits(0) {}
 

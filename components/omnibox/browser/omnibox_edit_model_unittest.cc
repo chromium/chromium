@@ -180,7 +180,7 @@ TEST_F(OmniboxEditModelTest, AdjustTextForCopy) {
     match.destination_url = GURL(input[i].match_destination_url);
     model()->SetCurrentMatchForTest(match);
 
-    base::string16 result = base::UTF8ToUTF16(input[i].input);
+    std::u16string result = base::UTF8ToUTF16(input[i].input);
     GURL url;
     bool write_url;
     model()->AdjustTextForCopy(input[i].sel_start, &result, &url, &write_url);
@@ -203,7 +203,7 @@ TEST_F(OmniboxEditModelTest, AdjustTextForCopyReaderMode) {
   location_bar_model()->set_url(distiller_url);
   model()->ResetDisplayTexts();
 
-  base::string16 result = base::UTF8ToUTF16(distiller_url.spec());
+  std::u16string result = base::UTF8ToUTF16(distiller_url.spec());
   GURL url;
   bool write_url = false;
   model()->AdjustTextForCopy(0, &result, &url, &write_url);
@@ -215,43 +215,43 @@ TEST_F(OmniboxEditModelTest, AdjustTextForCopyReaderMode) {
 
 TEST_F(OmniboxEditModelTest, DISABLED_InlineAutocompleteText) {
   // Test if the model updates the inline autocomplete text in the view.
-  EXPECT_EQ(base::string16(), view()->inline_autocompletion());
+  EXPECT_EQ(std::u16string(), view()->inline_autocompletion());
   model()->SetUserText(base::ASCIIToUTF16("he"));
-  model()->OnPopupDataChanged(base::string16(),
+  model()->OnPopupDataChanged(std::u16string(),
                               /*is_temporary_text=*/false,
-                              base::ASCIIToUTF16("llo"), base::string16(), {},
-                              base::string16(), false, base::string16());
+                              base::ASCIIToUTF16("llo"), std::u16string(), {},
+                              std::u16string(), false, std::u16string());
   EXPECT_EQ(base::ASCIIToUTF16("hello"), view()->GetText());
   EXPECT_EQ(base::ASCIIToUTF16("llo"), view()->inline_autocompletion());
 
-  base::string16 text_before = base::ASCIIToUTF16("he");
-  base::string16 text_after = base::ASCIIToUTF16("hel");
+  std::u16string text_before = base::ASCIIToUTF16("he");
+  std::u16string text_after = base::ASCIIToUTF16("hel");
   OmniboxView::StateChanges state_changes{
       &text_before, &text_after, 3, 3, false, true, false, false};
   model()->OnAfterPossibleChange(state_changes, true);
-  EXPECT_EQ(base::string16(), view()->inline_autocompletion());
-  model()->OnPopupDataChanged(base::string16(),
+  EXPECT_EQ(std::u16string(), view()->inline_autocompletion());
+  model()->OnPopupDataChanged(std::u16string(),
                               /*is_temporary_text=*/false,
-                              base::ASCIIToUTF16("lo"), base::string16(), {},
-                              base::string16(), false, base::string16());
+                              base::ASCIIToUTF16("lo"), std::u16string(), {},
+                              std::u16string(), false, std::u16string());
   EXPECT_EQ(base::ASCIIToUTF16("hello"), view()->GetText());
   EXPECT_EQ(base::ASCIIToUTF16("lo"), view()->inline_autocompletion());
 
   model()->Revert();
-  EXPECT_EQ(base::string16(), view()->GetText());
-  EXPECT_EQ(base::string16(), view()->inline_autocompletion());
+  EXPECT_EQ(std::u16string(), view()->GetText());
+  EXPECT_EQ(std::u16string(), view()->inline_autocompletion());
 
   model()->SetUserText(base::ASCIIToUTF16("he"));
-  model()->OnPopupDataChanged(base::string16(),
+  model()->OnPopupDataChanged(std::u16string(),
                               /*is_temporary_text=*/false,
-                              base::ASCIIToUTF16("llo"), base::string16(), {},
-                              base::string16(), false, base::string16());
+                              base::ASCIIToUTF16("llo"), std::u16string(), {},
+                              std::u16string(), false, std::u16string());
   EXPECT_EQ(base::ASCIIToUTF16("hello"), view()->GetText());
   EXPECT_EQ(base::ASCIIToUTF16("llo"), view()->inline_autocompletion());
 
   model()->AcceptTemporaryTextAsUserText();
   EXPECT_EQ(base::ASCIIToUTF16("hello"), view()->GetText());
-  EXPECT_EQ(base::string16(), view()->inline_autocompletion());
+  EXPECT_EQ(std::u16string(), view()->inline_autocompletion());
 }
 
 // iOS doesn't use elisions in the Omnibox textfield.
@@ -271,11 +271,11 @@ TEST_F(OmniboxEditModelTest, RespectUnelisionInZeroSuggest) {
   EXPECT_TRUE(view()->IsSelectAll());
 
   // Test that we don't clobber the unelided text with inline autocomplete text.
-  EXPECT_EQ(base::string16(), view()->inline_autocompletion());
+  EXPECT_EQ(std::u16string(), view()->inline_autocompletion());
   model()->StartZeroSuggestRequest();
-  model()->OnPopupDataChanged(base::string16(), /*is_temporary_text=*/false,
-                              base::string16(), base::string16(), {},
-                              base::string16(), false, base::string16());
+  model()->OnPopupDataChanged(std::u16string(), /*is_temporary_text=*/false,
+                              std::u16string(), std::u16string(), {},
+                              std::u16string(), false, std::u16string());
   EXPECT_EQ(base::ASCIIToUTF16("https://www.example.com/"), view()->GetText());
   EXPECT_FALSE(model()->user_input_in_progress());
   EXPECT_TRUE(view()->IsSelectAll());
@@ -294,9 +294,9 @@ TEST_F(OmniboxEditModelTest, RevertZeroSuggestTemporaryText) {
   view()->SelectAll(true);
   model()->StartZeroSuggestRequest();
   model()->OnPopupDataChanged(base::ASCIIToUTF16("fake_temporary_text"),
-                              /*is_temporary_text=*/true, base::string16(),
-                              base::string16(), {}, base::string16(), false,
-                              base::string16());
+                              /*is_temporary_text=*/true, std::u16string(),
+                              std::u16string(), {}, std::u16string(), false,
+                              std::u16string());
 
   // Test that reverting brings back the original input text.
   EXPECT_TRUE(model()->OnEscapeKeyPressed());
@@ -321,13 +321,13 @@ TEST_F(OmniboxEditModelTest, AlternateNavHasHTTP) {
   model()->OnSetFocus(false);  // Avoids DCHECK in OpenMatch().
   model()->SetUserText(base::ASCIIToUTF16("http://abcd"));
   model()->OpenMatch(match, WindowOpenDisposition::CURRENT_TAB,
-                     alternate_nav_url, base::string16(), 0);
+                     alternate_nav_url, std::u16string(), 0);
   EXPECT_TRUE(AutocompleteInput::HasHTTPScheme(
       client->alternate_nav_match().fill_into_edit));
 
   model()->SetUserText(base::ASCIIToUTF16("abcd"));
   model()->OpenMatch(match, WindowOpenDisposition::CURRENT_TAB,
-                     alternate_nav_url, base::string16(), 0);
+                     alternate_nav_url, std::u16string(), 0);
   EXPECT_TRUE(AutocompleteInput::HasHTTPScheme(
       client->alternate_nav_match().fill_into_edit));
 }
@@ -503,7 +503,7 @@ TEST_F(OmniboxEditModelTest, KeywordModePreservesInlineAutocompleteText) {
   EXPECT_TRUE(view()->IsSelectAll());
 
   // Deleting the user text (exiting keyword) mode should clear everything.
-  view()->SetUserText(base::string16());
+  view()->SetUserText(std::u16string());
   {
     EXPECT_TRUE(view()->GetText().empty());
     EXPECT_TRUE(model()->GetUserTextForTesting().empty());
@@ -521,9 +521,9 @@ TEST_F(OmniboxEditModelTest, KeywordModePreservesTemporaryText) {
 
   // OnPopupDataChanged() is called when the user focuses a suggestion.
   model()->OnPopupDataChanged(base::UTF8ToUTF16("match text"),
-                              /*is_temporary_text=*/true, base::string16(),
-                              base::string16(), {}, base::string16(), false,
-                              base::string16());
+                              /*is_temporary_text=*/true, std::u16string(),
+                              std::u16string(), {}, std::u16string(), false,
+                              std::u16string());
 
   // Entering keyword search mode should preserve temporary text as the user
   // text, and select all.
@@ -553,9 +553,9 @@ TEST_F(OmniboxEditModelTest, CtrlEnterNavigatesToDesiredTLDTemporaryText) {
   view()->SetUserText(base::UTF8ToUTF16("foo"));
   model()->StartAutocomplete(false, false);
   model()->OnPopupDataChanged(base::ASCIIToUTF16("foobar"),
-                              /*is_temporary_text=*/true, base::string16(),
-                              base::string16(), {}, base::string16(), false,
-                              base::string16());
+                              /*is_temporary_text=*/true, std::u16string(),
+                              std::u16string(), {}, std::u16string(), false,
+                              std::u16string());
 
   model()->OnControlKeyChanged(true);
   model()->AcceptInput(WindowOpenDisposition::UNKNOWN);

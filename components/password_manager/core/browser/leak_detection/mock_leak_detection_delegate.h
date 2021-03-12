@@ -19,7 +19,7 @@ class MockLeakDetectionDelegateInterface
 
   // LeakDetectionDelegateInterface:
   MOCK_METHOD4(OnLeakDetectionDone,
-               void(bool, GURL, base::string16, base::string16));
+               void(bool, GURL, std::u16string, std::u16string));
   MOCK_METHOD1(OnError, void(LeakDetectionError));
 };
 

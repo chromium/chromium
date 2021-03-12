@@ -239,7 +239,7 @@ void FindBestMatches(
   std::sort(non_federated_same_scheme->begin(),
             non_federated_same_scheme->end(), IsBetterMatch);
 
-  std::set<std::pair<PasswordForm::Store, base::string16>> store_usernames;
+  std::set<std::pair<PasswordForm::Store, std::u16string>> store_usernames;
   for (const auto* match : *non_federated_same_scheme) {
     auto store_username =
         std::make_pair(match->in_store, match->username_value);
@@ -256,7 +256,7 @@ void FindBestMatches(
 
 const PasswordForm* FindFormByUsername(
     const std::vector<const PasswordForm*>& forms,
-    const base::string16& username_value) {
+    const std::u16string& username_value) {
   for (const PasswordForm* form : forms) {
     if (form->username_value == username_value)
       return form;

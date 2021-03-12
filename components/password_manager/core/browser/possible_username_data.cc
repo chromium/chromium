@@ -19,7 +19,7 @@ namespace password_manager {
 PossibleUsernameData::PossibleUsernameData(
     std::string signon_realm,
     autofill::FieldRendererId renderer_id,
-    base::string16 value,
+    std::u16string value,
     base::Time last_change,
     int driver_id)
     : signon_realm(std::move(signon_realm)),
@@ -34,7 +34,7 @@ PossibleUsernameData::~PossibleUsernameData() = default;
 bool IsPossibleUsernameValid(
     const PossibleUsernameData& possible_username,
     const std::string& submitted_signon_realm,
-    const std::vector<base::string16>& possible_usernames) {
+    const std::vector<std::u16string>& possible_usernames) {
   if (submitted_signon_realm != possible_username.signon_realm)
     return false;
 
@@ -42,7 +42,7 @@ bool IsPossibleUsernameValid(
   // username. In the initial version of the username first flow it is better to
   // be conservative in that. This check only allows usernames that match
   // existing usernames after canonicalization.
-  base::string16 (*Canonicalize)(base::StringPiece16) = &CanonicalizeUsername;
+  std::u16string (*Canonicalize)(base::StringPiece16) = &CanonicalizeUsername;
   if (!base::Contains(possible_usernames, Canonicalize(possible_username.value),
                       Canonicalize)) {
     return false;

@@ -58,8 +58,8 @@ struct BulkLeakCheckImpl::CredentialHolder {
   std::unique_ptr<LeakDetectionRequestInterface> network_request_;
 };
 
-LeakCheckCredential::LeakCheckCredential(base::string16 username,
-                                         base::string16 password)
+LeakCheckCredential::LeakCheckCredential(std::u16string username,
+                                         std::u16string password)
     : username_(std::move(username)), password_(std::move(password)) {}
 
 LeakCheckCredential::LeakCheckCredential(LeakCheckCredential&&) = default;

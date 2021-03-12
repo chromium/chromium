@@ -51,12 +51,12 @@ struct StructTraits<blink::mojom::CredentialInfoDataView,
     return r.type;
   }
 
-  static const base::Optional<base::string16>& id(
+  static const base::Optional<std::u16string>& id(
       const password_manager::CredentialInfo& r) {
     return r.id;
   }
 
-  static const base::Optional<base::string16>& name(
+  static const base::Optional<std::u16string>& name(
       const password_manager::CredentialInfo& r) {
     return r.name;
   }
@@ -65,7 +65,7 @@ struct StructTraits<blink::mojom::CredentialInfoDataView,
     return r.icon;
   }
 
-  static const base::Optional<base::string16>& password(
+  static const base::Optional<std::u16string>& password(
       const password_manager::CredentialInfo& r) {
     return r.password;
   }

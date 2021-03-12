@@ -261,7 +261,7 @@ class AutocompleteProvider
   // Returns a string describing this provider's type.
   const char* GetName() const;
 
-  typedef std::multimap<char16_t, base::string16> WordMap;
+  typedef std::multimap<char16_t, std::u16string> WordMap;
 
   // Finds the matches for |find_text| in |text|, classifies those matches,
   // merges those classifications with |original_class|, and returns the merged
@@ -298,8 +298,8 @@ class AutocompleteProvider
   //      ^      ^
   //      0 M    7 N
   static ACMatchClassifications ClassifyAllMatchesInString(
-      const base::string16& find_text,
-      const base::string16& text,
+      const std::u16string& find_text,
+      const std::u16string& text,
       const bool text_is_search_query,
       const ACMatchClassifications& original_class = ACMatchClassifications());
 
@@ -308,20 +308,20 @@ class AutocompleteProvider
   // (not accidentally) in keyword mode. Combined, this method returns
   // whether the caller should perform steps that are only valid in this state.
   static bool InExplicitExperimentalKeywordMode(const AutocompleteInput& input,
-                                                const base::string16& keyword);
+                                                const std::u16string& keyword);
 
   // Uses the keyword entry mode in |input| (and possibly compare the length
   // of the user input vs |keyword|) to decide if the user intentionally
   // entered keyword mode.
   static bool IsExplicitlyInKeywordMode(const AutocompleteInput& input,
-                                        const base::string16& keyword);
+                                        const std::u16string& keyword);
 
   // Trims "http:" or "https:" and up to two subsequent slashes from |url|. If
   // |trim_https| is true, trims "https:", otherwise trims "http:". Returns the
   // number of characters that were trimmed.
   // NOTE: For a view-source: URL, this will trim from after "view-source:" and
   // return 0.
-  static size_t TrimSchemePrefix(base::string16* url, bool trim_https);
+  static size_t TrimSchemePrefix(std::u16string* url, bool trim_https);
 
  protected:
   friend class base::RefCountedThreadSafe<AutocompleteProvider>;
@@ -329,7 +329,7 @@ class AutocompleteProvider
   FRIEND_TEST_ALL_PREFIXES(AutocompleteResultTest,
                            DemoteOnDeviceSearchSuggestions);
 
-  typedef std::pair<bool, base::string16> FixupReturn;
+  typedef std::pair<bool, std::u16string> FixupReturn;
 
   virtual ~AutocompleteProvider();
 

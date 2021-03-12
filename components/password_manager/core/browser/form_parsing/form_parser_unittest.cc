@@ -113,7 +113,7 @@ autofill::FieldRendererId GetUniqueId() {
 }
 
 // Use to add a number suffix which is unique in the scope of the test.
-base::string16 StampUniqueSuffix(const char* base_str) {
+std::u16string StampUniqueSuffix(const char* base_str) {
   return ASCIIToUTF16(base_str) + ASCIIToUTF16("_") +
          base::NumberToString16(GetUniqueId().value());
 }
@@ -245,16 +245,16 @@ FormData GetFormDataAndExpectation(const FormParsingTestCase& test_case,
 // the confirmation password value, which is not represented in PasswordForm).
 void CheckField(const std::vector<FormFieldData>& fields,
                 autofill::FieldRendererId renderer_id,
-                const base::string16& element_name,
-                const base::string16* element_value,
+                const std::u16string& element_name,
+                const std::u16string* element_value,
                 const char* element_kind) {
   SCOPED_TRACE(testing::Message("Looking for element of kind ")
                << element_kind);
 
   if (renderer_id.is_null()) {
-    EXPECT_EQ(base::string16(), element_name);
+    EXPECT_EQ(std::u16string(), element_name);
     if (element_value)
-      EXPECT_EQ(base::string16(), *element_value);
+      EXPECT_EQ(std::u16string(), *element_value);
     return;
   }
 
@@ -273,7 +273,7 @@ void CheckField(const std::vector<FormFieldData>& fields,
   EXPECT_EQ(element_name, field_it->name);
 #endif
 
-  base::string16 expected_value =
+  std::u16string expected_value =
       field_it->user_input.empty() ? field_it->value : field_it->user_input;
 
   if (element_value)
@@ -323,7 +323,7 @@ void CheckPasswordFormFields(const PasswordForm& password_form,
 // Checks that in a vector of pairs of string16s, all the first parts of the
 // pairs (which represent element values) are unique.
 void CheckAllValuesUnique(const ValueElementVector& v) {
-  std::set<base::string16> all_values;
+  std::set<std::u16string> all_values;
   for (const auto& pair : v) {
     auto insertion = all_values.insert(pair.first);
     EXPECT_TRUE(insertion.second) << pair.first << " is duplicated";

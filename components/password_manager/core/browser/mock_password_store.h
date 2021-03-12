@@ -61,7 +61,7 @@ class MockPasswordStore : public PasswordStore {
   }
   MOCK_METHOD1(
       FillMatchingLoginsByPassword,
-      std::vector<std::unique_ptr<PasswordForm>>(const base::string16&));
+      std::vector<std::unique_ptr<PasswordForm>>(const std::u16string&));
   MOCK_METHOD1(FillAutofillableLogins,
                bool(std::vector<std::unique_ptr<PasswordForm>>*));
   MOCK_METHOD1(FillBlocklistLogins,
@@ -78,7 +78,7 @@ class MockPasswordStore : public PasswordStore {
                PasswordStoreChangeList(const InsecureCredential&));
   MOCK_METHOD3(RemoveInsecureCredentialsImpl,
                PasswordStoreChangeList(const std::string&,
-                                       const base::string16&,
+                                       const std::u16string&,
                                        RemoveInsecureCredentialsReason));
   MOCK_METHOD0(GetAllInsecureCredentialsImpl,
                std::vector<InsecureCredential>());
@@ -99,16 +99,16 @@ class MockPasswordStore : public PasswordStore {
   MOCK_CONST_METHOD0(IsAbleToSavePasswords, bool());
 
   MOCK_METHOD3(CheckReuse,
-               void(const base::string16&,
+               void(const std::u16string&,
                     const std::string&,
                     PasswordReuseDetectorConsumer*));
   MOCK_METHOD4(SaveGaiaPasswordHash,
                void(const std::string&,
-                    const base::string16&,
+                    const std::u16string&,
                     bool,
                     metrics_util::GaiaPasswordHashChange));
   MOCK_METHOD2(SaveEnterprisePasswordHash,
-               void(const std::string&, const base::string16&));
+               void(const std::string&, const std::u16string&));
   MOCK_METHOD1(ClearGaiaPasswordHash, void(const std::string&));
   MOCK_METHOD0(ClearAllGaiaPasswordHash, void());
   MOCK_METHOD0(ClearAllEnterprisePasswordHash, void());

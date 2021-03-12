@@ -189,7 +189,7 @@ PasswordStoreImpl::FillMatchingLogins(const FormDigest& form) {
 
 std::vector<std::unique_ptr<PasswordForm>>
 PasswordStoreImpl::FillMatchingLoginsByPassword(
-    const base::string16& plain_text_password) {
+    const std::u16string& plain_text_password) {
   std::vector<std::unique_ptr<PasswordForm>> matched_forms;
   if (login_db_ &&
       !login_db_->GetLoginsByPassword(plain_text_password, &matched_forms))
@@ -262,7 +262,7 @@ PasswordStoreChangeList PasswordStoreImpl::AddInsecureCredentialImpl(
 
 PasswordStoreChangeList PasswordStoreImpl::RemoveInsecureCredentialsImpl(
     const std::string& signon_realm,
-    const base::string16& username,
+    const std::u16string& username,
     RemoveInsecureCredentialsReason reason) {
   DCHECK(background_task_runner()->RunsTasksInCurrentSequence());
   if (!login_db_ || !login_db_->insecure_credentials_table().RemoveRow(

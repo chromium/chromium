@@ -1995,7 +1995,7 @@ TEST_F(LoginDatabaseTest, EncryptionEnabled) {
     ASSERT_TRUE(db.Init());
     EXPECT_EQ(AddChangeForForm(password_form), db.AddLogin(password_form));
   }
-  base::string16 decrypted_pw;
+  std::u16string decrypted_pw;
   ASSERT_TRUE(OSCrypt::DecryptString16(
       GetColumnValuesFromDatabase<std::string>(file, "password_value").at(0),
       &decrypted_pw));
@@ -2353,7 +2353,7 @@ PasswordForm LoginDatabaseUndecryptableLoginsTest::AddDummyLogin(
     const GURL& origin,
     bool should_be_corrupted) {
   // Create a dummy password form.
-  const base::string16 unique_string16 = ASCIIToUTF16(unique_string);
+  const std::u16string unique_string16 = ASCIIToUTF16(unique_string);
   PasswordForm form;
   form.url = origin;
   form.username_element = unique_string16;
@@ -2487,7 +2487,7 @@ TEST_F(LoginDatabaseTest, GetLoginsByPassword) {
   std::vector<std::unique_ptr<PasswordForm>> result;
   PrimaryKeyToFormMap key_to_form_map;
 
-  const base::string16 duplicated_password =
+  const std::u16string duplicated_password =
       base::ASCIIToUTF16("duplicated_password");
 
   // Insert first logins.
@@ -2625,8 +2625,8 @@ TEST_F(LoginDatabaseTest, RemovingLoginRemovesInsecureCredentials) {
 // Test retrieving password forms by supplied signon_realm and username.
 TEST_F(LoginDatabaseTest, GetLoginsBySignonRealmAndUsername) {
   std::string signon_realm = "https://test.com";
-  base::string16 username1 = base::ASCIIToUTF16("username1");
-  base::string16 username2 = base::ASCIIToUTF16("username2");
+  std::u16string username1 = base::ASCIIToUTF16("username1");
+  std::u16string username2 = base::ASCIIToUTF16("username2");
 
   // Insert first login.
   PasswordForm form1;

@@ -37,7 +37,7 @@ struct PasswordFieldPrediction {
   // Field identifier generated in Blink on non-iOS platforms.
   autofill::FieldRendererId renderer_id;
 #if defined(OS_IOS)
-  base::string16 unique_id;
+  std::u16string unique_id;
 #endif
   autofill::FieldSignature signature;
   autofill::ServerFieldType type;

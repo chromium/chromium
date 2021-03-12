@@ -91,13 +91,13 @@ class FormSaverImplSaveTest
   // Either saves, updates or replaces |pending| according to the test param.
   void SaveCredential(PasswordForm pending,
                       const std::vector<const PasswordForm*>& matches,
-                      const base::string16& old_password);
+                      const std::u16string& old_password);
 };
 
 void FormSaverImplSaveTest::SaveCredential(
     PasswordForm pending,
     const std::vector<const PasswordForm*>& matches,
-    const base::string16& old_password) {
+    const std::u16string& old_password) {
   switch (GetParam()) {
     case SaveOperation::kSave:
       EXPECT_CALL(*mock_store_, AddLogin(pending));
@@ -119,7 +119,7 @@ TEST_P(FormSaverImplSaveTest, Write_EmptyStore) {
   PasswordForm pending = CreatePending("nameofuser", "wordToP4a55");
 
   SaveCredential(pending, {} /* matches */,
-                 base::string16() /* old_password */);
+                 std::u16string() /* old_password */);
 }
 
 // Pushes the credential to the store with |matches| containing the pending
@@ -153,7 +153,7 @@ TEST_P(FormSaverImplSaveTest, Write_AndDeleteEmptyUsernameCredentials) {
                                                     &no_username};
 
   EXPECT_CALL(*mock_store_, RemoveLogin(no_username));
-  SaveCredential(pending, matches, base::string16());
+  SaveCredential(pending, matches, std::u16string());
 }
 
 // Check that storing credentials with a non-empty username does not result in
@@ -168,7 +168,7 @@ TEST_P(FormSaverImplSaveTest,
   no_username.password_value = ASCIIToUTF16("abcd");
 
   EXPECT_CALL(*mock_store_, RemoveLogin(_)).Times(0);
-  SaveCredential(pending, {&no_username}, base::string16());
+  SaveCredential(pending, {&no_username}, std::u16string());
 }
 
 // Check that if a credential without username is saved, and another credential
@@ -181,7 +181,7 @@ TEST_P(FormSaverImplSaveTest, Write_EmptyUsernameWillNotCauseDeletion) {
   with_username.username_value = ASCIIToUTF16("nameofuser");
 
   EXPECT_CALL(*mock_store_, RemoveLogin(_)).Times(0);
-  SaveCredential(pending, {&with_username}, base::string16());
+  SaveCredential(pending, {&with_username}, std::u16string());
 }
 
 // Check that PSL-matched credentials in matches are exempt from deletion,
@@ -197,7 +197,7 @@ TEST_P(FormSaverImplSaveTest, Write_AndDoNotDeleteEmptyUsernamePSLCredentials) {
   const std::vector<const PasswordForm*> matches = {&stored, &no_username_psl};
 
   EXPECT_CALL(*mock_store_, RemoveLogin(_)).Times(0);
-  SaveCredential(pending, matches, base::string16());
+  SaveCredential(pending, matches, std::u16string());
 }
 
 // Check that on storing a credential, other credentials with the same password
@@ -209,7 +209,7 @@ TEST_P(FormSaverImplSaveTest, Write_AndDoNotDeleteNonEmptyUsernameCredentials) {
   other_username.username_value = ASCIIToUTF16("other username");
 
   EXPECT_CALL(*mock_store_, RemoveLogin(_)).Times(0);
-  SaveCredential(pending, {&other_username}, base::string16());
+  SaveCredential(pending, {&other_username}, std::u16string());
 }
 
 // Stores a credential and makes sure that its duplicate is updated.

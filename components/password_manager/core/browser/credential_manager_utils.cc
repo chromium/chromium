@@ -25,11 +25,11 @@ std::unique_ptr<PasswordForm> CreatePasswordFormFromCredentialInfo(
 
   form = std::make_unique<PasswordForm>();
   form->icon_url = info.icon;
-  form->display_name = info.name.value_or(base::string16());
+  form->display_name = info.name.value_or(std::u16string());
   form->federation_origin = info.federation;
   form->url = origin.GetURL();
-  form->password_value = info.password.value_or(base::string16());
-  form->username_value = info.id.value_or(base::string16());
+  form->password_value = info.password.value_or(std::u16string());
+  form->username_value = info.id.value_or(std::u16string());
   form->scheme = PasswordForm::Scheme::kHtml;
   form->type = PasswordForm::Type::kApi;
 

@@ -73,7 +73,7 @@ class ScoredHistoryMatchTest : public testing::Test {
       const std::vector<std::string>&,
       const WordStarts term_word_starts,
       const GURL& url,
-      const base::string16& title);
+      const std::u16string& title);
 };
 
 history::URLRow ScoredHistoryMatchTest::MakeURLRow(const char* url,
@@ -115,7 +115,7 @@ float ScoredHistoryMatchTest::GetTopicalityScoreOfTermAgainstURLAndTitle(
     const std::vector<std::string>& terms,
     const WordStarts term_word_starts,
     const GURL& url,
-    const base::string16& title) {
+    const std::u16string& title) {
   String16Vector term_vector;
   std::transform(terms.begin(), terms.end(), std::back_inserter(term_vector),
                  [](auto term) { return base::UTF8ToUTF16(term); });
@@ -125,7 +125,7 @@ float ScoredHistoryMatchTest::GetTopicalityScoreOfTermAgainstURLAndTitle(
                         return accumulator + " " + term;
                       });
   RowWordStarts row_word_starts;
-  base::string16 url_string = base::UTF8ToUTF16(url.spec());
+  std::u16string url_string = base::UTF8ToUTF16(url.spec());
   String16SetFromString16(url_string, &row_word_starts.url_word_starts_);
   String16SetFromString16(title, &row_word_starts.title_word_starts_);
   auto row = history::URLRow(GURL(url));
@@ -660,7 +660,7 @@ TEST_F(ScoredHistoryMatchTest, GetDocumentSpecificityScore) {
 // once somewhere in the URL or title.
 TEST_F(ScoredHistoryMatchTest, GetTopicalityScore) {
   GURL url("http://abc.def.com/path1/path2?arg1=val1&arg2=val2#hash_fragment");
-  base::string16 title = ASCIIToUTF16("here is a - title");
+  std::u16string title = ASCIIToUTF16("here is a - title");
   auto Score = [&](const std::vector<std::string>& term_vector,
                    const WordStarts term_word_starts) {
     return GetTopicalityScoreOfTermAgainstURLAndTitle(
@@ -732,7 +732,7 @@ TEST_F(ScoredHistoryMatchTest, GetTopicalityScore) {
 
 TEST_F(ScoredHistoryMatchTest, GetTopicalityScore_MidwordMatching) {
   GURL url("http://abc.def.com/path1/path2?arg1=val1&arg2=val2#hash_fragment");
-  base::string16 title = ASCIIToUTF16("here is a - title");
+  std::u16string title = ASCIIToUTF16("here is a - title");
   auto Score = [&](const std::vector<std::string>& term_vector,
                    const WordStarts term_word_starts) {
     return GetTopicalityScoreOfTermAgainstURLAndTitle(

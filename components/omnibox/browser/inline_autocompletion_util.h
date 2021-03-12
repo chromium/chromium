@@ -15,8 +15,8 @@
 
 // Finds the first occurrence of |search| at a wordbreak within |text| starting
 // at |search_start|.
-size_t FindAtWordbreak(const base::string16& text,
-                       const base::string16& search,
+size_t FindAtWordbreak(const std::u16string& text,
+                       const std::u16string& search,
                        size_t search_start = 0);
 
 // Splits |search| into words and finds them in |text|, returning a vector of
@@ -28,8 +28,8 @@ size_t FindAtWordbreak(const base::string16& text,
 //   be found in 'a -c' and 'a- c'.
 // If all words in |search| were not found, then returns an empty vector.
 std::vector<std::pair<size_t, size_t>> FindWordsSequentiallyAtWordbreak(
-    const base::string16& text,
-    const base::string16& search);
+    const std::u16string& text,
+    const std::u16string& search);
 
 // Inverts and reverses term |matches| in a domain of [0, |length|) to determine
 // the selected non-matches. Ranges are interpreted as {start, end}. E.g., if

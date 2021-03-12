@@ -3326,7 +3326,7 @@ TEST_F(OmniboxPedalImplementationsTest,
   const auto& pedals = provider.pedals_;
   std::unordered_set<const OmniboxPedal*> found_pedals(pedals.size());
   for (const auto& pedal_concept : literal_concept_expressions) {
-    const base::string16 first_trigger = base::ASCIIToUTF16(pedal_concept[0]);
+    const std::u16string first_trigger = base::ASCIIToUTF16(pedal_concept[0]);
     auto iter =
         std::find_if(pedals.begin(), pedals.end(), [&](const auto& pedal) {
           const auto sequence = provider.Tokenize(first_trigger);
@@ -3339,7 +3339,7 @@ TEST_F(OmniboxPedalImplementationsTest,
     EXPECT_TRUE(is_newly_found)
         << "Found the same Pedal more than once with: " << first_trigger;
     for (const char* literal : pedal_concept) {
-      const base::string16 expression = base::ASCIIToUTF16(literal);
+      const std::u16string expression = base::ASCIIToUTF16(literal);
       const auto is_match = [&](const auto& pedal) {
         const auto sequence = provider.Tokenize(expression);
         return pedal.second->IsConceptMatch(sequence);

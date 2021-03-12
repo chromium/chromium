@@ -156,7 +156,7 @@ bool FormFetcherImpl::IsBlocklisted() const {
 }
 
 bool FormFetcherImpl::IsMovingBlocked(const autofill::GaiaIdHash& destination,
-                                      const base::string16& username) const {
+                                      const std::u16string& username) const {
   NOTREACHED();
   return false;
 }

@@ -25,7 +25,7 @@ using SavedPasswordsView =
 
 bool IsUsernameAlreadyUsed(SavedPasswordsView all_forms,
                            SavedPasswordsView forms_to_check,
-                           const base::string16& new_username) {
+                           const std::u16string& new_username) {
   // In case the username changed, make sure that there exists no other
   // credential with the same signon_realm and username in the same store.
   auto has_conflicting_username = [&forms_to_check,

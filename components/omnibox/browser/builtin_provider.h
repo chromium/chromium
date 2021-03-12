@@ -29,12 +29,12 @@ class BuiltinProvider : public AutocompleteProvider {
  private:
   ~BuiltinProvider() override;
 
-  typedef std::vector<base::string16> Builtins;
+  typedef std::vector<std::u16string> Builtins;
 
   static const int kRelevance;
 
-  void AddMatch(const base::string16& match_string,
-                const base::string16& inline_completion,
+  void AddMatch(const std::u16string& match_string,
+                const std::u16string& inline_completion,
                 const ACMatchClassifications& styles);
 
   // Returns true if |matches_| contains a match that should be allowed to be

@@ -88,7 +88,7 @@ class FakeAutocompleteProviderClient : public MockAutocompleteProviderClient {
   bool IsPersonalizedUrlDataCollectionActive() const override { return true; }
 
   void Classify(
-      const base::string16& text,
+      const std::u16string& text,
       bool prefer_keyword,
       bool allow_exact_keyword_match,
       metrics::OmniboxEventProto::PageClassification page_classification,
@@ -145,7 +145,7 @@ class MostVisitedSitesProviderTest : public testing::Test,
     // Use NTP as the page classification, since REMOTE_NO_URL is enabled by
     // default for the NTP.
     AutocompleteInput input(
-        base::string16(),
+        std::u16string(),
         metrics::OmniboxEventProto::INSTANT_NTP_WITH_OMNIBOX_AS_STARTING_FOCUS,
         TestSchemeClassifier());
     input.set_focus_type(OmniboxFocusType::ON_FOCUS);
@@ -174,7 +174,7 @@ TEST_F(MostVisitedSitesProviderTest, AllowMostVisitedSitesSuggestions) {
   on_focus_input.set_current_url(GURL(input_url));
   on_focus_input.set_focus_type(OmniboxFocusType::ON_FOCUS);
 
-  AutocompleteInput on_clobber_input(base::string16(),
+  AutocompleteInput on_clobber_input(std::u16string(),
                                      metrics::OmniboxEventProto::OTHER,
                                      TestSchemeClassifier());
   on_clobber_input.set_current_url(GURL(input_url));

@@ -59,9 +59,9 @@ void OmniboxController::OnResultChanged(AutocompleteController* controller,
       if (popup_)
         popup_->OnResultChanged();
       omnibox_edit_model_->OnPopupDataChanged(
-          base::string16(),
-          /*is_temporary_text=*/false, base::string16(), base::string16(), {},
-          base::string16(), false, base::string16());
+          std::u16string(),
+          /*is_temporary_text=*/false, std::u16string(), std::u16string(), {},
+          std::u16string(), false, std::u16string());
     }
   } else if (popup_) {
     popup_->OnResultChanged();

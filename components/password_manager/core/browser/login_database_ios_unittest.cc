@@ -84,17 +84,18 @@ size_t LoginDatabaseIOSTest::GetKeychainSize() {
 }
 
 TEST_F(LoginDatabaseIOSTest, KeychainStorage) {
-  base::string16 test_passwords[] = {
-      base::ASCIIToUTF16("foo"), base::ASCIIToUTF16("bar"),
+  std::u16string test_passwords[] = {
+      base::ASCIIToUTF16("foo"),
+      base::ASCIIToUTF16("bar"),
       base::WideToUTF16(L"\u043F\u0430\u0440\u043E\u043B\u044C"),
-      base::string16(),
+      std::u16string(),
   };
 
   for (unsigned int i = 0; i < base::size(test_passwords); i++) {
     std::string encrypted;
     EXPECT_EQ(LoginDatabase::ENCRYPTION_RESULT_SUCCESS,
               login_db_->EncryptedString(test_passwords[i], &encrypted));
-    base::string16 decrypted;
+    std::u16string decrypted;
     EXPECT_EQ(LoginDatabase::ENCRYPTION_RESULT_SUCCESS,
               login_db_->DecryptedString(encrypted, &decrypted));
     EXPECT_STREQ(UTF16ToUTF8(test_passwords[i]).c_str(),

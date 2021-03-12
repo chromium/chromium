@@ -167,17 +167,17 @@ void OmniboxPopupModel::SetSelection(Selection new_selection,
     view_->ProvideButtonFocusHint(selected_line());
   }
 
-  base::string16 keyword;
+  std::u16string keyword;
   bool is_keyword_hint;
   TemplateURLService* service = edit_model_->client()->GetTemplateURLService();
   match.GetKeywordUIState(service, &keyword, &is_keyword_hint);
 
   if (selection_.state == FOCUSED_BUTTON_HEADER) {
     // If the new selection is a Header, the temporary text is an empty string.
-    edit_model_->OnPopupDataChanged(base::string16(),
+    edit_model_->OnPopupDataChanged(std::u16string(),
                                     /*is_temporary_text=*/true,
-                                    base::string16(), base::string16(), {},
-                                    keyword, is_keyword_hint, base::string16());
+                                    std::u16string(), std::u16string(), {},
+                                    keyword, is_keyword_hint, std::u16string());
   } else if (old_selection.line != selection_.line ||
              (old_selection.IsButtonFocused() &&
               !new_selection.IsButtonFocused() &&
@@ -187,15 +187,15 @@ void OmniboxPopupModel::SetSelection(Selection new_selection,
     // Updating the edit model for every state change breaks keyword mode.
     if (reset_to_default) {
       edit_model_->OnPopupDataChanged(
-          base::string16(),
+          std::u16string(),
           /*is_temporary_text=*/false, match.inline_autocompletion,
           match.prefix_autocompletion, match.split_autocompletion, keyword,
           is_keyword_hint, match.additional_text);
     } else {
       edit_model_->OnPopupDataChanged(
           match.fill_into_edit,
-          /*is_temporary_text=*/true, base::string16(), base::string16(), {},
-          keyword, is_keyword_hint, base::string16());
+          /*is_temporary_text=*/true, std::u16string(), std::u16string(), {},
+          keyword, is_keyword_hint, std::u16string());
     }
   }
 }
@@ -553,7 +553,7 @@ bool OmniboxPopupModel::TriggerSelectionAction(Selection selection,
     case FOCUSED_BUTTON_TAB_SWITCH:
       DCHECK(timestamp != base::TimeTicks());
       edit_model()->OpenMatch(match, WindowOpenDisposition::SWITCH_TO_TAB,
-                              GURL(), base::string16(), selected_line(),
+                              GURL(), std::u16string(), selected_line(),
                               timestamp);
       break;
 
@@ -575,8 +575,8 @@ bool OmniboxPopupModel::TriggerSelectionAction(Selection selection,
   return true;
 }
 
-base::string16 OmniboxPopupModel::GetAccessibilityLabelForCurrentSelection(
-    const base::string16& match_text,
+std::u16string OmniboxPopupModel::GetAccessibilityLabelForCurrentSelection(
+    const std::u16string& match_text,
     bool include_positional_info,
     int* label_prefix_length) {
   size_t line = selection_.line;

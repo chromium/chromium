@@ -10,8 +10,8 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 TEST(TailoredWordBreakIterator, BreakWord) {
-  base::string16 underscore(base::UTF8ToUTF16("_"));
-  base::string16 str(base::UTF8ToUTF16("_foo_bar!_\npouet_boom"));
+  std::u16string underscore(base::UTF8ToUTF16("_"));
+  std::u16string str(base::UTF8ToUTF16("_foo_bar!_\npouet_boom"));
   TailoredWordBreakIterator iter(str, TailoredWordBreakIterator::BREAK_WORD);
   ASSERT_TRUE(iter.Init());
   EXPECT_TRUE(iter.Advance());

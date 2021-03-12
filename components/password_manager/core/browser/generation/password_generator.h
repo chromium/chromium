@@ -30,7 +30,7 @@ extern const uint32_t kDefaultPasswordLength;
 // - at least 1 upper case latin character
 // - at least 1 number (digit)
 // - no symbols
-base::string16 GeneratePassword(const PasswordRequirementsSpec& spec);
+std::u16string GeneratePassword(const PasswordRequirementsSpec& spec);
 
 }  // namespace autofill
 

@@ -25,7 +25,7 @@
 #include "ui/base/resource/resource_bundle.h"
 
 namespace {
-typedef base::StringTokenizerT<base::string16, base::string16::const_iterator>
+typedef base::StringTokenizerT<std::u16string, std::u16string::const_iterator>
     StringTokenizer16;
 
 }  // namespace
@@ -79,7 +79,7 @@ size_t OmniboxPedalProvider::EstimateMemoryUsage() const {
 
 OmniboxPedal* OmniboxPedalProvider::FindPedalMatch(
     const AutocompleteInput& input,
-    const base::string16& match_text) {
+    const std::u16string& match_text) {
   OmniboxPedal::Tokens match_tokens = Tokenize(match_text);
   if (match_tokens.empty()) {
     return nullptr;
@@ -104,8 +104,8 @@ OmniboxPedal* OmniboxPedalProvider::FindPedalMatch(
 }
 
 OmniboxPedal::Tokens OmniboxPedalProvider::Tokenize(
-    const base::string16& text) const {
-  base::string16 reduced_text = base::i18n::ToLower(text);
+    const std::u16string& text) const {
+  std::u16string reduced_text = base::i18n::ToLower(text);
   OmniboxPedal::Tokens match_tokens;
   match_tokens.reserve(max_tokens_);
   if (tokenize_characters_.empty()) {
@@ -178,7 +178,7 @@ void OmniboxPedalProvider::LoadPedalConcepts() {
   dictionary_.reserve(dictionary.size());
   int id = 0;
   for (const auto& token_value : dictionary) {
-    base::string16 token;
+    std::u16string token;
     token_value.GetAsString(&token);
     dictionary_.insert({token, id});
     ++id;

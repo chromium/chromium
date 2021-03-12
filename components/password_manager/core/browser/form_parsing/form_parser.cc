@@ -35,7 +35,6 @@
 using autofill::FieldPropertiesFlags;
 using autofill::FormData;
 using autofill::FormFieldData;
-using base::string16;
 
 namespace password_manager {
 
@@ -82,24 +81,24 @@ AutocompleteFlag ExtractAutocompleteFlag(const std::string& attribute) {
 }
 
 // Returns true if the |str| contains words related to CVC fields.
-bool StringMatchesCVC(const base::string16& str) {
-  static const base::NoDestructor<base::string16> kCardCvcReCached(
+bool StringMatchesCVC(const std::u16string& str) {
+  static const base::NoDestructor<std::u16string> kCardCvcReCached(
       base::UTF8ToUTF16(autofill::kCardCvcRe));
 
   return autofill::MatchesPattern(str, *kCardCvcReCached);
 }
 
 // Returns true if the |str| contains words related to SSN fields.
-bool StringMatchesSSN(const base::string16& str) {
-  static const base::NoDestructor<base::string16> kSSNReCached(
+bool StringMatchesSSN(const std::u16string& str) {
+  static const base::NoDestructor<std::u16string> kSSNReCached(
       base::UTF8ToUTF16(autofill::kSocialSecurityRe));
 
   return autofill::MatchesPattern(str, *kSSNReCached);
 }
 
 // Returns true if the |str| contains words related to one time password fields.
-bool StringMatchesOTP(const base::string16& str) {
-  static const base::NoDestructor<base::string16> kOTPReCached(
+bool StringMatchesOTP(const std::u16string& str) {
+  static const base::NoDestructor<std::u16string> kOTPReCached(
       base::UTF8ToUTF16(autofill::kOneTimePwdRe));
 
   return autofill::MatchesPattern(str, *kOTPReCached);
@@ -175,17 +174,17 @@ bool MatchesInteractability(const ProcessedField& processed_field,
            FieldPropertiesFlags::kAutofilled));
 }
 
-bool DoesStringContainOnlyDigits(const base::string16& s) {
+bool DoesStringContainOnlyDigits(const std::u16string& s) {
   return base::ranges::all_of(s, &base::IsAsciiDigit<char16_t>);
 }
 
 // Heuristics to determine that a string is very unlikely to be a username.
-bool IsProbablyNotUsername(const base::string16& s) {
+bool IsProbablyNotUsername(const std::u16string& s) {
   return s.empty() || (s.size() < 3 && DoesStringContainOnlyDigits(s));
 }
 
 // Returns |user_input| if it is not empty, |value| otherwise.
-const base::string16& GetFieldValue(const FormFieldData& field) {
+const std::u16string& GetFieldValue(const FormFieldData& field) {
   return field.user_input.empty() ? field.value : field.user_input;
 }
 
@@ -784,7 +783,7 @@ void ParseUsingBaseHeuristics(
 // manager refer to a field. The fuzzing infrastructure doed not run on iOS, so
 // the iOS specific parts of PasswordForm are also built on fuzzer enabled
 // platforms. See http://crbug.com/896594
-string16 GetPlatformSpecificIdentifier(const FormFieldData& field) {
+std::u16string GetPlatformSpecificIdentifier(const FormFieldData& field) {
 #if defined(OS_IOS)
   return field.unique_id;
 #else
@@ -859,7 +858,7 @@ std::vector<ProcessedField> ProcessFields(
     if (!field.IsTextInputElement())
       continue;
 
-    const base::string16& field_value = GetFieldValue(field);
+    const std::u16string& field_value = GetFieldValue(field);
     if (consider_only_non_empty && field_value.empty())
       continue;
 

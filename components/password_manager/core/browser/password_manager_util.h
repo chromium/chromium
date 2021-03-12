@@ -124,7 +124,7 @@ void FindBestMatches(
 // none exists. If multiple matches exist, returns the first one.
 const password_manager::PasswordForm* FindFormByUsername(
     const std::vector<const password_manager::PasswordForm*>& forms,
-    const base::string16& username_value);
+    const std::u16string& username_value);
 
 // If the user submits a form, they may have used existing credentials, new
 // credentials, or modified existing credentials that should be updated.

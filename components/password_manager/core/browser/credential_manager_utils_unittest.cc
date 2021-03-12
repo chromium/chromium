@@ -56,7 +56,7 @@ TEST_F(CredentialManagerUtilsTest, CreatePasswordFormFederation) {
   // Federated credentials have empty passwords, non-empty federation_origins,
   // and funky signon realms.
   EXPECT_EQ(info.federation, form->federation_origin);
-  EXPECT_EQ(base::string16(), form->password_value);
+  EXPECT_EQ(std::u16string(), form->password_value);
   EXPECT_EQ("federation://example.test/federation.test", form->signon_realm);
 }
 

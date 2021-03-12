@@ -212,7 +212,7 @@ TEST_F(CredentialManagerPendingRequestTaskTest,
       {federation_url}, StoresToQuery::kProfileAndAccountStores);
 
   form_.federation_origin = url::Origin::Create(federation_url);
-  form_.password_value = base::string16();
+  form_.password_value = std::u16string();
   form_.signon_realm = "federation://example.com/google.com";
 
   PasswordForm profile_form = form_;

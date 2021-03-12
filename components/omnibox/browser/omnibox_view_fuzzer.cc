@@ -13,8 +13,8 @@
 
 extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
   // This fuzzer creates a random UTF16 string to represent clipboard contents.
-  base::string16 s(reinterpret_cast<const base::string16::value_type*>(data),
-                   size / sizeof(base::string16::value_type));
+  std::u16string s(reinterpret_cast<const std::u16string::value_type*>(data),
+                   size / sizeof(std::u16string::value_type));
   OmniboxView::SanitizeTextForPaste(s);
   return 0;
 }

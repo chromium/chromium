@@ -15,9 +15,9 @@ struct TestCase {
       : text(base::ASCIIToUTF16(text)),
         prefix_suffix(base::ASCIIToUTF16(prefix_suffix)),
         expected_prefix(base::ASCIIToUTF16(expected_prefix)) {}
-  base::string16 text;
-  base::string16 prefix_suffix;
-  base::string16 expected_prefix;
+  std::u16string text;
+  std::u16string prefix_suffix;
+  std::u16string expected_prefix;
 };
 }  // namespace
 

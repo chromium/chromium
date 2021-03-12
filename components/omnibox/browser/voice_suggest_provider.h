@@ -30,7 +30,7 @@ class VoiceSuggestProvider : public BaseSearchProvider {
   // The voice suggestion is next converted to a proper Search suggestion
   // associated with user-selected search engine, with a relevance score
   // computed from the match_score.
-  void AddVoiceSuggestion(base::string16 match_text, float match_score);
+  void AddVoiceSuggestion(std::u16string match_text, float match_score);
 
   // Clear all cached voice matches.
   void ClearCache();
@@ -53,7 +53,7 @@ class VoiceSuggestProvider : public BaseSearchProvider {
   // the relevance score for matches.
   // Duplicate voice matches will be deduplicated automatically to the higher
   // ranked match.
-  std::vector<std::pair<float, base::string16>> voice_matches_;
+  std::vector<std::pair<float, std::u16string>> voice_matches_;
 
   // A pointer to the current AutocompleteInput, retained during the active
   // stage of operation only. Used by the BaseSearchProvider to construct the

@@ -137,7 +137,7 @@ bool InMemoryURLIndex::GetCacheFilePath(base::FilePath* file_path) {
 // Querying --------------------------------------------------------------------
 
 ScoredHistoryMatches InMemoryURLIndex::HistoryItemsForTerms(
-    const base::string16& term_string,
+    const std::u16string& term_string,
     size_t cursor_position,
     size_t max_matches) {
   return private_data_->HistoryItemsForTerms(

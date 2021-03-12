@@ -18,8 +18,8 @@ namespace password_manager {
 
 using BlocklistedStatus = OriginCredentialStore::BlocklistedStatus;
 
-UiCredential::UiCredential(base::string16 username,
-                           base::string16 password,
+UiCredential::UiCredential(std::u16string username,
+                           std::u16string password,
                            url::Origin origin,
                            IsPublicSuffixMatch is_public_suffix_match,
                            IsAffiliationBasedMatch is_affiliation_based_match,

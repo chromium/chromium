@@ -71,8 +71,8 @@ base::Pickle SerializeValueElementPairs(const ValueElementVector& vec) {
 
 ValueElementVector DeserializeValueElementPairs(const base::Pickle& p) {
   ValueElementVector ret;
-  base::string16 value;
-  base::string16 field_name;
+  std::u16string value;
+  std::u16string field_name;
 
   base::PickleIterator iterator(p);
   while (iterator.ReadString16(&value)) {
@@ -654,7 +654,7 @@ PasswordForm GetFormForRemoval(const sql::Statement& statement) {
 struct LoginDatabase::PrimaryKeyAndPassword {
   int primary_key;
   std::string encrypted_password;
-  base::string16 decrypted_password;
+  std::u16string decrypted_password;
 };
 
 LoginDatabase::LoginDatabase(const base::FilePath& db_path,
@@ -1036,7 +1036,7 @@ void LoginDatabase::ReportInaccessiblePasswordsMetrics() {
 
   size_t failed_encryption = 0;
   while (get_passwords_statement.Step()) {
-    base::string16 decrypted_password;
+    std::u16string decrypted_password;
     if (DecryptedString(get_passwords_statement.ColumnString(0),
                         &decrypted_password) != ENCRYPTION_RESULT_SUCCESS) {
       ++failed_encryption;
@@ -1064,7 +1064,7 @@ void LoginDatabase::ReportDuplicateCredentialsMetrics() {
     // Note: CryptProtectData() (used on Windows for encrypting passwords) is
     // non-deterministic, so passwords must be decrypted before checking
     // equality.
-    base::string16 password16;
+    std::u16string password16;
     if (DecryptedString(encrypted_password, &password16) !=
         ENCRYPTION_RESULT_SUCCESS) {
       continue;
@@ -1438,7 +1438,7 @@ LoginDatabase::EncryptionResult LoginDatabase::InitPasswordFormFromStatement(
     PasswordForm* form) const {
   std::string encrypted_password;
   s.ColumnBlobAsString(COLUMN_PASSWORD_VALUE, &encrypted_password);
-  base::string16 decrypted_password;
+  std::u16string decrypted_password;
   if (decrypt_and_fill_password_value) {
     EncryptionResult encryption_result =
         DecryptedString(encrypted_password, &decrypted_password);
@@ -1593,7 +1593,7 @@ bool LoginDatabase::GetLogins(
 }
 
 bool LoginDatabase::GetLoginsByPassword(
-    const base::string16& plain_text_password,
+    const std::u16string& plain_text_password,
     std::vector<std::unique_ptr<PasswordForm>>* forms) {
   TRACE_EVENT0("passwords", "LoginDatabase::GetLoginsByPassword");
   DCHECK(forms);
@@ -1653,7 +1653,7 @@ FormRetrievalResult LoginDatabase::GetAllLogins(
 
 FormRetrievalResult LoginDatabase::GetLoginsBySignonRealmAndUsername(
     const std::string& signon_realm,
-    const base::string16& username,
+    const std::u16string& username,
     PrimaryKeyToFormMap& key_to_form_map) {
   TRACE_EVENT0("passwords", "LoginDatabase::GetLoginsBySignonRealmAndUsername");
   key_to_form_map.clear();
@@ -1744,7 +1744,7 @@ DatabaseCleanupResult LoginDatabase::DeleteUndecryptableLogins() {
   while (s.Step()) {
     std::string encrypted_password;
     s.ColumnBlobAsString(COLUMN_PASSWORD_VALUE, &encrypted_password);
-    base::string16 decrypted_password;
+    std::u16string decrypted_password;
     if (DecryptedString(encrypted_password, &decrypted_password) ==
         ENCRYPTION_RESULT_SUCCESS)
       continue;
@@ -1958,7 +1958,7 @@ LoginDatabase::PrimaryKeyAndPassword LoginDatabase::GetPrimaryKeyAndPassword(
     }
     return result;
   }
-  return {-1, std::string(), base::string16()};
+  return {-1, std::string(), std::u16string()};
 }
 
 std::unique_ptr<syncer::MetadataBatch>

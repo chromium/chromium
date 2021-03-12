@@ -61,7 +61,7 @@ struct ScoredHistoryMatch : public history::HistoryMatch {
   // qualify the raw score will be 0.
   ScoredHistoryMatch(const history::URLRow& row,
                      const VisitInfoVector& visits,
-                     const base::string16& lower_string,
+                     const std::u16string& lower_string,
                      const String16Vector& terms_vector,
                      const WordStarts& terms_to_word_starts_offsets,
                      const RowWordStarts& word_starts,

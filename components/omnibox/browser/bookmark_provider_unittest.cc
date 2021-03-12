@@ -110,8 +110,8 @@ std::string TestBookmarkPositionsAsString(
 
 // Return the positions in |matches| as a formatted string for unit test
 // diagnostic output.
-base::string16 MatchesAsString16(const ACMatches& matches) {
-  base::string16 matches_string;
+std::u16string MatchesAsString16(const ACMatches& matches) {
+  std::u16string matches_string;
   for (auto i = matches.begin(); i != matches.end(); ++i) {
     matches_string.append(base::ASCIIToUTF16("    '"));
     matches_string.append(i->description);
@@ -445,7 +445,7 @@ TEST_F(BookmarkProviderTest, InlineAutocompletion) {
     AutocompleteInput input(base::ASCIIToUTF16(query_data[i].query),
                             metrics::OmniboxEventProto::OTHER,
                             TestSchemeClassifier());
-    const base::string16 fixed_up_input(
+    const std::u16string fixed_up_input(
         provider_->FixupUserInput(input).second);
     BookmarkNode node(/*id=*/0, base::GUID::GenerateRandomV4(),
                       GURL(query_data[i].url));

@@ -23,7 +23,7 @@ namespace password_manager {
 namespace {
 
 bool IsPrimaryAccountSignIn(const signin::IdentityManager& identity_manager,
-                            const base::string16& username,
+                            const std::u16string& username,
                             const std::string& signon_realm) {
   CoreAccountInfo primary_account = identity_manager.GetPrimaryAccountInfo(
       signin::ConsentLevel::kNotRequired);

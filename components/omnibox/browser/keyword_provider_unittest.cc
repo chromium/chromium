@@ -58,7 +58,7 @@ class KeywordProviderTest : public testing::Test {
 
   template<class ResultType>
   struct TestData {
-    const base::string16 input;
+    const std::u16string input;
     const size_t num_results;
     const MatchType<ResultType> output[3];
   };
@@ -161,8 +161,8 @@ void KeywordProviderTest::RunTest(TestData<ResultType>* keyword_cases,
 }
 
 TEST_F(KeywordProviderTest, Edit) {
-  const MatchType<base::string16> kEmptyMatch = { base::string16(), false };
-  TestData<base::string16> edit_cases[] = {
+  const MatchType<std::u16string> kEmptyMatch = {std::u16string(), false};
+  TestData<std::u16string> edit_cases[] = {
       // Searching for a nonexistent prefix should give nothing.
       {ASCIIToUTF16("Not Found"), 0, {kEmptyMatch, kEmptyMatch, kEmptyMatch}},
       {ASCIIToUTF16("aaaaaNot Found"),
@@ -263,37 +263,41 @@ TEST_F(KeywordProviderTest, Edit) {
   };
 
   SetUpClientAndKeywordProvider();
-  RunTest<base::string16>(edit_cases, base::size(edit_cases),
+  RunTest<std::u16string>(edit_cases, base::size(edit_cases),
                           &AutocompleteMatch::fill_into_edit);
 }
 
 TEST_F(KeywordProviderTest, IgnoreRegistryForScoring) {
-  const MatchType<base::string16> kEmptyMatch = { base::string16(), false };
-  TestData<base::string16> edit_cases[] = {
-    // Matches should be limited to three and sorted in quality order.
-    // When ignoring the registry length, this order of suggestions should
-    // result (sorted by keyword length sans registry).  The "Edit" test case
-    // has this exact test for when not ignoring the registry to check that
-    // the other order (shorter full keyword) results there.
-    { ASCIIToUTF16("foo hello"), 2,
-      { { ASCIIToUTF16("foolong.co.uk hello"), false },
-        { ASCIIToUTF16("fooshort.com hello"), false },
-        kEmptyMatch } },
+  const MatchType<std::u16string> kEmptyMatch = {std::u16string(), false};
+  TestData<std::u16string> edit_cases[] = {
+      // Matches should be limited to three and sorted in quality order.
+      // When ignoring the registry length, this order of suggestions should
+      // result (sorted by keyword length sans registry).  The "Edit" test case
+      // has this exact test for when not ignoring the registry to check that
+      // the other order (shorter full keyword) results there.
+      {ASCIIToUTF16("foo hello"),
+       2,
+       {{ASCIIToUTF16("foolong.co.uk hello"), false},
+        {ASCIIToUTF16("fooshort.com hello"), false},
+        kEmptyMatch}},
 
-    // Keywords that don't have full hostnames should keep the same order
-    // as normal.
-    { ASCIIToUTF16("aaa"), 2,
-      { { ASCIIToUTF16("aaaa "), false },
-        { ASCIIToUTF16("aaaaa "), false },
-        kEmptyMatch } },
-    { ASCIIToUTF16("a 1 2 3"), 3,
-     { { ASCIIToUTF16("aa 1 2 3"), false },
-       { ASCIIToUTF16("ab 1 2 3"), false },
-       { ASCIIToUTF16("aaaa 1 2 3"), false } } },
-    { ASCIIToUTF16("www.a"), 3,
-      { { ASCIIToUTF16("aa "), false },
-        { ASCIIToUTF16("ab "), false },
-        { ASCIIToUTF16("aaaa "), false } } },
+      // Keywords that don't have full hostnames should keep the same order
+      // as normal.
+      {ASCIIToUTF16("aaa"),
+       2,
+       {{ASCIIToUTF16("aaaa "), false},
+        {ASCIIToUTF16("aaaaa "), false},
+        kEmptyMatch}},
+      {ASCIIToUTF16("a 1 2 3"),
+       3,
+       {{ASCIIToUTF16("aa 1 2 3"), false},
+        {ASCIIToUTF16("ab 1 2 3"), false},
+        {ASCIIToUTF16("aaaa 1 2 3"), false}}},
+      {ASCIIToUTF16("www.a"),
+       3,
+       {{ASCIIToUTF16("aa "), false},
+        {ASCIIToUTF16("ab "), false},
+        {ASCIIToUTF16("aaaa "), false}}},
   };
 
   // Add a rule to make matching in the registry portion of a keyword
@@ -308,7 +312,7 @@ TEST_F(KeywordProviderTest, IgnoreRegistryForScoring) {
       OmniboxFieldTrial::kBundledExperimentFieldTrialName, "A");
 
   SetUpClientAndKeywordProvider();
-  RunTest<base::string16>(edit_cases, base::size(edit_cases),
+  RunTest<std::u16string>(edit_cases, base::size(edit_cases),
                           &AutocompleteMatch::fill_into_edit);
 }
 
@@ -351,8 +355,8 @@ TEST_F(KeywordProviderTest, DISABLED_URL) {
 }
 
 TEST_F(KeywordProviderTest, Contents) {
-  const MatchType<base::string16> kEmptyMatch = { base::string16(), false };
-  TestData<base::string16> contents_cases[] = {
+  const MatchType<std::u16string> kEmptyMatch = {std::u16string(), false};
+  TestData<std::u16string> contents_cases[] = {
       // No query input -> substitute "<Type search term>" into contents.
       {ASCIIToUTF16("z"),
        1,
@@ -397,7 +401,7 @@ TEST_F(KeywordProviderTest, Contents) {
   };
 
   SetUpClientAndKeywordProvider();
-  RunTest<base::string16>(contents_cases, base::size(contents_cases),
+  RunTest<std::u16string>(contents_cases, base::size(contents_cases),
                           &AutocompleteMatch::contents);
 }
 
@@ -405,7 +409,7 @@ TEST_F(KeywordProviderTest, AddKeyword) {
   SetUpClientAndKeywordProvider();
   TemplateURLData data;
   data.SetShortName(ASCIIToUTF16("Test"));
-  base::string16 keyword(ASCIIToUTF16("foo"));
+  std::u16string keyword(ASCIIToUTF16("foo"));
   data.SetKeyword(keyword);
   data.SetURL("http://www.google.com/foo?q={searchTerms}");
   TemplateURL* template_url = client_->GetTemplateURLService()->Add(
@@ -418,7 +422,7 @@ TEST_F(KeywordProviderTest, AddKeyword) {
 TEST_F(KeywordProviderTest, RemoveKeyword) {
   SetUpClientAndKeywordProvider();
   TemplateURLService* template_url_service = client_->GetTemplateURLService();
-  base::string16 url(ASCIIToUTF16("http://aaaa/?aaaa=1&b={searchTerms}&c"));
+  std::u16string url(ASCIIToUTF16("http://aaaa/?aaaa=1&b={searchTerms}&c"));
   template_url_service->Remove(
       template_url_service->GetTemplateURLForKeyword(ASCIIToUTF16("aaaa")));
   ASSERT_TRUE(template_url_service->GetTemplateURLForKeyword(
@@ -429,10 +433,10 @@ TEST_F(KeywordProviderTest, GetKeywordForInput) {
   SetUpClientAndKeywordProvider();
   EXPECT_EQ(ASCIIToUTF16("aa"),
       kw_provider_->GetKeywordForText(ASCIIToUTF16("aa")));
-  EXPECT_EQ(base::string16(),
-      kw_provider_->GetKeywordForText(ASCIIToUTF16("aafoo")));
-  EXPECT_EQ(base::string16(),
-      kw_provider_->GetKeywordForText(ASCIIToUTF16("aa foo")));
+  EXPECT_EQ(std::u16string(),
+            kw_provider_->GetKeywordForText(ASCIIToUTF16("aafoo")));
+  EXPECT_EQ(std::u16string(),
+            kw_provider_->GetKeywordForText(ASCIIToUTF16("aa foo")));
   EXPECT_EQ(
       ASCIIToUTF16("cleantestv1.com"),
       kw_provider_->GetKeywordForText(ASCIIToUTF16("http://cleantestv1.com")));
@@ -454,12 +458,12 @@ TEST_F(KeywordProviderTest, GetKeywordForInput) {
   EXPECT_EQ(
       ASCIIToUTF16("www.cleantestv3.com"),
       kw_provider_->GetKeywordForText(ASCIIToUTF16("www.cleantestv3.com")));
-  EXPECT_EQ(base::string16(),
+  EXPECT_EQ(std::u16string(),
             kw_provider_->GetKeywordForText(ASCIIToUTF16("cleantestv3.com")));
   EXPECT_EQ(
       ASCIIToUTF16("http://cleantestv4.com"),
       kw_provider_->GetKeywordForText(ASCIIToUTF16("http://cleantestv4.com")));
-  EXPECT_EQ(base::string16(),
+  EXPECT_EQ(std::u16string(),
             kw_provider_->GetKeywordForText(ASCIIToUTF16("cleantestv4.com")));
   EXPECT_EQ(ASCIIToUTF16("cleantestv5.com"),
             kw_provider_->GetKeywordForText(ASCIIToUTF16("cleantestv5.com")));
@@ -468,11 +472,11 @@ TEST_F(KeywordProviderTest, GetKeywordForInput) {
       kw_provider_->GetKeywordForText(ASCIIToUTF16("http://cleantestv5.com")));
   EXPECT_EQ(ASCIIToUTF16("cleantestv6:"),
             kw_provider_->GetKeywordForText(ASCIIToUTF16("cleantestv6:")));
-  EXPECT_EQ(base::string16(),
+  EXPECT_EQ(std::u16string(),
             kw_provider_->GetKeywordForText(ASCIIToUTF16("cleantestv6")));
   EXPECT_EQ(ASCIIToUTF16("cleantestv7/"),
             kw_provider_->GetKeywordForText(ASCIIToUTF16("cleantestv7/")));
-  EXPECT_EQ(base::string16(),
+  EXPECT_EQ(std::u16string(),
             kw_provider_->GetKeywordForText(ASCIIToUTF16("cleantestv7")));
   EXPECT_EQ(ASCIIToUTF16("cleantestv8/"),
             kw_provider_->GetKeywordForText(ASCIIToUTF16("cleantestv8/")));
@@ -489,37 +493,37 @@ TEST_F(KeywordProviderTest, GetSubstitutingTemplateURLForInput) {
     const std::string updated_text;
     const size_t updated_cursor_position;
   } cases[] = {
-    { "foo", base::string16::npos, true, "", "foo", base::string16::npos },
-    { "aa foo", base::string16::npos, true, "aa.com?foo={searchTerms}", "foo",
-      base::string16::npos },
+      {"foo", std::u16string::npos, true, "", "foo", std::u16string::npos},
+      {"aa foo", std::u16string::npos, true, "aa.com?foo={searchTerms}", "foo",
+       std::u16string::npos},
 
-    // Cursor adjustment.
-    { "aa foo", base::string16::npos, true, "aa.com?foo={searchTerms}", "foo",
-      base::string16::npos },
-    { "aa foo", 4u, true, "aa.com?foo={searchTerms}", "foo", 1u },
-    // Cursor at the end.
-    { "aa foo", 6u, true, "aa.com?foo={searchTerms}", "foo", 3u },
-    // Cursor before the first character of the remaining text.
-    { "aa foo", 3u, true, "aa.com?foo={searchTerms}", "foo", 0u },
+      // Cursor adjustment.
+      {"aa foo", std::u16string::npos, true, "aa.com?foo={searchTerms}", "foo",
+       std::u16string::npos},
+      {"aa foo", 4u, true, "aa.com?foo={searchTerms}", "foo", 1u},
+      // Cursor at the end.
+      {"aa foo", 6u, true, "aa.com?foo={searchTerms}", "foo", 3u},
+      // Cursor before the first character of the remaining text.
+      {"aa foo", 3u, true, "aa.com?foo={searchTerms}", "foo", 0u},
 
-    // Trailing space.
-    { "aa foo ", 7u, true, "aa.com?foo={searchTerms}", "foo ", 4u },
-    // Trailing space without remaining text, cursor in the middle.
-    { "aa  ", 3u, true, "aa.com?foo={searchTerms}", "", base::string16::npos },
-    // Trailing space without remaining text, cursor at the end.
-    { "aa  ", 4u, true, "aa.com?foo={searchTerms}", "", base::string16::npos },
-    // Extra space after keyword, cursor at the end.
-    { "aa  foo ", 8u, true, "aa.com?foo={searchTerms}", "foo ", 4u },
-    // Extra space after keyword, cursor in the middle.
-    { "aa  foo ", 3u, true, "aa.com?foo={searchTerms}", "foo ", 0 },
-    // Extra space after keyword, no trailing space, cursor at the end.
-    { "aa  foo", 7u, true, "aa.com?foo={searchTerms}", "foo", 3u },
-    // Extra space after keyword, no trailing space, cursor in the middle.
-    { "aa  foo", 5u, true, "aa.com?foo={searchTerms}", "foo", 1u },
+      // Trailing space.
+      {"aa foo ", 7u, true, "aa.com?foo={searchTerms}", "foo ", 4u},
+      // Trailing space without remaining text, cursor in the middle.
+      {"aa  ", 3u, true, "aa.com?foo={searchTerms}", "", std::u16string::npos},
+      // Trailing space without remaining text, cursor at the end.
+      {"aa  ", 4u, true, "aa.com?foo={searchTerms}", "", std::u16string::npos},
+      // Extra space after keyword, cursor at the end.
+      {"aa  foo ", 8u, true, "aa.com?foo={searchTerms}", "foo ", 4u},
+      // Extra space after keyword, cursor in the middle.
+      {"aa  foo ", 3u, true, "aa.com?foo={searchTerms}", "foo ", 0},
+      // Extra space after keyword, no trailing space, cursor at the end.
+      {"aa  foo", 7u, true, "aa.com?foo={searchTerms}", "foo", 3u},
+      // Extra space after keyword, no trailing space, cursor in the middle.
+      {"aa  foo", 5u, true, "aa.com?foo={searchTerms}", "foo", 1u},
 
-    // Disallow exact keyword match.
-    { "aa foo", base::string16::npos, false, "", "aa foo",
-      base::string16::npos },
+      // Disallow exact keyword match.
+      {"aa foo", std::u16string::npos, false, "", "aa foo",
+       std::u16string::npos},
   };
   SetUpClientAndKeywordProvider();
   for (size_t i = 0; i < base::size(cases); i++) {

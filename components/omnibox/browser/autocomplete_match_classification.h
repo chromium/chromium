@@ -22,8 +22,8 @@
 // "how to tie a tie", and |allow_mid_word_matching| false, this will return
 // "[ho]w [to] tie a tie". On the other hand, for |allow_mid_word_matching|
 // true, this will return "[ho]w [to] t[ie] a t[ie]."
-TermMatches FindTermMatches(base::string16 find_text,
-                            base::string16 text,
+TermMatches FindTermMatches(std::u16string find_text,
+                            std::u16string text,
                             bool allow_prefix_matching = true,
                             bool allow_mid_word_matching = false);
 

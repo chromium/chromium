@@ -28,7 +28,7 @@ void RecordPasswordDecryptionResult(PasswordDecryptionResult result) {
 }  // namespace
 
 LoginDatabase::EncryptionResult LoginDatabase::EncryptedString(
-    const base::string16& plain_text,
+    const std::u16string& plain_text,
     std::string* cipher_text) const {
 #if !defined(OS_FUCHSIA)
   if (!use_encryption_) {
@@ -44,7 +44,7 @@ LoginDatabase::EncryptionResult LoginDatabase::EncryptedString(
 
 LoginDatabase::EncryptionResult LoginDatabase::DecryptedString(
     const std::string& cipher_text,
-    base::string16* plain_text) const {
+    std::u16string* plain_text) const {
 #if !defined(OS_FUCHSIA)
 #if defined(OS_ANDROID) || BUILDFLAG(IS_CHROMEOS_ASH)
   // On Android and ChromeOS, we have a mix of obfuscated and plain-text

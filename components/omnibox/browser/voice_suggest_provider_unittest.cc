@@ -36,7 +36,7 @@ class VoiceSuggestProviderTest : public testing::Test,
 void VoiceSuggestProviderTest::SetUp() {
   provider_ = base::MakeRefCounted<VoiceSuggestProvider>(&client_, this);
   input_ = std::make_unique<AutocompleteInput>(
-      base::string16(), metrics::OmniboxEventProto::OTHER,
+      std::u16string(), metrics::OmniboxEventProto::OTHER,
       TestSchemeClassifier());
 }
 

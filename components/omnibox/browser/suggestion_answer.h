@@ -136,7 +136,7 @@ class SuggestionAnswer {
     static bool ParseTextField(const base::Value& field_json,
                                TextField* text_field);
 
-    const base::string16& text() const { return text_; }
+    const std::u16string& text() const { return text_; }
     int type() const { return type_; }
     TextStyle style() const { return style_; }
     void set_style(TextStyle style) { style_ = style; }
@@ -150,7 +150,7 @@ class SuggestionAnswer {
     size_t EstimateMemoryUsage() const;
 
    private:
-    base::string16 text_;
+    std::u16string text_;
     int type_ = -1;
     bool has_num_lines_ = false;
     int num_lines_ = 1;
@@ -197,7 +197,7 @@ class SuggestionAnswer {
 
     // Returns a string appropriate for use as a readable representation of the
     // content of this line.
-    base::string16 AccessibleText() const;
+    std::u16string AccessibleText() const;
 
     // Estimates dynamic memory usage.
     // See base/trace_event/memory_usage_estimator.h for more info.
@@ -228,7 +228,7 @@ class SuggestionAnswer {
   // contents. Returns true on success. If the supplied data is not well formed
   // or is missing required elements, returns false instead.
   static bool ParseAnswer(const base::Value& answer_json,
-                          const base::string16& answer_type_str,
+                          const std::u16string& answer_type_str,
                           SuggestionAnswer* answer);
 
   const GURL& image_url() const { return image_url_; }

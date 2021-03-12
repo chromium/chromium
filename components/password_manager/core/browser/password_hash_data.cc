@@ -34,7 +34,7 @@ PasswordHashData::PasswordHashData() = default;
 PasswordHashData::PasswordHashData(const PasswordHashData& other) = default;
 
 PasswordHashData::PasswordHashData(const std::string& username,
-                                   const base::string16& password,
+                                   const std::u16string& password,
                                    bool force_update,
                                    bool is_gaia_password)
     : username(username),
@@ -45,7 +45,7 @@ PasswordHashData::PasswordHashData(const std::string& username,
       is_gaia_password(is_gaia_password) {}
 
 bool PasswordHashData::MatchesPassword(const std::string& username,
-                                       const base::string16& password,
+                                       const std::u16string& password,
                                        bool is_gaia_password) const {
   if (password.size() != this->length ||
       !AreUsernamesSame(username, is_gaia_password, this->username,

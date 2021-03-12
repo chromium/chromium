@@ -63,7 +63,7 @@ class FakeAutocompleteProviderClient : public MockAutocompleteProviderClient {
   bool IsPersonalizedUrlDataCollectionActive() const override { return true; }
 
   void Classify(
-      const base::string16& text,
+      const std::u16string& text,
       bool prefer_keyword,
       bool allow_exact_keyword_match,
       metrics::OmniboxEventProto::PageClassification page_classification,
@@ -121,7 +121,7 @@ class ZeroSuggestProviderTest : public testing::Test,
     // Use NTP as the page classification, since REMOTE_NO_URL is enabled by
     // default for the NTP.
     AutocompleteInput input(
-        base::string16(),
+        std::u16string(),
         metrics::OmniboxEventProto::INSTANT_NTP_WITH_OMNIBOX_AS_STARTING_FOCUS,
         TestSchemeClassifier());
     input.set_focus_type(OmniboxFocusType::ON_FOCUS);
@@ -160,7 +160,7 @@ TEST_F(ZeroSuggestProviderTest, AllowZeroSuggestSuggestions) {
   on_focus_input.set_current_url(GURL(input_url));
   on_focus_input.set_focus_type(OmniboxFocusType::ON_FOCUS);
 
-  AutocompleteInput on_clobber_input(base::string16(),
+  AutocompleteInput on_clobber_input(std::u16string(),
                                      metrics::OmniboxEventProto::OTHER,
                                      TestSchemeClassifier());
   on_clobber_input.set_current_url(GURL(input_url));
@@ -184,7 +184,7 @@ TEST_F(ZeroSuggestProviderTest, AllowZeroSuggestSuggestions) {
 
     // Sanity check that we only affect the OTHER page classification.
     AutocompleteInput on_clobber_serp(
-        base::string16(),
+        std::u16string(),
         metrics::OmniboxEventProto::
             SEARCH_RESULT_PAGE_DOING_SEARCH_TERM_REPLACEMENT,
         TestSchemeClassifier());
@@ -225,7 +225,7 @@ TEST_F(ZeroSuggestProviderTest, TypeOfResultToRun) {
       /*remote_no_url_allowed=*/false);
 
   // Verify the platorm-specific defaults for the NTP.
-  AutocompleteInput ntp_input(base::string16(), metrics::OmniboxEventProto::NTP,
+  AutocompleteInput ntp_input(std::u16string(), metrics::OmniboxEventProto::NTP,
                               TestSchemeClassifier());
   ExpectPlatformSpecificDefaultZeroSuggestBehavior(
       ntp_input,
@@ -279,7 +279,7 @@ TEST_F(ZeroSuggestProviderTest, TypeOfResultToRunForContextualWeb) {
   on_focus_input.set_current_url(GURL(input_url));
   on_focus_input.set_focus_type(OmniboxFocusType::ON_FOCUS);
 
-  AutocompleteInput on_clobber_input(base::string16(),
+  AutocompleteInput on_clobber_input(std::u16string(),
                                      metrics::OmniboxEventProto::OTHER,
                                      TestSchemeClassifier());
   on_clobber_input.set_current_url(GURL(input_url));

@@ -25,7 +25,7 @@ namespace password_manager {
 using FormPrimaryKey = base::StrongAlias<class FormPrimaryKeyTag, int>;
 
 // Pair of a value and the name of the element that contained this value.
-using ValueElementPair = std::pair<base::string16, base::string16>;
+using ValueElementPair = std::pair<std::u16string, std::u16string>;
 
 // Vector of possible username values and corresponding field names.
 using ValueElementVector = std::vector<ValueElementPair>;
@@ -144,10 +144,10 @@ struct PasswordForm {
   // The name of the submit button used. Optional; only used in scoring
   // of PasswordForm results from the database to make matches as tight as
   // possible.
-  base::string16 submit_element;
+  std::u16string submit_element;
 
   // The name of the username input element.
-  base::string16 username_element;
+  std::u16string username_element;
 
   // The renderer id of the username input element. It is set during the new
   // form parsing and not persisted.
@@ -163,7 +163,7 @@ struct PasswordForm {
 
   // When parsing an HTML form, this is typically empty unless the site
   // has implemented some form of autofill.
-  base::string16 username_value;
+  std::u16string username_value;
 
   // This member is populated in cases where we there are multiple input
   // elements that could possibly be the username. Used when our heuristics for
@@ -184,7 +184,7 @@ struct PasswordForm {
   // When parsing an HTML form, this will always be set, unless it is a sign-up
   // form or a change password form that does not ask for the current password.
   // In these two cases the |new_password_element| will always be set.
-  base::string16 password_element;
+  std::u16string password_element;
 
   // The renderer id of the password input element. It is set during the new
   // form parsing and not persisted.
@@ -194,7 +194,7 @@ struct PasswordForm {
   // meant to be persisted to the password store.
   //
   // When parsing an HTML form, this is typically empty.
-  base::string16 password_value;
+  std::u16string password_value;
 
   // The current encrypted password. Must be non-empty for PasswordForm
   // instances retrieved from the password store or coming in a
@@ -203,7 +203,7 @@ struct PasswordForm {
 
   // If the form was a sign-up or a change password form, the name of the input
   // element corresponding to the new password. Optional, and not persisted.
-  base::string16 new_password_element;
+  std::u16string new_password_element;
 
   // The renderer id of the new password input element. It is set during the new
   // form parsing and not persisted.
@@ -211,14 +211,14 @@ struct PasswordForm {
 
   // The confirmation password element. Optional, only set on form parsing, and
   // not persisted.
-  base::string16 confirmation_password_element;
+  std::u16string confirmation_password_element;
 
   // The renderer id of the confirmation password input element. It is set
   // during the new form parsing and not persisted.
   autofill::FieldRendererId confirmation_password_element_renderer_id;
 
   // The new password. Optional, and not persisted.
-  base::string16 new_password_value;
+  std::u16string new_password_value;
 
   // When the login was last used by the user to login to the site. Defaults to
   // |date_created|, except for passwords that were migrated from the now
@@ -270,7 +270,7 @@ struct PasswordForm {
   // API.
   //
   // User friendly name to show in the UI.
-  base::string16 display_name;
+  std::u16string display_name;
 
   // The URL of this credential's icon, such as the user's avatar, to display
   // in the UI.

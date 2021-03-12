@@ -75,8 +75,8 @@ std::string GetShownOrigin(const url::Origin& origin) {
 }
 
 void UpdatePasswordFormUsernameAndPassword(
-    const base::string16& username,
-    const base::string16& password,
+    const std::u16string& username,
+    const std::u16string& password,
     PasswordFormManagerForUI* form_manager) {
   const auto& pending_credentials = form_manager->GetPendingCredentials();
   bool username_edited = pending_credentials.username_value != username;

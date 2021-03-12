@@ -52,7 +52,7 @@ bool JsonStringToFormData(NSString* json_string,
   if (!formValue)
     return false;
 
-  return autofill::ExtractFormData(*formValue, false, base::string16(),
+  return autofill::ExtractFormData(*formValue, false, std::u16string(),
                                    page_url, page_url.GetOrigin(), form_data);
 }
 

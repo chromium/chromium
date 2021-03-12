@@ -157,7 +157,7 @@ bool BaseSearchProvider::ShouldPrefetch(const AutocompleteMatch& match) {
 
 // static
 AutocompleteMatch BaseSearchProvider::CreateSearchSuggestion(
-    const base::string16& suggestion,
+    const std::u16string& suggestion,
     AutocompleteMatchType::Type type,
     bool from_keyword,
     const TemplateURL* template_url,
@@ -169,7 +169,7 @@ AutocompleteMatch BaseSearchProvider::CreateSearchSuggestion(
   SearchSuggestionParser::SuggestResult suggest_result(
       suggestion, type, /*subtypes=*/{}, from_keyword,
       /*relevance=*/0, /*relevance_from_server=*/false,
-      /*input_text=*/base::string16());
+      /*input_text=*/std::u16string());
   suggest_result.set_received_after_last_keystroke(false);
   return CreateSearchSuggestion(nullptr, AutocompleteInput(), from_keyword,
                                 suggest_result, template_url, search_terms_data,
@@ -180,7 +180,7 @@ AutocompleteMatch BaseSearchProvider::CreateSearchSuggestion(
 AutocompleteMatch BaseSearchProvider::CreateOnDeviceSearchSuggestion(
     AutocompleteProvider* autocomplete_provider,
     const AutocompleteInput& input,
-    const base::string16& suggestion,
+    const std::u16string& suggestion,
     int relevance,
     const TemplateURL* template_url,
     const SearchTermsData& search_terms_data,
@@ -327,7 +327,7 @@ AutocompleteMatch BaseSearchProvider::CreateSearchSuggestion(
         &match.description_class, 0, ACMatchClassification::NONE);
   }
 
-  const base::string16 input_lower = base::i18n::ToLower(input.text());
+  const std::u16string input_lower = base::i18n::ToLower(input.text());
   // suggestion.match_contents() should have already been collapsed.
   match.allowed_to_be_default_match =
       (!in_keyword_mode || suggestion.from_keyword()) &&
@@ -352,8 +352,8 @@ AutocompleteMatch BaseSearchProvider::CreateSearchSuggestion(
 
   const TemplateURLRef& search_url = template_url->url_ref();
   DCHECK(search_url.SupportsReplacement(search_terms_data));
-  base::string16 query(suggestion.suggestion());
-  base::string16 original_query(input.text());
+  std::u16string query(suggestion.suggestion());
+  std::u16string original_query(input.text());
   if (suggestion.type() == AutocompleteMatchType::CALCULATOR) {
     // Use query text, rather than the calculator answer suggestion, to search.
     query = original_query;
@@ -381,10 +381,10 @@ AutocompleteMatch BaseSearchProvider::CreateSearchSuggestion(
 }
 
 // static
-base::string16 BaseSearchProvider::GetFillIntoEdit(
+std::u16string BaseSearchProvider::GetFillIntoEdit(
     const SearchSuggestionParser::SuggestResult& suggest_result,
     const TemplateURL* template_url) {
-  base::string16 fill_into_edit;
+  std::u16string fill_into_edit;
 
   if (suggest_result.from_keyword())
     fill_into_edit.append(template_url->keyword() + char16_t(' '));

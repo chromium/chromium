@@ -56,7 +56,7 @@ bool FakeFormFetcher::IsBlocklisted() const {
 }
 
 bool FakeFormFetcher::IsMovingBlocked(const autofill::GaiaIdHash& destination,
-                                      const base::string16& username) const {
+                                      const std::u16string& username) const {
   // This is analogous to the implementation in
   // MultiStoreFormFetcher::IsMovingBlocked().
   for (const std::vector<const PasswordForm*>& matches_vector :

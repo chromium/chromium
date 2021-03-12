@@ -21,8 +21,8 @@ IsWeakPassword IsWeak(base::StringPiece16 password);
 
 // Checks each password for weakness and removes strong passwords from the
 // |passwords|.
-base::flat_set<base::string16> BulkWeakCheck(
-    base::flat_set<base::string16> passwords);
+base::flat_set<std::u16string> BulkWeakCheck(
+    base::flat_set<std::u16string> passwords);
 
 }  // namespace password_manager
 

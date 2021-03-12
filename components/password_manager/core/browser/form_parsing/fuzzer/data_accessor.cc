@@ -99,13 +99,13 @@ std::string DataAccessor::ConsumeString(size_t length) {
   return std::string(reinterpret_cast<const char*>(string_buffer), length);
 }
 
-base::string16 DataAccessor::ConsumeString16(size_t length) {
+std::u16string DataAccessor::ConsumeString16(size_t length) {
   CHECK_LE(2 * length, kMaxStringBytes);
 
   uint8_t string_buffer[kMaxStringBytes];
   ConsumeBytesToBuffer(2 * length, string_buffer);
-  return base::string16(
-      reinterpret_cast<base::string16::value_type*>(string_buffer), length);
+  return std::u16string(
+      reinterpret_cast<std::u16string::value_type*>(string_buffer), length);
 }
 
 }  // namespace password_manager

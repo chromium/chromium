@@ -88,8 +88,8 @@ constexpr bool IsWeak(const InsecureCredentialTypeFlags& flag) {
 struct CredentialView {
   CredentialView(std::string signon_realm,
                  GURL url,
-                 base::string16 username,
-                 base::string16 password);
+                 std::u16string username,
+                 std::u16string password);
   // Enable explicit construction from PasswordForm for convenience.
   explicit CredentialView(const PasswordForm& form);
   CredentialView(const CredentialView& credential);
@@ -100,8 +100,8 @@ struct CredentialView {
 
   std::string signon_realm;
   GURL url;
-  base::string16 username;
-  base::string16 password;
+  std::u16string username;
+  std::u16string password;
 };
 
 // All information needed by UI to represent InsecureCredential. It's a result
@@ -208,7 +208,7 @@ class InsecureCredentialsManager : public InsecureCredentialsReader::Observer,
   // Updates |weak_passwords| set and notifies observers that weak credentials
   // were changed.
   void OnWeakCheckDone(base::ElapsedTimer timer_since_weak_check_start,
-                       base::flat_set<base::string16> weak_passwords);
+                       base::flat_set<std::u16string> weak_passwords);
 
   // InsecureCredentialsReader::Observer:
   void OnInsecureCredentialsChanged(
@@ -245,7 +245,7 @@ class InsecureCredentialsManager : public InsecureCredentialsReader::Observer,
   std::vector<InsecureCredential> insecure_credentials_;
 
   // Cache of the most recently obtained weak passwords.
-  base::flat_set<base::string16> weak_passwords_;
+  base::flat_set<std::u16string> weak_passwords_;
 
   // A map that matches CredentialView to corresponding PasswordForms, latest
   // create_type and combined insecure type.

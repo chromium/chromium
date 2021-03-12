@@ -38,8 +38,8 @@ class OmniboxEditModel {
  public:
   struct State {
     State(bool user_input_in_progress,
-          const base::string16& user_text,
-          const base::string16& keyword,
+          const std::u16string& user_text,
+          const std::u16string& keyword,
           bool is_keyword_hint,
           metrics::OmniboxEventProto::KeywordModeEntryMethod
               keyword_mode_entry_method,
@@ -51,8 +51,8 @@ class OmniboxEditModel {
     State& operator=(const State&) = delete;
 
     bool user_input_in_progress;
-    const base::string16 user_text;
-    const base::string16 keyword;
+    const std::u16string user_text;
+    const std::u16string keyword;
     const bool is_keyword_hint;
     metrics::OmniboxEventProto::KeywordModeEntryMethod
         keyword_mode_entry_method;
@@ -108,7 +108,7 @@ class OmniboxEditModel {
   // Called when the user wants to export the entire current text as a URL.
   // Sets the url, and if known, the title and favicon.
   void GetDataForURLExport(GURL* url,
-                           base::string16* title,
+                           std::u16string* title,
                            gfx::Image* favicon);
 
   // Returns true if the current edit contents will be treated as a
@@ -137,7 +137,7 @@ class OmniboxEditModel {
   //  - |text| is full UTF-16 and not %-escaped. This is because we are not
   //    interpreting |text| as a URL, so we leave the Unicode characters as-is.
   void AdjustTextForCopy(int sel_min,
-                         base::string16* text,
+                         std::u16string* text,
                          GURL* url_from_text,
                          bool* write_url);
 
@@ -165,10 +165,10 @@ class OmniboxEditModel {
   bool ResetDisplayTexts();
 
   // Returns the permanent display text for the current page and Omnibox state.
-  base::string16 GetPermanentDisplayText() const;
+  std::u16string GetPermanentDisplayText() const;
 
   // Sets the user_text_ to |text|. Also enters user-input-in-progress mode.
-  void SetUserText(const base::string16& text);
+  void SetUserText(const std::u16string& text);
 
   // If the omnibox is currently displaying elided text, this method will
   // restore the full URL into the user text. After unelision, this selects-all,
@@ -195,16 +195,16 @@ class OmniboxEditModel {
   void StopAutocomplete();
 
   // Determines whether the user can "paste and go", given the specified text.
-  bool CanPasteAndGo(const base::string16& text) const;
+  bool CanPasteAndGo(const std::u16string& text) const;
 
   // Navigates to the destination last supplied to CanPasteAndGo.
   void PasteAndGo(
-      const base::string16& text,
+      const std::u16string& text,
       base::TimeTicks match_selection_timestamp = base::TimeTicks());
 
   // Sets |match| and |alternate_nav_url| based on classifying |text|.
   // |alternate_nav_url| may be nullptr.
-  void ClassifyString(const base::string16& text,
+  void ClassifyString(const std::u16string& text,
                       AutocompleteMatch* match,
                       GURL* alternate_nav_url) const;
 
@@ -241,7 +241,7 @@ class OmniboxEditModel {
   void OpenMatch(AutocompleteMatch match,
                  WindowOpenDisposition disposition,
                  const GURL& alternate_nav_url,
-                 const base::string16& pasted_text,
+                 const std::u16string& pasted_text,
                  size_t index,
                  base::TimeTicks match_selection_timestamp = base::TimeTicks());
 
@@ -260,7 +260,7 @@ class OmniboxEditModel {
 
   // Accessors for keyword-related state (see comments on keyword_ and
   // is_keyword_hint_).
-  const base::string16& keyword() const { return keyword_; }
+  const std::u16string& keyword() const { return keyword_; }
   bool is_keyword_hint() const { return is_keyword_hint_; }
   bool is_keyword_selected() const {
     return !is_keyword_hint_ && !keyword_.empty();
@@ -380,14 +380,14 @@ class OmniboxEditModel {
   //     the omnibox view.
   // Virtual to allow testing.
   virtual void OnPopupDataChanged(
-      const base::string16& temporary_text,
+      const std::u16string& temporary_text,
       bool is_temporary_text,
-      const base::string16& inline_autocompletion,
-      const base::string16& prefix_autocompletion,
+      const std::u16string& inline_autocompletion,
+      const std::u16string& prefix_autocompletion,
       const SplitAutocompletion& split_autocompletion,
-      const base::string16& keyword,
+      const std::u16string& keyword,
       bool is_keyword_hint,
-      const base::string16& additional_text);
+      const std::u16string& additional_text);
 
   // Called by the OmniboxView after something changes, with details about what
   // state changes occurred.  Updates internal state, updates the popup if
@@ -405,7 +405,7 @@ class OmniboxEditModel {
   void OnCurrentMatchChanged();
 
   // Used for testing purposes only.
-  base::string16 GetUserTextForTesting() const { return user_text_; }
+  std::u16string GetUserTextForTesting() const { return user_text_; }
 
   // Name of the histogram tracking cut or copy omnibox commands.
   static const char kCutOrCopyAllTextHistogram[];
@@ -461,13 +461,13 @@ class OmniboxEditModel {
 
   // An internal method to set the user text. Notably, this differs from
   // SetUserText because it does not change the user-input-in-progress state.
-  void InternalSetUserText(const base::string16& text);
+  void InternalSetUserText(const std::u16string& text);
 
   // Conversion between user text and display text. User text is the text the
   // user has input. Display text is the text being shown in the edit. The
   // two are different if a keyword is selected.
-  base::string16 MaybeStripKeyword(const base::string16& text) const;
-  base::string16 MaybePrependKeyword(const base::string16& text) const;
+  std::u16string MaybeStripKeyword(const std::u16string& text) const;
+  std::u16string MaybePrependKeyword(const std::u16string& text) const;
 
   // Copies a match corresponding to the current text into |match|, and
   // populates |alternate_nav_url| as well if it's not nullptr. If the popup
@@ -481,13 +481,13 @@ class OmniboxEditModel {
   //   foo| -> foo |      (a space was appended to a keyword)
   //   foo[bar] -> foo |  (a space replaced other text after a keyword)
   // Returns true if the current keyword is accepted.
-  bool MaybeAcceptKeywordBySpace(const base::string16& new_text);
+  bool MaybeAcceptKeywordBySpace(const std::u16string& new_text);
 
   // Checks whether the user inserted a space into |old_text| and by doing so
   // created a |new_text| that looks like "<keyword> <search phrase>".
   bool CreatedKeywordSearchByInsertingSpaceInMiddle(
-      const base::string16& old_text,
-      const base::string16& new_text,
+      const std::u16string& old_text,
+      const std::u16string& new_text,
       size_t caret_position) const;
 
   // Checks if a given character is a valid space character for accepting
@@ -530,12 +530,12 @@ class OmniboxEditModel {
   //    elisions applied. This is the case if Steady State Elisions is ON.
   //
   // This should not be considered suitable for editing.
-  base::string16 display_text_;
+  std::u16string display_text_;
 
   // The initial text representing the current URL suitable for editing.
   // This should fully represent the current URL without any meaning-changing
   // elisions applied - and is suitable for user editing.
-  base::string16 url_for_editing_;
+  std::u16string url_for_editing_;
 
   // This flag is true when the user has modified the contents of the edit, but
   // not yet accepted them.  We use this to determine when we need to save
@@ -549,7 +549,7 @@ class OmniboxEditModel {
   // contain a string without |user_input_in_progress_| being true.
   // For instance, this is the case when the user has unelided a URL without
   // modifying its contents.
-  base::string16 user_text_;
+  std::u16string user_text_;
 
   // We keep track of when the user last focused on the omnibox.
   base::TimeTicks last_omnibox_focus_;
@@ -586,7 +586,7 @@ class OmniboxEditModel {
   // simply ask the popup for the desired URL directly.  As a result, the
   // contents of this variable only need to be updated when the popup is closed
   // but user_input_in_progress_ is not being cleared.
-  base::string16 url_for_remembered_user_selection_;
+  std::u16string url_for_remembered_user_selection_;
 
   // Inline autocomplete is allowed if the user has not just deleted text, and
   // no temporary text is showing.  In this case, inline_autocompletion_ is
@@ -596,8 +596,8 @@ class OmniboxEditModel {
   // text (actions that close the popup should either accept the text, convert
   // it to a normal selection, or change the edit entirely).
   bool just_deleted_text_;
-  base::string16 inline_autocompletion_;
-  base::string16 prefix_autocompletion_;
+  std::u16string inline_autocompletion_;
+  std::u16string prefix_autocompletion_;
   SplitAutocompletion split_autocompletion_;
 
   // Used by OnPopupDataChanged to keep track of whether there is currently a
@@ -619,7 +619,7 @@ class OmniboxEditModel {
   // original_user_text_with_keyword_ is null if a keyword has not been
   // accepted.
   bool has_temporary_text_;
-  base::string16 original_user_text_with_keyword_;
+  std::u16string original_user_text_with_keyword_;
 
   // When the user's last action was to paste, we disallow inline autocomplete
   // (on the theory that the user is trying to paste in a new URL or part of
@@ -635,7 +635,7 @@ class OmniboxEditModel {
   // selected keyword, or just some input text that looks like a keyword (so we
   // can show a hint to press <tab>).  This is the keyword in either case;
   // is_keyword_hint_ (below) distinguishes the two cases.
-  base::string16 keyword_;
+  std::u16string keyword_;
 
   // True if the keyword associated with this match is merely a hint, i.e. the
   // user hasn't actually selected a keyword yet.  When this is true, we can use

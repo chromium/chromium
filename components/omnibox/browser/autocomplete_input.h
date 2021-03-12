@@ -33,7 +33,7 @@ class AutocompleteInput {
   //
   // |scheme_classifier| is passed to Parse() to help determine the type of
   // input this is; see comments there.
-  AutocompleteInput(const base::string16& text,
+  AutocompleteInput(const std::u16string& text,
                     metrics::OmniboxEventProto::PageClassification
                         current_page_classification,
                     const AutocompleteSchemeClassifier& scheme_classifier,
@@ -41,9 +41,9 @@ class AutocompleteInput {
                     int https_port_for_testing = 0);
   // This constructor adds |cursor_position|, related to |text|.
   // |cursor_position| represents the location of the cursor within the
-  // query |text|. It may be set to base::string16::npos if the input
+  // query |text|. It may be set to std::u16string::npos if the input
   // doesn't come directly from the user's typing.
-  AutocompleteInput(const base::string16& text,
+  AutocompleteInput(const std::u16string& text,
                     size_t cursor_position,
                     metrics::OmniboxEventProto::PageClassification
                         current_page_classification,
@@ -56,7 +56,7 @@ class AutocompleteInput {
   // autocomplete. When this is non-empty, it also implies that "www."
   // should be prepended to the domain where possible. The |desired_tld|
   // should not contain a leading '.' (use "com" instead of ".com").
-  AutocompleteInput(const base::string16& text,
+  AutocompleteInput(const std::u16string& text,
                     size_t cursor_position,
                     const std::string& desired_tld,
                     metrics::OmniboxEventProto::PageClassification
@@ -79,11 +79,11 @@ class AutocompleteInput {
   // canonicalized URL is stored in |canonicalized_url|; however, this URL is
   // not guaranteed to be valid, especially if the parsed type is, e.g., QUERY.
   static metrics::OmniboxInputType Parse(
-      const base::string16& text,
+      const std::u16string& text,
       const std::string& desired_tld,
       const AutocompleteSchemeClassifier& scheme_classifier,
       url::Parsed* parts,
-      base::string16* scheme,
+      std::u16string* scheme,
       GURL* canonicalized_url);
 
   // Parses |text| and fill |scheme| and |host| by the positions of them.
@@ -91,7 +91,7 @@ class AutocompleteInput {
   // is view-source, this function returns the positions of scheme and host
   // in the URL qualified by "view-source:" prefix.
   static void ParseForEmphasizeComponents(
-      const base::string16& text,
+      const std::u16string& text,
       const AutocompleteSchemeClassifier& scheme_classifier,
       url::Component* scheme,
       url::Component* host);
@@ -105,9 +105,9 @@ class AutocompleteInput {
   // to determine the meaning of the different strings, callers need to supply a
   // |scheme_classifier| to pass to Parse(). If |offset| is non-null, it will
   // be updated with any changes that shift it.
-  static base::string16 FormattedStringWithEquivalentMeaning(
+  static std::u16string FormattedStringWithEquivalentMeaning(
       const GURL& url,
-      const base::string16& formatted_url,
+      const std::u16string& formatted_url,
       const AutocompleteSchemeClassifier& scheme_classifier,
       size_t* offset);
 
@@ -115,22 +115,22 @@ class AutocompleteInput {
   static int NumNonHostComponents(const url::Parsed& parts);
 
   // Returns whether |text| begins with "http:" or "view-source:http:".
-  static bool HasHTTPScheme(const base::string16& text);
+  static bool HasHTTPScheme(const std::u16string& text);
 
   // Returns whether |text| begins with "https:" or "view-source:https:".
-  static bool HasHTTPSScheme(const base::string16& text);
+  static bool HasHTTPSScheme(const std::u16string& text);
 
   // User-provided text to be completed.
-  const base::string16& text() const { return text_; }
+  const std::u16string& text() const { return text_; }
 
-  // Returns 0-based cursor position within |text_| or base::string16::npos if
+  // Returns 0-based cursor position within |text_| or std::u16string::npos if
   // not used.
   size_t cursor_position() const { return cursor_position_; }
 
   // Use of this setter is risky, since no other internal state is updated
   // besides |text_|, |cursor_position_| and |parts_|.  Only callers who know
   // that they're not changing the type/scheme/etc. should use this.
-  void UpdateText(const base::string16& text,
+  void UpdateText(const std::u16string& text,
                   size_t cursor_position,
                   const url::Parsed& parts);
 
@@ -142,10 +142,10 @@ class AutocompleteInput {
 
   // The title of the current page, corresponding to the current URL, or empty
   // if this is not available.
-  const base::string16& current_title() const { return current_title_; }
+  const std::u16string& current_title() const { return current_title_; }
   // This is sometimes set as the description if returning a
   // URL-what-you-typed match for the current URL.
-  void set_current_title(const base::string16& title) {
+  void set_current_title(const std::u16string& title) {
     current_title_ = title;
   }
 
@@ -164,7 +164,7 @@ class AutocompleteInput {
 
   // The scheme parsed from the provided text; only meaningful when type_ is
   // URL.
-  const base::string16& scheme() const { return scheme_; }
+  const std::u16string& scheme() const { return scheme_; }
 
   // The input as an URL to navigate to, if possible.
   const GURL& canonicalized_url() const { return canonicalized_url_; }
@@ -244,7 +244,7 @@ class AutocompleteInput {
   // duplicate elimination to detect whether, for a given URL, the user may
   // have started typing that URL with an explicit scheme; see comments on
   // AutocompleteMatch::GURLToStrippedGURL().
-  const std::vector<base::string16>& terms_prefixed_by_http_or_https() const {
+  const std::vector<std::u16string>& terms_prefixed_by_http_or_https() const {
     return terms_prefixed_by_http_or_https_;
   }
 
@@ -278,19 +278,19 @@ class AutocompleteInput {
   // The common initialization of the non-default constructors, called after
   // the initial fields are set. These remaining parameters are used as inputs
   // to setting the remaining fields.
-  void Init(const base::string16& text,
+  void Init(const std::u16string& text,
             const AutocompleteSchemeClassifier& scheme_classifier);
 
   // NOTE: Whenever adding a new field here, please make sure to update Clear()
   // and EstimateMemoryUsage() methods.
-  base::string16 text_;
+  std::u16string text_;
   size_t cursor_position_;
   GURL current_url_;
-  base::string16 current_title_;
+  std::u16string current_title_;
   metrics::OmniboxEventProto::PageClassification current_page_classification_;
   metrics::OmniboxInputType type_;
   url::Parsed parts_;
-  base::string16 scheme_;
+  std::u16string scheme_;
   GURL canonicalized_url_;
   std::string desired_tld_;
   bool prevent_inline_autocomplete_;
@@ -299,7 +299,7 @@ class AutocompleteInput {
   metrics::OmniboxEventProto::KeywordModeEntryMethod keyword_mode_entry_method_;
   bool want_asynchronous_matches_;
   OmniboxFocusType focus_type_ = OmniboxFocusType::DEFAULT;
-  std::vector<base::string16> terms_prefixed_by_http_or_https_;
+  std::vector<std::u16string> terms_prefixed_by_http_or_https_;
   base::Optional<std::string> query_tile_id_;
 
   // Flags for OmniboxDefaultNavigationsToHttps feature.

@@ -81,13 +81,13 @@ class PasswordFormManagerForUI {
   // the save button. Updates the username and modifies internal state
   // accordingly.
   virtual void OnUpdateUsernameFromPrompt(
-      const base::string16& new_username) = 0;
+      const std::u16string& new_username) = 0;
 
   // Updates the password value. Called when user selects a password from the
   // password selection dropdown and clicks the save button. Updates the
   // password and modifies internal state accordingly.
   virtual void OnUpdatePasswordFromPrompt(
-      const base::string16& new_password) = 0;
+      const std::u16string& new_password) = 0;
 
   // Called when the user chose not to update password.
   virtual void OnNopeUpdateClicked() = 0;

@@ -235,7 +235,7 @@ int ShortcutsProviderTest::CalculateScore(
 // Actual tests ---------------------------------------------------------------
 
 TEST_F(ShortcutsProviderTest, SimpleSingleMatch) {
-  base::string16 text(ASCIIToUTF16("go"));
+  std::u16string text(ASCIIToUTF16("go"));
   std::string expected_url("http://www.google.com/");
   ExpectedURLs expected_urls;
   expected_urls.push_back(ExpectedURLAndAllowedToBeDefault(expected_url, true));
@@ -259,11 +259,11 @@ TEST_F(ShortcutsProviderTest, SimpleSingleMatch) {
   expected_urls.clear();
   expected_urls.push_back(ExpectedURLAndAllowedToBeDefault(expected_url, true));
   RunShortcutsProviderTest(provider_, text, false, expected_urls, expected_url,
-                           base::string16());
+                           std::u16string());
   // With prevent inline autocomplete, the suggestion should be the same
   // (because there is no completion).
   RunShortcutsProviderTest(provider_, text, true, expected_urls, expected_url,
-                           base::string16());
+                           std::u16string());
 
   // Another test, simply for a query match type, not a navigation URL match
   // type.
@@ -290,11 +290,11 @@ TEST_F(ShortcutsProviderTest, SimpleSingleMatch) {
   expected_urls.clear();
   expected_urls.push_back(ExpectedURLAndAllowedToBeDefault(expected_url, true));
   RunShortcutsProviderTest(provider_, text, false, expected_urls, expected_url,
-                           base::string16());
+                           std::u16string());
   // With prevent inline autocomplete, the suggestion should be the same
   // (because there is no completion).
   RunShortcutsProviderTest(provider_, text, true, expected_urls, expected_url,
-                           base::string16());
+                           std::u16string());
 
   // Now the shortcut ends at the end of |fill_into_edit| but has a
   // non-droppable prefix.  ("www.", for instance, is not droppable for
@@ -305,14 +305,14 @@ TEST_F(ShortcutsProviderTest, SimpleSingleMatch) {
   expected_urls.push_back(
       ExpectedURLAndAllowedToBeDefault(expected_url, false));
   RunShortcutsProviderTest(provider_, text, false, expected_urls, expected_url,
-                           base::string16());
+                           std::u16string());
 }
 
 // These tests are like those in SimpleSingleMatch but more complex,
 // involving URLs that need to be fixed up to match properly.
 TEST_F(ShortcutsProviderTest, TrickySingleMatch) {
   // Test that about: URLs are fixed up/transformed to chrome:// URLs.
-  base::string16 text(ASCIIToUTF16("about:o"));
+  std::u16string text(ASCIIToUTF16("about:o"));
   std::string expected_url("chrome://omnibox/");
   ExpectedURLs expected_urls;
   expected_urls.push_back(ExpectedURLAndAllowedToBeDefault(expected_url, true));
@@ -353,7 +353,7 @@ TEST_F(ShortcutsProviderTest, TrickySingleMatch) {
   expected_urls.clear();
   expected_urls.push_back(ExpectedURLAndAllowedToBeDefault(expected_url, true));
   RunShortcutsProviderTest(provider_, text, true, expected_urls, expected_url,
-                           base::string16());
+                           std::u16string());
 
   // A foursome of tests to verify that trailing spaces prevent the shortcut
   // from being allowed to be the default match.  For each of two tests, we
@@ -389,7 +389,7 @@ TEST_F(ShortcutsProviderTest, TrickySingleMatch) {
 }
 
 TEST_F(ShortcutsProviderTest, MultiMatch) {
-  base::string16 text(ASCIIToUTF16("NEWS"));
+  std::u16string text(ASCIIToUTF16("NEWS"));
   ExpectedURLs expected_urls;
   // Scores high because of completion length.
   expected_urls.push_back(
@@ -402,11 +402,11 @@ TEST_F(ShortcutsProviderTest, MultiMatch) {
   expected_urls.push_back(
       ExpectedURLAndAllowedToBeDefault("http://www.cnn.com/index.html", false));
   RunShortcutsProviderTest(provider_, text, false, expected_urls,
-                           "http://slashdot.org/", base::string16());
+                           "http://slashdot.org/", std::u16string());
 }
 
 TEST_F(ShortcutsProviderTest, RemoveDuplicates) {
-  base::string16 text(ASCIIToUTF16("dupl"));
+  std::u16string text(ASCIIToUTF16("dupl"));
   ExpectedURLs expected_urls;
   expected_urls.push_back(
       ExpectedURLAndAllowedToBeDefault("http://duplicate.com/", true));
@@ -416,7 +416,7 @@ TEST_F(ShortcutsProviderTest, RemoveDuplicates) {
 }
 
 TEST_F(ShortcutsProviderTest, TypedCountMatches) {
-  base::string16 text(ASCIIToUTF16("just"));
+  std::u16string text(ASCIIToUTF16("just"));
   ExpectedURLs expected_urls;
   expected_urls.push_back(ExpectedURLAndAllowedToBeDefault(
       "http://www.testsite.com/b.html", false));
@@ -425,11 +425,11 @@ TEST_F(ShortcutsProviderTest, TypedCountMatches) {
   expected_urls.push_back(ExpectedURLAndAllowedToBeDefault(
       "http://www.testsite.com/c.html", false));
   RunShortcutsProviderTest(provider_, text, false, expected_urls,
-                           "http://www.testsite.com/b.html", base::string16());
+                           "http://www.testsite.com/b.html", std::u16string());
 }
 
 TEST_F(ShortcutsProviderTest, FragmentLengthMatches) {
-  base::string16 text(ASCIIToUTF16("just a"));
+  std::u16string text(ASCIIToUTF16("just a"));
   ExpectedURLs expected_urls;
   expected_urls.push_back(ExpectedURLAndAllowedToBeDefault(
       "http://www.testsite.com/d.html", false));
@@ -438,11 +438,11 @@ TEST_F(ShortcutsProviderTest, FragmentLengthMatches) {
   expected_urls.push_back(ExpectedURLAndAllowedToBeDefault(
       "http://www.testsite.com/f.html", false));
   RunShortcutsProviderTest(provider_, text, false, expected_urls,
-                           "http://www.testsite.com/d.html", base::string16());
+                           "http://www.testsite.com/d.html", std::u16string());
 }
 
 TEST_F(ShortcutsProviderTest, DaysAgoMatches) {
-  base::string16 text(ASCIIToUTF16("ago"));
+  std::u16string text(ASCIIToUTF16("ago"));
   ExpectedURLs expected_urls;
   expected_urls.push_back(ExpectedURLAndAllowedToBeDefault(
       "http://www.daysagotest.com/a.html", false));
@@ -452,7 +452,7 @@ TEST_F(ShortcutsProviderTest, DaysAgoMatches) {
       "http://www.daysagotest.com/c.html", false));
   RunShortcutsProviderTest(provider_, text, false, expected_urls,
                            "http://www.daysagotest.com/a.html",
-                           base::string16());
+                           std::u16string());
 }
 
 TEST_F(ShortcutsProviderTest, CalculateScore) {
@@ -463,7 +463,7 @@ TEST_F(ShortcutsProviderTest, CalculateScore) {
           AutocompleteMatch::DocumentType::NONE, ASCIIToUTF16("www.test.com"),
           "0,1,4,3,8,1", ASCIIToUTF16("A test"), "0,0,2,2",
           ui::PAGE_TRANSITION_TYPED, AutocompleteMatchType::HISTORY_URL,
-          base::string16()),
+          std::u16string()),
       base::Time::Now(), 1);
 
   // Maximal score.

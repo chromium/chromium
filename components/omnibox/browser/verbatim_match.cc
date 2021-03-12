@@ -18,7 +18,7 @@ AutocompleteMatch VerbatimMatchForURL(
     AutocompleteProviderClient* client,
     const AutocompleteInput& input,
     const GURL& destination_url,
-    const base::string16& destination_description,
+    const std::u16string& destination_description,
     int verbatim_relevance) {
   AutocompleteMatch match;
   // If the caller is a provider and already knows where the verbatim match
@@ -70,7 +70,7 @@ AutocompleteMatch VerbatimMatchForInput(AutocompleteProvider* provider,
             ? url_formatter::kFormatUrlOmitHTTPS
             : url_formatter::kFormatUrlOmitHTTP;
 
-    base::string16 display_string(url_formatter::FormatUrl(
+    std::u16string display_string(url_formatter::FormatUrl(
         destination_url, url_formatter::kFormatUrlOmitDefaults & ~format_type,
         net::UnescapeRule::SPACES, nullptr, nullptr, nullptr));
     if (trim_default_scheme) {

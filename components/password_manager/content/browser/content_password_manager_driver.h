@@ -57,18 +57,18 @@ class ContentPasswordManagerDriver
       bool should_show_popup_without_passwords) override;
   void FormEligibleForGenerationFound(
       const autofill::PasswordFormGenerationData& form) override;
-  void GeneratedPasswordAccepted(const base::string16& password) override;
+  void GeneratedPasswordAccepted(const std::u16string& password) override;
   void GeneratedPasswordAccepted(
       const autofill::FormData& form_data,
       autofill::FieldRendererId generation_element_id,
-      const base::string16& password) override;
+      const std::u16string& password) override;
   void TouchToFillClosed(ShowVirtualKeyboard show_virtual_keyboard) override;
-  void FillSuggestion(const base::string16& username,
-                      const base::string16& password) override;
+  void FillSuggestion(const std::u16string& username,
+                      const std::u16string& password) override;
   void FillIntoFocusedField(bool is_password,
-                            const base::string16& credential) override;
-  void PreviewSuggestion(const base::string16& username,
-                         const base::string16& password) override;
+                            const std::u16string& credential) override;
+  void PreviewSuggestion(const std::u16string& username,
+                         const std::u16string& password) override;
   void ClearPreviewedForm() override;
   PasswordGenerationFrameHelper* GetPasswordGenerationHelper() override;
   PasswordManager* GetPasswordManager() override;
@@ -107,9 +107,9 @@ class ContentPasswordManagerDriver
   void RecordSavePasswordProgress(const std::string& log) override;
   void UserModifiedPasswordField() override;
   void UserModifiedNonPasswordField(autofill::FieldRendererId renderer_id,
-                                    const base::string16& value) override;
+                                    const std::u16string& value) override;
   void ShowPasswordSuggestions(base::i18n::TextDirection text_direction,
-                               const base::string16& typed_username,
+                               const std::u16string& typed_username,
                                int options,
                                const gfx::RectF& bounds) override;
   void ShowTouchToFill() override;

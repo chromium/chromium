@@ -29,8 +29,8 @@ struct CanonicalizedCredential {
       : canonicalized_username(CanonicalizeUsername(credential.username())),
         password(credential.password()) {}
 
-  base::string16 canonicalized_username;
-  base::string16 password;
+  std::u16string canonicalized_username;
+  std::u16string password;
 };
 
 inline bool operator<(const CanonicalizedCredential& lhs,

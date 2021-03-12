@@ -19,8 +19,8 @@
 
 // Convenience Types -----------------------------------------------------------
 
-typedef std::vector<base::string16> String16Vector;
-typedef base::flat_set<base::string16> String16Set;
+typedef std::vector<std::u16string> String16Vector;
+typedef base::flat_set<std::u16string> String16Set;
 typedef base::flat_set<char16_t> Char16Set;
 typedef std::vector<char16_t> Char16Vector;
 
@@ -47,7 +47,7 @@ typedef std::vector<TermMatch> TermMatches;
 
 // Returns the joined TermMatches of each term. See MatchTermInString.
 TermMatches MatchTermsInString(const String16Vector& terms,
-                               const base::string16& cleaned_string);
+                               const std::u16string& cleaned_string);
 
 // Returns a TermMatches which has an entry for each occurrence of the
 // string |term| found in the string |cleaned_string|. Use
@@ -57,8 +57,8 @@ TermMatches MatchTermsInString(const String16Vector& terms,
 // with other TermMatches for other terms. Note that only the first
 // 2,048 characters of |string| are considered during the match
 // operation.
-TermMatches MatchTermInString(const base::string16& term,
-                              const base::string16& cleaned_string,
+TermMatches MatchTermInString(const std::u16string& term,
+                              const std::u16string& cleaned_string,
                               int term_num);
 
 // Sorts |matches| by offset and returns the result.
@@ -90,7 +90,7 @@ TermMatches ReplaceOffsetsInTermMatches(const TermMatches& matches,
 // |cleaned_uni_string| at which each word starts onto
 // |word_starts|. These offsets are collected only up to the first
 // kMaxSignificantChars of |cleaned_uni_string|.
-String16Set String16SetFromString16(const base::string16& cleaned_uni_string,
+String16Set String16SetFromString16(const std::u16string& cleaned_uni_string,
                                     WordStarts* word_starts);
 
 // Breaks the |cleaned_uni_string| string down into individual words and
@@ -113,7 +113,7 @@ String16Set String16SetFromString16(const base::string16& cleaned_uni_string,
 //   With |break_on_space| true the returned list will contain:
 //    "http://", "www.google.com/", "harry", "the_rabbit."
 String16Vector String16VectorFromString16(
-    const base::string16& cleaned_uni_string,
+    const std::u16string& cleaned_uni_string,
     bool break_on_space,
     WordStarts* word_starts);
 
@@ -125,7 +125,7 @@ String16Vector String16VectorFromString16(
 // and properly handle substring matches, scoring and sorting the results
 // by score. Also, provide the metrics for where the matches occur so that
 // the UI can highlight the matched sections.
-Char16Set Char16SetFromString16(const base::string16& uni_word);
+Char16Set Char16SetFromString16(const std::u16string& uni_word);
 
 // Support for InMemoryURLIndex Private Data -----------------------------------
 
@@ -133,7 +133,7 @@ Char16Set Char16SetFromString16(const base::string16& uni_word);
 typedef size_t WordID;
 
 // A map allowing a WordID to be determined given a word.
-typedef std::map<base::string16, WordID> WordMap;
+typedef std::map<std::u16string, WordID> WordMap;
 
 // A map from character to the word_ids of words containing that character.
 typedef base::flat_set<WordID> WordIDSet;  // An index into the WordList.

@@ -248,7 +248,7 @@ TEST_F(ShortcutsBackendTest, EntitySuggestionTest) {
             match_core.destination_url.spec());
   EXPECT_EQ(match.fill_into_edit, match_core.contents);
   EXPECT_EQ("0,0", match_core.contents_class);
-  EXPECT_EQ(base::string16(), match_core.description);
+  EXPECT_EQ(std::u16string(), match_core.description);
   EXPECT_TRUE(match_core.description_class.empty());
 }
 

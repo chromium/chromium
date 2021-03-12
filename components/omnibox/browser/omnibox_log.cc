@@ -7,7 +7,7 @@
 #include "components/omnibox/browser/autocomplete_result.h"
 
 OmniboxLog::OmniboxLog(
-    const base::string16& text,
+    const std::u16string& text,
     bool just_deleted_text,
     metrics::OmniboxInputType input_type,
     bool in_keyword_mode,

@@ -20,7 +20,7 @@ constexpr size_t kUsernameHashPrefixLength = 26;
 // host in case the username is a mail address. |username| must be a UTF-8
 // string.
 std::string CanonicalizeUsername(base::StringPiece username);
-base::string16 CanonicalizeUsername(base::StringPiece16 username);
+std::u16string CanonicalizeUsername(base::StringPiece16 username);
 
 // Hashes |canonicalized_username| by appending a fixed salt and computing the
 // SHA256 hash.

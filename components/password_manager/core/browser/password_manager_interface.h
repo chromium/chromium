@@ -64,7 +64,7 @@ class PasswordManagerInterface : public FormSubmissionObserver {
   virtual void PresaveGeneratedPassword(
       PasswordManagerDriver* driver,
       const autofill::FormData& form,
-      const base::string16& generated_password,
+      const std::u16string& generated_password,
       autofill::FieldRendererId generation_element) = 0;
 
   // Updates the state if the PasswordFormManager which corresponds to the form
@@ -73,7 +73,7 @@ class PasswordManagerInterface : public FormSubmissionObserver {
   virtual void UpdateStateOnUserInput(PasswordManagerDriver* driver,
                                       autofill::FormRendererId form_id,
                                       autofill::FieldRendererId field_id,
-                                      const base::string16& field_value) = 0;
+                                      const std::u16string& field_value) = 0;
 
   // Stops treating a password as generated. |driver| corresponds to the
   // form parent frame.

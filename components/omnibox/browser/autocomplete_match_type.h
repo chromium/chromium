@@ -104,9 +104,9 @@ struct AutocompleteMatchType {
   // TODO(tommycli): It seems odd that we are passing in both |match| and
   // |match_text|. Using just |match.contents| or |match.fill_into_edit| seems
   // like it could replace |match_text|. Investigate this.
-  static base::string16 ToAccessibilityLabel(
+  static std::u16string ToAccessibilityLabel(
       const AutocompleteMatch& match,
-      const base::string16& match_text,
+      const std::u16string& match_text,
       size_t match_index = 0,
       size_t total_matches = 0,
       int additional_message_id = 0,

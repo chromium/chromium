@@ -132,7 +132,7 @@ class VotesUploaderTest : public testing::Test {
   }
 
  protected:
-  base::string16 GetFieldNameByIndex(size_t index) {
+  std::u16string GetFieldNameByIndex(size_t index) {
     return ASCIIToUTF16("field") + base::NumberToString16(index);
   }
 
@@ -149,8 +149,8 @@ class VotesUploaderTest : public testing::Test {
 
 TEST_F(VotesUploaderTest, UploadPasswordVoteUpdate) {
   VotesUploader votes_uploader(&client_, true);
-  base::string16 new_password_element = GetFieldNameByIndex(3);
-  base::string16 confirmation_element = GetFieldNameByIndex(11);
+  std::u16string new_password_element = GetFieldNameByIndex(3);
+  std::u16string confirmation_element = GetFieldNameByIndex(11);
   form_to_upload_.new_password_element = new_password_element;
   submitted_form_.new_password_element = new_password_element;
   form_to_upload_.confirmation_password_element = confirmation_element;
@@ -178,8 +178,8 @@ TEST_F(VotesUploaderTest, UploadPasswordVoteUpdate) {
 
 TEST_F(VotesUploaderTest, UploadPasswordVoteSave) {
   VotesUploader votes_uploader(&client_, false);
-  base::string16 password_element = GetFieldNameByIndex(5);
-  base::string16 confirmation_element = GetFieldNameByIndex(12);
+  std::u16string password_element = GetFieldNameByIndex(5);
+  std::u16string confirmation_element = GetFieldNameByIndex(12);
   form_to_upload_.password_element = password_element;
   submitted_form_.password_element = password_element;
   form_to_upload_.confirmation_password_element = confirmation_element;
@@ -206,7 +206,7 @@ TEST_F(VotesUploaderTest, InitialValueDetection) {
   // correctly written to the corresponding field in the |form_structure|.
   // Note that the value of the username field is deliberately altered before
   // the |form_structure| is generated from |form_data| to test the persistence.
-  base::string16 prefilled_username = ASCIIToUTF16("prefilled_username");
+  std::u16string prefilled_username = ASCIIToUTF16("prefilled_username");
   autofill::FieldRendererId username_field_renderer_id(123456);
   const uint32_t kNumberOfHashValues = 64;
   FormData form_data;
@@ -254,7 +254,7 @@ TEST_F(VotesUploaderTest, GeneratePasswordAttributesVote) {
   const char* kPasswordSnippets[kNumberOfPasswordAttributes] = {"abc", "*-_"};
   for (int test_case = 0; test_case < 10; ++test_case) {
     bool has_password_attribute[kNumberOfPasswordAttributes];
-    base::string16 password_value;
+    std::u16string password_value;
     for (int i = 0; i < kNumberOfPasswordAttributes; ++i) {
       has_password_attribute[i] = base::RandGenerator(2);
       if (has_password_attribute[i])
@@ -317,7 +317,7 @@ TEST_F(VotesUploaderTest, GeneratePasswordAttributesVote) {
 TEST_F(VotesUploaderTest, GeneratePasswordSpecialSymbolVote) {
   VotesUploader votes_uploader(&client_, true);
 
-  const base::string16 password_value = ASCIIToUTF16("password-withsymbols!");
+  const std::u16string password_value = ASCIIToUTF16("password-withsymbols!");
   const int kNumberOfRuns = 2000;
   const int kSpecialSymbolsAttribute =
       static_cast<int>(PasswordAttribute::kHasSpecialSymbol);

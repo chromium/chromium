@@ -100,8 +100,8 @@ class AutocompleteProviderClientWithClosure
 class TestProvider : public AutocompleteProvider {
  public:
   TestProvider(int relevance,
-               const base::string16& prefix,
-               const base::string16& match_keyword,
+               const std::u16string& prefix,
+               const std::u16string& match_keyword,
                AutocompleteProviderClient* client)
       : AutocompleteProvider(AutocompleteProvider::TYPE_SEARCH),
         listener_(nullptr),
@@ -132,8 +132,8 @@ class TestProvider : public AutocompleteProvider {
 
   AutocompleteProviderListener* listener_;
   int relevance_;
-  const base::string16 prefix_;
-  const base::string16 match_keyword_;
+  const std::u16string prefix_;
+  const std::u16string match_keyword_;
   AutocompleteProviderClient* client_;
 };
 
@@ -175,7 +175,7 @@ void TestProvider::Run() {
 void TestProvider::AddResults(int start_at, int num) {
   AddResultsWithSearchTermsArgs(
       start_at, num, AutocompleteMatchType::URL_WHAT_YOU_TYPED,
-      TemplateURLRef::SearchTermsArgs(base::string16()));
+      TemplateURLRef::SearchTermsArgs(std::u16string()));
 }
 
 void TestProvider::AddResultsWithSearchTermsArgs(
@@ -212,27 +212,27 @@ void TestProvider::AddResultsWithSearchTermsArgs(
 // convenient.
 class ClassifyTest {
  public:
-  ClassifyTest(const base::string16& text,
+  ClassifyTest(const std::u16string& text,
                const bool text_is_query,
                ACMatchClassifications matches);
   ~ClassifyTest();
 
-  ACMatchClassifications RunTest(const base::string16& find_text);
+  ACMatchClassifications RunTest(const std::u16string& find_text);
 
  private:
-  const base::string16 text_;
+  const std::u16string text_;
   const bool text_is_query_;
   const ACMatchClassifications matches_;
 };
 
-ClassifyTest::ClassifyTest(const base::string16& text,
+ClassifyTest::ClassifyTest(const std::u16string& text,
                            const bool text_is_query,
                            ACMatchClassifications matches)
     : text_(text), text_is_query_(text_is_query), matches_(matches) {}
 
 ClassifyTest::~ClassifyTest() {}
 
-ACMatchClassifications ClassifyTest::RunTest(const base::string16& find_text) {
+ACMatchClassifications ClassifyTest::RunTest(const std::u16string& find_text) {
   return AutocompleteProvider::ClassifyAllMatchesInString(
       find_text, text_, text_is_query_, matches_);
 }
@@ -246,9 +246,9 @@ class AutocompleteProviderTest : public testing::Test {
 
  protected:
   struct KeywordTestData {
-    const base::string16 fill_into_edit;
-    const base::string16 keyword;
-    const base::string16 expected_associated_keyword;
+    const std::u16string fill_into_edit;
+    const std::u16string keyword;
+    const std::u16string expected_associated_keyword;
   };
 
   struct HeaderTestData {
@@ -263,7 +263,7 @@ class AutocompleteProviderTest : public testing::Test {
   };
 
   // Registers a test TemplateURL under the given keyword.
-  void RegisterTemplateURL(const base::string16& keyword,
+  void RegisterTemplateURL(const std::u16string& keyword,
                            const std::string& template_url,
                            const std::string& image_url,
                            const std::string& image_url_post_params);
@@ -282,7 +282,7 @@ class AutocompleteProviderTest : public testing::Test {
   // to pretend it was running against input |input|, calls the |controller_|'s
   // UpdateAssociatedKeywords, and checks that the matches have associated
   // keywords as expected.
-  void RunKeywordTest(const base::string16& input,
+  void RunKeywordTest(const std::u16string& input,
                       const KeywordTestData* match_data,
                       size_t size);
 
@@ -366,7 +366,7 @@ AutocompleteProviderTest::~AutocompleteProviderTest() {
 }
 
 void AutocompleteProviderTest::RegisterTemplateURL(
-    const base::string16& keyword,
+    const std::u16string& keyword,
     const std::string& template_url,
     const std::string& image_url = "",
     const std::string& image_url_post_params = "") {
@@ -413,7 +413,7 @@ void AutocompleteProviderTest::ResetControllerWithTestProviders(
   TestProvider* provider2 = new TestProvider(
       kResultsPerProvider * 2,
       base::ASCIIToUTF16(same_destinations ? "http://a" : "http://b"),
-      base::string16(), client_);
+      std::u16string(), client_);
   providers.push_back(provider2);
 
   // Reset the controller to contain our new providers.
@@ -503,7 +503,7 @@ void AutocompleteProviderTest::RunTest() {
   RunQuery("a", true);
 }
 
-void AutocompleteProviderTest::RunKeywordTest(const base::string16& input,
+void AutocompleteProviderTest::RunKeywordTest(const std::u16string& input,
                                               const KeywordTestData* match_data,
                                               size_t size) {
   ACMatches matches;
@@ -530,7 +530,7 @@ void AutocompleteProviderTest::RunKeywordTest(const base::string16& input,
     EXPECT_EQ(match_data[j].expected_associated_keyword,
               result.match_at(j)->associated_keyword
                   ? result.match_at(j)->associated_keyword->keyword
-                  : base::string16());
+                  : std::u16string());
   }
 }
 
@@ -569,7 +569,7 @@ void AutocompleteProviderTest::RunAssistedQueryStatsTest(
     match.allowed_to_be_default_match = true;
     match.keyword = base::ASCIIToUTF16(kTestTemplateURLKeyword);
     match.search_terms_args.reset(
-        new TemplateURLRef::SearchTermsArgs(base::string16()));
+        new TemplateURLRef::SearchTermsArgs(std::u16string()));
     match.subtypes = aqs_test_data[i].subtypes;
     matches.push_back(match);
   }
@@ -710,10 +710,10 @@ TEST_F(AutocompleteProviderTest, RedundantKeywordsIgnoredInResult) {
 
   {
     KeywordTestData duplicate_url[] = {
-        {base::ASCIIToUTF16("fo"), base::string16(), base::string16()},
-        {base::ASCIIToUTF16("foo.com"), base::string16(),
+        {base::ASCIIToUTF16("fo"), std::u16string(), std::u16string()},
+        {base::ASCIIToUTF16("foo.com"), std::u16string(),
          base::ASCIIToUTF16("foo.com")},
-        {base::ASCIIToUTF16("foo.com"), base::string16(), base::string16()}};
+        {base::ASCIIToUTF16("foo.com"), std::u16string(), std::u16string()}};
 
     SCOPED_TRACE("Duplicate url");
     RunKeywordTest(base::ASCIIToUTF16("fo"), duplicate_url,
@@ -723,8 +723,8 @@ TEST_F(AutocompleteProviderTest, RedundantKeywordsIgnoredInResult) {
   {
     KeywordTestData keyword_match[] = {
         {base::ASCIIToUTF16("foo.com"), base::ASCIIToUTF16("foo.com"),
-         base::string16()},
-        {base::ASCIIToUTF16("foo.com"), base::string16(), base::string16()}};
+         std::u16string()},
+        {base::ASCIIToUTF16("foo.com"), std::u16string(), std::u16string()}};
 
     SCOPED_TRACE("Duplicate url with keyword match");
     RunKeywordTest(base::ASCIIToUTF16("fo"), keyword_match,
@@ -733,11 +733,11 @@ TEST_F(AutocompleteProviderTest, RedundantKeywordsIgnoredInResult) {
 
   {
     KeywordTestData multiple_keyword[] = {
-        {base::ASCIIToUTF16("fo"), base::string16(), base::string16()},
-        {base::ASCIIToUTF16("foo.com"), base::string16(),
+        {base::ASCIIToUTF16("fo"), std::u16string(), std::u16string()},
+        {base::ASCIIToUTF16("foo.com"), std::u16string(),
          base::ASCIIToUTF16("foo.com")},
-        {base::ASCIIToUTF16("foo.com"), base::string16(), base::string16()},
-        {base::ASCIIToUTF16("bar.com"), base::string16(),
+        {base::ASCIIToUTF16("foo.com"), std::u16string(), std::u16string()},
+        {base::ASCIIToUTF16("bar.com"), std::u16string(),
          base::ASCIIToUTF16("bar.com")},
     };
 
@@ -754,7 +754,7 @@ TEST_F(AutocompleteProviderTest, ExactMatchKeywords) {
 
   {
     KeywordTestData keyword_match[] = {{base::ASCIIToUTF16("foo.com"),
-                                        base::string16(),
+                                        std::u16string(),
                                         base::ASCIIToUTF16("foo.com")}};
 
     SCOPED_TRACE("keyword match as usual");
@@ -768,7 +768,7 @@ TEST_F(AutocompleteProviderTest, ExactMatchKeywords) {
   // this match.
   {
     KeywordTestData keyword_match[] = {{base::ASCIIToUTF16("foo.com"),
-                                        base::string16(),
+                                        std::u16string(),
                                         base::ASCIIToUTF16("f")}};
 
     SCOPED_TRACE("keyword exact match");
@@ -816,7 +816,7 @@ TEST_F(AutocompleteProviderTest, Headers) {
               result_.GetHeaderForGroupId(kRecommendedForYouGroupId));
     EXPECT_EQ(base::ASCIIToUTF16(kRecentSearchesHeader),
               result_.GetHeaderForGroupId(kRecentSearchesGroupId));
-    EXPECT_EQ(base::string16(), result_.GetHeaderForGroupId(-1));
+    EXPECT_EQ(std::u16string(), result_.GetHeaderForGroupId(-1));
   }
   {
     HeaderTestData test_data = {headers_map,
@@ -1005,7 +1005,7 @@ TEST_F(AutocompleteProviderTest, GetDestinationURL) {
 
   // search_terms_args needs to be set.
   match.search_terms_args.reset(
-      new TemplateURLRef::SearchTermsArgs(base::string16()));
+      new TemplateURLRef::SearchTermsArgs(std::u16string()));
   url = GetDestinationURL(match, base::TimeDelta::FromMilliseconds(2456));
   EXPECT_TRUE(url.path().empty());
 
@@ -1141,7 +1141,7 @@ TEST_F(AutocompleteProviderTest, ClassifyAllMatchesInString) {
   // Some web sites do not have a description.  If the string being searched is
   // empty, the classifications must also be empty: http://crbug.com/148647
   // Extra parens in the next line hack around C++03's "most vexing parse".
-  class ClassifyTest classify_test5((base::string16()), /*text_is_query=*/false,
+  class ClassifyTest classify_test5((std::u16string()), /*text_is_query=*/false,
                                     ACMatchClassifications());
   spans = classify_test5.RunTest(ASCIIToUTF16("man"));
   ASSERT_EQ(0U, spans.size());

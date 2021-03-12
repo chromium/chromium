@@ -33,11 +33,11 @@ class PasswordReuseDetectionManager : public PasswordReuseDetectorConsumer {
   explicit PasswordReuseDetectionManager(PasswordManagerClient* client);
   ~PasswordReuseDetectionManager() override;
   void DidNavigateMainFrame(const GURL& main_frame_url);
-  void OnKeyPressedCommitted(const base::string16& text);
+  void OnKeyPressedCommitted(const std::u16string& text);
 #if defined(OS_ANDROID)
-  void OnKeyPressedUncommitted(const base::string16& text);
+  void OnKeyPressedUncommitted(const std::u16string& text);
 #endif
-  void OnPaste(const base::string16 text);
+  void OnPaste(const std::u16string text);
 
   // PasswordReuseDetectorConsumer implementation
   void OnReuseCheckDone(
@@ -50,16 +50,16 @@ class PasswordReuseDetectionManager : public PasswordReuseDetectorConsumer {
   void SetClockForTesting(base::Clock* clock);
 
  private:
-  void OnKeyPressed(const base::string16& text, const bool is_committed);
+  void OnKeyPressed(const std::u16string& text, const bool is_committed);
   // Determines the type of password being reused.
   metrics_util::PasswordType GetReusedPasswordType(
       base::Optional<PasswordHashData> reused_protected_password_hash,
       size_t match_domain_count);
 
-  void CheckStoresForReuse(const base::string16& input);
+  void CheckStoresForReuse(const std::u16string& input);
 
   PasswordManagerClient* client_;
-  base::string16 input_characters_;
+  std::u16string input_characters_;
   GURL main_frame_url_;
   base::Time last_keystroke_time_;
   // Used to retrieve the current time, in base::Time units.

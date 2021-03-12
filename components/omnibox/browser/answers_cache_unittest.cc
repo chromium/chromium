@@ -21,7 +21,7 @@ TEST(AnswersCacheTest, UpdatePopulatesCache) {
 TEST(AnswersCacheTest, GetWillRetrieveMatchingInfo) {
   AnswersCache cache(1);
 
-  base::string16 full_query_text = base::ASCIIToUTF16("weather los angeles");
+  std::u16string full_query_text = base::ASCIIToUTF16("weather los angeles");
   int query_type = 2334;
   cache.UpdateRecentAnswers(full_query_text, query_type);
 
@@ -44,8 +44,8 @@ TEST(AnswersCacheTest, GetWillRetrieveMatchingInfo) {
 TEST(AnswersCacheTest, MatchMostRecent) {
   AnswersCache cache(2);
 
-  base::string16 query_weather_la = base::ASCIIToUTF16("weather los angeles");
-  base::string16 query_weather_lv = base::ASCIIToUTF16("weather las vegas");
+  std::u16string query_weather_la = base::ASCIIToUTF16("weather los angeles");
+  std::u16string query_weather_lv = base::ASCIIToUTF16("weather las vegas");
   int query_type = 2334;
 
   cache.UpdateRecentAnswers(query_weather_lv, query_type);
@@ -67,9 +67,9 @@ TEST(AnswersCacheTest, MatchMostRecent) {
 TEST(AnswersCacheTest, LeastRecentItemIsEvicted) {
   AnswersCache cache(2);
 
-  base::string16 query_weather_la = base::ASCIIToUTF16("weather los angeles");
-  base::string16 query_weather_lv = base::ASCIIToUTF16("weather las vegas");
-  base::string16 query_weather_lb = base::ASCIIToUTF16("weather long beach");
+  std::u16string query_weather_la = base::ASCIIToUTF16("weather los angeles");
+  std::u16string query_weather_lv = base::ASCIIToUTF16("weather las vegas");
+  std::u16string query_weather_lb = base::ASCIIToUTF16("weather long beach");
   int query_type = 2334;
 
   cache.UpdateRecentAnswers(query_weather_lb, query_type);
@@ -93,9 +93,9 @@ TEST(AnswersCacheTest, LeastRecentItemIsEvicted) {
 TEST(AnswersCacheTest, DuplicateEntries) {
   AnswersCache cache(2);
 
-  base::string16 query_weather_lv = base::ASCIIToUTF16("weather las vegas");
-  base::string16 query_weather_lb = base::ASCIIToUTF16("weather long beach");
-  base::string16 query_weather_l = base::ASCIIToUTF16("weather l");
+  std::u16string query_weather_lv = base::ASCIIToUTF16("weather las vegas");
+  std::u16string query_weather_lb = base::ASCIIToUTF16("weather long beach");
+  std::u16string query_weather_l = base::ASCIIToUTF16("weather l");
   int query_type = 2334;
 
   cache.UpdateRecentAnswers(query_weather_lb, query_type);

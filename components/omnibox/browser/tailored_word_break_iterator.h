@@ -24,7 +24,7 @@ class TailoredWordBreakIterator : public base::i18n::BreakIterator {
   // Returns characters between |prev_| and |pos_| if |underscore_word_| is not
   // empty. Otherwise returns the normal BreakIterator-determined current word.
   base::StringPiece16 GetStringPiece() const;
-  base::string16 GetString() const;
+  std::u16string GetString() const;
   size_t prev() const;
   size_t pos() const;
 

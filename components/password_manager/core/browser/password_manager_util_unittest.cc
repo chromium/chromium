@@ -242,10 +242,10 @@ TEST(PasswordManagerUtil, FindBestMatches) {
 }
 
 TEST(PasswordManagerUtil, FindBestMatchesInProfileAndAccountStores) {
-  const base::string16 kUsername1 = base::ASCIIToUTF16("Username1");
-  const base::string16 kPassword1 = base::ASCIIToUTF16("Password1");
-  const base::string16 kUsername2 = base::ASCIIToUTF16("Username2");
-  const base::string16 kPassword2 = base::ASCIIToUTF16("Password2");
+  const std::u16string kUsername1 = base::ASCIIToUTF16("Username1");
+  const std::u16string kPassword1 = base::ASCIIToUTF16("Password1");
+  const std::u16string kUsername2 = base::ASCIIToUTF16("Username2");
+  const std::u16string kPassword2 = base::ASCIIToUTF16("Password2");
 
   PasswordForm form;
   form.is_public_suffix_match = false;

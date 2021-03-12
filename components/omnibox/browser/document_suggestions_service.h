@@ -45,7 +45,7 @@ class DocumentSuggestionsService : public KeyedService {
 
   // Creates and starts a document suggestion request for |query|.
   // May obtain an OAuth2 token for the signed-in user.
-  void CreateDocumentSuggestionsRequest(const base::string16& query,
+  void CreateDocumentSuggestionsRequest(const std::u16string& query,
                                         bool is_incognito,
                                         StartCallback start_callback,
                                         CompletionCallback completion_callback);

@@ -21,7 +21,7 @@ TEST(DataAccessorTest, NullInput) {
   EXPECT_EQ(0u, accessor.ConsumeNumber(13));
   EXPECT_EQ(false, accessor.ConsumeBit());
   EXPECT_EQ(std::string("\0\0\0", 3), accessor.ConsumeString(3));
-  EXPECT_EQ(base::string16(), accessor.ConsumeString16(0));
+  EXPECT_EQ(std::u16string(), accessor.ConsumeString16(0));
 }
 
 TEST(DataAccessorTest, Bit) {
@@ -65,13 +65,13 @@ TEST(DataAccessorTest, String) {
 }
 
 TEST(DataAccessorTest, String16) {
-  const base::string16 str = UTF8ToUTF16("Test string 123.");
+  const std::u16string str = UTF8ToUTF16("Test string 123.");
   DataAccessor accessor(reinterpret_cast<const uint8_t*>(str.c_str()),
                         str.size() * 2);
   EXPECT_EQ(UTF8ToUTF16("Test"), accessor.ConsumeString16(4));
   accessor.ConsumeNumber(13);  // Skip 13 bits to test re-alignment.
   EXPECT_EQ(UTF8ToUTF16("string 123"), accessor.ConsumeString16(10));
-  EXPECT_EQ(base::string16(), accessor.ConsumeString16(0));
+  EXPECT_EQ(std::u16string(), accessor.ConsumeString16(0));
   // Test also that padding is included.
   EXPECT_EQ(UTF8ToUTF16(std::string(".\0\0", 3)), accessor.ConsumeString16(3));
 }

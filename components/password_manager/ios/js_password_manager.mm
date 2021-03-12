@@ -38,9 +38,9 @@ std::unique_ptr<base::Value> SerializeFillData(
     const GURL& origin,
     FormRendererId form_renderer_id,
     FieldRendererId username_element,
-    const base::string16& username_value,
+    const std::u16string& username_value,
     FieldRendererId password_element,
-    const base::string16& password_value) {
+    const std::u16string& password_value) {
   auto rootDict = std::make_unique<base::DictionaryValue>();
   rootDict->SetString("origin", origin.spec());
   rootDict->SetInteger("unique_renderer_id",

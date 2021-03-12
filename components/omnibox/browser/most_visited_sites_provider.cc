@@ -57,7 +57,7 @@ MostVisitedSitesProvider::MostVisitedSitesProvider(
 MostVisitedSitesProvider::~MostVisitedSitesProvider() = default;
 
 AutocompleteMatch MostVisitedSitesProvider::BuildMatch(
-    const base::string16& description,
+    const std::u16string& description,
     const GURL& url,
     int relevance,
     AutocompleteMatchType::Type type) {
@@ -90,7 +90,7 @@ void MostVisitedSitesProvider::OnMostVisitedUrlsAvailable(
 
   if (base::FeatureList::IsEnabled(omnibox::kMostVisitedTiles)) {
     AutocompleteMatch match = BuildMatch(
-        base::string16(), GURL::EmptyGURL(), kMostVisitedTilesRelevance,
+        std::u16string(), GURL::EmptyGURL(), kMostVisitedTilesRelevance,
         AutocompleteMatchType::TILE_NAVSUGGEST);
     match.navsuggest_tiles.reserve(urls.size());
 

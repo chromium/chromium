@@ -591,7 +591,7 @@ NSString* const kSuggestionSuffix = @" ••••••••";
   }
 
   // TODO(crbug.com/886583): pass correct |max_length|.
-  base::string16 generatedPassword =
+  std::u16string generatedPassword =
       self.passwordGenerationHelper->GeneratePassword(
           [self lastCommittedURL], autofill::FormSignature(0),
           autofill::FieldSignature(0), /*max_length=*/0);

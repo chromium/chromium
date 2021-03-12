@@ -1309,8 +1309,8 @@ TEST_F(PasswordStoreTest, SavingClearingProtectedPassword) {
   ASSERT_FALSE(prefs.HasPrefPath(prefs::kSyncPasswordHash));
   store->Init(&prefs);
 
-  const base::string16 sync_password = base::ASCIIToUTF16("password");
-  const base::string16 input = base::ASCIIToUTF16("123password");
+  const std::u16string sync_password = base::ASCIIToUTF16("password");
+  const std::u16string input = base::ASCIIToUTF16("123password");
   store->SaveGaiaPasswordHash(
       "sync_username", sync_password,
       /*is_primary_account=*/true,
@@ -1331,7 +1331,7 @@ TEST_F(PasswordStoreTest, SavingClearingProtectedPassword) {
   testing::Mock::VerifyAndClearExpectations(&mock_consumer);
 
   // Save a non-sync Gaia password this time.
-  const base::string16 gaia_password = base::ASCIIToUTF16("3password");
+  const std::u16string gaia_password = base::ASCIIToUTF16("3password");
   store->SaveGaiaPasswordHash("other_gaia_username", gaia_password,
                               /*is_primary_account=*/false,
                               GaiaPasswordHashChange::NOT_SYNC_PASSWORD_CHANGE);
@@ -1366,7 +1366,7 @@ TEST_F(PasswordStoreTest, SavingClearingProtectedPassword) {
   testing::Mock::VerifyAndClearExpectations(&mock_consumer);
 
   // Save a enterprise password this time.
-  const base::string16 enterprise_password = base::ASCIIToUTF16("23password");
+  const std::u16string enterprise_password = base::ASCIIToUTF16("23password");
   store->SaveEnterprisePasswordHash("enterprise_username", enterprise_password);
   base::Optional<PasswordHashData> enterprise_password_hash =
       GetPasswordFromPref("enterprise_username", /*is_gaia_password=*/false,
@@ -1391,7 +1391,7 @@ TEST_F(PasswordStoreTest, SavingClearingProtectedPassword) {
   testing::Mock::VerifyAndClearExpectations(&mock_consumer);
 
   // Save a Gmail password this time.
-  const base::string16 gmail_password = base::ASCIIToUTF16("gmailpass");
+  const std::u16string gmail_password = base::ASCIIToUTF16("gmailpass");
   store->SaveGaiaPasswordHash("username@gmail.com", gmail_password,
                               /*is_primary_account=*/false,
                               GaiaPasswordHashChange::NOT_SYNC_PASSWORD_CHANGE);
@@ -1410,7 +1410,7 @@ TEST_F(PasswordStoreTest, SavingClearingProtectedPassword) {
   testing::Mock::VerifyAndClearExpectations(&mock_consumer);
 
   // Also save another non-sync Gaia password this time.
-  const base::string16 non_sync_gaia_password = base::ASCIIToUTF16("3password");
+  const std::u16string non_sync_gaia_password = base::ASCIIToUTF16("3password");
   store->SaveGaiaPasswordHash("non_sync_gaia_password@gsuite.com",
                               non_sync_gaia_password,
                               /*is_primary_account=*/false,
@@ -1480,8 +1480,8 @@ TEST_F(PasswordStoreTest, ReportMetricsForAdvancedProtection) {
       name, metrics_util::IsSyncPasswordHashSaved::NOT_SAVED, 1);
 
   // Save password.
-  const base::string16 sync_password = base::ASCIIToUTF16("password");
-  const base::string16 input = base::ASCIIToUTF16("123password");
+  const std::u16string sync_password = base::ASCIIToUTF16("password");
+  const std::u16string input = base::ASCIIToUTF16("123password");
   store->SaveGaiaPasswordHash("sync_username", sync_password,
                               /*is_primary_account=*/true,
                               GaiaPasswordHashChange::SAVED_ON_CHROME_SIGNIN);
@@ -1520,8 +1520,8 @@ TEST_F(PasswordStoreTest, ReportMetricsForNonSyncPassword) {
       name, metrics_util::IsSyncPasswordHashSaved::NOT_SAVED, 1);
 
   // Save password.
-  const base::string16 not_sync_password = base::ASCIIToUTF16("password");
-  const base::string16 input = base::ASCIIToUTF16("123password");
+  const std::u16string not_sync_password = base::ASCIIToUTF16("password");
+  const std::u16string input = base::ASCIIToUTF16("123password");
   store->SaveGaiaPasswordHash("not_sync_username", not_sync_password,
                               /*is_primary_account=*/false,
                               GaiaPasswordHashChange::NOT_SYNC_PASSWORD_CHANGE);

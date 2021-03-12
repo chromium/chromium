@@ -30,7 +30,7 @@ ScopedJavaLocalRef<jobject> AutocompleteResult::GetOrCreateJavaObject(
   const size_t groups_count = headers_map_.size();
 
   std::vector<int> group_ids(groups_count);
-  std::vector<base::string16> group_names(groups_count);
+  std::vector<std::u16string> group_names(groups_count);
   bool group_collapsed_states[groups_count];
 
   size_t index = 0;

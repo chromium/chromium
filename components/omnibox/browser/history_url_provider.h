@@ -247,8 +247,8 @@ class HistoryURLProvider : public HistoryProvider {
   // Returns a set of classifications that highlight all the occurrences of
   // |input_text| at word breaks in |description|.
   static ACMatchClassifications ClassifyDescription(
-      const base::string16& input_text,
-      const base::string16& description);
+      const std::u16string& input_text,
+      const std::u16string& description);
 
   // Actually runs the autocomplete job on the given database, which is
   // guaranteed not to be NULL.  Used by both autocomplete passes, and therefore

@@ -32,7 +32,7 @@ bool PasswordManagerClient::RequiresReauthToFill() {
 
 void PasswordManagerClient::ShowTouchToFill(PasswordManagerDriver* driver) {}
 
-void PasswordManagerClient::OnPasswordSelected(const base::string16& text) {}
+void PasswordManagerClient::OnPasswordSelected(const std::u16string& text) {}
 
 BiometricAuthenticator* PasswordManagerClient::GetBiometricAuthenticator() {
   return nullptr;
@@ -59,7 +59,7 @@ void PasswordManagerClient::NotifyUserCredentialsWereLeaked(
     password_manager::CredentialLeakType leak_type,
     password_manager::CompromisedSitesCount saved_sites,
     const GURL& origin,
-    const base::string16& username) {}
+    const std::u16string& username) {}
 
 void PasswordManagerClient::TriggerReauthForPrimaryAccount(
     signin_metrics::ReauthAccessPoint access_point,

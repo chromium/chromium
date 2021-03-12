@@ -85,9 +85,9 @@ std::string ToString(const T& obj) {
   return ostream.str();
 }
 
-base::string16 ValueElementVectorToString(
+std::u16string ValueElementVectorToString(
     const ValueElementVector& value_element_pairs) {
-  std::vector<base::string16> pairs(value_element_pairs.size());
+  std::vector<std::u16string> pairs(value_element_pairs.size());
   std::transform(value_element_pairs.begin(), value_element_pairs.end(),
                  pairs.begin(), [](const ValueElementPair& p) {
                    return p.first + base::ASCIIToUTF16("+") + p.second;

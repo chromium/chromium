@@ -141,7 +141,7 @@ class PasswordFormManager : public PasswordFormManagerForUI,
   void OnGeneratedPasswordAccepted(
       autofill::FormData form_data,
       autofill::FieldRendererId generation_element_id,
-      const base::string16& password);
+      const std::u16string& password);
 
   // Sets |was_unblocklisted_while_on_page| to true.
   void MarkWasUnblocklisted();
@@ -161,8 +161,8 @@ class PasswordFormManager : public PasswordFormManagerForUI,
 
   void Save() override;
   void Update(const PasswordForm& credentials_to_update) override;
-  void OnUpdateUsernameFromPrompt(const base::string16& new_username) override;
-  void OnUpdatePasswordFromPrompt(const base::string16& new_password) override;
+  void OnUpdateUsernameFromPrompt(const std::u16string& new_username) override;
+  void OnUpdatePasswordFromPrompt(const std::u16string& new_password) override;
 
   void OnNopeUpdateClicked() override;
   void OnNeverClicked() override;
@@ -176,7 +176,7 @@ class PasswordFormManager : public PasswordFormManagerForUI,
   FormFetcher* GetFormFetcher();
   bool IsPendingCredentialsPublicSuffixMatch() const;
   void PresaveGeneratedPassword(const autofill::FormData& form_data,
-                                const base::string16& generated_password);
+                                const std::u16string& generated_password);
   void PasswordNoLongerGenerated();
   bool HasGeneratedPassword() const;
   void SetGenerationPopupWasShown(
@@ -196,7 +196,7 @@ class PasswordFormManager : public PasswordFormManagerForUI,
   // |form| parent frame.
   void PresaveGeneratedPassword(PasswordManagerDriver* driver,
                                 const autofill::FormData& form,
-                                const base::string16& generated_password,
+                                const std::u16string& generated_password,
                                 autofill::FieldRendererId generation_element);
 
   // Return false and do nothing if |form_identifier| does not correspond to
@@ -205,7 +205,7 @@ class PasswordFormManager : public PasswordFormManagerForUI,
   // is a presaved credential this function updates the presaved credential.
   bool UpdateStateOnUserInput(autofill::FormRendererId form_id,
                               autofill::FieldRendererId field_id,
-                              const base::string16& field_value);
+                              const std::u16string& field_value);
 
   void SetDriver(const base::WeakPtr<PasswordManagerDriver>& driver);
 
@@ -292,7 +292,7 @@ class PasswordFormManager : public PasswordFormManagerForUI,
 
   void PresaveGeneratedPasswordInternal(
       const autofill::FormData& form,
-      const base::string16& generated_password);
+      const std::u16string& generated_password);
 
   // Returns a mutable pointer to the observed form if possible or nullptr
   // otherwise.

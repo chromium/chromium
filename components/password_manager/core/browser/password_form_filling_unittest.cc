@@ -91,7 +91,7 @@ MATCHER_P3(IsLogin, username, password, uses_account_store, std::string()) {
 
 PasswordFormFillData::LoginCollection::const_iterator FindPasswordByUsername(
     const std::vector<autofill::PasswordAndMetadata>& logins,
-    const base::string16& username) {
+    const std::u16string& username) {
   return std::find_if(logins.begin(), logins.end(),
                       [&username](const autofill::PasswordAndMetadata& login) {
                         return login.username == username;

@@ -99,8 +99,8 @@ class MockAutocompleteProviderClient
 
   MOCK_CONST_METHOD0(GetAcceptLanguages, std::string());
   MOCK_CONST_METHOD0(GetEmbedderRepresentationOfAboutScheme, std::string());
-  MOCK_METHOD0(GetBuiltinURLs, std::vector<base::string16>());
-  MOCK_METHOD0(GetBuiltinsToProvideAsUserTypes, std::vector<base::string16>());
+  MOCK_METHOD0(GetBuiltinURLs, std::vector<std::u16string>());
+  MOCK_METHOD0(GetBuiltinsToProvideAsUserTypes, std::vector<std::u16string>());
   MOCK_CONST_METHOD0(IsOffTheRecord, bool());
   MOCK_CONST_METHOD0(SearchSuggestEnabled, bool());
   MOCK_CONST_METHOD0(IsPersonalizedUrlDataCollectionActive, bool());
@@ -109,14 +109,14 @@ class MockAutocompleteProviderClient
 
   MOCK_METHOD6(
       Classify,
-      void(const base::string16& text,
+      void(const std::u16string& text,
            bool prefer_keyword,
            bool allow_exact_keyword_match,
            metrics::OmniboxEventProto::PageClassification page_classification,
            AutocompleteMatch* match,
            GURL* alternate_nav_url));
   MOCK_METHOD2(DeleteMatchingURLsForKeywordFromHistory,
-               void(history::KeywordID keyword_id, const base::string16& term));
+               void(history::KeywordID keyword_id, const std::u16string& term));
   MOCK_METHOD1(PrefetchImage, void(const GURL& url));
 
   bool IsTabOpenWithURL(const GURL& url,

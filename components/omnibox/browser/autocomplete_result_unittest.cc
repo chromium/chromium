@@ -935,7 +935,7 @@ TEST_F(AutocompleteResultTest, SortAndCullNoMatchesAllowedToBeDefault) {
   ACMatches matches;
   PopulateAutocompleteMatches(data, base::size(data), &matches);
 
-  AutocompleteInput input(base::string16(), metrics::OmniboxEventProto::OTHER,
+  AutocompleteInput input(std::u16string(), metrics::OmniboxEventProto::OTHER,
                           TestSchemeClassifier());
   AutocompleteResult result;
   result.AppendMatches(input, matches);
@@ -1938,7 +1938,7 @@ TEST_F(AutocompleteResultTest, ConvertsOpenTabsCorrectly) {
   match.description = base::UTF8ToUTF16("Some Other Site");
   result.matches_.push_back(match);
   match.destination_url = GURL("http://doesnt-match.com");
-  match.description = base::string16();
+  match.description = std::u16string();
   result.matches_.push_back(match);
 
   // Have IsTabOpenWithURL() return true for some URLs.

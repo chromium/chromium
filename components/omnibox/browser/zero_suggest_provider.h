@@ -186,7 +186,7 @@ class ZeroSuggestProvider : public BaseSearchProvider {
   std::string current_query_;
 
   // The title of the page for which a suggestion fetch is pending.
-  base::string16 current_title_;
+  std::u16string current_title_;
 
   // The type of page the user is viewing (a search results page doing search
   // term replacement, an arbitrary URL, etc.).
@@ -194,7 +194,7 @@ class ZeroSuggestProvider : public BaseSearchProvider {
       metrics::OmniboxEventProto::INVALID_SPEC;
 
   // Copy of OmniboxEditModel::permanent_text_.
-  base::string16 permanent_text_;
+  std::u16string permanent_text_;
 
   // Loader used to retrieve results.
   std::unique_ptr<network::SimpleURLLoader> loader_;

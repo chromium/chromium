@@ -126,14 +126,14 @@ void MultiStorePasswordSaveManager::SavePendingToStoreImpl(
   auto account_matches = AccountStoreMatches(matches);
   auto profile_matches = ProfileStoreMatches(matches);
 
-  base::string16 old_account_password =
+  std::u16string old_account_password =
       states.similar_saved_form_from_account_store
           ? states.similar_saved_form_from_account_store->password_value
-          : base::string16();
-  base::string16 old_profile_password =
+          : std::u16string();
+  std::u16string old_profile_password =
       states.similar_saved_form_from_profile_store
           ? states.similar_saved_form_from_profile_store->password_value
-          : base::string16();
+          : std::u16string();
 
   if (states.profile_store_state == PendingCredentialsState::NEW_LOGIN &&
       states.account_store_state == PendingCredentialsState::NEW_LOGIN) {
@@ -286,7 +286,7 @@ void MultiStorePasswordSaveManager::MoveCredentialsToAccountStore(
       PasswordForm match_copy = *match;
       match_copy.moving_blocked_for_list.clear();
       account_store_form_saver_->Save(match_copy, account_store_matches,
-                                      /*old_password=*/base::string16());
+                                      /*old_password=*/std::u16string());
     }
     form_saver_->Remove(*match);
   }

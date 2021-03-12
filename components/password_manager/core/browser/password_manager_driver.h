@@ -64,7 +64,7 @@ class PasswordManagerDriver
 
   // Notifies the driver that the user has accepted a generated password.
   // TODO(crbug/936011): delete this method. The UI should call the one below.
-  virtual void GeneratedPasswordAccepted(const base::string16& password) = 0;
+  virtual void GeneratedPasswordAccepted(const std::u16string& password) = 0;
 
   // Notifies the password manager that the user has accepted a generated
   // password. The password manager can bring up some disambiguation UI in
@@ -72,24 +72,24 @@ class PasswordManagerDriver
   virtual void GeneratedPasswordAccepted(
       const autofill::FormData& form_data,
       autofill::FieldRendererId generation_element_id,
-      const base::string16& password) {}
+      const std::u16string& password) {}
 
   virtual void TouchToFillClosed(ShowVirtualKeyboard show_virtual_keyboard) {}
 
   // Tells the driver to fill the form with the |username| and |password|.
-  virtual void FillSuggestion(const base::string16& username,
-                              const base::string16& password) = 0;
+  virtual void FillSuggestion(const std::u16string& username,
+                              const std::u16string& password) = 0;
 
   // Tells the renderer to fill the given credential into the focused element.
   // Always calls |completed_callback| with a status indicating success/error.
   virtual void FillIntoFocusedField(
       bool is_password,
-      const base::string16& user_provided_credential) {}
+      const std::u16string& user_provided_credential) {}
 
   // Tells the driver to preview filling form with the |username| and
   // |password|.
-  virtual void PreviewSuggestion(const base::string16& username,
-                                 const base::string16& password) = 0;
+  virtual void PreviewSuggestion(const std::u16string& username,
+                                 const std::u16string& password) = 0;
 
   // Tells the driver to clear previewed password and username fields.
   virtual void ClearPreviewedForm() = 0;

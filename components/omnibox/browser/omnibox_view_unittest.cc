@@ -106,11 +106,11 @@ TEST_F(OmniboxViewTest, TestStripSchemasUnsafeForPaste) {
 
 TEST_F(OmniboxViewTest, SanitizeTextForPaste) {
   const struct {
-    base::string16 input;
-    base::string16 output;
+    std::u16string input;
+    std::u16string output;
   } kTestcases[] = {
       // No whitespace: leave unchanged.
-      {base::string16(), base::string16()},
+      {std::u16string(), std::u16string()},
       {ASCIIToUTF16("a"), ASCIIToUTF16("a")},
       {ASCIIToUTF16("abc"), ASCIIToUTF16("abc")},
 

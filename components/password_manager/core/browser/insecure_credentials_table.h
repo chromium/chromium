@@ -52,7 +52,7 @@ enum class RemoveInsecureCredentialsReason {
 struct InsecureCredential {
   InsecureCredential();
   InsecureCredential(std::string signon_realm,
-                     base::string16 username,
+                     std::u16string username,
                      base::Time create_time,
                      InsecureType insecure_type,
                      IsMuted is_muted);
@@ -67,7 +67,7 @@ struct InsecureCredential {
   // The signon_realm of the website where the credentials were compromised.
   std::string signon_realm;
   // The value of the compromised username.
-  base::string16 username;
+  std::u16string username;
   // The date when the record was created.
   base::Time create_time;
   // The type of the credentials that was compromised.
@@ -100,7 +100,7 @@ class InsecureCredentialsTable {
   // the table. Returns true if the SQL completed successfully.
   // Also logs the compromise type in UMA.
   bool RemoveRow(const std::string& signon_realm,
-                 const base::string16& username,
+                 const std::u16string& username,
                  RemoveInsecureCredentialsReason reason);
 
   // Gets all the rows in the database for |signon_realm|.

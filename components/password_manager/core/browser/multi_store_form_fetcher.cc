@@ -73,7 +73,7 @@ bool MultiStoreFormFetcher::IsBlocklisted() const {
 
 bool MultiStoreFormFetcher::IsMovingBlocked(
     const autofill::GaiaIdHash& destination,
-    const base::string16& username) const {
+    const std::u16string& username) const {
   for (const std::vector<std::unique_ptr<PasswordForm>>* matches_vector :
        {&federated_, &non_federated_}) {
     for (const auto& form : *matches_vector) {

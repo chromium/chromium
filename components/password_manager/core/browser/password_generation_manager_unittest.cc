@@ -86,7 +86,7 @@ MATCHER_P(FormHasUniqueKey, key, "") {
 
 class MockPasswordManagerDriver : public StubPasswordManagerDriver {
  public:
-  MOCK_METHOD1(GeneratedPasswordAccepted, void(const base::string16& password));
+  MOCK_METHOD1(GeneratedPasswordAccepted, void(const std::u16string& password));
 };
 
 class MockPasswordManagerClient : public StubPasswordManagerClient {
@@ -367,7 +367,7 @@ TEST_F(PasswordGenerationManagerTest, PresaveGeneratedPassword_ThenSaveAsNew) {
   EXPECT_CALL(store(), UpdateLoginWithPrimaryKey(generated_with_date,
                                                  FormHasUniqueKey(generated)));
   manager().CommitGeneratedPassword(pending, {} /* matches */,
-                                    base::string16() /* old_password */,
+                                    std::u16string() /* old_password */,
                                     &form_saver());
   EXPECT_TRUE(manager().HasGeneratedPassword());
 }

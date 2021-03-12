@@ -25,8 +25,8 @@ LeakDetectionDelegateHelper::~LeakDetectionDelegateHelper() = default;
 
 void LeakDetectionDelegateHelper::ProcessLeakedPassword(
     GURL url,
-    base::string16 username,
-    base::string16 password) {
+    std::u16string username,
+    std::u16string password) {
   url_ = std::move(url);
   username_ = std::move(username);
   password_ = std::move(password);
@@ -50,17 +50,16 @@ void LeakDetectionDelegateHelper::OnGetPasswordStoreResults(
     return;
 
   base::flat_set<std::string> distinct_origins;
-    base::string16 canonicalized_username = CanonicalizeUsername(username_);
-    for (const auto& form : partial_results_) {
-      if (CanonicalizeUsername(form->username_value) ==
-          canonicalized_username) {
-        distinct_origins.insert(form->signon_realm);
-        PasswordStore& store =
-            form->IsUsingAccountStore() ? *account_store_ : *profile_store_;
-        store.AddInsecureCredential(InsecureCredential(
-            form->signon_realm, form->username_value, base::Time::Now(),
-            InsecureType::kLeaked, IsMuted(false)));
-      }
+  std::u16string canonicalized_username = CanonicalizeUsername(username_);
+  for (const auto& form : partial_results_) {
+    if (CanonicalizeUsername(form->username_value) == canonicalized_username) {
+      distinct_origins.insert(form->signon_realm);
+      PasswordStore& store =
+          form->IsUsingAccountStore() ? *account_store_ : *profile_store_;
+      store.AddInsecureCredential(InsecureCredential(
+          form->signon_realm, form->username_value, base::Time::Now(),
+          InsecureType::kLeaked, IsMuted(false)));
+    }
     }
 
   IsSaved is_saved(

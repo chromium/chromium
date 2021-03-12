@@ -89,12 +89,12 @@ class PasswordManager : public PasswordManagerInterface {
   void PresaveGeneratedPassword(
       PasswordManagerDriver* driver,
       const autofill::FormData& form,
-      const base::string16& generated_password,
+      const std::u16string& generated_password,
       autofill::FieldRendererId generation_element) override;
   void UpdateStateOnUserInput(PasswordManagerDriver* driver,
                               autofill::FormRendererId form_id,
                               autofill::FieldRendererId field_id,
-                              const base::string16& field_value) override;
+                              const std::u16string& field_value) override;
   void OnPasswordNoLongerGenerated(PasswordManagerDriver* driver) override;
   void OnPasswordFormRemoved(
       PasswordManagerDriver* driver,
@@ -112,13 +112,13 @@ class PasswordManager : public PasswordManagerInterface {
       PasswordManagerDriver* driver,
       const autofill::FormData& form_data,
       autofill::FieldRendererId generation_element_id,
-      const base::string16& password);
+      const std::u16string& password);
 
   // Presaves the form with generated password. |driver| is needed to find the
   // matched form manager.
   void OnPresaveGeneratedPassword(PasswordManagerDriver* driver,
                                   const autofill::FormData& form,
-                                  const base::string16& generated_password);
+                                  const std::u16string& generated_password);
 
   // Stops treating a password as generated. |driver| is needed to find the
   // matched form manager.
@@ -153,7 +153,7 @@ class PasswordManager : public PasswordManagerInterface {
   // |value| is the current value of the field.
   void OnUserModifiedNonPasswordField(PasswordManagerDriver* driver,
                                       autofill::FieldRendererId renderer_id,
-                                      const base::string16& value);
+                                      const std::u16string& value);
 
   // Handles user input and decides whether to show manual fallback for password
   // saving, i.e. the omnibox icon with the anchored hidden prompt.

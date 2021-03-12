@@ -113,7 +113,7 @@ void BookmarkProvider::DoAutocomplete(const AutocompleteInput& input) {
       GetMatchesWithBookmarkPaths(input, kMaxBookmarkMatches);
   if (matches.empty())
     return;  // There were no matches.
-  const base::string16 fixed_up_input(FixupUserInput(input).second);
+  const std::u16string fixed_up_input(FixupUserInput(input).second);
   for (auto& bookmark_match : matches) {
     if (OmniboxFieldTrial::ShouldDisableCGIParamMatching()) {
       RemoveQueryParamKeyMatches(bookmark_match);
@@ -258,7 +258,7 @@ int BookmarkProvider::CalculateBookmarkMatchRelevance(
   // scored up to a maximum of three, the score is boosted by a fixed amount
   // given by |kURLCountBoost|, below.
 
-  base::string16 title(bookmark_match.node->GetTitledUrlNodeTitle());
+  std::u16string title(bookmark_match.node->GetTitledUrlNodeTitle());
   const GURL& url(bookmark_match.node->GetTitledUrlNodeUrl());
 
   // Pretend empty titles are identical to the URL.

@@ -72,7 +72,7 @@ class PasswordReuseDetectionManagerTest : public ::testing::Test {
 TEST_F(PasswordReuseDetectionManagerTest, CheckReuseCalled) {
   const GURL gurls[] = {GURL("https://www.example.com"),
                         GURL("https://www.otherexample.com")};
-  const base::string16 input[] = {
+  const std::u16string input[] = {
       base::ASCIIToUTF16(
           "1234567890abcdefghijklmnopqrstuvxyzABCDEFGHIJKLMNOPQRSTUVXYZ"),
       base::ASCIIToUTF16("?<>:'{}ABCDEF")};
@@ -84,7 +84,7 @@ TEST_F(PasswordReuseDetectionManagerTest, CheckReuseCalled) {
   for (size_t test = 0; test < base::size(gurls); ++test) {
     manager.DidNavigateMainFrame(gurls[test]);
     for (size_t i = 0; i < input[test].size(); ++i) {
-      base::string16 expected_input = input[test].substr(0, i + 1);
+      std::u16string expected_input = input[test].substr(0, i + 1);
       if (expected_input.size() > kMaxNumberOfCharactersToStore)
         expected_input = expected_input.substr(expected_input.size() -
                                                kMaxNumberOfCharactersToStore);
@@ -129,7 +129,7 @@ TEST_F(PasswordReuseDetectionManagerTest, CheckThatBufferClearedAfterEnter) {
   EXPECT_CALL(*store_, CheckReuse(base::ASCIIToUTF16("1"), _, _));
   manager.OnKeyPressedCommitted(base::ASCIIToUTF16("1"));
 
-  base::string16 enter_text(1, ui::VKEY_RETURN);
+  std::u16string enter_text(1, ui::VKEY_RETURN);
   EXPECT_CALL(*store_, CheckReuse(_, _, _)).Times(0);
   manager.OnKeyPressedCommitted(enter_text);
 
@@ -184,7 +184,7 @@ TEST_F(PasswordReuseDetectionManagerTest, DidNavigateMainFrame) {
 TEST_F(PasswordReuseDetectionManagerTest, CheckReuseCalledOnPaste) {
   const GURL gurls[] = {GURL("https://www.example.com"),
                         GURL("https://www.example.test")};
-  const base::string16 input[] = {
+  const std::u16string input[] = {
       base::ASCIIToUTF16(
           "1234567890abcdefghijklmnopqrstuvxyzABCDEFGHIJKLMNOPQRSTUVXYZ"),
       base::ASCIIToUTF16("?<>:'{}ABCDEF")};
@@ -195,7 +195,7 @@ TEST_F(PasswordReuseDetectionManagerTest, CheckReuseCalledOnPaste) {
 
   for (size_t test = 0; test < base::size(gurls); ++test) {
     manager.DidNavigateMainFrame(gurls[test]);
-    base::string16 expected_input = input[test];
+    std::u16string expected_input = input[test];
     if (expected_input.size() > kMaxNumberOfCharactersToStore)
       expected_input = expected_input.substr(expected_input.size() -
                                              kMaxNumberOfCharactersToStore);
@@ -209,7 +209,7 @@ TEST_F(PasswordReuseDetectionManagerTest, CheckReuseCalledOnPaste) {
 TEST_F(PasswordReuseDetectionManagerTest,
        CheckReuseCalledOnPasteTwiceProduceNoDuplicates) {
   const GURL kURL("https://www.example.com");
-  const base::string16 kInput =
+  const std::u16string kInput =
       base::ASCIIToUTF16("1234567890abcdefghijklmnopqrstuvxyz");
 
   EXPECT_CALL(client_, GetProfilePasswordStore())
@@ -251,9 +251,9 @@ TEST_F(PasswordReuseDetectionManagerTest,
   GURL test_url("https://www.example.com");
   manager.DidNavigateMainFrame(test_url);
 
-  base::string16 init_text = base::ASCIIToUTF16("init_text");
-  base::string16 uncommitted_text = base::ASCIIToUTF16("uncommitted_text");
-  base::string16 committed_text = base::ASCIIToUTF16("committed_text");
+  std::u16string init_text = base::ASCIIToUTF16("init_text");
+  std::u16string uncommitted_text = base::ASCIIToUTF16("uncommitted_text");
+  std::u16string committed_text = base::ASCIIToUTF16("committed_text");
 
   EXPECT_CALL(*store_,
               CheckReuse(init_text, test_url.GetOrigin().spec(), &manager));
@@ -290,7 +290,7 @@ class PasswordReuseDetectionManagerWithTwoStoresTest
 TEST_F(PasswordReuseDetectionManagerWithTwoStoresTest,
        CheckReuseCalledOnPasteReuseExistsInBothStores) {
   const GURL kURL("https://www.example.com");
-  const base::string16 kInput =
+  const std::u16string kInput =
       base::ASCIIToUTF16("1234567890abcdefghijklmnopqrstuvxyz");
 
   EXPECT_CALL(client_, GetProfilePasswordStore())
@@ -338,7 +338,7 @@ TEST_F(PasswordReuseDetectionManagerWithTwoStoresTest,
 TEST_F(PasswordReuseDetectionManagerWithTwoStoresTest,
        CheckReuseCalledOnPasteReuseExistsInFirstStoreResponse) {
   const GURL kURL("https://www.example.com");
-  const base::string16 kInput =
+  const std::u16string kInput =
       base::ASCIIToUTF16("1234567890abcdefghijklmnopqrstuvxyz");
 
   EXPECT_CALL(client_, GetProfilePasswordStore())
@@ -377,7 +377,7 @@ TEST_F(PasswordReuseDetectionManagerWithTwoStoresTest,
 TEST_F(PasswordReuseDetectionManagerWithTwoStoresTest,
        CheckReuseCalledOnPasteReuseExistsInSecondStoreResponse) {
   const GURL kURL("https://www.example.com");
-  const base::string16 kInput =
+  const std::u16string kInput =
       base::ASCIIToUTF16("1234567890abcdefghijklmnopqrstuvxyz");
 
   EXPECT_CALL(client_, GetProfilePasswordStore())

@@ -87,7 +87,7 @@ class FormFetcher {
   // |destination| GaiaIdHash is blocked. This is relevant only for account
   // store users.
   virtual bool IsMovingBlocked(const autofill::GaiaIdHash& destination,
-                               const base::string16& username) const = 0;
+                               const std::u16string& username) const = 0;
 
   // Non-federated matches obtained from the backend that have the same scheme
   // of this form.

@@ -11,7 +11,7 @@
 
 std::unique_ptr<OmniboxNavigationObserver>
 OmniboxClient::CreateOmniboxNavigationObserver(
-    const base::string16& text,
+    const std::u16string& text,
     const AutocompleteMatch& match,
     const AutocompleteMatch& alternate_nav_match) {
   return nullptr;
@@ -25,7 +25,7 @@ const GURL& OmniboxClient::GetURL() const {
   return GURL::EmptyGURL();
 }
 
-const base::string16& OmniboxClient::GetTitle() const {
+const std::u16string& OmniboxClient::GetTitle() const {
   return base::EmptyString16();
 }
 

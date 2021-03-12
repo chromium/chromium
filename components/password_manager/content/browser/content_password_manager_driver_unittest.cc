@@ -86,7 +86,7 @@ class FakePasswordAutofillAgent
   MOCK_METHOD(void, InformNoSavedCredentials, (bool), (override));
   MOCK_METHOD(void,
               FillIntoFocusedField,
-              (bool, const base::string16&),
+              (bool, const std::u16string&),
               (override));
   MOCK_METHOD(void, TouchToFillClosed, (bool), (override));
   MOCK_METHOD(void,

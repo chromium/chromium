@@ -53,15 +53,15 @@ class MockFormSaver : public StubFormSaver {
   MOCK_METHOD3(Save,
                void(PasswordForm pending,
                     const std::vector<const PasswordForm*>& matches,
-                    const base::string16& old_password));
+                    const std::u16string& old_password));
   MOCK_METHOD3(Update,
                void(PasswordForm pending,
                     const std::vector<const PasswordForm*>& matches,
-                    const base::string16& old_password));
+                    const std::u16string& old_password));
   MOCK_METHOD4(UpdateReplace,
                void(PasswordForm pending,
                     const std::vector<const PasswordForm*>& matches,
-                    const base::string16& old_password,
+                    const std::u16string& old_password,
                     const PasswordForm& old_unique_key));
   MOCK_METHOD1(Remove, void(const PasswordForm&));
 
@@ -477,8 +477,8 @@ class MultiStorePasswordSaveManagerTestGenerationConflictWithAccountStoreEnabled
 
   // Returns a password form using |saved_match_| with |username|, |password|
   // and |in_store|.
-  PasswordForm CreateSavedMatch(const base::string16& username,
-                                const base::string16& password,
+  PasswordForm CreateSavedMatch(const std::u16string& username,
+                                const std::u16string& password,
                                 const PasswordForm::Store in_store) const {
     PasswordForm form = saved_match_;
     form.username_value = username;
@@ -491,7 +491,7 @@ class MultiStorePasswordSaveManagerTestGenerationConflictWithAccountStoreEnabled
   // username value as |username|, or an empty one.
   // The test parameters determine which of the conflicts should be included.
   std::vector<PasswordForm> CreateProfileStoreMatchesForTestParameters(
-      const base::string16& username) const {
+      const std::u16string& username) const {
     bool add_same_username_match, add_empty_username_match;
     std::tie(add_same_username_match, add_empty_username_match) = GetParam();
 

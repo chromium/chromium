@@ -32,7 +32,7 @@ class PasswordGenerationManager {
   // Returns true iff the generated password was presaved.
   bool HasGeneratedPassword() const { return presaved_.has_value(); }
 
-  const base::string16& generated_password() const {
+  const std::u16string& generated_password() const {
     return presaved_->password_value;
   }
 
@@ -65,7 +65,7 @@ class PasswordGenerationManager {
   // |matches| and |old_password| have the same meaning as in FormSaver.
   void CommitGeneratedPassword(PasswordForm generated,
                                const std::vector<const PasswordForm*>& matches,
-                               const base::string16& old_password,
+                               const std::u16string& old_password,
                                FormSaver* form_saver);
 
 #if defined(UNIT_TEST)

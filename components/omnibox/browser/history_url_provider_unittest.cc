@@ -223,7 +223,7 @@ class HistoryURLProviderTest : public testing::Test,
   // Runs an autocomplete query on |text| and checks to see that the returned
   // results' destination URLs match those provided.  Also allows checking
   // that the input type was identified correctly.
-  void RunTest(const base::string16& text,
+  void RunTest(const std::u16string& text,
                const std::string& desired_tld,
                bool prevent_inline_autocomplete,
                const UrlAndLegalDefault* expected_urls,
@@ -231,7 +231,7 @@ class HistoryURLProviderTest : public testing::Test,
                metrics::OmniboxInputType* identified_input_type);
 
   // A version of the above without the final |type| output parameter.
-  void RunTest(const base::string16& text,
+  void RunTest(const std::u16string& text,
                const std::string& desired_tld,
                bool prevent_inline_autocomplete,
                const UrlAndLegalDefault* expected_urls,
@@ -316,13 +316,13 @@ void HistoryURLProviderTest::FillData() {
 }
 
 void HistoryURLProviderTest::RunTest(
-    const base::string16& text,
+    const std::u16string& text,
     const std::string& desired_tld,
     bool prevent_inline_autocomplete,
     const UrlAndLegalDefault* expected_urls,
     size_t num_results,
     metrics::OmniboxInputType* identified_input_type) {
-  AutocompleteInput input(text, base::string16::npos, desired_tld,
+  AutocompleteInput input(text, std::u16string::npos, desired_tld,
                           metrics::OmniboxEventProto::OTHER,
                           TestSchemeClassifier());
   input.set_prevent_inline_autocomplete(prevent_inline_autocomplete);
@@ -356,7 +356,7 @@ void HistoryURLProviderTest::ExpectFormattedFullMatch(
     const wchar_t* expected_match_contents,
     size_t expected_match_location,
     size_t expected_match_length) {
-  base::string16 expected_match_contents_string =
+  std::u16string expected_match_contents_string =
       base::WideToUTF16(expected_match_contents);
   ASSERT_FALSE(expected_match_contents_string.empty());
 
@@ -569,7 +569,7 @@ TEST_F(HistoryURLProviderTest, CullRedirects) {
   // Because all the results are part of a redirect chain with other results,
   // all but the first one (A) should be culled. We should get the default
   // "what you typed" result, plus this one.
-  const base::string16 typing(ASCIIToUTF16("http://redirects/"));
+  const std::u16string typing(ASCIIToUTF16("http://redirects/"));
   const UrlAndLegalDefault expected_results[] = {
     { test_cases[0].url, false },
     { base::UTF16ToUTF8(typing), true }
@@ -668,7 +668,7 @@ TEST_F(HistoryURLProviderTest, Fixup) {
 
   // Fixing up "file:" should result in an inline autocomplete offset of just
   // after "file:", not just after "file://".
-  const base::string16 input_1(ASCIIToUTF16("file:"));
+  const std::u16string input_1(ASCIIToUTF16("file:"));
   const UrlAndLegalDefault fixup_1[] = {
     { "file:///C:/foo.txt", true }
   };
@@ -679,7 +679,7 @@ TEST_F(HistoryURLProviderTest, Fixup) {
 
   // Fixing up "http:/" should result in an inline autocomplete offset of just
   // after "http:/", not just after "http:".
-  const base::string16 input_2(ASCIIToUTF16("http:/"));
+  const std::u16string input_2(ASCIIToUTF16("http:/"));
   const UrlAndLegalDefault fixup_2[] = {
     { "http://bogussite.com/a", true },
     { "http://bogussite.com/b", true },

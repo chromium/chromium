@@ -278,7 +278,7 @@ class AutocompleteController : public AutocompleteProviderListener,
   // Helper for UpdateKeywordDescriptions(). Returns whether curbing the keyword
   // descriptions is enabled, and whether there is enough input to guarantee
   // that the Omnibox is in keyword mode.
-  bool ShouldCurbKeywordDescriptions(const base::string16& keyword);
+  bool ShouldCurbKeywordDescriptions(const std::u16string& keyword);
 
   // MemoryDumpProvider:
   bool OnMemoryDump(

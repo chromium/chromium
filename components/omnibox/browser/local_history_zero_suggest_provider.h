@@ -56,7 +56,7 @@ class LocalHistoryZeroSuggestProvider : public AutocompleteProvider {
   // Called when the query results from HistoryService::QueryHistory are ready.
   // Deletes URLs in |results| that would generate |suggestion|. |query_time| is
   // the time HistoryService was queried.
-  void OnHistoryQueryResults(const base::string16& suggestion,
+  void OnHistoryQueryResults(const std::u16string& suggestion,
                              const base::TimeTicks& query_time,
                              history::QueryResults results);
 

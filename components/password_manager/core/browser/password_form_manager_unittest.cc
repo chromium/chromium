@@ -256,15 +256,15 @@ class MockFormSaver : public StubFormSaver {
   MOCK_METHOD3(Save,
                void(PasswordForm pending,
                     const std::vector<const PasswordForm*>& matches,
-                    const base::string16& old_password));
+                    const std::u16string& old_password));
   MOCK_METHOD3(Update,
                void(PasswordForm pending,
                     const std::vector<const PasswordForm*>& matches,
-                    const base::string16& old_password));
+                    const std::u16string& old_password));
   MOCK_METHOD4(UpdateReplace,
                void(PasswordForm pending,
                     const std::vector<const PasswordForm*>& matches,
-                    const base::string16& old_password,
+                    const std::u16string& old_password,
                     const PasswordForm& old_unique_key));
   MOCK_METHOD1(Remove, void(const PasswordForm&));
 
@@ -946,8 +946,8 @@ TEST_P(PasswordFormManagerTest, SaveNewCredentials) {
   SetNonFederatedAndNotifyFetchCompleted({&saved_match_});
 
   FormData submitted_form = observed_form_;
-  base::string16 new_username = saved_match_.username_value + ASCIIToUTF16("1");
-  base::string16 new_password = saved_match_.password_value + ASCIIToUTF16("1");
+  std::u16string new_username = saved_match_.username_value + ASCIIToUTF16("1");
+  std::u16string new_password = saved_match_.password_value + ASCIIToUTF16("1");
   submitted_form.fields[kUsernameFieldIndex].value = new_username;
   submitted_form.fields[kPasswordFieldIndex].value = new_password;
 
@@ -1028,8 +1028,8 @@ TEST_P(PasswordFormManagerTest, OverridePassword) {
   SetNonFederatedAndNotifyFetchCompleted({&saved_match_});
 
   FormData submitted_form = observed_form_;
-  base::string16 username = saved_match_.username_value;
-  base::string16 new_password = saved_match_.password_value + ASCIIToUTF16("1");
+  std::u16string username = saved_match_.username_value;
+  std::u16string new_password = saved_match_.password_value + ASCIIToUTF16("1");
   submitted_form.fields[kUsernameFieldIndex].value = username;
   submitted_form.fields[kPasswordFieldIndex].value = new_password;
 
@@ -1063,7 +1063,7 @@ TEST_P(PasswordFormManagerTest, UpdatePasswordOnChangePasswordForm) {
 
   FormData submitted_form = observed_form_only_password_fields_;
   submitted_form.fields[0].value = saved_match_.password_value;
-  base::string16 new_password = saved_match_.password_value + ASCIIToUTF16("1");
+  std::u16string new_password = saved_match_.password_value + ASCIIToUTF16("1");
   submitted_form.fields[1].value = new_password;
 
   EXPECT_TRUE(
@@ -1103,7 +1103,7 @@ TEST_P(PasswordFormManagerTest, VotesUploadingOnPasswordUpdate) {
     EXPECT_TRUE(
         form_manager_->ProvisionallySave(submitted_form, &driver_, nullptr));
 
-    std::map<base::string16, autofill::ServerFieldType> expected_types;
+    std::map<std::u16string, autofill::ServerFieldType> expected_types;
     expected_types[ASCIIToUTF16("password")] = autofill::PASSWORD;
     expected_types[ASCIIToUTF16("password2")] = expected_vote;
 
@@ -1132,7 +1132,7 @@ TEST_P(PasswordFormManagerTest, UpdateUsernameEmptyStore) {
 
   form_manager_->ProvisionallySave(submitted_form_, &driver_, nullptr);
 
-  base::string16 new_username =
+  std::u16string new_username =
       parsed_submitted_form_.username_value + ASCIIToUTF16("1");
   PasswordForm expected = parsed_submitted_form_;
   expected.username_value = new_username;
@@ -1147,8 +1147,8 @@ TEST_P(PasswordFormManagerTest, UpdateUsernameEmptyStore) {
 TEST_P(PasswordFormManagerTest, UpdateUsernameToAnotherFieldValue) {
   fetcher_->NotifyFetchCompleted();
 
-  base::string16 user_chosen_username = ASCIIToUTF16("user_chosen_username");
-  base::string16 automatically_chosen_username =
+  std::u16string user_chosen_username = ASCIIToUTF16("user_chosen_username");
+  std::u16string automatically_chosen_username =
       ASCIIToUTF16("automatically_chosen_username");
   submitted_form_.fields[0].value = user_chosen_username;
   submitted_form_.fields[1].value = automatically_chosen_username;
@@ -1182,8 +1182,8 @@ TEST_P(PasswordFormManagerTest, UpdateUsernameToAlreadyExisting) {
 
   form_manager_->ProvisionallySave(submitted_form_, &driver_, nullptr);
 
-  base::string16 new_username = saved_match_.username_value;
-  base::string16 expected_password = parsed_submitted_form_.password_value;
+  std::u16string new_username = saved_match_.username_value;
+  std::u16string expected_password = parsed_submitted_form_.password_value;
   PasswordForm expected = saved_match_;
   expected.password_value = expected_password;
 
@@ -1199,7 +1199,7 @@ TEST_P(PasswordFormManagerTest, UpdatePasswordValueEmptyStore) {
 
   form_manager_->ProvisionallySave(submitted_form_, &driver_, nullptr);
 
-  base::string16 new_password =
+  std::u16string new_password =
       parsed_submitted_form_.password_value + ASCIIToUTF16("1");
   PasswordForm expected = parsed_submitted_form_;
   expected.password_value = new_password;
@@ -1227,7 +1227,7 @@ TEST_P(PasswordFormManagerTest, UpdatePasswordValueToAlreadyExisting) {
   form_manager_->ProvisionallySave(submitted_form_, &driver_, nullptr);
 
   // The user changes password to already saved one.
-  base::string16 password = saved_match_.password_value;
+  std::u16string password = saved_match_.password_value;
   form_manager_->OnUpdatePasswordFromPrompt(password);
 
   CheckPendingCredentials(saved_match_, form_manager_->GetPendingCredentials());
@@ -1240,8 +1240,8 @@ TEST_P(PasswordFormManagerTest, UpdatePasswordValueMultiplePasswordFields) {
 
   CreateFormManager(form);
   fetcher_->NotifyFetchCompleted();
-  base::string16 password = ASCIIToUTF16("password1");
-  base::string16 pin = ASCIIToUTF16("pin");
+  std::u16string password = ASCIIToUTF16("password1");
+  std::u16string pin = ASCIIToUTF16("pin");
   form.fields[0].value = password;
   form.fields[1].value = pin;
   form_manager_->ProvisionallySave(form, &driver_, nullptr);
@@ -1262,7 +1262,7 @@ TEST_P(PasswordFormManagerTest, UpdatePasswordValueMultiplePasswordFields) {
 
   // Check that a vote is sent for the field with the value which is chosen by
   // the user.
-  std::map<base::string16, ServerFieldType> expected_types;
+  std::map<std::u16string, ServerFieldType> expected_types;
   expected_types[expected.password_element] = autofill::PASSWORD;
 
   EXPECT_CALL(mock_autofill_download_manager_,
@@ -1434,7 +1434,7 @@ TEST_P(PasswordFormManagerTest, PresaveGeneratedPasswordEmptyStore) {
 
   // Check that the generated password is presaved.
   PasswordForm saved_form;
-  EXPECT_CALL(form_saver, Save(_, IsEmpty(), base::string16()))
+  EXPECT_CALL(form_saver, Save(_, IsEmpty(), std::u16string()))
       .WillOnce(SaveArg<0>(&saved_form));
 
   PasswordForm form_with_generated_password = parsed_submitted_form_;
@@ -1535,7 +1535,7 @@ TEST_P(PasswordFormManagerTest, GeneratedPasswordWhichIsNotInFormData) {
   // password.
   PasswordForm form_with_generated_password;
   form_with_generated_password.form_data = submitted_form_;
-  const base::string16 generated_password = ASCIIToUTF16("gen_pw");
+  const std::u16string generated_password = ASCIIToUTF16("gen_pw");
   // |password_value| should contain the generated password.
   form_with_generated_password.password_value = generated_password;
 
@@ -1573,12 +1573,12 @@ TEST_P(PasswordFormManagerTest, PresaveGenerationWhenParsingFails) {
   // Create a password form with empty |form_data|. On this form the form parser
   // should fail.
   PasswordForm form_with_empty_form_data;
-  const base::string16 generated_password = ASCIIToUTF16("gen_pw");
+  const std::u16string generated_password = ASCIIToUTF16("gen_pw");
   form_with_empty_form_data.password_value = generated_password;
 
   // Check that nevertheless the generated password is presaved.
   PasswordForm saved_form;
-  EXPECT_CALL(form_saver, Save(_, IsEmpty(), base::string16()))
+  EXPECT_CALL(form_saver, Save(_, IsEmpty(), std::u16string()))
       .WillOnce(SaveArg<0>(&saved_form));
   form_manager_->PresaveGeneratedPassword(
       form_with_empty_form_data.form_data,
@@ -1783,8 +1783,8 @@ TEST_P(PasswordFormManagerTest, Update) {
       {&saved_match_, &saved_match_another_username});
 
   FormData submitted_form = observed_form_;
-  base::string16 username = saved_match_.username_value;
-  base::string16 new_password = saved_match_.password_value + ASCIIToUTF16("1");
+  std::u16string username = saved_match_.username_value;
+  std::u16string new_password = saved_match_.password_value + ASCIIToUTF16("1");
   submitted_form.fields[kUsernameFieldIndex].value = username;
   submitted_form.fields[kPasswordFieldIndex].value = new_password;
 
@@ -1920,8 +1920,8 @@ TEST_P(PasswordFormManagerTest, SaveHttpAuthNoHttpAuthStored) {
       saved_matches.push_back(&saved_match_);
     SetNonFederatedAndNotifyFetchCompleted(saved_matches);
 
-    base::string16 username = ASCIIToUTF16("user1");
-    base::string16 password = ASCIIToUTF16("pass1");
+    std::u16string username = ASCIIToUTF16("user1");
+    std::u16string password = ASCIIToUTF16("pass1");
     http_auth_form.username_value = username;
     http_auth_form.password_value = password;
 
@@ -1945,8 +1945,8 @@ TEST_P(PasswordFormManagerTest, HTTPAuthAlreadySaved) {
 
   CreateFormManagerForNonWebForm(http_auth_form);
 
-  const base::string16 username = ASCIIToUTF16("user1");
-  const base::string16 password = ASCIIToUTF16("pass1");
+  const std::u16string username = ASCIIToUTF16("user1");
+  const std::u16string password = ASCIIToUTF16("pass1");
   http_auth_form.username_value = username;
   http_auth_form.password_value = password;
   EXPECT_CALL(client_, AutofillHttpAuth(http_auth_form, _)).Times(1);
@@ -1967,8 +1967,8 @@ TEST_P(PasswordFormManagerTest, HTTPAuthPasswordOverridden) {
   MockFormSaver& form_saver = MockFormSaver::Get(form_manager_.get());
 
   PasswordForm saved_http_auth_form = http_auth_form;
-  const base::string16 username = ASCIIToUTF16("user1");
-  const base::string16 password = ASCIIToUTF16("pass1");
+  const std::u16string username = ASCIIToUTF16("user1");
+  const std::u16string password = ASCIIToUTF16("pass1");
   saved_http_auth_form.username_value = username;
   saved_http_auth_form.password_value = password;
   EXPECT_CALL(client_, AutofillHttpAuth(saved_http_auth_form, _)).Times(1);
@@ -1977,7 +1977,7 @@ TEST_P(PasswordFormManagerTest, HTTPAuthPasswordOverridden) {
   // Check that if new password is submitted, then |form_manager_| is in state
   // password overridden.
   PasswordForm submitted_http_auth_form = saved_http_auth_form;
-  base::string16 new_password = password + ASCIIToUTF16("1");
+  std::u16string new_password = password + ASCIIToUTF16("1");
   submitted_http_auth_form.password_value = new_password;
   ASSERT_TRUE(
       form_manager_->ProvisionallySaveHttpAuthForm(submitted_http_auth_form));
@@ -2022,20 +2022,20 @@ TEST_P(PasswordFormManagerTest, iOSPresavedGeneratedPassword) {
   MockFormSaver& form_saver = MockFormSaver::Get(form_manager_.get());
 
   FormData form_to_presave = observed_form_;
-  const base::string16 typed_username = ASCIIToUTF16("user1");
+  const std::u16string typed_username = ASCIIToUTF16("user1");
   FormFieldData& username_field = form_to_presave.fields[kUsernameFieldIndex];
   FormFieldData& password_field = form_to_presave.fields[kPasswordFieldIndex];
   username_field.value = typed_username;
   password_field.value = ASCIIToUTF16("not_password");
   // Use |generated_password| different from value in field to test that the
   // generated password is saved.
-  const base::string16 generated_password = ASCIIToUTF16("gen_pw");
+  const std::u16string generated_password = ASCIIToUTF16("gen_pw");
   // Use different |unique_id| and |name| to test that |unique_id| is taken.
   password_field.unique_id = password_field.name + ASCIIToUTF16("1");
   FieldRendererId generation_element = password_field.unique_renderer_id;
 
   PasswordForm saved_form;
-  EXPECT_CALL(form_saver, Save(_, IsEmpty(), base::string16()))
+  EXPECT_CALL(form_saver, Save(_, IsEmpty(), std::u16string()))
       .WillOnce(SaveArg<0>(&saved_form));
   form_manager_->PresaveGeneratedPassword(
       &driver_, form_to_presave, generated_password, generation_element);
@@ -2043,9 +2043,9 @@ TEST_P(PasswordFormManagerTest, iOSPresavedGeneratedPassword) {
 
   Mock::VerifyAndClearExpectations(&form_saver);
 
-  const base::string16 changed_password =
+  const std::u16string changed_password =
       generated_password + ASCIIToUTF16("1");
-  EXPECT_CALL(form_saver, UpdateReplace(_, _, base::string16(), _))
+  EXPECT_CALL(form_saver, UpdateReplace(_, _, std::u16string(), _))
       .WillOnce(SaveArg<0>(&saved_form));
 
   form_manager_->UpdateStateOnUserInput(form_to_presave.unique_renderer_id,
@@ -2060,7 +2060,7 @@ TEST_P(PasswordFormManagerTest, iOSUpdateStateWithoutPresaving) {
 
   FieldRendererId password_field =
       observed_form_.fields[kPasswordFieldIndex].unique_renderer_id;
-  const base::string16 new_field_value = ASCIIToUTF16("some_password");
+  const std::u16string new_field_value = ASCIIToUTF16("some_password");
 
   // Check that nothing is saved on changing password, in case when there was no
   // pre-saving.
@@ -2107,7 +2107,7 @@ TEST_P(PasswordFormManagerTest, UsernameFirstFlow) {
 
   CreateFormManager(observed_form_only_password_fields_);
   SetNonFederatedAndNotifyFetchCompleted({&saved_match_});
-  const base::string16 possible_username = ASCIIToUTF16("test@example.com");
+  const std::u16string possible_username = ASCIIToUTF16("test@example.com");
   PossibleUsernameData possible_username_data(
       saved_match_.signon_realm, autofill::FieldRendererId(2),
       possible_username, base::Time::Now(), 0 /* driver_id */);
@@ -2137,7 +2137,7 @@ TEST_P(PasswordFormManagerTest, UsernameFirstFlowDifferentDomains) {
 
   CreateFormManager(observed_form_only_password_fields_);
   fetcher_->NotifyFetchCompleted();
-  base::string16 possible_username = ASCIIToUTF16("possible_username");
+  std::u16string possible_username = ASCIIToUTF16("possible_username");
   PossibleUsernameData possible_username_data(
       "https://another.domain.com", autofill::FieldRendererId(2u),
       possible_username, base::Time::Now(), 0 /* driver_id */);
@@ -2160,7 +2160,7 @@ TEST_P(PasswordFormManagerTest, UsernameFirstFlowVotes) {
 
   CreateFormManager(observed_form_only_password_fields_);
   fetcher_->NotifyFetchCompleted();
-  const base::string16 possible_username = ASCIIToUTF16("possible_username");
+  const std::u16string possible_username = ASCIIToUTF16("possible_username");
   constexpr autofill::FieldRendererId kUsernameFieldRendererId(101);
   PossibleUsernameData possible_username_data(
       saved_match_.signon_realm, kUsernameFieldRendererId, possible_username,
@@ -2269,7 +2269,7 @@ TEST_P(PasswordFormManagerTest, PossibleUsernameServerPredictions) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeature(features::kUsernameFirstFlow);
 
-  const base::string16 possible_username = ASCIIToUTF16("possible_username");
+  const std::u16string possible_username = ASCIIToUTF16("possible_username");
   PossibleUsernameData possible_username_data(
       saved_match_.signon_realm, autofill::FieldRendererId(102u),
       possible_username, base::Time::Now(), 0 /* driver_id */);
@@ -2313,7 +2313,7 @@ TEST_P(PasswordFormManagerTest, PossibleUsernameFieldManager) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeature(features::kUsernameFirstFlow);
 
-  const base::string16 possible_username = ASCIIToUTF16("possible_username");
+  const std::u16string possible_username = ASCIIToUTF16("possible_username");
   PossibleUsernameData possible_username_data(
       saved_match_.signon_realm, autofill::FieldRendererId(102u),
       possible_username, base::Time::Now(), 0 /* driver_id */);
@@ -2445,7 +2445,7 @@ class MockPasswordSaveManager : public PasswordSaveManager {
                     scoped_refptr<PasswordFormMetricsRecorder>,
                     VotesUploader*));
   MOCK_CONST_METHOD0(GetPendingCredentials, const PasswordForm&());
-  MOCK_CONST_METHOD0(GetGeneratedPassword, const base::string16&());
+  MOCK_CONST_METHOD0(GetGeneratedPassword, const std::u16string&());
   MOCK_CONST_METHOD0(GetFormSaver, FormSaver*());
   MOCK_METHOD5(CreatePendingCredentials,
                void(const PasswordForm&,
@@ -2534,8 +2534,8 @@ TEST_F(PasswordFormManagerTestWithMockedSaver, SaveCredentials) {
   fetcher_->NotifyFetchCompleted();
   ukm::TestAutoSetUkmRecorder test_ukm_recorder;
   FormData submitted_form = observed_form_;
-  base::string16 new_username = saved_match_.username_value + ASCIIToUTF16("1");
-  base::string16 new_password = saved_match_.password_value + ASCIIToUTF16("1");
+  std::u16string new_username = saved_match_.username_value + ASCIIToUTF16("1");
+  std::u16string new_password = saved_match_.password_value + ASCIIToUTF16("1");
   submitted_form.fields[kUsernameFieldIndex].value = new_username;
   submitted_form.fields[kPasswordFieldIndex].value = new_password;
   EXPECT_TRUE(
@@ -2567,7 +2567,7 @@ TEST_F(PasswordFormManagerTestWithMockedSaver, SaveCredentials) {
 TEST_F(PasswordFormManagerTestWithMockedSaver, UpdateUsernameEmptyStore) {
   fetcher_->NotifyFetchCompleted();
   form_manager_->ProvisionallySave(submitted_form_, &driver_, nullptr);
-  base::string16 new_username =
+  std::u16string new_username =
       parsed_submitted_form_.username_value + ASCIIToUTF16("1");
   PasswordForm expected = parsed_submitted_form_;
   expected.username_value = new_username;
@@ -2581,8 +2581,8 @@ TEST_F(PasswordFormManagerTestWithMockedSaver, UpdateUsernameEmptyStore) {
 TEST_F(PasswordFormManagerTestWithMockedSaver,
        UpdateUsernameToAnotherFieldValue) {
   fetcher_->NotifyFetchCompleted();
-  base::string16 user_chosen_username = ASCIIToUTF16("user_chosen_username");
-  base::string16 automatically_chosen_username =
+  std::u16string user_chosen_username = ASCIIToUTF16("user_chosen_username");
+  std::u16string automatically_chosen_username =
       ASCIIToUTF16("automatically_chosen_username");
   submitted_form_.fields[0].value = user_chosen_username;
   submitted_form_.fields[1].value = automatically_chosen_username;
@@ -2604,8 +2604,8 @@ TEST_F(PasswordFormManagerTestWithMockedSaver, UpdateUsernameFromPrompt) {
                   FormHasUsernameValue(parsed_submitted_form_.username_value),
                   _, _, _, _));
   form_manager_->ProvisionallySave(submitted_form_, &driver_, nullptr);
-  base::string16 new_username = saved_match_.username_value;
-  base::string16 expected_password = parsed_submitted_form_.password_value;
+  std::u16string new_username = saved_match_.username_value;
+  std::u16string expected_password = parsed_submitted_form_.password_value;
   PasswordForm expected = saved_match_;
   expected.password_value = expected_password;
   EXPECT_CALL(
@@ -2621,7 +2621,7 @@ TEST_F(PasswordFormManagerTestWithMockedSaver, UpdatePasswordValueFromPrompt) {
       CreatePendingCredentials(
           FormHasPassword(parsed_submitted_form_.password_value), _, _, _, _));
   form_manager_->ProvisionallySave(submitted_form_, &driver_, nullptr);
-  base::string16 new_password = ASCIIToUTF16("new_password");
+  std::u16string new_password = ASCIIToUTF16("new_password");
   EXPECT_CALL(
       *mock_password_save_manager(),
       CreatePendingCredentials(FormHasPassword(new_password), _, _, _, _));
@@ -2633,8 +2633,8 @@ TEST_F(PasswordFormManagerTestWithMockedSaver,
   FormData form = observed_form_only_password_fields_;
   CreateFormManager(form);
   fetcher_->NotifyFetchCompleted();
-  base::string16 password = ASCIIToUTF16("password1");
-  base::string16 pin = ASCIIToUTF16("pin");
+  std::u16string password = ASCIIToUTF16("password1");
+  std::u16string pin = ASCIIToUTF16("pin");
   form.fields[0].value = password;
   form.fields[1].value = pin;
   // Check that a second password field is chosen for saving.
@@ -2734,7 +2734,7 @@ TEST_F(PasswordFormManagerTestWithMockedSaver,
   // password.
   PasswordForm form_with_generated_password;
   form_with_generated_password.form_data = submitted_form_;
-  const base::string16 generated_password = ASCIIToUTF16("gen_pw");
+  const std::u16string generated_password = ASCIIToUTF16("gen_pw");
   // |password_value| should contain the generated password.
   form_with_generated_password.password_value = generated_password;
   // Check that the generated password is forwarded to the
@@ -2771,7 +2771,7 @@ TEST_F(PasswordFormManagerTestWithMockedSaver,
   // Create a password form with empty |form_data|. On this form the form parser
   // should fail.
   PasswordForm form_with_empty_form_data;
-  const base::string16 generated_password = ASCIIToUTF16("gen_pw");
+  const std::u16string generated_password = ASCIIToUTF16("gen_pw");
   form_with_empty_form_data.password_value = generated_password;
   // Check that nevertheless the generated password is forwarded to the
   // PasswordSaveManager.
@@ -2834,8 +2834,8 @@ TEST_F(PasswordFormManagerTestWithMockedSaver, SaveHttpAuthNoHttpAuthStored) {
     if (html_credentials_saved)
       saved_matches.push_back(&saved_match_);
     SetNonFederatedAndNotifyFetchCompleted(saved_matches);
-    base::string16 username = ASCIIToUTF16("user1");
-    base::string16 password = ASCIIToUTF16("pass1");
+    std::u16string username = ASCIIToUTF16("user1");
+    std::u16string password = ASCIIToUTF16("pass1");
     http_auth_form.username_value = username;
     http_auth_form.password_value = password;
     // Check that submitted credentials are forwarded to the password save
@@ -2854,8 +2854,8 @@ TEST_F(PasswordFormManagerTestWithMockedSaver, HTTPAuthAlreadySaved) {
   PasswordForm http_auth_form = parsed_observed_form_;
   http_auth_form.scheme = PasswordForm::Scheme::kBasic;
   CreateFormManagerForNonWebForm(http_auth_form);
-  const base::string16 username = ASCIIToUTF16("user1");
-  const base::string16 password = ASCIIToUTF16("pass1");
+  const std::u16string username = ASCIIToUTF16("user1");
+  const std::u16string password = ASCIIToUTF16("pass1");
   http_auth_form.username_value = username;
   http_auth_form.password_value = password;
   EXPECT_CALL(client_, AutofillHttpAuth(http_auth_form, _)).Times(1);
@@ -2876,7 +2876,7 @@ TEST_F(PasswordFormManagerTestWithMockedSaver, UsernameFirstFlow) {
   feature_list.InitAndEnableFeature(features::kUsernameFirstFlow);
   CreateFormManager(observed_form_only_password_fields_);
   SetNonFederatedAndNotifyFetchCompleted({&saved_match_});
-  const base::string16 possible_username = ASCIIToUTF16("test@example.org");
+  const std::u16string possible_username = ASCIIToUTF16("test@example.org");
   PossibleUsernameData possible_username_data(
       saved_match_.signon_realm, autofill::FieldRendererId(2u),
       possible_username, base::Time::Now(), 0 /* driver_id */);
@@ -2898,7 +2898,7 @@ TEST_F(PasswordFormManagerTestWithMockedSaver,
   feature_list.InitAndEnableFeature(features::kUsernameFirstFlow);
   CreateFormManager(observed_form_only_password_fields_);
   fetcher_->NotifyFetchCompleted();
-  base::string16 possible_username = ASCIIToUTF16("possible_username");
+  std::u16string possible_username = ASCIIToUTF16("possible_username");
   PossibleUsernameData possible_username_data(
       "https://another.domain.com", autofill::FieldRendererId(2u),
       possible_username, base::Time::Now(), 0 /* driver_id */);

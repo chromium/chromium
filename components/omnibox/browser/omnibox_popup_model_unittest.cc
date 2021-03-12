@@ -47,17 +47,17 @@ class TestOmniboxEditModel : public OmniboxEditModel {
       : OmniboxEditModel(view, controller, std::move(client)) {}
   bool PopupIsOpen() const override { return true; }
 
-  const base::string16& text() const { return text_; }
+  const std::u16string& text() const { return text_; }
   bool is_temporary_text() const { return is_temporary_text_; }
 
-  void OnPopupDataChanged(const base::string16& temporary_text,
+  void OnPopupDataChanged(const std::u16string& temporary_text,
                           bool is_temporary_text,
-                          const base::string16& inline_autocompletion,
-                          const base::string16& prefix_autocompletion,
+                          const std::u16string& inline_autocompletion,
+                          const std::u16string& prefix_autocompletion,
                           const SplitAutocompletion& split_autocompletion,
-                          const base::string16& keyword,
+                          const std::u16string& keyword,
                           bool is_keyword_hint,
-                          const base::string16& additional_text) override {
+                          const std::u16string& additional_text) override {
     OmniboxEditModel::OnPopupDataChanged(
         temporary_text, is_temporary_text, inline_autocompletion,
         prefix_autocompletion, split_autocompletion, keyword, is_keyword_hint,
@@ -68,7 +68,7 @@ class TestOmniboxEditModel : public OmniboxEditModel {
 
  private:
   // Contains the most recent text passed by the popup model to the edit model.
-  base::string16 text_;
+  std::u16string text_;
   bool is_temporary_text_ = false;
 };
 
@@ -602,10 +602,10 @@ TEST_F(OmniboxPopupModelTest, PopupInlineAutocompleteAndTemporaryText) {
   popup_model()->OnResultChanged();
 
   // Simulate OmniboxController updating the popup, then check initial state.
-  model()->OnPopupDataChanged(base::string16(),
+  model()->OnPopupDataChanged(std::u16string(),
                               /*is_temporary_text=*/false,
-                              base::UTF8ToUTF16("1"), base::string16(), {},
-                              base::string16(), false, base::string16());
+                              base::UTF8ToUTF16("1"), std::u16string(), {},
+                              std::u16string(), false, std::u16string());
   EXPECT_EQ(Selection(0, OmniboxPopupModel::NORMAL),
             model()->popup_model()->selection());
   EXPECT_EQ(base::UTF8ToUTF16("1"), model()->text());
@@ -625,7 +625,7 @@ TEST_F(OmniboxPopupModelTest, PopupInlineAutocompleteAndTemporaryText) {
                                OmniboxPopupModel::kStateOrLine);
   EXPECT_EQ(Selection(2, OmniboxPopupModel::FOCUSED_BUTTON_HEADER),
             model()->popup_model()->selection());
-  EXPECT_EQ(base::string16(), model()->text());
+  EXPECT_EQ(std::u16string(), model()->text());
   EXPECT_TRUE(model()->is_temporary_text());
 
   // Now tab down to the third match, and expect that we update the temporary
@@ -643,7 +643,7 @@ TEST_F(OmniboxPopupModelTest, PopupInlineAutocompleteAndTemporaryText) {
                                OmniboxPopupModel::kStateOrLine);
   EXPECT_EQ(Selection(2, OmniboxPopupModel::FOCUSED_BUTTON_HEADER),
             model()->popup_model()->selection());
-  EXPECT_EQ(base::string16(), model()->text());
+  EXPECT_EQ(std::u16string(), model()->text());
   EXPECT_TRUE(model()->is_temporary_text());
 
   // Now tab backwards to the second match, expect we update the temporary text

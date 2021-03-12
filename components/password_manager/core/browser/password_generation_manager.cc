@@ -54,8 +54,8 @@ class PasswordDataForUI : public PasswordFormManagerForUI {
   bool IsMovableToAccountStore() const override;
   void Save() override;
   void Update(const PasswordForm& credentials_to_update) override;
-  void OnUpdateUsernameFromPrompt(const base::string16& new_username) override;
-  void OnUpdatePasswordFromPrompt(const base::string16& new_password) override;
+  void OnUpdateUsernameFromPrompt(const std::u16string& new_username) override;
+  void OnUpdatePasswordFromPrompt(const std::u16string& new_password) override;
   void OnNopeUpdateClicked() override;
   void OnNeverClicked() override;
   void OnNoInteraction(bool is_update) override;
@@ -156,12 +156,12 @@ void PasswordDataForUI::Update(const PasswordForm&) {
 }
 
 void PasswordDataForUI::OnUpdateUsernameFromPrompt(
-    const base::string16& new_username) {
+    const std::u16string& new_username) {
   pending_form_.username_value = new_username;
 }
 
 void PasswordDataForUI::OnUpdatePasswordFromPrompt(
-    const base::string16& new_password) {
+    const std::u16string& new_password) {
   // Ignore. The generated password can be edited in-place.
 }
 
@@ -246,11 +246,11 @@ void PasswordGenerationManager::PresaveGeneratedPassword(
   generated.date_created = clock_->Now();
   if (presaved_) {
     form_saver->UpdateReplace(generated, {} /* matches */,
-                              base::string16() /* old_password */,
+                              std::u16string() /* old_password */,
                               presaved_.value() /* old_primary_key */);
   } else {
     form_saver->Save(generated, {} /* matches */,
-                     base::string16() /* old_password */);
+                     std::u16string() /* old_password */);
   }
   presaved_ = std::move(generated);
 }
@@ -265,7 +265,7 @@ void PasswordGenerationManager::PasswordNoLongerGenerated(
 void PasswordGenerationManager::CommitGeneratedPassword(
     PasswordForm generated,
     const std::vector<const PasswordForm*>& matches,
-    const base::string16& old_password,
+    const std::u16string& old_password,
     FormSaver* form_saver) {
   DCHECK(presaved_);
   generated.date_last_used = clock_->Now();

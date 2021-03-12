@@ -119,7 +119,7 @@ class FakeNetworkContext : public network::TestNetworkContext {
 
 class MockLeakDetectionCheck : public LeakDetectionCheck {
  public:
-  MOCK_METHOD3(Start, void(const GURL&, base::string16, base::string16));
+  MOCK_METHOD3(Start, void(const GURL&, std::u16string, std::u16string));
 };
 
 class MockStoreResultFilter : public StubCredentialsFilter {
@@ -274,7 +274,7 @@ void SanitizeFormData(FormData* form) {
   }
 }
 
-void SetFieldName(const base::string16& name, FormFieldData* field) {
+void SetFieldName(const std::u16string& name, FormFieldData* field) {
 #if defined(OS_IOS)
   field->unique_id = name;
 #else
@@ -703,8 +703,8 @@ TEST_P(PasswordManagerTest, EditingGeneratedPasswordOnIOS) {
       .WillRepeatedly(Return(true));
 
   FormData form_data = MakeSimpleFormData();
-  base::string16 username = form_data.fields[0].value;
-  base::string16 generated_password =
+  std::u16string username = form_data.fields[0].value;
+  std::u16string generated_password =
       form_data.fields[1].value + ASCIIToUTF16("1");
   FieldRendererId username_element = form_data.fields[0].unique_renderer_id;
   FieldRendererId generation_element = form_data.fields[1].unique_renderer_id;
@@ -753,8 +753,8 @@ TEST_P(PasswordManagerTest, SavingGeneratedPasswordOnIOS) {
       .WillRepeatedly(Return(true));
 
   FormData form_data = MakeSimpleFormData();
-  const base::string16 username = form_data.fields[0].value;
-  base::string16 generated_password =
+  const std::u16string username = form_data.fields[0].value;
+  std::u16string generated_password =
       form_data.fields[1].value + ASCIIToUTF16("1");
   FieldRendererId generation_element = form_data.fields[1].unique_renderer_id;
 
@@ -796,7 +796,7 @@ TEST_P(PasswordManagerTest, PasswordNoLongerGeneratedOnIOS) {
       .WillRepeatedly(Return(true));
 
   FormData form_data = MakeSimpleFormData();
-  const base::string16 generated_password = form_data.fields[1].value;
+  const std::u16string generated_password = form_data.fields[1].value;
   FieldRendererId generation_element = form_data.fields[1].unique_renderer_id;
 
   // A form is found by PasswordManager.
@@ -831,7 +831,7 @@ TEST_P(PasswordManagerTest, ShowHideManualFallbackOnIOS) {
   std::unique_ptr<PasswordFormManagerForUI> form_manager_to_save;
   EXPECT_CALL(client_, ShowManualFallbackForSavingPtr(_, false, false))
       .WillOnce(WithArg<0>(SaveToScopedPtr(&form_manager_to_save)));
-  base::string16 typed_password = ASCIIToUTF16("password");
+  std::u16string typed_password = ASCIIToUTF16("password");
   manager()->UpdateStateOnUserInput(&driver_, form_data.unique_renderer_id,
                                     password_element, typed_password);
   Mock::VerifyAndClearExpectations(&client_);
@@ -844,7 +844,7 @@ TEST_P(PasswordManagerTest, ShowHideManualFallbackOnIOS) {
   // field value.
   EXPECT_CALL(client_, HideManualFallbackForSaving());
   manager()->UpdateStateOnUserInput(&driver_, form_data.unique_renderer_id,
-                                    password_element, base::string16());
+                                    password_element, std::u16string());
 }
 #endif  // defined(OS_IOS)
 
@@ -3417,7 +3417,7 @@ TEST_P(PasswordManagerTest, UsernameFirstFlow) {
 
   PasswordForm form(MakeSimpleFormWithOnlyPasswordField());
   // Simulate the user typed a username in username form.
-  const base::string16 username = ASCIIToUTF16("googleuser@gmail.com");
+  const std::u16string username = ASCIIToUTF16("googleuser@gmail.com");
   EXPECT_CALL(driver_, GetLastCommittedURL()).WillOnce(ReturnRef(form.url));
   manager()->OnUserModifiedNonPasswordField(&driver_, FieldRendererId(1001),
                                             username /* value */);
@@ -3430,7 +3430,7 @@ TEST_P(PasswordManagerTest, UsernameFirstFlow) {
       .WillRepeatedly(Return(true));
 
   // Simulate that the user typed password and submitted the password form.
-  const base::string16 password = ASCIIToUTF16("uniquepassword");
+  const std::u16string password = ASCIIToUTF16("uniquepassword");
   form.form_data.fields[0].value = password;
   OnPasswordFormSubmitted(form.form_data);
 
@@ -3861,10 +3861,10 @@ TEST_P(PasswordManagerTest, SubmissionDetectedOnClearedFormlessFields) {
 
     manager()->OnInformAboutUserInput(&driver_, form_data);
 
-    form_data.fields[0].value = base::string16();
-    form_data.fields[2].value = base::string16();
+    form_data.fields[0].value = std::u16string();
+    form_data.fields[2].value = std::u16string();
     if (new_password_field_was_cleared)
-      form_data.fields[1].value = base::string16();
+      form_data.fields[1].value = std::u16string();
 
     std::unique_ptr<PasswordFormManagerForUI> form_manager_to_save;
     if (new_password_field_was_cleared) {

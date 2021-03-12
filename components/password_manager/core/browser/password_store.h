@@ -237,7 +237,7 @@ class PasswordStore : protected PasswordStoreSync,
   // Searches for credentials with the specified |plain_text_password|, and
   // notifies |consumer| on completion. The request will be cancelled if the
   // consumer is destroyed.
-  void GetLoginsByPassword(const base::string16& plain_text_password,
+  void GetLoginsByPassword(const std::u16string& plain_text_password,
                            PasswordStoreConsumer* consumer);
 
   // Gets the complete list of PasswordForms that are not blocklist entries--and
@@ -283,7 +283,7 @@ class PasswordStore : protected PasswordStoreSync,
   // Removes information about insecure credentials on |signon_realm| for
   // |username|.
   void RemoveInsecureCredentials(const std::string& signon_realm,
-                                 const base::string16& username,
+                                 const std::u16string& username,
                                  RemoveInsecureCredentialsReason reason);
 
   // Retrieves all insecure credentials and notifies |consumer| on
@@ -358,7 +358,7 @@ class PasswordStore : protected PasswordStoreSync,
   // If such suffix is found, |consumer|->OnReuseFound() is called on the same
   // sequence on which this method is called.
   // |consumer| must not be null.
-  virtual void CheckReuse(const base::string16& input,
+  virtual void CheckReuse(const std::u16string& input,
                           const std::string& domain,
                           PasswordReuseDetectorConsumer* consumer);
 
@@ -368,14 +368,14 @@ class PasswordStore : protected PasswordStoreSync,
   // |is_primary_account| is whether account belong to the password is a
   // primary account.
   virtual void SaveGaiaPasswordHash(const std::string& username,
-                                    const base::string16& password,
+                                    const std::u16string& password,
                                     bool is_primary_account,
                                     GaiaPasswordHashChange event);
 
   // Saves |username| and a hash of |password| for enterprise password reuse
   // checking.
   virtual void SaveEnterprisePasswordHash(const std::string& username,
-                                          const base::string16& password);
+                                          const std::u16string& password);
 
   // Saves |sync_password_data| for sync password reuse checking.
   // |event| is used for metric logging.
@@ -522,7 +522,7 @@ class PasswordStore : protected PasswordStoreSync,
   // Finds and returns all not-blocklisted PasswordForms with the specified
   // |plain_text_password| stored in the credential database.
   virtual std::vector<std::unique_ptr<PasswordForm>>
-  FillMatchingLoginsByPassword(const base::string16& plain_text_password) = 0;
+  FillMatchingLoginsByPassword(const std::u16string& plain_text_password) = 0;
 
   // Overwrites |forms| with all stored non-blocklisted credentials. Returns
   // true on success.
@@ -548,7 +548,7 @@ class PasswordStore : protected PasswordStoreSync,
       const InsecureCredential& insecure_credential) = 0;
   virtual PasswordStoreChangeList RemoveInsecureCredentialsImpl(
       const std::string& signon_realm,
-      const base::string16& username,
+      const std::u16string& username,
       RemoveInsecureCredentialsReason reason) = 0;
   virtual std::vector<InsecureCredential> GetAllInsecureCredentialsImpl() = 0;
   virtual std::vector<InsecureCredential> GetMatchingInsecureCredentialsImpl(
@@ -603,14 +603,14 @@ class PasswordStore : protected PasswordStoreSync,
   // metric logging. |is_primary_account| is whether account belong to the
   // password is a primary account.
   void SaveProtectedPasswordHash(const std::string& username,
-                                 const base::string16& password,
+                                 const std::u16string& password,
                                  bool is_primary_account,
                                  bool is_gaia_password,
                                  GaiaPasswordHashChange event);
 
   // Synchronous implementation of CheckReuse().
   void CheckReuseImpl(std::unique_ptr<CheckReuseRequest> request,
-                      const base::string16& input,
+                      const std::u16string& input,
                       const std::string& domain);
 
   // Synchronous implementation of SaveProtectedPasswordHash().
@@ -752,7 +752,7 @@ class PasswordStore : protected PasswordStoreSync,
   // Finds all credentials with the specified |plain_text_password|.
   // Note: subclasses should implement FillMatchingLoginsByPassword() instead.
   std::vector<std::unique_ptr<PasswordForm>> GetLoginsByPasswordImpl(
-      const base::string16& plain_text_password);
+      const std::u16string& plain_text_password);
 
   // Finds all non-blocklist PasswordForms and returns the result.
   std::vector<std::unique_ptr<PasswordForm>> GetAutofillableLoginsImpl();

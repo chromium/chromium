@@ -325,7 +325,7 @@ void PasswordStore::GetLogins(const FormDigest& form,
 }
 
 void PasswordStore::GetLoginsByPassword(
-    const base::string16& plain_text_password,
+    const std::u16string& plain_text_password,
     PasswordStoreConsumer* consumer) {
   DCHECK(main_task_runner_->RunsTasksInCurrentSequence());
   PostLoginsTaskAndReplyToConsumerWithResult(
@@ -416,7 +416,7 @@ void PasswordStore::AddInsecureCredential(
 
 void PasswordStore::RemoveInsecureCredentials(
     const std::string& signon_realm,
-    const base::string16& username,
+    const std::u16string& username,
     RemoveInsecureCredentialsReason reason) {
   DCHECK(main_task_runner_->RunsTasksInCurrentSequence());
   auto callback = base::BindOnce(&PasswordStore::RemoveInsecureCredentialsImpl,
@@ -549,7 +549,7 @@ void PasswordStore::SetSyncTaskTimeoutForTest(base::TimeDelta timeout) {
   sync_task_timeout_ = timeout;
 }
 
-void PasswordStore::CheckReuse(const base::string16& input,
+void PasswordStore::CheckReuse(const std::u16string& input,
                                const std::string& domain,
                                PasswordReuseDetectorConsumer* consumer) {
   ScheduleTask(base::BindOnce(&PasswordStore::CheckReuseImpl, this,
@@ -565,7 +565,7 @@ void PasswordStore::PreparePasswordHashData(const std::string& sync_username,
 }
 
 void PasswordStore::SaveGaiaPasswordHash(const std::string& username,
-                                         const base::string16& password,
+                                         const std::u16string& password,
                                          bool is_primary_account,
                                          GaiaPasswordHashChange event) {
   SaveProtectedPasswordHash(username, password, is_primary_account,
@@ -573,7 +573,7 @@ void PasswordStore::SaveGaiaPasswordHash(const std::string& username,
 }
 
 void PasswordStore::SaveEnterprisePasswordHash(const std::string& username,
-                                               const base::string16& password) {
+                                               const std::u16string& password) {
   SaveProtectedPasswordHash(
       username, password, /*is_primary_account=*/false,
       /*is_gaia_password=*/false,
@@ -581,7 +581,7 @@ void PasswordStore::SaveEnterprisePasswordHash(const std::string& username,
 }
 
 void PasswordStore::SaveProtectedPasswordHash(const std::string& username,
-                                              const base::string16& password,
+                                              const std::u16string& password,
                                               bool is_primary_account,
                                               bool is_gaia_password,
                                               GaiaPasswordHashChange event) {
@@ -775,7 +775,7 @@ void PasswordStore::NotifyLoginsChanged(
         changes,
         base::BindRepeating(
             [](scoped_refptr<PasswordStore> store,
-               const std::string& signon_realm, const base::string16& username,
+               const std::string& signon_realm, const std::u16string& username,
                RemoveInsecureCredentialsReason reason) {
               auto callback =
                   base::BindOnce(&PasswordStore::RemoveInsecureCredentialsImpl,
@@ -839,7 +839,7 @@ void PasswordStore::NotifyUnsyncedCredentialsWillBeDeleted(
 }
 
 void PasswordStore::CheckReuseImpl(std::unique_ptr<CheckReuseRequest> request,
-                                   const base::string16& input,
+                                   const std::u16string& input,
                                    const std::string& domain) {
   if (reuse_detector_) {
     reuse_detector_->CheckReuse(input, domain, request.get());
@@ -1144,7 +1144,7 @@ std::vector<std::unique_ptr<PasswordForm>> PasswordStore::GetLoginsImpl(
 
 std::vector<std::unique_ptr<PasswordForm>>
 PasswordStore::GetLoginsByPasswordImpl(
-    const base::string16& plain_text_password) {
+    const std::u16string& plain_text_password) {
   DCHECK(background_task_runner_->RunsTasksInCurrentSequence());
   TRACE_EVENT0("passwords", "PasswordStore::GetLoginsByPasswordImpl");
   return FillMatchingLoginsByPassword(plain_text_password);

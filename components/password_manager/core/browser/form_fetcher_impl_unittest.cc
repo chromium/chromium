@@ -88,7 +88,7 @@ class NameFilter : public StubCredentialsFilter {
   }
 
  private:
-  const base::string16 name_;  // |username_value| to filter
+  const std::u16string name_;  // |username_value| to filter
 
   DISALLOW_COPY_AND_ASSIGN(NameFilter);
 };

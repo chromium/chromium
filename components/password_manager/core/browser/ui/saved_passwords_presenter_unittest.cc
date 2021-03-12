@@ -132,7 +132,7 @@ TEST_F(SavedPasswordsPresenterTest, EditPassword) {
   // set it here too.
   form.in_store = PasswordForm::Store::kProfileStore;
 
-  const base::string16 new_password = base::ASCIIToUTF16("new_password");
+  const std::u16string new_password = base::ASCIIToUTF16("new_password");
   PasswordForm updated = form;
   updated.password_value = new_password;
 
@@ -172,7 +172,7 @@ TEST_F(SavedPasswordsPresenterTest, EditOnlyUsername) {
 
   std::vector<PasswordForm> forms = {form};
 
-  const base::string16 new_username = base::ASCIIToUTF16("new_username");
+  const std::u16string new_username = base::ASCIIToUTF16("new_username");
   PasswordForm updated_username = form;
   updated_username.username_value = new_username;
 
@@ -212,7 +212,7 @@ TEST_F(SavedPasswordsPresenterTest, EditOnlyPassword) {
 
   std::vector<PasswordForm> forms = {form};
 
-  const base::string16 new_password = base::ASCIIToUTF16("new_password");
+  const std::u16string new_password = base::ASCIIToUTF16("new_password");
   PasswordForm updated_password = form;
   updated_password.password_value = new_password;
 
@@ -250,8 +250,8 @@ TEST_F(SavedPasswordsPresenterTest, EditUsernameAndPassword) {
 
   std::vector<PasswordForm> forms = {form};
 
-  const base::string16 new_username = base::ASCIIToUTF16("new_username");
-  const base::string16 new_password = base::ASCIIToUTF16("new_password");
+  const std::u16string new_username = base::ASCIIToUTF16("new_username");
+  const std::u16string new_password = base::ASCIIToUTF16("new_password");
 
   PasswordForm updated_both = form;
   updated_both.username_value = new_username;
@@ -295,7 +295,7 @@ TEST_F(SavedPasswordsPresenterTest, EditPasswordFails) {
 
   // Updating the form with the username which is already used for same website
   // fails.
-  const base::string16 new_username = base::ASCIIToUTF16("test2@gmail.com");
+  const std::u16string new_username = base::ASCIIToUTF16("test2@gmail.com");
   EXPECT_FALSE(presenter().EditSavedPasswords(forms, new_username,
                                               form1.password_value));
   RunUntilIdle();
@@ -304,7 +304,7 @@ TEST_F(SavedPasswordsPresenterTest, EditPasswordFails) {
 
   // Updating the form with the empty password fails.
   EXPECT_FALSE(presenter().EditSavedPasswords(forms, form1.username_value,
-                                              base::string16()));
+                                              std::u16string()));
   RunUntilIdle();
   EXPECT_THAT(store().stored_passwords(),
               ElementsAre(Pair(form1.signon_realm, ElementsAre(form1, form2))));

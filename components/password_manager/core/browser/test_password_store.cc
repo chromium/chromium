@@ -241,7 +241,7 @@ TestPasswordStore::FillMatchingLogins(const FormDigest& form) {
 
 std::vector<std::unique_ptr<PasswordForm>>
 TestPasswordStore::FillMatchingLoginsByPassword(
-    const base::string16& plain_text_password) {
+    const std::u16string& plain_text_password) {
   std::vector<std::unique_ptr<PasswordForm>> matched_forms;
   for (const auto& elements : stored_passwords_) {
     for (const auto& password_form : elements.second) {
@@ -349,7 +349,7 @@ PasswordStoreChangeList TestPasswordStore::AddInsecureCredentialImpl(
 
 PasswordStoreChangeList TestPasswordStore::RemoveInsecureCredentialsImpl(
     const std::string& signon_realm,
-    const base::string16& username,
+    const std::u16string& username,
     RemoveInsecureCredentialsReason reason) {
   const size_t old_size = insecure_credentials_.size();
   base::EraseIf(insecure_credentials_, [&](const auto& credential) {

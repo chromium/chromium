@@ -17,7 +17,7 @@ constexpr auto kMaxTimeSinceLastCheck = base::TimeDelta::FromMinutes(30);
 
 PostSaveCompromisedHelper::PostSaveCompromisedHelper(
     base::span<const InsecureCredential> compromised,
-    const base::string16& current_username) {
+    const std::u16string& current_username) {
   for (const InsecureCredential& credential : compromised) {
     if (credential.username == current_username)
       current_leak_ = credential;

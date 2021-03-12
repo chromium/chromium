@@ -160,12 +160,12 @@ TEST(SearchSuggestionParserTest, ParseSuggestResults) {
 TEST(SearchSuggestionParserTest, SuggestClassification) {
   SearchSuggestionParser::SuggestResult result(
       base::ASCIIToUTF16("foobar"), AutocompleteMatchType::SEARCH_SUGGEST, {},
-      false, 400, true, base::string16());
+      false, 400, true, std::u16string());
   AutocompleteMatch::ValidateClassifications(result.match_contents(),
                                              result.match_contents_class());
 
   // Nothing should be bolded for ZeroSuggest classified input.
-  result.ClassifyMatchContents(true, base::string16());
+  result.ClassifyMatchContents(true, std::u16string());
   AutocompleteMatch::ValidateClassifications(result.match_contents(),
                                              result.match_contents_class());
   const ACMatchClassifications kNone = {
@@ -203,7 +203,7 @@ TEST(SearchSuggestionParserTest, NavigationClassification) {
   TestSchemeClassifier scheme_classifier;
   SearchSuggestionParser::NavigationResult result(
       scheme_classifier, GURL("https://news.google.com/"),
-      AutocompleteMatchType::Type::NAVSUGGEST, {}, base::string16(),
+      AutocompleteMatchType::Type::NAVSUGGEST, {}, std::u16string(),
       std::string(), false, 400, true, base::ASCIIToUTF16("google"));
   AutocompleteMatch::ValidateClassifications(result.match_contents(),
                                              result.match_contents_class());
@@ -228,7 +228,7 @@ TEST(SearchSuggestionParserTest, NavigationClassification) {
   EXPECT_EQ(kAnnotateUrlOnly, result.match_contents_class());
 
   // Nothing should be bolded for ZeroSuggest classified input.
-  result.CalculateAndClassifyMatchContents(true, base::string16());
+  result.CalculateAndClassifyMatchContents(true, std::u16string());
   AutocompleteMatch::ValidateClassifications(result.match_contents(),
                                              result.match_contents_class());
   const ACMatchClassifications kNone = {

@@ -175,8 +175,8 @@ bool AuthenticatedLeakCheck::HasAccountForRequest(
 }
 
 void AuthenticatedLeakCheck::Start(const GURL& url,
-                                   base::string16 username,
-                                   base::string16 password) {
+                                   std::u16string username,
+                                   std::u16string password) {
   DCHECK(payload_helper_);
   DCHECK(!request_);
 

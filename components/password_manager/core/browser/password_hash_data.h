@@ -18,13 +18,13 @@ struct PasswordHashData {
   PasswordHashData();
   PasswordHashData(const PasswordHashData& other);
   PasswordHashData(const std::string& username,
-                   const base::string16& password,
+                   const std::u16string& password,
                    bool force_update,
                    bool is_gaia_password = true);
   // Returns true iff |*this| represents the credential (|username|,
   // |password|), also with respect to whether it |is_gaia_password|.
   bool MatchesPassword(const std::string& username,
-                       const base::string16& password,
+                       const std::u16string& password,
                        bool is_gaia_password) const;
 
   std::string username;

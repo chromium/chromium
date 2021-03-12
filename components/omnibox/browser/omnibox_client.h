@@ -50,7 +50,7 @@ class OmniboxClient {
   // Returns an OmniboxNavigationObserver specific to the embedder context. May
   // return null if the embedder has no need to observe omnibox navigations.
   virtual std::unique_ptr<OmniboxNavigationObserver>
-  CreateOmniboxNavigationObserver(const base::string16& text,
+  CreateOmniboxNavigationObserver(const std::u16string& text,
                                   const AutocompleteMatch& match,
                                   const AutocompleteMatch& alternate_nav_match);
 
@@ -62,7 +62,7 @@ class OmniboxClient {
   virtual const GURL& GetURL() const;
 
   // Returns the title of the current page.
-  virtual const base::string16& GetTitle() const;
+  virtual const std::u16string& GetTitle() const;
 
   // Returns the favicon of the current page.
   virtual gfx::Image GetFavicon() const;
@@ -148,7 +148,7 @@ class OmniboxClient {
   // Called when the text may have changed in the edit.
   virtual void OnTextChanged(const AutocompleteMatch& current_match,
                              bool user_input_in_progress,
-                             const base::string16& user_text,
+                             const std::u16string& user_text,
                              const AutocompleteResult& result,
                              bool has_focus) {}
 

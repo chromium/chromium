@@ -30,7 +30,7 @@ class PasswordSaveManagerImpl : public PasswordSaveManager {
       const PasswordManagerClient* client);
 
   const PasswordForm& GetPendingCredentials() const override;
-  const base::string16& GetGeneratedPassword() const override;
+  const std::u16string& GetGeneratedPassword() const override;
   FormSaver* GetFormSaver() const override;
 
   // |metrics_recorder| and |votes_uploader| can both be nullptr.
@@ -95,7 +95,7 @@ class PasswordSaveManagerImpl : public PasswordSaveManager {
       const PasswordForm& parsed_submitted_form,
       const autofill::FormData* observed_form,
       const autofill::FormData& submitted_form,
-      const base::Optional<base::string16>& generated_password,
+      const base::Optional<std::u16string>& generated_password,
       bool is_http_auth,
       bool is_credential_api_save,
       const PasswordForm* similar_saved_form);
@@ -139,7 +139,7 @@ class PasswordSaveManagerImpl : public PasswordSaveManager {
   const FormFetcher* form_fetcher_;
 
  private:
-  base::string16 GetOldPassword(
+  std::u16string GetOldPassword(
       const PasswordForm& parsed_submitted_form) const;
 
   void SetVotesAndRecordMetricsForPendingCredentials(

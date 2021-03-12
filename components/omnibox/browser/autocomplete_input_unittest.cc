@@ -24,10 +24,10 @@ using metrics::OmniboxEventProto;
 
 TEST(AutocompleteInputTest, InputType) {
   struct test_data {
-    const base::string16 input;
+    const std::u16string input;
     const metrics::OmniboxInputType type;
   } input_cases[] = {
-    {base::string16(), metrics::OmniboxInputType::EMPTY},
+    {std::u16string(), metrics::OmniboxInputType::EMPTY},
     {ASCIIToUTF16("?"), metrics::OmniboxInputType::QUERY},
     {ASCIIToUTF16("?foo"), metrics::OmniboxInputType::QUERY},
     {ASCIIToUTF16("?foo bar"), metrics::OmniboxInputType::QUERY},
@@ -233,7 +233,7 @@ TEST(AutocompleteInputTest, InputType) {
 
 TEST(AutocompleteInputTest, InputTypeWithDesiredTLD) {
   struct test_data {
-    const base::string16 input;
+    const std::u16string input;
     const metrics::OmniboxInputType type;
     const std::string spec;  // Unused if not a URL.
   } input_cases[] = {
@@ -265,7 +265,7 @@ TEST(AutocompleteInputTest, InputTypeWithDesiredTLD) {
 
   for (size_t i = 0; i < base::size(input_cases); ++i) {
     SCOPED_TRACE(input_cases[i].input);
-    AutocompleteInput input(input_cases[i].input, base::string16::npos, "com",
+    AutocompleteInput input(input_cases[i].input, std::u16string::npos, "com",
                             metrics::OmniboxEventProto::OTHER,
                             TestSchemeClassifier());
     input.set_prevent_inline_autocomplete(true);
@@ -289,11 +289,11 @@ TEST(AutocompleteInputTest, ParseForEmphasizeComponent) {
   using url::Component;
   Component kInvalidComponent(0, -1);
   struct test_data {
-    const base::string16 input;
+    const std::u16string input;
     const Component scheme;
     const Component host;
   } input_cases[] = {
-      {base::string16(), kInvalidComponent, kInvalidComponent},
+      {std::u16string(), kInvalidComponent, kInvalidComponent},
       {ASCIIToUTF16("?"), kInvalidComponent, kInvalidComponent},
       {ASCIIToUTF16("?http://foo.com/bar"), kInvalidComponent,
        kInvalidComponent},
@@ -340,30 +340,30 @@ TEST(AutocompleteInputTest, ParseForEmphasizeComponent) {
 
 TEST(AutocompleteInputTest, InputTypeWithCursorPosition) {
   struct test_data {
-    const base::string16 input;
+    const std::u16string input;
     size_t cursor_position;
-    const base::string16 normalized_input;
+    const std::u16string normalized_input;
     size_t normalized_cursor_position;
   } input_cases[] = {
-    { ASCIIToUTF16("foo bar"), base::string16::npos,
-      ASCIIToUTF16("foo bar"), base::string16::npos },
+      {ASCIIToUTF16("foo bar"), std::u16string::npos, ASCIIToUTF16("foo bar"),
+       std::u16string::npos},
 
-    // Regular case, no changes.
-    { ASCIIToUTF16("foo bar"), 3, ASCIIToUTF16("foo bar"), 3 },
+      // Regular case, no changes.
+      {ASCIIToUTF16("foo bar"), 3, ASCIIToUTF16("foo bar"), 3},
 
-    // Extra leading space.
-    { ASCIIToUTF16("  foo bar"), 3, ASCIIToUTF16("foo bar"), 1 },
-    { ASCIIToUTF16("      foo bar"), 3, ASCIIToUTF16("foo bar"), 0 },
-    { ASCIIToUTF16("      foo bar   "), 2, ASCIIToUTF16("foo bar   "), 0 },
+      // Extra leading space.
+      {ASCIIToUTF16("  foo bar"), 3, ASCIIToUTF16("foo bar"), 1},
+      {ASCIIToUTF16("      foo bar"), 3, ASCIIToUTF16("foo bar"), 0},
+      {ASCIIToUTF16("      foo bar   "), 2, ASCIIToUTF16("foo bar   "), 0},
 
-    // A leading '?' used to be a magic character indicating the following
-    // input should be treated as a "forced query", but now if such a string
-    // reaches the AutocompleteInput parser the '?' should just be treated like
-    // a normal character.
-    { ASCIIToUTF16("?foo bar"), 2, ASCIIToUTF16("?foo bar"), 2 },
-    { ASCIIToUTF16("  ?foo bar"), 4, ASCIIToUTF16("?foo bar"), 2 },
-    { ASCIIToUTF16("?  foo bar"), 4, ASCIIToUTF16("?  foo bar"), 4 },
-    { ASCIIToUTF16("  ?  foo bar"), 6, ASCIIToUTF16("?  foo bar"), 4 },
+      // A leading '?' used to be a magic character indicating the following
+      // input should be treated as a "forced query", but now if such a string
+      // reaches the AutocompleteInput parser the '?' should just be treated
+      // like a normal character.
+      {ASCIIToUTF16("?foo bar"), 2, ASCIIToUTF16("?foo bar"), 2},
+      {ASCIIToUTF16("  ?foo bar"), 4, ASCIIToUTF16("?foo bar"), 2},
+      {ASCIIToUTF16("?  foo bar"), 4, ASCIIToUTF16("?  foo bar"), 4},
+      {ASCIIToUTF16("  ?  foo bar"), 6, ASCIIToUTF16("?  foo bar"), 4},
   };
 
   for (size_t i = 0; i < base::size(input_cases); ++i) {
@@ -380,7 +380,7 @@ TEST(AutocompleteInputTest, InputTypeWithCursorPosition) {
 
 TEST(AutocompleteInputTest, UpgradeTypedNavigationsToHttps) {
   struct TestData {
-    const base::string16 input;
+    const std::u16string input;
     const GURL expected_url;
     bool expected_added_default_scheme_to_typed_url;
   };
@@ -414,7 +414,7 @@ TEST(AutocompleteInputTest, UpgradeTypedNavigationsToHttps) {
        false},
   };
   for (const TestData& test_case : test_cases) {
-    AutocompleteInput input(test_case.input, base::string16::npos,
+    AutocompleteInput input(test_case.input, std::u16string::npos,
                             metrics::OmniboxEventProto::OTHER,
                             TestSchemeClassifier(),
                             /*should_use_https_as_default_scheme=*/true);
@@ -457,7 +457,7 @@ TEST(AutocompleteInputTest, UpgradeTypedNavigationsToHttps) {
        false}};
   for (const TestData& test_case : test_cases_non_default_port) {
     AutocompleteInput input(
-        test_case.input, base::string16::npos,
+        test_case.input, std::u16string::npos,
         metrics::OmniboxEventProto::OTHER, TestSchemeClassifier(),
         /*should_use_https_as_default_scheme=*/true, https_port_for_testing);
     EXPECT_EQ(test_case.expected_url, input.canonicalized_url())

@@ -268,7 +268,7 @@ void PasswordManager::OnGeneratedPasswordAccepted(
     PasswordManagerDriver* driver,
     const FormData& form_data,
     autofill::FieldRendererId generation_element_id,
-    const base::string16& password) {
+    const std::u16string& password) {
   PasswordFormManager* manager = GetMatchedManager(driver, form_data);
   if (manager) {
     manager->OnGeneratedPasswordAccepted(form_data, generation_element_id,
@@ -283,7 +283,7 @@ void PasswordManager::OnGeneratedPasswordAccepted(
 void PasswordManager::OnPresaveGeneratedPassword(
     PasswordManagerDriver* driver,
     const FormData& form_data,
-    const base::string16& generated_password) {
+    const std::u16string& generated_password) {
   DCHECK(client_->IsSavingAndFillingEnabled(form_data.url));
   PasswordFormManager* form_manager = GetMatchedManager(driver, form_data);
   UMA_HISTOGRAM_BOOLEAN("PasswordManager.GeneratedFormHasNoFormManager",
@@ -513,7 +513,7 @@ void PasswordManager::OnPasswordFormSubmittedNoChecksForiOS(
 void PasswordManager::OnUserModifiedNonPasswordField(
     PasswordManagerDriver* driver,
     autofill::FieldRendererId renderer_id,
-    const base::string16& value) {
+    const std::u16string& value) {
   // |driver| might be empty on iOS or in tests.
   int driver_id = driver ? driver->GetId() : 0;
   possible_username_.emplace(GetSignonRealm(driver->GetLastCommittedURL()),
@@ -734,7 +734,7 @@ void PasswordManager::NotifyStorePasswordCalled() {
 void PasswordManager::PresaveGeneratedPassword(
     PasswordManagerDriver* driver,
     const FormData& form,
-    const base::string16& generated_password,
+    const std::u16string& generated_password,
     FieldRendererId generation_element) {
   PasswordFormManager* form_manager = GetMatchedManager(driver, form);
   UMA_HISTOGRAM_BOOLEAN("PasswordManager.GeneratedFormHasNoFormManager",
@@ -754,7 +754,7 @@ void PasswordManager::UpdateStateOnUserInput(
     PasswordManagerDriver* driver,
     FormRendererId form_id,
     FieldRendererId field_id,
-    const base::string16& field_value) {
+    const std::u16string& field_value) {
   for (std::unique_ptr<PasswordFormManager>& manager : form_managers_) {
     if (manager->UpdateStateOnUserInput(form_id, field_id, field_value)) {
       ProvisionallySaveForm(*manager->observed_form(), driver, true);
@@ -1058,7 +1058,7 @@ void PasswordManager::MaybeSavePasswordHash(
   if (username.find('@') != std::string::npos)
     username = gaia::CanonicalizeEmail(username);
   bool is_password_change = !submitted_form->new_password_element.empty();
-  const base::string16 password = is_password_change
+  const std::u16string password = is_password_change
                                       ? submitted_form->new_password_value
                                       : submitted_form->password_value;
 

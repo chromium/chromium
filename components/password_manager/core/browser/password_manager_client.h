@@ -176,7 +176,7 @@ class PasswordManagerClient {
 
   // Informs `PasswordReuseDetectionManager` about reused passwords selected
   // from the AllPasswordsBottomSheet.
-  virtual void OnPasswordSelected(const base::string16& text);
+  virtual void OnPasswordSelected(const std::u16string& text);
 
   // Returns a pointer to a BiometricAuthenticator. Might be null if
   // BiometricAuthentication is not available for a given platform.
@@ -244,7 +244,7 @@ class PasswordManagerClient {
       CredentialLeakType leak_type,
       CompromisedSitesCount saved_sites,
       const GURL& origin,
-      const base::string16& username);
+      const std::u16string& username);
 
   // Requests a reauth for the primary account with |access_point| representing
   // where the reauth was triggered.

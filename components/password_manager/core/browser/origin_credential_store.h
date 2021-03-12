@@ -28,8 +28,8 @@ class UiCredential {
   using IsAffiliationBasedMatch =
       base::StrongAlias<class IsAffiliationBasedMatchTag, bool>;
 
-  UiCredential(base::string16 username,
-               base::string16 password,
+  UiCredential(std::u16string username,
+               std::u16string password,
                url::Origin origin,
                IsPublicSuffixMatch is_public_suffix_match,
                IsAffiliationBasedMatch is_affiliation_based_match,
@@ -41,9 +41,9 @@ class UiCredential {
   UiCredential& operator=(const UiCredential&);
   ~UiCredential();
 
-  const base::string16& username() const { return username_; }
+  const std::u16string& username() const { return username_; }
 
-  const base::string16& password() const { return password_; }
+  const std::u16string& password() const { return password_; }
 
   const url::Origin& origin() const { return origin_; }
 
@@ -58,8 +58,8 @@ class UiCredential {
   base::Time last_used() const { return last_used_; }
 
  private:
-  base::string16 username_;
-  base::string16 password_;
+  std::u16string username_;
+  std::u16string password_;
   url::Origin origin_;
   IsPublicSuffixMatch is_public_suffix_match_{false};
   IsAffiliationBasedMatch is_affiliation_based_match_{false};

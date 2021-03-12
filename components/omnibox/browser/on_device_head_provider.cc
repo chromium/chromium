@@ -197,7 +197,7 @@ OnDeviceHeadProvider::GetSuggestionsFromModel(
   }
 
   params->creation_time = base::TimeTicks::Now();
-  base::string16 trimmed_input;
+  std::u16string trimmed_input;
   base::TrimWhitespace(params->input.text(), base::TRIM_ALL, &trimmed_input);
   auto results = OnDeviceHeadModel::GetSuggestionsForPrefix(
       model_filename, provider_max_matches,

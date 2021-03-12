@@ -288,7 +288,7 @@ const TemplateURL* ZeroSuggestProvider::GetTemplateURL(bool is_keyword) const {
 const AutocompleteInput ZeroSuggestProvider::GetInput(bool is_keyword) const {
   // The callers of this method won't look at the AutocompleteInput's
   // |from_omnibox_focus| member, so we can set its value to false.
-  AutocompleteInput input(base::string16(), current_page_classification_,
+  AutocompleteInput input(std::u16string(), current_page_classification_,
                           client()->GetSchemeClassifier());
   input.set_current_url(GURL(current_query_));
   input.set_current_title(current_title_);
@@ -448,11 +448,11 @@ AutocompleteMatch ZeroSuggestProvider::MatchForCurrentText() {
   // that it is in the first suggestion slot and inline autocompleted. It
   // gets dropped as soon as the user types something.
   AutocompleteInput tmp(GetInput(false));
-  tmp.UpdateText(permanent_text_, base::string16::npos, tmp.parts());
-  const base::string16 description =
+  tmp.UpdateText(permanent_text_, std::u16string::npos, tmp.parts());
+  const std::u16string description =
       (base::FeatureList::IsEnabled(omnibox::kDisplayTitleForCurrentUrl))
           ? current_title_
-          : base::string16();
+          : std::u16string();
 
   // We pass a nullptr as the |history_url_provider| parameter now to force
   // VerbatimMatch to do a classification, since the text can be a search query.

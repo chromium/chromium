@@ -12,9 +12,9 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 TEST(AutocompleteMatchTypeTest, AccessibilityLabelHistory) {
-  const base::string16& kTestUrl =
+  const std::u16string& kTestUrl =
       base::UTF8ToUTF16("https://www.chromium.org");
-  const base::string16& kTestTitle = base::UTF8ToUTF16("The Chromium Projects");
+  const std::u16string& kTestTitle = base::UTF8ToUTF16("The Chromium Projects");
 
   // Test plain url.
   AutocompleteMatch match;
@@ -31,8 +31,8 @@ TEST(AutocompleteMatchTypeTest, AccessibilityLabelHistory) {
 }
 
 TEST(AutocompleteMatchTypeTest, AccessibilityLabelSearch) {
-  const base::string16& kSearch = base::UTF8ToUTF16("gondola");
-  const base::string16& kSearchDesc = base::UTF8ToUTF16("Google Search");
+  const std::u16string& kSearch = base::UTF8ToUTF16("gondola");
+  const std::u16string& kSearchDesc = base::UTF8ToUTF16("Google Search");
 
   AutocompleteMatch match;
   match.type = AutocompleteMatchType::SEARCH_WHAT_YOU_TYPED;
@@ -61,8 +61,8 @@ bool ParseAnswer(const std::string& answer_json, SuggestionAnswer* answer) {
 }  // namespace
 
 TEST(AutocompleteMatchTypeTest, AccessibilityLabelAnswer) {
-  const base::string16& kSearch = base::UTF8ToUTF16("weather");
-  const base::string16& kSearchDesc = base::UTF8ToUTF16("Google Search");
+  const std::u16string& kSearch = base::UTF8ToUTF16("weather");
+  const std::u16string& kSearchDesc = base::UTF8ToUTF16("Google Search");
 
   AutocompleteMatch match;
   match.type = AutocompleteMatchType::SEARCH_WHAT_YOU_TYPED;

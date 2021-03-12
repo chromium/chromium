@@ -43,8 +43,8 @@ std::string GetShownOrigin(const url::Origin& origin);
 // Updates the |form_manager| pending credentials with |username| and
 // |password|.
 void UpdatePasswordFormUsernameAndPassword(
-    const base::string16& username,
-    const base::string16& password,
+    const std::u16string& username,
+    const std::u16string& password,
     PasswordFormManagerForUI* form_manager);
 
 }  // namespace password_manager
