@@ -14,6 +14,7 @@ import static androidx.test.espresso.assertion.ViewAssertions.doesNotExist;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
+import static androidx.test.espresso.matcher.ViewMatchers.withParent;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
 import static com.google.common.truth.Truth.assertThat;
@@ -46,6 +47,7 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 
 import androidx.annotation.Nullable;
+import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.test.espresso.UiController;
 import androidx.test.espresso.ViewAction;
@@ -533,7 +535,7 @@ public class InstantStartTest {
         // Note that onView(R.id.more_tabs).perform(click()) can not be used since it requires 90
         // percent of the view's area is displayed to the users. However, this view has negative
         // margin which makes the percentage is less than 90.
-        // TODO(crbug.com/1025296): Investigate whether this would be a problem for real users.
+        // TODO(crbug.com/1186752): Investigate whether this would be a problem for real users.
         try {
             TestThreadUtils.runOnUiThreadBlocking(()
                                                           -> mActivityTestRule.getActivity()
@@ -1300,6 +1302,50 @@ public class InstantStartTest {
         hideWatcher.waitForBehavior();
         assertEquals(1,
                 mActivityTestRule.getActivity().getTabModelSelector().getCurrentModel().getCount());
+    }
+
+    @Test
+    @MediumTest
+    // clang-format off
+    @EnableFeatures({ChromeFeatureList.TAB_SWITCHER_ON_RETURN + "<Study,",
+            ChromeFeatureList.START_SURFACE_ANDROID + "<Study"})
+    @CommandLineFlags.Add({ChromeSwitches.DISABLE_NATIVE_INITIALIZATION,
+            "force-fieldtrials=Study/Group",
+            IMMEDIATE_RETURN_PARAMS + "/start_surface_variation/single"})
+    public void testScrollToSelectedTab() throws IOException {
+        // clang-format on
+        createTabStateFile(new int[] {0, 1, 2, 3, 4, 5, 6, 7, 8, 9}, null, 9);
+        startMainActivityFromLauncher();
+        CriteriaHelper.pollUiThread(
+                mActivityTestRule.getActivity().getLayoutManager()::overviewVisible);
+        startAndWaitNativeInitialization();
+        CriteriaHelper.pollUiThread(
+                () -> mActivityTestRule.getActivity().getLayoutManager().overviewVisible());
+
+        // Note that onView(R.id.more_tabs).perform(click()) can not be used since it requires 90
+        // percent of the view's area is displayed to the users. However, this view has negative
+        // margin which makes the percentage is less than 90.
+        // TODO(crbug.com/1186752): Investigate whether this would be a problem for real users.
+        try {
+            TestThreadUtils.runOnUiThreadBlocking(
+                    ()
+                            -> mActivityTestRule.getActivity()
+                                       .findViewById(org.chromium.chrome.tab_ui.R.id.more_tabs)
+                                       .performClick());
+        } catch (ExecutionException e) {
+            Assert.fail("Failed to tap 'more tabs' " + e.toString());
+        }
+        onViewWaiting(withId(R.id.secondary_tasks_surface_view));
+
+        // Make sure the grid tab switcher is scrolled down to show the selected tab.
+        onView(allOf(withId(R.id.tab_list_view), withParent(withId(R.id.tasks_surface_body))))
+                .check((v, noMatchException) -> {
+                    if (noMatchException != null) throw noMatchException;
+                    Assert.assertTrue(v instanceof RecyclerView);
+                    LinearLayoutManager layoutManager =
+                            (LinearLayoutManager) ((RecyclerView) v).getLayoutManager();
+                    assertEquals(9, layoutManager.findLastVisibleItemPosition());
+                });
     }
 
     @Test
