@@ -57,6 +57,7 @@ import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.native_page.ContextMenuManager;
 import org.chromium.chrome.browser.omnibox.LocationBarLayout;
+import org.chromium.chrome.browser.omnibox.OmniboxStub;
 import org.chromium.chrome.browser.omnibox.UrlBar;
 import org.chromium.chrome.browser.omnibox.voice.VoiceRecognitionHandler;
 import org.chromium.chrome.browser.suggestions.SiteSuggestion;
@@ -126,7 +127,7 @@ public class NewTabPageTest {
                                                           .setRevision(RENDER_TEST_REVISION)
                                                           .build();
     @Mock
-    FakeboxDelegate mFakeboxDelegate;
+    OmniboxStub mOmniboxStub;
     @Mock
     VoiceRecognitionHandler mVoiceRecognitionHandler;
 
@@ -567,12 +568,12 @@ public class NewTabPageTest {
     @Test
     @SmallTest
     @Feature({"NewTabPage", "FeedNewTabPage"})
-    public void testSettingFakeboxDelegateAddsVoiceObserver() throws IOException {
-        when(mFakeboxDelegate.getVoiceRecognitionHandler()).thenReturn(mVoiceRecognitionHandler);
+    public void testSettingOmniboxStubAddsVoiceObserver() throws IOException {
+        when(mOmniboxStub.getVoiceRecognitionHandler()).thenReturn(mVoiceRecognitionHandler);
         when(mVoiceRecognitionHandler.isVoiceSearchEnabled()).thenReturn(true);
 
         TestThreadUtils.runOnUiThreadBlocking(() -> {
-            mNtp.setFakeboxDelegate(mFakeboxDelegate);
+            mNtp.setOmniboxStub(mOmniboxStub);
             verify(mVoiceRecognitionHandler).addObserver(eq(mNtp));
             View micButton = mNtp.getView().findViewById(R.id.voice_search_button);
             assertEquals(View.VISIBLE, micButton.getVisibility());

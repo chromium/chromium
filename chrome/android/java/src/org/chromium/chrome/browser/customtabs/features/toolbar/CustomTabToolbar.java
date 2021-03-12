@@ -51,6 +51,7 @@ import org.chromium.chrome.browser.ntp.FakeboxDelegate;
 import org.chromium.chrome.browser.offlinepages.OfflinePageUtils;
 import org.chromium.chrome.browser.omnibox.LocationBar;
 import org.chromium.chrome.browser.omnibox.LocationBarDataProvider;
+import org.chromium.chrome.browser.omnibox.OmniboxStub;
 import org.chromium.chrome.browser.omnibox.UrlBar;
 import org.chromium.chrome.browser.omnibox.UrlBarCoordinator;
 import org.chromium.chrome.browser.omnibox.UrlBarCoordinator.SelectionState;
@@ -905,6 +906,12 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
         @Nullable
         @Override
         public FakeboxDelegate getFakeboxDelegate() {
+            return null;
+        }
+
+        @Nullable
+        @Override
+        public OmniboxStub getOmniboxStub() {
             return null;
         }
     }

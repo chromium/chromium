@@ -14,7 +14,8 @@ import org.chromium.chrome.browser.omnibox.voice.VoiceRecognitionHandler;
 import java.util.List;
 
 /**
- * Handles user interaction with the fakebox (the URL bar in the NTP and tasks surface).
+ * Handles user interaction with the stubbed Omnibox (a.k.a. fakebox) used in the pages such as
+ * NTP and tasks surface.
  */
 public interface FakeboxDelegate {
     /**

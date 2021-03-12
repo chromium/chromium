@@ -271,7 +271,7 @@ public class StartSurfaceCoordinator implements StartSurface {
                     mParentTabSupplier, new ScrollableContainerDelegateImpl());
         }
         mStartSurfaceMediator.initWithNative(mSurfaceMode != SurfaceMode.NO_START_SURFACE
-                        ? mActivity.getToolbarManager().getFakeboxDelegate()
+                        ? mActivity.getToolbarManager().getOmniboxStub()
                         : null,
                 mExploreSurfaceCoordinator != null
                         ? mExploreSurfaceCoordinator.getFeedSurfaceCreator()
@@ -285,7 +285,7 @@ public class StartSurfaceCoordinator implements StartSurface {
         }
         if (mTasksSurface != null) {
             mTasksSurface.onFinishNativeInitialization(
-                    mActivity, mActivity.getToolbarManager().getFakeboxDelegate());
+                    mActivity, mActivity.getToolbarManager().getOmniboxStub());
         }
 
         if (mIsInitPending) {
@@ -295,7 +295,7 @@ public class StartSurfaceCoordinator implements StartSurface {
         if (mIsSecondaryTaskInitPending) {
             mIsSecondaryTaskInitPending = false;
             mSecondaryTasksSurface.onFinishNativeInitialization(
-                    mActivity, mActivity.getToolbarManager().getFakeboxDelegate());
+                    mActivity, mActivity.getToolbarManager().getOmniboxStub());
             mSecondaryTasksSurface.initialize();
         }
     }
@@ -450,7 +450,7 @@ public class StartSurfaceCoordinator implements StartSurface {
                 mParentTabSupplier, false, false, mWindowAndroid);
         if (mIsInitializedWithNative) {
             mSecondaryTasksSurface.onFinishNativeInitialization(
-                    mActivity, mActivity.getToolbarManager().getFakeboxDelegate());
+                    mActivity, mActivity.getToolbarManager().getOmniboxStub());
             mSecondaryTasksSurface.initialize();
         } else {
             mIsSecondaryTaskInitPending = true;

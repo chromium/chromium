@@ -75,4 +75,7 @@ public interface LocationBar extends Destroyable {
      */
     @Nullable
     FakeboxDelegate getFakeboxDelegate();
+
+    @Nullable
+    OmniboxStub getOmniboxStub();
 }

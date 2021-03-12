@@ -39,7 +39,6 @@ import org.chromium.chrome.browser.lens.LensEntryPoint;
 import org.chromium.chrome.browser.lens.LensIntentParams;
 import org.chromium.chrome.browser.lens.LensQueryParams;
 import org.chromium.chrome.browser.locale.LocaleManager;
-import org.chromium.chrome.browser.ntp.FakeboxDelegate;
 import org.chromium.chrome.browser.ntp.NewTabPageUma;
 import org.chromium.chrome.browser.omnibox.UrlBar.UrlBarDelegate;
 import org.chromium.chrome.browser.omnibox.UrlBarCoordinator.SelectionState;
@@ -79,11 +78,10 @@ import java.util.List;
  * Mediator for the LocationBar component. Intended location for LocationBar business logic;
  * currently, migration of this logic out of LocationBarLayout is in progress.
  */
-class LocationBarMediator implements LocationBarDataProvider.Observer, FakeboxDelegate,
-                                     VoiceRecognitionHandler.Delegate,
-                                     VoiceRecognitionHandler.Observer,
-                                     AssistantVoiceSearchService.Observer, UrlBarDelegate,
-                                     OnKeyListener, ComponentCallbacks, TemplateUrlServiceObserver {
+class LocationBarMediator
+        implements LocationBarDataProvider.Observer, OmniboxStub, VoiceRecognitionHandler.Delegate,
+                   VoiceRecognitionHandler.Observer, AssistantVoiceSearchService.Observer,
+                   UrlBarDelegate, OnKeyListener, ComponentCallbacks, TemplateUrlServiceObserver {
     private static final int ICON_FADE_ANIMATION_DURATION_MS = 150;
     private static final int ICON_FADE_ANIMATION_DELAY_MS = 75;
     private static final long NTP_KEYBOARD_FOCUS_DURATION_MS = 200;
@@ -1158,7 +1156,7 @@ class LocationBarMediator implements LocationBarDataProvider.Observer, FakeboxDe
         mAutocompleteCoordinator.prefetchZeroSuggestResults();
     }
 
-    // FakeboxDelegate implementation.
+    // OmniboxStub implementation.
 
     @Override
     public void setUrlBarFocus(boolean shouldBeFocused, @Nullable String pastedText, int reason) {

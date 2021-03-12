@@ -963,6 +963,7 @@ chrome_java_sources = [
   "java/src/org/chromium/chrome/browser/omnibox/NewTabPageDelegate.java",
   "java/src/org/chromium/chrome/browser/omnibox/OmniboxFocusReason.java",
   "java/src/org/chromium/chrome/browser/omnibox/OmniboxPrerender.java",
+  "java/src/org/chromium/chrome/browser/omnibox/OmniboxStub.java",
   "java/src/org/chromium/chrome/browser/omnibox/OmniboxViewUtil.java",
   "java/src/org/chromium/chrome/browser/omnibox/OverrideUrlLoadingDelegate.java",
   "java/src/org/chromium/chrome/browser/omnibox/SearchEngineLogoUtils.java",

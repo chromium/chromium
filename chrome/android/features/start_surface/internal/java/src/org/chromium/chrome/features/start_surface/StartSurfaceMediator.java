@@ -50,7 +50,7 @@ import org.chromium.chrome.browser.feed.shared.stream.Stream;
 import org.chromium.chrome.browser.flags.CachedFeatureFlags;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.lens.LensEntryPoint;
-import org.chromium.chrome.browser.ntp.FakeboxDelegate;
+import org.chromium.chrome.browser.omnibox.OmniboxStub;
 import org.chromium.chrome.browser.omnibox.UrlFocusChangeListener;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.Pref;
@@ -131,7 +131,7 @@ class StartSurfaceMediator
     private PropertyModel mSecondaryTasksSurfacePropertyModel;
     private boolean mIsIncognito;
     @Nullable
-    private FakeboxDelegate mFakeboxDelegate;
+    private OmniboxStub mOmniboxStub;
     private Context mContext;
     @Nullable
     UrlFocusChangeListener mUrlFocusChangeListener;
@@ -340,23 +340,23 @@ class StartSurfaceMediator
         mStartSurfaceState = StartSurfaceState.NOT_SHOWN;
     }
 
-    void initWithNative(@Nullable FakeboxDelegate fakeboxDelegate,
+    void initWithNative(@Nullable OmniboxStub omniboxStub,
             @Nullable ExploreSurfaceCoordinator.FeedSurfaceCreator feedSurfaceCreator,
             PrefService prefService) {
-        mFakeboxDelegate = fakeboxDelegate;
+        mOmniboxStub = omniboxStub;
         mFeedSurfaceCreator = feedSurfaceCreator;
         if (mPropertyModel != null) {
-            assert mFakeboxDelegate != null;
+            assert mOmniboxStub != null;
 
             // Initialize
             // Note that isVoiceSearchEnabled will return false in incognito mode.
             mPropertyModel.set(IS_VOICE_RECOGNITION_BUTTON_VISIBLE,
-                    mFakeboxDelegate.getVoiceRecognitionHandler().isVoiceSearchEnabled());
+                    mOmniboxStub.getVoiceRecognitionHandler().isVoiceSearchEnabled());
             mPropertyModel.set(IS_LENS_BUTTON_VISIBLE,
-                    mFakeboxDelegate.isLensEnabled(LensEntryPoint.TASKS_SURFACE));
+                    mOmniboxStub.isLensEnabled(LensEntryPoint.TASKS_SURFACE));
 
             if (mController.overviewVisible()) {
-                mFakeboxDelegate.addUrlFocusChangeListener(mUrlFocusChangeListener);
+                mOmniboxStub.addUrlFocusChangeListener(mUrlFocusChangeListener);
                 if (mStartSurfaceState == StartSurfaceState.SHOWN_HOMEPAGE
                         && mFeedSurfaceCreator != null) {
                     setExploreSurfaceVisibility(!mIsIncognito);
@@ -639,8 +639,8 @@ class StartSurfaceMediator
             mPropertyModel.set(TOP_MARGIN, mBrowserControlsStateProvider.getTopControlsHeight());
 
             mPropertyModel.set(IS_SHOWING_OVERVIEW, true);
-            if (mFakeboxDelegate != null) {
-                mFakeboxDelegate.addUrlFocusChangeListener(mUrlFocusChangeListener);
+            if (mOmniboxStub != null) {
+                mOmniboxStub.addUrlFocusChangeListener(mUrlFocusChangeListener);
             }
         }
 
@@ -730,8 +730,8 @@ class StartSurfaceMediator
     @Override
     public void startedHiding() {
         if (mPropertyModel != null) {
-            if (mFakeboxDelegate != null) {
-                mFakeboxDelegate.removeUrlFocusChangeListener(mUrlFocusChangeListener);
+            if (mOmniboxStub != null) {
+                mOmniboxStub.removeUrlFocusChangeListener(mUrlFocusChangeListener);
             }
             mPropertyModel.set(IS_SHOWING_OVERVIEW, false);
 
@@ -933,13 +933,13 @@ class StartSurfaceMediator
         // earlier than the VoiceRecognitionHandler, so isVoiceSearchEnabled returns
         // incorrect state if check synchronously.
         ThreadUtils.postOnUiThread(() -> {
-            if (mFakeboxDelegate != null) {
-                if (mFakeboxDelegate.getVoiceRecognitionHandler() != null) {
+            if (mOmniboxStub != null) {
+                if (mOmniboxStub.getVoiceRecognitionHandler() != null) {
                     mPropertyModel.set(IS_VOICE_RECOGNITION_BUTTON_VISIBLE,
-                            mFakeboxDelegate.getVoiceRecognitionHandler().isVoiceSearchEnabled());
+                            mOmniboxStub.getVoiceRecognitionHandler().isVoiceSearchEnabled());
                 }
                 mPropertyModel.set(IS_LENS_BUTTON_VISIBLE,
-                        mFakeboxDelegate.isLensEnabled(LensEntryPoint.TASKS_SURFACE));
+                        mOmniboxStub.isLensEnabled(LensEntryPoint.TASKS_SURFACE));
             }
         });
     }

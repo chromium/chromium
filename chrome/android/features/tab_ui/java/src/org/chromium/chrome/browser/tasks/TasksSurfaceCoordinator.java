@@ -18,8 +18,8 @@ import org.chromium.base.library_loader.LibraryLoader;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.app.ChromeActivity;
 import org.chromium.chrome.browser.feedback.HelpAndFeedbackLauncherImpl;
-import org.chromium.chrome.browser.ntp.FakeboxDelegate;
 import org.chromium.chrome.browser.ntp.IncognitoCookieControlsManager;
+import org.chromium.chrome.browser.omnibox.OmniboxStub;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tasks.tab_management.TabManagementDelegate.TabSwitcherType;
@@ -156,7 +156,7 @@ public class TasksSurfaceCoordinator implements TasksSurface {
     }
 
     @Override
-    public void onFinishNativeInitialization(Context context, FakeboxDelegate fakeboxDelegate) {
+    public void onFinishNativeInitialization(Context context, OmniboxStub omniboxStub) {
         if (mTabSwitcher != null) {
             ChromeActivity activity = (ChromeActivity) context;
             mTabSwitcher.initWithNative(activity, activity.getTabContentManager(),
@@ -164,7 +164,7 @@ public class TasksSurfaceCoordinator implements TasksSurface {
                     activity.getModalDialogManager());
         }
 
-        mMediator.initWithNative(fakeboxDelegate);
+        mMediator.initWithNative(omniboxStub);
 
         if (mHasTrendyTerm && mTabSwitcher != null) {
             mTabSwitcher.getController().addOverviewModeObserver(mMediator);

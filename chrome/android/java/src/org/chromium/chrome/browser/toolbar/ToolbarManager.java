@@ -65,7 +65,6 @@ import org.chromium.chrome.browser.incognito.IncognitoUtils;
 import org.chromium.chrome.browser.layouts.LayoutStateProvider;
 import org.chromium.chrome.browser.layouts.LayoutType;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
-import org.chromium.chrome.browser.ntp.FakeboxDelegate;
 import org.chromium.chrome.browser.ntp.IncognitoNewTabPage;
 import org.chromium.chrome.browser.ntp.NewTabPage;
 import org.chromium.chrome.browser.offlinepages.OfflinePageUtils;
@@ -74,6 +73,7 @@ import org.chromium.chrome.browser.omnibox.LocationBar;
 import org.chromium.chrome.browser.omnibox.LocationBarCoordinator;
 import org.chromium.chrome.browser.omnibox.NewTabPageDelegate;
 import org.chromium.chrome.browser.omnibox.OmniboxFocusReason;
+import org.chromium.chrome.browser.omnibox.OmniboxStub;
 import org.chromium.chrome.browser.omnibox.OverrideUrlLoadingDelegate;
 import org.chromium.chrome.browser.omnibox.SearchEngineLogoUtils;
 import org.chromium.chrome.browser.omnibox.UrlFocusChangeListener;
@@ -499,8 +499,8 @@ public class ToolbarManager implements UrlFocusChangeListener, ThemeColorObserve
             mLocationBar = locationBarCoordinator;
         }
 
-        if (mLocationBar.getFakeboxDelegate() != null) {
-            mLocationBar.getFakeboxDelegate().addUrlFocusChangeListener(this);
+        if (mLocationBar.getOmniboxStub() != null) {
+            mLocationBar.getOmniboxStub().addUrlFocusChangeListener(this);
         }
         Runnable clickDelegate =
                 () -> setUrlBarFocus(false, OmniboxFocusReason.UNFOCUS);
@@ -508,8 +508,8 @@ public class ToolbarManager implements UrlFocusChangeListener, ThemeColorObserve
         mLocationBarFocusHandler = new LocationBarFocusScrimHandler(scrimCoordinator,
                 new TabObscuringCallback(tabObscuringHandler), /* context= */ activity,
                 mLocationBarModel, clickDelegate, scrimTarget);
-        if (mLocationBar.getFakeboxDelegate() != null) {
-            mLocationBar.getFakeboxDelegate().addUrlFocusChangeListener(mLocationBarFocusHandler);
+        if (mLocationBar.getOmniboxStub() != null) {
+            mLocationBar.getOmniboxStub().addUrlFocusChangeListener(mLocationBarFocusHandler);
         }
 
         mProgressBarCoordinator = new LoadProgressCoordinator(
@@ -1048,10 +1048,10 @@ public class ToolbarManager implements UrlFocusChangeListener, ThemeColorObserve
      * @return  Whether the UrlBar currently has focus.
      */
     public boolean isUrlBarFocused() {
-        if (mLocationBar.getFakeboxDelegate() == null) {
+        if (mLocationBar.getOmniboxStub() == null) {
             return false;
         }
-        return mLocationBar.getFakeboxDelegate().isUrlBarFocused();
+        return mLocationBar.getOmniboxStub().isUrlBarFocused();
     }
 
     /**
@@ -1522,9 +1522,9 @@ public class ToolbarManager implements UrlFocusChangeListener, ThemeColorObserve
      */
     public void setUrlBarFocus(boolean focused, @OmniboxFocusReason int reason) {
         if (!mInitializedWithNative) return;
-        if (mLocationBar.getFakeboxDelegate() == null) return;
-        boolean wasFocused = mLocationBar.getFakeboxDelegate().isUrlBarFocused();
-        mLocationBar.getFakeboxDelegate().setUrlBarFocus(focused, null, reason);
+        if (mLocationBar.getOmniboxStub() == null) return;
+        boolean wasFocused = mLocationBar.getOmniboxStub().isUrlBarFocused();
+        mLocationBar.getOmniboxStub().setUrlBarFocus(focused, null, reason);
         if (wasFocused && focused) {
             mLocationBar.selectAll();
         }
@@ -1679,7 +1679,7 @@ public class ToolbarManager implements UrlFocusChangeListener, ThemeColorObserve
     private void checkIfNtpLoaded() {
         NewTabPage ntp = getNewTabPageForCurrentTab();
         if (ntp != null) {
-            ntp.setFakeboxDelegate(mLocationBar.getFakeboxDelegate());
+            ntp.setOmniboxStub(mLocationBar.getOmniboxStub());
             mLocationBarModel.notifyNtpStartedLoading();
         }
     }
@@ -1722,12 +1722,12 @@ public class ToolbarManager implements UrlFocusChangeListener, ThemeColorObserve
     }
 
     /**
-     * @return The {@link FakeboxDelegate}.
+     * @return The {@link OmniboxStub}.
      */
     @Nullable
-    public FakeboxDelegate getFakeboxDelegate() {
+    public OmniboxStub getOmniboxStub() {
         // TODO(crbug.com/1000295): Split fakebox component out of ntp package.
-        return mLocationBar.getFakeboxDelegate();
+        return mLocationBar.getOmniboxStub();
     }
 
     @Nullable

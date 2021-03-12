@@ -303,8 +303,15 @@ public final class LocationBarCoordinator implements LocationBar, NativeInitObse
         return mLocationBarMediator.getVoiceRecognitionHandler();
     }
 
+    @Nullable
     @Override
     public FakeboxDelegate getFakeboxDelegate() {
+        return getOmniboxStub();
+    }
+
+    @Nullable
+    @Override
+    public OmniboxStub getOmniboxStub() {
         return mLocationBarMediator;
     }
 

@@ -47,6 +47,7 @@ import org.chromium.chrome.browser.lifecycle.PauseResumeWithNativeObserver;
 import org.chromium.chrome.browser.native_page.ContextMenuManager;
 import org.chromium.chrome.browser.ntp.snippets.SectionHeaderView;
 import org.chromium.chrome.browser.omnibox.OmniboxFocusReason;
+import org.chromium.chrome.browser.omnibox.OmniboxStub;
 import org.chromium.chrome.browser.omnibox.voice.VoiceRecognitionHandler;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileKey;
@@ -118,7 +119,7 @@ public class NewTabPage implements NativePage, InvalidationAwareThumbnailProvide
     private LifecycleObserver mLifecycleObserver;
     protected boolean mSearchProviderHasLogo;
 
-    protected FakeboxDelegate mFakeboxDelegate;
+    protected OmniboxStub mOmniboxStub;
     private VoiceRecognitionHandler mVoiceRecognitionHandler;
 
     // The timestamp at which the constructor was called.
@@ -189,8 +190,8 @@ public class NewTabPage implements NativePage, InvalidationAwareThumbnailProvide
             if (mVoiceRecognitionHandler != null && beginVoiceSearch) {
                 mVoiceRecognitionHandler.startVoiceRecognition(
                         VoiceRecognitionHandler.VoiceInteractionSource.NTP);
-            } else if (mFakeboxDelegate != null) {
-                mFakeboxDelegate.setUrlBarFocus(true, pastedText,
+            } else if (mOmniboxStub != null) {
+                mOmniboxStub.setUrlBarFocus(true, pastedText,
                         pastedText == null
                                 ? OmniboxFocusReason.FAKE_BOX_TAP
                                 : (fromQueryTile ? OmniboxFocusReason.QUERY_TILES_NTP_TAP
@@ -200,14 +201,14 @@ public class NewTabPage implements NativePage, InvalidationAwareThumbnailProvide
 
         @Override
         public void performSearchQuery(QueryInfo queryInfo) {
-            if (mFakeboxDelegate == null) return;
-            mFakeboxDelegate.performSearchQuery(queryInfo.queryText, queryInfo.searchParams);
+            if (mOmniboxStub == null) return;
+            mOmniboxStub.performSearchQuery(queryInfo.queryText, queryInfo.searchParams);
         }
 
         @Override
         public boolean isCurrentPage() {
             if (mIsDestroyed) return false;
-            if (mFakeboxDelegate == null) return false;
+            if (mOmniboxStub == null) return false;
             return getNewTabPageForCurrentTab() == NewTabPage.this;
         }
 
@@ -611,19 +612,19 @@ public class NewTabPage implements NativePage, InvalidationAwareThumbnailProvide
     }
 
     /**
-     * Sets the FakeboxDelegate that this page interacts with.
+     * Sets the OmniboxStub that this page interacts with.
      */
-    public void setFakeboxDelegate(FakeboxDelegate fakeboxDelegate) {
-        mFakeboxDelegate = fakeboxDelegate;
-        if (mFakeboxDelegate != null) {
+    public void setOmniboxStub(OmniboxStub omniboxStub) {
+        mOmniboxStub = omniboxStub;
+        if (mOmniboxStub != null) {
             // The toolbar can't get the reference to the native page until its initialization is
             // finished, so we can't cache it here and transfer it to the view later. We pull that
             // state from the location bar when we get a reference to it as a workaround.
             mNewTabPageLayout.setUrlFocusChangeAnimationPercent(
-                    fakeboxDelegate.isUrlBarFocused() ? 1f : 0f);
+                    omniboxStub.isUrlBarFocused() ? 1f : 0f);
         }
 
-        mVoiceRecognitionHandler = mFakeboxDelegate.getVoiceRecognitionHandler();
+        mVoiceRecognitionHandler = mOmniboxStub.getVoiceRecognitionHandler();
         if (mVoiceRecognitionHandler != null) {
             mVoiceRecognitionHandler.addObserver(this);
             mNewTabPageLayout.updateVoiceSearchButtonVisibility();
@@ -827,7 +828,7 @@ public class NewTabPage implements NativePage, InvalidationAwareThumbnailProvide
     @Override
     public boolean onInterceptTouchEvent(MotionEvent ev) {
         return !(mTab != null && DeviceFormFactor.isWindowOnTablet(mTab.getWindowAndroid()))
-                && (mFakeboxDelegate != null && mFakeboxDelegate.isUrlBarFocused());
+                && (mOmniboxStub != null && mOmniboxStub.isUrlBarFocused());
     }
 
     @VisibleForTesting

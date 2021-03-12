@@ -189,7 +189,7 @@ public class SearchActivity extends AsyncInitializationActivity
                 new SettingsLauncherImpl());
         mLocationBarCoordinator.setUrlBarFocusable(true);
         mLocationBarCoordinator.setShouldShowMicButtonWhenUnfocused(true);
-        mLocationBarCoordinator.getFakeboxDelegate().addUrlFocusChangeListener(this);
+        mLocationBarCoordinator.getOmniboxStub().addUrlFocusChangeListener(this);
 
         // Kick off everything needed for the user to type into the box.
         beginQuery();
@@ -354,9 +354,8 @@ public class SearchActivity extends AsyncInitializationActivity
     @Override
     protected void onDestroy() {
         if (mTab != null && mTab.isInitialized()) mTab.destroy();
-        if (mLocationBarCoordinator != null
-                && mLocationBarCoordinator.getFakeboxDelegate() != null) {
-            mLocationBarCoordinator.getFakeboxDelegate().removeUrlFocusChangeListener(this);
+        if (mLocationBarCoordinator != null && mLocationBarCoordinator.getOmniboxStub() != null) {
+            mLocationBarCoordinator.getOmniboxStub().removeUrlFocusChangeListener(this);
         }
         mHandler.removeCallbacksAndMessages(null);
         super.onDestroy();

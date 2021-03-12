@@ -165,8 +165,7 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
         }
 
         if (mToolbarManager != null) {
-            mToolbarManager.getFakeboxDelegate().removeUrlFocusChangeListener(
-                    mUrlFocusChangeListener);
+            mToolbarManager.getOmniboxStub().removeUrlFocusChangeListener(mUrlFocusChangeListener);
         }
 
         if (mOfflineIndicatorInProductHelpController != null) {
@@ -486,8 +485,8 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
         };
         mOfflineIndicatorController = new OfflineIndicatorControllerV2(mActivity,
                 mStatusIndicatorCoordinator, isUrlBarFocusedSupplier, mCanAnimateBrowserControls);
-        if (mToolbarManager.getFakeboxDelegate() != null) {
-            mToolbarManager.getFakeboxDelegate().addUrlFocusChangeListener(mUrlFocusChangeListener);
+        if (mToolbarManager.getOmniboxStub() != null) {
+            mToolbarManager.getOmniboxStub().addUrlFocusChangeListener(mUrlFocusChangeListener);
         }
     }
 

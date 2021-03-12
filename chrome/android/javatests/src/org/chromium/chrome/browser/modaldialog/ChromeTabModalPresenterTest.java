@@ -119,7 +119,7 @@ public class ChromeTabModalPresenterTest {
         mActivity.getToolbarManager()
                 .getToolbarLayoutForTesting()
                 .getLocationBar()
-                .getFakeboxDelegate()
+                .getOmniboxStub()
                 .addUrlFocusChangeListener(mTestObserver);
         mTabModalPresenter =
                 (ChromeTabModalPresenter) mManager.getPresenterForTest(ModalDialogType.TAB);
