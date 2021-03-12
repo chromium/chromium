@@ -224,4 +224,24 @@ TEST_F(ReplaceSelectionCommandTest, InsertImageAfterEmptyBlockInInline) {
   EXPECT_EQ("<span><div></div></span><img>|<span>a</span>",
             GetSelectionTextFromBody());
 }
+
+// https://crbug.com/1173134
+TEST_F(ReplaceSelectionCommandTest, InsertImageAfterWhiteSpace) {
+  GetDocument().setDesignMode("on");
+  Selection().SetSelection(
+      SetSelectionTextToBody(
+          "<button><div></div><svg></svg>&#x20;|</button>x<input>"),
+      SetSelectionOptions());
+
+  DocumentFragment& fragment = *GetDocument().createDocumentFragment();
+  fragment.appendChild(GetDocument().CreateRawElement(html_names::kImgTag));
+  auto& command = *MakeGarbageCollected<ReplaceSelectionCommand>(
+      GetDocument(), &fragment, ReplaceSelectionCommand::kPreventNesting,
+      InputEvent::InputType::kNone);
+
+  // Should not crash
+  EXPECT_TRUE(command.Apply());
+  EXPECT_EQ("<button><div></div><svg></svg></button><img>|x<input>",
+            GetSelectionTextFromBody());
+}
 }  // namespace blink
