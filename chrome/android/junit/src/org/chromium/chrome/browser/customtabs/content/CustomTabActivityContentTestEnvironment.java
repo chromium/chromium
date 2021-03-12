@@ -155,13 +155,13 @@ public class CustomTabActivityContentTestEnvironment extends TestWatcher {
     }
 
     // clang-format off
-    public CustomTabActivityTabController createTabController(ProfileProvider profileProvider) {
+    public CustomTabActivityTabController createTabController() {
         return new CustomTabActivityTabController(activity, () -> customTabDelegateFactory,
                 connection, intentDataProvider, activityTabProvider, tabObserverRegistrar,
                 () -> compositorViewHolder, lifecycleDispatcher, warmupManager,
                 tabPersistencePolicy, tabFactory, () -> customTabObserver, webContentsFactory,
                 navigationEventObserver, tabProvider, startupTabPreloader, reparentingTaskProvider,
-                () -> customTabIncognitoManager, profileProvider, () -> realAsyncTabParamsManager);
+                () -> customTabIncognitoManager, () -> realAsyncTabParamsManager);
     }
     // clang-format on
 

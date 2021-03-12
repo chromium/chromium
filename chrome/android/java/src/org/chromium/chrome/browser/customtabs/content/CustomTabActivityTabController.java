@@ -106,7 +106,6 @@ public class CustomTabActivityTabController implements InflationObserver {
     private final StartupTabPreloader mStartupTabPreloader;
     private final ReparentingTaskProvider mReparentingTaskProvider;
     private final Lazy<CustomTabIncognitoManager> mCustomTabIncognitoManager;
-    private final ProfileProvider mProfileProvider;
     private final Lazy<AsyncTabParamsManager> mAsyncTabParamsManager;
 
     @Nullable
@@ -134,7 +133,7 @@ public class CustomTabActivityTabController implements InflationObserver {
             CustomTabActivityTabProvider tabProvider, StartupTabPreloader startupTabPreloader,
             ReparentingTaskProvider reparentingTaskProvider,
             Lazy<CustomTabIncognitoManager> customTabIncognitoManager,
-            ProfileProvider profileProvider, Lazy<AsyncTabParamsManager> asyncTabParamsManager) {
+            Lazy<AsyncTabParamsManager> asyncTabParamsManager) {
         mCustomTabDelegateFactory = customTabDelegateFactory;
         mActivity = activity;
         mConnection = connection;
@@ -152,7 +151,6 @@ public class CustomTabActivityTabController implements InflationObserver {
         mStartupTabPreloader = startupTabPreloader;
         mReparentingTaskProvider = reparentingTaskProvider;
         mCustomTabIncognitoManager = customTabIncognitoManager;
-        mProfileProvider = profileProvider;
         mAsyncTabParamsManager = asyncTabParamsManager;
 
         mSession = mIntentDataProvider.getSession();
@@ -451,7 +449,7 @@ public class CustomTabActivityTabController implements InflationObserver {
             return mWebContentsFactory.createWebContentsWithWarmRenderer(
                     mCustomTabIncognitoManager.get().getProfile(), false);
         } else {
-            Profile profile = mProfileProvider.getLastUsedRegularProfile();
+            Profile profile = Profile.getLastUsedRegularProfile();
             return mWebContentsFactory.createWebContentsWithWarmRenderer(profile, false);
         }
     }
