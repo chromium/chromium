@@ -767,7 +767,7 @@ void AppsGridView::EndDrag(bool cancel) {
   // and its bounds for later use in folder dropping animation.
   AppListItemView* folder_item_view = nullptr;
   AppListItem* drag_item = drag_view_->item();
-  const gfx::Rect drag_source_bounds(drag_view_->bounds());
+  gfx::Rect drag_source_bounds(drag_view_->bounds());
 
   if (forward_events_to_drag_and_drop_host_) {
     DCHECK(!IsDraggingForReparentInRootLevelGridView());
@@ -866,12 +866,6 @@ void AppsGridView::EndDrag(bool cancel) {
   if (!cancel && !folder_delegate_)
     view_structure_.SaveToMetadata();
 
-  if (folder_item_view) {
-    // Run an animation to move dragged item to the folder.
-    StartFolderDroppingAnimation(folder_item_view, drag_item,
-                                 drag_source_bounds);
-  }
-
   if (!cancel) {
     // Select the page where dragged item is dropped. Avoid doing so when the
     // dragged item ends up in a folder.
@@ -890,7 +884,17 @@ void AppsGridView::EndDrag(bool cancel) {
     // Temporarily set to cardified UI State so it animates back to its position
     // smoothly with all other icons.
     released_drag_view->SetCardifyUIState();
+    // Compensate drag_source_bounds for the translation of the items_container
+    // during AnimateCardifiedState().
+    gfx::Point start_position = items_container_->origin();
     EndAppsGridCardifiedView();
+    drag_source_bounds.Offset(
+        0, start_position.y() - items_container_->origin().y());
+  }
+  if (folder_item_view) {
+    // Run an animation to move dragged item to the folder.
+    StartFolderDroppingAnimation(folder_item_view, drag_item,
+                                 drag_source_bounds);
   }
 }
 
