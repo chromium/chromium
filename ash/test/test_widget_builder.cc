@@ -79,6 +79,14 @@ TestWidgetBuilder& TestWidgetBuilder::SetContext(aura::Window* context) {
   return *this;
 }
 
+TestWidgetBuilder& TestWidgetBuilder::SetActivatable(bool activatable) {
+  DCHECK(!built_);
+  widget_init_params_.activatable =
+      activatable ? views::Widget::InitParams::ACTIVATABLE_YES
+                  : views::Widget::InitParams::ACTIVATABLE_NO;
+  return *this;
+}
+
 TestWidgetBuilder& TestWidgetBuilder::SetWindowId(int window_id) {
   DCHECK(!built_);
   window_id_ = window_id;

@@ -2487,6 +2487,7 @@ test("ash_unittests") {
     "//chromeos/ui/vector_icons",
     "//components/account_id",
     "//components/arc:notification_test_support",
+    "//components/full_restore",
     "//components/media_message_center",
     "//components/password_manager/core/browser:hash_password_manager",
     "//components/prefs:test_support",

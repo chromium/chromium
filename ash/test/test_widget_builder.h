@@ -35,6 +35,7 @@ class ASH_EXPORT TestWidgetBuilder {
   TestWidgetBuilder& SetBounds(const gfx::Rect& bounds);
   TestWidgetBuilder& SetParent(aura::Window* parent);
   TestWidgetBuilder& SetContext(aura::Window* context);
+  TestWidgetBuilder& SetActivatable(bool activatable);
 
   // Sets the window property to be set on the window of a widget.
   template <typename T>

@@ -8,12 +8,17 @@
 #include "ash/public/cpp/ash_features.h"
 #include "ash/shell.h"
 #include "ash/test/ash_test_base.h"
+#include "ash/test/test_widget_builder.h"
 #include "ash/wm/desks/desks_controller.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller_test_api.h"
 #include "ash/wm/window_state.h"
 #include "base/containers/flat_map.h"
+#include "base/scoped_observation.h"
 #include "base/test/scoped_feature_list.h"
+#include "components/full_restore/full_restore_utils.h"
 #include "ui/aura/client/aura_constants.h"
+#include "ui/aura/env.h"
+#include "ui/aura/env_observer.h"
 #include "ui/wm/core/window_util.h"
 
 namespace ash {
@@ -28,7 +33,7 @@ void PerformAcceleratorAction(AcceleratorAction action,
 
 }  // namespace
 
-class FullRestoreControllerTest : public AshTestBase {
+class FullRestoreControllerTest : public AshTestBase, public aura::EnvObserver {
  public:
   // Struct which is the data in our fake full restore file.
   struct WindowInfo {
@@ -73,6 +78,21 @@ class FullRestoreControllerTest : public AshTestBase {
     return fake_full_restore_file_.at(window).activation_index;
   }
 
+  // Mocks creating a widget that is launched from full restore service.
+  views::Widget* CreateTestFullRestoredWidget(int32_t activation_index) {
+    // Full restore widgets are inactive when created as we do not want to take
+    // activation from a possible activated window, and we want to stack them in
+    // a certain order.
+    TestWidgetBuilder widget_builder;
+    widget_builder.SetWidgetType(views::Widget::InitParams::TYPE_WINDOW)
+        .SetBounds(gfx::Rect(200, 200))
+        .SetContext(Shell::GetPrimaryRootWindow())
+        .SetActivatable(false);
+    widget_builder.SetWindowProperty(full_restore::kActivationIndexKey,
+                                     new int32_t(activation_index));
+    return widget_builder.BuildOwnedByNativeWidget();
+  }
+
   // AshTestBase:
   void SetUp() override {
     scoped_feature_list_.InitAndEnableFeature(features::kFullRestore);
@@ -82,6 +102,22 @@ class FullRestoreControllerTest : public AshTestBase {
     FullRestoreController::Get()->SetSaveWindowCallbackForTesting(
         base::BindRepeating(&FullRestoreControllerTest::OnSaveWindow,
                             base::Unretained(this)));
+    env_observation_.Observe(aura::Env::GetInstance());
+  }
+
+  void TearDown() override {
+    env_observation_.Reset();
+
+    AshTestBase::TearDown();
+  }
+
+  // aura::EnvObserver:
+  void OnWindowInitialized(aura::Window* window) override {
+    // FullRestoreController relies on getting OnWindowInitialized events from
+    // aura::Env via full_restore::FullRestoreInfo. That object does not exist
+    // for ash unit tests, so we will observe aura::Env ourselves and forward
+    // the event to FullRestoreController.
+    FullRestoreController::Get()->OnWindowInitialized(window);
   }
 
  private:
@@ -102,6 +138,8 @@ class FullRestoreControllerTest : public AshTestBase {
 
   // A map which is a fake representation of the full restore file.
   base::flat_map<aura::Window*, WindowInfo> fake_full_restore_file_;
+
+  base::ScopedObservation<aura::Env, aura::EnvObserver> env_observation_{this};
 
   base::test::ScopedFeatureList scoped_feature_list_;
 };
@@ -277,6 +315,27 @@ TEST_F(FullRestoreControllerTest, Activation) {
   EXPECT_EQ(2, GetActivationIndex(window1.get()));
   EXPECT_EQ(1, GetActivationIndex(window2.get()));
   EXPECT_EQ(0, GetActivationIndex(window3.get()));
+}
+
+// Tests that the mock widget created from full restore we will use in other
+// tests works as expected.
+TEST_F(FullRestoreControllerTest, TestFullRestoredWidget) {
+  const int32_t kActivationIndex = 2;
+  views::Widget* widget = CreateTestFullRestoredWidget(kActivationIndex);
+  int32_t* activation_index =
+      widget->GetNativeWindow()->GetProperty(full_restore::kActivationIndexKey);
+  ASSERT_TRUE(activation_index);
+  EXPECT_EQ(kActivationIndex, *activation_index);
+
+  // Widget cannot be activated and is not active after it is created from full
+  // restore.
+  EXPECT_FALSE(widget->CanActivate());
+  EXPECT_FALSE(widget->IsActive());
+
+  // Activation permissions are restored in a post task. Spin the run loop and
+  // verify.
+  base::RunLoop().RunUntilIdle();
+  EXPECT_TRUE(widget->CanActivate());
 }
 
 }  // namespace ash

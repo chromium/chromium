@@ -107,11 +107,17 @@ void FullRestoreController::OnTabletControllerDestroyed() {
 void FullRestoreController::OnWindowParentChanged(aura::Window* window,
                                                   aura::Window* parent) {
   auto window_info = full_restore::GetWindowInfo(window);
-  DCHECK(window_info);
+  // May be null in tests.
+  if (!window_info) {
+    windows_observation_.RemoveObservation(window);
+    return;
+  }
 
   auto state_type = window_info->window_state_type;
-  if (!state_type.has_value())
+  if (!state_type.has_value()) {
+    windows_observation_.RemoveObservation(window);
     return;
+  }
 
   if (*state_type == chromeos::WindowStateType::kLeftSnapped ||
       *state_type == chromeos::WindowStateType::kRightSnapped) {
@@ -145,6 +151,9 @@ void FullRestoreController::OnWindowInitialized(aura::Window* window) {
   // these windows activatable once they are launched. Use a post task since it
   // is quite common for some widgets to explicitly call Show() after
   // initialized.
+  // TODO(sammiequon): Instead of disabling activation when creating the widget
+  // and enabling it here, use ShowInactive() instead of Show() when the widget
+  // is created.
   base::ThreadTaskRunnerHandle::Get()->PostTask(
       FROM_HERE, base::BindOnce(
                      [](aura::Window* window) {
