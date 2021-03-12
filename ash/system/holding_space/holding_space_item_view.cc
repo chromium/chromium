@@ -154,7 +154,8 @@ void HoldingSpaceItemView::Reset() {
 
 bool HoldingSpaceItemView::HandleAccessibleAction(
     const ui::AXActionData& action_data) {
-  return delegate_->OnHoldingSpaceItemViewAccessibleAction(this, action_data) ||
+  return (delegate_ && delegate_->OnHoldingSpaceItemViewAccessibleAction(
+                           this, action_data)) ||
          views::View::HandleAccessibleAction(action_data);
 }
 
@@ -181,11 +182,12 @@ void HoldingSpaceItemView::OnBlur() {
 }
 
 void HoldingSpaceItemView::OnGestureEvent(ui::GestureEvent* event) {
-  delegate_->OnHoldingSpaceItemViewGestureEvent(this, *event);
+  if (delegate_)
+    delegate_->OnHoldingSpaceItemViewGestureEvent(this, *event);
 }
 
 bool HoldingSpaceItemView::OnKeyPressed(const ui::KeyEvent& event) {
-  return delegate_->OnHoldingSpaceItemViewKeyPressed(this, event);
+  return delegate_ && delegate_->OnHoldingSpaceItemViewKeyPressed(this, event);
 }
 
 void HoldingSpaceItemView::OnMouseEvent(ui::MouseEvent* event) {
@@ -201,11 +203,13 @@ void HoldingSpaceItemView::OnMouseEvent(ui::MouseEvent* event) {
 }
 
 bool HoldingSpaceItemView::OnMousePressed(const ui::MouseEvent& event) {
-  return delegate_->OnHoldingSpaceItemViewMousePressed(this, event);
+  return delegate_ &&
+         delegate_->OnHoldingSpaceItemViewMousePressed(this, event);
 }
 
 void HoldingSpaceItemView::OnMouseReleased(const ui::MouseEvent& event) {
-  delegate_->OnHoldingSpaceItemViewMouseReleased(this, event);
+  if (delegate_)
+    delegate_->OnHoldingSpaceItemViewMouseReleased(this, event);
 }
 
 void HoldingSpaceItemView::OnThemeChanged() {
@@ -257,7 +261,9 @@ void HoldingSpaceItemView::SetSelected(bool selected) {
   selected_ = selected;
   InvalidateLayer(selected_layer_owner_->layer());
 
-  delegate_->OnHoldingSpaceItemViewSelectedChanged(this);
+  if (delegate_)
+    delegate_->OnHoldingSpaceItemViewSelectedChanged(this);
+
   OnSelectionUiChanged();
 }
 
@@ -301,8 +307,8 @@ views::ToggleImageButton* HoldingSpaceItemView::AddPin(views::View* parent) {
 
 void HoldingSpaceItemView::OnSelectionUiChanged() {
   const bool multiselect =
-      delegate_->selection_ui() ==
-      HoldingSpaceItemViewDelegate::SelectionUi::kMultiSelect;
+      delegate_ && delegate_->selection_ui() ==
+                       HoldingSpaceItemViewDelegate::SelectionUi::kMultiSelect;
 
   checkmark_->SetVisible(selected() && multiselect);
 }
