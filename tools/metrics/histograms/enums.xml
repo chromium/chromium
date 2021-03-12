@@ -39966,11 +39966,6 @@ Called by update_gpu_driver_bug_workaround_entries.py.-->
   <int value="63" label="DELETE_OLD_VERSIONS_TOO_MANY_ATTEMPTS"/>
   <int value="64" label="STORE_DMTOKEN_FAILED"/>
   <int value="65" label="STORE_DMTOKEN_SUCCESS"/>
-  <int value="66" label="DOWNGRADE_CLEANUP_FAILED"/>
-  <int value="67" label="DOWNGRADE_CLEANUP_SUCCESS"/>
-  <int value="68" label="UNDO_DOWNGRADE_CLEANUP_FAILED"/>
-  <int value="69" label="UNDO_DOWNGRADE_CLEANUP_SUCCESS"/>
-  <int value="70" label="DOWNGRADE_CLEANUP_UNKNOWN_OPERATION"/>
 </enum>
 
 <enum name="InstanceIDResult">

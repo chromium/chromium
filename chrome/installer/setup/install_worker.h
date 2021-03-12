@@ -106,14 +106,6 @@ void AddChannelWorkItems(HKEY root,
                          const std::wstring& clients_key,
                          WorkItemList* list);
 
-// Adds work items to be done when finalizing an update. This happens both
-// after the executables get renamed for an in-use update or as the last steps
-// for a regular update.
-void AddFinalizeUpdateWorkItems(const base::Version& new_version,
-                                const InstallerState& installer_state,
-                                const base::FilePath& setup_path,
-                                WorkItemList* list);
-
 }  // namespace installer
 
 #endif  // CHROME_INSTALLER_SETUP_INSTALL_WORKER_H_

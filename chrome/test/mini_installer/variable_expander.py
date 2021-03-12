@@ -146,8 +146,6 @@ class VariableExpander:
             Name for Chrome Dev.
         * $CHROME_ELEVATION_SERVICE_DISPLAY_NAME_SXS: Elevation Service Display
             Name for Chrome SxS.
-        * $LAST_INSTALLER_BREAKING_VERSION: The last installer version that had
-            breaking changes.
 
     Args:
       mini_installer_path: The path to a mini_installer.
@@ -165,8 +163,6 @@ class VariableExpander:
         '-q' if quiet else '',
         'OUTPUT_DIR':
         '"--output-dir=%s"' % output_dir if output_dir else '',
-        'LAST_INSTALLER_BREAKING_VERSION':
-        '85.0.4169.0',
         'LOCAL_APPDATA':
         shell.SHGetFolderPath(0, shellcon.CSIDL_LOCAL_APPDATA, None, 0),
         'LOG_FILE':
@@ -223,15 +219,6 @@ class VariableExpander:
           'CHROME_UPDATE_REGISTRY_SUBKEY': (
             'Software\\Google\\Update\\Clients\\'
             '{8A69D345-D564-463c-AFF1-A69D9E530F96}'),
-          'CHROME_CLIENT_STATE_KEY_BETA': (
-            'Software\\Google\\Update\\ClientState\\'
-            '{8237E44A-0054-442C-B6B6-EA0509993955}'),
-          'CHROME_CLIENT_STATE_KEY_DEV': (
-            'Software\\Google\\Update\\ClientState\\'
-            '{401C381F-E0DE-4B85-8BD8-3F3F14FBDA57}'),
-          'CHROME_CLIENT_STATE_KEY_SXS': (
-            'Software\\Google\\Update\\ClientState\\'
-            '{4ea16ac7-fd5a-47c3-875b-dbf4a2008c20}'),
           'CHROME_CLIENT_STATE_KEY': (
             'Software\\Google\\Update\\ClientState\\'
             '{8A69D345-D564-463c-AFF1-A69D9E530F96}'),
@@ -295,7 +282,8 @@ class VariableExpander:
             'Google Chrome Dev Elevation Service'
             ' (GoogleChromeDevElevationService)'),
           'CHROME_ELEVATION_SERVICE_DISPLAY_NAME_SXS': (
-            'Google Chrome Canary Elevation Service'),
+            'Google Chrome Canary Elevation Service'
+            ' (GoogleChromeCanaryElevationService)'),
       })
     elif mini_installer_product_name == 'Chromium Installer':
       self._variable_mapping.update({

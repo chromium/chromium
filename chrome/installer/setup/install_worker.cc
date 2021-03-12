@@ -39,10 +39,8 @@
 #include "chrome/install_static/install_details.h"
 #include "chrome/install_static/install_modes.h"
 #include "chrome/install_static/install_util.h"
-#include "chrome/installer/setup/downgrade_cleanup.h"
 #include "chrome/installer/setup/install_params.h"
 #include "chrome/installer/setup/installer_state.h"
-#include "chrome/installer/setup/last_breaking_installer_version.h"
 #include "chrome/installer/setup/setup_constants.h"
 #include "chrome/installer/setup/setup_util.h"
 #include "chrome/installer/setup/update_active_setup_version_work_item.h"
@@ -654,10 +652,6 @@ bool AppendPostInstallTasks(const InstallParams& install_params,
   base::FilePath new_chrome_exe(target_path.Append(kChromeNewExe));
   const std::wstring clients_key(install_static::GetClientsKeyPath());
 
-  base::FilePath installer_path(
-      installer_state.GetInstallerDirectory(new_version)
-          .Append(setup_path.BaseName()));
-
   // Append work items that will only be executed if this was an in-use update.
   // We update the 'opv' value with the current version that is active,
   // the 'cpv' value with the critical update version (if present), and the
@@ -672,6 +666,9 @@ bool AppendPostInstallTasks(const InstallParams& install_params,
     // version considered critical relative to the version being updated.
     base::Version critical_version(
         installer_state.DetermineCriticalVersion(current_version, new_version));
+    base::FilePath installer_path(
+        installer_state.GetInstallerDirectory(new_version)
+            .Append(setup_path.BaseName()));
 
     if (current_version.IsValid()) {
       in_use_update_work_items->AddSetRegValueWorkItem(
@@ -721,8 +718,6 @@ bool AppendPostInstallTasks(const InstallParams& install_params,
     // with it so that the browser knows which channel to use, otherwise delete
     // whatever value that key holds.
     AddChannelWorkItems(root, clients_key, regular_update_work_items.get());
-    AddFinalizeUpdateWorkItems(new_version, installer_state, installer_path,
-                               regular_update_work_items.get());
 
     // Since this was not an in-use-update, delete 'opv', 'cpv',
     // and 'cmd' keys.
@@ -1061,33 +1056,6 @@ void AddChannelWorkItems(HKEY root,
     list->AddDeleteRegValueWorkItem(root, clients_key, KEY_WOW64_32KEY,
                                     google_update::kRegChannelField);
   }
-}
-
-void AddFinalizeUpdateWorkItems(const base::Version& new_version,
-                                const InstallerState& installer_state,
-                                const base::FilePath& setup_path,
-                                WorkItemList* list) {
-  // Cleanup for breaking downgrade first in the post install to avoid
-  // overwriting any of the following post-install tasks.
-  AddDowngradeCleanupItems(new_version, list);
-
-  const std::wstring client_state_key = install_static::GetClientStateKeyPath();
-
-  // Adds the command that needs to be used in order to cleanup any breaking
-  // changes the installer of this version may have added.
-  list->AddSetRegValueWorkItem(
-      installer_state.root_key(), client_state_key, KEY_WOW64_32KEY,
-      google_update::kRegDowngradeCleanupCommandField,
-      GetDowngradeCleanupCommandWithPlaceholders(setup_path, installer_state),
-      true);
-
-  // Write the latest installer's breaking version so that future downgrades
-  // know if they need to do a clean install. This isn't done for in-use since
-  // it is done at the the executable's rename.
-  list->AddSetRegValueWorkItem(
-      installer_state.root_key(), client_state_key, KEY_WOW64_32KEY,
-      google_update::kRegCleanInstallRequiredForVersionBelowField,
-      kLastBreakingInstallerVersion, true);
 }
 
 }  // namespace installer
