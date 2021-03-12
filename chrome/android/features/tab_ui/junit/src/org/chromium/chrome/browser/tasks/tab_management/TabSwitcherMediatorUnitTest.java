@@ -452,6 +452,29 @@ public class TabSwitcherMediatorUnitTest {
     }
 
     @Test
+    public void scrollAfterNewTabModelSelected() {
+        initAndAssertAllProperties();
+        mModel.set(TabListContainerProperties.IS_VISIBLE, true);
+        TabModel incognitoTabModel = mock(TabModel.class);
+
+        doReturn(0).when(mTabModelFilter).index();
+        mTabModelSelectorObserverCaptor.getValue().onTabModelSelected(incognitoTabModel, mTabModel);
+        assertThat(mModel.get(TabListContainerProperties.INITIAL_SCROLL_INDEX), equalTo(0));
+
+        doReturn(1).when(mTabModelFilter).index();
+        mTabModelSelectorObserverCaptor.getValue().onTabModelSelected(incognitoTabModel, mTabModel);
+        assertThat(mModel.get(TabListContainerProperties.INITIAL_SCROLL_INDEX), equalTo(0));
+
+        doReturn(2).when(mTabModelFilter).index();
+        mTabModelSelectorObserverCaptor.getValue().onTabModelSelected(incognitoTabModel, mTabModel);
+        assertThat(mModel.get(TabListContainerProperties.INITIAL_SCROLL_INDEX), equalTo(0));
+
+        doReturn(3).when(mTabModelFilter).index();
+        mTabModelSelectorObserverCaptor.getValue().onTabModelSelected(incognitoTabModel, mTabModel);
+        assertThat(mModel.get(TabListContainerProperties.INITIAL_SCROLL_INDEX), equalTo(1));
+    }
+
+    @Test
     public void updatesMarginWithBottomBarChanges() {
         initAndAssertAllProperties();
 
