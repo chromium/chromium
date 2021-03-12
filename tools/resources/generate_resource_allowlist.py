@@ -61,6 +61,7 @@ def GetResourceAllowlistPDB(path):
       stdout=subprocess.PIPE)
   names = ''
   for line in pdbutil.stdout:
+    line = line.decode('utf8')
     # Read a line of the form
     # "733352 | S_PUB32 [size = 56] `??$AllowlistedResource@$0BFGM@@ui@@YAXXZ`".
     if '`' not in line:
@@ -80,9 +81,10 @@ def GetResourceAllowlistPDB(path):
   undname = subprocess.Popen([os.path.join(llvm_bindir, 'llvm-undname')],
                              stdin=subprocess.PIPE,
                              stdout=subprocess.PIPE)
-  stdout, _ = undname.communicate(names)
+  stdout, _ = undname.communicate(names.encode('utf8'))
   resource_ids = set()
-  for line in stdout.split('\n'):
+  for line in stdout.split(b'\n'):
+    line = line.decode('utf8')
     # Read a line of the form
     # "void __cdecl ui::AllowlistedResource<5484>(void)".
     prefix = ' ui::AllowlistedResource<'
@@ -116,14 +118,14 @@ def GetResourceAllowlistFileList(file_list_path):
 def WriteResourceAllowlist(args):
   resource_ids = set()
   for input in args.inputs:
-    with open(input, 'r') as f:
+    with open(input, 'rb') as f:
       magic = f.read(4)
       chunk = f.read(60)
-    if magic == '\x7fELF':
+    if magic == b'\x7fELF':
       func = GetResourceAllowlistELF
-    elif magic == 'Micr':
+    elif magic == b'Micr':
       func = GetResourceAllowlistPDB
-    elif magic == 'obj/' or '/obj/' in chunk:
+    elif magic == b'obj/' or b'/obj/' in chunk:
       # For secondary toolchain, path will look like android_clang_arm/obj/...
       func = GetResourceAllowlistFileList
     else:

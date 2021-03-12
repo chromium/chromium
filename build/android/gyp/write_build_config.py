@@ -2033,9 +2033,8 @@ def main(argv):
       _AddJarMapping(jar_to_target, [base_module_build_config['deps_info']])
     if options.tested_apk_config:
       _AddJarMapping(jar_to_target, [tested_apk_config])
-      for jar, target in itertools.izip(
-          tested_apk_config['javac_full_classpath'],
-          tested_apk_config['javac_full_classpath_targets']):
+      for jar, target in zip(tested_apk_config['javac_full_classpath'],
+                             tested_apk_config['javac_full_classpath_targets']):
         jar_to_target[jar] = target
 
     # Used by bytecode_processor to give better error message when missing

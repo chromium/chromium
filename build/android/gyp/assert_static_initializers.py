@@ -24,7 +24,7 @@ _DUMP_STATIC_INITIALIZERS_PATH = os.path.join(build_utils.DIR_SOURCE_ROOT,
 
 def _RunReadelf(so_path, options, tool_prefix=''):
   return subprocess.check_output([tool_prefix + 'readelf'] + options +
-                                 [so_path])
+                                 [so_path]).decode('utf8')
 
 
 def _ParseLibBuildId(so_path, tool_prefix):

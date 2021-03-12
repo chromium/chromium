@@ -4825,6 +4825,8 @@ if (enable_java_templates) {
 
     _bundle_target_name = "${_target_name}__bundle"
     action_with_pydeps(_bundle_target_name) {
+      # TODO(crbug.com/1187279): Get this to work under Python3.
+      run_under_python2 = true
       script = "//build/android/gyp/create_app_bundle.py"
       inputs = _all_module_zip_paths + _all_module_build_configs
       outputs = [ _bundle_path ]

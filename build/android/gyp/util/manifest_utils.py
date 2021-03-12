@@ -129,7 +129,7 @@ def _SortAndStripElementTree(root):
     # for the node or any of its descendants. Remove them so as to prevent a
     # change to a child that adds/removes a namespace usage from changing sort
     # order.
-    return re.sub(r' xmlns:.*?".*?"', '', ret)
+    return re.sub(r' xmlns:.*?".*?"', '', ret.decode('utf8'))
 
   def helper(node):
     for child in node:
@@ -205,7 +205,7 @@ def _CreateNodeHash(lines):
     assert False, 'Did not find end of node:\n' + '\n'.join(lines)
 
   # Insecure and truncated hash as it only needs to be unique vs. its neighbors.
-  return hashlib.md5('\n'.join(tag_lines)).hexdigest()[:8]
+  return hashlib.md5(('\n'.join(tag_lines)).encode('utf8')).hexdigest()[:8]
 
 
 def _IsSelfClosing(lines):

@@ -55,4 +55,5 @@ def WriteJarInfoFile(output_obj, info_data, source_file_map=None):
       path = source_file_map[path]
       assert not path.startswith('/tmp'), (
           'Java file path should not be in temp dir: {}'.format(path))
-    output_obj.write('{},{}\n'.format(fully_qualified_name, path))
+    output_obj.write(('{},{}\n'.format(fully_qualified_name,
+                                       path)).encode('utf8'))
