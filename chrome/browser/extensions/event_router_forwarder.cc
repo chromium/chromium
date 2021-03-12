@@ -100,14 +100,18 @@ void EventRouterForwarder::HandleEvent(
     }
   }
 
-  DCHECK_GT(profiles_to_dispatch_to.size(), 0u)
-      << "There should always be at least one profile!";
+  // There should always be at least one profile when running as Chromium.
+  // However, some Chromium embedders are known to run without profiles, in
+  // which case there's nothing to dispatch to.
+  if (profiles_to_dispatch_to.size() == 0u)
+    return;
 
+  // Use the same event_args for each profile (making copies as needed).
   std::vector<std::unique_ptr<base::ListValue>> per_profile_args;
   per_profile_args.reserve(profiles_to_dispatch_to.size());
-  for (size_t i = 0; i < profiles_to_dispatch_to.size() - 1; ++i)
-    per_profile_args.emplace_back(event_args->DeepCopy());
   per_profile_args.emplace_back(std::move(event_args));
+  for (size_t i = 1; i < profiles_to_dispatch_to.size(); ++i)
+    per_profile_args.emplace_back(per_profile_args.front()->DeepCopy());
   DCHECK_EQ(per_profile_args.size(), profiles_to_dispatch_to.size());
 
   size_t profile_args_index = 0;
