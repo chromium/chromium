@@ -233,6 +233,8 @@ component("cpp") {
     "quick_answers/controller/quick_answers_browser_client.h",
     "quick_answers/controller/quick_answers_controller.cc",
     "quick_answers/controller/quick_answers_controller.h",
+    "quick_answers/quick_answers_state.cc",
+    "quick_answers/quick_answers_state.h",
     "rounded_corner_decorator.cc",
     "rounded_corner_decorator.h",
     "rounded_image_view.cc",
@@ -324,6 +326,7 @@ component("cpp") {
   deps = [
     "//ash/constants",
     "//base/util/values:values_util",
+    "//chromeos/components/quick_answers/public/cpp:prefs",
     "//chromeos/dbus/power:power_manager_proto",
     "//chromeos/services/assistant/public/cpp",
     "//chromeos/services/cellular_setup:in_process_esim_manager",

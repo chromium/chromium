@@ -576,6 +576,10 @@ const base::Feature kQuickAnswersTranslationCloudAPI{
 const base::Feature kQuickAnswersOnEditableText{
     "QuickAnswersOnEditableText", base::FEATURE_ENABLED_BY_DEFAULT};
 
+// Controls whether to enable quick answers standalone settings section.
+const base::Feature kQuickAnswersStandaloneSettings{
+    "QuickAnswersStandaloneSettings", base::FEATURE_DISABLED_BY_DEFAULT};
+
 // Controls whether the PIN auto submit feature is enabled.
 const base::Feature kQuickUnlockPinAutosubmit{"QuickUnlockPinAutosubmit",
                                               base::FEATURE_ENABLED_BY_DEFAULT};
@@ -881,6 +885,10 @@ bool IsQuickAnswersTranslationCloudAPIEnabled() {
 
 bool IsQuickAnswersOnEditableTextEnabled() {
   return base::FeatureList::IsEnabled(kQuickAnswersOnEditableText);
+}
+
+bool IsQuickAnswersStandaloneSettingsEnabled() {
+  return base::FeatureList::IsEnabled(kQuickAnswersStandaloneSettings);
 }
 
 bool IsSplitSettingsSyncEnabled() {
