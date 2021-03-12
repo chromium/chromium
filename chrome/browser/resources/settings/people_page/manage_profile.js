@@ -24,7 +24,7 @@ import {routes} from '../route.js';
 import {RouteObserverBehavior, Router} from '../router.m.js';
 
 import {ManageProfileBrowserProxy, ManageProfileBrowserProxyImpl, ProfileShortcutStatus} from './manage_profile_browser_proxy.js';
-import {SyncStatus} from './sync_browser_proxy.m.js';
+import {SyncStatus} from './sync_browser_proxy.js';
 
 Polymer({
   is: 'settings-manage-profile',

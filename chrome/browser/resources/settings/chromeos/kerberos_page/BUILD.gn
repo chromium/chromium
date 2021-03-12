@@ -26,7 +26,7 @@ js_library("kerberos_accounts.m") {
     "..:metrics_recorder.m",
     "..:os_route.m",
     "../..:router.m",
-    "../../people_page:account_manager_browser_proxy.m",
+    "../../people_page:account_manager_browser_proxy",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
     "//ui/webui/resources/cr_elements/cr_action_menu:cr_action_menu.m",
     "//ui/webui/resources/js:cr.m",
@@ -83,7 +83,7 @@ group("polymer3_elements") {
     ":kerberos_add_account_dialog_module",
     ":kerberos_page_module",
     ":modulize",
-    "../../people_page:polymer3_elements",
+    "../../people_page:web_components",
   ]
 }
 

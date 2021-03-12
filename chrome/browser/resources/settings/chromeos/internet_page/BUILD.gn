@@ -88,7 +88,7 @@ js_library("internet_detail_page.m") {
     "//chrome/browser/resources/settings/chromeos/os_people_page:os_sync_browser_proxy.m",
     "//chrome/browser/resources/settings/controls:controlled_button",
     "//chrome/browser/resources/settings/controls:settings_toggle_button",
-    "//chrome/browser/resources/settings/people_page:sync_browser_proxy.m",
+    "//chrome/browser/resources/settings/people_page:sync_browser_proxy",
     "//chrome/browser/resources/settings/prefs:prefs",
     "//third_party/polymer/v3_0/components-chromium/iron-collapse:iron-collapse",
     "//third_party/polymer/v3_0/components-chromium/iron-flex-layout:iron-flex-layout-classes",

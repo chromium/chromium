@@ -20,7 +20,7 @@ import {assert} from 'chrome://resources/js/assert.m.js';
 import {I18nBehavior} from 'chrome://resources/js/i18n_behavior.m.js';
 import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {SyncBrowserProxyImpl} from '../people_page/sync_browser_proxy.m.js';
+import {SyncBrowserProxyImpl} from '../people_page/sync_browser_proxy.js';
 
 import {MultiStorePasswordUiEntry} from './multi_store_password_ui_entry.js';
 import {PasswordManagerImpl} from './password_manager_proxy.js';

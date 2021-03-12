@@ -10,7 +10,7 @@
 import '//resources/cr_elements/cr_button/cr_button.m.js';
 import '//resources/cr_elements/cr_toggle/cr_toggle.m.js';
 import '../controls/settings_toggle_button.js';
-import '../people_page/signout_dialog.m.js';
+import '../people_page/signout_dialog.js';
 import '../prefs/prefs.js';
 import '../settings_shared_css.m.js';
 // <if expr="not chromeos">
@@ -22,7 +22,7 @@ import {html, Polymer} from '//resources/polymer/v3_0/polymer/polymer_bundled.mi
 
 import {loadTimeData} from '../i18n_setup.js';
 import {LifetimeBrowserProxyImpl} from '../lifetime_browser_proxy.m.js';
-import {StatusAction, SyncStatus} from '../people_page/sync_browser_proxy.m.js';
+import {StatusAction, SyncStatus} from '../people_page/sync_browser_proxy.js';
 import {PrefsBehavior} from '../prefs/prefs_behavior.js';
 
 import {MetricsReporting, PrivacyPageBrowserProxy, PrivacyPageBrowserProxyImpl} from './privacy_page_browser_proxy.js';

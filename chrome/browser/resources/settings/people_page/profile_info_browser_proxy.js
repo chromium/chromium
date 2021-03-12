@@ -3,10 +3,9 @@
 // found in the LICENSE file.
 
 // clang-format off
-// #import {addSingletonGetter, sendWithPromise} from 'chrome://resources/js/cr.m.js';
+import {addSingletonGetter, sendWithPromise} from 'chrome://resources/js/cr.m.js';
 // clang-format on
 
-cr.define('settings', function() {
   /**
    * An object describing the profile.
    * @typedef {{
@@ -14,13 +13,13 @@ cr.define('settings', function() {
    *   iconUrl: string
    * }}
    */
-  /* #export */ let ProfileInfo;
+  export let ProfileInfo;
 
   /** @interface */
-  /* #export */ class ProfileInfoBrowserProxy {
+  export class ProfileInfoBrowserProxy {
     /**
      * Returns a Promise for the profile info.
-     * @return {!Promise<!settings.ProfileInfo>}
+     * @return {!Promise<!ProfileInfo>}
      */
     getProfileInfo() {}
 
@@ -32,12 +31,12 @@ cr.define('settings', function() {
   }
 
   /**
-   * @implements {settings.ProfileInfoBrowserProxy}
+   * @implements {ProfileInfoBrowserProxy}
    */
-  /* #export */ class ProfileInfoBrowserProxyImpl {
+  export class ProfileInfoBrowserProxyImpl {
     /** @override */
     getProfileInfo() {
-      return cr.sendWithPromise('getProfileInfo');
+      return sendWithPromise('getProfileInfo');
     }
 
     /** @override */
@@ -46,12 +45,5 @@ cr.define('settings', function() {
     }
   }
 
-  cr.addSingletonGetter(ProfileInfoBrowserProxyImpl);
+  addSingletonGetter(ProfileInfoBrowserProxyImpl);
 
-  // #cr_define_end
-  return {
-    ProfileInfo,
-    ProfileInfoBrowserProxy,
-    ProfileInfoBrowserProxyImpl,
-  };
-});

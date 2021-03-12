@@ -24,7 +24,7 @@ import {WebUIListenerBehavior} from 'chrome://resources/js/web_ui_listener_behav
 import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {loadTimeData} from '../i18n_setup.js';
-import {SyncBrowserProxyImpl} from '../people_page/sync_browser_proxy.m.js';
+import {SyncBrowserProxyImpl} from '../people_page/sync_browser_proxy.js';
 
 // <if expr="chromeos">
 import {BlockingRequestManager} from './blocking_request_manager.js';

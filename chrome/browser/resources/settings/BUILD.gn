@@ -131,6 +131,8 @@ preprocess_if_expr("preprocess") {
     "on_startup_page/startup_urls_page_browser_proxy.js",
     "open_window_proxy.js",
     "page_visibility.js",
+    "people_page/sync_browser_proxy.js",
+    "people_page/profile_info_browser_proxy.js",
     "prefs/prefs_behavior.js",
     "prefs/prefs.js",
     "prefs/prefs_types.js",
@@ -156,6 +158,7 @@ preprocess_if_expr("preprocess") {
     in_files += [
       "autofill_page/blocking_request_manager.js",
       "languages_page/languages_metrics_proxy.js",
+      "people_page/account_manager_browser_proxy.js",
       "site_settings/android_info_browser_proxy.js",
     ]
   } else {
@@ -238,14 +241,12 @@ preprocess_if_expr("preprocess_generated") {
     "on_startup_page/startup_url_dialog.js",
     "on_startup_page/startup_url_entry.js",
     "on_startup_page/startup_urls_page.js",
-    "people_page/sync_account_control.m.js",
-    "people_page/sync_browser_proxy.m.js",
-    "people_page/sync_encryption_options.m.js",
+    "people_page/sync_account_control.js",
+    "people_page/sync_encryption_options.js",
     "people_page/people_page.js",
-    "people_page/profile_info_browser_proxy.m.js",
-    "people_page/signout_dialog.m.js",
-    "people_page/sync_controls.m.js",
-    "people_page/sync_page.m.js",
+    "people_page/signout_dialog.js",
+    "people_page/sync_controls.js",
+    "people_page/sync_page.js",
     "privacy_page/collapse_radio_button.js",
     "privacy_page/cookies_page.js",
     "privacy_page/do_not_track_toggle.js",
@@ -330,9 +331,7 @@ preprocess_if_expr("preprocess_generated") {
     in_files += [ "languages_page/edit_dictionary_page.js" ]
   }
 
-  if (is_chromeos_ash) {
-    in_files += [ "people_page/account_manager_browser_proxy.m.js" ]
-  } else {
+  if (!is_chromeos_ash) {
     if (!is_chromeos_lacros) {
       in_files += [
         "default_browser_page/default_browser_page.js",
@@ -443,7 +442,7 @@ js_library("settings") {
     "autofill_page:multi_store_exception_entry",
     "autofill_page:multi_store_password_ui_entry",
     "autofill_page:password_manager_proxy",
-    "people_page:sync_browser_proxy.m",
+    "people_page:sync_browser_proxy",
     "privacy_page:privacy_page_browser_proxy",
     "safety_check_page:safety_check_browser_proxy",
     "search_engines_page:search_engines_browser_proxy",
@@ -580,7 +579,7 @@ group("polymer3_elements") {
     "downloads_page:web_components",
     "languages_page:web_components",
     "on_startup_page:web_components",
-    "people_page:polymer3_elements",
+    "people_page:web_components",
     "privacy_page:polymer3_elements",
     "reset_page:web_components",
     "safety_check_page:web_components",

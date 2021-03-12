@@ -29,9 +29,9 @@ import './site_settings/zoom_levels.js';
 import './people_page/import_data_dialog.js';
 import './people_page/manage_profile.js';
 // </if>
-import './people_page/signout_dialog.m.js';
-import './people_page/sync_controls.m.js';
-import './people_page/sync_page.m.js';
+import './people_page/signout_dialog.js';
+import './people_page/sync_controls.js';
+import './people_page/sync_page.js';
 // <if expr="use_nss_certs">
 import 'chrome://resources/cr_components/certificate_manager/certificate_manager.js';
 // </if>

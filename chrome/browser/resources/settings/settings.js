@@ -24,11 +24,11 @@ export {StartupUrlsPageBrowserProxy, StartupUrlsPageBrowserProxyImpl} from './on
 export {OpenWindowProxy, OpenWindowProxyImpl} from './open_window_proxy.js';
 export {pageVisibility, setPageVisibilityForTesting} from './page_visibility.js';
 // <if expr="chromeos">
-export {AccountManagerBrowserProxyImpl} from './people_page/account_manager_browser_proxy.m.js';
+export {AccountManagerBrowserProxyImpl} from './people_page/account_manager_browser_proxy.js';
 // </if>
-export {ProfileInfoBrowserProxyImpl} from './people_page/profile_info_browser_proxy.m.js';
-export {MAX_SIGNIN_PROMO_IMPRESSION} from './people_page/sync_account_control.m.js';
-export {PageStatus, StatusAction, StoredAccount, SyncBrowserProxy, SyncBrowserProxyImpl, SyncStatus} from './people_page/sync_browser_proxy.m.js';
+export {ProfileInfoBrowserProxyImpl} from './people_page/profile_info_browser_proxy.js';
+export {MAX_SIGNIN_PROMO_IMPRESSION} from './people_page/sync_account_control.js';
+export {PageStatus, StatusAction, StoredAccount, SyncBrowserProxy, SyncBrowserProxyImpl, SyncStatus} from './people_page/sync_browser_proxy.js';
 export {prefToString, stringToPrefValue} from './prefs/pref_util.js';
 export {PrefsBehavior} from './prefs/prefs_behavior.js';
 export {CrSettingsPrefs} from './prefs/prefs_types.js';

@@ -5,23 +5,21 @@
 import("//build/config/chromeos/ui_mode.gni")
 import("//third_party/closure_compiler/compile_js.gni")
 import("//tools/polymer/html_to_js.gni")
-import("//tools/polymer/polymer.gni")
-import("//ui/webui/resources/tools/js_modulizer.gni")
 import("../settings.gni")
 
 js_type_check("closure_compile_module") {
   is_polymer3 = true
   closure_flags = settings_closure_flags + mojom_js_args
   deps = [
-    ":account_manager_browser_proxy.m",
+    ":account_manager_browser_proxy",
     ":people_page",
-    ":profile_info_browser_proxy.m",
-    ":signout_dialog.m",
-    ":sync_account_control.m",
-    ":sync_browser_proxy.m",
-    ":sync_controls.m",
-    ":sync_encryption_options.m",
-    ":sync_page.m",
+    ":profile_info_browser_proxy",
+    ":signout_dialog",
+    ":sync_account_control",
+    ":sync_browser_proxy",
+    ":sync_controls",
+    ":sync_encryption_options",
+    ":sync_page",
   ]
 
   if (!is_chromeos_ash) {
@@ -34,10 +32,8 @@ js_type_check("closure_compile_module") {
   }
 }
 
-js_library("account_manager_browser_proxy.m") {
-  sources = [ "$root_gen_dir/chrome/browser/resources/settings/people_page/account_manager_browser_proxy.m.js" ]
+js_library("account_manager_browser_proxy") {
   deps = [ "//ui/webui/resources/js:cr.m" ]
-  extra_deps = [ ":modulize" ]
 }
 
 if (!is_chromeos_ash) {
@@ -60,7 +56,7 @@ if (!is_chromeos_ash) {
   js_library("manage_profile") {
     deps = [
       ":manage_profile_browser_proxy",
-      ":sync_browser_proxy.m",
+      ":sync_browser_proxy",
       "..:i18n_setup",
       "..:route",
       "..:router.m",
@@ -79,9 +75,9 @@ if (!is_chromeos_ash) {
 
 js_library("people_page") {
   deps = [
-    ":account_manager_browser_proxy.m",
-    ":profile_info_browser_proxy.m",
-    ":sync_browser_proxy.m",
+    ":account_manager_browser_proxy",
+    ":profile_info_browser_proxy",
+    ":sync_browser_proxy",
     "..:i18n_setup",
     "..:open_window_proxy",
     "..:page_visibility",
@@ -97,29 +93,24 @@ js_library("people_page") {
   ]
 }
 
-js_library("profile_info_browser_proxy.m") {
-  sources = [ "$root_gen_dir/chrome/browser/resources/settings/people_page/profile_info_browser_proxy.m.js" ]
+js_library("profile_info_browser_proxy") {
   deps = [ "//ui/webui/resources/js:cr.m" ]
-  extra_deps = [ ":modulize" ]
 }
 
-js_library("signout_dialog.m") {
-  sources = [ "$root_gen_dir/chrome/browser/resources/settings/people_page/signout_dialog.m.js" ]
+js_library("signout_dialog") {
   deps = [
-    ":profile_info_browser_proxy.m",
-    ":sync_browser_proxy.m",
+    ":profile_info_browser_proxy",
+    ":sync_browser_proxy",
     "..:i18n_setup",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
     "//ui/webui/resources/cr_elements/cr_dialog:cr_dialog.m",
     "//ui/webui/resources/js:web_ui_listener_behavior.m",
   ]
-  extra_deps = [ ":signout_dialog_module" ]
 }
 
-js_library("sync_account_control.m") {
-  sources = [ "$root_gen_dir/chrome/browser/resources/settings/people_page/sync_account_control.m.js" ]
+js_library("sync_account_control") {
   deps = [
-    ":sync_browser_proxy.m",
+    ":sync_browser_proxy",
     "..:i18n_setup",
     "..:router.m",
     "../prefs:prefs_behavior",
@@ -127,44 +118,36 @@ js_library("sync_account_control.m") {
     "//ui/webui/resources/cr_elements/cr_action_menu:cr_action_menu.m",
     "//ui/webui/resources/js:assert.m",
   ]
-  extra_deps = [ ":sync_account_control_module" ]
 }
 
-js_library("sync_browser_proxy.m") {
-  sources = [ "$root_gen_dir/chrome/browser/resources/settings/people_page/sync_browser_proxy.m.js" ]
+js_library("sync_browser_proxy") {
   deps = [ "//ui/webui/resources/js:cr.m" ]
   externs_list = [ "$externs_path/metrics_private.js" ]
-  extra_deps = [ ":modulize" ]
 }
 
-js_library("sync_controls.m") {
-  sources = [ "$root_gen_dir/chrome/browser/resources/settings/people_page/sync_controls.m.js" ]
+js_library("sync_controls") {
   deps = [
-    ":sync_browser_proxy.m",
+    ":sync_browser_proxy",
     "..:i18n_setup",
     "..:router.m",
     "//ui/webui/resources/js:assert.m",
     "//ui/webui/resources/js:web_ui_listener_behavior.m",
   ]
-  extra_deps = [ ":sync_controls_module" ]
 }
 
-js_library("sync_encryption_options.m") {
-  sources = [ "$root_gen_dir/chrome/browser/resources/settings/people_page/sync_encryption_options.m.js" ]
+js_library("sync_encryption_options") {
   deps = [
-    ":sync_browser_proxy.m",
+    ":sync_browser_proxy",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
     "//ui/webui/resources/cr_elements/cr_radio_group:cr_radio_group.m",
     "//ui/webui/resources/js:assert.m",
   ]
-  extra_deps = [ ":sync_encryption_options_module" ]
 }
 
-js_library("sync_page.m") {
-  sources = [ "$root_gen_dir/chrome/browser/resources/settings/people_page/sync_page.m.js" ]
+js_library("sync_page") {
   deps = [
-    ":sync_browser_proxy.m",
-    ":sync_encryption_options.m",
+    ":sync_browser_proxy",
+    ":sync_encryption_options",
     "..:i18n_setup",
     "..:router.m",
     "../privacy_page:personalization_options",
@@ -173,23 +156,17 @@ js_library("sync_page.m") {
     "//ui/webui/resources/cr_elements/cr_input:cr_input.m",
     "//ui/webui/resources/js:assert.m",
   ]
-  extra_deps = [ ":sync_page_module" ]
-}
-
-group("polymer3_elements") {
-  public_deps = [
-    ":modulize",
-    ":signout_dialog_module",
-    ":sync_account_control_module",
-    ":sync_controls_module",
-    ":sync_encryption_options_module",
-    ":sync_page_module",
-    ":web_components",
-  ]
 }
 
 html_to_js("web_components") {
-  js_files = [ "people_page.js" ]
+  js_files = [
+    "people_page.js",
+    "signout_dialog.js",
+    "sync_account_control.js",
+    "sync_controls.js",
+    "sync_encryption_options.js",
+    "sync_page.js",
+  ]
 
   if (!is_chromeos_ash) {
     js_files += [
@@ -197,77 +174,4 @@ html_to_js("web_components") {
       "manage_profile.js",
     ]
   }
-}
-
-polymer_modulizer("signout_dialog") {
-  js_file = "signout_dialog.js"
-  html_file = "signout_dialog.html"
-  html_type = "dom-module"
-  namespace_rewrites = settings_namespace_rewrites
-  migrated_imports = settings_migrated_imports
-  auto_imports = settings_auto_imports + [
-                   "chrome/browser/resources/settings/people_page/profile_info_browser_proxy.html|ProfileInfoBrowserProxyImpl",
-                   "chrome/browser/resources/settings/people_page/sync_browser_proxy.html|SyncBrowserProxyImpl,SyncStatus",
-                 ]
-}
-
-polymer_modulizer("sync_account_control") {
-  js_file = "sync_account_control.js"
-  html_file = "sync_account_control.html"
-  html_type = "dom-module"
-  namespace_rewrites = settings_namespace_rewrites
-  migrated_imports = settings_migrated_imports
-  auto_imports = settings_auto_imports + [
-                   "chrome/browser/resources/settings/people_page/sync_browser_proxy.html|SyncBrowserProxy,SyncBrowserProxyImpl,SyncStatus,StatusAction,StoredAccount",
-                   "chrome/browser/resources/settings/router.html|Route,Router",
-                   "ui/webui/resources/html/assert.html|assert",
-                 ]
-}
-
-polymer_modulizer("sync_controls") {
-  js_file = "sync_controls.js"
-  html_file = "sync_controls.html"
-  html_type = "dom-module"
-  namespace_rewrites = settings_namespace_rewrites
-  migrated_imports = settings_migrated_imports
-  auto_imports = settings_auto_imports + [
-                   "chrome/browser/resources/settings/router.html|Route,Router,RouteObserverBehavior",
-                   "chrome/browser/resources/settings/people_page/sync_browser_proxy.html|SyncBrowserProxy,SyncBrowserProxyImpl,StatusAction,SyncStatus,SyncPrefs",
-                   "ui/webui/resources/html/assert.html|assert",
-                 ]
-}
-
-polymer_modulizer("sync_encryption_options") {
-  js_file = "sync_encryption_options.js"
-  html_file = "sync_encryption_options.html"
-  html_type = "dom-module"
-  namespace_rewrites = settings_namespace_rewrites
-  auto_imports = settings_auto_imports + [
-                   "chrome/browser/resources/settings/people_page/sync_browser_proxy.html|SyncBrowserProxyImpl,SyncPrefs,SyncStatus",
-                   "ui/webui/resources/html/assert.html|assert,assertNotReached",
-                 ]
-}
-
-polymer_modulizer("sync_page") {
-  js_file = "sync_page.js"
-  html_file = "sync_page.html"
-  html_type = "dom-module"
-  namespace_rewrites = settings_namespace_rewrites
-  migrated_imports = settings_migrated_imports
-  auto_imports = settings_auto_imports + [
-                   "ui/webui/resources/html/polymer.html|Polymer,html,flush",
-                   "chrome/browser/resources/settings/router.html|Route,Router,RouteObserverBehavior",
-                   "chrome/browser/resources/settings/people_page/sync_browser_proxy.html|SyncBrowserProxy,SyncBrowserProxyImpl,PageStatus,StatusAction,SyncStatus,SyncPrefs",
-                   "ui/webui/resources/html/assert.html|assert,assertNotReached",
-                 ]
-}
-
-js_modulizer("modulize") {
-  input_files = [
-    "account_manager_browser_proxy.js",
-    "profile_info_browser_proxy.js",
-    "sync_browser_proxy.js",
-  ]
-
-  namespace_rewrites = settings_namespace_rewrites
 }

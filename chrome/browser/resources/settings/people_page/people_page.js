@@ -16,7 +16,7 @@ import 'chrome://resources/cr_elements/shared_style_css.m.js';
 import 'chrome://resources/cr_elements/shared_vars_css.m.js';
 import 'chrome://resources/polymer/v3_0/iron-flex-layout/iron-flex-layout-classes.js';
 import '../controls/settings_toggle_button.js';
-import './sync_account_control.m.js';
+import './sync_account_control.js';
 import '../icons.m.js';
 import '../settings_page/settings_animated_pages.js';
 import '../settings_page/settings_subpage.js';
@@ -40,10 +40,10 @@ import {routes} from '../route.js';
 import {RouteObserverBehavior, Router} from '../router.m.js';
 
 // <if expr="chromeos">
-import {AccountManagerBrowserProxyImpl} from './account_manager_browser_proxy.m.js';
+import {AccountManagerBrowserProxyImpl} from './account_manager_browser_proxy.js';
 // </if>
-import {ProfileInfo, ProfileInfoBrowserProxy, ProfileInfoBrowserProxyImpl} from './profile_info_browser_proxy.m.js';
-import {StoredAccount, SyncBrowserProxy, SyncBrowserProxyImpl, SyncStatus} from './sync_browser_proxy.m.js';
+import {ProfileInfo, ProfileInfoBrowserProxy, ProfileInfoBrowserProxyImpl} from './profile_info_browser_proxy.js';
+import {StoredAccount, SyncBrowserProxy, SyncBrowserProxyImpl, SyncStatus} from './sync_browser_proxy.js';
 
 Polymer({
   is: 'settings-people-page',
