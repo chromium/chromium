@@ -11,6 +11,7 @@
 #include "base/containers/span.h"
 #include "base/files/file_util.h"
 #include "base/metrics/histogram_functions.h"
+#include "build/build_config.h"
 #include "chrome/services/speech/soda/proto/soda_api.pb.h"
 #include "chrome/services/speech/soda/soda_client.h"
 #include "google_apis/google_api_keys.h"
@@ -116,11 +117,16 @@ SpeechRecognitionRecognizerImpl::SpeechRecognitionRecognizerImpl(
                           weak_factory_.GetWeakPtr()));
   enable_soda_ = base::FeatureList::IsEnabled(media::kUseSodaForLiveCaption);
   if (enable_soda_) {
+    // On Chrome OS, soda_client_ is not used, so don't try to create it here
+    // because it exists at a different location.
+    // Instead, CrosSpeechRecognitionRecognizerImpl has its own CrosSodaClient.
+#if !defined(OS_CHROMEOS)
     DCHECK(base::PathExists(binary_path));
     soda_client_ = std::make_unique<::soda::SodaClient>(binary_path);
     if (!soda_client_->BinaryLoadedSuccessfully()) {
       OnSpeechRecognitionError();
     }
+#endif
   } else {
     cloud_client_ = std::make_unique<CloudSpeechRecognitionClient>(
         recognition_event_callback(),
