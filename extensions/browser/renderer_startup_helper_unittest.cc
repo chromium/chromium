@@ -104,6 +104,8 @@ class InterceptingRendererStartupHelper : public RendererStartupHelper,
       int tab_id,
       bool update_origin_whitelist) override {}
 
+  void WatchPages(const std::vector<std::string>& css_selectors) override {}
+
   URLPatternSet default_blocked_hosts_;
   URLPatternSet default_allowed_hosts_;
   std::vector<std::string> activated_extensions_;

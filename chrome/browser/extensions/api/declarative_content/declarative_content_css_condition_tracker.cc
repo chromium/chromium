@@ -18,8 +18,10 @@
 #include "content/public/browser/notification_service.h"
 #include "content/public/browser/notification_source.h"
 #include "content/public/browser/render_process_host.h"
+#include "extensions/browser/renderer_startup_helper.h"
 #include "extensions/common/api/declarative/declarative_constants.h"
 #include "extensions/common/extension_messages.h"
+#include "extensions/common/mojom/renderer.mojom.h"
 #include "ipc/ipc_message.h"
 #include "ipc/ipc_message_macros.h"
 
@@ -291,9 +293,13 @@ void DeclarativeContentCssConditionTracker::
 InstructRenderProcessIfManagingBrowserContext(
     content::RenderProcessHost* process,
     std::vector<std::string> watched_css_selectors) {
-  if (delegate_->ShouldManageConditionsForBrowserContext(
-          process->GetBrowserContext())) {
-    process->Send(new ExtensionMsg_WatchPages(watched_css_selectors));
+  content::BrowserContext* browser_context = process->GetBrowserContext();
+  if (delegate_->ShouldManageConditionsForBrowserContext(browser_context)) {
+    mojom::Renderer* renderer =
+        RendererStartupHelperFactory::GetForBrowserContext(browser_context)
+            ->GetRenderer(process);
+    if (renderer)
+      renderer->WatchPages(watched_css_selectors);
   }
 }
 

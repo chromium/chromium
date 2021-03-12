@@ -248,6 +248,7 @@ class Dispatcher : public content::RenderThreadObserver,
       const std::vector<std::string>& extension_ids,
       int tab_id,
       bool update_origin_whitelist) override;
+  void WatchPages(const std::vector<std::string>& css_selectors) override;
 
   void OnRendererAssociatedRequest(
       mojo::PendingAssociatedReceiver<mojom::Renderer> receiver);

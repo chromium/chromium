@@ -77,4 +77,10 @@ interface Renderer {
   ClearTabSpecificPermissions(array<string> extension_ids,
                               int32 tab_id,
                               bool update_origin_whitelist);
+
+  // Notifies the renderer that an extension wants notifications when certain
+  // searches match the active page. This method replaces the old set of
+  // searches, and triggers ExtensionHostMsg_OnWatchedPageChange messages from
+  // each tab to keep the browser updated about changes.
+  WatchPages(array<string> css_selectors);
 };

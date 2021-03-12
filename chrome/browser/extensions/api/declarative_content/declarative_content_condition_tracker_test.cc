@@ -40,8 +40,16 @@ DeclarativeContentConditionTrackerTest::GetMockRenderProcessHost(
       contents->GetMainFrame()->GetProcess());
 }
 
+TestingProfile::TestingFactories
+DeclarativeContentConditionTrackerTest::GetTestingFactories() const {
+  return {};
+}
+
 TestingProfile* DeclarativeContentConditionTrackerTest::profile() {
   if (!profile_) {
+    for (auto& pair : GetTestingFactories())
+      profile_builder_.AddTestingFactory(pair.first, pair.second);
+
     profile_ = profile_builder_.Build();
   }
   return profile_.get();

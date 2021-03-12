@@ -882,9 +882,6 @@ bool Dispatcher::OnControlMessageReceived(const IPC::Message& message) {
   IPC_MESSAGE_HANDLER(ExtensionMsg_Loaded, OnLoaded)
   IPC_MESSAGE_HANDLER(ExtensionMsg_DispatchEvent, OnDispatchEvent)
   IPC_MESSAGE_HANDLER(ExtensionMsg_UpdatePermissions, OnUpdatePermissions)
-  IPC_MESSAGE_FORWARD(ExtensionMsg_WatchPages,
-                      content_watcher_.get(),
-                      ContentWatcher::OnWatchPages)
   IPC_MESSAGE_UNHANDLED(handled = false)
   IPC_END_MESSAGE_MAP()
 
@@ -1085,6 +1082,11 @@ void Dispatcher::ClearTabSpecificPermissions(
         UpdateOriginPermissions(*extension);
     }
   }
+}
+
+void Dispatcher::WatchPages(const std::vector<std::string>& css_selectors) {
+  DCHECK(content_watcher_);
+  content_watcher_->OnWatchPages(css_selectors);
 }
 
 void Dispatcher::OnDeliverMessage(int worker_thread_id,

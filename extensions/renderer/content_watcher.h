@@ -23,7 +23,7 @@ namespace extensions {
 
 // Handles watching the content of WebFrames to notify extensions when they
 // match various patterns. This class tracks the set of relevant patterns (set
-// by ExtensionMsg_WatchPages) and the set that match on each WebFrame, and
+// by the WatchPages Mojo method) and the set that match on each WebFrame, and
 // sends a ExtensionHostMsg_OnWatchedPageChange whenever a RenderFrame's set
 // changes.
 class ContentWatcher {
@@ -31,7 +31,8 @@ class ContentWatcher {
   ContentWatcher();
   ~ContentWatcher();
 
-  // Handler for ExtensionMsg_WatchPages.
+  // Handler for the WatchPages Mojo method in extensions.mojom.Renderer
+  // interface.
   void OnWatchPages(const std::vector<std::string>& css_selectors);
 
   void OnRenderFrameCreated(content::RenderFrame* render_frame);

@@ -131,7 +131,7 @@ class DeclarativeContentCssConditionTracker
   std::vector<std::string> GetWatchedCssSelectors() const;
 
   // If the renderer process is associated with our browser context, tells it
-  // what page attributes to watch for using an ExtensionMsg_WatchPages.
+  // what page attributes to watch for using the WatchPages Mojo method.
   void InstructRenderProcessIfManagingBrowserContext(
       content::RenderProcessHost* process,
       std::vector<std::string> watched_css_selectors);

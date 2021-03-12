@@ -112,6 +112,7 @@ class InterceptingRendererStartupHelper : public RendererStartupHelper,
       const std::vector<std::string>& extension_ids,
       int tab_id,
       bool update_origin_whitelist) override {}
+  void WatchPages(const std::vector<std::string>& css_selectors) override {}
 
   mojo::AssociatedReceiverSet<mojom::Renderer> receivers_;
 };

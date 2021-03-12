@@ -48,6 +48,10 @@ class DeclarativeContentConditionTrackerTest : public testing::Test {
 
   const void* GeneratePredicateGroupID();
 
+  // Returns a list of factories to use when creating the TestingProfile.
+  // Can be overridden by sub-classes if needed.
+  virtual TestingProfile::TestingFactories GetTestingFactories() const;
+
  private:
   content::BrowserTaskEnvironment task_environment_;
 
