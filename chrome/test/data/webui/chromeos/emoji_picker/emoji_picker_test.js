@@ -9,7 +9,7 @@ import {EMOJI_DATA_LOADED, EMOJI_VARIANTS_SHOWN} from 'chrome://emoji-picker/eve
 import {assert} from 'chrome://resources/js/assert.m.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {assertFalse, assertGT, assertLT, assertTrue} from '../../chai_assert.js';
+import {assertEquals, assertFalse, assertGT, assertLT, assertTrue} from '../../chai_assert.js';
 
 import {deepQuerySelector, dispatchMouseEvent, waitForCondition, waitForEvent, waitWithTimeout} from './emoji_picker_test_util.js';
 
@@ -55,16 +55,21 @@ suite('<emoji-picker>', () => {
     assert(customElements.get('emoji-picker'));
   });
 
-  test('first non-chevron tab should be active by default', () => {
-    const button =
-        findInEmojiPicker('emoji-group-button[data-group="history"]', 'div');
+  test('first non-chevron tab should be active by default', async () => {
+    const button = findInEmojiPicker(
+        'emoji-group-button[data-group="history"]', 'cr-icon-button');
     assertTrue(isGroupButtonActive(button));
   });
 
   test('second non-chevron tab should be inactive by default', () => {
-    const button =
-        findInEmojiPicker('emoji-group-button[data-group="1"]', 'div');
+    const button = findInEmojiPicker(
+        'emoji-group-button[data-group="1"]', 'cr-icon-button');
     assertFalse(isGroupButtonActive(button));
+  });
+
+  test('Highlight bar should be at the left on start', () => {
+    const button = findInEmojiPicker('#bar');
+    assertEquals('', button.style.left);
   });
 
   test('clicking second tab should activate it and scroll', async () => {
@@ -75,10 +80,10 @@ suite('<emoji-picker>', () => {
     // History group doesn't exist when there is no history, so scrolling to
     // the first non-history group (0) may not trigger a scroll, so scroll to
     // group (1).
-    const firstButton =
-        findInEmojiPicker('emoji-group-button[data-group="history"]', 'div');
-    const thirdButton =
-        findInEmojiPicker('emoji-group-button[data-group="1"]', 'div');
+    const firstButton = findInEmojiPicker(
+        'emoji-group-button[data-group="history"]', 'cr-icon-button');
+    const thirdButton = findInEmojiPicker(
+        'emoji-group-button[data-group="1"]', 'cr-icon-button');
 
     // wait so emoji-groups render and we have something to scroll to.
     await waitForCondition(
@@ -93,6 +98,10 @@ suite('<emoji-picker>', () => {
 
     const newScroll = emojiGroups.scrollTop;
     assertGT(newScroll, initialScroll);
+
+    // check the highlight bar also moved
+    const bar = findInEmojiPicker('#bar');
+    assertGT(parseInt(bar.style.left, 10), 0);
   });
 
   test('recently used should be hidden when empty', () => {
@@ -131,9 +140,12 @@ suite('<emoji-picker>', () => {
     };
 
     setup(async () => {
-      firstEmojiButton = await waitForCondition(
-          () => findInEmojiPicker(
-              '[data-group="0"] > emoji-group', 'emoji-button:nth-child(2)'));
+      firstEmojiButton = (await waitForCondition(
+                              () => findInEmojiPicker(
+                                  '[data-group="0"] > emoji-group',
+                                  'emoji-button:nth-child(2)')))
+                             .shadowRoot;
+
 
       // right click and wait for variants to appear.
       const variantsPromise = waitForEvent(emojiPicker, EMOJI_VARIANTS_SHOWN);
@@ -143,7 +155,7 @@ suite('<emoji-picker>', () => {
           variantsPromise, 1000, 'did not receive emoji variants event.');
       await waitForCondition(
           () => findEmojiVariants(firstEmojiButton),
-          'emoji-variants failed to appear.');
+          'emoji-variants failed to appear.', 5000);
     });
 
     test('right clicking emoji again should close popup', async () => {
@@ -165,8 +177,10 @@ suite('<emoji-picker>', () => {
 
     test('opening different variants should close first variants', async () => {
       const emojiButton2 = await waitForCondition(
-          () => findInEmojiPicker(
-              '[data-group="0"] > emoji-group', 'emoji-button:nth-child(3)'));
+          () =>
+              findInEmojiPicker(
+                  '[data-group="0"] > emoji-group', 'emoji-button:nth-child(3)')
+                  .shadowRoot);
 
       // right click on second emoji button
       dispatchMouseEvent(emojiButton2.querySelector('button'), 2);
@@ -191,8 +205,10 @@ suite('<emoji-picker>', () => {
 
     test('opening large variants should not overflow', async () => {
       const coupleEmojiButton = await waitForCondition(
-          () => findInEmojiPicker(
-              '[data-group="0"] > emoji-group', 'emoji-button:nth-child(5)'));
+          () =>
+              findInEmojiPicker(
+                  '[data-group="0"] > emoji-group', 'emoji-button:nth-child(5)')
+                  .shadowRoot);
 
       // listen for emoji variants event.
       const variantsPromise = waitForEvent(emojiPicker, EMOJI_VARIANTS_SHOWN);

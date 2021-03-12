@@ -17,15 +17,16 @@ import {assert} from 'chrome://resources/js/assert.m.js';
 export function deepQuerySelector(root, path) {
   assert(root, 'deepQuerySelector called with null root');
 
-  let el = root.shadowRoot || root;
+  let el = root;
 
   for (const part of path) {
+    if (el.shadowRoot) {
+      el = el.shadowRoot;
+    }
+
     el = el.querySelector(part);
     if (!el) {
       break;
-    }
-    if (el.shadowRoot) {
-      el = el.shadowRoot;
     }
   }
 

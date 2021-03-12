@@ -75,6 +75,17 @@
     position: absolute;
     z-index: -2;
   }
+
+  #bar {
+    background-color: var(--cr-checked-color);
+    border-top-left-radius: 2px;
+    border-top-right-radius: 2px;
+    flex-shrink: 0;
+    height: 2px;
+    position: relative;
+    transition: all 200ms;
+    width: 36px;
+  }
 </style>
 
 <div class="sr-only" aria-live="polite">
@@ -134,6 +145,7 @@
 
   <div class="sr-only" role="heading" aria-level="1">Emoji Groups</div>
 
+  <div id="bar" on-transitionend="onBarTransitionEnd"></div>
   <div class="divider"></div>
 
   <div id="groups" on-scroll="onEmojiScroll">

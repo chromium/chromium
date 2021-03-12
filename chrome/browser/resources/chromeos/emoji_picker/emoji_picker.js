@@ -147,7 +147,10 @@ export class EmojiPicker extends PolymerElement {
     /** @private {boolean} */
     this.autoScrollingToGroup = false;
 
-    // basic click handlers
+    /** @private {boolean} */
+    this.highlightBarMoving = false;
+
+
     this.addEventListener(
         GROUP_BUTTON_CLICK, ev => this.selectGroup(ev.detail.group));
     this.addEventListener(
@@ -182,6 +185,10 @@ export class EmojiPicker extends PolymerElement {
 
   onSearchChanged(newValue) {
     this.$.listContainer.style.display = newValue ? 'none' : '';
+  }
+
+  onBarTransitionEnd() {
+    this.highlightBarMoving = false;
   }
 
   /**
@@ -222,12 +229,16 @@ export class EmojiPicker extends PolymerElement {
     this.shadowRoot.getElementById('tabs').scrollLeft =
         GROUP_ICON_SIZE * (GROUP_PER_ROW + 1);
     this.scrollToGroup(GROUP_TABS[GROUP_PER_ROW - 2].groupId);
+    this.shadowRoot.getElementById('bar').style.left = '36px';
+    this.highlightBarMoving = true;
   }
 
   onLeftChevronClick() {
     this.shadowRoot.getElementById('tabs').scrollLeft = 0;
     // TODO(crbug/1152237): need to handle case where recent is empty
     this.scrollToGroup(GROUP_TABS[0].groupId);
+    this.shadowRoot.getElementById('bar').style.left = '0px';
+    this.highlightBarMoving = true;
   }
 
   /**
@@ -294,20 +305,27 @@ export class EmojiPicker extends PolymerElement {
       this.set(['emojiGroupTabs', i, 'active'], isActive);
     });
 
-    // Maybe group icons tab scroll to match active group
-    if (this.shadowRoot.getElementById('tabs').scrollLeft >
-        GROUP_ICON_SIZE * index) {
-      this.shadowRoot.getElementById('tabs').scrollLeft =
-          GROUP_ICON_SIZE * (index - 1);
+    // Update the scroll position of the emoji groups so that active group is
+    // visible.
+    let tabscrollLeft = Math.round(
+                            this.shadowRoot.getElementById('tabs').scrollLeft /
+                            GROUP_ICON_SIZE) *
+        GROUP_ICON_SIZE;
+    if (tabscrollLeft > GROUP_ICON_SIZE * index) {
+      tabscrollLeft = Math.max(GROUP_ICON_SIZE * (index - 1), 0);
     }
-    // Maybe increase icons tab scroll to match active group
-    if (this.shadowRoot.getElementById('tabs').scrollLeft +
-            GROUP_ICON_SIZE * (GROUP_PER_ROW - 2) <
+    if (tabscrollLeft + GROUP_ICON_SIZE * (GROUP_PER_ROW - 2) <
         GROUP_ICON_SIZE * (index)) {
       // 3 = 1 for 1 based index + 2 for chevrons (left and right can display at
       // the same time).
-      this.shadowRoot.getElementById('tabs').scrollLeft =
-          GROUP_ICON_SIZE * (index + 3 - GROUP_PER_ROW);
+      tabscrollLeft = GROUP_ICON_SIZE * (index + 3 - GROUP_PER_ROW);
+    }
+    this.shadowRoot.getElementById('tabs').scrollLeft = tabscrollLeft;
+
+    // once tab scroll is updated - update the position of the highlight bar.
+    if (!this.highlightBarMoving) {
+      this.shadowRoot.getElementById('bar').style.left =
+          ((index * GROUP_ICON_SIZE - tabscrollLeft)) + 'px';
     }
   }
 
