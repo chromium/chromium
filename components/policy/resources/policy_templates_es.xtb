@@ -5288,10 +5288,6 @@ Si se le asigna el valor "False", la pantalla de privacidad se inhabilitará cua
 Si se asigna un valor a esta política, el usuario no podrá anularlo cuando se muestre la pantalla de inicio de sesión.
 
 Si no se le asigna ningún valor, la pantalla de privacidad se inhabilitará inicialmente, pero el usuario podrá controlarla cuando se muestre la pantalla de inicio de sesión.</translation>
-<translation id="8147427717998252789">Si se le asigna un valor a esta política, se definirá el valor devuelto por la API Configuración administrada para un origen determinado.
-
-      La API Configuración administrada es un ajuste clave-valor al que se puede acceder llamando a la función navigator.device.getManagedConfiguration() de JavaScript. Esta API solo está disponible para orígenes que se correspondan con aplicaciones web de instalación forzada mediante <ph name="WEB_APP_INSTALL_FORCE_LIST_POLICY_NAME" />.
-     </translation>
 <translation id="815061180603915310">Si se habilita, esta política fuerza el cambio del perfil al modo efímero. Si se especifica como política del sistema operativo (p. ej., GPO en Windows), se aplicará a todos los perfiles del sistema; si se establece como política de la nube, solo se aplicará a un perfil en el que se inicie sesión con una cuenta gestionada.
 
       En este modo, los datos de perfil solo se mantienen en el disco mientras dura la sesión del usuario. Una vez que se cierra el navegador, no se conservan ciertas funciones, como las extensiones y sus datos o el historial web, datos de Internet como las cookies ni las bases de datos web. Sin embargo, esto no impide que el usuario pueda descargar datos en el disco manualmente, guardar páginas o imprimirlas.

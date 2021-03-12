@@ -52,7 +52,6 @@
 <translation id="1400642268715879018">گزشتہ 4 ہفتے</translation>
 <translation id="1407135791313364759">سبھی کو کھولیں</translation>
 <translation id="1430915738399379752">پرنٹ کریں</translation>
-<translation id="1436290164580597469">مطابقت پذیری شروع کرنے کے لیے پاس فریز درج کریں۔</translation>
 <translation id="1449835205994625556">پاس ورڈ چھپائیں</translation>
 <translation id="145015347812617860"><ph name="COUNT" /> آئٹمز</translation>
 <translation id="1491277525950327607">ترتیبات کو ٹوگل کرنے کیلئے دو بار تھپتھپائیں</translation>
@@ -112,7 +111,6 @@
 <translation id="209018056901015185">ڈیسک ٹاپ سائٹ کی درخواست کریں</translation>
 <translation id="2103075008456228677">‏history.google.com کھولیں</translation>
 <translation id="2116625576999540962"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> آئٹمز منتقل کر دیے گئے</translation>
-<translation id="2118594521750010466">ابھی درست کریں</translation>
 <translation id="213900355088104901">نجی طور پر براؤز کرنے کیلئے، ایک پوشیدگی ٹیب کھولیں</translation>
 <translation id="2139867232736819575">وہ متن تلاش کریں جسے آپ نے کاپی کیا ہے</translation>
 <translation id="2149973817440762519">بک مارک میں ترمیم کریں</translation>
@@ -287,7 +285,6 @@
 <translation id="3967822245660637423">ڈاؤن لوڈ مکمل ہوگیا ہے</translation>
 <translation id="3968505803272650567">دلچسپیوں کا نظم کریں</translation>
 <translation id="3989635538409502728">سائن آؤٹ کریں</translation>
-<translation id="399419089947468503">پاس ورڈز کی مطابقت پذیری کرنے میں خرابی</translation>
 <translation id="3995521777587992544">صفحہ لوڈ ہونے کا پیش رفت بار، <ph name="EMAIL" /> لوڈ ہوا۔</translation>
 <translation id="4002066346123236978">عنوان</translation>
 <translation id="4004204301268239848">‏پاس ورڈز آپ کے Google اکاؤنٹ میں محفوظ ہو جاتے ہیں لہذا آپ انہیں کسی بھی آلہ پر استعمال کر سکتے ہیں۔</translation>
@@ -312,7 +309,6 @@
 <translation id="4263576668337963058">دستیاب صفحہ کی کارروائیاں دکھائیں</translation>
 <translation id="4267380167363222949">اگلا ٹیب</translation>
 <translation id="4272631900155121838">‏QR کوڈ اسکین کرنے کیلئے، ترتیبات سے کیمرا فعال کریں</translation>
-<translation id="4276041135170112053">ابھی درست کریں۔</translation>
 <translation id="4277990410970811858">محفوظ براؤزنگ</translation>
 <translation id="4281844954008187215">سروس کی شرائط</translation>
 <translation id="430793432425771671">ہر چیز کی مطابقت پذیری کریں</translation>
@@ -418,7 +414,6 @@
 <translation id="54401264925851789">صفحہ کی سیکیورٹی کی معلومات</translation>
 <translation id="5443952882982198570">کریڈٹ کارڈز</translation>
 <translation id="5457226814769348910">آف لائن ورژن کھولیں</translation>
-<translation id="5457907402803865181">پاس ورڈز کی مطابقت پذیری کرنے میں خرابی۔</translation>
 <translation id="5489208564673669003">سبھی سائٹس کی خاطر کوکیز کا نظم کرنے کے لیے، <ph name="BEGIN_LINK" />کوکی کی ترتیبات<ph name="END_LINK" /> دیکھیں۔</translation>
 <translation id="5490005495580364134">سبھی کوکیز مسدود کریں (تجویز نہیں کی جاتی)</translation>
 <translation id="5508435575041083207">اس آلہ سے سائن آؤٹ کریں اور ڈیٹا صاف کریں</translation>
@@ -643,6 +638,7 @@ Handoff ترتیبات کے عام سیکشن میں بھی فعال ہونی ض
 <translation id="7603852183842204213">پاپ اپس کو مسدود کر دیا گیا (<ph name="NUMBER_OF_BLOCKED_POPUPS" />)</translation>
 <translation id="7607521702806708809">پاس ورڈ حذف کریں</translation>
 <translation id="7638584964844754484">غلط پاس فریز</translation>
+<translation id="7646772052135772216">پاس ورڈ کی مطابقت پذیری کام نہیں کر رہی ہے</translation>
 <translation id="7649070708921625228">مدد</translation>
 <translation id="7658239707568436148">منسوخ کریں</translation>
 <translation id="766891008101699113">نجی طور پر ویب پر براوز کرنے کیلئے، نیا ٹیب شامل کریں۔</translation>
@@ -750,6 +746,7 @@ Handoff ترتیبات کے عام سیکشن میں بھی فعال ہونی ض
 <translation id="8806823403540278281">آپ کی تنظیم چاہتی ہے کہ آپ نجی طور پر براؤز کریں۔ ٹیبز پوشیدگی وضع میں محفوظ نہیں ہیں۔
 <ph name="BEGIN_LINK" />مزید جانیں<ph name="END_LINK" /></translation>
 <translation id="8820817407110198400">بُک مارکس</translation>
+<translation id="8823704566850948458">پاس ورڈ تجویز کریں...</translation>
 <translation id="8840513115188359703">‏آپ اپنے Google اکاؤنٹ سے سائن آؤٹ نہیں ہوں گے۔</translation>
 <translation id="8870413625673593573">حال ہی میں بند کردہ</translation>
 <translation id="8881801611828450202">اس تصویر کیلئے <ph name="SEARCH_ENGINE" /> پر تلاش کریں</translation>

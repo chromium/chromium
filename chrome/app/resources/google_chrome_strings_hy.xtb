@@ -13,7 +13,6 @@
 <translation id="1125124144982679672">Ո՞վ է օգտագործում Chrome-ը</translation>
 <translation id="1142745911746664600">Չհաջողվեց թարմացնել Chrome-ը</translation>
 <translation id="1154147086299354128">&amp;Բացել Chrome-ում</translation>
-<translation id="123620459398936149">Chrome OS-ը չկարողացավ համաժամացնել ձեր տվյալները: Թարմացրեք ձեր անցաբառը Sync-ում:</translation>
 <translation id="1293325835983155583">Կայքը (<ph name="MANAGER" />) պահանջում է, որ դուք նախքան սարքն օգտագործելը կարդաք և ընդունեք հետևյալ Օգտագործման պայմանները։ Այս պայմանները չեն ընդլայնում, փոփոխում կամ սահմանափակում Google Chrome OS-ի պայմանները։</translation>
 <translation id="1302523850133262269">Սպասեք` մինչ Chrome-ը տեղադրում է համակարգի նորագույն թարմացումները:</translation>
 <translation id="137466361146087520">Google Chrome Բետա</translation>
@@ -27,7 +26,6 @@
 <translation id="1587325591171447154"><ph name="FILE_NAME" /> ֆայլը վտանգավոր է, և Chrome-ն արգելափակել է այն։</translation>
 <translation id="1597911401261118146">Որպեսզի պաշտպանեք ձեր գաղտնաբառերը տվյալների արտահոսքից և խուսափեք անվտանգության հետ կապված այլ խնդիրներից, <ph name="BEGIN_LINK" />մտեք հաշիվ Chrome դիտարկիչում<ph name="END_LINK" />։</translation>
 <translation id="1619887657840448962">Chrome-ն ավելի ապահով դարձնելու համար հետևյալ ընդլայնումներն անջատվել են, որոնք նշված չեն <ph name="IDS_EXTENSION_WEB_STORE_TITLE" />-ում և կարող են ավելացված լինել առանց ձեր իմացության։</translation>
-<translation id="162629503687514352">Chrome OS-ը չկարողացավ համաժամացնել ձեր գաղտնաբառերը։</translation>
 <translation id="1628000112320670027">Chrome-ի օգնության էջ</translation>
 <translation id="1666409074978194368">Գրեթե պատրաստ է։ Վերագործարկեք Google Chrome դիտարկիչը՝ թարմացումն ավարտելու համար։ Ինկոգնիտո պատուհանները նորից չեն բացվի։</translation>
 <translation id="1674870198290878346">Բացել հղումը Chrome-ի ինկ&amp;ոգնիտո պատուհանում</translation>
@@ -92,7 +90,6 @@
 <translation id="3089968997497233615">Մատչելի է Google Chrome-ի նոր, ավելի ապահով տարբերակը:</translation>
 <translation id="3100998948628680988">Անվանեք ձեր Chrome պրոֆիլը</translation>
 <translation id="3114643501466072395">Որպեսզի պաշտպանեք ձեր մյուս գաղտնաբառերը տվյալների արտահոսքից և խուսափեք անվտանգության հետ կապված այլ խնդիրներից, <ph name="BEGIN_LINK" />մտեք հաշիվ Chrome դիտարկիչում<ph name="END_LINK" />։</translation>
-<translation id="3127818369811890733">Chrome OS-ը չկարողացավ համաժամացնել ձեր տվյալները։</translation>
 <translation id="3140883423282498090">Ձեր փոփոխություններն ուժի մեջ կմտնեն հաջորդ անգամ Google Chrome-ը գործարկելիս:</translation>
 <translation id="3149510190863420837">Chrome-ի հավելվածներ</translation>
 <translation id="3360895254066713204">Chrome Helper</translation>

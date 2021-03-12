@@ -13,7 +13,6 @@
 <translation id="1125124144982679672">Chrome-г хэн ашиглаж байна вэ?</translation>
 <translation id="1142745911746664600">Chrome-г шинэчлэх боломжгүй байна</translation>
 <translation id="1154147086299354128">&amp;Chrome-д нээх</translation>
-<translation id="123620459398936149">Chrome OS нь таны өгөгдлийг sync хийж чадсангүй. Sync-ийн нэвтрэх хэллэгээ шинэчилнэ үү.</translation>
 <translation id="1293325835983155583"><ph name="MANAGER" /> танаас энэ төхөөрөмжийг ашиглахаасаа өмнө дараах Үйлчилгээний нөхцөлийг уншиж, зөвшөөрөхийг шаардаж байна. Эдгээр нөхцөл нь Google Chrome үйлдлийн системийн нөхцөлийг өргөтгөх, өөрчлөх эсвэл хязгаарлахгүй.</translation>
 <translation id="1302523850133262269">Chrome-оос хамгийн сүүлийн үеийн системийн шинэчлэлтүүдийг суулгаж байгаа тул түр хүлээнэ үү.</translation>
 <translation id="137466361146087520">Google Chrome Бета</translation>
@@ -28,7 +27,6 @@
 <translation id="1587325591171447154"><ph name="FILE_NAME" /> аюултай тул үүнийг Chrome блок хийсэн.</translation>
 <translation id="1597911401261118146">Нууц үгнүүддээ өгөгдлийн зөрчил болон аюулгүй байдлын өөр асуудал байхгүй болохыг шалгахын тулд <ph name="BEGIN_LINK" />Chrome-д нэвтэрнэ үү<ph name="END_LINK" />.</translation>
 <translation id="1619887657840448962">Chrome-г илүү аюулгүй болгохын тулд <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> жагсаалтанд байхгүй, танд мэдэгдэлгүйгээр нэмэгдсэн байж болох дараах өргөтгөлийг идэвхгүй болголоо.</translation>
-<translation id="162629503687514352">Chrome үйлдлийн систем таны нууц үгийг синк хийж чадсангүй.</translation>
 <translation id="1628000112320670027">Chrome-с тусламж авах</translation>
 <translation id="1666409074978194368">Шинэчилж дуусаж байна! Шинэчлэлтийг дуусгахын тулд Google Chrome-г дахин ачаална уу. Нууцлалтай цонхыг дахин нээхгүй.</translation>
 <translation id="1674870198290878346">Холбоосыг Chrome-н нууцлалтай цонхонд нээх</translation>
@@ -95,7 +93,6 @@
 <translation id="3089968997497233615">Google Chrome-ийн шинэ, илүү аюулгүй хувилбар бэлэн боллоо.</translation>
 <translation id="3100998948628680988">Chrome-н профайлаа нэрлэнэ үү</translation>
 <translation id="3114643501466072395">Бусад нууц үгэндээ өгөгдлийн зөрчил болон аюулгүй байдлын өөр асуудал байхгүй болохыг шалгахын тулд <ph name="BEGIN_LINK" />Chrome-д нэвтэрнэ үү<ph name="END_LINK" />.</translation>
-<translation id="3127818369811890733">Chrome үйлдлийн систем таны өгөгдлийг синк хийж чадсангүй.</translation>
 <translation id="3140883423282498090">Таны оруулсан өөрчлөлт дараа дахин Google Chrome-г ашиглах үед идэвхжинэ.</translation>
 <translation id="3149510190863420837">Chrome Аппликейшнууд</translation>
 <translation id="3360895254066713204">Chrome Helper</translation>

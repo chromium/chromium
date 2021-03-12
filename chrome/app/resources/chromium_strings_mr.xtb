@@ -27,7 +27,6 @@
 <translation id="2008474315282236005">हे या डिव्‍हाइस मधून 1 आयटम हटवेल. नंतर तुमचा डेटा पुनर्प्राप्त करण्‍यासाठी, Chromium मध्ये <ph name="USER_EMAIL" /> म्हणून साइन इन करा.</translation>
 <translation id="2020032459870799438">तुमचे इतर पासवर्ड डेटा भंग आणि इतर सुरक्षा समस्यांपासून सुरक्षित आहेत हे तपासण्यासाठी, <ph name="BEGIN_LINK" />Chromium मध्ये साइन इन करा<ph name="END_LINK" />.</translation>
 <translation id="2185166961232948079">Chromium - नेटवर्क साइन इन - <ph name="PAGE_TITLE" /></translation>
-<translation id="2225696941839557119">Chromium OS ला तुमचे पासवर्ड सिंक करता आले नाहीत.</translation>
 <translation id="2241627712206172106">तुम्ही कॉंप्युटर शेअर केल्यास, मित्र आणि कुटुंब स्वतंत्रपणे ब्राउझ करू शकतात आणि त्यांना पाहिजे तसे Chromium सेट अप करू शकतात.</translation>
 <translation id="2294245788148774212">पर्यायी: Google ला निदान आणि वापर डेटा आपोआप पाठवून, Chromium OS ची वैशिष्ट्ये आणि परफॉर्मन्समध्ये सुधारणा करण्यात मदत करा.</translation>
 <translation id="2343156876103232566">येथून तुमच्या Android फोनवर नंबर पाठवण्यासाठी, दोन्ही डिव्हाइसवर Chromium मध्ये साइन इन करा.</translation>
@@ -161,7 +160,6 @@
 <translation id="6183079672144801177">तुम्ही तुमच्या <ph name="TARGET_DEVICE_NAME" /> वर Chromium मध्ये साइन इन केले असल्याची खात्री करा आणि त्यानंतर पुन्हा पाठवून पाहा.</translation>
 <translation id="6212496753309875659">या कॉंप्युटरवर आधीपासून Chromium ची अगदी अलीकडील आवृत्ती आहे. सॉफ्‍टवेअर काम करत नसल्‍यास, कृपया Chromium अनइंस्टॉल करा आणि पुन्‍हा प्रयत्‍न करा.</translation>
 <translation id="6219195342503754812">{0,plural, =0{Chromium आता पुन्हा लाँच होईल}=1{Chromium एका सेकंदामध्ये पुन्हा लाँच होईल}other{Chromium # सेकंदांमध्ये पुन्हा लाँच होईल}}</translation>
-<translation id="623836266260425961">Chromium OS ला तुमचा डेटा सिंक करता आला नाही.</translation>
 <translation id="6248213926982192922">Chromium ला डीफॉल्‍ट ब्राउझर बनवा</translation>
 <translation id="6266342355635466082">Chromium अपडेट तपासू शकत नाही. तुमचे इंटरनेट कनेक्शन तपासून पहा.</translation>
 <translation id="6268381023930128611">Chromium मधून साइन आउट करायचे?</translation>
@@ -202,7 +200,6 @@
 <translation id="6990124437352146030">या साइटसाठी Chromium ला तुमचा मायक्रोफोन ॲक्सेस करण्याची परवानगी हवी आहे</translation>
 <translation id="701244094609242530">Chromium तुमची एक्स्टेंशन तपासू शकत नाही. नंतर पुन्हा प्रयत्न करा.</translation>
 <translation id="705851970750939768">Chromium अपडेट करा</translation>
-<translation id="7066436765290594559">Chromium OS तुमचा डेटा सिंक करू शकले नाही. कृपया तुमची सिंक सांकेतिक पासफ्रेज अपडेट करा.</translation>
 <translation id="7067091210845072982">इमेजचे उपयोगी वर्णन नसल्यास, Chromium तुमच्यासाठी ते देण्याचा प्रयत्न करेल. वर्णने तयार करण्यासाठी, इमेज Google ला पाठवल्या जातात.</translation>
 <translation id="7196312274710523067">Chromium लाँच करता आले नाही. पुन्हा प्रयत्न करा.</translation>
 <translation id="7197677400338048821">Chromium तुमचे पासवर्ड तपासू शकत नाही. २४ तासांनंतर पुन्हा प्रयत्न करा.</translation>

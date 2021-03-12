@@ -13,7 +13,6 @@
 <translation id="1125124144982679672">Chrome браузерін кім пайдаланып жатыр?</translation>
 <translation id="1142745911746664600">Chrome браузерін жаңарту мүмкін емес</translation>
 <translation id="1154147086299354128">&amp;Chrome браузерінде ашу</translation>
-<translation id="123620459398936149">Chrome OS деректеріңізді синхрондай алмады. Синхрондаудың құпия фразасын жаңартыңыз.</translation>
 <translation id="1293325835983155583">Бұл құрылғыны пайдаланбас бұрын, <ph name="MANAGER" /> келесі Қызмет көрсету шарттарын оқып, қабылдауыңызды талап етеді. Бұл шарттар Google Chrome OS Шарттарын толықтырмайды, өзгертпейді және шектемейді.</translation>
 <translation id="1302523850133262269">Chrome ең соңғы жүйе жаңартуларын орнатуда, күте тұрыңыз.</translation>
 <translation id="137466361146087520">Google Chrome Beta</translation>
@@ -27,7 +26,6 @@
 <translation id="1587325591171447154"><ph name="FILE_NAME" /> қауіпті болғандықтан, Chrome оны бөгеді.</translation>
 <translation id="1597911401261118146">Құпия сөздеріңіз ұрланудан және басқа да қауіпсіздік мәселелерінен қаншалықты қорғалғанын тексеру үшін <ph name="BEGIN_LINK" />Chrome браузеріне кіріңіз<ph name="END_LINK" />.</translation>
 <translation id="1619887657840448962">Chrome браузерін қауіпсіз ету үшін, <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> тізімінде жоқ келесі кеңейтім  өшірілді, ол сізге ескертілмей қосылған болуы мүмкін.</translation>
-<translation id="162629503687514352">Chrome OS құпия сөздеріңізді синхрондай алмады.</translation>
 <translation id="1628000112320670027">Chrome жөнінде анықтама алу</translation>
 <translation id="1666409074978194368">Дайын болып қалды! Жаңартуды аяқтау үшін Google Chrome-ды қайта іске қосыңыз. Инкогнито терезелері қайта ашылмайды.</translation>
 <translation id="1674870198290878346">Сілтемені Chrome инкогнито терезесінде ашу</translation>
@@ -94,7 +92,6 @@
 <translation id="3089968997497233615">Жаңа, қауіпсізірек Google Chrome нұсқасы қолжетімді.</translation>
 <translation id="3100998948628680988">Chrome профиліне ат қойыңыз</translation>
 <translation id="3114643501466072395">Басқа құпия сөздеріңіздің ұрланудан және басқа да қауіпсіздік мәселелерінен қаншалықты қорғалғанын тексеру үшін <ph name="BEGIN_LINK" />Chrome браузеріне кіріңіз<ph name="END_LINK" />.</translation>
-<translation id="3127818369811890733">Chrome OS деректеріңізді синхрондай алмады.</translation>
 <translation id="3140883423282498090">Өзгертулеріңіз Google Chrome келесі рет қайта іске қосылғанда күшіне енеді.</translation>
 <translation id="3149510190863420837">Chrome Apps</translation>
 <translation id="3360895254066713204">Chrome Helper</translation>

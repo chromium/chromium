@@ -52,7 +52,6 @@
 <translation id="1400642268715879018">Last 4 Weeks</translation>
 <translation id="1407135791313364759">Open all</translation>
 <translation id="1430915738399379752">Print</translation>
-<translation id="1436290164580597469">Enter passphrase to start sync.</translation>
 <translation id="1449835205994625556">Hide password</translation>
 <translation id="145015347812617860"><ph name="COUNT" /> items</translation>
 <translation id="1491277525950327607">Double tap to toggle setting</translation>
@@ -112,7 +111,6 @@
 <translation id="209018056901015185">Request desktop site</translation>
 <translation id="2103075008456228677">Open history.google.com</translation>
 <translation id="2116625576999540962"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> items moved</translation>
-<translation id="2118594521750010466">Fix now</translation>
 <translation id="213900355088104901">To browse privately, open an incognito tab</translation>
 <translation id="2139867232736819575">Search for text that you copied</translation>
 <translation id="2149973817440762519">Edit Bookmark</translation>
@@ -287,7 +285,6 @@ Follow the steps below:</translation>
 <translation id="3967822245660637423">Download complete</translation>
 <translation id="3968505803272650567">Manage interests</translation>
 <translation id="3989635538409502728">Sign Out</translation>
-<translation id="399419089947468503">Error syncing passwords</translation>
 <translation id="3995521777587992544">Page load progress bar, <ph name="EMAIL" /> loaded.</translation>
 <translation id="4002066346123236978">Title</translation>
 <translation id="4004204301268239848">Passwords are saved in your Google Account so that you can use them on any device.</translation>
@@ -312,7 +309,6 @@ Follow the steps below:</translation>
 <translation id="4263576668337963058">Show available page actions</translation>
 <translation id="4267380167363222949">Next tab</translation>
 <translation id="4272631900155121838">To scan a QR code, enable the camera from settings</translation>
-<translation id="4276041135170112053">Fix now.</translation>
 <translation id="4277990410970811858">Safe Browsing</translation>
 <translation id="4281844954008187215">Terms of Service</translation>
 <translation id="430793432425771671">Sync Everything</translation>
@@ -418,7 +414,6 @@ To change this setting, <ph name="BEGIN_LINK" />reset sync<ph name="END_LINK" />
 <translation id="54401264925851789">Page Security Info</translation>
 <translation id="5443952882982198570">Credit cards</translation>
 <translation id="5457226814769348910">Open offline version</translation>
-<translation id="5457907402803865181">Error syncing passwords.</translation>
 <translation id="5489208564673669003">To manage cookies for all sites, see <ph name="BEGIN_LINK" />Cookie settings<ph name="END_LINK" />.</translation>
 <translation id="5490005495580364134">Block all cookies (not recommended)</translation>
 <translation id="5508435575041083207">Sign out and clear data from this device</translation>
@@ -643,6 +638,7 @@ Try to use a unique password for every site.</translation>
 <translation id="7603852183842204213">Pop-ups blocked (<ph name="NUMBER_OF_BLOCKED_POPUPS" />)</translation>
 <translation id="7607521702806708809">Delete password</translation>
 <translation id="7638584964844754484">Incorrect passphrase</translation>
+<translation id="7646772052135772216">Password sync isn't working</translation>
 <translation id="7649070708921625228">Help</translation>
 <translation id="7658239707568436148">Cancel</translation>
 <translation id="766891008101699113">To browse the web privately, add a new tab.</translation>
@@ -750,6 +746,7 @@ Sites can use cookies to see your browsing activity across different sites, for 
 <translation id="8806823403540278281">Your organisation requires you to browse privately. Tabs aren't saved in Incognito mode.
 <ph name="BEGIN_LINK" />Learn more<ph name="END_LINK" /></translation>
 <translation id="8820817407110198400">Bookmarks</translation>
+<translation id="8823704566850948458">Suggest password...</translation>
 <translation id="8840513115188359703">You won't be signed out of your Google Account.</translation>
 <translation id="8870413625673593573">Recently Closed</translation>
 <translation id="8881801611828450202">Search <ph name="SEARCH_ENGINE" /> for This Image</translation>

@@ -52,7 +52,6 @@
 <translation id="1400642268715879018">နောက်ဆုံး ၄ ပတ်</translation>
 <translation id="1407135791313364759">အားလုံး ဖွင့်ရန်</translation>
 <translation id="1430915738399379752">ပရင့်</translation>
-<translation id="1436290164580597469">စင့်ခ်လုပ်ခြင်းစတင်ရန် စကားဝှက်စာ ထည့်ပါ။</translation>
 <translation id="1449835205994625556">စကားဝှက် ဖျောက်ထားရန်</translation>
 <translation id="145015347812617860"><ph name="COUNT" /> အကြောင်းအရာများ</translation>
 <translation id="1491277525950327607">ဆက်တင်ကို ကစားကြည့်ရန် နှစ်ချက်တို့ပါ</translation>
@@ -112,7 +111,6 @@
 <translation id="209018056901015185">ဒက်စတော့ပ် ဆိုက် တောင်းဆိုမည်</translation>
 <translation id="2103075008456228677">history.google.com ကိုဖွင့်ပါ</translation>
 <translation id="2116625576999540962"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> အကြောင်းအရာ ရွှေ့ပြောင်းပြီးပါပြီ</translation>
-<translation id="2118594521750010466">ယခု ပြင်ဆင်ရန်</translation>
 <translation id="213900355088104901">သီးသန့်ကြည့်ရှုရန် ရုပ်ဖျက်တဘ်တစ်ခုဖွင့်ပါ</translation>
 <translation id="2139867232736819575">သင်မိတ္တူကူးထားသည့် စာသားကို ရှာဖွေပါ</translation>
 <translation id="2149973817440762519">စာညှပ် တည်းဖြတ်ရန်</translation>
@@ -287,7 +285,6 @@
 <translation id="3967822245660637423">ဒေါင်းလုဒ်လုပ်ခြင်း ပြည့်စုံပါပြီ</translation>
 <translation id="3968505803272650567">စိတ်ဝင်စားမှုများ စီမံရန်</translation>
 <translation id="3989635538409502728">ထွက်ရန်</translation>
-<translation id="399419089947468503">စကားဝှက်များကို စင့်ခ်လုပ်ရာတွင် အမှားအယွင်းရှိနေသည်</translation>
 <translation id="3995521777587992544">စာမျက်နှာဖွင့်ခြင်း တိုးတက်မှုပြဘား၊ <ph name="EMAIL" /> ဖွင့်ထားသည်။</translation>
 <translation id="4002066346123236978">ခေါင်းစဉ်</translation>
 <translation id="4004204301268239848">မည်သည့်စက်ပစ္စည်းတွင်မဆို အသုံးပြုနိုင်ရန် စကားဝှက်များကို သင်၏ Google အကောင့်ထဲတွင် သိမ်းဆည်းထားပါသည်။</translation>
@@ -312,7 +309,6 @@
 <translation id="4263576668337963058">ရနိုင်သော စာမျက်နှာဆိုင်ရာ လုပ်ဆောင်ချက်များ ပြရန်</translation>
 <translation id="4267380167363222949">နောက်တဘ်</translation>
 <translation id="4272631900155121838">QR ကုဒ်ကို ဖတ်ရန် ဆက်တင်ထဲတွင် ကင်မရာကို ဖွင့်ပါ</translation>
-<translation id="4276041135170112053">ယခု ပြင်ဆင်ပါ။</translation>
 <translation id="4277990410970811858">လုံခြုံစွာ ဖွင့်ကြည့်ခြင်း</translation>
 <translation id="4281844954008187215">ဝန်ဆောင်မှု စည်းမျဉ်းများ</translation>
 <translation id="430793432425771671">အားလုံး စင့်ခ်မည်</translation>
@@ -418,7 +414,6 @@
 <translation id="54401264925851789">စာမျက်နှာ လုံခြုံမှု အချက်အလက်</translation>
 <translation id="5443952882982198570">ခရက်ဒစ်ကတ်များ</translation>
 <translation id="5457226814769348910">'အော့ဖ်လိုင်းဗားရှင်း' ဖွင့်ရန်</translation>
-<translation id="5457907402803865181">စကားဝှက်များကို စင့်ခ်လုပ်ရာတွင် အမှားအယွင်းရှိနေသည်။</translation>
 <translation id="5489208564673669003">ဝဘ်ဆိုက်အားလုံးအတွက် ကွတ်ကီးများကို စီမံရန် <ph name="BEGIN_LINK" />ကွတ်ကီးဆက်တင်များ<ph name="END_LINK" /> ကို ကြည့်ပါ။</translation>
 <translation id="5490005495580364134">ကွတ်ကီးအားလုံး ပိတ်ရန် (အကြံမပြုပါ)</translation>
 <translation id="5508435575041083207">ထွက်ပြီး ဤစက်မှဒေတာများ ရှင်းထုတ်ရန်</translation>
@@ -642,6 +637,7 @@ Handoff ကို ဆက်တင်များ၏ ယေဘူယျအပိ�
 <translation id="7603852183842204213">ပိတ်ဆို့ထားသည့် ပေါ့အာပ်များ( <ph name="NUMBER_OF_BLOCKED_POPUPS" /> )</translation>
 <translation id="7607521702806708809">စကားဝှက်ကို ဖျက်ရန်</translation>
 <translation id="7638584964844754484">စကားဝှက် မမှန်</translation>
+<translation id="7646772052135772216">စကားဝှက်စင့်ခ်လုပ်ခြင်းကို အသုံးပြု၍မရပါ</translation>
 <translation id="7649070708921625228">အကူအညီ</translation>
 <translation id="7658239707568436148">မလုပ်တော့</translation>
 <translation id="766891008101699113">ဝဘ်ကို သီးသန့်မုဒ်ဖြင့် ကြည့်ရန် တဘ်အသစ်ဖွင့်ပါ။</translation>
@@ -749,6 +745,7 @@ Handoff ကို ဆက်တင်များ၏ ယေဘူယျအပိ�
 <translation id="8806823403540278281">ကိုယ်ဖျောက်မုဒ်ဖြင့် ဝင်ရောက်ကြည့်ရှုရန် သင့်အဖွဲ့အစည်းက သတ်မှတ်ထားပါသည်။ ‘ရုပ်ဖျက်မုဒ်’ တွင် တဘ်များကို မသိမ်းပါ။
 <ph name="BEGIN_LINK" />ပိုမိုလေ့လာရန်<ph name="END_LINK" /></translation>
 <translation id="8820817407110198400">စာညှပ်များ</translation>
+<translation id="8823704566850948458">စကားဝှက်ကို အကြံပြုရန်...</translation>
 <translation id="8840513115188359703">Google အကောင့်မှ သင်ထွက်သွားမည် မဟုတ်ပါ။</translation>
 <translation id="8870413625673593573">မကြာမီက ပိတ်ခဲ့</translation>
 <translation id="8881801611828450202">ဤရုပ်ပုံကို <ph name="SEARCH_ENGINE" /> တွင်ရှာရန်</translation>

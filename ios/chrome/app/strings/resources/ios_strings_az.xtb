@@ -52,7 +52,6 @@
 <translation id="1400642268715879018">Son 4 Həftə</translation>
 <translation id="1407135791313364759">Hamısını açın</translation>
 <translation id="1430915738399379752">Çap edin</translation>
-<translation id="1436290164580597469">Sinxronizasiyanı başlatmaq üçün parol ifadəsini daxil edin.</translation>
 <translation id="1449835205994625556">Parolu Gizlədin</translation>
 <translation id="145015347812617860"><ph name="COUNT" /> element</translation>
 <translation id="1491277525950327607">Ayarı dəyişmək üçün iki dəfə klikləyin</translation>
@@ -112,7 +111,6 @@
 <translation id="209018056901015185">Masaüstü Versiyası Sorğusu</translation>
 <translation id="2103075008456228677">history.google.com linkində açın</translation>
 <translation id="2116625576999540962"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> element köçürüldü</translation>
-<translation id="2118594521750010466">İndi Düzəliş Edin</translation>
 <translation id="213900355088104901">Məxfi axtarış etmək üçün gizli pəncərəni açın</translation>
 <translation id="2139867232736819575">Kopyalanmış Mətni Axtarın</translation>
 <translation id="2149973817440762519">Əlfəcinə düzəliş edin</translation>
@@ -287,7 +285,6 @@ Aşağıdakı addımları izləyin:</translation>
 <translation id="3967822245660637423">Endirmə tamamdır</translation>
 <translation id="3968505803272650567">Maraqları idarə edin</translation>
 <translation id="3989635538409502728">Çıxış</translation>
-<translation id="399419089947468503">Parolları sinxronlaşdırarkən xəta baş verdi</translation>
 <translation id="3995521777587992544">Səhifənin yüklənmə gedişatını göstərən panel, <ph name="EMAIL" /> yüklənib.</translation>
 <translation id="4002066346123236978">Başlıq</translation>
 <translation id="4004204301268239848">Parollar Google Hesabınızda yadda saxlanılıb. Onları istənilən cihazda istifadə edə bilərsiniz.</translation>
@@ -312,7 +309,6 @@ Aşağıdakı addımları izləyin:</translation>
 <translation id="4263576668337963058">Əlçatan səhifə fəaliyyətlərini göstərin</translation>
 <translation id="4267380167363222949">Növbəti Tab</translation>
 <translation id="4272631900155121838">QR kodu skan etmək üçün, ayarlar bölməsindən kameranı aktiv edin</translation>
-<translation id="4276041135170112053">İndi düzəliş edin.</translation>
 <translation id="4277990410970811858">Təhlükəsiz Baxış</translation>
 <translation id="4281844954008187215">Xidmət Şərtləri</translation>
 <translation id="430793432425771671">Hər şeyi Sinxronlaşdırın</translation>
@@ -418,7 +414,6 @@ Ayarı dəyişmək üçün <ph name="BEGIN_LINK" />sinxronizasiyanı sıfırlay�
 <translation id="54401264925851789">Səhifə güvənliyi məlumatı</translation>
 <translation id="5443952882982198570">Kredit Kartları</translation>
 <translation id="5457226814769348910">Oflayn versiyanı açın</translation>
-<translation id="5457907402803865181">Parolları sinxronlaşdırarkən xəta baş verdi.</translation>
 <translation id="5489208564673669003">Bütün saytlar üçün kukiləri idarə etmək üçün <ph name="BEGIN_LINK" />Kuki Ayarlarına<ph name="END_LINK" /> baxın.</translation>
 <translation id="5490005495580364134">Bütün kukiləri bloklayın (Tövsiyə edilmir)</translation>
 <translation id="5508435575041083207">Çıxış edin və bu cihazdakı datanı silin</translation>
@@ -643,6 +638,7 @@ Hər sayt üçün unikal parol istifadə edin.</translation>
 <translation id="7603852183842204213">Popuplar bloklandı (<ph name="NUMBER_OF_BLOCKED_POPUPS" />)</translation>
 <translation id="7607521702806708809">Parolu Silin</translation>
 <translation id="7638584964844754484">Yanlış parol</translation>
+<translation id="7646772052135772216">Parol sinxronizasiyası işləmir</translation>
 <translation id="7649070708921625228">Yardım</translation>
 <translation id="7658239707568436148">Ləğv edin</translation>
 <translation id="766891008101699113">Vebdə məxfi axtarış etmək üçün yeni tab açın.</translation>
@@ -750,6 +746,7 @@ Saytlar müxtəlif saytlarda baxış fəaliyyətinizi görmək üçün kukilərd
 <translation id="8806823403540278281">Təşkilatınız məxfi şəkildə baxış keçirməyinizi tələb edir. Tablar Anonim rejimdə yadda saxlanılmır.
 <ph name="BEGIN_LINK" />Ətraflı məlumat<ph name="END_LINK" /></translation>
 <translation id="8820817407110198400">Əlfəcinlər</translation>
+<translation id="8823704566850948458">Parol təklif edin...</translation>
 <translation id="8840513115188359703">Google Hesabınızdan çıxmayacaqsınız.</translation>
 <translation id="8870413625673593573">Son Qapadılan</translation>
 <translation id="8881801611828450202">Bu Şəkil üçün <ph name="SEARCH_ENGINE" /> Axtarışı Edin</translation>

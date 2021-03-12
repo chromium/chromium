@@ -13,7 +13,6 @@
 <translation id="1125124144982679672">Chrome कसले चलाउँदै हुनुहुन्छ?</translation>
 <translation id="1142745911746664600">Chrome लाई अद्यावधिक गर्न सकिएन</translation>
 <translation id="1154147086299354128">Chrome मा खोल्नुहोस्</translation>
-<translation id="123620459398936149">Chrome OS ले तपाइँको लगत समक्रमण गर्न सकेन। कृपया तपाइँको समक्रमण पासफ्रेज अपडेट गर्नुहोस्।</translation>
 <translation id="1293325835983155583"><ph name="MANAGER" /> को नीतिअनुसार तपाईंले यो यन्त्र चलाउनुअघि तल दिइएका सेवाका सर्तहरू पढेर स्वीकार गर्नु पर्ने हुन्छ। यी सर्तहरूले Google Chrome OS का सर्तहरू विस्तार, परिमार्जन वा ती सर्तहरू सीमित पार्दैनन्।</translation>
 <translation id="1302523850133262269">Chrome ले नवीनतम सिस्टम अपडेटहरू स्थापित गर्दै गर्दा कृपया प्रतिक्षा गर्नुहोस्।</translation>
 <translation id="137466361146087520">Google Chrome बिटा</translation>
@@ -28,7 +27,6 @@
 <translation id="1587325591171447154"><ph name="FILE_NAME" /> खतरनाक छ, त्यसैले Chrome ले यसमाथि रोक लगाएको छ।</translation>
 <translation id="1597911401261118146">तपाईंका पासवर्डहरू कतै खुलासा भएका छन् कि छैनन् तथा सुरक्षासम्बन्धी अन्य समस्याबाट सुरक्षित छन् कि छैनन् भन्ने कुरा जाँच्न <ph name="BEGIN_LINK" />Chrome मा साइन इन गर्नुहोस्<ph name="END_LINK" />।</translation>
 <translation id="1619887657840448962">Chrome लाई अझ सुरक्षित बनाउन हामी <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> मा सूचीबद्ध नभएका र तपाईँले थाहा नपाई थपिएका हुन सक्ने निम्न विस्तारलाई असक्षम गर्छौँ।</translation>
-<translation id="162629503687514352">Chrome OS ले तपाईंका पासवर्डहरू सिंक गर्न सकेन।</translation>
 <translation id="1628000112320670027">Chrome को सम्बन्धमा मद्दत प्राप्त गर्नुहोस्</translation>
 <translation id="1666409074978194368">अद्यावधिक लगभग पूरा भइसक्यो! अद्यावधिक सम्पन्न गर्न Google Chrome पुनः सुरु गर्नुहोस्। इन्कोग्निटो विन्डोहरू पुनः खुल्ने छैनन्।</translation>
 <translation id="1674870198290878346">लिंकलाई Chrome को इन्कोग्निटो विन्डोमा खोल्नुहोस्</translation>
@@ -93,7 +91,6 @@
 <translation id="3089968997497233615">Google Chrome खो नयाँ, सुरक्षित संस्करण उपलब्ध छ।</translation>
 <translation id="3100998948628680988">आफ्नो Chrome प्रोफाइलको नाम राख्नुहोस्</translation>
 <translation id="3114643501466072395">तपाईंका अन्य पासवर्डहरू कतै खुलासा भएका छन् कि छैनन् तथा सुरक्षासम्बन्धी अन्य समस्याबाट सुरक्षित छन् कि छैनन् भन्ने कुरा जाँच्न <ph name="BEGIN_LINK" />Chrome मा साइन इन गर्नुहोस्<ph name="END_LINK" />।</translation>
-<translation id="3127818369811890733">Chrome OS ले तपाईंको डेटा सिंक गर्न सकेन।</translation>
 <translation id="3140883423282498090">तपाइँले अर्को पटक Google Chrome पुन: सुरुवात गर्दा तपाइँका परिवर्तनहरू लागू हुनेछन्।</translation>
 <translation id="3149510190863420837">Chrome एपहरू</translation>
 <translation id="3360895254066713204">Chrome सहायककर्ता</translation>

@@ -13,7 +13,6 @@
 <translation id="1125124144982679672">Chrome'ду ким колдонуп жатат?</translation>
 <translation id="1142745911746664600">Chrome жаңырбай жатат</translation>
 <translation id="1154147086299354128">&amp;Chrome'до ачуу</translation>
-<translation id="123620459398936149">Chrome OS дайын-даректериңизди шайкештештире албай койду. Шайкештештирүүнүн купуя сөз айкашын жаңыртыңыз.</translation>
 <translation id="1293325835983155583">Бул түзмөктү колдонуудан мурун, <ph name="MANAGER" /> төмөнкү Тейлөө шарттарын окуп, кабыл алууңузду талап кылат. Бул шарттар Google Chrome OS шарттарын кеңейтип, өзгөртүп же чектебейт.</translation>
 <translation id="1302523850133262269">Chrome эң акыркы тутум жаңыртууларын орнотуп бүткүчө күтө туруңуз.</translation>
 <translation id="137466361146087520">Google Chrome Бета</translation>
@@ -28,7 +27,6 @@
 <translation id="1587325591171447154"><ph name="FILE_NAME" /> кооптуу файл болгондуктан, Chrome аны бөгөттөп койду.</translation>
 <translation id="1597911401261118146">Башка сырсөздөрүңүздүн бекем корголгонун, ошондой эле коопсуздукка байланыштуу көйгөйлөрдү текшерүү үчүн <ph name="BEGIN_LINK" />Chrome'го кириңиз<ph name="END_LINK" />.</translation>
 <translation id="1619887657840448962">Жеке маалыматыңызды коргоо үчүн, айрым Chromium кеңейтүүлөрүн өчүрүп койдук, себеби <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> ичинде аларга байланыштуу маалымат жок. Демек, бул курамдык бөлүктөр тымызын орнотулган.</translation>
-<translation id="162629503687514352">Chrome OS сырсөздөрүңүздү шайкештештире албай койду.</translation>
 <translation id="1628000112320670027">Chrome'дон жардам алуу</translation>
 <translation id="1666409074978194368">Жаңыртылганы аз калды! Жаңыртууну аягына чыгаруу үчүн Google Chrome'ду кайра иштетиңиз. Жашыруун терезелер кайра ачылбайт.</translation>
 <translation id="1674870198290878346">Шилтемени Chrome'дун жашы&amp;руун терезесинде ачуу</translation>
@@ -95,7 +93,6 @@
 <translation id="3089968997497233615">Google Chrome'дун бир кыйла жаңы, коопсуз версиясы бар.</translation>
 <translation id="3100998948628680988">Chrome профилиңиздин аталышын коюңуз</translation>
 <translation id="3114643501466072395">Башка сырсөздөрүңүздүн бекем корголгонун, ошондой эле коопсуздукка байланыштуу көйгөйлөрдү текшерүү үчүн <ph name="BEGIN_LINK" />Chrome'го кириңиз<ph name="END_LINK" />.</translation>
-<translation id="3127818369811890733">Chrome OS маалыматыңызды шайкештештире албай койду.</translation>
 <translation id="3140883423282498090">Өзгөртүүлөрүңүз Google Chrome кийинки жолу кайра ишке киргизилгенде күчүнө кирет.</translation>
 <translation id="3149510190863420837">Chrome колдонмолору</translation>
 <translation id="3360895254066713204">Chrome Жардамчысы</translation>

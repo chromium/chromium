@@ -52,7 +52,6 @@
 <translation id="1400642268715879018">Վերջին 4 շաբաթվա</translation>
 <translation id="1407135791313364759">Բացել բոլորը</translation>
 <translation id="1430915738399379752">Տպում</translation>
-<translation id="1436290164580597469">Մուտքագրեք անցաբառը՝ համաժամացումը սկսելու համար:</translation>
 <translation id="1449835205994625556">Թաքցնել գաղտնաբառը</translation>
 <translation id="145015347812617860"><ph name="COUNT" /> տարր</translation>
 <translation id="1491277525950327607">Կրկնակի հպեք՝ կարգավորումը միացնելու/անջատելու համար</translation>
@@ -112,7 +111,6 @@
 <translation id="209018056901015185">Հայցել աշխատասեղանի տարբերակը</translation>
 <translation id="2103075008456228677">Բացել history.google.com էջը</translation>
 <translation id="2116625576999540962">Տեղափոխվել է <ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> տարր</translation>
-<translation id="2118594521750010466">Շտկել</translation>
 <translation id="213900355088104901">Գաղտնի դիտարկման համար բացեք ինկոգնիտո ներդիր</translation>
 <translation id="2139867232736819575">Որոնեք ձեր պատճենած տեքստը</translation>
 <translation id="2149973817440762519">Փոփոխել էջանիշը</translation>
@@ -287,7 +285,6 @@
 <translation id="3967822245660637423">Ներբեռնումն ավարտվեց</translation>
 <translation id="3968505803272650567">Կառավարել հետաքրքրությունները</translation>
 <translation id="3989635538409502728">Դուրս գալ</translation>
-<translation id="399419089947468503">Չհաջողվեց համաժամացնել գաղտնաբառերը</translation>
 <translation id="3995521777587992544">Էջի բեռնման ընթացագոտի, կատարված է <ph name="EMAIL" />։</translation>
 <translation id="4002066346123236978">Վերնագիր</translation>
 <translation id="4004204301268239848">Գաղտնաբառերը պահվում են ձեր Google հաշվում, որպեսզի կարողանաք օգտագործել դրանք ցանկացած սարքում։</translation>
@@ -312,7 +309,6 @@
 <translation id="4263576668337963058">Ցուցադրել հասանելի գործողությունները էջերի համար</translation>
 <translation id="4267380167363222949">Հաջորդ ներդիրը</translation>
 <translation id="4272631900155121838">QR կոդն օգտագործելու համար կարգավորումներում միացրեք ֆոտոխցիկը</translation>
-<translation id="4276041135170112053">Շտկել</translation>
 <translation id="4277990410970811858">Անվտանգ դիտարկում</translation>
 <translation id="4281844954008187215">Օգտագործման պայմաններ</translation>
 <translation id="430793432425771671">Համաժամացնել բոլորը</translation>
@@ -418,7 +414,6 @@
 <translation id="54401264925851789">Տեղեկություններ էջի հուսալիության մասին</translation>
 <translation id="5443952882982198570">Վարկային քարտեր</translation>
 <translation id="5457226814769348910">Բացել օֆլայն տարբերակը</translation>
-<translation id="5457907402803865181">Չհաջողվեց համաժամացնել գաղտնաբառերը։</translation>
 <translation id="5489208564673669003">Բոլոր կայքերի քուքիները կարող եք կառավարել <ph name="BEGIN_LINK" />Քուքիների կարգավորումներ<ph name="END_LINK" /> բաժնում։</translation>
 <translation id="5490005495580364134">Արգելափակել բոլոր քուքիները (խորհուրդ չի տրվում)</translation>
 <translation id="5508435575041083207">Դուրս գրվել և ջնջել տվյալներն այս սարքից</translation>
@@ -643,6 +638,7 @@ Handoff-ը պետք է միացված լինի նաև Կարգավորումնե
 <translation id="7603852183842204213">Ելնող պատուհաններն արգելափակվել են (<ph name="NUMBER_OF_BLOCKED_POPUPS" />)</translation>
 <translation id="7607521702806708809">Ջնջել գաղտնաբառը</translation>
 <translation id="7638584964844754484">Սխալ անցաբառ</translation>
+<translation id="7646772052135772216">Գաղտնաբառերի համաժամացումը չի աշխատում</translation>
 <translation id="7649070708921625228">Օգնություն</translation>
 <translation id="7658239707568436148">Չեղարկել</translation>
 <translation id="766891008101699113">Համացանցում անանուն կերպով կայքէջեր այցելելու համար ավելացրեք նոր ներդիր:</translation>
@@ -750,6 +746,7 @@ Handoff-ը պետք է միացված լինի նաև Կարգավորումնե
 <translation id="8806823403540278281">Ձեր կազմակերպության կանոնների համաձայն՝ դուք պետք է օգտագործեք ինկոգնիտո ռեժիմը։ Ինկոգնիտո ռեժիմում բացված ներդիրները չեն պահպանվում։
 <ph name="BEGIN_LINK" />Իմանալ ավելին<ph name="END_LINK" /></translation>
 <translation id="8820817407110198400">Էջանիշներ</translation>
+<translation id="8823704566850948458">Ստեղծել գաղտնաբառ...</translation>
 <translation id="8840513115188359703">Դուք դուրս չեք գա ձեր Google հաշվից:</translation>
 <translation id="8870413625673593573">Վերջին փակվածները</translation>
 <translation id="8881801611828450202">Որոնել այս պատկերը <ph name="SEARCH_ENGINE" />-ում</translation>

@@ -52,7 +52,6 @@
 <translation id="1400642268715879018">As últimas 4 semanas</translation>
 <translation id="1407135791313364759">Abrir todo</translation>
 <translation id="1430915738399379752">Imprimir</translation>
-<translation id="1436290164580597469">Introduce a frase de acceso para iniciar a sincronización.</translation>
 <translation id="1449835205994625556">Ocultar contrasinal</translation>
 <translation id="145015347812617860"><ph name="COUNT" /> elementos</translation>
 <translation id="1491277525950327607">Toca dúas veces para activar ou desactivar a configuración</translation>
@@ -112,7 +111,6 @@
 <translation id="209018056901015185">Ver como ordenador</translation>
 <translation id="2103075008456228677">Abrir history.google.com</translation>
 <translation id="2116625576999540962"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> elementos movidos</translation>
-<translation id="2118594521750010466">Corrixir agora</translation>
 <translation id="213900355088104901">Para navegar de forma privada, abre unha pestana de incógnito</translation>
 <translation id="2139867232736819575">Buscar texto que copiaches</translation>
 <translation id="2149973817440762519">Editar marcador</translation>
@@ -287,7 +285,6 @@ Sigue os pasos indicados a continuación:</translation>
 <translation id="3967822245660637423">Descarga completa</translation>
 <translation id="3968505803272650567">Xestionar intereses</translation>
 <translation id="3989635538409502728">Pechar sesión</translation>
-<translation id="399419089947468503">Produciuse un erro ao sincronizar os contrasinais</translation>
 <translation id="3995521777587992544">Barra de progreso de carga de páxinas: cargouse <ph name="EMAIL" />.</translation>
 <translation id="4002066346123236978">Título</translation>
 <translation id="4004204301268239848">Os contrasinais gárdanse na túa Conta de Google para que poidas usalos en calquera dispositivo.</translation>
@@ -312,7 +309,6 @@ Sigue os pasos indicados a continuación:</translation>
 <translation id="4263576668337963058">Mostrar accións da páxina dispoñibles</translation>
 <translation id="4267380167363222949">Pestana seguinte</translation>
 <translation id="4272631900155121838">Para escanear un código QR, activa a cámara na configuración</translation>
-<translation id="4276041135170112053">Corrixir agora.</translation>
 <translation id="4277990410970811858">Navegación segura</translation>
 <translation id="4281844954008187215">Condicións de servizo</translation>
 <translation id="430793432425771671">Sincronizar todo</translation>
@@ -418,7 +414,6 @@ Para cambiar esta opción de configuración, deberás <ph name="BEGIN_LINK" />re
 <translation id="54401264925851789">Información de seguranza da páxina</translation>
 <translation id="5443952882982198570">Tarxetas de crédito</translation>
 <translation id="5457226814769348910">Abrir versión sen conexión</translation>
-<translation id="5457907402803865181">Produciuse un erro ao sincronizar os contrasinais.</translation>
 <translation id="5489208564673669003">Se queres xestionar as cookies para todos os sitios, vai a <ph name="BEGIN_LINK" />Configuración das cookies<ph name="END_LINK" />.</translation>
 <translation id="5490005495580364134">Bloquear todas as cookies (non recomendado)</translation>
 <translation id="5508435575041083207">Pechar sesión e borrar datos deste dispositivo</translation>
@@ -643,6 +638,7 @@ Tenta usar un contrasinal distinto para cada sitio.</translation>
 <translation id="7603852183842204213">Ventás emerxentes bloqueadas (<ph name="NUMBER_OF_BLOCKED_POPUPS" />)</translation>
 <translation id="7607521702806708809">Eliminar contrasinal</translation>
 <translation id="7638584964844754484">Contrasinal incorrecto</translation>
+<translation id="7646772052135772216">A sincronización de contrasinais non funciona</translation>
 <translation id="7649070708921625228">Axuda</translation>
 <translation id="7658239707568436148">Cancelar</translation>
 <translation id="766891008101699113">Para navegar pola web de forma privada, engade unha nova pestana.</translation>
@@ -750,6 +746,7 @@ Tamén poden utilizalas para ver a túa actividade de navegación en varios siti
 <translation id="8806823403540278281">A túa organización esixe que navegues de forma privada. As pestanas do modo de incógnito non se gardan.
 <ph name="BEGIN_LINK" />Máis información<ph name="END_LINK" /></translation>
 <translation id="8820817407110198400">Marcadores</translation>
+<translation id="8823704566850948458">Suxerir contrasinal…</translation>
 <translation id="8840513115188359703">Non se pechará sesión na túa conta de Google.</translation>
 <translation id="8870413625673593573">Pechados recentemente</translation>
 <translation id="8881801611828450202">Buscar esta imaxe en <ph name="SEARCH_ENGINE" /></translation>
