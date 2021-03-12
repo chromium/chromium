@@ -87,7 +87,7 @@ void RequestGlobalDumpCallback(base::OnceClosure quit_closure,
 
 void OnStartTracingDoneCallback(
     base::trace_event::MemoryDumpLevelOfDetail dump_type,
-    base::Closure quit_closure) {
+    base::OnceClosure quit_closure) {
   memory_instrumentation::MemoryInstrumentation::GetInstance()
       ->RequestGlobalDumpAndAppendToTrace(
           MemoryDumpType::PERIODIC_INTERVAL, dump_type,

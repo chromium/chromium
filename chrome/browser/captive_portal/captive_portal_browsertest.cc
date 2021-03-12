@@ -951,7 +951,7 @@ CaptivePortalBrowserTest::~CaptivePortalBrowserTest() = default;
 
 void CaptivePortalBrowserTest::SetUpOnMainThread() {
   url_loader_interceptor_ =
-      std::make_unique<content::URLLoaderInterceptor>(base::Bind(
+      std::make_unique<content::URLLoaderInterceptor>(base::BindRepeating(
           &CaptivePortalBrowserTest::OnIntercept, base::Unretained(this)));
 
   // Double-check that the captive portal service isn't enabled by default for

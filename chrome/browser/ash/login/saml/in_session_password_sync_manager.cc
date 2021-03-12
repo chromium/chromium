@@ -180,7 +180,7 @@ void InSessionPasswordSyncManager::CheckCredentials(
     extended_authenticator_ = ExtendedAuthenticator::Create(this);
   }
   extended_authenticator_.get()->AuthenticateToCheck(user_context,
-                                                     base::Closure());
+                                                     base::OnceClosure());
 }
 
 void InSessionPasswordSyncManager::UpdateUserPassword(

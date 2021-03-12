@@ -25,7 +25,6 @@
 #include "content/public/browser/browser_thread.h"
 
 using base::Bind;
-using base::Callback;
 using base::FileEnumerator;
 using base::FilePath;
 using base::Time;
@@ -258,8 +257,6 @@ void Index::NormalizeVectors() {
     }
   }
 }
-
-typedef Callback<void(bool, const vector<bool>&)> IndexerCallback;
 
 }  // namespace
 
