@@ -242,7 +242,15 @@ BOOL WaitForKeyboardToAppear() {
 
 // Tests that the Address View Controller is dismissed when tapping the outside
 // the popover on iPad.
-- (void)testIPadTappingOutsidePopOverDismissAddressController {
+// TODO(crbug.com/1116887) Flaky on iOS simulator
+#if TARGET_IPHONE_SIMULATOR
+#define MAYBE_testIPadTappingOutsidePopOverDismissAddressController \
+  DISABLED_testIPadTappingOutsidePopOverDismissAddressController
+#else
+#define MAYBE_testIPadTappingOutsidePopOverDismissAddressController \
+  testIPadTappingOutsidePopOverDismissAddressController
+#endif
+- (void)MAYBE_testIPadTappingOutsidePopOverDismissAddressController {
   if (![ChromeEarlGrey isIPadIdiom]) {
     EARL_GREY_TEST_SKIPPED(@"Test is not applicable for iPhone");
   }
@@ -276,7 +284,15 @@ BOOL WaitForKeyboardToAppear() {
 }
 
 // Tests that the address icon is hidden when no addresses are available.
-- (void)testAddressIconIsNotVisibleWhenAddressStoreEmpty {
+// TODO(crbug.com/1116043): Flaky on ios simulator.
+#if TARGET_IPHONE_SIMULATOR
+#define MAYBE_testAddressIconIsNotVisibleWhenAddressStoreEmpty \
+  DISABLED_testAddressIconIsNotVisibleWhenAddressStoreEmpty
+#else
+#define MAYBE_testAddressIconIsNotVisibleWhenAddressStoreEmpty \
+  testAddressIconIsNotVisibleWhenAddressStoreEmpty
+#endif
+- (void)MAYBE_testAddressIconIsNotVisibleWhenAddressStoreEmpty {
   // Delete the profile that is added on |-setUp|.
   [AutofillAppInterface clearProfilesStore];
 
