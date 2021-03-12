@@ -491,8 +491,8 @@ void LayoutShiftTracker::NotifyPrePaintFinishedInternal() {
     ReportShift(score_delta, weighted_score_delta);
   }
 
-  if (!region_.IsEmpty())
-    SetLayoutShiftRects(region_.GetRects());
+  if (!region_.IsEmpty() && !timer_.IsActive())
+    SendLayoutShiftRectsToHud(region_.GetRects());
 }
 
 void LayoutShiftTracker::NotifyPrePaintFinished() {
@@ -700,7 +700,8 @@ void LayoutShiftTracker::AttributionsToTracedValue(TracedValue& value) const {
   value.EndArray();
 }
 
-void LayoutShiftTracker::SetLayoutShiftRects(const Vector<IntRect>& int_rects) {
+void LayoutShiftTracker::SendLayoutShiftRectsToHud(
+    const Vector<IntRect>& int_rects) {
   // Store the layout shift rects in the HUD layer.
   auto* cc_layer = frame_view_->RootCcLayer();
   if (cc_layer && cc_layer->layer_tree_host()) {
