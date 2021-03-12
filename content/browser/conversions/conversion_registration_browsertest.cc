@@ -291,7 +291,7 @@ IN_PROC_BROWSER_TEST_F(ConversionRegistrationBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(ConversionRegistrationBrowserTest,
-                       ConversionRegisteredFromChildFrame_Received) {
+                       ConversionRegisteredFromChildFrame_NotReceived) {
   EXPECT_TRUE(NavigateToURL(
       shell(),
       embedded_test_server()->GetURL("/page_with_subframe_conversion.html")));
@@ -300,32 +300,6 @@ IN_PROC_BROWSER_TEST_F(ConversionRegistrationBrowserTest,
 
   GURL redirect_url = embedded_test_server()->GetURL(
       "/server-redirect?" + kWellKnownUrl + "?conversion-data=200");
-  ResourceLoadObserver load_observer(shell());
-  EXPECT_TRUE(ExecJs(ChildFrameAt(web_contents()->GetMainFrame(), 0),
-                     JsReplace("createTrackingPixel($1);", redirect_url)));
-  EXPECT_EQ(200u, host->WaitForNumConversions(1));
-
-  EXPECT_TRUE(NavigateToURL(shell(), GURL("about:blank")));
-  EXPECT_EQ(1u, host->num_conversions());
-}
-
-IN_PROC_BROWSER_TEST_F(
-    ConversionRegistrationBrowserTest,
-    ConversionRegisteredFromChildFrameWithoutPermissionPolicy_NotReceived) {
-  GURL page_url =
-      embedded_test_server()->GetURL("b.test", "/page_with_iframe.html");
-  EXPECT_TRUE(NavigateToURL(web_contents(), page_url));
-
-  GURL subframe_url =
-      embedded_test_server()->GetURL("/page_with_conversion_redirect.html");
-  NavigateIframeToURL(web_contents(), "test_iframe", subframe_url);
-
-  std::unique_ptr<TestConversionHost> host =
-      TestConversionHost::ReplaceAndGetConversionHost(web_contents());
-
-  GURL redirect_url = embedded_test_server()->GetURL(
-      "/server-redirect?" + kWellKnownUrl + "?conversion-data=200");
-
   ResourceLoadObserver load_observer(shell());
   EXPECT_TRUE(ExecJs(ChildFrameAt(web_contents()->GetMainFrame(), 0),
                      JsReplace("createTrackingPixel($1);", redirect_url)));

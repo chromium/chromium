@@ -810,8 +810,10 @@ bool FrameFetchContext::SendConversionRequestInsteadOfRedirecting(
     return false;
   }
 
-  // Only treat same origin redirects as conversion pings.
-  if (!redirect_info ||
+  LocalFrame* frame = document_->GetFrame();
+  DCHECK(frame);
+  // Only register conversions pings that are redirects in the main frame.
+  if (!frame->IsMainFrame() || !redirect_info ||
       !SecurityOrigin::AreSameOrigin(url, redirect_info->previous_url)) {
     return false;
   }

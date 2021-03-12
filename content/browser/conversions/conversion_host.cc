@@ -202,6 +202,13 @@ void ConversionHost::RegisterConversion(
   content::RenderFrameHost* render_frame_host =
       receiver_.GetCurrentTargetFrame();
 
+  // Conversion registration is only allowed in the main frame.
+  if (render_frame_host->GetParent()) {
+    mojo::ReportBadMessage(
+        "blink.mojom.ConversionHost can only be used by the main frame.");
+    return;
+  }
+
   // If there is no conversion manager available, ignore any conversion
   // registrations.
   ConversionManager* conversion_manager =

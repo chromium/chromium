@@ -68,8 +68,8 @@ class ConversionHostTest : public RenderViewHostTestHarness {
   std::unique_ptr<ConversionHost> conversion_host_;
 };
 
-TEST_F(ConversionHostTest, ValidConversionInSubframe_NoBadMessage) {
-  contents()->NavigateAndCommit(GURL("https://www.example.com"));
+TEST_F(ConversionHostTest, ConversionInSubframe_BadMessage) {
+  contents()->NavigateAndCommit(GURL("http://www.example.com"));
 
   // Create a subframe and use it as a target for the conversion registration
   // mojo.
@@ -81,17 +81,13 @@ TEST_F(ConversionHostTest, ValidConversionInSubframe_NoBadMessage) {
   // Create a fake dispatch context to trigger a bad message in.
   FakeMojoMessageDispatchContext fake_dispatch_context;
   mojo::test::BadMessageObserver bad_message_observer;
-
   blink::mojom::ConversionPtr conversion = blink::mojom::Conversion::New();
-  conversion->reporting_origin =
-      url::Origin::Create(GURL("https://secure.com"));
-  conversion_host()->RegisterConversion(std::move(conversion));
 
-  // Run loop to allow the bad message code to run if a bad message was
-  // triggered.
-  base::RunLoop().RunUntilIdle();
-  EXPECT_FALSE(bad_message_observer.got_bad_message());
-  EXPECT_EQ(1u, test_manager_.num_conversions());
+  // Message should be ignored because it was registered from a subframe.
+  conversion_host()->RegisterConversion(std::move(conversion));
+  EXPECT_EQ("blink.mojom.ConversionHost can only be used by the main frame.",
+            bad_message_observer.WaitForBadMessage());
+  EXPECT_EQ(0u, test_manager_.num_conversions());
 }
 
 TEST_F(ConversionHostTest, ConversionOnInsecurePage_BadMessage) {

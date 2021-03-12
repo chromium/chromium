@@ -37,8 +37,7 @@ class CONTENT_EXPORT ConversionHost : public WebContentsObserver,
   ~ConversionHost() override;
 
  private:
-  FRIEND_TEST_ALL_PREFIXES(ConversionHostTest,
-                           ValidConversionInSubframe_NoBadMessage);
+  FRIEND_TEST_ALL_PREFIXES(ConversionHostTest, ConversionInSubframe_BadMessage);
   FRIEND_TEST_ALL_PREFIXES(ConversionHostTest,
                            ConversionOnInsecurePage_BadMessage);
   FRIEND_TEST_ALL_PREFIXES(ConversionHostTest,
