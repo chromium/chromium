@@ -364,7 +364,6 @@ static_library("protobuf_full") {
               "src/google/protobuf/util/message_differencer.cc",
               "src/google/protobuf/util/message_differencer.h",
               "src/google/protobuf/util/time_util.cc",
-              "src/google/protobuf/util/time_util.h",
               "src/google/protobuf/util/type_resolver.h",
               "src/google/protobuf/util/type_resolver_util.cc",
               "src/google/protobuf/util/type_resolver_util.h",
