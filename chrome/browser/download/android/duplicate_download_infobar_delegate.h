@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_DOWNLOAD_ANDROID_DUPLICATE_DOWNLOAD_INFOBAR_DELEGATE_H_
 #define CHROME_BROWSER_DOWNLOAD_ANDROID_DUPLICATE_DOWNLOAD_INFOBAR_DELEGATE_H_
 
+#include "chrome/browser/profiles/profile.h"
 #include "components/infobars/core/confirm_infobar_delegate.h"
 
 namespace android {
@@ -24,7 +25,8 @@ class DuplicateDownloadInfoBarDelegate : public ConfirmInfoBarDelegate {
 
   virtual std::string GetPageURL() const;
 
-  virtual bool IsOffTheRecord() const;
+  // The OTRProfileID of the download. Null if for regular mode.
+  virtual base::Optional<Profile::OTRProfileID> GetOTRProfileID() const;
 
   // Whether the duplicate is an in-progress request or completed download.
   virtual bool DuplicateRequestExists() const;

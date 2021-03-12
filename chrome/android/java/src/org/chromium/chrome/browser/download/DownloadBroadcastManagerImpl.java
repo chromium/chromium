@@ -386,11 +386,16 @@ public class DownloadBroadcastManagerImpl extends DownloadBroadcastManager.Impl 
                 intent, DownloadNotificationService.EXTRA_IS_SUPPORTED_MIME_TYPE, false);
         boolean isOffTheRecord = IntentUtils.safeGetBooleanExtra(
                 intent, DownloadNotificationService.EXTRA_IS_OFF_THE_RECORD, false);
+        OTRProfileID otrProfileID = DownloadUtils.getOTRProfileIDFromIntent(intent);
+        // TODO(crbug.com/1164379): Using Primary OTR profile ID for all OTR profiles is not safe,
+        // make sure it is null after adding |DownloadNotificationService#EXTRA_OTR_PROFILE_ID|.
+        if (isOffTheRecord && otrProfileID == null) {
+            otrProfileID = OTRProfileID.getPrimaryOTRProfileID();
+        }
         Uri originalUrl = IntentUtils.safeGetParcelableExtra(intent, Intent.EXTRA_ORIGINATING_URI);
         Uri referrer = IntentUtils.safeGetParcelableExtra(intent, Intent.EXTRA_REFERRER);
         DownloadManagerService.openDownloadedContent(context, downloadFilePath, isSupportedMimeType,
-                isOffTheRecord, contentId.id, id,
-                originalUrl == null ? null : originalUrl.toString(),
+                otrProfileID, contentId.id, id, originalUrl == null ? null : originalUrl.toString(),
                 referrer == null ? null : referrer.toString(), DownloadOpenSource.NOTIFICATION,
                 null);
     }

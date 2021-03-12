@@ -45,7 +45,7 @@ class ChromeDuplicateDownloadInfoBarDelegate
   bool Cancel() override;
   std::string GetFilePath() const override;
   void InfoBarDismissed() override;
-  bool IsOffTheRecord() const override;
+  base::Optional<Profile::OTRProfileID> GetOTRProfileID() const override;
 
   // The download item that is requesting the infobar. Could get deleted while
   // the infobar is showing.
@@ -54,9 +54,6 @@ class ChromeDuplicateDownloadInfoBarDelegate
   // The target file path to be downloaded. This is used to show users the
   // file name that will be used.
   base::FilePath file_path_;
-
-  // Whether the download is off the record.
-  bool is_off_the_record_;
 
   // A callback to download target determiner to notify that file selection
   // is made (or cancelled).

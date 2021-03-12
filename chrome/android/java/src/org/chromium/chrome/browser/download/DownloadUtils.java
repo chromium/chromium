@@ -345,7 +345,7 @@ public class DownloadUtils {
      * Utility method to open an {@link OfflineItem}, which can be a chrome download, offline page.
      * Falls back to open download home.
      * @param contentId The {@link ContentId} of the associated offline item.
-     * @param isOffTheRecord Whether the download should be opened in incognito mode.
+     * @param otrProfileID The {@link OTRProfileID} of the download. Null if in regular mode.
      * @param source The location from which the download was opened.
      */
     public static void openItem(
@@ -369,21 +369,21 @@ public class DownloadUtils {
      * @param filePath Path to the file to open, can be a content Uri.
      * @param mimeType mime type of the file.
      * @param downloadGuid The associated download GUID.
-     * @param isOffTheRecord whether we are in an off the record context.
+     * @param otrProfileID The {@link OTRProfileID} of the download. Null if in regular mode.
      * @param originalUrl The original url of the downloaded file.
      * @param referrer Referrer of the downloaded file.
      * @param source The source that tries to open the download file.
      * @return whether the file could successfully be opened.
      */
     public static boolean openFile(String filePath, String mimeType, String downloadGuid,
-            boolean isOffTheRecord, String originalUrl, String referrer,
+            OTRProfileID otrProfileID, String originalUrl, String referrer,
             @DownloadOpenSource int source) {
         DownloadMetrics.recordDownloadOpen(source, mimeType);
         Context context = ContextUtils.getApplicationContext();
         DownloadManagerService service = DownloadManagerService.getDownloadManagerService();
 
         // Check if Chrome should open the file itself.
-        if (service.isDownloadOpenableInBrowser(isOffTheRecord, mimeType)) {
+        if (service.isDownloadOpenableInBrowser(mimeType)) {
             // Share URIs use the content:// scheme when able, which looks bad when displayed
             // in the URL bar.
             Uri contentUri = getUriForItem(filePath);
@@ -398,7 +398,7 @@ public class DownloadUtils {
                     contentUri /*contentUri*/, normalizedMimeType,
                     true /* allowExternalAppHandlers */);
             IntentHandler.startActivityForTrustedIntent(intent);
-            service.updateLastAccessTime(downloadGuid, isOffTheRecord);
+            service.updateLastAccessTime(downloadGuid, otrProfileID);
             return true;
         }
 
@@ -410,7 +410,7 @@ public class DownloadUtils {
             Intent viewIntent =
                     MediaViewerUtils.createViewIntentForUri(uri, mimeType, originalUrl, referrer);
             context.startActivity(viewIntent);
-            service.updateLastAccessTime(downloadGuid, isOffTheRecord);
+            service.updateLastAccessTime(downloadGuid, otrProfileID);
             return true;
         } catch (Exception e) {
             Log.e(TAG, "Cannot start activity to open file", e);
@@ -443,10 +443,10 @@ public class DownloadUtils {
 
     @CalledByNative
     private static void openDownload(String filePath, String mimeType, String downloadGuid,
-            boolean isOffTheRecord, String originalUrl, String referer,
+            OTRProfileID otrProfileID, String originalUrl, String referer,
             @DownloadOpenSource int source) {
         boolean canOpen = DownloadUtils.openFile(
-                filePath, mimeType, downloadGuid, isOffTheRecord, originalUrl, referer, source);
+                filePath, mimeType, downloadGuid, otrProfileID, originalUrl, referer, source);
         if (!canOpen) {
             DownloadUtils.showDownloadManager(null, null, source);
         }

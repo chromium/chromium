@@ -23,6 +23,7 @@ import org.chromium.chrome.R;
 import org.chromium.chrome.browser.download.DownloadManagerService;
 import org.chromium.chrome.browser.download.DownloadOpenSource;
 import org.chromium.chrome.browser.download.DownloadUtils;
+import org.chromium.chrome.browser.profiles.OTRProfileID;
 import org.chromium.components.download.DownloadCollectionBridge;
 import org.chromium.components.infobars.ConfirmInfoBar;
 import org.chromium.components.infobars.InfoBar;
@@ -39,14 +40,14 @@ public class DuplicateDownloadInfoBar extends ConfirmInfoBar {
     private final String mFilePath;
     private final boolean mIsOfflinePage;
     private final String mPageUrl;
-    private final boolean mIsIncognito;
+    private final OTRProfileID mOTRProfileID;
     private final boolean mDuplicateRequestExists;
 
     @CalledByNative
     private static InfoBar createInfoBar(String filePath, boolean isOfflinePage, String pageUrl,
-            boolean isIncognito, boolean duplicateRequestExists) {
+            OTRProfileID otrProfileID, boolean duplicateRequestExists) {
         return new DuplicateDownloadInfoBar(ContextUtils.getApplicationContext(), filePath,
-                isOfflinePage, pageUrl, isIncognito, duplicateRequestExists);
+                isOfflinePage, pageUrl, otrProfileID, duplicateRequestExists);
     }
 
     /**
@@ -55,18 +56,18 @@ public class DuplicateDownloadInfoBar extends ConfirmInfoBar {
      * @param filePath The file path.
      * @param isOfflinePage Whether the download is for offline page.
      * @param pageUrl Url of the page, ignored if this is a regular download.
-     * @param isIncognito Whether download is Incognito.
+     * @param otrProfileID The {@link OTRProfileID} of the download. Null if in regular mode.
      * @param duplicateRequestExists Whether the duplicate is a download in progress.
      */
     private DuplicateDownloadInfoBar(Context context, String filePath, boolean isOfflinePage,
-            String pageUrl, boolean isIncognito, boolean duplicateRequestExists) {
+            String pageUrl, OTRProfileID otrProfileID, boolean duplicateRequestExists) {
         super(R.drawable.infobar_downloading, R.color.infobar_icon_drawable_color, null, null, null,
                 context.getString(R.string.duplicate_download_infobar_download_button),
                 context.getString(R.string.cancel));
         mFilePath = filePath;
         mIsOfflinePage = isOfflinePage;
         mPageUrl = pageUrl;
-        mIsIncognito = isIncognito;
+        mOTRProfileID = otrProfileID;
         mDuplicateRequestExists = duplicateRequestExists;
     }
 
@@ -98,7 +99,7 @@ public class DuplicateDownloadInfoBar extends ConfirmInfoBar {
                     @Override
                     protected void onPostExecute(String filePath) {
                         if (filePath != null) {
-                            DownloadUtils.openFile(filePath, mimeType, null, mIsIncognito, null,
+                            DownloadUtils.openFile(filePath, mimeType, null, mOTRProfileID, null,
                                     null, DownloadOpenSource.INFO_BAR);
                         } else {
                             DownloadManagerService.openDownloadsPage(

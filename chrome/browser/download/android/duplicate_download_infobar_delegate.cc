@@ -14,8 +14,9 @@ std::string DuplicateDownloadInfoBarDelegate::GetPageURL() const {
   return std::string();
 }
 
-bool DuplicateDownloadInfoBarDelegate::IsOffTheRecord() const {
-  return false;
+base::Optional<Profile::OTRProfileID>
+DuplicateDownloadInfoBarDelegate::GetOTRProfileID() const {
+  return base::nullopt;
 }
 
 bool DuplicateDownloadInfoBarDelegate::DuplicateRequestExists() const {
