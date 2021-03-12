@@ -81,6 +81,10 @@ void BookmarkAppRegistryController::SetAppIsDisabled(
   registrar_->NotifyWebAppDisabledStateChanged(app_id, is_disabled);
 }
 
+void BookmarkAppRegistryController::UpdateAppsDisableMode() {
+  registrar_->NotifyWebAppsDisabledModeChanged();
+}
+
 void BookmarkAppRegistryController::SetAppIsLocallyInstalled(
     const web_app::AppId& app_id,
     bool is_locally_installed) {

@@ -101,6 +101,10 @@ class WebAppsChromeOs : public WebAppsBase,
   void OnWebAppWillBeUninstalled(const web_app::AppId& app_id) override;
   void OnWebAppDisabledStateChanged(const web_app::AppId& app_id,
                                     bool is_disabled) override;
+  void OnWebAppsDisabledModeChanged() override;
+
+  // Updates app visibility.
+  void UpdateAppDisabledMode(apps::mojom::AppPtr& app);
 
   // ArcAppListPrefs::Observer overrides.
   void OnPackageInstalled(

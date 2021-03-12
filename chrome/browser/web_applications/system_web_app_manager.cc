@@ -853,7 +853,7 @@ void SystemWebAppManager::OnAppsSynchronized(
   // May be called more than once in tests.
   if (!on_apps_synchronized_->is_signaled()) {
     on_apps_synchronized_->Signal();
-    web_app_policy_manager_->OnAppsPolicyChanged();
+    web_app_policy_manager_->OnDisableListPolicyChanged();
     // TODO(http://crbug/1173187): Don't create SWA background tasks that are
     // associated with a disabled SWA.
   }

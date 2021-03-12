@@ -33,6 +33,7 @@ class BookmarkAppRegistryController : public web_app::AppRegistryController {
                              bool is_user_action) override;
   void SetAppIsDisabled(const web_app::AppId& app_id,
                         bool is_disabled) override;
+  void UpdateAppsDisableMode() override;
   void SetAppIsLocallyInstalled(const web_app::AppId& app_id,
                                 bool is_locally_installed) override;
   void SetAppLastLaunchTime(const web_app::AppId& app_id,

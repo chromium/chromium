@@ -14,6 +14,9 @@
 #include "chrome/browser/web_applications/policy/web_app_policy_manager_observer.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "url/gurl.h"
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "chrome/browser/chromeos/policy/system_features_disable_list_policy_handler.h"
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 class PrefService;
 class Profile;
@@ -60,10 +63,17 @@ class WebAppPolicyManager {
 
   // Used for handling SystemFeaturesDisableList policy. Checks if the app is
   // disabled and notifies app_registry_controller_ about the current app state.
-  void OnAppsPolicyChanged();
+  void OnDisableListPolicyChanged();
 
   // Gets system web apps disabled by SystemFeaturesDisableList policy.
   std::set<SystemAppType> GetDisabledSystemWebApps() const;
+
+  // Gets ids of web apps disabled by SystemFeaturesDisableList policy.
+  std::set<AppId> GetDisabledWebAppsIds() const;
+
+  // Checks if UI mode of disabled web apps is hidden.
+  bool IsDisabledAppsModeHidden() const;
+
   RunOnOsLoginPolicy GetUrlRunOnOsLoginPolicy(base::Optional<GURL> url) const;
 
   void AddObserver(WebAppPolicyManagerObserver* observer);
@@ -98,10 +108,9 @@ class WebAppPolicyManager {
       std::map<GURL, bool> uninstall_results);
   void ApplyPolicySettings();
 
-  void ObserveSystemDisableListPolicy();
+  void ObserveDisabledSystemFeaturesPolicy();
 
-  // Gets ids of web apps disabled by SystemFeaturesDisableList policy.
-  std::set<AppId> GetDisabledWebAppsIds() const;
+  void OnDisableModePolicyChanged();
 
   Profile* profile_;
   PrefService* pref_service_;

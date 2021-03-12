@@ -20,6 +20,7 @@ class TestAppRegistryController : public AppRegistryController {
                              DisplayMode display_mode,
                              bool is_user_action) override;
   void SetAppIsDisabled(const AppId& app_id, bool is_disabled) override;
+  void UpdateAppsDisableMode() override;
   void SetAppIsLocallyInstalled(const AppId& app_id,
                                 bool is_locally_installed) override;
   void SetAppLastLaunchTime(const AppId& app_id,

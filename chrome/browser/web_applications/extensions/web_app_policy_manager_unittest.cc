@@ -792,6 +792,15 @@ TEST_F(WebAppPolicyManagerTest, DisableWebApps) {
 
   disabled_apps = policy_manager()->GetDisabledSystemWebApps();
   EXPECT_EQ(disabled_apps, expected_disabled_apps);
+
+  // Default disable mode is blocked.
+  EXPECT_FALSE(policy_manager()->IsDisabledAppsModeHidden());
+  // Set disable mode to hidden.
+  testing_local_state_.Get()->SetUserPref(
+      policy::policy_prefs::kSystemFeaturesDisableMode,
+      std::make_unique<base::Value>(policy::kHiddenDisableMode));
+  base::RunLoop().RunUntilIdle();
+  EXPECT_TRUE(policy_manager()->IsDisabledAppsModeHidden());
 }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 

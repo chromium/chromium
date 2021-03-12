@@ -44,6 +44,7 @@
 #include "chrome/browser/web_applications/components/web_app_helpers.h"
 #include "chrome/browser/web_applications/components/web_app_id.h"
 #include "chrome/browser/web_applications/components/web_app_utils.h"
+#include "chrome/browser/web_applications/policy/web_app_policy_manager.h"
 #include "chrome/browser/web_applications/system_web_app_manager.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
@@ -58,6 +59,7 @@
 #include "components/full_restore/app_launch_info.h"
 #include "components/full_restore/full_restore_utils.h"
 #include "components/services/app_service/public/cpp/intent_filter_util.h"
+#include "components/services/app_service/public/mojom/types.mojom-shared.h"
 #include "components/sessions/core/session_id.h"
 #include "content/public/browser/clear_site_data_utils.h"
 #include "content/public/browser/web_contents.h"
@@ -422,7 +424,70 @@ void WebAppsChromeOs::OnWebAppDisabledStateChanged(const web_app::AppId& app_id,
                            : apps::mojom::Readiness::kReady);
   app->icon_key = icon_key_factory().MakeIconKey(
       GetIconEffects(web_app, paused_apps_.IsPaused(app_id), is_disabled));
+
+  // If the disable mode is hidden, update the visibility of the new disabled
+  // app.
+  if (is_disabled && provider()->policy_manager().IsDisabledAppsModeHidden()) {
+    UpdateAppDisabledMode(app);
+  }
+
   Publish(std::move(app), subscribers());
+}
+
+void WebAppsChromeOs::OnWebAppsDisabledModeChanged() {
+  std::vector<apps::mojom::AppPtr> apps;
+  auto disabled_web_apps = provider()->policy_manager().GetDisabledWebAppsIds();
+  std::vector<web_app::AppId> app_ids = provider()->registrar().GetAppIds();
+  for (const auto& id : app_ids) {
+    const bool is_disabled = base::Contains(disabled_web_apps, id);
+    // We only update visibility of disabled apps in this method. When enabling
+    // previously disabled app, OnWebAppDisabledStateChanged() method will be
+    // called and this method will update visibility and readiness of the newly
+    // enabled app.
+    if (is_disabled) {
+      const web_app::WebApp* web_app = GetWebApp(id);
+      if (!web_app || !Accepts(id)) {
+        continue;
+      }
+      apps::mojom::AppPtr app = apps::mojom::App::New();
+      app->app_type = apps::mojom::AppType::kWeb;
+      app->app_id = web_app->app_id();
+      UpdateAppDisabledMode(app);
+      apps.push_back(std::move(app));
+    }
+  }
+  for (auto& subscriber : subscribers()) {
+    subscriber->OnApps(std::move(apps), apps::mojom::AppType::kWeb,
+                       false /* should_notify_initialized */);
+  }
+}
+
+void WebAppsChromeOs::UpdateAppDisabledMode(apps::mojom::AppPtr& app) {
+  if (provider()->policy_manager().IsDisabledAppsModeHidden()) {
+    app->show_in_launcher = apps::mojom::OptionalBool::kFalse;
+    app->show_in_search = apps::mojom::OptionalBool::kFalse;
+    app->show_in_shelf = apps::mojom::OptionalBool::kFalse;
+    return;
+  }
+  app->show_in_launcher = apps::mojom::OptionalBool::kTrue;
+  app->show_in_search = apps::mojom::OptionalBool::kTrue;
+  app->show_in_shelf = apps::mojom::OptionalBool::kTrue;
+
+  auto system_app_type =
+      provider()->system_web_app_manager().GetSystemAppTypeForAppId(
+          app->app_id);
+  if (system_app_type.has_value()) {
+    app->show_in_launcher =
+        provider()->system_web_app_manager().ShouldShowInLauncher(
+            system_app_type.value())
+            ? apps::mojom::OptionalBool::kTrue
+            : apps::mojom::OptionalBool::kFalse;
+    app->show_in_search =
+        provider()->system_web_app_manager().ShouldShowInSearch(
+            system_app_type.value())
+            ? apps::mojom::OptionalBool::kTrue
+            : apps::mojom::OptionalBool::kFalse;
+  }
 }
 
 void WebAppsChromeOs::OnPackageInstalled(

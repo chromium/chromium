@@ -20,6 +20,7 @@ void TestAppRegistryController::SetAppUserDisplayMode(const AppId& app_id,
 
 void TestAppRegistryController::SetAppIsDisabled(const AppId& app_id,
                                                  bool is_disabled) {}
+void TestAppRegistryController::UpdateAppsDisableMode() {}
 
 void TestAppRegistryController::SetAppIsLocallyInstalled(
     const AppId& app_id,

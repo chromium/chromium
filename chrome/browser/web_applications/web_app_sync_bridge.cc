@@ -235,6 +235,13 @@ void WebAppSyncBridge::SetAppIsDisabled(const AppId& app_id, bool is_disabled) {
     registrar_->NotifyWebAppDisabledStateChanged(app_id, is_disabled);
 }
 
+void WebAppSyncBridge::UpdateAppsDisableMode() {
+  if (!IsChromeOs())
+    return;
+
+  registrar_->NotifyWebAppsDisabledModeChanged();
+}
+
 void WebAppSyncBridge::SetAppIsLocallyInstalled(const AppId& app_id,
                                                 bool is_locally_installed) {
   {

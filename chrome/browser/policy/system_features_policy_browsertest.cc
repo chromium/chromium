@@ -16,6 +16,8 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
 #include "chrome/browser/web_applications/components/web_app_id_constants.h"
+#include "chrome/browser/web_applications/system_web_app_manager.h"
+#include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/ui_test_utils.h"
@@ -34,6 +36,13 @@ namespace policy {
 namespace {
 const char kCanvasAppURL[] = "https://canvas.apps.chrome/";
 const char kCanvasAppTitle[] = "canvas.apps.chrome";
+
+struct VisibilityFlags {
+  apps::mojom::OptionalBool show_in_search;
+  apps::mojom::OptionalBool show_in_launcher;
+  apps::mojom::OptionalBool show_in_shelf;
+};
+
 }  // namespace
 
 class SystemFeaturesPolicyTest : public PolicyTest {
@@ -80,15 +89,23 @@ class SystemFeaturesPolicyTest : public PolicyTest {
     UpdateProviderPolicy(policies);
   }
 
-  void VerifyAppState(const char* app_id,
-                      apps::mojom::Readiness expected_readiness,
-                      bool blocked_icon,
-                      apps::mojom::OptionalBool expected_visibility) {
+  void VerifyExtensionAppState(const char* app_id,
+                               apps::mojom::Readiness expected_readiness,
+                               bool blocked_icon,
+                               const VisibilityFlags& expected_visibility) {
     auto* profile = browser()->profile();
     extensions::ExtensionRegistry* registry =
         extensions::ExtensionRegistry::Get(profile);
     ASSERT_TRUE(registry->enabled_extensions().GetByID(app_id));
+    VerifyAppState(app_id, expected_readiness, blocked_icon,
+                   expected_visibility);
+  }
 
+  void VerifyAppState(const char* app_id,
+                      apps::mojom::Readiness expected_readiness,
+                      bool blocked_icon,
+                      const VisibilityFlags& expected_visibility) {
+    auto* profile = browser()->profile();
     apps::AppServiceProxy* proxy =
         apps::AppServiceProxyFactory::GetForProfile(profile);
     proxy->FlushMojoCallsForTesting();
@@ -104,9 +121,10 @@ class SystemFeaturesPolicyTest : public PolicyTest {
             EXPECT_FALSE(apps::IconEffects::kBlocked &
                          update.IconKey()->icon_effects);
           }
-          EXPECT_EQ(expected_visibility, update.ShowInLauncher());
-          EXPECT_EQ(expected_visibility, update.ShowInSearch());
-          EXPECT_EQ(expected_visibility, update.ShowInShelf());
+          EXPECT_EQ(expected_visibility.show_in_launcher,
+                    update.ShowInLauncher());
+          EXPECT_EQ(expected_visibility.show_in_search, update.ShowInSearch());
+          EXPECT_EQ(expected_visibility.show_in_shelf, update.ShowInShelf());
         });
   }
 
@@ -121,35 +139,55 @@ class SystemFeaturesPolicyTest : public PolicyTest {
     apps::AppServiceProxyFactory::GetForProfile(browser()->profile())
         ->FlushMojoCallsForTesting();
   }
+
+  VisibilityFlags GetVisibilityFlags(bool is_hidden) {
+    VisibilityFlags flags;
+    if (is_hidden) {
+      flags.show_in_launcher = apps::mojom::OptionalBool::kFalse;
+      flags.show_in_search = apps::mojom::OptionalBool::kFalse;
+      flags.show_in_shelf = apps::mojom::OptionalBool::kFalse;
+      return flags;
+    }
+    flags.show_in_launcher = apps::mojom::OptionalBool::kTrue;
+    flags.show_in_search = apps::mojom::OptionalBool::kTrue;
+    flags.show_in_shelf = apps::mojom::OptionalBool::kTrue;
+    return flags;
+  }
 };
 
 IN_PROC_BROWSER_TEST_F(SystemFeaturesPolicyTest, DisableWebStoreBeforeInstall) {
   base::Value system_features(base::Value::Type::LIST);
   system_features.Append(kWebStoreFeature);
+  VisibilityFlags expected_visibility =
+      GetVisibilityFlags(false /* is_hidden */);
   UpdateSystemFeaturesDisableList(std::move(system_features), nullptr);
   EnableExtensions(true);
-  VerifyAppState(extensions::kWebStoreAppId,
-                 apps::mojom::Readiness::kDisabledByPolicy, true,
-                 apps::mojom::OptionalBool::kTrue);
+  VerifyExtensionAppState(extensions::kWebStoreAppId,
+                          apps::mojom::Readiness::kDisabledByPolicy, true,
+                          expected_visibility);
 
   UpdateSystemFeaturesDisableList(base::Value(), nullptr);
-  VerifyAppState(extensions::kWebStoreAppId, apps::mojom::Readiness::kReady,
-                 false, apps::mojom::OptionalBool::kTrue);
+  VerifyExtensionAppState(extensions::kWebStoreAppId,
+                          apps::mojom::Readiness::kReady, false,
+                          expected_visibility);
 }
 
 IN_PROC_BROWSER_TEST_F(SystemFeaturesPolicyTest, DisableWebStoreAfterInstall) {
   EnableExtensions(false);
   base::Value system_features(base::Value::Type::LIST);
   system_features.Append(kWebStoreFeature);
+  VisibilityFlags expected_visibility =
+      GetVisibilityFlags(false /* is_hidden */);
   UpdateSystemFeaturesDisableList(std::move(system_features), nullptr);
 
-  VerifyAppState(extensions::kWebStoreAppId,
-                 apps::mojom::Readiness::kDisabledByPolicy, true,
-                 apps::mojom::OptionalBool::kTrue);
+  VerifyExtensionAppState(extensions::kWebStoreAppId,
+                          apps::mojom::Readiness::kDisabledByPolicy, true,
+                          expected_visibility);
 
   UpdateSystemFeaturesDisableList(base::Value(), nullptr);
-  VerifyAppState(extensions::kWebStoreAppId, apps::mojom::Readiness::kReady,
-                 false, apps::mojom::OptionalBool::kTrue);
+  VerifyExtensionAppState(extensions::kWebStoreAppId,
+                          apps::mojom::Readiness::kReady, false,
+                          expected_visibility);
 }
 
 IN_PROC_BROWSER_TEST_F(SystemFeaturesPolicyTest,
@@ -157,25 +195,110 @@ IN_PROC_BROWSER_TEST_F(SystemFeaturesPolicyTest,
   EnableExtensions(false);
   base::Value system_features(base::Value::Type::LIST);
   system_features.Append(kWebStoreFeature);
-  // Disable app with default mode (blocked)..
+  VisibilityFlags expected_visibility =
+      GetVisibilityFlags(false /* is_hidden */);
+  // Disable app with default mode (blocked).
   UpdateSystemFeaturesDisableList(system_features.Clone(), nullptr);
-  VerifyAppState(extensions::kWebStoreAppId,
-                 apps::mojom::Readiness::kDisabledByPolicy, true,
-                 apps::mojom::OptionalBool::kTrue);
+  VerifyExtensionAppState(extensions::kWebStoreAppId,
+                          apps::mojom::Readiness::kDisabledByPolicy, true,
+                          expected_visibility);
   // Disable and hide app.
+  expected_visibility = GetVisibilityFlags(true /* is_hidden */);
   UpdateSystemFeaturesDisableList(system_features.Clone(), kHiddenDisableMode);
-  VerifyAppState(extensions::kWebStoreAppId,
-                 apps::mojom::Readiness::kDisabledByPolicy, true,
-                 apps::mojom::OptionalBool::kFalse);
+  VerifyExtensionAppState(extensions::kWebStoreAppId,
+                          apps::mojom::Readiness::kDisabledByPolicy, true,
+                          expected_visibility);
   // Disable and block app.
+  expected_visibility = GetVisibilityFlags(false /* is_hidden */);
   UpdateSystemFeaturesDisableList(system_features.Clone(), kBlockedDisableMode);
-  VerifyAppState(extensions::kWebStoreAppId,
-                 apps::mojom::Readiness::kDisabledByPolicy, true,
-                 apps::mojom::OptionalBool::kTrue);
+  VerifyExtensionAppState(extensions::kWebStoreAppId,
+                          apps::mojom::Readiness::kDisabledByPolicy, true,
+                          expected_visibility);
   // Enable app
   UpdateSystemFeaturesDisableList(base::Value(), nullptr);
-  VerifyAppState(extensions::kWebStoreAppId, apps::mojom::Readiness::kReady,
-                 false, apps::mojom::OptionalBool::kTrue);
+  VerifyExtensionAppState(extensions::kWebStoreAppId,
+                          apps::mojom::Readiness::kReady, false,
+                          expected_visibility);
+}
+
+IN_PROC_BROWSER_TEST_F(SystemFeaturesPolicyTest, DisableCameraWithModes) {
+  base::Value system_features(base::Value::Type::LIST);
+  system_features.Append(kCameraFeature);
+  VisibilityFlags expected_visibility =
+      GetVisibilityFlags(false /* is_hidden */);
+  // Disable app with default mode (blocked).
+  UpdateSystemFeaturesDisableList(system_features.Clone(), nullptr);
+  VerifyAppState(web_app::kCameraAppId,
+                 apps::mojom::Readiness::kDisabledByPolicy, true,
+                 expected_visibility);
+  // Disable and hide app.
+  expected_visibility = GetVisibilityFlags(true /* is_hidden */);
+  UpdateSystemFeaturesDisableList(system_features.Clone(), kHiddenDisableMode);
+  VerifyAppState(web_app::kCameraAppId,
+                 apps::mojom::Readiness::kDisabledByPolicy, true,
+                 expected_visibility);
+  // Disable and block app.
+  expected_visibility = GetVisibilityFlags(false /* is_hidden */);
+  UpdateSystemFeaturesDisableList(system_features.Clone(), kBlockedDisableMode);
+  VerifyAppState(web_app::kCameraAppId,
+                 apps::mojom::Readiness::kDisabledByPolicy, true,
+                 expected_visibility);
+  // Enable app.
+  UpdateSystemFeaturesDisableList(base::Value(), nullptr);
+  VerifyAppState(web_app::kCameraAppId, apps::mojom::Readiness::kReady, false,
+                 expected_visibility);
+}
+
+IN_PROC_BROWSER_TEST_F(SystemFeaturesPolicyTest,
+                       DisableMultipleAppsWithHiddenMode) {
+  base::Value system_features(base::Value::Type::LIST);
+  EnableExtensions(false);
+  system_features.Append(kCameraFeature);
+  system_features.Append(kScanningFeature);
+  system_features.Append(kWebStoreFeature);
+  VisibilityFlags camera_expected_visibility =
+      GetVisibilityFlags(true /* is_hidden */);
+  VisibilityFlags scanning_expected_visibility =
+      GetVisibilityFlags(true /* is_hidden */);
+  VisibilityFlags web_store_expected_visibility =
+      GetVisibilityFlags(true /* is_hidden */);
+  // Disable app with hidden mode.
+  UpdateSystemFeaturesDisableList(system_features.Clone(), kHiddenDisableMode);
+  VerifyAppState(web_app::kCameraAppId,
+                 apps::mojom::Readiness::kDisabledByPolicy, true,
+                 camera_expected_visibility);
+  VerifyAppState(web_app::kScanningAppId,
+                 apps::mojom::Readiness::kDisabledByPolicy, true,
+                 scanning_expected_visibility);
+  VerifyExtensionAppState(extensions::kWebStoreAppId,
+                          apps::mojom::Readiness::kDisabledByPolicy, true,
+                          web_store_expected_visibility);
+  // Disable and block apps.
+  camera_expected_visibility = GetVisibilityFlags(false /* is_hidden */);
+  scanning_expected_visibility = GetVisibilityFlags(false /* is_hidden */);
+  // We never show scanning in the launcher.
+  scanning_expected_visibility.show_in_launcher =
+      apps::mojom::OptionalBool::kFalse;
+  web_store_expected_visibility = GetVisibilityFlags(false /* is_hidden */);
+  UpdateSystemFeaturesDisableList(system_features.Clone(), kBlockedDisableMode);
+  VerifyAppState(web_app::kCameraAppId,
+                 apps::mojom::Readiness::kDisabledByPolicy, true,
+                 camera_expected_visibility);
+  VerifyAppState(web_app::kScanningAppId,
+                 apps::mojom::Readiness::kDisabledByPolicy, true,
+                 scanning_expected_visibility);
+  VerifyExtensionAppState(extensions::kWebStoreAppId,
+                          apps::mojom::Readiness::kDisabledByPolicy, true,
+                          web_store_expected_visibility);
+  // Enable apps.
+  UpdateSystemFeaturesDisableList(base::Value(), nullptr);
+  VerifyAppState(web_app::kCameraAppId, apps::mojom::Readiness::kReady, false,
+                 camera_expected_visibility);
+  VerifyAppState(web_app::kScanningAppId, apps::mojom::Readiness::kReady, false,
+                 scanning_expected_visibility);
+  VerifyExtensionAppState(extensions::kWebStoreAppId,
+                          apps::mojom::Readiness::kReady, false,
+                          web_store_expected_visibility);
 }
 
 IN_PROC_BROWSER_TEST_F(SystemFeaturesPolicyTest, RedirectChromeSettingsURL) {
