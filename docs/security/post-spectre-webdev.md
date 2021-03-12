@@ -3,7 +3,17 @@
 Contributors: Artur Janc, Camille Lamy, Charlie Reis, Jun Kokatsu, Mike West.
 Patches and corrections welcome!
 
-Last Updated: Feb. 25th, 2021
+Last Updated: Mar. 12th, 2021
+
+*** note
+**Note**: This document has been [adopted][cfc] by the W3C's Web Application Security
+Working Group; [https://w3c.github.io/webappsec-post-spectre-webdev/][ED] is
+proceeding under that group's aegis, and this document will redirect there
+once the working group is satisfied with its recommendations.
+***
+
+[cfc]: https://lists.w3.org/Archives/Public/public-webappsec/2021Feb/0007.html
+[ED]: https://w3c.github.io/webappsec-post-spectre-webdev/
 
 [TOC]
 
