@@ -230,4 +230,21 @@ IN_PROC_BROWSER_TEST_F(TestAPITest, AssertPromiseRejects_PromiseResolved) {
   EXPECT_EQ(kExpectedFailureMessage, result_catcher.message());
 }
 
+// Tests that finishing the test without waiting for the result of
+// chrome.test.assertPromiseRejects() properly fails the test.
+IN_PROC_BROWSER_TEST_F(TestAPITest, AssertPromiseRejects_PromiseIgnored) {
+  ResultCatcher result_catcher;
+  constexpr char kWorkerJs[] =
+      R"(chrome.test.runTests([
+           async function failedAssert_PromiseIgnored() {
+             let p = new Promise((resolve, reject) => { });
+             chrome.test.assertPromiseRejects(p, 'Expected Error');
+             chrome.test.succeed();
+           },
+         ]);)";
+  ASSERT_TRUE(LoadExtensionWithWorkerScript(kWorkerJs));
+  EXPECT_FALSE(result_catcher.GetNextResult());
+  EXPECT_EQ(kExpectedFailureMessage, result_catcher.message());
+}
+
 }  // namespace extensions
