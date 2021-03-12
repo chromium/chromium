@@ -15,6 +15,7 @@
 #include "base/test/task_environment.h"
 #include "chromeos/network/onc/certificate_scope.h"
 #include "chromeos/network/policy_certificate_provider.h"
+#include "chromeos/network/system_token_cert_db_storage.h"
 #include "crypto/scoped_nss_types.h"
 #include "crypto/scoped_test_nss_db.h"
 #include "net/cert/nss_cert_database_chromeos.h"
@@ -165,6 +166,7 @@ class NetworkCertLoaderTest : public testing::Test,
     ASSERT_TRUE(primary_public_slot_db_.is_open());
     ASSERT_TRUE(primary_private_slot_db_.is_open());
 
+    SystemTokenCertDbStorage::Initialize();
     NetworkCertLoader::Initialize();
     cert_loader_ = NetworkCertLoader::Get();
     cert_loader_->AddObserver(this);
@@ -173,6 +175,7 @@ class NetworkCertLoaderTest : public testing::Test,
   void TearDown() override {
     cert_loader_->RemoveObserver(this);
     NetworkCertLoader::Shutdown();
+    SystemTokenCertDbStorage::Shutdown();
   }
 
  protected:
@@ -361,7 +364,7 @@ TEST_F(NetworkCertLoaderTest, BasicOnlySystemDB) {
   ImportCACert("root_ca_cert.pem", system_certdb_.get(), &certs);
   task_environment_.RunUntilIdle();
 
-  cert_loader_->SetSystemNSSDB(system_certdb_.get());
+  cert_loader_->SetSystemNssDbForTesting(system_certdb_.get());
 
   EXPECT_FALSE(cert_loader_->initial_load_finished());
   EXPECT_FALSE(cert_loader_->user_cert_database_load_finished());
@@ -405,7 +408,7 @@ TEST_F(NetworkCertLoaderTest, SystemAndUnaffiliatedUserDB) {
   EXPECT_FALSE(cert_loader_->initial_load_finished());
   EXPECT_FALSE(cert_loader_->user_cert_database_load_finished());
 
-  cert_loader_->SetSystemNSSDB(system_certdb_.get());
+  cert_loader_->SetSystemNssDbForTesting(system_certdb_.get());
 
   EXPECT_FALSE(cert_loader_->initial_load_finished());
   EXPECT_FALSE(cert_loader_->user_cert_database_load_finished());
@@ -472,7 +475,7 @@ TEST_F(NetworkCertLoaderTest, SystemAndAffiliatedUserDB) {
   EXPECT_FALSE(cert_loader_->initial_load_finished());
   EXPECT_FALSE(cert_loader_->user_cert_database_load_finished());
 
-  cert_loader_->SetSystemNSSDB(system_certdb_.get());
+  cert_loader_->SetSystemNssDbForTesting(system_certdb_.get());
 
   EXPECT_FALSE(cert_loader_->initial_load_finished());
   EXPECT_FALSE(cert_loader_->user_cert_database_load_finished());
@@ -621,7 +624,7 @@ TEST_F(NetworkCertLoaderTest, ClientLoaderUpdateOnNewClientCertInSystemToken) {
   AddSystemToken(system_certdb_.get());
   task_environment_.RunUntilIdle();
 
-  cert_loader_->SetSystemNSSDB(system_certdb_.get());
+  cert_loader_->SetSystemNssDbForTesting(system_certdb_.get());
   task_environment_.RunUntilIdle();
   EXPECT_EQ(1U, GetAndResetCertificatesLoadedEventsCount());
 

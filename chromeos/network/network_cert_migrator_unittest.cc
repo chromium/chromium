@@ -17,6 +17,7 @@
 #include "chromeos/dbus/shill/shill_service_client.h"
 #include "chromeos/network/network_cert_loader.h"
 #include "chromeos/network/network_state_handler.h"
+#include "chromeos/network/system_token_cert_db_storage.h"
 #include "crypto/scoped_nss_types.h"
 #include "crypto/scoped_test_nss_db.h"
 #include "net/cert/nss_cert_database_chromeos.h"
@@ -72,6 +73,7 @@ class NetworkCertMigratorTest : public testing::Test {
     service_test_->ClearServices();
     task_environment_.RunUntilIdle();
 
+    SystemTokenCertDbStorage::Initialize();
     NetworkCertLoader::Initialize();
   }
 
@@ -80,6 +82,7 @@ class NetworkCertMigratorTest : public testing::Test {
     network_cert_migrator_.reset();
     network_state_handler_.reset();
     NetworkCertLoader::Shutdown();
+    SystemTokenCertDbStorage::Shutdown();
     shill_clients::Shutdown();
   }
 
@@ -227,7 +230,8 @@ class NetworkCertMigratorTest : public testing::Test {
 TEST_F(NetworkCertMigratorTest, DeferUserNetworkMigrationToUserCertDbLoad) {
   SetupNetworkWithEapCertId(ShillProfile::USER, true /* wifi */, "123:12345");
   // Load the system NSSDB only first
-  NetworkCertLoader::Get()->SetSystemNSSDB(test_system_nsscertdb_.get());
+  NetworkCertLoader::Get()->SetSystemNssDbForTesting(
+      test_system_nsscertdb_.get());
 
   SetupNetworkHandlers();
   task_environment_.RunUntilIdle();
@@ -254,7 +258,8 @@ TEST_F(NetworkCertMigratorTest, DeferUserNetworkMigrationToUserCertDbLoad) {
 TEST_F(NetworkCertMigratorTest, RunSharedNetworkMigrationOnFirstCertDbLoad) {
   SetupNetworkWithEapCertId(ShillProfile::SHARED, true /* wifi */, "123:12345");
   // Load the system NSSDB only first
-  NetworkCertLoader::Get()->SetSystemNSSDB(test_system_nsscertdb_.get());
+  NetworkCertLoader::Get()->SetSystemNssDbForTesting(
+      test_system_nsscertdb_.get());
 
   SetupNetworkHandlers();
   task_environment_.RunUntilIdle();

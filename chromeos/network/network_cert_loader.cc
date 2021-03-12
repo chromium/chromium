@@ -20,6 +20,7 @@
 #include "chromeos/network/certificate_helper.h"
 #include "chromeos/network/onc/certificate_scope.h"
 #include "chromeos/network/policy_certificate_provider.h"
+#include "chromeos/network/system_token_cert_db_storage.h"
 #include "crypto/chaps_support.h"
 #include "crypto/nss_util.h"
 #include "crypto/scoped_nss_types.h"
@@ -345,6 +346,12 @@ NetworkCertLoader::NetworkCertLoader() {
   user_public_slot_cert_cache_ =
       std::make_unique<CertCache>(base::BindRepeating(
           &NetworkCertLoader::OnCertCacheUpdated, base::Unretained(this)));
+
+  auto* system_token_cert_db_storage = SystemTokenCertDbStorage::Get();
+  DCHECK(system_token_cert_db_storage);
+
+  system_token_cert_db_storage->GetDatabase(base::BindOnce(
+      &NetworkCertLoader::OnSystemNssDbReady, weak_factory_.GetWeakPtr()));
 }
 
 NetworkCertLoader::~NetworkCertLoader() {
@@ -356,7 +363,7 @@ void NetworkCertLoader::MarkSystemNSSDBWillBeInitialized() {
   system_slot_cert_cache_->MarkWillBeInitialized(true);
 }
 
-void NetworkCertLoader::SetSystemNSSDB(
+void NetworkCertLoader::SetSystemNssDbForTesting(
     net::NSSCertDatabase* system_slot_database) {
   system_slot_cert_cache_->SetNSSDBAndSlot(
       system_slot_database, system_slot_database->GetSystemSlot(),
@@ -500,6 +507,20 @@ std::string NetworkCertLoader::GetPkcs11IdAndSlotForCert(CERTCertificate* cert,
   SECKEY_DestroyPrivateKey(priv_key);
 
   return pkcs11_id;
+}
+
+void NetworkCertLoader::OnSystemNssDbReady(
+    net::NSSCertDatabase* system_slot_database) {
+  // SystemTokenCertDbStorage informs callers that the system token certificate
+  // database initialization failed by returning nullptr.
+  if (!system_slot_database) {
+    LOG(ERROR) << "Failed to retrieve system token certificate database";
+    return;
+  }
+
+  system_slot_cert_cache_->SetNSSDBAndSlot(
+      system_slot_database, system_slot_database->GetSystemSlot(),
+      true /* is_slot_device_wide */);
 }
 
 void NetworkCertLoader::OnCertCacheUpdated() {

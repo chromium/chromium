@@ -176,6 +176,7 @@
 #include "chromeos/network/network_cert_loader.h"
 #include "chromeos/network/network_handler.h"
 #include "chromeos/network/portal_detector/network_portal_detector_stub.h"
+#include "chromeos/network/system_token_cert_db_storage.h"
 #include "chromeos/services/cros_healthd/public/cpp/service_connection.h"
 #include "chromeos/services/machine_learning/public/cpp/fake_service_connection.h"
 #include "chromeos/services/machine_learning/public/cpp/service_connection.h"
@@ -557,6 +558,10 @@ void ChromeBrowserMainPartsChromeos::PreMainMessageLoopStart() {
 }
 
 void ChromeBrowserMainPartsChromeos::PostMainMessageLoopStart() {
+  // Used by ChromeOS components to retrieve the system token certificate
+  // database.
+  SystemTokenCertDbStorage::Initialize();
+
   // device_event_log must be initialized after the message loop.
   device_event_log::Initialize(0 /* default max entries */);
 
@@ -1298,6 +1303,9 @@ void ChromeBrowserMainPartsChromeos::PostMainMessageLoopRun() {
 
   // Cleans up dbus services depending on ash.
   dbus_services_->PreAshShutdown();
+
+  // Destroy the SystemTokenCertDbStorage global instance.
+  SystemTokenCertDbStorage::Shutdown();
 
   // NOTE: Closes ash and destroys ash::Shell.
   ChromeBrowserMainPartsLinux::PostMainMessageLoopRun();

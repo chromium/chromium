@@ -183,6 +183,8 @@ component("network") {
     "shill_property_handler.h",
     "shill_property_util.cc",
     "shill_property_util.h",
+    "system_token_cert_db_storage.cc",
+    "system_token_cert_db_storage.h",
     "tether_constants.cc",
     "tether_constants.h",
   ]
@@ -227,6 +229,8 @@ source_set("test_support") {
     "onc/onc_test_utils.h",
     "portal_detector/mock_network_portal_detector.cc",
     "portal_detector/mock_network_portal_detector.h",
+    "system_token_cert_db_storage_test_util.cc",
+    "system_token_cert_db_storage_test_util.h",
     "test_cellular_esim_profile_handler.cc",
     "test_cellular_esim_profile_handler.h",
     "test_cellular_inhibitor.cc",
@@ -304,6 +308,7 @@ source_set("unit_tests") {
     "proxy/proxy_config_service_impl_unittest.cc",
     "proxy/ui_proxy_config_service_unittest.cc",
     "shill_property_handler_unittest.cc",
+    "system_token_cert_db_storage_unittest.cc",
   ]
 }
 

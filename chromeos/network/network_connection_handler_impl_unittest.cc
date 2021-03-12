@@ -28,6 +28,7 @@
 #include "chromeos/network/network_state_test_helper.h"
 #include "chromeos/network/onc/onc_utils.h"
 #include "chromeos/network/prohibited_technologies_handler.h"
+#include "chromeos/network/system_token_cert_db_storage.h"
 #include "components/onc/onc_constants.h"
 #include "crypto/scoped_nss_types.h"
 #include "crypto/scoped_test_nss_db.h"
@@ -157,6 +158,7 @@ class NetworkConnectionHandlerImplTest : public testing::Test {
         crypto::ScopedPK11Slot(PK11_ReferenceSlot(test_nssdb_.slot())),
         crypto::ScopedPK11Slot(PK11_ReferenceSlot(test_nssdb_.slot()))));
 
+    SystemTokenCertDbStorage::Initialize();
     NetworkCertLoader::Initialize();
     NetworkCertLoader::ForceAvailableForNetworkAuthForTesting();
 
@@ -210,6 +212,7 @@ class NetworkConnectionHandlerImplTest : public testing::Test {
     LoginState::Shutdown();
 
     NetworkCertLoader::Shutdown();
+    SystemTokenCertDbStorage::Shutdown();
   }
 
  protected:

@@ -27,6 +27,7 @@
 #include "chromeos/network/onc/onc_utils.h"
 #include "chromeos/network/prohibited_technologies_handler.h"
 #include "chromeos/network/proxy/ui_proxy_config_service.h"
+#include "chromeos/network/system_token_cert_db_storage.h"
 #include "chromeos/network/test_cellular_esim_profile_handler.h"
 #include "chromeos/services/network_config/public/cpp/cros_network_config_test_observer.h"
 #include "chromeos/services/network_config/public/mojom/cros_network_config.mojom-shared.h"
@@ -71,6 +72,7 @@ class CrosNetworkConfigTest : public testing::Test {
  public:
   CrosNetworkConfigTest() {
     LoginState::Initialize();
+    SystemTokenCertDbStorage::Initialize();
     NetworkCertLoader::Initialize();
     NetworkHandler::Initialize();
     network_profile_handler_ = NetworkProfileHandler::InitializeForTesting();
@@ -130,6 +132,7 @@ class CrosNetworkConfigTest : public testing::Test {
     ui_proxy_config_service_.reset();
     NetworkHandler::Shutdown();
     NetworkCertLoader::Shutdown();
+    SystemTokenCertDbStorage::Shutdown();
     LoginState::Shutdown();
   }
 

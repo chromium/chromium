@@ -90,6 +90,9 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) NetworkCertLoader
   using NetworkCertList = std::vector<NetworkCert>;
 
   // Sets the global instance. Must be called before any calls to Get().
+  // Note: For test usage, make sure to call
+  // SystemTokenCertDbStorage::Initialize() before initializing the
+  // NetworkCertLoader.
   static void Initialize();
 
   // Destroys the global instance.
@@ -120,11 +123,9 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) NetworkCertLoader
   // available.
   void MarkSystemNSSDBWillBeInitialized();
 
-  // Sets the NSS cert database which NetworkCertLoader should use to access
-  // system slot certificates. The NetworkCertLoader will _not_ take ownership
-  // of the database - see comment on SetUserNSSDB. NetworkCertLoader supports
-  // working with only one database or with both (system and user) databases.
-  void SetSystemNSSDB(net::NSSCertDatabase* system_slot_database);
+  // Used by tests to set the NSS cert database which NetworkCertLoader should
+  // use to access system slot certificates.
+  void SetSystemNssDbForTesting(net::NSSCertDatabase* system_slot_database);
 
   // Marks that the initialization of the user slot NSSCertDatabase has started.
   // The caller should call SetSystemNSSDB when the NSSCertDatabase is
@@ -214,6 +215,15 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) NetworkCertLoader
 
   NetworkCertLoader();
   ~NetworkCertLoader() override;
+
+  // Sets the NSS cert database which NetworkCertLoader should use to access
+  // system slot certificates. The NetworkCertLoader will _not_ take ownership
+  // of the database - see comment on SetUserNSSDB. NetworkCertLoader supports
+  // working with only one database or with both (system and user) databases.
+  // This method is passed as a callback to SystemTokenCertDbStorage which will
+  // call it when the system slot database is ready or the database
+  // initialization has failed.
+  void OnSystemNssDbReady(net::NSSCertDatabase* system_slot_database);
 
   // Called when |system_cert_cache_| or |user_cert_cache| certificates have
   // potentially changed.

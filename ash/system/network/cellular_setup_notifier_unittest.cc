@@ -18,6 +18,7 @@
 #include "chromeos/dbus/shill/shill_clients.h"
 #include "chromeos/network/network_cert_loader.h"
 #include "chromeos/network/network_handler.h"
+#include "chromeos/network/system_token_cert_db_storage.h"
 #include "chromeos/services/network_config/public/cpp/cros_network_config_test_helper.h"
 #include "components/prefs/pref_service.h"
 #include "third_party/cros_system_api/dbus/shill/dbus-constants.h"
@@ -47,6 +48,7 @@ class CellularSetupNotifierTest : public NoSessionAshTestBase {
     feature_list.InitAndEnableFeature(
         chromeos::features::kUpdatedCellularActivationUi);
 
+    chromeos::SystemTokenCertDbStorage::Initialize();
     chromeos::NetworkCertLoader::Initialize();
     chromeos::shill_clients::InitializeFakes();
     chromeos::hermes_clients::InitializeFakes();
@@ -73,6 +75,7 @@ class CellularSetupNotifierTest : public NoSessionAshTestBase {
     chromeos::hermes_clients::Shutdown();
     chromeos::shill_clients::Shutdown();
     chromeos::NetworkCertLoader::Shutdown();
+    chromeos::SystemTokenCertDbStorage::Shutdown();
   }
 
   // Returns the cellular setup notification if it is shown, and null if it is
