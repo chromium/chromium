@@ -305,7 +305,8 @@ class PLATFORM_EXPORT PaintArtifactCompositor final
 
     std::unique_ptr<JSONObject> ToJSON() const;
 
-    FloatRect VisualRectForOverlapTesting() const;
+    FloatRect VisualRectForOverlapTesting(
+        const PropertyTreeState& ancestor_state) const;
 
     bool MayDrawContent() const;
 

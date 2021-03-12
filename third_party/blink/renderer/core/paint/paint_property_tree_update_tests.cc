@@ -1809,4 +1809,61 @@ TEST_P(PaintPropertyTreeUpdateTest, StartSVGAnimation) {
   EXPECT_TRUE(properties->Transform()->HasDirectCompositingReasons());
 }
 
+TEST_P(PaintPropertyTreeUpdateTest, ScrollNonStackingContextContainingStacked) {
+  if (!RuntimeEnabledFeatures::CompositeAfterPaintEnabled())
+    return;
+
+  SetBodyInnerHTML(R"HTML(
+    <style>
+      #scroller { width: 200px; height: 200px; overflow: scroll;
+                  background: white; }
+      #content { height: 1000px; background: blue; }
+    </style>
+    <div id="scroller">
+      <div id="content" style="position: relative"></div>
+    </div>
+  )HTML");
+
+  auto* scroller = GetDocument().getElementById("scroller");
+  auto* content = GetDocument().getElementById("content");
+  auto* paint_artifact_compositor =
+      GetDocument().View()->GetPaintArtifactCompositor();
+  ASSERT_TRUE(paint_artifact_compositor);
+  ASSERT_FALSE(paint_artifact_compositor->NeedsUpdate());
+
+  // We need PaintArtifactCompositor update on scroll because the scroller is
+  // not a stacking context but contains stacked descendants.
+  scroller->setScrollTop(100);
+  UpdateAllLifecyclePhasesExceptPaint();
+  EXPECT_TRUE(paint_artifact_compositor->NeedsUpdate());
+  UpdateAllLifecyclePhasesForTest();
+  EXPECT_FALSE(paint_artifact_compositor->NeedsUpdate());
+
+  // Remove "position:relative" from |content|.
+  content->setAttribute(html_names::kStyleAttr, "");
+  UpdateAllLifecyclePhasesForTest();
+
+  // No need of PaintArtifactCompositor update because the scroller no longer
+  // has stacked descendants.
+  scroller->setScrollTop(110);
+  UpdateAllLifecyclePhasesExceptPaint();
+  EXPECT_FALSE(paint_artifact_compositor->NeedsUpdate());
+  UpdateAllLifecyclePhasesForTest();
+  EXPECT_FALSE(paint_artifact_compositor->NeedsUpdate());
+
+  // Make scroller a stacking context with stacked contents.
+  scroller->setAttribute(html_names::kStyleAttr,
+                         "position: absolute; will-change: transform");
+  content->setAttribute(html_names::kStyleAttr, "position: absolute");
+  UpdateAllLifecyclePhasesForTest();
+
+  // No need of PaintArtifactCompositor update because the scroller is a
+  // stacking context.
+  scroller->setScrollTop(120);
+  UpdateAllLifecyclePhasesExceptPaint();
+  EXPECT_FALSE(paint_artifact_compositor->NeedsUpdate());
+  UpdateAllLifecyclePhasesForTest();
+  EXPECT_FALSE(paint_artifact_compositor->NeedsUpdate());
+}
+
 }  // namespace blink

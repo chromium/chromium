@@ -1948,6 +1948,30 @@ TEST_P(PaintArtifactCompositorTest, MightOverlap) {
       MightOverlap(pending_layer, PendingLayer(chunks, chunks.begin() + 4)));
 }
 
+TEST_P(PaintArtifactCompositorTest, MightOverlapCommonClipAncestor) {
+  auto common_clip = CreateClip(c0(), t0(), FloatRoundedRect(0, 0, 100, 100));
+  auto c1 = CreateClip(*common_clip, t0(), FloatRoundedRect(0, 100, 100, 100));
+  auto c2 = CreateClip(*common_clip, t0(), FloatRoundedRect(50, 100, 100, 100));
+  auto c3 =
+      CreateClip(*common_clip, t0(), FloatRoundedRect(100, 100, 100, 100));
+
+  TestPaintArtifact artifact;
+  artifact.Chunk(t0(), *c1, e0())
+      .Bounds(IntRect(0, 100, 200, 100))
+      .Chunk(t0(), *c2, e0())
+      .Bounds(IntRect(0, 100, 200, 100))
+      .Chunk(t0(), *c3, e0())
+      .Bounds(IntRect(0, 100, 200, 100));
+  PaintChunkSubset chunks(artifact.Build());
+
+  PendingLayer pending_layer1(chunks, chunks.begin());
+  PendingLayer pending_layer2(chunks, chunks.begin() + 1);
+  PendingLayer pending_layer3(chunks, chunks.begin() + 2);
+  EXPECT_FALSE(MightOverlap(pending_layer1, pending_layer3));
+  EXPECT_TRUE(MightOverlap(pending_layer1, pending_layer2));
+  EXPECT_TRUE(MightOverlap(pending_layer2, pending_layer3));
+}
+
 TEST_P(PaintArtifactCompositorTest, UniteRectsKnownToBeOpaque) {
   // X aligned and intersect: unite.
   EXPECT_EQ(FloatRect(10, 20, 30, 60),

@@ -524,11 +524,11 @@ std::unique_ptr<JSONObject> PaintArtifactCompositor::PendingLayer::ToJSON()
   return result;
 }
 
-FloatRect PaintArtifactCompositor::PendingLayer::VisualRectForOverlapTesting()
-    const {
+FloatRect PaintArtifactCompositor::PendingLayer::VisualRectForOverlapTesting(
+    const PropertyTreeState& ancestor_state) const {
   FloatClipRect visual_rect(bounds);
   GeometryMapper::LocalToAncestorVisualRect(
-      property_tree_state, PropertyTreeState::Root(), visual_rect,
+      property_tree_state, ancestor_state, visual_rect,
       kIgnoreOverlayScrollbarSize, kNonInclusiveIntersect,
       kExpandVisualRectForAnimation);
   return visual_rect.Rect();
@@ -732,10 +732,46 @@ static const EffectPaintPropertyNode* StrictUnaliasedChildOfAlongPath(
   return nullptr;
 }
 
+static const ClipPaintPropertyNode* HighestOutputClipBetween(
+    const EffectPaintPropertyNode& ancestor,
+    const EffectPaintPropertyNode& descendant) {
+  const ClipPaintPropertyNode* result = nullptr;
+  for (const auto* effect = &descendant; effect != &ancestor;
+       effect = effect->UnaliasedParent()) {
+    if (const auto* output_clip = effect->OutputClip())
+      result = &output_clip->Unalias();
+  }
+  return result;
+}
+
 bool PaintArtifactCompositor::MightOverlap(const PendingLayer& layer_a,
                                            const PendingLayer& layer_b) {
-  return layer_a.VisualRectForOverlapTesting().Intersects(
-      layer_b.VisualRectForOverlapTesting());
+  PropertyTreeState common_ancestor_state(
+      layer_a.property_tree_state.Transform()
+          .LowestCommonAncestor(layer_b.property_tree_state.Transform())
+          .Unalias(),
+      layer_a.property_tree_state.Clip()
+          .LowestCommonAncestor(layer_b.property_tree_state.Clip())
+          .Unalias(),
+      layer_a.property_tree_state.Effect()
+          .LowestCommonAncestor(layer_b.property_tree_state.Effect())
+          .Unalias());
+  // Move the common clip up if some effect nodes have OutputClip escaping the
+  // common clip.
+  if (const auto* clip_a =
+          HighestOutputClipBetween(common_ancestor_state.Effect(),
+                                   layer_a.property_tree_state.Effect())) {
+    common_ancestor_state.SetClip(
+        clip_a->LowestCommonAncestor(common_ancestor_state.Clip()).Unalias());
+  }
+  if (const auto* clip_b =
+          HighestOutputClipBetween(common_ancestor_state.Effect(),
+                                   layer_b.property_tree_state.Effect())) {
+    common_ancestor_state.SetClip(
+        clip_b->LowestCommonAncestor(common_ancestor_state.Clip()).Unalias());
+  }
+  return layer_a.VisualRectForOverlapTesting(common_ancestor_state)
+      .Intersects(layer_b.VisualRectForOverlapTesting(common_ancestor_state));
 }
 
 bool PaintArtifactCompositor::DecompositeEffect(

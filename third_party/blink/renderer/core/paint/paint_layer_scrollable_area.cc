@@ -666,12 +666,6 @@ void PaintLayerScrollableArea::InvalidatePaintForScrollOffsetChange() {
   if (!RuntimeEnabledFeatures::CullRectUpdateEnabled() &&
       !UsesCompositedScrolling())
     Layer()->SetNeedsRepaint();
-
-  // Scrolling can change overlap relationship.
-  // TODO(crbug.com/1099379): Implement better fixed/sticky overlap testing.
-  // TODO(crbug.com/1180972): Avoid this for common composited scroll cases.
-  if (RuntimeEnabledFeatures::CompositeAfterPaintEnabled())
-    box->GetFrameView()->SetPaintArtifactCompositorNeedsUpdate();
 }
 
 IntSize PaintLayerScrollableArea::ScrollOffsetInt() const {

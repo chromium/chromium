@@ -1988,6 +1988,12 @@ static MainThreadScrollingReasons GetMainThreadScrollingReasons(
 void FragmentPaintPropertyTreeBuilder::UpdateScrollAndScrollTranslation() {
   DCHECK(properties_);
 
+  FloatSize old_scroll_offset;
+  if (const auto* old_scroll_translation = properties_->ScrollTranslation()) {
+    DCHECK(full_context_.was_layout_shift_root);
+    old_scroll_offset = old_scroll_translation->Translation2D();
+  }
+
   if (NeedsPaintPropertyUpdate()) {
     if (object_.IsBox() && To<LayoutBox>(object_).NeedsScrollNode(
                                full_context_.direct_compositing_reasons)) {
@@ -2138,12 +2144,35 @@ void FragmentPaintPropertyTreeBuilder::UpdateScrollAndScrollTranslation() {
   if (properties_->Scroll())
     context_.current.scroll = properties_->Scroll();
 
-  if (properties_->ScrollTranslation()) {
-    context_.current.transform = properties_->ScrollTranslation();
+  if (const auto* scroll_translation = properties_->ScrollTranslation()) {
+    context_.current.transform = scroll_translation;
     // See comments for ScrollTranslation in object_paint_properties.h for the
     // reason of adding ScrollOrigin().
     context_.current.paint_offset +=
         PhysicalOffset(To<LayoutBox>(object_).ScrollOrigin());
+
+    if (RuntimeEnabledFeatures::CompositeAfterPaintEnabled() &&
+        scroll_translation->Translation2D() != old_scroll_offset) {
+      // Scrolling can change overlap relationship.
+      auto* frame_view = object_.GetFrameView();
+      if (frame_view->HasViewportConstrainedObjects()) {
+        // TODO(crbug.com/1099379): Implement better fixed/sticky overlap
+        // testing.
+        frame_view->SetPaintArtifactCompositorNeedsUpdate();
+      } else if (!object_.IsStackingContext() &&
+                 // TODO(wangxianzhu): for accuracy, this should be something
+                 // like ContainsStackedDescendants(). Evaluate this, and
+                 // refine if this causes too much more updates.
+                 To<LayoutBoxModelObject>(object_)
+                     .Layer()
+                     ->HasSelfPaintingLayerDescendant()) {
+        // If the scroller is not a stacking context but contains stacked
+        // descendants, we need to update compositing because the stacked
+        // descendants may change overlap relationship with other stacked
+        // elements that are not contained by this scroller.
+        frame_view->SetPaintArtifactCompositorNeedsUpdate();
+      }
+    }
   }
 }
 
