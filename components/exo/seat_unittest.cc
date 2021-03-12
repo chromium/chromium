@@ -9,6 +9,7 @@
 #include "base/pickle.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/thread_pool/thread_pool_instance.h"
+#include "base/test/scoped_feature_list.h"
 #include "components/exo/data_source.h"
 #include "components/exo/data_source_delegate.h"
 #include "components/exo/seat_observer.h"
@@ -20,6 +21,7 @@
 #include "ui/base/clipboard/clipboard_format_type.h"
 #include "ui/base/clipboard/scoped_clipboard_writer.h"
 #include "ui/base/dragdrop/mojom/drag_drop_types.mojom-shared.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/events/event.h"
 #include "ui/events/event_utils.h"
 
@@ -325,6 +327,35 @@ TEST_F(SeatTest, SetSelectionRTF) {
 }
 
 TEST_F(SeatTest, SetSelectionFilenames) {
+  base::test::ScopedFeatureList features;
+  features.InitWithFeatures({features::kClipboardFilenames}, {});
+
+  TestSeat seat;
+  Surface focused_surface;
+  seat.set_focused_surface(&focused_surface);
+
+  std::string data("file:///path1\r\nfile:///path2");
+
+  TestDataSourceDelegate delegate;
+  delegate.SetData(std::vector<uint8_t>(data.begin(), data.end()));
+  DataSource source(&delegate);
+  source.Offer("text/uri-list");
+  seat.SetSelection(&source);
+
+  RunReadingTask();
+
+  std::vector<ui::FileInfo> filenames;
+  ui::Clipboard::GetForCurrentThread()->ReadFilenames(
+      ui::ClipboardBuffer::kCopyPaste,
+      /*data_dst=*/nullptr, &filenames);
+
+  EXPECT_EQ(ui::FileInfosToURIList(filenames), data);
+}
+
+TEST_F(SeatTest, SetSelectionFilenamesClipboardFilesDisabled) {
+  base::test::ScopedFeatureList features;
+  features.InitWithFeatures({}, {features::kClipboardFilenames});
+
   TestSeat seat;
   Surface focused_surface;
   seat.set_focused_surface(&focused_surface);
