@@ -24,19 +24,18 @@
             "type": "integer",
             "name": "guestInstanceId",
             "nodoc": true
-          },
-          {
-            "type": "function",
-            "name": "callback",
-            "optional": true,
-            "parameters": [
-              {
-                "type": "integer",
-                "name": "instanceId"
-              }
-            ]
           }
-        ]
+        ],
+        "returns_async": {
+          "name": "callback",
+          "optional": true,
+          "parameters": [
+            {
+              "type": "integer",
+              "name": "instanceId"
+            }
+          ]
+        }
       },
       {
         "name": "denyRequest",
