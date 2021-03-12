@@ -1431,30 +1431,6 @@
             ]
         }
     ],
-    "CheckOfflineCapability": [
-        {
-            "platforms": [
-                "android",
-                "chromeos",
-                "chromeos_lacros",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "params": {
-                        "check_mode": "enforce",
-                        "timeout_second": "10"
-                    },
-                    "enable_features": [
-                        "CheckOfflineCapability"
-                    ]
-                }
-            ]
-        }
-    ],
     "ChromeCleanupDistribution": [
         {
             "platforms": [
