@@ -63,13 +63,16 @@ namespace reporting {
 //                     std::move(important_message), std::move(done_cb)));
 //           },
 //           std::move(important_message), std::move(done_cb),
-//           std::move(config_result.ValueOrDie())))
+//           std::move(config_result.ValueOrDie())));
 // }
 
 class ReportQueue {
  public:
   // An EnqueueCallback is called on the completion of any |Enqueue| call.
   using EnqueueCallback = base::OnceCallback<void(Status)>;
+
+  // A FlushCallback is called on the completion of |Flush| call.
+  using FlushCallback = base::OnceCallback<void(Status)>;
 
   virtual ~ReportQueue();
 
@@ -99,6 +102,12 @@ class ReportQueue {
   void Enqueue(google::protobuf::MessageLite* record,
                Priority priority,
                EnqueueCallback callback) const;
+
+  // Initiates upload of collected records according to the priority.
+  // Called usually for a queue with an infinite or very large upload period.
+  // Multiple |Flush| calls can safely run in parallel.
+  // Returns error if cannot start upload.
+  virtual void Flush(Priority priority, FlushCallback callback) = 0;
 
  protected:
   virtual void AddRecord(base::StringPiece record,

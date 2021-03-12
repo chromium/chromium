@@ -40,6 +40,8 @@ class MissiveStorageModule : public StorageModuleInterface {
     virtual void AddRecord(const Priority priority,
                            const Record& record,
                            base::OnceCallback<void(Status)> callback) = 0;
+    virtual void Flush(Priority priority,
+                       base::OnceCallback<void(Status)> callback) = 0;
     virtual void ReportSuccess(
         const SequencingInformation& sequencing_information,
         bool force) = 0;
@@ -58,6 +60,13 @@ class MissiveStorageModule : public StorageModuleInterface {
   void AddRecord(Priority priority,
                  Record record,
                  base::OnceCallback<void(Status)> callback) override;
+
+  // Calls |missive_delegate_->Flush| to initiate upload of collected records
+  // according to the priority. Called usually for a queue with an infinite or
+  // very large upload period. Multiple |Flush| calls can safely run in
+  // parallel. Returns error if cannot start upload.
+  void Flush(Priority priority,
+             base::OnceCallback<void(Status)> callback) override;
 
   // Once a record has been successfully uploaded, the sequencing information
   // can be passed back to the StorageModule here for record deletion.

@@ -47,6 +47,8 @@ class MissiveClientImpl : public MissiveClient {
         std::make_unique<MissiveStorageModuleDelegateImpl>(
             base::BindRepeating(&MissiveClientImpl::AddRecord,
                                 weak_ptr_factory_.GetWeakPtr()),
+            base::BindRepeating(&MissiveClientImpl::Flush,
+                                weak_ptr_factory_.GetWeakPtr()),
             base::BindRepeating(&MissiveClientImpl::ReportSuccess,
                                 weak_ptr_factory_.GetWeakPtr()),
             base::BindRepeating(&MissiveClientImpl::UpdateEncryptionKey,
@@ -69,6 +71,15 @@ class MissiveClientImpl : public MissiveClient {
     std::move(completion_callback)
         .Run(reporting::Status(reporting::error::UNAVAILABLE,
                                "AddRecord has not been implemented."));
+  }
+
+  void Flush(const reporting::Priority priority,
+             base::OnceCallback<void(reporting::Status)> completion_callback)
+      override {
+    // TODO(1174889): Implement the actual DBus Call after the Daemon is
+    // available.
+    std::move(reporting::Status(reporting::error::UNAVAILABLE,
+                                "Flush has not been implemented."));
   }
 
   void ReportSuccess(

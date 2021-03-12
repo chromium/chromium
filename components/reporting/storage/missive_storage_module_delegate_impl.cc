@@ -14,9 +14,11 @@ namespace reporting {
 
 MissiveStorageModuleDelegateImpl::MissiveStorageModuleDelegateImpl(
     AddRecordCallback add_record,
+    FlushCallback flush,
     ReportSuccessCallback report_success,
     UpdateEncryptionKeyCallback update_encryption_key)
     : add_record_(std::move(add_record)),
+      flush_(std::move(flush)),
       report_success_(std::move(report_success)),
       update_encryption_key_(std::move(update_encryption_key)) {}
 
@@ -27,6 +29,12 @@ void MissiveStorageModuleDelegateImpl::AddRecord(
     const Record& record,
     base::OnceCallback<void(Status)> callback) {
   add_record_.Run(priority, record, std::move(callback));
+}
+
+void MissiveStorageModuleDelegateImpl::Flush(
+    const Priority priority,
+    base::OnceCallback<void(Status)> callback) {
+  flush_.Run(priority, std::move(callback));
 }
 
 void MissiveStorageModuleDelegateImpl::ReportSuccess(

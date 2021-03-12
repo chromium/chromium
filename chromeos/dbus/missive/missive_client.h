@@ -51,6 +51,10 @@ class COMPONENT_EXPORT(MISSIVE) MissiveClient {
       const reporting::Record& record,
       base::OnceCallback<void(reporting::Status)> completion_callback) = 0;
 
+  virtual void Flush(
+      const reporting::Priority priority,
+      base::OnceCallback<void(reporting::Status)> completion_callback) = 0;
+
   virtual void ReportSuccess(
       const reporting::SequencingInformation& sequencing_information,
       bool force_confirm) = 0;

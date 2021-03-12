@@ -43,6 +43,11 @@ void MissiveStorageModule::AddRecord(
   delegate_->AddRecord(priority, record, std::move(callback));
 }
 
+void MissiveStorageModule::Flush(Priority priority,
+                                 base::OnceCallback<void(Status)> callback) {
+  delegate_->Flush(priority, std::move(callback));
+}
+
 void MissiveStorageModule::ReportSuccess(
     SequencingInformation sequencing_information,
     bool force) {

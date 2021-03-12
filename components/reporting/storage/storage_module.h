@@ -42,6 +42,13 @@ class StorageModule : public StorageModuleInterface {
                  Record record,
                  base::OnceCallback<void(Status)> callback) override;
 
+  // Initiates upload of collected records according to the priority.
+  // Called usually for a queue with an infinite or very large upload period.
+  // Multiple |Flush| calls can safely run in parallel.
+  // Returns error if cannot start upload.
+  void Flush(Priority priority,
+             base::OnceCallback<void(Status)> callback) override;
+
   // Once a record has been successfully uploaded, the sequencing information
   // can be passed back to the StorageModule here for record deletion.
   // If |force| is false (which is used in most cases), |sequencing_information|

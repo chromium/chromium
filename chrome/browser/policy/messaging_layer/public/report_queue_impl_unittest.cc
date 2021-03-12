@@ -28,6 +28,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 using ::testing::_;
+using ::testing::Eq;
 using ::testing::Invoke;
 using ::testing::MockFunction;
 using ::testing::NiceMock;
@@ -146,7 +147,7 @@ TEST_F(ReportQueueImplTest, SuccessfulProtoRecord) {
 // been scheduled. The callback should fail, indicating that storage was
 // unsuccessful.
 TEST_F(ReportQueueImplTest, CallSuccessCallbackFailure) {
-  EXPECT_CALL(*test_storage_module(), AddRecord(_, _, _))
+  EXPECT_CALL(*test_storage_module(), AddRecord(Eq(priority_), _, _))
       .WillOnce(
           WithArg<2>(Invoke([](base::OnceCallback<void(Status)> callback) {
             std::move(callback).Run(Status(error::UNKNOWN, "Failing for Test"));
@@ -196,6 +197,36 @@ TEST_F(ReportQueueImplTest, EnqueueValueFailsOnPolicy) {
   const auto result = a.result();
   EXPECT_FALSE(result.ok());
   EXPECT_EQ(result.error_code(), error::UNAUTHENTICATED);
+}
+
+TEST_F(ReportQueueImplTest, EnqueueAndFlushSuccess) {
+  reporting::test::TestMessage test_message;
+  test_message.set_test("TEST_MESSAGE");
+  test::TestEvent<Status> a;
+  report_queue_->Enqueue(&test_message, priority_, a.cb());
+  EXPECT_OK(a.result());
+  test::TestEvent<Status> f;
+  report_queue_->Flush(priority_, f.cb());
+  EXPECT_OK(f.result());
+}
+
+TEST_F(ReportQueueImplTest, EnqueueSuccessFlushFailure) {
+  reporting::test::TestMessage test_message;
+  test_message.set_test("TEST_MESSAGE");
+  test::TestEvent<Status> a;
+  report_queue_->Enqueue(&test_message, priority_, a.cb());
+  EXPECT_OK(a.result());
+
+  EXPECT_CALL(*test_storage_module(), Flush(Eq(priority_), _))
+      .WillOnce(
+          WithArg<1>(Invoke([](base::OnceCallback<void(Status)> callback) {
+            std::move(callback).Run(Status(error::UNKNOWN, "Failing for Test"));
+          })));
+  test::TestEvent<Status> f;
+  report_queue_->Flush(priority_, f.cb());
+  const auto result = f.result();
+  EXPECT_FALSE(result.ok());
+  EXPECT_EQ(result.error_code(), error::UNKNOWN);
 }
 
 }  // namespace

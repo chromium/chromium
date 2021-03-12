@@ -27,6 +27,8 @@ class MockReportQueue : public ReportQueue {
               AddRecord,
               (base::StringPiece, Priority, ReportQueue::EnqueueCallback),
               (const override));
+
+  MOCK_METHOD(void, Flush, (Priority, ReportQueue::FlushCallback), (override));
 };
 
 }  // namespace reporting

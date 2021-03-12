@@ -42,5 +42,16 @@ TEST_F(ReportQueueTest, EnqueueTest) {
   ASSERT_OK(e.result());
 }
 
+TEST_F(ReportQueueTest, FlushTest) {
+  MockReportQueue queue;
+  EXPECT_CALL(queue, Flush(_, _))
+      .WillOnce(WithArg<1>(Invoke([](ReportQueue::FlushCallback cb) {
+        std::move(cb).Run(Status::StatusOK());
+      })));
+  test::TestEvent<Status> e;
+  queue.Flush(MANUAL_BATCH, e.cb());
+  ASSERT_OK(e.result());
+}
+
 }  // namespace
 }  // namespace reporting

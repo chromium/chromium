@@ -14,6 +14,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 using ::testing::Invoke;
+using ::testing::WithArg;
 
 namespace reporting {
 namespace test {
@@ -21,6 +22,11 @@ namespace test {
 TestStorageModuleStrict::TestStorageModuleStrict() {
   ON_CALL(*this, AddRecord)
       .WillByDefault(Invoke(this, &TestStorageModule::AddRecordSuccessfully));
+  ON_CALL(*this, Flush)
+      .WillByDefault(
+          WithArg<1>(Invoke([](base::OnceCallback<void(Status)> callback) {
+            std::move(callback).Run(Status::StatusOK());
+          })));
 }
 
 TestStorageModuleStrict::~TestStorageModuleStrict() = default;

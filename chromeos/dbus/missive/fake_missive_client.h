@@ -29,6 +29,10 @@ class FakeMissiveClient : public MissiveClient {
       const reporting::Record& record,
       base::OnceCallback<void(reporting::Status)> completion_callback) override;
 
+  void Flush(
+      const reporting::Priority priority,
+      base::OnceCallback<void(reporting::Status)> completion_callback) override;
+
   void ReportSuccess(
       const reporting::SequencingInformation& sequencing_information,
       bool force_confirm) override;

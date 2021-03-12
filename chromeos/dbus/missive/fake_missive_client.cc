@@ -26,6 +26,8 @@ void FakeMissiveClient::Init() {
       std::make_unique<MissiveStorageModuleDelegateImpl>(
           base::BindRepeating(&FakeMissiveClient::AddRecord,
                               weak_ptr_factory_.GetWeakPtr()),
+          base::BindRepeating(&FakeMissiveClient::Flush,
+                              weak_ptr_factory_.GetWeakPtr()),
           base::BindRepeating(&FakeMissiveClient::ReportSuccess,
                               weak_ptr_factory_.GetWeakPtr()),
           base::BindRepeating(&FakeMissiveClient::UpdateEncryptionKey,
@@ -37,6 +39,12 @@ void FakeMissiveClient::Init() {
 void FakeMissiveClient::AddRecord(
     const reporting::Priority priority,
     const reporting::Record& record,
+    base::OnceCallback<void(reporting::Status)> completion_callback) {
+  std::move(completion_callback).Run(reporting::Status::StatusOK());
+}
+
+void FakeMissiveClient::Flush(
+    const reporting::Priority priority,
     base::OnceCallback<void(reporting::Status)> completion_callback) {
   std::move(completion_callback).Run(reporting::Status::StatusOK());
 }

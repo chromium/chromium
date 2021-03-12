@@ -48,6 +48,8 @@ class ReportQueueImpl : public ReportQueue {
   ReportQueueImpl(const ReportQueueImpl& other) = delete;
   ReportQueueImpl& operator=(const ReportQueueImpl& other) = delete;
 
+  void Flush(Priority priority, FlushCallback callback) override;
+
  protected:
   ReportQueueImpl(std::unique_ptr<ReportQueueConfiguration> config,
                   scoped_refptr<StorageModuleInterface> storage);

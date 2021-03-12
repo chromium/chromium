@@ -32,6 +32,11 @@ class TestStorageModuleStrict : public StorageModuleInterface {
               (override));
 
   MOCK_METHOD(void,
+              Flush,
+              (Priority priority, base::OnceCallback<void(Status)> callback),
+              (override));
+
+  MOCK_METHOD(void,
               ReportSuccess,
               (SequencingInformation sequencing_information, bool force),
               (override));

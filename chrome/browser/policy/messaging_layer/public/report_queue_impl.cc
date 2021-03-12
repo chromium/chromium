@@ -91,4 +91,8 @@ Record ReportQueueImpl::AugmentRecord(base::StringPiece record_data) const {
   return record;
 }
 
+void ReportQueueImpl::Flush(Priority priority, FlushCallback callback) {
+  storage_->Flush(priority, std::move(callback));
+}
+
 }  // namespace reporting

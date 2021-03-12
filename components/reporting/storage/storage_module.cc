@@ -44,6 +44,11 @@ void StorageModule::ReportSuccess(SequencingInformation sequencing_information,
       }));
 }
 
+void StorageModule::Flush(Priority priority,
+                          base::OnceCallback<void(Status)> callback) {
+  std::move(callback).Run(storage_->Flush(priority));
+}
+
 void StorageModule::UpdateEncryptionKey(
     SignedEncryptionInfo signed_encryption_key) {
   storage_->UpdateEncryptionKey(std::move(signed_encryption_key));
