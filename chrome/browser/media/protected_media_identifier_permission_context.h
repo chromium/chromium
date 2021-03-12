@@ -73,6 +73,7 @@ class ProtectedMediaIdentifierPermissionContext
       const GURL& requesting_origin,
       const GURL& embedding_origin,
       bool user_gesture,
+      base::Time dialog_show_time,
       permissions::BrowserPermissionCallback callback,
       chromeos::attestation::PlatformVerificationDialog::ConsentResponse
           response);

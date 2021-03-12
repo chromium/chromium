@@ -12040,6 +12040,13 @@ be describing additional metrics about the same event.
       An enum of type PermissionSourceUI. The UI surface for this action.
     </summary>
   </metric>
+  <metric name="TimeToDecision">
+    <summary>
+      Time (in milliseconds) taken by the user to make a decision on a
+      permission prompt after it was displayed, if at all. Ignoring a prompt
+      doesnt count as a decision.
+    </summary>
+  </metric>
 </event>
 
 <event name="Plugins.FlashInstance">
