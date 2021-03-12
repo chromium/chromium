@@ -119,7 +119,7 @@ SpeechRecognitionRecognizerImpl::SpeechRecognitionRecognizerImpl(
     DCHECK(base::PathExists(binary_path));
     soda_client_ = std::make_unique<::soda::SodaClient>(binary_path);
     if (!soda_client_->BinaryLoadedSuccessfully()) {
-      client_remote_->OnSpeechRecognitionError();
+      OnSpeechRecognitionError();
     }
   } else {
     cloud_client_ = std::make_unique<CloudSpeechRecognitionClient>(
@@ -168,6 +168,10 @@ void SpeechRecognitionRecognizerImpl::SendAudioToSpeechRecognitionService(
 
   // OK, everything is verified, let's send the audio.
   SendAudioToSpeechRecognitionServiceInternal(std::move(buffer));
+}
+
+void SpeechRecognitionRecognizerImpl::OnSpeechRecognitionError() {
+  client_remote_->OnSpeechRecognitionError();
 }
 
 void SpeechRecognitionRecognizerImpl::

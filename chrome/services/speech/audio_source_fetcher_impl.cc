@@ -115,8 +115,7 @@ void AudioSourceFetcherImpl::Capture(const media::AudioBus* audio_source,
 }
 
 void AudioSourceFetcherImpl::OnCaptureError(const std::string& message) {
-  // TODO(crbug.com/1173135): Should this be sent back to the client?
-  LOG(ERROR) << "AudioSourceFetcherImpl:OnCaptureError: " << message;
+  speech_recognition_recognizer_->OnSpeechRecognitionError();
 }
 
 void AudioSourceFetcherImpl::SendAudioToSpeechRecognitionService(

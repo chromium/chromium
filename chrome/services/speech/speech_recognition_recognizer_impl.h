@@ -59,6 +59,8 @@ class SpeechRecognitionRecognizerImpl
   void SendAudioToSpeechRecognitionService(
       media::mojom::AudioDataS16Ptr buffer) final;
 
+  void OnSpeechRecognitionError();
+
  protected:
   virtual void SendAudioToSpeechRecognitionServiceInternal(
       media::mojom::AudioDataS16Ptr buffer);
