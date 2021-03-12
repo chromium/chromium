@@ -366,6 +366,15 @@ InputHandlerScrollResult ThreadedInputHandler::ScrollUpdate(
 
   last_scroll_update_state_ = *scroll_state;
 
+  // Snap on update if interacting with the scrollbar track or arrow buttons.
+  // Interactions with the scrollbar thumb have kScrollByPrecisePixel
+  // granularity.
+  if (scroll_state->is_scrollbar_interaction() &&
+      scroll_state->delta_granularity() !=
+          ui::ScrollGranularity::kScrollByPrecisePixel) {
+    AdjustScrollDeltaForScrollbarSnap(scroll_state);
+  }
+
   gfx::Vector2dF resolvedScrollDelta = ResolveScrollGranularityToPixels(
       *CurrentlyScrollingNode(),
       gfx::Vector2dF(scroll_state->delta_x(), scroll_state->delta_y()),
@@ -464,6 +473,36 @@ InputHandlerScrollResult ThreadedInputHandler::ScrollUpdate(
       GetScrollTree());
 
   return scroll_result;
+}
+
+void ThreadedInputHandler::AdjustScrollDeltaForScrollbarSnap(
+    ScrollState* scroll_state) {
+  ScrollNode* scroll_node = CurrentlyScrollingNode();
+  if (!scroll_node || !scroll_node->snap_container_data)
+    return;
+
+  // Ideally, scrollbar track and arrow interactions would have
+  // kScrollByPage and kScrollByLine, respectively. Currently, both have
+  // kScrollByPixel granularity.
+  // TODO(crbug.com/959441): Update snap strategy once the granularity is
+  // properly set. Currently, track and arrow scrolls both use a direction
+  // strategy; however, the track should be using an "end and direction"
+  // strategy.
+  gfx::ScrollOffset current_position = GetVisualScrollOffset(*scroll_node);
+  const SnapContainerData& data = scroll_node->snap_container_data.value();
+  std::unique_ptr<SnapSelectionStrategy> strategy =
+      SnapSelectionStrategy::CreateForDirection(
+          gfx::ScrollOffset(current_position.x(), current_position.y()),
+          gfx::ScrollOffset(scroll_state->delta_x(), scroll_state->delta_y()),
+          true);
+
+  gfx::ScrollOffset snap_position;
+  TargetSnapAreaElementIds snap_target_ids;
+  if (!data.FindSnapPosition(*strategy, &snap_position, &snap_target_ids))
+    return;
+
+  scroll_state->data()->delta_x = snap_position.x() - current_position.x();
+  scroll_state->data()->delta_y = snap_position.y() - current_position.y();
 }
 
 void ThreadedInputHandler::ScrollEnd(bool should_snap) {

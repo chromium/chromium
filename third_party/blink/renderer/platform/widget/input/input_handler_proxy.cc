@@ -100,6 +100,8 @@ cc::ScrollState CreateScrollStateForGesture(const WebGestureEvent& event) {
           WebGestureEvent::InertialPhaseState::kMomentum;
       scroll_state_data.delta_granularity =
           event.data.scroll_update.delta_units;
+      if (event.SourceDevice() == WebGestureDevice::kScrollbar)
+        scroll_state_data.is_scrollbar_interaction = true;
       break;
     case WebInputEvent::Type::kGestureScrollEnd:
       scroll_state_data.is_ending = true;

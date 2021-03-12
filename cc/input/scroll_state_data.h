@@ -47,6 +47,8 @@ class CC_EXPORT ScrollStateData {
   // True if the user interacts directly with the display, e.g., via
   // touch.
   bool is_direct_manipulation;
+  // True if the scroll is the result of a scrollbar interaction.
+  bool is_scrollbar_interaction;
 
   // Granularity units for the scroll delta.
   ui::ScrollGranularity delta_granularity;

@@ -59,6 +59,14 @@ class CC_EXPORT ScrollState {
     data_.is_direct_manipulation = is_direct_manipulation;
   }
 
+  // True if the user interacts with the scrollbar.
+  bool is_scrollbar_interaction() const {
+    return data_.is_scrollbar_interaction;
+  }
+  void set_is_scrollbar_interaction(bool is_scrollbar_interaction) {
+    data_.is_scrollbar_interaction = is_scrollbar_interaction;
+  }
+
   bool delta_consumed_for_scroll_sequence() const {
     return data_.delta_consumed_for_scroll_sequence;
   }
