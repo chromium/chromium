@@ -32,7 +32,9 @@
 <h1>Web App Internals</h1>
 
 <div class="section">
-  BMO enabled: <b>[[isBmoEnabled_]]</b>
+  <p>Save JSON: <button id="saveButton">Save file</button></p>
+  <p>Load JSON: <input type="file" id="loadButton"></p>
+  <p>BMO enabled: <b>[[isBmoEnabled_]]</b></p>
   <template is="dom-if" if="[[!isBmoEnabled_]]">
     <p>
       Web apps are using the extension system via bookmark apps, see
