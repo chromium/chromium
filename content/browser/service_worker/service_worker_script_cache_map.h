@@ -82,20 +82,21 @@ class CONTENT_EXPORT ServiceWorkerScriptCacheMap {
       base::WeakPtr<ServiceWorkerContextCore> context);
   ~ServiceWorkerScriptCacheMap();
 
-  void OnWriterDisconnected(int64_t resource_id);
+  void OnWriterDisconnected(uint64_t callback_id);
   void OnMetadataWritten(
       mojo::Remote<storage::mojom::ServiceWorkerResourceMetadataWriter>,
-      int64_t resource_id,
+      uint64_t callback_id,
       int result);
 
-  void RunCallback(int64_t resource_id, int result);
+  void RunCallback(uint64_t callback_id, int result);
 
   ServiceWorkerVersion* owner_;
   base::WeakPtr<ServiceWorkerContextCore> context_;
   ResourceMap resource_map_;
   int main_script_net_error_ = net::OK;
   std::string main_script_status_message_;
-  base::flat_map</*resource_id=*/int64_t, net::CompletionOnceCallback>
+  uint64_t next_callback_id_ = 0;
+  base::flat_map</*callback_id=*/uint64_t, net::CompletionOnceCallback>
       callbacks_;
 
   base::WeakPtrFactory<ServiceWorkerScriptCacheMap> weak_factory_{this};

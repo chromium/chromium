@@ -1503,6 +1503,23 @@ TEST_F(ServiceWorkerVersionTest, WriteMetadata_StorageDisabled) {
   ASSERT_EQ(completion.WaitForResult(), net::ERR_FAILED);
 }
 
+// Test that writing metadata twice at the same time finishes successfully.
+TEST_F(ServiceWorkerVersionTest, WriteMetadata_MultipleWrites) {
+  const std::string kMetadata("Test metadata");
+
+  net::TestCompletionCallback completion1;
+  version_->script_cache_map()->WriteMetadata(
+      version_->script_url(), base::as_bytes(base::make_span(kMetadata)),
+      completion1.callback());
+  net::TestCompletionCallback completion2;
+  version_->script_cache_map()->WriteMetadata(
+      version_->script_url(), base::as_bytes(base::make_span(kMetadata)),
+      completion2.callback());
+
+  ASSERT_EQ(completion1.WaitForResult(), static_cast<int>(kMetadata.size()));
+  ASSERT_EQ(completion2.WaitForResult(), static_cast<int>(kMetadata.size()));
+}
+
 class ServiceWorkerVersionTerminationOnNoControlleeTest
     : public ServiceWorkerVersionTest,
       public testing::WithParamInterface<bool> {
