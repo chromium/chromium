@@ -86,15 +86,7 @@ component("lib") {
       "timer_host.h",
     ]
 
-    if (enable_fake_assistant_microphone) {
-      sources += [
-        "platform/fake_input_device.cc",
-        "platform/fake_input_device.h",
-      ]
-    }
-
     deps += [
-      ":buildflags",
       "//chromeos/assistant/internal",
       "//chromeos/assistant/internal:libassistant",
       "//chromeos/assistant/internal/proto/google3",
@@ -203,11 +195,4 @@ static_library("test_support") {
   if (enable_cros_libassistant) {
     deps += [ "//chromeos/services/assistant/public/cpp/migration" ]
   }
-}
-
-buildflag_header("buildflags") {
-  header = "buildflags.h"
-
-  flags =
-      [ "ENABLE_FAKE_ASSISTANT_MICROPHONE=$enable_fake_assistant_microphone" ]
 }

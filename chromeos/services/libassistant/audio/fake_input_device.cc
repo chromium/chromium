@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chromeos/services/assistant/platform/fake_input_device.h"
+#include "chromeos/services/libassistant/audio/fake_input_device.h"
 
 #include <cstdint>
 #include <memory>

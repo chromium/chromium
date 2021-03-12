@@ -134,7 +134,7 @@ class AssistantAudioInputControllerTest : public testing::Test {
   }
 
  private:
-  base::test::SingleThreadTaskEnvironment environment_;
+  base::test::TaskEnvironment environment_;
   base::test::ScopedFeatureList scoped_feature_list_;
   mojo::Remote<mojom::AudioInputController> client_;
   AudioInputController controller_;
