@@ -186,6 +186,7 @@
           'shards': 15,
         },
       },
+      'weblayer_bundle_test': {},
       'weblayer_instrumentation_test_apk': {},
       'webview_instrumentation_test_apk': {
         'swarming': {
