@@ -70,25 +70,34 @@ bool HighlightRegistry::hasForBinding(ScriptState*,
   return highlights_.Contains(highlight);
 }
 
+HighlightRegistry::IterationSource::IterationSource(
+    const HighlightRegistry& highlight_registry)
+    : index_(0) {
+  highlights_snapshot_.ReserveInitialCapacity(
+      highlight_registry.highlights_.size());
+  for (const auto& highlight : highlight_registry.highlights_) {
+    highlights_snapshot_.push_back(highlight);
+  }
+}
+
 bool HighlightRegistry::IterationSource::Next(ScriptState*,
                                               Member<Highlight>& key,
                                               Member<Highlight>& value,
                                               ExceptionState&) {
-  // TODO(ffiori http://crbug.com/1185385)
-  return false;
+  if (index_ >= highlights_snapshot_.size())
+    return false;
+  key = value = highlights_snapshot_[index_++];
+  return true;
 }
 
 void HighlightRegistry::IterationSource::Trace(blink::Visitor* visitor) const {
+  visitor->Trace(highlights_snapshot_);
   HighlightRegistrySetIterable::IterationSource::Trace(visitor);
 }
 
 HighlightRegistrySetIterable::IterationSource*
-HighlightRegistry::StartIteration(ScriptState*,
-                                  ExceptionState& exception_state) {
-  // TODO(ffiori http://crbug.com/1185385)
-  exception_state.ThrowDOMException(DOMExceptionCode::kAbortError,
-                                    "Iteration still not implemented.");
-  return MakeGarbageCollected<IterationSource>(this);
+HighlightRegistry::StartIteration(ScriptState*, ExceptionState&) {
+  return MakeGarbageCollected<IterationSource>(*this);
 }
 
 }  // namespace blink

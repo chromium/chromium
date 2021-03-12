@@ -62,25 +62,34 @@ wtf_size_t Highlight::size() const {
   return highlight_ranges_.size();
 }
 
+Highlight::IterationSource::IterationSource(const Highlight& highlight)
+    : index_(0) {
+  highlight_ranges_snapshot_.ReserveInitialCapacity(
+      highlight.highlight_ranges_.size());
+  for (const auto& range : highlight.highlight_ranges_) {
+    highlight_ranges_snapshot_.push_back(range);
+  }
+}
+
 bool Highlight::IterationSource::Next(ScriptState*,
                                       Member<AbstractRange>& key,
                                       Member<AbstractRange>& value,
                                       ExceptionState&) {
-  // TODO(ffiori http://crbug.com/1185385)
-  return false;
+  if (index_ >= highlight_ranges_snapshot_.size())
+    return false;
+  key = value = highlight_ranges_snapshot_[index_++];
+  return true;
 }
 
 void Highlight::IterationSource::Trace(blink::Visitor* visitor) const {
+  visitor->Trace(highlight_ranges_snapshot_);
   HighlightSetIterable::IterationSource::Trace(visitor);
 }
 
 HighlightSetIterable::IterationSource* Highlight::StartIteration(
     ScriptState*,
-    ExceptionState& exception_state) {
-  // TODO(ffiori http://crbug.com/1185385)
-  exception_state.ThrowDOMException(DOMExceptionCode::kAbortError,
-                                    "Iteration still not implemented.");
-  return MakeGarbageCollected<IterationSource>(this);
+    ExceptionState&) {
+  return MakeGarbageCollected<IterationSource>(*this);
 }
 
 }  // namespace blink

@@ -40,7 +40,7 @@ class CORE_EXPORT Highlight : public ScriptWrappable,
 
   class IterationSource final : public HighlightSetIterable::IterationSource {
    public:
-    explicit IterationSource(const Member<Highlight>& highlight) {}
+    explicit IterationSource(const Highlight& highlight);
 
     bool Next(ScriptState*,
               Member<AbstractRange>&,
@@ -48,6 +48,10 @@ class CORE_EXPORT Highlight : public ScriptWrappable,
               ExceptionState&) override;
 
     void Trace(blink::Visitor*) const override;
+
+   private:
+    wtf_size_t index_;
+    HeapVector<Member<AbstractRange>> highlight_ranges_snapshot_;
   };
 
   HighlightSetIterable::IterationSource* StartIteration(
