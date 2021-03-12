@@ -29,6 +29,12 @@
 
 class PrefChangeRegistrar;
 
+namespace aura {
+namespace client {
+class DragDropClientObserver;
+}  // namespace client
+}  // namespace aura
+
 namespace views {
 class ImageView;
 }  // namespace views
@@ -74,12 +80,11 @@ class ASH_EXPORT HoldingSpaceTray : public TrayBackgroundView,
                       std::set<ui::ClipboardFormatType>* format_types) override;
   bool AreDropTypesRequired() override;
   bool CanDrop(const ui::OSExchangeData& data) override;
-  void OnDragEntered(const ui::DropTargetEvent& event) override;
   int OnDragUpdated(const ui::DropTargetEvent& event) override;
-  void OnDragExited() override;
   ui::mojom::DragOperation OnPerformDrop(
       const ui::DropTargetEvent& event) override;
   void Layout() override;
+  void VisibilityChanged(views::View* starting_from, bool is_visible) override;
 
   void set_use_zero_previews_update_delay_for_testing(bool zero_delay) {
     use_zero_previews_update_delay_ = zero_delay;
@@ -150,15 +155,15 @@ class ASH_EXPORT HoldingSpaceTray : public TrayBackgroundView,
   bool PreviewsShown() const;
 
   // Updates this view (and its children) to reflect state as a potential drop
-  // target. If `is_drop_target` is true, this view represents a suitable drop
-  // target for the current drag payload. When specified, `event` pinpoints the
-  // location of the event which triggered this method call.
-  void UpdateDropTargetState(bool is_drop_target,
-                             const ui::LocatedEvent* event);
+  // target. If `event` is `nullptr`, this view is *not* a drop target.
+  // Otherwise this view is a drop target iff the `event` is located within
+  // sufficient range of its bounds and contains pinnable files.
+  void UpdateDropTargetState(const ui::DropTargetEvent* event);
 
   std::unique_ptr<HoldingSpaceTrayBubble> bubble_;
   std::unique_ptr<ui::SimpleMenuModel> context_menu_model_;
   std::unique_ptr<views::MenuRunner> context_menu_runner_;
+  std::unique_ptr<aura::client::DragDropClientObserver> drag_drop_observer_;
 
   // Default tray icon shown when there are no previews available (or the
   // previews are disabled).

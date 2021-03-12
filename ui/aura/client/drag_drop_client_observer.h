@@ -17,6 +17,8 @@ namespace client {
 
 class AURA_EXPORT DragDropClientObserver {
  public:
+  virtual ~DragDropClientObserver() = default;
+
   // Called when dragging started.
   virtual void OnDragStarted() {}
 
@@ -33,9 +35,6 @@ class AURA_EXPORT DragDropClientObserver {
   // the operation returned from StartDragAndDrop.
   virtual void OnDragActionsChanged(int actions) {}
 #endif
-
- protected:
-  virtual ~DragDropClientObserver() = default;
 };
 
 }  // namespace client
