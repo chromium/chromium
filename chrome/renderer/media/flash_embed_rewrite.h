@@ -18,6 +18,9 @@ class FlashEmbedRewrite {
 
   // Dailymotion specific method.
   static GURL RewriteDailymotionFlashEmbedURL(const GURL&);
+
+  // Vimeo specific method.
+  static GURL RewriteVimeoFlashEmbedURL(const GURL&);
 };
 
 #endif  // CHROME_RENDERER_MEDIA_FLASH_EMBED_REWRITE_H_
