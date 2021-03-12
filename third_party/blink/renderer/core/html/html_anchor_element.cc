@@ -475,14 +475,16 @@ void HTMLAnchorElement::HandleClick(Event& event) {
     // FindOrCreateFrameForNavigation() call, as that call may result in
     // performing a navigation if the call results in creating a new window with
     // noopener set.
+    // At this time we don't know if the navigation will navigate a main frame
+    // or subframe. For example, a middle click on the anchor element will
+    // set `target_frame` to `frame`, but end up targeting a new window.
+    // Attach the impression regardless, the embedder will be able to drop
+    // impressions for subframe navigations.
     base::Optional<WebImpression> impression = GetImpressionForAnchor(this);
     if (impression)
       frame_request.SetImpression(*impression);
   }
 
-  // Note that we do not need to worry about impressions being attached to
-  // subframe navigations in the following call, a frame is only
-  // created/navigated if we are intending to navigate a new window/main frame.
   Frame* target_frame =
       frame->Tree().FindOrCreateFrameForNavigation(frame_request, target).frame;
 
@@ -497,15 +499,8 @@ void HTMLAnchorElement::HandleClick(Event& event) {
                       WebFeature::kHTMLAnchorElementHrefTranslateAttribute);
   }
 
-  if (target_frame) {
-    // We do not need to attach impressions for navigations to subframes, as the
-    // Conversion Measurement API only applies to main frame navigations. Clear
-    // out the impression in that case.
-    if (!target_frame->IsMainFrame()) {
-      frame_request.SetImpression(base::nullopt);
-    }
+  if (target_frame)
     target_frame->Navigate(frame_request, WebFrameLoadType::kStandard);
-  }
 }
 
 bool IsEnterKeyKeydownEvent(Event& event) {

@@ -284,6 +284,37 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_EQ(1UL, last_impression.impression_data);
 }
 
+// See https://crbug.com/1186077.
+IN_PROC_BROWSER_TEST_F(
+    ImpressionDeclarationBrowserTest,
+    TagNavigatesFromMiddleClickInSubframe_ImpressionReceived) {
+  GURL page_url = https_server()->GetURL("b.test", "/page_with_iframe.html");
+  EXPECT_TRUE(NavigateToURL(web_contents(), page_url));
+  EXPECT_TRUE(ExecJs(shell(), R"(
+     let frame = document.getElementById('test_iframe');
+     frame.setAttribute('allow', 'conversion-measurement');)"));
+
+  GURL subframe_url =
+      https_server()->GetURL("c.test", "/page_with_impression_creator.html");
+  NavigateIframeToURL(web_contents(), "test_iframe", subframe_url);
+
+  // Create an impression tag that is opened via middle click in the subframe.
+  RenderFrameHost* subframe = ChildFrameAt(web_contents()->GetMainFrame(), 0);
+  EXPECT_TRUE(ExecJs(subframe, R"(
+    createImpressionTag("link",
+                        "page_with_conversion_redirect.html",
+                        "1" /* impression data */,
+                        "https://a.com" /* conversion_destination */);)"));
+
+  ImpressionObserver impression_observer(nullptr);
+  impression_observer.StartWatchingNewWebContents();
+  EXPECT_TRUE(ExecJs(subframe, "simulateMiddleClick(\'link\');"));
+
+  // Verify the navigation was annotated with an impression.
+  blink::Impression last_impression = impression_observer.Wait();
+  EXPECT_EQ(1UL, last_impression.impression_data);
+}
+
 IN_PROC_BROWSER_TEST_F(
     ImpressionDeclarationBrowserTest,
     ImpressionTagNavigatesFromEnterPress_ImpressionReceived) {
