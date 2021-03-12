@@ -30,7 +30,7 @@ def ComputePythonDependencies():
   src/. The paths will be relative to the current directory.
   """
   module_paths = (m.__file__ for m in sys.modules.values()
-                  if m and hasattr(m, '__file__'))
+                  if m and hasattr(m, '__file__') and m.__file__)
 
   src_paths = set()
   for path in module_paths:
