@@ -43,6 +43,7 @@ run_jsbundler("select_to_speak_copied_files") {
     "select_to_speak_main.js",
     "select_to_speak_options.js",
     "sentence_utils.js",
+    "test_node_generator.js",
     "ui_manager.js",
     "unchecked.png",
     "word_utils.js",

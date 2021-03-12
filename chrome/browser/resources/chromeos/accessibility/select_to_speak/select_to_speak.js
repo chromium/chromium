@@ -644,7 +644,7 @@ export class SelectToSpeak {
     // If we have passed the user-selected content, STS should speak the content
     // from the current position to the end of the current node group.
     const {nodes: remainingNodes, offset} =
-        NodeUtils.getNextNodesInParagraphFromPosition(
+        NodeNavigationUtils.getNextNodesInParagraphFromPosition(
             currentPosition, constants.Dir.FORWARD);
 
     // If there is no remaining nodes in this paragraph, we navigate to the next

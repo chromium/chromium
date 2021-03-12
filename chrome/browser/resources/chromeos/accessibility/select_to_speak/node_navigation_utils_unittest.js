@@ -15,13 +15,12 @@ SelectToSpeakNodeNavigationUtilsUnitTest = class extends SelectToSpeakE2ETest {
       let module = await import('/select_to_speak/node_navigation_utils.js');
       window.NodeNavigationUtils = module.NodeNavigationUtils;
 
-      module = await import('/select_to_speak/node_utils.js');
-      window.NodeUtils = module.NodeUtils;
-
       module = await import('/select_to_speak/paragraph_utils.js');
       window.ParagraphUtils = module.ParagraphUtils;
 
-      module = await import('/select_to_speak/sentence_utils.js');
+      module = await import('/select_to_speak/test_node_generator.js');
+      window.createMockNode = module.createMockNode;
+      window.generateTestNodeGroup = module.generateTestNodeGroup;
       runTest();
     })();
   }
@@ -81,6 +80,527 @@ SYNC_TEST_F(
           (nodes) => !(nodes.find(
               n => n.parent ===
                   paragraph2) /* filter out nodes belong to paragraph 2 */));
+      assertEquals(result.length, 0);
+    });
+
+SYNC_TEST_F(
+    'SelectToSpeakNodeNavigationUtilsUnitTest', 'GetNextParagraphWithNode',
+    function() {
+      const root = createMockNode({role: 'rootWebArea'});
+      const paragraph1 = createMockNode(
+          {role: 'paragraph', display: 'block', parent: root, root});
+      const text1 = createMockNode(
+          {role: 'staticText', parent: paragraph1, root, name: 'Line 1'});
+      const text2 = createMockNode(
+          {role: 'staticText', parent: paragraph1, root, name: 'Line 2'});
+      const paragraph2 = createMockNode(
+          {role: 'paragraph', display: 'block', parent: root, root});
+      const text3 = createMockNode(
+          {role: 'staticText', parent: paragraph2, root, name: 'Line 3'});
+
+      // Forward from first text node of paragraph 1 gives paragraph 2 nodes.
+      let result = NodeNavigationUtils.getNextParagraphWithNode_(
+          text1, constants.Dir.FORWARD);
+      assertEquals(result.length, 1);
+      assertEquals(result[0], text3);
+
+      // Forward from second text node of paragraph 1 gives paragraph 2 nodes.
+      result = NodeNavigationUtils.getNextParagraphWithNode_(
+          text2, constants.Dir.FORWARD);
+      assertEquals(result.length, 1);
+      assertEquals(result[0], text3);
+
+      // Forward from paragraph 1 node gives paragraph 2 nodes.
+      result = NodeNavigationUtils.getNextParagraphWithNode_(
+          paragraph1, constants.Dir.FORWARD);
+      assertEquals(result.length, 1);
+      assertEquals(result[0], text3);
+
+      // Forward from text node of paragraph 2 returns no nodes.
+      result = NodeNavigationUtils.getNextParagraphWithNode_(
+          text3, constants.Dir.FORWARD);
+      assertEquals(result.length, 0);
+
+      // Forward from paragraph 2 returns no nodes.
+      result = NodeNavigationUtils.getNextParagraphWithNode_(
+          paragraph2, constants.Dir.FORWARD);
+      assertEquals(result.length, 0);
+
+      // Backward from text node of paragraph 2 returns paragraph 1 nodes.
+      result = NodeNavigationUtils.getNextParagraphWithNode_(
+          text3, constants.Dir.BACKWARD);
+      assertEquals(result.length, 2);
+      assertEquals(result[0], text1);
+      assertEquals(result[1], text2);
+
+      // Backward from paragraph 2 node returns paragraph 1 nodes.
+      result = NodeNavigationUtils.getNextParagraphWithNode_(
+          paragraph2, constants.Dir.BACKWARD);
+      assertEquals(result.length, 2);
+      assertEquals(result[0], text1);
+      assertEquals(result[1], text2);
+
+      // Backward from text node of paragraph 1 returns no nodes.
+      result = NodeNavigationUtils.getNextParagraphWithNode_(
+          text2, constants.Dir.BACKWARD);
+      assertEquals(result.length, 0);
+
+      // Backward from text node of paragraph 1 returns no nodes.
+      result = NodeNavigationUtils.getNextParagraphWithNode_(
+          text1, constants.Dir.BACKWARD);
+      assertEquals(result.length, 0);
+
+      // Backward from paragraph 1 node returns no nodes.
+      result = NodeNavigationUtils.getNextParagraphWithNode_(
+          paragraph1, constants.Dir.BACKWARD);
+      assertEquals(result.length, 0);
+    });
+
+SYNC_TEST_F(
+    'SelectToSpeakNodeNavigationUtilsUnitTest',
+    'GetNextParagraphWithNodeContainedWithinRoot', function() {
+      const desktop = createMockNode({role: 'desktop'});
+
+      const root = createMockNode({role: 'rootWebArea', parent: desktop});
+      const paragraph1 = createMockNode(
+          {role: 'paragraph', display: 'block', parent: root, root});
+      const text1 = createMockNode(
+          {role: 'staticText', parent: paragraph1, root, name: 'Line 1'});
+      const otherRoot = createMockNode({role: 'rootWebArea', parent: desktop});
+      const paragraph2 = createMockNode(
+          {role: 'paragraph', display: 'block', parent: otherRoot, root});
+      createMockNode({
+        role: 'staticText',
+        parent: paragraph2,
+        root: otherRoot,
+        name: 'Line 2'
+      });
+
+      let result = NodeNavigationUtils.getNextParagraphWithNode_(
+          text1, constants.Dir.FORWARD);
+      assertEquals(result.length, 0);
+
+      NodeNavigationUtils.getNextParagraphWithNode_(
+          text1, constants.Dir.BACKWARD);
+      assertEquals(result.length, 0);
+
+      result = NodeNavigationUtils.getNextParagraphWithNode_(
+          paragraph1, constants.Dir.FORWARD);
+      assertEquals(result.length, 0);
+
+      result = NodeNavigationUtils.getNextParagraphWithNode_(
+          paragraph1, constants.Dir.BACKWARD);
+      assertEquals(result.length, 0);
+    });
+
+SYNC_TEST_F(
+    'SelectToSpeakNodeNavigationUtilsUnitTest',
+    'GetNextParagraphWithNodeThroughIframe', function() {
+      const desktop = createMockNode({role: 'desktop'});
+
+      const root =
+          createMockNode({role: 'rootWebArea', parent: desktop, root: desktop});
+      const paragraph1 = createMockNode(
+          {role: 'paragraph', display: 'block', parent: root, root});
+      const text1 = createMockNode(
+          {role: 'staticText', parent: paragraph1, root, name: 'Line 1'});
+      const iframeRoot =
+          createMockNode({role: 'rootWebArea', parent: root, root});
+      const paragraph2 = createMockNode({
+        role: 'paragraph',
+        display: 'block',
+        parent: iframeRoot,
+        root: iframeRoot
+      });
+      const text2 = createMockNode({
+        role: 'staticText',
+        parent: paragraph2,
+        root: iframeRoot,
+        name: 'Line 2'
+      });
+      const paragraph3 = createMockNode(
+          {role: 'paragraph', display: 'block', parent: root, root});
+      const text3 = createMockNode(
+          {role: 'staticText', parent: paragraph3, root, name: 'Line 3'});
+
+      let result = NodeNavigationUtils.getNextParagraphWithNode_(
+          text1, constants.Dir.FORWARD);
+      assertEquals(result.length, 1);
+      assertEquals(result[0], text2);
+
+      result = NodeNavigationUtils.getNextParagraphWithNode_(
+          text2, constants.Dir.FORWARD);
+      assertEquals(result.length, 1);
+      assertEquals(result[0], text3);
+    });
+
+SYNC_TEST_F(
+    'SelectToSpeakNodeNavigationUtilsUnitTest',
+    'GetNextParagraphWithNodeNonBlockNodes', function() {
+      /**
+       * Example below is roughly similar to:
+       * <p>Line 1</p>
+       * <span>Line 2</span>
+       * <p><span>Line 2</span><span>Line 3</span></p>
+       */
+      const root = createMockNode({role: 'rootWebArea'});
+      const paragraph1 = createMockNode(
+          {role: 'paragraph', display: 'block', parent: root, root});
+      const text1 = createMockNode(
+          {role: 'staticText', parent: paragraph1, root, name: 'Line 1'});
+      const text2 = createMockNode(
+          {role: 'staticText', parent: root, root, name: 'Line 2'});
+      const paragraph2 = createMockNode(
+          {role: 'paragraph', display: 'block', parent: root, root});
+      const text3 = createMockNode(
+          {role: 'staticText', parent: paragraph2, root, name: 'Line 3'});
+      const text4 = createMockNode(
+          {role: 'staticText', parent: paragraph2, root, name: 'Line 4'});
+
+      // Forward from first text node of paragraph 1 gives inline text node.
+      let result = NodeNavigationUtils.getNextParagraphWithNode_(
+          text1, constants.Dir.FORWARD);
+      assertEquals(result.length, 1);
+      assertEquals(result[0], text2);
+
+      // Forward from inline text node gives paragraph 2 nodes.
+      result = NodeNavigationUtils.getNextParagraphWithNode_(
+          text2, constants.Dir.FORWARD);
+      assertEquals(result.length, 2);
+      assertEquals(result[0], text3);
+      assertEquals(result[1], text4);
+
+      // Backwards from paragraph 2 inline text node.
+      result = NodeNavigationUtils.getNextParagraphWithNode_(
+          paragraph2, constants.Dir.BACKWARD);
+      assertEquals(result.length, 1);
+      assertEquals(result[0], text2);
+    });
+
+SYNC_TEST_F(
+    'SelectToSpeakNodeNavigationUtilsUnitTest',
+    'GetNextParagraphWithNodeNestedBlocks', function() {
+      const root = createMockNode({role: 'rootWebArea'});
+      const paragraph1 = createMockNode(
+          {role: 'paragraph', display: 'block', parent: root, root});
+      const text1 = createMockNode(
+          {role: 'staticText', parent: paragraph1, root, name: 'Before text'});
+      const nestedParagraph = createMockNode(
+          {role: 'paragraph', display: 'block', parent: paragraph1, root});
+      const text2 = createMockNode({
+        role: 'staticText',
+        parent: nestedParagraph,
+        root,
+        name: 'Middle text'
+      });
+      const text3 = createMockNode(
+          {role: 'staticText', parent: paragraph1, root, name: 'After text'});
+
+      // Getting next paragraph from nested paragraph only includes nodes in
+      // the forward direction (does not include itself)
+      let result = NodeNavigationUtils.getNextParagraphWithNode_(
+          text2, constants.Dir.FORWARD);
+      assertEquals(result.length, 1);
+      assertEquals(result[0], text3);
+
+      // Getting next paragraph from nested paragraph only includes nodes in
+      // the backward direction (does not include itself)
+      result = NodeNavigationUtils.getNextParagraphWithNode_(
+          text2, constants.Dir.BACKWARD);
+      assertEquals(result.length, 1);
+      assertEquals(result[0], text1);
+    });
+
+SYNC_TEST_F(
+    'SelectToSpeakNodeNavigationUtilsUnitTest',
+    'GetNextParagraphWithNodeAndroid', function() {
+      const root = createMockNode({role: 'application'});
+      const container1 =
+          createMockNode({role: 'genericContainer', parent: root, root});
+      const text1 = createMockNode(
+          {role: 'staticText', parent: container1, root, name: 'Line 1'});
+      const text2 = createMockNode(
+          {role: 'staticText', parent: container1, root, name: 'Line 2'});
+      const container2 =
+          createMockNode({role: 'genericContainer', parent: root, root});
+      const text3 = createMockNode(
+          {role: 'staticText', parent: container2, root, name: 'Line 3'});
+
+      // Without paragraphs, navigate node to node.
+      let result = NodeNavigationUtils.getNextParagraphWithNode_(
+          text1, constants.Dir.FORWARD);
+      assertEquals(result.length, 1);
+      assertEquals(result[0], text2);
+
+      result = NodeNavigationUtils.getNextParagraphWithNode_(
+          text2, constants.Dir.FORWARD);
+      assertEquals(result.length, 1);
+      assertEquals(result[0], text3);
+
+      result = NodeNavigationUtils.getNextParagraphWithNode_(
+          container1, constants.Dir.FORWARD);
+      assertEquals(result.length, 1);
+      assertEquals(result[0], text3);
+
+      result = NodeNavigationUtils.getNextParagraphWithNode_(
+          text3, constants.Dir.FORWARD);
+      assertEquals(result.length, 0);
+
+      result = NodeNavigationUtils.getNextParagraphWithNode_(
+          container2, constants.Dir.FORWARD);
+      assertEquals(result.length, 0);
+
+      result = NodeNavigationUtils.getNextParagraphWithNode_(
+          text3, constants.Dir.BACKWARD);
+      assertEquals(result.length, 1);
+      assertEquals(result[0], text2);
+
+      result = NodeNavigationUtils.getNextParagraphWithNode_(
+          container2, constants.Dir.BACKWARD);
+      assertEquals(result.length, 1);
+      assertEquals(result[0], text2);
+
+      result = NodeNavigationUtils.getNextParagraphWithNode_(
+          text2, constants.Dir.BACKWARD);
+      assertEquals(result.length, 1);
+      assertEquals(result[0], text1);
+
+      result = NodeNavigationUtils.getNextParagraphWithNode_(
+          text1, constants.Dir.BACKWARD);
+      assertEquals(result.length, 0);
+
+      result = NodeNavigationUtils.getNextParagraphWithNode_(
+          container1, constants.Dir.BACKWARD);
+      assertEquals(result.length, 0);
+    });
+
+SYNC_TEST_F(
+    'SelectToSpeakNodeNavigationUtilsUnitTest',
+    'GetNextNodesInParagraphFromNodeGroupEmptyNodeGroup', function() {
+      const nodeGroup = {nodes: []};
+      const result = NodeNavigationUtils.getNextNodesInParagraphFromNodeGroup(
+          nodeGroup, 0 /* charIndex */, constants.Dir.FORWARD /* direction */);
+      assertEquals(result.nodes.length, 0);
+      assertEquals(result.offset, -1);
+    });
+
+SYNC_TEST_F(
+    'SelectToSpeakNodeNavigationUtilsUnitTest',
+    'GetNextNodesInParagraphFromNodeGroupForward', function() {
+      // The nodeGroup has four inline text nodes and one static text node.
+      // Their starting indexes are 0, 9, 20, 30, and 51.
+      const nodeGroup = generateTestNodeGroup();
+
+      let result = NodeNavigationUtils.getNextNodesInParagraphFromNodeGroup(
+          nodeGroup, 0 /* charIndex */, constants.Dir.FORWARD /* direction */);
+      assertEquals(result.nodes.length, 5);
+      assertEquals(result.offset, 0);
+
+      result = NodeNavigationUtils.getNextNodesInParagraphFromNodeGroup(
+          nodeGroup, 5 /* charIndex */, constants.Dir.FORWARD /* direction */);
+      assertEquals(result.nodes.length, 5);
+      assertEquals(result.offset, 5);
+
+      result = NodeNavigationUtils.getNextNodesInParagraphFromNodeGroup(
+          nodeGroup, 9 /* charIndex */, constants.Dir.FORWARD /* direction */);
+      assertEquals(result.nodes.length, 4);
+      assertEquals(result.offset, 0);
+
+      result = NodeNavigationUtils.getNextNodesInParagraphFromNodeGroup(
+          nodeGroup, 25 /* charIndex */, constants.Dir.FORWARD /* direction */);
+      assertEquals(result.nodes.length, 3);
+      assertEquals(result.offset, 5);
+
+      result = NodeNavigationUtils.getNextNodesInParagraphFromNodeGroup(
+          nodeGroup, 51 /* charIndex */, constants.Dir.FORWARD /* direction */);
+      assertEquals(result.nodes.length, 1);
+      assertEquals(result.offset, 0);
+
+      result = NodeNavigationUtils.getNextNodesInParagraphFromNodeGroup(
+          nodeGroup, 100 /* charIndex */,
+          constants.Dir.FORWARD /* direction */);
+      assertEquals(result.nodes.length, 0);
+    });
+
+SYNC_TEST_F(
+    'SelectToSpeakNodeNavigationUtilsUnitTest',
+    'GetNextNodesInParagraphFromNodeGroupBackward', function() {
+      // The nodeGroup has four inline text nodes and one static text node.
+      // Their starting indexes are 0, 9, 20, 30, and 51.
+      const nodeGroup = generateTestNodeGroup();
+
+      let result = NodeNavigationUtils.getNextNodesInParagraphFromNodeGroup(
+          nodeGroup, 0 /* charIndex */, constants.Dir.BACKWARD /* direction */);
+      assertEquals(result.nodes.length, 0);
+
+      result = NodeNavigationUtils.getNextNodesInParagraphFromNodeGroup(
+          nodeGroup, 5 /* charIndex */, constants.Dir.BACKWARD /* direction */);
+      assertEquals(result.nodes.length, 1);
+      assertEquals(result.offset, 5);
+
+      result = NodeNavigationUtils.getNextNodesInParagraphFromNodeGroup(
+          nodeGroup, 9 /* charIndex */, constants.Dir.BACKWARD /* direction */);
+      assertEquals(result.nodes.length, 1);
+      assertEquals(result.offset, 9);
+
+      result = NodeNavigationUtils.getNextNodesInParagraphFromNodeGroup(
+          nodeGroup, 25 /* charIndex */,
+          constants.Dir.BACKWARD /* direction */);
+      assertEquals(result.nodes.length, 3);
+      assertEquals(result.offset, 5);
+
+      result = NodeNavigationUtils.getNextNodesInParagraphFromNodeGroup(
+          nodeGroup, 51 /* charIndex */,
+          constants.Dir.BACKWARD /* direction */);
+      assertEquals(result.nodes.length, 4);
+      assertEquals(result.offset, 20);
+
+      // The charIndex is out of the range of nodeGroup. It will try to get all
+      // the content before the nodeGroup. In this case, there is nothing.
+      result = NodeNavigationUtils.getNextNodesInParagraphFromNodeGroup(
+          nodeGroup, 100 /* charIndex */,
+          constants.Dir.BACKWARD /* direction */);
+      assertEquals(result.nodes.length, 0);
+    });
+
+SYNC_TEST_F(
+    'SelectToSpeakNodeNavigationUtilsUnitTest',
+    'GetNextNodesInParagraphFromNodeGroupForwardWithEmptyTail', function() {
+      // The nodeGroup consists of three inline text nodes: "Hello", "world ",
+      // and " ".
+      const nodeGroup = generateTestNodeGroupWithEmptyTail();
+
+      // We can find the non-empty node at this charIndex but there is actually
+      // no text content afterwards.
+      const nodeWithOffset = ParagraphUtils.findNodeFromNodeGroupByCharIndex(
+          nodeGroup, 11 /* charIndex */);
+      assertEquals(nodeWithOffset.node.name, 'world ');
+      assertEquals(nodeWithOffset.offset, 5);
+
+      let result = NodeNavigationUtils.getNextNodesInParagraphFromNodeGroup(
+          nodeGroup, 11 /* charIndex */, constants.Dir.FORWARD /* direction */);
+      assertEquals(result.nodes.length, 0);
+
+      // If we decrease the charIndex, we will get the node with 'world ' but
+      // not any empty node.
+      result = NodeNavigationUtils.getNextNodesInParagraphFromNodeGroup(
+          nodeGroup, 10 /* charIndex */, constants.Dir.FORWARD /* direction */);
+      assertEquals(result.nodes.length, 1);
+      assertEquals(result.nodes[0].name, 'world ');
+    });
+
+SYNC_TEST_F(
+    'SelectToSpeakNodeNavigationUtilsUnitTest',
+    'GetNextNodesInParagraphFromNodeGroupBackwardWithEmptyHeads', function() {
+      // The nodeGroup consists of three inline text nodes: " ", " Hello",
+      // "world".
+      const nodeGroup = generateTestNodeGroupWithEmptyHead();
+
+      // We can find the non-empty node at this charIndex but there is actually
+      // no text content before this position.
+      const nodeWithOffset = ParagraphUtils.findNodeFromNodeGroupByCharIndex(
+          nodeGroup, 2 /* charIndex */);
+      assertEquals(nodeWithOffset.node.name, ' Hello');
+      assertEquals(nodeWithOffset.offset, 1);
+
+      let result = NodeNavigationUtils.getNextNodesInParagraphFromNodeGroup(
+          nodeGroup, 2 /* charIndex */, constants.Dir.BACKWARD /* direction */);
+      assertEquals(result.nodes.length, 0);
+
+      // If we increase the charIndex, we will get the node with ' Hello' but
+      // not any empty node.
+      result = NodeNavigationUtils.getNextNodesInParagraphFromNodeGroup(
+          nodeGroup, 3 /* charIndex */, constants.Dir.BACKWARD /* direction */);
+      assertEquals(result.nodes.length, 1);
+      assertEquals(result.nodes[0].name, ' Hello');
+    });
+
+SYNC_TEST_F(
+    'SelectToSpeakNodeNavigationUtilsUnitTest',
+    'GetNextNodesInParagraphFromNodeGroupForwardFromPartialParagraph',
+    function() {
+      // The nodeGroup consists only one static text node, which is "one". The
+      // entire paragraph has three static text nodes: "Sentence", "one",
+      // "here".
+      const nodeGroup = generateTestNodeGroupFromPartialParagraph();
+
+      // After reading "one", the TTS events will set charIndex to 3. Finding
+      // the static text node from the node group will return null.
+      const nodeWithOffset = ParagraphUtils.findNodeFromNodeGroupByCharIndex(
+          nodeGroup, 3 /* charIndex */);
+      assertEquals(nodeWithOffset.node, null);
+
+      const result = NodeNavigationUtils.getNextNodesInParagraphFromNodeGroup(
+          nodeGroup, 3 /* charIndex */, constants.Dir.FORWARD /* direction */);
+      assertEquals(result.nodes.length, 1);
+      assertEquals(result.offset, 0);
+    });
+
+SYNC_TEST_F(
+    'SelectToSpeakNodeNavigationUtilsUnitTest',
+    'GetNextNodesInParagraphFromNodeGroupBackwardFromPartialParagraph',
+    function() {
+      // The nodeGroup consists only one static text node, which is "one". The
+      // entire paragraph has three static text nodes: "Sentence", "one",
+      // "here".
+      const nodeGroup = generateTestNodeGroupFromPartialParagraph();
+
+      // After reading "one", the TTS events will set charIndex to 3. Finding
+      // the static text node from the node group will return null.
+      const nodeWithOffset = ParagraphUtils.findNodeFromNodeGroupByCharIndex(
+          nodeGroup, 3 /* charIndex */);
+      assertEquals(nodeWithOffset.node, null);
+
+      const result = NodeNavigationUtils.getNextNodesInParagraphFromNodeGroup(
+          nodeGroup, 3 /* charIndex */, constants.Dir.BACKWARD /* direction */);
+      assertEquals(result.nodes.length, 1);
+      assertEquals(result.nodes[0].name, 'Sentence');
+      assertEquals(result.offset, 8);
+    });
+
+SYNC_TEST_F(
+    'SelectToSpeakNodeNavigationUtilsUnitTest', 'GetNextNodesInParagraph',
+    function() {
+      const root = createMockNode({role: 'rootWebArea'});
+      createMockNode({role: 'paragraph', display: 'block', parent: root, root});
+      const paragraph2 = createMockNode(
+          {role: 'paragraph', display: 'block', parent: root, root});
+      const text1 = createMockNode(
+          {role: 'staticText', parent: paragraph2, root, name: 'Line 1'});
+      const text2 = createMockNode(
+          {role: 'staticText', parent: paragraph2, root, name: 'Line 2'});
+      const text3 = createMockNode(
+          {role: 'staticText', parent: paragraph2, root, name: 'Line 3'});
+      createMockNode({role: 'paragraph', display: 'block', parent: root, root});
+
+      let result = NodeNavigationUtils.getNextNodesInParagraph_(
+          text2, constants.Dir.FORWARD);
+      assertEquals(result.length, 1);
+      assertEquals(result[0], text3);
+
+      result = NodeNavigationUtils.getNextNodesInParagraph_(
+          text1, constants.Dir.FORWARD);
+      assertEquals(result.length, 2);
+      assertEquals(result[0], text2);
+      assertEquals(result[1], text3);
+
+      result = NodeNavigationUtils.getNextNodesInParagraph_(
+          text3, constants.Dir.FORWARD);
+      assertEquals(result.length, 0);
+
+      result = NodeNavigationUtils.getNextNodesInParagraph_(
+          text3, constants.Dir.BACKWARD);
+      assertEquals(result.length, 2);
+      assertEquals(result[0], text1);
+      assertEquals(result[1], text2);
+
+      result = NodeNavigationUtils.getNextNodesInParagraph_(
+          text2, constants.Dir.BACKWARD);
+      assertEquals(result.length, 1);
+      assertEquals(result[0], text1);
+
+      result = NodeNavigationUtils.getNextNodesInParagraph_(
+          text1, constants.Dir.BACKWARD);
       assertEquals(result.length, 0);
     });
 
@@ -332,32 +852,73 @@ SYNC_TEST_F(
     });
 
 /**
- * Creates a AutomationNode-like object.
- * @param {!Object} properties
+ * Creates a nodeGroup that has an empty tail (i.e., "Hello world  ").
+ * @return {!ParagraphUtils.NodeGroup}
  */
-function createMockNode(properties) {
-  const node = Object.assign(
-      {
-        htmlAttributes: [],
-        state: {},
-        children: [],
-        unclippedLocation: {left: 20, top: 10, width: 100, height: 50},
-        location: {left: 20, top: 10, width: 100, height: 50},
-      },
-      properties);
+function generateTestNodeGroupWithEmptyTail() {
+  const root = createMockNode({role: 'rootWebArea'});
+  const paragraph =
+      createMockNode({role: 'paragraph', display: 'block', parent: root, root});
+  const text1 =
+      createMockNode({name: 'Hello', role: 'staticText', parent: paragraph});
+  const inlineText1 = createMockNode(
+      {role: 'inlineTextBox', name: 'Hello', indexInParent: 0, parent: text1});
 
-  if (node.parent) {
-    // Update children of parent and sibling properties.
-    const parent = node.parent;
-    if (parent.children.length === 0) {
-      parent.children = [];
-      parent.firstChild = node;
-    } else {
-      node.previousSibling = parent.children[parent.children.length - 1];
-      node.previousSibling.nextSibling = node;
-    }
-    parent.children.push(node);
-    parent.lastChild = node;
-  }
-  return node;
+  const text2 =
+      createMockNode({name: 'world  ', role: 'staticText', parent: paragraph});
+  const inlineText2 = createMockNode(
+      {role: 'inlineTextBox', name: 'world ', indexInParent: 0, parent: text2});
+  const inlineText3 = createMockNode(
+      {role: 'inlineTextBox', name: ' ', indexInParent: 1, parent: text2});
+
+  return ParagraphUtils.buildNodeGroup(
+      [inlineText1, inlineText2, inlineText3], 0,
+      false /* do not split on language */);
+}
+
+/**
+ * Creates a nodeGroup that has an empty head (i.e., "  Hello world").
+ * @return {!ParagraphUtils.NodeGroup}
+ */
+function generateTestNodeGroupWithEmptyHead() {
+  const root = createMockNode({role: 'rootWebArea'});
+  const paragraph =
+      createMockNode({role: 'paragraph', display: 'block', parent: root, root});
+  const text1 =
+      createMockNode({name: '  Hello', role: 'staticText', parent: paragraph});
+  const inlineText1 = createMockNode(
+      {role: 'inlineTextBox', name: ' ', indexInParent: 0, parent: text1});
+  const inlineText2 = createMockNode(
+      {role: 'inlineTextBox', name: ' Hello', indexInParent: 1, parent: text1});
+
+  const text2 =
+      createMockNode({name: 'world  ', role: 'staticText', parent: paragraph});
+  const inlineText3 = createMockNode(
+      {role: 'inlineTextBox', name: 'world', indexInParent: 1, parent: text2});
+
+  return ParagraphUtils.buildNodeGroup(
+      [inlineText1, inlineText2, inlineText3], 0,
+      false /* do not split on language */);
+}
+
+/**
+ * Creates a nodeGroup that only has a part of the paragraph (e.g., the "one"
+ * in <p>Sentence <span>one</span> here</p>).
+ * @return {!ParagraphUtils.NodeGroup}
+ */
+function generateTestNodeGroupFromPartialParagraph() {
+  const root = createMockNode({role: 'rootWebArea'});
+  const paragraph =
+      createMockNode({role: 'paragraph', display: 'block', parent: root, root});
+  const text1 =
+      createMockNode({name: 'Sentence', role: 'staticText', parent: paragraph});
+
+  const text2 =
+      createMockNode({name: 'one', role: 'staticText', parent: paragraph});
+
+  const text3 =
+      createMockNode({name: 'here', role: 'staticText', parent: paragraph});
+
+  return ParagraphUtils.buildNodeGroup(
+      [text2], 0, false /* do not split on language */);
 }
