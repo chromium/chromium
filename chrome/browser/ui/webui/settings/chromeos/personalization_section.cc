@@ -335,6 +335,11 @@ void PersonalizationSection::RegisterHierarchy(
       IDS_OS_SETTINGS_SET_WALLPAPER, mojom::Subpage::kWallpaper,
       mojom::SearchResultIcon::kWallpaper,
       mojom::SearchResultDefaultRank::kMedium, mojom::kWallpaperSubpagePath);
+  generator->RegisterNestedSubpage(
+      IDS_OS_SETTINGS_SET_WALLPAPER, mojom::Subpage::kWallpaperImages,
+      mojom::Subpage::kWallpaper, mojom::SearchResultIcon::kWallpaper,
+      mojom::SearchResultDefaultRank::kMedium,
+      mojom::kWallpaperImagesSubpagePath);
 
   // Ambient mode.
   generator->RegisterTopLevelSubpage(

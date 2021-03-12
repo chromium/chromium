@@ -11,3 +11,12 @@
  * }}
  */
 /* #export */ let WallpaperCollection;
+
+/**
+ * WallpaperImage defines an image in a wallpaper collection.
+ *
+ * @typedef {{
+ *   url: !string,
+ * }}
+ */
+/* #export */ let WallpaperImage;

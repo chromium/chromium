@@ -40,6 +40,11 @@ void WallpaperHandler::RegisterMessages() {
       "fetchWallpaperCollections",
       base::BindRepeating(&WallpaperHandler::HandleFetchWallpaperCollections,
                           base::Unretained(this)));
+
+  web_ui()->RegisterMessageCallback(
+      "fetchImagesForCollection",
+      base::BindRepeating(&WallpaperHandler::HandleFetchCollectionImages,
+                          base::Unretained(this)));
 }
 
 void WallpaperHandler::HandleIsWallpaperSettingVisible(
@@ -87,6 +92,44 @@ void WallpaperHandler::OnFetchWallpaperCollections(
     base::Value item(base::Value::Type::DICTIONARY);
     item.SetKey("id", base::Value(collection.collection_id()));
     item.SetKey("name", base::Value(collection.collection_name()));
+    result.Append(std::move(item));
+  }
+  ResolveJavascriptCallback(callback_id, result);
+}
+
+void WallpaperHandler::HandleFetchCollectionImages(
+    const base::ListValue* args) {
+  CHECK_EQ(args->GetSize(), 2U);
+  DCHECK(IsJavascriptAllowed()) << "Page should already be initialized";
+
+  const base::Value& last_arg = args->GetList().back();
+  DCHECK(last_arg.is_string()) << "Last argument must be the collection id";
+  const std::string& collection_id = last_arg.GetString();
+
+  backdrop_api_weak_factory_.InvalidateWeakPtrs();
+  collection_images_fetcher_ =
+      std::make_unique<backdrop_wallpaper_handlers::ImageInfoFetcher>(
+          collection_id);
+
+  collection_images_fetcher_->Start(
+      base::BindOnce(&WallpaperHandler::OnFetchCollectionImages,
+                     backdrop_api_weak_factory_.GetWeakPtr(),
+                     args->GetList().front().Clone()));
+}
+
+void WallpaperHandler::OnFetchCollectionImages(
+    const base::Value& callback_id,
+    bool success,
+    const std::vector<backdrop::Image>& images) {
+  if (!success || images.empty()) {
+    RejectJavascriptCallback(callback_id, base::Value(base::Value::Type::NONE));
+    return;
+  }
+
+  base::Value result(base::Value::Type::LIST);
+  for (const auto& image : images) {
+    base::Value item(base::Value::Type::DICTIONARY);
+    item.SetKey("url", base::Value(image.image_url()));
     result.Append(std::move(item));
   }
   ResolveJavascriptCallback(callback_id, result);

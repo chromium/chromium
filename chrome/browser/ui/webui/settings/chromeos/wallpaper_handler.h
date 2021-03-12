@@ -50,10 +50,18 @@ class WallpaperHandler : public ::settings::SettingsPageUIHandler {
       bool success,
       const std::vector<backdrop::Collection>& collections);
 
+  void HandleFetchCollectionImages(const base::ListValue* args);
+
+  void OnFetchCollectionImages(const base::Value& callback_id,
+                               bool success,
+                               const std::vector<backdrop::Image>& images);
+
   // Helper function to resolve the Javascript callback.
   void ResolveCallback(const base::Value& callback_id, bool result);
 
   backdrop_wallpaper_handlers::CollectionInfoFetcher collection_info_fetcher_;
+  std::unique_ptr<backdrop_wallpaper_handlers::ImageInfoFetcher>
+      collection_images_fetcher_;
 
   base::WeakPtrFactory<WallpaperHandler> backdrop_api_weak_factory_{this};
 

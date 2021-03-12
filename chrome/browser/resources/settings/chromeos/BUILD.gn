@@ -453,6 +453,7 @@ preprocess_if_expr("preprocess_gen_v3") {
     "chromeos/personalization_page/personalization_page.m.js",
     "chromeos/personalization_page/wallpaper_browser_proxy.m.js",
     "chromeos/personalization_page/wallpaper_constants.m.js",
+    "chromeos/personalization_page/wallpaper_images_subpage.m.js",
     "chromeos/personalization_page/wallpaper_subpage.m.js",
     "chromeos/pref_to_setting_metric_converter.m.js",
     "chromeos/route_origin_behavior.m.js",

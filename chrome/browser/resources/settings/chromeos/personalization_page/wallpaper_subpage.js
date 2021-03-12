@@ -93,4 +93,15 @@ Polymer({
   computeSuccess_(collections, loading) {
     return !loading && Array.isArray(collections) && collections.length > 0;
   },
+
+  /**
+   * @private
+   * @param {!MouseEvent} event
+   */
+  onClickWallpaperCollection_(event) {
+    const params = new URLSearchParams();
+    params.append('collection', event.currentTarget.dataset.id);
+    settings.Router.getInstance().navigateTo(
+        settings.routes.WALLPAPER_IMAGES, params);
+  }
 });

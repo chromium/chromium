@@ -156,6 +156,7 @@ js_modulizer("modulize") {
     "timezone_subpage_test.js",
     "tts_subpage_test.js",
     "user_page_tests.js",
+    "wallpaper_images_subpage_test.js",
     "wallpaper_subpage_test.js",
   ]
   namespace_rewrites = os_settings_namespace_rewrites +

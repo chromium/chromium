@@ -88,6 +88,7 @@
  *   SYNC: !settings.Route,
  *   SYNC_ADVANCED: !settings.Route,
  *   WALLPAPER: !settings.Route,
+ *   WALLPAPER_IMAGES: !settings.Route,
  * }}
  */
 /* #export */ let OsSettingsRoutes;

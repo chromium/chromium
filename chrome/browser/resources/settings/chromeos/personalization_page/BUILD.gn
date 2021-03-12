@@ -16,6 +16,7 @@ js_type_check("closure_compile_module") {
     ":personalization_page.m",
     ":wallpaper_browser_proxy.m",
     ":wallpaper_constants.m",
+    ":wallpaper_images_subpage.m",
     ":wallpaper_subpage.m",
   ]
 }
@@ -77,11 +78,25 @@ js_library("wallpaper_constants.m") {
   extra_deps = [ ":modulize" ]
 }
 
+js_library("wallpaper_images_subpage.m") {
+  sources = [ "$root_gen_dir/chrome/browser/resources/settings/chromeos/personalization_page/wallpaper_images_subpage.m.js" ]
+  deps = [
+    ":wallpaper_browser_proxy.m",
+    ":wallpaper_constants.m",
+    "..:os_route.m",
+    "../..:router.m",
+    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+    "//ui/webui/resources/js:assert.m",
+  ]
+  extra_deps = [ ":wallpaper_images_subpage_module" ]
+}
+
 js_library("wallpaper_subpage.m") {
   sources = [ "$root_gen_dir/chrome/browser/resources/settings/chromeos/personalization_page/wallpaper_subpage.m.js" ]
   deps = [
     ":wallpaper_browser_proxy.m",
     ":wallpaper_constants.m",
+    "..:os_route.m",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
     "//ui/webui/resources/js:i18n_behavior.m",
   ]
@@ -93,6 +108,7 @@ group("polymer3_elements") {
     ":change_picture_module",
     ":modulize",
     ":personalization_page_module",
+    ":wallpaper_images_subpage_module",
     ":wallpaper_subpage_module",
   ]
 }
@@ -112,6 +128,15 @@ polymer_modulizer("change_picture") {
 polymer_modulizer("personalization_page") {
   js_file = "personalization_page.js"
   html_file = "personalization_page.html"
+  html_type = "dom-module"
+  migrated_imports = os_settings_migrated_imports
+  namespace_rewrites = os_settings_namespace_rewrites
+  auto_imports = os_settings_auto_imports
+}
+
+polymer_modulizer("wallpaper_images_subpage") {
+  js_file = "wallpaper_images_subpage.js"
+  html_file = "wallpaper_images_subpage.html"
   html_type = "dom-module"
   migrated_imports = os_settings_migrated_imports
   namespace_rewrites = os_settings_namespace_rewrites

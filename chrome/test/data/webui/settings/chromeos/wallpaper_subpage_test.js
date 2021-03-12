@@ -46,7 +46,6 @@ suite('All', function() {
         const spinner = wallpaperSubpage.$$('paper-spinner-lite');
         assertTrue(!!spinner);
         assertTrue(spinner.active);
-        assertFalse(spinner.hidden);
 
         const ironList = wallpaperSubpage.$$('iron-list');
         assertFalse(!!ironList);
@@ -63,7 +62,6 @@ suite('All', function() {
     flush();
 
     assertFalse(spinner.active);
-    assertTrue(spinner.hidden);
 
     const ironList = wallpaperSubpage.$$('iron-list');
     assertTrue(!!ironList);
@@ -72,8 +70,8 @@ suite('All', function() {
     assertEquals(2, elements.length);
 
     assertDeepEquals(wallpaperSubpage.collections_, [
-      {id: '0', name: 'zero'},
-      {id: '1', name: 'one'},
+      {id: 'id_0', name: 'zero'},
+      {id: 'id_1', name: 'one'},
     ]);
   });
 
@@ -96,5 +94,22 @@ suite('All', function() {
 
     // No elements should be displayed if there is an error.
     assertFalse(!!wallpaperSubpage.$$('iron-list'));
+  });
+
+  test('navigates to images subpage when item is clicked', async () => {
+    initPage();
+    await browserProxy.whenCalled('fetchWallpaperCollections');
+    flush();
+
+    const wallpaperCollections =
+        wallpaperSubpage.$$('iron-list')
+            .querySelectorAll('.wallpaper-collection-title');
+    assertEquals(2, wallpaperCollections.length);
+
+    wallpaperCollections[0].click();
+
+    const router = settings.Router.getInstance();
+    assertEquals('/wallpaper/images', router.getCurrentRoute().path);
+    assertEquals('collection=id_0', router.getQueryParameters().toString());
   });
 });
