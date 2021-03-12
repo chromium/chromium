@@ -1241,6 +1241,46 @@
         "tast_expr": "(\"group:mainline\" && \"dep:lacros\")",
         "test": "mainline_lacros_tast_tests",
         "timeout_sec": 10800
+      },
+      {
+        "args": [],
+        "cros_board": "kefka",
+        "cros_img": "kefka-release/R90-13812.0.0",
+        "name": "mainline_lacros_tast_tests_KEFKA_TOT",
+        "swarming": {},
+        "tast_expr": "(\"group:mainline\" && \"dep:lacros\")",
+        "test": "mainline_lacros_tast_tests",
+        "timeout_sec": 10800
+      },
+      {
+        "args": [],
+        "cros_board": "snappy",
+        "cros_img": "snappy-release/R90-13812.0.0",
+        "name": "mainline_lacros_tast_tests_SNAPPY_TOT",
+        "swarming": {},
+        "tast_expr": "(\"group:mainline\" && \"dep:lacros\")",
+        "test": "mainline_lacros_tast_tests",
+        "timeout_sec": 10800
+      },
+      {
+        "args": [],
+        "cros_board": "kip",
+        "cros_img": "kip-release/R90-13812.0.0",
+        "name": "mainline_lacros_tast_tests_KIP_TOT",
+        "swarming": {},
+        "tast_expr": "(\"group:mainline\" && \"dep:lacros\")",
+        "test": "mainline_lacros_tast_tests",
+        "timeout_sec": 10800
+      },
+      {
+        "args": [],
+        "cros_board": "coral",
+        "cros_img": "coral-release/R90-13812.0.0",
+        "name": "mainline_lacros_tast_tests_CORAL_TOT",
+        "swarming": {},
+        "tast_expr": "(\"group:mainline\" && \"dep:lacros\")",
+        "test": "mainline_lacros_tast_tests",
+        "timeout_sec": 10800
       }
     ]
   }

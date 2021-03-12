@@ -528,4 +528,32 @@
     },
     'identifier': 'OCTOPUS_TOT-1',
   },
+  'CROS_KEFKA_TOT': {
+    'skylab': {
+      'cros_board': 'kefka',
+      'cros_img': 'kefka-release/R90-13812.0.0',
+    },
+    'identifier': 'KEFKA_TOT',
+  },
+  'CROS_SNAPPY_TOT': {
+    'skylab': {
+      'cros_board': 'snappy',
+      'cros_img': 'snappy-release/R90-13812.0.0',
+    },
+    'identifier': 'SNAPPY_TOT',
+  },
+  'CROS_KIP_TOT': {
+    'skylab': {
+      'cros_board': 'kip',
+      'cros_img': 'kip-release/R90-13812.0.0',
+    },
+    'identifier': 'KIP_TOT',
+  },
+  'CROS_CORAL_TOT': {
+    'skylab': {
+      'cros_board': 'coral',
+      'cros_img': 'coral-release/R90-13812.0.0',
+    },
+    'identifier': 'CORAL_TOT',
+  },
 }
