@@ -4,9 +4,6 @@
 
 package org.chromium.chrome.browser.omnibox.status;
 
-import android.animation.Animator;
-import android.animation.AnimatorListenerAdapter;
-import android.animation.ValueAnimator;
 import android.content.Context;
 import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
@@ -63,9 +60,6 @@ public class StatusView extends LinearLayout {
     private View mSeparatorView;
     private View mStatusExtraSpace;
 
-    // Drawable alpha ranges from 0 (transparent) to 255 (opaque).
-    private final ValueAnimator mDrawableAlphaAnimator = ValueAnimator.ofInt(0, 255);
-
     private boolean mAnimationsEnabled;
     private boolean mAnimatingStatusIconShow;
     private boolean mAnimatingStatusIconHide;
@@ -95,44 +89,6 @@ public class StatusView extends LinearLayout {
         mVerboseStatusTextView = findViewById(R.id.location_bar_verbose_status);
         mSeparatorView = findViewById(R.id.location_bar_verbose_status_separator);
         mStatusExtraSpace = findViewById(R.id.location_bar_verbose_status_extra_space);
-        mDrawableAlphaAnimator.addUpdateListener(animator -> {
-            int opacity = (int) animator.getAnimatedValue();
-            // Note: the mStatusIconDrawable does not become 'current' until the transition
-            // animation finishes, eg. it will be <null> when the fade out begins, but will only
-            // substitute the currently shown drawable at the very last moment.
-            Drawable drawable = mIconView.getDrawable();
-            if (drawable != null) {
-                drawable.setAlpha(opacity);
-            }
-        });
-        mDrawableAlphaAnimator.addListener(new AnimatorListenerAdapter() {
-            @Override
-            public void onAnimationStart(Animator animator) {
-                if (mAnimatingStatusIconShow) {
-                    mIconView.setVisibility(View.VISIBLE);
-                    updateIncognitoBadgeEndPadding();
-                }
-            }
-
-            @Override
-            public void onAnimationCancel(Animator animator) {
-                mAnimatingStatusIconHide = false;
-                mAnimatingStatusIconShow = false;
-            }
-
-            @Override
-            public void onAnimationEnd(Animator animator) {
-                if (mAnimatingStatusIconHide) {
-                    mIconView.setVisibility(View.GONE);
-                    // Update incognito badge padding after the animation to avoid a glitch
-                    // on focusing location bar.
-                    updateIncognitoBadgeEndPadding();
-                }
-                updateTouchDelegate();
-                mAnimatingStatusIconHide = false;
-                mAnimatingStatusIconShow = false;
-            }
-        });
 
         configureAccessibilityDescriptions();
     }
@@ -203,21 +159,46 @@ public class StatusView extends LinearLayout {
             return;
         }
 
-        mDrawableAlphaAnimator.cancel();
         if (!wantIconHidden && (isIconHidden || mAnimatingStatusIconHide)) {
             // Action 1: animate showing, if icon was either hidden or hiding.
+            if (mAnimatingStatusIconHide) mIconView.animate().cancel();
+            mAnimatingStatusIconHide = false;
+
             mAnimatingStatusIconShow = true;
-            mDrawableAlphaAnimator.setDuration(ICON_ANIMATION_DURATION_MS).start();
+            mIconView.setVisibility(View.VISIBLE);
+            updateIncognitoBadgeEndPadding();
+            mIconView.animate()
+                    .alpha(1.0f)
+                    .setDuration(ICON_ANIMATION_DURATION_MS)
+                    .withEndAction(() -> {
+                        mAnimatingStatusIconShow = false;
+                        // Wait until the icon is visible so the bounds will be properly set.
+                        updateTouchDelegate();
+                    })
+                    .start();
         } else if (wantIconHidden && (!isIconHidden || mAnimatingStatusIconShow)) {
             // Action 2: animate hiding, if icon was either shown or showing.
+            if (mAnimatingStatusIconShow) mIconView.animate().cancel();
+            mAnimatingStatusIconShow = false;
+
+            mAnimatingStatusIconHide = true;
             // Do not animate phase-out when animations are disabled.
             // While this looks nice in some cases (navigating to insecure sites),
             // it has a side-effect of briefly showing padlock (phase-out) when navigating
             // back and forth between secure and insecure sites, which seems like a glitch.
             // See bug: crbug.com/919449
-            mAnimatingStatusIconHide = true;
-            mDrawableAlphaAnimator.setDuration(mAnimationsEnabled ? ICON_ANIMATION_DURATION_MS : 0)
-                    .reverse();
+            mIconView.animate()
+                    .setDuration(mAnimationsEnabled ? ICON_ANIMATION_DURATION_MS : 0)
+                    .alpha(0.0f)
+                    .withEndAction(() -> {
+                        mIconView.setVisibility(View.GONE);
+                        mAnimatingStatusIconHide = false;
+                        // Update incognito badge padding after the animation to avoid a glitch on
+                        // focusing location bar.
+                        updateIncognitoBadgeEndPadding();
+                        updateTouchDelegate();
+                    })
+                    .start();
         } else {
             updateTouchDelegate();
         }
@@ -344,17 +325,14 @@ public class StatusView extends LinearLayout {
 
     void setStatusIconResources(
             @Nullable Drawable statusIconDrawable, @IconTransitionType int transitionType) {
-        mStatusIconDrawable = statusIconDrawable == null ? null : statusIconDrawable.mutate();
+        mStatusIconDrawable = statusIconDrawable;
         animateStatusIcon(transitionType);
     }
 
     /** Specify the status icon alpha. */
     void setStatusIconAlpha(float alpha) {
         if (mIconView == null) return;
-        // Cancel animation if it is currently happening and yield control.
-        mDrawableAlphaAnimator.cancel();
-        mDrawableAlphaAnimator.setDuration(ICON_ANIMATION_DURATION_MS)
-                .setCurrentPlayTime(Math.round(ICON_ANIMATION_DURATION_MS * alpha));
+        mIconView.setAlpha(alpha);
     }
 
     /** Specify the status icon visibility. */

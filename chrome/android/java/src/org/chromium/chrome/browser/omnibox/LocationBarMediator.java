@@ -1129,8 +1129,6 @@ class LocationBarMediator implements LocationBarDataProvider.Observer, FakeboxDe
     @Override
     public void onIncognitoStateChanged() {
         updateMicButtonState();
-        // Status icon might be animated out in incognito mode. Make sure it's restored.
-        mLocationBarLayout.updateStatusVisibility();
     }
 
     @Override
