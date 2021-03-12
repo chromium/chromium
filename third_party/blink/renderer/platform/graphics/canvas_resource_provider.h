@@ -274,6 +274,10 @@ class PLATFORM_EXPORT CanvasResourceProvider
   CanvasImageProvider* GetOrCreateCanvasImageProvider();
   void TearDownSkSurface();
 
+  // Will only notify a will draw if its needed. This is initially done for the
+  // CanvasResourceProviderSharedImage use case.
+  virtual void WillDrawIfNeeded() {}
+
   ResourceProviderType type_;
   mutable sk_sp<SkSurface> surface_;  // mutable for lazy init
   SkSurface::ContentChangeMode mode_ = SkSurface::kRetain_ContentChangeMode;

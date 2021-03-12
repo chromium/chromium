@@ -408,6 +408,12 @@ class CanvasResourceProviderSharedImage : public CanvasResourceProvider {
     return cached_snapshot_;
   }
 
+  void WillDrawIfNeeded() final {
+    if (cached_snapshot_) {
+      WillDraw();
+    }
+  }
+
   void WillDrawInternal(bool write_to_local_texture) {
     DCHECK(resource_);
 
@@ -1227,6 +1233,8 @@ CanvasResourceProvider::GetOrCreateCanvasImageProvider() {
 }
 
 cc::PaintCanvas* CanvasResourceProvider::Canvas() {
+  WillDrawIfNeeded();
+
   if (!recorder_) {
     // A raw pointer is safe here because the callback is only used by the
     // |recorder_|.
