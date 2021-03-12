@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.tabmodel;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.text.TextUtils;
 
@@ -12,12 +13,13 @@ import androidx.annotation.Nullable;
 import org.chromium.base.IntentUtils;
 import org.chromium.base.SysUtils;
 import org.chromium.base.TraceEvent;
+import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.ServiceTabLauncher;
-import org.chromium.chrome.browser.app.ChromeActivity;
 import org.chromium.chrome.browser.app.tab_activity_glue.ReparentingDelegateFactory;
 import org.chromium.chrome.browser.app.tab_activity_glue.ReparentingTask;
+import org.chromium.chrome.browser.compositor.CompositorViewHolder;
 import org.chromium.chrome.browser.init.StartupTabPreloader;
 import org.chromium.chrome.browser.tab.RedirectHandlerTabHelper;
 import org.chromium.chrome.browser.tab.Tab;
@@ -65,7 +67,7 @@ public class ChromeTabCreator extends TabCreator {
 
     private static final String TAG = "ChromeTabCreator";
 
-    private final ChromeActivity mActivity;
+    private final Activity mActivity;
     private final StartupTabPreloader mStartupTabPreloader;
     private final boolean mIncognito;
 
@@ -76,11 +78,15 @@ public class ChromeTabCreator extends TabCreator {
     @Nullable
     private final OverviewNTPCreator mOverviewNTPCreator;
     private final AsyncTabParamsManager mAsyncTabParamsManager;
+    private final ObservableSupplier<TabModelSelector> mTabModelSelectorSupplier;
+    private final ObservableSupplier<CompositorViewHolder> mCompositorViewHolderSupplier;
 
-    public ChromeTabCreator(ChromeActivity activity, WindowAndroid nativeWindow,
+    public ChromeTabCreator(Activity activity, WindowAndroid nativeWindow,
             StartupTabPreloader startupTabPreloader,
             Supplier<TabDelegateFactory> tabDelegateFactory, boolean incognito,
-            OverviewNTPCreator overviewNTPCreator, AsyncTabParamsManager asyncTabParamsManager) {
+            OverviewNTPCreator overviewNTPCreator, AsyncTabParamsManager asyncTabParamsManager,
+            ObservableSupplier<TabModelSelector> tabModelSelectorSupplier,
+            ObservableSupplier<CompositorViewHolder> compositorViewHolderSupplier) {
         mActivity = activity;
         mStartupTabPreloader = startupTabPreloader;
         mNativeWindow = nativeWindow;
@@ -88,6 +94,8 @@ public class ChromeTabCreator extends TabCreator {
         mIncognito = incognito;
         mOverviewNTPCreator = overviewNTPCreator;
         mAsyncTabParamsManager = asyncTabParamsManager;
+        mTabModelSelectorSupplier = tabModelSelectorSupplier;
+        mCompositorViewHolderSupplier = compositorViewHolderSupplier;
     }
 
     @Override
@@ -169,7 +177,7 @@ public class ChromeTabCreator extends TabCreator {
                 tab = params.getTabToReparent();
                 ReparentingTask.from(tab).finish(
                         ReparentingDelegateFactory.createReparentingTaskDelegate(
-                                mActivity.getCompositorViewHolder(), mActivity.getWindowAndroid(),
+                                mCompositorViewHolderSupplier.get(), mNativeWindow,
                                 createDefaultTabDelegateFactory()),
                         params.getFinalizeCallback());
             } else if (asyncParams != null && asyncParams.getWebContents() != null) {
@@ -180,7 +188,7 @@ public class ChromeTabCreator extends TabCreator {
                         intent, IntentHandler.EXTRA_PARENT_INTENT);
                 parentId = IntentUtils.safeGetIntExtra(
                         intent, IntentHandler.EXTRA_PARENT_TAB_ID, parentId);
-                TabModelSelector selector = mActivity.getTabModelSelector();
+                TabModelSelector selector = mTabModelSelectorSupplier.get();
                 parent = selector != null ? selector.getTabById(parentId) : null;
                 assert TabModelUtils.getTabIndexById(mTabModel, assignedTabId)
                         == TabModel.INVALID_TAB_INDEX;
@@ -385,7 +393,7 @@ public class ChromeTabCreator extends TabCreator {
     @Override
     public Tab createFrozenTab(TabState state, byte[] serializedCriticalPersistedTabData, int id,
             boolean isIncognito, int index) {
-        TabModelSelector selector = mActivity.getTabModelSelector();
+        TabModelSelector selector = mTabModelSelectorSupplier.get();
         TabResolver resolver = (tabId) -> {
             return selector != null ? selector.getTabById(tabId) : null;
         };
@@ -408,7 +416,7 @@ public class ChromeTabCreator extends TabCreator {
             }
             ReparentingTask.from(tab).finish(
                     ReparentingDelegateFactory.createReparentingTaskDelegate(
-                            mActivity.getCompositorViewHolder(), mActivity.getWindowAndroid(),
+                            mCompositorViewHolderSupplier.get(), mNativeWindow,
                             createDefaultTabDelegateFactory()),
                     params.getFinalizeCallback());
             // TODO(crbug.com/1108562): Photos/videos viewed in custom tabs aren't displayed

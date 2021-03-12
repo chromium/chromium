@@ -297,7 +297,8 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
     // The PictureInPictureController is initialized lazily https://crbug.com/729738.
     private PictureInPictureController mPictureInPictureController;
 
-    private CompositorViewHolder mCompositorViewHolder;
+    private ObservableSupplierImpl<CompositorViewHolder> mCompositorViewHolderSupplier =
+            new ObservableSupplierImpl<>();
     private ObservableSupplierImpl<LayoutManagerImpl> mLayoutManagerSupplier =
             new ObservableSupplierImpl<>();
     private InsetObserverView mInsetObserverView;
@@ -373,7 +374,7 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
     @Override
     protected ActivityWindowAndroid createWindowAndroid() {
         return new ChromeWindow(/* activity= */ this, mActivityTabProvider,
-                this::getCompositorViewHolder, getModalDialogManagerSupplier());
+                mCompositorViewHolderSupplier, getModalDialogManagerSupplier());
     }
 
     @Override
@@ -457,7 +458,7 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
                         getBrowserControlsManager(), getFullscreenManager(),
                         getLayoutManagerSupplier(), getLifecycleDispatcher(),
                         this::getSnackbarManager, mActivityTabProvider, getTabContentManager(),
-                        getWindowAndroid(), this::getCompositorViewHolder, this,
+                        getWindowAndroid(), mCompositorViewHolderSupplier, this,
                         this::getCurrentTabCreator, this::isCustomTab,
                         getStatusBarColorController(), ScreenOrientationProvider.getInstance(),
                         this::getNotificationManagerProxy, getTabContentManagerSupplier(),
@@ -470,7 +471,7 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
                         getBrowserControlsManager(), getBrowserControlsManager(),
                         getFullscreenManager(), getLayoutManagerSupplier(),
                         getLifecycleDispatcher(), this::getSnackbarManager, mActivityTabProvider,
-                        getTabContentManager(), getWindowAndroid(), this::getCompositorViewHolder,
+                        getTabContentManager(), getWindowAndroid(), mCompositorViewHolderSupplier,
                         this, this::getCurrentTabCreator, this::isCustomTab,
                         getStatusBarColorController(), ScreenOrientationProvider.getInstance(),
                         this::getNotificationManagerProxy, getTabContentManagerSupplier(),
@@ -531,7 +532,7 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
             // Set up the animation placeholder to be the SurfaceView. This disables the
             // SurfaceView's 'hole' clipping during animations that are notified to the window.
             getWindowAndroid().setAnimationPlaceholderView(
-                    mCompositorViewHolder.getCompositorView());
+                    mCompositorViewHolderSupplier.get().getCompositorView());
 
             initializeTabModels();
             TabModelSelector tabModelSelector = mTabModelOrchestrator.getTabModelSelector();
@@ -560,7 +561,7 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
             // If onStart was called before postLayoutInflation (because inflation was done in a
             // background thread) then make sure to call the relevant methods belatedly.
             if (mStarted) {
-                mCompositorViewHolder.onStart();
+                mCompositorViewHolderSupplier.get().onStart();
             }
         }
     }
@@ -668,12 +669,13 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
         getStatusBarColorController().updateStatusBarColor();
 
         ViewGroup rootView = (ViewGroup) getWindow().getDecorView().getRootView();
-        mCompositorViewHolder = (CompositorViewHolder) findViewById(R.id.compositor_view_holder);
+        mCompositorViewHolderSupplier.set(
+                (CompositorViewHolder) findViewById(R.id.compositor_view_holder));
         // If the UI was inflated on a background thread, then the CompositorView may not have been
         // fully initialized yet as that may require the creation of a handler which is not allowed
         // outside the UI thread. This call should fully initialize the CompositorView if it hasn't
         // been yet.
-        mCompositorViewHolder.setRootView(rootView);
+        mCompositorViewHolderSupplier.get().setRootView(rootView);
 
         // Setting fitsSystemWindows to false ensures that the root view doesn't consume the
         // insets.
@@ -845,7 +847,8 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
         super.initializeCompositor();
 
         getTabContentManager().initWithNative();
-        mCompositorViewHolder.onNativeLibraryReady(getWindowAndroid(), getTabContentManager());
+        mCompositorViewHolderSupplier.get().onNativeLibraryReady(
+                getWindowAndroid(), getTabContentManager());
 
         // TODO(1107916): Move contextual search initialization to the RootUiCoordinator.
         if (ContextualSearchFieldTrial.isEnabled()) {
@@ -1245,8 +1248,8 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
     public void onStart() {
         // Sometimes mCompositorViewHolder is null, see crbug.com/1057613.
         if (AsyncTabParamsManagerSingleton.getInstance().hasParamsWithTabToReparent()
-                && mCompositorViewHolder != null) {
-            mCompositorViewHolder.prepareForTabReparenting();
+                && mCompositorViewHolderSupplier.hasValue()) {
+            mCompositorViewHolderSupplier.get().prepareForTabReparenting();
         }
         super.onStart();
 
@@ -1263,7 +1266,7 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
                 }
             });
         }
-        if (mCompositorViewHolder != null) mCompositorViewHolder.onStart();
+        if (mCompositorViewHolderSupplier.hasValue()) mCompositorViewHolderSupplier.get().onStart();
 
         mConfig = getResources().getConfiguration();
         mStarted = true;
@@ -1290,7 +1293,7 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
 
         // We want to refresh partner browser provider every onStart().
         mPartnerBrowserRefreshNeeded = true;
-        if (mCompositorViewHolder != null) mCompositorViewHolder.onStop();
+        if (mCompositorViewHolderSupplier.hasValue()) mCompositorViewHolderSupplier.get().onStop();
 
         // If postInflationStartup hasn't been called yet (because inflation was done asynchronously
         // and has not yet completed), it no longer needs to do the belated onStart code since we
@@ -1375,12 +1378,13 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
             LayoutManagerAppUtils.detach(mLayoutManagerSupplier.get());
         }
 
-        if (mCompositorViewHolder != null) {
-            if (mCompositorViewHolder.getLayoutManager() != null) {
-                mCompositorViewHolder.getLayoutManager().removeSceneChangeObserver(this);
+        if (mCompositorViewHolderSupplier.hasValue()) {
+            CompositorViewHolder compositorViewHolder = mCompositorViewHolderSupplier.get();
+            if (compositorViewHolder.getLayoutManager() != null) {
+                compositorViewHolder.getLayoutManager().removeSceneChangeObserver(this);
             }
-            mCompositorViewHolder.shutDown();
-            mCompositorViewHolder = null;
+            compositorViewHolder.shutDown();
+            mCompositorViewHolderSupplier.set(null);
         }
 
         onDestroyInternal();
@@ -1870,10 +1874,12 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
     }
 
     /**
+     * @deprecated Use {@link #getCompositorViewHolderSupplier()} instead.
      * @return A {@link CompositorViewHolder} instance.
      */
+    @Deprecated
     public CompositorViewHolder getCompositorViewHolder() {
-        return mCompositorViewHolder;
+        return mCompositorViewHolderSupplier.get();
     }
 
     /**
@@ -1898,14 +1904,16 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
      * that the compositor's surface should support alpha and not be marked as opaque.
      */
     public void setOverlayMode(boolean useOverlayMode) {
-        if (mCompositorViewHolder != null) mCompositorViewHolder.setOverlayMode(useOverlayMode);
+        if (mCompositorViewHolderSupplier.hasValue()) {
+            mCompositorViewHolderSupplier.get().setOverlayMode(useOverlayMode);
+        }
     }
 
     /**
      * @return The content offset provider, may be null.
      */
     public ContentOffsetProvider getContentOffsetProvider() {
-        return mCompositorViewHolder;
+        return mCompositorViewHolderSupplier.get();
     }
 
     /**
@@ -1947,15 +1955,16 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
         mLayoutManagerSupplier.set(layoutManager);
 
         layoutManager.addSceneChangeObserver(this);
-        mCompositorViewHolder.setLayoutManager(layoutManager);
-        mCompositorViewHolder.setFocusable(false);
-        mCompositorViewHolder.setControlContainer(controlContainer);
-        mCompositorViewHolder.setBrowserControlsManager(getBrowserControlsManager());
-        mCompositorViewHolder.setUrlBar(urlBar);
-        mCompositorViewHolder.setInsetObserverView(getInsetObserverView());
-        mCompositorViewHolder.setTopUiThemeColorProvider(
+        CompositorViewHolder compositorViewHolder = mCompositorViewHolderSupplier.get();
+        compositorViewHolder.setLayoutManager(layoutManager);
+        compositorViewHolder.setFocusable(false);
+        compositorViewHolder.setControlContainer(controlContainer);
+        compositorViewHolder.setBrowserControlsManager(getBrowserControlsManager());
+        compositorViewHolder.setUrlBar(urlBar);
+        compositorViewHolder.setInsetObserverView(getInsetObserverView());
+        compositorViewHolder.setTopUiThemeColorProvider(
                 mRootUiCoordinator.getTopUiThemeColorProvider());
-        mCompositorViewHolder.onFinishNativeInitialization(getTabModelSelector(), this);
+        compositorViewHolder.onFinishNativeInitialization(getTabModelSelector(), this);
 
         if (controlContainer != null && DeviceClassManager.enableToolbarSwipe()
                 && getCompositorViewHolder().getLayoutManager().getToolbarSwipeHandler() != null) {
@@ -1985,6 +1994,14 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
      */
     public ObservableSupplier<ShareDelegate> getShareDelegateSupplier() {
         return mShareDelegateSupplier;
+    }
+
+    /**
+     * @return An {@link ObservableSupplier} that will supply the {@link CompositorViewHolder} when
+     *         it is ready.
+     */
+    public ObservableSupplier<CompositorViewHolder> getCompositorViewHolderSupplier() {
+        return mCompositorViewHolderSupplier;
     }
 
     /**
@@ -2095,8 +2112,9 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
         ArDelegate arDelegate = ArDelegateProvider.getDelegate();
         if (arDelegate != null && arDelegate.onBackPressed()) return;
 
-        if (mCompositorViewHolder != null) {
-            LayoutManagerImpl layoutManager = mCompositorViewHolder.getLayoutManager();
+        if (mCompositorViewHolderSupplier.hasValue()) {
+            LayoutManagerImpl layoutManager =
+                    mCompositorViewHolderSupplier.get().getLayoutManager();
             if (layoutManager != null && layoutManager.onBackPressed()) return;
         }
 

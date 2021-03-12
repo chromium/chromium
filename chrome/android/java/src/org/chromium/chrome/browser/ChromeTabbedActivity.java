@@ -1749,12 +1749,15 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
                 }
             };
         }
-        return Pair.create(new ChromeTabCreator(this, getWindowAndroid(), getStartupTabPreloader(),
-                                   this::getTabDelegateFactory, false, overviewNTPCreator,
-                                   AsyncTabParamsManagerSingleton.getInstance()),
+        return Pair.create(
+                new ChromeTabCreator(this, getWindowAndroid(), getStartupTabPreloader(),
+                        this::getTabDelegateFactory, false, overviewNTPCreator,
+                        AsyncTabParamsManagerSingleton.getInstance(), getTabModelSelectorSupplier(),
+                        getCompositorViewHolderSupplier()),
                 new ChromeTabCreator(this, getWindowAndroid(), getStartupTabPreloader(),
                         this::getTabDelegateFactory, true, overviewNTPCreator,
-                        AsyncTabParamsManagerSingleton.getInstance()));
+                        AsyncTabParamsManagerSingleton.getInstance(), getTabModelSelectorSupplier(),
+                        getCompositorViewHolderSupplier()));
     }
 
     @Override
