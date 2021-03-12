@@ -78,7 +78,7 @@ void DownloadCallbackProxy::DownloadStarted(Download* download) {
   JNIEnv* env = AttachCurrentThread();
   Java_DownloadCallbackProxy_createDownload(
       env, java_delegate_, reinterpret_cast<jlong>(download_impl),
-      download_impl->GetId());
+      download_impl->GetNotificationId());
   Java_DownloadCallbackProxy_downloadStarted(env, java_delegate_,
                                              download_impl->java_download());
 }

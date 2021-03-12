@@ -66,6 +66,7 @@ public final class DownloadImpl extends IDownload.Stub {
 
     private final String mProfileName;
     private final boolean mIsIncognito;
+    // The client is only used for downloads to disk, so it will be null for transient downloads.
     private final IDownloadCallbackClient mClient;
     private final IClientDownload mClientDownload;
     // WARNING: DownloadImpl may outlive the native side, in which case this member is set to 0.
@@ -151,7 +152,7 @@ public final class DownloadImpl extends IDownload.Stub {
             long nativeDownloadImpl, int id) {
         mProfileName = profileName;
         mIsIncognito = isIncognito;
-        mClient = client;
+        mClient = DownloadImplJni.get().isTransientImpl(nativeDownloadImpl) ? null : client;
         mNativeDownloadImpl = nativeDownloadImpl;
         mNotificationId = id;
         if (mClient == null) {
@@ -217,28 +218,28 @@ public final class DownloadImpl extends IDownload.Stub {
     public int getState() {
         StrictModeWorkaround.apply();
         throwIfNativeDestroyed();
-        return implStateToJavaType(DownloadImplJni.get().getState(mNativeDownloadImpl));
+        return implStateToJavaType(DownloadImplJni.get().getStateImpl(mNativeDownloadImpl));
     }
 
     @Override
     public long getTotalBytes() {
         StrictModeWorkaround.apply();
         throwIfNativeDestroyed();
-        return DownloadImplJni.get().getTotalBytes(mNativeDownloadImpl);
+        return DownloadImplJni.get().getTotalBytesImpl(mNativeDownloadImpl);
     }
 
     @Override
     public long getReceivedBytes() {
         StrictModeWorkaround.apply();
         throwIfNativeDestroyed();
-        return DownloadImplJni.get().getReceivedBytes(mNativeDownloadImpl);
+        return DownloadImplJni.get().getReceivedBytesImpl(mNativeDownloadImpl);
     }
 
     @Override
     public void pause() {
         StrictModeWorkaround.apply();
         throwIfNativeDestroyed();
-        DownloadImplJni.get().pause(mNativeDownloadImpl);
+        DownloadImplJni.get().pauseImpl(mNativeDownloadImpl);
         updateNotification();
     }
 
@@ -246,7 +247,7 @@ public final class DownloadImpl extends IDownload.Stub {
     public void resume() {
         StrictModeWorkaround.apply();
         throwIfNativeDestroyed();
-        DownloadImplJni.get().resume(mNativeDownloadImpl);
+        DownloadImplJni.get().resumeImpl(mNativeDownloadImpl);
         updateNotification();
     }
 
@@ -254,7 +255,7 @@ public final class DownloadImpl extends IDownload.Stub {
     public void cancel() {
         StrictModeWorkaround.apply();
         throwIfNativeDestroyed();
-        DownloadImplJni.get().cancel(mNativeDownloadImpl);
+        DownloadImplJni.get().cancelImpl(mNativeDownloadImpl);
         updateNotification();
     }
 
@@ -262,14 +263,14 @@ public final class DownloadImpl extends IDownload.Stub {
     public String getLocation() {
         StrictModeWorkaround.apply();
         throwIfNativeDestroyed();
-        return DownloadImplJni.get().getLocation(mNativeDownloadImpl);
+        return DownloadImplJni.get().getLocationImpl(mNativeDownloadImpl);
     }
 
     @Override
     public String getFileNameToReportToUser() {
         StrictModeWorkaround.apply();
         throwIfNativeDestroyed();
-        return DownloadImplJni.get().getFileNameToReportToUser(mNativeDownloadImpl);
+        return DownloadImplJni.get().getFileNameToReportToUserImpl(mNativeDownloadImpl);
     }
 
     @Override
@@ -284,7 +285,7 @@ public final class DownloadImpl extends IDownload.Stub {
     public int getError() {
         StrictModeWorkaround.apply();
         throwIfNativeDestroyed();
-        return implErrorToJavaType(DownloadImplJni.get().getError(mNativeDownloadImpl));
+        return implErrorToJavaType(DownloadImplJni.get().getErrorImpl(mNativeDownloadImpl));
     }
 
     @Override
@@ -374,21 +375,26 @@ public final class DownloadImpl extends IDownload.Stub {
         Resources resources = context.getResources();
 
         if (state == DownloadState.COMPLETE) {
-            Intent openIntent = createIntent(OPEN_INTENT);
-            openIntent.putExtra(EXTRA_NOTIFICATION_LOCATION, getLocation());
-            openIntent.putExtra(EXTRA_NOTIFICATION_MIME_TYPE, getMimeType());
-            PendingIntentProvider openPendingIntent =
-                    PendingIntentProvider.getBroadcast(context, mNotificationId, openIntent, 0);
-
             String contextText =
                     resources.getString(R.string.download_notification_completed_with_size,
                             DownloadUtils.getStringForBytes(context, getTotalBytes()));
             builder.setContentText(contextText)
                     .setOngoing(false)
                     .setSmallIcon(android.R.drawable.stat_sys_download_done)
-                    .setContentIntent(openPendingIntent)
                     .setAutoCancel(true)
                     .setProgress(0, 0, false);
+
+            // TODO(estade): for transient downloads, create an intent that delegates back to native
+            // code.
+            if (!DownloadImplJni.get().isTransientImpl(mNativeDownloadImpl)) {
+                Intent openIntent = createIntent(OPEN_INTENT);
+                openIntent.putExtra(EXTRA_NOTIFICATION_LOCATION, getLocation());
+                openIntent.putExtra(EXTRA_NOTIFICATION_MIME_TYPE, getMimeType());
+                PendingIntentProvider openPendingIntent =
+                        PendingIntentProvider.getBroadcast(context, mNotificationId, openIntent, 0);
+
+                builder.setContentIntent(openPendingIntent);
+            }
         } else if (state == DownloadState.FAILED) {
             builder.setContentText(resources.getString(R.string.download_notification_failed))
                     .setOngoing(false)
@@ -469,15 +475,16 @@ public final class DownloadImpl extends IDownload.Stub {
     @NativeMethods
     interface Natives {
         void setJavaDownload(long nativeDownloadImpl, DownloadImpl caller);
-        int getState(long nativeDownloadImpl);
-        long getTotalBytes(long nativeDownloadImpl);
-        long getReceivedBytes(long nativeDownloadImpl);
-        void pause(long nativeDownloadImpl);
-        void resume(long nativeDownloadImpl);
-        void cancel(long nativeDownloadImpl);
-        String getLocation(long nativeDownloadImpl);
-        String getFileNameToReportToUser(long nativeDownloadImpl);
+        int getStateImpl(long nativeDownloadImpl);
+        long getTotalBytesImpl(long nativeDownloadImpl);
+        long getReceivedBytesImpl(long nativeDownloadImpl);
+        void pauseImpl(long nativeDownloadImpl);
+        void resumeImpl(long nativeDownloadImpl);
+        void cancelImpl(long nativeDownloadImpl);
+        String getLocationImpl(long nativeDownloadImpl);
+        String getFileNameToReportToUserImpl(long nativeDownloadImpl);
         String getMimeTypeImpl(long nativeDownloadImpl);
-        int getError(long nativeDownloadImpl);
+        int getErrorImpl(long nativeDownloadImpl);
+        boolean isTransientImpl(long nativeDownloadImpl);
     }
 }

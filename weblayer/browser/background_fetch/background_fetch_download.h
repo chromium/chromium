@@ -1,0 +1,53 @@
+// Copyright 2021 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#ifndef WEBLAYER_BROWSER_BACKGROUND_FETCH_BACKGROUND_FETCH_DOWNLOAD_H_
+#define WEBLAYER_BROWSER_BACKGROUND_FETCH_BACKGROUND_FETCH_DOWNLOAD_H_
+
+#include <string>
+
+#include "weblayer/browser/download_impl.h"
+
+namespace weblayer {
+
+class BackgroundFetchDelegateImpl;
+struct JobDetails;
+
+// The UI object for an in-progress BackgroundFetch download job.
+class BackgroundFetchDownload : public DownloadImpl {
+ public:
+  BackgroundFetchDownload(BackgroundFetchDelegateImpl* controller,
+                          const std::string& job_id,
+                          const JobDetails* job);
+  BackgroundFetchDownload(const BackgroundFetchDownload& other) = delete;
+  BackgroundFetchDownload& operator=(const BackgroundFetchDownload& other) =
+      delete;
+  ~BackgroundFetchDownload() override;
+
+  // Download implementation:
+  DownloadState GetState() override;
+  int64_t GetTotalBytes() override;
+  int64_t GetReceivedBytes() override;
+  void Pause() override;
+  void Resume() override;
+  void Cancel() override;
+  base::FilePath GetLocation() override;
+  base::FilePath GetFileNameToReportToUser() override;
+  std::string GetMimeType() override;
+  DownloadError GetError() override;
+
+  // DownloadImpl:
+  int GetNotificationId() override;
+  bool IsTransient() override;
+
+ private:
+  BackgroundFetchDelegateImpl* controller_;
+  std::string job_id_;
+  int notification_id_ = 0;
+  const JobDetails* job_;
+};
+
+}  // namespace weblayer
+
+#endif  // WEBLAYER_BROWSER_BACKGROUND_FETCH_BACKGROUND_FETCH_DOWNLOAD_H_

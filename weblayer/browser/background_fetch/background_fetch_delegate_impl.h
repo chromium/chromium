@@ -9,7 +9,6 @@
 #include <memory>
 #include <set>
 #include <string>
-#include <vector>
 
 #include "base/memory/weak_ptr.h"
 #include "components/download/public/background_service/download_params.h"
@@ -17,6 +16,7 @@
 #include "content/public/browser/background_fetch_delegate.h"
 #include "ui/gfx/image/image.h"
 #include "url/origin.h"
+#include "weblayer/browser/background_fetch/background_fetch_download.h"
 
 namespace content {
 class BrowserContext;
@@ -27,6 +27,8 @@ class DownloadService;
 }  // namespace download
 
 namespace weblayer {
+
+struct JobDetails;
 
 // Implementation of BackgroundFetchDelegate using the DownloadService.
 // TODO(estade): refactor and share this code with Chrome's version.
@@ -50,22 +52,22 @@ class BackgroundFetchDelegateImpl : public content::BackgroundFetchDelegate,
   void CreateDownloadJob(base::WeakPtr<Client> client,
                          std::unique_ptr<content::BackgroundFetchDescription>
                              fetch_description) override;
-  void DownloadUrl(const std::string& job_unique_id,
+  void DownloadUrl(const std::string& job_id,
                    const std::string& guid,
                    const std::string& method,
                    const GURL& url,
                    const net::NetworkTrafficAnnotationTag& traffic_annotation,
                    const net::HttpRequestHeaders& headers,
                    bool has_request_body) override;
-  void Abort(const std::string& job_unique_id) override;
-  void MarkJobComplete(const std::string& job_unique_id) override;
-  void UpdateUI(const std::string& job_unique_id,
+  void Abort(const std::string& job_id) override;
+  void MarkJobComplete(const std::string& job_id) override;
+  void UpdateUI(const std::string& job_id,
                 const base::Optional<std::string>& title,
                 const base::Optional<SkBitmap>& icon) override;
 
   // Abort all ongoing downloads and fail the fetch. Currently only used when
   // the bytes downloaded exceed the total download size, if specified.
-  void FailFetch(const std::string& job_unique_id);
+  void FailFetch(const std::string& job_id);
 
   void OnDownloadStarted(
       const std::string& guid,
@@ -103,95 +105,22 @@ class BackgroundFetchDelegateImpl : public content::BackgroundFetchDelegate,
     return weak_ptr_factory_.GetWeakPtr();
   }
 
+  // Called by BackgroundFetchDownload. The implementation should be shared with
+  // Chrome.
+  void PauseDownload(const std::string& job_id);
+  void ResumeDownload(const std::string& job_id);
+  void CancelDownload(const std::string& job_id);
+
+  // TODO(estade): make these override virtual methods from a base class that's
+  // shared with Chrome.
+  void OnJobCreated(const std::string& job_id, const JobDetails* job);
+  void UpdateUiAndUpdateObservers(const std::string& job_id);
+
  private:
-  struct JobDetails {
-    // If a job is part of the |job_details_map_|, it will have one of these
-    // states.
-    enum class State {
-      kPendingWillStartPaused,
-      kPendingWillStartDownloading,
-      kStartedButPaused,
-      kStartedAndDownloading,
-      // The job was aborted.
-      kCancelled,
-      // All requests were processed (either succeeded or failed).
-      kDownloadsComplete,
-      // The appropriate completion event (success, fail, abort) has been
-      // dispatched.
-      kJobComplete,
-    };
-
-    JobDetails(JobDetails&&);
-    JobDetails();
-    ~JobDetails();
-
-    void UpdateUiState();
-    void MarkJobAsStarted();
-    void UpdateJobOnDownloadComplete(const std::string& download_guid);
-
-    // Returns how many bytes have been processed by the Download Service so
-    // far.
-    uint64_t GetProcessedBytes() const;
-
-    // Returns the number of downloaded bytes, including for the in progress
-    // requests.
-    uint64_t GetDownloadedBytes() const;
-
-    void UpdateInProgressBytes(const std::string& download_guid,
-                               uint64_t bytes_uploaded,
-                               uint64_t bytes_downloaded);
-
-    struct RequestData {
-      enum class Status {
-        kAbsent,
-        kIncluded,
-      };
-
-      explicit RequestData(bool has_upload_data);
-      ~RequestData();
-
-      Status status = Status::kAbsent;
-
-      uint64_t body_size_bytes = 0u;
-      uint64_t in_progress_uploaded_bytes = 0u;
-      uint64_t in_progress_downloaded_bytes = 0u;
-    };
-
-    // The client to report the Background Fetch updates to.
-    base::WeakPtr<Client> client;
-
-    // Set of DownloadService GUIDs that are currently processed. They are
-    // added by DownloadUrl and are removed when the fetch completes, fails,
-    // or is cancelled.
-    std::map<std::string, RequestData> current_fetch_guids;
-
-    // TODO(estade): add UI state.
-    State job_state;
-    std::unique_ptr<content::BackgroundFetchDescription> fetch_description;
-    bool cancelled_from_ui = false;
-
-    base::OnceClosure on_resume;
-
-   private:
-    // Whether we should report progress of the job in terms of size of
-    // downloads or in terms of the number of files being downloaded.
-    bool ShouldReportProgressBySize();
-
-    // Returns the number of bytes processed by in-progress requests.
-    uint64_t GetInProgressBytes() const;
-
-    DISALLOW_COPY_AND_ASSIGN(JobDetails);
-  };
-
-  // Starts a download according to |params| belonging to |job_unique_id|.
-  void StartDownload(const std::string& job_unique_id,
+  // Starts a download according to |params| belonging to |job_id|.
+  void StartDownload(const std::string& job_id,
                      const download::DownloadParams& params,
                      bool has_request_body);
-
-  // Updates the OfflineItem that controls the contents of download
-  // notifications and notifies any OfflineContentProvider::Observer that was
-  // registered with this instance.
-  void UpdateUiAndUpdateObservers(JobDetails* job_details);
 
   void OnDownloadReceived(const std::string& guid,
                           download::DownloadParams::StartResult result);
@@ -206,17 +135,22 @@ class BackgroundFetchDelegateImpl : public content::BackgroundFetchDelegate,
                         download::GetUploadDataCallback callback,
                         blink::mojom::SerializedBlobPtr blob);
 
-  // Returns the client for a given |job_unique_id|.
-  base::WeakPtr<Client> GetClient(const std::string& job_unique_id);
+  // Returns the client for a given |job_id|.
+  base::WeakPtr<Client> GetClient(const std::string& job_id);
 
   // The browser context this service is being created for.
   content::BrowserContext* context_;
 
   // Map from individual download GUIDs to job unique ids.
-  std::map<std::string, std::string> download_job_unique_id_map_;
+  std::map<std::string, std::string> download_job_id_map_;
 
   // Map from job unique ids to the details of the job.
+  // TODO(estade): this map needs to have its items erased at some point.
   std::map<std::string, JobDetails> job_details_map_;
+
+  // Map from job unique ids to the UI item for the job.
+  // TODO(estade): this map needs to have its items erased at some point.
+  std::map<std::string, BackgroundFetchDownload> ui_item_map_;
 
   std::unique_ptr<download::DownloadService> download_service_;
 
