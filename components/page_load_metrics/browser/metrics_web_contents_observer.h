@@ -7,6 +7,7 @@
 
 #include <map>
 #include <memory>
+#include <queue>
 #include <vector>
 
 #include "base/macros.h"
@@ -307,6 +308,11 @@ class MetricsWebContentsObserver
   std::vector<std::unique_ptr<PageLoadTracker>> aborted_provisional_loads_;
 
   std::unique_ptr<PageLoadTracker> committed_load_;
+
+  // Memory updates that are accumulated while there is no `committed_load_`.
+  // Will be sent in HandleCommittedNavigationForTrackedLoad, unless the
+  // render process is gone and/or web contents is destroyed.
+  std::queue<std::vector<MemoryUpdate>> queued_memory_updates_;
 
   // This is currently set only for the main frame.
   base::ReadOnlySharedMemoryRegion ukm_smoothness_data_;

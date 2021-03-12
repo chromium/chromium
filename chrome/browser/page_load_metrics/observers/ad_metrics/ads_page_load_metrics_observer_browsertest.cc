@@ -2248,10 +2248,24 @@ IN_PROC_BROWSER_TEST_F(AdsMemoryMeasurementBrowserTest,
   const GURL main_url(embedded_test_server()->GetURL(
       "a.com", "/cross_site_iframe_factory.html?a(b)"));
 
+  // Create a waiter, navigate the mainframe to "about:blank", and prime the
+  // waiter with the mainframe's routing ID.
   auto waiter = CreatePageLoadMetricsTestWaiter();
+  ui_test_utils::NavigateToURL(browser(), GURL(url::kAboutBlankURL));
+
+  int main_frame_routing_id = browser()
+                                  ->tab_strip_model()
+                                  ->GetActiveWebContents()
+                                  ->GetMainFrame()
+                                  ->GetGlobalFrameRoutingId()
+                                  .frame_routing_id;
+  waiter->AddMemoryUpdateExpectation(main_frame_routing_id);
+
+  // Navigate to the main URL.
   ui_test_utils::NavigateToURL(browser(), main_url);
 
-  // Wait until we get positive memory measurements for each frame.
+  // Add any additional frame routing IDs and wait until we get positive
+  // memory measurements for each frame.
   for (int id : GetFrameRoutingIds())
     waiter->AddMemoryUpdateExpectation(id);
   waiter->Wait();
