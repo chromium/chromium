@@ -30,11 +30,7 @@ class SimpleURLLoader;
 class SharedURLLoaderFactory;
 }  // namespace network
 
-class PrefService;
-
 namespace safe_browsing {
-
-using IsHistorySyncEnabledCallback = base::RepeatingCallback<bool()>;
 
 using RTLookupRequestCallback =
     base::OnceCallback<void(std::unique_ptr<RTLookupRequest>, std::string)>;
@@ -51,12 +47,8 @@ class RealTimeUrlLookupServiceBase : public KeyedService {
   explicit RealTimeUrlLookupServiceBase(
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
       VerdictCacheManager* cache_manager,
-      const IsHistorySyncEnabledCallback& is_history_sync_enabled_callback,
-      PrefService* pref_service,
-      const ChromeUserPopulation::ProfileManagementStatus&
-          profile_management_status,
-      bool is_under_advanced_protection,
-      bool is_off_the_record);
+      base::RepeatingCallback<ChromeUserPopulation()>
+          get_user_population_callback);
   ~RealTimeUrlLookupServiceBase() override;
 
   // Returns true if |url|'s scheme can be checked.
@@ -216,25 +208,11 @@ class RealTimeUrlLookupServiceBase : public KeyedService {
   // Unowned object used for getting and storing real time url check cache.
   VerdictCacheManager* cache_manager_;
 
-  // Used for determining whether history sync is enabled in the safe browsing
-  // embedder.
-  IsHistorySyncEnabledCallback is_history_sync_enabled_callback_;
-
-  // Unowned object used for getting preference settings.
-  PrefService* pref_service_;
-
-  const ChromeUserPopulation::ProfileManagementStatus
-      profile_management_status_;
-
-  // Whether the profile is enrolled in  advanced protection.
-  bool is_under_advanced_protection_;
-
-  // A boolean indicates whether the profile associated with this
-  // |url_lookup_service| is an off the record profile.
-  bool is_off_the_record_;
-
   // All requests that are sent but haven't received a response yet.
   PendingRTLookupRequests pending_requests_;
+
+  // Used to populate the ChromeUserPopulation field in requests.
+  base::RepeatingCallback<ChromeUserPopulation()> get_user_population_callback_;
 
   friend class RealTimeUrlLookupServiceTest;
   friend class ChromeEnterpriseRealTimeUrlLookupServiceTest;

@@ -74,13 +74,27 @@ class RealTimeUrlLookupServiceTest : public PlatformTest {
     raw_token_fetcher_ = token_fetcher.get();
     rt_service_ = std::make_unique<RealTimeUrlLookupService>(
         test_shared_loader_factory_, cache_manager_.get(),
-        base::BindRepeating([]() { return true; }), &test_pref_service_,
-        std::move(token_fetcher),
+        base::BindRepeating(
+            [](PrefService* pref_service) {
+              ChromeUserPopulation population;
+              population.set_user_population(
+                  IsEnhancedProtectionEnabled(*pref_service)
+                      ? ChromeUserPopulation::ENHANCED_PROTECTION
+                      : IsExtendedReportingEnabled(*pref_service)
+                            ? ChromeUserPopulation::EXTENDED_REPORTING
+                            : ChromeUserPopulation::SAFE_BROWSING);
+              population.set_profile_management_status(
+                  ChromeUserPopulation::NOT_MANAGED);
+              population.set_is_history_sync_enabled(true);
+              population.set_is_under_advanced_protection(true);
+              population.set_is_incognito(false);
+              return population;
+            },
+            &test_pref_service_),
+        &test_pref_service_, std::move(token_fetcher),
         base::BindRepeating(
             &RealTimeUrlLookupServiceTest::AreTokenFetchesConfiguredInClient,
             base::Unretained(this)),
-        ChromeUserPopulation::NOT_MANAGED,
-        /*is_under_advanced_protection=*/true,
         /*is_off_the_record=*/false, /*variations_service=*/nullptr);
   }
 

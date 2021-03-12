@@ -29,20 +29,12 @@ ChromeEnterpriseRealTimeUrlLookupService::
         scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
         VerdictCacheManager* cache_manager,
         Profile* profile,
-        const IsHistorySyncEnabledCallback& is_history_sync_enabled_callback,
-        enterprise_connectors::ConnectorsService* connectors_service,
-        PrefService* pref_service,
-        const ChromeUserPopulation::ProfileManagementStatus&
-            profile_management_status,
-        bool is_under_advanced_protection,
-        bool is_off_the_record)
+        base::RepeatingCallback<ChromeUserPopulation()>
+            get_user_population_callback,
+        enterprise_connectors::ConnectorsService* connectors_service)
     : RealTimeUrlLookupServiceBase(url_loader_factory,
                                    cache_manager,
-                                   is_history_sync_enabled_callback,
-                                   pref_service,
-                                   profile_management_status,
-                                   is_under_advanced_protection,
-                                   is_off_the_record),
+                                   get_user_population_callback),
       profile_(profile),
       connectors_service_(connectors_service) {}
 

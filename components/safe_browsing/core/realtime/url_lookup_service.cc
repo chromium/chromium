@@ -31,22 +31,16 @@ namespace safe_browsing {
 RealTimeUrlLookupService::RealTimeUrlLookupService(
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
     VerdictCacheManager* cache_manager,
-    const IsHistorySyncEnabledCallback& is_history_sync_enabled_callback,
+    base::RepeatingCallback<ChromeUserPopulation()>
+        get_user_population_callback,
     PrefService* pref_service,
     std::unique_ptr<SafeBrowsingTokenFetcher> token_fetcher,
     const ClientConfiguredForTokenFetchesCallback& client_token_config_callback,
-    const ChromeUserPopulation::ProfileManagementStatus&
-        profile_management_status,
-    bool is_under_advanced_protection,
     bool is_off_the_record,
     variations::VariationsService* variations_service)
     : RealTimeUrlLookupServiceBase(url_loader_factory,
                                    cache_manager,
-                                   is_history_sync_enabled_callback,
-                                   pref_service,
-                                   profile_management_status,
-                                   is_under_advanced_protection,
-                                   is_off_the_record),
+                                   get_user_population_callback),
       pref_service_(pref_service),
       token_fetcher_(std::move(token_fetcher)),
       client_token_config_callback_(client_token_config_callback),

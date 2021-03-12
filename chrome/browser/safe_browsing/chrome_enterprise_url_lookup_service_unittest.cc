@@ -9,6 +9,7 @@
 #include "base/test/mock_callback.h"
 #include "chrome/browser/enterprise/connectors/connectors_service.h"
 #include "chrome/browser/policy/dm_token_utils.h"
+#include "chrome/browser/safe_browsing/user_population.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/policy/core/common/cloud/dm_token.h"
@@ -58,13 +59,20 @@ class ChromeEnterpriseRealTimeUrlLookupServiceTest : public PlatformTest {
     enterprise_rt_service_ = std::make_unique<
         ChromeEnterpriseRealTimeUrlLookupService>(
         test_shared_loader_factory_, cache_manager_.get(), test_profile_.get(),
-        base::BindRepeating(&safe_browsing::SyncUtils::IsHistorySyncEnabled,
-                            &test_sync_service_),
+        base::BindRepeating(
+            [](Profile* profile, syncer::TestSyncService* test_sync_service) {
+              ChromeUserPopulation population = GetUserPopulation(profile);
+              population.set_is_history_sync_enabled(
+                  safe_browsing::SyncUtils::IsHistorySyncEnabled(
+                      test_sync_service));
+              population.set_profile_management_status(
+                  ChromeUserPopulation::NOT_MANAGED);
+              population.set_is_under_advanced_protection(true);
+              return population;
+            },
+            test_profile_.get(), &test_sync_service_),
         enterprise_connectors::ConnectorsServiceFactory::GetForBrowserContext(
-            test_profile_.get()),
-        &test_pref_service_, ChromeUserPopulation::NOT_MANAGED,
-        /*is_under_advanced_protection=*/true,
-        /*is_off_the_record=*/false);
+            test_profile_.get()));
 
     test_profile_->GetPrefs()->SetInteger(
         prefs::kSafeBrowsingEnterpriseRealTimeUrlCheckMode,

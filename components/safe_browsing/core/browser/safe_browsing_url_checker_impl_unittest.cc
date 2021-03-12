@@ -173,16 +173,14 @@ class MockRealTimeUrlLookupService : public RealTimeUrlLookupService {
       : RealTimeUrlLookupService(
             /*url_loader_factory=*/nullptr,
             /*cache_manager=*/nullptr,
-            /*is_history_sync_enabled_callback=*/base::BindRepeating([]() {
-              return false;
+            /*get_user_population_callback=*/base::BindRepeating([]() {
+              return ChromeUserPopulation();
             }),
             /*pref_service=*/nullptr,
             /*token_fetcher=*/nullptr,
             /*client_token_config_callback=*/base::BindRepeating([](bool) {
               return false;
             }),
-            ChromeUserPopulation::NOT_MANAGED,
-            /*is_under_advanced_protection=*/false,
             /*is_off_the_record=*/false,
             /*variations_service=*/nullptr) {}
   // Returns the threat type previously set by |SetThreatTypeForUrl|. It crashes

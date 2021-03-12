@@ -123,19 +123,11 @@ RTLookupRequest::OSType GetRTLookupRequestOSType() {
 RealTimeUrlLookupServiceBase::RealTimeUrlLookupServiceBase(
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
     VerdictCacheManager* cache_manager,
-    const IsHistorySyncEnabledCallback& is_history_sync_enabled_callback,
-    PrefService* pref_service,
-    const ChromeUserPopulation::ProfileManagementStatus&
-        profile_management_status,
-    bool is_under_advanced_protection,
-    bool is_off_the_record)
+    base::RepeatingCallback<ChromeUserPopulation()>
+        get_user_population_callback)
     : url_loader_factory_(url_loader_factory),
       cache_manager_(cache_manager),
-      is_history_sync_enabled_callback_(is_history_sync_enabled_callback),
-      pref_service_(pref_service),
-      profile_management_status_(profile_management_status),
-      is_under_advanced_protection_(is_under_advanced_protection),
-      is_off_the_record_(is_off_the_record) {}
+      get_user_population_callback_(get_user_population_callback) {}
 
 RealTimeUrlLookupServiceBase::~RealTimeUrlLookupServiceBase() = default;
 
@@ -438,20 +430,8 @@ std::unique_ptr<RTLookupRequest> RealTimeUrlLookupServiceBase::FillRequestProto(
     request->set_dm_token(dm_token_string.value());
   }
 
-  ChromeUserPopulation* user_population = request->mutable_population();
-  user_population->set_user_population(
-      IsEnhancedProtectionEnabled(*pref_service_)
-          ? ChromeUserPopulation::ENHANCED_PROTECTION
-          : IsExtendedReportingEnabled(*pref_service_)
-                ? ChromeUserPopulation::EXTENDED_REPORTING
-                : ChromeUserPopulation::SAFE_BROWSING);
+  *request->mutable_population() = get_user_population_callback_.Run();
 
-  user_population->set_profile_management_status(profile_management_status_);
-  user_population->set_is_history_sync_enabled(
-      is_history_sync_enabled_callback_.Run());
-  user_population->set_is_under_advanced_protection(
-      is_under_advanced_protection_);
-  user_population->set_is_incognito(is_off_the_record_);
   return request;
 }
 

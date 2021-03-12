@@ -55,14 +55,12 @@ class RealTimeUrlLookupService : public RealTimeUrlLookupServiceBase {
   RealTimeUrlLookupService(
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
       VerdictCacheManager* cache_manager,
-      const IsHistorySyncEnabledCallback& is_history_sync_enabled_callback,
+      base::RepeatingCallback<ChromeUserPopulation()>
+          get_user_population_callback,
       PrefService* pref_service,
       std::unique_ptr<SafeBrowsingTokenFetcher> token_fetcher,
       const ClientConfiguredForTokenFetchesCallback&
           client_token_config_callback,
-      const ChromeUserPopulation::ProfileManagementStatus&
-          profile_management_status,
-      bool is_under_advanced_protection,
       bool is_off_the_record,
       variations::VariationsService* variations_service);
   ~RealTimeUrlLookupService() override;
