@@ -62,7 +62,6 @@ class MockUiListener {
   }
 }
 
-
 /** Mock PrefsManager. Currently just returns hard-coded values.  */
 class MockPrefsManager {
   backgroundShadingEnabled() {
@@ -195,7 +194,7 @@ SYNC_TEST_F('SelectToSpeakUiManagerUnitTest', 'SetSelectionRect', function() {
   assertEquals(FOCUS_RING_COLOR, focusRings[0].color);
 });
 
-SYNC_TEST_F('SelectToSpeakUiManagerUnitTest', 'UpdatesUI', function() {
+SYNC_TEST_F('SelectToSpeakUiManagerUnitTest', 'UpdatesUi', function() {
   const textNode = {
     role: 'staticText',
     name: 'Test',
@@ -209,7 +208,7 @@ SYNC_TEST_F('SelectToSpeakUiManagerUnitTest', 'UpdatesUI', function() {
   assertEquals(0, focusRings.length);
 
   this.uiManager.update(
-      nodeGroup, textNode,
+      nodeGroup, textNode, null,
       {showPanel: true, paused: false, speechRateMultiplier: 1});
 
   // Focus ring created highlighting the text node.
@@ -225,7 +224,72 @@ SYNC_TEST_F('SelectToSpeakUiManagerUnitTest', 'UpdatesUI', function() {
   assertEquals(textNode.location, panelState.anchor);
   assertFalse(panelState.isPaused);
   assertEquals(1, panelState.speed);
+
+  // No highlights.
+  const highlightRects = this.mockAccessibilityPrivate.getHighlightRects();
+  assertEquals(0, highlightRects.length);
 });
+
+SYNC_TEST_F('SelectToSpeakUiManagerUnitTest', 'UpdatesUiNoPanel', function() {
+  const textNode = {
+    role: 'staticText',
+    name: 'Test',
+    location: {left: 20, top: 10, width: 100, height: 50},
+  };
+  const nodeGroup = ParagraphUtils.buildNodeGroup(
+      [textNode], 0 /* index */, {splitOnLanguage: false});
+
+  // No focus rings to start.
+  let focusRings = this.mockAccessibilityPrivate.getFocusRings();
+  assertEquals(0, focusRings.length);
+
+  this.uiManager.update(nodeGroup, textNode, null, {showPanel: false});
+
+  // Focus ring created highlighting the text node.
+  focusRings = this.mockAccessibilityPrivate.getFocusRings();
+  assertEquals(1, focusRings.length);
+  assertEquals(1, focusRings[0].rects.length);
+  assertEquals(textNode.location, focusRings[0].rects[0]);
+  assertEquals(FOCUS_RING_COLOR, focusRings[0].color);
+
+  // No panel.
+  const panelState = this.mockAccessibilityPrivate.getSelectToSpeakPanelState();
+  assertFalse(panelState.show);
+});
+
+SYNC_TEST_F(
+    'SelectToSpeakUiManagerUnitTest', 'UpdatesUiWithWordHighlight', function() {
+      const wordBounds = {left: 25, top: 5, width: 20, height: 40};
+      const wordStart = 0;
+      const wordEnd = 5;
+      const textNode = {
+        role: 'staticText',
+        name: 'Hello world',
+        location: {left: 20, top: 10, width: 100, height: 50},
+        boundsForRange: (start, end, callback) => {
+          assertEquals(wordStart, start);
+          assertEquals(wordEnd, end);
+          callback(wordBounds);
+        },
+      };
+      const nodeGroup = ParagraphUtils.buildNodeGroup(
+          [textNode], 0 /* index */, {splitOnLanguage: false});
+
+      // No highlights to start.
+      let highlightRects = this.mockAccessibilityPrivate.getHighlightRects();
+      assertEquals(0, highlightRects.length);
+
+      this.uiManager.update(
+          nodeGroup, textNode, {start: 0, end: 5},
+          {showPanel: true, paused: false, speechRateMultiplier: 1});
+
+      // Word highlight created.
+      highlightRects = this.mockAccessibilityPrivate.getHighlightRects();
+      assertEquals(1, highlightRects.length);
+      assertEquals(wordBounds, highlightRects[0]);
+      assertEquals(
+          HIGHLIGHT_COLOR, this.mockAccessibilityPrivate.getHighlightColor());
+    });
 
 SYNC_TEST_F('SelectToSpeakUiManagerUnitTest', 'ClearsUI', function() {
   // Start with a focus ring.
@@ -243,4 +307,8 @@ SYNC_TEST_F('SelectToSpeakUiManagerUnitTest', 'ClearsUI', function() {
   // Panel is not visible.
   const panelState = this.mockAccessibilityPrivate.getSelectToSpeakPanelState();
   assertFalse(panelState.show);
+
+  // No highlights.
+  const highlightRects = this.mockAccessibilityPrivate.getHighlightRects();
+  assertEquals(0, highlightRects.length);
 });

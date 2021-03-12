@@ -46,6 +46,9 @@ var MockAccessibilityPrivate = {
   /** @private {!Array<!chrome.accessibilityPrivate.ScreenRect>} */
   highlightRects_: [],
 
+  /** @private {?string} */
+  highlightColor_: null,
+
   // Methods from AccessibilityPrivate API. //
 
   onScrollableBoundsForPointRequested: {
@@ -125,6 +128,7 @@ var MockAccessibilityPrivate = {
    */
   setHighlights: (rects, color) => {
     MockAccessibilityPrivate.highlightRects_ = rects;
+    MockAccessibilityPrivate.highlightColor_ = color;
   },
 
   /**
@@ -192,8 +196,16 @@ var MockAccessibilityPrivate = {
    * Gets the highlight bounds.
    * @return {!Array<!chrome.AccessibilityPrivate.ScreenRect>}
    */
-  getHighlights: () => {
+  getHighlightRects: () => {
     return MockAccessibilityPrivate.highlightRects_;
+  },
+
+  /**
+   * Gets the color of the last highlight created.
+   * @return {?string}
+   */
+  getHighlightColor: () => {
+    return MockAccessibilityPrivate.highlightColor_;
   },
 
   /**

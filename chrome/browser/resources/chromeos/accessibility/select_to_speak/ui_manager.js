@@ -14,6 +14,11 @@ const RoleType = chrome.automation.RoleType;
 const SelectToSpeakPanelAction =
     chrome.accessibilityPrivate.SelectToSpeakPanelAction;
 
+// This must be the same as in ash/system/accessibility/select_to_speak_tray.cc:
+// ash::kSelectToSpeakTrayClassName.
+export const SELECT_TO_SPEAK_TRAY_CLASS_NAME =
+    'tray/TrayBackgroundView/SelectToSpeakTray';
+
 // This must match the name of view class that implements the menu view:
 // ash/system/accessibility/select_to_speak_menu_view.h
 const SELECT_TO_SPEAK_MENU_CLASS_NAME = 'SelectToSpeakMenuView';
@@ -76,9 +81,7 @@ export class SelectToSpeakUiListener {
 
 /**
  * Manages user interface elements controlled by Select-to-speak, such the
- * focus ring, floating control panel, and tray button.
- *
- * TODO(crbug.com/1179812): Also move word highlighting here.
+ * focus ring, floating control panel, tray button, and word highlight.
  */
 export class UiManager {
   /**
@@ -280,6 +283,33 @@ export class UiManager {
   }
 
   /**
+   * Updates word highlight.
+   * @param {!AutomationNode} node Current node being spoken.
+   * @param {?{start: number, end: number}} currentWord Character offsets of
+   *    current word spoken within node if word highlighting is enabled.
+   * @private
+   */
+  updateHighlight_(node, currentWord) {
+    if (!currentWord) {
+      chrome.accessibilityPrivate.setHighlights(
+          [], this.prefsManager_.highlightColor());
+      return;
+    }
+    // getStartCharIndexInParent is only defined for nodes with role
+    // INLINE_TEXT_BOX.
+    const charIndexInParent = node.role === RoleType.INLINE_TEXT_BOX ?
+        ParagraphUtils.getStartCharIndexInParent(node) :
+        0;
+    node.boundsForRange(
+        currentWord.start - charIndexInParent,
+        currentWord.end - charIndexInParent, (bounds) => {
+          const highlights = bounds ? [bounds] : [];
+          chrome.accessibilityPrivate.setHighlights(
+              highlights, this.prefsManager_.highlightColor());
+        });
+  }
+
+  /**
    * Renders user selection rect, in the form of a focus ring.
    * @param {!chrome.accessibilityPrivate.ScreenRect} rect
    */
@@ -294,11 +324,13 @@ export class UiManager {
    * Updates overlay UI based on current node and panel state.
    * @param {!ParagraphUtils.NodeGroup} nodeGroup Current node group.
    * @param {!AutomationNode} node Current node being spoken.
+   * @param {?{start: number, end: number}} currentWord Character offsets of
+   *    current word spoken within node if word highlighting is enabled.
    * @param {!{showPanel: boolean,
    *          paused: boolean,
    *          speechRateMultiplier: number}} panelState
    */
-  update(nodeGroup, node, panelState) {
+  update(nodeGroup, node, currentWord, panelState) {
     const {showPanel, paused, speechRateMultiplier} = panelState;
     // Show the parent element of the currently verbalized node with the
     // focus ring. This is a nicer user-facing behavior than jumping from
@@ -313,12 +345,14 @@ export class UiManager {
     } else {
       focusRingRect = node.location;
     }
-    if (!focusRingRect) {
-      console.warn('Could not determine node location; cannot render UI');
-      return;
+    this.updateHighlight_(node, currentWord);
+    if (focusRingRect) {
+      this.setFocusRings_(
+          [focusRingRect], true /* draw background */, showPanel);
+      this.updatePanel_(showPanel, focusRingRect, paused, speechRateMultiplier);
+    } else {
+      console.warn('No node location; cannot render focus ring or panel');
     }
-    this.setFocusRings_([focusRingRect], true /* draw background */, showPanel);
-    this.updatePanel_(showPanel, focusRingRect, paused, speechRateMultiplier);
   }
 
   /**
@@ -348,5 +382,18 @@ export class UiManager {
         node.children.length === 1 &&
         (node.children[0].className === SELECT_TO_SPEAK_MENU_CLASS_NAME ||
          node.children[0].className === SELECT_TO_SPEAK_SPEED_CLASS_NAME));
+  }
+
+  /**
+   * @param {?AutomationNode|undefined} node
+   * @return {boolean} Whether given node is the Select-to-speak tray button.
+   */
+  static isTrayButton(node) {
+    if (!node) {
+      return false;
+    }
+    return AutomationUtil.getAncestors(node).find((n) => {
+      return n.className === SELECT_TO_SPEAK_TRAY_CLASS_NAME;
+    }) !== undefined;
   }
 }

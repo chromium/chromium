@@ -19,11 +19,6 @@ const RoleType = chrome.automation.RoleType;
 const AccessibilityFeature = chrome.accessibilityPrivate.AccessibilityFeature;
 const SelectToSpeakState = chrome.accessibilityPrivate.SelectToSpeakState;
 
-// This must be the same as in ash/system/accessibility/select_to_speak_tray.cc:
-// ash::kSelectToSpeakTrayClassName.
-export const SELECT_TO_SPEAK_TRAY_CLASS_NAME =
-    'tray/TrayBackgroundView/SelectToSpeakTray';
-
 // Matches one of the known GSuite apps which need the clipboard to find and
 // read selected text. Includes sandbox and non-sandbox versions.
 const GSUITE_APP_REGEXP =
@@ -97,17 +92,7 @@ export class SelectToSpeak {
       // hit test is a MOUSE_RELEASED accessibility event.
       desktop.addEventListener(
           EventType.MOUSE_RELEASED, this.onAutomationHitTest_.bind(this), true);
-
-      // When Select-To-Speak is active, we do a hit test on the active node
-      // and the result is a HOVER accessibility event. This event is used to
-      // check that the current node is in the foreground window.
-      desktop.addEventListener(
-          EventType.HOVER, this.onHitTestCheckCurrentNodeMatches_.bind(this),
-          true);
     }.bind(this));
-
-    /** @private {boolean} */
-    this.readAfterClose_ = true;
 
     /**
      * The node groups to be spoken. We process content into node groups and
@@ -148,7 +133,7 @@ export class SelectToSpeak {
     /**
      * The indexes within the current node group item representing the word
      * currently being spoken. Only updated if word highlighting is enabled.
-     * @private {?Object}
+     * @private {?{start: number, end: number}}
      */
     this.currentNodeWord_ = null;
 
@@ -173,9 +158,6 @@ export class SelectToSpeak {
      * @private {boolean}
      */
     this.supportsNavigationPanel_ = true;
-
-    /** @private {boolean} */
-    this.visible_ = true;
 
     /** @private {boolean} */
     this.scrollToSpokenNode_ = false;
@@ -313,9 +295,7 @@ export class SelectToSpeak {
           focusedNode.root.role !== RoleType.DESKTOP) {
         NodeUtils.findAllMatching(focusedNode.root, rect, nodes);
       }
-      if (nodes.length === 1 &&
-          AutomationUtil.getAncestors(nodes[0]).find(
-              (n) => n.className === SELECT_TO_SPEAK_TRAY_CLASS_NAME)) {
+      if (nodes.length === 1 && UiManager.isTrayButton(nodes[0])) {
         // Don't read only the Select-to-Speak toggle button in the tray unless
         // more items are being read.
         return;
@@ -988,7 +968,7 @@ export class SelectToSpeak {
     options.onEvent = (event) => {
       if (event.type === 'start') {
         this.onStateChanged_(SelectToSpeakState.SPEAKING);
-        this.testCurrentNode_();
+        this.updateUi_();
       } else if (
           event.type === 'end' || event.type === 'interrupted' ||
           event.type === 'cancelled') {
@@ -1177,7 +1157,7 @@ export class SelectToSpeak {
               this.currentCharIndex_ !== 0 ? this.currentCharIndex_ :
                                              undefined);
         } else {
-          this.testCurrentNode_();
+          this.updateUi_();
         }
       } else if (event.type === 'interrupted' || event.type === 'cancelled') {
         if (!this.shouldShowNavigationControls_()) {
@@ -1327,13 +1307,13 @@ export class SelectToSpeak {
    */
   prepareForSpeech_(clearFocusRing) {
     this.cancelIfSpeaking_(clearFocusRing /* clear the focus ring */);
+
+    // Update the UI on an interval, to adapt to automation tree changes.
     if (this.intervalRef_ !== undefined) {
       clearInterval(this.intervalRef_);
     }
-
-    // TODO(crbug.com/1179812): Move polling into UiManager.
     this.intervalRef_ = setInterval(
-        this.testCurrentNode_.bind(this),
+        this.updateUi_.bind(this),
         SelectToSpeakConstants.NODE_STATE_TEST_INTERVAL_MS);
   }
 
@@ -1365,13 +1345,10 @@ export class SelectToSpeak {
     // this.currentNodeGroupItemIndex_ to match.
     const nodeUpdated = this.syncCurrentNodeWithCharIndex_(
         nodeGroup, event.charIndex, this.currentNodeGroupItemIndex_);
-    if (nodeUpdated) {
-      if (!this.prefsManager_.wordHighlightingEnabled()) {
-        // If we are doing a per-word highlight, we will test the
-        // node after figuring out what the currently highlighted
-        // word is. Otherwise, test it now.
-        this.testCurrentNode_();
-      }
+    if (nodeUpdated && !this.prefsManager_.wordHighlightingEnabled()) {
+      // If we are doing a per-word highlight, we update the UI after figuring
+      // out what the currently highlighted word is. Otherwise, update now.
+      this.updateUi_();
     }
 
     // Finally update the word highlight if it is enabled.
@@ -1382,7 +1359,7 @@ export class SelectToSpeak {
           'end': event.charIndex + event.length -
               this.currentNodeGroupItem_.startChar
         };
-        this.testCurrentNode_();
+        this.updateUi_();
       } else {
         this.updateNodeHighlight_(nodeGroup.text, event.charIndex);
       }
@@ -1444,174 +1421,130 @@ export class SelectToSpeak {
   }
 
   /**
-   * Hides the speech and focus ring states if necessary based on a node's
-   * current state.
-   *
-   * @param {ParagraphUtils.NodeGroupItem} nodeGroupItem The node to use for
-   *     updates.
-   * @param {boolean} inForeground Whether the node is in the foreground
-   *     window.
+   * @param {!AutomationNode} node
+   * @return {!Promise<boolean>} Promise that resolves to whether the given node
+   *     should be considered in the foreground or not.
    * @private
    */
-  updateFromNodeState_(nodeGroupItem, inForeground) {
-    switch (NodeUtils.getNodeState(nodeGroupItem.node)) {
-      case NodeUtils.NodeState.NODE_STATE_INVALID:
-        // If the node is invalid, continue speech unless readAfterClose_
-        // is set to true. See https://crbug.com/818835 for more.
-        if (this.readAfterClose_) {
-          this.uiManager_.clear();
-          this.visible_ = false;
-        } else {
-          this.stopAll_();
-        }
-        break;
-      case NodeUtils.NodeState.NODE_STATE_INVISIBLE:
-        // If it is invisible but still valid, just clear the focus ring.
-        // Don't clear the current node because we may still use it
-        // if it becomes visible later.
-        this.uiManager_.clear();
-        this.visible_ = false;
-        break;
-      case NodeUtils.NodeState.NODE_STATE_NORMAL:
-      default:
-        if (inForeground && !this.visible_) {
-          this.visible_ = true;
-          // Just came to the foreground.
-          this.updateHighlightAndFocus_(nodeGroupItem);
-        } else if (!inForeground) {
-          this.uiManager_.clear();
-          this.visible_ = false;
-        }
-    }
+  isNodeInForeground_(node) {
+    return new Promise((resolve) => {
+      this.desktop_.hitTestWithReply(
+          node.location.left, node.location.top, (nodeAtLocation) => {
+            chrome.automation.getFocus((focusedNode) => {
+              const window =
+                  NodeUtils.getNearestContainingWindow(nodeAtLocation);
+              const currentWindow = NodeUtils.getNearestContainingWindow(node);
+              if (currentWindow != null && window != null &&
+                  currentWindow === window) {
+                resolve(true);
+                return;
+              }
+              if (UiManager.isPanel(window) ||
+                  UiManager.isPanel(
+                      NodeUtils.getNearestContainingWindow(focusedNode))) {
+                // If the focus is on the Select-to-speak panel or the hit test
+                // landed on the panel, treat the current node as if it is in
+                // the foreground.
+                resolve(true);
+                return;
+              }
+              if (focusedNode && currentWindow) {
+                // See if the focused node window matches the currentWindow.
+                // This may happen in some cases, for example, ARC++, when the
+                // window which received the hit test request is not part of the
+                // tree that contains the actual content. In such cases, use
+                // focus to get the appropriate root.
+                const focusedWindow = NodeUtils.getNearestContainingWindow(
+                    focusedNode.root || null);
+                if (focusedWindow != null && currentWindow === focusedWindow) {
+                  resolve(true);
+                  return;
+                }
+              }
+              resolve(false);
+            });
+          });
+    });
   }
 
   /**
-   * Updates the speech and focus ring states based on a node's current state.
-   *
-   * @param {ParagraphUtils.NodeGroupItem} nodeGroupItem The node to use for
-   *    updates.
+   * @return {?AutomationNode} Current node that is being spoken.
    * @private
    */
-  updateHighlightAndFocus_(nodeGroupItem) {
-    if (!this.visible_) {
-      return;
+  getCurrentSpokenNode_() {
+    if (!this.currentNodeGroupItem_) {
+      return null;
     }
-    let node;
-    if (nodeGroupItem.hasInlineText && this.currentNodeWord_) {
-      node = ParagraphUtils.findInlineTextNodeByCharacterIndex(
-          nodeGroupItem.node, this.currentNodeWord_.start);
+    if (this.currentNodeGroupItem_.hasInlineText && this.currentNodeWord_) {
+      return ParagraphUtils.findInlineTextNodeByCharacterIndex(
+          this.currentNodeGroupItem_.node, this.currentNodeWord_.start);
     } else if (
-        nodeGroupItem.hasInlineText && this.shouldShowNavigationControls_()) {
+        this.currentNodeGroupItem_.hasInlineText &&
+        this.shouldShowNavigationControls_()) {
       // If navigation controls are enabled, but word highlighting is disabled
       // (currentNodeWord_ === null), still find the inline text node so the
       // focus ring will highlight the whole block.
-      node = ParagraphUtils.findInlineTextNodeByCharacterIndex(
-          nodeGroupItem.node, 0);
-    } else {
-      // No inline text or word highlighting and navigation controls are
-      // disabled.
-      node = nodeGroupItem.node;
+      return ParagraphUtils.findInlineTextNodeByCharacterIndex(
+          this.currentNodeGroupItem_.node, 0);
     }
-    if (this.scrollToSpokenNode_ && node.state.offscreen) {
-      node.makeVisible();
-    }
-    if (this.prefsManager_.wordHighlightingEnabled() &&
-        this.currentNodeWord_ != null) {
-      var charIndexInParent = 0;
-      // getStartCharIndexInParent is only defined for nodes with role
-      // INLINE_TEXT_BOX.
-      if (node.role === RoleType.INLINE_TEXT_BOX) {
-        charIndexInParent = ParagraphUtils.getStartCharIndexInParent(node);
-      }
-      // TODO(crbug.com/1179812): Move highlighting to UiManager.
-      node.boundsForRange(
-          this.currentNodeWord_.start - charIndexInParent,
-          this.currentNodeWord_.end - charIndexInParent, (bounds) => {
-            if (bounds) {
-              chrome.accessibilityPrivate.setHighlights(
-                  [bounds], this.prefsManager_.highlightColor());
-            } else {
-              chrome.accessibilityPrivate.setHighlights(
-                  [], this.prefsManager_.highlightColor());
-            }
-          });
+    // No inline text or word highlighting and navigation controls are
+    // disabled.
+    return this.currentNodeGroupItem_.node;
+  }
+
+  /**
+   * Updates the UI based on the current STS and node state.
+   * @return {!Promise<void>} Promise that resolves when operation is complete.
+   * @private
+   */
+  async updateUi_() {
+    if (this.currentNodeGroupItem_ === null) {
+      // Nothing to do.
+      return;
     }
 
+    // Determine whether current node is in the foreground. If node has no
+    // location, assume it is not in the foreground.
+    const node = this.currentNodeGroupItem_.node;
+    const inForeground = node.location !== undefined ?
+        await this.isNodeInForeground_(node) :
+        false;
+
+    // Verify that current node item is still pointing to the same node after
+    // asynchronous |isNodeInForeground_| operation.
+    if (this.currentNodeGroupItem_ === null ||
+        this.currentNodeGroupItem_.node !== node) {
+      return;
+    }
+
+    const nodeState = NodeUtils.getNodeState(node);
+    if (nodeState === NodeUtils.NodeState.NODE_STATE_INVALID ||
+        nodeState === NodeUtils.NodeState.NODE_STATE_INVISIBLE ||
+        !inForeground) {
+      // Current node is in background or node is invalid/invisible.
+      this.uiManager_.clear();
+      return;
+    }
+
+    const spokenNode = this.getCurrentSpokenNode_();
     const currentNodeGroup = this.getCurrentNodeGroup_();
-    if (currentNodeGroup) {
-      this.uiManager_.update(
-          currentNodeGroup, /** @type {!AutomationNode} */ (node), {
-            showPanel: this.shouldShowNavigationControls_(),
-            paused: this.isPaused_(),
-            speechRateMultiplier: this.speechRateMultiplier_,
-          });
-    }
-  }
-
-  /**
-   * Tests the active node to make sure the bounds are drawn correctly.
-   * @private
-   */
-  testCurrentNode_() {
-    // TODO(crbug.com/1179812): Consider moving to UiManager.
-
-    if (this.currentNodeGroupItem_ == null) {
+    if (!currentNodeGroup || !spokenNode) {
+      console.warn('Could not update UI; no node group or spoken node');
       return;
     }
-    if (this.currentNodeGroupItem_.node.location === undefined) {
-      // Don't do the hit test because there is no location to test against.
-      // Just directly update Select To Speak from node state.
-      this.updateFromNodeState_(this.currentNodeGroupItem_, false);
-    } else {
-      this.updateHighlightAndFocus_(this.currentNodeGroupItem_);
-      // Do a hit test to make sure the node is not in a background window
-      // or minimimized. On the result checkCurrentNodeMatchesHitTest_ will be
-      // called, and we will use that result plus the currentNode's state to
-      // determine how to set the focus and whether to stop speech.
-      this.desktop_.hitTest(
-          this.currentNodeGroupItem_.node.location.left,
-          this.currentNodeGroupItem_.node.location.top, EventType.HOVER);
+
+    if (this.scrollToSpokenNode_ && spokenNode.state.offscreen) {
+      spokenNode.makeVisible();
     }
+    const currentWord = this.prefsManager_.wordHighlightingEnabled() ?
+        this.currentNodeWord_ :
+        null;
+    this.uiManager_.update(currentNodeGroup, spokenNode, currentWord, {
+      showPanel: this.shouldShowNavigationControls_(),
+      paused: this.isPaused_(),
+      speechRateMultiplier: this.speechRateMultiplier_,
+    });
   }
-
-  /**
-   * Checks that the current node is in the same window as the HitTest node.
-   * Uses this information to update Select-To-Speak from node state.
-   * @private
-   */
-  onHitTestCheckCurrentNodeMatches_(evt) {
-    if (this.currentNodeGroupItem_ == null) {
-      return;
-    }
-    chrome.automation.getFocus(function(focusedNode) {
-      var window = NodeUtils.getNearestContainingWindow(evt.target);
-      var currentWindow =
-          NodeUtils.getNearestContainingWindow(this.currentNodeGroupItem_.node);
-      var inForeground =
-          currentWindow != null && window != null && currentWindow === window;
-      if (!inForeground &&
-          (UiManager.isPanel(window) ||
-           UiManager.isPanel(
-               NodeUtils.getNearestContainingWindow(focusedNode)))) {
-        // If the focus is on the Select-to-speak panel or the hit test landed
-        // on the panel, treat the current node as if it is in the foreground.
-        inForeground = true;
-      }
-      if (!inForeground && focusedNode && currentWindow) {
-        // See if the focused node window matches the currentWindow.
-        // This may happen in some cases, for example, ARC++, when the window
-        // which received the hit test request is not part of the tree that
-        // contains the actual content. In such cases, use focus to get the
-        // appropriate root.
-        var focusedWindow =
-            NodeUtils.getNearestContainingWindow(focusedNode.root);
-        inForeground = focusedWindow != null && currentWindow === focusedWindow;
-      }
-      this.updateFromNodeState_(this.currentNodeGroupItem_, inForeground);
-    }.bind(this));
-  }
-
-
 
   /**
    * Updates the currently highlighted node word based on the current text
@@ -1652,7 +1585,7 @@ export class SelectToSpeak {
       // checking that the current word has changed allows us to
       // reduce extra work.
       this.currentNodeWord_ = {'start': nodeStart, 'end': nodeEnd};
-      this.testCurrentNode_();
+      this.updateUi_();
     }
   }
 

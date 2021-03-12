@@ -28,6 +28,8 @@ SelectToSpeakMouseSelectionTest = class extends SelectToSpeakE2ETest {
       window.selectToSpeak = module.selectToSpeak;
 
       module = await import('/select_to_speak/select_to_speak.js');
+
+      module = await import('/select_to_speak/ui_manager.js');
       window.SELECT_TO_SPEAK_TRAY_CLASS_NAME =
           module.SELECT_TO_SPEAK_TRAY_CLASS_NAME;
 
