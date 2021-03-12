@@ -8,6 +8,8 @@ import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.Espresso.pressBack;
 import static androidx.test.espresso.action.ViewActions.click;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
+import static androidx.test.espresso.intent.Intents.intended;
+import static androidx.test.espresso.intent.matcher.IntentMatchers.hasAction;
 import static androidx.test.espresso.matcher.RootMatchers.withDecorView;
 import static androidx.test.espresso.matcher.ViewMatchers.isChecked;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
@@ -22,12 +24,16 @@ import static org.junit.Assert.assertTrue;
 import static org.chromium.chrome.browser.tasks.tab_management.TabUiTestHelper.enterTabSwitcher;
 
 import android.content.res.Configuration;
+import android.os.Build;
+import android.provider.Settings;
 import android.support.test.InstrumentationRegistry;
 import android.support.test.uiautomator.UiDevice;
 import android.view.View;
 import android.widget.TextView;
 
 import androidx.test.espresso.NoMatchingRootException;
+import androidx.test.espresso.intent.Intents;
+import androidx.test.espresso.intent.rule.IntentsTestRule;
 import androidx.test.filters.MediumTest;
 
 import org.junit.After;
@@ -41,6 +47,7 @@ import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
+import org.chromium.chrome.browser.app.ChromeActivity;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.tab_ui.R;
@@ -68,6 +75,9 @@ import java.io.IOException;
 @Features.DisableFeatures({ChromeFeatureList.START_SURFACE_ANDROID})
 public class PriceTrackingDialogTest {
     // clang-format on
+    private static final String ACTION_APP_NOTIFICATION_SETTINGS =
+            "android.settings.APP_NOTIFICATION_SETTINGS";
+
     private ModalDialogManager mModalDialogManager;
 
     @Rule
@@ -76,6 +86,10 @@ public class PriceTrackingDialogTest {
     @Rule
     public ChromeRenderTestRule mRenderTestRule =
             ChromeRenderTestRule.Builder.withPublicCorpus().build();
+
+    @Rule
+    public IntentsTestRule<ChromeActivity> mIntentTestRule =
+            new IntentsTestRule<>(ChromeActivity.class, false, false);
 
     @Before
     public void setUp() throws Exception {
@@ -144,21 +158,21 @@ public class PriceTrackingDialogTest {
 
     @Test
     @MediumTest
-    public void testPriceAlertsSwitch() {
+    public void testPriceAlertsButton() {
+        Intents.init();
         final ChromeTabbedActivity cta = mActivityTestRule.getActivity();
 
         MenuUtils.invokeCustomMenuActionSync(
                 InstrumentationRegistry.getInstrumentation(), cta, R.id.track_prices_row_menu_id);
         verifyDialogShowing(cta);
+        onView(withId(R.id.price_alerts_arrow)).perform(click());
 
-        onView(withId(R.id.price_alerts_switch)).check(matches(isNotChecked()));
-        assertFalse(PriceTrackingUtilities.isPriceDropAlertsEnabled());
-        onView(withId(R.id.price_alerts_switch)).perform(click());
-        onView(withId(R.id.price_alerts_switch)).check(matches(isChecked()));
-        assertTrue(PriceTrackingUtilities.isPriceDropAlertsEnabled());
-        onView(withId(R.id.price_alerts_switch)).perform(click());
-        onView(withId(R.id.price_alerts_switch)).check(matches(isNotChecked()));
-        assertFalse(PriceTrackingUtilities.isPriceDropAlertsEnabled());
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) {
+            intended(hasAction(ACTION_APP_NOTIFICATION_SETTINGS));
+        } else {
+            intended(hasAction(Settings.ACTION_CHANNEL_NOTIFICATION_SETTINGS));
+        }
+        Intents.release();
     }
 
     @Test

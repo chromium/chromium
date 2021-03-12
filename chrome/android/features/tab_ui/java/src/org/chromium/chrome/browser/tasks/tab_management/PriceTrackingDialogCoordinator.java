@@ -9,6 +9,7 @@ import android.view.LayoutInflater;
 import android.widget.CompoundButton;
 import android.widget.CompoundButton.OnCheckedChangeListener;
 
+import org.chromium.chrome.browser.price_tracking.PriceDropNotificationManager;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.tab_ui.R;
 import org.chromium.ui.modaldialog.ModalDialogManager;
@@ -24,10 +25,13 @@ class PriceTrackingDialogCoordinator implements OnCheckedChangeListener {
     private final PriceTrackingDialogView mDialogView;
 
     PriceTrackingDialogCoordinator(Context context, ModalDialogManager modalDialogManager,
-            TabSwitcherMediator.ResetHandler resetHandler, TabModelSelector tabModelSelector) {
+            TabSwitcherMediator.ResetHandler resetHandler, TabModelSelector tabModelSelector,
+            PriceDropNotificationManager notificationManager) {
         mDialogView = (PriceTrackingDialogView) LayoutInflater.from(context).inflate(
                 R.layout.price_tracking_dialog_layout, null, false);
-        mDialogView.setupOnCheckedChangeListener(this);
+        mDialogView.setupTrackPricesSwitchOnCheckedChangeListener(this);
+        mDialogView.setupPriceAlertsArrowOnClickListener(
+                v -> { notificationManager.launchNotificationSettings(); });
         mModalDialogManager = modalDialogManager;
 
         ModalDialogProperties.Controller dialogController = new ModalDialogProperties.Controller() {
@@ -56,12 +60,9 @@ class PriceTrackingDialogCoordinator implements OnCheckedChangeListener {
 
     @Override
     public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-        if (buttonView.getId() == R.id.track_prices_switch
-                && isChecked != PriceTrackingUtilities.isTrackPricesOnTabsEnabled()) {
+        assert buttonView.getId() == R.id.track_prices_switch;
+        if (isChecked != PriceTrackingUtilities.isTrackPricesOnTabsEnabled()) {
             PriceTrackingUtilities.flipTrackPricesOnTabs();
-        } else if (buttonView.getId() == R.id.price_alerts_switch
-                && isChecked != PriceTrackingUtilities.isPriceDropAlertsEnabled()) {
-            PriceTrackingUtilities.flipPriceDropAlerts();
         }
     }
 }
