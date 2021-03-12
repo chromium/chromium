@@ -48,6 +48,16 @@ class SyncedNetworkMetricsLoggerTest : public testing::Test {
     testing::Test::TearDown();
   }
 
+  void SimulateConnectionFailure(std::string error) {
+    const NetworkState* network = CreateNetwork(/*from_sync=*/true);
+    SetNetworkProperty(network->path(), shill::kStateProperty,
+                       shill::kStateConfiguration);
+
+    SetNetworkProperty(network->path(), shill::kErrorProperty, error);
+    SetNetworkProperty(network->path(), shill::kStateProperty,
+                       shill::kStateFailure);
+  }
+
  protected:
   base::test::TaskEnvironment task_environment_;
 
@@ -64,6 +74,7 @@ class SyncedNetworkMetricsLoggerTest : public testing::Test {
                           const std::string& value) {
     network_test_helper_->network_state_test_helper()->SetServiceProperty(
         service_path, key, base::Value(value));
+    base::RunLoop().RunUntilIdle();
   }
 
   const NetworkState* CreateNetwork(bool from_sync) {
@@ -143,26 +154,35 @@ TEST_F(SyncedNetworkMetricsLoggerTest,
   histogram_tester.ExpectTotalCount(kConnectionFailureReasonManualHistogram, 0);
 }
 
-TEST_F(SyncedNetworkMetricsLoggerTest, FailedConnection_SyncedNetwork) {
+TEST_F(SyncedNetworkMetricsLoggerTest,
+       FailedConnection_SyncedNetwork_UnknownFailure) {
   base::HistogramTester histogram_tester;
-  const NetworkState* network = CreateNetwork(/*from_sync=*/true);
-
-  SetNetworkProperty(network->path(), shill::kStateProperty,
-                     shill::kStateConfiguration);
-  synced_network_metrics_logger()->NetworkConnectionStateChanged(network);
-
-  SetNetworkProperty(network->path(), shill::kStateProperty,
-                     shill::kStateFailure);
-  SetNetworkProperty(network->path(), shill::kErrorProperty,
-                     shill::kErrorUnknownFailure);
-  base::RunLoop().RunUntilIdle();
-
-  synced_network_metrics_logger()->NetworkConnectionStateChanged(network);
-  base::RunLoop().RunUntilIdle();
+  SimulateConnectionFailure(shill::kErrorUnknownFailure);
 
   histogram_tester.ExpectBucketCount(kConnectionResultAllHistogram, false, 1);
   histogram_tester.ExpectBucketCount(kConnectionFailureReasonAllHistogram,
                                      ConnectionFailureReason::kUnknown, 1);
+}
+
+TEST_F(SyncedNetworkMetricsLoggerTest,
+       FailedConnection_SyncedNetwork_BadPassphrase) {
+  base::HistogramTester histogram_tester;
+  SimulateConnectionFailure(shill::kErrorBadPassphrase);
+
+  histogram_tester.ExpectBucketCount(kConnectionResultAllHistogram, false, 1);
+  histogram_tester.ExpectBucketCount(kConnectionFailureReasonAllHistogram,
+                                     ConnectionFailureReason::kBadPassphrase,
+                                     1);
+}
+
+TEST_F(SyncedNetworkMetricsLoggerTest,
+       FailedConnection_SyncedNetwork_OutOfRange) {
+  base::HistogramTester histogram_tester;
+  SimulateConnectionFailure(shill::kErrorOutOfRange);
+
+  histogram_tester.ExpectTotalCount(kConnectionResultAllHistogram, 0);
+  histogram_tester.ExpectBucketCount(kConnectionFailureReasonAllHistogram,
+                                     ConnectionFailureReason::kOutOfRange, 1);
 }
 
 TEST_F(SyncedNetworkMetricsLoggerTest,
