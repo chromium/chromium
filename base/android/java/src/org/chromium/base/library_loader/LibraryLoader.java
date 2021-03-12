@@ -381,7 +381,7 @@ public class LibraryLoader {
      *
      * @return the Linker implementation instance.
      */
-    private Linker getLinker(ApplicationInfo info) {
+    private Linker getLinker() {
         // A non-monochrome APK (such as ChromePublic.apk) can be installed on N+ in these
         // circumstances:
         // * installing APK manually
@@ -399,24 +399,11 @@ public class LibraryLoader {
         // either Chrome{,Modern} or Trichrome.
         synchronized (mLock) {
             if (mLinker == null) {
-                // With incremental install, it's important to fall back to the "normal"
-                // library loading path in order for the libraries to be found.
-                String appClass = info.className;
-                boolean isIncrementalInstall =
-                        appClass != null && appClass.contains("incrementalinstall");
-                if (mUseModernLinker && !isIncrementalInstall) {
-                    mLinker = new ModernLinker();
-                } else {
-                    mLinker = new LegacyLinker();
-                }
+                mLinker = mUseModernLinker ? new ModernLinker() : new LegacyLinker();
                 Log.i(TAG, "Using linker: %s", mLinker.getClass().getName());
             }
             return mLinker;
         }
-    }
-
-    private Linker getLinker() {
-        return getLinker(ContextUtils.getApplicationContext().getApplicationInfo());
     }
 
     @CheckDiscard("Can't use @RemovableInRelease because Release build with DCHECK_IS_ON needs it")
@@ -601,18 +588,17 @@ public class LibraryLoader {
     }
 
     private void loadWithChromiumLinker(ApplicationInfo appInfo, String library) {
-        Linker linker = getLinker(appInfo);
+        Linker linker = getLinker();
 
         if (isInZipFile()) {
             String sourceDir = appInfo.sourceDir;
             linker.setApkFilePath(sourceDir);
-            Log.i(TAG, " Loading %s from within %s", library, sourceDir);
+            Log.i(TAG, "Loading %s from within %s", library, sourceDir);
         } else {
             Log.i(TAG, "Loading %s", library);
         }
 
-        // Load the library using this Linker. May throw UnsatisfiedLinkError.
-        linker.loadLibrary(library);
+        linker.loadLibrary(library); // May throw UnsatisfiedLinkError.
     }
 
     @GuardedBy("mLock")
@@ -636,7 +622,6 @@ public class LibraryLoader {
                 boolean crazyPrefix = forceSystemLinker(); // See comment in this function.
                 String fullPath = zipFilePath + "!/"
                         + makeLibraryPathInZipFile(library, crazyPrefix, is64Bit);
-
                 Log.i(TAG, "libraryName: %s", fullPath);
                 System.load(fullPath);
             }
