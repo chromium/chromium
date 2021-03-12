@@ -11,6 +11,7 @@
 #include "base/no_destructor.h"
 #include "base/single_thread_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
+#include "base/unguessable_token.h"
 #include "chromeos/components/cdm_factory_daemon/cdm_storage_adapter.h"
 #include "chromeos/components/cdm_factory_daemon/content_decryption_module_adapter.h"
 #include "chromeos/components/cdm_factory_daemon/mojom/content_decryption_module.mojom.h"
@@ -238,14 +239,12 @@ void ChromeOsCdmFactory::CreateCdm(
           &GetOutputProtectionOnTaskRunner,
           output_protection_remote.InitWithNewPipeAndPassReceiver()));
 
-  url::Origin cdm_origin;
-  frame_interfaces_->GetCdmOrigin(&cdm_origin);
-
   // Now create the remote CDM instance that links everything up.
-  remote_factory_->CreateCdm(
-      cdm->GetClientInterface(), std::move(storage_remote),
-      std::move(output_protection_remote), cdm_origin.host(),
-      std::move(cros_cdm_pending_receiver));
+  remote_factory_->CreateCdm(cdm->GetClientInterface(),
+                             std::move(storage_remote),
+                             std::move(output_protection_remote),
+                             base::UnguessableToken::Create().ToString(),
+                             std::move(cros_cdm_pending_receiver));
 
   base::ThreadTaskRunnerHandle::Get()->PostTask(
       FROM_HERE, base::BindOnce(std::move(cdm_created_cb), std::move(cdm), ""));
