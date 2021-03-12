@@ -116,21 +116,24 @@ double SpeechMonitor::GetDelayForLastUtteranceMS() {
 void SpeechMonitor::ExpectSpeech(const std::string& text,
                                  const base::Location& location) {
   CHECK(!replay_loop_runner_.get());
-  replay_queue_.push_back({[this, text]() {
-                             for (auto it = utterance_queue_.begin();
-                                  it != utterance_queue_.end(); it++) {
-                               if (it->text == text) {
-                                 // Erase all utterances that came before the
-                                 // match as well as the match itself.
-                                 utterance_queue_.erase(
-                                     utterance_queue_.begin(), it + 1);
-                                 return true;
-                               }
-                             }
-                             return false;
-                           },
-                           "ExpectSpeech(\"" + text + "\") " +
-                               location.ToString()});
+  replay_queue_.push_back(
+      {[this, text]() {
+         std::vector<std::string> all_text;
+         for (auto it = utterance_queue_.begin(); it != utterance_queue_.end();
+              it++) {
+           all_text.push_back(it->text);
+           std::string joined_all_text = base::JoinString(all_text, " ");
+           if (it->text == text ||
+               joined_all_text.find(text) != std::string::npos) {
+             // Erase all utterances that came before the
+             // match as well as the match itself.
+             utterance_queue_.erase(utterance_queue_.begin(), it + 1);
+             return true;
+           }
+         }
+         return false;
+       },
+       "ExpectSpeech(\"" + text + "\") " + location.ToString()});
 }
 
 void SpeechMonitor::ExpectSpeechPattern(const std::string& pattern,
@@ -143,22 +146,25 @@ void SpeechMonitor::ExpectSpeechPatternWithLocale(
     const std::string& locale,
     const base::Location& location) {
   CHECK(!replay_loop_runner_.get());
-  replay_queue_.push_back({[this, pattern, locale]() {
-                             for (auto it = utterance_queue_.begin();
-                                  it != utterance_queue_.end(); it++) {
-                               if (base::MatchPattern(it->text, pattern) &&
-                                   (locale.empty() || it->lang == locale)) {
-                                 // Erase all utterances that came before the
-                                 // match as well as the match itself.
-                                 utterance_queue_.erase(
-                                     utterance_queue_.begin(), it + 1);
-                                 return true;
-                               }
-                             }
-                             return false;
-                           },
-                           "ExpectSpeechPattern(\"" + pattern + "\") " +
-                               location.ToString()});
+  replay_queue_.push_back(
+      {[this, pattern, locale]() {
+         std::vector<std::string> all_text;
+         for (auto it = utterance_queue_.begin(); it != utterance_queue_.end();
+              it++) {
+           all_text.push_back(it->text);
+           std::string joined_all_text = base::JoinString(all_text, " ");
+           if ((base::MatchPattern(it->text, pattern) &&
+                (locale.empty() || it->lang == locale)) ||
+               base::MatchPattern(joined_all_text, "*" + pattern)) {
+             // Erase all utterances that came before the
+             // match as well as the match itself.
+             utterance_queue_.erase(utterance_queue_.begin(), it + 1);
+             return true;
+           }
+         }
+         return false;
+       },
+       "ExpectSpeechPattern(\"" + pattern + "\") " + location.ToString()});
 }
 
 void SpeechMonitor::ExpectNextSpeechIsNot(const std::string& text,

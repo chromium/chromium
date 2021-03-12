@@ -162,6 +162,33 @@ TtsBackground = class extends ChromeTtsBase {
       properties = {};
     }
 
+    // Chunk to improve responsiveness. Use a replace/split pattern in order to
+    // retain the original punctuation.
+    let splitTextString = textString.replace(/([-\n\r.,!?;])(\s)/g, '$1$2|');
+    splitTextString = splitTextString.split('|');
+    // Since we are substituting the chunk delimiters back into the string, only
+    // recurse when there are more than 2 split items. This should result in
+    // only one recursive call.
+    if (splitTextString.length > 2) {
+      const startCallback = properties['startCallback'];
+      const endCallback = properties['endCallback'];
+      const onEvent = properties['onEvent'];
+      for (let i = 0; i < splitTextString.length; i++) {
+        const propertiesCopy = {};
+        for (const p in properties) {
+          propertiesCopy[p] = properties[p];
+        }
+        propertiesCopy['startCallback'] = i === 0 ? startCallback : null;
+        propertiesCopy['endCallback'] =
+            i === (splitTextString.length - 1) ? endCallback : null;
+        propertiesCopy['onEvent'] =
+            i === (splitTextString.length - 1) ? onEvent : null;
+        this.speak(splitTextString[i], queueMode, propertiesCopy);
+        queueMode = QueueMode.QUEUE;
+      }
+      return this;
+    }
+
     if (textString.length > constants.OBJECT_MAX_CHARCOUNT) {
       // The text is too long. Try to split the text into multiple chunks based
       // on line breaks.
