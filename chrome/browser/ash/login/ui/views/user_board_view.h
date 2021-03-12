@@ -27,8 +27,6 @@ class UserSelectionScreen;
 // or Views one.
 class UserBoardView {
  public:
-  constexpr static StaticOobeScreenId kScreenId{"userBoard"};
-
   virtual ~UserBoardView() {}
 
   virtual void Bind(UserSelectionScreen* screen) = 0;

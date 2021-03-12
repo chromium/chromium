@@ -18,7 +18,6 @@
 #include "base/timer/timer.h"
 #include "base/values.h"
 #include "chrome/browser/ash/login/saml/password_sync_token_checkers_collection.h"
-#include "chrome/browser/ash/login/screens/base_screen.h"
 #include "chrome/browser/ash/login/signin/token_handle_util.h"
 #include "chrome/browser/ash/login/ui/login_display.h"
 #include "chrome/browser/ash/login/user_online_signin_notifier.h"
@@ -43,7 +42,6 @@ enum class DisplayedScreen { SIGN_IN_SCREEN, USER_ADDING_SCREEN, LOCK_SCREEN };
 // This class represents User Selection screen: user pod-based login screen.
 class UserSelectionScreen
     : public proximity_auth::ScreenlockBridge::LockHandler,
-      public BaseScreen,
       public session_manager::SessionManagerObserver,
       public PasswordSyncTokenLoginChecker::Observer,
       public UserOnlineSigninNotifier::Observer {
@@ -115,10 +113,6 @@ class UserSelectionScreen
   void SetUsersLoaded(bool loaded);
 
  protected:
-  // BaseScreen:
-  void ShowImpl() override;
-  void HideImpl() override;
-
   UserBoardView* view_ = nullptr;
 
   // Map from public session account IDs to recommended locales set by policy.

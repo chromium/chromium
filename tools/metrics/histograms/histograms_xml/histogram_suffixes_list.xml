@@ -12237,7 +12237,11 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <suffix name="Update" label=""/>
   <suffix name="Update-required" label=""/>
   <suffix name="User-creation" label=""/>
-  <suffix name="UserBoard" label=""/>
+  <suffix name="UserBoard" label="">
+    <obsolete>
+      Was never actually used. Not an OOBE screen.
+    </obsolete>
+  </suffix>
   <suffix name="Wrong-hwid" label=""/>
   <affected-histogram name="OOBE.StepCompletionTime"/>
 </histogram_suffixes>

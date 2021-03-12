@@ -70,8 +70,6 @@
 
 namespace chromeos {
 
-constexpr StaticOobeScreenId UserBoardView::kScreenId;
-
 namespace {
 
 const char kWakeLockReason[] = "TPMLockedIssue";
@@ -436,8 +434,7 @@ class UserSelectionScreen::TpmLockedChecker {
 };
 
 UserSelectionScreen::UserSelectionScreen(DisplayedScreen display_type)
-    : BaseScreen(UserBoardView::kScreenId, OobeScreenPriority::DEFAULT),
-      display_type_(display_type) {
+    : display_type_(display_type) {
   session_manager::SessionManager::Get()->AddObserver(this);
   if (display_type_ != DisplayedScreen::SIGN_IN_SCREEN)
     return;
@@ -843,10 +840,6 @@ void UserSelectionScreen::OnOnlineSigninEnforced(const AccountId& account_id) {
   SetAuthType(account_id, proximity_auth::mojom::AuthType::ONLINE_SIGN_IN,
               base::string16());
 }
-
-void UserSelectionScreen::ShowImpl() {}
-
-void UserSelectionScreen::HideImpl() {}
 
 void UserSelectionScreen::HardLockPod(const AccountId& account_id) {
   view_->SetAuthType(account_id,
