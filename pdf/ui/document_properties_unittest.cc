@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "pdf/ui/format_page_size.h"
+#include "pdf/ui/document_properties.h"
 
 #include <string>
 

@@ -138,10 +138,10 @@ if (enable_pdf) {
       "preview_mode_client.h",
       "range_set.cc",
       "range_set.h",
+      "ui/document_properties.cc",
+      "ui/document_properties.h",
       "ui/file_name.cc",
       "ui/file_name.h",
-      "ui/format_page_size.cc",
-      "ui/format_page_size.h",
       "ui/thumbnail.cc",
       "ui/thumbnail.h",
       "url_loader_wrapper.h",
@@ -364,8 +364,8 @@ if (enable_pdf) {
       "ppapi_migration/url_loader_unittest.cc",
       "range_set_unittest.cc",
       "test/run_all_unittests.cc",
+      "ui/document_properties_unittest.cc",
       "ui/file_name_unittest.cc",
-      "ui/format_page_size_unittest.cc",
       "ui/thumbnail_unittest.cc",
     ]
 

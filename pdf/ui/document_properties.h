@@ -2,12 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef PDF_UI_FORMAT_PAGE_SIZE_H_
-#define PDF_UI_FORMAT_PAGE_SIZE_H_
+#ifndef PDF_UI_DOCUMENT_PROPERTIES_H_
+#define PDF_UI_DOCUMENT_PROPERTIES_H_
 
 #include <string>
 
 #include "base/optional.h"
+#include "pdf/document_metadata.h"
 
 namespace gfx {
 class Size;
@@ -25,6 +26,9 @@ namespace chrome_pdf {
 // Returns the string "Varies" if `size_points` is `base::nullopt`.
 std::u16string FormatPageSize(const base::Optional<gfx::Size>& size_points);
 
+// Formats `version` to a localized string suitable for display to a user.
+std::u16string FormatPdfVersion(PdfVersion version);
+
 }  // namespace chrome_pdf
 
-#endif  // PDF_UI_FORMAT_PAGE_SIZE_H_
+#endif  // PDF_UI_DOCUMENT_PROPERTIES_H_

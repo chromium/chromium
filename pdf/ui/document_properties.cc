@@ -2,14 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "pdf/ui/format_page_size.h"
+#include "pdf/ui/document_properties.h"
 
 #include <string>
 
+#include "base/check_op.h"
 #include "base/i18n/number_formatting.h"
 #include "base/i18n/rtl.h"
 #include "base/optional.h"
 #include "components/strings/grit/components_strings.h"
+#include "pdf/document_metadata.h"
 #include "printing/units.h"
 #include "third_party/icu/source/i18n/unicode/ulocdata.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -87,6 +89,47 @@ std::u16string FormatPageSize(const base::Optional<gfx::Size>& size_points) {
       FormatLengthInMillimeters(size_points.value().width()),
       FormatLengthInMillimeters(size_points.value().height()),
       GetOrientation(size_points.value()));
+}
+
+std::u16string FormatPdfVersion(PdfVersion version) {
+  double value = 0;
+  switch (version) {
+    case PdfVersion::k1_0:
+      value = 1.0;
+      break;
+    case PdfVersion::k1_1:
+      value = 1.1;
+      break;
+    case PdfVersion::k1_2:
+      value = 1.2;
+      break;
+    case PdfVersion::k1_3:
+      value = 1.3;
+      break;
+    case PdfVersion::k1_4:
+      value = 1.4;
+      break;
+    case PdfVersion::k1_5:
+      value = 1.5;
+      break;
+    case PdfVersion::k1_6:
+      value = 1.6;
+      break;
+    case PdfVersion::k1_7:
+      value = 1.7;
+      break;
+    case PdfVersion::k2_0:
+      value = 2.0;
+      break;
+    case PdfVersion::kUnknown:
+    case PdfVersion::k1_8:  // Not an actual version
+      return std::u16string();
+  }
+  // The default case is excluded from the above switch statement to ensure that
+  // all supported versions are determinantly handled.
+
+  DCHECK_NE(0, value);
+  return base::FormatDouble(value, 1);
 }
 
 }  // namespace chrome_pdf

@@ -43,7 +43,7 @@
 #include "pdf/ppapi_migration/input_event_conversions.h"
 #include "pdf/ppapi_migration/url_loader.h"
 #include "pdf/ppapi_migration/value_conversions.h"
-#include "pdf/ui/format_page_size.h"
+#include "pdf/ui/document_properties.h"
 #include "pdf/ui/thumbnail.h"
 #include "ppapi/c/dev/ppb_cursor_control_dev.h"
 #include "ppapi/c/pp_errors.h"
@@ -500,48 +500,6 @@ pp::PDF::PrivateAccessibilityPageObjects ToPrivateAccessibilityPageObjects(
   }
 
   return pp_page_objects;
-}
-
-// Converts |version| to a formatted string.
-std::u16string GetFormattedVersion(PdfVersion version) {
-  double value = 0;
-  switch (version) {
-    case PdfVersion::k1_0:
-      value = 1.0;
-      break;
-    case PdfVersion::k1_1:
-      value = 1.1;
-      break;
-    case PdfVersion::k1_2:
-      value = 1.2;
-      break;
-    case PdfVersion::k1_3:
-      value = 1.3;
-      break;
-    case PdfVersion::k1_4:
-      value = 1.4;
-      break;
-    case PdfVersion::k1_5:
-      value = 1.5;
-      break;
-    case PdfVersion::k1_6:
-      value = 1.6;
-      break;
-    case PdfVersion::k1_7:
-      value = 1.7;
-      break;
-    case PdfVersion::k2_0:
-      value = 2.0;
-      break;
-    case PdfVersion::kUnknown:
-    case PdfVersion::k1_8:  // Not an actual version
-      return std::u16string();
-  }
-  // The default case is excluded from the above switch statement to ensure that
-  // all supported versions are determinantly handled.
-
-  DCHECK_NE(0, value);
-  return base::FormatDouble(value, 1);
 }
 
 }  // namespace
@@ -1583,7 +1541,7 @@ void OutOfProcessInstance::SendMetadata() {
   const DocumentMetadata& document_metadata = engine()->GetDocumentMetadata();
   pp::VarDictionary metadata_data;
 
-  std::u16string version = GetFormattedVersion(document_metadata.version);
+  std::u16string version = FormatPdfVersion(document_metadata.version);
   if (!version.empty())
     metadata_data.Set(pp::Var(kJSVersion), pp::Var(base::UTF16ToUTF8(version)));
 
