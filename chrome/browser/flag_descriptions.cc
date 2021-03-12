@@ -4634,7 +4634,7 @@ const char kOsSettingsPolymer3Description[] =
 
 const char kPhoneHubName[] = "Enable Phone Hub";
 const char kPhoneHubDescription[] =
-    "Provides a UI for users to view information about their Android phone"
+    "Provides a UI for users to view information about their Android phone "
     "and perform phone-side actions within Chrome OS.";
 
 const char kReduceDisplayNotificationsName[] = "Reduce display notifications";
