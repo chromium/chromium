@@ -10,7 +10,7 @@
 #include "base/memory/ptr_util.h"
 #include "base/notreached.h"
 #include "ui/events/event.h"
-#include "ui/events/fuchsia/input_event_dispatcher_delegate.h"
+#include "ui/events/fuchsia/input_event_sink.h"
 #include "ui/events/keycodes/dom/keycode_converter.h"
 #include "ui/events/keycodes/keyboard_code_conversion.h"
 
@@ -31,10 +31,9 @@ int KeyModifiersToFlags(int modifiers) {
 
 }  // namespace
 
-InputEventDispatcher::InputEventDispatcher(
-    InputEventDispatcherDelegate* delegate)
-    : delegate_(delegate) {
-  DCHECK(delegate_);
+InputEventDispatcher::InputEventDispatcher(InputEventSink* event_sink)
+    : event_sink_(event_sink) {
+  DCHECK(event_sink_);
 }
 
 InputEventDispatcher::~InputEventDispatcher() = default;
@@ -103,7 +102,7 @@ bool InputEventDispatcher::ProcessMouseEvent(
                              base::TimeTicks::FromZxTime(event.event_time),
                              buttons_flags, buttons_flags);
   mouse_event.set_location_f(gfx::PointF(event.x, event.y));
-  delegate_->DispatchEvent(&mouse_event);
+  event_sink_->DispatchEvent(&mouse_event);
   return mouse_event.handled();
 }
 
@@ -143,7 +142,7 @@ bool InputEventDispatcher::ProcessTouchEvent(
                              pointer_details);
   touch_event.set_hovering(hovering);
   touch_event.set_location_f(gfx::PointF(event.x, event.y));
-  delegate_->DispatchEvent(&touch_event);
+  event_sink_->DispatchEvent(&touch_event);
   return touch_event.handled();
 }
 
@@ -183,7 +182,7 @@ bool InputEventDispatcher::ProcessKeyboardEvent(
   ui::KeyEvent key_event(event_type, key_code, dom_code,
                          KeyModifiersToFlags(event.modifiers), dom_key,
                          base::TimeTicks::FromZxTime(event.event_time));
-  delegate_->DispatchEvent(&key_event);
+  event_sink_->DispatchEvent(&key_event);
   return key_event.handled();
 }
 

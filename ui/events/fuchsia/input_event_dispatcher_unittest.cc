@@ -10,7 +10,7 @@
 #include "base/macros.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/events/event.h"
-#include "ui/events/fuchsia/input_event_dispatcher_delegate.h"
+#include "ui/events/fuchsia/input_event_sink.h"
 #include "ui/events/keycodes/dom/dom_key.h"
 
 using fuchsia::ui::input::InputEvent;
@@ -20,8 +20,7 @@ using FuchsiaPointerEvent = fuchsia::ui::input::PointerEvent;
 namespace ui {
 namespace {
 
-class InputEventDispatcherTest : public testing::Test,
-                                 public InputEventDispatcherDelegate {
+class InputEventDispatcherTest : public testing::Test, public InputEventSink {
  public:
   InputEventDispatcherTest() : dispatcher_(this) {}
   ~InputEventDispatcherTest() override = default;

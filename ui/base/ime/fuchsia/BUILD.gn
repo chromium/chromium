@@ -10,6 +10,8 @@ component("fuchsia") {
   sources = [
     "input_method_fuchsia.cc",
     "input_method_fuchsia.h",
+    "keyboard_client.cc",
+    "keyboard_client.h",
     "virtual_keyboard_controller_fuchsia.cc",
     "virtual_keyboard_controller_fuchsia.h",
   ]
@@ -18,6 +20,7 @@ component("fuchsia") {
 
   public_deps = [
     "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.ui.input",
+    "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.ui.input3",
     "//third_party/fuchsia-sdk/sdk/pkg/scenic_cpp",
     "//third_party/fuchsia-sdk/sdk/pkg/sys_cpp",
     "//ui/base/ime",

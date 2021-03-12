@@ -16,7 +16,7 @@
 #include "ui/base/ime/input_method_base.h"
 #include "ui/base/ime/input_method_delegate.h"
 #include "ui/events/fuchsia/input_event_dispatcher.h"
-#include "ui/events/fuchsia/input_event_dispatcher_delegate.h"
+#include "ui/events/fuchsia/input_event_sink.h"
 #include "ui/gfx/native_widget_types.h"
 
 namespace ui {
@@ -24,7 +24,7 @@ namespace ui {
 // Handles input from physical keyboards and the IME service.
 class COMPONENT_EXPORT(UI_BASE_IME_FUCHSIA) InputMethodFuchsia
     : public InputMethodBase,
-      public InputEventDispatcherDelegate,
+      public InputEventSink,
       public fuchsia::ui::input::InputMethodEditorClient {
  public:
   InputMethodFuchsia(internal::InputMethodDelegate* delegate,
@@ -53,7 +53,7 @@ class COMPONENT_EXPORT(UI_BASE_IME_FUCHSIA) InputMethodFuchsia
   // input events.
   void DisconnectInputService();
 
-  // InputEventDispatcherDelegate interface implementation.
+  // InputEventSink interface implementation.
   void DispatchEvent(ui::Event* event) override;
 
   // InputMethodEditorClient interface implementation.

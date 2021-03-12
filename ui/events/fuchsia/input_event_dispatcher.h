@@ -12,14 +12,14 @@
 
 namespace ui {
 
-class InputEventDispatcherDelegate;
+class InputEventSink;
 
 // Translates Fuchsia input events to Chrome ui::Events.
 class EVENTS_EXPORT InputEventDispatcher {
  public:
-  // |delegate|: The recipient of any Chrome events that are processed from
+  // |event_sink|: The recipient of any Chrome events that are processed from
   // Fuchsia events.
-  explicit InputEventDispatcher(InputEventDispatcherDelegate* delegate);
+  explicit InputEventDispatcher(InputEventSink* event_sink);
   ~InputEventDispatcher();
 
   // Processes a Fuchsia |event| and dispatches Chrome ui::Events from it.
@@ -34,7 +34,7 @@ class EVENTS_EXPORT InputEventDispatcher {
   bool ProcessKeyboardEvent(
       const fuchsia::ui::input::KeyboardEvent& event) const;
 
-  InputEventDispatcherDelegate* delegate_;
+  InputEventSink* event_sink_;
 
   DISALLOW_COPY_AND_ASSIGN(InputEventDispatcher);
 };

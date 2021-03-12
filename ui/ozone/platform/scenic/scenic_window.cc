@@ -5,6 +5,7 @@
 #include "ui/ozone/platform/scenic/scenic_window.h"
 
 #include <fuchsia/sys/cpp/fidl.h>
+#include <lib/sys/cpp/component_context.h>
 #include <algorithm>
 #include <memory>
 #include <string>
@@ -12,6 +13,7 @@
 #include <vector>
 
 #include "base/fuchsia/fuchsia_logging.h"
+#include "base/fuchsia/process_context.h"
 #include "ui/events/event.h"
 #include "ui/events/event_constants.h"
 #include "ui/events/keycodes/keyboard_code_conversion.h"
@@ -28,6 +30,9 @@ ScenicWindow::ScenicWindow(ScenicWindowManager* window_manager,
       delegate_(delegate),
       window_id_(manager_->AddWindow(this)),
       event_dispatcher_(this),
+      keyboard_service_(base::ComponentContextForProcess()
+                            ->svc()
+                            ->Connect<fuchsia::ui::input3::Keyboard>()),
       scenic_session_(manager_->GetScenic()),
       view_ref_(std::move(properties.view_ref_pair.view_ref)),
       view_(&scenic_session_,
@@ -55,6 +60,12 @@ ScenicWindow::ScenicWindow(ScenicWindowManager* window_manager,
   node_.AddChild(render_node_);
 
   delegate_->OnAcceleratedWidgetAvailable(window_id_);
+
+  keyboard_service_.set_error_handler([](zx_status_t status) {
+    ZX_LOG(ERROR, status) << "input3.Keyboard service disconnected.";
+  });
+  keyboard_client_ = std::make_unique<KeyboardClient>(keyboard_service_.get(),
+                                                      CloneViewRef(), this);
 }
 
 ScenicWindow::~ScenicWindow() {
