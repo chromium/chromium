@@ -76,7 +76,7 @@ class ServiceWorkerPaymentApp : public PaymentApp,
   void ValidateCanMakePayment(ValidateCanMakePaymentCallback callback);
 
   // PaymentApp:
-  void InvokePaymentApp(Delegate* delegate) override;
+  void InvokePaymentApp(base::WeakPtr<Delegate> delegate) override;
   void OnPaymentAppWindowClosed() override;
   bool IsCompleteForPayment() const override;
   uint32_t GetCompletenessScore() const override;
@@ -138,9 +138,7 @@ class ServiceWorkerPaymentApp : public PaymentApp,
   base::WeakPtr<PaymentRequestSpec> spec_;
   std::unique_ptr<content::StoredPaymentApp> stored_payment_app_info_;
 
-  // Weak pointer is fine here since the owner of this object is
-  // PaymentRequestState which also owns PaymentResponseHelper.
-  Delegate* delegate_;
+  base::WeakPtr<Delegate> delegate_;
 
   bool is_incognito_;
 

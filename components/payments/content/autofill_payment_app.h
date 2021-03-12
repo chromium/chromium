@@ -38,7 +38,7 @@ class AutofillPaymentApp
   ~AutofillPaymentApp() override;
 
   // PaymentApp:
-  void InvokePaymentApp(PaymentApp::Delegate* delegate) override;
+  void InvokePaymentApp(base::WeakPtr<Delegate> delegate) override;
   bool IsCompleteForPayment() const override;
   uint32_t GetCompletenessScore() const override;
   bool CanPreselect() const override;
@@ -97,7 +97,7 @@ class AutofillPaymentApp
 
   const std::string app_locale_;
 
-  PaymentApp::Delegate* delegate_;
+  base::WeakPtr<Delegate> delegate_;
   PaymentRequestBaseDelegate* payment_request_delegate_;
   autofill::AutofillProfile billing_address_;
 

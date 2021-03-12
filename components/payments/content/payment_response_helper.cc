@@ -59,7 +59,7 @@ PaymentResponseHelper::PaymentResponseHelper(
 
   // Start to get the instrument details. Will call back into
   // OnInstrumentDetailsReady.
-  selected_app_->InvokePaymentApp(this);
+  selected_app_->InvokePaymentApp(weak_ptr_factory_.GetWeakPtr());
 }
 
 PaymentResponseHelper::~PaymentResponseHelper() {}

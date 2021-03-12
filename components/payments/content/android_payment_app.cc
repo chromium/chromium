@@ -47,7 +47,7 @@ AndroidPaymentApp::AndroidPaymentApp(
 
 AndroidPaymentApp::~AndroidPaymentApp() = default;
 
-void AndroidPaymentApp::InvokePaymentApp(Delegate* delegate) {
+void AndroidPaymentApp::InvokePaymentApp(base::WeakPtr<Delegate> delegate) {
   // Browser is closing, so no need to invoke a callback.
   if (!communication_)
     return;
@@ -169,11 +169,14 @@ bool AndroidPaymentApp::IsPreferred() const {
 }
 
 void AndroidPaymentApp::OnPaymentAppResponse(
-    Delegate* delegate,
+    base::WeakPtr<Delegate> delegate,
     const base::Optional<std::string>& error_message,
     bool is_activity_result_ok,
     const std::string& payment_method_identifier,
     const std::string& stringified_details) {
+  if (!delegate)
+    return;
+
   if (error_message.has_value()) {
     delegate->OnInstrumentDetailsError(error_message.value());
     return;

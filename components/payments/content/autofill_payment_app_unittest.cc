@@ -47,6 +47,10 @@ class FakePaymentAppDelegate : public PaymentApp::Delegate {
     on_instrument_details_error_called_ = true;
   }
 
+  base::WeakPtr<FakePaymentAppDelegate> AsWeakPtr() {
+    return weak_ptr_factory_.GetWeakPtr();
+  }
+
   bool WasOnInstrumentDetailsReadyCalled() {
     return on_instrument_details_ready_called_;
   }
@@ -58,6 +62,8 @@ class FakePaymentAppDelegate : public PaymentApp::Delegate {
  private:
   bool on_instrument_details_ready_called_ = false;
   bool on_instrument_details_error_called_ = false;
+
+  base::WeakPtrFactory<FakePaymentAppDelegate> weak_ptr_factory_{this};
 };
 
 class FakePaymentRequestDelegate : public PaymentRequestDelegate {
@@ -321,7 +327,7 @@ TEST_F(AutofillPaymentAppTest, InvokePaymentApp_NormalizationBeforeUnmask) {
 
   FakePaymentAppDelegate app_delegate;
 
-  app.InvokePaymentApp(&app_delegate);
+  app.InvokePaymentApp(app_delegate.AsWeakPtr());
   EXPECT_FALSE(app_delegate.WasOnInstrumentDetailsReadyCalled());
   EXPECT_FALSE(app_delegate.WasOnInstrumentDetailsErrorCalled());
 
@@ -351,7 +357,7 @@ TEST_F(AutofillPaymentAppTest, InvokePaymentApp_UnmaskBeforeNormalization) {
 
   FakePaymentAppDelegate app_delegate;
 
-  app.InvokePaymentApp(&app_delegate);
+  app.InvokePaymentApp(app_delegate.AsWeakPtr());
   EXPECT_FALSE(app_delegate.WasOnInstrumentDetailsReadyCalled());
   EXPECT_FALSE(app_delegate.WasOnInstrumentDetailsErrorCalled());
 

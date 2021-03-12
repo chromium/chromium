@@ -68,7 +68,7 @@ class SecurePaymentConfirmationApp : public PaymentApp,
       const SecurePaymentConfirmationApp& other) = delete;
 
   // PaymentApp implementation.
-  void InvokePaymentApp(Delegate* delegate) override;
+  void InvokePaymentApp(base::WeakPtr<Delegate> delegate) override;
   bool IsCompleteForPayment() const override;
   uint32_t GetCompletenessScore() const override;
   bool CanPreselect() const override;
@@ -100,7 +100,7 @@ class SecurePaymentConfirmationApp : public PaymentApp,
 
  private:
   void OnGetAssertion(
-      Delegate* delegate,
+      base::WeakPtr<Delegate> delegate,
       blink::mojom::AuthenticatorStatus status,
       blink::mojom::GetAssertionAuthenticatorResponsePtr response);
 
