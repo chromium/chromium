@@ -110,12 +110,16 @@ CacheWithUUID.prototype = {
    */
   retrieveItem: function(id) {
     var item = this.cache_[id];
-    if (item && isNodeReachable(item))
+    if (item && this.isNodeReachable_(item))
       return item;
     throw newError('element is not attached to the page document',
                    StatusCode.STALE_ELEMENT_REFERENCE);
   },
 
+  isNodeReachable_: function(node) {
+    var nodeRoot = getNodeRootThroughAnyShadows(node);
+    return (nodeRoot == document.documentElement.parentNode);
+  }
 };
 
 /**
@@ -156,12 +160,16 @@ Cache.prototype = {
    */
   retrieveItem: function(id) {
     var item = this.cache_[id];
-    if (item && isNodeReachable(item))
+    if (item && this.isNodeReachable_(item))
       return item;
     throw newError('element is not attached to the page document',
                    StatusCode.STALE_ELEMENT_REFERENCE);
   },
 
+  isNodeReachable_: function(node) {
+    var nodeRoot = getNodeRootThroughAnyShadows(node);
+    return (nodeRoot == document.documentElement.parentNode);
+  }
 };
 
 /**
@@ -187,17 +195,6 @@ function getNodeRootThroughAnyShadows(node) {
     root = getNodeRoot(root.host);
   }
   return root;
-}
-
-/**
-  * Returns if node is connected (https://dom.spec.whatwg.org/#connected) to root.
-  * Root could be a document or proxy.
-  * @param {!Node} node The node to check.
-  * @return {boolean} If the nodes is reachable.
-  */
-function isNodeReachable(node) {
-  var nodeRoot = getNodeRootThroughAnyShadows(node);
-  return (nodeRoot == document.documentElement.parentNode);
 }
 
 /**
@@ -322,10 +319,10 @@ function jsonSerialize(item, seen) {
     return item;
   if (isElement(item)) {
     const root = getNodeRootThroughAnyShadows(item);
-    if (!isNodeReachable(item))
+    const cache = getPageCache(root, w3cEnabled);
+    if (!cache.isNodeReachable_(item))
       throw newError('stale element not found',
                      StatusCode.STALE_ELEMENT_REFERENCE);
-    const cache = getPageCache(root, w3cEnabled);
     const ret = {};
     ret[ELEMENT_KEY] = cache.storeItem(item);
     return ret;
