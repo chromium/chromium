@@ -1,0 +1,5 @@
+{
+  "content": {
+    "version": "@MAJOR@.@MINOR@.@BUILD@.@PATCH@"
+  }
+}
