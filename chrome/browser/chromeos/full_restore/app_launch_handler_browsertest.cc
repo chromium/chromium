@@ -8,6 +8,8 @@
 #include <memory>
 
 #include "ash/public/cpp/ash_features.h"
+#include "ash/wm/window_state.h"
+#include "ash/wm/wm_event.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/timer/timer.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
@@ -48,7 +50,7 @@ constexpr int32_t kId = 100;
 
 // Test values for a test WindowInfo object.
 constexpr int kActivationIndex = 2;
-constexpr int kDeskId = 5;
+constexpr int kDeskId = 2;
 constexpr gfx::Rect kRestoreBounds(100, 100);
 constexpr gfx::Rect kCurrentBounds(200, 200);
 constexpr chromeos::WindowStateType kWindowStateType =
@@ -79,6 +81,10 @@ void SaveWindowInfo(aura::Window* window) {
   ::full_restore::WindowInfo window_info;
   window_info.window = window;
   window_info.activation_index = kActivationIndex;
+  window_info.desk_id = kDeskId;
+  window_info.restore_bounds = kRestoreBounds;
+  window_info.current_bounds = kCurrentBounds;
+  window_info.window_state_type = kWindowStateType;
   ::full_restore::SaveWindowInfo(window_info);
 }
 
@@ -612,6 +618,58 @@ IN_PROC_BROWSER_TEST_P(AppLaunchHandlerSystemWebAppsBrowserTest, LaunchSWA) {
       window->GetProperty(::full_restore::kRestoreWindowIdKey);
 
   EXPECT_EQ(window_id, restore_window_id);
+}
+
+IN_PROC_BROWSER_TEST_P(AppLaunchHandlerSystemWebAppsBrowserTest,
+                       WindowProperties) {
+  Browser* app_browser = LaunchSystemWebApp();
+  ASSERT_TRUE(app_browser);
+  ASSERT_NE(browser(), app_browser);
+
+  // Get the window id.
+  aura::Window* window = app_browser->window()->GetNativeWindow();
+  int32_t window_id = window->GetProperty(::full_restore::kWindowIdKey);
+
+  // Snap |window| to the left and store its window properties.
+  // TODO(sammiequon): Store and check desk id and restore bounds.
+  auto* window_state = ash::WindowState::Get(window);
+  const ash::WMEvent left_snap_event(ash::WM_EVENT_SNAP_LEFT);
+  window_state->OnWMEvent(&left_snap_event);
+  const WindowStateType pre_save_state_type = window_state->GetStateType();
+  EXPECT_EQ(chromeos::WindowStateType::kLeftSnapped, pre_save_state_type);
+  const gfx::Rect pre_save_bounds = window->GetBoundsInScreen();
+
+  SaveWindowInfo(window);
+  WaitForAppLaunchInfoSaved();
+
+  // Create AppLaunchHandler.
+  auto app_launch_handler = std::make_unique<AppLaunchHandler>(profile());
+
+  // Close |app_browser| so that the SWA can be relaunched.
+  web_app::CloseAndWait(app_browser);
+
+  // Set should restore.
+  app_launch_handler->SetShouldRestore();
+
+  // Wait for the restoration.
+  // TODO(chinsenj|nancylingwang): Look into using a more specific signal to
+  // detect when restoration is done.
+  content::RunAllTasksUntilIdle();
+
+  // Get the restored browser for the system web app.
+  Browser* restore_app_browser = BrowserList::GetInstance()->GetLastActive();
+  ASSERT_TRUE(restore_app_browser);
+  ASSERT_NE(browser(), restore_app_browser);
+
+  // Get the restored browser's window.
+  window = restore_app_browser->window()->GetNativeWindow();
+  ASSERT_EQ(window_id,
+            window->GetProperty(::full_restore::kRestoreWindowIdKey));
+
+  // Check that |window|'s properties match the one's we stored.
+  EXPECT_EQ(pre_save_bounds, window->GetBoundsInScreen());
+  window_state = ash::WindowState::Get(window);
+  EXPECT_EQ(pre_save_state_type, window_state->GetStateType());
 }
 
 INSTANTIATE_SYSTEM_WEB_APP_MANAGER_TEST_SUITE_REGULAR_PROFILE_P(

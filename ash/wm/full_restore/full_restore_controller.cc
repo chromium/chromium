@@ -11,6 +11,7 @@
 #include "ash/shell.h"
 #include "ash/wm/mru_window_tracker.h"
 #include "ash/wm/window_state.h"
+#include "ash/wm/wm_event.h"
 #include "base/check_op.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "components/full_restore/full_restore_utils.h"
@@ -103,6 +104,32 @@ void FullRestoreController::OnTabletControllerDestroyed() {
   tablet_mode_observation_.Reset();
 }
 
+void FullRestoreController::OnWindowParentChanged(aura::Window* window,
+                                                  aura::Window* parent) {
+  auto window_info = full_restore::GetWindowInfo(window);
+  DCHECK(window_info);
+
+  auto state_type = window_info->window_state_type;
+  if (!state_type.has_value())
+    return;
+
+  if (*state_type == chromeos::WindowStateType::kLeftSnapped ||
+      *state_type == chromeos::WindowStateType::kRightSnapped) {
+    const ash::WMEvent snap_event(
+        *state_type == chromeos::WindowStateType::kLeftSnapped
+            ? ash::WM_EVENT_SNAP_LEFT
+            : ash::WM_EVENT_SNAP_RIGHT);
+    WindowState::Get(window)->OnWMEvent(&snap_event);
+  }
+
+  windows_observation_.RemoveObservation(window);
+}
+
+void FullRestoreController::OnWindowDestroying(aura::Window* window) {
+  if (windows_observation_.IsObservingSource(window))
+    windows_observation_.RemoveObservation(window);
+}
+
 void FullRestoreController::OnAppLaunched(aura::Window* window) {}
 
 void FullRestoreController::OnWindowInitialized(aura::Window* window) {
@@ -127,6 +154,8 @@ void FullRestoreController::OnWindowInitialized(aura::Window* window) {
                        widget->widget_delegate()->SetCanActivate(true);
                      },
                      window));
+
+  windows_observation_.AddObservation(window);
 }
 
 void FullRestoreController::SaveAllWindows() {

@@ -38,6 +38,8 @@ specific_include_rules = {
    "+ash/components/audio",
    "+ash/constants",
    "+ash/public",
+   "+ash/wm/window_state.h",
+   "+ash/wm/wm_event.h",
   ],
   "assistant_util_unittest\.cc": [
     "+ui/events/devices/device_data_manager.h",
