@@ -3413,87 +3413,6 @@
       },
     },
 
-    'gpu_webgpu_integration_extra_isolated_scripts': {
-      'webgpu_blink_web_tests_with_backend_validation': {
-        # TODO(crbug.com/816629) - Move these args into //BUILD.gn.
-        'name': 'webgpu_blink_web_tests_with_backend_validation',
-        'args': [
-          '--driver-logging',
-          # Disable parallel jobs to work around consistent test timeout flakes.
-          # Also, the first test is always flaky due to startup time, so force
-          # the order so we can suppress it.
-          # TODO(crbug.com/953991): Solve this and remove the workaround.
-          '--jobs=1',
-          '--order=natural',
-          '--additional-driver-flag=--enable-dawn-backend-validation',
-          # We need this flag to initialize ANGLE so that we can explicitly tell
-          # Dawn which ANGLE adapter Chromium is using. This will help match the test
-          # usage to be the same as the browser.
-          '--additional-driver-flag=--use-gpu-in-tests',
-        ],
-        'win64_args': [ '--target=Release_x64' ],
-        'mac_args': [
-          # These tests run on 10.14, but web_tests [ Mac ] expectations don't
-          # work correctly yet under 10.14. Pretend it's 10.13.
-          '--platform=mac-mac10.13'
-        ],
-        'linux_args': [
-          '--no-xvfb',
-          '--additional-driver-flag=--enable-features=UseSkiaRenderer,Vulkan',
-        ],
-        'merge': {
-          'args': [
-            '--verbose',
-          ],
-          'script': '//third_party/blink/tools/merge_web_test_results.py',
-        },
-        'isolate_name': 'webgpu_blink_web_tests',
-        'resultdb': {
-          'enable': True,
-        },
-      },
-    },
-
-    'gpu_webgpu_integration_isolated_scripts': {
-      'webgpu_blink_web_tests': {
-        # TODO(crbug.com/816629) - Move these args into //BUILD.gn.
-        'name': 'webgpu_blink_web_tests',
-        'args': [
-          '--driver-logging',
-          # Disable parallel jobs to work around consistent test timeout flakes.
-          # Also, the first test is always flaky due to startup time, so force
-          # the order so we can suppress it.
-          # TODO(crbug.com/953991): Solve this and remove the workaround.
-          '--jobs=1',
-          '--order=natural',
-          # We need this flag to initialize ANGLE so that we can explicitly tell
-          # Dawn which ANGLE adapter Chromium is using. This will help match the test
-          # usage to be the same as the browser.
-          '--additional-driver-flag=--use-gpu-in-tests',
-        ],
-        'win64_args': [ '--target=Release_x64' ],
-        'mac_args': [
-          # These tests run on 10.14, but web_tests [ Mac ] expectations don't
-          # work correctly yet under 10.14. Pretend it's 10.13.
-          '--platform=mac-mac10.13'
-        ],
-        'linux_args': [
-          '--no-xvfb',
-          '--additional-driver-flag=--enable-features=UseSkiaRenderer,Vulkan',
-        ],
-        'merge': {
-          'args': [
-            '--verbose',
-          ],
-          'script': '//third_party/blink/tools/merge_web_test_results.py',
-        },
-        'isolate_name': 'webgpu_blink_web_tests',
-        'resultdb': {
-          'enable': True,
-        },
-      },
-    },
-
     'gpu_win_intel_specific_telemetry_tests': {
       'power_measurement_test': {
         'telemetry_test_name': 'power',
@@ -5446,7 +5365,6 @@
 
     'gpu_dawn_asan_isolated_scripts': [
       'gpu_dawn_perf_smoke_isolated_scripts',
-      'gpu_webgpu_integration_isolated_scripts',
     ],
 
     'gpu_dawn_integration_asan_gtests_passthrough': [
@@ -5470,8 +5388,6 @@
 
     'gpu_dawn_isolated_scripts': [
       'gpu_dawn_perf_smoke_isolated_scripts',
-      'gpu_webgpu_integration_isolated_scripts',
-      'gpu_webgpu_integration_extra_isolated_scripts',
     ],
 
     # These tests are run on Linux and Mac

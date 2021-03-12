@@ -1831,14 +1831,6 @@
     "label": "//chrome/android/webapk/shell_apk:webapk_shell_apk_junit_tests",
     "type": "junit_test",
   },
-  "webgpu_blink_web_tests": {
-    "label": "//:webgpu_blink_web_tests",
-    "type": "generated_script",
-    "args": [
-      "--results-directory",
-      "${ISOLATED_OUTDIR}",
-    ],
-  },
   "weblayer_browsertests": {
     "label": "//weblayer/test:weblayer_browsertests",
     "type": "windowed_test_launcher",
