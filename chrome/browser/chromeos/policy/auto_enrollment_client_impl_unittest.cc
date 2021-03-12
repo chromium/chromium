@@ -499,6 +499,22 @@ class AutoEnrollmentClientImplTest
         dm_status, dm_status_count);
   }
 
+  // Expects a sample for |kUMAHashDanceProtocolTime| to have value
+  // |expected_time_recorded|.
+  // if |success_time_recorded| is true it expects one sample for
+  // |kUMAHashDanceSuccessTime| to have value |expected_time_recorded|.
+  // Otherwise, expects no sample for |kUMAHashDanceSuccessTime|.
+  void ExpectHashDanceExecutionTimeHistogram(
+      base::TimeDelta expected_time_recorded,
+      bool success_time_recorded) const {
+    histogram_tester_.ExpectUniqueTimeSample(
+        kUMAHashDanceProtocolTimeStr + kUMAHashDanceSuffixInitialEnrollment,
+        expected_time_recorded, /*expected_count=*/1);
+    histogram_tester_.ExpectUniqueTimeSample(
+        kUMAHashDanceSuccessTimeStr + kUMAHashDanceSuffixInitialEnrollment,
+        expected_time_recorded, success_time_recorded ? 1 : 0);
+  }
+
   const em::DeviceAutoEnrollmentRequest& auto_enrollment_request() {
     return last_request_.auto_enrollment_request();
   }
@@ -534,6 +550,8 @@ class AutoEnrollmentClientImplTest
       DeviceManagementService::JobConfiguration::TYPE_INVALID;
 
  private:
+  const std::string kUMAHashDanceProtocolTimeStr = kUMAHashDanceProtocolTime;
+  const std::string kUMAHashDanceSuccessTimeStr = kUMAHashDanceSuccessTime;
   network::TestURLLoaderFactory url_loader_factory_;
   scoped_refptr<network::SharedURLLoaderFactory> shared_url_loader_factory_;
   std::unique_ptr<AutoEnrollmentClient> client_;
@@ -1859,6 +1877,12 @@ TEST_P(PsmHelperAndHashDanceTest, PsmRlweQueryFailedAndHashDanceSucceeded) {
   ExpectPsmHashDanceComparisonRecorded(
       PsmHashDanceComparison::kPSMErrorHashDanceSuccess);
 
+  // Verify Hash dance protocol overall execution time and its success time
+  // histograms were recorded correctly with the same value.
+  ExpectHashDanceExecutionTimeHistogram(
+      /*expected_time_recorded=*/base::TimeDelta::FromSeconds(0),
+      /*success_time_recorded=*/true);
+
   // Verify device state result.
   EXPECT_EQ(auto_enrollment_job_type_,
             DeviceManagementService::JobConfiguration::TYPE_AUTO_ENROLLMENT);
@@ -1899,6 +1923,12 @@ TEST_P(PsmHelperAndHashDanceTest, PsmRlweOprfFailedAndHashDanceSucceeded) {
   // Verify recorded comparison between PSM and Hash dance.
   ExpectPsmHashDanceComparisonRecorded(
       PsmHashDanceComparison::kPSMErrorHashDanceSuccess);
+
+  // Verify Hash dance protocol overall execution time and its success time
+  // histograms were recorded correctly with the same value.
+  ExpectHashDanceExecutionTimeHistogram(
+      /*expected_time_recorded=*/base::TimeDelta::FromSeconds(0),
+      /*success_time_recorded=*/true);
 
   // Verify device state result.
   EXPECT_EQ(auto_enrollment_job_type_,
@@ -1957,6 +1987,12 @@ TEST_P(PsmHelperAndHashDanceTest, PsmSucceedAndHashDanceSucceed) {
         PsmHashDanceDifferentResultsComparison::kHashDanceTruePsmFalse);
   }
 
+  // Verify Hash dance protocol overall execution time and its success time
+  // histograms were recorded correctly with the same value.
+  ExpectHashDanceExecutionTimeHistogram(
+      /*expected_time_recorded=*/base::TimeDelta::FromSeconds(0),
+      /*success_time_recorded=*/true);
+
   // Verify device state result.
   EXPECT_EQ(auto_enrollment_job_type_,
             DeviceManagementService::JobConfiguration::TYPE_AUTO_ENROLLMENT);
@@ -2009,6 +2045,12 @@ TEST_P(PsmHelperAndHashDanceTest,
     ExpectPsmHashDanceDifferentResultsComparisonRecorded(
         PsmHashDanceDifferentResultsComparison::kPsmTrueHashDanceFalse);
   }
+
+  // Verify Hash dance protocol overall execution time and its success time
+  // histograms were recorded correctly with the same value.
+  ExpectHashDanceExecutionTimeHistogram(
+      /*expected_time_recorded=*/base::TimeDelta::FromSeconds(0),
+      /*success_time_recorded=*/true);
 
   // Verify that no enrollment has been done, and no state has been retrieved.
   EXPECT_EQ(auto_enrollment_job_type_,
@@ -2102,6 +2144,12 @@ TEST_P(PsmHelperAndHashDanceTest,
   VerifyPsmRlweQueryRequest();
   VerifyPsmLastRequestJobType();
 
+  // Verify Hash dance protocol overall execution time and its success time
+  // histograms were recorded correctly with the same value.
+  ExpectHashDanceExecutionTimeHistogram(
+      /*expected_time_recorded=*/base::TimeDelta::FromSeconds(0),
+      /*success_time_recorded=*/true);
+
   // Verify that Hash dance cached decision hasn't changed, and no new request
   // has been sent.
   VerifyCachedResult(kExpectedHashDanceResult, kPowerLimit);
@@ -2179,6 +2227,8 @@ TEST_P(PsmHelperAndHashDanceTest,
        RetryWhileWaitingForPsmOprfResponseAndHashDanceFails) {
   InSequence sequence;
 
+  const base::TimeDelta kOneSecondTimeDelta = base::TimeDelta::FromSeconds(1);
+
   DeviceManagementService::JobControl* psm_rlwe_oprf_job = nullptr;
   DeviceManagementService::JobControl* hash_dance_job = nullptr;
 
@@ -2206,8 +2256,14 @@ TEST_P(PsmHelperAndHashDanceTest,
   // Verify hash dance job has not been triggered after RetryStep.
   EXPECT_FALSE(hash_dance_job);
 
+  // Advance the time forward one second.
+  task_environment_.FastForwardBy(kOneSecondTimeDelta);
+
   // Fail for PSM RLWE OPRF request.
   ServerFailsForAsyncJob(&psm_rlwe_oprf_job);
+
+  // Advance the time forward one second.
+  task_environment_.FastForwardBy(kOneSecondTimeDelta);
 
   // Verify failure of PSM protocol.
   EXPECT_EQ(GetStateDiscoveryResult(), StateDiscoveryResult::kFailure);
@@ -2219,8 +2275,15 @@ TEST_P(PsmHelperAndHashDanceTest,
   EXPECT_EQ(DeviceManagementService::JobConfiguration::TYPE_AUTO_ENROLLMENT,
             last_async_job_type_);
 
-  // Fail for DeviceAutoEnrollmentRequest i.e. hash dance request.
-  ServerFailsForAsyncJob(&hash_dance_job);
+  // Fail for DeviceAutoEnrollmentRequest i.e. hash dance request by sending
+  // an empty response.
+  ServerRepliesEmptyResponseForAsyncJob(&hash_dance_job);
+
+  // Verify Hash dance protocol overall execution time histogram has been
+  // recorded correctly. And its success time histogram has not been recorded.
+  ExpectHashDanceExecutionTimeHistogram(
+      /*expected_time_recorded=*/base::TimeDelta::FromSeconds(1),
+      /*success_time_recorded=*/false);
 
   // Verify failure of Hash dance by inexistence of its cached decision.
   EXPECT_FALSE(HasCachedDecision());
@@ -2310,11 +2373,11 @@ TEST_P(PsmHelperAndHashDanceTest,
   // an empty response.
   ServerRepliesEmptyResponseForAsyncJob(&hash_dance_job);
 
-  // Verify Hash dance execution time histogram was recorded correctly.
-  const std::string kUMAHashDanceProtocolTimeStr = kUMAHashDanceProtocolTime;
-  histogram_tester_.ExpectUniqueTimeSample(
-      kUMAHashDanceProtocolTimeStr + kUMAHashDanceSuffixInitialEnrollment,
-      kOneSecondTimeDelta, /*expected_count=*/1);
+  // Verify Hash dance protocol overall execution time histogram has been
+  // recorded correctly. And its success time histogram has not been recorded.
+  ExpectHashDanceExecutionTimeHistogram(
+      /*expected_time_recorded=*/base::TimeDelta::FromSeconds(1),
+      /*success_time_recorded=*/false);
 
   // Verify failure of Hash dance by inexistence of its cached decision.
   EXPECT_FALSE(HasCachedDecision());
