@@ -17,7 +17,7 @@ import '../prefs/prefs.js';
 import '../site_settings/settings_category_default_radio_group.js';
 import '../settings_page/settings_animated_pages.js';
 import '../settings_page/settings_subpage.js';
-import '../settings_shared_css.m.js';
+import '../settings_shared_css.js';
 
 import {assert} from 'chrome://resources/js/assert.m.js';
 import {focusWithoutInk} from 'chrome://resources/js/cr/ui/focus_without_ink.m.js';

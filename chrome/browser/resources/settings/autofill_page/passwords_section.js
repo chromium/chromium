@@ -41,7 +41,7 @@ import {MergeExceptionsStoreCopiesBehavior} from './merge_exceptions_store_copie
 import {MergePasswordsStoreCopiesBehavior} from './merge_passwords_store_copies_behavior.js';
 import {MultiStorePasswordUiEntry} from './multi_store_password_ui_entry.js';
 import {Router} from '../router.js';
-import '../settings_shared_css.m.js';
+import '../settings_shared_css.js';
 import '../site_favicon.js';
 import {PasswordCheckBehavior} from './password_check_behavior.js';
 import './password_list_item.js';

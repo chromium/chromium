@@ -4,8 +4,6 @@
 
 import("//third_party/closure_compiler/compile_js.gni")
 import("//tools/polymer/html_to_js.gni")
-import("//tools/polymer/polymer.gni")
-import("//ui/webui/resources/tools/js_modulizer.gni")
 import("../settings.gni")
 
 js_type_check("closure_compile_module") {

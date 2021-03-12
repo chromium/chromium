@@ -22,9 +22,9 @@ import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
 import './add_languages_dialog.js';
 import './languages.js';
 import '../controls/settings_toggle_button.js';
-import '../icons.m.js';
-import '../settings_shared_css.m.js';
-import '../settings_vars_css.m.js';
+import '../icons.js';
+import '../settings_shared_css.js';
+import '../settings_vars_css.js';
 
 import {assert} from 'chrome://resources/js/assert.m.js';
 import {isChromeOS, isWindows} from 'chrome://resources/js/cr.m.js';

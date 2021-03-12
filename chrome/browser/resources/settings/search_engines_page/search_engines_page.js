@@ -14,8 +14,8 @@ import 'chrome://resources/polymer/v3_0/iron-flex-layout/iron-flex-layout-classe
 import './search_engine_dialog.js';
 import './search_engines_list.js';
 import './omnibox_extension_entry.js';
-import '../settings_shared_css.m.js';
-import '../settings_vars_css.m.js';
+import '../settings_shared_css.js';
+import '../settings_vars_css.js';
 
 import {assert} from 'chrome://resources/js/assert.m.js';
 import {focusWithoutInk} from 'chrome://resources/js/cr/ui/focus_without_ink.m.js';

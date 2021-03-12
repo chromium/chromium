@@ -14,7 +14,7 @@ import 'chrome://resources/polymer/v3_0/paper-styles/color.js';
 import '../controls/controlled_button.js';
 import '../controls/settings_checkbox.js';
 import '../prefs/prefs.js';
-import '../settings_shared_css.m.js';
+import '../settings_shared_css.js';
 
 import {assert} from 'chrome://resources/js/assert.m.js';
 import {I18nBehavior} from 'chrome://resources/js/i18n_behavior.m.js';

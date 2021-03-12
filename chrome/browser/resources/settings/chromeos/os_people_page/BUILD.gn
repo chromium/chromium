@@ -265,7 +265,7 @@ group("polymer3_elements") {
     ":user_list_module",
     ":users_add_user_dialog_module",
     ":users_page_module",
-    "../../:icons_module",
+    "../..:web_components_local",
     "../../people_page:web_components",
     "../../privacy_page:polymer3_elements",
     "../kerberos_page:polymer3_elements",
@@ -339,6 +339,7 @@ polymer_modulizer("pin_autosubmit_dialog") {
   js_file = "pin_autosubmit_dialog.js"
   html_file = "pin_autosubmit_dialog.html"
   html_type = "dom-module"
+  migrated_imports = os_settings_migrated_imports
 }
 
 polymer_modulizer("setup_pin_dialog") {

@@ -14,7 +14,7 @@ import 'chrome://resources/polymer/v3_0/iron-flex-layout/iron-flex-layout-classe
 import '../controls/extension_controlled_indicator.js';
 import '../controls/settings_toggle_button.js';
 import '../prefs/prefs.js';
-import '../settings_shared_css.m.js';
+import '../settings_shared_css.js';
 
 import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 

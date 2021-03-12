@@ -15,7 +15,7 @@ import 'chrome://resources/cr_elements/shared_vars_css.m.js';
 import 'chrome://resources/polymer/v3_0/iron-flex-layout/iron-flex-layout-classes.js';
 import 'chrome://resources/polymer/v3_0/iron-list/iron-list.js';
 import 'chrome://resources/polymer/v3_0/paper-tooltip/paper-tooltip.js';
-import '../settings_shared_css.m.js';
+import '../settings_shared_css.js';
 import './add_site_dialog.js';
 import './edit_exception_dialog.js';
 import './site_list_entry.js';

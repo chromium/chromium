@@ -9,8 +9,8 @@
  */
 import 'chrome://resources/cr_elements/md_select_css.m.js';
 import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
-import '../settings_shared_css.m.js';
-import '../settings_vars_css.m.js';
+import '../settings_shared_css.js';
+import '../settings_vars_css.js';
 
 import {assert, assertNotReached} from 'chrome://resources/js/assert.m.js';
 import {I18nBehavior} from 'chrome://resources/js/i18n_behavior.m.js';

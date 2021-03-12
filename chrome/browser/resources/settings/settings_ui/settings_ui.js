@@ -16,12 +16,12 @@ import 'chrome://resources/cr_elements/cr_toolbar/cr_toolbar.js';
 import 'chrome://resources/cr_elements/icons.m.js';
 import 'chrome://resources/cr_elements/shared_vars_css.m.js';
 import 'chrome://resources/polymer/v3_0/paper-styles/color.js';
-import '../icons.m.js';
+import '../icons.js';
 import '../settings_main/settings_main.js';
 import '../settings_menu/settings_menu.js';
-import '../settings_shared_css.m.js';
+import '../settings_shared_css.js';
 import '../prefs/prefs.js';
-import '../settings_vars_css.m.js';
+import '../settings_vars_css.js';
 
 import {CrContainerShadowBehavior} from 'chrome://resources/cr_elements/cr_container_shadow_behavior.m.js';
 import {FindShortcutBehavior} from 'chrome://resources/cr_elements/find_shortcut_behavior.m.js';

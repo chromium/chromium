@@ -20,7 +20,7 @@ import '//resources/polymer/v3_0/iron-flex-layout/iron-flex-layout-classes.js';
 import {ProfileInfoBrowserProxyImpl} from './profile_info_browser_proxy.js';
 import {SyncBrowserProxyImpl, SyncStatus} from './sync_browser_proxy.js';
 import {loadTimeData} from '../i18n_setup.js';
-import '../settings_shared_css.m.js';
+import '../settings_shared_css.js';
 
 Polymer({
   is: 'settings-signout-dialog',

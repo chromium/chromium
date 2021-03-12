@@ -24,11 +24,11 @@ import './languages_subpage.js';
 import '../controls/controlled_radio_button.js';
 import '../controls/settings_radio_group.js';
 import '../controls/settings_toggle_button.js';
-import '../icons.m.js';
+import '../icons.js';
 import '../settings_page/settings_animated_pages.js';
 import '../settings_page/settings_subpage.js';
-import '../settings_shared_css.m.js';
-import '../settings_vars_css.m.js';
+import '../settings_shared_css.js';
+import '../settings_vars_css.js';
 
 // <if expr="not is_macosx">
 import './edit_dictionary_page.js';

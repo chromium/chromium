@@ -16,8 +16,8 @@ import '../about_page/about_page.js';
 import '../basic_page/basic_page.js';
 import '../prefs/prefs.js';
 import '../search_settings.js';
-import '../settings_shared_css.m.js';
-import '../settings_vars_css.m.js';
+import '../settings_shared_css.js';
+import '../settings_vars_css.js';
 
 import {assert, assertNotReached} from 'chrome://resources/js/assert.m.js';
 import {PromiseResolver} from 'chrome://resources/js/promise_resolver.m.js';

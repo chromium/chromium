@@ -13,8 +13,8 @@
  */
 import '//resources/cr_elements/md_select_css.m.js';
 import '//resources/cr_elements/policy/cr_policy_pref_indicator.m.js';
-import '../settings_shared_css.m.js';
-import '../settings_vars_css.m.js';
+import '../settings_shared_css.js';
+import '../settings_vars_css.js';
 
 import {CrPolicyPrefBehavior} from '//resources/cr_elements/policy/cr_policy_pref_behavior.m.js';
 import {assert} from '//resources/js/assert.m.js';

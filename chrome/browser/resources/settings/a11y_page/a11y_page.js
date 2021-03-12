@@ -11,7 +11,7 @@
 import 'chrome://resources/cr_elements/cr_link_row/cr_link_row.m.js';
 import '../controls/settings_toggle_button.js';
 import '../settings_page/settings_animated_pages.js';
-import '../settings_shared_css.m.js';
+import '../settings_shared_css.js';
 
 // <if expr="not is_macosx and not chromeos">
 import './captions_subpage.js';

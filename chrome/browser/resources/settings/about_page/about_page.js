@@ -7,11 +7,11 @@
  * information.
  */
 
-import '../icons.m.js';
+import '../icons.js';
 import '../prefs/prefs.js';
 import '../settings_page/settings_section.js';
-import '../settings_page_css.m.js';
-import '../settings_shared_css.m.js';
+import '../settings_page_css.js';
+import '../settings_shared_css.js';
 import 'chrome://resources/cr_elements/cr_button/cr_button.m.js';
 import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.m.js';
 import 'chrome://resources/cr_elements/cr_link_row/cr_link_row.m.js';

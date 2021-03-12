@@ -11,7 +11,7 @@ import 'chrome://resources/cr_elements/cr_button/cr_button.m.js';
 import 'chrome://resources/cr_elements/cr_checkbox/cr_checkbox.m.js';
 import 'chrome://resources/cr_elements/cr_dialog/cr_dialog.m.js';
 import 'chrome://resources/cr_elements/cr_input/cr_input.m.js';
-import '../settings_shared_css.m.js';
+import '../settings_shared_css.js';
 
 import {assert} from 'chrome://resources/js/assert.m.js';
 import {WebUIListenerBehavior} from 'chrome://resources/js/web_ui_listener_behavior.m.js';

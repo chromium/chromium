@@ -10,8 +10,8 @@
 import 'chrome://resources/cr_elements/cr_button/cr_button.m.js';
 import 'chrome://resources/cr_elements/shared_style_css.m.js';
 import 'chrome://resources/polymer/v3_0/iron-flex-layout/iron-flex-layout-classes.js';
-import '../icons.m.js';
-import '../settings_shared_css.m.js';
+import '../icons.js';
+import '../settings_shared_css.js';
 
 import {WebUIListenerBehavior} from 'chrome://resources/js/web_ui_listener_behavior.m.js';
 import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';

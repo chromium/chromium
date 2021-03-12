@@ -12,7 +12,7 @@ import 'chrome://resources/cr_elements/shared_style_css.m.js';
 import 'chrome://resources/polymer/v3_0/iron-flex-layout/iron-flex-layout-classes.js';
 import '../controls/controlled_button.js';
 import '../controls/settings_toggle_button.js';
-import '../settings_shared_css.m.js';
+import '../settings_shared_css.js';
 
 import {listenOnce} from 'chrome://resources/js/util.m.js';
 import {WebUIListenerBehavior} from 'chrome://resources/js/web_ui_listener_behavior.m.js';

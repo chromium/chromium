@@ -9,7 +9,7 @@
 
 import '//resources/cr_elements/shared_style_css.m.js';
 import '../controls/settings_slider.js';
-import '../settings_shared_css.m.js';
+import '../settings_shared_css.js';
 import './live_caption_section.js';
 
 import {I18nBehavior} from '//resources/js/i18n_behavior.m.js';

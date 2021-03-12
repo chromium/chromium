@@ -19,7 +19,7 @@ import 'chrome://resources/cr_elements/cr_radio_group/cr_radio_group.m.js';
 import 'chrome://resources/cr_elements/md_select_css.m.js';
 import '../controls/settings_toggle_button.js';
 import '../prefs/prefs.js';
-import '../settings_shared_css.m.js';
+import '../settings_shared_css.js';
 import './secure_dns_input.js';
 
 import {assertNotReached} from 'chrome://resources/js/assert.m.js';

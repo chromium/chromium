@@ -8,7 +8,6 @@ import("//third_party/closure_compiler/compile_js.gni")
 import("//tools/grit/grit_rule.gni")
 import("//tools/grit/preprocess_if_expr.gni")
 import("//tools/polymer/html_to_js.gni")
-import("//tools/polymer/polymer.gni")
 import("//ui/webui/resources/tools/generate_grd.gni")
 import("//ui/webui/webui_features.gni")
 import("../tools/optimize_webui.gni")
@@ -234,7 +233,7 @@ preprocess_if_expr("preprocess_generated") {
     "controls/settings_textarea.js",
     "controls/settings_toggle_button.js",
     "downloads_page/downloads_page.js",
-    "icons.m.js",
+    "icons.js",
     "languages_page/add_languages_dialog.js",
     "languages_page/languages_page.js",
     "languages_page/languages_subpage.js",
@@ -285,9 +284,9 @@ preprocess_if_expr("preprocess_generated") {
     "settings_page/settings_section.js",
     "settings_page/settings_subpage.js",
     "settings_ui/settings_ui.js",
-    "settings_page_css.m.js",
-    "settings_shared_css.m.js",
-    "settings_vars_css.m.js",
+    "settings_page_css.js",
+    "settings_shared_css.js",
+    "settings_vars_css.js",
     "site_favicon.js",
     "site_settings/add_site_dialog.js",
     "site_settings/all_sites.js",
@@ -579,10 +578,6 @@ group("polymer3_elements") {
     "site_settings_page:web_components",
 
     # Local targets
-    ":icons_module",
-    ":settings_page_css_module",
-    ":settings_shared_css_module",
-    ":settings_vars_css_module",
     ":web_components_local",
   ]
 
@@ -601,30 +596,12 @@ group("polymer3_elements") {
   }
 }
 
-polymer_modulizer("icons") {
-  js_file = "icons.m.js"
-  html_file = "icons.html"
-  html_type = "iron-iconset"
-}
-
-polymer_modulizer("settings_page_css") {
-  js_file = "settings_page_css.m.js"
-  html_file = "settings_page_css.html"
-  html_type = "style-module"
-}
-
-polymer_modulizer("settings_shared_css") {
-  js_file = "settings_shared_css.m.js"
-  html_file = "settings_shared_css.html"
-  html_type = "style-module"
-}
-
-polymer_modulizer("settings_vars_css") {
-  js_file = "settings_vars_css.m.js"
-  html_file = "settings_vars_css.html"
-  html_type = "custom-style"
-}
-
 html_to_js("web_components_local") {
-  js_files = [ "site_favicon.js" ]
+  js_files = [
+    "icons.js",
+    "settings_vars_css.js",
+    "settings_page_css.js",
+    "settings_shared_css.js",
+    "site_favicon.js",
+  ]
 }

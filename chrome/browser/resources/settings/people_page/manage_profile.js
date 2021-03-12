@@ -13,7 +13,7 @@ import 'chrome://resources/cr_elements/shared_style_css.m.js';
 import 'chrome://resources/cr_components/customize_themes/customize_themes.js';
 import 'chrome://resources/polymer/v3_0/iron-flex-layout/iron-flex-layout-classes.js';
 import 'chrome://resources/polymer/v3_0/paper-styles/shadow.js';
-import '../settings_shared_css.m.js';
+import '../settings_shared_css.js';
 
 import {AvatarIcon} from 'chrome://resources/cr_elements/cr_profile_avatar_selector/cr_profile_avatar_selector.m.js';
 import {WebUIListenerBehavior} from 'chrome://resources/js/web_ui_listener_behavior.m.js';

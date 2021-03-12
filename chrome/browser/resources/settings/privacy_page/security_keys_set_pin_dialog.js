@@ -14,7 +14,7 @@ import 'chrome://resources/cr_elements/cr_icons_css.m.js';
 import 'chrome://resources/cr_elements/cr_input/cr_input.m.js';
 import 'chrome://resources/polymer/v3_0/iron-pages/iron-pages.js';
 import 'chrome://resources/polymer/v3_0/paper-spinner/paper-spinner-lite.js';
-import '../settings_shared_css.m.js';
+import '../settings_shared_css.js';
 
 import {I18nBehavior} from 'chrome://resources/js/i18n_behavior.m.js';
 import {PluralStringProxyImpl} from 'chrome://resources/js/plural_string_proxy.js';

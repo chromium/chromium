@@ -15,7 +15,7 @@ import 'chrome://resources/cr_elements/shared_style_css.m.js';
 import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
 import 'chrome://resources/polymer/v3_0/iron-list/iron-list.js';
 import 'chrome://resources/polymer/v3_0/paper-spinner/paper-spinner-lite.js';
-import '../settings_shared_css.m.js';
+import '../settings_shared_css.js';
 import './site_data_entry.js';
 
 import {assert} from 'chrome://resources/js/assert.m.js';

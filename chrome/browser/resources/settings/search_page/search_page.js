@@ -15,8 +15,8 @@ import '../controls/extension_controlled_indicator.js';
 import '../i18n_setup.js';
 import '../settings_page/settings_animated_pages.js';
 import '../settings_page/settings_subpage.js';
-import '../settings_shared_css.m.js';
-import '../settings_vars_css.m.js';
+import '../settings_shared_css.js';
+import '../settings_vars_css.js';
 
 import {addWebUIListener} from 'chrome://resources/js/cr.m.js';
 import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';

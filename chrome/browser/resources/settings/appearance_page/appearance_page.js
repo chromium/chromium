@@ -12,8 +12,8 @@ import '../controls/settings_radio_group.js';
 import '../controls/settings_toggle_button.js';
 import '../settings_page/settings_animated_pages.js';
 import '../settings_page/settings_subpage.js';
-import '../settings_shared_css.m.js';
-import '../settings_vars_css.m.js';
+import '../settings_shared_css.js';
+import '../settings_vars_css.js';
 import './home_url_input.js';
 
 import {assert} from 'chrome://resources/js/assert.m.js';

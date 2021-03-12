@@ -8,7 +8,7 @@
  * linear UI range to a range of real values.  When |value| does not map exactly
  * to a tick mark, it interpolates to the nearest tick.
  */
-import '../settings_vars_css.m.js';
+import '../settings_vars_css.js';
 
 import {SliderTick} from '//resources/cr_elements/cr_slider/cr_slider.m.js';
 import {CrPolicyPrefBehavior} from '//resources/cr_elements/policy/cr_policy_pref_behavior.m.js';

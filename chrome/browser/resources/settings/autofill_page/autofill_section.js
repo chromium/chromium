@@ -12,7 +12,7 @@ import 'chrome://resources/cr_elements/cr_button/cr_button.m.js';
 import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.m.js';
 import 'chrome://resources/cr_elements/shared_style_css.m.js';
 import 'chrome://resources/polymer/v3_0/iron-flex-layout/iron-flex-layout-classes.js';
-import '../settings_shared_css.m.js';
+import '../settings_shared_css.js';
 import '../controls/extension_controlled_indicator.js';
 import '../controls/settings_toggle_button.js';
 import '../prefs/prefs.js';

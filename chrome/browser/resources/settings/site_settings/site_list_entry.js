@@ -11,8 +11,8 @@ import 'chrome://resources/cr_elements/icons.m.js';
 import 'chrome://resources/cr_elements/policy/cr_policy_pref_indicator.m.js';
 import 'chrome://resources/cr_elements/policy/cr_tooltip_icon.m.js';
 import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
-import '../icons.m.js';
-import '../settings_shared_css.m.js';
+import '../icons.js';
+import '../settings_shared_css.js';
 import '../site_favicon.js';
 
 import {assert} from 'chrome://resources/js/assert.m.js';

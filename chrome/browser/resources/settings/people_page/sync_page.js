@@ -25,8 +25,8 @@ import {SyncBrowserProxy, SyncBrowserProxyImpl, PageStatus, StatusAction, SyncSt
 import {loadTimeData} from '../i18n_setup.js';
 import '../privacy_page/personalization_options.js';
 import {Route, Router, RouteObserverBehavior} from '../router.js';
-import '../settings_shared_css.m.js';
-import '../settings_vars_css.m.js';
+import '../settings_shared_css.js';
+import '../settings_vars_css.js';
 
 // <if expr="not chromeos">
 import '//resources/cr_elements/cr_toast/cr_toast.m.js';

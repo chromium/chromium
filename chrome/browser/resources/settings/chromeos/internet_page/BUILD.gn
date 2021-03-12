@@ -415,6 +415,7 @@ polymer_modulizer("internet_shared_css") {
   js_file = "internet_shared_css.m.js"
   html_file = "internet_shared_css.html"
   html_type = "style-module"
+  migrated_imports = os_settings_migrated_imports
 }
 
 polymer_modulizer("internet_subpage") {

@@ -16,7 +16,7 @@ import '//resources/polymer/v3_0/iron-flex-layout/iron-flex-layout-classes.js';
 import {SyncBrowserProxy, SyncBrowserProxyImpl, StatusAction, SyncStatus, SyncPrefs} from './sync_browser_proxy.js';
 import {loadTimeData} from '../i18n_setup.js';
 import {Route, Router, RouteObserverBehavior} from '../router.js';
-import '../settings_shared_css.m.js';
+import '../settings_shared_css.js';
 
 
 /**

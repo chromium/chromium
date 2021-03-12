@@ -17,10 +17,10 @@ import 'chrome://resources/cr_elements/shared_vars_css.m.js';
 import 'chrome://resources/polymer/v3_0/iron-flex-layout/iron-flex-layout-classes.js';
 import '../controls/settings_toggle_button.js';
 import './sync_account_control.js';
-import '../icons.m.js';
+import '../icons.js';
 import '../settings_page/settings_animated_pages.js';
 import '../settings_page/settings_subpage.js';
-import '../settings_shared_css.m.js';
+import '../settings_shared_css.js';
 
 // <if expr="chromeos">
 import {convertImageSequenceToPng} from 'chrome://resources/cr_elements/chromeos/cr_picture/png.m.js';

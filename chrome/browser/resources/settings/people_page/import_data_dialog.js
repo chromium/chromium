@@ -13,8 +13,8 @@ import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
 import 'chrome://resources/polymer/v3_0/paper-spinner/paper-spinner-lite.js';
 import '../controls/settings_checkbox.js';
 import '../controls/settings_toggle_button.js';
-import '../icons.m.js';
-import '../settings_vars_css.m.js';
+import '../icons.js';
+import '../settings_vars_css.js';
 
 import {I18nBehavior} from 'chrome://resources/js/i18n_behavior.m.js';
 import {WebUIListenerBehavior} from 'chrome://resources/js/web_ui_listener_behavior.m.js';

@@ -20,11 +20,11 @@ import '//resources/polymer/v3_0/iron-icon/iron-icon.js';
 import './profile_info_browser_proxy.js';
 import {SyncBrowserProxy, SyncBrowserProxyImpl, SyncStatus, StatusAction, StoredAccount} from './sync_browser_proxy.js';
 import {loadTimeData} from '../i18n_setup.js';
-import '../icons.m.js';
+import '../icons.js';
 import '../prefs/prefs.js';
 import {PrefsBehavior} from '../prefs/prefs_behavior.js';
 import {Route, Router} from '../router.js';
-import '../settings_shared_css.m.js';
+import '../settings_shared_css.js';
 
   /** @const {number} */
   export const MAX_SIGNIN_PROMO_IMPRESSION = 10;

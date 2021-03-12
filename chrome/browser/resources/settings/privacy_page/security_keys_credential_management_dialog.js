@@ -13,7 +13,7 @@ import 'chrome://resources/cr_elements/cr_dialog/cr_dialog.m.js';
 import 'chrome://resources/polymer/v3_0/iron-list/iron-list.js';
 import 'chrome://resources/polymer/v3_0/iron-pages/iron-pages.js';
 import 'chrome://resources/polymer/v3_0/paper-spinner/paper-spinner-lite.js';
-import '../settings_shared_css.m.js';
+import '../settings_shared_css.js';
 import '../site_favicon.js';
 import './security_keys_pin_field.js';
 

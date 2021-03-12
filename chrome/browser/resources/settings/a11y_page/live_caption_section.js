@@ -12,7 +12,7 @@
 
 import '//resources/cr_elements/shared_style_css.m.js';
 import '../controls/settings_toggle_button.js';
-import '../settings_shared_css.m.js';
+import '../settings_shared_css.js';
 
 import {I18nBehavior} from '//resources/js/i18n_behavior.m.js';
 import {WebUIListenerBehavior} from '//resources/js/web_ui_listener_behavior.m.js';

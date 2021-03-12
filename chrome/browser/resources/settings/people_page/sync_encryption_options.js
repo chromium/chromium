@@ -12,8 +12,8 @@ import '//resources/cr_elements/cr_radio_button/cr_radio_button.m.js';
 import '//resources/cr_elements/cr_radio_group/cr_radio_group.m.js';
 import '//resources/cr_elements/shared_style_css.m.js';
 import {SyncBrowserProxyImpl, SyncPrefs, SyncStatus} from './sync_browser_proxy.js';
-import '../settings_shared_css.m.js';
-import '../settings_vars_css.m.js';
+import '../settings_shared_css.js';
+import '../settings_vars_css.js';
 
 
 /**

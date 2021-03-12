@@ -4,7 +4,7 @@
 
 import '//resources/cr_elements/cr_button/cr_button.m.js';
 import '../i18n_setup.js';
-import '../settings_shared_css.m.js';
+import '../settings_shared_css.js';
 
 import {assert} from '//resources/js/assert.m.js';
 import {I18nBehavior} from '//resources/js/i18n_behavior.m.js';

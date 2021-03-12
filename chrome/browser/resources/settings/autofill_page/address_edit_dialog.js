@@ -12,8 +12,8 @@ import 'chrome://resources/cr_elements/cr_input/cr_input.m.js';
 import 'chrome://resources/cr_elements/shared_style_css.m.js';
 import 'chrome://resources/cr_elements/shared_vars_css.m.js';
 import 'chrome://resources/cr_elements/md_select_css.m.js';
-import '../settings_shared_css.m.js';
-import '../settings_vars_css.m.js';
+import '../settings_shared_css.js';
+import '../settings_vars_css.js';
 import '../controls/settings_textarea.js';
 
 import {assertNotReached} from 'chrome://resources/js/assert.m.js';

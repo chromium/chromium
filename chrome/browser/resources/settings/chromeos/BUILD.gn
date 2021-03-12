@@ -477,7 +477,7 @@ preprocess_if_expr("preprocess_gen_v3") {
     "controls/settings_slider.js",
     "controls/settings_textarea.js",
     "controls/settings_toggle_button.js",
-    "icons.m.js",
+    "icons.js",
     "people_page/signout_dialog.js",
     "people_page/sync_account_control.js",
     "people_page/sync_controls.js",
@@ -487,9 +487,9 @@ preprocess_if_expr("preprocess_gen_v3") {
     "settings_page/settings_animated_pages.js",
     "settings_page/settings_section.js",
     "settings_page/settings_subpage.js",
-    "settings_page_css.m.js",
-    "settings_shared_css.m.js",
-    "settings_vars_css.m.js",
+    "settings_page_css.js",
+    "settings_shared_css.js",
+    "settings_vars_css.js",
   ]
 }
 
@@ -687,9 +687,7 @@ group("polymer3_elements") {
     ":os_settings_icons_css_module",
 
     # Shared with browser settings
-    "..:settings_shared_css_module",
-    "..:settings_vars_css_module",
-    "../../settings:settings_page_css_module",
+    "..:web_components_local",
     "../a11y_page:web_components",
     "../settings_page:web_components",
   ]

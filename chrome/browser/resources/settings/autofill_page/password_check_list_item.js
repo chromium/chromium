@@ -10,7 +10,7 @@
 import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.m.js';
 import 'chrome://resources/cr_elements/cr_icons_css.m.js';
 import 'chrome://resources/js/action_link.js';
-import '../settings_shared_css.m.js';
+import '../settings_shared_css.js';
 import '../site_favicon.js';
 import './passwords_shared_css.js';
 

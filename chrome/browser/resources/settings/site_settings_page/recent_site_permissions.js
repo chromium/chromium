@@ -5,7 +5,7 @@
 import 'chrome://resources/cr_elements/policy/cr_tooltip_icon.m.js';
 import 'chrome://resources/cr_elements/shared_style_css.m.js';
 import 'chrome://resources/polymer/v3_0/paper-tooltip/paper-tooltip.js';
-import '../settings_shared_css.m.js';
+import '../settings_shared_css.js';
 
 import {assert} from 'chrome://resources/js/assert.m.js';
 import {focusWithoutInk} from 'chrome://resources/js/cr/ui/focus_without_ink.m.js';

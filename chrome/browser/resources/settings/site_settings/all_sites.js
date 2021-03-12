@@ -15,7 +15,7 @@ import 'chrome://resources/cr_elements/shared_vars_css.m.js';
 import 'chrome://resources/cr_elements/md_select_css.m.js';
 import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
 import 'chrome://resources/polymer/v3_0/iron-list/iron-list.js';
-import '../settings_shared_css.m.js';
+import '../settings_shared_css.js';
 import './all_sites_icons.js';
 import './clear_storage_dialog_css.js';
 import './site_entry.js';

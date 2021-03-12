@@ -17,8 +17,8 @@ import './history_deletion_dialog.js';
 import './passwords_deletion_dialog.js';
 import './installed_app_checkbox.js';
 import '../controls/settings_checkbox.js';
-import '../icons.m.js';
-import '../settings_shared_css.m.js';
+import '../icons.js';
+import '../settings_shared_css.js';
 
 import {assert} from 'chrome://resources/js/assert.m.js';
 import {WebUIListenerBehavior} from 'chrome://resources/js/web_ui_listener_behavior.m.js';

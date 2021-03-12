@@ -18,7 +18,7 @@ import 'chrome://resources/cr_elements/icons.m.js';
 import 'chrome://resources/polymer/v3_0/iron-flex-layout/iron-flex-layout-classes.js';
 import '../prefs/prefs.js';
 import '../privacy_page/collapse_radio_button.js';
-import '../settings_shared_css.m.js';
+import '../settings_shared_css.js';
 import '../site_favicon.js';
 
 import {I18nBehavior} from 'chrome://resources/js/i18n_behavior.m.js';

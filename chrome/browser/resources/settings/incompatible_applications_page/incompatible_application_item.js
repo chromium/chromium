@@ -34,7 +34,7 @@
  */
 
 import 'chrome://resources/cr_elements/cr_button/cr_button.m.js';
-import '../settings_shared_css.m.js';
+import '../settings_shared_css.js';
 
 import {assertNotReached} from 'chrome://resources/js/assert.m.js';
 import {I18nBehavior} from 'chrome://resources/js/i18n_behavior.m.js';
