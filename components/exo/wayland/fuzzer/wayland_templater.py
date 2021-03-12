@@ -79,7 +79,7 @@ def WriteIfChanged(contents, filename):
   the mtime on filename doesn't change.
   """
   if os.path.exists(filename):
-    with open(filename) as in_fi:
+    with open(filename, 'rb') as in_fi:
       if in_fi.read() == contents:
         return
   with open(filename, 'wb') as out_fi:
