@@ -119,6 +119,15 @@ class RemoteSetImpl {
   // Indicates whether a remote with the given ID is present in the set.
   bool Contains(RemoteSetElementId id) { return base::Contains(storage_, id); }
 
+  // Returns an `Interface*` for the given ID, that can be used to issue
+  // interface calls.
+  Interface* Get(RemoteSetElementId id) {
+    auto* it = storage_.find(id);
+    if (it == storage_.end())
+      return nullptr;
+    return it->second.get();
+  }
+
   // Sets a callback to invoke any time a remote in the set is disconnected.
   // Note that the remote in question is already removed from the set by the
   // time the callback is run for its disconnection.
