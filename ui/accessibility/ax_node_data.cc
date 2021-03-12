@@ -925,6 +925,15 @@ bool AXNodeData::IsActivatable() const {
   return IsTextField() || role == ax::mojom::Role::kListBox;
 }
 
+bool AXNodeData::IsActiveLiveRegionRoot() const {
+  std::string aria_live_status;
+  if (GetStringAttribute(ax::mojom::StringAttribute::kLiveStatus,
+                         &aria_live_status)) {
+    return aria_live_status != "off";
+  }
+  return false;
+}
+
 bool AXNodeData::IsButtonPressed() const {
   // Currently there is no internal representation for |aria-pressed|, and
   // we map |aria-pressed="true"| to ax::mojom::CheckedState::kTrue for a native
@@ -945,6 +954,16 @@ bool AXNodeData::IsClickable() const {
     return true;
 
   return ui::IsClickable(role);
+}
+
+bool AXNodeData::IsContainedInActiveLiveRegion() const {
+  std::string aria_container_live_status;
+  if (GetStringAttribute(ax::mojom::StringAttribute::kContainerLiveStatus,
+                         &aria_container_live_status)) {
+    return aria_container_live_status != "off" &&
+           HasStringAttribute(ax::mojom::StringAttribute::kName);
+  }
+  return false;
 }
 
 bool AXNodeData::IsSelectable() const {

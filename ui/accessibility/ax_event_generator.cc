@@ -12,39 +12,17 @@
 #include "ui/accessibility/ax_role_properties.h"
 
 namespace ui {
+
 namespace {
-
-bool IsActiveLiveRegion(const AXTreeObserver::Change& change) {
-  return change.node->data().HasStringAttribute(
-             ax::mojom::StringAttribute::kLiveStatus) &&
-         change.node->data().GetStringAttribute(
-             ax::mojom::StringAttribute::kLiveStatus) != "off";
-}
-
-bool IsContainedInLiveRegion(const AXTreeObserver::Change& change) {
-  return change.node->data().HasStringAttribute(
-             ax::mojom::StringAttribute::kContainerLiveStatus) &&
-         change.node->data().HasStringAttribute(
-             ax::mojom::StringAttribute::kName);
-}
 
 bool HasEvent(const std::set<AXEventGenerator::EventParams>& node_events,
               AXEventGenerator::Event event) {
-  for (auto& iter : node_events) {
-    if (iter.event == event)
-      return true;
-  }
-  return false;
+  return node_events.count(AXEventGenerator::EventParams(event));
 }
 
 void RemoveEvent(std::set<AXEventGenerator::EventParams>* node_events,
                  AXEventGenerator::Event event) {
-  for (auto& iter : *node_events) {
-    if (iter.event == event) {
-      node_events->erase(iter);
-      return;
-    }
-  }
+  node_events->erase(AXEventGenerator::EventParams(event));
 }
 
 // If a node toggled its ignored state, don't also fire children-changed because
@@ -88,6 +66,12 @@ bool HasIgnoredChangedState(
 
 }  // namespace
 
+//
+// AXEventGenerator::EventParams
+//
+
+AXEventGenerator::EventParams::EventParams(const Event event) : event(event) {}
+
 AXEventGenerator::EventParams::EventParams(
     const Event event,
     const ax::mojom::EventFrom event_from,
@@ -98,6 +82,9 @@ AXEventGenerator::EventParams::EventParams(const EventParams& other) = default;
 
 AXEventGenerator::EventParams::~EventParams() = default;
 
+AXEventGenerator::EventParams& AXEventGenerator::EventParams::operator=(
+    const EventParams& other) = default;
+
 bool AXEventGenerator::EventParams::operator==(const EventParams& rhs) const {
   return rhs.event == event;
 }
@@ -106,17 +93,27 @@ bool AXEventGenerator::EventParams::operator<(const EventParams& rhs) const {
   return event < rhs.event;
 }
 
+//
+// AXEventGenerator::TargetedEvent
+//
+
 AXEventGenerator::TargetedEvent::TargetedEvent(AXNode* node,
                                                const EventParams& event_params)
     : node(node), event_params(event_params) {
   DCHECK(node);
 }
 
+AXEventGenerator::TargetedEvent::~TargetedEvent() = default;
+
+//
+// AXEventGenerator::Iterator
+//
+
 AXEventGenerator::Iterator::Iterator(
-    const std::map<AXNode*, std::set<EventParams>>& map,
-    const std::map<AXNode*, std::set<EventParams>>::const_iterator& head)
-    : map_(map), map_iter_(head) {
-  if (map_iter_ != map.end())
+    std::map<AXNode*, std::set<EventParams>>::const_iterator map_start_iter,
+    std::map<AXNode*, std::set<EventParams>>::const_iterator map_end_iter)
+    : map_iter_(map_start_iter), map_end_iter_(map_end_iter) {
+  if (map_iter_ != map_end_iter_)
     set_iter_ = map_iter_->second.begin();
 }
 
@@ -125,35 +122,76 @@ AXEventGenerator::Iterator::Iterator(const AXEventGenerator::Iterator& other) =
 
 AXEventGenerator::Iterator::~Iterator() = default;
 
-bool AXEventGenerator::Iterator::operator!=(
-    const AXEventGenerator::Iterator& rhs) const {
-  return map_iter_ != rhs.map_iter_ ||
-         (map_iter_ != map_.end() && set_iter_ != rhs.set_iter_);
-}
+AXEventGenerator::Iterator& AXEventGenerator::Iterator::operator=(
+    const Iterator& other) = default;
 
 AXEventGenerator::Iterator& AXEventGenerator::Iterator::operator++() {
-  if (map_iter_ == map_.end())
+  if (map_iter_ == map_end_iter_)
     return *this;
 
   DCHECK(set_iter_ != map_iter_->second.end());
   set_iter_++;
 
-  // |map_| may contain empty sets of events in its entries (i.e. |set_iter_| is
-  // at the iterator's end). In this case, we want to increment |map_iter_| to
-  // point to the next entry of |map_| that contains non-empty set of events.
-  while (map_iter_ != map_.end() && set_iter_ == map_iter_->second.end()) {
+  // The map pointed to by |map_end_iter_| may contain empty sets of events in
+  // its entries (i.e. |set_iter_| is at the iterator's end). In this case, we
+  // want to increment |map_iter_| to point to the next entry of the map that
+  // contains a non-empty set of events.
+  while (map_iter_ != map_end_iter_ && set_iter_ == map_iter_->second.end()) {
     map_iter_++;
-    if (map_iter_ != map_.end())
+    if (map_iter_ != map_end_iter_)
       set_iter_ = map_iter_->second.begin();
   }
 
   return *this;
 }
 
+AXEventGenerator::Iterator AXEventGenerator::Iterator::operator++(int) {
+  if (map_iter_ == map_end_iter_)
+    return *this;
+  Iterator iter = *this;
+  ++(*this);
+  return iter;
+}
+
 AXEventGenerator::TargetedEvent AXEventGenerator::Iterator::operator*() const {
-  DCHECK(map_iter_ != map_.end() && set_iter_ != map_iter_->second.end());
+  DCHECK(map_iter_ != map_end_iter_);
+  DCHECK(set_iter_ != map_iter_->second.end());
   return AXEventGenerator::TargetedEvent(map_iter_->first, *set_iter_);
 }
+
+bool operator==(const AXEventGenerator::Iterator& lhs,
+                const AXEventGenerator::Iterator& rhs) {
+  if (lhs.map_iter_ == lhs.map_end_iter_ && rhs.map_iter_ == rhs.map_end_iter_)
+    return true;
+  return lhs.map_iter_ == rhs.map_iter_ && lhs.set_iter_ == rhs.set_iter_;
+}
+
+bool operator!=(const AXEventGenerator::Iterator& lhs,
+                const AXEventGenerator::Iterator& rhs) {
+  return !(lhs == rhs);
+}
+
+void swap(AXEventGenerator::Iterator& lhs, AXEventGenerator::Iterator& rhs) {
+  if (lhs == rhs)
+    return;
+
+  std::map<AXNode*, std::set<AXEventGenerator::EventParams>>::const_iterator
+      map_iter = lhs.map_iter_;
+  lhs.map_iter_ = rhs.map_iter_;
+  rhs.map_iter_ = map_iter;
+  std::map<AXNode*, std::set<AXEventGenerator::EventParams>>::const_iterator
+      map_end_iter = lhs.map_end_iter_;
+  lhs.map_end_iter_ = rhs.map_end_iter_;
+  rhs.map_end_iter_ = map_end_iter;
+  std::set<AXEventGenerator::EventParams>::const_iterator set_iter =
+      lhs.set_iter_;
+  lhs.set_iter_ = rhs.set_iter_;
+  rhs.set_iter_ = set_iter;
+}
+
+//
+// AXEventGenerator
+//
 
 AXEventGenerator::AXEventGenerator() = default;
 
@@ -204,11 +242,11 @@ AXEventGenerator::Iterator AXEventGenerator::begin() const {
     }
   }
 
-  return AXEventGenerator::Iterator(tree_events_, map_iter);
+  return AXEventGenerator::Iterator(map_iter, tree_events_.end());
 }
 
 AXEventGenerator::Iterator AXEventGenerator::end() const {
-  return AXEventGenerator::Iterator(tree_events_, tree_events_.end());
+  return AXEventGenerator::Iterator(tree_events_.end(), tree_events_.end());
 }
 
 void AXEventGenerator::ClearEvents() {
@@ -718,9 +756,9 @@ void AXEventGenerator::OnAtomicUpdateFinished(
 
     if (IsAlert(change.node->data().role))
       AddEvent(change.node, Event::ALERT);
-    else if (IsActiveLiveRegion(change))
+    else if (change.node->data().IsActiveLiveRegionRoot())
       AddEvent(change.node, Event::LIVE_REGION_CREATED);
-    else if (IsContainedInLiveRegion(change))
+    else if (change.node->data().IsContainedInActiveLiveRegion())
       FireLiveRegionEvents(change.node);
   }
 

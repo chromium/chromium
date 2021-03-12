@@ -213,6 +213,10 @@ struct AX_BASE_EXPORT AXNodeData {
   // clicked, such as a text field or a native HTML list box.
   bool IsActivatable() const;
 
+  // Helper to determine if the data belongs to a node that is at the root of an
+  // ARIA live region that is active, i.e. its status is not set to "off".
+  bool IsActiveLiveRegionRoot() const;
+
   // Helper to determine if the data belongs to a node that is a native button
   // or ARIA role="button" in a pressed state.
   bool IsButtonPressed() const;
@@ -220,6 +224,10 @@ struct AX_BASE_EXPORT AXNodeData {
   // Helper to determine if the data belongs to a node that can respond to
   // clicks.
   bool IsClickable() const;
+
+  // Helper to determine if the data belongs to a node that is part of an active
+  // ARIA live region, and for which live announcements should be made.
+  bool IsContainedInActiveLiveRegion() const;
 
   // Helper to determine if the object is selectable.
   bool IsSelectable() const;

@@ -31,6 +31,7 @@ class AX_EXPORT AXEventGenerator : public AXTreeObserver {
     ACTIVE_DESCENDANT_CHANGED,
     ALERT,
     ARIA_CURRENT_CHANGED,
+
     // ATK treats alignment, indentation, and other format-related attributes as
     // text attributes even when they are only applicable to the entire object.
     // And it lacks an event for use when object attributes have changed.
@@ -48,6 +49,7 @@ class AX_EXPORT AXEventGenerator : public AXTreeObserver {
     DOCUMENT_SELECTION_CHANGED,
     DOCUMENT_TITLE_CHANGED,
     DROPEFFECT_CHANGED,
+
     // TODO(nektar): Deprecate this event and replace it with
     // "VALUE_IN_TEXT_FIELD_CHANGED".
     EDITABLE_TEXT_CHANGED,
@@ -65,11 +67,17 @@ class AX_EXPORT AXEventGenerator : public AXTreeObserver {
     KEY_SHORTCUTS_CHANGED,
     LABELED_BY_CHANGED,
     LANGUAGE_CHANGED,
-    LAYOUT_INVALIDATED,   // Fired when aria-busy turns from true to false.
-    LIVE_REGION_CHANGED,  // Fired on the root of a live region.
+    LAYOUT_INVALIDATED,  // Fired when aria-busy turns from true to false.
+
+    // Fired only on the root of the ARIA live region.
+    LIVE_REGION_CHANGED,
+    // Fired only on the root of the ARIA live region.
     LIVE_REGION_CREATED,
-    LIVE_REGION_NODE_CHANGED,  // Fired on a node within a live region.
+    // Fired on all the nodes within the ARIA live region excluding its root.
+    LIVE_REGION_NODE_CHANGED,
+    // Fired only on the root of the ARIA live region.
     LIVE_RELEVANT_CHANGED,
+    // Fired only on the root of the ARIA live region.
     LIVE_STATUS_CHANGED,
     LOAD_COMPLETE,
     LOAD_START,
@@ -105,38 +113,40 @@ class AX_EXPORT AXEventGenerator : public AXTreeObserver {
     TEXT_ATTRIBUTE_CHANGED,
     VALUE_IN_TEXT_FIELD_CHANGED,
 
-    // This event is for the exact set of attributes that affect
-    // the MSAA/IAccessible state on Windows. Not needed on other platforms,
-    // but very natural to compute here.
+    // This event is fired for the exact set of attributes that affect the
+    // MSAA/IAccessible state on Windows. It is not needed on other platforms,
+    // but it is very natural to compute in this class.
     WIN_IACCESSIBLE_STATE_CHANGED,
     MAX_VALUE = WIN_IACCESSIBLE_STATE_CHANGED,
   };
 
   // For distinguishing between show and hide state when a node has
-  // IGNORED_CHANGED event.
+  // an IGNORED_CHANGED event.
   enum class IgnoredChangedState : uint8_t { kShow, kHide, kCount = 2 };
 
-  struct AX_EXPORT EventParams {
+  struct AX_EXPORT EventParams final {
+    explicit EventParams(Event event);
     EventParams(Event event,
                 ax::mojom::EventFrom event_from,
                 const std::vector<AXEventIntent>& event_intents);
     EventParams(const EventParams& other);
     ~EventParams();
 
+    EventParams& operator=(const EventParams& other);
     bool operator==(const EventParams& rhs) const;
     bool operator<(const EventParams& rhs) const;
 
     Event event;
-    ax::mojom::EventFrom event_from;
+    ax::mojom::EventFrom event_from = ax::mojom::EventFrom::kNone;
     std::vector<AXEventIntent> event_intents;
   };
 
-  struct TargetedEvent final {
-    // |node| must not be null
-    TargetedEvent(ui::AXNode* node, const EventParams& event_params);
-    ~TargetedEvent() = default;
+  struct AX_EXPORT TargetedEvent final {
+    // |node| must not be null.
+    TargetedEvent(AXNode* node, const EventParams& event_params);
+    ~TargetedEvent();
 
-    ui::AXNode* node;
+    AXNode* const node;
     const EventParams& event_params;
   };
 
@@ -144,18 +154,23 @@ class AX_EXPORT AXEventGenerator : public AXTreeObserver {
       : public std::iterator<std::input_iterator_tag, TargetedEvent> {
    public:
     Iterator(
-        const std::map<AXNode*, std::set<EventParams>>& map,
-        const std::map<AXNode*, std::set<EventParams>>::const_iterator& head);
+        std::map<AXNode*, std::set<EventParams>>::const_iterator map_start_iter,
+        std::map<AXNode*, std::set<EventParams>>::const_iterator map_end_iter);
     Iterator(const Iterator& other);
     ~Iterator();
 
-    bool operator!=(const Iterator& rhs) const;
+    Iterator& operator=(const Iterator& other);
     Iterator& operator++();
-    TargetedEvent operator*() const;
+    Iterator operator++(int);  // Postfix increment.
+    value_type operator*() const;
 
    private:
-    const std::map<AXNode*, std::set<EventParams>>& map_;
+    AX_EXPORT friend bool operator==(const Iterator& lhs, const Iterator& rhs);
+    AX_EXPORT friend bool operator!=(const Iterator& lhs, const Iterator& rhs);
+    AX_EXPORT friend void swap(Iterator& lhs, Iterator& rhs);
+
     std::map<AXNode*, std::set<EventParams>>::const_iterator map_iter_;
+    std::map<AXNode*, std::set<EventParams>>::const_iterator map_end_iter_;
     std::set<EventParams>::const_iterator set_iter_;
   };
 
@@ -190,7 +205,7 @@ class AX_EXPORT AXEventGenerator : public AXTreeObserver {
   // this object or until you call SetTree again.
   void SetTree(AXTree* new_tree);
 
-  // Null |tree_| without accessing it or destroying it.
+  // Nulls-out |tree_| without accessing it or destroying it.
   void ReleaseTree();
 
   //
@@ -272,11 +287,21 @@ class AX_EXPORT AXEventGenerator : public AXTreeObserver {
                               const std::vector<Change>& changes) override;
 
  private:
+  static void GetRestrictionStates(ax::mojom::Restriction restriction,
+                                   bool* is_enabled,
+                                   bool* is_readonly);
+
+  // Returns a vector of values unique to either |lhs| or |rhs|
+  static std::vector<int32_t> ComputeIntListDifference(
+      const std::vector<int32_t>& lhs,
+      const std::vector<int32_t>& rhs);
+
   void FireLiveRegionEvents(AXNode* node);
   void FireActiveDescendantEvents();
   void FireValueInTextFieldChangedEvent(AXTree* tree, AXNode* target_node);
   void FireRelationSourceEvents(AXTree* tree, AXNode* target_node);
   bool ShouldFireLoadEvents(AXNode* node);
+
   // Remove excessive events for a tree update containing node.
   // We remove certain events on a node when it flips its IGNORED state to
   // either show/hide and one of the node's ancestor has also flipped its
@@ -296,14 +321,6 @@ class AX_EXPORT AXEventGenerator : public AXTreeObserver {
       std::map<AXNode*, IgnoredChangedStatesBitset>&
           ancestor_ignored_changed_map);
   void PostprocessEvents();
-  static void GetRestrictionStates(ax::mojom::Restriction restriction,
-                                   bool* is_enabled,
-                                   bool* is_readonly);
-
-  // Returns a vector of values unique to either |lhs| or |rhs|
-  static std::vector<int32_t> ComputeIntListDifference(
-      const std::vector<int32_t>& lhs,
-      const std::vector<int32_t>& rhs);
 
   AXTree* tree_ = nullptr;  // Not owned.
   std::map<AXNode*, std::set<EventParams>> tree_events_;
