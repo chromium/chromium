@@ -63,6 +63,10 @@ const int kAnimationDurationForBubblePopupMs = 200;
 constexpr base::TimeDelta kAnimationDurationForVisibilityMs =
     base::TimeDelta::FromMilliseconds(250);
 
+// Duration of opacity animation for hide animation.
+constexpr base::TimeDelta kAnimationDurationForHideMs =
+    base::TimeDelta::FromMilliseconds(100);
+
 // Bounce animation constants
 const base::TimeDelta kAnimationDurationForBounceElement =
     base::TimeDelta::FromMilliseconds(250);
@@ -418,8 +422,7 @@ void TrayBackgroundView::BounceInAnimation() {
           GetLocalBounds().CenterPoint(), std::move(scale));
 
   scale_about_pivot->SetChild(std::make_unique<ui::InterpolatedTranslation>(
-      gfx::PointF(0, kAnimationBounceDistance),
-      gfx::PointF(0, -kAnimationBounceDistance)));
+      gfx::PointF(0, 0), gfx::PointF(0, -kAnimationBounceDistance)));
 
   std::unique_ptr<ui::LayerAnimationElement> scale_and_move_up =
       ui::LayerAnimationElement::CreateInterpolatedTransformElement(
@@ -459,23 +462,11 @@ void TrayBackgroundView::HideAnimation() {
       std::make_unique<ui::LayerAnimationSequence>();
   std::unique_ptr<ui::LayerAnimationElement> fade_out =
       ui::LayerAnimationElement::CreateOpacityElement(
-          0.0f, kAnimationDurationForVisibilityMs);
+          0.0f, kAnimationDurationForHideMs);
   fade_sequence->AddElement(std::move(fade_out));
-
-  gfx::Transform transform;
-  if (shelf_->IsHorizontalAlignment())
-    transform.Translate(width(), 0.0f);
-  else
-    transform.Translate(0.0f, height());
-
-  std::unique_ptr<ui::LayerAnimationSequence> translate_sequence =
-      std::make_unique<ui::LayerAnimationSequence>();
-  translate_sequence->AddElement(
-      ui::LayerAnimationElement::CreateTransformElement(
-          transform, kAnimationDurationForVisibilityMs));
   fade_sequence->AddObserver(this);
-  layer()->GetAnimator()->StartTogether(
-      {fade_sequence.release(), translate_sequence.release()});
+
+  layer()->GetAnimator()->StartAnimation(fade_sequence.release());
 }
 
 void TrayBackgroundView::SetIsActive(bool is_active) {
