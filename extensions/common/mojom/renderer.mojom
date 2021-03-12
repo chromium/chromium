@@ -4,7 +4,9 @@
 
 module extensions.mojom;
 
+import "mojo/public/mojom/base/shared_memory.mojom";
 import "extensions/common/mojom/channel.mojom";
+import "extensions/common/mojom/host_id.mojom";
 import "extensions/common/mojom/feature_session_type.mojom";
 import "extensions/common/mojom/url_pattern_set.mojom";
 
@@ -71,6 +73,25 @@ interface Renderer {
                                URLPatternSet new_hosts,
                                int32 tab_id,
                                bool update_origin_whitelist);
+
+  // Notifies the renderer that the user scripts have been updated. It has one
+  // ReadOnlySharedMemoryRegion argument consisting of the pickled script data.
+  // This memory region is valid in the context of the renderer.
+  // If |owner| is not empty, then the shared memory handle refers to |owner|'s
+  // programmatically-defined scripts. Otherwise, the handle refers to all
+  // hosts' statically defined scripts. So far, only extension-hosts support
+  // statically defined scripts; WebUI-hosts don't.
+  // If |changed_hosts| is not empty, only the host in that set will be updated.
+  // Otherwise, all hosts that have scripts in the shared memory region will be
+  // updated. Note that the empty set => all hosts case is not supported for
+  // per-extension programmatically-defined script regions; in such regions, the
+  // owner is expected to list itself as the only changed host. If
+  // |allowlisted_only| is true, this process should only run allowlisted
+  // scripts and not all user scripts.
+  UpdateUserScripts(mojo_base.mojom.ReadOnlySharedMemoryRegion region,
+                    HostID owner,
+                    array<HostID> changed_hosts,
+                    bool allowlisted_only);
 
   // Tells the render view to clear tab-specific permissions for some
   // extensions.

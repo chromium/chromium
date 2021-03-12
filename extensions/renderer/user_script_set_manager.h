@@ -24,10 +24,6 @@ namespace content {
 class RenderFrame;
 }
 
-namespace IPC {
-class Message;
-}
-
 namespace extensions {
 
 class ScriptInjection;
@@ -40,7 +36,7 @@ class ScriptInjection;
 //                         only programmatically-declared scripts, instantiated
 //                         when an extension first creates a declarative rule
 //                         that would, if triggered, request a script injection.
-class UserScriptSetManager : public content::RenderThreadObserver {
+class UserScriptSetManager {
  public:
   // Like a UserScriptSet::Observer, but automatically subscribes to all sets
   // associated with the manager.
@@ -52,7 +48,7 @@ class UserScriptSetManager : public content::RenderThreadObserver {
 
   UserScriptSetManager();
 
-  ~UserScriptSetManager() override;
+  ~UserScriptSetManager();
 
   void AddObserver(Observer* observer);
   void RemoveObserver(Observer* observer);
@@ -79,6 +75,12 @@ class UserScriptSetManager : public content::RenderThreadObserver {
   // |programmatic_scripts_|.
   void GetAllActiveExtensionIds(std::set<std::string>* ids) const;
 
+  // Handle the UpdateUserScripts extension message.
+  void OnUpdateUserScripts(base::ReadOnlySharedMemoryRegion shared_memory,
+                           const mojom::HostID& host_id,
+                           const std::set<mojom::HostID>& changed_hosts,
+                           bool allowlisted_only);
+
   const UserScriptSet* static_scripts() const { return &static_scripts_; }
 
   void set_activity_logging_enabled(bool enabled) {
@@ -90,16 +92,7 @@ class UserScriptSetManager : public content::RenderThreadObserver {
   using UserScriptSetMap =
       std::map<mojom::HostID, std::unique_ptr<UserScriptSet>>;
 
-  // content::RenderThreadObserver implementation.
-  bool OnControlMessageReceived(const IPC::Message& message) override;
-
   UserScriptSet* GetProgrammaticScriptsByHostID(const mojom::HostID& host_id);
-
-  // Handle the UpdateUserScripts extension message.
-  void OnUpdateUserScripts(base::ReadOnlySharedMemoryRegion shared_memory,
-                           const mojom::HostID& host_id,
-                           const std::set<mojom::HostID>& changed_hosts,
-                           bool whitelisted_only);
 
   // Scripts statically defined in extension manifests.
   UserScriptSet static_scripts_;

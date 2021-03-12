@@ -553,26 +553,6 @@ IPC_MESSAGE_CONTROL1(ExtensionMsg_Loaded,
 IPC_MESSAGE_ROUTED1(ExtensionMsg_ExecuteCode,
                     extensions::mojom::ExecuteCodeParams)
 
-// Notification that the user scripts have been updated. It has one
-// ReadOnlySharedMemoryRegion argument consisting of the pickled script data.
-// This memory region is valid in the context of the renderer.
-// If |owner| is not empty, then the shared memory handle refers to |owner|'s
-// programmatically-defined scripts. Otherwise, the handle refers to all
-// hosts' statically defined scripts. So far, only extension-hosts support
-// statically defined scripts; WebUI-hosts don't.
-// If |changed_hosts| is not empty, only the host in that set will
-// be updated. Otherwise, all hosts that have scripts in the shared memory
-// region will be updated. Note that the empty set => all hosts case is not
-// supported for per-extension programmatically-defined script regions; in such
-// regions, the owner is expected to list itself as the only changed host.
-// If |whitelisted_only| is true, this process should only run whitelisted
-// scripts and not all user scripts.
-IPC_MESSAGE_CONTROL4(ExtensionMsg_UpdateUserScripts,
-                     base::ReadOnlySharedMemoryRegion,
-                     extensions::mojom::HostID /* owner */,
-                     std::set<extensions::mojom::HostID> /* changed hosts */,
-                     bool /* whitelisted_only */)
-
 // Tell the render view which browser window it's being attached to.
 IPC_MESSAGE_ROUTED1(ExtensionMsg_UpdateBrowserWindowId,
                     int /* id of browser window */)

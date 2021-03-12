@@ -86,6 +86,10 @@ class InterceptingRendererStartupHelper : public RendererStartupHelper,
                                     const URLPatternSet& new_hosts,
                                     int tab_id,
                                     bool update_origin_allowlist) override {}
+  void UpdateUserScripts(base::ReadOnlySharedMemoryRegion shared_memory,
+                         mojom::HostIDPtr host_id,
+                         std::vector<mojom::HostIDPtr> changed_hosts,
+                         bool allowlisted_only) override {}
   void ClearTabSpecificPermissions(
       const std::vector<std::string>& extension_ids,
       int tab_id,

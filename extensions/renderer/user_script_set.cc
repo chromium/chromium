@@ -98,7 +98,7 @@ void UserScriptSet::GetInjections(
 bool UserScriptSet::UpdateUserScripts(
     base::ReadOnlySharedMemoryRegion shared_memory,
     const std::set<mojom::HostID>& changed_hosts,
-    bool whitelisted_only) {
+    bool allowlisted_only) {
   bool only_inject_incognito =
       ExtensionsRendererClient::Get()->IsIncognitoProcess();
 
@@ -163,7 +163,7 @@ bool UserScriptSet::UpdateUserScripts(
 
     const Extension* extension =
         RendererExtensionRegistry::Get()->GetByID(script->extension_id());
-    if (whitelisted_only &&
+    if (allowlisted_only &&
         (!extension || !PermissionsData::CanExecuteScriptEverywhere(
                            extension->id(), extension->location()))) {
       continue;

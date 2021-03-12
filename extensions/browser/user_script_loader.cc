@@ -19,6 +19,7 @@
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/render_process_host.h"
 #include "extensions/browser/extensions_browser_client.h"
+#include "extensions/browser/renderer_startup_helper.h"
 #include "extensions/common/extension_messages.h"
 #include "extensions/common/mojom/run_location.mojom-shared.h"
 
@@ -474,9 +475,9 @@ void UserScriptLoader::SendUpdate(
     content::RenderProcessHost* process,
     const base::ReadOnlySharedMemoryRegion& shared_memory,
     const std::set<mojom::HostID>& changed_hosts) {
-  // Don't allow injection of non-whitelisted extensions' content scripts
+  // Don't allow injection of non-allowlisted extensions' content scripts
   // into <webview>.
-  bool whitelisted_only = process->IsForGuestsOnly() && host_id().id.empty();
+  bool allowlisted_only = process->IsForGuestsOnly() && host_id().id.empty();
 
   // Make sure we only send user scripts to processes in our browser_context.
   if (!ExtensionsBrowserClient::Get()->IsSameContext(
@@ -494,9 +495,16 @@ void UserScriptLoader::SendUpdate(
   if (!region_for_process.IsValid())
     return;
 
-  process->Send(new ExtensionMsg_UpdateUserScripts(
-      std::move(region_for_process), host_id(), changed_hosts,
-      whitelisted_only));
+  std::vector<mojom::HostIDPtr> changed_hosts_param;
+  for (const auto& host : changed_hosts)
+    changed_hosts_param.push_back(host.Clone());
+
+  mojom::Renderer* renderer =
+      RendererStartupHelperFactory::GetForBrowserContext(browser_context())
+          ->GetRenderer(process);
+  renderer->UpdateUserScripts(std::move(region_for_process),
+                              mojom::HostID::New(host_id().type, host_id().id),
+                              std::move(changed_hosts_param), allowlisted_only);
 }
 
 }  // namespace extensions

@@ -75,7 +75,7 @@ class UserScriptSet {
   // Returns true if the scripts were successfully updated.
   bool UpdateUserScripts(base::ReadOnlySharedMemoryRegion shared_memory,
                          const std::set<mojom::HostID>& changed_hosts,
-                         bool whitelisted_only);
+                         bool allowlisted_only);
 
   // Returns the contents of a script file.
   // Note that copying is cheap as this uses WebString.

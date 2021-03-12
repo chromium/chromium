@@ -11,14 +11,11 @@
 #include "extensions/renderer/dispatcher.h"
 #include "extensions/renderer/script_injection.h"
 #include "extensions/renderer/user_script_set.h"
-#include "ipc/ipc_message.h"
-#include "ipc/ipc_message_macros.h"
 
 namespace extensions {
 
 UserScriptSetManager::UserScriptSetManager()
     : activity_logging_enabled_(false) {
-  content::RenderThread::Get()->AddObserver(this);
 }
 
 UserScriptSetManager::~UserScriptSetManager() {
@@ -47,16 +44,6 @@ UserScriptSetManager::GetInjectionForDeclarativeScript(
   return user_script_set->GetDeclarativeScriptInjection(
       script_id, render_frame, tab_id, mojom::RunLocation::kBrowserDriven, url,
       activity_logging_enabled_);
-}
-
-bool UserScriptSetManager::OnControlMessageReceived(
-    const IPC::Message& message) {
-  bool handled = true;
-  IPC_BEGIN_MESSAGE_MAP(UserScriptSetManager, message)
-    IPC_MESSAGE_HANDLER(ExtensionMsg_UpdateUserScripts, OnUpdateUserScripts)
-    IPC_MESSAGE_UNHANDLED(handled = false)
-  IPC_END_MESSAGE_MAP()
-  return handled;
 }
 
 void UserScriptSetManager::GetAllInjections(
@@ -93,7 +80,7 @@ void UserScriptSetManager::OnUpdateUserScripts(
     base::ReadOnlySharedMemoryRegion shared_memory,
     const mojom::HostID& host_id,
     const std::set<mojom::HostID>& changed_hosts,
-    bool whitelisted_only) {
+    bool allowlisted_only) {
   if (!shared_memory.IsValid()) {
     NOTREACHED() << "Bad scripts handle";
     return;
@@ -150,7 +137,7 @@ void UserScriptSetManager::OnUpdateUserScripts(
   }
 
   if (scripts->UpdateUserScripts(std::move(shared_memory), *effective_hosts,
-                                 whitelisted_only)) {
+                                 allowlisted_only)) {
     for (auto& observer : observers_)
       observer.OnUserScriptsUpdated(*effective_hosts);
   }

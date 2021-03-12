@@ -1070,6 +1070,19 @@ void Dispatcher::UpdateTabSpecificPermissions(const std::string& extension_id,
     UpdateOriginPermissions(*extension);
 }
 
+void Dispatcher::UpdateUserScripts(
+    base::ReadOnlySharedMemoryRegion shared_memory,
+    mojom::HostIDPtr host_id,
+    std::vector<mojom::HostIDPtr> changed_hosts,
+    bool allowlisted_only) {
+  std::set<mojom::HostID> changed_hosts_set;
+  for (const auto& host : changed_hosts)
+    changed_hosts_set.insert(*host);
+
+  user_script_set_manager_->OnUpdateUserScripts(
+      std::move(shared_memory), *host_id, changed_hosts_set, allowlisted_only);
+}
+
 void Dispatcher::ClearTabSpecificPermissions(
     const std::vector<std::string>& extension_ids,
     int tab_id,
