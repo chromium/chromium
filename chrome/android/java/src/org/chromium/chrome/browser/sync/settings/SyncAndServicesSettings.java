@@ -4,7 +4,6 @@
 
 package org.chromium.chrome.browser.sync.settings;
 
-import android.accounts.Account;
 import android.app.Dialog;
 import android.content.Intent;
 import android.net.Uri;
@@ -545,10 +544,9 @@ public class SyncAndServicesSettings extends PreferenceFragmentCompat
         }
 
         if (mCurrentSyncError == SyncError.OTHER_ERRORS) {
-            final Account account = CoreAccountInfo.getAndroidAccountFrom(
-                    IdentityServicesProvider.get()
-                            .getIdentityManager(getProfile())
-                            .getPrimaryAccountInfo(ConsentLevel.SYNC));
+            final CoreAccountInfo account = IdentityServicesProvider.get()
+                                                    .getIdentityManager(getProfile())
+                                                    .getPrimaryAccountInfo(ConsentLevel.SYNC);
             // TODO(https://crbug.com/873116): Pass the correct reason for the signout.
             IdentityServicesProvider.get()
                     .getSigninManager(getProfile())
