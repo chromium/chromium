@@ -139,7 +139,7 @@ void VideoCaptureDeviceChromeOSDelegate::Shutdown() {
     screen_observer_delegate_->RemoveObserver();
     power_manager_client_proxy_->Shutdown();
     camera_hal_delegate_->DisableAllVirtualDevices();
-    std::move(cleanup_callback_).Run();
+    capture_task_runner_->PostTask(FROM_HERE, std::move(cleanup_callback_));
   }
 }
 
