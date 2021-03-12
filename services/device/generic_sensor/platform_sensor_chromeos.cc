@@ -224,11 +224,18 @@ PlatformSensorConfiguration PlatformSensorChromeOS::GetDefaultConfiguration() {
   return default_configuration_;
 }
 
+void PlatformSensorChromeOS::SensorReplaced() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  VLOG(1) << "SensorReplaced with id: " << iio_device_id_;
+  ResetReadingBuffer();
+  ResetOnError();
+}
+
 void PlatformSensorChromeOS::ResetOnError() {
   LOG(ERROR) << "ResetOnError of sensor with id: " << iio_device_id_;
-  NotifySensorError();
   sensor_device_remote_.reset();
   receiver_.reset();
+  NotifySensorError();
 }
 
 void PlatformSensorChromeOS::StartReadingIfReady() {

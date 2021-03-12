@@ -15,6 +15,7 @@
 #include "build/chromeos_buildflags.h"
 #include "chromeos/components/sensors/fake_sensor_device.h"
 #include "chromeos/components/sensors/fake_sensor_hal_server.h"
+#include "services/device/generic_sensor/sensor_impl.h"
 #include "services/device/public/cpp/generic_sensor/sensor_traits.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -32,6 +33,16 @@ constexpr double kScaleValue = 10.0;
 constexpr char kWrongScale[] = "10..0";
 
 constexpr char kWrongLocation[] = "basee";
+
+constexpr int64_t kFakeSampleData = 1;
+constexpr int64_t kFakeTimestampData = 163176689212344ll;
+
+// The number of axes for which there are accelerometer and gyroscope readings.
+constexpr uint32_t kNumberOfAxes = 3u;
+
+constexpr char kAccelerometerChannels[][10] = {"accel_x", "accel_y", "accel_z"};
+constexpr char kGyroscopeChannels[][10] = {"anglvel_x", "anglvel_y",
+                                           "anglvel_z"};
 
 }  // namespace
 
@@ -56,18 +67,22 @@ class PlatformSensorProviderChromeOSTest : public ::testing::Test {
   void AddDevice(int32_t iio_device_id,
                  chromeos::sensors::mojom::DeviceType type,
                  const base::Optional<std::string>& scale,
-                 const base::Optional<std::string>& location) {
+                 const base::Optional<std::string>& location,
+                 std::vector<chromeos::sensors::FakeSensorDevice::ChannelData>
+                     channels_data = {}) {
     AddDevice(iio_device_id,
               std::set<chromeos::sensors::mojom::DeviceType>{type},
-              std::move(scale), std::move(location));
+              std::move(scale), std::move(location), std::move(channels_data));
   }
 
   void AddDevice(int32_t iio_device_id,
                  std::set<chromeos::sensors::mojom::DeviceType> types,
                  const base::Optional<std::string>& scale,
-                 const base::Optional<std::string>& location) {
+                 const base::Optional<std::string>& location,
+                 std::vector<chromeos::sensors::FakeSensorDevice::ChannelData>
+                     channels_data = {}) {
     auto sensor_device = std::make_unique<chromeos::sensors::FakeSensorDevice>(
-        std::vector<chromeos::sensors::FakeSensorDevice::ChannelData>{});
+        std::move(channels_data));
 
     if (scale.has_value()) {
       sensor_device->SetAttribute(chromeos::sensors::mojom::kScale,
@@ -82,6 +97,20 @@ class PlatformSensorProviderChromeOSTest : public ::testing::Test {
 
     sensor_hal_server_->GetSensorService()->SetDevice(
         iio_device_id, std::move(types), std::move(sensor_device));
+  }
+
+  std::vector<chromeos::sensors::FakeSensorDevice::ChannelData>
+  GetChannelsWithAxes(const char channels[][10]) {
+    std::vector<chromeos::sensors::FakeSensorDevice::ChannelData> channels_data(
+        kNumberOfAxes + 1);
+    for (uint32_t i = 0; i < kNumberOfAxes; ++i) {
+      channels_data[i].id = channels[i];
+      channels_data[i].sample_data = kFakeSampleData;
+    }
+    channels_data.back().id = chromeos::sensors::mojom::kTimestampChannel;
+    channels_data.back().sample_data = kFakeTimestampData;
+
+    return channels_data;
   }
 
   // Sensor creation is asynchronous, therefore inner loop is used to wait for
@@ -523,6 +552,129 @@ TEST_F(PlatformSensorProviderChromeOSTest,
   EXPECT_TRUE(
       CreateSensor(mojom::SensorType::RELATIVE_ORIENTATION_EULER_ANGLES));
   EXPECT_TRUE(CreateSensor(mojom::SensorType::RELATIVE_ORIENTATION_QUATERNION));
+}
+
+TEST_F(PlatformSensorProviderChromeOSTest, LatePresentMotionSensors) {
+  int fake_id = 1;
+  AddDevice(fake_id++, chromeos::sensors::mojom::DeviceType::ACCEL,
+            base::NumberToString(kScaleValue),
+            chromeos::sensors::mojom::kLocationBase,
+            GetChannelsWithAxes(kAccelerometerChannels));
+  AddDevice(fake_id++, chromeos::sensors::mojom::DeviceType::ACCEL,
+            base::NumberToString(kScaleValue),
+            chromeos::sensors::mojom::kLocationLid,
+            GetChannelsWithAxes(kAccelerometerChannels));
+
+  RegisterSensorHalServer();
+
+  // Wait until the disconnect of the accelerometer_base arrives at
+  // FakeSensorDevice.
+  base::RunLoop().RunUntilIdle();
+
+  // Removed in |provider_| as it'll never be used.
+  EXPECT_FALSE(sensor_devices_[0]->HasReceivers());
+  // Remote stored in |provider_|.
+  EXPECT_TRUE(sensor_devices_[1]->HasReceivers());
+
+  AddDevice(fake_id++, chromeos::sensors::mojom::DeviceType::ANGLVEL,
+            base::NumberToString(kScaleValue),
+            chromeos::sensors::mojom::kLocationBase,
+            GetChannelsWithAxes(kGyroscopeChannels));
+
+  // Wait until |provider_| is notifies that the device is present.
+  base::RunLoop().RunUntilIdle();
+
+  auto accel_base = CreateSensor(mojom::SensorType::ACCELEROMETER);
+  EXPECT_TRUE(accel_base);
+
+  // Wait until all tasks are done and no failures occur in |provider_| or
+  // |accel_base|.
+  base::RunLoop().RunUntilIdle();
+
+  // Motion sensors on base are used. Accelerometer on lid is reset.
+  EXPECT_TRUE(sensor_devices_[0]->HasReceivers());
+  EXPECT_FALSE(sensor_devices_[1]->HasReceivers());
+  EXPECT_TRUE(sensor_devices_[2]->HasReceivers());
+
+  AddDevice(fake_id++, chromeos::sensors::mojom::DeviceType::ANGLVEL,
+            base::NumberToString(kScaleValue),
+            chromeos::sensors::mojom::kLocationLid,
+            GetChannelsWithAxes(kGyroscopeChannels));
+
+  // Wait until |provider_| is notifies that the device is present.
+  base::RunLoop().RunUntilIdle();
+
+  auto accel_lid = CreateSensor(mojom::SensorType::ACCELEROMETER);
+  EXPECT_TRUE(accel_lid);
+
+  // Wait until all tasks are done and no failures occur in |provider_| or
+  // |accel_lid|.
+  base::RunLoop().RunUntilIdle();
+
+  // Motion sensors on lid are used. Gyroscope on base is reset.
+  EXPECT_FALSE(sensor_devices_[0]->HasReceivers());
+  EXPECT_TRUE(sensor_devices_[1]->HasReceivers());
+  EXPECT_FALSE(sensor_devices_[2]->HasReceivers());
+  EXPECT_TRUE(sensor_devices_[3]->HasReceivers());
+
+  accel_base.reset();
+
+  // Wait until all tasks are done and no failures occur.
+  base::RunLoop().RunUntilIdle();
+}
+
+TEST_F(PlatformSensorProviderChromeOSTest, LatePresentLightSensors) {
+  int fake_id = 1;
+  std::vector<chromeos::sensors::FakeSensorDevice::ChannelData> channels_data(
+      2);
+  channels_data.front().id = chromeos::sensors::mojom::kLightChannel;
+  channels_data.front().sample_data = kFakeSampleData;
+  channels_data.back().id = chromeos::sensors::mojom::kTimestampChannel;
+  channels_data.back().sample_data = kFakeTimestampData;
+
+  AddDevice(fake_id++, chromeos::sensors::mojom::DeviceType::LIGHT,
+            base::NumberToString(kScaleValue),
+            chromeos::sensors::mojom::kLocationBase, channels_data);
+
+  RegisterSensorHalServer();
+
+  auto light_base = CreateSensor(mojom::SensorType::AMBIENT_LIGHT);
+  EXPECT_TRUE(light_base);
+  EXPECT_TRUE(sensor_devices_[0]->HasReceivers());
+
+  AddDevice(fake_id++, chromeos::sensors::mojom::DeviceType::LIGHT,
+            base::NumberToString(kScaleValue),
+            chromeos::sensors::mojom::kLocationLid, channels_data);
+
+  // Wait until |provider_| finishes processing the new device.
+  base::RunLoop().RunUntilIdle();
+
+  // Test PlatformSensorProviderBase::NotifySensorCreated on different sensors
+  // of the same type.
+  auto light_lid = CreateSensor(mojom::SensorType::AMBIENT_LIGHT);
+  EXPECT_TRUE(light_lid);
+
+  // Wait until all tasks are done and no failures occur in |provider_| or
+  // |light_lid|.
+  base::RunLoop().RunUntilIdle();
+
+  // The light sensor on lid is used in |light_lid|.
+  EXPECT_TRUE(sensor_devices_[1]->HasReceivers());
+
+  // The light sensor on base is not used after being overridden in
+  // |light_base|.
+  EXPECT_FALSE(sensor_devices_[0]->HasReceivers());
+
+  // Test the usage of |light_base->reading_buffer_|.
+  SensorReading result;
+  EXPECT_FALSE(light_base->GetLatestReading(&result));
+
+  // Test PlatformSensorProviderBase::RemoveSensor on different sensors of the
+  // same type.
+  light_base.reset();
+
+  // Wait until all tasks are done and no failures occur.
+  base::RunLoop().RunUntilIdle();
 }
 
 }  // namespace device

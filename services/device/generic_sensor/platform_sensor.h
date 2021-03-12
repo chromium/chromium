@@ -44,16 +44,19 @@ class PlatformSensor : public base::RefCountedThreadSafe<PlatformSensor> {
   virtual bool CheckSensorConfiguration(
       const PlatformSensorConfiguration& configuration) = 0;
 
-  // Can be overriden to return the sensor maximum sampling frequency
-  // value obtained from the platform if it is available. If platfrom
+  // Can be overridden to return the sensor maximum sampling frequency
+  // value obtained from the platform if it is available. If platform
   // does not provide maximum sampling frequency this method must
   // return default frequency.
   // The default implementation returns default frequency.
   virtual double GetMaximumSupportedFrequency();
 
-  // Can be overriden to return the sensor minimum sampling frequency.
+  // Can be overridden to return the sensor minimum sampling frequency.
   // The default implementation returns '1.0 / (60 * 60)', i.e. once per hour.
   virtual double GetMinimumSupportedFrequency();
+
+  // Can be overridden to reset this sensor by the PlatformSensorProvider.
+  virtual void SensorReplaced();
 
   mojom::SensorType GetType() const;
 
@@ -100,8 +103,10 @@ class PlatformSensor : public base::RefCountedThreadSafe<PlatformSensor> {
   void NotifySensorReadingChanged();
   void NotifySensorError();
 
+  void ResetReadingBuffer();
+
   // Task runner that is used by mojo objects for the IPC.
-  // If platfrom sensor events are processed on a different
+  // If platform sensor events are processed on a different
   // thread, notifications are forwarded to |task_runner_|.
   scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
   base::ObserverList<Client, true>::Unchecked clients_;

@@ -25,7 +25,8 @@ namespace device {
 
 class PlatformSensorProviderChromeOS
     : public PlatformSensorProviderLinuxBase,
-      public chromeos::sensors::mojom::SensorHalClient {
+      public chromeos::sensors::mojom::SensorHalClient,
+      public chromeos::sensors::mojom::SensorServiceNewDevicesObserver {
  public:
   PlatformSensorProviderChromeOS();
   PlatformSensorProviderChromeOS(const PlatformSensorProviderChromeOS&) =
@@ -37,6 +38,11 @@ class PlatformSensorProviderChromeOS
   // chromeos::sensors::mojom::SensorHalClient overrides:
   void SetUpChannel(mojo::PendingRemote<chromeos::sensors::mojom::SensorService>
                         pending_remote) override;
+
+  // chromeos::sensors::mojom::SensorServiceNewDevicesObserver overrides:
+  void OnNewDeviceAdded(
+      int32_t iio_device_id,
+      const std::vector<chromeos::sensors::mojom::DeviceType>& types) override;
 
  protected:
   // PlatformSensorProviderLinuxBase overrides:
@@ -85,9 +91,15 @@ class PlatformSensorProviderChromeOS
 
   void OnSensorServiceDisconnect();
 
+  void OnNewDevicesObserverDisconnect();
+
   void ResetSensorService();
 
   void GetAllDeviceIdsCallback(const SensorIdTypesMap& ids_types);
+  void RegisterDevice(
+      int32_t id,
+      const std::vector<chromeos::sensors::mojom::DeviceType>& types);
+
   void GetAttributesCallback(
       int32_t id,
       const std::vector<base::Optional<std::string>>& values);
@@ -99,6 +111,7 @@ class PlatformSensorProviderChromeOS
 
   void DetermineMotionSensors();
   void DetermineLightSensor();
+  void UpdateSensorIdMapping(const mojom::SensorType& type, int32_t id);
 
   // Remove Mojo remotes of the unused devices, as they'll never be used.
   void RemoveUnusedSensorDeviceRemotes();
@@ -112,6 +125,10 @@ class PlatformSensorProviderChromeOS
 
   // The Mojo remote to query and request for devices.
   mojo::Remote<chromeos::sensors::mojom::SensorService> sensor_service_remote_;
+
+  // The Mojo channel to get notified when new devices are added to IIO Service.
+  mojo::Receiver<chromeos::sensors::mojom::SensorServiceNewDevicesObserver>
+      new_devices_observer_{this};
 
   // The flag of sensor ids received or not to help determine if all sensors are
   // ready. It's needed when there is no sensor at all.

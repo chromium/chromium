@@ -42,6 +42,10 @@ double PlatformSensor::GetMinimumSupportedFrequency() {
   return 1.0 / (60 * 60);
 }
 
+void PlatformSensor::SensorReplaced() {
+  ResetReadingBuffer();
+}
+
 bool PlatformSensor::StartListening(Client* client,
                                     const PlatformSensorConfiguration& config) {
   DCHECK(clients_.HasObserver(client));
@@ -103,6 +107,9 @@ void PlatformSensor::RemoveClient(Client* client) {
 }
 
 bool PlatformSensor::GetLatestReading(SensorReading* result) {
+  if (!reading_buffer_)
+    return false;
+
   return SensorReadingSharedBufferReader::GetReading(reading_buffer_, result);
 }
 
@@ -123,6 +130,9 @@ void PlatformSensor::UpdateSharedBufferAndNotifyClients(
 }
 
 void PlatformSensor::UpdateSharedBuffer(const SensorReading& reading) {
+  if (!reading_buffer_)
+    return;
+
   ReadingBuffer* buffer = reading_buffer_;
   auto& seqlock = buffer->seqlock.value();
 
@@ -152,6 +162,10 @@ void PlatformSensor::NotifySensorReadingChanged() {
 void PlatformSensor::NotifySensorError() {
   for (auto& client : clients_)
     client.OnSensorError();
+}
+
+void PlatformSensor::ResetReadingBuffer() {
+  reading_buffer_ = nullptr;
 }
 
 bool PlatformSensor::UpdateSensorInternal(const ConfigMap& configurations) {

@@ -38,6 +38,9 @@ class PlatformSensorChromeOS
   bool CheckSensorConfiguration(
       const PlatformSensorConfiguration& configuration) override;
   PlatformSensorConfiguration GetDefaultConfiguration() override;
+  // Called by PlatformSensorProviderChromeOS when this PlatformSensor is
+  // overridden by a late-present sensor of the same type.
+  void SensorReplaced() override;
 
   // chromeos::sensors::mojom::SensorDeviceSamplesObserver overrides:
   void OnSampleUpdated(const base::flat_map<int32_t, int64_t>& sample) override;

@@ -107,12 +107,15 @@ void PlatformSensorProviderBase::RemoveSensor(mojom::SensorType type,
     // PlatformSensorFusion object is not added to the |sensor_map_|, but
     // its base class destructor PlatformSensor::~PlatformSensor() calls this
     // RemoveSensor() function with the PlatformSensorFusion type.
+    // It is also possible on PlatformSensorProviderChromeOS as late present
+    // sensors makes the previous sensor calls this RemoveSensor() function
+    // twice.
     return;
   }
 
   if (sensor != it->second) {
-    NOTREACHED()
-        << "not expecting to track more than one sensor of the same type";
+    // It is possible on PlatformSensorProviderChromeOS as late present sensors
+    // may change the devices chosen on specific types.
     return;
   }
 

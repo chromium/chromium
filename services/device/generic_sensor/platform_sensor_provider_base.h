@@ -55,6 +55,7 @@ class PlatformSensorProviderBase {
 
   SensorReadingSharedBuffer* GetSensorReadingSharedBufferForType(
       mojom::SensorType type);
+  void RemoveSensor(mojom::SensorType type, PlatformSensor* sensor);
 
   THREAD_CHECKER(thread_checker_);
 
@@ -62,7 +63,6 @@ class PlatformSensorProviderBase {
   friend class PlatformSensor;  // To call RemoveSensor();
 
   void FreeResourcesIfNeeded();
-  void RemoveSensor(mojom::SensorType type, PlatformSensor* sensor);
 
  private:
   using CallbackQueue = std::vector<CreateSensorCallback>;
