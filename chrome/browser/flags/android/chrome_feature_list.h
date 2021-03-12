@@ -134,6 +134,7 @@ extern const base::Feature kToolbarIphAndroidCohort5;
 extern const base::Feature kToolbarIphAndroidCohort6;
 extern const base::Feature kToolbarIphAndroidCohort7;
 extern const base::Feature kToolbarIphAndroidCohort8;
+extern const base::Feature kToolbarMicIphAndroid;
 extern const base::Feature kToolbarUseHardwareBitmapDraw;
 extern const base::Feature kTrustedWebActivityLocationDelegation;
 extern const base::Feature kTrustedWebActivityNewDisclosure;

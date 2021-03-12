@@ -3319,6 +3319,11 @@ const char kToolbarIphAndroidDescription[] =
     "Enables in product help bubbles on the toolbar. In particular, the home "
     "button and the tab switcher button.";
 
+const char kToolbarMicIphAndroidName[] =
+    "Enable IPH on Android on the mic in the toolbar";
+const char kToolbarMicIphAndroidDescription[] =
+    "Enables in product help bubble on the mic button in the toolbar.";
+
 const char kUpdateMenuBadgeName[] = "Force show update menu badge";
 const char kUpdateMenuBadgeDescription[] =
     "When enabled, a badge will be shown on the app menu button if the update "
