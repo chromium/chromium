@@ -71,8 +71,10 @@ void CountWASamplesProcessedForRate(base::Optional<float> sample_rate) {
   const int channel_count = Platform::Current()->AudioHardwareOutputChannels();
   const size_t request_frames = Platform::Current()->AudioHardwareBufferSize();
 
+  // TODO(https://crbug.com/988121) Replace 128 with the appropriate
+  // AudioContextRenderSizeHintCategory.
   scoped_refptr<AudioDestination> destination = AudioDestination::Create(
-      callback, channel_count, latency_hint, sample_rate);
+      callback, channel_count, latency_hint, sample_rate, 128);
   destination->Start();
 
   Vector<float> channels[channel_count];

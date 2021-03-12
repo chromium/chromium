@@ -22,8 +22,10 @@ const unsigned kMaxMessagesToLog = 100;
 
 const size_t PushPullFIFO::kMaxFIFOLength = 65536;
 
-PushPullFIFO::PushPullFIFO(unsigned number_of_channels, size_t fifo_length)
-    : fifo_length_(fifo_length) {
+PushPullFIFO::PushPullFIFO(unsigned number_of_channels,
+                           size_t fifo_length,
+                           unsigned render_quantum_frames)
+    : fifo_length_(fifo_length), render_quantum_frames_(render_quantum_frames) {
   CHECK_LE(fifo_length_, kMaxFIFOLength);
   fifo_bus_ = AudioBus::Create(number_of_channels, fifo_length_);
 }
@@ -62,7 +64,7 @@ void PushPullFIFO::Push(const AudioBus* input_bus) {
   TRACE_EVENT0("webaudio", "PushPullFIFO::Push under lock");
 
   CHECK(input_bus);
-  CHECK_EQ(input_bus->length(), audio_utilities::kRenderQuantumFrames);
+  CHECK_EQ(input_bus->length(), render_quantum_frames_);
   SECURITY_CHECK(input_bus->length() <= fifo_length_);
   SECURITY_CHECK(index_write_ < fifo_length_);
 

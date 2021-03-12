@@ -57,23 +57,27 @@ scoped_refptr<AudioDestination> AudioDestination::Create(
     AudioIOCallback& callback,
     unsigned number_of_output_channels,
     const WebAudioLatencyHint& latency_hint,
-    base::Optional<float> context_sample_rate) {
-  return base::AdoptRef(new AudioDestination(
-      callback, number_of_output_channels, latency_hint, context_sample_rate));
+    base::Optional<float> context_sample_rate,
+    unsigned render_quantum_frames) {
+  return base::AdoptRef(
+      new AudioDestination(callback, number_of_output_channels, latency_hint,
+                           context_sample_rate, render_quantum_frames));
 }
 
 AudioDestination::AudioDestination(AudioIOCallback& callback,
                                    unsigned number_of_output_channels,
                                    const WebAudioLatencyHint& latency_hint,
-                                   base::Optional<float> context_sample_rate)
-    : number_of_output_channels_(number_of_output_channels),
+                                   base::Optional<float> context_sample_rate,
+                                   unsigned render_quantum_frames)
+    : render_quantum_frames_(render_quantum_frames),
+      number_of_output_channels_(number_of_output_channels),
       fifo_(
           std::make_unique<PushPullFIFO>(number_of_output_channels, kFIFOSize)),
       output_bus_(AudioBus::Create(number_of_output_channels,
-                                   audio_utilities::kRenderQuantumFrames,
+                                   render_quantum_frames,
                                    false)),
-      render_bus_(AudioBus::Create(number_of_output_channels,
-                                   audio_utilities::kRenderQuantumFrames)),
+      render_bus_(
+          AudioBus::Create(number_of_output_channels, render_quantum_frames)),
       callback_(callback),
       frames_elapsed_(0),
       device_state_(DeviceState::kStopped) {
@@ -93,13 +97,12 @@ AudioDestination::AudioDestination(AudioIOCallback& callback,
   // Primes the FIFO for the given callback buffer size. This is to prevent
   // first FIFO pulls from causing "underflow" errors.
   const unsigned priming_render_quanta =
-      ceil(callback_buffer_size_ /
-           static_cast<float>(audio_utilities::kRenderQuantumFrames));
+      ceil(callback_buffer_size_ / static_cast<float>(render_quantum_frames));
   for (unsigned i = 0; i < priming_render_quanta; ++i) {
     fifo_->Push(render_bus_.get());
   }
 
-  if (!CheckBufferSize()) {
+  if (!CheckBufferSize(render_quantum_frames)) {
     NOTREACHED();
   }
 
@@ -110,11 +113,10 @@ AudioDestination::AudioDestination(AudioIOCallback& callback,
     scale_factor =
         context_sample_rate.value() / web_audio_device_->SampleRate();
 
-    resampler_.reset(new MediaMultiChannelResampler(
-        number_of_output_channels, scale_factor,
-        audio_utilities::kRenderQuantumFrames,
+    resampler_ = std::make_unique<MediaMultiChannelResampler>(
+        number_of_output_channels, scale_factor, render_quantum_frames,
         CrossThreadBindRepeating(&AudioDestination::ProvideResamplerInput,
-                                 CrossThreadUnretained(this))));
+                                 CrossThreadUnretained(this)));
     resampler_bus_ =
         media::AudioBus::CreateWrapper(render_bus_->NumberOfChannels());
     for (unsigned int i = 0; i < render_bus_->NumberOfChannels(); ++i) {
@@ -228,11 +230,11 @@ void AudioDestination::RequestRender(size_t frames_requested,
   base::TimeTicks callback_request = base::TimeTicks::Now();
 
   for (size_t pushed_frames = 0; pushed_frames < frames_to_render;
-       pushed_frames += audio_utilities::kRenderQuantumFrames) {
+       pushed_frames += RenderQuantumFrames()) {
     // If platform buffer is more than two times longer than |framesToProcess|
     // we do not want output position to get stuck so we promote it
     // using the elapsed time from the moment it was initially obtained.
-    if (callback_buffer_size_ > audio_utilities::kRenderQuantumFrames * 2) {
+    if (callback_buffer_size_ > RenderQuantumFrames() * 2) {
       double delta = (base::TimeTicks::Now() - callback_request).InSecondsF();
       output_position_.position += delta;
       output_position_.timestamp += delta;
@@ -244,11 +246,10 @@ void AudioDestination::RequestRender(size_t frames_requested,
       output_position_.position = 0.0;
 
     if (resampler_) {
-      resampler_->ResampleInternal(audio_utilities::kRenderQuantumFrames,
-                                   resampler_bus_.get());
+      resampler_->ResampleInternal(RenderQuantumFrames(), resampler_bus_.get());
     } else {
       // Process WebAudio graph and push the rendered output to FIFO.
-      callback_.Render(render_bus_.get(), audio_utilities::kRenderQuantumFrames,
+      callback_.Render(render_bus_.get(), RenderQuantumFrames(),
                        output_position_, metric_reporter_.GetMetric());
     }
 
@@ -347,7 +348,7 @@ uint32_t AudioDestination::MaxChannelCount() {
   return Platform::Current()->AudioHardwareOutputChannels();
 }
 
-bool AudioDestination::CheckBufferSize() {
+bool AudioDestination::CheckBufferSize(unsigned render_quantum_frames) {
   // Record the sizes if we successfully created an output device.
   // Histogram for audioHardwareBufferSize
   base::UmaHistogramSparse("WebAudio.AudioDestination.HardwareBufferSize",
@@ -361,17 +362,15 @@ bool AudioDestination::CheckBufferSize() {
 
   // Check if the requested buffer size is too large.
   bool is_buffer_size_valid =
-      callback_buffer_size_ + audio_utilities::kRenderQuantumFrames <=
-      kFIFOSize;
-  DCHECK_LE(callback_buffer_size_ + audio_utilities::kRenderQuantumFrames,
-            kFIFOSize);
+      callback_buffer_size_ + render_quantum_frames <= kFIFOSize;
+  DCHECK_LE(callback_buffer_size_ + render_quantum_frames, kFIFOSize);
   return is_buffer_size_valid;
 }
 
 void AudioDestination::ProvideResamplerInput(int resampler_frame_delay,
                                              AudioBus* dest) {
-  callback_.Render(dest, audio_utilities::kRenderQuantumFrames,
-                   output_position_, metric_reporter_.GetMetric());
+  callback_.Render(dest, RenderQuantumFrames(), output_position_,
+                   metric_reporter_.GetMetric());
 }
 
 void AudioDestination::SetDeviceState(DeviceState state) {

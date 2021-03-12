@@ -45,11 +45,16 @@ class PLATFORM_EXPORT PushPullFIFO {
   static const size_t kMaxFIFOLength;
 
   // |fifo_length| cannot exceed |kMaxFIFOLength|. Otherwise it crashes.
-  explicit PushPullFIFO(unsigned number_of_channels, size_t fifo_length);
+  // ||render_quantum_frames| is the render size used by the audio graph.  It
+  // |defaults to 128, the original and default render size.
+  explicit PushPullFIFO(unsigned number_of_channels,
+                        size_t fifo_length,
+                        unsigned render_quantum_frames = 128);
   ~PushPullFIFO();
 
   // Pushes the rendered frames by WebAudio engine.
-  //  - The |input_bus| length is 128 frames (1 render quantum), fixed.
+  //  - The |input_bus| length has a length equal to |render_quantum_frames_|,
+  //  fixed.
   //  - In case of overflow (FIFO full while push), the existing frames in FIFO
   //    will be overwritten and |index_read_| will be forcibly moved to
   //    |index_write_| to avoid reading overwritten frames.
@@ -86,6 +91,9 @@ class PLATFORM_EXPORT PushPullFIFO {
  private:
   // The size of the FIFO.
   const size_t fifo_length_ = 0;
+
+  // The render size used by the audio graph.
+  const unsigned render_quantum_frames_;
 
   // For UMA reporting purpose.
   unsigned pull_count_ = 0;
