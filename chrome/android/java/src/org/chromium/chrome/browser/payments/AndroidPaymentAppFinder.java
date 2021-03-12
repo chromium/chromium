@@ -14,9 +14,8 @@ import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Log;
+import org.chromium.chrome.browser.app.ChromeActivity;
 import org.chromium.chrome.browser.payments.PaymentManifestVerifier.ManifestVerifyCallback;
-import org.chromium.chrome.browser.tabmodel.TabModelSelector;
-import org.chromium.chrome.browser.tabmodel.TabModelSelectorSupplier;
 import org.chromium.components.payments.AndroidPaymentApp;
 import org.chromium.components.payments.ErrorStrings;
 import org.chromium.components.payments.MethodStrings;
@@ -188,12 +187,9 @@ public class AndroidPaymentAppFinder implements ManifestVerifyCallback {
         mPackageManagerDelegate = packageManagerDelegate;
         mTwaPackageManagerDelegate = twaPackageManagerDelegate;
         mFactory = factory;
-        TabModelSelector tabModelSelector = TabModelSelectorSupplier
-                                                    .from(mFactoryDelegate.getParams()
-                                                                    .getWebContents()
-                                                                    .getTopLevelNativeWindow())
-                                                    .get();
-        mIsIncognito = tabModelSelector != null && tabModelSelector.isIncognitoSelected();
+        ChromeActivity activity =
+                ChromeActivity.fromWebContents(mFactoryDelegate.getParams().getWebContents());
+        mIsIncognito = activity != null && activity.getCurrentTabModel().isIncognito();
     }
 
     private void findAppStoreBillingApp(List<ResolveInfo> allInstalledPaymentApps) {
