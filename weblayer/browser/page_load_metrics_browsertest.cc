@@ -69,10 +69,18 @@ IN_PROC_BROWSER_TEST_F(PageLoadMetricsBrowserTest, Heartbeat) {
 
   run_loop.Run();
 
-  histogram_tester.ExpectTotalCount(
-      "PageLoad.PaintTiming.NavigationToFirstPaint", 1);
-  histogram_tester.ExpectTotalCount(
-      "PageLoad.PaintTiming.NavigationToFirstContentfulPaint", 1);
+  // Look for prefix because on Android the name would be different if the tab
+  // is not in foreground initially. This seems to happen on a slow test bot.
+  EXPECT_GE(histogram_tester
+                .GetTotalCountsForPrefix(
+                    "PageLoad.PaintTiming.NavigationToFirstPaint")
+                .size(),
+            1u);
+  EXPECT_GE(histogram_tester
+                .GetTotalCountsForPrefix(
+                    "PageLoad.PaintTiming.NavigationToFirstContentfulPaint")
+                .size(),
+            1u);
 }
 
 IN_PROC_BROWSER_TEST_F(PageLoadMetricsBrowserTest, UserCounter) {
