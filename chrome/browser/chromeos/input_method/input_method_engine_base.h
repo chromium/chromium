@@ -335,10 +335,6 @@ class InputMethodEngineBase : virtual public ui::IMEEngineHandlerInterface,
   std::u16string text_;
   bool commit_text_changed_;
 
-  // Indicates whether the IME extension is currently handling a physical key
-  // event. This is used in CommitText/UpdateCompositionText/etc.
-  bool handling_key_event_;
-
  private:
   std::unique_ptr<PrefChangeRegistrar> pref_change_registrar_;
 

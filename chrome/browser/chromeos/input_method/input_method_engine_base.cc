@@ -51,7 +51,6 @@ InputMethodEngineBase::InputMethodEngineBase()
       profile_(nullptr),
       composition_changed_(false),
       commit_text_changed_(false),
-      handling_key_event_(false),
       pref_change_registrar_(nullptr) {}
 
 InputMethodEngineBase::~InputMethodEngineBase() = default;
@@ -161,10 +160,6 @@ void InputMethodEngineBase::Reset() {
 
 void InputMethodEngineBase::ProcessKeyEvent(const ui::KeyEvent& key_event,
                                             KeyEventDoneCallback callback) {
-  // Make true that we don't handle IME API calling of setComposition and
-  // commitText while the extension is handling key event.
-  handling_key_event_ = true;
-
   if (key_event.IsCommandDown()) {
     std::move(callback).Run(false);
     return;
@@ -550,7 +545,6 @@ bool InputMethodEngineBase::SetSelectionRange(int context_id,
 void InputMethodEngineBase::KeyEventHandled(const std::string& extension_id,
                                             const std::string& request_id,
                                             bool handled) {
-  handling_key_event_ = false;
   // When finish handling key event, take care of the unprocessed commitText
   // and setComposition calls.
   if (commit_text_changed_) {
