@@ -1703,6 +1703,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Enterprise.UserSigninChoice" enum="SigninChoice"
     expires_after="M77">
+  <obsolete>
+    Removed in M91 since the data is not monitored.
+  </obsolete>
   <owner>atwilson@chromium.org</owner>
   <summary>
     Choice the user made when presented with enterprise signin dialog.

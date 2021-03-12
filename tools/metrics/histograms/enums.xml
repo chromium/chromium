@@ -70642,6 +70642,9 @@ https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_2.7.1.pdf
 </enum>
 
 <enum name="SigninChoice">
+  <obsolete>
+    Removed in M91 since the data is not monitored.
+  </obsolete>
   <int value="0" label="Cancel"/>
   <int value="1" label="Continue"/>
   <int value="2" label="New Profile"/>

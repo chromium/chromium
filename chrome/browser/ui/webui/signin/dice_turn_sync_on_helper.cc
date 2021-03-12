@@ -12,7 +12,6 @@
 #include "base/location.h"
 #include "base/logging.h"
 #include "base/macros.h"
-#include "base/metrics/histogram_macros.h"
 #include "base/metrics/user_metrics.h"
 #include "base/metrics/user_metrics_action.h"
 #include "base/no_destructor.h"
@@ -318,8 +317,6 @@ void DiceTurnSyncOnHelper::OnMergeAccountConfirmation(SigninChoice choice) {
 
 void DiceTurnSyncOnHelper::OnEnterpriseAccountConfirmation(
     SigninChoice choice) {
-  UMA_HISTOGRAM_ENUMERATION("Enterprise.UserSigninChoice", choice,
-                            DiceTurnSyncOnHelper::SIGNIN_CHOICE_SIZE);
   switch (choice) {
     case SIGNIN_CHOICE_CANCEL:
       base::RecordAction(
