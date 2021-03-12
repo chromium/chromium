@@ -1471,6 +1471,12 @@ bool QuicChromiumClientSession::GetSSLInfo(SSLInfo* ssl_info) const {
   return true;
 }
 
+base::StringPiece QuicChromiumClientSession::GetAcceptChViaAlpsForOrigin(
+    const url::Origin& origin) const {
+  // TODO(https://crbug.com/1184252): Implement.
+  return {};
+}
+
 int QuicChromiumClientSession::CryptoConnect(CompletionOnceCallback callback) {
   connect_timing_.connect_start = tick_clock_->NowTicks();
   RecordHandshakeState(STATE_STARTED);

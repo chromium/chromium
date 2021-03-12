@@ -14,6 +14,7 @@
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/optional.h"
+#include "base/strings/string_piece.h"
 #include "net/base/completion_once_callback.h"
 #include "net/base/io_buffer.h"
 #include "net/base/net_export.h"
@@ -88,6 +89,7 @@ class NET_EXPORT_PRIVATE WebSocketHttp2HandshakeStream
   void PopulateNetErrorDetails(NetErrorDetails* details) override;
   HttpStream* RenewStreamForAuth() override;
   const std::vector<std::string>& GetDnsAliases() const override;
+  base::StringPiece GetAcceptChViaAlps() const override;
 
   // WebSocketHandshakeStreamBase methods.
 

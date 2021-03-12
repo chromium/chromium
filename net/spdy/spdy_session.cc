@@ -1426,6 +1426,12 @@ bool SpdySession::GetSSLInfo(SSLInfo* ssl_info) const {
   return socket_->GetSSLInfo(ssl_info);
 }
 
+base::StringPiece SpdySession::GetAcceptChViaAlpsForOrigin(
+    const url::Origin& origin) const {
+  // TODO(https://crbug.com/1184252): Implement.
+  return {};
+}
+
 bool SpdySession::WasAlpnNegotiated() const {
   return socket_->WasAlpnNegotiated();
 }

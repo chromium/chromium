@@ -29,6 +29,7 @@
 #include "net/third_party/quiche/src/quic/core/quic_utils.h"
 #include "net/third_party/quiche/src/spdy/core/spdy_frame_builder.h"
 #include "net/third_party/quiche/src/spdy/core/spdy_framer.h"
+#include "url/origin.h"
 
 namespace net {
 
@@ -431,6 +432,15 @@ void QuicHttpStream::OnReadResponseHeadersComplete(int rv) {
 
 const std::vector<std::string>& QuicHttpStream::GetDnsAliases() const {
   return dns_aliases_;
+}
+
+base::StringPiece QuicHttpStream::GetAcceptChViaAlps() const {
+  if (!request_info_) {
+    return {};
+  }
+
+  const url::Origin origin = url::Origin::Create(request_info_->url);
+  return session()->GetAcceptChViaAlpsForOrigin(origin);
 }
 
 void QuicHttpStream::ReadTrailingHeaders() {

@@ -13,6 +13,7 @@
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
+#include "base/strings/string_piece.h"
 #include "net/base/completion_once_callback.h"
 #include "net/base/load_timing_info.h"
 #include "net/base/net_export.h"
@@ -85,6 +86,7 @@ class NET_EXPORT_PRIVATE SpdyHttpStream : public SpdyStream::Delegate,
   void PopulateNetErrorDetails(NetErrorDetails* details) override;
   void SetPriority(RequestPriority priority) override;
   const std::vector<std::string>& GetDnsAliases() const override;
+  base::StringPiece GetAcceptChViaAlps() const override;
 
   // SpdyStream::Delegate implementation.
   void OnHeadersSent() override;

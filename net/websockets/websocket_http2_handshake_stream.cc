@@ -244,6 +244,10 @@ const std::vector<std::string>& WebSocketHttp2HandshakeStream::GetDnsAliases()
   return dns_aliases_;
 }
 
+base::StringPiece WebSocketHttp2HandshakeStream::GetAcceptChViaAlps() const {
+  return {};
+}
+
 std::unique_ptr<WebSocketStream> WebSocketHttp2HandshakeStream::Upgrade() {
   DCHECK(extension_params_.get());
 

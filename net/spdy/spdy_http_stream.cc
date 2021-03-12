@@ -29,6 +29,7 @@
 #include "net/spdy/spdy_session.h"
 #include "net/third_party/quiche/src/spdy/core/spdy_header_block.h"
 #include "net/third_party/quiche/src/spdy/core/spdy_protocol.h"
+#include "url/origin.h"
 
 namespace net {
 
@@ -716,6 +717,15 @@ void SpdyHttpStream::SetPriority(RequestPriority priority) {
 
 const std::vector<std::string>& SpdyHttpStream::GetDnsAliases() const {
   return dns_aliases_;
+}
+
+base::StringPiece SpdyHttpStream::GetAcceptChViaAlps() const {
+  if (!request_info_) {
+    return {};
+  }
+
+  const url::Origin origin = url::Origin::Create(request_info_->url);
+  return session()->GetAcceptChViaAlpsForOrigin(origin);
 }
 
 }  // namespace net

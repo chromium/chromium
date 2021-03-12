@@ -17,6 +17,7 @@
 #include <vector>
 
 #include "base/macros.h"
+#include "base/strings/string_piece.h"
 #include "net/base/completion_once_callback.h"
 #include "net/base/idempotency.h"
 #include "net/base/net_error_details.h"
@@ -195,6 +196,12 @@ class NET_EXPORT_PRIVATE HttpStream {
   // is preserved in reverse, from canonical name (i.e. address record name)
   // through to query name.
   virtual const std::vector<std::string>& GetDnsAliases() const = 0;
+
+  // The value in the ACCEPT_CH frame received during TLS handshake via the
+  // ALPS extension, or the empty string if the server did not send one.  Unlike
+  // Accept-CH header fields received in HTTP responses, this value is available
+  // before any requests are made.
+  virtual base::StringPiece GetAcceptChViaAlps() const = 0;
 
  private:
   DISALLOW_COPY_AND_ASSIGN(HttpStream);

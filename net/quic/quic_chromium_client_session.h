@@ -21,6 +21,7 @@
 #include "base/containers/mru_cache.h"
 #include "base/macros.h"
 #include "base/observer_list_types.h"
+#include "base/strings/string_piece.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "net/base/completion_once_callback.h"
@@ -50,6 +51,7 @@
 #include "net/third_party/quiche/src/quic/core/quic_server_id.h"
 #include "net/third_party/quiche/src/quic/core/quic_time.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
+#include "url/origin.h"
 
 namespace net {
 
@@ -704,6 +706,8 @@ class NET_EXPORT_PRIVATE QuicChromiumClientSession
   // MultiplexedSession methods:
   bool GetRemoteEndpoint(IPEndPoint* endpoint) override;
   bool GetSSLInfo(SSLInfo* ssl_info) const override;
+  base::StringPiece GetAcceptChViaAlpsForOrigin(
+      const url::Origin& origin) const override;
 
   // Performs a crypto handshake with the server.
   int CryptoConnect(CompletionOnceCallback callback);

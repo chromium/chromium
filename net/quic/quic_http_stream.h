@@ -14,6 +14,7 @@
 
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
+#include "base/strings/string_piece.h"
 #include "net/base/completion_once_callback.h"
 #include "net/base/idempotency.h"
 #include "net/base/io_buffer.h"
@@ -71,6 +72,7 @@ class NET_EXPORT_PRIVATE QuicHttpStream : public MultiplexedHttpStream {
   void SetPriority(RequestPriority priority) override;
   void SetRequestIdempotency(Idempotency idempotency) override;
   const std::vector<std::string>& GetDnsAliases() const override;
+  base::StringPiece GetAcceptChViaAlps() const override;
 
   static HttpResponseInfo::ConnectionInfo ConnectionInfoFromQuicVersion(
       quic::ParsedQuicVersion quic_version);

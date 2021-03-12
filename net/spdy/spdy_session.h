@@ -52,6 +52,7 @@
 #include "net/third_party/quiche/src/spdy/core/spdy_protocol.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "url/gurl.h"
+#include "url/origin.h"
 #include "url/scheme_host_port.h"
 
 namespace net {
@@ -514,6 +515,8 @@ class NET_EXPORT SpdySession : public BufferedSpdyFramerVisitorInterface,
   // MultiplexedSession methods:
   bool GetRemoteEndpoint(IPEndPoint* endpoint) override;
   bool GetSSLInfo(SSLInfo* ssl_info) const override;
+  base::StringPiece GetAcceptChViaAlpsForOrigin(
+      const url::Origin& origin) const override;
 
   // Returns true if ALPN was negotiated for the underlying socket.
   bool WasAlpnNegotiated() const;

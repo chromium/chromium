@@ -7,10 +7,12 @@
 
 #include <vector>
 
+#include "base/strings/string_piece.h"
 #include "net/base/ip_endpoint.h"
 #include "net/base/net_errors.h"
 #include "net/http/http_stream.h"
 #include "net/ssl/ssl_info.h"
+#include "url/origin.h"
 
 namespace net {
 
@@ -26,6 +28,13 @@ class NET_EXPORT_PRIVATE MultiplexedSession {
   // any. Returns true and fills in |endpoint| if it is available; returns false
   // and does not modify |endpoint| if it is unavailable.
   virtual bool GetRemoteEndpoint(IPEndPoint* endpoint) = 0;
+
+  // The value corresponding to |origin| in the ACCEPT_CH frame received
+  // during TLS handshake via the ALPS extension, or the empty string if the
+  // server did not send one.  Unlike Accept-CH header fields received in HTTP
+  // responses, this value is available before any requests are made.
+  virtual base::StringPiece GetAcceptChViaAlpsForOrigin(
+      const url::Origin& origin) const = 0;
 };
 
 // A handle to a multiplexed session which will be valid even after the
@@ -45,6 +54,12 @@ class NET_EXPORT_PRIVATE MultiplexedSessionHandle {
 
   // Caches SSL info from the underlying session.
   void SaveSSLInfo();
+
+  // The value corresponding to |origin| in the ACCEPT_CH frame received
+  // during TLS handshake via the ALPS extension, or the empty string if the
+  // server did not send one or if the underlying session is not available.
+  base::StringPiece GetAcceptChViaAlpsForOrigin(
+      const url::Origin& origin) const;
 
  private:
   base::WeakPtr<MultiplexedSession> session_;
