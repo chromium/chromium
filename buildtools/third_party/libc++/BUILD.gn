@@ -51,6 +51,11 @@ target(_libcxx_target_type, "libc++") {
   if (libcxx_is_shared) {
     no_default_deps = true
   }
+
+  if (is_linux && !is_clang) {
+    libs = [ "atomic" ]
+  }
+  
   sources = [
     "trunk/src/algorithm.cpp",
     "trunk/src/any.cpp",
