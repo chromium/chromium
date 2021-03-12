@@ -498,6 +498,33 @@ export class DeviceOperator {
   }
 
   /**
+   * Changes whether the camera frame rotation is enabled inside the Chrome OS
+   * video capture device.
+   * @param {string} deviceId The id of target camera device.
+   * @param {boolean} isEnabled Whether to enable the camera frame rotation at
+   *     source.
+   * @return {!Promise<boolean>} Whether the operation was successful.
+   */
+  async setCameraFrameRotationEnabledAtSource(deviceId, isEnabled) {
+    const device = await this.getDevice_(deviceId);
+    const {isSuccess} =
+        await device.setCameraFrameRotationEnabledAtSource(isEnabled);
+    return isSuccess;
+  }
+
+  /**
+   * Gets the clock-wise rotation applied on the raw camera frame in order to
+   * display the camera preview upright in the UI.
+   * @param {string} deviceId The id of target camera device.
+   * @return {!Promise<number>} The camera frame rotation.
+   */
+  async getCameraFrameRotation(deviceId) {
+    const device = await this.getDevice_(deviceId);
+    const {rotation} = await device.getCameraFrameRotation();
+    return rotation;
+  }
+
+  /**
    * Drops the connection to the video capture device in Chrome.
    * @param {string} deviceId Id of the target device.
    */

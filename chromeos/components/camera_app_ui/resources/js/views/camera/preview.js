@@ -238,6 +238,19 @@ export class Preview {
       this.updateScanBarcode_();
       this.updateShowMetadata_();
 
+      const deviceOperator = await DeviceOperator.getInstance();
+      if (deviceOperator !== null) {
+        const deviceId =
+            this.stream_.getVideoTracks()[0].getSettings().deviceId;
+        const isSuccess =
+            await deviceOperator.setCameraFrameRotationEnabledAtSource(
+                deviceId, false);
+        if (!isSuccess) {
+          console.warn(
+              'Cannot disable camera frame rotation. ' +
+              'The camera is probably being used by another app.');
+        }
+      }
       state.set(state.State.STREAMING, true);
     } catch (e) {
       await this.close();
