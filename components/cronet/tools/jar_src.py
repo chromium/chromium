@@ -123,7 +123,7 @@ def main():
 
   if options.depfile:
     deps = []
-    for sources in dir_to_files_map.itervalues():
+    for sources in dir_to_files_map.values():
       deps.extend(sources)
     # Srcjar deps already captured in GN rules (no need to list them here).
     build_utils.WriteDepfile(options.depfile, options.jar_path, deps)
