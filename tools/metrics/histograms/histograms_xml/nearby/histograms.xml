@@ -646,6 +646,26 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="Nearby.Share.Payload.AttachmentType{Variation}"
+    enum="NearbyShareAttachmentType" expires_after="2021-08-19">
+  <owner>cvandermerwe@google.com</owner>
+  <owner>nearby-share-chromeos-eng@google.com</owner>
+  <summary>
+    Records the attachment types from {Variation}. Emitted after all attachment
+    transfers conclude, successfully or not, for a given share target.
+  </summary>
+  <token key="Variation">
+    <variant name=""
+        summary="any Nearby Share attempt, agnostic of final result and
+                 direction"/>
+    <variant name=".Cancelled" summary="a cancelled Nearby Share attempt"/>
+    <variant name=".Failed" summary="a failed Nearby Share attempt"/>
+    <variant name=".Receive" summary="an incoming (receive) payload transfer"/>
+    <variant name=".Send" summary="an outgoing (send) payload transfer"/>
+    <variant name=".Succeeded" summary="a successful Nearby Share attempt"/>
+  </token>
+</histogram>
+
 <histogram name="Nearby.Share.Payload.FinalStatus{UpgradedMedium}"
     enum="NearbyShareFinalStatus" expires_after="2021-08-19">
   <owner>nohle@chromium.org</owner>

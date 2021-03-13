@@ -7,6 +7,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/numerics/safe_conversions.h"
 #include "chrome/browser/nearby_sharing/common/nearby_share_prefs.h"
+#include "chromeos/services/nearby/public/mojom/nearby_decoder_types.mojom.h"
 #include "components/policy/core/common/policy_service.h"
 #include "components/policy/policy_constants.h"
 #include "components/prefs/pref_service.h"
@@ -68,6 +69,55 @@ enum class FinalStatus {
   kCanceled = 2,
   kMaxValue = kCanceled
 };
+
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused. If entries are added, kMaxValue should
+// be updated.
+enum class AttachmentType {
+  kUnknownFileType = 0,
+  kUnknownTextType = 1,
+  kImage = 2,
+  kVideo = 3,
+  kApp = 4,
+  kAudio = 5,
+  kText = 6,
+  kUrl = 7,
+  kAddress = 8,
+  kPhoneNumber = 9,
+  kMaxValue = kPhoneNumber
+};
+
+AttachmentType FileMetadataTypeToAttachmentType(
+    sharing::mojom::FileMetadata::Type type) {
+  switch (type) {
+    case sharing::mojom::FileMetadata::Type::kUnknown:
+      return AttachmentType::kUnknownFileType;
+    case sharing::mojom::FileMetadata::Type::kImage:
+      return AttachmentType::kImage;
+    case sharing::mojom::FileMetadata::Type::kVideo:
+      return AttachmentType::kVideo;
+    case sharing::mojom::FileMetadata::Type::kApp:
+      return AttachmentType::kApp;
+    case sharing::mojom::FileMetadata::Type::kAudio:
+      return AttachmentType::kAudio;
+  }
+}
+
+AttachmentType TextMetadataTypeToAttachmentType(
+    sharing::mojom::TextMetadata::Type type) {
+  switch (type) {
+    case sharing::mojom::TextMetadata::Type::kUnknown:
+      return AttachmentType::kUnknownTextType;
+    case sharing::mojom::TextMetadata::Type::kText:
+      return AttachmentType::kText;
+    case sharing::mojom::TextMetadata::Type::kUrl:
+      return AttachmentType::kUrl;
+    case sharing::mojom::TextMetadata::Type::kAddress:
+      return AttachmentType::kAddress;
+    case sharing::mojom::TextMetadata::Type::kPhoneNumber:
+      return AttachmentType::kPhoneNumber;
+  }
+}
 
 TransferFinalStatus TransferMetadataStatusToTransferFinalStatus(
     TransferMetadata::Status status) {
@@ -211,6 +261,18 @@ std::string GetUpgradedMediumSubcategoryName(
   }
 }
 
+void RecordNearbySharePayloadAttachmentTypeMetric(
+    AttachmentType type,
+    bool is_incoming,
+    location::nearby::connections::mojom::PayloadStatus status) {
+  const std::string prefix = "Nearby.Share.Payload.AttachmentType";
+  base::UmaHistogramEnumeration(prefix, type);
+  base::UmaHistogramEnumeration(
+      prefix + GetDirectionSubcategoryName(is_incoming), type);
+  base::UmaHistogramEnumeration(
+      prefix + GetPayloadStatusSubcategoryName(status), type);
+}
+
 }  // namespace
 
 void RecordNearbyShareEnabledMetric(const PrefService* pref_service) {
@@ -251,6 +313,22 @@ void RecordNearbyShareEstablishConnectionMetrics(
   }
   base::UmaHistogramEnumeration(
       "Nearby.Share.Connection.EstablishOutgoingConnectionStatus", status);
+}
+
+void RecordNearbySharePayloadFileAttachmentTypeMetric(
+    sharing::mojom::FileMetadata::Type type,
+    bool is_incoming,
+    location::nearby::connections::mojom::PayloadStatus status) {
+  RecordNearbySharePayloadAttachmentTypeMetric(
+      FileMetadataTypeToAttachmentType(type), is_incoming, status);
+}
+
+void RecordNearbySharePayloadTextAttachmentTypeMetric(
+    sharing::mojom::TextMetadata::Type type,
+    bool is_incoming,
+    location::nearby::connections::mojom::PayloadStatus status) {
+  RecordNearbySharePayloadAttachmentTypeMetric(
+      TextMetadataTypeToAttachmentType(type), is_incoming, status);
 }
 
 void RecordNearbySharePayloadFinalStatusMetric(
