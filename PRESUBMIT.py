@@ -35,6 +35,13 @@ _EXCLUDED_PATHS = (
     r"tools[\\/]perf[\\/]page_sets[\\/]webrtc_cases.*",
 )
 
+_EXCLUDED_SET_NO_PARENT_PATHS = (
+    # It's for historical reasons that blink isn't a top level directory, where
+    # it would be allowed to have "set noparent" to avoid top level owners
+    # accidentally +1ing changes.
+    'third_party/blink/OWNERS',
+)
+
 
 # Fragment of a regular expression that matches C++ and Objective-C++
 # implementation files.
@@ -3174,7 +3181,8 @@ def CheckSetNoParent(input_api, output_api):
     # Check that every set noparent line has a corresponding file:// line
     # listed in build/OWNERS.setnoparent. An exception is made for top level
     # directories since src/OWNERS shouldn't review them.
-    if f.LocalPath().count('/') != 1:
+    if (f.LocalPath().count('/') != 1 and
+        (not f.LocalPath() in _EXCLUDED_SET_NO_PARENT_PATHS)):
       for set_noparent_line in found_set_noparent_lines:
         if set_noparent_line in found_owners_files:
           continue
