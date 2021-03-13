@@ -1617,6 +1617,16 @@ void TabDragController::RevertDrag() {
     }
   }
 
+  // If tabs were closed during this drag, the initial selection might include
+  // indices that are out of bounds for the tabstrip now. Reset the selection to
+  // include the stille-existing currently dragged WebContentses.
+  for (int selection : initial_selection_model_.selected_indices()) {
+    if (!source_context_->GetTabStripModel()->ContainsIndex(selection)) {
+      initial_selection_model_.Clear();
+      break;
+    }
+  }
+
   if (initial_selection_model_.empty())
     ResetSelection(source_context_->GetTabStripModel());
   else
