@@ -28,6 +28,7 @@ class HoldingSpaceClientImpl : public HoldingSpaceClient {
   void AddScreenRecording(const base::FilePath& file_path) override;
   void AddScreenshot(const base::FilePath& file_path) override;
   void CopyImageToClipboard(const HoldingSpaceItem&, SuccessCallback) override;
+  base::FilePath CrackFileSystemUrl(const GURL& file_system_url) const override;
   void OpenDownloads(SuccessCallback callback) override;
   void OpenItems(const std::vector<const HoldingSpaceItem*>& items,
                  SuccessCallback callback) override;

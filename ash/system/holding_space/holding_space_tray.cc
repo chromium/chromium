@@ -25,9 +25,11 @@
 #include "ash/system/tray/tray_constants.h"
 #include "ash/system/tray/tray_container.h"
 #include "base/containers/adapters.h"
+#include "base/pickle.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "ui/aura/client/drag_drop_client.h"
 #include "ui/aura/client/drag_drop_client_observer.h"
+#include "ui/base/clipboard/custom_data_helper.h"
 #include "ui/base/dragdrop/drag_drop_types.h"
 #include "ui/base/dragdrop/mojom/drag_drop_types.mojom.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -66,9 +68,10 @@ void AnimateToTargetOpacity(views::View* view, float target_opacity) {
   view->layer()->SetOpacity(target_opacity);
 }
 
-// Returns the file paths extracted from the specified `data` which are *not*
-// pinned to the attached holding space model.
-std::vector<base::FilePath> ExtractUnpinnedFilePaths(
+// Returns the file paths extracted from the specified `data` at the filenames
+// storage location. The Files app stores file paths but *not* directory paths
+// at this location.
+std::vector<base::FilePath> ExtractFilePathsFromFilenames(
     const ui::OSExchangeData& data) {
   if (!data.HasFile())
     return {};
@@ -77,14 +80,64 @@ std::vector<base::FilePath> ExtractUnpinnedFilePaths(
   if (!data.GetFilenames(&filenames))
     return {};
 
-  HoldingSpaceModel* const model = HoldingSpaceController::Get()->model();
+  std::vector<base::FilePath> result;
+  for (const ui::FileInfo& filename : filenames)
+    result.push_back(base::FilePath(filename.path));
 
-  std::vector<base::FilePath> unpinned_file_paths;
-  for (const ui::FileInfo& filename : filenames) {
-    const base::FilePath& file_path = filename.path;
-    if (!model->ContainsItem(HoldingSpaceItem::Type::kPinnedFile, file_path))
-      unpinned_file_paths.push_back(file_path);
+  return result;
+}
+
+// Returns the file paths extracted from the specified `data` at the file system
+// sources storage location. The Files app stores both file paths *and*
+// directory paths at this location.
+std::vector<base::FilePath> ExtractFilePathsFromFileSystemSources(
+    const ui::OSExchangeData& data) {
+  base::Pickle pickle;
+  if (!data.GetPickledData(ui::ClipboardFormatType::GetWebCustomDataType(),
+                           &pickle)) {
+    return {};
   }
+
+  constexpr char kFileSystemSourcesType[] = "fs/sources";
+
+  base::string16 file_system_sources;
+  ui::ReadCustomDataForType(pickle.data(), pickle.size(),
+                            base::UTF8ToUTF16(kFileSystemSourcesType),
+                            &file_system_sources);
+  if (file_system_sources.empty())
+    return {};
+
+  HoldingSpaceClient* const client = HoldingSpaceController::Get()->client();
+
+  std::vector<base::FilePath> result;
+  for (const base::StringPiece16& file_system_source : base::SplitStringPiece(
+           file_system_sources, base::UTF8ToUTF16("\n"), base::TRIM_WHITESPACE,
+           base::SPLIT_WANT_NONEMPTY)) {
+    base::FilePath file_path =
+        client->CrackFileSystemUrl(GURL(file_system_source));
+    if (!file_path.empty())
+      result.push_back(file_path);
+  }
+
+  return result;
+}
+
+// Returns the file paths extracted from the specified `data` which are *not*
+// already pinned to the attached holding space model.
+std::vector<base::FilePath> ExtractUnpinnedFilePaths(
+    const ui::OSExchangeData& data) {
+  // Prefer extracting file paths from file system sources when possible. The
+  // Files app populates both file system sources and filenames storage
+  // locations, but only the former contains directory paths.
+  std::vector<base::FilePath> unpinned_file_paths =
+      ExtractFilePathsFromFileSystemSources(data);
+  if (unpinned_file_paths.empty())
+    unpinned_file_paths = ExtractFilePathsFromFilenames(data);
+
+  HoldingSpaceModel* const model = HoldingSpaceController::Get()->model();
+  base::EraseIf(unpinned_file_paths, [model](const base::FilePath& file_path) {
+    return model->ContainsItem(HoldingSpaceItem::Type::kPinnedFile, file_path);
+  });
 
   return unpinned_file_paths;
 }
@@ -335,6 +388,11 @@ bool HoldingSpaceTray::GetDropFormats(
     int* formats,
     std::set<ui::ClipboardFormatType>* format_types) {
   *formats = ui::OSExchangeData::FILE_NAME;
+
+  // Support custom web data so that file system sources can be retrieved from
+  // pickled data. That is the storage location at which the Files app stores
+  // both file paths *and* directory paths.
+  format_types->insert(ui::ClipboardFormatType::GetWebCustomDataType());
   return true;
 }
 
