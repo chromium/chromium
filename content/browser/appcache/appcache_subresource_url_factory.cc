@@ -186,6 +186,8 @@ class SubresourceLoader : public network::mojom::URLLoader,
 
   // network::mojom::URLLoaderClient implementation
   // Called by either the appcache or network loader, whichever is in use.
+  void OnReceiveEarlyHints(network::mojom::EarlyHintsPtr early_hints) override {
+  }
   void OnReceiveResponse(
       network::mojom::URLResponseHeadPtr response_head) override {
     // Don't MaybeFallback for appcache produced responses.

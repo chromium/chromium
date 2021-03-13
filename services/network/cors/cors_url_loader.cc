@@ -254,6 +254,13 @@ void CorsURLLoader::ResumeReadingBodyFromNet() {
     network_loader_->ResumeReadingBodyFromNet();
 }
 
+void CorsURLLoader::OnReceiveEarlyHints(
+    network::mojom::EarlyHintsPtr early_hints) {
+  DCHECK(network_loader_);
+  DCHECK(forwarding_client_);
+  forwarding_client_->OnReceiveEarlyHints(std::move(early_hints));
+}
+
 void CorsURLLoader::OnReceiveResponse(mojom::URLResponseHeadPtr response_head) {
   DCHECK(network_loader_);
   DCHECK(forwarding_client_);

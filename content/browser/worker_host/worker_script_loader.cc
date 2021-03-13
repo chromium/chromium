@@ -237,6 +237,12 @@ void WorkerScriptLoader::ResumeReadingBodyFromNet() {
 // Additionally, on redirects it saves the redirect info so if the renderer
 // calls FollowRedirect(), it can do so.
 
+void WorkerScriptLoader::OnReceiveEarlyHints(
+    network::mojom::EarlyHintsPtr early_hints) {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  client_->OnReceiveEarlyHints(std::move(early_hints));
+}
+
 void WorkerScriptLoader::OnReceiveResponse(
     network::mojom::URLResponseHeadPtr response_head) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);

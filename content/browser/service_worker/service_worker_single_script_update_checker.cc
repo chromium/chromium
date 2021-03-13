@@ -193,6 +193,9 @@ ServiceWorkerSingleScriptUpdateChecker::
 
 // URLLoaderClient override ----------------------------------------------------
 
+void ServiceWorkerSingleScriptUpdateChecker::OnReceiveEarlyHints(
+    network::mojom::EarlyHintsPtr early_hints) {}
+
 void ServiceWorkerSingleScriptUpdateChecker::OnReceiveResponse(
     network::mojom::URLResponseHeadPtr response_head) {
   TRACE_EVENT_WITH_FLOW0(

@@ -352,6 +352,7 @@ class InterceptionJob : public network::mojom::URLLoaderClient,
   void ResumeReadingBodyFromNet() override;
 
   // network::mojom::URLLoaderClient methods
+  void OnReceiveEarlyHints(network::mojom::EarlyHintsPtr early_hints) override;
   void OnReceiveResponse(network::mojom::URLResponseHeadPtr head) override;
   void OnReceiveRedirect(const net::RedirectInfo& redirect_info,
                          network::mojom::URLResponseHeadPtr head) override;
@@ -1399,6 +1400,11 @@ void InterceptionJob::ResumeReadingBodyFromNet() {
 }
 
 // URLLoaderClient methods
+void InterceptionJob::OnReceiveEarlyHints(
+    network::mojom::EarlyHintsPtr early_hints) {
+  client_->OnReceiveEarlyHints(std::move(early_hints));
+}
+
 void InterceptionJob::OnReceiveResponse(
     network::mojom::URLResponseHeadPtr head) {
   state_ = State::kResponseReceived;

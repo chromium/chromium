@@ -57,6 +57,7 @@ class BLINK_PLATFORM_EXPORT MojoURLLoaderClient final
   void SetDefersLoading(WebURLLoader::DeferType value);
 
   // network::mojom::URLLoaderClient implementation
+  void OnReceiveEarlyHints(network::mojom::EarlyHintsPtr early_hints) override;
   void OnReceiveResponse(
       network::mojom::URLResponseHeadPtr response_head) override;
   void OnReceiveRedirect(

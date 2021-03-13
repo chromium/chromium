@@ -26,6 +26,9 @@ NavigationPreloadRequest::NavigationPreloadRequest(
 
 NavigationPreloadRequest::~NavigationPreloadRequest() = default;
 
+void NavigationPreloadRequest::OnReceiveEarlyHints(
+    network::mojom::EarlyHintsPtr early_hints) {}
+
 void NavigationPreloadRequest::OnReceiveResponse(
     network::mojom::URLResponseHeadPtr response_head) {
   DCHECK(!response_);

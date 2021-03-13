@@ -173,6 +173,10 @@ class URLLoaderClientInterceptor : public network::mojom::URLLoaderClient {
             params.traffic_annotation);
   }
 
+  void OnReceiveEarlyHints(network::mojom::EarlyHintsPtr early_hints) override {
+    original_client_->OnReceiveEarlyHints(std::move(early_hints));
+  }
+
   void OnReceiveResponse(network::mojom::URLResponseHeadPtr head) override {
     original_client_->OnReceiveResponse(std::move(head));
   }

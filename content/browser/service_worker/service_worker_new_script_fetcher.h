@@ -56,6 +56,7 @@ class CONTENT_EXPORT ServiceWorkerNewScriptFetcher
   void StartScriptLoadingWithNewResourceID(int64_t resource_id);
 
   // network::mojom::URLLoaderClient
+  void OnReceiveEarlyHints(network::mojom::EarlyHintsPtr early_hints) override;
   void OnReceiveResponse(
       network::mojom::URLResponseHeadPtr response_head) override;
   void OnReceiveRedirect(

@@ -119,6 +119,7 @@ class CONTENT_EXPORT NavigationURLLoaderImpl
       base::Time ui_post_time);
 
   // network::mojom::URLLoaderClient implementation:
+  void OnReceiveEarlyHints(network::mojom::EarlyHintsPtr early_hints) override;
   void OnReceiveResponse(network::mojom::URLResponseHeadPtr head) override;
   void OnStartLoadingResponseBody(
       mojo::ScopedDataPipeConsumerHandle response_body) override;

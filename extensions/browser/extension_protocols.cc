@@ -125,6 +125,10 @@ class ResultRecordingClient : public network::mojom::URLLoaderClient {
         ukm_source_id_(ukm_source_id),
         real_client_(std::move(real_client)) {}
 
+  void OnReceiveEarlyHints(network::mojom::EarlyHintsPtr early_hints) override {
+    real_client_->OnReceiveEarlyHints(std::move(early_hints));
+  }
+
   void OnReceiveResponse(
       network::mojom::URLResponseHeadPtr response_head) override {
     real_client_->OnReceiveResponse(std::move(response_head));

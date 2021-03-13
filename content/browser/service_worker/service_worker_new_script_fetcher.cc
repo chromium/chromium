@@ -109,6 +109,9 @@ void ServiceWorkerNewScriptFetcher::StartScriptLoadingWithNewResourceID(
       url_loader_remote_.BindNewPipeAndPassReceiver());
 }
 
+void ServiceWorkerNewScriptFetcher::OnReceiveEarlyHints(
+    network::mojom::EarlyHintsPtr early_hints) {}
+
 void ServiceWorkerNewScriptFetcher::OnReceiveResponse(
     network::mojom::URLResponseHeadPtr response_head) {
   response_head_ = std::move(response_head);

@@ -98,6 +98,11 @@ void WorkerScriptFetcher::Start(
       base::ThreadTaskRunnerHandle::Get());
 }
 
+void WorkerScriptFetcher::OnReceiveEarlyHints(
+    network::mojom::EarlyHintsPtr early_hints) {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+}
+
 void WorkerScriptFetcher::OnReceiveResponse(
     network::mojom::URLResponseHeadPtr response_head) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);

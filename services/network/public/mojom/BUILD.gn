@@ -164,6 +164,7 @@ mojom("url_loader_base") {
     "cross_origin_embedder_policy.mojom",
     "cross_origin_opener_policy.mojom",
     "data_pipe_getter.mojom",
+    "early_hints.mojom",
     "fetch_api.mojom",
     "http_raw_headers.mojom",
     "http_raw_request_response_info.mojom",

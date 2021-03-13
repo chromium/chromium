@@ -72,6 +72,13 @@ void MimeSniffingURLLoader::Start(
                                    task_runner_);
 }
 
+void MimeSniffingURLLoader::OnReceiveEarlyHints(
+    network::mojom::EarlyHintsPtr early_hints) {
+  // OnReceiveEarlyHints() shouldn't be called. See the comment in
+  // OnReceiveResponse().
+  NOTREACHED();
+}
+
 void MimeSniffingURLLoader::OnReceiveResponse(
     network::mojom::URLResponseHeadPtr response_head) {
   // OnReceiveResponse() shouldn't be called because MimeSniffingURLLoader is

@@ -318,6 +318,9 @@ void MojoURLLoaderClient::SetDefersLoading(WebURLLoader::DeferType value) {
   }
 }
 
+void MojoURLLoaderClient::OnReceiveEarlyHints(
+    network::mojom::EarlyHintsPtr early_hints) {}
+
 void MojoURLLoaderClient::OnReceiveResponse(
     network::mojom::URLResponseHeadPtr response_head) {
   TRACE_EVENT1("loading", "MojoURLLoaderClient::OnReceiveResponse", "url",

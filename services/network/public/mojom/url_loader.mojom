@@ -14,6 +14,7 @@ import "services/network/public/mojom/cors.mojom";
 import "services/network/public/mojom/cookie_access_observer.mojom";
 import "services/network/public/mojom/chunked_data_pipe_getter.mojom";
 import "services/network/public/mojom/data_pipe_getter.mojom";
+import "services/network/public/mojom/early_hints.mojom";
 import "services/network/public/mojom/fetch_api.mojom";
 import "services/network/public/mojom/http_request_headers.mojom";
 import "services/network/public/mojom/isolation_info.mojom";
@@ -91,6 +92,9 @@ interface URLLoader {
 
 // Receives messages from a single URLLoader.
 interface URLLoaderClient {
+  // Called when a 103 Early Hints response is received.
+  OnReceiveEarlyHints(EarlyHints early_hints);
+
   // Called when the response head is received.
   OnReceiveResponse(URLResponseHead head);
 

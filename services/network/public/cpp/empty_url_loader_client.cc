@@ -58,6 +58,9 @@ void EmptyURLLoaderClient::MaybeDone() {
     std::move(callback_).Run(*done_status_);
 }
 
+void EmptyURLLoaderClient::OnReceiveEarlyHints(
+    network::mojom::EarlyHintsPtr early_hints) {}
+
 void EmptyURLLoaderClient::OnReceiveResponse(
     const mojom::URLResponseHeadPtr head) {}
 

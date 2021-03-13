@@ -78,6 +78,11 @@ SignedExchangePrefetchHandler::TakePrefetchedSignedExchangeCacheEntry() {
   return signed_exchange_loader_->TakePrefetchedSignedExchangeCacheEntry();
 }
 
+void SignedExchangePrefetchHandler::OnReceiveEarlyHints(
+    network::mojom::EarlyHintsPtr early_hints) {
+  NOTREACHED();
+}
+
 void SignedExchangePrefetchHandler::OnReceiveResponse(
     network::mojom::URLResponseHeadPtr head) {
   NOTREACHED();

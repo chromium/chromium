@@ -137,6 +137,11 @@ void PrefetchURLLoader::ResumeReadingBodyFromNet() {
     loader_->ResumeReadingBodyFromNet();
 }
 
+void PrefetchURLLoader::OnReceiveEarlyHints(
+    network::mojom::EarlyHintsPtr early_hints) {
+  forwarding_client_->OnReceiveEarlyHints(std::move(early_hints));
+}
+
 void PrefetchURLLoader::OnReceiveResponse(
     network::mojom::URLResponseHeadPtr response) {
   if (is_signed_exchange_handling_enabled_ &&

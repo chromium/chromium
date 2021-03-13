@@ -141,6 +141,7 @@ class CONTENT_EXPORT ServiceWorkerSingleScriptUpdateChecker
   ~ServiceWorkerSingleScriptUpdateChecker() override;
 
   // network::mojom::URLLoaderClient override:
+  void OnReceiveEarlyHints(network::mojom::EarlyHintsPtr early_hints) override;
   void OnReceiveResponse(
       network::mojom::URLResponseHeadPtr response_head) override;
   void OnReceiveRedirect(

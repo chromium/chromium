@@ -144,6 +144,9 @@ int AppCacheUpdateJob::UpdateURLLoaderRequest::Cancel() {
   return 0;
 }
 
+void AppCacheUpdateJob::UpdateURLLoaderRequest::OnReceiveEarlyHints(
+    network::mojom::EarlyHintsPtr early_hints) {}
+
 void AppCacheUpdateJob::UpdateURLLoaderRequest::OnReceiveResponse(
     network::mojom::URLResponseHeadPtr response_head) {
   response_ = std::move(response_head);

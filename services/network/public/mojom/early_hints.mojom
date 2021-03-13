@@ -1,0 +1,18 @@
+// Copyright 2021 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module network.mojom;
+
+import "mojo/public/mojom/base/time.mojom";
+import "services/network/public/mojom/parsed_headers.mojom";
+
+// Represents a 103 Early Hints response.
+// https://tools.ietf.org/html/rfc8297
+struct EarlyHints {
+  // The time at which the response headers were received.
+  mojo_base.mojom.Time request_time;
+
+  // The parsed headers.
+  ParsedHeaders headers;
+};

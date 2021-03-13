@@ -133,6 +133,12 @@ NavigationBodyLoader::~NavigationBodyLoader() {
   }
 }
 
+void NavigationBodyLoader::OnReceiveEarlyHints(
+    network::mojom::EarlyHintsPtr early_hints) {
+  // This has already happened in the browser process.
+  NOTREACHED();
+}
+
 void NavigationBodyLoader::OnReceiveResponse(
     network::mojom::URLResponseHeadPtr head) {
   // This has already happened in the browser process.

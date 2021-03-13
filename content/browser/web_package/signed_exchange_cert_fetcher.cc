@@ -230,6 +230,9 @@ void SignedExchangeCertFetcher::OnDataComplete() {
 }
 
 // network::mojom::URLLoaderClient
+void SignedExchangeCertFetcher::OnReceiveEarlyHints(
+    network::mojom::EarlyHintsPtr early_hints) {}
+
 void SignedExchangeCertFetcher::OnReceiveResponse(
     network::mojom::URLResponseHeadPtr head) {
   TRACE_EVENT0(TRACE_DISABLED_BY_DEFAULT("loading"),

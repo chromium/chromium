@@ -129,6 +129,12 @@ void WorkerMainScriptLoader::Cancel() {
   url_loader_remote_.reset();
 }
 
+void WorkerMainScriptLoader::OnReceiveEarlyHints(
+    network::mojom::EarlyHintsPtr early_hints) {
+  // This has already happened in the browser process.
+  NOTREACHED();
+}
+
 void WorkerMainScriptLoader::OnReceiveResponse(
     network::mojom::URLResponseHeadPtr response_head) {
   // This has already happened in the browser process.

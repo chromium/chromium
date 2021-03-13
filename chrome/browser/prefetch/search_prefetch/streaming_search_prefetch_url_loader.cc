@@ -94,6 +94,11 @@ void StreamingSearchPrefetchURLLoader::SetUpForwardingClient(
   RunEventQueue();
 }
 
+void StreamingSearchPrefetchURLLoader::OnReceiveEarlyHints(
+    network::mojom::EarlyHintsPtr early_hints) {
+  // Do nothing.
+}
+
 void StreamingSearchPrefetchURLLoader::OnReceiveResponse(
     network::mojom::URLResponseHeadPtr head) {
   DCHECK(!forwarding_client_);

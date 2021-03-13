@@ -183,6 +183,9 @@ void ServiceWorkerNewScriptLoader::ResumeReadingBodyFromNet() {
 
 // URLLoaderClient for network loader ------------------------------------------
 
+void ServiceWorkerNewScriptLoader::OnReceiveEarlyHints(
+    network::mojom::EarlyHintsPtr early_hints) {}
+
 void ServiceWorkerNewScriptLoader::OnReceiveResponse(
     network::mojom::URLResponseHeadPtr response_head) {
   DCHECK_EQ(LoaderState::kLoadingHeader, network_loader_state_);

@@ -109,6 +109,9 @@ void SignedExchangeValidityPinger::Start(
 
 SignedExchangeValidityPinger::~SignedExchangeValidityPinger() = default;
 
+void SignedExchangeValidityPinger::OnReceiveEarlyHints(
+    network::mojom::EarlyHintsPtr early_hints) {}
+
 void SignedExchangeValidityPinger::OnReceiveResponse(
     network::mojom::URLResponseHeadPtr head) {}
 

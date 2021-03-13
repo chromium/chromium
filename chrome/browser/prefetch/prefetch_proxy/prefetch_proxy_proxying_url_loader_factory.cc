@@ -166,6 +166,11 @@ void PrefetchProxyProxyingURLLoaderFactory::InProgressRequest::
 }
 
 void PrefetchProxyProxyingURLLoaderFactory::InProgressRequest::
+    OnReceiveEarlyHints(network::mojom::EarlyHintsPtr early_hints) {
+  target_client_->OnReceiveEarlyHints(std::move(early_hints));
+}
+
+void PrefetchProxyProxyingURLLoaderFactory::InProgressRequest::
     OnReceiveResponse(network::mojom::URLResponseHeadPtr head) {
   if (head) {
     head_ = head->Clone();

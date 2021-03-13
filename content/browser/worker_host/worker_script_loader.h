@@ -96,6 +96,7 @@ class WorkerScriptLoader : public network::mojom::URLLoader,
   void ResumeReadingBodyFromNet() override;
 
   // network::mojom::URLLoaderClient:
+  void OnReceiveEarlyHints(network::mojom::EarlyHintsPtr early_hints) override;
   void OnReceiveResponse(
       network::mojom::URLResponseHeadPtr response_head) override;
   void OnReceiveRedirect(

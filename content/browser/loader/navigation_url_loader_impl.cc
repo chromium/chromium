@@ -751,6 +751,15 @@ void NavigationURLLoaderImpl::FollowRedirectInternal(
   Restart();
 }
 
+void NavigationURLLoaderImpl::OnReceiveEarlyHints(
+    network::mojom::EarlyHintsPtr early_hints) {
+  // Early Hints should not come after actual response.
+  DCHECK(on_receive_response_time_.is_null());
+  DCHECK(!received_response_);
+
+  // TODO(crbug.com/671310): Handle preload requests.
+}
+
 void NavigationURLLoaderImpl::OnReceiveResponse(
     network::mojom::URLResponseHeadPtr head) {
   head_ = std::move(head);

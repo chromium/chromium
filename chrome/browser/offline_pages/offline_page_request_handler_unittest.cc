@@ -166,6 +166,9 @@ class TestURLLoaderClient : public network::mojom::URLLoaderClient {
   explicit TestURLLoaderClient(Observer* observer) : observer_(observer) {}
   ~TestURLLoaderClient() override {}
 
+  void OnReceiveEarlyHints(network::mojom::EarlyHintsPtr early_hints) override {
+  }
+
   void OnReceiveResponse(
       network::mojom::URLResponseHeadPtr response_head) override {
     observer_->OnReceiveResponse(std::move(response_head));

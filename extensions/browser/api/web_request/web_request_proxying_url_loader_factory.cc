@@ -327,6 +327,11 @@ void WebRequestProxyingURLLoaderFactory::InProgressRequest::
     target_loader_->ResumeReadingBodyFromNet();
 }
 
+void WebRequestProxyingURLLoaderFactory::InProgressRequest::OnReceiveEarlyHints(
+    network::mojom::EarlyHintsPtr early_hints) {
+  target_client_->OnReceiveEarlyHints(std::move(early_hints));
+}
+
 void WebRequestProxyingURLLoaderFactory::InProgressRequest::OnReceiveResponse(
     network::mojom::URLResponseHeadPtr head) {
   if (current_request_uses_header_client_) {

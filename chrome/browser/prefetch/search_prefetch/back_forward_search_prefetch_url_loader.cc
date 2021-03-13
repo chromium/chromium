@@ -116,6 +116,12 @@ void BackForwardSearchPrefetchURLLoader::RestartDirect() {
   }
 }
 
+void BackForwardSearchPrefetchURLLoader::OnReceiveEarlyHints(
+    network::mojom::EarlyHintsPtr early_hints) {
+  DCHECK(forwarding_client_);
+  forwarding_client_->OnReceiveEarlyHints(std::move(early_hints));
+}
+
 void BackForwardSearchPrefetchURLLoader::OnReceiveResponse(
     network::mojom::URLResponseHeadPtr head) {
   DCHECK(forwarding_client_);
