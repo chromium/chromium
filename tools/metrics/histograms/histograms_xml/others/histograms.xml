@@ -18321,7 +18321,7 @@ regressions. -->
 <histogram name="WebUITabStrip.CloseAction" enum="WebUITabStripCloseActions"
     expires_after="2021-07-27">
   <owner>collinbaker@chromium.org</owner>
-  <owner>dfried@chromium.org</owner>
+  <owner>tluk@chromium.org</owner>
   <summary>
     The WebUI tab strip is a more touch-friendly tab strip used in place of
     Chrome's native tab strip in some cases. It can be opened and closed. This
@@ -18343,7 +18343,7 @@ regressions. -->
 <histogram name="WebUITabStrip.OpenAction" enum="WebUITabStripOpenActions"
     expires_after="2021-07-27">
   <owner>collinbaker@chromium.org</owner>
-  <owner>dfried@chromium.org</owner>
+  <owner>tluk@chromium.org</owner>
   <summary>
     The WebUI tab strip is a more touch-friendly tab strip used in place of
     Chrome's native tab strip in some cases. It can be opened and closed. This
@@ -18354,7 +18354,7 @@ regressions. -->
 <histogram name="WebUITabStrip.OpenDuration" units="ms"
     expires_after="2021-08-09">
   <owner>collinbaker@chromium.org</owner>
-  <owner>dfried@chromium.org</owner>
+  <owner>tluk@chromium.org</owner>
   <summary>
     The WebUI tab strip is a more touch-friendly tab strip used in place of
     Chrome's native tab strip in some cases. It can be opened and closed. This
