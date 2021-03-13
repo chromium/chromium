@@ -279,10 +279,13 @@ bool HoldingSpaceItemViewDelegate::OnHoldingSpaceItemViewMousePressed(
   // If the SHIFT key is down, the user is attempting a range-based selection.
   // Remove from the selection the previously selected range and instead add
   // the newly selected range to the selection. Note that the next mouse
-  // released event on `view` is ignored so that `view` isn't accidentally
-  // unselected right after having selected it.
+  // released event on `view` is ignored if this is not a double click so that
+  // `view` isn't accidentally unselected right after having selected it. If
+  // this is a double click, the mouse released event will be handled to launch
+  // the selected holding space items.
   if (event.IsShiftDown()) {
-    ignore_mouse_released_ = view;
+    if (!(event.flags() & ui::EF_IS_DOUBLE_CLICK))
+      ignore_mouse_released_ = view;
     SetSelectedRange(selected_range_start_, /*end=*/view);
     return true;
   }
@@ -294,10 +297,13 @@ bool HoldingSpaceItemViewDelegate::OnHoldingSpaceItemViewMousePressed(
     return true;
 
   // If the CTRL key is down, we need to add `view` to the current selection.
-  // We're going to need to ignore the next mouse released event on `view` so
-  // that we don't unselect `view` accidentally right after having selected it.
+  // We're going to need to ignore the next mouse released event on `view` if
+  // this is not a double click so that we don't unselect `view` accidentally
+  // right after having selected it. If this is a double click, the mouse
+  // released event will be handled to launch the selected holding space items.
   if (event.IsControlDown()) {
-    ignore_mouse_released_ = view;
+    if (!(event.flags() & ui::EF_IS_DOUBLE_CLICK))
+      ignore_mouse_released_ = view;
     view->SetSelected(true);
     return true;
   }
@@ -326,17 +332,19 @@ void HoldingSpaceItemViewDelegate::OnHoldingSpaceItemViewMouseReleased(
   if (event.IsRightMouseButton())
     return;
 
+  // If this mouse released `event` is part of a double click, we should open
+  // the items associated with the current selection. It is expected that the
+  // `view` being clicked is already part of the selection.
+  if (event.flags() & ui::EF_IS_DOUBLE_CLICK) {
+    DCHECK(view->selected());
+    OpenItems(GetSelection());
+    return;
+  }
+
   // If the CTRL key is down, mouse release should toggle the selected state of
   // `view`. It's possible that the current selection be empty after doing so.
   if (event.IsControlDown()) {
     view->SetSelected(!view->selected());
-    return;
-  }
-
-  // If this mouse released `event` is part of a double click, we should open
-  // the items associated with the current selection.
-  if (event.flags() & ui::EF_IS_DOUBLE_CLICK) {
-    OpenItems(GetSelection());
     return;
   }
 
