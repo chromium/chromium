@@ -120,3 +120,11 @@ JSON file is that it is more clear what the JSON object output will look like
 typically much more readable - especially when an API will have many methods or
 long descriptions.  However, IDL is not as fully-featured as JSON in terms of
 accepted properties on different nodes.
+
+## Promise Based Function Returns
+Extension functions can be made to both accept a callback as a final parameter,
+or return a promise if the callback is omitted. In IDL schemas this is achieved
+by adding the `[supportsPromises]` extended attribute in front of the function
+definition. For JSON schemas, instead of specifying the callback as a function
+at the end of the parameter list, it is explicitly defined as an asynchronous
+return using the `returns_async` key on the function itself.
