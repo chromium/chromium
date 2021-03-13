@@ -5552,9 +5552,7 @@
 
     'android_11_emulator_gtests': [
       'android_monochrome_smoke_tests',
-      'android_pagecontroller_self_tests',
       'android_smoke_tests',
-      'android_webapk_launch_tests',
       'android_specific_chromium_gtests',  # Already includes gl_gtests.
       'chromium_gtests',
       'chromium_gtests_for_devices_with_graphical_output',
