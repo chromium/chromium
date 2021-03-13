@@ -1719,6 +1719,31 @@ TEST_F(HidReportDescriptorTest, ExtraEndCollectionIgnored) {
   ValidateCollections(base::make_span(kExtraEndCollectionDescriptor));
 }
 
+TEST_F(HidReportDescriptorTest, ZeroByteLogicalMinMax) {
+  static const uint8_t kZeroByteLogicalMinMaxDescriptor[] = {
+      0x05, 0x01,  // Usage Page (Generic Desktop Ctrls)
+      0x09, 0x04,  // Usage (Joystick)
+      0xA1, 0x01,  // Collection (Application)
+      0x75, 0x08,  //   Report Size (8)
+      0x95, 0x01,  //   Report Count (1)
+      0x09, 0x30,  //   Usage (X)
+      0x14,        //   Logical Minimum (0)
+      0x24,        //   Logical Maximum (0)
+      0x34,        //   Physical Minimum (0)
+      0x44,        //   Physical Maximum (0)
+      0x81, 0x02,  //   Input (Data,Var,Abs,No Wrap,Linear,Preferred State,No
+                   //   Null Position)
+      0xC0,        // End Collection
+  };
+
+  auto* top = AddTopCollection(kUsageGenericDesktopJoystick,
+                               kCollectionTypeApplication);
+  SetReportSizeAndCount(8, 1);
+  SetLogicalAndPhysicalBounds(0, 0, 0, 0);
+  AddReportItem(top, kInput, kAbsoluteVariable, {kUsageGenericDesktopX});
+  ValidateCollections(base::make_span(kZeroByteLogicalMinMaxDescriptor));
+}
+
 TEST_F(HidReportDescriptorTest, OneByteLogicalMinMax) {
   static const uint8_t kOneByteLogicalMinMaxDescriptor[] = {
       0x05, 0x01,  // Usage Page (Generic Desktop Ctrls)

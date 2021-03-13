@@ -46,6 +46,9 @@ uint32_t MaybeCombineUsageAndUsagePage(
 // wide. The value is returned as a 32-bit signed integer, extending the sign
 // bit as needed.
 int32_t Int32FromValueAndSize(uint32_t value, size_t payload_size) {
+  if (payload_size == 0)
+    return 0;
+
   if (payload_size == 1)
     return int8_t{uint8_t{value}};
 
