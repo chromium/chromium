@@ -22,6 +22,8 @@ class WEB_MODAL_EXPORT ModalDialogHostObserver {
   virtual ~ModalDialogHostObserver();
 
   virtual void OnPositionRequiresUpdate() = 0;
+
+  // The host must call this method on each observer before destruction.
   virtual void OnHostDestroying() = 0;
 };
 
@@ -37,7 +39,9 @@ class WEB_MODAL_EXPORT ModalDialogHost {
   // Returns whether a dialog currently about to be shown should be activated.
   virtual bool ShouldActivateDialog() const;
 
-  // Add/remove observer.
+  // Add/remove observer. The host must implement these methods, store the
+  // observers in a list, and call OnHostDestroying() on each before host
+  // destruction. See https://crbug.com/1170577
   virtual void AddObserver(ModalDialogHostObserver* observer) = 0;
   virtual void RemoveObserver(ModalDialogHostObserver* observer) = 0;
 };
