@@ -11,7 +11,4 @@
 
     <!-- Menu button dragging related dimensions -->
     <dimen name="auto_scroll_full_velocity">500dp</dimen>
-
-    <!-- Misc. menu dimens -->
-    <dimen name="menu_elevation">@dimen/default_elevation_2</dimen>
 </resources>

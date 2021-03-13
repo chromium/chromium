@@ -6,12 +6,12 @@ package org.chromium.components.browser_ui.widget.listmenu;
 
 import android.content.Context;
 import android.content.res.TypedArray;
+import android.graphics.Color;
 import android.graphics.Rect;
-import android.graphics.drawable.Drawable;
+import android.graphics.drawable.ColorDrawable;
 import android.text.TextUtils;
 import android.util.AttributeSet;
 
-import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.base.ObserverList;
 import org.chromium.components.browser_ui.widget.R;
 import org.chromium.ui.widget.AnchoredPopupWindow;
@@ -39,7 +39,6 @@ public class ListMenuButton
     private final boolean mMenuVerticalOverlapAnchor;
     private final boolean mMenuHorizontalOverlapAnchor;
 
-    private Drawable mMenuBackground;
     private AnchoredPopupWindow mPopupMenu;
     private ListMenuButtonDelegate mDelegate;
     private ObserverList<PopupMenuShownListener> mPopupListeners = new ObserverList<>();
@@ -57,11 +56,6 @@ public class ListMenuButton
         TypedArray a = context.obtainStyledAttributes(attrs, R.styleable.ListMenuButton);
         mMenuMaxWidth = a.getDimensionPixelSize(R.styleable.ListMenuButton_menuMaxWidth,
                 getResources().getDimensionPixelSize(R.dimen.list_menu_width));
-        mMenuBackground = a.getDrawable(R.styleable.ListMenuButton_menuBackground);
-        if (mMenuBackground == null) {
-            mMenuBackground =
-                    ApiCompatibilityUtils.getDrawable(getResources(), R.drawable.popup_bg_tinted);
-        }
         mMenuHorizontalOverlapAnchor =
                 a.getBoolean(R.styleable.ListMenuButton_menuHorizontalOverlapAnchor, true);
         mMenuVerticalOverlapAnchor =
@@ -123,8 +117,9 @@ public class ListMenuButton
         ListMenu menu = mDelegate.getListMenu();
         menu.addContentViewClickRunnable(this::dismiss);
 
-        mPopupMenu = new AnchoredPopupWindow(getContext(), this, mMenuBackground,
-                menu.getContentView(), mDelegate.getRectProvider(this));
+        mPopupMenu =
+                new AnchoredPopupWindow(getContext(), this, new ColorDrawable(Color.TRANSPARENT),
+                        menu.getContentView(), mDelegate.getRectProvider(this));
         mPopupMenu.setVerticalOverlapAnchor(mMenuVerticalOverlapAnchor);
         mPopupMenu.setHorizontalOverlapAnchor(mMenuHorizontalOverlapAnchor);
         mPopupMenu.setMaxWidth(mMenuMaxWidth);

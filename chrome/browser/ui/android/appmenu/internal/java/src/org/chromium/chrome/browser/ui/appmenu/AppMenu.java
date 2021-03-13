@@ -8,7 +8,9 @@ import android.animation.Animator;
 import android.animation.AnimatorSet;
 import android.content.Context;
 import android.content.res.Resources;
+import android.graphics.Color;
 import android.graphics.Rect;
+import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.os.SystemClock;
@@ -211,7 +213,10 @@ class AppMenu implements OnItemClickListener, OnKeyListener, AppMenuClickHandler
         // drawable here even though our style says @null we should use this padding instead...
         Drawable originalBgDrawable = mPopup.getBackground();
 
-        mPopup.setBackgroundDrawable(null);
+        // Setting this to a transparent ColorDrawable instead of null because setting it to null
+        // prevents the menu from being dismissed by tapping outside or pressing the back button on
+        // Android L.
+        mPopup.setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
         // Make sure that the popup window will be closed when touch outside of it.
         mPopup.setOutsideTouchable(true);
 
@@ -243,7 +248,6 @@ class AppMenu implements OnItemClickListener, OnKeyListener, AppMenuClickHandler
                 (ViewGroup) LayoutInflater.from(context).inflate(R.layout.app_menu_layout, null);
         // Setting android:clipToOutline in xml causes an "attribute not found" error.
         contentView.setClipToOutline(true);
-        mPopup.setElevation(context.getResources().getDimensionPixelSize(R.dimen.menu_elevation));
 
         Rect bgPadding = new Rect();
         contentView.getBackground().getPadding(bgPadding);

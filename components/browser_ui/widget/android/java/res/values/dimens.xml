@@ -130,8 +130,11 @@
     <dimen name="chip_list_side_padding">-16dp</dimen>
 
     <!-- Misc. app menu dimens -->
-    <dimen name="app_menu_corner_size">?attr/menuCornerSize</dimen>
+    <!-- ?attr/menuCornerSize doesn't work on Lollipop. So, we use a default dimen here and
+         reference the ?attr/ one in v23/dimens.xml. See https://crbug.com/1187338. -->
+    <dimen name="app_menu_corner_size">@dimen/popup_bg_corner_radius</dimen>
     <dimen name="app_menu_shadow_length">@dimen/default_shadow_length_elev_2</dimen>
+    <dimen name="app_menu_elevation">@dimen/default_elevation_2</dimen>
 
     <!-- Misc refactor dimensions -->
     <dimen name="refactor_menu_rounded_corner_radius">28dp</dimen>
