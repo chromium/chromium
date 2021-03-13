@@ -485,7 +485,8 @@ void AutocompleteResult::AttachPedalsToMatches(
       continue;
     }
 
-    OmniboxPedal* const pedal = provider->FindPedalMatch(input, match.contents);
+    OmniboxPedal* const pedal =
+        provider->FindReadyPedalMatch(input, match.contents);
     if (pedal) {
       const auto result = pedals_found.insert(pedal);
       if (result.second)

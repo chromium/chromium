@@ -688,8 +688,7 @@ bool OmniboxFieldTrial::IsPedalSuggestionsEnabled() {
 }
 
 bool OmniboxFieldTrial::IsPedalsBatch2Enabled() {
-  return IsPedalSuggestionsEnabled() &&
-         base::FeatureList::IsEnabled(omnibox::kOmniboxPedalsBatch2);
+  return base::FeatureList::IsEnabled(omnibox::kOmniboxPedalsBatch2);
 }
 
 bool OmniboxFieldTrial::IsKeywordSearchButtonEnabled() {

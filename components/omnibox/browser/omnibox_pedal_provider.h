@@ -29,10 +29,14 @@ class OmniboxPedalProvider {
   OmniboxPedalProvider(const OmniboxPedalProvider&) = delete;
   OmniboxPedalProvider& operator=(const OmniboxPedalProvider&) = delete;
 
+  // Returns the Pedal found to match given |match_text| or else nullptr if
+  // none match. Triggering readiness is irrelevant.
+  OmniboxPedal* FindPedalMatch(const std::u16string& match_text);
+
   // Returns the Pedal triggered by given |match_text| or nullptr if none
   // trigger. The |input| is used to determine suitability for current context.
-  OmniboxPedal* FindPedalMatch(const AutocompleteInput& input,
-                               const std::u16string& match_text);
+  OmniboxPedal* FindReadyPedalMatch(const AutocompleteInput& input,
+                                    const std::u16string& match_text);
 
   // "Fake" implementation of AutocompleteProvider AddProviderInfo, though this
   // class is not a true subclass of AutocompleteProvider. This is used

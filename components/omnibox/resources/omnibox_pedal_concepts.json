@@ -1,7 +1,7 @@
 {
   "schema": "pedals_translation_model",
   "schema_version": 2,
-  "time_generated": "2021-03-09T00:05:57.662Z",
+  "time_generated": "2021-03-11T00:52:18.004Z",
   "primary_language_code": "en",
   "pedal_definitions": [
     {
@@ -5014,7 +5014,7 @@
           "cover_cases": [
             "run chrome safety check"
           ],
-          "enabled": false
+          "enabled": true
         },
         {
           "id": 8,
@@ -5060,7 +5060,7 @@
           "cover_cases": [
             "manage security settings"
           ],
-          "enabled": false
+          "enabled": true
         },
         {
           "id": 9,
@@ -5110,7 +5110,7 @@
             "manage cookies",
             "disallow all third-party cookies"
           ],
-          "enabled": false
+          "enabled": true
         },
         {
           "id": 10,
@@ -5153,7 +5153,7 @@
           "cover_cases": [
             "manage addresses"
           ],
-          "enabled": false
+          "enabled": true
         },
         {
           "id": 11,
@@ -5193,7 +5193,7 @@
           "cover_cases": [
             "manage sync"
           ],
-          "enabled": false
+          "enabled": true
         },
         {
           "id": 12,
@@ -5233,7 +5233,7 @@
           "cover_cases": [
             "manage site settings"
           ],
-          "enabled": false
+          "enabled": true
         },
         {
           "id": 13,
@@ -5242,21 +5242,40 @@
               "required": true,
               "single": true,
               "synonyms": [
-                "create"
+                "google workspace",
+                "google chrome",
+                "workspace",
+                "browser",
+                "g suite",
+                "google",
+                "chrome",
+                "gsuite"
               ]
             },
             {
               "required": true,
               "single": true,
               "synonyms": [
-                "google doc"
+                "create",
+                "start",
+                "open",
+                "make",
+                "new"
+              ]
+            },
+            {
+              "required": true,
+              "single": true,
+              "synonyms": [
+                "document",
+                "doc"
               ]
             }
           ],
           "cover_cases": [
             "create google doc"
           ],
-          "enabled": false
+          "enabled": true
         },
         {
           "id": 14,

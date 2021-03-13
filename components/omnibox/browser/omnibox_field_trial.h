@@ -394,7 +394,7 @@ bool IsTabSwitchSuggestionsEnabled();
 // Returns true if the Pedals and suggestion button row features are enabled.
 bool IsPedalSuggestionsEnabled();
 
-// Returns true if button row, Pedals, and the second batch are all enabled.
+// Returns true if the second batch of Pedals is enabled.
 bool IsPedalsBatch2Enabled();
 
 // Returns true if the keyword button and suggestion button row features are

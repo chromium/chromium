@@ -256,6 +256,19 @@
     Manage site settings button, press Enter to manage permissions and data stored across sites in Chrome settings
   </message>
 
+  <message name="IDS_OMNIBOX_PEDAL_CREATE_GOOGLE_DOC_HINT" desc="The button text contents to suggest pedal action, Create Google Doc.">
+    Create Google Doc
+  </message>
+  <message name="IDS_OMNIBOX_PEDAL_CREATE_GOOGLE_DOC_SUGGESTION_CONTENTS" desc="The suggestion content text to suggest pedal action, Create Google Doc.">
+    Create a new Google Doc quickly
+  </message>
+  <message name="IDS_ACC_OMNIBOX_PEDAL_CREATE_GOOGLE_DOC_SUFFIX" desc="Suffix for spoken suggestion description with Create Google Doc pedal action to explain keystroke used to Create Google Doc.">
+    <ph name="CREATE_GOOGLE_DOC_FOCUSED_FRIENDLY_MATCH_TEXT">$1<ex>The Chromium Projects http://www.chromium.org bookmark</ex></ph>, press Tab then Enter to Create Google Doc
+  </message>
+  <message name="IDS_ACC_OMNIBOX_PEDAL_CREATE_GOOGLE_DOC" desc="Announcement when the Create Google Doc pedal button is focused.">
+    Create Google Doc button, press Enter to Create a new Google Doc quickly
+  </message>
+
   <!-- Accessibility labels for autocomplete match types.
        These are parameterized on the text being completed into the omnibox.
   -->

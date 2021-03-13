@@ -78,29 +78,39 @@ size_t OmniboxPedalProvider::EstimateMemoryUsage() const {
 }
 
 OmniboxPedal* OmniboxPedalProvider::FindPedalMatch(
-    const AutocompleteInput& input,
     const std::u16string& match_text) {
   OmniboxPedal::Tokens match_tokens = Tokenize(match_text);
   if (match_tokens.empty()) {
     return nullptr;
   }
-
-  // Some users may be in a counterfactual study arm in which the pedal button
-  // is not attached to the suggestion.
-  bool in_pedal_counterfactual_group = base::GetFieldTrialParamByFeatureAsBool(
-      omnibox::kOmniboxPedalSuggestions, "PedalSuggestionsCounterfactualArm",
-      false);
-
   for (const auto& pedal : pedals_) {
-    if (pedal.second->IsTriggerMatch(match_tokens) &&
-        pedal.second->IsReadyToTrigger(input, client_)) {
-      field_trial_triggered_ = true;
-      field_trial_triggered_in_session_ = true;
-
-      return in_pedal_counterfactual_group ? nullptr : pedal.second.get();
+    if (pedal.second->IsTriggerMatch(match_tokens)) {
+      return pedal.second.get();
     }
   }
   return nullptr;
+}
+
+OmniboxPedal* OmniboxPedalProvider::FindReadyPedalMatch(
+    const AutocompleteInput& input,
+    const std::u16string& match_text) {
+  OmniboxPedal* const found = FindPedalMatch(match_text);
+  if (found == nullptr || !found->IsReadyToTrigger(input, client_)) {
+    return nullptr;
+  }
+
+  field_trial_triggered_ = true;
+  field_trial_triggered_in_session_ = true;
+
+  // Some users may be in a counterfactual study arm in which the pedal button
+  // is not attached to the suggestion, even though it triggered.
+  if (base::GetFieldTrialParamByFeatureAsBool(
+          omnibox::kOmniboxPedalSuggestions,
+          "PedalSuggestionsCounterfactualArm", false)) {
+    return nullptr;
+  }
+
+  return found;
 }
 
 OmniboxPedal::Tokens OmniboxPedalProvider::Tokenize(

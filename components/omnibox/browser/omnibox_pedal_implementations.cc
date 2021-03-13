@@ -219,6 +219,26 @@ class OmniboxPedalManageSiteSettings : public OmniboxPedal {
 
 // =============================================================================
 
+class OmniboxPedalCreateGoogleDoc : public OmniboxPedal {
+ public:
+  OmniboxPedalCreateGoogleDoc()
+      : OmniboxPedal(
+            OmniboxPedalId::CREATE_GOOGLE_DOC,
+            OmniboxPedal::LabelStrings(
+                IDS_OMNIBOX_PEDAL_CREATE_GOOGLE_DOC_HINT,
+                IDS_OMNIBOX_PEDAL_CREATE_GOOGLE_DOC_SUGGESTION_CONTENTS,
+                IDS_ACC_OMNIBOX_PEDAL_CREATE_GOOGLE_DOC_SUFFIX,
+                IDS_ACC_OMNIBOX_PEDAL_CREATE_GOOGLE_DOC),
+            GURL("https://doc.new")) {}
+  bool IsReadyToTrigger(
+      const AutocompleteInput& input,
+      const AutocompleteProviderClient& client) const override {
+    return client.IsAuthenticated();
+  }
+};
+
+// =============================================================================
+
 std::unordered_map<OmniboxPedalId, std::unique_ptr<OmniboxPedal>>
 GetPedalImplementations() {
   std::unordered_map<OmniboxPedalId, std::unique_ptr<OmniboxPedal>> pedals;
@@ -241,6 +261,7 @@ GetPedalImplementations() {
     add(OmniboxPedalId::MANAGE_SYNC, new OmniboxPedalManageSync());
     add(OmniboxPedalId::MANAGE_SITE_SETTINGS,
         new OmniboxPedalManageSiteSettings());
+    add(OmniboxPedalId::CREATE_GOOGLE_DOC, new OmniboxPedalCreateGoogleDoc());
   }
   return pedals;
 }
