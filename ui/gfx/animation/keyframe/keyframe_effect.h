@@ -43,18 +43,19 @@ class GFX_KEYFRAME_ANIMATION_EXPORT KeyframeEffect {
   KeyframeEffect(const KeyframeEffect&) = delete;
   KeyframeEffect& operator=(const KeyframeEffect&) = delete;
 
-  void AddKeyframeModel(std::unique_ptr<KeyframeModel> keyframe_model);
+  virtual void AddKeyframeModel(std::unique_ptr<KeyframeModel> keyframe_model);
+  void RemoveAllKeyframeModels();
   void RemoveKeyframeModel(int keyframe_model_id);
   void RemoveKeyframeModels(int target_property);
-  void RemoveAllKeyframeModels();
 
-  void Tick(base::TimeTicks monotonic_time);
+  virtual void Tick(base::TimeTicks monotonic_time);
 
   // This ticks all keyframe models until they are complete.
   void FinishAll();
 
   using KeyframeModels = std::vector<std::unique_ptr<KeyframeModel>>;
-  const KeyframeModels& keyframe_models() { return keyframe_models_; }
+  const KeyframeModels& keyframe_models() const { return keyframe_models_; }
+  KeyframeModels& keyframe_models() { return keyframe_models_; }
 
   // The transition is analogous to CSS transitions. When configured, the
   // transition object will cause subsequent calls the corresponding
@@ -99,15 +100,24 @@ class GFX_KEYFRAME_ANIMATION_EXPORT KeyframeEffect {
                                 const gfx::SizeF& default_value) const;
   SkColor GetTargetColorValue(int target_property, SkColor default_value) const;
   KeyframeModel* GetRunningKeyframeModelForProperty(int target_property) const;
+  KeyframeModel* GetKeyframeModel(int target_property) const;
+  KeyframeModel* GetKeyframeModelById(int id) const;
 
- private:
+ protected:
+  // Removes all keyframe models in the range provided. This is virtual so that
+  // subclasses that need to do extra bookkeeping upon removals may do so. As a
+  // consequence, please ensure that all removals happen via this method.
+  virtual void RemoveKeyframeModelRange(
+      typename KeyframeModels::iterator to_remove_begin,
+      typename KeyframeModels::iterator to_remove_end);
   void TickKeyframeModel(base::TimeTicks monotonic_time,
                          KeyframeModel* keyframe_model);
+
+ private:
   void TickInternal(base::TimeTicks monotonic_time,
                     bool include_infinite_animations);
   void StartKeyframeModels(base::TimeTicks monotonic_time,
                            bool include_infinite_animations);
-  KeyframeModel* GetKeyframeModelForProperty(int target_property) const;
   template <typename ValueType>
   ValueType GetTargetValue(int target_property,
                            const ValueType& default_value) const;

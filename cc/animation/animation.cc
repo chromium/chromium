@@ -238,7 +238,8 @@ void Animation::ActivateKeyframeModels() {
 
 KeyframeModel* Animation::GetKeyframeModel(
     TargetProperty::Type target_property) const {
-  return keyframe_effect_->GetKeyframeModel(target_property);
+  return KeyframeModel::ToCcKeyframeModel(
+      keyframe_effect_->GetKeyframeModel(target_property));
 }
 
 std::string Animation::ToString() const {

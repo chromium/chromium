@@ -570,7 +570,8 @@ PropertyToElementIdMap ElementAnimations::GetPropertyToElementIdMap() const {
         static_cast<TargetProperty::Type>(property_index);
     ElementId element_id_for_property;
     for (auto& keyframe_effect : keyframe_effects_list_) {
-      KeyframeModel* model = keyframe_effect.GetKeyframeModel(property);
+      KeyframeModel* model = KeyframeModel::ToCcKeyframeModel(
+          keyframe_effect.GetKeyframeModel(property));
       if (model) {
         // We deliberately use two branches here so that the DCHECK can
         // differentiate between models with different element ids, and the case

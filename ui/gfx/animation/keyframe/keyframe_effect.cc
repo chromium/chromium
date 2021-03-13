@@ -208,27 +208,41 @@ void KeyframeEffect::AddKeyframeModel(
 }
 
 void KeyframeEffect::RemoveKeyframeModel(int keyframe_model_id) {
-  base::EraseIf(keyframe_models_,
-                [keyframe_model_id](
-                    const std::unique_ptr<KeyframeModel>& keyframe_model) {
-                  return keyframe_model->id() == keyframe_model_id;
-                });
+  // Since we want to use the KeyframeModels that we're going to remove, we
+  // need to use a stable_partition here instead of remove_if. remove_if leaves
+  // the removed items in an unspecified state.
+  auto keyframe_models_to_remove = std::stable_partition(
+      keyframe_models_.begin(), keyframe_models_.end(),
+      [keyframe_model_id](
+          const std::unique_ptr<gfx::KeyframeModel>& keyframe_model) {
+        return keyframe_model->id() != keyframe_model_id;
+      });
+
+  RemoveKeyframeModelRange(keyframe_models_to_remove, keyframe_models_.end());
 }
 
 void KeyframeEffect::RemoveKeyframeModels(int target_property) {
-  base::EraseIf(
-      keyframe_models_,
-      [target_property](const std::unique_ptr<KeyframeModel>& keyframe_model) {
-        return keyframe_model->TargetProperty() == target_property;
+  auto keyframe_models_to_remove = std::stable_partition(
+      keyframe_models_.begin(), keyframe_models_.end(),
+      [target_property](
+          const std::unique_ptr<gfx::KeyframeModel>& keyframe_model) {
+        return keyframe_model->TargetProperty() != target_property;
       });
+  RemoveKeyframeModelRange(keyframe_models_to_remove, keyframe_models_.end());
 }
 
 void KeyframeEffect::RemoveAllKeyframeModels() {
-  keyframe_models_.clear();
+  RemoveKeyframeModelRange(keyframe_models_.begin(), keyframe_models_.end());
 }
 
 void KeyframeEffect::Tick(base::TimeTicks monotonic_time) {
   TickInternal(monotonic_time, true);
+}
+
+void KeyframeEffect::RemoveKeyframeModelRange(
+    typename KeyframeModels::iterator to_remove_begin,
+    typename KeyframeModels::iterator to_remove_end) {
+  keyframe_models_.erase(to_remove_begin, to_remove_end);
 }
 
 void KeyframeEffect::TickKeyframeModel(base::TimeTicks monotonic_time,
@@ -400,21 +414,26 @@ KeyframeModel* KeyframeEffect::GetRunningKeyframeModelForProperty(
   return nullptr;
 }
 
-KeyframeModel* KeyframeEffect::GetKeyframeModelForProperty(
-    int target_property) const {
-  for (auto& keyframe_model : keyframe_models_) {
-    if (keyframe_model->TargetProperty() == target_property) {
-      return keyframe_model.get();
-    }
+KeyframeModel* KeyframeEffect::GetKeyframeModel(int target_property) const {
+  for (size_t i = 0; i < keyframe_models().size(); ++i) {
+    size_t index = keyframe_models().size() - i - 1;
+    if (keyframe_models_[index]->TargetProperty() == target_property)
+      return keyframe_models_[index].get();
   }
+  return nullptr;
+}
+
+KeyframeModel* KeyframeEffect::GetKeyframeModelById(int id) const {
+  for (auto& keyframe_model : keyframe_models())
+    if (keyframe_model->id() == id)
+      return keyframe_model.get();
   return nullptr;
 }
 
 template <typename ValueType>
 ValueType KeyframeEffect::GetTargetValue(int target_property,
                                          const ValueType& default_value) const {
-  KeyframeModel* running_keyframe_model =
-      GetKeyframeModelForProperty(target_property);
+  KeyframeModel* running_keyframe_model = GetKeyframeModel(target_property);
   if (!running_keyframe_model) {
     return default_value;
   }

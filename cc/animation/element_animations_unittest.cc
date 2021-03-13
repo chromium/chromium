@@ -2539,11 +2539,13 @@ TEST_F(ElementAnimationsTest, NewlyPushedAnimationWaitsForActivation) {
             animation_impl_->keyframe_effect()
                 ->GetKeyframeModelById(keyframe_model_id)
                 ->run_state());
-  EXPECT_TRUE(animation_impl_->keyframe_effect()
-                  ->GetKeyframeModelById(keyframe_model_id)
+  EXPECT_TRUE(KeyframeModel::ToCcKeyframeModel(
+                  animation_impl_->keyframe_effect()->GetKeyframeModelById(
+                      keyframe_model_id))
                   ->affects_pending_elements());
-  EXPECT_FALSE(animation_impl_->keyframe_effect()
-                   ->GetKeyframeModelById(keyframe_model_id)
+  EXPECT_FALSE(KeyframeModel::ToCcKeyframeModel(
+                   animation_impl_->keyframe_effect()->GetKeyframeModelById(
+                       keyframe_model_id))
                    ->affects_active_elements());
 
   animation_impl_->Tick(kInitialTickTime);
@@ -2567,11 +2569,13 @@ TEST_F(ElementAnimationsTest, NewlyPushedAnimationWaitsForActivation) {
   EXPECT_EQ(0.f, client_impl_.GetOpacity(element_id_, ElementListType::ACTIVE));
 
   animation_impl_->ActivateKeyframeModels();
-  EXPECT_TRUE(animation_impl_->keyframe_effect()
-                  ->GetKeyframeModelById(keyframe_model_id)
+  EXPECT_TRUE(KeyframeModel::ToCcKeyframeModel(
+                  animation_impl_->keyframe_effect()->GetKeyframeModelById(
+                      keyframe_model_id))
                   ->affects_pending_elements());
-  EXPECT_TRUE(animation_impl_->keyframe_effect()
-                  ->GetKeyframeModelById(keyframe_model_id)
+  EXPECT_TRUE(KeyframeModel::ToCcKeyframeModel(
+                  animation_impl_->keyframe_effect()->GetKeyframeModelById(
+                      keyframe_model_id))
                   ->affects_active_elements());
 
   animation_impl_->Tick(kInitialTickTime + TimeDelta::FromMilliseconds(1000));
@@ -2607,11 +2611,13 @@ TEST_F(ElementAnimationsTest, ActivationBetweenAnimateAndUpdateState) {
             animation_impl_->keyframe_effect()
                 ->GetKeyframeModelById(keyframe_model_id)
                 ->run_state());
-  EXPECT_TRUE(animation_impl_->keyframe_effect()
-                  ->GetKeyframeModelById(keyframe_model_id)
+  EXPECT_TRUE(KeyframeModel::ToCcKeyframeModel(
+                  animation_impl_->keyframe_effect()->GetKeyframeModelById(
+                      keyframe_model_id))
                   ->affects_pending_elements());
-  EXPECT_FALSE(animation_impl_->keyframe_effect()
-                   ->GetKeyframeModelById(keyframe_model_id)
+  EXPECT_FALSE(KeyframeModel::ToCcKeyframeModel(
+                   animation_impl_->keyframe_effect()->GetKeyframeModelById(
+                       keyframe_model_id))
                    ->affects_active_elements());
 
   animation_impl_->Tick(kInitialTickTime);
@@ -2623,11 +2629,13 @@ TEST_F(ElementAnimationsTest, ActivationBetweenAnimateAndUpdateState) {
   EXPECT_EQ(0.f, client_impl_.GetOpacity(element_id_, ElementListType::ACTIVE));
 
   animation_impl_->ActivateKeyframeModels();
-  EXPECT_TRUE(animation_impl_->keyframe_effect()
-                  ->GetKeyframeModelById(keyframe_model_id)
+  EXPECT_TRUE(KeyframeModel::ToCcKeyframeModel(
+                  animation_impl_->keyframe_effect()->GetKeyframeModelById(
+                      keyframe_model_id))
                   ->affects_pending_elements());
-  EXPECT_TRUE(animation_impl_->keyframe_effect()
-                  ->GetKeyframeModelById(keyframe_model_id)
+  EXPECT_TRUE(KeyframeModel::ToCcKeyframeModel(
+                  animation_impl_->keyframe_effect()->GetKeyframeModelById(
+                      keyframe_model_id))
                   ->affects_active_elements());
 
   animation_impl_->UpdateState(true, events.get());
@@ -3568,11 +3576,13 @@ TEST_F(ElementAnimationsTest, PushedDeletedAnimationWaitsForActivation) {
   EXPECT_EQ(0.5f,
             client_impl_.GetOpacity(element_id_, ElementListType::ACTIVE));
 
-  EXPECT_TRUE(animation_impl_->keyframe_effect()
-                  ->GetKeyframeModelById(keyframe_model_id)
+  EXPECT_TRUE(KeyframeModel::ToCcKeyframeModel(
+                  animation_impl_->keyframe_effect()->GetKeyframeModelById(
+                      keyframe_model_id))
                   ->affects_pending_elements());
-  EXPECT_TRUE(animation_impl_->keyframe_effect()
-                  ->GetKeyframeModelById(keyframe_model_id)
+  EXPECT_TRUE(KeyframeModel::ToCcKeyframeModel(
+                  animation_impl_->keyframe_effect()->GetKeyframeModelById(
+                      keyframe_model_id))
                   ->affects_active_elements());
 
   // Delete the animation on the main-thread animations.
@@ -3581,11 +3591,13 @@ TEST_F(ElementAnimationsTest, PushedDeletedAnimationWaitsForActivation) {
   PushProperties();
 
   // The animation should no longer affect pending elements.
-  EXPECT_FALSE(animation_impl_->keyframe_effect()
-                   ->GetKeyframeModelById(keyframe_model_id)
+  EXPECT_FALSE(KeyframeModel::ToCcKeyframeModel(
+                   animation_impl_->keyframe_effect()->GetKeyframeModelById(
+                       keyframe_model_id))
                    ->affects_pending_elements());
-  EXPECT_TRUE(animation_impl_->keyframe_effect()
-                  ->GetKeyframeModelById(keyframe_model_id)
+  EXPECT_TRUE(KeyframeModel::ToCcKeyframeModel(
+                  animation_impl_->keyframe_effect()->GetKeyframeModelById(
+                      keyframe_model_id))
                   ->affects_active_elements());
 
   animation_impl_->Tick(kInitialTickTime + TimeDelta::FromMilliseconds(500));
@@ -3644,17 +3656,21 @@ TEST_F(ElementAnimationsTest, StartAnimationsAffectingDifferentObservers) {
 
   // The original animation should only affect active elements, and the new
   // animation should only affect pending elements.
-  EXPECT_FALSE(animation_impl_->keyframe_effect()
-                   ->GetKeyframeModelById(first_keyframe_model_id)
+  EXPECT_FALSE(KeyframeModel::ToCcKeyframeModel(
+                   animation_impl_->keyframe_effect()->GetKeyframeModelById(
+                       first_keyframe_model_id))
                    ->affects_pending_elements());
-  EXPECT_TRUE(animation_impl_->keyframe_effect()
-                  ->GetKeyframeModelById(first_keyframe_model_id)
+  EXPECT_TRUE(KeyframeModel::ToCcKeyframeModel(
+                  animation_impl_->keyframe_effect()->GetKeyframeModelById(
+                      first_keyframe_model_id))
                   ->affects_active_elements());
-  EXPECT_TRUE(animation_impl_->keyframe_effect()
-                  ->GetKeyframeModelById(second_keyframe_model_id)
+  EXPECT_TRUE(KeyframeModel::ToCcKeyframeModel(
+                  animation_impl_->keyframe_effect()->GetKeyframeModelById(
+                      second_keyframe_model_id))
                   ->affects_pending_elements());
-  EXPECT_FALSE(animation_impl_->keyframe_effect()
-                   ->GetKeyframeModelById(second_keyframe_model_id)
+  EXPECT_FALSE(KeyframeModel::ToCcKeyframeModel(
+                   animation_impl_->keyframe_effect()->GetKeyframeModelById(
+                       second_keyframe_model_id))
                    ->affects_active_elements());
 
   animation_impl_->Tick(kInitialTickTime + TimeDelta::FromMilliseconds(500));
@@ -3682,17 +3698,21 @@ TEST_F(ElementAnimationsTest, StartAnimationsAffectingDifferentObservers) {
 
   // The original animation no longer affect either elements, and the new
   // animation should now affect both elements.
-  EXPECT_FALSE(animation_impl_->keyframe_effect()
-                   ->GetKeyframeModelById(first_keyframe_model_id)
+  EXPECT_FALSE(KeyframeModel::ToCcKeyframeModel(
+                   animation_impl_->keyframe_effect()->GetKeyframeModelById(
+                       first_keyframe_model_id))
                    ->affects_pending_elements());
-  EXPECT_FALSE(animation_impl_->keyframe_effect()
-                   ->GetKeyframeModelById(first_keyframe_model_id)
+  EXPECT_FALSE(KeyframeModel::ToCcKeyframeModel(
+                   animation_impl_->keyframe_effect()->GetKeyframeModelById(
+                       first_keyframe_model_id))
                    ->affects_active_elements());
-  EXPECT_TRUE(animation_impl_->keyframe_effect()
-                  ->GetKeyframeModelById(second_keyframe_model_id)
+  EXPECT_TRUE(KeyframeModel::ToCcKeyframeModel(
+                  animation_impl_->keyframe_effect()->GetKeyframeModelById(
+                      second_keyframe_model_id))
                   ->affects_pending_elements());
-  EXPECT_TRUE(animation_impl_->keyframe_effect()
-                  ->GetKeyframeModelById(second_keyframe_model_id)
+  EXPECT_TRUE(KeyframeModel::ToCcKeyframeModel(
+                  animation_impl_->keyframe_effect()->GetKeyframeModelById(
+                      second_keyframe_model_id))
                   ->affects_active_elements());
 
   animation_impl_->Tick(kInitialTickTime + TimeDelta::FromMilliseconds(1000));

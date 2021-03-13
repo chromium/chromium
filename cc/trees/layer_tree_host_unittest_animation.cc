@@ -185,7 +185,7 @@ class LayerTreeHostAnimationTestAddKeyframeModel
                               int group) override {
     EXPECT_LT(base::TimeTicks(), monotonic_time);
 
-    KeyframeModel* keyframe_model =
+    gfx::KeyframeModel* keyframe_model =
         animation_->GetKeyframeModel(TargetProperty::OPACITY);
     if (keyframe_model)
       animation_->RemoveKeyframeModel(keyframe_model->id());
@@ -936,7 +936,7 @@ class LayerTreeHostAnimationTestScrollOffsetAnimationAdjusted
       GetImplTimelineAndAnimationByID(*host_impl);
       // This happens after the impl-only animation is added in
       // WillCommitCompleteOnThread.
-      KeyframeModel* keyframe_model =
+      gfx::KeyframeModel* keyframe_model =
           ScrollOffsetKeyframeEffect(*host_impl, scroll_layer_)
               .GetKeyframeModel(TargetProperty::SCROLL_OFFSET);
       DCHECK(keyframe_model);
@@ -962,7 +962,7 @@ class LayerTreeHostAnimationTestScrollOffsetAnimationAdjusted
 
   void CommitCompleteOnThread(LayerTreeHostImpl* host_impl) override {
     if (host_impl->sync_tree()->source_frame_number() == 1) {
-      KeyframeModel* keyframe_model =
+      gfx::KeyframeModel* keyframe_model =
           ScrollOffsetKeyframeEffect(*host_impl, scroll_layer_)
               .GetKeyframeModel(TargetProperty::SCROLL_OFFSET);
       DCHECK(keyframe_model);

@@ -359,7 +359,8 @@ KeyframeModel* GetKeyframeModelFromElementWithExistingKeyframeEffect(
   KeyframeEffect* keyframe_effect =
       element_animations->FirstKeyframeEffectForTesting();
   DCHECK(keyframe_effect);
-  return keyframe_effect->GetKeyframeModelById(keyframe_model_id);
+  return KeyframeModel::ToCcKeyframeModel(
+      keyframe_effect->GetKeyframeModelById(keyframe_model_id));
 }
 
 int AddAnimatedFilterToElementWithAnimation(
