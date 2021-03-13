@@ -1779,7 +1779,8 @@ class AutofillManagerTestDelegateDevtoolsImpl
 };
 
 // Disabled. Failing on MacOS MSAN. See https://crbug.com/849129.
-#if defined(OS_MAC)
+// Also failing on Linux. See https://crbug.com/1187693.
+#if defined(OS_MAC) || defined(OS_LINUX)
 #define MAYBE_TestDispatchKeyEventShowsAutoFill \
   DISABLED_TestDispatchKeyEventShowsAutoFill
 #else
