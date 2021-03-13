@@ -1661,8 +1661,16 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
   RunHtmlTest(FILE_PATH_LITERAL("contenteditable-br.html"));
 }
 
+// Flaky failure-on-exit: crbug.com/1187620
+#if defined(THREAD_SANITIZER)
+#define MAYBE_AccessibilityContenteditableBrDisableNGLayout \
+  DISABLED_AccessibilityContenteditableBrDisableNGLayout
+#else
+#define MAYBE_AccessibilityContenteditableBrDisableNGLayout \
+  AccessibilityContenteditableBrDisableNGLayout
+#endif
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
-                       AccessibilityContenteditableBrDisableNGLayout) {
+                       MAYBE_AccessibilityContenteditableBrDisableNGLayout) {
   base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
       switches::kDisableBlinkFeatures, "LayoutNG");
   RunHtmlTest(FILE_PATH_LITERAL("contenteditable-br-disable-ng-layout.html"));
@@ -1689,6 +1697,14 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
   RunHtmlTest(FILE_PATH_LITERAL("contenteditable-docs-li.html"));
 }
 
+// Flaky failure-on-exit: crbug.com/1187620
+#if defined(THREAD_SANITIZER)
+#define MAYBE_AccessibilityContenteditableDocsLiDisableNGLayout \
+  DISABLED_AccessibilityContenteditableDocsLiDisableNGLayout
+#else
+#define MAYBE_AccessibilityContenteditableDocsLiDisableNGLayout \
+  AccessibilityContenteditableDocsLiDisableNGLayout
+#endif
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
                        AccessibilityContenteditableDocsLiDisableNGLayout) {
   base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
@@ -1705,6 +1721,14 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
       FILE_PATH_LITERAL("contenteditable-li-contains-presentation.html"));
 }
 
+// Flaky failure-on-exit: crbug.com/1187620
+#if defined(THREAD_SANITIZER)
+#define MAYBE_AccessibilityContenteditableLiContainsPresentationDisableNGLayout \
+  DISABLED_AccessibilityContenteditableLiContainsPresentationDisableNGLayout
+#else
+#define MAYBE_AccessibilityContenteditableLiContainsPresentationDisableNGLayout \
+  AccessibilityContenteditableLiContainsPresentationDisableNGLayout
+#endif
 IN_PROC_BROWSER_TEST_P(
     DumpAccessibilityTreeTest,
     AccessibilityContenteditableLiContainsPresentationDisableNGLayout) {
@@ -1721,6 +1745,14 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
   RunHtmlTest(FILE_PATH_LITERAL("contenteditable-spans.html"));
 }
 
+// Flaky failure-on-exit: crbug.com/1187620
+#if defined(THREAD_SANITIZER)
+#define MAYBE_AccessibilityContenteditableSpansDisableNGLayout \
+  DISABLED_AccessibilityContenteditableSpansDisableNGLayout
+#else
+#define MAYBE_AccessibilityContenteditableSpansDisableNGLayout \
+  AccessibilityContenteditableSpansDisableNGLayout
+#endif
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
                        AccessibilityContenteditableSpansDisableNGLayout) {
   base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
