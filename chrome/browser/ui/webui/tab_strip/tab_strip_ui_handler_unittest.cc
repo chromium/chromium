@@ -54,6 +54,9 @@ class StubTabStripUIEmbedder : public TabStripUIEmbedder {
   }
   TabStripUILayout GetLayout() override { return TabStripUILayout(); }
   SkColor GetColor(int id) const override { return SK_ColorWHITE; }
+  SkColor GetSystemColor(ui::NativeTheme::ColorId id) const override {
+    return SK_ColorWHITE;
+  }
 };
 
 }  // namespace

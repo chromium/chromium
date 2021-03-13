@@ -840,6 +840,11 @@ SkColor WebUITabStripContainerView::GetColor(int id) const {
   return GetThemeProvider()->GetColor(id);
 }
 
+SkColor WebUITabStripContainerView::GetSystemColor(
+    ui::NativeTheme::ColorId id) const {
+  return GetNativeTheme()->GetSystemColor(id);
+}
+
 int WebUITabStripContainerView::GetHeightForWidth(int w) const {
   DCHECK(!(animation_.is_animating() && current_drag_height_));
 

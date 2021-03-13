@@ -105,7 +105,7 @@ class WebUITabStripContainerView : public TabStripUIEmbedder,
   // Passed to the AutoCloser to handle closing.
   void CloseForEventOutsideTabStrip(TabStripUICloseAction reason);
 
-  // TabStripUI::Embedder:
+  // TabStripUIEmbedder:
   const ui::AcceleratorProvider* GetAcceleratorProvider() const override;
   void CloseContainer() override;
   void ShowContextMenuAtPoint(
@@ -116,6 +116,7 @@ class WebUITabStripContainerView : public TabStripUIEmbedder,
                                      tab_groups::TabGroupId group) override;
   TabStripUILayout GetLayout() override;
   SkColor GetColor(int id) const override;
+  SkColor GetSystemColor(ui::NativeTheme::ColorId id) const override;
 
   // views::View:
   int GetHeightForWidth(int w) const override;

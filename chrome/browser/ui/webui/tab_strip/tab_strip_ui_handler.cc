@@ -557,19 +557,16 @@ void TabStripUIHandler::HandleGetThemeColors(const base::ListValue* args) {
                    color_utils::SkColorToRgbaString(embedder_->GetColor(
                        ThemeProperties::COLOR_TAB_THROBBER_WAITING)));
   colors.SetString("--tabstrip-indicator-recording-color",
-                   color_utils::SkColorToRgbaString(
-                       ui::NativeTheme::GetInstanceForWeb()->GetSystemColor(
-                           ui::NativeTheme::kColorId_AlertSeverityHigh)));
+                   color_utils::SkColorToRgbaString(embedder_->GetSystemColor(
+                       ui::NativeTheme::kColorId_AlertSeverityHigh)));
   colors.SetString("--tabstrip-indicator-pip-color", throbber_color);
   colors.SetString("--tabstrip-indicator-capturing-color", throbber_color);
   colors.SetString("--tabstrip-tab-blocked-color",
-                   color_utils::SkColorToRgbaString(
-                       ui::NativeTheme::GetInstanceForWeb()->GetSystemColor(
-                           ui::NativeTheme::kColorId_ProminentButtonColor)));
+                   color_utils::SkColorToRgbaString(embedder_->GetSystemColor(
+                       ui::NativeTheme::kColorId_ProminentButtonColor)));
   colors.SetString("--tabstrip-focus-outline-color",
-                   color_utils::SkColorToRgbaString(
-                       ui::NativeTheme::GetInstanceForWeb()->GetSystemColor(
-                           ui::NativeTheme::kColorId_FocusedBorderColor)));
+                   color_utils::SkColorToRgbaString(embedder_->GetSystemColor(
+                       ui::NativeTheme::kColorId_FocusedBorderColor)));
 
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
   colors.SetString(
