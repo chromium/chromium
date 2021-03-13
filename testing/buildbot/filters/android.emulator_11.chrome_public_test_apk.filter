@@ -1,0 +1,16 @@
+# crbug.com/1187270
+-org.chromium.chrome.browser.compositor.layouts.LayoutManagerTest.testCreation
+-org.chromium.chrome.browser.compositor.layouts.LayoutManagerTest.testLayoutObserverNotification_ShowAndHide_SimpleAnimation
+-org.chromium.chrome.browser.compositor.layouts.LayoutManagerTest.testLayoutObserverNotification_ShowAndHide_ToolbarSwipe
+-org.chromium.chrome.browser.compositor.layouts.LayoutManagerTest.testStackNoAnimation
+-org.chromium.chrome.browser.compositor.layouts.LayoutManagerTest.testStackPinch
+-org.chromium.chrome.browser.compositor.layouts.LayoutManagerTest.testToolbarSideSwipeNextTab
+-org.chromium.chrome.browser.compositor.layouts.LayoutManagerTest.testToolbarSideSwipeNextTabIncognito
+-org.chromium.chrome.browser.compositor.layouts.LayoutManagerTest.testToolbarSideSwipeNextTabNone
+-org.chromium.chrome.browser.compositor.layouts.LayoutManagerTest.testToolbarSideSwipeNextTabNoneIncognito
+-org.chromium.chrome.browser.compositor.layouts.LayoutManagerTest.testToolbarSideSwipeOnlyTab
+-org.chromium.chrome.browser.compositor.layouts.LayoutManagerTest.testToolbarSideSwipeOnlyTabIncognito
+-org.chromium.chrome.browser.compositor.layouts.LayoutManagerTest.testToolbarSideSwipePrevTab
+-org.chromium.chrome.browser.compositor.layouts.LayoutManagerTest.testToolbarSideSwipePrevTabIncognito
+-org.chromium.chrome.browser.compositor.layouts.LayoutManagerTest.testToolbarSideSwipePrevTabNone
+-org.chromium.chrome.browser.compositor.layouts.LayoutManagerTest.testToolbarSideSwipePrevTabNoneIncognito

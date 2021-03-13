@@ -814,6 +814,11 @@
         # either passing or there is more capacity.
         'experiment_percentage': 0,
       },
+      'android-11-x86-fyi-rel': {
+        'args': [
+          '--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_11.chrome_public_test_apk.filter',
+        ],
+      },
       'android-arm64-proguard-rel': {
         'swarming': {
           'shards': 25,
