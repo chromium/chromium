@@ -227,15 +227,14 @@ public final class WebLayerImpl extends IWebLayer.Stub {
             notifyWebViewRunningInProcess(remoteContext.getClassLoader());
         }
 
+        Context appContext = minimalInitForContext(
+                ObjectWrapper.unwrap(appContextWrapper, Context.class), remoteContext);
+
         // Load library in the background since it may be expensive.
         // TODO(crbug.com/1146438): Look into enabling relro sharing in browser process. It seems to
         // crash when WebView is loaded in the same process.
-        new Thread(() -> {
-            LibraryLoader.getInstance().loadNowOverrideApplicationContext(remoteContext);
-        }).start();
+        new Thread(() -> LibraryLoader.getInstance().loadNow()).start();
 
-        Context appContext = minimalInitForContext(
-                ObjectWrapper.unwrap(appContextWrapper, Context.class), remoteContext);
         PackageInfo packageInfo = WebViewFactory.getLoadedPackageInfo();
 
         if (!CommandLine.isInitialized()) {
