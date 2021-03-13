@@ -37,7 +37,7 @@ class FeedbackDialog : public ui::WebDialogDelegate {
 
   // Overrides from ui::WebDialogDelegate
   ui::ModalType GetDialogModalType() const override;
-  std::u16string GetDialogTitle() const override;
+  base::string16 GetDialogTitle() const override;
   GURL GetDialogContentURL() const override;
   void GetWebUIMessageHandlers(
       std::vector<content::WebUIMessageHandler*>* handlers) const override;

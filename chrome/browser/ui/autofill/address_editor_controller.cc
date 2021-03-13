@@ -178,11 +178,11 @@ void AddressEditorController::OnSelectedCountryChanged() {
 }
 
 void AddressEditorController::SetProfileInfo(autofill::ServerFieldType type,
-                                             const std::u16string& value) {
+                                             const base::string16& value) {
   profile_to_edit_.SetInfo(type, value, locale_);
 }
 
-std::u16string AddressEditorController::GetProfileInfo(
+base::string16 AddressEditorController::GetProfileInfo(
     autofill::ServerFieldType type) {
   // TDOD(mamir): Update the implementation to format strings properly.
   return profile_to_edit_.GetInfo(type, locale_);
@@ -206,7 +206,7 @@ void AddressEditorController::UpdateCountries(
     }
   }
 
-  std::u16string chosen_country(GetProfileInfo(autofill::ADDRESS_HOME_COUNTRY));
+  base::string16 chosen_country(GetProfileInfo(autofill::ADDRESS_HOME_COUNTRY));
   bool found = false;
   for (size_t i = 0; i < countries_.size(); ++i) {
     if (chosen_country == countries_[i].second) {

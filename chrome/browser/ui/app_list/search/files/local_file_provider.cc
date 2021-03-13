@@ -16,7 +16,7 @@ LocalFileProvider::LocalFileProvider(Profile* profile) : profile_(profile) {
 
 LocalFileProvider::~LocalFileProvider() = default;
 
-void LocalFileProvider::Start(const std::u16string& query) {
+void LocalFileProvider::Start(const base::string16& query) {
   // TODO(crbug.com/1154513): Search for local files.
 }
 

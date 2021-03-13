@@ -252,7 +252,7 @@ TEST_F(CommanderControllerTest, ViewModelSortsResults) {
 TEST_F(CommanderControllerTest, ViewModelSortsCommandsAboveNouns) {
   std::vector<std::unique_ptr<CommandSource>> sources;
   auto source = std::make_unique<TestCommandSource>(
-      base::BindRepeating([](const std::u16string&, Browser* browser) {
+      base::BindRepeating([](const base::string16&, Browser* browser) {
         CommandSource::CommandResults result;
         auto window = CreateNoOpCommandItem(base::ASCIIToUTF16("window"), 99);
         window->entity_type = CommandItem::Entity::kWindow;
