@@ -1,6 +1,0 @@
-specific_include_rules = {
-  "screen_capture_notification_ui_chromeos\.cc": [
-    "+ash/shell.h",
-    "+ash/system/tray/system_tray_notifier.h",
-  ],
-}

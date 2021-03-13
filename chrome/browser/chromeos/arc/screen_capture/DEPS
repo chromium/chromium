@@ -1,9 +1,0 @@
-specific_include_rules = {
-  "arc_screen_capture_bridge\.cc": [
-    "+ash/shell.h",
-  ],
-  "arc_screen_capture_session\.cc": [
-    # To inform Shell that capture is active for cursor compositing.
-    "+ash/shell.h",
-  ],
-}

@@ -1,8 +1,0 @@
-specific_include_rules = {
-  "chrome_data_exchange_delegate\.cc": [
-    "+ash/wm/window_util.h",
-  ],
-  "chrome_data_exchange_delegate_unittest\.cc": [
-    "+ash/wm/window_util.h",
-  ],
-}

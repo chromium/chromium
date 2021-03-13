@@ -15,19 +15,6 @@ specific_include_rules = {
     "+chrome/test",
     "+content/public",
   ],
-  "candidate_window_controller_impl\.cc": [
-    "+ash/shell.h",
-    "+ash/wm/window_util.h",
-  ],
-  "assistive_window_controller\.cc": [
-    "+ash/shell.h",
-    "+ash/wm/window_util.h",
-  ],
-
-  # Detect text input client host.
-  "input_host_helper\.cc": [
-    "+ash/wm/window_util.h",
-  ],
 
   # TODO(erikwright): Bring this list to zero.
   # Do not add to the list of temporarily-allowed dependencies below,

@@ -1,5 +1,0 @@
-specific_include_rules = {
-  "data_transfer_dlp_controller_browsertest\.cc": [
-    "+ash/shell.h",
-  ],
-}

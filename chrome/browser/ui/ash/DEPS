@@ -1,6 +1,8 @@
 include_rules = [
-  "+ash/components/audio",
-  "+ash/keyboard/ui",
+  # //chrome/browser/ui/ash is conceptually part of "ash". See the "Lacros:
+  # ChromeOS source code directory migration" design doc at
+  # https://docs.google.com/document/d/1g-98HpzA8XcoGBWUv1gQNr4rbnD5yfvbtYZyPDDbkaE
+  "+ash",
 
   # ash depends on views, so code in ui/ash is allowed to depend on ui/views.
   "+chrome/browser/ui/views",
@@ -10,70 +12,9 @@ include_rules = [
 
 specific_include_rules = {
   ".*test.*": [
-    "!ash",
-    "+ash/components/audio",
-    "+ash/constants",
-    "+ash/shortcut_viewer",
-    "+ash/shortcut_viewer/strings/grit/shortcut_viewer_strings.h",
-    "+ash/keyboard/ui",
-    "+ash/public",
-    "+ash/assistant/ui/assistant_ui_constants.h",
-    "+ash/assistant/ui/main_stage/assistant_ui_element_view.h",
     "+ui/message_center/message_center.h",
-  ],
-  "ash_shell_init\.cc": [
-    "+ash",
-  ],
-  # SetupWidgetInitParamsForContainer accesses ash::Shell.
-  "ash_util\.cc": [
-    "+ash/shell.h",
   ],
   "assistant_timers_browsertest\.cc": [
-    "+ash/shelf",
-    "+ash/shell.h",
-    "+ash/system",
     "+ui/message_center",
-  ],
-  # https://crbug.com/756054
-  "chrome_accessibility_delegate.*": [
-    "+ash/accessibility/accessibility_delegate.h",
-  ],
-  # For ash::Shell::SetIsBrowserProcessWithMash()
-  "chrome_browser_main_extra_parts_ash\.cc": [
-    "+ash/shell.h",
-  ],
-  "chrome_capture_mode_delegate.cc": [
-    "+ash/services/recording/public/mojom/recording_service.mojom.h",
-  ],
-  # https://crbug.com/124222
-  "chrome_new_window_client\.cc": [
-    "+ash/content/keyboard_overlay/keyboard_overlay_view.h",
-  ],
-  # https://crbug.com/557397
-  "chrome_screenshot_grabber.*": [
-    "+ash/screenshot_delegate.h",
-    "+ash/shell.h",
-  ],
-  # https://crbug.com/665064
-  "chrome_shell_delegate.*": [
-    # https://crbug.com/557397
-    "+ash/screenshot_delegate.h",
-    # https://crbug.com/665064
-    "+ash/shell_delegate.h",
-  ],
-  "screen_orientation_delegate_chromeos.cc": [
-    "+ash/display/screen_orientation_controller.h",
-    "+ash/shell.h",
-  ],
-  "system_tray_tray_cast_browsertest_media_router_chromeos\.cc": [
-    "+ui/message_center/message_center.h",
-  ],
-  # https://crbug.com/796366
-  "tab_scrubber\.cc": [
-    "+ash/shell.h",
-  ],
-  "screen_rotation_interactive_uitest\.cc": [
-    "+ash/rotator/screen_rotation_animator.h",
-    "+ash/rotator/screen_rotation_animator_observer.h",
   ],
 }
