@@ -35,6 +35,7 @@ component("lib") {
     "media_session/assistant_media_session.h",
     "platform/audio_devices.cc",
     "platform/audio_devices.h",
+    "platform/audio_input_host.h",
     "platform/audio_input_host_impl.cc",
     "platform/audio_input_host_impl.h",
     "platform/audio_output_delegate_impl.cc",

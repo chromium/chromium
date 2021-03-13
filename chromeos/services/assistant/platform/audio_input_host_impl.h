@@ -5,7 +5,7 @@
 #ifndef CHROMEOS_SERVICES_ASSISTANT_PLATFORM_AUDIO_INPUT_HOST_IMPL_H_
 #define CHROMEOS_SERVICES_ASSISTANT_PLATFORM_AUDIO_INPUT_HOST_IMPL_H_
 
-#include "chromeos/services/assistant/public/cpp/migration/audio_input_host.h"
+#include "chromeos/services/assistant/platform/audio_input_host.h"
 
 #include <string>
 

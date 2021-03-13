@@ -2,19 +2,17 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROMEOS_SERVICES_ASSISTANT_PUBLIC_CPP_MIGRATION_AUDIO_INPUT_HOST_H_
-#define CHROMEOS_SERVICES_ASSISTANT_PUBLIC_CPP_MIGRATION_AUDIO_INPUT_HOST_H_
+#ifndef CHROMEOS_SERVICES_ASSISTANT_PLATFORM_AUDIO_INPUT_HOST_H_
+#define CHROMEOS_SERVICES_ASSISTANT_PLATFORM_AUDIO_INPUT_HOST_H_
 
 #include <string>
-
-#include "base/component_export.h"
 
 namespace chromeos {
 namespace assistant {
 
 // Class that provides the bridge between the ChromeOS UI thread and the
 // Libassistant audio input class.
-class COMPONENT_EXPORT(ASSISTANT_SERVICE) AudioInputHost {
+class AudioInputHost {
  public:
   virtual ~AudioInputHost() = default;
 
@@ -30,4 +28,4 @@ class COMPONENT_EXPORT(ASSISTANT_SERVICE) AudioInputHost {
 }  // namespace assistant
 }  // namespace chromeos
 
-#endif  // CHROMEOS_SERVICES_ASSISTANT_PUBLIC_CPP_MIGRATION_AUDIO_INPUT_HOST_H_
+#endif  // CHROMEOS_SERVICES_ASSISTANT_PLATFORM_AUDIO_INPUT_HOST_H_
