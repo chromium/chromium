@@ -17,9 +17,11 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.signin.services.SigninManager;
 import org.chromium.chrome.browser.signin.services.SigninMetricsUtils;
+import org.chromium.chrome.browser.signin.services.SigninPreferencesManager;
 import org.chromium.chrome.browser.signin.services.WebSigninBridge;
 import org.chromium.chrome.browser.signin.ui.account_picker.AccountPickerBottomSheetCoordinator;
 import org.chromium.chrome.browser.signin.ui.account_picker.AccountPickerDelegateImpl;
+import org.chromium.chrome.browser.signin.ui.account_picker.AccountPickerFeatureUtils;
 import org.chromium.chrome.browser.sync.settings.AccountManagementFragment;
 import org.chromium.chrome.browser.tabmodel.TabCreator;
 import org.chromium.chrome.browser.tabmodel.TabCreatorManager;
@@ -32,6 +34,7 @@ import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetControllerProvider;
 import org.chromium.components.signin.AccountManagerFacadeProvider;
 import org.chromium.components.signin.GAIAServiceType;
+import org.chromium.components.signin.metrics.AccountConsistencyPromoAction;
 import org.chromium.components.signin.metrics.SigninAccessPoint;
 import org.chromium.ui.base.WindowAndroid;
 
@@ -77,16 +80,20 @@ final class SigninBridge {
                 Profile.getLastUsedRegularProfile());
         if (!signinManager.isSignInAllowed()) {
             SigninMetricsUtils.logAccountConsistencyPromoAction(
-                    org.chromium.components.signin.metrics.AccountConsistencyPromoAction
-                            .SUPPRESSED_SIGNIN_NOT_ALLOWED);
+                    AccountConsistencyPromoAction.SUPPRESSED_SIGNIN_NOT_ALLOWED);
             return;
         }
         if (AccountManagerFacadeProvider.getInstance().tryGetGoogleAccounts().isEmpty()) {
             // TODO(https://crbug.com/1119720): Show the bottom sheet when no accounts on device
             //  in the future. This disabling is only temporary.
             SigninMetricsUtils.logAccountConsistencyPromoAction(
-                    org.chromium.components.signin.metrics.AccountConsistencyPromoAction
-                            .SUPPRESSED_NO_ACCOUNTS);
+                    AccountConsistencyPromoAction.SUPPRESSED_NO_ACCOUNTS);
+            return;
+        }
+        if (SigninPreferencesManager.getInstance().getAccountPickerBottomSheetActiveDismissalCount()
+                >= AccountPickerFeatureUtils.getDismissLimit()) {
+            SigninMetricsUtils.logAccountConsistencyPromoAction(
+                    AccountConsistencyPromoAction.SUPPRESSED_CONSECUTIVE_DISMISSALS);
             return;
         }
         BottomSheetController bottomSheetController =
@@ -111,8 +118,8 @@ final class SigninBridge {
         assert tabCreatorManagerSupplier.hasValue() : "No TabCreatorManager available.";
         final TabCreator incognitoTabCreator =
                 tabCreatorManagerSupplier.get().getTabCreator(/*incognito=*/true);
-        AccountPickerBottomSheetCoordinator coordinator = new AccountPickerBottomSheetCoordinator(
-                windowAndroid.getActivity().get(), bottomSheetController,
+        new AccountPickerBottomSheetCoordinator(windowAndroid.getActivity().get(),
+                bottomSheetController,
                 new AccountPickerDelegateImpl(windowAndroid,
                         TabModelUtils.getCurrentTab(regularTabModel), new WebSigninBridge.Factory(),
                         continueUrl),

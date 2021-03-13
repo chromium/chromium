@@ -1029,6 +1029,10 @@ Unknown properties are collapsed to zero. -->
     User has completed the account addition flow triggered from the bottom
     sheet.
   </int>
+  <int value="16" label="SuppressedConsecutiveDismissals">
+    The bottom sheet was suppressed as the user hit consecutive active dismissal
+    limit.
+  </int>
 </enum>
 
 <enum name="AccountConsistencyPromoAfterDismissal">

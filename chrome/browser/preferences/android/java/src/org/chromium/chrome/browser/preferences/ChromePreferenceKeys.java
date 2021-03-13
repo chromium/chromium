@@ -52,6 +52,9 @@ public final class ChromePreferenceKeys {
     public static final String ACCOUNT_PICKER_BOTTOM_SHEET_SHOWN_COUNT =
             "Chrome.AccountPickerBottomSheet.ShownCount";
 
+    public static final String ACCOUNT_PICKER_BOTTOM_SHEET_ACTIVE_DISMISSAL_COUNT =
+            "Chrome.AccountPickerBottomSheet.ConsecutiveActiveDismissalCount";
+
     /** The language code to override application language with. */
     public static final String APPLICATION_OVERRIDE_LANGUAGE =
             "Chrome.Language.ApplicationOverrideLanguage";
@@ -850,6 +853,7 @@ public final class ChromePreferenceKeys {
         // clang-format off
         return Arrays.asList(
                 ACCOUNT_PICKER_BOTTOM_SHEET_SHOWN_COUNT,
+                ACCOUNT_PICKER_BOTTOM_SHEET_ACTIVE_DISMISSAL_COUNT,
                 ASSISTANT_VOICE_SEARCH_ENABLED,
                 AUTOFILL_ASSISTANT_FIRST_TIME_LITE_SCRIPT_USER,
                 AUTOFILL_ASSISTANT_NUMBER_OF_LITE_SCRIPTS_CANCELED,
