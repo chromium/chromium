@@ -423,7 +423,7 @@ IN_PROC_BROWSER_TEST_F(PrivateNetworkAccessWithFeatureEnabledBrowserTest,
 IN_PROC_BROWSER_TEST_F(PrivateNetworkAccessWithFeatureEnabledBrowserTest,
                        SpecialSchemeChromeSearch) {
   EXPECT_TRUE(content::NavigateToURL(
-      web_contents(), GURL("chrome-search://local-ntp/local-ntp.html")));
+      web_contents(), GURL("chrome-search://most-visited/title.html")));
   ASSERT_TRUE(web_contents()->GetMainFrame()->GetLastCommittedURL().SchemeIs(
       chrome::kChromeSearchScheme));
 

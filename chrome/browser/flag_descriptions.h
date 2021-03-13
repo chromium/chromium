@@ -2028,9 +2028,6 @@ extern const char kNtpOneGoogleBarModalOverlaysDescription[];
 extern const char kNtpRepeatableQueriesName[];
 extern const char kNtpRepeatableQueriesDescription[];
 
-extern const char kNtpWebUIName[];
-extern const char kNtpWebUIDescription[];
-
 extern const char kNtpModulesName[];
 extern const char kNtpModulesDescription[];
 

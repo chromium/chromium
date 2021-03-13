@@ -1349,7 +1349,6 @@ if (!is_android) {
       "../browser/safe_browsing/test_safe_browsing_database_helper.cc",
       "../browser/safe_browsing/test_safe_browsing_database_helper.h",
       "../browser/safe_xml_parser_browsertest.cc",
-      "../browser/search/local_ntp_navigation_browsertest.cc",
       "../browser/search/ntp_custom_background_enabled_policy_handler_browsertest.cc",
       "../browser/search_engines/template_url_scraper_browsertest.cc",
       "../browser/secure_origin_allowlist_browsertest.cc",
@@ -1478,17 +1477,6 @@ if (!is_android) {
       "../browser/ui/search/instant_test_base.h",
       "../browser/ui/search/instant_test_utils.cc",
       "../browser/ui/search/instant_test_utils.h",
-      "../browser/ui/search/instant_theme_browsertest.cc",
-      "../browser/ui/search/local_ntp_backgrounds_browsertest.cc",
-      "../browser/ui/search/local_ntp_browsertest.cc",
-      "../browser/ui/search/local_ntp_browsertest_base.cc",
-      "../browser/ui/search/local_ntp_browsertest_base.h",
-      "../browser/ui/search/local_ntp_doodle_browsertest.cc",
-      "../browser/ui/search/local_ntp_js_browsertest.cc",
-      "../browser/ui/search/local_ntp_one_google_bar_browsertest.cc",
-      "../browser/ui/search/local_ntp_promos_browsertest.cc",
-      "../browser/ui/search/local_ntp_suggestions_browsertest.cc",
-      "../browser/ui/search/local_ntp_voice_search_browsertest.cc",
       "../browser/ui/search/new_tab_page_navigation_throttle_browsertest.cc",
       "../browser/ui/search/third_party_ntp_browsertest.cc",
       "../browser/ui/search_engines/search_engine_tab_helper_browsertest.cc",
@@ -7447,21 +7435,6 @@ if (!is_fuchsia && !is_android) {
 
     # This target should not require the Chrome executable to run.
     assert_no_deps = [ "//chrome" ]
-  }
-
-  test("ntp_render_browsertests") {
-    sources = [ "../browser/ui/search/local_ntp_render_browsertest.cc" ]
-
-    configs += [ "//build/config:precompiled_headers" ]
-
-    defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
-
-    deps = [
-      ":browser_tests_runner",
-      ":test_support",
-      ":test_support_ui",
-      "//chrome/browser",
-    ]
   }
 
   # Tests autofill on captured websites

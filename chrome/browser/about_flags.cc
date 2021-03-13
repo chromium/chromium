@@ -4764,10 +4764,6 @@ const FeatureEntry kFeatureEntries[] = {
                                     kNtpRepeatableQueriesVariations,
                                     "NtpRepeatableQueries")},
 
-    {"ntp-webui", flag_descriptions::kNtpWebUIName,
-     flag_descriptions::kNtpWebUIDescription, kOsDesktop,
-     FEATURE_VALUE_TYPE(ntp_features::kWebUI)},
-
     {"ntp-modules", flag_descriptions::kNtpModulesName,
      flag_descriptions::kNtpModulesDescription, kOsDesktop,
      FEATURE_VALUE_TYPE(ntp_features::kModules)},

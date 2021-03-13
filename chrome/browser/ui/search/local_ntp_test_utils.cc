@@ -39,25 +39,6 @@ content::WebContents* OpenNewTab(Browser* browser, const GURL& url) {
   return browser->tab_strip_model()->GetActiveWebContents();
 }
 
-void NavigateToNTPAndWaitUntilLoaded(Browser* browser, int delay) {
-  content::WebContents* active_tab =
-      browser->tab_strip_model()->GetActiveWebContents();
-
-  ASSERT_FALSE(search::IsInstantNTP(active_tab));
-
-  // Attach a message queue *before* navigating to the NTP, to make sure we
-  // don't miss the 'loaded' message due to some race condition.
-  content::DOMMessageQueue msg_queue(active_tab);
-
-  // Navigate to the local NTP.
-  ui_test_utils::NavigateToURL(browser, GURL(chrome::kChromeSearchLocalNtpUrl));
-  ASSERT_TRUE(search::IsInstantNTP(active_tab));
-  ASSERT_EQ(GURL(chrome::kChromeSearchLocalNtpUrl),
-            active_tab->GetController().GetVisibleEntry()->GetURL());
-
-  WaitUntilTilesLoaded(active_tab, &msg_queue, delay);
-}
-
 void ExecuteScriptOnNTPAndWaitUntilLoaded(content::RenderFrameHost* host,
                                           const std::string& script) {
   content::WebContents* contents =
@@ -161,10 +142,8 @@ void SetUserSelectedDefaultSearchProvider(Profile* profile,
 }
 
 GURL GetFinalNtpUrl(Profile* profile) {
-  GURL ntp_url = base::FeatureList::IsEnabled(ntp_features::kWebUI)
-                     ? GURL(chrome::kChromeUINewTabPageURL)
-                     : GURL(chrome::kChromeSearchLocalNtpUrl);
-  if (search::GetNewTabPageURL(profile) == ntp_url) {
+  if (search::GetNewTabPageURL(profile) ==
+      GURL(chrome::kChromeUINewTabPageURL)) {
     // If chrome://newtab/ already maps to the local/WebUI NTP, then that will
     // load correctly, even without network.  The URL associated with the
     // WebContents will stay chrome://newtab/
@@ -172,8 +151,8 @@ GURL GetFinalNtpUrl(Profile* profile) {
   }
   // If chrome://newtab/ maps to a remote URL, then it will fail to load in a
   // browser_test environment.  In this case, we will get redirected to the
-  // local NTP, which changes the URL associated with the WebContents.
-  return GURL(chrome::kChromeSearchLocalNtpUrl);
+  // 3P WebUI NTP, which changes the URL associated with the WebContents.
+  return GURL(chrome::kChromeUINewTabPageThirdPartyURL);
 }
 
 }  // namespace local_ntp_test_utils

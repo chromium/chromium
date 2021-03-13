@@ -24,13 +24,6 @@ namespace local_ntp_test_utils {
 
 content::WebContents* OpenNewTab(Browser* browser, const GURL& url);
 
-// Navigates the active tab to chrome://newtab and waits until the NTP is
-// fully loaded. The active tab must not be on an NTP already. Note that simply
-// waiting for a navigation is not enough, since the MV iframe receives the
-// tiles asynchronously. Optionally, a delay may be introduced to wait an
-// additional amount of time after the page reports as loaded.
-void NavigateToNTPAndWaitUntilLoaded(Browser* browser, int delay = 0);
-
 // Executes a script on the NTP, verifies it executes successfully, and waits
 // until the NTP tiles are reloaded. Note that simply waiting for the script
 // execution to complete is not enough, since the MV iframe receives the tiles

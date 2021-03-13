@@ -144,12 +144,14 @@ TEST_F(ChromeContentBrowserClientWindowTest, OpenURL) {
 //    and associated test.
 TEST_F(ChromeContentBrowserClientWindowTest, ShouldStayInParentProcessForNTP) {
   ChromeContentBrowserClient client;
+  // Remote 3P NTPs effectively have a URL chrome-search://remote-ntp. This
+  // is so an iframe with the src of chrome-search://most-visited/title.html can
+  // be embedded within the remote NTP.
   scoped_refptr<content::SiteInstance> site_instance =
-      content::SiteInstance::CreateForURL(
-          browser()->profile(),
-          GURL("chrome-search://local-ntp/local-ntp.html"));
+      content::SiteInstance::CreateForURL(browser()->profile(),
+                                          GURL("chrome-search://remote-ntp"));
   EXPECT_TRUE(client.ShouldStayInParentProcessForNTP(
-      GURL("chrome-search://local-ntp/local-ntp.html"), site_instance.get()));
+      GURL("chrome-search://remote-ntp"), site_instance.get()));
 
   site_instance = content::SiteInstance::CreateForURL(
       browser()->profile(), GURL("chrome://new-tab-page"));
@@ -168,9 +170,8 @@ TEST_F(ChromeContentBrowserClientWindowTest, OverrideNavigationParams) {
   base::Optional<url::Origin> initiator_origin = base::nullopt;
 
   scoped_refptr<content::SiteInstance> site_instance =
-      content::SiteInstance::CreateForURL(
-          browser()->profile(),
-          GURL("chrome-search://local-ntp/local-ntp.html"));
+      content::SiteInstance::CreateForURL(browser()->profile(),
+                                          GURL("chrome-search://remote-ntp"));
   transition = ui::PAGE_TRANSITION_LINK;
   is_renderer_initiated = true;
   // The origin is a placeholder to test that |initiator_origin| is set to

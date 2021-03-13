@@ -28,9 +28,7 @@ void ExpectIsWebUiNtp(content::WebContents* tab) {
 
 class WebUiNtpBrowserTest : public InProcessBrowserTest {
  public:
-  WebUiNtpBrowserTest() {
-    feature_list_.InitAndEnableFeature(ntp_features::kWebUI);
-  }
+  WebUiNtpBrowserTest() = default;
 
   ~WebUiNtpBrowserTest() override = default;
 

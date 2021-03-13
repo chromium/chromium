@@ -103,32 +103,32 @@ IN_PROC_BROWSER_TEST_F(NewTabPageNavigationThrottleTest,
   };
 
   FailedRequestObserver observer(web_contents(), instant_ntp_url);
-  // Failed navigation makes a redirect to the local NTP.
-  EXPECT_EQ(chrome::kChromeSearchLocalNtpUrl, NavigateToNewTabPage());
+  // Failed navigation makes a redirect to the 3P WebUI NTP.
+  EXPECT_EQ(chrome::kChromeUINewTabPageThirdPartyURL, NavigateToNewTabPage());
   EXPECT_TRUE(observer.did_finish());
   EXPECT_FALSE(observer.did_commit());
 }
 
 IN_PROC_BROWSER_TEST_F(NewTabPageNavigationThrottleTest, LocalNewTabPage) {
   ASSERT_TRUE(https_test_server()->Start());
-  // This URL is not https so it will default to the 3P NTP.
+  // This URL is not https so it will default to the 3P WebUI NTP.
   SetNewTabPage(chrome::kChromeUINewTabPageThirdPartyURL);
-  // Already going to the 3P NTP, so we should arrive there as expected.
+  // Already going to the 3P WebUI NTP, so we should arrive there as expected.
   EXPECT_EQ(chrome::kChromeUINewTabPageThirdPartyURL, NavigateToNewTabPage());
 }
 
 IN_PROC_BROWSER_TEST_F(NewTabPageNavigationThrottleTest, 404Throttle) {
   ASSERT_TRUE(https_test_server()->Start());
   SetNewTabPage(https_test_server()->GetURL("/page404.html").spec());
-  // 404 makes a redirect to the local NTP.
-  EXPECT_EQ(chrome::kChromeSearchLocalNtpUrl, NavigateToNewTabPage());
+  // 404 makes a redirect to the 3P WebUI NTP.
+  EXPECT_EQ(chrome::kChromeUINewTabPageThirdPartyURL, NavigateToNewTabPage());
 }
 
 IN_PROC_BROWSER_TEST_F(NewTabPageNavigationThrottleTest, 204Throttle) {
   ASSERT_TRUE(https_test_server()->Start());
   SetNewTabPage(https_test_server()->GetURL("/page204.html").spec());
-  // 204 makes a redirect to the local NTP.
-  EXPECT_EQ(chrome::kChromeSearchLocalNtpUrl, NavigateToNewTabPage());
+  // 204 makes a redirect to the 3P WebUI NTP.
+  EXPECT_EQ(chrome::kChromeUINewTabPageThirdPartyURL, NavigateToNewTabPage());
 }
 
 }  // namespace

@@ -67,10 +67,6 @@ const base::Feature kDisableSearchSuggestChips{
 extern const base::Feature kNtpHandleMostVisitedNavigationExplicitly{
     "HandleMostVisitedNavigationExplicitly", base::FEATURE_ENABLED_BY_DEFAULT};
 
-// If enabled, the WebUI new tab page will load when a new tab is created
-// instead of the local NTP.
-const base::Feature kWebUI{"NtpWebUI", base::FEATURE_ENABLED_BY_DEFAULT};
-
 // If enabled, logo will be shown.
 const base::Feature kNtpLogo{"NtpLogo", base::FEATURE_ENABLED_BY_DEFAULT};
 

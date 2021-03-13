@@ -324,8 +324,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionBrowserTest,
       extensions::kExtensionScheme));
 }
 
-// Test that navigating to an extension URL is allowed on chrome:// and
-// chrome-search:// pages, even for URLs that are not web-accessible.
+// Test that navigating to an extension URL is allowed on chrome://.
 // See https://crbug.com/662602.
 IN_PROC_BROWSER_TEST_F(ExtensionBrowserTest,
                        NavigateToInaccessibleResourceFromChromeURL) {
@@ -341,24 +340,19 @@ IN_PROC_BROWSER_TEST_F(ExtensionBrowserTest,
   // Navigate to the non-web-accessible URL from chrome:// and
   // chrome-search:// pages.  Verify that the page loads correctly.
   GURL history_url(chrome::kChromeUIHistoryURL);
-  GURL ntp_url(chrome::kChromeSearchLocalNtpUrl);
   ASSERT_TRUE(history_url.SchemeIs(content::kChromeUIScheme));
-  ASSERT_TRUE(ntp_url.SchemeIs(chrome::kChromeSearchScheme));
-  GURL start_urls[] = {history_url, ntp_url};
-  for (size_t i = 0; i < base::size(start_urls); i++) {
-    ui_test_utils::NavigateToURL(browser(), start_urls[i]);
-    EXPECT_EQ(start_urls[i], tab->GetMainFrame()->GetLastCommittedURL());
+  ui_test_utils::NavigateToURL(browser(), history_url);
+  EXPECT_EQ(history_url, tab->GetMainFrame()->GetLastCommittedURL());
 
-    content::TestNavigationObserver observer(tab);
-    ASSERT_TRUE(content::ExecuteScript(
-        tab, "location.href = '" + extension_url.spec() + "';"));
-    observer.Wait();
-    EXPECT_EQ(extension_url, tab->GetMainFrame()->GetLastCommittedURL());
-    std::string result;
-    ASSERT_TRUE(content::ExecuteScriptAndExtractString(
-        tab, "domAutomationController.send(document.body.innerText)", &result));
-    EXPECT_EQ("HOWDIE!!!", result);
-  }
+  content::TestNavigationObserver observer(tab);
+  ASSERT_TRUE(content::ExecuteScript(
+      tab, "location.href = '" + extension_url.spec() + "';"));
+  observer.Wait();
+  EXPECT_EQ(extension_url, tab->GetMainFrame()->GetLastCommittedURL());
+  std::string result;
+  ASSERT_TRUE(content::ExecuteScriptAndExtractString(
+      tab, "domAutomationController.send(document.body.innerText)", &result));
+  EXPECT_EQ("HOWDIE!!!", result);
 }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)

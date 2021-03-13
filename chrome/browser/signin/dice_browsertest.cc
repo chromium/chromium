@@ -963,15 +963,8 @@ IN_PROC_BROWSER_TEST_F(DiceBrowserTest, EnableSyncAfterToken) {
         auto url =
             content::Details<content::LoadNotificationDetails>(details)->url;
         // Some test flags (e.g. ForceWebRequestProxyForTest) can change whether
-        // the reported NTP URL is the virtual chrome://newtab or one of the
-        // concrete chrome://new-tab-page or
-        // chrome-search://local-ntp/local-ntp.html. As far as this test is
-        // concerned either URL is fine.
-        auto concrete_ntp_url =
-            base::FeatureList::IsEnabled(ntp_features::kWebUI)
-                ? GURL(chrome::kChromeUINewTabPageURL)
-                : GURL(chrome::kChromeSearchLocalNtpUrl);
-        return url == concrete_ntp_url ||
+        // the reported NTP URL is chrome://newtab or chrome://new-tab-page.
+        return url == GURL(chrome::kChromeUINewTabPageURL) ||
                url == GURL(chrome::kChromeUINewTabURL);
       }));
 

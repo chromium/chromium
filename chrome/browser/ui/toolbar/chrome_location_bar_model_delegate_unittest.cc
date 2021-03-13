@@ -15,7 +15,6 @@
 #include "chrome/common/url_constants.h"
 #include "chrome/test/base/browser_with_test_window_test.h"
 #include "chrome/test/base/search_test_utils.h"
-#include "components/search/ntp_features.h"
 #include "components/search_engines/template_url_service.h"
 
 // Concrete implementation of ChromeLocationBarModelDelegate.
@@ -46,13 +45,8 @@ class ChromeLocationBarModelDelegateTest
     : public BrowserWithTestWindowTest,
       public ::testing::WithParamInterface<bool> {
  protected:
-  ChromeLocationBarModelDelegateTest() {
-    if (GetParam()) {
-      scoped_feature_list_.InitAndEnableFeature(ntp_features::kWebUI);
-    } else {
-      scoped_feature_list_.InitAndDisableFeature(ntp_features::kWebUI);
-    }
-  }
+  ChromeLocationBarModelDelegateTest() = default;
+
   void SetUp() override {
     BrowserWithTestWindowTest::SetUp();
 
@@ -97,9 +91,7 @@ class ChromeLocationBarModelDelegateTest
 TEST_P(ChromeLocationBarModelDelegateTest, IsNewTabPage) {
   chrome::NewTab(browser());
   // New Tab URL with Google DSP resolves to the local or the WebUI NTP URL.
-  GURL ntp_url(base::FeatureList::IsEnabled(ntp_features::kWebUI)
-                   ? chrome::kChromeUINewTabPageURL
-                   : chrome::kChromeSearchLocalNtpUrl);
+  GURL ntp_url(chrome::kChromeUINewTabPageURL);
   EXPECT_EQ(ntp_url, search::GetNewTabPageURL(profile()));
 
   EXPECT_TRUE(delegate_->IsNewTabPage());
@@ -109,9 +101,7 @@ TEST_P(ChromeLocationBarModelDelegateTest, IsNewTabPage) {
   chrome::NewTab(browser());
   // New Tab URL with a user selected DSP without an NTP URL resolves to
   // chrome://new-tab-page-third-party/ or local-ntp.
-  EXPECT_EQ(GURL(base::FeatureList::IsEnabled(ntp_features::kWebUI)
-                     ? chrome::kChromeUINewTabPageThirdPartyURL
-                     : chrome::kChromeSearchLocalNtpUrl),
+  EXPECT_EQ(GURL(chrome::kChromeUINewTabPageThirdPartyURL),
             search::GetNewTabPageURL(profile()));
 
   EXPECT_FALSE(delegate_->IsNewTabPage());

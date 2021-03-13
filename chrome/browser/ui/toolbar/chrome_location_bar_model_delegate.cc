@@ -196,9 +196,7 @@ bool ChromeLocationBarModelDelegate::IsNewTabPage() const {
   if (!search::DefaultSearchProviderIsGoogle(profile))
     return false;
 
-  GURL ntp_url(base::FeatureList::IsEnabled(ntp_features::kWebUI)
-                   ? chrome::kChromeUINewTabPageURL
-                   : chrome::kChromeSearchLocalNtpUrl);
+  GURL ntp_url(chrome::kChromeUINewTabPageURL);
   return ntp_url.scheme_piece() == entry->GetURL().scheme_piece() &&
          ntp_url.host_piece() == entry->GetURL().host_piece();
 }
