@@ -1150,10 +1150,10 @@ public class NavigationTest {
     }
 
     private void navigateToStream(InstrumentationActivity activity, String mimeType,
-            String cacheControl) throws Exception {
+            String cacheControl, String html) throws Exception {
         int curOnFirstContentfulPaintCount =
                 mCallback.onFirstContentfulPaintCallback.getCallCount();
-        InputStream stream = new ByteArrayInputStream(STREAM_HTML.getBytes(StandardCharsets.UTF_8));
+        InputStream stream = new ByteArrayInputStream(html.getBytes(StandardCharsets.UTF_8));
         WebResourceResponse response = new WebResourceResponse(mimeType, "UTF-8", stream);
         if (cacheControl != null) {
             Map<String, String> headers = new HashMap<>();
@@ -1167,6 +1167,11 @@ public class NavigationTest {
                         -> activity.getTab().getNavigationController().navigate(
                                 Uri.parse(STREAM_URL), params));
         mCallback.onFirstContentfulPaintCallback.waitForCallback(curOnFirstContentfulPaintCount);
+    }
+
+    private void navigateToStream(InstrumentationActivity activity, String mimeType,
+            String cacheControl) throws Exception {
+        navigateToStream(activity, mimeType, cacheControl, STREAM_HTML);
     }
 
     private void assertStreamContent() throws Exception {
@@ -1286,6 +1291,39 @@ public class NavigationTest {
         runOnUiThreadBlocking(() -> { activity.getTab().getNavigationController().goBack(); });
         mCallback.onFailedCallback.assertCalledWith(
                 curFailedCount, STREAM_URL, LoadError.CONNECTIVITY_ERROR);
+    }
+
+    // Verifies that a request which uses a stream can still set the user agent that is used for
+    // subresources.
+    @Test
+    @SmallTest
+    // The flags are necessary for the following reasons:
+    // ignore-certificate-errors: TestWebServer doesn't have a real cert.
+    @CommandLineFlags.Add({"ignore-certificate-errors"})
+    public void testWebResponseWithUserAgent() throws Exception {
+        InstrumentationActivity activity = mActivityTestRule.launchShellWithUrl(URL1);
+        TestThreadUtils.runOnUiThreadBlocking(() -> { activity.getBrowser().setTopView(null); });
+        setNavigationCallback(activity);
+
+        // Avoid mixed http/https errors since the stream url is https.
+        TestWebServer testServer = TestWebServer.startSsl();
+        String scriptUrl = testServer.setResponse("/foo.js", "", null);
+        String streamHtml = "<html><script src='" + scriptUrl + "'/>bar</html>";
+
+        String customUserAgent = "custom-ua";
+        UserAgentSetter setter = new UserAgentSetter(customUserAgent);
+        registerNavigationCallback(setter);
+
+        navigateToStream(activity, "", null, streamHtml);
+
+        // Ensure the script is fetched.
+        CriteriaHelper.pollInstrumentationThread(
+                ()
+                        -> Criteria.checkThat(
+                                testServer.getLastRequest("/foo.js"), Matchers.notNullValue()));
+
+        String actualUserAgent = testServer.getLastRequest("/foo.js").headerValue("User-Agent");
+        assertEquals(customUserAgent, actualUserAgent);
     }
 
     @MinWebLayerVersion(88)
