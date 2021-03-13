@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "ash/public/cpp/ash_features.h"
+#include "ash/public/cpp/autotest_desks_api.h"
 #include "ash/wm/window_state.h"
 #include "ash/wm/wm_event.h"
 #include "base/test/scoped_feature_list.h"
@@ -417,6 +418,11 @@ IN_PROC_BROWSER_TEST_F(AppLaunchHandlerBrowserTest, WindowProperties) {
 }
 
 IN_PROC_BROWSER_TEST_F(AppLaunchHandlerBrowserTest, RestoreChromeApp) {
+  // Have 4 desks total.
+  ash::AutotestDesksApi().CreateNewDesk();
+  ash::AutotestDesksApi().CreateNewDesk();
+  ash::AutotestDesksApi().CreateNewDesk();
+
   ::full_restore::SetActiveProfilePath(profile()->GetPath());
 
   // Create the restore data.
@@ -454,6 +460,7 @@ IN_PROC_BROWSER_TEST_F(AppLaunchHandlerBrowserTest, RestoreChromeApp) {
   int32_t* index = window->GetProperty(::full_restore::kActivationIndexKey);
   ASSERT_TRUE(index);
   EXPECT_EQ(kActivationIndex, *index);
+  EXPECT_EQ(kDeskId, window->GetProperty(aura::client::kWindowWorkspaceKey));
 
   // Windows created from full restore are not activated. They will become
   // activatable after a post task is run.
@@ -468,6 +475,14 @@ IN_PROC_BROWSER_TEST_F(AppLaunchHandlerBrowserTest, RestoreChromeApp) {
   // Close the window.
   CloseAppWindow(app_window);
   ASSERT_FALSE(::full_restore::GetWindowInfo(restore_window_id));
+
+  // Remove the added desks.
+  while (true) {
+    base::RunLoop run_loop;
+    if (!ash::AutotestDesksApi().RemoveActiveDesk(run_loop.QuitClosure()))
+      break;
+    run_loop.Run();
+  }
 }
 
 IN_PROC_BROWSER_TEST_F(AppLaunchHandlerBrowserTest,
