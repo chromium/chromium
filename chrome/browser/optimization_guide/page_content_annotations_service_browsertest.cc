@@ -95,6 +95,17 @@ class PageContentAnnotationsServiceBrowserTest : public InProcessBrowserTest {
         "type.googleapis.com/com.foo.PageTopicsModelMetadata");
     proto::PageTopicsModelMetadata page_topics_model_metadata;
     page_topics_model_metadata.set_version(123);
+    page_topics_model_metadata.add_supported_output(
+        proto::PAGE_TOPICS_SUPPORTED_OUTPUT_CATEGORIES);
+    auto* output_params =
+        page_topics_model_metadata.mutable_output_postprocessing_params();
+    auto* category_params = output_params->mutable_category_params();
+    category_params->set_max_categories(5);
+    category_params->set_min_none_weight(0.8);
+    category_params->set_min_category_weight(0.0);
+    category_params->set_min_normalized_weight_within_top_n(0.1);
+    // TODO(crbug/1177102): Add Floc-Protected params when test model supports
+    // it.
     page_topics_model_metadata.SerializeToString(any_metadata.mutable_value());
     base::FilePath source_root_dir;
     base::PathService::Get(base::DIR_SOURCE_ROOT, &source_root_dir);

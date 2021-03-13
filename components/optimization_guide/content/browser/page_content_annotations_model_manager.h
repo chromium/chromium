@@ -7,6 +7,7 @@
 
 #include "components/optimization_guide/content/browser/bert_model_executor.h"
 #include "components/optimization_guide/content/browser/page_content_annotations.h"
+#include "components/optimization_guide/proto/page_topics_model_metadata.pb.h"
 
 namespace optimization_guide {
 
@@ -41,7 +42,14 @@ class PageContentAnnotationsModelManager {
   // Invoked when the page topics model has finished executing.
   void OnPageTopicsModelExecutionCompleted(
       PageContentAnnotatedCallback callback,
+      const proto::PageTopicsModelMetadata& model_metadata,
       const base::Optional<std::vector<tflite::task::core::Category>>& output);
+
+  // Converts |model_output| into PageContentAnnotations based on
+  // |model_metadata|.
+  PageContentAnnotations GetPageContentAnnotationsFromModelOutput(
+      const proto::PageTopicsModelMetadata& model_metadata,
+      const std::vector<tflite::task::core::Category>& model_output) const;
 
   // The model executor responsible for executing the page topics model.
   std::unique_ptr<BertModelExecutor> page_topics_model_executor_;

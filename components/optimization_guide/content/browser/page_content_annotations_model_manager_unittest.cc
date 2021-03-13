@@ -69,12 +69,19 @@ class PageContentAnnotationsModelManagerTest : public testing::Test {
     RunUntilIdle();
   }
 
-  PageTopicsModelObserverTracker* model_observer_tracker() {
+  PageTopicsModelObserverTracker* model_observer_tracker() const {
     return model_observer_tracker_.get();
   }
 
-  PageContentAnnotationsModelManager* model_manager() {
+  PageContentAnnotationsModelManager* model_manager() const {
     return model_manager_.get();
+  }
+
+  PageContentAnnotations GetPageContentAnnotationsFromModelOutput(
+      const proto::PageTopicsModelMetadata& metadata,
+      const std::vector<tflite::task::core::Category>& model_output) const {
+    return model_manager()->GetPageContentAnnotationsFromModelOutput(
+        metadata, model_output);
   }
 
   void RunUntilIdle() { task_environment_.RunUntilIdle(); }
@@ -98,7 +105,7 @@ TEST_F(PageContentAnnotationsModelManagerTest, RegistersCorrectModelMetadata) {
   EXPECT_EQ(page_topics_model_metadata->supported_output_size(), 2);
   EXPECT_THAT(
       page_topics_model_metadata->supported_output(),
-      UnorderedElementsAre(proto::PAGE_TOPICS_SUPPORTED_OUTPUT_SENSITIVITY,
+      UnorderedElementsAre(proto::PAGE_TOPICS_SUPPORTED_OUTPUT_FLOC_PROTECTED,
                            proto::PAGE_TOPICS_SUPPORTED_OUTPUT_CATEGORIES));
 #else
   EXPECT_FALSE(registered_model_metadata.has_value());
@@ -137,6 +144,156 @@ TEST_F(PageContentAnnotationsModelManagerTest,
   base::Optional<int64_t> model_version =
       model_manager()->GetPageTopicsModelVersion();
   EXPECT_FALSE(model_version.has_value());
+}
+
+TEST_F(PageContentAnnotationsModelManagerTest,
+       GetPageContentAnnotationsFromModelOutputFlocProtectedOnly) {
+  proto::PageTopicsModelMetadata model_metadata;
+  model_metadata.mutable_output_postprocessing_params()
+      ->mutable_floc_protected_params()
+      ->set_category_name("SOMECATEGORY");
+
+  std::vector<tflite::task::core::Category> model_output = {
+      {"SOMECATEGORY", 0.5},
+      {"-2", 0.3},
+  };
+  PageContentAnnotations annotations =
+      GetPageContentAnnotationsFromModelOutput(model_metadata, model_output);
+  EXPECT_TRUE(annotations.categories().empty());
+  EXPECT_EQ(annotations.floc_protected_score(), 0.5);
+}
+
+TEST_F(
+    PageContentAnnotationsModelManagerTest,
+    GetPageContentAnnotationsFromModelOutputFlocProtectedOnlyCategoryNotInOutput) {
+  proto::PageTopicsModelMetadata model_metadata;
+  model_metadata.mutable_output_postprocessing_params()
+      ->mutable_floc_protected_params()
+      ->set_category_name("SOMECATEGORY");
+
+  std::vector<tflite::task::core::Category> model_output = {
+      {"-2", 0.3},
+  };
+  PageContentAnnotations annotations =
+      GetPageContentAnnotationsFromModelOutput(model_metadata, model_output);
+  EXPECT_TRUE(annotations.categories().empty());
+  EXPECT_EQ(annotations.floc_protected_score(), -1.0);
+}
+
+TEST_F(
+    PageContentAnnotationsModelManagerTest,
+    GetPageContentAnnotationsFromModelOutputNonNumericAndLowWeightCategoriesPruned) {
+  proto::PageTopicsModelMetadata model_metadata;
+  auto* category_params = model_metadata.mutable_output_postprocessing_params()
+                              ->mutable_category_params();
+  category_params->set_max_categories(4);
+  category_params->set_min_none_weight(0.8);
+  category_params->set_min_category_weight(0.01);
+  category_params->set_min_normalized_weight_within_top_n(0.1);
+
+  std::vector<tflite::task::core::Category> model_output = {
+      {"0", 0.0001}, {"1", 0.1}, {"SOMECATEGORY", 0.9}, {"2", 0.2}, {"3", 0.3},
+  };
+  PageContentAnnotations annotations =
+      GetPageContentAnnotationsFromModelOutput(model_metadata, model_output);
+  EXPECT_THAT(
+      annotations.categories(),
+      UnorderedElementsAre(std::make_pair(1, 0.1), std::make_pair(2, 0.2),
+                           std::make_pair(3, 0.3)));
+  EXPECT_EQ(annotations.floc_protected_score(), -1.0);
+}
+
+TEST_F(PageContentAnnotationsModelManagerTest,
+       GetPageContentAnnotationsFromModelOutputNoneWeightTooStrong) {
+  proto::PageTopicsModelMetadata model_metadata;
+  auto* category_params = model_metadata.mutable_output_postprocessing_params()
+                              ->mutable_category_params();
+  category_params->set_max_categories(4);
+  category_params->set_min_none_weight(0.1);
+  category_params->set_min_category_weight(0.01);
+  category_params->set_min_normalized_weight_within_top_n(0.1);
+
+  std::vector<tflite::task::core::Category> model_output = {
+      {"-2", 0.9999},
+      {"0", 0.3},
+      {"1", 0.2},
+  };
+  PageContentAnnotations annotations =
+      GetPageContentAnnotationsFromModelOutput(model_metadata, model_output);
+  EXPECT_TRUE(annotations.categories().empty());
+  EXPECT_EQ(annotations.floc_protected_score(), -1.0);
+}
+
+TEST_F(PageContentAnnotationsModelManagerTest,
+       GetPageContentAnnotationsFromModelOutputNoneInTopButNotStrongSoPruned) {
+  proto::PageTopicsModelMetadata model_metadata;
+  auto* category_params = model_metadata.mutable_output_postprocessing_params()
+                              ->mutable_category_params();
+  category_params->set_max_categories(4);
+  category_params->set_min_none_weight(0.8);
+  category_params->set_min_category_weight(0.01);
+  category_params->set_min_normalized_weight_within_top_n(0.1);
+
+  std::vector<tflite::task::core::Category> model_output = {
+      {"-2", 0.1}, {"0", 0.3}, {"1", 0.2}, {"2", 0.4}, {"3", 0.05},
+  };
+  PageContentAnnotations annotations =
+      GetPageContentAnnotationsFromModelOutput(model_metadata, model_output);
+  EXPECT_THAT(
+      annotations.categories(),
+      UnorderedElementsAre(std::make_pair(0, 0.3), std::make_pair(1, 0.2),
+                           std::make_pair(2, 0.4)));
+  EXPECT_EQ(annotations.floc_protected_score(), -1.0);
+}
+
+TEST_F(PageContentAnnotationsModelManagerTest,
+       GetPageContentAnnotationsFromModelOutputPrunedAfterNormalization) {
+  proto::PageTopicsModelMetadata model_metadata;
+  auto* category_params = model_metadata.mutable_output_postprocessing_params()
+                              ->mutable_category_params();
+  category_params->set_max_categories(4);
+  category_params->set_min_none_weight(0.8);
+  category_params->set_min_category_weight(0.01);
+  category_params->set_min_normalized_weight_within_top_n(0.25);
+
+  std::vector<tflite::task::core::Category> model_output = {
+      {"0", 0.3},
+      {"1", 0.25},
+      {"2", 0.4},
+      {"3", 0.05},
+  };
+  PageContentAnnotations annotations =
+      GetPageContentAnnotationsFromModelOutput(model_metadata, model_output);
+  EXPECT_THAT(
+      annotations.categories(),
+      UnorderedElementsAre(std::make_pair(0, 0.3), std::make_pair(1, 0.25),
+                           std::make_pair(2, 0.4)));
+  EXPECT_EQ(annotations.floc_protected_score(), -1.0);
+}
+
+TEST_F(PageContentAnnotationsModelManagerTest,
+       GetPageContentAnnotationsFromModelOutputCategoriesAndFlocProtected) {
+  proto::PageTopicsModelMetadata model_metadata;
+  auto* category_params = model_metadata.mutable_output_postprocessing_params()
+                              ->mutable_category_params();
+  category_params->set_max_categories(4);
+  category_params->set_min_none_weight(0.8);
+  category_params->set_min_category_weight(0.01);
+  category_params->set_min_normalized_weight_within_top_n(0.25);
+  model_metadata.mutable_output_postprocessing_params()
+      ->mutable_floc_protected_params()
+      ->set_category_name("SOMECATEGORY");
+
+  std::vector<tflite::task::core::Category> model_output = {
+      {"0", 0.3}, {"1", 0.25}, {"2", 0.4}, {"3", 0.05}, {"SOMECATEGORY", 0.5},
+  };
+  PageContentAnnotations annotations =
+      GetPageContentAnnotationsFromModelOutput(model_metadata, model_output);
+  EXPECT_THAT(
+      annotations.categories(),
+      UnorderedElementsAre(std::make_pair(0, 0.3), std::make_pair(1, 0.25),
+                           std::make_pair(2, 0.4)));
+  EXPECT_EQ(annotations.floc_protected_score(), 0.5);
 }
 
 }  // namespace optimization_guide

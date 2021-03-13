@@ -39,10 +39,12 @@ void PageContentAnnotationsService::Annotate(const HistoryVisit& visit,
 void PageContentAnnotationsService::OnPageContentAnnotated(
     const HistoryVisit& visit,
     const base::Optional<PageContentAnnotations>& page_content_annotations) {
-  // TODO(crbug/1177102): If success, then populate to history service.
   LOCAL_HISTOGRAM_BOOLEAN(
       "OptimizationGuide.PageContentAnnotationsService.PageContentAnnotated",
       page_content_annotations.has_value());
+  if (page_content_annotations) {
+    // TODO(crbug/1177102): Send annotations to store in history service.
+  }
 }
 
 base::Optional<int64_t>
