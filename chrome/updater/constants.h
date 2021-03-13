@@ -192,6 +192,12 @@ constexpr int kErrorFailedToLockPrefsMutex = 1;
 constexpr int kErrorFailedToSwap = 2;
 
 // Policy Management constants.
+// The maximum value allowed for policy AutoUpdateCheckPeriodMinutes.
+constexpr int kMaxAutoUpdateCheckPeriodMinutes = 43200;
+
+// The maximum value allowed for policy UpdatesSuppressedDurationMin.
+constexpr int kMaxUpdatesSuppressedDurationMinutes = 960;
+
 extern const char kProxyModeDirect[];
 extern const char kProxyModeAutoDetect[];
 extern const char kProxyModePacScript[];

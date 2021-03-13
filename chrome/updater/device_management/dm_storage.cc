@@ -16,6 +16,7 @@
 #include "base/strings/string16.h"
 #include "base/strings/sys_string_conversions.h"
 #include "chrome/updater/device_management/dm_cached_policy_info.h"
+#include "chrome/updater/device_management/dm_message.h"
 #include "chrome/updater/device_management/dm_policy_manager.h"
 #include "chrome/updater/util.h"
 #include "components/policy/proto/device_management_backend.pb.h"
@@ -38,9 +39,6 @@ constexpr char kPolicyInfoFileName[] = "CachedPolicyInfo";
 // This is the standard name for the file that PersistPolicies() uses for each
 // {policy_type} that it receives from the DMServer.
 constexpr char kPolicyFileName[] = "PolicyFetchResponse";
-
-// The policy type for Omaha policy settings.
-constexpr char kGoogleUpdatePolicyType[] = "google/machine-level-omaha";
 
 // Policy subfolder in the updater installation path.
 constexpr char kPolicyCacheSubfolder[] = "Policies";

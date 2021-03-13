@@ -164,8 +164,8 @@ GetDefaultTestingOmahaPolicyProto() {
   omaha_settings->mutable_updates_suppressed()->set_start_hour(9);
   omaha_settings->mutable_updates_suppressed()->set_start_minute(30);
   omaha_settings->mutable_updates_suppressed()->set_duration_min(120);
-  omaha_settings->set_download_preference("test_download_preference");
-  omaha_settings->set_proxy_mode("test_proxy_mode");
+  omaha_settings->set_download_preference("cacheable");
+  omaha_settings->set_proxy_mode("pac_script");
   omaha_settings->set_proxy_pac_url("foo.c/proxy.pa");
   omaha_settings->set_install_default(
       ::wireless_android_enterprise_devicemanagement::INSTALL_ENABLED);
@@ -182,6 +182,7 @@ GetDefaultTestingOmahaPolicyProto() {
   app.set_rollback_to_target_version(
       ::wireless_android_enterprise_devicemanagement::
           ROLLBACK_TO_TARGET_VERSION_ENABLED);
+  app.set_target_channel("beta");
   omaha_settings->mutable_application_settings()->Add(std::move(app));
 
   return omaha_settings;

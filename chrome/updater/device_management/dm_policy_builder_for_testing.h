@@ -128,10 +128,6 @@ class DMPolicyBuilderForTesting {
   std::unique_ptr<DMSigningKeyForTesting> new_signing_key_;
 };
 
-// Constructs a DeviceManagementResponse that contains the given policies.
-std::unique_ptr<::enterprise_management::DeviceManagementResponse>
-DMResponseForPolicies(const DMPolicyMap& policies);
-
 // Gets the canned testing Omaha policy protobuf object.
 std::unique_ptr<
     ::wireless_android_enterprise_devicemanagement::OmahaSettingsClientProto>

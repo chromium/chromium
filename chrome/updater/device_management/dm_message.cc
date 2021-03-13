@@ -14,6 +14,8 @@
 
 namespace updater {
 
+constexpr char kGoogleUpdatePolicyType[] = "google/machine-level-omaha";
+
 std::string GetRegisterBrowserRequestData(const std::string& machine_name,
                                           const std::string& os_platform,
                                           const std::string& os_version) {
@@ -82,7 +84,7 @@ DMPolicyMap ParsePolicyFetchResponse(
     const ::enterprise_management::PolicyFetchResponse& response =
         dm_response.policy_response().responses(i);
 
-    if (!validator.ValidatePolicy(response, validation_result)) {
+    if (!validator.ValidatePolicyResponse(response, validation_result)) {
       VLOG(1) << "Policy " << validation_result.policy_type
               << " validation failed.";
       validation_results.push_back(validation_result);

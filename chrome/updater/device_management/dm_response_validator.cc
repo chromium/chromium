@@ -4,12 +4,19 @@
 
 #include "chrome/updater/device_management/dm_response_validator.h"
 
+#include <algorithm>
 #include <string>
 
+#include "base/check.h"
+#include "base/containers/contains.h"
 #include "base/containers/span.h"
 #include "base/logging.h"
 #include "base/strings/string_util.h"
+#include "base/strings/stringprintf.h"
+#include "chrome/updater/constants.h"
 #include "chrome/updater/device_management/dm_cached_policy_info.h"
+#include "chrome/updater/device_management/dm_message.h"
+#include "chrome/updater/protos/omaha_settings.pb.h"
 #include "components/policy/core/common/cloud/cloud_policy_constants.h"
 #include "components/policy/proto/device_management_backend.pb.h"
 #include "crypto/signature_verifier.h"
@@ -18,6 +25,13 @@
 namespace updater {
 
 namespace {
+
+namespace edm = ::wireless_android_enterprise_devicemanagement;
+
+constexpr const char* kProxyModeValidValues[] = {
+    kProxyModeDirect,       kProxyModeAutoDetect, kProxyModePacScript,
+    kProxyModeFixedServers, kProxyModeSystem,
+};
 
 bool VerifySHA256Signature(const std::string& data,
                            const std::string& key,
@@ -31,6 +45,189 @@ bool VerifySHA256Signature(const std::string& data,
   }
   verifier.VerifyUpdate(base::as_bytes(base::make_span(data)));
   return verifier.VerifyFinal();
+}
+
+class OmahaPolicyValidator {
+ public:
+  OmahaPolicyValidator() = default;
+  ~OmahaPolicyValidator() = default;
+
+  bool Initialize(const enterprise_management::PolicyData& policy_data);
+  bool Validate(PolicyValidationResult& validation_result) const;
+
+ private:
+  // Functions to validate global-level policies.
+  void ValidateAutoUpdateCheckPeriodPolicy(
+      PolicyValidationResult& result) const;
+  void ValidateDownloadPreferencePolicy(PolicyValidationResult& result) const;
+  void ValidateUpdatesSuppressedPolicies(PolicyValidationResult& result) const;
+  void ValidateProxyPolicies(PolicyValidationResult& result) const;
+
+  // Functions to validate app-level policies.
+  void ValidateAppTargetChannelPolicy(
+      const edm::ApplicationSettings& app_settings,
+      PolicyValidationResult& validation_result) const;
+  void ValidateAppTargetVersionPrefixPolicy(
+      const edm::ApplicationSettings& app_settings,
+      PolicyValidationResult& validation_result) const;
+
+  edm::OmahaSettingsClientProto omaha_settings_;
+};
+
+bool OmahaPolicyValidator::Initialize(
+    const enterprise_management::PolicyData& policy_data) {
+  return omaha_settings_.ParseFromString(policy_data.policy_value());
+}
+
+bool OmahaPolicyValidator::Validate(
+    PolicyValidationResult& validation_result) const {
+  ValidateAutoUpdateCheckPeriodPolicy(validation_result);
+  ValidateDownloadPreferencePolicy(validation_result);
+  ValidateUpdatesSuppressedPolicies(validation_result);
+  ValidateProxyPolicies(validation_result);
+
+  for (const auto& app_settings : omaha_settings_.application_settings()) {
+    ValidateAppTargetChannelPolicy(app_settings, validation_result);
+    ValidateAppTargetVersionPrefixPolicy(app_settings, validation_result);
+  }
+
+  return validation_result.status ==
+             PolicyValidationResult::Status::kValidationOK &&
+         !validation_result.HasErrorIssue();
+}
+
+void OmahaPolicyValidator::ValidateAutoUpdateCheckPeriodPolicy(
+    PolicyValidationResult& validation_result) const {
+  if (omaha_settings_.has_auto_update_check_period_minutes() &&
+      (omaha_settings_.auto_update_check_period_minutes() < 0 ||
+       omaha_settings_.auto_update_check_period_minutes() >
+           kMaxAutoUpdateCheckPeriodMinutes)) {
+    validation_result.issues.emplace_back(
+        "auto_update_check_period_minutes",
+        PolicyValueValidationIssue::Severity::kError,
+        base::StringPrintf("Value out of range (0 - %d): %lld",
+                           kMaxAutoUpdateCheckPeriodMinutes,
+                           omaha_settings_.auto_update_check_period_minutes()));
+  }
+}
+
+void OmahaPolicyValidator::ValidateDownloadPreferencePolicy(
+    PolicyValidationResult& validation_result) const {
+  if (!omaha_settings_.has_download_preference())
+    return;
+
+  if (!base::EqualsCaseInsensitiveASCII(omaha_settings_.download_preference(),
+                                        kDownloadPreferenceCacheable)) {
+    validation_result.issues.emplace_back(
+        "download_preference", PolicyValueValidationIssue::Severity::kWarning,
+        "Unrecognized download preference: " +
+            omaha_settings_.download_preference());
+  }
+}
+void OmahaPolicyValidator::ValidateUpdatesSuppressedPolicies(
+    PolicyValidationResult& validation_result) const {
+  if (!omaha_settings_.has_updates_suppressed())
+    return;
+
+  if (omaha_settings_.updates_suppressed().start_hour() < 0 ||
+      omaha_settings_.updates_suppressed().start_hour() >= 24) {
+    validation_result.issues.emplace_back(
+        "updates_suppressed.start_hour",
+        PolicyValueValidationIssue::Severity::kError,
+        base::StringPrintf("Value out of range(0 - 23): %lld",
+                           omaha_settings_.updates_suppressed().start_hour()));
+  }
+  if (omaha_settings_.updates_suppressed().start_minute() < 0 ||
+      omaha_settings_.updates_suppressed().start_minute() >= 60) {
+    validation_result.issues.emplace_back(
+        "updates_suppressed.start_minute",
+        PolicyValueValidationIssue::Severity::kError,
+        base::StringPrintf(
+            "Value out of range(0 - 59): %lld",
+            omaha_settings_.updates_suppressed().start_minute()));
+  }
+  if (omaha_settings_.updates_suppressed().duration_min() < 0 ||
+      omaha_settings_.updates_suppressed().duration_min() >
+          kMaxUpdatesSuppressedDurationMinutes) {
+    validation_result.issues.emplace_back(
+        "updates_suppressed.duration_min",
+        PolicyValueValidationIssue::Severity::kError,
+        base::StringPrintf(
+            "Value out of range(0 - %d): %lld",
+            kMaxUpdatesSuppressedDurationMinutes,
+            omaha_settings_.updates_suppressed().duration_min()));
+  }
+}
+
+void OmahaPolicyValidator::ValidateProxyPolicies(
+    PolicyValidationResult& validation_result) const {
+  if (omaha_settings_.has_proxy_mode()) {
+    const std::string proxy_mode =
+        base::ToLowerASCII(omaha_settings_.proxy_mode());
+    if (!base::Contains(kProxyModeValidValues, proxy_mode)) {
+      validation_result.issues.emplace_back(
+          "proxy_mode", PolicyValueValidationIssue::Severity::kError,
+          "Unrecognized proxy mode: " + omaha_settings_.proxy_mode());
+    }
+  }
+
+  if (omaha_settings_.has_proxy_server()) {
+    if (!omaha_settings_.has_proxy_mode()) {
+      validation_result.issues.emplace_back(
+          "proxy_server", PolicyValueValidationIssue::Severity::kWarning,
+          "Proxy server setting is ignored because proxy mode is not set.");
+    } else {
+      if (!base::EqualsCaseInsensitiveASCII(omaha_settings_.proxy_mode(),
+                                            kProxyModeFixedServers)) {
+        validation_result.issues.emplace_back(
+            "proxy_server", PolicyValueValidationIssue::Severity::kWarning,
+            base::StringPrintf("Proxy server setting [%s] is ignored "
+                               "because proxy mode is not [%s]",
+                               omaha_settings_.proxy_server().c_str(),
+                               kProxyModeFixedServers));
+      }
+    }
+  }
+
+  if (omaha_settings_.has_proxy_pac_url()) {
+    if (!omaha_settings_.has_proxy_mode()) {
+      validation_result.issues.emplace_back(
+          "proxy_pac_url", PolicyValueValidationIssue::Severity::kWarning,
+          "Proxy PAC URL setting is ignored because proxy mode is not set.");
+    } else {
+      if (!base::EqualsCaseInsensitiveASCII(omaha_settings_.proxy_mode(),
+                                            kProxyModePacScript)) {
+        validation_result.issues.emplace_back(
+            "proxy_pac_url", PolicyValueValidationIssue::Severity::kWarning,
+            base::StringPrintf("Proxy PAC URL setting [%s] is ignored because "
+                               "proxy mode is not [%s]",
+                               omaha_settings_.proxy_pac_url().c_str(),
+                               kProxyModePacScript));
+      }
+    }
+  }
+}
+
+void OmahaPolicyValidator::ValidateAppTargetChannelPolicy(
+    const edm::ApplicationSettings& app_settings,
+    PolicyValidationResult& validation_result) const {
+  if (app_settings.has_target_channel() &&
+      app_settings.target_channel().empty()) {
+    validation_result.issues.emplace_back(
+        "target_channel", PolicyValueValidationIssue::Severity::kWarning,
+        app_settings.app_guid() + " empty policy value");
+  }
+}
+
+void OmahaPolicyValidator::ValidateAppTargetVersionPrefixPolicy(
+    const edm::ApplicationSettings& app_settings,
+    PolicyValidationResult& validation_result) const {
+  if (app_settings.has_target_version_prefix() &&
+      app_settings.target_version_prefix().empty()) {
+    validation_result.issues.emplace_back(
+        "target_version_prefix", PolicyValueValidationIssue::Severity::kWarning,
+        app_settings.app_guid() + " empty policy value");
+  }
 }
 
 }  // namespace
@@ -222,7 +419,27 @@ bool DMResponseValidator::ValidateTimestamp(
   return true;
 }
 
-bool DMResponseValidator::ValidatePolicy(
+bool DMResponseValidator::ValidatePayloadPolicy(
+    const enterprise_management::PolicyData& policy_data,
+    PolicyValidationResult& validation_result) const {
+  // Policy type was validated previously.
+  DCHECK(policy_data.has_policy_type());
+
+  if (base::EqualsCaseInsensitiveASCII(policy_data.policy_type(),
+                                       kGoogleUpdatePolicyType)) {
+    OmahaPolicyValidator validator;
+    if (!validator.Initialize(policy_data)) {
+      validation_result.status =
+          PolicyValidationResult::Status::kValidationPolicyParseError;
+      return false;
+    }
+    return validator.Validate(validation_result);
+  }
+
+  return true;
+}
+
+bool DMResponseValidator::ValidatePolicyResponse(
     const enterprise_management::PolicyFetchResponse& fetch_response,
     PolicyValidationResult& validation_result) const {
   enterprise_management::PolicyData fetch_policy_data;
@@ -263,8 +480,11 @@ bool DMResponseValidator::ValidatePolicy(
     return false;
   }
 
-  // TODO(crbug/1183453): Further validate Omaha policies if the policy type is
-  // "google/machine-level-omaha".
+  if (!ValidatePayloadPolicy(fetch_policy_data, validation_result)) {
+    VLOG(1) << "Payload policy validation failed, policy type: "
+            << validation_result.policy_type;
+    return false;
+  }
 
   return true;
 }

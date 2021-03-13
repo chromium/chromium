@@ -18,6 +18,9 @@ struct PolicyValidationResult;
 // DM policy map: policy_type --> serialized policy data of PolicyFetchResponse.
 using DMPolicyMap = base::flat_map<std::string, std::string>;
 
+// The policy type for Omaha policy settings.
+extern const char kGoogleUpdatePolicyType[];
+
 // Returns the serialized data from a DeviceManagementRequest, which wraps
 // a RegisterBrowserRequest, to register the current device.
 std::string GetRegisterBrowserRequestData(const std::string& machine_name,

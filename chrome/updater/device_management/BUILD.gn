@@ -62,6 +62,7 @@ source_set("unittest") {
     "dm_policy_builder_for_testing.cc",
     "dm_policy_builder_for_testing.h",
     "dm_policy_manager_unittest.cc",
+    "dm_response_validator_unittest.cc",
     "dm_storage_unittest.cc",
   ]
 

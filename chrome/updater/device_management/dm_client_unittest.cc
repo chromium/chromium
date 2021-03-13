@@ -139,7 +139,7 @@ class DMRequestCallbackHandler
       EXPECT_TRUE(policy_manager->IsManaged());
       std::string proxy_mode;
       EXPECT_TRUE(policy_manager->GetProxyMode(&proxy_mode));
-      EXPECT_EQ(proxy_mode, "test_proxy_mode");
+      EXPECT_EQ(proxy_mode, "pac_script");
       int update_policy = 0;
       EXPECT_TRUE(policy_manager->GetEffectivePolicyForAppUpdates(
           kChromeAppId, &update_policy));

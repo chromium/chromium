@@ -8,6 +8,7 @@
 #include <string>
 #include <vector>
 
+#include "base/ranges/algorithm.h"
 #include "chrome/updater/device_management/dm_cached_policy_info.h"
 
 namespace enterprise_management {
@@ -71,6 +72,12 @@ struct PolicyValidationResult {
   PolicyValidationResult(const PolicyValidationResult& other);
   ~PolicyValidationResult();
 
+  bool HasErrorIssue() const {
+    return base::ranges::any_of(issues, [](const auto& issue) {
+      return issue.severity == PolicyValueValidationIssue::Severity::kError;
+    });
+  }
+
   std::string policy_type;
   std::string policy_token;
 
@@ -89,7 +96,7 @@ class DMResponseValidator {
   // The validation steps are sorted in the order of descending severity
   // of the error, that means the most severe check will determine the
   // validation status.
-  bool ValidatePolicy(
+  bool ValidatePolicyResponse(
       const enterprise_management::PolicyFetchResponse& policy_response,
       PolicyValidationResult& validation_result) const;
 
@@ -127,6 +134,9 @@ class DMResponseValidator {
                         PolicyValidationResult& validation_result) const;
   bool ValidateTimestamp(const enterprise_management::PolicyData& policy_data,
                          PolicyValidationResult& validation_result) const;
+  bool ValidatePayloadPolicy(
+      const enterprise_management::PolicyData& policy_data,
+      PolicyValidationResult& validation_result) const;
 
   const CachedPolicyInfo policy_info_;
   const std::string expected_dm_token_;
