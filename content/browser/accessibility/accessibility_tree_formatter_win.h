@@ -60,6 +60,10 @@ class CONTENT_EXPORT AccessibilityTreeFormatterWin
                              base::Value* dict) const;
   std::string ProcessTreeForOutput(
       const base::DictionaryValue& node) const override;
+
+  // Returns a document accessible object for an active tab in a browser.
+  Microsoft::WRL::ComPtr<IAccessible> FindActiveDocument(
+      IAccessible* root) const;
 };
 
 }  // namespace content

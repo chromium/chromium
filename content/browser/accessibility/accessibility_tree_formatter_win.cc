@@ -227,7 +227,27 @@ base::Value AccessibilityTreeFormatterWin::BuildTreeForWindow(
 
 base::Value AccessibilityTreeFormatterWin::BuildTreeForSelector(
     const AXTreeSelector& selector) const {
-  return BuildTreeForWindow(GetHWNDBySelector(selector));
+  base::Value dict(base::Value::Type::DICTIONARY);
+
+  HWND hwnd = GetHWNDBySelector(selector);
+  if (!hwnd)
+    return dict;
+
+  Microsoft::WRL::ComPtr<IAccessible> root;
+  HRESULT hr =
+      ::AccessibleObjectFromWindow(hwnd, OBJID_CLIENT, IID_PPV_ARGS(&root));
+  if (FAILED(hr))
+    return dict;
+
+  if (selector.types & AXTreeSelector::ActiveTab) {
+    root = FindActiveDocument(root.Get());
+    if (!root) {
+      return dict;
+    }
+  }
+
+  RecursiveBuildTree(root, &dict, 0, 0);
+  return dict;
 }
 
 void AccessibilityTreeFormatterWin::RecursiveBuildTree(
@@ -862,6 +882,48 @@ std::string AccessibilityTreeFormatterWin::ProcessTreeForOutput(
   }
 
   return line;
+}
+
+Microsoft::WRL::ComPtr<IAccessible>
+AccessibilityTreeFormatterWin::FindActiveDocument(IAccessible* root) const {
+  for (const ui::MSAAChild& child : ui::MSAAChildren(root)) {
+    IAccessible* ia = child.AsIAccessible();
+    if (!ia)
+      continue;
+
+    Microsoft::WRL::ComPtr<IAccessible2> ia2;
+    if (FAILED(QueryIAccessible2(ia, &ia2)))
+      continue;  // No IA2, we are finished with this node.
+
+    LONG role = 0;
+    if (FAILED(ia2->role(&role)))
+      continue;
+
+    // Firefox browser exposes documents for all tabs, grab one that doesn't
+    // have OFFSCREEN state.
+    if (role == IA2_ROLE_INTERNAL_FRAME) {
+      base::win::ScopedVariant state_variant;
+      if (SUCCEEDED(ia->get_accState(base::win::ScopedVariant(CHILDID_SELF),
+                                     state_variant.Receive())) &&
+          state_variant.type() == VT_I4) {
+        int32_t state = V_I4(state_variant.ptr());
+        if (!(state & STATE_SYSTEM_OFFSCREEN))
+          return ia;
+      }
+      continue;
+    }
+
+    // Chrome-based browsers expose active tab document only.
+    if (role == ROLE_SYSTEM_DOCUMENT)
+      return ia;
+
+    Microsoft::WRL::ComPtr<IAccessible> active_document =
+        FindActiveDocument(ia);
+    if (active_document)
+      return active_document;
+  }
+
+  return nullptr;
 }
 
 }  // namespace content
