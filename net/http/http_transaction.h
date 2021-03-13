@@ -198,6 +198,8 @@ class NET_EXPORT_PRIVATE HttpTransaction {
   virtual void SetConnectedCallback(const ConnectedCallback& callback) = 0;
 
   virtual void SetRequestHeadersCallback(RequestHeadersCallback callback) = 0;
+  virtual void SetEarlyResponseHeadersCallback(
+      ResponseHeadersCallback callback) = 0;
   virtual void SetResponseHeadersCallback(ResponseHeadersCallback callback) = 0;
 
   // Resumes the transaction after being deferred.

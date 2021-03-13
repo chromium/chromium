@@ -392,6 +392,20 @@ void SpdyHttpStream::OnHeadersSent() {
   }
 }
 
+void SpdyHttpStream::OnEarlyHintsReceived(
+    const spdy::Http2HeaderBlock& headers) {
+  DCHECK(!response_headers_complete_);
+  DCHECK(response_info_);
+  DCHECK_EQ(stream_->type(), SPDY_REQUEST_RESPONSE_STREAM);
+
+  const bool headers_valid = SpdyHeadersToHttpResponse(headers, response_info_);
+  CHECK(headers_valid);
+
+  if (!response_callback_.is_null()) {
+    DoResponseCallback(OK);
+  }
+}
+
 void SpdyHttpStream::OnHeadersReceived(
     const spdy::Http2HeaderBlock& response_headers,
     const spdy::Http2HeaderBlock* pushed_request_headers) {

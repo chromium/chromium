@@ -693,6 +693,10 @@ class NET_EXPORT URLRequest : public base::SupportsUserData {
   // called with a response from the server.
   void SetResponseHeadersCallback(ResponseHeadersCallback callback);
 
+  // Sets a callback that will be invoked each time a 103 Early Hints response
+  // is received from the remote party.
+  void SetEarlyResponseHeadersCallback(ResponseHeadersCallback callback);
+
   // Sets socket tag to be applied to all sockets used to execute this request.
   // Must be set before Start() is called.  Only currently supported for HTTP
   // and HTTPS requests on Android; UID tagging requires
@@ -956,8 +960,9 @@ class NET_EXPORT URLRequest : public base::SupportsUserData {
 
   SocketTag socket_tag_;
 
-  // See Set{Request|Response}HeadersCallback() above for details.
+  // See Set{Request|Response,EarlyResponse}HeadersCallback() above for details.
   RequestHeadersCallback request_headers_callback_;
+  ResponseHeadersCallback early_response_headers_callback_;
   ResponseHeadersCallback response_headers_callback_;
 
   bool upgrade_if_insecure_;

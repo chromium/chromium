@@ -463,6 +463,8 @@ void URLRequestHttpJob::StartTransactionInternal() {
       transaction_->SetConnectedCallback(base::BindRepeating(
           &URLRequestHttpJob::NotifyConnectedCallback, base::Unretained(this)));
       transaction_->SetRequestHeadersCallback(request_headers_callback_);
+      transaction_->SetEarlyResponseHeadersCallback(
+          early_response_headers_callback_);
       transaction_->SetResponseHeadersCallback(response_headers_callback_);
 
       if (!throttling_entry_.get() ||
@@ -1403,6 +1405,13 @@ void URLRequestHttpJob::SetRequestHeadersCallback(
   DCHECK(!transaction_);
   DCHECK(!request_headers_callback_);
   request_headers_callback_ = std::move(callback);
+}
+
+void URLRequestHttpJob::SetEarlyResponseHeadersCallback(
+    ResponseHeadersCallback callback) {
+  DCHECK(!transaction_);
+  DCHECK(!early_response_headers_callback_);
+  early_response_headers_callback_ = std::move(callback);
 }
 
 void URLRequestHttpJob::SetResponseHeadersCallback(

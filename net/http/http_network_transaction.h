@@ -87,6 +87,8 @@ class NET_EXPORT_PRIVATE HttpNetworkTransaction
       BeforeNetworkStartCallback callback) override;
   void SetConnectedCallback(const ConnectedCallback& callback) override;
   void SetRequestHeadersCallback(RequestHeadersCallback callback) override;
+  void SetEarlyResponseHeadersCallback(
+      ResponseHeadersCallback callback) override;
   void SetResponseHeadersCallback(ResponseHeadersCallback callback) override;
   int ResumeNetworkStart() override;
   void CloseConnectionOnDestruction() override;
@@ -420,6 +422,7 @@ class NET_EXPORT_PRIVATE HttpNetworkTransaction
   BeforeNetworkStartCallback before_network_start_callback_;
   ConnectedCallback connected_callback_;
   RequestHeadersCallback request_headers_callback_;
+  ResponseHeadersCallback early_response_headers_callback_;
   ResponseHeadersCallback response_headers_callback_;
 
   ConnectionAttempts connection_attempts_;

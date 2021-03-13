@@ -206,6 +206,12 @@ void BidirectionalStreamSpdyImpl::OnHeadersSent() {
     delegate_->OnStreamReady(/*request_headers_sent=*/true);
 }
 
+void BidirectionalStreamSpdyImpl::OnEarlyHintsReceived(
+    const spdy::Http2HeaderBlock& headers) {
+  DCHECK(stream_);
+  // TODO(crbug.com/671310): Plumb Early Hints to `delegate_` if needed.
+}
+
 void BidirectionalStreamSpdyImpl::OnHeadersReceived(
     const spdy::Http2HeaderBlock& response_headers,
     const spdy::Http2HeaderBlock* pushed_request_headers) {

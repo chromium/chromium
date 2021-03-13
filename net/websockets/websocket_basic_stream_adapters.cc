@@ -130,6 +130,12 @@ void WebSocketSpdyStreamAdapter::OnHeadersSent() {
     delegate_->OnHeadersSent();
 }
 
+void WebSocketSpdyStreamAdapter::OnEarlyHintsReceived(
+    const spdy::Http2HeaderBlock& headers) {
+  // This callback should not be called for a WebSocket handshake.
+  NOTREACHED();
+}
+
 void WebSocketSpdyStreamAdapter::OnHeadersReceived(
     const spdy::Http2HeaderBlock& response_headers,
     const spdy::Http2HeaderBlock* pushed_request_headers) {

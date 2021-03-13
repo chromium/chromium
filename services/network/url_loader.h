@@ -324,6 +324,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) URLLoader
   void SendResponseToClient();
   void CompletePendingWrite(bool success);
   void SetRawResponseHeaders(scoped_refptr<const net::HttpResponseHeaders>);
+  void NotifyEarlyResponse(scoped_refptr<const net::HttpResponseHeaders>);
   void SetRawRequestHeadersAndNotify(net::HttpRawRequestHeaders);
   void SendUploadProgress(const net::UploadProgress& progress);
   void OnUploadProgressACK();

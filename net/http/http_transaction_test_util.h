@@ -249,6 +249,7 @@ class MockNetworkTransaction
 
   void SetRequestHeadersCallback(RequestHeadersCallback callback) override {}
   void SetResponseHeadersCallback(ResponseHeadersCallback) override {}
+  void SetEarlyResponseHeadersCallback(ResponseHeadersCallback) override {}
 
   int ResumeNetworkStart() override;
 

@@ -241,6 +241,12 @@ class NET_EXPORT URLRequestJob {
   // from the remote party with the actual response headers recieved.
   virtual void SetResponseHeadersCallback(ResponseHeadersCallback callback) {}
 
+  // Sets a callback that will be invoked each time a 103 Early Hints response
+  // is received from the remote party with the actual response headers
+  // received.
+  virtual void SetEarlyResponseHeadersCallback(
+      ResponseHeadersCallback callback) {}
+
   // Causes the current transaction always close its active socket on
   // destruction. Does not close H2/H3 sessions.
   virtual void CloseConnectionOnDestruction();

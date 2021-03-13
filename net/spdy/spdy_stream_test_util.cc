@@ -25,6 +25,9 @@ ClosingDelegate::~ClosingDelegate() = default;
 
 void ClosingDelegate::OnHeadersSent() {}
 
+void ClosingDelegate::OnEarlyHintsReceived(
+    const spdy::Http2HeaderBlock& headers) {}
+
 void ClosingDelegate::OnHeadersReceived(
     const spdy::Http2HeaderBlock& response_headers,
     const spdy::Http2HeaderBlock* pushed_request_headers) {}
@@ -62,6 +65,12 @@ void StreamDelegateBase::OnHeadersSent() {
   stream_id_ = stream_->stream_id();
   EXPECT_NE(stream_id_, 0u);
   send_headers_completed_ = true;
+}
+
+void StreamDelegateBase::OnEarlyHintsReceived(
+    const spdy::Http2HeaderBlock& headers) {
+  EXPECT_EQ(stream_->type() != SPDY_PUSH_STREAM, send_headers_completed_);
+  early_hints_.push_back(headers.Clone());
 }
 
 void StreamDelegateBase::OnHeadersReceived(

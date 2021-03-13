@@ -288,6 +288,11 @@ void ThrottlingNetworkTransaction::SetResponseHeadersCallback(
   network_transaction_->SetResponseHeadersCallback(std::move(callback));
 }
 
+void ThrottlingNetworkTransaction::SetEarlyResponseHeadersCallback(
+    net::ResponseHeadersCallback callback) {
+  network_transaction_->SetEarlyResponseHeadersCallback(std::move(callback));
+}
+
 void ThrottlingNetworkTransaction::SetConnectedCallback(
     const ConnectedCallback& callback) {
   network_transaction_->SetConnectedCallback(callback);

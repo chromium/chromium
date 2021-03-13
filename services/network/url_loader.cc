@@ -648,6 +648,12 @@ URLLoader::URLLoader(
         &URLLoader::SetRawResponseHeaders, base::Unretained(this)));
   }
 
+  // TODO(crbug.com/671310): We may want to add
+  // ResourceRequest::report_early_response so that we can bypass setting
+  // EarlyResponseHeadersCallback if the client can't handle Early Hints.
+  url_request_->SetEarlyResponseHeadersCallback(base::BindRepeating(
+      &URLLoader::NotifyEarlyResponse, base::Unretained(this)));
+
   if (keepalive_ && keepalive_statistics_recorder_) {
     keepalive_statistics_recorder_->OnLoadStarted(
         *factory_params_->top_frame_id, keepalive_request_size_);
@@ -1911,6 +1917,16 @@ void URLLoader::CompletePendingWrite(bool success) {
 void URLLoader::SetRawResponseHeaders(
     scoped_refptr<const net::HttpResponseHeaders> headers) {
   raw_response_headers_ = headers;
+}
+
+void URLLoader::NotifyEarlyResponse(
+    scoped_refptr<const net::HttpResponseHeaders> headers) {
+  DCHECK(!has_received_response_);
+  DCHECK(url_loader_client_);
+  DCHECK(headers);
+  DCHECK_EQ(headers->response_code(), 103);
+  // TODO(crbug.com/671310): Notify the early response to `url_loader_client_`
+  // after https://crrev.com/c/2725403 is landed.
 }
 
 void URLLoader::SetRawRequestHeadersAndNotify(

@@ -532,6 +532,12 @@ void HttpNetworkTransaction::SetRequestHeadersCallback(
   request_headers_callback_ = std::move(callback);
 }
 
+void HttpNetworkTransaction::SetEarlyResponseHeadersCallback(
+    ResponseHeadersCallback callback) {
+  DCHECK(!stream_);
+  early_response_headers_callback_ = std::move(callback);
+}
+
 void HttpNetworkTransaction::SetResponseHeadersCallback(
     ResponseHeadersCallback callback) {
   DCHECK(!stream_);
@@ -1126,6 +1132,29 @@ int HttpNetworkTransaction::DoReadHeadersComplete(int result) {
     return HandleIOError(result);
 
   DCHECK(response_.headers.get());
+
+  // Check for a 103 Early Hints response.
+  if (response_.headers->response_code() == HTTP_EARLY_HINTS) {
+    NetLogResponseHeaders(
+        net_log_,
+        NetLogEventType::HTTP_TRANSACTION_READ_EARLY_HINTS_RESPONSE_HEADERS,
+        response_.headers.get());
+
+    // Early Hints does not make sense for a WebSocket handshake.
+    if (ForWebSocketHandshake())
+      return ERR_FAILED;
+
+    // TODO(crbug.com/671310): Validate headers? It seems that
+    // "Content-Encoding" etc should not appear.
+
+    if (early_response_headers_callback_)
+      early_response_headers_callback_.Run(std::move(response_.headers));
+
+    response_.headers =
+        base::MakeRefCounted<HttpResponseHeaders>(std::string());
+    next_state_ = STATE_READ_HEADERS;
+    return OK;
+  }
 
   if (!ContentEncodingsValid())
     return ERR_CONTENT_DECODING_FAILED;
