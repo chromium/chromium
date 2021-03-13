@@ -51,6 +51,10 @@ struct WebURLError {
     kFalse,
     kTrue,
   };
+  enum class ShouldCollapseInitiator {
+    kFalse,
+    kTrue,
+  };
 
   WebURLError() = delete;
   // |reason| must not be 0.
@@ -61,7 +65,8 @@ struct WebURLError {
                                     net::ResolveErrorInfo resolve_error_info,
                                     HasCopyInCache,
                                     IsWebSecurityViolation,
-                                    const WebURL&);
+                                    const WebURL&,
+                                    ShouldCollapseInitiator);
   BLINK_PLATFORM_EXPORT WebURLError(
       network::mojom::BlockedByResponseReason blocked_reason,
       net::ResolveErrorInfo resolve_error_info,
@@ -100,6 +105,7 @@ struct WebURLError {
       const {
     return trust_token_operation_error_;
   }
+  bool should_collapse_initiator() const { return should_collapse_initiator_; }
 
  private:
   // A numeric error code detailing the reason for this error. The value must
@@ -124,6 +130,9 @@ struct WebURLError {
 
   // Optional CORS error details.
   base::Optional<network::CorsErrorStatus> cors_error_status_;
+
+  // True if the initiator of this request should be collapsed.
+  bool should_collapse_initiator_ = false;
 
   // More detailed reason for failing the response with
   // ERR_net::ERR_BLOCKED_BY_RESPONSE |error_code|.

@@ -213,6 +213,9 @@
           settings.
         </message>
       </if>
+      <message name="IDS_ERRORPAGES_SUMMARY_BLOCKED_BY_CLIENT" desc="Summary in the error page when a request is blocked by the browser.">
+        This page has been blocked by Chrome
+      </message>
       <message name="IDS_ERRORPAGES_SUMMARY_BLOCKED_ENROLLMENT_CHECK_PENDING" desc="Summary in the error page when the user tries to browse before the forced enrollment check has finished.">
         Chrome OS hasn’t completed its initial setup.
       </message>

@@ -141,6 +141,11 @@ class ExtensionsClient {
       bool is_extension_active,
       std::vector<network::mojom::CorsOriginPatternPtr>* origin_patterns) const;
 
+  // Returns the extended error code used by the embedder when an extension
+  // blocks a request. Returns base::nullopt if the embedder doesn't define such
+  // an error code.
+  virtual base::Optional<int> GetExtensionExtendedErrorCode() const;
+
  private:
   // Performs common initialization and calls Initialize() to allow subclasses
   // to do any extra initialization.

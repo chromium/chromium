@@ -6858,6 +6858,7 @@ void RenderFrameHostImpl::FailedNavigation(
     const mojom::CommitNavigationParams& commit_params,
     bool has_stale_copy_in_cache,
     int error_code,
+    int extended_error_code,
     const base::Optional<std::string>& error_page_content) {
   TRACE_EVENT2("navigation", "RenderFrameHostImpl::FailedNavigation",
                "frame_tree_node", frame_tree_node_->frame_tree_node_id(),
@@ -6897,8 +6898,8 @@ void RenderFrameHostImpl::FailedNavigation(
   SendCommitFailedNavigation(
       navigation_client, navigation_request, common_params.Clone(),
       commit_params.Clone(), has_stale_copy_in_cache, error_code,
-      error_page_content, std::move(subresource_loader_factories),
-      std::move(policy_container));
+      extended_error_code, error_page_content,
+      std::move(subresource_loader_factories), std::move(policy_container));
 
   // TODO(crbug/1129537): support UKM source creation for failed navigations
   // too.
@@ -9316,6 +9317,7 @@ void RenderFrameHostImpl::SendCommitFailedNavigation(
     mojom::CommitNavigationParamsPtr commit_params,
     bool has_stale_copy_in_cache,
     int32_t error_code,
+    int32_t extended_error_code,
     const base::Optional<std::string>& error_page_content,
     std::unique_ptr<blink::PendingURLLoaderFactoryBundle>
         subresource_loader_factories,
@@ -9324,7 +9326,7 @@ void RenderFrameHostImpl::SendCommitFailedNavigation(
   DCHECK_NE(GURL(), common_params->url);
   navigation_client->CommitFailedNavigation(
       std::move(common_params), std::move(commit_params),
-      has_stale_copy_in_cache, error_code,
+      has_stale_copy_in_cache, error_code, extended_error_code,
       navigation_request->GetResolveErrorInfo(), error_page_content,
       std::move(subresource_loader_factories), std::move(policy_container),
       BuildCommitFailedNavigationCallback(navigation_request));

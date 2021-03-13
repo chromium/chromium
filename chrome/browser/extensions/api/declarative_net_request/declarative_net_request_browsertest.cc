@@ -1887,6 +1887,27 @@ IN_PROC_BROWSER_TEST_P(DeclarativeNetRequestBrowserTest, ZeroRulesets) {
   EXPECT_TRUE(IsNavigationBlocked(url));
 }
 
+// Ensure that when an extension blocks a main-frame request using
+// declarativeNetRequest, the resultant error page attributes this to an
+// extension.
+IN_PROC_BROWSER_TEST_P(DeclarativeNetRequestBrowserTest,
+                       ErrorPageForBlockedMainFrameNavigation) {
+  ASSERT_NO_FATAL_FAILURE(
+      LoadExtensionWithRules({CreateMainFrameBlockRule("example.com")}));
+
+  ui_test_utils::NavigateToURL(browser(), GetURLForFilter("example.com"));
+  EXPECT_EQ(content::PAGE_TYPE_ERROR, GetPageType());
+
+  std::string body;
+  ASSERT_TRUE(content::ExecuteScriptAndExtractString(
+      web_contents(),
+      "window.domAutomationController.send(document.body.textContent)", &body));
+
+  EXPECT_TRUE(
+      base::Contains(body, "This page has been blocked by an extension"));
+  EXPECT_TRUE(base::Contains(body, "Try disabling your extensions."));
+}
+
 // Test an extension with multiple static rulesets.
 IN_PROC_BROWSER_TEST_P(DeclarativeNetRequestBrowserTest, MultipleRulesets) {
   set_config_flags(ConfigFlag::kConfig_HasBackgroundScript);

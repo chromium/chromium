@@ -1723,8 +1723,6 @@ String blockedReason(blink::ResourceRequestBlockedReason reason) {
       return protocol::Network::BlockedReasonEnum::ContentType;
     case blink::ResourceRequestBlockedReason::kOther:
       return protocol::Network::BlockedReasonEnum::Other;
-    case blink::ResourceRequestBlockedReason::kCollapsedByClient:
-      return protocol::Network::BlockedReasonEnum::CollapsedByClient;
     case blink::ResourceRequestBlockedReason::kCoepFrameResourceNeedsCoepHeader:
       return protocol::Network::BlockedReasonEnum::
           CoepFrameResourceNeedsCoepHeader;
@@ -1776,8 +1774,16 @@ Maybe<String> GetBlockedReasonFor(
   if (status.error_code != net::ERR_BLOCKED_BY_CLIENT &&
       status.error_code != net::ERR_BLOCKED_BY_RESPONSE)
     return Maybe<String>();
-  return blockedReason(static_cast<blink::ResourceRequestBlockedReason>(
-      status.extended_error_code));
+
+  if (status.extended_error_code <=
+      static_cast<int>(blink::ResourceRequestBlockedReason::kMax)) {
+    return blockedReason(static_cast<blink::ResourceRequestBlockedReason>(
+        status.extended_error_code));
+  }
+
+  // TODO(karandeepb): Embedder would know how to interpret the
+  // `status.extended_error_code` in this case. For now just return Other.
+  return {protocol::Network::BlockedReasonEnum::Other};
 }
 
 String GetTrustTokenOperationType(

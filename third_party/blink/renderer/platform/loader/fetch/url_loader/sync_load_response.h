@@ -36,6 +36,8 @@ struct BLINK_PLATFORM_EXPORT SyncLoadResponse {
   // The response extended error code.
   int extended_error_code = 0;
 
+  bool should_collapse_initiator = false;
+
   // Detailed host resolution error information.
   net::ResolveErrorInfo resolve_error_info;
 

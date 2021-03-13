@@ -54,7 +54,8 @@ class LocalizedError {
       bool auto_fetch_feature_enabled,
       bool is_kiosk_mode,  // whether device is currently in single app (kiosk)
                            // mode
-      const std::string& locale);
+      const std::string& locale,
+      bool is_blocked_by_extension);
 
   // Returns a description of the encountered error.
   static std::u16string GetErrorDetails(const std::string& error_domain,

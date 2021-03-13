@@ -13,6 +13,7 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/string_util.h"
 #include "base/values.h"
+#include "chrome/common/chrome_resource_request_blocked_reason.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/extensions/chrome_extensions_api_provider.h"
 #include "chrome/common/extensions/manifest_handlers/theme_handler.h"
@@ -249,6 +250,11 @@ void ChromeExtensionsClient::AddOriginAccessPermissions(
         network::mojom::CorsPortMatchMode::kAllowAnyPort,
         network::mojom::CorsOriginAccessMatchPriority::kDefaultPriority));
   }
+}
+
+base::Optional<int> ChromeExtensionsClient::GetExtensionExtendedErrorCode()
+    const {
+  return static_cast<int>(ChromeResourceRequestBlockedReason::kExtension);
 }
 
 }  // namespace extensions

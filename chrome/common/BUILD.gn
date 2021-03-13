@@ -106,6 +106,7 @@ static_library("common") {
     "chrome_content_client_constants.cc",
     "chrome_descriptors.h",
     "chrome_isolated_world_ids.h",
+    "chrome_resource_request_blocked_reason.h",
     "chrome_result_codes.h",
     "common_message_generator.cc",
     "common_message_generator.h",

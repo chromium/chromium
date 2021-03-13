@@ -19,14 +19,17 @@ WebURLError::WebURLError(int reason,
                          net::ResolveErrorInfo resolve_error_info,
                          HasCopyInCache has_copy_in_cache,
                          IsWebSecurityViolation is_web_security_violation,
-                         const WebURL& url)
+                         const WebURL& url,
+                         ShouldCollapseInitiator should_collapse_initiator)
     : reason_(reason),
       extended_reason_(extended_reason),
       resolve_error_info_(resolve_error_info),
       has_copy_in_cache_(has_copy_in_cache == HasCopyInCache::kTrue),
       is_web_security_violation_(is_web_security_violation ==
                                  IsWebSecurityViolation::kTrue),
-      url_(url) {
+      url_(url),
+      should_collapse_initiator_(should_collapse_initiator ==
+                                 ShouldCollapseInitiator::kTrue) {
   DCHECK_NE(reason_, 0);
 }
 

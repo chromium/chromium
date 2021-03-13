@@ -3,12 +3,15 @@
 // found in the LICENSE file.
 
 #include "base/command_line.h"
+#include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
+#include "build/branding_buildflags.h"
 #include "build/build_config.h"
 #include "chrome/browser/extensions/extension_apitest.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "components/crx_file/id_util.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/navigation_handle.h"
@@ -783,6 +786,37 @@ IN_PROC_BROWSER_TEST_F(
 
   OpenUrlInSubFrameAndVerifyBackNavigationBlocked(
       inaccessible_resource, "local-frame", url_blocked_by_renderer);
+}
+
+// Regression test for crbug.com/649869. Ensures that on navigation to an
+// invalid extension resource (or more generally for navigations blocked by the
+// browser with net::ERR_BLOCKED_BY_CLIENT), the error page doesn't incorrectly
+// attribute extensions as the cause of the blocked request.
+IN_PROC_BROWSER_TEST_F(ExtensionResourceRequestPolicyTest,
+                       NavigationToInvalidExtensionPage) {
+  std::string url =
+      base::StringPrintf("chrome-extension://%s/manifest.json",
+                         crx_file::id_util::GenerateId("foo").c_str());
+  ui_test_utils::NavigateToURL(browser(), GURL(url));
+
+  std::string body;
+  content::WebContents* tab =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  ASSERT_TRUE(content::ExecuteScriptAndExtractString(
+      tab, "window.domAutomationController.send(document.body.textContent)",
+      &body));
+
+  std::string expected_error;
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+  expected_error = "This page has been blocked by Chrome";
+#else
+  expected_error = "This page has been blocked by Chromium";
+#endif
+
+  EXPECT_TRUE(base::Contains(body, expected_error));
+  EXPECT_FALSE(
+      base::Contains(body, "This page has been blocked by an extension"));
+  EXPECT_FALSE(base::Contains(body, "Try disabling your extensions."));
 }
 
 }  // namespace extensions

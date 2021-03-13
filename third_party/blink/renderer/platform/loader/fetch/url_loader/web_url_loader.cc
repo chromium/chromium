@@ -936,7 +936,10 @@ WebURLError WebURLLoader::PopulateURLError(
 
   return WebURLError(status.error_code, status.extended_error_code,
                      status.resolve_error_info, has_copy_in_cache,
-                     WebURLError::IsWebSecurityViolation::kFalse, url);
+                     WebURLError::IsWebSecurityViolation::kFalse, url,
+                     status.should_collapse_initiator
+                         ? WebURLError::ShouldCollapseInitiator::kTrue
+                         : WebURLError::ShouldCollapseInitiator::kFalse);
 }
 
 void WebURLLoader::LoadSynchronously(
@@ -989,7 +992,10 @@ void WebURLLoader::LoadSynchronously(
       error = WebURLError(error_code, sync_load_response.extended_error_code,
                           sync_load_response.resolve_error_info,
                           WebURLError::HasCopyInCache::kFalse,
-                          is_web_security_violation, final_url);
+                          is_web_security_violation, final_url,
+                          sync_load_response.should_collapse_initiator
+                              ? WebURLError::ShouldCollapseInitiator::kTrue
+                              : WebURLError::ShouldCollapseInitiator::kFalse);
     }
     return;
   }

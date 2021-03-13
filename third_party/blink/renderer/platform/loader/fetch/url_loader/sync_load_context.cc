@@ -248,6 +248,7 @@ void SyncLoadContext::OnCompletedRequest(
   response_->error_code = status.error_code;
   response_->extended_error_code = status.extended_error_code;
   response_->resolve_error_info = status.resolve_error_info;
+  response_->should_collapse_initiator = status.should_collapse_initiator;
   response_->cors_error = status.cors_error_status;
   response_->head->encoded_data_length = status.encoded_data_length;
   response_->head->encoded_body_length = status.encoded_body_length;

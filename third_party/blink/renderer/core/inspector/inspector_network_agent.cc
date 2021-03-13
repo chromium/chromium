@@ -373,8 +373,6 @@ String BuildBlockedReason(ResourceRequestBlockedReason reason) {
       return protocol::Network::BlockedReasonEnum::ContentType;
     case ResourceRequestBlockedReason::kOther:
       return protocol::Network::BlockedReasonEnum::Other;
-    case ResourceRequestBlockedReason::kCollapsedByClient:
-      return protocol::Network::BlockedReasonEnum::CollapsedByClient;
     case blink::ResourceRequestBlockedReason::kCoepFrameResourceNeedsCoepHeader:
       return protocol::Network::BlockedReasonEnum::
           CoepFrameResourceNeedsCoepHeader;
@@ -398,6 +396,23 @@ String BuildBlockedReason(ResourceRequestBlockedReason reason) {
   }
   NOTREACHED();
   return protocol::Network::BlockedReasonEnum::Other;
+}
+
+Maybe<String> BuildBlockedReason(const ResourceError& error) {
+  int error_code = error.ErrorCode();
+  if (error_code != net::ERR_BLOCKED_BY_CLIENT &&
+      error_code != net::ERR_BLOCKED_BY_RESPONSE) {
+    return Maybe<String>();
+  }
+
+  base::Optional<ResourceRequestBlockedReason> resource_request_blocked_reason =
+      error.GetResourceRequestBlockedReason();
+  if (resource_request_blocked_reason)
+    return BuildBlockedReason(*resource_request_blocked_reason);
+
+  // TODO(karandeepb): Embedder would know how to interpret the
+  // `error.extended_error_code_` in this case. For now just return Other.
+  return {protocol::Network::BlockedReasonEnum::Other};
 }
 
 String BuildCorsError(network::mojom::CorsError cors_error) {
@@ -1411,12 +1426,8 @@ void InspectorNetworkAgent::DidFailLoading(
   }
 
   bool canceled = error.IsCancellation();
-  base::Optional<ResourceRequestBlockedReason> resource_request_blocked_reason =
-      error.GetResourceRequestBlockedReason();
-  protocol::Maybe<String> blocked_reason;
-  if (resource_request_blocked_reason) {
-    blocked_reason = BuildBlockedReason(*resource_request_blocked_reason);
-  }
+
+  protocol::Maybe<String> blocked_reason = BuildBlockedReason(error);
   auto cors_error_status = error.CorsErrorStatus();
   protocol::Maybe<protocol::Network::CorsErrorStatus>
       protocol_cors_error_status;

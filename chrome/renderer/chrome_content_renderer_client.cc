@@ -1223,9 +1223,9 @@ void ChromeContentRendererClient::PrepareErrorPage(
     std::string* error_html) {
   NetErrorHelper::Get(render_frame)
       ->PrepareErrorPage(
-          error_page::Error::NetError(web_error.url(), web_error.reason(),
-                                      web_error.resolve_error_info(),
-                                      web_error.has_copy_in_cache()),
+          error_page::Error::NetError(
+              web_error.url(), web_error.reason(), web_error.extended_reason(),
+              web_error.resolve_error_info(), web_error.has_copy_in_cache()),
           http_method == "POST", error_html);
 
 #if BUILDFLAG(ENABLE_SUPERVISED_USERS)

@@ -3027,6 +3027,26 @@ IN_PROC_BROWSER_TEST_F(ExtensionWebRequestApiTest, AppCacheRequests) {
             1);
 }
 
+// Ensure that when an extension blocks a main-frame request, the resultant
+// error page attributes this to an extension.
+IN_PROC_BROWSER_TEST_F(ExtensionWebRequestApiTest,
+                       ErrorPageForBlockedMainFrameNavigation) {
+  ASSERT_TRUE(StartEmbeddedTestServer());
+  ASSERT_TRUE(
+      RunExtensionSubtest("webrequest", "test_simple_cancel_navigation.html"))
+      << message_;
+
+  std::string body;
+  WebContents* tab = browser()->tab_strip_model()->GetActiveWebContents();
+  ASSERT_TRUE(content::ExecuteScriptAndExtractString(
+      tab, "window.domAutomationController.send(document.body.textContent)",
+      &body));
+
+  EXPECT_TRUE(
+      base::Contains(body, "This page has been blocked by an extension"));
+  EXPECT_TRUE(base::Contains(body, "Try disabling your extensions."));
+}
+
 // Regression test for http://crbug.com/996940. Requests that redirected to an
 // appcache handled URL could have request ID collisions.
 // This test is flaky on Linux: https://crbug.com/1094834.

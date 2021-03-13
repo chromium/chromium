@@ -4605,7 +4605,6 @@ domain Network
       inspector
       subresource-filter
       content-type
-      collapsed-by-client
       coep-frame-resource-needs-coep-header
       coop-sandboxed-iframe-cannot-navigate-to-coop-page
       corp-not-same-origin

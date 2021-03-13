@@ -3177,6 +3177,7 @@ void RenderFrameImpl::CommitFailedNavigation(
     mojom::CommitNavigationParamsPtr commit_params,
     bool has_stale_copy_in_cache,
     int error_code,
+    int extended_error_code,
     net::ResolveErrorInfo resolve_error_info,
     const base::Optional<std::string>& error_page_content,
     std::unique_ptr<blink::PendingURLLoaderFactoryBundle>
@@ -3214,10 +3215,11 @@ void RenderFrameImpl::CommitFailedNavigation(
 
   // Send the provisional load failure.
   WebURLError error(
-      error_code, 0, resolve_error_info,
+      error_code, extended_error_code, resolve_error_info,
       has_stale_copy_in_cache ? WebURLError::HasCopyInCache::kTrue
                               : WebURLError::HasCopyInCache::kFalse,
-      WebURLError::IsWebSecurityViolation::kFalse, common_params->url);
+      WebURLError::IsWebSecurityViolation::kFalse, common_params->url,
+      WebURLError::ShouldCollapseInitiator::kFalse);
 
   auto navigation_params = std::make_unique<WebNavigationParams>();
   FillNavigationParamsRequest(*common_params, *commit_params,

@@ -2799,12 +2799,10 @@ void NavigationRequest::OnRequestFailed(
     const network::URLLoaderCompletionStatus& status) {
   DCHECK_NE(status.error_code, net::OK);
 
-  bool collapse_frame =
-      status.extended_error_code ==
-      static_cast<int>(blink::ResourceRequestBlockedReason::kCollapsedByClient);
-  OnRequestFailedInternal(status, false /* skip_throttles */,
-                          base::nullopt /* error_page_content */,
-                          collapse_frame);
+  OnRequestFailedInternal(
+      status, false /* skip_throttles */,
+      base::nullopt /* error_page_content */,
+      status.should_collapse_initiator /* collapse_frame */);
 }
 
 void NavigationRequest::OnRequestFailedInternal(
@@ -2837,6 +2835,7 @@ void NavigationRequest::OnRequestFailedInternal(
   pending_entry_ref_.reset();
 
   net_error_ = static_cast<net::Error>(status.error_code);
+  extended_error_code_ = status.extended_error_code;
   resolve_error_info_ = status.resolve_error_info;
 
   if (MaybeCancelFailedNavigation())
@@ -3279,6 +3278,8 @@ void NavigationRequest::OnFailureChecksComplete(
   net::Error old_net_error = net_error_;
   net_error_ = result.net_error_code();
 
+  // FIXME: Should we clear out |extended_error_code_| here?
+
   // Ensure that WillFailRequest() isn't changing the error code in a way that
   // switches the destination process for the error page - see
   // https://crbug.com/817881.
@@ -3437,9 +3438,9 @@ void NavigationRequest::CommitErrorPage(
   ReadyToCommitNavigation(true);
   // Use a separate cache shard, and no cookies, for error pages.
   isolation_info_for_subresources_ = net::IsolationInfo::CreateTransient();
-  render_frame_host_->FailedNavigation(this, *common_params_, *commit_params_,
-                                       has_stale_copy_in_cache_, net_error_,
-                                       error_page_content);
+  render_frame_host_->FailedNavigation(
+      this, *common_params_, *commit_params_, has_stale_copy_in_cache_,
+      net_error_, extended_error_code_, error_page_content);
 }
 
 void NavigationRequest::AddOldPageInfoToCommitParamsIfNeeded() {

@@ -17,7 +17,6 @@
 #include "base/metrics/field_trial.h"
 #include "base/notreached.h"
 #include "base/stl_util.h"
-#include "base/strings/string16.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
@@ -283,8 +282,8 @@ const LocalizedErrorMap net_error_options[] = {
   },
   {net::ERR_BLOCKED_BY_CLIENT,
    IDS_ERRORPAGES_HEADING_BLOCKED,
-   IDS_ERRORPAGES_SUMMARY_BLOCKED_BY_EXTENSION,
-   SUGGEST_DISABLE_EXTENSION,
+   IDS_ERRORPAGES_SUMMARY_BLOCKED_BY_CLIENT,
+   SUGGEST_NONE,
    SHOW_BUTTON_RELOAD,
   },
   {net::ERR_BLOCKED_BY_CSP,
@@ -907,7 +906,8 @@ LocalizedError::PageState LocalizedError::GetPageState(
     bool offline_content_feature_enabled,
     bool auto_fetch_feature_enabled,
     bool is_kiosk_mode,
-    const std::string& locale) {
+    const std::string& locale,
+    bool is_blocked_by_extension) {
   LocalizedError::PageState result;
   result.is_offline_error = IsOfflineError(error_domain, error_code);
 
@@ -994,8 +994,18 @@ LocalizedError::PageState LocalizedError::GetPageState(
   auto summary = std::make_unique<base::DictionaryValue>();
 
   // Set summary message under the heading.
-  summary->SetString("msg",
-                     l10n_util::GetStringUTF16(options.summary_resource_id));
+  std::u16string message;
+  if (is_blocked_by_extension) {
+    // Use a custom message if an extension blocked the request.
+    message =
+        l10n_util::GetStringUTF16(IDS_ERRORPAGES_SUMMARY_BLOCKED_BY_EXTENSION);
+    options.suggestions = SUGGEST_DISABLE_EXTENSION;
+  } else {
+    message = l10n_util::GetStringUTF16(options.summary_resource_id);
+  }
+
+  summary->SetString("msg", std::move(message));
+
   summary->SetString("failedUrl", failed_url_string);
   summary->SetString("hostName", host_name);
 

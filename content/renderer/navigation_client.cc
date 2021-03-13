@@ -51,6 +51,7 @@ void NavigationClient::CommitFailedNavigation(
     mojom::CommitNavigationParamsPtr commit_params,
     bool has_stale_copy_in_cache,
     int error_code,
+    int extended_error_code,
     const net::ResolveErrorInfo& resolve_error_info,
     const base::Optional<std::string>& error_page_content,
     std::unique_ptr<blink::PendingURLLoaderFactoryBundle> subresource_loaders,
@@ -59,8 +60,8 @@ void NavigationClient::CommitFailedNavigation(
   ResetDisconnectionHandler();
   render_frame_->CommitFailedNavigation(
       std::move(common_params), std::move(commit_params),
-      has_stale_copy_in_cache, error_code, resolve_error_info,
-      error_page_content, std::move(subresource_loaders),
+      has_stale_copy_in_cache, error_code, extended_error_code,
+      resolve_error_info, error_page_content, std::move(subresource_loaders),
       std::move(policy_container), std::move(callback));
 }
 

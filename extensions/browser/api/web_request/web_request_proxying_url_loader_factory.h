@@ -18,6 +18,7 @@
 #include "content/public/browser/content_browser_client.h"
 #include "extensions/browser/api/web_request/web_request_api.h"
 #include "extensions/browser/api/web_request/web_request_info.h"
+#include "extensions/common/extension_id.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -167,6 +168,10 @@ class WebRequestProxyingURLLoaderFactory
                         const GURL& to_url,
                         bool is_navigation_request);
     void HandleBeforeRequestRedirect();
+
+    network::URLLoaderCompletionStatus CreateURLLoaderCompletionStatus(
+        int error_code,
+        bool collapse_initiator = false);
 
     WebRequestProxyingURLLoaderFactory* const factory_;
     network::ResourceRequest request_;

@@ -54,7 +54,7 @@ ResourceError ResourceError::CancelledDueToAccessCheckError(
     ResourceRequestBlockedReason blocked_reason) {
   ResourceError error = CancelledError(url);
   error.is_access_check_ = true;
-  error.blocked_by_subresource_filter_ =
+  error.should_collapse_inititator_ =
       blocked_reason == ResourceRequestBlockedReason::kSubresourceFilter;
   return error;
 }
@@ -112,6 +112,7 @@ ResourceError::ResourceError(const WebURLError& error)
       is_access_check_(error.is_web_security_violation()),
       has_copy_in_cache_(error.has_copy_in_cache()),
       cors_error_status_(error.cors_error_status()),
+      should_collapse_inititator_(error.should_collapse_initiator()),
       blocked_by_response_reason_(error.blocked_by_response_reason()),
       trust_token_operation_error_(error.trust_token_operation_error()) {
   DCHECK_NE(error_code_, 0);
@@ -137,7 +138,10 @@ ResourceError::operator WebURLError() const {
       error_code_, extended_error_code_, resolve_error_info_, has_copy_in_cache,
       is_access_check_ ? WebURLError::IsWebSecurityViolation::kTrue
                        : WebURLError::IsWebSecurityViolation::kFalse,
-      failing_url_);
+      failing_url_,
+      should_collapse_inititator_
+          ? WebURLError::ShouldCollapseInitiator::kTrue
+          : WebURLError::ShouldCollapseInitiator::kFalse);
 }
 
 bool ResourceError::Compare(const ResourceError& a, const ResourceError& b) {
@@ -166,6 +170,9 @@ bool ResourceError::Compare(const ResourceError& a, const ResourceError& b) {
     return false;
 
   if (a.trust_token_operation_error_ != b.trust_token_operation_error_)
+    return false;
+
+  if (a.should_collapse_inititator_ != b.should_collapse_inititator_)
     return false;
 
   return true;
@@ -197,12 +204,6 @@ bool ResourceError::IsCacheMiss() const {
 
 bool ResourceError::WasBlockedByResponse() const {
   return error_code_ == net::ERR_BLOCKED_BY_RESPONSE;
-}
-
-bool ResourceError::ShouldCollapseInitiator() const {
-  return blocked_by_subresource_filter_ ||
-         GetResourceRequestBlockedReason() ==
-             ResourceRequestBlockedReason::kCollapsedByClient;
 }
 
 namespace {
@@ -242,7 +243,13 @@ ResourceError::GetResourceRequestBlockedReason() const {
     return BlockedByResponseReasonToResourceRequestBlockedReason(
         *blocked_by_response_reason_);
   }
-  return static_cast<ResourceRequestBlockedReason>(extended_error_code_);
+
+  if (extended_error_code_ <=
+      static_cast<int>(ResourceRequestBlockedReason::kMax)) {
+    return static_cast<ResourceRequestBlockedReason>(extended_error_code_);
+  }
+
+  return base::nullopt;
 }
 
 base::Optional<network::mojom::BlockedByResponseReason>
@@ -255,13 +262,15 @@ ResourceError::GetBlockedByResponseReason() const {
 }
 
 namespace {
-String DescriptionForBlockedByClientOrResponse(int error, int extended_error) {
-  if (extended_error == 0)
+String DescriptionForBlockedByClientOrResponse(
+    int error,
+    const base::Optional<blink::ResourceRequestBlockedReason>& reason) {
+  if (!reason || *reason == ResourceRequestBlockedReason::kOther)
     return WebString::FromASCII(net::ErrorToString(error));
   std::string detail;
-  switch (static_cast<ResourceRequestBlockedReason>(extended_error)) {
+  switch (*reason) {
     case ResourceRequestBlockedReason::kOther:
-      NOTREACHED();  // extended_error == 0, handled above
+      NOTREACHED();  // handled above
       break;
     case ResourceRequestBlockedReason::kCSP:
       detail = "CSP";
@@ -280,9 +289,6 @@ String DescriptionForBlockedByClientOrResponse(int error, int extended_error) {
       break;
     case ResourceRequestBlockedReason::kContentType:
       detail = "ContentType";
-      break;
-    case ResourceRequestBlockedReason::kCollapsedByClient:
-      detail = "Collapsed";
       break;
     case ResourceRequestBlockedReason::kCoepFrameResourceNeedsCoepHeader:
       detail = "ResponseNeedsCrossOriginEmbedderPolicy";
@@ -314,8 +320,10 @@ void ResourceError::InitializeDescription() {
     localized_description_ = WebString::FromASCII(kThrottledErrorDescription);
   } else if (error_code_ == net::ERR_BLOCKED_BY_CLIENT ||
              error_code_ == net::ERR_BLOCKED_BY_RESPONSE) {
-    localized_description_ = DescriptionForBlockedByClientOrResponse(
-        error_code_, extended_error_code_);
+    base::Optional<ResourceRequestBlockedReason> reason =
+        GetResourceRequestBlockedReason();
+    localized_description_ =
+        DescriptionForBlockedByClientOrResponse(error_code_, reason);
   } else {
     localized_description_ = WebString::FromASCII(
         net::ExtendedErrorToString(error_code_, extended_error_code_));
