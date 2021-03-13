@@ -222,12 +222,10 @@ void GetStatusFromCore(const policy::CloudPolicyCore* core,
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 // Adds a new entry to |dict| with the affiliation status of the user associated
-// with |profile|. Device scope policy status providers call this method with
-// nullptr |profile|. In this case no entry is added as affiliation status only
-// makes sense for user scope policy status providers.
+// with |profile|. This method shouldn't be called for device scope status.
 void GetUserAffiliationStatus(base::DictionaryValue* dict, Profile* profile) {
-  if (!profile)
-    return;
+  CHECK(profile);
+
   const user_manager::User* user =
       chromeos::ProfileHelper::Get()->GetUserByProfile(profile);
   if (!user)
@@ -244,8 +242,11 @@ void GetOffHoursStatus(base::DictionaryValue* dict) {
   }
 }
 
+// Adds a new entry to |dict| with the enterprise domain manager of the user
+// associated with |profile|. This method shouldn't be called for device scope
+// status.
 void GetUserManager(base::DictionaryValue* dict, Profile* profile) {
-  DCHECK(profile);
+  CHECK(profile);
 
   std::string account_manager = ManagementUIHandler::GetAccountManager(profile);
   if (!account_manager.empty()) {
@@ -719,8 +720,15 @@ void UserActiveDirectoryPolicyStatusProvider::GetStatus(
 
   dict->SetString("timeSinceLastRefresh",
                   GetTimeSinceLastRefreshString(last_refresh_time));
-  GetUserAffiliationStatus(dict, profile_);
-  GetUserManager(dict, profile_);
+
+  // Check if profile is present. Note that profile is not present if object is
+  // an instance of DeviceActiveDirectoryPolicyStatusProvider that inherits from
+  // UserActiveDirectoryPolicyStatusProvider.
+  // TODO(b/182585903): Extend browser test to cover Active Directory case.
+  if (profile_) {
+    GetUserAffiliationStatus(dict, profile_);
+    GetUserManager(dict, profile_);
+  }
 }
 
 void UserActiveDirectoryPolicyStatusProvider::OnStoreLoaded(
