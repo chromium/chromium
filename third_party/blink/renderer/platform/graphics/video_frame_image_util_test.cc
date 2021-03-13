@@ -182,6 +182,35 @@ TEST(VideoFrameImageUtilTest, CreateAcceleratedImageFromTextureFrame) {
   ASSERT_TRUE(image->IsTextureBacked());
 }
 
+TEST(VideoFrameImageUtilTest, FlushedAcceleratedImage) {
+  ScopedFakeGpuContext fake_context(/*disable_imagebitmap=*/false);
+
+  auto texture_frame = media::CreateSharedImageRGBAFrame(
+      fake_context.context_provider(), kTestSize, gfx::Rect(kTestSize),
+      base::DoNothing::Once());
+
+  auto* raster_context_provider = fake_context.raster_context_provider();
+  ASSERT_TRUE(raster_context_provider);
+
+  auto provider = CreateResourceProviderForVideoFrame(IntSize(kTestSize),
+                                                      raster_context_provider);
+  ASSERT_TRUE(provider);
+  EXPECT_TRUE(provider->IsAccelerated());
+
+  auto image = CreateImageFromVideoFrame(texture_frame,
+                                         /*allow_zero_copy_images=*/false,
+                                         provider.get());
+  EXPECT_TRUE(image->IsTextureBacked());
+
+  image = CreateImageFromVideoFrame(texture_frame,
+                                    /*allow_zero_copy_images=*/false,
+                                    provider.get());
+  EXPECT_TRUE(image->IsTextureBacked());
+
+  ASSERT_FALSE(provider->needs_flush());
+  ASSERT_FALSE(provider->HasRecordedDrawOps());
+}
+
 TEST(VideoFrameImageUtilTest, SoftwareCreateResourceProviderForVideoFrame) {
   // Creating a provider with a null viz::RasterContextProvider should result in
   // a non-accelerated provider being created.
