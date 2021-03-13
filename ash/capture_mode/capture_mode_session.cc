@@ -1540,42 +1540,89 @@ gfx::Rect CaptureModeSession::CalculateCaptureLabelWidgetBounds() {
       static_cast<CaptureLabelView*>(capture_label_widget_->GetContentsView());
 
   const gfx::Size preferred_size = label_view->GetPreferredSize();
+  const gfx::Rect capture_bar_bounds =
+      capture_mode_bar_widget_->GetNativeWindow()->bounds();
 
   // Calculates the bounds for when the capture label is not placed in the
   // middle of the screen.
-  auto calculate_bounds = [&preferred_size](const gfx::Rect& capture_bounds,
-                                            aura::Window* root) {
+  auto calculate_bounds = [&preferred_size, &capture_bar_bounds](
+                              const gfx::Rect& capture_bounds,
+                              aura::Window* root) {
     // The capture_bounds must be at least the size of |preferred_size| plus
     // some padding for the capture label to be centered inside it.
     gfx::Rect label_bounds(capture_bounds);
     gfx::Size capture_bounds_min_size = preferred_size;
     capture_bounds_min_size.Enlarge(kCaptureRegionMinimumPaddingDp,
                                     kCaptureRegionMinimumPaddingDp);
+    // If the label fits into |capture_bounds| with a comfortable padding, and
+    // does not intersect the capture bar, we're good.
     if (label_bounds.width() > capture_bounds_min_size.width() &&
         label_bounds.height() > capture_bounds_min_size.height()) {
       label_bounds.ClampToCenteredSize(preferred_size);
-    } else {
-      // The capture_bounds is too small for the capture label to be inside it.
-      // Align |label_bounds| so that its horizontal centerpoint aligns with the
-      // capture_bounds centerpoint.
-      label_bounds.set_size(preferred_size);
-      label_bounds.set_x(capture_bounds.CenterPoint().x() -
-                         preferred_size.width() / 2);
+      if (!label_bounds.Intersects(capture_bar_bounds))
+        return label_bounds;
+    }
 
-      // Try to put the capture label slightly below the capture_bounds. If it
-      // does not fully fit in the root window bounds, place the capture label
-      // slightly above.
-      const int under_capture_bounds_label_y =
-          capture_bounds.bottom() + kCaptureButtonDistanceFromRegionDp;
-      if (under_capture_bounds_label_y + preferred_size.height() <
-          root->bounds().bottom()) {
-        label_bounds.set_y(under_capture_bounds_label_y);
-      } else {
-        label_bounds.set_y(capture_bounds.y() -
-                           kCaptureButtonDistanceFromRegionDp -
-                           preferred_size.height());
+    // The capture button may be placed along the edge of a capture region if it
+    // cannot be placed in the middle. This enum represents the possible edges.
+    enum class Direction { kBottom, kTop, kLeft, kRight };
+
+    // Try placing the label slightly outside |capture_bounds|. The label will
+    // be |kCaptureButtonDistanceFromRegionDp| away from |capture_bounds| along
+    // one of the edges. The order we will try is bottom, top, left then right.
+    const std::vector<Direction> directions = {
+        Direction::kBottom, Direction::kTop, Direction::kLeft,
+        Direction::kRight};
+
+    // For each direction, start off with the label in the center of
+    // |capture_bounds| (matching centerpoints). We will shift the label to
+    // slighty outside |capture_bounds| for each direction.
+    gfx::Rect centered_label_bounds(preferred_size);
+    centered_label_bounds.set_x(capture_bounds.CenterPoint().x() -
+                                preferred_size.width() / 2);
+    centered_label_bounds.set_y(capture_bounds.CenterPoint().y() -
+                                preferred_size.height() / 2);
+    const int spacing = kCaptureButtonDistanceFromRegionDp;
+
+    // Try the directions in the preferred order. We will early out if one of
+    // them is viable.
+    for (Direction direction : directions) {
+      label_bounds = centered_label_bounds;
+
+      switch (direction) {
+        case Direction::kBottom:
+          label_bounds.set_y(capture_bounds.bottom() + spacing);
+          break;
+        case Direction::kTop:
+          label_bounds.set_y(capture_bounds.y() - spacing -
+                             preferred_size.height());
+          break;
+        case Direction::kLeft:
+          label_bounds.set_x(capture_bounds.x() - spacing -
+                             preferred_size.width());
+          break;
+        case Direction::kRight:
+          label_bounds.set_x(capture_bounds.right() + spacing);
+          break;
+      }
+
+      // If |label_bounds| does not overlap with |capture_bar_bounds| and is
+      // fully contained in root, we're good.
+      if (!label_bounds.Intersects(capture_bar_bounds) &&
+          root->bounds().Contains(label_bounds)) {
+        return label_bounds;
       }
     }
+
+    // Reaching here, we have not found a good edge to place the label at. The
+    // last attempt is to place it slightly above the capture bar.
+    label_bounds.set_size(preferred_size);
+    label_bounds.set_x(capture_bar_bounds.CenterPoint().x() -
+                       preferred_size.width() / 2);
+    label_bounds.set_y(capture_bar_bounds.y() -
+                       kCaptureButtonDistanceFromRegionDp -
+                       preferred_size.height());
+
     return label_bounds;
   };
 
@@ -1592,7 +1639,7 @@ gfx::Rect CaptureModeSession::CalculateCaptureLabelWidgetBounds() {
   // region. For window capture mode, it is the same as the region capture mode
   // fine tune phase logic, in that it will first try to place the label in the
   // middle of the selected window bounds, otherwise it will be placed slightly
-  // above or below the selected window.
+  // away from one of the edges of the selected window.
   if (source == CaptureModeSource::kRegion && !is_selecting_region_ &&
       !capture_region.IsEmpty()) {
     if (label_view->IsInCountDownAnimation()) {

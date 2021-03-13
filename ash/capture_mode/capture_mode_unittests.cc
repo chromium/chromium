@@ -1005,6 +1005,56 @@ TEST_F(CaptureModeTest, CaptureRegionCaptureButtonLocation) {
             capture_button_window->bounds().bottom());
 }
 
+// Tests some edge cases to ensure the capture button does not intersect the
+// capture bar and end up unclickable since it is stacked below the capture bar.
+// Regression test for https://crbug.com/1186462.
+TEST_F(CaptureModeTest, CaptureRegionCaptureButtonDoesNotIntersectCaptureBar) {
+  UpdateDisplay("800x800");
+
+  StartImageRegionCapture();
+
+  // Create a region that would cover the capture mode bar. Add some insets to
+  // ensure that the capture button could fit inside. Verify that the two
+  // widgets do not overlap.
+  const gfx::Rect capture_bar_bounds =
+      GetCaptureModeBarWidget()->GetWindowBoundsInScreen();
+  gfx::Rect region_bounds = capture_bar_bounds;
+  region_bounds.Inset(-20, -20);
+  SelectRegion(region_bounds);
+  EXPECT_FALSE(capture_bar_bounds.Intersects(
+      GetCaptureModeLabelWidget()->GetWindowBoundsInScreen()));
+
+  // Create a thin region above the capture mode bar. The algorithm would
+  // normally place the capture label under the region, but should adjust to
+  // avoid intersecting.
+  auto* event_generator = GetEventGenerator();
+  event_generator->set_current_screen_location(gfx::Point());
+  event_generator->ClickLeftButton();
+  const int capture_bar_midpoint_x = capture_bar_bounds.CenterPoint().x();
+  SelectRegion(
+      gfx::Rect(capture_bar_midpoint_x, capture_bar_bounds.y() - 10, 20, 10));
+  EXPECT_FALSE(capture_bar_bounds.Intersects(
+      GetCaptureModeLabelWidget()->GetWindowBoundsInScreen()));
+
+  // Create a thin region below the capture mode bar which reaches the bottom of
+  // the display. The algorithm would  normally place the capture label above
+  // the region, but should adjust to avoid intersecting.
+  event_generator->set_current_screen_location(gfx::Point());
+  event_generator->ClickLeftButton();
+  SelectRegion(gfx::Rect(capture_bar_midpoint_x, capture_bar_bounds.bottom(),
+                         20, 800 - capture_bar_bounds.bottom()));
+  EXPECT_FALSE(capture_bar_bounds.Intersects(
+      GetCaptureModeLabelWidget()->GetWindowBoundsInScreen()));
+
+  // Create a thin region that is vertical as tall as the display, and at the
+  // left edge of the display. The capture label button should be right of the
+  // region.
+  event_generator->set_current_screen_location(gfx::Point());
+  event_generator->ClickLeftButton();
+  SelectRegion(gfx::Rect(20, 800));
+  EXPECT_GT(GetCaptureModeLabelWidget()->GetWindowBoundsInScreen().x(), 20);
+}
+
 TEST_F(CaptureModeTest, WindowCapture) {
   // Create 2 windows that overlap with each other.
   const gfx::Rect bounds1(0, 0, 200, 200);
