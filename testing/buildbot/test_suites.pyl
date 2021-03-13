@@ -6040,15 +6040,6 @@
       'gpu_angle_deqp_khr_gles3_vulkan_gtests',
     ],
 
-    'gpu_angle_deqp_mac_gtests': [
-      'gpu_angle_deqp_egl_gl_gtests',
-      'gpu_angle_deqp_egl_metal_gtests',
-      'gpu_angle_deqp_gles2_gl_gtests',
-      'gpu_angle_deqp_gles2_metal_gtests',
-      'gpu_angle_deqp_gles3_gl_gtests',
-      'gpu_angle_deqp_gles3_metal_gtests',
-    ],
-
     'gpu_angle_deqp_win_amd_gtests': [
       'gpu_angle_deqp_gles2_d3d11_gtests',
       'gpu_angle_deqp_gles2_vulkan_gtests',
@@ -6129,14 +6120,6 @@
       'gpu_angle_deqp_gles3_metal_gtests',
       'gpu_angle_end2end_gtests',
       'gpu_angle_unit_gtests',
-    ],
-
-    'gpu_angle_mac_gtests': [
-      'gpu_angle_end2end_gtests',
-      'gpu_angle_unit_gtests',
-      'gpu_common_gtests_passthrough',
-      'gpu_fyi_and_optional_non_linux_gtests',
-      'gpu_gles2_conform_gtests',
     ],
 
     'gpu_angle_mac_telemetry_tests': [

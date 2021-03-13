@@ -42,11 +42,6 @@ FAKE_TRY_BUILDERS = {
         'Optional Linux Release (Intel HD 630)',
         'Optional Linux Release (NVIDIA)',
     ],
-    'mac-angle-rel': [
-        'ANGLE GPU Mac Release (Intel)',
-        'ANGLE GPU Mac Retina Release (AMD)',
-        'ANGLE GPU Mac Retina Release (NVIDIA)',
-    ],
     'mac_optional_gpu_tests_rel': [
         'Optional Mac Release (Intel)',
         'Optional Mac Retina Release (AMD)',

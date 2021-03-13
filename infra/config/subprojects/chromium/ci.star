@@ -4331,14 +4331,6 @@ ci.gpu_fyi_mac_builder(
     ),
 )
 
-ci.gpu_fyi_mac_builder(
-    name = "GPU FYI Mac dEQP Builder",
-    console_view_entry = consoles.console_view_entry(
-        category = "Mac|Builder",
-        short_name = "dqp",
-    ),
-)
-
 ci.gpu_fyi_thin_tester(
     name = "Lacros FYI x64 Release (AMD)",
     console_view_entry = consoles.console_view_entry(
@@ -4560,24 +4552,6 @@ ci.gpu_fyi_thin_tester(
         short_name = "rel",
     ),
     triggered_by = ["GPU FYI Mac Builder"],
-)
-
-ci.gpu_fyi_thin_tester(
-    name = "Mac FYI dEQP Release AMD",
-    console_view_entry = consoles.console_view_entry(
-        category = "Mac|AMD",
-        short_name = "dqp",
-    ),
-    triggered_by = ["GPU FYI Mac dEQP Builder"],
-)
-
-ci.gpu_fyi_thin_tester(
-    name = "Mac FYI dEQP Release Intel",
-    console_view_entry = consoles.console_view_entry(
-        category = "Mac|Intel",
-        short_name = "dqp",
-    ),
-    triggered_by = ["GPU FYI Mac dEQP Builder"],
 )
 
 ci.gpu_fyi_thin_tester(

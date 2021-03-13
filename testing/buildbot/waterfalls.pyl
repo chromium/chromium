@@ -3842,39 +3842,6 @@
           'isolated_scripts': 'gpu_angle_isolated_scripts',
         },
       },
-      'ANGLE GPU Mac Release (Intel)': {
-        'os_type': 'mac',
-        'browser_config': 'release',
-        'mixins': [
-          'mac_mini_intel_gpu_stable',
-        ],
-        'test_suites': {
-          'gtest_tests': 'gpu_angle_mac_gtests',
-          'gpu_telemetry_tests': 'gpu_angle_mac_telemetry_tests',
-        },
-      },
-      'ANGLE GPU Mac Retina Release (AMD)': {
-        'os_type': 'mac',
-        'browser_config': 'release',
-        'mixins': [
-          'mac_retina_amd_gpu_stable',
-        ],
-        'test_suites': {
-          'gtest_tests': 'gpu_angle_mac_gtests',
-          'gpu_telemetry_tests': 'gpu_angle_mac_telemetry_tests',
-        },
-      },
-      'ANGLE GPU Mac Retina Release (NVIDIA)': {
-        'os_type': 'mac',
-        'browser_config': 'release',
-        'mixins': [
-          'mac_retina_nvidia_gpu_stable',
-        ],
-        'test_suites': {
-          # Fewer tests enabled on this config because of limited capacity.
-          'gtest_tests': 'gpu_angle_gtests',
-        },
-      },
       # END Fake builder used as mirror targets for ANGLE's GPU tryservers
       'Android FYI 32 Vk Release (Pixel 2)': {
         'os_type': 'android',
@@ -4137,7 +4104,6 @@
       'GPU FYI Linux dEQP Builder' : {},
       'GPU FYI Mac Builder' : {},
       'GPU FYI Mac Builder (dbg)' : {},
-      'GPU FYI Mac dEQP Builder' : {},
       'GPU FYI Win Builder' : {},
       'GPU FYI Win Builder (dbg)' : {},
       'GPU FYI Win dEQP Builder': {},
@@ -4483,24 +4449,6 @@
           'gtest_tests': 'gpu_fyi_mac_release_gtests',
           'gpu_telemetry_tests': 'gpu_fyi_mac_release_telemetry_tests',
           'isolated_scripts': 'rendering_desktop_representative_perf_tests_isolated_scripts',
-        },
-      },
-      'Mac FYI dEQP Release AMD': {
-        'os_type': 'mac',
-        'mixins': [
-          'mac_retina_amd_gpu_stable',
-        ],
-        'test_suites': {
-          'gtest_tests': 'gpu_angle_deqp_mac_gtests',
-        },
-      },
-      'Mac FYI dEQP Release Intel': {
-        'os_type': 'mac',
-        'mixins': [
-          'mac_mini_intel_gpu_stable',
-        ],
-        'test_suites': {
-          'gtest_tests': 'gpu_angle_deqp_mac_gtests',
         },
       },
       'Mac Pro FYI Release (AMD)': {

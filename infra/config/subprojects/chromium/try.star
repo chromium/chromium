@@ -647,12 +647,6 @@ try_.chromium_angle_builder(
 )
 
 try_.chromium_angle_builder(
-    name = "mac-angle-rel",
-    cores = None,
-    os = os.MAC_ANY,
-)
-
-try_.chromium_angle_builder(
     name = "mac-angle-try",
     cores = None,
     os = os.MAC_ANY,

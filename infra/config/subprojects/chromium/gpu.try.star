@@ -251,11 +251,6 @@ def gpu_mac_builder(*, name, **kwargs):
     )
 
 gpu_mac_builder(
-    name = "gpu-fyi-try-mac-amd-dqp",
-    pool = "luci.chromium.gpu.mac.retina.amd.try",
-)
-
-gpu_mac_builder(
     name = "gpu-fyi-try-mac-amd-pro-rel",
     pool = "luci.chromium.gpu.mac.pro.amd.try",
 )
@@ -289,11 +284,6 @@ gpu_mac_builder(
 
 gpu_mac_builder(
     name = "gpu-fyi-try-mac-intel-dbg",
-    pool = "luci.chromium.gpu.mac.mini.intel.try",
-)
-
-gpu_mac_builder(
-    name = "gpu-fyi-try-mac-intel-dqp",
     pool = "luci.chromium.gpu.mac.mini.intel.try",
 )
 
