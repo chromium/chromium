@@ -993,6 +993,8 @@ source_set("chromeos") {
     "../ash/login/signin_specifics.h",
     "../ash/login/startup_utils.cc",
     "../ash/login/startup_utils.h",
+    "../ash/login/ui/captive_portal_dialog_delegate.cc",
+    "../ash/login/ui/captive_portal_dialog_delegate.h",
     "../ash/login/ui/captive_portal_view.cc",
     "../ash/login/ui/captive_portal_view.h",
     "../ash/login/ui/captive_portal_window_proxy.cc",

@@ -14,6 +14,7 @@
 #include "ash/public/cpp/login_screen_model.h"
 #include "ash/public/cpp/shelf_config.h"
 #include "ash/public/cpp/shell_window_ids.h"
+#include "chrome/browser/ash/login/ui/captive_portal_dialog_delegate.h"
 #include "chrome/browser/ash/login/ui/login_display_host_mojo.h"
 #include "chrome/browser/ash/login/ui/oobe_dialog_size_utils.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
@@ -25,7 +26,6 @@
 #include "chrome/browser/ui/webui/chromeos/login/core_oobe_handler.h"
 #include "chrome/browser/ui/webui/chromeos/login/gaia_screen_handler.h"
 #include "chrome/browser/ui/webui/chromeos/login/oobe_ui.h"
-#include "components/web_modal/web_contents_modal_dialog_manager.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/aura/window.h"
 #include "ui/base/accelerators/accelerator.h"
@@ -209,123 +209,6 @@ ADD_PROPERTY_METADATA(bool, Fullscreen)
 ADD_PROPERTY_METADATA(bool, HasShelf)
 ADD_READONLY_PROPERTY_METADATA(OobeDialogPaddingMode, Padding)
 END_METADATA
-
-class CaptivePortalDialogDelegate
-    : public ui::WebDialogDelegate,
-      public ChromeWebModalDialogManagerDelegate,
-      public web_modal::WebContentsModalDialogHost {
- public:
-  explicit CaptivePortalDialogDelegate(views::WebDialogView* host_dialog_view)
-      : host_view_(host_dialog_view),
-        web_contents_(host_dialog_view->web_contents()) {
-    view_ =
-        new views::WebDialogView(ProfileHelper::GetSigninProfile(), this,
-                                 std::make_unique<ChromeWebContentsHandler>());
-    view_->SetVisible(false);
-
-    views::Widget::InitParams params(
-        views::Widget::InitParams::TYPE_WINDOW_FRAMELESS);
-    params.delegate = view_;
-    params.opacity = views::Widget::InitParams::WindowOpacity::kTranslucent;
-    ash_util::SetupWidgetInitParamsForContainer(
-        &params, ash::kShellWindowId_LockSystemModalContainer);
-
-    widget_ = new views::Widget;
-    widget_->Init(std::move(params));
-    widget_->SetBounds(display::Screen::GetScreen()
-                           ->GetDisplayNearestWindow(widget_->GetNativeWindow())
-                           .work_area());
-    widget_->SetOpacity(0);
-
-    // Set this as the web modal delegate so that captive portal dialog can
-    // appear.
-    web_modal::WebContentsModalDialogManager::CreateForWebContents(
-        web_contents_);
-    web_modal::WebContentsModalDialogManager::FromWebContents(web_contents_)
-        ->SetDelegate(this);
-  }
-
-  void Show() { widget_->Show(); }
-
-  void Hide() { widget_->Hide(); }
-
-  void Close() { widget_->Close(); }
-
-  web_modal::WebContentsModalDialogHost* GetWebContentsModalDialogHost()
-      override {
-    return this;
-  }
-
-  // web_modal::WebContentsModalDialogHost:
-  gfx::NativeView GetHostView() const override {
-    if (widget_->IsVisible())
-      return widget_->GetNativeWindow();
-    else
-      return host_view_->GetWidget()->GetNativeWindow();
-  }
-
-  gfx::Point GetDialogPosition(const gfx::Size& size) override {
-    // Center the dialog in the screen.
-    gfx::Size host_size = GetHostView()->GetBoundsInScreen().size();
-    return gfx::Point(host_size.width() / 2 - size.width() / 2,
-                      host_size.height() / 2 - size.height() / 2);
-  }
-
-  gfx::Size GetMaximumDialogSize() override {
-    return display::Screen::GetScreen()
-        ->GetDisplayNearestWindow(widget_->GetNativeWindow())
-        .work_area()
-        .size();
-  }
-
-  void AddObserver(web_modal::ModalDialogHostObserver* observer) override {}
-
-  void RemoveObserver(web_modal::ModalDialogHostObserver* observer) override {}
-
-  // ui::WebDialogDelegate:
-  ui::ModalType GetDialogModalType() const override {
-    return ui::ModalType::MODAL_TYPE_SYSTEM;
-  }
-
-  std::u16string GetDialogTitle() const override { return std::u16string(); }
-
-  GURL GetDialogContentURL() const override { return GURL(); }
-
-  void GetWebUIMessageHandlers(
-      std::vector<content::WebUIMessageHandler*>* handlers) const override {}
-
-  void GetDialogSize(gfx::Size* size) const override {
-    *size = display::Screen::GetScreen()
-                ->GetDisplayNearestWindow(widget_->GetNativeWindow())
-                .work_area()
-                .size();
-  }
-
-  std::string GetDialogArgs() const override { return std::string(); }
-
-  void OnDialogClosed(const std::string& json_retval) override { delete this; }
-
-  void OnCloseContents(content::WebContents* source,
-                       bool* out_close_dialog) override {
-    *out_close_dialog = false;
-  }
-
-  bool ShouldShowDialogTitle() const override { return false; }
-
-  base::WeakPtr<CaptivePortalDialogDelegate> GetWeakPtr() {
-    return weak_ptr_factory_.GetWeakPtr();
-  }
-
- private:
-  views::Widget* widget_ = nullptr;
-  views::WebDialogView* view_ = nullptr;
-  views::WebDialogView* host_view_ = nullptr;
-  content::WebContents* web_contents_ = nullptr;
-
-  base::WeakPtrFactory<CaptivePortalDialogDelegate> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(CaptivePortalDialogDelegate);
-};
 
 OobeUIDialogDelegate::OobeUIDialogDelegate(
     base::WeakPtr<LoginDisplayHostMojo> controller)
