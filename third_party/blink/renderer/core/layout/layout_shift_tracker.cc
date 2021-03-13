@@ -311,6 +311,25 @@ void LayoutShiftTracker::ObjectShifted(
   if (visible_old_rect.IsEmpty() && visible_new_rect.IsEmpty())
     return;
 
+  // If the object moved from or to out of view, ignore the shift if it's in
+  // the inline direction only.
+  if (visible_old_rect.IsEmpty() || visible_new_rect.IsEmpty()) {
+    FloatPoint old_inline_direction_indifferent_starting_point_in_root =
+        old_starting_point_in_root;
+    if (object.IsHorizontalWritingMode()) {
+      old_inline_direction_indifferent_starting_point_in_root.SetX(
+          new_starting_point_in_root.X());
+    } else {
+      old_inline_direction_indifferent_starting_point_in_root.SetY(
+          new_starting_point_in_root.Y());
+    }
+    if (EqualWithinMovementThreshold(
+            old_inline_direction_indifferent_starting_point_in_root,
+            new_starting_point_in_root, threshold_physical_px)) {
+      return;
+    }
+  }
+
   // Compute move distance based on unclipped rects, to accurately determine how
   // much the element moved.
   float move_distance =
