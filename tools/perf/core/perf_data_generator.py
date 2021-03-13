@@ -100,6 +100,9 @@ LIGHTWEIGHT_TESTERS = [
     'win-10_laptop_low_end-perf'
 ]
 
+# This is an opt-in list for builders which uses dynamic sharding.
+DYNAMIC_SHARDING_TESTERS = ['android-pixel2-perf-fyi']
+
 CALIBRATION_BUILDERS = {
     'linux-perf-calibration': {
         'tests': [
@@ -1405,6 +1408,8 @@ def generate_performance_test(tester_config, test, builder_name):
             'True'
         ],
     }
+    if builder_name in DYNAMIC_SHARDING_TESTERS:
+      result['trigger_script']['args'].append('--use-dynamic-shards')
 
   result['merge'] = {
       'script': '//tools/perf/process_perf_results.py',
