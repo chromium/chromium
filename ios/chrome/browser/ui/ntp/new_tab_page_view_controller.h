@@ -65,15 +65,15 @@
 // Stops scrolling in the scroll view.
 - (void)stopScrolling;
 
-// Sets the feed collection contentOffset to |offset| to set the initial scroll
-// position.
-- (void)setContentOffset:(CGFloat)offset;
+// Sets the feed collection contentOffset from the saved state to |offset| to
+// set the initial scroll position.
+- (void)setSavedContentOffset:(CGFloat)offset;
 
-// Updates this ViewController layout to match the new ContentSuggestions
+// Updates the ContentSuggestionsViewController and its header for the current
 // layout.
 // TODO(crbug.com/1170995): Remove once ContentSuggestions can be added as part
 // of a header.
-- (void)updateLayoutForContentSuggestions;
+- (void)updateContentSuggestionForCurrentLayout;
 
 // Returns the current height of the content suggestions content.
 - (CGFloat)contentSuggestionsContentHeight;

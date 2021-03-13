@@ -68,6 +68,11 @@ const CGFloat kOffsetToPinOmnibox = 100;
 // remains YES if viewDidAppear has been called.
 @property(nonatomic, assign) BOOL viewDidAppear;
 
+// |YES| if the initial scroll position is from the saved web state (when
+// navigating away and back), and |NO| if it is the top of the NTP.
+@property(nonatomic, assign, getter=isInitialOffsetFromSavedState)
+    BOOL initialOffsetFromSavedState;
+
 @end
 
 @implementation NewTabPageViewController
@@ -201,8 +206,6 @@ const CGFloat kOffsetToPinOmnibox = 100;
           constraintEqualToAnchor:contentSuggestionsView.trailingAnchor],
       self.contentSuggestionsHeightConstraint,
     ]];
-
-    [self setContentOffset:-[self adjustedContentSuggestionsHeight]];
   }
 
   [self updateContentSuggestionForCurrentLayout];
@@ -305,14 +308,26 @@ const CGFloat kOffsetToPinOmnibox = 100;
   [scrollView setContentOffset:scrollView.contentOffset animated:NO];
 }
 
-- (void)setContentOffset:(CGFloat)offset {
-  self.discoverFeedWrapperViewController.feedCollectionView.contentOffset =
-      CGPointMake(0, offset);
-  self.scrolledIntoFeed = offset > kOffsetToPinOmnibox;
+- (void)setSavedContentOffset:(CGFloat)offset {
+  self.initialOffsetFromSavedState = YES;
+  [self setContentOffset:offset];
 }
 
-- (void)updateLayoutForContentSuggestions {
-  [self updateContentSuggestionForCurrentLayout];
+- (void)updateContentSuggestionForCurrentLayout {
+  [self updateFeedInsetsForContentSuggestions];
+
+  // Reload data to ensure the Most Visited tiles and fake omnibox are correctly
+  // positioned, in particular during a rotation while a ViewController is
+  // presented in front of the NTP.
+  [self.headerSynchronizer
+      updateFakeOmniboxOnNewWidth:self.collectionView.bounds.size.width];
+  [self.contentSuggestionsViewController.collectionView
+          .collectionViewLayout invalidateLayout];
+  // Ensure initial fake omnibox layout.
+  [self.headerSynchronizer updateFakeOmniboxForScrollPosition];
+  if (!self.viewDidAppear && ![self isInitialOffsetFromSavedState]) {
+    [self setContentOffset:-[self adjustedContentSuggestionsHeight]];
+  }
 }
 
 - (CGFloat)contentSuggestionsContentHeight {
@@ -519,22 +534,6 @@ const CGFloat kOffsetToPinOmnibox = 100;
   [self.ntpContentDelegate reloadContentSuggestions];
 }
 
-// Updates the ContentSuggestionsViewController and its header for the current
-// layout.
-- (void)updateContentSuggestionForCurrentLayout {
-  [self updateFeedInsetsForContentSuggestions];
-
-  // Reload data to ensure the Most Visited tiles and fake omnibox are correctly
-  // positioned, in particular during a rotation while a ViewController is
-  // presented in front of the NTP.
-  [self.headerSynchronizer
-      updateFakeOmniboxOnNewWidth:self.collectionView.bounds.size.width];
-  [self.contentSuggestionsViewController.collectionView
-          .collectionViewLayout invalidateLayout];
-  // Ensure initial fake omnibox layout.
-  [self.headerSynchronizer updateFakeOmniboxForScrollPosition];
-}
-
 // Sets an inset to the Discover feed equal to the content suggestions height,
 // so that the content suggestions could act as the feed header.
 - (void)updateFeedInsetsForContentSuggestions {
@@ -576,6 +575,14 @@ const CGFloat kOffsetToPinOmnibox = 100;
   } else {
     [self.headerSynchronizer unfocusOmnibox];
   }
+}
+
+// Sets the feed collection contentOffset to |offset| to set the initial scroll
+// position.
+- (void)setContentOffset:(CGFloat)offset {
+  self.discoverFeedWrapperViewController.feedCollectionView.contentOffset =
+      CGPointMake(0, offset);
+  self.scrolledIntoFeed = offset > kOffsetToPinOmnibox;
 }
 
 #pragma mark - Setters

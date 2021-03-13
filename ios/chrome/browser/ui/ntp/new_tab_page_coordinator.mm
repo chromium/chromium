@@ -435,7 +435,7 @@
   if ([self isNTPRefactoredAndFeedVisible]) {
     [self.containedViewController.view setNeedsLayout];
     [self.containedViewController.view layoutIfNeeded];
-    [self.ntpViewController updateLayoutForContentSuggestions];
+    [self.ntpViewController updateContentSuggestionForCurrentLayout];
   }
 }
 
