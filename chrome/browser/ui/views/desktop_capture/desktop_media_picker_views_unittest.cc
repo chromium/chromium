@@ -7,7 +7,6 @@
 #include <map>
 #include <string>
 #include <utility>
-#include <vector>
 
 #include "base/bind.h"
 #include "base/command_line.h"
@@ -25,7 +24,6 @@
 #include "chrome/test/views/chrome_test_views_delegate.h"
 #include "components/web_modal/test_web_contents_modal_dialog_host.h"
 #include "content/public/test/browser_task_environment.h"
-#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/ui_base_switches.h"
 #include "ui/events/event_utils.h"
@@ -37,10 +35,6 @@
 #include "ui/views/widget/any_widget_observer.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/window/dialog_delegate.h"
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "ash/public/cpp/projector/projector_controller.h"
-#endif
 
 using content::DesktopMediaID;
 
@@ -85,19 +79,6 @@ class DesktopMediaPickerViewsTest : public testing::Test {
         switches::kDisableModalAnimations);
 #endif
     DesktopMediaPickerManager::Get()->AddObserver(&observer_);
-    CreatePickerViews();
-  }
-
-  void TearDown() override {
-    if (GetPickerDialogView())
-      GetPickerDialogView()->GetWidget()->CloseNow();
-    widget_destroyed_waiter_->Wait();
-    DesktopMediaPickerManager::Get()->RemoveObserver(&observer_);
-  }
-
-  void CreatePickerViews() {
-    widget_destroyed_waiter_.reset();
-    picker_views_.reset();
 
     picker_views_ = std::make_unique<DesktopMediaPickerViews>();
     test_api_.set_picker(picker_views_.get());
@@ -126,6 +107,13 @@ class DesktopMediaPickerViewsTest : public testing::Test {
     widget_destroyed_waiter_ =
         std::make_unique<views::test::WidgetDestroyedWaiter>(
             waiter.WaitIfNeededAndGet());
+  }
+
+  void TearDown() override {
+    if (GetPickerDialogView())
+      GetPickerDialogView()->GetWidget()->CloseNow();
+    widget_destroyed_waiter_->Wait();
+    DesktopMediaPickerManager::Get()->RemoveObserver(&observer_);
   }
 
   DesktopMediaPickerDialogView* GetPickerDialogView() const {
@@ -386,80 +374,6 @@ TEST_F(DesktopMediaPickerViewsTest, OkButtonEnabledDuringAcceptSpecific) {
   GetPickerDialogView()->AcceptSpecificSource(kFakeId);
   EXPECT_EQ(kFakeId, WaitForPickerDone());
 }
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-
-class ProjectorControllerMock : public ash::ProjectorController {
- public:
-  ProjectorControllerMock() = default;
-  ~ProjectorControllerMock() = default;
-  MOCK_METHOD1(SetClient, void(ash::ProjectorClient*));
-  MOCK_METHOD1(OnSpeechRecognitionAvailable, void(bool));
-  MOCK_METHOD5(OnTranscription,
-               void(const base::string16&,
-                    base::TimeDelta,
-                    base::TimeDelta,
-                    const std::vector<base::TimeDelta>&,
-                    bool));
-  MOCK_METHOD1(SetProjectorToolsVisible, void(bool));
-  MOCK_METHOD0(StartProjectorSession, void());
-  MOCK_CONST_METHOD0(IsEligible, bool());
-};
-
-TEST_F(DesktopMediaPickerViewsTest, ProjectorIneligible) {
-  ProjectorControllerMock mock;
-  ON_CALL(mock, IsEligible).WillByDefault(testing::Return(false));
-  EXPECT_EQ(test_api_.GetPresenterToolsCheckbox(), nullptr);
-}
-
-TEST_F(DesktopMediaPickerViewsTest, ProjectorEligible) {
-  ProjectorControllerMock mock;
-  ON_CALL(mock, IsEligible).WillByDefault(testing::Return(true));
-
-  EXPECT_CALL(mock, SetProjectorToolsVisible(true)).Times(1);
-  CreatePickerViews();
-
-  test_api_.SelectTabForSourceType(DesktopMediaList::Type::kScreen);
-  EXPECT_TRUE(test_api_.GetPresenterToolsCheckbox()->GetVisible());
-
-  test_api_.SelectTabForSourceType(DesktopMediaList::Type::kWindow);
-  EXPECT_TRUE(test_api_.GetPresenterToolsCheckbox()->GetVisible());
-
-  test_api_.SelectTabForSourceType(DesktopMediaList::Type::kWebContents);
-  EXPECT_TRUE(test_api_.GetPresenterToolsCheckbox()->GetVisible());
-
-  // Button is visible but unchecked.
-  test_api_.GetPresenterToolsCheckbox()->SetChecked(true);
-
-  // When the dialog is cancelled, we expect that ProjectorController to hide
-  // the toolbar.
-  EXPECT_CALL(mock, SetProjectorToolsVisible(false)).Times(1);
-
-  // Cancel and dismiss the Dialog
-  GetPickerDialogView()->Cancel();
-}
-
-TEST_F(DesktopMediaPickerViewsTest, ProjectorStartSession) {
-  constexpr DesktopMediaID kOriginId(DesktopMediaID::TYPE_WEB_CONTENTS, 222);
-
-  ProjectorControllerMock mock;
-  ON_CALL(mock, IsEligible).WillByDefault(testing::Return(true));
-  CreatePickerViews();
-
-  media_lists_[DesktopMediaList::Type::kWebContents]->AddSourceByFullMediaID(
-      kOriginId);
-
-  test_api_.SelectTabForSourceType(DesktopMediaList::Type::kWebContents);
-  test_api_.GetPresenterToolsCheckbox()->SetChecked(true);
-  test_api_.FocusSourceAtIndex(0);
-
-  EXPECT_CALL(mock, StartProjectorSession()).Times(1);
-
-  GetPickerDialogView()->AcceptDialog();
-  WaitForPickerDone();
-}
-
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 // Creates a single pane DesktopMediaPickerViews that only has a tab list.
 class DesktopMediaPickerViewsSingleTabPaneTest

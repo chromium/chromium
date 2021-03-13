@@ -90,7 +90,7 @@ class ProjectorControllerTest : public AshTestBase {
 TEST_F(ProjectorControllerTest, ShowToolbar) {
   // Verify that |ShowToolbar| in |ProjectorUiController| is called.
   EXPECT_CALL(*mock_ui_controller_, ShowToolbar()).Times(1);
-  controller_->SetProjectorToolsVisible(true);
+  controller_->ShowToolbar();
 }
 
 TEST_F(ProjectorControllerTest, SaveScreencast) {
@@ -165,10 +165,10 @@ TEST_F(ProjectorControllerTest, OnTranscriptionCaptionOnPartialResult) {
 
 TEST_F(ProjectorControllerTest, OnSpeechRecognitionAvailable) {
   controller_->OnSpeechRecognitionAvailable(true);
-  EXPECT_TRUE(controller_->IsEligible());
+  EXPECT_TRUE(controller_->is_eligible());
 
   controller_->OnSpeechRecognitionAvailable(false);
-  EXPECT_FALSE(controller_->IsEligible());
+  EXPECT_FALSE(controller_->is_eligible());
 }
 
 }  // namespace ash

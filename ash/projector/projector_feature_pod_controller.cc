@@ -62,10 +62,10 @@ void ProjectorFeaturePodController::OnIconPressed() {
 
   if (projector_session->is_active()) {
     projector_session->Stop();
-    projector_controller->SetProjectorToolsVisible(false);
+    projector_controller->CloseToolbar();
   } else {
     projector_session->Start();
-    projector_controller->SetProjectorToolsVisible(true);
+    projector_controller->ShowToolbar();
   }
 }
 

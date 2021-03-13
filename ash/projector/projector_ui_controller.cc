@@ -83,8 +83,4 @@ void ProjectorUiController::ResetTools() {
     Shell::Get()->laser_pointer_controller()->SetEnabled(false);
 }
 
-bool ProjectorUiController::IsToolbarVisible() const {
-  return model_.bar_enabled();
-}
-
 }  // namespace ash
