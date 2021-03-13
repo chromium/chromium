@@ -37,21 +37,12 @@ public class AccountPickerBottomSheetCoordinator {
         public void onSheetClosed(@StateChangeReason int reason) {
             super.onSheetClosed(reason);
             if (reason == StateChangeReason.SWIPE) {
-                SigninMetricsUtils.logAccountConsistencyPromoAction(
-                        AccountConsistencyPromoAction.DISMISSED_SWIPE_DOWN);
+                logOnDismissMetrics(AccountConsistencyPromoAction.DISMISSED_SWIPE_DOWN);
             } else if (reason == StateChangeReason.BACK_PRESS) {
-                SigninMetricsUtils.logAccountConsistencyPromoAction(
-                        AccountConsistencyPromoAction.DISMISSED_BACK);
+                logOnDismissMetrics(AccountConsistencyPromoAction.DISMISSED_BACK);
             } else if (reason == StateChangeReason.TAP_SCRIM) {
-                SigninMetricsUtils.logAccountConsistencyPromoAction(
-                        AccountConsistencyPromoAction.DISMISSED_SCRIM);
-            } else {
-                // Return for other dismiss cases so we don't record web signin metrics for them.
-                return;
+                logOnDismissMetrics(AccountConsistencyPromoAction.DISMISSED_SCRIM);
             }
-            SigninPreferencesManager.getInstance()
-                    .incrementAccountPickerBottomSheetActiveDismissalCount();
-            SigninMetricsUtils.logWebSignin();
         }
 
         @Override
@@ -129,7 +120,16 @@ public class AccountPickerBottomSheetCoordinator {
 
     @MainThread
     private void dismissBottomSheet() {
+        logOnDismissMetrics(AccountConsistencyPromoAction.DISMISSED_BUTTON);
         mBottomSheetController.hideContent(mView, true);
+    }
+
+    @MainThread
+    private void logOnDismissMetrics(@AccountConsistencyPromoAction int promoAction) {
+        SigninMetricsUtils.logAccountConsistencyPromoAction(promoAction);
+        SigninPreferencesManager.getInstance()
+                .incrementAccountPickerBottomSheetActiveDismissalCount();
+        SigninMetricsUtils.logWebSignin();
     }
 
     @VisibleForTesting
