@@ -107,14 +107,6 @@ void HoldingSpaceClientImpl::CopyImageToClipboard(const HoldingSpaceItem& item,
           std::move(callback)));
 }
 
-base::FilePath HoldingSpaceClientImpl::CrackFileSystemUrl(
-    const GURL& file_system_url) const {
-  return file_manager::util::GetFileSystemContextForExtensionId(
-             profile_, file_manager::kFileManagerAppId)
-      ->CrackURL(file_system_url)
-      .path();
-}
-
 void HoldingSpaceClientImpl::OpenDownloads(SuccessCallback callback) {
   auto file_path = file_manager::util::GetDownloadsFolderForProfile(profile_);
   if (file_path.empty()) {

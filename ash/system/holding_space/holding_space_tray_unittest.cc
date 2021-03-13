@@ -129,10 +129,6 @@ class MockHoldingSpaceClient : public HoldingSpaceClient {
               CopyImageToClipboard,
               (const HoldingSpaceItem& item, SuccessCallback callback),
               (override));
-  MOCK_METHOD(base::FilePath,
-              CrackFileSystemUrl,
-              (const GURL& file_system_url),
-              (const, override));
   MOCK_METHOD(void, OpenDownloads, (SuccessCallback callback), (override));
   MOCK_METHOD(void, OpenMyFiles, (SuccessCallback callback), (override));
   MOCK_METHOD(void,

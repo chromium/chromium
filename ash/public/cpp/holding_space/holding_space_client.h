@@ -10,8 +10,6 @@
 #include "ash/public/cpp/ash_public_export.h"
 #include "base/callback_forward.h"
 
-class GURL;
-
 namespace base {
 class FilePath;
 }  // namespace base
@@ -37,10 +35,6 @@ class ASH_PUBLIC_EXPORT HoldingSpaceClient {
   // via the supplied `callback`.
   virtual void CopyImageToClipboard(const HoldingSpaceItem& item,
                                     SuccessCallback callback) = 0;
-
-  // Returns the file path from cracking the specified `file_system_url`.
-  virtual base::FilePath CrackFileSystemUrl(
-      const GURL& file_system_url) const = 0;
 
   // Attempts to open the Downloads folder.
   // Success is returned via the supplied `callback`.
