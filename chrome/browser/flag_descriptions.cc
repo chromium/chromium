@@ -4348,6 +4348,12 @@ const char kExperimentalAccessibilityDictationExtensionName[] =
 const char kExperimentalAccessibilityDictationExtensionDescription[] =
     "Enables the JavaScript dictation extension.";
 
+const char kExperimentalAccessibilityDictationListeningName[] =
+    "Experimental accessibility dictation listening duration and behavior.";
+const char kExperimentalAccessibilityDictationListeningDescription[] =
+    "Enables longer listening with network recognition and listening after "
+    "finalized speech for the accessibility dictation feature.";
+
 const char kExperimentalAccessibilityDictationOfflineName[] =
     "Experimental accessibility dictation offline.";
 const char kExperimentalAccessibilityDictationOfflineDescription[] =
