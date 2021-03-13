@@ -14,6 +14,8 @@
 #include "ui/views/examples/example_base.h"
 
 namespace views {
+class Button;
+
 namespace examples {
 
 // A TabbedPane example tests adding and selecting tabs.
@@ -32,15 +34,21 @@ class VIEWS_EXAMPLES_EXPORT TabbedPaneExample : public ExampleBase,
   // TabbedPaneListener:
   void TabSelectedAt(int index) override;
 
-  void CreateTabbedPane(View* container, TabbedPane::Orientation orientation);
+  void CreateTabbedPane(View* container,
+                        TabbedPane::Orientation orientation,
+                        TabbedPane::TabStripStyle style);
   void PrintCurrentStatus();
   void SwapLayout();
+  void ToggleHighlighted();
   void AddTab(const std::u16string& label);
   void AddAt();
   void SelectAt();
 
   // The tabbed pane to be tested.
   TabbedPane* tabbed_pane_;
+
+  // The button that toggles highlighted style.
+  Button* toggle_highlighted_;
 };
 
 }  // namespace examples

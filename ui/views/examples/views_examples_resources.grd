@@ -223,6 +223,9 @@
       <message translateable="false" name="IDS_TABBED_PANE_SWAP_LAYOUT_LABEL">
         Swap Layout
       </message>
+      <message translateable="false" name="IDS_TABBED_PANE_TOGGLE_HIGHLIGHTED_LABEL">
+        Toggle Highlighted
+      </message>
       <message translateable="false" name="IDS_TABBED_PANE_ADD_LABEL">
         Add
       </message>

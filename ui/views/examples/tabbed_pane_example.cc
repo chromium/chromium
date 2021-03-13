@@ -32,8 +32,6 @@ void TabbedPaneExample::CreateExampleView(View* container) {
   container->SetLayoutManager(std::make_unique<views::FlexLayout>())
       ->SetOrientation(LayoutOrientation::kVertical);
 
-  CreateTabbedPane(container, TabbedPane::Orientation::kHorizontal);
-
   // Add control buttons horizontally.
   auto* const button_panel = container->AddChildView(std::make_unique<View>());
   button_panel->SetLayoutManager(std::make_unique<views::FlexLayout>());
@@ -41,6 +39,11 @@ void TabbedPaneExample::CreateExampleView(View* container) {
       base::BindRepeating(&TabbedPaneExample::SwapLayout,
                           base::Unretained(this)),
       GetStringUTF16(IDS_TABBED_PANE_SWAP_LAYOUT_LABEL)));
+  toggle_highlighted_ =
+      button_panel->AddChildView(std::make_unique<LabelButton>(
+          base::BindRepeating(&TabbedPaneExample::ToggleHighlighted,
+                              base::Unretained(this)),
+          GetStringUTF16(IDS_TABBED_PANE_TOGGLE_HIGHLIGHTED_LABEL)));
   button_panel->AddChildView(std::make_unique<LabelButton>(
       base::BindRepeating(&TabbedPaneExample::AddTab, base::Unretained(this),
                           GetStringUTF16(IDS_TABBED_PANE_ADDED_LABEL)),
@@ -57,6 +60,9 @@ void TabbedPaneExample::CreateExampleView(View* container) {
                              .WithWeight(1);
   for (View* view : button_panel->children())
     view->SetProperty(views::kFlexBehaviorKey, full_flex);
+
+  CreateTabbedPane(container, TabbedPane::Orientation::kHorizontal,
+                   TabbedPane::TabStripStyle::kBorder);
 }
 
 void TabbedPaneExample::TabSelectedAt(int index) {
@@ -65,10 +71,17 @@ void TabbedPaneExample::TabSelectedAt(int index) {
 }
 
 void TabbedPaneExample::CreateTabbedPane(View* container,
-                                         TabbedPane::Orientation orientation) {
-  tabbed_pane_ =
-      container->AddChildViewAt(std::make_unique<TabbedPane>(orientation), 0);
+                                         TabbedPane::Orientation orientation,
+                                         TabbedPane::TabStripStyle style) {
+  // Tabbed panes only support highlighted style for vertical tabs.
+  if (orientation == TabbedPane::Orientation::kHorizontal)
+    style = TabbedPane::TabStripStyle::kBorder;
+
+  tabbed_pane_ = container->AddChildViewAt(
+      std::make_unique<TabbedPane>(orientation, style), 0);
   tabbed_pane_->set_listener(this);
+  toggle_highlighted_->SetEnabled(orientation ==
+                                  TabbedPane::Orientation::kVertical);
   const auto full_flex = FlexSpecification(MinimumFlexSizeRule::kScaleToZero,
                                            MaximumFlexSizeRule::kUnbounded)
                              .WithWeight(1);
@@ -89,8 +102,20 @@ void TabbedPaneExample::SwapLayout() {
       (tabbed_pane_->GetOrientation() == TabbedPane::Orientation::kHorizontal)
           ? TabbedPane::Orientation::kVertical
           : TabbedPane::Orientation::kHorizontal;
+  const auto style = tabbed_pane_->GetStyle();
   container->RemoveChildView(tabbed_pane_);
-  CreateTabbedPane(container, orientation);
+  CreateTabbedPane(container, orientation, style);
+}
+
+void TabbedPaneExample::ToggleHighlighted() {
+  auto* const container = tabbed_pane_->parent();
+  const auto orientation = tabbed_pane_->GetOrientation();
+  const auto style =
+      (tabbed_pane_->GetStyle() == TabbedPane::TabStripStyle::kBorder)
+          ? TabbedPane::TabStripStyle::kHighlight
+          : TabbedPane::TabStripStyle::kBorder;
+  container->RemoveChildView(tabbed_pane_);
+  CreateTabbedPane(container, orientation, style);
 }
 
 void TabbedPaneExample::AddTab(const std::u16string& label) {
