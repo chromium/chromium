@@ -23,13 +23,6 @@
 #   https://chromium.googlesource.com/infra/infra/+/master/doc/users/vpython.md
 
 python_version: "3.8"
-# Used by:
-#   build/android/pylib/local/emulator/avd.py
-#   components/policy/test_support/policy_testserver.py
-wheel: <
-  name: "infra/python/wheels/protobuf-py2_py3"
-  version: "version:3.6.1"
->
 
 # TODO(https://crbug.com/898348): Add in necessary wheels as Python3 versions
 # become available.
@@ -40,7 +33,7 @@ wheel: <
 
 # Common utilities.
 wheel: <
-  name: "infra/python/wheels/psutil/${vpython_platform}"
+  name: "infra/python/wheels/psutil/${platform}_${py_python}_${py_abi}"
   version: "version:5.7.2"
 >
 wheel: <
