@@ -55,4 +55,7 @@ void ExoAppTypeResolver::PopulateProperties(
   out_properties_container.SetProperty(aura::client::kAppType,
                                        static_cast<int>(ash::AppType::ARC_APP));
   out_properties_container.SetProperty(full_restore::kWindowIdKey, task_id);
+  out_properties_container.SetProperty(
+      full_restore::kRestoreWindowIdKey,
+      full_restore::GetArcRestoreWindowId(task_id));
 }

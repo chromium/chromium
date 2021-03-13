@@ -35,6 +35,10 @@ constexpr int32_t kId2 = 200;
 constexpr int32_t kActivationIndex1 = 100;
 constexpr int32_t kActivationIndex2 = 101;
 
+constexpr int32_t kArcSessionId = kArcSessionIdOffsetForRestoredLaunching + 1;
+
+constexpr int32_t kArcTaskId = 666;
+
 }  // namespace
 
 // Unit tests for restore data.
@@ -98,12 +102,12 @@ class FullRestoreReadAndSaveTest : public testing::Test {
     const auto& launch_list = restore_data->app_id_to_launch_list();
     EXPECT_EQ(1u, launch_list.size());
 
-    // Verify for |kAppId|
+    // Verify for |kAppId|.
     const auto launch_list_it = launch_list.find(kAppId);
     EXPECT_TRUE(launch_list_it != launch_list.end());
     EXPECT_EQ(1u, launch_list_it->second.size());
 
-    // Verify for |id|
+    // Verify for |id|.
     const auto app_restore_data_it = launch_list_it->second.find(id);
     EXPECT_TRUE(app_restore_data_it != launch_list_it->second.end());
 
@@ -165,12 +169,12 @@ TEST_F(FullRestoreReadAndSaveTest, SaveAndReadRestoreData) {
   const auto& launch_list = restore_data->app_id_to_launch_list();
   EXPECT_EQ(1u, launch_list.size());
 
-  // Verify for |kAppId|
+  // Verify for |kAppId|.
   const auto launch_list_it = launch_list.find(kAppId);
   EXPECT_TRUE(launch_list_it != launch_list.end());
   EXPECT_EQ(2u, launch_list_it->second.size());
 
-  // Verify for |kId1|
+  // Verify for |kId1|.
   const auto app_restore_data_it1 = launch_list_it->second.find(kId1);
   EXPECT_TRUE(app_restore_data_it1 != launch_list_it->second.end());
 
@@ -178,7 +182,7 @@ TEST_F(FullRestoreReadAndSaveTest, SaveAndReadRestoreData) {
   EXPECT_TRUE(data1->activation_index.has_value());
   EXPECT_EQ(kActivationIndex1, data1->activation_index.value());
 
-  // Verify for |kId2|
+  // Verify for |kId2|.
   const auto app_restore_data_it2 = launch_list_it->second.find(kId2);
   EXPECT_TRUE(app_restore_data_it2 != launch_list_it->second.end());
 
@@ -218,6 +222,66 @@ TEST_F(FullRestoreReadAndSaveTest, MultipleFilePaths) {
 
   VerifyRestoreData(tmp_dir1.GetPath(), kId1, kActivationIndex1);
   VerifyRestoreData(tmp_dir2.GetPath(), kId2, kActivationIndex2);
+}
+
+TEST_F(FullRestoreReadAndSaveTest, ArcWindowRestore) {
+  FullRestoreSaveHandler* save_handler = FullRestoreSaveHandler::GetInstance();
+  base::OneShotTimer* timer = save_handler->GetTimerForTesting();
+
+  // Add app launch info, and modify the window info.
+  AddAppLaunchInfo(GetPath(), kId1);
+  CreateWindowInfo(kId1, kActivationIndex1);
+  timer->FireNow();
+  task_environment().RunUntilIdle();
+
+  ReadFromFile(GetPath());
+
+  // Verify the restore data can be read correctly.
+  const auto* restore_data = GetRestoreData(GetPath());
+  ASSERT_TRUE(restore_data);
+
+  // Verify the map from app ids to launch list:
+  // std::map<app_id, std::map<window_id, std::unique_ptr<AppRestoreData>>>
+  const auto& launch_list = restore_data->app_id_to_launch_list();
+  EXPECT_EQ(1u, launch_list.size());
+
+  // Verify the launch list for |kAppId|:
+  // std::map<window_id, std::unique_ptr<AppRestoreData>>
+  const auto launch_list_it = launch_list.find(kAppId);
+  EXPECT_TRUE(launch_list_it != launch_list.end());
+  EXPECT_EQ(1u, launch_list_it->second.size());
+
+  // Verify that there is an AppRestoreData for the window id |kId1|.
+  const auto app_restore_data_it = launch_list_it->second.find(kId1);
+  EXPECT_TRUE(app_restore_data_it != launch_list_it->second.end());
+
+  // Verify the AppRestoreData.
+  const std::unique_ptr<AppRestoreData>& data = app_restore_data_it->second;
+  EXPECT_TRUE(data->activation_index.has_value());
+  EXPECT_EQ(kActivationIndex1, data->activation_index.value());
+
+  // Simulate the ARC app launching, and set the arc session id |kArcSessionId|
+  // for the window id |kId1|.
+  FullRestoreReadHandler* read_handler = FullRestoreReadHandler::GetInstance();
+  read_handler->SetArcSessionIdForWindowId(kArcSessionId, kId1);
+
+  // Call OnTaskCreated to simulate that the ARC app with |kAppId| has been
+  // launched, and the new task id |kArcTaskId| has been created with
+  // |kArcSessionId| returned.
+  read_handler->OnTaskCreated(kAppId, kArcTaskId, kArcSessionId);
+
+  // Since we have got the new task with |kArcSessionId|, the map from the arc
+  // session id to the window id can be cleared. And verify that we can get the
+  // restore window id with the new |kArcTaskId|.
+  EXPECT_TRUE(read_handler->GetArcSessionIdMapForTesting().empty());
+  EXPECT_EQ(kId1, full_restore::GetArcRestoreWindowId(kArcTaskId));
+
+  // Call OnTaskDestroyed to simulate the ARC app launching has been finished
+  // for |kArcTaskId|, and verify the task id map is now empty and a invalid
+  // value is returned when trying to get the restore window id.
+  read_handler->OnTaskDestroyed(kArcTaskId);
+  EXPECT_EQ(-1, full_restore::GetArcRestoreWindowId(kArcTaskId));
+  EXPECT_TRUE(read_handler->GetArcTaskIdMapForTesting().empty());
 }
 
 }  // namespace full_restore

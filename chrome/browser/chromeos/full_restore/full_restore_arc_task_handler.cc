@@ -6,7 +6,7 @@
 
 #include "chrome/browser/chromeos/full_restore/full_restore_arc_task_handler_factory.h"
 #include "chrome/browser/profiles/profile.h"
-#include "components/full_restore/full_restore_save_handler.h"
+#include "components/full_restore/full_restore_utils.h"
 
 namespace chromeos {
 namespace full_restore {
@@ -33,13 +33,11 @@ void FullRestoreArcTaskHandler::OnTaskCreated(int32_t task_id,
                                               const std::string& intent,
                                               int32_t session_id) {
   const std::string app_id = ArcAppListPrefs::GetAppId(package_name, activity);
-  ::full_restore::FullRestoreSaveHandler::GetInstance()->OnTaskCreated(
-      app_id, task_id, session_id);
+  ::full_restore::OnTaskCreated(app_id, task_id, session_id);
 }
 
 void FullRestoreArcTaskHandler::OnTaskDestroyed(int32_t task_id) {
-  ::full_restore::FullRestoreSaveHandler::GetInstance()->OnTaskDestroyed(
-      task_id);
+  ::full_restore::OnTaskDestroyed(task_id);
 }
 
 }  // namespace full_restore

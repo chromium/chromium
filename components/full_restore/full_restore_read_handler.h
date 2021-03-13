@@ -52,6 +52,14 @@ class COMPONENT_EXPORT(FULL_RESTORE) FullRestoreReadHandler
 
   void SetActiveProfilePath(const base::FilePath& profile_path);
 
+  // Invoked when the task is created for an ARC app.
+  void OnTaskCreated(const std::string& app_id,
+                     int32_t task_id,
+                     int32_t session_id);
+
+  // Invoked when the task is destroyed for an ARC app.
+  void OnTaskDestroyed(int32_t task_id);
+
   // Reads the restore data from |profile_path| on a background task runner, and
   // calls |callback| when the reading operation is done.
   void ReadFromFile(const base::FilePath& profile_path, Callback callback);
@@ -73,6 +81,12 @@ class COMPONENT_EXPORT(FULL_RESTORE) FullRestoreReadHandler
   // |app_id|. |app_id| should be a Chrome app id.
   int32_t FetchRestoreWindowId(const std::string& app_id);
 
+  // Returns the restore window id for the ARC app's |task_id|.
+  //
+  // TODO(crbug.com/1146900): Handle the scenario that the window is created
+  // first, and OnTaskCreated is called later..
+  int32_t GetArcRestoreWindowId(int32_t task_id);
+
   // Modifies |out_params| based on the window info associated with
   // |restore_window_id|.
   void ModifyWidgetParams(int32_t restore_window_id,
@@ -81,6 +95,19 @@ class COMPONENT_EXPORT(FULL_RESTORE) FullRestoreReadHandler
   // Generates the ARC session id (1,000,000,001 - INT_MAX) for restored ARC
   // apps.
   int32_t GetArcSessionId();
+
+  // Sets |arc session id| for |window_id| to |arc_session_id_to_window_id_|.
+  // |arc session id| is assigned when ARC apps are restored.
+  void SetArcSessionIdForWindowId(int32_t arc_session_id, int32_t window_id);
+
+  const std::map<int32_t, int32_t>& GetArcSessionIdMapForTesting() const {
+    return arc_session_id_to_window_id_;
+  }
+
+  const std::map<int32_t, std::pair<std::string, int32_t>>&
+  GetArcTaskIdMapForTesting() const {
+    return arc_task_id_to_app_id_window_id_;
+  }
 
  private:
   // Invoked when reading the restore data from |profile_path| is finished, and
@@ -106,8 +133,15 @@ class COMPONENT_EXPORT(FULL_RESTORE) FullRestoreReadHandler
   std::map<int32_t, std::pair<base::FilePath, std::string>>
       window_id_to_app_restore_info_;
 
-  int32_t arc_session_id =
+  int32_t arc_session_id_ =
       full_restore::kArcSessionIdOffsetForRestoredLaunching;
+
+  // The map from the arc session id to the window id.
+  std::map<int32_t, int32_t> arc_session_id_to_window_id_;
+
+  // The map from the arc task id to the app id and the window id.
+  std::map<int32_t, std::pair<std::string, int32_t>>
+      arc_task_id_to_app_id_window_id_;
 
   base::ScopedMultiSourceObservation<aura::Window, aura::WindowObserver>
       observed_windows_{this};

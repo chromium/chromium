@@ -199,7 +199,7 @@ void FullRestoreSaveHandler::SaveWindowInfo(const WindowInfo& window_info) {
   ModifyWindowInfo(window_id, window_info);
 }
 
-void FullRestoreSaveHandler::OnTaskCreated(const std::string app_id,
+void FullRestoreSaveHandler::OnTaskCreated(const std::string& app_id,
                                            int32_t task_id,
                                            int32_t session_id) {
   task_id_to_app_window_info_[task_id].app_id = app_id;
@@ -263,12 +263,12 @@ void FullRestoreSaveHandler::RemoveApp(const base::FilePath& profile_path,
 }
 
 int32_t FullRestoreSaveHandler::GetArcSessionId() {
-  if (arc_session_id >= kArcSessionIdOffsetForRestoredLaunching) {
-    LOG(WARNING) << "ARC session id is too large: " << arc_session_id;
-    arc_session_id = 0;
+  if (arc_session_id_ >= kArcSessionIdOffsetForRestoredLaunching) {
+    LOG(WARNING) << "ARC session id is too large: " << arc_session_id_;
+    arc_session_id_ = 0;
   }
 
-  return ++arc_session_id;
+  return ++arc_session_id_;
 }
 
 void FullRestoreSaveHandler::MaybeStartSaveTimer() {

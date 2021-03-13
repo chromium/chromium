@@ -246,9 +246,16 @@ void AppLaunchHandler::LaunchArcApp(
   for (const auto& it : launch_list) {
     DCHECK(it.second->event_flag.has_value());
     apps::mojom::WindowInfoPtr window_info = it.second->GetAppWindowInfo();
-    window_info->window_id =
+
+    // Set an ARC session id to find the restore window id based on the new
+    // created ARC task id in FullRestoreReadHandler.
+    int32_t arc_session_id =
         ::full_restore::FullRestoreReadHandler::GetInstance()
             ->GetArcSessionId();
+    window_info->window_id = arc_session_id;
+    ::full_restore::FullRestoreReadHandler::GetInstance()
+        ->SetArcSessionIdForWindowId(arc_session_id, it.first);
+
     if (it.second->intent.has_value()) {
       proxy->LaunchAppWithIntent(app_id, it.second->event_flag.value(),
                                  std::move(it.second->intent.value()),

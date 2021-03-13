@@ -60,6 +60,13 @@ int32_t FetchRestoreWindowId(const std::string& app_id) {
   return FullRestoreReadHandler::GetInstance()->FetchRestoreWindowId(app_id);
 }
 
+int32_t GetArcRestoreWindowId(int32_t task_id) {
+  if (!ash::features::IsFullRestoreEnabled())
+    return 0;
+
+  return FullRestoreReadHandler::GetInstance()->GetArcRestoreWindowId(task_id);
+}
+
 bool ShouldRestore(const AccountId& account_id) {
   return FullRestoreInfo::GetInstance()->ShouldRestore(account_id);
 }
@@ -87,6 +94,20 @@ void ModifyWidgetParams(int32_t restore_window_id,
 
   FullRestoreReadHandler::GetInstance()->ModifyWidgetParams(restore_window_id,
                                                             out_params);
+}
+
+void OnTaskCreated(const std::string& app_id,
+                   int32_t task_id,
+                   int32_t session_id) {
+  FullRestoreReadHandler::GetInstance()->OnTaskCreated(app_id, task_id,
+                                                       session_id);
+  FullRestoreSaveHandler::GetInstance()->OnTaskCreated(app_id, task_id,
+                                                       session_id);
+}
+
+void OnTaskDestroyed(int32_t task_id) {
+  FullRestoreReadHandler::GetInstance()->OnTaskDestroyed(task_id);
+  FullRestoreSaveHandler::GetInstance()->OnTaskDestroyed(task_id);
 }
 
 }  // namespace full_restore

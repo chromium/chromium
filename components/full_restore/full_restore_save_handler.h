@@ -66,7 +66,7 @@ class COMPONENT_EXPORT(FULL_RESTORE) FullRestoreSaveHandler
   void SaveWindowInfo(const WindowInfo& window_info);
 
   // Invoked when the task is created for an ARC app.
-  void OnTaskCreated(const std::string app_id,
+  void OnTaskCreated(const std::string& app_id,
                      int32_t task_id,
                      int32_t session_id);
 
@@ -163,7 +163,7 @@ class COMPONENT_EXPORT(FULL_RESTORE) FullRestoreSaveHandler
   // Records whether the saving process is running for a full restore file.
   std::set<base::FilePath> save_running_;
 
-  int32_t arc_session_id = 0;
+  int32_t arc_session_id_ = 0;
 
   base::ScopedMultiSourceObservation<aura::Window, aura::WindowObserver>
       observed_windows_{this};

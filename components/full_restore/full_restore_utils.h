@@ -81,6 +81,10 @@ std::unique_ptr<WindowInfo> GetWindowInfo(aura::Window* window);
 COMPONENT_EXPORT(FULL_RESTORE)
 int32_t FetchRestoreWindowId(const std::string& app_id);
 
+// Returns the restore window id for the ARC app's |task_id|.
+COMPONENT_EXPORT(FULL_RESTORE)
+int32_t GetArcRestoreWindowId(int32_t task_id);
+
 // Returns true if we should restore apps and pages based on the restore setting
 // and the user's choice from the notification. Otherwise, returns false.
 COMPONENT_EXPORT(FULL_RESTORE) bool ShouldRestore(const AccountId& account_id);
@@ -99,6 +103,16 @@ bool HasWindowInfo(int32_t restore_window_id);
 COMPONENT_EXPORT(FULL_RESTORE)
 void ModifyWidgetParams(int32_t restore_window_id,
                         views::Widget::InitParams* out_params);
+
+// Invoked when the task is created for an ARC app.
+COMPONENT_EXPORT(FULL_RESTORE)
+void OnTaskCreated(const std::string& app_id,
+                   int32_t task_id,
+                   int32_t session_id);
+
+// Invoked when the task is destroyed for an ARC app.
+COMPONENT_EXPORT(FULL_RESTORE)
+void OnTaskDestroyed(int32_t task_id);
 
 }  // namespace full_restore
 
