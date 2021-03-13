@@ -14,6 +14,7 @@
 #include "chrome/browser/web_applications/components/web_app_constants.h"
 #include "chrome/browser/web_applications/components/web_app_id.h"
 #include "chrome/browser/web_applications/components/web_application_info.h"
+#include "components/services/app_service/public/cpp/file_handler.h"
 #include "components/services/app_service/public/cpp/url_handler_info.h"
 #include "third_party/skia/include/core/SkColor.h"
 
@@ -100,6 +101,8 @@ class AppRegistrar {
   virtual const apps::ShareTarget* GetAppShareTarget(
       const AppId& app_id) const = 0;
   virtual blink::mojom::CaptureLinks GetAppCaptureLinks(
+      const AppId& app_id) const = 0;
+  virtual const apps::FileHandlers* GetAppFileHandlers(
       const AppId& app_id) const = 0;
 
   // Returns the start_url with launch_query_params appended to the end if any.

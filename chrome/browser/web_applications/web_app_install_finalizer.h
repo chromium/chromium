@@ -82,10 +82,16 @@ class WebAppInstallFinalizer final : public InstallFinalizer {
   void OnDatabaseCommitCompletedForInstall(InstallFinalizedCallback callback,
                                            AppId app_id,
                                            bool success);
+  void FinalizeUpdateWithShortcutInfo(
+      InstallFinalizedCallback callback,
+      const AppId app_id,
+      const WebApplicationInfo& web_app_info,
+      std::unique_ptr<ShortcutInfo> old_shortcut);
   void OnDatabaseCommitCompletedForUpdate(
       InstallFinalizedCallback callback,
       AppId app_id,
       std::string old_name,
+      std::unique_ptr<ShortcutInfo> old_shortcut,
       const WebApplicationInfo& web_app_info,
       bool success);
   void OnUninstallOsHooks(const AppId& app_id,

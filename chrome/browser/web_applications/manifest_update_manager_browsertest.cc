@@ -1329,6 +1329,194 @@ IN_PROC_BROWSER_TEST_F(ManifestUpdateManagerWebAppsBrowserTest,
   EXPECT_FALSE(web_app->share_target().has_value());
 }
 
+// Functional tests. More tests for detecting file handler updates are
+// available in unit tests at ManifestUpdateTaskTest.
+class ManifestUpdateManagerBrowserTestWithFileHandling
+    : public ManifestUpdateManagerBrowserTest {
+ public:
+  ManifestUpdateManagerBrowserTestWithFileHandling() {
+    scoped_feature_list_.InitAndEnableFeature(
+        blink::features::kFileHandlingAPI);
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(ManifestUpdateManagerBrowserTestWithFileHandling,
+                       CheckFindsAddedFileHandler) {
+  constexpr char kManifestTemplate[] = R"(
+    {
+      "name": "Test app name",
+      "start_url": ".",
+      "scope": "/",
+      "display": "minimal-ui",
+      "icons": $1
+    }
+  )";
+
+  constexpr char kFileHandlerManifestTemplate[] = R"(
+    {
+      "name": "Test app name",
+      "start_url": ".",
+      "scope": "/",
+      "display": "minimal-ui",
+      "file_handlers": [
+        {
+          "action": "/?plaintext",
+          "name": "Plain Text",
+          "accept": {
+            "text/plain": [".txt"]
+          }
+        }
+      ],
+      "icons": $1
+    }
+  )";
+
+  OverrideManifest(kManifestTemplate, {kInstallableIconList});
+  AppId app_id = InstallWebApp();
+
+  OverrideManifest(kFileHandlerManifestTemplate, {kInstallableIconList});
+  EXPECT_EQ(ManifestUpdateResult::kAppUpdated,
+            GetResultAfterPageLoad(GetAppURL(), &app_id));
+  histogram_tester_.ExpectBucketCount(kUpdateHistogramName,
+                                      ManifestUpdateResult::kAppUpdated, 1);
+
+  const WebApp* web_app =
+      GetProvider().registrar().AsWebAppRegistrar()->GetAppById(app_id);
+  EXPECT_FALSE(web_app->file_handlers().empty());
+  const auto& file_handler = web_app->file_handlers()[0];
+  EXPECT_EQ("plaintext", file_handler.action.query());
+  EXPECT_EQ(1u, file_handler.accept.size());
+  EXPECT_EQ("text/plain", file_handler.accept[0].mime_type);
+}
+
+IN_PROC_BROWSER_TEST_F(ManifestUpdateManagerBrowserTestWithFileHandling,
+                       CheckIgnoresUnchangedFileHandler) {
+  constexpr char kFileHandlerManifestTemplate[] = R"(
+    {
+      "name": "Test app name",
+      "start_url": ".",
+      "scope": "/",
+      "display": "minimal-ui",
+      "file_handlers": [
+        {
+          "action": "/?plaintext",
+          "name": "Plain Text",
+          "accept": {
+            "text/plain": [".txt"]
+          }
+        }
+      ],
+      "icons": $1
+    }
+  )";
+
+  OverrideManifest(kFileHandlerManifestTemplate, {kInstallableIconList});
+  AppId app_id = InstallWebApp();
+
+  OverrideManifest(kFileHandlerManifestTemplate, {kInstallableIconList});
+  EXPECT_EQ(ManifestUpdateResult::kAppUpToDate,
+            GetResultAfterPageLoad(GetAppURL(), &app_id));
+  histogram_tester_.ExpectBucketCount(kUpdateHistogramName,
+                                      ManifestUpdateResult::kAppUpToDate, 1);
+
+  const WebApp* web_app =
+      GetProvider().registrar().AsWebAppRegistrar()->GetAppById(app_id);
+  EXPECT_FALSE(web_app->file_handlers().empty());
+}
+
+IN_PROC_BROWSER_TEST_F(ManifestUpdateManagerBrowserTestWithFileHandling,
+                       CheckFindsChangedFileExtension) {
+  constexpr char kFileHandlerManifestTemplate[] = R"(
+    {
+      "name": "Test app name",
+      "start_url": ".",
+      "scope": "/",
+      "display": "minimal-ui",
+      "file_handlers": [
+        {
+          "action": "/?plaintext",
+          "name": "Plain Text",
+          "accept": {
+            "text/plain": ["$1"]
+          }
+        }
+      ],
+      "icons": $2
+    }
+  )";
+
+  OverrideManifest(kFileHandlerManifestTemplate,
+                   {".txt", kInstallableIconList});
+  AppId app_id = InstallWebApp();
+  const WebApp* web_app =
+      GetProvider().registrar().AsWebAppRegistrar()->GetAppById(app_id);
+  const auto& old_file_handler = web_app->file_handlers()[0];
+  EXPECT_EQ(1u, old_file_handler.accept.size());
+  auto old_extensions = old_file_handler.accept[0].file_extensions;
+  EXPECT_EQ(1u, old_extensions.size());
+  EXPECT_TRUE(base::Contains(old_extensions, ".txt"));
+
+  OverrideManifest(kFileHandlerManifestTemplate, {".md", kInstallableIconList});
+  EXPECT_EQ(ManifestUpdateResult::kAppUpdated,
+            GetResultAfterPageLoad(GetAppURL(), &app_id));
+  histogram_tester_.ExpectBucketCount(kUpdateHistogramName,
+                                      ManifestUpdateResult::kAppUpdated, 1);
+
+  const auto& new_file_handler = web_app->file_handlers()[0];
+  EXPECT_EQ(1u, new_file_handler.accept.size());
+  auto new_extensions = new_file_handler.accept[0].file_extensions;
+  EXPECT_EQ(1u, new_extensions.size());
+  EXPECT_TRUE(base::Contains(new_extensions, ".md"));
+}
+
+IN_PROC_BROWSER_TEST_F(ManifestUpdateManagerBrowserTestWithFileHandling,
+                       CheckFindsDeletedFileHandler) {
+  constexpr char kFileHandlerManifestTemplate[] = R"(
+    {
+      "name": "Test app name",
+      "start_url": ".",
+      "scope": "/",
+      "display": "minimal-ui",
+      "file_handlers": [
+        {
+          "action": "/?plaintext",
+          "name": "Plain Text",
+          "accept": {
+            "text/plain": [".txt"]
+          }
+        }
+      ],
+      "icons": $1
+    }
+  )";
+
+  constexpr char kManifestTemplate[] = R"(
+    {
+      "name": "Test app name",
+      "start_url": ".",
+      "scope": "/",
+      "display": "minimal-ui",
+      "icons": $1
+    }
+  )";
+
+  OverrideManifest(kFileHandlerManifestTemplate, {kInstallableIconList});
+  AppId app_id = InstallWebApp();
+
+  OverrideManifest(kManifestTemplate, {kInstallableIconList});
+  EXPECT_EQ(ManifestUpdateResult::kAppUpdated,
+            GetResultAfterPageLoad(GetAppURL(), &app_id));
+  histogram_tester_.ExpectBucketCount(kUpdateHistogramName,
+                                      ManifestUpdateResult::kAppUpdated, 1);
+
+  const WebApp* web_app =
+      GetProvider().registrar().AsWebAppRegistrar()->GetAppById(app_id);
+  EXPECT_TRUE(web_app->file_handlers().empty());
+}
+
 class ManifestUpdateManagerBrowserTestWithShortcutsMenu
     : public ManifestUpdateManagerBrowserTest {
  public:

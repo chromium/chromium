@@ -220,6 +220,7 @@ source_set("web_applications_unit_tests") {
     "daily_metrics_helper_unittest.cc",
     "external_web_app_manager_unittest.cc",
     "external_web_app_utils_unittest.cc",
+    "manifest_update_task_unittest.cc",
     "pending_app_manager_impl_unittest.cc",
     "system_web_app_manager_unittest.cc",
     "web_app_database_unittest.cc",

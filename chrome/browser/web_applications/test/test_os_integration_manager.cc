@@ -113,8 +113,8 @@ void TestOsIntegrationManager::UninstallAllOsHooks(
 void TestOsIntegrationManager::UpdateOsHooks(
     const AppId& app_id,
     base::StringPiece old_name,
-    const WebApplicationInfo& web_app_info) {
-}
+    std::unique_ptr<ShortcutInfo> old_shortcut,
+    const WebApplicationInfo& web_app_info) {}
 
 void TestOsIntegrationManager::SetFileHandlerManager(
     std::unique_ptr<FileHandlerManager> file_handler_manager) {

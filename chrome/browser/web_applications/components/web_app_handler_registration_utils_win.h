@@ -43,7 +43,8 @@ base::Optional<base::FilePath> CreateAppLauncherFile(
 // Checks if there is an installation of this app in another profile that needs
 // to be updated with a profile specific name and executes required update.
 void CheckAndUpdateExternalInstallations(const base::FilePath& cur_profile_path,
-                                         const AppId& app_id);
+                                         const AppId& app_id,
+                                         base::OnceCallback<void()> callback);
 
 // Result of file handler registration process.
 // These values are persisted to logs. Entries should not be renumbered and

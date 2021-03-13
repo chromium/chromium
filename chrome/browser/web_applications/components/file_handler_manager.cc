@@ -100,7 +100,11 @@ void FileHandlerManager::EnableAndRegisterOsFileHandlers(const AppId& app_id) {
 }
 
 void FileHandlerManager::DisableAndUnregisterOsFileHandlers(
-    const AppId& app_id) {
+    const AppId& app_id,
+    std::unique_ptr<ShortcutInfo> info,
+    base::OnceCallback<void()> callback) {
+  // Updating prefs must be done on the UI Thread.
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   UpdateBoolWebAppPref(profile()->GetPrefs(), app_id, kFileHandlersEnabled,
                        /*value=*/false);
 
@@ -117,9 +121,10 @@ void FileHandlerManager::DisableAndUnregisterOsFileHandlers(
   // File handler information is embedded in the shortcut, when
   // |DeleteSharedAppShims| is called in
   // |OsIntegrationManager::UninstallOsHooks|, file handlers are also
-  // unregistered./
+  // unregistered.
 #if !defined(OS_MAC)
-  UnregisterFileHandlersWithOs(app_id, profile());
+  UnregisterFileHandlersWithOs(app_id, profile(), std::move(info),
+                               std::move(callback));
 #endif
 }
 
@@ -218,7 +223,8 @@ void FileHandlerManager::UpdateFileHandlersForOriginTrialExpiryTime(
     if (!file_handlers_enabled)
       EnableAndRegisterOsFileHandlers(app_id);
   } else if (file_handlers_enabled) {
-    DisableAndUnregisterOsFileHandlers(app_id);
+    // TODO(crbug.com/1076688): Retrieve shortcuts before they're unregistered.
+    DisableAndUnregisterOsFileHandlers(app_id, nullptr, base::DoNothing());
   }
 }
 
@@ -236,7 +242,8 @@ int FileHandlerManager::CleanupAfterOriginTrials() {
       continue;
 
     // If the trial has expired, unregister handlers.
-    DisableAndUnregisterOsFileHandlers(app_id);
+    // TODO(crbug.com/1076688): Retrieve shortcuts before they're unregistered.
+    DisableAndUnregisterOsFileHandlers(app_id, nullptr, base::DoNothing());
     cleaned_up_count++;
   }
 

@@ -293,20 +293,12 @@ void WebAppInstallFinalizer::FinalizeUpdate(
     return;
   }
 
-  // Prepare copy-on-write to update existing app.
-  auto web_app = std::make_unique<WebApp>(*existing_web_app);
-  const bool is_synced = web_app->IsSynced();
-
-  CommitCallback commit_callback = base::BindOnce(
-      &WebAppInstallFinalizer::OnDatabaseCommitCompletedForUpdate,
-      weak_ptr_factory_.GetWeakPtr(), std::move(callback), app_id,
-      existing_web_app->name(), web_app_info);
-
-  SetWebAppManifestFieldsAndWriteData(web_app_info, std::move(web_app),
-                                      std::move(commit_callback));
-
-  if (legacy_finalizer_ && is_synced)
-    legacy_finalizer_->FinalizeUpdate(web_app_info, base::DoNothing());
+  // Grab the shortcut info before the app is removed from the database.
+  os_integration_manager().GetShortcutInfoForApp(
+      app_id,
+      base::BindOnce(&WebAppInstallFinalizer::FinalizeUpdateWithShortcutInfo,
+                     weak_ptr_factory_.GetWeakPtr(), std::move(callback),
+                     app_id, web_app_info));
 }
 
 void WebAppInstallFinalizer::RemoveLegacyInstallFinalizerForTesting() {
@@ -460,10 +452,33 @@ void WebAppInstallFinalizer::OnDatabaseCommitCompletedForInstall(
   std::move(callback).Run(app_id, InstallResultCode::kSuccessNewInstall);
 }
 
+void WebAppInstallFinalizer::FinalizeUpdateWithShortcutInfo(
+    InstallFinalizedCallback callback,
+    const AppId app_id,
+    const WebApplicationInfo& web_app_info,
+    std::unique_ptr<ShortcutInfo> old_shortcut) {
+  // Prepare copy-on-write to update existing app.
+  const WebApp* existing_web_app = GetWebAppRegistrar().GetAppById(app_id);
+  auto web_app = std::make_unique<WebApp>(*existing_web_app);
+  const bool is_synced = web_app->IsSynced();
+
+  CommitCallback commit_callback = base::BindOnce(
+      &WebAppInstallFinalizer::OnDatabaseCommitCompletedForUpdate,
+      weak_ptr_factory_.GetWeakPtr(), std::move(callback), app_id,
+      existing_web_app->name(), std::move(old_shortcut), web_app_info);
+
+  SetWebAppManifestFieldsAndWriteData(web_app_info, std::move(web_app),
+                                      std::move(commit_callback));
+
+  if (legacy_finalizer_ && is_synced)
+    legacy_finalizer_->FinalizeUpdate(web_app_info, base::DoNothing());
+}
+
 void WebAppInstallFinalizer::OnDatabaseCommitCompletedForUpdate(
     InstallFinalizedCallback callback,
     AppId app_id,
     std::string old_name,
+    std::unique_ptr<ShortcutInfo> old_shortcut,
     const WebApplicationInfo& web_app_info,
     bool success) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
@@ -472,7 +487,8 @@ void WebAppInstallFinalizer::OnDatabaseCommitCompletedForUpdate(
     return;
   }
 
-  os_integration_manager().UpdateOsHooks(app_id, old_name, web_app_info);
+  os_integration_manager().UpdateOsHooks(app_id, old_name,
+                                         std::move(old_shortcut), web_app_info);
 
   registrar().NotifyWebAppManifestUpdated(app_id, old_name);
   std::move(callback).Run(app_id, InstallResultCode::kSuccessAlreadyInstalled);

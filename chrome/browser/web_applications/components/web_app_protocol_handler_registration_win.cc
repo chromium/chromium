@@ -126,7 +126,7 @@ void RegisterProtocolHandlersWithOs(
                      base::UTF8ToWide(app_name), profile, profile->GetPath(),
                      std::move(protocol_handlers), app_name_extension),
       base::BindOnce(&CheckAndUpdateExternalInstallations, profile->GetPath(),
-                     app_id));
+                     app_id, base::DoNothing::Once()));
 }
 
 void UnregisterProtocolHandlersWithOs(
@@ -144,7 +144,7 @@ void UnregisterProtocolHandlersWithOs(
       base::BindOnce(&UnregisterProtocolHandlersWithOsInBackground, app_id,
                      profile->GetPath()),
       base::BindOnce(&CheckAndUpdateExternalInstallations, profile->GetPath(),
-                     app_id));
+                     app_id, base::DoNothing::Once()));
 }
 
 }  // namespace web_app

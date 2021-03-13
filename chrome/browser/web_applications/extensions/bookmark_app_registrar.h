@@ -52,6 +52,8 @@ class BookmarkAppRegistrar : public web_app::AppRegistrar,
       const web_app::AppId& app_id) const override;
   blink::mojom::CaptureLinks GetAppCaptureLinks(
       const web_app::AppId& app_id) const override;
+  const apps::FileHandlers* GetAppFileHandlers(
+      const web_app::AppId& app_id) const override;
   base::Optional<GURL> GetAppScopeInternal(
       const web_app::AppId& app_id) const override;
   web_app::DisplayMode GetAppDisplayMode(

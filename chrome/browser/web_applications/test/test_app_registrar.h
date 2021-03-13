@@ -67,6 +67,8 @@ class TestAppRegistrar : public AppRegistrar {
       const AppId& app_id) const override;
   blink::mojom::CaptureLinks GetAppCaptureLinks(
       const AppId& app_id) const override;
+  const apps::FileHandlers* GetAppFileHandlers(
+      const AppId& app_id) const override;
   base::Optional<GURL> GetAppScopeInternal(const AppId& app_id) const override;
   DisplayMode GetAppDisplayMode(const AppId& app_id) const override;
   DisplayMode GetAppUserDisplayMode(const AppId& app_id) const override;

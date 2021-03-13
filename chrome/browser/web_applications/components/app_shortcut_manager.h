@@ -50,6 +50,7 @@ class AppShortcutManager {
   void CreateShortcuts(const AppId& app_id,
                        bool add_to_desktop,
                        CreateShortcutsCallback callback);
+  // Fetch already-updated shortcut data and deploy to OS integration.
   void UpdateShortcuts(const AppId& app_id, base::StringPiece old_name);
   void DeleteShortcuts(const AppId& app_id,
                        const base::FilePath& shortcuts_data_dir,

@@ -127,6 +127,11 @@ blink::mojom::CaptureLinks TestAppRegistrar::GetAppCaptureLinks(
   return blink::mojom::CaptureLinks::kUndefined;
 }
 
+const apps::FileHandlers* TestAppRegistrar::GetAppFileHandlers(
+    const AppId& app_id) const {
+  return nullptr;
+}
+
 base::Optional<GURL> TestAppRegistrar::GetAppScopeInternal(
     const AppId& app_id) const {
   const auto& result = installed_apps_.find(app_id);

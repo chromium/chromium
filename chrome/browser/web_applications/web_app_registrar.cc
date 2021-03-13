@@ -123,6 +123,12 @@ blink::mojom::CaptureLinks WebAppRegistrar::GetAppCaptureLinks(
                  : blink::mojom::CaptureLinks::kUndefined;
 }
 
+const apps::FileHandlers* WebAppRegistrar::GetAppFileHandlers(
+    const AppId& app_id) const {
+  auto* web_app = GetAppById(app_id);
+  return web_app ? &web_app->file_handlers() : nullptr;
+}
+
 base::Optional<GURL> WebAppRegistrar::GetAppScopeInternal(
     const AppId& app_id) const {
   auto* web_app = GetAppById(app_id);

@@ -164,6 +164,11 @@ blink::mojom::CaptureLinks BookmarkAppRegistrar::GetAppCaptureLinks(
   return blink::mojom::CaptureLinks::kUndefined;
 }
 
+const apps::FileHandlers* BookmarkAppRegistrar::GetAppFileHandlers(
+    const web_app::AppId& app_id) const {
+  return nullptr;
+}
+
 base::Optional<GURL> BookmarkAppRegistrar::GetAppScopeInternal(
     const web_app::AppId& app_id) const {
   const Extension* extension = GetBookmarkAppDchecked(app_id);

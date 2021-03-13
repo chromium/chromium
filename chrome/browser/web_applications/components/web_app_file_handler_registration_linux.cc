@@ -55,7 +55,17 @@ void RecordRegistration(RegistrationResult result) {
   UMA_HISTOGRAM_ENUMERATION(kRegistrationResultMetric, result);
 }
 
-void OnShortcutInfoReceived(std::unique_ptr<ShortcutInfo> info) {
+void OnCreateShortcut(base::OnceCallback<void()> callback,
+                      bool shortcut_created) {
+  UMA_HISTOGRAM_ENUMERATION(
+      kRecreateShortcutResultMetric,
+      shortcut_created ? RecreateShortcutResult::kSuccess
+                       : RecreateShortcutResult::kFailToCreateShortcut);
+  std::move(callback).Run();
+}
+
+void OnShortcutInfoReceived(base::OnceCallback<void()> callback,
+                            std::unique_ptr<ShortcutInfo> info) {
   if (!info) {
     UMA_HISTOGRAM_ENUMERATION(kRecreateShortcutResultMetric,
                               RecreateShortcutResult::kFailToCreateShortcut);
@@ -67,25 +77,29 @@ void OnShortcutInfoReceived(std::unique_ptr<ShortcutInfo> info) {
   ShortcutLocations locations;
   locations.applications_menu_location = APP_MENU_LOCATION_SUBDIR_CHROMEAPPS;
 
-  auto onCreateShortcut = [](bool shortcut_created) {
-    UMA_HISTOGRAM_ENUMERATION(
-        kRecreateShortcutResultMetric,
-        shortcut_created ? RecreateShortcutResult::kSuccess
-                         : RecreateShortcutResult::kFailToCreateShortcut);
-  };
   internals::ScheduleCreatePlatformShortcuts(
       std::move(shortcut_data_dir), locations,
       ShortcutCreationReason::SHORTCUT_CREATION_BY_USER, std::move(info),
-      base::BindOnce(onCreateShortcut));
+      base::BindOnce(OnCreateShortcut, std::move(callback)));
 }
 
-void UpdateFileHandlerRegistrationInOs(const AppId& app_id, Profile* profile) {
+void UpdateFileHandlerRegistrationInOs(const AppId& app_id,
+                                       Profile* profile,
+                                       std::unique_ptr<ShortcutInfo> info,
+                                       base::OnceCallback<void()> callback) {
+  if (info) {
+    // `info` may be prepopulated for unregistration, to avoid updating file
+    // handler registrations based on deleted shortcuts.
+    OnShortcutInfoReceived(std::move(callback), std::move(info));
+    return;
+  }
   // On Linux, file associations are managed through shortcuts in the app menu,
   // so after enabling or disabling file handling for an app its shortcuts
   // need to be recreated.
   WebAppProviderBase::GetProviderBase(profile)
       ->os_integration_manager()
-      .GetShortcutInfoForApp(app_id, base::BindOnce(&OnShortcutInfoReceived));
+      .GetShortcutInfoForApp(
+          app_id, base::BindOnce(&OnShortcutInfoReceived, std::move(callback)));
 }
 
 void OnRegisterMimeTypes(bool registration_succeeded) {
@@ -145,10 +159,14 @@ void RegisterFileHandlersWithOs(const AppId& app_id,
                              std::move(callback));
   }
 
-  UpdateFileHandlerRegistrationInOs(app_id, profile);
+  UpdateFileHandlerRegistrationInOs(app_id, profile, nullptr,
+                                    base::DoNothing());
 }
 
-void UnregisterFileHandlersWithOs(const AppId& app_id, Profile* profile) {
+void UnregisterFileHandlersWithOs(const AppId& app_id,
+                                  Profile* profile,
+                                  std::unique_ptr<ShortcutInfo> info,
+                                  base::OnceCallback<void()> callback) {
   // If this was triggered as part of the uninstallation process, nothing more
   // is needed. Uninstalling already cleans up shortcuts (and thus, file
   // handlers).
@@ -158,7 +176,8 @@ void UnregisterFileHandlersWithOs(const AppId& app_id, Profile* profile) {
 
   // TODO(crbug.com/1076688): Fix file handlers unregistration. We can't update
   // registration here asynchronously because app_id is being uninstalled.
-  UpdateFileHandlerRegistrationInOs(app_id, profile);
+  UpdateFileHandlerRegistrationInOs(app_id, profile, std::move(info),
+                                    std::move(callback));
 }
 
 void RegisterMimeTypesOnLinux(const AppId& app_id,
