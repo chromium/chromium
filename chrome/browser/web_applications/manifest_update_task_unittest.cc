@@ -28,7 +28,7 @@ std::vector<blink::Manifest::FileHandler> GetDefaultManifestFileHandlers() {
   blink::Manifest::FileHandler handler;
   handler.action = GURL("http://foo.com/?plaintext");
   handler.name = base::UTF8ToUTF16("Text");
-  std::vector<base::string16> extensions = {base::UTF8ToUTF16(".txt"),
+  std::vector<std::u16string> extensions = {base::UTF8ToUTF16(".txt"),
                                             base::UTF8ToUTF16(".md")};
   handler.accept.emplace(base::UTF8ToUTF16("text/plain"), extensions);
   return {handler};
@@ -62,7 +62,7 @@ TEST_F(ManifestUpdateTaskTest, TestSecondFileHandlerAdded) {
   blink::Manifest::FileHandler second_handler;
   second_handler.action = GURL("http://foo.com/?csv");
   second_handler.name = base::UTF8ToUTF16("Comma-Separated Value");
-  std::vector<base::string16> extensions = {base::UTF8ToUTF16(".csv")};
+  std::vector<std::u16string> extensions = {base::UTF8ToUTF16(".csv")};
   second_handler.accept.emplace(base::UTF8ToUTF16("text/csv"), extensions);
   new_handlers.push_back(second_handler);
 
@@ -92,7 +92,7 @@ TEST_F(ManifestUpdateTaskTest, TestFileHandlerExtraAccept) {
   apps::FileHandlers old_handlers = GetDefaultAppsFileHandlers();
   std::vector<blink::Manifest::FileHandler> new_handlers =
       GetDefaultManifestFileHandlers();
-  std::vector<base::string16> csv_extensions = {base::UTF8ToUTF16(".csv")};
+  std::vector<std::u16string> csv_extensions = {base::UTF8ToUTF16(".csv")};
   new_handlers[0].accept.emplace(base::UTF8ToUTF16("text/csv"), csv_extensions);
 
   EXPECT_TRUE(internal::HaveFileHandlersChanged(&old_handlers, new_handlers));

@@ -838,7 +838,7 @@ void UserSelectionScreen::OnInvalidSyncToken(const AccountId& account_id) {
 
 void UserSelectionScreen::OnOnlineSigninEnforced(const AccountId& account_id) {
   SetAuthType(account_id, proximity_auth::mojom::AuthType::ONLINE_SIGN_IN,
-              base::string16());
+              std::u16string());
 }
 
 void UserSelectionScreen::HardLockPod(const AccountId& account_id) {

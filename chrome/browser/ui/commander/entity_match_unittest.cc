@@ -57,7 +57,7 @@ class CommanderEntityMatchTest : public BrowserWithTestWindowTest {
     }
   }
 
-  void CreateTabs(std::vector<base::string16> titles) {
+  void CreateTabs(std::vector<std::u16string> titles) {
     for (const auto& title : titles) {
       GURL url("chrome://newtab");
       AddTab(browser(), url);

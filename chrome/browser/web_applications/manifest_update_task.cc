@@ -100,12 +100,12 @@ bool HaveFileHandlersChanged(
       // Check `file_extensions` for equality.
       const base::flat_set<std::string>& old_extensions_set =
           old_accept_entry.file_extensions;
-      const std::vector<base::string16>& new_extensions_list =
+      const std::vector<std::u16string>& new_extensions_list =
           new_accept_it->second;
 
       if (old_extensions_set.size() != new_extensions_list.size())
         return true;
-      for (const base::string16& new_extension : new_extensions_list) {
+      for (const std::u16string& new_extension : new_extensions_list) {
         if (!base::Contains(old_extensions_set,
                             base::UTF16ToUTF8(new_extension))) {
           return true;
