@@ -12,9 +12,9 @@ import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
 import org.chromium.chrome.browser.init.ChromeBrowserInitializer;
-import org.chromium.chrome.browser.metrics.UkmRecorder;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.components.content_settings.ContentSettingsType;
+import org.chromium.components.ukm.UkmRecorder;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;

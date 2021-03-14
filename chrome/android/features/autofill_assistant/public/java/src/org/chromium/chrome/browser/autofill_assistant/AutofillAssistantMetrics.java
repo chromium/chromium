@@ -13,7 +13,7 @@ import org.chromium.chrome.browser.autofill_assistant.metrics.LiteScriptFinished
 import org.chromium.chrome.browser.autofill_assistant.metrics.LiteScriptStarted;
 import org.chromium.chrome.browser.autofill_assistant.metrics.OnBoarding;
 import org.chromium.chrome.browser.autofill_assistant.strings.IntentStrings;
-import org.chromium.chrome.browser.metrics.UkmRecorder;
+import org.chromium.components.ukm.UkmRecorder;
 import org.chromium.content_public.browser.WebContents;
 
 /**
