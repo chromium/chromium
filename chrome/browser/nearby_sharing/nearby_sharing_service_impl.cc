@@ -788,13 +788,13 @@ void NearbySharingServiceImpl::Cancel(
   NS_LOG(INFO) << __func__ << ": User canceled transfer";
   locally_cancelled_share_target_ids_.insert(share_target.id);
   DoCancel(share_target, std::move(status_codes_callback),
-           /*write_cancel_frame=*/true);
+           /*is_initiator_of_cancellation=*/true);
 }
 
 void NearbySharingServiceImpl::DoCancel(
     ShareTarget share_target,
     StatusCodesCallback status_codes_callback,
-    bool write_cancel_frame) {
+    bool is_initiator_of_cancellation) {
   ShareTargetInfo* info = GetShareTargetInfo(share_target);
   if (!info || !info->endpoint_id()) {
     NS_LOG(ERROR) << __func__
@@ -837,23 +837,25 @@ void NearbySharingServiceImpl::DoCancel(
                           .build());
   }
 
-  // If a connection exists, close the connection after a short delay that
-  // allows for final processing by the other device. Otherwise, disconnect from
-  // endpoint id directly. Note: A share attempt can be cancelled by the user
-  // before a connection is fully established, in which case, info->connection()
-  // will be null.
+  // If a connection exists, close the connection. Note: The initiator of a
+  // cancellation waits for a short delay before closing the connection,
+  // allowing for final processing by the other device. Otherwise, disconnect
+  // from endpoint id directly. Note: A share attempt can be cancelled by the
+  // user before a connection is fully established, in which case,
+  // info->connection() will be null.
   if (info->connection()) {
-    info->connection()->SetDisconnectionListener(
-        base::BindOnce(&NearbySharingServiceImpl::UnregisterShareTarget,
-                       weak_ptr_factory_.GetWeakPtr(), share_target));
-    base::SequencedTaskRunnerHandle::Get()->PostDelayedTask(
-        FROM_HERE,
-        base::BindOnce(&NearbySharingServiceImpl::CloseConnection,
-                       weak_ptr_factory_.GetWeakPtr(), share_target),
-        kIncomingCancelDelay);
-
-    if (write_cancel_frame) {
+    if (is_initiator_of_cancellation) {
+      info->connection()->SetDisconnectionListener(
+          base::BindOnce(&NearbySharingServiceImpl::UnregisterShareTarget,
+                         weak_ptr_factory_.GetWeakPtr(), share_target));
+      base::SequencedTaskRunnerHandle::Get()->PostDelayedTask(
+          FROM_HERE,
+          base::BindOnce(&NearbySharingServiceImpl::CloseConnection,
+                         weak_ptr_factory_.GetWeakPtr(), share_target),
+          kInitiatorCancelDelay);
       WriteCancel(*info->connection());
+    } else {
+      info->connection()->Close();
     }
   } else {
     nearby_connections_manager_->Disconnect(*info->endpoint_id());
@@ -3329,7 +3331,8 @@ void NearbySharingServiceImpl::OnFrameRead(
   switch (v1_frame->which()) {
     case sharing::mojom::V1Frame::Tag::CANCEL_FRAME:
       NS_LOG(INFO) << __func__ << ": Read the cancel frame, closing connection";
-      DoCancel(share_target, base::DoNothing(), /*write_cancel_frame=*/false);
+      DoCancel(share_target, base::DoNothing(),
+               /*is_initiator_of_cancellation=*/false);
       break;
 
     case sharing::mojom::V1Frame::Tag::CERTIFICATE_INFO:

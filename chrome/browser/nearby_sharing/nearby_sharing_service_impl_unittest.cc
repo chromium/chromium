@@ -316,6 +316,15 @@ sharing::mojom::FramePtr GetConnectionResponseFrame(
   return mojo_frame;
 }
 
+sharing::mojom::FramePtr GetCancelFrame() {
+  sharing::mojom::V1FramePtr mojo_v1frame = sharing::mojom::V1Frame::New();
+  mojo_v1frame->set_cancel_frame(sharing::mojom::CancelFrame::New());
+
+  sharing::mojom::FramePtr mojo_frame = sharing::mojom::Frame::New();
+  mojo_frame->set_v1(std::move(mojo_v1frame));
+  return mojo_frame;
+}
+
 std::vector<std::unique_ptr<Attachment>> CreateTextAttachments(
     std::vector<std::string> texts) {
   std::vector<std::unique_ptr<Attachment>> attachments;
@@ -668,6 +677,17 @@ class NearbySharingServiceImplTest : public testing::Test {
     connection_.AppendReadableData(bytes);
   }
 
+  void SendCancel() {
+    std::string data = "cancel_frame";
+    std::vector<uint8_t> bytes(data.begin(), data.end());
+    EXPECT_CALL(mock_decoder_, DecodeFrame(testing::Eq(bytes), testing::_))
+        .WillOnce(testing::Invoke(
+            [=](const std::vector<uint8_t>& data,
+                chromeos::nearby::MockNearbySharingDecoder::DecodeFrameCallback
+                    callback) { std::move(callback).Run(GetCancelFrame()); }));
+    connection_.AppendReadableData(bytes);
+  }
+
   ShareTarget SetUpIncomingConnection(
       NiceMock<MockTransferUpdateCallback>& callback) {
     fake_nearby_connections_manager_->SetRawAuthenticationToken(kEndpointId,
@@ -789,11 +809,20 @@ class NearbySharingServiceImplTest : public testing::Test {
     return frame.v1().introduction();
   }
 
+  void ExpectCancelFrame() {
+    sharing::nearby::Frame frame = GetWrittenFrame();
+    ASSERT_TRUE(frame.has_v1());
+    EXPECT_EQ(sharing::nearby::V1Frame::CANCEL, frame.v1().type());
+  }
+
+  // Optionally, |new_share_target| is updated with the ShareTargets sent to
+  // OnTransferUpdate() calls.
   void ExpectTransferUpdates(
       MockTransferUpdateCallback& transfer_callback,
       const ShareTarget& target,
       const std::vector<TransferMetadata::Status>& updates,
-      base::OnceClosure callback) {
+      base::OnceClosure callback,
+      ShareTarget* new_share_target = nullptr) {
     auto barrier = base::BarrierClosure(updates.size(), std::move(callback));
     auto& expectation =
         EXPECT_CALL(transfer_callback, OnTransferUpdate).Times(updates.size());
@@ -802,20 +831,25 @@ class NearbySharingServiceImplTest : public testing::Test {
           [=](const ShareTarget& share_target, TransferMetadata metadata) {
             EXPECT_EQ(target.id, share_target.id);
             EXPECT_EQ(status, metadata.status());
+            if (new_share_target)
+              *new_share_target = share_target;
             barrier.Run();
           }));
     }
   }
 
-  void SetUpOutgoingConnectionUntilAccept(
+  // Returns the modified ShareTarget received from a TransferUpdate.
+  ShareTarget SetUpOutgoingConnectionUntilAccept(
       MockTransferUpdateCallback& transfer_callback,
       const ShareTarget& target) {
+    ShareTarget new_share_target;
     base::RunLoop introduction_run_loop;
     ExpectTransferUpdates(transfer_callback, target,
                           {TransferMetadata::Status::kConnecting,
                            TransferMetadata::Status::kAwaitingLocalConfirmation,
                            TransferMetadata::Status::kAwaitingRemoteAcceptance},
-                          introduction_run_loop.QuitClosure());
+                          introduction_run_loop.QuitClosure(),
+                          &new_share_target);
 
     EXPECT_EQ(NearbySharingServiceImpl::StatusCodes::kOk,
               service_->SendAttachments(target,
@@ -826,6 +860,8 @@ class NearbySharingServiceImplTest : public testing::Test {
     ExpectPairedKeyEncryptionFrame();
     ExpectPairedKeyResultFrame();
     ExpectIntroductionFrame();
+
+    return new_share_target;
   }
 
   struct PayloadInfo {
@@ -3578,6 +3614,151 @@ TEST_F(NearbySharingServiceImplTest, SendFiles_Success) {
   payload_run_loop.Run();
 
   service_->UnregisterSendSurface(&transfer_callback, &discovery_callback);
+}
+
+TEST_F(NearbySharingServiceImplTest, Cancel_Sender_Initiator) {
+  MockTransferUpdateCallback transfer_callback;
+  MockShareTargetDiscoveredCallback discovery_callback;
+  ShareTarget target =
+      SetUpOutgoingShareTarget(transfer_callback, discovery_callback);
+  target = SetUpOutgoingConnectionUntilAccept(transfer_callback, target);
+  PayloadInfo info = AcceptAndSendPayload(transfer_callback, target);
+
+  // After we stop scanning, we check back in after kInvalidateDelay
+  // milliseconds to make sure that we stopped in order to send a file and not
+  // because the user left the page. We have to fast forward here, otherwise, we
+  // will hit this callback when trying to fastfoward by kInitiatorCancelDelay
+  // below.
+  task_environment_.FastForwardBy(kInvalidateDelay);
+
+  base::RunLoop run_loop;
+  EXPECT_CALL(transfer_callback, OnTransferUpdate(testing::_, testing::_))
+      .WillOnce(testing::Invoke(
+          [&](const ShareTarget& share_target, TransferMetadata metadata) {
+            EXPECT_EQ(target.id, share_target.id);
+            EXPECT_EQ(TransferMetadata::Status::kCancelled, metadata.status());
+          }));
+  EXPECT_FALSE(
+      fake_nearby_connections_manager_->WasPayloadCanceled(info.payload_id));
+  // The initiator of the cancellation explicitly calls Cancel().
+  service_->Cancel(target,
+                   base::BindLambdaForTesting(
+                       [&](NearbySharingServiceImpl::StatusCodes status_code) {
+                         EXPECT_EQ(NearbySharingServiceImpl::StatusCodes::kOk,
+                                   status_code);
+                         run_loop.Quit();
+                       }));
+  run_loop.Run();
+  EXPECT_TRUE(
+      fake_nearby_connections_manager_->WasPayloadCanceled(info.payload_id));
+
+  // After the TransferMetadata::Status::kCancelled update, we expect other
+  // classes to unregister the send surface.
+  service_->UnregisterSendSurface(&transfer_callback, &discovery_callback);
+
+  // The initiator of the cancel should send a cancel frame to the other device,
+  // then wait a few seconds before disconnecting to allow for processing on the
+  // other device.
+  ExpectCancelFrame();
+  EXPECT_FALSE(connection_.IsClosed());
+  task_environment_.FastForwardBy(kInitiatorCancelDelay);
+  EXPECT_TRUE(connection_.IsClosed());
+}
+
+TEST_F(NearbySharingServiceImplTest, Cancel_Sender_Noninitiator) {
+  MockTransferUpdateCallback transfer_callback;
+  MockShareTargetDiscoveredCallback discovery_callback;
+  ShareTarget target =
+      SetUpOutgoingShareTarget(transfer_callback, discovery_callback);
+  target = SetUpOutgoingConnectionUntilAccept(transfer_callback, target);
+  PayloadInfo info = AcceptAndSendPayload(transfer_callback, target);
+
+  base::RunLoop run_loop;
+  EXPECT_CALL(transfer_callback, OnTransferUpdate(testing::_, testing::_))
+      .WillOnce(testing::Invoke(
+          [&](const ShareTarget& share_target, TransferMetadata metadata) {
+            EXPECT_EQ(target.id, share_target.id);
+            EXPECT_EQ(TransferMetadata::Status::kCancelled, metadata.status());
+            run_loop.Quit();
+          }));
+  EXPECT_FALSE(
+      fake_nearby_connections_manager_->WasPayloadCanceled(info.payload_id));
+  // The non-initiator of the cancellation processes a cancellation frame from
+  // the initiator.
+  SendCancel();
+  run_loop.Run();
+  EXPECT_TRUE(
+      fake_nearby_connections_manager_->WasPayloadCanceled(info.payload_id));
+
+  // The non-initiator should close the connection immediately
+  EXPECT_TRUE(connection_.IsClosed());
+}
+
+TEST_F(NearbySharingServiceImplTest, Cancel_Receiver_Initiator) {
+  NiceMock<MockTransferUpdateCallback> transfer_callback;
+  ShareTarget target = SetUpIncomingConnection(transfer_callback);
+  ExpectPairedKeyEncryptionFrame();
+  ExpectPairedKeyResultFrame();
+
+  base::RunLoop run_loop;
+  EXPECT_CALL(transfer_callback, OnTransferUpdate(testing::_, testing::_))
+      .WillOnce(testing::Invoke(
+          [&](const ShareTarget& share_target, TransferMetadata metadata) {
+            EXPECT_EQ(target.id, share_target.id);
+            EXPECT_EQ(TransferMetadata::Status::kCancelled, metadata.status());
+          }));
+  EXPECT_FALSE(
+      fake_nearby_connections_manager_->WasPayloadCanceled(kFilePayloadId));
+  // The initiator of the cancellation explicitly calls Cancel().
+  service_->Cancel(target,
+                   base::BindLambdaForTesting(
+                       [&](NearbySharingServiceImpl::StatusCodes status_code) {
+                         EXPECT_EQ(NearbySharingServiceImpl::StatusCodes::kOk,
+                                   status_code);
+                         run_loop.Quit();
+                       }));
+  run_loop.Run();
+  EXPECT_TRUE(
+      fake_nearby_connections_manager_->WasPayloadCanceled(kFilePayloadId));
+
+  // After the TransferMetadata::Status::kCancelled update, we expect other
+  // classes to unregister the receive surface.
+  service_->UnregisterReceiveSurface(&transfer_callback);
+
+  // The initiator of the cancel should send a cancel frame to the other device,
+  // then wait a few seconds before disconnecting to allow for processing on the
+  // other device.
+  ExpectCancelFrame();
+  EXPECT_FALSE(connection_.IsClosed());
+  task_environment_.FastForwardBy(kInitiatorCancelDelay);
+  EXPECT_TRUE(connection_.IsClosed());
+}
+
+TEST_F(NearbySharingServiceImplTest, Cancel_Receiver_Noninitiator) {
+  NiceMock<MockTransferUpdateCallback> transfer_callback;
+  ShareTarget target = SetUpIncomingConnection(transfer_callback);
+  ExpectPairedKeyEncryptionFrame();
+  ExpectPairedKeyResultFrame();
+
+  base::RunLoop run_loop;
+  EXPECT_CALL(transfer_callback, OnTransferUpdate(testing::_, testing::_))
+      .WillOnce(testing::Invoke(
+          [&](const ShareTarget& share_target, TransferMetadata metadata) {
+            EXPECT_EQ(target.id, share_target.id);
+            EXPECT_EQ(TransferMetadata::Status::kCancelled, metadata.status());
+            run_loop.Quit();
+          }));
+  EXPECT_FALSE(
+      fake_nearby_connections_manager_->WasPayloadCanceled(kFilePayloadId));
+  // The non-initiator of the cancellation processes a cancellation frame from
+  // the initiator.
+  SendCancel();
+  run_loop.Run();
+  EXPECT_TRUE(
+      fake_nearby_connections_manager_->WasPayloadCanceled(kFilePayloadId));
+
+  // The non-initiator should close the connection immediately
+  EXPECT_TRUE(connection_.IsClosed());
 }
 
 TEST_F(NearbySharingServiceImplTest,

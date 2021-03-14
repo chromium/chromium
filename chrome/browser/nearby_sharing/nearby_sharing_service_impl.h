@@ -377,7 +377,7 @@ class NearbySharingServiceImpl
   // cancellation process.
   void DoCancel(ShareTarget share_target,
                 StatusCodesCallback status_codes_callback,
-                bool write_cancel_frame);
+                bool is_initiator_of_cancellation);
 
   Profile* profile_;
   std::unique_ptr<NearbyConnectionsManager> nearby_connections_manager_;
