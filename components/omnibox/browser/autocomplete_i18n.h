@@ -7,7 +7,6 @@
 
 #include <string>
 
-#include "base/strings/string16.h"
 #include "third_party/icu/source/common/unicode/uchar.h"
 
 // Functor for a simple 16-bit Unicode case-insensitive comparison. This is

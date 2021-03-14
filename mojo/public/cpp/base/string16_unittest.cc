@@ -4,7 +4,6 @@
 
 #include <string>
 
-#include "base/strings/string16.h"
 #include "base/rand_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "mojo/public/cpp/base/big_buffer_mojom_traits.h"

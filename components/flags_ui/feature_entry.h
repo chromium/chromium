@@ -8,7 +8,6 @@
 #include <string>
 
 #include "base/containers/span.h"
-#include "base/strings/string16.h"
 
 namespace base {
 struct Feature;

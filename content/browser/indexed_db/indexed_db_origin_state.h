@@ -14,7 +14,6 @@
 #include "base/feature_list.h"
 #include "base/gtest_prod_util.h"
 #include "base/sequence_checker.h"
-#include "base/strings/string16.h"
 #include "base/time/clock.h"
 #include "base/timer/timer.h"
 #include "components/services/storage/indexed_db/scopes/disjoint_range_lock_manager.h"

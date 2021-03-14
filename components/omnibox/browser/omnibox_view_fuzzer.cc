@@ -9,7 +9,6 @@
 
 #include <string>
 
-#include "base/strings/string16.h"
 
 extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
   // This fuzzer creates a random UTF16 string to represent clipboard contents.

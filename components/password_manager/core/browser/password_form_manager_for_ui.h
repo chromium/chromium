@@ -10,7 +10,6 @@
 
 #include "base/containers/span.h"
 #include "base/memory/weak_ptr.h"
-#include "base/strings/string16.h"
 #include "components/password_manager/core/browser/insecure_credentials_table.h"
 #include "components/password_manager/core/browser/password_manager_metrics_util.h"
 

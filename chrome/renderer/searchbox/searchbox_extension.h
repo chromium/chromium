@@ -9,7 +9,6 @@
 #include <vector>
 
 #include "base/macros.h"
-#include "base/strings/string16.h"
 #include "chrome/common/search/omnibox.mojom.h"
 #include "ui/gfx/color_palette.h"
 

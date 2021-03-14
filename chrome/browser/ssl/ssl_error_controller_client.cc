@@ -41,7 +41,6 @@
 #if defined(OS_WIN)
 #include "base/base_paths_win.h"
 #include "base/path_service.h"
-#include "base/strings/string16.h"
 #include "base/win/windows_version.h"
 #endif
 

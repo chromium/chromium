@@ -12,7 +12,6 @@
 
 #include "base/android/scoped_java_ref.h"
 #include "base/callback.h"
-#include "base/strings/string16.h"
 #include "components/messages/android/message_enums.h"
 
 namespace messages {

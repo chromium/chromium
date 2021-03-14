@@ -8,7 +8,6 @@
 #include <string>
 
 #include "base/optional.h"
-#include "base/strings/string16.h"
 #include "components/password_manager/core/common/credential_manager_types.h"
 #include "mojo/public/cpp/bindings/struct_traits.h"
 #include "third_party/blink/public/mojom/credentialmanager/credential_manager.mojom.h"

@@ -17,7 +17,6 @@
 
 #include "base/component_export.h"
 #include "base/files/file_path.h"
-#include "base/strings/string16.h"
 #include "ui/base/clipboard/clipboard_format_type.h"
 #include "ui/base/clipboard/file_info.h"
 #include "ui/base/dragdrop/download_file_info.h"

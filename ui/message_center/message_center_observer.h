@@ -9,7 +9,6 @@
 
 #include "base/observer_list_types.h"
 #include "base/optional.h"
-#include "base/strings/string16.h"
 #include "ui/message_center/message_center_export.h"
 #include "ui/message_center/message_center_types.h"
 

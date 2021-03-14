@@ -9,7 +9,6 @@
 #include "base/files/file_path.h"
 #include "base/json/json_reader.h"
 #include "base/run_loop.h"
-#include "base/strings/string16.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"

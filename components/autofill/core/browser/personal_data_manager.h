@@ -18,7 +18,6 @@
 #include "base/macros.h"
 #include "base/observer_list.h"
 #include "base/scoped_observation.h"
-#include "base/strings/string16.h"
 #include "build/build_config.h"
 #include "components/autofill/core/browser/autofill_profile_validator.h"
 #include "components/autofill/core/browser/data_model/autofill_offer_data.h"

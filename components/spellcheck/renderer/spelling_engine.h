@@ -9,7 +9,6 @@
 #include <vector>
 
 #include "base/files/file.h"
-#include "base/strings/string16.h"
 
 namespace service_manager {
 class LocalInterfaceProvider;

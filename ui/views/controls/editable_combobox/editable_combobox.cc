@@ -12,7 +12,6 @@
 #include "base/check_op.h"
 #include "base/i18n/rtl.h"
 #include "base/macros.h"
-#include "base/strings/string16.h"
 #include "build/build_config.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/accessibility/ax_action_data.h"

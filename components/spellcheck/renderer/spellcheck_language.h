@@ -12,7 +12,6 @@
 
 #include "base/files/file.h"
 #include "base/macros.h"
-#include "base/strings/string16.h"
 #include "components/spellcheck/renderer/spellcheck_worditerator.h"
 
 namespace service_manager {

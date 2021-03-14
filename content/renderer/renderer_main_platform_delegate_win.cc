@@ -10,7 +10,6 @@
 #include <string>
 
 #include "base/command_line.h"
-#include "base/strings/string16.h"
 #include "base/win/win_util.h"
 #include "base/win/windows_version.h"
 #include "content/child/dwrite_font_proxy/dwrite_font_proxy_init_impl_win.h"

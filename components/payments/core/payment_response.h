@@ -8,7 +8,6 @@
 #include <memory>
 #include <string>
 
-#include "base/strings/string16.h"
 #include "components/payments/mojom/payment_request_data.mojom.h"
 
 // C++ bindings for the PaymentRequest API PaymentResponse. Conforms to the

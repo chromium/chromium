@@ -9,7 +9,6 @@
 
 #include "base/observer_list_types.h"
 #include "base/optional.h"
-#include "base/strings/string16.h"
 #include "base/time/time.h"
 #include "chrome/browser/chromeos/child_accounts/time_limits/app_types.h"
 #include "content/public/browser/web_contents_observer.h"

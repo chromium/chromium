@@ -9,7 +9,6 @@
 #include <vector>
 
 #include "base/check.h"
-#include "base/strings/string16.h"
 #include "components/js_injection/common/interfaces.mojom.h"
 #include "components/js_injection/common/origin_matcher.h"
 #include "mojo/public/cpp/bindings/associated_receiver_set.h"

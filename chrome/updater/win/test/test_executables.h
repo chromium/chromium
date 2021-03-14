@@ -8,7 +8,6 @@
 #include <string>
 
 #include "base/process/process.h"
-#include "base/strings/string16.h"
 
 namespace base {
 class CommandLine;

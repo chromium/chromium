@@ -9,7 +9,6 @@
 
 #include "ash/public/cpp/ash_public_export.h"
 #include "base/callback_forward.h"
-#include "base/strings/string16.h"
 
 namespace ash {
 

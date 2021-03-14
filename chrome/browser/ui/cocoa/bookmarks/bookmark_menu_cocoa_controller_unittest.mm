@@ -7,7 +7,6 @@
 #include <string>
 
 #import "base/mac/scoped_nsobject.h"
-#include "base/strings/string16.h"
 #include "chrome/browser/bookmarks/bookmark_model_factory.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/cocoa/test/cocoa_test_helper.h"

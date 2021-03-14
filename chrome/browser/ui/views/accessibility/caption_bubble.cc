@@ -11,7 +11,6 @@
 #include <vector>
 
 #include "base/metrics/histogram_functions.h"
-#include "base/strings/string16.h"
 #include "base/time/default_tick_clock.h"
 #include "base/timer/timer.h"
 #include "build/build_config.h"

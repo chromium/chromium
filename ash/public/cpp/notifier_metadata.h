@@ -8,7 +8,6 @@
 #include <string>
 
 #include "ash/public/cpp/ash_public_export.h"
-#include "base/strings/string16.h"
 #include "ui/gfx/image/image_skia.h"
 #include "ui/message_center/public/cpp/notifier_id.h"
 

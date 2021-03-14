@@ -9,7 +9,6 @@
 
 #include "base/callback_forward.h"
 #include "base/macros.h"
-#include "base/strings/string16.h"
 
 namespace network {
 class SharedURLLoaderFactory;

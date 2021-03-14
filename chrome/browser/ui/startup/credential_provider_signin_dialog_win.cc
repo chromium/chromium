@@ -12,7 +12,6 @@
 #include "base/bind.h"
 #include "base/command_line.h"
 #include "base/json/json_writer.h"
-#include "base/strings/string16.h"
 #include "base/syslog_logging.h"
 #include "base/win/win_util.h"
 #include "chrome/browser/signin/signin_promo.h"

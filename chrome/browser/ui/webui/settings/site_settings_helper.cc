@@ -11,7 +11,6 @@
 
 #include "base/containers/contains.h"
 #include "base/feature_list.h"
-#include "base/strings/string16.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
 #include "chrome/browser/bluetooth/bluetooth_chooser_context.h"

@@ -9,7 +9,6 @@
 
 #include <string>
 
-#include "base/strings/string16.h"
 #include "chrome/browser/android/proto/delta_file.pb.h"
 #include "components/history/core/browser/history_types.h"
 

@@ -11,7 +11,6 @@
 
 #include "base/macros.h"
 #include "base/optional.h"
-#include "base/strings/string16.h"
 #include "components/policy/policy_export.h"
 
 #if defined(OS_WIN)

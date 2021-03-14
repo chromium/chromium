@@ -8,7 +8,6 @@
 #include <string>
 #include <vector>
 
-#include "base/strings/string16.h"
 #include "chromeos/components/local_search_service/public/mojom/index.mojom.h"
 #include "chromeos/components/local_search_service/public/mojom/local_search_service.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"

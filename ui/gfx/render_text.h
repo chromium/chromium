@@ -18,7 +18,6 @@
 
 #include "base/i18n/rtl.h"
 #include "base/macros.h"
-#include "base/strings/string16.h"
 #include "cc/paint/paint_canvas.h"
 #include "cc/paint/paint_flags.h"
 #include "third_party/skia/include/core/SkColor.h"

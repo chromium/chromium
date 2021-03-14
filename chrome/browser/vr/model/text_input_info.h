@@ -7,7 +7,6 @@
 
 #include <string>
 
-#include "base/strings/string16.h"
 #include "chrome/browser/vr/text_edit_action.h"
 #include "chrome/browser/vr/vr_base_export.h"
 

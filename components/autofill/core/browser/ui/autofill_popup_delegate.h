@@ -8,7 +8,6 @@
 #include <string>
 
 #include "base/callback_forward.h"
-#include "base/strings/string16.h"
 #include "components/autofill/core/browser/ui/popup_types.h"
 
 namespace autofill {

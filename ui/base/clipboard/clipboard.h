@@ -19,7 +19,6 @@
 #include "base/macros.h"
 #include "base/no_destructor.h"
 #include "base/process/process.h"
-#include "base/strings/string16.h"
 #include "base/synchronization/lock.h"
 #include "base/threading/platform_thread.h"
 #include "base/threading/thread_checker.h"

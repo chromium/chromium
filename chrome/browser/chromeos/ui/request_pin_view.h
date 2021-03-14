@@ -10,7 +10,6 @@
 
 #include "base/callback.h"
 #include "base/memory/weak_ptr.h"
-#include "base/strings/string16.h"
 #include "chrome/browser/ash/certificate_provider/security_token_pin_dialog_host.h"
 #include "chromeos/components/security_token_pin/constants.h"
 #include "ui/base/ui_base_types.h"

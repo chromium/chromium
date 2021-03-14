@@ -20,7 +20,6 @@
 #include "base/notreached.h"
 #include "base/path_service.h"
 #include "base/strings/strcat.h"
-#include "base/strings/string16.h"
 #include "base/strings/stringprintf.h"
 #include "base/time/time.h"
 #include "base/win/scoped_bstr.h"

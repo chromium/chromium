@@ -26,7 +26,6 @@
 #include "ash/system/tray/tray_bubble_view.h"
 #include "ash/system/unified/rounded_label_button.h"
 #include "base/strings/strcat.h"
-#include "base/strings/string16.h"
 #include "chromeos/components/phonehub/onboarding_ui_tracker.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/resource/resource_bundle.h"

@@ -11,7 +11,6 @@
 #include "base/files/file_path.h"
 #include "base/logging.h"
 #include "base/memory/ref_counted.h"
-#include "base/strings/string16.h"
 #include "base/values.h"
 #include "chromeos/login/login_state/scoped_test_public_session_login_state.h"
 #include "extensions/common/extension.h"

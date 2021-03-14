@@ -8,7 +8,6 @@
 
 #include "ash/public/cpp/notification_utils.h"
 #include "base/memory/weak_ptr.h"
-#include "base/strings/string16.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/app/vector_icons/vector_icons.h"

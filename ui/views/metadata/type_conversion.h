@@ -17,7 +17,6 @@
 #include "base/no_destructor.h"
 #include "base/optional.h"
 #include "base/ranges/algorithm.h"
-#include "base/strings/string16.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"

@@ -17,7 +17,6 @@
 #include "base/memory/free_deleter.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
-#include "base/strings/string16.h"
 #include "base/task_runner.h"
 #include "build/chromeos_buildflags.h"
 #include "ui/events/keycodes/scoped_xkb.h"

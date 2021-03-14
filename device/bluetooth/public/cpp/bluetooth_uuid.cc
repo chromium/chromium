@@ -17,7 +17,6 @@
 #if defined(OS_WIN)
 #include <objbase.h>
 
-#include "base/strings/string16.h"
 #include "base/win/win_util.h"
 #endif  // defined(OS_WIN)
 

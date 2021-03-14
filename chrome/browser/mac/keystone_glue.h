@@ -7,7 +7,6 @@
 
 #include <string>
 
-#include "base/strings/string16.h"
 
 #if defined(__OBJC__)
 

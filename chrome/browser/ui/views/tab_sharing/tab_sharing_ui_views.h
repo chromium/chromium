@@ -11,7 +11,6 @@
 
 #include "base/callback.h"
 #include "base/macros.h"
-#include "base/strings/string16.h"
 #include "chrome/browser/media/webrtc/media_stream_capture_indicator.h"
 #include "chrome/browser/ui/browser_list_observer.h"
 #include "chrome/browser/ui/tab_sharing/tab_sharing_ui.h"

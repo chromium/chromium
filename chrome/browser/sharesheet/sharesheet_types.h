@@ -9,7 +9,6 @@
 
 #include "base/callback.h"
 #include "base/optional.h"
-#include "base/strings/string16.h"
 #include "ui/gfx/image/image_skia.h"
 
 namespace sharesheet {

@@ -8,7 +8,6 @@
 #include <string>
 #include <vector>
 
-#include "base/strings/string16.h"
 #include "extensions/common/manifest.h"
 #include "extensions/common/permissions/permission_message.h"
 

@@ -9,7 +9,6 @@
 
 #include "base/bind.h"
 #include "base/optional.h"
-#include "base/strings/string16.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/gfx/color_palette.h"
 #include "ui/views/controls/label.h"

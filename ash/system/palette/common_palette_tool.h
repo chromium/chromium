@@ -9,7 +9,6 @@
 
 #include "ash/system/palette/palette_tool.h"
 #include "ash/system/tray/view_click_listener.h"
-#include "base/strings/string16.h"
 #include "base/time/time.h"
 
 namespace gfx {

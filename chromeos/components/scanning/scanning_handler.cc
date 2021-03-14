@@ -6,7 +6,6 @@
 
 #include <string>
 
-#include "base/strings/string16.h"
 #include "base/values.h"
 #include "chromeos/components/scanning/scanning_paths_provider.h"
 #include "chromeos/strings/grit/chromeos_strings.h"

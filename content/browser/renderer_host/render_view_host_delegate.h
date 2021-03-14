@@ -11,7 +11,6 @@
 
 #include "base/callback.h"
 #include "base/process/kill.h"
-#include "base/strings/string16.h"
 #include "content/browser/dom_storage/session_storage_namespace_impl.h"
 #include "content/common/content_export.h"
 #include "content/common/render_message_filter.mojom.h"

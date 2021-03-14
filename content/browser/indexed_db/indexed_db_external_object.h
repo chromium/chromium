@@ -14,7 +14,6 @@
 #include "base/callback.h"
 #include "base/files/file_path.h"
 #include "base/optional.h"
-#include "base/strings/string16.h"
 #include "base/time/time.h"
 #include "content/browser/indexed_db/indexed_db_leveldb_coding.h"
 #include "content/common/content_export.h"

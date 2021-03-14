@@ -12,7 +12,6 @@
 #include "base/callback.h"
 #include "base/numerics/safe_math.h"
 #include "base/optional.h"
-#include "base/strings/string16.h"
 
 namespace chrome_pdf {
 

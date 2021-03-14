@@ -13,7 +13,6 @@
 #include "base/i18n/unicodestring.h"
 #include "base/macros.h"
 #include "base/no_destructor.h"
-#include "base/strings/string16.h"
 #include "base/synchronization/lock.h"
 #include "third_party/icu/source/i18n/unicode/regex.h"
 

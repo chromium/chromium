@@ -12,7 +12,6 @@
 #include <vector>
 
 #include "base/optional.h"
-#include "base/strings/string16.h"
 #include "services/device/public/mojom/screen_orientation_lock_types.mojom-shared.h"
 #include "third_party/blink/public/common/manifest/manifest.h"
 #include "third_party/skia/include/core/SkColor.h"

@@ -15,7 +15,6 @@
 #include "base/containers/flat_map.h"
 #include "base/guid.h"
 #include "base/mac/scoped_nsobject.h"
-#include "base/strings/string16.h"
 
 // This class manages notification categories for a given NotificationCenter.
 // Notification categories on macOS describe all action buttons that should be

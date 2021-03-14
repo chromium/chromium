@@ -9,7 +9,6 @@
 
 #include <string>
 
-#include "base/strings/string16.h"
 
 // Truncates |contents| to |length|.
 // Returns a string terminated at the last space to ensure no words are

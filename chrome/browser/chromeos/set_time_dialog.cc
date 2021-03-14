@@ -7,7 +7,6 @@
 #include <string>
 
 #include "base/metrics/user_metrics.h"
-#include "base/strings/string16.h"
 #include "chrome/common/url_constants.h"
 #include "chromeos/login/login_state/login_state.h"
 #include "ui/gfx/geometry/size.h"

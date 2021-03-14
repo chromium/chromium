@@ -8,7 +8,6 @@
 #include <string>
 
 #include "base/component_export.h"
-#include "base/strings/string16.h"
 #include "chromeos/components/security_token_pin/constants.h"
 
 namespace chromeos {

@@ -8,7 +8,6 @@
 #include <map>
 #include <string>
 
-#include "base/strings/string16.h"
 #include "ppapi/shared_impl/ppapi_shared_export.h"
 
 namespace ppapi {

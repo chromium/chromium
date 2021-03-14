@@ -8,7 +8,6 @@
 #include <string>
 #include <vector>
 
-#include "base/strings/string16.h"
 #include "third_party/blink/public/common/messaging/message_port_descriptor.h"
 
 namespace js_injection {

@@ -11,7 +11,6 @@
 
 #include "base/component_export.h"
 #include "base/optional.h"
-#include "base/strings/string16.h"
 #include "device/fido/authenticator_get_assertion_response.h"
 #include "device/fido/authenticator_make_credential_response.h"
 #include "device/fido/fido_constants.h"

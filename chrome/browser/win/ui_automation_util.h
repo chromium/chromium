@@ -17,7 +17,6 @@
 #include <string>
 #include <vector>
 
-#include "base/strings/string16.h"
 
 // Returns a cached BSTR property of |element|.
 std::wstring GetCachedBstrValue(IUIAutomationElement* element,

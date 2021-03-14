@@ -10,7 +10,6 @@
 #include <string>
 
 #include "base/ios/block_types.h"
-#include "base/strings/string16.h"
 
 @class AlertCoordinator;
 @class ActionSheetCoordinator;

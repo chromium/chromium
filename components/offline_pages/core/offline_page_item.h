@@ -10,7 +10,6 @@
 #include <string>
 
 #include "base/files/file_path.h"
-#include "base/strings/string16.h"
 #include "base/time/time.h"
 #include "components/offline_pages/core/client_id.h"
 #include "url/gurl.h"

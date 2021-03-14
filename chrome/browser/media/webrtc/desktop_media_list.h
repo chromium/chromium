@@ -8,7 +8,6 @@
 #include <string>
 #include <vector>
 
-#include "base/strings/string16.h"
 #include "base/time/time.h"
 #include "content/public/browser/desktop_media_id.h"
 #include "ui/gfx/image/image_skia.h"

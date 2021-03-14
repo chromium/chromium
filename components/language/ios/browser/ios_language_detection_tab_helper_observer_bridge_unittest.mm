@@ -7,7 +7,6 @@
 #include <memory>
 #include <string>
 
-#include "base/strings/string16.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/translate/core/common/language_detection_details.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"

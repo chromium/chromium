@@ -10,7 +10,6 @@
 #include <vector>
 
 #include "base/optional.h"
-#include "base/strings/string16.h"
 #include "components/js_injection/common/interfaces.mojom.h"
 #include "content/public/browser/web_contents_observer.h"
 

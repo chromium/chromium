@@ -8,7 +8,6 @@
 #include <memory>
 #include <string>
 
-#include "base/strings/string16.h"
 #include "components/autofill/core/browser/payments/legal_message_line.h"
 #include "components/autofill/core/browser/ui/payments/payments_bubble_closed_reasons.h"
 #include "content/public/browser/web_contents.h"

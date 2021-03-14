@@ -18,7 +18,6 @@
 #include "base/compiler_specific.h"
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
-#include "base/strings/string16.h"
 #include "ui/views/context_menu_controller.h"
 
 namespace gfx {

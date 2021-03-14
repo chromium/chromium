@@ -7,7 +7,6 @@
 
 #include <string>
 #include <vector>
-#include "base/strings/string16.h"
 #include "chrome/browser/chromeos/input_method/ui/assistive_delegate.h"
 
 namespace chromeos {

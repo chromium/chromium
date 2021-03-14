@@ -9,7 +9,6 @@
 #include <string>
 
 #include "base/macros.h"
-#include "base/strings/string16.h"
 
 // Custom spellcheck dictionary. Words in this dictionary are always correctly
 // spelled. Words that are not in this dictionary may or may not be correctly

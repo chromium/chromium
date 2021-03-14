@@ -7,7 +7,6 @@
 
 #include <string>
 
-#include "base/strings/string16.h"
 #include "ui/base/cursor/cursor.h"
 #include "ui/wm/core/native_cursor_manager_delegate.h"
 #include "ui/wm/core/wm_core_export.h"

@@ -30,7 +30,6 @@
 #include "base/process/process.h"
 #include "base/process/process_iterator.h"
 #include "base/stl_util.h"
-#include "base/strings/string16.h"
 #include "base/test/test_timeouts.h"
 #include "base/win/scoped_com_initializer.h"
 #include "base/win/windows_version.h"

@@ -7,7 +7,6 @@
 
 #include <string>
 
-#include "base/strings/string16.h"
 #include "base/strings/string_piece.h"
 #include "base/types/strong_alias.h"
 #include "ui/gfx/image/image.h"

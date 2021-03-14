@@ -8,7 +8,6 @@
 #include <string>
 
 #include "base/memory/ref_counted.h"
-#include "base/strings/string16.h"
 
 class GURL;
 

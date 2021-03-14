@@ -12,7 +12,6 @@
 #include "base/macros.h"
 #include "base/process/kill.h"
 #include "base/process/process_handle.h"
-#include "base/strings/string16.h"
 #include "base/time/time.h"
 #include "components/sessions/core/session_id.h"
 #include "third_party/blink/public/common/web_cache/web_cache_resource_type_stats.h"

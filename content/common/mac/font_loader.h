@@ -13,7 +13,6 @@
 
 #include "base/callback_forward.h"
 #include "base/mac/scoped_cftyperef.h"
-#include "base/strings/string16.h"
 #include "content/common/content_export.h"
 #include "mojo/public/cpp/system/buffer.h"
 

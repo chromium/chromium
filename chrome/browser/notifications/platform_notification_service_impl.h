@@ -12,7 +12,6 @@
 #include <unordered_set>
 
 #include "base/gtest_prod_util.h"
-#include "base/strings/string16.h"
 #include "base/task/cancelable_task_tracker.h"
 #include "chrome/browser/notifications/notification_common.h"
 #include "chrome/browser/notifications/notification_trigger_scheduler.h"

@@ -11,7 +11,6 @@
 #include <utility>
 #include <vector>
 
-#include "base/strings/string16.h"
 #include "components/autofill/core/browser/autofill_client.h"
 #include "components/autofill/core/browser/autofill_metrics.h"
 #include "components/autofill/core/browser/payments/legal_message_line.h"

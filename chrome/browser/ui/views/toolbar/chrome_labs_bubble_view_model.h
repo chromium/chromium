@@ -7,7 +7,6 @@
 
 #include <string>
 #include <vector>
-#include "base/strings/string16.h"
 #include "components/version_info/channel.h"
 
 // Currently there are differences in both visible name and visible description

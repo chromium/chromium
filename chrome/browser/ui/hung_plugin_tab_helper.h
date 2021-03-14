@@ -11,7 +11,6 @@
 
 #include "base/macros.h"
 #include "base/scoped_observer.h"
-#include "base/strings/string16.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "components/infobars/core/infobar_manager.h"

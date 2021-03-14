@@ -8,7 +8,6 @@
 #include <string>
 
 #include "base/callback_forward.h"
-#include "base/strings/string16.h"
 #include "chrome/browser/extensions/api/messaging/incognito_connectability.h"
 #include "components/infobars/core/confirm_infobar_delegate.h"
 

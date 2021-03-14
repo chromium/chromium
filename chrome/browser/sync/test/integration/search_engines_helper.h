@@ -10,7 +10,6 @@
 #include <string>
 
 #include "base/scoped_observer.h"
-#include "base/strings/string16.h"
 #include "chrome/browser/sync/test/integration/status_change_checker.h"
 #include "components/search_engines/template_url_service.h"
 #include "components/search_engines/template_url_service_observer.h"

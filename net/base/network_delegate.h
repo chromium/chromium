@@ -12,7 +12,6 @@
 
 #include "base/callback.h"
 #include "base/optional.h"
-#include "base/strings/string16.h"
 #include "base/threading/thread_checker.h"
 #include "net/base/auth.h"
 #include "net/base/completion_once_callback.h"

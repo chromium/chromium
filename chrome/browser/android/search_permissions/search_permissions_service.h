@@ -9,7 +9,6 @@
 
 #include "base/callback_forward.h"
 #include "base/memory/singleton.h"
-#include "base/strings/string16.h"
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/keyed_service/content/browser_context_keyed_service_factory.h"
 #include "components/keyed_service/core/keyed_service.h"

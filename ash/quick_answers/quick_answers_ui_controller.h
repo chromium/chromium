@@ -8,7 +8,6 @@
 #include <string>
 
 #include "ash/ash_export.h"
-#include "base/strings/string16.h"
 #include "ui/gfx/geometry/rect.h"
 
 namespace chromeos {

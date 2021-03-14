@@ -15,7 +15,6 @@
 #include <vector>
 
 #include "base/macros.h"
-#include "base/strings/string16.h"
 #include "base/synchronization/waitable_event.h"
 #include "components/storage_monitor/volume_mount_watcher_win.h"
 

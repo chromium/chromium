@@ -10,7 +10,6 @@
 
 #include "base/callback_forward.h"
 #include "base/callback_list.h"
-#include "base/strings/string16.h"
 #include "base/timer/timer.h"
 #include "components/infobars/core/confirm_infobar_delegate.h"
 

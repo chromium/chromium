@@ -29,7 +29,6 @@
 #include "base/containers/mru_cache.h"
 #include "base/containers/queue.h"
 #include "base/stl_util.h"
-#include "base/strings/string16.h"
 #include "base/template_util.h"
 
 // Composable memory usage estimators.

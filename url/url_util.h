@@ -10,7 +10,6 @@
 #include <vector>
 
 #include "base/component_export.h"
-#include "base/strings/string16.h"
 #include "base/strings/string_piece.h"
 #include "url/third_party/mozilla/url_parse.h"
 #include "url/url_canon.h"

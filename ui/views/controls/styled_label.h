@@ -15,7 +15,6 @@
 #include "base/callback_forward.h"
 #include "base/macros.h"
 #include "base/optional.h"
-#include "base/strings/string16.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/base/class_property.h"
 #include "ui/gfx/font_list.h"

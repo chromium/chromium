@@ -11,7 +11,6 @@
 
 #include "base/at_exit.h"
 #include "base/i18n/icu_util.h"
-#include "base/strings/string16.h"
 #include "base/strings/utf_string_conversion_utils.h"
 #include "components/omnibox/browser/test_scheme_classifier.h"
 #include "third_party/metrics_proto/omnibox_event.pb.h"

@@ -9,7 +9,6 @@
 #include <string>
 
 #include "base/logging.h"
-#include "base/strings/string16.h"
 
 #include "components/policy/core/common/policy_load_status.h"
 #include "components/policy/core/common/preg_parser.h"

@@ -14,7 +14,6 @@
 #include <vector>
 
 #include "base/sequence_checker.h"
-#include "base/strings/string16.h"
 #include "components/services/storage/public/mojom/blob_storage_context.mojom-forward.h"
 #include "components/services/storage/public/mojom/file_system_access_context.mojom-forward.h"
 #include "content/browser/indexed_db/indexed_db_external_object.h"

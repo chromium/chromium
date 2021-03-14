@@ -23,7 +23,6 @@
 #include "base/optional.h"
 #include "base/sequence_checker.h"
 #include "base/sequenced_task_runner.h"
-#include "base/strings/string16.h"
 #include "base/synchronization/lock.h"
 #include "base/timer/timer.h"
 #include "chrome/browser/chromeos/power/process_data_collector.h"

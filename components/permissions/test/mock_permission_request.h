@@ -7,7 +7,6 @@
 
 #include <string>
 
-#include "base/strings/string16.h"
 #include "build/build_config.h"
 #include "components/permissions/permission_request.h"
 #include "url/gurl.h"

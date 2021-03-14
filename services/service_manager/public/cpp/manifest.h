@@ -12,7 +12,6 @@
 
 #include "base/component_export.h"
 #include "base/files/file_path.h"
-#include "base/strings/string16.h"
 
 namespace service_manager {
 

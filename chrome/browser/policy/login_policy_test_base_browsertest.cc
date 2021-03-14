@@ -6,7 +6,6 @@
 #include <vector>
 
 #include "ash/constants/ash_pref_names.h"
-#include "base/strings/string16.h"
 #include "base/threading/thread_restrictions.h"
 #include "base/values.h"
 #include "chrome/browser/ash/login/test/session_manager_state_waiter.h"

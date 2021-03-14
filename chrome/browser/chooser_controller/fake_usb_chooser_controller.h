@@ -8,7 +8,6 @@
 #include <string>
 
 #include "base/macros.h"
-#include "base/strings/string16.h"
 #include "chrome/browser/chooser_controller/chooser_controller.h"
 
 // A subclass of ChooserController that pretends to be a USB device chooser for

@@ -13,7 +13,6 @@
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
-#include "base/strings/string16.h"
 #include "build/build_config.h"
 #include "cc/input/browser_controls_state.h"
 #include "components/find_in_page/find_result_observer.h"

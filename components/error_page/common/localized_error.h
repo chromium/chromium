@@ -9,7 +9,6 @@
 #include <string>
 
 #include "base/macros.h"
-#include "base/strings/string16.h"
 #include "base/values.h"
 #include "url/gurl.h"
 

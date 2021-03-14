@@ -8,7 +8,6 @@
 #include <string>
 
 #include "base/macros.h"
-#include "base/strings/string16.h"
 #include "ui/gfx/image/image.h"
 
 namespace gfx {

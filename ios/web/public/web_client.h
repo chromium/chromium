@@ -12,7 +12,6 @@
 
 #include "base/callback.h"
 #include "base/optional.h"
-#include "base/strings/string16.h"
 #include "base/strings/string_piece.h"
 #include "base/task/thread_pool/thread_pool_instance.h"
 #include "base/values.h"

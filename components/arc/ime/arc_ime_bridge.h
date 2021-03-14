@@ -9,7 +9,6 @@
 
 #include "base/callback.h"
 #include "base/macros.h"
-#include "base/strings/string16.h"
 #include "ui/base/ime/text_input_type.h"
 #include "ui/events/event.h"
 

@@ -21,7 +21,6 @@
 #include "base/observer_list.h"
 #include "base/process/process.h"
 #include "base/single_thread_task_runner.h"
-#include "base/strings/string16.h"
 #include "base/strings/string_piece.h"
 #include "base/timer/timer.h"
 #include "build/build_config.h"

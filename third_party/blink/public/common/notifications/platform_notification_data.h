@@ -9,7 +9,6 @@
 #include <vector>
 
 #include "base/optional.h"
-#include "base/strings/string16.h"
 #include "base/time/time.h"
 #include "third_party/blink/public/common/common_export.h"
 #include "third_party/blink/public/mojom/notifications/notification.mojom-forward.h"

@@ -8,7 +8,6 @@
 #include <string>
 
 #include "base/optional.h"
-#include "base/strings/string16.h"
 #include "chrome/browser/ui/views/tabs/tab_group_header.h"
 #include "components/tab_groups/tab_group_color.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"

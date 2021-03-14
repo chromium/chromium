@@ -9,7 +9,6 @@
 #include <string>
 
 #include "base/memory/weak_ptr.h"
-#include "base/strings/string16.h"
 #include "ui/message_center/public/cpp/notification_delegate.h"
 
 class Profile;

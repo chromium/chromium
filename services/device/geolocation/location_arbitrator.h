@@ -14,7 +14,6 @@
 #include "base/cancelable_callback.h"
 #include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
-#include "base/strings/string16.h"
 #include "base/time/time.h"
 #include "services/device/geolocation/geolocation_provider_impl.h"
 #include "services/device/geolocation/network_location_provider.h"

@@ -15,7 +15,6 @@
 #include "base/no_destructor.h"
 #include "base/run_loop.h"
 #include "base/sanitizer_buildflags.h"
-#include "base/strings/string16.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"

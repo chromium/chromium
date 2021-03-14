@@ -9,7 +9,6 @@
 #include <vector>
 
 #include "base/callback_list.h"
-#include "base/strings/string16.h"
 #include "components/ntp_tiles/ntp_tile.h"
 #include "url/gurl.h"
 

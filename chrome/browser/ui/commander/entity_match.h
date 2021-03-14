@@ -9,7 +9,6 @@
 #include <string>
 #include <vector>
 
-#include "base/strings/string16.h"
 #include "chrome/browser/ui/commander/command_source.h"
 #include "components/sessions/core/session_id.h"
 #include "components/tab_groups/tab_group_id.h"

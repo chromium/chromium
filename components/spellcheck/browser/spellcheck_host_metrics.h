@@ -11,7 +11,6 @@
 #include <unordered_set>
 #include <vector>
 
-#include "base/strings/string16.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "build/build_config.h"

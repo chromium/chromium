@@ -12,7 +12,6 @@
 #include "base/callback_forward.h"
 #include "base/callback_list.h"
 #include "base/files/file_path.h"
-#include "base/strings/string16.h"
 #include "url/gurl.h"
 
 namespace base {

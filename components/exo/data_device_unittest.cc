@@ -9,7 +9,6 @@
 #include <vector>
 
 #include "ash/shell.h"
-#include "base/strings/string16.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
 #include "components/exo/data_device_delegate.h"

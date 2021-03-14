@@ -7,7 +7,6 @@
 
 #include <string>
 
-#include "base/strings/string16.h"
 #include "chrome/browser/vr/vr_ui_export.h"
 
 namespace vr {

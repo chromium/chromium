@@ -8,7 +8,6 @@
 #include <memory>
 #include <string>
 
-#include "base/strings/string16.h"
 #include "chrome/browser/chooser_controller/chooser_controller.h"
 #include "ui/base/models/table_model.h"
 #include "ui/gfx/range/range.h"

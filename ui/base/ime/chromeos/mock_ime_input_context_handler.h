@@ -10,7 +10,6 @@
 #include <string>
 
 #include "base/component_export.h"
-#include "base/strings/string16.h"
 #include "ui/base/ime/chromeos/ime_input_context_handler_interface.h"
 #include "ui/base/ime/composition_text.h"
 #include "ui/events/event.h"

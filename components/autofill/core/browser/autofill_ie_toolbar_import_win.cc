@@ -13,7 +13,6 @@
 #include "base/check.h"
 #include "base/compiler_specific.h"
 #include "base/macros.h"
-#include "base/strings/string16.h"
 #include "base/win/registry.h"
 #include "components/autofill/core/browser/crypto/rc4_decryptor.h"
 #include "components/autofill/core/browser/data_model/autofill_profile.h"

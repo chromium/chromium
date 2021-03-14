@@ -17,7 +17,6 @@
 #include "base/optional.h"
 #include "base/process/launch.h"
 #include "base/strings/strcat.h"
-#include "base/strings/string16.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
 #include "base/win/registry.h"

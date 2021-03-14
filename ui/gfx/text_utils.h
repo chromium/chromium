@@ -9,7 +9,6 @@
 
 #include <string>
 
-#include "base/strings/string16.h"
 #include "ui/gfx/gfx_export.h"
 #include "ui/gfx/text_constants.h"
 

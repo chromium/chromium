@@ -10,7 +10,6 @@
 
 #include "base/callback_forward.h"
 #include "base/optional.h"
-#include "base/strings/string16.h"
 #include "ui/gfx/image/image_skia.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
 #include "ui/views/controls/button/button.h"

@@ -12,7 +12,6 @@
 #include "ash/public/cpp/app_list/app_list_types.h"
 #include "base/callback_forward.h"
 #include "base/containers/flat_map.h"
-#include "base/strings/string16.h"
 #include "chrome/browser/ui/app_list/app_list_model_updater_observer.h"
 #include "chrome/browser/ui/app_list/app_list_syncable_service.h"
 #include "chrome/browser/ui/app_list/chrome_app_list_item.h"

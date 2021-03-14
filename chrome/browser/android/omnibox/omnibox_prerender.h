@@ -10,7 +10,6 @@
 
 #include "base/android/jni_weak_ref.h"
 #include "base/macros.h"
-#include "base/strings/string16.h"
 
 class Profile;
 struct AutocompleteMatch;

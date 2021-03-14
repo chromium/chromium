@@ -11,7 +11,6 @@
 
 #include "base/files/file_path.h"
 #include "base/i18n/base_i18n_export.h"
-#include "base/strings/string16.h"
 
 namespace base {
 namespace i18n {

@@ -11,7 +11,6 @@
 
 #include "base/macros.h"
 #include "base/scoped_observation.h"
-#include "base/strings/string16.h"
 #include "base/time/time.h"
 #include "ui/base/models/combobox_model.h"
 #include "ui/base/models/combobox_model_observer.h"

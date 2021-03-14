@@ -6,7 +6,6 @@
 
 #include <string>
 
-#include "base/strings/string16.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chromeos/components/security_token_pin/constants.h"
 #include "testing/gtest/include/gtest/gtest.h"

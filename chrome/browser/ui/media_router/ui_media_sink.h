@@ -7,7 +7,6 @@
 
 #include <string>
 
-#include "base/strings/string16.h"
 #include "chrome/browser/ui/media_router/media_cast_mode.h"
 #include "components/media_router/common/issue.h"
 #include "components/media_router/common/media_route_provider_helper.h"

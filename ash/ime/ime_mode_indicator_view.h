@@ -9,7 +9,6 @@
 
 #include "ash/ash_export.h"
 #include "base/macros.h"
-#include "base/strings/string16.h"
 #include "base/timer/timer.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"

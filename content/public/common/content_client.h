@@ -10,7 +10,6 @@
 #include <vector>
 
 #include "base/memory/scoped_refptr.h"
-#include "base/strings/string16.h"
 #include "base/strings/string_piece.h"
 #include "build/build_config.h"
 #include "content/common/content_export.h"

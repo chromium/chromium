@@ -13,7 +13,6 @@
 #include "base/hash/sha1.h"
 #include "base/i18n/case_conversion.h"
 #include "base/optional.h"
-#include "base/strings/string16.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/win/conflicts/module_info.h"

@@ -9,7 +9,6 @@
 
 #include "base/callback_forward.h"
 #include "base/memory/weak_ptr.h"
-#include "base/strings/string16.h"
 #include "content/public/browser/javascript_dialog_manager.h"
 
 namespace javascript_dialogs {

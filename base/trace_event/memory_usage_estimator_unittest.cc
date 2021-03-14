@@ -9,7 +9,6 @@
 #include <string>
 
 #include "base/memory/ptr_util.h"
-#include "base/strings/string16.h"
 #include "build/build_config.h"
 #include "testing/gtest/include/gtest/gtest.h"
 

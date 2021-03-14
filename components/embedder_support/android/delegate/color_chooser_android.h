@@ -11,7 +11,6 @@
 #include "base/android/jni_android.h"
 #include "base/compiler_specific.h"
 #include "base/macros.h"
-#include "base/strings/string16.h"
 #include "content/public/browser/color_chooser.h"
 #include "third_party/blink/public/mojom/choosers/color_chooser.mojom.h"
 

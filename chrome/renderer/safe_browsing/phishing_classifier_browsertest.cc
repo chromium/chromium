@@ -10,7 +10,6 @@
 
 #include "base/bind.h"
 #include "base/run_loop.h"
-#include "base/strings/string16.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/test_discardable_memory_allocator.h"
 #include "chrome/renderer/chrome_content_renderer_client.h"

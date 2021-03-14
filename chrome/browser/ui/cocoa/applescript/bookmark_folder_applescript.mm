@@ -5,7 +5,6 @@
 #import "chrome/browser/ui/cocoa/applescript/bookmark_folder_applescript.h"
 
 #import "base/mac/scoped_nsobject.h"
-#import "base/strings/string16.h"
 #include "base/strings/sys_string_conversions.h"
 #import "chrome/browser/ui/cocoa/applescript/bookmark_item_applescript.h"
 #import "chrome/browser/ui/cocoa/applescript/constants_applescript.h"

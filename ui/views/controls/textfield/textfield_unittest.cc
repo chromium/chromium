@@ -16,7 +16,6 @@
 #include "base/i18n/rtl.h"
 #include "base/pickle.h"
 #include "base/stl_util.h"
-#include "base/strings/string16.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"

@@ -8,7 +8,6 @@
 #include <string>
 #include <vector>
 
-#include "base/strings/string16.h"
 #include "chrome/browser/ui/commander/command_source.h"
 #include "ui/gfx/range/range.h"
 

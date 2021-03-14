@@ -21,7 +21,6 @@
 #include <string>
 
 #include "base/containers/span.h"
-#include "base/strings/string16.h"
 #include "base/strings/string_piece.h"
 #include "net/base/net_export.h"
 #include "net/ntlm/ntlm_constants.h"

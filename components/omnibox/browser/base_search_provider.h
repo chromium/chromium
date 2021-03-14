@@ -16,7 +16,6 @@
 #include <vector>
 
 #include "base/gtest_prod_util.h"
-#include "base/strings/string16.h"
 #include "components/omnibox/browser/autocomplete_input.h"
 #include "components/omnibox/browser/autocomplete_match.h"
 #include "components/omnibox/browser/autocomplete_provider.h"

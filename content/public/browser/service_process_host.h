@@ -16,7 +16,6 @@
 #include "base/observer_list.h"
 #include "base/optional.h"
 #include "base/process/process_handle.h"
-#include "base/strings/string16.h"
 #include "base/strings/string_piece.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/service_process_info.h"

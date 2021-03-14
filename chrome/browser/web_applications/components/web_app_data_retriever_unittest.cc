@@ -11,7 +11,6 @@
 
 #include "base/bind.h"
 #include "base/optional.h"
-#include "base/strings/string16.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
 #include "chrome/browser/web_applications/components/web_application_info.h"

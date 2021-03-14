@@ -10,7 +10,6 @@
 #include "base/check_op.h"
 #include "base/memory/ptr_util.h"
 #include "base/notreached.h"
-#include "base/strings/string16.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/time/time.h"
 #include "components/translate/core/browser/translate_download_manager.h"

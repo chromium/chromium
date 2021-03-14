@@ -8,7 +8,6 @@
 #include <memory>
 #include <string>
 
-#include "base/strings/string16.h"
 #include "base/supports_user_data.h"
 #include "base/time/time.h"
 #import "ios/web/common/user_agent.h"

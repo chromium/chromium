@@ -8,7 +8,6 @@
 #include <string>
 
 #include "base/process/process.h"
-#include "base/strings/string16.h"
 #include "content/common/content_export.h"
 #include "sandbox/policy/sandbox_type.h"
 

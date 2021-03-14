@@ -9,7 +9,6 @@
 #include <string>
 #include <vector>
 
-#include "base/strings/string16.h"
 #include "chrome/browser/notifications/scheduler/public/icon_bundle.h"
 #include "chrome/browser/notifications/scheduler/public/notification_scheduler_types.h"
 

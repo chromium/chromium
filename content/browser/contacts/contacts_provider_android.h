@@ -9,7 +9,6 @@
 
 #include "base/android/jni_array.h"
 #include "base/android/scoped_java_ref.h"
-#include "base/strings/string16.h"
 #include "content/browser/contacts/contacts_provider.h"
 #include "content/common/content_export.h"
 #include "third_party/blink/public/mojom/contacts/contacts_manager.mojom.h"

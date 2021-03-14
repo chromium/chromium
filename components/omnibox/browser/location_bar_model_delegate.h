@@ -9,7 +9,6 @@
 #include <string>
 
 #include "base/memory/ref_counted.h"
-#include "base/strings/string16.h"
 #include "components/security_state/core/security_state.h"
 
 class AutocompleteClassifier;

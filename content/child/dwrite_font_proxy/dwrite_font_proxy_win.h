@@ -15,7 +15,6 @@
 #include "base/callback.h"
 #include "base/files/memory_mapped_file.h"
 #include "base/macros.h"
-#include "base/strings/string16.h"
 #include "base/threading/sequence_local_storage_slot.h"
 #include "content/common/content_export.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"

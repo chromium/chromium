@@ -8,7 +8,6 @@
 #include <string>
 #include <vector>
 
-#include "base/strings/string16.h"
 #include "ui/gfx/font.h"
 #include "ui/gfx/gfx_export.h"
 #include "ui/gfx/range/range.h"

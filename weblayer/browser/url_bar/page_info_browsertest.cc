@@ -4,7 +4,6 @@
 
 #include <string>
 
-#include "base/strings/string16.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/page_info/android/page_info_client.h"

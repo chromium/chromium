@@ -13,7 +13,6 @@
 #include <vector>
 
 #include "base/memory/weak_ptr.h"
-#include "base/strings/string16.h"
 #include "components/payments/content/secure_payment_confirmation_controller.h"
 #include "content/public/browser/global_routing_id.h"
 #include "content/public/browser/web_contents_observer.h"

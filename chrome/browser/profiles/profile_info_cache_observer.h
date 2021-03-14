@@ -7,7 +7,6 @@
 
 #include <string>
 
-#include "base/strings/string16.h"
 #include "ui/gfx/image/image.h"
 
 namespace base {

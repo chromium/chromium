@@ -8,7 +8,6 @@
 #include <string>
 
 #include "base/containers/span.h"
-#include "base/strings/string16.h"
 #include "mojo/public/cpp/bindings/struct_traits.h"
 #include "mojo/public/mojom/base/string16.mojom-blink.h"
 #include "third_party/blink/renderer/platform/platform_export.h"

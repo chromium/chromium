@@ -10,7 +10,6 @@
 #include <vector>
 
 #include "base/memory/scoped_refptr.h"
-#include "base/strings/string16.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "third_party/skia/include/core/SkCanvas.h"
 #include "third_party/skia/include/core/SkPaint.h"

@@ -8,7 +8,6 @@
 
 #include "base/android/jni_array.h"
 #include "base/base64.h"
-#include "base/strings/string16.h"
 #include "components/autofill/content/browser/content_autofill_driver.h"
 #include "components/autofill/content/browser/content_autofill_driver_factory.h"
 #include "components/autofill/core/browser/autofill_provider.h"

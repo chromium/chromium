@@ -10,7 +10,6 @@
 #include <stdint.h>
 #include <string>
 
-#include "base/strings/string16.h"
 #include "base/util/type_safety/id_type.h"
 
 namespace autofill {

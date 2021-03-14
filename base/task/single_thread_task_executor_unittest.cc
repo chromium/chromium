@@ -50,7 +50,6 @@
 #if defined(OS_WIN)
 #include "base/message_loop/message_pump_win.h"
 #include "base/process/memory.h"
-#include "base/strings/string16.h"
 #include "base/win/current_module.h"
 #include "base/win/message_window.h"
 #include "base/win/scoped_handle.h"

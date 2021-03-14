@@ -14,7 +14,6 @@
 #include "base/check_op.h"
 #include "base/mac/scoped_nsobject.h"
 #include "base/optional.h"
-#include "base/strings/string16.h"
 
 namespace chrome {
 

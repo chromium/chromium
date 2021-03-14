@@ -8,7 +8,6 @@
 #include <string>
 #include <vector>
 
-#include "base/strings/string16.h"
 #include "pdf/page_orientation.h"
 #include "pdf/pdfium/pdfium_page.h"
 #include "ui/gfx/geometry/point.h"

@@ -9,7 +9,6 @@
 #include <set>
 #include <string>
 
-#include "base/strings/string16.h"
 #include "base/strings/string_piece_forward.h"
 #include "components/autofill/core/common/dense_set.h"
 

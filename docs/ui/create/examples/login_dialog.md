@@ -26,8 +26,6 @@ To create this simple dialog, you would need to add the following files:
 #ifndef LOGIN_BUBBLE_DIALOG_EXAMPLE_H_
 #define LOGIN_BUBBLE_DIALOG_EXAMPLE_H_
 
-#include <string>
-
 #include "ui/views/bubble/bubble_border.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
 
@@ -128,7 +126,8 @@ and relevant headers.
 `login_bubble_dialog_example.cc`
 
 ``` cpp
-#include "base/strings/string16.h"
+#include <string>
+
 #include "ui/views/controls/label.h"
 #include "ui/views/layout/grid_layout.h"
 #include "ui/views/layout/layout_provider.h"
@@ -237,7 +236,7 @@ passed in by the caller. Update the code as follows.
 
 
 ``` cpp
-#include "base/strings/string16.h"
+#include <string>
 ...
 class LoginBubbleDialogView : public views::BubbleDialogDelegateView {
  public:
@@ -389,7 +388,8 @@ The final code should resemble the following:
 #ifndef LOGIN_BUBBLE_DIALOG_EXAMPLE_H_
 #define LOGIN_BUBBLE_DIALOG_EXAMPLE_H_
 
-#include "base/strings/string16.h"
+#include <string>
+
 #include "ui/views/bubble/bubble_border.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
 #include "ui/views/controls/textfield/textfield.h"
@@ -434,9 +434,10 @@ class LoginBubbleDialogView : public BubbleDialogDelegateView,
 
 #include "login_bubble_dialog_example.h"
 
+#include <string>
+
 #include "base/bind.h"
 #include "base/callback_forward.h"
-#include "base/strings/string16.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/views/border.h"
 #include "ui/views/controls/label.h"

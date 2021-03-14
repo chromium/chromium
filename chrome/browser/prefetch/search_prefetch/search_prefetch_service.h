@@ -12,7 +12,6 @@
 #include "base/callback_list.h"
 #include "base/optional.h"
 #include "base/scoped_observation.h"
-#include "base/strings/string16.h"
 #include "base/timer/timer.h"
 #include "chrome/browser/prefetch/search_prefetch/base_search_prefetch_request.h"
 #include "components/keyed_service/core/keyed_service.h"

@@ -9,7 +9,6 @@
 
 #include <memory>
 
-#include "base/strings/string16.h"
 #include "build/build_config.h"
 #include "chromeos/components/multidevice/logging/logging.h"
 #include "chromeos/dbus/session_manager/session_manager_client.h"

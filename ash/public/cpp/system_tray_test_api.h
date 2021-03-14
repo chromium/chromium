@@ -9,7 +9,6 @@
 #include <string>
 
 #include "ash/ash_export.h"
-#include "base/strings/string16.h"
 
 namespace message_center {
 class MessagePopupView;

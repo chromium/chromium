@@ -9,7 +9,6 @@
 
 #include "base/containers/span.h"
 #include "base/logging.h"
-#include "base/strings/string16.h"
 #include "base/strings/string_number_conversions_internal.h"
 #include "base/strings/string_piece.h"
 

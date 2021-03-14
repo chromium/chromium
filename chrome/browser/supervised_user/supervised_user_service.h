@@ -17,7 +17,6 @@
 #include "base/macros.h"
 #include "base/observer_list.h"
 #include "base/scoped_observer.h"
-#include "base/strings/string16.h"
 #include "build/build_config.h"
 #include "chrome/browser/net/file_downloader.h"
 #include "chrome/browser/supervised_user/supervised_user_denylist.h"
@@ -29,7 +28,6 @@
 #include "extensions/buildflags/buildflags.h"
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
-#include "base/strings/string16.h"
 #include "chrome/browser/ui/supervised_user/parent_permission_dialog.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_registry_observer.h"

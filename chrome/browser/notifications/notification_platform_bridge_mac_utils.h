@@ -7,7 +7,6 @@
 
 #include <string>
 
-#include "base/strings/string16.h"
 #include "chrome/browser/notifications/notification_common.h"
 #include "ui/message_center/public/cpp/notification.h"
 

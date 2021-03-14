@@ -7,7 +7,6 @@
 
 #include <string>
 
-#include "base/strings/string16.h"
 #include "content/public/browser/web_contents.h"
 
 namespace autofill {

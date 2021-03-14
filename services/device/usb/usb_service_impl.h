@@ -18,7 +18,6 @@
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/optional.h"
-#include "base/strings/string16.h"
 #include "build/build_config.h"
 #include "services/device/usb/scoped_libusb_device_ref.h"
 #include "services/device/usb/usb_context.h"

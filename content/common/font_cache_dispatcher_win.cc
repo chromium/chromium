@@ -14,7 +14,6 @@
 #include "base/macros.h"
 #include "base/numerics/checked_math.h"
 #include "base/stl_util.h"
-#include "base/strings/string16.h"
 #include "base/thread_annotations.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 

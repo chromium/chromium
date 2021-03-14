@@ -7,7 +7,6 @@
 
 #include <string>
 
-#include "base/strings/string16.h"
 #include "build/chromeos_buildflags.h"
 
 class Profile;

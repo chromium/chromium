@@ -112,7 +112,6 @@
 #include "base/base_export.h"
 #include "base/compiler_specific.h"
 #include "base/stl_util.h"
-#include "base/strings/string16.h"
 #include "base/strings/string_piece.h"
 #include "base/trace_event/base_tracing_forward.h"
 #include "build/build_config.h"

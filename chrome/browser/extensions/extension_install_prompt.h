@@ -18,7 +18,6 @@
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
-#include "base/strings/string16.h"
 #include "base/threading/thread_checker.h"
 #include "chrome/browser/extensions/install_prompt_permissions.h"
 #include "chrome/common/buildflags.h"

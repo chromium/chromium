@@ -8,7 +8,6 @@
 #include <string>
 
 #include "base/lazy_instance.h"
-#include "base/strings/string16.h"
 
 // Additional data needed by TemplateURLRef::ReplaceSearchTerms on Android.
 struct SearchTermsDataAndroid {

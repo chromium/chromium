@@ -8,7 +8,6 @@
 #include <string>
 
 #include "base/optional.h"
-#include "base/strings/string16.h"
 #include "chrome/browser/ui/tabs/tab_network_state.h"
 #include "chrome/browser/ui/tabs/tab_utils.h"
 #include "chrome/browser/ui/thumbnails/thumbnail_image.h"

@@ -9,7 +9,6 @@
 #include <string>
 
 #include "base/macros.h"
-#include "base/strings/string16.h"
 #include "net/ssl/client_cert_identity.h"
 #include "ui/views/controls/table/table_view_observer.h"
 #include "ui/views/metadata/metadata_header_macros.h"

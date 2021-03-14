@@ -12,7 +12,6 @@
 #include "base/files/file_util.h"
 #include "base/optional.h"
 #include "base/path_service.h"
-#include "base/strings/string16.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/post_task.h"

@@ -8,7 +8,6 @@
 #include <string>
 
 #include "base/component_export.h"
-#include "base/strings/string16.h"
 #include "url/gurl.h"
 
 namespace base {

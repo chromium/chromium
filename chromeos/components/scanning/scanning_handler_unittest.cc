@@ -10,7 +10,6 @@
 
 #include "base/bind.h"
 #include "base/files/file_path.h"
-#include "base/strings/string16.h"
 #include "base/values.h"
 #include "chromeos/components/scanning/scanning_paths_provider.h"
 #include "content/public/browser/web_contents.h"

@@ -7,7 +7,6 @@
 #include <string>
 
 #include "base/logging.h"
-#include "base/strings/string16.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/extensions/extension_management.h"
 #include "extensions/common/constants.h"

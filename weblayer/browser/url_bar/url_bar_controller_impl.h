@@ -7,7 +7,6 @@
 
 #include <string>
 
-#include "base/strings/string16.h"
 #include "build/build_config.h"
 #include "components/omnibox/browser/location_bar_model_delegate.h"
 #include "weblayer/public/url_bar_controller.h"

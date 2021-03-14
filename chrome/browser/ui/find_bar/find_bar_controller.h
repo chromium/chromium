@@ -10,7 +10,6 @@
 
 #include "base/macros.h"
 #include "base/scoped_observer.h"
-#include "base/strings/string16.h"
 #include "chrome/browser/ui/find_bar/find_bar_platform_helper.h"
 #include "components/find_in_page/find_result_observer.h"
 #include "components/find_in_page/find_tab_helper.h"

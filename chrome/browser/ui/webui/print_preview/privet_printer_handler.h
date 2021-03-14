@@ -11,7 +11,6 @@
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
-#include "base/strings/string16.h"
 #include "chrome/browser/local_discovery/service_discovery_shared_client.h"
 #include "chrome/browser/printing/cloud_print/privet_local_printer_lister.h"
 #include "chrome/browser/ui/webui/print_preview/printer_handler.h"

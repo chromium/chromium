@@ -11,7 +11,6 @@
 #include "base/macros.h"
 #include "base/optional.h"
 #include "base/process/process_handle.h"
-#include "base/strings/string16.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "sandbox/policy/sandbox_type.h"
 #include "services/service_manager/public/cpp/identity.h"

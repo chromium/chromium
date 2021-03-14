@@ -8,7 +8,6 @@
 #include <memory>
 #include <string>
 
-#include "base/strings/string16.h"
 #include "base/thread_annotations.h"
 #include "media/midi/midi_manager.h"
 

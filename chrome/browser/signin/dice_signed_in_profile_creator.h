@@ -10,7 +10,6 @@
 #include "base/callback.h"
 #include "base/memory/weak_ptr.h"
 #include "base/optional.h"
-#include "base/strings/string16.h"
 #include "chrome/browser/profiles/profile.h"
 #include "google_apis/gaia/core_account_id.h"
 

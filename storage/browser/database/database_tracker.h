@@ -21,7 +21,6 @@
 #include "base/memory/ref_counted.h"
 #include "base/observer_list.h"
 #include "base/sequenced_task_runner.h"
-#include "base/strings/string16.h"
 #include "base/strings/string_util.h"
 #include "base/time/time.h"
 #include "net/base/completion_once_callback.h"

@@ -9,7 +9,6 @@
 
 #include "base/compiler_specific.h"
 #include "base/macros.h"
-#include "base/strings/string16.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/views/views_export.h"
 #include "ui/views/widget/tooltip_manager.h"

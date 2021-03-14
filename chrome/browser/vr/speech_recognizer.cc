@@ -8,7 +8,6 @@
 #include <string>
 
 #include "base/bind.h"
-#include "base/strings/string16.h"
 #include "chrome/browser/vr/browser_ui_interface.h"
 #include "chrome/grit/generated_resources.h"
 #include "content/public/browser/browser_task_traits.h"

@@ -11,7 +11,6 @@
 #include "ash/app_list/model/app_list_model_export.h"
 #include "base/macros.h"
 #include "base/observer_list.h"
-#include "base/strings/string16.h"
 #include "ui/gfx/image/image_skia.h"
 #include "ui/gfx/selection_model.h"
 

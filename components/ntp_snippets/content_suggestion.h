@@ -12,7 +12,6 @@
 #include "base/files/file_path.h"
 #include "base/macros.h"
 #include "base/optional.h"
-#include "base/strings/string16.h"
 #include "base/time/time.h"
 #include "components/ntp_snippets/category.h"
 #include "url/gurl.h"

@@ -7,7 +7,6 @@
 
 #include <string>
 
-#include "base/strings/string16.h"
 #include "components/omnibox/browser/autocomplete_input.h"
 #include "url/gurl.h"
 

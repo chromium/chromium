@@ -11,7 +11,6 @@
 #include "base/feature_list.h"
 #include "base/memory/ptr_util.h"
 #include "base/optional.h"
-#include "base/strings/string16.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"

@@ -8,7 +8,6 @@
 
 #include "base/android/jni_android.h"
 #include "base/android/jni_string.h"
-#include "base/strings/string16.h"
 #include "base/strings/string_piece.h"
 #include "url/url_canon_internal.h"
 #include "url/url_jni_headers/IDNStringUtil_jni.h"

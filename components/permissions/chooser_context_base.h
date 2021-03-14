@@ -12,7 +12,6 @@
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
 #include "base/optional.h"
-#include "base/strings/string16.h"
 #include "base/values.h"
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/content_settings/core/common/content_settings_types.h"

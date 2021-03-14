@@ -20,7 +20,6 @@
 #include "base/containers/stack.h"
 #include "base/guid.h"
 #include "base/i18n/string_compare.h"
-#include "base/strings/string16.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/android/chrome_jni_headers/BookmarkBridge_jni.h"
 #include "chrome/browser/android/bookmarks/partner_bookmarks_reader.h"

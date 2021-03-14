@@ -5,7 +5,6 @@
 #include <memory>
 #include <string>
 
-#include "base/strings/string16.h"
 #include "base/strings/utf_string_conversion_utils.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/test/chromedriver/chrome/ui_events.h"

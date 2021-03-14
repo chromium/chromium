@@ -14,7 +14,6 @@
 
 #include "base/file_version_info.h"
 #include "base/i18n/case_conversion.h"
-#include "base/strings/string16.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 

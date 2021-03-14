@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_UI_VIEWS_WEBID_WEBID_PERMISSION_VIEW_H_
 
 #include <memory>
-#include "base/strings/string16.h"
 #include "chrome/browser/ui/views/webid/webid_dialog_views.h"
 #include "ui/views/view.h"
 

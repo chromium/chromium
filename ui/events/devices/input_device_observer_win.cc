@@ -10,7 +10,6 @@
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/memory/singleton.h"
-#include "base/strings/string16.h"
 
 #include <windows.h>
 

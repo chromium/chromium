@@ -9,7 +9,6 @@
 #include <string>
 #include <vector>
 
-#include "base/strings/string16.h"
 #include "base/test/scoped_feature_list.h"
 #include "content/public/browser/ax_inspect_factory.h"
 #include "content/public/test/content_browser_test.h"

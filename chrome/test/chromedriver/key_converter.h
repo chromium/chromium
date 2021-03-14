@@ -8,7 +8,6 @@
 #include <string>
 #include <vector>
 
-#include "base/strings/string16.h"
 #include "base/values.h"
 #include "ui/events/keycodes/keyboard_codes.h"
 

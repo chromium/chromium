@@ -11,7 +11,6 @@
 
 #include "base/macros.h"
 #include "base/observer_list.h"
-#include "base/strings/string16.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/ui/webui/signin/signin_ui_error.h"
 #include "components/keyed_service/core/keyed_service.h"

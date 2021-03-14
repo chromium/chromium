@@ -9,7 +9,6 @@
 #include <string>
 
 #include "base/android/scoped_java_ref.h"
-#include "base/strings/string16.h"
 
 namespace ui {
 class WindowAndroid;

@@ -16,7 +16,6 @@
 #include "base/memory/singleton.h"
 #include "base/optional.h"
 #include "base/process/process.h"
-#include "base/strings/string16.h"
 #include "build/build_config.h"
 #include "content/common/child_process.mojom.h"
 #include "content/public/common/child_process_host.h"

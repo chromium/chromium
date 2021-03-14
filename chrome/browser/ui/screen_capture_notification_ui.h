@@ -9,7 +9,6 @@
 
 #include "base/callback.h"
 #include "base/macros.h"
-#include "base/strings/string16.h"
 #include "chrome/browser/media/webrtc/media_stream_capture_indicator.h"
 
 // Interface for screen capture notification UI shown when content of the screen

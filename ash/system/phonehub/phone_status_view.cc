@@ -20,7 +20,6 @@
 #include "ash/system/tray/tray_popup_utils.h"
 #include "base/i18n/number_formatting.h"
 #include "base/strings/strcat.h"
-#include "base/strings/string16.h"
 #include "base/strings/string_number_conversions.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/gfx/color_utils.h"

@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_CHROMEOS_CROSTINI_CROSTINI_SHELF_UTILS_H_
 
 #include <string>
-#include "base/strings/string16.h"
 #include "base/strings/string_piece_forward.h"
 
 class Profile;

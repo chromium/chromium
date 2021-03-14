@@ -8,7 +8,6 @@
 #include <string>
 #include <utility>
 
-#include "base/strings/string16.h"
 #include "mojo/public/cpp/bindings/connector.h"
 #include "mojo/public/cpp/bindings/message.h"
 #include "third_party/blink/public/common/common_export.h"

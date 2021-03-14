@@ -9,7 +9,6 @@
 
 #include <string>
 
-#include "base/strings/string16.h"
 
 // Truncates the clipboard text returned in order to improve performance and
 // prevent unresponsiveness. For reference, a book is about ~500k characters and

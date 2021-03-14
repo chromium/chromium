@@ -10,7 +10,6 @@
 
 #include "base/base64.h"
 #include "base/containers/flat_set.h"
-#include "base/strings/string16.h"
 #include "base/strings/string_util.h"
 #include "build/build_config.h"
 #include "components/autofill/core/browser/autofill_client.h"

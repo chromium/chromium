@@ -11,7 +11,6 @@
 
 #include "base/i18n/rtl.h"
 #include "base/observer_list.h"
-#include "base/strings/string16.h"
 #include "content/common/content_export.h"
 #include "ui/base/ime/mojom/text_input_state.mojom.h"
 #include "ui/gfx/geometry/rect.h"

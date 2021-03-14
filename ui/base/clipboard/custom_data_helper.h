@@ -13,7 +13,6 @@
 
 #include "base/component_export.h"
 #include "base/containers/flat_map.h"
-#include "base/strings/string16.h"
 #include "build/build_config.h"
 
 // Due to restrictions of most operating systems, we don't directly map each

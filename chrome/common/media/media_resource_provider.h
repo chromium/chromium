@@ -7,7 +7,6 @@
 
 #include <string>
 
-#include "base/strings/string16.h"
 #include "media/base/localized_strings.h"
 
 // This is called indirectly by the media layer to access resources.

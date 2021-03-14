@@ -12,7 +12,6 @@
 #include <vector>
 
 #include "base/memory/ref_counted.h"
-#include "base/strings/string16.h"
 #include "components/printing/common/print.mojom-forward.h"
 #include "printing/image.h"
 #include "printing/mojom/print.mojom.h"

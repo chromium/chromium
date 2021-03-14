@@ -10,7 +10,6 @@
 
 #include "ash/public/cpp/shelf_types.h"
 #include "base/macros.h"
-#include "base/strings/string16.h"
 #include "chrome/browser/ui/extensions/extension_enable_flow_delegate.h"
 
 class ArcAppListPrefs;

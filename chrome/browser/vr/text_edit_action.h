@@ -8,7 +8,6 @@
 #include <string>
 #include <vector>
 
-#include "base/strings/string16.h"
 #include "chrome/browser/vr/vr_base_export.h"
 
 namespace vr {

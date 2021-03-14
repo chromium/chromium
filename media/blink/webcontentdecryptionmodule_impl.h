@@ -14,7 +14,6 @@
 #include "base/callback.h"
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
-#include "base/strings/string16.h"
 #include "media/base/cdm_config.h"
 #include "media/blink/media_blink_export.h"
 #include "third_party/blink/public/platform/web_content_decryption_module.h"

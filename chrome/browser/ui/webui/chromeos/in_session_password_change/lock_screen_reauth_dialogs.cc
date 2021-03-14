@@ -9,7 +9,6 @@
 
 #include "base/bind.h"
 #include "base/json/json_writer.h"
-#include "base/strings/string16.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"

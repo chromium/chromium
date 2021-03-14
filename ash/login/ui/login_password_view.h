@@ -13,7 +13,6 @@
 #include "ash/login/ui/login_palette.h"
 #include "ash/public/cpp/session/user_info.h"
 #include "base/scoped_observer.h"
-#include "base/strings/string16.h"
 #include "ui/base/ime/chromeos/ime_keyboard.h"
 #include "ui/views/controls/button/button.h"
 #include "ui/views/controls/textfield/textfield_controller.h"

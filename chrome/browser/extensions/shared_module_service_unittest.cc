@@ -9,7 +9,6 @@
 #include <utility>
 
 #include "base/memory/ref_counted.h"
-#include "base/strings/string16.h"
 #include "base/values.h"
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/extension_service_test_base.h"

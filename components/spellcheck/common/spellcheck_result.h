@@ -9,7 +9,6 @@
 #include <string>
 #include <vector>
 
-#include "base/strings/string16.h"
 
 // This class mirrors blink::WebTextCheckingResult which holds a
 // misspelled range inside the checked text. It also contains a

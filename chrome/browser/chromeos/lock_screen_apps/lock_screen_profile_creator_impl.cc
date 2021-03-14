@@ -11,7 +11,6 @@
 #include "base/bind.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/one_shot_event.h"
-#include "base/strings/string16.h"
 #include "base/time/tick_clock.h"
 #include "base/time/time.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"

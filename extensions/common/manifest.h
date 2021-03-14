@@ -13,7 +13,6 @@
 
 #include "base/containers/span.h"
 #include "base/macros.h"
-#include "base/strings/string16.h"
 #include "base/values.h"
 #include "extensions/common/extension_id.h"
 #include "extensions/common/hashed_extension_id.h"

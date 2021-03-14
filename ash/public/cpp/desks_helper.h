@@ -9,7 +9,6 @@
 
 #include "ash/public/cpp/ash_public_export.h"
 #include "base/macros.h"
-#include "base/strings/string16.h"
 
 namespace aura {
 class Window;

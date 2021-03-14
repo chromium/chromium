@@ -9,7 +9,6 @@
 
 #include "base/containers/span.h"
 #include "base/macros.h"
-#include "base/strings/string16.h"
 #include "components/services/app_service/public/cpp/file_handler.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/manifest_handler.h"

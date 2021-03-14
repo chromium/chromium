@@ -11,7 +11,6 @@
 #include <vector>
 
 #include "base/component_export.h"
-#include "base/strings/string16.h"
 
 #ifdef __OBJC__
 @class NSString;

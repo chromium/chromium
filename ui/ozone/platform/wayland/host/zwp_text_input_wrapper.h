@@ -10,7 +10,6 @@
 #include <string>
 #include <vector>
 
-#include "base/strings/string16.h"
 #include "base/strings/string_piece.h"
 #include "ui/ozone/platform/wayland/common/wayland_object.h"
 

@@ -10,7 +10,6 @@
 #include <utility>
 
 #include "base/memory/ref_counted.h"
-#include "base/strings/string16.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/ui/browser_dialogs.h"
 #include "chrome/browser/ui/views/chrome_typography.h"

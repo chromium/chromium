@@ -14,7 +14,6 @@
 #include "base/component_export.h"
 #include "base/containers/flat_map.h"
 #include "base/macros.h"
-#include "base/strings/string16.h"
 #include "base/threading/thread_checker.h"
 #include "ui/base/ime/chromeos/input_method_descriptor.h"
 

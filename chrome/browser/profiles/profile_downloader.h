@@ -11,7 +11,6 @@
 #include "base/gtest_prod_util.h"
 #include "base/scoped_observer.h"
 #include "base/sequence_checker.h"
-#include "base/strings/string16.h"
 #include "chrome/browser/image_decoder/image_decoder.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/signin/public/identity_manager/identity_manager.h"

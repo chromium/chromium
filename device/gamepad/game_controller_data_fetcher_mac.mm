@@ -10,7 +10,6 @@
 #include <string>
 
 #include "base/mac/mac_util.h"
-#include "base/strings/string16.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "device/gamepad/gamepad_standard_mappings.h"

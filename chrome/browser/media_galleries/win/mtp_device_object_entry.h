@@ -10,7 +10,6 @@
 #include <string>
 #include <vector>
 
-#include "base/strings/string16.h"
 #include "base/time/time.h"
 
 // MTPDeviceObjectEntry contains the media transfer protocol device object

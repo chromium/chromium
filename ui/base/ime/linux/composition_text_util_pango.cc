@@ -11,7 +11,6 @@
 
 #include "base/i18n/char_iterator.h"
 #include "base/numerics/ranges.h"
-#include "base/strings/string16.h"
 #include "base/strings/utf_string_conversions.h"
 #include "ui/base/ime/composition_text.h"
 

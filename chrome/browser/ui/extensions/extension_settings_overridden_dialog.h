@@ -8,7 +8,6 @@
 #include <memory>
 #include <string>
 
-#include "base/strings/string16.h"
 #include "chrome/browser/ui/extensions/settings_overridden_dialog_controller.h"
 #include "extensions/common/extension_id.h"
 

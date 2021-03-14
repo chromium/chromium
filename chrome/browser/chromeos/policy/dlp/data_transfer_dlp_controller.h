@@ -8,7 +8,6 @@
 #include <string>
 
 #include "base/callback.h"
-#include "base/strings/string16.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_clipboard_notifier.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_drag_drop_notifier.h"
 #include "ui/base/data_transfer_policy/data_transfer_policy_controller.h"

@@ -20,7 +20,6 @@
 #include "ash/test/ash_test_base.h"
 #include "base/bind.h"
 #include "base/macros.h"
-#include "base/strings/string16.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chromeos/dbus/power/fake_power_manager_client.h"
 #include "components/prefs/pref_service.h"

@@ -13,7 +13,6 @@
 #include "base/callback_forward.h"
 #include "base/containers/flat_map.h"
 #include "base/optional.h"
-#include "base/strings/string16.h"
 #include "ui/aura/window.h"
 
 namespace ash {

@@ -9,7 +9,6 @@
 #include <vector>
 
 #include "base/containers/span.h"
-#include "base/strings/string16.h"
 #include "base/time/time.h"
 #include "base/types/strong_alias.h"
 #include "url/gurl.h"

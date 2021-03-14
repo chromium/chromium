@@ -8,7 +8,6 @@
 #include <string>
 
 #include "base/callback.h"
-#include "base/strings/string16.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 

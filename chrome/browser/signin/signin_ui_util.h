@@ -9,7 +9,6 @@
 #include <vector>
 
 #include "base/callback_forward.h"
-#include "base/strings/string16.h"
 #include "build/buildflag.h"
 #include "chrome/browser/signin/reauth_result.h"
 #include "chrome/browser/ui/signin_reauth_view_controller.h"

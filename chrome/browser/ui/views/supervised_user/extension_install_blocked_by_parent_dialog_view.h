@@ -8,7 +8,6 @@
 #include <string>
 
 #include "base/callback_forward.h"
-#include "base/strings/string16.h"
 #include "chrome/browser/ui/browser_dialogs.h"
 #include "ui/gfx/image/image_skia.h"
 #include "ui/views/controls/button/button.h"

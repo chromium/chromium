@@ -16,7 +16,6 @@
 #include "base/component_export.h"
 #include "base/i18n/rtl.h"
 #include "base/optional.h"
-#include "base/strings/string16.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"

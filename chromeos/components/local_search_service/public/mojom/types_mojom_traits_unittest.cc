@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 #include "chromeos/components/local_search_service/public/mojom/types_mojom_traits.h"
-#include "base/strings/string16.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chromeos/components/local_search_service/public/mojom/types.mojom.h"
 #include "mojo/public/cpp/test_support/test_utils.h"

@@ -10,7 +10,6 @@
 
 #include "base/callback_forward.h"
 #include "base/optional.h"
-#include "base/strings/string16.h"
 #include "chrome/browser/notifications/notification_common.h"
 #include "chrome/browser/notifications/stub_notification_display_service.h"
 #include "components/keyed_service/core/keyed_service_shutdown_notifier.h"

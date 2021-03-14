@@ -7,7 +7,6 @@
 
 #include <string>
 
-#include "base/strings/string16.h"
 #include "components/page_info/page_info_ui.h"
 #include "ui/views/metadata/metadata_header_macros.h"
 #include "ui/views/view.h"

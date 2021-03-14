@@ -11,7 +11,6 @@
 #include "base/android/jni_array.h"
 #include "base/android/jni_string.h"
 #include "base/bind.h"
-#include "base/strings/string16.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/media_router/browser/android/jni_headers/BrowserMediaRouterDialogController_jni.h"
 #include "components/media_router/browser/android/media_router_android.h"

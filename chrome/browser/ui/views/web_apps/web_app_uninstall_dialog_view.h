@@ -12,7 +12,6 @@
 #include "base/callback.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observer.h"
-#include "base/strings/string16.h"
 #include "base/threading/thread_checker.h"
 #include "chrome/browser/ui/web_applications/web_app_uninstall_dialog.h"
 #include "chrome/browser/web_applications/components/app_registrar.h"

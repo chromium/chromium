@@ -7,7 +7,6 @@
 
 #include <string>
 
-#include "base/strings/string16.h"
 #include "components/user_manager/user_manager_export.h"
 
 class AccountId;

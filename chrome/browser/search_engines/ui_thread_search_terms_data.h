@@ -9,7 +9,6 @@
 
 #include "base/compiler_specific.h"
 #include "base/macros.h"
-#include "base/strings/string16.h"
 #include "components/search_engines/search_terms_data.h"
 
 // Implementation of SearchTermsData that is only usable on the UI thread.

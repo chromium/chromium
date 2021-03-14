@@ -15,7 +15,6 @@
 #include "base/callback_forward.h"
 #include "base/component_export.h"
 #include "base/files/file_path.h"
-#include "base/strings/string16.h"
 #include "ui/base/clipboard/file_info.h"
 
 class GURL;

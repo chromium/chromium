@@ -10,7 +10,6 @@
 #include <vector>
 
 #include "base/optional.h"
-#include "base/strings/string16.h"
 #include "base/types/strong_alias.h"
 #include "components/autofill/core/browser/ui/accessory_sheet_enums.h"
 

@@ -9,7 +9,6 @@
 #include <vector>
 
 #include "base/macros.h"
-#include "base/strings/string16.h"
 #include "base/strings/string_piece_forward.h"
 #include "extensions/common/manifest.h"
 

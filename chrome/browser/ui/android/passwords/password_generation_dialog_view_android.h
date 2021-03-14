@@ -10,7 +10,6 @@
 #include <string>
 
 #include "base/android/scoped_java_ref.h"
-#include "base/strings/string16.h"
 #include "chrome/browser/password_manager/android/password_generation_dialog_view_interface.h"
 
 class PasswordGenerationController;

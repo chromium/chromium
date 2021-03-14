@@ -7,7 +7,6 @@
 
 #include <string>
 
-#include "base/strings/string16.h"
 #include "extensions/browser/management_policy.h"
 
 namespace extensions {

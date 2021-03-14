@@ -12,7 +12,6 @@
 #include <string>
 
 #include "base/location.h"
-#include "base/strings/string16.h"
 
 namespace content {
 

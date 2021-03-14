@@ -8,7 +8,6 @@
 #include <string>
 #include <utility>
 
-#include "base/strings/string16.h"
 #include "components/password_manager/core/browser/manage_passwords_referrer.h"
 #include "components/password_manager/core/browser/origin_credential_store.h"
 

@@ -12,7 +12,6 @@
 #include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/sequenced_task_runner.h"
-#include "base/strings/string16.h"
 #include "base/strings/string_piece.h"
 #include "base/time/time.h"
 #include "components/services/storage/indexed_db/scopes/leveldb_scopes_factory.h"

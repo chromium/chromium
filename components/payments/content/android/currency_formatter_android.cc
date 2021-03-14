@@ -7,7 +7,6 @@
 #include <string>
 
 #include "base/android/jni_string.h"
-#include "base/strings/string16.h"
 #include "components/payments/content/android/jni_headers/CurrencyFormatter_jni.h"
 #include "components/payments/core/currency_formatter.h"
 

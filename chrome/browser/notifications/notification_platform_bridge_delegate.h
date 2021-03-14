@@ -8,7 +8,6 @@
 #include <string>
 
 #include "base/optional.h"
-#include "base/strings/string16.h"
 
 // The interface that a NotificationPlatformBridge uses to pass back information
 // and interactions from the native notification system.

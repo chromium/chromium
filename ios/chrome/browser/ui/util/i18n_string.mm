@@ -7,7 +7,6 @@
 #include <string>
 
 #include "base/i18n/rtl.h"
-#include "base/strings/string16.h"
 #include "base/strings/sys_string_conversions.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)

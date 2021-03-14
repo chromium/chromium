@@ -9,7 +9,6 @@
 #include <utility>
 
 #include "ash/public/cpp/notification_utils.h"
-#include "base/strings/string16.h"
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/notifications/notification_display_service.h"

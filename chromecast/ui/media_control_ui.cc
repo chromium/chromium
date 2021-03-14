@@ -8,7 +8,6 @@
 #include <string>
 
 #include "base/bind.h"
-#include "base/strings/string16.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/threading/thread_checker.h"
 #include "chromecast/graphics/cast_window_manager.h"

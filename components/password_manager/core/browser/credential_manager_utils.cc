@@ -8,7 +8,6 @@
 #include <string>
 
 #include "base/optional.h"
-#include "base/strings/string16.h"
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/common/credential_manager_types.h"
 #include "url/gurl.h"

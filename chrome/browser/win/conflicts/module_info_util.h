@@ -10,7 +10,6 @@
 #include <vector>
 
 #include "base/files/file_path.h"
-#include "base/strings/string16.h"
 #include "base/strings/string_piece.h"
 
 // A format string for generating paths to COM class in-proc server keys under

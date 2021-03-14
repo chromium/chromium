@@ -22,7 +22,6 @@
 #include <vector>
 
 #include "base/containers/flat_set.h"
-#include "base/strings/string16.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/utf_offset_string_conversions.h"
 #include "components/url_formatter/spoof_checks/idn_spoof_checker.h"

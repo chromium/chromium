@@ -13,7 +13,6 @@
 #include "base/json/json_writer.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
-#include "base/strings/string16.h"
 #include "base/task/current_thread.h"
 #include "base/threading/thread_restrictions.h"
 #include "build/build_config.h"

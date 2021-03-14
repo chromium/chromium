@@ -8,7 +8,6 @@
 
 #include "base/containers/flat_map.h"
 #include "base/no_destructor.h"
-#include "base/strings/string16.h"
 #include "components/storage_monitor/storage_info.h"
 #include "components/storage_monitor/storage_monitor.h"
 #include "components/storage_monitor/test_storage_monitor.h"

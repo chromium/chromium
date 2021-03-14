@@ -9,7 +9,6 @@
 #include "base/logging.h"
 #include "base/power_monitor/power_monitor.h"
 #include "base/power_monitor/power_monitor_source.h"
-#include "base/strings/string16.h"
 #include "base/strings/string_util.h"
 #include "base/task/current_thread.h"
 #include "base/win/wrapped_window_proc.h"

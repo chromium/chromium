@@ -11,7 +11,6 @@
 
 #include "base/bind.h"
 #include "base/callback.h"
-#include "base/strings/string16.h"
 
 namespace autofill {
 class CreditCard;

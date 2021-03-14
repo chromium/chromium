@@ -11,7 +11,6 @@
 
 #include "base/android/scoped_java_ref.h"
 #include "base/macros.h"
-#include "base/strings/string16.h"
 #include "ui/events/events_export.h"
 #include "ui/gfx/geometry/point_conversions.h"
 

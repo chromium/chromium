@@ -8,7 +8,6 @@
 #include <memory>
 #include <string>
 
-#include "base/strings/string16.h"
 #include "device/bluetooth/bluetooth_classic_win.h"
 
 namespace device {

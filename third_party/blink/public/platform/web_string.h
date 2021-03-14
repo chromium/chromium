@@ -38,7 +38,6 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/optional.h"
 #include "base/strings/latin1_string_conversions.h"
-#include "base/strings/string16.h"
 #include "third_party/blink/public/platform/web_common.h"
 
 #if INSIDE_BLINK

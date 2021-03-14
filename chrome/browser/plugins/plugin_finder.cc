@@ -11,7 +11,6 @@
 #include "base/bind.h"
 #include "base/json/json_reader.h"
 #include "base/optional.h"
-#include "base/strings/string16.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/values.h"

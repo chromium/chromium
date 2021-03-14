@@ -15,7 +15,6 @@
 
 #include "base/files/file_path.h"
 #include "base/macros.h"
-#include "base/strings/string16.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "third_party/blink/public/mojom/dwrite_font_proxy/dwrite_font_proxy.mojom.h"

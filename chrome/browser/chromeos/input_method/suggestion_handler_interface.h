@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_CHROMEOS_INPUT_METHOD_SUGGESTION_HANDLER_INTERFACE_H_
 
 #include <string>
-#include "base/strings/string16.h"
 
 namespace ui {
 namespace ime {

@@ -12,7 +12,6 @@
 
 #include "base/memory/ref_counted_memory.h"
 #include "base/optional.h"
-#include "base/strings/string16.h"
 #include "base/supports_user_data.h"
 #include "base/time/time.h"
 #include "build/build_config.h"

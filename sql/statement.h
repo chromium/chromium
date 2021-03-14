@@ -14,7 +14,6 @@
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/sequence_checker.h"
-#include "base/strings/string16.h"
 #include "base/strings/string_piece_forward.h"
 #include "build/build_config.h"  // TODO(crbug.com/866218): Remove this include.
 #include "sql/database.h"

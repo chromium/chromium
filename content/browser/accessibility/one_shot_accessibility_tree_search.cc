@@ -9,7 +9,6 @@
 #include <string>
 
 #include "base/i18n/case_conversion.h"
-#include "base/strings/string16.h"
 #include "base/strings/utf_string_conversions.h"
 #include "content/browser/accessibility/browser_accessibility.h"
 #include "content/browser/accessibility/browser_accessibility_manager.h"

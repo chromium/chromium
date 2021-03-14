@@ -13,7 +13,6 @@
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/optional.h"
-#include "base/strings/string16.h"
 #include "base/strings/string_piece.h"
 #include "base/values.h"
 #include "build/build_config.h"

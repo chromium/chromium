@@ -11,7 +11,6 @@
 #include <vector>
 
 #include "base/check_op.h"
-#include "base/strings/string16.h"
 #include "third_party/blink/public/common/common_export.h"
 #include "third_party/blink/public/common/indexeddb/web_idb_types.h"
 

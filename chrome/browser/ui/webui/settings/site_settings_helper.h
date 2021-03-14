@@ -12,7 +12,6 @@
 #include <utility>
 #include <vector>
 
-#include "base/strings/string16.h"
 #include "base/strings/string_piece.h"
 #include "base/values.h"
 #include "components/content_settings/core/common/content_settings.h"

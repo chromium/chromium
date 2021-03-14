@@ -10,7 +10,6 @@
 #include <string>
 
 #include "base/stl_util.h"
-#include "base/strings/string16.h"
 
 #if !defined(NDEBUG)
 // Sends string |format| to the debugger for display.

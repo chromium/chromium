@@ -10,7 +10,6 @@
 
 #include "ash/app_menu/app_menu_export.h"
 #include "ash/app_menu/notification_menu_view.h"
-#include "base/strings/string16.h"
 #include "ui/views/animation/slide_out_controller_delegate.h"
 #include "ui/views/view.h"
 

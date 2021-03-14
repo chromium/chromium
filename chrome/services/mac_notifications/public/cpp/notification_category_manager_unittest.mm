@@ -7,7 +7,6 @@
 #include <string>
 
 #include "base/mac/mac_util.h"
-#include "base/strings/string16.h"
 #include "base/strings/sys_string_conversions.h"
 #include "chrome/services/mac_notifications/public/cpp/notification_category_manager.h"
 #include "chrome/services/mac_notifications/public/cpp/notification_constants_mac.h"

@@ -13,7 +13,6 @@
 
 #include "base/containers/queue.h"
 #include "base/optional.h"
-#include "base/strings/string16.h"
 #include "build/chromeos_buildflags.h"
 #include "device/bluetooth/bluetooth_common.h"
 #include "device/bluetooth/bluetooth_device.h"

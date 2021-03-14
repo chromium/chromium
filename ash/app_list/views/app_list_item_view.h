@@ -13,7 +13,6 @@
 #include "ash/app_list/app_list_export.h"
 #include "ash/app_list/model/app_list_item_observer.h"
 #include "base/memory/ref_counted.h"
-#include "base/strings/string16.h"
 #include "base/timer/timer.h"
 #include "ui/compositor/layer_animation_observer.h"
 #include "ui/views/context_menu_controller.h"

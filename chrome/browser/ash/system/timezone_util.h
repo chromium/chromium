@@ -8,7 +8,6 @@
 #include <memory>
 #include <string>
 
-#include "base/strings/string16.h"
 // TODO(https://crbug.com/1164001): move TimeZoneResponseData to forward
 // declaration when moved to chrome/browser/ash/.
 #include "chromeos/timezone/timezone_request.h"

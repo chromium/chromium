@@ -10,7 +10,6 @@
 
 #include "base/callback_forward.h"
 #include "base/optional.h"
-#include "base/strings/string16.h"
 
 class GURL;
 class Profile;

@@ -8,7 +8,6 @@
 #include <memory>
 #include <string>
 
-#include "base/strings/string16.h"
 #include "printing/printing_context_linux.h"
 #include "ui/gfx/native_widget_types.h"
 

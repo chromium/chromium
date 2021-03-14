@@ -12,7 +12,6 @@
 
 #include "base/callback_forward.h"
 #include "base/single_thread_task_runner.h"
-#include "base/strings/string16.h"
 #include "base/supports_user_data.h"
 #include "content/common/content_export.h"
 #include "ipc/ipc_listener.h"

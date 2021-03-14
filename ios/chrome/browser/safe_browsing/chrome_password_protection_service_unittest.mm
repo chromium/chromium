@@ -9,7 +9,6 @@
 #include <vector>
 
 #include "base/memory/scoped_refptr.h"
-#include "base/strings/string16.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
 #include "components/keyed_service/core/service_access_type.h"

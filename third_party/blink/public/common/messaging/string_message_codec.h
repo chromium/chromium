@@ -8,7 +8,6 @@
 #include <string>
 #include <vector>
 #include "base/containers/span.h"
-#include "base/strings/string16.h"
 #include "third_party/blink/public/common/common_export.h"
 
 namespace blink {

@@ -14,7 +14,6 @@
 #include "base/feature_list.h"
 #include "base/logging.h"
 #include "base/optional.h"
-#include "base/strings/string16.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/favicon/favicon_utils.h"

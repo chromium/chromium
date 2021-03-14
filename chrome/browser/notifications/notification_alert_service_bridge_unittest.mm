@@ -10,7 +10,6 @@
 #include "base/mac/scoped_nsobject.h"
 #include "base/process/process_handle.h"
 #include "base/run_loop.h"
-#include "base/strings/string16.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
 #import "chrome/browser/notifications/notification_alert_service_bridge.h"

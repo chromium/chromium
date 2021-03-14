@@ -7,7 +7,6 @@
 
 #include <string>
 
-#include "base/strings/string16.h"
 #include "device/bluetooth/public/cpp/bluetooth_uuid.h"
 #include "services/device/public/mojom/bluetooth_system.mojom.h"
 

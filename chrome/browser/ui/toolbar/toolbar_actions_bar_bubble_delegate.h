@@ -8,7 +8,6 @@
 #include <string>
 
 #include "base/callback_forward.h"
-#include "base/strings/string16.h"
 #include "ui/base/ui_base_types.h"
 
 namespace gfx {

@@ -10,7 +10,6 @@
 #include <vector>
 
 #include "base/macros.h"
-#include "base/strings/string16.h"
 #include "base/timer/timer.h"
 #include "ui/base/ime/infolist_entry.h"
 #include "ui/chromeos/ui_chromeos_export.h"

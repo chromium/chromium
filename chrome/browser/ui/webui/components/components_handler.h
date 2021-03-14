@@ -9,7 +9,6 @@
 #include <string>
 
 #include "base/scoped_observation.h"
-#include "base/strings/string16.h"
 #include "components/component_updater/component_updater_service.h"
 #include "components/update_client/update_client.h"
 #include "content/public/browser/web_ui_message_handler.h"

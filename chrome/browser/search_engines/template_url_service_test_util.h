@@ -11,7 +11,6 @@
 #include "base/files/scoped_temp_dir.h"
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
-#include "base/strings/string16.h"
 #include "base/time/time.h"
 #include "components/search_engines/template_url.h"
 #include "components/search_engines/template_url_data.h"

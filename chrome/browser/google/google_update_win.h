@@ -13,7 +13,6 @@
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/optional.h"
-#include "base/strings/string16.h"
 #include "google_update/google_update_idl.h"
 #include "ui/gfx/native_widget_types.h"
 

@@ -10,7 +10,6 @@
 
 #include "base/callback_forward.h"
 #include "base/files/file_path.h"
-#include "base/strings/string16.h"
 #include "build/build_config.h"
 #include "chrome/browser/web_applications/components/web_app_shortcut.h"
 

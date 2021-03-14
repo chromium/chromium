@@ -8,7 +8,6 @@
 #include <string>
 
 #include "ash/keyboard/ui/keyboard_export.h"
-#include "base/strings/string16.h"
 
 // Global utility functions for the virtual keyboard.
 // TODO(stevenjb/shuchen/shend): Many of these are accessed from both Chrome

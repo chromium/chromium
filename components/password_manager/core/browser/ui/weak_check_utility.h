@@ -8,7 +8,6 @@
 #include <string>
 
 #include "base/containers/flat_set.h"
-#include "base/strings/string16.h"
 #include "base/strings/string_piece_forward.h"
 #include "base/types/strong_alias.h"
 

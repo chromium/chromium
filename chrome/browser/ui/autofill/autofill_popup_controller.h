@@ -12,7 +12,6 @@
 
 #include "base/compiler_specific.h"
 #include "base/optional.h"
-#include "base/strings/string16.h"
 #include "build/build_config.h"
 #include "chrome/browser/ui/autofill/autofill_popup_view_delegate.h"
 #include "third_party/skia/include/core/SkColor.h"

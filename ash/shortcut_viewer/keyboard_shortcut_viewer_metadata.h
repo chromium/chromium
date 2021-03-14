@@ -11,7 +11,6 @@
 #include "ash/shortcut_viewer/ksv_export.h"
 #include "base/containers/span.h"
 #include "base/optional.h"
-#include "base/strings/string16.h"
 #include "ui/events/keycodes/keyboard_codes.h"
 
 namespace gfx {

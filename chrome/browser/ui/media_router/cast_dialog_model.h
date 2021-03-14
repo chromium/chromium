@@ -8,7 +8,6 @@
 #include <string>
 
 #include "base/optional.h"
-#include "base/strings/string16.h"
 #include "chrome/browser/ui/media_router/ui_media_sink.h"
 
 namespace media_router {

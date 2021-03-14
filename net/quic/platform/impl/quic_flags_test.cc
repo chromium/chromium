@@ -10,7 +10,6 @@
 #include "base/optional.h"
 #include "base/stl_util.h"
 #include "base/strings/strcat.h"
-#include "base/strings/string16.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "net/quic/platform/impl/quic_flags_impl.h"

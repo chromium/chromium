@@ -18,7 +18,6 @@
 #include "base/macros.h"
 #include "base/memory/free_deleter.h"
 #include "base/memory/ref_counted.h"
-#include "base/strings/string16.h"
 #include "base/strings/string_piece_forward.h"
 #include "net/base/net_export.h"
 #include "net/dns/dns_config_service.h"

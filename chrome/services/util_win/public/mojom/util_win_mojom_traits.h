@@ -8,7 +8,6 @@
 #include <string>
 
 #include "base/files/file_path.h"
-#include "base/strings/string16.h"
 #include "chrome/browser/win/conflicts/module_info.h"
 #include "chrome/browser/win/conflicts/module_info_util.h"
 #include "chrome/services/util_win/public/mojom/util_win.mojom-shared.h"

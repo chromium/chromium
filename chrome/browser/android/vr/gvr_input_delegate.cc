@@ -7,7 +7,6 @@
 #include <string>
 #include <utility>
 
-#include "base/strings/string16.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/android/vr/vr_controller.h"
 #include "chrome/browser/vr/input_event.h"

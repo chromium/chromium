@@ -13,7 +13,6 @@
 
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
-#include "base/strings/string16.h"
 #include "services/device/geolocation/wifi_data_provider.h"
 #include "services/device/geolocation/wifi_polling_policy.h"
 

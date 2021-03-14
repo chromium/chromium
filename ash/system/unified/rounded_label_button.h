@@ -8,7 +8,6 @@
 #include <string>
 
 #include "base/macros.h"
-#include "base/strings/string16.h"
 #include "ui/views/controls/button/label_button.h"
 
 namespace ash {

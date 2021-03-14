@@ -7,7 +7,6 @@
 
 #include <string>
 
-#include "base/strings/string16.h"
 #include "components/search_engines/template_url_id.h"
 
 class GURL;

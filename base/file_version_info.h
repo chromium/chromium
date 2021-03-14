@@ -10,7 +10,6 @@
 
 #include "build/build_config.h"
 #include "base/base_export.h"
-#include "base/strings/string16.h"
 
 #if defined(OS_WIN)
 #include <windows.h>

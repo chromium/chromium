@@ -9,7 +9,6 @@
 
 #include "base/callback.h"
 #include "base/memory/scoped_refptr.h"
-#include "base/strings/string16.h"
 #include "base/version.h"
 #include "components/variations/proto/study.pb.h"
 #include "components/version_info/version_info.h"

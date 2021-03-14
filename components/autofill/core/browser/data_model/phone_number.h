@@ -10,7 +10,6 @@
 #include <string>
 #include <vector>
 
-#include "base/strings/string16.h"
 #include "components/autofill/core/browser/data_model/form_group.h"
 #include "components/autofill/core/browser/geo/phone_number_i18n.h"
 

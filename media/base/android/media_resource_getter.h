@@ -10,7 +10,6 @@
 #include <string>
 
 #include "base/callback.h"
-#include "base/strings/string16.h"
 #include "base/time/time.h"
 #include "media/base/media_export.h"
 #include "url/gurl.h"

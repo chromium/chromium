@@ -8,7 +8,6 @@
 
 #include "ash/public/cpp/notification_utils.h"
 #include "base/location.h"
-#include "base/strings/string16.h"
 #include "base/task/post_task.h"
 #include "chrome/browser/notifications/notification_display_service.h"
 #include "chrome/browser/notifications/system_notification_helper.h"

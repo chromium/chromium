@@ -16,7 +16,6 @@
 #include "base/android/jni_android.h"
 #include "base/android/jni_string.h"
 #include "base/guid.h"
-#include "base/strings/string16.h"
 #include "components/webapps/browser/android/add_to_homescreen_params.h"
 #include "components/webapps/browser/android/shortcut_info.h"
 #include "ui/android/color_helpers.h"

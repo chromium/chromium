@@ -9,7 +9,6 @@
 
 #include "base/callback.h"
 #include "base/containers/span.h"
-#include "base/strings/string16.h"
 #include "base/supports_user_data.h"
 
 namespace base {

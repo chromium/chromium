@@ -8,7 +8,6 @@
 #include "base/bind.h"
 #include "base/files/file_path.h"
 #include "base/run_loop.h"
-#include "base/strings/string16.h"
 #include "base/strings/string_util.h"
 #include "base/system/sys_info.h"
 #include "base/test/metrics/histogram_tester.h"

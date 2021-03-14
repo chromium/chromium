@@ -10,7 +10,6 @@
 #include <cstdint>
 #include <string>
 
-#include "base/strings/string16.h"
 #include "ui/ozone/platform/wayland/common/wayland_object.h"
 
 namespace gfx {

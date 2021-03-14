@@ -8,7 +8,6 @@
 #include <string>
 
 #include "base/macros.h"
-#include "base/strings/string16.h"
 #include "ui/views/controls/button/checkbox.h"
 #include "ui/views/controls/focus_ring.h"
 

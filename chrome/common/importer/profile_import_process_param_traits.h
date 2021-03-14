@@ -7,7 +7,6 @@
 
 #include <string>
 
-#include "base/strings/string16.h"
 #include "chrome/common/importer/importer_data_types.h"
 #include "chrome/common/importer/profile_import.mojom.h"
 #include "chrome/common/importer/profile_import_process_param_traits_macros.h"

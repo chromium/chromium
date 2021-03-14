@@ -9,7 +9,6 @@
 
 #include "base/callback.h"
 #include "base/macros.h"
-#include "base/strings/string16.h"
 #include "ui/views/window/dialog_delegate.h"
 
 namespace views {

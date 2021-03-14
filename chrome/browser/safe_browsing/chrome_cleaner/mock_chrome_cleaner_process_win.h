@@ -11,7 +11,6 @@
 
 #include "base/files/file_path.h"
 #include "base/optional.h"
-#include "base/strings/string16.h"
 #include "chrome/browser/safe_browsing/chrome_cleaner/chrome_prompt_actions_win.h"
 
 namespace base {

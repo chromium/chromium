@@ -11,7 +11,6 @@
 
 #include "base/callback.h"
 #include "base/macros.h"
-#include "base/strings/string16.h"
 #include "components/ntp_tiles/section_type.h"
 #include "components/ntp_tiles/tile_title_source.h"
 #include "url/gurl.h"

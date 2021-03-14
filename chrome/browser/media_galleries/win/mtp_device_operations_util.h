@@ -18,7 +18,6 @@
 #include <string>
 
 #include "base/files/file.h"
-#include "base/strings/string16.h"
 #include "chrome/browser/media_galleries/win/mtp_device_object_entry.h"
 
 namespace media_transfer_protocol {

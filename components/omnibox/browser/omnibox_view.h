@@ -17,7 +17,6 @@
 #include <string>
 
 #include "base/gtest_prod_util.h"
-#include "base/strings/string16.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/omnibox/browser/autocomplete_match.h"

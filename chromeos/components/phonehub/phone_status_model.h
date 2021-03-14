@@ -10,7 +10,6 @@
 #include <string>
 
 #include "base/optional.h"
-#include "base/strings/string16.h"
 
 namespace chromeos {
 namespace phonehub {

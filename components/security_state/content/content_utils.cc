@@ -9,7 +9,6 @@
 #include <utility>
 #include <vector>
 
-#include "base/strings/string16.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/dom_distiller/core/url_constants.h"

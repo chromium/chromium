@@ -14,7 +14,6 @@
 
 #include "base/check.h"
 #include "base/notreached.h"
-#include "base/strings/string16.h"
 #include "base/strings/string_piece.h"
 #include "gin/gin_export.h"
 #include "v8/include/v8.h"

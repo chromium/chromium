@@ -8,7 +8,6 @@
 #include <string>
 
 #include "base/optional.h"
-#include "base/strings/string16.h"
 
 // Context-specific text replacements for an in-product help bubble's
 // body text.

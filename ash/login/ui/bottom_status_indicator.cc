@@ -4,7 +4,6 @@
 #include "ash/login/ui/bottom_status_indicator.h"
 
 #include "ash/resources/vector_icons/vector_icons.h"
-#include "base/strings/string16.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/views/controls/image_view.h"

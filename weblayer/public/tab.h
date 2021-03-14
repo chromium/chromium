@@ -11,7 +11,6 @@
 #include <vector>
 
 #include "base/callback_forward.h"
-#include "base/strings/string16.h"
 #include "build/build_config.h"
 
 namespace base {

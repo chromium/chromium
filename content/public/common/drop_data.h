@@ -17,7 +17,6 @@
 
 #include "base/files/file_path.h"
 #include "base/optional.h"
-#include "base/strings/string16.h"
 #include "content/common/content_export.h"
 #include "ipc/ipc_message.h"
 #include "services/network/public/mojom/referrer_policy.mojom.h"

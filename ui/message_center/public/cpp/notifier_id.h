@@ -11,7 +11,6 @@
 #include <vector>
 
 #include "base/macros.h"
-#include "base/strings/string16.h"
 #include "ui/gfx/image/image.h"
 #include "ui/message_center/public/cpp/message_center_public_export.h"
 #include "url/gurl.h"

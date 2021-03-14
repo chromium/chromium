@@ -13,7 +13,6 @@
 #include <vector>
 
 #include "base/containers/flat_set.h"
-#include "base/strings/string16.h"
 #include "components/history/core/browser/history_types.h"
 #include "url/gurl.h"
 

@@ -8,7 +8,6 @@
 #include <string>
 
 #include "base/memory/weak_ptr.h"
-#include "base/strings/string16.h"
 #include "components/payments/content/payment_credential_enrollment_view.h"
 #include "ui/views/metadata/metadata_header_macros.h"
 #include "ui/views/style/typography.h"

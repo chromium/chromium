@@ -7,7 +7,6 @@
 
 #include <string>
 
-#include "base/strings/string16.h"
 
 // Announces |message| as an accessibility alert in the currently active normal
 // browser window, if there is one. Otherwise, no announcement is made.

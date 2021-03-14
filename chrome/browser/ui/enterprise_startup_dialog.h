@@ -10,7 +10,6 @@
 
 #include "base/macros.h"
 #include "base/optional.h"
-#include "base/strings/string16.h"
 
 namespace policy {
 

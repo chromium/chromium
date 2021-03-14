@@ -9,7 +9,6 @@
 #include <string>
 #include <vector>
 
-#include "base/strings/string16.h"
 #include "components/services/app_service/public/mojom/types.mojom.h"
 
 class Profile;

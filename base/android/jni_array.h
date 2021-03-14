@@ -13,7 +13,6 @@
 
 #include "base/android/scoped_java_ref.h"
 #include "base/containers/span.h"
-#include "base/strings/string16.h"
 
 namespace base {
 namespace android {

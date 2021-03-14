@@ -9,7 +9,6 @@
 #include <vector>
 
 #include "base/check.h"
-#include "base/strings/string16.h"
 #include "base/strings/string_piece_forward.h"
 #include "base/values.h"
 #include "tools/json_schema_compiler/util.h"

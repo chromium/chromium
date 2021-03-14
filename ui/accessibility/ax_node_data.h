@@ -13,7 +13,6 @@
 #include <utility>
 #include <vector>
 
-#include "base/strings/string16.h"
 #include "base/strings/string_split.h"
 #include "ui/accessibility/ax_base_export.h"
 #include "ui/accessibility/ax_enums.mojom-forward.h"

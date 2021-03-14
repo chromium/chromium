@@ -7,7 +7,6 @@
 
 #include <string>
 
-#include "base/strings/string16.h"
 #include "chrome/browser/ui/passwords/password_base_dialog_controller.h"
 #include "ui/gfx/range/range.h"
 

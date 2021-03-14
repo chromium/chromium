@@ -12,7 +12,6 @@
 #include "ash/public/cpp/accessibility_controller_enums.h"
 #include "ash/public/cpp/ash_public_export.h"
 #include "base/macros.h"
-#include "base/strings/string16.h"
 
 namespace gfx {
 class Rect;

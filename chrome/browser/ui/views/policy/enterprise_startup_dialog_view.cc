@@ -9,7 +9,6 @@
 
 #include "base/bind.h"
 #include "base/i18n/message_formatter.h"
-#include "base/strings/string16.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "build/branding_buildflags.h"

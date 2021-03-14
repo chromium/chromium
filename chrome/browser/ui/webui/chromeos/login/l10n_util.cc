@@ -21,7 +21,6 @@
 #include "base/memory/ref_counted.h"
 #include "base/notreached.h"
 #include "base/sequenced_task_runner.h"
-#include "base/strings/string16.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/post_task.h"

@@ -12,7 +12,6 @@
 #include <vector>
 
 #include "base/macros.h"
-#include "base/strings/string16.h"
 #include "components/query_parser/snippet.h"
 
 namespace query_parser {

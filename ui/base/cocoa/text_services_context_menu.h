@@ -10,7 +10,6 @@
 #include "base/component_export.h"
 #include "base/i18n/rtl.h"
 #include "base/macros.h"
-#include "base/strings/string16.h"
 #include "ui/base/models/simple_menu_model.h"
 
 namespace ui {

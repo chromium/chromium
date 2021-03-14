@@ -9,7 +9,6 @@
 #include <vector>
 
 #include "base/macros.h"
-#include "base/strings/string16.h"
 #include "build/build_config.h"
 #include "components/browsing_data/content/local_shared_objects_container.h"
 #include "components/content_settings/core/common/content_settings.h"

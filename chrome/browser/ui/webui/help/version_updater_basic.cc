@@ -6,7 +6,6 @@
 
 #include <string>
 
-#include "base/strings/string16.h"
 #include "chrome/browser/upgrade_detector/upgrade_detector.h"
 
 void VersionUpdaterBasic::CheckForUpdate(StatusCallback status_callback,

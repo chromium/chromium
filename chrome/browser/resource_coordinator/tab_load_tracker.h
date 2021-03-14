@@ -14,7 +14,6 @@
 #include "base/observer_list.h"
 #include "base/process/kill.h"
 #include "base/sequence_checker.h"
-#include "base/strings/string16.h"
 #include "chrome/browser/resource_coordinator/lifecycle_unit_state.mojom-shared.h"
 
 namespace content {

@@ -17,7 +17,6 @@
 #include "base/observer_list.h"
 #include "base/scoped_observation.h"
 #include "base/sequenced_task_runner.h"
-#include "base/strings/string16.h"
 #include "base/synchronization/lock.h"
 #include "base/time/time.h"
 #include "components/history/core/browser/history_service.h"

@@ -12,7 +12,6 @@
 
 #include "base/check_op.h"
 #include "base/optional.h"
-#include "base/strings/string16.h"
 #include "chrome/browser/ui/tab_ui_helper.h"
 #include "chrome/browser/ui/tabs/tab_group_controller.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_observer.h"

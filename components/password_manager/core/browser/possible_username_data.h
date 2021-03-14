@@ -9,7 +9,6 @@
 #include <vector>
 
 #include "base/optional.h"
-#include "base/strings/string16.h"
 #include "base/time/time.h"
 #include "components/autofill/core/common/renderer_id.h"
 #include "components/password_manager/core/browser/form_parsing/password_field_prediction.h"

@@ -13,7 +13,6 @@
 
 #include "base/component_export.h"
 #include "base/debug/alias.h"
-#include "base/strings/string16.h"
 #include "base/strings/string_piece.h"
 #include "third_party/perfetto/include/perfetto/tracing/traced_value_forward.h"
 #include "url/third_party/mozilla/url_parse.h"

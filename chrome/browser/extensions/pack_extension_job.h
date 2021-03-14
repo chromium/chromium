@@ -10,7 +10,6 @@
 #include "base/files/file_path.h"
 #include "base/macros.h"
 #include "base/sequenced_task_runner.h"
-#include "base/strings/string16.h"
 #include "extensions/browser/extension_creator.h"
 
 namespace extensions {

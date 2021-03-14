@@ -10,7 +10,6 @@
 #include <string>
 
 #include "base/compiler_specific.h"
-#include "base/strings/string16.h"
 #include "components/omnibox/browser/location_bar_model.h"
 
 namespace gfx {

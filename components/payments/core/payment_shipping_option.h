@@ -7,7 +7,6 @@
 
 #include <string>
 
-#include "base/strings/string16.h"
 #include "components/payments/core/payment_currency_amount.h"
 
 // C++ bindings for the PaymentRequest API PaymentShippingOption. Conforms to

@@ -11,7 +11,6 @@
 #include <string>
 
 #include "base/bind.h"
-#include "base/strings/string16.h"
 #include "base/test/task_environment.h"
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/extension_service_test_base.h"

@@ -10,7 +10,6 @@
 #include "base/callback.h"
 #include "base/containers/flat_set.h"
 #include "base/gtest_prod_util.h"
-#include "base/strings/string16.h"
 #include "base/types/pass_key.h"
 #include "ui/base/accelerators/accelerator.h"
 #include "ui/base/models/combobox_model.h"

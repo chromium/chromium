@@ -12,7 +12,6 @@
 
 #include "base/files/file_path.h"
 #include "base/observer_list.h"
-#include "base/strings/string16.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/custom_handlers/protocol_handler_registry.h"
 #include "chrome/browser/ui/browser.h"

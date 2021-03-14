@@ -8,7 +8,6 @@
 #include <string>
 #include <vector>
 
-#include "base/strings/string16.h"
 #include "extensions/common/permissions/base_set_operators.h"
 
 namespace base {

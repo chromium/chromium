@@ -10,7 +10,6 @@
 #include <vector>
 
 #include "base/run_loop.h"
-#include "base/strings/string16.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/chrome_notification_types.h"

@@ -12,7 +12,6 @@
 #include "base/containers/flat_set.h"
 #include "base/optional.h"
 #include "base/process/process_handle.h"
-#include "base/strings/string16.h"
 #include "base/time/time.h"
 #include "chrome/browser/resource_coordinator/decision_details.h"
 #include "chrome/browser/resource_coordinator/lifecycle_unit_state.mojom-forward.h"

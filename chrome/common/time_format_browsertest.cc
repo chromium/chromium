@@ -12,7 +12,6 @@
 
 #include <string>
 
-#include "base/strings/string16.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_locale.h"
 #include "chrome/test/base/in_process_browser_test.h"

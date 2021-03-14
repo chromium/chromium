@@ -24,7 +24,6 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/statistics_recorder.h"
 #include "base/scoped_observer.h"
-#include "base/strings/string16.h"
 #include "base/strings/string_tokenizer.h"
 #include "base/task/thread_pool.h"
 #include "base/threading/scoped_blocking_call.h"

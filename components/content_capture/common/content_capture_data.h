@@ -8,7 +8,6 @@
 #include <string>
 #include <vector>
 
-#include "base/strings/string16.h"
 #include "ui/gfx/geometry/rect_f.h"
 
 namespace content_capture {

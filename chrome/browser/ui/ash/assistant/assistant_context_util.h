@@ -9,7 +9,6 @@
 
 #include "base/callback.h"
 #include "base/optional.h"
-#include "base/strings/string16.h"
 #include "ui/accessibility/mojom/ax_assistant_structure.mojom.h"
 #include "ui/gfx/geometry/rect.h"
 

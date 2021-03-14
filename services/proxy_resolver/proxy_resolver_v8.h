@@ -13,7 +13,6 @@
 #include "base/compiler_specific.h"
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
-#include "base/strings/string16.h"
 #include "net/proxy_resolution/proxy_resolve_dns_operation.h"
 
 class GURL;

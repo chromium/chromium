@@ -14,7 +14,6 @@
 #include "base/check_op.h"
 #include "base/containers/span.h"
 #include "base/notreached.h"
-#include "base/strings/string16.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/sys_byteorder.h"
 #include "build/build_config.h"

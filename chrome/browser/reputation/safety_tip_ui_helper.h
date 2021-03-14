@@ -7,7 +7,6 @@
 
 #include <string>
 
-#include "base/strings/string16.h"
 #include "chrome/browser/reputation/safety_tip_ui.h"
 #include "components/security_state/core/security_state.h"
 #include "url/gurl.h"

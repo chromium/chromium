@@ -11,7 +11,6 @@
 #include "ash/strings/grit/ash_strings.h"
 #include "base/callback_helpers.h"
 #include "base/logging.h"
-#include "base/strings/string16.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "chromeos/network/network_connection_handler.h"

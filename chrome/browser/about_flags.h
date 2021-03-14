@@ -15,7 +15,6 @@
 
 #include "base/command_line.h"
 #include "base/metrics/histogram_base.h"
-#include "base/strings/string16.h"
 #include "components/flags_ui/feature_entry.h"
 #include "components/flags_ui/flags_state.h"
 

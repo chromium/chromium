@@ -12,7 +12,6 @@
 #include "base/compiler_specific.h"
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
-#include "base/strings/string16.h"
 #include "chrome/browser/ash/login/signin/token_handle_util.h"
 #include "components/account_id/account_id.h"
 #include "components/account_manager_core/account.h"

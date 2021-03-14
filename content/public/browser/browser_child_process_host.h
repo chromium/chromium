@@ -13,7 +13,6 @@
 #include "base/environment.h"
 #include "base/process/kill.h"
 #include "base/process/process.h"
-#include "base/strings/string16.h"
 #include "build/build_config.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/child_process_termination_info.h"

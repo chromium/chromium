@@ -9,7 +9,6 @@
 
 #include "base/auto_reset.h"
 #include "base/macros.h"
-#include "base/strings/string16.h"
 #include "extensions/browser/management_policy.h"
 #include "extensions/common/extension.h"
 

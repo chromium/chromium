@@ -8,7 +8,6 @@
 #include <string>
 
 #include "base/callback_forward.h"
-#include "base/strings/string16.h"
 #include "build/build_config.h"
 #include "chrome/common/buildflags.h"
 #include "ui/gfx/native_widget_types.h"

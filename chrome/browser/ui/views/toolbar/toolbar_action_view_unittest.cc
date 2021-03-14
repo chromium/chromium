@@ -8,7 +8,6 @@
 #include <string>
 
 #include "base/run_loop.h"
-#include "base/strings/string16.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "chrome/browser/sessions/session_tab_helper_factory.h"

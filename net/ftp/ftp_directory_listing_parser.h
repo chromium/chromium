@@ -10,7 +10,6 @@
 #include <string>
 #include <vector>
 
-#include "base/strings/string16.h"
 #include "base/time/time.h"
 #include "net/base/net_export.h"
 

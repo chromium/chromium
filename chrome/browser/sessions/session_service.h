@@ -12,7 +12,6 @@
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/optional.h"
-#include "base/strings/string16.h"
 #include "chrome/browser/sessions/session_service_base.h"
 #include "chrome/browser/ui/browser.h"
 #include "components/sessions/core/command_storage_manager_delegate.h"

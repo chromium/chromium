@@ -8,7 +8,6 @@
 #include <string>
 
 #include "base/macros.h"
-#include "base/strings/string16.h"
 #include "components/password_manager/core/browser/leak_detection/leak_detection_check_factory.h"
 #include "url/gurl.h"
 

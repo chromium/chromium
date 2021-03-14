@@ -8,7 +8,6 @@
 #include <tuple>
 #include <utility>
 
-#include "base/strings/string16.h"
 #include "base/test/simple_test_clock.h"
 #include "base/time/time.h"
 #include "base/values.h"

@@ -29,7 +29,6 @@
 #include "base/path_service.h"
 #include "base/scoped_observation.h"
 #include "base/single_thread_task_runner.h"
-#include "base/strings/string16.h"
 #include "base/system/sys_info.h"
 #include "base/task/post_task.h"
 #include "base/threading/thread_task_runner_handle.h"

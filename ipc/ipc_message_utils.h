@@ -31,7 +31,6 @@
 #include "base/memory/writable_shared_memory_region.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/optional.h"
-#include "base/strings/string16.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/util/type_safety/id_type.h"

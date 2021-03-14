@@ -7,7 +7,6 @@
 
 #include <string>
 
-#include "base/strings/string16.h"
 #include "chrome/browser/sharesheet/sharesheet_controller.h"
 #include "components/services/app_service/public/mojom/types.mojom.h"
 #include "ui/views/view.h"

@@ -11,7 +11,6 @@
 #include <string>
 
 #include "base/strings/escape.h"
-#include "base/strings/string16.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/utf_offset_string_conversions.h"
 #include "net/base/net_export.h"

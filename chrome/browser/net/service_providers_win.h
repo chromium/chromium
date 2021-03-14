@@ -8,7 +8,6 @@
 #include <string>
 #include <vector>
 
-#include "base/strings/string16.h"
 
 struct WinsockNamespaceProvider {
   std::wstring name;

@@ -16,7 +16,6 @@
 #include <utility>
 
 #include "base/component_export.h"
-#include "base/strings/string16.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "ui/events/event_constants.h"

@@ -13,7 +13,6 @@
 #include "base/compiler_specific.h"
 #include "base/component_export.h"
 #include "base/macros.h"
-#include "base/strings/string16.h"
 #include "ui/base/ime/ime_text_span.h"
 #include "ui/base/ime/input_method_delegate.h"
 #include "ui/events/event_utils.h"

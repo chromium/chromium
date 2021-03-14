@@ -7,7 +7,6 @@
 #include <string.h>
 #include <string>
 
-#include "base/strings/string16.h"
 #include "base/strings/utf_string_conversions.h"
 
 // Conversion table from code page 437 to Unicode.

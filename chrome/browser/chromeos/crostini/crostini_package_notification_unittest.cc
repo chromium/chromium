@@ -7,7 +7,6 @@
 #include <memory>
 #include <string>
 
-#include "base/strings/string16.h"
 #include "chrome/browser/chromeos/crostini/crostini_package_service.h"
 #include "chrome/browser/chromeos/crostini/crostini_test_helper.h"
 #include "chrome/browser/chromeos/crostini/crostini_util.h"

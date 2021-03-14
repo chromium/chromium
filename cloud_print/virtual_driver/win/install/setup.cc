@@ -17,7 +17,6 @@
 #include "base/path_service.h"
 #include "base/process/launch.h"
 #include "base/process/process.h"
-#include "base/strings/string16.h"
 #include "base/strings/string_util.h"
 #include "base/win/windows_version.h"
 #include "cloud_print/common/win/cloud_print_utils.h"

@@ -8,7 +8,6 @@
 #include <memory>
 #include <string>
 
-#include "base/strings/string16.h"
 #include "chrome/browser/ui/views/hover_button.h"
 #include "ui/views/metadata/metadata_header_macros.h"
 

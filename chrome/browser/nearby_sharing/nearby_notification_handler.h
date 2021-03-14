@@ -9,7 +9,6 @@
 
 #include "base/callback_forward.h"
 #include "base/optional.h"
-#include "base/strings/string16.h"
 #include "chrome/browser/notifications/notification_handler.h"
 #include "url/gurl.h"
 

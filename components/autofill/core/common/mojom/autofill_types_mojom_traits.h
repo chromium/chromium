@@ -11,7 +11,6 @@
 #include <vector>
 
 #include "base/i18n/rtl.h"
-#include "base/strings/string16.h"
 #include "components/autofill/core/common/form_data.h"
 #include "components/autofill/core/common/form_data_predictions.h"
 #include "components/autofill/core/common/form_field_data.h"

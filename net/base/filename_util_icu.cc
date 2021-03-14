@@ -8,7 +8,6 @@
 
 #include "base/files/file_path.h"
 #include "base/i18n/file_util_icu.h"
-#include "base/strings/string16.h"
 #include "build/chromeos_buildflags.h"
 #include "net/base/filename_util_internal.h"
 

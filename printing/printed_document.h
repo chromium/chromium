@@ -11,7 +11,6 @@
 
 #include "base/files/file_path.h"
 #include "base/memory/ref_counted.h"
-#include "base/strings/string16.h"
 #include "base/synchronization/lock.h"
 #include "build/build_config.h"
 #include "printing/native_drawing_context.h"

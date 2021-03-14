@@ -11,7 +11,6 @@
 
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
-#include "base/strings/string16.h"
 #include "base/time/time.h"
 #include "chrome/browser/chromeos/crostini/crostini_export_import_notification_controller.h"
 #include "chrome/browser/chromeos/crostini/crostini_manager.h"

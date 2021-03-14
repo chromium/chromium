@@ -8,7 +8,6 @@
 #include <string>
 #include <vector>
 
-#include "base/strings/string16.h"
 #include "third_party/icu/source/common/unicode/uscript.h"
 
 namespace gfx {

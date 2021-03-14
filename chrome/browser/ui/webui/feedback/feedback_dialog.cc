@@ -7,7 +7,6 @@
 #include <memory>
 #include <utility>
 
-#include "base/strings/string16.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/browser_dialogs.h"
 #include "content/public/browser/browser_thread.h"

@@ -12,7 +12,6 @@
 
 #include "base/compiler_specific.h"
 #include "base/component_export.h"
-#include "base/strings/string16.h"
 
 namespace base {
 namespace win {

@@ -9,7 +9,6 @@
 #include <type_traits>
 
 #include "base/macros.h"
-#include "base/strings/string16.h"
 #include "base/types/strong_alias.h"
 #include "components/password_manager/core/browser/password_manager_metrics_util.h"
 #include "ui/gfx/range/range.h"

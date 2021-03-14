@@ -11,7 +11,6 @@
 #include "ash/ash_export.h"
 #include "ash/public/cpp/keyboard/keyboard_controller_observer.h"
 #include "base/optional.h"
-#include "base/strings/string16.h"
 #include "ui/compositor/layer_animation_observer.h"
 #include "ui/events/event.h"
 #include "ui/events/event_constants.h"

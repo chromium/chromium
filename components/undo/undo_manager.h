@@ -13,7 +13,6 @@
 
 #include "base/macros.h"
 #include "base/observer_list.h"
-#include "base/strings/string16.h"
 
 class UndoManagerObserver;
 class UndoOperation;

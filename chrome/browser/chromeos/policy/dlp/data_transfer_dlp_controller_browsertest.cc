@@ -7,7 +7,6 @@
 
 #include "ash/shell.h"
 #include "base/json/json_writer.h"
-#include "base/strings/string16.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/chromeos/crostini/crostini_manager.h"

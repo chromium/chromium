@@ -15,7 +15,6 @@
 
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
-#include "base/strings/string16.h"
 #include "base/strings/string_piece.h"
 #include "components/services/storage/indexed_db/scopes/scope_lock_range.h"
 #include "content/common/content_export.h"

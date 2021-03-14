@@ -12,7 +12,6 @@
 #include "base/callback.h"
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
-#include "base/strings/string16.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/net/nss_context.h"
 #include "net/cert/nss_cert_database.h"

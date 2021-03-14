@@ -13,7 +13,6 @@
 #include "ash/system/power/peripheral_battery_listener.h"
 #include "ash/system/power/power_status.h"
 #include "ash/system/tray/tray_constants.h"
-#include "base/strings/string16.h"
 #include "base/time/time.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/gfx/color_palette.h"

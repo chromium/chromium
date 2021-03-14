@@ -10,7 +10,6 @@
 #include <utility>
 
 #include "base/macros.h"
-#include "base/strings/string16.h"
 #include "ui/base/class_property.h"
 #include "ui/views/metadata/metadata_cache.h"
 #include "ui/views/metadata/metadata_types.h"

@@ -10,7 +10,6 @@
 #include <string>
 
 #include "base/optional.h"
-#include "base/strings/string16.h"
 #include "chrome/browser/ui/webauthn/hover_list_model.h"
 #include "ui/views/controls/scroll_view.h"
 #include "ui/views/metadata/metadata_header_macros.h"

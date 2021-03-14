@@ -9,7 +9,6 @@
 
 #include "base/macros.h"
 #include "base/metrics/field_trial.h"
-#include "base/strings/string16.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/test_reg_util_win.h"
 #include "chrome/chrome_elf/chrome_elf_constants.h"

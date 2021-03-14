@@ -10,7 +10,6 @@
 #include <string>
 #include <vector>
 
-#include "base/strings/string16.h"
 #include "base/time/time.h"
 #include "components/query_parser/snippet.h"
 #include "url/gurl.h"

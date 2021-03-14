@@ -20,7 +20,6 @@
 #include "base/optional.h"
 #include "base/path_service.h"
 #include "base/strings/strcat.h"
-#include "base/strings/string16.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/version.h"
 #include "base/win/scoped_com_initializer.h"

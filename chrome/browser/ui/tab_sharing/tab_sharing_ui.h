@@ -7,7 +7,6 @@
 
 #include <string>
 
-#include "base/strings/string16.h"
 #include "chrome/browser/media/webrtc/media_stream_capture_indicator.h"
 
 namespace infobars {

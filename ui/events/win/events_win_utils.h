@@ -11,7 +11,6 @@
 #include <memory>
 #include <string>
 
-#include "base/strings/string16.h"
 #include "build/build_config.h"
 #include "ui/display/display.h"
 #include "ui/events/event.h"

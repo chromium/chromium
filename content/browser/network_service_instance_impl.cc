@@ -54,7 +54,6 @@
 
 #if defined(OS_WIN)
 #include "base/metrics/histogram_functions.h"
-#include "base/strings/string16.h"
 #include "base/win/registry.h"
 #include "base/win/windows_version.h"
 #endif  // defined(OS_WIN)

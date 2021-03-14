@@ -8,7 +8,6 @@
 #include <string>
 
 #include "base/callback.h"
-#include "base/strings/string16.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/resource_context.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"

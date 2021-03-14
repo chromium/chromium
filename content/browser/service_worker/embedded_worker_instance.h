@@ -18,7 +18,6 @@
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/optional.h"
-#include "base/strings/string16.h"
 #include "base/threading/sequence_bound.h"
 #include "base/time/time.h"
 #include "base/unguessable_token.h"

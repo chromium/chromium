@@ -10,7 +10,6 @@
 
 #include <string>
 
-#include "base/strings/string16.h"
 #include "base/time/time.h"
 #include "ios/web/common/user_agent.h"
 #include "ios/web/public/navigation/referrer.h"

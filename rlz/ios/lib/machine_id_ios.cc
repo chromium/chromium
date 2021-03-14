@@ -5,7 +5,6 @@
 #include <string>
 
 #include "base/ios/device_util.h"
-#include "base/strings/string16.h"
 #include "base/strings/utf_string_conversions.h"
 
 namespace rlz_lib {

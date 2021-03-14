@@ -9,7 +9,6 @@
 #include <string>
 
 #include "base/optional.h"
-#include "base/strings/string16.h"
 #include "components/autofill/core/common/form_field_data.h"
 #include "components/autofill/core/common/renderer_id.h"
 

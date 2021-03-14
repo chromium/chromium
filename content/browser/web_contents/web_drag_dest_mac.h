@@ -10,7 +10,6 @@
 #include <memory>
 #include <string>
 
-#include "base/strings/string16.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/global_routing_id.h"
 #include "content/public/common/drop_data.h"

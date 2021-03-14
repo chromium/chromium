@@ -10,7 +10,6 @@
 
 #include "base/gtest_prod_util.h"
 #include "base/macros.h"
-#include "base/strings/string16.h"
 #include "ui/gfx/range/range.h"
 #include "url/gurl.h"
 

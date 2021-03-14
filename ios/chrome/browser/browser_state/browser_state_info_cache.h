@@ -13,7 +13,6 @@
 #include "base/files/file_path.h"
 #include "base/macros.h"
 #include "base/observer_list.h"
-#include "base/strings/string16.h"
 
 namespace base {
 class DictionaryValue;

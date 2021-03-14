@@ -12,7 +12,6 @@
 #include "base/containers/span.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/optional.h"
-#include "base/strings/string16.h"
 
 namespace password_manager {
 class PasswordStore;

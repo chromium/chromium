@@ -11,7 +11,6 @@
 #include "base/bind.h"
 #include "base/callback_forward.h"
 #include "base/strings/strcat.h"
-#include "base/strings/string16.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/views/border.h"
 #include "ui/views/controls/button/md_text_button.h"

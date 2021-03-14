@@ -17,7 +17,6 @@
 #include "base/callback.h"
 #include "base/macros.h"
 #include "base/observer_list.h"
-#include "base/strings/string16.h"
 #include "base/unguessable_token.h"
 #include "ui/gfx/image/image_skia.h"
 #include "ui/gfx/range/range.h"

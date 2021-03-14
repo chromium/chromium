@@ -14,7 +14,6 @@
 
 #include "base/containers/flat_set.h"
 #include "base/optional.h"
-#include "base/strings/string16.h"
 #include "components/services/app_service/public/cpp/share_target.h"
 #include "components/services/app_service/public/cpp/url_handler_info.h"
 #include "components/webapps/common/web_page_metadata.mojom-forward.h"

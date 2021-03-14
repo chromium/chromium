@@ -13,7 +13,6 @@
 #include "base/containers/span.h"
 #include "base/files/file_path.h"
 #include "base/sequence_checker.h"
-#include "base/strings/string16.h"
 #include "ui/gfx/image/image_family.h"
 #include "url/gurl.h"
 

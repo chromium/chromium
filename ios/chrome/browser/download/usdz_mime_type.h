@@ -7,7 +7,6 @@
 
 #include <string>
 
-#include "base/strings/string16.h"
 
 // Universal Scene Description file format used to represent 3D models.
 // See https://www.iana.org/assignments/media-types/model/vnd.usdz+zip

@@ -15,7 +15,6 @@
 #include "base/logging.h"
 #include "base/numerics/math_constants.h"
 #include "base/numerics/ranges.h"
-#include "base/strings/string16.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "build/build_config.h"
 #include "chrome/browser/vr/content_input_delegate.h"

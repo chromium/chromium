@@ -10,7 +10,6 @@
 #include <utility>
 
 #include "base/stl_util.h"
-#include "base/strings/string16.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/webui/bookmarks/bookmarks_message_handler.h"
 #include "chrome/browser/ui/webui/favicon_source.h"

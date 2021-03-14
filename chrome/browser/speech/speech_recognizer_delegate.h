@@ -8,7 +8,6 @@
 #include <stdint.h>
 #include <string>
 
-#include "base/strings/string16.h"
 #include "base/time/time.h"
 
 // Requires cleanup. See crbug.com/800374.

@@ -14,7 +14,6 @@
 #include "base/files/file_path.h"
 #include "base/observer_list_threadsafe.h"
 #include "base/sequence_checker.h"
-#include "base/strings/string16.h"
 #include "base/synchronization/lock.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"

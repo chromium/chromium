@@ -8,7 +8,6 @@
 #include <string>
 
 #include "ash/style/ash_color_provider.h"
-#include "base/strings/string16.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/views/controls/button/label_button.h"
 #include "ui/views/view.h"

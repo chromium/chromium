@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_TEXTFIELD_LAYOUT_H_
 #define CHROME_BROWSER_UI_VIEWS_TEXTFIELD_LAYOUT_H_
 
-#include "base/strings/string16.h"
 
 #include <memory>
 #include <string>

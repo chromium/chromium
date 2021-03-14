@@ -9,7 +9,6 @@
 
 #include "base/callback_helpers.h"
 #include "base/macros.h"
-#include "base/strings/string16.h"
 #include "base/threading/thread_checker.h"
 
 namespace remoting {

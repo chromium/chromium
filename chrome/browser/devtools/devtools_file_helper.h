@@ -15,7 +15,6 @@
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
-#include "base/strings/string16.h"
 #include "chrome/browser/devtools/devtools_file_watcher.h"
 #include "chrome/browser/platform_util.h"
 #include "components/prefs/pref_change_registrar.h"

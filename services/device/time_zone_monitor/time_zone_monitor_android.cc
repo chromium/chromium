@@ -10,7 +10,6 @@
 #include "base/android/jni_android.h"
 #include "base/android/timezone_utils.h"  // nogncheck
 #include "base/sequenced_task_runner.h"
-#include "base/strings/string16.h"
 #include "services/device/time_zone_monitor/time_zone_monitor_jni_headers/TimeZoneMonitor_jni.h"
 #include "third_party/icu/source/common/unicode/unistr.h"
 #include "third_party/icu/source/i18n/unicode/timezone.h"

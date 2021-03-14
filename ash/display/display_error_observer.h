@@ -10,7 +10,6 @@
 #include "ash/ash_export.h"
 #include "base/compiler_specific.h"
 #include "base/macros.h"
-#include "base/strings/string16.h"
 #include "ui/display/manager/display_configurator.h"
 
 namespace ash {

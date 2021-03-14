@@ -7,7 +7,6 @@
 
 #include <string>
 
-#include "base/strings/string16.h"
 #include "chromeos/components/local_search_service/public/mojom/local_search_service.mojom-shared.h"
 #include "chromeos/components/local_search_service/public/mojom/types.mojom-shared.h"
 #include "chromeos/components/local_search_service/shared_structs.h"

@@ -13,7 +13,6 @@
 #include "ash/public/cpp/app_list/app_list_types.h"
 #include "ash/public/cpp/ash_public_export.h"
 #include "base/observer_list_types.h"
-#include "base/strings/string16.h"
 
 namespace ash {
 

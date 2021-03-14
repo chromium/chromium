@@ -11,7 +11,6 @@
 #include "ash/ambient/ui/ambient_container_view.h"
 #include "ash/public/cpp/ash_pref_names.h"
 #include "ash/shell.h"
-#include "base/strings/string16.h"
 #include "base/strings/utf_string_conversions.h"
 #include "services/media_session/public/mojom/media_session.mojom.h"
 #include "ui/compositor/scoped_animation_duration_scale_mode.h"

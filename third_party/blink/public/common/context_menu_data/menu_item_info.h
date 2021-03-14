@@ -35,7 +35,6 @@
 #include <vector>
 
 #include "base/i18n/rtl.h"
-#include "base/strings/string16.h"
 
 namespace blink {
 

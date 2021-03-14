@@ -10,7 +10,6 @@
 
 #include "base/macros.h"
 #include "base/observer_list_types.h"
-#include "base/strings/string16.h"
 #include "base/time/time.h"
 #include "chromecast/browser/cast_content_window.h"
 #include "chromecast/browser/cast_web_contents.h"

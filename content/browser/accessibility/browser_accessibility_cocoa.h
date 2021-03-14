@@ -10,7 +10,6 @@
 #include <vector>
 
 #import "base/mac/scoped_nsobject.h"
-#include "base/strings/string16.h"
 #include "content/browser/accessibility/browser_accessibility.h"
 #include "content/browser/accessibility/browser_accessibility_manager.h"
 #include "content/common/content_export.h"

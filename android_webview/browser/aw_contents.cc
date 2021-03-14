@@ -58,7 +58,6 @@
 #include "base/no_destructor.h"
 #include "base/pickle.h"
 #include "base/single_thread_task_runner.h"
-#include "base/strings/string16.h"
 #include "base/supports_user_data.h"
 #include "base/threading/thread_restrictions.h"
 #include "base/threading/thread_task_runner_handle.h"

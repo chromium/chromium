@@ -10,7 +10,6 @@
 #include <vector>
 
 #include "base/callback.h"
-#include "base/strings/string16.h"
 #include "base/strings/string_piece.h"
 #include "services/preferences/public/cpp/scoped_pref_update.h"
 

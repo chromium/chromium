@@ -9,7 +9,6 @@
 #include <vector>
 
 #include "base/optional.h"
-#include "base/strings/string16.h"
 #include "chromeos/chromeos_export.h"
 #include "third_party/icu/source/i18n/unicode/timezone.h"
 

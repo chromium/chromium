@@ -20,7 +20,6 @@
 #include "base/macros.h"
 #include "base/optional.h"
 #include "base/sequence_checker.h"
-#include "base/strings/string16.h"
 #include "base/strings/string_piece.h"
 #include "ui/base/layout.h"
 #include "ui/gfx/font_list.h"

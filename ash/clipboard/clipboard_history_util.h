@@ -9,7 +9,6 @@
 
 #include "ash/ash_export.h"
 #include "base/optional.h"
-#include "base/strings/string16.h"
 #include "base/strings/string_piece_forward.h"
 
 namespace ui {

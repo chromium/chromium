@@ -12,7 +12,6 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/single_thread_task_runner.h"
-#include "base/strings/string16.h"
 #include "base/timer/timer.h"
 #include "chromecast/graphics/cast_window_manager.h"
 #include "chromecast/media/cma/pipeline/media_pipeline_observer.h"

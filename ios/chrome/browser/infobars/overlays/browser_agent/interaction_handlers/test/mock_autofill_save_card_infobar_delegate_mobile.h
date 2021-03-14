@@ -10,7 +10,6 @@
 
 #include "components/autofill/core/browser/payments/autofill_save_card_infobar_delegate_mobile.h"
 
-#include "base/strings/string16.h"
 #include "components/autofill/core/browser/autofill_client.h"
 #include "components/autofill/core/browser/data_model/credit_card.h"
 #include "components/autofill/core/browser/payments/legal_message_line.h"

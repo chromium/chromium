@@ -8,7 +8,6 @@
 #include <memory>
 #include <string>
 
-#include "base/strings/string16.h"
 #include "components/payments/core/payment_address.h"
 
 namespace base {

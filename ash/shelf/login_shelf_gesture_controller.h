@@ -11,7 +11,6 @@
 #include "ash/shelf/drag_handle.h"
 #include "base/callback.h"
 #include "base/memory/weak_ptr.h"
-#include "base/strings/string16.h"
 #include "base/timer/timer.h"
 #include "ui/views/widget/widget_observer.h"
 

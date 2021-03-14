@@ -10,7 +10,6 @@
 #include "ash/public/cpp/ash_public_export.h"
 #include "ash/public/cpp/ime_controller_client.h"
 #include "ash/public/cpp/ime_info.h"
-#include "base/strings/string16.h"
 
 namespace gfx {
 class Rect;

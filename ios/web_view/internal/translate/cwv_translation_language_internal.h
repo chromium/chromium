@@ -9,7 +9,6 @@
 
 #include <string>
 
-#include "base/strings/string16.h"
 
 NS_ASSUME_NONNULL_BEGIN
 

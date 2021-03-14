@@ -11,7 +11,6 @@
 #include "base/lazy_instance.h"
 #include "base/macros.h"
 #include "base/observer_list.h"
-#include "base/strings/string16.h"
 #include "base/values.h"
 #include "chromeos/components/proximity_auth/public/mojom/auth_type.mojom.h"
 #include "components/account_id/account_id.h"

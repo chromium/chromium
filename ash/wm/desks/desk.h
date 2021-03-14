@@ -14,7 +14,6 @@
 #include "base/containers/flat_map.h"
 #include "base/macros.h"
 #include "base/observer_list.h"
-#include "base/strings/string16.h"
 #include "base/time/clock.h"
 #include "base/time/time.h"
 #include "ui/aura/window_observer.h"

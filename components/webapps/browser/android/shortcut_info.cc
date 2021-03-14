@@ -8,7 +8,6 @@
 
 #include "base/feature_list.h"
 #include "base/optional.h"
-#include "base/strings/string16.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/webapps/browser/android/webapps_icon_utils.h"
 #include "third_party/blink/public/common/manifest/manifest_icon_selector.h"

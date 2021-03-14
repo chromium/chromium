@@ -10,7 +10,6 @@
 #include <type_traits>
 #include <utility>
 
-#include "base/strings/string16.h"
 #include "base/template_util.h"
 #include "components/password_manager/core/browser/leak_detection/bulk_leak_check.h"
 #include "components/password_manager/core/browser/leak_detection/encryption_utils.h"

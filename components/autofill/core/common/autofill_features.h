@@ -8,7 +8,6 @@
 #include <string>
 
 #include "base/feature_list.h"
-#include "base/strings/string16.h"
 #include "build/build_config.h"
 
 class PrefService;

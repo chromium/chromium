@@ -13,7 +13,6 @@
 #include <string>
 #include <vector>
 
-#include "base/strings/string16.h"
 #include "components/tab_groups/tab_group_id.h"
 #include "components/tab_groups/tab_group_visual_data.h"
 #include "ui/gfx/range/range.h"

@@ -13,7 +13,6 @@
 #include "base/no_destructor.h"
 #include "base/optional.h"
 #include "base/sequence_checker.h"
-#include "base/strings/string16.h"
 #include "base/types/strong_alias.h"
 
 namespace autofill {

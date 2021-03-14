@@ -11,7 +11,6 @@
 #include "base/callback.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/ref_counted_memory.h"
-#include "base/strings/string16.h"
 #include "base/values.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/common/buildflags.h"

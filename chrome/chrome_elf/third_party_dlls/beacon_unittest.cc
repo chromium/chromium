@@ -9,7 +9,6 @@
 
 #include "chrome/chrome_elf/third_party_dlls/beacon.h"
 
-#include "base/strings/string16.h"
 #include "base/test/test_reg_util_win.h"
 #include "base/win/registry.h"
 #include "chrome/chrome_elf/chrome_elf_constants.h"

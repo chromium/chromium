@@ -14,7 +14,6 @@
 
 #include "base/callback_forward.h"
 #include "base/memory/ref_counted.h"
-#include "base/strings/string16.h"
 #include "services/device/public/mojom/usb_device.mojom.h"
 
 namespace device {

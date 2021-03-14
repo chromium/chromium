@@ -13,7 +13,6 @@
 #include <vector>
 
 #include "base/i18n/rtl.h"
-#include "base/strings/string16.h"
 #include "build/build_config.h"
 #include "components/autofill/core/common/mojom/autofill_types.mojom-shared.h"
 #include "components/autofill/core/common/renderer_id.h"

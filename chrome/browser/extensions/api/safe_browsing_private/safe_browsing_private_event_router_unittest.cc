@@ -10,7 +10,6 @@
 
 #include "base/bind.h"
 #include "base/json/json_reader.h"
-#include "base/strings/string16.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/mock_callback.h"
 #include "base/test/scoped_feature_list.h"

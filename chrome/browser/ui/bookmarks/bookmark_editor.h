@@ -9,7 +9,6 @@
 #include <utility>
 #include <vector>
 
-#include "base/strings/string16.h"
 #include "components/bookmarks/browser/bookmark_node.h"
 #include "ui/gfx/native_widget_types.h"
 

@@ -10,7 +10,6 @@
 #include <map>
 #include <string>
 
-#include "base/strings/string16.h"
 #include "third_party/blink/public/common/common_export.h"
 #include "third_party/blink/public/common/indexeddb/indexeddb_key_path.h"
 

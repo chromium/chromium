@@ -9,7 +9,6 @@
 
 #include "base/component_export.h"
 #include "base/macros.h"
-#include "base/strings/string16.h"
 
 namespace base {
 class DictionaryValue;

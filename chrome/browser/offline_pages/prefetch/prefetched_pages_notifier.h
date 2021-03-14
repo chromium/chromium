@@ -7,7 +7,6 @@
 
 #include <string>
 
-#include "base/strings/string16.h"
 #include "components/offline_pages/core/offline_page_types.h"
 #include "url/gurl.h"
 

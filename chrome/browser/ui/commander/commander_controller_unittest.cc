@@ -9,7 +9,6 @@
 #include "base/callback.h"
 #include "base/macros.h"
 #include "base/run_loop.h"
-#include "base/strings/string16.h"
 #include "base/test/bind.h"
 #include "chrome/browser/ui/commander/command_source.h"
 #include "chrome/browser/ui/commander/commander_view_model.h"

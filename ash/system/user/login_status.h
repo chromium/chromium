@@ -8,7 +8,6 @@
 #include <string>
 
 #include "ash/login_status.h"
-#include "base/strings/string16.h"
 
 namespace ash {
 namespace user {

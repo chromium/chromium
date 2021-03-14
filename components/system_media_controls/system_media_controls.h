@@ -8,7 +8,6 @@
 #include <string>
 
 #include "base/component_export.h"
-#include "base/strings/string16.h"
 #include "services/media_session/public/cpp/media_position.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 

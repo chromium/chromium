@@ -13,7 +13,6 @@
 #include "base/observer_list.h"
 #include "base/optional.h"
 #include "base/process/process.h"
-#include "base/strings/string16.h"
 #include "chromecast/common/mojom/feature_manager.mojom.h"
 #include "content/public/common/media_playback_renderer_type.mojom.h"
 #include "mojo/public/cpp/bindings/generic_pending_receiver.h"

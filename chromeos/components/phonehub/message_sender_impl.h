@@ -10,7 +10,6 @@
 #include <stdint.h>
 #include <string>
 
-#include "base/strings/string16.h"
 #include "chromeos/components/phonehub/proto/phonehub_api.pb.h"
 
 namespace chromeos {

@@ -6,7 +6,6 @@
 
 #include <string>
 
-#include "base/strings/string16.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/win/win_util.h"
 #include "chrome/updater/policy_manager.h"

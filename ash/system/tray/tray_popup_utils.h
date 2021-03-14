@@ -12,7 +12,6 @@
 #include "ash/system/tray/tray_constants.h"
 #include "ash/system/tray/tray_popup_ink_drop_style.h"
 #include "ash/system/tray/tri_view.h"
-#include "base/strings/string16.h"
 #include "ui/views/controls/button/button.h"
 
 namespace views {

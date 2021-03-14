@@ -5,7 +5,6 @@
 #include <string>
 #include <utility>
 
-#include "base/strings/string16.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/autofill/core/browser/geo/country_names.h"
 #include "testing/gtest/include/gtest/gtest.h"

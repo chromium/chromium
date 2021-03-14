@@ -11,7 +11,6 @@
 #include "base/macros.h"
 #include "base/memory/singleton.h"
 #include "base/optional.h"
-#include "base/strings/string16.h"
 #include "build/build_config.h"
 #include "build/chromecast_buildflags.h"
 #include "content/common/content_export.h"

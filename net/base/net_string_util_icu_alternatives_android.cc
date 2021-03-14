@@ -6,7 +6,6 @@
 
 #include "base/android/jni_android.h"
 #include "base/android/jni_string.h"
-#include "base/strings/string16.h"
 #include "base/strings/string_piece.h"
 #include "net/base/net_string_util.h"
 #include "net/net_jni_headers/NetStringUtil_jni.h"

@@ -8,7 +8,6 @@
 #include <string>
 
 #include "ash/hud_display/hud_constants.h"
-#include "base/strings/string16.h"
 #include "ui/views/controls/button/label_button.h"
 #include "ui/views/metadata/metadata_header_macros.h"
 #include "ui/views/view.h"

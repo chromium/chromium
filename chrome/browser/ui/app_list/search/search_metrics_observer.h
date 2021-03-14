@@ -12,7 +12,6 @@
 #include "ash/public/cpp/app_list/app_list_notifier.h"
 #include "base/macros.h"
 #include "base/scoped_observer.h"
-#include "base/strings/string16.h"
 
 namespace app_list {
 

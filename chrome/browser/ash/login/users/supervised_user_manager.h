@@ -9,7 +9,6 @@
 
 #include "base/callback.h"
 #include "base/macros.h"
-#include "base/strings/string16.h"
 #include "base/values.h"
 #include "chrome/browser/profiles/profile.h"
 

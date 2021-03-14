@@ -6,7 +6,6 @@
 
 #include <string>
 
-#include "base/strings/string16.h"
 #include "chrome/browser/ui/page_info/page_info_dialog.h"
 #include "components/page_info/page_info_ui.h"
 #include "content/public/browser/navigation_handle.h"

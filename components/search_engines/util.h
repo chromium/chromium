@@ -12,7 +12,6 @@
 #include <string>
 #include <vector>
 
-#include "base/strings/string16.h"
 #include "components/search_engines/template_url_service.h"
 
 class KeywordWebDataService;

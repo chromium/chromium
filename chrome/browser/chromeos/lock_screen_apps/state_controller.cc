@@ -15,7 +15,6 @@
 #include "base/command_line.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/path_service.h"
-#include "base/strings/string16.h"
 #include "base/time/default_tick_clock.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/browser_process.h"

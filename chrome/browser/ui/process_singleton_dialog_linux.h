@@ -7,7 +7,6 @@
 
 #include <string>
 
-#include "base/strings/string16.h"
 
 // Displays an error to the user when the ProcessSingleton cannot acquire the
 // lock.  This runs the message loop itself as the browser message loop has not

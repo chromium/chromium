@@ -10,7 +10,6 @@
 #include "base/base64.h"
 #include "base/i18n/time_formatting.h"
 #include "base/json/json_writer.h"
-#include "base/strings/string16.h"
 #include "base/values.h"
 #include "components/sync/protocol/proto_enum_conversions.h"
 

@@ -9,7 +9,6 @@
 
 #include <string>
 #include <vector>
-#include "base/strings/string16.h"
 #include "components/omnibox/browser/in_memory_url_index_types.h"
 #include "ui/gfx/range/range.h"
 

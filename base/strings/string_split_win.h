@@ -10,7 +10,6 @@
 
 #include "base/base_export.h"
 #include "base/compiler_specific.h"
-#include "base/strings/string16.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/string_split.h"
 

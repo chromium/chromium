@@ -10,7 +10,6 @@
 
 #include "base/gtest_prod_util.h"
 #include "base/macros.h"
-#include "base/strings/string16.h"
 #include "base/supports_user_data.h"
 #include "chrome/browser/font_pref_change_notifier.h"
 #include "third_party/blink/public/common/web_preferences/web_preferences.h"

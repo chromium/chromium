@@ -8,7 +8,6 @@
 #include <string>
 
 #include "base/optional.h"
-#include "base/strings/string16.h"
 
 // A delegate class that returns the Profile information necessary for
 // browser-independent Nearby Share components, such as the local-device-data

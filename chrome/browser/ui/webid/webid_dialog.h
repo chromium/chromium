@@ -8,7 +8,6 @@
 #include <string>
 
 #include "base/callback.h"
-#include "base/strings/string16.h"
 #include "content/public/browser/identity_request_dialog_controller.h"
 #include "url/gurl.h"
 

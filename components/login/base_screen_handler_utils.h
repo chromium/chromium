@@ -13,7 +13,6 @@
 
 #include "base/callback.h"
 #include "base/logging.h"
-#include "base/strings/string16.h"
 #include "base/values.h"
 #include "components/account_id/account_id.h"
 #include "components/login/login_export.h"

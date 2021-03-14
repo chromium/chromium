@@ -15,7 +15,6 @@
 #include "base/containers/span.h"
 #include "base/location.h"
 #include "base/optional.h"
-#include "base/strings/string16.h"
 #include "base/time/time.h"
 #include "base/values.h"
 #include "build/build_config.h"

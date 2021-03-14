@@ -10,7 +10,6 @@
 #include <string>
 
 #include "base/callback.h"
-#include "base/strings/string16.h"
 #include "base/strings/utf_string_conversions.h"
 
 // Controller for the disconnect window which allows the host user to

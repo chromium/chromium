@@ -16,7 +16,6 @@
 
 #include <string>
 
-#include "base/strings/string16.h"
 #include "net/base/completion_once_callback.h"
 #include "net/base/net_errors.h"
 #include "net/base/net_export.h"

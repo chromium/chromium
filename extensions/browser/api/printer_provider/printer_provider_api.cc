@@ -17,7 +17,6 @@
 #include "base/i18n/rtl.h"
 #include "base/macros.h"
 #include "base/scoped_observer.h"
-#include "base/strings/string16.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
 #include "extensions/browser/api/printer_provider/printer_provider_internal_api.h"

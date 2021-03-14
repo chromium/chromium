@@ -10,7 +10,6 @@
 #include "base/callback_forward.h"
 #include "base/optional.h"
 #include "base/run_loop.h"
-#include "base/strings/string16.h"
 #include "base/values.h"
 #include "weblayer/public/navigation.h"
 #include "weblayer/public/navigation_observer.h"

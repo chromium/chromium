@@ -9,7 +9,6 @@
 #include <string>
 #include "base/files/file_util.h"
 #include "base/process/process.h"
-#include "base/strings/string16.h"
 
 namespace cloud_print {
 

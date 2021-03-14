@@ -8,7 +8,6 @@
 #include <string>
 
 #include "base/macros.h"
-#include "base/strings/string16.h"
 #include "components/infobars/core/infobar_delegate.h"
 #include "ui/gfx/range/range.h"
 

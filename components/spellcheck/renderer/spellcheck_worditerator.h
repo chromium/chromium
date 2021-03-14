@@ -15,7 +15,6 @@
 #include <string>
 
 #include "base/macros.h"
-#include "base/strings/string16.h"
 #include "third_party/icu/source/common/unicode/uscript.h"
 
 namespace base {

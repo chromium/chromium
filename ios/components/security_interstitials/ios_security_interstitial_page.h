@@ -8,7 +8,6 @@
 #include <string>
 
 #include "base/macros.h"
-#include "base/strings/string16.h"
 #include "ios/components/security_interstitials/ios_blocking_page_controller_client.h"
 #include "ios/web/public/security/web_interstitial_delegate.h"
 #include "url/gurl.h"

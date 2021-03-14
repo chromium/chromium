@@ -14,7 +14,6 @@
 #include <vector>
 
 #include "base/optional.h"
-#include "base/strings/string16.h"
 #include "base/time/time.h"
 #include "components/sessions/core/sessions_export.h"
 #include "ui/base/page_transition_types.h"

@@ -10,7 +10,6 @@
 
 #include "ash/public/cpp/ash_public_export.h"
 #include "base/callback_forward.h"
-#include "base/strings/string16.h"
 #include "components/account_id/account_id.h"
 #include "ui/gfx/image/image_skia.h"
 

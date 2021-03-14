@@ -14,7 +14,6 @@
 #include "base/android/jni_string.h"
 #include "base/bind.h"
 #include "base/optional.h"
-#include "base/strings/string16.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/android/chrome_jni_headers/WebApkUpdateDataFetcher_jni.h"

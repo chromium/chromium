@@ -4,7 +4,6 @@
 
 #include <string>
 
-#include "base/strings/string16.h"
 #include "base/threading/thread_restrictions.h"
 #include "base/values.h"
 #include "chrome/browser/browser_process.h"

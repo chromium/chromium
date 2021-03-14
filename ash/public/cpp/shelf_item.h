@@ -10,7 +10,6 @@
 
 #include "ash/public/cpp/ash_public_export.h"
 #include "ash/public/cpp/shelf_types.h"
-#include "base/strings/string16.h"
 #include "ui/gfx/image/image_skia.h"
 
 namespace ash {

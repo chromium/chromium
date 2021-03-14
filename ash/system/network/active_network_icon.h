@@ -13,7 +13,6 @@
 #include "ash/system/network/network_icon.h"
 #include "ash/system/network/tray_network_state_observer.h"
 #include "base/macros.h"
-#include "base/strings/string16.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "chromeos/services/network_config/public/mojom/cros_network_config.mojom-forward.h"

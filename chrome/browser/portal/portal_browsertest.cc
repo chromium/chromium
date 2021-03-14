@@ -9,7 +9,6 @@
 #include "base/callback.h"
 #include "base/containers/flat_set.h"
 #include "base/memory/scoped_refptr.h"
-#include "base/strings/string16.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/post_task.h"
 #include "base/test/scoped_feature_list.h"

@@ -5,7 +5,6 @@
 #include <string>
 
 #include "base/run_loop.h"
-#include "base/strings/string16.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
 #include "chrome/test/base/in_process_browser_test.h"

@@ -7,7 +7,6 @@
 
 #include <string>
 
-#include "base/strings/string16.h"
 #include "components/translate/core/browser/translate_metrics_logger_impl.h"
 #include "components/translate/core/common/translate_errors.h"
 

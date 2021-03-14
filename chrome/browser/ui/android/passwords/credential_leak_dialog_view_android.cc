@@ -8,7 +8,6 @@
 
 #include "base/android/jni_android.h"
 #include "base/android/jni_string.h"
-#include "base/strings/string16.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/android/chrome_jni_headers/CredentialLeakDialogBridge_jni.h"
 #include "chrome/browser/password_manager/android/credential_leak_controller_android.h"

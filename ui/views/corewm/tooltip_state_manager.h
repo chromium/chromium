@@ -9,7 +9,6 @@
 #include <memory>
 #include <string>
 
-#include "base/strings/string16.h"
 #include "base/timer/timer.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/views/corewm/tooltip.h"

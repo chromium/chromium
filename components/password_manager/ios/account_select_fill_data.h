@@ -11,7 +11,6 @@
 #include <vector>
 
 #include "base/macros.h"
-#include "base/strings/string16.h"
 #include "components/autofill/core/common/renderer_id.h"
 #include "url/gurl.h"
 

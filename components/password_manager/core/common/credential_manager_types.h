@@ -13,7 +13,6 @@
 
 #include "base/compiler_specific.h"
 #include "base/optional.h"
-#include "base/strings/string16.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 

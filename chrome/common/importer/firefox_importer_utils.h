@@ -9,7 +9,6 @@
 #include <vector>
 
 #include "base/files/file_util.h"
-#include "base/strings/string16.h"
 #include "build/build_config.h"
 
 class GURL;

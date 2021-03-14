@@ -11,7 +11,6 @@
 #include <string>
 #include <vector>
 
-#include "base/strings/string16.h"
 #include "base/threading/thread_checker.h"
 #include "base/win/atl.h"
 #include "chrome/updater/win/install_progress_observer.h"

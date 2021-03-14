@@ -5,7 +5,6 @@
 #include <string>
 
 #include "base/bind.h"
-#include "base/strings/string16.h"
 #include "base/strings/string_number_conversions.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "testing/platform_test.h"

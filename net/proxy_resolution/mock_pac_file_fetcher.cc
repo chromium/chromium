@@ -9,7 +9,6 @@
 
 #include "base/check.h"
 #include "base/run_loop.h"
-#include "base/strings/string16.h"
 #include "base/strings/utf_string_conversions.h"
 #include "net/base/net_errors.h"
 

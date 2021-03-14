@@ -9,7 +9,6 @@
 #include <vector>
 
 #include "base/macros.h"
-#include "base/strings/string16.h"
 #include "components/sqlite_proto/table_manager.h"
 #include "url/gurl.h"
 

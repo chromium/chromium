@@ -7,7 +7,6 @@
 
 #include <string>
 
-#include "base/strings/string16.h"
 #include "ui/accessibility/ax_export.h"
 
 namespace ui {

@@ -8,7 +8,6 @@
 #include <memory>
 #include <string>
 
-#include "base/strings/string16.h"
 #include "chrome/browser/extensions/extension_uninstall_dialog.h"
 #include "ui/gfx/native_widget_types.h"
 

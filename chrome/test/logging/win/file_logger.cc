@@ -17,7 +17,6 @@
 #include "base/logging.h"
 #include "base/logging_win.h"
 #include "base/stl_util.h"
-#include "base/strings/string16.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/win/event_trace_consumer.h"
 #include "base/win/registry.h"

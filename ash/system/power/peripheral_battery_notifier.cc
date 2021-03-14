@@ -16,7 +16,6 @@
 #include "ash/system/model/system_tray_model.h"
 #include "base/bind.h"
 #include "base/logging.h"
-#include "base/strings/string16.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"

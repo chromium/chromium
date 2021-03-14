@@ -8,7 +8,6 @@
 #include <string>
 
 #include "base/macros.h"
-#include "base/strings/string16.h"
 
 // An interface used for launching the entry editor and editing a credential
 // record.

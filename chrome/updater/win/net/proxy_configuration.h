@@ -13,7 +13,6 @@
 
 #include "base/memory/ref_counted.h"
 #include "base/optional.h"
-#include "base/strings/string16.h"
 #include "chrome/updater/win/net/proxy_info.h"
 #include "chrome/updater/win/net/scoped_winttp_proxy_info.h"
 

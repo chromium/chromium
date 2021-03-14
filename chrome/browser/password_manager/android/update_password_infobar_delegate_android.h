@@ -10,7 +10,6 @@
 #include <vector>
 
 #include "base/macros.h"
-#include "base/strings/string16.h"
 #include "chrome/browser/password_manager/android/password_manager_infobar_delegate_android.h"
 #include "chrome/browser/ui/passwords/manage_passwords_state.h"
 #include "components/password_manager/core/browser/password_form_manager_for_ui.h"

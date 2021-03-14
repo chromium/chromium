@@ -8,7 +8,6 @@
 #include <string>
 
 #include "base/optional.h"
-#include "base/strings/string16.h"
 #include "chrome/browser/continuous_search/internal/search_result_category.h"
 #include "url/gurl.h"
 

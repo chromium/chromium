@@ -9,7 +9,6 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
-#include "base/strings/string16.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "components/bookmarks/browser/bookmark_model.h"

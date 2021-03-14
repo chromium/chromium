@@ -12,7 +12,6 @@
 #include "ash/public/cpp/tablet_mode.h"
 #include "base/i18n/rtl.h"
 #include "base/scoped_observation.h"
-#include "base/strings/string16.h"
 #include "base/time/time.h"
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/about_flags.h"

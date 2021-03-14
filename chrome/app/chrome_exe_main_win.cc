@@ -23,7 +23,6 @@
 #include "base/process/memory.h"
 #include "base/process/process.h"
 #include "base/stl_util.h"
-#include "base/strings/string16.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"

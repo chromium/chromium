@@ -10,7 +10,6 @@
 #include "base/callback_forward.h"
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
-#include "base/strings/string16.h"
 #include "ui/views/window/dialog_delegate.h"
 
 namespace ash {

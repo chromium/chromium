@@ -8,7 +8,6 @@
 #include <string>
 
 #include "base/scoped_observer.h"
-#include "base/strings/string16.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "build/buildflag.h"

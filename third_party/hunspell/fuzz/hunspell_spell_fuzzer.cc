@@ -6,7 +6,6 @@
 #include <stdint.h>
 #include <string>
 
-#include "base/strings/string16.h"
 #include "base/strings/utf_string_conversions.h"
 #include "third_party/hunspell/fuzz/hunspell_fuzzer_hunspell_dictionary.h"
 #include "third_party/hunspell/src/hunspell/hunspell.hxx"

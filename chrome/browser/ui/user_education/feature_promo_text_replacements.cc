@@ -7,7 +7,6 @@
 #include <string>
 #include <utility>
 
-#include "base/strings/string16.h"
 #include "ui/base/l10n/l10n_util.h"
 
 FeaturePromoTextReplacements::FeaturePromoTextReplacements() = default;

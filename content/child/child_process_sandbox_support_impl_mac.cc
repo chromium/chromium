@@ -10,7 +10,6 @@
 #include "base/bind.h"
 #include "base/mac/scoped_cftyperef.h"
 #include "base/numerics/safe_conversions.h"
-#include "base/strings/string16.h"
 #include "base/strings/sys_string_conversions.h"
 #include "content/common/mac/font_loader.h"
 #include "content/public/child/child_thread.h"

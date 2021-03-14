@@ -14,7 +14,6 @@
 #include "base/containers/span.h"
 #include "base/i18n/rtl.h"
 #include "base/memory/weak_ptr.h"
-#include "base/strings/string16.h"
 #include "base/types/strong_alias.h"
 #include "base/values.h"
 #include "build/build_config.h"

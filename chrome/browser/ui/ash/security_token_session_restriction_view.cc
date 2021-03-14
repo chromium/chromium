@@ -7,7 +7,6 @@
 #include <string>
 
 #include "base/i18n/message_formatter.h"
-#include "base/strings/string16.h"
 #include "base/time/default_tick_clock.h"
 #include "base/time/tick_clock.h"
 #include "base/time/time.h"

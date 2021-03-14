@@ -11,7 +11,6 @@
 #include "ash/system/message_center/message_center_ui_delegate.h"
 #include "base/macros.h"
 #include "base/observer_list.h"
-#include "base/strings/string16.h"
 #include "ui/message_center/message_center_export.h"
 #include "ui/message_center/message_center_observer.h"
 #include "ui/message_center/public/cpp/notifier_id.h"

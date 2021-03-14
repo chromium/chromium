@@ -10,7 +10,6 @@
 #include <string>
 
 #include "base/process/process_handle.h"
-#include "base/strings/string16.h"
 #include "content/common/content_export.h"
 #include "ppapi/c/pp_resource.h"
 #include "ppapi/c/pp_var.h"

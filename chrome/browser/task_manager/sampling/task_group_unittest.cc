@@ -13,7 +13,6 @@
 #include "base/memory/ref_counted.h"
 #include "base/run_loop.h"
 #include "base/sequenced_task_runner.h"
-#include "base/strings/string16.h"
 #include "base/test/gtest_util.h"
 #include "chrome/browser/task_manager/sampling/shared_sampler.h"
 #include "content/public/browser/browser_task_traits.h"

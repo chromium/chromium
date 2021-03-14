@@ -19,7 +19,6 @@
 #include "base/metrics/persistent_memory_allocator.h"
 #include "base/process/memory.h"
 #include "base/process/process.h"
-#include "base/strings/string16.h"
 #include "base/time/time.h"
 #include "components/browser_watcher/activity_report_extractor.h"
 #include "components/browser_watcher/activity_tracker_annotation.h"

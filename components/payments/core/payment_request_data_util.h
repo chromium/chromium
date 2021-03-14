@@ -10,7 +10,6 @@
 #include <string>
 #include <vector>
 
-#include "base/strings/string16.h"
 #include "components/autofill/core/browser/data_model/credit_card.h"
 #include "components/payments/mojom/payment_request_data.mojom.h"
 #include "url/gurl.h"

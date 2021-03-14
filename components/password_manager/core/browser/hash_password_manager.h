@@ -11,7 +11,6 @@
 #include "base/callback_list.h"
 #include "base/macros.h"
 #include "base/optional.h"
-#include "base/strings/string16.h"
 #include "components/password_manager/core/browser/password_hash_data.h"
 
 class PrefService;

@@ -9,7 +9,6 @@
 #include <vector>
 
 #include "base/i18n/case_conversion.h"
-#include "base/strings/string16.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/trace_event/trace_event.h"

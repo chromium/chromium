@@ -7,7 +7,6 @@
 
 #include <string>
 
-#include "base/strings/string16.h"
 #include "chrome/browser/vr/vr_base_export.h"
 #include "components/omnibox/browser/autocomplete_match.h"
 #include "url/gurl.h"

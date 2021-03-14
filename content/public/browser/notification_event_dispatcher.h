@@ -9,7 +9,6 @@
 
 #include "base/callback_forward.h"
 #include "base/optional.h"
-#include "base/strings/string16.h"
 #include "content/common/content_export.h"
 
 class GURL;

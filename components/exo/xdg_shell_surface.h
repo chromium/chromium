@@ -13,7 +13,6 @@
 #include "ash/wm/window_state_observer.h"
 #include "base/macros.h"
 #include "base/optional.h"
-#include "base/strings/string16.h"
 #include "components/exo/shell_surface.h"
 #include "components/exo/surface_observer.h"
 #include "components/exo/surface_tree_host.h"

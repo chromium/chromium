@@ -9,7 +9,6 @@
 #include <string>
 
 #include "base/containers/span.h"
-#include "base/strings/string16.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_icon_set.h"
 #include "extensions/common/extension_resource.h"

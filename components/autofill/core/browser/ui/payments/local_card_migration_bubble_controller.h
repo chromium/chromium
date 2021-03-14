@@ -8,7 +8,6 @@
 #include <string>
 
 #include "base/macros.h"
-#include "base/strings/string16.h"
 #include "components/autofill/core/browser/ui/payments/payments_bubble_closed_reasons.h"
 
 namespace autofill {

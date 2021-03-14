@@ -12,7 +12,6 @@
 
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
-#include "base/strings/string16.h"
 #include "chrome/browser/google/google_update_win.h"
 #include "chrome/browser/ui/webui/help/version_updater.h"
 

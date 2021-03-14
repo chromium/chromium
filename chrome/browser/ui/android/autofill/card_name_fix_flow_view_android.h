@@ -12,7 +12,6 @@
 #include "base/android/jni_string.h"
 #include "base/android/scoped_java_ref.h"
 #include "base/macros.h"
-#include "base/strings/string16.h"
 #include "components/autofill/core/browser/ui/payments/card_name_fix_flow_view.h"
 
 namespace content {

@@ -10,7 +10,6 @@
 
 #include "base/containers/flat_tree.h"
 #include "base/optional.h"
-#include "base/strings/string16.h"
 #include "device/fido/authenticator_selection_criteria.h"
 #include "device/fido/cable/cable_discovery_data.h"
 #include "device/fido/fido_constants.h"

@@ -11,7 +11,6 @@
 
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
-#include "base/strings/string16.h"
 #include "chrome/common/buildflags.h"
 #include "chrome/common/plugin.mojom.h"
 #include "content/public/browser/web_contents_observer.h"
