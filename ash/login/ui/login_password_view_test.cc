@@ -63,18 +63,6 @@ class LoginPasswordViewTest : public LoginTestBase {
   void OnEasyUnlockIconHovered() { easy_unlock_icon_hovered_called_ = true; }
   void OnEasyUnlockIconTapped() { easy_unlock_icon_tapped_called_ = true; }
 
-  void MakeTextfieldNonEmptyAndTabTraverse(
-      const LoginPasswordView::TestApi& test_api,
-      ui::test::EventGenerator* generator) {
-    EXPECT_TRUE(is_password_field_empty_);
-    // By making the textfield non-empty, we enable other buttons, thus
-    // allowing Tab traversal.
-    view_->InsertNumber(0);
-    EXPECT_TRUE(test_api.textfield()->HasFocus());
-    generator->PressKey(ui::KeyboardCode::VKEY_TAB, ui::EventFlags::EF_NONE);
-    EXPECT_FALSE(test_api.textfield()->HasFocus());
-  }
-
   LoginPasswordView* view_ = nullptr;
   base::Optional<base::string16> password_;
   bool is_password_field_empty_ = true;
@@ -495,56 +483,17 @@ TEST_F(LoginPasswordViewTest,
 // Verifies that focus returned to the textfield after InsertNumber is called.
 TEST_F(LoginPasswordViewTest, FocusReturn) {
   LoginPasswordView::TestApi test_api(view_);
-  MakeTextfieldNonEmptyAndTabTraverse(test_api, GetEventGenerator());
+  ui::test::EventGenerator* generator = GetEventGenerator();
   // Verify that focus is returned to view after the number insertion.
+  view_->InsertNumber(0);
+  EXPECT_TRUE(test_api.textfield()->HasFocus());
+  // Focus on the next element to check that following focus return will not
+  // delete what was already inserted into textfield.
+  generator->PressKey(ui::KeyboardCode::VKEY_TAB, ui::EventFlags::EF_NONE);
+  EXPECT_FALSE(test_api.textfield()->HasFocus());
   view_->InsertNumber(1);
   EXPECT_TRUE(test_api.textfield()->HasFocus());
   EXPECT_EQ(test_api.textfield()->GetText().length(), 2u);
-}
-
-// Verifies that password row and capslock icon highlight when password row
-// gets focused and loose highlight when focus is lost.
-TEST_F(LoginPasswordViewTest, FocusHighlight) {
-  LoginPasswordView::TestApi test_api(view_);
-  ui::test::EventGenerator* generator = GetEventGenerator();
-
-  EXPECT_TRUE(test_api.textfield()->HasFocus());
-  EXPECT_TRUE(test_api.password_row()->get_highlight_for_testing());
-  EXPECT_TRUE(test_api.is_capslock_highlight_for_testing());
-
-  // Loose focus.
-  MakeTextfieldNonEmptyAndTabTraverse(test_api, generator);
-  EXPECT_FALSE(test_api.password_row()->get_highlight_for_testing());
-  EXPECT_FALSE(test_api.is_capslock_highlight_for_testing());
-
-  // Get focus again.
-  generator->PressKey(ui::KeyboardCode::VKEY_TAB, ui::EF_SHIFT_DOWN);
-  EXPECT_TRUE(test_api.textfield()->HasFocus());
-  EXPECT_TRUE(test_api.password_row()->get_highlight_for_testing());
-  EXPECT_TRUE(test_api.is_capslock_highlight_for_testing());
-}
-
-// Check that password textfield cursor is enabled iff there is text,
-// independently of focus state.
-TEST_F(LoginPasswordViewTest, CursorDisabledWhenEmpty) {
-  LoginPasswordView::TestApi test_api(view_);
-  ui::test::EventGenerator* generator = GetEventGenerator();
-
-  EXPECT_FALSE(test_api.textfield()->GetCursorEnabled());
-  generator->PressKey(ui::KeyboardCode::VKEY_A, ui::EF_NONE);
-  EXPECT_TRUE(test_api.textfield()->GetCursorEnabled());
-  generator->PressKey(ui::KeyboardCode::VKEY_B, ui::EF_NONE);
-  EXPECT_TRUE(test_api.textfield()->GetCursorEnabled());
-  generator->PressKey(ui::KeyboardCode::VKEY_BACK, ui::EF_NONE);
-  EXPECT_TRUE(test_api.textfield()->GetCursorEnabled());
-  generator->PressKey(ui::KeyboardCode::VKEY_BACK, ui::EF_NONE);
-  EXPECT_FALSE(test_api.textfield()->GetCursorEnabled());
-
-  // Check that cursor state does not depend on focus state.
-  MakeTextfieldNonEmptyAndTabTraverse(test_api, generator);
-  EXPECT_TRUE(test_api.textfield()->GetCursorEnabled());
-  view_->Clear();
-  EXPECT_FALSE(test_api.textfield()->GetCursorEnabled());
 }
 
 }  // namespace ash

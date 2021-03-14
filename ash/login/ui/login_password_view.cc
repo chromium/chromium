@@ -232,34 +232,46 @@ class AnimationCycleEndObserver : public ui::LayerAnimationObserver {
 
 }  // namespace
 
-LoginPasswordView::LoginPasswordRow::LoginPasswordRow()
-    : focus_ring_(views::FocusRing::Install(this)) {
-  focus_ring_->SetColor(ShelfConfig::Get()->shelf_focus_border_color());
-  views::InstallRoundRectHighlightPathGenerator(this, gfx::Insets(),
-                                                kPasswordRowFocusRingRadiusDp);
+// The login password row contains the password textfield and different buttons
+// and indicators (easy unlock, display password, caps lock enabled).
+class LoginPasswordView::LoginPasswordRow : public views::View {
+ public:
+  LoginPasswordRow() : focus_ring_(views::FocusRing::Install(this)) {
+    focus_ring_->SetColor(ShelfConfig::Get()->shelf_focus_border_color());
+    views::InstallRoundRectHighlightPathGenerator(
+        this, gfx::Insets(), kPasswordRowFocusRingRadiusDp);
 
-  focus_ring_->SetHasFocusPredicate([](View* view) {
-    return static_cast<LoginPasswordRow*>(view)->is_highlighted_;
-  });
+    focus_ring_->SetHasFocusPredicate([](View* view) {
+      return static_cast<LoginPasswordRow*>(view)->is_highlighted_;
+    });
 
-  SetBorder(views::CreateEmptyBorder(gfx::Insets(kBorderForFocusRingDp)));
-}
+    SetBorder(views::CreateEmptyBorder(gfx::Insets(kBorderForFocusRingDp)));
+  }
+  ~LoginPasswordRow() override = default;
+  LoginPasswordRow(const LoginPasswordRow&) = delete;
+  LoginPasswordRow& operator=(const LoginPasswordRow&) = delete;
 
-void LoginPasswordView::LoginPasswordRow::SetHighlight(bool enabled) {
-  is_highlighted_ = enabled;
-  focus_ring_->SchedulePaint();
-}
+  void SetHighlight(bool enabled) {
+    is_highlighted_ = enabled;
+    focus_ring_->SchedulePaint();
+  }
 
-// views::View:
-void LoginPasswordView::LoginPasswordRow::OnPaint(gfx::Canvas* canvas) {
-  views::View::OnPaint(canvas);
+  // views::View:
+  void OnPaint(gfx::Canvas* canvas) override {
+    views::View::OnPaint(canvas);
 
-  cc::PaintFlags flags;
-  flags.setStyle(cc::PaintFlags::kFill_Style);
-  flags.setColor(AshColorProvider::Get()->GetControlsLayerColor(
-      AshColorProvider::ControlsLayerType::kControlBackgroundColorInactive));
-  canvas->DrawRoundRect(GetContentsBounds(), kPasswordRowCornerRadiusDp, flags);
-}
+    cc::PaintFlags flags;
+    flags.setStyle(cc::PaintFlags::kFill_Style);
+    flags.setColor(AshColorProvider::Get()->GetControlsLayerColor(
+        AshColorProvider::ControlsLayerType::kControlBackgroundColorInactive));
+    canvas->DrawRoundRect(GetContentsBounds(), kPasswordRowCornerRadiusDp,
+                          flags);
+  }
+
+ private:
+  bool is_highlighted_ = false;
+  views::FocusRing* focus_ring_;
+};
 
 // A textfield that selects all text on focus and allows to switch between
 // show/hide password modes.
@@ -267,7 +279,8 @@ class LoginPasswordView::LoginTextfield : public views::Textfield {
  public:
   LoginTextfield(const LoginPalette& palette,
                  base::RepeatingClosure on_focus_closure,
-                 base::RepeatingClosure on_blur_closure)
+                 base::RepeatingClosure on_blur_closure,
+                 base::RepeatingClosure on_tab_focus_closure)
       : on_focus_closure_(std::move(on_focus_closure)),
         on_blur_closure_(std::move(on_blur_closure)) {
     SetTextColor(palette.password_text_color);
@@ -278,8 +291,6 @@ class LoginPasswordView::LoginTextfield : public views::Textfield {
     SetObscuredGlyphSpacing(kPasswordGlyphSpacing);
     SetBorder(nullptr);
     SetBackgroundColor(palette.password_background_color);
-    SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_CENTER);
-    set_placeholder_text_draw_flags(gfx::Canvas::TEXT_ALIGN_CENTER);
   }
   LoginTextfield(const LoginTextfield&) = delete;
   LoginTextfield& operator=(const LoginTextfield&) = delete;
@@ -300,12 +311,14 @@ class LoginPasswordView::LoginTextfield : public views::Textfield {
   }
 
   void AboutToRequestFocusFromTabTraversal(bool reverse) override {
+    if (on_tab_focus_closure_)
+      on_tab_focus_closure_.Run();
+
     if (!GetText().empty())
       SelectAll(/*reversed=*/false);
   }
 
   void UpdateFontListAndCursor() {
-    SetCursorEnabled(!GetText().empty());
     SetFontList(GetTextInputType() == ui::TEXT_INPUT_TYPE_PASSWORD
                     ? font_list_hidden_
                     : font_list_visible_);
@@ -348,6 +361,7 @@ class LoginPasswordView::LoginTextfield : public views::Textfield {
   // Closures that will be called when the element receives and loses focus.
   base::RepeatingClosure on_focus_closure_;
   base::RepeatingClosure on_blur_closure_;
+  base::RepeatingClosure on_tab_focus_closure_;
 };
 
 class LoginPasswordView::EasyUnlockIcon : public views::Button {
@@ -608,11 +622,6 @@ views::View* LoginPasswordView::TestApi::capslock_icon() const {
   return view_->capslock_icon_;
 }
 
-LoginPasswordView::LoginPasswordRow* LoginPasswordView::TestApi::password_row()
-    const {
-  return view_->password_row_;
-}
-
 void LoginPasswordView::TestApi::set_immediately_hover_easy_unlock_icon() {
   view_->easy_unlock_icon_->set_immediately_hover_for_test();
 }
@@ -658,10 +667,12 @@ LoginPasswordView::LoginPasswordView(const LoginPalette& palette)
   auto textfield = std::make_unique<LoginTextfield>(
       palette_,
       // Highlight on focus. Remove highlight on blur.
-      base::BindRepeating(&LoginPasswordView::AddHighlightToCapsLockAndRow,
-                          base::Unretained(this)),
+      base::BindRepeating(&LoginPasswordView::SetCapsLockHighlighted,
+                          base::Unretained(this), /*highlight=*/true),
       base::BindRepeating(&LoginPasswordView::RemoveHighlightFromCapsLockAndRow,
-                          base::Unretained(this)));
+                          base::Unretained(this)),
+      base::BindRepeating(&LoginPasswordView::SetPasswordRowHighlighted,
+                          base::Unretained(this), /*highlight=*/true));
   textfield_ = password_row_->AddChildView(std::move(textfield));
   textfield_->set_controller(this);
 
@@ -674,10 +685,6 @@ LoginPasswordView::LoginPasswordView(const LoginPalette& palette)
                           view->InvertPasswordDisplayingState();
                         },
                         this)));
-  password_end_space_ =
-      password_row_->AddChildView(std::make_unique<NonAccessibleView>());
-  password_end_space_->SetPreferredSize(gfx::Size(kIconSizeDp, kIconSizeDp));
-  password_end_space_->SetVisible(false);
 
   submit_button_ = AddChildView(std::make_unique<ArrowButtonView>(
       base::BindRepeating(&LoginPasswordView::SubmitPassword,
@@ -755,7 +762,6 @@ void LoginPasswordView::SetFocusEnabledForTextfield(bool enable) {
 
 void LoginPasswordView::SetDisplayPasswordButtonVisible(bool visible) {
   display_password_button_->SetVisible(visible);
-  password_end_space_->SetVisible(!visible);
   // Only start the timer if the display password button is enabled.
   if (visible) {
     clear_password_timer_->Start(
@@ -926,20 +932,20 @@ bool LoginPasswordView::IsPasswordSubmittable() {
 void LoginPasswordView::HandleLeftIconsVisibilities(bool handling_capslock) {
   views::View* handled_view = easy_unlock_icon_;
   views::View* other_view = capslock_icon_;
-  bool should_show_handled_view = should_show_easy_unlock_;
-  bool should_show_other_view = should_show_capslock_;
+  bool handled_should_show = should_show_easy_unlock_;
+  bool other_should_show = should_show_capslock_;
   if (handling_capslock) {
     std::swap(handled_view, other_view);
-    std::swap(should_show_handled_view, should_show_other_view);
+    std::swap(handled_should_show, other_should_show);
   }
 
-  if (should_show_handled_view) {
+  if (handled_should_show) {
     // If the view that is currently handled should be shown, we immediately
     // show it; if the other view should be shown as well, we make it invisible
     // for the moment and start a cyclic animation that will show these two
     // views alternatively.
     handled_view->SetVisible(true);
-    if (should_show_other_view) {
+    if (other_should_show) {
       other_view->SetVisible(false);
       left_icon_->ScheduleAnimation(handled_view, other_view);
     }
@@ -949,7 +955,7 @@ void LoginPasswordView::HandleLeftIconsVisibilities(bool handling_capslock) {
     // We also make the other view visible if needed, as its current state
     // may depend on how long the animation has been running.
     left_icon_->AbortAnimationIfAny();
-    other_view->SetVisible(should_show_other_view);
+    other_view->SetVisible(other_should_show);
     handled_view->SetVisible(false);
   }
   password_row_->Layout();
@@ -974,11 +980,6 @@ void LoginPasswordView::SetCapsLockHighlighted(bool highlight) {
 
 void LoginPasswordView::SetPasswordRowHighlighted(bool highlight) {
   password_row_->SetHighlight(highlight);
-}
-
-void LoginPasswordView::AddHighlightToCapsLockAndRow() {
-  SetCapsLockHighlighted(true);
-  SetPasswordRowHighlighted(true);
 }
 
 void LoginPasswordView::RemoveHighlightFromCapsLockAndRow() {
