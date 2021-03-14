@@ -22,6 +22,7 @@ import re
 import shutil
 import subprocess
 import sys
+import tempfile
 
 from update import (CDS_URL, CHROMIUM_DIR, CLANG_REVISION, LLVM_BUILD_DIR,
                     FORCE_HEAD_REVISION_FILE, PACKAGE_VERSION, RELEASE_VERSION,
@@ -44,11 +45,13 @@ ANDROID_NDK_DIR = os.path.join(
     CHROMIUM_DIR, 'third_party', 'android_ndk')
 FUCHSIA_SDK_DIR = os.path.join(CHROMIUM_DIR, 'third_party', 'fuchsia-sdk',
                                'sdk')
+STABLE_CLANG_DIR = os.path.join(LLVM_BUILD_TOOLS_DIR, 'stable-clang')
 
 BUG_REPORT_URL = ('https://crbug.com and run'
                   ' tools/clang/scripts/process_crashreports.py'
                   ' (only works inside Google) which will upload a report')
 
+UPDATE_PY_URL = 'https://raw.githubusercontent.com/chromium/chromium/master/tools/clang/scripts/update.py'
 
 win_sdk_dir = None
 def GetWinSDKDir():
@@ -313,9 +316,23 @@ def DownloadRPMalloc():
   return rpmalloc_dir
 
 
+def DownloadStableClang():
+  # The update.py in this current revision may have a patched revision while
+  # building new clang packages. Download update.py off git to pull the current
+  # pinned clang.
+  with tempfile.NamedTemporaryFile() as f:
+    DownloadUrl(UPDATE_PY_URL, f)
+    print("Running update.py")
+    # Without the flush, the subprocess call below doesn't work.
+    f.flush()
+    subprocess.check_call(
+        [sys.executable, f.name, '--output-dir=' + STABLE_CLANG_DIR])
+
+
+# TODO(crbug.com/929645): Remove once we don't need gcc's libstdc++.
 def MaybeDownloadHostGcc(args):
   """Download a modern GCC host compiler on Linux."""
-  if not sys.platform.startswith('linux') or args.gcc_toolchain:
+  if args.gcc_toolchain:
     return
   gcc_dir = os.path.join(LLVM_BUILD_TOOLS_DIR, 'gcc-10.2.0-trusty')
   if not os.path.exists(gcc_dir):
@@ -494,10 +511,6 @@ def main():
   # move this down to where we fetch other build tools.
   AddGnuWinToPath()
 
-  # TODO(crbug.com/929645): Remove once we build on host systems with a modern
-  # enough GCC to build Clang.
-  MaybeDownloadHostGcc(args)
-
   if sys.platform == 'darwin':
     isysroot = subprocess.check_output(['xcrun', '--show-sdk-path']).rstrip()
 
@@ -571,16 +584,24 @@ def main():
       '-DLLVM_ENABLE_DIA_SDK=OFF',
   ]
 
-  if args.gcc_toolchain:
-    # Use the specified gcc installation for building.
-    cc = os.path.join(args.gcc_toolchain, 'bin', 'gcc')
-    cxx = os.path.join(args.gcc_toolchain, 'bin', 'g++')
-    if not os.access(cc, os.X_OK):
-      print('Invalid --gcc-toolchain: ' + args.gcc_toolchain)
-      return 1
-    base_cmake_args += [
-        '-DLLVM_LOCAL_RPATH=' + os.path.join(args.gcc_toolchain, 'lib64')
-    ]
+  if sys.platform.startswith('linux'):
+    MaybeDownloadHostGcc(args)
+    DownloadStableClang()
+    cc = os.path.join(STABLE_CLANG_DIR, 'bin', 'clang')
+    cxx = os.path.join(STABLE_CLANG_DIR, 'bin', 'clang++')
+    # The host clang has lld.
+    base_cmake_args.append('-DLLVM_ENABLE_LLD=ON')
+    # Use the libraries in the specified gcc installation for building.
+    cxxflags.append('--gcc-toolchain=' + args.gcc_toolchain)
+    base_cmake_args.append('-DLLVM_LOCAL_RPATH=' +
+                           os.path.join(args.gcc_toolchain, 'lib64'))
+    # Force compiler-rt tests to use our gcc libraries (mostly libstdc++.so)
+    # because the ones on the host may be too old.
+    base_cmake_args.append(
+        '-DCOMPILER_RT_TEST_COMPILER_CFLAGS=--gcc-toolchain=' +
+        args.gcc_toolchain + ' -Wl,-rpath,' +
+        os.path.join(args.gcc_toolchain, 'lib64') + ' -Wl,-rpath,' +
+        os.path.join(args.gcc_toolchain, 'lib32'))
 
   if sys.platform == 'darwin':
     # For libc++, we only want the headers.
@@ -590,15 +611,6 @@ def main():
         '-DLIBCXX_INCLUDE_TESTS=OFF',
         '-DLIBCXX_ENABLE_EXPERIMENTAL_LIBRARY=OFF',
     ])
-
-  if args.gcc_toolchain:
-    # Force compiler-rt tests to use our gcc toolchain (including libstdc++.so)
-    # because the one on the host may be too old.
-    base_cmake_args.append(
-        '-DCOMPILER_RT_TEST_COMPILER_CFLAGS=--gcc-toolchain=' +
-        args.gcc_toolchain + ' -Wl,-rpath,' +
-        os.path.join(args.gcc_toolchain, 'lib64') + ' -Wl,-rpath,' +
-        os.path.join(args.gcc_toolchain, 'lib32'))
 
   if sys.platform == 'win32':
     base_cmake_args.append('-DLLVM_USE_CRT_RELEASE=MT')
@@ -703,8 +715,6 @@ def main():
     else:
       cc = os.path.join(LLVM_BOOTSTRAP_INSTALL_DIR, 'bin', 'clang')
       cxx = os.path.join(LLVM_BOOTSTRAP_INSTALL_DIR, 'bin', 'clang++')
-    if sys.platform.startswith('linux'):
-      base_cmake_args.append('-DLLVM_ENABLE_LLD=ON')
 
     if args.gcc_toolchain:
       # Tell the bootstrap compiler where to find the standard library headers
