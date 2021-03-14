@@ -694,7 +694,8 @@ public class StatusMediator implements PermissionDialogController.Observer {
 
         Drawable permissionIcon =
                 ContentSettingsResources.getContentSettingsIcon(mContext, mLastPermission, result);
-        PermissionIconResource statusIcon = new PermissionIconResource(permissionIcon);
+        PermissionIconResource statusIcon =
+                new PermissionIconResource(permissionIcon, mLocationBarDataProvider.isIncognito());
         statusIcon.setTransitionType(IconTransitionType.ROTATE);
         // Set the timer to switch the icon back afterwards.
         mPermissionTaskHandler.removeCallbacksAndMessages(null);

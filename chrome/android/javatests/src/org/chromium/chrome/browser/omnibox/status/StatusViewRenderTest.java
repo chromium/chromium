@@ -184,7 +184,7 @@ public class StatusViewRenderTest extends DummyUiActivityTestCase {
             Drawable locationIcon =
                     ContentSettingsResources.getContentSettingsIcon(mStatusView.getContext(),
                             ContentSettingsType.GEOLOCATION, ContentSettingValues.ALLOW);
-            PermissionIconResource statusIcon = new PermissionIconResource(locationIcon);
+            PermissionIconResource statusIcon = new PermissionIconResource(locationIcon, false);
             statusIcon.setTransitionType(StatusView.IconTransitionType.ROTATE);
             mStatusModel.set(StatusProperties.STATUS_ICON_ALPHA, 1f);
             mStatusModel.set(StatusProperties.SHOW_STATUS_ICON, true);

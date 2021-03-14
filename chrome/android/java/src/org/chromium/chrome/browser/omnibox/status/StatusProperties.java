@@ -133,16 +133,11 @@ public class StatusProperties {
      * highlight.
      */
     static class PermissionIconResource extends StatusIconResource {
-        PermissionIconResource(Drawable drawable) {
+        private boolean mIsIncognito;
+
+        PermissionIconResource(Drawable drawable, boolean isIncognito) {
             super(drawable);
-        }
-
-        PermissionIconResource(String iconIdentifier, Bitmap bitmap, @ColorRes int tint) {
-            super(iconIdentifier, bitmap, tint);
-        }
-
-        PermissionIconResource(@DrawableRes int iconRes, @ColorRes int tint) {
-            super(iconRes, tint);
+            mIsIncognito = isIncognito;
         }
 
         /** Returns a {@link Drawable} for this StatusIconResource. */
@@ -152,8 +147,10 @@ public class StatusProperties {
             if (icon == null) {
                 return null;
             }
-            icon.setColorFilter(
-                    ApiCompatibilityUtils.getColor(resources, R.color.default_icon_color_blue),
+            // Use the dark mode color if in incognito mode.
+            icon.setColorFilter(ApiCompatibilityUtils.getColor(resources,
+                                        mIsIncognito ? R.color.default_icon_color_blue_light
+                                                     : R.color.default_icon_color_blue),
                     PorterDuff.Mode.SRC_IN);
             Bitmap circleCopy = createCircleBackground(resources);
             Canvas canvas = new Canvas(circleCopy);
@@ -189,8 +186,10 @@ public class StatusProperties {
             Bitmap circleBackground = Bitmap.createBitmap(width, width, Bitmap.Config.ARGB_8888);
             Canvas canvas = new Canvas(circleBackground);
             Paint paint = new Paint();
-            paint.setColor(
-                    ApiCompatibilityUtils.getColor(resources, R.color.toolbar_background_primary));
+            // Use the dark mode color if in incognito mode.
+            paint.setColor(ApiCompatibilityUtils.getColor(resources,
+                    mIsIncognito ? R.color.toolbar_background_primary_dark
+                                 : R.color.toolbar_background_primary));
             paint.setAntiAlias(true);
             canvas.drawCircle(radius, radius, radius, paint);
             return circleBackground;
