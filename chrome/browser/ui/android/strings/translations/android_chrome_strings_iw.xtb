@@ -40,7 +40,6 @@
 <translation id="123724288017357924">טעינה מחדש של הדף הנוכחי, תוך התעלמות מתוכן שמאוחסן בקובץ השמור</translation>
 <translation id="124678866338384709">סגירת הכרטיסייה הנוכחית</translation>
 <translation id="1258753120186372309">‏דודל של Google‏: <ph name="DOODLE_DESCRIPTION" /></translation>
-<translation id="1263231323834454256">רשימת קריאה</translation>
 <translation id="1266864766717917324">לא ניתן היה לשתף את ה<ph name="CONTENT_TYPE" /></translation>
 <translation id="1283039547216852943">יש להקיש כדי להרחיב</translation>
 <translation id="1285310382777185058">החלפת שפה</translation>
@@ -994,7 +993,6 @@
 <translation id="7774809984919390718">{PAYMENT_METHOD,plural, =1{‏<ph name="PAYMENT_METHOD_PREVIEW" />‎\u2026‎ ו-<ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> נוסף}two{‏<ph name="PAYMENT_METHOD_PREVIEW" />‎\u2026‎ ו-<ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> נוספים}many{‏<ph name="PAYMENT_METHOD_PREVIEW" />‎\u2026‎ ו-<ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> נוספים}other{‏<ph name="PAYMENT_METHOD_PREVIEW" />‎\u2026‎ ו-<ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> נוספים}}</translation>
 <translation id="7778840695157240389">בהמשך יהיו פה סיפורים חדשים</translation>
 <translation id="7786595606756654269">‏שירות Google Assistant מספק חוויה קולית טובה יותר במהלך חיפוש ברשת והתעניינות באתרים שפתחת. שירות Google Assistant יקבל את כתובת האתרים ואת התוכן של אתרים שהשתמשת בהם.</translation>
-<translation id="7790349552933995572">מסך הבית</translation>
 <translation id="7791543448312431591">הוספה</translation>
 <translation id="7798392620021911922">שוחזרו <ph name="TAB_COUNT" /> כרטיסיות</translation>
 <translation id="780301667611848630">לא תודה</translation>
@@ -1202,7 +1200,6 @@
 <translation id="9149286894143103695">ניתן להוסיף את האתר הזה למסך הבית של הטלפון כדי להגיע אליו בקלות</translation>
 <translation id="9155898266292537608">אפשר גם להתחיל חיפוש על-ידי הקשה קצרה על מילה</translation>
 <translation id="9169507124922466868">היסטוריית הניווט פתוחה למחצה</translation>
-<translation id="9191031968346938109">הוספה אל…</translation>
 <translation id="9199368092038462496">{NUM_MINS,plural, =1{התבצעה בדיקה לפני דקה אחת}two{התבצעה בדיקה לפני # דקות}many{התבצעה בדיקה לפני # דקות}other{התבצעה בדיקה לפני # דקות}}</translation>
 <translation id="9204836675896933765">נותר קובץ אחד</translation>
 <translation id="9206873250291191720">א</translation>

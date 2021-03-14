@@ -40,7 +40,6 @@
 <translation id="123724288017357924">Обновить страницу без учета кешированного контента</translation>
 <translation id="124678866338384709">Закрыть вкладку</translation>
 <translation id="1258753120186372309">Дудл Google: <ph name="DOODLE_DESCRIPTION" /></translation>
-<translation id="1263231323834454256">Список для чтения</translation>
 <translation id="1266864766717917324">Не удалось отправить: <ph name="CONTENT_TYPE" /></translation>
 <translation id="1283039547216852943">Нажмите, чтобы развернуть</translation>
 <translation id="1285310382777185058">Изменить язык</translation>
@@ -994,7 +993,6 @@
 <translation id="7774809984919390718">{PAYMENT_METHOD,plural, =1{<ph name="PAYMENT_METHOD_PREVIEW" /> и ещё <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> способ оплаты}one{<ph name="PAYMENT_METHOD_PREVIEW" /> и ещё <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> способ оплаты}few{<ph name="PAYMENT_METHOD_PREVIEW" /> и ещё <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> способа оплаты}many{<ph name="PAYMENT_METHOD_PREVIEW" /> и ещё <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> способов оплаты}other{<ph name="PAYMENT_METHOD_PREVIEW" /> и ещё <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> способа оплаты}}</translation>
 <translation id="7778840695157240389">Новый контент появится позже.</translation>
 <translation id="7786595606756654269">Включив Google Ассистента, вы сможете выполнять поиск в Интернете и работать с сайтами, используя голосовые команды. При взаимодействии с сайтами Ассистент будет получать их контент и URL.</translation>
-<translation id="7790349552933995572">Главный экран</translation>
 <translation id="7791543448312431591">Добавить</translation>
 <translation id="7798392620021911922">Восстановлено вкладок: <ph name="TAB_COUNT" /></translation>
 <translation id="780301667611848630">Спасибо, не надо</translation>
@@ -1202,7 +1200,6 @@
 <translation id="9149286894143103695">Добавьте этот сайт на главный экран телефона для быстрого доступа.</translation>
 <translation id="9155898266292537608">Также можно выполнить поиск, нажав на слово.</translation>
 <translation id="9169507124922466868">История переходов открыта наполовину</translation>
-<translation id="9191031968346938109">Добавить…</translation>
 <translation id="9199368092038462496">{NUM_MINS,plural, =1{Проверено 1 минуту назад.}one{Проверено # минуту назад.}few{Проверено # минуты назад.}many{Проверено # минут назад.}other{Проверено # минуты назад.}}</translation>
 <translation id="9204836675896933765">Остался 1 файл</translation>
 <translation id="9206873250291191720">А</translation>

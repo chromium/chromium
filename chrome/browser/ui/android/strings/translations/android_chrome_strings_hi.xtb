@@ -40,7 +40,6 @@
 <translation id="123724288017357924">कैश सामग्री को अनदेखा कर, मौजूदा पेज फिर लोड करें</translation>
 <translation id="124678866338384709">वर्तमान टैब को बंद करें</translation>
 <translation id="1258753120186372309">Google doodle: <ph name="DOODLE_DESCRIPTION" /></translation>
-<translation id="1263231323834454256">पठन सूची</translation>
 <translation id="1266864766717917324"><ph name="CONTENT_TYPE" /> शेयर नहीं किया जा सका</translation>
 <translation id="1283039547216852943">पूरा खोलने के लिए टैप करें</translation>
 <translation id="1285310382777185058">भाषा बदलें</translation>
@@ -994,7 +993,6 @@
 <translation id="7774809984919390718">{PAYMENT_METHOD,plural, =1{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 और <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> अन्य}one{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 और <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> अन्य}other{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 और <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> अन्य}}</translation>
 <translation id="7778840695157240389">नई कहानियों के लिए कुछ समय बाद आएं</translation>
 <translation id="7786595606756654269">Google Assistant, वेब पर खोजने के लिए वॉइस सर्च का बेहतर अनुभव उपलब्ध कराती है और आपको खोली गई साइटों से जोड़े रखती है. Google Assistant, यूआरएल और उन साइटों का कॉन्टेंट इस्तेमाल करेगी जिन पर आप Assistant का इस्तेमाल करते हैं.</translation>
-<translation id="7790349552933995572">होम स्क्रीन</translation>
 <translation id="7791543448312431591">जोड़ें</translation>
 <translation id="7798392620021911922"><ph name="TAB_COUNT" /> टैब वापस लाए गए</translation>
 <translation id="780301667611848630">नहीं, रहने दें</translation>
@@ -1202,7 +1200,6 @@
 <translation id="9149286894143103695">इस साइट को अपने फ़ोन की होम स्क्रीन पर जोड़ें, ताकि आप इसे और आसानी से ऐक्सेस कर सकें</translation>
 <translation id="9155898266292537608">आप किसी शब्द पर बस एक टैप करके भी खोज सकते हैं</translation>
 <translation id="9169507124922466868">नेविगेशन का इतिहास आधी स्क्रीन में खुला हुआ है</translation>
-<translation id="9191031968346938109">इनमें जोड़ें…</translation>
 <translation id="9199368092038462496">{NUM_MINS,plural, =1{जांच 1 मिनट पहले की गई}one{जांच # मिनट पहले की गई}other{जांच # मिनट पहले की गई}}</translation>
 <translation id="9204836675896933765">1 फ़ाइल बची है</translation>
 <translation id="9206873250291191720">A</translation>

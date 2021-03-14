@@ -4196,6 +4196,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="5774295353725270860">Abrir Archivos</translation>
 <translation id="577624874850706961">Buscar cookies</translation>
 <translation id="5777468213129569553">Abrir Chrome</translation>
+<translation id="5778491106820461378">Puedes gestionar las cuentas de Google con las que se haya iniciado sesión en <ph name="LINK_BEGIN" />Configuración<ph name="LINK_END" />. Es posible que los permisos que hayas dado a sitios web y aplicaciones se apliquen a todas las cuentas. Si no quieres que los sitios ni las aplicaciones accedan a los datos de tu cuenta, puedes iniciar sesión en tu <ph name="DEVICE_TYPE" /> como invitado.</translation>
 <translation id="5780011244986845107">La carpeta que has seleccionado contiene archivos confidenciales. ¿Seguro que quieres conceder a "<ph name="APP_NAME" />" acceso de lectura permanente a esta carpeta?</translation>
 <translation id="5780973441651030252">Prioridad del proceso</translation>
 <translation id="5781092003150880845">Sincronizar como <ph name="ACCOUNT_FULL_NAME" /></translation>
@@ -5086,6 +5087,7 @@ Exponente público (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bits):
 <translation id="6811332638216701903">Nombre de host de DHCP</translation>
 <translation id="6812349420832218321">No se puede ejecutar <ph name="PRODUCT_NAME" /> como raíz.</translation>
 <translation id="6812841287760418429">Mantener cambios</translation>
+<translation id="6813907279658683733">Toda la pantalla</translation>
 <translation id="681584224457905309">{COUNT,plural, =1{archivo}other{# archivos}}</translation>
 <translation id="6817174620439930047">Preguntar cuando un sitio web quiera utilizar mensajes exclusivos del sistema para acceder a los dispositivos MIDI (recomendado)</translation>
 <translation id="6818198425579322765">Idioma de la página que quieres traducir</translation>
@@ -5590,6 +5592,7 @@ Exponente público (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bits):
 <translation id="7392118418926456391">Error en el análisis antivirus</translation>
 <translation id="7392915005464253525">Volv&amp;er a abrir ventana cerrada</translation>
 <translation id="7393073300870882456">{COUNT,plural, =1{1 elemento copiado}other{{COUNT} elementos copiados}}</translation>
+<translation id="7395774987022469191">Toda la pantalla</translation>
 <translation id="7396017167185131589">Las carpetas compartidas aparecerán aquí</translation>
 <translation id="7396845648024431313"><ph name="APP_NAME" /> empezará a ejecutarse cuando se inicie el sistema y seguirá ejecutándose en segundo plano aunque cierres todas las demás ventanas de <ph name="PRODUCT_NAME" />.</translation>
 <translation id="7399045143794278225">Personalizar sincronización</translation>

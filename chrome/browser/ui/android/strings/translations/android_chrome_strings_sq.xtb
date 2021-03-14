@@ -40,7 +40,6 @@
 <translation id="123724288017357924">Ringarko faqen aktuale, duke shpërfillur përmbajtjen në memorien specifike</translation>
 <translation id="124678866338384709">Mbyll skedën aktuale</translation>
 <translation id="1258753120186372309">Logoja alternative e Google: <ph name="DOODLE_DESCRIPTION" /></translation>
-<translation id="1263231323834454256">Lista e leximit</translation>
 <translation id="1266864766717917324">Nuk mund të ndahet <ph name="CONTENT_TYPE" /></translation>
 <translation id="1283039547216852943">Trokit për të zgjeruar</translation>
 <translation id="1285310382777185058">Ndrysho gjuhën</translation>
@@ -994,7 +993,6 @@ Të dhënat nga sesioni yt "i fshehtë" do të pastrohen nga Chrome vetëm kur <
 <translation id="7774809984919390718">{PAYMENT_METHOD,plural, =1{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 dhe <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> tjetër}other{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 dhe <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> të tjera}}</translation>
 <translation id="7778840695157240389">Kontrollo përsëri më vonë për histori të reja</translation>
 <translation id="7786595606756654269">"Asistenti i Google" ofron një përvojë më të mirë zanore për të kërkuar në ueb dhe për t'u përfshirë me sajtet që ke hapur. "Asistenti i Google" do të marrë URL-në dhe përmbajtjet e sajteve që përdor me të.</translation>
-<translation id="7790349552933995572">Ekrani bazë</translation>
 <translation id="7791543448312431591">Shtoje</translation>
 <translation id="7798392620021911922">Rikthyer <ph name="TAB_COUNT" /> skeda</translation>
 <translation id="780301667611848630">Jo, faleminderit</translation>
@@ -1202,7 +1200,6 @@ Të dhënat nga sesioni yt "i fshehtë" do të pastrohen nga Chrome vetëm kur <
 <translation id="9149286894143103695">Shtoje këtë faqe në "Ekranin bazë" të pajisjes sate që të mund të vish më lehtë këtu</translation>
 <translation id="9155898266292537608">Mund të kërkosh po ashtu me një trokitje të shpejtë te një fjalë</translation>
 <translation id="9169507124922466868">Historiku i navigimit është gjysmë i hapur</translation>
-<translation id="9191031968346938109">Shto në…</translation>
 <translation id="9199368092038462496">{NUM_MINS,plural, =1{Kontrolluar 1 minutë më parë}other{Kontrolluar # minuta më parë}}</translation>
 <translation id="9204836675896933765">1 skedar i mbetur</translation>
 <translation id="9206873250291191720">A</translation>

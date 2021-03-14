@@ -40,7 +40,6 @@
 <translation id="123724288017357924">Ponovo učitajte tren. str. ignorir. sadrž. keš memor.</translation>
 <translation id="124678866338384709">Zatvori trenutnu karticu</translation>
 <translation id="1258753120186372309">Google crtež: <ph name="DOODLE_DESCRIPTION" /></translation>
-<translation id="1263231323834454256">Lista za čitanje</translation>
 <translation id="1266864766717917324">Nije moguće podijeliti <ph name="CONTENT_TYPE" /></translation>
 <translation id="1283039547216852943">Dodirnite da proširite</translation>
 <translation id="1285310382777185058">Promijenite jezik</translation>
@@ -994,7 +993,6 @@ Podaci iz vaših anonimnih sesija će se obrisati iz Chromea kada <ph name="BEGI
 <translation id="7774809984919390718">{PAYMENT_METHOD,plural, =1{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 i još <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}one{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 i još <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}few{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 i još <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}other{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 i još <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}}</translation>
 <translation id="7778840695157240389">Provjerite nove priče kasnije</translation>
 <translation id="7786595606756654269">Google Asistent pruža bolje glasovno iskustvo za pretraživanje weba i stupanje u interakciju s web lokacijama koje ste otvorili. Google Asistent će primiti URL i sadržaje web lokacija koje koristite s njim.</translation>
-<translation id="7790349552933995572">Početni ekran</translation>
 <translation id="7791543448312431591">Dodaj</translation>
 <translation id="7798392620021911922">Vraćeno kartica: <ph name="TAB_COUNT" /></translation>
 <translation id="780301667611848630">Ne, hvala</translation>
@@ -1202,7 +1200,6 @@ Podaci iz vaših anonimnih sesija će se obrisati iz Chromea kada <ph name="BEGI
 <translation id="9149286894143103695">Dodajte ovu web lokaciju na početni ekran telefona da joj možete lakše pristupiti</translation>
 <translation id="9155898266292537608">Također možete pretraživati brzim dodirom riječi</translation>
 <translation id="9169507124922466868">Historija navigacije je napola otvorena</translation>
-<translation id="9191031968346938109">Dodaj u…</translation>
 <translation id="9199368092038462496">{NUM_MINS,plural, =1{Provjereno prije 1 minutu}one{Provjereno prije # minutu}few{Provjereno prije # minute}other{Provjereno prije # minuta}}</translation>
 <translation id="9204836675896933765">Ostao je još 1 fajl</translation>
 <translation id="9206873250291191720">A</translation>

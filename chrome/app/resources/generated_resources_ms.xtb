@@ -4197,6 +4197,7 @@ Anda boleh mengurus tetapan akaun ini dengan memasang apl Family Link pada peran
 <translation id="5774295353725270860">Buka apl Fail</translation>
 <translation id="577624874850706961">Cari kuki</translation>
 <translation id="5777468213129569553">Buka Chrome</translation>
+<translation id="5778491106820461378">Anda boleh mengurus Akaun Google yang dilog masuk daripada <ph name="LINK_BEGIN" />Tetapan<ph name="LINK_END" />. Kebenaran yang telah anda berikan kepada laman web dan apl boleh digunakan pada semua akaun. Jika anda tidak mahu maklumat akaun anda diakses oleh laman atau apl, anda boleh log masuk ke <ph name="DEVICE_TYPE" /> anda sebagai tetamu.</translation>
 <translation id="5780011244986845107">Folder yang anda pilih mengandungi fail sensitif. Adakah anda pasti anda mahu memberi "<ph name="APP_NAME" />" akses baca kekal kepada folder ini?</translation>
 <translation id="5780973441651030252">Keutamaan proses</translation>
 <translation id="5781092003150880845">Segerakkan sebagai <ph name="ACCOUNT_FULL_NAME" /></translation>
@@ -5087,6 +5088,7 @@ Anda boleh mengurus tetapan akaun ini dengan memasang apl Family Link pada peran
 <translation id="6811332638216701903">Nama hos DHCP</translation>
 <translation id="6812349420832218321"><ph name="PRODUCT_NAME" /> tidak dapat dijalankan sebagai akar.</translation>
 <translation id="6812841287760418429">Simpan perubahan</translation>
+<translation id="6813907279658683733">Seluruh Skrin</translation>
 <translation id="681584224457905309">{COUNT,plural, =1{fail}other{# fail}}</translation>
 <translation id="6817174620439930047">Tanya apabila tapak mahu menggunakan mesej eksklusif sistem untuk mengakses peranti MIDI (disyorkan)</translation>
 <translation id="6818198425579322765">Bahasa Halaman yang Hendak Diterjemahkan</translation>
@@ -5591,6 +5593,7 @@ Anda boleh mengurus tetapan akaun ini dengan memasang apl Family Link pada peran
 <translation id="7392118418926456391">Imbasan virus gagal</translation>
 <translation id="7392915005464253525">B&amp;uka semula tetingkap ditutup</translation>
 <translation id="7393073300870882456">{COUNT,plural, =1{1 item disalin}other{{COUNT} item disalin}}</translation>
+<translation id="7395774987022469191">Seluruh skrin</translation>
 <translation id="7396017167185131589">Folder dikongsi akan dipaparkan di sini</translation>
 <translation id="7396845648024431313"><ph name="APP_NAME" /> akan melancarkan permulaan sistem dan terus dijalankan di latar belakang walaupun sebaik sahaja anda menutup semua tetingkap <ph name="PRODUCT_NAME" /> lain.</translation>
 <translation id="7399045143794278225">Sesuaikan penyegerakan</translation>

@@ -287,6 +287,7 @@
 <translation id="2001146170449793414">{COUNT,plural, =1{и ещё 1}one{и ещё #}few{и ещё #}many{и ещё #}other{и ещё #}}</translation>
 <translation id="2003709556000175978">Сброс пароля</translation>
 <translation id="2003775180883135320">Четыре отверстия сверху</translation>
+<translation id="201174227998721785">Задать разрешения и другие параметры для сайтов в настройках Chrome</translation>
 <translation id="2025115093177348061">Дополненная реальность</translation>
 <translation id="2025186561304664664">Прокси-сервер настраивается автоматически.</translation>
 <translation id="2032962459168915086"><ph name="BEGIN_LINK" />Проверьте настройки прокси-сервера и брандмауэра<ph name="END_LINK" />.</translation>
@@ -299,6 +300,7 @@
 <translation id="2079545284768500474">Отмена</translation>
 <translation id="20817612488360358">Включены системные настройки прокси-сервера, но при этом его конфигурация задана явным образом.</translation>
 <translation id="2082238445998314030">Результат <ph name="RESULT_NUMBER" />, всего <ph name="TOTAL_RESULTS" /></translation>
+<translation id="2088086323192747268">Кнопка "Настройки синхронизации". Нажмите Ввод, чтобы открыть настройки Chrome и указать, какая информация должна синхронизироваться.</translation>
 <translation id="2091887806945687916">Звук</translation>
 <translation id="2094505752054353250">Несоответствие домена</translation>
 <translation id="2096368010154057602">Департамент</translation>
@@ -363,6 +365,7 @@
 <translation id="2293443924986248631">Когда эта настройка включена, сайты не могут использовать файлы cookie, которые отслеживают ваши действия в Интернете. Из-за этого некоторые функции на сайтах могут работать некорректно.</translation>
 <translation id="2295290966866883927">URL страниц, которые вы посещаете, передаются на проверку в Google Cloud или сторонние сервисы. Страницы могут быть просканированы на предмет безопасности.</translation>
 <translation id="2297722699537546652">B5 (конверт)</translation>
+<translation id="2298855485018661510">Кнопка "Открыть настройки файлов cookie". Нажмите Ввод, чтобы задать параметры файлов cookie в настройках Chrome.</translation>
 <translation id="2300306941146563769">Не загружен</translation>
 <translation id="2310021320168182093">Chou2 (конверт)</translation>
 <translation id="2316887270356262533">Освободится менее 1 МБ пространства. После этого некоторые веб-страницы могут загружаться дольше обычного.</translation>
@@ -396,6 +399,7 @@
 <translation id="2465402087343596252">Architecture-E</translation>
 <translation id="2465655957518002998">Выбрать способ доставки</translation>
 <translation id="2465688316154986572">Скоба</translation>
+<translation id="246725142101294240"><ph name="MANAGE_SECURITY_SETTINGS_FOCUSED_FRIENDLY_MATCH_TEXT" />. Нажмите Tab, а затем – Ввод, чтобы задать параметры Безопасного просмотра и других функций в настройках Chrome.</translation>
 <translation id="2467694685043708798"><ph name="BEGIN_LINK" />Выполните диагностику сети<ph name="END_LINK" /></translation>
 <translation id="2469153820345007638">В порядке от 1 до N</translation>
 <translation id="2470767536994572628">При редактировании заметок документ вернется в одностраничный режим и исходную ориентацию.</translation>
@@ -568,6 +572,7 @@
 <translation id="3188393374551744535">Баланс</translation>
 <translation id="3194737229810486521">Сайт <ph name="URL" /> запрашивает разрешение на постоянное хранение данных на вашем устройстве.</translation>
 <translation id="3195213714973468956"><ph name="PRINTER_NAME" /> на <ph name="SERVER_NAME" /></translation>
+<translation id="3202497928925179914"><ph name="MANAGE_SYNC_FOCUSED_FRIENDLY_MATCH_TEXT" />. Нажмите Tab, а затем – Ввод, чтобы открыть настройки Chrome и указать, какая информация должна синхронизироваться.</translation>
 <translation id="320323717674993345">Отменить оплату</translation>
 <translation id="3207960819495026254">Добавлено в закладки.</translation>
 <translation id="3209034400446768650">На этой странице может взиматься плата</translation>
@@ -624,6 +629,7 @@
 <translation id="3395827396354264108">Способ выдачи</translation>
 <translation id="3399952811970034796">Адрес доставки</translation>
 <translation id="3402261774528610252">Сайт использует устаревший протокол TLS 1.0 или TLS 1.1. В будущем эти протоколы будут отключены, из-за чего пользователи не смогут зайти на сайт. На сервере нужно включить протокол TLS 1.2 или более поздней версии.</translation>
+<translation id="3409896703495473338">Открыть настройки безопасности</translation>
 <translation id="3414952576877147120">Размер:</translation>
 <translation id="3417660076059365994">Загруженные или прикрепленные вами файлы передаются на проверку в Google Cloud или сторонние сервисы. В частности, файлы могут быть просканированы на наличие конфиденциальных данных или вредоносного ПО.</translation>
 <translation id="3422248202833853650">Закройте другие программы, чтобы освободить память.</translation>
@@ -655,6 +661,7 @@
 <translation id="350069200438440499">Имя файла:</translation>
 <translation id="3507936815618196901">Создание 3D-карты места, в котором вы находитесь, и отслеживание положения камеры</translation>
 <translation id="3512163584740124171">Действует правило с более высоким приоритетом.</translation>
+<translation id="35172538073169599">Кнопка "Управление адресами". Нажмите Ввод, чтобы добавить и изменить адреса в настройках Chrome.</translation>
 <translation id="3518941727116570328">Обработка нескольких объектов</translation>
 <translation id="3528171143076753409">Сертификат сервера не является доверенным.</translation>
 <translation id="3528485271872257980">Темно-коричневый</translation>
@@ -1193,6 +1200,7 @@
 <translation id="5540224163453853">Не удалось найти указанную статью</translation>
 <translation id="5541086400771735334">Почтовый ящик 7</translation>
 <translation id="5541546772353173584">Добавьте адрес электронной почты</translation>
+<translation id="5542280138350899197">Кнопка "Открыть настройки безопасности". Нажмите Ввод, чтобы задать параметры Безопасного просмотра и других функций в настройках Chrome.</translation>
 <translation id="5545756402275714221">Статьи для вас</translation>
 <translation id="5552137475244467770">Время от времени Chrome проверяет, есть ли ваши пароли в списках, опубликованных в Интернете. При этом имена пользователей и сами пароли зашифрованы и никому не видны, даже сотрудникам Google.</translation>
 <translation id="5556459405103347317">Перезагрузить</translation>
@@ -1447,6 +1455,7 @@
 <translation id="6583674473685352014">B6 (конверт)</translation>
 <translation id="6587923378399804057">Скопированная ссылка</translation>
 <translation id="6591833882275308647">Это устройство <ph name="DEVICE_TYPE" /> не управляется администратором.</translation>
+<translation id="6592952801936330159">Кнопка "Открыть настройки сайтов". Нажмите Ввод, чтобы открыть настройки Chrome и задать разрешения для сайтов, а также указать, какие данные они могут хранить.</translation>
 <translation id="6596325263575161958">Параметры шифрования</translation>
 <translation id="6604181099783169992">Датчики движения и освещенности</translation>
 <translation id="6609880536175561541">Prc7 (конверт)</translation>
@@ -1548,6 +1557,7 @@
 <translation id="7053983685419859001">Блокировать</translation>
 <translation id="7058163556978339998">Данные браузера <ph name="BROWSER" /> подтверждают, что сертификат сайта выпущен компанией <ph name="ISSUER" />.</translation>
 <translation id="7062635574500127092">Бирюзовый</translation>
+<translation id="706295145388601875">Добавить и изменить адреса в настройках Chrome</translation>
 <translation id="7064851114919012435">Контактные данные</translation>
 <translation id="70705239631109039">Подключение к сайту небезопасно</translation>
 <translation id="7072826695771387770">Произошло потенциально опасное событие</translation>
@@ -1557,6 +1567,7 @@
 <translation id="7083258188081898530">Лоток 9</translation>
 <translation id="7086090958708083563">Загрузка запрошена пользователем</translation>
 <translation id="7087282848513945231">Округ</translation>
+<translation id="7095139009144195559"><ph name="MANAGE_SITE_SETTINGS_FOCUSED_FRIENDLY_MATCH_TEXT" />. Нажмите Tab, а затем – Ввод, чтобы открыть настройки Chrome и задать разрешения для сайтов, а также указать, какие данные они могут хранить.</translation>
 <translation id="7108338896283013870">Скрыть</translation>
 <translation id="7108634116785509031">Сайт <ph name="HOST" /> запрашивает доступ к камере.</translation>
 <translation id="7108819624672055576">Разрешено расширением</translation>
@@ -1622,6 +1633,7 @@
 <translation id="7349430561505560861">A4-Extra</translation>
 <translation id="7353601530677266744">Командная строка</translation>
 <translation id="7359588939039777303">Реклама заблокирована.</translation>
+<translation id="7365596969960773405"><ph name="MANAGE_ADDRESSES_FOCUSED_FRIENDLY_MATCH_TEXT" />. Нажмите Tab, а затем – Ввод, чтобы добавить и изменить адреса в настройках Chrome.</translation>
 <translation id="7365849542400970216">Предоставить информацию об использовании устройства?</translation>
 <translation id="7372973238305370288">результат поиска</translation>
 <translation id="7374733840632556089">Эта проблема возникает из-за сертификата, который вы или другой пользователь установили на это устройство. Такой сертификат не считается доверенным, поскольку обычно он используется для отслеживания и перехвата данных в сети. Подобный функционал допустим, когда устройство прикреплено к организации или учебному заведению. Так или иначе, мы хотели бы предупредить вас о существовании этого сертификата. Обратите внимание, что отслеживание действий может происходить в любом браузере или приложении с доступом в Интернет.</translation>
@@ -1788,6 +1800,7 @@
 <translation id="7938958445268990899">Сертификат сервера еще не действителен.</translation>
 <translation id="7942349550061667556">Красный</translation>
 <translation id="7947285636476623132">Проверьте год в сроке действия карты и повторите попытку</translation>
+<translation id="7950027195171824198">Задать параметры файлов cookie в настройках Chrome</translation>
 <translation id="7951415247503192394">(32 бит)</translation>
 <translation id="7953569069500808819">Скобы по верхнему краю</translation>
 <translation id="7956713633345437162">Моб. закладки</translation>
@@ -1819,6 +1832,7 @@
 <translation id="8066955247577885446">Произошла ошибка.</translation>
 <translation id="8067872629359326442">Вы только что ввели пароль на поддельном сайте. Чтобы изменить пароль и сообщить Google о возможной угрозе безопасности, нажмите "Защитить аккаунт".</translation>
 <translation id="8074253406171541171">10x13 (конверт)</translation>
+<translation id="8075898834294118863">Открыть настройки сайтов</translation>
 <translation id="8078141288243656252">Недоступно, когда документ повернут</translation>
 <translation id="8079031581361219619">Перезагрузить сайт?</translation>
 <translation id="8086971161893892807">Черновик</translation>
@@ -1874,6 +1888,7 @@
 <translation id="8277900682056760511">Лист с обработчиком платежа открыт</translation>
 <translation id="8281084378435768645">Large-Photo</translation>
 <translation id="8282947398454257691">доступ к уникальному идентификатору устройства</translation>
+<translation id="8284769179630993263">Задать параметры Безопасного просмотра и других функций в настройках Chrome</translation>
 <translation id="8286036467436129157">Вход</translation>
 <translation id="8288807391153049143">Показать сертификат</translation>
 <translation id="8289355894181816810">Уточните информацию у администратора сети.</translation>
@@ -1902,6 +1917,7 @@
 <translation id="8380941800586852976">Опасно</translation>
 <translation id="8381674639488873545">Списание может быть разовым или повторяющимся без каких-либо уведомлений. <ph name="BEGIN_LINK" />Все равно продолжить<ph name="END_LINK" /></translation>
 <translation id="8390725133630534698">Администратор запретил переносить контент со страницы <ph name="ORIGIN_NAME" /> в <ph name="VM_NAME" />.</translation>
+<translation id="8405579342203358118">Указать данные для синхронизации в настройках Chrome</translation>
 <translation id="8412145213513410671">Сбои (<ph name="CRASH_COUNT" />)</translation>
 <translation id="8412392972487953978">Необходимо дважды ввести одну и ту же кодовую фразу.</translation>
 <translation id="8416694386774425977">Импорт невозможен: недопустимая конфигурация сети.
@@ -1909,6 +1925,7 @@
 <ph name="DEBUG_INFO" /></translation>
 <translation id="8424582179843326029"><ph name="FIRST_LABEL" /> <ph name="SECOND_LABEL" /> <ph name="THIRD_LABEL" /></translation>
 <translation id="8428213095426709021">Настройки</translation>
+<translation id="8431194080598727332"><ph name="MANAGE_COOKIES_FOCUSED_FRIENDLY_MATCH_TEXT" />. Нажмите Tab, а затем – Ввод, чтобы задать параметры файлов cookie в настройках Chrome.</translation>
 <translation id="8433057134996913067">На большинстве сайтов будет выполнен выход из аккаунта.</translation>
 <translation id="8437238597147034694">&amp;Отменить перемещение</translation>
 <translation id="8438786541497918448">Использовать камеру и микрофон?</translation>
@@ -1928,6 +1945,7 @@
 <translation id="8503813439785031346">Имя пользователя</translation>
 <translation id="8507227106804027148">Командная строка</translation>
 <translation id="8508648098325802031">Значок поиска</translation>
+<translation id="8511402995811232419">Открыть настройки файлов cookie</translation>
 <translation id="8522552481199248698">Защитите свой аккаунт Google и смените пароль с помощью Chrome.</translation>
 <translation id="8530813470445476232">Удалить историю браузера, файлы cookie, кеш и другие данные в настройках Chrome</translation>
 <translation id="8533619373899488139">Чтобы посмотреть список заблокированных URL и узнать, какие ещё правила заданы системным администратором, перейдите на страницу &lt;strong&gt;chrome://policy&lt;/strong&gt;.</translation>

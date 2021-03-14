@@ -4198,6 +4198,7 @@
 <translation id="5774295353725270860">Отвори ја апликацијата Датотеки</translation>
 <translation id="577624874850706961">Барај колачиња</translation>
 <translation id="5777468213129569553">Отвори го Chrome</translation>
+<translation id="5778491106820461378">Може да управувате со најавените сметки на Google од <ph name="LINK_BEGIN" />Поставки<ph name="LINK_END" />. Дозволите што сте им ги одобриле на веб-сајтовите и апликациите можеби ќе важат за сите сметки. Ако не сакате сајтовите или апликациите да пристапуваат до податоците за сметката, може да се најавите на <ph name="DEVICE_TYPE" /> како гостин.</translation>
 <translation id="5780011244986845107">Папката што ја избравте содржи чувствителни датотеки. Дали сигурно сакате да ѝ доделите на <ph name="APP_NAME" /> постојан пристап за читање на оваа папка?</translation>
 <translation id="5780973441651030252">Приоритет на процес</translation>
 <translation id="5781092003150880845">Синхронизирај како <ph name="ACCOUNT_FULL_NAME" /></translation>
@@ -5088,6 +5089,7 @@
 <translation id="6811332638216701903">Име на хост за DHCP</translation>
 <translation id="6812349420832218321"><ph name="PRODUCT_NAME" /> не може да се изврши како основа.</translation>
 <translation id="6812841287760418429">Чувај промени</translation>
+<translation id="6813907279658683733">Цел екран</translation>
 <translation id="681584224457905309">{COUNT,plural, =1{датотека}one{# датотека}other{# датотеки}}</translation>
 <translation id="6817174620439930047">Прашај кога сајтот сака да користи пораки наменети само за системот за да пристапи до уреди со MIDI (препорачано)</translation>
 <translation id="6818198425579322765">Јазик на страницата што треба да се преведе</translation>
@@ -5592,6 +5594,7 @@
 <translation id="7392118418926456391">Скенирањето за вируси не успеа</translation>
 <translation id="7392915005464253525">Повторно о&amp;твори затворен прозорец</translation>
 <translation id="7393073300870882456">{COUNT,plural, =1{1 ставка е копирана}one{{COUNT} ставка е копирана}other{{COUNT} ставки се копирани}}</translation>
+<translation id="7395774987022469191">Цел екран</translation>
 <translation id="7396017167185131589">Споделените папки ќе се појават тука</translation>
 <translation id="7396845648024431313"><ph name="APP_NAME" /> ќе стартува при подигнувањето на системот и ќе продолжи да се извршува во заднина дури и откако сте ги затвориле останатите прозорци на <ph name="PRODUCT_NAME" />.</translation>
 <translation id="7399045143794278225">Приспособете ја синхронизацијата</translation>

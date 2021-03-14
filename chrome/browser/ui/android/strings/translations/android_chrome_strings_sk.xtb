@@ -40,7 +40,6 @@
 <translation id="123724288017357924">Opätovné načítanie aktuálnej stránky a ignorovanie obsahu vo vyrovnávacej pamäti</translation>
 <translation id="124678866338384709">Zavretie aktuálnej karty</translation>
 <translation id="1258753120186372309">Sviatočné logo Google: <ph name="DOODLE_DESCRIPTION" /></translation>
-<translation id="1263231323834454256">Čitateľský zoznam</translation>
 <translation id="1266864766717917324"><ph name="CONTENT_TYPE" /> sa nepodarilo zdieľať</translation>
 <translation id="1283039547216852943">Klepnutím rozbaliť</translation>
 <translation id="1285310382777185058">Zmena jazyka</translation>
@@ -994,7 +993,6 @@ Niektoré weby môžu napríklad na túto žiadosť reagovať tak, že vám zobr
 <translation id="7774809984919390718">{PAYMENT_METHOD,plural, =1{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 a <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> ďalší}few{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 a <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> ďalšie}many{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 a <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> ďalšieho}other{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 a <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> ďalších}}</translation>
 <translation id="7778840695157240389">Neskôr tu nájdete nové príbehy</translation>
 <translation id="7786595606756654269">Asistent Google zaisťuje lepšie prostredie na vyhľadávanie na internete a používanie otvorených webov pomocou hlasu. Získa webové adresy a obsah webov, ktoré s ním použijete.</translation>
-<translation id="7790349552933995572">Plocha</translation>
 <translation id="7791543448312431591">Pridať</translation>
 <translation id="7798392620021911922">Bolo obnovených niekoľko kariet (<ph name="TAB_COUNT" />)</translation>
 <translation id="780301667611848630">Nie, ďakujem</translation>
@@ -1202,7 +1200,6 @@ Niektoré weby môžu napríklad na túto žiadosť reagovať tak, že vám zobr
 <translation id="9149286894143103695">Pridajte si tento web na plochu telefónu, aby ste sa sem ľahšie dostali</translation>
 <translation id="9155898266292537608">Vyhľadávať môžete aj rýchlym klepnutím na slovo</translation>
 <translation id="9169507124922466868">História navigácie je dopoly otvorená</translation>
-<translation id="9191031968346938109">Pridať do služby…</translation>
 <translation id="9199368092038462496">{NUM_MINS,plural, =1{Kontrola prebehla pred minútou}few{Kontrola prebehla pred # minútami}many{Kontrola prebehla pred # minúty}other{Kontrola prebehla pred # minútami}}</translation>
 <translation id="9204836675896933765">Zostáva 1 súbor</translation>
 <translation id="9206873250291191720">A</translation>

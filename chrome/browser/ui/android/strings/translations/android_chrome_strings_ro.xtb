@@ -40,7 +40,6 @@
 <translation id="123724288017357924">Reîncarcă pagina, ignorând conținutul din cache</translation>
 <translation id="124678866338384709">Închide fila actuală</translation>
 <translation id="1258753120186372309">Doodle Google: <ph name="DOODLE_DESCRIPTION" /></translation>
-<translation id="1263231323834454256">Lista de lectură</translation>
 <translation id="1266864766717917324">Nu s-a trimis <ph name="CONTENT_TYPE" /></translation>
 <translation id="1283039547216852943">Atinge pentru a extinde</translation>
 <translation id="1285310382777185058">Schimbă limba</translation>
@@ -994,7 +993,6 @@ Datele din sesiunea incognito vor fi șterse din Chrome numai când <ph name="BE
 <translation id="7774809984919390718">{PAYMENT_METHOD,plural, =1{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 și încă <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}few{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 și încă <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}other{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 și încă <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}}</translation>
 <translation id="7778840695157240389">Revino mai târziu pentru subiecte noi</translation>
 <translation id="7786595606756654269">Asistentul Google oferă o experiență vocală mai bună pentru căutarea pe web și interacțiunea cu site-uri pe care le-ai deschis. Asistentul Google va primi adresa URL și conținutul site-urilor în care îl folosești.</translation>
-<translation id="7790349552933995572">Ecran de pornire</translation>
 <translation id="7791543448312431591">Adaugă</translation>
 <translation id="7798392620021911922">S-au restabilit <ph name="TAB_COUNT" /> file</translation>
 <translation id="780301667611848630">Nu, mulțumesc</translation>
@@ -1202,7 +1200,6 @@ Datele din sesiunea incognito vor fi șterse din Chrome numai când <ph name="BE
 <translation id="9149286894143103695">Adaugă site-ul pe ecranul de pornire al telefonului ca să îl poți accesa mai ușor</translation>
 <translation id="9155898266292537608">De asemenea, poți căuta atingând scurt un cuvânt</translation>
 <translation id="9169507124922466868">Istoricul de navigare este pe jumătate deschis</translation>
-<translation id="9191031968346938109">Adaugă în…</translation>
 <translation id="9199368092038462496">{NUM_MINS,plural, =1{A rulat acum un minut}few{A rulat acum # minute}other{A rulat acum # de minute}}</translation>
 <translation id="9204836675896933765">1 fișier rămas</translation>
 <translation id="9206873250291191720">A</translation>

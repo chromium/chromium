@@ -40,7 +40,6 @@
 <translation id="123724288017357924">Кэшти колдонбой, учурдагы баракты кайра жүктөө</translation>
 <translation id="124678866338384709">Учурдагы өтмөктү жабуу</translation>
 <translation id="1258753120186372309">Google чиймелек: <ph name="DOODLE_DESCRIPTION" /></translation>
-<translation id="1263231323834454256">Окуу тизмеси</translation>
 <translation id="1266864766717917324"><ph name="CONTENT_TYPE" /> менен бөлүшүлгөн жок</translation>
 <translation id="1283039547216852943">Жайып көрсөтүү үчүн таптап коюңуз</translation>
 <translation id="1285310382777185058">Тилди өзгөртүү</translation>
@@ -994,7 +993,6 @@ Google аккаунтуңуздун башка Google кызматтарынан
 <translation id="7774809984919390718">{PAYMENT_METHOD,plural, =1{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 жана дагы <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}other{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 жана дагы <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}}</translation>
 <translation id="7778840695157240389">Жаңы окуяларды көрүү үчүн мезгил-мезгили менен баш багып туруңуз</translation>
 <translation id="7786595606756654269">Google Жардамчы менен Интернетте оозеки издеп, ачкан сайттарыңызда иштегенде жакшыраак натыйжаларды аласыз. Google Жардамчы ал аркылуу ачкан сайттарыңыздын URL даректерин жана мазмундарын алып турат.</translation>
-<translation id="7790349552933995572">Башкы экран</translation>
 <translation id="7791543448312431591">Кошуу</translation>
 <translation id="7798392620021911922"><ph name="TAB_COUNT" /> өтмөк калыбына келтирилди</translation>
 <translation id="780301667611848630">Жок, рахмат</translation>
@@ -1202,7 +1200,6 @@ Google аккаунтуңуздун башка Google кызматтарынан
 <translation id="9149286894143103695">Бул сайтты телефонуңуздун башкы экранына кошсоңуз, бул жерге оңой киресиз</translation>
 <translation id="9155898266292537608">Ошондой эле сөзду таптап коюп, издесеңиз болот</translation>
 <translation id="9169507124922466868">Чабыттоо таржымалынын жарымы жабык</translation>
-<translation id="9191031968346938109">Кошуу…</translation>
 <translation id="9199368092038462496">{NUM_MINS,plural, =1{1 мүнөт мурда текшерилди}other{# мүнөт мурда текшерилди}}</translation>
 <translation id="9204836675896933765">1 файл калды</translation>
 <translation id="9206873250291191720">А</translation>

@@ -40,7 +40,6 @@
 <translation id="123724288017357924">De pagina opnieuw laden, gecachte content negeren</translation>
 <translation id="124678866338384709">Huidig tabblad sluiten</translation>
 <translation id="1258753120186372309">Google-doodle: <ph name="DOODLE_DESCRIPTION" /></translation>
-<translation id="1263231323834454256">Leeslijst</translation>
 <translation id="1266864766717917324">Kan <ph name="CONTENT_TYPE" /> niet delen</translation>
 <translation id="1283039547216852943">Tik om uit te vouwen</translation>
 <translation id="1285310382777185058">Taal wijzigen</translation>
@@ -994,7 +993,6 @@ Gegevens van je incognitosessie in Chrome worden alleen gewist als je <ph name="
 <translation id="7774809984919390718">{PAYMENT_METHOD,plural, =1{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 en nog <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> andere}other{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 en nog <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> andere}}</translation>
 <translation id="7778840695157240389">Kom later terug voor nieuwe artikelen</translation>
 <translation id="7786595606756654269">De Google Assistent biedt betere spraakfunctionaliteit voor zoeken op internet en gebruikmaken van sites die je hebt geopend. De Google Assistent ontvangt de URL en content van sites die je met de Assistent gebruikt.</translation>
-<translation id="7790349552933995572">Startscherm</translation>
 <translation id="7791543448312431591">Toevoegen</translation>
 <translation id="7798392620021911922"><ph name="TAB_COUNT" /> tabbladen hersteld</translation>
 <translation id="780301667611848630">Nee, bedankt</translation>
@@ -1202,7 +1200,6 @@ Gegevens van je incognitosessie in Chrome worden alleen gewist als je <ph name="
 <translation id="9149286894143103695">Voeg deze site toe aan het startscherm van je telefoon zodat je hem makkelijk kunt openen</translation>
 <translation id="9155898266292537608">Je kunt ook zoeken door kort op een woord te tikken</translation>
 <translation id="9169507124922466868">Navigatiegeschiedenis is half geopend</translation>
-<translation id="9191031968346938109">Toevoegen aan…</translation>
 <translation id="9199368092038462496">{NUM_MINS,plural, =1{1 minuut geleden gecheckt}other{# minuten geleden gecheckt}}</translation>
 <translation id="9204836675896933765">1 bestand over</translation>
 <translation id="9206873250291191720">A</translation>

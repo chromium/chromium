@@ -40,7 +40,6 @@
 <translation id="123724288017357924">Vnov. nalag. tren. strani s prezrtjem predp. vseb.</translation>
 <translation id="124678866338384709">Zapiranje trenutnega zavihka</translation>
 <translation id="1258753120186372309">Googlov priložnostni logotip: <ph name="DOODLE_DESCRIPTION" /></translation>
-<translation id="1263231323834454256">Bralni seznam</translation>
 <translation id="1266864766717917324">Ni bilo mogoče deliti tega: <ph name="CONTENT_TYPE" /></translation>
 <translation id="1283039547216852943">Dotaknite se za razširitev</translation>
 <translation id="1285310382777185058">Spreminjanje jezika</translation>
@@ -994,7 +993,6 @@ Podatki seje brez beleženja dejavnosti se iz Chroma izbrišejo šele, ko <ph na
 <translation id="7774809984919390718">{PAYMENT_METHOD,plural, =1{<ph name="PAYMENT_METHOD_PREVIEW" /> \u2026 in še <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}one{<ph name="PAYMENT_METHOD_PREVIEW" /> \u2026 in še <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}two{<ph name="PAYMENT_METHOD_PREVIEW" /> \u2026 in še <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}few{<ph name="PAYMENT_METHOD_PREVIEW" /> \u2026 in še <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}other{<ph name="PAYMENT_METHOD_PREVIEW" /> \u2026 in še <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}}</translation>
 <translation id="7778840695157240389">Vrnite se pozneje in preverite, ali so na voljo nove novice</translation>
 <translation id="7786595606756654269">Pomočnik Google omogoča boljšo glasovno izkušnjo pri iskanju v spletu in komunikaciji s spletnimi stranmi, ki jih imate odprte. Pomočnik Google prejme URL in vsebino spletnih mest, s katero ga uporabljate.</translation>
-<translation id="7790349552933995572">Začetni zaslon</translation>
 <translation id="7791543448312431591">Dodaj</translation>
 <translation id="7798392620021911922">Število obnovljenih zavihkov: <ph name="TAB_COUNT" /></translation>
 <translation id="780301667611848630">Ne, hvala</translation>
@@ -1202,7 +1200,6 @@ Podatki seje brez beleženja dejavnosti se iz Chroma izbrišejo šele, ko <ph na
 <translation id="9149286894143103695">Za preprostejši dostop dodajte to spletno mesto na začetni zaslon telefona.</translation>
 <translation id="9155898266292537608">Prav tako lahko iščete, tako da se hitro dotaknete besede</translation>
 <translation id="9169507124922466868">Zgodovina krmarjenja je napol odprta</translation>
-<translation id="9191031968346938109">Dodajanje …</translation>
 <translation id="9199368092038462496">{NUM_MINS,plural, =1{Preverjeno pred 1 minuto}one{Preverjeno pred # minuto}two{Preverjeno pred # minutama}few{Preverjeno pred # minutami}other{Preverjeno pred # minutami}}</translation>
 <translation id="9204836675896933765">Še 1 datoteka</translation>
 <translation id="9206873250291191720">A</translation>

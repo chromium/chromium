@@ -40,7 +40,6 @@
 <translation id="123724288017357924">Keş məzmununu iqnor edərək cari səhifəni yenidən yükləyin</translation>
 <translation id="124678866338384709">Cari paneli bağlayın</translation>
 <translation id="1258753120186372309">Google doodle: <ph name="DOODLE_DESCRIPTION" /></translation>
-<translation id="1263231323834454256">Oxu siyahısı</translation>
 <translation id="1266864766717917324"><ph name="CONTENT_TYPE" /> paylaşmaq mümkün olmnadı</translation>
 <translation id="1283039547216852943">Genişləndirmək üçün klikləyin</translation>
 <translation id="1285310382777185058">Dili dəyişin</translation>
@@ -992,7 +991,6 @@ Anomim sessiyadan data yalnız <ph name="BEGIN_BOLD2" />bütün Anonim tabları 
 <translation id="7774809984919390718">{PAYMENT_METHOD,plural, =1{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 və <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> digəri}other{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 və <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> digəri}}</translation>
 <translation id="7778840695157240389">Yeni hekayələr üçün sonra yenidən yoxlayın</translation>
 <translation id="7786595606756654269">Google Assistent vebdə axtarış etmək və açıq saytlar üzərində işləmək üçün daha yaxşı səs təcrübəsi təmin edir. Google Assistent onunla istifadə etdiyiniz saytların URL və məzmunlarını əldə edəcək.</translation>
-<translation id="7790349552933995572">Əsas ekran</translation>
 <translation id="7791543448312431591">Əlavə etmək</translation>
 <translation id="7798392620021911922"><ph name="TAB_COUNT" /> tab bərpa edilib</translation>
 <translation id="780301667611848630">Yox, çox sağ olun</translation>
@@ -1200,7 +1198,6 @@ Anomim sessiyadan data yalnız <ph name="BEGIN_BOLD2" />bütün Anonim tabları 
 <translation id="9149286894143103695">Bura daha rahat giriş üçün bu saytı telefonun Əsas ekranına əlavə edin</translation>
 <translation id="9155898266292537608">Sözün üzərində klikləməklə axtarış edə bilərsiniz</translation>
 <translation id="9169507124922466868">Naviqasiya tarixçəsi yarı açıqdır</translation>
-<translation id="9191031968346938109">Buraya əlavə edin:</translation>
 <translation id="9199368092038462496">{NUM_MINS,plural, =1{1 dəqiqə əvvəl yoxlanılıb}other{# dəqiqə əvvəl yoxlanılıb}}</translation>
 <translation id="9204836675896933765">1 fayl qaldı</translation>
 <translation id="9206873250291191720">A</translation>

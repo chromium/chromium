@@ -291,6 +291,7 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="2001146170449793414">{COUNT,plural, =1{và 1 ứng dụng khác}other{và # ứng dụng khác}}</translation>
 <translation id="2003709556000175978">Đặt lại mật khẩu của bạn ngay bây giờ</translation>
 <translation id="2003775180883135320">Đục 4 lỗ trên cùng</translation>
+<translation id="201174227998721785">Quản lý quyền và dữ liệu lưu trữ trên các trang web trong phần Cài đặt của Chrome</translation>
 <translation id="2025115093177348061">Thực tế tăng cường</translation>
 <translation id="2025186561304664664">Proxy được đặt thành định cấu hình tự động.</translation>
 <translation id="2032962459168915086"><ph name="BEGIN_LINK" />Kiểm tra proxy và tường lửa<ph name="END_LINK" /></translation>
@@ -303,6 +304,7 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="2079545284768500474">Hoàn tác</translation>
 <translation id="20817612488360358">Cài đặt proxy hệ thống được đặt để sử dụng nhưng cấu hình proxy rõ ràng cũng được chỉ định.</translation>
 <translation id="2082238445998314030">Kết quả <ph name="RESULT_NUMBER" /> trong tổng số <ph name="TOTAL_RESULTS" /></translation>
+<translation id="2088086323192747268">Nút Quản lý dữ liệu đồng bộ hóa, hãy nhấn Enter để quản lý loại thông tin bạn đồng bộ hóa trong phần Cài đặt của Chrome</translation>
 <translation id="2091887806945687916">Âm thanh</translation>
 <translation id="2094505752054353250">Miền không khớp</translation>
 <translation id="2096368010154057602">Khu vực hành chính</translation>
@@ -367,6 +369,7 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="2293443924986248631">Khi tùy chọn này bật, các trang web không thể dùng cookie theo dõi bạn trên web. Do đó, các tính năng trên một số trang web có thể hoạt động không đúng cách.</translation>
 <translation id="2295290966866883927">Hệ thống sẽ gửi URL của những trang mà bạn truy cập cho Google Cloud hoặc bên thứ ba để phân tích. Ví dụ: họ có thể quét những trang này để phát hiện trang web không an toàn.</translation>
 <translation id="2297722699537546652">B5 (Phong bì)</translation>
+<translation id="2298855485018661510">Nút Quản lý cookie, hãy nhấn Enter để quản lý các lựa chọn ưu tiên dành cho cookie trong phần Cài đặt của Chrome</translation>
 <translation id="2300306941146563769">Chưa tải lên</translation>
 <translation id="2310021320168182093">Chou2 (Phong bì)</translation>
 <translation id="2316887270356262533">Bộ nhớ đệm còn chưa đầy 1 MB. Một số trang web có thể tải chậm hơn vào lần tới bạn truy cập.</translation>
@@ -400,6 +403,7 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="2465402087343596252">Architecture-E</translation>
 <translation id="2465655957518002998">Chọn cách giao hàng</translation>
 <translation id="2465688316154986572">Dập ghim</translation>
+<translation id="246725142101294240"><ph name="MANAGE_SECURITY_SETTINGS_FOCUSED_FRIENDLY_MATCH_TEXT" />, hãy nhấn Tab, sau đó nhấn Enter để Quản lý tính năng Duyệt web an toàn và nhiều tính năng khác trong phần Cài đặt của Chrome</translation>
 <translation id="2467694685043708798"><ph name="BEGIN_LINK" />Chạy Chẩn đoán mạng<ph name="END_LINK" /></translation>
 <translation id="2469153820345007638">Thứ tự từ 1 đến N</translation>
 <translation id="2470767536994572628">Khi bạn chỉnh sửa chú thích, tài liệu này sẽ trở về chế độ xem một trang và hướng xoay ban đầu</translation>
@@ -575,6 +579,7 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="3188393374551744535">Số dư tài khoản</translation>
 <translation id="3194737229810486521"><ph name="URL" /> muốn lưu trữ vĩnh viễn dữ liệu trên thiết bị của bạn</translation>
 <translation id="3195213714973468956"><ph name="PRINTER_NAME" /> trên <ph name="SERVER_NAME" /></translation>
+<translation id="3202497928925179914"><ph name="MANAGE_SYNC_FOCUSED_FRIENDLY_MATCH_TEXT" />, hãy nhấn Tab, sau đó nhấn Enter để quản lý loại thông tin bạn sẽ đồng bộ hóa trong phần Cài đặt của Chrome</translation>
 <translation id="320323717674993345">Hủy thanh toán</translation>
 <translation id="3207960819495026254">Đã đánh dấu trang</translation>
 <translation id="3209034400446768650">Trang này có thể tính phí</translation>
@@ -631,6 +636,7 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="3395827396354264108">Phương thức nhận hàng</translation>
 <translation id="3399952811970034796">Địa chỉ giao hàng</translation>
 <translation id="3402261774528610252">Đường kết nối dùng để tải trang web này đã sử dụng TLS 1.0 hoặc TLS 1.1. Các phiên bản này không được dùng nữa và sẽ bị vô hiệu hóa trong tương lai. Sau khi phiên bản bị vô hiệu hóa, người dùng sẽ không thể tải trang web này. Máy chủ cần bật phiên bản TLS 1.2 trở lên.</translation>
+<translation id="3409896703495473338">Quản lý cài đặt bảo mật</translation>
 <translation id="3414952576877147120">Kích thước:</translation>
 <translation id="3417660076059365994">Tệp bạn tải lên hoặc đính kèm được gửi đến Google Cloud hoặc bên thứ ba để phân tích. Ví dụ: các tệp đó có thể được quét tìm dữ liệu nhạy cảm hoặc phần mềm độc hại.</translation>
 <translation id="3422248202833853650">Thử thoát các chương trình khác để giải phóng bộ nhớ.</translation>
@@ -662,6 +668,7 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="350069200438440499">Tên tệp:</translation>
 <translation id="3507936815618196901">Tạo bản đồ 3D về các khu vực xung quanh bạn và theo dõi thông tin vị trí của máy ảnh</translation>
 <translation id="3512163584740124171">Chính sách này bị bỏ qua vì một chính sách khác thuộc cùng nhóm chính sách có mức ưu tiên cao hơn.</translation>
+<translation id="35172538073169599">Nút Quản lý địa chỉ, hãy nhấn Enter để thêm và quản lý các địa chỉ trong phần Cài đặt của Chrome</translation>
 <translation id="3518941727116570328">Xử lý nhiều đối tượng</translation>
 <translation id="3528171143076753409">Chứng chỉ của máy chủ không đáng tin cậy.</translation>
 <translation id="3528485271872257980">Nâu đậm</translation>
@@ -1205,6 +1212,7 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="5540224163453853">Không thể tìm thấy bài viết đã yêu cầu.</translation>
 <translation id="5541086400771735334">Hộp thư 7</translation>
 <translation id="5541546772353173584">Thêm email</translation>
+<translation id="5542280138350899197">Nút Quản lý cài đặt bảo mật, hãy nhấn Enter để Quản lý tính năng Duyệt web an toàn và nhiều tính năng khác trong phần Cài đặt của Chrome</translation>
 <translation id="5545756402275714221">Tin bài dành cho bạn</translation>
 <translation id="5552137475244467770">Chrome kiểm tra định kỳ các mật khẩu của bạn so với những danh sách đã đăng trên Internet. Khi thực hiện việc này, mật khẩu và tên người dùng của bạn được mã hóa nên không ai có thể đọc được, kể cả Google.</translation>
 <translation id="5556459405103347317">Tải lại</translation>
@@ -1459,6 +1467,7 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="6583674473685352014">B6 (Phong bì)</translation>
 <translation id="6587923378399804057">Liên kết bạn đã sao chép</translation>
 <translation id="6591833882275308647"><ph name="DEVICE_TYPE" /> của bạn không được quản lý</translation>
+<translation id="6592952801936330159">Nút Quản lý chế độ cài đặt trang web, hãy nhấn Enter để quản lý quyền và dữ liệu lưu trữ trên các trang web trong phần Cài đặt của Chrome</translation>
 <translation id="6596325263575161958">Tùy chọn mã hóa</translation>
 <translation id="6604181099783169992">Cảm biến chuyển động hoặc ánh sáng</translation>
 <translation id="6609880536175561541">Prc7 (Phong bì)</translation>
@@ -1560,6 +1569,7 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="7053983685419859001">Chặn</translation>
 <translation id="7058163556978339998"><ph name="BROWSER" /> đã xác minh rằng trang web này có chứng chỉ do <ph name="ISSUER" /> cấp.</translation>
 <translation id="7062635574500127092">Xanh mòng két</translation>
+<translation id="706295145388601875">Thêm và quản lý các địa chỉ trong phần Cài đặt của Chrome</translation>
 <translation id="7064851114919012435">Thông tin liên hệ</translation>
 <translation id="70705239631109039">Kết nối của bạn không đủ an toàn</translation>
 <translation id="7072826695771387770">Xảy ra sự kiện không an toàn</translation>
@@ -1569,6 +1579,7 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="7083258188081898530">Khay 9</translation>
 <translation id="7086090958708083563">Người dùng yêu cầu tải lên</translation>
 <translation id="7087282848513945231">Hạt</translation>
+<translation id="7095139009144195559"><ph name="MANAGE_SITE_SETTINGS_FOCUSED_FRIENDLY_MATCH_TEXT" />, hãy nhấn Tab rồi nhấn Enter để quản lý quyền và dữ liệu lưu trữ trên các trang web trong phần Cài đặt của Chrome</translation>
 <translation id="7108338896283013870">Ẩn</translation>
 <translation id="7108634116785509031"><ph name="HOST" /> muốn sử dụng máy ảnh của bạn</translation>
 <translation id="7108819624672055576">Được một tiện ích cho phép</translation>
@@ -1634,6 +1645,7 @@ Thông tin chi tiết bổ sung:
 <translation id="7349430561505560861">A4-Extra</translation>
 <translation id="7353601530677266744">Dòng Lệnh</translation>
 <translation id="7359588939039777303">Đã chặn quảng cáo.</translation>
+<translation id="7365596969960773405"><ph name="MANAGE_ADDRESSES_FOCUSED_FRIENDLY_MATCH_TEXT" />, hãy nhấn Tab rồi nhấn Enter để thêm và quản lý các địa chỉ trong phần Cài đặt của Chrome</translation>
 <translation id="7365849542400970216">Biết hoạt động dùng thiết bị của bạn?</translation>
 <translation id="7372973238305370288">kết quả tìm kiếm</translation>
 <translation id="7374733840632556089">Sự cố này xảy ra do một chứng chỉ mà bạn hoặc ai đó đã cài đặt trên thiết bị của bạn. Chrome không tin cậy chứng chỉ này vì chứng chỉ được xác định là dùng để chặn và giám sát mạng. Mặc dù có một số trường hợp trong đó hoạt động giám sát là hợp pháp, chẳng hạn như mạng của trường học hay công ty, nhưng Chrome muốn đảm bảo rằng bạn biết điều này, ngay cả khi bạn không thể ngăn chặn. Hoạt động giám sát có thể diễn ra trong bất kỳ trình duyệt hoặc ứng dụng nào có quyền truy cập vào web.</translation>
@@ -1800,6 +1812,7 @@ Thông tin chi tiết bổ sung:
 <translation id="7938958445268990899">Chứng chỉ của máy chủ chưa hợp lệ.</translation>
 <translation id="7942349550061667556">Đỏ</translation>
 <translation id="7947285636476623132">Kiểm tra năm hết hạn của bạn và thử lại</translation>
+<translation id="7950027195171824198">Quản lý tùy chọn cookie trong phần Cài đặt của Chrome</translation>
 <translation id="7951415247503192394">(32 bit)</translation>
 <translation id="7953569069500808819">May viền ở trên cùng</translation>
 <translation id="7956713633345437162">Dấu trang trên thiết bị di động</translation>
@@ -1831,6 +1844,7 @@ Thông tin chi tiết bổ sung:
 <translation id="8066955247577885446">Rất tiếc, đã xảy ra lỗi.</translation>
 <translation id="8067872629359326442">Bạn vừa nhập mật khẩu vào một trang web lừa đảo. Chromium có thể trợ giúp bạn. Để đổi mật khẩu và thông báo cho Google biết rằng tài khoản của bạn có thể gặp nguy hiểm, hãy nhấp vào Bảo vệ tài khoản.</translation>
 <translation id="8074253406171541171">10x13 (Phong bì)</translation>
+<translation id="8075898834294118863">Quản lý chế độ cài đặt trang web</translation>
 <translation id="8078141288243656252">Không thể chú thích khi xoay</translation>
 <translation id="8079031581361219619">Tải lại trang web?</translation>
 <translation id="8086971161893892807">Bản nháp</translation>
@@ -1886,6 +1900,7 @@ Thông tin chi tiết bổ sung:
 <translation id="8277900682056760511">Trang tính trình xử lý thanh toán đang mở</translation>
 <translation id="8281084378435768645">Large-Photo</translation>
 <translation id="8282947398454257691">Biết số nhận dạng thiết bị duy nhất của bạn</translation>
+<translation id="8284769179630993263">Quản lý tính năng Duyệt web an toàn và nhiều tính năng khác trong phần Cài đặt của Chrome</translation>
 <translation id="8286036467436129157">Đăng nhập</translation>
 <translation id="8288807391153049143">Hiển thị chứng chỉ</translation>
 <translation id="8289355894181816810">Hãy liên hệ với quản trị viên mạng của bạn nếu bạn không chắc chắn về điều này có ý nghĩa gì.</translation>
@@ -1914,6 +1929,7 @@ Thông tin chi tiết bổ sung:
 <translation id="8380941800586852976">Nguy hiểm</translation>
 <translation id="8381674639488873545">Những khoản phí này có thể là khoản thu một lần hoặc định kỳ và có thể không rõ ràng. <ph name="BEGIN_LINK" />Vẫn hiển thị<ph name="END_LINK" /></translation>
 <translation id="8390725133630534698">Chính sách của quản trị viên đã chặn thao tác chia sẻ từ <ph name="ORIGIN_NAME" /> với <ph name="VM_NAME" /></translation>
+<translation id="8405579342203358118">Quản lý loại thông tin bạn đồng bộ hóa trong phần Cài đặt của Chrome</translation>
 <translation id="8412145213513410671">Sự cố (<ph name="CRASH_COUNT" />)</translation>
 <translation id="8412392972487953978">Bạn phải nhập cùng một cụm mật khẩu hai lần.</translation>
 <translation id="8416694386774425977">Cấu hình mạng này là không hợp lệ và không thể nhập được.
@@ -1921,6 +1937,7 @@ Thông tin chi tiết bổ sung:
 <ph name="DEBUG_INFO" /></translation>
 <translation id="8424582179843326029"><ph name="FIRST_LABEL" /> <ph name="SECOND_LABEL" /> <ph name="THIRD_LABEL" /></translation>
 <translation id="8428213095426709021">Cài đặt</translation>
+<translation id="8431194080598727332"><ph name="MANAGE_COOKIES_FOCUSED_FRIENDLY_MATCH_TEXT" />, hãy nhấn Tab rồi nhấn Enter để quản lý các lựa chọn ưu tiên dành cho cookie trong phần Cài đặt của Chrome</translation>
 <translation id="8433057134996913067">Thao tác này sẽ đăng xuất bạn khỏi hầu hết các trang web.</translation>
 <translation id="8437238597147034694">&amp;Hoàn tác di chuyển</translation>
 <translation id="8438786541497918448">Sử dụng máy ảnh và micrô?</translation>
@@ -1940,6 +1957,7 @@ Thông tin chi tiết bổ sung:
 <translation id="8503813439785031346">Tên người dùng</translation>
 <translation id="8507227106804027148">Dòng lệnh</translation>
 <translation id="8508648098325802031">Biểu tượng Tìm kiếm</translation>
+<translation id="8511402995811232419">Quản lý cookie</translation>
 <translation id="8522552481199248698">Chrome có thể giúp bạn bảo vệ Tài khoản Google của mình và đổi mật khẩu.</translation>
 <translation id="8530813470445476232">Xóa lịch sử duyệt web, cookie, bộ nhớ đệm và các dữ liệu khác trong phần cài đặt của Chrome</translation>
 <translation id="8533619373899488139">Hãy truy cập vào &lt;strong&gt;chrome://policy&lt;/strong&gt; để xem danh sách các URL bị chặn và những chính sách khác do quản trị viên hệ thống thực thi.</translation>

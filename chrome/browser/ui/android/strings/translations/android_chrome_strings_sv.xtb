@@ -40,7 +40,6 @@
 <translation id="123724288017357924">Läs in den aktuella sidan igen och ignorera cachelagrat innehåll</translation>
 <translation id="124678866338384709">Stäng den aktuella fliken</translation>
 <translation id="1258753120186372309">Googles doodle: <ph name="DOODLE_DESCRIPTION" /></translation>
-<translation id="1263231323834454256">Läslista</translation>
 <translation id="1266864766717917324">Det gick inte att dela <ph name="CONTENT_TYPE" /></translation>
 <translation id="1283039547216852943">Tryck och utöka</translation>
 <translation id="1285310382777185058">Ändra språk</translation>
@@ -994,7 +993,6 @@ Data från inkognitosessionen rensas bara från Chrome om du <ph name="BEGIN_BOL
 <translation id="7774809984919390718">{PAYMENT_METHOD,plural, =1{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 och <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> till}other{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 och <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> till}}</translation>
 <translation id="7778840695157240389">Återkom senare för nya berättelser</translation>
 <translation id="7786595606756654269">Med Google Assistent är det lättare att söka på webben och interagera med webbplatser du har öppna med hjälp av rösten. Innehållet på de webbplatser där du använder Google Assistent samt deras webbadresser överförs till assistenten.</translation>
-<translation id="7790349552933995572">Startskärm</translation>
 <translation id="7791543448312431591">Lägg till</translation>
 <translation id="7798392620021911922"><ph name="TAB_COUNT" /> flikar har återställts</translation>
 <translation id="780301667611848630">Nej tack</translation>
@@ -1202,7 +1200,6 @@ Data från inkognitosessionen rensas bara från Chrome om du <ph name="BEGIN_BOL
 <translation id="9149286894143103695">Lägg till webbplatsen på telefonens startskärm så att du kommer åt den enkelt</translation>
 <translation id="9155898266292537608">Du kan även söka med ett snabbt tryck eller ett ord</translation>
 <translation id="9169507124922466868">Navigeringshistoriken visas på halva skärmen</translation>
-<translation id="9191031968346938109">Lägg till i …</translation>
 <translation id="9199368092038462496">{NUM_MINS,plural, =1{Genomsöktes för 1 minut sedan}other{Genomsöktes för # minuter sedan}}</translation>
 <translation id="9204836675896933765">1 fil återstår</translation>
 <translation id="9206873250291191720">A</translation>

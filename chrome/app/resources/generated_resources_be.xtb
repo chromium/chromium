@@ -4200,6 +4200,7 @@
 <translation id="5774295353725270860">Адкрыць праграму "Файлы"</translation>
 <translation id="577624874850706961">Шукаць у файлах cookie</translation>
 <translation id="5777468213129569553">Адкрыць Chrome</translation>
+<translation id="5778491106820461378">У раздзеле <ph name="LINK_BEGIN" />Налады<ph name="LINK_END" /> можна кіраваць Уліковымі запісамі Google, у якія вы ўвайшлі. Дазволы для вэб-сайтаў і праграм могуць дзейнічаць для ўсіх гэтых уліковых запісаў. Калі вы не хочаце даваць сайтам або праграмам доступ да інфармацыі пра ўліковы запіс, вы можаце ўвайсці на сваю прыладу <ph name="DEVICE_TYPE" /> як госць.</translation>
 <translation id="5780011244986845107">Выбраная папка змяшчае канфідэнцыяльныя файлы. Даць праграме "<ph name="APP_NAME" />" пастаянны доступ на чытанне гэтай папкі?</translation>
 <translation id="5780973441651030252">Прыярытэт працэсу</translation>
 <translation id="5781092003150880845">Сінхранізаваць як <ph name="ACCOUNT_FULL_NAME" /></translation>
@@ -5090,6 +5091,7 @@
 <translation id="6811332638216701903">Імя хоста DHCP</translation>
 <translation id="6812349420832218321">Немагчыма запусціць <ph name="PRODUCT_NAME" /> з правамі каранёвага доступу.</translation>
 <translation id="6812841287760418429">Захаваць змяненні</translation>
+<translation id="6813907279658683733">Увесь экран</translation>
 <translation id="681584224457905309">{COUNT,plural, =1{файл}one{# файл}few{# файлы}many{# файлаў}other{# файла}}</translation>
 <translation id="6817174620439930047">Запытваць, калі сайт хоча выкарыстоўваць эксклюзіўныя сістэмныя паведамленні для доступу да MIDI-прылад (рэкамендуецца)</translation>
 <translation id="6818198425579322765">З якой мовы перакладаць старонку</translation>
@@ -5594,6 +5596,7 @@
 <translation id="7392118418926456391">Не ўдалося выканаць праверку на вірусы</translation>
 <translation id="7392915005464253525">Паў&amp;торна адкрыць закрытае акно</translation>
 <translation id="7393073300870882456">{COUNT,plural, =1{1 элемент скапіраваны}one{{COUNT} элемент скапіраваны}few{{COUNT} элементы скапіравана}many{{COUNT} элементаў скапіравана}other{{COUNT} элемента скапіравана}}</translation>
+<translation id="7395774987022469191">Увесь экран</translation>
 <translation id="7396017167185131589">Тут з'явяцца абагуленыя папкі</translation>
 <translation id="7396845648024431313"><ph name="APP_NAME" /> будзе запускацца пры запуску сістэмы і будзе працягваць працаваць у фоне, нават калі вы закрылі ўсе іншыя вокны <ph name="PRODUCT_NAME" />.</translation>
 <translation id="7399045143794278225">Наладзіць сінхранізацыю</translation>

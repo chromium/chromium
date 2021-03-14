@@ -287,6 +287,7 @@ Sie werden sonst gemäß Ihren Datenschutzeinstellungen blockiert. Wenn Cookies 
 <translation id="2001146170449793414">{COUNT,plural, =1{und 1 weitere}other{und # weitere}}</translation>
 <translation id="2003709556000175978">Jetzt Passwort zurücksetzen</translation>
 <translation id="2003775180883135320">Vierfache Lochung oben</translation>
+<translation id="201174227998721785">Berechtigungen und gespeicherte Daten von Websites in den Chrome-Einstellungen verwalten</translation>
 <translation id="2025115093177348061">Augmented Reality</translation>
 <translation id="2025186561304664664">Proxy ist auf automatische Konfiguration eingestellt.</translation>
 <translation id="2032962459168915086"><ph name="BEGIN_LINK" />Proxy und Firewall prüfen<ph name="END_LINK" /></translation>
@@ -299,6 +300,7 @@ Sie werden sonst gemäß Ihren Datenschutzeinstellungen blockiert. Wenn Cookies 
 <translation id="2079545284768500474">Rückgängig machen</translation>
 <translation id="20817612488360358">Die System-Proxy-Einstellungen sind zur Verwendung angegeben, gleichzeitig wurde aber auch eine explizite Proxy-Konfiguration festgelegt.</translation>
 <translation id="2082238445998314030">Ergebnis <ph name="RESULT_NUMBER" /> von <ph name="TOTAL_RESULTS" /></translation>
+<translation id="2088086323192747268">Schaltfläche zum Verwalten der Synchronisierung – drücken Sie die Eingabetaste, um in den Chrome-Einstellungen zu verwalten, welche Informationen synchronisiert werden</translation>
 <translation id="2091887806945687916">Ton</translation>
 <translation id="2094505752054353250">Domains stimmen nicht überein.</translation>
 <translation id="2096368010154057602">Abteilung</translation>
@@ -363,6 +365,7 @@ Sie werden sonst gemäß Ihren Datenschutzeinstellungen blockiert. Wenn Cookies 
 <translation id="2293443924986248631">Wenn diese Funktion aktiviert ist, können Websites keine Cookies nutzen, die Sie durch das Web verfolgen. Einige Websites funktionieren dann möglicherweise nicht mehr richtig.</translation>
 <translation id="2295290966866883927">URLs von Seiten, die Sie besuchen, werden zur Analyse an Google Cloud oder Dritte gesendet. Sie werden beispielsweise gescannt, um unsichere Websites zu identifizieren.</translation>
 <translation id="2297722699537546652">B5 (Umschlag)</translation>
+<translation id="2298855485018661510">Schaltfläche zum Verwalten von Cookies – drücken Sie die Eingabetaste, um Ihre Cookie-Einstellungen in den Chrome-Einstellungen zu verwalten</translation>
 <translation id="2300306941146563769">Nicht hochgeladen</translation>
 <translation id="2310021320168182093">Chou2 (Umschlag)</translation>
 <translation id="2316887270356262533">Es werden weniger als 1 MB Speicherplatz freigegeben. Manche Websites werden beim nächsten Öffnen eventuell langsamer geladen.</translation>
@@ -396,6 +399,7 @@ Sie werden sonst gemäß Ihren Datenschutzeinstellungen blockiert. Wenn Cookies 
 <translation id="2465402087343596252">Architecture-E</translation>
 <translation id="2465655957518002998">Lieferoption auswählen</translation>
 <translation id="2465688316154986572">Heften</translation>
+<translation id="246725142101294240"><ph name="MANAGE_SECURITY_SETTINGS_FOCUSED_FRIENDLY_MATCH_TEXT" /> – drücken Sie die Tabulatortaste und dann die Eingabetaste, um beispielsweise Safe Browsing in den Chrome-Einstellungen zu verwalten</translation>
 <translation id="2467694685043708798"><ph name="BEGIN_LINK" />Netzwerkdiagnose ausführen<ph name="END_LINK" /></translation>
 <translation id="2469153820345007638">1-zu-N-Reihenfolge</translation>
 <translation id="2470767536994572628">Wenn Sie Anmerkungen bearbeiten, wechselt das Dokument zur Einzelseitenansicht und seiner ursprünglichen Ausrichtung zurück</translation>
@@ -569,6 +573,7 @@ Sie werden sonst gemäß Ihren Datenschutzeinstellungen blockiert. Wenn Cookies 
 <translation id="3188393374551744535">Guthaben</translation>
 <translation id="3194737229810486521"><ph name="URL" /> möchte Daten dauerhaft auf Ihrem Gerät speichern</translation>
 <translation id="3195213714973468956"><ph name="PRINTER_NAME" /> auf <ph name="SERVER_NAME" /></translation>
+<translation id="3202497928925179914"><ph name="MANAGE_SYNC_FOCUSED_FRIENDLY_MATCH_TEXT" /> – drücken Sie die Tabulatortaste und dann die Eingabetaste, um in den Chrome-Einstellungen zu verwalten, welche Informationen synchronisiert werden</translation>
 <translation id="320323717674993345">Zahlung abbrechen</translation>
 <translation id="3207960819495026254">Mit einem Lesezeichen versehen</translation>
 <translation id="3209034400446768650">Auf der Seite wird möglicherweise Geld verlangt</translation>
@@ -625,6 +630,7 @@ Sie werden sonst gemäß Ihren Datenschutzeinstellungen blockiert. Wenn Cookies 
 <translation id="3395827396354264108">Abholoption</translation>
 <translation id="3399952811970034796">Lieferadresse</translation>
 <translation id="3402261774528610252">Diese Website wurde unter Verwendung von TLS 1.0 oder TLS 1.1 geladen. Diese Versionen wurden eingestellt und werden zukünftig deaktiviert. Sobald sie deaktiviert wurden, können Nutzer diese Website nicht mehr aufrufen. Auf dem Server sollte TLS 1.2 oder höher laufen.</translation>
+<translation id="3409896703495473338">Sicherheitseinstellungen verwalten</translation>
 <translation id="3414952576877147120">Größe:</translation>
 <translation id="3417660076059365994">Hochgeladene oder angehängte Dateien werden zur Analyse an Google Cloud oder Dritte gesendet. Sie werden beispielsweise auf sensible Daten oder Malware geprüft.</translation>
 <translation id="3422248202833853650">Versuchen Sie, andere Programme zu beenden, um Speicher freizugeben.</translation>
@@ -655,6 +661,7 @@ Sie werden sonst gemäß Ihren Datenschutzeinstellungen blockiert. Wenn Cookies 
 <translation id="350069200438440499">Dateiname:</translation>
 <translation id="3507936815618196901">Eine 3D-Karte Ihrer Umgebung erstellen und die Kameraposition verfolgen</translation>
 <translation id="3512163584740124171">Diese Richtlinie wird ignoriert, da eine andere Richtlinie aus derselben Richtliniengruppe eine höhere Priorität hat.</translation>
+<translation id="35172538073169599">Schaltfläche zum Verwalten von Adressen – drücken Sie die Eingabetaste, um Adressen in den Chrome-Einstellungen hinzuzufügen und zu verwalten</translation>
 <translation id="3518941727116570328">Handhabung mehrerer Objekte</translation>
 <translation id="3528171143076753409">Serverzertifikat ist nicht vertrauenswürdig.</translation>
 <translation id="3528485271872257980">Dunkelbraun</translation>
@@ -1192,6 +1199,7 @@ Sie werden sonst gemäß Ihren Datenschutzeinstellungen blockiert. Wenn Cookies 
 <translation id="5540224163453853">Der gewünschte Artikel wurde nicht gefunden.</translation>
 <translation id="5541086400771735334">Ablage 7</translation>
 <translation id="5541546772353173584">E-Mail-Adresse hinzufügen</translation>
+<translation id="5542280138350899197">Schaltfläche zum Verwalten der Sicherheitseinstellungen – drücken Sie die Eingabetaste, um beispielsweise Safe Browsing in den Chrome-Einstellungen zu verwalten</translation>
 <translation id="5545756402275714221">Artikel für mich</translation>
 <translation id="5552137475244467770">Chrome prüft in regelmäßigen Abständen, ob Ihre Passwörter auf Listen erscheinen, die online veröffentlicht wurden. Dabei werden Ihre Passwörter und Nutzernamen verschlüsselt, damit sie von niemandem gelesen werden können, auch nicht von Google.</translation>
 <translation id="5556459405103347317">Neu laden</translation>
@@ -1446,6 +1454,7 @@ Sie werden sonst gemäß Ihren Datenschutzeinstellungen blockiert. Wenn Cookies 
 <translation id="6583674473685352014">B6 (Umschlag)</translation>
 <translation id="6587923378399804057">Von Ihnen kopierter Link</translation>
 <translation id="6591833882275308647">Ihr <ph name="DEVICE_TYPE" /> wird nicht verwaltet</translation>
+<translation id="6592952801936330159">Schaltfläche zum Verwalten der Website-Einstellungen – drücken Sie die Eingabetaste, um Berechtigungen und gespeicherte Daten von Websites in den Chrome-Einstellungen zu verwalten</translation>
 <translation id="6596325263575161958">Verschlüsselungsoptionen</translation>
 <translation id="6604181099783169992">Bewegungs- oder Lichtsensoren</translation>
 <translation id="6609880536175561541">Prc7 (Umschlag)</translation>
@@ -1547,6 +1556,7 @@ Sie werden sonst gemäß Ihren Datenschutzeinstellungen blockiert. Wenn Cookies 
 <translation id="7053983685419859001">Blockieren</translation>
 <translation id="7058163556978339998"><ph name="BROWSER" /> hat verifiziert, dass <ph name="ISSUER" /> das Zertifikat dieser Website ausgestellt hat.</translation>
 <translation id="7062635574500127092">Blaugrün</translation>
+<translation id="706295145388601875">Adressen in den Chrome-Einstellungen hinzufügen und verwalten</translation>
 <translation id="7064851114919012435">Kontaktdaten</translation>
 <translation id="70705239631109039">Ihre Verbindung ist nicht uneingeschränkt sicher</translation>
 <translation id="7072826695771387770">Auftreten eines unsicheren Ereignisses</translation>
@@ -1556,6 +1566,7 @@ Sie werden sonst gemäß Ihren Datenschutzeinstellungen blockiert. Wenn Cookies 
 <translation id="7083258188081898530">Fach 9</translation>
 <translation id="7086090958708083563">Upload vom Nutzer angefordert</translation>
 <translation id="7087282848513945231">Landkreis</translation>
+<translation id="7095139009144195559"><ph name="MANAGE_SITE_SETTINGS_FOCUSED_FRIENDLY_MATCH_TEXT" /> – drücken Sie die Tabulatortaste und dann die Eingabetaste, um Berechtigungen und gespeicherte Daten von Websites in den Chrome-Einstellungen zu verwalten</translation>
 <translation id="7108338896283013870">Ausblenden</translation>
 <translation id="7108634116785509031"><ph name="HOST" /> möchte Ihre Kamera verwenden</translation>
 <translation id="7108819624672055576">Von einer Erweiterung zugelassen</translation>
@@ -1621,6 +1632,7 @@ Weitere Details:
 <translation id="7349430561505560861">A4-Extra</translation>
 <translation id="7353601530677266744">Befehlszeile</translation>
 <translation id="7359588939039777303">Werbung blockiert.</translation>
+<translation id="7365596969960773405"><ph name="MANAGE_ADDRESSES_FOCUSED_FRIENDLY_MATCH_TEXT" /> – drücken Sie die Tabulatortaste und dann die Eingabetaste, um Adressen in den Chrome-Einstellungen hinzuzufügen und zu verwalten</translation>
 <translation id="7365849542400970216">Informationen zu Ihrer Gerätenutzung abrufen?</translation>
 <translation id="7372973238305370288">Suchergebnis</translation>
 <translation id="7374733840632556089">Sie sehen diesen Fehler aufgrund eines Zertifikats, das auf Ihrem Gerät installiert ist. Chrome vertraut dem Zertifikat nicht, weil es Netzwerke unterbrechen und überwachen kann. Natürlich gibt es berechtigte Gründe für eine Überwachung, z. B. im Netzwerk von Schulen oder Unternehmen. Trotzdem soll sichergestellt werden, dass Sie über die Überwachung informiert sind, selbst wenn Sie sie nicht unterbinden können. Die Überwachung ist in jedem Browser und jeder Anwendung mit Webzugriff möglich.</translation>
@@ -1787,6 +1799,7 @@ Weitere Details:
 <translation id="7938958445268990899">Serverzertifikat ist noch nicht gültig.</translation>
 <translation id="7942349550061667556">Rot</translation>
 <translation id="7947285636476623132">Prüfen Sie Ihr Ablaufjahr und versuchen Sie es dann erneut</translation>
+<translation id="7950027195171824198">Cookie-Einstellungen in den Chrome-Einstellungen verwalten</translation>
 <translation id="7951415247503192394">(32-Bit)</translation>
 <translation id="7953569069500808819">Mehrere Heftklammern oben</translation>
 <translation id="7956713633345437162">Mobile Lesezeichen</translation>
@@ -1818,6 +1831,7 @@ Weitere Details:
 <translation id="8066955247577885446">Ein Fehler ist aufgetreten.</translation>
 <translation id="8067872629359326442">Sie haben Ihr Passwort gerade auf einer verdächtigen Website eingegeben. Chromium kann Ihnen helfen. Wenn Sie Ihr Passwort ändern und Google darüber informieren möchten, dass Ihr Konto gefährdet sein könnte, klicken Sie auf "Konto schützen".</translation>
 <translation id="8074253406171541171">10x13 (Umschlag)</translation>
+<translation id="8075898834294118863">Website-Einstellungen verwalten</translation>
 <translation id="8078141288243656252">Anmerkungen bei gedrehtem Dokument nicht möglich</translation>
 <translation id="8079031581361219619">Website neu laden?</translation>
 <translation id="8086971161893892807">Entwurf</translation>
@@ -1873,6 +1887,7 @@ Weitere Details:
 <translation id="8277900682056760511">Das Dokument zur Zahlungsabwicklung ist geöffnet</translation>
 <translation id="8281084378435768645">Large-Photo</translation>
 <translation id="8282947398454257691">Ihre eindeutige Geräte-ID abrufen</translation>
+<translation id="8284769179630993263">Safe Browsing und mehr in den Chrome-Einstellungen verwalten</translation>
 <translation id="8286036467436129157">Anmelden</translation>
 <translation id="8288807391153049143">Zertifikat anzeigen</translation>
 <translation id="8289355894181816810">Wenn Sie weitere Informationen dazu benötigen, kann Ihnen Ihr Netzwerkadministrator weiterhelfen.</translation>
@@ -1901,6 +1916,7 @@ Weitere Details:
 <translation id="8380941800586852976">Schädlich</translation>
 <translation id="8381674639488873545">Diese Kosten können einmalig oder wiederkehrend sein und sind vielleicht nicht klar zu erkennen. <ph name="BEGIN_LINK" />Trotzdem anzeigen<ph name="END_LINK" /></translation>
 <translation id="8390725133630534698">Die Administratorrichtlinie blockiert das Teilen von <ph name="ORIGIN_NAME" /> mit <ph name="VM_NAME" /></translation>
+<translation id="8405579342203358118">In den Chrome-Einstellungen verwalten, welche Informationen synchronisiert werden</translation>
 <translation id="8412145213513410671">Abstürze (<ph name="CRASH_COUNT" />)</translation>
 <translation id="8412392972487953978">Sie müssen zweimal dieselbe Passphrase eingeben.</translation>
 <translation id="8416694386774425977">Die Netzwerkkonfiguration ist ungültig und konnte nicht importiert werden.
@@ -1908,6 +1924,7 @@ Weitere Details:
 <ph name="DEBUG_INFO" /></translation>
 <translation id="8424582179843326029"><ph name="FIRST_LABEL" />, <ph name="SECOND_LABEL" />, <ph name="THIRD_LABEL" /></translation>
 <translation id="8428213095426709021">Einstellungen</translation>
+<translation id="8431194080598727332"><ph name="MANAGE_COOKIES_FOCUSED_FRIENDLY_MATCH_TEXT" /> – drücken Sie die Tabulatortaste und dann die Eingabetaste, um Ihre Cookie-Einstellungen in den Chrome-Einstellungen zu verwalten</translation>
 <translation id="8433057134996913067">Dadurch werden Sie von den meisten Websites abgemeldet.</translation>
 <translation id="8437238597147034694">&amp;Verschieben rückgängig machen</translation>
 <translation id="8438786541497918448">Kamera und Mikrofon verwenden?</translation>
@@ -1927,6 +1944,7 @@ Weitere Details:
 <translation id="8503813439785031346">Nutzername</translation>
 <translation id="8507227106804027148">Befehlszeile</translation>
 <translation id="8508648098325802031">Symbol "Suche"</translation>
+<translation id="8511402995811232419">Cookies verwalten</translation>
 <translation id="8522552481199248698">Mithilfe von Chrome können Sie Ihr Google-Konto schützen und Ihr Passwort ändern.</translation>
 <translation id="8530813470445476232">In den Chrome-Einstellungen Browserverlauf, Cookies und mehr löschen sowie Cache leeren</translation>
 <translation id="8533619373899488139">Unter &lt;strong&gt;chrome://policy&lt;/strong&gt; finden Sie eine Liste mit blockierten URLs und andere Richtlinien, die von Ihrem Systemadministrator festgelegt wurden.</translation>

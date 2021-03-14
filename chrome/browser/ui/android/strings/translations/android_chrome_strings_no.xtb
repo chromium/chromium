@@ -40,7 +40,6 @@
 <translation id="123724288017357924">Last inn siden på nytt, men ignorer bufret innhold</translation>
 <translation id="124678866338384709">Lukk den aktive fanen</translation>
 <translation id="1258753120186372309">Google-doodle: <ph name="DOODLE_DESCRIPTION" /></translation>
-<translation id="1263231323834454256">Leseliste</translation>
 <translation id="1266864766717917324">Kunne ikke dele <ph name="CONTENT_TYPE" /></translation>
 <translation id="1283039547216852943">Trykk for å vise</translation>
 <translation id="1285310382777185058">Bytt språk</translation>
@@ -994,7 +993,6 @@ Dataene fra inkognitoøkten fjernes ikke fra Chrome før du <ph name="BEGIN_BOLD
 <translation id="7774809984919390718">{PAYMENT_METHOD,plural, =1{<ph name="PAYMENT_METHOD_PREVIEW" /> og <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> til}other{<ph name="PAYMENT_METHOD_PREVIEW" /> og <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> til}}</translation>
 <translation id="7778840695157240389">Kom tilbake senere for nye nyhetssaker</translation>
 <translation id="7786595606756654269">Google-assistenten gjør det lettere å bruke stemmen til å søke på nettet og utføre handlinger på nettstedene du er inne på. Google-assistenten mottar nettadressene til og innholdet på nettstedene der du bruker den.</translation>
-<translation id="7790349552933995572">Startskjerm</translation>
 <translation id="7791543448312431591">Legg til</translation>
 <translation id="7798392620021911922">Gjenopprettet <ph name="TAB_COUNT" /> faner</translation>
 <translation id="780301667611848630">Nei takk</translation>
@@ -1202,7 +1200,6 @@ Dataene fra inkognitoøkten fjernes ikke fra Chrome før du <ph name="BEGIN_BOLD
 <translation id="9149286894143103695">Legg til dette nettstedet på telefonens startskjerm, slik at du lettere kan komme hit</translation>
 <translation id="9155898266292537608">Du kan også søke med et kjapt trykk på et ord</translation>
 <translation id="9169507124922466868">Navigasjonshistorikken er halvveis åpnet</translation>
-<translation id="9191031968346938109">Legg til i…</translation>
 <translation id="9199368092038462496">{NUM_MINS,plural, =1{Sjekket for ett minutt siden}other{Sjekket for # minutter siden}}</translation>
 <translation id="9204836675896933765">1 fil gjenstår</translation>
 <translation id="9206873250291191720">A</translation>

@@ -40,7 +40,6 @@
 <translation id="123724288017357924">क्यास गरिएको सामग्रीको बेवास्ता गर्दै हालको पृष्ठलाई पुनःलोड गर्नुहोस्</translation>
 <translation id="124678866338384709">हालको ट्याब बन्द गर्नुहोस्</translation>
 <translation id="1258753120186372309">Google केरकार: <ph name="DOODLE_DESCRIPTION" /></translation>
-<translation id="1263231323834454256">पाठ्य सूची</translation>
 <translation id="1266864766717917324"><ph name="CONTENT_TYPE" /> आदान प्रदान गर्न सकिएन</translation>
 <translation id="1283039547216852943">विस्तृत गर्न ट्याप गर्नुहोस्</translation>
 <translation id="1285310382777185058">भाषा परिवर्तन गर्नुहोस्</translation>
@@ -993,7 +992,6 @@
 <translation id="7774809984919390718">{PAYMENT_METHOD,plural, =1{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 र <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> थप}other{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 र <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> थप}}</translation>
 <translation id="7778840695157240389">नयाँ समाचार हेर्न पछि फर्केर आउनुहोस्</translation>
 <translation id="7786595606756654269">Google Assistant ले वेबमा खोज्दा तथा आफूले खोलेका साइटहरू चलाउँदा बोलेरै प्रयोग गर्न सकिने अझ राम्रा सुविधाहरू उपलब्ध गराउँछ। Google सहायकले तपाईंले सहायक प्रयोग गर्ने साइटका URL र सामग्रीहरू प्राप्त गर्ने छ।</translation>
-<translation id="7790349552933995572">होम स्क्रिन</translation>
 <translation id="7791543448312431591">थप्नुहोस्</translation>
 <translation id="7798392620021911922"><ph name="TAB_COUNT" /> वटा ट्याब रिस्टोर गरिए</translation>
 <translation id="780301667611848630">भयो, धन्यवाद</translation>
@@ -1201,7 +1199,6 @@
 <translation id="9149286894143103695">तपाईं यो साइटमा अझ सजिलैसँग जानका खातिर आफ्नो फोनको होम स्क्रिनमा उक्त साइटको लिंक हाल्नुहोस्</translation>
 <translation id="9155898266292537608">कुनै शब्दमा द्रुत ट्याप गरेर पनि तपाईं खोज्न सक्नुहुन्छ</translation>
 <translation id="9169507124922466868">नेभिगेसनको इतिहास आधा खुला छ</translation>
-<translation id="9191031968346938109">यहाँ हाल्नुहोस्…</translation>
 <translation id="9199368092038462496">{NUM_MINS,plural, =1{१ मिनेटअघि जाँच गरिएको}other{# मिनेटअघि जाँच गरिएको}}</translation>
 <translation id="9204836675896933765">१ फाइल बाँकी</translation>
 <translation id="9206873250291191720">क</translation>

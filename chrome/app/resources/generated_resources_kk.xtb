@@ -4194,6 +4194,7 @@
 <translation id="5774295353725270860">Файлдар қолданбасын ашу</translation>
 <translation id="577624874850706961">Cookie файлдарын іздеу</translation>
 <translation id="5777468213129569553">Chrome браузерін ашу</translation>
+<translation id="5778491106820461378">Кірген Google есептік жазбаларыңызды <ph name="LINK_BEGIN" />Параметрлерден<ph name="LINK_END" /> басқара аласыз. Веб-сайттар мен қолданбаларға берген рұқсаттар барлық есептік жазбаға қолданылуы мүмкін. Егер сайттар мен қолданбалардың есептік жазбаңыз туралы ақпаратты пайдаланғанын қаламасаңыз, <ph name="DEVICE_TYPE" /> құрылғысына қонақ ретінде кіре аласыз.</translation>
 <translation id="5780011244986845107">Сіз таңдаған қалтада құпия файлдар бар. "<ph name="APP_NAME" />" қолданбасына қалтадағы деректерді тұрақты оқу мүмкіндігін бергіңіз келе ме?</translation>
 <translation id="5780973441651030252">Өңдеу басымдығы</translation>
 <translation id="5781092003150880845"><ph name="ACCOUNT_FULL_NAME" /> атты пайдаланушының есептік жазбасымен синхрондау</translation>
@@ -5084,6 +5085,7 @@
 <translation id="6811332638216701903">DHCP хост атауы</translation>
 <translation id="6812349420832218321"><ph name="PRODUCT_NAME" /> өнімін түбірлік ретінде іске мүмкін емес.</translation>
 <translation id="6812841287760418429">Өзгерістерді сақтау</translation>
+<translation id="6813907279658683733">Бүкіл экран</translation>
 <translation id="681584224457905309">{COUNT,plural, =1{файл}other{# файл}}</translation>
 <translation id="6817174620439930047">Сайт MIDI құрылғыларына кіру үшін жүйенің айрықша хабарларын пайдаланғысы келетіні сұралсын (ұсынылады)</translation>
 <translation id="6818198425579322765">Беттің аударма тілі</translation>
@@ -5588,6 +5590,7 @@
 <translation id="7392118418926456391">Вирустарды тексеру сәтсіз аяқталды</translation>
 <translation id="7392915005464253525">Жабылған терезені қа&amp;йта ашу</translation>
 <translation id="7393073300870882456">{COUNT,plural, =1{1 элемент көшірілді.}other{{COUNT} элемент көшірілді.}}</translation>
+<translation id="7395774987022469191">Бүкіл экран</translation>
 <translation id="7396017167185131589">Ортақ қалталар осы жерде көрсетіледі.</translation>
 <translation id="7396845648024431313">Жүйе қосылғанда, <ph name="APP_NAME" /> ашылады және барлық басқа <ph name="PRODUCT_NAME" /> терезелерін жапсаңыз да, фонда істеп тұра береді.</translation>
 <translation id="7399045143794278225">Синхрондауды реттеу</translation>

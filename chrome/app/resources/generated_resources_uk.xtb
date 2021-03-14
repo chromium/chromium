@@ -4200,6 +4200,7 @@
 <translation id="5774295353725270860">Відкрити програму файлів</translation>
 <translation id="577624874850706961">Пошук файлів cookie</translation>
 <translation id="5777468213129569553">Відкрити Chrome</translation>
+<translation id="5778491106820461378">Усіма обліковими записами Google, у які ви ввійшли, можна керувати в <ph name="LINK_BEGIN" />Налаштуваннях<ph name="LINK_END" />. Дозволи, надані веб-сайтам і додаткам, можуть діяти для всіх облікових записів. Якщо ви не хочете, щоб сайти чи додатки мали доступ до даних облікового запису, можете ввійти на пристрої <ph name="DEVICE_TYPE" /> як гість.</translation>
 <translation id="5780011244986845107">Вибрана папка містить файли з конфіденційною інформацією. Надати додатку <ph name="APP_NAME" /> постійний дозвіл на перегляд цієї папки?</translation>
 <translation id="5780973441651030252">Пріоритет обробки</translation>
 <translation id="5781092003150880845">Синхронізувати як <ph name="ACCOUNT_FULL_NAME" /></translation>
@@ -5090,6 +5091,7 @@
 <translation id="6811332638216701903">Ім'я хосту для DHCP-сервера</translation>
 <translation id="6812349420832218321"><ph name="PRODUCT_NAME" /> неможливо запустити з кореневого каталогу.</translation>
 <translation id="6812841287760418429">Залишити зміни</translation>
+<translation id="6813907279658683733">Увесь екран</translation>
 <translation id="681584224457905309">{COUNT,plural, =1{файл}one{# файл}few{# файли}many{# файлів}other{# файлу}}</translation>
 <translation id="6817174620439930047">Запитувати, коли сайт хоче використовувати виключні повідомлення системи, щоб отримувати доступ до пристроїв MIDI (рекомендується)</translation>
 <translation id="6818198425579322765">Мова сторінки для перекладу</translation>
@@ -5594,6 +5596,7 @@
 <translation id="7392118418926456391">Помилка перевірки на віруси</translation>
 <translation id="7392915005464253525">В&amp;ідкрити закрите вікно знову</translation>
 <translation id="7393073300870882456">{COUNT,plural, =1{Скопійовано 1 елемент}one{Скопійовано {COUNT} елемент}few{Скопійовано {COUNT} елементи}many{Скопійовано {COUNT} елементів}other{Скопійовано {COUNT} елемента}}</translation>
+<translation id="7395774987022469191">Увесь екран</translation>
 <translation id="7396017167185131589">Тут відображатимуться спільні папки</translation>
 <translation id="7396845648024431313">Програма <ph name="APP_NAME" /> запускатиметься під час запуску системи та продовжуватиме працювати у фоновому режимі навіть після закриття всіх інших вікон <ph name="PRODUCT_NAME" />.</translation>
 <translation id="7399045143794278225">Налаштувати синхронізацію</translation>

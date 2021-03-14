@@ -4199,6 +4199,7 @@ Assurez-vous de ne pas dévoiler d'informations sensibles.</translation>
 <translation id="5774295353725270860">Ouvrir l'application Fichiers</translation>
 <translation id="577624874850706961">Rechercher des cookies</translation>
 <translation id="5777468213129569553">Ouvrir Chrome</translation>
+<translation id="5778491106820461378">Vous pouvez gérer les comptes Google auxquels des utilisateurs sont connectés dans <ph name="LINK_BEGIN" />Paramètres<ph name="LINK_END" />. Les autorisations que vous accordez aux sites et aux applis peuvent s'appliquer à tous ces comptes. Si vous ne voulez pas que les sites ou les applis que vous utilisez aient accès à vos informations de compte, vous pouvez vous connecter à votre <ph name="DEVICE_TYPE" /> en tant qu'invité.</translation>
 <translation id="5780011244986845107">Le dossier que vous avez sélectionné contient des fichiers sensibles. Voulez-vous vraiment accorder à "<ph name="APP_NAME" />" un accès en lecture permanent à ce dossier ?</translation>
 <translation id="5780973441651030252">Priorité de traitement</translation>
 <translation id="5781092003150880845">Synchroniser en tant que <ph name="ACCOUNT_FULL_NAME" /></translation>
@@ -5089,6 +5090,7 @@ Assurez-vous de ne pas dévoiler d'informations sensibles.</translation>
 <translation id="6811332638216701903">Nom d'hôte DHCP</translation>
 <translation id="6812349420832218321"><ph name="PRODUCT_NAME" /> ne peut pas être exécuté en tant que root.</translation>
 <translation id="6812841287760418429">Conserver les modifications</translation>
+<translation id="6813907279658683733">Plein écran</translation>
 <translation id="681584224457905309">{COUNT,plural, =1{fichier}one{# fichier}other{# fichiers}}</translation>
 <translation id="6817174620439930047">Demander lorsqu'un site souhaite utiliser des messages spécifiques au système pour accéder aux appareils MIDI (recommandé)</translation>
 <translation id="6818198425579322765">Langue source</translation>
@@ -5593,6 +5595,7 @@ Assurez-vous de ne pas dévoiler d'informations sensibles.</translation>
 <translation id="7392118418926456391">Échec de l'analyse antivirus.</translation>
 <translation id="7392915005464253525">&amp;Rouvrir la fenêtre fermée</translation>
 <translation id="7393073300870882456">{COUNT,plural, =1{1 élément copié}one{{COUNT} élément copié}other{{COUNT} éléments copiés}}</translation>
+<translation id="7395774987022469191">Plein écran</translation>
 <translation id="7396017167185131589">Les dossiers partagés s'afficheront ici</translation>
 <translation id="7396845648024431313"><ph name="APP_NAME" /> sera lancé au démarrage du système et continuera de s'exécuter en arrière-plan, même si toutes les fenêtres de <ph name="PRODUCT_NAME" /> sont fermées.</translation>
 <translation id="7399045143794278225">Personnaliser la synchronisation</translation>

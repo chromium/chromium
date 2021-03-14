@@ -287,6 +287,7 @@ Jika tidak, ini akan diblokir oleh setelan privasi Anda. Ini akan memungkinkan k
 <translation id="2001146170449793414">{COUNT,plural, =1{dan 1 lainnya}other{dan # lainnya}}</translation>
 <translation id="2003709556000175978">Reset sandi Anda sekarang</translation>
 <translation id="2003775180883135320">Empat lubang di atas</translation>
+<translation id="201174227998721785">Kelola izin dan data yang disimpan di seluruh situs di setelan Chrome</translation>
 <translation id="2025115093177348061">Augmented reality</translation>
 <translation id="2025186561304664664">Proxy disetel ke konfigurasi otomatis.</translation>
 <translation id="2032962459168915086"><ph name="BEGIN_LINK" />Memeriksa proxy dan firewall<ph name="END_LINK" /></translation>
@@ -299,6 +300,7 @@ Jika tidak, ini akan diblokir oleh setelan privasi Anda. Ini akan memungkinkan k
 <translation id="2079545284768500474">Urungkan</translation>
 <translation id="20817612488360358">Setelan proxy sistem disetel untuk digunakan namun konfigurasi proxy eksplisit juga ditentukan.</translation>
 <translation id="2082238445998314030">Hasil <ph name="RESULT_NUMBER" /> dari <ph name="TOTAL_RESULTS" /></translation>
+<translation id="2088086323192747268">Tombol Kelola sinkronisasi, tekan Enter untuk mengelola info apa saja yang Anda sinkronkan di setelan Chrome</translation>
 <translation id="2091887806945687916">Suara</translation>
 <translation id="2094505752054353250">Ketidakcocokan domain</translation>
 <translation id="2096368010154057602">Departemen</translation>
@@ -363,6 +365,7 @@ Jika tidak, ini akan diblokir oleh setelan privasi Anda. Ini akan memungkinkan k
 <translation id="2293443924986248631">Jika diaktifkan, situs tidak dapat menggunakan cookie yang akan melacak Anda di seluruh web. Fitur di beberapa situs mungkin error.</translation>
 <translation id="2295290966866883927">URL halaman yang Anda kunjungi akan dikirimkan ke Google Cloud atau pihak ketiga untuk analisis. Misalnya, URL mungkin dipindai untuk mendeteksi situs yang tidak aman.</translation>
 <translation id="2297722699537546652">B5 (Envelope)</translation>
+<translation id="2298855485018661510">Tombol Kelola cookie, tekan Enter untuk mengelola preferensi cookie di setelan Chrome</translation>
 <translation id="2300306941146563769">Tidak diupload</translation>
 <translation id="2310021320168182093">Chou2 (Envelope)</translation>
 <translation id="2316887270356262533">Sediakan ruang kurang dari 1 MB. Beberapa situs mungkin dimuat lebih lambat dibuka lagi.</translation>
@@ -396,6 +399,7 @@ Jika tidak, ini akan diblokir oleh setelan privasi Anda. Ini akan memungkinkan k
 <translation id="2465402087343596252">Architecture-E</translation>
 <translation id="2465655957518002998">Pilih Metode Pengiriman</translation>
 <translation id="2465688316154986572">Jepretan</translation>
+<translation id="246725142101294240"><ph name="MANAGE_SECURITY_SETTINGS_FOCUSED_FRIENDLY_MATCH_TEXT" />, tekan Tab lalu Enter untuk Mengelola Safe Browsing dan lainnya di setelan Chrome</translation>
 <translation id="2467694685043708798"><ph name="BEGIN_LINK" />Jalankan Diagnostik Jaringan<ph name="END_LINK" /></translation>
 <translation id="2469153820345007638">Urutan 1-ke-N</translation>
 <translation id="2470767536994572628">Jika Anda mengedit anotasi, dokumen ini akan kembali ke tampilan satu halaman dan rotasi aslinya</translation>
@@ -571,6 +575,7 @@ Jika tidak, ini akan diblokir oleh setelan privasi Anda. Ini akan memungkinkan k
 <translation id="3188393374551744535">Saldo rekening</translation>
 <translation id="3194737229810486521"><ph name="URL" /> ingin menyimpan data di perangkat Anda secara permanen</translation>
 <translation id="3195213714973468956"><ph name="PRINTER_NAME" /> di <ph name="SERVER_NAME" /></translation>
+<translation id="3202497928925179914"><ph name="MANAGE_SYNC_FOCUSED_FRIENDLY_MATCH_TEXT" />, tekan Tab lalu Enter untuk mengelola info apa saja yang Anda sinkronkan di setelan Chrome</translation>
 <translation id="320323717674993345">Batalkan Pembayaran</translation>
 <translation id="3207960819495026254">Diberi bookmark</translation>
 <translation id="3209034400446768650">Halaman mungkin dikenakan biaya</translation>
@@ -627,6 +632,7 @@ Jika tidak, ini akan diblokir oleh setelan privasi Anda. Ini akan memungkinkan k
 <translation id="3395827396354264108">Metode pengambilan</translation>
 <translation id="3399952811970034796">Alamat Pengiriman</translation>
 <translation id="3402261774528610252">Koneksi yang digunakan untuk memuat situs ini menggunakan TLS 1.0 atau TLS 1.1 yang tidak digunakan lagi dan akan dinonaktifkan pada waktu mendatang. Setelah dinonaktifkan, pengguna tidak akan dapat memuat situs ini. Sebaiknya server mengaktifkan TLS 1.2 atau yang lebih baru.</translation>
+<translation id="3409896703495473338">Kelola setelan keamanan</translation>
 <translation id="3414952576877147120">Ukuran:</translation>
 <translation id="3417660076059365994">File yang Anda upload atau lampirkan akan dikirimkan ke Google Cloud atau pihak ketiga untuk analisis. Misalnya, file mungkin dipindai untuk mendeteksi data sensitif atau malware.</translation>
 <translation id="3422248202833853650">Coba program lain yang ada untuk mengosongkan memori.</translation>
@@ -657,6 +663,7 @@ Jika tidak, ini akan diblokir oleh setelan privasi Anda. Ini akan memungkinkan k
 <translation id="350069200438440499">Nama file:</translation>
 <translation id="3507936815618196901">Membuat peta 3D untuk area di sekeliling Anda dan melacak posisi kamera</translation>
 <translation id="3512163584740124171">Kebijakan ini diabaikan karena kebijakan lain dari grup kebijakan yang sama memiliki prioritas lebih tinggi.</translation>
+<translation id="35172538073169599">Tombol Kelola alamat, tekan Enter untuk menambahkan dan mengelola alamat di setelan Chrome</translation>
 <translation id="3518941727116570328">Penanganan beberapa objek</translation>
 <translation id="3528171143076753409">Sertifikat server tidak dipercaya.</translation>
 <translation id="3528485271872257980">Cokelat Tua</translation>
@@ -1195,6 +1202,7 @@ Jika tidak, ini akan diblokir oleh setelan privasi Anda. Ini akan memungkinkan k
 <translation id="5540224163453853">Tidak dapat menemukan artikel yang diminta.</translation>
 <translation id="5541086400771735334">Kotak surat 7</translation>
 <translation id="5541546772353173584">Tambahkan Email</translation>
+<translation id="5542280138350899197">Tombol Kelola setelan keamanan, tekan Enter untuk Mengelola Safe Browsing dan lainnya di setelan Chrome</translation>
 <translation id="5545756402275714221">Artikel untuk Anda</translation>
 <translation id="5552137475244467770">Chrome memeriksa sandi Anda secara berkala berdasarkan daftar sandi yang telah diterbitkan secara online. Saat pemeriksaan dilakukan, sandi dan nama pengguna Anda dienkripsi, sehingga tidak dapat dibaca oleh siapa pun, termasuk Google.</translation>
 <translation id="5556459405103347317">Muat ulang</translation>
@@ -1449,6 +1457,7 @@ Jika tidak, ini akan diblokir oleh setelan privasi Anda. Ini akan memungkinkan k
 <translation id="6583674473685352014">B6 (Envelope)</translation>
 <translation id="6587923378399804057">Link yang Anda salin</translation>
 <translation id="6591833882275308647"><ph name="DEVICE_TYPE" /> Anda tidak dikelola</translation>
+<translation id="6592952801936330159">Tombol Kelola setelan situs, tekan Enter untuk mengelola izin dan data yang disimpan di seluruh situs di setelan Chrome</translation>
 <translation id="6596325263575161958">Opsi enkripsi</translation>
 <translation id="6604181099783169992">Sensor Gerakan atau Cahaya</translation>
 <translation id="6609880536175561541">Prc7 (Envelope)</translation>
@@ -1550,6 +1559,7 @@ Jika tidak, ini akan diblokir oleh setelan privasi Anda. Ini akan memungkinkan k
 <translation id="7053983685419859001">Blokir</translation>
 <translation id="7058163556978339998"><ph name="BROWSER" /> memverifikasi bahwa <ph name="ISSUER" /> menerbitkan sertifikat situs ini.</translation>
 <translation id="7062635574500127092">Hijau kebiruan</translation>
+<translation id="706295145388601875">Tambahkan dan kelola alamat di setelan Chrome</translation>
 <translation id="7064851114919012435">Info kontak</translation>
 <translation id="70705239631109039">Koneksi Anda tidak sepenuhnya aman</translation>
 <translation id="7072826695771387770">Terjadi peristiwa tidak aman</translation>
@@ -1559,6 +1569,7 @@ Jika tidak, ini akan diblokir oleh setelan privasi Anda. Ini akan memungkinkan k
 <translation id="7083258188081898530">Baki 9</translation>
 <translation id="7086090958708083563">Upload yang diminta oleh pengguna</translation>
 <translation id="7087282848513945231">County</translation>
+<translation id="7095139009144195559"><ph name="MANAGE_SITE_SETTINGS_FOCUSED_FRIENDLY_MATCH_TEXT" />, tekan Tab lalu Enter untuk mengelola izin dan data yang disimpan di seluruh situs di setelan Chrome</translation>
 <translation id="7108338896283013870">Sembunyikan</translation>
 <translation id="7108634116785509031"><ph name="HOST" /> ingin menggunakan kamera Anda</translation>
 <translation id="7108819624672055576">Diizinkan oleh ekstensi</translation>
@@ -1622,6 +1633,7 @@ Jika tidak, ini akan diblokir oleh setelan privasi Anda. Ini akan memungkinkan k
 <translation id="7349430561505560861">A4-Extra</translation>
 <translation id="7353601530677266744">Baris Perintah</translation>
 <translation id="7359588939039777303">Iklan diblokir.</translation>
+<translation id="7365596969960773405"><ph name="MANAGE_ADDRESSES_FOCUSED_FRIENDLY_MATCH_TEXT" />, tekan Tab lalu Enter untuk menambahkan dan mengelola alamat di setelan Chrome</translation>
 <translation id="7365849542400970216">Tahu penggunaan perangkat Anda?</translation>
 <translation id="7372973238305370288">hasil penelusuran</translation>
 <translation id="7374733840632556089">Masalah ini terjadi karena sertifikat yang diinstal di perangkat oleh Anda atau orang lain. Sertifikat ini diketahui sebagai sertifikat yang digunakan untuk memantau dan melakukan intersepsi jaringan dan tidak dipercaya oleh Chrome. Walau terdapat beberapa kasus pemantauan yang sah, seperti pada jaringan sekolah atau perusahaan, Chrome ingin memastikan Anda mengetahui adanya pemantauan ini, meskipun Anda tidak dapat menghentikannya. Pemantauan dapat terjadi di browser atau aplikasi yang mengakses web.</translation>
@@ -1788,6 +1800,7 @@ Jika tidak, ini akan diblokir oleh setelan privasi Anda. Ini akan memungkinkan k
 <translation id="7938958445268990899">Sertifikat server belum valid.</translation>
 <translation id="7942349550061667556">Merah</translation>
 <translation id="7947285636476623132">Periksa tahun kedaluwarsa dan coba lagi</translation>
+<translation id="7950027195171824198">Kelola preferensi cookie di setelan Chrome</translation>
 <translation id="7951415247503192394">(32 bit)</translation>
 <translation id="7953569069500808819">Jahit tepi di atas</translation>
 <translation id="7956713633345437162">Bookmark seluler</translation>
@@ -1819,6 +1832,7 @@ Jika tidak, ini akan diblokir oleh setelan privasi Anda. Ini akan memungkinkan k
 <translation id="8066955247577885446">Maaf, terjadi error.</translation>
 <translation id="8067872629359326442">Anda baru saja memasukkan sandi ke situs penipuan. Chromium dapat membantu. Untuk mengubah sandi dan memberi tahu Google bahwa akun Anda mungkin berisiko, klik Lindungi Akun.</translation>
 <translation id="8074253406171541171">10x13 (Envelope)</translation>
+<translation id="8075898834294118863">Kelola setelan situs</translation>
 <translation id="8078141288243656252">Tidak dapat menambahkan anotasi saat diputar</translation>
 <translation id="8079031581361219619">Muat ulang situs?</translation>
 <translation id="8086971161893892807">Draf</translation>
@@ -1874,6 +1888,7 @@ Jika tidak, ini akan diblokir oleh setelan privasi Anda. Ini akan memungkinkan k
 <translation id="8277900682056760511">Lembar handler pembayaran terbuka</translation>
 <translation id="8281084378435768645">Large-Photo</translation>
 <translation id="8282947398454257691">Mengetahui pengenal perangkat unik Anda</translation>
+<translation id="8284769179630993263">Kelola Safe Browsing dan lainnya di setelan Chrome</translation>
 <translation id="8286036467436129157">Login</translation>
 <translation id="8288807391153049143">Tampilkan sertifikat</translation>
 <translation id="8289355894181816810">Hubungi administrator jaringan Anda jika Anda tidak yakin apa maksudnya.</translation>
@@ -1902,11 +1917,13 @@ Jika tidak, ini akan diblokir oleh setelan privasi Anda. Ini akan memungkinkan k
 <translation id="8380941800586852976">Berbahaya</translation>
 <translation id="8381674639488873545">Tagihan ini dapat hanya satu kali atau berulang, dan mungkin tidak ditampilkan dengan jelas. <ph name="BEGIN_LINK" />Tetap tampilkan<ph name="END_LINK" /></translation>
 <translation id="8390725133630534698">Berbagi dari <ph name="ORIGIN_NAME" /> ke <ph name="VM_NAME" /> telah diblokir oleh kebijakan administrator</translation>
+<translation id="8405579342203358118">Kelola info apa saja yang Anda sinkronkan di setelan Chrome</translation>
 <translation id="8412145213513410671">Ngadat (<ph name="CRASH_COUNT" />)</translation>
 <translation id="8412392972487953978">Anda harus memasukkan frasa sandi yang sama dua kali.</translation>
 <translation id="8416694386774425977">Konfigurasi jaringan tidak valid dan tidak dapat diimpor. Detail tambahan: <ph name="DEBUG_INFO" /></translation>
 <translation id="8424582179843326029"><ph name="FIRST_LABEL" /> <ph name="SECOND_LABEL" /> <ph name="THIRD_LABEL" /></translation>
 <translation id="8428213095426709021">Setelan</translation>
+<translation id="8431194080598727332"><ph name="MANAGE_COOKIES_FOCUSED_FRIENDLY_MATCH_TEXT" />, tekan Tab lalu Enter untuk mengelola preferensi cookie di setelan Chrome</translation>
 <translation id="8433057134996913067">Tindakan ini akan mengeluarkan Anda dari sebagian besar situs web.</translation>
 <translation id="8437238597147034694">&amp;Urungkan pemindahan</translation>
 <translation id="8438786541497918448">Gunakan kamera &amp; mikrofon?</translation>
@@ -1926,6 +1943,7 @@ Jika tidak, ini akan diblokir oleh setelan privasi Anda. Ini akan memungkinkan k
 <translation id="8503813439785031346">Nama Pengguna</translation>
 <translation id="8507227106804027148">Command line</translation>
 <translation id="8508648098325802031">Ikon penelusuran</translation>
+<translation id="8511402995811232419">Kelola cookie</translation>
 <translation id="8522552481199248698">Chrome dapat membantu Anda melindungi Akun Google dan mengubah sandi Anda.</translation>
 <translation id="8530813470445476232">Hapus histori penjelajahan, cookie, cache, dan lainnya di setelan Chrome</translation>
 <translation id="8533619373899488139">Buka &lt;strong&gt;chrome://policy&lt;/strong&gt; untuk melihat daftar URL yang diblokir dan kebijakan lainnya yang diterapkan oleh administrator sistem Anda.</translation>

@@ -291,6 +291,7 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="2001146170449793414">{COUNT,plural, =1{et 1 autre}one{et # autre}other{et # autres}}</translation>
 <translation id="2003709556000175978">Réinitialiser votre mot de passe maintenant</translation>
 <translation id="2003775180883135320">Quadruple perforation en haut</translation>
+<translation id="201174227998721785">Gérez les autorisations et les données stockées sur les différents sites dans les paramètres Chrome</translation>
 <translation id="2025115093177348061">Réalité augmentée</translation>
 <translation id="2025186561304664664">Le proxy est défini sur la configuration automatique.</translation>
 <translation id="2032962459168915086"><ph name="BEGIN_LINK" />Vérifier le proxy et le pare-feu<ph name="END_LINK" /></translation>
@@ -303,6 +304,7 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="2079545284768500474">Annuler</translation>
 <translation id="20817612488360358">Les paramètres de proxy du système sont configurés pour être utilisés, mais une configuration de proxy explicite est également spécifiée.</translation>
 <translation id="2082238445998314030">Résultat <ph name="RESULT_NUMBER" /> sur <ph name="TOTAL_RESULTS" /></translation>
+<translation id="2088086323192747268">Bouton "Gérer la synchronisation" : appuyez sur Entrée pour gérer les informations que vous synchronisez dans les paramètres Chrome</translation>
 <translation id="2091887806945687916">Son</translation>
 <translation id="2094505752054353250">Le domaine ne correspond pas</translation>
 <translation id="2096368010154057602">Département</translation>
@@ -367,6 +369,7 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="2293443924986248631">Lorsque cette option est activée, les sites ne peuvent pas utiliser de cookies pour suivre votre activité sur le Web. Les fonctionnalités de certains sites peuvent être bloquées.</translation>
 <translation id="2295290966866883927">Les URL des pages que vous consultez sont envoyées dans Google Cloud ou à des tiers pour être analysées (par exemple, dans le but de détecter les sites Web dangereux).</translation>
 <translation id="2297722699537546652">B5 (enveloppe)</translation>
+<translation id="2298855485018661510">Bouton "Gérer les cookies" : appuyez sur Entrée pour gérer vos préférences de cookies dans les paramètres Chrome</translation>
 <translation id="2300306941146563769">Non importé</translation>
 <translation id="2310021320168182093">Chou2 (enveloppe)</translation>
 <translation id="2316887270356262533">Libère moins de 1 Mo. Le chargement de certains sites risque d'être plus lent lors de votre prochaine visite.</translation>
@@ -400,6 +403,7 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="2465402087343596252">Architecture-E</translation>
 <translation id="2465655957518002998">Sélectionner un mode d'expédition</translation>
 <translation id="2465688316154986572">Agrafer</translation>
+<translation id="246725142101294240"><ph name="MANAGE_SECURITY_SETTINGS_FOCUSED_FRIENDLY_MATCH_TEXT" /> : appuyez sur Tabulation, puis sur Entrée pour gérer la navigation sécurisée et bien plus encore dans les paramètres Chrome</translation>
 <translation id="2467694685043708798"><ph name="BEGIN_LINK" />Exécuter les diagnostics du réseau<ph name="END_LINK" /></translation>
 <translation id="2469153820345007638">Ordre 1 à N</translation>
 <translation id="2470767536994572628">Si vous modifiez des annotations, ce document s'affichera en mode "Vue par page", dans son orientation d'origine</translation>
@@ -573,6 +577,7 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="3188393374551744535">Solde du compte</translation>
 <translation id="3194737229810486521"><ph name="URL" /> souhaite stocker des données de façon permanente sur votre appareil</translation>
 <translation id="3195213714973468956"><ph name="PRINTER_NAME" /> sur <ph name="SERVER_NAME" /></translation>
+<translation id="3202497928925179914"><ph name="MANAGE_SYNC_FOCUSED_FRIENDLY_MATCH_TEXT" /> : appuyez sur Tabulation, puis sur Entrée pour gérer les informations que vous synchronisez dans les paramètres Chrome</translation>
 <translation id="320323717674993345">Annuler le paiement</translation>
 <translation id="3207960819495026254">Favori</translation>
 <translation id="3209034400446768650">Cette page peut vous facturer de l'argent</translation>
@@ -629,6 +634,7 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="3395827396354264108">Mode d'enlèvement</translation>
 <translation id="3399952811970034796">Adresse de livraison</translation>
 <translation id="3402261774528610252">La connexion utilisée pour charger ce site l'a fait au moyen de TLS 1.0 ou TLS 1.1, qui sont obsolètes et seront désactivés à l'avenir. Une fois ces protocoles désactivés, les utilisateurs ne seront plus autorisés à charger ce site. Le serveur doit activer TLS 1.2 ou version ultérieure.</translation>
+<translation id="3409896703495473338">Gérer les paramètres de sécurité</translation>
 <translation id="3414952576877147120">Taille :</translation>
 <translation id="3417660076059365994">Le fichier que vous importez ou joignez est envoyé dans Google Cloud ou à des tiers pour y être analysé (par exemple, pour vérifier qu'il ne contient pas de données sensibles ni de logiciels malveillants).</translation>
 <translation id="3422248202833853650">Essayez de fermer les autres programmes pour libérer de la mémoire.</translation>
@@ -660,6 +666,7 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="350069200438440499">Nom du fichier :</translation>
 <translation id="3507936815618196901">Créer un plan 3D de votre environnement et suivre la position de la caméra</translation>
 <translation id="3512163584740124171">Cette règle est ignorée, car une autre issue du même groupe de règles présente une priorité plus élevée.</translation>
+<translation id="35172538073169599">Bouton "Gérer les adresses" : appuyez sur Entrée pour gérer les adresses et en ajouter dans les paramètres Chrome</translation>
 <translation id="3518941727116570328">Gestion d'objets multiples</translation>
 <translation id="3528171143076753409">Le certificat du serveur n'est pas approuvé.</translation>
 <translation id="3528485271872257980">Marron foncé</translation>
@@ -1203,6 +1210,7 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="5540224163453853">Impossible de trouver l'article demandé.</translation>
 <translation id="5541086400771735334">Boîte aux lettres 7</translation>
 <translation id="5541546772353173584">Ajouter une adresse e-mail</translation>
+<translation id="5542280138350899197">Bouton "Gérer les paramètres de sécurité" : appuyez sur Entrée pour gérer la navigation sécurisée et bien plus encore dans les paramètres Chrome</translation>
 <translation id="5545756402275714221">Articles pour vous</translation>
 <translation id="5552137475244467770">Chrome vérifie régulièrement que vos mots de passe ne figurent pas dans les listes qui ont été publiées en ligne. Lors de cette opération, vos mots de passe et vos noms d'utilisateur sont chiffrés afin que personne ne puisse les consulter, y compris Google.</translation>
 <translation id="5556459405103347317">Actualiser</translation>
@@ -1457,6 +1465,7 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="6583674473685352014">B6 (enveloppe)</translation>
 <translation id="6587923378399804057">Lien copié</translation>
 <translation id="6591833882275308647">Votre <ph name="DEVICE_TYPE" /> n'est pas géré</translation>
+<translation id="6592952801936330159">Bouton "Gérer les paramètres du site" : appuyez sur Entrée pour gérer les autorisations et les données stockées sur les différents sites dans les paramètres Chrome</translation>
 <translation id="6596325263575161958">Options de chiffrement</translation>
 <translation id="6604181099783169992">Capteurs de mouvement ou de lumière</translation>
 <translation id="6609880536175561541">Prc7 (enveloppe)</translation>
@@ -1558,6 +1567,7 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="7053983685419859001">Bloquer</translation>
 <translation id="7058163556978339998"><ph name="BROWSER" /> a confirmé que le certificat de ce site Web a bien été émis par <ph name="ISSUER" />.</translation>
 <translation id="7062635574500127092">Turquoise</translation>
+<translation id="706295145388601875">Gérez les adresses et ajoutez-en dans les paramètres Chrome</translation>
 <translation id="7064851114919012435">Coordonnées</translation>
 <translation id="70705239631109039">Votre connexion n'est pas totalement sécurisée</translation>
 <translation id="7072826695771387770">Événement présentant un danger détecté</translation>
@@ -1567,6 +1577,7 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="7083258188081898530">Bac 9</translation>
 <translation id="7086090958708083563">Importation demandée par l'utilisateur</translation>
 <translation id="7087282848513945231">Comté</translation>
+<translation id="7095139009144195559"><ph name="MANAGE_SITE_SETTINGS_FOCUSED_FRIENDLY_MATCH_TEXT" /> : appuyez sur Tabulation, puis sur Entrée pour gérer les autorisations et les données stockées sur les différents sites dans les paramètres Chrome</translation>
 <translation id="7108338896283013870">Masquer</translation>
 <translation id="7108634116785509031"><ph name="HOST" /> souhaite utiliser votre appareil photo</translation>
 <translation id="7108819624672055576">Autorisé par une extension</translation>
@@ -1632,6 +1643,7 @@ Informations supplémentaires :
 <translation id="7349430561505560861">A4-Extra</translation>
 <translation id="7353601530677266744">Ligne de commande</translation>
 <translation id="7359588939039777303">Annonces bloquées.</translation>
+<translation id="7365596969960773405"><ph name="MANAGE_ADDRESSES_FOCUSED_FRIENDLY_MATCH_TEXT" /> : appuyez sur Tabulation, puis sur Entrée pour gérer les adresses et en ajouter dans les paramètres Chrome</translation>
 <translation id="7365849542400970216">Savoir si vous utilisez cet appareil ?</translation>
 <translation id="7372973238305370288">résultat de recherche</translation>
 <translation id="7374733840632556089">Ce problème est dû à un certificat installé sur votre appareil par vous-même ou par quelqu'un d'autre. Ce certificat est utilisé pour surveiller et intercepter des réseaux, et n'est pas approuvé par Chrome. Bien qu'il existe des cas légitimes de surveillance (sur un réseau scolaire ou d'entreprise, par exemple), Chrome souhaite s'assurer que vous êtes au courant de cette activité, même si vous ne pouvez pas l'empêcher. La surveillance peut se produire sur n'importe quel navigateur ou application qui accède au Web.</translation>
@@ -1798,6 +1810,7 @@ Informations supplémentaires :
 <translation id="7938958445268990899">Le certificat du serveur n'est pas encore valide.</translation>
 <translation id="7942349550061667556">Rouge</translation>
 <translation id="7947285636476623132">Veuillez vérifier l'année d'expiration, puis réessayer</translation>
+<translation id="7950027195171824198">Gérez vos préférences de cookies dans les paramètres Chrome</translation>
 <translation id="7951415247503192394">(32 bits)</translation>
 <translation id="7953569069500808819">Agrafage par le bord supérieur</translation>
 <translation id="7956713633345437162">Favoris sur mobile</translation>
@@ -1829,6 +1842,7 @@ Informations supplémentaires :
 <translation id="8066955247577885446">Désolé, un problème est survenu.</translation>
 <translation id="8067872629359326442">Vous venez de saisir votre mot de passe sur un site trompeur. Chromium peut vous aider. Pour modifier votre mot de passe et informer Google que votre compte a peut-être été piraté, cliquez sur "Protéger le compte".</translation>
 <translation id="8074253406171541171">10x13 (enveloppe)</translation>
+<translation id="8075898834294118863">Gérer les paramètres du site</translation>
 <translation id="8078141288243656252">Impossible d'ajouter des annotations si le document a pivoté</translation>
 <translation id="8079031581361219619">Actualiser le site Web ?</translation>
 <translation id="8086971161893892807">Brouillon</translation>
@@ -1884,6 +1898,7 @@ Informations supplémentaires :
 <translation id="8277900682056760511">La feuille du gestionnaire de paiement est ouverte</translation>
 <translation id="8281084378435768645">Large-Photo</translation>
 <translation id="8282947398454257691">Connaître l'identifiant unique de votre appareil</translation>
+<translation id="8284769179630993263">Gérez la navigation sécurisée et bien plus encore dans les paramètres Chrome</translation>
 <translation id="8286036467436129157">Connexion</translation>
 <translation id="8288807391153049143">Afficher le certificat</translation>
 <translation id="8289355894181816810">Contactez votre administrateur réseau si vous n'êtes pas sûr de vous.</translation>
@@ -1912,6 +1927,7 @@ Informations supplémentaires :
 <translation id="8380941800586852976">Dangereux</translation>
 <translation id="8381674639488873545">Il peut s'agir de frais uniques ou récurrents qui ne sont pas toujours clairement signalés. <ph name="BEGIN_LINK" />Je souhaite accéder malgré tout à ce site<ph name="END_LINK" />.</translation>
 <translation id="8390725133630534698">Le règlement de l'administrateur bloque le partage de <ph name="ORIGIN_NAME" /> vers <ph name="VM_NAME" /></translation>
+<translation id="8405579342203358118">Gérez les informations que vous synchronisez dans les paramètres Chrome</translation>
 <translation id="8412145213513410671">Erreurs (<ph name="CRASH_COUNT" />)</translation>
 <translation id="8412392972487953978">Vous devez saisir deux fois la même phrase secrète.</translation>
 <translation id="8416694386774425977">Impossible d'importer la configuration du réseau : elle n'est pas valide.
@@ -1919,6 +1935,7 @@ Informations supplémentaires :
 <ph name="DEBUG_INFO" /></translation>
 <translation id="8424582179843326029"><ph name="FIRST_LABEL" /> <ph name="SECOND_LABEL" /> <ph name="THIRD_LABEL" /></translation>
 <translation id="8428213095426709021">Paramètres</translation>
+<translation id="8431194080598727332"><ph name="MANAGE_COOKIES_FOCUSED_FRIENDLY_MATCH_TEXT" /> : appuyez sur Tabulation, puis sur Entrée pour gérer vos préférences de cookies dans les paramètres Chrome</translation>
 <translation id="8433057134996913067">Vous serez déconnecté de la plupart des sites.</translation>
 <translation id="8437238597147034694">&amp;Annuler le déplacement</translation>
 <translation id="8438786541497918448">Utiliser la caméra et le micro ?</translation>
@@ -1938,6 +1955,7 @@ Informations supplémentaires :
 <translation id="8503813439785031346">Nom d'utilisateur</translation>
 <translation id="8507227106804027148">Ligne de commande</translation>
 <translation id="8508648098325802031">Icône Recherche</translation>
+<translation id="8511402995811232419">Gérer les cookies</translation>
 <translation id="8522552481199248698">Chrome peut vous aider à protéger votre compte Google et à modifier votre mot de passe.</translation>
 <translation id="8530813470445476232">Effacez votre historique de navigation, supprimez les cookies, videz le cache, et plus encore dans les paramètres Chrome</translation>
 <translation id="8533619373899488139">Pour consulter la liste des URL bloquées et des autres règles définies par votre administrateur système, rendez-vous sur &lt;strong&gt;chrome://policy&lt;/strong&gt;.</translation>

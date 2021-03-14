@@ -4199,6 +4199,7 @@ Vai vēlaties palaist rīku <ph name="CONTROL_PANEL_APPLET_NAME" />?</translatio
 <translation id="5774295353725270860">Atvērt lietotni Files</translation>
 <translation id="577624874850706961">Meklēt sīkfailus</translation>
 <translation id="5777468213129569553">Atvērt Chrome</translation>
+<translation id="5778491106820461378">Varat pārvaldīt Google kontus, kuros esat pierakstījies, sadaļā <ph name="LINK_BEGIN" />Iestatījumi<ph name="LINK_END" />. Jūsu piešķirtās atļaujas vietnēm un lietotnēm var būt spēkā visos kontos. Ja nevēlaties atļaut vietnēm vai lietotnēm piekļūt jūsu konta informācijai, varat pierakstīties savā <ph name="DEVICE_TYPE" /> ierīcē kā viesis.</translation>
 <translation id="5780011244986845107">Atlasītajā mapē ir iekļauti sensitīvi faili. Vai tiešām vēlaties piešķirt lietotnei <ph name="APP_NAME" /> pastāvīgu lasīšanas piekļuvi šai mapei?</translation>
 <translation id="5780973441651030252">Procesa prioritāte</translation>
 <translation id="5781092003150880845">Sinhronizēt kā: <ph name="ACCOUNT_FULL_NAME" /></translation>
@@ -5089,6 +5090,7 @@ Saskaņā ar domēna <ph name="DOMAIN" /> prasībām viedkartei ir jābūt ievie
 <translation id="6811332638216701903">DHCP saimniekdatora nosaukums</translation>
 <translation id="6812349420832218321"><ph name="PRODUCT_NAME" /> nevar darboties kā sakne.</translation>
 <translation id="6812841287760418429">Saglabāt izmaiņas</translation>
+<translation id="6813907279658683733">Viss ekrāns</translation>
 <translation id="681584224457905309">{COUNT,plural, =1{fails}zero{# failu}one{# fails}other{# faili}}</translation>
 <translation id="6817174620439930047">Jautāt, ja vietnē tiek mēģināts izmantot ekskluzīvus sistēmas ziņojumus, lai piekļūtu MIDI ierīcēm (ieteicams)</translation>
 <translation id="6818198425579322765">Lapas valoda, no kuras jātulko saturs</translation>
@@ -5593,6 +5595,7 @@ Saskaņā ar domēna <ph name="DOMAIN" /> prasībām viedkartei ir jābūt ievie
 <translation id="7392118418926456391">Vīrusu skenēšana neizdevās.</translation>
 <translation id="7392915005464253525">A&amp;tkārtoti atvērt aizvērto logu</translation>
 <translation id="7393073300870882456">{COUNT,plural, =1{Nokopēts viens vienums}zero{Nokopēti {COUNT} vienumi}one{Nokopēts {COUNT} vienums}other{Nokopēti {COUNT} vienumi}}</translation>
+<translation id="7395774987022469191">Viss ekrāns</translation>
 <translation id="7396017167185131589">Šeit būs redzamas kopīgotās mapes.</translation>
 <translation id="7396845648024431313"><ph name="APP_NAME" /> tiks startēta pie sistēmas startēšanas un turpinās darboties fonā arī tad, ja aizvērsiet visus citus <ph name="PRODUCT_NAME" /> logus.</translation>
 <translation id="7399045143794278225">Pielāgot sinhronizāciju</translation>

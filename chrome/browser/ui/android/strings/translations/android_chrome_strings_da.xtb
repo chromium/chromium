@@ -40,7 +40,6 @@
 <translation id="123724288017357924">Genindlæs aktuel side, og ignorer indhold gemt i cache</translation>
 <translation id="124678866338384709">Luk aktuel fane</translation>
 <translation id="1258753120186372309">Google-doodle: <ph name="DOODLE_DESCRIPTION" /></translation>
-<translation id="1263231323834454256">Læseliste</translation>
 <translation id="1266864766717917324">Det var ikke muligt at dele <ph name="CONTENT_TYPE" /></translation>
 <translation id="1283039547216852943">Tryk for at udvide</translation>
 <translation id="1285310382777185058">Skift sprog</translation>
@@ -994,7 +993,6 @@ Data fra din inkognitosession ryddes først fra Chrome, når du <ph name="BEGIN_
 <translation id="7774809984919390718">{PAYMENT_METHOD,plural, =1{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 og <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> mere}one{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 og <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> mere}other{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 og <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> mere}}</translation>
 <translation id="7778840695157240389">Vend tilbage senere for at se nye historier</translation>
 <translation id="7786595606756654269">Google Assistent giver en bedre brugeroplevelse med stemmestyring ved søgning på nettet og interaktion med åbne websites. Google Assistent modtager webadressen og indholdet på de websites, hvor du bruger Assistent.</translation>
-<translation id="7790349552933995572">Startskærm</translation>
 <translation id="7791543448312431591">Tilføj</translation>
 <translation id="7798392620021911922"><ph name="TAB_COUNT" /> faner blev gendannet</translation>
 <translation id="780301667611848630">Nej tak</translation>
@@ -1202,7 +1200,6 @@ Data fra din inkognitosession ryddes først fra Chrome, når du <ph name="BEGIN_
 <translation id="9149286894143103695">Føj dette website til din telefons startskærm, så du nemt kan vende tilbage hertil</translation>
 <translation id="9155898266292537608">Du kan også søge med et hurtigt tryk på et ord</translation>
 <translation id="9169507124922466868">Navigationshistorikken er åbnet halvt</translation>
-<translation id="9191031968346938109">Føj til…</translation>
 <translation id="9199368092038462496">{NUM_MINS,plural, =1{Tjekket for 1 minut siden}one{Tjekket for # minut siden}other{Tjekket for # minutter siden}}</translation>
 <translation id="9204836675896933765">1 fil tilbage</translation>
 <translation id="9206873250291191720">A</translation>

@@ -40,7 +40,6 @@
 <translation id="123724288017357924">Վերաբեռնել ընթացիկ էջը` անտեսելով հիշապահեստի բովանդակությունը</translation>
 <translation id="124678866338384709">Փակել ընթացիկ ներդիրը</translation>
 <translation id="1258753120186372309">Google doodle՝ <ph name="DOODLE_DESCRIPTION" /></translation>
-<translation id="1263231323834454256">Ընթերցանության ցանկ</translation>
 <translation id="1266864766717917324">Չհաջողվեց ուղարկել բովանդակությունը (<ph name="CONTENT_TYPE" />)</translation>
 <translation id="1283039547216852943">Հպեք՝ ընդարձակելու համար</translation>
 <translation id="1285310382777185058">Փոխել լեզուն</translation>
@@ -994,7 +993,6 @@
 <translation id="7774809984919390718">{PAYMENT_METHOD,plural, =1{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 ու վճարման ևս <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> եղանակ}one{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 and <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> more}other{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 ու վճարման ևս <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> եղանակ}}</translation>
 <translation id="7778840695157240389">Վերադարձեք ավելի ուշ՝ նոր բովանդակություն տեսնելու համար</translation>
 <translation id="7786595606756654269">Google Օգնականն առաջարկում է ավելի հարմար ձայնային որոնում համացանցում և փոխազդեցություն բացված կայքերի հետ։ Google Օգնականը կստանա այն կայքերի հասցեներն ու բովանդակությունը, որոնցից օգտվում եք իր միջոցով։</translation>
-<translation id="7790349552933995572">Հիմնական էկրան</translation>
 <translation id="7791543448312431591">Ավելացնել</translation>
 <translation id="7798392620021911922">Վերականգնվել է <ph name="TAB_COUNT" /> ներդիր</translation>
 <translation id="780301667611848630">Ոչ</translation>
@@ -1202,7 +1200,6 @@
 <translation id="9149286894143103695">Այս կայքն ավելի արագ բացելու համար ավելացրեք այն ձեր հեռախոսի հիմնական էկրանին</translation>
 <translation id="9155898266292537608">Կարող եք նաև որոնել՝ սեղմելով բառի վրա</translation>
 <translation id="9169507124922466868">Նավարկման պատմության թերթը կիսաբացված է</translation>
-<translation id="9191031968346938109">Ավելացնել…</translation>
 <translation id="9199368092038462496">{NUM_MINS,plural, =1{Ստուգվել է 1 րոպե առաջ}one{Ստուգվել է # րոպե առաջ}other{Ստուգվել է # րոպե առաջ}}</translation>
 <translation id="9204836675896933765">Մնաց 1 ֆայլ</translation>
 <translation id="9206873250291191720">Ա</translation>

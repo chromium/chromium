@@ -340,13 +340,24 @@ Wenn Sie diese Richtlinie deaktivieren, wird das Scrollen zu bestimmten Textfrag
       Wenn die Richtlinie auf "False" gesetzt oder nicht konfiguriert ist, können Erweiterungen diese API nicht verwenden.
 
       Hinweis: Diese Richtlinie gilt auch für Komponentenerweiterungen, zum Beispiel die Hangout Services-Erweiterung.</translation>
-<translation id="148194404518916594">Zulassen, dass Nutzer „Zum Suchen tippen“ verwenden</translation>
+<translation id="148194404518916594">Zulassen, dass Nutzer „Zum Suchen antippen“ verwenden</translation>
 <translation id="1486021504508098388">Informationen zur Hintergrundbeleuchtung ausgeben</translation>
 <translation id="1487916040416013623">Wenn diese Richtlinie konfiguriert ist, wird festgelegt, welche Server für die integrierte Authentifizierung zulässig sind. Die integrierte Authentifizierung wird nur dann aktiviert, wenn <ph name="PRODUCT_NAME" /> eine Authentifizierungsaufforderung von einem Proxy oder einem Server erhält, der sich in dieser Liste zulässiger Programme befindet.
 
       Wenn die Richtlinie nicht konfiguriert ist, versucht <ph name="PRODUCT_NAME" /> zu ermitteln, ob sich ein Server im Intranet befindet. Es reagiert nur dann auf IWA-Anfragen. Wenn der Server sich dagegen im Internet befindet, werden dessen IWA-Anfragen von <ph name="PRODUCT_NAME" /> ignoriert.
 
       Trennen Sie mehrere Servernamen durch Kommas. Platzhalter wie <ph name="WILDCARD_VALUE" /> sind zulässig.</translation>
+<translation id="1491015714523410492">Während der Anmeldung über den Sperrbildschirm kann <ph name="PRODUCT_OS_NAME" /> die Authentifizierung über einen Server (online) oder über ein Passwort im Cache (offline) ausführen.
+
+      Wenn diese Richtlinie nicht konfiguriert oder auf den Wert -1 festgelegt ist, erzwingt sie keine Onlineauthentifizierung auf dem Sperrbildschirm und erlaubt dem Nutzer, die Offlineauthentifizierung zu verwenden, außer die Onlineauthentifizierung wird durch etwas anderes als diese Richtlinie erzwungen.
+
+      Ist die Richtlinie auf den Wert 0 festgelegt, ist eine Onlineauthentifizierung immer erforderlich.
+
+      Wenn die Richtlinie auf einen beliebigen anderen Wert festgelegt ist, wird damit die Anzahl der Tage seit der letzten Onlineauthentifizierung angegeben, nach der der Nutzer für die nächste Anmeldung über den Sperrbildschirm wieder eine Onlineauthentifizierung verwenden muss.
+
+      Diese Richtlinie betrifft Nutzer, die sich über SAML authentifizieren.
+
+      Denken Sie daran, den Wert der Richtlinie in Tagen anzugeben.</translation>
 <translation id="1502843533062797703">Blockieren von Codeeinschleusungen durch Drittanbieter-Software aktivieren</translation>
 <translation id="150857982247452081">Ermöglicht das Erstellen einer Liste mit Protokollen und für jedes Protokoll eine verknüpfte Liste mit zugelassenen Quellmustern, die eine externe App starten können, ohne beim Nutzer nachzufragen. Das abschließende Trennzeichen sollte beim Aufführen des Protokolls nicht mit angegeben werden. Geben Sie also beispielsweise „skype“ ein, statt „skype:“ oder „skype://“.
 
@@ -376,6 +387,13 @@ Wenn Sie diese Richtlinie deaktivieren, wird das Scrollen zu bestimmten Textfrag
 <translation id="1522425503138261032">Ermittlung des physischen Standorts des Nutzers durch Websites zulassen</translation>
 <translation id="1523774894176285446">Für konfigurierte Websites soll ein alternativer Browser geöffnet werden.</translation>
 <translation id="152657506688053119">Liste alternativer URLs für den Standardsuchanbieter</translation>
+<translation id="1527298988676981599">Wenn diese Richtlinie konfiguriert ist, können Sie eine Liste mit URL-Mustern erstellen, die die Websites angeben, denen automatisch die Berechtigung für den Zugriff auf ein USB-Gerät mit den angegebenen Anbieter- und Produkt-IDs auf dem Anmeldebildschirm gewährt wird. Damit die Richtlinie gültig ist, müssen für jeden Eintrag auf der Liste die Felder „<ph name="DEVICES_FIELD_NAME" />“ und „<ph name="URLS_FIELD_NAME" />“ angegeben sein. Jeder Eintrag im Feld „<ph name="DEVICES_FIELD_NAME" />“ kann das Feld „<ph name="VENDOR_ID_FIELD_NAME" />“ und das Feld „<ph name="PRODUCT_ID_FIELD_NAME" />“ haben. Bei Weglassen des Felds „<ph name="VENDOR_ID_FIELD_NAME" />“ wird eine Richtlinie erstellt, die für jedes Gerät gilt. Bei Weglassen des Felds „<ph name="PRODUCT_ID_FIELD_NAME" />“ wird eine Richtlinie erstellt, die für jedes Gerät mit der angegebenen Anbieter-ID gilt. Eine Richtlinie, die das Feld „<ph name="PRODUCT_ID_FIELD_NAME" />“ ohne das Feld „<ph name="VENDOR_ID_FIELD_NAME" />“ hat, ist ungültig.
+
+      Das USB-Berechtigungsmodell erteilt der angegebenen URL die Berechtigung für den Zugriff auf das USB-Gerät als eine Quelle der obersten Ebene. Wenn eingebettete Frames auf USB-Geräte zugreifen müssen, sollte der <ph name="FEATURE_POLICY_HEADER_NAME" />-Header für USB verwendet werden, um Zugriff zu gewähren. Die URL muss gültig sein, da die Richtlinie andernfalls ignoriert wird.
+
+      Eingestellt: Das USB-Berechtigungsmodell, das dafür verwendet wurde, sowohl die anfragende URL als auch die einbettende URL anzugeben. Dieses wurde verworfen und wird aus Gründen der Abwärtskompatibilität nur noch folgendermaßen unterstützt: Wenn sowohl eine anfragende als auch eine einbettende URL angegeben ist, wird der einbettenden URL die Berechtigung als Quelle der obersten Ebene gegeben und die anfragende URL wird vollständig ignoriert.
+
+      Ist diese Richtlinie nicht konfiguriert, wird für alle Websites der globale Standardwert verwendet (kein automatischer Zugriff).</translation>
 <translation id="1530812829012954197">Immer die folgenden URL-Muster im Host-Browser darstellen</translation>
 <translation id="1534690481294492142">Wenn die Richtlinie aktiviert ist oder nicht konfiguriert wird, kann <ph name="PRODUCT_NAME" /> als Proxy zwischen <ph name="CLOUD_PRINT_NAME" /> und älteren Druckern fungieren, die an den Computer angeschlossen sind. Nutzer können den Cloud Print-Proxy durch die Authentifizierung mit ihrem Google-Konto aktivieren.
 
@@ -1125,6 +1143,7 @@ Ist sie nicht konfiguriert, ist der Datenschutzbildschirm anfangs deaktiviert, N
       Beachten Sie, dass der Nutzer keine sekundären Profile erstellen kann, wenn diese Richtlinie auf „true“ gesetzt ist, BrowserAddPersonEnabled jedoch auf „false“. Dasselbe gilt für BrowserGuestModeEnabled und den Gastmodus.</translation>
 <translation id="2517466659416174529">Deaktivieren von Tabs im Hintergrund zulassen</translation>
 <translation id="2518231489509538392">Wiedergabe von Audioinhalten zulassen</translation>
+<translation id="2520551905471951523">Hohe Priorität für den Audioprozess verwenden</translation>
 <translation id="2521581787935130926">App-Verknüpfung in der Lesezeichenleiste anzeigen</translation>
 <translation id="2522304491589804974">Zulassungsliste für Installation von Erweiterungen konfigurieren</translation>
 <translation id="2529880111512635313">Liste der Apps und Erweiterungen konfigurieren, deren Installation erzwungen wurde</translation>
@@ -1310,6 +1329,7 @@ Ist sie nicht konfiguriert, ist der Datenschutzbildschirm anfangs deaktiviert, N
 <translation id="2787774054174244402">Wenn die Richtlinie auf "True" festgelegt ist, können Nutzer nicht auf externe Speichergeräte schreiben.
 
       Sofern der externe Speicher nicht blockiert ist, können, wenn Sie "ExternalStorageReadOnly" auf "False" oder keinen Wert festlegen, Nutzer Dateien auf physisch beschreibbaren externen Speichergeräten erstellen und ändern. Sie können externen Speicher dadurch blockieren, dass Sie "ExternalStorageDisable" auf "True" festlegen.</translation>
+<translation id="2789742777235177478">Zeit beschränken, während der sich ein über GAIA ohne SAML authentifizierter Nutzer offline auf dem Sperrbildschirm anmelden kann</translation>
 <translation id="2796714419743648316">Zulassungsliste für App-Zeitbeschränkungen</translation>
 <translation id="2796896367838042659">Mit dieser Richtlinie wird festgelegt, welche Apps und URLs in Bezug auf Nutzungsbeschränkungen auf die Zulassungsliste gesetzt werden sollen.
         Für Apps, die unter <ph name="PRODUCT_OS_NAME" /> installiert sind und auf der Zulassungsliste stehen, gelten für den jeweiligen Nutzer keine Zeitbeschränkungen.
@@ -1714,6 +1734,15 @@ Ist diese Einstellung deaktiviert oder nicht konfiguriert, erfasst der Passworts
 Unter <ph name="MS_WIN_NAME" /> ist diese Funktion nur in Instanzen verfügbar, die Teil einer <ph name="MS_AD_NAME" />-Domain sind, auf denen Windows 10 Pro läuft oder die durch <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" /> verwaltet werden. Unter <ph name="MAC_OS_NAME" /> steht diese Funktion nur bei Instanzen zur Verfügung, die über die Mobilgeräteverwaltung verwaltet werden oder per MCX mit einer Domain verbunden sind.</translation>
 <translation id="3261592499545947104">Zeitpunkt, an dem eine Zertifikatsverlängerung ausgelöst werden soll, angegeben in Sekunden bis zum Zertifikatsablauf</translation>
 <translation id="3264793472749429012">Standardsuchmaschinen-Codierungen</translation>
+<translation id="3265738316212552123">Wenn diese Richtlinie konfiguriert ist, können Sie eine Liste mit URL-Mustern erstellen, die die Websites angeben, denen automatisch die Berechtigung für den Zugriff auf ein USB-Gerät mit den angegebenen Anbieter- und Produkt-IDs gewährt wird. Damit die Richtlinie gültig ist, müssen für jeden Eintrag auf der Liste die Felder „<ph name="DEVICES_FIELD_NAME" />“ und „<ph name="URLS_FIELD_NAME" />“ angegeben sein. Jeder Eintrag im Feld „<ph name="DEVICES_FIELD_NAME" />“ kann das Feld „<ph name="VENDOR_ID_FIELD_NAME" />“ und das Feld „<ph name="PRODUCT_ID_FIELD_NAME" />“ haben. Bei Weglassen des Felds „<ph name="VENDOR_ID_FIELD_NAME" />“ wird eine Richtlinie erstellt, die für jedes Gerät gilt. Bei Weglassen des Felds „<ph name="PRODUCT_ID_FIELD_NAME" />“ wird eine Richtlinie erstellt, die für jedes Gerät mit der angegebenen Anbieter-ID gilt. Eine Richtlinie, die das Feld „<ph name="PRODUCT_ID_FIELD_NAME" />“ ohne das Feld „<ph name="VENDOR_ID_FIELD_NAME" />“ hat, ist ungültig.
+
+      Das USB-Berechtigungsmodell erteilt der angegebenen URL die Berechtigung für den Zugriff auf das USB-Gerät als eine Quelle der obersten Ebene. Wenn eingebettete Frames auf USB-Geräte zugreifen müssen, sollte der <ph name="FEATURE_POLICY_HEADER_NAME" />-Header für USB verwendet werden, um Zugriff zu gewähren. Die URL muss gültig sein, da die Richtlinie andernfalls ignoriert wird.
+
+      Eingestellt: Das USB-Berechtigungsmodell, das dafür verwendet wurde, sowohl die anfragende URL als auch die einbettende URL anzugeben. Dieses wurde verworfen und wird aus Gründen der Abwärtskompatibilität nur noch folgendermaßen unterstützt: Wenn sowohl eine anfragende als auch eine einbettende URL angegeben ist, wird der einbettenden URL die Berechtigung als Quelle der obersten Ebene gegeben und die anfragende URL wird vollständig ignoriert.
+
+      Wenn die Richtlinie nicht konfiguriert ist, gilt <ph name="DEFAULT_WEB_USB_GUARD_SETTING_POLICY_NAME" />, sofern diese Einstellung verwendet wird. Falls nicht, wird die persönliche Einstellung des Nutzers verwendet.
+
+      URL-Muster in dieser Richtlinie dürfen nicht im Widerspruch zu den über <ph name="WEB_USB_BLOCKED_FOR_URLS_POLICY_NAME" /> konfigurierten URLs stehen. Andernfalls hat diese Richtlinie Vorrang vor <ph name="WEB_USB_BLOCKED_FOR_URLS_POLICY_NAME" /> und <ph name="WEB_USB_ASK_FOR_URLS_POLICY_NAME" />.</translation>
 <translation id="3273221114520206906">JavaScript-Standardeinstellung</translation>
 <translation id="328347261792478720">Der Browser zeigt standardmäßig für den Nutzer personalisierte Empfehlungen zu Medien an. Wenn diese Richtlinie deaktiviert ist, sind diese Empfehlungen für den Nutzer nicht sichtbar. Wenn sie aktiviert oder nicht konfiguriert ist, werden dem Nutzer die Empfehlungen zu Medien angezeigt.</translation>
 <translation id="3284094172359247914">Verwendung der WebUSB API steuern</translation>
@@ -1798,6 +1827,12 @@ Unter <ph name="MS_WIN_NAME" /> ist diese Funktion nur in Instanzen verfügbar, 
       Wenn diese Richtlinie nicht konfiguriert ist, werden 0 Millisekunden als Zeitlimit verwendet.
 
       Wenn die Richtlinie <ph name="DEVICE_LOCAL_ACCOUNT_AUTO_LOGIN_ID_POLICY_NAME" /> nicht konfiguriert ist, hat diese Richtlinie keine Auswirkungen.</translation>
+<translation id="341285788698114069">Diese Richtlinie steuert die Priorität des Audioprozesses unter Windows.
+      Wenn diese Richtlinie aktiviert ist, wird der Audioprozess mit einer Priorität ausgeführt, die über der normalen liegt.
+      Wird sie deaktiviert, erfolgt die Ausführung des Audioprozesses mit normaler Priorität.
+      Ist die Richtlinie nicht konfiguriert, kommt die Standardkonfiguration für den Audioprozess zum Einsatz.
+      Diese Richtlinie ist als vorübergehende Maßnahme für Unternehmen vorgesehen, um Audioprozesse mit höherer Priorität ausführen zu können. Dies ermöglicht die Behandlung bestimmter Leistungsprobleme mit Audioaufnahmen.
+      Diese Richtlinie wird in Zukunft entfernt.</translation>
 <translation id="3412937883532015092">Wenn für die Richtlinie eine Zahl festgelegt ist, zeigt <ph name="PRODUCT_NAME" /> für genau diese Anzahl von Millisekunden eine Nachricht an und öffnet dann den alternativen Browser.
 
       Ist die Richtlinie nicht konfiguriert oder auf 0 gesetzt, wird eine bestimmte aufgerufene URL sofort in einem alternativen Browser geöffnet.</translation>
@@ -2178,6 +2213,7 @@ Falls die Richtlinie nicht festgelegt wird, bleibt die Varianten-Seed-URL unver�
 
       Ist die Richtlinie nicht konfiguriert, steht SPDY zur Verfügung.</translation>
 <translation id="3891357445869647828">JavaScript aktivieren</translation>
+<translation id="3897218615484393758">Zeit beschränken, während der sich ein über SAML authentifizierter Nutzer offline auf dem Sperrbildschirm anmelden kann</translation>
 <translation id="3898345958122666461">NTLMv2 deaktivieren</translation>
 <translation id="3898795800259311780">Bildschirmaufnahme gestatten oder ablehnen</translation>
 <translation id="3907683835264956726">Ermöglicht Nutzern, sich online über einen Sperrbildschirm anzumelden. Wenn diese Richtlinie auf "True" gesetzt ist, wird die erneute Online-Authentifizierung auf dem Sperrbildschirm beispielsweise durch <ph name="POLICY" /> ausgelöst.
@@ -2558,6 +2594,7 @@ Wird die Richtlinie auf „False“ gesetzt, verwendet <ph name="PRODUCT_NAME" /
 <translation id="4534500438517478692">Name der Android-Einschränkung:</translation>
 <translation id="4541530620466526913">Lokale Gerätekonten</translation>
 <translation id="4543502256674577024">Einstellungen für die Geräteaktualisierung</translation>
+<translation id="454585952814397564">Normale Priorität für den Audioprozess verwenden</translation>
 <translation id="4548555985107150628">Diese Richtlinie ist veraltet. Sie können mit <ph name="DEFAULT_PLUGINS_SETTING_POLICY_NAME" /> die Verfügbarkeit des Flash-Plug-ins definieren und über <ph name="ALWAYS_OPEN_PDF_EXTERNALLY_POLICY_NAME" /> festlegen, ob der integrierte PDF-Viewer zum Öffnen von PDF-Dateien verwendet werden soll.
 
       Mit dieser Richtlinie wird eine Liste von Plug-ins angegeben, die in <ph name="PRODUCT_NAME" /> aktiviert sind, und verhindert, dass Nutzer diese Einstellung ändern.
@@ -2632,6 +2669,7 @@ Wird die Richtlinie auf „False“ gesetzt, verwendet <ph name="PRODUCT_NAME" /
 <translation id="4632343302005518762">Verarbeitung der gelisteten Inhaltstypen durch <ph name="PRODUCT_FRAME_NAME" /> zulassen</translation>
 <translation id="4632566332417930481">Nutzung der Entwicklertools für Erweiterungen, die über die Unternehmensrichtlinie installiert wurden, nicht zulassen und Nutzung der Entwicklertools in anderen Kontexten zulassen</translation>
 <translation id="4635284822166984665">Zeitpunkt, an dem der Ladevorgang beginnt, angegeben in der lokalen Zeit des Geräts.</translation>
+<translation id="4646739075621507361">Druckaufträge ausgeben</translation>
 <translation id="4649395978608361979">Lokale Druckziele</translation>
 <translation id="4650759511838826572">URL-Protokollschemas deaktivieren</translation>
 <translation id="465099050592230505">Unternehmens-Web-Store-URL (veraltet)</translation>
@@ -3166,6 +3204,7 @@ Wird die Richtlinie auf „False“ gesetzt, verwendet <ph name="PRODUCT_NAME" /
           Wird sie nicht konfiguriert, ist die Funktion "Geteilte Zwischenablage" standardmäßig aktiviert.
 
           Es bleibt den Administratoren überlassen, die Richtlinien für alle relevanten Plattformen zu konfigurieren. Es wird empfohlen, für alle Plattformen dieselbe Einstellung zu verwenden.</translation>
+<translation id="5389708774452952523">Ausführen des Audioprozesses unter Windows mit einer Priorität ermöglichen, die über der normalen liegt</translation>
 <translation id="5389798680516458665">Wenn diese Richtlinie konfiguriert ist, können Sie eine Liste von URL-Mustern erstellen, die angeben, welche Websites Bilder anzeigen dürfen.
 
       Wenn die Richtlinie nicht konfiguriert ist, gilt <ph name="DEFAULT_IMAGES_SETTING_ENABLED_POLICY_NAME" /> für alle Websites, sofern konfiguriert. Falls nicht, wird die persönliche Einstellung des Nutzers verwendet.
@@ -3554,7 +3593,7 @@ Wenn der Wert für <ph name="CHROMEOS_VERSION_PROPERTY_NAME" /> bei keinem Eintr
       Die Werte für <ph name="WARNING_PERIOD_PROPERTY_NAME" /> und <ph name="AUE_WARNING_PERIOD_PROPERTY_NAME" /> sind optional und werden in Tagen angegeben. Der Standardwert liegt bei 0 Tagen.
       Das Attribut <ph name="UNMANAGED_USER_RESTRICTED_PROPERTY_NAME" /> ist optional und der Standardwert "False".</translation>
 <translation id="5879014913445067283">Steuerung der Erkennung von Netzwerkfreigaben über <ph name="NETBIOS_NAME" /></translation>
-<translation id="588135807064822874">"Zum Suchen tippen" aktivieren</translation>
+<translation id="588135807064822874">"Zum Suchen antippen" aktivieren</translation>
 <translation id="5882345429632338713">Verzögerung vor dem Starten eines alternativen Browsers (Millisekunden)</translation>
 <translation id="5883015257301027298">Standardeinstellungen für Cookies</translation>
 <translation id="5883754873839596178">Wenn diese Richtlinie konfiguriert ist, legt sie die maximale Anzahl gleichzeitiger Verbindungen zum Proxyserver fest. Einige Proxyserver können eine hohe Anzahl gleichzeitiger Verbindungen pro Client nicht verarbeiten. Dieses Problem kann umgangen werden, indem für diese Richtlinie ein niedrigerer Wert festgelegt wird. Der Wert sollte kleiner als 100 und größer als 6 sein. Einige Web-Apps nutzen viele Verbindungen mit hängenden GETs. Daher kann ein Wert unter 32 dazu führen, dass der Browser hängt, wenn zu viele solcher Web-Apps geöffnet sind. Wenn Sie einen Wert unter dem Standardwert festlegen, geschieht dies auf eigenes Risiko.
@@ -3664,6 +3703,7 @@ Wenn der Wert für <ph name="CHROMEOS_VERSION_PROPERTY_NAME" /> bei keinem Eintr
 <translation id="6066761914755798079">Wenn "<ph name="DEFAULT_SEARCH_PROVIDER_ENABLED_POLICY_NAME" />" aktiviert ist, gibt "<ph name="DEFAULT_SEARCH_PROVIDER_SUGGEST_URL_POLICY_NAME" />" die URL der Suchmaschine für Suchvorschläge an. Die URL sollte den String <ph name="SEARCH_TERM_MARKER" /> enthalten, der während des Suchvorgangs durch die Suchbegriffe des Nutzers ersetzt wird.
 
       Sie können die Such-URL von Google so angeben: <ph name="GOOGLE_SUGGEST_SEARCH_URL" />.</translation>
+<translation id="606742564823687992">Druckaufträge nicht ausgeben</translation>
 <translation id="6070374129526507093">Eingestellt in M69. Verwenden Sie stattdessen
       OverrideSecurityRestrictionsOnInsecureOrigin.
 
@@ -4640,6 +4680,7 @@ Wenn diese Richtlinie nicht festgelegt ist oder absichtlich leer gelassen wird, 
 
       Die automatische Suche und Installation von fehlenden Plug-ins wird nicht mehr unterstützt.</translation>
 <translation id="7267809745244694722">Medientasten standardmäßig als Funktionstasten verwenden</translation>
+<translation id="7269263983506766969">Standardpriorität für den Audioprozess verwenden</translation>
 <translation id="7270001383428188269">ID für dieses Clientzertifikat</translation>
 <translation id="7271085005502526897">Startseite bei erster Ausführung aus Standardbrowser importieren</translation>
 <translation id="7271181393214180342">Wenn die Richtlinie aktiviert ist, wird bei der HTTP-Authentifizierung die Genehmigung durch die KDC-Richtlinie berücksichtigt. Das heißt, <ph name="PRODUCT_NAME" /> leitet nur dann Anmeldedaten an die verwendeten Dienste weiter, wenn KDC "<ph name="OK_AS_DELEGATE" />" für ein Dienstticket festlegt. Weitere Informationen finden Sie unter RFC 5896 ( https://tools.ietf.org/html/rfc5896.html ). Die Dienste sollten auch durch "<ph name="AUTH_NEGOTIATE_DELEGATE_ALLOWLIST_POLICY_NAME" />" zugelassen sein.
@@ -4741,6 +4782,10 @@ Wenn diese Richtlinie nicht festgelegt ist oder absichtlich leer gelassen wird, 
 
       Wenn sie nicht konfiguriert ist, gilt die Richtlinie <ph name="ASK_NOTIFICATIONS_POLICY_NAME" />, aber Nutzer können diese Einstellung ändern.</translation>
 <translation id="747275827471712187">Auf diesen Websites das alte "<ph name="ATTRIBUTE_SAMESITE_NAME" />"-Verhalten für Cookies wiederherstellen</translation>
+<translation id="7476158778585368567">Durch diese Richtlinie können die Druckaufträge eines Geräts ausgegeben werden.
+
+      Wenn die Richtlinie auf „false“ gesetzt oder nicht konfiguriert ist, werden keine Informationen ausgegeben.
+      Ist sie auf „true“ gesetzt, werden die Druckaufträge des Geräts ausgegeben.</translation>
 <translation id="7476447711788742702">Wenn die Richtlinie konfiguriert ist, wird festgelegt, was <ph name="PRODUCT_OS_NAME" /> tun soll, wenn der Nutzer das Gerät zuklappt.
 
       Wenn diese Richtlinie nicht konfiguriert ist, wird die Ruhemodus-Aktion ausgeführt.
@@ -5217,9 +5262,9 @@ Wenn die Richtlinie nicht festgelegt ist, werden keine Einschränkungen angewend
 <translation id="8118665053362250806">Cache-Größe für Mediendatenträger festlegen</translation>
 <translation id="8124468781472887384">Richtlinie für den Zugriff auf die Konfiguration von an Geräte gebundenen Druckern.</translation>
 <translation id="8128192446158421884">URLs, auf die AutoOpenFileTypes angewendet werden können</translation>
-<translation id="8133152694354699657">Wenn die Richtlinie auf "True" gesetzt oder nicht konfiguriert ist, steht Nutzern "Zum Suchen tippen" zur Verfügung und sie können die Funktion aktivieren oder deaktivieren.
+<translation id="8133152694354699657">Wenn die Richtlinie auf "True" gesetzt oder nicht konfiguriert ist, steht Nutzern "Zum Suchen antippen" zur Verfügung und sie können die Funktion aktivieren oder deaktivieren.
 
-      Ist sie auf "False" gesetzt, wird "Zum Suchen tippen" vollständig deaktiviert.</translation>
+      Ist sie auf "False" gesetzt, wird "Zum Suchen antippen" vollständig deaktiviert.</translation>
 <translation id="8136906469922284163">Wenn die Richtlinie auf „True“ gesetzt ist, dürfen Seiten Pop-ups anzeigen, während die Seiten entfernt werden.
 
       Wenn die Richtlinie auf „False“ gesetzt oder nicht konfiguriert ist, können Seiten keine Pop-ups anzeigen, während die Seiten entfernt werden.
@@ -5597,7 +5642,7 @@ Ist die Richtlinie auf "false" gesetzt oder nicht konfiguriert, kann der Nutzer 
        Standardmäßig spielt <ph name="PRODUCT_NAME" /> Medien nicht automatisch ab. Aber für bestimmte URL-Muster können Sie diese Einstellung über die Richtlinie "<ph name="AUTOPLAY_ALLOWLIST_POLICY_NAME" />" ändern.
 
       Wird die Richtlinie während der Ausführung von <ph name="PRODUCT_NAME" /> geändert, wird sie nur auf neu geöffnete Tabs angewendet.</translation>
-<translation id="8685748277907759932">Verhindern, dass Nutzer „Zum Suchen tippen“ verwenden</translation>
+<translation id="8685748277907759932">Verhindern, dass Nutzer „Zum Suchen antippen“ verwenden</translation>
 <translation id="8687958770985542440">Damit wird die Web Components v0 API bis M84 wieder aktiviert.</translation>
 <translation id="8693243869659262736">Integrierten DNS-Client verwenden</translation>
 <translation id="8698286761337647563">Gibt an, wie viele Tage SAML-Nutzer vorab benachrichtigt werden, wenn ihr Passwort bald abläuft</translation>
@@ -5669,6 +5714,17 @@ Ist die Richtlinie auf "false" gesetzt oder nicht konfiguriert, kann der Nutzer 
 
       Ist die Richtlinie nicht konfiguriert, ist sie aktiviert und kann von Nutzern nicht deaktiviert werden.</translation>
 <translation id="8789338675663014675">Hiermit werden erweiterungsbezogene Richtlinien konfiguriert. Blockierte Erweiterungen können vom Nutzer nur installiert werden, wenn diese in der Zulassungsliste enthalten sind. Wenn Sie die automatische Installation von bestimmten Erweiterungen durch <ph name="PRODUCT_NAME" /> erzwingen möchten, können Sie die Erweiterungen in <ph name="EXTENSION_INSTALL_FORCELIST_POLICY_NAME" /> angeben. Erweiterungen mit erzwungener Installation werden immer installiert, unabhängig davon, ob sie blockiert sind.</translation>
+<translation id="8796924197496002727">Während der Anmeldung über den Sperrbildschirm kann <ph name="PRODUCT_OS_NAME" /> die Authentifizierung über einen Server (online) oder über ein Passwort im Cache (offline) ausführen.
+
+      Wenn diese Richtlinie nicht konfiguriert oder auf den Wert -1 festgelegt ist, erzwingt sie keine Onlineauthentifizierung auf dem Sperrbildschirm und erlaubt dem Nutzer, die Offlineauthentifizierung zu verwenden, außer die Onlineauthentifizierung wird durch etwas anderes als diese Richtlinie erzwungen.
+
+      Ist die Richtlinie auf den Wert 0 festgelegt, ist eine Onlineauthentifizierung immer erforderlich.
+
+      Wenn die Richtlinie auf einen beliebigen anderen Wert festgelegt ist, wird damit die Anzahl der Tage seit der letzten Onlineauthentifizierung angegeben, nach der der Nutzer für die nächste Anmeldung über den Sperrbildschirm wieder eine Onlineauthentifizierung verwenden muss.
+
+      Diese Richtlinie betrifft Nutzer, die sich über GAIA ohne SAML authentifizieren.
+
+      Denken Sie daran, den Wert der Richtlinie in Tagen anzugeben.</translation>
 <translation id="879697755145469671">Überdeckte Fenster nicht erkennen</translation>
 <translation id="8798099450830957504">Standardeinstellung</translation>
 <translation id="8799492680917278474">Wenn diese Richtlinie konfiguriert wird, werden Verbindungen per Remotezugriff automatisch nach Ablauf der in der Richtlinie festgelegten Dauer (in Minuten) getrennt. Der Client wird nicht daran gehindert, eine neue Verbindung herzustellen, nachdem die maximale Sitzungsdauer überschritten wurde. Wird die Richtlinie auf einen Wert festgelegt, der nicht zwischen dem Höchst- und dem Mindestwert liegt, kann der Host möglicherweise nicht starten. Diese Richtlinie wirkt sich nicht auf die Remote-Unterstützung aus.

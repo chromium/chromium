@@ -40,7 +40,6 @@
 <translation id="123724288017357924">Keshga yuklangan ma’lumotlarsiz sahifani qayta yuklang.</translation>
 <translation id="124678866338384709">Joriy varaqni yopish</translation>
 <translation id="1258753120186372309">Google-dudl: <ph name="DOODLE_DESCRIPTION" /></translation>
-<translation id="1263231323834454256">Mutolaa ro‘yxati</translation>
 <translation id="1266864766717917324"><ph name="CONTENT_TYPE" /> yuborilmadi</translation>
 <translation id="1283039547216852943">Bosib yoyish</translation>
 <translation id="1285310382777185058">Tilni almashtirish</translation>
@@ -994,7 +993,6 @@ Masalan, qaysi sahifalarga kirganligingizdan qat’i nazar, ba’zi saytlarda re
 <translation id="7774809984919390718">{PAYMENT_METHOD,plural, =1{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 va yana <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> ta}other{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 va yana <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> ta}}</translation>
 <translation id="7778840695157240389">Yangi hikoyalar uchun keyinroq qayta tekshiring</translation>
 <translation id="7786595606756654269">Google Assistent internetdan axborot qidirish va ochiq saytlar bilan ishlashda ovozli boshqaruvni yanada yaxshiroq bajaradi. Google Asssistent siz kiritgan saytlarni ularning URL manzili va kontenti bilan birga qabul qiladi.</translation>
-<translation id="7790349552933995572">Bosh ekran</translation>
 <translation id="7791543448312431591">Qo‘shish</translation>
 <translation id="7798392620021911922"><ph name="TAB_COUNT" /> ta varaq tiklandi</translation>
 <translation id="780301667611848630">Kerak emas</translation>
@@ -1202,7 +1200,6 @@ Masalan, qaysi sahifalarga kirganligingizdan qat’i nazar, ba’zi saytlarda re
 <translation id="9149286894143103695">Bu saytni oson ochish uchun telefon bosh ekraniga chiqaring</translation>
 <translation id="9155898266292537608">Shuningdek so‘z ustiga bosib qidirish mumkin</translation>
 <translation id="9169507124922466868">Sahifalar tarixi yarim hajmda ochildi</translation>
-<translation id="9191031968346938109">Kiritish…</translation>
 <translation id="9199368092038462496">{NUM_MINS,plural, =1{1 daqiqa oldin tekshirilgan}other{# daqiqa oldin tekshirilgan}}</translation>
 <translation id="9204836675896933765">1 fayl qoldi</translation>
 <translation id="9206873250291191720">A</translation>

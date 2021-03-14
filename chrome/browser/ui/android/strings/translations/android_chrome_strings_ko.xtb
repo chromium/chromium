@@ -40,7 +40,6 @@
 <translation id="123724288017357924">캐시된 콘텐츠를 무시하고 현재 페이지 새로고침</translation>
 <translation id="124678866338384709">현재 탭 닫기</translation>
 <translation id="1258753120186372309">Google 기념일 로고: <ph name="DOODLE_DESCRIPTION" /></translation>
-<translation id="1263231323834454256">읽기 목록</translation>
 <translation id="1266864766717917324"><ph name="CONTENT_TYPE" /> 공유할 수 없음</translation>
 <translation id="1283039547216852943">탭하여 펼치기</translation>
 <translation id="1285310382777185058">언어 변경</translation>
@@ -994,7 +993,6 @@
 <translation id="7774809984919390718">{PAYMENT_METHOD,plural, =1{<ph name="PAYMENT_METHOD_PREVIEW" /> 외 <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />개}other{<ph name="PAYMENT_METHOD_PREVIEW" /> 외 <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />개}}</translation>
 <translation id="7778840695157240389">나중에 다시 새 스토리를 확인하세요.</translation>
 <translation id="7786595606756654269">Google 어시스턴트는 웹 검색과 열려 있는 사이트 이용에 더 나은 음성 사용 환경을 제공합니다. Google 어시스턴트는 내가 사용하는 사이트의 URL과 콘텐츠를 수신합니다.</translation>
-<translation id="7790349552933995572">홈 화면</translation>
 <translation id="7791543448312431591">추가</translation>
 <translation id="7798392620021911922">탭 <ph name="TAB_COUNT" />개를 복원했습니다.</translation>
 <translation id="780301667611848630">취소</translation>
@@ -1202,7 +1200,6 @@
 <translation id="9149286894143103695">이 사이트를 스마트폰의 홈 화면에 추가하면 더 쉽게 방문할 수 있습니다.</translation>
 <translation id="9155898266292537608">단어를 살짝 탭하여 검색할 수도 있습니다</translation>
 <translation id="9169507124922466868">탐색 기록이 절반 높이로 열림</translation>
-<translation id="9191031968346938109">추가할 위치…</translation>
 <translation id="9199368092038462496">{NUM_MINS,plural, =1{1분 전에 확인됨}other{#분 전에 확인됨}}</translation>
 <translation id="9204836675896933765">파일 1개가 남았습니다.</translation>
 <translation id="9206873250291191720">A</translation>

@@ -40,7 +40,6 @@
 <translation id="123724288017357924">Atkārtoti ielādēt lapu, ignorējot saturu kešatmiņā</translation>
 <translation id="124678866338384709">Aizvērt pašreizējo cilni</translation>
 <translation id="1258753120186372309">Google svētku logotips: <ph name="DOODLE_DESCRIPTION" /></translation>
-<translation id="1263231323834454256">Lasīšanas saraksts</translation>
 <translation id="1266864766717917324">Nevarēja kopīgot: <ph name="CONTENT_TYPE" /></translation>
 <translation id="1283039547216852943">Pieskarties, lai izvērstu</translation>
 <translation id="1285310382777185058">Valodas maiņa</translation>
@@ -994,7 +993,6 @@ No jūsu inkognito sesijas iegūtie dati tiks dzēsti no Chrome tikai tad, kad <
 <translation id="7774809984919390718">{PAYMENT_METHOD,plural, =1{<ph name="PAYMENT_METHOD_PREVIEW" />… un vēl <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}zero{<ph name="PAYMENT_METHOD_PREVIEW" />… un vēl <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}one{<ph name="PAYMENT_METHOD_PREVIEW" />… un vēl <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}other{<ph name="PAYMENT_METHOD_PREVIEW" />… un vēl <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}}</translation>
 <translation id="7778840695157240389">Lai skatītu jaunus rakstus, atgriezieties vēlāk</translation>
 <translation id="7786595606756654269">Google asistents sniedz labākas balss izmantošanas iespējas meklēšanai tīmeklī un mijiedarbībai ar atvērtajām vietnēm. Google asistents saņems to vietņu vietrāžus URL un saturu, kurās izmantojat Asistentu.</translation>
-<translation id="7790349552933995572">Sākuma ekrāns</translation>
 <translation id="7791543448312431591">Pievienot</translation>
 <translation id="7798392620021911922">Cilnes atjaunotas, skaits: <ph name="TAB_COUNT" /></translation>
 <translation id="780301667611848630">Nē, paldies</translation>
@@ -1202,7 +1200,6 @@ No jūsu inkognito sesijas iegūtie dati tiks dzēsti no Chrome tikai tad, kad <
 <translation id="9149286894143103695">Pievienojiet šo vietni tālruņa sākuma ekrānam, lai varētu te nokļūt ērtāk</translation>
 <translation id="9155898266292537608">Varat arī meklēt, ātri pieskaroties vārdam</translation>
 <translation id="9169507124922466868">Navigācijas vēsture ir atvērta līdz pusei.</translation>
-<translation id="9191031968346938109">Pievienot šo lapu…</translation>
 <translation id="9199368092038462496">{NUM_MINS,plural, =1{Pārbaudīts: pirms 1 minūtes}zero{Pārbaudīts: pirms # minūtēm}one{Pārbaudīts: pirms # minūtes}other{Pārbaudīts: pirms # minūtēm}}</translation>
 <translation id="9204836675896933765">Atlicis 1 fails</translation>
 <translation id="9206873250291191720">A</translation>

@@ -40,7 +40,6 @@
 <translation id="123724288017357924">Ponovno učitavanje aktuelne stranice, zanemarujući keširani sadržaj</translation>
 <translation id="124678866338384709">Zatvaranje aktuelne kartice</translation>
 <translation id="1258753120186372309">Google dudl logotip: <ph name="DOODLE_DESCRIPTION" /></translation>
-<translation id="1263231323834454256">Lista za čitanje</translation>
 <translation id="1266864766717917324">Nije uspelo deljenje: <ph name="CONTENT_TYPE" /></translation>
 <translation id="1283039547216852943">Dodirnite da biste proširili</translation>
 <translation id="1285310382777185058">Promenite jezik</translation>
@@ -994,7 +993,6 @@ Podaci iz sesije bez arhiviranja se brišu iz Chrome-a samo kada <ph name="BEGIN
 <translation id="7774809984919390718">{PAYMENT_METHOD,plural, =1{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 i još <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}one{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 i još <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}few{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 i još <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}other{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 i još <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}}</translation>
 <translation id="7778840695157240389">Vratite se kasnije za još novih vesti</translation>
 <translation id="7786595606756654269">Google pomoćnik pruža bolji glasovni doživljaj za pretraživanje veba i interakciju sa sajtovima koje ste otvorili. Google pomoćnik će primiti URL-ove i sadržaj sajtova koje koristite sa njim.</translation>
-<translation id="7790349552933995572">Početni ekran</translation>
 <translation id="7791543448312431591">Dodaj</translation>
 <translation id="7798392620021911922">Vraćene kartice: <ph name="TAB_COUNT" /></translation>
 <translation id="780301667611848630">Ne, hvala</translation>
@@ -1202,7 +1200,6 @@ Podaci iz sesije bez arhiviranja se brišu iz Chrome-a samo kada <ph name="BEGIN
 <translation id="9149286894143103695">Dodajte ovaj sajt na početni ekran telefona da biste mu lakše pristupali</translation>
 <translation id="9155898266292537608">Možete i kratko da dodirnete reč da biste je pretražili</translation>
 <translation id="9169507124922466868">Istorija navigacije je poluotvorena</translation>
-<translation id="9191031968346938109">Dodaj u…</translation>
 <translation id="9199368092038462496">{NUM_MINS,plural, =1{Provereno pre 1 minut}one{Provereno pre # minut}few{Provereno pre # minuta}other{Provereno pre # minuta}}</translation>
 <translation id="9204836675896933765">Preostala je 1 datoteka</translation>
 <translation id="9206873250291191720">A</translation>

@@ -4200,6 +4200,7 @@
 <translation id="5774295353725270860">فتح تطبيق الملفات</translation>
 <translation id="577624874850706961">ملفات تعريف ارتباط البحث</translation>
 <translation id="5777468213129569553">‏افتح Chrome</translation>
+<translation id="5778491106820461378">‏يمكنك إدارة حسابات Google التي تم تسجيل الدخول إليها، وذلك من خلال الانتقال إلى <ph name="LINK_BEGIN" />الإعدادات<ph name="LINK_END" />. ويمكن أن تنطبق الأذونات التي منحتها إلى المواقع الإلكترونية والتطبيقات على جميع الحسابات. إذا كنت لا تريد السماح للمواقع الإلكترونية أو التطبيقات بالوصول إلى معلومات حسابك، يمكنك تسجيل الدخول إلى <ph name="DEVICE_TYPE" /> بصفتك ضيفًا.</translation>
 <translation id="5780011244986845107">يتضمَّن المجلَّد الذي اخترته ملفات حساسة. هل تريد بالتأكيد منح "<ph name="APP_NAME" />" الوصول الدائم للقراءة في هذا المجلَّد؟</translation>
 <translation id="5780973441651030252">أولوية المعالجة</translation>
 <translation id="5781092003150880845">المزامنة باسم <ph name="ACCOUNT_FULL_NAME" /></translation>
@@ -5090,6 +5091,7 @@
 <translation id="6811332638216701903">‏اسم مضيف DHCP</translation>
 <translation id="6812349420832218321">لا يمكن تشغيل <ph name="PRODUCT_NAME" /> كجذر.</translation>
 <translation id="6812841287760418429">الإبقاء على التغييرات</translation>
+<translation id="6813907279658683733">الشاشة بالكامل</translation>
 <translation id="681584224457905309">{COUNT,plural, =1{ملف واحد}zero{# ملف}two{ملفّان}few{# ملفّات}many{# ملفًّا}other{# ملف}}</translation>
 <translation id="6817174620439930047">‏طلب الإذن عند محاولة أحد المواقع استخدام رسائل حصرية للنظام للوصول إلى أجهزة MIDI (موصى به)</translation>
 <translation id="6818198425579322765">لغة الصفحة المُراد ترجمتها</translation>
@@ -5594,6 +5596,7 @@
 <translation id="7392118418926456391">تعذّر فحص الفيروسات</translation>
 <translation id="7392915005464253525">إ&amp;عادة فتح النافذة المغلقة</translation>
 <translation id="7393073300870882456">{COUNT,plural, =1{تم نسخ عنصر واحد.}zero{تم نسخ {COUNT} عنصر.}two{تم نسخ عنصرَين ({COUNT}).}few{تم نسخ {COUNT} عناصر.}many{تم نسخ {COUNT} عنصرًا.}other{تم نسخ {COUNT} عنصر.}}</translation>
+<translation id="7395774987022469191">الشاشة بالكامل</translation>
 <translation id="7396017167185131589">ستظهر المجلدات المشتركة هنا.</translation>
 <translation id="7396845648024431313">سيتم تشغيل <ph name="APP_NAME" /> عند بدء تشغيل النظام وسيستمر تشغيله في الخلفية حتى بعد إغلاق كل نوافذ <ph name="PRODUCT_NAME" /> الأخرى.</translation>
 <translation id="7399045143794278225">تخصيص المزامنة</translation>

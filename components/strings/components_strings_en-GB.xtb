@@ -624,6 +624,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="3371076217486966826"><ph name="URL" /> wants to:
       • Create a 3D map of your surroundings and track camera position
       • Use your camera</translation>
+<translation id="3372389303668969359">You can use Windows Hello to quickly verify that it's you the next time that you use this device to make a purchase with this payment method.</translation>
 <translation id="337363190475750230">Deprovisioned</translation>
 <translation id="3377144306166885718">The server used an obsolete version of TLS.</translation>
 <translation id="3377188786107721145">Policy parse error</translation>
@@ -697,6 +698,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="3615877443314183785">Enter a valid expiry date</translation>
 <translation id="36224234498066874">Clear Browsing Data...</translation>
 <translation id="362276910939193118">Show full history</translation>
+<translation id="3625635938337243871">Sign-in data will be stored on this device after you exit Incognito mode.</translation>
 <translation id="3630155396527302611">If it is already listed as a program allowed to access the network, try
       removing it from the list and adding it again.</translation>
 <translation id="3630699740441428070">Administrators of this device have configured your network connection, which may allow them to see your network traffic, including which websites that you visit.</translation>
@@ -931,6 +933,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="4477350412780666475">Next track</translation>
 <translation id="4482953324121162758">This site will not be translated.</translation>
 <translation id="4490717597759821841">A7</translation>
+<translation id="449126573531210296">Encrypt synced passwords with your Google Account</translation>
 <translation id="4492519888999857993">These features are disabled by default. They will not be available in future versions of Chrome.</translation>
 <translation id="4493480324863638523">Invalid URL. Must be a URL with a standard scheme, e.g. http://example.com or https://example.com.</translation>
 <translation id="4503882053543859973">Architecture-D</translation>
@@ -1100,6 +1103,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="5126510351761255129">Verify your card</translation>
 <translation id="5135404736266831032">Manage addresses...</translation>
 <translation id="5138227688689900538">Show less</translation>
+<translation id="514010763713772514">Check out faster next time</translation>
 <translation id="5145883236150621069">Error code present in the policy response</translation>
 <translation id="5146995429444047494">Notifications for <ph name="ORIGIN" /> are blocked</translation>
 <translation id="5148809049217731050">Face up</translation>
@@ -1849,6 +1853,7 @@ Additional details:
 <translation id="8086971161893892807">Draft</translation>
 <translation id="8088680233425245692">Failed to view article.</translation>
 <translation id="808894953321890993">Change password</translation>
+<translation id="8090329638663751802">You can use Touch ID to quickly verify that it's you the next time that you use this device to make a purchase with this payment method.</translation>
 <translation id="8090403583893450254">Size 20</translation>
 <translation id="8091372947890762290">Activation is pending on the server</translation>
 <translation id="8092774999298748321">Deep purple</translation>

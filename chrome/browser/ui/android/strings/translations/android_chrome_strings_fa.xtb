@@ -40,7 +40,6 @@
 <translation id="123724288017357924">تازه‌سازی صفحه اصلی با نادیده گرفتن محتوای حافظه پنهان</translation>
 <translation id="124678866338384709">بستن برگه کنونی</translation>
 <translation id="1258753120186372309">‏Google doodle: ‏<ph name="DOODLE_DESCRIPTION" /></translation>
-<translation id="1263231323834454256">فهرست خواندن</translation>
 <translation id="1266864766717917324"><ph name="CONTENT_TYPE" /> هم‌رسانی نشد</translation>
 <translation id="1283039547216852943">برای بزرگ کردن ضربه بزنید</translation>
 <translation id="1285310382777185058">تغییر زبان</translation>
@@ -994,7 +993,6 @@
 <translation id="7774809984919390718">{PAYMENT_METHOD,plural, =1{‏<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 و <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> روش پرداخت دیگر}one{‏<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 و <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> روش پرداخت دیگر}other{‏<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 و <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> روش پرداخت دیگر}}</translation>
 <translation id="7778840695157240389">برای خواندن داستان‌های جدید، بعداً دوباره سربزنید</translation>
 <translation id="7786595606756654269">‏«دستیار Google» تجربه گفتاری بهتری در جستجوی وب و تعامل با سایت‌هایی که باز کرده‌اید ارائه می‌دهد. «دستیار Google» نشانی وب و محتوای سایت‌هایی را که در آن استفاده می‌کنید دریافت خواهد کرد.</translation>
-<translation id="7790349552933995572">صفحه اصلی</translation>
 <translation id="7791543448312431591">افزودن</translation>
 <translation id="7798392620021911922"><ph name="TAB_COUNT" /> برگه بازیابی شد</translation>
 <translation id="780301667611848630">نه متشکرم</translation>
@@ -1202,7 +1200,6 @@
 <translation id="9149286894143103695">این سایت را به صفحه اصلی تلفن اضافه کنید تا بتوانید آسان‌تر به اینجا دسترسی پیدا کنید</translation>
 <translation id="9155898266292537608">می‌توانید با ضربه‌ای سریع روی کلمه نیز جستجو کنید</translation>
 <translation id="9169507124922466868">سابقه «پیمایش» نیمه‌باز است</translation>
-<translation id="9191031968346938109">افزودن به…</translation>
 <translation id="9199368092038462496">{NUM_MINS,plural, =1{آخرین بررسی: ۱ دقیقه قبل}one{آخرین بررسی: # دقیقه قبل}other{آخرین بررسی: # دقیقه قبل}}</translation>
 <translation id="9204836675896933765">۱ فایل باقی مانده است</translation>
 <translation id="9206873250291191720">A</translation>

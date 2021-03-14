@@ -1385,7 +1385,7 @@ Kontu honen ezarpenak kudeatzeko, instalatu Family Link aplikazioa zure gailuan.
 <translation id="252502352004572774">Ordenagailuan software kaltegarria bilatzen ari da Chrome…</translation>
 <translation id="2526277209479171883">Instalatu eta egin aurrera</translation>
 <translation id="2526590354069164005">Ordenagailua</translation>
-<translation id="2526619973349913024">Egiaztatu eguneratzeak dauden</translation>
+<translation id="2526619973349913024">Bilatu eguneratzeak</translation>
 <translation id="2527167509808613699">Edozein motatako konexioa</translation>
 <translation id="2530166226437958497">Irtenbideak</translation>
 <translation id="2532589005999780174">Kontraste handiko modua</translation>
@@ -4197,6 +4197,7 @@ Haurrak ikastetxean ez badu Chromebook-ik erabiltzen, edo nahiago baduzu etxean 
 <translation id="5774295353725270860">Ireki Fitxategiak aplikazioa</translation>
 <translation id="577624874850706961">Bilatu cookieak</translation>
 <translation id="5777468213129569553">Ireki Chrome</translation>
+<translation id="5778491106820461378"><ph name="LINK_BEGIN" />Ezarpenak<ph name="LINK_END" /> atalean kudea ditzakezu saioa hasita daukaten Google-ko kontuak. Baliteke webguneei eta aplikazioei emandako baimenak kontu guztiei aplikatzea. Webguneek eta aplikazioek zure kontuko informazioa atzitzerik nahi ez baduzu, hasi saioa gonbidatu gisa <ph name="DEVICE_TYPE" /> gailuan.</translation>
 <translation id="5780011244986845107">Kontuzko fitxategiak ditu hautatu duzun karpetak. Ziur "<ph name="APP_NAME" />" aplikazioari karpeta hori irakurtzeko behin betiko sarbidea eman nahi diozula?</translation>
 <translation id="5780973441651030252">Prozesuaren lehentasuna</translation>
 <translation id="5781092003150880845">Sinkronizatu <ph name="ACCOUNT_FULL_NAME" /> gisa</translation>
@@ -5087,6 +5088,7 @@ Txartel adimenduna sartuta edukitzea eskatzen du <ph name="DOMAIN" /> domeinuak.
 <translation id="6811332638216701903">DHCP motako ostalari-izena</translation>
 <translation id="6812349420832218321">Ezin da <ph name="PRODUCT_NAME" /> erro gisa exekutatu.</translation>
 <translation id="6812841287760418429">Mantendu aldaketak</translation>
+<translation id="6813907279658683733">Pantaila osoa</translation>
 <translation id="681584224457905309">{COUNT,plural, =1{fitxategia}other{# fitxategi}}</translation>
 <translation id="6817174620439930047">Eskatu nire baimena webgune batek sistemaren mezu esklusiboak erabili nahi dituenean MIDI gailuak atzitzeko (gomendatua)</translation>
 <translation id="6818198425579322765">Orriaren jatorrizko hizkuntza</translation>
@@ -5591,6 +5593,7 @@ Txartel adimenduna sartuta edukitzea eskatzen du <ph name="DOMAIN" /> domeinuak.
 <translation id="7392118418926456391">Birus-analisiak huts egin du</translation>
 <translation id="7392915005464253525">Ir&amp;eki leihoa berriro</translation>
 <translation id="7393073300870882456">{COUNT,plural, =1{1 elementu kopiatu da}other{{COUNT} elementu kopiatu dira}}</translation>
+<translation id="7395774987022469191">Pantaila osoa</translation>
 <translation id="7396017167185131589">Partekatutako karpetak agertuko dira hemen.</translation>
 <translation id="7396845648024431313">Sistemarekin batera abiaraziko da <ph name="APP_NAME" /> aplikazioa, eta atzeko planoan funtzionatzen jarraituko du <ph name="PRODUCT_NAME" /> aplikazioaren beste leiho guztiak itxi ondoren ere.</translation>
 <translation id="7399045143794278225">Pertsonalizatu sinkronizazioa</translation>
@@ -7245,7 +7248,7 @@ Txartel adimenduna sartuta edukitzea eskatzen du <ph name="DOMAIN" /> domeinuak.
 <translation id="960987915827980018">Gutxi gorabehera, ordubete falta da</translation>
 <translation id="962802172452141067">Laster-marken karpetaren zuhaitza</translation>
 <translation id="964057662886721376">Zenbait luzapenek erabilera motel dezakete, batez ere, berariaz instalatu ez dituzunek.</translation>
-<translation id="964286338916298286">IT administratzaileak desgaitu egin ditu zure gailurako osagarriak.</translation>
+<translation id="964286338916298286">IKT saileko administratzaileak desgaitu egin ditu zure gailurako osagarriak.</translation>
 <translation id="964439421054175458">{NUM_APLLICATIONS,plural, =1{Aplikazioa}other{Aplikazioak}}</translation>
 <translation id="964790508619473209">Pantailaren antolaketa</translation>
 <translation id="965211523698323809">Bidali eta jaso testu-mezuak <ph name="DEVICE_TYPE" /> gailua erabilita. <ph name="LINK_BEGIN" />Lortu informazio gehiago<ph name="LINK_END" /></translation>

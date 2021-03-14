@@ -353,6 +353,17 @@ Se disattivi questo criterio, lo scorrimento della pagina web ai frammenti di te
       Se il criterio non viene configurato, <ph name="PRODUCT_NAME" /> prova a rilevare se un server è presente sulla Intranet. Solo allora risponderà alle richieste IWA. Se viene rilevato un server su Internet, <ph name="PRODUCT_NAME" /> ignora le richieste IWA provenienti da tale server.
 
       Nota: se ci sono più server, separane i nomi utilizzando virgole. I caratteri jolly (<ph name="WILDCARD_VALUE" />) sono consentiti.</translation>
+<translation id="1491015714523410492">Durante l'accesso tramite la schermata di blocco, <ph name="PRODUCT_OS_NAME" /> può eseguire l'autenticazione con un server (online) o utilizzando una password memorizzata nella cache (offline).
+
+      Se questo criterio non viene configurato o se viene impostato il valore -1, non viene applicata l'autenticazione online nella schermata di blocco e l'utente potrà usare l'autenticazione offline finché un motivo diverso da quello di questo criterio non applicherà un'autenticazione online.
+
+      Se per il criterio viene impostato il valore 0, sarà sempre richiesta l'autenticazione online.
+
+      Se per questo criterio viene impostato qualsiasi altro valore, il criterio consente di specificare il numero di giorni dall'ultima autenticazione online trascorsi i quali l'utente deve usare di nuovo l'autenticazione online per l'accesso successivo tramite la schermata di blocco.
+
+      Questo criterio viene applicato per gli utenti che si sono autenticati tramite SAML.
+
+      Il valore del criterio deve essere specificato in giorni.</translation>
 <translation id="1502843533062797703">Attiva blocco inserimento da software di terze parti</translation>
 <translation id="150857982247452081">Consente di impostare un elenco di protocolli, e per ogni protocollo un elenco associato di pattern di origini consentite, che possono lanciare un'applicazione esterna senza chiedere conferma all'utente. Il separatore finale non deve essere incluso nell'elenco di protocolli, quindi usa "skype" anziché "skype:" o "skype://".
 
@@ -382,6 +393,13 @@ Se disattivi questo criterio, lo scorrimento della pagina web ai frammenti di te
 <translation id="1522425503138261032">Consenti ai siti di monitorare la posizione fisica degli utenti</translation>
 <translation id="1523774894176285446">Browser alternativo da aprire per i siti web configurati.</translation>
 <translation id="152657506688053119">Elenco di URL alternativi per il fornitore del servizio di ricerca predefinito</translation>
+<translation id="1527298988676981599">La configurazione del criterio consente di elencare i pattern URL che specificano i siti a cui viene concessa automaticamente l'autorizzazione di accesso a un dispositivo USB con gli ID fornitore e prodotto indicati nella schermata di accesso. Perché il criterio sia valido, ogni elemento nell'elenco richiede entrambi i campi <ph name="DEVICES_FIELD_NAME" /> e <ph name="URLS_FIELD_NAME" />. Ogni elemento nel campo <ph name="DEVICES_FIELD_NAME" /> può avere un campo <ph name="VENDOR_ID_FIELD_NAME" /> e un campo <ph name="PRODUCT_ID_FIELD_NAME" />. Se il campo <ph name="VENDOR_ID_FIELD_NAME" /> non viene specificato, il criterio può corrispondere a qualsiasi dispositivo. Se il campo <ph name="PRODUCT_ID_FIELD_NAME" /> non viene specificato, il criterio può corrispondere a qualsiasi dispositivo con l'ID fornitore specificato. Un criterio con un campo <ph name="PRODUCT_ID_FIELD_NAME" /> senza un campo <ph name="VENDOR_ID_FIELD_NAME" /> non è valido.
+
+      Il modello di autorizzazioni USB consentirà all'URL specificato di accedere al dispositivo USB come origine di primo livello. Se i frame incorporati devono accedere ai dispositivi USB, per concedere l'accesso è necessario usare l'intestazione "usb" del criterio <ph name="FEATURE_POLICY_HEADER_NAME" />. Se l'URL non è valido, il criterio viene ignorato.
+
+      Deprecato. Il modello di autorizzazioni USB supportava la specifica di entrambi gli URL richiedente e di incorporamento. Questo modello è deprecato e supportato soltanto per la compatibilità con le versioni precedenti nel seguente modo: se vengono specificati entrambi gli URL richiedente e di incorporamento, all'URL di incorporamento verrà concessa l'autorizzazione come origine di primo livello, mentre l'URL richiedente verrà ignorato completamente.
+
+      Se il criterio non viene configurato, viene utilizzato il valore predefinito globale per tutti i siti (nessun accesso automatico).</translation>
 <translation id="1530812829012954197">Visualizza sempre i seguenti schemi URL nel browser host</translation>
 <translation id="1534690481294492142">Se il criterio viene impostato su Attivato o se non viene configurato, <ph name="PRODUCT_NAME" /> può agire da proxy tra <ph name="CLOUD_PRINT_NAME" /> e le precedenti stampanti collegate al computer. Gli utenti possono attivare il proxy Cloud Print tramite l'autenticazione usando il proprio Account Google.
 
@@ -1144,6 +1162,7 @@ Se questo criterio non viene impostato, la Schermata sulla privacy verrà inizia
       Tieni presente che se questo criterio viene impostato su vero, ma il criterio BrowserAddPersonEnabled viene impostato su falso, gli utenti non possono creare profili secondari. Lo stesso vale per il criterio BrowserGuestModeEnabled e la modalità ospite.</translation>
 <translation id="2517466659416174529">Consenti il blocco delle schede in secondo piano</translation>
 <translation id="2518231489509538392">Consenti riproduzione audio</translation>
+<translation id="2520551905471951523">Viene usata la priorità elevata per il processo audio</translation>
 <translation id="2521581787935130926">Mostra la scorciatoia per le app nella barra dei Preferiti</translation>
 <translation id="2522304491589804974">Configura la lista consentita per l'installazione delle estensioni</translation>
 <translation id="2529880111512635313">Configura l'elenco di estensioni e app con installazione imposta</translation>
@@ -1329,6 +1348,7 @@ Se questo criterio non viene impostato, la Schermata sulla privacy verrà inizia
 <translation id="2787774054174244402">L'impostazione del criterio su True impedisce agli utenti di scrivere su dispositivi di archiviazione esterni.
 
       A meno che lo spazio di archiviazione esterno non sia bloccato, se imposti ExternalStorageReadOnly su False o non lo imposti, gli utenti possono creare e modificare i file dei dispositivi di archiviazione esterni fisicamente scrivibili. Puoi bloccare lo spazio di archiviazione esterno impostando ExternalStorageDisable su True.</translation>
+<translation id="2789742777235177478">Limita il tempo per cui un utente autenticato tramite GAIA senza SAML può accedere offline nella schermata di blocco</translation>
 <translation id="2796714419743648316">Lista consentita limiti di utilizzo per app</translation>
 <translation id="2796896367838042659">Questo criterio consente di specificare le applicazioni e gli URL da autorizzare per i limiti di utilizzo per app.
         La lista consentita configurata viene applicata alle app installate su <ph name="PRODUCT_OS_NAME" /> per l'utente in questione con limiti di utilizzo per app.
@@ -1722,6 +1742,15 @@ Questa norma viene rispettata soltanto se viene attivata la norma "DefaultSearch
       Su <ph name="MS_WIN_NAME" />, questa funzionalità è disponibile soltanto sulle istanze che fanno parte di un dominio <ph name="MS_AD_NAME" />, sono in esecuzione su Windows 10 Pro o sono registrate in <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />. Su <ph name="MAC_OS_NAME" />, questa funzionalità è disponibile soltanto nelle istanze gestite tramite MDM o aggiunte a un dominio tramite MCX.</translation>
 <translation id="3261592499545947104">Il numero di secondi prima della scadenza di un certificato in cui attivare il rinnovo.</translation>
 <translation id="3264793472749429012">Codifiche del provider di ricerca predefinito</translation>
+<translation id="3265738316212552123">La configurazione del criterio consente di elencare i pattern URL che specificano i siti a cui viene concessa automaticamente l'autorizzazione di accesso a un dispositivo USB con gli ID fornitore e prodotto indicati. Perché il criterio sia valido, ogni elemento nell'elenco richiede entrambi i campi <ph name="DEVICES_FIELD_NAME" /> e <ph name="URLS_FIELD_NAME" />. Ogni elemento nel campo <ph name="DEVICES_FIELD_NAME" /> può avere un campo <ph name="VENDOR_ID_FIELD_NAME" /> e un campo <ph name="PRODUCT_ID_FIELD_NAME" />. Se il campo <ph name="VENDOR_ID_FIELD_NAME" /> non viene specificato, il criterio può corrispondere a qualsiasi dispositivo. Se il campo <ph name="PRODUCT_ID_FIELD_NAME" /> non viene specificato, il criterio può corrispondere a qualsiasi dispositivo con l'ID fornitore specificato. Un criterio con un campo <ph name="PRODUCT_ID_FIELD_NAME" /> senza un campo <ph name="VENDOR_ID_FIELD_NAME" /> non è valido.
+
+      Il modello di autorizzazioni USB consentirà all'URL specificato di accedere al dispositivo USB come origine di primo livello. Se i frame incorporati devono accedere ai dispositivi USB, per concedere l'accesso è necessario usare l'intestazione "usb" del criterio <ph name="FEATURE_POLICY_HEADER_NAME" />. Se l'URL non è valido, il criterio viene ignorato.
+
+      Deprecato. Il modello di autorizzazioni USB supportava la specifica di entrambi gli URL richiedente e di incorporamento. Questo modello è deprecato e supportato soltanto per la compatibilità con le versioni precedenti nel seguente modo: se vengono specificati entrambi gli URL richiedente e di incorporamento, all'URL di incorporamento verrà concessa l'autorizzazione come origine di primo livello, mentre l'URL richiedente verrà ignorato completamente.
+
+      Se il criterio non viene configurato, viene applicato il criterio <ph name="DEFAULT_WEB_USB_GUARD_SETTING_POLICY_NAME" />, se impostato. In caso contrario, viene applicata l'impostazione personale dell'utente.
+
+      I pattern URL di questo criterio non devono essere in conflitto con quelli configurati tramite il criterio <ph name="WEB_USB_BLOCKED_FOR_URLS_POLICY_NAME" />. In caso di conflitto, questo criterio ha la precedenza sui criteri <ph name="WEB_USB_BLOCKED_FOR_URLS_POLICY_NAME" /> e <ph name="WEB_USB_ASK_FOR_URLS_POLICY_NAME" />.</translation>
 <translation id="3273221114520206906">Impostazione JavaScript predefinita</translation>
 <translation id="328347261792478720">Per impostazione predefinita, nel browser vengono mostrati consigli di contenuti multimediali personalizzati in base agli interessi dell'utente. Se questo criterio viene impostato su Disattivato, questi consigli vengono nascosti all'utente. Se il criterio viene impostato su Attivato o se non viene configurato, i consigli di contenuti multimediali vengono mostrati all'utente.</translation>
 <translation id="3284094172359247914">Controlla l'utilizzo dell'API WebUSB</translation>
@@ -1803,6 +1832,12 @@ Questa norma viene rispettata soltanto se viene attivata la norma "DefaultSearch
       Se il criterio non viene configurato, il timeout è 0 millisecondi.
 
       Se il criterio <ph name="DEVICE_LOCAL_ACCOUNT_AUTO_LOGIN_ID_POLICY_NAME" /> non viene configurato, questo criterio non ha alcun effetto.</translation>
+<translation id="341285788698114069">Questo criterio consente di stabilire la priorità del processo audio su Windows.
+      Se il criterio viene attivato, il processo audio verrà eseguito con priorità sopra la norma.
+      Se il criterio viene disattivato, il processo audio verrà eseguito con priorità normale.
+      Se il criterio non viene configurato, verrà usata la configurazione predefinita del processo audio.
+      Questo criterio è inteso come misura temporanea per dare alle aziende la possibilità di eseguire l'audio con priorità più elevata al fine di risolvere determinati problemi di prestazioni relativi all'acquisizione di audio.
+      Questo criterio verrà rimosso in futuro.</translation>
 <translation id="3412937883532015092">Se per il criterio viene impostato un numero, <ph name="PRODUCT_NAME" /> mostra un messaggio relativo al numero di millisecondi impostato, quindi apre un browser alternativo.
 
       Se il criterio non viene impostato o viene impostato su 0 e si passa a un URL definito, l'URL viene aperto subito in un browser alternativo.</translation>
@@ -2184,6 +2219,7 @@ Questa norma viene rispettata soltanto se viene attivata la norma "DefaultSearch
 
       Se la norma non viene impostata, il protocollo SPDY sarà disponibile.</translation>
 <translation id="3891357445869647828">Abilita JavaScript</translation>
+<translation id="3897218615484393758">Limita il tempo per cui un utente autenticato tramite SAML può accedere offline nella schermata di blocco</translation>
 <translation id="3898345958122666461">Disattiva NTLMv2</translation>
 <translation id="3898795800259311780">Consenti o nega acquisizione schermo</translation>
 <translation id="3907683835264956726">Consente l'accesso online degli utenti in una schermata di blocco. Se il criterio viene impostato su true, la riautenticazione online nella schermata di blocco viene attivata, ad esempio, tramite il criterio <ph name="POLICY" />.
@@ -2564,6 +2600,7 @@ Se questo criterio viene impostato su Falso, <ph name="PRODUCT_NAME" /> non util
 <translation id="4534500438517478692">Nome della limitazione di Android:</translation>
 <translation id="4541530620466526913">Account del dispositivo</translation>
 <translation id="4543502256674577024">Impostazioni di aggiornamento del dispositivo</translation>
+<translation id="454585952814397564">Viene usata la priorità normale per il processo audio</translation>
 <translation id="4548555985107150628">Questo criterio è obsoleto. Usa <ph name="DEFAULT_PLUGINS_SETTING_POLICY_NAME" /> per controllare la disponibilità del plug-in Flash e <ph name="ALWAYS_OPEN_PDF_EXTERNALLY_POLICY_NAME" /> per controllare se si deve utilizzare il visualizzatore PDF integrato per aprire i file PDF.
 
       Specifica un elenco di plug-in attivati in <ph name="PRODUCT_NAME" /> e impedisce agli utenti di modificare questa impostazione.
@@ -2638,6 +2675,7 @@ Se questo criterio viene impostato su Falso, <ph name="PRODUCT_NAME" /> non util
 <translation id="4632343302005518762">Consenti a <ph name="PRODUCT_FRAME_NAME" /> di gestire i tipi di contenuti elencati</translation>
 <translation id="4632566332417930481">Non consentire l'utilizzo degli Strumenti per sviluppatori per le estensioni installate in base a norme aziendali; consenti l'utilizzo degli Strumenti per sviluppatori in altri contesti</translation>
 <translation id="4635284822166984665">L'ora in cui iniziare la ricarica del dispositivo, nel fuso orario locale del dispositivo.</translation>
+<translation id="4646739075621507361">Vengono segnalati i processi di stampa</translation>
 <translation id="4649395978608361979">Destinazioni stampanti locali</translation>
 <translation id="4650759511838826572">Disabilita schemi di protocollo dell'URL</translation>
 <translation id="465099050592230505">URL del web store dell'azienda (obsoleta)</translation>
@@ -3173,6 +3211,7 @@ Se questo criterio viene impostato su Falso, <ph name="PRODUCT_NAME" /> non util
           Se questo criterio non viene impostato, la funzione Appunti condivisi è attivata per impostazione predefinita.
 
           Spetta agli amministratori scegliere se impostare i criteri su tutte le piattaforme a cui sono interessati. Consigliamo di impostare questo criterio su un valore unico per tutte le piattaforme.</translation>
+<translation id="5389708774452952523">Consenti l'esecuzione del processo audio con priorità sopra la norma su Windows</translation>
 <translation id="5389798680516458665">Se il criterio viene configurato, puoi impostare un elenco di pattern URL che specificano i siti che possono mostrare immagini.
 
       Se il criterio non viene configurato, <ph name="DEFAULT_IMAGES_SETTING_ENABLED_POLICY_NAME" /> si applica per tutti i siti, se impostato. In caso contrario, viene applicata l'impostazione personale dell'utente.
@@ -3672,6 +3711,7 @@ Se il criterio viene configurato, gli utenti non possono apportare modifiche. Gl
 <translation id="6066761914755798079">Se il criterio <ph name="DEFAULT_SEARCH_PROVIDER_ENABLED_POLICY_NAME" /> è attivo, l'assegnazione di un valore al criterio <ph name="DEFAULT_SEARCH_PROVIDER_SUGGEST_URL_POLICY_NAME" /> consente di specificare l'URL del motore di ricerca per fornire suggerimenti per le ricerche. L'URL dovrebbe includere la stringa <ph name="SEARCH_TERM_MARKER" />, sostituita nella query dai termini di ricerca degli utenti.
 
       Puoi specificare l'URL di ricerca di Google come: <ph name="GOOGLE_SUGGEST_SEARCH_URL" />.</translation>
+<translation id="606742564823687992">Non vengono segnalati i processi di stampa</translation>
 <translation id="6070374129526507093">Criterio ritirato nella versione M69. Usa il criterio OverrideSecurityRestrictionsOnInsecureOrigin.
 
 Questo criterio consente di specificare un elenco di origini (URL) o di pattern di nomi host (ad esempio "*.example.com") a cui non vengono applicate limitazioni di sicurezza previste per le origini non sicure.
@@ -4633,6 +4673,7 @@ Per informazioni dettagliate sui pattern <ph name="URL_LABEL" /> validi, visita 
 
       La ricerca e l'installazione automatiche dei plug-in mancanti non sono più supportate.</translation>
 <translation id="7267809745244694722">Per impostazione predefinita, i tasti multimediali si comportano come tasti funzione.</translation>
+<translation id="7269263983506766969">Viene usata la priorità predefinita per il processo audio</translation>
 <translation id="7270001383428188269">L'identificatore di questo certificato client.</translation>
 <translation id="7271085005502526897">Importazione della home page dal browser predefinito alla prima esecuzione</translation>
 <translation id="7271181393214180342">Se il criterio viene impostato su Attivato, l'autenticazione HTTP rispetta l'approvazione da parte del criterio KDC. In altre parole, <ph name="PRODUCT_NAME" /> delega le credenziali utente al servizio a cui si accede se il KDC imposta <ph name="OK_AS_DELEGATE" /> sul ticket di servizio. Vedi RFC 5896 ( https://tools.ietf.org/html/rfc5896.html ). Il servizio dovrebbe essere consentito anche dal criterio <ph name="AUTH_NEGOTIATE_DELEGATE_ALLOWLIST_POLICY_NAME" />.
@@ -4734,6 +4775,10 @@ Per informazioni dettagliate sui pattern <ph name="URL_LABEL" /> validi, visita 
 
       Se non viene configurato, si applica il criterio <ph name="ASK_NOTIFICATIONS_POLICY_NAME" />, ma gli utenti possono modificare l'impostazione.</translation>
 <translation id="747275827471712187">Ripristina il comportamento <ph name="ATTRIBUTE_SAMESITE_NAME" /> precedente per i cookie su questi siti</translation>
+<translation id="7476158778585368567">Consente di segnalare i processi di stampa di un dispositivo.
+
+      Se il criterio viene impostato su falso o se non viene configurato, le informazioni non vengono segnalate.
+      Se il criterio viene impostato su vero, i processi di stampa del dispositivo vengono segnalati.</translation>
 <translation id="7476447711788742702">La configurazione del criterio consente di specificare l'azione compiuta in <ph name="PRODUCT_OS_NAME" /> quando l'utente chiude il coperchio del dispositivo.
 
       Se il criterio non viene configurato, viene compiuta l'azione di sospensione.
@@ -5666,6 +5711,17 @@ Se questa norma non viene impostata, le pagine saranno sottoposte a scansione pe
 
       Se il criterio non viene configurato viene considerato attivo e gli utenti non possono disattivarlo.</translation>
 <translation id="8789338675663014675">Consente di configurare i criteri relativi alle estensioni. L'utente non può installare estensioni bloccate, a meno che non vengano autorizzate. Puoi anche forzare <ph name="PRODUCT_NAME" /> a installare automaticamente le estensioni, specificandole nel criterio <ph name="EXTENSION_INSTALL_FORCELIST_POLICY_NAME" />. Le estensioni con installazione forzata vengono installate indipendentemente dalla loro presenza nella lista bloccata.</translation>
+<translation id="8796924197496002727">Durante l'accesso tramite la schermata di blocco, <ph name="PRODUCT_OS_NAME" /> può eseguire l'autenticazione con un server (online) o utilizzando una password memorizzata nella cache (offline).
+
+      Se questo criterio non viene configurato o se viene impostato il valore -1, non viene applicata l'autenticazione online nella schermata di blocco e l'utente potrà usare l'autenticazione offline finché un motivo diverso da quello di questo criterio non applicherà un'autenticazione online.
+
+      Se per il criterio viene impostato il valore 0, sarà sempre richiesta l'autenticazione online.
+
+      Se per questo criterio viene impostato qualsiasi altro valore, il criterio consente di specificare il numero di giorni dall'ultima autenticazione online trascorsi i quali l'utente deve usare di nuovo l'autenticazione online per l'accesso successivo tramite la schermata di blocco.
+
+      Questo criterio viene applicato per gli utenti che si sono autenticati tramite GAIA senza SAML.
+
+      Il valore del criterio deve essere specificato in giorni.</translation>
 <translation id="879697755145469671">La finestra coperta non viene rilevata</translation>
 <translation id="8798099450830957504">Predefinito</translation>
 <translation id="8799492680917278474">Se questo criterio viene configurato, le connessioni di accesso remoto si disconnettono automaticamente una volta trascorsi i minuti specificati nel criterio stesso. Questo non impedisce al client di riconnettersi una volta raggiunta la durata massima della sessione. Se il criterio viene impostato su un valore che non rientra nell'intervallo minimo/massimo, l'host potrebbe non essere avviato. Questo criterio non influisce sugli scenari di assistenza remota

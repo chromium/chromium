@@ -40,7 +40,6 @@
 <translation id="123724288017357924">Ricarica pag. corr. Ignora i contenuti nella cache</translation>
 <translation id="124678866338384709">Chiudi scheda corrente</translation>
 <translation id="1258753120186372309">Doodle di Google: <ph name="DOODLE_DESCRIPTION" /></translation>
-<translation id="1263231323834454256">Elenco di lettura</translation>
 <translation id="1266864766717917324">Impossibile condividere <ph name="CONTENT_TYPE" /></translation>
 <translation id="1283039547216852943">Tocca per espandere</translation>
 <translation id="1285310382777185058">Cambia lingua</translation>
@@ -994,7 +993,6 @@ I dati della sessione in incognito vengono cancellati da Chrome soltanto quando 
 <translation id="7774809984919390718">{PAYMENT_METHOD,plural, =1{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 e altri <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}other{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 e altri <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}}</translation>
 <translation id="7778840695157240389">Ricontrolla più tardi se ci sono nuove notizie</translation>
 <translation id="7786595606756654269">L'Assistente Google offre un'esperienza vocale migliore per cercare sul Web e utilizzare i siti aperti. L'Assistente Google riceverà gli URL e i contenuti dei siti su cui lo utilizzi.</translation>
-<translation id="7790349552933995572">Schermata Home</translation>
 <translation id="7791543448312431591">Aggiungi</translation>
 <translation id="7798392620021911922"><ph name="TAB_COUNT" /> schede ripristinate</translation>
 <translation id="780301667611848630">No grazie</translation>
@@ -1202,7 +1200,6 @@ I dati della sessione in incognito vengono cancellati da Chrome soltanto quando 
 <translation id="9149286894143103695">Aggiungi questo sito alla schermata Home del telefono per potervi accedere più facilmente</translation>
 <translation id="9155898266292537608">Per eseguire una ricerca, basta un rapido tocco su una parola</translation>
 <translation id="9169507124922466868">La cronologia di navigazione è aperta fino a metà</translation>
-<translation id="9191031968346938109">Aggiungi a…</translation>
 <translation id="9199368092038462496">{NUM_MINS,plural, =1{Eseguito 1 minuto fa}other{Eseguito # minuti fa}}</translation>
 <translation id="9204836675896933765">1 file rimanente</translation>
 <translation id="9206873250291191720">A</translation>

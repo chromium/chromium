@@ -4194,6 +4194,7 @@ Cilësimet e kësaj llogarie mund t'i menaxhosh duke instaluar aplikacionin Fami
 <translation id="5774295353725270860">Hap aplikacionin "Skedarët"</translation>
 <translation id="577624874850706961">Kërko për kuki</translation>
 <translation id="5777468213129569553">Hap Chrome</translation>
+<translation id="5778491106820461378">Mund t'i menaxhosh "Llogaritë e Google" ku je identifikuar nga <ph name="LINK_BEGIN" />Cilësimet<ph name="LINK_END" />. Lejet që u ke dhënë sajteve të uebit dhe aplikacioneve mund të zbatohen për të gjitha llogaritë. Nëse nuk dëshiron që sajtet ose aplikacionet të kenë qasje tek informacionet e llogarisë sate, mund të identifikohesh në <ph name="DEVICE_TYPE" /> si vizitor</translation>
 <translation id="5780011244986845107">Dosja që zgjodhe përmban skedarë delikatë. Je i sigurt që dëshiron t'i japësh "<ph name="APP_NAME" />" qasje të përhershme leximi në këtë dosje?</translation>
 <translation id="5780973441651030252">Përparësia e procesit</translation>
 <translation id="5781092003150880845">Sinkronizo si <ph name="ACCOUNT_FULL_NAME" /></translation>
@@ -5084,6 +5085,7 @@ Cilësimet e kësaj llogarie mund t'i menaxhosh duke instaluar aplikacionin Fami
 <translation id="6811332638216701903">Emri i pritësit të DHCP-së</translation>
 <translation id="6812349420832218321"><ph name="PRODUCT_NAME" /> nuk mund të ekzekutohet si një rrënjë.</translation>
 <translation id="6812841287760418429">Mbaji ndryshimet</translation>
+<translation id="6813907279658683733">Ekrani i plotë</translation>
 <translation id="681584224457905309">{COUNT,plural, =1{skedar}other{# skedarë}}</translation>
 <translation id="6817174620439930047">Pyet kur një faqe kërkon të përdorë mesazhe ekskluzive të sistemit për t'u qasur në pajisjet MIDI (rekomandohet)</translation>
 <translation id="6818198425579322765">Faqja "Gjuha në të cilën do të përkthehet"</translation>
@@ -5588,6 +5590,7 @@ Cilësimet e kësaj llogarie mund t'i menaxhosh duke instaluar aplikacionin Fami
 <translation id="7392118418926456391">Skanimi për viruse dështoi</translation>
 <translation id="7392915005464253525">H&amp;ape sërish dritaren e mbyllur</translation>
 <translation id="7393073300870882456">{COUNT,plural, =1{U kopjua 1 artikull}other{U kopjuan {COUNT} artikuj}}</translation>
+<translation id="7395774987022469191">Ekrani i plotë</translation>
 <translation id="7396017167185131589">Dosjet e ndara do të shfaqen këtu</translation>
 <translation id="7396845648024431313"><ph name="APP_NAME" /> do të nisë pas fillimit të sistemit dhe do të vazhdojë të funksionojë në sfond edhe nëse i mbyll të gjitha dritaret e tjera <ph name="PRODUCT_NAME" />.</translation>
 <translation id="7399045143794278225">Personalizo sinkronizimin</translation>

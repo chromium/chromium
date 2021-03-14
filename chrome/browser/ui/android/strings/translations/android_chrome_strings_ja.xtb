@@ -40,7 +40,6 @@
 <translation id="123724288017357924">キャッシュ コンテンツを無視して現在のページを再読み込みする</translation>
 <translation id="124678866338384709">現在のタブを閉じる</translation>
 <translation id="1258753120186372309">Google Doodle: <ph name="DOODLE_DESCRIPTION" /></translation>
-<translation id="1263231323834454256">リーディング リスト</translation>
 <translation id="1266864766717917324"><ph name="CONTENT_TYPE" /> を共有できませんでした</translation>
 <translation id="1283039547216852943">タップして展開</translation>
 <translation id="1285310382777185058">言語を変更する</translation>
@@ -994,7 +993,6 @@
 <translation id="7774809984919390718">{PAYMENT_METHOD,plural, =1{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 他 <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> 件}other{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 他 <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> 件}}</translation>
 <translation id="7778840695157240389">しばらくしてからご確認ください</translation>
 <translation id="7786595606756654269">Google アシスタントを使用すると、ウェブを検索したり、開いたサイトを操作したりする際の、音声操作の利便性が向上します。Google アシスタントを使用するサイトの URL とコンテンツがアシスタントに渡されます。</translation>
-<translation id="7790349552933995572">ホーム画面</translation>
 <translation id="7791543448312431591">追加</translation>
 <translation id="7798392620021911922"><ph name="TAB_COUNT" /> 個のタブを復元しました</translation>
 <translation id="780301667611848630">いいえ</translation>
@@ -1202,7 +1200,6 @@
 <translation id="9149286894143103695">このサイトをスマートフォンのホーム画面に追加すると簡単にアクセスできるようになります</translation>
 <translation id="9155898266292537608">単語をタップするだけでも検索できます</translation>
 <translation id="9169507124922466868">ナビゲーション履歴が半分開いています</translation>
-<translation id="9191031968346938109">追加先…</translation>
 <translation id="9199368092038462496">{NUM_MINS,plural, =1{前回の確認: 1 分前}other{前回の確認: # 分前}}</translation>
 <translation id="9204836675896933765">残り 1 ファイル</translation>
 <translation id="9206873250291191720">A</translation>

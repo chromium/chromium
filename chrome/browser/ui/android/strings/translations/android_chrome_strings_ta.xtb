@@ -40,7 +40,6 @@
 <translation id="123724288017357924">தற்காலிக சேமிப்பைப் புறக்கணித்து, நடப்புப் பக்கத்தை மீண்டும் ஏற்றும்</translation>
 <translation id="124678866338384709">தற்போதைய தாவலை மூடும்</translation>
 <translation id="1258753120186372309">Google doodle: <ph name="DOODLE_DESCRIPTION" /></translation>
-<translation id="1263231323834454256">வாசிப்புப் பட்டியல்</translation>
 <translation id="1266864766717917324"><ph name="CONTENT_TYPE" />ஐப் பகிர முடியவில்லை</translation>
 <translation id="1283039547216852943">விரிவாக்க, தட்டவும்</translation>
 <translation id="1285310382777185058">மொழியை மாற்றுங்கள்</translation>
@@ -994,7 +993,6 @@
 <translation id="7774809984919390718">{PAYMENT_METHOD,plural, =1{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 மற்றும் <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> கட்டண முறை}other{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 மற்றும் <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> கட்டண முறைகள்}}</translation>
 <translation id="7778840695157240389">புதிய கட்டுரைகளைப் பார்க்க பின்னர் வந்து பாருங்கள்</translation>
 <translation id="7786595606756654269">குரல் மூலம் இணையத்தில் தேடுவதற்கும் நீங்கள் திறந்திருக்கும் தளங்களைப் பயன்படுத்துவதற்கும் உதவுவதன் மூலம் Google Assistant உங்கள் அனுபவத்தை இன்னும் சிறப்பாக்குகிறது. Google Assistant மூலம் நீங்கள் பயன்படுத்தும் தளங்களின் URLலையும் உள்ளடக்கங்களையும் அது உள்வாங்கிக் கொள்ளும்.</translation>
-<translation id="7790349552933995572">முகப்புத் திரை</translation>
 <translation id="7791543448312431591">சேர்</translation>
 <translation id="7798392620021911922"><ph name="TAB_COUNT" /> தாவல்கள் மீட்டெடுக்கப்பட்டன</translation>
 <translation id="780301667611848630">வேண்டாம்</translation>
@@ -1202,7 +1200,6 @@
 <translation id="9149286894143103695">உங்கள் மொபைலின் முகப்புத் திரையில் இந்தத் தளத்தைச் சேர்ப்பதன் மூலம் இதை மேலும் எளிதாக அணுகலாம்</translation>
 <translation id="9155898266292537608">ஒரு சொல்லைத் தட்டி உடனடியாகவும் தேடலாம்</translation>
 <translation id="9169507124922466868">வழிசெலுத்தல் வரலாறு பாதியளவு திறந்துள்ளது</translation>
-<translation id="9191031968346938109">இதில் சேர்…</translation>
 <translation id="9199368092038462496">{NUM_MINS,plural, =1{சரிபார்த்தது: 1 நிமிடத்திற்கு முன்பு}other{சரிபார்த்தது: # நிமிடங்களுக்கு முன்பு}}</translation>
 <translation id="9204836675896933765">1 கோப்பு மீதமுள்ளது</translation>
 <translation id="9206873250291191720">A</translation>

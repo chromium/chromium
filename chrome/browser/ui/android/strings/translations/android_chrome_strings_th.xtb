@@ -40,7 +40,6 @@
 <translation id="123724288017357924">โหลดหน้าปัจจุบันซ้ำ โดยไม่คำนึงถึงเนื้อหาที่แคชไว้</translation>
 <translation id="124678866338384709">ปิดแท็บปัจจุบัน</translation>
 <translation id="1258753120186372309">Google doodle: <ph name="DOODLE_DESCRIPTION" /></translation>
-<translation id="1263231323834454256">เรื่องรออ่าน</translation>
 <translation id="1266864766717917324">แชร์<ph name="CONTENT_TYPE" />ไม่ได้</translation>
 <translation id="1283039547216852943">แตะเพื่อขยาย</translation>
 <translation id="1285310382777185058">เปลี่ยนภาษา</translation>
@@ -994,7 +993,6 @@
 <translation id="7774809984919390718">{PAYMENT_METHOD,plural, =1{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 และอีก <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> วิธี}other{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 และอีก <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> วิธี}}</translation>
 <translation id="7778840695157240389">กลับมาดูเรื่องราวใหม่ๆ ภายหลัง</translation>
 <translation id="7786595606756654269">Google Assistant มอบประสบการณ์ใช้งานด้วยเสียงที่ดียิ่งขึ้นสำหรับการค้นหาเว็บและการมีส่วนร่วมกับเว็บไซต์ที่คุณเปิดอยู่ Google Assistant จะได้รับ URL และเนื้อหาของเว็บไซต์ที่คุณใช้งานร่วมกัน</translation>
-<translation id="7790349552933995572">หน้าจอหลัก</translation>
 <translation id="7791543448312431591">เพิ่ม</translation>
 <translation id="7798392620021911922">คืนค่าแท็บ <ph name="TAB_COUNT" /> แล้ว</translation>
 <translation id="780301667611848630">ไม่ ขอบคุณ</translation>
@@ -1202,7 +1200,6 @@
 <translation id="9149286894143103695">เพิ่มเว็บไซต์นี้ลงในหน้าจอหลักของโทรศัพท์เพื่อให้เข้าชมได้ง่ายขึ้น</translation>
 <translation id="9155898266292537608">หรือคุณจะค้นหาด้วยการแตะอย่างรวดเร็วที่คำๆ หนึ่งก็ได้เช่นกัน</translation>
 <translation id="9169507124922466868">ประวัติการนำทางเปิดอยู่ครึ่งเดียว</translation>
-<translation id="9191031968346938109">เพิ่มใน…</translation>
 <translation id="9199368092038462496">{NUM_MINS,plural, =1{ตรวจสอบเมื่อ 1 นาทีที่ผ่านมา}other{ตรวจสอบเมื่อ # นาทีที่ผ่านมา}}</translation>
 <translation id="9204836675896933765">เหลืออีก 1 ไฟล์</translation>
 <translation id="9206873250291191720">A</translation>

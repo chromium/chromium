@@ -40,7 +40,6 @@
 <translation id="123724288017357924">Oldal újratöltése a gyorsítótárat figyelmen kívül hagyva</translation>
 <translation id="124678866338384709">Az aktuális lap bezárása</translation>
 <translation id="1258753120186372309">Google ünnepi embléma: <ph name="DOODLE_DESCRIPTION" /></translation>
-<translation id="1263231323834454256">Olvasási lista</translation>
 <translation id="1266864766717917324">Nem sikerült a(z) <ph name="CONTENT_TYPE" /> megosztása</translation>
 <translation id="1283039547216852943">Koppintson a kibontáshoz</translation>
 <translation id="1285310382777185058">Nyelv módosítása</translation>
@@ -994,7 +993,6 @@ Az inkognitó-munkamenet adatai csak <ph name="BEGIN_BOLD2" />az összes inkogni
 <translation id="7774809984919390718">{PAYMENT_METHOD,plural, =1{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 és további <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}other{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 és további <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}}</translation>
 <translation id="7778840695157240389">Új hírekért látogasson vissza később</translation>
 <translation id="7786595606756654269">A Google Segéd jobb felhasználói élményt biztosít a weben a hangalapú kereséseknél, valamint a megnyitott webhelyek hangalapú használatakor. A Google Segéd megkapja azoknak a webhelyeknek az URL-jeit és tartalmait, amelyeken Ön használta Segédjét.</translation>
-<translation id="7790349552933995572">Kezdőképernyő</translation>
 <translation id="7791543448312431591">Hozzáadás</translation>
 <translation id="7798392620021911922"><ph name="TAB_COUNT" /> lap visszaállítva</translation>
 <translation id="780301667611848630">Köszönöm, nem</translation>
@@ -1202,7 +1200,6 @@ Az inkognitó-munkamenet adatai csak <ph name="BEGIN_BOLD2" />az összes inkogni
 <translation id="9149286894143103695">Adja hozzá ezt a webhelyet telefonja kezdőképernyőjéhez, hogy gyorsabban hozzáférhessen.</translation>
 <translation id="9155898266292537608">Úgy is végrehajthat keresést, hogy gyorsan rákoppint valamelyik szóra</translation>
 <translation id="9169507124922466868">Félmagasságban megnyitott navigációs előzmények</translation>
-<translation id="9191031968346938109">Hozzáadás…</translation>
 <translation id="9199368092038462496">{NUM_MINS,plural, =1{1 perce ellenőrizve}other{# perce ellenőrizve}}</translation>
 <translation id="9204836675896933765">1 fájl maradt</translation>
 <translation id="9206873250291191720">A</translation>

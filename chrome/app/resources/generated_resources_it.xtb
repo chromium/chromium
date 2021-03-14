@@ -4196,6 +4196,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="5774295353725270860">Apri l'applicazione File</translation>
 <translation id="577624874850706961">Cerca cookie</translation>
 <translation id="5777468213129569553">Apri Chrome</translation>
+<translation id="5778491106820461378">Puoi gestire gli Account Google a cui hai eseguito l'accesso dalle <ph name="LINK_BEGIN" />Impostazioni<ph name="LINK_END" />. Le autorizzazioni concesse ai siti web e alle app potrebbero essere applicate a tutti gli account. Se non vuoi consentire a siti o app di accedere ai dati del tuo account, puoi accedere al tuo dispositivo <ph name="DEVICE_TYPE" /> come ospite.</translation>
 <translation id="5780011244986845107">La cartella che hai selezionato contiene file sensibili. Vuoi concedere a "<ph name="APP_NAME" />" accesso di lettura permanente a questa cartella?</translation>
 <translation id="5780973441651030252">Priorità processo</translation>
 <translation id="5781092003150880845">Sincronizza come <ph name="ACCOUNT_FULL_NAME" /></translation>
@@ -5086,6 +5087,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="6811332638216701903">Nome host DHCP</translation>
 <translation id="6812349420832218321"><ph name="PRODUCT_NAME" /> non può essere eseguito come root.</translation>
 <translation id="6812841287760418429">Mantieni le modifiche</translation>
+<translation id="6813907279658683733">Schermo intero</translation>
 <translation id="681584224457905309">{COUNT,plural, =1{file}other{# file}}</translation>
 <translation id="6817174620439930047">Chiedi conferma quando un sito vuole utilizzare messaggi esclusivi di sistema per accedere a dispositivi MIDI (consigliata)</translation>
 <translation id="6818198425579322765">Lingua della pagina da tradurre</translation>
@@ -5590,6 +5592,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="7392118418926456391">Scansione virus non riuscita</translation>
 <translation id="7392915005464253525">R&amp;iapri finestra chiusa</translation>
 <translation id="7393073300870882456">{COUNT,plural, =1{1 elemento copiato}other{{COUNT} elementi copiati}}</translation>
+<translation id="7395774987022469191">Schermo intero</translation>
 <translation id="7396017167185131589">Le cartelle condivise verranno visualizzate qui</translation>
 <translation id="7396845648024431313"><ph name="APP_NAME" /> si attiverà all'avvio del sistema e continuerà a funzionare in background anche dopo la chiusura di tutte le altre finestre di <ph name="PRODUCT_NAME" />.</translation>
 <translation id="7399045143794278225">Personalizza sincronizzazione</translation>

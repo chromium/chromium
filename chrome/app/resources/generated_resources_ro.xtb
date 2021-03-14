@@ -4198,6 +4198,7 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="5774295353725270860">Deschideți aplicația Fișiere</translation>
 <translation id="577624874850706961">Caută cookie-uri</translation>
 <translation id="5777468213129569553">Deschide Chrome</translation>
+<translation id="5778491106820461378">Poți să gestionezi Conturile Google conectate din <ph name="LINK_BEGIN" />Setări<ph name="LINK_END" />. Permisiunile pe care le-ai acordat site-urilor și aplicațiilor se pot aplica tuturor conturilor. Dacă nu vrei ca site-urile sau aplicațiile să îți acceseze informațiile contului, poți să te conectezi pe <ph name="DEVICE_TYPE" /> ca invitat.</translation>
 <translation id="5780011244986845107">Dosarul pe care l-ai selectat conține fișiere cu informații sensibile. Sigur dorești să permiți accesul de scriere permanent pentru „<ph name="APP_NAME" />” la acest dosar?</translation>
 <translation id="5780973441651030252">Prioritatea procesului</translation>
 <translation id="5781092003150880845">Sincronizează ca <ph name="ACCOUNT_FULL_NAME" /></translation>
@@ -5088,6 +5089,7 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="6811332638216701903">Nume de gazdă DHCP</translation>
 <translation id="6812349420832218321"><ph name="PRODUCT_NAME" /> nu poate fi rulat în modul root.</translation>
 <translation id="6812841287760418429">Păstrați modificările</translation>
+<translation id="6813907279658683733">Tot ecranul</translation>
 <translation id="681584224457905309">{COUNT,plural, =1{fișier}few{# fișiere}other{# de fișiere}}</translation>
 <translation id="6817174620439930047">Întreabă-mă când un site dorește să utilizeze mesajele rezervate sistemului ca să acceseze dispozitivele MIDI (recomandat)</translation>
 <translation id="6818198425579322765">Limba paginii de tradus</translation>
@@ -5592,6 +5594,7 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="7392118418926456391">Scanarea antivirus nu a reușit</translation>
 <translation id="7392915005464253525">R&amp;edeschide fereastra închisă</translation>
 <translation id="7393073300870882456">{COUNT,plural, =1{Un element copiat}few{{COUNT} elemente copiate}other{{COUNT} de elemente copiate}}</translation>
+<translation id="7395774987022469191">Tot ecranul</translation>
 <translation id="7396017167185131589">Dosarele comune vor apărea aici</translation>
 <translation id="7396845648024431313"><ph name="APP_NAME" /> se va lansa la pornirea sistemului și va continua să ruleze în fundal, chiar după ce ai închis toate celelalte ferestre ale <ph name="PRODUCT_NAME" />.</translation>
 <translation id="7399045143794278225">Personalizează sincronizarea</translation>

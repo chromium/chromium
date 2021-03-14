@@ -40,7 +40,6 @@
 <translation id="123724288017357924">Нөөцөлсөн агуулгыг алгасч одоогийн хуудсыг дахин ачаалах</translation>
 <translation id="124678866338384709">Үндсэн чихтэй хуудсыг хаах</translation>
 <translation id="1258753120186372309">Google doodle: <ph name="DOODLE_DESCRIPTION" /></translation>
-<translation id="1263231323834454256">Унших жагсаалт</translation>
 <translation id="1266864766717917324"><ph name="CONTENT_TYPE" />-г хуваалцаж чадсангүй</translation>
 <translation id="1283039547216852943">Дэлгэхийн тулд товших</translation>
 <translation id="1285310382777185058">Хэл өөрчлөх</translation>
@@ -993,7 +992,6 @@ Tаны Google бүртгэл <ph name="BEGIN_LINK" />history.google.com<ph name
 <translation id="7774809984919390718">{PAYMENT_METHOD,plural, =1{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 болон бусад <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}other{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 болон бусад <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}}</translation>
 <translation id="7778840695157240389">Шинэ түүхийг дараа дахин шалгана уу</translation>
 <translation id="7786595606756654269">Google Туслах нь вебээр хайх, нээсэн сайтуудтайгаа харьцах илүү сайн дуут туршлагаар хангадаг. Google Туслах нь таны үүнийг ашигладаг сайтуудын URL болон контентыг хүлээн авна.</translation>
-<translation id="7790349552933995572">Нүүр хуудас</translation>
 <translation id="7791543448312431591">Нэмэх</translation>
 <translation id="7798392620021911922"><ph name="TAB_COUNT" /> табыг сэргээсэн</translation>
 <translation id="780301667611848630">Үгүй, баярлалаа</translation>
@@ -1201,7 +1199,6 @@ Tаны Google бүртгэл <ph name="BEGIN_LINK" />history.google.com<ph name
 <translation id="9149286894143103695">Энэ сайтыг утасныхаа Үндсэн нүүрэнд нэмснээр та энд илүү хялбар очих боломжтой</translation>
 <translation id="9155898266292537608">Мөн та үгийг хурдан товшоод хайх боломжтой</translation>
 <translation id="9169507124922466868">Навигацын түүхийг хагас нээлээ</translation>
-<translation id="9191031968346938109">Дараахад нэмэх…</translation>
 <translation id="9199368092038462496">{NUM_MINS,plural, =1{1 минутын өмнө шалгасан}other{# минутын өмнө шалгасан}}</translation>
 <translation id="9204836675896933765">1 файл үлдсэн</translation>
 <translation id="9206873250291191720">A</translation>

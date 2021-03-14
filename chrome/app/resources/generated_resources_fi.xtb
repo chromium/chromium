@@ -4194,6 +4194,7 @@ Voit ylläpitää tilin asetuksia asentamalla laitteellesi Family Link ‑sovell
 <translation id="5774295353725270860">Avaa Tiedostot-sovellus</translation>
 <translation id="577624874850706961">Hae evästeistä</translation>
 <translation id="5777468213129569553">Avaa Chrome</translation>
+<translation id="5778491106820461378">Voit ylläpitää sisäänkirjautuneita Google-tilejä <ph name="LINK_BEGIN" />asetuksista<ph name="LINK_END" />. Sivustoille ja sovelluksille antamasi luvat saattavat koskea kaikkia tilejä. Jos et halua, että sivustot ja sovellukset saavat pääsyn tilitietoihisi, voit kirjautua laitteelle (<ph name="DEVICE_TYPE" />) vieraana.</translation>
 <translation id="5780011244986845107">Valitsemasi kansio sisältää arkaluontoisia tiedostoja. Haluatko varmasti, että <ph name="APP_NAME" /> saa pysyvän lukuoikeuden tähän kansioon?</translation>
 <translation id="5780973441651030252">Prosessien tärkeysjärjestys</translation>
 <translation id="5781092003150880845">Vaihda synkronointitilille <ph name="ACCOUNT_FULL_NAME" /></translation>
@@ -5084,6 +5085,7 @@ Julkinen eksponentti (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bittiä):
 <translation id="6811332638216701903">DHCP-isäntänimi</translation>
 <translation id="6812349420832218321">Tuotetta <ph name="PRODUCT_NAME" /> ei voi käynnistää pääkäyttäjätilassa.</translation>
 <translation id="6812841287760418429">Säilytä muutokset</translation>
+<translation id="6813907279658683733">Koko näyttö</translation>
 <translation id="681584224457905309">{COUNT,plural, =1{tiedosto}other{# tiedostoa}}</translation>
 <translation id="6817174620439930047">Kysy, kun sivusto haluaa käyttää MIDI-laitteita järjestelmän omien viestien avulla (suositus)</translation>
 <translation id="6818198425579322765">Käännettävän sivun kieli</translation>
@@ -5588,6 +5590,7 @@ Julkinen eksponentti (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bittiä):
 <translation id="7392118418926456391">Virustarkistus epäonnistui</translation>
 <translation id="7392915005464253525">A&amp;vaa suljettu ikkuna uudelleen</translation>
 <translation id="7393073300870882456">{COUNT,plural, =1{1 kohde kopioitu}other{{COUNT} kohdetta kopioitu}}</translation>
+<translation id="7395774987022469191">Koko näyttö</translation>
 <translation id="7396017167185131589">Jaetut kansiot näkyvät täällä</translation>
 <translation id="7396845648024431313"><ph name="APP_NAME" /> käynnistyy tietokoneen käynnistyksen yhteydessä ja on käynnissä taustalla vielä kaikkien <ph name="PRODUCT_NAME" /> -ikkunoiden sulkemisen jälkeen.</translation>
 <translation id="7399045143794278225">Muokkaa synkronointia</translation>

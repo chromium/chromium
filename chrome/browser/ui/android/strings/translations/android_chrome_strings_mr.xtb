@@ -40,7 +40,6 @@
 <translation id="123724288017357924">कॅशे केलेला आशय दुर्लक्षित करून, सद्य पेज रीलोड करा</translation>
 <translation id="124678866338384709">वर्तमान टॅब बंद करा</translation>
 <translation id="1258753120186372309">Google डूडल: <ph name="DOODLE_DESCRIPTION" /></translation>
-<translation id="1263231323834454256">वाचन सूची</translation>
 <translation id="1266864766717917324"><ph name="CONTENT_TYPE" /> शेअर करू शकलो नाही</translation>
 <translation id="1283039547216852943">विस्तृत करण्यासाठी टॅप करा</translation>
 <translation id="1285310382777185058">भाषा बदला</translation>
@@ -994,7 +993,6 @@
 <translation id="7774809984919390718">{PAYMENT_METHOD,plural, =1{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 आणि <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> अधिक}other{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 आणि <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> अधिक}}</translation>
 <translation id="7778840695157240389">नवीन बातम्यांसाठी नंतर पुन्हा भेट द्या</translation>
 <translation id="7786595606756654269">वेबवर शोधण्यासाठी आणि तुम्ही उघडलेल्या साइटसह गुंतण्यासाठी Google Assistant आणखी चांगला व्हॉइस अनुभव देते. Google Assistant ला URL आणि तुम्ही त्यासह वापरत असलेल्या साइटचा आशय मिळेल.</translation>
-<translation id="7790349552933995572">होम स्क्रीन</translation>
 <translation id="7791543448312431591">जोडा</translation>
 <translation id="7798392620021911922"><ph name="TAB_COUNT" /> टॅब रिस्टोअर केले</translation>
 <translation id="780301667611848630">नाही, नको</translation>
@@ -1202,7 +1200,6 @@
 <translation id="9149286894143103695">तुम्हाला येथे परत येणे आणखी सोपे होण्यासाठी, ही साइट तुमच्या फोनच्या होम स्क्रीनवर जोडा</translation>
 <translation id="9155898266292537608">तुम्ही शब्दावर जलद टॅप करूनदेखील शोधू शकता</translation>
 <translation id="9169507124922466868">नेव्हिगेशन इतिहास अर्धा उघडा आहे</translation>
-<translation id="9191031968346938109">यात जोडा…</translation>
 <translation id="9199368092038462496">{NUM_MINS,plural, =1{एका मिनिटापूर्वी तपासले}other{# मिनिटांपूर्वी तपासले}}</translation>
 <translation id="9204836675896933765">1 फाइल शिल्लक</translation>
 <translation id="9206873250291191720">A</translation>

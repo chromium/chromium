@@ -40,7 +40,6 @@
 <translation id="123724288017357924">ক্যাশে করা কন্টেন্ট এড়িয়ে বর্তমান পৃষ্ঠা আবার লোড করুন</translation>
 <translation id="124678866338384709">বর্তমান ট্যাব বন্ধ করুন</translation>
 <translation id="1258753120186372309">Google ডুডল: <ph name="DOODLE_DESCRIPTION" /></translation>
-<translation id="1263231323834454256">পড়ার তালিকা</translation>
 <translation id="1266864766717917324"><ph name="CONTENT_TYPE" /> শেয়ার করা যায়নি</translation>
 <translation id="1283039547216852943">প্রসারিত করতে আলতো চাপুন</translation>
 <translation id="1285310382777185058">ভাষা পরিবর্তন করুন</translation>
@@ -996,7 +995,6 @@ Privacy Sandbox এখনও ডেভেলপ করা হচ্ছে এব
 <translation id="7774809984919390718">{PAYMENT_METHOD,plural, =1{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 এবং <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> আরও অনেক}one{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 এবং <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> আরও অনেক}other{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 এবং <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> আরও অনেক}}</translation>
 <translation id="7778840695157240389">নতুন খবরের জন্য পরে আবার চেক করুন</translation>
 <translation id="7786595606756654269">Google Assistant, ওয়েবে আরও ভাল ভয়েস সার্চের অভিজ্ঞতা প্রদান করে এবং আপনার খুলে রাখা সাইটগুলির সাথে এনগেজ করে রাখে। Google Assistant, সেইসব সাইটের ইউআরএল ও কন্টেন্ট ব্যবহার করবে, যাতে আপনি Assistant ব্যবহার করেন।</translation>
-<translation id="7790349552933995572">হোম স্ক্রিন</translation>
 <translation id="7791543448312431591">জুড়ুন</translation>
 <translation id="7798392620021911922"><ph name="TAB_COUNT" />টি ট্যাব ফিরিয়ে আনা হয়েছে</translation>
 <translation id="780301667611848630">না থাক</translation>
@@ -1204,7 +1202,6 @@ Privacy Sandbox এখনও ডেভেলপ করা হচ্ছে এব
 <translation id="9149286894143103695">আপনার ফোনের হোম স্ক্রিনে এই সাইটটি যোগ করুন যাতে আপনি এটি অনেক সহজে ব্যবহার করতে পারেন</translation>
 <translation id="9155898266292537608">এছাড়াও কোনও শব্দের উপরে ট্যাপ করেও খুঁজতে পারেন</translation>
 <translation id="9169507124922466868">নেভিগেশনের ইতিহাস অর্ধেক খোলা রয়েছে</translation>
-<translation id="9191031968346938109">এতে যোগ করুন…</translation>
 <translation id="9199368092038462496">{NUM_MINS,plural, =1{১ মিনিট আগে চেক করা হয়েছে}one{# মিনিট আগে চেক করা হয়েছে}other{# মিনিট আগে চেক করা হয়েছে}}</translation>
 <translation id="9204836675896933765">১টি ফাইল বাকি</translation>
 <translation id="9206873250291191720">আ</translation>

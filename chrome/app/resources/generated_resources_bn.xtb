@@ -4197,6 +4197,7 @@
 <translation id="5774295353725270860">ফাইল অ্যাপ খুলুন</translation>
 <translation id="577624874850706961">কুকিজ খুঁজুন</translation>
 <translation id="5777468213129569553">Chrome খুলুন</translation>
+<translation id="5778491106820461378"><ph name="LINK_BEGIN" />সেটিংস<ph name="LINK_END" /> থেকে আপনি সাইন-ইন করা Google অ্যাকাউন্ট ম্যানেজ করতে পারবেন। বিভিন্ন ওয়েবসাইট এবং অ্যাপে আপনি যেসব অনুমতি দিয়েছেন সেগুলি সবকটি অ্যাকাউন্টে প্রয়োগ করা হতে পারে। আপনি বিভিন্ন সাইট বা অ্যাপকে আপনার অ্যাকাউন্ট সম্পর্কিত তথ্য যদি অ্যাক্সেস করতে দিতে না চান, তাহলে আপনি <ph name="DEVICE_TYPE" />-এ গেস্ট হিসেবে সাইন-ইন করতে পারেন।</translation>
 <translation id="5780011244986845107">আপনি যে ফোল্ডার বেছে নিয়েছেন সেটিতে সংবেদনশীল ফাইল আছে। আপনি কি "<ph name="APP_NAME" />"-কে স্থায়ীভাবে পড়ার অ্যাক্সেস দেওয়ার ব্যাপারে নিশ্চিত?</translation>
 <translation id="5780973441651030252">প্রক্রিয়ার অগ্রাধিকার</translation>
 <translation id="5781092003150880845"><ph name="ACCOUNT_FULL_NAME" /> হিসেবে সিঙ্ক করুন</translation>
@@ -5087,6 +5088,7 @@
 <translation id="6811332638216701903">DHCP হোস্টনেম</translation>
 <translation id="6812349420832218321"><ph name="PRODUCT_NAME" />-কে রুট হিসাবে চালনা করা যাবে না৷</translation>
 <translation id="6812841287760418429">পরিবর্তন রাখুন</translation>
+<translation id="6813907279658683733">সম্পূর্ণ স্ক্রিন</translation>
 <translation id="681584224457905309">{COUNT,plural, =1{ফাইল}one{#টি ফাইল}other{#টি ফাইল}}</translation>
 <translation id="6817174620439930047">যখন কোনো সাইট MIDI ডিভাইসগুলি অ্যাক্সেস করার জন্য সিস্টেমের বিশিষ্ট বার্তাগুলি ব্যবহার করতে চায় তখন জিজ্ঞাসা করুন (প্রস্তাবিত)</translation>
 <translation id="6818198425579322765">অনুবাদ করার জন্য পৃষ্ঠার ভাষা</translation>
@@ -5591,6 +5593,7 @@
 <translation id="7392118418926456391">ভাইরাস স্ক্যান ব্যর্থ হয়েছে</translation>
 <translation id="7392915005464253525">বন্ধ হওয়া উইন্ডো পু&amp;নরায় খোলা</translation>
 <translation id="7393073300870882456">{COUNT,plural, =1{১টি আইটেম কপি করা হয়েছে}one{{COUNT}টি আইটেম কপি করা হয়েছে}other{{COUNT}টি আইটেম কপি করা হয়েছে}}</translation>
+<translation id="7395774987022469191">সম্পূর্ণ স্ক্রিন</translation>
 <translation id="7396017167185131589">শেয়ার করা ফোল্ডারগুলি এখানে দেখা যাবে</translation>
 <translation id="7396845648024431313">সিস্টেমের প্রারম্ভে <ph name="APP_NAME" /> শুরু হবে এবং এমনকি আপনি অন্য সব <ph name="PRODUCT_NAME" /> উইন্ডো বন্ধ করার পরেও ব্যাকগ্রাউন্ডে চলতে থাকবে৷</translation>
 <translation id="7399045143794278225">সিঙ্ক করার বিকল্প কাস্টমাইজ করুন</translation>

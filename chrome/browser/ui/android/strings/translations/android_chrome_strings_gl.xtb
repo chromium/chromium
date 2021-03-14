@@ -40,7 +40,6 @@
 <translation id="123724288017357924">Cargar a páxina, ignorando o contido da caché</translation>
 <translation id="124678866338384709">Pechar a pestana actual</translation>
 <translation id="1258753120186372309">Doodle de Google: <ph name="DOODLE_DESCRIPTION" /></translation>
-<translation id="1263231323834454256">Lista de lectura</translation>
 <translation id="1266864766717917324">Non se puido compartir este contido: <ph name="CONTENT_TYPE" /></translation>
 <translation id="1283039547216852943">Toca para despregar</translation>
 <translation id="1285310382777185058">Cambiar idioma</translation>
@@ -994,7 +993,6 @@ Os datos da túa sesión só se borrarán de Chrome ao <ph name="BEGIN_BOLD2" />
 <translation id="7774809984919390718">{PAYMENT_METHOD,plural, =1{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 e <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> máis}other{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 e <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> máis}}</translation>
 <translation id="7778840695157240389">Volve máis tarde para comprobar se hai historias novas</translation>
 <translation id="7786595606756654269">O Asistente de Google ofréceche unha experiencia de busca por voz mellorada para navegar na Web e interactuar cos sitios que tes abertos. O Asistente de Google recibirá o URL e o contido dos sitios que visites con el.</translation>
-<translation id="7790349552933995572">Pantalla de inicio</translation>
 <translation id="7791543448312431591">Engadir</translation>
 <translation id="7798392620021911922"><ph name="TAB_COUNT" /> pestanas restauradas</translation>
 <translation id="780301667611848630">Non, grazas</translation>
@@ -1202,7 +1200,6 @@ Os datos da túa sesión só se borrarán de Chrome ao <ph name="BEGIN_BOLD2" />
 <translation id="9149286894143103695">Engádelle este sitio á pantalla de inicio do teu teléfono para poder acceder dun xeito máis doado</translation>
 <translation id="9155898266292537608">Tamén podes realizar buscas con só tocar rapidamente unha palabra</translation>
 <translation id="9169507124922466868">O historial de navegación abriuse ata a metade</translation>
-<translation id="9191031968346938109">Engadir a…</translation>
 <translation id="9199368092038462496">{NUM_MINS,plural, =1{A comprobación realizouse hai 1 minuto}other{A comprobación realizouse hai # minutos}}</translation>
 <translation id="9204836675896933765">Queda 1 ficheiro</translation>
 <translation id="9206873250291191720">A</translation>

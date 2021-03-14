@@ -353,6 +353,17 @@ Si inhabilitas esta política, se inhabilitará el desplazamiento de una página
       Si no se define esta política, <ph name="PRODUCT_NAME" /> intentará detectar si un servidor está en la intranet y solo en ese caso responderá a las solicitudes de IWA. Si se detecta que un servidor está en Internet, <ph name="PRODUCT_NAME" /> ignorará las solicitudes de IWA que procedan de dicho servidor.
 
       Nota: Si hay varios nombres de servidores, se deben separar con comas. Se permite el uso de caracteres comodín (<ph name="WILDCARD_VALUE" />).</translation>
+<translation id="1491015714523410492">Durante el inicio de sesión en la pantalla de bloqueo, <ph name="PRODUCT_OS_NAME" /> puede realizar la autenticación a través de un servidor (con conexión) o una contraseña almacenada en caché (sin conexión).
+
+      Si no se le asigna ningún valor a esta política, o se le asigna -1, no se requerirá la autenticación online en la pantalla de bloqueo y se permitirá al usuario utilizar la autenticación sin conexión a menos que se requiera la autenticación online por un motivo diferente a esta política.
+
+      SI se le asigna el valor 0 a la política, siempre se requerirá la autenticación online.
+
+      Si se le asigna cualquier otro valor a esta política, se especifica el número de días (a partir de la última autenticación online) tras el que el usuario deberá autenticarse de nuevo cuando vuelva a iniciar sesión en la pantalla de bloqueo.
+
+      Esta política afecta a los usuarios que se hayan autenticado mediante SAML.
+
+      El valor de esta política debe especificarse en número de días.</translation>
 <translation id="1502843533062797703">Habilitar el bloqueo de inserción de software de terceros</translation>
 <translation id="150857982247452081">Permite definir una lista de protocolos y una lista asociada de patrones de origen permitidos para cada uno de los protocolos, que pueden abrir una aplicación externa sin pedir permiso al usuario. No se debe incluir el separador del final al añadir el protocolo a la lista, así que añade "skype" en lugar de "skype:" o "skype://".
 
@@ -382,6 +393,13 @@ Si inhabilitas esta política, se inhabilitará el desplazamiento de una página
 <translation id="1522425503138261032">Permitir que los sitios puedan hacer un seguimiento de la ubicación física de los usuarios</translation>
 <translation id="1523774894176285446">Navegador alternativo donde se abren los sitios web configurados.</translation>
 <translation id="152657506688053119">Lista de URL alternativas para el proveedor de búsquedas predeterminado</translation>
+<translation id="1527298988676981599">Si se le asigna un valor a esta política, podrás establecer una lista de patrones de URL donde se especifique qué sitios obtendrán permiso automáticamente para acceder a un dispositivo USB con el ID de proveedor y de producto establecidos en la pantalla de inicio de sesión. Para que la política sea válida, cada elemento de la lista debe tener los campos <ph name="DEVICES_FIELD_NAME" /> y <ph name="URLS_FIELD_NAME" />. Cada elemento del campo <ph name="DEVICES_FIELD_NAME" /> puede tener un campo <ph name="VENDOR_ID_FIELD_NAME" /> y un campo <ph name="PRODUCT_ID_FIELD_NAME" />. Si se omite el campo <ph name="VENDOR_ID_FIELD_NAME" />, se creará una política válida con cualquier dispositivo. Si se omite el campo <ph name="PRODUCT_ID_FIELD_NAME" />, se creará una política válida con cualquier dispositivo con el ID de proveedor proporcionado. Una política que tenga un campo <ph name="PRODUCT_ID_FIELD_NAME" />, pero que no tenga un campo <ph name="VENDOR_ID_FIELD_NAME" />, no es válida.
+
+      El modelo de permisos USB otorgará a la URL especificada el permiso de acceso al dispositivo USB como origen de nivel destacado. Si los marcos insertados necesitan acceder a dispositivos USB, se deberá usar el encabezado 'usb' <ph name="FEATURE_POLICY_HEADER_NAME" /> para otorgar acceso. La URL debe ser válida; si no, se ignorará la política.
+
+      Obsoleto: El modelo de permisos USB permitía especificar tanto la URL solicitante como la URL de inserción. Esto ya no es así y solo se aplica a la retrocompatibilidad de la siguiente manera: si se especifican tanto una URL solicitante como una URL de inserción, se otorgará el permiso de nivel destacado a la URL de inserción y la URL solicitante se ignorará por completo.
+
+      Si no se establece esta política, se usará el valor predeterminado global para todos los sitios (sin acceso automático).</translation>
 <translation id="1530812829012954197">Mostrar siempre los patrones de URL que se indican a continuación en el navegador del host</translation>
 <translation id="1534690481294492142">Si se habilita la política o no se le asigna ningún valor, <ph name="PRODUCT_NAME" /> podrá actuar como proxy entre <ph name="CLOUD_PRINT_NAME" /> y las impresoras anteriores conectadas al ordenador. Los usuarios pueden activar el proxy de impresión en la nube utilizando su cuenta de Google para el proceso de autenticación.
 
@@ -1152,6 +1170,7 @@ Si no se le asigna ningún valor, la pantalla de privacidad se inhabilitará ini
       Sin embargo, si se le asigna el valor true, pero BrowserAddPersonEnabled tiene asignado el valor false, el usuario no podrá crear perfiles secundarios. Ocurre lo mismo con BrowserGuestModeEnabled y el modo invitados.</translation>
 <translation id="2517466659416174529">Permite inmovilizar las pestañas que están en segundo plano</translation>
 <translation id="2518231489509538392">Permitir reproducción de audio</translation>
+<translation id="2520551905471951523">Utiliza la prioridad alta para el proceso de audio</translation>
 <translation id="2521581787935130926">Mostrar el acceso directo de aplicaciones en la barra de marcadores</translation>
 <translation id="2522304491589804974">Configura la lista de extensiones de instalación permitidas</translation>
 <translation id="2529880111512635313">Configura la lista de aplicaciones y extensiones de instalación forzada</translation>
@@ -1337,6 +1356,7 @@ Si no se le asigna ningún valor, la pantalla de privacidad se inhabilitará ini
 <translation id="2787774054174244402">Si se le asigna el valor "true" a esta política, se evita que los usuarios deban escribir en dispositivos de almacenamiento externos.
 
       A menos que el almacenamiento externo esté bloqueado, si se configura "ExternalStorageReadOnly" en "false" o no se le asigna ningún valor, los usuarios podrán crear y modificar archivos de dispositivos de almacenamiento externos en los que se pueda escribir físicamente. (El almacenamiento externo se bloquea asignándole a "ExternalStorageDisable" el valor "true").</translation>
+<translation id="2789742777235177478">Limita el tiempo durante el que un usuario autenticado mediante GAIA sin SAML puede iniciar sesión sin conexión en la pantalla de bloqueo</translation>
 <translation id="2796714419743648316">Lista de aplicaciones y URL permitidas de límites de tiempo por aplicación</translation>
 <translation id="2796896367838042659">Esta política especifica qué aplicaciones y URLs deben añadirse a la lista de aplicaciones y URLs permitidas de restricciones de uso por aplicación.
         La lista de permitidas establecida tendrá efecto en las aplicaciones que un determinado usuario haya instalado en <ph name="PRODUCT_OS_NAME" /> que tengan límites de tiempo por aplicación.
@@ -1741,6 +1761,15 @@ Si no se le asigna ningún valor, la pantalla de privacidad se inhabilitará ini
       En <ph name="MS_WIN_NAME" />, esta política solo está disponible en las instancias vinculadas a un dominio de <ph name="MS_AD_NAME" /> que se ejecuten en Windows 10 Pro o que se hayan registrado en <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />. En <ph name="MAC_OS_NAME" />, esta función solo está disponible en instancias que se gestionen mediante MDM o que estén vinculadas a un dominio a través de MCX.</translation>
 <translation id="3261592499545947104">Número de segundos restantes para que caduque un certificado cuando se deba activar la renovación</translation>
 <translation id="3264793472749429012">Codificaciones del proveedor de búsquedas predeterminadas</translation>
+<translation id="3265738316212552123">Habilitar esta política te permite añadir una lista con patrones de URL que especifica qué sitios obtendrán permiso automáticamente para acceder a un dispositivo USB con el ID de proveedor y de producto establecidos. Para que la política sea válida, cada elemento de la lista debe tener los campos <ph name="DEVICES_FIELD_NAME" /> y <ph name="URLS_FIELD_NAME" />. Cada elemento del campo <ph name="DEVICES_FIELD_NAME" /> puede tener un campo <ph name="VENDOR_ID_FIELD_NAME" /> y un campo <ph name="PRODUCT_ID_FIELD_NAME" />. Si se omite el campo <ph name="VENDOR_ID_FIELD_NAME" />, se creará una política válida con cualquier dispositivo. Si se omite el campo <ph name="PRODUCT_ID_FIELD_NAME" />, se creará una política válida con cualquier dispositivo con el ID de proveedor proporcionado. Una política que tenga un campo <ph name="PRODUCT_ID_FIELD_NAME" />, pero que no tenga un campo <ph name="VENDOR_ID_FIELD_NAME" />, no es válida.
+
+      El modelo de permisos USB otorgará a la URL especificada el permiso de acceso al dispositivo USB como origen de nivel destacado. Si los marcos insertados necesitan acceder a dispositivos USB, se deberá usar el encabezado 'usb' <ph name="FEATURE_POLICY_HEADER_NAME" /> para otorgar acceso. La URL debe ser válida; si no, se ignorará la política.
+
+      Obsoleto: El modelo de permisos USB permitía especificar tanto la URL solicitante como la URL de inserción. Esto ya no es así y solo se aplica a la retrocompatibilidad de la siguiente manera: si se especifican tanto una URL solicitante como una URL de inserción, se otorgará el permiso de nivel destacado a la URL de inserción y la URL solicitante se ignorará por completo.
+
+      Si no se le asigna un valor a la política, se aplicará <ph name="DEFAULT_WEB_USB_GUARD_SETTING_POLICY_NAME" /> si se ha definido previamente. Si no se ha definido, se aplicará la configuración personal del usuario.
+
+      Los patrones de URL de esta política no deben entrar en conflicto con los de la política <ph name="WEB_USB_BLOCKED_FOR_URLS_POLICY_NAME" />. En caso de conflicto, esta política prevalece sobre <ph name="WEB_USB_BLOCKED_FOR_URLS_POLICY_NAME" /> y <ph name="WEB_USB_ASK_FOR_URLS_POLICY_NAME" />.</translation>
 <translation id="3273221114520206906">Configuración de JavaScript predeterminada</translation>
 <translation id="328347261792478720">De forma predeterminada, el navegador mostrará recomendaciones de contenido multimedia personalizadas al usuario. Si se inhabilita esta política, no se mostrarán estas recomendaciones al usuario. Si se habilita esta política o no se establece, se mostrarán recomendaciones de contenido multimedia al usuario.</translation>
 <translation id="3284094172359247914">Controlar el uso de la API WebUSB</translation>
@@ -1825,6 +1854,13 @@ Si no se le asigna ningún valor, la pantalla de privacidad se inhabilitará ini
       Si no se le asigna ningún valor, el tiempo de espera será de 0 (cero) milisegundos.
 
       Esta política no tendrá efecto si no se define la política <ph name="DEVICE_LOCAL_ACCOUNT_AUTO_LOGIN_ID_POLICY_NAME" />.</translation>
+<translation id="341285788698114069">Esta política controla la prioridad del proceso de audio en Windows.
+      Si se habilita la política, el proceso de audio se ejecutará con una prioridad normal superior.
+      Si se inhabilita esta política, el proceso de audio se ejecutará con una prioridad normal.
+      Si no se define esta política, se usará la configuración predeterminada del proceso de audio.
+      Esta política se ha creado como medida temporal para ofrecer a las empresas la posibilidad de
+      ejecutar audio con una prioridad superior para solucionar determinados problemas de rendimiento de la captura de audio.
+      Esta política se eliminará en el futuro.</translation>
 <translation id="3412937883532015092">Si a esta política se le asigna un número como valor, <ph name="PRODUCT_NAME" /> mostrará un mensaje durante ese número de milisegundos y después abrirá un navegador alternativo.
 
       Si no se le asigna ningún valor o el valor es 0 (cero), al ir a una URL designada se abrirá inmediatamente en un navegador alternativo.</translation>
@@ -2206,6 +2242,7 @@ Si no se le asigna ningún valor, la pantalla de privacidad se inhabilitará ini
 
       Si esta política no se configura, el protocolo SPDY estará disponible.</translation>
 <translation id="3891357445869647828">Habilitar JavaScript</translation>
+<translation id="3897218615484393758">Limita el tiempo durante el que un usuario autenticado mediante SAML puede iniciar sesión sin conexión en la pantalla de bloqueo</translation>
 <translation id="3898345958122666461">Desactivar NTLMv2</translation>
 <translation id="3898795800259311780">Permitir o denegar capturas de pantalla</translation>
 <translation id="3907683835264956726">Habilita el inicio de sesión online del usuario en una pantalla de bloqueo. Si se asigna el valor "verdadero" a esta política, se activará la reautenticación online en la pantalla de bloqueo (por ejemplo, mediante la política <ph name="POLICY" />).
@@ -2586,6 +2623,7 @@ Si se le asigna el valor False, <ph name="PRODUCT_NAME" /> no utilizará notific
 <translation id="4534500438517478692">Nombre de restricción de Android:</translation>
 <translation id="4541530620466526913">Cuentas locales del dispositivo</translation>
 <translation id="4543502256674577024">Configuración de actualización de dispositivos</translation>
+<translation id="454585952814397564">Utiliza la prioridad normal para el proceso de audio</translation>
 <translation id="4548555985107150628">Esta política está obsoleta. Utiliza <ph name="DEFAULT_PLUGINS_SETTING_POLICY_NAME" /> para controlar la disponibilidad del complemento Flash y <ph name="ALWAYS_OPEN_PDF_EXTERNALLY_POLICY_NAME" /> para controlar si el visor de PDF integrado se debe usar para abrir archivos PDF.
 
       Define una lista de complementos que están habilitados en <ph name="PRODUCT_NAME" /> y evita que los usuarios cambien esta configuración.
@@ -2660,6 +2698,7 @@ Si se le asigna el valor False, <ph name="PRODUCT_NAME" /> no utilizará notific
 <translation id="4632343302005518762">Permitir que <ph name="PRODUCT_FRAME_NAME" /> procese los tipos de contenido mostrados</translation>
 <translation id="4632566332417930481">No permite el uso de las herramientas para desarrolladores en extensiones instaladas por la política de empresa, pero sí permite su uso en otros contextos</translation>
 <translation id="4635284822166984665">Hora a la que el dispositivo empezará a cargarse, interpretada en la zona horaria local del dispositivo.</translation>
+<translation id="4646739075621507361">Informar de los trabajos de impresión</translation>
 <translation id="4649395978608361979">Destinos en impresoras locales</translation>
 <translation id="4650759511838826572">Inhabilitar esquemas de protocolo de URL</translation>
 <translation id="465099050592230505">URL de la tienda online de la empresa (política obsoleta)</translation>
@@ -3196,6 +3235,7 @@ Si se le asigna el valor False, <ph name="PRODUCT_NAME" /> no utilizará notific
           Si no se le asigna ningún valor, la función de portapapeles compartido se habilita de forma predeterminada.
 
           Los administradores se encargan de establecer políticas para todas las plataformas que consideren relevantes. Se recomienda definir un valor para esta política en todas las plataformas.</translation>
+<translation id="5389708774452952523">Permite ejecutar el proceso de audio con una prioridad superior a la normal en Windows</translation>
 <translation id="5389798680516458665">Si asignas un valor a esta política, podrás establecer una lista de patrones de URL donde se especifique qué sitios podrán mostrar imágenes.
 
       Si no se le asigna ningún valor a esta política, <ph name="DEFAULT_IMAGES_SETTING_ENABLED_POLICY_NAME" /> se aplicará a todos los sitios web, si se ha definido. Si no se ha definido, se aplicará la configuración personal del usuario.
@@ -3704,6 +3744,7 @@ Si se le asigna el valor False, <ph name="PRODUCT_NAME" /> no utilizará notific
 <translation id="6066761914755798079">Si <ph name="DEFAULT_SEARCH_PROVIDER_ENABLED_POLICY_NAME" /> está activada y se asigna un valor a <ph name="DEFAULT_SEARCH_PROVIDER_SUGGEST_URL_POLICY_NAME" />, se especificará la URL que utilizará el buscador para mostrar sugerencias de búsqueda. La URL debe incluir la cadena <ph name="SEARCH_TERM_MARKER" />, que en la consulta se sustituirá por los términos de búsqueda del usuario.
 
       Puedes especificar la URL de la Búsqueda de Google introduciendo lo siguiente: <ph name="GOOGLE_SUGGEST_SEARCH_URL" />.</translation>
+<translation id="606742564823687992">No informar de los trabajos de impresión</translation>
 <translation id="6070374129526507093">Obsoleta en M69. Utiliza en su lugar
       OverrideSecurityRestrictionsOnInsecureOrigin.
 
@@ -4679,6 +4720,7 @@ Estas políticas te permiten configurar el comportamiento de <ph name="PRODUCT_O
 
       Ya no están disponibles la búsqueda y la instalación automáticas de complementos que falten.</translation>
 <translation id="7267809745244694722">Teclas multimedia predeterminadas para teclas de funciones</translation>
+<translation id="7269263983506766969">Utiliza la prioridad predeterminada para el proceso de audio</translation>
 <translation id="7270001383428188269">El identificador de este certificado de cliente.</translation>
 <translation id="7271085005502526897">Importar la página de inicio desde el navegador predeterminado en la primera ejecución</translation>
 <translation id="7271181393214180342">Si se habilita esta política, la autenticación HTTP respetará la aprobación por parte de la política del centro de distribución de claves (KDC). Es decir, <ph name="PRODUCT_NAME" /> delegará las credenciales de usuario al servicio al que se esté accediendo si el KDC define el valor <ph name="OK_AS_DELEGATE" /> en el ticket de servicio. Consulta el RFC 5896 (https://tools.ietf.org/html/rfc5896.html). También es necesario que <ph name="AUTH_NEGOTIATE_DELEGATE_ALLOWLIST_POLICY_NAME" /> permita este servicio.
@@ -4782,6 +4824,10 @@ Estas políticas te permiten configurar el comportamiento de <ph name="PRODUCT_O
 
       Si no se le asigna ningún valor, se aplicará la política <ph name="ASK_NOTIFICATIONS_POLICY_NAME" />, pero los usuarios podrán cambiar esta opción.</translation>
 <translation id="747275827471712187">Volver a la configuración antigua de comportamiento de cookies de <ph name="ATTRIBUTE_SAMESITE_NAME" /> en estos sitios web</translation>
+<translation id="7476158778585368567">Informa de los trabajos de impresión de un dispositivo.
+
+      Si se le asigna el valor false a esta política o no se le asigna ninguno, no se enviará esta información.
+      Si se le asigna el valor true, se enviará la información sobre los trabajos de impresión del dispositivo.</translation>
 <translation id="7476447711788742702">Si se le asigna un valor a esta política, se especifica la acción que realiza <ph name="PRODUCT_OS_NAME" /> cuando el usuario cierra la tapa del dispositivo.
 
       Si no se le asigna ningún valor, la acción será la suspensión.
@@ -5722,6 +5768,17 @@ Te recomendamos que utilices GPO para configurar la política en Windows, aunque
 
       Si no se le asigna ningún valor a esta política, implica que está activada y los usuarios no pueden desactivarla.</translation>
 <translation id="8789338675663014675">Configura políticas relacionadas con extensiones. Los usuarios no pueden instalar extensiones bloqueadas, a menos que se incluyan en la lista de permitidas. Puedes hacer que <ph name="PRODUCT_NAME" /> realice automáticamente instalaciones forzadas de extensiones especificándolas en <ph name="EXTENSION_INSTALL_FORCELIST_POLICY_NAME" />. Las extensiones de instalación forzada se instalarán, independientemente de si están incluidas o no en la lista de bloqueadas.</translation>
+<translation id="8796924197496002727">Durante el inicio de sesión en la pantalla de bloqueo, <ph name="PRODUCT_OS_NAME" /> puede realizar la autenticación a través de un servidor (con conexión) o una contraseña almacenada en caché (sin conexión).
+
+      Si no se le asigna ningún valor a esta política, o se le asigna -1, no se requerirá la autenticación online en la pantalla de bloqueo y se permitirá al usuario utilizar la autenticación sin conexión a menos que se requiera la autenticación online por un motivo diferente a esta política.
+
+      SI se le asigna el valor 0 a la política, siempre se requerirá la autenticación online.
+
+      Si se le asigna cualquier otro valor a esta política, se especifica el número de días (a partir de la última autenticación online) tras el que el usuario deberá autenticarse de nuevo cuando vuelva a iniciar sesión en la pantalla de bloqueo.
+
+      Esta política afecta a los usuarios que se hayan autenticado mediante GAIA sin SAML.
+
+      El valor de esta política debe especificarse en número de días.</translation>
 <translation id="879697755145469671">No detectar ventanas tapadas</translation>
 <translation id="8798099450830957504">Predeterminado</translation>
 <translation id="8799492680917278474">Si esta política se habilita, las conexiones de acceso remoto se desconectarán automáticamente después de que hayan pasado el número de minutos definido en la política. Esto no evita que el cliente pueda volver a conectarse después de que se haya alcanzado la duración máxima de la sesión. La asignación de un valor que no esté dentro del intervalo mínimo/máximo puede evitar que el host se inicie. Esta política no afecta a las situaciones de asistencia remota.

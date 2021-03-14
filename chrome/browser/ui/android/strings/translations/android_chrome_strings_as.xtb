@@ -40,7 +40,6 @@
 <translation id="123724288017357924">কেশ্ব কৰা সমল অৱজ্ঞা কৰি বর্তমানৰ পৃষ্ঠাটো পুনৰ ল'ড কৰক</translation>
 <translation id="124678866338384709">বর্তমানৰ টেবটো বন্ধ কৰক</translation>
 <translation id="1258753120186372309">Google ডুডল্‌: <ph name="DOODLE_DESCRIPTION" /></translation>
-<translation id="1263231323834454256">পঢ়াৰ সূচী</translation>
 <translation id="1266864766717917324"><ph name="CONTENT_TYPE" /> শ্বেয়াৰ কৰিব পৰা নগ’ল</translation>
 <translation id="1283039547216852943">বিস্তাৰ কৰিবলৈ টিপক</translation>
 <translation id="1285310382777185058">ভাষা সলনি কৰক</translation>
@@ -993,7 +992,6 @@
 <translation id="7774809984919390718">{PAYMENT_METHOD,plural, =1{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 আৰু অন্য <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />টা}one{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 আৰু অন্য <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />টা}other{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 আৰু অন্য <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />টা}}</translation>
 <translation id="7778840695157240389">নতুন কাহিনীৰ বাবে পাছত আকৌ চাওক</translation>
 <translation id="7786595606756654269">ৱেবত সন্ধান কৰিবলৈ আৰু আপুনি খোলা ছাইটৰ সৈতে জড়িত কৰি ৰাখিবলৈ Google Assistantএ কণ্ঠধ্বনিৰ এক উন্নত অভিজ্ঞতা প্ৰদান কৰে। Google Assistantএ আপুনি ছাইটসমূহৰ সৈতে ব্যৱহাৰ কৰা URL আৰু সমল লাভ কৰিব।</translation>
-<translation id="7790349552933995572">গৃহ স্ক্ৰীন</translation>
 <translation id="7791543448312431591">যোগ কৰক</translation>
 <translation id="7798392620021911922"><ph name="TAB_COUNT" /> টা টেব পুনঃস্থাপন কৰা হ’ল</translation>
 <translation id="780301667611848630">নালাগে, ধন্যবাদ</translation>
@@ -1200,7 +1198,6 @@
 <translation id="9149286894143103695">এই ছাইটটো আপোনাৰ ফ’নৰ গৃহ স্ক্ৰীনত যোগ দিয়ক যাতে আপুনি অধিক সহজে ইয়ালৈ আহিব পাৰে</translation>
 <translation id="9155898266292537608">আপুনি কোনো এটা শব্দত এবাৰ টিপিও সন্ধান কৰিব পাৰে</translation>
 <translation id="9169507124922466868">নেভিগেশ্বন ইতিহাস আধা খোলা আছে</translation>
-<translation id="9191031968346938109">ইয়াত যোগ দিয়ক…</translation>
 <translation id="9199368092038462496">{NUM_MINS,plural, =1{১ মিনিটৰ আগত পৰীক্ষা কৰা হৈছে}one{# মিনিটৰ আগত পৰীক্ষা কৰা হৈছে}other{# মিনিটৰ আগত পৰীক্ষা কৰা হৈছে}}</translation>
 <translation id="9204836675896933765">১টা ফাইল বাকী আছে</translation>
 <translation id="9206873250291191720">অ</translation>

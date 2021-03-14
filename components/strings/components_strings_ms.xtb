@@ -291,6 +291,7 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="2001146170449793414">{COUNT,plural, =1{dan 1 lagi}other{dan # lagi}}</translation>
 <translation id="2003709556000175978">Tetapkan semula kata laluan anda sekarang</translation>
 <translation id="2003775180883135320">Empat tebukan atas</translation>
+<translation id="201174227998721785">Urus kebenaran dan data yang disimpan merentas berbilang laman dalam tetapan Chrome</translation>
 <translation id="2025115093177348061">Realiti tambahan</translation>
 <translation id="2025186561304664664">Proksi ditetapkan kepada auto konfigurasi.</translation>
 <translation id="2032962459168915086"><ph name="BEGIN_LINK" />Menyemak proksi dan tembok api<ph name="END_LINK" /></translation>
@@ -303,6 +304,7 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="2079545284768500474">Buat asal</translation>
 <translation id="20817612488360358">Tetapan proksi sistem telah sedia untuk digunakan tetapi konfigurasi proksi jelas juga telah ditentukan.</translation>
 <translation id="2082238445998314030">Hasil carian <ph name="RESULT_NUMBER" /> daripada <ph name="TOTAL_RESULTS" /></translation>
+<translation id="2088086323192747268">Butang urus penyegerakan, tekan Enter untuk mengurus maklumat yang anda segerakkan dalam tetapan Chrome</translation>
 <translation id="2091887806945687916">Bunyi</translation>
 <translation id="2094505752054353250">Domain tidak padan</translation>
 <translation id="2096368010154057602">Jabatan</translation>
@@ -367,6 +369,7 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="2293443924986248631">Apabila pilihan ini dihidupkan, tapak tidak dapat menggunakan kuki yang menjejaki anda merentas web. Ciri pada sesetengah tapak mungkin rosak.</translation>
 <translation id="2295290966866883927">URL halaman yang anda lawat dihantar kepada Google Cloud atau pihak ketiga untuk analisis. Contohnya, halaman itu mungkin diimbas untuk mengesan tapak web yang tidak selamat</translation>
 <translation id="2297722699537546652">B5 (Sampul Surat)</translation>
+<translation id="2298855485018661510">Butang urus kuki, tekan Enter untuk mengurus pilihan kuki anda dalam tetapan Chrome</translation>
 <translation id="2300306941146563769">Tidak dimuat naik</translation>
 <translation id="2310021320168182093">Chou2 (Sampul Surat)</translation>
 <translation id="2316887270356262533">Mengosongkan kurang daripada 1 MB. Sesetengah tapak mungkin dimuatkan dengan lebih perlahan pada lawatan anda yang seterusnya.</translation>
@@ -400,6 +403,7 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="2465402087343596252">Seni Bina-E</translation>
 <translation id="2465655957518002998">Pilih Kaedah Penghantaran</translation>
 <translation id="2465688316154986572">Kokot</translation>
+<translation id="246725142101294240"><ph name="MANAGE_SECURITY_SETTINGS_FOCUSED_FRIENDLY_MATCH_TEXT" />, tekan Tab kemudian Enter untuk Mengurus Penyemakan Imbas Selamat anda dan pelbagai lagi dalam tetapan Chrome</translation>
 <translation id="2467694685043708798"><ph name="BEGIN_LINK" />Jalankan Diagnostik Rangkaian<ph name="END_LINK" /></translation>
 <translation id="2469153820345007638">Susunan 1-ke-N</translation>
 <translation id="2470767536994572628">Apabila anda mengedit anotasi, dokumen ini akan kembali kepada paparan satu halaman dan putaran asalnya</translation>
@@ -575,6 +579,7 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="3188393374551744535">Baki akaun</translation>
 <translation id="3194737229810486521"><ph name="URL" /> mahu menyimpan data pada peranti anda secara kekal</translation>
 <translation id="3195213714973468956"><ph name="PRINTER_NAME" /> pada <ph name="SERVER_NAME" /></translation>
+<translation id="3202497928925179914"><ph name="MANAGE_SYNC_FOCUSED_FRIENDLY_MATCH_TEXT" />, tekan Tab kemudian Enter untuk mengurus maklumat yang anda segerakkan dalam tetapan Chrome</translation>
 <translation id="320323717674993345">Batal Pembayaran</translation>
 <translation id="3207960819495026254">Ditandai halaman</translation>
 <translation id="3209034400446768650">Halaman mungkin mengenakan bayaran berbentuk wang</translation>
@@ -631,6 +636,7 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="3395827396354264108">Kaedah pengambilan</translation>
 <translation id="3399952811970034796">Alamat Penghantaran</translation>
 <translation id="3402261774528610252">Sambungan yang digunakan untuk memuatkan tapak ini menggunakan TLS 1.0 atau TLS 1.1, yang telah ditamatkan dan akan dilumpuhkan pada masa hadapan. Apabila dilumpuhkan, pengguna akan dihalang daripada memuatkan tapak ini. Pelayan harus mendayakan TLS 1.2 atau yang lebih baharu.</translation>
+<translation id="3409896703495473338">Urus tetapan keselamatan</translation>
 <translation id="3414952576877147120">Saiz:</translation>
 <translation id="3417660076059365994">Fail yang anda muat naik atau lampirkan dihantar kepada Google Cloud atau pihak ketiga untuk dianalisis. Contohnya, fail itu mungkin diimbas untuk mencari data sensitif atau perisian hasad.</translation>
 <translation id="3422248202833853650">Cuba keluar daripada atur cara lain untuk mengosongkan memori.</translation>
@@ -662,6 +668,7 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="350069200438440499">Nama fail:</translation>
 <translation id="3507936815618196901">Buat peta 3D bagi persekitaran anda dan jejaki kedudukan kamera</translation>
 <translation id="3512163584740124171">Dasar ini diabaikan kerana dasar lain daripada kumpulan dasar yang sama mempunyai keutamaan yang lebih tinggi.</translation>
+<translation id="35172538073169599">Butang urus alamat, tekan Enter untuk menambah dan mengurus alamat dalam tetapan Chrome</translation>
 <translation id="3518941727116570328">Pengendalian berbilang objek</translation>
 <translation id="3528171143076753409">Sijil pelayan tidak dipercayai.</translation>
 <translation id="3528485271872257980">Coklat Gelap</translation>
@@ -1206,6 +1213,7 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="5540224163453853">Tidak menemui artikel yang diminta.</translation>
 <translation id="5541086400771735334">Peti mel 7</translation>
 <translation id="5541546772353173584">Tambahkan E-mel</translation>
+<translation id="5542280138350899197">Butang urus tetapan keselamatan, tekan Enter untuk Mengurus Penyemakan Imbas Selamat anda dan pelbagai lagi dalam tetapan Chrome</translation>
 <translation id="5545756402275714221">Artikel untuk Anda</translation>
 <translation id="5552137475244467770">Chrome menyemak kata laluan anda secara berkala pada senarai yang telah diterbitkan dalam talian. Apabila melakukan tindakan ini, kata laluan dan nama pengguna anda akan disulitkan supaya data ini tidak dapat dibaca oleh sesiapa termasuk Google.</translation>
 <translation id="5556459405103347317">Muat Semula</translation>
@@ -1460,6 +1468,7 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="6583674473685352014">B6 (Sampul Surat)</translation>
 <translation id="6587923378399804057">Pautan yang anda salin</translation>
 <translation id="6591833882275308647"><ph name="DEVICE_TYPE" /> anda tidak diurus</translation>
+<translation id="6592952801936330159">Butang urus tetapan laman, tekan Enter untuk mengurus kebenaran dan data yang disimpan merentas berbilang laman dalam tetapan Chrome</translation>
 <translation id="6596325263575161958">Pilihan penyulitan</translation>
 <translation id="6604181099783169992">Penderia Gerakan atau Cahaya</translation>
 <translation id="6609880536175561541">Prc7 (Sampul Surat)</translation>
@@ -1561,6 +1570,7 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="7053983685419859001">Sekat</translation>
 <translation id="7058163556978339998"><ph name="BROWSER" /> mengesahkan bahawa <ph name="ISSUER" /> telah mengeluarkan sijil tapak web ini.</translation>
 <translation id="7062635574500127092">Hijau kebiruan</translation>
+<translation id="706295145388601875">Tambah dan urus alamat dalam tetapan Chrome</translation>
 <translation id="7064851114919012435">Maklumat hubungan</translation>
 <translation id="70705239631109039">Sambungan anda tidak selamat sepenuhnya</translation>
 <translation id="7072826695771387770">Peristiwa tidak selamat berlaku</translation>
@@ -1570,6 +1580,7 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="7083258188081898530">Dulang 9</translation>
 <translation id="7086090958708083563">Muat naik diminta oleh pengguna</translation>
 <translation id="7087282848513945231">Daerah</translation>
+<translation id="7095139009144195559"><ph name="MANAGE_SITE_SETTINGS_FOCUSED_FRIENDLY_MATCH_TEXT" />, tekan Tab kemudian Enter untuk mengurus kebenaran dan data yang disimpan merentas berbilang laman dalam tetapan Chrome</translation>
 <translation id="7108338896283013870">Sembunyikan</translation>
 <translation id="7108634116785509031"><ph name="HOST" /> mahu menggunakan kamera anda</translation>
 <translation id="7108819624672055576">Dibenarkan oleh sambungan</translation>
@@ -1635,6 +1646,7 @@ Butiran tambahan:
 <translation id="7349430561505560861">A4-Ekstra</translation>
 <translation id="7353601530677266744">Baris Perintah</translation>
 <translation id="7359588939039777303">Iklan disekat.</translation>
+<translation id="7365596969960773405"><ph name="MANAGE_ADDRESSES_FOCUSED_FRIENDLY_MATCH_TEXT" />, tekan Tab kemudian Enter untuk menambah dan mengurus alamat dalam tetapan Chrome</translation>
 <translation id="7365849542400970216">Tahu penggunaan peranti anda?</translation>
 <translation id="7372973238305370288">hasil carian</translation>
 <translation id="7374733840632556089">Masalah ini berlaku disebabkan oleh sijil yang anda pasang atau dipasang oleh orang lain pada peranti anda. Sijil itu diketahui digunakan untuk memantau dan memintas rangkaian, dan tidak dipercayai oleh Chrome. Walaupun terdapat sebab yang munasabah untuk melakukan pemantauan, seperti pada rangkaian institusi pengajian atau syarikat, Chrome ingin memastikan anda menyedari pemantauan berlaku, walaupun anda tidak dapat menghentikan pemantauan itu. Pemantauan boleh berlaku pada mana-mana penyemak imbas atau aplikasi yang mengakses web.</translation>
@@ -1801,6 +1813,7 @@ Butiran tambahan:
 <translation id="7938958445268990899">Sijil pelayan masih belum sah.</translation>
 <translation id="7942349550061667556">Merah</translation>
 <translation id="7947285636476623132">Semak tahun tamat tempoh anda dan cuba lagi</translation>
+<translation id="7950027195171824198">Urus pilihan kuki anda dalam tetapan Chrome</translation>
 <translation id="7951415247503192394">(32-bit)</translation>
 <translation id="7953569069500808819">Jahitan tepi atas</translation>
 <translation id="7956713633345437162">Penanda halaman mudah alih</translation>
@@ -1832,6 +1845,7 @@ Butiran tambahan:
 <translation id="8066955247577885446">Maaf, kesilapan telah berlaku.</translation>
 <translation id="8067872629359326442">Anda baru sahaja memasukkan kata laluan anda pada tapak yang menipu. Chromium boleh membantu. Untuk menukar kata laluan anda dan memaklumi Google bahawa akaun anda mungkin berisiko, klik Lindungi Akaun.</translation>
 <translation id="8074253406171541171">10x13 (Sampul Surat)</translation>
+<translation id="8075898834294118863">Urus tetapan laman</translation>
 <translation id="8078141288243656252">Tidak boleh melakukan anotasi apabila diputarkan</translation>
 <translation id="8079031581361219619">Muatkan semula tapak?</translation>
 <translation id="8086971161893892807">Draf</translation>
@@ -1887,6 +1901,7 @@ Butiran tambahan:
 <translation id="8277900682056760511">Helaian pengendali pembayaran dibuka</translation>
 <translation id="8281084378435768645">Foto-Besar</translation>
 <translation id="8282947398454257691">Ketahui pengecam peranti unik anda</translation>
+<translation id="8284769179630993263">Urus Penyemakan Imbas Selamat anda dan pelbagai lagi dalam tetapan Chrome</translation>
 <translation id="8286036467436129157">Log Masuk</translation>
 <translation id="8288807391153049143">Tunjukkan sijil</translation>
 <translation id="8289355894181816810">Hubungi pentadbir rangkaian anda jika anda tidak pasti apa yang dimaksudkan ini.</translation>
@@ -1915,6 +1930,7 @@ Butiran tambahan:
 <translation id="8380941800586852976">Berbahaya</translation>
 <translation id="8381674639488873545">Caj ini mungkin caj sekali atau caj berulang dan mungkin tidak ketara. <ph name="BEGIN_LINK" />Tunjukkan juga<ph name="END_LINK" /></translation>
 <translation id="8390725133630534698">Perkongsian daripada <ph name="ORIGIN_NAME" /> kepada <ph name="VM_NAME" /> telah disekat oleh dasar pentadbir</translation>
+<translation id="8405579342203358118">Urus maklumat yang anda segerakkan dalam tetapan Chrome</translation>
 <translation id="8412145213513410671">Nahas (<ph name="CRASH_COUNT" />)</translation>
 <translation id="8412392972487953978">Anda mesti memasukkan frasa laluan yang sama dua kali.</translation>
 <translation id="8416694386774425977">Konfigurasi rangkaian tidak sah dan tidak boleh diimport.
@@ -1922,6 +1938,7 @@ Butiran tambahan:
 <ph name="DEBUG_INFO" /></translation>
 <translation id="8424582179843326029"><ph name="FIRST_LABEL" /> <ph name="SECOND_LABEL" /> <ph name="THIRD_LABEL" /></translation>
 <translation id="8428213095426709021">Tetapan</translation>
+<translation id="8431194080598727332"><ph name="MANAGE_COOKIES_FOCUSED_FRIENDLY_MATCH_TEXT" />, tekan Tab kemudian Enter untuk mengurus pilihan kuki anda dalam tetapan Chrome</translation>
 <translation id="8433057134996913067">Pemadaman ini akan membuatkan anda dilog keluar daripada kebanyakan tapak web.</translation>
 <translation id="8437238597147034694">&amp;Buat asal pindahkan</translation>
 <translation id="8438786541497918448">Gunakan kamera &amp; mikrofon?</translation>
@@ -1941,6 +1958,7 @@ Butiran tambahan:
 <translation id="8503813439785031346">Nama pengguna</translation>
 <translation id="8507227106804027148">Baris perintah</translation>
 <translation id="8508648098325802031">Ikon Carian</translation>
+<translation id="8511402995811232419">Urus kuki</translation>
 <translation id="8522552481199248698">Chrome boleh membantu anda melindungi Akaun Google anda dan menukar kata laluan anda.</translation>
 <translation id="8530813470445476232">Kosongkan sejarah penyemakan imbas, kuki, cache dan pelbagai lagi dalam tetapan Chrome</translation>
 <translation id="8533619373899488139">Lawati &lt;strong&gt;chrome://policy&lt;/strong&gt; untuk melihat senarai URL yang disekat dan dasar lain yang dikuatkuasakan oleh pentadbir sistem anda.</translation>

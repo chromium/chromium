@@ -40,7 +40,6 @@
 <translation id="123724288017357924">Вчитај тековна страница, без кеширана содржина</translation>
 <translation id="124678866338384709">Затвори ја тековната картичка</translation>
 <translation id="1258753120186372309">Google Doodle: <ph name="DOODLE_DESCRIPTION" /></translation>
-<translation id="1263231323834454256">Список за читање</translation>
 <translation id="1266864766717917324">Не може да се сподели <ph name="CONTENT_TYPE" /></translation>
 <translation id="1283039547216852943">Допрете за да се прошири</translation>
 <translation id="1285310382777185058">Изменете го јазикот</translation>
@@ -994,7 +993,6 @@
 <translation id="7774809984919390718">{PAYMENT_METHOD,plural, =1{<ph name="PAYMENT_METHOD_PREVIEW" />… и уште <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}one{<ph name="PAYMENT_METHOD_PREVIEW" />… и уште <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}other{<ph name="PAYMENT_METHOD_PREVIEW" />… и уште <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}}</translation>
 <translation id="7778840695157240389">Проверете подоцна дали има нови статии</translation>
 <translation id="7786595606756654269">„Помошникот на Google“ обезбедува подобро доживување при гласовното пребарување на интернет и интеракцијата со отворените сајтови. „Помошникот на Google“ ќе ги добива URL-адресите и содржините на сајтовите што ги користите со него.</translation>
-<translation id="7790349552933995572">Почетен екран</translation>
 <translation id="7791543448312431591">Додај</translation>
 <translation id="7798392620021911922">Вратени се <ph name="TAB_COUNT" /> картички</translation>
 <translation id="780301667611848630">Не, фала</translation>
@@ -1202,7 +1200,6 @@
 <translation id="9149286894143103695">Додајте го сајтов на почетниот екран на телефонот за да имате полесен пристап до него</translation>
 <translation id="9155898266292537608">Може да пребарувате и со брзо допирање збор</translation>
 <translation id="9169507124922466868">Историјата на навигација е отворена до половина екран</translation>
-<translation id="9191031968346938109">Додај во…</translation>
 <translation id="9199368092038462496">{NUM_MINS,plural, =1{Проверено пред 1 минута}one{Проверено пред # минута}other{Проверено пред # минути}}</translation>
 <translation id="9204836675896933765">Преостанува 1 датотека</translation>
 <translation id="9206873250291191720">A</translation>

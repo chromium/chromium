@@ -40,7 +40,6 @@
 <translation id="123724288017357924">Презареждане на страницата (кешът се пренебрегва)</translation>
 <translation id="124678866338384709">Затваряне на текущия раздел</translation>
 <translation id="1258753120186372309">Драскулка на Google: <ph name="DOODLE_DESCRIPTION" /></translation>
-<translation id="1263231323834454256">Списък за четене</translation>
 <translation id="1266864766717917324">Споделянето на <ph name="CONTENT_TYPE" /> не бе възможно</translation>
 <translation id="1283039547216852943">Докоснете за разгъване</translation>
 <translation id="1285310382777185058">Промяна на езика</translation>
@@ -994,7 +993,6 @@ Privacy Sandbox продължава да се разработва активн
 <translation id="7774809984919390718">{PAYMENT_METHOD,plural, =1{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 и още <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}other{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 и още <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}}</translation>
 <translation id="7778840695157240389">Проверете отново по-късно за нови истории</translation>
 <translation id="7786595606756654269">Google Асистент предлага по-добра практическа работа с глас при търсене в мрежата и взаимодействие с отворени от вас сайтове. Google Асистент ще получава URL адресите и съдържанието на сайтовете, с които го използвате.</translation>
-<translation id="7790349552933995572">Начален екран</translation>
 <translation id="7791543448312431591">Добавяне</translation>
 <translation id="7798392620021911922">Бяха възстановени <ph name="TAB_COUNT" /> раздела</translation>
 <translation id="780301667611848630">Не, благодаря</translation>
@@ -1202,7 +1200,6 @@ Privacy Sandbox продължава да се разработва активн
 <translation id="9149286894143103695">Добавете този сайт към началния екран на телефона си, за да можете да го отваряте по-лесно</translation>
 <translation id="9155898266292537608">Можете също да извършите търсене с бързо докосване на дума</translation>
 <translation id="9169507124922466868">Историята на навигацията е наполовина отворена</translation>
-<translation id="9191031968346938109">Добавяне към…</translation>
 <translation id="9199368092038462496">{NUM_MINS,plural, =1{Проверено преди 1 минута}other{Проверено преди # минути}}</translation>
 <translation id="9204836675896933765">Остава 1 файл</translation>
 <translation id="9206873250291191720">А</translation>

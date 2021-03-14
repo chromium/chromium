@@ -40,7 +40,6 @@
 <translation id="123724288017357924">Phinda ulayishe ikhasi lamanje, iziba okuqukethwe okufakwe kunqolobane</translation>
 <translation id="124678866338384709">Vala ithebhu yamanje</translation>
 <translation id="1258753120186372309">I-Google doodle: <ph name="DOODLE_DESCRIPTION" /></translation>
-<translation id="1263231323834454256">Uhlu lokufunda</translation>
 <translation id="1266864766717917324">Ayikwazanga ukwabelana nge-<ph name="CONTENT_TYPE" /></translation>
 <translation id="1283039547216852943">Thepha ukuze unwebe</translation>
 <translation id="1285310382777185058">Shintsha ulimi</translation>
@@ -994,7 +993,6 @@ Idatha evela kuseshini yakho ye-Incognito izosulwa kusukela ku-Chrome uma <ph na
 <translation id="7774809984919390718">{PAYMENT_METHOD,plural, =1{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 nokungu-<ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> ngaphezulu}one{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 nokungu-<ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> ngaphezulu}other{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 nokungu-<ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> ngaphezulu}}</translation>
 <translation id="7778840695157240389">Phinda uhlole kamuva mayelana nezindaba ezintsha</translation>
 <translation id="7786595606756654269">Umsizi we-Google unikeza umuzwa ongcono wezwi wokusesha iwebhu nokuzibandakanya namasayithi owavulile. Umsizi we-Google uzothola i-URL nokuqukethwe kwamasayithi oyisebenzisa nayo.</translation>
-<translation id="7790349552933995572">Isikrini sasekhaya</translation>
 <translation id="7791543448312431591">Engeza</translation>
 <translation id="7798392620021911922">Kubuyiselwe amathebhu angu-<ph name="TAB_COUNT" /></translation>
 <translation id="780301667611848630">Cha ngiyabonga</translation>
@@ -1202,7 +1200,6 @@ Idatha evela kuseshini yakho ye-Incognito izosulwa kusukela ku-Chrome uma <ph na
 <translation id="9149286894143103695">Engeza isayithi Kusikrini sasekhaya sefoni yakho ukuze ufike lapha kalula nakakhulu</translation>
 <translation id="9155898266292537608">Futhi ungasesha ngokuthepha okusheshayo egameni</translation>
 <translation id="9169507124922466868">Umlando wokuzula uvuleke ngohhafu</translation>
-<translation id="9191031968346938109">Engeza ku-…</translation>
 <translation id="9199368092038462496">{NUM_MINS,plural, =1{Kuhlolwe kumzuzu o-1 odlule}one{Kuhlolwe kwimizuzu engu-# edlule}other{Kuhlolwe kwimizuzu engu-# edlule}}</translation>
 <translation id="9204836675896933765">1 ifayela elisele</translation>
 <translation id="9206873250291191720">A</translation>

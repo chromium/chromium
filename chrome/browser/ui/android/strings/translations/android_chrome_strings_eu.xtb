@@ -40,7 +40,6 @@
 <translation id="123724288017357924">Kargatu orria, cacheko edukiari ez ikusi eginda</translation>
 <translation id="124678866338384709">Itxi uneko fitxa</translation>
 <translation id="1258753120186372309">Google doodle-a: <ph name="DOODLE_DESCRIPTION" /></translation>
-<translation id="1263231323834454256">Irakurketa-zerrenda</translation>
 <translation id="1266864766717917324">Ezin izan da partekatu <ph name="CONTENT_TYPE" /></translation>
 <translation id="1283039547216852943">Sakatu zabaltzeko</translation>
 <translation id="1285310382777185058">Aldatu hizkuntza</translation>
@@ -994,7 +993,6 @@ Ezkutuko moduko saioaren datuak <ph name="BEGIN_BOLD2" />ezkutuko moduko fitxa g
 <translation id="7774809984919390718">{PAYMENT_METHOD,plural, =1{<ph name="PAYMENT_METHOD_PREVIEW" /> eta beste <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}other{<ph name="PAYMENT_METHOD_PREVIEW" /> eta beste <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}}</translation>
 <translation id="7778840695157240389">Itzuli geroago istorio berririk dagoen ikusteko</translation>
 <translation id="7786595606756654269">Google-ren Laguntzailea eginbideari esker, errazagoa izango da ahotsa erabiliz Interneten bilaketak egitea eta irekita dituzun webguneekin interakzioan aritzea. Eginbidearekin erabiltzen dituzun webguneen URLak eta edukiak jasoko ditu Google-ren Laguntzailea eginbideak.</translation>
-<translation id="7790349552933995572">Hasierako pantaila</translation>
 <translation id="7791543448312431591">Gehitu</translation>
 <translation id="7798392620021911922">Leheneratu egin dira <ph name="TAB_COUNT" /> fitxa</translation>
 <translation id="780301667611848630">Ez, eskerrik asko</translation>
@@ -1202,7 +1200,6 @@ Ezkutuko moduko saioaren datuak <ph name="BEGIN_BOLD2" />ezkutuko moduko fitxa g
 <translation id="9149286894143103695">Gehitu webgunea telefonoko hasierako pantailan hura errazago atzitu ahal izateko</translation>
 <translation id="9155898266292537608">Hatzarekin ukitu bizkor bat emanda ere egin ditzakezu bilaketak</translation>
 <translation id="9169507124922466868">Nabigazio-historia erdi-irekita dago</translation>
-<translation id="9191031968346938109">Gehitu hemen…</translation>
 <translation id="9199368092038462496">{NUM_MINS,plural, =1{Duela 1 minutu egiaztatu du}other{Duela # minutu egiaztatu du}}</translation>
 <translation id="9204836675896933765">1 fitxategi gelditzen da</translation>
 <translation id="9206873250291191720">A</translation>

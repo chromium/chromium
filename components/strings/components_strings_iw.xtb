@@ -291,6 +291,7 @@
 <translation id="2001146170449793414">{COUNT,plural, =1{ואפליקציה אחת נוספת}two{ושתי אפליקציות נוספות}many{ו-# אפליקציות נוספות}other{ו-# אפליקציות נוספות}}</translation>
 <translation id="2003709556000175978">צריך לאפס את הסיסמה עכשיו</translation>
 <translation id="2003775180883135320">4 ניקובים בצד שמאל</translation>
+<translation id="201174227998721785">‏ניתן לנהל את ההרשאות והנתונים השמורים בכל האתרים בהגדרות Chrome</translation>
 <translation id="2025115093177348061">מציאות רבודה</translation>
 <translation id="2025186561304664664">‏שרת Proxy נקבע למוגדר אוטומטית.</translation>
 <translation id="2032962459168915086">‏<ph name="BEGIN_LINK" />לבדוק את שרת ה-Proxy ואת חומת האש<ph name="END_LINK" /></translation>
@@ -303,6 +304,7 @@
 <translation id="2079545284768500474">ביטול הפעולה</translation>
 <translation id="20817612488360358">‏נקבע שימוש בהגדרות שרת Proxy של מערכת אך בנוסף מצוינת גם תצורה מפורשת של שרת Proxy.</translation>
 <translation id="2082238445998314030">תוצאה <ph name="RESULT_NUMBER" /> מתוך <ph name="TOTAL_RESULTS" /></translation>
+<translation id="2088086323192747268">‏הלחצן 'ניהול הסנכרון', יש להקיש על Enter כדי לקבוע איזה מידע יסונכרן בהגדרות Chrome</translation>
 <translation id="2091887806945687916">צליל</translation>
 <translation id="2094505752054353250">אי התאמה בדומיינים</translation>
 <translation id="2096368010154057602">מחלקה</translation>
@@ -367,6 +369,7 @@
 <translation id="2293443924986248631">‏כשהאפשרות מופעלת, אתרים לא יכולים להשתמש בקובצי cookie כדי לעקוב אחריך באינטרנט. ייתכנו שיבושים בפעולה של תכונות באתרים מסוימים.</translation>
 <translation id="2295290966866883927">‏כתובות URL של דפים שאליהם נכנסת נשלחות אל Google Cloud או צדדים שלישיים לניתוח. לדוגמה, ייתכן שהן ייסרקו כדי לזהות אתרים לא בטוחים.</translation>
 <translation id="2297722699537546652">B5 (Envelope)‎</translation>
+<translation id="2298855485018661510">‏הלחצן 'ניהול קובצי Cookie', יש להקיש על Enter כדי לנהל את ההעדפות לגבי קובצי Cookie בהגדרות Chrome</translation>
 <translation id="2300306941146563769">לא הועלה</translation>
 <translation id="2310021320168182093">Chou2 (Envelope)‎</translation>
 <translation id="2316887270356262533">‏פינוי של פחות מ-‎1 MB‎ מהשטח. ייתכן שחלק מהאתרים ייטענו לאט יותר בביקור הבא שלך.</translation>
@@ -400,6 +403,7 @@
 <translation id="2465402087343596252">Architecture-E</translation>
 <translation id="2465655957518002998">בחירת שיטת מסירה</translation>
 <translation id="2465688316154986572">סיכת הידוק</translation>
+<translation id="246725142101294240">‏<ph name="MANAGE_SECURITY_SETTINGS_FOCUSED_FRIENDLY_MATCH_TEXT" />, יש להקיש על Tab ואז על Enter כדי לנהל את הגלישה הבטוחה ועוד בהגדרות Chrome</translation>
 <translation id="2467694685043708798"><ph name="BEGIN_LINK" />להפעיל את אבחון הרשת<ph name="END_LINK" /></translation>
 <translation id="2469153820345007638">‏סדר מ-1 עד N</translation>
 <translation id="2470767536994572628">המסמך הזה יחזור לתצוגת דף יחיד ולמצב הסיבוב המקורי שלו בזמן עריכת ההערות</translation>
@@ -575,6 +579,7 @@
 <translation id="3188393374551744535">יתרה בחשבון</translation>
 <translation id="3194737229810486521"><ph name="URL" /> רוצה לאחסן נתונים במכשיר שלך באופן קבוע</translation>
 <translation id="3195213714973468956"><ph name="PRINTER_NAME" /> בשרת <ph name="SERVER_NAME" /></translation>
+<translation id="3202497928925179914">‏<ph name="MANAGE_SYNC_FOCUSED_FRIENDLY_MATCH_TEXT" />, יש להקיש על Tab ואז על Enter כדי לקבוע איזה מידע יסונכרן בהגדרות Chrome</translation>
 <translation id="320323717674993345">ביטול תשלום</translation>
 <translation id="3207960819495026254">מסומן בסימנייה</translation>
 <translation id="3209034400446768650">כניסה לדף עשויה להיות כרוכה בתשלום</translation>
@@ -631,6 +636,7 @@
 <translation id="3395827396354264108">שיטת איסוף</translation>
 <translation id="3399952811970034796">כתובת למשלוח</translation>
 <translation id="3402261774528610252">‏החיבור ששימש לצורך טעינת האתר הזה היה מבוסס על הפרוטוקול TLS 1.0 או TLS 1.1, שהוצא משימוש ויושבת בעתיד. אחרי שהפרוטוקול יושבת, משתמשים לא יוכלו לטעון את האתר הזה. יש להפעיל בשרת את הפרוטוקול TLS 1.2 ואילך.</translation>
+<translation id="3409896703495473338">ניהול הגדרות האבטחה</translation>
 <translation id="3414952576877147120">גודל:</translation>
 <translation id="3417660076059365994">‏קבצים שמעלים או מצרפים נשלחים ל-Google Cloud או לצדדים שלישיים לצורך ניתוח. לדוגמה, ייתכן שהקבצים יעברו סריקה כדי לאתר מידע אישי רגיש או תוכנות זדוניות.</translation>
 <translation id="3422248202833853650">מומלץ לצאת מתוכניות אחרות וכך לפנות מקום בזיכרון.</translation>
@@ -662,6 +668,7 @@
 <translation id="350069200438440499">שם הקובץ:</translation>
 <translation id="3507936815618196901">ליצור מפה בתלת ממד של הסביבה שלך ולעקוב אחר מיקום המצלמה</translation>
 <translation id="3512163584740124171">המערכת מתעלמת מהמדיניות הזו כי יש מדיניות אחרת מאותה קבוצה של הגדרות מדיניות שקיבלה עדיפות גבוהה יותר.</translation>
+<translation id="35172538073169599">‏הלחצן 'ניהול כתובות', יש להקיש על Enter כדי להוסיף ולנהל כתובות בהגדרות Chrome</translation>
 <translation id="3518941727116570328">טיפול באובייקטים מרובים</translation>
 <translation id="3528171143076753409">אישור השרת אינו מהימן.</translation>
 <translation id="3528485271872257980">חום כהה</translation>
@@ -1208,6 +1215,7 @@ Del</translation>
 <translation id="5540224163453853">לא ניתן היה למצוא את הפריט המבוקש.</translation>
 <translation id="5541086400771735334">תיבת דואר 7</translation>
 <translation id="5541546772353173584">הוספת כתובת אימייל</translation>
+<translation id="5542280138350899197">‏הלחצן 'ניהול הגדרות האבטחה', יש להקיש על Enter כדי לנהל את הגלישה הבטוחה ועוד בהגדרות Chrome</translation>
 <translation id="5545756402275714221">מאמרים שעשויים לעניין אותך</translation>
 <translation id="5552137475244467770">‏מערכת Chrome בודקת מדי פעם את הסיסמאות שלך ומשווה אותן לרשימות שהתפרסמו באינטרנט. כשהפעולה הזו מבוצעת, הסיסמאות ושמות המשתמש מוצפנים, כך שאיש לא יוכל לקרוא אותם, כולל Google.</translation>
 <translation id="5556459405103347317">ניסיון טעינה נוסף</translation>
@@ -1462,6 +1470,7 @@ Del</translation>
 <translation id="6583674473685352014">B6 (Envelope)‎</translation>
 <translation id="6587923378399804057">קישור שהעתקת</translation>
 <translation id="6591833882275308647"><ph name="DEVICE_TYPE" /> זה אינו מנוהל</translation>
+<translation id="6592952801936330159">‏הלחצן 'ניהול ההגדרות לאתרים', יש להקיש על Enter כדי לנהל את ההרשאות והנתונים השמורים בכל האתרים בהגדרות Chrome</translation>
 <translation id="6596325263575161958">אפשרויות הצפנה</translation>
 <translation id="6604181099783169992">חיישני תנועה או אור</translation>
 <translation id="6609880536175561541">Prc7 (Envelope)‎</translation>
@@ -1563,6 +1572,7 @@ Del</translation>
 <translation id="7053983685419859001">חסימה</translation>
 <translation id="7058163556978339998"><ph name="BROWSER" /> אימת ש-<ph name="ISSUER" /> הנפיק את האישור של האתר הזה.</translation>
 <translation id="7062635574500127092">כחול-ירקרק</translation>
+<translation id="706295145388601875">‏ניתן להוסיף ולנהל כתובות בהגדרות Chrome</translation>
 <translation id="7064851114919012435">פרטים ליצירת קשר</translation>
 <translation id="70705239631109039">החיבור שלך לא מאובטח לחלוטין</translation>
 <translation id="7072826695771387770">מתרחש אירוע אבטחה</translation>
@@ -1572,6 +1582,7 @@ Del</translation>
 <translation id="7083258188081898530">מגש 9</translation>
 <translation id="7086090958708083563">ההעלאה התבקשה על ידי המשתמש</translation>
 <translation id="7087282848513945231">מחוז</translation>
+<translation id="7095139009144195559">‏<ph name="MANAGE_SITE_SETTINGS_FOCUSED_FRIENDLY_MATCH_TEXT" />, יש להקיש על Tab ואז על Enter כדי לנהל את ההרשאות והנתונים השמורים בכל האתרים בהגדרות Chrome</translation>
 <translation id="7108338896283013870">הסתרה</translation>
 <translation id="7108634116785509031"><ph name="HOST" /> רוצה להשתמש במצלמה שלך</translation>
 <translation id="7108819624672055576">אושרה על-ידי תוסף</translation>
@@ -1637,6 +1648,7 @@ Del</translation>
 <translation id="7349430561505560861">A4-Extra</translation>
 <translation id="7353601530677266744">שורת פקודה </translation>
 <translation id="7359588939039777303">מודעות חסומות.</translation>
+<translation id="7365596969960773405">‏<ph name="MANAGE_ADDRESSES_FOCUSED_FRIENDLY_MATCH_TEXT" />, יש להקיש על Tab ואז על Enter כדי להוסיף ולנהל כתובות בהגדרות Chrome</translation>
 <translation id="7365849542400970216">רוצה שהאתר יקבל מידע לגבי השימוש שלך במכשיר?</translation>
 <translation id="7372973238305370288">תוצאת חיפוש</translation>
 <translation id="7374733840632556089">‏הבעיה הזו מתרחשת בגלל אישור שהותקן במכשיר על ידך או על ידי מישהו אחר. האישור הזה מוכר כאישור שמשמש לצורך מעקב אחרי רשתות ויירוט נתונים מרשתות, והוא לא נחשב כמהימן על ידי Chrome. במקרים מסוימים מתבצע מעקב מסיבות לגיטימיות, כמו במוסדות חינוך או ברשתות של חברות, אך Chrome רוצה לוודא שהמעקב מתבצע בידיעתך גם אם אין לך אפשרות לעצור אותו. המעקב עשוי להתבצע בכל דפדפן או אפליקציה שניגשים לאינטרנט.</translation>
@@ -1803,6 +1815,7 @@ Del</translation>
 <translation id="7938958445268990899">אישור השרת עדיין לא בתוקף.</translation>
 <translation id="7942349550061667556">אדום</translation>
 <translation id="7947285636476623132">יש לבדוק את שנת התפוגה ולנסות שוב</translation>
+<translation id="7950027195171824198">‏ניתן לנהל את ההעדפות לגבי קובצי Cookie בהגדרות Chrome</translation>
 <translation id="7951415247503192394">(32 סיביות)</translation>
 <translation id="7953569069500808819">הידוק קצוות בחלק העליון</translation>
 <translation id="7956713633345437162">סימניות לנייד</translation>
@@ -1834,6 +1847,7 @@ Del</translation>
 <translation id="8066955247577885446">מצטערים, משהו השתבש.</translation>
 <translation id="8067872629359326442">‏הזנת כרגע את הסיסמה שלך באתר מטעה. אפשר לפתור את הבעיה בעזרת Chromium. כדי לשנות את הסיסמה ולהודיע ל-Google שייתכן כי החשבון בסיכון, יש ללחוץ על 'הגנה על החשבון'.</translation>
 <translation id="8074253406171541171">10x13 (Envelope)‎</translation>
+<translation id="8075898834294118863">ניהול ההגדרות לאתרים</translation>
 <translation id="8078141288243656252">לא ניתן להוסיף הערה במצב מסובב</translation>
 <translation id="8079031581361219619">לטעון את האתר מחדש?</translation>
 <translation id="8086971161893892807">טיוטה</translation>
@@ -1889,6 +1903,7 @@ Del</translation>
 <translation id="8277900682056760511">טופס פרטי התשלום פתוח</translation>
 <translation id="8281084378435768645">Large-Photo</translation>
 <translation id="8282947398454257691">ידיעת המזהה הייחודי של המכשיר</translation>
+<translation id="8284769179630993263">‏ניתן לנהל את הגלישה הבטוחה ועוד בהגדרות Chrome</translation>
 <translation id="8286036467436129157">כניסה</translation>
 <translation id="8288807391153049143">הצגת אישור</translation>
 <translation id="8289355894181816810">כדי לברר מה זה אומר, מומלץ לפנות למנהל הרשת.</translation>
@@ -1917,6 +1932,7 @@ Del</translation>
 <translation id="8380941800586852976">מסוכן</translation>
 <translation id="8381674639488873545">החיובים האלה יכולים להיות חד פעמיים או חוזרים, והם לא תמיד מוצגים בצורה בולטת. <ph name="BEGIN_LINK" />אני רוצה להמשיך בכל זאת<ph name="END_LINK" /></translation>
 <translation id="8390725133630534698">השיתוף מ-<ph name="ORIGIN_NAME" /> אל <ph name="VM_NAME" /> חסום בהתאם למדיניות של מנהל המערכת</translation>
+<translation id="8405579342203358118">‏ניתן לקבוע איזה מידע יסונכרן בהגדרות Chrome</translation>
 <translation id="8412145213513410671">קריסות (<ph name="CRASH_COUNT" />)</translation>
 <translation id="8412392972487953978">עליך להזין את אותו משפט-סיסמה פעמיים.</translation>
 <translation id="8416694386774425977">תצורת הרשת אינה חוקית ולא ניתן לייבא אותה.
@@ -1924,6 +1940,7 @@ Del</translation>
 <ph name="DEBUG_INFO" /></translation>
 <translation id="8424582179843326029"><ph name="FIRST_LABEL" /> <ph name="SECOND_LABEL" /> <ph name="THIRD_LABEL" /></translation>
 <translation id="8428213095426709021">הגדרות</translation>
+<translation id="8431194080598727332">‏<ph name="MANAGE_COOKIES_FOCUSED_FRIENDLY_MATCH_TEXT" />, יש להקיש על Tab ואז על Enter כדי לנהל את ההעדפות לגבי קובצי Cookie בהגדרות Chrome</translation>
 <translation id="8433057134996913067">פעולה זו תוציא אותך מהחשבון ברוב האתרים.</translation>
 <translation id="8437238597147034694">&amp;ביטול העברה</translation>
 <translation id="8438786541497918448">להשתמש במצלמה ובמיקרופון?</translation>
@@ -1943,6 +1960,7 @@ Del</translation>
 <translation id="8503813439785031346">שם משתמש</translation>
 <translation id="8507227106804027148">שורת פקודה</translation>
 <translation id="8508648098325802031">סמל החיפוש</translation>
+<translation id="8511402995811232419">‏ניהול קובצי Cookie</translation>
 <translation id="8522552481199248698">‏בעזרת Chrome אפשר להגן על חשבון Google ולשנות את הסיסמה.</translation>
 <translation id="8530813470445476232">‏בהגדרות Chrome, ניתן לנקות את היסטוריית הגלישה, את קובצי ה-cookie, את המטמון ועוד</translation>
 <translation id="8533619373899488139">‏בכתובת &lt;strong&gt;chrome://policy&lt;/strong&gt; מוצגת רשימה של כתובות אתרים שנחסמו ותקנונים אחרים שנאכפים על ידי מנהל המערכת.</translation>

@@ -40,7 +40,6 @@
 <translation id="123724288017357924">Кэштелген мазмұнды елемей, ағымдағы бетті жаңарту</translation>
 <translation id="124678866338384709">Ағымдағы қойындыны жабу</translation>
 <translation id="1258753120186372309">Google Doodle: <ph name="DOODLE_DESCRIPTION" /></translation>
-<translation id="1263231323834454256">Оқу тізімі</translation>
 <translation id="1266864766717917324"><ph name="CONTENT_TYPE" /> бөлісу мүмкін болмады.</translation>
 <translation id="1283039547216852943">Жаю үшін түртіңіз</translation>
 <translation id="1285310382777185058">Тілді ауыстыру</translation>
@@ -994,7 +993,6 @@ Google есептік жазбасының шолу тарихы басқа Goog
 <translation id="7774809984919390718">{PAYMENT_METHOD,plural, =1{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 және тағы <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}other{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 және тағы <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}}</translation>
 <translation id="7778840695157240389">Жаңалықтарды кейінірек тексеріңіз.</translation>
 <translation id="7786595606756654269">Google Assistant – интернеттен іздеуге және ашылған сайттармен жұмыс істеуге таптырмас дауыстық технология. Google Assistant арқылы пайдаланған сайттардың URL сілтемесі мен мазмұны Google Assistant қызметіне келеді.</translation>
-<translation id="7790349552933995572">Негізгі экран</translation>
 <translation id="7791543448312431591">Қосу</translation>
 <translation id="7798392620021911922"><ph name="TAB_COUNT" /> қойынды қалпына келтірілді.</translation>
 <translation id="780301667611848630">Жоқ, рақмет</translation>
@@ -1202,7 +1200,6 @@ Google есептік жазбасының шолу тарихы басқа Goog
 <translation id="9149286894143103695">Осы сайтты оңай табылатындай етіп телефонның негізгі экранына енгізіңіз.</translation>
 <translation id="9155898266292537608">Сонымен қатар сөзді түрту арқылы іздеуге болады</translation>
 <translation id="9169507124922466868">Навигация тарихы жартылай ашық.</translation>
-<translation id="9191031968346938109">Мына жерге қосу…</translation>
 <translation id="9199368092038462496">{NUM_MINS,plural, =1{1 минут бұрын тексерілді.}other{# минут бұрын тексерілді.}}</translation>
 <translation id="9204836675896933765">1 файл қалды</translation>
 <translation id="9206873250291191720">A</translation>

@@ -40,7 +40,6 @@
 <translation id="123724288017357924">Actualiser la page, ignorer le contenu mis en cache</translation>
 <translation id="124678866338384709">Fermer l'onglet actuel</translation>
 <translation id="1258753120186372309">Logo commémoratif de Google : <ph name="DOODLE_DESCRIPTION" /></translation>
-<translation id="1263231323834454256">Liste de lecture</translation>
 <translation id="1266864766717917324">Partage impossible du contenu suivant : <ph name="CONTENT_TYPE" /></translation>
 <translation id="1283039547216852943">Toucher pour développer</translation>
 <translation id="1285310382777185058">Changer de langue</translation>
@@ -994,7 +993,6 @@ Les données de votre session de navigation privée ne seront effacées de Chrom
 <translation id="7774809984919390718">{PAYMENT_METHOD,plural, =1{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 et <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> autre mode de paiement}one{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 et <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> autre mode de paiement}other{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 et <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> autres modes de paiement}}</translation>
 <translation id="7778840695157240389">Revenez plus tard lorsque de nouveaux articles seront proposés</translation>
 <translation id="7786595606756654269">L'Assistant Google vous procure une meilleure expérience vocale pour effectuer des recherches sur le Web et pour interagir avec les sites que vous avez ouverts. L'Assistant Google recevra l'URL et le contenu des sites avec lesquels vous l'utilisez.</translation>
-<translation id="7790349552933995572">Écran d'accueil</translation>
 <translation id="7791543448312431591">Ajouter</translation>
 <translation id="7798392620021911922"><ph name="TAB_COUNT" /> onglets restaurés</translation>
 <translation id="780301667611848630">Non merci</translation>
@@ -1202,7 +1200,6 @@ Les données de votre session de navigation privée ne seront effacées de Chrom
 <translation id="9149286894143103695">Ajoutez ce site à l'écran d'accueil de votre téléphone afin d'y accéder plus facilement</translation>
 <translation id="9155898266292537608">Vous pouvez également effectuer une recherche d'un simple toucher sur un mot</translation>
 <translation id="9169507124922466868">L'historique de navigation est ouvert à moitié</translation>
-<translation id="9191031968346938109">Ajouter à…</translation>
 <translation id="9199368092038462496">{NUM_MINS,plural, =1{Dernière vérification : il y a 1 minute}one{Dernière vérification : il y a # minute}other{Dernière vérification : il y a # minutes}}</translation>
 <translation id="9204836675896933765">1 fichier restant</translation>
 <translation id="9206873250291191720">A</translation>

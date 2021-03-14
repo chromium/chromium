@@ -40,7 +40,6 @@
 <translation id="123724288017357924">የተሸጎጠ ይዘትን ችላ በማለት የአሁኑን ገጽ ዳግም ጫን</translation>
 <translation id="124678866338384709">የአሁኑን ትር ዝጋ</translation>
 <translation id="1258753120186372309">Google doodle፦ <ph name="DOODLE_DESCRIPTION" /></translation>
-<translation id="1263231323834454256">የንባብ ዝርዝር</translation>
 <translation id="1266864766717917324"><ph name="CONTENT_TYPE" /> ን ማጋራት አልተቻለም።</translation>
 <translation id="1283039547216852943">ለመዘርጋት መታ ያድርጉ</translation>
 <translation id="1285310382777185058">ቋንቋ ይቀይሩ</translation>
@@ -994,7 +993,6 @@
 <translation id="7774809984919390718">{PAYMENT_METHOD,plural, =1{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 እና <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> ተጨማሪ}one{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 እና <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> ተጨማሪ}other{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 እና <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> ተጨማሪ}}</translation>
 <translation id="7778840695157240389">ለአዳዲስ ዘገባዎች በኋላ ላይ መልሰው ይፈትሹ</translation>
 <translation id="7786595606756654269">Google ረዳት ድርን ለመፈለግ እና ከከፈቷቸው ጣቢያዎች ጋር ለመሳተፍ የተሻለ የድምጽ ተሞክሮ ይሰጣል። Google ረዳት ከእሱ ጋር የሚጠቀሙባቸውን ዩአርኤል እና ይዘቶች ይቀበላል።</translation>
-<translation id="7790349552933995572">መነሻ ገጽ</translation>
 <translation id="7791543448312431591">ያክሉ</translation>
 <translation id="7798392620021911922">ወደነበሩበት የተመለሱ <ph name="TAB_COUNT" /> ትሮች</translation>
 <translation id="780301667611848630">አይ፣ አመሰግናለሁ</translation>
@@ -1202,7 +1200,6 @@
 <translation id="9149286894143103695">በበለጠ በቀላሉ ወደዚህ ለመድረስ ይህንን ጣቢያ በስልክዎ መነሻ ገጽ ላይ ያክሉ</translation>
 <translation id="9155898266292537608">እንዲሁም አንድ ቃል ላይ በፍጥነት መታ በማድረግ ፍለጋ ማድረግ ይችላሉ</translation>
 <translation id="9169507124922466868">የዳሰሳ ታሪክ በግማሽ ተከፍቷል</translation>
-<translation id="9191031968346938109">አክል ወደ…</translation>
 <translation id="9199368092038462496">{NUM_MINS,plural, =1{ከ1 ደቂቃ በፊት ተፈትሿል}one{ከ# ደቂቃዎች በፊት ተፈትሿል}other{ከ# ደቂቃዎች በፊት ተፈትሿል}}</translation>
 <translation id="9204836675896933765">1 ፋይል ቀርቷል</translation>
 <translation id="9206873250291191720">አ</translation>

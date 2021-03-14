@@ -40,7 +40,6 @@
 <translation id="123724288017357924">Перазагрузіць бягучую старонку, ігнаруючы змесціва кэша</translation>
 <translation id="124678866338384709">Закрыць бягучую ўкладку</translation>
 <translation id="1258753120186372309">Дудл Google: <ph name="DOODLE_DESCRIPTION" /></translation>
-<translation id="1263231323834454256">Спіс чытання</translation>
 <translation id="1266864766717917324">Не ўдалося абагуліць змесціва наступнага тыпу: <ph name="CONTENT_TYPE" /></translation>
 <translation id="1283039547216852943">Дакраніцеся, каб разгарнуць</translation>
 <translation id="1285310382777185058">Змяніць мову</translation>
@@ -994,7 +993,6 @@ Privacy Sandbox падтрымлівае адкрытасць інтэрнэту
 <translation id="7774809984919390718">{PAYMENT_METHOD,plural, =1{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 і яшчэ <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}one{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 і яшчэ <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}few{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 і яшчэ <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}many{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 і яшчэ <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}other{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 і яшчэ <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}}</translation>
 <translation id="7778840695157240389">Каб праверыць, ці з'явіліся новыя артыкулы, загляніце сюды пазней</translation>
 <translation id="7786595606756654269">Памочнік Google робіць пошук у інтэрнэце і працу з вэб-старонкамі яшчэ зручнейшымі дзякуючы палепшаным функцыям галасавога пошуку. Памочнік будзе збіраць URL-адрасы і змесціва сайтаў, на якіх ён будзе выкарыстоўвацца.</translation>
-<translation id="7790349552933995572">Галоўны экран</translation>
 <translation id="7791543448312431591">Дадаць</translation>
 <translation id="7798392620021911922">Адноўлена ўкладак: <ph name="TAB_COUNT" /></translation>
 <translation id="780301667611848630">Не, дзякуй</translation>
@@ -1202,7 +1200,6 @@ Privacy Sandbox падтрымлівае адкрытасць інтэрнэту
 <translation id="9149286894143103695">Каб вы маглі пераходзіць на гэты сайт хутчэй, дадайце яго на галоўны экран вашага тэлефона</translation>
 <translation id="9155898266292537608">Запусціць пошук таксама можна, коратка націснуўшы на слова</translation>
 <translation id="9169507124922466868">Гісторыя навігацыі адкрыта напалову</translation>
-<translation id="9191031968346938109">Дадаць у…</translation>
 <translation id="9199368092038462496">{NUM_MINS,plural, =1{Праверка праводзілася хвіліну таму}one{Праверка праводзілася # хвіліну таму}few{Праверка праводзілася # хвіліны таму}many{Праверка праводзілася # хвілін таму}other{Праверка праводзілася # хвіліны таму}}</translation>
 <translation id="9204836675896933765">Застаўся 1 файл</translation>
 <translation id="9206873250291191720">A</translation>

@@ -40,7 +40,6 @@
 <translation id="123724288017357924">重新載入目前的網頁，忽略之前快取的內容</translation>
 <translation id="124678866338384709">關閉目前分頁</translation>
 <translation id="1258753120186372309">Google Doodle：<ph name="DOODLE_DESCRIPTION" /></translation>
-<translation id="1263231323834454256">閱讀清單</translation>
 <translation id="1266864766717917324">無法分享<ph name="CONTENT_TYPE" /></translation>
 <translation id="1283039547216852943">輕按即可展開</translation>
 <translation id="1285310382777185058">變更語言</translation>
@@ -994,7 +993,6 @@
 <translation id="7774809984919390718">{PAYMENT_METHOD,plural, =1{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 和另外 <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> 種付款方式}other{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 和另外 <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> 種付款方式}}</translation>
 <translation id="7778840695157240389">請稍後回來查看新的報導</translation>
 <translation id="7786595606756654269">當您搜尋網絡及瀏覽已開啟的網站時，「Google 助理」將為您提供更好的語音體驗。系統會將您所在網站的網址及內容傳送給「Google 助理」。</translation>
-<translation id="7790349552933995572">主畫面</translation>
 <translation id="7791543448312431591">新增</translation>
 <translation id="7798392620021911922">還原咗 <ph name="TAB_COUNT" /> 個分頁</translation>
 <translation id="780301667611848630">不用了，謝謝</translation>
@@ -1202,7 +1200,6 @@
 <translation id="9149286894143103695">請將此網站加入手機的主畫面，方便日後使用</translation>
 <translation id="9155898266292537608">您亦可以透過快速輕按某個字詞進行搜尋</translation>
 <translation id="9169507124922466868">導覽記錄喺畫面下半部分顯示</translation>
-<translation id="9191031968346938109">新增至…</translation>
 <translation id="9199368092038462496">{NUM_MINS,plural, =1{曾在 1 分鐘前檢查}other{曾在 # 分鐘前檢查}}</translation>
 <translation id="9204836675896933765">尚餘 1 個檔案</translation>
 <translation id="9206873250291191720">A</translation>

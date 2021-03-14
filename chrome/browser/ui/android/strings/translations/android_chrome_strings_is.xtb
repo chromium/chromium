@@ -40,7 +40,6 @@
 <translation id="123724288017357924">Endurhlaða núverandi síðu, hunsa efni í skyndiminni</translation>
 <translation id="124678866338384709">Loka núverandi flipa</translation>
 <translation id="1258753120186372309">Google dúlla: <ph name="DOODLE_DESCRIPTION" /></translation>
-<translation id="1263231323834454256">Leslisti</translation>
 <translation id="1266864766717917324">Ekki tókst að deila <ph name="CONTENT_TYPE" /></translation>
 <translation id="1283039547216852943">Ýttu til að stækka</translation>
 <translation id="1285310382777185058">Skipta um tungumál</translation>
@@ -994,7 +993,6 @@ Gögnum úr huliðslotum verður aðeins eytt úr Chrome þegar þú <ph name="B
 <translation id="7774809984919390718">{PAYMENT_METHOD,plural, =1{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 og <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> í viðbót}one{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 og <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> í viðbót}other{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 og <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> í viðbót}}</translation>
 <translation id="7778840695157240389">Kíktu aftur síðar til að fá nýjar sögur</translation>
 <translation id="7786595606756654269">Google hjálparinn veitir betri raddupplifun við að leita á vefnum og nota vefsvæðin sem þú ert með opin. Google hjálparinn fær vefslóðir og innihald vefsvæðanna sem hann er notaður á.</translation>
-<translation id="7790349552933995572">Heimaskjár</translation>
 <translation id="7791543448312431591">Bæta við</translation>
 <translation id="7798392620021911922">Endurheimti <ph name="TAB_COUNT" /> flipa</translation>
 <translation id="780301667611848630">Nei, takk</translation>
@@ -1202,7 +1200,6 @@ Gögnum úr huliðslotum verður aðeins eytt úr Chrome þegar þú <ph name="B
 <translation id="9149286894143103695">Bættu þessu vefsvæði við heimaskjáinn til að geta komist þangað auðveldlega</translation>
 <translation id="9155898266292537608">Þú getur einnig leitað með því að ýta á orð</translation>
 <translation id="9169507124922466868">Ferill er hálfopinn</translation>
-<translation id="9191031968346938109">Bæta við…</translation>
 <translation id="9199368092038462496">{NUM_MINS,plural, =1{Athugað fyrir 1 mínútu}one{Athugað fyrir # mínútu}other{Athugað fyrir # mínútum}}</translation>
 <translation id="9204836675896933765">Ein skrá eftir</translation>
 <translation id="9206873250291191720">A</translation>

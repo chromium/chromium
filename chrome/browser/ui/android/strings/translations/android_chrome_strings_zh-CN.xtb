@@ -40,7 +40,6 @@
 <translation id="123724288017357924">重新加载当前网页（忽略缓存的内容）</translation>
 <translation id="124678866338384709">关闭当前标签页</translation>
 <translation id="1258753120186372309">Google 涂鸦：<ph name="DOODLE_DESCRIPTION" /></translation>
-<translation id="1263231323834454256">阅读清单</translation>
 <translation id="1266864766717917324">无法分享<ph name="CONTENT_TYPE" /></translation>
 <translation id="1283039547216852943">点按即可展开</translation>
 <translation id="1285310382777185058">更改语言</translation>
@@ -994,7 +993,6 @@
 <translation id="7774809984919390718">{PAYMENT_METHOD,plural, =1{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026以及另外 <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> 种付款方式}other{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026以及另外 <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> 种付款方式}}</translation>
 <translation id="7778840695157240389">请稍后再回来查看是否有新报道</translation>
 <translation id="7786595606756654269">当您在网上搜索内容以及与已打开的网站互动时，Google 助理可让您畅享更佳的语音使用体验。Google 助理将会收到您使用它时所在网站的网址和内容。</translation>
-<translation id="7790349552933995572">主屏幕</translation>
 <translation id="7791543448312431591">添加</translation>
 <translation id="7798392620021911922">已恢复 <ph name="TAB_COUNT" /> 个标签页</translation>
 <translation id="780301667611848630">不用了，谢谢</translation>
@@ -1202,7 +1200,6 @@
 <translation id="9149286894143103695">将该网站添加到手机的主屏幕，以便您更轻松地访问</translation>
 <translation id="9155898266292537608">您也可以通过快速点按某个字词进行搜索</translation>
 <translation id="9169507124922466868">导航历史记录在下半屏中显示</translation>
-<translation id="9191031968346938109">添加到…</translation>
 <translation id="9199368092038462496">{NUM_MINS,plural, =1{1 分钟前检查过}other{# 分钟前检查过}}</translation>
 <translation id="9204836675896933765">还剩 1 个文件</translation>
 <translation id="9206873250291191720">A</translation>

@@ -40,7 +40,6 @@
 <translation id="123724288017357924">Reload the current page, ignoring cached content</translation>
 <translation id="124678866338384709">Close current tab</translation>
 <translation id="1258753120186372309">Google doodle: <ph name="DOODLE_DESCRIPTION" /></translation>
-<translation id="1263231323834454256">Reading list</translation>
 <translation id="1266864766717917324">Couldn't share <ph name="CONTENT_TYPE" /></translation>
 <translation id="1283039547216852943">Tap to expand</translation>
 <translation id="1285310382777185058">Change language</translation>
@@ -317,6 +316,7 @@ Touch and hold any word to search. To refine your search, select more or fewer w
 <translation id="3208584281581115441">Check now</translation>
 <translation id="3211426585530211793">Deleted <ph name="ITEM_TITLE" /></translation>
 <translation id="321773570071367578">If you forgot your passphrase or want to change this setting, <ph name="BEGIN_LINK" />reset sync<ph name="END_LINK" /></translation>
+<translation id="3220943972464248773">To sync your passwords, verify that it's you</translation>
 <translation id="3227557059438308877">Google Chrome as a security key</translation>
 <translation id="3232754137068452469">Web App</translation>
 <translation id="3236059992281584593">1 min left</translation>
@@ -485,6 +485,7 @@ Privacy Sandbox is still in active development and is available in selected regi
 <translation id="447252321002412580">Help improve Chrome's features and performance</translation>
 <translation id="4479972344484327217">Installing <ph name="MODULE" /> for Chrome…</translation>
 <translation id="4487967297491345095">All Chrome’s app data will be deleted permanently. This includes all files, settings, accounts, databases, etc.</translation>
+<translation id="449126573531210296">Encrypt synced passwords with your Google Account</translation>
 <translation id="4493497663118223949">Lite mode is on</translation>
 <translation id="4508528996305412043">Feed card menu is opened</translation>
 <translation id="4508642716788467538">Pick your language</translation>
@@ -508,6 +509,7 @@ Your Google Account may have other forms of browsing history such as searches an
 <translation id="4594952190837476234">This offline page is from <ph name="CREATION_TIME" /> and may differ from the online version.</translation>
 <translation id="4605958867780575332">Item removed: <ph name="ITEM_TITLE" /></translation>
 <translation id="4616150815774728855">Open <ph name="WEBAPK_NAME" /></translation>
+<translation id="4619564267100705184">Verify that it's you</translation>
 <translation id="4634124774493850572">Use password</translation>
 <translation id="4640331037679501949">{NUM_PASSWORDS,plural, =1{1 compromised password}other{# compromised passwords}}</translation>
 <translation id="4650364565596261010">System default</translation>
@@ -780,6 +782,7 @@ For example, some websites may respond to this request by showing you ads that a
 <translation id="6342069812937806050">Just now</translation>
 <translation id="6343495912647200061">{SHIPPING_ADDRESS,plural, =1{<ph name="SHIPPING_ADDRESS_PREVIEW" />\u2026 and <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> more}other{<ph name="SHIPPING_ADDRESS_PREVIEW" />\u2026 and <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> more}}</translation>
 <translation id="6345878117466430440">Mark as read</translation>
+<translation id="6363990818884053551">To start sync, verify that it's you</translation>
 <translation id="6364438453358674297">Remove suggestion from history?</translation>
 <translation id="6378173571450987352">Details: Sorted by amount of data used</translation>
 <translation id="6379829913050047669"><ph name="APP_NAME" /> will open in Chrome. By continuing, you agree to the <ph name="BEGIN_LINK1" />Google Terms of Service<ph name="END_LINK1" />, and the <ph name="BEGIN_LINK2" />Google Chrome and Chrome OS Additional Terms of Service<ph name="END_LINK2" />.</translation>
@@ -842,6 +845,7 @@ For example, some websites may respond to this request by showing you ads that a
 <translation id="666731172850799929">Open in <ph name="APP_NAME" /></translation>
 <translation id="666981079809192359">Chrome Privacy Notice</translation>
 <translation id="6671495933530132209">Copy image</translation>
+<translation id="6674571176963658787">To start sync, enter your passphrase</translation>
 <translation id="6676840375528380067">Clear your Chrome data from this device?</translation>
 <translation id="6697492270171225480">Show suggestions for similar pages when a page can't be found</translation>
 <translation id="6698801883190606802">Manage synced data</translation>
@@ -994,7 +998,6 @@ Data from your Incognito session will only be cleared from Chrome when you <ph n
 <translation id="7774809984919390718">{PAYMENT_METHOD,plural, =1{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 and <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> more}other{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 and <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> more}}</translation>
 <translation id="7778840695157240389">Check back later for new stories</translation>
 <translation id="7786595606756654269">Google Assistant provides a better voice experience for searching the web and engaging with sites that you have open. Google Assistant will receive the URL and contents of sites that you use with it.</translation>
-<translation id="7790349552933995572">Home screen</translation>
 <translation id="7791543448312431591">Add</translation>
 <translation id="7798392620021911922">Restored <ph name="TAB_COUNT" /> tabs</translation>
 <translation id="780301667611848630">No, thanks</translation>
@@ -1202,7 +1205,6 @@ Data from your Incognito session will only be cleared from Chrome when you <ph n
 <translation id="9149286894143103695">Add this site to your phone’s home screen so that you can get here more easily</translation>
 <translation id="9155898266292537608">You can also search with a quick tap on a word</translation>
 <translation id="9169507124922466868">Navigation history is half-opened</translation>
-<translation id="9191031968346938109">Add to…</translation>
 <translation id="9199368092038462496">{NUM_MINS,plural, =1{Checked 1 minute ago}other{Checked # minutes ago}}</translation>
 <translation id="9204836675896933765">1 file left</translation>
 <translation id="9206873250291191720">A</translation>

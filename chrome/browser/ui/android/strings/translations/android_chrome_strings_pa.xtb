@@ -40,7 +40,6 @@
 <translation id="123724288017357924">ਕੈਸ਼ੇ ਕੀਤੀ ਸਮੱਗਰੀ ਨੂੰ ਅਣਡਿੱਠ ਕਰਕੇ ਮੌਜੂਦਾ ਪੰਨਾ ਰੀਲੋਡ ਕਰੋ</translation>
 <translation id="124678866338384709">ਮੌਜੂਦਾ ਟੈਬ ਬੰਦ ਕਰੋ</translation>
 <translation id="1258753120186372309">Google ਡੂਡਲ: <ph name="DOODLE_DESCRIPTION" /></translation>
-<translation id="1263231323834454256">ਪੜ੍ਹਤ ਸੂਚੀ</translation>
 <translation id="1266864766717917324"><ph name="CONTENT_TYPE" /> ਨਾਲ ਸਾਂਝਾ ਨਹੀਂ ਕੀਤਾ ਜਾ ਸਕਿਆ</translation>
 <translation id="1283039547216852943">ਵਿਸਤਾਰ ਕਰਨ ਲਈ ਟੈਪ ਕਰੋ</translation>
 <translation id="1285310382777185058">ਭਾਸ਼ਾ ਬਦਲੋ</translation>
@@ -994,7 +993,6 @@
 <translation id="7774809984919390718">{PAYMENT_METHOD,plural, =1{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 ਅਤੇ <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> ਹੋਰ}one{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 ਅਤੇ <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> ਹੋਰ}other{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 ਅਤੇ <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> ਹੋਰ}}</translation>
 <translation id="7778840695157240389">ਨਵੀਆਂ ਕਹਾਣੀਆਂ ਲਈ ਬਾਅਦ ਵਿੱਚ ਵਾਪਸ ਜਾਂਚ ਕਰੋ</translation>
 <translation id="7786595606756654269">Google Assistant ਵੈੱਬ 'ਤੇ ਖੋਜ ਕਰਨ ਅਤੇ ਤੁਹਾਡੇ ਵੱਲੋਂ ਖੋਲ੍ਹੀਆਂ ਸਾਈਟਾਂ ਨਾਲ ਸ਼ਾਮਲ ਹੋਣ ਲਈ ਇੱਕ ਬਿਹਤਰ ਅਵਾਜ਼ੀ ਅਨੁਭਵ ਮੁਹੱਈਆ ਕਰਵਾਉਂਦੀ ਹੈ। Google Assistant ਨੂੰ ਉਹਨਾਂ ਸਾਈਟਾਂ ਦੇ URL ਅਤੇ ਸਮੱਗਰੀਆਂ ਮਿਲਣਗੀਆਂ ਜਿਨ੍ਹਾਂ 'ਤੇ ਤੁਸੀਂ ਇਸਨੂੰ ਵਰਤਦੇ ਹੋ।</translation>
-<translation id="7790349552933995572">ਹੋਮ ਸਕ੍ਰੀਨ</translation>
 <translation id="7791543448312431591">ਜੋੜੋ</translation>
 <translation id="7798392620021911922"><ph name="TAB_COUNT" /> ਟੈਬਾਂ ਨੂੰ ਮੁੜ-ਬਹਾਲ ਕੀਤਾ ਗਿਆ</translation>
 <translation id="780301667611848630">ਨਹੀਂ ਧੰਨਵਾਦ</translation>
@@ -1202,7 +1200,6 @@
 <translation id="9149286894143103695">ਇਸ ਸਾਈਟ ਨੂੰ ਆਪਣੇ ਫ਼ੋਨ ਦੀ ਹੋਮ ਸਕ੍ਰੀਨ ‘ਤੇ ਸ਼ਾਮਲ ਕਰੋ, ਤਾਂ ਕਿ ਤੁਸੀਂ ਇੱਥੇ ਆਸਾਨੀ ਨਾਲ ਪਹੁੰਚ ਕਰ ਸਕੋ</translation>
 <translation id="9155898266292537608">ਤੁਸੀਂ ਕਿਸੇ ਸ਼ਬਦ 'ਤੇ ਤੁਰੰਤ ਟੈਪ ਨਾਲ ਵੀ ਖੋਜ ਕਰ ਸਕਦੇ ਹੋ</translation>
 <translation id="9169507124922466868">ਨੈਵੀਗੇਸ਼ਨ ਇਤਿਹਾਸ ਵਾਲੀ ਸ਼ੀਟ ਅੱਧੀ ਖੁੱਲ੍ਹੀ ਹੋਈ ਹੈ</translation>
-<translation id="9191031968346938109">ਇਸ ਵਿੱਚ ਸ਼ਾਮਲ ਕਰੋ…</translation>
 <translation id="9199368092038462496">{NUM_MINS,plural, =1{1 ਮਿੰਟ ਪਹਿਲਾਂ ਜਾਂਚ ਕੀਤੀ ਗਈ}one{# ਮਿੰਟ ਪਹਿਲਾਂ ਜਾਂਚ ਕੀਤੀ ਗਈ}other{# ਮਿੰਟ ਪਹਿਲਾਂ ਜਾਂਚ ਕੀਤੀ ਗਈ}}</translation>
 <translation id="9204836675896933765">1 ਫ਼ਾਈਲ ਬਾਕੀ</translation>
 <translation id="9206873250291191720">A</translation>

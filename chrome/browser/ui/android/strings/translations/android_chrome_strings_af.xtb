@@ -40,7 +40,6 @@
 <translation id="123724288017357924">Herlaai die huidige bladsy en ignoreer kasinhoud</translation>
 <translation id="124678866338384709">Maak huidige oortjie toe</translation>
 <translation id="1258753120186372309">Google-logoskets: <ph name="DOODLE_DESCRIPTION" /></translation>
-<translation id="1263231323834454256">Leeslys</translation>
 <translation id="1266864766717917324">Kon nie <ph name="CONTENT_TYPE" /> deel nie.</translation>
 <translation id="1283039547216852943">Tik om uit te vou</translation>
 <translation id="1285310382777185058">Verander taal</translation>
@@ -994,7 +993,6 @@ Data van jou Incognito-sessie af sal slegs in Chrome uitgevee word wanneer jy <p
 <translation id="7774809984919390718">{PAYMENT_METHOD,plural, =1{<ph name="PAYMENT_METHOD_PREVIEW" /> \u2026 en nog <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}other{<ph name="PAYMENT_METHOD_PREVIEW" /> \u2026 en nog <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}}</translation>
 <translation id="7778840695157240389">Loer later weer in vir nuwe stories</translation>
 <translation id="7786595606756654269">Google Assistent bied 'n beter stemervaring vir soektogte op die web en interaksie met werwe wat jy oopgemaak het. Google Assistent sal die URL en inhoud ontvang van werwe wat jy daarmee gebruik.</translation>
-<translation id="7790349552933995572">Tuisskerm</translation>
 <translation id="7791543448312431591">Voeg by</translation>
 <translation id="7798392620021911922">Het <ph name="TAB_COUNT" /> oortjies teruggestel</translation>
 <translation id="780301667611848630">Nee, dankie</translation>
@@ -1202,7 +1200,6 @@ Data van jou Incognito-sessie af sal slegs in Chrome uitgevee word wanneer jy <p
 <translation id="9149286894143103695">Voeg hierdie werf by jou foon se tuisskerm sodat jy makliker hierheen kan kom</translation>
 <translation id="9155898266292537608">Jy kan ook soek met 'n vinnige tik op 'n woord</translation>
 <translation id="9169507124922466868">Navigasiegeskiedenis is half oopgemaak</translation>
-<translation id="9191031968346938109">Voeg by …</translation>
 <translation id="9199368092038462496">{NUM_MINS,plural, =1{1 minuut gelede nagegaan}other{# minute gelede nagegaan}}</translation>
 <translation id="9204836675896933765">1 lêer oor</translation>
 <translation id="9206873250291191720">A</translation>

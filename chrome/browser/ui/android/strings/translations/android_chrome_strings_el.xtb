@@ -40,7 +40,6 @@
 <translation id="123724288017357924">Επαναφ. τρέχ.σελ. αγνοώντας το περιεχ. κρυφ.μνήμης</translation>
 <translation id="124678866338384709">Κλείσιμο τρέχουσας καρτέλας</translation>
 <translation id="1258753120186372309">Google doodle: <ph name="DOODLE_DESCRIPTION" /></translation>
-<translation id="1263231323834454256">Λίστα ανάγνωσης</translation>
 <translation id="1266864766717917324">Δεν ήταν δυνατή η κοινοποίηση <ph name="CONTENT_TYPE" /></translation>
 <translation id="1283039547216852943">Πατήστε για ανάπτυξη</translation>
 <translation id="1285310382777185058">Αλλαγή γλώσσας</translation>
@@ -994,7 +993,6 @@
 <translation id="7774809984919390718">{PAYMENT_METHOD,plural, =1{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 και <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> ακόμη}other{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 και <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> ακόμη}}</translation>
 <translation id="7778840695157240389">Ελέγξτε πάλι αργότερα για νέες ιστορίες</translation>
 <translation id="7786595606756654269">Ο Βοηθός Google παρέχει μια βελτιωμένη φωνητική εμπειρία για την αναζήτηση στον ιστό και την αλληλεπίδραση με τους ιστοτόπους που ανοίγετε. Ο Βοηθός Google θα λαμβάνει τα URL και το περιεχόμενο των ιστοτόπων στους οποίους χρησιμοποιείτε τον Βοηθό.</translation>
-<translation id="7790349552933995572">Αρχική οθόνη</translation>
 <translation id="7791543448312431591">Προσθήκη</translation>
 <translation id="7798392620021911922">Έγινε επαναφορά <ph name="TAB_COUNT" /> καρτελών</translation>
 <translation id="780301667611848630">Όχι, ευχαριστώ</translation>
@@ -1202,7 +1200,6 @@
 <translation id="9149286894143103695">Προσθέστε αυτόν τον ιστότοπο στην αρχική οθόνη του τηλεφώνου για ταχύτερη μετάβαση.</translation>
 <translation id="9155898266292537608">Επίσης, μπορείτε να κάνετε αναζήτηση με ένα γρήγορο πάτημα σε μια λέξη</translation>
 <translation id="9169507124922466868">Το ιστορικό πλοήγησης έχει ανοίξει κατά το ήμισυ</translation>
-<translation id="9191031968346938109">Προσθήκη σε…</translation>
 <translation id="9199368092038462496">{NUM_MINS,plural, =1{Ελέγχθηκε πριν από ένα λεπτό}other{Ελέγχθηκε πριν από # λεπτά}}</translation>
 <translation id="9204836675896933765">1 αρχείο απομένει</translation>
 <translation id="9206873250291191720">Α</translation>

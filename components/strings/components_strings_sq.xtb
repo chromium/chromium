@@ -290,6 +290,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="2001146170449793414">{COUNT,plural, =1{dhe 1 tjetër}other{dhe # të tjera}}</translation>
 <translation id="2003709556000175978">Rivendos fjalëkalimin tënd tani</translation>
 <translation id="2003775180883135320">Katër shpime lart</translation>
+<translation id="201174227998721785">Menaxho lejet dhe të dhënat e ruajtura nëpër sajte te cilësimet e Chrome</translation>
 <translation id="2025115093177348061">Realiteti i zgjeruar</translation>
 <translation id="2025186561304664664">Përfaqësuesi është i caktuar për konfigurim automatik.</translation>
 <translation id="2032962459168915086"><ph name="BEGIN_LINK" />Të kontrollosh përfaqësuesin dhe murin mbrojtës<ph name="END_LINK" /></translation>
@@ -302,6 +303,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="2079545284768500474">Zhbëj</translation>
 <translation id="20817612488360358">Cilësimet e përfaqësuesit të sistemit janë caktuar që të përdoren, por është specifikuar po ashtu një konfigurim i qartë i përfaqësuesit.</translation>
 <translation id="2082238445998314030">Rezultati <ph name="RESULT_NUMBER" /> nga <ph name="TOTAL_RESULTS" /></translation>
+<translation id="2088086323192747268">Butoni "Menaxho sinkronizimin". Shtyp "Enter" për të menaxhuar se çfarë informacionesh sinkronizon ti te cilësimet e Chrome</translation>
 <translation id="2091887806945687916">Tingulli</translation>
 <translation id="2094505752054353250">Mospërputhje domeni</translation>
 <translation id="2096368010154057602">Departamenti</translation>
@@ -366,6 +368,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="2293443924986248631">Kur është aktivizuar, sajtet nuk mund t'i përdorin kukit për të të monitoruar në ueb. Veçoritë në disa sajte mund të ndalojnë së funksionuari.</translation>
 <translation id="2295290966866883927">URL-të e faqeve që viziton i dërgohen Google Cloud ose palëve të treta për analizim. Për shembull, mund të skanohen për të zbuluar faqe interneti të pasigurta.</translation>
 <translation id="2297722699537546652">B5 (Zarf)</translation>
+<translation id="2298855485018661510">Butoni "Menaxho kukit". Shtyp "Enter" për të menaxhuar preferencat e tua për kukit te cilësimet e Chrome</translation>
 <translation id="2300306941146563769">Pa ngarkuar</translation>
 <translation id="2310021320168182093">Chou2 (Zarf)</translation>
 <translation id="2316887270356262533">Liron më pak se 1 MB. Disa sajte mund të ngarkohen më ngadalë gjatë vizitës tënde të radhës.</translation>
@@ -399,6 +402,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="2465402087343596252">Architecture-E</translation>
 <translation id="2465655957518002998">Zgjidh mënyrën e dorëzimit</translation>
 <translation id="2465688316154986572">Kapje me tel</translation>
+<translation id="246725142101294240"><ph name="MANAGE_SECURITY_SETTINGS_FOCUSED_FRIENDLY_MATCH_TEXT" />. Shtyp "Tab" dhe më pas "Enter" për të menaxhuar shfletimin e sigurt dhe më shumë te cilësimet e Chrome</translation>
 <translation id="2467694685043708798"><ph name="BEGIN_LINK" />Po ekzekuton diagnostikimin e rrjetit<ph name="END_LINK" /></translation>
 <translation id="2469153820345007638">Renditja 1 deri në N</translation>
 <translation id="2470767536994572628">Kur redakton shënimet, ky dokument do të kthehet te pamja me një faqe dhe te rrotullimi fillestar</translation>
@@ -572,6 +576,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="3188393374551744535">Balanca e llogarisë</translation>
 <translation id="3194737229810486521"><ph name="URL" /> kërkon të ruajë në mënyrë të përhershme të dhëna në pajisjen tënde</translation>
 <translation id="3195213714973468956"><ph name="PRINTER_NAME" /> në <ph name="SERVER_NAME" /></translation>
+<translation id="3202497928925179914"><ph name="MANAGE_SYNC_FOCUSED_FRIENDLY_MATCH_TEXT" />. Shtyp "Tab" dhe më pas "Enter" për të menaxhuar se çfarë informacionesh sinkronizon ti te cilësimet e Chrome</translation>
 <translation id="320323717674993345">Anulo pagesën</translation>
 <translation id="3207960819495026254">Regjistruar në faqeshënues</translation>
 <translation id="3209034400446768650">Faqja mund të tarifojë para</translation>
@@ -628,6 +633,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="3395827396354264108">Mënyra e marrjes</translation>
 <translation id="3399952811970034796">Adresa e dorëzimit</translation>
 <translation id="3402261774528610252">Lidhja e përdorur për të ngarkuar këtë sajt ka përdorur versionin TLS 1.0 ose TLS 1.1, të cilët janë të vjetëruar dhe do të çaktivizohen në të ardhmen. Pasi të çaktivizohen, përdoruesit nuk do të lejohen ta ngarkojnë këtë sajt. Serveri duhet të aktivizojë versionin TLS 1.2 ose një version të mëvonshëm.</translation>
+<translation id="3409896703495473338">Menaxho cilësimet e sigurisë</translation>
 <translation id="3414952576877147120">Madhësia:</translation>
 <translation id="3417660076059365994">Skedarët që ngarkon ose bashkëngjit i dërgohen Google Cloud ose palëve të treta për analizim. Për shembull, mund të skanohen për të dhëna delikate ose softuerë keqdashës.</translation>
 <translation id="3422248202833853650">Provo të dalësh nga programet e tjera për të liruar memorien.</translation>
@@ -659,6 +665,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="350069200438440499">Emri i dosjes:</translation>
 <translation id="3507936815618196901">Të krijojë një hartë 3D të ambientit tënd rrethues dhe të gjurmojë pozicionin e kamerës</translation>
 <translation id="3512163584740124171">Kjo politikë shpërfillet pasi një politikë tjetër nga i njëjti grup politikash ka përparësi më të lartë.</translation>
+<translation id="35172538073169599">Butoni "Menaxho adresat". Shtyp "Enter" për të shtuar dhe menaxhuar adresat te cilësimet e Chrome</translation>
 <translation id="3518941727116570328">Menaxhimi i shumë objekteve</translation>
 <translation id="3528171143076753409">Certifikata e serverit nuk është e besuar.</translation>
 <translation id="3528485271872257980">Kafe e errët</translation>
@@ -1200,6 +1207,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="5540224163453853">Artikulli i kërkuar nuk u gjet.</translation>
 <translation id="5541086400771735334">Kutia postare 7</translation>
 <translation id="5541546772353173584">Shto email</translation>
+<translation id="5542280138350899197">Butoni "Menaxho cilësimet e sigurisë". Shtyp "Enter" për të menaxhuar shfletimin e sigurt dhe më shumë te cilësimet e Chrome</translation>
 <translation id="5545756402275714221">Artikuj për ty</translation>
 <translation id="5552137475244467770">Chrome i kontrollon periodikisht fjalëkalimet e tua për t'i krahasuar me listat që janë publikuar në linjë. Kur vepron kështu, fjalëkalimet dhe emrat e tu të përdoruesit janë të enkriptuara, në mënyrë që të mos lexohen nga askush, duke përfshirë Google.</translation>
 <translation id="5556459405103347317">Ringarko</translation>
@@ -1453,6 +1461,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="6583674473685352014">B6 (Zarf)</translation>
 <translation id="6587923378399804057">Lidhja që kopjove</translation>
 <translation id="6591833882275308647">Pajisja jote <ph name="DEVICE_TYPE" /> nuk është e menaxhuar</translation>
+<translation id="6592952801936330159">Butoni "Menaxho cilësimet e sajtit". Shtyp "Enter" për të menaxhuar lejet dhe të dhënat e ruajtura nëpër sajte te cilësimet e Chrome</translation>
 <translation id="6596325263575161958">Opsionet e enkriptimit</translation>
 <translation id="6604181099783169992">Sensorët e lëvizjes ose të dritës</translation>
 <translation id="6609880536175561541">Prc7 (Zarf)</translation>
@@ -1554,6 +1563,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="7053983685419859001">Bllokoje</translation>
 <translation id="7058163556978339998"><ph name="BROWSER" /> verifikoi se <ph name="ISSUER" /> ka lëshuar certifikatën e kësaj faqeje interneti.</translation>
 <translation id="7062635574500127092">Gurkali</translation>
+<translation id="706295145388601875">Shto dhe menaxho adresat te cilësimet e Chrome</translation>
 <translation id="7064851114919012435">Informacionet e kontaktit</translation>
 <translation id="70705239631109039">Lidhja jote nuk është plotësisht e sigurt</translation>
 <translation id="7072826695771387770">Ndodh ngjarje e pasigurt</translation>
@@ -1563,6 +1573,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="7083258188081898530">Tabakaja 9</translation>
 <translation id="7086090958708083563">Përditësimi u kërkua nga përdoruesi</translation>
 <translation id="7087282848513945231">Konteja</translation>
+<translation id="7095139009144195559"><ph name="MANAGE_SITE_SETTINGS_FOCUSED_FRIENDLY_MATCH_TEXT" />. Shtyp "Tab" dhe më pas "Enter" për të menaxhuar lejet dhe të dhënat e ruajtura nëpër sajte te cilësimet e Chrome</translation>
 <translation id="7108338896283013870">Fshih</translation>
 <translation id="7108634116785509031"><ph name="HOST" /> kërkon të përdorë kamerën</translation>
 <translation id="7108819624672055576">Lejuar nga një shtesë</translation>
@@ -1628,6 +1639,7 @@ Detaje shtesë:
 <translation id="7349430561505560861">A4-Extra</translation>
 <translation id="7353601530677266744">Linja e komandave</translation>
 <translation id="7359588939039777303">Reklamat janë të bllokuara.</translation>
+<translation id="7365596969960773405"><ph name="MANAGE_ADDRESSES_FOCUSED_FRIENDLY_MATCH_TEXT" />. Shtyp "Tab" dhe më pas "Enter" për të shtuar dhe menaxhuar adresat te cilësimet e Chrome</translation>
 <translation id="7365849542400970216">Të dinë përdorimin e pajisjes sate?</translation>
 <translation id="7372973238305370288">rezultati i kërkimit</translation>
 <translation id="7374733840632556089">Ky problem ndodh për shkak të një certifikate që instalove ti ose dikush tjetër në pajisjen tënde. Certifikata njihet se është përdorur për të monitoruar dhe ndërhyrë në rrjete dhe nuk është e besuar nga Chrome. Megjithëse ekzistojnë disa raste legjitime për monitorimin, si p.sh. një rrjet shkolle ose kompanie, Chrome dëshiron të sigurohet që je në dijeni se kjo ndodh, edhe nëse nuk arrin ta ndalosh. Monitorimi mund të ndodhë në çdo shfletues ose aplikacion që ka qasje në ueb.</translation>
@@ -1794,6 +1806,7 @@ Detaje shtesë:
 <translation id="7938958445268990899">Certifikata e serverit nuk është ende e vlefshme.</translation>
 <translation id="7942349550061667556">E kuqe</translation>
 <translation id="7947285636476623132">Kontrollo vitin e skadimit dhe provo përsëri</translation>
+<translation id="7950027195171824198">Menaxho preferencat e tua për kukit te cilësimet e Chrome</translation>
 <translation id="7951415247503192394">(32-bitësh)</translation>
 <translation id="7953569069500808819">Qepje anësore lart</translation>
 <translation id="7956713633345437162">Faqeshënuesit celularë</translation>
@@ -1825,6 +1838,7 @@ Detaje shtesë:
 <translation id="8066955247577885446">Na vjen keq! Diçka shkoi keq.</translation>
 <translation id="8067872629359326442">Sapo fute fjalëkalimin tënd në një sajt mashtrues. Chromium mund të të ndihmojë. Për të ndryshuar fjalëkalimin dhe për të njoftuar Google se llogaria jote mund të jetë në rrezik, kliko te "Mbroje llogarinë".</translation>
 <translation id="8074253406171541171">10x13 (Zarf)</translation>
+<translation id="8075898834294118863">Menaxho cilësimet e sajtit</translation>
 <translation id="8078141288243656252">Nuk mund të shënosh kur rrotullohet</translation>
 <translation id="8079031581361219619">Dëshiron të ngarkosh përsëri sajtin?</translation>
 <translation id="8086971161893892807">Draft</translation>
@@ -1880,6 +1894,7 @@ Detaje shtesë:
 <translation id="8277900682056760511">Fleta e përpunuesit të pagesës është hapur</translation>
 <translation id="8281084378435768645">Large-Photo</translation>
 <translation id="8282947398454257691">Njihu me identifikuesin unik të pajisjes tënde</translation>
+<translation id="8284769179630993263">Menaxho shfletimin e sigurt dhe më shumë te cilësimet e Chrome</translation>
 <translation id="8286036467436129157">Identifikohu</translation>
 <translation id="8288807391153049143">Shfaq certifikatën</translation>
 <translation id="8289355894181816810">Kontakto me administratorin e rrjetit nëse nuk je i sigurt se çfarë do të thotë kjo.</translation>
@@ -1908,6 +1923,7 @@ Detaje shtesë:
 <translation id="8380941800586852976">I rrezikshëm</translation>
 <translation id="8381674639488873545">Këto tarifa mund të jenë vetëm për një rast ose dhe të përsëritura, gjë që mund të mos jetë menjëherë e qartë. <ph name="BEGIN_LINK" />Shfaqi gjithsesi<ph name="END_LINK" /></translation>
 <translation id="8390725133630534698">Ndarja nga <ph name="ORIGIN_NAME" /> te <ph name="VM_NAME" /> është bllokuar nga politika e administratorit</translation>
+<translation id="8405579342203358118">Menaxho se çfarë informacionesh sinkronizon ti te cilësimet e Chrome</translation>
 <translation id="8412145213513410671">Ndërprerjet aksidentale (<ph name="CRASH_COUNT" />)</translation>
 <translation id="8412392972487953978">Duhet ta fusësh dy herë të njëjtën frazë kalimi.</translation>
 <translation id="8416694386774425977">Konfigurimi i rrjetit është i pavlefshëm dhe nuk mund të importohej.
@@ -1915,6 +1931,7 @@ Detaje shtesë:
 <ph name="DEBUG_INFO" /></translation>
 <translation id="8424582179843326029"><ph name="FIRST_LABEL" /> <ph name="SECOND_LABEL" /> <ph name="THIRD_LABEL" /></translation>
 <translation id="8428213095426709021">Cilësimet</translation>
+<translation id="8431194080598727332"><ph name="MANAGE_COOKIES_FOCUSED_FRIENDLY_MATCH_TEXT" />. Shtyp "Tab" dhe më pas "Enter" për të menaxhuar preferencat e tua për kukit te cilësimet e Chrome</translation>
 <translation id="8433057134996913067">Kjo do të bëjë të dalësh nga shumica e sajteve të uebit.</translation>
 <translation id="8437238597147034694">&amp;Zhbëj zhvendosjen</translation>
 <translation id="8438786541497918448">Të përdoret kamera dhe mikrofoni?</translation>
@@ -1934,6 +1951,7 @@ Detaje shtesë:
 <translation id="8503813439785031346">Emri i përdoruesit</translation>
 <translation id="8507227106804027148">Rreshti i komandës</translation>
 <translation id="8508648098325802031">Ikona e kërkimit</translation>
+<translation id="8511402995811232419">Menaxho kukit</translation>
 <translation id="8522552481199248698">Chrome mund të të ndihmojë ta mbrosh "Llogarinë tënde të Google" dhe të ndryshosh fjalëkalimin tënd.</translation>
 <translation id="8530813470445476232">Pastro historikun e shfletimit, kukit, memorien specifike etj. te cilësimet e Chrome</translation>
 <translation id="8533619373899488139">Vizito &lt;strong&gt;chrome://policy&lt;/strong&gt; për të parë listën e URL-ve të bllokuara dhe politika të tjera të detyruara nga administratori i sistemit tënd.</translation>

@@ -40,7 +40,6 @@
 <translation id="123724288017357924">Önbelleğe alınmış içeriği yoksayarak geçerli sayfayı yeniden yükler</translation>
 <translation id="124678866338384709">Geçerli sekmeyi kapatır</translation>
 <translation id="1258753120186372309">Google doodle'ı: <ph name="DOODLE_DESCRIPTION" /></translation>
-<translation id="1263231323834454256">Okuma listesi</translation>
 <translation id="1266864766717917324"><ph name="CONTENT_TYPE" /> paylaşılamadı</translation>
 <translation id="1283039547216852943">Genişletmek için dokunun</translation>
 <translation id="1285310382777185058">Dili değiştirin</translation>
@@ -994,7 +993,6 @@ Gizli oturumunuzdaki veriler yalnızca <ph name="BEGIN_BOLD2" />tüm Gizli sekme
 <translation id="7774809984919390718">{PAYMENT_METHOD,plural, =1{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 ve <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> ödeme yöntemi daha}other{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 ve <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> ödeme yöntemi daha}}</translation>
 <translation id="7778840695157240389">Yeni hikaye için daha sonra tekrar kontrol edin</translation>
 <translation id="7786595606756654269">Google Asistan hem web'de arama yapmak hem de açtığınız sitelerle etkileşim kurmak için daha iyi ses deneyimi sağlar. Google Asistan, Asistan'ı kullandığınız sitelerin URL'leri ile içeriklerini alır.</translation>
-<translation id="7790349552933995572">Ana ekran</translation>
 <translation id="7791543448312431591">Ekle</translation>
 <translation id="7798392620021911922"><ph name="TAB_COUNT" /> sekme geri yüklendi</translation>
 <translation id="780301667611848630">Hayır, teşekkürler</translation>
@@ -1202,7 +1200,6 @@ Gizli oturumunuzdaki veriler yalnızca <ph name="BEGIN_BOLD2" />tüm Gizli sekme
 <translation id="9149286894143103695">Bu siteyi daha kolay ulaşabilmek için telefonunuzun ana ekranına ekleyin</translation>
 <translation id="9155898266292537608">Bir kelimeye hızlıca dokunarak da arama yapabilirsiniz</translation>
 <translation id="9169507124922466868">Gezinme geçmişi yarım açık</translation>
-<translation id="9191031968346938109">Ekle…</translation>
 <translation id="9199368092038462496">{NUM_MINS,plural, =1{1 dakika önce kontrol edildi}other{# dakika önce kontrol edildi}}</translation>
 <translation id="9204836675896933765">1 dosya kaldı</translation>
 <translation id="9206873250291191720">A</translation>

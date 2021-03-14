@@ -291,6 +291,7 @@
 <translation id="2001146170449793414">{COUNT,plural, =1{وتطبيق آخر}zero{و# تطبيق آخر}two{وتطبيقان (#) آخران}few{و# تطبيقات أخرى}many{و# تطبيقًا آخر}other{و# تطبيق آخر}}</translation>
 <translation id="2003709556000175978">إعادة ضبط كلمة المرورالآن</translation>
 <translation id="2003775180883135320">عمل أربعة ثقوب بالأعلى</translation>
+<translation id="201174227998721785">‏إدارة الأذونات والبيانات المُخزّنة في المواقع الإلكترونية من خلال إعدادات متصفّح Chrome</translation>
 <translation id="2025115093177348061">الواقع المعزّز</translation>
 <translation id="2025186561304664664">تم ضبط الخادم الوكيل على الإعداد التلقائي.</translation>
 <translation id="2032962459168915086"><ph name="BEGIN_LINK" />التحقق من الخادم الوكيل والجدار الناري<ph name="END_LINK" /></translation>
@@ -303,6 +304,7 @@
 <translation id="2079545284768500474">تراجع</translation>
 <translation id="20817612488360358">تم ضبط إعدادات الخادم الوكيل ليتم استخدامها وتم أيضًا تحديد إعداد صريح للخادم الوكيل.</translation>
 <translation id="2082238445998314030">النتيجة <ph name="RESULT_NUMBER" /> من <ph name="TOTAL_RESULTS" /></translation>
+<translation id="2088086323192747268">‏زر "إدارة المزامنة"، اضغط على مفتاح Enter لإدارة نوع المعلومات التي تريد مزامنتها من خلال إعدادات Chrome.</translation>
 <translation id="2091887806945687916">الصوت</translation>
 <translation id="2094505752054353250">النطاق غير متطابق</translation>
 <translation id="2096368010154057602">القسم</translation>
@@ -367,6 +369,7 @@
 <translation id="2293443924986248631">عند تفعيل هذه الميزة، لا يمكن للمواقع الإلكترونية استخدام ملفات تعريف الارتباط لتتبّع نشاط تصفحّك على الإنترنت. وقد تتوقف الميزات عن العمل في بعض المواقع الإلكترونية.</translation>
 <translation id="2295290966866883927">‏يتم إرسال عناوين URL الخاصة بالصفحات التي تزورها إلى Google Cloud أو إلى جهات خارجية بهدف تحليلها. على سبيل المثال، قد يتم فحص هذه العناوين لاكتشاف المواقع الإلكترونية غير الآمنة.</translation>
 <translation id="2297722699537546652">‏B5 (مغلف)</translation>
+<translation id="2298855485018661510">‏زر "إدارة ملفات تعريف الارتباط"، اضغط على مفتاح Enter لإدارة الإعدادات المفضّلة لملفات تعريف الارتباط في إعدادات متصفّح Chrome.</translation>
 <translation id="2300306941146563769">لم يتم التحميل</translation>
 <translation id="2310021320168182093">‏Chou2 (مغلف)</translation>
 <translation id="2316887270356262533">سيتم توفير أقل من 1 ميغابايت. وقد يتم تحميل بعض المواقع بشكل أبطأ عند زيارتها في المرة القادمة.</translation>
@@ -400,6 +403,7 @@
 <translation id="2465402087343596252">Architecture-E</translation>
 <translation id="2465655957518002998">اختيار طريقة التسليم للمستخدم</translation>
 <translation id="2465688316154986572">وضع دبوس واحد</translation>
+<translation id="246725142101294240">‏<ph name="MANAGE_SECURITY_SETTINGS_FOCUSED_FRIENDLY_MATCH_TEXT" />، اضغط على مفتاح التبويب (Tab) ثم مفتاح Enter لإدارة إعدادات التصفّح الآمن وغيرها في إعدادات متصفّح Chrome.</translation>
 <translation id="2467694685043708798"><ph name="BEGIN_LINK" />تشغيل بيانات تشخيص الشبكة<ph name="END_LINK" /></translation>
 <translation id="2469153820345007638">طباعة الصفحات بالترتيب الأساسي</translation>
 <translation id="2470767536994572628">عند تعديل التعليقات التوضيحية، سيعود هذا المستند إلى اتجاه تدويره الأصلي وإلى عرض صفحة واحدة.</translation>
@@ -575,6 +579,7 @@
 <translation id="3188393374551744535">رصيد الحساب</translation>
 <translation id="3194737229810486521">يريد <ph name="URL" /> تخزين البيانات بشكل دائم على جهازك.</translation>
 <translation id="3195213714973468956"><ph name="PRINTER_NAME" /> على <ph name="SERVER_NAME" /></translation>
+<translation id="3202497928925179914">‏<ph name="MANAGE_SYNC_FOCUSED_FRIENDLY_MATCH_TEXT" />، اضغط على مفتاح التبويب (Tab) ثم مفتاح Enter لإدارة نوع المعلومات التي تريد مزامنتها من خلال إعدادات متصفّح Chrome.</translation>
 <translation id="320323717674993345">إلغاء الدفع</translation>
 <translation id="3207960819495026254">تمت إضافتها إلى الإشارات المرجعية.</translation>
 <translation id="3209034400446768650">إمكانية تحصيل الصفحة للرسوم</translation>
@@ -631,6 +636,7 @@
 <translation id="3395827396354264108">طريقة الاستلام</translation>
 <translation id="3399952811970034796">عنوان التسليم</translation>
 <translation id="3402261774528610252">‏إن الاتصال المستخدَم لتحميل هذا الموقع الإلكتروني يعتمد على إصدارات متوقفة، مثل TLS 1.0 أو 1.1 TLS. وسيتم إيقاف هذه الإصدارات كليًا في المستقبل. وعندما يتم إيقافها كليًا، سيتم منع المستخدمين من تحميل هذا الموقع الإلكتروني. على الخادم تفعيل TLS 1.2 أو إصدار أحدث.</translation>
+<translation id="3409896703495473338">إدارة إعدادات الأمان</translation>
 <translation id="3414952576877147120">الحجم:</translation>
 <translation id="3417660076059365994">‏يتم إرسال الملفات التي تلصقها أو ترفقها إلى Google Cloud أو جهات خارجية للتحليل. على سبيل المثال، قد يتم فحص هذه الملفات بحثًا عن بيانات حسّاسة أو برامج ضارة.</translation>
 <translation id="3422248202833853650">جرّب الخروج من البرامج الأخرى لتفريغ مساحة من الذاكرة.</translation>
@@ -662,6 +668,7 @@
 <translation id="350069200438440499">اسم الملفّ:</translation>
 <translation id="3507936815618196901">إنشاء خريطة ثلاثية الأبعاد للبيئة المحيطة بك وتتبُّع موضع الكاميرا</translation>
 <translation id="3512163584740124171">يتم تجاهل هذه السياسة بسبب سياسة أخرى من نفس مجموعة السياسة لها أولوية أعلى.</translation>
+<translation id="35172538073169599">‏زر "إدارة العناوين"، اضغط على مفتاح Enter لإضافة عناوين وإدارتها في إعدادات متصفّح Chrome.</translation>
 <translation id="3518941727116570328">معالجة الأهداف المتعددة</translation>
 <translation id="3528171143076753409">شهادة الخادم غير موثوق فيها.</translation>
 <translation id="3528485271872257980">بني داكن</translation>
@@ -1205,6 +1212,7 @@
 <translation id="5540224163453853">تعذر العثور على المقالة المطلوبة</translation>
 <translation id="5541086400771735334">صندوق البريد الإلكتروني 7</translation>
 <translation id="5541546772353173584">إضافة البريد الإلكتروني</translation>
+<translation id="5542280138350899197">‏زر "إدارة إعدادات الأمان"، اضغط على مفتاح Enter لإدارة إعدادات التصفّح الآمن وغيرها في إعدادات متصفّح Chrome.</translation>
 <translation id="5545756402275714221">مقالات لك</translation>
 <translation id="5552137475244467770">‏يتحقَّق Chrome من كلمات مرورك بشكلٍ دوري في البيانات التي تم نشرها على الإنترنت. وأثناء هذه العملية، تكون كلمات المرور وأسماء المستخدمين مشفّرة، ولا يمكن لأي مستخدم آخر الاطِّلاع على هذه البيانات بما في ذلك Google.</translation>
 <translation id="5556459405103347317">إعادة التحميل</translation>
@@ -1459,6 +1467,7 @@
 <translation id="6583674473685352014">‏B6 (مغلف)</translation>
 <translation id="6587923378399804057">الرابط الذي نسخته</translation>
 <translation id="6591833882275308647">لا تتم إدارة <ph name="DEVICE_TYPE" /></translation>
+<translation id="6592952801936330159">‏زر "إدارة إعدادات المواقع الإلكترونية"، اضغط على مفتاح Enter لإدارة الأذونات والبيانات المُخزّنة في المواقع الإلكترونية من خلال إعدادات متصفّح Chrome.</translation>
 <translation id="6596325263575161958">خيارات التشفير</translation>
 <translation id="6604181099783169992">أجهزة استشعار الإضاءة والحركة</translation>
 <translation id="6609880536175561541">‏Prc7 (مغلف)</translation>
@@ -1560,6 +1569,7 @@
 <translation id="7053983685419859001">حظر</translation>
 <translation id="7058163556978339998">لقد تحقّق متصفّح <ph name="BROWSER" /> من أن <ph name="ISSUER" /> أصدر شهادة الموقع الإلكتروني هذه.</translation>
 <translation id="7062635574500127092">أزرق مخضر</translation>
+<translation id="706295145388601875">‏إضافة عناوين وإدارتها في إعدادات متصفّح Chrome</translation>
 <translation id="7064851114919012435">معلومات الاتصال</translation>
 <translation id="70705239631109039">اتصالك بهذا الموقع تتخلله ثغرات أمنية.</translation>
 <translation id="7072826695771387770">حصول أحداث غير آمنة</translation>
@@ -1569,6 +1579,7 @@
 <translation id="7083258188081898530">الدُرج 9</translation>
 <translation id="7086090958708083563">طلب التحميل مقدّم من المستخدم</translation>
 <translation id="7087282848513945231">مقاطعة</translation>
+<translation id="7095139009144195559">‏<ph name="MANAGE_SITE_SETTINGS_FOCUSED_FRIENDLY_MATCH_TEXT" />، اضغط على مفتاح التبويب (Tab) ثم مفتاح Enter لإدارة الأذونات والبيانات المُخزّنة في المواقع الإلكترونية من خلال إعدادات متصفّح Chrome</translation>
 <translation id="7108338896283013870">إخفاء</translation>
 <translation id="7108634116785509031">يريد <ph name="HOST" /> استخدام الكاميرا.</translation>
 <translation id="7108819624672055576">تم السماح بواسطة إحدى الإضافات</translation>
@@ -1634,6 +1645,7 @@
 <translation id="7349430561505560861">A4-Extra</translation>
 <translation id="7353601530677266744">سطر الأوامر</translation>
 <translation id="7359588939039777303">تم حظر الإعلانات.</translation>
+<translation id="7365596969960773405">‏<ph name="MANAGE_ADDRESSES_FOCUSED_FRIENDLY_MATCH_TEXT" />، اضغط على مفتاح التبويب (Tab) ثم مفتاح Enter لإضافة عناوين وإدارتها في إعدادات متصفّح Chrome.</translation>
 <translation id="7365849542400970216">هل تسمح للموقع الإلكتروني برصد استخدامك للجهاز؟</translation>
 <translation id="7372973238305370288">نتيجة البحث</translation>
 <translation id="7374733840632556089">‏تحدث هذه المشكلة بسبب شهادة ثبّتها أنت أو ثبّتها مستخدم آخر على جهازك. من المعروف أن الشهادة تُستخدم لمراقبة الشبكات واعتراضها، ولا يثق Chrome بها. وعلى الرغم من وجود بعض الحالات المشروعة للمراقبة، كما هو الحال في شبكة المدرسة أو الشركة، يريد Chrome التأكد من أنك تدرك حدوث ذلك، حتى لو لم يكن بإمكانك إيقافه. يمكن أن تحدث عملية المراقبة في أي متصفّح أو تطبيق يصل إلى الويب.</translation>
@@ -1800,6 +1812,7 @@
 <translation id="7938958445268990899">شهادة الخادم ليست صالحة بعد.</translation>
 <translation id="7942349550061667556">أحمر</translation>
 <translation id="7947285636476623132">تحقق من عام انتهاء الصلاحية وأعِد المحاولة مرة أخرى</translation>
+<translation id="7950027195171824198">‏إدارة الإعدادات المفضّلة لملفات تعريف الارتباط في إعدادات متصفِّح Chrome</translation>
 <translation id="7951415247503192394">(32 بت)</translation>
 <translation id="7953569069500808819">خزم الحواف من الأعلى</translation>
 <translation id="7956713633345437162">الإشارات المرجعية على الجوّال</translation>
@@ -1831,6 +1844,7 @@
 <translation id="8066955247577885446">عذرًا، حدث خطأ.</translation>
 <translation id="8067872629359326442">‏لقد أدخلت للتو كلمة مرورك في موقع إلكتروني مريب. يمكن لـ Chromium مساعدتك. لتغيير كلمة مرورك وإشعار Google أن حسابك قد يكون معرّضًا للخطر، انقر على "حماية الحساب".</translation>
 <translation id="8074253406171541171">‏10x13 (مغلف)</translation>
+<translation id="8075898834294118863">إدارة إعدادات المواقع الإلكترونية</translation>
 <translation id="8078141288243656252">لا يمكن إضافة تعليق توضيحي عند تدوير المستند</translation>
 <translation id="8079031581361219619">هل تريد تحديث الموقع؟</translation>
 <translation id="8086971161893892807">مسودّة</translation>
@@ -1886,6 +1900,7 @@
 <translation id="8277900682056760511">جدول بيانات معالج الدفع مفتوح</translation>
 <translation id="8281084378435768645">Large-Photo</translation>
 <translation id="8282947398454257691">معرفة معرّف جهازك الفريد</translation>
+<translation id="8284769179630993263">‏إدارة إعدادات التصفّح الآمن وغيرها في إعدادات متصفّح Chrome</translation>
 <translation id="8286036467436129157">تسجيل الدخول</translation>
 <translation id="8288807391153049143">عرض الشهادة</translation>
 <translation id="8289355894181816810">اتصل بمشرف الشبكة إذا لم تكن متأكدًا مما يعنيه هذا.</translation>
@@ -1914,6 +1929,7 @@
 <translation id="8380941800586852976">ضارة</translation>
 <translation id="8381674639488873545">قد يتم تحصيل هذه الرسوم لمرة واحدة أو بشكل متكرِّر، وقد تكون غير واضحة. <ph name="BEGIN_LINK" />عرض على أي حال<ph name="END_LINK" /></translation>
 <translation id="8390725133630534698">تحظر سياسة المشرف إمكانية المشاركة من <ph name="ORIGIN_NAME" /> إلى <ph name="VM_NAME" />.</translation>
+<translation id="8405579342203358118">‏إدارة نوع المعلومات التي تريد مزامنتها في إعدادات متصفّح Chrome</translation>
 <translation id="8412145213513410671">الأعطال (<ph name="CRASH_COUNT" />)</translation>
 <translation id="8412392972487953978">يجب إدخال عبارة المرور نفسها مرتين.</translation>
 <translation id="8416694386774425977">إعداد الشبكة غير صالحة ويتعذّر استيرادها.
@@ -1921,6 +1937,7 @@
 <ph name="DEBUG_INFO" /></translation>
 <translation id="8424582179843326029"><ph name="FIRST_LABEL" /> <ph name="SECOND_LABEL" /> <ph name="THIRD_LABEL" /></translation>
 <translation id="8428213095426709021">الإعدادات</translation>
+<translation id="8431194080598727332">‏<ph name="MANAGE_COOKIES_FOCUSED_FRIENDLY_MATCH_TEXT" />، اضغط على مفتاح التبويب (Tab) ثم مفتاح Enter لإدارة الإعدادات المفضّلة لملفات تعريف الارتباط في إعدادات متصفّح Chrome.</translation>
 <translation id="8433057134996913067">سيؤدي هذا إلى خروجك من معظم المواقع الإلكترونية.</translation>
 <translation id="8437238597147034694">تراجع عن ال&amp;نقل</translation>
 <translation id="8438786541497918448">هل تريد استخدام الكاميرا والميكروفون؟</translation>
@@ -1940,6 +1957,7 @@
 <translation id="8503813439785031346">اسم المستخدم</translation>
 <translation id="8507227106804027148">سطر الأوامر</translation>
 <translation id="8508648098325802031">رمز البحث</translation>
+<translation id="8511402995811232419">إدارة ملفات تعريف الارتباط</translation>
 <translation id="8522552481199248698">‏يمكن أن يساعدك Chrome على حماية حسابك على Google وتغيير كلمة المرور.</translation>
 <translation id="8530813470445476232">‏محو سجلّ التصفُّح وملفات تعريف الارتباط وذاكرة التخزين المؤقت وغير ذلك في إعدادات متصفِّح Chrome</translation>
 <translation id="8533619373899488139">‏انتقِل إلى &lt;strong&gt;chrome://policy&lt;/strong&gt; للاطّلاع على قائمة عناوين URL المحظورة والسياسات الأخرى التي يفرضها مشرف النظام.</translation>

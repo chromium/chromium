@@ -40,7 +40,6 @@
 <translation id="123724288017357924">Aktuelle Seite neu laden, Cache-Inhalte ignorieren</translation>
 <translation id="124678866338384709">Aktuellen Tab schließen</translation>
 <translation id="1258753120186372309">Google-Doodle: <ph name="DOODLE_DESCRIPTION" /></translation>
-<translation id="1263231323834454256">Leseliste</translation>
 <translation id="1266864766717917324"><ph name="CONTENT_TYPE" /> konnte nicht geteilt werden</translation>
 <translation id="1283039547216852943">Zum Maximieren tippen</translation>
 <translation id="1285310382777185058">Sprache ändern</translation>
@@ -158,7 +157,7 @@
 <translation id="2096012225669085171">Geräteübergreifend synchronisieren und personalisieren</translation>
 <translation id="2100273922101894616">Automatisch anmelden</translation>
 <translation id="2100314319871056947">Teilen Sie den Text am besten in mehreren Abschnitten</translation>
-<translation id="2109711654079915747">Erfahren Sie mehr über Website-Themen, ohne die Seite zu verlassen. Mit der Option "Zum Suchen tippen" werden ein Wort sowie dessen Kontext an die Google Suche gesendet. Daraufhin erhalten Sie Definitionen, Bilder, Suchergebnisse und andere Details.
+<translation id="2109711654079915747">Erfahren Sie mehr über Website-Themen, ohne die Seite zu verlassen. Mit der Option "Zum Suchen antippen" werden ein Wort sowie dessen Kontext an die Google Suche gesendet. Daraufhin erhalten Sie Definitionen, Bilder, Suchergebnisse und andere Details.
 
 Tippen Sie auf ein Wort, um eine Suche damit zu starten. Sie können Ihre Suche verfeinern, indem Sie Wörter berühren und halten, um sie auszuwählen oder auszuschließen. Sie können Ihre Suche auch bearbeiten, indem Sie das Feld öffnen, auf das Symbol "In neuem Tab öffnen" tippen und dann im Suchfeld Ihre Änderungen vornehmen.</translation>
 <translation id="2111511281910874386">Seite aufrufen</translation>
@@ -211,7 +210,7 @@ Tippen Sie auf ein Wort, um eine Suche damit zu starten. Sie können Ihre Suche 
 <translation id="2426805022920575512">Anderes Konto auswählen</translation>
 <translation id="2433507940547922241">Darstellung</translation>
 <translation id="2450083983707403292">Möchten Sie den Download von <ph name="FILE_NAME" /> noch einmal starten?</translation>
-<translation id="2450907520913474542">Erfahren Sie mehr über Website-Themen, ohne die Seite zu verlassen. Mit der Option "Zum Suchen tippen" werden ein Wort sowie dessen Kontext an die Google Suche gesendet. Daraufhin erhalten Sie Definitionen, Bilder, Suchergebnisse und andere Details.
+<translation id="2450907520913474542">Erfahren Sie mehr über Website-Themen, ohne die Seite zu verlassen. Mit der Option "Zum Suchen antippen" werden ein Wort sowie dessen Kontext an die Google Suche gesendet. Daraufhin erhalten Sie Definitionen, Bilder, Suchergebnisse und andere Details.
 
 Berühren und halten Sie ein Wort, um eine Suche damit zu starten. Sie können Ihre Suche verfeinern, indem Sie weitere Wörter auswählen oder Wörter ausschließen. Sie können Ihre Suche auch bearbeiten, indem Sie das Feld öffnen, auf das Symbol "In neuem Tab öffnen" tippen und dann im Suchfeld Ihre Änderungen vornehmen.</translation>
 <translation id="2459390580524506445">Verbesserte Sprachsuche</translation>
@@ -395,7 +394,7 @@ Privacy Sandbox befindet sich noch in der Entwicklung und ist nur in ausgewählt
 <translation id="3716182511346448902">Diese Seite benötigt zu viel Arbeitsspeicher und wurde daher von Chrome angehalten.</translation>
 <translation id="3721119614952978349">Google und ich</translation>
 <translation id="3737319253362202215">Übersetzungseinstellungen</translation>
-<translation id="3738139272394829648">Zum Suchen tippen</translation>
+<translation id="3738139272394829648">Zum Suchen antippen</translation>
 <translation id="3739899004075612870">Als Lesezeichen in <ph name="PRODUCT_NAME" /> gespeichert</translation>
 <translation id="3749259744154402564">Nicht unterstützt</translation>
 <translation id="3771001275138982843">Update konnte nicht heruntergeladen werden</translation>
@@ -994,7 +993,6 @@ Daten aus Ihrer Inkognitositzung werden erst aus Chrome gelöscht, wenn Sie <ph 
 <translation id="7774809984919390718">{PAYMENT_METHOD,plural, =1{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 und <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> weitere}other{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 und <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> weitere}}</translation>
 <translation id="7778840695157240389">Kommen Sie später wieder vorbei, um neue Artikel zu lesen</translation>
 <translation id="7786595606756654269">Google Assistant bietet eine bessere Spracheingabe für die Suche im Web und für Interaktionen mit Seiten, die Sie geöffnet haben. Die URLs und Inhalte der Websites, auf denen Sie Assistant verwenden, werden an Google Assistant weitergegeben.</translation>
-<translation id="7790349552933995572">Startbildschirm</translation>
 <translation id="7791543448312431591">Hinzufügen</translation>
 <translation id="7798392620021911922"><ph name="TAB_COUNT" /> Tabs wiederhergestellt</translation>
 <translation id="780301667611848630">Kein Interesse</translation>
@@ -1057,7 +1055,7 @@ Daten aus Ihrer Inkognitositzung werden erst aus Chrome gelöscht, wenn Sie <ph 
 <translation id="8115259494083109761">Wenn Sie einen QR-Code scannen möchten, erlauben Sie Chrome, Ihre Kamera zu verwenden</translation>
 <translation id="8127542551745560481">Startseite bearbeiten</translation>
 <translation id="813082847718468539">Website-Informationen anzeigen</translation>
-<translation id="8137558756159375272">Mit "Zum Suchen tippen" werden das ausgewählte Wort und die aktuelle Seite als Kontext an die Google Suche gesendet. Sie können die Funktion in den <ph name="BEGIN_LINK" />Einstellungen<ph name="END_LINK" /> deaktivieren.</translation>
+<translation id="8137558756159375272">Mit "Zum Suchen antippen" werden das ausgewählte Wort und die aktuelle Seite als Kontext an die Google Suche gesendet. Sie können die Funktion in den <ph name="BEGIN_LINK" />Einstellungen<ph name="END_LINK" /> deaktivieren.</translation>
 <translation id="8153351135626613369">Assistant erscheint auf unterstützten Websites, wenn erkannt wird, dass er Ihnen helfen kann</translation>
 <translation id="8156139159503939589">Welche Sprachen können Sie lesen?</translation>
 <translation id="8168435359814927499">Inhalte</translation>
@@ -1202,7 +1200,6 @@ Daten aus Ihrer Inkognitositzung werden erst aus Chrome gelöscht, wenn Sie <ph 
 <translation id="9149286894143103695">Sie können diese Website zum Startbildschirm des Smartphones hinzufügen, um schneller zurückzukehren</translation>
 <translation id="9155898266292537608">Sie können auch kurz auf ein Wort tippen, um eine Suche zu starten</translation>
 <translation id="9169507124922466868">Navigationsverlauf ist halb geöffnet</translation>
-<translation id="9191031968346938109">Hinzufügen zu…</translation>
 <translation id="9199368092038462496">{NUM_MINS,plural, =1{Zuletzt geprüft: vor 1 Minute}other{Zuletzt geprüft: vor # Minuten}}</translation>
 <translation id="9204836675896933765">Noch 1 Datei</translation>
 <translation id="9206873250291191720">A</translation>

@@ -4194,6 +4194,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="5774295353725270860">Abrir Archivos</translation>
 <translation id="577624874850706961">Buscar cookies</translation>
 <translation id="5777468213129569553">Abrir Chrome</translation>
+<translation id="5778491106820461378">Desde <ph name="LINK_BEGIN" />Configuración<ph name="LINK_END" />, puedes administrar las Cuentas de Google a las que se accedió. Es posible que se apliquen a todas las cuentas los permisos que otorgaste a sitios web y apps. Si no quieres que los sitios o apps accedan a la información de la cuenta, puedes acceder a tu <ph name="DEVICE_TYPE" /> como invitado.</translation>
 <translation id="5780011244986845107">La carpeta seleccionada contiene archivos confidenciales. ¿Confirmas que deseas otorgar a "<ph name="APP_NAME" />" acceso de lectura permanente a esta carpeta?</translation>
 <translation id="5780973441651030252">Prioridad del proceso</translation>
 <translation id="5781092003150880845">Sincronizar como <ph name="ACCOUNT_FULL_NAME" /></translation>
@@ -5084,6 +5085,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="6811332638216701903">Nombre de host DHCP</translation>
 <translation id="6812349420832218321"><ph name="PRODUCT_NAME" /> no se puede ejecutar como raíz.</translation>
 <translation id="6812841287760418429">Conservar cambios</translation>
+<translation id="6813907279658683733">Pantalla completa</translation>
 <translation id="681584224457905309">{COUNT,plural, =1{archivo}other{# archivos}}</translation>
 <translation id="6817174620439930047">Preguntarme cuando un sitio quiera usar los mensajes exclusivos del sistema para acceder a dispositivos MIDI (recomendado)</translation>
 <translation id="6818198425579322765">Idioma de la página para traducir</translation>
@@ -5588,6 +5590,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="7392118418926456391">Error en el análisis antivirus</translation>
 <translation id="7392915005464253525">Volver a abrir una ventana cerrada</translation>
 <translation id="7393073300870882456">{COUNT,plural, =1{Se copió 1 elemento}other{Se copiaron {COUNT} elementos}}</translation>
+<translation id="7395774987022469191">Pantalla completa</translation>
 <translation id="7396017167185131589">Aquí aparecerán las carpetas compartidas</translation>
 <translation id="7396845648024431313"><ph name="APP_NAME" /> empezará a ejecutarse cuando se inicie el sistema y seguirá ejecutándose en segundo plano aunque cierres todas las demás ventanas de <ph name="PRODUCT_NAME" />.</translation>
 <translation id="7399045143794278225">Personalizar la sincronización</translation>

@@ -291,6 +291,7 @@
 <translation id="2001146170449793414">{COUNT,plural, =1{ແລະ ອີກ 1 ອັນ}other{ແລະ ອີກ # ອັນ}}</translation>
 <translation id="2003709556000175978">ຣີເຊັດລະຫັດຜ່ານຂອງທ່ານຕອນນີ້</translation>
 <translation id="2003775180883135320">ເຈາະຮູຢູ່ເທິງສຸດສີ່ຮູ</translation>
+<translation id="201174227998721785">ຈັດການການອະນຸຍາດ ແລະ ຂໍ້ມູນທີ່ຈັດເກັບໄວ້ໃນເວັບໄຊຕ່າງໆໃນການຕັ້ງຄ່າ Chrome</translation>
 <translation id="2025115093177348061">ອາກິວເມັນ ຣີອາລິຕີ</translation>
 <translation id="2025186561304664664">ພຣັອກຊີຖືກຕັ້ງເປັນປັບຕັ້ງຄ່າອັດຕະໂນມັດ.</translation>
 <translation id="2032962459168915086"><ph name="BEGIN_LINK" />ກຳລັງກວດເບິ່ງພຣັອກຊີ ແລະ ໄຟຣ໌ວໍ<ph name="END_LINK" /></translation>
@@ -303,6 +304,7 @@
 <translation id="2079545284768500474">ບໍ່ເຮັດ</translation>
 <translation id="20817612488360358">ການຕັ້ງຄ່າພຣັອກຊີລະບົບຖືກຕັ້ງໃຫ້ຖືກນໍາໃຊ້ ແຕ່ການປັບຕັ້ງຄ່າພຣັອກຊີທີ່ຈະແຈ້ງໄດ້ຖືກລະບຸ​ແຈ້ງນໍາອີກ.</translation>
 <translation id="2082238445998314030">ຜົນຮັບ <ph name="RESULT_NUMBER" /> ຈາກ <ph name="TOTAL_RESULTS" /></translation>
+<translation id="2088086323192747268">ຈັດການປຸ່ມຊິ້ງຂໍ້ມູນ, ກົດ Enter ເພື່ອຈັດການວ່າຂໍ້ມູນໃດທີ່ທ່ານຈະຊິ້ງຂໍ້ມູນໃນການຕັ້ງຄ່າ Chrome</translation>
 <translation id="2091887806945687916">ສຽງ</translation>
 <translation id="2094505752054353250">ໂດເມນບໍ່ເຂົ້າຄູ່ກັນ</translation>
 <translation id="2096368010154057602">ພະແນກ</translation>
@@ -367,6 +369,7 @@
 <translation id="2293443924986248631">ເມື່ອເປີດຢູ່, ເວັບໄຊຈະບໍ່ສາມາດໃຊ້ຄຸກກີ້ທີ່ຕິດຕາມທ່ານໃນທົ່ວເວັບໄຊ. ຄຸນສົມບັດໃນບາງເວັບໄຊອາດຈະໃຊ້ບໍ່ໄດ້.</translation>
 <translation id="2295290966866883927">URL ຂອງໜ້າທີ່ທ່ານເຂົ້າເບິ່ງຈະຖືກສົ່ງໃຫ້ Google Cloud ຫຼື ພາກສ່ວນທີສາມເພື່ອວິເຄາະ. ຕົວຢ່າງ: ພວກມັນອາດຈະຖືກສະແກນເພື່ອກວດຫາເວັບໄຊທີ່ບໍ່ປອດໄພ.</translation>
 <translation id="2297722699537546652">B5 (ຊອງຈົດໝາຍ)</translation>
+<translation id="2298855485018661510">ຈັດການປຸ່ມຄຸກກີ້, ກົດ Enter ເພື່ອຈັດການການຕັ້ງຄ່າຄຸກກີ້ຂອງທ່ານໃນການຕັ້ງຄ່າ Chrome</translation>
 <translation id="2300306941146563769">ອັບໂຫຼດບໍ່ໄດ້</translation>
 <translation id="2310021320168182093">Chou2 (ຊອງຈົດໝາຍ)</translation>
 <translation id="2316887270356262533">ຂະຫຍາຍພື້ນທີ່ຫວ່າງໄດ້ໜ້ອຍກວ່າ 1 MB. ບາງເວັບໄຊອາດຈະໂຫຼດຊ້າກວ່າໃນການເຂົ້າເບິ່ງຄັ້ງຕໍ່ໄປຂອງທ່ານ.</translation>
@@ -400,6 +403,7 @@
 <translation id="2465402087343596252">Architecture-E</translation>
 <translation id="2465655957518002998">ເລືອກວິທີການຈັດສົ່ງ</translation>
 <translation id="2465688316154986572">ກະຫຼັບເຟີ</translation>
+<translation id="246725142101294240"><ph name="MANAGE_SECURITY_SETTINGS_FOCUSED_FRIENDLY_MATCH_TEXT" />, ກົດ Tab ຈາກນັ້ນກົດ Enter ເພື່ອຈັດການ Safe Browsing ຂອງທ່ານ ແລະ ອື່ນໆໃນການຕັ້ງຄ່າ Chrome</translation>
 <translation id="2467694685043708798"><ph name="BEGIN_LINK" />ກຳລັງເປີດໃຊ້ Network Diagnostics<ph name="END_LINK" /></translation>
 <translation id="2469153820345007638">ລຳດັບ 1 ເຖິງ N</translation>
 <translation id="2470767536994572628">ເມື່ອທ່ານແກ້ໄຂຄຳອະທິບາຍຄວາມເຫັນດ ເອກະສານນີ້ຈະກັບໄປເປັນມຸມມອງແບບໜ້າດຽວ ແລະ ກັບໄປໃຊ້ການໝຸນແບບເດີມຂອງມັນ</translation>
@@ -575,6 +579,7 @@
 <translation id="3188393374551744535">ຍອດເງິນໃນບັນຊີ</translation>
 <translation id="3194737229810486521"><ph name="URL" /> ຕ້ອງການເກັບຂໍ້ມູນໄວ້ໃນອຸປະກອນຂອງທ່ານຢ່າງຖາວອນ</translation>
 <translation id="3195213714973468956"><ph name="PRINTER_NAME" /> ໃນ <ph name="SERVER_NAME" /></translation>
+<translation id="3202497928925179914"><ph name="MANAGE_SYNC_FOCUSED_FRIENDLY_MATCH_TEXT" />, ກົດ Tab ຈາກນັ້ນກົດ Enter ເພື່ອຈັດການວ່າຂໍ້ມູນໃດທີ່ທ່ານຈະຊິ້ງຂໍ້ມູນໃນການຕັ້ງຄ່າ Chrome</translation>
 <translation id="320323717674993345">ຍົກເລີກການຈ່າຍເງິນ</translation>
 <translation id="3207960819495026254">ໃສ່ບຸກ​ມາກ​໌​ແລ້ວ</translation>
 <translation id="3209034400446768650">ໜ້າອາດຈະຮຽກເກັບເງິນ</translation>
@@ -631,6 +636,7 @@
 <translation id="3395827396354264108">ວິທີການຮັບເຄື່ອງ</translation>
 <translation id="3399952811970034796">ທີ່ຢູ່ການຈັດສົ່ງ</translation>
 <translation id="3402261774528610252">ການເຊື່ອມຕໍ່ທີ່ໃຊ້ເພື່ອໂຫຼດເວັບໄຊນີ້ໃຊ້ TLS 1.0 ຫຼື TLS 1.1, ເຊິ່ງເຊົາຮອງຮັບແລ້ວ ແລະ ຈະຖືກປິດການນຳໃຊ້ໃນອະນາຄົດ. ເມື່ອປິດການນຳໃຊ້ແລ້ວ, ລະບົບຈະປ້ອງກັນບໍ່ໃຫ້ຜູ້ໃຊ້ໂຫຼດເວັບໄຊນີ້. ເຊີບເວີຄວນເປີດການນຳໃຊ້ TLS 1.2 ຫຼື ໃໝ່ກວ່າ.</translation>
+<translation id="3409896703495473338">ຈັດການການຕັ້ງຄ່າຄວາມປອດໄພ</translation>
 <translation id="3414952576877147120">ຂະໜາດ:</translation>
 <translation id="3417660076059365994">ໄຟລ໌ທີ່ທ່ານອັບໂຫຼດ ຫຼື ແນບຈະຖືກສົ່ງໃຫ້ Google Cloud ຫຼື ພາກສ່ວນທີສາມເພື່ອວິເຄາະ. ຕົວຢ່າງ: ພວກມັນອາດຈະຖືກສະແກນຫາຂໍ້ມູນລະອຽດອ່ອນ ຫຼື ເມົາແວ.</translation>
 <translation id="3422248202833853650">ລອງອອກຈາກໂປຣແກຣມອື່ນເພື່ອຂະຫຍາຍຄວາມຈຳ.</translation>
@@ -662,6 +668,7 @@
 <translation id="350069200438440499">ຊື່ໄຟລ໌:</translation>
 <translation id="3507936815618196901">ສ້າງແຜນທີ່ 3 ມິຕິຂອງສິ່ງທີ່ຢູ່ອ້ອມຂ້າງຕົວທ່ານ ຫຼື ຕິດຕາມຕຳແໜ່ງກ້ອງ</translation>
 <translation id="3512163584740124171">ລະບົບລະເລີຍນະໂຍບາຍນີ້ເພາະວ່ານະໂຍບາຍອື່ນຈາກກຸ່ມນະໂຍບາຍດຽວກັນມີບຸລິມະສິດສູງກວ່າ.</translation>
+<translation id="35172538073169599">ຈັດການປຸ່ມທີ່ຢູ່, ກົດ Enter ເພື່ອເພີ່ມ ແລະ ຈັດການທີ່ຢູ່ໃນການຕັ້ງຄ່າ Chrome</translation>
 <translation id="3518941727116570328">ການຈັດການວັດຖຸຫຼາຍລາຍການ</translation>
 <translation id="3528171143076753409">ໃບຢັ້ງຢືນຂອງເຊີບເວີບໍ່ເຊື່ອຖືໄດ້.</translation>
 <translation id="3528485271872257980">ສີ​ນ້ຳ​ຕານ​ເຂັ້ມ</translation>
@@ -1205,6 +1212,7 @@
 <translation id="5540224163453853">ບໍ່ສາມາດຊອກຫາບົດຄວາມທີ່ຂໍໄດ້.</translation>
 <translation id="5541086400771735334">ກ່ອງຈົດໝາຍ 7</translation>
 <translation id="5541546772353173584">ເພີ່ມອີເມວ</translation>
+<translation id="5542280138350899197">ຈັດການປຸ່ມການຕັ້ງຄ່າຄວາມປອດໄພ, ກົດ Enter ເພື່ອຈັດການ Safe Browsing ຂອງທ່ານ ແລະ ອື່ນໆໃນການຕັ້ງຄ່າ Chrome</translation>
 <translation id="5545756402275714221">ບົດຄວາມສຳລັບທ່ານ</translation>
 <translation id="5552137475244467770">Chrome ກວດລະຫັດຜ່ານຂອງທ່ານເປັນໄລຍະໂດຍທຽບກັບລາຍການທີ່ມີການເຜີຍແຜ່ທາງອອນລາຍ. ໃນເວລາເຮັດສິ່ງນີ້, ພວກເຮົາເຂົ້າລະຫັດຊື່ຜູ້ໃຊ້ ແລະ ລະຫັດຜ່ານຂອງທ່ານໄວ້ ເພື່ອບໍ່ໃຫ້ຜູ້ໃດ ຮວມທັງ Google ສາມາດອ່ານພວກມັນໄດ້.</translation>
 <translation id="5556459405103347317">ໂຫຼດຄືນໃໝ່</translation>
@@ -1459,6 +1467,7 @@
 <translation id="6583674473685352014">B6 (ຊອງຈົດໝາຍ)</translation>
 <translation id="6587923378399804057">ລິ້ງທີ່ທ່ານສຳເນົາ</translation>
 <translation id="6591833882275308647">ບໍ່ມີການຈັດການ <ph name="DEVICE_TYPE" /> ຂອງທ່ານ</translation>
+<translation id="6592952801936330159">ຈັດການປຸ່ມການຕັ້ງຄ່າເວັບໄຊ, ກົດ Enter ເພື່ອຈັດການການອະນຸຍາດ ແລະ ຂໍ້ມູນທີ່ຈັດເກັບໄວ້ໃນເວັບໄຊຕ່າງໆໃນການຕັ້ງຄ່າ Chrome</translation>
 <translation id="6596325263575161958">ທາງເລືອກການໃສ່ລະຫັດ</translation>
 <translation id="6604181099783169992">ເຊັນເຊີກວດຈັບການເຄື່ອນໄຫວ ຫຼື ແສງ</translation>
 <translation id="6609880536175561541">Prc7 (ຊອງຈົດໝາຍ)</translation>
@@ -1560,6 +1569,7 @@
 <translation id="7053983685419859001">ບລັອກ</translation>
 <translation id="7058163556978339998"><ph name="BROWSER" /> ໄດ້ຢັ້ງຢືນວ່າ <ph name="ISSUER" /> ໄດ້ອອກໃບຮັບຮອງຂອງເວັບໄຊນີ້ແລ້ວ.</translation>
 <translation id="7062635574500127092">ສີຂຽວຫົວເປັດ</translation>
+<translation id="706295145388601875">ເພີ່ມ ແລະ ຈັດການທີ່ຢູ່ໃນການຕັ້ງຄ່າ Chrome</translation>
 <translation id="7064851114919012435">ຂໍ້​ມູນ​ຕິດ​ຕໍ່</translation>
 <translation id="70705239631109039">ການເຊື່ອມຕໍ່ຂອງທ່ານບໍ່ປອດໄພຢ່າງສົມບູນ</translation>
 <translation id="7072826695771387770">ເກີດເຫດການທີ່ບໍ່ປອດໄພຂຶ້ນ</translation>
@@ -1569,6 +1579,7 @@
 <translation id="7083258188081898530">ຖາດ 9</translation>
 <translation id="7086090958708083563">ການອັບໂຫຼດທີ່ຂໍໂດຍຜູ້ໃຊ້</translation>
 <translation id="7087282848513945231">ເຂດປົກຄອງ</translation>
+<translation id="7095139009144195559"><ph name="MANAGE_SITE_SETTINGS_FOCUSED_FRIENDLY_MATCH_TEXT" />, ກົດ Tab ຈາກນັ້ນກົດ Enter ເພື່ອຈັດການການອະນຸຍາດ ແລະ ຂໍ້ມູນທີ່ຈັດເກັບໄວ້ໃນເວັບໄຊຕ່າງໆໃນການຕັ້ງຄ່າ Chrome</translation>
 <translation id="7108338896283013870">ເຊື່ອງ</translation>
 <translation id="7108634116785509031"><ph name="HOST" /> ຕ້ອງການໃຊ້ກ້ອງຖ່າຍຮູບຂອງທ່ານ</translation>
 <translation id="7108819624672055576">ອະນຸຍາດໂດຍສ່ວນຂະຫຍາຍ</translation>
@@ -1634,6 +1645,7 @@
 <translation id="7349430561505560861">A4-Extra</translation>
 <translation id="7353601530677266744">ແຖວຄໍາສັ່ງ</translation>
 <translation id="7359588939039777303">ບລັອກໂຄສະນາໄວ້ແລ້ວ.</translation>
+<translation id="7365596969960773405"><ph name="MANAGE_ADDRESSES_FOCUSED_FRIENDLY_MATCH_TEXT" />, ກົດ Tab ຈາກນັ້ນກົດ Enter ເພື່ອເພີ່ມ ແລະ ຈັດການທີ່ຢູ່ໃນການຕັ້ງຄ່າ Chrome</translation>
 <translation id="7365849542400970216">ຮູ້ຈັກການນຳໃຊ້ອຸປະກອນຂອງທ່ານບໍ?</translation>
 <translation id="7372973238305370288">ຜົນ​ການຄົ້ນ​ຫາ</translation>
 <translation id="7374733840632556089">ບັນຫານີ້ເກີດຂຶ້ນເນື່ອງຈາກໃບຮັບຮອງທີ່ທ່ານ ຫຼື ຄົນອື່ນຕິດຕັ້ງໃນອຸປະກອນຂອງທ່ານ. ເປັນທີ່ຮູ້ກັນວ່າໃບຮັບຮອງນີ້ຖືກໃຊ້ເພື່ອຕິດຕາມ ແລະ ສະກັດກັ້ນເຄືອຂ່າຍ ແລະ Chrome ບໍ່ເຊື່ອຖືໃບຮັບຮອງນີ້. ເຖິງແມ່ນວ່າຈະມີບາງກໍລະນີທີ່ການຕິດຕາມອາດຈະຖືກກົດໝາຍ ເຊັ່ນ: ໃນເຄືອຂ່າຍຂອງໂຮງຮຽນ ຫຼື ບໍລິສັດ, ແຕ່ Chrome ກໍຍັງຕ້ອງການໃຫ້ແນ່ໃຈວ່າທ່ານຮັບຮູ້ວ່າມີການຕິດຕາມເບິ່ງ ເຖິງແມ່ນວ່າທ່ານບໍ່ສາມາດຢຸດມັນໄດ້ກໍຕາມ. ການຕິດຕາມອາດຈະເກີດຂຶ້ນໃນໂປຣແກຣມທ່ອງເວັບ ຫຼື ແອັບພລິເຄຊັນໃດໆກໍຕາມທີ່ເຂົ້າເຖິງເວັບໄຊໄດ້.</translation>
@@ -1800,6 +1812,7 @@
 <translation id="7938958445268990899">ໃບຢັ້ງຢືນຂອງເຊີບເວີໃຊ້ບໍ່ໄດ້ເທື່ອ.</translation>
 <translation id="7942349550061667556">ສີ​ແດງ</translation>
 <translation id="7947285636476623132">ກວດເບິ່ງປີໝົດອາຍຸຂອງທ່ານ ແລະ ລອງອີກຄັ້ງ</translation>
+<translation id="7950027195171824198">ຈັດການການຕັ້ງຄ່າຄຸກກີ້ຂອງທ່ານໃນການຕັ້ງຄ່າ Chrome</translation>
 <translation id="7951415247503192394">(32-ບິດ)</translation>
 <translation id="7953569069500808819">ຫຍິບຂອບເທິງສຸດ</translation>
 <translation id="7956713633345437162">ບຸກມາກສ໌ມື​ຖື</translation>
@@ -1831,6 +1844,7 @@
 <translation id="8066955247577885446">ຂໍອະໄພ, ມີບາງຢ່າງຜິດພາດ.</translation>
 <translation id="8067872629359326442">ທ່ານຫາກໍປ້ອນລະຫັດຜ່ານຂອງທ່ານໃສ່ເວັບໄຊຫຼອກລວງ. Chromium ສາມາດຊ່ວຍໄດ້. ເພື່ອປ່ຽນລະຫັດຜ່ານຂອງທ່ານ ແລະ ແຈ້ງບອກ Google ວ່າບັນຊີຂອງທ່ານອາດຈະມີຄວາມສ່ຽງ, ກະລຸນາຄລິກປົກປ້ອງບັນຊີ.</translation>
 <translation id="8074253406171541171">10x13 (ຊອງຈົດໝາຍ)</translation>
+<translation id="8075898834294118863">ຈັດການການຕັ້ງຄ່າເວັບໄຊ</translation>
 <translation id="8078141288243656252">ບໍ່ສາມາດຂຽນອະທິບາຍຄວາມເຫັນໃນເວລາໝຸນໄດ້</translation>
 <translation id="8079031581361219619">ໂຫຼດເວັບໄຊຄືນໃໝ່ບໍ?</translation>
 <translation id="8086971161893892807">ສະບັບຮ່າງ</translation>
@@ -1886,6 +1900,7 @@
 <translation id="8277900682056760511">ແຜ່ນວຽກຂອງເຄື່ອງຈັດການການຈ່າຍເງິນເປີດຢູ່</translation>
 <translation id="8281084378435768645">Large-Photo</translation>
 <translation id="8282947398454257691">ຮູ້​ຈັກ​ຕົວ​ລະ​ບຸ​ອຸ​ປະ​ກອນ​ສະ​ເພາະ​ຂອງ​ທ່ານ</translation>
+<translation id="8284769179630993263">ຈັດການ Safe Browsing ຂອງທ່ານ ແລະ ອື່ນໆໃນການຕັ້ງຄ່າ Chrome</translation>
 <translation id="8286036467436129157">ເຂົ້າສູ່ລະບົບ</translation>
 <translation id="8288807391153049143">ສະແດງໃບຮອງຮັບ</translation>
 <translation id="8289355894181816810">ຕິດຕໍ່ຫາຜູ້ຄວບຄຸມເຄືອຂ່າຍຂອງທ່ານ ຖ້າທ່ານບໍ່ແນ່ໃຈວ່າ ອັນນີ້ໝາຍຄວາມວ່າຫຍັງ.</translation>
@@ -1914,6 +1929,7 @@
 <translation id="8380941800586852976">ອັນຕະລາຍ</translation>
 <translation id="8381674639488873545">ການຮຽກເກັບເງິນເຫຼົ່ານີ້ອາດຈະເກັບຄັ້ງດຽວ ຫຼື ເປັນປະຈຳຫຼາຍຄັ້ງ ແລະ ອາດຈະບໍ່ເຫັນໄດ້ຈະແຈ້ງ. <ph name="BEGIN_LINK" />ຢືນຢັນໃຫ້ສະແດງ<ph name="END_LINK" /></translation>
 <translation id="8390725133630534698">ນະໂຍບາຍຂອງຜູ້ເບິ່ງແຍງລະບົບໄດ້ບລັອກການແບ່ງປັນຈາກ <ph name="ORIGIN_NAME" /> ກັບ <ph name="VM_NAME" /> ໄວ້ແລ້ວ</translation>
+<translation id="8405579342203358118">ຈັດການວ່າຂໍ້ມູນໃດທີ່ທ່ານຈະຊິ້ງຂໍ້ມູນໃນການຕັ້ງຄ່າ Chrome</translation>
 <translation id="8412145213513410671">ການຂັດຂ້ອງ (<ph name="CRASH_COUNT" />)</translation>
 <translation id="8412392972487953978">ທ່ານຕ້ອງປ້ອນລະຫັດຜ່ານອັນດຽວກັນສອງຄັ້ງ.</translation>
 <translation id="8416694386774425977">ການກຳນົດຄ່າເຄືອຂ່າຍໃຊ້ບໍ່ໄດ້ ແລະ ບໍ່ສາມາດຖືກນຳເຂົ້າໄດ້.
@@ -1921,6 +1937,7 @@
 <ph name="DEBUG_INFO" /></translation>
 <translation id="8424582179843326029"><ph name="FIRST_LABEL" /> <ph name="SECOND_LABEL" /> <ph name="THIRD_LABEL" /></translation>
 <translation id="8428213095426709021">ການ​ຕັ້ງຄ່າ</translation>
+<translation id="8431194080598727332"><ph name="MANAGE_COOKIES_FOCUSED_FRIENDLY_MATCH_TEXT" />, ກົດ Tab ຈາກນັ້ນກົດ Enter ເພື່ອຈັດການການຕັ້ງຄ່າຄຸກກີ້ຂອງທ່ານໃນການຕັ້ງຄ່າ Chrome</translation>
 <translation id="8433057134996913067">ນີ້ຈະນຳທ່ານອອກຈາກລະບົບເວັບໄຊສ່ວນໃຫຍ່.</translation>
 <translation id="8437238597147034694">ປ່ຽນກັບຄືນຄໍາສັ່ງຍ້າຍ</translation>
 <translation id="8438786541497918448">ໃຊ້ກ້ອງຖ່າຍຮູບ ແລະ ໄມໂຄຣໂຟນບໍ?</translation>
@@ -1940,6 +1957,7 @@
 <translation id="8503813439785031346">ຊື່​ຜູ້​ໃຊ້</translation>
 <translation id="8507227106804027148">ແຖວຄໍາສັ່ງ</translation>
 <translation id="8508648098325802031">ໄອຄອນຊອກຫາ</translation>
+<translation id="8511402995811232419">ຈັດການຄຸກກີ້</translation>
 <translation id="8522552481199248698">Chrome ສາມາດຊ່ວຍທ່ານປົກປ້ອງບັນຊີ Google ຂອງທ່ານ ແລະ ປ່ຽນລະຫັດຜ່ານຂອງທ່ານໄດ້.</translation>
 <translation id="8530813470445476232">ລຶບລ້າງປະຫວັດການທ່ອງເວັບ, ຄຸກກີ້, ແຄສ ແລະ ອື່ນໆອີກໃນການຕັ້ງຄ່າ Chrome</translation>
 <translation id="8533619373899488139">ເຂົ້າຫາ &lt;strong&gt;chrome://policy&lt;/strong&gt; ເພື່ອເບິ່ງລາຍຊື່ຂອງ URL ທີ່ຖືກບລັອກໄວ້ ແລະ ນະໂຍບາຍອື່ນທີ່ຜູ້ຄວບຄຸມລະບົບຂອງທ່ານບັງຄັບໃຊ້.</translation>

@@ -352,6 +352,17 @@ Jika Anda menonaktifkan kebijakan ini, scroll halaman web ke fragmen teks terten
       Jika kebijakan tidak disetel, <ph name="PRODUCT_NAME" /> akan mencoba mendeteksi apakah server ada di intranet. Setelah itu, barulah permintaan IWA akan direspons. Jika server dideteksi sebagai intranet, <ph name="PRODUCT_NAME" /> akan mengabaikan permintaan IWA darinya.
 
       Catatan: Pisahkan beberapa nama server dengan koma. Karakter pengganti, <ph name="WILDCARD_VALUE" />, diizinkan.</translation>
+<translation id="1491015714523410492">Saat login melalui layar kunci, <ph name="PRODUCT_OS_NAME" /> dapat melakukan autentikasi terhadap server (online) atau menggunakan sandi yang tersimpan di cache (offline).
+
+      Jika kebijakan ini tidak disetel atau disetel ke nilai -1, kebijakan ini tidak akan menerapkan autentikasi online di layar kunci dan akan mengizinkan pengguna menggunakan autentikasi offline sampai ada alasan lain, selain kebijakan ini, yang menerapkan autentikasi online.
+
+      Jika kebijakan disetel ke nilai 0, autentikasi online akan selalu diperlukan.
+
+      Menyetel kebijakan ini ke nilai lain akan menentukan jumlah hari sejak autentikasi online terakhir hingga saat pengguna diwajibkan menggunakan autentikasi online lagi untuk login berikutnya melalui layar kunci.
+
+      Kebijakan ini memengaruhi pengguna yang diautentikasi menggunakan SAML.
+
+      Nilai kebijakan harus ditentukan dalam hari.</translation>
 <translation id="1502843533062797703">Aktifkan pemblokiran injeksi software pihak ketiga</translation>
 <translation id="150857982247452081">Memungkinkan Anda menyetel daftar protokol, dan daftar terkait pola asal yang diizinkan untuk setiap protokol, yang dapat meluncurkan aplikasi eksternal tanpa meminta izin pengguna. Pemisah di akhir tidak boleh disertakan saat mencantumkan protokol, jadi cantumkan "skype" bukan "skype:" atau "skype://".
 
@@ -381,6 +392,13 @@ Jika Anda menonaktifkan kebijakan ini, scroll halaman web ke fragmen teks terten
 <translation id="1522425503138261032">Izinkan situs melacak lokasi fisik pengguna</translation>
 <translation id="1523774894176285446">Browser alternatif untuk membuka situs yang dikonfigurasi.</translation>
 <translation id="152657506688053119">Daftar URL pengganti untuk penyedia penelusuran default</translation>
+<translation id="1527298988676981599">Menyetel kebijakan memungkinkan Anda menetapkan daftar pola URL yang menentukan situs mana yang otomatis diizinkan untuk mengakses perangkat USB dengan ID vendor dan produk tertentu di layar login. Setiap item dalam daftar memerlukan kolom <ph name="DEVICES_FIELD_NAME" /> dan <ph name="URLS_FIELD_NAME" /> agar kebijakan menjadi valid. Setiap item di kolom <ph name="DEVICES_FIELD_NAME" /> dapat memiliki kolom <ph name="VENDOR_ID_FIELD_NAME" /> dan <ph name="PRODUCT_ID_FIELD_NAME" />. Jika kolom <ph name="VENDOR_ID_FIELD_NAME" /> tidak ada, kebijakan akan cocok dengan perangkat apa pun. Jika kolom <ph name="PRODUCT_ID_FIELD_NAME" /> tidak ada, kebijakan akan cocok dengan perangkat apa pun yang memiliki ID vendor tertentu. Kebijakan yang memiliki kolom <ph name="PRODUCT_ID_FIELD_NAME" /> tanpa kolom <ph name="VENDOR_ID_FIELD_NAME" /> menjadi tidak valid.
+
+      Model izin USB akan mengizinkan URL yang telah ditentukan untuk mengakses perangkat USB sebagai asal level atas. Jika bingkai sematan memerlukan akses ke perangkat USB, header <ph name="FEATURE_POLICY_HEADER_NAME" /> 'usb' harus digunakan untuk memberikan akses. URL harus valid. Jika tidak, kebijakan akan diabaikan.
+
+      Tidak digunakan lagi: Model izin USB digunakan untuk mendukung penentuan URL peminta dan sematan. Model izin ini tidak digunakan lagi dan hanya didukung untuk kompatibilitas mundur dengan cara berikut: jika URL peminta dan sematan ditentukan, URL sematan akan diizinkan sebagai asal level atas dan URL peminta akan diabaikan sepenuhnya.
+
+      Jika kebijakan tidak disetel, nilai default global akan digunakan untuk semua situs (tidak ada akses otomatis).</translation>
 <translation id="1530812829012954197">Selalu urai pola URL berikut di browser host</translation>
 <translation id="1534690481294492142">Jika kebijakan disetel ke Aktif atau tidak disetel, <ph name="PRODUCT_NAME" /> dapat bertindak sebagai proxy di antara <ph name="CLOUD_PRINT_NAME" /> dan printer lama yang terhubung ke mesin. Dengan Akun Google-nya, pengguna dapat mengaktifkan proxy cloud print melalui autentikasi.
 
@@ -1152,6 +1170,7 @@ Jika kebijakan ini tidak ditetapkan, layar privasi mula-mula akan dinonaktifkan 
       Perlu diketahui bahwa jika kebijakan ini disetel ke benar (true) tetapi BrowserAddPersonEnabled disetel ke salah (false), pengguna tidak akan dapat membuat profil sekunder. Berlaku juga untuk BrowserGuestModeEnabled dan mode tamu.</translation>
 <translation id="2517466659416174529">Izinkan pembekuan tab di latar belakang</translation>
 <translation id="2518231489509538392">Mengizinkan pemutaran audio</translation>
+<translation id="2520551905471951523">Gunakan prioritas tinggi untuk proses audio</translation>
 <translation id="2521581787935130926">Tampilkan pintasan aplikasi di bilah bookmark</translation>
 <translation id="2522304491589804974">Mengonfigurasi daftar penginstalan ekstensi yang diizinkan</translation>
 <translation id="2529880111512635313">Mengonfigurasi daftar aplikasi dan ekstensi yang dipasang secara paksa</translation>
@@ -1337,6 +1356,7 @@ Jika kebijakan ini tidak ditetapkan, layar privasi mula-mula akan dinonaktifkan 
 <translation id="2787774054174244402">Jika kebijakan ditetapkan ke Benar (True), pengguna tidak akan dapat menulis ke perangkat penyimpanan eksternal.
 
       Jika ExternalStorageReadOnly ditetapkan ke Salah (False) atau tidak ditetapkan, pengguna dapat membuat dan memodifikasi file perangkat penyimpanan eksternal yang dapat ditulis secara fisik, kecuali penyimpanan eksternal diblokir. (Anda dapat memblokir penyimpanan eksternal dengan menetapkan ExternalStorageDisable ke Benar (True).)</translation>
+<translation id="2789742777235177478">Membatasi waktu bagi pengguna yang diautentikasi melalui GAIA tanpa SAML untuk dapat login secara offline di layar kunci</translation>
 <translation id="2796714419743648316">Daftar yang Diizinkan terkait Batas Waktu per Aplikasi</translation>
 <translation id="2796896367838042659">Kebijakan ini akan menentukan aplikasi dan URL mana yang harus diizinkan untuk batasan penggunaan per aplikasi.
         Daftar yang diizinkan dan dikonfigurasi akan diterapkan ke aplikasi yang diinstal pada <ph name="PRODUCT_OS_NAME" /> untuk pengguna tertentu dengan batas waktu per aplikasi.
@@ -1741,6 +1761,15 @@ Jika kebijakan ini tidak ditetapkan, layar privasi mula-mula akan dinonaktifkan 
       Di <ph name="MS_WIN_NAME" />, fungsi ini hanya tersedia di instance yang dihubungkan ke domain <ph name="MS_AD_NAME" />, dijalankan di Windows 10 Pro, atau didaftarkan di <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />. Di <ph name="MAC_OS_NAME" />, fungsi ini hanya tersedia di instance yang dikelola melalui MDM, atau dihubungkan ke domain melalui MCX.</translation>
 <translation id="3261592499545947104">Jumlah detik sebelum masa berlaku sertifikat habis saat perpanjangan harus dipicu.</translation>
 <translation id="3264793472749429012">Penyandiaksaraan penyedia penelusuran default</translation>
+<translation id="3265738316212552123">Menyetel kebijakan memungkinkan Anda menetapkan daftar pola URL yang menentukan situs mana yang otomatis diizinkan untuk mengakses perangkat USB dengan ID vendor dan produk tertentu. Setiap item dalam daftar memerlukan kolom <ph name="DEVICES_FIELD_NAME" /> dan <ph name="URLS_FIELD_NAME" /> agar kebijakan menjadi valid. Setiap item di kolom <ph name="DEVICES_FIELD_NAME" /> dapat memiliki kolom <ph name="VENDOR_ID_FIELD_NAME" /> dan <ph name="PRODUCT_ID_FIELD_NAME" />. Jika kolom <ph name="VENDOR_ID_FIELD_NAME" /> tidak ada, kebijakan akan cocok dengan perangkat apa pun. Jika kolom <ph name="PRODUCT_ID_FIELD_NAME" /> tidak ada, kebijakan akan cocok dengan perangkat apa pun yang memiliki ID vendor tertentu. Kebijakan yang memiliki kolom <ph name="PRODUCT_ID_FIELD_NAME" /> tanpa kolom <ph name="VENDOR_ID_FIELD_NAME" /> menjadi tidak valid.
+
+      Model izin USB akan mengizinkan URL yang telah ditentukan untuk mengakses perangkat USB sebagai asal level atas. Jika bingkai sematan memerlukan akses ke perangkat USB, header <ph name="FEATURE_POLICY_HEADER_NAME" /> 'usb' harus digunakan untuk memberikan akses. URL harus valid. Jika tidak, kebijakan akan diabaikan.
+
+      Tidak digunakan lagi: Model izin USB digunakan untuk mendukung penentuan URL peminta dan sematan. Model izin ini tidak digunakan lagi dan hanya didukung untuk kompatibilitas mundur dengan cara berikut: jika URL peminta dan sematan ditentukan, URL sematan akan diizinkan sebagai asal level atas dan URL peminta akan diabaikan sepenuhnya.
+
+      Tidak menyetel kebijakan berarti <ph name="DEFAULT_WEB_USB_GUARD_SETTING_POLICY_NAME" /> akan berlaku, jika disetel. Jika tidak, setelan pribadi pengguna akan digunakan.
+
+      Pola URL dalam kebijakan ini tidak boleh bertentangan dengan pola URL yang dikonfigurasi melalui <ph name="WEB_USB_BLOCKED_FOR_URLS_POLICY_NAME" />. Jika bertentangan, kebijakan ini akan lebih diprioritaskan daripada <ph name="WEB_USB_BLOCKED_FOR_URLS_POLICY_NAME" /> dan <ph name="WEB_USB_ASK_FOR_URLS_POLICY_NAME" />.</translation>
 <translation id="3273221114520206906">Setelan JavaScript default</translation>
 <translation id="328347261792478720">Secara default, browser akan menampilkan rekomendasi media yang dipersonalisasi kepada pengguna. Jika kebijakan ini disetel ke Nonaktif, rekomendasi ini akan disembunyikan dari pengguna. Jika kebijakan ini disetel ke Aktif atau tidak disetel, rekomendasi media akan ditampilkan kepada pengguna.</translation>
 <translation id="3284094172359247914">Penggunaan kontrol WebUSB API</translation>
@@ -1825,6 +1854,13 @@ Jika kebijakan ini tidak ditetapkan, layar privasi mula-mula akan dinonaktifkan 
       Jika tidak disetel, 0 milidetik akan digunakan sebagai waktu tunggu.
 
       Jika kebijakan <ph name="DEVICE_LOCAL_ACCOUNT_AUTO_LOGIN_ID_POLICY_NAME" /> tidak disetel, kebijakan ini tidak berpengaruh.</translation>
+<translation id="341285788698114069">Kebijakan ini mengontrol prioritas proses audio di Windows.
+      Jika kebijakan ini diaktifkan, proses audio akan berjalan dengan prioritas di atas normal.
+      Jika kebijakan ini dinonaktifkan, proses audio akan berjalan dengan prioritas normal.
+      Jika kebijakan ini tidak disetel, konfigurasi default untuk proses audio akan digunakan.
+      Kebijakan ini ditujukan sebagai tindakan sementara untuk memberi perusahaan kemampuan
+      menjalankan audio dengan prioritas yang lebih tinggi guna menyelesaikan masalah performa tertentu terkait perekaman audio.
+      Kebijakan ini akan dihapus di masa mendatang.</translation>
 <translation id="3412937883532015092">Jika kebijakan disetel ke angka, <ph name="PRODUCT_NAME" /> akan menampilkan pesan untuk angka milidetik tersebut, kemudian membuka browser alternatif.
 
       Jika kebijakan tidak disetel atau disetel ke 0, navigasi ke URL yang ditetapkan akan segera membuka kebijakan tersebut di browser alternatif.</translation>
@@ -2206,6 +2242,7 @@ Jika kebijakan ini tidak disetel, setelan default-nya tidak diizinkan bagi pengg
 
       Jika kebijakan ini tidak disetel, SPDY akan tersedia.</translation>
 <translation id="3891357445869647828">Mengaktifkan JavaScript</translation>
+<translation id="3897218615484393758">Membatasi waktu bagi pengguna yang diautentikasi melalui SAML untuk dapat login secara offline di layar kunci</translation>
 <translation id="3898345958122666461">Nonaktifkan NTLMv2</translation>
 <translation id="3898795800259311780">Mengizinkan atau menolak tangkapan layar</translation>
 <translation id="3907683835264956726">Memungkinkan login pengguna online di layar kunci. Jika kebijakan disetel ke benar (true), autentikasi ulang online di layar kunci akan dipicu, misalnya oleh <ph name="POLICY" />.
@@ -2586,6 +2623,7 @@ Jika disetel ke Salah (False), <ph name="PRODUCT_NAME" /> tidak akan menggunakan
 <translation id="4534500438517478692">Nama pembatasan Android:</translation>
 <translation id="4541530620466526913">Akun lokal perangkat</translation>
 <translation id="4543502256674577024">Setelan update perangkat</translation>
+<translation id="454585952814397564">Gunakan Prioritas normal untuk proses audio</translation>
 <translation id="4548555985107150628">Kebijakan ini tidak digunakan lagi. Gunakan kebijakan <ph name="DEFAULT_PLUGINS_SETTING_POLICY_NAME" /> untuk mengontrol ketersediaan plugin Flash dan <ph name="ALWAYS_OPEN_PDF_EXTERNALLY_POLICY_NAME" /> untuk mengontrol apakah penampil PDF yang terintegrasi akan digunakan untuk membuka file PDF atau tidak.
 
       Menentukan daftar plugin yang diaktifkan di <ph name="PRODUCT_NAME" /> dan mencegah pengguna mengubah setelan ini.
@@ -2660,6 +2698,7 @@ Jika disetel ke Salah (False), <ph name="PRODUCT_NAME" /> tidak akan menggunakan
 <translation id="4632343302005518762">Izinkan <ph name="PRODUCT_FRAME_NAME" /> menangani jenis konten yang tercantum</translation>
 <translation id="4632566332417930481">Larang penggunaan Developer Tools pada ekstensi yang diinstal oleh kebijakan perusahaan, izinkan penggunaan Developer Tools dalam konteks lainnya</translation>
 <translation id="4635284822166984665">Waktu perangkat akan mulai mengisi daya, disesuaikan dengan zona waktu lokal perangkat.</translation>
+<translation id="4646739075621507361">Laporkan tugas pencetakan</translation>
 <translation id="4649395978608361979">Tujuan printer lokal</translation>
 <translation id="4650759511838826572">Nonaktifkan skema protokol URL</translation>
 <translation id="465099050592230505">URL toko web perusahaan (tidak digunakan)</translation>
@@ -3195,6 +3234,7 @@ Jika disetel ke Salah (False), <ph name="PRODUCT_NAME" /> tidak akan menggunakan
           Jika kebijakan ini tidak ditetapkan, fitur papan klip bersama akan diaktifkan secara default.
 
           Penetapan kebijakan di semua platform yang diinginkan bergantung pada admin. Sebaiknya tetapkan kebijakan ini ke satu nilai di semua platform.</translation>
+<translation id="5389708774452952523">Mengizinkan proses audio berjalan dengan prioritas di atas normal di Windows</translation>
 <translation id="5389798680516458665">Menyetel kebijakan memungkinkan Anda menetapkan daftar pola URL yang menentukan situs yang diizinkan untuk menampilkan gambar.
 
       Tidak menyetel kebijakan berarti <ph name="DEFAULT_IMAGES_SETTING_ENABLED_POLICY_NAME" /> akan berlaku untuk semua situs, jika disetel. Jika tidak, setelan pribadi pengguna akan digunakan.
@@ -3704,6 +3744,7 @@ Jika disetel ke Salah (False), <ph name="PRODUCT_NAME" /> tidak akan menggunakan
 <translation id="6066761914755798079">Jika <ph name="DEFAULT_SEARCH_PROVIDER_ENABLED_POLICY_NAME" /> aktif, menyetel <ph name="DEFAULT_SEARCH_PROVIDER_SUGGEST_URL_POLICY_NAME" /> akan menentukan URL mesin telusur untuk menyediakan saran penelusuran. URL harus menyertakan string <ph name="SEARCH_TERM_MARKER" />, yang diganti di kueri dengan istilah penelusuran pengguna.
 
       Anda dapat menentukan URL penelusuran Google sebagai: <ph name="GOOGLE_SUGGEST_SEARCH_URL" />.</translation>
+<translation id="606742564823687992">Jangan laporkan tugas pencetakan</translation>
 <translation id="6070374129526507093">Tidak digunakan lagi di M69. Sebagai gantinya,
       gunakan OverrideSecurityRestrictionsOnInsecureOrigin.
 
@@ -4679,6 +4720,7 @@ Jika kebijakan ini tidak disetel atau kosong, pengguna dapat menyetel akun Googl
 
       Penelusuran dan penginstalan otomatis untuk plugin yang tidak ada, tidak didukung lagi.</translation>
 <translation id="7267809745244694722">Default tombol media ke tombol fungsi</translation>
+<translation id="7269263983506766969">Gunakan prioritas default untuk proses audio</translation>
 <translation id="7270001383428188269">ID untuk sertifikat klien ini.</translation>
 <translation id="7271085005502526897">Impor beranda dari browser default saat pertama kali dijalankan</translation>
 <translation id="7271181393214180342">Jika kebijakan disetel ke Aktif, autentikasi HTTP akan mematuhi persetujuan dari kebijakan KDC. Dengan kata lain, <ph name="PRODUCT_NAME" /> akan mendelegasikan kredensial pengguna ke layanan yang sedang diakses jika KDC menyetel <ph name="OK_AS_DELEGATE" /> pada tiket layanan. Lihat RFC 5896 ( https://tools.ietf.org/html/rfc5896.html ). Layanan juga harus diizinkan oleh <ph name="AUTH_NEGOTIATE_DELEGATE_ALLOWLIST_POLICY_NAME" />.
@@ -4780,6 +4822,10 @@ Jika kebijakan ini tidak disetel atau kosong, pengguna dapat menyetel akun Googl
 
       Jika tidak disetel, <ph name="ASK_NOTIFICATIONS_POLICY_NAME" /> akan berlaku tetapi pengguna dapat mengubah setelan ini.</translation>
 <translation id="747275827471712187">Mengembalikan cookie di situs ini ke perilaku <ph name="ATTRIBUTE_SAMESITE_NAME" /> lama</translation>
+<translation id="7476158778585368567">Melaporkan tugas pencetakan perangkat.
+
+      Jika kebijakan disetel ke salah (false) atau tidak disetel, informasi tidak akan dilaporkan.
+      Jika disetel ke benar (true), tugas pencetakan perangkat akan dilaporkan.</translation>
 <translation id="7476447711788742702">Menyetel kebijakan akan menentukan tindakan yang diambil <ph name="PRODUCT_OS_NAME" /> jika pengguna menutup penutup perangkat.
 
       Tidak menyetel kebijakan berarti tindakan Penangguhan akan diambil.
@@ -5710,6 +5756,17 @@ Kebijakan akan dihapus pada M75.</translation>
 
       Tidak menyetel kebijakan sama artinya dengan mengaktifkan kebijakan, dan pengguna tidak dapat menonaktifkannya.</translation>
 <translation id="8789338675663014675">Mengonfigurasi kebijakan terkait ekstensi. Pengguna tidak diizinkan untuk menginstal ekstensi yang diblokir kecuali tercantum dalam daftar yang diizinkan. Selain itu, Anda juga dapat memaksa <ph name="PRODUCT_NAME" /> agar otomatis menginstal ekstensi dengan menentukannya dalam <ph name="EXTENSION_INSTALL_FORCELIST_POLICY_NAME" />. Ekstensi yang diinstal otomatis akan diinstal meskipun ada dalam daftar yang tidak diizinkan.</translation>
+<translation id="8796924197496002727">Saat login melalui layar kunci, <ph name="PRODUCT_OS_NAME" /> dapat melakukan autentikasi terhadap server (online) atau menggunakan sandi yang tersimpan di cache (offline).
+
+      Jika kebijakan ini tidak disetel atau disetel ke nilai -1, kebijakan ini tidak akan menerapkan autentikasi online di layar kunci dan akan mengizinkan pengguna menggunakan autentikasi offline sampai ada alasan lain, selain kebijakan ini, yang menerapkan autentikasi online.
+
+      Jika kebijakan disetel ke nilai 0, autentikasi online akan selalu diperlukan.
+
+      Menyetel kebijakan ini ke nilai lain akan menentukan jumlah hari sejak autentikasi online terakhir hingga saat pengguna diwajibkan menggunakan autentikasi online lagi untuk login berikutnya melalui layar kunci.
+
+      Kebijakan ini memengaruhi pengguna yang diautentikasi menggunakan GAIA tanpa SAML.
+
+      Nilai kebijakan harus ditentukan dalam hari.</translation>
 <translation id="879697755145469671">Jangan deteksi jendela yang tertutup</translation>
 <translation id="8798099450830957504">Default</translation>
 <translation id="8799492680917278474">Jika kebijakan ini disetel, koneksi akses jarak jauh akan otomatis terputus setelah jumlah menit yang ditentukan di kebijakan telah dilalui. Ini tidak akan mencegah klien menghubungkan kembali setelah durasi sesi maksimum tercapai. Menyetel kebijakan ke nilai yang tidak ada dalam rentang minimum/maksimum dapat mencegah host dimulai. Kebijakan ini tidak memengaruhi skenario dukungan jarak jauh.

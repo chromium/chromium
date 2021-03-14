@@ -40,7 +40,6 @@
 <translation id="123724288017357924">Tải lại trang hiện tại, bỏ qua nội dung được lưu trong bộ nhớ đệm</translation>
 <translation id="124678866338384709">Đóng thẻ hiện tại</translation>
 <translation id="1258753120186372309">Hình tượng trưng của Google: <ph name="DOODLE_DESCRIPTION" /></translation>
-<translation id="1263231323834454256">Danh sách đọc</translation>
 <translation id="1266864766717917324">Không thể chia sẻ <ph name="CONTENT_TYPE" /></translation>
 <translation id="1283039547216852943">Nhấn để mở rộng</translation>
 <translation id="1285310382777185058">Thay đổi ngôn ngữ</translation>
@@ -994,7 +993,6 @@ Dữ liệu của phiên Ẩn danh sẽ chỉ bị xóa khỏi Chrome khi bạn 
 <translation id="7774809984919390718">{PAYMENT_METHOD,plural, =1{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 và <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> tùy chọn khác}other{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 và <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> tùy chọn khác}}</translation>
 <translation id="7778840695157240389">Hãy kiểm tra lại sau để xem các tin bài mới</translation>
 <translation id="7786595606756654269">Trợ lý Google giúp cải thiện trải nghiệm nhập liệu bằng giọng nói khi tìm kiếm trên web và tương tác với các trang web mà bạn đang mở. Trợ lý Google sẽ nhận URL và nội dung của những trang web mà bạn sử dụng Trợ lý Google.</translation>
-<translation id="7790349552933995572">Màn hình chính</translation>
 <translation id="7791543448312431591">Thêm</translation>
 <translation id="7798392620021911922">Đã khôi phục <ph name="TAB_COUNT" /> thẻ</translation>
 <translation id="780301667611848630">Không, cảm ơn</translation>
@@ -1202,7 +1200,6 @@ Dữ liệu của phiên Ẩn danh sẽ chỉ bị xóa khỏi Chrome khi bạn 
 <translation id="9149286894143103695">Thêm trang web này vào Màn hình chính của điện thoại để bạn có thể truy cập dễ dàng hơn</translation>
 <translation id="9155898266292537608">Bạn cũng có thể tìm kiếm bằng cách nhấn nhanh vào một từ</translation>
 <translation id="9169507124922466868">Lịch sử di chuyển đang mở ở nửa dưới màn hình</translation>
-<translation id="9191031968346938109">Thêm vào…</translation>
 <translation id="9199368092038462496">{NUM_MINS,plural, =1{Đã kiểm tra 1 phút trước}other{Đã kiểm tra # phút trước}}</translation>
 <translation id="9204836675896933765">Còn lại 1 tệp</translation>
 <translation id="9206873250291191720">A</translation>

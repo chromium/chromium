@@ -40,7 +40,6 @@
 <translation id="123724288017357924">လက်ရှိစာမျက်နှာကို ပြန်ဖွင့်ပြီး ကက်ရှ်ကို ပယ်ရန်</translation>
 <translation id="124678866338384709">လက်ရှိတဘ်ကို ပိတ်ရန်</translation>
 <translation id="1258753120186372309">Google doodle- <ph name="DOODLE_DESCRIPTION" /></translation>
-<translation id="1263231323834454256">ဖတ်ရန် စာရင်း</translation>
 <translation id="1266864766717917324"><ph name="CONTENT_TYPE" /> ကို မျှဝေ၍မရပါ။</translation>
 <translation id="1283039547216852943">ချဲ့ရန် တို့ပါ</translation>
 <translation id="1285310382777185058">ဘာသာစကား ပြောင်းခြင်း</translation>
@@ -993,7 +992,6 @@
 <translation id="7774809984919390718">{PAYMENT_METHOD,plural, =1{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 နှင့် နောက်ထပ် <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> ခု}other{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 နှင့် နောက်ထပ် <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> ခု}}</translation>
 <translation id="7778840695157240389">သတင်းဆောင်းပါးသစ်များအတွက် နောက်မှ ပြန်လာကြည့်ပါ</translation>
 <translation id="7786595606756654269">ဝဘ်တွင်ရှာဖွေခြင်းနှင့် သင်ဖွင့်ထားသော ဝဘ်ဆိုက်များအသုံးပြုခြင်းတို့အတွက် ပိုကောင်းမွန်သော အသံအသုံးပြုမှုကို Google Assistant က ပေးပါသည်။ Google Assistant သည် ၎င်းနှင့် အသုံးပြုသောဝဘ်ဆိုက်၏ အကြောင်းအရာများနှင့် URL တို့ကို ရရှိပါမည်။</translation>
-<translation id="7790349552933995572">ပင်မစာမျက်နှာ</translation>
 <translation id="7791543448312431591">ထည့်ရန်</translation>
 <translation id="7798392620021911922">တဘ် <ph name="TAB_COUNT" /> ခု ပြန်ယူထားသည်</translation>
 <translation id="780301667611848630">မလိုပါ</translation>
@@ -1201,7 +1199,6 @@
 <translation id="9149286894143103695">ဤဝဘ်ဆိုက်ကို သင့်ဖုန်း၏ 'ပင်မစာမျက်နှာ' သို့ထည့်ခြင်းဖြင့် ဤနေရာသို့ ပိုမိုလွယ်ကူစွာဝင်ကြည့်နိုင်သည်</translation>
 <translation id="9155898266292537608">စာလုံးပေါ်ကို အမြန်တို့၍လည်း ရှာနိုင်သည်</translation>
 <translation id="9169507124922466868">လမ်းညွှန်မှု မှတ်တမ်း တစ်ဝက်ဖွင့်ထားသည်</translation>
-<translation id="9191031968346938109">ထည့်မည့်နေရာ…</translation>
 <translation id="9199368092038462496">{NUM_MINS,plural, =1{လွန်ခဲ့သော ၁ မိနစ်က စစ်ဆေးခဲ့သည်}other{လွန်ခဲ့သော # မိနစ်က စစ်ဆေးခဲ့သည်}}</translation>
 <translation id="9204836675896933765">ဖိုင် ၁ ဖိုင် ကျန်ပါသည်</translation>
 <translation id="9206873250291191720">A</translation>

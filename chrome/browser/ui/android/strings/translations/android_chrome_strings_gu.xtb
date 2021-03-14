@@ -40,7 +40,6 @@
 <translation id="123724288017357924">કૅશ કરેલ કન્ટેન્ટને અવગણીને વર્તમાન પેજ ફરીથી લોડ કરો</translation>
 <translation id="124678866338384709">વર્તમાન ટૅબ બંધ કરો</translation>
 <translation id="1258753120186372309">Google ડૂડલ: <ph name="DOODLE_DESCRIPTION" /></translation>
-<translation id="1263231323834454256">વાચન સૂચિ</translation>
 <translation id="1266864766717917324"><ph name="CONTENT_TYPE" /> શેર કરી શકાયો નથી</translation>
 <translation id="1283039547216852943">વિસ્તૃત કરવા માટે ટૅપ કરો</translation>
 <translation id="1285310382777185058">ભાષા બદલો</translation>
@@ -994,7 +993,6 @@
 <translation id="7774809984919390718">{PAYMENT_METHOD,plural, =1{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 અને વધુ <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}one{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 અને વધુ <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}other{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 અને વધુ <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}}</translation>
 <translation id="7778840695157240389">નવી સ્ટોરી માટે થોડા સમય પછી ફરી ચેક કરો</translation>
 <translation id="7786595606756654269">વેબમાં શોધખોળ કરવા અને તમે ખોલેલી સાઇટથી જોડાયેલા રહેવામાં Google Assistant એક બહેતર વૉઇસ અનુભવ પ્રદાન કરે છે. Google Assistantનો વપરાશ તમે જે સાઇટ પર કરશો, તેનું URL અને કન્ટેન્ટ Google Assistant મેળવશે.</translation>
-<translation id="7790349552933995572">હોમ સ્ક્રીન</translation>
 <translation id="7791543448312431591">ઉમેરો</translation>
 <translation id="7798392620021911922"><ph name="TAB_COUNT" /> ટૅબ રિસ્ટોર કરી</translation>
 <translation id="780301667611848630">નહીં, આભાર</translation>
@@ -1202,7 +1200,6 @@
 <translation id="9149286894143103695">તમારા ફોનની હોમ સ્ક્રીનમાં આ સાઇટ ઉમેરો જેથી તમે અહીં વધુ સરળતાથી પહોંચી શકો</translation>
 <translation id="9155898266292537608">તમે કોઈએક શબ્દ પર ટૅપ કરીને પણ ઝડપથી શોધી શકો છો</translation>
 <translation id="9169507124922466868">નૅવિગેશન ઇતિહાસ અડધા ભાગમાં ખુલ્લો છે</translation>
-<translation id="9191031968346938109">આમાં ઉમેરો…</translation>
 <translation id="9199368092038462496">{NUM_MINS,plural, =1{1 મિનિટ પહેલાં ચેક કર્યું}one{# મિનિટ પહેલાં ચેક કર્યું}other{# મિનિટ પહેલાં ચેક કર્યું}}</translation>
 <translation id="9204836675896933765">1 ફાઇલ બાકી છે</translation>
 <translation id="9206873250291191720">A</translation>

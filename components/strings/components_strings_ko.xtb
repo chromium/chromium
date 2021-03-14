@@ -287,6 +287,7 @@
 <translation id="2001146170449793414">{COUNT,plural, =1{외 1개}other{외 #개}}</translation>
 <translation id="2003709556000175978">지금 비밀번호 재설정</translation>
 <translation id="2003775180883135320">상단 4공 펀칭</translation>
+<translation id="201174227998721785">Chrome 설정에서 여러 사이트의 권한 및 저장된 데이터 관리</translation>
 <translation id="2025115093177348061">증강 현실</translation>
 <translation id="2025186561304664664">프록시가 자동 설정되도록 지정됩니다.</translation>
 <translation id="2032962459168915086"><ph name="BEGIN_LINK" />프록시 및 방화벽 확인<ph name="END_LINK" /></translation>
@@ -299,6 +300,7 @@
 <translation id="2079545284768500474">실행취소</translation>
 <translation id="20817612488360358">시스템 프록시 설정이 사용하도록 설정되었지만 명시적 프록시 설정도 지정되어 있습니다.</translation>
 <translation id="2082238445998314030">전체 결과 <ph name="TOTAL_RESULTS" />개 중 <ph name="RESULT_NUMBER" />개</translation>
+<translation id="2088086323192747268">동기화 관리 버튼, Enter를 눌러 Chrome 설정에서 내가 동기화하는 정보 관리</translation>
 <translation id="2091887806945687916">소리</translation>
 <translation id="2094505752054353250">도메인이 일치하지 않음</translation>
 <translation id="2096368010154057602">부서</translation>
@@ -363,6 +365,7 @@
 <translation id="2293443924986248631">이 옵션을 사용 설정하면 사이트가 웹 전반에서 사용자를 추적하는 쿠키를 사용할 수 없습니다. 일부 사이트에서는 기능이 작동하지 않을 수 있습니다.</translation>
 <translation id="2295290966866883927">방문한 페이지의 URL은 분석을 위해 Google Cloud 또는 타사로 전송됩니다. 예를 들어, 안전하지 않은 웹사이트를 감지하기 위해 URL을 검사할 수 있습니다.</translation>
 <translation id="2297722699537546652">B5(봉투)</translation>
+<translation id="2298855485018661510">쿠키 관리 버튼, Enter를 눌러 Chrome 설정에서 쿠키 환경설정 관리</translation>
 <translation id="2300306941146563769">업로드되지 않음</translation>
 <translation id="2310021320168182093">Chou2(봉투)</translation>
 <translation id="2316887270356262533">1MB 미만의 저장용량을 확보합니다. 일부 사이트는 다음 방문 시 로드 속도가 느려질 수 있습니다.</translation>
@@ -396,6 +399,7 @@
 <translation id="2465402087343596252">Architecture-E</translation>
 <translation id="2465655957518002998">배달 방법 선택</translation>
 <translation id="2465688316154986572">스테이플</translation>
+<translation id="246725142101294240"><ph name="MANAGE_SECURITY_SETTINGS_FOCUSED_FRIENDLY_MATCH_TEXT" />, Tab을 누른 다음 Enter를 눌러 Chrome 설정에서 세이프 브라우징 등 관리</translation>
 <translation id="2467694685043708798"><ph name="BEGIN_LINK" />네트워크 진단 프로그램 실행<ph name="END_LINK" /></translation>
 <translation id="2469153820345007638">1-to-N 순서</translation>
 <translation id="2470767536994572628">주석을 수정하면 문서가 원래 방향의 단일 페이지 뷰로 돌아갑니다.</translation>
@@ -569,6 +573,7 @@
 <translation id="3188393374551744535">계정 잔액</translation>
 <translation id="3194737229810486521"><ph name="URL" />에서 내 기기에 데이터를 영구 저장하려고 합니다</translation>
 <translation id="3195213714973468956"><ph name="SERVER_NAME" />의 <ph name="PRINTER_NAME" /></translation>
+<translation id="3202497928925179914"><ph name="MANAGE_SYNC_FOCUSED_FRIENDLY_MATCH_TEXT" />, Tab을 누른 다음 Enter를 눌러 Chrome 설정에서 내가 동기화하는 정보 관리</translation>
 <translation id="320323717674993345">결제 취소</translation>
 <translation id="3207960819495026254">북마크에 추가됨</translation>
 <translation id="3209034400446768650">페이지에서 요금을 청구할 수 있음</translation>
@@ -625,6 +630,7 @@
 <translation id="3395827396354264108">수령 방법</translation>
 <translation id="3399952811970034796">배달 주소</translation>
 <translation id="3402261774528610252">이 사이트를 로드하는 데 사용된 연결에는 TLS 1.0 또는 TLS 1.1이 사용되었으며, 이러한 TLS는 지원이 중단되어 향후 사용 중지될 예정입니다. 사용 중지된 후에는 사용자가 이 사이트를 로드할 수 없습니다. 서버에서 TLS 1.2 이상을 사용해야 합니다.</translation>
+<translation id="3409896703495473338">보안 설정 관리</translation>
 <translation id="3414952576877147120">크기:</translation>
 <translation id="3417660076059365994">업로드 또는 첨부한 파일은 분석을 위해 Google Cloud 또는 타사로 전송됩니다. 예를 들어, 민감한 정보 또는 멀웨어를 찾기 위해 파일을 스캔할 수 있습니다.</translation>
 <translation id="3422248202833853650">다른 프로그램을 종료하여 메모리를 확보하세요.</translation>
@@ -656,6 +662,7 @@
 <translation id="350069200438440499">파일 이름:</translation>
 <translation id="3507936815618196901">주변 환경의 3D 지도를 생성하고 카메라 위치를 추적</translation>
 <translation id="3512163584740124171">동일한 정책 그룹에 있는 다른 정책이 우선순위가 높기 때문에 이 정책은 무시됩니다.</translation>
+<translation id="35172538073169599">주소 관리 버튼, Enter를 눌러 Chrome 설정에서 주소 추가 및 관리</translation>
 <translation id="3518941727116570328">다중 객체 처리</translation>
 <translation id="3528171143076753409">서버의 인증서를 신뢰할 수 없습니다.</translation>
 <translation id="3528485271872257980">진한 갈색</translation>
@@ -1194,6 +1201,7 @@
 <translation id="5540224163453853">요청한 글을 찾지 못했습니다.</translation>
 <translation id="5541086400771735334">메일박스 7</translation>
 <translation id="5541546772353173584">이메일 추가</translation>
+<translation id="5542280138350899197">보안 설정 관리 버튼, Enter를 눌러 Chrome 설정에서 세이프 브라우징 등 관리</translation>
 <translation id="5545756402275714221">추천 기사</translation>
 <translation id="5552137475244467770">Chrome에서는 온라인에 게시된 비밀번호 목록에 사용자의 비밀번호가 포함되어 있는지를 주기적으로 확인합니다. 이렇게 하면 비밀번호 및 사용자 이름이 암호화되어 Google을 포함해 누구도 읽을 수 없습니다.</translation>
 <translation id="5556459405103347317">새로고침</translation>
@@ -1448,6 +1456,7 @@
 <translation id="6583674473685352014">B6(봉투)</translation>
 <translation id="6587923378399804057">복사한 링크</translation>
 <translation id="6591833882275308647"><ph name="DEVICE_TYPE" /> 기기는 관리 대상 기기가 아닙니다.</translation>
+<translation id="6592952801936330159">사이트 설정 관리 버튼, Enter를 눌러 Chrome 설정에서 여러 사이트의 권한 및 저장된 데이터 관리</translation>
 <translation id="6596325263575161958">암호화 옵션</translation>
 <translation id="6604181099783169992">모션 또는 조도 센서</translation>
 <translation id="6609880536175561541">Prc7(봉투)</translation>
@@ -1549,6 +1558,7 @@
 <translation id="7053983685419859001">차단</translation>
 <translation id="7058163556978339998"><ph name="BROWSER" />에서 <ph name="ISSUER" /> 업체가 이 웹사이트 인증서를 발급했음을 확인했습니다.</translation>
 <translation id="7062635574500127092">청록색</translation>
+<translation id="706295145388601875">Chrome 설정에서 주소 추가 및 관리</translation>
 <translation id="7064851114919012435">연락처 정보</translation>
 <translation id="70705239631109039">연결의 보안이 완벽하지 않음</translation>
 <translation id="7072826695771387770">안전하지 않은 이벤트 발생</translation>
@@ -1558,6 +1568,7 @@
 <translation id="7083258188081898530">트레이 9</translation>
 <translation id="7086090958708083563">사용자가 요청한 업로드</translation>
 <translation id="7087282848513945231">카운티</translation>
+<translation id="7095139009144195559"><ph name="MANAGE_SITE_SETTINGS_FOCUSED_FRIENDLY_MATCH_TEXT" />, Tab을 누른 다음 Enter를 눌러 Chrome 설정에서 여러 사이트의 권한 및 저장된 데이터 관리</translation>
 <translation id="7108338896283013870">숨기기</translation>
 <translation id="7108634116785509031"><ph name="HOST" />에서 카메라에 액세스하려고 합니다</translation>
 <translation id="7108819624672055576">확장 프로그램에서 허용</translation>
@@ -1623,6 +1634,7 @@
 <translation id="7349430561505560861">A4-Extra</translation>
 <translation id="7353601530677266744">명령줄</translation>
 <translation id="7359588939039777303">광고가 차단되었습니다.</translation>
+<translation id="7365596969960773405"><ph name="MANAGE_ADDRESSES_FOCUSED_FRIENDLY_MATCH_TEXT" />, Tab을 누른 다음 Enter를 눌러 Chrome 설정에서 주소 추가 및 관리</translation>
 <translation id="7365849542400970216">기기 사용 여부를 웹사이트에 알리시겠습니까?</translation>
 <translation id="7372973238305370288">검색결과</translation>
 <translation id="7374733840632556089">나 또는 다른 사용자가 기기에 설치한 인증서로 인해 이 문제가 발생할 수 있습니다. 이 인증서는 네트워크를 모니터링하고 가로막는 데 사용되는 것으로 알려져 있으며, Chrome에서 신뢰하지 않습니다. 학교나 회사 네트워크에서 발생하는 합법적인 모니터링도 존재합니다. 사용자가 멈출 수는 없더라도 모니터링이 이뤄지고 있다는 사실을 Chrome에서는 알립니다. 모니터링은 웹에 액세스하는 모든 브라우저 또는 애플리케이션에서 이뤄집니다.</translation>
@@ -1788,6 +1800,7 @@
 <translation id="7938958445268990899">서버 인증서가 유효하지 않습니다.</translation>
 <translation id="7942349550061667556">빨간색</translation>
 <translation id="7947285636476623132">유효기간 연도를 확인한 후 다시 시도해 주세요.</translation>
+<translation id="7950027195171824198">Chrome 설정에서 쿠키 환경설정 관리</translation>
 <translation id="7951415247503192394">(32비트)</translation>
 <translation id="7953569069500808819">상단 에지 스티치</translation>
 <translation id="7956713633345437162">모바일 북마크</translation>
@@ -1819,6 +1832,7 @@
 <translation id="8066955247577885446">문제 발생</translation>
 <translation id="8067872629359326442">사기성 사이트에 비밀번호를 입력했습니다. Chromium이 계정 보호를 도와드립니다. 비밀번호를 변경하고 계정 보안 위험에 관해 Google에 알리려면 계정 보호를 클릭하세요.</translation>
 <translation id="8074253406171541171">10x13(봉투)</translation>
+<translation id="8075898834294118863">사이트 설정 관리</translation>
 <translation id="8078141288243656252">회전 시 주석을 달 수 없습니다.</translation>
 <translation id="8079031581361219619">사이트를 새로고침하시겠습니까?</translation>
 <translation id="8086971161893892807">초고</translation>
@@ -1874,6 +1888,7 @@
 <translation id="8277900682056760511">결제 핸들러 시트가 열림</translation>
 <translation id="8281084378435768645">Large-Photo</translation>
 <translation id="8282947398454257691">고유 기기 식별자 조회</translation>
+<translation id="8284769179630993263">Chrome 설정에서 세이프 브라우징 등 관리</translation>
 <translation id="8286036467436129157">로그인</translation>
 <translation id="8288807391153049143">인증서 표시</translation>
 <translation id="8289355894181816810">잘 모르는 경우 네트워크 관리자에게 문의하시기 바랍니다.</translation>
@@ -1902,6 +1917,7 @@
 <translation id="8380941800586852976">위험</translation>
 <translation id="8381674639488873545">이러한 금액 청구는 일회성이거나 반복적일 수 있으며 불분명한 방식으로 이루어질 수도 있습니다. <ph name="BEGIN_LINK" />사이트 표시하기<ph name="END_LINK" /></translation>
 <translation id="8390725133630534698">관리자 정책에 의해 <ph name="ORIGIN_NAME" />에서 <ph name="VM_NAME" /> VM으로 공유하는 작업이 차단되었습니다.</translation>
+<translation id="8405579342203358118">Chrome 설정에서 내가 동기화하는 정보 관리</translation>
 <translation id="8412145213513410671">비정상 종료(<ph name="CRASH_COUNT" />회)</translation>
 <translation id="8412392972487953978">동일한 암호를 두 번 입력해야 합니다.</translation>
 <translation id="8416694386774425977">네트워크 설정이 잘못되어 가져올 수 없습니다.
@@ -1909,6 +1925,7 @@
 <ph name="DEBUG_INFO" /></translation>
 <translation id="8424582179843326029"><ph name="FIRST_LABEL" /> <ph name="SECOND_LABEL" /> <ph name="THIRD_LABEL" /></translation>
 <translation id="8428213095426709021">설정</translation>
+<translation id="8431194080598727332"><ph name="MANAGE_COOKIES_FOCUSED_FRIENDLY_MATCH_TEXT" />, Tab을 누른 다음 Enter를 눌러 Chrome 설정에서 쿠키 환경설정 관리</translation>
 <translation id="8433057134996913067">이 작업을 수행하면 대부분의 웹사이트에서 로그아웃됩니다.</translation>
 <translation id="8437238597147034694">이동 실행 취소(&amp;U)</translation>
 <translation id="8438786541497918448">카메라 및 마이크를 사용하시겠습니까?</translation>
@@ -1928,6 +1945,7 @@
 <translation id="8503813439785031346">사용자이름</translation>
 <translation id="8507227106804027148">명령줄</translation>
 <translation id="8508648098325802031">검색 아이콘</translation>
+<translation id="8511402995811232419">쿠키 관리</translation>
 <translation id="8522552481199248698">Chrome을 통해 Google 계정을 보호하고 비밀번호를 변경할 수 있습니다.</translation>
 <translation id="8530813470445476232">Chrome 설정에서 방문 기록, 쿠키, 캐시 등을 삭제하세요.</translation>
 <translation id="8533619373899488139">차단된 URL 및 시스템 관리자가 설정한 기타 정책 목록을 확인하려면 &lt;strong&gt;chrome://policy&lt;/strong&gt;를 방문하세요.</translation>

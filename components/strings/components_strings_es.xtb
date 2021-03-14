@@ -291,6 +291,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="2001146170449793414">{COUNT,plural, =1{y una más}other{y # más}}</translation>
 <translation id="2003709556000175978">Cambia tu contraseña ahora</translation>
 <translation id="2003775180883135320">Perforado cuádruple en la parte superior</translation>
+<translation id="201174227998721785">Gestiona permisos y datos almacenados en sitios en la configuración de Chrome</translation>
 <translation id="2025115093177348061">Realidad aumentada</translation>
 <translation id="2025186561304664664">Se ha establecido que el proxy se configure automáticamente.</translation>
 <translation id="2032962459168915086"><ph name="BEGIN_LINK" />Comprobar el proxy y el cortafuegos<ph name="END_LINK" /></translation>
@@ -303,6 +304,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="2079545284768500474">Deshacer</translation>
 <translation id="20817612488360358">Se ha establecido la configuración del proxy del sistema, pero también se han especificado ajustes de proxy explícitos.</translation>
 <translation id="2082238445998314030">Resultado <ph name="RESULT_NUMBER" /> de <ph name="TOTAL_RESULTS" /></translation>
+<translation id="2088086323192747268">Botón Gestionar sincronización, pulsa Intro para gestionar la información que sincronizas en la configuración de Chrome</translation>
 <translation id="2091887806945687916">Sonido</translation>
 <translation id="2094505752054353250">El dominio no coincide</translation>
 <translation id="2096368010154057602">Departamento</translation>
@@ -367,6 +369,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="2293443924986248631">Si activas esta opción, los sitios no podrán usar cookies para hacer un seguimiento de tu actividad en la Web. Es posible que las funciones de algunos sitios no funcionen correctamente.</translation>
 <translation id="2295290966866883927">Las URL de las páginas que visites se enviarán a Google Cloud o a terceros para que se analicen. Por ejemplo, puede que se analicen para detectar sitios web no seguros.</translation>
 <translation id="2297722699537546652">B5 (sobre)</translation>
+<translation id="2298855485018661510">Botón Gestionar cookies, pulsa Intro para gestionar tus preferencias de cookies en la configuración de Chrome</translation>
 <translation id="2300306941146563769">No subido</translation>
 <translation id="2310021320168182093">Chou2 (sobre)</translation>
 <translation id="2316887270356262533">Libera menos de 1 MB. Algunos sitios pueden tardar más en cargarse la próxima vez que accedas a ellos.</translation>
@@ -400,6 +403,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="2465402087343596252">Architecture-E</translation>
 <translation id="2465655957518002998">Seleccionar método de entrega</translation>
 <translation id="2465688316154986572">Grapar</translation>
+<translation id="246725142101294240"><ph name="MANAGE_SECURITY_SETTINGS_FOCUSED_FRIENDLY_MATCH_TEXT" />, pulsa Tabulador y, a continuación, Intro para gestionar Navegación segura y otras opciones en la configuración de Chrome</translation>
 <translation id="2467694685043708798"><ph name="BEGIN_LINK" />Ejecutar Diagnósticos de red<ph name="END_LINK" /></translation>
 <translation id="2469153820345007638">Orden de 1 a N</translation>
 <translation id="2470767536994572628">Cuando edites las anotaciones, este documento volverá a la vista de una única página y a su rotación original</translation>
@@ -575,6 +579,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="3188393374551744535">Saldo de cuenta</translation>
 <translation id="3194737229810486521"><ph name="URL" /> quiere almacenar datos de forma permanente en tu dispositivo</translation>
 <translation id="3195213714973468956"><ph name="PRINTER_NAME" /> de <ph name="SERVER_NAME" /></translation>
+<translation id="3202497928925179914"><ph name="MANAGE_SYNC_FOCUSED_FRIENDLY_MATCH_TEXT" />, pulsa Tabulador y, a continuación, Intro para gestionar qué información quieres sincronizar en la configuración de Chrome</translation>
 <translation id="320323717674993345">Cancelar pago</translation>
 <translation id="3207960819495026254">Añadido a marcadores</translation>
 <translation id="3209034400446768650">La página puede cobrarte dinero</translation>
@@ -631,6 +636,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="3395827396354264108">Método de recogida</translation>
 <translation id="3399952811970034796">Dirección de entrega</translation>
 <translation id="3402261774528610252">La conexión que se usa para cargar este sitio web utiliza TLS 1.0 o TLS 1.1, que están obsoletas y se inhabilitarán en el futuro. Cuando se inhabiliten, los usuarios no podrán cargar este sitio web. El servidor debería habilitar el uso de TLS 1.2 o versiones posteriores.</translation>
+<translation id="3409896703495473338">Gestionar ajustes de seguridad</translation>
 <translation id="3414952576877147120">Tamaño:</translation>
 <translation id="3417660076059365994">Los archivos que subas o adjuntes se enviarán a Google Cloud o a terceros para que se analicen. Por ejemplo, puede que se analicen para buscar datos sensibles o software malicioso.</translation>
 <translation id="3422248202833853650">Prueba a salir de otros programas para liberar memoria.</translation>
@@ -662,6 +668,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="350069200438440499">Nombre:</translation>
 <translation id="3507936815618196901">Crear un mapa 3D de tu entorno y hacer un seguimiento de la posición de la cámara</translation>
 <translation id="3512163584740124171">Se ha ignorado esta política porque existe otra en el mismo grupo de políticas con mayor prioridad.</translation>
+<translation id="35172538073169599">Botón Gestionar direcciones, pulsa Intro para añadir y gestionar direcciones en la configuración de Chrome</translation>
 <translation id="3518941727116570328">Gestión de varios objetos</translation>
 <translation id="3528171143076753409">El certificado de servidor no es de confianza.</translation>
 <translation id="3528485271872257980">Marrón oscuro</translation>
@@ -1205,6 +1212,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="5540224163453853">No se ha podido encontrar el artículo solicitado.</translation>
 <translation id="5541086400771735334">Buzón de correo 7</translation>
 <translation id="5541546772353173584">Añade un correo electrónico</translation>
+<translation id="5542280138350899197">Botón Gestionar ajustes de seguridad, pulsa Intro para gestionar Navegación segura y otras opciones en la configuración de Chrome</translation>
 <translation id="5545756402275714221">Artículos recomendados para ti</translation>
 <translation id="5552137475244467770">Chrome comprueba de forma periódica si tus contraseñas se encuentran en alguna lista publicada en Internet. Cuando lo hace, se cifran tus contraseñas y nombres de usuario para que nadie pueda leerlos, ni siquiera Google.</translation>
 <translation id="5556459405103347317">Volver a cargar</translation>
@@ -1459,6 +1467,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="6583674473685352014">B6 (sobre)</translation>
 <translation id="6587923378399804057">Enlace copiado</translation>
 <translation id="6591833882275308647">Tu <ph name="DEVICE_TYPE" /> no está administrado</translation>
+<translation id="6592952801936330159">Botón Gestionar la configuración del sitio, pulsa Intro para gestionar permisos y datos almacenados en sitios en la configuración de Chrome</translation>
 <translation id="6596325263575161958">Opciones de cifrado</translation>
 <translation id="6604181099783169992">Sensores de luz o movimiento</translation>
 <translation id="6609880536175561541">Prc7 (sobre)</translation>
@@ -1560,6 +1569,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="7053983685419859001">Bloquear</translation>
 <translation id="7058163556978339998"><ph name="BROWSER" /> ha verificado que <ph name="ISSUER" /> emitió el certificado de este sitio web.</translation>
 <translation id="7062635574500127092">Turquesa</translation>
+<translation id="706295145388601875">Añade y gestiona direcciones en la configuración de Chrome</translation>
 <translation id="7064851114919012435">Información de contacto</translation>
 <translation id="70705239631109039">Tu conexión no es completamente segura</translation>
 <translation id="7072826695771387770">Se produce un evento no seguro</translation>
@@ -1569,6 +1579,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="7083258188081898530">Bandeja 9</translation>
 <translation id="7086090958708083563">Subida solicitada por el usuario</translation>
 <translation id="7087282848513945231">Condado</translation>
+<translation id="7095139009144195559"><ph name="MANAGE_SITE_SETTINGS_FOCUSED_FRIENDLY_MATCH_TEXT" />, pulsa Tabulador y, a continuación, Intro para gestionar permisos y datos almacenados en sitios en la configuración de Chrome</translation>
 <translation id="7108338896283013870">Ocultar</translation>
 <translation id="7108634116785509031"><ph name="HOST" /> quiere utilizar la cámara</translation>
 <translation id="7108819624672055576">Permitido por una extensión</translation>
@@ -1634,6 +1645,7 @@ Más información:
 <translation id="7349430561505560861">A4-Extra</translation>
 <translation id="7353601530677266744">Línea de comandos</translation>
 <translation id="7359588939039777303">Los anuncios están bloqueados.</translation>
+<translation id="7365596969960773405"><ph name="MANAGE_ADDRESSES_FOCUSED_FRIENDLY_MATCH_TEXT" />, pulsa Tabulador y, a continuación, Intro para añadir y gestionar direcciones en la configuración de Chrome</translation>
 <translation id="7365849542400970216">¿Detectar el uso de tu dispositivo?</translation>
 <translation id="7372973238305370288">resultado de búsqueda</translation>
 <translation id="7374733840632556089">Este problema se debe a un certificado que tú u otra persona habéis instalado en el dispositivo. Chrome no confía en este certificado porque hay constancia de que se utiliza para interceptar y vigilar redes. En algunos casos, dicha vigilancia es legítima (por ejemplo, en las redes de centros educativos o empresas), pero Chrome quiere asegurarse de que estás al corriente de ello, aunque no puedas evitarlo. La vigilancia puede afectar a todos los navegadores y las aplicaciones que accedan a Internet.</translation>
@@ -1800,6 +1812,7 @@ Más información:
 <translation id="7938958445268990899">Aún no es válido el certificado de servidor.</translation>
 <translation id="7942349550061667556">Rojo</translation>
 <translation id="7947285636476623132">Consulta el año de vencimiento y vuelve a intentarlo</translation>
+<translation id="7950027195171824198">Gestiona tus preferencias de cookies en la configuración de Chrome</translation>
 <translation id="7951415247503192394">(32 bits)</translation>
 <translation id="7953569069500808819">Grapado en el borde superior</translation>
 <translation id="7956713633345437162">Marcadores del móvil</translation>
@@ -1831,6 +1844,7 @@ Más información:
 <translation id="8066955247577885446">Se ha producido un error.</translation>
 <translation id="8067872629359326442">Acabas de introducir tu contraseña en un sitio web engañoso. Chromium puede ayudarte. Para cambiar tu contraseña y notificar a Google de que tu cuenta podría estar en peligro, haz clic en Proteger cuenta.</translation>
 <translation id="8074253406171541171">10x13 (sobre)</translation>
+<translation id="8075898834294118863">Gestionar la configuración del sitio</translation>
 <translation id="8078141288243656252">No se pueden añadir anotaciones a los documentos girados</translation>
 <translation id="8079031581361219619">¿Quieres volver a cargar el sitio web?</translation>
 <translation id="8086971161893892807">Borrador</translation>
@@ -1886,6 +1900,7 @@ Más información:
 <translation id="8277900682056760511">La hoja del controlador de pagos está abierta</translation>
 <translation id="8281084378435768645">Large-Photo</translation>
 <translation id="8282947398454257691">Conocer tu identificador de dispositivo único</translation>
+<translation id="8284769179630993263">Gestiona Navegación segura y más en la configuración de Chrome</translation>
 <translation id="8286036467436129157">Iniciar sesión</translation>
 <translation id="8288807391153049143">Mostrar certificado</translation>
 <translation id="8289355894181816810">Si tienes alguna duda, ponte en contacto con el administrador de red.</translation>
@@ -1914,6 +1929,7 @@ Más información:
 <translation id="8380941800586852976">Peligroso</translation>
 <translation id="8381674639488873545">Estos cargos pueden ser únicos o periódicos, y es posible que no se indiquen de una forma evidente. <ph name="BEGIN_LINK" />Mostrar de todos modos<ph name="END_LINK" /></translation>
 <translation id="8390725133630534698">La política del administrador no permite compartir entre <ph name="ORIGIN_NAME" /> y <ph name="VM_NAME" />.</translation>
+<translation id="8405579342203358118">Gestiona la información que sincronizas en la configuración de Chrome</translation>
 <translation id="8412145213513410671">Fallos (<ph name="CRASH_COUNT" />)</translation>
 <translation id="8412392972487953978">Debes introducir la misma frase de contraseña dos veces.</translation>
 <translation id="8416694386774425977">La configuración de red no es válida y no se ha podido importar.
@@ -1921,6 +1937,7 @@ Más información:
 <ph name="DEBUG_INFO" /></translation>
 <translation id="8424582179843326029"><ph name="FIRST_LABEL" /> <ph name="SECOND_LABEL" /> <ph name="THIRD_LABEL" /></translation>
 <translation id="8428213095426709021">Configuración</translation>
+<translation id="8431194080598727332"><ph name="MANAGE_COOKIES_FOCUSED_FRIENDLY_MATCH_TEXT" />, pulsa Tabulador y, a continuación, Intro para gestionar tus preferencias de cookies en la configuración de Chrome</translation>
 <translation id="8433057134996913067">Con esta opción, tu sesión se cerrará en la mayoría de sitios web.</translation>
 <translation id="8437238597147034694">&amp;Deshacer movimiento</translation>
 <translation id="8438786541497918448">¿Usar cámara y micrófono?</translation>
@@ -1940,6 +1957,7 @@ Más información:
 <translation id="8503813439785031346">Nombre de usuario</translation>
 <translation id="8507227106804027148">Línea de comandos</translation>
 <translation id="8508648098325802031">Icono de búsqueda</translation>
+<translation id="8511402995811232419">Gestionar cookies</translation>
 <translation id="8522552481199248698">Chrome puede ayudarte a proteger tu cuenta de Google y a cambiar tu contraseña.</translation>
 <translation id="8530813470445476232">Borra el historial de navegación, las cookies, la caché y más desde la configuración de Chrome</translation>
 <translation id="8533619373899488139">Visita &lt;strong&gt;chrome://policy&lt;/strong&gt; para ver la lista de URL boloqueadas y otras políticas implementadas por el administrador del sistema.</translation>

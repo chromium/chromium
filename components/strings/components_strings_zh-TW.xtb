@@ -287,6 +287,7 @@
 <translation id="2001146170449793414">{COUNT,plural, =1{以及另外 1 個應用程式}other{以及另外 # 個應用程式}}</translation>
 <translation id="2003709556000175978">立即重設你的密碼</translation>
 <translation id="2003775180883135320">四孔 (頂端)</translation>
+<translation id="201174227998721785">在 Chrome 設定中管理各網站的權限及儲存的資料</translation>
 <translation id="2025115093177348061">擴增實境</translation>
 <translation id="2025186561304664664">Proxy 已設為自動設定。</translation>
 <translation id="2032962459168915086"><ph name="BEGIN_LINK" />檢查 Proxy 和防火牆<ph name="END_LINK" /></translation>
@@ -299,6 +300,7 @@
 <translation id="2079545284768500474">復原</translation>
 <translation id="20817612488360358">雖然系統 Proxy 設定已設為使用，不過也指定了明確 Proxy 設定。</translation>
 <translation id="2082238445998314030">第 <ph name="RESULT_NUMBER" /> 個結果，共 <ph name="TOTAL_RESULTS" /> 個</translation>
+<translation id="2088086323192747268">「管理同步功能」按鈕；按下 Enter 鍵即可在 Chrome 設定中管理要同步處理哪些資訊</translation>
 <translation id="2091887806945687916">音訊</translation>
 <translation id="2094505752054353250">網域不符</translation>
 <translation id="2096368010154057602">部門</translation>
@@ -363,6 +365,7 @@
 <translation id="2293443924986248631">開啟這項功能後，網站無法使用 Cookie 來追蹤你在網路上的活動。某些網站的功能可能無法正常運作。</translation>
 <translation id="2295290966866883927">系統會將你造訪的網頁網址傳送到 Google Cloud 或第三方進行分析。舉例來說，Google Cloud 或第三方可能會掃描網頁網址，藉此偵測不安全的網站。</translation>
 <translation id="2297722699537546652">B5 (信封)</translation>
+<translation id="2298855485018661510">「管理 Cookie」按鈕；按下 Enter 鍵即可在 Chrome 設定中管理 Cookie 偏好設定</translation>
 <translation id="2300306941146563769">未上傳</translation>
 <translation id="2310021320168182093">Chou2 (信封)</translation>
 <translation id="2316887270356262533">釋出不到 1 MB。下次造訪部分網站時，載入速度可能會變慢。</translation>
@@ -396,6 +399,7 @@
 <translation id="2465402087343596252">Architecture-E</translation>
 <translation id="2465655957518002998">選擇快遞方式</translation>
 <translation id="2465688316154986572">釘裝</translation>
+<translation id="246725142101294240"><ph name="MANAGE_SECURITY_SETTINGS_FOCUSED_FRIENDLY_MATCH_TEXT" />；按下 Tab 鍵再按下 Enter 鍵即可在 Chrome 設定中管理安全瀏覽等功能</translation>
 <translation id="2467694685043708798"><ph name="BEGIN_LINK" />執行網路診斷<ph name="END_LINK" /></translation>
 <translation id="2469153820345007638">1 到 N 的順序</translation>
 <translation id="2470767536994572628">這份文件會在你編輯註解時重設為單頁檢視和原始顯示方向</translation>
@@ -569,6 +573,7 @@
 <translation id="3188393374551744535">帳戶餘額</translation>
 <translation id="3194737229810486521"><ph name="URL" /> 要求在你的裝置上永久儲存資料</translation>
 <translation id="3195213714973468956"><ph name="SERVER_NAME" /> 上的 <ph name="PRINTER_NAME" /></translation>
+<translation id="3202497928925179914"><ph name="MANAGE_SYNC_FOCUSED_FRIENDLY_MATCH_TEXT" />；按下 Tab 鍵再按下 Enter 鍵即可在 Chrome 設定中管理要同步處理哪些資訊</translation>
 <translation id="320323717674993345">取消付款</translation>
 <translation id="3207960819495026254">已加入書籤</translation>
 <translation id="3209034400446768650">這個頁面可能會產生費用</translation>
@@ -625,6 +630,7 @@
 <translation id="3395827396354264108">取件方式</translation>
 <translation id="3399952811970034796">快遞地址</translation>
 <translation id="3402261774528610252">用來載入這個網站的連線使用傳輸層安全標準 (TLS) 1.0 或 1.1，現已不適用，並將在日後遭到停用。一旦停用，使用者將無法載入這個網站。伺服器應啟用傳輸層安全標準 (TLS) 1.2 以上版本。</translation>
+<translation id="3409896703495473338">管理安全性設定</translation>
 <translation id="3414952576877147120">空間大小：</translation>
 <translation id="3417660076059365994">系統會將你上傳或附加的檔案傳送到 Google Cloud 或第三方進行分析。舉例來說，Google Cloud 或第三方可能會掃描檔案，檢查是否含有機密資料或惡意軟體。</translation>
 <translation id="3422248202833853650">嘗試關閉其他程式以釋出記憶體。</translation>
@@ -656,6 +662,7 @@
 <translation id="350069200438440499">檔案名稱：</translation>
 <translation id="3507936815618196901">根據你的周遭環境建立 3D 地圖並追蹤攝影機位置</translation>
 <translation id="3512163584740124171">由於相同政策群組中有其他政策的優先順序更高，因此系統已忽略這項政策。</translation>
+<translation id="35172538073169599">「管理地址」按鈕；按下 Enter 鍵即可在 Chrome 設定中新增及管理地址</translation>
 <translation id="3518941727116570328">多個物件處理</translation>
 <translation id="3528171143076753409">伺服器憑證授權不可靠。</translation>
 <translation id="3528485271872257980">深棕色</translation>
@@ -1194,6 +1201,7 @@
 <translation id="5540224163453853">找不到要求的文章。</translation>
 <translation id="5541086400771735334">出紙槽 7</translation>
 <translation id="5541546772353173584">新增電子郵件地址</translation>
+<translation id="5542280138350899197">「管理安全性設定」按鈕；按下 Enter 鍵即可在 Chrome 設定中管理安全瀏覽等功能</translation>
 <translation id="5545756402275714221">為你推薦的報導</translation>
 <translation id="5552137475244467770">Chrome 會定期將你的密碼與網路上發布的清單進行比對。在比對過程中，你的密碼和使用者名稱會經過加密，任何人 (包括 Google) 都無法讀取。</translation>
 <translation id="5556459405103347317">重新載入</translation>
@@ -1448,6 +1456,7 @@
 <translation id="6583674473685352014">B6 (信封)</translation>
 <translation id="6587923378399804057">你複製的連結</translation>
 <translation id="6591833882275308647">你的 <ph name="DEVICE_TYPE" /> 未受管理</translation>
+<translation id="6592952801936330159">「管理網站設定」按鈕；按下 Enter 鍵即可在 Chrome 設定中管理各網站的權限及儲存的資料</translation>
 <translation id="6596325263575161958">加密選項</translation>
 <translation id="6604181099783169992">動作或光源感應器</translation>
 <translation id="6609880536175561541">Prc7 (信封)</translation>
@@ -1549,6 +1558,7 @@
 <translation id="7053983685419859001">封鎖</translation>
 <translation id="7058163556978339998"><ph name="BROWSER" /> 已驗證這個網站的憑證是由「<ph name="ISSUER" />」所核發。</translation>
 <translation id="7062635574500127092">藍綠色</translation>
+<translation id="706295145388601875">在 Chrome 設定中新增及管理地址</translation>
 <translation id="7064851114919012435">聯絡資訊</translation>
 <translation id="70705239631109039">你的連線可能有安全漏洞</translation>
 <translation id="7072826695771387770">發生不安全的事件</translation>
@@ -1558,6 +1568,7 @@
 <translation id="7083258188081898530">紙匣 9</translation>
 <translation id="7086090958708083563">使用者要求上傳</translation>
 <translation id="7087282848513945231">郡/縣</translation>
+<translation id="7095139009144195559"><ph name="MANAGE_SITE_SETTINGS_FOCUSED_FRIENDLY_MATCH_TEXT" />；按下 Tab 鍵再按下 Enter 鍵即可在 Chrome 設定中管理各網站的權限及儲存的資料</translation>
 <translation id="7108338896283013870">隱藏</translation>
 <translation id="7108634116785509031"><ph name="HOST" /> 要求使用攝影機</translation>
 <translation id="7108819624672055576">依據擴充功能設定允許</translation>
@@ -1623,6 +1634,7 @@
 <translation id="7349430561505560861">A4-Extra</translation>
 <translation id="7353601530677266744">命令列</translation>
 <translation id="7359588939039777303">已封鎖廣告。</translation>
+<translation id="7365596969960773405"><ph name="MANAGE_ADDRESSES_FOCUSED_FRIENDLY_MATCH_TEXT" />；按下 Tab 鍵再按下 Enter 鍵即可在 Chrome 設定中新增及管理地址</translation>
 <translation id="7365849542400970216">知道你的裝置使用狀態嗎？</translation>
 <translation id="7372973238305370288">搜尋結果</translation>
 <translation id="7374733840632556089">發生這個問題是因為你或其他人在裝置上安裝了具有風險的憑證。已知這個憑證是用於監控及攔截網路資訊，且不受 Chrome 信任。雖然有部分監控活動屬於正當行為 (例如學校或公司網路上的監控機制)，Chrome 仍想確保你知曉此一情況，即使你無法阻止這類監控活動。任何存取網路的瀏覽器或應用程式都可能受到監控。</translation>
@@ -1789,6 +1801,7 @@
 <translation id="7938958445268990899">伺服器憑證尚未生效。</translation>
 <translation id="7942349550061667556">紅色</translation>
 <translation id="7947285636476623132">請檢查信用卡到期年份，然後再試一次</translation>
+<translation id="7950027195171824198">在 Chrome 設定中管理 Cookie 偏好設定</translation>
 <translation id="7951415247503192394">(32 位元)</translation>
 <translation id="7953569069500808819">邊緣裝訂 (右側)</translation>
 <translation id="7956713633345437162">行動版書籤</translation>
@@ -1820,6 +1833,7 @@
 <translation id="8066955247577885446">抱歉，系統發生錯誤。</translation>
 <translation id="8067872629359326442">你剛才在詐騙網站上輸入了密碼。Chromium 能夠幫助你。如要變更密碼並通知 Google 你的帳戶可能面臨風險，請按一下 [保護帳戶]。</translation>
 <translation id="8074253406171541171">10x13 (信封)</translation>
+<translation id="8075898834294118863">管理網站設定</translation>
 <translation id="8078141288243656252">文件旋轉後無法加註</translation>
 <translation id="8079031581361219619">要重新載入網站嗎？</translation>
 <translation id="8086971161893892807">草稿</translation>
@@ -1875,6 +1889,7 @@
 <translation id="8277900682056760511">已開啟付款處理常式工作表</translation>
 <translation id="8281084378435768645">Large-Photo</translation>
 <translation id="8282947398454257691">存取您的專屬裝置 ID</translation>
+<translation id="8284769179630993263">在 Chrome 設定中管理安全瀏覽等功能</translation>
 <translation id="8286036467436129157">登入</translation>
 <translation id="8288807391153049143">顯示憑證</translation>
 <translation id="8289355894181816810">如果你不確定這代表什麼意思，請與網路管理員聯絡。</translation>
@@ -1903,6 +1918,7 @@
 <translation id="8380941800586852976">不安全</translation>
 <translation id="8381674639488873545">這些費用可能是一次性或週期性的費用，而且可能難以察覺。<ph name="BEGIN_LINK" />仍要顯示<ph name="END_LINK" /></translation>
 <translation id="8390725133630534698">系統管理員政策禁止將 <ph name="ORIGIN_NAME" /> 的內容分享到 <ph name="VM_NAME" /></translation>
+<translation id="8405579342203358118">在 Chrome 設定中管理要同步處理哪些資訊</translation>
 <translation id="8412145213513410671">當機次數 (<ph name="CRASH_COUNT" />)</translation>
 <translation id="8412392972487953978">你必須輸入兩次相同的通關密語。</translation>
 <translation id="8416694386774425977">網路設定無效，無法匯入。
@@ -1910,6 +1926,7 @@
 <ph name="DEBUG_INFO" /></translation>
 <translation id="8424582179843326029"><ph name="FIRST_LABEL" /> <ph name="SECOND_LABEL" /> <ph name="THIRD_LABEL" /></translation>
 <translation id="8428213095426709021">設定</translation>
+<translation id="8431194080598727332"><ph name="MANAGE_COOKIES_FOCUSED_FRIENDLY_MATCH_TEXT" />；按下 Tab 鍵再按下 Enter 鍵即可在 Chrome 設定中管理 Cookie 偏好設定</translation>
 <translation id="8433057134996913067">您會因此登出大多數網站。</translation>
 <translation id="8437238597147034694">復原移動(&amp;U)</translation>
 <translation id="8438786541497918448">要使用攝影機和麥克風嗎？</translation>
@@ -1929,6 +1946,7 @@
 <translation id="8503813439785031346">使用者名稱</translation>
 <translation id="8507227106804027148">指令列</translation>
 <translation id="8508648098325802031">搜尋圖示</translation>
+<translation id="8511402995811232419">管理 Cookie</translation>
 <translation id="8522552481199248698">Chrome 可協助你保護 Google 帳戶並變更密碼。</translation>
 <translation id="8530813470445476232">清除瀏覽記錄、Cookie、快取以及其他 Chrome 設定</translation>
 <translation id="8533619373899488139">請前往 &lt;strong&gt;chrome://policy&lt;/strong&gt; 查看遭到封鎖的網址清單，以及由系統管理員所強制執行的其他政策。</translation>

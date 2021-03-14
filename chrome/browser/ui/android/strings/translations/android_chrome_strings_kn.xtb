@@ -40,7 +40,6 @@
 <translation id="123724288017357924">ಸಂಗ್ರಹ ಮಾಡಿದ ವಿಷಯವನ್ನು ನಿರ್ಲಕ್ಷಿಸಿ, ಪ್ರಸ್ತುತ ಪುಟ ಮರುಲೋಡ್ ಮಾಡಿ</translation>
 <translation id="124678866338384709">ಪ್ರಸ್ತುತ ಟ್ಯಾಬ್ ಮುಚ್ಚಿ</translation>
 <translation id="1258753120186372309">Google ಡೂಡಲ್‌: <ph name="DOODLE_DESCRIPTION" /></translation>
-<translation id="1263231323834454256">ಓದುವ ಪಟ್ಟಿ</translation>
 <translation id="1266864766717917324"><ph name="CONTENT_TYPE" /> ಅನ್ನು ಹಂಚಿಕೊಳ್ಳಲು ಸಾಧ್ಯವಾಗಲಿಲ್ಲ</translation>
 <translation id="1283039547216852943">ವಿಸ್ತರಿಸಲು ಟ್ಯಾಪ್ ಮಾಡಿ</translation>
 <translation id="1285310382777185058">ಭಾಷೆಯನ್ನು ಬದಲಾಯಿಸಿ</translation>
@@ -994,7 +993,6 @@
 <translation id="7774809984919390718">{PAYMENT_METHOD,plural, =1{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 ಮತ್ತು ಇನ್ನೂ <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}one{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 ಮತ್ತು ಇನ್ನೂ <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}other{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 ಮತ್ತು ಇನ್ನೂ <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}}</translation>
 <translation id="7778840695157240389">ಹೊಸ ಸುದ್ದಿಗಳಿಗಾಗಿ ನಂತರ ಪುನಃ ಪರಿಶೀಲಿಸಿ</translation>
 <translation id="7786595606756654269">ವೆಬ್‌ನಲ್ಲಿ ಹುಡುಕುವುದಕ್ಕಾಗಿ ಮತ್ತು ನೀವು ತೆರೆದಿರುವ ಸೈಟ್‌ಗಳೊಂದಿಗೆ ತೊಡಗಿಸಿಕೊಳ್ಳುವುದಕ್ಕಾಗಿ Google Assistant ಉತ್ತಮ ಧ್ವನಿ ಅನುಭವವನ್ನು ಒದಗಿಸುತ್ತದೆ. ಇದರೊಂದಿಗೆ ನೀವು ಬಳಸುವ ಸೈಟ್‌ನ URL ಮತ್ತು ಅದರ ಕಂಟೆಂಟ್‌ಗಳನ್ನು Google Assistant ಸ್ವೀಕರಿಸುತ್ತದೆ.</translation>
-<translation id="7790349552933995572">ಹೋಮ್ ಸ್ಕ್ರೀನ್</translation>
 <translation id="7791543448312431591">ಸೇರಿಸು</translation>
 <translation id="7798392620021911922"><ph name="TAB_COUNT" /> ಟ್ಯಾಬ್‌ಗಳನ್ನು ಮರುಸ್ಥಾಪಿಸಲಾಗಿದೆ</translation>
 <translation id="780301667611848630">ಬೇಡ, ಧನ್ಯವಾದಗಳು</translation>
@@ -1202,7 +1200,6 @@
 <translation id="9149286894143103695">ನೀವು ಇಲ್ಲಿಗೆ ಮತ್ತಷ್ಟು ಸುಲಭವಾಗಿ ತಲುಪುವಂತೆ ಮಾಡಲು ಈ ಸೈಟ್ ಅನ್ನು ನಿಮ್ಮ ಫೋನ್‌ನ ಮುಖಪುಟದ ಪರದೆಗೆ ಸೇರಿಸಿ</translation>
 <translation id="9155898266292537608">ನೀವು ಪದವನ್ನು ಕ್ಷಿಪ್ರವಾಗಿ ಟ್ಯಾಪ್ ಮಾಡುವ ಮೂಲಕವೂ ಹುಡುಕಬಹುದು</translation>
 <translation id="9169507124922466868">ನ್ಯಾವಿಗೇಷನ್ ಇತಿಹಾಸವು ಅರ್ಧ-ತೆರೆದಿದೆ</translation>
-<translation id="9191031968346938109">ಇದಕ್ಕೆ ಸೇರಿಸಿ…</translation>
 <translation id="9199368092038462496">{NUM_MINS,plural, =1{1 ನಿಮಿಷದ ಹಿಂದೆ ಪರಿಶೀಲಿಸಲಾಗಿದೆ}one{# ನಿಮಿಷಗಳ ಹಿಂದೆ ಪರಿಶೀಲಿಸಲಾಗಿದೆ}other{# ನಿಮಿಷಗಳ ಹಿಂದೆ ಪರಿಶೀಲಿಸಲಾಗಿದೆ}}</translation>
 <translation id="9204836675896933765">1 ಫೈಲ್ ಬಾಕಿ ಉಳಿದಿದೆ</translation>
 <translation id="9206873250291191720">A</translation>

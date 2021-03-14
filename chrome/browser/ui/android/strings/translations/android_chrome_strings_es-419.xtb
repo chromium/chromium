@@ -40,7 +40,6 @@
 <translation id="123724288017357924">Volver a cargar página actual; ignorar contenido en caché</translation>
 <translation id="124678866338384709">Cerrar la pestaña actual</translation>
 <translation id="1258753120186372309">Doodle de Google: <ph name="DOODLE_DESCRIPTION" /></translation>
-<translation id="1263231323834454256">Lista de lectura</translation>
 <translation id="1266864766717917324">No se pudo compartir <ph name="CONTENT_TYPE" /></translation>
 <translation id="1283039547216852943">Presiona para expandir</translation>
 <translation id="1285310382777185058">Cambiar el idioma</translation>
@@ -994,7 +993,6 @@ Solo se borran de Chrome los datos de las sesiones de incógnito cuando <ph name
 <translation id="7774809984919390718">{PAYMENT_METHOD,plural, =1{<ph name="PAYMENT_METHOD_PREVIEW" /> y <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> más}other{<ph name="PAYMENT_METHOD_PREVIEW" /> y <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> más}}</translation>
 <translation id="7778840695157240389">Vuelve más tarde para ver historias nuevas</translation>
 <translation id="7786595606756654269">Asistente de Google proporciona una mejor experiencia de voz para realizar búsquedas en la Web y además interactuar con los sitios que abras. Asistente de Google tendrá acceso a las URL y al contenido de los sitios que uses.</translation>
-<translation id="7790349552933995572">Pantalla principal</translation>
 <translation id="7791543448312431591">Agregar</translation>
 <translation id="7798392620021911922">Se restablecieron <ph name="TAB_COUNT" /> pestañas</translation>
 <translation id="780301667611848630">No, gracias</translation>
@@ -1202,7 +1200,6 @@ Solo se borran de Chrome los datos de las sesiones de incógnito cuando <ph name
 <translation id="9149286894143103695">Agrega este sitio a la pantalla principal del teléfono para que puedas acceder aquí con mayor facilidad</translation>
 <translation id="9155898266292537608">También puedes presionar brevemente la palabra para realizar una búsqueda</translation>
 <translation id="9169507124922466868">El historial de navegación está abierto a la mitad</translation>
-<translation id="9191031968346938109">Agregar a…</translation>
 <translation id="9199368092038462496">{NUM_MINS,plural, =1{Se verificó hace 1 minuto}other{Se verificó hace # minutos}}</translation>
 <translation id="9204836675896933765">Queda 1 archivo</translation>
 <translation id="9206873250291191720">A</translation>

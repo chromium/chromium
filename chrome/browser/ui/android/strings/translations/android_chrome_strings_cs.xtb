@@ -40,7 +40,6 @@
 <translation id="123724288017357924">Obnovit stránku a ignorovat obsah v mezipaměti</translation>
 <translation id="124678866338384709">Zavřít aktuální kartu</translation>
 <translation id="1258753120186372309">Sváteční logo Google: <ph name="DOODLE_DESCRIPTION" /></translation>
-<translation id="1263231323834454256">Seznam četby</translation>
 <translation id="1266864766717917324">Sdílení obsahu typu <ph name="CONTENT_TYPE" /> se nezdařilo</translation>
 <translation id="1283039547216852943">Klepnutím rozbalíte</translation>
 <translation id="1285310382777185058">Změna jazyka</translation>
@@ -994,7 +993,6 @@ Data z anonymní relace budou vymazána jedině po <ph name="BEGIN_BOLD2" />zav
 <translation id="7774809984919390718">{PAYMENT_METHOD,plural, =1{<ph name="PAYMENT_METHOD_PREVIEW" /> a <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> další}few{<ph name="PAYMENT_METHOD_PREVIEW" /> a <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> další}many{<ph name="PAYMENT_METHOD_PREVIEW" /> a <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> další}other{<ph name="PAYMENT_METHOD_PREVIEW" /> a <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> dalších}}</translation>
 <translation id="7778840695157240389">Brzy tu najdete nové příběhy</translation>
 <translation id="7786595606756654269">Asistent Google nabízí lepší hlasové prostředí k vyhledávání na webu a interakci s otevřenými weby. Asistent Google obdrží adresu URL a obsah webů, které s ním použijete.</translation>
-<translation id="7790349552933995572">Plocha</translation>
 <translation id="7791543448312431591">Přidat</translation>
 <translation id="7798392620021911922">Obnovené karty: <ph name="TAB_COUNT" /></translation>
 <translation id="780301667611848630">Ne, děkuji</translation>
@@ -1202,7 +1200,6 @@ Data z anonymní relace budou vymazána jedině po <ph name="BEGIN_BOLD2" />zav
 <translation id="9149286894143103695">Pokud si tento web přidáte na plochu telefonu, budete na něj moci snadno přejít</translation>
 <translation id="9155898266292537608">Hledat můžete také rychlým klepnutím na slovo</translation>
 <translation id="9169507124922466868">Historie navigace je otevřená na půlce</translation>
-<translation id="9191031968346938109">Přidat do…</translation>
 <translation id="9199368092038462496">{NUM_MINS,plural, =1{Zkontrolováno před 1 minutou}few{Zkontrolováno před # minutami}many{Zkontrolováno před # minuty}other{Aktualizováno před # minutami}}</translation>
 <translation id="9204836675896933765">Zbývá 1 soubor</translation>
 <translation id="9206873250291191720">A</translation>
