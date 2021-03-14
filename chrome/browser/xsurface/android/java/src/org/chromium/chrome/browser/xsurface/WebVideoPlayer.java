@@ -32,6 +32,11 @@ public interface WebVideoPlayer {
     /** Stops the video. */
     default void stop() {}
 
+    /** Returns the elapsed time in seconds since the video started playing. */
+    default long getElapsedTimeInSeconds() {
+        return 0;
+    }
+
     /** Adds a listener to be notified for the video playing events. */
     default void addListener(Listener listener) {}
 
