@@ -90,11 +90,12 @@ class UpdaterImpl
   // Overrides for IUpdater.
   IFACEMETHODIMP GetVersion(BSTR* version) override;
   IFACEMETHODIMP CheckForUpdate(const wchar_t* app_id) override;
-  IFACEMETHODIMP Register(const wchar_t* app_id,
-                          const wchar_t* brand_code,
-                          const wchar_t* tag,
-                          const wchar_t* version,
-                          const wchar_t* existence_checker_path) override;
+  IFACEMETHODIMP RegisterApp(const wchar_t* app_id,
+                             const wchar_t* brand_code,
+                             const wchar_t* tag,
+                             const wchar_t* version,
+                             const wchar_t* existence_checker_path,
+                             IUpdaterRegisterAppCallback* callback) override;
   IFACEMETHODIMP Update(const wchar_t* app_id,
                         IUpdaterObserver* observer) override;
   IFACEMETHODIMP UpdateAll(IUpdaterObserver* observer) override;

@@ -178,8 +178,7 @@ void UpdateServiceProxy::RegisterApp(
       std::move(callback);
 
   auto reply = ^(int error) {
-    RegistrationResponse response;
-    response.status_code = error;
+    RegistrationResponse response(error);
     callback_runner_->PostTask(
         FROM_HERE, base::BindOnce(std::move(block_callback), response));
   };

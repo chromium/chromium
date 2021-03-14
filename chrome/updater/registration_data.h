@@ -43,9 +43,7 @@ struct RegistrationRequest {
 };
 
 struct RegistrationResponse {
-  RegistrationResponse() = default;
   explicit RegistrationResponse(int status_code) : status_code(status_code) {}
-  ~RegistrationResponse() = default;
 
   // Status code of the registration. 0 = success. All others = failure.
   int status_code = 0;

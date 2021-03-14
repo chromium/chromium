@@ -25,6 +25,8 @@
 #include "chrome/updater/constants.h"
 #include "chrome/updater/external_constants_builder.h"
 #include "chrome/updater/test/integration_tests.h"
+#include "chrome/updater/test/test_app/constants.h"
+#include "chrome/updater/test/test_app/test_app_version.h"
 #include "chrome/updater/updater_branding.h"
 #include "chrome/updater/updater_scope.h"
 #include "chrome/updater/updater_version.h"
@@ -44,6 +46,13 @@ base::FilePath GetInstallerPath() {
   if (!base::PathService::Get(base::FILE_EXE, &test_executable))
     return base::FilePath();
   return test_executable.DirName().AppendASCII("UpdaterSetup.exe");
+}
+
+base::FilePath GetTestAppExecutablePath() {
+  base::FilePath test_executable;
+  if (!base::PathService::Get(base::FILE_EXE, &test_executable))
+    return base::FilePath();
+  return test_executable.DirName().AppendASCII(TEST_APP_FULLNAME_STRING);
 }
 
 base::Optional<base::FilePath> GetProductPath() {
@@ -165,6 +174,16 @@ void ExpectActiveUpdater(UpdaterScope scope) {
     EXPECT_TRUE(base::PathExists(*path));
 }
 
+void RegisterTestApp(UpdaterScope scope) {
+  const base::FilePath path = GetTestAppExecutablePath();
+  ASSERT_FALSE(path.empty());
+  base::CommandLine command_line(path);
+  command_line.AppendSwitch(kRegisterUpdaterSwitch);
+  int exit_code = -1;
+  ASSERT_TRUE(Run(scope, command_line, &exit_code));
+  EXPECT_EQ(exit_code, 0);
+}
+
 void Install(UpdaterScope scope) {
   const base::FilePath path = GetInstallerPath();
   ASSERT_FALSE(path.empty());
@@ -205,8 +224,8 @@ void Uninstall(UpdaterScope scope) {
 void SetActive(UpdaterScope scope, const std::string& id) {
   // TODO(crbug/1159498): Standardize registry access.
   base::win::RegKey key;
-  ASSERT_EQ(key.Open(HKEY_CURRENT_USER, GetAppClientStateKey(id).c_str(),
-                     KEY_WRITE | KEY_WOW64_32KEY),
+  ASSERT_EQ(key.Create(HKEY_CURRENT_USER, GetAppClientStateKey(id).c_str(),
+                       KEY_WRITE | KEY_WOW64_32KEY),
             ERROR_SUCCESS);
   EXPECT_EQ(key.WriteValue(kDidRun, L"1"), ERROR_SUCCESS);
 }

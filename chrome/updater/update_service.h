@@ -156,8 +156,10 @@ class UpdateService : public base::RefCountedThreadSafe<UpdateService> {
     kForeground = 2,
   };
 
-  using StateChangeCallback = base::RepeatingCallback<void(UpdateState)>;
   using Callback = base::OnceCallback<void(Result)>;
+  using StateChangeCallback = base::RepeatingCallback<void(UpdateState)>;
+  using RegisterAppCallback =
+      base::OnceCallback<void(const RegistrationResponse&)>;
 
   // Returns the version of the active updater. In the current implementation,
   // this value corresponds to UPDATER_VERSION. The version object is invalid
@@ -166,9 +168,8 @@ class UpdateService : public base::RefCountedThreadSafe<UpdateService> {
       base::OnceCallback<void(const base::Version&)>) const = 0;
 
   // Registers given request to the updater.
-  virtual void RegisterApp(
-      const RegistrationRequest& request,
-      base::OnceCallback<void(const RegistrationResponse&)> callback) = 0;
+  virtual void RegisterApp(const RegistrationRequest& request,
+                           RegisterAppCallback callback) = 0;
 
   // Initiates an update check for all registered applications. Receives state
   // change notifications through the repeating |state_update| callback.

@@ -52,6 +52,13 @@ typedef interface IUpdateState IUpdateState;
 #endif 	/* __IUpdateState_FWD_DEFINED__ */
 
 
+#ifndef __IUpdaterRegisterAppCallback_FWD_DEFINED__
+#define __IUpdaterRegisterAppCallback_FWD_DEFINED__
+typedef interface IUpdaterRegisterAppCallback IUpdaterRegisterAppCallback;
+
+#endif 	/* __IUpdaterRegisterAppCallback_FWD_DEFINED__ */
+
+
 #ifndef __ICompleteStatus_FWD_DEFINED__
 #define __ICompleteStatus_FWD_DEFINED__
 typedef interface ICompleteStatus ICompleteStatus;
@@ -294,6 +301,86 @@ EXTERN_C const IID IID_IUpdateState;
 #endif 	/* __IUpdateState_INTERFACE_DEFINED__ */
 
 
+#ifndef __IUpdaterRegisterAppCallback_INTERFACE_DEFINED__
+#define __IUpdaterRegisterAppCallback_INTERFACE_DEFINED__
+
+/* interface IUpdaterRegisterAppCallback */
+/* [unique][helpstring][uuid][dual][object] */ 
+
+
+EXTERN_C const IID IID_IUpdaterRegisterAppCallback;
+
+#if defined(__cplusplus) && !defined(CINTERFACE)
+    
+    MIDL_INTERFACE("3FDEC4CB-8501-4ECD-A4CF-BF70326218D0")
+    IUpdaterRegisterAppCallback : public IUnknown
+    {
+    public:
+        virtual HRESULT STDMETHODCALLTYPE Run( 
+            /* [in] */ LONG status_code) = 0;
+        
+    };
+    
+    
+#else 	/* C style interface */
+
+    typedef struct IUpdaterRegisterAppCallbackVtbl
+    {
+        BEGIN_INTERFACE
+        
+        HRESULT ( STDMETHODCALLTYPE *QueryInterface )( 
+            IUpdaterRegisterAppCallback * This,
+            /* [in] */ REFIID riid,
+            /* [annotation][iid_is][out] */ 
+            _COM_Outptr_  void **ppvObject);
+        
+        ULONG ( STDMETHODCALLTYPE *AddRef )( 
+            IUpdaterRegisterAppCallback * This);
+        
+        ULONG ( STDMETHODCALLTYPE *Release )( 
+            IUpdaterRegisterAppCallback * This);
+        
+        HRESULT ( STDMETHODCALLTYPE *Run )( 
+            IUpdaterRegisterAppCallback * This,
+            /* [in] */ LONG status_code);
+        
+        END_INTERFACE
+    } IUpdaterRegisterAppCallbackVtbl;
+
+    interface IUpdaterRegisterAppCallback
+    {
+        CONST_VTBL struct IUpdaterRegisterAppCallbackVtbl *lpVtbl;
+    };
+
+    
+
+#ifdef COBJMACROS
+
+
+#define IUpdaterRegisterAppCallback_QueryInterface(This,riid,ppvObject)	\
+    ( (This)->lpVtbl -> QueryInterface(This,riid,ppvObject) ) 
+
+#define IUpdaterRegisterAppCallback_AddRef(This)	\
+    ( (This)->lpVtbl -> AddRef(This) ) 
+
+#define IUpdaterRegisterAppCallback_Release(This)	\
+    ( (This)->lpVtbl -> Release(This) ) 
+
+
+#define IUpdaterRegisterAppCallback_Run(This,status_code)	\
+    ( (This)->lpVtbl -> Run(This,status_code) ) 
+
+#endif /* COBJMACROS */
+
+
+#endif 	/* C style interface */
+
+
+
+
+#endif 	/* __IUpdaterRegisterAppCallback_INTERFACE_DEFINED__ */
+
+
 #ifndef __ICompleteStatus_INTERFACE_DEFINED__
 #define __ICompleteStatus_INTERFACE_DEFINED__
 
@@ -495,12 +582,13 @@ EXTERN_C const IID IID_IUpdater;
         virtual HRESULT STDMETHODCALLTYPE CheckForUpdate( 
             /* [string][in] */ const WCHAR *app_id) = 0;
         
-        virtual HRESULT STDMETHODCALLTYPE Register( 
+        virtual HRESULT STDMETHODCALLTYPE RegisterApp( 
             /* [string][in] */ const WCHAR *app_id,
             /* [string][in] */ const WCHAR *brand_code,
             /* [string][in] */ const WCHAR *tag,
             /* [string][in] */ const WCHAR *version,
-            /* [string][in] */ const WCHAR *existence_checker_path) = 0;
+            /* [string][in] */ const WCHAR *existence_checker_path,
+            /* [in] */ IUpdaterRegisterAppCallback *callback) = 0;
         
         virtual HRESULT STDMETHODCALLTYPE Update( 
             /* [string][in] */ const WCHAR *app_id,
@@ -538,13 +626,14 @@ EXTERN_C const IID IID_IUpdater;
             IUpdater * This,
             /* [string][in] */ const WCHAR *app_id);
         
-        HRESULT ( STDMETHODCALLTYPE *Register )( 
+        HRESULT ( STDMETHODCALLTYPE *RegisterApp )( 
             IUpdater * This,
             /* [string][in] */ const WCHAR *app_id,
             /* [string][in] */ const WCHAR *brand_code,
             /* [string][in] */ const WCHAR *tag,
             /* [string][in] */ const WCHAR *version,
-            /* [string][in] */ const WCHAR *existence_checker_path);
+            /* [string][in] */ const WCHAR *existence_checker_path,
+            /* [in] */ IUpdaterRegisterAppCallback *callback);
         
         HRESULT ( STDMETHODCALLTYPE *Update )( 
             IUpdater * This,
@@ -584,8 +673,8 @@ EXTERN_C const IID IID_IUpdater;
 #define IUpdater_CheckForUpdate(This,app_id)	\
     ( (This)->lpVtbl -> CheckForUpdate(This,app_id) ) 
 
-#define IUpdater_Register(This,app_id,brand_code,tag,version,existence_checker_path)	\
-    ( (This)->lpVtbl -> Register(This,app_id,brand_code,tag,version,existence_checker_path) ) 
+#define IUpdater_RegisterApp(This,app_id,brand_code,tag,version,existence_checker_path,callback)	\
+    ( (This)->lpVtbl -> RegisterApp(This,app_id,brand_code,tag,version,existence_checker_path,callback) ) 
 
 #define IUpdater_Update(This,app_id,observer)	\
     ( (This)->lpVtbl -> Update(This,app_id,observer) ) 

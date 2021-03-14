@@ -26,6 +26,9 @@ enum class Error;
 
 namespace updater {
 
+struct RegistrationRequest;
+struct RegistrationResponse;
+
 // There are two threads running the code in this module. The main sequence is
 // bound to one thread, all the COM calls, inbound and outbound occur on the
 // second thread which serializes the tasks and the invocations originating
@@ -40,9 +43,8 @@ class UpdateServiceProxy : public UpdateService {
   // Overrides for updater::UpdateService.
   void GetVersion(
       base::OnceCallback<void(const base::Version&)> callback) const override;
-  void RegisterApp(
-      const RegistrationRequest& request,
-      base::OnceCallback<void(const RegistrationResponse&)> callback) override;
+  void RegisterApp(const RegistrationRequest& request,
+                   RegisterAppCallback callback) override;
   void UpdateAll(StateChangeCallback state_update, Callback callback) override;
   void Update(const std::string& app_id,
               Priority priority,
@@ -56,6 +58,8 @@ class UpdateServiceProxy : public UpdateService {
   // These functions runs on the |com_task_runner_|.
   void GetVersionOnSTA(
       base::OnceCallback<void(const base::Version&)> callback) const;
+  void RegisterAppOnSTA(const RegistrationRequest& request,
+                        RegisterAppCallback callback);
   void UpdateAllOnSTA(StateChangeCallback state_update, Callback callback);
   void UpdateOnSTA(const std::string& app_id,
                    StateChangeCallback state_update,

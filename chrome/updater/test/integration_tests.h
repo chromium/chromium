@@ -118,9 +118,7 @@ void ExpectNotActive(UpdaterScope scope, const std::string& app_id);
 void SetFakeExistenceCheckerPath(const std::string& app_id);
 void ExpectAppUnregisteredExistenceCheckerPath(const std::string& app_id);
 
-#if defined(OS_MAC)
 void RegisterApp(const std::string& app_id);
-#endif
 
 #if defined(OS_WIN)
 void ExpectInterfacesRegistered();
@@ -146,10 +144,8 @@ class IntegrationTestCommands
   virtual void ExpectVersionActive(const std::string& version) const = 0;
   virtual void ExpectVersionNotActive(const std::string& version) const = 0;
   virtual void Uninstall() const = 0;
-#if defined(OS_MAC)
   virtual void RegisterApp(const std::string& app_id) const = 0;
   virtual void RegisterTestApp() const = 0;
-#endif
   virtual void CopyLog() const = 0;
   virtual void SetupFakeUpdaterHigherVersion() const = 0;
   virtual void SetupFakeUpdaterLowerVersion() const = 0;

@@ -133,7 +133,6 @@ class IntegrationTestCommandsUser : public IntegrationTestCommands {
     updater::test::RunWake(scope(), exit_code);
   }
 
-#if defined(OS_MAC)
   void RegisterApp(const std::string& app_id) const override {
     updater::test::RegisterApp(app_id);
   }
@@ -141,7 +140,6 @@ class IntegrationTestCommandsUser : public IntegrationTestCommands {
   void RegisterTestApp() const override {
     updater::test::RegisterTestApp(scope());
   }
-#endif
 
  private:
   ~IntegrationTestCommandsUser() override = default;
@@ -243,7 +241,6 @@ class IntegrationTestCommandsSystem : public IntegrationTestCommands {
         {HelperParam("exit_code", base::NumberToString(expected_exit_code))});
   }
 
-#if defined(OS_MAC)
   void RegisterApp(const std::string& app_id) const override {
     RunHelperCommand("register_app", {HelperParam("app_id", app_id)});
   }
@@ -251,7 +248,6 @@ class IntegrationTestCommandsSystem : public IntegrationTestCommands {
   void RegisterTestApp() const override {
     RunHelperCommand("register_test_app");
   }
-#endif
 
  private:
   ~IntegrationTestCommandsSystem() override = default;
@@ -295,7 +291,6 @@ class IntegrationTestCommandsSystem : public IntegrationTestCommands {
   }
 };
 
-#if defined(OS_MAC)
 void RegisterApp(const std::string& app_id) {
   scoped_refptr<UpdateService> update_service = CreateUpdateService();
   RegistrationRequest registration;
@@ -310,7 +305,6 @@ void RegisterApp(const std::string& app_id) {
                         })));
   loop.Run();
 }
-#endif  // defined(OS_MAC)
 
 void ExpectVersionActive(const std::string& version) {
   EXPECT_EQ(CreateGlobalPrefs()->GetActiveVersion(), version);
@@ -523,13 +517,10 @@ class IntegrationTest
   void ExpectAppUnregisteredExistenceCheckerPath(const std::string& app_id) {
     test_commands_->ExpectAppUnregisteredExistenceCheckerPath(app_id);
   }
-
-#if defined(OS_MAC)
   void RegisterApp(const std::string& app_id) {
     test_commands_->RegisterApp(app_id);
   }
   void RegisterTestApp() { test_commands_->RegisterTestApp(); }
-#endif
   void RunWake(int exit_code) { test_commands_->RunWake(exit_code); }
   UpdaterScope GetUpdaterScope() { return test_commands_->scope(); }
 
@@ -548,6 +539,12 @@ TEST_P(IntegrationTest, InstallUninstall) {
   ExpectInstalled();
   ExpectVersionActive(UPDATER_VERSION_STRING);
   ExpectActiveUpdater();
+#if defined(OS_WIN)
+  // Tests the COM registration after the install. For now, tests that the
+  // COM interfaces are registered, which is indirectly testing the type
+  // library separation for the public, private, and legacy interfaces.
+  ExpectInterfacesRegistered();
+#endif  // OS_WIN
   Uninstall();
 }
 
@@ -588,8 +585,8 @@ TEST_P(IntegrationTest, RegisterTestApp) {
   ExpectActiveUpdater();
   Uninstall();
 }
+#endif  // OS_MAC
 
-// TODO(crbug.com/1163524): Enable on Windows.
 // TODO(crbug.com/1163625): Failing on Mac 10.11.
 TEST_P(IntegrationTest, ReportsActive) {
   // TODO(crbug.com/1096654): Enable for system.
@@ -635,6 +632,7 @@ TEST_P(IntegrationTest, ReportsActive) {
   Uninstall();
 }
 
+#if defined(OS_MAC)
 // TODO(https://crbug.com/1186583): Test failing frequently on Mac
 #if defined(OS_MAC)
 #define MAYBE_UnregisterUninstalledApp DISABLED_UnregisterUninstalledApp
@@ -723,17 +721,6 @@ TEST_P(IntegrationTest, MAYBE_UnregisterUnownedApp) {
 }
 
 #endif  // OS_MAC
-
-#if defined(OS_WIN)
-// Tests the COM registration after the install. For now, tests that the
-// COM interfaces are registered, which is indirectly testing the type
-// library separation for the public, private, and legacy interfaces.
-TEST_P(IntegrationTest, COMRegistration) {
-  Install();
-  ExpectInterfacesRegistered();
-  Uninstall();
-}
-#endif  // OS_WIN
 
 #if defined(OS_MAC)
 // TODO(crbug.com/1096654): Enable tests for IntegrationTestCommandsSystem on
