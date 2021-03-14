@@ -31,6 +31,7 @@ import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.components.browser_ui.styles.ChromeColors;
 import org.chromium.components.externalauth.ExternalAuthUtils;
+import org.chromium.components.signin.AccountManagerFacadeProvider;
 import org.chromium.ui.base.ViewUtils;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -92,7 +93,8 @@ class SearchBoxMediator
                 ExternalAuthUtils.getInstance(), TemplateUrlServiceFactory.get(),
                 GSAState.getInstance(mContext), this, SharedPreferencesManager.getInstance(),
                 IdentityServicesProvider.get().getIdentityManager(
-                        Profile.getLastUsedRegularProfile()));
+                        Profile.getLastUsedRegularProfile()),
+                AccountManagerFacadeProvider.getInstance());
         onAssistantVoiceSearchServiceChanged();
     }
 

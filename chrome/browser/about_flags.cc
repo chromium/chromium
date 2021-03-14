@@ -2018,12 +2018,20 @@ const FeatureEntry::FeatureParam kOmniboxAssistantVoiceSearchColorfulMic[] = {
     {"min_agsa_version", "10.95"},
     {"colorful_mic", "true"}};
 
+const FeatureEntry::FeatureParam
+    kOmniboxAssistantVoiceSearchNoMultiAccountCheck[] = {
+        {"min_agsa_version", "10.95"},
+        {"colorful_mic", "true"},
+        {"enable_multi_account_check", "false"}};
+
 const FeatureEntry::FeatureVariation kOmniboxAssistantVoiceSearchVariations[] =
     {
         {"(grey mic)", kOmniboxAssistantVoiceSearchGreyMic,
          base::size(kOmniboxAssistantVoiceSearchGreyMic), nullptr},
         {"(colorful mic)", kOmniboxAssistantVoiceSearchColorfulMic,
          base::size(kOmniboxAssistantVoiceSearchColorfulMic), nullptr},
+        {"(no account check)", kOmniboxAssistantVoiceSearchNoMultiAccountCheck,
+         base::size(kOmniboxAssistantVoiceSearchNoMultiAccountCheck), nullptr},
 };
 
 const FeatureEntry::FeatureParam

@@ -30,6 +30,9 @@ import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
 import org.chromium.components.browser_ui.styles.ChromeColors;
 import org.chromium.components.externalauth.ExternalAuthUtils;
 import org.chromium.components.search_engines.TemplateUrlService;
+import org.chromium.components.signin.AccountManagerDelegateException;
+import org.chromium.components.signin.AccountManagerFacade;
+import org.chromium.components.signin.AccountsChangeObserver;
 import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.components.signin.identitymanager.IdentityManager;
@@ -45,8 +48,9 @@ import java.util.List;
  * Service for state tracking and event delivery to classes that need to observe the state
  * of Assistant Voice Search.
  **/
-public class AssistantVoiceSearchService
-        implements TemplateUrlService.TemplateUrlServiceObserver, IdentityManager.Observer {
+public class AssistantVoiceSearchService implements TemplateUrlService.TemplateUrlServiceObserver,
+                                                    IdentityManager.Observer,
+                                                    AccountsChangeObserver {
     @VisibleForTesting
     static final String USER_ELIGIBILITY_HISTOGRAM = "Assistant.VoiceSearch.UserEligibility";
     @VisibleForTesting
@@ -54,7 +58,7 @@ public class AssistantVoiceSearchService
             "Assistant.VoiceSearch.UserEligibility.FailureReason";
     @VisibleForTesting
     static final String AGSA_VERSION_HISTOGRAM = "Assistant.VoiceSearch.AgsaVersion";
-    private static final String DEFAULT_ASSISTANT_AGSA_MIN_VERSION = "12.7.2.23";
+    private static final String DEFAULT_ASSISTANT_AGSA_MIN_VERSION = "11.7";
     private static final boolean DEFAULT_ASSISTANT_COLORFUL_MIC_ENABLED = false;
 
     // These values are persisted to logs. Entries should not be renumbered and
@@ -78,6 +82,7 @@ public class AssistantVoiceSearchService
         int NON_GOOGLE_SEARCH_ENGINE = 7;
         int NO_CHROME_ACCOUNT = 8;
         int LOW_END_DEVICE = 9;
+        int MULTIPLE_ACCOUNTS_ON_DEVICE = 10;
 
         // STOP: When updating this, also update values in enums.xml.
         int MAX_VALUE = 10;
@@ -102,18 +107,21 @@ public class AssistantVoiceSearchService
     private final GSAState mGsaState;
     private final SharedPreferencesManager mSharedPrefsManager;
     private final IdentityManager mIdentityManager;
+    private final AccountManagerFacade mAccountManagerFacade;
 
     private boolean mIsDefaultSearchEngineGoogle;
     private boolean mIsAssistantVoiceSearchEnabled;
     private boolean mIsColorfulMicEnabled;
     private boolean mShouldShowColorfulMic;
+    private boolean mIsMultiAccountCheckEnabled;
     private String mMinAgsaVersion;
 
     public AssistantVoiceSearchService(@NonNull Context context,
             @NonNull ExternalAuthUtils externalAuthUtils,
             @NonNull TemplateUrlService templateUrlService, @NonNull GSAState gsaState,
             @Nullable Observer observer, @NonNull SharedPreferencesManager sharedPrefsManager,
-            @NonNull IdentityManager identityManager) {
+            @NonNull IdentityManager identityManager,
+            @NonNull AccountManagerFacade accountManagerFacade) {
         mContext = context;
         mExternalAuthUtils = externalAuthUtils;
         mTemplateUrlService = templateUrlService;
@@ -121,7 +129,9 @@ public class AssistantVoiceSearchService
         mSharedPrefsManager = sharedPrefsManager;
         mObserver = observer;
         mIdentityManager = identityManager;
+        mAccountManagerFacade = accountManagerFacade;
 
+        mAccountManagerFacade.addObserver(this);
         mIdentityManager.addObserver(this);
         mTemplateUrlService.addObserver(this);
         initializeAssistantVoiceSearchState();
@@ -130,6 +140,7 @@ public class AssistantVoiceSearchService
     public void destroy() {
         mTemplateUrlService.removeObserver(this);
         mIdentityManager.removeObserver(this);
+        mAccountManagerFacade.removeObserver(this);
     }
 
     private void notifyObserver() {
@@ -149,6 +160,10 @@ public class AssistantVoiceSearchService
 
         mMinAgsaVersion = ChromeFeatureList.getFieldTrialParamByFeature(
                 ChromeFeatureList.OMNIBOX_ASSISTANT_VOICE_SEARCH, "min_agsa_version");
+
+        mIsMultiAccountCheckEnabled = ChromeFeatureList.getFieldTrialParamByFeatureAsBoolean(
+                ChromeFeatureList.OMNIBOX_ASSISTANT_VOICE_SEARCH, "enable_multi_account_check",
+                /* default= */ true);
 
         mIsDefaultSearchEngineGoogle = mTemplateUrlService.isDefaultSearchEngineGoogle();
 
@@ -278,6 +293,11 @@ public class AssistantVoiceSearchService
             outList.add(EligibilityFailureReason.LOW_END_DEVICE);
         }
 
+        if (mIsMultiAccountCheckEnabled && doesViolateMultiAccountCheck()) {
+            if (returnImmediately) return false;
+            outList.add(EligibilityFailureReason.MULTIPLE_ACCOUNTS_ON_DEVICE);
+        }
+
         // Either we would have failed already or we have some errors on the list.
         // Otherwise this client is eligible for assistant.
         return returnImmediately || outList.size() == 0;
@@ -338,6 +358,19 @@ public class AssistantVoiceSearchService
         }.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
     }
 
+    /** Wrapped multi-account check to handle the exception. */
+    @VisibleForTesting
+    boolean doesViolateMultiAccountCheck() {
+        if (!mAccountManagerFacade.isCachePopulated()) return true;
+
+        try {
+            return mAccountManagerFacade.getGoogleAccounts().size() > 1;
+        } catch (AccountManagerDelegateException e) {
+            // In case of an exception -- we can't be sure so default to true.
+            return true;
+        }
+    }
+
     // TemplateUrlService.TemplateUrlServiceObserver implementation
 
     @Override
@@ -357,11 +390,22 @@ public class AssistantVoiceSearchService
         updateColorfulMicState();
     }
 
+    // AccountsChangeObserver implementation
+
+    @Override
+    public void onAccountsChanged() {
+        updateColorfulMicState();
+    }
+
     // Test-only methods
 
     /** Enable the colorful mic for testing purposes. */
     void setColorfulMicEnabledForTesting(boolean enabled) {
         mIsColorfulMicEnabled = enabled;
         mShouldShowColorfulMic = enabled;
+    }
+
+    void setMultiAccountCheckEnabledForTesting(boolean enabled) {
+        mIsMultiAccountCheckEnabled = enabled;
     }
 }

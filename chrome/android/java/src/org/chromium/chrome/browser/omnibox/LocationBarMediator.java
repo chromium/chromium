@@ -63,6 +63,7 @@ import org.chromium.components.externalauth.ExternalAuthUtils;
 import org.chromium.components.search_engines.TemplateUrl;
 import org.chromium.components.search_engines.TemplateUrlService;
 import org.chromium.components.search_engines.TemplateUrlService.TemplateUrlServiceObserver;
+import org.chromium.components.signin.AccountManagerFacadeProvider;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.content_public.common.ResourceRequestBody;
 import org.chromium.ui.base.PageTransition;
@@ -283,7 +284,8 @@ class LocationBarMediator
                 ExternalAuthUtils.getInstance(), mTemplateUrlServiceSupplier.get(),
                 GSAState.getInstance(mContext), this, SharedPreferencesManager.getInstance(),
                 IdentityServicesProvider.get().getIdentityManager(
-                        Profile.getLastUsedRegularProfile())));
+                        Profile.getLastUsedRegularProfile()),
+                AccountManagerFacadeProvider.getInstance()));
         onAssistantVoiceSearchServiceChanged();
         mLocationBarLayout.onFinishNativeInitialization();
         setProfile(mProfileSupplier.get());

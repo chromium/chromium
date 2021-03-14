@@ -6,14 +6,15 @@ package org.chromium.chrome.browser.omnibox.voice;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.doThrow;
 
 import static org.chromium.chrome.browser.preferences.ChromePreferenceKeys.ASSISTANT_VOICE_SEARCH_ENABLED;
 
+import android.accounts.Account;
 import android.app.Activity;
 import android.content.Context;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
-import android.content.pm.PackageManager.NameNotFoundException;
 import android.graphics.drawable.Drawable;
 
 import org.junit.After;
@@ -46,9 +47,12 @@ import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
 import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.components.externalauth.ExternalAuthUtils;
 import org.chromium.components.search_engines.TemplateUrlService;
+import org.chromium.components.signin.AccountManagerFacade;
+import org.chromium.components.signin.GmsAvailabilityException;
 import org.chromium.components.signin.identitymanager.IdentityManager;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -61,6 +65,9 @@ import java.util.List;
 @CommandLineFlags.Add(BaseSwitches.DISABLE_LOW_END_DEVICE_MODE)
 public class AssistantVoiceSearchServiceUnitTest {
     private static final int AGSA_VERSION_NUMBER = 11007;
+    private static final List<Account> FAKE_ACCOUNTS_1 = Arrays.asList(Mockito.mock(Account.class));
+    private static final List<Account> FAKE_ACCOUNTS_2 =
+            Arrays.asList(Mockito.mock(Account.class), Mockito.mock(Account.class));
 
     @Rule
     public TestRule mProcessor = new Features.JUnitProcessor();
@@ -75,6 +82,8 @@ public class AssistantVoiceSearchServiceUnitTest {
     ExternalAuthUtils mExternalAuthUtils;
     @Mock
     IdentityManager mIdentityManager;
+    @Mock
+    AccountManagerFacade mAccountManagerFacade;
 
     AssistantVoiceSearchService mAssistantVoiceSearchService;
     SharedPreferencesManager mSharedPreferencesManager;
@@ -89,7 +98,7 @@ public class AssistantVoiceSearchServiceUnitTest {
     }
 
     @Before
-    public void setUp() throws NameNotFoundException {
+    public void setUp() throws Exception {
         ShadowRecordHistogram.reset();
         SysUtils.resetForTesting();
         MockitoAnnotations.initMocks(this);
@@ -98,6 +107,7 @@ public class AssistantVoiceSearchServiceUnitTest {
 
         mContext = Mockito.spy(Robolectric.buildActivity(Activity.class).setup().get());
 
+        doReturn(mPackageManager).when(mContext).getPackageManager();
         doReturn(true).when(mExternalAuthUtils).isChromeGoogleSigned();
         doReturn(true).when(mExternalAuthUtils).isGoogleSigned(IntentHandler.PACKAGE_GSA);
         doReturn(true).when(mTemplateUrlService).isDefaultSearchEngineGoogle();
@@ -105,10 +115,13 @@ public class AssistantVoiceSearchServiceUnitTest {
         doReturn(AGSA_VERSION_NUMBER).when(mGsaState).parseAgsaMajorMinorVersionAsInteger(any());
         doReturn(true).when(mGsaState).canAgsaHandleIntent(any());
         doReturn(true).when(mIdentityManager).hasPrimaryAccount();
+        doReturn(FAKE_ACCOUNTS_1).when(mAccountManagerFacade).getGoogleAccounts();
+        doReturn(true).when(mAccountManagerFacade).isCachePopulated();
         mSharedPreferencesManager.writeBoolean(ASSISTANT_VOICE_SEARCH_ENABLED, true);
 
         mAssistantVoiceSearchService = new AssistantVoiceSearchService(mContext, mExternalAuthUtils,
-                mTemplateUrlService, mGsaState, null, mSharedPreferencesManager, mIdentityManager);
+                mTemplateUrlService, mGsaState, null, mSharedPreferencesManager, mIdentityManager,
+                mAccountManagerFacade);
     }
 
     @After
@@ -225,6 +238,49 @@ public class AssistantVoiceSearchServiceUnitTest {
 
     @Test
     @Feature("OmniboxAssistantVoiceSearch")
+    public void testAssistantEligibility_MutlipleAccounts() throws Exception {
+        doReturn(FAKE_ACCOUNTS_2).when(mAccountManagerFacade).getGoogleAccounts();
+
+        List<Integer> reasons = new ArrayList<>();
+        boolean eligible = mAssistantVoiceSearchService.isDeviceEligibleForAssistant(
+                /* returnImmediately= */ false, /* outList= */ reasons);
+        Assert.assertEquals(1, reasons.size());
+        Assert.assertEquals(
+                EligibilityFailureReason.MULTIPLE_ACCOUNTS_ON_DEVICE, (int) reasons.get(0));
+        Assert.assertFalse(eligible);
+    }
+
+    @Test
+    @Feature("OmniboxAssistantVoiceSearch")
+    public void testAssistantEligibility_MutlipleAccounts_CheckDisabled() throws Exception {
+        mAssistantVoiceSearchService.setMultiAccountCheckEnabledForTesting(false);
+        doReturn(FAKE_ACCOUNTS_2).when(mAccountManagerFacade).getGoogleAccounts();
+
+        List<Integer> reasons = new ArrayList<>();
+        boolean eligible = mAssistantVoiceSearchService.isDeviceEligibleForAssistant(
+                /* returnImmediately= */ false, /* outList= */ reasons);
+        Assert.assertEquals(0, reasons.size());
+        Assert.assertTrue(eligible);
+    }
+
+    @Test
+    @Feature("OmniboxAssistantVoiceSearch")
+    public void testAssistantEligibility_MutlipleAccounts_JustAdded() throws Exception {
+        mAssistantVoiceSearchService.setColorfulMicEnabledForTesting(true);
+        mAssistantVoiceSearchService.onAccountsChanged();
+
+        // Colorful mic should be returned when only 1 account is present.
+        Assert.assertNull(mAssistantVoiceSearchService.getMicButtonColorStateList(0, mContext));
+
+        doReturn(FAKE_ACCOUNTS_2).when(mAccountManagerFacade).getGoogleAccounts();
+        mAssistantVoiceSearchService.onAccountsChanged();
+
+        // Colorful mic should be returned when only 1 account is present.
+        Assert.assertNotNull(mAssistantVoiceSearchService.getMicButtonColorStateList(0, mContext));
+    }
+
+    @Test
+    @Feature("OmniboxAssistantVoiceSearch")
     public void getMicButtonColorStateList_ColorfulMicEnabled() {
         mAssistantVoiceSearchService.setColorfulMicEnabledForTesting(true);
         Assert.assertNull(mAssistantVoiceSearchService.getMicButtonColorStateList(0, mContext));
@@ -269,5 +325,19 @@ public class AssistantVoiceSearchServiceUnitTest {
                 ShadowRecordHistogram.getHistogramValueCountForTesting(
                         AssistantVoiceSearchService.USER_ELIGIBILITY_FAILURE_REASON_HISTOGRAM,
                         AssistantVoiceSearchService.EligibilityFailureReason.NO_CHROME_ACCOUNT));
+    }
+
+    @Test
+    @Feature("OmniboxAssistantVoiceSearch")
+    public void testDoesViolateMultiAccountCheck_throws() throws Exception {
+        doThrow(GmsAvailabilityException.class).when(mAccountManagerFacade).getGoogleAccounts();
+        Assert.assertTrue(mAssistantVoiceSearchService.doesViolateMultiAccountCheck());
+    }
+
+    @Test
+    @Feature("OmniboxAssistantVoiceSearch")
+    public void testDoesViolateMultiAccountCheck_cacheNotPopuolated() throws Exception {
+        doReturn(false).when(mAccountManagerFacade).isCachePopulated();
+        Assert.assertTrue(mAssistantVoiceSearchService.doesViolateMultiAccountCheck());
     }
 }
