@@ -607,7 +607,6 @@ component("base") {
     "strings/strcat.cc",
     "strings/strcat.h",
     "strings/strcat_internal.h",
-    "strings/string16.h",
     "strings/string_number_conversions.cc",
     "strings/string_number_conversions.h",
     "strings/string_number_conversions_internal.h",

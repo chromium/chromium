@@ -9,7 +9,6 @@ include_rules = [
     "+base/containers/span.h",
     "+base/observer_list.h",
     "+base/strings/latin1_string_conversions.h",
-    "+base/strings/string16.h",
     "+base/task/current_thread.h",
     "+mojo/public/cpp/base/time_mojom_traits.h",
     "+mojo/public/mojom/base/string16.mojom-blink.h",

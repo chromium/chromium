@@ -568,9 +568,9 @@ BASE_EXPORT std::ostream& operator<<(std::ostream& o, WStringPiece piece);
 // We provide appropriate hash functions so StringPiece and StringPiece16 can
 // be used as keys in hash sets and maps.
 
-// This hash function is copied from base/strings/string16.h. We don't use the
-// ones already defined for string and std::u16string directly because it would
-// require the string constructors to be called, which we don't want.
+// This is a custom hash function. We don't use the ones already defined for
+// string and std::u16string directly because it would require the string
+// constructors to be called, which we don't want.
 
 template <typename StringPieceType>
 struct StringPieceHashImpl {
