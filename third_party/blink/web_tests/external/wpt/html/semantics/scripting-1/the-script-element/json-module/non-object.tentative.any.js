@@ -1,4 +1,4 @@
-// META: global=window,worker
+// META: global=window,dedicatedworker,sharedworker
 
 for (const value of [null, true, false, "string"]) {
   promise_test(async t => {
