@@ -5109,6 +5109,7 @@
 <translation id="6811332638216701903">Имя хоста DHCP</translation>
 <translation id="6812349420832218321">Нельзя запускать <ph name="PRODUCT_NAME" /> от имени суперпользователя.</translation>
 <translation id="6812841287760418429">Сохранить изменения</translation>
+<translation id="6813907279658683733">Весь экран</translation>
 <translation id="681584224457905309">{COUNT,plural, =1{файл}one{# файл}few{# файла}many{# файлов}other{# файла}}</translation>
 <translation id="6817174620439930047">Уведомлять меня о сайтах, пытающихся использовать системные сообщения для доступа к MIDI-устройствам (рекомендуется)</translation>
 <translation id="6818198425579322765">Исходный язык страницы</translation>
@@ -5619,6 +5620,7 @@
 <translation id="7392118418926456391">Не удалось выполнить проверку на вирусы</translation>
 <translation id="7392915005464253525">О&amp;ткрыть закрытое окно</translation>
 <translation id="7393073300870882456">{COUNT,plural, =1{Скопирована 1 закладка.}one{Скопирована {COUNT} закладка.}few{Скопировано {COUNT} закладки.}many{Скопировано {COUNT} закладок.}other{Скопировано {COUNT} закладки.}}</translation>
+<translation id="7395774987022469191">Весь экран</translation>
 <translation id="7396017167185131589">Здесь будут появляться общие папки.</translation>
 <translation id="7396845648024431313">Приложение <ph name="APP_NAME" /> будет запущено при старте системы и продолжит работу в фоновом режиме даже после закрытия всех окон <ph name="PRODUCT_NAME" />.</translation>
 <translation id="7399045143794278225">Настроить синхронизацию</translation>

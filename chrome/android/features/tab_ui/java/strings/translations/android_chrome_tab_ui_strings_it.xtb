@@ -10,6 +10,7 @@
 <translation id="1869137256605757565">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> scheda}other{<ph name="TABS_COUNT_MANY" /> schede}}</translation>
 <translation id="2277224997687551299">Modifica nome gruppo</translation>
 <translation id="228946090561406413">{TABS_COUNT,plural, =1{Rimuovi <ph name="TABS_COUNT_ONE" /> scheda selezionata dal gruppo.}other{Rimuovi <ph name="TABS_COUNT_MANY" /> schede selezionate dal gruppo.}}</translation>
+<translation id="2479148705183875116">Vai a Impostazioni</translation>
 <translation id="2539705006853443997">{TABS_COUNT,plural, =1{Comprimi <ph name="TABS_COUNT_ONE" /> scheda.}other{Comprimi il gruppo di schede con <ph name="TABS_COUNT_MANY" /> schede.}}</translation>
 <translation id="2569352796411618312">Suggerimento: <ph name="NUMBER_OF_TABS" /> delle tue schede non sono state usate ultimamente. Vuoi chiuderle?</translation>
 <translation id="257674075312929031">Raggruppa</translation>
@@ -20,6 +21,7 @@
 <translation id="3291470810748040983">Riceverai un avviso quando ci sarà un prezzo più basso in una scheda aperta</translation>
 <translation id="3328308545011660196">Suggerimento: <ph name="NUMBER_OF_TABS" /> schede sembrano correlate. Vuoi raggrupparle?</translation>
 <translation id="3819916404117584598">{TABS_COUNT,plural, =1{Comprimi <ph name="TABS_COUNT_ONE" /> scheda.}other{Comprimi il gruppo di schede <ph name="TITLE_OF_GROUP" /> contenente <ph name="TABS_COUNT_MANY" /> schede.}}</translation>
+<translation id="3882834874697329510">Attiva le notifiche nelle Impostazioni per ricevere un avviso quando ci sarà un prezzo più basso in una scheda aperta.</translation>
 <translation id="3940195383040445971">Monitora prezzi nelle schede</translation>
 <translation id="3996880007329611795">Ricevi notifiche</translation>
 <translation id="4133493477912226187"><ph name="NUMBER_OF_TABS" /> schede sembrano correlate. Vuoi raggrupparle?</translation>

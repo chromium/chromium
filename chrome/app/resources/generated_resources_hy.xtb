@@ -5113,6 +5113,7 @@
 <translation id="6811332638216701903">DHCP-ի խնամորդի անունը</translation>
 <translation id="6812349420832218321"><ph name="PRODUCT_NAME" />-ը չի կարող գործարկվել արմատային գրացուցակից:</translation>
 <translation id="6812841287760418429">Պահպանել փոփոխությունները</translation>
+<translation id="6813907279658683733">Ամբողջ էկրանը</translation>
 <translation id="681584224457905309">{COUNT,plural, =1{ֆայլ}one{# ֆայլ}other{# ֆայլ}}</translation>
 <translation id="6817174620439930047">Հարցնել, երբ որևէ կայք ուզում է օգտագործել համակարգի բացառիկ հաղորդագրությունները՝ MIDI սարքեր մուտք գործելու համար (խորհուրդ է տրվում)</translation>
 <translation id="6818198425579322765">Թարգմանվող էջի լեզուն</translation>
@@ -5623,6 +5624,7 @@
 <translation id="7392118418926456391">Վիրուսների սկանավորումը չհաջողվեց</translation>
 <translation id="7392915005464253525">Նո&amp;րից բացել փակված պատուհանը</translation>
 <translation id="7393073300870882456">{COUNT,plural, =1{Պատճենվեց 1 տարր}one{Պատճենվեց {COUNT} տարր}other{Պատճենվեց {COUNT} տարր}}</translation>
+<translation id="7395774987022469191">Ամբողջ էկրանը</translation>
 <translation id="7396017167185131589">Ընդհանուր պանակները կցուցադրվեն այստեղ</translation>
 <translation id="7396845648024431313"><ph name="APP_NAME" />-ը կգործարկվի համակարգի մեկնարկի ժամանակ և կշարունակի աշխատել հետնաշերտում, նույնիսկ եթե փակեք <ph name="PRODUCT_NAME" />-ի բոլոր պատուհանները:</translation>
 <translation id="7399045143794278225">Կարգավորել համաժամացումը</translation>

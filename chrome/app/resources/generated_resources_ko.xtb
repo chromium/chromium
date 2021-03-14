@@ -5106,6 +5106,7 @@
 <translation id="6811332638216701903">DHCP 호스트 이름</translation>
 <translation id="6812349420832218321"><ph name="PRODUCT_NAME" />은(는) 루트로 실행할 수 없습니다.</translation>
 <translation id="6812841287760418429">변경사항 유지</translation>
+<translation id="6813907279658683733">전체 화면</translation>
 <translation id="681584224457905309">{COUNT,plural, =1{파일}other{파일 #개}}</translation>
 <translation id="6817174620439930047">사이트에서 시스템 전용 메시지를 사용하여 MIDI 기기에 액세스하려고 할 때 확인(권장)</translation>
 <translation id="6818198425579322765">페이지 번역 출발어</translation>
@@ -5616,6 +5617,7 @@
 <translation id="7392118418926456391">바이러스 검사 실패</translation>
 <translation id="7392915005464253525">닫은 탭 다시 열기(&amp;E)</translation>
 <translation id="7393073300870882456">{COUNT,plural, =1{항목 1개 복사됨}other{항목 {COUNT}개 복사됨}}</translation>
+<translation id="7395774987022469191">전체 화면</translation>
 <translation id="7396017167185131589">공유 폴더가 여기에 표시됩니다.</translation>
 <translation id="7396845648024431313">시스템이 시작할 때 <ph name="APP_NAME" />이(가) 실행되며 다른 모든 <ph name="PRODUCT_NAME" /> 창을 종료한 후에도 백그라운드에서 계속 실행됩니다.</translation>
 <translation id="7399045143794278225">동기화 맞춤설정</translation>

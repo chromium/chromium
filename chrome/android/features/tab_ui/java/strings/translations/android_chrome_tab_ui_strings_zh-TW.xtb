@@ -10,6 +10,7 @@
 <translation id="1869137256605757565">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> 個分頁}other{<ph name="TABS_COUNT_MANY" /> 個分頁}}</translation>
 <translation id="2277224997687551299">編輯群組名稱</translation>
 <translation id="228946090561406413">{TABS_COUNT,plural, =1{從群組中移除 <ph name="TABS_COUNT_ONE" /> 個已選取的分頁。}other{從群組中移除 <ph name="TABS_COUNT_MANY" /> 個已選取的分頁。}}</translation>
+<translation id="2479148705183875116">前往「設定」</translation>
 <translation id="2539705006853443997">{TABS_COUNT,plural, =1{收合 <ph name="TABS_COUNT_ONE" /> 個分頁。}other{收合包含 <ph name="TABS_COUNT_MANY" /> 個分頁的分頁群組。}}</translation>
 <translation id="2569352796411618312">建議：你有 <ph name="NUMBER_OF_TABS" /> 個分頁最近沒有使用過。要關閉這些分頁嗎？</translation>
 <translation id="257674075312929031">群組</translation>
@@ -20,6 +21,7 @@
 <translation id="3291470810748040983">每當開啟的分頁中有降價商品，你就會收到通知</translation>
 <translation id="3328308545011660196">建議：似乎有 <ph name="NUMBER_OF_TABS" /> 個相關的分頁。要將這些分頁加入群組嗎？</translation>
 <translation id="3819916404117584598">{TABS_COUNT,plural, =1{收合 <ph name="TABS_COUNT_ONE" /> 個分頁。}other{收合包含 <ph name="TABS_COUNT_MANY" /> 個分頁的「<ph name="TITLE_OF_GROUP" />」分頁群組。}}</translation>
+<translation id="3882834874697329510">如要在開啟的分頁有降價商品時收到通知，請在設定中啟用通知功能。</translation>
 <translation id="3940195383040445971">在分頁上追蹤價格</translation>
 <translation id="3996880007329611795">接收通知</translation>
 <translation id="4133493477912226187">似乎有 <ph name="NUMBER_OF_TABS" /> 個相關的分頁。要將這些分頁加入群組嗎？</translation>

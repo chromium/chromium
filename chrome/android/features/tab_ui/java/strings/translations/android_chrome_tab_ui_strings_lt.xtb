@@ -10,6 +10,7 @@
 <translation id="1869137256605757565">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> skirtukas}one{<ph name="TABS_COUNT_MANY" /> skirtukas}few{<ph name="TABS_COUNT_MANY" /> skirtukai}many{<ph name="TABS_COUNT_MANY" /> skirtuko}other{<ph name="TABS_COUNT_MANY" /> skirtukų}}</translation>
 <translation id="2277224997687551299">Redaguoti grupės pavadinimą</translation>
 <translation id="228946090561406413">{TABS_COUNT,plural, =1{Pašalinti <ph name="TABS_COUNT_ONE" /> pasirinktą skirtuką iš grupės.}one{Pašalinti <ph name="TABS_COUNT_MANY" /> pasirinktą skirtuką iš grupės.}few{Pašalinti <ph name="TABS_COUNT_MANY" /> pasirinktus skirtukus iš grupės.}many{Pašalinti <ph name="TABS_COUNT_MANY" /> pasirinkto skirtuko iš grupės.}other{Pašalinti <ph name="TABS_COUNT_MANY" /> pasirinktų skirtukų iš grupės.}}</translation>
+<translation id="2479148705183875116">Eiti į nustatymus</translation>
 <translation id="2539705006853443997">{TABS_COUNT,plural, =1{Sutraukti <ph name="TABS_COUNT_ONE" /> skirtuką.}one{Sutraukti skirtukų grupę, kurioje yra <ph name="TABS_COUNT_MANY" /> skirtukas.}few{Sutraukti skirtukų grupę, kurioje yra <ph name="TABS_COUNT_MANY" /> skirtukai.}many{Sutraukti skirtukų grupę, kurioje yra <ph name="TABS_COUNT_MANY" /> skirtuko.}other{Sutraukti skirtukų grupę, kurioje yra <ph name="TABS_COUNT_MANY" /> skirtukų.}}</translation>
 <translation id="2569352796411618312">Pasiūlymas: pastaruoju metu nebuvo naudojama <ph name="NUMBER_OF_TABS" /> skirtuk. Uždaryti juos?</translation>
 <translation id="257674075312929031">Grupė</translation>
@@ -20,6 +21,7 @@
 <translation id="3291470810748040983">Gausite įspėjimą, kai atidarytame skirtuke bus sumažinta kaina</translation>
 <translation id="3328308545011660196">Pasiūlymas: skirtukai (iš viso: <ph name="NUMBER_OF_TABS" />) atrodo susiję. Grupuoti juos?</translation>
 <translation id="3819916404117584598">{TABS_COUNT,plural, =1{Sutraukti <ph name="TABS_COUNT_ONE" /> skirtuką.}one{Sutraukti skirtukų grupę „<ph name="TITLE_OF_GROUP" />“, kurioje yra <ph name="TABS_COUNT_MANY" /> skirtukas.}few{Sutraukti skirtukų grupę „<ph name="TITLE_OF_GROUP" />“, kurioje yra <ph name="TABS_COUNT_MANY" /> skirtukai.}many{Sutraukti skirtukų grupę „<ph name="TITLE_OF_GROUP" />“, kurioje yra <ph name="TABS_COUNT_MANY" /> skirtuko.}other{Sutraukti skirtukų grupę „<ph name="TITLE_OF_GROUP" />“, kurioje yra <ph name="TABS_COUNT_MANY" /> skirtukų.}}</translation>
+<translation id="3882834874697329510">Norėdami gauti įspėjimą, kai atidarytame skirtuke bus sumažinta kaina, įjunkite pranešimus Nustatymų skiltyje.</translation>
 <translation id="3940195383040445971">Stebėti kainas skirtukuose</translation>
 <translation id="3996880007329611795">Pranešti</translation>
 <translation id="4133493477912226187">Skirtukai (iš viso: <ph name="NUMBER_OF_TABS" />) atrodo susiję. Grupuoti juos?</translation>

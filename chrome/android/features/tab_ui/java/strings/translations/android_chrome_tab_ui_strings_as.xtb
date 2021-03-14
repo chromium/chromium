@@ -10,6 +10,7 @@
 <translation id="1869137256605757565">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" />টা টেব}one{<ph name="TABS_COUNT_MANY" />টা টেব}other{<ph name="TABS_COUNT_MANY" />টা টেব}}</translation>
 <translation id="2277224997687551299">গোটৰ নাম সম্পাদনা কৰক</translation>
 <translation id="228946090561406413">{TABS_COUNT,plural, =1{গোটৰ পৰা <ph name="TABS_COUNT_ONE" /> টা বাছনি কৰা টেব আঁতৰাওক।}one{গোটৰ পৰা <ph name="TABS_COUNT_MANY" /> টা বাছনি কৰা টেব আঁতৰাওক।}other{গোটৰ পৰা <ph name="TABS_COUNT_MANY" /> টা বাছনি কৰা টেব আঁতৰাওক।}}</translation>
+<translation id="2479148705183875116">ছেটিংসমূহলৈ যাওক</translation>
 <translation id="2539705006853443997">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> টা টেব সংকোচন কৰক।}one{<ph name="TABS_COUNT_MANY" /> টা টেবযুক্ত টেবৰ গোটটো সংকোচন কৰক।}other{<ph name="TABS_COUNT_MANY" /> টা টেবযুক্ত টেবৰ গোটটো সংকোচন কৰক।}}</translation>
 <translation id="2569352796411618312">পৰামৰ্শ: শেহতীয়াকৈ আপোনাৰ <ph name="NUMBER_OF_TABS" /> টা টেব ব্যৱহাৰ কৰা হোৱা নাই। সেইকেইটা বন্ধ কৰিবনে?</translation>
 <translation id="257674075312929031">গোট</translation>
@@ -20,6 +21,7 @@
 <translation id="3291470810748040983">খোলা থকা কোনো টেবত কম মূল্যৰ তথ্য উপলব্ধ হ’লে আপুনি এটা সতৰ্কবাৰ্তা লাভ কৰিব</translation>
 <translation id="3328308545011660196">পৰামৰ্শ: <ph name="NUMBER_OF_TABS" />টা টেব জড়িত যেন লাগিছে। সেইকেইটা একগোট কৰিবনে?</translation>
 <translation id="3819916404117584598">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> টা টেব সংকোচন কৰক।}one{<ph name="TABS_COUNT_MANY" /> টা টেবযুক্ত <ph name="TITLE_OF_GROUP" /> টেবৰ গোটটো সংকোচন কৰক।}other{<ph name="TABS_COUNT_MANY" /> টা টেবযুক্ত <ph name="TITLE_OF_GROUP" /> টেবৰ গোটটো সংকোচন কৰক।}}</translation>
+<translation id="3882834874697329510">খোলা থকা কোনো টেবত কম মূল্যৰ তথ্য উপলব্ধ হ’লে সতৰ্কবাৰ্তা লাভ কৰিবলৈ ছেটিঙলৈ গৈ জাননী অন কৰক।</translation>
 <translation id="3940195383040445971">টেবত মূল্য ট্ৰেক কৰক</translation>
 <translation id="3996880007329611795">জাননী পাওক</translation>
 <translation id="4133493477912226187"><ph name="NUMBER_OF_TABS" /> টা টেব জড়িত যেন লাগিছে। সেইকেইটা একগোট কৰিবনে?</translation>

@@ -10,6 +10,7 @@
 <translation id="1869137256605757565">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> вкладка}one{<ph name="TABS_COUNT_MANY" /> вкладка}few{<ph name="TABS_COUNT_MANY" /> вкладки}many{<ph name="TABS_COUNT_MANY" /> вкладок}other{<ph name="TABS_COUNT_MANY" /> вкладки}}</translation>
 <translation id="2277224997687551299">Изменить название группы</translation>
 <translation id="228946090561406413">{TABS_COUNT,plural, =1{Удалить <ph name="TABS_COUNT_ONE" /> выбранную вкладку из группы.}one{Удалить <ph name="TABS_COUNT_MANY" /> выбранную вкладку из группы.}few{Удалить <ph name="TABS_COUNT_MANY" /> выбранные вкладки из группы.}many{Удалить <ph name="TABS_COUNT_MANY" /> выбранных вкладок из группы.}other{Удалить <ph name="TABS_COUNT_MANY" /> выбранной вкладки из группы.}}</translation>
+<translation id="2479148705183875116">Открыть настройки</translation>
 <translation id="2539705006853443997">{TABS_COUNT,plural, =1{Свернуть <ph name="TABS_COUNT_ONE" /> вкладку.}one{Свернуть группу из <ph name="TABS_COUNT_MANY" /> вкладки.}few{Свернуть группу из <ph name="TABS_COUNT_MANY" /> вкладок.}many{Свернуть группу из <ph name="TABS_COUNT_MANY" /> вкладок.}other{Свернуть группу из <ph name="TABS_COUNT_MANY" /> вкладки.}}</translation>
 <translation id="2569352796411618312">Подсказка: вы давно не использовали некоторые вкладки (всего: <ph name="NUMBER_OF_TABS" />). Закрыть их?</translation>
 <translation id="257674075312929031">Группа</translation>
@@ -20,6 +21,7 @@
 <translation id="3291470810748040983">Если цена на открытой вкладке снизится, вы получите оповещение.</translation>
 <translation id="3328308545011660196">Подсказка: обнаружены похожие вкладки (<ph name="NUMBER_OF_TABS" />). Сгруппировать их?</translation>
 <translation id="3819916404117584598">{TABS_COUNT,plural, =1{Свернуть <ph name="TABS_COUNT_ONE" /> вкладку.}one{Свернуть группу из <ph name="TABS_COUNT_MANY" /> вкладки под названием "<ph name="TITLE_OF_GROUP" />".}few{Свернуть группу из <ph name="TABS_COUNT_MANY" /> вкладок под названием "<ph name="TITLE_OF_GROUP" />".}many{Свернуть группу из <ph name="TABS_COUNT_MANY" /> вкладок под названием "<ph name="TITLE_OF_GROUP" />".}other{Свернуть группу из <ph name="TABS_COUNT_MANY" /> вкладки под названием "<ph name="TITLE_OF_GROUP" />".}}</translation>
+<translation id="3882834874697329510">Чтобы получать оповещения о снижении цены на открытой вкладке, включите уведомления в настройках.</translation>
 <translation id="3940195383040445971">Отслеживать цены на вкладках</translation>
 <translation id="3996880007329611795">Получать уведомления</translation>
 <translation id="4133493477912226187">Обнаружены похожие вкладки (<ph name="NUMBER_OF_TABS" />). Сгруппировать их?</translation>

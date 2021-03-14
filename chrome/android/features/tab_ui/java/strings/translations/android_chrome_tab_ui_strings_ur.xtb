@@ -10,6 +10,7 @@
 <translation id="1869137256605757565">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> ٹیب}other{<ph name="TABS_COUNT_MANY" /> ٹیبز}}</translation>
 <translation id="2277224997687551299">گروپ کے نام میں ترمیم کریں</translation>
 <translation id="228946090561406413">{TABS_COUNT,plural, =1{گروپ سے <ph name="TABS_COUNT_ONE" /> منتخب کردہ ٹیب کو ہٹائیں۔}other{گروپ سے <ph name="TABS_COUNT_MANY" /> منتخب کردہ ٹیبز کو ہٹائیں۔}}</translation>
+<translation id="2479148705183875116">ترتیبات پر جائیں</translation>
 <translation id="2539705006853443997">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> ٹیب کو سکیڑیں۔}other{ٹیب گروپ کو <ph name="TABS_COUNT_MANY" /> ٹیبز کے ساتھ سکیڑیں۔}}</translation>
 <translation id="2569352796411618312">تجویز: آپ کے ٹیبز میں سے <ph name="NUMBER_OF_TABS" /> کا استعمال حال میں نہیں ہوا ہے۔ انہیں بند کریں؟</translation>
 <translation id="257674075312929031">گروپ</translation>
@@ -20,6 +21,7 @@
 <translation id="3291470810748040983">کھلے ہوئے ٹیب میں قیمت کم ہونے پر آپ کو الرٹ کیا جائے گا</translation>
 <translation id="3328308545011660196">تجویز: <ph name="NUMBER_OF_TABS" /> ٹیبز متعلقہ معلوم ہوتے ہیں۔ ان کی گروپ بندی کریں؟</translation>
 <translation id="3819916404117584598">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> ٹیب کو سکیڑیں۔}other{<ph name="TITLE_OF_GROUP" /> ٹیب گروپ کو <ph name="TABS_COUNT_MANY" /> ٹیبز کے ساتھ سکیڑیں۔}}</translation>
+<translation id="3882834874697329510">کھلے ہوئے ٹیب میں کم قیمت ہونے پر الرٹ حاصل کرنے کے لئے، ترتیبات میں موجود اطلاعات آن کریں۔</translation>
 <translation id="3940195383040445971">ٹیبز پر قیمتیں ٹریک کریں</translation>
 <translation id="3996880007329611795">اطلاع حاصل کریں</translation>
 <translation id="4133493477912226187"><ph name="NUMBER_OF_TABS" /> ٹیبز متعلقہ معلوم ہوتے ہیں۔ ان کی گروپ بندی کریں؟</translation>

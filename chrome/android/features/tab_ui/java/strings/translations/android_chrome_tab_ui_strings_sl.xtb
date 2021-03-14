@@ -10,6 +10,7 @@
 <translation id="1869137256605757565">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> zavihek}one{<ph name="TABS_COUNT_MANY" /> zavihek}two{<ph name="TABS_COUNT_MANY" /> zavihka}few{<ph name="TABS_COUNT_MANY" /> zavihki}other{<ph name="TABS_COUNT_MANY" /> zavihkov}}</translation>
 <translation id="2277224997687551299">Urejanje imena skupine</translation>
 <translation id="228946090561406413">{TABS_COUNT,plural, =1{Odstrani <ph name="TABS_COUNT_ONE" /> izbran zavihek iz skupine.}one{Odstrani <ph name="TABS_COUNT_MANY" /> izbran zavihek iz skupine.}two{Odstrani <ph name="TABS_COUNT_MANY" /> izbrana zavihka iz skupine.}few{Odstrani <ph name="TABS_COUNT_MANY" /> izbrane zavihke iz skupine.}other{Odstrani <ph name="TABS_COUNT_MANY" /> izbranih zavihkov iz skupine.}}</translation>
+<translation id="2479148705183875116">V nastavitve</translation>
 <translation id="2539705006853443997">{TABS_COUNT,plural, =1{Strni <ph name="TABS_COUNT_ONE" /> zavihek.}one{Strni skupino zavihkov s/z <ph name="TABS_COUNT_MANY" /> zavihkom.}two{Strni skupino zavihkov s/z <ph name="TABS_COUNT_MANY" /> zavihkoma.}few{Strni skupino zavihkov s/z <ph name="TABS_COUNT_MANY" /> zavihki.}other{Strni skupino zavihkov s/z <ph name="TABS_COUNT_MANY" /> zavihki.}}</translation>
 <translation id="2569352796411618312">Predlog: Toliko zavihkov nedavno niste uporabljali: <ph name="NUMBER_OF_TABS" />. Ali jih želite zapreti?</translation>
 <translation id="257674075312929031">Združi</translation>
@@ -20,6 +21,7 @@
 <translation id="3291470810748040983">Ko bo na odprtem zavihku nižja cena, boste prejeli opozorilo.</translation>
 <translation id="3328308545011660196">Predlog: Videti je, da je toliko sorodnih zavihkov: <ph name="NUMBER_OF_TABS" />. Jih želite uvrstiti v skupino?</translation>
 <translation id="3819916404117584598">{TABS_COUNT,plural, =1{Strni <ph name="TABS_COUNT_ONE" /> zavihek.}one{Strni skupino zavihkov <ph name="TITLE_OF_GROUP" /> s/z <ph name="TABS_COUNT_MANY" /> zavihkom.}two{Strni skupino zavihkov <ph name="TITLE_OF_GROUP" /> s/z <ph name="TABS_COUNT_MANY" /> zavihkoma.}few{Strni skupino zavihkov <ph name="TITLE_OF_GROUP" /> s/z <ph name="TABS_COUNT_MANY" /> zavihki.}other{Strni skupino zavihkov <ph name="TITLE_OF_GROUP" /> s/z <ph name="TABS_COUNT_MANY" /> zavihki.}}</translation>
+<translation id="3882834874697329510">Če želite prejeti opozorilo, ko bo na odprtem zavihku nižja cena, v nastavitvah vklopite obvestila.</translation>
 <translation id="3940195383040445971">Spremljanje cen na zavihkih</translation>
 <translation id="3996880007329611795">Bodite obveščeni</translation>
 <translation id="4133493477912226187">Videti je, da je toliko zavihkov sorodnih: <ph name="NUMBER_OF_TABS" />. Jih želite uvrstiti v skupino?</translation>

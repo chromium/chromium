@@ -10,6 +10,7 @@
 <translation id="1869137256605757565">{TABS_COUNT,plural, =1{ផ្ទាំង <ph name="TABS_COUNT_ONE" />}other{ផ្ទាំង <ph name="TABS_COUNT_MANY" />}}</translation>
 <translation id="2277224997687551299">កែ​ឈ្មោះក្រុម</translation>
 <translation id="228946090561406413">{TABS_COUNT,plural, =1{លុបផ្ទាំង <ph name="TABS_COUNT_ONE" /> ដែល​បានជ្រើសរើស​ពីក្រុម។}other{លុបផ្ទាំង <ph name="TABS_COUNT_MANY" /> ដែល​បានជ្រើសរើស​ពីក្រុម។}}</translation>
+<translation id="2479148705183875116">ចូលទៅកាន់ការកំណត់</translation>
 <translation id="2539705006853443997">{TABS_COUNT,plural, =1{បង្រួមផ្ទាំង <ph name="TABS_COUNT_ONE" />។}other{បង្រួមក្រុមផ្ទាំង​ដែលមាន <ph name="TABS_COUNT_MANY" />ផ្ទាំង។}}</translation>
 <translation id="2569352796411618312">ការណែនាំ៖ ផ្ទាំង <ph name="NUMBER_OF_TABS" /> របស់អ្នក​មិនត្រូវបាន​ប្រើទេ​នាពេល​ថ្មីៗនេះ។ បិទផ្ទាំង​ទាំងនោះឬ?</translation>
 <translation id="257674075312929031">ដាក់ជាក្រុម</translation>
@@ -20,6 +21,7 @@
 <translation id="3291470810748040983">អ្នកនឹងទទួលបាន​ការជូនដំណឹង នៅពេលមានតម្លៃទាបជាងមុននៅក្នុងផ្ទាំងដែលកំពុងបើក</translation>
 <translation id="3328308545011660196">ការណែនាំ៖ ផ្ទាំង <ph name="NUMBER_OF_TABS" /> ហាក់ដូចជាពាក់ព័ន្ធគ្នា។ បញ្ចូលផ្ទាំងទាំងនេះទៅក្នុងក្រុមឬ?</translation>
 <translation id="3819916404117584598">{TABS_COUNT,plural, =1{បង្រួមផ្ទាំង <ph name="TABS_COUNT_ONE" />។}other{បង្រួមក្រុមផ្ទាំង <ph name="TITLE_OF_GROUP" /> ដែលមាន <ph name="TABS_COUNT_MANY" />ផ្ទាំង។}}</translation>
+<translation id="3882834874697329510">ដើម្បី​ទទួលបាន​ការជូនដំណឹង នៅពេល​មានតម្លៃទាបជាងមុន​នៅក្នុងផ្ទាំងដែល​កំពុងបើក សូមបើក​ការជូនដំណឹង​នៅក្នុងការកំណត់។</translation>
 <translation id="3940195383040445971">តាមដានតម្លៃនៅក្នុងផ្ទាំង</translation>
 <translation id="3996880007329611795">ទទួល​ការជូន​ដំណឹង</translation>
 <translation id="4133493477912226187">ផ្ទាំង <ph name="NUMBER_OF_TABS" /> ហាក់ដូចជាពាក់ព័ន្ធគ្នា។ បញ្ចូលផ្ទាំងទាំងនេះទៅក្នុងក្រុមឬ?</translation>

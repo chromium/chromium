@@ -10,6 +10,7 @@
 <translation id="1869137256605757565">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> தாவல்}other{<ph name="TABS_COUNT_MANY" /> தாவல்கள்}}</translation>
 <translation id="2277224997687551299">குழுவின் பெயரை மாற்று</translation>
 <translation id="228946090561406413">{TABS_COUNT,plural, =1{தேர்ந்தெடுத்த <ph name="TABS_COUNT_ONE" /> தாவலைக் குழுவிலிருந்து அகற்றும்.}other{தேர்ந்தெடுத்த <ph name="TABS_COUNT_MANY" /> தாவல்களைக் குழுவிலிருந்து அகற்றும்.}}</translation>
+<translation id="2479148705183875116">அமைப்புகளுக்குச் செல்லவும்</translation>
 <translation id="2539705006853443997">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> தாவலைச் சுருக்கும்.}other{<ph name="TABS_COUNT_MANY" /> தாவல்கள் உள்ள தாவல் குழுவைச் சுருக்கும்.}}</translation>
 <translation id="2569352796411618312">பரிந்துரை: உங்களின் <ph name="NUMBER_OF_TABS" /> தாவல்கள் சமீபத்தில் பயன்படுத்தவில்லை. அவற்றை மூட வேண்டுமா?</translation>
 <translation id="257674075312929031">குழு</translation>
@@ -20,6 +21,7 @@
 <translation id="3291470810748040983">திறந்திருக்கும் தாவலில் குறைவான விலை இருக்கும்போது விழிப்பூட்டலைப் பெறுவீர்கள்</translation>
 <translation id="3328308545011660196">பரிந்துரை: <ph name="NUMBER_OF_TABS" /> தாவல்கள் தொடர்புடையவையாகத் தெரிகின்றன. அவற்றைக் குழுவாக்கவா?</translation>
 <translation id="3819916404117584598">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> தாவலைச் சுருக்கும்.}other{<ph name="TABS_COUNT_MANY" /> தாவல்கள் உள்ள <ph name="TITLE_OF_GROUP" /> தாவல் குழுவைச் சுருக்கும்.}}</translation>
+<translation id="3882834874697329510">திறந்திருக்கும் தாவலில் குறைவான விலை இருக்கும்போது விழிப்பூட்டலைப் பெற, அமைப்புகளில் அறிவிப்புகளை இயக்குங்கள்.</translation>
 <translation id="3940195383040445971">தாவல்களில் விலையைக் கண்காணித்தல்</translation>
 <translation id="3996880007329611795">அறிவிப்பைப் பெறுக</translation>
 <translation id="4133493477912226187"><ph name="NUMBER_OF_TABS" /> தாவல்கள் தொடர்புடையவையாகத் தெரிகின்றன. அவற்றைக் குழுவாக்கவா?</translation>

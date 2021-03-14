@@ -10,6 +10,7 @@
 <translation id="1869137256605757565">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> 个标签页}other{<ph name="TABS_COUNT_MANY" /> 个标签页}}</translation>
 <translation id="2277224997687551299">修改组名称</translation>
 <translation id="228946090561406413">{TABS_COUNT,plural, =1{将所选的 <ph name="TABS_COUNT_ONE" /> 个标签页从组内移出。}other{将所选的 <ph name="TABS_COUNT_MANY" /> 个标签页从组内移出。}}</translation>
+<translation id="2479148705183875116">转到“设置”</translation>
 <translation id="2539705006853443997">{TABS_COUNT,plural, =1{收起 <ph name="TABS_COUNT_ONE" /> 个标签页。}other{收起包含 <ph name="TABS_COUNT_MANY" /> 个标签页的标签页组。}}</translation>
 <translation id="2569352796411618312">建议：您有 <ph name="NUMBER_OF_TABS" /> 个标签页最近未被使用过。关闭它们？</translation>
 <translation id="257674075312929031">群组</translation>
@@ -20,6 +21,7 @@
 <translation id="3291470810748040983">当某个已打开的标签页中有商品降价时，您会收到提醒</translation>
 <translation id="3328308545011660196">建议：有 <ph name="NUMBER_OF_TABS" /> 个标签页似乎彼此相关。为它们建组？</translation>
 <translation id="3819916404117584598">{TABS_COUNT,plural, =1{收起 <ph name="TABS_COUNT_ONE" /> 个标签页。}other{收起包含 <ph name="TABS_COUNT_MANY" /> 个标签页的“<ph name="TITLE_OF_GROUP" />”标签页组。}}</translation>
+<translation id="3882834874697329510">如果想在某个已打开的标签页中有商品降价时收到提醒，请在“设置”中开启通知功能。</translation>
 <translation id="3940195383040445971">跟踪标签页上的价格</translation>
 <translation id="3996880007329611795">接收通知</translation>
 <translation id="4133493477912226187">有 <ph name="NUMBER_OF_TABS" /> 个标签页似乎彼此相关。为它们建组？</translation>

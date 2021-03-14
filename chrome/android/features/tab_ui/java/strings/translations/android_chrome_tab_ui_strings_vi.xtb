@@ -10,6 +10,7 @@
 <translation id="1869137256605757565">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> tab}other{<ph name="TABS_COUNT_MANY" /> tab}}</translation>
 <translation id="2277224997687551299">Chỉnh sửa tên nhóm</translation>
 <translation id="228946090561406413">{TABS_COUNT,plural, =1{Xóa <ph name="TABS_COUNT_ONE" /> thẻ đã chọn khỏi nhóm.}other{Xóa <ph name="TABS_COUNT_MANY" /> thẻ đã chọn khỏi nhóm.}}</translation>
+<translation id="2479148705183875116">Chuyển đến phần Cài đặt</translation>
 <translation id="2539705006853443997">{TABS_COUNT,plural, =1{Thu gọn <ph name="TABS_COUNT_ONE" /> thẻ.}other{Thu gọn nhóm thẻ có <ph name="TABS_COUNT_MANY" /> thẻ.}}</translation>
 <translation id="2569352796411618312">Đề xuất: Gần đây, bạn không sử dụng <ph name="NUMBER_OF_TABS" /> thẻ. Bạn có muốn đóng các thẻ này không?</translation>
 <translation id="257674075312929031">Nhóm</translation>
@@ -20,6 +21,7 @@
 <translation id="3291470810748040983">Bạn sẽ nhận được thông báo khi có ưu đãi giảm giá trong một thẻ đang mở</translation>
 <translation id="3328308545011660196">Đề xuất: <ph name="NUMBER_OF_TABS" /> thẻ có vẻ liên quan đến nhau. Bạn có muốn nhóm các thẻ đó lại không?</translation>
 <translation id="3819916404117584598">{TABS_COUNT,plural, =1{Thu gọn <ph name="TABS_COUNT_ONE" /> thẻ.}other{Thu gọn nhóm thẻ <ph name="TITLE_OF_GROUP" /> có <ph name="TABS_COUNT_MANY" /> thẻ.}}</translation>
+<translation id="3882834874697329510">Để nhận thông báo khi có ưu đãi giảm giá trong một thẻ đang mở, hãy bật thông báo trong phần Cài đặt.</translation>
 <translation id="3940195383040445971">Theo dõi giá trên thẻ</translation>
 <translation id="3996880007329611795">Nhận thông báo</translation>
 <translation id="4133493477912226187"><ph name="NUMBER_OF_TABS" /> thẻ có vẻ liên quan đến nhau. Bạn có muốn nhóm các thẻ đó lại không?</translation>

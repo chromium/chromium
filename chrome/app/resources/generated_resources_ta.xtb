@@ -5109,6 +5109,7 @@
 <translation id="6811332638216701903">DHCP ஹோஸ்ட்பெயர்</translation>
 <translation id="6812349420832218321"><ph name="PRODUCT_NAME" /> ஐ மூலமாக இயக்க முடியாது.</translation>
 <translation id="6812841287760418429">மாற்றங்களை வைத்திரு</translation>
+<translation id="6813907279658683733">திரை முழுவதும்</translation>
 <translation id="681584224457905309">{COUNT,plural, =1{கோப்பு}other{# கோப்புகள்}}</translation>
 <translation id="6817174620439930047">MIDI சாதனங்களை அணுகுவதற்காக ஒரு தளம் சாதனத்துக்குப் பிரத்தியேகமான செய்திகளைப் பயன்படுத்த விரும்பும் போது கேள் (பரிந்துரைக்கப்படுகிறது)</translation>
 <translation id="6818198425579322765">மொழியாக்கம் செய்யப்பட வேண்டிய பக்கத்தின் மொழி</translation>
@@ -5619,6 +5620,7 @@
 <translation id="7392118418926456391">வைரஸ் ஸ்கேன் தோல்வி</translation>
 <translation id="7392915005464253525">மூடப்பட்ட சாளரத்தை மீ&amp;ண்டும் திற</translation>
 <translation id="7393073300870882456">{COUNT,plural, =1{1 புக்மார்க் நகலெடுக்கப்பட்டது}other{{COUNT} புக்மார்க்குகள் நகலெடுக்கப்பட்டன}}</translation>
+<translation id="7395774987022469191">திரை முழுவதும்</translation>
 <translation id="7396017167185131589">பகிரப்பட்ட கோப்புறைகள் இங்கே தோன்றும்</translation>
 <translation id="7396845648024431313"><ph name="APP_NAME" /> ஆனது முறைமை தொடக்கத்தின்போதே தொடங்கப்படும், மேலும் நீங்கள் பிற <ph name="PRODUCT_NAME" /> சாளரங்களை மூடி விட்டாலும் கூட பின்னணியில் தொடர்ந்து இயங்கும்.</translation>
 <translation id="7399045143794278225">ஒத்திசைவைப் பிரத்தியேகமாக்கு</translation>

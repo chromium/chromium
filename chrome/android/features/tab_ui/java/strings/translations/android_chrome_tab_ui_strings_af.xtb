@@ -10,6 +10,7 @@
 <translation id="1869137256605757565">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> oortjie}other{<ph name="TABS_COUNT_MANY" /> oortjies}}</translation>
 <translation id="2277224997687551299">Wysig groep se naam</translation>
 <translation id="228946090561406413">{TABS_COUNT,plural, =1{Verwyder <ph name="TABS_COUNT_ONE" /> geselekteerde oortjie uit die groep.}other{Verwyder <ph name="TABS_COUNT_MANY" /> geselekteerde oortjies uit die groep.}}</translation>
+<translation id="2479148705183875116">Gaan na Instellings</translation>
 <translation id="2539705006853443997">{TABS_COUNT,plural, =1{Vou <ph name="TABS_COUNT_ONE" /> oortjie in.}other{Vou oortjiegroep met <ph name="TABS_COUNT_MANY" /> oortjies in.}}</translation>
 <translation id="2569352796411618312">Voorstel: <ph name="NUMBER_OF_TABS" /> van jou oortjies is nie onlangs gebruik nie. Maak hulle toe?</translation>
 <translation id="257674075312929031">Groep</translation>
@@ -20,6 +21,7 @@
 <translation id="3291470810748040983">Jy sal 'n opletberig kry wanneer daar 'n laer prys in 'n oop oortjie is</translation>
 <translation id="3328308545011660196">Voorstel: <ph name="NUMBER_OF_TABS" /> oortjies lyk of hulle verwant is. Groepeer hulle?</translation>
 <translation id="3819916404117584598">{TABS_COUNT,plural, =1{Vou <ph name="TABS_COUNT_ONE" /> oortjie in.}other{Vou <ph name="TITLE_OF_GROUP" />-oortjiegroep met <ph name="TABS_COUNT_MANY" /> oortjies in.}}</translation>
+<translation id="3882834874697329510">Skakel kennisgewings in Instellings aan om 'n kennisgewing te kry wanneer daar 'n laer prys in 'n oop oortjie is.</translation>
 <translation id="3940195383040445971">Spoor pryse na in oortjies</translation>
 <translation id="3996880007329611795">Word in kennis gestel</translation>
 <translation id="4133493477912226187"><ph name="NUMBER_OF_TABS" /> oortjies lyk of hulle verwant is. Groepeer hulle?</translation>

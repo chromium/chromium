@@ -10,6 +10,7 @@
 <translation id="1869137256605757565">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> පටිත්තක්}one{පටිති <ph name="TABS_COUNT_MANY" /> ක්}other{පටිති <ph name="TABS_COUNT_MANY" /> ක්}}</translation>
 <translation id="2277224997687551299">සමූහ නම සංස්කරණය කරන්න</translation>
 <translation id="228946090561406413">{TABS_COUNT,plural, =1{සමූහයෙන් තෝරා ගත් ටැබ <ph name="TABS_COUNT_ONE" />ක් ඉවත් කරන්න.}one{සමූහයෙන් තෝරා ගත් ටැබ <ph name="TABS_COUNT_MANY" />ක් ඉවත් කරන්න.}other{සමූහයෙන් තෝරා ගත් ටැබ <ph name="TABS_COUNT_MANY" />ක් ඉවත් කරන්න.}}</translation>
+<translation id="2479148705183875116">සැකසීම් වෙත යන්න</translation>
 <translation id="2539705006853443997">{TABS_COUNT,plural, =1{ටැබ <ph name="TABS_COUNT_ONE" />ක් හකුළන්න.}one{ටැබ සමූහය ටැබ <ph name="TABS_COUNT_MANY" />ක් සමග හකුළන්න.}other{ටැබ සමූහය ටැබ <ph name="TABS_COUNT_MANY" />ක් සමග හකුළන්න.}}</translation>
 <translation id="2569352796411618312">යෝජනාව: ඔබේ පටිතිවලින් <ph name="NUMBER_OF_TABS" /> ක් මෑතදී භාවිත වී නැත. ඒවා වසන්නද?</translation>
 <translation id="257674075312929031">සමූහය</translation>
@@ -20,6 +21,7 @@
 <translation id="3291470810748040983">විවෘත ටැබයක අඩු මිලක් ඇති විට ඔබට ඇඟවීමක් ලැබෙනු ඇත</translation>
 <translation id="3328308545011660196">යෝජනාව: පටිති <ph name="NUMBER_OF_TABS" /> ක් අදාළ බව පෙනේ. ඒවා සමූහ කරන්නද?</translation>
 <translation id="3819916404117584598">{TABS_COUNT,plural, =1{ටැබ <ph name="TABS_COUNT_ONE" />ක් හකුළන්න.}one{<ph name="TITLE_OF_GROUP" /> ටැබ සමූහය ටැබ <ph name="TABS_COUNT_MANY" />ක් සමග හකුළන්න.}other{<ph name="TITLE_OF_GROUP" /> ටැබ සමූහය ටැබ <ph name="TABS_COUNT_MANY" />ක් සමග හකුළන්න.}}</translation>
+<translation id="3882834874697329510">විවෘත ටැබ් එකක අඩු මිලක් ඇති විට ඇඟවීමක් ලබා ගැනීමට, සැකසීම්වල දැනුම්දීම් ක්‍රියාත්මක කරන්න.</translation>
 <translation id="3940195383040445971">ටැබවල මිල ගණන් හඹා යන්න</translation>
 <translation id="3996880007329611795">දැනුම්දීම් ලබන්න</translation>
 <translation id="4133493477912226187">පටිති <ph name="NUMBER_OF_TABS" /> ක් අදාළ බව පෙනේ. ඒවා සමූහ කරන්නද?</translation>

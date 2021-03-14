@@ -73,7 +73,7 @@
 <translation id="1484102317210609525"><ph name="DEVICE_NAME" /> (HDMI/DP)</translation>
 <translation id="1503394326855300303">Бұл иеленуші есептік жазбасы көп кіру сеансында алғашқы жүйеге кірген есептік жазба болуы керек.</translation>
 <translation id="1510238584712386396">Іске қосу құрылғысы</translation>
-<translation id="1516740043221086139">"Мазаламау" режимі қосулы.</translation>
+<translation id="1516740043221086139">Мазаламау режимі қосулы.</translation>
 <translation id="1520303207432623762">{NUM_APPS,plural, =1{Хабарландыру параметрлерін көрсету. Қолданбаның хабарландырулары өшірулі}other{Хабарландыру параметрлерін көрсету. # қолданбаның хабарландырулары өшірулі}}</translation>
 <translation id="1525508553941733066">ЖАБУ</translation>
 <translation id="15373452373711364">Үлкен тінтуір курсоры</translation>
@@ -435,7 +435,7 @@
 <translation id="4628757576491864469">Құрылғылар</translation>
 <translation id="4642092649622328492">Экранның бір бөлігін түсіру</translation>
 <translation id="4659419629803378708">ChromeVox қосылды</translation>
-<translation id="4665114317261903604">"Мазаламау" режиміне ауысыңыз. <ph name="STATE_TEXT" /></translation>
+<translation id="4665114317261903604">Мазаламау режиміне ауысыңыз. <ph name="STATE_TEXT" /></translation>
 <translation id="4696813013609194136">Құрылғының құлпын ата-ана кодымен ашыңыз</translation>
 <translation id="4702647871202761252">Құпиялылық экраны өшірулі.</translation>
 <translation id="4705716602320768426">Пікір жіберу</translation>
@@ -549,7 +549,7 @@
 <translation id="5682642926269496722">Қазіргі пайдаланушының есептік жазбасы үшін Google Assistant қолжетімді емес.</translation>
 <translation id="5689633613396158040">Түнгі жарық режимін қосып қойсаңыз, айнала күңгірттеніп тұрғанда, экран жарығы көзіңізді ауыртпайды. Түнгі жарық қосылатын уақытты өзгерту немесе оны толықтай өшіру үшін түртіңіз.</translation>
 <translation id="5691772641933328258">Саусағыңыздың ізі танылмады</translation>
-<translation id="5710450975648804523">"Мазаламау" режимі қосулы</translation>
+<translation id="5710450975648804523">Мазаламау режимі қосулы</translation>
 <translation id="573413375004481890">Бұл құрылғы барлық дисплейлерді бірдей қолдамайтындықтан, бір дисплей ажыратылды.</translation>
 <translation id="574392208103952083">Орташа</translation>
 <translation id="5744083938413354016">Түртіп сүйреу</translation>
@@ -616,7 +616,7 @@
 <translation id="6254629735336163724">Көлденең күйде құлыптаулы</translation>
 <translation id="6259254695169772643">Стилустың көмегімен таңдаңыз</translation>
 <translation id="6267036997247669271"><ph name="NAME" />: белсендірілуде…</translation>
-<translation id="6283712521836204486">"Мазаламау" режимі өшірулі.</translation>
+<translation id="6283712521836204486">Мазаламау режимі өшірулі.</translation>
 <translation id="6284232397434400372">Ажыратымдылық өзгертілді</translation>
 <translation id="6288235558961782912"><ph name="USER_EMAIL_ADDRESS" /> есептік жазбасы ата-ананың рұқсатымен кейінірек қайта енгізіледі.</translation>
 <translation id="6291221004442998378">Зарядталып жатқан жоқ.</translation>

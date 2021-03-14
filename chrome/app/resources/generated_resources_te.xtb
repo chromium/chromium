@@ -2640,7 +2640,7 @@
 <translation id="3915280005470252504">వాయిస్ ద్వారా వెతుకు</translation>
 <translation id="3916233823027929090">భద్రతా తనిఖీలు పూర్తయ్యాయి</translation>
 <translation id="3916445069167113093">ఈ రకం ఫైల్‌ మీ కంప్యూటర్‌కు హాని చేయవచ్చు. అయినా సరే <ph name="FILE_NAME" />ని ఉంచాలని అనుకుంటున్నారా?</translation>
-<translation id="3918972485393593704">Googleకు వివరాలను నివేదించండి</translation>
+<translation id="3918972485393593704">ఈ వివరాలను Googleకు రిపోర్ట్ చేయండి</translation>
 <translation id="3919145445993746351">మీ అన్ని కంప్యూటర్‌లలో మీ ఎక్స్‌టెన్షన్‌లను పొందడానికి, సింక్‌ను ఆన్ చేయండి</translation>
 <translation id="3920504717067627103">సర్టిఫికెట్ విధానాలు</translation>
 <translation id="392089482157167418">ChromeVox (చదవబడే అభిప్రాయం)ను ప్రారంభించు</translation>
@@ -3235,7 +3235,7 @@
 <translation id="4615586811063744755">కుక్కీలను ఎంచుకోలేదు</translation>
 <translation id="461661862154729886">పవర్ సోర్స్</translation>
 <translation id="4617001782309103936">ఇది మరీ చిన్నది</translation>
-<translation id="4617270414136722281">పొడిగింపు ఎంపికలు</translation>
+<translation id="4617270414136722281">ఎక్స్‌టెన్షన్ ఆప్షన్‌లు</translation>
 <translation id="4619615317237390068">ఇతర పరికరాల్లోని ట్యాబ్‌లు</translation>
 <translation id="4620809267248568679">ఈ సెట్టింగ్ పొడిగింపు ద్వారా అమలు చేయబడింది.</translation>
 <translation id="4623167406982293031">ఖాతాను వెరిఫై చేయండి</translation>
@@ -3963,7 +3963,7 @@
 <translation id="5486561344817861625">బ్రౌజర్ పునఃప్రారంభాన్ని ప్రారంభించండి</translation>
 <translation id="5487521232677179737">డేటాని తీసివేయి</translation>
 <translation id="5488093641312826914">'<ph name="COPIED_ITEM_NAME" />' కాపీ చేయబడింది</translation>
-<translation id="5488468185303821006">అజ్ఞాతంలో అనుమతించు</translation>
+<translation id="5488468185303821006">అజ్ఞాత మోడ్‌లో అనుమతించండి</translation>
 <translation id="5488508217173274228">సింక్ ఎన్‌క్రిప్షన్ ఆప్షన్‌లు</translation>
 <translation id="5489435190927933437"><ph name="DOMAIN" /> కోసం సేవ్ చేసిన పాస్‌వర్డ్‌లు</translation>
 <translation id="5490721031479690399">బ్లూటూత్ పరికరాన్ని డిస్‌కనెక్ట్ చేయండి</translation>
@@ -5108,6 +5108,7 @@
 <translation id="6811332638216701903">DHCP హోస్ట్‌పేరు</translation>
 <translation id="6812349420832218321"><ph name="PRODUCT_NAME" /> రూట్‌గా రన్ చేయలేదు.</translation>
 <translation id="6812841287760418429">మార్పులను ఉంచు</translation>
+<translation id="6813907279658683733">పూర్తి స్క్రీన్</translation>
 <translation id="681584224457905309">{COUNT,plural, =1{ఫైల్}other{# ఫైల్‌లు}}</translation>
 <translation id="6817174620439930047">MIDI పరికరాలను యాక్సెస్ చేయడానికి సిస్టమ్ విశిష్ట సందేశాలను సైట్ ఉపయోగించాలనుకున్నప్పుడు అడుగు (సిఫార్సు చేయబడింది)</translation>
 <translation id="6818198425579322765">పేజీని అనువదించాల్సిన భాష</translation>
@@ -5176,7 +5177,7 @@
 <translation id="6886476658664859389">NFC భద్రతా కీ</translation>
 <translation id="6886871292305414135">కొత్త &amp;ట్యాబ్‌లో లింక్‌ను తెరువు</translation>
 <translation id="6892812721183419409">లింక్‌ను <ph name="USER" /> తరపున తెరువు</translation>
-<translation id="6895032998810961280">ఈ క్లీన్అప్ సమయంలో మీ కంప్యూటర్‌లో గుర్తించిన హానికరమైన సాఫ్ట్‌వేర్, సిస్టమ్ సెట్టింగ్‌లు మరియు ప్రాసెస్‌ల గురించి Googleకు వివరాలను నివేదించండి</translation>
+<translation id="6895032998810961280">ఈ క్లీన్అప్ సమయంలో మీ కంప్యూటర్‌లో గుర్తించిన హానికరమైన సాఫ్ట్‌వేర్, సిస్టమ్ సెట్టింగ్‌లు, అలాగే ప్రాసెస్‌ల గురించిన వివరాలను Googleకు రిపోర్ట్ చేయండి</translation>
 <translation id="6896758677409633944">కాపీ చేయి</translation>
 <translation id="6897363604023044284">క్లియర్ చేయడానికి సైట్‌లను ఎంచుకోండి</translation>
 <translation id="6898440773573063262">కియోస్క్ యాప్‌లను ఇప్పుడు ఈ పరికరంలో ఆటోమేటిక్‌గా ప్రారంభించడానికి కాన్ఫిగర్ చేయవచ్చు.</translation>
@@ -5618,6 +5619,7 @@
 <translation id="7392118418926456391">వైరస్‌ను స్కాన్ చేయడంలో విఫలమైంది</translation>
 <translation id="7392915005464253525">మూసివేయబడిన విండోను మ&amp;ళ్లీ తెరువు</translation>
 <translation id="7393073300870882456">{COUNT,plural, =1{1 ఐటెమ్ కాపీ చేయబడింది}other{{COUNT} ఐటెమ్‌లు కాపీ చేయబడ్డాయి}}</translation>
+<translation id="7395774987022469191">పూర్తి స్క్రీన్</translation>
 <translation id="7396017167185131589">షేర్ చేసిన ఫోల్డర్‌లు ఇక్కడ కనిపిస్తాయి</translation>
 <translation id="7396845648024431313"><ph name="APP_NAME" /> సిస్టమ్ ప్రారంభంలో ప్రారంభమవ్వడమే కాక, అన్ని ఇతర <ph name="PRODUCT_NAME" /> విండోలను మీరు మూసివేసిన తర్వాత కూడా నేపథ్యంలో అమలవడం కొనసాగుతుంది.</translation>
 <translation id="7399045143794278225">సింక్‌ను అనుకూలంగా మార్చండి</translation>
@@ -6432,7 +6434,7 @@
 <translation id="8289128870594824098">డిస్క్ పరిమాణం</translation>
 <translation id="8293206222192510085">బుక్‌మార్క్‌లను జోడించు</translation>
 <translation id="829335040383910391">సౌండ్</translation>
-<translation id="8294431847097064396">మూలం</translation>
+<translation id="8294431847097064396">సోర్స్</translation>
 <translation id="8298429963694909221">మీరు మీ <ph name="DEVICE_TYPE" />లో మీ ఫోన్ నుండి ఇప్పుడు నోటిఫికేషన్‌లను పొందగలరు. మీ <ph name="DEVICE_TYPE" />లో నోటిఫికేషన్‌లను విస్మరించడం వలన అవి మీ ఫోన్‌లో కూడా విస్మరించబడతాయి. మీ ఫోన్ సమీపంలోనే ఉండి, అలాగే అందులో బ్లూటూత్, Wi-Fi ఆన్ చేయబడి ఉన్నాయని నిర్ధారించుకోండి.</translation>
 <translation id="8299319456683969623">మీరు ప్రస్తుతం ఆఫ్‌లైన్‌లో ఉన్నారు.</translation>
 <translation id="8300011035382349091">ఈ ట్యాబ్‌కు సేవ్ చేసిన బుక్‌మార్క్‌ను సవరించండి</translation>

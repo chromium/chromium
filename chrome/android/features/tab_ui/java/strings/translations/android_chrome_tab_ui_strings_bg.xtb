@@ -10,6 +10,7 @@
 <translation id="1869137256605757565">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> раздел}other{<ph name="TABS_COUNT_MANY" /> раздела}}</translation>
 <translation id="2277224997687551299">Редактиране на името на групата</translation>
 <translation id="228946090561406413">{TABS_COUNT,plural, =1{Премахване на <ph name="TABS_COUNT_ONE" /> избран раздел от групата.}other{Премахване на <ph name="TABS_COUNT_MANY" /> избрани раздела от групата.}}</translation>
+<translation id="2479148705183875116">Към настройките</translation>
 <translation id="2539705006853443997">{TABS_COUNT,plural, =1{Свиване на <ph name="TABS_COUNT_ONE" /> раздел.}other{Свиване на групата с раздели с(ъс) <ph name="TABS_COUNT_MANY" /> раздела.}}</translation>
 <translation id="2569352796411618312">Предложение: <ph name="NUMBER_OF_TABS" /> от разделите ви не са използвани наскоро. Искате ли да ги затворите?</translation>
 <translation id="257674075312929031">Група</translation>
@@ -20,6 +21,7 @@
 <translation id="3291470810748040983">Ще получите сигнал, когато цената в отворен раздел е по-ниска</translation>
 <translation id="3328308545011660196">Предложение: <ph name="NUMBER_OF_TABS" /> раздела изглеждат сродни. Искате ли да ги групирате?</translation>
 <translation id="3819916404117584598">{TABS_COUNT,plural, =1{Свиване на <ph name="TABS_COUNT_ONE" /> раздел.}other{Свиване на групата с раздели „<ph name="TITLE_OF_GROUP" />“ с(ъс) <ph name="TABS_COUNT_MANY" /> раздела.}}</translation>
+<translation id="3882834874697329510">За да получавате сигнал, когато цената в отворен раздел е по-ниска, включете известията от настройките.</translation>
 <translation id="3940195383040445971">Проследяване на цените в разделите</translation>
 <translation id="3996880007329611795">Получаване на известия</translation>
 <translation id="4133493477912226187"><ph name="NUMBER_OF_TABS" /> раздела изглеждат сродни. Искате ли да ги групирате?</translation>

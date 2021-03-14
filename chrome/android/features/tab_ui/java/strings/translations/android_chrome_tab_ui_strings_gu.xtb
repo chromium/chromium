@@ -10,6 +10,7 @@
 <translation id="1869137256605757565">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> ટૅબ}one{<ph name="TABS_COUNT_MANY" /> ટૅબ}other{<ph name="TABS_COUNT_MANY" /> ટૅબ}}</translation>
 <translation id="2277224997687551299">ગ્રૂપના નામમાં ફેરફાર કરો</translation>
 <translation id="228946090561406413">{TABS_COUNT,plural, =1{ગ્રૂપમાંથી પસંદ કરેલી <ph name="TABS_COUNT_ONE" /> ટૅબ કાઢી નાખો.}one{ગ્રૂપમાંથી પસંદ કરેલી <ph name="TABS_COUNT_MANY" /> ટૅબ કાઢી નાખો.}other{ગ્રૂપમાંથી પસંદ કરેલી <ph name="TABS_COUNT_MANY" /> ટૅબ કાઢી નાખો.}}</translation>
+<translation id="2479148705183875116">સેટિંગ પર જાઓ</translation>
 <translation id="2539705006853443997">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> ટૅબ નાની કરો.}one{<ph name="TABS_COUNT_MANY" /> ટૅબ ધરાવતા ટૅબ ગ્રૂપને નાનું કરો.}other{<ph name="TABS_COUNT_MANY" /> ટૅબ ધરાવતા ટૅબ ગ્રૂપને નાનું કરો.}}</translation>
 <translation id="2569352796411618312">સૂચન: હજુ સુધી તમારા ટૅબમાંથી <ph name="NUMBER_OF_TABS" /> ટૅબનો ઉપયોગ કરવામાં આવ્યો નથી. તેને બંધ કરીએ?</translation>
 <translation id="257674075312929031">જૂથ</translation>
@@ -20,6 +21,7 @@
 <translation id="3291470810748040983">ખોલવામાં આવેલી ટૅબમાં જ્યારે કોઈ આઇટમની કિંમત ઓછી થશે, ત્યારે તમને અલર્ટ મળશે</translation>
 <translation id="3328308545011660196">સૂચન: <ph name="NUMBER_OF_TABS" /> ટૅબ સંબંધિત હોય તેમ જણાય છે. તેમનું ગ્રૂપ બનાવીએ?</translation>
 <translation id="3819916404117584598">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> ટૅબ નાની કરો.}one{<ph name="TABS_COUNT_MANY" /> ટૅબ ધરાવતા <ph name="TITLE_OF_GROUP" /> ટૅબ ગ્રૂપને નાનું કરો.}other{<ph name="TABS_COUNT_MANY" /> ટૅબ ધરાવતા <ph name="TITLE_OF_GROUP" /> ટૅબ ગ્રૂપને નાનું કરો.}}</translation>
+<translation id="3882834874697329510">ખોલવામાં આવેલી ટૅબમાં જ્યારે કોઈ આઇટમની કિંમત ઓછી થાય ત્યારે અલર્ટ મેળવવા માટે, સેટિંગમાં જઈને નોટિફિકેશન ચાલુ કરો.</translation>
 <translation id="3940195383040445971">ટૅબ પર કિંમત ટ્રૅક કરો</translation>
 <translation id="3996880007329611795">નોટિફિકેશન મેળવો</translation>
 <translation id="4133493477912226187"><ph name="NUMBER_OF_TABS" /> ટૅબ સંબંધિત હોય તેમ જણાય છે. તેમનું ગ્રૂપ બનાવીએ?</translation>

@@ -5106,6 +5106,7 @@
 <translation id="6811332638216701903">DHCP 主機名稱</translation>
 <translation id="6812349420832218321"><ph name="PRODUCT_NAME" /> 無法以根使用者的身分執行。</translation>
 <translation id="6812841287760418429">保留變更</translation>
+<translation id="6813907279658683733">整個螢幕畫面</translation>
 <translation id="681584224457905309">{COUNT,plural, =1{檔案}other{# 個檔案}}</translation>
 <translation id="6817174620439930047">每當有網站要使用系統專用訊息存取 MIDI 裝置時詢問我 (建議使用)</translation>
 <translation id="6818198425579322765">要翻譯的網頁語言</translation>
@@ -5616,6 +5617,7 @@
 <translation id="7392118418926456391">病毒掃描失敗</translation>
 <translation id="7392915005464253525">重新開啟已關閉視窗(&amp;E)</translation>
 <translation id="7393073300870882456">{COUNT,plural, =1{已複製 1 個項目}other{已複製 {COUNT} 個項目}}</translation>
+<translation id="7395774987022469191">整個螢幕畫面</translation>
 <translation id="7396017167185131589">共用資料夾會顯示在這裡</translation>
 <translation id="7396845648024431313"><ph name="APP_NAME" /> 會隨著系統一併啟動，即使在所有 <ph name="PRODUCT_NAME" /> 視窗都關閉後仍會在背景繼續執行。</translation>
 <translation id="7399045143794278225">自訂同步功能</translation>

@@ -10,6 +10,7 @@
 <translation id="1869137256605757565">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> guia}one{<ph name="TABS_COUNT_MANY" /> guia}other{<ph name="TABS_COUNT_MANY" /> guias}}</translation>
 <translation id="2277224997687551299">Editar nome do grupo</translation>
 <translation id="228946090561406413">{TABS_COUNT,plural, =1{Remover <ph name="TABS_COUNT_ONE" /> guia selecionada do grupo.}one{Remover <ph name="TABS_COUNT_MANY" /> guia selecionada do grupo.}other{Remover <ph name="TABS_COUNT_MANY" /> guias selecionadas do grupo.}}</translation>
+<translation id="2479148705183875116">Acessar as configurações</translation>
 <translation id="2539705006853443997">{TABS_COUNT,plural, =1{Recolher <ph name="TABS_COUNT_ONE" /> guia.}one{Recolher grupo de guias com <ph name="TABS_COUNT_MANY" /> guia.}other{Recolher grupo de guias com <ph name="TABS_COUNT_MANY" /> guias.}}</translation>
 <translation id="2569352796411618312">Sugestão: <ph name="NUMBER_OF_TABS" /> das suas guias não foram usadas recentemente. Fechar todas elas?</translation>
 <translation id="257674075312929031">Grupo</translation>
@@ -20,6 +21,7 @@
 <translation id="3291470810748040983">Você receberá um alerta quando houver um preço menor em uma guia aberta</translation>
 <translation id="3328308545011660196">Sugestão: <ph name="NUMBER_OF_TABS" /> guias parecem ser relacionadas. Agrupá-las?</translation>
 <translation id="3819916404117584598">{TABS_COUNT,plural, =1{Recolher <ph name="TABS_COUNT_ONE" /> guia.}one{Recolher <ph name="TITLE_OF_GROUP" /> grupo de guias com <ph name="TABS_COUNT_MANY" /> guia.}other{Recolher <ph name="TITLE_OF_GROUP" /> grupo de guias com <ph name="TABS_COUNT_MANY" /> guias.}}</translation>
+<translation id="3882834874697329510">Para receber um alerta quando houver um preço menor em uma guia aberta, ative as notificações nas configurações.</translation>
 <translation id="3940195383040445971">Monitorar preço nas guias</translation>
 <translation id="3996880007329611795">Receber notificações</translation>
 <translation id="4133493477912226187"><ph name="NUMBER_OF_TABS" /> guias parecem ser relacionadas. Agrupá-las?</translation>

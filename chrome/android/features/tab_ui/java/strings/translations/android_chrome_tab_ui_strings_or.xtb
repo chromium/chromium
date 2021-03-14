@@ -10,6 +10,7 @@
 <translation id="1869137256605757565">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" />ଟି ଟାବ୍}other{<ph name="TABS_COUNT_MANY" />ଟି ଟାବ୍}}</translation>
 <translation id="2277224997687551299">ଗ୍ରୁପ ନାମ ଏଡିଟ୍ କରନ୍ତୁ</translation>
 <translation id="228946090561406413">{TABS_COUNT,plural, =1{ଗ୍ରୁପରୁ <ph name="TABS_COUNT_ONE" />ଟି ଚୟନିତ ଟାବକୁ କାଢ଼ି ଦିଅନ୍ତୁ।}other{ଗ୍ରୁପରୁ <ph name="TABS_COUNT_MANY" />ଟି ଚୟନିତ ଟାବକୁ କାଢ଼ି ଦିଅନ୍ତୁ।}}</translation>
+<translation id="2479148705183875116">ସେଟିଂସକୁ ଯାଆନ୍ତୁ</translation>
 <translation id="2539705006853443997">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" />ଟି ଟାବ୍ ସଙ୍କୁଚିତ କରନ୍ତୁ।}other{<ph name="TABS_COUNT_MANY" />ଟି ଟାବ୍ ଥିବା ଟାବ୍ ଗ୍ରୁପକୁ ସଙ୍କୁଚିତ କରନ୍ତୁ।}}</translation>
 <translation id="2569352796411618312">ପ୍ରସ୍ତାବ: ଆପଣଙ୍କର <ph name="NUMBER_OF_TABS" />ଟି ଟାବ୍ ନିକଟରେ ବ୍ୟବହୃତ ହୋଇନାହିଁ। ସେଗୁଡ଼ିକୁ ବନ୍ଦ କରିବେ?</translation>
 <translation id="257674075312929031">ଗୋଷ୍ଠୀ</translation>
@@ -20,6 +21,7 @@
 <translation id="3291470810748040983">ଖୋଲା ଥିବା ଏକ ଟାବରେ ମୂଲ୍ୟରେ ହ୍ରାସ ହେବାର ସୂଚନା ଉପଲବ୍ଧ ହେଲେ ଆପଣ ଏକ ଆଲର୍ଟ ପାଇବେ</translation>
 <translation id="3328308545011660196">ପରାମର୍ଶ: <ph name="NUMBER_OF_TABS" />ଟି ଟାବ୍ ସମ୍ବନ୍ଧିତ ଥିଲା ପରି ଜଣାପଡ଼ୁଛି। ସେଗୁଡ଼ିକୁ ଗ୍ରୁପ୍ କରିବେ?</translation>
 <translation id="3819916404117584598">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" />ଟି ଟାବ୍ ସଙ୍କୁଚିତ କରନ୍ତୁ।}other{<ph name="TITLE_OF_GROUP" />ଟି ଟାବ୍ ଥିବା <ph name="TABS_COUNT_MANY" /> ଟାବ୍ ଗ୍ରୁପକୁ ସଙ୍କୁଚିତ କରନ୍ତୁ।}}</translation>
+<translation id="3882834874697329510">ଖୋଲା ଥିବା ଏକ ଟାବରେ କମ୍ ମୂଲ୍ୟ ସମ୍ବନ୍ଧିତ ସୂଚନା ଉପଲବ୍ଧ ହେଲେ ଆଲର୍ଟ ପାଇବାକୁ ସେଟିଂସରେ "ବିଜ୍ଞପ୍ତିଗୁଡ଼ିକ" ଚାଲୁ କରନ୍ତୁ।</translation>
 <translation id="3940195383040445971">ଟାବଗୁଡ଼ିକରେ ମୂଲ୍ୟଗୁଡ଼ିକୁ ଟ୍ରାକ୍ କରନ୍ତୁ</translation>
 <translation id="3996880007329611795">ସୂଚନା ପାଆନ୍ତୁ</translation>
 <translation id="4133493477912226187"><ph name="NUMBER_OF_TABS" />ଟି ଟାବ୍ ସମ୍ବନ୍ଧିତ ଥିଲା ପରି ଲାଗୁଛି। ସେଗୁଡ଼ିକୁ ଗ୍ରୁପ୍ କରିବେ?</translation>

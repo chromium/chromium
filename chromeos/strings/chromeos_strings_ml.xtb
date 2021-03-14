@@ -51,6 +51,7 @@
 <translation id="1999615961760456652">ക്യാപ്‌റ്റീവ് പോർട്ടൽ</translation>
 <translation id="2008685064673031089">പ്രധാന തിരയൽ</translation>
 <translation id="2080070583977670716">കൂടുതൽ ക്രമീകരണങ്ങൾ</translation>
+<translation id="2119172414412204879"><ph name="BOARD_NAME" />, പതിപ്പ് <ph name="MILESTONE_VERSION" /></translation>
 <translation id="2126937207024182736"><ph name="TOTAL_MEMORY" /> GB-യിൽ <ph name="AVAILABLE_MEMORY" /> GB ലഭ്യം</translation>
 <translation id="2141644705054017895"><ph name="PERCENTAGE_VALUE" />%</translation>
 <translation id="2157959690810728433">ക്യൂവിലാണ്</translation>
@@ -192,6 +193,7 @@
 <translation id="5267975978099728568"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="ERROR_STATUS" /></translation>
 <translation id="5275828089655680674">ദിനചര്യകൾ വീണ്ടും റൺ ചെയ്യുക</translation>
 <translation id="5286252187236914003">L2TP/IPsec</translation>
+<translation id="5294769550414936029">പതിപ്പ് <ph name="MILESTONE_VERSION" /></translation>
 <translation id="5315873049536339193">വ്യക്തിത്വം</translation>
 <translation id="5317780077021120954">സംരക്ഷിക്കുക</translation>
 <translation id="5318334351163689047">പരാജയപ്പെട്ട TCP അഭ്യർത്ഥനകൾ</translation>

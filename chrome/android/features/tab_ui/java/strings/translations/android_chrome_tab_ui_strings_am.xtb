@@ -10,6 +10,7 @@
 <translation id="1869137256605757565">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> ትር}one{<ph name="TABS_COUNT_MANY" /> ትሮች}other{<ph name="TABS_COUNT_MANY" /> ትሮች}}</translation>
 <translation id="2277224997687551299">የቡድን ስም ያርትዑ</translation>
 <translation id="228946090561406413">{TABS_COUNT,plural, =1{ከቡድን <ph name="TABS_COUNT_ONE" /> የተመረጠ ትርን ያስወግዱ።}one{ከቡድን <ph name="TABS_COUNT_MANY" /> የተመረጡ ትሮችን ያስወግዱ።}other{ከቡድን <ph name="TABS_COUNT_MANY" /> የተመረጡ ትሮችን ያስወግዱ።}}</translation>
+<translation id="2479148705183875116">ወደ ቅንብሮች ሂድ</translation>
 <translation id="2539705006853443997">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> ትርን ሰብስብ።}one{ከ<ph name="TABS_COUNT_MANY" /> ትሮች ጋር የትር ቡድንን ሰብስብ።}other{ከ<ph name="TABS_COUNT_MANY" /> ትሮች ጋር የትር ቡድንን ሰብስብ።}}</translation>
 <translation id="2569352796411618312">ጥቆማ ሐሳብ፦ ከእርስዎ ትሮች <ph name="NUMBER_OF_TABS" /> ያክሉ በቅርቡ ጥቅም ላይ አልዋሉም። ይዘጉ?</translation>
 <translation id="257674075312929031">ቡድን</translation>
@@ -20,6 +21,7 @@
 <translation id="3291470810748040983">በክፍት ትር ውስጥ ዝቅተኛ ዋጋ ሲኖር ማንቂያ ይደርስዎታል</translation>
 <translation id="3328308545011660196">የአስተያየት ጥቆማ፦ <ph name="NUMBER_OF_TABS" /> ትሮች የሚዛመዱ ይመስላሉ። ይቦደኑ?</translation>
 <translation id="3819916404117584598">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> ትርን ሰብስብ።}one{የ<ph name="TITLE_OF_GROUP" /> ትር ቡድንን ከ<ph name="TABS_COUNT_MANY" /> ትሮች ጋር ሰብስብ።}other{የ<ph name="TITLE_OF_GROUP" /> ትር ቡድንን ከ<ph name="TABS_COUNT_MANY" /> ትሮች ጋር ሰብስብ።}}</translation>
+<translation id="3882834874697329510">በክፍት ትር ውስጥ ዝቅተኛ ዋጋ ሲኖር ማንቂያ ለማግኘት በቅንብሮች ውስጥ ማሳወቂያዎችን ያብሩ።</translation>
 <translation id="3940195383040445971">በትሮች ላይ ዋጋዎችን ይከታተሉ</translation>
 <translation id="3996880007329611795">ማሳወቂያ ይድረሰዎት</translation>
 <translation id="4133493477912226187"><ph name="NUMBER_OF_TABS" /> ትሮች የሚዛመዱ ይመስላሉ ይቦደኑ?</translation>
