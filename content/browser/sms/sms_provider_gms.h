@@ -29,7 +29,7 @@ class CONTENT_EXPORT SmsProviderGms : public SmsProvider {
   SmsProviderGms();
   ~SmsProviderGms() override;
 
-  void Retrieve(RenderFrameHost* rfh) override;
+  void Retrieve(RenderFrameHost* rfh, SmsFetchType fetch_type) override;
 
   // Implementation of corresponding JNI methods in SmsProviderGms.Natives.*
 

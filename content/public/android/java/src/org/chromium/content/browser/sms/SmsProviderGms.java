@@ -77,7 +77,7 @@ public class SmsProviderGms {
     }
 
     @CalledByNative
-    private void listen(WindowAndroid window) {
+    private void listen(WindowAndroid window, boolean isLocalRequest) {
         mWindow = window;
 
         // Using the verification receiver is preferable but also start user consent receiver in
@@ -86,8 +86,11 @@ public class SmsProviderGms {
         // handle it. Note that starting both receiver means that we may end up using the user
         // consent receiver even when the preferred verification backend is available but slow. But
         // this is acceptable given that handling SMS should be done in timely manner.
-        if (mVerificationReceiver != null) mVerificationReceiver.listen(window);
-        if (mUserConsentReceiver != null) mUserConsentReceiver.listen(window);
+        // If the SMS retrieval request is made from a remote device, e.g. desktop, we only proceed
+        // with the verification receiver because the user consent receiver introduces too much user
+        // friction. In addition, we do not apply the fallback logic in such case.
+        if (mVerificationReceiver != null) mVerificationReceiver.listen(window, isLocalRequest);
+        if (mUserConsentReceiver != null && isLocalRequest) mUserConsentReceiver.listen(window);
     }
 
     public void destoryUserConsentReceiver() {
@@ -100,7 +103,7 @@ public class SmsProviderGms {
         if (mVerificationReceiver != null) mVerificationReceiver.destroy();
     }
 
-    void onMethodNotAvailable() {
+    void onMethodNotAvailable(boolean isLocalRequest) {
         assert (mBackend == GmsBackend.AUTO || mBackend == GmsBackend.VERIFICATION);
 
         // Note on caching method availability status: It is possible to cache the fact that calling
@@ -110,7 +113,9 @@ public class SmsProviderGms {
         // verification method first on *each request* and fallback to the user consent method if it
         // fails. The initial call to verification is expected to be cheap so this should not have
         // any noticeable impact.
-        if (mBackend == GmsBackend.VERIFICATION) onNotAvailable();
+        // Note that the fallback logic is only applicable if the SMS retrieval request is made from
+        // a local device.
+        if (mBackend == GmsBackend.VERIFICATION || !isLocalRequest) onNotAvailable();
     }
 
     // --------- Callbacks for receivers

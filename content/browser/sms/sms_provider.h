@@ -18,6 +18,15 @@ namespace content {
 
 class RenderFrameHost;
 
+// When WebOTP API is called on mobile, a local |SmsProvider| fetches the SMS on
+// the same device. When the API is called on desktop, a remote |SmsProvider|
+// will fetch the SMS on mobile. In this case we only try to use the CodeBrowser
+// backend and not fall back to the UserConsent one.
+enum class SmsFetchType {
+  kLocal,
+  kRemote,
+};
+
 // This class wraps the platform-specific functions and allows tests to
 // inject custom providers.
 class CONTENT_EXPORT SmsProvider {
@@ -40,13 +49,14 @@ class CONTENT_EXPORT SmsProvider {
   SmsProvider();
   virtual ~SmsProvider();
 
-
   // Listen to the next incoming SMS and notify observers (exactly once) when
   // it is received or (exclusively) when it timeouts. |render_frame_host|
   // is the RenderFrameHost for the renderer that issued the request, and is
   // passed in to support showing native permission confirmation prompt on the
-  // relevant window.
-  virtual void Retrieve(RenderFrameHost* render_frame_host) = 0;
+  // relevant window. |fetch_type| indicates that whether the retrieval request
+  // is made from a remote device, e.g. desktop.
+  virtual void Retrieve(RenderFrameHost* render_frame_host,
+                        SmsFetchType fetch_type) = 0;
 
   static std::unique_ptr<SmsProvider> Create();
 

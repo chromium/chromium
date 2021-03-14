@@ -16,7 +16,7 @@ class MockSmsProvider : public SmsProvider {
   MockSmsProvider();
   ~MockSmsProvider() override;
 
-  MOCK_METHOD1(Retrieve, void(RenderFrameHost*));
+  MOCK_METHOD2(Retrieve, void(RenderFrameHost*, SmsFetchType));
 
  private:
   DISALLOW_COPY_AND_ASSIGN(MockSmsProvider);

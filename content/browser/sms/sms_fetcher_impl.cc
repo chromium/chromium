@@ -46,9 +46,8 @@ void SmsFetcherImpl::Subscribe(const OriginList& origin_list,
   DCHECK(!subscribers_.HasSubscriber(origin_list, subscriber));
 
   subscribers_.Push(origin_list, subscriber);
-  // Fetches a local SMS.
   if (provider_)
-    provider_->Retrieve(nullptr);
+    provider_->Retrieve(nullptr, SmsFetchType::kRemote);
 }
 
 void SmsFetcherImpl::Subscribe(const OriginList& origin_list,
@@ -71,7 +70,7 @@ void SmsFetcherImpl::Subscribe(const OriginList& origin_list,
 
   // Fetches a local SMS.
   if (provider_)
-    provider_->Retrieve(render_frame_host);
+    provider_->Retrieve(render_frame_host, SmsFetchType::kLocal);
 }
 
 void SmsFetcherImpl::Unsubscribe(const OriginList& origin_list,

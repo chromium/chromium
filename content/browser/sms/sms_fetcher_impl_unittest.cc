@@ -91,7 +91,7 @@ TEST_F(SmsFetcherImplTest, ReceiveFromLocalSmsProvider) {
   StrictMock<MockSubscriber> subscriber;
   SmsFetcherImpl fetcher(nullptr, provider());
 
-  EXPECT_CALL(*provider(), Retrieve(_)).WillOnce(Invoke([&]() {
+  EXPECT_CALL(*provider(), Retrieve(_, _)).WillOnce(Invoke([&]() {
     provider()->NotifyReceive(OriginList{kOrigin}, "123",
                               UserConsent::kObtained);
   }));
@@ -173,7 +173,7 @@ TEST_F(SmsFetcherImplTest, ReceiveFromBothProviders) {
                 OriginList{url::Origin::Create(GURL("https://a.com"))}, "123");
           }));
 
-  EXPECT_CALL(*provider(), Retrieve(_)).WillOnce(Invoke([&]() {
+  EXPECT_CALL(*provider(), Retrieve(_, _)).WillOnce(Invoke([&]() {
     provider()->NotifyReceive(OriginList{kOrigin}, sms,
                               UserConsent::kNotObtained);
   }));

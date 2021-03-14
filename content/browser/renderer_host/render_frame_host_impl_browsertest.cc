@@ -4500,7 +4500,7 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTest,
     }) ();
   )";
 
-  EXPECT_CALL(*mock_provider_ptr, Retrieve(testing::_))
+  EXPECT_CALL(*mock_provider_ptr, Retrieve(testing::_, testing::_))
       .WillOnce(testing::Invoke([&]() {
         mock_provider_ptr->NotifyReceive(
             std::vector<url::Origin>{url::Origin::Create(first_url)}, "hello",

@@ -55,7 +55,8 @@ SmsProviderGms::~SmsProviderGms() {
   Java_SmsProviderGms_destroy(env, j_sms_provider_);
 }
 
-void SmsProviderGms::Retrieve(RenderFrameHost* render_frame_host) {
+void SmsProviderGms::Retrieve(RenderFrameHost* render_frame_host,
+                              SmsFetchType fetch_type) {
   WebContents* web_contents =
       WebContents::FromRenderFrameHost(render_frame_host);
   base::android::ScopedJavaLocalRef<jobject> j_window = nullptr;
@@ -65,7 +66,8 @@ void SmsProviderGms::Retrieve(RenderFrameHost* render_frame_host) {
   }
 
   JNIEnv* env = AttachCurrentThread();
-  Java_SmsProviderGms_listen(env, j_sms_provider_, j_window);
+  Java_SmsProviderGms_listen(env, j_sms_provider_, j_window,
+                             fetch_type == SmsFetchType::kLocal);
 }
 
 void SmsProviderGms::OnReceive(JNIEnv* env, jstring message, jint backend) {
