@@ -22,7 +22,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 <histograms>
 
 <histogram name="Cros.CrOSActionRecorderEvent" enum="CrOSActionRecorderEvent"
-    expires_after="2021-03-15">
+    expires_after="2021-09-15">
   <owner>charleszhao@chromium.org</owner>
   <owner>tby@chromium.org</owner>
   <summary>
