@@ -77,12 +77,6 @@ bool IsIsoImage(const base::FilePath& image) {
   return false;
 }
 
-// TODO(crbug.com/1009837): Remove when base::DeleteFile() is no longer
-// ambiguous.
-bool DeleteFileWrapper(const base::FilePath& to_delete) {
-  return base::DeleteFile(to_delete);
-}
-
 PluginVmSetupResult BucketForCancelledInstall(
     PluginVmInstaller::InstallingState installing_state) {
   switch (installing_state) {
@@ -968,7 +962,7 @@ void PluginVmInstaller::RemoveTemporaryImageIfExists() {
   } else if (!downloaded_image_.empty()) {
     base::ThreadPool::PostTaskAndReplyWithResult(
         FROM_HERE, {base::TaskPriority::USER_VISIBLE, base::MayBlock()},
-        base::BindOnce(&DeleteFileWrapper, downloaded_image_),
+        base::BindOnce(&base::DeleteFile, downloaded_image_),
         base::BindOnce(&PluginVmInstaller::OnTemporaryImageRemoved,
                        weak_ptr_factory_.GetWeakPtr()));
   }
