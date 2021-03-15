@@ -114,10 +114,6 @@ bool ValidateResponseExtensions(const CtapGetAssertionRequest& request,
     }
     const std::string& ext_name = it.first.GetString();
 
-    if (ext_name == kExtensionLargeBlobKey && !request.large_blob_key) {
-      return false;
-    }
-
     if (ext_name == kExtensionHmacSecret) {
       // This extension is checked by |GetAssertionTask| because it needs to be
       // decrypted there.
