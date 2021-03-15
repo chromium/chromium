@@ -113,25 +113,33 @@ class ASH_EXPORT DesksBarView : public views::View,
   // there's only a single desk available, in which case the bar is shown in a
   // minimized state.
   bool IsZeroState() const;
-  // Handle drag & drop events for each desk preview.
-  void HandleStartDragEvent(DeskMiniView* mini_view,
+  // Handle the mouse press event from a desk preview.
+  void HandlePressEvent(DeskMiniView* mini_view, const ui::LocatedEvent& event);
+  // Handle the gesture long press event from a desk preview.
+  void HandleLongPressEvent(DeskMiniView* mini_view,
                             const ui::LocatedEvent& event);
-  // Return true if the drag event is handled by drag & drop.
-  bool HandleDragEvent(DeskMiniView* mini_view, const ui::LocatedEvent& event);
-  // Return true if the release event is handled by drag & drop.
+  // Handle the drag event from a desk preview.
+  void HandleDragEvent(DeskMiniView* mini_view, const ui::LocatedEvent& event);
+  // Handle the release event from a desk preview. Return true if a drag event
+  // is ended.
   bool HandleReleaseEvent(DeskMiniView* mini_view,
                           const ui::LocatedEvent& event);
 
-  // Trigger drag & drop. Create a proxy for the dragged desk.
+  // Finalize any unfinished drag & drop. Initialize a new drag proxy.
+  void InitDragDesk(DeskMiniView* mini_view,
+                    const gfx::PointF& location_in_screen);
+  // Start to drag. Scale up the drag proxy.
   void StartDragDesk(DeskMiniView* mini_view,
                      const gfx::PointF& location_in_screen);
-  // Reorder desks according to the drag proxy's location. Return true if the
-  // dragged desk is reordered.
-  bool ContinueDragDesk(DeskMiniView* mini_view,
+  // Reorder desks according to the drag proxy's location.
+  void ContinueDragDesk(DeskMiniView* mini_view,
                         const gfx::PointF& location_in_screen);
-  // Snap back the drag proxy to the drag view's location. Return true if
-  // current drag is ended.
-  bool EndDragDesk(DeskMiniView* mini_view, bool end_by_user);
+  // If the desk is dropped by user (|end_by_user| = true), scale down and snap
+  // back the drag proxy. Otherwise, directly finalize the drag & drop. Note
+  // that when we want to end the current drag immediately, if the drag is
+  // initialized but did not start, |FinalizeDragDesk| should be use; if the
+  // drag started, |EndDragDesk| should be used with |end_by_user| = false.
+  void EndDragDesk(DeskMiniView* mini_view, bool end_by_user);
   // Reset the drag view and the drag proxy.
   void FinalizeDragDesk();
   // If a desk is in a drag & drop cycle.

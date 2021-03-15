@@ -36,7 +36,25 @@ DeskDragProxy::DeskDragProxy(DesksBarView* desks_bar_view,
     : desks_bar_view_(desks_bar_view),
       drag_view_(drag_view),
       drag_preview_size_(drag_view->GetPreviewBoundsInScreen().size()),
-      init_offset_(init_offset) {
+      init_offset_(init_offset) {}
+
+DeskDragProxy::~DeskDragProxy() = default;
+
+void DeskDragProxy::OnImplicitAnimationsCompleted() {
+  DCHECK(desks_bar_view_);
+
+  state_ = State::kEnded;
+
+  // |this| is destroyed here.
+  desks_bar_view_->FinalizeDragDesk();
+}
+
+gfx::Point DeskDragProxy::GetPositionInScreen() const {
+  return drag_widget_->GetWindowBoundsInScreen().origin();
+}
+
+void DeskDragProxy::InitAndScaleAndMoveTo(
+    const gfx::PointF& location_in_screen) {
   DCHECK(drag_view_);
 
   aura::Window* root_window =
@@ -55,23 +73,8 @@ DeskDragProxy::DeskDragProxy(DesksBarView* desks_bar_view,
   drag_widget_->SetBounds(drag_view_->GetPreviewBoundsInScreen());
 
   drag_widget_->Show();
-}
 
-DeskDragProxy::~DeskDragProxy() = default;
-
-void DeskDragProxy::OnImplicitAnimationsCompleted() {
-  DCHECK(desks_bar_view_);
-
-  desks_bar_view_->FinalizeDragDesk();
-}
-
-gfx::Point DeskDragProxy::GetPositionInScreen() const {
-  return drag_widget_->GetWindowBoundsInScreen().origin();
-}
-
-void DeskDragProxy::ScaleAndMoveTo(const gfx::PointF& location_in_screen) {
   ui::Layer* layer = drag_widget_->GetLayer();
-
   // Perform and animate scaling.
   gfx::Transform scale_transform;
   scale_transform.Scale(kDragProxyScale, kDragProxyScale);
@@ -86,6 +89,8 @@ void DeskDragProxy::ScaleAndMoveTo(const gfx::PointF& location_in_screen) {
 
   // Perform Moving.
   DragTo(location_in_screen);
+
+  state_ = State::kStarted;
 }
 
 void DeskDragProxy::DragTo(const gfx::PointF& location_in_screen) {
@@ -95,12 +100,7 @@ void DeskDragProxy::DragTo(const gfx::PointF& location_in_screen) {
 }
 
 void DeskDragProxy::SnapBackToDragView() {
-  ui::Layer* layer = drag_widget_->GetLayer();
-
-  // Do not snap back again if the proxy is already doing it.
-  if (layer->GetAnimator()->is_animating() &&
-      layer->GetTargetTransform().IsIdentity())
-    return;
+  DCHECK_NE(state_, State::kSnappingBack);
 
   // Cache proxy's bounds and drag view's bounds.
   gfx::RectF scaled_proxy_bounds(drag_widget_->GetWindowBoundsInScreen());
@@ -110,6 +110,7 @@ void DeskDragProxy::SnapBackToDragView() {
   // Set bounds of drag view to drag proxy.
   drag_widget_->SetBounds(drag_view_bounds);
 
+  ui::Layer* layer = drag_widget_->GetLayer();
   // Animate snapping back.
   layer->SetTransform(gfx::TransformBetweenRects(gfx::RectF(drag_view_bounds),
                                                  scaled_proxy_bounds));
@@ -118,6 +119,8 @@ void DeskDragProxy::SnapBackToDragView() {
   settings.SetTweenType(gfx::Tween::ACCEL_LIN_DECEL_60);
   settings.AddObserver(this);
   layer->SetTransform(gfx::Transform());
+
+  state_ = State::kSnappingBack;
 }
 
 }  // namespace ash
