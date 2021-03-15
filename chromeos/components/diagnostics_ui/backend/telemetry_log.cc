@@ -7,6 +7,8 @@
 #include <sstream>
 #include <utility>
 
+#include "base/strings/string_number_conversions.h"
+
 namespace chromeos {
 namespace diagnostics {
 namespace {
@@ -47,9 +49,9 @@ const char kMemoryUsageFreeMemoryTitle[] = "Free Memory (kib): ";
 
 // CpuUsage constants:
 const char kCpuUsageSectionName[] = "--- Cpu Usage ---";
-const char kCpuUsageUserTitle[] = "Usage User: ";
-const char kCpuUsageSystemTitle[] = "Usage System: ";
-const char kCpuUsageFreeTitle[] = "Usage Free: ";
+const char kCpuUsageUserTitle[] = "Usage User (%): ";
+const char kCpuUsageSystemTitle[] = "Usage System (%): ";
+const char kCpuUsageFreeTitle[] = "Usage Free (%): ";
 const char kCpuUsageAvgTempTitle[] = "Avg Temp (C): ";
 const char kCpuUsageScalingFrequencyTitle[] =
     "Current scaled frequency (kHz): ";
@@ -100,8 +102,10 @@ std::string TelemetryLog::GetContents() const {
            << kSystemInfoMilestoneVersionTitle
            << latest_system_info_->version_info->milestone_version << kNewline
            << kSystemInfoHasBatteryTitle
-           << latest_system_info_->device_capabilities->has_battery << kNewline
-           << kNewline;
+           << ((latest_system_info_->device_capabilities->has_battery)
+                   ? "true"
+                   : "false")
+           << kNewline << kNewline;
   }
   if (latest_battery_charge_status_) {
     output << kBatteryChargeStatusSectionName << kNewline
@@ -126,8 +130,9 @@ std::string TelemetryLog::GetContents() const {
            << kNewline << kBatteryHealthCycleCountTitle
            << latest_battery_health_->cycle_count << kNewline
            << kBatteryHealthWearPercentageTitle
-           << latest_battery_health_->battery_wear_percentage << kNewline
-           << kNewline;
+           << base::NumberToString(
+                  latest_battery_health_->battery_wear_percentage)
+           << kNewline << kNewline;
   }
   if (latest_memory_usage_) {
     output << kMemoryUsageSectionName << kNewline
@@ -140,11 +145,12 @@ std::string TelemetryLog::GetContents() const {
   }
   if (latest_cpu_usage_) {
     output << kCpuUsageSectionName << kNewline << kCpuUsageUserTitle
-           << latest_cpu_usage_->percent_usage_user << kNewline
-           << kCpuUsageSystemTitle << latest_cpu_usage_->percent_usage_system
+           << base::NumberToString(latest_cpu_usage_->percent_usage_user)
+           << kNewline << kCpuUsageSystemTitle
+           << base::NumberToString(latest_cpu_usage_->percent_usage_system)
            << kNewline << kCpuUsageFreeTitle
-           << latest_cpu_usage_->percent_usage_free << kNewline
-           << kCpuUsageAvgTempTitle
+           << base::NumberToString(latest_cpu_usage_->percent_usage_free)
+           << kNewline << kCpuUsageAvgTempTitle
            << latest_cpu_usage_->average_cpu_temp_celsius << kNewline
            << kCpuUsageScalingFrequencyTitle
            << latest_cpu_usage_->scaling_current_frequency_khz << kNewline
