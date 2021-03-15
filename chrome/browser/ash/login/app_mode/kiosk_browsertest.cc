@@ -24,6 +24,7 @@
 #include "base/memory/ptr_util.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
+#include "base/scoped_observer.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"

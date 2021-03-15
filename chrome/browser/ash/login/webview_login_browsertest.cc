@@ -18,6 +18,7 @@
 #include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"
+#include "base/scoped_observer.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_piece.h"
