@@ -24,7 +24,7 @@ Dumping CacheStorage tree:
         totalCount: 5
     cache: testCache3 - http://127.0.0.1:8000
         0, /devtools/resources/image.png, basic, image/png, 647
-        1, /vars, default, text/plain, 0
+        1, /vars, default, text/plain, 0, Accept
         totalCount: 2
 Dumping CacheStorage tree with URL path filter string "2"
     cache: testCache1 - http://127.0.0.1:8000
