@@ -12,6 +12,7 @@
 #include "base/files/file_path.h"
 #include "base/memory/ptr_util.h"
 #include "base/no_destructor.h"
+#include "base/optional.h"
 #include "base/run_loop.h"
 #include "base/time/time.h"
 #include "base/values.h"
@@ -149,7 +150,7 @@ class FakeThemeService : public ThemeService {
 
 std::unique_ptr<KeyedService> BuildMockThemeService(
     content::BrowserContext* profile) {
-  return base::WrapUnique(new FakeThemeService);
+  return std::make_unique<FakeThemeService>();
 }
 
 scoped_refptr<extensions::Extension> MakeThemeExtension(
@@ -175,7 +176,8 @@ scoped_refptr<extensions::Extension> MakeThemeExtension(
 
 }  // namespace
 
-class ThemeSyncableServiceTest : public testing::Test {
+class ThemeSyncableServiceTest : public testing::Test,
+                                 public ThemeSyncableService::Observer {
  protected:
   ThemeSyncableServiceTest() : fake_theme_service_(nullptr) {}
 
@@ -186,11 +188,13 @@ class ThemeSyncableServiceTest : public testing::Test {
     // considered syncable.
     extension_test_util::SetGalleryUpdateURL(GURL(kCustomThemeUrl));
 
-    profile_.reset(new TestingProfile);
+    profile_ = std::make_unique<TestingProfile>();
     fake_theme_service_ = BuildForProfile(profile_.get());
-    theme_sync_service_.reset(new ThemeSyncableService(profile_.get(),
-                                                       fake_theme_service_));
-    fake_change_processor_.reset(new syncer::FakeSyncChangeProcessor);
+    theme_sync_service_ = std::make_unique<ThemeSyncableService>(
+        profile_.get(), fake_theme_service_);
+    theme_sync_service_->AddObserver(this);
+    fake_change_processor_ =
+        std::make_unique<syncer::FakeSyncChangeProcessor>();
     SetUpExtension();
   }
 
@@ -250,6 +254,17 @@ class ThemeSyncableServiceTest : public testing::Test {
     return list;
   }
 
+  void OnThemeSyncStarted(ThemeSyncableService::ThemeSyncState state) override {
+    state_ = state;
+  }
+
+  bool HasThemeSyncStarted() { return state_ != base::nullopt; }
+
+  bool HasThemeSyncTriggeredExtensionInstallation() {
+    return state_ && *state_ == ThemeSyncableService::ThemeSyncState::
+                                    kWaitingForExtensionInstallation;
+  }
+
   // Needed for setting up extension service.
   content::BrowserTaskEnvironment task_environment_;
 
@@ -263,6 +278,7 @@ class ThemeSyncableServiceTest : public testing::Test {
   scoped_refptr<extensions::Extension> theme_extension_;
   std::unique_ptr<ThemeSyncableService> theme_sync_service_;
   std::unique_ptr<syncer::FakeSyncChangeProcessor> fake_change_processor_;
+  base::Optional<ThemeSyncableService::ThemeSyncState> state_;
 };
 
 class PolicyInstalledThemeTest : public ThemeSyncableServiceTest {
@@ -361,6 +377,7 @@ TEST_F(ThemeSyncableServiceTest, SetCurrentThemeDefaultTheme) {
                   fake_change_processor_.get())),
           std::unique_ptr<syncer::SyncErrorFactory>(
               new syncer::SyncErrorFactoryMock()));
+  EXPECT_TRUE(HasThemeSyncStarted());
   EXPECT_FALSE(error.has_value()) << error.value().message();
   EXPECT_FALSE(fake_theme_service_->UsingDefaultTheme());
   EXPECT_EQ(fake_theme_service_->theme_extension(), theme_extension_.get());
@@ -380,6 +397,7 @@ TEST_F(ThemeSyncableServiceTest, SetCurrentThemeSystemTheme) {
                   fake_change_processor_.get())),
           std::unique_ptr<syncer::SyncErrorFactory>(
               new syncer::SyncErrorFactoryMock()));
+  EXPECT_TRUE(HasThemeSyncStarted());
   EXPECT_FALSE(error.has_value()) << error.value().message();
   EXPECT_FALSE(fake_theme_service_->UsingSystemTheme());
   EXPECT_EQ(fake_theme_service_->theme_extension(), theme_extension_.get());
@@ -390,7 +408,7 @@ TEST_F(ThemeSyncableServiceTest, SetCurrentThemeCustomTheme_Extension) {
   theme_specifics.set_use_custom_theme(true);
   theme_specifics.set_custom_theme_id(theme_extension_->id());
   theme_specifics.set_custom_theme_name(kCustomThemeName);
-  theme_specifics.set_custom_theme_name(kCustomThemeUrl);
+  theme_specifics.set_custom_theme_update_url(kCustomThemeUrl);
 
   // Set up theme service to use default theme.
   fake_theme_service_->UseDefaultTheme();
@@ -402,8 +420,39 @@ TEST_F(ThemeSyncableServiceTest, SetCurrentThemeCustomTheme_Extension) {
                   fake_change_processor_.get())),
           std::unique_ptr<syncer::SyncErrorFactory>(
               new syncer::SyncErrorFactoryMock()));
+  EXPECT_TRUE(HasThemeSyncStarted());
+  EXPECT_FALSE(HasThemeSyncTriggeredExtensionInstallation());
   EXPECT_FALSE(error.has_value()) << error.value().message();
   EXPECT_EQ(fake_theme_service_->theme_extension(), theme_extension_.get());
+}
+
+TEST_F(ThemeSyncableServiceTest, SetCurrentThemeCustomTheme_Extension_Install) {
+  sync_pb::ThemeSpecifics theme_specifics;
+  theme_specifics.set_use_custom_theme(true);
+  // Use an arbitrary id (such an extension is not installed, yet).
+  theme_specifics.set_custom_theme_id("fake_extension_id");
+  theme_specifics.set_custom_theme_name(kCustomThemeName);
+  theme_specifics.set_custom_theme_update_url(kCustomThemeUrl);
+
+  // Set up theme service to use default theme.
+  fake_theme_service_->UseDefaultTheme();
+  base::Optional<syncer::ModelError> error =
+      theme_sync_service_->MergeDataAndStartSyncing(
+          syncer::THEMES, MakeThemeDataList(theme_specifics),
+          std::unique_ptr<syncer::SyncChangeProcessor>(
+              new syncer::SyncChangeProcessorWrapperForTest(
+                  fake_change_processor_.get())),
+          std::unique_ptr<syncer::SyncErrorFactory>(
+              new syncer::SyncErrorFactoryMock()));
+  EXPECT_TRUE(HasThemeSyncStarted());
+  EXPECT_FALSE(error.has_value()) << error.value().message();
+  // The theme is not installed yet and thus, the default theme is still used.
+  EXPECT_TRUE(fake_theme_service_->UsingDefaultTheme());
+  EXPECT_TRUE(HasThemeSyncTriggeredExtensionInstallation());
+  EXPECT_TRUE(extensions::ExtensionSystem::Get(profile_.get())
+                  ->extension_service()
+                  ->pending_extension_manager()
+                  ->HasPendingExtensionFromSync());
 }
 
 TEST_F(ThemeSyncableServiceTest, SetCurrentThemeCustomTheme_Autogenerated) {
@@ -422,6 +471,7 @@ TEST_F(ThemeSyncableServiceTest, SetCurrentThemeCustomTheme_Autogenerated) {
                   fake_change_processor_.get())),
           std::unique_ptr<syncer::SyncErrorFactory>(
               new syncer::SyncErrorFactoryMock()));
+  EXPECT_TRUE(HasThemeSyncStarted());
   EXPECT_FALSE(error.has_value()) << error.value().message();
   EXPECT_EQ(fake_theme_service_->GetAutogeneratedThemeColor(),
             SkColorSetRGB(0, 0, 100));
@@ -439,6 +489,7 @@ TEST_F(ThemeSyncableServiceTest, DontResetThemeWhenSpecificsAreEqual) {
                   fake_change_processor_.get())),
           std::unique_ptr<syncer::SyncErrorFactory>(
               new syncer::SyncErrorFactoryMock()));
+  EXPECT_TRUE(HasThemeSyncStarted());
   EXPECT_FALSE(error.has_value()) << error.value().message();
   EXPECT_FALSE(fake_theme_service_->is_dirty());
 }
@@ -557,7 +608,7 @@ TEST_F(ThemeSyncableServiceTest, ProcessSyncThemeChange_Extension) {
   theme_specifics.set_use_custom_theme(true);
   theme_specifics.set_custom_theme_id(theme_extension_->id());
   theme_specifics.set_custom_theme_name(kCustomThemeName);
-  theme_specifics.set_custom_theme_name(kCustomThemeUrl);
+  theme_specifics.set_custom_theme_update_url(kCustomThemeUrl);
   sync_pb::EntitySpecifics entity_specifics;
   entity_specifics.mutable_theme()->CopyFrom(theme_specifics);
   syncer::SyncChangeList change_list;
@@ -782,7 +833,7 @@ TEST_F(ThemeSyncableServiceTest, SystemThemeSameAsDefaultTheme) {
   theme_specifics.set_use_custom_theme(true);
   theme_specifics.set_custom_theme_id(theme_extension_->id());
   theme_specifics.set_custom_theme_name(kCustomThemeName);
-  theme_specifics.set_custom_theme_name(kCustomThemeUrl);
+  theme_specifics.set_custom_theme_update_url(kCustomThemeUrl);
   theme_specifics.set_use_system_theme_by_default(true);
   base::Optional<syncer::ModelError> error =
       theme_sync_service_->MergeDataAndStartSyncing(

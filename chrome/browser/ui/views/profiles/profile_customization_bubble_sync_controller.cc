@@ -124,11 +124,17 @@ void ProfileCustomizationBubbleSyncController::OnStateChanged(
   }
 }
 
-void ProfileCustomizationBubbleSyncController::OnThemeSyncStarted() {
-  // Skip the bubble (and not use the default color) if the user got a
-  // non-default value from sync.
-  if (!theme_service_->UsingDefaultTheme() &&
-      !theme_service_->UsingSystemTheme()) {
+void ProfileCustomizationBubbleSyncController::OnThemeSyncStarted(
+    ThemeSyncableService::ThemeSyncState state) {
+  // Skip the bubble (and not use the default color) if the user got a custom
+  // value from sync (that is either already applied as a custom theme or
+  // triggered a custom theme installation).
+  const bool using_custom_theme = !theme_service_->UsingDefaultTheme() &&
+                                  !theme_service_->UsingSystemTheme();
+  const bool installing_custom_theme =
+      state ==
+      ThemeSyncableService::ThemeSyncState::kWaitingForExtensionInstallation;
+  if (using_custom_theme || installing_custom_theme) {
     SkipBubble();
     return;
   }

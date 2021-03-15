@@ -67,7 +67,7 @@ class ProfileCustomizationBubbleSyncController
   void OnStateChanged(syncer::SyncService* sync) override;
 
   // ThemeSyncableService::Observer:
-  void OnThemeSyncStarted() override;
+  void OnThemeSyncStarted(ThemeSyncableService::ThemeSyncState state) override;
 
   // This function may delete the object.
   void Init();

@@ -83,8 +83,12 @@ class ProfileCustomizationBubbleSyncControllerTest : public testing::Test {
     fake_theme_service_.DoSetTheme(nullptr, false);
   }
 
-  void NotifyOnSyncStarted() {
-    theme_syncable_service_.NotifyOnSyncStartedForTesting();
+  void NotifyOnSyncStarted(bool waiting_for_extension_installation = false) {
+    theme_syncable_service_.NotifyOnSyncStartedForTesting(
+        waiting_for_extension_installation
+            ? ThemeSyncableService::ThemeSyncState::
+                  kWaitingForExtensionInstallation
+            : ThemeSyncableService::ThemeSyncState::kApplied);
   }
 
  protected:
@@ -137,6 +141,16 @@ TEST_F(ProfileCustomizationBubbleSyncControllerTest,
   ApplyColorAndShowBubbleWhenNoValueSynced(show_bubble.Get());
   SetSyncedProfileTheme();
   NotifyOnSyncStarted();
+  histogram_tester_.ExpectTotalCount("Profile.SyncCustomizationBubbleDelay", 1);
+}
+
+TEST_F(ProfileCustomizationBubbleSyncControllerTest,
+       ShouldNotShowWhenSyncGetsCustomThemeToInstall) {
+  base::MockCallback<base::OnceCallback<void(bool)>> show_bubble;
+  EXPECT_CALL(show_bubble, Run(false));
+
+  ApplyColorAndShowBubbleWhenNoValueSynced(show_bubble.Get());
+  NotifyOnSyncStarted(/*waiting_for_extension_installation=*/true);
   histogram_tester_.ExpectTotalCount("Profile.SyncCustomizationBubbleDelay", 1);
 }
 
