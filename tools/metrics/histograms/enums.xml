@@ -45303,6 +45303,7 @@ from previous Chrome versions.
   <int value="-314910380" label="disable-distance-field-text"/>
   <int value="-314605926" label="protect-sync-credential-on-reauth:enabled"/>
   <int value="-313812707" label="VideoTutorials:disabled"/>
+  <int value="-312144677" label="TFLiteLanguageDetectionEnabled:disabled"/>
   <int value="-311148335" label="v8-pac-mojo-out-of-process"/>
   <int value="-310908854" label="new-wallpaper-picker"/>
   <int value="-310615515" label="EnableSuggestedFiles:disabled"/>
@@ -47691,6 +47692,7 @@ from previous Chrome versions.
   <int value="1906942630" label="enable-easy-unlock"/>
   <int value="1907273605" label="NtpZeroSuggest:disabled"/>
   <int value="1910240042" label="enable-experimental-fullscreen-exit-ui"/>
+  <int value="1911002680" label="TFLiteLanguageDetectionEnabled:enabled"/>
   <int value="1913263516" label="OculusVR:enabled"/>
   <int value="1913298816" label="OverlayScrollbar:enabled"/>
   <int value="1913926782" label="ChromeModernAlternateCardLayout:disabled"/>

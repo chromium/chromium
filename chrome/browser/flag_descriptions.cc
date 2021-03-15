@@ -2406,6 +2406,10 @@ const char kTextFragmentColorChangeDescription[] =
     "Changes the Text Fragment background color"
     "away from the default yellow.";
 
+const char kTFLiteLanguageDetectionName[] = "TFLite-based Language Detection";
+const char kTFLiteLanguageDetectionDescription[] =
+    "Uses TFLite for language detection in place of CLD3";
+
 const char kTintCompositedContentName[] = "Tint composited content";
 const char kTintCompositedContentDescription[] =
     "Tint contents composited using Viz with a shade of red to help debug and "
