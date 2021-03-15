@@ -7,6 +7,7 @@
   await TestRunner.showPanel("network");
   await TestRunner.showPanel("timeline");
   await TestRunner.loadLegacyModule('emulation');
+  await TestRunner.loadLegacyModule('mobile_throttling');
   await UI.viewManager.showView("network.config");
 
   var deviceModeView = new Emulation.DeviceModeView();
