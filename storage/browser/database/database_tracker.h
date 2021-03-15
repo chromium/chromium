@@ -24,7 +24,7 @@
 #include "base/strings/string_util.h"
 #include "base/time/time.h"
 #include "net/base/completion_once_callback.h"
-#include "storage/common/database/database_connections.h"
+#include "storage/browser/database/database_connections.h"
 #include "url/origin.h"
 
 namespace sql {

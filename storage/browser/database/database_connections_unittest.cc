@@ -4,7 +4,7 @@
 
 #include <stdint.h>
 
-#include "storage/common/database/database_connections.h"
+#include "storage/browser/database/database_connections.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace storage {

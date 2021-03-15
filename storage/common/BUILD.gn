@@ -7,8 +7,6 @@ import("//mojo/public/tools/bindings/mojom.gni")
 component("common") {
   output_name = "storage_common"
   sources = [
-    "database/database_connections.cc",
-    "database/database_connections.h",
     "database/database_identifier.cc",
     "database/database_identifier.h",
     "file_system/file_system_info.cc",
@@ -47,7 +45,6 @@ source_set("unittests") {
   testonly = true
 
   sources = [
-    "database/database_connections_unittest.cc",
     "database/database_identifier_unittest.cc",
     "file_system/file_system_util_unittest.cc",
     "run_all_unittests.cc",

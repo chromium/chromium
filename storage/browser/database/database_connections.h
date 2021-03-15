@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef STORAGE_COMMON_DATABASE_DATABASE_CONNECTIONS_H_
-#define STORAGE_COMMON_DATABASE_DATABASE_CONNECTIONS_H_
+#ifndef STORAGE_BROWSER_DATABASE_DATABASE_CONNECTIONS_H_
+#define STORAGE_BROWSER_DATABASE_DATABASE_CONNECTIONS_H_
 
 #include <stdint.h>
 
@@ -15,7 +15,7 @@
 
 namespace storage {
 
-class COMPONENT_EXPORT(STORAGE_COMMON) DatabaseConnections {
+class COMPONENT_EXPORT(STORAGE_BROWSER) DatabaseConnections {
  public:
   DatabaseConnections();
   ~DatabaseConnections();
@@ -61,4 +61,4 @@ class COMPONENT_EXPORT(STORAGE_COMMON) DatabaseConnections {
 
 }  // namespace storage
 
-#endif  // STORAGE_COMMON_DATABASE_DATABASE_CONNECTIONS_H_
+#endif  // STORAGE_BROWSER_DATABASE_DATABASE_CONNECTIONS_H_

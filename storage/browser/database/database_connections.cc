@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "storage/common/database/database_connections.h"
+#include "storage/browser/database/database_connections.h"
 
 #include <ostream>
 
