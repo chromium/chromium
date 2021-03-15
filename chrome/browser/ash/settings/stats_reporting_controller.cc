@@ -8,10 +8,10 @@
 
 #include "base/bind.h"
 #include "base/logging.h"
+#include "chrome/browser/ash/ownership/owner_settings_service_chromeos.h"
+#include "chrome/browser/ash/ownership/owner_settings_service_chromeos_factory.h"
 #include "chrome/browser/ash/settings/cros_settings.h"
 #include "chrome/browser/ash/settings/device_settings_service.h"
-#include "chrome/browser/chromeos/ownership/owner_settings_service_chromeos.h"
-#include "chrome/browser/chromeos/ownership/owner_settings_service_chromeos_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chromeos/settings/cros_settings_names.h"
 #include "components/ownership/owner_settings_service.h"

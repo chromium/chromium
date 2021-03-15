@@ -2,15 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_CHROMEOS_OWNERSHIP_FAKE_OWNER_SETTINGS_SERVICE_H_
-#define CHROME_BROWSER_CHROMEOS_OWNERSHIP_FAKE_OWNER_SETTINGS_SERVICE_H_
+#ifndef CHROME_BROWSER_ASH_OWNERSHIP_FAKE_OWNER_SETTINGS_SERVICE_H_
+#define CHROME_BROWSER_ASH_OWNERSHIP_FAKE_OWNER_SETTINGS_SERVICE_H_
 
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
+#include "chrome/browser/ash/ownership/owner_settings_service_chromeos.h"
 // TODO(https://crbug.com/1164001): forward declare StubCrosSettingsProvider
 // after //c/b/c/ownership is moved to ash.
 #include "chrome/browser/ash/settings/stub_cros_settings_provider.h"
-#include "chrome/browser/chromeos/ownership/owner_settings_service_chromeos.h"
 
 class Profile;
 
@@ -58,4 +58,4 @@ namespace ash {
 using ::chromeos::FakeOwnerSettingsService;
 }
 
-#endif  // CHROME_BROWSER_CHROMEOS_OWNERSHIP_FAKE_OWNER_SETTINGS_SERVICE_H_
+#endif  // CHROME_BROWSER_ASH_OWNERSHIP_FAKE_OWNER_SETTINGS_SERVICE_H_

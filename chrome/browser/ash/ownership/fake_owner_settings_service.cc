@@ -2,11 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/chromeos/ownership/fake_owner_settings_service.h"
+#include "chrome/browser/ash/ownership/fake_owner_settings_service.h"
 
 #include "base/check.h"
+#include "chrome/browser/ash/ownership/owner_settings_service_chromeos_factory.h"
 #include "chrome/browser/ash/settings/stub_cros_settings_provider.h"
-#include "chrome/browser/chromeos/ownership/owner_settings_service_chromeos_factory.h"
 #include "chromeos/tpm/install_attributes.h"
 #include "components/ownership/mock_owner_key_util.h"
 

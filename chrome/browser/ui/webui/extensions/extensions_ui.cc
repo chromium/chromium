@@ -48,7 +48,7 @@
 #include "ui/base/webui/web_ui_util.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chrome/browser/chromeos/ownership/owner_settings_service_chromeos_factory.h"
+#include "chrome/browser/ash/ownership/owner_settings_service_chromeos_factory.h"
 #include "chrome/browser/ui/webui/extensions/chromeos/kiosk_apps_handler.h"
 #endif
 
