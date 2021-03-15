@@ -8,7 +8,6 @@
 -Wl,--gc-sections
 -Wl,--icf=all
 -Wl,--lto-O0
--Wl,--lto-legacy-pass-manager
 -Wl,--no-call-graph-profile-sort
 -Wl,--no-rosegment
 -Wl,--warn-shared-textrel
