@@ -59,6 +59,12 @@ ui::DataTransferEndpoint CreateEndpoint(ui::EndpointType type) {
 
 class MockDlpClipboardNotifier : public DlpClipboardNotifier {
  public:
+  MockDlpClipboardNotifier() = default;
+  MockDlpClipboardNotifier(const MockDlpClipboardNotifier&) = delete;
+  MockDlpClipboardNotifier& operator=(const MockDlpClipboardNotifier&) = delete;
+  ~MockDlpClipboardNotifier() override = default;
+
+  // DlpDataTransferNotifier:
   MOCK_METHOD1(ShowBlockBubble, void(const std::u16string& text));
   MOCK_METHOD3(ShowWarningBubble,
                void(const std::u16string& text,
@@ -77,10 +83,17 @@ class MockDlpClipboardNotifier : public DlpClipboardNotifier {
 
 }  // namespace
 
-class BubbleTestWithParam
-    : public ::testing::TestWithParam<base::Optional<ui::EndpointType>> {};
+class ClipboardBubbleTestWithParam
+    : public ::testing::TestWithParam<base::Optional<ui::EndpointType>> {
+ public:
+  ClipboardBubbleTestWithParam() = default;
+  ClipboardBubbleTestWithParam(const ClipboardBubbleTestWithParam&) = delete;
+  ClipboardBubbleTestWithParam& operator=(const ClipboardBubbleTestWithParam&) =
+      delete;
+  ~ClipboardBubbleTestWithParam() override = default;
+};
 
-TEST_P(BubbleTestWithParam, BlockBubble) {
+TEST_P(ClipboardBubbleTestWithParam, BlockBubble) {
   ::testing::StrictMock<MockDlpClipboardNotifier> notifier;
   ui::DataTransferEndpoint data_src(url::Origin::Create(GURL(kExampleUrl)));
   base::Optional<ui::DataTransferEndpoint> data_dst;
@@ -93,7 +106,7 @@ TEST_P(BubbleTestWithParam, BlockBubble) {
   notifier.NotifyBlockedAction(&data_src, base::OptionalOrNullptr(data_dst));
 }
 
-TEST_P(BubbleTestWithParam, WarnBubble) {
+TEST_P(ClipboardBubbleTestWithParam, WarnBubble) {
   ::testing::StrictMock<MockDlpClipboardNotifier> notifier;
   url::Origin origin = url::Origin::Create(GURL(kExampleUrl));
   ui::DataTransferEndpoint data_src(origin);
@@ -110,17 +123,25 @@ TEST_P(BubbleTestWithParam, WarnBubble) {
 }
 
 INSTANTIATE_TEST_SUITE_P(DlpClipboardNotifierTest,
-                         BubbleTestWithParam,
+                         ClipboardBubbleTestWithParam,
                          ::testing::Values(base::nullopt,
                                            ui::EndpointType::kDefault,
                                            ui::EndpointType::kUnknownVm,
                                            ui::EndpointType::kBorealis,
                                            ui::EndpointType::kUrl));
 
-class BubbleButtonsTestWithParam
-    : public ::testing::TestWithParam<ui::EndpointType> {};
+class ClipboardBubbleButtonsTestWithParam
+    : public ::testing::TestWithParam<ui::EndpointType> {
+ public:
+  ClipboardBubbleButtonsTestWithParam() = default;
+  ClipboardBubbleButtonsTestWithParam(
+      const ClipboardBubbleButtonsTestWithParam&) = delete;
+  ClipboardBubbleButtonsTestWithParam& operator=(
+      const ClipboardBubbleButtonsTestWithParam&) = delete;
+  ~ClipboardBubbleButtonsTestWithParam() override = default;
+};
 
-TEST_P(BubbleButtonsTestWithParam, ProceedPressed) {
+TEST_P(ClipboardBubbleButtonsTestWithParam, ProceedPressed) {
   ::testing::StrictMock<MockDlpClipboardNotifier> notifier;
   ui::DataTransferEndpoint data_dst(CreateEndpoint(GetParam()));
 
@@ -133,7 +154,7 @@ TEST_P(BubbleButtonsTestWithParam, ProceedPressed) {
   EXPECT_TRUE(notifier.DidUserApproveDst(&data_dst));
 }
 
-TEST_P(BubbleButtonsTestWithParam, CancelPressed) {
+TEST_P(ClipboardBubbleButtonsTestWithParam, CancelPressed) {
   ::testing::StrictMock<MockDlpClipboardNotifier> notifier;
   ui::DataTransferEndpoint data_dst(CreateEndpoint(GetParam()));
 
@@ -147,13 +168,19 @@ TEST_P(BubbleButtonsTestWithParam, CancelPressed) {
 }
 
 INSTANTIATE_TEST_SUITE_P(DlpClipboardNotifierTest,
-                         BubbleButtonsTestWithParam,
+                         ClipboardBubbleButtonsTestWithParam,
                          ::testing::Values(ui::EndpointType::kDefault,
                                            ui::EndpointType::kUnknownVm,
                                            ui::EndpointType::kBorealis,
                                            ui::EndpointType::kUrl));
 
 class DlpClipboardNotifierTest : public testing::Test {
+ public:
+  DlpClipboardNotifierTest() = default;
+  DlpClipboardNotifierTest(const DlpClipboardNotifierTest&) = delete;
+  DlpClipboardNotifierTest& operator=(const DlpClipboardNotifierTest&) = delete;
+  ~DlpClipboardNotifierTest() override = default;
+
  private:
   content::BrowserTaskEnvironment task_environment_;
 };
@@ -287,7 +314,16 @@ TEST_F(DlpClipboardNotifierTest, CancelSavedHistory) {
   EXPECT_FALSE(notifier.DidUserCancelDst(&crostini_dst));
 }
 
-class ToastTestWithParam : public ::testing::TestWithParam<ToastTest> {};
+class ToastTestWithParam : public ::testing::TestWithParam<ToastTest> {
+ public:
+  ToastTestWithParam() = default;
+  ToastTestWithParam(const ToastTestWithParam&) = delete;
+  ToastTestWithParam& operator=(const ToastTestWithParam&) = delete;
+  ~ToastTestWithParam() override = default;
+
+ private:
+  content::BrowserTaskEnvironment task_environment_;
+};
 
 TEST_P(ToastTestWithParam, BlockToast) {
   ::testing::StrictMock<MockDlpClipboardNotifier> notifier;
