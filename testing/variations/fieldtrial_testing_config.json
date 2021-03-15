@@ -5535,29 +5535,6 @@
             ]
         }
     ],
-    "QuickAnswersLiveExperiment": [
-        {
-            "platforms": [
-                "chromeos"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "params": {
-                        "selected_text_confidence_threshold": "0.8",
-                        "surrounding_text_confidence_threshold": "0.9"
-                    },
-                    "enable_features": [
-                        "QuickAnswers",
-                        "QuickAnswersRichUi",
-                        "QuickAnswersTextAnnotator",
-                        "QuickAnswersTranslation",
-                        "QuickAnswersTranslationCloudAPI"
-                    ]
-                }
-            ]
-        }
-    ],
     "QuietNotificationPrompts": [
         {
             "platforms": [
