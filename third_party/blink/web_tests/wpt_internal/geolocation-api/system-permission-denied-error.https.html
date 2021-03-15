@@ -1,0 +1,32 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+<head>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+</head>
+<body>
+<script type="module">
+import {GeolocationMock} from './resources/geolocation-mock.js';
+
+async_test(function(t) {
+    const mock = new GeolocationMock();
+    mock.setGeolocationPermission(true);
+    mock.setSystemGeolocationPermission(false);
+
+    let errorCallbackInvoked = false;
+    navigator.geolocation.watchPosition(t.unreached_func("Success callback invoked unexpectedly"), function(error) {
+        assert_false(errorCallbackInvoked, "Second error callback invoked unexpectedly", error.message);
+        errorCallbackInvoked = true;
+
+        assert_equals(error.code, error.PERMISSION_DENIED);
+        assert_equals(error.message, "User has not allowed access to system location.");
+
+        // Update the mock Geolocation service to report a new position, then
+        // yield to allow a chance for the success callback to be invoked.
+        mock.setGeolocationPosition(55.478, -0.166, 100);
+        window.setTimeout(t.step_func_done(() => {}), 0);
+    });
+}, "Tests that when System Geolocation permission is denied the error callback is invoked and watchers are destroyed.");
+</script>
+</body>
+</html>

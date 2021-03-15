@@ -96,9 +96,19 @@ void NetworkLocationProvider::OnPermissionGranted() {
 
 void NetworkLocationProvider::OnSystemPermissionUpdate(
     LocationSystemPermissionStatus new_status) {
+  is_awaiting_initial_permission_status_ = false;
   const bool was_permission_granted = is_system_permission_granted_;
   is_system_permission_granted_ =
       (new_status == LocationSystemPermissionStatus::kAllowed);
+
+  if (!is_system_permission_granted_ && location_provider_update_callback_) {
+    mojom::Geoposition error_position;
+    error_position.error_code =
+        mojom::Geoposition::ErrorCode::PERMISSION_DENIED;
+    error_position.error_message =
+        "User has not allowed access to system location.";
+    location_provider_update_callback_.Run(this, error_position);
+  }
   if (!was_permission_granted && is_system_permission_granted_ && IsStarted()) {
     wifi_data_provider_manager_->ForceRescan();
     OnWifiDataUpdate();
@@ -111,6 +121,14 @@ void NetworkLocationProvider::OnWifiDataUpdate() {
 #if defined(OS_MAC)
   if (!is_system_permission_granted_ &&
       base::FeatureList::IsEnabled(features::kMacCoreLocationImplementation)) {
+    if (!is_awaiting_initial_permission_status_) {
+      mojom::Geoposition error_position;
+      error_position.error_code =
+          mojom::Geoposition::ErrorCode::PERMISSION_DENIED;
+      error_position.error_message =
+          "User has not allowed access to system location.";
+      location_provider_update_callback_.Run(this, error_position);
+    }
     return;
   }
 #endif

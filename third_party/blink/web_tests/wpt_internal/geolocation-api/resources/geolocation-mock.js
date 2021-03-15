@@ -45,6 +45,8 @@ export class GeolocationMock {
     this.permissionStatus_ = PermissionStatus.ASK;
     this.rejectGeolocationServiceConnections_ = false;
 
+    this.systemPermissionStatus_ = PermissionStatus.GRANTED;
+
     /**
      * Set by interceptQueryNextPosition() and used to resolve the promise
      * returned by that call once the next incoming queryPosition() is received.
@@ -102,6 +104,15 @@ export class GeolocationMock {
       return new Promise(resolve => {
         this.queryNextPositionIntercept_(resolve);
       });
+    }
+
+    if (this.systemPermissionStatus_ != PermissionStatus.GRANTED) {
+      this.geoposition_ = {
+        valid: false,
+        timestamp: {internalValue: 0n},
+        errorMessage: "User has not allowed access to system location.",
+        errorCode: Geoposition_ErrorCode.PERMISSION_DENIED,
+      };
     }
 
     if (!this.geoposition_) {
@@ -205,5 +216,10 @@ export class GeolocationMock {
   setGeolocationPermission(allowed) {
     this.permissionStatus_ = allowed ? PermissionStatus.GRANTED
                                      : PermissionStatus.DENIED;
+  }
+
+  setSystemGeolocationPermission(allowed) {
+    this.systemPermissionStatus_ = allowed ? PermissionStatus.GRANTED
+                                           : PermissionStatus.DENIED;
   }
 }

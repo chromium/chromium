@@ -51,11 +51,14 @@ struct LocationUpdateListener {
                         const mojom::Geoposition& position) {
     last_position = position;
     update_count++;
+    if (position.error_code != mojom::Geoposition::ErrorCode::NONE)
+      error_count++;
   }
 
   const LocationProvider::LocationProviderUpdateCallback callback;
   mojom::Geoposition last_position;
   int update_count = 0;
+  int error_count = 0;
 };
 
 // A mock implementation of WifiDataProvider for testing. Adapted from
@@ -598,9 +601,9 @@ TEST_F(GeolocationNetworkProviderTest, MacOSSystemPermissionsTest) {
   // be called immediately.
   provider->OnPermissionGranted();
 
-  // Ensure the callback was never called.
+  // Ensure there was an error callback.
   base::RunLoop().RunUntilIdle();
-  EXPECT_EQ(0, listener.update_count);
+  EXPECT_EQ(1, listener.error_count);
 
   // Now try to make a request for new wifi data.
   wifi_data_provider_->set_got_data(true);

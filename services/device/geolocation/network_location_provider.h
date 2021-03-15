@@ -102,6 +102,8 @@ class NetworkLocationProvider
 
   bool is_system_permission_granted_ = false;
 
+  bool is_awaiting_initial_permission_status_ = true;
+
   base::WeakPtrFactory<NetworkLocationProvider> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(NetworkLocationProvider);
