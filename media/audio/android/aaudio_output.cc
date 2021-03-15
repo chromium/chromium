@@ -100,37 +100,18 @@ bool AAudioOutputStream::Open() {
   if (AAUDIO_OK != result)
     return false;
 
-  switch (performance_mode_) {
-    case AAUDIO_PERFORMANCE_MODE_NONE:
-    case AAUDIO_PERFORMANCE_MODE_POWER_SAVING: {
-      // For the high-latency modes, it is better to match the requested
-      // buffer size and the AAudio's internal buffer capacity to reduce the
-      // irregulairty of the callback interval. See crbug.com/1181434.
-      int32_t buffer_capacity =
-          AAudioStream_getBufferCapacityInFrames(aaudio_stream_);
-      AAudioStream_setBufferSizeInFrames(aaudio_stream_, buffer_capacity);
-      break;
-    }
-    case AAUDIO_PERFORMANCE_MODE_LOW_LATENCY: {
-      // For the low latency mode, set the effective buffer size to 3X the burst
-      // size to prevent glitching when the burst is small (e.g. < 128). On some
-      // devices you can get by with 1X or 2X, but 3X is safer.
-      int32_t frames_per_burst = AAudioStream_getFramesPerBurst(aaudio_stream_);
-      int32_t buffer_size_requested =
-          frames_per_burst * (frames_per_burst < 128 ? 3 : 2);
-      AAudioStream_setBufferSizeInFrames(aaudio_stream_, buffer_size_requested);
-      break;
-    }
-    default:
-      NOTREACHED();
-  }
+  // After opening the stream, sets the effective buffer size to 3X the burst
+  // size to prevent glitching if the burst is small (e.g. < 128). On some
+  // devices you can get by with 1X or 2X, but 3X is safer.
+  int32_t framesPerBurst = AAudioStream_getFramesPerBurst(aaudio_stream_);
+  int32_t sizeRequested = framesPerBurst * (framesPerBurst < 128 ? 3 : 2);
+  AAudioStream_setBufferSizeInFrames(aaudio_stream_, sizeRequested);
 
   audio_bus_ = AudioBus::Create(params_);
 
   TRACE_EVENT2("audio", "AAudioOutputStream::Open",
                "params_", params_.AsHumanReadableString(),
-               "AAudio BufferSizeInFrames",
-               AAudioStream_getBufferSizeInFrames(aaudio_stream_));
+               "requested BufferSizeInFrames", sizeRequested);
 
   return true;
 }
