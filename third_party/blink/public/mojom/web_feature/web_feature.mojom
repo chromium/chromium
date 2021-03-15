@@ -2683,7 +2683,7 @@ enum WebFeature {
   kV8RTCRtpTransceiver_Stopped_AttributeGetter = 3374,
   kV8RTCRtpTransceiver_Stop_Method = 3375,
   kSecurePaymentConfirmation = 3376,
-  kOBSOLETE_CSSInvalidVariableUnset = 3377,
+  kCSSInvalidVariableUnset = 3377,
   kElementInternalsShadowRoot = 3378,
   kAnyPiiFieldDetected_PredictedTypeMatch = 3379,
   kEmailFieldDetected_PredictedTypeMatch = 3380,

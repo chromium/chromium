@@ -340,6 +340,7 @@ class CORE_EXPORT StyleCascade {
   void CountUse(WebFeature);
   void MaybeUseCountRevert(const CSSValue&);
   void MaybeUseCountSummaryDisplayBlock();
+  void MaybeUseCountInvalidVariableUnset(const CustomProperty&);
 
   StyleResolverState& state_;
   MatchResult match_result_;

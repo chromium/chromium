@@ -94,7 +94,7 @@ div { (user agent stylesheet)
 body { (<style>)
 /-- overloaded --/     --a: red;
 
-value of --a: undefined
+value of --a:  red
 ==== Computed style for ID5 ====
 display: block;
     block - div user agent stylesheet

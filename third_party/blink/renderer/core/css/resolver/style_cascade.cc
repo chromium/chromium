@@ -639,10 +639,12 @@ const CSSValue* StyleCascade::ResolveCustomProperty(
 
   state_.Style()->SetHasVariableDeclaration();
 
-  if (!data || resolver.InCycle()) {
-    if (!To<CustomProperty>(property).SupportsGuaranteedInvalid())
-      return cssvalue::CSSUnsetValue::Create();
+  if (resolver.InCycle())
     return CSSInvalidVariableValue::Create();
+
+  if (!data) {
+    MaybeUseCountInvalidVariableUnset(To<CustomProperty>(property));
+    return cssvalue::CSSUnsetValue::Create();
   }
 
   if (data == decl.Value())
@@ -977,6 +979,20 @@ void StyleCascade::CountUse(WebFeature feature) {
 void StyleCascade::MaybeUseCountRevert(const CSSValue& value) {
   if (IsRevert(value))
     CountUse(WebFeature::kCSSKeywordRevert);
+}
+
+void StyleCascade::MaybeUseCountInvalidVariableUnset(
+    const CustomProperty& property) {
+  if (!property.SupportsGuaranteedInvalid())
+    return;
+  if (!property.IsInherited() && !property.HasInitialValue())
+    return;
+  const AtomicString& name = property.GetPropertyNameAtomicString();
+  const ComputedStyle* parent_style = state_.ParentStyle();
+  if (parent_style &&
+      parent_style->GetVariableData(name, property.IsInherited())) {
+    CountUse(WebFeature::kCSSInvalidVariableUnset);
+  }
 }
 
 }  // namespace blink

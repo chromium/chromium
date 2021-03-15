@@ -1060,19 +1060,6 @@ TEST_F(StyleCascadeTest, RegisteredCycle) {
   cascade.Add("--b", "var(--a)");
   cascade.Apply();
 
-  EXPECT_EQ("0px", cascade.ComputedValue("--a"));
-  EXPECT_EQ("0px", cascade.ComputedValue("--b"));
-}
-
-TEST_F(StyleCascadeTest, UniversalSyntaxCycle) {
-  RegisterProperty(GetDocument(), "--a", "*", "foo", false);
-  RegisterProperty(GetDocument(), "--b", "*", "bar", false);
-
-  TestCascade cascade(GetDocument());
-  cascade.Add("--a", "var(--b)");
-  cascade.Add("--b", "var(--a)");
-  cascade.Apply();
-
   EXPECT_FALSE(cascade.ComputedValue("--a"));
   EXPECT_FALSE(cascade.ComputedValue("--b"));
 }
@@ -1085,11 +1072,11 @@ TEST_F(StyleCascadeTest, PartiallyRegisteredCycle) {
   cascade.Add("--b", "var(--a)");
   cascade.Apply();
 
-  EXPECT_EQ("0px", cascade.ComputedValue("--a"));
+  EXPECT_FALSE(cascade.ComputedValue("--a"));
   EXPECT_FALSE(cascade.ComputedValue("--b"));
 }
 
-TEST_F(StyleCascadeTest, ReferencedRegisteredCycle) {
+TEST_F(StyleCascadeTest, FallbackTriggeredByRegisteredCycle) {
   RegisterProperty(GetDocument(), "--a", "<length>", "0px", false);
   RegisterProperty(GetDocument(), "--b", "<length>", "0px", false);
 
@@ -1102,10 +1089,10 @@ TEST_F(StyleCascadeTest, ReferencedRegisteredCycle) {
   cascade.Add("--d", "var(--b,2px)");
   cascade.Apply();
 
-  EXPECT_EQ("0px", cascade.ComputedValue("--a"));
-  EXPECT_EQ("0px", cascade.ComputedValue("--b"));
-  EXPECT_EQ("0px", cascade.ComputedValue("--c"));
-  EXPECT_EQ("0px", cascade.ComputedValue("--d"));
+  EXPECT_FALSE(cascade.ComputedValue("--a"));
+  EXPECT_FALSE(cascade.ComputedValue("--b"));
+  EXPECT_EQ("1px", cascade.ComputedValue("--c"));
+  EXPECT_EQ("2px", cascade.ComputedValue("--d"));
 }
 
 TEST_F(StyleCascadeTest, CycleStillInvalidWithFallback) {
@@ -1268,7 +1255,7 @@ TEST_F(StyleCascadeTest, EmUnitCycle) {
   cascade.Add("--x", "10em");
   cascade.Apply();
 
-  EXPECT_EQ("0px", cascade.ComputedValue("--x"));
+  EXPECT_FALSE(cascade.ComputedValue("--x"));
 }
 
 TEST_F(StyleCascadeTest, SubstitutingEmCycles) {
@@ -1281,8 +1268,8 @@ TEST_F(StyleCascadeTest, SubstitutingEmCycles) {
   cascade.Add("--z", "var(--x,1px)");
   cascade.Apply();
 
-  EXPECT_EQ("0px", cascade.ComputedValue("--y"));
-  EXPECT_EQ("0px", cascade.ComputedValue("--z"));
+  EXPECT_FALSE(cascade.ComputedValue("--y"));
+  EXPECT_EQ("1px", cascade.ComputedValue("--z"));
 }
 
 TEST_F(StyleCascadeTest, RemUnit) {
@@ -1331,7 +1318,7 @@ TEST_F(StyleCascadeTest, RemUnitInRootFontSizeCycle) {
   cascade.Add("--x", "1rem");
   cascade.Apply();
 
-  EXPECT_EQ("0px", cascade.ComputedValue("--x"));
+  EXPECT_FALSE(cascade.ComputedValue("--x"));
 }
 
 TEST_F(StyleCascadeTest, RemUnitInRootFontSizeNonCycle) {
@@ -1838,8 +1825,7 @@ TEST_F(StyleCascadeTest, RevertInKeyframeResponsive) {
   EXPECT_EQ("40px", cascade.ComputedValue("margin-left"));
 }
 
-// TODO(crbug.com/1185745): Temporarily disabled
-TEST_F(StyleCascadeTest, DISABLED_RevertToCycleInKeyframe) {
+TEST_F(StyleCascadeTest, RevertToCycleInKeyframe) {
   RegisterProperty(GetDocument(), "--x", "<length>", "0px", false);
 
   AppendSheet(R"HTML(

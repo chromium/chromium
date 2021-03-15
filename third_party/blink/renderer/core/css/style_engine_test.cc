@@ -3182,6 +3182,239 @@ TEST_F(StyleEngineTest, SystemColorComputeToSelfUseCount) {
       GetDocument().IsUseCounted(WebFeature::kCSSSystemColorComputeToSelf));
 }
 
+TEST_F(StyleEngineTest, InvalidVariableUnsetUseCount) {
+  // Do not count for basic variable usage.
+  GetDocument().body()->setInnerHTML(R"HTML(
+    <style>
+      #outer { --x: foo; }
+      #inner { --x: bar; }
+    </style>
+    <div id=outer>
+      <div id=inner></div>
+    <div>
+  )HTML");
+  UpdateAllLifecyclePhases();
+  EXPECT_FALSE(IsUseCounted(WebFeature::kCSSInvalidVariableUnset));
+  ClearUseCounter(WebFeature::kCSSInvalidVariableUnset);
+
+  // Do not count when a fallback handles the unknown variable.
+  GetDocument().body()->setInnerHTML(R"HTML(
+    <style>
+      #outer { --x: foo; }
+      #inner { --x: var(--unknown,bar); }
+    </style>
+    <div id=outer>
+      <div id=inner></div>
+    <div>
+  )HTML");
+  UpdateAllLifecyclePhases();
+  EXPECT_FALSE(IsUseCounted(WebFeature::kCSSInvalidVariableUnset));
+  ClearUseCounter(WebFeature::kCSSInvalidVariableUnset);
+
+  // Do not count for explicit 'unset'.
+  GetDocument().body()->setInnerHTML(R"HTML(
+    <style>
+      #outer { --x: foo; }
+      #inner { --x: unset; }
+    </style>
+    <div id=outer>
+      <div id=inner></div>
+    <div>
+  )HTML");
+  UpdateAllLifecyclePhases();
+  EXPECT_FALSE(IsUseCounted(WebFeature::kCSSInvalidVariableUnset));
+  ClearUseCounter(WebFeature::kCSSInvalidVariableUnset);
+
+  // Do not count when we anyway end up with the guaranteed-invalid value.
+  // (Applies to registered properties as well).
+  GetDocument().body()->setInnerHTML(R"HTML(
+    <style>
+      @property --y {
+        syntax: "*";
+        inherits: true;
+      }
+      @property --z {
+        syntax: "*";
+        inherits: false;
+      }
+      #inner {
+        --x: var(--unknown);
+        --y: var(--unknown);
+        --z: var(--unknown);
+      }
+    </style>
+    <div id=outer>
+      <div id=inner></div>
+    <div>
+  )HTML");
+  UpdateAllLifecyclePhases();
+  EXPECT_FALSE(IsUseCounted(WebFeature::kCSSInvalidVariableUnset));
+  ClearUseCounter(WebFeature::kCSSInvalidVariableUnset);
+
+  // Count when 'unset' inherits something that not guaranteed-invalid.
+  GetDocument().body()->setInnerHTML(R"HTML(
+    <style>
+      #outer { --x: foo; }
+      #inner { --x: var(--unknown); }
+    </style>
+    <div id=outer>
+      <div id=inner></div>
+    <div>
+  )HTML");
+  UpdateAllLifecyclePhases();
+  EXPECT_TRUE(IsUseCounted(WebFeature::kCSSInvalidVariableUnset));
+  ClearUseCounter(WebFeature::kCSSInvalidVariableUnset);
+
+  // Do not count for non-universal registered custom properties.
+  GetDocument().body()->setInnerHTML(R"HTML(
+    <style>
+      @property --x {
+        syntax: "<length>";
+        inherits: true;
+        initial-value: 0px;
+      }
+      #outer { --x: 1px; }
+      #inner { --x: var(--unknown); }
+    </style>
+    <div id=outer>
+      <div id=inner></div>
+    <div>
+  )HTML");
+  UpdateAllLifecyclePhases();
+  EXPECT_FALSE(IsUseCounted(WebFeature::kCSSInvalidVariableUnset));
+  ClearUseCounter(WebFeature::kCSSInvalidVariableUnset);
+
+  // Count for universal registered custom properties.
+  GetDocument().body()->setInnerHTML(R"HTML(
+    <style>
+      @property --x {
+        syntax: "*";
+        inherits: true;
+      }
+      #outer { --x: bar; }
+      #inner { --x: var(--unknown); }
+    </style>
+    <div id=outer>
+      <div id=inner></div>
+    <div>
+  )HTML");
+  UpdateAllLifecyclePhases();
+  EXPECT_TRUE(IsUseCounted(WebFeature::kCSSInvalidVariableUnset));
+  ClearUseCounter(WebFeature::kCSSInvalidVariableUnset);
+
+  // Do not count for non-inherited universal registered custom properties
+  // without initial value.
+  GetDocument().body()->setInnerHTML(R"HTML(
+    <style>
+      @property --x {
+        syntax: "*";
+        inherits: false;
+      }
+      #outer { --x: bar; }
+      #inner { --x: var(--unknown); }
+    </style>
+    <div id=outer>
+      <div id=inner></div>
+    <div>
+  )HTML");
+  UpdateAllLifecyclePhases();
+  EXPECT_FALSE(IsUseCounted(WebFeature::kCSSInvalidVariableUnset));
+  ClearUseCounter(WebFeature::kCSSInvalidVariableUnset);
+
+  // Count for universal registered custom properties even with an
+  // initial-value defined.
+  GetDocument().body()->setInnerHTML(R"HTML(
+    <style>
+      @property --x {
+        syntax: "*";
+        inherits: true;
+        initial-value: foo;
+      }
+      #outer { --x: bar; }
+      #inner { --x: var(--unknown); }
+    </style>
+    <div id=outer>
+      <div id=inner></div>
+    <div>
+  )HTML");
+  UpdateAllLifecyclePhases();
+  EXPECT_TRUE(IsUseCounted(WebFeature::kCSSInvalidVariableUnset));
+  ClearUseCounter(WebFeature::kCSSInvalidVariableUnset);
+
+  // Do not count for cycles.
+  GetDocument().body()->setInnerHTML(R"HTML(
+    <style>
+      @property --a {
+        syntax: "*";
+        inherits: true;
+      }
+      @property --b {
+        syntax: "*";
+        inherits: true;
+      }
+      #outer {
+        --a: foo;
+        --b: foo;
+        --c: foo;
+        --d: foo;
+      }
+      #inner {
+        --a: var(--b);
+        --b: var(--a);
+        --c: var(--d);
+        --d: var(--c);
+      }
+    </style>
+    <div id=outer>
+      <div id=inner></div>
+    <div>
+  )HTML");
+  UpdateAllLifecyclePhases();
+  EXPECT_FALSE(IsUseCounted(WebFeature::kCSSInvalidVariableUnset));
+  ClearUseCounter(WebFeature::kCSSInvalidVariableUnset);
+
+  // Count for @keyframes
+  GetDocument().body()->setInnerHTML(R"HTML(
+    <style>
+      @keyframes anim {
+        from { --x: var(--unknown); }
+        to { --x: var(--unknown); }
+      }
+      #outer {
+        --x: foo;
+      }
+      #inner {
+        animation: anim 10s;
+      }
+    </style>
+    <div id=outer>
+      <div id=inner></div>
+    <div>
+  )HTML");
+  UpdateAllLifecyclePhases();
+  EXPECT_TRUE(IsUseCounted(WebFeature::kCSSInvalidVariableUnset));
+  ClearUseCounter(WebFeature::kCSSInvalidVariableUnset);
+
+  // Don't count for @keyframes if there's nothing to inherit.
+  GetDocument().body()->setInnerHTML(R"HTML(
+    <style>
+      @keyframes anim {
+        from { --x: var(--unknown); }
+        to { --x: var(--unknown); }
+      }
+      #inner {
+        animation: anim 10s;
+      }
+    </style>
+    <div id=outer>
+      <div id=inner></div>
+    <div>
+  )HTML");
+  UpdateAllLifecyclePhases();
+  EXPECT_FALSE(IsUseCounted(WebFeature::kCSSInvalidVariableUnset));
+  ClearUseCounter(WebFeature::kCSSInvalidVariableUnset);
+}
+
 // https://crbug.com/1050564
 TEST_F(StyleEngineTest, MediaAttributeChangeUpdatesFontCacheVersion) {
   GetDocument().body()->setInnerHTML(R"HTML(
