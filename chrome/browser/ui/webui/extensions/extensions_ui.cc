@@ -367,8 +367,7 @@ ExtensionsUI::ExtensionsUI(content::WebUI* web_ui)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   auto kiosk_app_handler = std::make_unique<chromeos::KioskAppsHandler>(
-      chromeos::OwnerSettingsServiceChromeOSFactory::GetForBrowserContext(
-          profile));
+      ash::OwnerSettingsServiceChromeOSFactory::GetForBrowserContext(profile));
   web_ui->AddMessageHandler(std::move(kiosk_app_handler));
 #endif
 

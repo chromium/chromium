@@ -121,7 +121,7 @@ class UsersPrivateApiTest : public ExtensionApiTest {
         new ownership::MockOwnerKeyUtil();
     owner_key_util->SetPrivateKey(crypto::RSAPrivateKey::Create(512));
 
-    chromeos::OwnerSettingsServiceChromeOSFactory::GetInstance()
+    ash::OwnerSettingsServiceChromeOSFactory::GetInstance()
         ->SetOwnerKeyUtilForTesting(owner_key_util);
 
     scoped_testing_cros_settings_.device_settings()->Set(

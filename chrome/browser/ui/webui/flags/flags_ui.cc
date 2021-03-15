@@ -114,9 +114,8 @@ void FinishInitialization(base::WeakPtr<T> flags_ui,
   // Note that |dom_handler| is owned by the web ui that owns |flags_ui|, so
   // it is still alive if |flags_ui| is.
   if (current_user_is_owner) {
-    chromeos::OwnerSettingsServiceChromeOS* service =
-        chromeos::OwnerSettingsServiceChromeOSFactory::GetForBrowserContext(
-            profile);
+    ash::OwnerSettingsServiceChromeOS* service =
+        ash::OwnerSettingsServiceChromeOSFactory::GetForBrowserContext(profile);
     dom_handler->Init(new chromeos::about_flags::OwnerFlagsStorage(
                           profile->GetPrefs(), service),
                       flags_ui::kOwnerAccessToFlags);
@@ -233,10 +232,10 @@ FlagsUIHandler* InitializeHandler(content::WebUI* web_ui,
   // Bypass possible incognito profile.
   Profile* original_profile = profile->GetOriginalProfile();
   if (base::SysInfo::IsRunningOnChromeOS() &&
-      chromeos::OwnerSettingsServiceChromeOSFactory::GetForBrowserContext(
+      ash::OwnerSettingsServiceChromeOSFactory::GetForBrowserContext(
           original_profile)) {
-    chromeos::OwnerSettingsServiceChromeOS* service =
-        chromeos::OwnerSettingsServiceChromeOSFactory::GetForBrowserContext(
+    ash::OwnerSettingsServiceChromeOS* service =
+        ash::OwnerSettingsServiceChromeOSFactory::GetForBrowserContext(
             original_profile);
     service->IsOwnerAsync(base::BindOnce(&FinishInitialization<T>,
                                          weak_factory.GetWeakPtr(),

@@ -135,8 +135,8 @@ bool CanChangeChannel(Profile* profile) {
   }
 
   // On non-managed machines, only the local owner can change the channel.
-  chromeos::OwnerSettingsServiceChromeOS* service =
-      chromeos::OwnerSettingsServiceChromeOSFactory::GetInstance()
+  ash::OwnerSettingsServiceChromeOS* service =
+      ash::OwnerSettingsServiceChromeOSFactory::GetInstance()
           ->GetForBrowserContext(profile);
   return service && service->IsOwner();
 }

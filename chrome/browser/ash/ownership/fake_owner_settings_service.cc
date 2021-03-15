@@ -10,7 +10,7 @@
 #include "chromeos/tpm/install_attributes.h"
 #include "components/ownership/mock_owner_key_util.h"
 
-namespace chromeos {
+namespace ash {
 
 FakeOwnerSettingsService::FakeOwnerSettingsService(
     StubCrosSettingsProvider* provider,
@@ -34,7 +34,7 @@ FakeOwnerSettingsService::FakeOwnerSettingsService(
 FakeOwnerSettingsService::~FakeOwnerSettingsService() = default;
 
 bool FakeOwnerSettingsService::IsOwner() {
-  return !InstallAttributes::Get()->IsEnterpriseManaged() &&
+  return !chromeos::InstallAttributes::Get()->IsEnterpriseManaged() &&
          settings_provider_->current_user_is_owner();
 }
 
@@ -45,4 +45,4 @@ bool FakeOwnerSettingsService::Set(const std::string& setting,
   return true;
 }
 
-}  // namespace chromeos
+}  // namespace ash

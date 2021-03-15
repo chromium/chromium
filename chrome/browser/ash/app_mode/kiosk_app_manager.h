@@ -19,9 +19,6 @@
 #include "chrome/browser/ash/settings/cros_settings.h"
 #include "chrome/browser/chromeos/extensions/external_cache.h"
 #include "chrome/browser/chromeos/extensions/external_cache_delegate.h"
-// TODO(https://crbug.com/1164001): use forward declaration when moved to
-// chrome/browser/ash/.
-#include "chrome/browser/ash/ownership/owner_settings_service_chromeos.h"
 #include "chromeos/tpm/install_attributes.h"
 #include "components/account_id/account_id.h"
 #include "extensions/common/extension_id.h"
@@ -47,6 +44,7 @@ namespace ash {
 
 class KioskAppData;
 class KioskExternalUpdater;
+class OwnerSettingsServiceChromeOS;
 
 // KioskAppManager manages cached app data.
 class KioskAppManager : public KioskAppManagerBase,

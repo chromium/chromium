@@ -34,12 +34,6 @@ class DeviceOffHoursController;
 }  // namespace off_hours
 }  // namespace policy
 
-// TODO(https://crbug.com/1164001): remove when OwnerSettingsServiceChromeOS is
-// moved to ash.
-namespace chromeos {
-class OwnerSettingsServiceChromeOS;
-}  // namespace chromeos
-
 namespace ash {
 
 class SessionManagerOperation;
@@ -218,7 +212,7 @@ class DeviceSettingsService : public chromeos::SessionManagerClient::Observer {
   void PropertyChangeComplete(bool success) override;
 
  private:
-  friend class ::chromeos::OwnerSettingsServiceChromeOS;
+  friend class OwnerSettingsServiceChromeOS;
 
   // Enqueues a new operation. Takes ownership of |operation| and starts it
   // right away if there is no active operation currently.

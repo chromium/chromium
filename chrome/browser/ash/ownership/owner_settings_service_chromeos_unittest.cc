@@ -27,7 +27,7 @@
 
 namespace em = enterprise_management;
 
-namespace chromeos {
+namespace ash {
 
 namespace {
 
@@ -413,4 +413,4 @@ TEST_F(OwnerSettingsServiceChromeOSNoOwnerTest, TakeOwnershipForceAllowlist) {
                               provider_->Get(kAccountsPrefUsers)));
 }
 
-}  // namespace chromeos
+}  // namespace ash

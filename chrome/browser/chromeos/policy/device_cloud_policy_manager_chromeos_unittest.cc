@@ -550,8 +550,8 @@ class DeviceCloudPolicyManagerChromeOSEnrollmentTest
             device_management_service_.StartJobFullControl(&register_job)));
     AllowUninterestingRemoteCommandFetches();
 
-    chromeos::OwnerSettingsServiceChromeOS* owner_settings_service =
-        chromeos::OwnerSettingsServiceChromeOSFactory::GetForBrowserContext(
+    ash::OwnerSettingsServiceChromeOS* owner_settings_service =
+        ash::OwnerSettingsServiceChromeOSFactory::GetForBrowserContext(
             profile_.get());
     ASSERT_TRUE(owner_settings_service);
 

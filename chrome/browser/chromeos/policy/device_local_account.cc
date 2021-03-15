@@ -174,7 +174,7 @@ bool IsDeviceLocalAccountUser(const std::string& user_id,
   return true;
 }
 
-void SetDeviceLocalAccounts(chromeos::OwnerSettingsServiceChromeOS* service,
+void SetDeviceLocalAccounts(ash::OwnerSettingsServiceChromeOS* service,
                             const std::vector<DeviceLocalAccount>& accounts) {
   // TODO(https://crbug.com/984021): handle TYPE_SAML_PUBLIC_SESSION
   base::ListValue list;

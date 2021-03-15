@@ -8,17 +8,16 @@
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "chrome/browser/ash/ownership/owner_settings_service_chromeos.h"
-// TODO(https://crbug.com/1164001): forward declare StubCrosSettingsProvider
-// after //c/b/c/ownership is moved to ash.
-#include "chrome/browser/ash/settings/stub_cros_settings_provider.h"
 
 class Profile;
 
 namespace ownership {
 class OwnerKeyUtil;
-}
+}  // namespace ownership
 
-namespace chromeos {
+namespace ash {
+
+class StubCrosSettingsProvider;
 
 class FakeOwnerSettingsService : public OwnerSettingsServiceChromeOS {
  public:
@@ -51,11 +50,12 @@ class FakeOwnerSettingsService : public OwnerSettingsServiceChromeOS {
   DISALLOW_COPY_AND_ASSIGN(FakeOwnerSettingsService);
 };
 
-}  // namespace chromeos
+}  // namespace ash
 
-// TODO(https://crbug.com/1164001): remove when moved to chrome/browser/ash/.
-namespace ash {
-using ::chromeos::FakeOwnerSettingsService;
-}
+// TODO(https://crbug.com/1164001): remove after //chrome/browser/chromeos
+// source migration is finished.
+namespace chromeos {
+using ::ash::FakeOwnerSettingsService;
+}  // namespace chromeos
 
 #endif  // CHROME_BROWSER_ASH_OWNERSHIP_FAKE_OWNER_SETTINGS_SERVICE_H_

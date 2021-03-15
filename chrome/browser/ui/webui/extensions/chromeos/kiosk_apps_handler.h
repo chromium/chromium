@@ -12,6 +12,9 @@
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ash/app_mode/kiosk_app_manager.h"
 #include "chrome/browser/ash/app_mode/kiosk_app_manager_observer.h"
+// TODO(https://crbug.com/1164001): move OwnerSettingsServiceChromeOS to forward
+// declaration when moved to chrome/browser/ash/.
+#include "chrome/browser/ash/ownership/owner_settings_service_chromeos.h"
 #include "content/public/browser/web_ui_message_handler.h"
 
 namespace base {
@@ -19,8 +22,6 @@ class ListValue;
 }
 
 namespace chromeos {
-
-class OwnerSettingsServiceChromeOS;
 
 class KioskAppsHandler : public content::WebUIMessageHandler,
                          public KioskAppManagerObserver {

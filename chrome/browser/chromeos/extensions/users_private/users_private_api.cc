@@ -52,8 +52,7 @@ bool IsChild(Profile* profile) {
 
 bool IsOwnerProfile(Profile* profile) {
   return profile &&
-         chromeos::OwnerSettingsServiceChromeOSFactory::GetForBrowserContext(
-             profile)
+         ash::OwnerSettingsServiceChromeOSFactory::GetForBrowserContext(profile)
              ->IsOwner();
 }
 
@@ -141,8 +140,8 @@ std::unique_ptr<base::ListValue> GetUsersList(Profile* profile,
         std::make_unique<base::Value>(user->GetAccountId().GetUserEmail()));
   }
 
-  if (chromeos::OwnerSettingsServiceChromeOS* service =
-          chromeos::OwnerSettingsServiceChromeOSFactory::GetForBrowserContext(
+  if (ash::OwnerSettingsServiceChromeOS* service =
+          ash::OwnerSettingsServiceChromeOSFactory::GetForBrowserContext(
               profile)) {
     service->Set(chromeos::kAccountsPrefUsers, *email_list.get());
   }

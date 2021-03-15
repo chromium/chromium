@@ -25,13 +25,13 @@ class Profile;
 
 namespace content {
 class WebUI;
-}
+}  // namespace content
 
 namespace ownership {
 class OwnerKeyUtil;
-}
+}  // namespace ownership
 
-namespace chromeos {
+namespace ash {
 
 enum class FeatureFlagsMigrationStatus {
   kNoFeatureFlags,
@@ -47,10 +47,11 @@ enum class FeatureFlagsMigrationStatus {
 //
 // TODO (ygorshenin@): move write path for device settings here
 // (crbug.com/230018).
-class OwnerSettingsServiceChromeOS : public ownership::OwnerSettingsService,
-                                     public ProfileManagerObserver,
-                                     public SessionManagerClient::Observer,
-                                     public DeviceSettingsService::Observer {
+class OwnerSettingsServiceChromeOS
+    : public ownership::OwnerSettingsService,
+      public ProfileManagerObserver,
+      public chromeos::SessionManagerClient::Observer,
+      public DeviceSettingsService::Observer {
  public:
   struct ManagementSettings {
     ManagementSettings();
@@ -198,11 +199,12 @@ class OwnerSettingsServiceChromeOS : public ownership::OwnerSettingsService,
   DISALLOW_COPY_AND_ASSIGN(OwnerSettingsServiceChromeOS);
 };
 
-}  // namespace chromeos
+}  // namespace ash
 
-// TODO(https://crbug.com/1164001): remove when moved to chrome/browser/ash/.
-namespace ash {
-using ::chromeos::OwnerSettingsServiceChromeOS;
-}
+// TODO(https://crbug.com/1164001): remove after //chrome/browser/chromeos
+// source migration is finished.
+namespace chromeos {
+using ::ash::OwnerSettingsServiceChromeOS;
+}  // namespace chromeos
 
 #endif  // CHROME_BROWSER_ASH_OWNERSHIP_OWNER_SETTINGS_SERVICE_CHROMEOS_H_

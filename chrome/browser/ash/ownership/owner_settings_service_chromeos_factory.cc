@@ -17,7 +17,7 @@
 #include "components/ownership/owner_key_util.h"
 #include "components/ownership/owner_key_util_impl.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace {
 
@@ -120,4 +120,4 @@ KeyedService* OwnerSettingsServiceChromeOSFactory::BuildServiceInstanceFor(
       GetInstance()->GetOwnerKeyUtil());
 }
 
-}  // namespace chromeos
+}  // namespace ash

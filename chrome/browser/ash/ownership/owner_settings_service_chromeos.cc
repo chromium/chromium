@@ -55,7 +55,7 @@ using ownership::OwnerKeyUtil;
 using ownership::PrivateKey;
 using ownership::PublicKey;
 
-namespace chromeos {
+namespace ash {
 
 namespace {
 
@@ -198,17 +198,18 @@ OwnerSettingsServiceChromeOS::OwnerSettingsServiceChromeOS(
     : ownership::OwnerSettingsService(owner_key_util),
       device_settings_service_(device_settings_service),
       profile_(profile) {
-  if (TPMTokenLoader::IsInitialized()) {
-    TPMTokenLoader::TPMTokenStatus tpm_token_status =
-        TPMTokenLoader::Get()->IsTPMTokenEnabled(
+  if (chromeos::TPMTokenLoader::IsInitialized()) {
+    chromeos::TPMTokenLoader::TPMTokenStatus tpm_token_status =
+        chromeos::TPMTokenLoader::Get()->IsTPMTokenEnabled(
             base::BindOnce(&OwnerSettingsServiceChromeOS::OnTPMTokenReady,
                            weak_factory_.GetWeakPtr()));
     waiting_for_tpm_token_ =
-        tpm_token_status == TPMTokenLoader::TPM_TOKEN_STATUS_UNDETERMINED;
+        tpm_token_status ==
+        chromeos::TPMTokenLoader::TPM_TOKEN_STATUS_UNDETERMINED;
   }
 
-  if (SessionManagerClient::Get())
-    SessionManagerClient::Get()->AddObserver(this);
+  if (chromeos::SessionManagerClient::Get())
+    chromeos::SessionManagerClient::Get()->AddObserver(this);
 
   if (device_settings_service_)
     device_settings_service_->AddObserver(this);
@@ -237,8 +238,8 @@ OwnerSettingsServiceChromeOS::~OwnerSettingsServiceChromeOS() {
   if (device_settings_service_)
     device_settings_service_->RemoveObserver(this);
 
-  if (SessionManagerClient::Get())
-    SessionManagerClient::Get()->RemoveObserver(this);
+  if (chromeos::SessionManagerClient::Get())
+    chromeos::SessionManagerClient::Get()->RemoveObserver(this);
 }
 
 OwnerSettingsServiceChromeOS* OwnerSettingsServiceChromeOS::FromWebUI(
@@ -274,14 +275,14 @@ bool OwnerSettingsServiceChromeOS::HasPendingChanges() const {
 }
 
 bool OwnerSettingsServiceChromeOS::IsOwner() {
-  if (InstallAttributes::Get()->IsEnterpriseManaged()) {
+  if (chromeos::InstallAttributes::Get()->IsEnterpriseManaged()) {
     return false;
   }
   return OwnerSettingsService::IsOwner();
 }
 
 void OwnerSettingsServiceChromeOS::IsOwnerAsync(IsOwnerCallback callback) {
-  if (InstallAttributes::Get()->IsEnterpriseManaged()) {
+  if (chromeos::InstallAttributes::Get()->IsEnterpriseManaged()) {
     base::ThreadTaskRunnerHandle::Get()->PostTask(
         FROM_HERE, base::BindOnce(std::move(callback), false));
     return;
@@ -827,8 +828,7 @@ void OwnerSettingsServiceChromeOS::MigrateFeatureFlags(
     return;
   }
 
-  chromeos::about_flags::OwnerFlagsStorage flags_storage(profile_->GetPrefs(),
-                                                         this);
+  about_flags::OwnerFlagsStorage flags_storage(profile_->GetPrefs(), this);
   std::set<std::string> flags = flags_storage.GetFlags();
   for (const auto& flag : flags) {
     feature_flags->add_feature_flags(flag);
@@ -839,4 +839,4 @@ void OwnerSettingsServiceChromeOS::MigrateFeatureFlags(
       FeatureFlagsMigrationStatus::kMigrationPerformed);
 }
 
-}  // namespace chromeos
+}  // namespace ash

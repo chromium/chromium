@@ -20,12 +20,9 @@ namespace base {
 class Value;
 }
 
-namespace chromeos {
-class FakeOwnerSettingsService;
-}  // namespace chromeos
-
 namespace ash {
 
+class FakeOwnerSettingsService;
 class ScopedTestCrosSettings;
 class ScopedTestDeviceSettingsService;
 
@@ -49,8 +46,8 @@ class ScopedCrosSettingsTestHelper {
 
   // Method to create an owner settings service that uses
   // |stub_settings_provider_| as settings write path.
-  std::unique_ptr<chromeos::FakeOwnerSettingsService>
-  CreateOwnerSettingsService(Profile* profile);
+  std::unique_ptr<FakeOwnerSettingsService> CreateOwnerSettingsService(
+      Profile* profile);
 
   // Returns the stubbed CrosSettingsProvider - the one that is swapped into
   // |CrosSettings| once |ReplaceDeviceSettingsProviderWithStub()| is called.

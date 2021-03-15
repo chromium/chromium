@@ -10,26 +10,22 @@
 #include "base/memory/ref_counted.h"
 #include "base/memory/singleton.h"
 #include "components/keyed_service/content/browser_context_keyed_service_factory.h"
-// TODO(https://crbug.com/1164001): forward declare DeviceSettingsService when
-// moved to ash.
-#include "chrome/browser/ash/settings/device_settings_service.h"
-// TODO(https://crbug.com/1164001): forward declare StubCrosSettingsProvider
-// when moved to ash.
-#include "chrome/browser/ash/settings/stub_cros_settings_provider.h"
 
 class KeyedService;
 
 namespace content {
 class BrowserContext;
-}
+}  // namespace content
 
 namespace ownership {
 class OwnerKeyUtil;
-}
+}  // namespace ownership
 
-namespace chromeos {
+namespace ash {
 
+class DeviceSettingsService;
 class OwnerSettingsServiceChromeOS;
+class StubCrosSettingsProvider;
 
 class OwnerSettingsServiceChromeOSFactory
     : public BrowserContextKeyedServiceFactory {
@@ -69,11 +65,12 @@ class OwnerSettingsServiceChromeOSFactory
   DISALLOW_COPY_AND_ASSIGN(OwnerSettingsServiceChromeOSFactory);
 };
 
-}  // namespace chromeos
+}  // namespace ash
 
-// TODO(https://crbug.com/1164001): remove when moved to chrome/browser/ash/.
-namespace ash {
-using ::chromeos::OwnerSettingsServiceChromeOSFactory;
-}
+// TODO(https://crbug.com/1164001): remove after //chrome/browser/chromeos
+// source migration is finished.
+namespace chromeos {
+using ::ash::OwnerSettingsServiceChromeOSFactory;
+}  // namespace chromeos
 
 #endif  // CHROME_BROWSER_ASH_OWNERSHIP_OWNER_SETTINGS_SERVICE_CHROMEOS_FACTORY_H_
