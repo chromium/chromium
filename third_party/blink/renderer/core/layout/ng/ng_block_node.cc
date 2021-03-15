@@ -692,15 +692,40 @@ void NGBlockNode::FinishLayout(
     return;
   }
 
+  const auto& physical_fragment =
+      To<NGPhysicalBoxFragment>(layout_result->PhysicalFragment());
+
+  if (box_->IsLayoutImage()) {
+    DCHECK(RuntimeEnabledFeatures::LayoutNGReplacedEnabled());
+    DCHECK(CanUseNewLayout());
+    // NG images are painted with legacy painters. We need to force a legacy
+    // "layout" so that paint invalidation flags are updated. But we don't want
+    // to use the size that legacy calculates, so we force legacy to use NG's
+    // size via BoxLayoutExtraInput's override fields.
+    BoxLayoutExtraInput input(*box_);
+    SetupBoxLayoutExtraInput(constraint_space, *box_, &input);
+    NGBoxFragment fragment(constraint_space.GetWritingDirection(),
+                           physical_fragment);
+    DCHECK_EQ(input.override_inline_size.value_or(fragment.InlineSize()),
+              fragment.InlineSize())
+        << "Forced inline size wasn't the fragment's inline size?";
+    DCHECK_EQ(input.override_block_size.value_or(fragment.BlockSize()),
+              fragment.BlockSize())
+        << "Forced block size wasn't the fragment's block size?";
+    input.override_inline_size = fragment.InlineSize();
+    input.override_block_size = fragment.BlockSize();
+    box_->ComputeAndSetBlockDirectionMargins(box_->ContainingBlock());
+    box_->ForceLayout();
+    DCHECK_EQ(box_->Size(), physical_fragment.Size().ToLayoutSize())
+        << "Legacy layout was supposed to use the size that NG computed";
+  }
+
   // Add all layout results (and fragments) generated from a node to a list in
   // the layout object. Some extra care is required to correctly overwrite
   // intermediate layout results: The sequence number of an incoming break token
   // corresponds with the fragment index in the layout object (off by 1,
   // though). When writing back a layout result, we remove any fragments in the
   // layout box at higher indices than that of the one we're writing back.
-  const auto& physical_fragment =
-      To<NGPhysicalBoxFragment>(layout_result->PhysicalFragment());
-
   if (layout_result->IsSingleUse())
     box_->AddLayoutResult(layout_result, FragmentIndex(break_token));
   else
