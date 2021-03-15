@@ -723,6 +723,17 @@ void AccountTrackerService::SeedAccountsInfo(
 
   DVLOG(1) << "AccountTrackerService.SeedAccountsInfo: "
            << " number of accounts " << gaia_ids.size();
+
+  std::vector<CoreAccountId> curr_ids;
+  for (const auto& gaia_id : gaia_ids) {
+    curr_ids.push_back(CoreAccountId::FromGaiaId(gaia_id));
+  }
+  // Remove the accounts deleted from device
+  for (const AccountInfo& info : GetAccounts()) {
+    if (!base::Contains(curr_ids, info.account_id)) {
+      RemoveAccount(info.account_id);
+    }
+  }
   for (size_t i = 0; i < gaia_ids.size(); ++i) {
     SeedAccountInfo(gaia_ids[i], account_names[i]);
   }

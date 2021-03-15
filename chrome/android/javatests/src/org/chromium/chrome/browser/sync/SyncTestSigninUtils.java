@@ -6,7 +6,6 @@ package org.chromium.chrome.browser.sync;
 
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.chrome.test.util.browser.signin.AccountManagerTestRule;
-import org.chromium.components.signin.base.CoreAccountInfo;
 
 /**
  * Utility class for sign-in functionalities in native Sync browser tests.
@@ -37,10 +36,7 @@ final class SyncTestSigninUtils {
      */
     @CalledByNative
     private static void tearDownAuthForTesting() {
-        CoreAccountInfo coreAccountInfo = sAccountManagerTestRule.getCurrentSignedInAccount();
-        if (coreAccountInfo != null) {
-            sAccountManagerTestRule.removeAccountAndWaitForSeeding(coreAccountInfo.getEmail());
-        }
+        // The seeded account is removed automatically when user signs out
         sAccountManagerTestRule.tearDownRule();
     }
 }
