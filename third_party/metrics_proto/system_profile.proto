@@ -17,7 +17,7 @@ import "extension_install.proto";
 // Almost all the fields should be populated on every upload. (The only
 // exception is some fields in the stability section that are only uploaded
 // once per browsing session, usually shortly after startup.)
-// Next tag: 36
+// Next tag: 37
 message SystemProfileProto {
   // The time when the client was compiled/linked, in seconds since the epoch.
   optional int64 build_timestamp = 1;
@@ -60,6 +60,10 @@ message SystemProfileProto {
     CHANNEL_STABLE = 4;
   }
   optional Channel channel = 10;
+
+  // True for a client following updates on the extended stable channel;
+  // see go/chrome-extended-dd.
+  optional bool is_extended_stable_channel = 36 [default = false];
 
   // True if Chrome build is instrumented (e.g. built with ASAN instrumentation
   // or with DCHECKs enabled).
@@ -206,18 +210,6 @@ message SystemProfileProto {
     // Max DPI for any attached screen. (Windows only)
     optional float max_dpi_x = 9;
     optional float max_dpi_y = 10;
-
-    // Device form factors.
-    enum FormFactor {
-      FORM_FACTOR_UNKNOWN = 0;
-      FORM_FACTOR_DESKTOP = 1;
-      FORM_FACTOR_PHONE = 2;
-      FORM_FACTOR_TABLET = 3;
-      FORM_FACTOR_KIOSK = 4;
-    }
-
-    // The device form factor.
-    optional FormFactor form_factor = 19;
 
     // Information on the CPU obtained by CPUID.
     message CPU {
