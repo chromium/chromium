@@ -363,8 +363,6 @@ const char kChromeUIWebUIJsErrorURL[] = "chrome://webuijserror/";
     defined(OS_CHROMEOS)
 const char kChromeUIDiscardsHost[] = "discards";
 const char kChromeUIDiscardsURL[] = "chrome://discards/";
-const char kChromeUIHatsHost[] = "hats";
-const char kChromeUIHatsURL[] = "chrome://hats/";
 #endif
 
 #if !defined(OS_ANDROID)

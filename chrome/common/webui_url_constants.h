@@ -314,8 +314,6 @@ extern const char kChromeUIWebUIJsErrorURL[];
     defined(OS_CHROMEOS)
 extern const char kChromeUIDiscardsHost[];
 extern const char kChromeUIDiscardsURL[];
-extern const char kChromeUIHatsHost[];
-extern const char kChromeUIHatsURL[];
 #endif
 
 #if !defined(OS_ANDROID)
