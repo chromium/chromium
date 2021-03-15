@@ -98,7 +98,7 @@
 <translation id="1697284962337958118">新增至</translation>
 <translation id="1718835860248848330">過去一小時</translation>
 <translation id="1724977129262658800">解鎖後即可編輯密碼</translation>
-<translation id="173522743738009831">關於私隱沙箱</translation>
+<translation id="173522743738009831">關於 Privacy Sandbox</translation>
 <translation id="1736419249208073774">探索</translation>
 <translation id="1749561566933687563">同步您的書籤</translation>
 <translation id="17513872634828108">開啟分頁</translation>
@@ -347,19 +347,19 @@
 <translation id="3384347053049321195">分享圖片</translation>
 <translation id="3387650086002190359">檔案系統發生錯誤，因此無法下載 <ph name="FILE_NAME" />。</translation>
 <translation id="3389286852084373014">文字過多</translation>
-<translation id="3391512812407811893">試用私隱沙箱</translation>
+<translation id="3391512812407811893">試用 Privacy Sandbox</translation>
 <translation id="3398320232533725830">開啟書籤管理員</translation>
 <translation id="3414952576877147120">大小：</translation>
 <translation id="3429160811076349561">試用功能已關閉</translation>
 <translation id="3440975416244667276">輕觸並按住即可查看更多相關資料</translation>
 <translation id="3443221991560634068">重新載入目前網頁</translation>
-<translation id="3451542610083122179">「私隱沙箱」是一項進行中的計劃，目的是保護開放網絡，防止有心人透過追蹤機制取得您的資料。您的資料。網絡，防止有心人透過追蹤機制取得您的資料。
+<translation id="3451542610083122179">Privacy Sandbox 是一項進行中的計劃，目的是保護開放網絡，防止有心人透過追蹤機制取得您的資料。
 
 現今很多網站都會依賴第三方 Cookie 等眾多技術來提供重要服務，例如顯示相關廣告及衡量網站成效。
 
-「私隱沙箱」可以在不干擾網站運作的前提下，讓網站以更好的方式提供這些服務，同時防止有心人透過跨網站追蹤機制暗中取得您的資料，因此有利於開放網絡的發展。
+Privacy Sandbox 可以在不干擾網站運作的前提下，讓網站以更好的方式提供這些服務，同時防止有心人透過跨網站追蹤機制暗中取得您的資料，因此有利於開放網絡的發展。
 
-「私隱沙箱」仍在開發階段，目前開放地區有限。現在網站可以嘗試使用「私隱沙箱」，亦能繼續使用第三方 Cookie 等現有的網絡技術。<ph name="BEGIN_LINK" />瞭解詳情<ph name="END_LINK" /></translation>
+Privacy Sandbox  仍在開發階段，目前開放地區有限。現在網站可以嘗試使用 Privacy Sandbox，亦能繼續使用第三方 Cookie 等現有的網絡技術。<ph name="BEGIN_LINK" />瞭解詳情<ph name="END_LINK" /></translation>
 <translation id="3478363558367712427">您可以選擇搜尋引擎</translation>
 <translation id="3492207499832628349">新增無痕式分頁</translation>
 <translation id="3493531032208478708"><ph name="BEGIN_LINK" />進一步瞭解<ph name="END_LINK" />建議的內容</translation>
@@ -1060,7 +1060,7 @@
 <translation id="8156139159503939589">您看得懂哪些語言？</translation>
 <translation id="8168435359814927499">內容</translation>
 <translation id="8186512483418048923">尚餘 <ph name="FILES" /> 個檔案</translation>
-<translation id="8189750580333936930">私隱沙箱</translation>
+<translation id="8189750580333936930">Privacy Sandbox</translation>
 <translation id="8190358571722158785">尚餘 1 天</translation>
 <translation id="8200772114523450471">繼續</translation>
 <translation id="8209050860603202033">開啟圖片</translation>
