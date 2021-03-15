@@ -39,8 +39,6 @@ class DlpDataTransferNotifier : public views::WidgetObserver {
   virtual void CloseWidget(views::Widget* widget,
                            views::Widget::ClosedReason reason);
 
-  views::Widget* GetWidgetForTesting() { return widget_.get(); }
-
   views::UniqueWidgetPtr widget_;
 
  private:

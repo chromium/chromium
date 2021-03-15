@@ -51,7 +51,7 @@ constexpr char kExampleUrl[] = "https://example.com";
 
 class FakeClipboardNotifier : public DlpClipboardNotifier {
  public:
-  views::Widget* GetWidget() { return GetWidgetForTesting(); }
+  views::Widget* GetWidget() { return widget_.get(); }
 
   void ProceedPressed(const ui::DataTransferEndpoint& data_dst) {
     DlpClipboardNotifier::ProceedPressed(data_dst, GetWidget());

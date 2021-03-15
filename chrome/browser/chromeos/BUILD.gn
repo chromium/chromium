@@ -3964,6 +3964,7 @@ source_set("unit_tests") {
     "policy/dlp/dlp_clipboard_notifier_unittest.cc",
     "policy/dlp/dlp_content_manager_unittest.cc",
     "policy/dlp/dlp_content_tab_helper_unittest.cc",
+    "policy/dlp/dlp_data_transfer_notifier_unittest.cc",
     "policy/dlp/dlp_rules_manager_impl_unittest.cc",
     "policy/dlp/dlp_rules_manager_test_utils.cc",
     "policy/dlp/dlp_rules_manager_test_utils.h",
