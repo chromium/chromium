@@ -103,6 +103,9 @@ FromMojoAccountAdditionStatus(
       return account_manager::AccountAdditionResult::Status::kCancelledByUser;
     case cm::AccountAdditionResult::Status::kNetworkError:
       return account_manager::AccountAdditionResult::Status::kNetworkError;
+    case cm::AccountAdditionResult::Status::kUnexpectedResponse:
+      return account_manager::AccountAdditionResult::Status::
+          kUnexpectedResponse;
     default:
       LOG(WARNING) << "Unknown crosapi::mojom::AccountAdditionResult::Status: "
                    << mojo_status;
