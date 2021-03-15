@@ -149,16 +149,7 @@ void NGOutOfFlowLayoutPart::Run(const LayoutBox* only_layout) {
       LayoutFragmentainerDescendants(&fragmentainer_descendants,
                                      column_inline_progression);
     }
-
-    if (container_builder_->HasMulticolsWithPendingOOFs()) {
-      NGContainerFragmentBuilder::MulticolCollection
-          multicols_with_pending_oofs;
-      container_builder_->SwapMulticolsWithPendingOOFs(
-          &multicols_with_pending_oofs);
-      DCHECK(!multicols_with_pending_oofs.IsEmpty());
-      for (LayoutBox* multicol : multicols_with_pending_oofs)
-        LayoutOOFsInMulticol(NGBlockNode(multicol));
-    }
+    HandleMulticolsWithPendingOOFs(container_builder_);
   }
 
   const LayoutObject* current_container = container_builder_->GetLayoutObject();
@@ -561,7 +552,24 @@ void NGOutOfFlowLayoutPart::LayoutCandidates(
   }
 }
 
-// TODO(almaher): Look into moving this to NGColumnLayoutAlgorithm instead.
+void NGOutOfFlowLayoutPart::HandleMulticolsWithPendingOOFs(
+    NGBoxFragmentBuilder* container_builder) {
+  if (!container_builder->HasMulticolsWithPendingOOFs())
+    return;
+
+  NGContainerFragmentBuilder::MulticolCollection multicols_with_pending_oofs;
+  container_builder->SwapMulticolsWithPendingOOFs(&multicols_with_pending_oofs);
+  DCHECK(!multicols_with_pending_oofs.IsEmpty());
+
+  while (!multicols_with_pending_oofs.IsEmpty()) {
+    for (LayoutBox* multicol : multicols_with_pending_oofs)
+      LayoutOOFsInMulticol(NGBlockNode(multicol));
+    multicols_with_pending_oofs.clear();
+    container_builder->SwapMulticolsWithPendingOOFs(
+        &multicols_with_pending_oofs);
+  }
+}
+
 void NGOutOfFlowLayoutPart::LayoutOOFsInMulticol(const NGBlockNode& multicol) {
   Vector<NGLogicalOutOfFlowPositionedNode> oof_nodes_to_layout;
   Vector<MulticolChildInfo> multicol_children;
@@ -692,6 +700,10 @@ void NGOutOfFlowLayoutPart::LayoutOOFsInMulticol(const NGBlockNode& multicol) {
                         &multicol_container_builder)
       .LayoutFragmentainerDescendants(
           &oof_nodes_to_layout, column_inline_progression, &multicol_children);
+
+  // Handle any inner multicols with OOF descendants that may have propagated up
+  // while laying out the direct OOF descendants of the current multicol.
+  HandleMulticolsWithPendingOOFs(&multicol_container_builder);
 }
 
 void NGOutOfFlowLayoutPart::LayoutFragmentainerDescendants(
@@ -1317,7 +1329,6 @@ void NGOutOfFlowLayoutPart::AddOOFToFragmentainer(
     result->GetMutableForOutOfFlow().SetOutOfFlowPositionedOffset(
         oof_offset, allow_first_tier_oof_cache_);
   }
-  // TODO(almaher): Handle nested inner multicols with pending OOFs.
   container_builder_->PropagateOOFPositionedInfo(
       result->PhysicalFragment(), result->OutOfFlowPositionedOffset(),
       fragmentainer_consumed_block_size_);

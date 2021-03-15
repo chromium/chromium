@@ -85,7 +85,6 @@ class CORE_EXPORT NGOutOfFlowLayoutPart {
     LogicalRect rect;
   };
 
-  // TODO(almaher): Move this to the multicol algorithm in upcoming refactor.
   // This stores the information needed to update a multicol child inside an
   // existing multicol fragment. This is used during nested fragmentation of an
   // OOF positioned element.
@@ -169,6 +168,7 @@ class CORE_EXPORT NGOutOfFlowLayoutPart {
                         const LayoutBox* only_layout,
                         HashSet<const LayoutObject*>* placed_objects);
 
+  void HandleMulticolsWithPendingOOFs(NGBoxFragmentBuilder* container_builder);
   void LayoutOOFsInMulticol(const NGBlockNode& multicol);
 
   // Layout the OOF nodes that are descendants of a fragmentation context root.
