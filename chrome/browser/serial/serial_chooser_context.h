@@ -14,6 +14,7 @@
 
 #include "base/memory/weak_ptr.h"
 #include "base/unguessable_token.h"
+#include "chrome/browser/serial/serial_policy_allowed_ports.h"
 #include "components/permissions/chooser_context_base.h"
 #include "content/public/browser/serial_delegate.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -81,6 +82,8 @@ class SerialChooserContext : public permissions::ChooserContextBase,
                   std::vector<device::mojom::SerialPortInfoPtr> ports);
 
   const bool is_incognito_;
+
+  SerialPolicyAllowedPorts policy_;
 
   // Tracks the set of ports to which an origin has access to.
   std::map<url::Origin, std::set<base::UnguessableToken>> ephemeral_ports_;

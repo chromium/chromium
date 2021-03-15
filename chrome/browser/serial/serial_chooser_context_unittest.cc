@@ -14,6 +14,7 @@
 #include "chrome/browser/serial/serial_blocklist.h"
 #include "chrome/browser/serial/serial_chooser_context_factory.h"
 #include "chrome/browser/serial/serial_chooser_histograms.h"
+#include "chrome/common/pref_names.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/content_settings/core/common/pref_names.h"
@@ -58,6 +59,14 @@ device::mojom::SerialPortInfoPtr CreatePersistentPort(
 #endif
 #endif  // defined(OS_WIN)
   return port;
+}
+
+std::unique_ptr<base::Value> ReadJson(base::StringPiece json) {
+  base::JSONReader::ValueWithError result =
+      base::JSONReader::ReadAndReturnValueWithError(json);
+  EXPECT_TRUE(result.value) << result.error_message;
+  return result.value ? base::Value::ToUniquePtrValue(std::move(*result.value))
+                      : nullptr;
 }
 
 class SerialChooserContextTest : public testing::Test {
@@ -407,9 +416,7 @@ TEST_F(SerialChooserContextTest, PolicyAskForUrls) {
   prefs->SetManagedPref(prefs::kManagedDefaultSerialGuardSetting,
                         std::make_unique<base::Value>(CONTENT_SETTING_BLOCK));
   prefs->SetManagedPref(prefs::kManagedSerialAskForUrls,
-                        base::JSONReader::ReadDeprecated(R"(
-    [ "https://foo.origin" ]
-  )"));
+                        ReadJson(R"([ "https://foo.origin" ])"));
 
   EXPECT_TRUE(context()->CanRequestObjectPermission(kFooOrigin));
   EXPECT_TRUE(context()->HasPortPermission(kFooOrigin, *port));
@@ -438,9 +445,7 @@ TEST_F(SerialChooserContextTest, PolicyBlockedForUrls) {
 
   auto* prefs = profile()->GetTestingPrefService();
   prefs->SetManagedPref(prefs::kManagedSerialBlockedForUrls,
-                        base::JSONReader::ReadDeprecated(R"(
-    [ "https://foo.origin" ]
-  )"));
+                        ReadJson(R"([ "https://foo.origin" ])"));
 
   EXPECT_FALSE(context()->CanRequestObjectPermission(kFooOrigin));
   EXPECT_FALSE(context()->HasPortPermission(kFooOrigin, *port));
@@ -456,6 +461,92 @@ TEST_F(SerialChooserContextTest, PolicyBlockedForUrls) {
   std::vector<std::unique_ptr<permissions::ChooserContextBase::Object>>
       all_origin_objects = context()->GetAllGrantedObjects();
   EXPECT_EQ(1u, all_origin_objects.size());
+}
+
+TEST_F(SerialChooserContextTest, PolicyAllowForUrls) {
+  const auto kFooOrigin = url::Origin::Create(GURL("https://foo.origin"));
+  const auto kBarOrigin = url::Origin::Create(GURL("https://bar.origin"));
+
+  auto* prefs = profile()->GetTestingPrefService();
+  prefs->SetManagedPref(prefs::kManagedSerialAllowAllPortsForUrls,
+                        ReadJson(R"([ "https://foo.origin" ])"));
+  prefs->SetManagedPref(prefs::kManagedSerialAllowUsbDevicesForUrls,
+                        ReadJson(R"([
+               {
+                 "devices": [{ "vendor_id": 1234, "product_id": 5678 }],
+                 "urls": [ "https://bar.origin" ]
+               }
+             ])"));
+
+  auto platform_port = device::mojom::SerialPortInfo::New();
+  platform_port->token = base::UnguessableToken::Create();
+
+  auto usb_port1 = device::mojom::SerialPortInfo::New();
+  usb_port1->token = base::UnguessableToken::Create();
+  usb_port1->has_vendor_id = true;
+  usb_port1->vendor_id = 1234;
+  usb_port1->has_product_id = true;
+  usb_port1->product_id = 5678;
+
+  auto usb_port2 = device::mojom::SerialPortInfo::New();
+  usb_port2->token = base::UnguessableToken::Create();
+  usb_port2->has_vendor_id = true;
+  usb_port2->vendor_id = 1234;
+  usb_port2->has_product_id = true;
+  usb_port2->product_id = 8765;
+
+  EXPECT_TRUE(context()->CanRequestObjectPermission(kFooOrigin));
+  EXPECT_TRUE(context()->HasPortPermission(kFooOrigin, *platform_port));
+  EXPECT_TRUE(context()->HasPortPermission(kFooOrigin, *usb_port1));
+  EXPECT_TRUE(context()->HasPortPermission(kFooOrigin, *usb_port2));
+
+  EXPECT_TRUE(context()->CanRequestObjectPermission(kBarOrigin));
+  EXPECT_FALSE(context()->HasPortPermission(kBarOrigin, *platform_port));
+  EXPECT_TRUE(context()->HasPortPermission(kBarOrigin, *usb_port1));
+  EXPECT_FALSE(context()->HasPortPermission(kBarOrigin, *usb_port2));
+
+  // TODO(crbug.com/1001242): Add tests for GetGrantedObjects() and
+  // GetAllGrantedObjects() once those have been updated to include device
+  // permissions granted by policy.
+}
+
+TEST_F(SerialChooserContextTest, PolicyAllowOverridesGuard) {
+  const auto kFooOrigin = url::Origin::Create(GURL("https://foo.origin"));
+  const auto kBarOrigin = url::Origin::Create(GURL("https://bar.origin"));
+
+  auto* prefs = profile()->GetTestingPrefService();
+  prefs->SetManagedPref(prefs::kManagedDefaultSerialGuardSetting,
+                        std::make_unique<base::Value>(CONTENT_SETTING_BLOCK));
+  prefs->SetManagedPref(prefs::kManagedSerialAllowAllPortsForUrls,
+                        ReadJson(R"([ "https://foo.origin" ])"));
+
+  auto port = device::mojom::SerialPortInfo::New();
+  port->token = base::UnguessableToken::Create();
+
+  EXPECT_FALSE(context()->CanRequestObjectPermission(kFooOrigin));
+  EXPECT_TRUE(context()->HasPortPermission(kFooOrigin, *port));
+  EXPECT_FALSE(context()->CanRequestObjectPermission(kBarOrigin));
+  EXPECT_FALSE(context()->HasPortPermission(kBarOrigin, *port));
+}
+
+TEST_F(SerialChooserContextTest, PolicyAllowOverridesBlocked) {
+  const auto kFooOrigin = url::Origin::Create(GURL("https://foo.origin"));
+  const auto kBarOrigin = url::Origin::Create(GURL("https://bar.origin"));
+
+  auto* prefs = profile()->GetTestingPrefService();
+  prefs->SetManagedPref(
+      prefs::kManagedSerialBlockedForUrls,
+      ReadJson(R"([ "https://foo.origin", "https://bar.origin" ])"));
+  prefs->SetManagedPref(prefs::kManagedSerialAllowAllPortsForUrls,
+                        ReadJson(R"([ "https://foo.origin" ])"));
+
+  auto port = device::mojom::SerialPortInfo::New();
+  port->token = base::UnguessableToken::Create();
+
+  EXPECT_FALSE(context()->CanRequestObjectPermission(kFooOrigin));
+  EXPECT_TRUE(context()->HasPortPermission(kFooOrigin, *port));
+  EXPECT_FALSE(context()->CanRequestObjectPermission(kBarOrigin));
+  EXPECT_FALSE(context()->HasPortPermission(kBarOrigin, *port));
 }
 
 TEST_F(SerialChooserContextTest, Blocklist) {
@@ -486,4 +577,30 @@ TEST_F(SerialChooserContextTest, Blocklist) {
   std::vector<std::unique_ptr<permissions::ChooserContextBase::Object>>
       all_origin_objects = context()->GetAllGrantedObjects();
   EXPECT_EQ(1u, all_origin_objects.size());
+}
+
+TEST_F(SerialChooserContextTest, BlocklistOverridesPolicy) {
+  const auto origin = url::Origin::Create(GURL("https://google.com"));
+
+  auto* prefs = profile()->GetTestingPrefService();
+  prefs->SetManagedPref(prefs::kManagedSerialAllowUsbDevicesForUrls,
+                        ReadJson(R"([
+               {
+                 "devices": [{ "vendor_id": 6353, "product_id": 22768 }],
+                 "urls": [ "https://google.com" ]
+               }
+             ])"));
+
+  auto port = device::mojom::SerialPortInfo::New();
+  port->token = base::UnguessableToken::Create();
+  port->has_vendor_id = true;
+  port->vendor_id = 0x18D1;
+  port->has_product_id = true;
+  port->product_id = 0x58F0;
+  EXPECT_TRUE(context()->HasPortPermission(origin, *port));
+
+  // Adding a USB device to the blocklist overrides permissions granted by
+  // policy.
+  SetDynamicBlocklist("usb:18D1:58F0");
+  EXPECT_FALSE(context()->HasPortPermission(origin, *port));
 }

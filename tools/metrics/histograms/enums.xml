@@ -23903,6 +23903,8 @@ Called by update_document_policy_enum.py.-->
   <int value="834" label="SamlLockScreenOfflineSigninTimeLimitDays"/>
   <int value="835" label="ReportDevicePrintJobs"/>
   <int value="836" label="AudioProcessHighPriorityEnabled"/>
+  <int value="837" label="SerialAllowAllPortsForUrls"/>
+  <int value="838" label="SerialAllowUsbDevicesForUrls"/>
 </enum>
 
 <enum name="EnterprisePolicyDeviceIdValidity">

@@ -546,6 +546,7 @@ const PolicyToPreferenceMapEntry kSimplePolicyMap[] = {
   { key::kWebUsbBlockedForUrls,
     prefs::kManagedWebUsbBlockedForUrls,
     base::Value::Type::LIST },
+#if !defined(OS_ANDROID)
   { key::kDefaultSerialGuardSetting,
     prefs::kManagedDefaultSerialGuardSetting,
     base::Value::Type::INTEGER },
@@ -555,6 +556,10 @@ const PolicyToPreferenceMapEntry kSimplePolicyMap[] = {
   { key::kSerialBlockedForUrls,
     prefs::kManagedSerialBlockedForUrls,
     base::Value::Type::LIST },
+  { key::kSerialAllowAllPortsForUrls,
+    prefs::kManagedSerialAllowAllPortsForUrls,
+    base::Value::Type::LIST },
+#endif  // !defined(OS_ANDROID)
   { key::kDefaultFileSystemReadGuardSetting,
     prefs::kManagedDefaultFileSystemReadGuardSetting,
     base::Value::Type::INTEGER },
@@ -1431,6 +1436,14 @@ std::unique_ptr<ConfigurationPolicyHandlerList> BuildHandlerList(
   handlers->AddHandler(std::make_unique<HomepageLocationPolicyHandler>());
   handlers->AddHandler(std::make_unique<ProxyPolicyHandler>());
   handlers->AddHandler(std::make_unique<SecureDnsPolicyHandler>());
+#if !defined(OS_ANDROID)
+  handlers->AddHandler(std::make_unique<SimpleSchemaValidatingPolicyHandler>(
+      key::kSerialAllowUsbDevicesForUrls,
+      prefs::kManagedSerialAllowUsbDevicesForUrls, chrome_schema,
+      SCHEMA_ALLOW_UNKNOWN,
+      SimpleSchemaValidatingPolicyHandler::RECOMMENDED_PROHIBITED,
+      SimpleSchemaValidatingPolicyHandler::MANDATORY_ALLOWED));
+#endif  // !defined(OS_ANDROID)
   handlers->AddHandler(std::make_unique<SimpleSchemaValidatingPolicyHandler>(
       key::kCertificateTransparencyEnforcementDisabledForUrls,
       certificate_transparency::prefs::kCTExcludedHosts, chrome_schema,

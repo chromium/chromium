@@ -574,6 +574,8 @@
         'WebUsbBlockedForUrls',
         'SerialAskForUrls',
         'SerialBlockedForUrls',
+        'SerialAllowAllPortsForUrls',
+        'SerialAllowUsbDevicesForUrls',
       ],
     },
     {
@@ -6155,9 +6157,9 @@
 
       Deprecated: The USB permission model used to support specifying both the requesting and embedding URLs. This is deprecated and only supported for backwards compatiblity in this manner: if both a requesting and embedding URL is specified, then the embedding URL will be granted the permission as top-level origin and the requsting URL will be ignored entirely.
 
-      Leaving the policy unset means <ph name="DEFAULT_WEB_USB_GUARD_SETTING_POLICY_NAME">DefaultWebUsbGuardSetting</ph> applies, if it's set. If not, the user's personal setting applies.
+      This policy overrides <ph name="DEFAULT_WEB_USB_GUARD_SETTING_POLICY_NAME">DefaultWebUsbGuardSetting</ph>, <ph name="WEB_USB_ASK_FOR_URLS_POLICY_NAME">WebUsbAskForUrls</ph>, <ph name="WEB_USB_BLOCKED_FOR_URLS_POLICY_NAME">WebUsbBlockedForUrls</ph> and the user's preferences.
 
-      URL patterns in this policy shouldn't conflict with those configured through <ph name="WEB_USB_BLOCKED_FOR_URLS_POLICY_NAME">WebUsbBlockedForUrls</ph>. If they do, this policy takes precedence over <ph name="WEB_USB_BLOCKED_FOR_URLS_POLICY_NAME">WebUsbBlockedForUrls</ph> and <ph name="WEB_USB_ASK_FOR_URLS_POLICY_NAME">WebUsbAskForUrls</ph>.''',
+      This policy only affects access to USB devices through the WebUSB API. To grant access to USB devices through the Web Serial API see the <ph name="SERIAL_ALLOW_USB_DEVICES_FOR_URLS_POLICY_NAME">SerialAllowUsbDevicesForUrls</ph> policy.''',
     },
     {
       'name': 'DeviceLoginScreenWebUsbAllowDevicesForUrls',
@@ -6344,6 +6346,83 @@
       URL patterns can't conflict with <ph name="SERIAL_ASK_FOR_URLS_POLICY_NAME">SerialAskForUrls</ph>. Neither policy takes precedence if a URL matches with both.
 
       For detailed information on valid <ph name="URL_LABEL">url</ph> patterns, please see https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. <ph name="WILDCARD_VALUE">*</ph> is not an accepted value for this policy.''',
+    },
+    {
+      'name': 'SerialAllowAllPortsForUrls',
+      'owners': ['reillyg@chromium.org', 'file://content/browser/serial/OWNERS'],
+      'type': 'list',
+      'schema': {
+        'type': 'array',
+        'items': { 'type': 'string' },
+      },
+      'future_on': ['chrome_os', 'chrome.*'],
+      'features': {
+        'dynamic_refresh': True,
+        'per_profile': True,
+      },
+      'example_value': ['https://www.example.com'],
+      'id': 837,
+      'caption': '''Automatically grant permission to sites to connect all serial ports.''',
+      'tags': [],
+      'desc': '''Setting the policy allows you to list sites which are automatically granted permission to access all available serial ports.
+
+      The URLs must be valid, otherwise the policy is ignored. Only the origin (scheme, host and port) of the URL is considered.
+
+      This policy overrides <ph name="DEFAULT_SERIAL_GUARD_SETTING_POLICY_NAME">DefaultSerialGuardSetting</ph>, <ph name="SERIAL_ASK_FOR_URLS_POLICY_NAME">SerialAskForUrls</ph>, <ph name="SERIAL_BLOCKED_FOR_URLS_POLICY_NAME">SerialBlockedForUrls</ph> and the user's preferences.''',
+    },
+    {
+      'name': 'SerialAllowUsbDevicesForUrls',
+      'owners': ['reillyg@chromium.org', 'file://content/browser/serial/OWNERS'],
+      'type': 'dict',
+      'schema': {
+        'type': 'array',
+        'items': {
+          'type': 'object',
+          'properties': {
+            'devices': {
+              'type': 'array',
+              'items': {
+                'type': 'object',
+                'properties': {
+                  'vendor_id': { 'type': 'integer', 'minimum': 0, 'maximum': 65535 },
+                  'product_id': { 'type': 'integer', 'minimum': 0, 'maximum': 65535 }
+                },
+                'required': ['vendor_id']
+              }
+            },
+            'urls': {
+              'type': 'array',
+              'items': { 'type': 'string' }
+            }
+          },
+          'required': ['devices', 'urls']
+        }
+      },
+      'future_on': ['chrome_os', 'chrome.*'],
+      'features': {
+        'dynamic_refresh': True,
+        'per_profile': True,
+      },
+      'example_value': [
+        {
+          'devices': [{'vendor_id': 1234, 'product_id': 5678}],
+          'urls': ['https://specific-device.example.com']
+        },
+        {
+          'devices': [{'vendor_id': 1234}],
+          'urls': ['https://all-vendor-devices.example.com']
+        }
+      ],
+      'id': 838,
+      'caption': '''Automatically grant permission to sites to connect to USB serial devices.''',
+      'tags': ['website-sharing'],
+      'desc': '''Setting the policy allows you to list sites which are automatically granted permission to access USB serial devices with vendor and product IDs matching the <ph name="VENDOR_ID_FIELD_NAME">vendor_id</ph> and <ph name="PRODUCT_ID_FIELD_NAME">product_id</ph> fields. Omitting the <ph name="PRODUCT_ID_FIELD_NAME">product_id</ph> field allows the given sites permission to access devices with a vendor ID matching the <ph name="VENDOR_ID_FIELD_NAME">vendor_id</ph> field and any product ID.
+
+      The URLs must be valid, otherwise the policy is ignored. Only the origin (scheme, host and port) of the URL is considered.
+
+      This policy overrides <ph name="DEFAULT_SERIAL_GUARD_SETTING_POLICY_NAME">DefaultSerialGuardSetting</ph>, <ph name="SERIAL_ASK_FOR_URLS_POLICY_NAME">SerialAskForUrls</ph>, <ph name="SERIAL_BLOCKED_FOR_URLS_POLICY_NAME">SerialBlockedForUrls</ph> and the user's preferences.
+
+      This policy only affects access to USB devices through the Web Serial API. To grant access to USB devices through the WebUSB API see the <ph name="WEB_USB_ALLOW_DEVICES_FOR_URLS_POLICY_NAME">WebUsbAllowDevicesForUrls</ph> policy.''',
     },
     {
       'name': 'DefaultFileSystemReadGuardSetting',
@@ -25984,6 +26063,6 @@ The recommended way to configure policy on Windows is via GPO, although provisio
   'placeholders': [],
   'deleted_policy_ids': [114, 115, 204, 205, 206, 412, 476, 544, 546, 562, 569, 578, 583, 585, 586, 587, 588, 589, 590, 591, 600, 668, 669],
   'deleted_atomic_policy_group_ids': [19],
-  'highest_id_currently_used': 836,
+  'highest_id_currently_used': 838,
   'highest_atomic_group_id_currently_used': 40
 }

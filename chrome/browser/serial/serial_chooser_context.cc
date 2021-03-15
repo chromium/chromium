@@ -96,7 +96,8 @@ SerialChooserContext::SerialChooserContext(Profile* profile)
     : ChooserContextBase(ContentSettingsType::SERIAL_GUARD,
                          ContentSettingsType::SERIAL_CHOOSER_DATA,
                          HostContentSettingsMapFactory::GetForProfile(profile)),
-      is_incognito_(profile->IsOffTheRecord()) {}
+      is_incognito_(profile->IsOffTheRecord()),
+      policy_(profile->GetPrefs()) {}
 
 SerialChooserContext::~SerialChooserContext() = default;
 
@@ -220,6 +221,10 @@ bool SerialChooserContext::HasPortPermission(
     const device::mojom::SerialPortInfo& port) {
   if (SerialBlocklist::Get().IsExcluded(port)) {
     return false;
+  }
+
+  if (policy_.HasPortPermission(origin, port)) {
+    return true;
   }
 
   if (!CanRequestObjectPermission(origin)) {

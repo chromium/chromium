@@ -3946,6 +3946,8 @@ static_library("browser") {
       "serial/serial_chooser_context_factory.cc",
       "serial/serial_chooser_context_factory.h",
       "serial/serial_chooser_histograms.h",
+      "serial/serial_policy_allowed_ports.cc",
+      "serial/serial_policy_allowed_ports.h",
       "sessions/closed_tab_cache_service.cc",
       "sessions/closed_tab_cache_service.h",
       "sessions/closed_tab_cache_service_factory.cc",
