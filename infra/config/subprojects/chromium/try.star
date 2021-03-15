@@ -1844,10 +1844,6 @@ chrome_internal_verifier(
 
 chrome_internal_verifier(
     builder = "linux-chrome",
-)
-
-chrome_internal_verifier(
-    builder = "linux-chrome-beta",
     branch_selector = branches.STANDARD_MILESTONE,
 )
 
@@ -1862,10 +1858,6 @@ chrome_internal_verifier(
 
 chrome_internal_verifier(
     builder = "mac-chrome",
-)
-
-chrome_internal_verifier(
-    builder = "mac-chrome-beta",
     branch_selector = branches.STANDARD_MILESTONE,
 )
 
@@ -1876,10 +1868,6 @@ chrome_internal_verifier(
 
 chrome_internal_verifier(
     builder = "win-chrome",
-)
-
-chrome_internal_verifier(
-    builder = "win-chrome-beta",
     branch_selector = branches.STANDARD_MILESTONE,
 )
 
@@ -1890,10 +1878,6 @@ chrome_internal_verifier(
 
 chrome_internal_verifier(
     builder = "win64-chrome",
-)
-
-chrome_internal_verifier(
-    builder = "win64-chrome-beta",
     branch_selector = branches.STANDARD_MILESTONE,
 )
 
