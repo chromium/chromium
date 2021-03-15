@@ -44,7 +44,10 @@ AXTreeID AXTreeID::FromString(const std::string& string) {
 
 // static
 AXTreeID AXTreeID::FromToken(const base::UnguessableToken& token) {
-  return AXTreeID(token.ToString());
+  AXTreeID id;
+  id.type_ = ax::mojom::AXTreeIDType::kToken;
+  id.token_ = token;
+  return id;
 }
 
 // static

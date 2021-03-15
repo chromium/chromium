@@ -1228,9 +1228,11 @@ void AXObject::SerializeUnignoredAttributes(ui::AXNodeData* node_data,
       base::Optional<base::UnguessableToken> child_token =
           child_frame->GetEmbeddingToken();
       if (child_token && !(IsDetached() || ChildCountIncludingIgnored())) {
+        ui::AXTreeID child_tree_id =
+            ui::AXTreeID::FromToken(child_token.value());
         node_data->AddStringAttribute(
             ax::mojom::blink::StringAttribute::kChildTreeId,
-            child_token->ToString());
+            child_tree_id.ToString());
       }
     }
   }
