@@ -148,10 +148,12 @@
             <template is="dom-if"
                 if="[[prefs.nearby_sharing.onboarding_complete.value]]"
                 restamp>
-              <settings-toggle-button id="nearbySharingToggleButton"
-                  pref="{{prefs.nearby_sharing.enabled}}"
+              <cr-toggle id="nearbySharingToggleButton"
+                  class="margin-matches-padding"
+                  aria-label="$i18n{nearbyShareTitle}"
+                  checked="{{prefs.nearby_sharing.enabled.value}}"
                   deep-link-focus-id$="[[Setting.kNearbyShareOnOff]]">
-              </settings-toggle-button>
+              </cr-toggle>
             </template>
             <template is="dom-if"
                 if="[[!prefs.nearby_sharing.onboarding_complete.value]]"

@@ -121,17 +121,6 @@ Polymer({
     nearby_share.getContactManager().downloadContacts();
   },
 
-  /**
-   * @param {!Event} event
-   * @private
-   */
-  onEnableTap_(event) {
-    this.setPrefValue(
-        'nearby_sharing.enabled',
-        !this.getPref('nearby_sharing.enabled').value);
-    event.stopPropagation();
-  },
-
   /** @private */
   onDeviceNameTap_() {
     if (this.showDeviceNameDialog_) {

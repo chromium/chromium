@@ -57,23 +57,16 @@
         padding-inline-end: var(--cr-section-padding);
       }
     </style>
-    <div id="toggleRow" class="cr-row first" on-click="onEnableTap_" actionable>
-      <div id="onOff" class="flex cr-padded-text"
-          on$="[[prefs.nearby_sharing.enabled.value]]" aria-hidden="true">
-        [[getOnOffString_(prefs.nearby_sharing.enabled.value,
-            '$i18nPolymer{deviceOn}', '$i18nPolymer{deviceOff}')]]
-      </div>
-
-      <!-- Use a template to work around visual glitch where the toggle flips
-          on when the page first loads. -->
-      <template is="dom-if" if="[[prefs]]" restamp>
-        <settings-toggle-button id="featureToggleButton"
-            aria-describedby="onOff"
-            pref="{{prefs.nearby_sharing.enabled}}"
-            deep-link-focus-id$="[[Setting.kNearbyShareOnOff]]">
-        </settings-toggle-button>
-      </template>
-    </div>
+    <!-- Use a template to work around visual glitch where the toggle flips
+        on when the page first loads. -->
+    <template is="dom-if" if="[[prefs]]" restamp>
+      <settings-toggle-button id="featureToggleButton"
+          label="[[getOnOffString_(prefs.nearby_sharing.enabled.value,
+              '$i18nPolymer{deviceOn}', '$i18nPolymer{deviceOff}')]]"
+          pref="{{prefs.nearby_sharing.enabled}}"
+          deep-link-focus-id$="[[Setting.kNearbyShareOnOff]]">
+      </settings-toggle-button>
+    </template>
     <div class="settings-box two-line">
       <div class="start"
           aria-label="[[getAccountRowLabel(profileName_, profileLabel_)]]">

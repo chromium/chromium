@@ -44,12 +44,8 @@ class TestAccountManagerBrowserProxy extends TestBrowserProxy {
 suite('NearbyShare', function() {
   /** @type {?SettingsNearbyShareSubpage} */
   let subpage = null;
-  /** @type {?HTMLElement} */
-  let onOffText = null;
   /** @type {?SettingsToggleButtonElement} */
   let featureToggleButton = null;
-  /** @type {?HTMLElement} */
-  let toggleRow = null;
   /** @type {?FakeReceiveManager} */
   let fakeReceiveManager = null;
   /** @type {nearby_share.AccountManagerBrowserProxy} */
@@ -93,9 +89,7 @@ suite('NearbyShare', function() {
     document.body.appendChild(subpage);
     Polymer.dom.flush();
 
-    onOffText = subpage.$$('#onOff');
     featureToggleButton = subpage.$$('#featureToggleButton');
-    toggleRow = subpage.$$('#toggleRow');
   });
 
   teardown(function() {
@@ -113,7 +107,7 @@ suite('NearbyShare', function() {
 
     assertEquals(true, featureToggleButton.checked);
     assertEquals(true, subpage.prefs.nearby_sharing.enabled.value);
-    assertEquals('On', onOffText.textContent.trim());
+    assertEquals('On', featureToggleButton.label.trim());
     assertFalse(highVizToggle.disabled);
     assertFalse(editDeviceNameButton.disabled);
     assertFalse(editVisibilityButton.disabled);
@@ -123,7 +117,7 @@ suite('NearbyShare', function() {
 
     assertEquals(false, featureToggleButton.checked);
     assertEquals(false, subpage.prefs.nearby_sharing.enabled.value);
-    assertEquals('Off', onOffText.textContent.trim());
+    assertEquals('Off', featureToggleButton.label.trim());
     assertTrue(highVizToggle.disabled);
     assertTrue(editDeviceNameButton.disabled);
     assertTrue(editVisibilityButton.disabled);
@@ -133,13 +127,13 @@ suite('NearbyShare', function() {
   test('toggle row controls preference', function() {
     assertEquals(true, featureToggleButton.checked);
     assertEquals(true, subpage.prefs.nearby_sharing.enabled.value);
-    assertEquals('On', onOffText.textContent.trim());
+    assertEquals('On', featureToggleButton.label.trim());
 
-    toggleRow.click();
+    featureToggleButton.click();
 
     assertEquals(false, featureToggleButton.checked);
     assertEquals(false, subpage.prefs.nearby_sharing.enabled.value);
-    assertEquals('Off', onOffText.textContent.trim());
+    assertEquals('Off', featureToggleButton.label.trim());
   });
 
   suite('Deeplinking', () => {
