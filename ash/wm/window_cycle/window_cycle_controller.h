@@ -42,7 +42,11 @@ class ASH_EXPORT WindowCycleController : public SessionObserver {
 
   enum class WindowCyclingDirection { kForward, kBackward };
   enum class KeyboardNavDirection { kUp, kDown, kLeft, kRight, kInvalid };
-  enum class ModeSwitchSource { kClick, kKeyboard };
+
+  // Enumeration of the sources of alt-tab mode switch.
+  // Note that these values are persisted to histograms so existing values
+  // should remain unchanged and new values should be added to the end.
+  enum class ModeSwitchSource { kClick, kKeyboard, kMaxValue = kKeyboard };
 
   WindowCycleController();
   ~WindowCycleController() override;
