@@ -50,10 +50,6 @@ class PowerMonitorBroadcastSource : public base::PowerMonitorSource {
     Client();
     ~Client() override;
 
-    // Called on main thread when the source is destroyed. Prevents data race
-    // on the power monitor and source due to use on task runner thread.
-    void Shutdown();
-
     void Init(mojo::PendingRemote<mojom::PowerMonitor> remote_monitor);
 
     bool last_reported_on_battery_power_state() const {
@@ -67,9 +63,6 @@ class PowerMonitorBroadcastSource : public base::PowerMonitorSource {
 
    private:
     mojo::Receiver<device::mojom::PowerMonitorClient> receiver_{this};
-
-    base::Lock is_shutdown_lock_;
-    bool is_shutdown_ = false;
 
     bool last_reported_on_battery_power_state_ = false;
 
