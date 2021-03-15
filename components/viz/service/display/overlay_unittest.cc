@@ -157,6 +157,8 @@ class DefaultOverlayProcessor : public TestOverlayProcessor {
     }
 
     for (const auto& r : expected_rects_) {
+      SCOPED_TRACE(r.ToString());
+
       if (std::abs(r.x() - candidate.display_rect.x()) <= kAbsoluteError &&
           std::abs(r.y() - candidate.display_rect.y()) <= kAbsoluteError &&
           std::abs(r.width() - candidate.display_rect.width()) <=
@@ -568,6 +570,8 @@ static void CompareRenderPassLists(
     const AggregatedRenderPassList& actual_list) {
   EXPECT_EQ(expected_list.size(), actual_list.size());
   for (size_t i = 0; i < actual_list.size(); ++i) {
+    SCOPED_TRACE(i);
+
     AggregatedRenderPass* expected = expected_list[i].get();
     AggregatedRenderPass* actual = actual_list[i].get();
 
@@ -1012,6 +1016,8 @@ TEST_F(SingleOverlayOnTopTest, OpaqueOverlayDamageSubtract) {
 
   AddExpectedRectToOverlayProcessor(gfx::RectF(kOverlayDisplayRect));
   for (size_t i = 0; i < base::size(kDamageRect); ++i) {
+    SCOPED_TRACE(i);
+
     auto pass = CreateRenderPass();
     SharedQuadState* damaged_shared_quad_state =
         pass->shared_quad_state_list.AllocateAndCopyFrom(
@@ -1885,6 +1891,8 @@ TEST_F(ChangeSingleOnTopTest, DoNotPromoteIfContentsDontChange) {
   ResourceId previous_resource_id;
   int64_t frame_counter = 0;
   for (size_t i = 0; i < 3 + kFramesSkippedBeforeNotPromoting; ++i) {
+    SCOPED_TRACE(i);
+
     auto pass = CreateRenderPass();
     AggregatedRenderPass* main_pass = pass.get();
 
@@ -1982,6 +1990,8 @@ TEST_F(FullThresholdTest, ThresholdTestForPrioritization) {
   nearly_occluding_quad.Inset(1, 1);
 
   for (size_t i = 0; i < kSlowFrameTestEnd; ++i) {
+    SCOPED_TRACE(i);
+
     if (i >= kSlowFrameTestStart && i < kSlowFrameTestEnd) {
       wait_4_frames();
     } else {
@@ -2114,6 +2124,8 @@ TEST_F(TransitionOverlayTypeTest, DamageChangeOnTransistionOverlayType) {
   static const int kOverlayFrameStart = 3;
   static const int kOverlayFrameEnd = 5;
   for (int i = 0; i < 8; ++i) {
+    SCOPED_TRACE(i);
+
     auto pass = CreateRenderPass();
     damage_rect_ = kOverlayTopLeftRect;
 
@@ -2210,6 +2222,8 @@ TEST_F(UnderlayTest, InitialUnderlayDamageNotExcluded) {
 TEST_F(UnderlayTest, DamageExcludedForConsecutiveIdenticalUnderlays) {
   static const int kDemotionFrame = 3;
   for (int i = 0; i < 5; ++i) {
+    SCOPED_TRACE(i);
+
     auto pass = CreateRenderPass();
     damage_rect_ = kOverlayTopLeftRect;
 
@@ -2270,6 +2284,8 @@ TEST_F(UnderlayTest, DamageNotExcludedForNonIdenticalConsecutiveUnderlays) {
                                kOverlayTopLeftRect, kOverlayRect};
   gfx::Rect prev_rect;
   for (auto&& curr_rect : overlay_rects) {
+    SCOPED_TRACE(curr_rect.ToString());
+
     AddExpectedRectToOverlayProcessor(gfx::RectF(curr_rect));
 
     auto pass = CreateRenderPass();
@@ -2311,6 +2327,8 @@ TEST_F(UnderlayTest, DamageNotExcludedForNonConsecutiveIdenticalUnderlays) {
   bool has_fullscreen_candidate[] = {true, false, true, true, true, false};
 
   for (int i = 0; i < 3; ++i) {
+    SCOPED_TRACE(i);
+
     auto pass = CreateRenderPass();
     damage_rect_ = kOverlayRect;
 
@@ -2356,6 +2374,8 @@ TEST_F(UnderlayTest, DamageNotExcludedForNonConsecutiveIdenticalUnderlays) {
 
 TEST_F(UnderlayTest, DamageExcludedForCandidateAndThoseOccluded) {
   for (int i = 0; i < 3; ++i) {
+    SCOPED_TRACE(i);
+
     auto pass = CreateRenderPass();
     damage_rect_ = kOverlayRect;
     SurfaceDamageRectList surface_damage_rect_list;
@@ -2548,6 +2568,8 @@ TEST_F(UnderlayTest, OverlayCandidateTemporalTracker) {
   int fake_display_area = 256 * 256;
   // We test internal hysteresis state by running this test twice.
   for (int j = 0; j < 2; j++) {
+    SCOPED_TRACE(j);
+
     // First setup a 60fps high damage candidate.
     for (int i = 0; i < OverlayCandidateTemporalTracker::kNumRecords; i++) {
       wait_1_frame();
@@ -2718,6 +2740,8 @@ TEST_F(UnderlayTest, UpdateDamageRectWhenNoPromotion) {
   size_t expected_candidate_size[] = {1, 1, 0};
 
   for (size_t i = 0; i < base::size(expected_damages); ++i) {
+    SCOPED_TRACE(i);
+
     auto pass = CreateRenderPass();
     SurfaceDamageRectList surface_damage_rect_list;
     SharedQuadState* default_damaged_shared_quad_state =
@@ -2764,6 +2788,8 @@ TEST_F(UnderlayTest, UpdateDamageRectWhenNoPromotion) {
 // damage.
 TEST_F(UnderlayTest, CandidateNoDamageWhenQuadSharedStateNoOccludingDamage) {
   for (int i = 0; i < 4; ++i) {
+    SCOPED_TRACE(i);
+
     auto pass = CreateRenderPass();
     SurfaceDamageRectList surface_damage_rect_list;
 
@@ -4269,6 +4295,8 @@ TEST_F(UnderlayTest, EstimateOccludedDamage) {
 
   SurfaceDamageRectList surface_damage_rect_list;
   for (size_t i = 0; i < base::size(kCandidateRects); ++i) {
+    SCOPED_TRACE(i);
+
     // Create fake surface damage for this candidate.
     SharedQuadState* damaged_shared_quad_state =
         pass->shared_quad_state_list.AllocateAndCopyFrom(
@@ -4353,6 +4381,8 @@ TEST_F(UnderlayTest, ProtectedVideoOverlayScaling) {
 
   float initial_scalings[] = {0.5f, 0.625f, 0.5f};
   for (auto initial_scaling : initial_scalings) {
+    SCOPED_TRACE(initial_scaling);
+
     auto pass = CreateRenderPass();
 
     AggregatedRenderPassId render_pass_id{3};
