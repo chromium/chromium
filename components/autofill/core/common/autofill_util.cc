@@ -161,9 +161,10 @@ bool SanitizedFieldIsEmpty(const std::u16string& value) {
   // their fields. Check if the field value is empty after the removal of the
   // formatting characters.
   static std::u16string formatting =
-      (base::ASCIIToUTF16("-_()/") + char16_t(base::i18n::kRightToLeftMark) +
-       char16_t(base::i18n::kLeftToRightMark))
-          .append(base::kWhitespaceUTF16);
+      base::StrCat({u"-_()/",
+                    {&base::i18n::kRightToLeftMark, 1},
+                    {&base::i18n::kLeftToRightMark, 1},
+                    base::kWhitespaceUTF16});
 
   return (value.find_first_not_of(formatting) == base::StringPiece::npos);
 }

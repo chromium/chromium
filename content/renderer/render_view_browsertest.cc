@@ -400,7 +400,7 @@ class RenderViewImplTest : public RenderViewTest {
     char16_t c = DomCodeToUsLayoutCharacter(
         UsLayoutKeyboardCodeToDomCode(static_cast<ui::KeyboardCode>(key_code)),
         flags);
-    output->assign(1, static_cast<char16_t>(c));
+    output->assign(1, c);
     return 1;
   }
 #endif
@@ -431,7 +431,7 @@ class RenderViewImplTest : public RenderViewTest {
     char16_t c = DomCodeToUsLayoutCharacter(
         UsLayoutKeyboardCodeToDomCode(static_cast<ui::KeyboardCode>(key_code)),
         flags);
-    output->assign(1, static_cast<char16_t>(c));
+    output->assign(1, c);
     return 1;
   }
 #endif

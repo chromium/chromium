@@ -218,7 +218,7 @@ void OmniboxTextView::SetTextWithStyling(
 }
 
 void OmniboxTextView::AppendExtraText(const SuggestionAnswer::ImageLine& line) {
-  const std::u16string space(1, char16_t(' '));
+  const std::u16string space = u" ";
   const auto* text_field = line.additional_text();
   if (text_field) {
     AppendText(*text_field, space);

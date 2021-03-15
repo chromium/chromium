@@ -1586,8 +1586,7 @@ void EventSender::KeyDown(const std::string& code_str,
       if (base::IsAsciiAlpha(code)) {
         domKeyString.assign(code_str);
         domCodeString.assign("Key");
-        domCodeString.push_back(
-            base::ToUpperASCII(static_cast<char16_t>(code)));
+        domCodeString.push_back(base::ToUpperASCII(char16_t{code}));
       } else if (base::IsAsciiDigit(code)) {
         domKeyString.assign(code_str);
         domCodeString.assign("Digit");

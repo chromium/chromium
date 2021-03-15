@@ -262,7 +262,7 @@ size_t AutocompleteProvider::TrimSchemePrefix(std::u16string* url,
   if (!trim_https && !AutocompleteInput::HasHTTPScheme(*url))
     return 0;
   const char* scheme = trim_https ? url::kHttpsScheme : url::kHttpScheme;
-  size_t scheme_pos = url->find(base::ASCIIToUTF16(scheme) + char16_t(':'));
+  size_t scheme_pos = url->find(base::ASCIIToUTF16(scheme) + u':');
   DCHECK_NE(std::u16string::npos, scheme_pos);
 
   // Erase scheme plus up to two slashes.

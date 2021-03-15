@@ -587,7 +587,7 @@ std::u16string AutocompleteInput::FormattedStringWithEquivalentMeaning(
     size_t* offset) {
   if (!url_formatter::CanStripTrailingSlash(url))
     return formatted_url;
-  const std::u16string url_with_path(formatted_url + char16_t('/'));
+  const std::u16string url_with_path(formatted_url + u'/');
   if (AutocompleteInput::Parse(formatted_url, std::string(), scheme_classifier,
                                nullptr, nullptr, nullptr) ==
       AutocompleteInput::Parse(url_with_path, std::string(), scheme_classifier,

@@ -289,8 +289,7 @@ void AdjustParagraphDirectionality(std::u16string* paragraph) {
 #if defined(OS_POSIX) && !defined(OS_APPLE) && !defined(OS_ANDROID)
   if (base::i18n::IsRTL() &&
       base::i18n::StringContainsStrongRTLChars(*paragraph)) {
-    paragraph->insert(0, 1,
-                      static_cast<char16_t>(base::i18n::kRightToLeftMark));
+    paragraph->insert(0, 1, char16_t{base::i18n::kRightToLeftMark});
   }
 #endif
 }

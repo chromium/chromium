@@ -233,7 +233,7 @@ ui::EventDispatchDetails InputMethodWinBase::DispatchKeyEvent(
   // If only 1 WM_CHAR per the key event, set it as the character of it.
   if (char_msgs.size() == 1 &&
       !std::iswcntrl(static_cast<wint_t>(char_msgs[0].wParam)))
-    event->set_character(static_cast<char16_t>(char_msgs[0].wParam));
+    event->set_character(char16_t{char_msgs[0].wParam});
 
   return ProcessUnhandledKeyEvent(event, &char_msgs);
 }
@@ -262,7 +262,7 @@ LRESULT InputMethodWinBase::OnChar(HWND window_handle,
   // its text input type is ui::TEXT_INPUT_TYPE_NONE.
   if (GetTextInputClient()) {
     const char16_t kCarriageReturn = L'\r';
-    const char16_t ch = static_cast<char16_t>(wparam);
+    const char16_t ch{wparam};
     // A mask to determine the previous key state from |lparam|. The value is 1
     // if the key is down before the message is sent, or it is 0 if the key is
     // up.

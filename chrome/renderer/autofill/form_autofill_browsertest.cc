@@ -1321,7 +1321,7 @@ class FormAutofillTest : public ChromeRenderViewTest {
     // We now modify the values.
     // This will be ignored, the string will be sanitized into an empty string.
     control_elements[0].SetValue(WebString::FromUTF16(
-        char16_t(base::i18n::kLeftToRightMark) + ASCIIToUTF16("     ")));
+        char16_t{base::i18n::kLeftToRightMark} + ASCIIToUTF16("     ")));
 
     // This will be considered as a value entered by the user.
     control_elements[1].SetValue(WebString::FromUTF16(ASCIIToUTF16("Earp")));
@@ -1504,7 +1504,7 @@ class FormAutofillTest : public ChromeRenderViewTest {
     // These will be ignored, because it's (case insensitively) equal to the
     // placeholder.
     control_elements[0].SetValue(WebString::FromUTF16(
-        char16_t(base::i18n::kLeftToRightMark) + ASCIIToUTF16("first name")));
+        char16_t{base::i18n::kLeftToRightMark} + ASCIIToUTF16("first name")));
     control_elements[1].SetValue(
         WebString::FromUTF16(ASCIIToUTF16("LAST NAME")));
     // This will be considered.

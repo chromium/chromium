@@ -57,7 +57,7 @@ static content::ContextMenuParams CreateParams(int contexts) {
   rv.media_type = blink::mojom::ContextMenuDataMediaType::kNone;
   rv.page_url = GURL("http://test.page/");
 
-  static const char16_t selected_text[] = {'s', 'e', 'l', 0};
+  static constexpr char16_t selected_text[] = u"sel";
   if (contexts & MenuItem::SELECTION)
     rv.selection_text = selected_text;
 

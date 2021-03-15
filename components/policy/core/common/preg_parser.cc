@@ -60,12 +60,12 @@ static_assert(kMaxPRegFileSize <= std::numeric_limits<ptrdiff_t>::max(),
 const size_t kMaxKeyNameComponents = 1024;
 
 // Constants for PReg file delimiters.
-const char16_t kDelimBracketOpen = L'[';
-const char16_t kDelimBracketClose = L']';
-const char16_t kDelimSemicolon = L';';
+const char16_t kDelimBracketOpen = u'[';
+const char16_t kDelimBracketClose = u']';
+const char16_t kDelimSemicolon = u';';
 
 // Registry path separator.
-const char16_t kRegistryPathSeparator[] = {L'\\', L'\0'};
+const char16_t kRegistryPathSeparator[] = u"\\";
 
 // Magic strings for the PReg value field to trigger special actions.
 const char kActionTriggerPrefix[] = "**";

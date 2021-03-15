@@ -15,11 +15,6 @@
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/base/ime/composition_text.h"
 
-// Following code requires wchar_t to be same as char16. It should always be
-// true on Windows.
-static_assert(sizeof(wchar_t) == sizeof(char16_t),
-              "wchar_t should be the same size as char16");
-
 ///////////////////////////////////////////////////////////////////////////////
 // IMM32Manager
 
@@ -347,8 +342,9 @@ bool IMM32Manager::GetString(HIMC imm_context,
     return false;
   DCHECK_EQ(0u, string_size % sizeof(wchar_t));
   ::ImmGetCompositionString(imm_context, type,
-      base::WriteInto(result, (string_size / sizeof(wchar_t)) + 1),
-      string_size);
+                            base::as_writable_wcstr(base::WriteInto(
+                                result, (string_size / sizeof(wchar_t)) + 1)),
+                            string_size);
   return true;
 }
 

@@ -1025,7 +1025,7 @@ char16_t KeyEvent::GetCharacter() const {
     // Historically ui::KeyEvent has held only BMP characters.
     // Until this explicitly changes, require |key_| to hold a BMP character.
     DomKey::Base utf32_character = key_.ToCharacter();
-    char16_t ucs2_character = static_cast<char16_t>(utf32_character);
+    char16_t ucs2_character{utf32_character};
     DCHECK_EQ(static_cast<DomKey::Base>(ucs2_character), utf32_character);
     // Check if the control character is down. Note that ALTGR is represented
     // on Windows as CTRL|ALT, so we need to make sure that is not set.

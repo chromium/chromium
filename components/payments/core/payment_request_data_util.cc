@@ -157,7 +157,7 @@ std::u16string FormatCardNumberForDisplay(const std::u16string& card_number) {
     positions = {4U, 11U};
   }
 
-  static const char16_t kSeparator = base::ASCIIToUTF16(" ")[0];
+  static constexpr char16_t kSeparator = u' ';
   for (size_t i : positions) {
     if (number.size() > i)
       number.insert(i, 1U, kSeparator);

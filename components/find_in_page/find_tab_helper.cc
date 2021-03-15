@@ -48,7 +48,7 @@ void FindTabHelper::StartFinding(std::u16string search_string,
                                  bool find_match,
                                  bool run_synchronously_for_testing) {
   // Remove the carriage return character, which generally isn't in web content.
-  const char16_t kInvalidChars[] = {'\r', 0};
+  const char16_t kInvalidChars[] = u"\r";
   base::RemoveChars(search_string, kInvalidChars, &search_string);
 
   // Keep track of what the last search was across the tabs.

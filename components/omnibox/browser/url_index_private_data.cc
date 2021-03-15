@@ -1188,7 +1188,7 @@ bool URLIndexPrivateData::RestoreCharWordMap(
     actual_item_count = entry.word_id_size();
     if (actual_item_count == 0 || actual_item_count != expected_item_count)
       return false;
-    char16_t uni_char = static_cast<char16_t>(entry.char_16());
+    char16_t uni_char = entry.char_16();
     const RepeatedField<int32_t>& word_ids = entry.word_id();
     char_word_map_[uni_char] = WordIDSet(word_ids.begin(), word_ids.end());
   }

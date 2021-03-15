@@ -1144,7 +1144,7 @@ bool OmniboxViewViews::UnapplySteadyStateElisions(UnelisionGesture gesture) {
   //
   // In this special case, chop off the trailing slash and search again.
   if (offset == std::u16string::npos && !original_text.empty() &&
-      original_text.back() == char16_t('/')) {
+      original_text.back() == u'/') {
     offset = GetText().find(original_text.substr(0, original_text.size() - 1));
   }
 

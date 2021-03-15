@@ -687,7 +687,7 @@ void DownloadItemView::SetMode(Mode mode) {
   accessible_name_ =
       has_warning_label(mode_)
           ? warning_label_->GetText()
-          : (status_label_->GetText() + char16_t(' ') + unelided_filename);
+          : (status_label_->GetText() + u' ' + unelided_filename);
   open_button_->SetAccessibleName(accessible_name_);
   // Do not fire text changed notifications. Screen readers are notified of
   // status changes via the accessible alert notifications, and text change

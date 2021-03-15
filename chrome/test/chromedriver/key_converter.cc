@@ -130,15 +130,15 @@ const ui::KeyboardCode kSpecialWebDriverKeys[] = {
     ui::VKEY_DELETE,
 };
 
-const char16_t kWebDriverNullKey = 0xE000U;
-const char16_t kWebDriverShiftKey = 0xE008U;
-const char16_t kWebDriverControlKey = 0xE009U;
-const char16_t kWebDriverAltKey = 0xE00AU;
-const char16_t kWebDriverCommandKey = 0xE03DU;
-const char16_t kWebDriverRightShiftKey = 0xE050U;
-const char16_t kWebDriverRightControlKey = 0xE051U;
-const char16_t kWebDriverRightAltKey = 0xE052U;
-const char16_t kWebDriverRightCommandKey = 0xE053U;
+const char16_t kWebDriverNullKey = u'\uE000';
+const char16_t kWebDriverShiftKey = u'\uE008';
+const char16_t kWebDriverControlKey = u'\uE009';
+const char16_t kWebDriverAltKey = u'\uE00A';
+const char16_t kWebDriverCommandKey = u'\uE03D';
+const char16_t kWebDriverRightShiftKey = u'\uE050';
+const char16_t kWebDriverRightControlKey = u'\uE051';
+const char16_t kWebDriverRightAltKey = u'\uE052';
+const char16_t kWebDriverRightCommandKey = u'\uE053';
 
 // Returns whether the given key code has a corresponding printable char.
 // Notice: The given key code should be a special WebDriver key code.

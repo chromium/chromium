@@ -45,8 +45,7 @@ struct ComponentResult {
 };
 
 ComponentResult IDNToUnicodeOneComponent(
-    const char16_t* comp,
-    size_t comp_len,
+    base::StringPiece16 comp,
     base::StringPiece top_level_domain,
     base::StringPiece16 top_level_domain_unicode,
     bool ignore_spoof_check_results,
@@ -251,9 +250,9 @@ void GetTopLevelDomain(base::StringPiece host,
 
   // Convert the TLD to unicode, ignoring the spoof check results. This will
   // always decode the input to unicode as long as it's valid punycode.
-  IDNToUnicodeOneComponent(
-      tld16.data(), tld16.size(), std::string(), std::u16string(),
-      /*ignore_spoof_check_results=*/true, top_level_domain_unicode);
+  IDNToUnicodeOneComponent(tld16, std::string(), std::u16string(),
+                           /*ignore_spoof_check_results=*/true,
+                           top_level_domain_unicode);
 }
 
 IDNConversionResult IDNToUnicodeWithAdjustmentsImpl(
@@ -288,7 +287,7 @@ IDNConversionResult IDNToUnicodeWithAdjustmentsImpl(
     if (component_end > component_start) {
       // Add the substring that we just found.
       component_result = IDNToUnicodeOneComponent(
-          host16.data() + component_start, component_length, top_level_domain,
+          {host16.data() + component_start, component_length}, top_level_domain,
           top_level_domain_unicode, ignore_spoof_check_results, &out16);
       result.has_idn_component |= component_result.has_idn_component;
       if (component_result.spoof_check_result !=
@@ -402,24 +401,21 @@ base::LazyInstance<UIDNAWrapper>::Leaky g_uidna = LAZY_INSTANCE_INITIALIZER;
 // if conversion was made. Sets |has_idn_component| to true if the input has
 // IDN, regardless of whether it was converted to unicode or not.
 ComponentResult IDNToUnicodeOneComponent(
-    const char16_t* comp,
-    size_t comp_len,
+    base::StringPiece16 comp,
     base::StringPiece top_level_domain,
     base::StringPiece16 top_level_domain_unicode,
     bool ignore_spoof_check_results,
     std::u16string* out) {
   DCHECK(out);
   ComponentResult result;
-  if (comp_len == 0)
+  if (comp.empty())
     return result;
 
   // Early return if the input cannot be an IDN component.
   // Valid punycode must not end with a dash.
-  static const char16_t kIdnPrefix[] = {'x', 'n', '-', '-'};
-  if (comp_len <= base::size(kIdnPrefix) ||
-      memcmp(comp, kIdnPrefix, sizeof(kIdnPrefix)) != 0 ||
-      comp[comp_len - 1] == '-') {
-    out->append(comp, comp_len);
+  static constexpr char16_t kIdnPrefix[] = u"xn--";
+  if (!base::StartsWith(comp, kIdnPrefix) || comp.back() == '-') {
+    out->append(comp.data(), comp.size());
     return result;
   }
 
@@ -436,8 +432,8 @@ ComponentResult IDNToUnicodeOneComponent(
     // code units, |status| will be U_BUFFER_OVERFLOW_ERROR and we'll try
     // the conversion again, but with a sufficiently large buffer.
     output_length = uidna_labelToUnicode(
-        uidna, comp, static_cast<int32_t>(comp_len), &(*out)[original_length],
-        output_length, &info, &status);
+        uidna, comp.data(), static_cast<int32_t>(comp.size()),
+        &(*out)[original_length], output_length, &info, &status);
   } while ((status == U_BUFFER_OVERFLOW_ERROR && info.errors == 0));
 
   if (U_SUCCESS(status) && info.errors == 0) {
@@ -462,7 +458,7 @@ ComponentResult IDNToUnicodeOneComponent(
   // We get here with no IDN or on error, in which case we just revert to
   // original string and append the literal input.
   out->resize(original_length);
-  out->append(comp, comp_len);
+  out->append(comp.data(), comp.size());
   return result;
 }
 

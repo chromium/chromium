@@ -755,7 +755,7 @@ TEST_F(SearchProviderTest, QueryKeywordProvider) {
   EXPECT_FALSE(match.keyword.empty());
 
   // The fill into edit should contain the keyword.
-  EXPECT_EQ(keyword_t_url_->keyword() + char16_t(' ') + keyword_term_,
+  EXPECT_EQ(keyword_t_url_->keyword() + u' ' + keyword_term_,
             match.fill_into_edit);
 }
 

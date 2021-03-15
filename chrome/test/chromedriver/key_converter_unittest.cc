@@ -129,8 +129,7 @@ TEST(KeyConverter, WebDriverSpecialChar) {
   KeyEventBuilder builder;
   std::vector<KeyEvent> key_events;
   builder.SetKeyCode(ui::VKEY_SPACE)->SetText(" ", " ")->Generate(&key_events);
-  std::u16string keys;
-  keys.push_back(static_cast<char16_t>(0xE00DU));
+  std::u16string keys = u"\uE00D";
   CheckEventsReleaseModifiers(keys, key_events);
 }
 
@@ -138,8 +137,7 @@ TEST(KeyConverter, WebDriverSpecialNonCharKey) {
   KeyEventBuilder builder;
   std::vector<KeyEvent> key_events;
   builder.SetKeyCode(ui::VKEY_F1)->Generate(&key_events);
-  std::u16string keys;
-  keys.push_back(static_cast<char16_t>(0xE031U));
+  std::u16string keys = u"\uE031";
   CheckEventsReleaseModifiers(keys, key_events);
 }
 
@@ -222,9 +220,7 @@ TEST(KeyConverter, UppercaseCharUsesShiftOnlyIfNecessary) {
   builder.SetKeyCode(ui::VKEY_C)->SetText("c", "C")->Generate(&key_events);
   key_events.push_back(
       shift_builder.SetType(kKeyUpEventType)->SetModifiers(0)->Build());
-  std::u16string keys;
-  keys.push_back(static_cast<char16_t>(0xE008U));
-  keys.append(base::UTF8ToUTF16("aBc"));
+  std::u16string keys = u"\uE008aBc";
   CheckEventsReleaseModifiers(keys, key_events);
 }
 
@@ -255,15 +251,7 @@ TEST(KeyConverter, ToggleModifiers) {
                            ->Build());
   key_events.push_back(
       builder.SetType(kKeyUpEventType)->SetModifiers(0)->Build());
-  std::u16string keys;
-  keys.push_back(static_cast<char16_t>(0xE008U));
-  keys.push_back(static_cast<char16_t>(0xE008U));
-  keys.push_back(static_cast<char16_t>(0xE009U));
-  keys.push_back(static_cast<char16_t>(0xE009U));
-  keys.push_back(static_cast<char16_t>(0xE00AU));
-  keys.push_back(static_cast<char16_t>(0xE00AU));
-  keys.push_back(static_cast<char16_t>(0xE03DU));
-  keys.push_back(static_cast<char16_t>(0xE03DU));
+  std::u16string keys = u"\uE008\uE008\uE009\uE009\uE00A\uE00A\uE03D\uE03D";
   CheckEventsReleaseModifiers(keys, key_events);
 }
 
@@ -365,7 +353,7 @@ TEST(KeyConverter, AllSpecialWebDriverKeysOnEnglishKeyboard) {
       continue;
     std::u16string keys;
     int modifiers = 0;
-    keys.push_back(0xE000U + i);
+    keys.push_back(u'\uE000' + i);
     std::vector<KeyEvent> events;
     EXPECT_EQ(kOk, ConvertKeysToKeyEvents(keys,
                                           true /* release_modifiers */,
@@ -403,11 +391,7 @@ TEST(KeyConverter, ModifiersState) {
                            ->AddModifiers(kMetaKeyModifierMask)
                            ->Build());
 
-  std::u16string keys;
-  keys.push_back(static_cast<char16_t>(0xE008U));
-  keys.push_back(static_cast<char16_t>(0xE009U));
-  keys.push_back(static_cast<char16_t>(0xE00AU));
-  keys.push_back(static_cast<char16_t>(0xE03DU));
+  std::u16string keys = u"\uE008\uE009\uE00A\uE03D";
 
   CheckEvents(keys, key_events, false /* release_modifiers */,
               kShiftKeyModifierMask | kControlKeyModifierMask |
@@ -429,9 +413,7 @@ TEST(KeyConverter, ReleaseModifiers) {
                            ->SetModifiers(0)
                            ->Build());
   key_events.push_back(builder.SetKeyCode(ui::VKEY_CONTROL)->Build());
-  std::u16string keys;
-  keys.push_back(static_cast<char16_t>(0xE008U));
-  keys.push_back(static_cast<char16_t>(0xE009U));
+  std::u16string keys = u"\uE008\uE009";
 
   CheckEvents(keys, key_events, true /* release_modifiers */, 0);
 }

@@ -47,12 +47,14 @@ namespace autofill {
 using structured_address::VerificationStatus;
 
 // Unicode characters used in card number obfuscation:
-//  - 0x2022 - Bullet.
-//  - 0x2006 - SIX-PER-EM SPACE (small space between bullets).
-//  - 0x2060 - WORD-JOINER (makes obfuscated string undivisible).
-const char16_t kMidlineEllipsis[] = {
-    0x2022, 0x2060, 0x2006, 0x2060, 0x2022, 0x2060, 0x2006, 0x2060, 0x2022,
-    0x2060, 0x2006, 0x2060, 0x2022, 0x2060, 0x2006, 0x2060, 0};
+//  - \u2022 - Bullet.
+//  - \u2006 - SIX-PER-EM SPACE (small space between bullets).
+//  - \u2060 - WORD-JOINER (makes obfuscated string undivisible).
+constexpr char16_t kMidlineEllipsis[] =
+    u"\u2022\u2060\u2006\u2060"
+    u"\u2022\u2060\u2006\u2060"
+    u"\u2022\u2060\u2006\u2060"
+    u"\u2022\u2060\u2006\u2060";
 
 namespace {
 

@@ -13,6 +13,7 @@
 #include <vector>
 
 #include "base/optional.h"
+#include "base/strings/char_traits.h"
 #include "build/build_config.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/accessibility/ax_export.h"
@@ -37,14 +38,11 @@ class AX_EXPORT AXNode final {
   // actual text contents. Also on the same platforms, if a node has only
   // ignored descendants, i.e., it appears to be empty to assistive software, we
   // need to treat it as a character and a word boundary.
-  //
-  // Note that we cannot use L"..." because it works correctly only on Windows.
-  // TODO(nektar): Consider using UTF8 encoding instead, "\xEF\xBF\xBC".
-  static constexpr char16_t kEmbeddedCharacter[] = {0xFFFC, 0x0000};
+  static constexpr char16_t kEmbeddedCharacter[] = u"\uFFFC";
   // We compute the embedded character's length instead of manually typing it in
   // order to avoid the two variables getting out of sync in a future update.
   static constexpr int kEmbeddedCharacterLength =
-      int{sizeof(kEmbeddedCharacter) / sizeof(char16_t) - 1};
+      base::CharTraits<char16_t>::length(kEmbeddedCharacter);
 
   // Interface to the tree class that owns an AXNode. We use this instead
   // of letting AXNode have a pointer to its AXTree directly so that we're

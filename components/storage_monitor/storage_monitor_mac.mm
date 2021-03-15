@@ -41,7 +41,7 @@ std::u16string JoinName(const std::u16string& name,
     return name;
   if (name.empty())
     return addition;
-  return name + static_cast<char16_t>(' ') + addition;
+  return name + u' ' + addition;
 }
 
 StorageInfo::Type GetDeviceType(bool is_removable, bool has_dcim) {

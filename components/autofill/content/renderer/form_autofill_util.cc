@@ -1413,13 +1413,13 @@ bool FormOrFieldsetsToFormData(
   // Since the term |stop_words| is a known text processing concept we use here
   // it to refer to such characters. They are not to be confused with words.
   std::vector<char16_t> stop_words;
-  stop_words.push_back(static_cast<char16_t>(' '));
-  stop_words.push_back(static_cast<char16_t>('*'));
-  stop_words.push_back(static_cast<char16_t>(':'));
-  stop_words.push_back(static_cast<char16_t>('-'));
-  stop_words.push_back(static_cast<char16_t>(L'\u2013'));
-  stop_words.push_back(static_cast<char16_t>('('));
-  stop_words.push_back(static_cast<char16_t>(')'));
+  stop_words.push_back(u' ');
+  stop_words.push_back(u'*');
+  stop_words.push_back(u':');
+  stop_words.push_back(u'-');
+  stop_words.push_back(u'–');  // U+2013
+  stop_words.push_back(u'(');
+  stop_words.push_back(u')');
 
   // Loop through the form control elements, extracting the label text from
   // the DOM.  We use the |fields_extracted| vector to make sure we assign the

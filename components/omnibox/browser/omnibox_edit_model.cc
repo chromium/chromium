@@ -1601,7 +1601,7 @@ std::u16string OmniboxEditModel::MaybeStripKeyword(
 
 std::u16string OmniboxEditModel::MaybePrependKeyword(
     const std::u16string& text) const {
-  return is_keyword_selected() ? (keyword_ + char16_t(' ') + text) : text;
+  return is_keyword_selected() ? (keyword_ + u' ' + text) : text;
 }
 
 void OmniboxEditModel::GetInfoForCurrentText(AutocompleteMatch* match,

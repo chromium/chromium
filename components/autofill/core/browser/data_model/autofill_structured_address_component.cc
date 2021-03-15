@@ -600,10 +600,6 @@ std::u16string AddressComponent::ReplacePlaceholderTypesWithValues(
   //
   // * If the corresponding value is empty, return false.
 
-  auto control_parmater = base::ASCIIToUTF16("$").at(0);
-  auto control_parmater_open_delimitor = base::ASCIIToUTF16("{").at(0);
-  auto control_parmater_close_delimitor = base::ASCIIToUTF16("}").at(0);
-
   // Create a result vector for the tokens that are joined in the end.
   std::vector<base::StringPiece16> result_pieces;
 
@@ -621,8 +617,8 @@ std::u16string AddressComponent::ReplacePlaceholderTypesWithValues(
 
   for (size_t i = 0; i < format_piece.size(); ++i) {
     // Check if a control sequence is started by '${'
-    if (format_piece[i] == control_parmater && i < format_piece.size() - 1 &&
-        format_piece[i + 1] == control_parmater_open_delimitor) {
+    if (format_piece[i] == u'$' && i < format_piece.size() - 1 &&
+        format_piece[i + 1] == u'{') {
       // A control sequence is started.
       started_control_sequence = true;
       // Append the preceding string since it can't be a valid placeholder.
@@ -632,8 +628,7 @@ std::u16string AddressComponent::ReplacePlaceholderTypesWithValues(
       }
       processed_until_index = i;
       ++i;
-    } else if (started_control_sequence &&
-               format_piece[i] == control_parmater_close_delimitor) {
+    } else if (started_control_sequence && format_piece[i] == u'}') {
       // The control sequence came to an end.
       started_control_sequence = false;
       size_t placeholder_start = processed_until_index + 2;

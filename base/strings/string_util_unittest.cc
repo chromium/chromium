@@ -640,12 +640,9 @@ TEST(StringUtilTest, ToLowerASCII) {
   EXPECT_EQ('c', ToLowerASCII('c'));
   EXPECT_EQ('2', ToLowerASCII('2'));
 
-  EXPECT_EQ(static_cast<char16_t>('c'),
-            ToLowerASCII(static_cast<char16_t>('C')));
-  EXPECT_EQ(static_cast<char16_t>('c'),
-            ToLowerASCII(static_cast<char16_t>('c')));
-  EXPECT_EQ(static_cast<char16_t>('2'),
-            ToLowerASCII(static_cast<char16_t>('2')));
+  EXPECT_EQ(u'c', ToLowerASCII(u'C'));
+  EXPECT_EQ(u'c', ToLowerASCII(u'c'));
+  EXPECT_EQ(u'2', ToLowerASCII(u'2'));
 
   EXPECT_EQ("cc2", ToLowerASCII("Cc2"));
   EXPECT_EQ(ASCIIToUTF16("cc2"), ToLowerASCII(ASCIIToUTF16("Cc2")));
@@ -656,12 +653,9 @@ TEST(StringUtilTest, ToUpperASCII) {
   EXPECT_EQ('C', ToUpperASCII('c'));
   EXPECT_EQ('2', ToUpperASCII('2'));
 
-  EXPECT_EQ(static_cast<char16_t>('C'),
-            ToUpperASCII(static_cast<char16_t>('C')));
-  EXPECT_EQ(static_cast<char16_t>('C'),
-            ToUpperASCII(static_cast<char16_t>('c')));
-  EXPECT_EQ(static_cast<char16_t>('2'),
-            ToUpperASCII(static_cast<char16_t>('2')));
+  EXPECT_EQ(u'C', ToUpperASCII(u'C'));
+  EXPECT_EQ(u'C', ToUpperASCII(u'c'));
+  EXPECT_EQ(u'2', ToUpperASCII(u'2'));
 
   EXPECT_EQ("CC2", ToUpperASCII("Cc2"));
   EXPECT_EQ(ASCIIToUTF16("CC2"), ToUpperASCII(ASCIIToUTF16("Cc2")));
