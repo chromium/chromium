@@ -5,22 +5,16 @@
 #ifndef CHROME_BROWSER_UI_WEBUI_FEEDBACK_FEEDBACK_DIALOG_H_
 #define CHROME_BROWSER_UI_WEBUI_FEEDBACK_FEEDBACK_DIALOG_H_
 
+#include <memory>
 #include <string>
 #include <vector>
 
+#include "extensions/common/api/feedback_private.h"
 #include "ui/web_dialogs/web_dialog_delegate.h"
 
 namespace views {
 class Widget;
 }
-
-namespace extensions {
-namespace api {
-namespace feedback_private {
-struct FeedbackInfo;
-}
-}  // namespace api
-}  // namespace extensions
 
 class FeedbackDialog : public ui::WebDialogDelegate {
  public:
@@ -39,10 +33,10 @@ class FeedbackDialog : public ui::WebDialogDelegate {
   ui::ModalType GetDialogModalType() const override;
   std::u16string GetDialogTitle() const override;
   GURL GetDialogContentURL() const override;
-  void GetWebUIMessageHandlers(
-      std::vector<content::WebUIMessageHandler*>* handlers) const override;
   void GetDialogSize(gfx::Size* size) const override;
   std::string GetDialogArgs() const override;
+  void GetWebUIMessageHandlers(
+      std::vector<content::WebUIMessageHandler*>* handlers) const override;
   void OnDialogClosed(const std::string& json_retval) override;
   void OnCloseContents(content::WebContents* source,
                        bool* out_close_dialog) override;
@@ -50,6 +44,8 @@ class FeedbackDialog : public ui::WebDialogDelegate {
   bool ShouldShowCloseButton() const override;
   ui::WebDialogDelegate::FrameKind GetWebDialogFrameKind() const override;
 
+  std::unique_ptr<base::DictionaryValue> feedbackInfo_;
+  extensions::api::feedback_private::FeedbackFlow feedbackFlow_;
   // Widget for the Feedback WebUI.
   views::Widget* widget_;
   static FeedbackDialog* current_instance_;

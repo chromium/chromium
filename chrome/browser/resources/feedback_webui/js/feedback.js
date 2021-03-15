@@ -9,6 +9,10 @@ import {$} from 'chrome://resources/js/util.m.js';
 import {FEEDBACK_LANDING_PAGE, FEEDBACK_LANDING_PAGE_TECHSTOP, FEEDBACK_LEGAL_HELP_URL, FEEDBACK_PRIVACY_POLICY_URL, FEEDBACK_TERM_OF_SERVICE_URL, openUrlInAppWindow} from './feedback_util.js';
 import {takeScreenshot} from './take_screenshot.js';
 
+
+/** @type {string} */
+const dialogArgs = chrome.getVariableValue('dialogArguments');
+
 /**
  * The object will be manipulated by feedbackHelper
  *
@@ -38,35 +42,6 @@ class FeedbackHelper {
      * @type {boolean}
      */
     this.systemInformationLoaded = false;
-  }
-
-  getFeedbackInfo() {
-    // If the getFeedbackInfo is implemented by a message handler, then the
-    // data returned from it will be used. Otherwise, the default data is used.
-    // Currently, if a user visits chrome://feedback directly, the message
-    // handler will not be available. In this case, we should still allow the
-    // user submit a feedback.
-    return new Promise(
-        resolve => sendWithPromise('getFeedbackInfo')
-                       .then(info => resolve(info))
-                       .catch(() => {
-                         resolve({
-                           assistantDebugInfoAllowed: false,
-                           attachedFile: undefined,
-                           attachedFileBlobUuid: undefined,
-                           categoryTag: undefined,
-                           description: undefined,
-                           descriptionPlaceholder: undefined,
-                           email: undefined,
-                           flow: 'regular',
-                           fromAssistant: false,
-                           includeBluetoothLogs: false,
-                           pageUrl: undefined,
-                           screenshot: {},
-                           systemInformation: [],
-                           useSystemWindowFrame: false,
-                         });
-                       }));
   }
 
   getSystemInformation() {
@@ -694,21 +669,25 @@ function initialize() {
   };
 
   window.addEventListener('DOMContentLoaded', function() {
-    feedbackHelper.getFeedbackInfo().then(function(data) {
-      feedbackInfo = data;
-      applyData(feedbackInfo);
+    if (dialogArgs) {
+      feedbackInfo = /** @type {chrome.feedbackPrivate.FeedbackInfo} */ (
+          JSON.parse(dialogArgs));
+    }
+    applyData(feedbackInfo);
 
-      // Setup our event handlers.
-      $('attach-file').addEventListener('change', onFileSelected);
-      $('attach-file').addEventListener('click', onOpenFileDialog);
-      $('send-report-button').onclick = sendReport;
-      $('cancel-button').onclick = cancel;
-      $('remove-attached-file').onclick = clearAttachedFile;
-      // <if expr="chromeos">
-      $('performance-info-checkbox')
-          .addEventListener('change', performanceFeedbackChanged);
-      // </if>
-    });
+    window.feedbackInfo = feedbackInfo;
+    window.feedbackHelper = feedbackHelper;
+
+    // Setup our event handlers.
+    $('attach-file').addEventListener('change', onFileSelected);
+    $('attach-file').addEventListener('click', onOpenFileDialog);
+    $('send-report-button').onclick = sendReport;
+    $('cancel-button').onclick = cancel;
+    $('remove-attached-file').onclick = clearAttachedFile;
+    // <if expr="chromeos">
+    $('performance-info-checkbox')
+        .addEventListener('change', performanceFeedbackChanged);
+    // </if>
   });
 }
 

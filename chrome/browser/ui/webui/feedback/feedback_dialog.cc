@@ -7,9 +7,12 @@
 #include <memory>
 #include <utility>
 
+#include "base/json/json_writer.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/browser_dialogs.h"
+#include "chrome/grit/generated_resources.h"
 #include "content/public/browser/browser_thread.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/views/widget/widget.h"
 #include "url/gurl.h"
 
@@ -24,13 +27,15 @@ const int kDefaultHeight = 628;
 
 }  // namespace
 
+using extensions::api::feedback_private::FEEDBACK_FLOW_SADTABCRASH;
 using extensions::api::feedback_private::FeedbackInfo;
 
 // static
 FeedbackDialog* FeedbackDialog::current_instance_ = nullptr;
 
 // static
-void FeedbackDialog::CreateOrShow(const FeedbackInfo& info) {
+void FeedbackDialog::CreateOrShow(
+    const extensions::api::feedback_private::FeedbackInfo& info) {
   // Focus the window hosting the dialog that has already been created.
   if (current_instance_) {
     DCHECK(current_instance_->widget_);
@@ -40,12 +45,15 @@ void FeedbackDialog::CreateOrShow(const FeedbackInfo& info) {
 
   current_instance_ = new FeedbackDialog(info);
   gfx::NativeWindow window = chrome::ShowWebDialog(
-      nullptr /* parent */, ProfileManager::GetActiveUserProfile(),
-      current_instance_);
+      nullptr, ProfileManager::GetActiveUserProfile(), current_instance_);
   current_instance_->widget_ = views::Widget::GetWidgetForNativeWindow(window);
 }
 
-FeedbackDialog::FeedbackDialog(const FeedbackInfo& info) : widget_(nullptr) {
+FeedbackDialog::FeedbackDialog(
+    const extensions::api::feedback_private::FeedbackInfo& info)
+    : feedbackInfo_(info.ToValue()),
+      feedbackFlow_(info.flow),
+      widget_(nullptr) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   set_can_resize(false);
   set_can_minimize(true);
@@ -61,22 +69,29 @@ ui::ModalType FeedbackDialog::GetDialogModalType() const {
 }
 
 std::u16string FeedbackDialog::GetDialogTitle() const {
-  return std::u16string();
+  return l10n_util::GetStringUTF16(
+      (feedbackFlow_ == FEEDBACK_FLOW_SADTABCRASH)
+          ? IDS_FEEDBACK_REPORT_PAGE_TITLE_SAD_TAB_FLOW
+          : IDS_FEEDBACK_REPORT_PAGE_TITLE);
 }
 
 GURL FeedbackDialog::GetDialogContentURL() const {
   return GURL("chrome://feedback");
 }
 
-void FeedbackDialog::GetWebUIMessageHandlers(
-    std::vector<WebUIMessageHandler*>* handlers) const {}
-
 void FeedbackDialog::GetDialogSize(gfx::Size* size) const {
   size->SetSize(kDefaultWidth, kDefaultHeight);
 }
 
+void FeedbackDialog::GetWebUIMessageHandlers(
+    std::vector<WebUIMessageHandler*>* handlers) const {}
+
+// The feedbackInfo will be available to JS via
+// chrome.getVariableValue('dialogArguments')
 std::string FeedbackDialog::GetDialogArgs() const {
-  return std::string();
+  std::string data;
+  base::JSONWriter::Write(*feedbackInfo_, &data);
+  return data;
 }
 
 void FeedbackDialog::OnDialogClosed(const std::string& json_retval) {
