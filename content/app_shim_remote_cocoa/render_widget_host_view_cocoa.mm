@@ -210,13 +210,17 @@ void ExtractUnderlines(NSAttributedString* string,
 @synthesize textInputFlags = _textInputFlags;
 @synthesize spellCheckerForTesting = _spellCheckerForTesting;
 
++ (void)initialize {
+  RenderWidgetHostViewMacEditCommandHelper::AddEditingSelectorsToClass(self);
+}
+
 - (id)initWithHost:(RenderWidgetHostNSViewHost*)host
     withHostHelper:(RenderWidgetHostNSViewHostHelper*)hostHelper {
   self = [super initWithFrame:NSZeroRect];
   if (self) {
     self.acceptsTouchEvents = YES;
-    _editCommandHelper.reset(new RenderWidgetHostViewMacEditCommandHelper);
-    _editCommandHelper->AddEditingSelectorsToClass([self class]);
+    _editCommandHelper =
+        std::make_unique<RenderWidgetHostViewMacEditCommandHelper>();
 
     _host = host;
     _hostHelper = hostHelper;

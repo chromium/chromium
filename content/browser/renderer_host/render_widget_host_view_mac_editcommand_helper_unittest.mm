@@ -163,13 +163,14 @@ TEST_F(RenderWidgetHostViewMacEditCommandHelperWithTaskEnvTest,
     base::scoped_nsobject<RenderWidgetHostViewCocoa> rwhv_cocoa(
         [rwhv_mac->GetInProcessNSView() retain]);
 
-    RenderWidgetHostViewMacEditCommandHelper helper;
-    NSArray* edit_command_strings = helper.GetEditSelectorNames();
+    NSArray* edit_command_strings = RenderWidgetHostViewMacEditCommandHelper::
+        GetEditSelectorNamesForTesting();
     RenderWidgetHostNSViewHostOwner* rwhwvm_owner =
         [[[RenderWidgetHostNSViewHostOwner alloc]
             initWithRenderWidgetHostViewMac:rwhv_mac] autorelease];
 
-    helper.AddEditingSelectorsToClass([rwhwvm_owner class]);
+    RenderWidgetHostViewMacEditCommandHelper::AddEditingSelectorsToClass(
+        [rwhwvm_owner class]);
 
     for (NSString* edit_command_name in edit_command_strings) {
       NSString* sel_str = [edit_command_name stringByAppendingString:@":"];
@@ -189,7 +190,8 @@ TEST_F(RenderWidgetHostViewMacEditCommandHelperWithTaskEnvTest,
 TEST_F(RenderWidgetHostViewMacEditCommandHelperTest,
        TestAddEditingSelectorsToClass) {
   RenderWidgetHostViewMacEditCommandHelper helper;
-  NSArray* edit_command_strings = helper.GetEditSelectorNames();
+  NSArray* edit_command_strings = RenderWidgetHostViewMacEditCommandHelper::
+      GetEditSelectorNamesForTesting();
   ASSERT_GT([edit_command_strings count], 0U);
 
   // Create a class instance and add methods to the class.
@@ -201,14 +203,16 @@ TEST_F(RenderWidgetHostViewMacEditCommandHelperTest,
   ASSERT_FALSE(CheckObjectRespondsToEditCommands(edit_command_strings,
       test_obj));
 
-  helper.AddEditingSelectorsToClass([test_obj class]);
+  RenderWidgetHostViewMacEditCommandHelper::AddEditingSelectorsToClass(
+      [test_obj class]);
 
   // Check that all edit commands where added.
   ASSERT_TRUE(CheckObjectRespondsToEditCommands(edit_command_strings,
       test_obj));
 
   // AddEditingSelectorsToClass() should be idempotent.
-  helper.AddEditingSelectorsToClass([test_obj class]);
+  RenderWidgetHostViewMacEditCommandHelper::AddEditingSelectorsToClass(
+      [test_obj class]);
 
   // Check that all edit commands are still there.
   ASSERT_TRUE(CheckObjectRespondsToEditCommands(edit_command_strings,
