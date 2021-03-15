@@ -79,54 +79,36 @@ class SensorProviderImpl;
 class TimeZoneMonitor;
 class GeolocationSystemPermissionManager;
 
-#if defined(OS_ANDROID)
 // NOTE: See the comments on the definitions of PublicIpAddressLocationNotifier,
 // |WakeLockContextCallback|, |CustomLocationProviderCallback| and
 // NFCDelegate.java to understand the semantics and usage of these parameters.
+struct DeviceServiceParams {
+  DeviceServiceParams();
+  ~DeviceServiceParams();
+
+  scoped_refptr<base::SingleThreadTaskRunner> file_task_runner;
+  scoped_refptr<base::SingleThreadTaskRunner> io_task_runner;
+  scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory;
+  network::NetworkConnectionTracker* network_connection_tracker = nullptr;
+  std::string geolocation_api_key;
+  CustomLocationProviderCallback custom_location_provider_callback;
+  bool use_gms_core_location_provider = false;
+  GeolocationSystemPermissionManager* location_permission_manager = nullptr;
+  WakeLockContextCallback wake_lock_context_callback;
+
+#if defined(OS_ANDROID)
+  base::android::ScopedJavaGlobalRef<jobject> java_nfc_delegate;
+#endif  // defined(OS_ANDROID)
+};
+
 std::unique_ptr<DeviceService> CreateDeviceService(
-    scoped_refptr<base::SingleThreadTaskRunner> file_task_runner,
-    scoped_refptr<base::SingleThreadTaskRunner> io_task_runner,
-    scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
-    network::NetworkConnectionTracker* network_connection_tracker,
-    const std::string& geolocation_api_key,
-    bool use_gms_core_location_provider,
-    const WakeLockContextCallback& wake_lock_context_callback,
-    const CustomLocationProviderCallback& custom_location_provider_callback,
-    const base::android::JavaRef<jobject>& java_nfc_delegate,
+    std::unique_ptr<DeviceServiceParams> params,
     mojo::PendingReceiver<mojom::DeviceService> receiver);
-#else
-std::unique_ptr<DeviceService> CreateDeviceService(
-    scoped_refptr<base::SingleThreadTaskRunner> file_task_runner,
-    scoped_refptr<base::SingleThreadTaskRunner> io_task_runner,
-    scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
-    network::NetworkConnectionTracker* network_connection_tracker,
-    const std::string& geolocation_api_key,
-    GeolocationSystemPermissionManager* location_permission_manager,
-    const CustomLocationProviderCallback& custom_location_provider_callback,
-    mojo::PendingReceiver<mojom::DeviceService> receiver);
-#endif
 
 class DeviceService : public mojom::DeviceService {
  public:
-#if defined(OS_ANDROID)
-  DeviceService(
-      scoped_refptr<base::SingleThreadTaskRunner> file_task_runner,
-      scoped_refptr<base::SingleThreadTaskRunner> io_task_runner,
-      scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
-      network::NetworkConnectionTracker* network_connection_tracker,
-      const std::string& geolocation_api_key,
-      const WakeLockContextCallback& wake_lock_context_callback,
-      const base::android::JavaRef<jobject>& java_nfc_delegate,
-      mojo::PendingReceiver<mojom::DeviceService> receiver);
-#else
-  DeviceService(
-      scoped_refptr<base::SingleThreadTaskRunner> file_task_runner,
-      scoped_refptr<base::SingleThreadTaskRunner> io_task_runner,
-      scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
-      network::NetworkConnectionTracker* network_connection_tracker,
-      const std::string& geolocation_api_key,
-      mojo::PendingReceiver<mojom::DeviceService> receiver);
-#endif
+  DeviceService(std::unique_ptr<DeviceServiceParams> params,
+                mojo::PendingReceiver<mojom::DeviceService> receiver);
   ~DeviceService() override;
 
   void AddReceiver(mojo::PendingReceiver<mojom::DeviceService> receiver);
@@ -235,7 +217,7 @@ class DeviceService : public mojom::DeviceService {
   service_manager::InterfaceProvider java_interface_provider_{
       base::ThreadTaskRunnerHandle::Get()};
 
-  bool java_interface_provider_initialized_;
+  bool java_interface_provider_initialized_ = false;
 
   base::android::ScopedJavaGlobalRef<jobject> java_nfc_delegate_;
 #else

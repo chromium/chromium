@@ -75,7 +75,7 @@ class GeolocationProviderImpl : public GeolocationProvider,
       const std::string& api_key,
       const CustomLocationProviderCallback& custom_location_provider_getter,
       GeolocationSystemPermissionManager* system_permission_manager,
-      bool use_gms_core_location_provider = false);
+      bool use_gms_core_location_provider);
 
   void BindGeolocationControlReceiver(
       mojo::PendingReceiver<mojom::GeolocationControl> receiver);

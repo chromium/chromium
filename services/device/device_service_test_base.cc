@@ -36,21 +36,18 @@ std::unique_ptr<DeviceService> CreateTestDeviceService(
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
     mojo::PendingReceiver<mojom::DeviceService> receiver,
     GeolocationSystemPermissionManager* location_permission_manager) {
-#if defined(OS_ANDROID)
-  return CreateDeviceService(
-      file_task_runner, io_task_runner, url_loader_factory,
-      network::TestNetworkConnectionTracker::GetInstance(),
-      kTestGeolocationApiKey, false, WakeLockContextCallback(),
-      base::BindRepeating(&GetCustomLocationProviderForTest), nullptr,
-      std::move(receiver));
-#else
-  return CreateDeviceService(
-      file_task_runner, io_task_runner, url_loader_factory,
-      network::TestNetworkConnectionTracker::GetInstance(),
-      kTestGeolocationApiKey, location_permission_manager,
-      base::BindRepeating(&GetCustomLocationProviderForTest),
-      std::move(receiver));
-#endif
+  auto params = std::make_unique<DeviceServiceParams>();
+  params->file_task_runner = std::move(file_task_runner);
+  params->io_task_runner = std::move(io_task_runner);
+  params->url_loader_factory = std::move(url_loader_factory);
+  params->network_connection_tracker =
+      network::TestNetworkConnectionTracker::GetInstance();
+  params->geolocation_api_key = kTestGeolocationApiKey;
+  params->custom_location_provider_callback =
+      base::BindRepeating(&GetCustomLocationProviderForTest);
+  params->location_permission_manager = location_permission_manager;
+
+  return CreateDeviceService(std::move(params), std::move(receiver));
 }
 
 }  // namespace
