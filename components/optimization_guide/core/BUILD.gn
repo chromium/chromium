@@ -66,7 +66,10 @@ static_library("core") {
     "url_pattern_with_wildcards.h",
   ]
 
-  public_deps = [ "//third_party/re2" ]
+  public_deps = [
+    "//components/optimization_guide:machine_learning_tflite_buildflags",
+    "//third_party/re2",
+  ]
 
   deps = [
     "//base",

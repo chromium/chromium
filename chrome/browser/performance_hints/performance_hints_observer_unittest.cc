@@ -63,7 +63,9 @@ class PerformanceHintsObserverTest : public ChromeRenderViewHostTestHarness {
          // Need to enable kOptimizationHints or GetForProfile will return
          // nullptr.
          optimization_guide::features::kOptimizationHints},
-        {});
+
+        {// Need to disable model downloading for these tests.
+         optimization_guide::features::kOptimizationGuideModelDownloading});
   }
   ~PerformanceHintsObserverTest() override = default;
 

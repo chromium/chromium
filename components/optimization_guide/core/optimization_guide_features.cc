@@ -13,6 +13,7 @@
 #include "build/build_config.h"
 #include "components/optimization_guide/core/optimization_guide_constants.h"
 #include "components/optimization_guide/core/optimization_guide_switches.h"
+#include "components/optimization_guide/machine_learning_tflite_buildflags.h"
 #include "components/variations/hashing.h"
 #include "google_apis/google_api_keys.h"
 #include "net/base/url_util.h"
@@ -62,7 +63,13 @@ const base::Feature kOptimizationTargetPrediction{
 
 // Enables the downloading of models.
 const base::Feature kOptimizationGuideModelDownloading{
-    "OptimizationGuideModelDownloading", base::FEATURE_DISABLED_BY_DEFAULT};
+  "OptimizationGuideModelDownloading",
+#if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
+      base::FEATURE_ENABLED_BY_DEFAULT
+#else   // BUILD_WITH_TFLITE_LIB
+      base::FEATURE_DISABLED_BY_DEFAULT
+#endif  // !BUILD_WITH_TFLITE_LIB
+};
 
 // Enables page content to be annotated.
 const base::Feature kPageContentAnnotations{"PageContentAnnotations",
