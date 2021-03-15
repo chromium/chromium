@@ -61,6 +61,17 @@ void LayoutShiftNormalization::AddNewLayoutShifts(
   recent_layout_shifts_.erase(recent_layout_shifts_.begin(), first_non_stale);
 }
 
+void LayoutShiftNormalization::ClearAllLayoutShifts() {
+  normalized_cls_data_ = NormalizedCLSData();
+  recent_layout_shifts_.clear();
+  sliding_300ms_.clear();
+  sliding_1000ms_.clear();
+  session_gap1000ms_max5000ms_ = SessionWindow();
+  session_gap1000ms_ = SessionWindow();
+  session_gap5000ms_ = SessionWindow();
+  session_gap5000ms_count_ = 0;
+}
+
 void LayoutShiftNormalization::UpdateSlidingWindow(
     std::vector<SlidingWindow>* sliding_windows,
     base::TimeDelta duration,

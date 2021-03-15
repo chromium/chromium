@@ -185,8 +185,12 @@ class PageLoadMetricsUpdateDispatcher {
     return *(subframe_metadata_.get());
   }
   const PageRenderData& page_render_data() const { return page_render_data_; }
-  const NormalizedCLSData& normalized_cls_data() const {
-    return layout_shift_normalization_.normalized_cls_data();
+  const NormalizedCLSData& normalized_cls_data(
+      PageLoadMetricsObserverDelegate::BfcacheStrategy bfcache_strategy) const {
+    return bfcache_strategy ==
+                   PageLoadMetricsObserverDelegate::BfcacheStrategy::RESET
+               ? layout_shift_normalization_for_bfcache_.normalized_cls_data()
+               : layout_shift_normalization_.normalized_cls_data();
   }
   const PageRenderData& main_frame_render_data() const {
     return main_frame_render_data_;
@@ -197,7 +201,11 @@ class PageLoadMetricsUpdateDispatcher {
   const blink::MobileFriendliness& mobile_friendliness() const {
     return mobile_friendliness_;
   }
-
+  void UpdateLayoutShiftNormalizationForBfcache() {
+    cumulative_layout_shift_score_for_bfcache_ =
+        page_render_data_.layout_shift_score;
+    layout_shift_normalization_for_bfcache_.ClearAllLayoutShifts();
+  }
   // Ensures all pending updates will get dispatched.
   void FlushPendingTimingUpdates();
 
@@ -290,6 +298,10 @@ class PageLoadMetricsUpdateDispatcher {
       frame_intersection_updates_;
 
   LayoutShiftNormalization layout_shift_normalization_;
+  // Layout shift normalization data for bfcache which needs to be reset each
+  // time the page enters the BackForward cache.
+  LayoutShiftNormalization layout_shift_normalization_for_bfcache_;
+  float cumulative_layout_shift_score_for_bfcache_ = 0.0;
 
   // Navigation start offsets for the most recently committed document in each
   // frame.

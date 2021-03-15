@@ -27,6 +27,8 @@ class LayoutShiftNormalization {
       base::TimeTicks current_time,
       /*Whole page CLS*/ double cumulative_layout_shift_score);
 
+  void ClearAllLayoutShifts();
+
  private:
   struct SlidingWindow {
     base::TimeTicks start_time;

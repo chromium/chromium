@@ -49,6 +49,14 @@ class PageLoadMetricsObserverDelegate {
     bool was_in_foreground = false;
   };
 
+  // Distinguishes metric variants by how they react to bfcache events.
+  enum class BfcacheStrategy {
+    // Accumulate the metric over the lifetime of the PageLoadTracker.
+    ACCUMULATE,
+    // Reset the metric when the page enters the bfcache.
+    RESET
+  };
+
   virtual content::WebContents* GetWebContents() const = 0;
 
   // The time the navigation was initiated.
@@ -122,7 +130,8 @@ class PageLoadMetricsObserverDelegate {
   // such as subframe intersections is initialized to defaults.
   virtual const mojom::FrameMetadata& GetSubframeMetadata() const = 0;
   virtual const PageRenderData& GetPageRenderData() const = 0;
-  virtual const NormalizedCLSData& GetNormalizedCLSData() const = 0;
+  virtual const NormalizedCLSData& GetNormalizedCLSData(
+      BfcacheStrategy bfcache_strategy) const = 0;
   // InputTiming data accumulated across all frames.
   virtual const mojom::InputTiming& GetPageInputTiming() const = 0;
   virtual const blink::MobileFriendliness& GetMobileFriendliness() const = 0;
