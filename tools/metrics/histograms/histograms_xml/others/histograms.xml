@@ -3658,6 +3658,16 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="Crypto.TPMSupport" enum="TPMSupport"
+    expires_after="2021-04-01">
+  <owner>agl@chromium.org</owner>
+  <owner>davidben@chromium.org</owner>
+  <summary>
+    Collected on Windows at startup. Records whether a TPM is present and, if
+    so, what the best supported algorithm is.
+  </summary>
+</histogram>
+
 <histogram name="DataPack.Load" enum="DataPackLoadErrors" expires_after="M87">
   <owner>grt@chromium.org</owner>
   <owner>sky@chromium.org</owner>
@@ -16384,15 +16394,6 @@ should be kept until we use this API.  -->
   <summary>
     Reported at boot if the previous boot session was interrupted in the middle
     of a TPM command during the first 30 seconds of uptime.
-  </summary>
-</histogram>
-
-<histogram name="TPM.Support" enum="TPMSupport" expires_after="2021-04-01">
-  <owner>agl@chromium.org</owner>
-  <owner>davidben@chromium.org</owner>
-  <summary>
-    Collected on Windows at startup. Records whether a TPM is present and, if
-    so, what the best supported algorithm is.
   </summary>
 </histogram>
 
