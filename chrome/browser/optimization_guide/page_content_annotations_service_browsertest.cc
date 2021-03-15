@@ -105,8 +105,8 @@ class PageContentAnnotationsServiceBrowserTest : public InProcessBrowserTest {
     category_params->set_min_none_weight(0.8);
     category_params->set_min_category_weight(0.0);
     category_params->set_min_normalized_weight_within_top_n(0.1);
-    // TODO(crbug/1177102): Add Floc-Protected params when test model supports
-    // it.
+    output_params->mutable_floc_protected_params()->set_category_name(
+        "FLOC_PROTECTED");
     page_topics_model_metadata.SerializeToString(any_metadata.mutable_value());
     base::FilePath source_root_dir;
     base::PathService::Get(base::DIR_SOURCE_ROOT, &source_root_dir);
