@@ -300,7 +300,9 @@ V4LocalDatabaseManager::V4LocalDatabaseManager(
                        : base::ThreadPool::CreateSequencedTaskRunner(
                              {base::MayBlock(),
                               base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN})) {
-  RenameOldStoreFiles();
+  task_runner_->PostTask(
+      FROM_HERE, base::BindOnce(&V4LocalDatabaseManager::RenameOldStoreFiles,
+                                weak_factory_.GetWeakPtr()));
 
   DCHECK(!base_path_.empty());
   DCHECK(!list_infos_.empty());
@@ -935,7 +937,6 @@ void V4LocalDatabaseManager::RenameOldStoreFiles() {
     const base::StringPiece& new_name = pair.second;
 
     const base::FilePath old_store_path = base_path_.AppendASCII(old_name);
-
     // Is the old filename also being used for a valid V4Store?
     auto it = std::find_if(
         std::begin(list_infos_), std::end(list_infos_),
@@ -967,9 +968,7 @@ void V4LocalDatabaseManager::RenameOldStoreFiles() {
       continue;
     }
 
-    task_runner_->PostTask(
-        FROM_HERE, base::BindOnce(&V4LocalDatabaseManager::RenameStoreFile,
-                                  old_store_path, new_store_path));
+    RenameStoreFile(old_store_path, new_store_path);
   }
 }
 
@@ -979,7 +978,7 @@ void V4LocalDatabaseManager::RenameStoreFile(const base::FilePath& old_path,
   base::File::Error error = base::File::FILE_OK;
   base::ReplaceFile(old_path, new_path, &error);
 
-  UMA_HISTOGRAM_ENUMERATION(
+  base::UmaHistogramExactLinear(
       "SafeBrowsing.V4Store.RenameStatus" + GetUmaSuffixForStore(new_path),
       -error, -base::File::FILE_ERROR_MAX);
 }
