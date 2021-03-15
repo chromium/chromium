@@ -144,6 +144,10 @@ static const char kDevToolsDeveloperResourceLoadedHistogram[] =
     "DevTools.DeveloperResourceLoaded";
 static const char kDevToolsDeveloperResourceSchemeHistogram[] =
     "DevTools.DeveloperResourceScheme";
+static const char kDevToolsLinearMemoryInspectorRevealedFromHistogram[] =
+    "DevTools.LinearMemoryInspector.RevealedFrom";
+static const char kDevToolsLinearMemoryInspectorTargetHistogram[] =
+    "DevTools.LinearMemoryInspector.Target";
 
 static const char kRemotePageActionInspect[] = "inspect";
 static const char kRemotePageActionReload[] = "reload";
@@ -1327,7 +1331,9 @@ void DevToolsUIBindings::RecordEnumeratedHistogram(const std::string& name,
       name == kDevToolsCssEditorOpenedHistogram ||
       name == kDevToolsIssueCreatedHistogram ||
       name == kDevToolsDeveloperResourceLoadedHistogram ||
-      name == kDevToolsDeveloperResourceSchemeHistogram)
+      name == kDevToolsDeveloperResourceSchemeHistogram ||
+      name == kDevToolsLinearMemoryInspectorRevealedFromHistogram ||
+      name == kDevToolsLinearMemoryInspectorTargetHistogram)
     base::UmaHistogramExactLinear(name, sample, boundary_value);
   else
     frontend_host_->BadMessageReceived();
