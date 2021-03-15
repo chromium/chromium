@@ -73,10 +73,12 @@ class TestDataSourceDelegate : public DataSourceDelegate {
   void OnDndFinished() override {}
   void OnAction(DndAction dnd_action) override {}
   bool CanAcceptDataEventsForSurface(Surface* surface) const override {
-    return true;
+    return can_accept_;
   }
 
   void SetData(std::vector<uint8_t> data) { data_ = std::move(data); }
+
+  bool can_accept_ = true;
 
  private:
   bool cancelled_ = false;
@@ -544,6 +546,32 @@ TEST_F(SeatTest, SetSelection_NullSource) {
   ui::Clipboard::GetForCurrentThread()->ReadAsciiText(
       ui::ClipboardBuffer::kCopyPaste, /*data_dst=*/nullptr, &clipboard);
   EXPECT_EQ(clipboard, "Golden data");
+}
+
+TEST_F(SeatTest, SetSelection_NoFocusedSurface) {
+  TestSeat seat;
+  seat.set_focused_surface(nullptr);
+
+  TestDataSourceDelegate delegate;
+  DataSource source(&delegate);
+  source.Offer("text/plain;charset=utf-8");
+  seat.SetSelection(&source);
+
+  EXPECT_TRUE(delegate.cancelled());
+}
+
+TEST_F(SeatTest, SetSelection_ClientOutOfFocus) {
+  TestSeat seat;
+  Surface focused_surface;
+  seat.set_focused_surface(&focused_surface);
+
+  TestDataSourceDelegate delegate;
+  delegate.can_accept_ = false;
+  DataSource source(&delegate);
+  source.Offer("text/plain;charset=utf-8");
+  seat.SetSelection(&source);
+
+  EXPECT_TRUE(delegate.cancelled());
 }
 
 TEST_F(SeatTest, PressedKeys) {

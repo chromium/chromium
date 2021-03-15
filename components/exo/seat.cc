@@ -124,9 +124,12 @@ void Seat::AbortPendingDragOperation() {
 
 void Seat::SetSelection(DataSource* source) {
   Surface* focused_surface = GetFocusedSurface();
-  DCHECK(focused_surface);
-  if (!source || !source->CanBeDataSourceForCopy(focused_surface))
+  if (!source || !focused_surface ||
+      !source->CanBeDataSourceForCopy(focused_surface)) {
+    if (source)
+      source->Cancelled();
     return;
+  }
 
   if (selection_source_) {
     if (selection_source_->get() == source)
