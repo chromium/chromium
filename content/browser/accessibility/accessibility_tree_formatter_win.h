@@ -24,6 +24,8 @@ class CONTENT_EXPORT AccessibilityTreeFormatterWin
   base::Value BuildTreeForSelector(
       const AXTreeSelector& selector) const override;
 
+  base::Value BuildNode(ui::AXPlatformNodeDelegate* node) const override;
+
  protected:
   void AddDefaultFilters(
       std::vector<AXPropertyFilter>* property_filters) override;

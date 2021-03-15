@@ -1,9 +1,20 @@
-# DumpAccessibilityTreeTest and DumpAccessibilityEventsTest Notes:
+# DumpAccessibility*Test Notes
 
-Both sets of tests use a similar format for files.
+We have several tools for dumping accessibility object and event information:
+
+* DumpAccessibilityTreeTest
+* DumpAccessibilityNodeTest
+* DumpAccessibilityEventsTest
+
+These sets of tests use a similar format for files.
 
 `DumpAccessibilityTree` tests load an HTML file, wait for it to load, then
 dump the accessibility tree.
+
+`DumpAccessibilityNode` tests load an HTML file, wait for it to load, then
+dump a single accessible node whose `class` attribute is `test`. There is
+no support for multiple "test" nodes and the output will be for the first
+match located.
 
 Each test is parameterized to run multiple times.  Most platforms dump in the
 "blink" format (the internal data), and again in a "native" (platform-specific)
@@ -13,7 +24,7 @@ third time.  The test name indicates which test pass was run, e.g.,
 the Windows, Mac, Linux, and Android platforms rename the "native" pass to
 "win", "mac", "linux" and "android", respectively.)
 
-The test output is a compact text representation of the accessibility tree
+The test output is a compact text representation of the accessible node(s)
 for that format, and it should be familiar if you're familiar with the
 accessibility protocol on that platform, but it's not in a standardized
 format - it's just a text dump, meant to be compared to expected output.
@@ -47,6 +58,15 @@ out/Debug/content_browsertests --gtest_filter="All/DumpAccessibility*"
 * `foo-expected-uia-win.txt` -- expected Win UIA output
 * `foo-expected-uia-win7.txt` -- expected Win7 UIA output (Version Specific
   Expected File)
+
+By default, `DumpAccessibilityNode` tests have an expectations-file qualifier
+of `node` inserted immediately before `expected`. Thus for `foo.html`, there
+could be:
+
+* `foo-expected-mac.txt` -- expected Mac NSAccessibility output for the
+  entire accessibility tree
+* `foo-node-expected-mac.txt` -- expected Mac NSAccessibility output for
+  just the node in `foo.html` whose `class` is `test`
 
 ## Format for expected files:
 

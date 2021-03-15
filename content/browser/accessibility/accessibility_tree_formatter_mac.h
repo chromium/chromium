@@ -28,6 +28,8 @@ class CONTENT_EXPORT AccessibilityTreeFormatterMac
   base::Value BuildTreeForSelector(
       const AXTreeSelector& selector) const override;
 
+  base::Value BuildNode(ui::AXPlatformNodeDelegate* node) const override;
+
  protected:
   void AddDefaultFilters(
       std::vector<ui::AXPropertyFilter>* property_filters) override;
@@ -35,6 +37,8 @@ class CONTENT_EXPORT AccessibilityTreeFormatterMac
  private:
   base::Value BuildTree(const id root) const;
   base::Value BuildTreeForAXUIElement(AXUIElementRef node) const;
+
+  base::Value BuildNode(const id node) const;
 
   // Runs all scripts defined by given property filters.
   void EvaluateScripts(const a11y::LineIndexer* line_indexer,

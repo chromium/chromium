@@ -40,7 +40,10 @@ class DumpAccessibilityTestBase
   // loads the HTML, loads the accessibility tree, calls Dump(), then
   // compares the output to the expected result and has the test succeed
   // or fail based on the diff.
-  void RunTest(const base::FilePath file_path, const char* file_dir);
+  void RunTest(const base::FilePath file_path,
+               const char* file_dir,
+               const base::FilePath::StringType& expectations_qualifier =
+                   FILE_PATH_LITERAL(""));
 
  protected:
   void SetUpCommandLine(base::CommandLine* command_line) override;
@@ -77,7 +80,10 @@ class DumpAccessibilityTestBase
   // and return it as a string.
   std::string DumpUnfilteredAccessibilityTreeAsString();
 
-  void RunTestForPlatform(const base::FilePath file_path, const char* file_dir);
+  void RunTestForPlatform(const base::FilePath file_path,
+                          const char* file_dir,
+                          const base::FilePath::StringType&
+                              expectations_qualifier = FILE_PATH_LITERAL(""));
 
   // Retrieve the accessibility node that matches the accessibility name. There
   // is an optional search_root parameter that defaults to the document root if
@@ -103,12 +109,24 @@ class DumpAccessibilityTestBase
 
   base::test::ScopedFeatureList scoped_feature_list_;
 
+  bool HasHtmlAttribute(BrowserAccessibility& node,
+                        const char* attr,
+                        const std::string& value);
+
+  BrowserAccessibility* FindNodeByHTMLAttribute(const char* attr,
+                                                const std::string& value);
+
  protected:
   DumpAccessibilityTestHelper test_helper_;
 
  private:
   BrowserAccessibility* FindNodeInSubtree(BrowserAccessibility& node,
                                           const std::string& name);
+
+  BrowserAccessibility* FindNodeByHTMLAttributeInSubtree(
+      BrowserAccessibility& node,
+      const char* attr,
+      const std::string& value);
 
   std::vector<std::string> CollectAllFrameUrls(
       WebContentsImpl* web_contents,

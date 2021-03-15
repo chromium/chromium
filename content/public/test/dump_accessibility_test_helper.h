@@ -32,7 +32,10 @@ class DumpAccessibilityTestHelper {
   // Returns a path to an expectation file for the current platform. If no
   // suitable expectation file can be found, logs an error message and returns
   // an empty path.
-  base::FilePath GetExpectationFilePath(const base::FilePath& test_file_path);
+  base::FilePath GetExpectationFilePath(
+      const base::FilePath& test_file_path,
+      const base::FilePath::StringType& expectations_qualifier =
+          FILE_PATH_LITERAL(""));
 
   // Sets up a command line for the test.
   void SetUpCommandLine(base::CommandLine*) const;
@@ -157,12 +160,23 @@ class DumpAccessibilityTestHelper {
   // Example:
   // HTML test:      test-file.html
   // Expected:       test-file-expected-mac.txt.
-  base::FilePath::StringType GetExpectedFileSuffix() const;
+  //
+  // In order to support multiple tests for the same html file, an
+  // optional expectations_qualifier string may be specified. For
+  // example, we could have both dump-tree and dump-node tests:
+  // HTML test:      test-file.html
+  // Expected:       test-file-node-expected-mac.txt
+  // Expected:       test-file-tree-expected-mac.txt
+  base::FilePath::StringType GetExpectedFileSuffix(
+      const base::FilePath::StringType& expectations_qualifier =
+          FILE_PATH_LITERAL("")) const;
 
   // Some Platforms expect different outputs depending on the version.
   // Most test outputs are identical but this allows a version specific
   // expected file to be used.
-  base::FilePath::StringType GetVersionSpecificExpectedFileSuffix() const;
+  base::FilePath::StringType GetVersionSpecificExpectedFileSuffix(
+      const base::FilePath::StringType& expectations_qualifier =
+          FILE_PATH_LITERAL("")) const;
 
   FRIEND_TEST_ALL_PREFIXES(DumpAccessibilityTestHelperTest, TestDiffLines);
 

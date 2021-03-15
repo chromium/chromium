@@ -139,6 +139,29 @@ void AccessibilityTreeFormatterMac::EvaluateScripts(
   dict->SetPath(kScriptsDictAttr, std::move(scripts));
 }
 
+base::Value AccessibilityTreeFormatterMac::BuildNode(
+    ui::AXPlatformNodeDelegate* node) const {
+  DCHECK(node);
+  BrowserAccessibility* internal_node =
+      BrowserAccessibility::FromAXPlatformNodeDelegate(node);
+  return BuildNode(ToBrowserAccessibilityCocoa(internal_node));
+}
+
+base::Value AccessibilityTreeFormatterMac::BuildNode(const id node) const {
+  DCHECK(node);
+
+  LineIndexer line_indexer(node);
+  base::Value dict(base::Value::Type::DICTIONARY);
+
+  NSPoint position = PositionOf(node);
+  NSSize size = SizeOf(node);
+  NSRect rect = NSMakeRect(position.x, position.y, size.width, size.height);
+
+  EvaluateScripts(&line_indexer, &dict);
+  AddProperties(node, rect, &line_indexer, &dict);
+  return dict;
+}
+
 void AccessibilityTreeFormatterMac::RecursiveBuildTree(
     const id node,
     const NSRect& root_rect,

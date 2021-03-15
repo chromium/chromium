@@ -977,6 +977,7 @@ test("content_browsertests") {
     "../browser/accessibility/dump_accessibility_browsertest_base.cc",
     "../browser/accessibility/dump_accessibility_browsertest_base.h",
     "../browser/accessibility/dump_accessibility_events_browsertest.cc",
+    "../browser/accessibility/dump_accessibility_node_browsertest.cc",
     "../browser/accessibility/dump_accessibility_scripts_browsertest.cc",
     "../browser/accessibility/dump_accessibility_tree_browsertest.cc",
     "../browser/accessibility/fullscreen_browsertest.cc",

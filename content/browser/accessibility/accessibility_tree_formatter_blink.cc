@@ -265,6 +265,14 @@ base::Value AccessibilityTreeFormatterBlink::BuildTreeForNode(
   return dict;
 }
 
+base::Value AccessibilityTreeFormatterBlink::BuildNode(
+    ui::AXPlatformNodeDelegate* node) const {
+  CHECK(node);
+  base::DictionaryValue dict;
+  AddProperties(*BrowserAccessibility::FromAXPlatformNodeDelegate(node), &dict);
+  return std::move(dict);
+}
+
 std::string AccessibilityTreeFormatterBlink::DumpInternalAccessibilityTree(
     ui::AXTreeID tree_id,
     const std::vector<AXPropertyFilter>& property_filters) {

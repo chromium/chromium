@@ -50,6 +50,13 @@ class AX_EXPORT AXTreeFormatter {
   // |root| must be non-null and must be in web content.
   virtual std::string Format(AXPlatformNodeDelegate* root) const = 0;
 
+  // Formats a given web node (i.e. without children).
+  virtual std::string FormatNode(AXPlatformNodeDelegate* node) const = 0;
+
+  // Similar to BuildTree, but generates a dictionary just for the current
+  // web node (i.e. without children).
+  virtual base::Value BuildNode(AXPlatformNodeDelegate* node) const = 0;
+
   // Build an accessibility tree for any window.
   //
   // Returns a dictionary value with the accessibility tree populated.

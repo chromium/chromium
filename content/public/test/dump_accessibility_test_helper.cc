@@ -133,13 +133,14 @@ DumpAccessibilityTestHelper::DumpAccessibilityTestHelper(
     : expectation_type_(expectation_type) {}
 
 base::FilePath DumpAccessibilityTestHelper::GetExpectationFilePath(
-    const base::FilePath& test_file_path) {
+    const base::FilePath& test_file_path,
+    const base::FilePath::StringType& expectations_qualifier) {
   base::ScopedAllowBlockingForTesting allow_blocking;
   base::FilePath expected_file_path;
 
   // Try to get version specific expected file.
   base::FilePath::StringType expected_file_suffix =
-      GetVersionSpecificExpectedFileSuffix();
+      GetVersionSpecificExpectedFileSuffix(expectations_qualifier);
   if (expected_file_suffix != FILE_PATH_LITERAL("")) {
     expected_file_path = base::FilePath(
         test_file_path.RemoveExtension().value() + expected_file_suffix);
@@ -148,7 +149,7 @@ base::FilePath DumpAccessibilityTestHelper::GetExpectationFilePath(
   }
 
   // If a version specific file does not exist, get the generic one.
-  expected_file_suffix = GetExpectedFileSuffix();
+  expected_file_suffix = GetExpectedFileSuffix(expectations_qualifier);
   expected_file_path = base::FilePath(test_file_path.RemoveExtension().value() +
                                       expected_file_suffix);
   if (base::PathExists(expected_file_path))
@@ -405,22 +406,31 @@ bool DumpAccessibilityTestHelper::ValidateAgainstExpectation(
   return !is_different;
 }
 
-FilePath::StringType DumpAccessibilityTestHelper::GetExpectedFileSuffix()
-    const {
+FilePath::StringType DumpAccessibilityTestHelper::GetExpectedFileSuffix(
+    const base::FilePath::StringType& expectations_qualifier) const {
   const TypeInfo::Mapping* mapping = TypeMapping(expectation_type_);
   if (!mapping) {
     return FILE_PATH_LITERAL("");
   }
-  return FILE_PATH_LITERAL("-expected") + mapping->expectations_file_postfix +
-         FILE_PATH_LITERAL(".txt");
+
+  FilePath::StringType suffix;
+  if (!expectations_qualifier.empty())
+    suffix = FILE_PATH_LITERAL("-") + expectations_qualifier;
+
+  return suffix + FILE_PATH_LITERAL("-expected") +
+         mapping->expectations_file_postfix + FILE_PATH_LITERAL(".txt");
 }
 
 FilePath::StringType
-DumpAccessibilityTestHelper::GetVersionSpecificExpectedFileSuffix() const {
+DumpAccessibilityTestHelper::GetVersionSpecificExpectedFileSuffix(
+    const base::FilePath::StringType& expectations_qualifier) const {
 #if defined(OS_WIN)
   if (expectation_type_ == "uia" &&
       base::win::GetVersion() == base::win::Version::WIN7) {
-    return FILE_PATH_LITERAL("-expected-uia-win7.txt");
+    FilePath::StringType suffix;
+    if (!expectations_qualifier.empty())
+      suffix = FILE_PATH_LITERAL("-") + expectations_qualifier;
+    return suffix + FILE_PATH_LITERAL("-expected-uia-win7.txt");
   }
 #endif
   return FILE_PATH_LITERAL("");

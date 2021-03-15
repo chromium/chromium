@@ -64,23 +64,34 @@ base::Value AccessibilityTreeFormatterAuraLinux::BuildTreeForSelector(
   return std::move(dict);
 }
 
+AtkObject* GetAtkObject(ui::AXPlatformNodeDelegate* node) {
+  DCHECK(node);
+
+  BrowserAccessibility* node_internal =
+      BrowserAccessibility::FromAXPlatformNodeDelegate(node);
+  DCHECK(node_internal);
+
+  BrowserAccessibilityAuraLinux* platform_node =
+      ToBrowserAccessibilityAuraLinux(node_internal);
+  DCHECK(platform_node);
+
+  AtkObject* atk_node = platform_node->GetNativeViewAccessible();
+  DCHECK(atk_node);
+
+  return atk_node;
+}
+
 base::Value AccessibilityTreeFormatterAuraLinux::BuildTree(
     ui::AXPlatformNodeDelegate* root) const {
-  DCHECK(root);
-
-  BrowserAccessibility* root_internal =
-      BrowserAccessibility::FromAXPlatformNodeDelegate(root);
-  DCHECK(root_internal);
-
-  BrowserAccessibilityAuraLinux* platform_root =
-      ToBrowserAccessibilityAuraLinux(root_internal);
-  DCHECK(platform_root);
-
-  AtkObject* atk_root = platform_root->GetNativeViewAccessible();
-  DCHECK(atk_root);
-
   base::DictionaryValue dict;
-  RecursiveBuildTree(atk_root, &dict);
+  RecursiveBuildTree(GetAtkObject(root), &dict);
+  return std::move(dict);
+}
+
+base::Value AccessibilityTreeFormatterAuraLinux::BuildNode(
+    ui::AXPlatformNodeDelegate* node) const {
+  base::DictionaryValue dict;
+  AddProperties(GetAtkObject(node), &dict);
   return std::move(dict);
 }
 

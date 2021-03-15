@@ -1,0 +1,1 @@
+android.view.View role_description='scroll bar' clickable focusable range name='55' item_index=55 item_count=100 range_max=100 range_current_value=55

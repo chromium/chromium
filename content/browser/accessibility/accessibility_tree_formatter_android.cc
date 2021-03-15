@@ -121,6 +121,14 @@ base::Value AccessibilityTreeFormatterAndroid::BuildTreeForSelector(
   return base::Value(base::Value::Type::DICTIONARY);
 }
 
+base::Value AccessibilityTreeFormatterAndroid::BuildNode(
+    ui::AXPlatformNodeDelegate* node) const {
+  CHECK(node);
+  base::DictionaryValue dict;
+  AddProperties(*BrowserAccessibility::FromAXPlatformNodeDelegate(node), &dict);
+  return std::move(dict);
+}
+
 void AccessibilityTreeFormatterAndroid::AddDefaultFilters(
     std::vector<AXPropertyFilter>* property_filters) {
   AddPropertyFilter(property_filters, "hint=*");

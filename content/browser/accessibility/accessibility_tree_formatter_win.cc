@@ -183,25 +183,42 @@ static HRESULT QueryIAccessibleValue(IAccessible* accessible,
   return service_provider->QueryService(IID_IAccessibleValue, accessibleValue);
 }
 
-base::Value AccessibilityTreeFormatterWin::BuildTree(
-    ui::AXPlatformNodeDelegate* start) const {
-  DCHECK(start);
-  BrowserAccessibility* start_internal =
-      BrowserAccessibility::FromAXPlatformNodeDelegate(start);
-  DCHECK(start_internal);
+Microsoft::WRL::ComPtr<IAccessible>
+GetIAObject(ui::AXPlatformNodeDelegate* node, LONG& root_x, LONG& root_y) {
+  DCHECK(node);
+  BrowserAccessibility* node_internal =
+      BrowserAccessibility::FromAXPlatformNodeDelegate(node);
+  DCHECK(node_internal);
   BrowserAccessibilityManager* root_manager =
-      start_internal->manager()->GetRootManager();
+      node_internal->manager()->GetRootManager();
   DCHECK(root_manager);
 
   base::win::ScopedVariant variant_self(CHILDID_SELF);
-  LONG root_x, root_y, root_width, root_height;
+  LONG root_width, root_height;
   BrowserAccessibility* root = root_manager->GetRoot();
   HRESULT hr = ToBrowserAccessibilityWin(root)->GetCOM()->accLocation(
       &root_x, &root_y, &root_width, &root_height, variant_self);
   DCHECK(SUCCEEDED(hr));
 
+  return ToBrowserAccessibilityComWin(node_internal);
+}
+
+base::Value AccessibilityTreeFormatterWin::BuildNode(
+    ui::AXPlatformNodeDelegate* node) const {
+  LONG root_x = 0, root_y = 0;
+  Microsoft::WRL::ComPtr<IAccessible> node_ia =
+      GetIAObject(node, root_x, root_y);
+
+  base::DictionaryValue dict;
+  AddProperties(node_ia, &dict, root_x, root_y);
+  return std::move(dict);
+}
+
+base::Value AccessibilityTreeFormatterWin::BuildTree(
+    ui::AXPlatformNodeDelegate* start) const {
+  LONG root_x = 0, root_y = 0;
   Microsoft::WRL::ComPtr<IAccessible> start_ia =
-      ToBrowserAccessibilityComWin(start_internal);
+      GetIAObject(start, root_x, root_y);
 
   base::Value dict(base::Value::Type::DICTIONARY);
   RecursiveBuildTree(start_ia, &dict, root_x, root_y);

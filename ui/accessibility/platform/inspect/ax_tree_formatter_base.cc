@@ -34,6 +34,15 @@ std::string AXTreeFormatterBase::Format(AXPlatformNodeDelegate* root) const {
   return FormatTree(BuildTree(root));
 }
 
+std::string AXTreeFormatterBase::FormatNode(
+    AXPlatformNodeDelegate* node) const {
+  return FormatTree(BuildNode(node));
+}
+
+base::Value AXTreeFormatterBase::BuildNode(AXPlatformNodeDelegate* node) const {
+  return base::Value(base::Value::Type::DICTIONARY);
+}
+
 std::string AXTreeFormatterBase::FormatTree(const base::Value& dict) const {
   std::string contents;
 

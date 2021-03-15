@@ -32,6 +32,8 @@ class CONTENT_EXPORT AccessibilityTreeFormatterAuraLinux
   base::Value BuildTreeForSelector(
       const AXTreeSelector& selector) const override;
 
+  base::Value BuildNode(ui::AXPlatformNodeDelegate* node) const override;
+
   AtspiAccessible* FindActiveDocument(AtspiAccessible* root) const;
   void RecursiveBuildTree(AtspiAccessible* node,
                           base::DictionaryValue* dict) const;
