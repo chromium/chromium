@@ -137,10 +137,6 @@ class CONTENT_EXPORT Calculator {
   //   2) Returns all Janks with Jank.start_time < |end_time|.
   JankList TakeJanksOlderThanTime(JankList* janks, base::TimeTicks end_time);
 
-  // Used to generate a unique id when emitting Large Jank trace events
-  int g_num_large_ui_janks_ = 0;
-  int g_num_large_io_janks_ = 0;
-
   // Janks from tasks/events with a long execution time on the UI thread. Should
   // only be accessed via the accessor, which checks that the caller is on the
   // UI thread.
