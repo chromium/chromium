@@ -352,7 +352,7 @@ scoped_refptr<CachedMetadata> V8CodeCache::GenerateFullCodeCache(
   TRACE_EVENT_END1(
       kTraceEventCategoryGroup, "v8.compile", "data",
       inspector_compile_script_event::Data(
-          file_name, TextPosition(),
+          file_name, TextPosition::MinimumPosition(),
           inspector_compile_script_event::V8CacheResult(
               inspector_compile_script_event::V8CacheResult::ProduceResult(
                   cached_data ? cached_data->length : 0),

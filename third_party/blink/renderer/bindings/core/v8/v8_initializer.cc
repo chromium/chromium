@@ -595,7 +595,7 @@ static v8::MaybeLocal<v8::Promise> HostImportModuleDynamically(
   }
 
   ModuleRequest module_request(
-      specifier, TextPosition(),
+      specifier, TextPosition::MinimumPosition(),
       ModuleRecord::ToBlinkImportAssertions(
           script_state->GetContext(), v8::Local<v8::Module>(),
           v8_import_assertions, /*v8_import_assertions_has_positions=*/false));

@@ -348,14 +348,6 @@ void StyleSheetContents::ParseAuthorStyleSheet(
 
 ParseSheetResult StyleSheetContents::ParseString(const String& sheet_text,
                                                  bool allow_import_rules) {
-  return ParseStringAtPosition(sheet_text, TextPosition::MinimumPosition(),
-                               allow_import_rules);
-}
-
-ParseSheetResult StyleSheetContents::ParseStringAtPosition(
-    const String& sheet_text,
-    const TextPosition& start_position,
-    bool allow_import_rules) {
   const auto* context =
       MakeGarbageCollected<CSSParserContext>(ParserContext(), this);
   return CSSParser::ParseSheet(context, this, sheet_text,

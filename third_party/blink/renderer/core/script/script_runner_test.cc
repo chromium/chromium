@@ -36,7 +36,7 @@ class MockPendingScript : public PendingScript {
 
   MockPendingScript(ScriptElementBase* element,
                     ScriptSchedulingType scheduling_type)
-      : PendingScript(element, TextPosition()) {
+      : PendingScript(element, TextPosition::MinimumPosition()) {
     SetSchedulingType(scheduling_type);
   }
   ~MockPendingScript() override {}

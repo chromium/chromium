@@ -178,7 +178,7 @@ void HttpEquiv::ProcessHttpEquivRefresh(LocalDOMWindow* window,
   UseCounter::Count(window, WebFeature::kMetaRefresh);
   if (!window->GetContentSecurityPolicy()->AllowInline(
           ContentSecurityPolicy::InlineType::kScript, element, "" /* content */,
-          "" /* nonce */, NullURL(), OrdinalNumber(),
+          "" /* nonce */, NullURL(), OrdinalNumber::First(),
           ReportingDisposition::kSuppressReporting)) {
     UseCounter::Count(window,
                       WebFeature::kMetaRefreshWhenCSPBlocksInlineScript);

@@ -818,7 +818,7 @@ CSSStyleSheet* StyleEngine::ParseSheet(Element& element,
   CSSStyleSheet* style_sheet = nullptr;
   style_sheet = CSSStyleSheet::CreateInline(element, NullURL(), start_position,
                                             GetDocument().Encoding());
-  style_sheet->Contents()->ParseStringAtPosition(text, start_position);
+  style_sheet->Contents()->ParseString(text);
   return style_sheet;
 }
 

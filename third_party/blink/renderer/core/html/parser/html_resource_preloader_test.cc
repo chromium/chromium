@@ -56,11 +56,12 @@ class HTMLResourcePreloaderTest : public PageTestBase {
     // TODO(yoav): Need a mock loader here to verify things are happenning
     // beyond preconnect.
     auto preload_request = PreloadRequest::CreateIfNeeded(
-        String(), TextPosition(), test_case.url, KURL(test_case.base_url),
-        ResourceType::kImage, network::mojom::ReferrerPolicy(),
-        PreloadRequest::kDocumentIsReferrer, ResourceFetcher::kImageNotImageSet,
-        nullptr /* exclusion_info */, FetchParameters::ResourceWidth(),
-        ClientHintsPreferences(), PreloadRequest::kRequestTypePreconnect);
+        String(), TextPosition::MinimumPosition(), test_case.url,
+        KURL(test_case.base_url), ResourceType::kImage,
+        network::mojom::ReferrerPolicy(), PreloadRequest::kDocumentIsReferrer,
+        ResourceFetcher::kImageNotImageSet, nullptr /* exclusion_info */,
+        FetchParameters::ResourceWidth(), ClientHintsPreferences(),
+        PreloadRequest::kRequestTypePreconnect);
     DCHECK(preload_request);
     if (test_case.is_cors)
       preload_request->SetCrossOrigin(kCrossOriginAttributeAnonymous);

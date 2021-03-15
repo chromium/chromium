@@ -339,7 +339,7 @@ TEST_F(ContentSecurityPolicyTest, NonceInline) {
 
   String context_url;
   String content;
-  WTF::OrdinalNumber context_line;
+  OrdinalNumber context_line = OrdinalNumber::First();
 
   // We need document for HTMLScriptElement tests.
   auto dummy = std::make_unique<DummyPageHolder>();
@@ -1154,7 +1154,7 @@ TEST_F(ContentSecurityPolicyTest, EmptyCSPIsNoOp) {
   String source;
   String context_url;
   String nonce;
-  OrdinalNumber ordinal_number;
+  OrdinalNumber ordinal_number = OrdinalNumber::First();
   auto* element =
       MakeGarbageCollected<HTMLScriptElement>(*document, CreateElementFlags());
 

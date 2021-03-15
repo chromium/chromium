@@ -68,9 +68,6 @@ class CORE_EXPORT StyleSheetContents final
 
   void ParseAuthorStyleSheet(const CSSStyleSheetResource*);
   ParseSheetResult ParseString(const String&, bool allow_import_rules = true);
-  ParseSheetResult ParseStringAtPosition(const String&,
-                                         const TextPosition&,
-                                         bool allow_import_rules = true);
 
   bool IsCacheableForResource() const;
   bool IsCacheableForStyleElement() const;

@@ -238,7 +238,8 @@ TEST_P(DynamicModuleResolverTest, ResolveSuccess) {
                    scope.GetScriptState()));
 
   auto* resolver = MakeGarbageCollected<DynamicModuleResolver>(modulator);
-  ModuleRequest module_request("./dependency.js", TextPosition(),
+  ModuleRequest module_request("./dependency.js",
+                               TextPosition::MinimumPosition(),
                                Vector<ImportAssertion>());
   resolver->ResolveDynamically(module_request, TestReferrerURL(),
                                ReferrerScriptInfo(), promise_resolver);
@@ -273,9 +274,9 @@ TEST_P(DynamicModuleResolverTest, ResolveJSONModuleSuccess) {
 
   auto* resolver = MakeGarbageCollected<DynamicModuleResolver>(modulator);
   Vector<ImportAssertion> import_assertions{
-      ImportAssertion("type", "json", TextPosition())};
-  ModuleRequest module_request("./dependency.json", TextPosition(),
-                               import_assertions);
+      ImportAssertion("type", "json", TextPosition::MinimumPosition())};
+  ModuleRequest module_request(
+      "./dependency.json", TextPosition::MinimumPosition(), import_assertions);
   resolver->ResolveDynamically(module_request, TestReferrerURL(),
                                ReferrerScriptInfo(), promise_resolver);
 
@@ -304,7 +305,8 @@ TEST_P(DynamicModuleResolverTest, ResolveSpecifierFailure) {
                capture->Bind());
 
   auto* resolver = MakeGarbageCollected<DynamicModuleResolver>(modulator);
-  ModuleRequest module_request("invalid-specifier", TextPosition(),
+  ModuleRequest module_request("invalid-specifier",
+                               TextPosition::MinimumPosition(),
                                Vector<ImportAssertion>());
   resolver->ResolveDynamically(module_request, TestReferrerURL(),
                                ReferrerScriptInfo(), promise_resolver);
@@ -333,9 +335,9 @@ TEST_P(DynamicModuleResolverTest, ResolveModuleTypeFailure) {
 
   auto* resolver = MakeGarbageCollected<DynamicModuleResolver>(modulator);
   Vector<ImportAssertion> import_assertions{
-      ImportAssertion("type", "notARealType", TextPosition())};
-  ModuleRequest module_request("./dependency.js", TextPosition(),
-                               import_assertions);
+      ImportAssertion("type", "notARealType", TextPosition::MinimumPosition())};
+  ModuleRequest module_request(
+      "./dependency.js", TextPosition::MinimumPosition(), import_assertions);
   resolver->ResolveDynamically(module_request, TestReferrerURL(),
                                ReferrerScriptInfo(), promise_resolver);
 
@@ -362,7 +364,8 @@ TEST_P(DynamicModuleResolverTest, FetchFailure) {
                capture->Bind());
 
   auto* resolver = MakeGarbageCollected<DynamicModuleResolver>(modulator);
-  ModuleRequest module_request("./dependency.js", TextPosition(),
+  ModuleRequest module_request("./dependency.js",
+                               TextPosition::MinimumPosition(),
                                Vector<ImportAssertion>());
   resolver->ResolveDynamically(module_request, TestReferrerURL(),
                                ReferrerScriptInfo(), promise_resolver);
@@ -394,7 +397,8 @@ TEST_P(DynamicModuleResolverTest, ExceptionThrown) {
                capture->Bind());
 
   auto* resolver = MakeGarbageCollected<DynamicModuleResolver>(modulator);
-  ModuleRequest module_request("./dependency.js", TextPosition(),
+  ModuleRequest module_request("./dependency.js",
+                               TextPosition::MinimumPosition(),
                                Vector<ImportAssertion>());
   resolver->ResolveDynamically(module_request, TestReferrerURL(),
                                ReferrerScriptInfo(), promise_resolver);
@@ -435,7 +439,8 @@ TEST_P(DynamicModuleResolverTest, ResolveWithNullReferrerScriptSuccess) {
                    scope.GetScriptState()));
 
   auto* resolver = MakeGarbageCollected<DynamicModuleResolver>(modulator);
-  ModuleRequest module_request("./dependency.js", TextPosition(),
+  ModuleRequest module_request("./dependency.js",
+                               TextPosition::MinimumPosition(),
                                Vector<ImportAssertion>());
   resolver->ResolveDynamically(module_request, /* null referrer */ KURL(),
                                ReferrerScriptInfo(), promise_resolver);
@@ -471,7 +476,8 @@ TEST_P(DynamicModuleResolverTest, ResolveWithReferrerScriptInfoBaseURL) {
   auto* resolver = MakeGarbageCollected<DynamicModuleResolver>(modulator);
   KURL wrong_base_url("https://example.com/wrong/bar.js");
   KURL correct_base_url("https://example.com/correct/baz.js");
-  ModuleRequest module_request("./dependency.js", TextPosition(),
+  ModuleRequest module_request("./dependency.js",
+                               TextPosition::MinimumPosition(),
                                Vector<ImportAssertion>());
   resolver->ResolveDynamically(
       module_request, wrong_base_url,

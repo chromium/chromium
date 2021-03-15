@@ -50,7 +50,7 @@ ClassicPendingScript* ClassicPendingScript::Fetch(
 
   ClassicPendingScript* pending_script =
       MakeGarbageCollected<ClassicPendingScript>(
-          element, TextPosition(), KURL(), String(),
+          element, TextPosition::MinimumPosition(), KURL(), String(),
           ScriptSourceLocationType::kExternalFile, options,
           true /* is_external */);
 

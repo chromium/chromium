@@ -353,7 +353,7 @@ void ThreadDebugger::installAdditionalCommandLineAPI(
           isolate_, ScriptState::From(context),
           ScriptSourceCode("(function(e) { console.log(e.type, e); })",
                            ScriptSourceLocationType::kInternal, nullptr, KURL(),
-                           TextPosition()))
+                           TextPosition::MinimumPosition()))
           .ToLocal(&function_value) &&
       function_value->IsFunction();
   DCHECK(success);

@@ -410,8 +410,8 @@ bool ScriptLoader::PrepareScript(const TextPosition& script_start_position,
   const bool is_in_document_write = element_document.IsInDocumentWrite();
 
   // Reset line numbering for nested writes.
-  TextPosition position =
-      is_in_document_write ? TextPosition() : script_start_position;
+  TextPosition position = is_in_document_write ? TextPosition::MinimumPosition()
+                                               : script_start_position;
 
   // <spec step="13">If the script element does not have a src content
   // attribute, and the Should element's inline behavior be blocked by Content
