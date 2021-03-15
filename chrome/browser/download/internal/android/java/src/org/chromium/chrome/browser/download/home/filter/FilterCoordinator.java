@@ -13,7 +13,7 @@ import org.chromium.base.Callback;
 import org.chromium.base.ObserverList;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.chrome.browser.download.home.filter.Filters.FilterType;
-import org.chromium.chrome.browser.download.home.filter.chips.ChipsCoordinator;
+import org.chromium.components.browser_ui.widget.chips.ChipsCoordinator;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 
