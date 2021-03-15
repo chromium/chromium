@@ -169,7 +169,7 @@ public class ShareSheetCoordinator implements ActivityStateObserver, ChromeOptio
      * @param state The state from {@link LinkGeneration} to which ShareParams should be updated.
      */
     void updateShareSheetForLinkToText(@LinkGeneration int state) {
-        if (!ChromeFeatureList.isEnabled(ChromeFeatureList.PREEMTIVE_LINK_TO_TEXT_GENERATION)
+        if (!ChromeFeatureList.isEnabled(ChromeFeatureList.PREEMPTIVE_LINK_TO_TEXT_GENERATION)
                 || mLinkToTextCoordinator == null) {
             return;
         }
@@ -202,7 +202,7 @@ public class ShareSheetCoordinator implements ActivityStateObserver, ChromeOptio
      */
     public void showInitialShareSheet(
             ShareParams params, ChromeShareExtras chromeShareExtras, long shareStartTime) {
-        if (ChromeFeatureList.isEnabled(ChromeFeatureList.PREEMTIVE_LINK_TO_TEXT_GENERATION)
+        if (ChromeFeatureList.isEnabled(ChromeFeatureList.PREEMPTIVE_LINK_TO_TEXT_GENERATION)
                 && chromeShareExtras.isUserHighlightedText()) {
             String tabUrl =
                     mTabProvider.get().isInitialized() ? mTabProvider.get().getUrl().getSpec() : "";

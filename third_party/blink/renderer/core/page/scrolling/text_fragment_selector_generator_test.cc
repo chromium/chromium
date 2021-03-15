@@ -96,7 +96,7 @@ class TextFragmentSelectorGeneratorTest : public SimTest {
     GetDocument()
         .GetFrame()
         ->GetTextFragmentSelectorGenerator()
-        ->GenerateSelector(std::move(callback));
+        ->RequestSelector(std::move(callback));
     base::RunLoop().RunUntilIdle();
 
     EXPECT_TRUE(callback_called);

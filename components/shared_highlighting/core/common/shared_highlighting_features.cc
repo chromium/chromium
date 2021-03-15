@@ -8,6 +8,9 @@
 
 namespace shared_highlighting {
 
+const base::Feature kPreemptiveLinkToTextGeneration{
+    "PreemptiveLinkToTextGeneration", base::FEATURE_DISABLED_BY_DEFAULT};
+
 const base::Feature kSharedHighlightingUseBlocklist{
     "SharedHighlightingUseBlocklist", base::FEATURE_ENABLED_BY_DEFAULT};
 

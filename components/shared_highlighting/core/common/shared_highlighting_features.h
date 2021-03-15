@@ -11,6 +11,9 @@ struct Feature;
 
 namespace shared_highlighting {
 
+// Enables link to text to be generated in advance.
+extern const base::Feature kPreemptiveLinkToTextGeneration;
+
 // If enabled, a blocklist will disable link generation on certain pages where
 // the feature is unlikely to work correctly.
 extern const base::Feature kSharedHighlightingUseBlocklist;
