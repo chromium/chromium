@@ -248,35 +248,38 @@ TEST_F(PowerMetricsReporterUnitTest, UKMs) {
           fake_interval_data.user_interaction_count));
   test_ukm_recorder_.ExpectEntryMetric(
       entries[0], UkmEntry::kFullscreenVideoSingleMonitorSecondsName,
-      ukm::GetExponentialBucketMinForUserTiming(
+      ukm::GetLinearBucketMin(
           fake_interval_data.time_playing_video_full_screen_single_monitor
-              .InSeconds()));
+              .InSeconds(),
+          10));
   test_ukm_recorder_.ExpectEntryMetric(
       entries[0], UkmEntry::kTimeWithOpenWebRTCConnectionSecondsName,
-      ukm::GetExponentialBucketMinForUserTiming(
-          fake_interval_data.time_with_open_webrtc_connection.InSeconds()));
+      ukm::GetLinearBucketMin(
+          fake_interval_data.time_with_open_webrtc_connection.InSeconds(), 10));
   test_ukm_recorder_.ExpectEntryMetric(
       entries[0], UkmEntry::kTimePlayingVideoInVisibleTabName,
-      ukm::GetExponentialBucketMinForUserTiming(
-          fake_interval_data.time_playing_video_in_visible_tab.InSeconds()));
+      ukm::GetLinearBucketMin(
+          fake_interval_data.time_playing_video_in_visible_tab.InSeconds(),
+          10));
   test_ukm_recorder_.ExpectEntryMetric(
       entries[0], UkmEntry::kIntervalDurationSecondsName,
       kExpectedMetricsCollectionInterval.InSeconds());
   test_ukm_recorder_.ExpectEntryMetric(
       entries[0], UkmEntry::kTimeSinceInteractionWithBrowserSecondsName,
-      ukm::GetExponentialBucketMinForUserTiming(
+      ukm::GetLinearBucketMin(
           fake_interval_data.time_since_last_user_interaction_with_browser
-              .InSeconds()));
+              .InSeconds(),
+          10));
   test_ukm_recorder_.ExpectEntryMetric(
       entries[0], UkmEntry::kVideoCaptureSecondsName,
-      ukm::GetExponentialBucketMinForUserTiming(
-          fake_interval_data.time_capturing_video.InSeconds()));
+      ukm::GetLinearBucketMin(
+          fake_interval_data.time_capturing_video.InSeconds(), 10));
   test_ukm_recorder_.ExpectEntryMetric(
       entries[0], UkmEntry::kBrowserShuttingDownName, false);
   test_ukm_recorder_.ExpectEntryMetric(
       entries[0], UkmEntry::kPlayingAudioSecondsName,
-      ukm::GetExponentialBucketMinForUserTiming(
-          fake_interval_data.time_playing_audio.InSeconds()));
+      ukm::GetLinearBucketMin(fake_interval_data.time_playing_audio.InSeconds(),
+                              10));
 
   histogram_tester_.ExpectUniqueSample(kBatteryDischargeRateHistogramName, 2500,
                                        1);
@@ -551,4 +554,32 @@ TEST_F(PowerMetricsReporterUnitTest, UKMsNoTab) {
       entries[0], UkmEntry::kUptimeSecondsName,
       ukm::GetExponentialBucketMinForUserTiming(
           fake_interval_data.uptime_at_interval_end.InSeconds()));
+}
+
+TEST_F(PowerMetricsReporterUnitTest, DurationsLongerThanIntervalAreCapped) {
+  UsageScenarioDataStore::IntervalData fake_interval_data;
+
+  fake_interval_data.time_playing_video_full_screen_single_monitor =
+      kExpectedMetricsCollectionInterval * 100;
+
+  task_environment_.FastForwardBy(kExpectedMetricsCollectionInterval);
+  battery_states_.push(BatteryLevelProvider::BatteryState{
+      1, 1, 0.50, true, base::TimeTicks::Now()});
+  data_store_.SetIntervalDataToReturn(fake_interval_data);
+
+  performance_monitor::ProcessMonitor::Metrics fake_metrics = {};
+  fake_metrics.cpu_usage = 0.5;
+  WaitForNextSample(fake_metrics);
+
+  auto entries = test_ukm_recorder_.GetEntriesByName(
+      ukm::builders::PowerUsageScenariosIntervalData::kEntryName);
+  EXPECT_EQ(1u, entries.size());
+
+  EXPECT_EQ(entries[0]->source_id, ukm::kInvalidSourceId);
+  test_ukm_recorder_.ExpectEntryMetric(
+      entries[0], UkmEntry::kFullscreenVideoSingleMonitorSecondsName,
+      // Every value greater than |kExpectedMetricsCollectionInterval| should
+      // fall in the same overflow bucket.
+      ukm::GetLinearBucketMin(
+          kExpectedMetricsCollectionInterval.InSeconds() + 10, 10));
 }
