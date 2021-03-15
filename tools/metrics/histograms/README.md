@@ -374,12 +374,8 @@ latter case, the actual expiry date is about 12 weeks after that branch is cut,
 or basically when it is replaced on the "stable" channel by the following
 release.
 
-After a histogram expires, it ceases to be displayed on the dashboard. However,
-the client may continue to send data for that histogram for some time after the
-official expiry date so simply bumping the 'expires_after' date at HEAD may be
-sufficient to resurrect it without any discontinuity. If too much time has
-passed and the client is no longer sending data, it can be re-enabled via Finch:
-see [Expired histogram allowlist](#Expired-histogram-allowlist).
+After a histogram expires, it ceases to be displayed on the dashboard.
+Follow [these directions](#extending) to extend it.
 
 Once a histogram has expired, the code that records it becomes dead code and
 should be removed from the codebase along with marking the histogram definition
@@ -421,6 +417,31 @@ We also have a tool that automatically extends expiry dates. The 80% more
 frequently accessed histograms are pushed out every Tuesday, to 6 months from
 the date of the run. Googlers can view the [design
 doc](https://docs.google.com/document/d/1IEAeBF9UnYQMDfyh2gdvE7WlUKsfIXIZUw7qNoU89A4).
+
+#### How to extend an expired histogram {#extending}
+
+You can revive an expired histogram by setting the expiration date to a
+date in the future.
+
+There's some leeway here. A client may continue to send data for that
+histogram for some time after the official expiry date so simply bumping
+the 'expires_after' date at HEAD may be sufficient to resurrect it without
+any data discontinuity.
+
+If a histogram expired more than a month ago (for histograms with an
+expiration date) or more than one milestone ago (for histograms with
+expiration milestones; this means top-of-tree is two or more milestones away
+from expired milestone), then you may be outside the safety window. In this
+case, when extending the histogram add to the histogram description a
+message: "Warning: this histogram was expired from DATE to DATE; data may be
+missing." (For milestones, write something similar.)
+
+When reviving a histogram outside the safety window, realize the change to
+histograms.xml to revive it rolls out with the binary release. It takes
+some time to get to the stable channel.
+
+It you need to revive it faster, the histogram can be re-enabled via adding to
+the [expired histogram allowlist](#Expired-histogram-allowlist).
 
 ### Expired histogram notifier
 
