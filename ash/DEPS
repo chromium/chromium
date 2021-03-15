@@ -68,6 +68,7 @@ include_rules = [
   "+chromeos/services/assistant/public" ,
   "+chromeos/services/assistant/test_support",
   "+chromeos/services/libassistant/public/cpp",
+  "+chromeos/services/libassistant/public/mojom",
   "+chromeos/services/machine_learning/public",
   "+chromeos/services/multidevice_setup/public",
   "+chromeos/services/nearby/public",

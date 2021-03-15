@@ -14,6 +14,7 @@
 #include "chromeos/services/libassistant/public/mojom/conversation_controller.mojom.h"
 #include "chromeos/services/libassistant/public/mojom/device_settings_delegate.mojom-forward.h"
 #include "chromeos/services/libassistant/public/mojom/display_controller.mojom.h"
+#include "chromeos/services/libassistant/public/mojom/notification_delegate.mojom-forward.h"
 #include "chromeos/services/libassistant/public/mojom/service.mojom.h"
 #include "chromeos/services/libassistant/public/mojom/service_controller.mojom.h"
 #include "chromeos/services/libassistant/public/mojom/speaker_id_enrollment_controller.mojom-forward.h"
@@ -58,6 +59,9 @@ class LibassistantServiceTester {
     return *speaker_id_enrollment_controller_.get();
   }
 
+  mojo::PendingReceiver<mojom::NotificationDelegate>
+  GetNotificationDelegatePendingReceiver();
+
   void FlushForTesting();
 
  private:
@@ -77,6 +81,8 @@ class LibassistantServiceTester {
   mojo::PendingReceiver<mojom::DeviceSettingsDelegate>
       pending_device_settings_delegate_;
   mojo::PendingReceiver<mojom::MediaDelegate> pending_media_delegate_;
+  mojo::PendingReceiver<mojom::NotificationDelegate>
+      pending_notification_delegate_;
   mojo::PendingReceiver<mojom::PlatformDelegate> pending_platform_delegate_;
   mojo::PendingReceiver<mojom::TimerDelegate> pending_timer_delegate_;
 

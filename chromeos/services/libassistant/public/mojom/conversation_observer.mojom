@@ -45,12 +45,6 @@ interface ConversationObserver{
   // Assistant has started waiting. This occur during execution of a routine to
   // give the user time to digest a response before continuing execution.
   OnWaitStarted();
-
-  // Libassistant is removing the notification with the given id.
-  OnNotificationRemoved(string id);
-
-  // Libassistant is removing all notifications.
-  OnAllNotificationsRemoved();
 };
 
 struct AssistantInteractionMetadata {

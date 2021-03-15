@@ -5,6 +5,7 @@
 #include "chromeos/services/libassistant/test_support/libassistant_service_tester.h"
 
 #include "base/base_paths.h"
+#include "chromeos/services/libassistant/public/mojom/notification_delegate.mojom-forward.h"
 #include "chromeos/services/libassistant/test_support/fake_libassistant_factory.h"
 #include "services/network/test/test_url_loader_factory.h"
 
@@ -59,6 +60,8 @@ void LibassistantServiceTester::BindControllers() {
   mojo::PendingRemote<mojom::DeviceSettingsDelegate>
       pending_device_settings_delegate_remote;
   mojo::PendingRemote<mojom::MediaDelegate> pending_media_delegate_remote;
+  mojo::PendingRemote<mojom::NotificationDelegate>
+      pending_notification_delegate_remote;
   mojo::PendingRemote<mojom::PlatformDelegate> pending_platform_delegate_remote;
   mojo::PendingRemote<mojom::TimerDelegate> pending_timer_delegate_remote;
 
@@ -68,6 +71,8 @@ void LibassistantServiceTester::BindControllers() {
       pending_device_settings_delegate_remote.InitWithNewPipeAndPassReceiver();
   pending_media_delegate_ =
       pending_media_delegate_remote.InitWithNewPipeAndPassReceiver();
+  pending_notification_delegate_ =
+      pending_notification_delegate_remote.InitWithNewPipeAndPassReceiver();
   pending_platform_delegate_ =
       pending_platform_delegate_remote.InitWithNewPipeAndPassReceiver();
   pending_timer_delegate_ =
@@ -84,8 +89,15 @@ void LibassistantServiceTester::BindControllers() {
                  std::move(pending_audio_output_delegate_remote),
                  std::move(pending_device_settings_delegate_remote),
                  std::move(pending_media_delegate_remote),
+                 std::move(pending_notification_delegate_remote),
                  std::move(pending_platform_delegate_remote),
                  std::move(pending_timer_delegate_remote));
+}
+
+mojo::PendingReceiver<mojom::NotificationDelegate>
+LibassistantServiceTester::GetNotificationDelegatePendingReceiver() {
+  DCHECK(pending_notification_delegate_.is_valid());
+  return std::move(pending_notification_delegate_);
 }
 
 void LibassistantServiceTester::FlushForTesting() {

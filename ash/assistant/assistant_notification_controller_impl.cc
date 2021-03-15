@@ -97,7 +97,12 @@ AssistantNotificationControllerImpl::~AssistantNotificationControllerImpl() {
 
 void AssistantNotificationControllerImpl::SetAssistant(
     chromeos::assistant::Assistant* assistant) {
+  receiver_.reset();
+
   assistant_ = assistant;
+
+  if (assistant)
+    receiver_.Bind(assistant_->GetPendingNotificationDelegate());
 }
 
 // AssistantNotificationController --------------------------------------
@@ -113,6 +118,12 @@ void AssistantNotificationControllerImpl::RemoveNotificationById(
   model_.RemoveNotificationById(id, from_server);
 }
 
+void AssistantNotificationControllerImpl::SetQuietMode(bool enabled) {
+  message_center::MessageCenter::Get()->SetQuietMode(enabled);
+}
+
+// NotificationDelegate ------------------------------------------------------
+
 void AssistantNotificationControllerImpl::RemoveNotificationByGroupingKey(
     const std::string& grouping_key,
     bool from_server) {
@@ -122,10 +133,6 @@ void AssistantNotificationControllerImpl::RemoveNotificationByGroupingKey(
 void AssistantNotificationControllerImpl::RemoveAllNotifications(
     bool from_server) {
   model_.RemoveAllNotifications(from_server);
-}
-
-void AssistantNotificationControllerImpl::SetQuietMode(bool enabled) {
-  message_center::MessageCenter::Get()->SetQuietMode(enabled);
 }
 
 // AssistantNotificationModelObserver ------------------------------------------

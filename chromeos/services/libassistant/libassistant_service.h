@@ -16,6 +16,7 @@
 #include "chromeos/services/libassistant/libassistant_factory.h"
 #include "chromeos/services/libassistant/media_controller.h"
 #include "chromeos/services/libassistant/platform_api.h"
+#include "chromeos/services/libassistant/public/mojom/notification_delegate.mojom-forward.h"
 #include "chromeos/services/libassistant/public/mojom/service.mojom.h"
 #include "chromeos/services/libassistant/service_controller.h"
 #include "chromeos/services/libassistant/settings_controller.h"
@@ -55,6 +56,7 @@ class COMPONENT_EXPORT(LIBASSISTANT_SERVICE) LibassistantService
       mojo::PendingRemote<mojom::DeviceSettingsDelegate>
           device_settings_delegate,
       mojo::PendingRemote<mojom::MediaDelegate> media_delegate,
+      mojo::PendingRemote<mojom::NotificationDelegate> notification_delegate,
       mojo::PendingRemote<mojom::PlatformDelegate> platform_delegate,
       mojo::PendingRemote<mojom::TimerDelegate> timer_delegate) override;
   void AddSpeechRecognitionObserver(

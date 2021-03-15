@@ -10,6 +10,7 @@
 
 #include "base/unguessable_token.h"
 #include "chromeos/services/assistant/public/cpp/assistant_service.h"
+#include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace ash {
@@ -247,6 +248,12 @@ void TestAssistantService::AddAssistantInteractionSubscriber(
 void TestAssistantService::RemoveAssistantInteractionSubscriber(
     AssistantInteractionSubscriber* subscriber) {
   interaction_subscribers_.RemoveObserver(subscriber);
+}
+
+mojo::PendingReceiver<chromeos::libassistant::mojom::NotificationDelegate>
+TestAssistantService::GetPendingNotificationDelegate() {
+  return mojo::PendingReceiver<
+      chromeos::libassistant::mojom::NotificationDelegate>();
 }
 
 void TestAssistantService::RetrieveNotification(

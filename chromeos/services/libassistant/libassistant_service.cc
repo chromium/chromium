@@ -108,12 +108,14 @@ void LibassistantService::Bind(
     mojo::PendingRemote<mojom::AudioOutputDelegate> audio_output_delegate,
     mojo::PendingRemote<mojom::DeviceSettingsDelegate> device_settings_delegate,
     mojo::PendingRemote<mojom::MediaDelegate> media_delegate,
+    mojo::PendingRemote<mojom::NotificationDelegate> notification_delegate,
     mojo::PendingRemote<mojom::PlatformDelegate> platform_delegate,
     mojo::PendingRemote<mojom::TimerDelegate> timer_delegate) {
   platform_delegate_.Bind(std::move(platform_delegate));
   audio_input_controller_.Bind(std::move(audio_input_controller),
                                platform_delegate_.get());
-  conversation_controller_.Bind(std::move(conversation_controller));
+  conversation_controller_.Bind(std::move(conversation_controller),
+                                std::move(notification_delegate));
   device_settings_controller_.Bind(std::move(device_settings_delegate));
   display_controller_.Bind(std::move(display_controller));
   media_controller_.Bind(std::move(media_controller),

@@ -17,6 +17,7 @@ import "chromeos/services/libassistant/public/mojom/settings_controller.mojom";
 import "chromeos/services/libassistant/public/mojom/speaker_id_enrollment_controller.mojom";
 import "chromeos/services/libassistant/public/mojom/speech_recognition_observer.mojom";
 import "chromeos/services/libassistant/public/mojom/timer_controller.mojom";
+import "chromeos/services/libassistant/public/mojom/notification_delegate.mojom";
 
 // The main interface to the Libassistant service on ChromeOS.
 // Libassistant provides access to the Google Assistant.
@@ -39,6 +40,7 @@ interface LibassistantService {
     pending_remote<AudioOutputDelegate> audio_output_delegate,
     pending_remote<DeviceSettingsDelegate> device_settings_delegate,
     pending_remote<MediaDelegate> media_delegate,
+    pending_remote<NotificationDelegate> delegate,
     pending_remote<PlatformDelegate> platform_delegate,
     pending_remote<TimerDelegate> timer_delegate
   );

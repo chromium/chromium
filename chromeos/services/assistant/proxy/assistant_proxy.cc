@@ -79,6 +79,8 @@ void AssistantProxy::BindControllers() {
       pending_device_settings_delegate_remote;
   mojo::PendingRemote<chromeos::libassistant::mojom::MediaDelegate>
       pending_media_delegate_remote;
+  mojo::PendingRemote<chromeos::libassistant::mojom::NotificationDelegate>
+      pending_notification_delegate_remote;
   mojo::PendingRemote<chromeos::libassistant::mojom::PlatformDelegate>
       pending_platform_delegate_remote;
   mojo::PendingRemote<
@@ -87,15 +89,14 @@ void AssistantProxy::BindControllers() {
   mojo::PendingRemote<chromeos::libassistant::mojom::TimerDelegate>
       pending_timer_delegate_remote;
 
-  mojo::PendingReceiver<chromeos::libassistant::mojom::MediaDelegate>
-      pending_media_delegate =
-          pending_media_delegate_remote.InitWithNewPipeAndPassReceiver();
-  mojo::PendingReceiver<chromeos::libassistant::mojom::PlatformDelegate>
-      pending_platform_delegate =
-          pending_platform_delegate_remote.InitWithNewPipeAndPassReceiver();
-  mojo::PendingReceiver<chromeos::libassistant::mojom::TimerDelegate>
-      pending_timer_delegate =
-          pending_timer_delegate_remote.InitWithNewPipeAndPassReceiver();
+  media_delegate_ =
+      pending_media_delegate_remote.InitWithNewPipeAndPassReceiver();
+  notification_delegate_ =
+      pending_notification_delegate_remote.InitWithNewPipeAndPassReceiver();
+  platform_delegate_ =
+      pending_platform_delegate_remote.InitWithNewPipeAndPassReceiver();
+  timer_delegate_ =
+      pending_timer_delegate_remote.InitWithNewPipeAndPassReceiver();
 
   pending_audio_output_delegate_receiver_ =
       pending_audio_output_delegate_remote.InitWithNewPipeAndPassReceiver();
@@ -114,15 +115,13 @@ void AssistantProxy::BindControllers() {
       std::move(pending_audio_output_delegate_remote),
       std::move(pending_device_settings_delegate_remote),
       std::move(pending_media_delegate_remote),
+      std::move(pending_notification_delegate_remote),
       std::move(pending_platform_delegate_remote),
       std::move(pending_timer_delegate_remote));
 
   audio_input_controller_ = std::move(pending_audio_input_controller_remote);
   speaker_id_enrollment_controller_ =
       std::move(pending_speaker_id_enrollment_controller_remote);
-  media_delegate_ = std::move(pending_media_delegate);
-  platform_delegate_ = std::move(pending_platform_delegate);
-  timer_delegate_ = std::move(pending_timer_delegate);
 }
 
 scoped_refptr<base::SingleThreadTaskRunner>
@@ -152,6 +151,12 @@ mojo::PendingReceiver<chromeos::libassistant::mojom::MediaDelegate>
 AssistantProxy::ExtractMediaDelegate() {
   DCHECK(media_delegate_.is_valid());
   return std::move(media_delegate_);
+}
+
+mojo::PendingReceiver<chromeos::libassistant::mojom::NotificationDelegate>
+AssistantProxy::ExtractNotificationDelegate() {
+  DCHECK(notification_delegate_.is_valid());
+  return std::move(notification_delegate_);
 }
 
 mojo::PendingReceiver<chromeos::libassistant::mojom::PlatformDelegate>

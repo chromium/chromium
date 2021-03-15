@@ -17,6 +17,7 @@ mojom("mojom") {
     "device_settings_delegate.mojom",
     "display_controller.mojom",
     "media_controller.mojom",
+    "notification_delegate.mojom",
     "platform_delegate.mojom",
     "service.mojom",
     "service_controller.mojom",

@@ -581,16 +581,6 @@ void AssistantManagerServiceImpl::OnVerifyAndroidApp(
       [](auto) {});
 }
 
-void AssistantManagerServiceImpl::OnNotificationRemoved(const std::string& id) {
-  assistant_notification_controller()->RemoveNotificationByGroupingKey(
-      id, /*from_server=*/true);
-}
-
-void AssistantManagerServiceImpl::OnAllNotificationsRemoved() {
-  assistant_notification_controller()->RemoveAllNotifications(
-      /*from_server=*/true);
-}
-
 void AssistantManagerServiceImpl::OnStateChanged(
     chromeos::libassistant::mojom::ServiceState new_state) {
   using chromeos::libassistant::mojom::ServiceState;
@@ -746,6 +736,11 @@ void AssistantManagerServiceImpl::AddRemoteConversationObserver(
     ConversationObserver* observer) {
   conversation_controller().AddRemoteObserver(
       observer->BindNewPipeAndPassRemote());
+}
+
+mojo::PendingReceiver<chromeos::libassistant::mojom::NotificationDelegate>
+AssistantManagerServiceImpl::GetPendingNotificationDelegate() {
+  return assistant_proxy_->ExtractNotificationDelegate();
 }
 
 void AssistantManagerServiceImpl::SendVoicelessInteraction(

@@ -92,8 +92,6 @@ class ConversationObserverMock : public mojom::ConversationObserver {
               OnHtmlResponse,
               (const std::string& response, const std::string& fallback));
   MOCK_METHOD(void, OnTextResponse, (const std::string& text));
-  MOCK_METHOD(void, OnNotificationRemoved, (const std::string& id));
-  MOCK_METHOD(void, OnAllNotificationsRemoved, ());
   MOCK_METHOD(void,
               OnSuggestionsResponse,
               (const std::vector<assistant::AssistantSuggestion>& suggestions));

@@ -15,6 +15,7 @@
 #include "base/macros.h"
 #include "chromeos/services/assistant/public/cpp/assistant_service.h"
 #include "chromeos/services/libassistant/public/cpp/assistant_notification.h"
+#include "chromeos/services/libassistant/public/mojom/notification_delegate.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "ui/message_center/message_center_observer.h"
@@ -26,7 +27,8 @@ namespace ash {
 class ASH_EXPORT AssistantNotificationControllerImpl
     : public AssistantNotificationController,
       public AssistantNotificationModelObserver,
-      public message_center::MessageCenterObserver {
+      public message_center::MessageCenterObserver,
+      public chromeos::libassistant::mojom::NotificationDelegate {
  public:
   using AssistantNotification = chromeos::assistant::AssistantNotification;
 
@@ -42,10 +44,12 @@ class ASH_EXPORT AssistantNotificationControllerImpl
   // AssistantNotificationController:
   void AddOrUpdateNotification(AssistantNotification&& notification) override;
   void RemoveNotificationById(const std::string& id, bool from_server) override;
+  void SetQuietMode(bool enabled) override;
+
+  // chromeos::libassistant::mojom::NotificationDelegate:
   void RemoveNotificationByGroupingKey(const std::string& grouping_id,
                                        bool from_server) override;
   void RemoveAllNotifications(bool from_server) override;
-  void SetQuietMode(bool enabled) override;
 
   // AssistantNotificationModelObserver:
   void OnNotificationAdded(const AssistantNotification& notification) override;
@@ -73,6 +77,9 @@ class ASH_EXPORT AssistantNotificationControllerImpl
   chromeos::assistant::Assistant* assistant_ = nullptr;
 
   const message_center::NotifierId notifier_id_;
+
+  mojo::Receiver<chromeos::libassistant::mojom::NotificationDelegate> receiver_{
+      this};
 
   DISALLOW_COPY_AND_ASSIGN(AssistantNotificationControllerImpl);
 };

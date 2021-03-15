@@ -15,6 +15,9 @@
 #include "base/optional.h"
 #include "chromeos/services/assistant/assistant_manager_service.h"
 #include "chromeos/services/assistant/fake_assistant_settings_impl.h"
+#include "chromeos/services/libassistant/public/mojom/notification_delegate.mojom-forward.h"
+#include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
 
 namespace chromeos {
 namespace assistant {
@@ -64,6 +67,8 @@ class COMPONENT_EXPORT(ASSISTANT_SERVICE) FakeAssistantManagerServiceImpl
   void AddRemoteConversationObserver(ConversationObserver* observer) override {}
   void RemoveAssistantInteractionSubscriber(
       AssistantInteractionSubscriber* subscriber) override;
+  mojo::PendingReceiver<chromeos::libassistant::mojom::NotificationDelegate>
+  GetPendingNotificationDelegate() override;
   void RetrieveNotification(const AssistantNotification& notification,
                             int action_index) override;
   void DismissNotification(const AssistantNotification& notification) override;

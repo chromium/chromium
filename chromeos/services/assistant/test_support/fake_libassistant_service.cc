@@ -4,6 +4,8 @@
 
 #include "chromeos/services/assistant/test_support/fake_libassistant_service.h"
 
+#include "chromeos/services/libassistant/public/mojom/notification_delegate.mojom-forward.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace chromeos {
@@ -69,6 +71,8 @@ void FakeLibassistantService::Bind(
         device_settings_delegate,
     mojo::PendingRemote<chromeos::libassistant::mojom::MediaDelegate>
         media_delegate,
+    mojo::PendingRemote<chromeos::libassistant::mojom::NotificationDelegate>
+        notification_delegate,
     mojo::PendingRemote<chromeos::libassistant::mojom::PlatformDelegate>
         platform_delegate,
     mojo::PendingRemote<chromeos::libassistant::mojom::TimerDelegate>

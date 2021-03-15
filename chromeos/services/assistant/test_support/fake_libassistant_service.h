@@ -6,9 +6,11 @@
 #define CHROMEOS_SERVICES_ASSISTANT_TEST_SUPPORT_FAKE_LIBASSISTANT_SERVICE_H_
 
 #include "chromeos/services/assistant/test_support/fake_service_controller.h"
+#include "chromeos/services/libassistant/public/mojom/notification_delegate.mojom-forward.h"
 #include "chromeos/services/libassistant/public/mojom/service.mojom.h"
 #include "chromeos/services/libassistant/public/mojom/speaker_id_enrollment_controller.mojom-forward.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 
 namespace chromeos {
@@ -67,6 +69,8 @@ class FakeLibassistantService
           device_settings_delegate,
       mojo::PendingRemote<chromeos::libassistant::mojom::MediaDelegate>
           media_delegate,
+      mojo::PendingRemote<chromeos::libassistant::mojom::NotificationDelegate>
+          notification_delegate,
       mojo::PendingRemote<chromeos::libassistant::mojom::PlatformDelegate>
           platform_delegate,
       mojo::PendingRemote<chromeos::libassistant::mojom::TimerDelegate>

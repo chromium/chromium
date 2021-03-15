@@ -143,14 +143,16 @@ class ConversationController::AssistantManagerDelegateImpl
  private:
   void RemoveAllNotifications() {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-    for (auto& observer : parent_.observers_)
-      observer->OnAllNotificationsRemoved();
+
+    parent_.notification_delegate_->RemoveAllNotifications(
+        /*from_server=*/true);
   }
 
   void RemoveNotification(const std::string& id) {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-    for (auto& observer : parent_.observers_)
-      observer->OnNotificationRemoved(id);
+
+    parent_.notification_delegate_->RemoveNotificationByGroupingKey(
+        id, /*from_server=*/true);
   }
 
   SEQUENCE_CHECKER(sequence_checker_);
@@ -189,10 +191,14 @@ ConversationController::ConversationController(
 ConversationController::~ConversationController() = default;
 
 void ConversationController::Bind(
-    mojo::PendingReceiver<mojom::ConversationController> receiver) {
+    mojo::PendingReceiver<mojom::ConversationController> receiver,
+    mojo::PendingRemote<mojom::NotificationDelegate> notification_delegate) {
   // Cannot bind the receiver twice.
   DCHECK(!receiver_.is_bound());
   receiver_.Bind(std::move(receiver));
+
+  // Binds remote notification delegate.
+  notification_delegate_.Bind(std::move(notification_delegate));
 }
 
 void ConversationController::AddActionObserver(
@@ -337,6 +343,7 @@ void ConversationController::OnShowContextualQueryFallback() {
       IDS_ASSISTANT_SCREEN_CONTEXT_QUERY_FALLBACK_TEXT));
 }
 
+// Called from Libassistant thread.
 void ConversationController::OnShowSuggestions(
     const std::vector<assistant::action::Suggestion>& suggestions) {
   ENSURE_MOJOM_THREAD(&ConversationController::OnShowSuggestions, suggestions);
@@ -354,6 +361,7 @@ void ConversationController::OnOpenUrl(const std::string& url,
     observer->OnOpenUrlResponse(GURL(url), in_background);
 }
 
+// Called from Libassistant thread.
 void ConversationController::OnOpenAndroidApp(
     const chromeos::assistant::AndroidAppInfo& app_info,
     const chromeos::assistant::InteractionInfo& interaction) {
@@ -377,6 +385,7 @@ void ConversationController::OnOpenAndroidApp(
       [](auto) {});
 }
 
+// Called from Libassistant thread.
 void ConversationController::OnScheduleWait(int id, int time_ms) {
   ENSURE_MOJOM_THREAD(&ConversationController::OnScheduleWait, id, time_ms);
 

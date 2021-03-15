@@ -11,11 +11,14 @@
 #include "chromeos/services/libassistant/public/mojom/audio_input_controller.mojom.h"
 #include "chromeos/services/libassistant/public/mojom/conversation_controller.mojom.h"
 #include "chromeos/services/libassistant/public/mojom/media_controller.mojom.h"
+#include "chromeos/services/libassistant/public/mojom/notification_delegate.mojom.h"
 #include "chromeos/services/libassistant/public/mojom/platform_delegate.mojom.h"
 #include "chromeos/services/libassistant/public/mojom/service.mojom.h"
 #include "chromeos/services/libassistant/public/mojom/service_controller.mojom.h"
 #include "chromeos/services/libassistant/public/mojom/speaker_id_enrollment_controller.mojom-forward.h"
 #include "chromeos/services/libassistant/public/mojom/timer_controller.mojom.h"
+#include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"
 
 namespace chromeos {
@@ -81,6 +84,8 @@ class AssistantProxy {
   ExtractDeviceSettingsDelegate();
   mojo::PendingReceiver<chromeos::libassistant::mojom::MediaDelegate>
   ExtractMediaDelegate();
+  mojo::PendingReceiver<chromeos::libassistant::mojom::NotificationDelegate>
+  ExtractNotificationDelegate();
   mojo::PendingReceiver<chromeos::libassistant::mojom::PlatformDelegate>
   ExtractPlatformDelegate();
   mojo::PendingRemote<
@@ -130,6 +135,8 @@ class AssistantProxy {
       pending_device_settings_delegate_receiver_;
   mojo::PendingReceiver<chromeos::libassistant::mojom::MediaDelegate>
       media_delegate_;
+  mojo::PendingReceiver<chromeos::libassistant::mojom::NotificationDelegate>
+      notification_delegate_;
   mojo::PendingReceiver<chromeos::libassistant::mojom::PlatformDelegate>
       platform_delegate_;
   mojo::PendingRemote<

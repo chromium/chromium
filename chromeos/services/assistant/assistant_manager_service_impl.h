@@ -29,9 +29,12 @@
 #include "chromeos/services/assistant/public/cpp/device_actions.h"
 #include "chromeos/services/assistant/public/shared/utils.h"
 #include "chromeos/services/libassistant/public/cpp/assistant_notification.h"
+#include "chromeos/services/libassistant/public/mojom/notification_delegate.mojom.h"
 #include "chromeos/services/libassistant/public/mojom/service_controller.mojom-forward.h"
 #include "libassistant/shared/public/conversation_state_listener.h"
 #include "libassistant/shared/public/device_state_listener.h"
+#include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/device/public/mojom/battery_monitor.mojom.h"
@@ -162,6 +165,8 @@ class COMPONENT_EXPORT(ASSISTANT_SERVICE) AssistantManagerServiceImpl
   void RemoveAlarmOrTimer(const std::string& id) override;
   void ResumeTimer(const std::string& id) override;
   void AddRemoteConversationObserver(ConversationObserver* observer) override;
+  mojo::PendingReceiver<chromeos::libassistant::mojom::NotificationDelegate>
+  GetPendingNotificationDelegate() override;
 
   // AssistantActionObserver overrides:
   void OnShowNotification(const action::Notification& notification) override;
@@ -177,8 +182,6 @@ class COMPONENT_EXPORT(ASSISTANT_SERVICE) AssistantManagerServiceImpl
                       const std::string& fallback) override;
   void OnTextResponse(const std::string& reponse) override;
   void OnOpenUrlResponse(const GURL& url, bool in_background) override;
-  void OnNotificationRemoved(const std::string& id) override;
-  void OnAllNotificationsRemoved() override;
 
   // AppListEventSubscriber overrides:
   void OnAndroidAppListRefreshed(

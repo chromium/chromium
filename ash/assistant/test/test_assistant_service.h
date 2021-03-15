@@ -14,6 +14,9 @@
 #include "base/optional.h"
 #include "base/timer/timer.h"
 #include "chromeos/services/assistant/public/cpp/assistant_service.h"
+#include "chromeos/services/libassistant/public/mojom/notification_delegate.mojom-forward.h"
+#include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
 
 namespace ash {
 
@@ -94,6 +97,8 @@ class TestAssistantService : public chromeos::assistant::Assistant {
       chromeos::assistant::AssistantInteractionSubscriber* subscriber) override;
   void AddRemoteConversationObserver(
       chromeos::assistant::ConversationObserver* observer) override {}
+  mojo::PendingReceiver<chromeos::libassistant::mojom::NotificationDelegate>
+  GetPendingNotificationDelegate() override;
   void RetrieveNotification(
       const chromeos::assistant::AssistantNotification& notification,
       int action_index) override;

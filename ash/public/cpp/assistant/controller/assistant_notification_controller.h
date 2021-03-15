@@ -30,16 +30,6 @@ class ASH_PUBLIC_EXPORT AssistantNotificationController {
   virtual void RemoveNotificationById(const std::string& id,
                                       bool from_server) = 0;
 
-  // Requests that all notifications associated with the given |grouping_key|
-  // be removed. If |from_server| is true the request to remove was initiated
-  // by the server.
-  virtual void RemoveNotificationByGroupingKey(const std::string& grouping_key,
-                                               bool from_server) = 0;
-
-  // Requests that all notifications be removed. If |from_server| is true the
-  // request was initiated by the server.
-  virtual void RemoveAllNotifications(bool from_server) = 0;
-
   // Changes the quiet mode state in the message center.
   virtual void SetQuietMode(bool enabled) = 0;
 

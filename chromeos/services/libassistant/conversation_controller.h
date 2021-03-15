@@ -15,6 +15,8 @@
 #include "chromeos/services/libassistant/public/cpp/assistant_notification.h"
 #include "chromeos/services/libassistant/public/mojom/authentication_state_observer.mojom.h"
 #include "chromeos/services/libassistant/public/mojom/conversation_controller.mojom.h"
+#include "chromeos/services/libassistant/public/mojom/notification_delegate.mojom.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote_set.h"
 
@@ -43,7 +45,9 @@ class COMPONENT_EXPORT(LIBASSISTANT_SERVICE) ConversationController
   ConversationController& operator=(const ConversationController&) = delete;
   ~ConversationController() override;
 
-  void Bind(mojo::PendingReceiver<mojom::ConversationController> receiver);
+  void Bind(
+      mojo::PendingReceiver<mojom::ConversationController> receiver,
+      mojo::PendingRemote<mojom::NotificationDelegate> notification_delegate);
 
   void AddActionObserver(
       chromeos::assistant::action::AssistantActionObserver* observer);
@@ -99,6 +103,7 @@ class COMPONENT_EXPORT(LIBASSISTANT_SERVICE) ConversationController
   mojo::RemoteSet<mojom::ConversationObserver> observers_;
   mojo::RemoteSet<mojom::AuthenticationStateObserver>
       authentication_state_observers_;
+  mojo::Remote<mojom::NotificationDelegate> notification_delegate_;
 
   // Owned by |LibassistantService|.
   ServiceController* const service_controller_;

@@ -16,6 +16,10 @@
 #include "chromeos/services/libassistant/public/cpp/android_app_info.h"
 #include "chromeos/services/libassistant/public/cpp/assistant_interaction_metadata.h"
 #include "chromeos/services/libassistant/public/cpp/assistant_notification.h"
+#include "chromeos/services/libassistant/public/mojom/notification_delegate.mojom-forward.h"
+#include "chromeos/services/libassistant/public/mojom/notification_delegate.mojom.h"
+#include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
 #include "ui/accessibility/mojom/ax_assistant_structure.mojom.h"
 
 namespace chromeos {
@@ -102,6 +106,10 @@ class COMPONENT_EXPORT(ASSISTANT_SERVICE_PUBLIC) Assistant {
       AssistantInteractionSubscriber* subscriber) = 0;
   virtual void AddRemoteConversationObserver(
       ConversationObserver* observer) = 0;
+
+  virtual mojo::PendingReceiver<
+      chromeos::libassistant::mojom::NotificationDelegate>
+  GetPendingNotificationDelegate() = 0;
 
   // Retrieves a notification. A voiceless interaction will be sent to server to
   // retrieve the notification of |action_index|, which can trigger other

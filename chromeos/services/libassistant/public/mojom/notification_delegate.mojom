@@ -1,0 +1,18 @@
+// Copyright 2021 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module chromeos.libassistant.mojom;
+
+// Interface that allows Libassistant to make notification related changes on
+// ChromeOS.
+interface NotificationDelegate {
+  // Requests to remove all notifications associated with |grouping_key|.
+  // If |from_server| is true, the request to remove was initiated by the
+  // server.
+  RemoveNotificationByGroupingKey(string grouping_key, bool from_server);
+
+  // Requests to remove all notifications. If |from_server| is true, the
+  // request was initiated by the server.
+  RemoveAllNotifications(bool from_server);
+};
