@@ -31,6 +31,7 @@
 #import "ios/chrome/browser/ui/table_view/cells/table_view_item.h"
 #import "ios/chrome/browser/ui/util/uikit_ui_util.h"
 #import "ios/chrome/common/ui/colors/UIColor+cr_semantic_colors.h"
+#import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #include "ios/chrome/grit/ios_chromium_strings.h"
 #include "ios/chrome/grit/ios_strings.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -212,6 +213,8 @@ NSString* kGoogleServicesSyncErrorImage = @"google_services_sync_error";
   self.encryptionItem =
       [[TableViewImageItem alloc] initWithType:EncryptionItemType];
   self.encryptionItem.title = GetNSString(IDS_IOS_MANAGE_SYNC_ENCRYPTION);
+  // The detail text (if any) is an error message, so color it in red.
+  self.encryptionItem.detailTextColor = [UIColor colorNamed:kRedColor];
   // For kSyncServiceNeedsTrustedVaultKey, the disclosure indicator should not
   // be shown since the reauth dialog for the trusted vault is presented from
   // the bottom, and is not part of navigation controller.
