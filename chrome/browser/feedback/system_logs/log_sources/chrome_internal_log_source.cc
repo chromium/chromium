@@ -234,8 +234,8 @@ void PopulateEntriesAsync(SystemLogsResponse* response) {
 
 std::string GetChromeVersionString() {
   // Version of the current running browser.
-  std::string browser_version = chrome::GetVersionString();
-
+  std::string browser_version =
+      chrome::GetVersionString(chrome::WithExtendedStable(true));
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   // If the device is receiving LTS updates, add a prefix to the version string.

@@ -89,7 +89,7 @@ void LacrosChromeServiceDelegateImpl::NewWindow() {
 }
 
 std::string LacrosChromeServiceDelegateImpl::GetChromeVersion() {
-  return chrome::GetVersionString();
+  return chrome::GetVersionString(chrome::WithExtendedStable(true));
 }
 
 void LacrosChromeServiceDelegateImpl::GetFeedbackData(
