@@ -240,7 +240,7 @@ const base::Feature kDesktopPWAsAttentionBadgingCrOS{
     "DesktopPWAsAttentionBadgingCrOS", base::FEATURE_ENABLED_BY_DEFAULT};
 constexpr base::FeatureParam<std::string> kDesktopPWAsAttentionBadgingCrOSParam{
     &kDesktopPWAsAttentionBadgingCrOS, "badge-source",
-    switches::kDesktopPWAsAttentionBadgingCrOSApiOnly};
+    switches::kDesktopPWAsAttentionBadgingCrOSApiOverridesNotifications};
 #endif
 
 // When installing default installed PWAs, we wait for service workers
