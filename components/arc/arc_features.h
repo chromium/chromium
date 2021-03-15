@@ -24,6 +24,8 @@ extern const base::Feature kFilePickerExperimentFeature;
 extern const base::Feature kNativeBridge64BitSupportExperimentFeature;
 extern const base::Feature kNativeBridgeToggleFeature;
 extern const base::Feature kPictureInPictureFeature;
+extern const base::Feature kRtVcpuDualCore;
+extern const base::Feature kRtVcpuQuadCore;
 extern const base::Feature kUseHighMemoryDalvikProfile;
 extern const base::Feature kUsbHostFeature;
 extern const base::Feature kUsbStorageUIFeature;

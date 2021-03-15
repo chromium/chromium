@@ -2232,6 +2232,12 @@ extern const char kArcNativeBridgeToggleDescription[];
 extern const char kArcNativeBridge64BitSupportExperimentName[];
 extern const char kArcNativeBridge64BitSupportExperimentDescription[];
 
+extern const char kArcRtVcpuDualCoreName[];
+extern const char kArcRtVcpuDualCoreDesc[];
+
+extern const char kArcRtVcpuQuadCoreName[];
+extern const char kArcRtVcpuQuadCoreDesc[];
+
 extern const char kArcUseHighMemoryDalvikProfileName[];
 extern const char kArcUseHighMemoryDalvikProfileDesc[];
 

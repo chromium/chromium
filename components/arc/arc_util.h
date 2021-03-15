@@ -80,7 +80,9 @@ bool IsArcAvailable();
 bool IsArcVmEnabled();
 
 // Returns true if ARC VM realtime VCPU is enabled.
-bool IsArcVmRtVcpuEnabled();
+// |cpus| is the number of logical cores that are currently online on the
+// device.
+bool IsArcVmRtVcpuEnabled(uint32_t cpus);
 
 // Returns true if all development configuration directives in the
 // vm_tools/init/arcvm_dev.conf file are ignored during ARCVM start.

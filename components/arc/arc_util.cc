@@ -171,9 +171,17 @@ bool IsArcVmEnabled() {
       chromeos::switches::kEnableArcVm);
 }
 
-bool IsArcVmRtVcpuEnabled() {
-  return base::CommandLine::ForCurrentProcess()->HasSwitch(
-      chromeos::switches::kEnableArcVmRtVcpu);
+bool IsArcVmRtVcpuEnabled(uint32_t cpus) {
+  // TODO(kansho): remove switch after tast test use Finch instead.
+  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
+          chromeos::switches::kEnableArcVmRtVcpu)) {
+    return true;
+  }
+  if (cpus == 2 && base::FeatureList::IsEnabled(kRtVcpuDualCore))
+    return true;
+  if (cpus > 2 && base::FeatureList::IsEnabled(kRtVcpuQuadCore))
+    return true;
+  return false;
 }
 
 bool IsArcVmDevConfIgnored() {
