@@ -25,6 +25,7 @@
 #include "base/message_loop/message_pump_for_io.h"
 #include "base/strings/stringprintf.h"
 #include "base/task/current_thread.h"
+#include "base/trace_event/typed_macros.h"
 
 extern "C" {
 kern_return_t fileport_makeport(int fd, mach_port_t*);
@@ -476,6 +477,8 @@ class ChannelMac : public Channel,
 
   // base::MessagePumpKqueue::MachPortWatcher:
   void OnMachMessageReceived(mach_port_t port) override {
+    TRACE_EVENT("ipc,toplevel", "Mojo read message");
+
     DCHECK(io_task_runner_->RunsTasksInCurrentSequence());
 
     base::BufferIterator<const char> buffer(

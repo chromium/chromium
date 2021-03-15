@@ -18,6 +18,7 @@
 #include "base/memory/ptr_util.h"
 #include "base/numerics/safe_math.h"
 #include "base/process/process_handle.h"
+#include "base/trace_event/typed_macros.h"
 #include "build/build_config.h"
 #include "mojo/core/configuration.h"
 #include "mojo/core/core.h"
@@ -636,6 +637,8 @@ bool Channel::OnReadComplete(size_t bytes_read, size_t* next_read_size_hint) {
 Channel::DispatchResult Channel::TryDispatchMessage(
     base::span<const char> buffer,
     size_t* size_hint) {
+  TRACE_EVENT("ipc,toplevel", "Mojo dispatch message");
+
   bool did_consume_message = false;
 
   // We have at least enough data available for a LegacyHeader.
