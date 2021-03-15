@@ -13,7 +13,7 @@
 #include "base/optional.h"
 #include "base/time/clock.h"
 #include "base/time/time.h"
-#include "chrome/browser/chromeos/attestation/enrollment_certificate_uploader.h"
+#include "chrome/browser/ash/attestation/enrollment_certificate_uploader.h"
 #include "components/policy/core/common/cloud/cloud_policy_store.h"
 
 class PrefService;

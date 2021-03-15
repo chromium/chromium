@@ -10456,7 +10456,7 @@ histogram as enum -->
 <enum name="ChromeOSPlatformVerificationExpiryStatus">
   <summary>
     Possible results of a platform verification expiry check. See
-    chrome/browser/chromeos/attestation/platform_verification.cc.
+    chrome/browser/ash/attestation/platform_verification.cc.
   </summary>
   <int value="0" label="Ok"/>
   <int value="1" label="Expiring Soon"/>
@@ -10468,7 +10468,7 @@ histogram as enum -->
 <enum name="ChromeOSPlatformVerificationResult">
   <summary>
     Possible results of a platform verification attempt. See
-    chrome/browser/chromeos/attestation/platform_verification.h.
+    chrome/browser/ash/attestation/platform_verification.h.
   </summary>
   <int value="0" label="Success"/>
   <int value="1" label="Internal Error"/>

@@ -11,7 +11,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/time/time.h"
-#include "chrome/browser/chromeos/attestation/tpm_challenge_key_subtle.h"
+#include "chrome/browser/ash/attestation/tpm_challenge_key_subtle.h"
 #include "chrome/browser/chromeos/cert_provisioning/cert_provisioning_common.h"
 #include "chrome/browser/chromeos/platform_keys/platform_keys.h"
 #include "chrome/browser/chromeos/platform_keys/platform_keys_service.h"

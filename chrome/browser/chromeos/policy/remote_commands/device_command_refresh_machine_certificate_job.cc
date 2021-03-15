@@ -14,7 +14,7 @@
 #include "base/system/sys_info.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
-#include "chrome/browser/chromeos/attestation/machine_certificate_uploader.h"
+#include "chrome/browser/ash/attestation/machine_certificate_uploader.h"
 
 namespace policy {
 

@@ -11,7 +11,7 @@
 #include <memory>
 #include <string>
 
-#include "chrome/browser/chromeos/attestation/tpm_challenge_key.h"
+#include "chrome/browser/ash/attestation/tpm_challenge_key.h"
 #include "chromeos/dbus/constants/attestation_constants.h"
 #include "extensions/browser/extension_function.h"
 #include "extensions/common/extension.h"

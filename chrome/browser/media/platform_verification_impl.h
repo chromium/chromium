@@ -15,7 +15,7 @@
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chrome/browser/chromeos/attestation/platform_verification_flow.h"
+#include "chrome/browser/ash/attestation/platform_verification_flow.h"
 #endif
 
 // Implements media::mojom::PlatformVerification. Can only be used on the

@@ -15,8 +15,8 @@
 #include <map>
 
 #include "base/memory/weak_ptr.h"
-#include "chrome/browser/chromeos/attestation/platform_verification_dialog.h"
-#include "chrome/browser/chromeos/attestation/platform_verification_flow.h"
+#include "chrome/browser/ash/attestation/platform_verification_dialog.h"
+#include "chrome/browser/ash/attestation/platform_verification_flow.h"
 #endif
 
 namespace views {

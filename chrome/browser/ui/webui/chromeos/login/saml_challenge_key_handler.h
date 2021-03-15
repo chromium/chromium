@@ -12,7 +12,7 @@
 #include "base/callback_helpers.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
-#include "chrome/browser/chromeos/attestation/tpm_challenge_key_with_timeout.h"
+#include "chrome/browser/ash/attestation/tpm_challenge_key_with_timeout.h"
 
 namespace chromeos {
 
