@@ -48,6 +48,7 @@
 #include "gpu/ipc/service/gpu_init.h"
 #include "gpu/ipc/service/gpu_watchdog_thread.h"
 #include "media/gpu/buildflags.h"
+#include "mojo/public/cpp/bindings/sync_call_restrictions.h"
 #include "services/tracing/public/cpp/trace_startup.h"
 #include "third_party/angle/src/gpu_info_util/SystemInfo.h"
 #include "ui/base/ui_base_features.h"
@@ -231,6 +232,13 @@ int GpuMain(const MainFunctionParams& parameters) {
     bool success = gpu_preferences.FromSwitchValue(value);
     CHECK(success);
   }
+
+  // Disallow sending sync IPCs from the GPU process, in particular CrGpuMain
+  // and VizCompositorThreads. Incoming sync IPCs can be received out of order
+  // when waiting on response to an outgoing sync IPC. Both viz and gpu
+  // interfaces rely on receiving messages in order so this message reordering
+  // would break things.
+  mojo::SyncCallRestrictions::DisallowSyncCall();
 
   if (gpu_preferences.gpu_startup_dialog)
     WaitForDebugger("Gpu");
