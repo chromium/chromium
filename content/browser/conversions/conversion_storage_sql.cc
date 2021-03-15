@@ -65,11 +65,15 @@ const base::FilePath::CharType kDatabasePath[] =
 // Version 2 adds a new impression column "conversion_destination" based on
 // registerable domain which is used for attribution instead of
 // "conversion_origin".
-const int kCurrentVersionNumber = 2;
+//
+// Version 3 - 2021/03/08 - https://crrev.com/c/2743337
+//
+// Version 3 adds new impression columns source_type and attributed_truthfully.
+const int kCurrentVersionNumber = 3;
 
 // Earliest version which can use a |kCurrentVersionNumber| database
 // without failing.
-const int kCompatibleVersionNumber = 2;
+const int kCompatibleVersionNumber = 3;
 
 // Latest version of the database that cannot be upgraded to
 // |kCurrentVersionNumber| without razing the database. No versions are
@@ -159,8 +163,9 @@ void ConversionStorageSql::StoreImpression(
       "INSERT INTO impressions"
       "(impression_data, impression_origin, conversion_origin, "
       "conversion_destination, "
-      "reporting_origin, impression_time, expiry_time) "
-      "VALUES (?,?,?,?,?,?,?)";
+      "reporting_origin, impression_time, expiry_time, source_type, "
+      "attributed_truthfully) "
+      "VALUES (?,?,?,?,?,?,?,?,?)";
   sql::Statement statement(
       db_->GetCachedStatement(SQL_FROM_HERE, kInsertImpressionSql));
   statement.BindString(0, impression.impression_data());
@@ -170,6 +175,8 @@ void ConversionStorageSql::StoreImpression(
   statement.BindString(4, serialized_reporting_origin);
   statement.BindInt64(5, SerializeTime(impression.impression_time()));
   statement.BindInt64(6, SerializeTime(impression.expiry_time()));
+  statement.BindInt(7, static_cast<int>(impression.source_type()));
+  statement.BindInt(8, 1 /*true*/);
   statement.Run();
 
   transaction.Commit();
@@ -817,6 +824,11 @@ bool ConversionStorageSql::CreateSchema() {
   //     in StoreImpression().
   //   - An impression has expired but still has unsent conversions in the
   //     conversions table meaning it cannot be deleted yet.
+  // |source_type| is the type of the source of the impression, currently always
+  // |kNavigation|.
+  // |attributed_truthfully| is whether the impression was noisily attributed:
+  // the impression was either marked inactive to start so it would never send a
+  // report, or a fake conversion report was generated for the impression.
   const char kImpressionTableSql[] =
       "CREATE TABLE IF NOT EXISTS impressions"
       "(impression_id INTEGER PRIMARY KEY,"
@@ -828,7 +840,9 @@ bool ConversionStorageSql::CreateSchema() {
       "expiry_time INTEGER NOT NULL,"
       "num_conversions INTEGER DEFAULT 0,"
       "active INTEGER DEFAULT 1,"
-      "conversion_destination TEXT NOT NULL)";
+      "conversion_destination TEXT NOT NULL,"
+      "source_type INTEGER NOT NULL,"
+      "attributed_truthfully INTEGER NOT NULL)";
   if (!db_->Execute(kImpressionTableSql))
     return false;
 

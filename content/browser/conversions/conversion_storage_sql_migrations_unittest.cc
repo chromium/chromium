@@ -29,7 +29,7 @@ std::string RemoveQuotes(std::string input) {
   return output;
 }
 
-const int kCurrentVersionNumber = 2;
+const int kCurrentVersionNumber = 3;
 
 }  // namespace
 
@@ -57,7 +57,7 @@ class ConversionStorageSqlMigrationsTest : public testing::Test {
   std::string GetCurrentSchema() {
     base::FilePath current_version_path = temp_directory_.GetPath().Append(
         FILE_PATH_LITERAL("TestCurrentVersion.db"));
-    LoadDatabase(FILE_PATH_LITERAL("version_2.sql"), current_version_path);
+    LoadDatabase(FILE_PATH_LITERAL("version_3.sql"), current_version_path);
     sql::Database db;
     EXPECT_TRUE(db.Open(current_version_path));
     return db.GetSchema();
@@ -188,6 +188,61 @@ TEST_F(ConversionStorageSqlMigrationsTest, MigrateVersion1ToCurrent) {
     ASSERT_TRUE(s.Step());
     ASSERT_EQ("https://sub.conversion.test", s.ColumnString(0));
     ASSERT_EQ("https://conversion.test", s.ColumnString(1));
+    ASSERT_FALSE(s.Step());
+  }
+
+  // DB migration histograms should be recorded.
+  histograms.ExpectTotalCount("Conversions.Storage.CreationTime", 0);
+  histograms.ExpectTotalCount("Conversions.Storage.MigrationTime", 1);
+}
+
+TEST_F(ConversionStorageSqlMigrationsTest, MigrateVersion2ToCurrent) {
+  base::HistogramTester histograms;
+  LoadDatabase(FILE_PATH_LITERAL("version_2.sql"), DbPath());
+
+  // Verify pre-conditions.
+  {
+    sql::Database db;
+    ASSERT_TRUE(db.Open(DbPath()));
+
+    ASSERT_FALSE(db.DoesColumnExist("impressions", "source_type"));
+    ASSERT_FALSE(db.DoesColumnExist("impressions", "attributed_truthfully"));
+  }
+
+  MigrateDatabase();
+
+  // Verify schema is current.
+  {
+    sql::Database db;
+    ASSERT_TRUE(db.Open(DbPath()));
+
+    // Check version.
+    EXPECT_EQ(kCurrentVersionNumber, VersionFromDatabase(&db));
+
+    // Check that expected tables are present.
+    EXPECT_TRUE(db.DoesTableExist("conversions"));
+    EXPECT_TRUE(db.DoesTableExist("impressions"));
+    EXPECT_TRUE(db.DoesTableExist("meta"));
+
+    // Compare without quotes as sometimes migrations cause table names to be
+    // string literals.
+    EXPECT_EQ(RemoveQuotes(GetCurrentSchema()), RemoveQuotes(db.GetSchema()));
+
+    // Check that the relevant schema changes are made.
+    EXPECT_TRUE(db.DoesColumnExist("impressions", "source_type"));
+    EXPECT_TRUE(db.DoesColumnExist("impressions", "attributed_truthfully"));
+
+    // Verify that data is preserved across the migration.
+    size_t rows = 0;
+    sql::test::CountTableRows(&db, "impressions", &rows);
+    EXPECT_EQ(1u, rows);
+
+    sql::Statement s(db.GetUniqueStatement(
+        "SELECT source_type, attributed_truthfully FROM impressions"));
+
+    ASSERT_TRUE(s.Step());
+    ASSERT_EQ(0, s.ColumnInt(0));
+    ASSERT_EQ(true, s.ColumnBool(1));
     ASSERT_FALSE(s.Step());
   }
 
