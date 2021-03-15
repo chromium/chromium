@@ -4098,44 +4098,6 @@
   "android-pie-arm64-wpt-rel-non-cq": {
     "isolated_scripts": [
       {
-        "isolate_name": "chrome_public_wpt",
-        "merge": {
-          "args": [
-            "--verbose"
-          ],
-          "script": "//third_party/blink/tools/merge_web_test_results.py"
-        },
-        "name": "chrome_public_wpt",
-        "resultdb": {
-          "enable": true
-        },
-        "results_handler": "layout tests",
-        "swarming": {
-          "can_use_on_swarming_builders": true,
-          "cipd_packages": [
-            {
-              "cipd_package": "infra/tools/luci/logdog/butler/${platform}",
-              "location": "bin",
-              "revision": "git_revision:ff387eadf445b24c935f1cf7d6ddd279f8a6b04c"
-            }
-          ],
-          "dimension_sets": [
-            {
-              "device_os": "PQ3A.190801.002",
-              "device_os_flavor": "google",
-              "device_os_type": "userdebug",
-              "device_type": "walleye",
-              "os": "Android"
-            }
-          ],
-          "expiration": 18000,
-          "hard_timeout": 14400,
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
-          "shards": 15
-        },
-        "test_id_prefix": "ninja://chrome/android:chrome_public_wpt/"
-      },
-      {
         "isolate_name": "system_webview_wpt",
         "merge": {
           "args": [
@@ -4210,6 +4172,62 @@
           "shards": 15
         },
         "test_id_prefix": "ninja://weblayer/shell/android:weblayer_shell_wpt/"
+      }
+    ]
+  },
+  "android-web-platform-pie-x86-fyi-rel": {
+    "isolated_scripts": [
+      {
+        "args": [
+          "--avd-config=../../tools/android/avd/proto/generic_android28.textpb"
+        ],
+        "isolate_name": "chrome_public_wpt",
+        "merge": {
+          "args": [
+            "--verbose"
+          ],
+          "script": "//third_party/blink/tools/merge_web_test_results.py"
+        },
+        "name": "chrome_public_wpt",
+        "resultdb": {
+          "enable": true
+        },
+        "results_handler": "layout tests",
+        "swarming": {
+          "can_use_on_swarming_builders": true,
+          "cipd_packages": [
+            {
+              "cipd_package": "infra/tools/luci/logdog/butler/${platform}",
+              "location": "bin",
+              "revision": "git_revision:ff387eadf445b24c935f1cf7d6ddd279f8a6b04c"
+            }
+          ],
+          "dimension_sets": [
+            {
+              "cpu": "x86-64",
+              "device_os": null,
+              "device_type": null,
+              "machine_type": "n1-standard-8",
+              "os": "Ubuntu-16.04",
+              "pool": "chromium.tests.avd"
+            }
+          ],
+          "expiration": 18000,
+          "hard_timeout": 14400,
+          "named_caches": [
+            {
+              "name": "avd_generic_android28",
+              "path": ".android"
+            },
+            {
+              "name": "system_images_android_28_google_apis_x86",
+              "path": ".emulator_sdk"
+            }
+          ],
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
+          "shards": 18
+        },
+        "test_id_prefix": "ninja://chrome/android:chrome_public_wpt/"
       }
     ]
   },
