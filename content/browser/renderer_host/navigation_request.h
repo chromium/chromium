@@ -825,6 +825,10 @@ class CONTENT_EXPORT NavigationRequest
   // only meaningful to call this after BeginNavigation().
   bool IsPrerenderedPageActivation() const;
 
+  // This is the same as |NavigationHandle::IsServedFromBackForwardCache|, but
+  // adds a const qualifier.
+  bool IsServedFromBackForwardCache() const;
+
  private:
   friend class NavigationRequestTest;
 

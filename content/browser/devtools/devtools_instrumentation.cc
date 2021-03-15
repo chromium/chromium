@@ -165,6 +165,11 @@ void OnResetNavigationRequest(NavigationRequest* navigation_request) {
 void OnNavigationResponseReceived(
     const NavigationRequest& nav_request,
     const network::mojom::URLResponseHead& response) {
+  // This response is artificial (see CachedNavigationURLLoader), so we don't
+  // want to report it.
+  if (nav_request.IsServedFromBackForwardCache())
+    return;
+
   FrameTreeNode* ftn = nav_request.frame_tree_node();
   std::string id = nav_request.devtools_navigation_token().ToString();
   std::string frame_id = ftn->devtools_frame_token().ToString();
@@ -244,6 +249,11 @@ void OnNavigationRequestFailed(
     ReportBrowserInitiatedIssue(ftn->current_frame_host(),
                                 inspector_issue.get());
   }
+
+  // If a BFCache navigation fails, it will be restarted as a regular
+  // navigation, so we don't want to report this failure.
+  if (nav_request.IsServedFromBackForwardCache())
+    return;
 
   DispatchToAgents(ftn, &protocol::NetworkHandler::LoadingComplete, id,
                    protocol::Network::ResourceTypeEnum::Document, status);
@@ -625,6 +635,11 @@ void OnNavigationRequestWillBeSent(
       continue;
     agent_host->OnNavigationRequestWillBeSent(navigation_request);
   }
+
+  // We use CachedNavigationURLLoader for BFCache navigations and don't actually
+  // send a network request, so we don't report this request to DevTools.
+  if (navigation_request.IsServedFromBackForwardCache())
+    return;
 
   // Make sure both back-ends yield the same timestamp.
   auto timestamp = base::TimeTicks::Now();

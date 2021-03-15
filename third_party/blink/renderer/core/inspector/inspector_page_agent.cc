@@ -1020,6 +1020,10 @@ void InspectorPageAgent::WillCommitLoad(LocalFrame*, DocumentLoader* loader) {
   GetFrontend()->frameNavigated(BuildObjectForFrame(loader->GetFrame()));
 }
 
+void InspectorPageAgent::DidRestoreFromBackForwardCache(LocalFrame* frame) {
+  GetFrontend()->frameNavigated(BuildObjectForFrame(frame));
+}
+
 void InspectorPageAgent::DidOpenDocument(LocalFrame* frame,
                                          DocumentLoader* loader) {
   GetFrontend()->documentOpened(BuildObjectForFrame(loader->GetFrame()));

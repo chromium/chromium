@@ -5429,7 +5429,8 @@ GlobalFrameRoutingId NavigationRequest::GetPreviousRenderFrameHostId() {
 }
 
 bool NavigationRequest::IsServedFromBackForwardCache() {
-  return rfh_restored_from_back_forward_cache_ != nullptr;
+  const NavigationRequest& request = *this;
+  return request.IsServedFromBackForwardCache();
 }
 
 void NavigationRequest::SetIsOverridingUserAgent(bool override_ua) {
@@ -5809,6 +5810,10 @@ bool NavigationRequest::MaybeCancelFailedNavigation() {
 bool NavigationRequest::IsPrerenderedPageActivation() const {
   CHECK_GE(state_, WILL_START_REQUEST);
   return prerender_frame_tree_node_id_ != RenderFrameHost::kNoFrameTreeNodeId;
+}
+
+bool NavigationRequest::IsServedFromBackForwardCache() const {
+  return rfh_restored_from_back_forward_cache_ != nullptr;
 }
 
 bool NavigationRequest::IsWaitingForBeforeUnload() {

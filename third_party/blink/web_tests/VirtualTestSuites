@@ -771,6 +771,11 @@
     "args": [ "--enable-features=BackForwardCacheABExperimentControl" ]
   },
   {
+    "prefix": "bfcache",
+    "bases": [ "http/tests/inspector-protocol/bfcache" ],
+    "args": [ "--enable-features=BackForwardCache" ]
+  },
+  {
     "prefix": "interest-cohort-api-origin-trial",
     "bases": [ "http/tests/origin_trials/webexposed/interest-cohort-origin-trial-interfaces.html" ],
     "args": [ "--enable-features=InterestCohortAPIOriginTrial" ]
