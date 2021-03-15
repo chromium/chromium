@@ -20,7 +20,6 @@ enum BucketDurability {
 
 // The policies applied to a StorageBucket upon its creation.
 struct BucketPolicies {
-  string title;
   bool persisted;
   BucketDurability durability;
   int64 quota;

@@ -43,9 +43,6 @@ mojom::blink::BucketPoliciesPtr ToMojoBucketPolicies(
     const StorageBucketOptions* options) {
   auto policies = mojom::blink::BucketPolicies::New();
   policies->persisted = options->persisted();
-  policies->title = (options->hasTitle() && !options->title().IsEmpty())
-                        ? options->title()
-                        : "";
   policies->quota = options->hasQuotaNonNull()
                         ? options->quotaNonNull()
                         : mojom::blink::kNoQuotaPolicyValue;
