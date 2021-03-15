@@ -10404,10 +10404,20 @@ void RenderFrameHostImpl::RecordDocumentCreatedUkmEvent(
       !is_main_frame() &&
       !GetMainFrame()->GetLastCommittedOrigin().IsSameOriginWith(origin);
 
+  // Compares the subframe site with the main frame site. In the case of
+  // nested subframes such as A(B(A)), the bottom-most frame A is expected to
+  // have |is_cross_site_frame| set to false, even though this frame is cross-
+  // site from its parent frame B. This value is only used in manual analysis.
+  bool is_cross_site_frame =
+      !is_main_frame() &&
+      (net::SchemefulSite(origin) !=
+       net::SchemefulSite(GetMainFrame()->GetLastCommittedOrigin()));
+
   ukm::builders::DocumentCreated(document_ukm_source_id)
       .SetNavigationSourceId(GetPageUkmSourceId())
       .SetIsMainFrame(is_main_frame())
       .SetIsCrossOriginFrame(is_cross_origin_frame)
+      .SetIsCrossSiteFrame(is_cross_site_frame)
       .Record(ukm_recorder);
 }
 

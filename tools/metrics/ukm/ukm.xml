@@ -4363,6 +4363,12 @@ be describing additional metrics about the same event.
       1.
     </summary>
   </metric>
+  <metric name="IsCrossSiteFrame">
+    <summary>
+      Whether the document was in a cross site iframe. This can either be 0 or
+      1.
+    </summary>
+  </metric>
   <metric name="IsMainFrame">
     <summary>
       Whether the document was in the main frame. This is can either be 0 or 1.
