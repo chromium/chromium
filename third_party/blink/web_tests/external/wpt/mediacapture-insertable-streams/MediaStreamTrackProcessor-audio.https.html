@@ -1,0 +1,43 @@
+<!doctype html>
+<html>
+
+<head>
+  <title>MediaStreamTrackProcessor</title>
+  <link rel="help" href="https://w3c.github.io/mediacapture-insertable-streams">
+</head>
+
+<body>
+  <p class="instructions">When prompted, use the accept button to give permission to use your audio and video devices.</p>
+  <h1 class="instructions">Description</h1>
+  <p class="instructions">This test checks that processing captured audio MediaStreamTracks works as expected.</p>
+  <script src=/resources/testharness.js></script>
+  <script src=/resources/testharnessreport.js></script>
+  <script>
+
+    promise_test(async t => {
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      assert_equals(stream.getAudioTracks().length, 1);
+      const audioTrack = stream.getAudioTracks()[0];
+
+      return new Promise((resolve, reject) => {
+        const writableStream = new WritableStream({
+          write(audioFrame) {
+            assert_true(audioFrame instanceof AudioFrame);
+            assert_not_equals(audioFrame.timestamp, null);
+            resolve();
+          },
+          close() {
+            assert_unreached("Closed");
+          },
+          abort(err) {
+            assert_unreached("Sink error:" + err);
+          }
+        });
+        const audioTrackProcessor = new MediaStreamTrackProcessor(audioTrack);
+        audioTrackProcessor.readable.pipeTo(writableStream);
+      });
+    }, "Tests that creating an Audio MediaStreamTrackProcessor works as expected");
+  </script>
+</body>
+
+</html>
