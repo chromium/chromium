@@ -533,6 +533,7 @@ test("android_webview_unittests") {
     "../browser/state_serializer_unittest.cc",
     "../lib/webview_tests.cc",
     "../nonembedded/component_updater/aw_component_installer_policy_delegate_unittest.cc",
+    "../nonembedded/component_updater/aw_component_update_service_test.cc",
     "../nonembedded/component_updater/aw_component_updater_configurator_unittest.cc",
   ]
 

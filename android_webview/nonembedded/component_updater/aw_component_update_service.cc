@@ -18,6 +18,7 @@
 #include "base/command_line.h"
 #include "base/files/file_path.h"
 #include "base/threading/thread_task_runner_handle.h"
+#include "components/component_updater/component_installer.h"
 #include "components/component_updater/component_updater_paths.h"
 #include "components/component_updater/component_updater_service.h"
 #include "components/component_updater/component_updater_utils.h"
@@ -50,14 +51,19 @@ void JNI_AwComponentUpdateService_StartComponentUpdateService(
     JNIEnv* env,
     const base::android::JavaParamRef<jobject>& j_finished_callback) {
   AwComponentUpdateService::GetInstance()->StartComponentUpdateService(
-      j_finished_callback);
+      base::BindOnce(
+          base::android::RunRunnableAndroid,
+          base::android::ScopedJavaGlobalRef<jobject>(j_finished_callback)));
 }
 
 AwComponentUpdateService::AwComponentUpdateService()
-    : update_client_(
-          update_client::UpdateClientFactory(MakeAwComponentUpdaterConfigurator(
-              base::CommandLine::ForCurrentProcess(),
-              WebViewApkProcess::GetInstance()->GetPrefService()))) {}
+    : AwComponentUpdateService(MakeAwComponentUpdaterConfigurator(
+          base::CommandLine::ForCurrentProcess(),
+          WebViewApkProcess::GetInstance()->GetPrefService())) {}
+
+AwComponentUpdateService::AwComponentUpdateService(
+    scoped_refptr<update_client::Configurator> configurator)
+    : update_client_(update_client::UpdateClientFactory(configurator)) {}
 
 AwComponentUpdateService::~AwComponentUpdateService() = default;
 
@@ -72,7 +78,7 @@ bool AwComponentUpdateService::NotifyNewVersion(
 
 // Start ComponentUpdateService once.
 void AwComponentUpdateService::StartComponentUpdateService(
-    const base::android::JavaParamRef<jobject>& j_finished_callback) {
+    base::OnceClosure finished_callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   // All dirs point to the webview component root dir. Has to be called after
@@ -82,15 +88,12 @@ void AwComponentUpdateService::StartComponentUpdateService(
       /*components_system_root_key_alt=*/android_webview::DIR_COMPONENTS_ROOT,
       /*components_user_root_key=*/android_webview::DIR_COMPONENTS_ROOT);
 
-  RegisterComponentsForUpdate(
+  RegisterComponents(
       base::BindRepeating(&AwComponentUpdateService::RegisterComponent,
                           base::Unretained(this)),
       base::BindOnce(
           &AwComponentUpdateService::ScheduleUpdatesOfRegisteredComponents,
-          weak_ptr_factory_.GetWeakPtr(),
-          base::BindOnce(base::android::RunRunnableAndroid,
-                         base::android::ScopedJavaGlobalRef<jobject>(
-                             j_finished_callback))));
+          weak_ptr_factory_.GetWeakPtr(), std::move(finished_callback)));
 }
 
 bool AwComponentUpdateService::RegisterComponent(
@@ -207,6 +210,12 @@ void AwComponentUpdateService::ScheduleUpdatesOfRegisteredComponents(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   CheckForUpdates(std::move(on_finished_updates));
+}
+
+void AwComponentUpdateService::RegisterComponents(
+    RegisterComponentsCallback register_callback,
+    base::OnceClosure on_finished) {
+  RegisterComponentsForUpdate(register_callback, std::move(on_finished));
 }
 
 }  // namespace android_webview
