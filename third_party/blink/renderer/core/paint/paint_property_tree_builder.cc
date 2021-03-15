@@ -1045,7 +1045,7 @@ void FragmentPaintPropertyTreeBuilder::UpdateTransform() {
     }
     if (transform->IsIdentityOr2DTranslation()) {
       context_.translation_2d_to_layout_shift_root_delta +=
-          PhysicalOffset::FromFloatSizeRound(transform->Translation2D());
+          transform->Translation2D();
     }
   } else if (RuntimeEnabledFeatures::TransformInteropEnabled() &&
              !object_.IsAnonymous()) {
@@ -2173,6 +2173,11 @@ void FragmentPaintPropertyTreeBuilder::UpdateScrollAndScrollTranslation() {
         frame_view->SetPaintArtifactCompositorNeedsUpdate();
       }
     }
+
+    // A scroller creates a layout shift root, so we just calculate one scroll
+    // offset delta without accumulation.
+    context_.current.scroll_offset_to_layout_shift_root_delta =
+        scroll_translation->Translation2D() - old_scroll_offset;
   }
 }
 
@@ -2731,10 +2736,13 @@ void FragmentPaintPropertyTreeBuilder::UpdateForSelf() {
   // For LayoutView, additional_offset_to_layout_shift_root_delta applies to
   // neither itself nor descendants. For other layout shift roots, we clear the
   // delta at the end of UpdateForChildren() because the delta still applies to
-  // the object itself.
+  // the object itself. Same for translation_2d_to_layout_shift_delta and
+  // scroll_offset_to_layout_shift_root_delta.
   if (IsA<LayoutView>(object_)) {
     context_.current.additional_offset_to_layout_shift_root_delta =
-        context_.translation_2d_to_layout_shift_root_delta = PhysicalOffset();
+        PhysicalOffset();
+    context_.translation_2d_to_layout_shift_root_delta = FloatSize();
+    context_.current.scroll_offset_to_layout_shift_root_delta = FloatSize();
   }
 }
 
@@ -2769,7 +2777,11 @@ void FragmentPaintPropertyTreeBuilder::UpdateForChildren() {
     // additional_offset_to_layout_shift_root_delta.
     context_.current.additional_offset_to_layout_shift_root_delta =
         context_.old_paint_offset - fragment_data_.PaintOffset();
-    context_.translation_2d_to_layout_shift_root_delta = PhysicalOffset();
+    context_.translation_2d_to_layout_shift_root_delta = FloatSize();
+    // Don't reset scroll_offset_to_layout_shift_root_delta if this object has
+    // scroll translation because we need to propagate the delta to descendants.
+    if (!properties_ || !properties_->ScrollTranslation())
+      context_.current.scroll_offset_to_layout_shift_root_delta = FloatSize();
   }
 
 #if DCHECK_IS_ON()
@@ -2808,7 +2820,7 @@ void PaintPropertyTreeBuilder::InitFragmentPaintProperties(
     if (const auto* transform = properties->Transform()) {
       if (transform->IsIdentityOr2DTranslation()) {
         context.translation_2d_to_layout_shift_root_delta -=
-            PhysicalOffset::FromFloatSizeRound(transform->Translation2D());
+            transform->Translation2D();
       }
     }
   }

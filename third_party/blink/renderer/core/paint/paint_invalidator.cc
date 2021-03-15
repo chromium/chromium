@@ -200,14 +200,17 @@ void PaintInvalidator::UpdateLayoutShiftTracking(
       *tree_builder_context.current.clip, *tree_builder_context.current_effect);
 
   // Adjust old_paint_offset so that LayoutShiftTracker will see the change of
-  // offset caused by change of paint offset translations below the layout shift
-  // root.
-  PhysicalOffset adjusted_old_transform_indifferent_paint_offset =
-      context.old_paint_offset -
-      tree_builder_context.current.additional_offset_to_layout_shift_root_delta;
+  // offset caused by change of paint offset translations and scroll offset
+  // below the layout shift root. For more details, see
+  // renderer/core/layout/layout-shift-tracker-old-paint-offset.md.
   PhysicalOffset adjusted_old_paint_offset =
-      adjusted_old_transform_indifferent_paint_offset -
-      tree_builder_context.translation_2d_to_layout_shift_root_delta;
+      context.old_paint_offset -
+      tree_builder_context.current
+          .additional_offset_to_layout_shift_root_delta -
+      PhysicalOffset::FromFloatSizeRound(
+          tree_builder_context.translation_2d_to_layout_shift_root_delta +
+          tree_builder_context.current
+              .scroll_offset_to_layout_shift_root_delta);
   PhysicalOffset new_paint_offset = tree_builder_context.current.paint_offset;
 
   if (object.IsText()) {
@@ -229,8 +232,9 @@ void PaintInvalidator::UpdateLayoutShiftTracking(
     layout_shift_tracker.NotifyTextPrePaint(
         text, property_tree_state, old_starting_point, new_starting_point,
         adjusted_old_paint_offset,
-        adjusted_old_transform_indifferent_paint_offset, new_paint_offset,
-        logical_height);
+        tree_builder_context.translation_2d_to_layout_shift_root_delta,
+        tree_builder_context.current.scroll_offset_to_layout_shift_root_delta,
+        new_paint_offset, logical_height);
     return;
   }
 
@@ -290,7 +294,9 @@ void PaintInvalidator::UpdateLayoutShiftTracking(
   if (should_report_layout_shift) {
     layout_shift_tracker.NotifyBoxPrePaint(
         box, property_tree_state, old_rect, new_rect, adjusted_old_paint_offset,
-        adjusted_old_transform_indifferent_paint_offset, new_paint_offset);
+        tree_builder_context.translation_2d_to_layout_shift_root_delta,
+        tree_builder_context.current.scroll_offset_to_layout_shift_root_delta,
+        new_paint_offset);
   }
 }
 

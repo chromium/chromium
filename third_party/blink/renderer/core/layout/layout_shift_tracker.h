@@ -46,30 +46,34 @@ class CORE_EXPORT LayoutShiftTracker final
   // |old_rect| and |old_paint_offset| so that we can calculate the correct old
   // visual representation and old starting point in the initial containing
   // block and the viewport with the new property tree state in most cases.
-  // |old_transform_indifferent_paint_offset| is the adjusted old paint offset
-  // with transform changes excluded.
-  void NotifyBoxPrePaint(
-      const LayoutBox& box,
-      const PropertyTreeStateOrAlias& property_tree_state,
-      const PhysicalRect& old_rect,
-      const PhysicalRect& new_rect,
-      const PhysicalOffset& old_paint_offset,
-      const PhysicalOffset& old_transform_indifferent_paint_offset,
-      const PhysicalOffset& new_paint_offset);
+  // The adjustment should include the deltas of 2d translations and scrolls,
+  // and LayoutShiftTracker can determine stability by including (by default)
+  // or excluding |translation_delta| and/or |scroll_delta|.
+  //
+  // See renderer/core/layout/layout-shift-tracker-old-paint-offset.md for
+  // more details about |old_paint_offset|.
+  void NotifyBoxPrePaint(const LayoutBox& box,
+                         const PropertyTreeStateOrAlias& property_tree_state,
+                         const PhysicalRect& old_rect,
+                         const PhysicalRect& new_rect,
+                         const PhysicalOffset& old_paint_offset,
+                         const FloatSize& translation_delta,
+                         const FloatSize& scroll_delta,
+                         const PhysicalOffset& new_paint_offset);
 
-  void NotifyTextPrePaint(
-      const LayoutText& text,
-      const PropertyTreeStateOrAlias& property_tree_state,
-      const LogicalOffset& old_starting_point,
-      const LogicalOffset& new_starting_point,
-      const PhysicalOffset& old_paint_offset,
-      const PhysicalOffset& old_transform_indifferent_paint_offset,
-      const PhysicalOffset& new_paint_offset,
-      const LayoutUnit logical_height);
+  void NotifyTextPrePaint(const LayoutText& text,
+                          const PropertyTreeStateOrAlias& property_tree_state,
+                          const LogicalOffset& old_starting_point,
+                          const LogicalOffset& new_starting_point,
+                          const PhysicalOffset& old_paint_offset,
+                          const FloatSize& translation_delta,
+                          const FloatSize& scroll_delta,
+                          const PhysicalOffset& new_paint_offset,
+                          const LayoutUnit logical_height);
 
   void NotifyPrePaintFinished();
   void NotifyInput(const WebInputEvent&);
-  void NotifyScroll(mojom::blink::ScrollType, ScrollOffset delta);
+  void NotifyScroll(mojom::blink::ScrollType);
   void NotifyViewportSizeChanged();
   void NotifyFindInPageInput();
   void NotifyChangeEvent();
@@ -153,7 +157,8 @@ class CORE_EXPORT LayoutShiftTracker final
                      const PhysicalRect& old_rect,
                      const PhysicalRect& new_rect,
                      const FloatPoint& old_starting_point,
-                     const FloatPoint& old_transform_indifferent_starting_point,
+                     const FloatSize& translation_delta,
+                     const FloatSize& scroll_offset_delta,
                      const FloatPoint& new_starting_point);
 
   void ReportShift(double score_delta, double weighted_score_delta);
@@ -220,9 +225,6 @@ class CORE_EXPORT LayoutShiftTracker final
   // The maximum distance any layout object has moved, across all animation
   // frames.
   float overall_max_distance_;
-
-  // Sum of all scroll deltas that occurred in the current animation frame.
-  ScrollOffset frame_scroll_delta_;
 
   // Whether either a user input or document scroll have been observed during
   // the session. (This is only tracked so UkmPageLoadMetricsObserver to report
