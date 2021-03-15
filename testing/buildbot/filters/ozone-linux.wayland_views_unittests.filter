@@ -49,6 +49,5 @@
 -TooltipStateManagerTest.UpdatePositionWhileWillShowTooltipTimerIsRunning
 
 # Crashed tests.
--DesktopWidgetTest.MinimumSizeConstraints
 -TooltipControllerTest.Capture
 
