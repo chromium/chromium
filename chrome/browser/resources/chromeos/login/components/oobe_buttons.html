@@ -73,6 +73,9 @@
         font-family: var(--oobe-button-font-family);
         font-size: var(--oobe-button-font-size);
       }
+      :host([disabled]) {
+        pointer-events: none;
+      }
     </style>
     <cr-button id="textButton" on-click="onClick_" disabled="[[disabled]]"
         inverse$="[[inverse]]" aria-label$="[[labelForAriaText_]]"
@@ -138,6 +141,9 @@
         font-family: var(--oobe-button-font-family);
         font-size: var(--oobe-button-font-size);
       }
+      :host([disabled]) {
+        pointer-events: none;
+      }
     </style>
     <cr-button id="button" on-click="onClick_" disabled="[[disabled]]"
         aria-label$="[[labelForAria_]]">
@@ -175,6 +181,9 @@
       .fallback {
         font-family: var(--oobe-button-font-family);
         font-size: var(--oobe-button-font-size);
+      }
+      :host([disabled]) {
+        pointer-events: none;
       }
     </style>
     <cr-button id="button" on-click="onClick_" disabled="[[disabled]]"
