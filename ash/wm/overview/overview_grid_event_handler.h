@@ -35,9 +35,6 @@ class OverviewGridEventHandler : public ui::EventHandler,
   explicit OverviewGridEventHandler(OverviewGrid* grid);
   ~OverviewGridEventHandler() override;
 
-  // The amount the grid's fling curve's offsets are scaled down.
-  static constexpr float kFlingScaleDown = 3.f;
-
   // ui::EventHandler:
   void OnMouseEvent(ui::MouseEvent* event) override;
   void OnGestureEvent(ui::GestureEvent* event) override;
