@@ -269,6 +269,8 @@ void MultiDeviceSetupImpl::SetFeatureEnabledState(
     SetFeatureEnabledStateCallback callback) {
   if (IsAuthTokenRequiredForFeatureStateChange(feature, enabled) &&
       (!auth_token || !auth_token_validator_->IsAuthTokenValid(*auth_token))) {
+    PA_LOG(ERROR) << __func__ << " Cannot " << (enabled ? "enable" : "disable")
+                  << " " << feature << "; auth token invalid";
     std::move(callback).Run(false /* success */);
     return;
   }
