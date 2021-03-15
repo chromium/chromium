@@ -5820,8 +5820,9 @@
       'telemetry_perf_unittests_isolated_scripts',
     ],
 
-    # When changing something here, change chromium_linux_and_gl_gtests and
-    # chromium_linux_and_gl_and_vulkan_gtests in the same way.
+    # When changing something here, change chromium_linux_and_gl_gtests,
+    # chromium_linux_and_gl_and_vulkan_gtests, linux_ozone_x11_ci_tests and
+    # linux_ozone_wayland_ci_tests in the same way.
     'chromium_linux_gtests': [
       'aura_gtests',
       'chromium_gtests',
@@ -7276,13 +7277,13 @@
     },
 
     # These tests run on Ozone/X11 CI tester.
-    # Will replicate chromium_linux_gtests with OZONE_X11 variant.
-    # Unfortunatelly, we can't have chromium_linux_gtests matrix
+    # These replicate chromium_linux_gtests with OZONE_X11 variant.
+    # Unfortunately, we can't have chromium_linux_gtests matrix
     # compound test added here as the script that generates config
-    # doesn't permit so. Thus, this is a mirrored list of tests
+    # doesn't permit so. Thus, this will be a mirrored list of tests
     # from chromium_linux_gtests.
-    # TODO(msisov): add vr_platform_specific_chromium_gtests as well.
-    # They are failing on Ozone/X11 tester now.
+    # Thus, any changes done to chromium_linux_gtests must be also
+    # made here.
     'linux_ozone_x11_ci_tests': {
       'aura_gtests': {
         'variants': [
@@ -7335,6 +7336,11 @@
         ]
       },
       'non_android_chromium_gtests': {
+        'variants': [
+          'OZONE_X11',
+        ]
+      },
+      'vr_platform_specific_chromium_gtests': {
         'variants': [
           'OZONE_X11',
         ]
