@@ -7,7 +7,7 @@
 
 #include "base/callback.h"
 #include "base/macros.h"
-#include "chrome/browser/chromeos/plugin_vm/plugin_vm_installer.h"
+#include "chrome/browser/ash/plugin_vm/plugin_vm_installer.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
 #include "ui/views/metadata/metadata_header_macros.h"
 

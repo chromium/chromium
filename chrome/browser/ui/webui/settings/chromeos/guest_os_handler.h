@@ -7,8 +7,8 @@
 
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
-#include "chrome/browser/chromeos/plugin_vm/plugin_vm_manager.h"
-#include "chrome/browser/chromeos/plugin_vm/plugin_vm_manager_factory.h"
+#include "chrome/browser/ash/plugin_vm/plugin_vm_manager.h"
+#include "chrome/browser/ash/plugin_vm/plugin_vm_manager_factory.h"
 #include "chrome/browser/chromeos/usb/cros_usb_detector.h"
 #include "chrome/browser/ui/webui/settings/settings_page_ui_handler.h"
 

@@ -10,8 +10,8 @@
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
-#include "chrome/browser/chromeos/plugin_vm/plugin_vm_manager.h"
-#include "chrome/browser/chromeos/plugin_vm/plugin_vm_manager_factory.h"
+#include "chrome/browser/ash/plugin_vm/plugin_vm_manager.h"
+#include "chrome/browser/ash/plugin_vm/plugin_vm_manager_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "content/public/browser/browser_thread.h"
 

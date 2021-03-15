@@ -7,7 +7,7 @@
 #include <utility>
 
 #include "base/bind_post_task.h"
-#include "chrome/browser/chromeos/plugin_vm/plugin_vm_pref_names.h"
+#include "chrome/browser/ash/plugin_vm/plugin_vm_pref_names.h"
 #include "chrome/browser/chromeos/printing/cups_printers_manager.h"
 #include "chrome/browser/chromeos/printing/cups_printers_manager_factory.h"
 #include "chrome/browser/chromeos/printing/printer_configurer.h"

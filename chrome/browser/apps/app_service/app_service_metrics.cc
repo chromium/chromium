@@ -16,7 +16,7 @@
 #include "extensions/common/constants.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chrome/browser/chromeos/plugin_vm/plugin_vm_util.h"
+#include "chrome/browser/ash/plugin_vm/plugin_vm_util.h"
 #include "chrome/browser/ui/app_list/arc/arc_app_utils.h"
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 

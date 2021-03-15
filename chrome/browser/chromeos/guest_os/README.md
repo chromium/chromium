@@ -7,4 +7,4 @@ sharing.
 
 Code for specific VM types can be found in:
 * Crostini [`chrome/browser/chromeos/crostini`](/chrome/browser/chromeos/crostini/)
-* PluginVm [`chrome/browser/chromeos/plugin_vm`](/chrome/browser/chromeos/plugin_vm/)
+* PluginVm [`chrome/browser/ash/plugin_vm`](/chrome/browser/ash/plugin_vm/)

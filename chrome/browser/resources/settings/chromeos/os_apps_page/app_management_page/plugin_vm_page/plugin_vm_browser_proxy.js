@@ -8,7 +8,7 @@
 
 /**
  * These values should remain consistent with their C++ counterpart
- * (chrome/browser/chromeos/plugin_vm/plugin_vm_manager.h).
+ * (chrome/browser/ash/plugin_vm/plugin_vm_manager.h).
  * @enum {number}
  */
 const PermissionType = {

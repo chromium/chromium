@@ -8,10 +8,10 @@
 #include <utility>
 
 #include "base/bind.h"
+#include "chrome/browser/ash/plugin_vm/plugin_vm_pref_names.h"
+#include "chrome/browser/ash/plugin_vm/plugin_vm_util.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part.h"
-#include "chrome/browser/chromeos/plugin_vm/plugin_vm_pref_names.h"
-#include "chrome/browser/chromeos/plugin_vm/plugin_vm_util.h"
 #include "chrome/browser/chromeos/policy/browser_policy_connector_chromeos.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
