@@ -40,6 +40,7 @@ enum class PrefLocation {
   kUserProfile,
   kSigninProfile,
   kLocalState,
+  kCrosSetting,
 };
 
 PrefLocation GetPrefLocation(const base::Value& settings) {
@@ -50,6 +51,8 @@ PrefLocation GetPrefLocation(const base::Value& settings) {
     return PrefLocation::kLocalState;
   if (*location == "signin_profile")
     return PrefLocation::kSigninProfile;
+  if (*location == "cros_setting")
+    return PrefLocation::kCrosSetting;
   NOTREACHED() << "Unknown pref location: " << *location;
   return PrefLocation::kUserProfile;
 }
@@ -425,8 +428,7 @@ void VerifyPolicyToPrefMappings(const base::FilePath& test_case_path,
                                 PrefService* local_state,
                                 PrefService* user_prefs,
                                 PrefService* signin_profile_prefs,
-                                MockConfigurationPolicyProvider* provider,
-                                const std::string& skipped_pref_prefix) {
+                                MockConfigurationPolicyProvider* provider) {
   Schema chrome_schema = Schema::Wrap(GetChromeSchemaData());
   ASSERT_TRUE(chrome_schema.valid());
 
@@ -458,13 +460,6 @@ void VerifyPolicyToPrefMappings(const base::FilePath& test_case_path,
 
       for (const auto& pref_mapping : pref_mappings) {
         for (const auto& pref_case : pref_mapping->prefs()) {
-          // Skip Chrome OS preferences that use a different backend and cannot
-          // be retrieved through the prefs mechanism.
-          if (!skipped_pref_prefix.empty() &&
-              base::StartsWith(pref_case->pref(), skipped_pref_prefix,
-                               base::CompareCase::SENSITIVE))
-            continue;
-
           // Skip preferences that should not be checked when the policy is set
           // to a mandatory value.
           if (!pref_case->check_for_mandatory())
@@ -481,6 +476,9 @@ void VerifyPolicyToPrefMappings(const base::FilePath& test_case_path,
             case PrefLocation::kLocalState:
               prefs = local_state;
               break;
+            case PrefLocation::kCrosSetting:
+              // TODO(https://crbug.com/809991) Verify CrosSettings mappings
+              continue;
             default:
               NOTREACHED() << "Unhandled pref location: "
                            << static_cast<int>(pref_case->location());

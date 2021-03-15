@@ -42,8 +42,6 @@ namespace policy {
 
 namespace {
 
-const char kCrosSettingsPrefix[] = "cros.";
-
 base::FilePath GetTestCasePath() {
   return ui_test_utils::GetTestFilePath(
       base::FilePath(FILE_PATH_LITERAL("policy")),
@@ -92,8 +90,7 @@ IN_PROC_BROWSER_TEST_F(PolicyPrefsTest, PolicyToPrefsMapping) {
   PrefService* user_prefs = browser()->profile()->GetPrefs();
 
   VerifyPolicyToPrefMappings(GetTestCasePath(), local_state, user_prefs,
-                             /* signin_profile_prefs= */ nullptr, &provider_,
-                             kCrosSettingsPrefix);
+                             /* signin_profile_prefs= */ nullptr, &provider_);
 }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -124,7 +121,7 @@ IN_PROC_BROWSER_TEST_F(SigninPolicyPrefsTest, PolicyToPrefsMapping) {
   // checked by PolicyPrefsTest.PolicyToPrefsMapping test.
   VerifyPolicyToPrefMappings(GetTestCasePath(), /* local_state= */ nullptr,
                              /* user_prefs= */ nullptr, signin_profile_prefs,
-                             &provider_, kCrosSettingsPrefix);
+                             &provider_);
 }
 
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)

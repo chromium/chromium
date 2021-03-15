@@ -27,7 +27,7 @@
             "${pref}": {
               "value": "The value that |pref| should take on.",
               "expect_default": "Whether or not the pref value should be the default one.",
-              "location": "The location where the pref is registered, possible values are ['user_profile', 'signin_profile', 'local_state']. Defaults to 'user_profile' if not specified.",
+              "location": "The location where the pref is registered, possible values are ['user_profile', 'signin_profile', 'local_state', 'cros_setting']. Defaults to 'user_profile' if not specified.",
               "check_for_mandatory": "Should the preference be tested when a mandatory value is set for the policy? Defaults to |true| if not specified.",
               "check_for_recommended": "Should the preference be tested when a recommended value is set for the policy? Defaults to |true| if not specified."
             }
@@ -5704,7 +5704,10 @@
         "policies": {
           "DeviceMetricsReportingEnabled": true
         },
-        "prefs": { "cros.metrics.reportingEnabled": {} },
+        "prefs": { "cros.metrics.reportingEnabled": {
+            "location": "cros_setting"
+          }
+        },
         "indicator_tests": [
           {
             "pref": "cros.metrics.reportingEnabled",
@@ -5861,7 +5864,12 @@
         "policies": {
           "ShowLowDiskSpaceNotification": false
         },
-        "prefs": { "cros.device.show_low_disk_space_notification": {"value": false} }
+        "prefs": {
+          "cros.device.show_low_disk_space_notification": {
+            "value": false,
+            "location": "cros_setting"
+          }
+        }
       }
     ]
   },
@@ -5877,7 +5885,11 @@
         "policies": {
           "LoginAuthenticationBehavior": 1
         },
-        "prefs": { "cros.device.login_authentication_behavior": {} }
+        "prefs": {
+          "cros.device.login_authentication_behavior": {
+            "location": "cros_setting"
+          }
+        }
       }
     ]
   },
@@ -5895,7 +5907,11 @@
         "policies": {
           "DeviceWiFiAllowed": false
         },
-        "prefs": { "cros.device.device_wifi_allowed": {} }
+        "prefs": {
+          "cros.device.device_wifi_allowed": {
+            "location": "cros_setting"
+          }
+        }
       }
     ]
   },
@@ -5908,7 +5924,11 @@
         "policies": {
           "DeviceQuirksDownloadEnabled": true
         },
-        "prefs": { "cros.device.quirks_download_enabled": {} }
+        "prefs": {
+          "cros.device.quirks_download_enabled": {
+            "location": "cros_setting"
+          }
+        }
       }
     ]
   },
@@ -5920,7 +5940,11 @@
         "policies": {
           "SystemTimezoneAutomaticDetection": 1
         },
-        "prefs": { "cros.device.system_timezone_automatic_detection": {} }
+        "prefs": {
+          "cros.device.system_timezone_automatic_detection": {
+            "location": "cros_setting"
+          }
+        }
       }
     ]
   },
@@ -5976,7 +6000,11 @@
             "https://example.com"
           ]
         },
-        "prefs": { "cros.device.login_video_capture_allowed_urls": {} }
+        "prefs": {
+          "cros.device.login_video_capture_allowed_urls": {
+            "location": "cros_setting"
+          }
+        }
       }
     ]
   },
@@ -6018,7 +6046,11 @@
             "hash": "deadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeef"
           }
         },
-        "prefs": { "cros.device_wallpaper_image": {} }
+        "prefs": {
+          "cros.device_wallpaper_image": {
+            "location": "cros_setting"
+          }
+        }
       }
     ]
   },
@@ -6089,7 +6121,11 @@
         "policies": {
           "CastReceiverName": "Hallway"
         },
-        "prefs": { "cros.device.cast_receiver.name": { "location": "local_state" } }
+        "prefs": {
+          "cros.device.cast_receiver.name": {
+            "location": "cros_setting"
+          }
+        }
       }
     ]
   },
@@ -6115,7 +6151,11 @@
         "policies": {
           "DeviceNativePrintersAccessMode": 1
         },
-        "prefs": { "cros.device.native_printers_access_mode": {} }
+        "prefs": {
+          "cros.device.native_printers_access_mode": {
+            "location": "cros_setting"
+          }
+        }
       }
     ]
   },
@@ -6127,7 +6167,11 @@
         "policies": {
           "DeviceNativePrintersBlacklist": ["id4", "id7", "id10"]
         },
-        "prefs": { "cros.device.native_printers_blacklist": {} }
+        "prefs": {
+          "cros.device.native_printers_blacklist": {
+            "location": "cros_setting"
+          }
+        }
       }
     ]
   },
@@ -6139,7 +6183,11 @@
         "policies": {
           "DeviceNativePrintersWhitelist": ["id4", "id7", "id10"]
         },
-        "prefs": { "cros.device.native_printers_whitelist": {} }
+        "prefs": {
+          "cros.device.native_printers_whitelist": {
+            "location": "cros_setting"
+          }
+        }
       }
     ]
   },
@@ -6194,7 +6242,11 @@
         "policies": {
           "DevicePrintersAccessMode": 1
         },
-        "prefs": { "cros.device.native_printers_access_mode": {} }
+        "prefs": {
+          "cros.device.native_printers_access_mode": {
+            "location": "cros_setting"
+          }
+        }
       }
     ]
   },
@@ -6206,7 +6258,11 @@
         "policies": {
           "DevicePrintersBlocklist": ["id4", "id7", "id10"]
         },
-        "prefs": { "cros.device.native_printers_blacklist": {} }
+        "prefs": {
+          "cros.device.native_printers_blacklist": {
+            "location": "cros_setting"
+          }
+        }
       }
     ]
   },
@@ -6218,7 +6274,11 @@
         "policies": {
           "DevicePrintersAllowlist": ["id4", "id7", "id10"]
         },
-        "prefs": { "cros.device.native_printers_whitelist": {} }
+        "prefs": {
+          "cros.device.native_printers_whitelist": {
+            "location": "cros_setting"
+          }
+        }
       }
     ]
   },
@@ -6231,7 +6291,11 @@
           "allow-user-initiated-powerwash": true,
           "auto-update-mode": 2
         },
-        "prefs": { "cros.tpm_firmware_update_settings": {} }
+        "prefs": {
+          "cros.tpm_firmware_update_settings": {
+            "location": "cros_setting"
+          }
+        }
       }
     ]
   },
@@ -6259,7 +6323,8 @@
                 {"chromeos_version" : "13121.0.0", "warning_period" : 0, "aue_warning_period" : 14}
               ],
               "unmanaged_user_restricted": true
-            }
+            },
+            "location": "cros_setting"
           }
         }
       }
@@ -6275,7 +6340,8 @@
         },
         "prefs": {
           "cros.device.min_version_aue_message": {
-            "value": "Please return this device."
+            "value": "Please return this device.",
+            "location": "cros_setting"
           }
         }
       }
@@ -6291,7 +6357,11 @@
         "policies": {
           "unaffiliated_arc_allowed": false
         },
-        "prefs": { "cros.unaffiliated_arc_allowed": {} }
+        "prefs": {
+          "cros.unaffiliated_arc_allowed": {
+            "location": "cros_setting"
+          }
+        }
       }
     ]
   },
@@ -6303,7 +6373,11 @@
         "policies": {
           "DeviceHostnameTemplate": "chromebook-${ASSET_ID}"
         },
-        "prefs": { "cros.network.hostname_template": {} }
+        "prefs": {
+          "cros.network.hostname_template": {
+            "location": "cros_setting"
+          }
+        }
       }
     ]
   },
@@ -6454,7 +6528,11 @@
         "policies": {
           "virtual_machines_allowed": true
         },
-        "prefs": { "cros.device.virtual_machines_allowed": {} }
+        "prefs": {
+          "cros.device.virtual_machines_allowed": {
+            "location": "cros_setting"
+          }
+        }
       }
     ]
   },
@@ -6478,7 +6556,11 @@
         "policies": {
           "device_unaffiliated_crostini_allowed": false
         },
-        "prefs": { "cros.device.unaffiliated_crostini_allowed": {} }
+        "prefs": {
+          "cros.device.unaffiliated_crostini_allowed": {
+            "location": "cros_setting"
+          }
+        }
       }
     ]
   },
@@ -6896,7 +6978,11 @@
         "policies": {
           "PluginVmAllowed": true
         },
-        "prefs": { "cros.device.plugin_vm_allowed": {} }
+        "prefs": {
+          "cros.device.plugin_vm_allowed": {
+            "location": "cros_setting"
+          }
+        }
       }
     ]
   },
@@ -6908,7 +6994,11 @@
         "policies": {
           "PluginVmLicenseKey": "LICENSE_KEY"
         },
-        "prefs": { "cros.device.plugin_vm_license_key": {} }
+        "prefs": {
+          "cros.device.plugin_vm_license_key": {
+            "location": "cros_setting"
+          }
+        }
       }
     ]
   },
@@ -7006,7 +7096,11 @@
         "policies": {
           "DeviceRebootOnUserSignout": 0
         },
-        "prefs": { "cros.device.reboot_on_user_signout": {} }
+        "prefs": {
+          "cros.device.reboot_on_user_signout": {
+            "location": "cros_setting"
+          }
+        }
       }
     ]
   },
@@ -7022,7 +7116,11 @@
         "policies": {
           "DeviceWilcoDtcAllowed": true
         },
-        "prefs": { "cros.device.wilco_dtc_allowed": {} }
+        "prefs": {
+          "cros.device.wilco_dtc_allowed": {
+            "location": "cros_setting"
+          }
+        }
       }
     ]
   },
@@ -7129,7 +7227,11 @@
         "policies": {
           "DeviceDockMacAddressSource": 2
         },
-        "prefs": { "cros.device.device_dock_mac_address_source": {} }
+        "prefs": {
+          "cros.device.device_dock_mac_address_source": {
+            "location": "cros_setting"
+          }
+        }
       }
     ]
   },
@@ -7238,7 +7340,11 @@
         "policies": {
           "DevicePowerwashAllowed": true
         },
-        "prefs": { "cros.device.device_powerwash_allowed": { "location": "local_state" } }
+        "prefs": {
+          "cros.device.device_powerwash_allowed": {
+            "location": "cros_setting"
+          }
+        }
       }
     ]
   },
@@ -7252,7 +7358,11 @@
             "[*.]example.com"
           ]
         },
-        "prefs": { "cros.device.web_based_attestation_allowed_urls": {} }
+        "prefs": {
+          "cros.device.web_based_attestation_allowed_urls": {
+            "location": "cros_setting"
+          }
+        }
       }
     ]
   },
@@ -7513,7 +7623,12 @@
         "policies": {
           "DeviceBorealisAllowed": false
         },
-        "prefs": { "cros.device.borealis_allowed": { "value": false } }
+        "prefs": {
+          "cros.device.borealis_allowed": {
+            "value": false,
+            "location": "cros_setting"
+          }
+        }
       }
     ]
   },
@@ -8178,7 +8293,9 @@
        }
       },
       "prefs": {
-       "cros.system_proxy_settings": { "location": "local_state" }
+      "cros.system_proxy_settings": {
+        "location": "cros_setting"
+      }
       }
      }
     ]
@@ -8291,7 +8408,11 @@
     "policy_pref_mapping_tests": [
       {
         "policies": { "DeviceChannelDowngradeBehavior": 0 },
-        "prefs": { "cros.system.channelDowngradeBehavior": {} }
+        "prefs": {
+          "cros.system.channelDowngradeBehavior": {
+            "location": "cros_setting"
+          }
+        }
       }
     ]
   },
