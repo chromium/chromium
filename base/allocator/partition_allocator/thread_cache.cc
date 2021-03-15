@@ -106,6 +106,21 @@ void ThreadCacheRegistry::DumpStats(bool my_thread_only,
 void ThreadCacheRegistry::PurgeAll() {
   auto* current_thread_tcache = ThreadCache::Get();
 
+  // May take a while, don't hold the lock while purging.
+  //
+  // In most cases, the current thread is more important than other ones. For
+  // instance in renderers, it is the main thread. It is also the only thread
+  // that we can synchronously purge.
+  //
+  // The reason why we trigger the purge for this one first is that assuming
+  // that all threads are allocating memory, they will start purging
+  // concurrently in the loop below. This will then make them all contend with
+  // the main thread for the partition lock, since it is acquired/released once
+  // per bucket. By purging the main thread first, we avoid these interferences
+  // for this thread at least.
+  if (ThreadCache::IsValid(current_thread_tcache))
+    current_thread_tcache->Purge();
+
   {
     PartitionAutoLock scoped_locker(GetLock());
     ThreadCache* tcache = list_head_;
@@ -120,10 +135,6 @@ void ThreadCacheRegistry::PurgeAll() {
       tcache = tcache->next_;
     }
   }
-
-  // May take a while, don't hold the lock while purging.
-  if (ThreadCache::IsValid(current_thread_tcache))
-    current_thread_tcache->Purge();
 }
 
 void ThreadCacheRegistry::ForcePurgeAllThreadAfterForkUnsafe() {
@@ -554,6 +565,7 @@ void ThreadCache::Purge() {
 
 void ThreadCache::PurgeInternal() {
   should_purge_.store(false, std::memory_order_relaxed);
+  // TODO(lizeb): Investigate whether lock acquisition should be less frequent.
   for (auto& bucket : buckets_)
     ClearBucket(bucket, 0);
 }
