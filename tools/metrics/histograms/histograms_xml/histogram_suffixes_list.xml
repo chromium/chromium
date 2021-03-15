@@ -8105,6 +8105,8 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
       label="In-product help for password autofill suggestions."/>
   <suffix name="IPH_KeyboardAccessoryPaymentFilling"
       label="In-product help for payments autofill suggestions."/>
+  <suffix name="IPH_KeyboardAccessoryPaymentOffer"
+      label="In-product help for payments autofill suggestions."/>
   <suffix name="IPH_LiveCaption" label="In product help for Live Caption."/>
   <suffix name="IPH_LongPressToolbarTip"
       label="In product help LongPress toolbar."/>
