@@ -24,6 +24,8 @@ std::string IndexIdBasedHistogramPrefix(IndexId index_id) {
       return prefix + "CrosSettings";
     case IndexId::kHelpApp:
       return prefix + "HelpApp";
+    case IndexId::kHelpAppLauncher:
+      return prefix + "HelpAppLauncher";
   }
 }
 

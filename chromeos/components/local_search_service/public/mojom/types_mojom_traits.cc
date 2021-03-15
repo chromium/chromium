@@ -18,6 +18,8 @@ EnumTraits<chromeos::local_search_service::mojom::IndexId,
       return chromeos::local_search_service::mojom::IndexId::kCrosSettings;
     case chromeos::local_search_service::IndexId::kHelpApp:
       return chromeos::local_search_service::mojom::IndexId::kHelpApp;
+    case chromeos::local_search_service::IndexId::kHelpAppLauncher:
+      return chromeos::local_search_service::mojom::IndexId::kHelpAppLauncher;
   }
   NOTREACHED();
   return chromeos::local_search_service::mojom::IndexId::kCrosSettings;
@@ -34,6 +36,9 @@ bool EnumTraits<chromeos::local_search_service::mojom::IndexId,
       return true;
     case chromeos::local_search_service::mojom::IndexId::kHelpApp:
       *output = chromeos::local_search_service::IndexId::kHelpApp;
+      return true;
+    case chromeos::local_search_service::mojom::IndexId::kHelpAppLauncher:
+      *output = chromeos::local_search_service::IndexId::kHelpAppLauncher;
       return true;
   }
   NOTREACHED();

@@ -9,7 +9,8 @@ import "chromeos/components/local_search_service/public/mojom/types.mojom";
 
 enum IndexId {
   kCrosSettings = 0,
-  kHelpApp = 1
+  kHelpApp = 1,
+  kHelpAppLauncher = 2
   // Add new client IDs here.
 };
 

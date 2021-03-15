@@ -7822,6 +7822,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 <histogram_suffixes name="IndexId" separator="." ordering="prefix,1">
   <suffix name="CrosSettings" label="Cros Settings"/>
   <suffix name="HelpApp" label="Help App"/>
+  <suffix name="HelpAppLauncher" label="Help App Launcher"/>
   <affected-histogram name="LocalSearchService.Backend"/>
   <affected-histogram name="LocalSearchService.DailySearch"/>
   <affected-histogram name="LocalSearchService.NumberDocuments"/>
