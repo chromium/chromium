@@ -861,22 +861,21 @@ void PluginVmInstaller::OnImportDiskImageCancelled(
 
   RemoveTemporaryImageIfExists();
 
-  // TODO(https://crbug.com/966392): Handle unsuccessful PluginVm image
-  // importing cancellation.
   if (!reply.has_value()) {
     LOG(ERROR) << "Could not retrieve response from CancelDiskImageOperation "
                << "call to concierge";
+    CancelFinished();
     return;
   }
 
   vm_tools::concierge::CancelDiskImageResponse response = reply.value();
-  if (!response.success()) {
+  if (response.success()) {
+    VLOG(1) << "Import disk image request has been cancelled successfully";
+  } else {
     LOG(ERROR) << "Import disk image request failed to be cancelled, "
                << response.failure_reason();
-    return;
   }
 
-  VLOG(1) << "Import disk image request has been cancelled successfully";
   CancelFinished();
 }
 
