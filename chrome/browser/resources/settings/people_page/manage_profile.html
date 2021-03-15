@@ -56,7 +56,7 @@
 <div class="cr-row first manage-profile-section">
   <h1 class="cr-title-text">$i18n{nameYourProfile}</h1>
   <div class="content">
-    <cr-input id="name" value="[[profileName]]" pattern=".*\\\\S.*"
+    <cr-input id="name" value="[[profileName]]" pattern="[[pattern_]]"
         on-change="onProfileNameChanged_"
         on-keydown="onProfileNameKeydown_"
         disabled="[[isProfileNameDisabled_(syncStatus)]]" maxlength="500"
