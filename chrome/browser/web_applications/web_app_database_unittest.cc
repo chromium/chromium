@@ -246,6 +246,11 @@ class WebAppDatabaseTest : public WebAppTest {
     app->SetUserDisplayMode(random.next_bool() ? DisplayMode::kBrowser
                                                : DisplayMode::kStandalone);
 
+    const base::Time last_badging_time =
+        base::Time::UnixEpoch() +
+        base::TimeDelta::FromMilliseconds(random.next_uint());
+    app->SetLastBadgingTime(last_badging_time);
+
     const base::Time last_launch_time =
         base::Time::UnixEpoch() +
         base::TimeDelta::FromMilliseconds(random.next_uint());
@@ -604,6 +609,7 @@ TEST_F(WebAppDatabaseTest, WebAppWithoutOptionalFields) {
   EXPECT_TRUE(app->additional_search_terms().empty());
   EXPECT_TRUE(app->protocol_handlers().empty());
   EXPECT_TRUE(app->url_handlers().empty());
+  EXPECT_TRUE(app->last_badging_time().is_null());
   EXPECT_TRUE(app->last_launch_time().is_null());
   EXPECT_TRUE(app->install_time().is_null());
   EXPECT_TRUE(app->shortcuts_menu_item_infos().empty());
@@ -647,6 +653,7 @@ TEST_F(WebAppDatabaseTest, WebAppWithoutOptionalFields) {
   EXPECT_TRUE(app_copy->scope().is_empty());
   EXPECT_FALSE(app_copy->theme_color().has_value());
   EXPECT_FALSE(app_copy->background_color().has_value());
+  EXPECT_TRUE(app_copy->last_badging_time().is_null());
   EXPECT_TRUE(app_copy->last_launch_time().is_null());
   EXPECT_TRUE(app_copy->install_time().is_null());
   EXPECT_TRUE(app_copy->icon_infos().empty());

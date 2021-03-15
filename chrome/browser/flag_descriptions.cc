@@ -695,6 +695,8 @@ extern const char kDesktopPWAsAttentionBadgingCrOSDescription[] =
     "Enable attention badging for PWA icons in the shelf and launcher.";
 extern const char kDesktopPWAsAttentionBadgingCrOSApiAndNotifications[] =
     "for Badging API and notifications";
+extern const char kDesktopPWAsAttentionBadgingCrOSApiOverridesNotifications[] =
+    "for Badging API, or notifications for apps not using Badging API";
 extern const char kDesktopPWAsAttentionBadgingCrOSApiOnly[] =
     "for Badging API only";
 extern const char kDesktopPWAsAttentionBadgingCrOSNotificationsOnly[] =

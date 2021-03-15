@@ -65,6 +65,7 @@ class BookmarkAppRegistrar : public web_app::AppRegistrar,
   apps::UrlHandlers GetAppUrlHandlers(
       const web_app::AppId& app_id) const override;
   GURL GetAppManifestUrl(const web_app::AppId& app_id) const override;
+  base::Time GetAppLastBadgingTime(const web_app::AppId& app_id) const override;
   base::Time GetAppLastLaunchTime(const web_app::AppId& app_id) const override;
   base::Time GetAppInstallTime(const web_app::AppId& app_id) const override;
   std::vector<WebApplicationIconInfo> GetAppIconInfos(

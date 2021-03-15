@@ -174,6 +174,11 @@ GURL WebAppRegistrar::GetAppManifestUrl(const AppId& app_id) const {
   return web_app ? web_app->manifest_url() : GURL::EmptyGURL();
 }
 
+base::Time WebAppRegistrar::GetAppLastBadgingTime(const AppId& app_id) const {
+  auto* web_app = GetAppById(app_id);
+  return web_app ? web_app->last_badging_time() : base::Time();
+}
+
 base::Time WebAppRegistrar::GetAppLastLaunchTime(const AppId& app_id) const {
   auto* web_app = GetAppById(app_id);
   return web_app ? web_app->last_launch_time() : base::Time();

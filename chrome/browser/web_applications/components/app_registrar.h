@@ -122,6 +122,7 @@ class AppRegistrar {
 
   virtual GURL GetAppManifestUrl(const AppId& app_id) const = 0;
 
+  virtual base::Time GetAppLastBadgingTime(const AppId& app_id) const = 0;
   virtual base::Time GetAppLastLaunchTime(const AppId& app_id) const = 0;
   virtual base::Time GetAppInstallTime(const AppId& app_id) const = 0;
 

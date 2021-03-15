@@ -76,6 +76,7 @@ class TestAppRegistrar : public AppRegistrar {
       const AppId& app_id) const override;
   apps::UrlHandlers GetAppUrlHandlers(const AppId& app_id) const override;
   GURL GetAppManifestUrl(const AppId& app_id) const override;
+  base::Time GetAppLastBadgingTime(const AppId& app_id) const override;
   base::Time GetAppLastLaunchTime(const AppId& app_id) const override;
   base::Time GetAppInstallTime(const AppId& app_id) const override;
   std::vector<WebApplicationIconInfo> GetAppIconInfos(

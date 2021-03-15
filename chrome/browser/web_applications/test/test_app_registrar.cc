@@ -168,6 +168,11 @@ GURL TestAppRegistrar::GetAppManifestUrl(const AppId& app_id) const {
   return GURL::EmptyGURL();
 }
 
+base::Time TestAppRegistrar::GetAppLastBadgingTime(const AppId& app_id) const {
+  NOTIMPLEMENTED();
+  return base::Time();
+}
+
 base::Time TestAppRegistrar::GetAppLastLaunchTime(const AppId& app_id) const {
   NOTIMPLEMENTED();
   return base::Time();

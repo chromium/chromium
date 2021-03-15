@@ -771,6 +771,10 @@ const FeatureEntry::FeatureParam
     kDesktopPWAsAttentionBadgingCrOSApiAndNotifications[] = {
         {"badge-source",
          switches::kDesktopPWAsAttentionBadgingCrOSApiAndNotifications}};
+const FeatureEntry::FeatureParam
+    kDesktopPWAsAttentionBadgingCrOSApiOverridesNotifications[] = {
+        {"badge-source",
+         switches::kDesktopPWAsAttentionBadgingCrOSApiOverridesNotifications}};
 const FeatureEntry::FeatureParam kDesktopPWAsAttentionBadgingCrOSApiOnly[] = {
     {"badge-source", switches::kDesktopPWAsAttentionBadgingCrOSApiOnly}};
 const FeatureEntry::FeatureParam
@@ -783,6 +787,11 @@ const FeatureEntry::FeatureVariation
         {flag_descriptions::kDesktopPWAsAttentionBadgingCrOSApiAndNotifications,
          kDesktopPWAsAttentionBadgingCrOSApiAndNotifications,
          base::size(kDesktopPWAsAttentionBadgingCrOSApiAndNotifications),
+         nullptr},
+        {flag_descriptions::
+             kDesktopPWAsAttentionBadgingCrOSApiOverridesNotifications,
+         kDesktopPWAsAttentionBadgingCrOSApiOverridesNotifications,
+         base::size(kDesktopPWAsAttentionBadgingCrOSApiOverridesNotifications),
          nullptr},
         {flag_descriptions::kDesktopPWAsAttentionBadgingCrOSApiOnly,
          kDesktopPWAsAttentionBadgingCrOSApiOnly,

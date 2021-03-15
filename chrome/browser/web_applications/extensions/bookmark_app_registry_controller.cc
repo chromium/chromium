@@ -94,6 +94,14 @@ void BookmarkAppRegistryController::SetAppIsLocallyInstalled(
                                                        is_locally_installed);
 }
 
+// Bookmark apps are deprecated. They don't update last badging time on local
+// installs.
+void BookmarkAppRegistryController::SetAppLastBadgingTime(
+    const web_app::AppId& app_id,
+    const base::Time& time) {
+  NOTIMPLEMENTED();
+}
+
 void BookmarkAppRegistryController::SetAppLastLaunchTime(
     const web_app::AppId& app_id,
     const base::Time& time) {

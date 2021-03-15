@@ -254,6 +254,14 @@ void WebAppSyncBridge::SetAppIsLocallyInstalled(const AppId& app_id,
                                                        is_locally_installed);
 }
 
+void WebAppSyncBridge::SetAppLastBadgingTime(const AppId& app_id,
+                                             const base::Time& time) {
+  ScopedRegistryUpdate update(this);
+  WebApp* web_app = update->UpdateApp(app_id);
+  if (web_app)
+    web_app->SetLastBadgingTime(time);
+}
+
 void WebAppSyncBridge::SetAppLastLaunchTime(const AppId& app_id,
                                             const base::Time& time) {
   {

@@ -99,6 +99,8 @@ class WebApp {
   // using |sync_fallback_data| fields.
   bool is_in_sync_install() const { return is_in_sync_install_; }
 
+  // Represents the last time the Badging API was used.
+  const base::Time& last_badging_time() const { return last_badging_time_; }
   // Represents the last time this app is launched.
   const base::Time& last_launch_time() const { return last_launch_time_; }
   // Represents the time when this app is installed.
@@ -223,6 +225,7 @@ class WebApp {
   void SetProtocolHandlers(
       std::vector<apps::ProtocolHandlerInfo> protocol_handlers);
   void SetUrlHandlers(apps::UrlHandlers url_handlers);
+  void SetLastBadgingTime(const base::Time& time);
   void SetLastLaunchTime(const base::Time& time);
   void SetInstallTime(const base::Time& time);
   void SetRunOnOsLoginMode(RunOnOsLoginMode mode);
@@ -275,6 +278,7 @@ class WebApp {
   base::Optional<apps::ShareTarget> share_target_;
   std::vector<std::string> additional_search_terms_;
   std::vector<apps::ProtocolHandlerInfo> protocol_handlers_;
+  base::Time last_badging_time_;
   base::Time last_launch_time_;
   base::Time install_time_;
   RunOnOsLoginMode run_on_os_login_mode_ = RunOnOsLoginMode::kNotRun;

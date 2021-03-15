@@ -23,6 +23,8 @@ class TestAppRegistryController : public AppRegistryController {
   void UpdateAppsDisableMode() override;
   void SetAppIsLocallyInstalled(const AppId& app_id,
                                 bool is_locally_installed) override;
+  void SetAppLastBadgingTime(const AppId& app_id,
+                             const base::Time& time) override;
   void SetAppLastLaunchTime(const AppId& app_id,
                             const base::Time& time) override;
   void SetAppInstallTime(const AppId& app_id, const base::Time& time) override;

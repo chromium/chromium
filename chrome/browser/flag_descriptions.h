@@ -437,6 +437,7 @@ extern const char kDesktopPWAsAppIconShortcutsMenuDescription[];
 extern const char kDesktopPWAsAttentionBadgingCrOSName[];
 extern const char kDesktopPWAsAttentionBadgingCrOSDescription[];
 extern const char kDesktopPWAsAttentionBadgingCrOSApiAndNotifications[];
+extern const char kDesktopPWAsAttentionBadgingCrOSApiOverridesNotifications[];
 extern const char kDesktopPWAsAttentionBadgingCrOSApiOnly[];
 extern const char kDesktopPWAsAttentionBadgingCrOSNotificationsOnly[];
 

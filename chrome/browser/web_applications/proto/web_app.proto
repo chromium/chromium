@@ -210,4 +210,8 @@ message WebAppProto {
   optional CaptureLinks capture_links = 29;
 
   optional string manifest_url = 30;
+
+  // Last time the Badging API was used.
+  // ms since the Unix epoch. See sync/base/time.h.
+  optional int64 last_badging_time = 31;
 }

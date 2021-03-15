@@ -259,6 +259,12 @@ GURL BookmarkAppRegistrar::GetAppManifestUrl(
   return GURL::EmptyGURL();
 }
 
+base::Time BookmarkAppRegistrar::GetAppLastBadgingTime(
+    const web_app::AppId& app_id) const {
+  NOTIMPLEMENTED();
+  return base::Time();
+}
+
 base::Time BookmarkAppRegistrar::GetAppLastLaunchTime(
     const web_app::AppId& app_id) const {
   const Extension* extension = GetBookmarkAppDchecked(app_id);

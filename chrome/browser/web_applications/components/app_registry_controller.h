@@ -57,6 +57,9 @@ class AppRegistryController {
   virtual void SetAppIsLocallyInstalled(const AppId& app_id,
                                         bool is_locally_installed) = 0;
 
+  virtual void SetAppLastBadgingTime(const AppId& app_id,
+                                     const base::Time& time) = 0;
+
   virtual void SetAppLastLaunchTime(const AppId& app_id,
                                     const base::Time& time) = 0;
 

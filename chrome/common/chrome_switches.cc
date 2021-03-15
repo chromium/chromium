@@ -165,6 +165,8 @@ const char kDebugPackedApps[]               = "debug-packed-apps";
 // Values for the enable-desktop-pwas-attention-badging-cros flag.
 const char kDesktopPWAsAttentionBadgingCrOSApiAndNotifications[] =
     "api-and-notifications";
+const char kDesktopPWAsAttentionBadgingCrOSApiOverridesNotifications[] =
+    "api-overrides-notifications";
 const char kDesktopPWAsAttentionBadgingCrOSApiOnly[] = "api-only";
 const char kDesktopPWAsAttentionBadgingCrOSNotificationsOnly[] =
     "notifications-only";

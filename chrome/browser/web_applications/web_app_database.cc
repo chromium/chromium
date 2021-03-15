@@ -209,6 +209,10 @@ std::unique_ptr<WebAppProto> WebAppDatabase::CreateWebAppProto(
     local_data->set_theme_color(web_app.theme_color().value());
   if (web_app.background_color().has_value())
     local_data->set_background_color(web_app.background_color().value());
+  if (!web_app.last_badging_time().is_null()) {
+    local_data->set_last_badging_time(
+        syncer::TimeToProtoTime(web_app.last_badging_time()));
+  }
   if (!web_app.last_launch_time().is_null()) {
     local_data->set_last_launch_time(
         syncer::TimeToProtoTime(web_app.last_launch_time()));
@@ -493,6 +497,10 @@ std::unique_ptr<WebApp> WebAppDatabase::CreateWebApp(
   if (local_data.has_is_in_sync_install())
     web_app->SetIsInSyncInstall(local_data.is_in_sync_install());
 
+  if (local_data.has_last_badging_time()) {
+    web_app->SetLastBadgingTime(
+        syncer::ProtoTimeToTime(local_data.last_badging_time()));
+  }
   if (local_data.has_last_launch_time()) {
     web_app->SetLastLaunchTime(
         syncer::ProtoTimeToTime(local_data.last_launch_time()));

@@ -250,6 +250,10 @@ void WebApp::SetDownloadedShortcutsMenuIconsSizes(
   downloaded_shortcuts_menu_icons_sizes_ = std::move(sizes);
 }
 
+void WebApp::SetLastBadgingTime(const base::Time& time) {
+  last_badging_time_ = time;
+}
+
 void WebApp::SetLastLaunchTime(const base::Time& time) {
   last_launch_time_ = time;
 }
@@ -341,6 +345,7 @@ std::ostream& operator<<(std::ostream& out, const WebApp& app) {
       << "  sync_fallback_data: " << std::endl
       << app.sync_fallback_data_  // Outputs a std::endl.
       << "  description: " << app.description_ << std::endl
+      << "  last_badging_time: " << app.last_badging_time_ << std::endl
       << "  last_launch_time: " << app.last_launch_time_ << std::endl
       << "  install_time: " << app.install_time_ << std::endl
       << "  is_generated_icon: " << app.is_generated_icon_ << std::endl
@@ -442,6 +447,7 @@ bool WebApp::operator==(const WebApp& other) const {
         app.share_target_,
         app.additional_search_terms_,
         app.protocol_handlers_,
+        app.last_badging_time_,
         app.last_launch_time_,
         app.install_time_,
         app.run_on_os_login_mode_,
