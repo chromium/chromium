@@ -75,6 +75,10 @@ content::WebUIDataSource* CreateMediaAppUntrustedDataSource(
   source->OverrideContentSecurityPolicy(
       network::mojom::CSPDirectiveName::ScriptSrc,
       "script-src 'self' 'wasm-eval';");
+  // Allow calls to Maps reverse geocoding API for loading metadata.
+  source->OverrideContentSecurityPolicy(
+      network::mojom::CSPDirectiveName::ConnectSrc,
+      "connect-src 'self' https://maps.googleapis.com/maps/api/geocode/json;");
 
   // TODO(crbug.com/1098685): Trusted Type remaining WebUI.
   source->DisableTrustedTypesCSP();
