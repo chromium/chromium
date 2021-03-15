@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ui/cocoa/screentime/webpage_controller_impl.h"
 
+#include "base/mac/foundation_util.h"
+#include "base/strings/sys_string_conversions.h"
 #include "net/base/mac/url_conversions.h"
 
 #include <ScreenTime/ScreenTime.h>
@@ -51,7 +53,12 @@ namespace screentime {
 WebpageControllerImpl::WebpageControllerImpl(
     const BlockedChangedCallback& blocked_changed_callback)
     : platform_controller_([[STWebpageController alloc] init]),
-      blocked_changed_callback_(blocked_changed_callback) {}
+      blocked_changed_callback_(blocked_changed_callback) {
+  NSError* error = nil;
+  NSString* bundle_id = base::SysUTF8ToNSString(base::mac::BaseBundleID());
+  [platform_controller_ setBundleIdentifier:bundle_id error:&error];
+}
+
 WebpageControllerImpl::~WebpageControllerImpl() = default;
 
 NSView* WebpageControllerImpl::GetView() {

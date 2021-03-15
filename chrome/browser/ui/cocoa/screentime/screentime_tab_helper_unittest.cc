@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/cocoa/screentime/tab_helper.h"
 
 #include "base/test/scoped_feature_list.h"
+#include "chrome/browser/ui/cocoa/screentime/screentime_features.h"
 #include "chrome/test/base/testing_profile.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -15,7 +16,7 @@ using ScreentimeTabHelperTest = ::testing::Test;
 
 TEST(ScreentimeTabHelperTest, NeverUsedInIncognito) {
   base::test::ScopedFeatureList features;
-  features.InitAndEnableFeature(TabHelper::kScreenTime);
+  features.InitAndEnableFeature(kScreenTime);
 
   content::BrowserTaskEnvironment task_environment;
 

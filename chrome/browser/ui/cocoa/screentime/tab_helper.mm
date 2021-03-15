@@ -7,6 +7,7 @@
 #include "base/command_line.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/cocoa/screentime/fake_webpage_controller.h"
+#include "chrome/browser/ui/cocoa/screentime/screentime_features.h"
 #include "chrome/browser/ui/cocoa/screentime/tab_helper.h"
 #include "chrome/browser/ui/cocoa/screentime/webpage_controller.h"
 #include "chrome/browser/ui/cocoa/screentime/webpage_controller_impl.h"
@@ -14,11 +15,6 @@
 #include "content/public/browser/web_contents.h"
 
 namespace screentime {
-
-const base::Feature TabHelper::kScreenTime{
-    "ScreenTime",
-    base::FEATURE_DISABLED_BY_DEFAULT,
-};
 
 namespace {
 bool g_use_fake_webpage_controller = false;
@@ -33,7 +29,7 @@ void TabHelper::UseFakeWebpageControllerForTesting() {
 bool TabHelper::IsScreentimeEnabledForProfile(Profile* profile) {
   if (profile->IsOffTheRecord())
     return false;
-  return base::FeatureList::IsEnabled(kScreenTime);
+  return IsScreenTimeEnabled();
 }
 
 TabHelper::TabHelper(content::WebContents* contents)

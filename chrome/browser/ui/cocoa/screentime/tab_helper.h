@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/feature_list.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/browser/web_contents_user_data.h"
 
@@ -27,8 +26,6 @@ class WebpageController;
 class TabHelper : public content::WebContentsObserver,
                   public content::WebContentsUserData<TabHelper> {
  public:
-  static const base::Feature kScreenTime;
-
   static void UseFakeWebpageControllerForTesting();
   static bool IsScreentimeEnabledForProfile(Profile* profile);
 
