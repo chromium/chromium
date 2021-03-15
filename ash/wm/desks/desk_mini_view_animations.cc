@@ -46,7 +46,7 @@ constexpr float kEnterOrExitZeroStateScale = 0.6f;
 void InitScopedAnimationSettings(ui::ScopedLayerAnimationSettings* settings,
                                  base::TimeDelta duration) {
   settings->SetTransitionDuration(duration);
-  settings->SetTweenType(gfx::Tween::FAST_OUT_SLOW_IN);
+  settings->SetTweenType(gfx::Tween::ACCEL_20_DECEL_60);
   settings->SetPreemptionStrategy(
       ui::LayerAnimator::IMMEDIATELY_ANIMATE_TO_NEW_TARGET);
 }
