@@ -186,8 +186,11 @@ void ExecutionContextCSPDelegate::PostViolationReport(
   // Construct and route the report to the ReportingContext, to be observed
   // by any ReportingObservers.
   auto* body = MakeGarbageCollected<CSPViolationReportBody>(violation_data);
+  String url_sending_report = is_frame_ancestors_violation
+                                  ? violation_data.documentURI()
+                                  : Url().GetString();
   Report* observed_report = MakeGarbageCollected<Report>(
-      ReportType::kCSPViolation, Url().GetString(), body);
+      ReportType::kCSPViolation, url_sending_report, body);
   ReportingContext::From(execution_context_.Get())
       ->QueueReport(observed_report,
                     use_reporting_api ? report_endpoints : Vector<String>());
