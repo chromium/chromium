@@ -76,24 +76,34 @@ void GestureTap(const views::View* view) {
   event_generator.GestureTapAt(view->GetBoundsInScreen().CenterPoint());
 }
 
+ui::GestureEvent BuildGestureEvent(const gfx::Point& event_location,
+                                   ui::EventType gesture_type) {
+  return ui::GestureEvent(event_location.x(), event_location.y(), ui::EF_NONE,
+                          ui::EventTimeForNow(),
+                          ui::GestureEventDetails(gesture_type));
+}
+
 void LongPress(const views::View* view) {
   auto* root_window = view->GetWidget()->GetNativeWindow()->GetRootWindow();
   ui::test::EventGenerator event_generator(root_window);
   event_generator.MoveTouch(view->GetBoundsInScreen().CenterPoint());
-  ui::GestureEvent long_press(
-      event_generator.current_screen_location().x(),
-      event_generator.current_screen_location().y(), ui::EF_NONE,
-      ui::EventTimeForNow(),
-      ui::GestureEventDetails(ui::ET_GESTURE_LONG_PRESS));
+  const gfx::Point& press_location = event_generator.current_screen_location();
+  ui::GestureEvent long_press =
+      BuildGestureEvent(press_location, ui::ET_GESTURE_LONG_PRESS);
   event_generator.Dispatch(&long_press);
+
+  ui::GestureEvent gesture_end =
+      BuildGestureEvent(press_location, ui::ET_GESTURE_END);
+  event_generator.Dispatch(&gesture_end);
 }
 
-void PressKey(const views::View* view,
-              ui::KeyboardCode key_code,
-              int flags = ui::EF_NONE) {
+void PressAndReleaseKey(const views::View* view,
+                        ui::KeyboardCode key_code,
+                        int flags = ui::EF_NONE) {
   auto* root_window = view->GetWidget()->GetNativeWindow()->GetRootWindow();
   ui::test::EventGenerator event_generator(root_window);
   event_generator.PressKey(key_code, flags);
+  event_generator.ReleaseKey(key_code, flags);
 }
 
 bool PressTabUntilFocused(const views::View* view, int max_count = 10) {
@@ -1915,7 +1925,7 @@ TEST_P(HoldingSpaceTrayTest, EnterKeyOpensDownloads) {
   // app. There should be *no* attempts to open an holding space items.
   EXPECT_CALL(*client(), OpenItems).Times(0);
   EXPECT_CALL(*client(), OpenDownloads);
-  PressKey(downloads_section_header, ui::KeyboardCode::VKEY_RETURN);
+  PressAndReleaseKey(downloads_section_header, ui::KeyboardCode::VKEY_RETURN);
 }
 
 // User should be able to launch selected holding space items by pressing the
@@ -1942,7 +1952,7 @@ TEST_P(HoldingSpaceTrayTest, EnterKeyOpensSelectedFiles) {
 
   // Press the enter key. The client should *not* attempt to open any items.
   EXPECT_CALL(*client(), OpenItems).Times(0);
-  PressKey(item_views[0], ui::KeyboardCode::VKEY_RETURN);
+  PressAndReleaseKey(item_views[0], ui::KeyboardCode::VKEY_RETURN);
   testing::Mock::VerifyAndClearExpectations(client());
 
   // Click an item. The view should be selected.
@@ -1954,7 +1964,7 @@ TEST_P(HoldingSpaceTrayTest, EnterKeyOpensSelectedFiles) {
   // Press the enter key. We expect the client to open the selected item.
   EXPECT_CALL(*client(), OpenItems(testing::ElementsAre(item_views[0]->item()),
                                    testing::_));
-  PressKey(item_views[0], ui::KeyboardCode::VKEY_RETURN);
+  PressAndReleaseKey(item_views[0], ui::KeyboardCode::VKEY_RETURN);
   testing::Mock::VerifyAndClearExpectations(client());
 
   // Shift-click on the second item. Both views should be selected.
@@ -1966,7 +1976,7 @@ TEST_P(HoldingSpaceTrayTest, EnterKeyOpensSelectedFiles) {
   EXPECT_CALL(*client(), OpenItems(testing::ElementsAre(item_views[0]->item(),
                                                         item_views[1]->item()),
                                    testing::_));
-  PressKey(item_views[1], ui::KeyboardCode::VKEY_RETURN);
+  PressAndReleaseKey(item_views[1], ui::KeyboardCode::VKEY_RETURN);
   testing::Mock::VerifyAndClearExpectations(client());
 
   // Tab traverse to the last item.
@@ -1976,7 +1986,7 @@ TEST_P(HoldingSpaceTrayTest, EnterKeyOpensSelectedFiles) {
   // it was *not* selected prior to pressing the enter key.
   EXPECT_CALL(*client(), OpenItems(testing::ElementsAre(item_views[2]->item()),
                                    testing::_));
-  PressKey(item_views[2], ui::KeyboardCode::VKEY_RETURN);
+  PressAndReleaseKey(item_views[2], ui::KeyboardCode::VKEY_RETURN);
   EXPECT_FALSE(item_views[0]->selected());
   EXPECT_FALSE(item_views[1]->selected());
   EXPECT_TRUE(item_views[2]->selected());
@@ -2193,7 +2203,7 @@ TEST_P(HoldingSpaceTrayTest, MultiselectInTouchMode) {
 
   // Close the context menu. The view that was long pressed should still be
   // selected.
-  PressKey(item_views[0], ui::KeyboardCode::VKEY_ESCAPE);
+  PressAndReleaseKey(item_views[0], ui::KeyboardCode::VKEY_ESCAPE);
   EXPECT_FALSE(views::MenuController::GetActiveInstance());
   EXPECT_TRUE(item_views[0]->selected());
   EXPECT_FALSE(item_views[1]->selected());
@@ -2209,7 +2219,7 @@ TEST_P(HoldingSpaceTrayTest, MultiselectInTouchMode) {
 
   // Close the context menu. Both views that were long pressed should still be
   // selected.
-  PressKey(item_views[0], ui::KeyboardCode::VKEY_ESCAPE);
+  PressAndReleaseKey(item_views[0], ui::KeyboardCode::VKEY_ESCAPE);
   EXPECT_FALSE(views::MenuController::GetActiveInstance());
   EXPECT_TRUE(item_views[0]->selected());
   EXPECT_TRUE(item_views[1]->selected());
@@ -2227,9 +2237,20 @@ TEST_P(HoldingSpaceTrayTest, MultiselectInTouchMode) {
   GestureTap(item_views[0]);
   testing::Mock::VerifyAndClearExpectations(client());
 
-  // Long press the same two views to reselect them.
+  // Reselect the first item view and close the context menu triggered from
+  // long press.
   LongPress(item_views[0]);
+  EXPECT_TRUE(views::MenuController::GetActiveInstance());
+  PressAndReleaseKey(item_views[0], ui::VKEY_ESCAPE);
+  EXPECT_FALSE(views::MenuController::GetActiveInstance());
+
+  // Reselect the second item view and close the context menu triggered from
+  // long press.
   LongPress(item_views[1]);
+  EXPECT_TRUE(views::MenuController::GetActiveInstance());
+  PressAndReleaseKey(item_views[1], ui::VKEY_ESCAPE);
+  EXPECT_FALSE(views::MenuController::GetActiveInstance());
+
   EXPECT_TRUE(item_views[0]->selected());
   EXPECT_TRUE(item_views[1]->selected());
   EXPECT_FALSE(item_views[2]->selected());
