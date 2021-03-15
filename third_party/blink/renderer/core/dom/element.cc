@@ -4818,6 +4818,11 @@ HeapVector<Member<Element>> CollectAncestorsToEnsure(Element& element) {
 
 const ComputedStyle* Element::EnsureComputedStyle(
     PseudoId pseudo_element_specifier) {
+  // Style computation should not be triggered when in a NoAllocationScope
+  // because there is always a possibility that it could allocate something on
+  // the V8 heap.
+  DCHECK(ThreadState::Current()->IsAllocationAllowed());
+
   if (PseudoElement* element = GetPseudoElement(pseudo_element_specifier))
     return element->EnsureComputedStyle();
 

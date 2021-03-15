@@ -107,6 +107,7 @@ MutableCSSPropertyValueSet::SetResult CSSParser::ParseValue(
     SecureContextMode secure_context_mode,
     StyleSheetContents* style_sheet,
     const ExecutionContext* execution_context) {
+  DCHECK(ThreadState::Current()->IsAllocationAllowed());
   if (string.IsEmpty()) {
     bool did_parse = false;
     bool did_change = false;
@@ -150,6 +151,7 @@ MutableCSSPropertyValueSet::SetResult CSSParser::ParseValueForCustomProperty(
     SecureContextMode secure_context_mode,
     StyleSheetContents* style_sheet,
     bool is_animation_tainted) {
+  DCHECK(ThreadState::Current()->IsAllocationAllowed());
   DCHECK(CSSVariableParser::IsValidVariableName(property_name));
   if (value.IsEmpty()) {
     bool did_parse = false;
@@ -177,6 +179,7 @@ MutableCSSPropertyValueSet::SetResult CSSParser::ParseValue(
     const String& string,
     bool important,
     const CSSParserContext* context) {
+  DCHECK(ThreadState::Current()->IsAllocationAllowed());
   return CSSParserImpl::ParseValue(declaration, unresolved_property, string,
                                    important, context);
 }
@@ -184,6 +187,7 @@ MutableCSSPropertyValueSet::SetResult CSSParser::ParseValue(
 const CSSValue* CSSParser::ParseSingleValue(CSSPropertyID property_id,
                                             const String& string,
                                             const CSSParserContext* context) {
+  DCHECK(ThreadState::Current()->IsAllocationAllowed());
   if (string.IsEmpty())
     return nullptr;
   if (CSSValue* value = CSSParserFastPaths::MaybeParseValue(property_id, string,
@@ -247,6 +251,7 @@ bool CSSParser::ParseSupportsCondition(
 }
 
 bool CSSParser::ParseColor(Color& color, const String& string, bool strict) {
+  DCHECK(ThreadState::Current()->IsAllocationAllowed());
   if (string.IsEmpty())
     return false;
 
@@ -316,6 +321,7 @@ CSSPrimitiveValue* CSSParser::ParseLengthPercentage(
 MutableCSSPropertyValueSet* CSSParser::ParseFont(
     const String& string,
     const ExecutionContext* execution_context) {
+  DCHECK(ThreadState::Current()->IsAllocationAllowed());
   auto* set =
       MakeGarbageCollected<MutableCSSPropertyValueSet>(kHTMLStandardMode);
   ParseValue(set, CSSPropertyID::kFont, string, true /* important */,

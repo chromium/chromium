@@ -2283,6 +2283,7 @@ static void AssertLayoutTreeUpdated(Node& root) {
 
 void Document::UpdateStyleAndLayoutTree() {
   DCHECK(IsMainThread());
+  DCHECK(ThreadState::Current()->IsAllocationAllowed());
   if (!IsActive() || !View() || View()->ShouldThrottleRendering() ||
       Lifecycle().LifecyclePostponed()) {
     return;
@@ -2299,6 +2300,7 @@ void Document::UpdateStyleAndLayoutTree() {
 
 void Document::UpdateStyleAndLayoutTreeForThisDocument() {
   DCHECK(IsMainThread());
+  DCHECK(ThreadState::Current()->IsAllocationAllowed());
   if (!IsActive() || !View() || View()->ShouldThrottleRendering() ||
       Lifecycle().LifecyclePostponed()) {
     return;
