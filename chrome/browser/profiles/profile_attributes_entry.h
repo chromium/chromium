@@ -162,6 +162,7 @@ class ProfileAttributesEntry {
   void SetLocalProfileName(const std::u16string& name, bool is_default_name);
   void SetShortcutName(const std::u16string& name);
   void SetActiveTimeToNow();
+  // Only ephemeral profiles can be set as omitted.
   void SetIsOmitted(bool is_omitted);
   void SetSupervisedUserId(const std::string& id);
   void SetLocalAuthCredentials(const std::string& auth);
@@ -173,6 +174,9 @@ class ProfileAttributesEntry {
   void SetIsUsingGAIAPicture(bool value);
   void SetIsSigninRequired(bool value);
   void SetSignedInWithCredentialProvider(bool value);
+  // Only non-omitted profiles can be set as non-ephemeral. It's the
+  // responsibility of the caller to make sure that the entry is set as
+  // non-ephemeral only if prefs::kForceEphemeralProfiles is false.
   void SetIsEphemeral(bool value);
   void SetIsGuest(bool value);
   // TODO(msalama): Remove this function.

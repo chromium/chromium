@@ -1559,7 +1559,10 @@ void ProfileImpl::UpdateIsEphemeralInStorage() {
   ProfileAttributesEntry* entry = g_browser_process->profile_manager()
                                       ->GetProfileAttributesStorage()
                                       .GetProfileAttributesWithPath(GetPath());
-  if (entry) {
+  // If a profile is omitted, it has to be ephemeral and thus setting the value
+  // based on the pref does not make any sense. Whenever the profile is set as
+  // non-omitted, it should also update IsEphemeral to respect this pref.
+  if (entry && !entry->IsOmitted()) {
     entry->SetIsEphemeral(
         GetPrefs()->GetBoolean(prefs::kForceEphemeralProfiles));
   }
