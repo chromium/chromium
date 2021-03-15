@@ -584,7 +584,7 @@ void ConsumerHost::TracingSession::OnTraceStats(
     return;
   }
 
-  if (!success || stats.buffer_stats_size() != 1) {
+  if (!(success && stats.buffer_stats_size())) {
     std::move(request_buffer_usage_callback_).Run(false, 0.0f, false);
     return;
   }
