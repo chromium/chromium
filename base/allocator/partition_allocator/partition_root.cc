@@ -143,14 +143,14 @@ static size_t PartitionPurgeSlotSpan(
   size_t discardable_bytes = 0;
 
   if (slot_span->CanStoreRawSize()) {
-    uint32_t used_bytes =
-        static_cast<uint32_t>(RoundUpToSystemPage(slot_span->GetRawSize()));
-    discardable_bytes = bucket->slot_size - used_bytes;
+    uint32_t utilized_slot_size = static_cast<uint32_t>(
+        RoundUpToSystemPage(slot_span->GetUtilizedSlotSize()));
+    discardable_bytes = bucket->slot_size - utilized_slot_size;
     if (discardable_bytes && discard) {
       char* ptr = reinterpret_cast<char*>(
           internal::SlotSpanMetadata<thread_safe>::ToSlotSpanStartPtr(
               slot_span));
-      ptr += used_bytes;
+      ptr += utilized_slot_size;
       DiscardSystemPages(ptr, discardable_bytes);
     }
     return discardable_bytes;
