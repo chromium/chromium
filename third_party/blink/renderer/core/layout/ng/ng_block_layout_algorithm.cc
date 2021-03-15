@@ -218,7 +218,13 @@ NGBlockLayoutAlgorithm::NGBlockLayoutAlgorithm(
       is_line_clamp_context_(params.space.IsLineClampContext()),
       lines_until_clamp_(params.space.LinesUntilClamp()),
       exclusion_space_(params.space.ExclusionSpace()),
-      early_break_(params.early_break) {}
+      early_break_(params.early_break) {
+  child_percentage_size_ = CalculateChildPercentageSize(
+      ConstraintSpace(), Node(), ChildAvailableSize());
+  replaced_child_percentage_size_ = CalculateReplacedChildPercentageSize(
+      ConstraintSpace(), Node(), ChildAvailableSize(), BorderScrollbarPadding(),
+      BorderPadding());
+}
 
 // Define the destructor here, so that we can forward-declare more in the
 // header.
@@ -480,12 +486,6 @@ NGBlockLayoutAlgorithm::RelayoutIgnoringLineClamp() {
 
 inline scoped_refptr<const NGLayoutResult> NGBlockLayoutAlgorithm::Layout(
     NGInlineChildLayoutContext* inline_child_layout_context) {
-  child_percentage_size_ = CalculateChildPercentageSize(
-      ConstraintSpace(), Node(), ChildAvailableSize());
-  replaced_child_percentage_size_ = CalculateReplacedChildPercentageSize(
-      ConstraintSpace(), Node(), ChildAvailableSize(), BorderScrollbarPadding(),
-      BorderPadding());
-
   if (ConstraintSpace().IsLegacyTableCell())
     container_builder_.AdjustBorderScrollbarPaddingForTableCell();
 
