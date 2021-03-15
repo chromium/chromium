@@ -23,7 +23,7 @@ class GtkUiDelegateWayland : public GtkUiDelegate {
   ~GtkUiDelegateWayland() override;
 
   // GtkUiDelegate:
-  void OnInitialized() override;
+  void OnInitialized(GtkWidget* widget) override;
   GdkKeymap* GetGdkKeymap() override;
   GdkWindow* GetGdkWindow(gfx::AcceleratedWidget window_id) override;
   bool SetGdkWindowTransientFor(GdkWindow* window,

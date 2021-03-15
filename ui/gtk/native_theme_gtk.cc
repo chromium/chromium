@@ -410,6 +410,8 @@ NativeThemeGtk* NativeThemeGtk::instance() {
 }
 
 NativeThemeGtk::NativeThemeGtk() {
+  // g_type_from_name() is only used in GTK3.
+#if BUILDFLAG(GTK_VERSION) < 4
   // These types are needed by g_type_from_name(), but may not be registered at
   // this point.  We need the g_type_class magic to make sure the compiler
   // doesn't optimize away this code.
@@ -440,6 +442,7 @@ NativeThemeGtk::NativeThemeGtk() {
   auto model =
       TakeGObject(GTK_TREE_MODEL(gtk_tree_store_new(1, G_TYPE_STRING)));
   auto combo = TakeGObject(gtk_combo_box_new_with_model(model));
+#endif
 
   OnThemeChanged(gtk_settings_get_default(), nullptr);
 }
@@ -450,15 +453,28 @@ NativeThemeGtk::~NativeThemeGtk() {
 
 void NativeThemeGtk::SetThemeCssOverride(ScopedCssProvider provider) {
   if (theme_css_override_) {
+#if BUILDFLAG(GTK_VERSION) >= 4
+    gtk_style_context_remove_provider_for_display(
+        gdk_display_get_default(),
+        GTK_STYLE_PROVIDER(theme_css_override_.get()));
+#else
     gtk_style_context_remove_provider_for_screen(
         gdk_screen_get_default(),
         GTK_STYLE_PROVIDER(theme_css_override_.get()));
+#endif
   }
   theme_css_override_ = std::move(provider);
   if (theme_css_override_) {
+#if BUILDFLAG(GTK_VERSION) >= 4
+    gtk_style_context_add_provider_for_display(
+        gdk_display_get_default(),
+        GTK_STYLE_PROVIDER(theme_css_override_.get()),
+        GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
+#else
     gtk_style_context_add_provider_for_screen(
         gdk_screen_get_default(), GTK_STYLE_PROVIDER(theme_css_override_.get()),
         GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
+#endif
   }
 }
 
@@ -559,16 +575,16 @@ void NativeThemeGtk::PaintArrowButton(
 
   switch (direction) {
     case kScrollbarUpArrow:
-      gtk_style_context_add_class(context, GTK_STYLE_CLASS_TOP);
+      gtk_style_context_add_class(context, "top");
       break;
     case kScrollbarRightArrow:
-      gtk_style_context_add_class(context, GTK_STYLE_CLASS_RIGHT);
+      gtk_style_context_add_class(context, "right");
       break;
     case kScrollbarDownArrow:
-      gtk_style_context_add_class(context, GTK_STYLE_CLASS_BOTTOM);
+      gtk_style_context_add_class(context, "bottom");
       break;
     case kScrollbarLeftArrow:
-      gtk_style_context_add_class(context, GTK_STYLE_CLASS_LEFT);
+      gtk_style_context_add_class(context, "left");
       break;
     default:
       NOTREACHED();
@@ -675,7 +691,7 @@ void NativeThemeGtk::PaintMenuSeparator(
     gtk_style_context_get_margin(context, &margin);
     gtk_style_context_get_border(context, &border);
     gtk_style_context_get_padding(context, &padding);
-    gtk_style_context_get(context, "min-height", &min_height, nullptr);
+    min_height = GetSeparatorSize(true).height();
 #else
     GtkStateFlags state = gtk_style_context_get_state(context);
     gtk_style_context_get_margin(context, state, &margin);

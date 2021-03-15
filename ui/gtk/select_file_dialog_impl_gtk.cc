@@ -62,7 +62,7 @@ void OnFilePickerDestroy(base::OnceClosure* callback_raw) {
 void GtkFileChooserSetCurrentFolder(GtkFileChooser* dialog,
                                     const base::FilePath& path) {
 #if GTK_CHECK_VERSION(3, 90, 0)
-  ScopedGObject<GFile> file(g_file_new_for_path(path.value().c_str()));
+  auto file = TakeGObject(g_file_new_for_path(path.value().c_str()));
   gtk_file_chooser_set_current_folder(dialog, file, nullptr);
 #else
   gtk_file_chooser_set_current_folder(dialog, path.value().c_str());
@@ -72,7 +72,7 @@ void GtkFileChooserSetCurrentFolder(GtkFileChooser* dialog,
 void GtkFileChooserSetFilename(GtkFileChooser* dialog,
                                const base::FilePath& path) {
 #if GTK_CHECK_VERSION(3, 90, 0)
-  ScopedGObject<GFile> file(g_file_new_for_path(path.value().c_str()));
+  auto file = TakeGObject(g_file_new_for_path(path.value().c_str()));
   gtk_file_chooser_set_file(dialog, file, nullptr);
 #else
   gtk_file_chooser_set_filename(dialog, path.value().c_str());
@@ -83,8 +83,8 @@ int GtkDialogSelectedFilterIndex(GtkWidget* dialog) {
   GtkFileFilter* selected_filter =
       gtk_file_chooser_get_filter(GTK_FILE_CHOOSER(dialog));
 #if GTK_CHECK_VERSION(3, 90, 0)
-  ScopedGObject<GListModel> filters(
-      gtk_file_chooser_get_filters(GTK_FILE_CHOOSER(dialog)));
+  auto filters =
+      TakeGObject(gtk_file_chooser_get_filters(GTK_FILE_CHOOSER(dialog)));
   int size = g_list_model_get_n_items(filters);
   int idx = -1;
   for (; idx < size; ++idx) {
@@ -102,8 +102,7 @@ int GtkDialogSelectedFilterIndex(GtkWidget* dialog) {
 std::string GtkFileChooserGetFilename(GtkWidget* dialog) {
   const char* filename = nullptr;
 #if GTK_CHECK_VERSION(3, 90, 0)
-  ScopedGObject<GFile> file(
-      gtk_file_chooser_get_file(GTK_FILE_CHOOSER(dialog)));
+  auto file = TakeGObject(gtk_file_chooser_get_file(GTK_FILE_CHOOSER(dialog)));
   if (file)
     filename = g_file_peek_path(file);
 #else
@@ -120,11 +119,11 @@ std::string GtkFileChooserGetFilename(GtkWidget* dialog) {
 std::vector<base::FilePath> GtkFileChooserGetFilenames(GtkWidget* dialog) {
   std::vector<base::FilePath> filenames_fp;
 #if GTK_CHECK_VERSION(3, 90, 0)
-  ScopedGObject<GListModel> files(
-      gtk_file_chooser_get_files(GTK_FILE_CHOOSER(dialog)));
+  auto files =
+      TakeGObject(gtk_file_chooser_get_files(GTK_FILE_CHOOSER(dialog)));
   auto size = g_list_model_get_n_items(files);
   for (unsigned int i = 0; i < size; ++i) {
-    ScopedGObject<GFile> file(G_FILE(g_list_model_get_object(files, i)));
+    auto file = TakeGObject(G_FILE(g_list_model_get_object(files, i)));
     filenames_fp.emplace_back(g_file_peek_path(file));
   }
 #else

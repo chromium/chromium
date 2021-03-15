@@ -24,7 +24,6 @@ typedef struct _GParamSpec GParamSpec;
 typedef struct _GtkParamSpec GtkParamSpec;
 typedef struct _GtkSettings GtkSettings;
 typedef struct _GtkStyle GtkStyle;
-typedef struct _GtkWidget GtkWidget;
 
 namespace gtk {
 using ColorMap = std::map<int, SkColor>;
@@ -155,9 +154,6 @@ class GtkUi : public views::LinuxUI {
   ui::GtkUiDelegate* const delegate_;
 
   NativeThemeGtk* native_theme_;
-
-  // A regular GtkWindow.
-  GtkWidget* fake_window_;
 
   // Colors calculated by LoadGtkValues() that are given to the
   // caller while |use_gtk_| is true.

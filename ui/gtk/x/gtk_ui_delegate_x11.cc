@@ -25,7 +25,11 @@ GdkWindow* gdk_x11_window_foreign_new_for_display(GdkDisplay* display,
 GdkWindow* gdk_x11_window_lookup_for_display(GdkDisplay* display,
                                              unsigned long window);
 
+#if BUILDFLAG(GTK_VERSION) >= 4
+unsigned long gdk_x11_surface_get_xid(GdkSurface* surface);
+#else
 unsigned long gdk_x11_window_get_xid(GdkWindow* window);
+#endif
 }
 
 namespace ui {
@@ -42,9 +46,10 @@ GtkUiDelegateX11::GtkUiDelegateX11(x11::Connection* connection)
 
 GtkUiDelegateX11::~GtkUiDelegateX11() = default;
 
-void GtkUiDelegateX11::OnInitialized() {
+void GtkUiDelegateX11::OnInitialized(GtkWidget* widget) {
   // Ensure the singleton instance of GtkEventLoopX11 is created and started.
-  GtkEventLoopX11::EnsureInstance();
+  if (!event_loop_)
+    event_loop_ = std::make_unique<GtkEventLoopX11>(widget);
 
   // GTK sets an Xlib error handler that exits the process on any async errors.
   // We don't want this behavior, so reset the error handler to something that
@@ -53,10 +58,20 @@ void GtkUiDelegateX11::OnInitialized() {
 }
 
 GdkKeymap* GtkUiDelegateX11::GetGdkKeymap() {
+#if BUILDFLAG(GTK_VERSION) >= 4
+  NOTREACHED();
+  return nullptr;
+#else
   return gdk_keymap_get_for_display(GetGdkDisplay());
+#endif
 }
 
 GdkWindow* GtkUiDelegateX11::GetGdkWindow(gfx::AcceleratedWidget window_id) {
+#if BUILDFLAG(GTK_VERSION) >= 4
+  // GTK4 dropped support for foreign windows.
+  NOTIMPLEMENTED_LOG_ONCE();
+  return nullptr;
+#else
   GdkDisplay* display = GetGdkDisplay();
   GdkWindow* gdk_window = gdk_x11_window_lookup_for_display(
       display, static_cast<uint32_t>(window_id));
@@ -66,11 +81,17 @@ GdkWindow* GtkUiDelegateX11::GetGdkWindow(gfx::AcceleratedWidget window_id) {
     gdk_window = gdk_x11_window_foreign_new_for_display(
         display, static_cast<uint32_t>(window_id));
   return gdk_window;
+#endif
 }
 
 bool GtkUiDelegateX11::SetGdkWindowTransientFor(GdkWindow* window,
                                                 gfx::AcceleratedWidget parent) {
+#if BUILDFLAG(GTK_VERSION) >= 4
+  auto x11_window = static_cast<x11::Window>(gdk_x11_surface_get_xid(
+      gtk_native_get_surface(gtk_widget_get_native(GTK_WIDGET(window)))));
+#else
   auto x11_window = static_cast<x11::Window>(gdk_x11_window_get_xid(window));
+#endif
   SetProperty(x11_window, x11::Atom::WM_TRANSIENT_FOR, x11::Atom::WINDOW,
               parent);
 

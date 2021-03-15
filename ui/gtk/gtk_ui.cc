@@ -317,16 +317,9 @@ GtkUi::GtkUi(ui::GtkUiDelegate* delegate) : delegate_(delegate) {
   env->SetVar("NO_AT_BRIDGE", "1");
   GtkInitFromCommandLine(*base::CommandLine::ForCurrentProcess());
   native_theme_ = NativeThemeGtk::instance();
-#if GTK_CHECK_VERSION(3, 98, 1)
-  fake_window_ = gtk_window_new();
-#else
-  fake_window_ = gtk_window_new(GTK_WINDOW_TOPLEVEL);
-#endif
-  gtk_widget_realize(fake_window_);
 }
 
 GtkUi::~GtkUi() {
-  GtkWindowDestroy(fake_window_);
   g_gtk_ui = nullptr;
 }
 
@@ -370,7 +363,7 @@ void GtkUi::Initialize() {
   // Listen for scale factor changes.  We would prefer to listen on
   // a GdkScreen, but there is no scale-factor property, so use an
   // unmapped window instead.
-  g_signal_connect(fake_window_, "notify::scale-factor",
+  g_signal_connect(GetDummyWindow(), "notify::scale-factor",
                    G_CALLBACK(OnDeviceScaleFactorMaybeChangedThunk), this);
 
   LoadGtkValues();
@@ -387,7 +380,7 @@ void GtkUi::Initialize() {
 
   indicators_count = 0;
 
-  GetDelegate()->OnInitialized();
+  GetDelegate()->OnInitialized(GetDummyWindow());
 }
 
 bool GtkUi::GetTint(int id, color_utils::HSL* tint) const {
@@ -511,21 +504,20 @@ gfx::Image GtkUi::GetIconForContentType(const std::string& content_type,
   for (size_t i = 0; i < base::size(content_types); ++i) {
     auto icon = TakeGObject(g_content_type_get_icon(content_type.c_str()));
 #if GTK_CHECK_VERSION(3, 98, 0)
-    ScopedGObject<GtkIconPaintable> icon_paintable(
-        gtk_icon_theme_lookup_by_gicon(theme, icon.get(), size, 1,
-                                       GTK_TEXT_DIR_NONE,
-                                       static_cast<GtkIconLookupFlags>(0)));
+    auto icon_paintable = TakeGObject(gtk_icon_theme_lookup_by_gicon(
+        theme, icon.get(), size, 1, GTK_TEXT_DIR_NONE,
+        static_cast<GtkIconLookupFlags>(0)));
     if (!icon_paintable)
       continue;
 
     auto* paintable = GDK_PAINTABLE(icon_paintable);
     auto* snapshot = gtk_snapshot_new();
     gdk_paintable_snapshot(paintable, snapshot, size, size);
-    ScopedGObject<GskRenderNode> node(gtk_snapshot_free_to_node(snapshot));
+    auto node = TakeGObject(gtk_snapshot_free_to_node(snapshot));
     auto rect = GRAPHENE_RECT_INIT(0, 0, size, size);
-    ScopedGObject<GskRenderer> renderer(gsk_cairo_renderer_new());
-    ScopedGObject<GdkTexture> texture(
-        gsk_renderer_render_texture(renderer, node, &rect));
+    auto renderer = TakeGObject(gsk_cairo_renderer_new());
+    auto texture =
+        TakeGObject(gsk_renderer_render_texture(renderer, node, &rect));
 
     SkBitmap bitmap;
     bitmap.allocN32Pixels(size, size);
@@ -533,8 +525,8 @@ gfx::Image GtkUi::GetIconForContentType(const std::string& content_type,
 
     CairoSurface surface(bitmap);
     cairo_t* cr = surface.cairo();
-    gtk_render_icon(gtk_widget_get_style_context(fake_window_), cr, texture, 0,
-                    0);
+    gtk_render_icon(gtk_widget_get_style_context(GetDummyWindow()), cr, texture,
+                    0, 0);
 #else
     auto icon_info = TakeGObject(gtk_icon_theme_lookup_by_gicon(
         theme, icon.get(), size,
@@ -1057,7 +1049,7 @@ float GtkUi::GetRawDeviceScaleFactor() {
   if (display::Display::HasForceDeviceScaleFactor())
     return display::Display::GetForcedDeviceScaleFactor();
 
-  float scale = gtk_widget_get_scale_factor(fake_window_);
+  float scale = gtk_widget_get_scale_factor(GetDummyWindow());
   DCHECK_GT(scale, 0.0);
 
   auto* settings = gtk_settings_get_default();

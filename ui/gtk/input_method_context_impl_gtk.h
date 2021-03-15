@@ -62,23 +62,27 @@ class InputMethodContextImplGtk : public ui::LinuxInputMethodContext {
                      OnPreeditStart,
                      GtkIMContext*);
 
+#if BUILDFLAG(GTK_VERSION) < 4
   void SetContextClientWindow(GdkWindow* window);
+#endif
 
   // A set of callback functions.  Must not be nullptr.
-  ui::LinuxInputMethodContextDelegate* delegate_;
+  ui::LinuxInputMethodContextDelegate* const delegate_;
 
   // Input method context type flag.
   //   - true if it supports table-based input methods
   //   - false if it supports multiple, loadable input methods
-  bool is_simple_;
+  const bool is_simple_;
 
   // Keeps track of current focus state.
-  bool has_focus_;
+  bool has_focus_ = false;
 
   // IME's input GTK context.
-  GtkIMContext* gtk_context_;
+  GtkIMContext* gtk_context_ = nullptr;
 
-  gpointer gdk_last_set_client_window_;
+#if BUILDFLAG(GTK_VERSION) < 4
+  gpointer gdk_last_set_client_window_ = nullptr;
+#endif
 
   // Last known caret bounds relative to the screen coordinates.
   gfx::Rect last_caret_bounds_;

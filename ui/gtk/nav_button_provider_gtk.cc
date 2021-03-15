@@ -122,7 +122,7 @@ gfx::Size LoadNavButtonIcon(
     NavButtonIcon* icon = nullptr) {
   const char* icon_name = IconNameFromButtonType(type);
 #if GTK_CHECK_VERSION(3, 90, 0)
-  ScopedGObject<GtkIconPaintable> icon_paintable(gtk_icon_theme_lookup_icon(
+  auto icon_paintable = TakeGObject(gtk_icon_theme_lookup_icon(
       GetDefaultIconTheme(), icon_name, nullptr, kNavButtonIconSize, scale,
       GTK_TEXT_DIR_NONE, static_cast<GtkIconLookupFlags>(0)));
   auto* paintable = GDK_PAINTABLE(icon_paintable);
@@ -131,10 +131,10 @@ gfx::Size LoadNavButtonIcon(
   if (icon) {
     auto* snapshot = gtk_snapshot_new();
     gdk_paintable_snapshot(paintable, snapshot, width, height);
-    ScopedGObject<GskRenderNode> node(gtk_snapshot_free_to_node(snapshot));
+    auto node = TakeGObject(gtk_snapshot_free_to_node(snapshot));
     auto rect = GRAPHENE_RECT_INIT(0, 0, width, height);
-    ScopedGObject<GskRenderer> renderer(gsk_cairo_renderer_new());
-    *icon = NavButtonIcon(gsk_renderer_render_texture(renderer, node, &rect));
+    auto renderer = TakeGObject(gsk_cairo_renderer_new());
+    *icon = TakeGObject(gsk_renderer_render_texture(renderer, node, &rect));
   }
   return {width, height};
 #else
@@ -260,8 +260,7 @@ class NavButtonImageSource : public gfx::ImageSkiaSource {
     cairo_pattern_t* cr_pattern = nullptr;
     cairo_surface_t* cr_surface = nullptr;
 #if GTK_CHECK_VERSION(3, 90, 0)
-    gtk_style_context_get(button_context, GTK_STYLE_PROPERTY_BACKGROUND_IMAGE,
-                          &cr_pattern, nullptr);
+    NOTIMPLEMENTED_LOG_ONCE();
 #else
     gtk_style_context_get(button_context, button_state,
                           GTK_STYLE_PROPERTY_BACKGROUND_IMAGE, &cr_pattern,

@@ -87,39 +87,12 @@ GdkModifierType GetIbusFlags(const ui::KeyEvent& key_event) {
                                       << ui::kPropertyKeyboardIBusFlagOffset);
 }
 
-GdkModifierType GetGdkKeyEventState(ui::KeyEvent key_event) {
-  // ui::KeyEvent uses a normalized modifier state which is not respected by
-  // Gtk, so we need to get the state from the display backend. Gtk instead
-  // follows the X11 spec in which the state of a key event is expected to be
-  // the mask of modifier keys _prior_ to this event. Some IMEs rely on this
-  // behavior. See https://crbug.com/1086946#c11.
-
-  GdkModifierType state = GetIbusFlags(key_event);
-  if (key_event.key_code() != ui::VKEY_PROCESSKEY) {
-    // This is an synthetized event when |key_code| is VKEY_PROCESSKEY.
-    // In such a case there is no event being dispatching in the display
-    // backend.
-    state = static_cast<GdkModifierType>(
-        state | ui::GtkUiDelegate::instance()->GetGdkKeyState());
-  }
-
-  return state;
-}
-
-int GetKeyEventProperty(const ui::KeyEvent& key_event,
-                        const char* property_key) {
-  auto* properties = key_event.properties();
-  if (!properties)
-    return 0;
-  auto it = properties->find(property_key);
-  DCHECK(it == properties->end() || it->second.size() == 1);
-  return (it != properties->end()) ? it->second[0] : 0;
-}
-
+#if BUILDFLAG(GTK_VERSION) < 4
 float GetDeviceScaleFactor() {
   views::LinuxUI* linux_ui = views::LinuxUI::instance();
   return linux_ui ? linux_ui->GetDeviceScaleFactor() : 1;
 }
+#endif
 
 GtkCssContext AppendCssNodeToStyleContextImpl(
     GtkCssContext context,
@@ -133,7 +106,7 @@ GtkCssContext AppendCssNodeToStyleContextImpl(
                             ? g_object_new(GTK_TYPE_WIDGET, nullptr)
                             : g_object_new(GTK_TYPE_WIDGET, "css-name",
                                            object_name.c_str(), nullptr);
-  ScopedGObject<GtkWidget> widget(GTK_WIDGET(widget_object));
+  auto widget = TakeGObject(GTK_WIDGET(widget_object));
 
   if (!name.empty())
     gtk_widget_set_name(widget, name.c_str());
@@ -192,6 +165,16 @@ GtkCssContext AppendCssNodeToStyleContextImpl(
   gtk_widget_path_unref(path);
   return GtkCssContext(child_context);
 #endif
+}
+
+GtkWidget* CreateDummyWindow() {
+#if BUILDFLAG(GTK_VERSION) >= 4
+  GtkWidget* window = gtk_window_new();
+#else
+  GtkWidget* window = gtk_window_new(GTK_WINDOW_TOPLEVEL);
+#endif
+  gtk_widget_realize(window);
+  return window;
 }
 
 }  // namespace
@@ -412,8 +395,10 @@ GtkCssContext AppendCssNodeToStyleContext(GtkCssContext context,
           object_name = t.token();
           break;
         case CSS_TYPE: {
+#if BUILDFLAG(GTK_VERSION) < 4
           gtype = g_type_from_name(t.token().c_str());
           DCHECK(gtype);
+#endif
           break;
         }
         case CSS_CLASS:
@@ -544,17 +529,18 @@ SkColor GetSelectionBgColor(const std::string& css_selector) {
   auto context = GetStyleContextFromCss(css_selector);
   if (GtkCheckVersion(3, 20))
     return GetBgColorFromStyleContext(context);
+#if BUILDFLAG(GTK_VERSION) < 4
   // This is verbatim how Gtk gets the selection color on versions before 3.20.
   GdkRGBA selection_color;
   G_GNUC_BEGIN_IGNORE_DEPRECATIONS;
-#if GTK_CHECK_VERSION(3, 90, 0)
-  gtk_style_context_get_background_color(context, &selection_color);
-#else
   gtk_style_context_get_background_color(
       context, gtk_style_context_get_state(context), &selection_color);
-#endif
   G_GNUC_END_IGNORE_DEPRECATIONS;
   return GdkRgbaToSkColor(selection_color);
+#else
+  NOTREACHED();
+  return SK_ColorRED;
+#endif
 }
 
 bool ContextHasClass(GtkCssContext context, const std::string& style_class) {
@@ -572,10 +558,14 @@ SkColor GetSeparatorColor(const std::string& css_selector) {
     return GetFgColor(css_selector);
 
   auto context = GetStyleContextFromCss(css_selector);
+  bool horizontal = ContextHasClass(context, "horizontal");
+
   int w = 1, h = 1;
   GtkBorder border, padding;
 #if GTK_CHECK_VERSION(3, 90, 0)
-  gtk_style_context_get(context, "min-width", &w, "min-height", &h, nullptr);
+  auto size = GetSeparatorSize(horizontal);
+  w = size.width();
+  h = size.height();
   gtk_style_context_get_border(context, &border);
   gtk_style_context_get_padding(context, &padding);
 #else
@@ -588,7 +578,6 @@ SkColor GetSeparatorColor(const std::string& css_selector) {
   w += border.left + padding.left + padding.right + border.right;
   h += border.top + padding.top + padding.bottom + border.bottom;
 
-  bool horizontal = ContextHasClass(context, "horizontal");
   if (horizontal) {
     w = 24;
     h = std::max(h, 1);
@@ -619,6 +608,36 @@ int BuildXkbStateFromGdkEvent(unsigned int state, unsigned char group) {
   return state | ((group & 0x3) << 13);
 }
 
+int GetKeyEventProperty(const ui::KeyEvent& key_event,
+                        const char* property_key) {
+  auto* properties = key_event.properties();
+  if (!properties)
+    return 0;
+  auto it = properties->find(property_key);
+  DCHECK(it == properties->end() || it->second.size() == 1);
+  return (it != properties->end()) ? it->second[0] : 0;
+}
+
+GdkModifierType GetGdkKeyEventState(const ui::KeyEvent& key_event) {
+  // ui::KeyEvent uses a normalized modifier state which is not respected by
+  // Gtk, so we need to get the state from the display backend. Gtk instead
+  // follows the X11 spec in which the state of a key event is expected to be
+  // the mask of modifier keys _prior_ to this event. Some IMEs rely on this
+  // behavior. See https://crbug.com/1086946#c11.
+
+  GdkModifierType state = GetIbusFlags(key_event);
+  if (key_event.key_code() != ui::VKEY_PROCESSKEY) {
+    // This is an synthetized event when |key_code| is VKEY_PROCESSKEY.
+    // In such a case there is no event being dispatching in the display
+    // backend.
+    state = static_cast<GdkModifierType>(
+        state | ui::GtkUiDelegate::instance()->GetGdkKeyState());
+  }
+
+  return state;
+}
+
+#if BUILDFLAG(GTK_VERSION) < 4
 GdkEvent* GdkEventFromKeyEvent(const ui::KeyEvent& key_event) {
   GdkEventType event_type =
       key_event.type() == ui::ET_KEY_PRESSED ? GDK_KEY_PRESS : GDK_KEY_RELEASE;
@@ -653,6 +672,7 @@ GdkEvent* GdkEventFromKeyEvent(const ui::KeyEvent& key_event) {
 
   return gdk_event;
 }
+#endif
 
 GtkIconTheme* GetDefaultIconTheme() {
 #if GTK_CHECK_VERSION(3, 90, 0)
@@ -668,6 +688,19 @@ void GtkWindowDestroy(GtkWidget* widget) {
 #else
   gtk_widget_destroy(widget);
 #endif
+}
+
+GtkWidget* GetDummyWindow() {
+  static GtkWidget* window = CreateDummyWindow();
+  return window;
+}
+
+gfx::Size GetSeparatorSize(bool horizontal) {
+  auto widget = TakeGObject(gtk_separator_new(
+      horizontal ? GTK_ORIENTATION_HORIZONTAL : GTK_ORIENTATION_VERTICAL));
+  GtkRequisition natural_size;
+  gtk_widget_get_preferred_size(widget, nullptr, &natural_size);
+  return {natural_size.width, natural_size.height};
 }
 
 }  // namespace gtk

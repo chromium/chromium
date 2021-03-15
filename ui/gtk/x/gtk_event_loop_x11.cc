@@ -8,7 +8,6 @@
 #include <xcb/xcb.h>
 #include <xcb/xproto.h>
 
-#include "base/memory/singleton.h"
 #include "ui/base/x/x11_util.h"
 #include "ui/gfx/x/event.h"
 
@@ -80,43 +79,7 @@ x11::KeyEvent ConvertGdkEventToKeyEvent(GdkEvent* gdk_event) {
 #endif
 }
 
-}  // namespace
-
-// static
-GtkEventLoopX11* GtkEventLoopX11::EnsureInstance() {
-  return base::Singleton<GtkEventLoopX11>::get();
-}
-
-GtkEventLoopX11::GtkEventLoopX11() {
-  gdk_event_handler_set(DispatchGdkEvent, nullptr, nullptr);
-}
-
-GtkEventLoopX11::~GtkEventLoopX11() {
-  gdk_event_handler_set(reinterpret_cast<GdkEventFunc>(gtk_main_do_event),
-                        nullptr, nullptr);
-}
-
-// static
-void GtkEventLoopX11::DispatchGdkEvent(GdkEvent* gdk_event, gpointer) {
-#if GTK_CHECK_VERSION(3, 90, 0)
-  auto event_type = gdk_event_get_event_type(gdk_event);
-#else
-  auto event_type = gdk_event->type;
-#endif
-  switch (event_type) {
-    case GDK_KEY_PRESS:
-    case GDK_KEY_RELEASE:
-      ProcessGdkEventKey(gdk_event);
-      break;
-    default:
-      break;  // Do nothing.
-  }
-
-  gtk_main_do_event(gdk_event);
-}
-
-// static
-void GtkEventLoopX11::ProcessGdkEventKey(GdkEvent* gdk_event) {
+void ProcessGdkEvent(GdkEvent* gdk_event) {
   // This function translates GdkEventKeys into XKeyEvents and puts them to
   // the X event queue.
   //
@@ -131,10 +94,57 @@ void GtkEventLoopX11::ProcessGdkEventKey(GdkEvent* gdk_event) {
   // corresponding key event in the X event queue.  So we have to handle this
   // case.  ibus-gtk is used through gtk-immodule to support IMEs.
 
+#if GTK_CHECK_VERSION(3, 90, 0)
+  auto event_type = gdk_event_get_event_type(gdk_event);
+#else
+  auto event_type = gdk_event->type;
+#endif
+  switch (event_type) {
+    case GDK_KEY_PRESS:
+    case GDK_KEY_RELEASE:
+      break;
+    default:
+      return;
+  }
+
   // We want to process the gtk event; mapped to an X11 event immediately
   // otherwise if we put it back on the queue we may get items out of order.
   x11::Connection::Get()->DispatchEvent(
       x11::Event{ConvertGdkEventToKeyEvent(gdk_event)});
 }
+
+}  // namespace
+
+GtkEventLoopX11::GtkEventLoopX11(GtkWidget* widget) {
+#if BUILDFLAG(GTK_VERSION) >= 4
+  surface_ = gtk_native_get_surface(gtk_widget_get_native(widget));
+  signal_id_ =
+      g_signal_connect(surface_, "event", G_CALLBACK(OnEventThunk), this);
+#else
+  gdk_event_handler_set(DispatchGdkEvent, nullptr, nullptr);
+#endif
+}
+
+GtkEventLoopX11::~GtkEventLoopX11() {
+#if BUILDFLAG(GTK_VERSION) >= 4
+  g_signal_handler_disconnect(surface_, signal_id_);
+#else
+  gdk_event_handler_set(reinterpret_cast<GdkEventFunc>(gtk_main_do_event),
+                        nullptr, nullptr);
+#endif
+}
+
+#if BUILDFLAG(GTK_VERSION) >= 4
+gboolean GtkEventLoopX11::OnEvent(GdkEvent* gdk_event) {
+  ProcessGdkEvent(gdk_event);
+  return false;
+}
+#else
+// static
+void GtkEventLoopX11::DispatchGdkEvent(GdkEvent* gdk_event, gpointer) {
+  ProcessGdkEvent(gdk_event);
+  gtk_main_do_event(gdk_event);
+}
+#endif
 
 }  // namespace ui

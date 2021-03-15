@@ -43,7 +43,7 @@ GtkUiDelegateWayland::GtkUiDelegateWayland(WaylandConnection* connection)
 
 GtkUiDelegateWayland::~GtkUiDelegateWayland() = default;
 
-void GtkUiDelegateWayland::OnInitialized() {
+void GtkUiDelegateWayland::OnInitialized(GtkWidget* widget) {
   // Nothing to do upon initialization for Wayland.
 }
 

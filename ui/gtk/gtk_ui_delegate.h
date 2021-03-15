@@ -11,6 +11,7 @@
 
 using GdkKeymap = struct _GdkKeymap;
 using GtkWindow = struct _GtkWindow;
+using GtkWidget = struct _GtkWidget;
 
 #if BUILDFLAG(GTK_VERSION) == 3
 using GdkWindow = struct _GdkWindow;
@@ -40,8 +41,9 @@ class COMPONENT_EXPORT(GTK) GtkUiDelegate {
   // Returns the current active instance.
   static GtkUiDelegate* instance();
 
-  // Called when the GtkUi instance initialization process finished.
-  virtual void OnInitialized() = 0;
+  // Called when the GtkUi instance initialization process finished. |widget| is
+  // a dummy window passed in for context.
+  virtual void OnInitialized(GtkWidget* widget) = 0;
 
   // Gets the GdkKeymap instance, which is used to translate KeyEvents into
   // GdkEvents before filtering them through GtkIM API.

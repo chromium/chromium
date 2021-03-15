@@ -11,8 +11,11 @@
 #include "ui/gtk/gtk_ui_delegate.h"
 
 using GdkDisplay = struct _GdkDisplay;
+using GtkWidget = struct _GtkWidget;
 
 namespace ui {
+
+class GtkEventLoopX11;
 
 // GtkUiDelegate implementation for desktop Linux X11 backends.
 //
@@ -27,7 +30,7 @@ class COMPONENT_EXPORT(UI_GTK_X) GtkUiDelegateX11 : public GtkUiDelegate {
   ~GtkUiDelegateX11() override;
 
   // GtkUiDelegate:
-  void OnInitialized() override;
+  void OnInitialized(GtkWidget* widget) override;
   GdkKeymap* GetGdkKeymap() override;
   GdkWindow* GetGdkWindow(gfx::AcceleratedWidget window_id) override;
   bool SetGdkWindowTransientFor(GdkWindow* window,
@@ -41,6 +44,7 @@ class COMPONENT_EXPORT(UI_GTK_X) GtkUiDelegateX11 : public GtkUiDelegate {
 
   x11::Connection* const connection_;
   GdkDisplay* display_ = nullptr;
+  std::unique_ptr<GtkEventLoopX11> event_loop_;
 };
 
 }  // namespace ui
