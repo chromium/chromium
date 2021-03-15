@@ -6,6 +6,7 @@
 
 #include <utility>
 
+#include "chrome/browser/content_index/content_index_provider_impl.h"
 #include "chrome/browser/download/download_shelf.h"
 #include "chrome/browser/download/offline_item_model_manager.h"
 #include "chrome/browser/download/offline_item_model_manager_factory.h"
@@ -54,6 +55,9 @@ void DownloadShelfController::OnItemUpdated(
     return;
 
   if (item.state == OfflineItemState::CANCELLED)
+    return;
+
+  if (item.id.name_space == ContentIndexProviderImpl::kProviderNamespace)
     return;
 
   OfflineItemModelManager* manager =

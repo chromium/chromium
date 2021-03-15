@@ -45,7 +45,6 @@ using offline_items_collection::OfflineItemSchedule;
 
 namespace {
 
-constexpr char kProviderNamespace[] = "content_index";
 constexpr char kEntryKeySeparator[] = "#";
 
 struct EntryKeyComponents {
@@ -99,6 +98,8 @@ OfflineItemFilter CategoryToFilter(blink::mojom::ContentCategory category) {
 }
 
 }  // namespace
+
+const char ContentIndexProviderImpl::kProviderNamespace[] = "content_index";
 
 ContentIndexProviderImpl::ContentIndexProviderImpl(Profile* profile)
     : profile_(profile),

@@ -35,6 +35,8 @@ class ContentIndexProviderImpl
       public offline_items_collection::OfflineContentProvider,
       public content::ContentIndexProvider {
  public:
+  static const char kProviderNamespace[];
+
   explicit ContentIndexProviderImpl(Profile* profile);
   ~ContentIndexProviderImpl() override;
 
