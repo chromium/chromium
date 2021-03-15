@@ -490,7 +490,7 @@ namespace {
 
 LayoutUnit ComputeInlineSizeForFragmentInternal(
     const NGConstraintSpace& space,
-    NGLayoutInputNode node,
+    const NGBlockNode& node,
     const NGBoxStrut& border_padding,
     const MinMaxSizes* override_min_max_sizes) {
   auto MinMaxSizesFunc = [&](MinMaxSizesType type) -> MinMaxSizesResult {
@@ -544,7 +544,7 @@ LayoutUnit ComputeInlineSizeForFragmentInternal(
 
 LayoutUnit ComputeInlineSizeForFragment(
     const NGConstraintSpace& space,
-    NGLayoutInputNode node,
+    const NGBlockNode& node,
     const NGBoxStrut& border_padding,
     const MinMaxSizes* override_min_max_sizes_for_test) {
   if (space.IsFixedInlineSize() || space.IsAnonymous())
@@ -559,7 +559,7 @@ LayoutUnit ComputeInlineSizeForFragment(
 
 LayoutUnit ComputeUsedInlineSizeForTableFragment(
     const NGConstraintSpace& space,
-    NGLayoutInputNode node,
+    const NGBlockNode& node,
     const NGBoxStrut& border_padding,
     const MinMaxSizes& table_grid_min_max_sizes) {
   DCHECK(!space.IsFixedInlineSize());

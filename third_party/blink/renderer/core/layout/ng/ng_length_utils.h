@@ -400,7 +400,7 @@ MinMaxSizes ComputeMinMaxInlineSizes(const NGConstraintSpace& space,
 // |override_min_max_sizes_for_test| is provided *solely* for use by unit tests.
 CORE_EXPORT LayoutUnit ComputeInlineSizeForFragment(
     const NGConstraintSpace&,
-    NGLayoutInputNode,
+    const NGBlockNode& node,
     const NGBoxStrut& border_padding,
     const MinMaxSizes* override_min_max_sizes_for_test = nullptr);
 
@@ -409,7 +409,7 @@ CORE_EXPORT LayoutUnit ComputeInlineSizeForFragment(
 // https://drafts.csswg.org/css-tables-3/#used-width-of-table
 CORE_EXPORT LayoutUnit ComputeUsedInlineSizeForTableFragment(
     const NGConstraintSpace& space,
-    NGLayoutInputNode node,
+    const NGBlockNode& node,
     const NGBoxStrut& border_padding,
     const MinMaxSizes& table_grid_min_max_sizes);
 

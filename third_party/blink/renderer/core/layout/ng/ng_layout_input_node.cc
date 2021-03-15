@@ -99,15 +99,6 @@ bool NGLayoutInputNode::IsTextControlPlaceholder() const {
   return IsBlock() && blink::IsTextControlPlaceholder(GetDOMNode());
 }
 
-MinMaxSizesResult NGLayoutInputNode::ComputeMinMaxSizes(
-    WritingMode writing_mode,
-    const MinMaxSizesInput& input,
-    const NGConstraintSpace* space) const {
-  if (auto* inline_node = DynamicTo<NGInlineNode>(this))
-    return inline_node->ComputeMinMaxSizes(writing_mode, input, space);
-  return To<NGBlockNode>(*this).ComputeMinMaxSizes(writing_mode, input, space);
-}
-
 void NGLayoutInputNode::IntrinsicSize(
     base::Optional<LayoutUnit>* computed_inline_size,
     base::Optional<LayoutUnit>* computed_block_size) const {
