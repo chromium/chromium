@@ -685,6 +685,10 @@ class BASE_EXPORT Time : public time_internal::TimeBase<Time> {
 #if defined(OS_APPLE)
   static Time FromCFAbsoluteTime(CFAbsoluteTime t);
   CFAbsoluteTime ToCFAbsoluteTime() const;
+#if defined(__OBJC__)
+  static Time FromNSDate(NSDate* date);
+  NSDate* ToNSDate() const;
+#endif
 #endif
 
 #if defined(OS_WIN)

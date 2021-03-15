@@ -4,7 +4,7 @@
 
 #include "base/time/time.h"
 
-#include <CoreFoundation/CFDate.h>
+#import <Foundation/Foundation.h>
 #include <mach/mach.h>
 #include <mach/mach_time.h>
 #include <stddef.h>
@@ -111,10 +111,8 @@ int64_t ComputeThreadTicks() {
   thread_basic_info_data_t thread_info_data;
 
   kern_return_t kr = thread_info(
-      thread_port,
-      THREAD_BASIC_INFO,
-      reinterpret_cast<thread_info_t>(&thread_info_data),
-      &thread_info_count);
+      thread_port, THREAD_BASIC_INFO,
+      reinterpret_cast<thread_info_t>(&thread_info_data), &thread_info_count);
   MACH_DCHECK(kr == KERN_SUCCESS, kr) << "thread_info";
 
   base::CheckedNumeric<int64_t> absolute_micros(
@@ -170,6 +168,16 @@ CFAbsoluteTime Time::ToCFAbsoluteTime() const {
   return is_max() ? std::numeric_limits<CFAbsoluteTime>::infinity()
                   : (CFAbsoluteTime{(*this - UnixEpoch()).InSecondsF()} -
                      kCFAbsoluteTimeIntervalSince1970);
+}
+
+// static
+Time Time::FromNSDate(NSDate* date) {
+  DCHECK(date);
+  return FromCFAbsoluteTime(date.timeIntervalSinceReferenceDate);
+}
+
+NSDate* Time::ToNSDate() const {
+  return [NSDate dateWithTimeIntervalSinceReferenceDate:ToCFAbsoluteTime()];
 }
 
 // TimeDelta ------------------------------------------------------------------
