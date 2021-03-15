@@ -278,6 +278,20 @@ class AutofillMetrics {
     kMaxValue = OFFER_NOTIFICATION_BUBBLE_LOST_FOCUS,
   };
 
+  // Metrics to track event when the offer notification infobar is closed.
+  enum class OfferNotificationInfoBarResultMetric {
+    // These values are persisted to logs. Entries should not be renumbered and
+    // numeric values should never be reused.
+
+    // User acknowledged the infobar by clicking the ok button.
+    OFFER_NOTIFICATION_INFOBAR_ACKNOWLEDGED = 0,
+    // User explicitly closed the infobar with the close button.
+    OFFER_NOTIFICATION_INFOBAR_CLOSED = 1,
+    // InfoBar was shown but user did not interact with the it.
+    OFFER_NOTIFICATION_INFOBAR_IGNORED = 2,
+    kMaxValue = OFFER_NOTIFICATION_INFOBAR_IGNORED,
+  };
+
   enum CreditCardUploadFeedbackMetric {
     // The loading indicator animation which indicates uploading is in progress
     // is successfully shown.
@@ -1137,6 +1151,10 @@ class AutofillMetrics {
   static void LogOfferNotificationBubbleResultMetric(
       OfferNotificationBubbleResultMetric metric,
       bool is_reshow);
+  static void LogOfferNotificationInfoBarDeepLinkClicked();
+  static void LogOfferNotificationInfoBarResultMetric(
+      OfferNotificationInfoBarResultMetric metric);
+  static void LogOfferNotificationInfoBarShown();
 
   // Should be called when credit card scan is finished. |duration| should be
   // the time elapsed between launching the credit card scanner and getting back

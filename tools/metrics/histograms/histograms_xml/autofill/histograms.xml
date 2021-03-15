@@ -21,9 +21,10 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histograms>
 
-<variants name="Autofill.OfferNotificationBubble.Type">
+<variants name="Autofill.OfferNotification.Type">
   <variant name="CardLinkedOffer"
-      summary="The bubble for an offer that is linked to a credit card."/>
+      summary="The bubble/infobar for an offer that is linked to a credit
+               card."/>
 </variants>
 
 <variants name="Autofill.PaymentBubble.Show">
@@ -1328,7 +1329,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
     the user has been shown or is reshown due to user actions. The metric is
     recorded when the bubble is shown.
   </summary>
-  <token key="BubbleType" variants="Autofill.OfferNotificationBubble.Type"/>
+  <token key="BubbleType" variants="Autofill.OfferNotification.Type"/>
 </histogram>
 
 <histogram
@@ -1340,8 +1341,32 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
     Records the reason for closing the offer notification bubble. Recorded when
     the bubble is closed.
   </summary>
-  <token key="BubbleType" variants="Autofill.OfferNotificationBubble.Type"/>
+  <token key="BubbleType" variants="Autofill.OfferNotification.Type"/>
   <token key="ShowType" variants="Autofill.PaymentBubble.Show"/>
+</histogram>
+
+<histogram name="Autofill.OfferNotificationInfoBarOffer.{OfferType}"
+    enum="BooleanShown" expires_after="2021-09-01">
+  <owner>siashah@chromium.org</owner>
+  <owner>siyua@chromium.org</owner>
+  <owner>payments-autofill-team@google.com</owner>
+  <summary>
+    Emits true when the offer notification infobar is displayed and does not
+    emit any value otherwise.
+  </summary>
+  <token key="OfferType" variants="Autofill.OfferNotification.Type"/>
+</histogram>
+
+<histogram name="Autofill.OfferNotificationInfoBarResult.{OfferType}"
+    enum="AutofillOfferNotificationInfoBarResult" expires_after="2021-09-01">
+  <owner>siashah@chromium.org</owner>
+  <owner>siyua@chromium.org</owner>
+  <owner>payments-autofill-team@google.com</owner>
+  <summary>
+    Records the reason for closing the offer notification infobar for
+    {OfferType}. Recorded when the infobar is closed.
+  </summary>
+  <token key="OfferType" variants="Autofill.OfferNotification.Type"/>
 </histogram>
 
 <histogram name="Autofill.PageTranslationStatus" enum="Boolean"

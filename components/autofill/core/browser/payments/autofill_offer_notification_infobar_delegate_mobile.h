@@ -50,6 +50,8 @@ class AutofillOfferNotificationInfoBarDelegateMobile
   infobars::InfoBarDelegate::InfoBarIdentifier GetIdentifier() const override;
   int GetButtons() const override;
   std::u16string GetButtonLabel(InfoBarButton button) const override;
+  void InfoBarDismissed() override;
+  bool Accept() override;
 
  private:
   // Identifier for the credit card associated with the offer.
@@ -58,6 +60,9 @@ class AutofillOfferNotificationInfoBarDelegateMobile
   int network_icon_id_;
   // URL that links to the offer details page in the Google Pay app.
   GURL deep_link_url_;
+  // Indicates whether the user manually closed the infobar by clicking on the X
+  // icon or the Got it button.
+  bool user_manually_closed_infobar_;
 };
 
 }  // namespace autofill

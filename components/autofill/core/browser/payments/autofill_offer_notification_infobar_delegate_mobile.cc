@@ -36,13 +36,23 @@ AutofillOfferNotificationInfoBarDelegateMobile::
     : credit_card_identifier_string_(
           card.CardIdentifierStringForAutofillDisplay()),
       network_icon_id_(CreditCard::IconResourceId(card.network())),
-      deep_link_url_(offer_details_url) {}
+      deep_link_url_(offer_details_url),
+      user_manually_closed_infobar_(false) {
+  AutofillMetrics::LogOfferNotificationInfoBarShown();
+}
 
 AutofillOfferNotificationInfoBarDelegateMobile::
-    ~AutofillOfferNotificationInfoBarDelegateMobile() {}
+    ~AutofillOfferNotificationInfoBarDelegateMobile() {
+  if (!user_manually_closed_infobar_) {
+    AutofillMetrics::LogOfferNotificationInfoBarResultMetric(
+        AutofillMetrics::OfferNotificationInfoBarResultMetric::
+            OFFER_NOTIFICATION_INFOBAR_IGNORED);
+  }
+}
 
 void AutofillOfferNotificationInfoBarDelegateMobile::OnOfferDeepLinkClicked(
     GURL url) {
+  AutofillMetrics::LogOfferNotificationInfoBarDeepLinkClicked();
   infobar()->owner()->OpenURL(url, WindowOpenDisposition::NEW_FOREGROUND_TAB);
 }
 
@@ -73,6 +83,21 @@ std::u16string AutofillOfferNotificationInfoBarDelegateMobile::GetButtonLabel(
 
   NOTREACHED() << "Unsupported button label requested: " << button;
   return std::u16string();
+}
+
+void AutofillOfferNotificationInfoBarDelegateMobile::InfoBarDismissed() {
+  AutofillMetrics::LogOfferNotificationInfoBarResultMetric(
+      AutofillMetrics::OfferNotificationInfoBarResultMetric::
+          OFFER_NOTIFICATION_INFOBAR_CLOSED);
+  user_manually_closed_infobar_ = true;
+}
+
+bool AutofillOfferNotificationInfoBarDelegateMobile::Accept() {
+  AutofillMetrics::LogOfferNotificationInfoBarResultMetric(
+      AutofillMetrics::OfferNotificationInfoBarResultMetric::
+          OFFER_NOTIFICATION_INFOBAR_ACKNOWLEDGED);
+  user_manually_closed_infobar_ = true;
+  return true;
 }
 
 }  // namespace autofill

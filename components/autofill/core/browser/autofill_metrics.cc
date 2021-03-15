@@ -1132,6 +1132,25 @@ void AutofillMetrics::LogOfferNotificationBubbleResultMetric(
 }
 
 // static
+void AutofillMetrics::LogOfferNotificationInfoBarDeepLinkClicked() {
+  base::RecordAction(base::UserMetricsAction(
+      "Autofill_OfferNotificationInfoBar_DeepLinkClicked"));
+}
+
+// static
+void AutofillMetrics::LogOfferNotificationInfoBarResultMetric(
+    OfferNotificationInfoBarResultMetric metric) {
+  DCHECK_LE(metric, OfferNotificationInfoBarResultMetric::kMaxValue);
+  base::UmaHistogramEnumeration(
+      "Autofill.OfferNotificationInfoBarResult.CardLinkedOffer", metric);
+}
+
+void AutofillMetrics::LogOfferNotificationInfoBarShown() {
+  base::UmaHistogramBoolean(
+      "Autofill.OfferNotificationInfoBarOffer.CardLinkedOffer", true);
+}
+
+// static
 void AutofillMetrics::LogSaveCardWithFirstAndLastNameOffered(bool is_local) {
   std::string histogram_name = "Autofill.SaveCardWithFirstAndLastNameOffered.";
   histogram_name += is_local ? "Local" : "Server";
