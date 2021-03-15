@@ -496,6 +496,10 @@ DocumentLoader::CreateWebNavigationParamsToCloneDocument() {
   // All the security properties of the document must be preserved. Note that
   // sandbox flags and various policies are copied separately during commit in
   // CommitNavigation() and CalculateSandboxFlags().
+  // TODO(dcheng): Is it a problem that origin_to_commit_ is copied with
+  // isolated copy? This probably has observable side effects (e.g. executing a
+  // javascript: URL in an about:blank frame that inherited an origin will cause
+  // the origin to no longer be aliased).
   params->origin_to_commit = window->GetSecurityOrigin();
   params->sandbox_flags = sandbox_flags_;
   params->origin_agent_cluster = origin_agent_cluster_;
@@ -1726,6 +1730,15 @@ scoped_refptr<SecurityOrigin> DocumentLoader::CalculateOrigin(
     // preserve `domain_` via `url::Origin` and B) doesn't alias the origin /
     // `domain_` - changes in the "about:blank" document do not affect the
     // initiator document).
+    //
+    // TODO(dcheng): if we're aliasing an origin, do we need to go through any
+    // of the other checks below? This seems like it could have potentially
+    // surprising side effects: for example, if the web security setting toggle
+    // is disabled, this will affect the owner document's origin too...
+    //
+    // TODO(dcheng): maybe FrameLoader::Init() should specify origin_to_commit_?
+    // But origin_to_commit_ is currently cloned with IsolatedCopy() which
+    // breaks aliasing...
     origin = owner_document->domWindow()->GetMutableSecurityOrigin();
   } else {
     // Otherwise, create an origin that propagates precursor information
@@ -1762,7 +1775,16 @@ scoped_refptr<SecurityOrigin> DocumentLoader::CalculateOrigin(
     origin = sandbox_origin;
   }
 
-  if (!frame_->GetSettings()->GetWebSecurityEnabled()) {
+  if (commit_reason_ == CommitReason::kInitialization &&
+      frame_->GetSettings()->GetShouldReuseGlobalForUnownedMainFrame() &&
+      !frame_->Parent() && !frame_->Opener()) {
+    // For legacy reasons, grant universal access to a top-level initial empty
+    // Document in Android WebView. This allows the WebView embedder to inject
+    // arbitrary script into about:blank and have it persist when the frame is
+    // navigated.
+    CHECK(origin->IsOpaque());
+    origin->GrantUniversalAccess();
+  } else if (!frame_->GetSettings()->GetWebSecurityEnabled()) {
     // Web security is turned off. We should let this document access
     // every other document. This is used primary by testing harnesses for
     // web sites.

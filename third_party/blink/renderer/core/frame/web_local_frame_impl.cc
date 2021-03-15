@@ -2042,12 +2042,6 @@ void WebLocalFrameImpl::InitializeCoreFrameInternal(
   // We must call init() after frame_ is assigned because it is referenced
   // during init().
   frame_->Init(opener_frame, std::move(policy_container));
-  CHECK(frame_);
-  CHECK(frame_->GetDocument()->IsInitialEmptyDocument());
-  if (!Parent() && !Opener() &&
-      frame_->GetSettings()->GetShouldReuseGlobalForUnownedMainFrame()) {
-    frame_->DomWindow()->GetMutableSecurityOrigin()->GrantUniversalAccess();
-  }
 
   if (!owner) {
     // This trace event is needed to detect the main frame of the
