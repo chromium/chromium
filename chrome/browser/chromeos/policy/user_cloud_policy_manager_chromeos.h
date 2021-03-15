@@ -228,10 +228,15 @@ class UserCloudPolicyManagerChromeOS
 
   // Cancels waiting for the initial policy fetch/refresh and flags the
   // ConfigurationPolicyProvider ready (assuming all other initialization tasks
-  // have completed). Pass |true| if policy fetch was successful (either because
-  // policy was successfully fetched, or if DMServer has notified us that the
-  // user is not managed).
-  void CancelWaitForPolicyFetch(bool success);
+  // have completed). Pass |true| and |std::string()| if policy fetch was
+  // successful (either because policy was successfully fetched, or if DMServer
+  // has notified us that the user is not managed). Otherwise, pass |false| and
+  // a string indicating the failure reason.
+  //
+  // Note: |failure_reason| will get passed to syslog in case of |success| being
+  // false. Make sure it does not contain any privacy-sensitive information.
+  void CancelWaitForPolicyFetch(bool success,
+                                const std::string& failure_reason);
 
   // Starts refresh scheduler if all the required conditions are fullfilled.
   // Exits immediately if refresh scheduler is already started, so it is safe to
