@@ -134,9 +134,8 @@ void GoogleTtsStream::Resume() {
 }
 
 void GoogleTtsStream::ReadMoreFrames(bool is_first_buffer) {
-  if (!is_buffering_) {
+  if (!is_buffering_)
     return;
-  }
 
   TtsService::AudioBuffer buf;
   buf.frames.resize(libchrometts_.GoogleTtsGetFramesInAudioBuffer());
@@ -162,8 +161,12 @@ void GoogleTtsStream::ReadMoreFrames(bool is_first_buffer) {
                 timepoint_index)));
   }
 
-  if (status <= 0)
+  // Ensure we always clean up given status 0 (done) or -1 (error).
+  if (status <= 0) {
+    is_buffering_ = false;
+    libchrometts_.GoogleTtsFinalizeBuffered();
     return;
+  }
 
   base::ThreadTaskRunnerHandle::Get()->PostTask(
       FROM_HERE,
