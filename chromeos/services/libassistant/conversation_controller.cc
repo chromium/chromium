@@ -54,6 +54,42 @@ std::vector<assistant::AssistantSuggestion> ToAssistantSuggestion(
 
   return result;
 }
+
+// Helper function to convert |action::Notification| to |AssistantNotification|.
+chromeos::assistant::AssistantNotification ToAssistantNotification(
+    const assistant::action::Notification& notification) {
+  chromeos::assistant::AssistantNotification assistant_notification;
+  assistant_notification.title = notification.title;
+  assistant_notification.message = notification.text;
+  assistant_notification.action_url = GURL(notification.action_url);
+  assistant_notification.client_id = notification.notification_id;
+  assistant_notification.server_id = notification.notification_id;
+  assistant_notification.consistency_token = notification.consistency_token;
+  assistant_notification.opaque_token = notification.opaque_token;
+  assistant_notification.grouping_key = notification.grouping_key;
+  assistant_notification.obfuscated_gaia_id = notification.obfuscated_gaia_id;
+  assistant_notification.from_server = true;
+
+  if (notification.expiry_timestamp_ms) {
+    assistant_notification.expiry_time =
+        base::Time::FromJavaTime(notification.expiry_timestamp_ms);
+  }
+
+  // The server sometimes sends an empty |notification_id|, but our client
+  // requires a non-empty |client_id| for notifications. Known instances in
+  // which the server sends an empty |notification_id| are for Reminders.
+  if (assistant_notification.client_id.empty()) {
+    assistant_notification.client_id =
+        base::UnguessableToken::Create().ToString();
+  }
+
+  for (const auto& button : notification.buttons) {
+    assistant_notification.buttons.push_back(
+        {button.label, GURL(button.action_url),
+         /*remove_notification_on_click=*/true});
+  }
+  return assistant_notification;
+}
 }  // namespace
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -267,7 +303,7 @@ void ConversationController::StartEditReminderInteraction(
 }
 
 void ConversationController::RetrieveNotification(
-    const AssistantNotification& notification,
+    AssistantNotification notification,
     int32_t action_index) {
   const std::string request_interaction =
       assistant::SerializeNotificationRequestInteraction(
@@ -280,7 +316,7 @@ void ConversationController::RetrieveNotification(
 }
 
 void ConversationController::DismissNotification(
-    const AssistantNotification& notification) {
+    AssistantNotification notification) {
   // |assistant_manager_internal()| may not exist if we are dismissing
   // notifications as part of a shutdown sequence.
   if (!assistant_manager_internal())
@@ -408,6 +444,16 @@ void ConversationController::OnScheduleWait(int id, int time_ms) {
   // Notify subscribers that a wait has been started.
   for (auto& observer : observers_)
     observer->OnWaitStarted();
+}
+
+// Called from Libassistant thread.
+void ConversationController::OnShowNotification(
+    const assistant::action::Notification& notification) {
+  ENSURE_MOJOM_THREAD(&ConversationController::OnShowNotification,
+                      notification);
+
+  notification_delegate_->AddOrUpdateNotification(
+      ToAssistantNotification(notification));
 }
 
 void ConversationController::SendVoicelessInteraction(

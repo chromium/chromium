@@ -6,8 +6,10 @@
 #define CHROMEOS_SERVICES_LIBASSISTANT_PUBLIC_MOJOM_MOJOM_TRAITS_H_
 
 #include <cstdint>
+#include <vector>
 
 #include "base/containers/span.h"
+#include "base/optional.h"
 #include "base/time/time.h"
 #include "chromeos/services/assistant/public/cpp/assistant_enums.h"
 #include "chromeos/services/libassistant/public/cpp/android_app_info.h"
@@ -57,6 +59,10 @@ struct StructTraits<
     chromeos::assistant::AssistantNotification> {
   using AssistantNotification = chromeos::assistant::AssistantNotification;
 
+  static const std::string& title(const AssistantNotification& input);
+  static const std::string& message(const AssistantNotification& input);
+  static const GURL& action_url(const AssistantNotification& input);
+  static const std::string& client_id(const AssistantNotification& input);
   static const std::string& server_id(const AssistantNotification& input);
   static const std::string& consistency_token(
       const AssistantNotification& input);
@@ -64,10 +70,32 @@ struct StructTraits<
   static const std::string& grouping_key(const AssistantNotification& input);
   static const std::string& obfuscated_gaia_id(
       const AssistantNotification& input);
+  static const base::Optional<base::Time>& expiry_time(
+      const AssistantNotification& input);
+  static const std::vector<chromeos::assistant::AssistantNotificationButton>&
+  buttons(const AssistantNotification& input);
+  static bool from_server(const AssistantNotification& input);
 
   static bool Read(
       chromeos::libassistant::mojom::AssistantNotificationDataView data,
       AssistantNotification* output);
+};
+
+template <>
+struct StructTraits<
+    chromeos::libassistant::mojom::AssistantNotificationButtonDataView,
+    chromeos::assistant::AssistantNotificationButton> {
+  using AssistantNotificationButton =
+      chromeos::assistant::AssistantNotificationButton;
+
+  static const std::string& label(const AssistantNotificationButton& input);
+  static const GURL& action_url(const AssistantNotificationButton& input);
+  static bool remove_notification_on_click(
+      const AssistantNotificationButton& input);
+
+  static bool Read(
+      chromeos::libassistant::mojom::AssistantNotificationButtonDataView data,
+      AssistantNotificationButton* output);
 };
 
 template <>

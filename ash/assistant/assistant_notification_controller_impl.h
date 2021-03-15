@@ -42,11 +42,11 @@ class ASH_EXPORT AssistantNotificationControllerImpl
   void SetAssistant(chromeos::assistant::Assistant* assistant);
 
   // AssistantNotificationController:
-  void AddOrUpdateNotification(AssistantNotification&& notification) override;
   void RemoveNotificationById(const std::string& id, bool from_server) override;
   void SetQuietMode(bool enabled) override;
 
   // chromeos::libassistant::mojom::NotificationDelegate:
+  void AddOrUpdateNotification(AssistantNotification notification) override;
   void RemoveNotificationByGroupingKey(const std::string& grouping_id,
                                        bool from_server) override;
   void RemoveAllNotifications(bool from_server) override;

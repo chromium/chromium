@@ -3,10 +3,11 @@
 // found in the LICENSE file.
 
 #include "chromeos/services/libassistant/public/mojom/mojom_traits.h"
-#include "mojo/public/cpp/base/time_mojom_traits.h"
 
 #include "base/notreached.h"
+#include "mojo/public/cpp/base/time_mojom_traits.h"
 #include "mojo/public/cpp/base/unguessable_token_mojom_traits.h"
+#include "url/gurl.h"
 #include "url/mojom/url_gurl_mojom_traits.h"
 
 namespace mojo {
@@ -28,11 +29,13 @@ using chromeos::assistant::AndroidAppInfo;
 using chromeos::assistant::AssistantFeedback;
 using chromeos::assistant::AssistantInteractionMetadata;
 using chromeos::assistant::AssistantNotification;
+using chromeos::assistant::AssistantNotificationButton;
 using chromeos::assistant::AssistantSuggestion;
 using chromeos::assistant::AssistantTimer;
 using chromeos::libassistant::mojom::AndroidAppInfoDataView;
 using chromeos::libassistant::mojom::AssistantFeedbackDataView;
 using chromeos::libassistant::mojom::AssistantInteractionMetadataDataView;
+using chromeos::libassistant::mojom::AssistantNotificationButtonDataView;
 using chromeos::libassistant::mojom::AssistantNotificationDataView;
 using chromeos::libassistant::mojom::AssistantSuggestionDataView;
 using chromeos::libassistant::mojom::AssistantTimerDataView;
@@ -141,6 +144,30 @@ bool StructTraits<AndroidAppInfoDataView, AndroidAppInfo>::Read(
 ////////////////////////////////////////////////////////////////////////////////
 
 const std::string&
+StructTraits<AssistantNotificationDataView, AssistantNotification>::title(
+    const AssistantNotification& input) {
+  return input.title;
+}
+
+const std::string&
+StructTraits<AssistantNotificationDataView, AssistantNotification>::message(
+    const AssistantNotification& input) {
+  return input.message;
+}
+
+const GURL&
+StructTraits<AssistantNotificationDataView, AssistantNotification>::action_url(
+    const AssistantNotification& input) {
+  return input.action_url;
+}
+
+const std::string&
+StructTraits<AssistantNotificationDataView, AssistantNotification>::client_id(
+    const AssistantNotification& input) {
+  return input.client_id;
+}
+
+const std::string&
 StructTraits<AssistantNotificationDataView, AssistantNotification>::server_id(
     const AssistantNotification& input) {
   return input.server_id;
@@ -170,9 +197,34 @@ StructTraits<AssistantNotificationDataView, AssistantNotification>::
   return input.obfuscated_gaia_id;
 }
 
+const base::Optional<base::Time>&
+StructTraits<AssistantNotificationDataView, AssistantNotification>::expiry_time(
+    const AssistantNotification& input) {
+  return input.expiry_time;
+}
+
+const std::vector<AssistantNotificationButton>&
+StructTraits<AssistantNotificationDataView, AssistantNotification>::buttons(
+    const AssistantNotification& input) {
+  return input.buttons;
+}
+
+bool StructTraits<AssistantNotificationDataView, AssistantNotification>::
+    from_server(const AssistantNotification& input) {
+  return input.from_server;
+}
+
 bool StructTraits<AssistantNotificationDataView, AssistantNotification>::Read(
     chromeos::libassistant::mojom::AssistantNotificationDataView data,
     AssistantNotification* output) {
+  if (!data.ReadTitle(&output->title))
+    return false;
+  if (!data.ReadMessage(&output->message))
+    return false;
+  if (!data.ReadActionUrl(&output->action_url))
+    return false;
+  if (!data.ReadClientId(&output->client_id))
+    return false;
   if (!data.ReadServerId(&output->server_id))
     return false;
   if (!data.ReadConsistencyToken(&output->consistency_token))
@@ -183,6 +235,46 @@ bool StructTraits<AssistantNotificationDataView, AssistantNotification>::Read(
     return false;
   if (!data.ReadObfuscatedGaiaId(&output->obfuscated_gaia_id))
     return false;
+  if (!data.ReadExpiryTime(&output->expiry_time))
+    return false;
+  if (!data.ReadButtons(&output->buttons))
+    return false;
+  output->from_server = data.from_server();
+  return true;
+}
+
+////////////////////////////////////////////////////////////////////////////////
+// AssistantNotificationButton
+////////////////////////////////////////////////////////////////////////////////
+
+const std::string&
+StructTraits<AssistantNotificationButtonDataView, AssistantNotificationButton>::
+    label(const AssistantNotificationButton& input) {
+  return input.label;
+}
+
+const GURL&
+StructTraits<AssistantNotificationButtonDataView, AssistantNotificationButton>::
+    action_url(const AssistantNotificationButton& input) {
+  return input.action_url;
+}
+
+bool StructTraits<AssistantNotificationButtonDataView,
+                  AssistantNotificationButton>::
+    remove_notification_on_click(const AssistantNotificationButton& input) {
+  return input.remove_notification_on_click;
+}
+
+bool StructTraits<
+    AssistantNotificationButtonDataView,
+    AssistantNotificationButton>::Read(AssistantNotificationButtonDataView data,
+                                       AssistantNotificationButton* output) {
+  if (!data.ReadLabel(&output->label))
+    return false;
+  if (!data.ReadActionUrl(&output->action_url))
+    return false;
+  output->remove_notification_on_click = data.remove_notification_on_click();
+
   return true;
 }
 

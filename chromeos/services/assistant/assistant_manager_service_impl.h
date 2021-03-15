@@ -169,7 +169,6 @@ class COMPONENT_EXPORT(ASSISTANT_SERVICE) AssistantManagerServiceImpl
   GetPendingNotificationDelegate() override;
 
   // AssistantActionObserver overrides:
-  void OnShowNotification(const action::Notification& notification) override;
   void OnVerifyAndroidApp(const std::vector<AndroidAppInfo>& apps_info,
                           const InteractionInfo& interaction) override;
 

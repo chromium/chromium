@@ -19,12 +19,6 @@ class ASH_PUBLIC_EXPORT AssistantNotificationController {
  public:
   static AssistantNotificationController* Get();
 
-  // Requests that the specified |notification| be added or updated. If the
-  // |client_id| for |notification| matches that of an existing notification,
-  // an update will occur. Otherwise, a new notification will be added.
-  virtual void AddOrUpdateNotification(
-      chromeos::assistant::AssistantNotification&& notification) = 0;
-
   // Requests that the notification uniquely identified by |id| be removed. If
   // |from_server| is true the request to remove was initiated by the server.
   virtual void RemoveNotificationById(const std::string& id,

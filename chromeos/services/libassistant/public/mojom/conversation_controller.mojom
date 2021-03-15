@@ -5,6 +5,8 @@
 module chromeos.libassistant.mojom;
 
 import "chromeos/services/libassistant/public/mojom/conversation_observer.mojom";
+import "chromeos/services/libassistant/public/mojom/notification_delegate.mojom";
+import "chromeos/services/libassistant/public/mojom/assistant_notification.mojom";
 
 // Interface for controller supporting conversation related functionalities.
 interface ConversationController {
@@ -36,24 +38,6 @@ interface ConversationController {
   // Add a remote observer, which will be informed of set of events
   // related to the ongoing conversation.
   AddRemoteObserver(pending_remote<ConversationObserver> observer);
-};
-
-// Models an Assistant notification. This should be kept in sync with
-// |chromeos::assistant::AssistantNotification|. For now we only include
-// entries that are currently in use.
-struct AssistantNotification {
-  // An id that uniquely identifies a notification on the server.
-  string server_id;
-
-  // Used to fetch notification contents.
-  string consistency_token;
-  string opaque_token;
-
-  // Key that can be used to group multiple notifications together.
-  string grouping_key;
-
-  // Obfuscated Gaia id of the intended recipient of the user.
-  string obfuscated_gaia_id;
 };
 
 // Models an Assistant feedback. This should be kept in sync with

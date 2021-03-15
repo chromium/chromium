@@ -107,11 +107,6 @@ void AssistantNotificationControllerImpl::SetAssistant(
 
 // AssistantNotificationController --------------------------------------
 
-void AssistantNotificationControllerImpl::AddOrUpdateNotification(
-    AssistantNotification&& notification) {
-  model_.AddOrUpdateNotification(std::move(notification));
-}
-
 void AssistantNotificationControllerImpl::RemoveNotificationById(
     const std::string& id,
     bool from_server) {
@@ -123,6 +118,11 @@ void AssistantNotificationControllerImpl::SetQuietMode(bool enabled) {
 }
 
 // NotificationDelegate ------------------------------------------------------
+
+void AssistantNotificationControllerImpl::AddOrUpdateNotification(
+    AssistantNotification notification) {
+  model_.AddOrUpdateNotification(std::move(notification));
+}
 
 void AssistantNotificationControllerImpl::RemoveNotificationByGroupingKey(
     const std::string& grouping_key,

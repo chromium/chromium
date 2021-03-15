@@ -4,9 +4,16 @@
 
 module chromeos.libassistant.mojom;
 
+import "chromeos/services/libassistant/public/mojom/assistant_notification.mojom";
+
 // Interface that allows Libassistant to make notification related changes on
 // ChromeOS.
 interface NotificationDelegate {
+  // Requests that the specified |notification| be added or updated. If the
+  // |notification.client_id| matches that of an existing notification,
+  // an update will occur. Otherwise, a new notification will be added.
+  AddOrUpdateNotification(AssistantNotification notification);
+
   // Requests to remove all notifications associated with |grouping_key|.
   // If |from_server| is true, the request to remove was initiated by the
   // server.

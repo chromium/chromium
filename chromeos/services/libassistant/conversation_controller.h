@@ -66,9 +66,9 @@ class COMPONENT_EXPORT(LIBASSISTANT_SERVICE) ConversationController
                      AssistantQuerySource source,
                      bool allow_tts) override;
   void StartEditReminderInteraction(const std::string& client_id) override;
-  void RetrieveNotification(const AssistantNotification& notification,
+  void RetrieveNotification(AssistantNotification notification,
                             int32_t action_index) override;
-  void DismissNotification(const AssistantNotification& notification) override;
+  void DismissNotification(AssistantNotification notification) override;
   void SendAssistantFeedback(const AssistantFeedback& feedback) override;
   void AddRemoteObserver(
       mojo::PendingRemote<mojom::ConversationObserver> observer) override;
@@ -85,6 +85,8 @@ class COMPONENT_EXPORT(LIBASSISTANT_SERVICE) ConversationController
       const chromeos::assistant::AndroidAppInfo& app_info,
       const chromeos::assistant::InteractionInfo& interaction) override;
   void OnScheduleWait(int id, int time_ms) override;
+  void OnShowNotification(
+      const assistant::action::Notification& notification) override;
 
   const mojo::RemoteSet<mojom::ConversationObserver>* conversation_observers() {
     return &observers_;
