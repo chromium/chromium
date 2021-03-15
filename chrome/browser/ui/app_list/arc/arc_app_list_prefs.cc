@@ -630,6 +630,9 @@ arc::mojom::ArcResizeLockState ArcAppListPrefs::GetResizeLockState(
 
 void ArcAppListPrefs::SetResizeLockState(const std::string& app_id,
                                          arc::mojom::ArcResizeLockState state) {
+  if (!ash::features::IsArcResizeLockEnabled())
+    return;
+
   if (!IsRegistered(app_id)) {
     VLOG(2) << "Request to set ret resize lock for non-registered app:"
             << app_id << ".";
