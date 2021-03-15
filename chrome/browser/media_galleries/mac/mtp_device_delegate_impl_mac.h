@@ -37,57 +37,55 @@ class MTPDeviceDelegateImplMac : public MTPDeviceAsyncDelegate {
   // similarly-named methods on the UI thread.
   void GetFileInfo(const base::FilePath& file_path,
                    GetFileInfoSuccessCallback success_callback,
-                   const ErrorCallback& error_callback) override;
+                   ErrorCallback error_callback) override;
 
   void CreateDirectory(const base::FilePath& directory_path,
                        const bool exclusive,
                        const bool recursive,
-                       const CreateDirectorySuccessCallback& success_callback,
-                       const ErrorCallback& error_callback) override;
+                       CreateDirectorySuccessCallback success_callback,
+                       ErrorCallback error_callback) override;
 
   // Note: passed absolute paths, but expects relative paths in reply.
   void ReadDirectory(const base::FilePath& root,
-                     const ReadDirectorySuccessCallback& success_callback,
-                     const ErrorCallback& error_callback) override;
+                     ReadDirectorySuccessCallback success_callback,
+                     ErrorCallback error_callback) override;
 
   // Note: passed absolute paths.
-  void CreateSnapshotFile(
-      const base::FilePath& device_file_path,
-      const base::FilePath& local_path,
-      const CreateSnapshotFileSuccessCallback& success_callback,
-      const ErrorCallback& error_callback) override;
+  void CreateSnapshotFile(const base::FilePath& device_file_path,
+                          const base::FilePath& local_path,
+                          CreateSnapshotFileSuccessCallback success_callback,
+                          ErrorCallback error_callback) override;
   bool IsStreaming() override;
   void ReadBytes(const base::FilePath& device_file_path,
                  const scoped_refptr<net::IOBuffer>& buf,
                  int64_t offset,
                  int buf_len,
-                 const ReadBytesSuccessCallback& success_callback,
-                 const ErrorCallback& error_callback) override;
+                 ReadBytesSuccessCallback success_callback,
+                 ErrorCallback error_callback) override;
   bool IsReadOnly() const override;
   void CopyFileLocal(
       const base::FilePath& source_file_path,
       const base::FilePath& device_file_path,
       const CreateTemporaryFileCallback& create_temporary_file_callback,
       const CopyFileProgressCallback& progress_callback,
-      const CopyFileLocalSuccessCallback& success_callback,
-      const ErrorCallback& error_callback) override;
+      CopyFileLocalSuccessCallback success_callback,
+      ErrorCallback error_callback) override;
   void MoveFileLocal(
       const base::FilePath& source_file_path,
       const base::FilePath& device_file_path,
       const CreateTemporaryFileCallback& create_temporary_file_callback,
-      const MoveFileLocalSuccessCallback& success_callback,
-      const ErrorCallback& error_callback) override;
-  void CopyFileFromLocal(
-      const base::FilePath& source_file_path,
-      const base::FilePath& device_file_path,
-      const CopyFileFromLocalSuccessCallback& success_callback,
-      const ErrorCallback& error_callback) override;
+      MoveFileLocalSuccessCallback success_callback,
+      ErrorCallback error_callback) override;
+  void CopyFileFromLocal(const base::FilePath& source_file_path,
+                         const base::FilePath& device_file_path,
+                         CopyFileFromLocalSuccessCallback success_callback,
+                         ErrorCallback error_callback) override;
   void DeleteFile(const base::FilePath& file_path,
-                  const DeleteFileSuccessCallback& success_callback,
-                  const ErrorCallback& error_callback) override;
+                  DeleteFileSuccessCallback success_callback,
+                  ErrorCallback error_callback) override;
   void DeleteDirectory(const base::FilePath& file_path,
-                       const DeleteDirectorySuccessCallback& success_callback,
-                       const ErrorCallback& error_callback) override;
+                       DeleteDirectorySuccessCallback success_callback,
+                       ErrorCallback error_callback) override;
   void AddWatcher(const GURL& origin,
                   const base::FilePath& file_path,
                   const bool recursive,
@@ -124,17 +122,15 @@ class MTPDeviceDelegateImplMac : public MTPDeviceAsyncDelegate {
                        base::File::Error* error);
 
   // Delegate for ReadDirectory, called on the UI thread.
-  void ReadDirectoryImpl(
-      const base::FilePath& root,
-      const ReadDirectorySuccessCallback& success_callback,
-      const ErrorCallback& error_callback);
+  void ReadDirectoryImpl(const base::FilePath& root,
+                         ReadDirectorySuccessCallback success_callback,
+                         ErrorCallback error_callback);
 
   // Delegate for CreateSnapshotFile, called on the UI thread.
-  void DownloadFile(
-      const base::FilePath& device_file_path,
-      const base::FilePath& local_path,
-      const CreateSnapshotFileSuccessCallback& success_callback,
-      const ErrorCallback& error_callback);
+  void DownloadFile(const base::FilePath& device_file_path,
+                    const base::FilePath& local_path,
+                    CreateSnapshotFileSuccessCallback success_callback,
+                    ErrorCallback error_callback);
 
   // Public for closures; should not be called except by
   // CancelTasksAndDeleteDelegate.
@@ -168,7 +164,6 @@ class MTPDeviceDelegateImplMac : public MTPDeviceAsyncDelegate {
                     const base::FilePath& snapshot_filename,
                     CreateSnapshotFileSuccessCallback success_cb,
                     ErrorCallback error_cb);
-    ReadFileRequest(const ReadFileRequest& other);
     ~ReadFileRequest();
 
     std::string request_file;
@@ -183,7 +178,6 @@ class MTPDeviceDelegateImplMac : public MTPDeviceAsyncDelegate {
     ReadDirectoryRequest(const base::FilePath& dir,
                          ReadDirectorySuccessCallback success_cb,
                          ErrorCallback error_cb);
-    ReadDirectoryRequest(const ReadDirectoryRequest& other);
     ~ReadDirectoryRequest();
 
     base::FilePath directory;

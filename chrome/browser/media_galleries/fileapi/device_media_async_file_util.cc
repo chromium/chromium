@@ -222,9 +222,9 @@ void OnSnapshotFileCreatedRunTask(
   delegate->CreateSnapshotFile(
       url.path(),  // device file path
       snapshot_file_path,
-      base::Bind(&OnDidCreateSnapshotFile, copyable_callback,
-                 base::RetainedRef(context->task_runner()),
-                 validate_media_files),
+      base::BindRepeating(&OnDidCreateSnapshotFile, copyable_callback,
+                          base::RetainedRef(context->task_runner()),
+                          validate_media_files),
       base::BindRepeating(&OnCreateSnapshotFileError, copyable_callback));
 }
 

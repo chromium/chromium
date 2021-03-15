@@ -15,35 +15,29 @@
 SnapshotRequestInfo::SnapshotRequestInfo(
     uint32_t file_id,
     const base::FilePath& snapshot_file_path,
-    const MTPDeviceAsyncDelegate::CreateSnapshotFileSuccessCallback&
-        success_callback,
-    const MTPDeviceAsyncDelegate::ErrorCallback& error_callback)
+    MTPDeviceAsyncDelegate::CreateSnapshotFileSuccessCallback success_callback,
+    MTPDeviceAsyncDelegate::ErrorCallback error_callback)
     : file_id(file_id),
       snapshot_file_path(snapshot_file_path),
-      success_callback(success_callback),
-      error_callback(error_callback) {}
+      success_callback(std::move(success_callback)),
+      error_callback(std::move(error_callback)) {}
 
-SnapshotRequestInfo::SnapshotRequestInfo(const SnapshotRequestInfo& other) =
-    default;
+SnapshotRequestInfo::SnapshotRequestInfo(SnapshotRequestInfo&& other) = default;
 
-SnapshotRequestInfo::~SnapshotRequestInfo() {
-}
+SnapshotRequestInfo::~SnapshotRequestInfo() = default;
 
 ////////////////////////////////////////////////////////////////////////////////
 //                             SnapshotFileDetails                            //
 ////////////////////////////////////////////////////////////////////////////////
 
-SnapshotFileDetails::SnapshotFileDetails(
-    const SnapshotRequestInfo& request_info,
-    const base::File::Info& file_info)
-    : request_info_(request_info),
+SnapshotFileDetails::SnapshotFileDetails(SnapshotRequestInfo request_info,
+                                         const base::File::Info& file_info)
+    : request_info_(std::move(request_info)),
       file_info_(file_info),
       bytes_written_(0),
-      error_occurred_(false) {
-}
+      error_occurred_(false) {}
 
-SnapshotFileDetails::~SnapshotFileDetails() {
-}
+SnapshotFileDetails::~SnapshotFileDetails() = default;
 
 void SnapshotFileDetails::set_error_occurred(bool error) {
   error_occurred_ = error;
