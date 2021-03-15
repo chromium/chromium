@@ -391,6 +391,24 @@ em::DeviceManagementRequest GetUploadStatusRequest() {
   return upload_status_request;
 }
 
+em::DeviceManagementRequest GetChromeDesktopReportRequest() {
+  em::DeviceManagementRequest chrome_desktop_report_request;
+  chrome_desktop_report_request.mutable_chrome_desktop_report_request();
+  return chrome_desktop_report_request;
+}
+
+em::DeviceManagementRequest GetChromeOsUserReportRequest() {
+  em::DeviceManagementRequest chrome_os_user_report_request;
+  chrome_os_user_report_request.mutable_chrome_os_user_report_request();
+  return chrome_os_user_report_request;
+}
+
+em::DeviceManagementRequest GetGcmIdUpdateRequest() {
+  em::DeviceManagementRequest gcm_id_update_request;
+  gcm_id_update_request.mutable_gcm_id_update_request()->set_gcm_id(kGcmID);
+  return gcm_id_update_request;
+}
+
 em::DeviceManagementResponse GetEmptyResponse() {
   return em::DeviceManagementResponse();
 }
@@ -403,9 +421,6 @@ class CloudPolicyClientTest : public testing::Test {
       : job_type_(DeviceManagementService::JobConfiguration::TYPE_INVALID),
         client_id_(kClientID),
         policy_type_(dm_protocol::kChromeUserPolicyType) {
-    chrome_desktop_report_request_.mutable_chrome_desktop_report_request();
-    chrome_os_user_report_request_.mutable_chrome_os_user_report_request();
-
     remote_command_request_.mutable_remote_command_request()
         ->set_last_command_unique_id(kLastCommandId);
     em::RemoteCommandResult* command_result =
@@ -433,8 +448,6 @@ class CloudPolicyClientTest : public testing::Test {
     attribute_update_response_.mutable_device_attribute_update_response()
         ->set_result(
             em::DeviceAttributeUpdateResponse_ResultType_ATTRIBUTE_UPDATE_SUCCESS);
-
-    gcm_id_update_request_.mutable_gcm_id_update_request()->set_gcm_id(kGcmID);
 
     em::PolicyValidationReportRequest* policy_validation_report_request =
         upload_policy_validation_report_request_
@@ -572,21 +585,15 @@ class CloudPolicyClientTest : public testing::Test {
   }
 
   // Request protobufs used as expectations for the client requests.
-  em::DeviceManagementRequest chrome_desktop_report_request_;
-  em::DeviceManagementRequest chrome_os_user_report_request_;
   em::DeviceManagementRequest remote_command_request_;
   em::DeviceManagementRequest attribute_update_permission_request_;
   em::DeviceManagementRequest attribute_update_request_;
-  em::DeviceManagementRequest gcm_id_update_request_;
   em::DeviceManagementRequest upload_policy_validation_report_request_;
   em::DeviceManagementRequest robot_auth_code_fetch_request_;
 
   // Protobufs used in successful responses.
-  em::DeviceManagementResponse chrome_desktop_report_response_;
-  em::DeviceManagementResponse chrome_os_user_report_response_;
   em::DeviceManagementResponse attribute_update_permission_response_;
   em::DeviceManagementResponse attribute_update_response_;
-  em::DeviceManagementResponse gcm_id_update_response_;
   em::DeviceManagementResponse upload_policy_validation_report_response_;
   em::DeviceManagementResponse robot_auth_code_fetch_response_;
 
@@ -1613,7 +1620,7 @@ TEST_F(CloudPolicyClientTest, UploadPolicyValidationReport) {
 TEST_F(CloudPolicyClientTest, UploadChromeDesktopReport) {
   RegisterClient();
 
-  ExpectAndCaptureJob(chrome_desktop_report_response_);
+  ExpectAndCaptureJob(GetEmptyResponse());
   EXPECT_CALL(callback_observer_, OnCallbackComplete(true)).Times(1);
   CloudPolicyClient::StatusCallback callback =
       base::BindOnce(&MockStatusCallbackObserver::OnCallbackComplete,
@@ -1628,14 +1635,14 @@ TEST_F(CloudPolicyClientTest, UploadChromeDesktopReport) {
       job_type_);
   EXPECT_EQ(auth_data_, DMAuth::FromDMToken(kDMToken));
   EXPECT_EQ(job_request_.SerializePartialAsString(),
-            chrome_desktop_report_request_.SerializePartialAsString());
+            GetChromeDesktopReportRequest().SerializePartialAsString());
   EXPECT_EQ(DM_STATUS_SUCCESS, client_->status());
 }
 
 TEST_F(CloudPolicyClientTest, UploadChromeOsUserReport) {
   RegisterClient();
 
-  ExpectAndCaptureJob(chrome_os_user_report_response_);
+  ExpectAndCaptureJob(GetEmptyResponse());
   EXPECT_CALL(callback_observer_, OnCallbackComplete(true)).Times(1);
   CloudPolicyClient::StatusCallback callback =
       base::BindOnce(&MockStatusCallbackObserver::OnCallbackComplete,
@@ -1650,7 +1657,7 @@ TEST_F(CloudPolicyClientTest, UploadChromeOsUserReport) {
       job_type_);
   EXPECT_EQ(auth_data_, DMAuth::FromDMToken(kDMToken));
   EXPECT_EQ(job_request_.SerializePartialAsString(),
-            chrome_os_user_report_request_.SerializePartialAsString());
+            GetChromeOsUserReportRequest().SerializePartialAsString());
   EXPECT_EQ(DM_STATUS_SUCCESS, client_->status());
 }
 
@@ -2253,7 +2260,7 @@ TEST_F(CloudPolicyClientTest, RequestDeviceAttributeUpdate) {
 
 TEST_F(CloudPolicyClientTest, RequestGcmIdUpdate) {
   RegisterClient();
-  ExpectAndCaptureJob(/*response=*/gcm_id_update_response_);
+  ExpectAndCaptureJob(GetEmptyResponse());
   EXPECT_CALL(callback_observer_, OnCallbackComplete(true)).Times(1);
 
   CloudPolicyClient::StatusCallback callback =
@@ -2265,7 +2272,7 @@ TEST_F(CloudPolicyClientTest, RequestGcmIdUpdate) {
             job_type_);
   EXPECT_EQ(auth_data_, DMAuth::FromDMToken(kDMToken));
   EXPECT_EQ(job_request_.SerializePartialAsString(),
-            gcm_id_update_request_.SerializePartialAsString());
+            GetGcmIdUpdateRequest().SerializePartialAsString());
 }
 
 TEST_F(CloudPolicyClientTest, PolicyReregistration) {
