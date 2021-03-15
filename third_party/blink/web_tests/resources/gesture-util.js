@@ -181,7 +181,9 @@ function waitForScrollEnd(eventTarget, getValue, targetValue) {
       if (getValue() == targetValue) {
         clearTimeout(timeout);
         eventTarget.removeEventListener('scroll', scrollListener);
-        resolve();
+        // Wait for a commit to allow the scroll to propagate through the
+        // compositor before resolving.
+        return waitForCompositorCommit().then(() => { resolve(); });
       }
     };
     if (getValue() == targetValue)

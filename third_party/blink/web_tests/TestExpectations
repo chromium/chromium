@@ -5721,14 +5721,6 @@ crbug.com/1184157 http/tests/serviceworker/window-close-during-registration.html
 crbug.com/1184773 [ Mac ] virtual/synchronous_html_parser/svg/dynamic-updates/SVGFEComponentTransferElement-svgdom-intercept-prop.html [ Pass Failure ]
 crbug.com/1186901 [ Linux ] http/tests/devtools/elements/styles-3/style-autocomplete.js [ Pass Failure ]
 
-# Updating virtual suite from virtual/threaded/fast/scroll-snap to
-# virtual/threaded-prefer-compositing/fast/scroll-snap exposes additional
-# tests that fail on the composited code path.
-crbug.com/1186753 virtual/threaded-prefer-compositing/fast/scroll-snap/snaps-after-scrollbar-scrolling-thumb.html [ Pass Failure ]
-crbug.com/1186753 virtual/threaded-prefer-compositing/fast/scroll-snap/snaps-after-wheel-scrolling.html [ Pass Failure ]
-crbug.com/1186753 virtual/threaded-prefer-compositing/fast/scroll-snap/snap-scrolls-visual-viewport.html [ Pass Failure ]
-crbug.com/1186753 virtual/threaded-prefer-compositing/fast/scroll-snap/animate-fling-to-snap-points-2.html [ Pass Timeout ]
-
 # Expect failure for unimplemented canvas color object input
 crbug.com/1187575 external/wpt/html/canvas/element/fill-and-stroke-styles/2d.fillStyle.colorObject.html [ Failure ]
 crbug.com/1187575 external/wpt/html/canvas/element/fill-and-stroke-styles/2d.fillStyle.colorObject.transparency.html [ Failure ]
