@@ -107,6 +107,8 @@ class BaseTestTriggerer(object):
     else:
       additional_args = all_args + bot_args
     additional_args = self.append_additional_args(additional_args, shard_index)
+    # crbug/1140389: debug print outs
+    logging.info('DEBUG: Before adding shardmap args: %s', additional_args)
     if shard_map:
       shard_map_str = json.dumps(shard_map, separators=(',', ':'))
       shard_map_args = ['--use-dynamic-shards']
@@ -279,6 +281,8 @@ class BaseTestTriggerer(object):
     Returns:
       Exit code for the script.
     """
+    # crbug/1140389: debug print outs
+    logging.info('DEBUG: init: %s', remaining)
     verbose = args.multiple_dimension_script_verbose
     self.parse_bot_configs(args)
     # Prunes config list to the exact set of configurations to trigger jobs on.
@@ -295,6 +299,8 @@ class BaseTestTriggerer(object):
       for k in config.iterkeys():
         filtered_remaining_args = self.remove_swarming_dimension(
           filtered_remaining_args, k)
+    # crbug/1140389: debug print outs
+    logging.info('DEBUG: After filtered: %s', filtered_remaining_args)
 
     merged_json = {}
     selected_config = self.select_config_indices(args, verbose)
@@ -314,9 +320,13 @@ class BaseTestTriggerer(object):
       try:
         json_temp = self.make_temp_file(prefix='base_trigger_dimensions',
                                         suffix='.json')
+        # crbug/1140389: debug print outs
+        logging.info('DEBUG: Before modify args: %s', filtered_remaining_args)
         args_to_pass = self.modify_args(
             filtered_remaining_args, bot_index, shard_index, args.shards,
             json_temp, shard_map)
+        # crbug/1140389: debug print outs
+        logging.info('DEBUG: Before calling swarming: %s', args_to_pass)
         ret = self.run_swarming_go(
           args_to_pass, verbose, json_temp, shard_index, args.shards,
           merged_json)
