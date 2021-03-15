@@ -4781,13 +4781,6 @@ TEST_F(WebRtcEventLogManagerTestCompression,
   WaitForPendingTasks(&run_loop);
 }
 
-TEST_F(WebRtcEventLogManagerTestIncognito,
-       NoRemoteBoundLogsDirectoryCreatedWhenProfileLoaded) {
-  const base::FilePath remote_logs_path =
-      RemoteBoundLogsDir(incognito_profile_);
-  EXPECT_FALSE(base::DirectoryExists(remote_logs_path));
-}
-
 TEST_F(WebRtcEventLogManagerTestIncognito, StartRemoteLoggingFails) {
   const auto key = GetPeerConnectionKey(incognito_rph_.get(), kLid);
   ASSERT_TRUE(PeerConnectionAdded(key));
@@ -4804,7 +4797,7 @@ TEST_F(WebRtcEventLogManagerTestIncognito,
 
   const base::FilePath remote_logs_path =
       RemoteBoundLogsDir(incognito_profile_);
-  EXPECT_FALSE(base::DirectoryExists(remote_logs_path));
+  EXPECT_TRUE(base::IsDirectoryEmpty(remote_logs_path));
 }
 
 TEST_F(WebRtcEventLogManagerTestIncognito,

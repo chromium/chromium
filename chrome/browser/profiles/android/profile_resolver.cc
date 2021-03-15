@@ -154,17 +154,10 @@ std::string TokenizeProfile(Profile* profile) {
   }
 
   ProfileToken token_proto;
-
+  token_proto.set_relative_path(
+      GetRelativeProfilePath(profile->GetPath()).value());
   if (profile->IsOffTheRecord()) {
-    // TODO(skym): Stop using GetOriginalProfile() once TestingProfile is
-    // correctly setup.
-    token_proto.set_relative_path(
-        GetRelativeProfilePath(profile->GetOriginalProfile()->GetPath())
-            .value());
     token_proto.set_otr_profile_id(profile->GetOTRProfileID().Serialize());
-  } else {
-    token_proto.set_relative_path(
-        GetRelativeProfilePath(profile->GetPath()).value());
   }
 
   std::string token_string;

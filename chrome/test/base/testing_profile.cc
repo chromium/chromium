@@ -633,6 +633,7 @@ Profile* TestingProfile::GetOffTheRecordProfile(
     TestingProfile::Builder builder;
     if (IsGuestSession() && otr_profile_id == OTRProfileID::PrimaryID())
       builder.SetGuestSession();
+    builder.SetPath(GetPath());
     builder.BuildOffTheRecord(this, otr_profile_id);
     DCHECK(HasOffTheRecordProfile(otr_profile_id));
   }
