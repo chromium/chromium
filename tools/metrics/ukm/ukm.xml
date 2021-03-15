@@ -581,6 +581,87 @@ be describing additional metrics about the same event.
   </metric>
 </event>
 
+<event name="Android.MultiWindowChangeActivity">
+  <owner>gangwu@chromium.org</owner>
+  <owner>fgorski@chromium.org</owner>
+  <summary>
+    Records when the activity enter or exit Android N+ multi-window mode.
+  </summary>
+  <metric name="ActivityType" enum="AndroidMultiWindowActivityType">
+    <summary>
+      Enter or exit the multi-window mode.
+    </summary>
+    <aggregation>
+      <history>
+        <statistics>
+          <enumeration/>
+        </statistics>
+      </history>
+    </aggregation>
+  </metric>
+</event>
+
+<event name="Android.MultiWindowState">
+  <owner>gangwu@chromium.org</owner>
+  <owner>fgorski@chromium.org</owner>
+  <summary>
+    Records the multi window state when the activity is shown.
+  </summary>
+  <metric name="WindowState" enum="AndroidMultiWindowState">
+    <summary>
+      The state of the multi-window mode, single or multi-window.
+    </summary>
+    <aggregation>
+      <history>
+        <statistics>
+          <enumeration/>
+        </statistics>
+      </history>
+    </aggregation>
+  </metric>
+</event>
+
+<event name="Android.ScreenRotation">
+  <owner>gangwu@chromium.org</owner>
+  <owner>fgorski@chromium.org</owner>
+  <summary>
+    Records when a user rotates the device triggering a screen orientation
+    change.
+  </summary>
+  <metric name="TargetDeviceOrientation" enum="DeviceOrientation2">
+    <summary>
+      The orientation of the device rotated to.
+    </summary>
+    <aggregation>
+      <history>
+        <statistics>
+          <enumeration/>
+        </statistics>
+      </history>
+    </aggregation>
+  </metric>
+</event>
+
+<event name="Android.UserRequestedUserAgentChange">
+  <owner>gangwu@chromium.org</owner>
+  <owner>fgorski@chromium.org</owner>
+  <summary>
+    Records when a user pressed 'Request Desktop Site' in the app menu.
+  </summary>
+  <metric name="UserAgentType" enum="UserAgentRequestType">
+    <summary>
+      An enum that records the type of user agent.
+    </summary>
+    <aggregation>
+      <history>
+        <statistics>
+          <enumeration/>
+        </statistics>
+      </history>
+    </aggregation>
+  </metric>
+</event>
+
 <event name="AppListAppClickData">
   <owner>pdyson@chromium.org</owner>
   <summary>
