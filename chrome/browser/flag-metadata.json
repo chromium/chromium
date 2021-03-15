@@ -293,19 +293,9 @@
     "expiry_milestone": 94
   },
   {
-    "name": "autofill-assistant-chrome-entry",
-    "owners": [ "//components/autofill_assistant/OWNERS" ],
-    "expiry_milestone": 90
-  },
-  {
-    "name": "autofill-assistant-direct-actions",
-    "owners": [ "//components/autofill_assistant/OWNERS" ],
-    "expiry_milestone": 90
-  },
-  {
     "name": "autofill-assistant-proactive-help",
     "owners": [ "//components/autofill_assistant/OWNERS" ],
-    "expiry_milestone": 90
+    "expiry_milestone": 91
   },
   {
     "name": "autofill-cache-query-responses",
@@ -1016,11 +1006,6 @@
     "name": "dice-web-signin-interception",
     "owners": [ "droger", "my-chrome-everywhere@google.com" ],
     "expiry_milestone": 92
-  },
-  {
-    "name": "direct-actions",
-    "owners": [ "//components/autofill_assistant/OWNERS" ],
-    "expiry_milestone": 90
   },
   {
     "name": "direct-manipulation-stylus",

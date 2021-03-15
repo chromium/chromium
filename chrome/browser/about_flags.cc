@@ -2806,9 +2806,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kContextualSearchTranslationsName,
      flag_descriptions::kContextualSearchTranslationsDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(chrome::android::kContextualSearchTranslations)},
-    {"direct-actions", flag_descriptions::kDirectActionsName,
-     flag_descriptions::kDirectActionsDescription, kOsAndroid,
-     FEATURE_VALUE_TYPE(chrome::android::kDirectActions)},
     {"explore-sites", flag_descriptions::kExploreSitesName,
      flag_descriptions::kExploreSitesDescription, kOsAndroid,
      FEATURE_WITH_PARAMS_VALUE_TYPE(chrome::android::kExploreSites,
@@ -5551,18 +5548,6 @@ const FeatureEntry kFeatureEntries[] = {
 #endif
 
 #if defined(OS_ANDROID)
-    {"autofill-assistant-chrome-entry",
-     flag_descriptions::kAutofillAssistantChromeEntryName,
-     flag_descriptions::kAutofillAssistantChromeEntryDescription, kOsAndroid,
-     FEATURE_VALUE_TYPE(
-         autofill_assistant::features::kAutofillAssistantChromeEntry)},
-
-    {"autofill-assistant-direct-actions",
-     flag_descriptions::kAutofillAssistantDirectActionsName,
-     flag_descriptions::kAutofillAssistantDirectActionsDescription, kOsAndroid,
-     FEATURE_VALUE_TYPE(
-         autofill_assistant::features::kAutofillAssistantDirectActions)},
-
     {"autofill-assistant-proactive-help",
      flag_descriptions::kAutofillAssistantProactiveHelpName,
      flag_descriptions::kAutofillAssistantProactiveHelpDescription, kOsAndroid,
