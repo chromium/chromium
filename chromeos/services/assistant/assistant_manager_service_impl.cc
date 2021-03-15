@@ -342,26 +342,10 @@ void AssistantManagerServiceImpl::SyncDeviceAppsStatus() {
 
 void AssistantManagerServiceImpl::UpdateInternalMediaPlayerStatus(
     MediaSessionAction action) {
-  switch (action) {
-    case MediaSessionAction::kPause:
-      media_host_->PauseInternalMediaPlayer();
-      break;
-    case MediaSessionAction::kPlay:
-      media_host_->ResumeInternalMediaPlayer();
-      break;
-    case MediaSessionAction::kPreviousTrack:
-    case MediaSessionAction::kNextTrack:
-    case MediaSessionAction::kSeekBackward:
-    case MediaSessionAction::kSeekForward:
-    case MediaSessionAction::kSkipAd:
-    case MediaSessionAction::kStop:
-    case MediaSessionAction::kSeekTo:
-    case MediaSessionAction::kScrubTo:
-    case MediaSessionAction::kEnterPictureInPicture:
-    case MediaSessionAction::kExitPictureInPicture:
-    case MediaSessionAction::kSwitchAudioDevice:
-      NOTIMPLEMENTED();
-      break;
+  if (action == MediaSessionAction::kPause) {
+    media_host_->PauseInternalMediaPlayer();
+  } else if (action == MediaSessionAction::kPlay) {
+    media_host_->ResumeInternalMediaPlayer();
   }
 }
 

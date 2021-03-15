@@ -45,6 +45,12 @@ class CONTENT_EXPORT MediaSessionServiceImpl
   const base::Optional<media_session::MediaPosition>& position() const {
     return position_;
   }
+  media_session::mojom::MicrophoneState microphone_state() const {
+    return microphone_state_;
+  }
+  media_session::mojom::CameraState camera_state() const {
+    return camera_state_;
+  }
 
   void DidFinishNavigation();
   void FlushForTesting();
@@ -57,6 +63,9 @@ class CONTENT_EXPORT MediaSessionServiceImpl
   void SetPositionState(
       const base::Optional<media_session::MediaPosition>& position) override;
   void SetMetadata(blink::mojom::SpecMediaMetadataPtr metadata) override;
+  void SetMicrophoneState(
+      media_session::mojom::MicrophoneState microphone_state) override;
+  void SetCameraState(media_session::mojom::CameraState camera_state) override;
 
   void EnableAction(media_session::mojom::MediaSessionAction action) override;
   void DisableAction(media_session::mojom::MediaSessionAction action) override;
@@ -82,6 +91,14 @@ class CONTENT_EXPORT MediaSessionServiceImpl
   blink::mojom::SpecMediaMetadataPtr metadata_;
   std::set<media_session::mojom::MediaSessionAction> actions_;
   base::Optional<media_session::MediaPosition> position_;
+
+  // Tracks whether the microphone is muted in a WebRTC session.
+  media_session::mojom::MicrophoneState microphone_state_ =
+      media_session::mojom::MicrophoneState::kUnknown;
+
+  // Tracks whether the camera is turned on in a WebRTC session.
+  media_session::mojom::CameraState camera_state_ =
+      media_session::mojom::CameraState::kUnknown;
 
   DISALLOW_COPY_AND_ASSIGN(MediaSessionServiceImpl);
 };

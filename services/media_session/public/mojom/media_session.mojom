@@ -9,7 +9,7 @@ import "mojo/public/mojom/base/time.mojom";
 import "ui/gfx/geometry/mojom/geometry.mojom";
 import "url/mojom/url.mojom";
 
-// Next MinVersion: 11
+// Next MinVersion: 12
 
 [Stable, Extensible]
 enum MediaPlaybackState {
@@ -32,6 +32,9 @@ enum MediaSessionAction {
   kEnterPictureInPicture,
   kExitPictureInPicture,
   kSwitchAudioDevice,
+  [MinVersion=11] kToggleMicrophone,
+  [MinVersion=11] kToggleCamera,
+  [MinVersion=11] kHangUp,
 };
 
 [Stable, Extensible]
@@ -108,6 +111,20 @@ struct MediaPosition {
   mojo_base.mojom.TimeTicks last_updated_time;
 };
 
+[Stable, Extensible]
+enum MicrophoneState {
+  kUnknown,
+  kMuted,
+  kUnmuted,
+};
+
+[Stable, Extensible]
+enum CameraState {
+  kUnknown,
+  kTurnedOn,
+  kTurnedOff,
+};
+
 // Contains state information about a MediaSession.
 [Stable]
 struct MediaSessionInfo {
@@ -164,6 +181,12 @@ struct MediaSessionInfo {
 
   // The audio/video states of all the players in the Media Session (if known).
   [MinVersion=10] array<MediaAudioVideoState>? audio_video_states;
+
+  // Tracks whether the microphone is muted in WebRTC sessions.
+  [MinVersion=11] MicrophoneState microphone_state;
+
+  // Tracks whether the camera is turned on in WebRTC sessions.
+  [MinVersion=11] CameraState camera_state;
 };
 
 // Contains debugging information about a MediaSession. This will be displayed
@@ -206,7 +229,7 @@ interface MediaSessionObserver {
 
 // A MediaSession manages the media session and audio focus for a given
 // WebContents or ARC app.
-// Next Method ID: 18
+// Next Method ID: 21
 [Stable]
 interface MediaSession {
   [Stable, Extensible]
@@ -293,4 +316,13 @@ interface MediaSession {
   // Routes the audio from this Media Session to the given output device. If
   // |id| is null, we will route to the default output device.
   SetAudioSinkId@17(string? id);
+
+  // Mute or unmute the microphone for a WebRTC session.
+  [MinVersion=11] ToggleMicrophone@18();
+
+  // Turn on or off the camera for a WebRTC session.
+  [MinVersion=11] ToggleCamera@19();
+
+  // Hang up a WebRTC session.
+  [MinVersion=11] HangUp@20();
 };

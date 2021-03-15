@@ -100,6 +100,22 @@ void MediaSessionServiceImpl::SetMetadata(
     session->OnMediaSessionMetadataChanged(this);
 }
 
+void MediaSessionServiceImpl::SetMicrophoneState(
+    media_session::mojom::MicrophoneState microphone_state) {
+  microphone_state_ = microphone_state;
+  MediaSessionImpl* session = GetMediaSession();
+  if (session)
+    session->OnMediaSessionInfoChanged(this);
+}
+
+void MediaSessionServiceImpl::SetCameraState(
+    media_session::mojom::CameraState camera_state) {
+  camera_state_ = camera_state;
+  MediaSessionImpl* session = GetMediaSession();
+  if (session)
+    session->OnMediaSessionInfoChanged(this);
+}
+
 void MediaSessionServiceImpl::EnableAction(
     media_session::mojom::MediaSessionAction action) {
   actions_.insert(action);

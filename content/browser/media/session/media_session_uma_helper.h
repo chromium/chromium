@@ -48,7 +48,10 @@ class CONTENT_EXPORT MediaSessionUmaHelper {
     EnterPictureInPicture = 13,
     ExitPictureInPicture = 14,
     SwitchAudioDevice = 15,
-    kMaxValue = SwitchAudioDevice,
+    ToggleMicrophone = 16,
+    ToggleCamera = 17,
+    HangUp = 18,
+    kMaxValue = HangUp,
   };
 
   MediaSessionUmaHelper();

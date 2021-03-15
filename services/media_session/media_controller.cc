@@ -298,6 +298,27 @@ void MediaController::SetAudioSinkId(const base::Optional<std::string>& id) {
     session_->ipc()->SetAudioSinkId(id);
 }
 
+void MediaController::ToggleMicrophone() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  if (session_)
+    session_->ipc()->ToggleMicrophone();
+}
+
+void MediaController::ToggleCamera() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  if (session_)
+    session_->ipc()->ToggleCamera();
+}
+
+void MediaController::HangUp() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  if (session_)
+    session_->ipc()->HangUp();
+}
+
 void MediaController::SetMediaSession(AudioFocusRequest* session) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 

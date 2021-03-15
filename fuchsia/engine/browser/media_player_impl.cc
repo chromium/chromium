@@ -47,6 +47,12 @@ fuchsia::media::sessions2::PlayerCapabilityFlags ActionToCapabilityFlag(
       return {};  // PlayerControl assumes that stop is always supported.
     case MediaSessionAction::kSwitchAudioDevice:
       return {};  // PlayerControl does not support switching audio device.
+    case MediaSessionAction::kToggleMicrophone:
+      return {};  // PlayerControl does not support toggling microphone.
+    case MediaSessionAction::kToggleCamera:
+      return {};  // PlayerControl does not support toggling camera.
+    case MediaSessionAction::kHangUp:
+      return {};  // PlayerControl does not support hanging up.
   }
 }
 
