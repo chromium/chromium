@@ -160,9 +160,9 @@ process.
 
 ### Step 0 Download Tooling
 Generating code coverage reports requires llvm-profdata and llvm-cov tools.
-Currently, these two tools are not part of Chromium’s Clang bundle,
-[coverage script] downloads and updates them automatically, you can also
-download the tools manually ([tools link]).
+You can get them by adding `"checkout_clang_coverage_tools": True,` to 
+`custom_vars` in the `.gclient` config and run `gclient runhooks`. You can also
+download the tools manually ([tools link])
 
 ### Step 1 Build
 In Chromium, to compile code with coverage enabled, one needs to add
