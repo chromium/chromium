@@ -6,7 +6,8 @@
 /* #export */ const LoadingPageState = {
   LOADING: 1,
   SIM_DETECT_ERROR: 2,
-  CELLULAR_DISCONNECT_WARNING: 3,
+  FINAL_SIM_DETECT_ERROR: 3,
+  CELLULAR_DISCONNECT_WARNING: 4,
 };
 
 /**
@@ -61,6 +62,8 @@ Polymer({
     switch (state) {
       case LoadingPageState.SIM_DETECT_ERROR:
         return this.i18n('simDetectPageErrorMessage');
+      case LoadingPageState.FINAL_SIM_DETECT_ERROR:
+        return this.i18n('simDetectPageFinalErrorMessage');
       case LoadingPageState.CELLULAR_DISCONNECT_WARNING:
         return this.i18n('eSimConnectionWarning');
       case LoadingPageState.LOADING:
@@ -86,6 +89,7 @@ Polymer({
    * @private
    */
   shouldShowSimDetectError_(state) {
-    return state === LoadingPageState.SIM_DETECT_ERROR;
+    return state === LoadingPageState.SIM_DETECT_ERROR ||
+        state === LoadingPageState.FINAL_SIM_DETECT_ERROR;
   },
 });

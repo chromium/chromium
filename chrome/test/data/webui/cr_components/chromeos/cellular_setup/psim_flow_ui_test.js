@@ -49,6 +49,9 @@ suite('CrComponentsPsimFlowUiTest', function() {
   /** @type {?chromeos.cellularSetup.mojom.ActivationDelegateReceiver} */
   let cellularActivationDelegate = null;
 
+  /** @type {function(Function, number)} */
+  let timeoutFunction = null;
+
   async function flushAsync() {
     Polymer.dom.flush();
     // Use setTimeout to wait for the next macrotask.
@@ -76,9 +79,17 @@ suite('CrComponentsPsimFlowUiTest', function() {
 
     pSimPage = document.createElement('psim-flow-ui');
     pSimPage.delegate = new cellular_setup.FakeCellularSetupDelegate();
+    pSimPage.setTimerFunctionForTest(function(fn, milliseconds) {
+      timeoutFunction = fn;
+      return 1;
+    });
     pSimPage.initSubflow();
     document.body.appendChild(pSimPage);
     Polymer.dom.flush();
+  });
+
+  teardown(function() {
+    pSimPage.remove();
   });
 
   test('Show provisioning page on activation finished', async () => {
@@ -112,8 +123,7 @@ suite('CrComponentsPsimFlowUiTest', function() {
     await flushAsync();
 
     // Simulate timeout.
-    pSimPage.clearTimer_();
-    pSimPage.onTimeout_();
+    timeoutFunction();
 
     assertTrue(
         pSimPage.state_ === cellularSetup.PSimUIState.TIMEOUT_START_ACTIVATION);
@@ -129,8 +139,7 @@ suite('CrComponentsPsimFlowUiTest', function() {
     await flushAsync();
 
     // Timeout again.
-    pSimPage.clearTimer_();
-    pSimPage.onTimeout_();
+    timeoutFunction();
 
     assertTrue(
         pSimPage.state_ === cellularSetup.PSimUIState.TIMEOUT_START_ACTIVATION);
@@ -146,12 +155,12 @@ suite('CrComponentsPsimFlowUiTest', function() {
     await flushAsync();
 
     // Timeout again.
-    pSimPage.clearTimer_();
-    pSimPage.onTimeout_();
+    timeoutFunction();
 
     // Should now be at the failure state.
     assertTrue(
-        pSimPage.state_ === cellularSetup.PSimUIState.ACTIVATION_FAILURE);
+        pSimPage.state_ ===
+        cellularSetup.PSimUIState.FINAL_TIMEOUT_START_ACTIVATION);
   });
 
   test('Carrier title on provisioning page', async () => {

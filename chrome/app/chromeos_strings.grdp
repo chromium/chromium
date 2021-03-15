@@ -273,8 +273,11 @@
   <message name="IDS_CELLULAR_SETUP_SIM_DETECT_PAGE_ERROR_TITLE" desc="Title for cellular setup when Chrome OS encounters an error preparing the cellular device for setup.">
     No network found
   </message>
-  <message name="IDS_CELLULAR_SETUP_SIM_DETECT_PAGE_ERROR_MESSAGE" desc="Message displayed under title in cellular setup when Chrome OS encounters an error preparing the cellular device for setup. Prompts user to insert SIM and try again.">
-    Please insert your SIM and try again
+  <message name="IDS_CELLULAR_SETUP_SIM_DETECT_PAGE_ERROR_MESSAGE" desc="Message displayed under title in cellular setup when Chrome OS encounters an error preparing the cellular device for setup and has retry attempts left. Prompts user to insert SIM and try again.">
+    No network found. Please insert your SIM and try again.
+  </message>
+  <message name="IDS_CELLULAR_SETUP_SIM_DETECT_PAGE_FINAL_ERROR_MESSAGE" desc="Message displayed under title in cellular setup when Chrome OS encounters an error preparing the cellular device for setup and has no retry attempts left. Prompts user to insert SIM, reboot and try again.">
+    No network found. Please insert your SIM and reboot your device before trying again.
   </message>
   <message name="IDS_CELLULAR_SETUP_PROVISIONING_PAGE_LOADING_TITLE" desc="Title for cellular setup step which indicates that a connection is in progress to the user's mobile data provider (e.g., Verizon).">
     Connecting to <ph name="CARRIER_NAME">$1<ex>Google Fi</ex></ph>

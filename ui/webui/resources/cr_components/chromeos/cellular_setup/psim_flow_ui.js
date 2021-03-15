@@ -16,6 +16,7 @@ cr.define('cellularSetup', function() {
     STARTING_ACTIVATION: 'starting-activation',
     WAITING_FOR_ACTIVATION_TO_START: 'waiting-for-activation-to-start',
     TIMEOUT_START_ACTIVATION: 'timeout-start-activation',
+    FINAL_TIMEOUT_START_ACTIVATION: 'final-timeout-start-activation',
     WAITING_FOR_PORTAL_TO_LOAD: 'waiting-for-portal-to-load',
     TIMEOUT_PORTAL_LOAD: 'timeout-portal-load',
     WAITING_FOR_USER_PAYMENT: 'waiting-for-user-payment',
@@ -196,12 +197,17 @@ cr.define('cellularSetup', function() {
      */
     carrierPortalHandler_: null,
 
-
     /**
      * Whether there was a carrier portal error.
      * @private {boolean}
      */
     didCarrierPortalResultFail_: false,
+
+    /**
+     * The function used to initiate a timer. Can be overwritten in tests.
+     * @private {function(Function, number)}
+     */
+    setTimeoutFunction_: setTimeout.bind(window),
 
     /** @override */
     created() {
@@ -220,6 +226,7 @@ cr.define('cellularSetup', function() {
           resultCode = PSimSetupFlowResult.CANCELLED_COLD_SIM_DEFER;
           break;
         case PSimUIState.TIMEOUT_START_ACTIVATION:
+        case PSimUIState.FINAL_TIMEOUT_START_ACTIVATION:
           resultCode = PSimSetupFlowResult.CANCELLED_NO_SIM;
           break;
         case PSimUIState.WAITING_FOR_PORTAL_TO_LOAD:
@@ -279,6 +286,7 @@ cr.define('cellularSetup', function() {
           break;
         case PSimUIState.WAITING_FOR_ACTIVATION_TO_FINISH:
         case PSimUIState.TIMEOUT_FINISH_ACTIVATION:
+        case PSimUIState.FINAL_TIMEOUT_START_ACTIVATION:
           this.fire('exit-cellular-setup');
           break;
         case PSimUIState.TIMEOUT_START_ACTIVATION:
@@ -296,6 +304,15 @@ cr.define('cellularSetup', function() {
     attemptBackwardNavigation() {
       // Back navigation for pSIM flow always goes back to selection page
       return false;
+    },
+
+    /**
+     * Sets the function used to initiate a timer.
+     * @param {function(Function, number)}
+     *     timerFunction
+     */
+    setTimerFunctionForTest(timerFunction) {
+      this.setTimeoutFunction_ = timerFunction;
     },
 
     /** @private */
@@ -333,6 +350,7 @@ cr.define('cellularSetup', function() {
           break;
         case PSimUIState.ALREADY_ACTIVATED:
         case PSimUIState.ACTIVATION_FAILURE:
+        case PSimUIState.FINAL_TIMEOUT_START_ACTIVATION:
           this.forwardButtonLabel = this.i18n('done');
           buttonState = {
             backward: cellularSetup.ButtonState.ENABLED,
@@ -389,7 +407,6 @@ cr.define('cellularSetup', function() {
     /** @private */
     updateShowError_() {
       switch (this.state_) {
-        case PSimUIState.TIMEOUT_START_ACTIVATION:
         case PSimUIState.TIMEOUT_PORTAL_LOAD:
         case PSimUIState.TIMEOUT_FINISH_ACTIVATION:
         case PSimUIState.ACTIVATION_FAILURE:
@@ -408,6 +425,7 @@ cr.define('cellularSetup', function() {
         case PSimUIState.STARTING_ACTIVATION:
         case PSimUIState.WAITING_FOR_ACTIVATION_TO_START:
         case PSimUIState.TIMEOUT_START_ACTIVATION:
+        case PSimUIState.FINAL_TIMEOUT_START_ACTIVATION:
           this.selectedPSimPageName_ = PSimPageName.SIM_DETECT;
           return;
         case PSimUIState.WAITING_FOR_PORTAL_TO_LOAD:
@@ -437,7 +455,7 @@ cr.define('cellularSetup', function() {
       const timeoutMs = getTimeoutMsForPSimUIState(this.state_);
       if (timeoutMs !== null) {
         this.currentTimeoutId_ =
-            setTimeout(this.onTimeout_.bind(this), timeoutMs);
+            this.setTimeoutFunction_(this.onTimeout_.bind(this), timeoutMs);
       }
 
       if (this.state_ === PSimUIState.STARTING_ACTIVATION) {
@@ -457,7 +475,7 @@ cr.define('cellularSetup', function() {
           if (this.startActivationAttempts_ < MAX_START_ACTIVATION_ATTEMPTS) {
             this.state_ = PSimUIState.TIMEOUT_START_ACTIVATION;
           } else {
-            this.state_ = PSimUIState.ACTIVATION_FAILURE;
+            this.state_ = PSimUIState.FINAL_TIMEOUT_START_ACTIVATION;
           }
           return;
         case PSimUIState.WAITING_FOR_PORTAL_TO_LOAD:
@@ -533,12 +551,16 @@ cr.define('cellularSetup', function() {
     },
 
     /**
-     * @param {boolean} showError
+     * @return {LoadingPageState}
      * @private
      */
-    getLoadingPageState_(showError) {
-      return showError ? LoadingPageState.SIM_DETECT_ERROR :
-                         LoadingPageState.LOADING;
+    getLoadingPageState_() {
+      if (this.state_ === PSimUIState.TIMEOUT_START_ACTIVATION) {
+        return LoadingPageState.SIM_DETECT_ERROR;
+      } else if (this.state_ === PSimUIState.FINAL_TIMEOUT_START_ACTIVATION) {
+        return LoadingPageState.FINAL_SIM_DETECT_ERROR;
+      }
+      return LoadingPageState.LOADING;
     },
   });
 

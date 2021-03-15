@@ -16,7 +16,6 @@ suite('CrComponentsSetupLoadingPageTest', function() {
   let simDetectPage;
   let basePage;
   let messageIcon;
-  let errorMessage = 'Please insert your SIM and try again';
 
   setup(function() {
     simDetectPage = document.createElement('setup-loading-page');
@@ -44,9 +43,17 @@ suite('CrComponentsSetupLoadingPageTest', function() {
     assertFalse(messageIcon.hidden);
   });
 
-  test('Error message is shown', function() {
+  test('Retry error message is shown', function() {
     simDetectPage.state = LoadingPageState.SIM_DETECT_ERROR;
-    assertEquals(basePage.message, errorMessage);
+    assertEquals(
+        basePage.message, simDetectPage.i18n('simDetectPageErrorMessage'));
+    assertTrue(messageIcon.hidden);
+  });
+
+  test('Final error message is shown', function() {
+    simDetectPage.state = LoadingPageState.FINAL_SIM_DETECT_ERROR;
+    assertEquals(
+        basePage.message, simDetectPage.i18n('simDetectPageFinalErrorMessage'));
     assertTrue(messageIcon.hidden);
   });
 });

@@ -40,6 +40,8 @@ constexpr webui::LocalizedString kLocalizedStringsWithoutPlaceholders[] = {
     {"simDetectPageErrorTitle", IDS_CELLULAR_SETUP_SIM_DETECT_PAGE_ERROR_TITLE},
     {"simDetectPageErrorMessage",
      IDS_CELLULAR_SETUP_SIM_DETECT_PAGE_ERROR_MESSAGE},
+    {"simDetectPageFinalErrorMessage",
+     IDS_CELLULAR_SETUP_SIM_DETECT_PAGE_FINAL_ERROR_MESSAGE},
     {"provisioningPageLoadingTitle",
      IDS_CELLULAR_SETUP_PROVISIONING_PAGE_LOADING_TITLE},
     {"provisioningPageActiveTitle",
