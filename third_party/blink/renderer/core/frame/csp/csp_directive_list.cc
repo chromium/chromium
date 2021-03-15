@@ -808,7 +808,7 @@ bool CheckInlineAndReportViolation(
       suffix = suffix +
                " Note that hashes do not apply to event handlers, style "
                "attributes and javascript: navigations unless the "
-               "'unsafe-hashes' keyword' is present.";
+               "'unsafe-hashes' keyword is present.";
     }
 
     if (directive.type == CSPDirectiveName::DefaultSrc) {
