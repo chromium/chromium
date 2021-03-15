@@ -456,15 +456,7 @@ void VerifyPolicyToPrefMappings(const base::FilePath& test_case_path,
       if (!test_case->IsSupported() || pref_mappings.empty())
         continue;
 
-      LOG(INFO) << "Testing policy: " << policy.first;
-
       for (const auto& pref_mapping : pref_mappings) {
-        if (!preprocessor_macros_checker.SupportsTest(pref_mapping.get())) {
-          LOG(INFO) << " Skipping policy_pref_mapping_test because of "
-                    << "preprocessor macros";
-          continue;
-        }
-
         for (const auto& pref_case : pref_mapping->prefs()) {
           // Skip Chrome OS preferences that use a different backend and cannot
           // be retrieved through the prefs mechanism.
@@ -498,6 +490,13 @@ void VerifyPolicyToPrefMappings(const base::FilePath& test_case_path,
           if (!prefs)
             continue;
 
+          LOG(INFO) << "Testing policy: " << policy.first;
+
+          if (!preprocessor_macros_checker.SupportsTest(pref_mapping.get())) {
+            LOG(INFO) << " Skipping policy_pref_mapping_test because of "
+                      << "preprocessor macros";
+            continue;
+          }
           // The preference must have been registered.
           const PrefService::Preference* pref =
               prefs->FindPreference(pref_case->pref().c_str());
