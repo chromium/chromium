@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<title>CSP for subresource WebBundle (blocked cases)</title>
+<link
+  rel="help"
+  href="https://github.com/WICG/webpackage/blob/master/explainers/subresource-loading.md"
+/>
+<meta
+  http-equiv="Content-Security-Policy"
+  content="script-src * 'unsafe-inline';
+           img-src https://web-platform.test:8444/web-bundle/resources/wbn/subresource.wbn;
+           frame-src *"
+>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<body>
+<link rel="webbundle" href="../resources/wbn/subresource.wbn"
+      resources="https://web-platform.test:8444/web-bundle/resources/wbn/fail.png" />
+<link rel="webbundle" href="../resources/wbn/urn-uuid.wbn"
+      resources="urn:uuid:020111b3-437a-4c5c-ae07-adb6bbffb720
+                 urn:uuid:429fcc4e-0696-4bad-b099-ee9175f023ae" />
+<script>
+  function expect_violation() {
+    return new Promise((resolve) => {
+      document.addEventListener('securitypolicyviolation', (e) => {
+        e.stopPropagation();
+        resolve(e);
+      }, {once: true});
+    });
+  }
+
+  promise_test(async () => {
+    const p = expect_violation();
+    const img = document.createElement('img');
+    img.src = 'https://web-platform.test:8444/web-bundle/resources/wbn/fail.png';
+    document.body.appendChild(img);
+    const e = await p;
+    assert_equals(e.blockedURI, img.src);
+  }, 'URL matching of CSP should be done based on the subresource URL, not on the bundle URL');
+
+  promise_test(async () => {
+    const urn_uuid = 'urn:uuid:020111b3-437a-4c5c-ae07-adb6bbffb720';
+    const p = expect_violation();
+    const script = document.createElement('script');
+    script.src = urn_uuid;
+    document.body.appendChild(script);
+    const e = await p;
+    // Use prefix check because browsers may strip cross-origin blockedURI.
+    assert_true(urn_uuid.startsWith(e.blockedURI));
+  }, '"script-src *" CSP directive should block urn:uuid scripts');
+
+  promise_test(async () => {
+    const urn_uuid = 'urn:uuid:429fcc4e-0696-4bad-b099-ee9175f023ae';
+    const p = expect_violation();
+    const iframe = document.createElement('iframe');
+    iframe.src = urn_uuid;
+    document.body.appendChild(iframe);
+    const e = await p;
+    // Use prefix check because browsers may strip cross-origin blockedURI.
+    assert_true(urn_uuid.startsWith(e.blockedURI));
+  }, '"frame-src *" CSP directive should block urn:uuid iframes');
+</script>
+</body>
