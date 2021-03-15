@@ -4,7 +4,7 @@
 
 #include "weblayer/browser/background_fetch/background_fetch_download.h"
 
-#include "base/files/file_path.h"
+#include "base/strings/utf_string_conversions.h"
 #include "content/public/browser/background_fetch_description.h"
 #include "weblayer/browser/background_fetch/background_fetch_delegate_impl.h"
 #include "weblayer/browser/background_fetch/job_details.h"
@@ -70,10 +70,8 @@ base::FilePath BackgroundFetchDownload::GetLocation() {
   return {};
 }
 
-base::FilePath BackgroundFetchDownload::GetFileNameToReportToUser() {
-  // TODO(estade): this method should return a string instead of a FilePath.
-  // It's used as the notification's title.
-  return base::FilePath::FromUTF8Unsafe(job_->fetch_description->title);
+std::u16string BackgroundFetchDownload::GetFileNameToReportToUser() {
+  return base::UTF8ToUTF16(job_->fetch_description->title);
 }
 
 std::string BackgroundFetchDownload::GetMimeType() {

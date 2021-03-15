@@ -84,8 +84,8 @@ base::FilePath PersistentDownload::GetLocation() {
   return item_->GetTargetFilePath();
 }
 
-base::FilePath PersistentDownload::GetFileNameToReportToUser() {
-  return item_->GetFileNameToReportUser();
+std::u16string PersistentDownload::GetFileNameToReportToUser() {
+  return item_->GetFileNameToReportUser().LossyDisplayName();
 }
 
 std::string PersistentDownload::GetMimeType() {

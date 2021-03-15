@@ -42,8 +42,8 @@ base::android::ScopedJavaLocalRef<jstring> DownloadImpl::GetLocationImpl(
 base::android::ScopedJavaLocalRef<jstring>
 DownloadImpl::GetFileNameToReportToUserImpl(JNIEnv* env) {
   return base::android::ScopedJavaLocalRef<jstring>(
-      base::android::ConvertUTF8ToJavaString(
-          env, GetFileNameToReportToUser().value()));
+      base::android::ConvertUTF16ToJavaString(env,
+                                              GetFileNameToReportToUser()));
 }
 
 base::android::ScopedJavaLocalRef<jstring> DownloadImpl::GetMimeTypeImpl(

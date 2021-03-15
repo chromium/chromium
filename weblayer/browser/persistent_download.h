@@ -33,7 +33,7 @@ class PersistentDownload : public DownloadImpl {
   void Resume() override;
   void Cancel() override;
   base::FilePath GetLocation() override;
-  base::FilePath GetFileNameToReportToUser() override;
+  std::u16string GetFileNameToReportToUser() override;
   std::string GetMimeType() override;
   DownloadError GetError() override;
 
