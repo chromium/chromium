@@ -25,9 +25,11 @@ import org.chromium.chrome.browser.flags.CachedFeatureFlags;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.fonts.FontPreloader;
 import org.chromium.chrome.browser.night_mode.SystemNightModeMonitor;
+import org.chromium.chrome.browser.profiles.ProfileResolver;
 import org.chromium.chrome.browser.vr.OnExitVrRequestListener;
 import org.chromium.chrome.browser.vr.VrModuleProvider;
 import org.chromium.components.browser_ui.util.GlobalDiscardableReferencePool;
+import org.chromium.components.embedder_support.browser_context.PartitionResolverSupplier;
 import org.chromium.components.module_installer.util.ModuleUtil;
 import org.chromium.components.version_info.Channel;
 import org.chromium.components.version_info.VersionConstants;
@@ -76,6 +78,7 @@ public class ChromeApplication extends SplitCompatApplication {
 
                 // Set Chrome factory for mapping BackgroundTask classes to TaskIds.
                 ChromeBackgroundTaskFactory.setAsDefault();
+                PartitionResolverSupplier.setInstance(new ProfileResolver());
 
                 AppHooks.get().getChimeDelegate().initialize();
             }

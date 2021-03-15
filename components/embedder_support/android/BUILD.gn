@@ -10,6 +10,7 @@ android_library("browser_context_java") {
   sources = [
     "java/src/org/chromium/components/embedder_support/browser_context/BrowserContextHandle.java",
     "java/src/org/chromium/components/embedder_support/browser_context/PartitionResolver.java",
+    "java/src/org/chromium/components/embedder_support/browser_context/PartitionResolverSupplier.java",
   ]
   deps = [
     ":simple_factory_key_java",
