@@ -1,5 +1,5 @@
-# Use of this source code is governed by a BSD-style license that can be
 # Copyright 2014 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
 import("//build/android/resource_sizes.gni")
@@ -97,6 +97,8 @@ _enable_libs_and_assets_verification =
 _enable_manifest_verification =
     !is_java_debug && !enable_chrome_android_internal &&
     android_channel == "stable"
+
+_enable_flags_verification = target_cpu == "arm" && is_official_build
 
 jinja_template("chrome_public_android_manifest") {
   input = "java/AndroidManifest.xml"
@@ -3544,7 +3546,8 @@ generate_jni("chrome_jni_headers") {
 }
 
 # Used by android-binary-size trybot to validate expectations.
-if (_enable_libs_and_assets_verification || _enable_manifest_verification) {
+if (_enable_libs_and_assets_verification || _enable_manifest_verification ||
+    _enable_flags_verification) {
   group("validate_expectations") {
     deps = []
     if (_enable_libs_and_assets_verification) {
@@ -3564,6 +3567,9 @@ if (_enable_libs_and_assets_verification || _enable_manifest_verification) {
         "//android_webview:system_webview_base_bundle_module_validate_android_manifest",
         "//android_webview:trichrome_webview_base_bundle_module_validate_android_manifest",
       ]
+    }
+    if (_enable_flags_verification) {
+      deps += [ "//chrome/android/expectations:native_flags_expectations" ]
     }
   }
 }

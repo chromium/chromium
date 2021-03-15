@@ -1,0 +1,66 @@
+# Use of this source code is governed by a BSD-style license that can be
+# Copyright 2021 The Chromium Authors. All rights reserved.
+# found in the LICENSE file.
+
+import("//build/config/android/config.gni")
+import("//build/config/python.gni")
+
+_flagcapture_out_dir =
+    get_label_info("foo(//build/android/native_flags:flagcapture)",
+                   "root_out_dir")
+action_with_pydeps("native_cc_flags_expectations") {
+  script = "//build/android/gyp/check_flag_expectations.py"
+  _actual_flags = "$_flagcapture_out_dir/default_ccflags.txt"
+  _expected_flags = "//chrome/android/expectations/ccflags.expected"
+  _failure_file =
+      "$expectations_failure_dir/native_cc_flags_expectations.failed"
+  inputs = [
+    _actual_flags,
+    _expected_flags,
+  ]
+  outputs = [ _failure_file ]
+  args = [
+    "--current-flags",
+    rebase_path(_actual_flags, root_build_dir),
+    "--expected-file",
+    rebase_path(_expected_flags, root_build_dir),
+    "--failure-file",
+    rebase_path(_failure_file, root_build_dir),
+  ]
+  if (fail_on_android_expectations) {
+    args += [ "--fail-on-expectations" ]
+  }
+  deps = [ "//build/android/native_flags:default_ccflags(//build/android/native_flags:flagcapture)" ]
+}
+
+action_with_pydeps("native_ld_flags_expectations") {
+  script = "//build/android/gyp/check_flag_expectations.py"
+  _actual_flags = "$_flagcapture_out_dir/default_ldflags.txt"
+  _expected_flags = "//chrome/android/expectations/ldflags.expected"
+  _failure_file =
+      "$expectations_failure_dir/native_ld_flags_expectations.failed"
+  inputs = [
+    _actual_flags,
+    _expected_flags,
+  ]
+  outputs = [ _failure_file ]
+  args = [
+    "--current-flags",
+    rebase_path(_actual_flags, root_build_dir),
+    "--expected-file",
+    rebase_path(_expected_flags, root_build_dir),
+    "--failure-file",
+    rebase_path(_failure_file, root_build_dir),
+  ]
+  if (fail_on_android_expectations) {
+    args += [ "--fail-on-expectations" ]
+  }
+  deps = [ "//build/android/native_flags:default_ldflags(//build/android/native_flags:flagcapture)" ]
+}
+
+group("native_flags_expectations") {
+  deps = [
+    ":native_cc_flags_expectations",
+    ":native_ld_flags_expectations",
+  ]
+}
