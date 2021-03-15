@@ -4844,6 +4844,8 @@ class SplitViewAppDraggingTest : public SplitViewControllerTest {
         ->current_window_dragging_state();
   }
 
+  void DestroyWindow() { window_.reset(); }
+
   aura::Window* window() { return window_.get(); }
 
   std::unique_ptr<TabletModeWindowResizer> controller_;
@@ -5236,6 +5238,30 @@ TEST_F(SplitViewAppDraggingTest, BackdropBoundsDuringDrag) {
     backdrop_window = *(--it);
   DCHECK(backdrop_window);
   EXPECT_EQ(backdrop_window->bounds(), active_desk_container->bounds());
+}
+
+TEST_F(SplitViewAppDraggingTest, WindowDestroyedDuringDragging) {
+  UpdateDisplay("800x600");
+  InitializeWindow(/*can_resize=*/true);
+  EXPECT_TRUE(WindowState::Get(window())->IsMaximized());
+  gfx::Rect display_bounds =
+      screen_util::GetDisplayWorkAreaBoundsInScreenForActiveDeskContainer(
+          window());
+
+  // Start app dragging.
+  gfx::PointF location;
+  const float long_scroll_delta = display_bounds.height() / 4 + 5;
+  location.set_y(long_scroll_delta);
+  SendScrollStartAndUpdate(location);
+  OverviewController* overview_controller = Shell::Get()->overview_controller();
+  EXPECT_TRUE(overview_controller->InOverviewSession());
+  EXPECT_FALSE(
+      overview_controller->overview_session()->IsWindowInOverview(window()));
+
+  // Destroy the window.
+  DestroyWindow();
+  // Overview should still be active.
+  EXPECT_TRUE(overview_controller->InOverviewSession());
 }
 
 }  // namespace ash

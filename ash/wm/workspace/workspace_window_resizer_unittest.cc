@@ -10,6 +10,7 @@
 #include "ash/shelf/shelf.h"
 #include "ash/shell.h"
 #include "ash/test/ash_test_base.h"
+#include "ash/wm/toplevel_window_event_handler.h"
 #include "ash/wm/window_positioning_utils.h"
 #include "ash/wm/window_state.h"
 #include "ash/wm/window_util.h"
@@ -2228,4 +2229,20 @@ TEST_F(WorkspaceWindowResizerTest, HorizontalMoveNotTriggerSnap) {
   window_state = WindowState::Get(window_.get());
   EXPECT_FALSE(window_state->IsMaximized());
 }
+
+// Tests that window destroyed is properly handled during window resize.
+TEST_F(WorkspaceWindowResizerTest, WindowDestroyedDuringResize) {
+  InitTouchResizeWindow(gfx::Rect(100, 100, 600, kRootHeight - 200), HTRIGHT);
+  ui::test::EventGenerator generator(Shell::GetPrimaryRootWindow(),
+                                     touch_resize_window_.get());
+  generator.PressTouch();
+  EXPECT_TRUE(WindowState::Get(touch_resize_window_.get())->is_dragged());
+  ToplevelWindowEventHandler* event_handler =
+      Shell::Get()->toplevel_window_event_handler();
+  EXPECT_TRUE(event_handler->is_drag_in_progress());
+
+  touch_resize_window_.reset();
+  EXPECT_FALSE(event_handler->is_drag_in_progress());
+}
+
 }  // namespace ash
