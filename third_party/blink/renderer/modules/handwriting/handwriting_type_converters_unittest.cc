@@ -42,7 +42,21 @@ TEST(HandwritingTypeConvertersTest, IdlHandwritingPointToMojo) {
   ASSERT_FALSE(mojo_point.is_null());
   EXPECT_NEAR(mojo_point->location.x(), 1.1, 1e-5);
   EXPECT_NEAR(mojo_point->location.y(), 2.3, 1e-5);
-  EXPECT_EQ(mojo_point->t.InMilliseconds(), 345);
+  ASSERT_TRUE(mojo_point->t.has_value());
+  EXPECT_EQ(mojo_point->t->InMilliseconds(), 345);
+}
+
+TEST(HandwritingTypeConvertersTest, IdlHandwritingPointToMojoWithoutT) {
+  auto* idl_point = blink::HandwritingPoint::Create();
+
+  idl_point->setX(3.1);
+  idl_point->setY(4.3);
+
+  auto mojo_point = mojo::ConvertTo<HandwritingPointPtr>(idl_point);
+  ASSERT_FALSE(mojo_point.is_null());
+  EXPECT_NEAR(mojo_point->location.x(), 3.1, 1e-5);
+  EXPECT_NEAR(mojo_point->location.y(), 4.3, 1e-5);
+  ASSERT_FALSE(mojo_point->t.has_value());
 }
 
 TEST(HandwritingTypeConvertersTest, IdlHandwritingStrokeToMojo) {
@@ -55,7 +69,6 @@ TEST(HandwritingTypeConvertersTest, IdlHandwritingStrokeToMojo) {
   idl_stroke->addPoint(idl_point1);
   idl_point2->setX(1.1);
   idl_point2->setY(1.2);
-  idl_point2->setT(456);
   idl_stroke->addPoint(idl_point2);
 
   auto mojo_stroke = mojo::ConvertTo<HandwritingStrokePtr>(idl_stroke);
@@ -63,10 +76,11 @@ TEST(HandwritingTypeConvertersTest, IdlHandwritingStrokeToMojo) {
   ASSERT_EQ(mojo_stroke->points.size(), 2u);
   EXPECT_NEAR(mojo_stroke->points[0]->location.x(), 0.1, 1e-5);
   EXPECT_NEAR(mojo_stroke->points[0]->location.y(), 0.2, 1e-5);
-  EXPECT_EQ(mojo_stroke->points[0]->t.InMilliseconds(), 123);
+  ASSERT_TRUE(mojo_stroke->points[0]->t.has_value());
+  EXPECT_EQ(mojo_stroke->points[0]->t->InMilliseconds(), 123);
   EXPECT_NEAR(mojo_stroke->points[1]->location.x(), 1.1, 1e-5);
   EXPECT_NEAR(mojo_stroke->points[1]->location.y(), 1.2, 1e-5);
-  EXPECT_EQ(mojo_stroke->points[1]->t.InMilliseconds(), 456);
+  ASSERT_FALSE(mojo_stroke->points[1]->t.has_value());
 }
 
 TEST(HandwritingTypeConvertersTest, IdlHandwritingHintsToMojo) {
@@ -126,7 +140,19 @@ TEST(HandwritingTypeConvertersTest, MojoHandwritingPointToIdl) {
   ASSERT_NE(idl_point, nullptr);
   EXPECT_NEAR(idl_point->x(), 0.3, 1e-5);
   EXPECT_NEAR(idl_point->y(), 0.4, 1e-5);
+  ASSERT_TRUE(idl_point->hasT());
   EXPECT_EQ(idl_point->t(), 123u);
+}
+
+TEST(HandwritingTypeConvertersTest, MojoHandwritingPointToIdlWithoutT) {
+  auto mojo_point = handwriting::mojom::blink::HandwritingPoint::New();
+  mojo_point->location = gfx::PointF(0.3, 0.4);
+
+  auto* idl_point = mojo::ConvertTo<blink::HandwritingPoint*>(mojo_point);
+  ASSERT_NE(idl_point, nullptr);
+  EXPECT_NEAR(idl_point->x(), 0.3, 1e-5);
+  EXPECT_NEAR(idl_point->y(), 0.4, 1e-5);
+  ASSERT_FALSE(idl_point->hasT());
 }
 
 TEST(HandwritingTypeConvertersTest, MojoHandwritingStrokeToIdl) {
@@ -137,7 +163,6 @@ TEST(HandwritingTypeConvertersTest, MojoHandwritingStrokeToIdl) {
   mojo_stroke->points.push_back(std::move(mojo_point1));
   auto mojo_point2 = handwriting::mojom::blink::HandwritingPoint::New();
   mojo_point2->location = gfx::PointF(3.1, 3.2);
-  mojo_point2->t = base::TimeDelta::FromMilliseconds(456);
   mojo_stroke->points.push_back(std::move(mojo_point2));
 
   auto* idl_stroke = mojo::ConvertTo<blink::HandwritingStroke*>(mojo_stroke);
@@ -145,10 +170,11 @@ TEST(HandwritingTypeConvertersTest, MojoHandwritingStrokeToIdl) {
   ASSERT_EQ(idl_stroke->getPoints().size(), 2u);
   EXPECT_NEAR(idl_stroke->getPoints()[0]->x(), 2.1, 1e-5);
   EXPECT_NEAR(idl_stroke->getPoints()[0]->y(), 2.2, 1e-5);
+  ASSERT_TRUE(idl_stroke->getPoints()[0]->hasT());
   EXPECT_EQ(idl_stroke->getPoints()[0]->t(), 321u);
   EXPECT_NEAR(idl_stroke->getPoints()[1]->x(), 3.1, 1e-5);
   EXPECT_NEAR(idl_stroke->getPoints()[1]->y(), 3.2, 1e-5);
-  EXPECT_EQ(idl_stroke->getPoints()[1]->t(), 456u);
+  ASSERT_FALSE(idl_stroke->getPoints()[1]->hasT());
 }
 
 TEST(HandwritingTypeConvertersTest, MojoHandwritingFeatureQueryResultIdl) {

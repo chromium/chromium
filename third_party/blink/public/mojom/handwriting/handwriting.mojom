@@ -18,7 +18,7 @@ struct HandwritingPoint {
   gfx.mojom.PointF location;
   // The time elapsed since the starting time (e.g. when the first ink point
   // of the drawing is captured).
-  mojo_base.mojom.TimeDelta t;
+  mojo_base.mojom.TimeDelta? t;
 };
 
 // Represents a stroke which is just a series of points.
@@ -125,7 +125,7 @@ struct HandwritingModelConstraint {
   array<string> languages;
 };
 
-// Interface for a renderer to use a specific speech recognition backend.
+// Interface for a renderer to use a specific handwriting recognition backend.
 // The browser handles the requests and forwards them to the appropriate
 // backend.
 interface HandwritingRecognizer {
@@ -141,7 +141,7 @@ interface HandwritingRecognizer {
 };
 
 // Per-document interface that allows the renderer to ask the browser for
-// a specific speech recognizer backend, query capabilities, et cetera.
+// a specific handwriting recognizer backend, query capabilities, et cetera.
 // Corresponds to `navigator_handwriting_recognition_service.idl`.
 interface HandwritingRecognitionService {
   // Creates a recognizer.
