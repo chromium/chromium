@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/synchronization/lock.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/net/system_network_context_manager.h"
@@ -171,19 +172,28 @@ class SCTReportingServiceBrowserTest : public CertVerifierBrowserTest {
   net::EmbeddedTestServer* report_server() { return &report_server_; }
 
   void WaitForRequests(size_t num_requests) {
-    if (requests_seen_ >= num_requests)
-      return;
-
-    requests_expected_ = num_requests;
-
-    base::RunLoop run_loop;
-    quit_closure_ = run_loop.QuitClosure();
-    run_loop.Run();
+    // Each loop iteration will account for one request being processed. (This
+    // simplifies the request handler code below, and reduces the state that
+    // must be tracked and handled under locks.)
+    while (true) {
+      base::RunLoop run_loop;
+      {
+        base::AutoLock auto_lock(requests_lock_);
+        if (requests_seen_ >= num_requests)
+          return;
+        requests_closure_ = run_loop.QuitClosure();
+      }
+      run_loop.Run();
+    }
   }
 
-  size_t requests_seen() { return requests_seen_; }
+  size_t requests_seen() {
+    base::AutoLock auto_lock(requests_lock_);
+    return requests_seen_;
+  }
 
   sct_auditing::SCTClientReport GetLastSeenReport() {
+    base::AutoLock auto_lock(requests_lock_);
     sct_auditing::SCTClientReport auditing_report;
     if (last_seen_request_.has_content)
       auditing_report.ParseFromString(last_seen_request_.content);
@@ -212,11 +222,11 @@ class SCTReportingServiceBrowserTest : public CertVerifierBrowserTest {
  private:
   std::unique_ptr<net::test_server::HttpResponse> HandleReportRequest(
       const net::test_server::HttpRequest& request) {
+    base::AutoLock auto_lock(requests_lock_);
     last_seen_request_ = request;
     ++requests_seen_;
-    if (!quit_closure_.is_null() && requests_seen_ >= requests_expected_) {
-      std::move(quit_closure_).Run();
-    }
+    if (requests_closure_)
+      std::move(requests_closure_).Run();
 
     auto http_response =
         std::make_unique<net::test_server::BasicHttpResponse>();
@@ -228,10 +238,12 @@ class SCTReportingServiceBrowserTest : public CertVerifierBrowserTest {
   net::EmbeddedTestServer report_server_;
   base::test::ScopedFeatureList scoped_feature_list_;
 
+  // `requests_lock_` is used to force sequential access to these variables to
+  // avoid races that can cause test flakes.
+  base::Lock requests_lock_;
   net::test_server::HttpRequest last_seen_request_;
   size_t requests_seen_ = 0;
-  size_t requests_expected_ = 0;
-  base::OnceClosure quit_closure_;
+  base::OnceClosure requests_closure_;
 };
 
 // Tests that reports should not be sent when extended reporting is not opted
