@@ -118,8 +118,6 @@ class BASE_EXPORT BuildInfo {
 
   const char* abi_name() const { return abi_name_; }
 
-  std::string extracted_file_suffix() const { return extracted_file_suffix_; }
-
   int sdk_int() const {
     return sdk_int_;
   }
@@ -167,7 +165,6 @@ class BASE_EXPORT BuildInfo {
   const char* const custom_themes_;
   const char* const resources_version_;
   // Not needed by breakpad.
-  const std::string extracted_file_suffix_;
   const int target_sdk_version_;
   const bool is_debug_android_;
   const bool is_tv_;

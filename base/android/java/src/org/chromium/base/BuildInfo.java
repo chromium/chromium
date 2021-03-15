@@ -53,8 +53,6 @@ public class BuildInfo {
     public final String abiString;
     /** Truncated version of Build.FINGERPRINT (for crash reporting). */
     public final String androidBuildFingerprint;
-    /** A string that is different each time the apk changes. */
-    public final String extractedFileSuffix;
     /** Whether or not the device has apps installed for using custom themes. */
     public final String customThemes;
     /** Product version as stored in Android resources. */
@@ -90,7 +88,6 @@ public class BuildInfo {
                 sFirebaseAppId,
                 buildInfo.customThemes,
                 buildInfo.resourcesVersion,
-                buildInfo.extractedFileSuffix,
                 String.valueOf(
                         ContextUtils.getApplicationContext().getApplicationInfo().targetSdkVersion),
                 isDebugAndroid() ? "1" : "0",
@@ -187,10 +184,6 @@ public class BuildInfo {
             } else {
                 abiString = String.format("ABI1: %s, ABI2: %s", Build.CPU_ABI, Build.CPU_ABI2);
             }
-
-            // Append lastUpdateTime to versionCode, since versionCode is unlikely to change when
-            // developing locally but lastUpdateTime is.
-            extractedFileSuffix = String.format("@%x_%x", versionCode, pi.lastUpdateTime);
 
             // The value is truncated, as this is used for crash and UMA reporting.
             androidBuildFingerprint = Build.FINGERPRINT.substring(
