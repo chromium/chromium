@@ -9,9 +9,12 @@
 #include <string>
 
 #include "base/macros.h"
+#include "base/observer_list.h"
 #include "chrome/browser/command_updater_delegate.h"
+#include "chrome/browser/ui/chrome_web_modal_dialog_manager_delegate.h"
 #include "chrome/browser/ui/toolbar/chrome_location_bar_model_delegate.h"
 #include "chrome/browser/ui/views/location_bar/location_bar_view.h"
+#include "components/web_modal/web_contents_modal_dialog_host.h"
 #include "content/public/browser/page_navigator.h"
 #include "content/public/browser/web_contents_delegate.h"
 #include "ui/views/controls/button/image_button.h"
@@ -43,7 +46,9 @@ class SimpleWebViewDialog : public views::View,
                             public ChromeLocationBarModelDelegate,
                             public CommandUpdaterDelegate,
                             public content::PageNavigator,
-                            public content::WebContentsDelegate {
+                            public content::WebContentsDelegate,
+                            public ChromeWebModalDialogManagerDelegate,
+                            public web_modal::WebContentsModalDialogHost {
  public:
   METADATA_HEADER(SimpleWebViewDialog);
   explicit SimpleWebViewDialog(Profile* profile);
@@ -82,11 +87,20 @@ class SimpleWebViewDialog : public views::View,
   virtual std::unique_ptr<views::WidgetDelegate> MakeWidgetDelegate();
 
  private:
-  friend class SimpleWebViewDialogTest;
-
   void LoadImages();
   void UpdateButtons();
   void UpdateReload(bool is_loading, bool force);
+
+  // Implements ChromeWebModalDialogManagerDelegate:
+  web_modal::WebContentsModalDialogHost* GetWebContentsModalDialogHost()
+      override;
+
+  // Implements web_modal::WebContentsModalDialogHost:
+  gfx::NativeView GetHostView() const override;
+  gfx::Point GetDialogPosition(const gfx::Size& size) override;
+  gfx::Size GetMaximumDialogSize() override;
+  void AddObserver(web_modal::ModalDialogHostObserver* observer) override;
+  void RemoveObserver(web_modal::ModalDialogHostObserver* observer) override;
 
   Profile* profile_;
   std::unique_ptr<LocationBarModel> location_bar_model_;
@@ -104,6 +118,8 @@ class SimpleWebViewDialog : public views::View,
   std::unique_ptr<views::WebView> web_view_container_;
 
   std::unique_ptr<StubBubbleModelDelegate> bubble_model_delegate_;
+
+  base::ObserverList<web_modal::ModalDialogHostObserver>::Unchecked observers_;
 };
 
 }  // namespace chromeos

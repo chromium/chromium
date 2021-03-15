@@ -25,6 +25,7 @@
 #include "components/omnibox/browser/location_bar_model_impl.h"
 #include "components/password_manager/core/browser/password_manager.h"
 #include "components/strings/grit/components_strings.h"
+#include "components/web_modal/web_contents_modal_dialog_manager.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/web_contents.h"
@@ -142,8 +143,15 @@ SimpleWebViewDialog::SimpleWebViewDialog(Profile* profile)
 }
 
 SimpleWebViewDialog::~SimpleWebViewDialog() {
-  if (web_view_ && web_view_->web_contents())
+  for (auto& observer : observers_)
+    observer.OnHostDestroying();
+
+  if (web_view_ && web_view_->web_contents()) {
     web_view_->web_contents()->SetDelegate(nullptr);
+    web_modal::WebContentsModalDialogManager::FromWebContents(
+        web_view_->web_contents())
+        ->SetDelegate(nullptr);
+  }
 }
 
 void SimpleWebViewDialog::StartLoad(const GURL& url) {
@@ -160,6 +168,11 @@ void SimpleWebViewDialog::StartLoad(const GURL& url) {
   ChromePasswordManagerClient::CreateForWebContentsWithAutofillClient(
       web_contents,
       autofill::ChromeAutofillClient::FromWebContents(web_contents));
+
+  // Set this as the web modal delegate so that web dialog can appear.
+  web_modal::WebContentsModalDialogManager::CreateForWebContents(web_contents);
+  web_modal::WebContentsModalDialogManager::FromWebContents(web_contents)
+      ->SetDelegate(this);
 }
 
 void SimpleWebViewDialog::Init() {
@@ -373,6 +386,35 @@ void SimpleWebViewDialog::UpdateReload(bool is_loading, bool force) {
         is_loading ? ReloadButton::Mode::kStop : ReloadButton::Mode::kReload,
         force);
   }
+}
+
+web_modal::WebContentsModalDialogHost*
+SimpleWebViewDialog::GetWebContentsModalDialogHost() {
+  return this;
+}
+
+gfx::NativeView SimpleWebViewDialog::GetHostView() const {
+  return GetWidget()->GetNativeWindow();
+}
+
+gfx::Point SimpleWebViewDialog::GetDialogPosition(const gfx::Size& size) {
+  const gfx::Size& host_size = this->size();
+  return gfx::Point(host_size.width() / 2 - size.width() / 2,
+                    host_size.height() / 2 - size.height() / 2);
+}
+
+gfx::Size SimpleWebViewDialog::GetMaximumDialogSize() {
+  return size();
+}
+
+void SimpleWebViewDialog::AddObserver(
+    web_modal::ModalDialogHostObserver* observer) {
+  observers_.AddObserver(observer);
+}
+
+void SimpleWebViewDialog::RemoveObserver(
+    web_modal::ModalDialogHostObserver* observer) {
+  observers_.RemoveObserver(observer);
 }
 
 BEGIN_METADATA(SimpleWebViewDialog, views::View)
