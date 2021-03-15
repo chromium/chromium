@@ -93,7 +93,7 @@ class CONTENT_EXPORT BackForwardCacheImpl : public BackForwardCache {
     DISALLOW_COPY_AND_ASSIGN(Entry);
   };
 
-  BackForwardCacheImpl();
+  explicit BackForwardCacheImpl();
   ~BackForwardCacheImpl();
 
   // Returns whether a RenderFrameHost can be stored into the BackForwardCache

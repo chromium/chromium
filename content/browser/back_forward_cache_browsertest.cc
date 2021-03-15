@@ -178,9 +178,9 @@ class BackForwardCacheBrowserTest : public ContentBrowserTest,
     std::vector<base::test::ScopedFeatureList::FeatureAndParams>
         enabled_features;
 
-    for (auto feature_param = features_with_params_.begin();
-         feature_param != features_with_params_.end(); feature_param++) {
-      enabled_features.push_back({feature_param->first, feature_param->second});
+    for (auto& features_with_param : features_with_params_) {
+      enabled_features.emplace_back(features_with_param.first,
+                                    features_with_param.second);
     }
 
     feature_list_.InitWithFeaturesAndParameters(enabled_features,
@@ -4812,8 +4812,8 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTestWithVibration,
 class BackForwardCacheBrowserTestWithServiceWorkerEnabled
     : public BackForwardCacheBrowserTest {
  public:
-  BackForwardCacheBrowserTestWithServiceWorkerEnabled() {}
-  ~BackForwardCacheBrowserTestWithServiceWorkerEnabled() override {}
+  BackForwardCacheBrowserTestWithServiceWorkerEnabled() = default;
+  ~BackForwardCacheBrowserTestWithServiceWorkerEnabled() override = default;
 
  protected:
   void SetUpCommandLine(base::CommandLine* command_line) override {
@@ -7737,7 +7737,7 @@ namespace {
 
 class ExecJsInDidFinishNavigation : public WebContentsObserver {
  public:
-  ExecJsInDidFinishNavigation(WebContents* web_contents)
+  explicit ExecJsInDidFinishNavigation(WebContents* web_contents)
       : WebContentsObserver(web_contents) {}
 
   void DidFinishNavigation(NavigationHandle* navigation_handle) override {
