@@ -61,22 +61,18 @@ const tests = [
     chrome.test.succeed();
   },
 
-  // Test long press selects word. This test flakes out on some bots.
-  // The test passes locally on MacOS, ChromeOS and Linux. Disable until it's
-  // possible to repro the bot issue. https://crbug.com/723632
-  // function testLongPressSelectsText() {
-  //   var client = new PDFScriptingAPI(window, window);
-  //   sendTouchStart([{x: 336, y: 163}]);
-  //   window.setTimeout(function() {
-  //     client.getSelectedText(
-  //       chrome.test.callbackPass(function(selectedText) {
-  //         chrome.test.assertEq('some', selectedText);
-  //       })
-  //     );
-  //     chrome.test.succeed();
-  //   // 10k is the value for the action_timeout_ms_ in Chrome test_timeouts.cc
-  //   }, 10000);
-  // }
+  // Test long press selects word.
+  function testLongPressSelectsText() {
+    const client = new PDFScriptingAPI(window, window);
+    sendTouchStart([{x: 336, y: 163}]);
+    window.setTimeout(function() {
+      client.getSelectedText(chrome.test.callbackPass(function(selectedText) {
+        chrome.test.assertEq('some', selectedText);
+      }));
+      chrome.test.succeed();
+      // 10k is the value for the action_timeout_ms_ in Chrome test_timeouts.cc
+    }, 10000);
+  },
 ];
 
 const scriptingAPI = new PDFScriptingAPI(window, window);
