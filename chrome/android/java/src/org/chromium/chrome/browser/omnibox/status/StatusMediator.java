@@ -704,9 +704,19 @@ public class StatusMediator implements PermissionDialogController.Observer {
                 this::resetPermissionIcon, PERMISSION_ICON_DISPLAY_TIMEOUT_MS);
         if (mPageInfoIPHController != null) {
             // We only want to show the IPH after the icon transition is finished.
-            mPermissionTaskHandler.postDelayed(mPageInfoIPHController::onPermissionDialogShown,
+            mPermissionTaskHandler.postDelayed(
+                    ()
+                            -> mPageInfoIPHController.onPermissionDialogShown(getIPHTimeout()),
                     StatusView.ICON_ROTATION_DURATION_MS);
         }
+    }
+
+    /**
+     * @return A timeout for the IPH bubble. The bubble is shown after the permission icon animation
+     * finishes and should disappear when it animates out.
+     */
+    private static int getIPHTimeout() {
+        return PERMISSION_ICON_DISPLAY_TIMEOUT_MS - (2 * StatusView.ICON_ROTATION_DURATION_MS);
     }
 
     /** Triggers an update to the status icon to stop showing the permission icon. */
