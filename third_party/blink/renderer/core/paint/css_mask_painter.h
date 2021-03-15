@@ -8,7 +8,6 @@
 #include "base/optional.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/platform/geometry/int_rect.h"
-#include "third_party/blink/renderer/platform/graphics/graphics_types.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 
 namespace blink {
@@ -26,10 +25,6 @@ class CORE_EXPORT CSSMaskPainter {
   static base::Optional<IntRect> MaskBoundingBox(
       const LayoutObject&,
       const PhysicalOffset& paint_offset);
-
-  // Returns the color filter used to interpret mask pixel values as opaqueness.
-  // The return value is undefined if there is no mask or the mask is invalid.
-  static ColorFilter MaskColorFilter(const LayoutObject&);
 };
 
 }  // namespace blink

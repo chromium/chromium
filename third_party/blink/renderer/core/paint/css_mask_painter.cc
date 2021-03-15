@@ -58,19 +58,4 @@ base::Optional<IntRect> CSSMaskPainter::MaskBoundingBox(
   return PixelSnappedIntRect(maximum_mask_region);
 }
 
-ColorFilter CSSMaskPainter::MaskColorFilter(const LayoutObject& object) {
-  if (!object.IsSVGChild())
-    return kColorFilterNone;
-  SVGResourceClient* client = SVGResources::GetClient(object);
-  if (!client)
-    return kColorFilterNone;
-  auto* masker = GetSVGResourceAsType<LayoutSVGResourceMasker>(
-      *client, object.StyleRef().MaskerResource());
-  if (!masker)
-    return kColorFilterNone;
-  return masker->StyleRef().MaskType() == EMaskType::kLuminance
-             ? kColorFilterLuminanceToAlpha
-             : kColorFilterNone;
-}
-
 }  // namespace blink

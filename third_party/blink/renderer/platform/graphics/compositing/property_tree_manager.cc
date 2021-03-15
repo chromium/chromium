@@ -19,7 +19,6 @@
 #include "third_party/blink/renderer/platform/graphics/paint/geometry_mapper.h"
 #include "third_party/blink/renderer/platform/graphics/paint/scroll_paint_property_node.h"
 #include "third_party/blink/renderer/platform/graphics/paint/transform_paint_property_node.h"
-#include "third_party/skia/include/effects/SkLumaColorFilter.h"
 
 namespace blink {
 
@@ -1155,29 +1154,17 @@ void PropertyTreeManager::PopulateCcEffectNode(
   effect_node.render_surface_reason = RenderSurfaceReasonForEffect(effect);
   effect_node.opacity = effect.Opacity();
   const auto& transform = effect.LocalTransformSpace().Unalias();
-  if (effect.GetColorFilter() != kColorFilterNone) {
-    // Currently color filter is only used by SVG masks.
-    // We are cutting corner here by support only specific configuration.
-    DCHECK_EQ(effect.GetColorFilter(), kColorFilterLuminanceToAlpha);
-    DCHECK_EQ(effect.BlendMode(), SkBlendMode::kDstIn);
+  effect_node.transform_id = EnsureCompositorTransformNode(transform);
+  if (effect.HasBackdropEffect()) {
+    // We never have backdrop effect and filter on the same effect node.
     DCHECK(effect.Filter().IsEmpty());
-    effect_node.filters.Append(cc::FilterOperation::CreateReferenceFilter(
-        sk_make_sp<ColorFilterPaintFilter>(SkLumaColorFilter::Make(),
-                                           nullptr)));
-    effect_node.blend_mode = SkBlendMode::kDstIn;
+    effect_node.backdrop_filters =
+        effect.BackdropFilter().AsCcFilterOperations();
+    effect_node.backdrop_filter_bounds = effect.BackdropFilterBounds();
+    effect_node.blend_mode = effect.BlendMode();
+    effect_node.backdrop_mask_element_id = effect.BackdropMaskElementId();
   } else {
-    effect_node.transform_id = EnsureCompositorTransformNode(transform);
-    if (effect.HasBackdropEffect()) {
-      // We never have backdrop effect and filter on the same effect node.
-      DCHECK(effect.Filter().IsEmpty());
-      effect_node.backdrop_filters =
-          effect.BackdropFilter().AsCcFilterOperations();
-      effect_node.backdrop_filter_bounds = effect.BackdropFilterBounds();
-      effect_node.blend_mode = effect.BlendMode();
-      effect_node.backdrop_mask_element_id = effect.BackdropMaskElementId();
-    } else {
-      effect_node.filters = effect.Filter().AsCcFilterOperations();
-    }
+    effect_node.filters = effect.Filter().AsCcFilterOperations();
   }
   effect_node.double_sided = !transform.IsBackfaceHidden();
   effect_node.effect_changed = effect.NodeChangeAffectsRaster();

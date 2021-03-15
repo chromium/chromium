@@ -36,10 +36,9 @@ class ChunkToLayerMapperTest : public testing::Test {
           CreateClip(c0(), *layer_transform_, FloatRoundedRect(12, 34, 56, 78));
       layer_effect_ = EffectPaintPropertyNode::Create(
           e0(), EffectPaintPropertyNode::State{
-                    layer_transform_, layer_clip_, kColorFilterLuminanceToAlpha,
-                    CompositorFilterOperations(), 0.789f,
-                    CompositorFilterOperations(), base::Optional<gfx::RRectF>(),
-                    SkBlendMode::kSrcIn});
+                    layer_transform_, layer_clip_, CompositorFilterOperations(),
+                    0.789f, CompositorFilterOperations(),
+                    base::Optional<gfx::RRectF>(), SkBlendMode::kSrcIn});
     }
     return PropertyTreeState(*layer_transform_, *layer_clip_, *layer_effect_);
   }

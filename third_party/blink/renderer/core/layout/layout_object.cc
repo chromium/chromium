@@ -1709,7 +1709,6 @@ bool LayoutObject::HasDistortingVisualEffects() const {
   for (const auto* effect = &paint_properties.Effect().Unalias(); effect;
        effect = effect->UnaliasedParent()) {
     if (!effect->Filter().IsEmpty() || !effect->BackdropFilter().IsEmpty() ||
-        effect->GetColorFilter() != kColorFilterNone ||
         effect->BlendMode() != SkBlendMode::kSrcOver ||
         effect->Opacity() != 1.0) {
       return true;

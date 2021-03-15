@@ -8,7 +8,6 @@
 #include <algorithm>
 #include "third_party/blink/renderer/platform/graphics/compositor_element_id.h"
 #include "third_party/blink/renderer/platform/graphics/compositor_filter_operations.h"
-#include "third_party/blink/renderer/platform/graphics/graphics_types.h"
 #include "third_party/blink/renderer/platform/graphics/paint/clip_paint_property_node.h"
 #include "third_party/blink/renderer/platform/graphics/paint/paint_property_node.h"
 #include "third_party/blink/renderer/platform/graphics/paint/transform_paint_property_node.h"
@@ -93,7 +92,6 @@ class PLATFORM_EXPORT EffectPaintPropertyNode
     // Optionally a number of effects can be applied to the composited output.
     // The chain of effects will be applied in the following order:
     // === Begin of effects ===
-    ColorFilter color_filter = kColorFilterNone;
     CompositorFilterOperations filter;
     float opacity = 1;
     CompositorFilterOperations backdrop_filter;
@@ -116,7 +114,6 @@ class PLATFORM_EXPORT EffectPaintPropertyNode
         const AnimationState& animation_state) {
       if (local_transform_space != other.local_transform_space ||
           output_clip != other.output_clip ||
-          color_filter != other.color_filter ||
           backdrop_filter_bounds != other.backdrop_filter_bounds ||
           blend_mode != other.blend_mode) {
         return PaintPropertyChangeType::kChangedOnlyValues;
@@ -200,9 +197,6 @@ class PLATFORM_EXPORT EffectPaintPropertyNode
   const CompositorFilterOperations& Filter() const {
     return state_.filter;
   }
-  ColorFilter GetColorFilter() const {
-    return state_.color_filter;
-  }
 
   const CompositorFilterOperations& BackdropFilter() const {
     return state_.backdrop_filter;
@@ -221,14 +215,12 @@ class PLATFORM_EXPORT EffectPaintPropertyNode
   }
 
   bool HasRealEffects() const {
-    return Opacity() != 1.0f || GetColorFilter() != kColorFilterNone ||
-           BlendMode() != SkBlendMode::kSrcOver || !Filter().IsEmpty() ||
-           !BackdropFilter().IsEmpty();
+    return Opacity() != 1.0f || BlendMode() != SkBlendMode::kSrcOver ||
+           !Filter().IsEmpty() || !BackdropFilter().IsEmpty();
   }
 
   bool IsOpacityOnly() const {
-    return GetColorFilter() == kColorFilterNone &&
-           BlendMode() == SkBlendMode::kSrcOver && Filter().IsEmpty() &&
+    return BlendMode() == SkBlendMode::kSrcOver && Filter().IsEmpty() &&
            BackdropFilter().IsEmpty();
   }
 

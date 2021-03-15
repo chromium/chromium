@@ -535,8 +535,7 @@ void ConversionContext::StartEffect(const EffectPaintPropertyNode& effect) {
   // effects, so we can handle them separately.
   bool has_filter = !effect.Filter().IsEmpty();
   bool has_opacity = effect.Opacity() != 1.f;
-  bool has_other_effects = effect.BlendMode() != SkBlendMode::kSrcOver ||
-                           effect.GetColorFilter() != kColorFilterNone;
+  bool has_other_effects = effect.BlendMode() != SkBlendMode::kSrcOver;
   DCHECK(!has_filter || !(has_opacity || has_other_effects));
   // We always composite backdrop filters.
   DCHECK(effect.BackdropFilter().IsEmpty());
@@ -551,8 +550,6 @@ void ConversionContext::StartEffect(const EffectPaintPropertyNode& effect) {
       PaintFlags flags;
       flags.setBlendMode(effect.BlendMode());
       flags.setAlpha(alpha);
-      flags.setColorFilter(GraphicsContext::WebCoreColorFilterToSkiaColorFilter(
-          effect.GetColorFilter()));
       save_layer_id = cc_list_.push<cc::SaveLayerOp>(nullptr, &flags);
     } else {
       save_layer_id = cc_list_.push<cc::SaveLayerAlphaOp>(nullptr, alpha);

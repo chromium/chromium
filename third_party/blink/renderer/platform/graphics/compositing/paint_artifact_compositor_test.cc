@@ -2221,13 +2221,12 @@ TEST_P(PaintArtifactCompositorTest, EffectWithElementIdWithAlias) {
             ElementIdToEffectNodeIndex(real_effect->GetCompositorElementId()));
 }
 
-TEST_P(PaintArtifactCompositorTest, NonCompositedSimpleLuminanceMask) {
+TEST_P(PaintArtifactCompositorTest, NonCompositedSimpleMask) {
   auto masked = CreateOpacityEffect(
       e0(), 1.0, CompositingReason::kIsolateCompositedDescendants);
   EffectPaintPropertyNode::State masking_state;
   masking_state.local_transform_space = &t0();
   masking_state.output_clip = &c0();
-  masking_state.color_filter = kColorFilterLuminanceToAlpha;
   masking_state.blend_mode = SkBlendMode::kDstIn;
   auto masking =
       EffectPaintPropertyNode::Create(*masked, std::move(masking_state));
@@ -2254,84 +2253,6 @@ TEST_P(PaintArtifactCompositorTest, NonCompositedSimpleLuminanceMask) {
   EXPECT_TRUE(masked_group->filters.IsEmpty());
   // It's the last effect node. |masking| has been decomposited.
   EXPECT_EQ(masked_group, GetPropertyTrees().effect_tree.back());
-}
-
-TEST_P(PaintArtifactCompositorTest, CompositedLuminanceMaskOneChild) {
-  auto masked = CreateOpacityEffect(
-      e0(), 1.0, CompositingReason::kIsolateCompositedDescendants);
-  EffectPaintPropertyNode::State masking_state;
-  masking_state.local_transform_space = &t0();
-  masking_state.output_clip = &c0();
-  masking_state.color_filter = kColorFilterLuminanceToAlpha;
-  masking_state.blend_mode = SkBlendMode::kDstIn;
-  masking_state.direct_compositing_reasons = CompositingReason::kLayerForMask;
-  auto masking =
-      EffectPaintPropertyNode::Create(*masked, std::move(masking_state));
-
-  TestPaintArtifact artifact;
-  artifact.Chunk(t0(), c0(), *masked)
-      .RectDrawing(IntRect(100, 100, 200, 200), Color::kGray);
-  artifact.Chunk(t0(), c0(), *masking)
-      .RectDrawing(IntRect(150, 150, 100, 100), Color::kWhite);
-  Update(artifact.Build());
-  ASSERT_EQ(2u, LayerCount());
-
-  const cc::Layer* masking_layer = LayerAt(1);
-  const cc::EffectNode* masking_group =
-      GetPropertyTrees().effect_tree.Node(masking_layer->effect_tree_index());
-
-  // Render surface is not needed for one child.
-  EXPECT_FALSE(masking_group->HasRenderSurface());
-  ASSERT_EQ(1u, masking_group->filters.size());
-  EXPECT_EQ(cc::FilterOperation::REFERENCE,
-            masking_group->filters.at(0).type());
-  EXPECT_EQ(SkBlendMode::kDstIn, masking_group->blend_mode);
-
-  // The parent also has a render surface to define the scope of the backdrop
-  // of the kDstIn blend mode.
-  EXPECT_TRUE(
-      GetPropertyTrees().effect_tree.parent(masking_group)->HasRenderSurface());
-}
-
-TEST_P(PaintArtifactCompositorTest, CompositedLuminanceMaskTwoChildren) {
-  auto masked = CreateOpacityEffect(
-      e0(), 1.0, CompositingReason::kIsolateCompositedDescendants);
-  EffectPaintPropertyNode::State masking_state;
-  masking_state.local_transform_space = &t0();
-  masking_state.output_clip = &c0();
-  masking_state.color_filter = kColorFilterLuminanceToAlpha;
-  masking_state.blend_mode = SkBlendMode::kDstIn;
-  auto masking =
-      EffectPaintPropertyNode::Create(*masked, std::move(masking_state));
-
-  auto child_of_masked = CreateOpacityEffect(
-      *masking, 1.0, CompositingReason::kIsolateCompositedDescendants);
-
-  TestPaintArtifact artifact;
-  artifact.Chunk(t0(), c0(), *masked)
-      .RectDrawing(IntRect(100, 100, 200, 200), Color::kGray);
-  artifact.Chunk(t0(), c0(), *child_of_masked)
-      .RectDrawing(IntRect(100, 100, 200, 200), Color::kGray);
-  artifact.Chunk(t0(), c0(), *masking)
-      .RectDrawing(IntRect(150, 150, 100, 100), Color::kWhite);
-  Update(artifact.Build());
-  ASSERT_EQ(3u, LayerCount());
-
-  const cc::Layer* masking_layer = LayerAt(2);
-  const cc::EffectNode* masking_group =
-      GetPropertyTrees().effect_tree.Node(masking_layer->effect_tree_index());
-
-  // There is a render surface because there are two children.
-  EXPECT_TRUE(masking_group->HasRenderSurface());
-  ASSERT_EQ(1u, masking_group->filters.size());
-  EXPECT_EQ(cc::FilterOperation::REFERENCE,
-            masking_group->filters.at(0).type());
-  EXPECT_EQ(SkBlendMode::kDstIn, masking_group->blend_mode);
-
-  // The parent also has a render surface to define the scope of the backdrop
-  // of the kDstIn blend mode.
-  EXPECT_TRUE(
-      GetPropertyTrees().effect_tree.parent(masking_group)->HasRenderSurface());
 }
 
 TEST_P(PaintArtifactCompositorTest, CompositedMaskOneChild) {
