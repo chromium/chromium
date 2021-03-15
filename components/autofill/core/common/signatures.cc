@@ -6,8 +6,10 @@
 
 #include <cctype>
 
+#include "base/containers/span.h"
 #include "base/hash/sha1.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/strings/string_piece.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "components/autofill/core/common/autofill_util.h"
@@ -41,6 +43,16 @@ std::string StripDigitsIfRequired(const std::u16string& input) {
       i++;
     }
   }
+  return result;
+}
+
+template <size_t N>
+uint64_t PackBytes(base::span<const uint8_t, N> bytes) {
+  static_assert(N <= 8u,
+                "Error: Can't pack more than 8 bytes into a uint64_t.");
+  uint64_t result = 0;
+  for (auto byte : bytes)
+    result = (result << 8) | byte;
   return result;
 }
 
@@ -108,31 +120,16 @@ FieldSignature CalculateFieldSignatureForField(
                                               field_data.form_control_type);
 }
 
-uint64_t StrToHash64Bit(const std::string& str) {
-  std::string hash_bin = base::SHA1HashString(str);
-  DCHECK_EQ(base::kSHA1Length, hash_bin.length());
-
-  uint64_t hash64 = (((static_cast<uint64_t>(hash_bin[0])) & 0xFF) << 56) |
-                    (((static_cast<uint64_t>(hash_bin[1])) & 0xFF) << 48) |
-                    (((static_cast<uint64_t>(hash_bin[2])) & 0xFF) << 40) |
-                    (((static_cast<uint64_t>(hash_bin[3])) & 0xFF) << 32) |
-                    (((static_cast<uint64_t>(hash_bin[4])) & 0xFF) << 24) |
-                    (((static_cast<uint64_t>(hash_bin[5])) & 0xFF) << 16) |
-                    (((static_cast<uint64_t>(hash_bin[6])) & 0xFF) << 8) |
-                    ((static_cast<uint64_t>(hash_bin[7])) & 0xFF);
-
-  return hash64;
+uint64_t StrToHash64Bit(base::StringPiece str) {
+  auto bytes = base::as_bytes(base::make_span(str));
+  const base::SHA1Digest digest = base::SHA1HashSpan(bytes);
+  return PackBytes(base::make_span(digest).subspan<0, 8>());
 }
 
-uint32_t StrToHash32Bit(const std::string& str) {
-  std::string hash_bin = base::SHA1HashString(str);
-  DCHECK_EQ(base::kSHA1Length, hash_bin.length());
-
-  uint32_t hash32 = ((hash_bin[0] & 0xFF) << 24) |
-                    ((hash_bin[1] & 0xFF) << 16) | ((hash_bin[2] & 0xFF) << 8) |
-                    (hash_bin[3] & 0xFF);
-
-  return hash32;
+uint32_t StrToHash32Bit(base::StringPiece str) {
+  auto bytes = base::as_bytes(base::make_span(str));
+  const base::SHA1Digest digest = base::SHA1HashSpan(bytes);
+  return PackBytes(base::make_span(digest).subspan<0, 4>());
 }
 
 int64_t HashFormSignature(autofill::FormSignature form_signature) {

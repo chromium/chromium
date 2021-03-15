@@ -6,10 +6,11 @@
 #define COMPONENTS_AUTOFILL_CORE_COMMON_SIGNATURES_H_
 
 #include <stddef.h>
-
 #include <stdint.h>
+
 #include <string>
 
+#include "base/strings/string_piece.h"
 #include "base/util/type_safety/id_type.h"
 
 namespace autofill {
@@ -52,10 +53,10 @@ FieldSignature CalculateFieldSignatureByNameAndType(
 FieldSignature CalculateFieldSignatureForField(const FormFieldData& field_data);
 
 // Returns 64-bit hash of the string.
-uint64_t StrToHash64Bit(const std::string& str);
+uint64_t StrToHash64Bit(base::StringPiece str);
 
 // Returns 32-bit hash of the string.
-uint32_t StrToHash32Bit(const std::string& str);
+uint32_t StrToHash32Bit(base::StringPiece str);
 
 // Reduce FieldSignature space (in UKM) to a small range for privacy reasons.
 int64_t HashFormSignature(autofill::FormSignature form_signature);
