@@ -117,11 +117,12 @@ class SigninPolicyPrefsTest : public PolicyPrefsTest {
 };
 
 IN_PROC_BROWSER_TEST_F(SigninPolicyPrefsTest, PolicyToPrefsMapping) {
-  PrefService* local_state = g_browser_process->local_state();
   PrefService* signin_profile_prefs =
       chromeos::ProfileHelper::GetSigninProfile()->GetPrefs();
 
-  VerifyPolicyToPrefMappings(GetTestCasePath(), local_state,
+  // Only checking signin_profile_prefs here since |local_state| is already
+  // checked by PolicyPrefsTest.PolicyToPrefsMapping test.
+  VerifyPolicyToPrefMappings(GetTestCasePath(), /* local_state= */ nullptr,
                              /* user_prefs= */ nullptr, signin_profile_prefs,
                              &provider_, kCrosSettingsPrefix);
 }
