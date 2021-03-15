@@ -4006,6 +4006,11 @@
     "expiry_milestone": 99
   },
   {
+    "name": "optimization-guide-model-downloading",
+    "owners": [ "mcrouse", "chrome-intelligence-core@google.com" ],
+    "expiry_milestone": 95
+  },
+  {
     "name": "os-settings-deep-linking",
     "owners": [ "cros-customization@google.com", "hsuregan", "khorimoto" ],
     "expiry_milestone": 90

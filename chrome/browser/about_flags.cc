@@ -7247,6 +7247,12 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kTFLiteLanguageDetectionDescription, kOsAll,
      FEATURE_VALUE_TYPE(translate::kTFLiteLanguageDetectionEnabled)},
 
+    {"optimization-guide-model-downloading",
+     flag_descriptions::kOptimizationGuideModelDownloadingName,
+     flag_descriptions::kOptimizationGuideModelDownloadingDescription, kOsAll,
+     FEATURE_VALUE_TYPE(
+         optimization_guide::features::kOptimizationGuideModelDownloading)},
+
     // NOTE: Adding a new flag requires adding a corresponding entry to enum
     // "LoginCustomFlags" in tools/metrics/histograms/enums.xml. See "Flag
     // Histograms" in tools/metrics/histograms/README.md (run the

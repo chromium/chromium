@@ -43826,6 +43826,7 @@ from previous Chrome versions.
       label="AutofillUpstreamEditableCardholderName:disabled"/>
   <int value="-1624854957" label="enable-es3-apis"/>
   <int value="-1624593106" label="NewTabPageBackgrounds:enabled"/>
+  <int value="-1624412478" label="OptimizationGuideModelDownloading:disabled"/>
   <int value="-1623003151"
       label="SafeBrowsingkRealTimeUrlLookupEnterpriseGaEndpoint:disabled"/>
   <int value="-1621963267" label="EnableAssistantLauncherUI:enabled"/>
@@ -47055,6 +47056,7 @@ from previous Chrome versions.
   <int value="1307003774" label="AutofillEnableCompanyName:disabled"/>
   <int value="1308537004" label="force-pnacl-subzero"/>
   <int value="1310000273" label="ReleaseNotesNotificationAllChannels:disabled"/>
+  <int value="1310316934" label="OptimizationGuideModelDownloading:enabled"/>
   <int value="1311860720" label="ChromeHomeNtpRedesign:disabled"/>
   <int value="1312025202" label="NTPOfflinePageSuggestions:disabled"/>
   <int value="1313476409" label="ReportFeedUserActions:disabled"/>
