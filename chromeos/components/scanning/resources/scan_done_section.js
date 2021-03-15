@@ -32,8 +32,8 @@ Polymer({
     /** @type {number} */
     numFilesSaved: Number,
 
-    /** @type {?mojoBase.mojom.FilePath} */
-    lastScannedFilePath: Object,
+    /** @type {!Array<!mojoBase.mojom.FilePath>} */
+    scannedFilePaths: Array,
 
     /** @type {string} */
     selectedFolder: String,
@@ -57,7 +57,13 @@ Polymer({
 
   /** @private */
   showFileInLocation_() {
-    this.browserProxy_.showFileInLocation(this.lastScannedFilePath.path)
+    if (this.scannedFilePaths.length == 0) {
+      this.fire('file-not-found');
+      return;
+    }
+
+    this.browserProxy_
+        .showFileInLocation(this.scannedFilePaths.slice(-1)[0].path)
         .then(
             /* @type {boolean} */ (succesful) => {
               if (!succesful) {

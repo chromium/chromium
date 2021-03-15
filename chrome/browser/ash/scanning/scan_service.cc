@@ -10,6 +10,7 @@
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/check.h"
+#include "base/check_op.h"
 #include "base/files/file_util.h"
 #include "base/location.h"
 #include "base/metrics/histogram_functions.h"
@@ -121,6 +122,8 @@ bool AddPdfPage(sk_sp<SkDocument> pdf_doc, const sk_sp<SkData>& image_data) {
 // PDF to |file_path|. Returns whether the PDF was successfully saved.
 bool SaveAsPdf(const std::vector<std::string>& png_images,
                const base::FilePath& file_path) {
+  DCHECK(!file_path.empty());
+
   SkFILEWStream pdf_outfile(file_path.value().c_str());
   if (!pdf_outfile.isValid()) {
     LOG(ERROR) << "Unable to open output file.";
@@ -369,9 +372,13 @@ void ScanService::OnPageReceived(const base::FilePath& scan_to_path,
   // scanned images are received.
   if (file_type == mojo_ipc::FileType::kPdf) {
     scanned_images_.push_back(std::move(scanned_image));
-    if (last_scanned_file_path_.empty()) {
-      last_scanned_file_path_ = scan_to_path.Append(CreateFilename(
-          start_time_, /*not used*/ 0, mojo_ipc::FileType::kPdf));
+
+    // The output of multi-page PDF scans is a single file so only create and
+    // append a single file path.
+    if (scanned_file_paths_.empty()) {
+      DCHECK_EQ(1, page_number);
+      scanned_file_paths_.push_back(scan_to_path.Append(CreateFilename(
+          start_time_, /*not used*/ 0, mojo_ipc::FileType::kPdf)));
     }
     return;
   }
@@ -385,10 +392,12 @@ void ScanService::OnPageReceived(const base::FilePath& scan_to_path,
 }
 
 void ScanService::OnScanCompleted(bool success) {
+  // |scanned_images_| only has data for PDF scans.
   if (success && !scanned_images_.empty()) {
+    DCHECK(!scanned_file_paths_.empty());
     base::PostTaskAndReplyWithResult(
         task_runner_.get(), FROM_HERE,
-        base::BindOnce(&SaveAsPdf, scanned_images_, last_scanned_file_path_),
+        base::BindOnce(&SaveAsPdf, scanned_images_, scanned_file_paths_.back()),
         base::BindOnce(&ScanService::OnPdfSaved,
                        weak_ptr_factory_.GetWeakPtr()));
   }
@@ -414,29 +423,32 @@ void ScanService::OnPdfSaved(const bool success) {
 
 void ScanService::OnPageSaved(const base::FilePath& saved_file_path) {
   page_save_failed_ = page_save_failed_ || saved_file_path.empty();
-  last_scanned_file_path_ =
-      page_save_failed_ ? base::FilePath() : saved_file_path;
+  if (page_save_failed_) {
+    return;
+  }
+
+  scanned_file_paths_.push_back(saved_file_path);
 }
 
 void ScanService::OnAllPagesSaved(bool success) {
   base::Optional<scanning::ScanJobFailureReason> failure_reason = base::nullopt;
   if (!success) {
     failure_reason = scanning::ScanJobFailureReason::kUnknownScannerError;
-    last_scanned_file_path_.clear();
+    scanned_file_paths_.clear();
   } else if (page_save_failed_) {
     failure_reason = scanning::ScanJobFailureReason::kSaveToDiskFailed;
-    last_scanned_file_path_.clear();
+    scanned_file_paths_.clear();
   }
 
   scan_job_observer_->OnScanComplete(success && !page_save_failed_,
-                                     last_scanned_file_path_);
+                                     scanned_file_paths_);
   RecordScanJobResult(success && !page_save_failed_, failure_reason,
                       num_pages_scanned_);
 }
 
 void ScanService::ClearScanState() {
   page_save_failed_ = false;
-  last_scanned_file_path_.clear();
+  scanned_file_paths_.clear();
   scanned_images_.clear();
   num_pages_scanned_ = 0;
 }

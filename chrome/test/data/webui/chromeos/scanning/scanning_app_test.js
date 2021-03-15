@@ -10,7 +10,7 @@ import {ScannerArr} from 'chrome://scanning/scanning_app_types.js';
 import {tokenToString} from 'chrome://scanning/scanning_app_util.js';
 import {ScanningBrowserProxyImpl} from 'chrome://scanning/scanning_browser_proxy.js';
 
-import {assertEquals, assertFalse, assertTrue} from '../../chai_assert.js';
+import {assertArrayEquals, assertEquals, assertFalse, assertTrue} from '../../chai_assert.js';
 import {flushTasks, isVisible} from '../../test_util.m.js';
 
 import {changeSelect, createScanner, createScannerSource} from './scanning_app_test_utils.js';
@@ -179,11 +179,11 @@ class FakeScanService {
 
   /**
    * @param {boolean} success
-   * @param {!mojoBase.mojom.FilePath} lastScannedFilePath
+   * @param {!Array<!mojoBase.mojom.FilePath>} scannedFilePaths
    * @return {!Promise}
    */
-  simulateScanComplete(success, lastScannedFilePath) {
-    this.scanJobObserverRemote_.onScanComplete(success, lastScannedFilePath);
+  simulateScanComplete(success, scannedFilePaths) {
+    this.scanJobObserverRemote_.onScanComplete(success, scannedFilePaths);
     return flushTasks();
   }
 
@@ -404,9 +404,9 @@ export function scanningAppTest() {
   }
 
   test('Scan', () => {
-
-    /** @type {!mojoBase.mojom.FilePath} */
-    const lastScannedFilePath = {'path': '/test/path/scan.jpg'};
+    /** @type {!Array<!mojoBase.mojom.FilePath>} */
+    const scannedFilePaths =
+        [{'path': '/test/path/scan1.jpg'}, {'path': '/test/path/scan2.jpg'}];
 
     return initializeScanningApp(expectedScanners, capabilities)
         .then(() => {
@@ -524,8 +524,7 @@ export function scanningAppTest() {
         })
         .then(() => {
           // Complete the scan.
-          return fakeScanService_.simulateScanComplete(
-              true, lastScannedFilePath);
+          return fakeScanService_.simulateScanComplete(true, scannedFilePaths);
         })
         .then(() => {
           assertTrue(isVisible(/** @type {!HTMLElement} */ (scannedImages)));
@@ -533,9 +532,9 @@ export function scanningAppTest() {
           assertTrue(isVisible(
               /** @type {!HTMLElement} */ (
                   scanningApp.$$('scan-done-section'))));
-          assertEquals(
-              lastScannedFilePath.path,
-              scanningApp.$$('scan-done-section').lastScannedFilePath.path);
+          assertArrayEquals(
+              scannedFilePaths,
+              scanningApp.$$('scan-done-section').scannedFilePaths);
 
           // Click the Done button to return to READY state.
           return clickDoneButton();
@@ -582,7 +581,7 @@ export function scanningAppTest() {
         })
         .then(() => {
           // Simulate the scan failing.
-          return fakeScanService_.simulateScanComplete(false, {'path': ''});
+          return fakeScanService_.simulateScanComplete(false, []);
         })
         .then(() => {
           // The scan failed dialog should open.

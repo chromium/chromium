@@ -154,8 +154,8 @@ class ScanService : public chromeos::scanning::mojom::ScanService,
   // The time a scan was started. Used in filenames when saving scanned images.
   base::Time::Exploded start_time_;
 
-  // The file path of the last page scanned in a scan job.
-  base::FilePath last_scanned_file_path_;
+  // The file paths of the pages scanned in a scan job.
+  std::vector<base::FilePath> scanned_file_paths_;
 
   // Task runner used to convert and save scanned images.
   scoped_refptr<base::SequencedTaskRunner> task_runner_;

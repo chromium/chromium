@@ -82,9 +82,10 @@ export function scanDoneSectionTest() {
       fileNotFoundEventFired = true;
     });
 
-    const lastScannedFilePath = {'path': '/test/path/scan.jpg'};
-    scanningBrowserProxy.setPathToFile(lastScannedFilePath.path);
-    scanDoneSection.lastScannedFilePath = lastScannedFilePath;
+    const scannedFilePaths =
+        [{'path': '/test/path/scan1.jpg'}, {'path': '/test/path/scan2.jpg'}];
+    scanningBrowserProxy.setPathToFile(scannedFilePaths[1].path);
+    scanDoneSection.scannedFilePaths = scannedFilePaths;
     scanDoneSection.numFilesSaved = 1;
     return flushTasks().then(() => {
       scanDoneSection.$$('#folderLink').click();
@@ -103,7 +104,7 @@ export function scanDoneSectionTest() {
     });
 
     scanningBrowserProxy.setPathToFile('/wrong/path/file/so/not/found.jpg');
-    scanDoneSection.lastScannedFilePath = {'path': '/test/path/scan.jpg'};
+    scanDoneSection.scannedFilePaths = [{'path': '/test/path/scan.jpg'}];
     scanDoneSection.numFilesSaved = 1;
     return flushTasks().then(() => {
       scanDoneSection.$$('#folderLink').click();

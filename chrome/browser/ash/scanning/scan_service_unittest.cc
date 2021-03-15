@@ -134,10 +134,11 @@ class FakeScanJobObserver : public mojo_ipc::ScanJobObserver {
     page_complete_ = true;
   }
 
-  void OnScanComplete(bool success,
-                      const base::FilePath& last_scanned_file_path) override {
+  void OnScanComplete(
+      bool success,
+      const std::vector<base::FilePath>& scanned_file_paths) override {
     scan_success_ = success;
-    last_scanned_file_path_ = last_scanned_file_path;
+    scanned_file_paths_ = scanned_file_paths;
   }
 
   void OnCancelComplete(bool success) override {
@@ -163,9 +164,9 @@ class FakeScanJobObserver : public mojo_ipc::ScanJobObserver {
   // Returns true if the cancel scan request completed successfully.
   bool cancel_scan_success() const { return cancel_scan_success_; }
 
-  // Returns the file path of the file saved last.
-  base::FilePath last_scanned_file_path() const {
-    return last_scanned_file_path_;
+  // Returns file paths of the saved scan files.
+  std::vector<base::FilePath> scanned_file_paths() const {
+    return scanned_file_paths_;
   }
 
  private:
@@ -173,7 +174,7 @@ class FakeScanJobObserver : public mojo_ipc::ScanJobObserver {
   bool page_complete_ = false;
   bool scan_success_ = false;
   bool cancel_scan_success_ = false;
-  base::FilePath last_scanned_file_path_;
+  std::vector<base::FilePath> scanned_file_paths_;
   mojo::Receiver<mojo_ipc::ScanJobObserver> receiver_{this};
 };
 
@@ -376,8 +377,7 @@ TEST_F(ScanServiceTest, Scan) {
       EXPECT_TRUE(base::PathExists(saved_scan_path));
 
     EXPECT_TRUE(fake_scan_job_observer_.scan_success());
-    EXPECT_EQ(saved_scan_paths.back(),
-              fake_scan_job_observer_.last_scanned_file_path());
+    EXPECT_EQ(saved_scan_paths, fake_scan_job_observer_.scanned_file_paths());
   }
 }
 
@@ -404,7 +404,10 @@ TEST_F(ScanServiceTest, PdfScan) {
   EXPECT_TRUE(StartScan(scanners[0]->id, settings.Clone()));
   EXPECT_TRUE(base::PathExists(saved_scan_path));
   EXPECT_TRUE(fake_scan_job_observer_.scan_success());
-  EXPECT_EQ(saved_scan_path, fake_scan_job_observer_.last_scanned_file_path());
+  const std::vector<base::FilePath> scanned_file_paths =
+      fake_scan_job_observer_.scanned_file_paths();
+  EXPECT_EQ(1u, scanned_file_paths.size());
+  EXPECT_EQ(saved_scan_path, scanned_file_paths.front());
 }
 
 // Test that when a scan fails, the scan job is marked as failed.
@@ -422,7 +425,7 @@ TEST_F(ScanServiceTest, ScanFails) {
 
   EXPECT_TRUE(StartScan(scanners[0]->id, settings.Clone()));
   EXPECT_FALSE(fake_scan_job_observer_.scan_success());
-  EXPECT_TRUE(fake_scan_job_observer_.last_scanned_file_path().empty());
+  EXPECT_TRUE(fake_scan_job_observer_.scanned_file_paths().empty());
 }
 
 // Test that when a page fails to save during the scan, the scan job is marked
@@ -442,7 +445,7 @@ TEST_F(ScanServiceTest, PageSaveFails) {
 
   EXPECT_TRUE(StartScan(scanners[0]->id, settings.Clone()));
   EXPECT_FALSE(fake_scan_job_observer_.scan_success());
-  EXPECT_TRUE(fake_scan_job_observer_.last_scanned_file_path().empty());
+  EXPECT_TRUE(fake_scan_job_observer_.scanned_file_paths().empty());
 }
 
 // Tests that a new scan job can succeed after the previous scan failed.
@@ -460,7 +463,7 @@ TEST_F(ScanServiceTest, ScanAfterFailedScan) {
 
   EXPECT_TRUE(StartScan(scanners[0]->id, settings.Clone()));
   EXPECT_FALSE(fake_scan_job_observer_.scan_success());
-  EXPECT_TRUE(fake_scan_job_observer_.last_scanned_file_path().empty());
+  EXPECT_TRUE(fake_scan_job_observer_.scanned_file_paths().empty());
 
   // Set scan data so next scan is successful.
   const std::vector<std::string> scan_data = {"TestData1", "TestData2",
@@ -480,8 +483,7 @@ TEST_F(ScanServiceTest, ScanAfterFailedScan) {
     EXPECT_TRUE(base::PathExists(saved_scan_path));
 
   EXPECT_TRUE(fake_scan_job_observer_.scan_success());
-  EXPECT_EQ(saved_scan_paths.back(),
-            fake_scan_job_observer_.last_scanned_file_path());
+  EXPECT_EQ(saved_scan_paths, fake_scan_job_observer_.scanned_file_paths());
 }
 
 // Tests that a failed scan does not retain values from the previous successful
@@ -512,8 +514,7 @@ TEST_F(ScanServiceTest, FailedScanAfterSuccessfulScan) {
     EXPECT_TRUE(base::PathExists(saved_scan_path));
 
   EXPECT_TRUE(fake_scan_job_observer_.scan_success());
-  EXPECT_EQ(saved_scan_paths.back(),
-            fake_scan_job_observer_.last_scanned_file_path());
+  EXPECT_EQ(saved_scan_paths, fake_scan_job_observer_.scanned_file_paths());
 
   // Remove the scan data from FakeLorgnetteScannerManager so the scan will
   // fail.
@@ -521,7 +522,7 @@ TEST_F(ScanServiceTest, FailedScanAfterSuccessfulScan) {
 
   EXPECT_TRUE(StartScan(scanners[0]->id, settings.Clone()));
   EXPECT_FALSE(fake_scan_job_observer_.scan_success());
-  EXPECT_TRUE(fake_scan_job_observer_.last_scanned_file_path().empty());
+  EXPECT_TRUE(fake_scan_job_observer_.scanned_file_paths().empty());
 }
 
 // Test that canceling sends an update to the observer OnCancelComplete().

@@ -203,11 +203,13 @@ Polymer({
     },
 
     /**
-     * The file path of the last scanned page of a successful scan job. Used to
-     * open the Files app with the correct file highlighted.
-     * @private {?mojoBase.mojom.FilePath}
+     * The file paths of the scanned pages of a successful scan job.
+     * @private {!Array<!mojoBase.mojom.FilePath>}
      */
-    lastScannedFilePath_: Object,
+    scannedFilePaths_: {
+      type: Array,
+      value: () => [],
+    },
 
     /**
      * The key to retrieve the appropriate string to display in the toast.
@@ -304,15 +306,15 @@ Polymer({
   /**
    * Overrides chromeos.scanning.mojom.ScanJobObserverInterface.
    * @param {boolean} success
-   * @param {!mojoBase.mojom.FilePath} lastScannedFilePath
+   * @param {!Array<!mojoBase.mojom.FilePath>} scannedFilePaths
    */
-  onScanComplete(success, lastScannedFilePath) {
+  onScanComplete(success, scannedFilePaths) {
     if (!success || this.objectUrls_.length == 0) {
       this.$.scanFailedDialog.showModal();
       return;
     }
 
-    this.lastScannedFilePath_ = lastScannedFilePath;
+    this.scannedFilePaths_ = scannedFilePaths;
     this.setAppState_(AppState.DONE);
   },
 

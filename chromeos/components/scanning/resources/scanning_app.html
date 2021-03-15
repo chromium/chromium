@@ -246,7 +246,7 @@
       <template is="dom-if" if="[[showDoneSection_]]">
         <scan-done-section num-files-saved="[[getNumFilesSaved_(pageNumber_)]]"
             on-done-click="onDoneClick_" on-file-not-found="onFileNotFound_"
-            last-scanned-file-path="[[lastScannedFilePath_]]"
+            scanned-file-paths="[[scannedFilePaths_]]"
             selected-folder="[[selectedFolder]]">
         </scan-done-section>
       </template>
