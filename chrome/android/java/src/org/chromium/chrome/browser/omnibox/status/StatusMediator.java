@@ -497,26 +497,33 @@ public class StatusMediator implements PermissionDialogController.Observer {
     /** @return True if the security icon has been set for the search engine icon. */
     @VisibleForTesting
     boolean maybeUpdateStatusIconForSearchEngineIcon() {
-        boolean showIconWhenFocused = mUrlHasFocus && mShowStatusIconWhenUrlFocused;
-        boolean showIconWhenScrollingOnNTP =
-                mSearchEngineLogoUtils.currentlyOnNTP(mLocationBarDataProvider)
-                && mUrlFocusPercent > 0 && !mUrlHasFocus && !mLocationBarDataProvider.isLoading()
-                && mShowStatusIconWhenUrlFocused;
-
         // Show the logo unfocused if we're on the NTP.
-        if (mSearchEngineLogoUtils.shouldShowSearchEngineLogo(
-                    mLocationBarDataProvider.isIncognito())
-                && mIsSearchEngineStateSetup
-                && (showIconWhenFocused || showIconWhenScrollingOnNTP)) {
+        if (shouldUpdateStatusIconForSearchEngineIcon()) {
             getStatusIconResourceForSearchEngineIcon(
                     mLocationBarDataProvider.isIncognito(), (statusIconRes) -> {
-                        mModel.set(StatusProperties.STATUS_ICON_RESOURCE, statusIconRes);
+                        // Check again in case the conditions have changed since this callback was
+                        // created.
+                        if (shouldUpdateStatusIconForSearchEngineIcon()) {
+                            mModel.set(StatusProperties.STATUS_ICON_RESOURCE, statusIconRes);
+                        }
                     });
             return true;
         } else {
             mShouldCancelCustomFavicon = true;
             return false;
         }
+    }
+
+    private boolean shouldUpdateStatusIconForSearchEngineIcon() {
+        boolean showIconWhenFocused = mUrlHasFocus && mShowStatusIconWhenUrlFocused;
+        boolean showIconWhenScrollingOnNTP =
+                mSearchEngineLogoUtils.currentlyOnNTP(mLocationBarDataProvider)
+                && mUrlFocusPercent > 0 && !mUrlHasFocus && !mLocationBarDataProvider.isLoading()
+                && mShowStatusIconWhenUrlFocused;
+
+        return mSearchEngineLogoUtils.shouldShowSearchEngineLogo(
+                       mLocationBarDataProvider.isIncognito())
+                && mIsSearchEngineStateSetup && (showIconWhenFocused || showIconWhenScrollingOnNTP);
     }
 
     /**
