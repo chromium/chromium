@@ -209,7 +209,7 @@ def _run_with_xvfb(cmd, env, stdoutfile, use_openbox, use_xcompmgr):
       # been terminated. In that case, it's safe to read the return value.
       if wait_for_openbox:
         xwmstartupcheck_proc.wait()
-        if xwmstartupcheck_proc.returncode is not 0:
+        if xwmstartupcheck_proc.returncode != 0:
           raise _XvfbProcessError('Failed to get OpenBox up.')
 
     if use_xcompmgr:
