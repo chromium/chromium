@@ -808,9 +808,8 @@ bool AwContentBrowserClient::HandleExternalProtocol(
   if (content::BrowserThread::CurrentlyOn(content::BrowserThread::IO)) {
     // Manages its own lifetime.
     new android_webview::AwProxyingURLLoaderFactory(
-        0 /* process_id */, frame_tree_node_id, std::move(receiver),
-        mojo::NullRemote(), true /* intercept_only */,
-        base::nullopt /* security_options */);
+        frame_tree_node_id, std::move(receiver), mojo::NullRemote(),
+        true /* intercept_only */, base::nullopt /* security_options */);
   } else {
     content::GetIOThreadTaskRunner({})->PostTask(
         FROM_HERE,
@@ -819,8 +818,8 @@ bool AwContentBrowserClient::HandleExternalProtocol(
                int frame_tree_node_id) {
               // Manages its own lifetime.
               new android_webview::AwProxyingURLLoaderFactory(
-                  0 /* process_id */, frame_tree_node_id, std::move(receiver),
-                  mojo::NullRemote(), true /* intercept_only */,
+                  frame_tree_node_id, std::move(receiver), mojo::NullRemote(),
+                  true /* intercept_only */,
                   base::nullopt /* security_options */);
             },
             std::move(receiver), frame_tree_node_id));
@@ -917,9 +916,6 @@ bool AwContentBrowserClient::WillCreateURLLoaderFactory(
     proxied_receiver = std::move(*factory_receiver);
     *factory_receiver = target_factory_remote.InitWithNewPipeAndPassReceiver();
   }
-  int process_id =
-      type == URLLoaderFactoryType::kNavigation ? 0 : render_process_id;
-
   // Android WebView has one non off-the-record browser context.
   if (frame) {
     auto security_options =
@@ -947,7 +943,7 @@ bool AwContentBrowserClient::WillCreateURLLoaderFactory(
 
     content::GetIOThreadTaskRunner({})->PostTask(
         FROM_HERE,
-        base::BindOnce(&AwProxyingURLLoaderFactory::CreateProxy, process_id,
+        base::BindOnce(&AwProxyingURLLoaderFactory::CreateProxy,
                        frame->GetFrameTreeNodeId(), std::move(proxied_receiver),
                        std::move(target_factory_remote), security_options));
   } else {
@@ -955,12 +951,11 @@ bool AwContentBrowserClient::WillCreateURLLoaderFactory(
     // work without seeing the AllowUniversalAccessFromFileURLs setting. So,
     // we don't pass a valid |security_options| here.
     content::GetIOThreadTaskRunner({})->PostTask(
-        FROM_HERE,
-        base::BindOnce(&AwProxyingURLLoaderFactory::CreateProxy, process_id,
-                       content::RenderFrameHost::kNoFrameTreeNodeId,
-                       std::move(proxied_receiver),
-                       std::move(target_factory_remote),
-                       base::nullopt /* security_options */));
+        FROM_HERE, base::BindOnce(&AwProxyingURLLoaderFactory::CreateProxy,
+                                  content::RenderFrameHost::kNoFrameTreeNodeId,
+                                  std::move(proxied_receiver),
+                                  std::move(target_factory_remote),
+                                  base::nullopt /* security_options */));
   }
   return true;
 }

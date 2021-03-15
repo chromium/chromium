@@ -64,7 +64,6 @@ class AwProxyingURLLoaderFactory : public network::mojom::URLLoaderFactory {
   // (shouldInterceptRequest), it will not propagate the request to the
   // target factory.
   AwProxyingURLLoaderFactory(
-      int process_id,
       int frame_tree_node_id,
       mojo::PendingReceiver<network::mojom::URLLoaderFactory> loader_receiver,
       mojo::PendingRemote<network::mojom::URLLoaderFactory>
@@ -76,7 +75,6 @@ class AwProxyingURLLoaderFactory : public network::mojom::URLLoaderFactory {
 
   // static
   static void CreateProxy(
-      int process_id,
       int frame_tree_node_id,
       mojo::PendingReceiver<network::mojom::URLLoaderFactory> loader,
       mojo::PendingRemote<network::mojom::URLLoaderFactory>
@@ -100,7 +98,6 @@ class AwProxyingURLLoaderFactory : public network::mojom::URLLoaderFactory {
   void OnTargetFactoryError();
   void OnProxyBindingError();
 
-  const int process_id_;
   const int frame_tree_node_id_;
   mojo::ReceiverSet<network::mojom::URLLoaderFactory> proxy_receivers_;
   mojo::Remote<network::mojom::URLLoaderFactory> target_factory_;
