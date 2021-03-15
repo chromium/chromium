@@ -1631,6 +1631,12 @@ extern const char kCCTIncognitoAvailableToThirdPartyDescription[];
 extern const char kCCTTargetTranslateLanguageName[];
 extern const char kCCTTargetTranslateLanguageDescription[];
 
+extern const char kChimeAlwaysShowNotificationDescription[];
+extern const char kChimeAlwaysShowNotificationName[];
+
+extern const char kChimeAndroidSdkDescription[];
+extern const char kChimeAndroidSdkName[];
+
 extern const char kContinuousSearchName[];
 extern const char kContinuousSearchDescription[];
 
@@ -1970,9 +1976,6 @@ extern const char kVoiceButtonInTopToolbarDescription[];
 
 extern const char kPrefetchNotificationSchedulingIntegrationName[];
 extern const char kPrefetchNotificationSchedulingIntegrationDescription[];
-
-extern const char kUseChimeAndroidSdkDescription[];
-extern const char kUseChimeAndroidSdkName[];
 
 extern const char kInlineUpdateFlowName[];
 extern const char kInlineUpdateFlowDescription[];

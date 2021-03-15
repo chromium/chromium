@@ -898,6 +898,11 @@
     "expiry_milestone": -1
   },
   {
+    "name": "debug-chime-notification",
+    "owners": [ "xingliu" ],
+    "expiry_milestone": 95
+  },
+  {
     "name": "debug-packed-apps",
     "owners": [ "benwells", "raymes" ],
     "expiry_milestone": 88
