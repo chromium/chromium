@@ -30,6 +30,10 @@ class Label;
 class ToggleButton;
 }  // namespace views
 
+namespace content {
+class WebContents;
+}  // namespace content
+
 // Dialog that shows media controls that control the active media session.
 class MediaDialogView : public views::BubbleDialogDelegateView,
                         public MediaDialogDelegate,
@@ -45,6 +49,12 @@ class MediaDialogView : public views::BubbleDialogDelegateView,
                                    MediaNotificationService* service,
                                    Profile* profile,
                                    GlobalMediaControlsEntryPoint entry_point);
+  static views::Widget* ShowDialogForPresentationRequest(
+      views::View* anchor_view,
+      MediaNotificationService* service,
+      Profile* profile,
+      content::WebContents* contents,
+      GlobalMediaControlsEntryPoint entry_point);
   static void HideDialog();
   static bool IsShowing();
 
@@ -88,7 +98,9 @@ class MediaDialogView : public views::BubbleDialogDelegateView,
   MediaDialogView(views::View* anchor_view,
                   MediaNotificationService* service,
                   Profile* profile,
+                  content::WebContents* contents,
                   GlobalMediaControlsEntryPoint entry_point);
+
   ~MediaDialogView() override;
 
   static MediaDialogView* instance_;
@@ -128,6 +140,11 @@ class MediaDialogView : public views::BubbleDialogDelegateView,
   NewBadgeLabel* live_caption_title_new_badge_ = nullptr;
   views::Label* live_caption_title_ = nullptr;
   views::ToggleButton* live_caption_button_ = nullptr;
+
+  // It stores the WebContents* from which a MediaRouterDialogControllerViews
+  // opened the dialog for a presentation request. It is nullptr if the dialog
+  // is opened from the toolbar.
+  content::WebContents* const web_contents_for_presentation_request_ = nullptr;
   const GlobalMediaControlsEntryPoint entry_point_;
 };
 

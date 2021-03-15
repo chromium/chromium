@@ -23,6 +23,7 @@
 #include "chrome/grit/generated_resources.h"
 #include "components/sync_preferences/pref_service_syncable.h"
 #include "components/vector_icons/vector_icons.h"
+#include "content/public/browser/web_contents.h"
 #include "media/base/media_switches.h"
 #include "services/media_session/public/mojom/media_session.mojom.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -60,9 +61,21 @@ views::Widget* MediaDialogView::ShowDialog(
     MediaNotificationService* service,
     Profile* profile,
     GlobalMediaControlsEntryPoint entry_point) {
+  return ShowDialogForPresentationRequest(anchor_view, service, profile,
+                                          nullptr, entry_point);
+}
+
+// static
+views::Widget* MediaDialogView::ShowDialogForPresentationRequest(
+    views::View* anchor_view,
+    MediaNotificationService* service,
+    Profile* profile,
+    content::WebContents* contents,
+    GlobalMediaControlsEntryPoint entry_point) {
   DCHECK(!instance_);
   DCHECK(service);
-  instance_ = new MediaDialogView(anchor_view, service, profile, entry_point);
+  instance_ =
+      new MediaDialogView(anchor_view, service, profile, contents, entry_point);
 
   views::Widget* widget =
       views::BubbleDialogDelegateView::CreateBubble(instance_);
@@ -140,9 +153,15 @@ void MediaDialogView::AddedToWidget() {
   int corner_radius =
       views::LayoutProvider::Get()->GetCornerRadiusMetric(views::EMPHASIS_HIGH);
   views::BubbleFrameView* frame = GetBubbleFrameView();
-  if (frame)
+  if (frame) {
     frame->SetCornerRadius(corner_radius);
-  service_->SetDialogDelegate(this);
+  }
+  if (entry_point_ == GlobalMediaControlsEntryPoint::kPresentation) {
+    service_->SetDialogDelegateForWebContents(
+        this, web_contents_for_presentation_request_);
+  } else {
+    service_->SetDialogDelegate(this);
+  }
   speech::SodaInstaller::GetInstance()->AddObserver(this);
 }
 
@@ -210,12 +229,14 @@ const MediaNotificationListView* MediaDialogView::GetListViewForTesting()
 MediaDialogView::MediaDialogView(views::View* anchor_view,
                                  MediaNotificationService* service,
                                  Profile* profile,
+                                 content::WebContents* contents,
                                  GlobalMediaControlsEntryPoint entry_point)
     : BubbleDialogDelegateView(anchor_view, views::BubbleBorder::TOP_RIGHT),
       service_(service),
       profile_(profile->GetOriginalProfile()),
       active_sessions_view_(
           AddChildView(std::make_unique<MediaNotificationListView>())),
+      web_contents_for_presentation_request_(contents),
       entry_point_(entry_point) {
   // Enable layer based clipping to ensure children using layers are clipped
   // appropriately.

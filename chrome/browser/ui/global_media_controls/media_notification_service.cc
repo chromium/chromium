@@ -393,17 +393,7 @@ void MediaNotificationService::OnCastNotificationsChanged() {
 
 void MediaNotificationService::SetDialogDelegate(
     MediaDialogDelegate* delegate) {
-  DCHECK(!delegate || !dialog_delegate_);
-  dialog_delegate_ = delegate;
-
-  if (dialog_delegate_) {
-    for (auto& observer : observers_)
-      observer.OnMediaDialogOpened();
-  } else {
-    for (auto& observer : observers_)
-      observer.OnMediaDialogClosed();
-  }
-
+  SetDialogDelegateCommon(delegate);
   if (!dialog_delegate_)
     return;
 
@@ -435,8 +425,62 @@ void MediaNotificationService::SetDialogDelegate(
   }
 }
 
+void MediaNotificationService::SetDialogDelegateForWebContents(
+    MediaDialogDelegate* delegate,
+    content::WebContents* contents) {
+  SetDialogDelegateCommon(delegate);
+  if (!dialog_delegate_)
+    return;
+
+  // When the dialog is opened by a PresentationRequest, there should be only
+  // one notification, in the following priority order:
+  // 1. A cast session associated with |contents|.
+  // 2. A local media session associated with |contents|.
+  // 3. A supplemental notification.
+
+  // Find the cast notification item associated with |contents|.
+  auto routes = media_router::WebContentsPresentationManager::Get(contents)
+                    ->GetMediaRoutes();
+  if (!routes.empty()) {
+    // It is possible for a sender page to connect to two routes. For the
+    // sake of the Zenith dialog, only one notification is needed.
+    const std::string& route_id = routes.begin()->media_route_id();
+    auto cast_item = cast_notification_producer_->GetNotificationItem(route_id);
+    DCHECK(cast_item);
+    dialog_delegate_->ShowMediaSession(route_id, cast_item);
+    return;
+  }
+
+  // Show the local media notification if any.
+  if (HasSessionForWebContents(contents)) {
+    std::string notification_id =
+        media_session_notification_producer_
+            ->GetActiveControllableSessionForWebContents(contents);
+    base::WeakPtr<media_message_center::MediaNotificationItem> item =
+        GetNotificationItem(notification_id);
+    MediaNotificationContainerImpl* container =
+        dialog_delegate_->ShowMediaSession(notification_id, item);
+    if (container)
+      media_session_notification_producer_->ObserveContainer(container,
+                                                             notification_id);
+    return;
+  }
+
+  // Show a supplemental notification, e.g. to start a presentation from the web
+  // page's PresentationRequest.
+  std::string notification_id =
+      GetSupplementalNotificationForWebContents(contents);
+  base::WeakPtr<media_message_center::MediaNotificationItem> item =
+      GetNotificationItem(notification_id);
+  DCHECK(item);
+  dialog_delegate_->ShowMediaSession(notification_id, item);
+}
+
 std::set<std::string>
 MediaNotificationService::GetActiveControllableNotificationIds() const {
+  // TODO(b/170488574): A supplemental notification shows up when there is a
+  // cast session associated with an inactive local media session. This
+  // notification should be removed.
   std::set<std::string> ids;
   for (auto* notification_provider : notification_producers_) {
     const std::set<std::string>& provider_ids =
@@ -548,6 +592,31 @@ void MediaNotificationService::OnNotificationChanged(
 
 bool MediaNotificationService::HasSessionForWebContents(
     content::WebContents* web_contents) const {
-  return media_session_notification_producer_->HasSessionForWebContents(
-      web_contents);
+  return media_session_notification_producer_
+      ->HasActiveControllableSessionForWebContents(web_contents);
+}
+
+std::string MediaNotificationService::GetSupplementalNotificationForWebContents(
+    content::WebContents* web_contents) const {
+  auto notification_it = std::find_if(
+      supplemental_notifications_.begin(), supplemental_notifications_.end(),
+      [web_contents](const auto& pair) { return pair.second == web_contents; });
+
+  return notification_it == supplemental_notifications_.end()
+             ? ""
+             : notification_it->first;
+}
+
+void MediaNotificationService::SetDialogDelegateCommon(
+    MediaDialogDelegate* delegate) {
+  DCHECK(!delegate || !dialog_delegate_);
+  dialog_delegate_ = delegate;
+
+  if (dialog_delegate_) {
+    for (auto& observer : observers_)
+      observer.OnMediaDialogOpened();
+  } else {
+    for (auto& observer : observers_)
+      observer.OnMediaDialogClosed();
+  }
 }

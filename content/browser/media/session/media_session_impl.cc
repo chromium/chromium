@@ -217,6 +217,14 @@ WebContents* MediaSession::GetWebContentsFromRequestId(
 }
 
 // static
+const base::UnguessableToken& MediaSession::GetRequestIdFromWebContents(
+    WebContents* web_contents) {
+  DCHECK(web_contents);
+  MediaSessionImpl* session = MediaSessionImpl::FromWebContents(web_contents);
+  return session ? session->GetRequestId() : base::UnguessableToken::Null();
+}
+
+// static
 MediaSessionImpl* MediaSessionImpl::Get(WebContents* web_contents) {
   MediaSessionImpl* session = FromWebContents(web_contents);
   if (!session) {

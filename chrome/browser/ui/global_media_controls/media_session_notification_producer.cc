@@ -217,7 +217,8 @@ void MediaSessionNotificationProducer::OnContainerDismissed(
 void MediaSessionNotificationProducer::OnContainerDestroyed(
     const std::string& id) {
   auto iter = observed_containers_.find(id);
-  DCHECK(iter != observed_containers_.end());
+  if (iter == observed_containers_.end())
+    return;
 
   iter->second->RemoveObserver(this);
   observed_containers_.erase(iter);
@@ -346,8 +347,9 @@ MediaSessionNotificationProducer::CreateCastDialogControllerForSession(
   return nullptr;
 }
 
-bool MediaSessionNotificationProducer::HasSessionForWebContents(
-    content::WebContents* web_contents) const {
+bool MediaSessionNotificationProducer::
+    HasActiveControllableSessionForWebContents(
+        content::WebContents* web_contents) const {
   DCHECK(web_contents);
   return std::any_of(sessions_.begin(), sessions_.end(),
                      [web_contents, this](const auto& pair) {
@@ -355,6 +357,19 @@ bool MediaSessionNotificationProducer::HasSessionForWebContents(
                               base::Contains(active_controllable_session_ids_,
                                              pair.first);
                      });
+}
+
+std::string
+MediaSessionNotificationProducer::GetActiveControllableSessionForWebContents(
+    content::WebContents* web_contents) const {
+  DCHECK(web_contents);
+  for (auto& session : sessions_) {
+    if (session.second.web_contents() == web_contents &&
+        base::Contains(active_controllable_session_ids_, session.first)) {
+      return session.first;
+    }
+  }
+  return "";
 }
 
 void MediaSessionNotificationProducer::LogMediaSessionActionButtonPressed(

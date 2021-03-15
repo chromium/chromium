@@ -54,8 +54,9 @@ PresentationRequestNotificationProducer::GetNotificationItem(
     const std::string& id) {
   if (item_ && item_->id() == id) {
     return item_->GetWeakPtr();
+  } else {
+    return nullptr;
   }
-  return nullptr;
 }
 
 std::set<std::string>

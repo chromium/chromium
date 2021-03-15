@@ -83,7 +83,13 @@ class MediaNotificationService
 
   void OnCastNotificationsChanged();
 
+  // Called if the dialog is opened from the toolbar button. It shows all active
+  // and controllable media notifications.
   void SetDialogDelegate(MediaDialogDelegate* delegate);
+  // Called if the dialog is opened for a presentation request from |contents|.
+  // It only shows media session notifications from |contents|.
+  void SetDialogDelegateForWebContents(MediaDialogDelegate* delegate,
+                                       content::WebContents* contents);
 
   // Returns active controllable notifications gathered from all the
   // notification producers. If empty, then there's nothing to show in the
@@ -290,6 +296,13 @@ class MediaNotificationService
   void OnNotificationChanged(const std::string* changed_notification_id);
 
   bool HasSessionForWebContents(content::WebContents* web_contents) const;
+
+  std::string GetSupplementalNotificationForWebContents(
+      content::WebContents* web_contents) const;
+
+  // Updates |dialog_delegate_| and notifies |observers_|. Called from
+  // SetDialogDelegate() and SetDialogDelegateForPresentationRequest().
+  void SetDialogDelegateCommon(MediaDialogDelegate* delegate);
 
   MediaDialogDelegate* dialog_delegate_ = nullptr;
 

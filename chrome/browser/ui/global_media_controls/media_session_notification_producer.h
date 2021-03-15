@@ -64,7 +64,12 @@ class MediaSessionNotificationProducer
   bool HasFrozenNotifications() const;
   std::unique_ptr<media_router::CastDialogController>
   CreateCastDialogControllerForSession(const std::string& id);
-  bool HasSessionForWebContents(content::WebContents* web_contents) const;
+  bool HasActiveControllableSessionForWebContents(
+      content::WebContents* web_contents) const;
+  // Returns the notification id of the session associated with |web_contents|.
+  // There is at most one session per WebContents.
+  std::string GetActiveControllableSessionForWebContents(
+      content::WebContents* web_contents) const;
   void LogMediaSessionActionButtonPressed(
       const std::string& id,
       media_session::mojom::MediaSessionAction action);
