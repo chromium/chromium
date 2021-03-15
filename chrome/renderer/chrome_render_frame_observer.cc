@@ -295,7 +295,7 @@ void ChromeRenderFrameObserver::RequestImageForContextNode(
     const gfx::Size& thumbnail_max_size_pixels,
     chrome::mojom::ImageFormat image_format,
     RequestImageForContextNodeCallback callback) {
-  WebNode context_node = render_frame()->GetWebFrame()->ContextMenuNode();
+  WebNode context_node = render_frame()->GetWebFrame()->ContextMenuImageNode();
   std::vector<uint8_t> image_data;
   gfx::Size original_size;
   std::string image_extension;
@@ -368,7 +368,7 @@ void ChromeRenderFrameObserver::RequestReloadImageForContextNode() {
   WebLocalFrame* frame = render_frame()->GetWebFrame();
   // TODO(dglazkov): This code is clearly in the wrong place. Need
   // to investigate what it is doing and fix (http://crbug.com/606164).
-  WebNode context_node = frame->ContextMenuNode();
+  WebNode context_node = frame->ContextMenuImageNode();
   if (!context_node.IsNull()) {
     frame->ReloadImage(context_node);
   }

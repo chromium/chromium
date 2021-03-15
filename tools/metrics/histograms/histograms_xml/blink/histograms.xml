@@ -626,6 +626,49 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="Blink.ContextMenu.ImageSelection.Depth" units="count"
+    expires_after="2021-09-05">
+  <owner>benwgold@google.com</owner>
+  <owner>flackr@chromium.org</owner>
+  <summary>
+    The depth of the discovered image node in the hit test list when performing
+    a penetrating image selection search.
+
+    Only recorded when the `EnablePenetratingImageSelection` feature is enabled
+    and a user long presses or right clicks a document (and an image is found).
+  </summary>
+</histogram>
+
+<histogram name="Blink.ContextMenu.ImageSelection.ElapsedTime"
+    units="microseconds" expires_after="2021-09-05">
+  <owner>benwgold@google.com</owner>
+  <owner>flackr@chromium.org</owner>
+  <summary>
+    The amount of time it took to iterate through the dom looking for an image
+    node.
+
+    Only recorded when the `EnablePenetratingImageSelection` feature is enabled
+    and a user long presses or right clicks a document.
+
+    Note: This metric drops reports on clients with low-resolution clocks, which
+    means these reports will be biased against a portion of the population on
+    Windows. See Windows.HasHighResolutionTimeTicks for the affected sample.
+  </summary>
+</histogram>
+
+<histogram name="Blink.ContextMenu.ImageSelection.Outcome"
+    enum="ImageSelectionOutcome" expires_after="2021-09-05">
+  <owner>benwgold@google.com</owner>
+  <owner>flackr@chromium.org</owner>
+  <summary>
+    The outcome of an image selection search that may or may not trigger the
+    context menu.
+
+    Only recorded when the `EnablePenetratingImageSelection` feature is enabled
+    and a user long presses or right clicks a document (and an image is found).
+  </summary>
+</histogram>
+
 <histogram name="Blink.CookieStore.MatchType" enum="CookieStoreMatchType"
     expires_after="M87">
   <obsolete>

@@ -392,12 +392,14 @@ const AtomicString& HitTestResult::AltDisplayString() const {
 }
 
 Image* HitTestResult::GetImage() const {
-  Node* inner_node_or_image_map_image = InnerNodeOrImageMapImage();
-  if (!inner_node_or_image_map_image)
+  return GetImage(InnerNodeOrImageMapImage());
+}
+
+Image* HitTestResult::GetImage(const Node* node) {
+  if (!node)
     return nullptr;
 
-  LayoutObject* layout_object =
-      inner_node_or_image_map_image->GetLayoutObject();
+  LayoutObject* layout_object = node->GetLayoutObject();
   if (layout_object && layout_object->IsImage()) {
     auto* image = To<LayoutImage>(layout_object);
     if (image->CachedImage() && !image->CachedImage()->ErrorOccurred())
@@ -416,9 +418,8 @@ IntRect HitTestResult::ImageRect() const {
       .EnclosingBoundingBox();
 }
 
-KURL HitTestResult::AbsoluteImageURL() const {
-  Node* inner_node_or_image_map_image = InnerNodeOrImageMapImage();
-  if (!inner_node_or_image_map_image)
+KURL HitTestResult::AbsoluteImageURL(const Node* node) {
+  if (!node)
     return KURL();
 
   AtomicString url_string;
@@ -426,23 +427,24 @@ KURL HitTestResult::AbsoluteImageURL() const {
   // even if they don't have a LayoutImage (e.g. because the image didn't load
   // and we are using an alt container). For other elements we don't create alt
   // containers so ensure they contain a loaded image.
-  auto* html_input_element =
-      DynamicTo<HTMLInputElement>(inner_node_or_image_map_image);
-  if (IsA<HTMLImageElement>(*inner_node_or_image_map_image) ||
+  auto* html_input_element = DynamicTo<HTMLInputElement>(node);
+  if (IsA<HTMLImageElement>(*node) ||
       (html_input_element &&
        html_input_element->type() == input_type_names::kImage))
-    url_string = To<Element>(*inner_node_or_image_map_image).ImageSourceURL();
-  else if ((inner_node_or_image_map_image->GetLayoutObject() &&
-            inner_node_or_image_map_image->GetLayoutObject()->IsImage()) &&
-           (IsA<HTMLEmbedElement>(*inner_node_or_image_map_image) ||
-            IsA<HTMLObjectElement>(*inner_node_or_image_map_image) ||
-            IsA<SVGImageElement>(*inner_node_or_image_map_image)))
-    url_string = To<Element>(*inner_node_or_image_map_image).ImageSourceURL();
+    url_string = To<Element>(*node).ImageSourceURL();
+  else if ((node->GetLayoutObject() && node->GetLayoutObject()->IsImage()) &&
+           (IsA<HTMLEmbedElement>(*node) || IsA<HTMLObjectElement>(*node) ||
+            IsA<SVGImageElement>(*node)))
+    url_string = To<Element>(*node).ImageSourceURL();
   if (url_string.IsEmpty())
     return KURL();
 
-  return inner_node_or_image_map_image->GetDocument().CompleteURL(
+  return node->GetDocument().CompleteURL(
       StripLeadingAndTrailingHTMLSpaces(url_string));
+}
+
+KURL HitTestResult::AbsoluteImageURL() const {
+  return AbsoluteImageURL(InnerNodeOrImageMapImage());
 }
 
 KURL HitTestResult::AbsoluteMediaURL() const {

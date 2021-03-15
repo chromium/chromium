@@ -603,6 +603,7 @@ class WebLocalFrame : public WebFrame {
   // Context menu -----------------------------------------------------------
 
   // Returns the node that the context menu opened over.
+  virtual WebNode ContextMenuImageNode() const = 0;
   virtual WebNode ContextMenuNode() const = 0;
 
   // Copy to the clipboard the image located at a particular point in visual
