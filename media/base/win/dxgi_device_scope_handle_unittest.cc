@@ -25,7 +25,7 @@ class DXGIDeviceScopedHandleTest : public testing::Test {
     if (!test_supported_)
       return;
 
-    ASSERT_NE(nullptr, session_ = InitializeMediaFoundation());
+    ASSERT_TRUE(InitializeMediaFoundation());
 
     // Get a shared DXGI Device Manager from Media Foundation.
     ASSERT_HRESULT_SUCCEEDED(
@@ -60,7 +60,6 @@ class DXGIDeviceScopedHandleTest : public testing::Test {
     }
   }
 
-  MFSessionLifetime session_;
   Microsoft::WRL::ComPtr<IMFDXGIDeviceManager> dxgi_device_man_ = nullptr;
   UINT device_reset_token_ = 0;
   const bool test_supported_;

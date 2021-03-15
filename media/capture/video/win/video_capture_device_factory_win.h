@@ -18,7 +18,6 @@
 #include "base/macros.h"
 #include "base/threading/thread.h"
 #include "media/base/win/dxgi_device_manager.h"
-#include "media/base/win/mf_initializer.h"
 #include "media/capture/video/video_capture_device_factory.h"
 
 namespace media {
@@ -97,7 +96,6 @@ class CAPTURE_EXPORT VideoCaptureDeviceFactoryWin
 
   bool use_media_foundation_;
   bool use_d3d11_with_media_foundation_;
-  MFSessionLifetime session_;
 
   // For calling WinRT methods on a COM initiated thread.
   base::Thread com_thread_;

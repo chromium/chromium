@@ -23,7 +23,6 @@
 #include "media/base/pipeline_status.h"
 #include "media/base/renderer.h"
 #include "media/base/renderer_client.h"
-#include "media/base/win/mf_initializer.h"
 #include "media/renderers/win/media_engine_extension.h"
 #include "media/renderers/win/media_engine_notify_impl.h"
 #include "media/renderers/win/media_foundation_protection_manager.h"
@@ -104,9 +103,6 @@ class MEDIA_EXPORT MediaFoundationRenderer
   // Once set, will force |mf_media_engine_| to use DirectComposition mode.
   // This is used for testing.
   const bool force_dcomp_mode_for_testing_;
-
-  // Keep this here so it's destroyed after all Media Foundation members below.
-  MFSessionLifetime mf_session_life_time_;
 
   RendererClient* renderer_client_;
 
