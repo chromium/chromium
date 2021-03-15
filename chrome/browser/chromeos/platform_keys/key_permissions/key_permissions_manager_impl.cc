@@ -236,7 +236,14 @@ void KeyPermissionsManagerImpl::KeyPermissionsInChapsUpdater::
 
 void KeyPermissionsManagerImpl::KeyPermissionsInChapsUpdater::
     OnKeyPermissionsUpdated(Status permissions_update_status) {
-  if (permissions_update_status != Status::kSuccess) {
+  if (permissions_update_status == Status::kErrorKeyNotFound) {
+    // Some public keys are not removed from chaps although their corresponding
+    // private keys are removed. We continue the migration process if we
+    // received kKeyNotFound as a workaround until the keys-clean-up problem is
+    // solved (crbug.com/1096051).
+    LOG(WARNING) << "Corresponding private key not found. Continuing the "
+                    "migration process...";
+  } else if (permissions_update_status != Status::kSuccess) {
     LOG(ERROR) << "Couldn't update permissions for a key: "
                << StatusToString(permissions_update_status);
     std::move(callback_).Run(permissions_update_status);
