@@ -616,7 +616,11 @@ void NGOutOfFlowLayoutPart::LayoutOOFsInMulticol(const NGBlockNode& multicol) {
         current_column_index = multicol_children.size();
       }
 
-      multicol_container_builder.AddChild(*fragment, offset);
+      multicol_container_builder.AddChild(
+          *fragment, offset, /* inline_container */ nullptr,
+          /* margin_strut */ nullptr, /* is_self_collapsing */ false,
+          /* offset_includes_relative_position */ false,
+          /* propagate_oof_descendants */ false);
       multicol_children.emplace_back(MulticolChildInfo(&child));
     }
 
@@ -681,11 +685,7 @@ void NGOutOfFlowLayoutPart::LayoutOOFsInMulticol(const NGBlockNode& multicol) {
     previous_column_break_token = current_column_break_token;
   }
   DCHECK(!oof_nodes_to_layout.IsEmpty());
-
-  // Clear out any OOF fragmentainer descendants that had been re-propagated
-  // when setting up |multicol_container_builder|.
-  // TODO(almaher): Avoid adding the descendants again to begin with.
-  multicol_container_builder.ClearOutOfFlowFragmentainerDescendants();
+  DCHECK(!multicol_container_builder.HasOutOfFlowFragmentainerDescendants());
 
   // Layout the OOF positioned elements inside the inner multicol.
   NGOutOfFlowLayoutPart(multicol, multicol_constraint_space,
@@ -1369,7 +1369,11 @@ void NGOutOfFlowLayoutPart::ReplaceFragmentainer(
     }
     scoped_refptr<const NGLayoutResult> new_result = algorithm->Layout();
     node.AddColumnResult(new_result);
-    container_builder_->AddChild(new_result->PhysicalFragment(), offset);
+    container_builder_->AddChild(
+        new_result->PhysicalFragment(), offset, /* inline_container */ nullptr,
+        /* margin_strut */ nullptr, /* is_self_collapsing */ false,
+        /* offset_includes_relative_position */ false,
+        /* propagate_oof_descendants */ false);
   } else {
     scoped_refptr<const NGLayoutResult> new_result = algorithm->Layout();
     node.ReplaceColumnResult(new_result, fragment);

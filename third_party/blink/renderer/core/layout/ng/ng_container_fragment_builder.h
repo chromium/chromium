@@ -145,8 +145,6 @@ class CORE_EXPORT NGContainerFragmentBuilder : public NGFragmentBuilder {
   void SwapMulticolsWithPendingOOFs(
       MulticolCollection* multicols_with_pending_oofs);
 
-  void ClearOutOfFlowFragmentainerDescendants();
-
   bool HasOutOfFlowPositionedCandidates() const {
     return !oof_positioned_candidates_.IsEmpty();
   }
@@ -178,9 +176,11 @@ class CORE_EXPORT NGContainerFragmentBuilder : public NGFragmentBuilder {
   // first have to create NGLogicalOutOfFlowPositionedNodes copies before
   // appending them to our list of descendants.
   // In addition, propagate any inner multicols with pending OOF descendants.
-  void PropagateOOFPositionedInfo(const NGPhysicalContainerFragment& fragment,
-                                  LogicalOffset offset,
-                                  LayoutUnit fragmentainer_consumed_block_size);
+  void PropagateOOFPositionedInfo(
+      const NGPhysicalContainerFragment& fragment,
+      LogicalOffset offset,
+      LayoutUnit fragmentainer_consumed_block_size,
+      const LayoutInline* inline_container = nullptr);
 
   void SetIsSelfCollapsing() { is_self_collapsing_ = true; }
 
@@ -251,7 +251,8 @@ class CORE_EXPORT NGContainerFragmentBuilder : public NGFragmentBuilder {
 
   void PropagateChildData(const NGPhysicalContainerFragment& child,
                           const LogicalOffset& child_offset,
-                          const LayoutInline* inline_container = nullptr);
+                          const LayoutInline* inline_container = nullptr,
+                          bool propagate_oof_descendants = true);
 
   void AddChildInternal(scoped_refptr<const NGPhysicalFragment>,
                         const LogicalOffset&);

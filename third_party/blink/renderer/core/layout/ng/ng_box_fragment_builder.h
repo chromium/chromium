@@ -203,14 +203,16 @@ class CORE_EXPORT NGBoxFragmentBuilder final
   // descendants, propagating fragmentainer breaks, and more.
   void AddResult(const NGLayoutResult&,
                  const LogicalOffset,
-                 bool offset_includes_relative_position = false);
+                 bool offset_includes_relative_position = false,
+                 bool propagate_oof_descendants = true);
 
   void AddChild(const NGPhysicalContainerFragment&,
                 const LogicalOffset&,
                 const LayoutInline* inline_container = nullptr,
                 const NGMarginStrut* margin_strut = nullptr,
                 bool is_self_collapsing = false,
-                bool offset_includes_relative_position = false);
+                bool offset_includes_relative_position = false,
+                bool propagate_oof_descendants = true);
 
   // Manually add a break token to the builder. Note that we're assuming that
   // this break token is for content in the same flow as this parent.

@@ -65,7 +65,9 @@ scoped_refptr<const NGLayoutResult> NGSimplifiedOOFLayoutAlgorithm::Layout() {
 
 void NGSimplifiedOOFLayoutAlgorithm::AppendOutOfFlowResult(
     scoped_refptr<const NGLayoutResult> result) {
-  container_builder_.AddResult(*result, result->OutOfFlowPositionedOffset());
+  container_builder_.AddResult(*result, result->OutOfFlowPositionedOffset(),
+                               /* offset_includes_relative_position */ false,
+                               /* propagate_oof_descendants */ false);
 
   // If there is an incoming child break token, make sure that it matches
   // the OOF child that was just added.
@@ -94,7 +96,8 @@ void NGSimplifiedOOFLayoutAlgorithm::AddChildFragment(const NGLink& child) {
   container_builder_.AddChild(
       *fragment, child_offset, /* inline_container */ nullptr,
       /* margin_strut */ nullptr, /* is_self_collapsing */ false,
-      /* offset_includes_relative_position */ true);
+      /* offset_includes_relative_position */ true,
+      /* propagate_oof_descendants */ false);
 }
 
 void NGSimplifiedOOFLayoutAlgorithm::AdvanceChildIterator() {

@@ -38,31 +38,13 @@ void NGContainerFragmentBuilder::ReplaceChild(
 void NGContainerFragmentBuilder::PropagateChildData(
     const NGPhysicalContainerFragment& child,
     const LogicalOffset& child_offset,
-    const LayoutInline* inline_container) {
-  // Collect the child's out of flow descendants.
-  const WritingModeConverter converter(GetWritingDirection(), child.Size());
-  for (const auto& descendant : child.OutOfFlowPositionedDescendants()) {
-    NGLogicalStaticPosition static_position =
-        descendant.static_position.ConvertToLogical(converter);
-    static_position.offset += child_offset;
-
-    const LayoutInline* new_inline_container = descendant.inline_container;
-    if (!new_inline_container &&
-        IsInlineContainerForNode(descendant.node, inline_container))
-      new_inline_container = inline_container;
-
-    // |oof_positioned_candidates_| should not have duplicated entries.
-    DCHECK(std::none_of(
-        oof_positioned_candidates_.begin(), oof_positioned_candidates_.end(),
-        [&descendant](const NGLogicalOutOfFlowPositionedNode& node) {
-          return node.node == descendant.node;
-        }));
-    oof_positioned_candidates_.emplace_back(descendant.node, static_position,
-                                            new_inline_container);
+    const LayoutInline* inline_container,
+    bool propagate_oof_descendants) {
+  if (propagate_oof_descendants) {
+    PropagateOOFPositionedInfo(child, child_offset,
+                               fragmentainer_consumed_block_size_,
+                               inline_container);
   }
-
-  PropagateOOFPositionedInfo(child, child_offset,
-                             fragmentainer_consumed_block_size_);
 
   // We only need to report if inflow or floating elements depend on the
   // percentage resolution block-size. OOF-positioned children resolve their
@@ -260,12 +242,6 @@ void NGContainerFragmentBuilder::SwapOutOfFlowFragmentainerDescendants(
   std::swap(oof_positioned_fragmentainer_descendants_, *descendants);
 }
 
-void NGContainerFragmentBuilder::ClearOutOfFlowFragmentainerDescendants() {
-  if (!HasOutOfFlowFragmentainerDescendants())
-    return;
-  oof_positioned_fragmentainer_descendants_.clear();
-}
-
 void NGContainerFragmentBuilder::
     MoveOutOfFlowDescendantCandidatesToDescendants() {
   DCHECK(oof_positioned_descendants_.IsEmpty());
@@ -296,7 +272,33 @@ void NGContainerFragmentBuilder::
 void NGContainerFragmentBuilder::PropagateOOFPositionedInfo(
     const NGPhysicalContainerFragment& fragment,
     LogicalOffset offset,
-    LayoutUnit fragmentainer_consumed_block_size) {
+    LayoutUnit fragmentainer_consumed_block_size,
+    const LayoutInline* inline_container) {
+  // TODO(almaher): Determine if this needs updating once nested fixedpos
+  // elements are properly handled in a multicol.
+
+  // Collect the child's out of flow descendants.
+  const WritingModeConverter converter(GetWritingDirection(), fragment.Size());
+  for (const auto& descendant : fragment.OutOfFlowPositionedDescendants()) {
+    NGLogicalStaticPosition static_position =
+        descendant.static_position.ConvertToLogical(converter);
+    static_position.offset += offset;
+
+    const LayoutInline* new_inline_container = descendant.inline_container;
+    if (!new_inline_container &&
+        IsInlineContainerForNode(descendant.node, inline_container))
+      new_inline_container = inline_container;
+
+    // |oof_positioned_candidates_| should not have duplicated entries.
+    DCHECK(std::none_of(
+        oof_positioned_candidates_.begin(), oof_positioned_candidates_.end(),
+        [&descendant](const NGLogicalOutOfFlowPositionedNode& node) {
+          return node.node == descendant.node;
+        }));
+    oof_positioned_candidates_.emplace_back(descendant.node, static_position,
+                                            new_inline_container);
+  }
+
   const NGPhysicalBoxFragment* box_fragment =
       DynamicTo<NGPhysicalBoxFragment>(&fragment);
   if (!box_fragment)
@@ -319,7 +321,6 @@ void NGContainerFragmentBuilder::PropagateOOFPositionedInfo(
     return;
   }
 
-  const WritingModeConverter converter(GetWritingDirection(), fragment.Size());
   const auto& out_of_flow_fragmentainer_descendants =
       box_fragment->OutOfFlowPositionedFragmentainerDescendants();
   for (const auto& descendant : out_of_flow_fragmentainer_descendants) {

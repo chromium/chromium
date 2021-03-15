@@ -164,7 +164,8 @@ void NGBoxFragmentBuilder::AddBreakBeforeChild(
 
 void NGBoxFragmentBuilder::AddResult(const NGLayoutResult& child_layout_result,
                                      const LogicalOffset offset,
-                                     bool offset_includes_relative_position) {
+                                     bool offset_includes_relative_position,
+                                     bool propagate_oof_descendants) {
   const auto& fragment = child_layout_result.PhysicalFragment();
   if (items_builder_) {
     if (const NGPhysicalLineBoxFragment* line =
@@ -181,7 +182,7 @@ void NGBoxFragmentBuilder::AddResult(const NGLayoutResult& child_layout_result,
 
   AddChild(fragment, offset, /* inline_container */ nullptr, &end_margin_strut,
            child_layout_result.IsSelfCollapsing(),
-           offset_includes_relative_position);
+           offset_includes_relative_position, propagate_oof_descendants);
   if (fragment.IsBox())
     PropagateBreak(child_layout_result);
 }
@@ -191,7 +192,8 @@ void NGBoxFragmentBuilder::AddChild(const NGPhysicalContainerFragment& child,
                                     const LayoutInline* inline_container,
                                     const NGMarginStrut* margin_strut,
                                     bool is_self_collapsing,
-                                    bool offset_includes_relative_position) {
+                                    bool offset_includes_relative_position,
+                                    bool propagate_oof_descendants) {
   LogicalOffset adjusted_offset = child_offset;
 
   if (box_type_ != NGPhysicalBoxFragment::NGBoxType::kInlineBox &&
@@ -310,7 +312,8 @@ void NGBoxFragmentBuilder::AddChild(const NGPhysicalContainerFragment& child,
       offset_includes_relative_position;
 #endif
 
-  PropagateChildData(child, adjusted_offset, inline_container);
+  PropagateChildData(child, adjusted_offset, inline_container,
+                     propagate_oof_descendants);
   AddChildInternal(&child, adjusted_offset);
 }
 
