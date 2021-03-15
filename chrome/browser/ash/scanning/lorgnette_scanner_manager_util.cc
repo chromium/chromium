@@ -6,7 +6,7 @@
 
 #include "third_party/re2/src/re2/re2.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace {
 
@@ -19,14 +19,14 @@ constexpr char kUrlPattern[] = R"((://))";
 
 void ParseScannerName(const std::string& scanner_name,
                       std::string& ip_address_out,
-                      ScanProtocol& protocol_out) {
+                      chromeos::ScanProtocol& protocol_out) {
   if (RE2::PartialMatch(scanner_name, kIpv4Pattern, &ip_address_out) ||
       RE2::PartialMatch(scanner_name, kUrlPattern)) {
-    protocol_out = ScanProtocol::kLegacyNetwork;
+    protocol_out = chromeos::ScanProtocol::kLegacyNetwork;
     return;
   }
 
-  protocol_out = ScanProtocol::kLegacyUsb;
+  protocol_out = chromeos::ScanProtocol::kLegacyUsb;
 }
 
-}  // namespace chromeos
+}  // namespace ash

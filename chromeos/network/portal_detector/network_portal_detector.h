@@ -135,6 +135,10 @@ COMPONENT_EXPORT(CHROMEOS_NETWORK) bool SetForTesting();
 // TODO(https://crbug.com/1164001): remove when moved to ash.
 namespace ash {
 using ::chromeos::NetworkPortalDetector;
-}
+namespace network_portal_detector {
+using ::chromeos::network_portal_detector::InitializeForTesting;
+using ::chromeos::network_portal_detector::IsInitialized;
+}  // namespace network_portal_detector
+}  // namespace ash
 
 #endif  // CHROMEOS_NETWORK_PORTAL_DETECTOR_NETWORK_PORTAL_DETECTOR_H_

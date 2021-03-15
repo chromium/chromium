@@ -16,7 +16,7 @@
 #include "chromeos/dbus/lorgnette_manager/lorgnette_manager_client.h"
 #include "components/keyed_service/core/keyed_service.h"
 
-namespace chromeos {
+namespace ash {
 
 class ZeroconfScannerDetector;
 
@@ -69,6 +69,6 @@ class LorgnetteScannerManager : public KeyedService {
   virtual void CancelScan(CancelCallback cancel_callback) = 0;
 };
 
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // CHROME_BROWSER_ASH_SCANNING_LORGNETTE_SCANNER_MANAGER_H_

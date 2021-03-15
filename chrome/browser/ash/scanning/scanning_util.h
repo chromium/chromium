@@ -15,7 +15,7 @@ class WebUI;
 
 class Profile;
 
-namespace chromeos {
+namespace ash {
 namespace scanning {
 
 // Opens the Files app with |path_to_file| highlighted if |path_to_file| is
@@ -30,6 +30,6 @@ bool ShowFileInFilesApp(const base::FilePath& drive_path,
 base::FilePath GetDrivePath(Profile* profile);
 
 }  // namespace scanning
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // CHROME_BROWSER_ASH_SCANNING_SCANNING_UTIL_H_

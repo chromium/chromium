@@ -33,11 +33,11 @@
 #include "ui/gfx/image/image.h"
 #include "ui/gfx/image/image_util.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace {
 
-namespace mojo_ipc = scanning::mojom;
+namespace mojo_ipc = chromeos::scanning::mojom;
 
 // The conversion quality when converting from PNG to JPG.
 constexpr int kJpgQuality = 100;
@@ -463,4 +463,4 @@ std::string ScanService::GetScannerName(
   return it->second;
 }
 
-}  // namespace chromeos
+}  // namespace ash

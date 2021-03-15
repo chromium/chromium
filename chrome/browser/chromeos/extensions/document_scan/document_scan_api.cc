@@ -56,8 +56,7 @@ ExtensionFunction::ResponseAction DocumentScanScanFunction::Run() {
   if (!user_gesture())
     return RespondNow(Error(kUserGestureRequiredError));
 
-  chromeos::LorgnetteScannerManagerFactory::GetForBrowserContext(
-      browser_context())
+  ash::LorgnetteScannerManagerFactory::GetForBrowserContext(browser_context())
       ->GetScannerNames(
           base::BindOnce(&DocumentScanScanFunction::OnNamesReceived, this));
   return did_respond() ? AlreadyResponded() : RespondLater();
@@ -101,8 +100,7 @@ void DocumentScanScanFunction::OnNamesReceived(
 
   lorgnette::ScanSettings settings;
   settings.set_color_mode(lorgnette::MODE_COLOR);  // Hardcoded for now.
-  chromeos::LorgnetteScannerManagerFactory::GetForBrowserContext(
-      browser_context())
+  ash::LorgnetteScannerManagerFactory::GetForBrowserContext(browser_context())
       ->Scan(
           scanner_name, settings, base::NullCallback(),
           base::BindRepeating(&DocumentScanScanFunction::OnPageReceived, this),

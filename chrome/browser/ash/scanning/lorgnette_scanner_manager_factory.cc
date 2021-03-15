@@ -12,7 +12,7 @@
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "content/public/browser/browser_context.h"
 
-namespace chromeos {
+namespace ash {
 
 // static
 LorgnetteScannerManager* LorgnetteScannerManagerFactory::GetForBrowserContext(
@@ -56,4 +56,4 @@ bool LorgnetteScannerManagerFactory::ServiceIsNULLWhileTesting() const {
   return true;
 }
 
-}  // namespace chromeos
+}  // namespace ash

@@ -17,7 +17,7 @@
 #include "content/public/test/test_web_ui.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace chromeos {
+namespace ash {
 
 class ScanningUtilTest : public testing::Test {
  public:
@@ -101,4 +101,4 @@ TEST_F(ScanningUtilTest, ReferencesNotSupported) {
       my_files_path_.Append("../MyFiles/test_file.png")));
 }
 
-}  // namespace chromeos.
+}  // namespace ash

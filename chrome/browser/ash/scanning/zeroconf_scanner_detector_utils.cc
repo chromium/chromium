@@ -12,20 +12,20 @@
 #include "chrome/browser/ash/scanning/zeroconf_scanner_detector.h"
 #include "url/gurl.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace {
 
 // Sets the values of |scheme| and |protocol| based on |service_type|.
 void SetSchemeAndProtocol(const std::string& service_type,
                           std::string& scheme_out,
-                          ScanProtocol& protocol_out) {
+                          chromeos::ScanProtocol& protocol_out) {
   if (service_type == ZeroconfScannerDetector::kEsclsServiceType) {
     scheme_out = "https";
-    protocol_out = ScanProtocol::kEscls;
+    protocol_out = chromeos::ScanProtocol::kEscls;
   } else if (service_type == ZeroconfScannerDetector::kEsclServiceType) {
     scheme_out = "http";
-    protocol_out = ScanProtocol::kEscl;
+    protocol_out = chromeos::ScanProtocol::kEscl;
   } else {
     NOTREACHED() << "Zeroconf scanner with unknown service type: "
                  << service_type;
@@ -68,7 +68,7 @@ std::string CreateDeviceName(const std::string& name,
 
 }  // namespace
 
-base::Optional<Scanner> CreateSaneAirscanScanner(
+base::Optional<chromeos::Scanner> CreateSaneAirscanScanner(
     const std::string& name,
     const std::string& service_type,
     const std::string& rs,
@@ -76,19 +76,19 @@ base::Optional<Scanner> CreateSaneAirscanScanner(
     int port,
     bool usable) {
   std::string scheme;
-  ScanProtocol protocol = ScanProtocol::kUnknown;
+  chromeos::ScanProtocol protocol = chromeos::ScanProtocol::kUnknown;
   SetSchemeAndProtocol(service_type, scheme, protocol);
   const std::string device_name =
       CreateDeviceName(name, scheme, rs, ip_address, port);
   if (device_name.empty())
     return base::nullopt;
 
-  Scanner scanner;
+  chromeos::Scanner scanner;
   scanner.display_name = name;
   scanner.device_names[protocol].emplace(
-      ScannerDeviceName(device_name, usable));
+      chromeos::ScannerDeviceName(device_name, usable));
   scanner.ip_addresses.insert(ip_address);
   return scanner;
 }
 
-}  // namespace chromeos
+}  // namespace ash

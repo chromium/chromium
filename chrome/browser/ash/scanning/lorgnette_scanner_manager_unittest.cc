@@ -28,10 +28,12 @@
 #include "testing/gmock/include/gmock/gmock-matchers.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace {
 
+using ::chromeos::FakeLorgnetteManagerClient;
+using ::chromeos::Scanner;
 using local_discovery::ServiceDescription;
 using ::testing::ElementsAreArray;
 
@@ -525,4 +527,4 @@ TEST_F(LorgnetteScannerManagerTest, CancelScan) {
   EXPECT_TRUE(cancel_scan_success());
 }
 
-}  // namespace chromeos
+}  // namespace ash

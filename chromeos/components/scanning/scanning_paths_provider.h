@@ -32,4 +32,10 @@ class ScanningPathsProvider {
 
 }  // namespace chromeos
 
+// TODO(https://crbug.com/1164001): remove when //chromeos/components/scanning
+// moved to ash
+namespace ash {
+using ::chromeos::ScanningPathsProvider;
+}  // namespace ash
+
 #endif  // CHROMEOS_COMPONENTS_SCANNING_SCANNING_PATHS_PROVIDER_H_

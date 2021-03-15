@@ -24,10 +24,11 @@
 #include "testing/gmock/include/gmock/gmock-matchers.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace {
 
+using ::chromeos::Scanner;
 using local_discovery::FakeServiceDiscoveryDeviceLister;
 using local_discovery::ServiceDescription;
 using local_discovery::ServiceDiscoveryDeviceLister;
@@ -457,4 +458,4 @@ TEST_F(ZeroconfScannerDetectorTest, DestroyedWithTasksPending) {
   SUCCEED();
 }
 
-}  // namespace chromeos
+}  // namespace ash

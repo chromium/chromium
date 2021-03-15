@@ -9,7 +9,9 @@
 #include "chromeos/scanning/scanner.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace chromeos {
+namespace ash {
+
+using ::chromeos::ScanProtocol;
 
 // Test that parsing a scanner name with an IP address successfully extracts the
 // IP address and sets the protocol to kLegacyNetwork.
@@ -44,4 +46,4 @@ TEST(LorgnetteScannerManagerUtilTest, ParseNameWithVidPid) {
   EXPECT_EQ(protocol, ScanProtocol::kLegacyUsb);
 }
 
-}  // namespace chromeos
+}  // namespace ash

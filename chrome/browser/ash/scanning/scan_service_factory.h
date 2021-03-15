@@ -16,7 +16,7 @@ namespace content {
 class BrowserContext;
 }  // namespace content
 
-namespace chromeos {
+namespace ash {
 
 class ScanService;
 
@@ -45,6 +45,6 @@ class ScanServiceFactory : public BrowserContextKeyedServiceFactory {
   bool ServiceIsNULLWhileTesting() const override;
 };
 
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // CHROME_BROWSER_ASH_SCANNING_SCAN_SERVICE_FACTORY_H_

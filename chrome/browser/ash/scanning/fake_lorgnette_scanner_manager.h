@@ -13,7 +13,7 @@
 #include "chromeos/dbus/lorgnette/lorgnette_service.pb.h"
 #include "chromeos/dbus/lorgnette_manager/lorgnette_manager_client.h"
 
-namespace chromeos {
+namespace ash {
 
 // Fake implementation of LorgnetteScannerManager for tests.
 class FakeLorgnetteScannerManager final : public LorgnetteScannerManager {
@@ -54,6 +54,6 @@ class FakeLorgnetteScannerManager final : public LorgnetteScannerManager {
   base::Optional<std::vector<std::string>> scan_data_;
 };
 
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // CHROME_BROWSER_ASH_SCANNING_FAKE_LORGNETTE_SCANNER_MANAGER_H_

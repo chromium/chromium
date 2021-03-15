@@ -31,11 +31,11 @@
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/gfx/codec/png_codec.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace {
 
-namespace mojo_ipc = scanning::mojom;
+namespace mojo_ipc = chromeos::scanning::mojom;
 
 // Path to the user's "My files" folder.
 constexpr char kMyFilesPath[] = "/home/chronos/user/MyFiles";
@@ -542,4 +542,4 @@ TEST_F(ScanServiceTest, CancelScanBeforeScanCompletes) {
   EXPECT_TRUE(fake_scan_job_observer_.cancel_scan_success());
 }
 
-}  // namespace chromeos
+}  // namespace ash

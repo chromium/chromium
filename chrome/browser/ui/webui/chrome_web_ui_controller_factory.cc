@@ -403,8 +403,8 @@ void BindScanService(
     Profile* profile,
     mojo::PendingReceiver<chromeos::scanning::mojom::ScanService>
         pending_receiver) {
-  chromeos::ScanService* service =
-      chromeos::ScanServiceFactory::GetForBrowserContext(profile);
+  ash::ScanService* service =
+      ash::ScanServiceFactory::GetForBrowserContext(profile);
   if (service)
     service->BindInterface(std::move(pending_receiver));
 }
@@ -421,10 +421,10 @@ WebUIController* NewWebUI<chromeos::ScanningUI>(WebUI* web_ui,
   return new chromeos::ScanningUI(
       web_ui, base::BindRepeating(&BindScanService, profile),
       base::BindRepeating(&CreateChromeSelectFilePolicy),
-      std::make_unique<chromeos::ScanningPathsProviderImpl>(),
+      std::make_unique<ash::ScanningPathsProviderImpl>(),
       base::BindRepeating(
-          &chromeos::scanning::ShowFileInFilesApp,
-          chromeos::scanning::GetDrivePath(profile),
+          &ash::scanning::ShowFileInFilesApp,
+          ash::scanning::GetDrivePath(profile),
           file_manager::util::GetMyFilesFolderForProfile(profile)));
 }
 

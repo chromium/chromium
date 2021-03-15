@@ -14,7 +14,7 @@ namespace content {
 class WebUI;
 }  // namespace content
 
-namespace chromeos {
+namespace ash {
 
 class ScanningPathsProviderImpl : public ScanningPathsProvider {
  public:
@@ -31,6 +31,6 @@ class ScanningPathsProviderImpl : public ScanningPathsProvider {
   base::FilePath GetMyFilesPath(content::WebUI* web_ui) override;
 };
 
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // CHROME_BROWSER_ASH_SCANNING_SCANNING_PATHS_PROVIDER_IMPL_H_

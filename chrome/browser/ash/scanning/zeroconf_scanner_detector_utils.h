@@ -11,7 +11,7 @@
 #include "chromeos/scanning/scanner.h"
 #include "net/base/ip_address.h"
 
-namespace chromeos {
+namespace ash {
 
 // Creates a Scanner with a device name that can be used to interact with a
 // scanner via the sane-airscan backend. If errors occur, base::nullopts is
@@ -21,7 +21,7 @@ namespace chromeos {
 // discover itself. See mdns_make_escl_endpoint() at
 // https://github.com/alexpevzner/sane-airscan/blob/master/airscan-mdns.c for
 // more details.
-base::Optional<Scanner> CreateSaneAirscanScanner(
+base::Optional<chromeos::Scanner> CreateSaneAirscanScanner(
     const std::string& name,
     const std::string& service_type,
     const std::string& rs,
@@ -29,6 +29,6 @@ base::Optional<Scanner> CreateSaneAirscanScanner(
     int port,
     bool usable = true);
 
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // CHROME_BROWSER_ASH_SCANNING_ZEROCONF_SCANNER_DETECTOR_UTILS_H_

@@ -26,7 +26,7 @@
 #include "content/public/test/test_web_ui.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace {
 
@@ -139,4 +139,4 @@ TEST_F(ScanningPathsProviderImplTest, GetMyFilesPath) {
             scanning_paths_provider_.GetMyFilesPath(web_ui_.get()));
 }
 
-}  // namespace chromeos.
+}  // namespace ash

@@ -35,7 +35,7 @@ constexpr char kVirtualUSBPrinterName[] = "DavieV Virtual USB Printer (USB)";
 // Creates a new FakeLorgnetteScannerManager for the given |context|.
 std::unique_ptr<KeyedService> BuildLorgnetteScannerManager(
     content::BrowserContext* context) {
-  return std::make_unique<chromeos::FakeLorgnetteScannerManager>();
+  return std::make_unique<ash::FakeLorgnetteScannerManager>();
 }
 
 }  // namespace
@@ -49,14 +49,14 @@ class DocumentScanScanFunctionTest : public ExtensionApiUnittest {
   void SetUp() override {
     ExtensionApiUnittest::SetUp();
     function_->set_user_gesture(true);
-    chromeos::LorgnetteScannerManagerFactory::GetInstance()->SetTestingFactory(
+    ash::LorgnetteScannerManagerFactory::GetInstance()->SetTestingFactory(
         browser()->profile(),
         base::BindRepeating(&BuildLorgnetteScannerManager));
   }
 
-  chromeos::FakeLorgnetteScannerManager* GetLorgnetteScannerManager() {
-    return static_cast<chromeos::FakeLorgnetteScannerManager*>(
-        chromeos::LorgnetteScannerManagerFactory::GetForBrowserContext(
+  ash::FakeLorgnetteScannerManager* GetLorgnetteScannerManager() {
+    return static_cast<ash::FakeLorgnetteScannerManager*>(
+        ash::LorgnetteScannerManagerFactory::GetForBrowserContext(
             browser()->profile()));
   }
 

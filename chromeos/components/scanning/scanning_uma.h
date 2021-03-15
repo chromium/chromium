@@ -37,4 +37,12 @@ ScanJobSettingsResolution GetResolutionEnumValue(const int resolution);
 }  // namespace scanning
 }  // namespace chromeos
 
+// TODO(https://crbug.com/1164001): remove when //chromeos/components/scanning
+// moved to ash
+namespace ash {
+namespace scanning {
+using ::chromeos::scanning::ScanJobFailureReason;
+}  // namespace scanning
+}  // namespace ash
+
 #endif  // CHROMEOS_COMPONENTS_SCANNING_SCANNING_UMA_H_

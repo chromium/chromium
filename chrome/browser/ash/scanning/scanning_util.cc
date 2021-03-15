@@ -8,7 +8,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "content/public/browser/web_ui.h"
 
-namespace chromeos {
+namespace ash {
 namespace scanning {
 
 namespace {
@@ -59,4 +59,4 @@ base::FilePath GetDrivePath(Profile* profile) {
 }
 
 }  // namespace scanning
-}  // namespace chromeos
+}  // namespace ash

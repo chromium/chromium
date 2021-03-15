@@ -12,7 +12,7 @@
 #include "chrome/browser/ash/scanning/scanner_detector.h"
 #include "chrome/browser/local_discovery/service_discovery_device_lister.h"
 
-namespace chromeos {
+namespace ash {
 
 // Uses mDNS and DNS-SD to detect nearby networked scanners.
 class ZeroconfScannerDetector
@@ -38,6 +38,6 @@ class ZeroconfScannerDetector
       ListersMap&& device_listers);
 };
 
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // CHROME_BROWSER_ASH_SCANNING_ZEROCONF_SCANNER_DETECTOR_H_

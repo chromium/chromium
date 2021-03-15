@@ -10,7 +10,7 @@
 #include "base/callback.h"
 #include "chromeos/scanning/scanner.h"
 
-namespace chromeos {
+namespace ash {
 
 // Interface for automatic scanner detection. This API allows for incremental
 // discovery of scanners and provides a notification when discovery is complete.
@@ -32,14 +32,14 @@ class CHROMEOS_EXPORT ScannerDetector {
   // Registers the callback used to provide notifications when scanners are
   // detected.
   using OnScannersDetectedCallback =
-      base::RepeatingCallback<void(std::vector<Scanner> scanners)>;
+      base::RepeatingCallback<void(std::vector<chromeos::Scanner> scanners)>;
   virtual void RegisterScannersDetectedCallback(
       OnScannersDetectedCallback callback) = 0;
 
   // Returns the detected scanners.
-  virtual std::vector<Scanner> GetScanners() = 0;
+  virtual std::vector<chromeos::Scanner> GetScanners() = 0;
 };
 
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // CHROME_BROWSER_ASH_SCANNING_SCANNER_DETECTOR_H_

@@ -10,13 +10,13 @@
 namespace base {
 template <typename T>
 struct DefaultSingletonTraits;
-}
+}  // namespace base
 
 namespace content {
 class BrowserContext;
-}
+}  // namespace content
 
-namespace chromeos {
+namespace ash {
 
 class LorgnetteScannerManager;
 
@@ -46,6 +46,6 @@ class LorgnetteScannerManagerFactory
   bool ServiceIsNULLWhileTesting() const override;
 };
 
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // CHROME_BROWSER_ASH_SCANNING_LORGNETTE_SCANNER_MANAGER_FACTORY_H_

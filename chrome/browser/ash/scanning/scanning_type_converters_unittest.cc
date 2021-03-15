@@ -9,13 +9,13 @@
 #include "testing/gmock/include/gmock/gmock-matchers.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace {
 
 using ::testing::ElementsAreArray;
 
-namespace mojo_ipc = scanning::mojom;
+namespace mojo_ipc = chromeos::scanning::mojom;
 
 // POD struct for ScannerCapabilitiesTest.
 struct ScannerCapabilitiesTestParams {
@@ -196,4 +196,4 @@ INSTANTIATE_TEST_SUITE_P(
                                            lorgnette::MODE_COLOR,
                                            mojo_ipc::PageSize::kMax, 0, 0}));
 
-}  // namespace chromeos
+}  // namespace ash

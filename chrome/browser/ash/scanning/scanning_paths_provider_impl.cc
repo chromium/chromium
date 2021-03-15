@@ -11,7 +11,7 @@
 #include "content/public/browser/web_ui.h"
 #include "ui/base/l10n/l10n_util.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace {
 
@@ -48,4 +48,4 @@ base::FilePath ScanningPathsProviderImpl::GetMyFilesPath(
       Profile::FromWebUI(web_ui));
 }
 
-}  // namespace chromeos
+}  // namespace ash

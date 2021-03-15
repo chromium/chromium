@@ -20,14 +20,14 @@
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace {
 
 // Creates a new LorgnetteScannerManager for the given `context`.
 std::unique_ptr<KeyedService> BuildLorgnetteScannerManager(
     content::BrowserContext* context) {
-  return std::make_unique<chromeos::FakeLorgnetteScannerManager>();
+  return std::make_unique<FakeLorgnetteScannerManager>();
 }
 
 // Creates a new ScanService for the given `context`.
@@ -89,4 +89,4 @@ TEST(ScanServiceFactoryTest, LockScreenProfileNoService) {
             ScanServiceFactory::GetForBrowserContext(lockscreen_profile.get()));
 }
 
-}  // namespace chromeos
+}  // namespace ash

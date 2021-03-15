@@ -11,7 +11,7 @@
 #include "base/single_thread_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
 
-namespace chromeos {
+namespace ash {
 
 FakeLorgnetteScannerManager::FakeLorgnetteScannerManager() = default;
 
@@ -77,4 +77,4 @@ void FakeLorgnetteScannerManager::SetScanResponse(
   scan_data_ = scan_data;
 }
 
-}  // namespace chromeos
+}  // namespace ash
