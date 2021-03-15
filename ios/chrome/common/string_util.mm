@@ -55,7 +55,7 @@ NSAttributedString* AttributedStringFromStringWithLink(
                                              attributes:text_attributes];
 
   DCHECK(parsed_string.range.location != NSNotFound);
-  [attributed_string setAttributes:link_attributes range:parsed_string.range];
+  [attributed_string addAttributes:link_attributes range:parsed_string.range];
 
   return attributed_string;
 }

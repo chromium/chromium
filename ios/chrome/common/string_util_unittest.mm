@@ -27,22 +27,26 @@ TEST_F(StringUtilTest, AttributedStringFromStringWithLink) {
     NSDictionary* textAttributes;
     NSDictionary* linkAttributes;
     NSString* expectedString;
-    NSRange expectedRange;
+    NSRange expectedTextRange;
+    NSRange expectedLinkRange;
   };
 
   const TestCase kAllTestCases[] = {
       TestCase{@"Text with valid BEGIN_LINK link END_LINK and spaces.", @{},
                @{NSLinkAttributeName : @"google.com"},
-               @"Text with valid link and spaces.", NSRange{16, 4}},
+               @"Text with valid link and spaces.", NSRange{0, 16},
+               NSRange{16, 4}},
       TestCase{
           @"Text with valid BEGIN_LINK link END_LINK and spaces.",
           @{NSForegroundColorAttributeName : [UIColor colorNamed:kBlueColor]},
-          @{}, @"Text with valid link and spaces.", NSRange{16, 4}},
+          @{}, @"Text with valid link and spaces.", NSRange{0, 32},
+          NSRange{0, 32}},
       TestCase{
           @"Text with valid BEGIN_LINK link END_LINK and spaces.",
           @{NSForegroundColorAttributeName : [UIColor colorNamed:kBlueColor]},
           @{NSLinkAttributeName : @"google.com"},
           @"Text with valid link and spaces.",
+          NSRange{0, 16},
           NSRange{16, 4},
       },
       TestCase{
@@ -50,6 +54,7 @@ TEST_F(StringUtilTest, AttributedStringFromStringWithLink) {
           @{NSForegroundColorAttributeName : [UIColor colorNamed:kBlueColor]},
           @{NSLinkAttributeName : @"google.com"},
           @"Text with valid link and no spaces.",
+          NSRange{0, 16},
           NSRange{16, 4},
       },
   };
@@ -63,17 +68,21 @@ TEST_F(StringUtilTest, AttributedStringFromStringWithLink) {
     NSRange textRange;
     NSDictionary* resultTextAttributes = [result attributesAtIndex:0
                                                     effectiveRange:&textRange];
-    EXPECT_TRUE(NSEqualRanges(NSMakeRange(0, test_case.expectedRange.location),
-                              textRange));
+    EXPECT_TRUE(NSEqualRanges(test_case.expectedTextRange, textRange));
     EXPECT_NSEQ(test_case.textAttributes, resultTextAttributes);
 
     // Text at index |expectedRange.location| has link attributes applied.
     NSRange linkRange;
     NSDictionary* resultLinkAttributes =
-        [result attributesAtIndex:test_case.expectedRange.location
+        [result attributesAtIndex:test_case.expectedLinkRange.location
                    effectiveRange:&linkRange];
-    EXPECT_TRUE(NSEqualRanges(test_case.expectedRange, linkRange));
-    EXPECT_NSEQ(test_case.linkAttributes, resultLinkAttributes);
+    EXPECT_TRUE(NSEqualRanges(test_case.expectedLinkRange, linkRange));
+
+    NSMutableDictionary* combinedAttributes =
+        [[NSMutableDictionary alloc] init];
+    [combinedAttributes addEntriesFromDictionary:test_case.textAttributes];
+    [combinedAttributes addEntriesFromDictionary:test_case.linkAttributes];
+    EXPECT_NSEQ(combinedAttributes, resultLinkAttributes);
   }
 }
 
