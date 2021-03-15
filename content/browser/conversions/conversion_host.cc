@@ -8,6 +8,7 @@
 #include "base/callback_helpers.h"
 #include "base/check.h"
 #include "base/memory/ptr_util.h"
+#include "base/metrics/histogram_macros.h"
 #include "content/browser/conversions/conversion_manager.h"
 #include "content/browser/conversions/conversion_manager_impl.h"
 #include "content/browser/conversions/conversion_page_metrics.h"
@@ -101,8 +102,10 @@ void ConversionHost::DidStartNavigation(NavigationHandle* navigation_handle) {
 
   // The initiator frame host may be deleted by this point. In that case, ignore
   // this navigation and drop the impression associated with it.
-  // TODO(https://crbug.com/1056907): Record metrics on how often impressions
-  // are dropped because the initiator is destroyed.
+
+  UMA_HISTOGRAM_BOOLEAN("Conversions.ImpressionNavigationHasDeadInitiator",
+                        initiator_frame_host == nullptr);
+
   if (!initiator_frame_host)
     return;
 

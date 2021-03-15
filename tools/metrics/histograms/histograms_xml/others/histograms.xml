@@ -3376,6 +3376,16 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="Conversions.ImpressionNavigationHasDeadInitiator"
+    enum="Boolean" expires_after="M95">
+  <owner>johnidel@chromium.org</owner>
+  <owner>csharrison@chromium.org</owner>
+  <summary>
+    Measures how often impressions are ignored because the initiator frame is
+    dead by the time the navigation reaches the browser.
+  </summary>
+</histogram>
+
 <histogram name="Conversions.RegisteredConversionsPerPage" units="conversions"
     expires_after="2021-09-05">
   <owner>johnidel@chromium.org</owner>

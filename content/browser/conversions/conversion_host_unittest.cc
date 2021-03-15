@@ -400,6 +400,8 @@ TEST_F(ConversionHostTest, ImpressionInSubframe_Ignored) {
 // Test that if we cannot access the initiator frame of the navigation, we
 // ignore the associated impression.
 TEST_F(ConversionHostTest, ImpressionNavigationWithDeadInitiator_Ignored) {
+  base::HistogramTester histograms;
+
   contents()->NavigateAndCommit(GURL("https://secure_impression.com"));
 
   auto navigation = NavigationSimulatorImpl::CreateRendererInitiated(
@@ -408,6 +410,9 @@ TEST_F(ConversionHostTest, ImpressionNavigationWithDeadInitiator_Ignored) {
   navigation->Commit();
 
   EXPECT_EQ(0u, test_manager_.num_impressions());
+
+  histograms.ExpectUniqueSample(
+      "Conversions.ImpressionNavigationHasDeadInitiator", true, 2);
 }
 
 TEST_F(ConversionHostTest, ImpressionNavigationCommitsToErrorPage_Ignored) {
