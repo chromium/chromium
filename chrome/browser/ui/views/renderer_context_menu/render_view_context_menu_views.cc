@@ -245,6 +245,10 @@ bool RenderViewContextMenuViews::GetAcceleratorForCommandId(
       *accel = ui::Accelerator(ui::VKEY_SPACE,
                                ui::EF_COMMAND_DOWN | ui::EF_CONTROL_DOWN);
       return true;
+#elif BUILDFLAG(IS_CHROMEOS_ASH)
+      *accel = ui::Accelerator(ui::VKEY_SPACE,
+                               ui::EF_SHIFT_DOWN | ui::EF_COMMAND_DOWN);
+      return true;
 #else
       return false;
 #endif
