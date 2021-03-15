@@ -150,9 +150,7 @@ const ContentSettingsTypeNameEntry kContentSettingsTypeGroupNames[] = {
     {ContentSettingsType::DISPLAY_CAPTURE, nullptr},
 };
 
-// TODO(crbug.com/1149878): After removing
-// ContentSettingsType::DEPRECATED_PLUGINS, remove +1.
-static_assert(base::size(kContentSettingsTypeGroupNames) + 1 ==
+static_assert(base::size(kContentSettingsTypeGroupNames) ==
                   // ContentSettingsType starts at -1, so add 1 here.
                   static_cast<int32_t>(ContentSettingsType::NUM_TYPES) + 1,
               "kContentSettingsTypeGroupNames should have "

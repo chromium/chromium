@@ -13004,7 +13004,7 @@ Called by update_net_error_codes.py.-->
   <int value="0" label="Cookies setting"/>
   <int value="1" label="Images setting"/>
   <int value="2" label="JavaScript setting"/>
-  <int value="3" label="Plugins setting"/>
+  <int value="3" label="Plugins setting [removed in M91]"/>
   <int value="4" label="Popups setting"/>
   <int value="5" label="Location setting"/>
   <int value="6" label="Notifications setting"/>

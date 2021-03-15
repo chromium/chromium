@@ -63,11 +63,6 @@ bool RemoveContentType(base::ListValue* args,
   // We remove the ContentSettingsType parameter since this is added by the
   // renderer, and is not part of the JSON schema.
   args->Remove(0, nullptr);
-  // PLUGINS have been deprecated, so ignore requests for removing them.
-  if (content_type_str == "plugins") {
-    *content_type = ContentSettingsType::DEPRECATED_PLUGINS;
-    return true;
-  }
   *content_type =
       extensions::content_settings_helpers::StringToContentSettingsType(
           content_type_str);
@@ -85,12 +80,6 @@ ContentSettingsContentSettingClearFunction::Run() {
 
   std::unique_ptr<Clear::Params> params(Clear::Params::Create(*args_));
   EXTENSION_FUNCTION_VALIDATE(params.get());
-
-  if (content_type == ContentSettingsType::DEPRECATED_PLUGINS) {
-    return RespondNow(
-        Error(content_settings_api_constants::
-                  kSettingPluginContentSettingsClearIsDisallowed));
-  }
 
   ExtensionPrefsScope scope = kExtensionPrefsScopeRegular;
   bool incognito = false;
@@ -126,10 +115,6 @@ ContentSettingsContentSettingGetFunction::Run() {
   std::unique_ptr<Get::Params> params(Get::Params::Create(*args_));
   EXTENSION_FUNCTION_VALIDATE(params.get());
 
-  if (content_type == ContentSettingsType::DEPRECATED_PLUGINS) {
-    return RespondNow(Error(content_settings_api_constants::
-                                kSettingPluginContentSettingsGetIsDisallowed));
-  }
 
   GURL primary_url(params->details.primary_url);
   if (!primary_url.is_valid()) {
@@ -198,12 +183,6 @@ ContentSettingsContentSettingSetFunction::Run() {
 
   std::unique_ptr<Set::Params> params(Set::Params::Create(*args_));
   EXTENSION_FUNCTION_VALIDATE(params.get());
-
-  // PLUGINS have been deprecated.
-  if (content_type == ContentSettingsType::DEPRECATED_PLUGINS) {
-    return RespondNow(Error(content_settings_api_constants::
-                                kSettingPluginContentSettingsIsDisallowed));
-  }
 
   std::string primary_error;
   ContentSettingsPattern primary_pattern =
@@ -326,19 +305,11 @@ ContentSettingsContentSettingSetFunction::Run() {
 
 ExtensionFunction::ResponseAction
 ContentSettingsContentSettingGetResourceIdentifiersFunction::Run() {
-  ContentSettingsType content_type;
-  EXTENSION_FUNCTION_VALIDATE(RemoveContentType(args_.get(), &content_type));
-
-  if (content_type != ContentSettingsType::DEPRECATED_PLUGINS) {
-    return RespondNow(NoArguments());
-  }
-#if BUILDFLAG(ENABLE_PLUGINS)
-  return RespondNow(
-      Error(content_settings_api_constants::
-                kSettingPluginContentSettingsResourceIdentifierIsDisallowed));
-#endif
-
-  return RespondLater();
+  // The only setting that supported resource identifiers was plugins. Since
+  // plugins have been deprecated since Chrome 87, there are no resource
+  // identifiers for existing settings (but we retain the function for
+  // backwards and potential forwards compatibility).
+  return RespondNow(NoArguments());
 }
 
 }  // namespace extensions
