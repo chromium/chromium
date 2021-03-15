@@ -162,6 +162,14 @@ template("gcc_toolchain") {
     } else {
       toolchain_uses_goma = use_goma
     }
+
+    # x86_64-nacl-* is ELF-32 and Goma/RBE won't support ELF-32.
+    if (toolchain_uses_goma &&
+        get_path_info(invoker.cc, "name") == "x86_64-nacl-gcc") {
+      # it will also disable x86_64-nacl-g++ since these are in
+      # the same toolchain.
+      toolchain_uses_goma = false
+    }
     if (defined(toolchain_args.cc_wrapper)) {
       toolchain_cc_wrapper = toolchain_args.cc_wrapper
     } else {
