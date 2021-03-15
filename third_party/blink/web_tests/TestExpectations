@@ -4743,9 +4743,6 @@ crbug.com/1003055 external/wpt/css/css-scroll-snap/scroll-target-snap-002.html [
 # Sheriff 2019-09-20
 crbug.com/1005128 crypto/subtle/abandon-crypto-operation2.html [ Pass Crash ]
 
-# Sheriff 2019-09-27
-crbug.com/1008826 [ Mac ] http/tests/security/frameNavigation/xss-ALLOWED-parent-navigation-change.html [ Pass Failure Timeout ]
-
 # Sheriff 2019-09-30
 crbug.com/1003715 [ Win10 ] http/tests/notifications/serviceworker-notification-properties.html [ Pass Failure Timeout ]
 
