@@ -34,7 +34,12 @@ class CORE_EXPORT NGGridLayoutAlgorithm
     kForMaxContentMinimums,
     kForIntrinsicMaximums,
     kForMaxContentMaximums,
-    kForFreeSpace
+    kForFreeSpace,
+  };
+
+  enum class BaselineType {
+    kMajor,
+    kMinor,
   };
 
   struct ItemSetIndices {
@@ -65,6 +70,12 @@ class CORE_EXPORT NGGridLayoutAlgorithm
     bool IsSpanningIntrinsicTrack(
         GridTrackSizingDirection track_direction) const;
 
+    bool IsBaselineAlignedForDirection(
+        GridTrackSizingDirection track_direction) const;
+    void SetAlignmentFallback(
+        const NGGridLayoutAlgorithmTrackCollection& track_collection,
+        const ComputedStyle& container_style);
+
     // For this item and track direction, computes and stores the pair of
     // indices "begin" and "end" such that the item spans every set from the
     // respective collection's |sets_| with an index in the range [begin, end).
@@ -84,6 +95,10 @@ class CORE_EXPORT NGGridLayoutAlgorithm
 
     bool is_inline_axis_stretched;
     bool is_block_axis_stretched;
+
+    bool has_baseline_alignment;
+    BaselineType row_baseline_type;
+    BaselineType column_baseline_type;
 
     TrackSpanProperties column_span_properties;
     TrackSpanProperties row_span_properties;
@@ -185,10 +200,36 @@ class CORE_EXPORT NGGridLayoutAlgorithm
 
   // Typically we pass around both the column, and row geometry together.
   struct GridGeometry {
+    GridGeometry(SetGeometry&& column_geometry, SetGeometry&& row_geometry)
+        : column_geometry(column_geometry),
+          row_geometry(row_geometry),
+          major_inline_baselines(column_geometry.sets.size(),
+                                 LayoutUnit::Min()),
+          minor_inline_baselines(column_geometry.sets.size(),
+                                 LayoutUnit::Min()),
+          major_block_baselines(row_geometry.sets.size(), LayoutUnit::Min()),
+          minor_block_baselines(row_geometry.sets.size(), LayoutUnit::Min()) {}
+
+    GridGeometry() = default;
+
     const SetGeometry& Geometry(GridTrackSizingDirection track_direction) const;
+
+    // Updates stored major/minor baseline value.
+    void UpdateBaseline(const GridItemData& grid_item,
+                        LayoutUnit candidate_baseline,
+                        GridTrackSizingDirection track_direction);
+
+    // Retrieves major/minor baseline.
+    LayoutUnit Baseline(const GridItemData& grid_item,
+                        GridTrackSizingDirection track_direction) const;
 
     SetGeometry column_geometry;
     SetGeometry row_geometry;
+
+    Vector<LayoutUnit> major_inline_baselines;
+    Vector<LayoutUnit> minor_inline_baselines;
+    Vector<LayoutUnit> major_block_baselines;
+    Vector<LayoutUnit> minor_block_baselines;
   };
 
   explicit NGGridLayoutAlgorithm(const NGLayoutAlgorithmParams& params);
@@ -239,6 +280,12 @@ class CORE_EXPORT NGGridLayoutAlgorithm
   void CacheGridItemsTrackSpanProperties(
       const NGGridLayoutAlgorithmTrackCollection& track_collection,
       GridItems* grid_items) const;
+
+  // Determines the major/minor alignment baselines for each row/column based on
+  // each item in |grid_items|, and stores the results in |grid_geometry|.
+  void CalculateAlignmentBaselines(GridItems& grid_items,
+                                   GridGeometry& grid_geometry,
+                                   GridTrackSizingDirection direction) const;
 
   // Initializes the given track collection, and returns the base set geometry.
   SetGeometry InitializeTrackSizes(
