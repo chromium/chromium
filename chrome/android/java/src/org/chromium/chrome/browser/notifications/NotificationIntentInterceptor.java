@@ -60,11 +60,10 @@ public class NotificationIntentInterceptor {
     }
 
     /**
-     * Deprecated, now we use {@link TrampolineActivity} to do the logging. Temporarily kept or
-     * existing notification will crash. Receives the event when the user taps on the notification
-     * body, notification action, or dismiss notification.
-     * {@link Notification#contentIntent}, {@link Notification#deleteIntent}
-     * {@link Notification.Action#actionIntent} will be delivered to this broadcast receiver.
+     * Receives the event when the user dismisses notification. {@link Notification#deleteIntent}
+     * will be delivered to this broadcast receiver. Starting from Android S, the click events and
+     * action click events must be handled by activity. Starting from Android Q, the dismiss event
+     * can't be handled by {@link TrampolineActivity} due to background activity start restriction.
      */
     public static final class Receiver extends BroadcastReceiver {
         @Override
@@ -105,7 +104,7 @@ public class NotificationIntentInterceptor {
     }
 
     /**
-     * A trampoline activity that handles notification events logging.
+     * A trampoline activity that handles logging metrics for click events and action click events.
      */
     public static class TrampolineActivity extends Activity {
         @Override
@@ -137,8 +136,15 @@ public class NotificationIntentInterceptor {
             pendingIntent = pendingIntentProvider.getPendingIntent();
             flags = pendingIntentProvider.getFlags();
         }
+
+        // The delete intent needs to be handled by broadcast receiver from Q due to background
+        // activity start restriction.
+        boolean shouldUseBroadcast =
+                intentType == NotificationIntentInterceptor.IntentType.DELETE_INTENT;
         Context applicationContext = ContextUtils.getApplicationContext();
-        Intent intent = new Intent(applicationContext, TrampolineActivity.class);
+        Intent intent = shouldUseBroadcast
+                ? new Intent(applicationContext, Receiver.class)
+                : new Intent(applicationContext, TrampolineActivity.class);
 
         intent.setAction(INTENT_ACTION);
         intent.putExtra(EXTRA_PENDING_INTENT, pendingIntent);
@@ -151,7 +157,7 @@ public class NotificationIntentInterceptor {
 
         // This flag ensures the broadcast is delivered with foreground priority to speed up the
         // broadcast delivery.
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+        if (shouldUseBroadcast && Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
             intent.addFlags(Intent.FLAG_RECEIVER_FOREGROUND);
         }
         // Use request code to distinguish different PendingIntents on Android.
@@ -159,7 +165,9 @@ public class NotificationIntentInterceptor {
                 pendingIntentProvider != null ? pendingIntentProvider.getRequestCode() : 0;
         int requestCode = computeHashCode(metadata, intentType, intentId, originalRequestCode);
 
-        return PendingIntent.getActivity(applicationContext, requestCode, intent, flags);
+        return shouldUseBroadcast
+                ? PendingIntent.getBroadcast(applicationContext, requestCode, intent, flags)
+                : PendingIntent.getActivity(applicationContext, requestCode, intent, flags);
     }
 
     /**

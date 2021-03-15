@@ -6,6 +6,8 @@ package org.chromium.chrome.browser.notifications;
 
 import static org.robolectric.Shadows.shadowOf;
 
+import static org.chromium.chrome.browser.notifications.NotificationIntentInterceptor.INTENT_ACTION;
+
 import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
@@ -85,6 +87,8 @@ public class NotificationIntentInterceptorTest {
         ContextUtils.initApplicationContextForTests(mContext);
         mShadowNotificationManager = shadowOf(
                 (NotificationManager) mContext.getSystemService(Context.NOTIFICATION_SERVICE));
+        mContext.registerReceiver(
+                new NotificationIntentInterceptor.Receiver(), new IntentFilter(INTENT_ACTION));
         mReceiver = new TestReceiver();
         mContext.registerReceiver(mReceiver, new IntentFilter(TestReceiver.TEST_ACTION));
     }
@@ -177,7 +181,7 @@ public class NotificationIntentInterceptorTest {
         Notification notification = mShadowNotificationManager.getAllNotifications().get(0);
         Assert.assertEquals(TEST_NOTIFICATION_TITLE,
                 notification.extras.getCharSequence(Notification.EXTRA_TITLE).toString());
-        sendPendingIntent(notification.deleteIntent);
+        notification.deleteIntent.send();
 
         // Verify the histogram.
         Assert.assertEquals(1,
