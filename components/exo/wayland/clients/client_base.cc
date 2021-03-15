@@ -87,6 +87,9 @@ const char kFullscreen[] = "fullscreen";
 // Specifies if client should y-invert the dmabuf surfaces.
 const char kYInvert[] = "y-invert";
 
+// Specifies if client should use xdg or zxdg_v6 or rely on wl_shell.
+const char kXdg[] = "xdg";
+
 }  // namespace switches
 
 namespace {
@@ -169,6 +172,12 @@ void RegistryHandler(void* data,
   } else if (strcmp(interface, "zcr_color_space_v1") == 0) {
     globals->color_space.reset(static_cast<zcr_color_space_v1*>(
         wl_registry_bind(registry, id, &zcr_color_space_v1_interface, 1)));
+  } else if (strcmp(interface, "zxdg_shell_v6") == 0) {
+    globals->xdg_shell_v6.reset(static_cast<zxdg_shell_v6*>(
+        wl_registry_bind(registry, id, &zxdg_shell_v6_interface, version)));
+  } else if (strcmp(interface, "xdg_wm_base") == 0) {
+    globals->xdg_wm_base.reset(static_cast<xdg_wm_base*>(
+        wl_registry_bind(registry, id, &xdg_wm_base_interface, version)));
   }
 }
 
@@ -389,6 +398,8 @@ bool ClientBase::InitParams::FromCommandLine(
       command_line.HasSwitch(switches::kTransparentBackground);
 
   y_invert = command_line.HasSwitch(switches::kYInvert);
+
+  use_xdg = command_line.HasSwitch(switches::kXdg);
   return true;
 }
 
@@ -617,23 +628,11 @@ bool ClientBase::Init(const InitParams& params) {
     zwp_fullscreen_shell_v1_present_surface(globals_.fullscreen_shell.get(),
                                             surface_.get(), 0, nullptr);
 
-  } else {
+  } else if (!params.use_xdg) {
     if (!globals_.shell) {
       LOG(ERROR) << "Can't find shell interface";
       return false;
     }
-    if (!globals_.aura_shell) {
-      LOG(ERROR) << "Can't find aura shell interface";
-      return false;
-    }
-    static zaura_shell_listener kAuraShellListener = {
-        [](void* data, struct zaura_shell* zaura_shell, uint32_t layout_mode) {
-        },
-        [](void* data, struct zaura_shell* zaura_shell, uint32_t id) {
-          CastToClientBase(data)->bug_fix_ids_.insert(id);
-        }};
-    zaura_shell_add_listener(globals_.aura_shell.get(), &kAuraShellListener,
-                             this);
 
     std::unique_ptr<wl_shell_surface> shell_surface(
         static_cast<wl_shell_surface*>(
@@ -645,16 +644,7 @@ bool ClientBase::Init(const InitParams& params) {
 
     wl_shell_surface_set_title(shell_surface.get(), params.title.c_str());
 
-    std::unique_ptr<zaura_surface> aura_surface(
-        static_cast<zaura_surface*>(zaura_shell_get_aura_surface(
-            globals_.aura_shell.get(), surface_.get())));
-    if (!aura_surface) {
-      LOG(ERROR) << "Can't get aura surface";
-      return false;
-    }
-
-    zaura_surface_set_frame(aura_surface.get(),
-                            ZAURA_SURFACE_FRAME_TYPE_NORMAL);
+    SetupAuraShellIfAvailable();
 
     if (fullscreen_) {
       wl_shell_surface_set_fullscreen(
@@ -663,6 +653,76 @@ bool ClientBase::Init(const InitParams& params) {
     } else {
       wl_shell_surface_set_toplevel(shell_surface.get());
     }
+  } else {
+    if (!globals_.xdg_wm_base) {
+      // use zxdg
+      if (!globals_.xdg_shell_v6) {
+        LOG(ERROR) << "Can't find xdg_shell or zxdg_shell_v6 interface";
+        return false;
+      }
+
+      zxdg_surface_.reset(zxdg_shell_v6_get_xdg_surface(
+          globals_.xdg_shell_v6.get(), surface_.get()));
+      if (!zxdg_surface_) {
+        LOG(ERROR) << "Can't get zxdg surface";
+        return false;
+      }
+      static const zxdg_surface_v6_listener zxdg_surface_v6_listener = {
+          [](void* data, struct zxdg_surface_v6* zxdg_surface_v6,
+             uint32_t layout_mode) {
+            zxdg_surface_v6_ack_configure(zxdg_surface_v6, layout_mode);
+          },
+      };
+      zxdg_surface_v6_add_listener(zxdg_surface_.get(),
+                                   &zxdg_surface_v6_listener, this);
+      zxdg_toplevel_.reset(zxdg_surface_v6_get_toplevel(zxdg_surface_.get()));
+      if (!zxdg_toplevel_) {
+        LOG(ERROR) << "Can't get zxdg toplevel";
+        return false;
+      }
+      static const zxdg_toplevel_v6_listener zxdg_toplevel_v6_listener = {
+          [](void* data, struct zxdg_toplevel_v6* zxdg_toplevel_v6,
+             int32_t width, int32_t height, struct wl_array* states) {},
+          [](void* data, struct zxdg_toplevel_v6* zxdg_toplevel_v6) {}};
+      zxdg_toplevel_v6_add_listener(zxdg_toplevel_.get(),
+                                    &zxdg_toplevel_v6_listener, this);
+    } else {
+      // use xdg
+      xdg_surface_.reset(xdg_wm_base_get_xdg_surface(globals_.xdg_wm_base.get(),
+                                                     surface_.get()));
+      if (!xdg_surface_) {
+        LOG(ERROR) << "Can't get xdg surface";
+        return false;
+      }
+      static const xdg_surface_listener xdg_surface_listener = {
+          [](void* data, struct xdg_surface* xdg_surface,
+             uint32_t layout_mode) {
+            xdg_surface_ack_configure(xdg_surface, layout_mode);
+          },
+      };
+      xdg_surface_add_listener(xdg_surface_.get(), &xdg_surface_listener, this);
+      xdg_toplevel_.reset(xdg_surface_get_toplevel(xdg_surface_.get()));
+      if (!xdg_toplevel_) {
+        LOG(ERROR) << "Can't get xdg toplevel";
+        return false;
+      }
+      static const xdg_toplevel_listener xdg_toplevel_listener = {
+          [](void* data, struct xdg_toplevel* xdg_toplevel, int32_t width,
+             int32_t height, struct wl_array* states) {},
+          [](void* data, struct xdg_toplevel* xdg_toplevel) {}};
+      xdg_toplevel_add_listener(xdg_toplevel_.get(), &xdg_toplevel_listener,
+                                this);
+    }
+
+    if (fullscreen_) {
+      LOG(ERROR) << "full screen not supported yet.";
+      return false;
+    }
+
+    SetupAuraShellIfAvailable();
+
+    wl_surface_commit(surface_.get());
+    wl_display_flush(display_.get());
   }
 
   if (params.use_touch) {
@@ -1112,6 +1172,30 @@ ClientBase::Buffer* ClientBase::DequeueBuffer() {
   Buffer* buffer = buffer_it->get();
   buffer->busy = true;
   return buffer;
+}
+
+void ClientBase::SetupAuraShellIfAvailable() {
+  if (!globals_.aura_shell) {
+    LOG(ERROR) << "Can't find aura shell interface";
+    return;
+  }
+
+  static zaura_shell_listener kAuraShellListener = {
+      [](void* data, struct zaura_shell* zaura_shell, uint32_t layout_mode) {},
+      [](void* data, struct zaura_shell* zaura_shell, uint32_t id) {
+        CastToClientBase(data)->bug_fix_ids_.insert(id);
+      }};
+  zaura_shell_add_listener(globals_.aura_shell.get(), &kAuraShellListener,
+                           this);
+
+  std::unique_ptr<zaura_surface> aura_surface(static_cast<zaura_surface*>(
+      zaura_shell_get_aura_surface(globals_.aura_shell.get(), surface_.get())));
+  if (!aura_surface) {
+    LOG(ERROR) << "Can't get aura surface";
+    return;
+  }
+
+  zaura_surface_set_frame(aura_surface.get(), ZAURA_SURFACE_FRAME_TYPE_NORMAL);
 }
 
 }  // namespace clients

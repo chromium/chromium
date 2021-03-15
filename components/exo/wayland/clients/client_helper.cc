@@ -90,6 +90,10 @@ DEFAULT_DELETER(zwp_relative_pointer_manager_v1,
                 zwp_relative_pointer_manager_v1_destroy)
 DEFAULT_DELETER(zxdg_decoration_manager_v1, zxdg_decoration_manager_v1_destroy)
 DEFAULT_DELETER(zcr_extended_drag_v1, zcr_extended_drag_v1_destroy)
+DEFAULT_DELETER(xdg_surface, xdg_surface_destroy)
+DEFAULT_DELETER(xdg_toplevel, xdg_toplevel_destroy)
+DEFAULT_DELETER(zxdg_surface_v6, zxdg_surface_v6_destroy)
+DEFAULT_DELETER(zxdg_toplevel_v6, zxdg_toplevel_v6_destroy)
 
 #if defined(USE_GBM)
 DEFAULT_DELETER(gbm_bo, gbm_bo_destroy)
