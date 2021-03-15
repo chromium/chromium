@@ -6,8 +6,8 @@
 
 #include "base/metrics/histogram_macros.h"
 #include "base/trace_event/trace_event.h"
-#include "components/viz/common/delegated_ink_metadata.h"
 #include "third_party/skia/include/core/SkCanvas.h"
+#include "ui/gfx/delegated_ink_metadata.h"
 #include "ui/gfx/geometry/rect_conversions.h"
 #include "ui/gfx/skia_util.h"
 
@@ -61,8 +61,8 @@ gfx::Rect DelegatedInkPointRendererSkia::GetDamageRect() {
 }
 
 base::TimeDelta GetImprovement(
-    const std::vector<DelegatedInkPoint>* points_to_draw,
-    const DelegatedInkMetadata* metadata) {
+    const std::vector<gfx::DelegatedInkPoint>* points_to_draw,
+    const gfx::DelegatedInkMetadata* metadata) {
   if (points_to_draw->size() == 0)
     return base::TimeDelta::FromMilliseconds(0);
 
@@ -70,7 +70,7 @@ base::TimeDelta GetImprovement(
 }
 
 std::vector<SkPoint> DelegatedInkPointRendererSkia::GetPointsToDraw() {
-  std::vector<DelegatedInkPoint> ink_points_to_draw = FilterPoints();
+  std::vector<gfx::DelegatedInkPoint> ink_points_to_draw = FilterPoints();
   UMA_HISTOGRAM_TIMES(
       "Renderer.DelegatedInkTrail.LatencyImprovement.Skia.WithoutPrediction",
       GetImprovement(&ink_points_to_draw, metadata_.get()));
@@ -78,7 +78,7 @@ std::vector<SkPoint> DelegatedInkPointRendererSkia::GetPointsToDraw() {
   PredictPoints(&ink_points_to_draw);
 
   std::vector<SkPoint> sk_points;
-  for (DelegatedInkPoint ink_point : ink_points_to_draw)
+  for (gfx::DelegatedInkPoint ink_point : ink_points_to_draw)
     sk_points.push_back(gfx::PointFToSkPoint(ink_point.point()));
 
   return sk_points;

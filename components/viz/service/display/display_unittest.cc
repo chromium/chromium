@@ -19,8 +19,6 @@
 #include "base/test/null_task_runner.h"
 #include "cc/base/math_util.h"
 #include "cc/test/scheduler_test_common.h"
-#include "components/viz/common/delegated_ink_metadata.h"
-#include "components/viz/common/delegated_ink_point.h"
 #include "components/viz/common/frame_sinks/begin_frame_source.h"
 #include "components/viz/common/frame_sinks/copy_output_request.h"
 #include "components/viz/common/frame_sinks/copy_output_result.h"
@@ -56,6 +54,8 @@
 #include "gpu/GLES2/gl2extchromium.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/gfx/delegated_ink_metadata.h"
+#include "ui/gfx/delegated_ink_point.h"
 #include "ui/gfx/overlay_transform.h"
 #include "ui/gfx/presentation_feedback.h"
 
@@ -4588,16 +4588,16 @@ class SkiaDelegatedInkRendererTest : public DisplayTest {
 
   void StoreAlreadyCreatedDelegatedInkPoints(int32_t pointer_id) {
     DCHECK(ink_points_.find(pointer_id) != ink_points_.end());
-    for (DelegatedInkPoint ink_point : ink_points_[pointer_id])
+    for (gfx::DelegatedInkPoint ink_point : ink_points_[pointer_id])
       ink_renderer()->StoreDelegatedInkPoint(ink_point);
   }
 
-  void SendMetadata(DelegatedInkMetadata metadata) {
+  void SendMetadata(gfx::DelegatedInkMetadata metadata) {
     ink_renderer()->SetDelegatedInkMetadata(
-        std::make_unique<DelegatedInkMetadata>(metadata));
+        std::make_unique<gfx::DelegatedInkMetadata>(metadata));
   }
 
-  DelegatedInkMetadata MakeAndSendMetadataFromStoredInkPoint(
+  gfx::DelegatedInkMetadata MakeAndSendMetadataFromStoredInkPoint(
       int index,
       float diameter,
       SkColor color,
@@ -4607,7 +4607,7 @@ class SkiaDelegatedInkRendererTest : public DisplayTest {
         ink_points_.begin()->first, index, diameter, color, presentation_area);
   }
 
-  DelegatedInkMetadata MakeAndSendMetadataFromStoredInkPoint(
+  gfx::DelegatedInkMetadata MakeAndSendMetadataFromStoredInkPoint(
       int32_t pointer_id,
       int index,
       float diameter,
@@ -4617,11 +4617,11 @@ class SkiaDelegatedInkRendererTest : public DisplayTest {
     EXPECT_GE(index, 0);
     EXPECT_LT(index, ink_points_size(pointer_id));
 
-    DelegatedInkMetadata metadata(ink_points_[pointer_id][index].point(),
-                                  diameter, color,
-                                  ink_points_[pointer_id][index].timestamp(),
-                                  presentation_area, base::TimeTicks::Now(),
-                                  /*hovering*/ false);
+    gfx::DelegatedInkMetadata metadata(
+        ink_points_[pointer_id][index].point(), diameter, color,
+        ink_points_[pointer_id][index].timestamp(), presentation_area,
+        base::TimeTicks::Now(),
+        /*hovering*/ false);
     SendMetadata(metadata);
     return metadata;
   }
@@ -4664,23 +4664,23 @@ class SkiaDelegatedInkRendererTest : public DisplayTest {
   int GetPathPointCount() { return ink_renderer()->GetPathPointCountForTest(); }
 
   // Explicitly get the metadata that is stored on the renderer.
-  const DelegatedInkMetadata* GetMetadataFromRenderer() {
+  const gfx::DelegatedInkMetadata* GetMetadataFromRenderer() {
     return ink_renderer()->GetMetadataForTest();
   }
 
-  const DelegatedInkPoint& ink_point(int index) {
+  const gfx::DelegatedInkPoint& ink_point(int index) {
     DCHECK_EQ(static_cast<int>(ink_points_.size()), 1);
     return ink_point(ink_points_.begin()->first, index);
   }
 
-  const DelegatedInkPoint& ink_point(int32_t pointer_id, int index) {
+  const gfx::DelegatedInkPoint& ink_point(int32_t pointer_id, int index) {
     DCHECK(ink_points_.find(pointer_id) != ink_points_.end());
     EXPECT_GE(index, 0);
     EXPECT_LT(index, ink_points_size(pointer_id));
     return ink_points_[pointer_id][index];
   }
 
-  const DelegatedInkPoint& last_ink_point(int32_t pointer_id) {
+  const gfx::DelegatedInkPoint& last_ink_point(int32_t pointer_id) {
     DCHECK(ink_points_.find(pointer_id) != ink_points_.end());
     return ink_points_[pointer_id].back();
   }
@@ -4696,7 +4696,7 @@ class SkiaDelegatedInkRendererTest : public DisplayTest {
   }
 
  private:
-  std::unordered_map<int32_t, std::vector<DelegatedInkPoint>> ink_points_;
+  std::unordered_map<int32_t, std::vector<gfx::DelegatedInkPoint>> ink_points_;
 };
 
 // Testing filtering points in the the delegated ink renderer when the skia
@@ -4734,7 +4734,7 @@ TEST_F(SkiaDelegatedInkRendererTest, SkiaDelegatedInkRendererFilteringPoints) {
   // confirm that earlier points are removed and later points remain.
   const int kInkPointForMetadata = 1;
   const float kDiameter = 1.f;
-  DelegatedInkMetadata metadata = MakeAndSendMetadataFromStoredInkPoint(
+  gfx::DelegatedInkMetadata metadata = MakeAndSendMetadataFromStoredInkPoint(
       kInkPointForMetadata, kDiameter, SK_ColorBLACK, gfx::RectF());
 
   // The histogram should count one in the bucket that is the difference between
@@ -4830,7 +4830,7 @@ TEST_F(SkiaDelegatedInkRendererTest,
   // later points remain.
   const int kInkPointForMetadata = 1;
   const float kDiameter = 1.f;
-  DelegatedInkMetadata metadata = MakeAndSendMetadataFromStoredInkPoint(
+  gfx::DelegatedInkMetadata metadata = MakeAndSendMetadataFromStoredInkPoint(
       kPointerIds[0], kInkPointForMetadata, kDiameter, SK_ColorBLACK,
       gfx::RectF());
 
@@ -4869,7 +4869,7 @@ TEST_F(SkiaDelegatedInkRendererTest,
   // DelegatedInkPoint and confirm that it doesn't cause any changes to the
   // stored values. *WithoutPrediction histogram should record 0 improvement,
   // *WithPrediction* shouldn't record anything due to no valid pointer id.
-  SendMetadata(DelegatedInkMetadata(
+  SendMetadata(gfx::DelegatedInkMetadata(
       gfx::PointF(100, 100), 5.6f, SK_ColorBLACK, base::TimeTicks::Min(),
       gfx::RectF(), base::TimeTicks::Min(), /*hovering*/ false));
   FinalizePathAndCheckHistograms(base::TimeDelta::FromMilliseconds(0),
@@ -4884,7 +4884,7 @@ TEST_F(SkiaDelegatedInkRendererTest,
   // Finally, send a metadata with a timestamp beyond all of the stored points.
   // This should result in all of the points being erased, but the pointer ids
   // will still exist as they contains the predictors as well.
-  SendMetadata(DelegatedInkMetadata(
+  SendMetadata(gfx::DelegatedInkMetadata(
       gfx::PointF(100, 100), 5.6f, SK_ColorBLACK,
       base::TimeTicks::Now() + base::TimeDelta::FromMilliseconds(1000),
       gfx::RectF(), base::TimeTicks::Now(), /*hovering*/ false));

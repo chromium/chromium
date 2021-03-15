@@ -11,10 +11,10 @@
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/trace_event/trace_event.h"
-#include "components/viz/common/delegated_ink_metadata.h"
-#include "components/viz/common/delegated_ink_point.h"
 #include "components/viz/common/features.h"
 #include "ui/base/prediction/kalman_predictor.h"
+#include "ui/gfx/delegated_ink_metadata.h"
+#include "ui/gfx/delegated_ink_point.h"
 
 namespace viz {
 
@@ -36,7 +36,7 @@ DelegatedInkTrailData::~DelegatedInkTrailData() = default;
 DelegatedInkTrailData::PredictionHandler::PredictionHandler() = default;
 DelegatedInkTrailData::PredictionHandler::~PredictionHandler() = default;
 
-void DelegatedInkTrailData::AddPoint(const DelegatedInkPoint& point) {
+void DelegatedInkTrailData::AddPoint(const gfx::DelegatedInkPoint& point) {
   if (static_cast<int>(points_.size()) == 0)
     pointer_id_ = point.pointer_id();
   else
@@ -56,8 +56,8 @@ void DelegatedInkTrailData::AddPoint(const DelegatedInkPoint& point) {
 }
 
 void DelegatedInkTrailData::PredictPoints(
-    std::vector<DelegatedInkPoint>* ink_points_to_draw,
-    DelegatedInkMetadata* metadata) {
+    std::vector<gfx::DelegatedInkPoint>* ink_points_to_draw,
+    gfx::DelegatedInkMetadata* metadata) {
   TRACE_EVENT0("viz", "DelegatedInkTrailData::PredictPoints");
   // Base name used for the histograms that measure the latency improvement from
   // the prediction done for different experiments.
@@ -97,9 +97,9 @@ void DelegatedInkTrailData::PredictPoints(
               predicted_point->time_stamp - metadata->timestamp();
           if (should_draw_predicted_ink_points.has_value() &&
               experiment == should_draw_predicted_ink_points.value()) {
-            ink_points_to_draw->push_back(
-                DelegatedInkPoint(predicted_point->pos,
-                                  predicted_point->time_stamp, pointer_id_));
+            ink_points_to_draw->push_back(gfx::DelegatedInkPoint(
+                predicted_point->pos, predicted_point->time_stamp,
+                pointer_id_));
           }
         } else {
           // HasPrediction() can return true while GeneratePrediction() fails to
@@ -130,7 +130,7 @@ void DelegatedInkTrailData::Reset() {
 }
 
 bool DelegatedInkTrailData::ContainsMatchingPoint(
-    DelegatedInkMetadata* metadata) const {
+    gfx::DelegatedInkMetadata* metadata) const {
   auto point = points_.find(metadata->timestamp());
   if (point == points_.end())
     return false;
@@ -139,7 +139,7 @@ bool DelegatedInkTrailData::ContainsMatchingPoint(
 }
 
 void DelegatedInkTrailData::ErasePointsOlderThanMetadata(
-    DelegatedInkMetadata* metadata) {
+    gfx::DelegatedInkMetadata* metadata) {
   // Any points with a timestamp earlier than the metadata have already been
   // drawn by the app. Since the metadata timestamp will only increase, we can
   // safely erase every point earlier than it and be left only with the points
@@ -149,7 +149,7 @@ void DelegatedInkTrailData::ErasePointsOlderThanMetadata(
     points_.erase(points_.begin());
 }
 
-void DelegatedInkTrailData::UpdateMetrics(DelegatedInkMetadata* metadata) {
+void DelegatedInkTrailData::UpdateMetrics(gfx::DelegatedInkMetadata* metadata) {
   for (auto& handler : prediction_handlers_) {
     for (auto it : points_)
       handler.metrics_handler->AddRealEvent(it.second, it.first,

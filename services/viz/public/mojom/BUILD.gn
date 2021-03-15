@@ -19,8 +19,7 @@ mojom("mojom") {
     "compositing/compositor_render_pass_id.mojom",
     "compositing/copy_output_request.mojom",
     "compositing/copy_output_result.mojom",
-    "compositing/delegated_ink_metadata.mojom",
-    "compositing/delegated_ink_point.mojom",
+    "compositing/delegated_ink_point_renderer.mojom",
     "compositing/filter_operation.mojom",
     "compositing/filter_operations.mojom",
     "compositing/frame_deadline.mojom",
@@ -270,30 +269,6 @@ mojom("mojom") {
         "//services/viz/public/cpp/compositing/copy_output_result_mojom_traits.cc",
       ]
       traits_headers = [ "//services/viz/public/cpp/compositing/copy_output_result_mojom_traits.h" ]
-      traits_public_deps = [ "//components/viz/common" ]
-    },
-    {
-      types = [
-        {
-          mojom = "viz.mojom.DelegatedInkMetadata"
-          cpp = "::std::unique_ptr<::viz::DelegatedInkMetadata>"
-          move_only = true
-          nullable_is_same_type = true
-        },
-      ]
-      traits_sources = [ "//services/viz/public/cpp/compositing/delegated_ink_metadata_mojom_traits.cc" ]
-      traits_headers = [ "//services/viz/public/cpp/compositing/delegated_ink_metadata_mojom_traits.h" ]
-      traits_public_deps = [ "//components/viz/common" ]
-    },
-    {
-      types = [
-        {
-          mojom = "viz.mojom.DelegatedInkPoint"
-          cpp = "::viz::DelegatedInkPoint"
-        },
-      ]
-      traits_sources = [ "//services/viz/public/cpp/compositing/delegated_ink_point_mojom_traits.cc" ]
-      traits_headers = [ "//services/viz/public/cpp/compositing/delegated_ink_point_mojom_traits.h" ]
       traits_public_deps = [ "//components/viz/common" ]
     },
     {
@@ -581,18 +556,6 @@ mojom("mojom") {
         "//ui/gfx/mojom",
         "//ui/latency/mojom",
       ]
-    },
-    {
-      types = [
-        {
-          mojom = "viz.mojom.DelegatedInkMetadata"
-          cpp = "::std::unique_ptr<::viz::DelegatedInkMetadata>"
-          move_only = true
-          nullable_is_same_type = true
-        },
-      ]
-      traits_headers = [ "//services/viz/public/cpp/compositing/delegated_ink_metadata_mojom_traits.h" ]
-      traits_public_deps = [ "//components/viz/common" ]
     },
   ]
 }

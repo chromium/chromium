@@ -2,12 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "ui/gfx/delegated_ink_metadata.h"
+
 #include <inttypes.h>
 
 #include "base/strings/stringprintf.h"
-#include "components/viz/common/delegated_ink_metadata.h"
 
-namespace viz {
+namespace gfx {
 
 std::string DelegatedInkMetadata::ToString() const {
   std::string str = base::StringPrintf(
@@ -20,4 +21,4 @@ std::string DelegatedInkMetadata::ToString() const {
   return str;
 }
 
-}  // namespace viz
+}  // namespace gfx

@@ -8293,8 +8293,8 @@ TEST_F(SurfaceAggregatorValidSurfaceTest,
             hit_test_region_index);
 }
 
-void ExpectDelegatedInkMetadataIsEqual(const DelegatedInkMetadata& lhs,
-                                       const DelegatedInkMetadata& rhs) {
+void ExpectDelegatedInkMetadataIsEqual(const gfx::DelegatedInkMetadata& lhs,
+                                       const gfx::DelegatedInkMetadata& rhs) {
   EXPECT_FLOAT_EQ(lhs.point().y(), rhs.point().y());
   EXPECT_FLOAT_EQ(lhs.point().x(), rhs.point().x());
   EXPECT_EQ(lhs.diameter(), rhs.diameter());
@@ -8319,11 +8319,11 @@ TEST_F(SurfaceAggregatorValidSurfaceTest, DelegatedInkMetadataTest) {
       Pass(child_quads, CompositorRenderPassId{1}, gfx::Size(100, 100))};
 
   CompositorFrame child_frame = MakeEmptyCompositorFrame();
-  DelegatedInkMetadata metadata(
+  gfx::DelegatedInkMetadata metadata(
       gfx::PointF(100, 100), 1.5, SK_ColorRED, base::TimeTicks::Now(),
       gfx::RectF(10, 10, 200, 200), base::TimeTicks::Now(), /*hovering*/ true);
   child_frame.metadata.delegated_ink_metadata =
-      std::make_unique<DelegatedInkMetadata>(metadata);
+      std::make_unique<gfx::DelegatedInkMetadata>(metadata);
   AddPasses(&child_frame.render_pass_list, child_passes,
             &child_frame.metadata.referenced_surfaces);
 
@@ -8364,7 +8364,7 @@ TEST_F(SurfaceAggregatorValidSurfaceTest, DelegatedInkMetadataTest) {
   root_frame.render_pass_list[0]
       ->shared_quad_state_list.ElementAt(0)
       ->quad_to_target_transform.TransformRect(&area);
-  metadata = DelegatedInkMetadata(
+  metadata = gfx::DelegatedInkMetadata(
       pt, metadata.diameter(), metadata.color(), metadata.timestamp(), area,
       metadata.frame_time(), metadata.is_hovering());
 
@@ -8375,7 +8375,7 @@ TEST_F(SurfaceAggregatorValidSurfaceTest, DelegatedInkMetadataTest) {
                             root_local_surface_id_);
   auto aggregated_frame = AggregateFrame(root_surface_id);
 
-  std::unique_ptr<DelegatedInkMetadata> actual_metadata =
+  std::unique_ptr<gfx::DelegatedInkMetadata> actual_metadata =
       std::move(aggregated_frame.delegated_ink_metadata);
   EXPECT_TRUE(actual_metadata);
   ExpectDelegatedInkMetadataIsEqual(*actual_metadata.get(), metadata);
@@ -8397,12 +8397,12 @@ TEST_F(SurfaceAggregatorValidSurfaceTest,
   std::vector<Pass> greatgrandchild_passes = {Pass(
       greatgrandchild_quads, CompositorRenderPassId{1}, gfx::Size(100, 100))};
 
-  DelegatedInkMetadata metadata(
+  gfx::DelegatedInkMetadata metadata(
       gfx::PointF(100, 100), 1.5, SK_ColorRED, base::TimeTicks::Now(),
       gfx::RectF(10, 10, 200, 200), base::TimeTicks::Now(), /*hovering*/ false);
   CompositorFrame greatgrandchild_frame = MakeEmptyCompositorFrame();
   greatgrandchild_frame.metadata.delegated_ink_metadata =
-      std::make_unique<DelegatedInkMetadata>(metadata);
+      std::make_unique<gfx::DelegatedInkMetadata>(metadata);
   AddPasses(&greatgrandchild_frame.render_pass_list, greatgrandchild_passes,
             &greatgrandchild_frame.metadata.referenced_surfaces);
 
@@ -8518,11 +8518,11 @@ TEST_F(SurfaceAggregatorValidSurfaceTest,
                             root_local_surface_id_);
   auto aggregated_frame = AggregateFrame(root_surface_id);
 
-  metadata = DelegatedInkMetadata(
+  metadata = gfx::DelegatedInkMetadata(
       pt, metadata.diameter(), metadata.color(), metadata.timestamp(), area,
       metadata.frame_time(), metadata.is_hovering());
 
-  std::unique_ptr<DelegatedInkMetadata> actual_metadata =
+  std::unique_ptr<gfx::DelegatedInkMetadata> actual_metadata =
       std::move(aggregated_frame.delegated_ink_metadata);
   EXPECT_TRUE(actual_metadata);
   ExpectDelegatedInkMetadataIsEqual(*actual_metadata.get(), metadata);
@@ -8565,12 +8565,12 @@ TEST_F(SurfaceAggregatorValidSurfaceTest,
   std::vector<Pass> child_2_passes = {
       Pass(child_2_quads, CompositorRenderPassId{1}, gfx::Size(100, 100))};
 
-  DelegatedInkMetadata metadata = DelegatedInkMetadata(
+  gfx::DelegatedInkMetadata metadata(
       gfx::PointF(88, 34), 1.8, SK_ColorBLACK, base::TimeTicks::Now(),
       gfx::RectF(50, 50, 300, 300), base::TimeTicks::Now(), /*hovering*/ true);
   CompositorFrame child_2_frame = MakeEmptyCompositorFrame();
   child_2_frame.metadata.delegated_ink_metadata =
-      std::make_unique<DelegatedInkMetadata>(metadata);
+      std::make_unique<gfx::DelegatedInkMetadata>(metadata);
   AddPasses(&child_2_frame.render_pass_list, child_2_passes,
             &child_2_frame.metadata.referenced_surfaces);
 
@@ -8650,11 +8650,11 @@ TEST_F(SurfaceAggregatorValidSurfaceTest,
                             root_local_surface_id_);
   auto aggregated_frame = AggregateFrame(root_surface_id);
 
-  metadata = DelegatedInkMetadata(
+  metadata = gfx::DelegatedInkMetadata(
       pt, metadata.diameter(), metadata.color(), metadata.timestamp(), area,
       metadata.frame_time(), metadata.is_hovering());
 
-  std::unique_ptr<DelegatedInkMetadata> actual_metadata =
+  std::unique_ptr<gfx::DelegatedInkMetadata> actual_metadata =
       std::move(aggregated_frame.delegated_ink_metadata);
   EXPECT_TRUE(actual_metadata);
   ExpectDelegatedInkMetadataIsEqual(*actual_metadata.get(), metadata);
@@ -8702,10 +8702,10 @@ TEST_F(SurfaceAggregatorValidSurfaceTest,
   // the metadata with the later timestamp. Specifically setting the
   // later_metadata timestamp to be 50 microseconds later than Now() to avoid
   // issues with both metadatas sometimes having the same time in Release.
-  DelegatedInkMetadata early_metadata = DelegatedInkMetadata(
+  gfx::DelegatedInkMetadata early_metadata(
       gfx::PointF(88, 34), 1.8, SK_ColorBLACK, base::TimeTicks::Now(),
       gfx::RectF(50, 50, 300, 300), base::TimeTicks::Now(), /*hovering*/ false);
-  DelegatedInkMetadata later_metadata = DelegatedInkMetadata(
+  gfx::DelegatedInkMetadata later_metadata(
       gfx::PointF(92, 35), 0.08, SK_ColorYELLOW,
       base::TimeTicks::Now() + base::TimeDelta::FromMicroseconds(50),
       gfx::RectF(35, 55, 128, 256),
@@ -8714,7 +8714,7 @@ TEST_F(SurfaceAggregatorValidSurfaceTest,
 
   CompositorFrame child_2_frame = MakeEmptyCompositorFrame();
   child_2_frame.metadata.delegated_ink_metadata =
-      std::make_unique<DelegatedInkMetadata>(later_metadata);
+      std::make_unique<gfx::DelegatedInkMetadata>(later_metadata);
   AddPasses(&child_2_frame.render_pass_list, child_2_passes,
             &child_2_frame.metadata.referenced_surfaces);
 
@@ -8734,7 +8734,7 @@ TEST_F(SurfaceAggregatorValidSurfaceTest,
 
   CompositorFrame child_3_frame = MakeEmptyCompositorFrame();
   child_3_frame.metadata.delegated_ink_metadata =
-      std::make_unique<DelegatedInkMetadata>(early_metadata);
+      std::make_unique<gfx::DelegatedInkMetadata>(early_metadata);
   AddPasses(&child_3_frame.render_pass_list, child_3_passes,
             &child_3_frame.metadata.referenced_surfaces);
 
@@ -8797,12 +8797,12 @@ TEST_F(SurfaceAggregatorValidSurfaceTest,
                             root_local_surface_id_);
   auto aggregated_frame = AggregateFrame(root_surface_id);
 
-  DelegatedInkMetadata expected_metadata = DelegatedInkMetadata(
+  gfx::DelegatedInkMetadata expected_metadata(
       pt, later_metadata.diameter(), later_metadata.color(),
       later_metadata.timestamp(), area, later_metadata.frame_time(),
       later_metadata.is_hovering());
 
-  std::unique_ptr<DelegatedInkMetadata> actual_metadata =
+  std::unique_ptr<gfx::DelegatedInkMetadata> actual_metadata =
       std::move(aggregated_frame.delegated_ink_metadata);
   EXPECT_TRUE(actual_metadata);
   ExpectDelegatedInkMetadataIsEqual(*actual_metadata.get(), expected_metadata);
@@ -8823,12 +8823,12 @@ TEST_F(SurfaceAggregatorValidSurfaceTest,
       Pass(child_quads, CompositorRenderPassId{1}, gfx::Size(100, 100))};
 
   CompositorFrame child_frame = MakeEmptyCompositorFrame();
-  DelegatedInkMetadata metadata(gfx::PointF(34, 89), 1.597, SK_ColorBLUE,
-                                base::TimeTicks::Now(),
-                                gfx::RectF(2.3, 3.2, 177, 212),
-                                base::TimeTicks::Now(), /*hovering*/ false);
+  gfx::DelegatedInkMetadata metadata(
+      gfx::PointF(34, 89), 1.597, SK_ColorBLUE, base::TimeTicks::Now(),
+      gfx::RectF(2.3, 3.2, 177, 212), base::TimeTicks::Now(),
+      /*hovering*/ false);
   child_frame.metadata.delegated_ink_metadata =
-      std::make_unique<DelegatedInkMetadata>(metadata);
+      std::make_unique<gfx::DelegatedInkMetadata>(metadata);
   AddPasses(&child_frame.render_pass_list, child_passes,
             &child_frame.metadata.referenced_surfaces);
 
@@ -8879,7 +8879,7 @@ TEST_F(SurfaceAggregatorValidSurfaceTest,
 
   aggregated_frame = AggregateFrame(root_surface_id);
 
-  std::unique_ptr<DelegatedInkMetadata> actual_metadata =
+  std::unique_ptr<gfx::DelegatedInkMetadata> actual_metadata =
       std::move(aggregated_frame.delegated_ink_metadata);
   EXPECT_TRUE(actual_metadata);
   ExpectDelegatedInkMetadataIsEqual(*actual_metadata.get(), metadata);

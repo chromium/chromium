@@ -5,8 +5,8 @@
 #include "components/viz/service/display/delegated_ink_point_renderer_base.h"
 
 #include "base/trace_event/trace_event.h"
-#include "components/viz/common/delegated_ink_metadata.h"
 #include "components/viz/service/display/delegated_ink_trail_data.h"
+#include "ui/gfx/delegated_ink_metadata.h"
 
 namespace viz {
 
@@ -29,7 +29,7 @@ void DelegatedInkPointRendererBase::InitMessagePipeline(
 }
 
 void DelegatedInkPointRendererBase::SetDelegatedInkMetadata(
-    std::unique_ptr<DelegatedInkMetadata> metadata) {
+    std::unique_ptr<gfx::DelegatedInkMetadata> metadata) {
   // Frame time is set later than everything else due to what is available
   // at time of creation, so confirm that it was actually set.
   DCHECK_NE(metadata->frame_time(), base::TimeTicks());
@@ -56,7 +56,8 @@ void DelegatedInkPointRendererBase::SetDelegatedInkMetadata(
   pointer_id_ = base::nullopt;
 }
 
-std::vector<DelegatedInkPoint> DelegatedInkPointRendererBase::FilterPoints() {
+std::vector<gfx::DelegatedInkPoint>
+DelegatedInkPointRendererBase::FilterPoints() {
   if (pointer_ids_.size() == 0)
     return {};
 
@@ -99,7 +100,7 @@ std::vector<DelegatedInkPoint> DelegatedInkPointRendererBase::FilterPoints() {
 
   // Any remaining points must be the points that should be part of the
   // delegated ink trail
-  std::vector<DelegatedInkPoint> points_to_draw;
+  std::vector<gfx::DelegatedInkPoint> points_to_draw;
   for (auto it : trail_data.GetPoints())
     points_to_draw.emplace_back(it.second, it.first, pointer_id_.value());
 
@@ -110,7 +111,7 @@ std::vector<DelegatedInkPoint> DelegatedInkPointRendererBase::FilterPoints() {
 }
 
 void DelegatedInkPointRendererBase::PredictPoints(
-    std::vector<DelegatedInkPoint>* ink_points_to_draw) {
+    std::vector<gfx::DelegatedInkPoint>* ink_points_to_draw) {
   DCHECK(metadata_);
 
   if (!pointer_id_.has_value() ||
@@ -129,7 +130,7 @@ void DelegatedInkPointRendererBase::ResetPrediction() {
 }
 
 void DelegatedInkPointRendererBase::StoreDelegatedInkPoint(
-    const DelegatedInkPoint& point) {
+    const gfx::DelegatedInkPoint& point) {
   TRACE_EVENT_INSTANT1("viz",
                        "DelegatedInkPointRendererImpl::StoreDelegatedInkPoint",
                        TRACE_EVENT_SCOPE_THREAD, "point", point.ToString());

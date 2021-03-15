@@ -2,15 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "services/viz/public/cpp/compositing/delegated_ink_metadata_mojom_traits.h"
+#include "ui/gfx/mojom/delegated_ink_metadata_mojom_traits.h"
 
 namespace mojo {
 
 // static
-bool StructTraits<viz::mojom::DelegatedInkMetadataDataView,
-                  std::unique_ptr<viz::DelegatedInkMetadata>>::
-    Read(viz::mojom::DelegatedInkMetadataDataView data,
-         std::unique_ptr<viz::DelegatedInkMetadata>* out) {
+bool StructTraits<gfx::mojom::DelegatedInkMetadataDataView,
+                  std::unique_ptr<gfx::DelegatedInkMetadata>>::
+    Read(gfx::mojom::DelegatedInkMetadataDataView data,
+         std::unique_ptr<gfx::DelegatedInkMetadata>* out) {
   // Diameter isn't expected to ever be below 0, so stop here if it is in order
   // to avoid unexpected calculations in viz.
   if (data.diameter() < 0)
@@ -26,7 +26,7 @@ bool StructTraits<viz::mojom::DelegatedInkMetadataDataView,
       !data.ReadColor(&color) || !data.ReadFrameTime(&frame_time)) {
     return false;
   }
-  *out = std::make_unique<viz::DelegatedInkMetadata>(
+  *out = std::make_unique<gfx::DelegatedInkMetadata>(
       point, data.diameter(), color, timestamp, presentation_area, frame_time,
       data.is_hovering());
   return true;

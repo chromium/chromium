@@ -15,7 +15,6 @@
 #include "base/containers/flat_set.h"
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
-#include "components/viz/common/delegated_ink_metadata.h"
 #include "components/viz/common/quads/compositor_render_pass.h"
 #include "components/viz/common/quads/draw_quad.h"
 #include "components/viz/common/resources/transferable_resource.h"
@@ -24,6 +23,7 @@
 #include "components/viz/service/display/aggregated_frame.h"
 #include "components/viz/service/display/render_pass_id_remapper.h"
 #include "components/viz/service/viz_service_export.h"
+#include "ui/gfx/delegated_ink_metadata.h"
 #include "ui/gfx/display_color_spaces.h"
 #include "ui/gfx/overlay_transform.h"
 
@@ -301,7 +301,7 @@ class VIZ_SERVICE_EXPORT SurfaceAggregator {
   // then store it in the |delegated_ink_metadata_| member.
   void TransformAndStoreDelegatedInkMetadata(
       const gfx::Transform& parent_quad_to_root_target_transform,
-      std::unique_ptr<DelegatedInkMetadata> metadata);
+      std::unique_ptr<gfx::DelegatedInkMetadata> metadata);
 
   // Preliminary check to see if a surface contained in |surface_quad| can
   // potentially merge its root render pass. If so, returns true.
@@ -471,7 +471,7 @@ class VIZ_SERVICE_EXPORT SurfaceAggregator {
   // the final aggregated frame. This is only populated during aggregation when
   // a surface contains delegated ink metadata on its frame, and it is cleared
   // after it is placed on the final aggregated frame during aggregation.
-  std::unique_ptr<DelegatedInkMetadata> delegated_ink_metadata_;
+  std::unique_ptr<gfx::DelegatedInkMetadata> delegated_ink_metadata_;
   // Whether the last aggregated frame contained delegated ink metadata or not.
   // Used to determine if the root render pass needs to remain expanded by the
   // target damage or not, because that allows a frame to be drawn after inking

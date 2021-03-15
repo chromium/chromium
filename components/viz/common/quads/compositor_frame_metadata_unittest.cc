@@ -7,7 +7,6 @@
 #include "base/optional.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
-#include "components/viz/common/delegated_ink_metadata.h"
 #include "components/viz/common/frame_sinks/begin_frame_args.h"
 #include "components/viz/common/quads/compositor_frame_transition_directive.h"
 #include "components/viz/common/quads/frame_deadline.h"
@@ -16,6 +15,7 @@
 #include "components/viz/common/viz_common_export.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/skia/include/core/SkColor.h"
+#include "ui/gfx/delegated_ink_metadata.h"
 #include "ui/gfx/display_color_spaces.h"
 #include "ui/gfx/geometry/size_f.h"
 #include "ui/gfx/geometry/vector2d_f.h"
@@ -40,8 +40,8 @@ bool AreLatencyInfosEqual(const ui::LatencyInfo& a, const ui::LatencyInfo& b) {
          a.gesture_scroll_id() == b.gesture_scroll_id();
 }
 
-bool AreDelegatedInkMetadataEqual(const DelegatedInkMetadata& a,
-                                  const DelegatedInkMetadata& b) {
+bool AreDelegatedInkMetadataEqual(const gfx::DelegatedInkMetadata& a,
+                                  const gfx::DelegatedInkMetadata& b) {
   return a.point() == b.point() && a.diameter() == b.diameter() &&
          a.color() == b.color() && a.timestamp() == b.timestamp() &&
          a.presentation_area() == b.presentation_area() &&
@@ -84,7 +84,7 @@ TEST(CompositorFrameMetadata, Clone) {
   metadata.preferred_frame_interval.emplace(
       base::TimeDelta::FromMilliseconds(11));
   metadata.display_transform_hint = gfx::OVERLAY_TRANSFORM_FLIP_VERTICAL;
-  metadata.delegated_ink_metadata = std::make_unique<DelegatedInkMetadata>(
+  metadata.delegated_ink_metadata = std::make_unique<gfx::DelegatedInkMetadata>(
       gfx::PointF(88.8, 44.4), 1.f, SK_ColorRED,
       base::TimeTicks() + base::TimeDelta::FromSeconds(125),
       gfx::RectF(1, 2, 3, 4), true);

@@ -8903,10 +8903,10 @@ class LayerTreeHostTestDelegatedInkMetadataOnAndOff
     base::TimeTicks timestamp = base::TimeTicks::Now();
     bool is_hovering = true;
 
-    expected_metadata_ = viz::DelegatedInkMetadata(
+    expected_metadata_ = gfx::DelegatedInkMetadata(
         point, diameter, color, timestamp, area, is_hovering);
     layer_tree_host()->SetDelegatedInkMetadata(
-        std::make_unique<viz::DelegatedInkMetadata>(
+        std::make_unique<gfx::DelegatedInkMetadata>(
             expected_metadata_.value()));
   }
 
@@ -8928,7 +8928,7 @@ class LayerTreeHostTestDelegatedInkMetadataOnAndOff
 
   void ExpectMetadata(base::Optional<DelegatedInkBrowserMetadata>
                           browser_delegated_ink_metadata,
-                      viz::DelegatedInkMetadata* actual_metadata) {
+                      gfx::DelegatedInkMetadata* actual_metadata) {
     if (expected_metadata_.has_value()) {
       EXPECT_TRUE(browser_delegated_ink_metadata.has_value());
       EXPECT_TRUE(actual_metadata);
@@ -8965,7 +8965,7 @@ class LayerTreeHostTestDelegatedInkMetadataOnAndOff
   }
 
  private:
-  base::Optional<viz::DelegatedInkMetadata> expected_metadata_;
+  base::Optional<gfx::DelegatedInkMetadata> expected_metadata_;
   FakeContentLayerClient client_;
   scoped_refptr<Layer> layer_;
   bool set_needs_display_ = true;

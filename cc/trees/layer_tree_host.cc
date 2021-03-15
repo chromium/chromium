@@ -1928,7 +1928,7 @@ void LayerTreeHost::SetEnableFrameRateThrottling(
 }
 
 void LayerTreeHost::SetDelegatedInkMetadata(
-    std::unique_ptr<viz::DelegatedInkMetadata> metadata) {
+    std::unique_ptr<gfx::DelegatedInkMetadata> metadata) {
   delegated_ink_metadata_ = std::move(metadata);
   SetNeedsCommit();
 }

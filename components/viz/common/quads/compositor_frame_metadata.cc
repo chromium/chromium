@@ -45,7 +45,7 @@ CompositorFrameMetadata::CompositorFrameMetadata(
       display_transform_hint(other.display_transform_hint),
       transition_directives(other.transition_directives) {
   if (other.delegated_ink_metadata) {
-    delegated_ink_metadata = std::make_unique<DelegatedInkMetadata>(
+    delegated_ink_metadata = std::make_unique<gfx::DelegatedInkMetadata>(
         *other.delegated_ink_metadata.get());
   }
 }

@@ -52,10 +52,10 @@
 #include "cc/trees/swap_promise_manager.h"
 #include "cc/trees/target_property.h"
 #include "cc/trees/viewport_layers.h"
-#include "components/viz/common/delegated_ink_metadata.h"
 #include "components/viz/common/resources/resource_format.h"
 #include "components/viz/common/surfaces/local_surface_id.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
+#include "ui/gfx/delegated_ink_metadata.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/overlay_transform.h"
 
@@ -737,8 +737,8 @@ class CC_EXPORT LayerTreeHost : public MutatorHostClient {
   }
 
   void SetDelegatedInkMetadata(
-      std::unique_ptr<viz::DelegatedInkMetadata> metadata);
-  viz::DelegatedInkMetadata* DelegatedInkMetadataForTesting() {
+      std::unique_ptr<gfx::DelegatedInkMetadata> metadata);
+  gfx::DelegatedInkMetadata* DelegatedInkMetadataForTesting() {
     return delegated_ink_metadata_.get();
   }
 
@@ -982,7 +982,7 @@ class CC_EXPORT LayerTreeHost : public MutatorHostClient {
   // stroke. std::unique_ptr was specifically chosen so that it would be cleared
   // as it is forwarded along the pipeline to avoid old information incorrectly
   // sticking around and potentially being reused.
-  std::unique_ptr<viz::DelegatedInkMetadata> delegated_ink_metadata_;
+  std::unique_ptr<gfx::DelegatedInkMetadata> delegated_ink_metadata_;
 
   // A list of document transitions that need to be transported from Blink to
   // Viz, as a CompositorFrameTransitionDirective.

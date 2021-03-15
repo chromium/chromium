@@ -2749,7 +2749,7 @@ WebFrameWidgetImpl::EnsureCompositorPaintDispatcher(
 }
 
 void WebFrameWidgetImpl::SetDelegatedInkMetadata(
-    std::unique_ptr<viz::DelegatedInkMetadata> metadata) {
+    std::unique_ptr<gfx::DelegatedInkMetadata> metadata) {
   widget_base_->LayerTreeHost()->SetDelegatedInkMetadata(std::move(metadata));
 }
 

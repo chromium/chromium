@@ -8,7 +8,7 @@ include_rules = [
     "+gpu/command_buffer/common/context_creation_attribs.h",
     "+gpu/ipc/client/gpu_channel_host.h",
     "+services/viz/public/cpp/gpu/context_provider_command_buffer.h",
-    "+services/viz/public/mojom/compositing/delegated_ink_metadata.mojom-blink.h",
+    "+ui/gfx/mojom/delegated_ink_metadata.mojom-blink.h",
     "+services/viz/public/mojom/compositing/frame_sink_id.mojom-blink.h",
     "+ui/base/ime/text_input_mode.h",
     "+ui/base/ime/text_input_type.h",

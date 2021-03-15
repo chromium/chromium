@@ -144,10 +144,6 @@ viz_component("common") {
   sources = [
     "constants.cc",
     "constants.h",
-    "delegated_ink_metadata.cc",
-    "delegated_ink_metadata.h",
-    "delegated_ink_point.cc",
-    "delegated_ink_point.h",
     "delegated_ink_prediction_configuration.h",
     "display/de_jelly.cc",
     "display/de_jelly.h",

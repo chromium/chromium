@@ -7,7 +7,7 @@ module viz.mojom;
 import "mojo/public/mojom/base/time.mojom";
 import "services/viz/public/mojom/compositing/begin_frame_args.mojom";
 import "services/viz/public/mojom/compositing/compositor_frame_transition_directive.mojom";
-import "services/viz/public/mojom/compositing/delegated_ink_metadata.mojom";
+import "ui/gfx/mojom/delegated_ink_metadata.mojom";
 import "services/viz/public/mojom/compositing/frame_deadline.mojom";
 import "services/viz/public/mojom/compositing/selection.mojom";
 import "services/viz/public/mojom/compositing/surface_id.mojom";
@@ -61,7 +61,7 @@ struct CompositorFrameMetadata {
   // The ink trail created with this metadata will only last for a single frame
   // before it disappears, regardless of whether or not the next frame contains
   // delegated ink metadata.
-  DelegatedInkMetadata? delegated_ink_metadata;
+  gfx.mojom.DelegatedInkMetadata? delegated_ink_metadata;
 
   // Transition directives represent a list of directives for animating a
   // transition between different compositor frames / render passes.

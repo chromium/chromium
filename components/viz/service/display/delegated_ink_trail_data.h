@@ -15,14 +15,16 @@
 #include "ui/base/prediction/prediction_metrics_handler.h"
 #include "ui/gfx/geometry/point_f.h"
 
+namespace gfx {
+class DelegatedInkMetadata;
+class DelegatedInkPoint;
+}  // namespace gfx
+
 namespace ui {
 class InputPredictor;
 }  // namespace ui
 
 namespace viz {
-class DelegatedInkMetadata;
-class DelegatedInkPoint;
-
 // The maximum number of delegated ink points that will be stored at a time.
 // When this is hit, the oldest one will be removed each time a new one is
 // added.
@@ -33,13 +35,13 @@ class VIZ_SERVICE_EXPORT DelegatedInkTrailData {
   DelegatedInkTrailData();
   ~DelegatedInkTrailData();
 
-  void AddPoint(const DelegatedInkPoint& point);
-  void PredictPoints(std::vector<DelegatedInkPoint>* ink_points_to_draw,
-                     DelegatedInkMetadata* metadata);
+  void AddPoint(const gfx::DelegatedInkPoint& point);
+  void PredictPoints(std::vector<gfx::DelegatedInkPoint>* ink_points_to_draw,
+                     gfx::DelegatedInkMetadata* metadata);
   void Reset();
-  bool ContainsMatchingPoint(DelegatedInkMetadata* metadata) const;
-  void ErasePointsOlderThanMetadata(DelegatedInkMetadata* metadata);
-  void UpdateMetrics(DelegatedInkMetadata* metadata);
+  bool ContainsMatchingPoint(gfx::DelegatedInkMetadata* metadata) const;
+  void ErasePointsOlderThanMetadata(gfx::DelegatedInkMetadata* metadata);
+  void UpdateMetrics(gfx::DelegatedInkMetadata* metadata);
 
   const std::map<base::TimeTicks, gfx::PointF>& GetPoints() const {
     return points_;

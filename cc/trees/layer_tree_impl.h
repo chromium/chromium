@@ -735,10 +735,10 @@ class CC_EXPORT LayerTreeImpl {
   // only be called after the JS API |updateInkTrailStartPoint| has been
   // called, which populates the metadata with provided information.
   void set_delegated_ink_metadata(
-      std::unique_ptr<viz::DelegatedInkMetadata> metadata) {
+      std::unique_ptr<gfx::DelegatedInkMetadata> metadata) {
     delegated_ink_metadata_ = std::move(metadata);
   }
-  std::unique_ptr<viz::DelegatedInkMetadata> take_delegated_ink_metadata() {
+  std::unique_ptr<gfx::DelegatedInkMetadata> take_delegated_ink_metadata() {
     return std::move(delegated_ink_metadata_);
   }
 
@@ -918,7 +918,7 @@ class CC_EXPORT LayerTreeImpl {
   // Event metrics that are reported back from the main thread.
   EventMetrics::List events_metrics_from_main_thread_;
 
-  std::unique_ptr<viz::DelegatedInkMetadata> delegated_ink_metadata_;
+  std::unique_ptr<gfx::DelegatedInkMetadata> delegated_ink_metadata_;
 
   // Document transition requests to be transferred to Viz.
   std::vector<std::unique_ptr<DocumentTransitionRequest>>

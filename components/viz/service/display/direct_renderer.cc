@@ -995,7 +995,7 @@ DelegatedInkPointRendererBase* DirectRenderer::GetDelegatedInkPointRenderer() {
 }
 
 void DirectRenderer::SetDelegatedInkMetadata(
-    std::unique_ptr<DelegatedInkMetadata> metadata) {
+    std::unique_ptr<gfx::DelegatedInkMetadata> metadata) {
   if (!GetDelegatedInkPointRenderer() && !CreateDelegatedInkPointRenderer())
     return;
 

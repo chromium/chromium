@@ -75,6 +75,10 @@ component("gfx") {
     "color_transform.h",
     "decorated_text.cc",
     "decorated_text.h",
+    "delegated_ink_metadata.cc",
+    "delegated_ink_metadata.h",
+    "delegated_ink_point.cc",
+    "delegated_ink_point.h",
     "extension_set.cc",
     "extension_set.h",
     "favicon_size.cc",
@@ -310,6 +314,7 @@ component("gfx") {
     "//base/third_party/dynamic_annotations",
     "//build:chromeos_buildflags",
     "//device/vr/buildflags",
+    "//mojo/public/cpp/bindings:struct_traits",
     "//skia",
     "//third_party/zlib",
   ]

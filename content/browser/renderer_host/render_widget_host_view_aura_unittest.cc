@@ -75,7 +75,6 @@
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"
-#include "services/viz/public/mojom/compositing/delegated_ink_point.mojom.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/input/synthetic_web_input_event_builders.h"
@@ -119,6 +118,7 @@
 #include "ui/events/keycodes/keyboard_code_conversion.h"
 #include "ui/events/test/event_generator.h"
 #include "ui/gfx/geometry/rect.h"
+#include "ui/gfx/mojom/delegated_ink_point.mojom.h"
 #include "ui/gfx/selection_bound.h"
 #include "ui/wm/core/window_util.h"
 
@@ -6719,14 +6719,14 @@ class MockDelegatedInkPointRenderer
       mojo::PendingReceiver<viz::mojom::DelegatedInkPointRenderer> receiver)
       : receiver_(this, std::move(receiver)) {}
 
-  void StoreDelegatedInkPoint(const viz::DelegatedInkPoint& point) override {
+  void StoreDelegatedInkPoint(const gfx::DelegatedInkPoint& point) override {
     delegated_ink_point_ = point;
   }
 
   bool HasDelegatedInkPoint() { return delegated_ink_point_.has_value(); }
 
-  viz::DelegatedInkPoint GetDelegatedInkPoint() {
-    viz::DelegatedInkPoint point = delegated_ink_point_.value();
+  gfx::DelegatedInkPoint GetDelegatedInkPoint() {
+    gfx::DelegatedInkPoint point = delegated_ink_point_.value();
     delegated_ink_point_.reset();
     return point;
   }
@@ -6747,7 +6747,7 @@ class MockDelegatedInkPointRenderer
 
  private:
   mojo::Receiver<viz::mojom::DelegatedInkPointRenderer> receiver_;
-  base::Optional<viz::DelegatedInkPoint> delegated_ink_point_;
+  base::Optional<gfx::DelegatedInkPoint> delegated_ink_point_;
   bool prediction_reset_ = false;
 };
 
@@ -6910,7 +6910,7 @@ TEST_P(DelegatedInkPointTest, EventForwardedToCompositor) {
   // Then set it to true and confirm that the DelegatedInkPointRenderer is
   // initialized, the connection is made and the point makes it to the renderer.
   SetInkMetadataFlagOnRenderFrameMetadata(true);
-  viz::DelegatedInkPoint expected_point(
+  gfx::DelegatedInkPoint expected_point(
       gfx::PointF(10, 10), base::TimeTicks::Now(), GetExpectedPointerId());
   SendEvent(true, expected_point.point(), expected_point.timestamp());
 
@@ -6919,7 +6919,7 @@ TEST_P(DelegatedInkPointTest, EventForwardedToCompositor) {
   delegated_ink_point_renderer->FlushForTesting();
 
   EXPECT_TRUE(delegated_ink_point_renderer->HasDelegatedInkPoint());
-  viz::DelegatedInkPoint actual_point =
+  gfx::DelegatedInkPoint actual_point =
       delegated_ink_point_renderer->GetDelegatedInkPoint();
   EXPECT_EQ(expected_point.point(), actual_point.point());
   EXPECT_EQ(expected_point.timestamp(), actual_point.timestamp());
@@ -6936,7 +6936,7 @@ TEST_P(DelegatedInkPointTest, EventForwardedToCompositor) {
   delegated_ink_point_renderer->FlushForTesting();
 
   unscaled_point.Scale(scale);
-  expected_point = viz::DelegatedInkPoint(unscaled_point, unscaled_time,
+  expected_point = gfx::DelegatedInkPoint(unscaled_point, unscaled_time,
                                           GetExpectedPointerId());
 
   EXPECT_TRUE(delegated_ink_point_renderer->HasDelegatedInkPoint());

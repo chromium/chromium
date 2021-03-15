@@ -39,11 +39,11 @@ void DelegatedInkPointPixelTestHelper::CreateAndSendMetadata(
     base::TimeTicks timestamp,
     const gfx::RectF& presentation_area) {
   DCHECK(renderer_);
-  metadata_ =
-      DelegatedInkMetadata(point, diameter, color, timestamp, presentation_area,
-                           base::TimeTicks::Now(), /*hovering*/ false);
+  metadata_ = gfx::DelegatedInkMetadata(
+      point, diameter, color, timestamp, presentation_area,
+      base::TimeTicks::Now(), /*hovering*/ false);
   GetInkRenderer()->SetDelegatedInkMetadata(
-      std::make_unique<DelegatedInkMetadata>(metadata_));
+      std::make_unique<gfx::DelegatedInkMetadata>(metadata_));
 }
 
 void DelegatedInkPointPixelTestHelper::CreateAndSendMetadataFromLastPoint() {

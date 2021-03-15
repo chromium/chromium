@@ -15,7 +15,6 @@
 #include "base/macros.h"
 #include "base/optional.h"
 #include "build/build_config.h"
-#include "components/viz/common/delegated_ink_metadata.h"
 #include "components/viz/common/quads/aggregated_render_pass.h"
 #include "components/viz/common/quads/tile_draw_quad.h"
 #include "components/viz/service/display/aggregated_frame.h"
@@ -25,6 +24,7 @@
 #include "components/viz/service/display/overlay_processor_interface.h"
 #include "components/viz/service/viz_service_export.h"
 #include "gpu/command_buffer/common/texture_in_use_response.h"
+#include "ui/gfx/delegated_ink_metadata.h"
 #include "ui/gfx/display_color_spaces.h"
 #include "ui/gfx/geometry/quad_f.h"
 #include "ui/gfx/geometry/rect.h"
@@ -142,7 +142,8 @@ class VIZ_SERVICE_EXPORT DirectRenderer {
   }
 
   virtual DelegatedInkPointRendererBase* GetDelegatedInkPointRenderer();
-  void SetDelegatedInkMetadata(std::unique_ptr<DelegatedInkMetadata> metadata);
+  void SetDelegatedInkMetadata(
+      std::unique_ptr<gfx::DelegatedInkMetadata> metadata);
 
   // Returns true if composite time tracing is enabled. This measures a detailed
   // trace log for draw time spent per quad.

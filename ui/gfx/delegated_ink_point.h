@@ -2,17 +2,17 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_VIZ_COMMON_DELEGATED_INK_POINT_H_
-#define COMPONENTS_VIZ_COMMON_DELEGATED_INK_POINT_H_
+#ifndef UI_GFX_DELEGATED_INK_POINT_H_
+#define UI_GFX_DELEGATED_INK_POINT_H_
 
 #include <string>
 
 #include "base/time/time.h"
-#include "components/viz/common/viz_common_export.h"
 #include "mojo/public/cpp/bindings/struct_traits.h"
 #include "ui/gfx/geometry/point_f.h"
+#include "ui/gfx/gfx_export.h"
 
-namespace viz {
+namespace gfx {
 
 namespace mojom {
 class DelegatedInkPointDataView;
@@ -28,15 +28,15 @@ class DelegatedInkPointDataView;
 //
 // Explainer for the feature:
 // https://github.com/WICG/ink-enhancement/blob/master/README.md
-class VIZ_COMMON_EXPORT DelegatedInkPoint {
+class GFX_EXPORT DelegatedInkPoint {
  public:
   DelegatedInkPoint() = default;
-  DelegatedInkPoint(const gfx::PointF& pt,
+  DelegatedInkPoint(const PointF& pt,
                     base::TimeTicks timestamp,
                     int32_t pointer_id)
       : point_(pt), timestamp_(timestamp), pointer_id_(pointer_id) {}
 
-  const gfx::PointF& point() const { return point_; }
+  const PointF& point() const { return point_; }
   base::TimeTicks timestamp() const { return timestamp_; }
   int32_t pointer_id() const { return pointer_id_; }
   std::string ToString() const;
@@ -47,7 +47,7 @@ class VIZ_COMMON_EXPORT DelegatedInkPoint {
 
   // Location of the input event relative to the root window in device pixels.
   // Scale is device scale factor at time of input.
-  gfx::PointF point_;
+  PointF point_;
 
   // Timestamp from the input event.
   base::TimeTicks timestamp_;
@@ -59,6 +59,6 @@ class VIZ_COMMON_EXPORT DelegatedInkPoint {
   int32_t pointer_id_;
 };
 
-}  // namespace viz
+}  // namespace gfx
 
-#endif  // COMPONENTS_VIZ_COMMON_DELEGATED_INK_POINT_H_
+#endif  // UI_GFX_DELEGATED_INK_POINT_H_

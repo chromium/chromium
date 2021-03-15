@@ -2030,7 +2030,7 @@ bool SurfaceAggregator::IsRootSurface(const Surface* surface) const {
 // aggregated frame, after which the member is then cleared.
 void SurfaceAggregator::TransformAndStoreDelegatedInkMetadata(
     const gfx::Transform& parent_quad_to_root_target_transform,
-    std::unique_ptr<DelegatedInkMetadata> metadata) {
+    std::unique_ptr<gfx::DelegatedInkMetadata> metadata) {
   if (delegated_ink_metadata_) {
     // This member could already be populated in two scenarios:
     //   1. The delegated ink metadata was committed to a frame's metadata that
@@ -2053,7 +2053,7 @@ void SurfaceAggregator::TransformAndStoreDelegatedInkMetadata(
   gfx::RectF area(metadata->presentation_area());
   parent_quad_to_root_target_transform.TransformPoint(&point);
   parent_quad_to_root_target_transform.TransformRect(&area);
-  delegated_ink_metadata_ = std::make_unique<DelegatedInkMetadata>(
+  delegated_ink_metadata_ = std::make_unique<gfx::DelegatedInkMetadata>(
       point, metadata->diameter(), metadata->color(), metadata->timestamp(),
       area, metadata->frame_time(), metadata->is_hovering());
 

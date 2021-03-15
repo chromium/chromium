@@ -9,9 +9,9 @@
 #include <vector>
 
 #include "base/optional.h"
-#include "components/viz/common/delegated_ink_metadata.h"
 #include "components/viz/common/quads/aggregated_render_pass.h"
 #include "components/viz/service/viz_service_export.h"
+#include "ui/gfx/delegated_ink_metadata.h"
 #include "ui/gfx/display_color_spaces.h"
 #include "ui/latency/latency_info.h"
 
@@ -61,7 +61,7 @@ class VIZ_SERVICE_EXPORT AggregatedFrame {
   // The ink trail created with this metadata will only last for a single frame
   // before it disappears, regardless of whether or not the next frame contains
   // delegated ink metadata.
-  std::unique_ptr<DelegatedInkMetadata> delegated_ink_metadata;
+  std::unique_ptr<gfx::DelegatedInkMetadata> delegated_ink_metadata;
 
   AggregatedRenderPassList render_pass_list;
 };

@@ -258,7 +258,7 @@ class VIZ_SERVICE_EXPORT Surface final {
 
   void ActivateIfDeadlinePassed();
 
-  std::unique_ptr<DelegatedInkMetadata> TakeDelegatedInkMetadata();
+  std::unique_ptr<gfx::DelegatedInkMetadata> TakeDelegatedInkMetadata();
 
   SurfaceSavedFrameStorage* GetSurfaceSavedFrameStorage();
 
@@ -285,7 +285,7 @@ class VIZ_SERVICE_EXPORT Surface final {
 
     // Delegated ink metadata should only be used for a single frame, so it
     // should be taken from the FrameData to use.
-    std::unique_ptr<DelegatedInkMetadata> TakeDelegatedInkMetadata() {
+    std::unique_ptr<gfx::DelegatedInkMetadata> TakeDelegatedInkMetadata() {
       return std::move(frame.metadata.delegated_ink_metadata);
     }
 

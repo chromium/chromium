@@ -2,17 +2,17 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_VIZ_COMMON_DELEGATED_INK_METADATA_H_
-#define COMPONENTS_VIZ_COMMON_DELEGATED_INK_METADATA_H_
+#ifndef UI_GFX_DELEGATED_INK_METADATA_H_
+#define UI_GFX_DELEGATED_INK_METADATA_H_
 
 #include <string>
 
 #include "base/time/time.h"
-#include "components/viz/common/viz_common_export.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/gfx/geometry/rect_f.h"
+#include "ui/gfx/gfx_export.h"
 
-namespace viz {
+namespace gfx {
 
 // This class stores all the metadata that is gathered when the WebAPI
 // updateInkTrailStartPoint is called. This metadata flows from blink,
@@ -21,14 +21,14 @@ namespace viz {
 //
 // Explainer for the feature:
 // https://github.com/WICG/ink-enhancement/blob/master/README.md
-class VIZ_COMMON_EXPORT DelegatedInkMetadata {
+class GFX_EXPORT DelegatedInkMetadata {
  public:
   DelegatedInkMetadata() = default;
-  DelegatedInkMetadata(const gfx::PointF& pt,
+  DelegatedInkMetadata(const PointF& pt,
                        double diameter,
                        SkColor color,
                        base::TimeTicks timestamp,
-                       const gfx::RectF& area,
+                       const RectF& area,
                        bool hovering)
       : point_(pt),
         diameter_(diameter),
@@ -36,11 +36,11 @@ class VIZ_COMMON_EXPORT DelegatedInkMetadata {
         timestamp_(timestamp),
         presentation_area_(area),
         is_hovering_(hovering) {}
-  DelegatedInkMetadata(const gfx::PointF& pt,
+  DelegatedInkMetadata(const PointF& pt,
                        double diameter,
                        SkColor color,
                        base::TimeTicks timestamp,
-                       const gfx::RectF& area,
+                       const RectF& area,
                        base::TimeTicks frame_time,
                        bool hovering)
       : point_(pt),
@@ -52,11 +52,11 @@ class VIZ_COMMON_EXPORT DelegatedInkMetadata {
         is_hovering_(hovering) {}
   DelegatedInkMetadata(const DelegatedInkMetadata& other) = default;
 
-  const gfx::PointF& point() const { return point_; }
+  const PointF& point() const { return point_; }
   double diameter() const { return diameter_; }
   SkColor color() const { return color_; }
   base::TimeTicks timestamp() const { return timestamp_; }
-  const gfx::RectF& presentation_area() const { return presentation_area_; }
+  const RectF& presentation_area() const { return presentation_area_; }
   base::TimeTicks frame_time() const { return frame_time_; }
   bool is_hovering() const { return is_hovering_; }
 
@@ -66,7 +66,7 @@ class VIZ_COMMON_EXPORT DelegatedInkMetadata {
 
  private:
   // Location of the pointerevent relative to the root frame.
-  gfx::PointF point_;
+  PointF point_;
 
   // Width of the trail, in physical pixels.
   double diameter_ = 0;
@@ -78,7 +78,7 @@ class VIZ_COMMON_EXPORT DelegatedInkMetadata {
   base::TimeTicks timestamp_;
 
   // The rect to clip the ink trail to, defaults to the containing viewport.
-  gfx::RectF presentation_area_;
+  RectF presentation_area_;
 
   // Frame time of the layer tree that this metadata is on.
   base::TimeTicks frame_time_;
@@ -89,6 +89,6 @@ class VIZ_COMMON_EXPORT DelegatedInkMetadata {
   bool is_hovering_ = false;
 };
 
-}  // namespace viz
+}  // namespace gfx
 
-#endif  // COMPONENTS_VIZ_COMMON_DELEGATED_INK_METADATA_H_
+#endif  // UI_GFX_DELEGATED_INK_METADATA_H_

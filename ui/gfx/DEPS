@@ -11,3 +11,9 @@ include_rules = [
 
   "-testing/gmock",
 ]
+
+specific_include_rules = {
+  "delegated_ink_point\.h" : [
+    "+mojo/public/cpp/bindings/struct_traits.h",
+  ],
+}

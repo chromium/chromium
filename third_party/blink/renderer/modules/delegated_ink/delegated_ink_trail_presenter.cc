@@ -4,7 +4,6 @@
 
 #include "third_party/blink/renderer/modules/delegated_ink/delegated_ink_trail_presenter.h"
 
-#include "components/viz/common/delegated_ink_metadata.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ink_trail_style.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser.h"
 #include "third_party/blink/renderer/core/dom/element.h"
@@ -18,6 +17,7 @@
 #include "third_party/blink/renderer/core/page/page.h"
 #include "third_party/blink/renderer/core/paint/paint_layer_scrollable_area.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
+#include "ui/gfx/delegated_ink_metadata.h"
 
 namespace blink {
 
@@ -148,8 +148,8 @@ void DelegatedInkTrailPresenter::updateInkTrailStartPoint(
       !(evt->GetModifiers() & WebInputEvent::Modifiers::kLeftButtonDown);
 
   const double diameter_in_physical_pixels = style->diameter() * effective_zoom;
-  std::unique_ptr<viz::DelegatedInkMetadata> metadata =
-      std::make_unique<viz::DelegatedInkMetadata>(
+  std::unique_ptr<gfx::DelegatedInkMetadata> metadata =
+      std::make_unique<gfx::DelegatedInkMetadata>(
           point, diameter_in_physical_pixels, color.Rgb(),
           evt->PlatformTimeStamp(), area, is_hovering);
 

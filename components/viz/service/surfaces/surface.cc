@@ -795,7 +795,7 @@ void Surface::ActivatePendingFrameForInheritedDeadline() {
   ActivatePendingFrameForDeadline();
 }
 
-std::unique_ptr<DelegatedInkMetadata> Surface::TakeDelegatedInkMetadata() {
+std::unique_ptr<gfx::DelegatedInkMetadata> Surface::TakeDelegatedInkMetadata() {
   DCHECK(active_frame_data_);
   return active_frame_data_->TakeDelegatedInkMetadata();
 }

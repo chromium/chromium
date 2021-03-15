@@ -4,7 +4,6 @@
 
 #include "third_party/blink/renderer/modules/delegated_ink/delegated_ink_trail_presenter.h"
 
-#include "components/viz/common/delegated_ink_metadata.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_pointer_event_init.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ink_trail_style.h"
 #include "third_party/blink/renderer/core/dom/element.h"
@@ -14,13 +13,14 @@
 #include "third_party/blink/renderer/core/paint/paint_layer_scrollable_area.h"
 #include "third_party/blink/renderer/core/testing/sim/sim_request.h"
 #include "third_party/blink/renderer/core/testing/sim/sim_test.h"
+#include "ui/gfx/delegated_ink_metadata.h"
 
 namespace blink {
 namespace {
 
 class TestDelegatedInkMetadata {
  public:
-  explicit TestDelegatedInkMetadata(viz::DelegatedInkMetadata* metadata)
+  explicit TestDelegatedInkMetadata(gfx::DelegatedInkMetadata* metadata)
       : point_(metadata->point()),
         color_(metadata->color()),
         diameter_(metadata->diameter()),

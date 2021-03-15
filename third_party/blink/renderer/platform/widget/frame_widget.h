@@ -7,7 +7,6 @@
 
 #include "cc/input/layer_selection_bound.h"
 #include "mojo/public/mojom/base/text_direction.mojom-blink.h"
-#include "services/viz/public/mojom/compositing/delegated_ink_metadata.mojom-blink.h"
 #include "services/viz/public/mojom/compositing/frame_sink_id.mojom-blink.h"
 #include "third_party/blink/public/mojom/input/input_handler.mojom-blink.h"
 #include "third_party/blink/public/mojom/manifest/display_mode.mojom-blink.h"
@@ -18,6 +17,7 @@
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "ui/base/ime/mojom/text_input_state.mojom-blink.h"
 #include "ui/base/ime/mojom/virtual_keyboard_types.mojom-blink.h"
+#include "ui/gfx/mojom/delegated_ink_metadata.mojom-blink.h"
 
 namespace cc {
 class AnimationHost;
@@ -113,7 +113,7 @@ class PLATFORM_EXPORT FrameWidget {
 
   // Sets the ink metadata on the layer tree host
   virtual void SetDelegatedInkMetadata(
-      std::unique_ptr<viz::DelegatedInkMetadata> metadata) = 0;
+      std::unique_ptr<gfx::DelegatedInkMetadata> metadata) = 0;
 
   // Called when the main thread overscrolled.
   virtual void DidOverscroll(const gfx::Vector2dF& overscroll_delta,

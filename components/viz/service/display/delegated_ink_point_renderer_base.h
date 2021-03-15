@@ -14,10 +14,14 @@
 #include "components/viz/service/display/delegated_ink_trail_data.h"
 #include "components/viz/service/viz_service_export.h"
 #include "mojo/public/cpp/bindings/receiver.h"
-#include "services/viz/public/mojom/compositing/delegated_ink_point.mojom.h"
+#include "services/viz/public/mojom/compositing/delegated_ink_point_renderer.mojom.h"
+
+namespace gfx {
+class DelegatedInkMetadata;
+class DelegatedInkPoint;
+}  // namespace gfx
 
 namespace viz {
-class DelegatedInkMetadata;
 
 // This is the base class used for rendering delegated ink trails on the end of
 // strokes to reduce user perceived latency. On initialization, it binds the
@@ -38,8 +42,9 @@ class VIZ_SERVICE_EXPORT DelegatedInkPointRendererBase
   void InitMessagePipeline(
       mojo::PendingReceiver<mojom::DelegatedInkPointRenderer> receiver);
 
-  void StoreDelegatedInkPoint(const DelegatedInkPoint& point) override;
-  void SetDelegatedInkMetadata(std::unique_ptr<DelegatedInkMetadata> metadata);
+  void StoreDelegatedInkPoint(const gfx::DelegatedInkPoint& point) override;
+  void SetDelegatedInkMetadata(
+      std::unique_ptr<gfx::DelegatedInkMetadata> metadata);
 
   virtual void FinalizePathForDraw() = 0;
   virtual gfx::Rect GetDamageRect() = 0;
@@ -50,12 +55,12 @@ class VIZ_SERVICE_EXPORT DelegatedInkPointRendererBase
   // ink trail. However, if a point has a timestamp that is earlier than the
   // timestamp on the metadata, then the point has already been drawn, and
   // therefore should be removed from |points_| before drawing.
-  std::vector<DelegatedInkPoint> FilterPoints();
+  std::vector<gfx::DelegatedInkPoint> FilterPoints();
 
-  void PredictPoints(std::vector<DelegatedInkPoint>* ink_points_to_draw);
+  void PredictPoints(std::vector<gfx::DelegatedInkPoint>* ink_points_to_draw);
   void ResetPrediction() override;
 
-  std::unique_ptr<DelegatedInkMetadata> metadata_;
+  std::unique_ptr<gfx::DelegatedInkMetadata> metadata_;
 
  private:
   friend class SkiaDelegatedInkRendererTest;
@@ -65,7 +70,7 @@ class VIZ_SERVICE_EXPORT DelegatedInkPointRendererBase
     return pointer_ids_;
   }
 
-  const DelegatedInkMetadata* GetMetadataForTest() const {
+  const gfx::DelegatedInkMetadata* GetMetadataForTest() const {
     return metadata_.get();
   }
 
