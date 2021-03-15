@@ -452,6 +452,10 @@ void BrowserProcessImpl::StartTearDown() {
 
   sessions::SessionIdGenerator::GetInstance()->Shutdown();
 
+  // Resetting the status tray will result in calls to
+  // |g_browser_process->local_state()|. See crbug.com/1187418
+  status_tray_.reset();
+
   if (local_state_)
     local_state_->CommitPendingWrite();
 
