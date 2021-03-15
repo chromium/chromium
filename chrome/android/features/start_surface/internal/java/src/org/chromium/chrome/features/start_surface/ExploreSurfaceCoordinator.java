@@ -16,6 +16,7 @@ import org.chromium.chrome.browser.feed.FeedV1ActionOptions;
 import org.chromium.chrome.browser.feed.StreamLifecycleManager;
 import org.chromium.chrome.browser.feed.shared.FeedSurfaceDelegate;
 import org.chromium.chrome.browser.feed.shared.stream.Stream;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.ntp.ScrollableContainerDelegate;
 import org.chromium.chrome.browser.ntp.snippets.SectionHeaderView;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -100,8 +101,14 @@ class ExploreSurfaceCoordinator implements FeedSurfaceDelegate {
         SectionHeaderView sectionHeaderView = null;
         if (hasHeader) {
             LayoutInflater inflater = LayoutInflater.from(mActivity);
-            sectionHeaderView = (SectionHeaderView) inflater.inflate(
-                    R.layout.new_tab_page_feed_v2_expandable_header, null, false);
+            if (ChromeFeatureList.isEnabled(ChromeFeatureList.WEB_FEED)) {
+                sectionHeaderView = (SectionHeaderView) inflater.inflate(
+                        org.chromium.chrome.R.layout.new_tab_page_multi_feed_header, null, false);
+            } else {
+                sectionHeaderView = (SectionHeaderView) inflater.inflate(
+                        org.chromium.chrome.R.layout.new_tab_page_feed_v2_expandable_header, null,
+                        false);
+            }
         }
 
         FeedV1ActionOptions feedActionOptions = new FeedV1ActionOptions();

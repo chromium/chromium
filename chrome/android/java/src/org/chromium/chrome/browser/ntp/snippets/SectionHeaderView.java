@@ -13,10 +13,13 @@ import android.graphics.Rect;
 import android.util.AttributeSet;
 import android.view.TouchDelegate;
 import android.view.View;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.annotation.Nullable;
+
+import com.google.android.material.tabs.TabLayout;
 
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.feed.FeedUma;
@@ -39,10 +42,35 @@ import org.chromium.ui.widget.ViewRectProvider;
 public class SectionHeaderView extends LinearLayout {
     private static final int ANIMATION_DURATION_MS = 200;
 
+    /** OnTabSelectedListener that delegates calls to the SectionHeadSelectedListener. */
+    private class SectionHeaderTabListener implements TabLayout.OnTabSelectedListener {
+        private @Nullable OnSectionHeaderSelectedListener mListener;
+
+        @Override
+        public void onTabSelected(TabLayout.Tab tab) {
+            if (mListener != null) {
+                mListener.onSectionHeaderSelected(tab.getPosition());
+            }
+        }
+
+        @Override
+        public void onTabUnselected(TabLayout.Tab tab) {
+            // Do nothing; Not supported.
+        }
+
+        @Override
+        public void onTabReselected(TabLayout.Tab tab) {
+            // Do nothing; Not supported.
+        }
+    }
+
     // Views in the header layout that are set during inflate.
-    private TextView mTitleView;
+    private @Nullable ImageView mVisibilityIndicator;
+    private @Nullable TabLayout mTabLayout;
+    private @Nullable TextView mTitleView;
     private ListMenuButton mMenuView;
 
+    private @Nullable SectionHeaderTabListener mTabListener;
     private boolean mAnimatePaddingWhenDisabled;
 
     public SectionHeaderView(Context context, @Nullable AttributeSet attrs) {
@@ -64,6 +92,13 @@ public class SectionHeaderView extends LinearLayout {
 
         mTitleView = findViewById(R.id.header_title);
         mMenuView = findViewById(R.id.header_menu);
+        mVisibilityIndicator = findViewById(R.id.visibility_indicator);
+        mTabLayout = findViewById(R.id.tab_list_view);
+
+        if (mTabLayout != null) {
+            mTabListener = new SectionHeaderTabListener();
+            mTabLayout.addOnTabSelectedListener(mTabListener);
+        }
 
         int touchPadding;
         // If we are animating padding, add additional touch area around the menu.
@@ -87,20 +122,62 @@ public class SectionHeaderView extends LinearLayout {
     }
 
     /** Updates header text for this view. */
-    public void setHeaderText(String text) {
-        mTitleView.setText(text);
+    void setHeaderText(String text) {
+        if (mTitleView != null) {
+            mTitleView.setText(text);
+        }
+    }
+
+    /** Adds a blank tab. */
+    void addTab() {
+        if (mTabLayout != null) {
+            mTabLayout.addTab(mTabLayout.newTab());
+        }
+    }
+
+    /**
+     * Set text for the header tab at a particular index to text.
+     *
+     * Does nothing if index is invalid. Make sure to call addTab() beforehand.
+     *
+     * @param text Text to set the tab to.
+     * @param index Index of the tab to set.
+     */
+    void setHeaderTextAt(String text, int index) {
+        if (mTabLayout != null && mTabLayout.getTabCount() > index && index >= 0) {
+            mTabLayout.getTabAt(index).setText(text);
+        }
+    }
+
+    /**
+     * @param index The index of the tab to set as active. Does nothing if index is invalid.
+     */
+    void setActiveTab(int index) {
+        if (mTabLayout != null && mTabLayout.getTabCount() > index && index >= 0) {
+            mTabLayout.selectTab(mTabLayout.getTabAt(index));
+        }
+    }
+
+    /** Sets the listener for tab changes. */
+    void setTabChangeListener(OnSectionHeaderSelectedListener listener) {
+        if (mTabListener != null) {
+            mTabListener.mListener = listener;
+        }
     }
 
     /** Sets the delegate for the gear/settings icon. */
-    public void setMenuDelegate(ModelList listItems, ListMenu.Delegate listMenuDelegate) {
+    void setMenuDelegate(ModelList listItems, ListMenu.Delegate listMenuDelegate) {
         mMenuView.setOnClickListener((v) -> { displayMenu(listItems, listMenuDelegate); });
     }
 
     /** Expand the header to indicate the section has been enabled. */
-    public void expandHeader() {
+    void expandHeader() {
         if (mAnimatePaddingWhenDisabled) {
             int finalHorizontalPadding = 0;
             setBackgroundResource(0);
+            if (mVisibilityIndicator != null) {
+                mVisibilityIndicator.setVisibility(View.INVISIBLE);
+            }
             ValueAnimator animator = ValueAnimator.ofInt(getPaddingLeft(), finalHorizontalPadding);
             animator.addUpdateListener((ValueAnimator animation) -> {
                 int horizontalPadding = (Integer) animation.getAnimatedValue();
@@ -115,7 +192,7 @@ public class SectionHeaderView extends LinearLayout {
     }
 
     /** Collapse the header to indicate the section has been disabled. */
-    public void collapseHeader() {
+    void collapseHeader() {
         if (mAnimatePaddingWhenDisabled) {
             int finalHorizontalPadding = getResources().getDimensionPixelSize(
                     R.dimen.feed_v2_header_menu_disabled_padding);
@@ -130,6 +207,9 @@ public class SectionHeaderView extends LinearLayout {
                 public void onAnimationEnd(Animator animation) {
                     // Add the hairline after animation.
                     setBackgroundResource(R.drawable.hairline_border_card_background);
+                    if (mVisibilityIndicator != null) {
+                        mVisibilityIndicator.setVisibility(View.VISIBLE);
+                    }
                 }
             });
             animator.setDuration(ANIMATION_DURATION_MS);

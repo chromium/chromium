@@ -41,6 +41,7 @@ import org.chromium.chrome.browser.feed.StreamLifecycleManager;
 import org.chromium.chrome.browser.feed.shared.FeedSurfaceDelegate;
 import org.chromium.chrome.browser.feed.shared.FeedSurfaceProvider;
 import org.chromium.chrome.browser.feed.shared.stream.Stream;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.lifecycle.LifecycleObserver;
 import org.chromium.chrome.browser.lifecycle.PauseResumeWithNativeObserver;
@@ -409,8 +410,14 @@ public class NewTabPage implements NativePage, InvalidationAwareThumbnailProvide
         LayoutInflater inflater = LayoutInflater.from(activity);
         mNewTabPageLayout = (NewTabPageLayout) inflater.inflate(R.layout.new_tab_page_layout, null);
 
-        final SectionHeaderView sectionHeaderView = (SectionHeaderView) inflater.inflate(
-                R.layout.new_tab_page_feed_v2_expandable_header, null, false);
+        final SectionHeaderView sectionHeaderView;
+        if (ChromeFeatureList.isEnabled(ChromeFeatureList.WEB_FEED)) {
+            sectionHeaderView = (SectionHeaderView) inflater.inflate(
+                    R.layout.new_tab_page_multi_feed_header, null, false);
+        } else {
+            sectionHeaderView = (SectionHeaderView) inflater.inflate(
+                    R.layout.new_tab_page_feed_v2_expandable_header, null, false);
+        }
 
         mFeedSurfaceProvider =
                 new FeedSurfaceCoordinator(activity, snackbarManager, tabModelSelector,

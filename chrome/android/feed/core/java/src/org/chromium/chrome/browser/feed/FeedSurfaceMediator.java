@@ -29,8 +29,8 @@ import org.chromium.chrome.browser.ntp.ScrollListener;
 import org.chromium.chrome.browser.ntp.SnapScrollHelper;
 import org.chromium.chrome.browser.ntp.cards.SignInPromo;
 import org.chromium.chrome.browser.ntp.cards.promo.enhanced_protection.EnhancedProtectionPromoController.EnhancedProtectionPromoStateListener;
-import org.chromium.chrome.browser.ntp.snippets.SectionHeader;
-import org.chromium.chrome.browser.ntp.snippets.SectionHeaderList;
+import org.chromium.chrome.browser.ntp.snippets.SectionHeaderListProperties;
+import org.chromium.chrome.browser.ntp.snippets.SectionHeaderProperties;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.preferences.PrefChangeRegistrar;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -51,6 +51,7 @@ import org.chromium.components.signin.identitymanager.PrimaryAccountChangeEvent;
 import org.chromium.components.signin.metrics.SigninAccessPoint;
 import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.content_public.browser.LoadUrlParams;
+import org.chromium.ui.modelutil.MVCListAdapter;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.mojom.WindowOpenDisposition;
@@ -68,11 +69,13 @@ public class FeedSurfaceMediator
                    EnhancedProtectionPromoStateListener, IdentityManager.Observer {
     @VisibleForTesting
     public static final String FEED_CONTENT_FIRST_LOADED_TIME_MS_UMA = "FeedContentFirstLoadedTime";
+    private static final int INTEREST_FEED_HEADER_POSITION = 0;
 
     private final FeedSurfaceCoordinator mCoordinator;
     private final @Nullable SnapScrollHelper mSnapScrollHelper;
     private final PrefChangeRegistrar mPrefChangeRegistrar;
     private final SigninManager mSigninManager;
+    private final PropertyModel mSectionHeaderModel;
 
     private final NativePageNavigationDelegate mPageNavigationDelegate;
 
@@ -85,10 +88,12 @@ public class FeedSurfaceMediator
     private boolean mHasHeader;
     private boolean mTouchEnabled = true;
     private boolean mStreamContentChanged;
-    private boolean mHasHeaderMenu;
     private int mThumbnailWidth;
     private int mThumbnailHeight;
     private int mThumbnailScrollY;
+
+    /** The model representing feed-related cog menu items. */
+    private ModelList mFeedMenuModel;
 
     /** Whether the Feed content is loading. */
     private boolean mIsLoadingFeed;
@@ -100,16 +105,19 @@ public class FeedSurfaceMediator
     // that Feed content is still loading at that time and the {@link mContentFirstAvailableTimeMs}
     // hasn't been set yet.
     private boolean mHasPendingUmaRecording;
+    private int mToggleswitchMenuIndex;
 
     /**
      * @param coordinator The {@link FeedSurfaceCoordinator} that interacts with this class.
      * @param snapScrollHelper The {@link SnapScrollHelper} that handles snap scrolling.
      * @param pageNavigationDelegate The {@link NativePageNavigationDelegate} that handles page
-     *                               navigation.
+     *         navigation.
+     * @param propertyModel The {@link PropertyModel} that contains this mediator should work with.
      */
     FeedSurfaceMediator(FeedSurfaceCoordinator coordinator,
             @Nullable SnapScrollHelper snapScrollHelper,
-            @Nullable NativePageNavigationDelegate pageNavigationDelegate) {
+            @Nullable NativePageNavigationDelegate pageNavigationDelegate,
+            PropertyModel propertyModel) {
         mCoordinator = coordinator;
         mSnapScrollHelper = snapScrollHelper;
         mSigninManager = IdentityServicesProvider.get().getSigninManager(
@@ -119,12 +127,13 @@ public class FeedSurfaceMediator
         mPrefChangeRegistrar = new PrefChangeRegistrar();
         mHasHeader = mCoordinator.getSectionHeaderView() != null;
         mPrefChangeRegistrar.addObserver(Pref.ENABLE_SNIPPETS, this::updateContent);
-        mHasHeaderMenu = FeedFeatures.isReportingUserActions();
 
         // Check that there is a navigation delegate when using the feed header menu.
-        if (mPageNavigationDelegate == null && mHasHeaderMenu) {
+        if (mPageNavigationDelegate == null) {
             assert false : "Need navigation delegate for header menu";
         }
+
+        mSectionHeaderModel = propertyModel;
 
         initialize();
         // Create the content.
@@ -143,6 +152,10 @@ public class FeedSurfaceMediator
     }
 
     private void initialize() {
+        if (mSectionHeaderModel != null) {
+            mSectionHeaderModel.set(
+                    SectionHeaderListProperties.ON_TAB_SELECTED_CALLBACK_KEY, this::onTabSelected);
+        }
         if (mSnapScrollHelper == null) return;
 
         // Listen for layout changes on the NewTabPageView itself to catch changes in scroll
@@ -249,29 +262,43 @@ public class FeedSurfaceMediator
         stream.addOnContentChangedListener(mStreamContentChangedListener);
 
         if (mHasHeader) {
-            boolean suggestionsVisible = getPrefService().getBoolean(Pref.ARTICLES_LIST_VISIBLE);
-
-            mCoordinator.getSectionHeaderModel().set(
-                    SectionHeaderList.IS_SECTION_ENABLED_KEY, suggestionsVisible);
-
-            SectionHeader interestFeedHeader =
-                    new SectionHeader(getSectionHeaderText(suggestionsVisible));
-            mCoordinator.getSectionHeaderModel().addHeader(interestFeedHeader);
-
             mPrefChangeRegistrar.addObserver(Pref.ARTICLES_LIST_VISIBLE, this::updateSectionHeader);
             TemplateUrlServiceFactory.get().addObserver(this);
 
-            if (mHasHeaderMenu) {
-                interestFeedHeader.set(SectionHeader.MENU_MODEL_LIST_KEY, buildMenuItems());
-                interestFeedHeader.set(SectionHeader.MENU_DELEGATE_KEY, this::onItemSelected);
-                mCoordinator.initializeIph();
-                mSigninManager.getIdentityManager().addObserver(this);
+            boolean suggestionsVisible = getPrefService().getBoolean(Pref.ARTICLES_LIST_VISIBLE);
+            mSectionHeaderModel.set(
+                    SectionHeaderListProperties.IS_SECTION_ENABLED_KEY, suggestionsVisible);
+            // Build menu after section enabled key is set.
+            mFeedMenuModel = buildMenuItems();
+
+            PropertyModel interestFeedHeader = SectionHeaderProperties.createSectionHeader(
+                    getSectionHeaderText(suggestionsVisible));
+            mSectionHeaderModel.get(SectionHeaderListProperties.SECTION_HEADERS_KEY)
+                    .add(interestFeedHeader);
+
+            mCoordinator.initializeIph();
+            mSigninManager.getIdentityManager().addObserver(this);
+
+            mSectionHeaderModel.set(SectionHeaderListProperties.CURRENT_TAB_INDEX_KEY, 0);
+            mSectionHeaderModel.set(
+                    SectionHeaderListProperties.MENU_MODEL_LIST_KEY, mFeedMenuModel);
+            mSectionHeaderModel.set(
+                    SectionHeaderListProperties.MENU_DELEGATE_KEY, this::onItemSelected);
+
+            if (FeedFeatures.isWebFeedUIEnabled()) {
+                PropertyModel webFeedHeader = SectionHeaderProperties.createSectionHeader(
+                        mCoordinator.getSectionHeaderView().getResources().getString(
+                                R.string.ntp_following));
+                mSectionHeaderModel.get(SectionHeaderListProperties.SECTION_HEADERS_KEY)
+                        .add(webFeedHeader);
             }
         }
         // Show feed if there is no header that would allow user to hide feed.
         // This is currently only relevant for the two panes start surface.
-        stream.setStreamContentVisibility(
-                mHasHeader ? mCoordinator.getSectionHeaderModel().isSectionEnabled() : true);
+        stream.setStreamContentVisibility(mHasHeader
+                        ? mSectionHeaderModel.get(
+                                SectionHeaderListProperties.IS_SECTION_ENABLED_KEY)
+                        : true);
 
         initStreamHeaderViews();
 
@@ -359,17 +386,18 @@ public class FeedSurfaceMediator
     /** Update whether the section header should be expanded and its text contents. */
     private void updateSectionHeader() {
         boolean suggestionsVisible = getPrefService().getBoolean(Pref.ARTICLES_LIST_VISIBLE);
-        if (mCoordinator.getSectionHeaderModel().isSectionEnabled() != suggestionsVisible) {
-            mCoordinator.getSectionHeaderModel().toggleSection();
+        mSectionHeaderModel.set(
+                SectionHeaderListProperties.IS_SECTION_ENABLED_KEY, suggestionsVisible);
+
+        if (!FeedFeatures.isWebFeedUIEnabled()) {
+            mSectionHeaderModel.get(SectionHeaderListProperties.SECTION_HEADERS_KEY)
+                    .get(INTEREST_FEED_HEADER_POSITION)
+                    .set(SectionHeaderProperties.HEADER_TEXT_KEY,
+                            getSectionHeaderText(suggestionsVisible));
         }
 
-        // TODO(chili): Support multiple headers.
-        mCoordinator.getSectionHeaderModel().getHeaders().get(0).set(SectionHeader.HEADER_TEXT_KEY,
-                getSectionHeaderText(mCoordinator.getSectionHeaderModel().isSectionEnabled()));
-        if (mHasHeaderMenu) {
-            mCoordinator.getSectionHeaderModel().getHeaders().get(0).set(
-                    SectionHeader.MENU_MODEL_LIST_KEY, buildMenuItems());
-        }
+        // Update toggleswitch item, which is last item in list.
+        mFeedMenuModel.update(mToggleswitchMenuIndex, getMenuToggleSwitch(suggestionsVisible, 0));
 
         if (mSignInPromo != null) {
             mSignInPromo.setCanShowPersonalizedSuggestions(suggestionsVisible);
@@ -383,10 +411,12 @@ public class FeedSurfaceMediator
      * expand icon on the section header view.
      */
     private void onSectionHeaderToggled() {
-        // Update model.
-        mCoordinator.getSectionHeaderModel().toggleSection();
+        boolean isExpanded =
+                !mSectionHeaderModel.get(SectionHeaderListProperties.IS_SECTION_ENABLED_KEY);
 
-        boolean isExpanded = mCoordinator.getSectionHeaderModel().isSectionEnabled();
+        // Update model.
+        mSectionHeaderModel.set(SectionHeaderListProperties.IS_SECTION_ENABLED_KEY, isExpanded);
+
         // Record in prefs and UMA.
         getPrefService().setBoolean(Pref.ARTICLES_LIST_VISIBLE, isExpanded);
         mCoordinator.getStream().toggledArticlesListVisible(isExpanded);
@@ -401,45 +431,55 @@ public class FeedSurfaceMediator
         final boolean isDefaultSearchEngineGoogle =
                 TemplateUrlServiceFactory.get().isDefaultSearchEngineGoogle();
         final int sectionHeaderStringId;
-        if (mHasHeaderMenu) {
-            if (isDefaultSearchEngineGoogle) {
-                sectionHeaderStringId =
-                        isExpanded ? R.string.ntp_discover_on : R.string.ntp_discover_off;
-            } else {
-                sectionHeaderStringId = isExpanded ? R.string.ntp_discover_on_branded
-                                                   : R.string.ntp_discover_off_branded;
-            }
+
+        if (ChromeFeatureList.isEnabled(ChromeFeatureList.WEB_FEED)) {
+            sectionHeaderStringId = R.string.ntp_for_you;
+        } else if (isDefaultSearchEngineGoogle) {
+            sectionHeaderStringId =
+                    isExpanded ? R.string.ntp_discover_on : R.string.ntp_discover_off;
         } else {
-            sectionHeaderStringId = isDefaultSearchEngineGoogle
-                    ? R.string.ntp_article_suggestions_section_header
-                    : R.string.ntp_article_suggestions_section_header_branded;
+            sectionHeaderStringId = isExpanded ? R.string.ntp_discover_on_branded
+                                               : R.string.ntp_discover_off_branded;
         }
+
         return res.getString(sectionHeaderStringId);
     }
 
     private ModelList buildMenuItems() {
         ModelList itemList = new ModelList();
-        int icon_id = 0;
+        int iconId = 0;
         if (mSigninManager.getIdentityManager().hasPrimaryAccount()) {
             itemList.add(buildMenuListItem(R.string.ntp_manage_my_activity,
-                    R.id.ntp_feed_header_menu_item_activity, icon_id));
+                    R.id.ntp_feed_header_menu_item_activity, iconId));
             itemList.add(buildMenuListItem(R.string.ntp_manage_interests,
-                    R.id.ntp_feed_header_menu_item_interest, icon_id));
+                    R.id.ntp_feed_header_menu_item_interest, iconId));
             if (ChromeFeatureList.isEnabled(ChromeFeatureList.INTEREST_FEED_V2_HEARTS)) {
                 itemList.add(buildMenuListItem(R.string.ntp_manage_reactions,
-                        R.id.ntp_feed_header_menu_item_reactions, icon_id));
+                        R.id.ntp_feed_header_menu_item_reactions, iconId));
             }
         }
         itemList.add(buildMenuListItem(
-                R.string.learn_more, R.id.ntp_feed_header_menu_item_learn, icon_id));
-        if (mCoordinator.getSectionHeaderModel().isSectionEnabled()) {
-            itemList.add(buildMenuListItem(R.string.ntp_turn_off_feed,
-                    R.id.ntp_feed_header_menu_item_toggle_switch, icon_id));
-        } else {
-            itemList.add(buildMenuListItem(R.string.ntp_turn_on_feed,
-                    R.id.ntp_feed_header_menu_item_toggle_switch, icon_id));
-        }
+                R.string.learn_more, R.id.ntp_feed_header_menu_item_learn, iconId));
+        itemList.add(getMenuToggleSwitch(
+                mSectionHeaderModel.get(SectionHeaderListProperties.IS_SECTION_ENABLED_KEY),
+                iconId));
+        mToggleswitchMenuIndex = itemList.size() - 1;
         return itemList;
+    }
+
+    /**
+     * Returns the menu list item that represents turning the feed on/off.
+     *
+     * @param isEnabled Whether the feed section is currently enabled.
+     * @param iconId IconId for the list item if any.
+     */
+    private MVCListAdapter.ListItem getMenuToggleSwitch(boolean isEnabled, int iconId) {
+        if (isEnabled) {
+            return buildMenuListItem(R.string.ntp_turn_off_feed,
+                    R.id.ntp_feed_header_menu_item_toggle_switch, iconId);
+        }
+        return buildMenuListItem(
+                R.string.ntp_turn_on_feed, R.id.ntp_feed_header_menu_item_toggle_switch, iconId);
     }
 
     /**
@@ -665,5 +705,18 @@ public class FeedSurfaceMediator
         StartSurfaceConfiguration.recordHistogram(FEED_CONTENT_FIRST_LOADED_TIME_MS_UMA,
                 mContentFirstAvailableTimeMs - mActivityCreationTimeMs, mIsInstantStart);
         return true;
+    }
+
+    private void onTabSelected(int index) {
+        mSectionHeaderModel.set(SectionHeaderListProperties.CURRENT_TAB_INDEX_KEY, index);
+        Runnable onSelectCallback =
+                mSectionHeaderModel.get(SectionHeaderListProperties.SECTION_HEADERS_KEY)
+                        .get(index)
+                        .get(SectionHeaderProperties.ON_SELECT_CALLBACK_KEY);
+        if (onSelectCallback != null) {
+            onSelectCallback.run();
+        }
+        // TODO(chili): Register observers for new datastream; de-register observer for old
+        // datastream.
     }
 }

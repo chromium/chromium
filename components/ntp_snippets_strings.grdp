@@ -23,18 +23,6 @@
     </message>
   </if>
 
-  <if expr="use_titlecase">
-    <message name="IDS_NTP_ARTICLE_SUGGESTIONS_SECTION_HEADER_BRANDED" desc="Branded version of the the articles section header, which is a list of news articles displayed as cards on the New Tab Page.">
-      Suggestions by Google
-    </message>
-  </if>
-
-  <if expr="not use_titlecase">
-    <message name="IDS_NTP_ARTICLE_SUGGESTIONS_SECTION_HEADER_BRANDED" desc="Branded version of the the articles section header, which is a list of news articles displayed as cards on the New Tab Page." formatter_data="android_java">
-      Suggestions by Google
-    </message>
-  </if>
-
   <message name="IDS_NTP_ARTICLE_SUGGESTIONS_SECTION_EMPTY" desc="On the New Tab Page, text of the card explaining to the user that they can expect to see suggested articles in this area in the future." formatter_data="android_java">
     Your suggested articles appear here
   </message>

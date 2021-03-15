@@ -40,8 +40,7 @@ import org.chromium.chrome.browser.ntp.ScrollListener;
 import org.chromium.chrome.browser.ntp.ScrollableContainerDelegate;
 import org.chromium.chrome.browser.ntp.SnapScrollHelper;
 import org.chromium.chrome.browser.ntp.cards.promo.enhanced_protection.EnhancedProtectionPromoController;
-import org.chromium.chrome.browser.ntp.snippets.SectionHeaderList;
-import org.chromium.chrome.browser.ntp.snippets.SectionHeaderListMcp;
+import org.chromium.chrome.browser.ntp.snippets.SectionHeaderListProperties;
 import org.chromium.chrome.browser.ntp.snippets.SectionHeaderView;
 import org.chromium.chrome.browser.ntp.snippets.SectionHeaderViewBinder;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -59,6 +58,11 @@ import org.chromium.components.feature_engagement.Tracker;
 import org.chromium.ui.UiUtils;
 import org.chromium.ui.base.ViewUtils;
 import org.chromium.ui.base.WindowAndroid;
+import org.chromium.ui.modelutil.ListModelChangeProcessor;
+import org.chromium.ui.modelutil.PropertyKey;
+import org.chromium.ui.modelutil.PropertyListModel;
+import org.chromium.ui.modelutil.PropertyModel;
+import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -128,9 +132,12 @@ public class FeedSurfaceCoordinator implements FeedSurfaceProvider {
     // Used when Feed is enabled.
     private @Nullable Stream mStream;
     private @Nullable StreamLifecycleManager mStreamLifecycleManager;
-    private @Nullable SectionHeaderList mSectionHeaderModel;
+    private @Nullable PropertyModel mSectionHeaderModel;
     private @Nullable SectionHeaderView mSectionHeaderView;
-    private @Nullable SectionHeaderListMcp mSectionHeaderChangeProcessor;
+    private @Nullable ListModelChangeProcessor<PropertyListModel<PropertyModel, PropertyKey>,
+            SectionHeaderView, PropertyKey> mSectionHeaderListModelChangeProcessor;
+    private @Nullable PropertyModelChangeProcessor<PropertyModel, SectionHeaderView, PropertyKey>
+            mSectionHeaderModelChangeProcessor;
     private @Nullable PersonalizedSigninPromoView mSigninPromoView;
     private @Nullable ViewResizer mStreamViewResizer;
     private @Nullable NativePageNavigationDelegate mPageNavigationDelegate;
@@ -319,14 +326,20 @@ public class FeedSurfaceCoordinator implements FeedSurfaceProvider {
         // MVC setup for feed header.
         mSectionHeaderView = sectionHeaderView;
         if (mSectionHeaderView != null) {
-            mSectionHeaderModel = new SectionHeaderList();
+            mSectionHeaderModel = SectionHeaderListProperties.create();
             SectionHeaderViewBinder binder = new SectionHeaderViewBinder();
-            mSectionHeaderChangeProcessor =
-                    new SectionHeaderListMcp(mSectionHeaderModel, mSectionHeaderView, binder);
+            mSectionHeaderModelChangeProcessor = PropertyModelChangeProcessor.create(
+                    mSectionHeaderModel, mSectionHeaderView, binder);
+            mSectionHeaderListModelChangeProcessor = new ListModelChangeProcessor<>(
+                    mSectionHeaderModel.get(SectionHeaderListProperties.SECTION_HEADERS_KEY),
+                    mSectionHeaderView, binder);
+            mSectionHeaderModel.get(SectionHeaderListProperties.SECTION_HEADERS_KEY)
+                    .addObserver(mSectionHeaderListModelChangeProcessor);
         }
 
         // Mediator should be created before any Stream changes.
-        mMediator = new FeedSurfaceMediator(this, snapScrollHelper, mPageNavigationDelegate);
+        mMediator = new FeedSurfaceMediator(
+                this, snapScrollHelper, mPageNavigationDelegate, mSectionHeaderModel);
 
         mUserEducationHelper =
                 new UserEducationHelper(mActivity, mHandler, TrackerFactory::getTrackerForProfile);
@@ -343,8 +356,10 @@ public class FeedSurfaceCoordinator implements FeedSurfaceProvider {
             mEnhancedProtectionPromoController.destroy();
         }
         mScrollableContainerDelegate = null;
-        if (mSectionHeaderChangeProcessor != null) {
-            mSectionHeaderChangeProcessor.destroy();
+        if (mSectionHeaderModelChangeProcessor != null) {
+            mSectionHeaderModelChangeProcessor.destroy();
+            mSectionHeaderModel.get(SectionHeaderListProperties.SECTION_HEADERS_KEY)
+                    .removeObserver(mSectionHeaderListModelChangeProcessor);
         }
     }
 
@@ -514,10 +529,10 @@ public class FeedSurfaceCoordinator implements FeedSurfaceProvider {
         return mSectionHeaderView;
     }
 
-    /** @return The {@link SectionHeaderList} model for the Feed section header. */
+    /** @return The {@link SectionHeaderListProperties} model for the Feed section header. */
     // TODO(chili): Make this package-private when we remove v2 folder.
     @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
-    public SectionHeaderList getSectionHeaderModel() {
+    public PropertyModel getSectionHeaderModel() {
         return mSectionHeaderModel;
     }
 
@@ -655,7 +670,7 @@ public class FeedSurfaceCoordinator implements FeedSurfaceProvider {
             }
             @Override
             public boolean isFeedExpanded() {
-                return mSectionHeaderModel.isSectionEnabled();
+                return mSectionHeaderModel.get(SectionHeaderListProperties.IS_SECTION_ENABLED_KEY);
             }
             @Override
             public boolean isSignedIn() {

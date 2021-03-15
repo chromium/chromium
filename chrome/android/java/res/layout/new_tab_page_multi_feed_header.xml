@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Copyright 2021 The Chromium Authors. All rights reserved.
+     Use of this source code is governed by a BSD-style license that can be
+     found in the LICENSE file.
+-->
+
+<org.chromium.chrome.browser.ntp.snippets.SectionHeaderView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:minHeight="@dimen/snippets_article_header_height"
+    android:orientation="horizontal"
+    android:gravity="center_vertical"
+    android:layoutDirection="locale"
+    app:animatePaddingWhenDisabled="true">
+
+    <!-- Null content description for now because UX in flux. -->
+    <ImageView
+        android:id="@+id/visibility_indicator"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@drawable/ic_visibility_off_black"
+        android:visibility="invisible"
+        tools:ignore="contentDescription" />
+
+    <com.google.android.material.tabs.TabLayout
+        android:id="@+id/tab_list_view"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        style="@style/NtpHeaderTabLayoutStyle" />
+
+    <org.chromium.components.browser_ui.widget.listmenu.ListMenuButton
+        android:id="@+id/header_menu"
+        android:layout_width="@dimen/feed_v2_header_menu_width"
+        android:layout_height="@dimen/snippets_article_header_menu_size"
+        android:scaleType="fitXY"
+        android:paddingVertical="15dp"
+        android:layout_marginStart="15dp"
+        android:background="@null"
+        android:src="@drawable/ic_settings_gear_24dp"
+        android:contentDescription="@string/accessibility_ntp_feed_menu_button"
+        app:menuMaxWidth="@dimen/feed_header_menu_max_width"
+        app:tint="@null" />
+
+</org.chromium.chrome.browser.ntp.snippets.SectionHeaderView>

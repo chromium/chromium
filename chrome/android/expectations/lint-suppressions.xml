@@ -249,8 +249,9 @@ https://chromium.googlesource.com/chromium/src/+/master/build/android/docs/lint.
     <ignore regexp="The resource `R.string.iph_infobar_add_to_home_screen_title` appears to be unused"/>
     <ignore regexp="The resource `R.string.iph_infobar_add_to_home_screen_description` appears to be unused"/>
     <ignore regexp="The resource `R.string.iph_infobar_add_to_home_screen_description_tablet` appears to be unused"/>
-    <!-- 1: resource is used in C++ components/ntp_snippets. -->
+    <!-- 2: resource is used in C++ components/ntp_snippets. -->
     <ignore regexp="The resource `R.string.ntp_article_suggestions_section_empty` appears to be unused"/>
+    <ignore regexp="The resource `R.string.ntp_article_suggestions_section_header` appears to be unused"/>
     <!-- 2: resource is used in C++ components/error_page. -->
     <ignore regexp="The resource `R.string.show_content` appears to be unused"/>
     <ignore regexp="The resource `R.string.hide_content` appears to be unused"/>

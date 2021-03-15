@@ -370,6 +370,10 @@
         <item name="android:background">@color/default_bg_color</item>
     </style>
 
+    <style name="NtpHeaderTabLayoutStyle" parent="TabLayoutStyle">
+        <item name="tabGravity">center</item>
+    </style>
+
     <!-- Misc styles -->
     <style name="LocationBarButton">
         <item name="android:background">@null</item>

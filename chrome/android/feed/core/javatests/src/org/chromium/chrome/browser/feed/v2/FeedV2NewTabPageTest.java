@@ -61,6 +61,7 @@ import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.ntp.NewTabPage;
 import org.chromium.chrome.browser.ntp.cards.SignInPromo;
+import org.chromium.chrome.browser.ntp.snippets.SectionHeaderListProperties;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
 import org.chromium.chrome.browser.suggestions.SiteSuggestion;
@@ -343,8 +344,8 @@ public class FeedV2NewTabPageTest {
         TextView headerStatusView = sectionHeaderView.findViewById(R.id.header_title);
 
         // Assert that the feed is expanded and that the header title text is correct.
-        Assert.assertTrue(
-                mNtp.getCoordinatorForTesting().getSectionHeaderModel().isSectionEnabled());
+        Assert.assertTrue(mNtp.getCoordinatorForTesting().getSectionHeaderModel().get(
+                SectionHeaderListProperties.IS_SECTION_ENABLED_KEY));
         Assert.assertEquals(sectionHeaderView.getContext().getString(R.string.ntp_discover_on),
                 headerStatusView.getText());
 
@@ -352,8 +353,8 @@ public class FeedV2NewTabPageTest {
         toggleHeader(false);
 
         // Assert that the feed is collapsed and that the header title text is correct.
-        Assert.assertFalse(
-                mNtp.getCoordinatorForTesting().getSectionHeaderModel().isSectionEnabled());
+        Assert.assertFalse(mNtp.getCoordinatorForTesting().getSectionHeaderModel().get(
+                SectionHeaderListProperties.IS_SECTION_ENABLED_KEY));
         Assert.assertEquals(sectionHeaderView.getContext().getString(R.string.ntp_discover_off),
                 headerStatusView.getText());
     }
