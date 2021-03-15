@@ -84,7 +84,6 @@ CurrentTabDesktopMediaList::CurrentTabDesktopMediaList(
     base::TimeDelta period,
     DesktopMediaListObserver* observer)
     : DesktopMediaListBase(period),
-      view_(web_contents->GetRenderWidgetHostView()),
       media_id_(content::DesktopMediaID::TYPE_WEB_CONTENTS,
                 content::DesktopMediaID::kNullId,
                 content::WebContentsMediaCaptureId(
@@ -93,7 +92,6 @@ CurrentTabDesktopMediaList::CurrentTabDesktopMediaList(
       thumbnail_task_runner_(base::ThreadPool::CreateSequencedTaskRunner(
           {base::MayBlock(), base::TaskPriority::USER_VISIBLE})) {
   DCHECK(web_contents);
-  DCHECK(view_);
 
   type_ = DesktopMediaList::Type::kCurrentTab;
 
@@ -107,11 +105,23 @@ CurrentTabDesktopMediaList::CurrentTabDesktopMediaList(
 
 CurrentTabDesktopMediaList::~CurrentTabDesktopMediaList() = default;
 
-void CurrentTabDesktopMediaList::Refresh(bool update_thumnails) {
+void CurrentTabDesktopMediaList::Refresh(bool update_thumbnails) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   DCHECK(can_refresh());
 
-  if (refresh_in_progress_ || !update_thumnails || thumbnail_size_.IsEmpty()) {
+  if (refresh_in_progress_ || !update_thumbnails || thumbnail_size_.IsEmpty()) {
+    return;
+  }
+
+  content::RenderFrameHost* const host = content::RenderFrameHost::FromID(
+      media_id_.web_contents_id.render_process_id,
+      media_id_.web_contents_id.main_render_frame_id);
+  if (!host) {
+    return;
+  }
+
+  content::RenderWidgetHostView* const view = host->GetView();
+  if (!view) {
     return;
   }
 
@@ -120,7 +130,7 @@ void CurrentTabDesktopMediaList::Refresh(bool update_thumnails) {
   auto reply = base::BindOnce(&CurrentTabDesktopMediaList::OnCaptureHandled,
                               weak_factory_.GetWeakPtr());
 
-  view_->CopyFromSurface(
+  view->CopyFromSurface(
       gfx::Rect(), gfx::Size(),
       base::BindPostTask(thumbnail_task_runner_,
                          base::BindOnce(&HandleCapturedBitmap, std::move(reply),
