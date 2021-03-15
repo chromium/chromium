@@ -222,9 +222,9 @@ IN_PROC_BROWSER_TEST_F(AutoscrollBrowserTest, AutoscrollFlingGSBDeltaHints) {
 
 // Tests that the GSU and GSE events generated from the autoscroll fling have
 // non-zero positions in widget.
-// Disabled due to flakiness. See https://crbug.com/930011.
-IN_PROC_BROWSER_TEST_F(AutoscrollBrowserTest,
-                       DISABLED_GSUGSEValidPositionInWidget) {
+//
+// Temporarily enabled to investigate flakiness. See https://crbug.com/930011.
+IN_PROC_BROWSER_TEST_F(AutoscrollBrowserTest, GSUGSEValidPositionInWidget) {
   LoadURL(kAutoscrollDataURL);
 
   // Start autoscroll with middle click.
