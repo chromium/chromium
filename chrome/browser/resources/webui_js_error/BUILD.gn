@@ -16,7 +16,7 @@ preprocess_manifest = "preprocessed_manifest.json"
 if (optimize_webui) {
   build_manifest = "build_manifest.json"
   optimize_webui("build") {
-    host = "webui_js_error"
+    host = "webuijserror"
     input = rebase_path("$target_gen_dir/$preprocess_folder", root_build_dir)
     deps = [
       ":preprocess",
