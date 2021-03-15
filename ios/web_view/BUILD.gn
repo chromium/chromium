@@ -50,6 +50,7 @@ ios_web_view_public_headers = [
   "public/cwv_credit_card_saver.h",
   "public/cwv_credit_card_verifier.h",
   "public/cwv_download_task.h",
+  "public/cwv_defines.h",
   "public/cwv_export.h",
   "public/cwv_favicon.h",
   "public/cwv_flags.h",
