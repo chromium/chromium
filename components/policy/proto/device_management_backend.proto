@@ -3373,6 +3373,89 @@ message RsuLookupKeyUploadResponse {
   optional bool rsu_lookup_key_updated = 1;
 }
 
+// An event used for reporting when a new print job has completed.
+message PrintJobEvent {
+  message PrintJobConfiguration {
+    // The ID of the job. This and the device ID uniquely identify a print job
+    // in enterprise reporting.
+    optional string id = 1;
+
+    // The name of the document.
+    optional string title = 2;
+
+    // The final status of the job.
+    optional int32 status = 3;
+
+    // The time the print job was created.
+    optional int64 creation_time = 4;
+
+    // The time the print job was completed.
+    optional int64 completion_time = 5;
+
+    // The number of pages in the document.
+    optional int32 number_of_pages = 6;
+
+    // The settings of the print job.
+    optional PrintSettings settings = 7;
+  }
+
+  enum UserType {
+    UNKNOWN = 0;
+    REGULAR = 1;
+    GUEST = 2;
+    KIOSK = 3;
+  }
+
+  message Printer {
+    // Displayed name of the printer in the client.
+    optional string name = 1;
+
+    // URI of the printer, which serves as a unique identifier.
+    optional string uri = 2;
+  }
+
+  // The finishing settings of the print job.
+  message PrintSettings {
+    enum ColorMode {
+      UNKNOWN_COLOR_MODE = 0;
+      BLACK_AND_WHITE = 1;
+      COLOR = 2;
+    }
+
+    enum DuplexMode {
+      UNKNOWN_DUPLEX_MODE = 0;
+      ONE_SIDED = 1;
+      TWO_SIDED_LONG_EDGE = 2;
+      TWO_SIDED_SHORT_EDGE = 3;
+    }
+
+    message MediaSize {
+      // Width (in micrometers)
+      optional int32 width = 1;
+
+      // Height (in micrometers)
+      optional int32 height = 2;
+
+      // Platform specific id to map it back to the particular media.
+      optional string vendor_id = 3;
+    }
+
+    optional ColorMode color = 1;
+
+    optional DuplexMode duplex = 2;
+
+    optional MediaSize media_size = 3;
+
+    optional int32 copies = 4;
+  }
+
+  optional PrintJobConfiguration job_configuration = 1;
+
+  optional UserType user_type = 2;
+
+  optional Printer printer = 3;
+}
+
 // Provides information about an installed app.
 message App {
   // Enum listing the available types of the apps.
