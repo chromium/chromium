@@ -106,14 +106,6 @@ GetSwitchDependentFeatureOverrides(const base::CommandLine& command_line) {
   std::vector<base::FeatureList::FeatureOverrideInfo> feature_overrides =
       content::GetSwitchDependentFeatureOverrides(command_line);
 
-  // TODO(chlily): This can be removed when Schemeful Same-Site is enabled by
-  // default.
-  if (command_line.HasSwitch(switches::kWebViewEnableModernCookieSameSite)) {
-    feature_overrides.push_back(
-        std::make_pair(std::cref(net::features::kSchemefulSameSite),
-                       base::FeatureList::OVERRIDE_ENABLE_FEATURE));
-  }
-
   return feature_overrides;
 }
 

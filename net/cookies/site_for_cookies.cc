@@ -73,8 +73,11 @@ bool SiteForCookies::IsFirstPartyWithSchemefulMode(
 }
 
 bool SiteForCookies::IsEquivalent(const SiteForCookies& other) const {
-  if (IsNull())
-    return other.IsNull();
+  if (IsNull() || other.IsNull()) {
+    // We need to check if `other.IsNull()` explicitly in order to catch if
+    // `other.schemefully_same_` is false when "Schemeful Same-Site" is enabled.
+    return IsNull() && other.IsNull();
+  }
 
   // In the case where the site has no registrable domain or host, the scheme
   // cannot be ws(s) or http(s), so equality of sites implies actual equality of

@@ -3967,25 +3967,20 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTest,
 
     grandchild = child->child_at(0);
 
-    // Now the frames above grandchild differ only in scheme. SiteForCookies
-    // should be the same except that schemefully_same() should be false.
+    // Now the frames above grandchild differ only in scheme. This results in
+    // null SiteForCookies because of the schemefully_same flag, but site should
+    // still not be opaque.
     net::SiteForCookies grandchild_cross_scheme =
         grandchild->current_frame_host()->ComputeSiteForCookies();
-    EXPECT_FALSE(grandchild_cross_scheme.schemefully_same());
-    EXPECT_EQ("a.test", grandchild_cross_scheme.registrable_domain());
+    EXPECT_TRUE(grandchild_cross_scheme.IsNull());
+    EXPECT_FALSE(grandchild_cross_scheme.site().opaque());
 
     net::SiteForCookies grandchild_cross_scheme_navigation =
         grandchild->current_frame_host()
             ->ComputeIsolationInfoForNavigation(other_url)
             .site_for_cookies();
-    EXPECT_FALSE(grandchild_cross_scheme_navigation.schemefully_same());
-    EXPECT_EQ("a.test",
-              grandchild_cross_scheme_navigation.registrable_domain());
-
-    // IsEquivalent() doesn't check schemefully_same.
-    EXPECT_TRUE(grandchild_cross_scheme.IsEquivalent(grandchild_same_scheme));
-    EXPECT_TRUE(grandchild_cross_scheme_navigation.IsEquivalent(
-        grandchild_same_scheme_navigation));
+    EXPECT_TRUE(grandchild_cross_scheme_navigation.IsNull());
+    EXPECT_FALSE(grandchild_cross_scheme_navigation.site().opaque());
   }
 }
 

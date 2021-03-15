@@ -19,17 +19,21 @@ namespace net {
 // Represents which origins are to be considered same-site for a given
 // context (e.g. frame). There may be none.
 //
-// The currently implemented policy ("schemeless") is that two valid URLs would
-// be considered the same site if either:
-// 1) They both have non-empty and equal registrable domains or hostnames/IPs.
-// 2) They both have empty hostnames and equal schemes.
-//
-// With the SchemefulSameSite feature enabled the policy ("schemeful") is that
+// The currently implemented policy ("schemeful") is that
 // two valid URLs would be considered same-site if either:
 // 1) They both have compatible schemes along with non-empty and equal
 //    registrable domains or hostnames/IPs. Two schemes are compatible if they
 //    are either equal, or are both in {http, ws}, or are both in {https, wss}.
-// 2) They both have empty hostnames and exactly equal schemes.
+//    E.x. "https://example.com" and "wss://example.com"
+// 2) They both have empty hostnames and exactly equal schemes. E.x. "file://"
+// and "file://"
+//
+// With the SchemefulSameSite feature disabled the policy ("schemeless") is that
+// two valid URLs would be considered the same site if either: 1) They both have
+// non-empty and equal registrable domains or hostnames/IPs. E.x. "example.com"
+// and "example.com" 2) They both have empty hostnames and equal schemes. E.x.
+// "file://" and "file://"
+//
 //
 // Invalid URLs are never same-site to anything.
 class NET_EXPORT SiteForCookies {
@@ -59,8 +63,8 @@ class NET_EXPORT SiteForCookies {
 
   // If the origin is opaque, returns SiteForCookies that matches nothing.
   //
-  // If it's not, returns one that matches URLs which are considered to be
-  // same-party as URLs from `origin`.
+  // If it's not opaque, returns one that matches URLs which are considered to
+  // be same-party as URLs from `origin`.
   static SiteForCookies FromOrigin(const url::Origin& origin);
 
   // Equivalent to FromOrigin(url::Origin::Create(url)).
@@ -90,7 +94,9 @@ class NET_EXPORT SiteForCookies {
                                      bool compute_schemefully) const;
 
   // Returns true if `other.IsFirstParty()` is true for exactly the same URLs
-  // as `this->IsFirstParty` (potentially none).
+  // as `this->IsFirstParty` (potentially none). Two SFCs are also considered
+  // equivalent if neither ever returns true for `IsFirstParty()`. I.e., both
+  // are null.
   bool IsEquivalent(const SiteForCookies& other) const;
 
   // Compares a "candidate" SFC, `this`, with an origin (represented as a
@@ -123,7 +129,7 @@ class NET_EXPORT SiteForCookies {
   // Same-Site" is disabled.)
   bool CompareWithFrameTreeSiteAndRevise(const SchemefulSite& other);
 
-  // Overload which converts an Origin into a SchemefulSite and then calls
+  // Converts an Origin into a SchemefulSite and then calls
   //`CompareWithFrameTreeSiteAndRevise(SchemefulSite)`
   //
   // If possible, prefer `CompareWithFrameTreeSiteAndRevise(SchemefulSite)`
@@ -151,7 +157,7 @@ class NET_EXPORT SiteForCookies {
   }
 
   // Used for serialization/deserialization. This value is irrelevant if
-  // IsNull() is true.
+  // site().opaque() is true.
   bool schemefully_same() const { return schemefully_same_; }
 
   void SetSchemefullySameForTesting(bool schemefully_same) {

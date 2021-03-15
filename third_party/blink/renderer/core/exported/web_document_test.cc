@@ -382,8 +382,12 @@ TEST_F(WebDocumentFirstPartyTest, NestedOriginSecureA) {
 
   ASSERT_TRUE(SiteForCookiesEqual(g_nested_origin_secure_a,
                                   TopDocument()->SiteForCookies()));
-  ASSERT_TRUE(SiteForCookiesEqual(g_nested_origin_secure_a,
-                                  NestedDocument()->SiteForCookies()));
+  // Since NestedDocument is secure, and the parent is insecure, its
+  // SiteForCookies will be null and therefore will not match.
+  ASSERT_FALSE(SiteForCookiesEqual(g_nested_origin_secure_a,
+                                   NestedDocument()->SiteForCookies()));
+  // However its site shouldn't be opaque
+  ASSERT_FALSE(NestedDocument()->SiteForCookies().site().opaque());
 
   ASSERT_TRUE(
       OriginsEqual(g_nested_origin_secure_a, TopDocument()->TopFrameOrigin()));
