@@ -13,7 +13,6 @@
 // for all new work.
 enum IPCMessageStart {
   AutomationMsgStart = 0,
-  FrameMsgStart,
   TestMsgStart,
   WorkerMsgStart,
   NaClMsgStart,

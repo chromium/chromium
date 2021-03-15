@@ -22,9 +22,6 @@ void WriteIpcMessageIdAsProtozero(uint32_t message_id,
     case AutomationMsgStart:
       message_class = ChromeLegacyIpc::CLASS_AUTOMATION;
       break;
-    case FrameMsgStart:
-      message_class = ChromeLegacyIpc::CLASS_FRAME;
-      break;
     case TestMsgStart:
       message_class = ChromeLegacyIpc::CLASS_TEST;
       break;

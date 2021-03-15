@@ -36,9 +36,7 @@ namespace content {
 
 namespace {
 
-const uint32_t kPepperFilteredMessageClasses[] = {
-    PpapiMsgStart, FrameMsgStart,
-};
+const uint32_t kPepperFilteredMessageClasses[] = {PpapiMsgStart};
 
 // Responsible for creating the pending resource hosts, holding their IDs until
 // all of them have been created for a single message, and sending the reply to

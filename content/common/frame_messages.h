@@ -75,7 +75,6 @@
 #undef IPC_MESSAGE_EXPORT
 #define IPC_MESSAGE_EXPORT CONTENT_EXPORT
 
-#define IPC_MESSAGE_START FrameMsgStart
 IPC_ENUM_TRAITS_MAX_VALUE(blink::mojom::ScrollbarMode,
                           blink::mojom::ScrollbarMode::kMaxValue)
 IPC_ENUM_TRAITS_MAX_VALUE(content::StopFindAction,

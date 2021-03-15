@@ -107,17 +107,15 @@ class BrowserMessageFilter::Internal : public IPC::MessageFilter {
   DISALLOW_COPY_AND_ASSIGN(Internal);
 };
 
+BrowserMessageFilter::BrowserMessageFilter() = default;
+
 BrowserMessageFilter::BrowserMessageFilter(uint32_t message_class_to_filter)
-    : internal_(nullptr),
-      sender_(nullptr),
-      message_classes_to_filter_(1, message_class_to_filter) {}
+    : message_classes_to_filter_(1, message_class_to_filter) {}
 
 BrowserMessageFilter::BrowserMessageFilter(
     const uint32_t* message_classes_to_filter,
     size_t num_message_classes_to_filter)
-    : internal_(nullptr),
-      sender_(nullptr),
-      message_classes_to_filter_(
+    : message_classes_to_filter_(
           message_classes_to_filter,
           message_classes_to_filter + num_message_classes_to_filter) {
   DCHECK(num_message_classes_to_filter);

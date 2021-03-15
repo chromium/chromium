@@ -76,20 +76,13 @@
 #endif
 
 namespace content {
-namespace {
-
-const uint32_t kRenderFilteredMessageClasses[] = {FrameMsgStart};
-
-}  // namespace
 
 RenderMessageFilter::RenderMessageFilter(
     int render_process_id,
     BrowserContext* browser_context,
     RenderWidgetHelper* render_widget_helper,
     MediaInternals* media_internals)
-    : BrowserMessageFilter(kRenderFilteredMessageClasses,
-                           base::size(kRenderFilteredMessageClasses)),
-      BrowserAssociatedInterface<mojom::RenderMessageFilter>(this),
+    : BrowserAssociatedInterface<mojom::RenderMessageFilter>(this),
       resource_context_(browser_context->GetResourceContext()),
       render_widget_helper_(render_widget_helper),
       render_process_id_(render_process_id),
