@@ -6292,9 +6292,9 @@ class CompositedSelectionBoundsTest
                              layer_owner_node_for_start);
     EXPECT_EQ(selection.start.layer_id, id);
 
-    EXPECT_EQ(start_edge_start_in_layer_x, selection.start.edge_start.x());
-    EXPECT_EQ(start_edge_start_in_layer_y, selection.start.edge_start.y());
-    EXPECT_EQ(start_edge_end_in_layer_x, selection.start.edge_end.x());
+    EXPECT_NEAR(start_edge_start_in_layer_x, selection.start.edge_start.x(), 1);
+    EXPECT_NEAR(start_edge_start_in_layer_y, selection.start.edge_start.y(), 1);
+    EXPECT_NEAR(start_edge_end_in_layer_x, selection.start.edge_end.x(), 1);
 
     blink::Node* layer_owner_node_for_end = V8Node::ToImplWithTypeCheck(
         v8::Isolate::GetCurrent(),
@@ -6303,9 +6303,9 @@ class CompositedSelectionBoundsTest
     id = LayerIdFromNode(layer_tree_host->root_layer(),
                          layer_owner_node_for_end);
     EXPECT_EQ(selection.end.layer_id, id);
-    EXPECT_EQ(end_edge_start_in_layer_x, selection.end.edge_start.x());
-    EXPECT_EQ(end_edge_start_in_layer_y, selection.end.edge_start.y());
-    EXPECT_EQ(end_edge_end_in_layer_x, selection.end.edge_end.x());
+    EXPECT_NEAR(end_edge_start_in_layer_x, selection.end.edge_start.x(), 1);
+    EXPECT_NEAR(end_edge_start_in_layer_y, selection.end.edge_start.y(), 1);
+    EXPECT_NEAR(end_edge_end_in_layer_x, selection.end.edge_end.x(), 1);
 
     // Platform differences can introduce small stylistic deviations in
     // y-axis positioning, the details of which aren't relevant to
@@ -6462,6 +6462,31 @@ struct CompositedSelectionBoundsTestPassToString {
 
 INSTANTIATE_TEST_SUITE_P(All,
                          CompositedSelectionBoundsTest,
+                         testing::Bool(),
+                         CompositedSelectionBoundsTestPassToString());
+
+class CompositedSelectionBoundsTestWithImage
+    : public CompositedSelectionBoundsTest {
+ public:
+  CompositedSelectionBoundsTestWithImage() : CompositedSelectionBoundsTest() {
+    RegisterMockedHttpURLLoad("notifications/120x120.png");
+  }
+};
+
+TEST_P(CompositedSelectionBoundsTestWithImage, Replaced) {
+  RunTest("composited_selection_bounds_replaced.html");
+}
+
+TEST_P(CompositedSelectionBoundsTestWithImage, ReplacedRTL) {
+  RunTest("composited_selection_bounds_replaced_rtl.html");
+}
+
+TEST_P(CompositedSelectionBoundsTestWithImage, ReplacedVerticalLR) {
+  RunTest("composited_selection_bounds_replaced_vertical_lr.html");
+}
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         CompositedSelectionBoundsTestWithImage,
                          testing::Bool(),
                          CompositedSelectionBoundsTestPassToString());
 
