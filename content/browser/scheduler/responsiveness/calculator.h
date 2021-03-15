@@ -71,9 +71,7 @@ class CONTENT_EXPORT Calculator {
  protected:
   // Emits an UMA metric for responsiveness of a single measurement interval.
   // Exposed for testing.
-  virtual void EmitResponsiveness(JankType jank_type,
-                                  size_t janky_slices,
-                                  bool was_process_suspended);
+  virtual void EmitResponsiveness(JankType jank_type, size_t janky_slices);
 
   // Emits trace events for responsiveness metric. A trace event is emitted for
   // the whole duration of the metric interval and sub events are emitted for
@@ -158,14 +156,6 @@ class CONTENT_EXPORT Calculator {
   // the UI thread.
   bool is_application_visible_ = false;
 #endif
-
-  // Whether or not the process is suspended (Power management). Accessed only
-  // on the UI thread.
-  bool is_process_suspended_ = false;
-
-  // Stores whether to process was suspended since last metric computation.
-  // Accessed only on the UI thread.
-  bool was_process_suspended_ = false;
 
   // We expect there to be low contention and this lock to cause minimal
   // overhead. If performance of this lock proves to be a problem, we can move

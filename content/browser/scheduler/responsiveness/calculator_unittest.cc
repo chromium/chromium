@@ -22,10 +22,8 @@ constexpr int kJankThresholdInMs = 100;
 
 class FakeCalculator : public Calculator {
  public:
-  MOCK_METHOD3(EmitResponsiveness,
-               void(JankType jank_type,
-                    size_t janky_slices,
-                    bool was_process_suspended));
+  MOCK_METHOD2(EmitResponsiveness,
+               void(JankType jank_type, size_t janky_slices));
 
   MOCK_METHOD3(EmitJankyIntervalsMeasurementTraceEvent,
                void(base::TimeTicks start_time,
@@ -94,10 +92,10 @@ class ResponsivenessCalculatorTest : public testing::Test {
 
 #define EXPECT_EXECUTION_JANKY_SLICES(num_slices) \
   EXPECT_CALL(*calculator_,                       \
-              EmitResponsiveness(JankType::kExecution, num_slices, false));
-#define EXPECT_QUEUE_AND_EXECUTION_JANKY_SLICES(num_slices)                  \
-  EXPECT_CALL(*calculator_, EmitResponsiveness(JankType::kQueueAndExecution, \
-                                               num_slices, false));
+              EmitResponsiveness(JankType::kExecution, num_slices));
+#define EXPECT_QUEUE_AND_EXECUTION_JANKY_SLICES(num_slices) \
+  EXPECT_CALL(*calculator_,                                 \
+              EmitResponsiveness(JankType::kQueueAndExecution, num_slices));
 
 // A single event executing slightly longer than kJankThresholdInMs.
 TEST_F(ResponsivenessCalculatorTest, ShortExecutionJank) {
@@ -355,7 +353,7 @@ TEST_F(ResponsivenessCalculatorTest, LongDelay) {
   base_time += 10 * kMeasurementIntervalInMs;
   AddEventUI(base_time, base_time, base_time + 1);
 
-  EXPECT_CALL(*calculator_, EmitResponsiveness(_, _, _)).Times(0);
+  EXPECT_CALL(*calculator_, EmitResponsiveness(_, _)).Times(0);
 }
 
 // A long event means that the machine likely went to sleep.
@@ -363,7 +361,7 @@ TEST_F(ResponsivenessCalculatorTest, LongEvent) {
   int base_time = 105;
   AddEventUI(base_time, base_time, base_time + 10 * kMeasurementIntervalInMs);
 
-  EXPECT_CALL(*calculator_, EmitResponsiveness(_, _, _)).Times(0);
+  EXPECT_CALL(*calculator_, EmitResponsiveness(_, _)).Times(0);
 }
 
 #if defined(OS_ANDROID)
@@ -380,63 +378,10 @@ TEST_F(ResponsivenessCalculatorTest, ApplicationInBackground) {
 
   AddEventUI(kQueueTime, kStartTime + 1, kFinishTime + 1);
 
-  EXPECT_CALL(*calculator_, EmitResponsiveness(_, _, _)).Times(0);
+  EXPECT_CALL(*calculator_, EmitResponsiveness(_, _)).Times(0);
   TriggerCalculation();
 }
 #endif
-
-// The suspended state must be passed to EmitResponsiveness(...).
-// A single event executing slightly longer than 10 * kJankThresholdInMs.
-TEST_F(ResponsivenessCalculatorTest, JankWithPowerSuspend) {
-  constexpr int kQueueTime = 35;
-  constexpr int kStartTime = 40;
-  constexpr int kFinishTime = kStartTime + 10 * kJankThresholdInMs + 5;
-
-  AddEventUI(kQueueTime, kStartTime, kFinishTime);
-  EXPECT_CALL(*calculator_,
-              EmitResponsiveness(JankType::kExecution, 10, false));
-  EXPECT_CALL(*calculator_,
-              EmitResponsiveness(JankType::kQueueAndExecution, 10, false));
-  TriggerCalculation();
-
-  calculator_->SetProcessSuspended(true);
-  AddEventUI(kQueueTime, kStartTime, kFinishTime);
-  EXPECT_CALL(*calculator_, EmitResponsiveness(JankType::kExecution, 10, true));
-  EXPECT_CALL(*calculator_,
-              EmitResponsiveness(JankType::kQueueAndExecution, 10, true));
-  TriggerCalculation();
-
-  calculator_->SetProcessSuspended(false);
-  AddEventUI(kQueueTime, kStartTime, kFinishTime);
-  EXPECT_CALL(*calculator_, EmitResponsiveness(JankType::kExecution, 10, true));
-  EXPECT_CALL(*calculator_,
-              EmitResponsiveness(JankType::kQueueAndExecution, 10, true));
-  TriggerCalculation();
-
-  calculator_->SetProcessSuspended(true);
-  AddEventUI(kQueueTime, kStartTime, kFinishTime);
-  calculator_->SetProcessSuspended(false);
-  EXPECT_CALL(*calculator_, EmitResponsiveness(JankType::kExecution, 10, true));
-  EXPECT_CALL(*calculator_,
-              EmitResponsiveness(JankType::kQueueAndExecution, 10, true));
-  TriggerCalculation();
-
-  // The whole slice must be flagged as containing suspend/resume events.
-  calculator_->SetProcessSuspended(true);
-  calculator_->SetProcessSuspended(false);
-  AddEventUI(kQueueTime, kStartTime, kFinishTime);
-  EXPECT_CALL(*calculator_, EmitResponsiveness(JankType::kExecution, 10, true));
-  EXPECT_CALL(*calculator_,
-              EmitResponsiveness(JankType::kQueueAndExecution, 10, true));
-  TriggerCalculation();
-
-  AddEventUI(kQueueTime, kStartTime, kFinishTime);
-  EXPECT_CALL(*calculator_,
-              EmitResponsiveness(JankType::kExecution, 10, false));
-  EXPECT_CALL(*calculator_,
-              EmitResponsiveness(JankType::kQueueAndExecution, 10, false));
-  TriggerCalculation();
-}
 
 // An event execution that crosses a measurement interval boundary should count
 // towards both measurement intervals.
