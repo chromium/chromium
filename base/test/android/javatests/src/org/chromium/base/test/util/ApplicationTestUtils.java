@@ -35,11 +35,9 @@ public class ApplicationTestUtils {
 
     /** Waits until the given activity transitions to the given state. */
     public static void waitForActivityState(String failureReason, Activity activity, Stage stage) {
-        CriteriaHelper.pollUiThread(
-                ()
-                        -> { return sMonitor.getLifecycleStageOf(activity) == stage; },
-                failureReason, ScalableTimeout.scaleTimeout(10000),
-                CriteriaHelper.DEFAULT_POLLING_INTERVAL);
+        CriteriaHelper.pollUiThread(() -> {
+            return sMonitor.getLifecycleStageOf(activity) == stage;
+        }, failureReason, 10000, CriteriaHelper.DEFAULT_POLLING_INTERVAL);
     }
 
     /** Finishes the given activity and waits for its onDestroy() to be called. */

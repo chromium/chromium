@@ -193,7 +193,7 @@ public class VisualStateTest {
         });
 
         Assert.assertTrue(testFinishedSignal.await(
-                AwActivityTestRule.WAIT_TIMEOUT_MS, TimeUnit.MILLISECONDS));
+                AwActivityTestRule.SCALED_WAIT_TIMEOUT_MS, TimeUnit.MILLISECONDS));
     }
 
     @Test
@@ -265,9 +265,9 @@ public class VisualStateTest {
         });
 
         Assert.assertTrue(pageCommitCallbackOccurred.await(
-                AwActivityTestRule.WAIT_TIMEOUT_MS, TimeUnit.MILLISECONDS));
+                AwActivityTestRule.SCALED_WAIT_TIMEOUT_MS, TimeUnit.MILLISECONDS));
         Assert.assertTrue(testFinishedSignal.await(
-                AwActivityTestRule.WAIT_TIMEOUT_MS, TimeUnit.MILLISECONDS));
+                AwActivityTestRule.SCALED_WAIT_TIMEOUT_MS, TimeUnit.MILLISECONDS));
     }
 
     @Test
@@ -313,7 +313,7 @@ public class VisualStateTest {
                 awContents, awContentsClient.getOnPageFinishedHelper(), WAIT_FOR_JS_TEST_URL);
 
         Assert.assertTrue(readyToUpdateColor.await(
-                AwActivityTestRule.WAIT_TIMEOUT_MS, TimeUnit.MILLISECONDS));
+                AwActivityTestRule.SCALED_WAIT_TIMEOUT_MS, TimeUnit.MILLISECONDS));
         DOMUtils.clickNode(webContents, UPDATE_COLOR_CONTROL_ID);
         Assert.assertTrue(jsObserver.waitForEvent(WAIT_TIMEOUT_MS));
 
@@ -330,7 +330,7 @@ public class VisualStateTest {
                         }));
 
         Assert.assertTrue(testFinishedSignal.await(
-                AwActivityTestRule.WAIT_TIMEOUT_MS, TimeUnit.MILLISECONDS));
+                AwActivityTestRule.SCALED_WAIT_TIMEOUT_MS, TimeUnit.MILLISECONDS));
     }
 
     @Test
@@ -380,7 +380,7 @@ public class VisualStateTest {
                 awContents, awContentsClient.getOnPageFinishedHelper(), FULLSCREEN_TEST_URL);
 
         Assert.assertTrue(readyToEnterFullscreenSignal.await(
-                AwActivityTestRule.WAIT_TIMEOUT_MS, TimeUnit.MILLISECONDS));
+                AwActivityTestRule.SCALED_WAIT_TIMEOUT_MS, TimeUnit.MILLISECONDS));
         DOMUtils.clickNode(webContents, ENTER_FULLSCREEN_CONTROL_ID);
         Assert.assertTrue(jsObserver.waitForEvent(WAIT_TIMEOUT_MS));
 
@@ -398,7 +398,7 @@ public class VisualStateTest {
                 }));
 
         Assert.assertTrue(testFinishedSignal.await(
-                AwActivityTestRule.WAIT_TIMEOUT_MS, TimeUnit.MILLISECONDS));
+                AwActivityTestRule.SCALED_WAIT_TIMEOUT_MS, TimeUnit.MILLISECONDS));
     }
 
     private AwTestContainerView createDetachedTestContainerViewOnMainSync(
@@ -448,7 +448,7 @@ public class VisualStateTest {
         });
 
         Assert.assertTrue(testFinishedSignal.await(
-                AwActivityTestRule.WAIT_TIMEOUT_MS, TimeUnit.MILLISECONDS));
+                AwActivityTestRule.SCALED_WAIT_TIMEOUT_MS, TimeUnit.MILLISECONDS));
     }
 
     private static final LoadUrlParams createTestPageUrl(String backgroundColor) {

@@ -130,7 +130,7 @@ public class ComponentsProviderServiceTest {
             }
         });
         Assert.assertTrue("Timeout waiting to receive result from getFilesForComponent",
-                latch.await(AwActivityTestRule.WAIT_TIMEOUT_MS, TimeUnit.MILLISECONDS));
+                latch.await(AwActivityTestRule.SCALED_WAIT_TIMEOUT_MS, TimeUnit.MILLISECONDS));
 
         return result.isEmpty() ? null : result;
     }

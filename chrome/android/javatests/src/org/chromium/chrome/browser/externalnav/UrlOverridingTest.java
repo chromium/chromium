@@ -37,7 +37,6 @@ import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DisabledTest;
-import org.chromium.base.test.util.ScalableTimeout;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.document.ChromeLauncherActivity;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
@@ -447,7 +446,7 @@ public class UrlOverridingTest {
 
         CriteriaHelper.pollUiThread(() -> {
             Criteria.checkThat(mActivityMonitor.getHits(), Matchers.is(1));
-        }, ScalableTimeout.scaleTimeout(10000L), CriteriaHelper.DEFAULT_POLLING_INTERVAL);
+        }, 10000L, CriteriaHelper.DEFAULT_POLLING_INTERVAL);
         ApplicationTestUtils.waitForActivityState(activity, Stage.STOPPED);
     }
 

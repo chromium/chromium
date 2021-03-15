@@ -254,7 +254,8 @@ public class AwContentsTest {
         });
         InstrumentationRegistry.getInstrumentation().runOnMainSync(
                 () -> awContents.documentHasImages(msg));
-        Assert.assertTrue(s.tryAcquire(AwActivityTestRule.WAIT_TIMEOUT_MS, TimeUnit.MILLISECONDS));
+        Assert.assertTrue(
+                s.tryAcquire(AwActivityTestRule.SCALED_WAIT_TIMEOUT_MS, TimeUnit.MILLISECONDS));
         int result = val.get();
         return result;
     }

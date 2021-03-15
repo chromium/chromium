@@ -83,7 +83,6 @@ import org.chromium.base.test.util.CriteriaNotSatisfiedException;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Restriction;
-import org.chromium.base.test.util.ScalableTimeout;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ChromeApplication;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
@@ -801,7 +800,7 @@ public class CustomTabActivityTest {
                                        LaunchCauseMetrics.LAUNCH_CAUSE_HISTOGRAM,
                                        LaunchCauseMetrics.LaunchCause.OPEN_IN_BROWSER_FROM_MENU),
                     Matchers.is(1));
-        }, ScalableTimeout.scaleTimeout(5000L), CriteriaHelper.DEFAULT_POLLING_INTERVAL);
+        }, 5000L, CriteriaHelper.DEFAULT_POLLING_INTERVAL);
         activity.finish();
     }
 

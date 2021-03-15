@@ -4,8 +4,6 @@
 
 package org.chromium.android_webview.test;
 
-import static org.chromium.base.test.util.ScalableTimeout.scaleTimeout;
-
 import android.content.Context;
 import android.content.Intent;
 import android.support.test.InstrumentationRegistry;
@@ -34,6 +32,7 @@ import org.chromium.base.test.util.ApplicationTestUtils;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.InMemorySharedPreferences;
+import org.chromium.base.test.util.ScalableTimeout;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.content_public.browser.test.util.TestCallbackHelperContainer.OnPageFinishedHelper;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
@@ -55,7 +54,10 @@ import java.util.regex.Pattern;
 
 /** Custom ActivityTestRunner for WebView instrumentation tests */
 public class AwActivityTestRule extends BaseActivityTestRule<AwTestRunnerActivity> {
-    public static final long WAIT_TIMEOUT_MS = scaleTimeout(15000L);
+    public static final long WAIT_TIMEOUT_MS = 15000L;
+
+    // Only use scaled timeout if you are certain it's not being called further up the call stack.
+    public static final long SCALED_WAIT_TIMEOUT_MS = ScalableTimeout.scaleTimeout(15000L);
 
     public static final int CHECK_INTERVAL = 100;
 
@@ -569,7 +571,7 @@ public class AwActivityTestRule extends BaseActivityTestRule<AwTestRunnerActivit
      */
     public static <T> T waitForFuture(Future<T> future) {
         try {
-            return future.get(WAIT_TIMEOUT_MS, TimeUnit.MILLISECONDS);
+            return future.get(SCALED_WAIT_TIMEOUT_MS, TimeUnit.MILLISECONDS);
         } catch (ExecutionException e) {
             // ExecutionException means this Future has an associated Exception that we should
             // re-throw on the current thread. We throw the cause instead of ExecutionException,
@@ -600,7 +602,7 @@ public class AwActivityTestRule extends BaseActivityTestRule<AwTestRunnerActivit
      * Takes an element out of the {@link BlockingQueue} (or times out).
      */
     public static <T> T waitForNextQueueElement(BlockingQueue<T> queue) throws Exception {
-        T value = queue.poll(WAIT_TIMEOUT_MS, TimeUnit.MILLISECONDS);
+        T value = queue.poll(SCALED_WAIT_TIMEOUT_MS, TimeUnit.MILLISECONDS);
         if (value == null) {
             // {@code null} is the special value which means {@link BlockingQueue#poll} has timed
             // out (also: there's no risk for collision with real values, because BlockingQueue does

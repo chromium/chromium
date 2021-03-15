@@ -4,7 +4,7 @@
 
 package org.chromium.android_webview.test;
 
-import static org.chromium.android_webview.test.AwActivityTestRule.WAIT_TIMEOUT_MS;
+import static org.chromium.android_webview.test.AwActivityTestRule.SCALED_WAIT_TIMEOUT_MS;
 
 import android.support.test.InstrumentationRegistry;
 import android.util.Pair;
@@ -351,7 +351,7 @@ public class ClientOnPageFinishedTest {
                     "/about.html", CommonResources.ABOUT_HTML, null,
                     () -> {
                         try {
-                            Assert.assertTrue(latch.await(WAIT_TIMEOUT_MS,
+                            Assert.assertTrue(latch.await(SCALED_WAIT_TIMEOUT_MS,
                                     java.util.concurrent.TimeUnit.MILLISECONDS));
                         } catch (InterruptedException e) {
                             Assert.fail("Caught InterruptedException " + e);
@@ -493,8 +493,8 @@ public class ClientOnPageFinishedTest {
                         try {
                             // Delay the server response so that we guarantee stopLoading() comes
                             // before the server response.
-                            Assert.assertTrue(firstUrlLatch.await(
-                                    WAIT_TIMEOUT_MS, java.util.concurrent.TimeUnit.MILLISECONDS));
+                            Assert.assertTrue(firstUrlLatch.await(SCALED_WAIT_TIMEOUT_MS,
+                                    java.util.concurrent.TimeUnit.MILLISECONDS));
                         } catch (InterruptedException e) {
                             Assert.fail("Caught InterruptedException " + e);
                         }
@@ -541,7 +541,7 @@ public class ClientOnPageFinishedTest {
                     "/stallingImage.html", "", null /* headers */, () -> {
                         serverImageUrlLatch.countDown();
                         try {
-                            Assert.assertTrue(testDoneLatch.await(WAIT_TIMEOUT_MS,
+                            Assert.assertTrue(testDoneLatch.await(SCALED_WAIT_TIMEOUT_MS,
                                     java.util.concurrent.TimeUnit.MILLISECONDS));
                         } catch (InterruptedException e) {
                             Assert.fail("Caught InterruptedException " + e);
@@ -556,7 +556,7 @@ public class ClientOnPageFinishedTest {
             mActivityTestRule.loadUrlAsync(mAwContents, mainPageUrl);
 
             Assert.assertTrue(serverImageUrlLatch.await(
-                    WAIT_TIMEOUT_MS, java.util.concurrent.TimeUnit.MILLISECONDS));
+                    SCALED_WAIT_TIMEOUT_MS, java.util.concurrent.TimeUnit.MILLISECONDS));
             Assert.assertEquals(0, onPageFinishedHelper.getCallCount());
             // Our load isn't done since we haven't loaded the image - now cancel the load.
             mActivityTestRule.stopLoading(mAwContents);

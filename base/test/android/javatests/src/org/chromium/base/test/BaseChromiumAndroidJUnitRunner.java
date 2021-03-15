@@ -105,9 +105,9 @@ public class BaseChromiumAndroidJUnitRunner extends AndroidJUnitRunner {
     // crashed.
     private static final String BUNDLE_STACK_ID = "stack";
 
-    private static final long WAIT_FOR_IDLE_TIMEOUT_MS = ScalableTimeout.scaleTimeout(10000L);
+    private static final long WAIT_FOR_IDLE_TIMEOUT_MS = 10000L;
 
-    private static final long FINISH_APP_TASKS_TIMEOUT_MS = ScalableTimeout.scaleTimeout(3000L);
+    private static final long FINISH_APP_TASKS_TIMEOUT_MS = 3000L;
     private static final long FINISH_APP_TASKS_POLL_INTERVAL_MS = 100;
 
     static InMemorySharedPreferencesContext sInMemorySharedPreferencesContext;
@@ -548,7 +548,8 @@ public class BaseChromiumAndroidJUnitRunner extends AndroidJUnitRunner {
         for (ActivityManager.AppTask task : activityManager.getAppTasks()) {
             task.finishAndRemoveTask();
         }
-        long endTime = SystemClock.uptimeMillis() + FINISH_APP_TASKS_TIMEOUT_MS;
+        long endTime = SystemClock.uptimeMillis()
+                + ScalableTimeout.scaleTimeout(FINISH_APP_TASKS_TIMEOUT_MS);
         while (activityManager.getAppTasks().size() != 0 && SystemClock.uptimeMillis() < endTime) {
             try {
                 Thread.sleep(FINISH_APP_TASKS_POLL_INTERVAL_MS);

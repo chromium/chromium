@@ -105,7 +105,7 @@ public class AwSecondBrowserProcessTest {
         Assert.assertNotNull(context.startService(intent));
         Assert.assertTrue(context.bindService(intent, mConnection, 0));
         Assert.assertTrue(mSecondBrowserProcessLatch.await(
-                AwActivityTestRule.WAIT_TIMEOUT_MS, TimeUnit.MILLISECONDS));
+                AwActivityTestRule.SCALED_WAIT_TIMEOUT_MS, TimeUnit.MILLISECONDS));
         mSecondBrowserProcessLatch = null;
     }
 

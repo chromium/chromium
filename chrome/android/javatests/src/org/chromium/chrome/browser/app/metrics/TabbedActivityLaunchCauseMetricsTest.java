@@ -45,7 +45,6 @@ import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.JniMocker;
-import org.chromium.base.test.util.ScalableTimeout;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.LauncherShortcutActivity;
@@ -180,7 +179,7 @@ public final class TabbedActivityLaunchCauseMetricsTest {
             Criteria.checkThat(
                     histogramCountForValue(LaunchCauseMetrics.LaunchCause.HOME_SCREEN_WIDGET),
                     Matchers.is(count));
-        }, ScalableTimeout.scaleTimeout(5000L), CriteriaHelper.DEFAULT_POLLING_INTERVAL);
+        }, 5000L, CriteriaHelper.DEFAULT_POLLING_INTERVAL);
     }
 
     private static class TestContext extends ContextWrapper {
@@ -230,7 +229,7 @@ public final class TabbedActivityLaunchCauseMetricsTest {
                     histogramCountForValue(
                             LaunchCauseMetrics.LaunchCause.EXTERNAL_SEARCH_ACTION_INTENT),
                     Matchers.is(count));
-        }, ScalableTimeout.scaleTimeout(5000L), CriteriaHelper.DEFAULT_POLLING_INTERVAL);
+        }, 5000L, CriteriaHelper.DEFAULT_POLLING_INTERVAL);
 
         ApplicationTestUtils.finishActivity(cta);
         ApplicationTestUtils.finishActivity(searchActivity);
@@ -251,6 +250,6 @@ public final class TabbedActivityLaunchCauseMetricsTest {
         CriteriaHelper.pollInstrumentationThread(() -> {
             Criteria.checkThat(histogramCountForValue(LaunchCauseMetrics.LaunchCause.NOTIFICATION),
                     Matchers.is(count));
-        }, ScalableTimeout.scaleTimeout(5000L), CriteriaHelper.DEFAULT_POLLING_INTERVAL);
+        }, 5000L, CriteriaHelper.DEFAULT_POLLING_INTERVAL);
     }
 }

@@ -6,6 +6,7 @@ package org.chromium.android_webview.test;
 
 import static org.junit.Assert.assertNotEquals;
 
+import static org.chromium.android_webview.test.AwActivityTestRule.SCALED_WAIT_TIMEOUT_MS;
 import static org.chromium.android_webview.test.AwActivityTestRule.WAIT_TIMEOUT_MS;
 
 import android.webkit.WebSettings;
@@ -371,8 +372,7 @@ public class ClientOnReceivedError2Test {
                 "/about.html", CommonResources.ABOUT_HTML, null,
                 () -> {
                     try {
-                        latch.await(
-                                WAIT_TIMEOUT_MS, TimeUnit.MILLISECONDS);
+                        latch.await(SCALED_WAIT_TIMEOUT_MS, TimeUnit.MILLISECONDS);
                     } catch (InterruptedException e) {
                         Assert.fail("Caught InterruptedException " + e);
                     }

@@ -4,7 +4,7 @@
 
 package org.chromium.android_webview.test;
 
-import static org.chromium.android_webview.test.AwActivityTestRule.WAIT_TIMEOUT_MS;
+import static org.chromium.android_webview.test.AwActivityTestRule.SCALED_WAIT_TIMEOUT_MS;
 
 import android.support.test.InstrumentationRegistry;
 import android.util.Pair;
@@ -1049,8 +1049,8 @@ public class AwContentsClientShouldInterceptRequestTest {
         final String destinationUrl = mWebServer.setResponse("/hello.txt", "", headers);
 
         final Future<String> future = loadDataAndFetch(destinationUrl);
-        Assert.assertEquals(
-                "fetch should succeed", "cors", future.get(WAIT_TIMEOUT_MS, TimeUnit.MILLISECONDS));
+        Assert.assertEquals("fetch should succeed", "cors",
+                future.get(SCALED_WAIT_TIMEOUT_MS, TimeUnit.MILLISECONDS));
         Assert.assertEquals(2, mShouldInterceptRequestHelper.getUrls().size());
         Assert.assertEquals(destinationUrl, mShouldInterceptRequestHelper.getUrls().get(1));
     }
@@ -1067,8 +1067,8 @@ public class AwContentsClientShouldInterceptRequestTest {
 
         final Future<String> future = loadDataAndFetch(destinationUrl);
         // The request fails due to origin mismatch.
-        Assert.assertEquals(
-                "fetch should fail", "error", future.get(WAIT_TIMEOUT_MS, TimeUnit.MILLISECONDS));
+        Assert.assertEquals("fetch should fail", "error",
+                future.get(SCALED_WAIT_TIMEOUT_MS, TimeUnit.MILLISECONDS));
         Assert.assertEquals(2, mShouldInterceptRequestHelper.getUrls().size());
         Assert.assertEquals(destinationUrl, mShouldInterceptRequestHelper.getUrls().get(1));
     }
@@ -1086,8 +1086,8 @@ public class AwContentsClientShouldInterceptRequestTest {
 
         // PUT is not a safelisted method and triggers a preflight.
         final Future<String> future = loadDataAndFetch(destinationUrl, "PUT");
-        Assert.assertEquals(
-                "fetch should succeed", "cors", future.get(WAIT_TIMEOUT_MS, TimeUnit.MILLISECONDS));
+        Assert.assertEquals("fetch should succeed", "cors",
+                future.get(SCALED_WAIT_TIMEOUT_MS, TimeUnit.MILLISECONDS));
         Assert.assertEquals(3, mShouldInterceptRequestHelper.getUrls().size());
         Assert.assertEquals("preflight request should be visible to shouldInterceptRequest",
                 destinationUrl, mShouldInterceptRequestHelper.getUrls().get(1));
@@ -1108,8 +1108,8 @@ public class AwContentsClientShouldInterceptRequestTest {
         // PUT is not a safelisted method and triggers a preflight.
         final Future<String> future = loadDataAndFetch(destinationUrl, "PUT");
         // The request fails due to the lack of access-control-allow-methods.
-        Assert.assertEquals(
-                "fetch should fail", "error", future.get(WAIT_TIMEOUT_MS, TimeUnit.MILLISECONDS));
+        Assert.assertEquals("fetch should fail", "error",
+                future.get(SCALED_WAIT_TIMEOUT_MS, TimeUnit.MILLISECONDS));
         Assert.assertEquals(2, mShouldInterceptRequestHelper.getUrls().size());
         Assert.assertEquals("preflight request should be visible to shouldInterceptRequest",
                 destinationUrl, mShouldInterceptRequestHelper.getUrls().get(1));
@@ -1135,8 +1135,8 @@ public class AwContentsClientShouldInterceptRequestTest {
         mShouldInterceptRequestHelper.setReturnValueForUrl(destinationUrl, response);
 
         final Future<String> future = loadDataAndFetch(destinationUrl);
-        Assert.assertEquals(
-                "fetch should succeed", "cors", future.get(WAIT_TIMEOUT_MS, TimeUnit.MILLISECONDS));
+        Assert.assertEquals("fetch should succeed", "cors",
+                future.get(SCALED_WAIT_TIMEOUT_MS, TimeUnit.MILLISECONDS));
         Assert.assertEquals(2, mShouldInterceptRequestHelper.getUrls().size());
         Assert.assertEquals(destinationUrl, mShouldInterceptRequestHelper.getUrls().get(1));
 
@@ -1162,8 +1162,8 @@ public class AwContentsClientShouldInterceptRequestTest {
         mShouldInterceptRequestHelper.setReturnValueForUrl(destinationUrl, response);
 
         final Future<String> future = loadDataAndFetch(destinationUrl);
-        Assert.assertEquals(
-                "fetch should fail", "error", future.get(WAIT_TIMEOUT_MS, TimeUnit.MILLISECONDS));
+        Assert.assertEquals("fetch should fail", "error",
+                future.get(SCALED_WAIT_TIMEOUT_MS, TimeUnit.MILLISECONDS));
         Assert.assertEquals(2, mShouldInterceptRequestHelper.getUrls().size());
         Assert.assertEquals(destinationUrl, mShouldInterceptRequestHelper.getUrls().get(1));
 
@@ -1192,8 +1192,8 @@ public class AwContentsClientShouldInterceptRequestTest {
 
         // PUT is not a safelisted method and triggers a preflight.
         final Future<String> future = loadDataAndFetch(destinationUrl, "PUT");
-        Assert.assertEquals(
-                "fetch should succeed", "cors", future.get(WAIT_TIMEOUT_MS, TimeUnit.MILLISECONDS));
+        Assert.assertEquals("fetch should succeed", "cors",
+                future.get(SCALED_WAIT_TIMEOUT_MS, TimeUnit.MILLISECONDS));
         Assert.assertEquals(3, mShouldInterceptRequestHelper.getUrls().size());
         Assert.assertEquals("preflight request should be visible to shouldInterceptRequest",
                 destinationUrl, mShouldInterceptRequestHelper.getUrls().get(1));
@@ -1224,8 +1224,8 @@ public class AwContentsClientShouldInterceptRequestTest {
 
         // PUT is not a safelisted method and triggers a preflight.
         final Future<String> future = loadDataAndFetch(destinationUrl, "PUT");
-        Assert.assertEquals(
-                "fetch should fail", "error", future.get(WAIT_TIMEOUT_MS, TimeUnit.MILLISECONDS));
+        Assert.assertEquals("fetch should fail", "error",
+                future.get(SCALED_WAIT_TIMEOUT_MS, TimeUnit.MILLISECONDS));
         Assert.assertEquals(2, mShouldInterceptRequestHelper.getUrls().size());
         Assert.assertEquals("preflight request should be visible to shouldInterceptRequest",
                 destinationUrl, mShouldInterceptRequestHelper.getUrls().get(1));
@@ -1247,7 +1247,7 @@ public class AwContentsClientShouldInterceptRequestTest {
 
         final Future<String> future = loadUrlAndFetch(pageUrl, fetchUrl);
         Assert.assertEquals("fetch result check", fetchResult,
-                future.get(WAIT_TIMEOUT_MS, TimeUnit.MILLISECONDS));
+                future.get(SCALED_WAIT_TIMEOUT_MS, TimeUnit.MILLISECONDS));
 
         Assert.assertEquals(2, mShouldInterceptRequestHelper.getUrls().size());
         Assert.assertEquals(pageUrl, mShouldInterceptRequestHelper.getUrls().get(0));
@@ -1307,8 +1307,8 @@ public class AwContentsClientShouldInterceptRequestTest {
         mShouldInterceptRequestHelper.setReturnValueForUrl(fetchUrl, response);
 
         final Future<String> future = loadUrlAndFetch(pageUrl, fetchUrl);
-        Assert.assertEquals(
-                "fetch result check", "error", future.get(WAIT_TIMEOUT_MS, TimeUnit.MILLISECONDS));
+        Assert.assertEquals("fetch result check", "error",
+                future.get(SCALED_WAIT_TIMEOUT_MS, TimeUnit.MILLISECONDS));
 
         // Only the main resource request reaches to the network stack.
         Assert.assertEquals(1, mShouldInterceptRequestHelper.getUrls().size());
@@ -1331,7 +1331,7 @@ public class AwContentsClientShouldInterceptRequestTest {
         final Future<String> futureToFail =
                 loadUrlAndFetch(pageUrl, fetchUrlToFail, preflightTriggeringMethod);
         Assert.assertEquals("fetch result check", "error",
-                futureToFail.get(WAIT_TIMEOUT_MS, TimeUnit.MILLISECONDS));
+                futureToFail.get(SCALED_WAIT_TIMEOUT_MS, TimeUnit.MILLISECONDS));
 
         Assert.assertEquals(2, mShouldInterceptRequestHelper.getUrls().size());
         Assert.assertEquals(pageUrl, mShouldInterceptRequestHelper.getUrls().get(0));
@@ -1365,7 +1365,7 @@ public class AwContentsClientShouldInterceptRequestTest {
         final Future<String> futureToPass =
                 loadUrlAndFetch(pageUrl, fetchUrlToPass, preflightTriggeringMethod);
         Assert.assertEquals("fetch result check", "cors",
-                futureToPass.get(WAIT_TIMEOUT_MS, TimeUnit.MILLISECONDS));
+                futureToPass.get(SCALED_WAIT_TIMEOUT_MS, TimeUnit.MILLISECONDS));
 
         Assert.assertEquals(3, mShouldInterceptRequestHelper.getUrls().size());
         Assert.assertEquals(pageUrl, mShouldInterceptRequestHelper.getUrls().get(0));
