@@ -12,10 +12,32 @@
 #include "third_party/blink/renderer/modules/buckets/storage_bucket.h"
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
+#include "third_party/blink/renderer/platform/wtf/text/ascii_ctype.h"
 
 namespace blink {
 
 namespace {
+
+bool IsValidName(const String& name) {
+  if (!name.IsLowerASCII())
+    return false;
+
+  if (!name.ContainsOnlyASCIIOrEmpty())
+    return false;
+
+  if (name.IsEmpty() || name.length() >= 64)
+    return false;
+
+  // | name | must only contain lowercase latin letters, digits 0-9, or special
+  // characters '-' & '_' in the middle of the name, but not at the beginning.
+  for (wtf_size_t i = 0; i < name.length(); i++) {
+    if (!IsASCIIAlphanumeric(name[i]) &&
+        (i == 0 || (name[i] != '_' && name[i] != '-'))) {
+      return false;
+    }
+  }
+  return true;
+}
 
 mojom::blink::BucketPoliciesPtr ToMojoBucketPolicies(
     const StorageBucketOptions* options) {
@@ -71,6 +93,13 @@ ScriptPromise StorageBucketManager::open(ScriptState* script_state,
   mojom::blink::BucketPoliciesPtr bucket_policies =
       ToMojoBucketPolicies(options);
 
+  if (!IsValidName(name)) {
+    resolver->Reject(MakeGarbageCollected<DOMException>(
+        DOMExceptionCode::kInvalidCharacterError,
+        "The bucket name '" + name + "' is not a valid name."));
+    return promise;
+  }
+
   GetBucketManager(script_state)
       ->OpenBucket(name, std::move(bucket_policies),
                    WTF::Bind(&StorageBucketManager::DidOpen,
@@ -94,6 +123,13 @@ ScriptPromise StorageBucketManager::Delete(ScriptState* script_state,
                                            ExceptionState& exception_state) {
   auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
   ScriptPromise promise = resolver->Promise();
+
+  if (!IsValidName(name)) {
+    resolver->Reject(MakeGarbageCollected<DOMException>(
+        DOMExceptionCode::kInvalidCharacterError,
+        "The bucket name " + name + " is not a valid name."));
+    return promise;
+  }
 
   GetBucketManager(script_state)
       ->DeleteBucket(name,

@@ -7,29 +7,6 @@
 // Split and add extensive testing once implementation for the endpoints are
 // added and method definitions are more defined.
 promise_test(async testCase => {
-  await navigator.storageBuckets.open('bucket_name');
-  testCase.add_cleanup(async () => {
-    await navigator.storageBuckets.delete('bucket_name');
-  });
-
-  const buckets = await navigator.storageBuckets.keys();
-  assert_equals(buckets.length, 1);
-  assert_equals(buckets[0], 'bucket_name');
-}, 'open() stores bucket name');
-
-promise_test(async testCase => {
-  await navigator.storageBuckets.open('bucket_name');
-  await navigator.storageBuckets.open('bucket_name');
-  testCase.add_cleanup(async () => {
-    await navigator.storageBuckets.delete('bucket_name');
-  });
-
-  const buckets = await navigator.storageBuckets.keys();
-  assert_equals(buckets.length, 1);
-  assert_equals(buckets[0], 'bucket_name');
-}, 'open() does not store duplicate bucket name');
-
-promise_test(async testCase => {
   await navigator.storageBuckets.open('bucket_name3');
   await navigator.storageBuckets.open('bucket_name1');
   await navigator.storageBuckets.open('bucket_name2');
