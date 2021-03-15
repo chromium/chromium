@@ -15,6 +15,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/sequence_checker.h"
 #include "base/version.h"
+#include "chrome/updater/check_for_updates_task.h"
 #include "chrome/updater/update_service_internal.h"
 
 namespace updater {
@@ -33,16 +34,6 @@ class UpdateServiceInternalImpl : public UpdateServiceInternal {
 
   void Uninitialize() override;
 
-  class Task : public base::RefCountedThreadSafe<Task> {
-   public:
-    virtual void Run() = 0;
-
-   protected:
-    friend class base::RefCountedThreadSafe<Task>;
-
-    virtual ~Task() = default;
-  };
-
   // Callback to run after a `Task` has finished.
   void TaskDone(base::OnceClosure callback);
 
@@ -56,7 +47,7 @@ class UpdateServiceInternalImpl : public UpdateServiceInternal {
 
   // The queue prevents multiple Task instances from running simultaneously and
   // processes them sequentially.
-  base::queue<scoped_refptr<Task>> tasks_;
+  base::queue<scoped_refptr<CheckForUpdatesTask>> tasks_;
 };
 
 }  // namespace updater

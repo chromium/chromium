@@ -120,6 +120,8 @@ if (is_win || is_mac) {
       "app/app_update.h",
       "app/app_wake.cc",
       "app/app_wake.h",
+      "check_for_updates_task.cc",
+      "check_for_updates_task.h",
       "configurator.cc",
       "configurator.h",
       "crx_downloader_factory.h",
