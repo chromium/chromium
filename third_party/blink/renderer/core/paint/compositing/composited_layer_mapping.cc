@@ -1914,6 +1914,9 @@ void CompositedLayerMapping::PaintScrollableArea(
     const GraphicsLayer* graphics_layer,
     GraphicsContext& context,
     const IntRect& interest_rect) const {
+  if (GetLayoutObject().StyleRef().Visibility() != EVisibility::kVisible)
+    return;
+
   // cull_rect is in the space of the containing scrollable area in which
   // Scrollbar::Paint() will paint the scrollbar.
   CullRect cull_rect(interest_rect);
