@@ -21,20 +21,6 @@
 
 namespace ui {
 
-namespace {
-
-float GetDeviceScaleFactor() {
-  float device_scale_factor = 1.0f;
-  // TODO(crbug.com/891175): Implement PlatformScreen for X11
-  // Get device scale factor using scale factor and resolution like
-  // 'GtkUi::GetRawDeviceScaleFactor'.
-  if (display::Display::HasForceDeviceScaleFactor())
-    device_scale_factor = display::Display::GetForcedDeviceScaleFactor();
-  return device_scale_factor;
-}
-
-}  // namespace
-
 X11ScreenOzone::X11ScreenOzone()
     : window_manager_(X11WindowManager::GetInstance()),
       x11_display_manager_(std::make_unique<XDisplayManager>(this)) {
@@ -83,7 +69,7 @@ gfx::Point X11ScreenOzone::GetCursorScreenPoint() const {
   }
   // TODO(danakj): Should this be rounded? Or kept as a floating point?
   return gfx::ToFlooredPoint(
-      gfx::ConvertPointToDips(*point_in_pixels, GetDeviceScaleFactor()));
+      gfx::ConvertPointToDips(*point_in_pixels, GetXDisplayScaleFactor()));
 }
 
 gfx::AcceleratedWidget X11ScreenOzone::GetAcceleratedWidgetAtScreenPoint(
@@ -111,7 +97,7 @@ display::Display X11ScreenOzone::GetDisplayNearestPoint(
 display::Display X11ScreenOzone::GetDisplayMatching(
     const gfx::Rect& match_rect_in_pixels) const {
   gfx::Rect match_rect = gfx::ToEnclosingRect(
-      gfx::ConvertRectToDips(match_rect_in_pixels, GetDeviceScaleFactor()));
+      gfx::ConvertRectToDips(match_rect_in_pixels, GetXDisplayScaleFactor()));
   const display::Display* matching_display =
       display::FindDisplayWithBiggestIntersection(
           x11_display_manager_->displays(), match_rect);
@@ -150,6 +136,14 @@ base::Value X11ScreenOzone::GetGpuExtraInfoAsListValue(
                                      gpu_extra_info.rgba_visual);
 }
 
+void X11ScreenOzone::SetDeviceScaleFactor(float scale) {
+  if (device_scale_factor_ == scale)
+    return;
+
+  device_scale_factor_ = scale;
+  x11_display_manager_->DispatchDelayedDisplayListUpdate();
+}
+
 void X11ScreenOzone::OnEvent(const x11::Event& xev) {
   x11_display_manager_->OnEvent(xev);
 }
@@ -165,7 +159,9 @@ void X11ScreenOzone::OnXDisplayListUpdated() {
 }
 
 float X11ScreenOzone::GetXDisplayScaleFactor() const {
-  return GetDeviceScaleFactor();
+  return display::Display::HasForceDeviceScaleFactor()
+             ? display::Display::GetForcedDeviceScaleFactor()
+             : device_scale_factor_;
 }
 
 }  // namespace ui

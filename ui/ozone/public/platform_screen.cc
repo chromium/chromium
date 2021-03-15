@@ -43,4 +43,6 @@ base::Value PlatformScreen::GetGpuExtraInfoAsListValue(
   return base::Value(base::Value::Type::LIST);
 }
 
+void PlatformScreen::SetDeviceScaleFactor(float scale) {}
+
 }  // namespace ui

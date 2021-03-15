@@ -54,6 +54,9 @@ class AURA_EXPORT ScreenOzone : public display::Screen {
   virtual gfx::NativeWindow GetNativeWindowFromAcceleratedWidget(
       gfx::AcceleratedWidget widget) const;
 
+ protected:
+  ui::PlatformScreen* platform_screen() { return platform_screen_.get(); }
+
  private:
   gfx::AcceleratedWidget GetAcceleratedWidgetForWindow(
       aura::Window* window) const;

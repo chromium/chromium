@@ -54,6 +54,7 @@ class X11ScreenOzone : public PlatformScreen,
   std::string GetCurrentWorkspace() override;
   base::Value GetGpuExtraInfoAsListValue(
       const gfx::GpuExtraInfo& gpu_extra_info) override;
+  void SetDeviceScaleFactor(float scale) override;
 
   // Overridden from x11::EventObserver:
   void OnEvent(const x11::Event& event) override;
@@ -69,6 +70,10 @@ class X11ScreenOzone : public PlatformScreen,
 
   X11WindowManager* const window_manager_;
   std::unique_ptr<ui::XDisplayManager> x11_display_manager_;
+
+  // Scale value that DesktopScreenOzoneLinux sets by listening to
+  // DeviceScaleFactorObserver.
+  float device_scale_factor_ = 1.0f;
 
   DISALLOW_COPY_AND_ASSIGN(X11ScreenOzone);
 };
