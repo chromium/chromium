@@ -635,3 +635,9 @@ ALL_PLATFORM_NAMES = {
 OFFICIAL_PLATFORM_NAMES = {
     p.name for p in OFFICIAL_PLATFORMS
 }
+
+
+def find_bot_platform(builder_name):
+  for bot_platform in ALL_PLATFORMS:
+    if bot_platform.name == builder_name:
+      return bot_platform
