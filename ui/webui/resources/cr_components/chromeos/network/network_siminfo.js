@@ -23,6 +23,12 @@ Polymer({
       observer: 'deviceStateChanged_',
     },
 
+    /** @type {?OncMojo.NetworkStateProperties} */
+    networkState: {
+      type: Object,
+      value: null,
+    },
+
     /**
      * Reflects deviceState.simLockStatus.lockEnabled for the
      * toggle button.
@@ -47,6 +53,16 @@ Polymer({
     showChangePin_: {
       type: Boolean,
       value: false,
+    },
+
+    /**
+     * Indicates that the current network is on the active sim slot.
+     * @private {boolean}
+     */
+    isActiveSim_: {
+      type: Boolean,
+      value: false,
+      computed: 'computeIsActiveSim_(networkState, deviceState)'
     }
   },
 
@@ -169,7 +185,7 @@ Polymer({
     if (!simLockStatus) {
       return false;
     }
-    return !!simLockStatus.lockType;
+    return !!simLockStatus.lockType && this.isActiveSim_;
   },
 
   /**
@@ -192,5 +208,39 @@ Polymer({
     this.showChangePin_ = showChangePin;
     this.isDialogOpen_ = true;
   },
+
+  /**
+   * @return {boolean}
+   * @private
+   */
+  computeIsActiveSim_() {
+    const mojom = chromeos.networkConfig.mojom;
+    if (!this.networkState ||
+        this.networkState.type !== mojom.NetworkType.kCellular) {
+      return false;
+    }
+
+    const iccid = this.networkState.typeState.cellular.iccid;
+    if (!iccid || !this.deviceState || !this.deviceState.simInfos) {
+      return false;
+    }
+    const isActiveSim = this.deviceState.simInfos.find(simInfo => {
+      return simInfo.iccid === iccid && simInfo.isPrimary;
+    });
+
+    return !!isActiveSim;
+  },
+
+  /**
+   * @return {boolean}
+   * @private
+   */
+  showChangePinButton_() {
+    if (!this.deviceState || !this.deviceState.simLockStatus) {
+      return false;
+    }
+
+    return this.deviceState.simLockStatus.lockEnabled && this.isActiveSim_;
+  }
 });
 })();
