@@ -751,10 +751,10 @@ bool WebRequestAPI::MaybeProxyURLLoaderFactory(
               browser_context_));
   WebRequestProxyingURLLoaderFactory::StartProxying(
       browser_context, is_navigation ? -1 : render_process_id,
-      &request_id_generator_, std::move(navigation_ui_data),
-      std::move(navigation_id), ukm_source_id, std::move(proxied_receiver),
-      std::move(target_factory_remote), std::move(header_client_receiver),
-      proxies_.get(), type);
+      frame ? frame->GetRoutingID() : MSG_ROUTING_NONE, &request_id_generator_,
+      std::move(navigation_ui_data), std::move(navigation_id), ukm_source_id,
+      std::move(proxied_receiver), std::move(target_factory_remote),
+      std::move(header_client_receiver), proxies_.get(), type);
   return true;
 }
 

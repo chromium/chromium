@@ -16,6 +16,7 @@
 #include "base/optional.h"
 #include "components/keyed_service/core/keyed_service_shutdown_notifier.h"
 #include "content/public/browser/content_browser_client.h"
+#include "content/public/browser/render_frame_host.h"
 #include "extensions/browser/api/web_request/web_request_api.h"
 #include "extensions/browser/api/web_request/web_request_info.h"
 #include "extensions/common/extension_id.h"
@@ -53,7 +54,8 @@ class WebRequestProxyingURLLoaderFactory
     InProgressRequest(
         WebRequestProxyingURLLoaderFactory* factory,
         uint64_t request_id,
-        int32_t routing_id,
+        int32_t view_routing_id,
+        int32_t frame_routing_id,
         int32_t network_service_request_id,
         uint32_t options,
         ukm::SourceIdObj ukm_source_id,
@@ -64,6 +66,7 @@ class WebRequestProxyingURLLoaderFactory
     // For CORS preflights
     InProgressRequest(WebRequestProxyingURLLoaderFactory* factory,
                       uint64_t request_id,
+                      int32_t frame_routing_id,
                       const network::ResourceRequest& request);
     ~InProgressRequest() override;
 
@@ -178,7 +181,8 @@ class WebRequestProxyingURLLoaderFactory
     const base::Optional<url::Origin> original_initiator_;
     const uint64_t request_id_ = 0;
     const int32_t network_service_request_id_ = 0;
-    const int32_t routing_id_ = 0;
+    const int32_t view_routing_id_ = MSG_ROUTING_NONE;
+    const int32_t frame_routing_id_ = MSG_ROUTING_NONE;
     const uint32_t options_ = 0;
     const ukm::SourceIdObj ukm_source_id_;
     const net::MutableNetworkTrafficAnnotationTag traffic_annotation_;
@@ -247,6 +251,7 @@ class WebRequestProxyingURLLoaderFactory
   WebRequestProxyingURLLoaderFactory(
       content::BrowserContext* browser_context,
       int render_process_id,
+      int frame_routing_id,
       WebRequestAPI::RequestIDGenerator* request_id_generator,
       std::unique_ptr<ExtensionNavigationUIData> navigation_ui_data,
       base::Optional<int64_t> navigation_id,
@@ -264,6 +269,7 @@ class WebRequestProxyingURLLoaderFactory
   static void StartProxying(
       content::BrowserContext* browser_context,
       int render_process_id,
+      int frame_routing_id,
       WebRequestAPI::RequestIDGenerator* request_id_generator,
       std::unique_ptr<ExtensionNavigationUIData> navigation_ui_data,
       base::Optional<int64_t> navigation_id,
@@ -322,6 +328,7 @@ class WebRequestProxyingURLLoaderFactory
 
   content::BrowserContext* const browser_context_;
   const int render_process_id_;
+  const int frame_routing_id_;
   WebRequestAPI::RequestIDGenerator* const request_id_generator_;
   std::unique_ptr<ExtensionNavigationUIData> navigation_ui_data_;
   base::Optional<int64_t> navigation_id_;

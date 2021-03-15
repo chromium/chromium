@@ -159,7 +159,7 @@ WebRequestInfoInitParams::WebRequestInfoInitParams(
     int render_process_id,
     int render_frame_id,
     std::unique_ptr<ExtensionNavigationUIData> navigation_ui_data,
-    int32_t routing_id,
+    int32_t view_routing_id,
     const network::ResourceRequest& request,
     bool is_download,
     bool is_async,
@@ -169,7 +169,7 @@ WebRequestInfoInitParams::WebRequestInfoInitParams(
     : id(request_id),
       url(request.url),
       render_process_id(render_process_id),
-      routing_id(routing_id),
+      view_routing_id(view_routing_id),
       frame_id(render_frame_id),
       method(request.method),
       is_navigation_request(!!navigation_ui_data),
@@ -207,7 +207,7 @@ void WebRequestInfoInitParams::InitializeWebViewAndFrameData(
     // Grab any WebView-related information if relevant.
     WebViewRendererState::WebViewInfo web_view_info;
     if (WebViewRendererState::GetInstance()->GetInfo(
-            render_process_id, routing_id, &web_view_info)) {
+            render_process_id, view_routing_id, &web_view_info)) {
       is_web_view = true;
       web_view_instance_id = web_view_info.instance_id;
       web_view_rules_registry_id = web_view_info.rules_registry_id;
@@ -227,7 +227,7 @@ WebRequestInfo::WebRequestInfo(WebRequestInfoInitParams params)
     : id(params.id),
       url(std::move(params.url)),
       render_process_id(params.render_process_id),
-      routing_id(params.routing_id),
+      view_routing_id(params.view_routing_id),
       frame_id(params.frame_id),
       method(std::move(params.method)),
       is_navigation_request(params.is_navigation_request),

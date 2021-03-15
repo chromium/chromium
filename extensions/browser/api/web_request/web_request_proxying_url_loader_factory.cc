@@ -97,7 +97,8 @@ WebRequestProxyingURLLoaderFactory::InProgressRequest::InProgressRequest(
     WebRequestProxyingURLLoaderFactory* factory,
     uint64_t request_id,
     int32_t network_service_request_id,
-    int32_t routing_id,
+    int32_t view_routing_id,
+    int32_t frame_routing_id,
     uint32_t options,
     ukm::SourceIdObj ukm_source_id,
     const network::ResourceRequest& request,
@@ -109,7 +110,8 @@ WebRequestProxyingURLLoaderFactory::InProgressRequest::InProgressRequest(
       original_initiator_(request.request_initiator),
       request_id_(request_id),
       network_service_request_id_(network_service_request_id),
-      routing_id_(routing_id),
+      view_routing_id_(view_routing_id),
+      frame_routing_id_(frame_routing_id),
       options_(options),
       ukm_source_id_(ukm_source_id),
       traffic_annotation_(traffic_annotation),
@@ -134,11 +136,13 @@ WebRequestProxyingURLLoaderFactory::InProgressRequest::InProgressRequest(
 WebRequestProxyingURLLoaderFactory::InProgressRequest::InProgressRequest(
     WebRequestProxyingURLLoaderFactory* factory,
     uint64_t request_id,
+    int32_t frame_routing_id,
     const network::ResourceRequest& request)
     : factory_(factory),
       request_(request),
       original_initiator_(request.request_initiator),
       request_id_(request_id),
+      frame_routing_id_(frame_routing_id),
       ukm_source_id_(ukm::kInvalidSourceIdObj),
       proxied_loader_receiver_(this),
       for_cors_preflight_(true),
@@ -191,10 +195,10 @@ void WebRequestProxyingURLLoaderFactory::InProgressRequest::
   network::ResourceRequest request_for_info = request_;
   request_for_info.request_initiator = original_initiator_;
   info_.emplace(WebRequestInfoInitParams(
-      request_id_, factory_->render_process_id_, request_.render_frame_id,
+      request_id_, factory_->render_process_id_, frame_routing_id_,
       factory_->navigation_ui_data_ ? factory_->navigation_ui_data_->DeepCopy()
                                     : nullptr,
-      routing_id_, request_for_info, factory_->IsForDownload(),
+      view_routing_id_, request_for_info, factory_->IsForDownload(),
       !(options_ & network::mojom::kURLLoadOptionSynchronous),
       factory_->IsForServiceWorkerScript(), factory_->navigation_id_,
       ukm_source_id_));
@@ -656,7 +660,7 @@ void WebRequestProxyingURLLoaderFactory::InProgressRequest::
     if (has_any_extra_headers_listeners_)
       options |= network::mojom::kURLLoadOptionUseHeaderClient;
     factory_->target_factory_->CreateLoaderAndStart(
-        target_loader_.BindNewPipeAndPassReceiver(), info_->routing_id,
+        target_loader_.BindNewPipeAndPassReceiver(), info_->view_routing_id,
         network_service_request_id_, options, request_,
         proxied_client_receiver_.BindNewPipeAndPassRemote(),
         traffic_annotation_);
@@ -1050,7 +1054,7 @@ void WebRequestProxyingURLLoaderFactory::InProgressRequest::
     // be retrieved in the restarted request, which will call
     // RequestIDGenerator::Generate() with the same ID pair.
     factory_->request_id_generator_->SaveID(
-        routing_id_, network_service_request_id_, request_id_);
+        view_routing_id_, network_service_request_id_, request_id_);
 
     state_ = State::kRedirectFollowedByAnotherInProgressRequest;
     // Deletes |this|.
@@ -1097,6 +1101,7 @@ network::URLLoaderCompletionStatus WebRequestProxyingURLLoaderFactory::
 WebRequestProxyingURLLoaderFactory::WebRequestProxyingURLLoaderFactory(
     content::BrowserContext* browser_context,
     int render_process_id,
+    int frame_routing_id,
     WebRequestAPI::RequestIDGenerator* request_id_generator,
     std::unique_ptr<ExtensionNavigationUIData> navigation_ui_data,
     base::Optional<int64_t> navigation_id,
@@ -1109,6 +1114,7 @@ WebRequestProxyingURLLoaderFactory::WebRequestProxyingURLLoaderFactory(
     content::ContentBrowserClient::URLLoaderFactoryType loader_factory_type)
     : browser_context_(browser_context),
       render_process_id_(render_process_id),
+      frame_routing_id_(frame_routing_id),
       request_id_generator_(request_id_generator),
       navigation_ui_data_(std::move(navigation_ui_data)),
       navigation_id_(std::move(navigation_id)),
@@ -1141,6 +1147,7 @@ WebRequestProxyingURLLoaderFactory::WebRequestProxyingURLLoaderFactory(
 void WebRequestProxyingURLLoaderFactory::StartProxying(
     content::BrowserContext* browser_context,
     int render_process_id,
+    int frame_routing_id,
     WebRequestAPI::RequestIDGenerator* request_id_generator,
     std::unique_ptr<ExtensionNavigationUIData> navigation_ui_data,
     base::Optional<int64_t> navigation_id,
@@ -1154,10 +1161,11 @@ void WebRequestProxyingURLLoaderFactory::StartProxying(
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   auto proxy = std::make_unique<WebRequestProxyingURLLoaderFactory>(
-      browser_context, render_process_id, request_id_generator,
-      std::move(navigation_ui_data), std::move(navigation_id), ukm_source_id,
-      std::move(loader_receiver), std::move(target_factory_remote),
-      std::move(header_client_receiver), proxies, loader_factory_type);
+      browser_context, render_process_id, frame_routing_id,
+      request_id_generator, std::move(navigation_ui_data),
+      std::move(navigation_id), ukm_source_id, std::move(loader_receiver),
+      std::move(target_factory_remote), std::move(header_client_receiver),
+      proxies, loader_factory_type);
 
   proxies->AddProxy(std::move(proxy));
 }
@@ -1198,10 +1206,11 @@ void WebRequestProxyingURLLoaderFactory::CreateLoaderAndStart(
   }
 
   auto result = requests_.emplace(
-      web_request_id, std::make_unique<InProgressRequest>(
-                          this, web_request_id, request_id, routing_id, options,
-                          ukm_source_id_, request, traffic_annotation,
-                          std::move(loader_receiver), std::move(client)));
+      web_request_id,
+      std::make_unique<InProgressRequest>(
+          this, web_request_id, request_id, routing_id, frame_routing_id_,
+          options, ukm_source_id_, request, traffic_annotation,
+          std::move(loader_receiver), std::move(client)));
   result.first->second->Restart();
 }
 
@@ -1238,8 +1247,8 @@ void WebRequestProxyingURLLoaderFactory::OnLoaderForCorsPreflightCreated(
       request_id_generator_->Generate(MSG_ROUTING_NONE, 0);
 
   auto result = requests_.insert(std::make_pair(
-      web_request_id,
-      std::make_unique<InProgressRequest>(this, web_request_id, request)));
+      web_request_id, std::make_unique<InProgressRequest>(
+                          this, web_request_id, frame_routing_id_, request)));
 
   result.first->second->OnLoaderCreated(std::move(receiver));
   result.first->second->Restart();
