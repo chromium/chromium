@@ -6962,21 +6962,6 @@
             ]
         }
     ],
-    "UpdateMenuItem": [
-        {
-            "platforms": [
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "StorageRequired500",
-                    "params": {
-                        "min_required_storage_for_update_mb": "500"
-                    }
-                }
-            ]
-        }
-    ],
     "UseFluentLanguageModel": [
         {
             "platforms": [
