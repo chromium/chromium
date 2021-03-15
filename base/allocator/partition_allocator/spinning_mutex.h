@@ -114,11 +114,18 @@ inline constexpr SpinningMutex::SpinningMutex() = default;
 #if defined(PA_HAS_LINUX_KERNEL)
 
 ALWAYS_INLINE bool SpinningMutex::Try() {
+  // Using the weak variant of compare_exchange(), which may fail spuriously. On
+  // some architectures such as ARM, CAS is typically performed as a LDREX/STREX
+  // pair, where the store may fail. In the strong version, there is a loop
+  // inserted by the compiler to retry in these cases.
+  //
+  // Since we are retrying in Lock() anyway, there is no point having two nested
+  // loops.
   int expected = kUnlocked;
   return (state_.load(std::memory_order_relaxed) == expected) &&
-         state_.compare_exchange_strong(expected, kLockedUncontended,
-                                        std::memory_order_acquire,
-                                        std::memory_order_relaxed);
+         state_.compare_exchange_weak(expected, kLockedUncontended,
+                                      std::memory_order_acquire,
+                                      std::memory_order_relaxed);
 }
 
 ALWAYS_INLINE void SpinningMutex::Release() {
