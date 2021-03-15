@@ -256,6 +256,10 @@ public class CachedFeatureFlags {
                 ChromeFeatureList.isEnabled(ChromeFeatureList.REACHED_CODE_PROFILER),
                 ChromeFeatureList.getFieldTrialParamByFeatureAsInt(
                         ChromeFeatureList.REACHED_CODE_PROFILER, "sampling_interval_us", 0));
+
+        // Similarly, propagate the BACKGROUND_THREAD_POOL feature value to LibraryLoader.
+        LibraryLoader.setBackgroundThreadPoolEnabledOnNextRuns(
+                ChromeFeatureList.isEnabled(ChromeFeatureList.BACKGROUND_THREAD_POOL));
     }
 
     /**

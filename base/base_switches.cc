@@ -31,6 +31,11 @@ const char kEnableFeatures[] = "enable-features";
 // Force low-end device mode when set.
 const char kEnableLowEndDeviceMode[]        = "enable-low-end-device-mode";
 
+// Enable the use of background thread priorities for background tasks in the
+// ThreadPool even on systems where it is disabled by default, e.g. due to
+// concerns about priority inversions.
+const char kEnableBackgroundThreadPool[] = "enable-background-thread-pool";
+
 // This option can be used to force field trials when testing changes locally.
 // The argument is a list of name and value pairs, separated by slashes. If a
 // trial name is prefixed with an asterisk, that trial will start activated.

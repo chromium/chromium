@@ -4,6 +4,8 @@
 
 #include "base/task/thread_pool/environment_config.h"
 
+#include "base/base_switches.h"
+#include "base/command_line.h"
 #include "base/synchronization/lock.h"
 #include "base/threading/platform_thread.h"
 #include "build/build_config.h"
@@ -14,6 +16,12 @@ namespace internal {
 namespace {
 
 bool CanUseBackgroundPriorityForWorkerThreadImpl() {
+  // Commandline flag overrides (e.g. for experiments).
+  if (CommandLine::ForCurrentProcess()->HasSwitch(
+          switches::kEnableBackgroundThreadPool)) {
+    return true;
+  }
+
   // When Lock doesn't handle multiple thread priorities, run all
   // WorkerThread with a normal priority to avoid priority inversion when a
   // thread running with a normal priority tries to acquire a lock held by a

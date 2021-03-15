@@ -29,8 +29,10 @@
 #if defined(OS_ANDROID)
 #include "base/android/build_info.h"
 #include "base/android/bundle_utils.h"
+#include "base/task/thread_pool/environment_config.h"
 #include "chrome/browser/chrome_browser_field_trials_mobile.h"
 #include "chrome/browser/flags/android/cached_feature_flags.h"
+#include "chrome/browser/flags/android/chrome_feature_list.h"
 #include "chrome/common/chrome_features.h"
 #endif
 
@@ -110,26 +112,59 @@ void ChromeBrowserFieldTrials::RegisterSyntheticTrials() {
         kReachedCodeProfilerTrial, reached_code_profiler_group);
   }
 
-  const char* group_name;
-  bool java_feature_enabled =
-      chrome::android::IsJavaDrivenFeatureEnabled(features::kEarlyLibraryLoad);
-  bool feature_enabled =
-      base::FeatureList::IsEnabled(features::kEarlyLibraryLoad);
-  // Use the default group if cc and java feature values don't agree (can happen
-  // on first startup after feature is enabled by Finch), or the feature is not
-  // overridden by Finch.
-  if (feature_enabled != java_feature_enabled ||
-      !base::FeatureList::GetInstance()->IsFeatureOverridden(
-          features::kEarlyLibraryLoad.name)) {
-    group_name = "Default";
-  } else if (java_feature_enabled) {
-    group_name = "Enabled";
-  } else {
-    group_name = "Disabled";
+  {
+    // EarlyLibraryLoadSynthetic field trial.
+    const char* group_name;
+    bool java_feature_enabled = chrome::android::IsJavaDrivenFeatureEnabled(
+        features::kEarlyLibraryLoad);
+    bool feature_enabled =
+        base::FeatureList::IsEnabled(features::kEarlyLibraryLoad);
+    // Use the default group if cc and java feature values don't agree (can
+    // happen on first startup after feature is enabled by Finch), or the
+    // feature is not overridden by Finch.
+    if (feature_enabled != java_feature_enabled ||
+        !base::FeatureList::GetInstance()->IsFeatureOverridden(
+            features::kEarlyLibraryLoad.name)) {
+      group_name = "Default";
+    } else if (java_feature_enabled) {
+      group_name = "Enabled";
+    } else {
+      group_name = "Disabled";
+    }
+    static constexpr char kEarlyLibraryLoadTrial[] =
+        "EarlyLibraryLoadSynthetic";
+    ChromeMetricsServiceAccessor::RegisterSyntheticFieldTrial(
+        kEarlyLibraryLoadTrial, group_name);
   }
-  static constexpr char kEarlyLibraryLoadTrial[] = "EarlyLibraryLoadSynthetic";
-  ChromeMetricsServiceAccessor::RegisterSyntheticFieldTrial(
-      kEarlyLibraryLoadTrial, group_name);
+
+  {
+    // BackgroundThreadPoolSynthetic field trial.
+    const char* group_name;
+    // Target group as indicated by finch feature.
+    bool feature_enabled =
+        base::FeatureList::IsEnabled(chrome::android::kBackgroundThreadPool);
+    bool feature_overridden =
+        base::FeatureList::GetInstance()->IsFeatureOverridden(
+            chrome::android::kBackgroundThreadPool.name);
+    // The finch feature value is cached by Java in a setting and applied via a
+    // command line flag. Check if this has happened -- it may not have happened
+    // if this is the first startup after the feature is enabled.
+    bool actually_enabled =
+        base::internal::CanUseBackgroundPriorityForWorkerThread();
+    // Use the default group if either the feature wasn't overridden by Finch,
+    // or if the feature target state and actual state don't agree.
+    if (actually_enabled != feature_enabled || !feature_overridden) {
+      group_name = "Default";
+    } else if (feature_enabled) {
+      group_name = "Enabled";
+    } else {
+      group_name = "Disabled";
+    }
+    static constexpr char kBackgroundThreadPoolTrial[] =
+        "BackgroundThreadPoolSynthetic";
+    ChromeMetricsServiceAccessor::RegisterSyntheticFieldTrial(
+        kBackgroundThreadPoolTrial, group_name);
+  }
 
   // If isolated splits are enabled at build time, Monochrome and Trichrome will
   // have a different bundle layout, so measure N+ even though isolated splits
