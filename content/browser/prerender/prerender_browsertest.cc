@@ -1534,12 +1534,39 @@ IN_PROC_BROWSER_TEST_P(PrerenderBrowserTest, RenderDocumentHostUserData) {
   EXPECT_EQ(data_after_activation.get(), data.get());
 }
 
+// Tests that accessing the clipboard via ExecCommand API results in cancelling
+// the prerender.
+IN_PROC_BROWSER_TEST_P(PrerenderBrowserTest, ClipboardByExecCommandCancel) {
+  const GURL kInitialUrl = GetUrl("/prerender/add_prerender.html");
+  const GURL kPrerenderingUrl = GetUrl("/empty.html");
+
+  // Navigate to an initial page.
+  ASSERT_TRUE(NavigateToURL(shell(), kInitialUrl));
+
+  // Make a prerendered page.
+  AddPrerender(kPrerenderingUrl);
+
+  PrerenderHostRegistry& registry = GetPrerenderHostRegistry();
+  PrerenderHost* prerender_host =
+      registry.FindHostByUrlForTesting(kPrerenderingUrl);
+  RenderFrameHostImpl* prerendered_render_frame_host =
+      prerender_host->GetPrerenderedMainFrameHostForTesting();
+
+  // Access the clipboard.
+  ignore_result(
+      ExecJs(prerendered_render_frame_host, "document.execCommand('copy');"));
+
+  // The corresponding prerender should be cancelled.
+  EXPECT_EQ(registry.FindHostByUrlForTesting(kPrerenderingUrl), nullptr);
+}
+
 // - End: Tests for Mojo capability control methodology restrictions ===========
 
-// Tests that prerendering pages cannot access Clipboard.
+// Tests that prerendering pages cannot access the Async Clipboard API because
+// they are not focused.
 // This cannot be upstreamed as a WPT test because the spec (probably) will
 // require that no error is thrown until activation.
-IN_PROC_BROWSER_TEST_P(PrerenderBrowserTest, ClipboardAccessError) {
+IN_PROC_BROWSER_TEST_P(PrerenderBrowserTest, AsyncClipboardAccessError) {
   const GURL kInitialUrl = GetUrl("/prerender/add_prerender.html");
   const GURL kPrerenderingUrl = GetUrl("/empty.html");
 

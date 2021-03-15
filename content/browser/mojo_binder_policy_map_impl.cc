@@ -24,12 +24,9 @@ void RegisterContentBinderPoliciesForSameOriginPrerendering(
   map.SetPolicy<device::mojom::GamepadHapticsManager>(
       MojoBinderPolicy::kCancel);
   map.SetPolicy<device::mojom::GamepadMonitor>(MojoBinderPolicy::kCancel);
-
-  // ClipboardHost has sync messages, so it cannot be kDefer. However, the
-  // renderer is not expected to request the interface because it only does so
-  // after blink::mojom::PermissionService is bound, which is a deferred
-  // interface.
-  map.SetPolicy<blink::mojom::ClipboardHost>(MojoBinderPolicy::kUnexpected);
+  // ClipboardHost is a sync interface, so we cannot defer it and have to cancel
+  // prerendering.
+  map.SetPolicy<blink::mojom::ClipboardHost>(MojoBinderPolicy::kCancel);
 
   map.SetPolicy<blink::mojom::IDBFactory>(MojoBinderPolicy::kGrant);
   map.SetPolicy<network::mojom::RestrictedCookieManager>(
