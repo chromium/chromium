@@ -28,7 +28,6 @@ class NavigationHandleObserver : public WebContentsObserver {
   bool has_committed() { return has_committed_; }
   bool is_error() { return is_error_; }
   bool is_main_frame() { return is_main_frame_; }
-  bool is_parent_main_frame() { return is_parent_main_frame_; }
   bool is_renderer_initiated() { return is_renderer_initiated_; }
   bool is_same_document() { return is_same_document_; }
   bool was_redirected() { return was_redirected_; }
@@ -60,7 +59,6 @@ class NavigationHandleObserver : public WebContentsObserver {
   bool has_committed_ = false;
   bool is_error_ = false;
   bool is_main_frame_ = false;
-  bool is_parent_main_frame_ = false;
   bool is_renderer_initiated_ = true;
   bool is_same_document_ = false;
   bool was_redirected_ = false;

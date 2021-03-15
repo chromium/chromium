@@ -93,10 +93,6 @@ class CONTENT_EXPORT NavigationHandle {
   // This remains constant over the navigation lifetime.
   virtual bool IsInMainFrame() = 0;
 
-  // Whether the navigation is taking place in a frame that is a direct child
-  // of the main frame. This remains constant over the navigation lifetime.
-  virtual bool IsParentMainFrame() = 0;
-
   // Whether the navigation was initiated by the renderer process. Examples of
   // renderer-initiated navigations include:
   //  * <a> link click

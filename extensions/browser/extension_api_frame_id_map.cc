@@ -112,13 +112,7 @@ int ExtensionApiFrameIdMap::GetParentFrameId(content::RenderFrameHost* rfh) {
 // static
 int ExtensionApiFrameIdMap::GetParentFrameId(
     content::NavigationHandle* navigation_handle) {
-  if (navigation_handle->IsInMainFrame())
-    return kInvalidFrameId;
-
-  if (navigation_handle->IsParentMainFrame())
-    return kTopFrameId;
-
-  return navigation_handle->GetParentFrame()->GetFrameTreeNodeId();
+  return GetFrameId(navigation_handle->GetParentFrame());
 }
 
 // static

@@ -30,7 +30,6 @@ void NavigationHandleObserver::DidStartNavigation(
   response_headers_.reset();
 
   is_main_frame_ = navigation_handle->IsInMainFrame();
-  is_parent_main_frame_ = navigation_handle->IsParentMainFrame();
   is_renderer_initiated_ = navigation_handle->IsRendererInitiated();
   is_same_document_ = navigation_handle->IsSameDocument();
   was_redirected_ = navigation_handle->WasServerRedirect();
@@ -47,7 +46,6 @@ void NavigationHandleObserver::DidFinishNavigation(
     return;
 
   DCHECK_EQ(is_main_frame_, navigation_handle->IsInMainFrame());
-  DCHECK_EQ(is_parent_main_frame_, navigation_handle->IsParentMainFrame());
   DCHECK_EQ(is_same_document_, navigation_handle->IsSameDocument());
   DCHECK_EQ(is_renderer_initiated_, navigation_handle->IsRendererInitiated());
   DCHECK_EQ(frame_tree_node_id_, navigation_handle->GetFrameTreeNodeId());

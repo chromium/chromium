@@ -272,7 +272,6 @@ class CONTENT_EXPORT NavigationRequest
   SiteInstanceImpl* GetStartingSiteInstance() override;
   SiteInstanceImpl* GetSourceSiteInstance() override;
   bool IsInMainFrame() override;
-  bool IsParentMainFrame() override;
   bool IsRendererInitiated() override;
   bool WasServerRedirect() override;
   const std::vector<GURL>& GetRedirectChain() override;

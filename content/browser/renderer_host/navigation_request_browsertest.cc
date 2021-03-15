@@ -545,7 +545,6 @@ IN_PROC_BROWSER_TEST_F(NavigationRequestBrowserTest, VerifyPageTransition) {
 
 // Ensure that the following methods on NavigationHandle behave correctly:
 // * IsInMainFrame
-// * IsParentMainFrame
 IN_PROC_BROWSER_TEST_F(NavigationRequestBrowserTest, VerifyFrameTree) {
   GURL main_url(embedded_test_server()->GetURL(
       "a.com", "/cross_site_iframe_factory.html?a(b(c))"));
@@ -576,7 +575,6 @@ IN_PROC_BROWSER_TEST_F(NavigationRequestBrowserTest, VerifyFrameTree) {
   EXPECT_FALSE(b_observer.is_error());
   EXPECT_EQ(b_url, b_observer.last_committed_url());
   EXPECT_FALSE(b_observer.is_main_frame());
-  EXPECT_TRUE(b_observer.is_parent_main_frame());
   EXPECT_EQ(root->child_at(0)->frame_tree_node_id(),
             b_observer.frame_tree_node_id());
 
@@ -585,7 +583,6 @@ IN_PROC_BROWSER_TEST_F(NavigationRequestBrowserTest, VerifyFrameTree) {
   EXPECT_FALSE(c_observer.is_error());
   EXPECT_EQ(c_url, c_observer.last_committed_url());
   EXPECT_FALSE(c_observer.is_main_frame());
-  EXPECT_FALSE(c_observer.is_parent_main_frame());
   EXPECT_EQ(root->child_at(0)->child_at(0)->frame_tree_node_id(),
             c_observer.frame_tree_node_id());
 }

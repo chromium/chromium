@@ -5166,11 +5166,6 @@ RenderFrameHostImpl* NavigationRequest::GetParentFrame() {
   return IsInMainFrame() ? nullptr : frame_tree_node()->parent();
 }
 
-bool NavigationRequest::IsParentMainFrame() {
-  RenderFrameHostImpl* parent = frame_tree_node()->parent();
-  return parent && parent->is_main_frame();
-}
-
 int NavigationRequest::GetFrameTreeNodeId() {
   return frame_tree_node()->frame_tree_node_id();
 }
