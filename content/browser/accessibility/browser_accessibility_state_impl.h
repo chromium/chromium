@@ -23,6 +23,8 @@
 
 namespace content {
 
+struct FocusedNodeDetails;
+
 // The BrowserAccessibilityState class is used to determine if Chrome should be
 // customized for users with assistive technology, such as screen readers. We
 // modify the behavior of certain user interfaces to provide a better experience
@@ -67,6 +69,8 @@ class CONTENT_EXPORT BrowserAccessibilityStateImpl
   void SetImageLabelsModeForProfile(bool enabled,
                                     BrowserContext* profile) override;
 #endif
+  base::CallbackListSubscription RegisterFocusChangedCallback(
+      FocusChangedCallback callback) override;
 
   // Returns whether caret browsing is enabled for the most recently
   // used profile.
@@ -86,6 +90,9 @@ class CONTENT_EXPORT BrowserAccessibilityStateImpl
   bool disable_hot_tracking_for_testing() const {
     return disable_hot_tracking_;
   }
+
+  // Notifies listeners that the focused element changed inside a WebContents.
+  void OnFocusChangedInPage(const FocusedNodeDetails& details);
 
  private:
   friend class base::RefCountedThreadSafe<BrowserAccessibilityStateImpl>;
@@ -123,6 +130,9 @@ class CONTENT_EXPORT BrowserAccessibilityStateImpl
   // Only used on Windows
   std::unique_ptr<gfx::SingletonHwndObserver> singleton_hwnd_observer_;
 #endif
+
+  base::RepeatingCallbackList<void(const FocusedNodeDetails&)>
+      focus_changed_callbacks_;
 
   DISALLOW_COPY_AND_ASSIGN(BrowserAccessibilityStateImpl);
 };

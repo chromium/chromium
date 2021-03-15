@@ -270,8 +270,13 @@ AccessibilityManager::AccessibilityManager() {
                               content::NotificationService::AllSources());
   notification_registrar_.Add(this, chrome::NOTIFICATION_APP_TERMINATING,
                               content::NotificationService::AllSources());
-  notification_registrar_.Add(this, content::NOTIFICATION_FOCUS_CHANGED_IN_PAGE,
-                              content::NotificationService::AllSources());
+
+  focus_changed_subscription_ =
+      content::BrowserAccessibilityState::GetInstance()
+          ->RegisterFocusChangedCallback(
+              base::BindRepeating(&AccessibilityManager::OnFocusChangedInPage,
+                                  base::Unretained(this)));
+
   input_method::InputMethodManager::Get()->AddObserver(this);
   user_manager::UserManager::Get()->AddSessionStateObserver(this);
 
@@ -1351,18 +1356,17 @@ void AccessibilityManager::Observe(
       app_terminating_ = true;
       break;
     }
-    case content::NOTIFICATION_FOCUS_CHANGED_IN_PAGE: {
-      // Avoid unnecessary mojo IPC to ash when focus highlight feature is not
-      // enabled.
-      if (!IsFocusHighlightEnabled())
-        return;
-      content::FocusedNodeDetails* node_details =
-          content::Details<content::FocusedNodeDetails>(details).ptr();
-      AccessibilityController::Get()->SetFocusHighlightRect(
-          node_details->node_bounds_in_screen);
-      break;
-    }
   }
+}
+
+void AccessibilityManager::OnFocusChangedInPage(
+    const content::FocusedNodeDetails& details) {
+  // Avoid unnecessary IPC to ash when focus highlight feature is not enabled.
+  if (!IsFocusHighlightEnabled())
+    return;
+
+  AccessibilityController::Get()->SetFocusHighlightRect(
+      details.node_bounds_in_screen);
 }
 
 void AccessibilityManager::OnBrailleDisplayStateChanged(

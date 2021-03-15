@@ -52,6 +52,7 @@
 #include "components/power_scheduler/power_mode_voter.h"
 #include "components/url_formatter/url_formatter.h"
 #include "content/browser/accessibility/browser_accessibility.h"
+#include "content/browser/accessibility/browser_accessibility_state_impl.h"
 #include "content/browser/bad_message.h"
 #include "content/browser/browser_main_loop.h"
 #include "content/browser/browser_plugin/browser_plugin_embedder.h"
@@ -7384,6 +7385,8 @@ void WebContentsImpl::OnFocusedElementChangedInFrame(
       NOTIFICATION_FOCUS_CHANGED_IN_PAGE,
       Source<RenderViewHost>(GetRenderViewHost()),
       Details<FocusedNodeDetails>(&details));
+
+  BrowserAccessibilityStateImpl::GetInstance()->OnFocusChangedInPage(details);
 
   observers_.NotifyObservers(&WebContentsObserver::OnFocusChangedInPage,
                              &details);

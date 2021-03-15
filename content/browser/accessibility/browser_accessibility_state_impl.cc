@@ -271,4 +271,15 @@ void BrowserAccessibilityStateImpl::RemoveAccessibilityModeFlags(
     web_contents_vector[i]->SetAccessibilityMode(accessibility_mode_);
 }
 
+base::CallbackListSubscription
+BrowserAccessibilityStateImpl::RegisterFocusChangedCallback(
+    FocusChangedCallback callback) {
+  return focus_changed_callbacks_.Add(std::move(callback));
+}
+
+void BrowserAccessibilityStateImpl::OnFocusChangedInPage(
+    const FocusedNodeDetails& details) {
+  focus_changed_callbacks_.Notify(details);
+}
+
 }  // namespace content

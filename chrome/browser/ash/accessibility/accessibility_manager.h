@@ -37,6 +37,10 @@
 
 class Browser;
 
+namespace content {
+struct FocusedNodeDetails;
+}  // namespace content
+
 namespace gfx {
 class Rect;
 }  // namespace gfx
@@ -387,6 +391,7 @@ class AccessibilityManager
   void OnSelectToSpeakChanged();
   void OnAccessibilityCommonChanged(const std::string& pref_name);
   void OnSwitchAccessChanged();
+  void OnFocusChangedInPage(const content::FocusedNodeDetails& details);
 
   void CheckBrailleState();
   void ReceiveBrailleDisplayState(
@@ -498,6 +503,8 @@ class AccessibilityManager
 
   // Whether the virtual keyboard was enabled before Switch Access loaded.
   bool was_vk_enabled_before_switch_access_ = false;
+
+  base::CallbackListSubscription focus_changed_subscription_;
 
   base::WeakPtrFactory<AccessibilityManager> weak_ptr_factory_{this};
 
