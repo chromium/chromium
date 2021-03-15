@@ -2,7 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {isChromeOS} from 'chrome://resources/js/cr.m.js';
 import {checkTabLinkVisibility} from './test_util.js';
 
 suite('NetInternalsMainTests', function() {
@@ -14,7 +13,9 @@ suite('NetInternalsMainTests', function() {
       dns: true,
       sockets: true,
       hsts: true,
-      chromeos: isChromeOS,
+      // <if expr="chromeos">
+      chromeos: true,
+      // </if>
     };
 
     checkTabLinkVisibility(tabVisibilityState, true);

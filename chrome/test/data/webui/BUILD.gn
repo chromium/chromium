@@ -99,6 +99,7 @@ if (include_js_tests) {
 
     deps = [
       ":modulize",
+      "net_internals:preprocess",
       "settings:preprocess",
       "//build:branding_buildflags",
       "//chrome/browser/ui",
@@ -174,6 +175,8 @@ if (include_js_tests) {
       "$root_gen_dir/chrome/test/data/webui/js/load_time_data_test.m.js",
       "$root_gen_dir/chrome/test/data/webui/mock_controller.m.js",
       "$root_gen_dir/chrome/test/data/webui/mock_timer.m.js",
+      "$root_gen_dir/chrome/test/data/webui/net_internals/main_test.js",
+      "$root_gen_dir/chrome/test/data/webui/net_internals/test_util.js",
       "$root_gen_dir/chrome/test/data/webui/settings/fake_input_method_private.m.js",
       "$root_gen_dir/chrome/test/data/webui/settings/fake_language_settings_private.m.js",
       "$root_gen_dir/chrome/test/data/webui/settings/fake_settings_private.m.js",

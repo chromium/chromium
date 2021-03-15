@@ -108,24 +108,6 @@ export class TabSwitcherView extends View {
     this.tabListWidth_ = $(TAB_LIST_ID).offsetWidth;
   }
 
-  showTabLink(tabId, isVisible) {
-    const wasActive = this.activeTabId_ == tabId;
-
-    setNodeDisplay(this.tabIdToLink_[tabId], isVisible);
-    this.tabIdsLinkVisibility_.set(tabId, isVisible);
-
-    if (wasActive && !isVisible) {
-      // If the link for active tab is being hidden, then switch to the first
-      // tab which is still visible.
-      for (const [localTabId, enabled] of this.tabIdsLinkVisibility_) {
-        if (enabled) {
-          this.switchToTab(localTabId);
-          break;
-        }
-      }
-    }
-  }
-
   getAllTabViews() {
     return this.tabIdToView_;
   }
