@@ -27,13 +27,14 @@ class SessionIdUserData : public base::SupportsUserData::Data {
 }  // namespace
 
 // static
-void CastNavigationUIData::SetSessionIdForWebContents(
+void CastNavigationUIData::SetAppPropertiesForWebContents(
     content::WebContents* web_contents,
-    const std::string& session_id) {
+    const std::string& session_id,
+    bool is_audio_app) {
   DCHECK(web_contents);
   web_contents->SetUserData(kUserDataKey,
                             std::make_unique<SessionIdUserData>(session_id));
-  CastSessionIdMap::SetSessionId(session_id, web_contents);
+  CastSessionIdMap::SetAppProperties(session_id, is_audio_app, web_contents);
 }
 
 // static

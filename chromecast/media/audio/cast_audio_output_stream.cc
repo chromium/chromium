@@ -23,6 +23,7 @@
 #include "chromecast/common/mojom/constants.mojom.h"
 #include "chromecast/media/api/cma_backend_factory.h"
 #include "chromecast/media/audio/cast_audio_manager.h"
+#include "chromecast/media/audio/cast_audio_output_utils.h"
 #include "chromecast/media/audio/cma_audio_output_stream.h"
 #include "chromecast/media/audio/mixer_service/mixer_service.pb.h"
 #include "chromecast/media/audio/mixer_service/output_stream_connection.h"
@@ -81,11 +82,6 @@ mixer_service::ContentType ConvertContentType(AudioContentType content_type) {
       NOTREACHED();
       return mixer_service::CONTENT_TYPE_MEDIA;
   }
-}
-
-bool IsValidDeviceId(const std::string& device_id) {
-  return device_id == ::media::AudioDeviceDescription::kDefaultDeviceId ||
-         device_id == ::media::AudioDeviceDescription::kCommunicationsDeviceId;
 }
 
 }  // namespace
@@ -307,8 +303,7 @@ CastAudioOutputStream::CastAudioOutputStream(
       device_id_(IsValidDeviceId(device_id_or_group_id)
                      ? device_id_or_group_id
                      : ::media::AudioDeviceDescription::kDefaultDeviceId),
-      group_id_(IsValidDeviceId(device_id_or_group_id) ? ""
-                                                       : device_id_or_group_id),
+      group_id_(GetGroupId(device_id_or_group_id)),
       use_mixer_service_(use_mixer_service),
       audio_weak_factory_(this) {
   DCHECK(audio_manager_);
@@ -344,6 +339,7 @@ bool CastAudioOutputStream::Open() {
 
   const std::string application_session_id =
       audio_manager_->GetSessionId(group_id_);
+  LOG_IF(WARNING, application_session_id.empty()) << "Session id is empty.";
   DVLOG(1) << this << ": " << __func__
            << ", session_id=" << application_session_id;
 

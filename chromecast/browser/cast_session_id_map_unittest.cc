@@ -51,7 +51,8 @@ TEST_F(CastSessionIdMapTest, DefaultsToEmptyString) {
 TEST_F(CastSessionIdMapTest, CanRetrieveSessionId) {
   auto web_contents = CreateTestWebContents();
   base::UnguessableToken group_id = web_contents->GetAudioGroupId();
-  CastSessionIdMap::SetSessionId(kTestSessionId, web_contents.get());
+  CastSessionIdMap::SetAppProperties(kTestSessionId, false /* is_audio_app */,
+                                     web_contents.get());
   task_runner_->RunUntilIdle();
 
   std::string saved_session_id =
@@ -62,7 +63,8 @@ TEST_F(CastSessionIdMapTest, CanRetrieveSessionId) {
 TEST_F(CastSessionIdMapTest, RemovesMappingOnWebContentsDestroyed) {
   auto web_contents = CreateTestWebContents();
   base::UnguessableToken group_id = web_contents->GetAudioGroupId();
-  CastSessionIdMap::SetSessionId(kTestSessionId, web_contents.get());
+  CastSessionIdMap::SetAppProperties(kTestSessionId, false /* is_audio_app */,
+                                     web_contents.get());
   task_runner_->RunUntilIdle();
 
   web_contents.reset();
@@ -80,9 +82,12 @@ TEST_F(CastSessionIdMapTest, CanHoldMultiple) {
   auto web_contents_1 = CreateTestWebContents();
   auto web_contents_2 = CreateTestWebContents();
   auto web_contents_3 = CreateTestWebContents();
-  CastSessionIdMap::SetSessionId(test_session_id_1, web_contents_1.get());
-  CastSessionIdMap::SetSessionId(test_session_id_2, web_contents_2.get());
-  CastSessionIdMap::SetSessionId(test_session_id_3, web_contents_3.get());
+  CastSessionIdMap::SetAppProperties(
+      test_session_id_1, false /* is_audio_app */, web_contents_1.get());
+  CastSessionIdMap::SetAppProperties(
+      test_session_id_2, false /* is_audio_app */, web_contents_2.get());
+  CastSessionIdMap::SetAppProperties(
+      test_session_id_3, false /* is_audio_app */, web_contents_3.get());
   task_runner_->RunUntilIdle();
 
   std::string saved_session_id = "";

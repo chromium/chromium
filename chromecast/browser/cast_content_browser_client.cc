@@ -295,6 +295,7 @@ CastContentBrowserClient::CreateAudioManager(
       base::BindRepeating(&CastContentBrowserClient::GetCmaBackendFactory,
                           base::Unretained(this)),
       base::BindRepeating(&shell::CastSessionIdMap::GetSessionId),
+      base::BindRepeating(&shell::CastSessionIdMap::IsAudioOnlySession),
       GetMediaTaskRunner(),
       ServiceConnector::MakeRemote(kBrowserProcessClientId));
 #else

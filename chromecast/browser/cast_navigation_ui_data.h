@@ -19,8 +19,9 @@ namespace shell {
 
 class CastNavigationUIData : public content::NavigationUIData {
  public:
-  static void SetSessionIdForWebContents(content::WebContents* web_contents,
-                                         const std::string& session_id);
+  static void SetAppPropertiesForWebContents(content::WebContents* web_contents,
+                                             const std::string& session_id,
+                                             bool is_audio_app);
   static std::string GetSessionIdForWebContents(
       content::WebContents* web_contents);
 
