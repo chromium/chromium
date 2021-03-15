@@ -65,13 +65,6 @@ void LogProblematicBookmark(RemoteBookmarkUpdateError problem) {
   base::UmaHistogramEnumeration("Sync.ProblematicServerSideBookmarks", problem);
 }
 
-void LogDuplicateBookmarkEntityOnRemoteUpdateCondition(
-    BookmarkRemoteUpdatesHandler::DuplicateBookmarkEntityOnRemoteUpdateCondition
-        condition) {
-  base::UmaHistogramEnumeration(
-      "Sync.DuplicateBookmarkEntityOnRemoteUpdateCondition", condition);
-}
-
 // Recursive method to traverse a forest created by ReorderUpdates() to to
 // emit updates in top-down order. |ordered_updates| must not be null because
 // traversed updates are appended to |*ordered_updates|.
@@ -446,127 +439,68 @@ BookmarkRemoteUpdatesHandler::DetermineLocalTrackedEntityToUpdate(
     bool* should_ignore_update) {
   *should_ignore_update = false;
 
-  const SyncedBookmarkTracker::Entity* const tracked_entity =
+  // If there's nothing other than a server ID to issue a lookup, just do that
+  // and return immediately. This is the case for permanent nodes and possibly
+  // tombstones (at least the LoopbackServer only sets the server ID).
+  if (update_entity.originator_client_item_id.empty() &&
+      update_entity.client_tag_hash.value().empty()) {
+    return bookmark_tracker_->GetEntityForSyncId(update_entity.id);
+  }
+
+  // Parse the client tag hash in the update or infer it from the originator
+  // information (all of which are immutable properties of a sync entity).
+  const syncer::ClientTagHash client_tag_hash_in_update =
+      !update_entity.client_tag_hash.value().empty()
+          ? update_entity.client_tag_hash
+          : SyncedBookmarkTracker::GetClientTagHashFromGUID(
+                InferGuidFromLegacyOriginatorId(
+                    update_entity.originator_cache_guid,
+                    update_entity.originator_client_item_id));
+
+  const SyncedBookmarkTracker::Entity* const tracked_entity_by_client_tag =
+      bookmark_tracker_->GetEntityForClientTagHash(client_tag_hash_in_update);
+  const SyncedBookmarkTracker::Entity* const tracked_entity_by_sync_id =
       bookmark_tracker_->GetEntityForSyncId(update_entity.id);
-  // The GUID cannot have changed, after all validation earlier, since the
-  // GUID-validation logic uses immutable properties of a sync entity at the
-  // protocol level.
-  //
-  // However, with a bad-behaving server, in theory there could be weird cases
-  // like originator_client_item_id changing, for a given sync ID.
-  // TODO(crbug.com/1143246): Switch to a DCHECK instead  once the lookup for
-  // |tracked_entity| switches to an approach that guarantees the invariant
-  // regardless of server bugs, possibly by adopting client tags.
-  const base::GUID remote_guid =
-      base::GUID::ParseLowercase(update_entity.specifics.bookmark().guid());
-  if (tracked_entity && !update_entity.is_deleted() &&
-      update_entity.server_defined_unique_tag.empty()) {
-    DCHECK(remote_guid.is_valid());
 
-    if (tracked_entity->GetClientTagHash() !=
-        SyncedBookmarkTracker::GetClientTagHashFromGUID(remote_guid)) {
-      // This should be practically unreachable, but guard against misbehaving
-      // servers.
-      DLOG(ERROR) << "Ignoring remote bookmark update with protocol violation: "
-                     "GUID must be immutable";
-      LogProblematicBookmark(
-          RemoteBookmarkUpdateError::kGuidChangedForTrackedServerId);
-      *should_ignore_update = true;
-      return nullptr;
-    }
+  // The most common scenario is that both lookups, client-tag-based and
+  // server-ID-based, refer to the same tracked entity or both lookups fail. In
+  // that case there's nothing to reconcile and the function can return
+  // trivially.
+  if (tracked_entity_by_client_tag == tracked_entity_by_sync_id) {
+    return tracked_entity_by_client_tag;
   }
 
-  // If a commit succeeds, but the response does not come back fast enough
-  // (e.g. before shutdown or crash), then the |bookmark_tracker_| might
-  // assume that it was never committed. The server will track the client that
-  // sent up the original commit and return this in a get updates response. We
-  // need to check if we have an entry that didn't get its server id updated
-  // correctly. The server sends down |original_client_item_id| (regular case)
-  // or |client_provided_unique_tag| (experimental). If the tracker contains
-  // a matching entry, it should be treated as update.
-  const SyncedBookmarkTracker::Entity* old_tracked_entity =
-      bookmark_tracker_->GetEntityForSyncId(
-          update_entity.originator_client_item_id);
-  if (!old_tracked_entity && !update_entity.client_tag_hash.value().empty()) {
-    old_tracked_entity = bookmark_tracker_->GetEntityForClientTagHash(
-        syncer::ClientTagHash::FromHashed(
-            update_entity.client_tag_hash.value()));
+  // Client-tags (GUIDs) are known at all times and immutable (as opposed to
+  // server IDs which get a temp value for local creations), so they cannot have
+  // changed.
+  if (tracked_entity_by_sync_id &&
+      tracked_entity_by_sync_id->GetClientTagHash() !=
+          client_tag_hash_in_update) {
+    // The client tag has changed for an already-tracked entity, which is a
+    // protocol violation. This should be practically unreachable, but guard
+    // against misbehaving servers.
+    DLOG(ERROR) << "Ignoring remote bookmark update with protocol violation: "
+                   "GUID must be immutable";
+    LogProblematicBookmark(
+        RemoteBookmarkUpdateError::kGuidChangedForTrackedServerId);
+    *should_ignore_update = true;
+    return nullptr;
   }
 
-  // Do another lookup by GUID, in case the remote client tag is not set.
-  // TODO(crbug.com/1143246): Unify with the above by computing the inferred
-  // client tag, which requires logic analogous to what
-  // HasExpectedBookmarkGuid() uses internally.
-  if (!old_tracked_entity && !update_entity.is_deleted()) {
-    old_tracked_entity = bookmark_tracker_->GetEntityForClientTagHash(
-        SyncedBookmarkTracker::GetClientTagHashFromGUID(remote_guid));
-  }
+  // At this point |tracked_entity_by_client_tag| must be non-null because
+  // otherwise one of the two codepaths above would have returned early.
+  DCHECK(tracked_entity_by_client_tag);
+  DCHECK(!tracked_entity_by_sync_id);
 
-  if (!old_tracked_entity || old_tracked_entity == tracked_entity) {
-    return tracked_entity;
-  }
-
-  // TODO(crbug.com/1143246): UMA data supports the idea that this can be
-  // transformed into a DCHECK. However, strictly speaking, this can only be
-  // safely done once the tracker supports lookups based on client tag
-  // hashes.
-  if (tracked_entity) {
-    DCHECK_NE(tracked_entity, old_tracked_entity);
-    // We generally shouldn't have an entry for both the old ID and the new
-    // ID, but it could happen due to some past bug (see crbug.com/1004205).
-    // In that case, the two entries should be duplicates in the sense that
-    // they have the same URL.
-    // TODO(crbug.com/516866): Clean up the workaround once this has been
-    // resolved.
-    const bookmarks::BookmarkNode* old_node =
-        old_tracked_entity->bookmark_node();
-    const bookmarks::BookmarkNode* new_node = tracked_entity->bookmark_node();
-    if (new_node == nullptr) {
-      // This might happen in case a synced bookmark (with a non-temporary
-      // server ID but no known client tag) was deleted locally and then
-      // recreated locally while the commit is in flight. This leads to two
-      // entities in the tracker (for the same bookmark GUID), one of them
-      // being a tombstone (|tracked_entity|). The commit response (for the
-      // deletion) may never be received (e.g. network issues) and instead a
-      // remote update is received (possibly our own reflection). Resolving
-      // a situation with duplicate entries is simple as long as at least
-      // one of the two (it could also be both) is a tombstone: one of the
-      // entities can be simply untracked.
-      //
-      // In the current case the |old_tracked_entity| must be a new entity
-      // since it does not have server ID yet. The |new_node| must be always
-      // a tombstone (the bookmark which was deleted). Just remove the
-      // tombstone and continue applying current update (even if |old_node|
-      // is a tombstone too).
-      bookmark_tracker_->Remove(tracked_entity);
-      LogDuplicateBookmarkEntityOnRemoteUpdateCondition(
-          DuplicateBookmarkEntityOnRemoteUpdateCondition::kServerIdTombstone);
-    } else {
-      // |old_node| may be null when |old_entity| is a tombstone pending
-      // commit.
-      if (old_node != nullptr) {
-        DCHECK_NE(old_node, new_node);
-        bookmark_model_->Remove(old_node);
-        LogDuplicateBookmarkEntityOnRemoteUpdateCondition(
-            DuplicateBookmarkEntityOnRemoteUpdateCondition::
-                kBothEntitiesNonTombstone);
-      } else {
-        LogDuplicateBookmarkEntityOnRemoteUpdateCondition(
-            DuplicateBookmarkEntityOnRemoteUpdateCondition::
-                kTempSyncIdTombstone);
-      }
-      bookmark_tracker_->Remove(old_tracked_entity);
-      *should_ignore_update = true;
-      return nullptr;
-    }
-  }
-
+  // The server ID has changed for a tracked entity (matched via client tag).
+  // This can happen if a commit succeeds, but the response does not come back
+  // fast enough(e.g. before shutdown or crash), then the |bookmark_tracker_|
+  // might assume that it was never committed. The server will track the client
+  // that sent up the original commit and return this in a get updates response.
   bookmark_tracker_->UpdateSyncIdForLocalCreationIfNeeded(
-      old_tracked_entity,
+      tracked_entity_by_client_tag,
       /*sync_id=*/update_entity.id);
-
-  // The tracker has changed. Re-retrieve the |tracker_entity|.
-  return bookmark_tracker_->GetEntityForSyncId(update_entity.id);
+  return tracked_entity_by_client_tag;
 }
 
 const SyncedBookmarkTracker::Entity*

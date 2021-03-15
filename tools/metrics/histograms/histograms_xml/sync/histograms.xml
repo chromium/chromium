@@ -396,7 +396,10 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Sync.DuplicateBookmarkEntityOnRemoteUpdateCondition"
     enum="DuplicateBookmarkEntityOnRemoteUpdateCondition"
-    expires_after="2021-07-13">
+    expires_after="2021-05-31">
+  <obsolete>
+    Removed as of 3/2021.
+  </obsolete>
   <owner>rushans@google.com</owner>
   <owner>mastiz@chromium.org</owner>
   <summary>

@@ -27,14 +27,6 @@ namespace sync_bookmarks {
 // server.
 class BookmarkRemoteUpdatesHandler {
  public:
-  enum class DuplicateBookmarkEntityOnRemoteUpdateCondition {
-    kServerIdTombstone = 0,
-    kTempSyncIdTombstone = 1,
-    kBothEntitiesNonTombstone = 2,
-
-    kMaxValue = kBothEntitiesNonTombstone,
-  };
-
   // |bookmark_model|, |favicon_service| and |bookmark_tracker| must not be null
   // and must outlive this object.
   BookmarkRemoteUpdatesHandler(bookmarks::BookmarkModel* bookmark_model,

@@ -403,6 +403,20 @@ bool IsValidBookmarkSpecifics(const sync_pb::BookmarkSpecifics& specifics,
   return is_valid;
 }
 
+base::GUID InferGuidFromLegacyOriginatorId(
+    const std::string& originator_cache_guid,
+    const std::string& originator_client_item_id) {
+  // Bookmarks created around 2016, between [M44..M52) use an uppercase GUID
+  // as originator client item ID, so it requires case-insensitive parsing.
+  base::GUID guid = base::GUID::ParseCaseInsensitive(originator_client_item_id);
+  if (guid.is_valid()) {
+    return guid;
+  }
+
+  return base::GUID::ParseLowercase(InferGuidForLegacyBookmark(
+      originator_cache_guid, originator_client_item_id));
+}
+
 bool HasExpectedBookmarkGuid(const sync_pb::BookmarkSpecifics& specifics,
                              const syncer::ClientTagHash& client_tag_hash,
                              const std::string& originator_cache_guid,
@@ -415,16 +429,9 @@ bool HasExpectedBookmarkGuid(const sync_pb::BookmarkSpecifics& specifics,
     return true;
   }
 
-  if (base::GUID::ParseCaseInsensitive(originator_client_item_id).is_valid()) {
-    // Bookmarks created around 2016, between [M44..M52) use an uppercase GUID
-    // as originator client item ID, so it needs to be lowercased to adhere to
-    // the invariant that GUIDs in specifics are canonicalized.
-    return specifics.guid() == base::ToLowerASCII(originator_client_item_id);
-  }
-
-  return specifics.guid() ==
-         InferGuidForLegacyBookmark(originator_cache_guid,
-                                    originator_client_item_id);
+  return base::GUID::ParseLowercase(specifics.guid()) ==
+         InferGuidFromLegacyOriginatorId(originator_cache_guid,
+                                         originator_client_item_id);
 }
 
 }  // namespace sync_bookmarks

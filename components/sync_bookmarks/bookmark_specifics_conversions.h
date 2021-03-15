@@ -83,6 +83,11 @@ const bookmarks::BookmarkNode* ReplaceBookmarkNodeGUID(
 bool IsValidBookmarkSpecifics(const sync_pb::BookmarkSpecifics& specifics,
                               bool is_folder);
 
+// Returns the inferred GUID for given remote update's originator information.
+base::GUID InferGuidFromLegacyOriginatorId(
+    const std::string& originator_cache_guid,
+    const std::string& originator_client_item_id);
+
 // Checks if bookmark specifics contain a GUID that matches the value that would
 // be inferred from other redundant fields. |specifics| must be valid as per
 // IsValidBookmarkSpecifics().
