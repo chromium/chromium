@@ -132,10 +132,8 @@ public class ViewResourceAdapter extends DynamicResource implements OnLayoutChan
             switch (mImageReaderStatus) {
                 case NEW:
                     mImageReaderStatus = ImageReaderStatus.INITIALIZING;
-                    mState.mRequestNewDraw = false;
                     break;
                 case UPDATED:
-                    mState.mRequestNewDraw = false;
                     mImageReaderStatus = ImageReaderStatus.RUNNING;
                     break;
                 case INITIALIZING:
@@ -157,7 +155,7 @@ public class ViewResourceAdapter extends DynamicResource implements OnLayoutChan
         @Override
         public void onImageAvailable(ImageReader reader) {
             try (TraceEvent e = TraceEvent.scoped("AcceleratedImageReader::onImageAvailable")) {
-                android.media.Image image = mReaderDelegate.acquireNextImage();
+                android.media.Image image = reader.acquireNextImage();
                 assert image != null;
                 android.media.Image.Plane[] planes = image.getPlanes();
                 assert planes.length != 0;
@@ -303,6 +301,7 @@ public class ViewResourceAdapter extends DynamicResource implements OnLayoutChan
                 captureCommon(canvas);
 
                 renderNode.endRecording();
+                currentState.mRequestNewDraw = false;
                 mReader.requestDraw(renderNode);
             }
         }
