@@ -4,8 +4,11 @@
 
 package org.chromium.chrome.browser.tabbed_mode;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
+import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.when;
 
@@ -39,6 +42,9 @@ import org.chromium.chrome.browser.enterprise.util.ManagedBrowserUtils;
 import org.chromium.chrome.browser.enterprise.util.ManagedBrowserUtilsJni;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.multiwindow.MultiWindowModeStateDispatcher;
+import org.chromium.chrome.browser.net.spdyproxy.DataReductionProxySettings;
+import org.chromium.chrome.browser.net.spdyproxy.DataReductionProxySettingsJni;
+import org.chromium.chrome.browser.offlinepages.OfflinePageUtils;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileJni;
@@ -58,6 +64,7 @@ import org.chromium.content.browser.ContentFeatureListImplJni;
 import org.chromium.content_public.browser.ContentFeatureList;
 import org.chromium.content_public.browser.NavigationController;
 import org.chromium.content_public.browser.WebContents;
+import org.chromium.url.JUnitTestGURLs;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -66,6 +73,7 @@ import java.util.List;
  * Unit tests for {@link TabbedAppMenuPropertiesDelegate}.
  */
 @RunWith(BaseRobolectricTestRunner.class)
+@Features.EnableFeatures({ChromeFeatureList.WEB_FEED})
 public class TabbedAppMenuPropertiesDelegateUnitTest {
     @Rule
     public JniMocker jniMocker = new JniMocker();
@@ -106,7 +114,11 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
     @Mock
     private PrefService mPrefServiceMock;
     @Mock
+    private DataReductionProxySettings.Natives mDataReductionJniMock;
+    @Mock
     private ContentFeatureListImpl.Natives mContentFeatureListJniMock;
+    @Mock
+    private OfflinePageUtils.Internal mOfflinePageUtils;
 
     private OneshotSupplierImpl<OverviewModeBehavior> mOverviewModeSupplier =
             new OneshotSupplierImpl<>();
@@ -133,10 +145,13 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
         when(mPrefServiceMock.getBoolean(Pref.ENABLE_WEB_FEED_UI)).thenReturn(true);
         jniMocker.mock(ManagedBrowserUtilsJni.TEST_HOOKS, mManagedBrowserUtilsJniMock);
         Profile.setLastUsedProfileForTesting(mProfile);
+        jniMocker.mock(DataReductionProxySettingsJni.TEST_HOOKS, mDataReductionJniMock);
+        when(mDataReductionJniMock.isDataReductionProxyEnabled(anyLong(), any())).thenReturn(false);
         jniMocker.mock(ContentFeatureListImplJni.TEST_HOOKS, mContentFeatureListJniMock);
         when(mContentFeatureListJniMock.isEnabled(
                      ContentFeatureList.EXPERIMENTAL_ACCESSIBILITY_LABELS))
                 .thenReturn(false);
+        OfflinePageUtils.setInstanceForTesting(mOfflinePageUtils);
         FeatureList.setTestCanUseDefaultsForTesting();
 
         mTabbedAppMenuPropertiesDelegate = Mockito.spy(new TabbedAppMenuPropertiesDelegate(
@@ -175,6 +190,52 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
                 R.id.request_desktop_site_row_menu_id, R.id.divider_line_id, R.id.preferences_id,
                 R.id.help_id, R.id.managed_by_menu_id};
         assertMenuItemsAreEqual(menu, expectedItems);
+    }
+
+    @Test
+    public void getFooterResourceId_incognito_doesNotReturnWebFeedMenuItem() {
+        setUpMocksForWebFeedFooter();
+        when(mTab.isIncognito()).thenReturn(true);
+
+        assertNotEquals("Footer Resource ID should not be web_feed_main_menu_item.",
+                R.layout.web_feed_main_menu_item,
+                mTabbedAppMenuPropertiesDelegate.getFooterResourceId());
+    }
+
+    @Test
+    public void getFooterResourceId_offlinePage_doesNotReturnWebFeedMenuItem() {
+        setUpMocksForWebFeedFooter();
+        when(mOfflinePageUtils.isOfflinePage(mTab)).thenReturn(true);
+
+        assertNotEquals("Footer Resource ID should not be web_feed_main_menu_item.",
+                R.layout.web_feed_main_menu_item,
+                mTabbedAppMenuPropertiesDelegate.getFooterResourceId());
+    }
+
+    @Test
+    public void getFooterResourceId_nonHttpUrl_doesNotReturnWebFeedMenuItem() {
+        setUpMocksForWebFeedFooter();
+        when(mTab.getOriginalUrl()).thenReturn(JUnitTestGURLs.getGURL(JUnitTestGURLs.NTP_URL));
+
+        assertNotEquals("Footer Resource ID should not be web_feed_main_menu_item.",
+                R.layout.web_feed_main_menu_item,
+                mTabbedAppMenuPropertiesDelegate.getFooterResourceId());
+    }
+
+    @Test
+    public void getFooterResourceId_httpsUrl_returnsWebFeedMenuItem() {
+        setUpMocksForWebFeedFooter();
+
+        assertEquals("Footer Resource ID should be web_feed_main_menu_item.",
+                R.layout.web_feed_main_menu_item,
+                mTabbedAppMenuPropertiesDelegate.getFooterResourceId());
+    }
+
+    private void setUpMocksForWebFeedFooter() {
+        when(mActivityTabProvider.get()).thenReturn(mTab);
+        when(mTab.isIncognito()).thenReturn(false);
+        when(mTab.getOriginalUrl()).thenReturn(JUnitTestGURLs.getGURL(JUnitTestGURLs.EXAMPLE_URL));
+        when(mOfflinePageUtils.isOfflinePage(mTab)).thenReturn(false);
     }
 
     private void setUpMocksForPageMenu() {

@@ -99,8 +99,8 @@ public class OfflinePageUtils {
      * We are using an internal interface, so that instance methods can have the same names as
      * static methods.
      */
-    @VisibleForTesting
-    interface Internal {
+    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    public interface Internal {
         /** Returns offline page bridge for specified profile. */
         OfflinePageBridge getOfflinePageBridge(Profile profile);
 
@@ -950,8 +950,8 @@ public class OfflinePageUtils {
                 "OfflinePages.TabRestore", tabRestoreType, TabRestoreType.NUM_ENTRIES);
     }
 
-    @VisibleForTesting
-    static void setInstanceForTesting(Internal instance) {
+    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    public static void setInstanceForTesting(Internal instance) {
         sInstance = instance;
     }
 

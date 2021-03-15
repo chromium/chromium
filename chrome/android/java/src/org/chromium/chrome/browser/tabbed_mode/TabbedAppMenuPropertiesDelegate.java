@@ -22,12 +22,14 @@ import org.chromium.chrome.browser.flags.CachedFeatureFlags;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.multiwindow.MultiWindowModeStateDispatcher;
 import org.chromium.chrome.browser.net.spdyproxy.DataReductionProxySettings;
+import org.chromium.chrome.browser.offlinepages.OfflinePageUtils;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.toolbar.ToolbarManager;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuDelegate;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuHandler;
+import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.favicon.LargeIconBridge;
 
 /**
@@ -53,10 +55,16 @@ public class TabbedAppMenuPropertiesDelegate extends AppMenuPropertiesDelegateIm
     }
 
     private boolean shouldShowWebFeedMenuItem() {
-        // TODO(crbug/1152592): Restrict when to show the footer based on tab (eg. not on chrome://
-        // etc.).
-        return FeedFeatures.isWebFeedUIEnabled() && mActivityTabProvider.get() != null
-                && !mActivityTabProvider.get().isIncognito();
+        if (!FeedFeatures.isWebFeedUIEnabled()) {
+            return false;
+        }
+        Tab tab = mActivityTabProvider.get();
+        if (tab == null || tab.isIncognito() || OfflinePageUtils.isOfflinePage(tab)) {
+            return false;
+        }
+        String url = tab.getOriginalUrl().getSpec();
+        return url.startsWith(UrlConstants.HTTP_URL_PREFIX)
+                || url.startsWith(UrlConstants.HTTPS_URL_PREFIX);
     }
 
     @Override
