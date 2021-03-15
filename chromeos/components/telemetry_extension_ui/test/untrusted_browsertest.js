@@ -899,75 +899,62 @@ UNTRUSTED_TEST('UntrustedRequestTelemetryInfo', async () => {
 });
 
 // Tests that sendCommandToRoutine returns the correct Object
-// for an interactive routine.
+// for an interactive routine and that interactive routine.getStatus()
+// returns the correct Object.
 UNTRUSTED_TEST(
-    'UntrustedDiagnosticsRequestInteractiveRoutineUpdate', async () => {
-      const response = await chromeos.diagnostics.sendCommandToRoutine(
-          987654321, 'remove', true);
-      assertDeepEquals(
-          {
-            progressPercent: 0,
-            output: 'This routine is running!',
-            routineUpdateUnion:
-                {interactiveUpdate: {userMessage: 'unplug-ac-power'}}
-          },
-          response);
-    });
-
-// Tests that an interactive routine.getStatus() returns the correct Object.
-// Note: this is an end-to-end test using fake cros_healthd.
-// TODO(mgawad): use real interactive routine.
-// TODO(b:181324455): merge this test with
-// UntrustedDiagnosticsRequestInteractiveRoutineUpdate once the bug is resolved.
-UNTRUSTED_TEST('UntrustedDiagnosticsInteractiveRoutineCommand', async () => {
-  const dpslRoutine = await dpsl.diagnostics.battery.runCapacityRoutine();
-  const routineStatus = await dpslRoutine.getStatus();
-  assertDeepEquals(
-      {
+    'UntrustedDiagnosticsInteractiveRoutineCommand', async () => {
+      const expectedResult = {
         progressPercent: 0,
         output: 'This routine is running!',
         status: 'waiting',
         statusMessage: '',
         userMessage: 'unplug-ac-power'
-      },
-      routineStatus);
-});
-
-// Tests that sendCommandToRoutine returns the correct Object
-// for a non-interactive routine.
-UNTRUSTED_TEST(
-    'UntrustedDiagnosticsRequestNonInteractiveRoutineUpdate', async () => {
+      };
       const response = await chromeos.diagnostics.sendCommandToRoutine(
-          135797531, 'remove', true);
+          987654321, 'remove', true);
       assertDeepEquals(
           {
-            progressPercent: 3147483771,
-            output: '',
-            routineUpdateUnion: {
-              noninteractiveUpdate:
-                  {status: 'ready', statusMessage: 'Routine ran by Google.'}
-            }
+            progressPercent: expectedResult.progressPercent,
+            output: expectedResult.output,
+            routineUpdateUnion:
+                {interactiveUpdate: {userMessage: expectedResult.userMessage}}
           },
           response);
+      const dpslRoutine = await dpsl.diagnostics.power.runAcConnectedRoutine();
+      const routineStatus = await dpslRoutine.getStatus();
+      assertDeepEquals(expectedResult, routineStatus);
     });
 
-// Tests that a non-interactive routine.getStatus() returns the correct Object.
+// Tests that sendCommandToRoutine returns the correct Object
+// for a non-interactive routine and that a non-interactive routine.getStatus()
+// returns the correct Object.
 // Note: this is an end-to-end test using fake cros_healthd.
-// TODO(b:181324455): merge this test with
-// UntrustedDiagnosticsRequestNonInteractiveRoutineUpdate once the bug is
-// resolved.
-UNTRUSTED_TEST('UntrustedDiagnosticsNonInteractiveRoutineCommand', async () => {
-  const dpslRoutine = await dpsl.diagnostics.battery.runCapacityRoutine();
-  const routineStatus = await dpslRoutine.getStatus();
-  assertDeepEquals(
-      {
+UNTRUSTED_TEST(
+    'UntrustedDiagnosticsNonInteractiveRoutineCommand', async () => {
+      const expectedResult = {
         progressPercent: 3147483771,
         output: '',
         status: 'ready',
         statusMessage: 'Routine ran by Google.',
         userMessage: ''
-      },
-      routineStatus);
+      }
+      const response = await chromeos.diagnostics.sendCommandToRoutine(
+          135797531, 'remove', true);
+      assertDeepEquals(
+          {
+            progressPercent: expectedResult.progressPercent,
+            output: expectedResult.output,
+            routineUpdateUnion: {
+              noninteractiveUpdate: {
+                status: expectedResult.status,
+                statusMessage: expectedResult.statusMessage
+              }
+            }
+          },
+          response);
+      const dpslRoutine = await dpsl.diagnostics.battery.runCapacityRoutine();
+      const routineStatus = await dpslRoutine.getStatus();
+      assertDeepEquals(expectedResult, routineStatus);
 });
 
 // Tests that TelemetryInfo can be successfully requested from

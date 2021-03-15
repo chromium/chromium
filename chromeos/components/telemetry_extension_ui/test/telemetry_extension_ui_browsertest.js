@@ -507,16 +507,8 @@ const untrustedTests = [
   ['UntrustedRequestTelemetryInfoUnknownCategory'],
   ['UntrustedRequestTelemetryInfo'],
   [
-    'UntrustedDiagnosticsRequestInteractiveRoutineUpdate',
-    'TelemetryExtensionUIWithInteractiveRoutineUpdateBrowserTest'
-  ],
-  [
     'UntrustedDiagnosticsInteractiveRoutineCommand',
     'TelemetryExtensionUIWithInteractiveRoutineUpdateBrowserTest'
-  ],
-  [
-    'UntrustedDiagnosticsRequestNonInteractiveRoutineUpdate',
-    'TelemetryExtensionUIWithNonInteractiveRoutineUpdateBrowserTest'
   ],
   [
     'UntrustedDiagnosticsNonInteractiveRoutineCommand',
