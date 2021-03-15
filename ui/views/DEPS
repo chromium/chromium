@@ -11,6 +11,7 @@ include_rules = [
   "+ui/accessibility",
   "+ui/aura",
   "+ui/base",
+  "+ui/color",
   "+ui/compositor",
   "+ui/display",
   "+ui/events",

@@ -28,8 +28,6 @@ component("color") {
   sources = [
     "color_mixer.cc",
     "color_provider.cc",
-    "color_provider_manager.cc",
-    "color_provider_manager.h",
     "color_provider_utils.cc",
     "color_provider_utils.h",
     "color_recipe.cc",
@@ -73,6 +71,7 @@ test("color_unittests") {
 
   deps = [
     ":color",
+    ":mixers",
     "//base/test:test_support",
     "//testing/gtest",
   ]
@@ -81,6 +80,8 @@ test("color_unittests") {
 component("mixers") {
   sources = [
     "color_mixers.h",
+    "color_provider_manager.cc",
+    "color_provider_manager.h",
     "core_default_color_mixer.cc",
     "ui_color_mixer.cc",
   ]
@@ -109,6 +110,8 @@ component("mixers") {
       "mac/scoped_current_nsappearance.h",
       "mac/scoped_current_nsappearance.mm",
     ]
+  } else if (is_ios) {
+    sources += [ "ios/native_color_mixers.mm" ]
   } else if (is_win) {
     sources += [ "win/native_color_mixers.cc" ]
   }

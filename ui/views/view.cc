@@ -29,6 +29,7 @@
 #include "ui/base/dragdrop/drag_drop_types.h"
 #include "ui/base/dragdrop/mojom/drag_drop_types.mojom.h"
 #include "ui/base/ime/input_method.h"
+#include "ui/color/color_provider_manager.h"
 #include "ui/compositor/clip_recorder.h"
 #include "ui/compositor/compositor.h"
 #include "ui/compositor/layer.h"
@@ -1198,8 +1199,13 @@ Border* View::GetBorder() const {
 }
 
 const ui::ThemeProvider* View::GetThemeProvider() const {
-  const Widget* widget = GetWidget();
+  const auto* widget = GetWidget();
   return widget ? widget->GetThemeProvider() : nullptr;
+}
+
+const ui::ColorProvider* View::GetColorProvider() const {
+  const auto* widget = GetWidget();
+  return widget ? widget->GetColorProvider() : nullptr;
 }
 
 const ui::NativeTheme* View::GetNativeTheme() const {

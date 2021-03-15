@@ -505,6 +505,8 @@ component("views") {
     "//ui/accessibility",
     "//ui/base/clipboard",
     "//ui/base/dragdrop/mojom",
+    "//ui/color",
+    "//ui/color:mixers",
     "//ui/display",
     "//ui/latency",
     "//ui/native_theme",

@@ -39,6 +39,7 @@ class Rect;
 
 namespace ui {
 class Accelerator;
+class ColorProvider;
 class Compositor;
 class GestureRecognizer;
 class InputMethod;
@@ -714,9 +715,16 @@ class VIEWS_EXPORT Widget : public internal::NativeWidgetDelegate,
 
   ui::NativeTheme* GetNativeTheme() {
     return const_cast<ui::NativeTheme*>(
-        const_cast<const Widget*>(this)->GetNativeTheme());
+        static_cast<const Widget*>(this)->GetNativeTheme());
   }
   virtual const ui::NativeTheme* GetNativeTheme() const;
+
+  // Returns the ui::ColorProvider associated with this Widget.
+  ui::ColorProvider* GetColorProvider() {
+    return const_cast<ui::ColorProvider*>(
+        static_cast<const Widget*>(this)->GetColorProvider());
+  }
+  const ui::ColorProvider* GetColorProvider() const;
 
   // Returns the FocusManager for this widget.
   // Note that all widgets in a widget hierarchy share the same focus manager.

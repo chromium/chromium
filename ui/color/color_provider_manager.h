@@ -31,6 +31,7 @@ class COMPONENT_EXPORT(COLOR) ColorProviderManager {
     kNormal,
     kHigh,
   };
+  using ColorProviderKey = std::tuple<ColorMode, ContrastMode>;
   using ColorProviderInitializer =
       base::RepeatingCallback<void(ColorProvider*, ColorMode, ContrastMode)>;
 
@@ -38,23 +39,21 @@ class COMPONENT_EXPORT(COLOR) ColorProviderManager {
   ColorProviderManager& operator=(const ColorProviderManager&) = delete;
 
   static ColorProviderManager& Get();
+  static ColorProviderManager& GetForTesting();
   static void ResetForTesting();
 
   // Sets the initializer for all ColorProviders returned from
   // GetColorProviderFor().
   void SetColorProviderInitializer(ColorProviderInitializer initializer);
 
-  // Returns a color provider for |color_mode| and |contrast_mode|, creating one
-  // if necessary.
-  ColorProvider* GetColorProviderFor(ColorMode color_mode,
-                                     ContrastMode contrast_mode);
+  // Returns a color provider for |key|, creating one if necessary.
+  ColorProvider* GetColorProviderFor(ColorProviderKey key);
 
  protected:
   ColorProviderManager();
   virtual ~ColorProviderManager();
 
  private:
-  using ColorProviderKey = std::tuple<ColorMode, ContrastMode>;
   ColorProviderInitializer initializer_;
   base::flat_map<ColorProviderKey, std::unique_ptr<ColorProvider>>
       color_providers_;

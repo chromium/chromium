@@ -20,6 +20,7 @@
 #include "ui/base/ime/input_method.h"
 #include "ui/base/l10n/l10n_font_util.h"
 #include "ui/base/resource/resource_bundle.h"
+#include "ui/color/color_provider_manager.h"
 #include "ui/compositor/compositor.h"
 #include "ui/compositor/layer.h"
 #include "ui/display/screen.h"
@@ -801,6 +802,17 @@ const ui::ThemeProvider* Widget::GetThemeProvider() const {
   const Widget* root_widget = GetTopLevelWidget();
   return (root_widget && root_widget != this) ? root_widget->GetThemeProvider()
                                               : nullptr;
+}
+
+const ui::ColorProvider* Widget::GetColorProvider() const {
+  auto color_scheme = GetNativeTheme()->GetDefaultSystemColorScheme();
+  return ui::ColorProviderManager::Get().GetColorProviderFor(
+      {(color_scheme == ui::NativeTheme::ColorScheme::kDark)
+           ? ui::ColorProviderManager::ColorMode::kDark
+           : ui::ColorProviderManager::ColorMode::kLight,
+       (color_scheme == ui::NativeTheme::ColorScheme::kPlatformHighContrast)
+           ? ui::ColorProviderManager::ContrastMode::kHigh
+           : ui::ColorProviderManager::ContrastMode::kNormal});
 }
 
 FocusManager* Widget::GetFocusManager() {

@@ -66,6 +66,7 @@ class Transform;
 namespace ui {
 struct AXActionData;
 struct AXNodeData;
+class ColorProvider;
 class Compositor;
 class InputMethod;
 class Layer;
@@ -892,6 +893,13 @@ class VIEWS_EXPORT View : public ui::LayerDelegate,
   // Get the theme provider from the parent widget.
   const ui::ThemeProvider* GetThemeProvider() const;
 
+  // Returns the ColorProvider from the ColorProviderManager.
+  ui::ColorProvider* GetColorProvider() {
+    return const_cast<ui::ColorProvider*>(
+        static_cast<const View*>(this)->GetColorProvider());
+  }
+  const ui::ColorProvider* GetColorProvider() const;
+
   // Returns the NativeTheme to use for this View. This calls through to
   // GetNativeTheme() on the Widget this View is in, or provides a default
   // theme if there's no widget, or returns |native_theme_| if that's
@@ -899,7 +907,7 @@ class VIEWS_EXPORT View : public ui::LayerDelegate,
   // override OnThemeChanged().
   ui::NativeTheme* GetNativeTheme() {
     return const_cast<ui::NativeTheme*>(
-        const_cast<const View*>(this)->GetNativeTheme());
+        static_cast<const View*>(this)->GetNativeTheme());
   }
   const ui::NativeTheme* GetNativeTheme() const;
 
