@@ -69,10 +69,12 @@ void ExtensionRequestNotification::Show(NotificationCloseCallback callback) {
   const std::u16string body = l10n_util::GetPluralStringFUTF16(
       kNotificationBodies[notify_type_], extension_ids_.size());
   GURL original_url("https://chrome.google.com/webstore");
-  gfx::Image icon(gfx::CreateVectorIcon(
-      vector_icons::kBusinessIcon, message_center::kSmallImageSize,
-      ui::NativeTheme::GetInstanceForWeb()->GetSystemColor(
-          ui::NativeTheme::kColorId_DefaultIconColor)));
+  // TODO(crbug.com/1187930): Eliminate the use of `gfx::kChromeIconGrey` and
+  // instead retrieve the icon color via a ui::ColorProvider once message center
+  // has been updated to use the ColorProvider infrastructure.
+  gfx::Image icon(gfx::CreateVectorIcon(vector_icons::kBusinessIcon,
+                                        message_center::kSmallImageSize,
+                                        gfx::kChromeIconGrey));
 
   notification_ = std::make_unique<message_center::Notification>(
       message_center::NOTIFICATION_TYPE_SIMPLE, kNotificationIds[notify_type_],
