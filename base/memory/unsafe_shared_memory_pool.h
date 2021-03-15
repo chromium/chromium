@@ -11,6 +11,7 @@
 #include "base/memory/ref_counted.h"
 #include "base/memory/unsafe_shared_memory_region.h"
 #include "base/synchronization/lock.h"
+#include "base/types/pass_key.h"
 
 namespace base {
 
@@ -21,27 +22,29 @@ namespace base {
 // regions are purged. Regions are returned to the buffer on destruction of
 // |SharedMemoryHandle| if they are of a correct size.
 class BASE_EXPORT UnsafeSharedMemoryPool
-    : public base::RefCountedThreadSafe<UnsafeSharedMemoryPool> {
+    : public RefCountedThreadSafe<UnsafeSharedMemoryPool> {
  public:
   // Used to store the allocation result.
   // This class returns memory to the pool upon destruction.
   class BASE_EXPORT Handle {
    public:
-    Handle(base::UnsafeSharedMemoryRegion region,
-           base::WritableSharedMemoryMapping mapping,
+    Handle(PassKey<UnsafeSharedMemoryPool>,
+           UnsafeSharedMemoryRegion region,
+           WritableSharedMemoryMapping mapping,
            scoped_refptr<UnsafeSharedMemoryPool> pool);
+
     ~Handle();
     // Disallow copy and assign.
     Handle(const Handle&) = delete;
     Handle& operator=(const Handle&) = delete;
 
-    const base::UnsafeSharedMemoryRegion& GetRegion() const;
+    const UnsafeSharedMemoryRegion& GetRegion() const;
 
-    const base::WritableSharedMemoryMapping& GetMapping() const;
+    const WritableSharedMemoryMapping& GetMapping() const;
 
    private:
-    base::UnsafeSharedMemoryRegion region_;
-    base::WritableSharedMemoryMapping mapping_;
+    UnsafeSharedMemoryRegion region_;
+    WritableSharedMemoryMapping mapping_;
     scoped_refptr<UnsafeSharedMemoryPool> pool_;
   };
 
@@ -59,19 +62,18 @@ class BASE_EXPORT UnsafeSharedMemoryPool
   void Shutdown();
 
  private:
-  friend class base::RefCountedThreadSafe<UnsafeSharedMemoryPool>;
+  friend class RefCountedThreadSafe<UnsafeSharedMemoryPool>;
   ~UnsafeSharedMemoryPool();
 
-  void ReleaseBuffer(base::UnsafeSharedMemoryRegion region,
-                     base::WritableSharedMemoryMapping mapping);
+  void ReleaseBuffer(UnsafeSharedMemoryRegion region,
+                     WritableSharedMemoryMapping mapping);
 
-  base::Lock lock_;
+  Lock lock_;
   // All shared memory regions cached internally are guaranteed to be
   // at least `region_size_` bytes in size.
   size_t region_size_ GUARDED_BY(lock_) = 0u;
   // Cached unused regions and their mappings.
-  std::vector<std::pair<base::UnsafeSharedMemoryRegion,
-                        base::WritableSharedMemoryMapping>>
+  std::vector<std::pair<UnsafeSharedMemoryRegion, WritableSharedMemoryMapping>>
       regions_ GUARDED_BY(lock_);
   bool is_shutdown_ GUARDED_BY(lock_) = false;
 };

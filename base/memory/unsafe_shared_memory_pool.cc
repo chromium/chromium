@@ -17,8 +17,9 @@ UnsafeSharedMemoryPool::UnsafeSharedMemoryPool() = default;
 UnsafeSharedMemoryPool::~UnsafeSharedMemoryPool() = default;
 
 UnsafeSharedMemoryPool::Handle::Handle(
-    base::UnsafeSharedMemoryRegion region,
-    base::WritableSharedMemoryMapping mapping,
+    PassKey<UnsafeSharedMemoryPool>,
+    UnsafeSharedMemoryRegion region,
+    WritableSharedMemoryMapping mapping,
     scoped_refptr<UnsafeSharedMemoryPool> pool)
     : region_(std::move(region)),
       mapping_(std::move(mapping)),
@@ -32,19 +33,19 @@ UnsafeSharedMemoryPool::Handle::~Handle() {
   pool_->ReleaseBuffer(std::move(region_), std::move(mapping_));
 }
 
-const base::UnsafeSharedMemoryRegion&
-UnsafeSharedMemoryPool::Handle::GetRegion() const {
+const UnsafeSharedMemoryRegion& UnsafeSharedMemoryPool::Handle::GetRegion()
+    const {
   return region_;
 }
 
-const base::WritableSharedMemoryMapping&
-UnsafeSharedMemoryPool::Handle::GetMapping() const {
+const WritableSharedMemoryMapping& UnsafeSharedMemoryPool::Handle::GetMapping()
+    const {
   return mapping_;
 }
 
 std::unique_ptr<UnsafeSharedMemoryPool::Handle>
 UnsafeSharedMemoryPool::MaybeAllocateBuffer(size_t region_size) {
-  base::AutoLock lock(lock_);
+  AutoLock lock(lock_);
 
   DCHECK_GE(region_size, 0u);
   if (is_shutdown_)
@@ -60,33 +61,35 @@ UnsafeSharedMemoryPool::MaybeAllocateBuffer(size_t region_size) {
     auto region = std::move(regions_.back());
     regions_.pop_back();
     DCHECK_GE(region.first.GetSize(), region_size_);
-    auto handle = std::make_unique<Handle>(std::move(region.first),
+    auto handle = std::make_unique<Handle>(PassKey<UnsafeSharedMemoryPool>(),
+                                           std::move(region.first),
                                            std::move(region.second), this);
     return handle;
   }
 
-  auto region = base::UnsafeSharedMemoryRegion::Create(region_size_);
+  auto region = UnsafeSharedMemoryRegion::Create(region_size_);
   if (!region.IsValid())
     return nullptr;
 
-  base::WritableSharedMemoryMapping mapping = region.Map();
+  WritableSharedMemoryMapping mapping = region.Map();
   if (!mapping.IsValid())
     return nullptr;
 
-  return std::make_unique<Handle>(std::move(region), std::move(mapping), this);
+  return std::make_unique<Handle>(PassKey<UnsafeSharedMemoryPool>(),
+                                  std::move(region), std::move(mapping), this);
 }
 
 void UnsafeSharedMemoryPool::Shutdown() {
-  base::AutoLock lock(lock_);
+  AutoLock lock(lock_);
   DCHECK(!is_shutdown_);
   is_shutdown_ = true;
   regions_.clear();
 }
 
 void UnsafeSharedMemoryPool::ReleaseBuffer(
-    base::UnsafeSharedMemoryRegion region,
-    base::WritableSharedMemoryMapping mapping) {
-  base::AutoLock lock(lock_);
+    UnsafeSharedMemoryRegion region,
+    WritableSharedMemoryMapping mapping) {
+  AutoLock lock(lock_);
   // Only return regions which are at least as big as the current configuration.
   if (is_shutdown_ || regions_.size() >= kMaxStoredBuffers ||
       !region.IsValid() || region.GetSize() < region_size_) {
