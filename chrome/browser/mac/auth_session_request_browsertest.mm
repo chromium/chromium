@@ -11,6 +11,9 @@
 #include "chrome/test/base/ui_test_utils.h"
 #include "content/public/test/browser_test.h"
 #include "net/base/mac/url_conversions.h"
+#include "net/http/http_status_code.h"
+#include "net/test/embedded_test_server/embedded_test_server.h"
+#include "net/test/embedded_test_server/http_response.h"
 #include "testing/gtest_mac.h"
 #include "ui/base/page_transition_types.h"
 
@@ -165,8 +168,8 @@ IN_PROC_BROWSER_TEST_F(AuthSessionBrowserTest, UserCancellation) {
   }
 }
 
-// Tests that a successful auth session works.
-IN_PROC_BROWSER_TEST_F(AuthSessionBrowserTest, UserSuccess) {
+// Tests that a successful auth session works via direct navigation.
+IN_PROC_BROWSER_TEST_F(AuthSessionBrowserTest, UserSuccessDirect) {
   if (@available(macOS 10.15, *)) {
     auto* browser_list = BrowserList::GetInstance();
     size_t start_browser_count = browser_list->size();
@@ -188,11 +191,12 @@ IN_PROC_BROWSER_TEST_F(AuthSessionBrowserTest, UserSuccess) {
     Browser* browser = ui_test_utils::WaitForBrowserToOpen();
     EXPECT_EQ(start_browser_count + 1, browser_list->size());
 
-    // Simulate the user successfully logging in.
+    // Simulate the user successfully logging in with a non-redirected load of
+    // a URL with the expected scheme.
 
-    GURL callback_url("makeitso://enterprise");
+    GURL success_url("makeitso://enterprise");
     browser->tab_strip_model()->GetWebContentsAt(0)->GetController().LoadURL(
-        callback_url, content::Referrer(), ui::PAGE_TRANSITION_GENERATED,
+        success_url, content::Referrer(), ui::PAGE_TRANSITION_GENERATED,
         std::string());
 
     // Expect the browser window to close.
@@ -204,7 +208,67 @@ IN_PROC_BROWSER_TEST_F(AuthSessionBrowserTest, UserSuccess) {
 
     ASSERT_NE(nil, session_request.get().callbackURL);
     EXPECT_EQ(nil, session_request.get().cancellationError);
-    EXPECT_NSEQ(net::NSURLWithGURL(callback_url),
+    EXPECT_NSEQ(net::NSURLWithGURL(success_url),
+                session_request.get().callbackURL);
+  }
+}
+
+// Tests that a successful auth session works via a redirect.
+IN_PROC_BROWSER_TEST_F(AuthSessionBrowserTest, UserSuccessRedirect) {
+  if (@available(macOS 10.15, *)) {
+    GURL success_url("makeitso://cerritos");
+
+    net::EmbeddedTestServer embedded_test_server;
+    embedded_test_server.RegisterRequestHandler(base::BindRepeating(
+        [](const GURL& success_url,
+           const net::test_server::HttpRequest& request)
+            -> std::unique_ptr<net::test_server::HttpResponse> {
+          auto http_response =
+              std::make_unique<net::test_server::BasicHttpResponse>();
+          http_response->set_code(net::HTTP_FOUND);
+          http_response->AddCustomHeader("Location", success_url.spec());
+          return http_response;
+        },
+        success_url));
+    ASSERT_TRUE(embedded_test_server.Start());
+
+    auto* browser_list = BrowserList::GetInstance();
+    size_t start_browser_count = browser_list->size();
+
+    base::scoped_nsobject<MockASWebAuthenticationSessionRequest>
+        session_request([[MockASWebAuthenticationSessionRequest alloc] init]);
+    id<ASWebAuthenticationSessionWebBrowserSessionHandling> session_handler =
+        ASWebAuthenticationSessionWebBrowserSessionManager.sharedManager
+            .sessionHandler;
+    ASSERT_NE(nil, session_handler);
+
+    // Ask the app controller to start handling our session request.
+
+    id request = session_request.get();
+    [session_handler beginHandlingWebAuthenticationSessionRequest:request];
+
+    // Expect a browser window to be opened.
+
+    Browser* browser = ui_test_utils::WaitForBrowserToOpen();
+    EXPECT_EQ(start_browser_count + 1, browser_list->size());
+
+    // Simulate the user successfully logging in with a redirected load of a URL
+    // with the expected scheme.
+
+    GURL url = embedded_test_server.GetURL("/something");
+    browser->tab_strip_model()->GetWebContentsAt(0)->GetController().LoadURL(
+        url, content::Referrer(), ui::PAGE_TRANSITION_GENERATED, std::string());
+
+    // Expect the browser window to close.
+
+    ui_test_utils::WaitForBrowserToClose(browser);
+    EXPECT_EQ(start_browser_count, browser_list->size());
+
+    // Expect there to have been the success callback.
+
+    ASSERT_NE(nil, session_request.get().callbackURL);
+    EXPECT_EQ(nil, session_request.get().cancellationError);
+    EXPECT_NSEQ(net::NSURLWithGURL(success_url),
                 session_request.get().callbackURL);
   }
 }

@@ -41,7 +41,14 @@ class AuthNavigationThrottle : public content::NavigationThrottle {
   }
   ~AuthNavigationThrottle() override = default;
 
-  ThrottleCheckResult WillStartRequest() override {
+  ThrottleCheckResult WillStartRequest() override { return HandleRequest(); }
+
+  ThrottleCheckResult WillRedirectRequest() override { return HandleRequest(); }
+
+  const char* GetNameForLogging() override { return "AuthNavigationThrottle"; }
+
+ private:
+  ThrottleCheckResult HandleRequest() {
     GURL url = navigation_handle()->GetURL();
     if (!url.SchemeIs(scheme_))
       return PROCEED;
@@ -50,7 +57,7 @@ class AuthNavigationThrottle : public content::NavigationThrottle {
     // navigations that somehow get through before the WebContents deletion
     // happens.
     if (scheme_found_.is_null())
-      return PROCEED;
+      return CANCEL_AND_IGNORE;
 
     // Post the callback; triggering the deletion of the WebContents that owns
     // the navigation that is in the middle of being throttled would likely not
@@ -61,9 +68,6 @@ class AuthNavigationThrottle : public content::NavigationThrottle {
     return CANCEL_AND_IGNORE;
   }
 
-  const char* GetNameForLogging() override { return "AuthNavigationThrottle"; }
-
- private:
   // The scheme to watch for.
   std::string scheme_;
 
