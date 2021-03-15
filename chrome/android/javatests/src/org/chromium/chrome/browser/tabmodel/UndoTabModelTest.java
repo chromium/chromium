@@ -575,6 +575,7 @@ public class UndoTabModelTest {
      */
     @Test
     @MediumTest
+    @FlakyTest(message = "crbug.com/1184155")
     public void testInOrderRestore() throws TimeoutException {
         TabModel model = sActivityTestRule.getActivity().getTabModelSelector().getModel(false);
         ChromeTabCreator tabCreator = TestThreadUtils.runOnUiThreadBlockingNoException(
