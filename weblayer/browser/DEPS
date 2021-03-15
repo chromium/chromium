@@ -30,7 +30,6 @@ include_rules = [
   "+components/favicon_base",
   "+components/favicon",
   "+components/find_in_page",
-  "+components/heavy_ad_intervention",
   "+components/infobars/android",
   "+components/infobars/content",
   "+components/infobars/core",

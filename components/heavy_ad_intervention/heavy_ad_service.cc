@@ -40,7 +40,6 @@ HeavyAdService::~HeavyAdService() {
 
 void HeavyAdService::Initialize(const base::FilePath& profile_path) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  DCHECK(!profile_path.empty());
 
   if (!base::FeatureList::IsEnabled(features::kHeavyAdPrivacyMitigations))
     return;

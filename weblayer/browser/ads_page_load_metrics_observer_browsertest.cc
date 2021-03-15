@@ -6,17 +6,13 @@
 
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
-#include "components/heavy_ad_intervention/heavy_ad_features.h"
 #include "components/page_load_metrics/browser/ads_page_load_metrics_test_waiter.h"
-#include "components/page_load_metrics/browser/observers/ad_metrics/ads_page_load_metrics_observer.h"
 #include "components/page_load_metrics/browser/observers/ad_metrics/frame_data.h"
 #include "components/page_load_metrics/browser/page_load_metrics_test_waiter.h"
 #include "components/subresource_filter/core/common/common_features.h"
 #include "components/subresource_filter/core/common/test_ruleset_utils.h"
 #include "components/ukm/test_ukm_recorder.h"
 #include "content/public/common/content_switches.h"
-#include "content/public/test/test_navigation_observer.h"
-#include "net/test/embedded_test_server/controllable_http_response.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "weblayer/shell/browser/shell.h"
 #include "weblayer/test/subresource_filter_browser_test_harness.h"
@@ -29,28 +25,6 @@ namespace {
 const char kCrossOriginHistogramId[] =
     "PageLoad.Clients.Ads.FrameCounts.AdFrames.PerFrame."
     "OriginStatus";
-
-const char kHeavyAdInterventionTypeHistogramId[] =
-    "PageLoad.Clients.Ads.HeavyAds.InterventionType2";
-
-// Use the maximum possible threshold so tests are deterministic.
-const int kMaxHeavyAdNetworkSize =
-    heavy_ad_thresholds::kMaxNetworkBytes +
-    AdsPageLoadMetricsObserver::HeavyAdThresholdNoiseProvider::
-        kMaxNetworkThresholdNoiseBytes;
-
-const char kHttpOkResponseHeader[] =
-    "HTTP/1.1 200 OK\r\n"
-    "Content-Type: text/html; charset=utf-8\r\n"
-    "\r\n";
-
-void LoadLargeResource(net::test_server::ControllableHttpResponse* response,
-                       int bytes) {
-  response->WaitForRequest();
-  response->Send(kHttpOkResponseHeader);
-  response->Send(std::string(bytes, ' '));
-  response->Done();
-}
 
 }  // namespace
 
@@ -177,10 +151,7 @@ class AdsPageLoadMetricsObserverResourceBrowserTest
  public:
   AdsPageLoadMetricsObserverResourceBrowserTest() {
     scoped_feature_list_.InitWithFeaturesAndParameters(
-        {{subresource_filter::kAdTagging, {}},
-         {features::kHeavyAdIntervention, {}},
-         {features::kHeavyAdPrivacyMitigations, {{"host-threshold", "3"}}}},
-        {});
+        {{subresource_filter::kAdTagging, {}}}, {});
   }
 
   ~AdsPageLoadMetricsObserverResourceBrowserTest() override = default;
@@ -190,8 +161,7 @@ class AdsPageLoadMetricsObserverResourceBrowserTest
 
     SetRulesetWithRules(
         {subresource_filter::testing::CreateSuffixRule("ad_script.js"),
-         subresource_filter::testing::CreateSuffixRule("ad_script_2.js"),
-         subresource_filter::testing::CreateSuffixRule("ad_iframe_writer.js")});
+         subresource_filter::testing::CreateSuffixRule("ad_script_2.js")});
   }
 
  protected:
@@ -221,87 +191,6 @@ IN_PROC_BROWSER_TEST_F(AdsPageLoadMetricsObserverResourceBrowserTest,
   // Two subresources should have been reported as ads.
   waiter->AddMinimumAdResourceExpectation(2);
   waiter->Wait();
-}
-
-// Verifies that the frame is navigated to the intervention page when a
-// heavy ad intervention triggers.
-IN_PROC_BROWSER_TEST_F(AdsPageLoadMetricsObserverResourceBrowserTest,
-                       HeavyAdInterventionEnabled_ErrorPageLoaded) {
-  base::HistogramTester histogram_tester;
-  auto incomplete_resource_response =
-      std::make_unique<net::test_server::ControllableHttpResponse>(
-          embedded_test_server(), "/ads_observer/incomplete_resource.js",
-          true /*relative_url_is_prefix*/);
-  ASSERT_TRUE(embedded_test_server()->Start());
-
-  // Create a navigation observer that will watch for the intervention to
-  // navigate the frame.
-  content::TestNavigationObserver error_observer(web_contents(),
-                                                 net::ERR_BLOCKED_BY_CLIENT);
-
-  auto waiter = CreateAdsPageLoadMetricsTestWaiter();
-  GURL url = embedded_test_server()->GetURL(
-      "/ads_observer/ad_with_incomplete_resource.html");
-  NavigateAndWaitForCompletion(url, shell());
-
-  // Load a resource large enough to trigger the intervention.
-  LoadLargeResource(incomplete_resource_response.get(), kMaxHeavyAdNetworkSize);
-
-  // Wait for the intervention page navigation to finish on the frame.
-  error_observer.WaitForNavigationFinished();
-
-  histogram_tester.ExpectUniqueSample(kHeavyAdInterventionTypeHistogramId,
-                                      ad_metrics::HeavyAdStatus::kNetwork, 1);
-
-  // Check that the ad frame was navigated to the intervention page.
-  EXPECT_FALSE(error_observer.last_navigation_succeeded());
-
-  histogram_tester.ExpectUniqueSample(kHeavyAdInterventionTypeHistogramId,
-                                      ad_metrics::HeavyAdStatus::kNetwork, 1);
-  histogram_tester.ExpectBucketCount(
-      "Blink.UseCounter.Features",
-      blink::mojom::WebFeature::kHeavyAdIntervention, 1);
-}
-
-class AdsPageLoadMetricsObserverResourceIncognitoBrowserTest
-    : public AdsPageLoadMetricsObserverResourceBrowserTest {
- public:
-  AdsPageLoadMetricsObserverResourceIncognitoBrowserTest() {
-    SetShellStartsInIncognitoMode();
-  }
-};
-
-// Verifies that the blocklist is setup correctly and the intervention triggers
-// in incognito mode.
-IN_PROC_BROWSER_TEST_F(AdsPageLoadMetricsObserverResourceIncognitoBrowserTest,
-                       HeavyAdInterventionIncognitoMode_InterventionFired) {
-  base::HistogramTester histogram_tester;
-  auto incomplete_resource_response =
-      std::make_unique<net::test_server::ControllableHttpResponse>(
-          embedded_test_server(), "/ads_observer/incomplete_resource.js",
-          true /*relative_url_is_prefix*/);
-  ASSERT_TRUE(embedded_test_server()->Start());
-
-  // Create a navigation observer that will watch for the intervention to
-  // navigate the frame.
-  content::TestNavigationObserver error_observer(web_contents(),
-                                                 net::ERR_BLOCKED_BY_CLIENT);
-
-  // Create a waiter for the incognito contents.
-  auto waiter = std::make_unique<page_load_metrics::PageLoadMetricsTestWaiter>(
-      web_contents());
-  GURL url = embedded_test_server()->GetURL(
-      "/ads_observer/ad_with_incomplete_resource.html");
-  NavigateAndWaitForCompletion(url, shell());
-
-  // Load a resource large enough to trigger the intervention.
-  LoadLargeResource(incomplete_resource_response.get(), kMaxHeavyAdNetworkSize);
-
-  // Wait for the intervention page navigation to finish on the frame.
-  error_observer.WaitForNavigationFinished();
-
-  // Check that the ad frame was navigated to the intervention page.
-  EXPECT_FALSE(error_observer.last_navigation_succeeded());
 }
 
 }  // namespace weblayer

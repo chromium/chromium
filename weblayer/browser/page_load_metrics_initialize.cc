@@ -11,7 +11,6 @@
 #include "components/page_load_metrics/browser/page_load_metrics_memory_tracker.h"
 #include "components/page_load_metrics/browser/page_load_metrics_observer.h"
 #include "components/page_load_metrics/browser/page_load_tracker.h"
-#include "weblayer/browser/heavy_ad_service_factory.h"
 #include "weblayer/browser/i18n_util.h"
 #include "weblayer/browser/no_state_prefetch/prerender_utils.h"
 #include "weblayer/browser/page_load_metrics_observer_impl.h"
@@ -67,8 +66,9 @@ class PageLoadMetricsEmbedder
       std::unique_ptr<AdsPageLoadMetricsObserver> ads_observer =
           AdsPageLoadMetricsObserver::CreateIfNeeded(
               tracker->GetWebContents(),
-              HeavyAdServiceFactory::GetForBrowserContext(
-                  tracker->GetWebContents()->GetBrowserContext()),
+              // TODO(crbug.com/1110695): Bring up HeavyAdService and ad
+              // interventions in WebLayer.
+              /*heavy_ad_service=*/nullptr,
               base::BindRepeating(&i18n::GetApplicationLocale));
       if (ads_observer)
         tracker->AddObserver(std::move(ads_observer));
