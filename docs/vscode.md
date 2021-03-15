@@ -383,6 +383,26 @@ You might want to disable git status autorefresh to save battery.
 "git.autorefresh": false,
 ```
 
+#### Editing in multiple Git repositories
+If you frequently work in multiple Git repositories that are part of the Chromium repository, you might find that the built-in tooling does not work as expected for files that exist below folders that are part of a `.gitignore` file checked in to Chromium.
+
+To work around this, you can add the directories you edit as separate `folders` entries in your workspace configuration, and ensure that the directories that are ignored in Chromium are listed **before** the Chromium `src` path.
+
+To edit this, go to `Settings` -> Select the `Workspace` tab, and choose to open as JSON (button in the top right), and configure `folders` like this (change paths to match your local setup and usage):
+
+```
+{
+  "folders": [
+    {
+      "path": "chromium/src/third_party/perfetto"
+    },
+    {
+      "path": "chromium/src"
+    }
+  ]
+}
+```
+
 ### Unable to open $File resource is not available when debugging Chromium on Linux
 Chromium [recently changed](https://docs.google.com/document/d/1OX4jY_bOCeNK7PNjVRuBQE9s6BQKS8XRNWGK8FEyh-E/edit?usp=sharing)
 the file path to be relative to the output dir. Check
