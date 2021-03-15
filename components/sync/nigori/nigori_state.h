@@ -51,6 +51,8 @@ struct NigoriState {
 
   bool NeedsKeystoreReencryption() const;
 
+  // TODO(crbug.com/1109221): Make this const unique_ptr to avoid the object
+  // being destroyed after it's been injected to the ModelTypeWorker-s.
   std::unique_ptr<CryptographerImpl> cryptographer;
 
   // Pending keys represent a remote update that contained a keybag that cannot

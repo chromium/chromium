@@ -153,7 +153,7 @@ ModelTypeWorker::ModelTypeWorker(
     ModelType type,
     const sync_pb::ModelTypeState& initial_state,
     bool trigger_initial_sync,
-    std::unique_ptr<Cryptographer> cryptographer,
+    Cryptographer* cryptographer,
     PassphraseType passphrase_type,
     NudgeHandler* nudge_handler,
     std::unique_ptr<ModelTypeProcessor> model_type_processor,
@@ -161,7 +161,7 @@ ModelTypeWorker::ModelTypeWorker(
     : type_(type),
       model_type_state_(initial_state),
       model_type_processor_(std::move(model_type_processor)),
-      cryptographer_(std::move(cryptographer)),
+      cryptographer_(cryptographer),
       passphrase_type_(passphrase_type),
       nudge_handler_(nudge_handler),
       min_gu_responses_to_ignore_key_(kMinGuResponsesToIgnoreKey),
@@ -183,15 +183,15 @@ ModelTypeWorker::ModelTypeWorker(
   // type state that has already done its initial sync, and is going to be
   // tracking metadata changes, however it does not have the most recent
   // encryption key name. The cryptographer was updated while the worker was not
-  // around, and we're not going to receive the normal UpdateCryptographer() or
+  // around, and we're not going to receive the usual OnCryptographerChange() or
   // EncryptionAcceptedApplyUpdates() calls to drive this process.
   //
   // If |cryptographer_->CanEncrypt()| is false, all the rest of this logic can
-  // be safely skipped, since |UpdateCryptographer(...)| must be called first
+  // be safely skipped, since |OnCryptographerChange()| must be called first
   // and things should be driven normally after that.
   //
   // If |model_type_state_.initial_sync_done()| is false, |model_type_state_|
-  // may still need to be updated, since UpdateCryptographer() is never going to
+  // may still need to be updated, since OnCryptographerChange() will never
   // happen, but we can assume PassiveApplyUpdates(...) will push the state to
   // the processor, and we should not push it now. In fact, doing so now would
   // violate the processor's assumption that the first OnUpdateReceived is will
@@ -215,20 +215,27 @@ ModelType ModelTypeWorker::GetModelType() const {
   return type_;
 }
 
-void ModelTypeWorker::UpdateCryptographer(
-    std::unique_ptr<Cryptographer> cryptographer) {
+void ModelTypeWorker::EnableEncryption(Cryptographer* cryptographer) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DCHECK(!cryptographer_);
   DCHECK(cryptographer);
-  cryptographer_ = std::move(cryptographer);
+  cryptographer_ = cryptographer;
+  OnCryptographerChange();
+}
+
+void ModelTypeWorker::SetFallbackCryptographerForUma(
+    Cryptographer* fallback_cryptographer_for_uma) {
+  DCHECK(!fallback_cryptographer_for_uma_);
+  DCHECK(fallback_cryptographer_for_uma);
+  fallback_cryptographer_for_uma_ = fallback_cryptographer_for_uma;
+}
+
+void ModelTypeWorker::OnCryptographerChange() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DCHECK(cryptographer_);
   UpdateEncryptionKeyName();
   DecryptStoredEntities();
   NudgeIfReadyToCommit();
-}
-
-void ModelTypeWorker::UpdateFallbackCryptographerForUma(
-    std::unique_ptr<Cryptographer> fallback_cryptographer_for_uma) {
-  DCHECK(fallback_cryptographer_for_uma);
-  fallback_cryptographer_for_uma_ = std::move(fallback_cryptographer_for_uma);
 }
 
 void ModelTypeWorker::UpdatePassphraseType(PassphraseType type) {
@@ -281,8 +288,8 @@ SyncerError ModelTypeWorker::ProcessGetUpdatesResponse(
     }
 
     UpdateResponseData response_data;
-    switch (PopulateUpdateResponseData(cryptographer_.get(), type_,
-                                       *update_entity, &response_data)) {
+    switch (PopulateUpdateResponseData(cryptographer_, type_, *update_entity,
+                                       &response_data)) {
       case SUCCESS:
         pending_updates_.push_back(std::move(response_data));
         // Override any previously undecryptable update for the same id.
@@ -536,8 +543,7 @@ std::unique_ptr<CommitContribution> ModelTypeWorker::GetContribution(
                      weak_ptr_factory_.GetWeakPtr()),
       base::BindOnce(&ModelTypeWorker::OnFullCommitFailure,
                      weak_ptr_factory_.GetWeakPtr()),
-      cryptographer_.get(), passphrase_type_,
-      CommitOnlyTypes().Has(GetModelType()));
+      cryptographer_, passphrase_type_, CommitOnlyTypes().Has(GetModelType()));
 }
 
 bool ModelTypeWorker::HasLocalChangesForTest() const {
@@ -613,8 +619,8 @@ void ModelTypeWorker::DecryptStoredEntities() {
     const sync_pb::SyncEntity& encrypted_update = it->second;
 
     UpdateResponseData response_data;
-    switch (PopulateUpdateResponseData(cryptographer_.get(), type_,
-                                       encrypted_update, &response_data)) {
+    switch (PopulateUpdateResponseData(cryptographer_, type_, encrypted_update,
+                                       &response_data)) {
       case SUCCESS:
         pending_updates_.push_back(std::move(response_data));
         it = entries_pending_decryption_.erase(it);
@@ -802,7 +808,7 @@ void ModelTypeWorker::RecordBlockedByUndecryptableUpdate() {
   // |fallback_cryptographer_for_uma_| can decrypt the data.
   for (const auto& id_and_pending_update : entries_pending_decryption_) {
     UpdateResponseData ignored;
-    if (PopulateUpdateResponseData(fallback_cryptographer_for_uma_.get(), type_,
+    if (PopulateUpdateResponseData(fallback_cryptographer_for_uma_, type_,
                                    id_and_pending_update.second,
                                    &ignored) == SUCCESS) {
       base::UmaHistogramEnumeration(

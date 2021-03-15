@@ -77,7 +77,8 @@ class CommitContributionImpl : public CommitContribution {
   // all (i.e. there is no internet connection).
   base::OnceCallback<void(SyncCommitError)> on_full_commit_failure_callback_;
 
-  // A non-owned pointer to cryptographer to encrypt entities.
+  // Null if |type_| is not encrypted. Otherwise this is used to encrypt the
+  // committed entities.
   Cryptographer* const cryptographer_;
 
   const PassphraseType passphrase_type_;

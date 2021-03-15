@@ -44,13 +44,6 @@ void FakeCryptographer::ClearDefaultEncryptionKey() {
   default_key_name_.clear();
 }
 
-std::unique_ptr<Cryptographer> FakeCryptographer::Clone() const {
-  auto new_cryptographer = std::make_unique<FakeCryptographer>();
-  new_cryptographer->known_key_names_ = known_key_names_;
-  new_cryptographer->default_key_name_ = default_key_name_;
-  return new_cryptographer;
-}
-
 bool FakeCryptographer::CanEncrypt() const {
   return !default_key_name_.empty();
 }

@@ -33,15 +33,12 @@ std::unique_ptr<CryptographerImpl> CryptographerImpl::FromSingleKeyForTesting(
 std::unique_ptr<CryptographerImpl> CryptographerImpl::FromProto(
     const sync_pb::CryptographerData& proto) {
   NigoriKeyBag key_bag = NigoriKeyBag::CreateFromProto(proto.key_bag());
-  std::string default_encryption_key_name = proto.default_key_name();
-  if (!default_encryption_key_name.empty() &&
-      !key_bag.HasKey(default_encryption_key_name)) {
-    // A default key name was specified but not present among keys.
-    return nullptr;
-  }
-
-  return base::WrapUnique(new CryptographerImpl(
-      std::move(key_bag), std::move(default_encryption_key_name)));
+  // TODO(crbug.com/1109221): An invalid local state should be handled in the
+  // caller instead of CHECK-ing here, e.g. by resetting the local state.
+  CHECK(proto.default_key_name().empty() ||
+        key_bag.HasKey(proto.default_key_name()));
+  return base::WrapUnique(
+      new CryptographerImpl(std::move(key_bag), proto.default_key_name()));
 }
 
 CryptographerImpl::CryptographerImpl(NigoriKeyBag key_bag,
@@ -79,8 +76,19 @@ void CryptographerImpl::SelectDefaultEncryptionKey(
   default_encryption_key_name_ = key_name;
 }
 
+void CryptographerImpl::EmplaceKeysAndSelectDefaultKeyFrom(
+    const CryptographerImpl& other) {
+  EmplaceKeysFrom(other.key_bag_);
+  SelectDefaultEncryptionKey(other.default_encryption_key_name_);
+}
+
 void CryptographerImpl::ClearDefaultEncryptionKey() {
   default_encryption_key_name_.clear();
+}
+
+void CryptographerImpl::ClearAllKeys() {
+  default_encryption_key_name_.clear();
+  key_bag_ = NigoriKeyBag::CreateEmpty();
 }
 
 bool CryptographerImpl::HasKey(const std::string& key_name) const {
@@ -92,17 +100,13 @@ sync_pb::NigoriKey CryptographerImpl::ExportDefaultKey() const {
   return key_bag_.ExportKey(default_encryption_key_name_);
 }
 
-std::unique_ptr<CryptographerImpl> CryptographerImpl::CloneImpl() const {
+std::unique_ptr<CryptographerImpl> CryptographerImpl::Clone() const {
   return base::WrapUnique(
       new CryptographerImpl(key_bag_.Clone(), default_encryption_key_name_));
 }
 
 size_t CryptographerImpl::KeyBagSizeForTesting() const {
   return key_bag_.size();
-}
-
-std::unique_ptr<Cryptographer> CryptographerImpl::Clone() const {
-  return CloneImpl();
 }
 
 bool CryptographerImpl::CanEncrypt() const {
