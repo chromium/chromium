@@ -5608,9 +5608,6 @@ crbug.com/1178160 virtual/threaded-prefer-compositing/external/wpt/css/cssom-vie
 crbug.com/1178160 virtual/threaded-prefer-compositing/external/wpt/css/cssom-view/MediaQueryList-extends-EventTarget.html [ Pass Failure ]
 crbug.com/1178160 virtual/threaded-prefer-compositing/external/wpt/css/cssom-view/MediaQueryList-extends-EventTarget-interop.html [ Pass Failure ]
 
-# Failing on Webkit Linux Leak
-crbug.com/1174806 external/wpt/css/selectors/focus-visible-006.html [ Pass Failure ]
-
 # No support for key combinations like Alt + c in testdriver.Actions for content_shell
 crbug.com/893480 external/wpt/uievents/interface/keyboard-accesskey-click-event.html [ Timeout ]
 
