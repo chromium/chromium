@@ -221,6 +221,10 @@ public class SingleTabSwitcherMediator implements TabSwitcher.Controller {
 
     @Override
     public boolean onBackPressed(boolean isOnHomepage) {
+        // If currently on the Start surface, we will stop here. The back button will be handled by
+        // the ChromeTabbedActivity. See https://crbug.com/1187714.
+        if (isOnHomepage) return false;
+
         if (overviewVisible() && !mTabModelSelector.isIncognitoSelected()
                 && mTabModelSelector.getCurrentTabId() != TabList.INVALID_TAB_INDEX) {
             selectTheCurrentTab();

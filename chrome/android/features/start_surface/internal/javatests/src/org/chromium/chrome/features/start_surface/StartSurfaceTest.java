@@ -47,6 +47,8 @@ import android.app.Activity;
 import android.content.Intent;
 import android.os.Build;
 import android.support.test.InstrumentationRegistry;
+import android.support.test.runner.lifecycle.ActivityLifecycleMonitorRegistry;
+import android.support.test.runner.lifecycle.Stage;
 import android.support.test.uiautomator.UiDevice;
 import android.text.TextUtils;
 import android.view.KeyEvent;
@@ -1458,6 +1460,20 @@ public class StartSurfaceTest {
     @CommandLineFlags.Add({BASE_PARAMS + "/single"})
     public void testShow_SingleAsHomepage_BackButtonWithTabSwitcher() throws ExecutionException {
         // clang-format on
+        singleAsHomepage_BackButtonWithTabSwitcher();
+    }
+
+    @Test
+    @MediumTest
+    @Feature({"StartSurface"})
+    // clang-format off
+    @CommandLineFlags.Add({BASE_PARAMS + "/single/show_last_active_tab_only/true"})
+    public void testShow_SingleAsHomepageV2_BackButtonWithTabSwitcher() throws ExecutionException {
+        // clang-format on
+        singleAsHomepage_BackButtonWithTabSwitcher();
+    }
+
+    private void singleAsHomepage_BackButtonWithTabSwitcher() throws ExecutionException {
         if (!mImmediateReturn) {
             onView(withId(org.chromium.chrome.tab_ui.R.id.home_button)).perform(click());
         }
@@ -1485,13 +1501,10 @@ public class StartSurfaceTest {
         }
 
         // Enters the tab switcher, and choose the new tab. After the tab is opening, press back.
-        onView(allOf(withId(org.chromium.chrome.R.id.tab_switcher_button), isDisplayed()));
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            cta.findViewById(org.chromium.chrome.R.id.tab_switcher_button).performClick();
-        });
-        CriteriaHelper.pollUiThread(() -> cta.getLayoutManager().overviewVisible());
-        onViewWaiting(withId(R.id.primary_tasks_surface_view));
-        onView(allOf(withId(org.chromium.chrome.tab_ui.R.id.tab_list_view), isDisplayed()));
+        waitForView(withId(org.chromium.chrome.tab_ui.R.id.tab_switcher_button));
+        TabUiTestHelper.enterTabSwitcher(cta);
+        waitForView(withId(R.id.secondary_tasks_surface_view));
+        waitForView(withId(org.chromium.chrome.tab_ui.R.id.tab_list_view));
         onView(allOf(withParent(withId(org.chromium.chrome.tab_ui.R.id.tasks_surface_body)),
                        withId(org.chromium.chrome.tab_ui.R.id.tab_list_view)))
                 .perform(RecyclerViewActions.actionOnItemAtPosition(1, click()));
@@ -1502,12 +1515,24 @@ public class StartSurfaceTest {
                 ()
                         -> Assert.assertTrue(StartSurfaceUserData.getKeepTab(
                                 cta.getTabModelSelector().getCurrentTab())));
-        pressBack();
 
+        pressBack();
         // Verifies the new Tab isn't deleted, and Start surface is shown.
         CriteriaHelper.pollUiThread(() -> cta.getLayoutManager().overviewVisible());
-        onViewWaiting(withId(R.id.primary_tasks_surface_view));
+        waitForView(withId(R.id.primary_tasks_surface_view));
         TabUiTestHelper.verifyTabModelTabCount(cta, 2, 0);
+
+        // Verifies Chrome is closed.
+        try {
+            pressBack();
+        } catch (Exception e) {
+        } finally {
+            TestThreadUtils.runOnUiThreadBlocking(() -> {
+                Assert.assertEquals(Stage.STOPPED,
+                        ActivityLifecycleMonitorRegistry.getInstance().getLifecycleStageOf(
+                                mActivityTestRule.getActivity()));
+            });
+        }
     }
 
     @Test
