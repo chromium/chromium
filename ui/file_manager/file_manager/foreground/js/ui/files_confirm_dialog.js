@@ -63,6 +63,7 @@
     }
 
     if (this.focusCancelButton) {
+      this.frame.classList.add('files-confirm-dialog-cancel-default');
       this.setInitialFocusOnCancel();
     }
 

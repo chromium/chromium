@@ -341,6 +341,7 @@
 
       this.deleteConfirmDialog_ = new FilesConfirmDialog(dialogElement);
       this.deleteConfirmDialog_.setOkLabel(str('DELETE_BUTTON_LABEL'));
+      this.deleteConfirmDialog_.focusCancelButton = true;
 
       dialogElement.addEventListener('keydown', event => {
         event.stopPropagation();

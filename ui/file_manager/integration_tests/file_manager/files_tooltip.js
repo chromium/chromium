@@ -250,56 +250,68 @@
   };
 
   /**
-   * Tests that the tooltip is hidden after the 'Delete' confirmation dialog is
-   * closed.
+   * Tests that the tooltip is hidden after the delete confirm dialog closes.
    */
   testcase.filesTooltipHidesOnDeleteDialogClosed = async () => {
     const appId = await setupAndWaitUntilReady(
         RootPath.DRIVE, [], [ENTRIES.beautiful, ENTRIES.photos]);
 
     const fileListItemQuery = '#file-list li[file-name="Beautiful Song.ogg"]';
-    const okButtonQuery = '.cr-dialog-ok';
-    const cancelButtonQuery = '.cr-dialog-cancel';
 
-    // The tooltip should be hidden.
+    // Check: initially the tooltip should be hidden.
     await remoteCall.waitForElement(appId, tooltipQueryHidden);
 
     // Select file.
-    await remoteCall.waitAndClickElement(appId, [fileListItemQuery]);
+    await remoteCall.waitAndClickElement(appId, fileListItemQuery);
 
-    // Focus delete button.
-    chrome.test.assertTrue(
-        await remoteCall.callRemoteTestUtil('focus', appId, [deleteButton]));
+    // Mouse over the delete button and leave time for tooltip to show.
+    chrome.test.assertTrue(await remoteCall.callRemoteTestUtil(
+        'fakeMouseOver', appId, [deleteButton]));
+    await wait(tooltipShowTimeout);
 
-    // Click delete button.
-    await remoteCall.waitAndClickElement(appId, [deleteButton]);
+    // Click the toolbar delete button.
+    await remoteCall.waitAndClickElement(appId, deleteButton);
 
-    // Cancel deletion by clicking 'Cancel'.
-    await remoteCall.waitAndClickElement(appId, [cancelButtonQuery]);
+    // Check: the delete confirm dialog should appear.
+    await remoteCall.waitForElement(appId, '.cr-dialog-container.shown');
+
+    // Click the delete confirm dialog 'Cancel' button.
+    const dialogCancelButton =
+        await remoteCall.waitAndClickElement(appId, '.cr-dialog-cancel:focus');
+    chrome.test.assertEq('Cancel', dialogCancelButton.text);
 
     // Leave time for tooltip to show.
     await wait(tooltipShowTimeout);
 
-    // The tooltip should still be hidden.
+    // Check: the tooltip should be hidden.
     await remoteCall.waitForElement(appId, tooltipQueryHidden);
 
     // Select file.
-    await remoteCall.waitAndClickElement(appId, [fileListItemQuery]);
+    await remoteCall.waitAndClickElement(appId, fileListItemQuery);
 
-    // Focus delete button.
-    chrome.test.assertTrue(
-        await remoteCall.callRemoteTestUtil('focus', appId, [deleteButton]));
+    // Mouse over the delete button and leave time for tooltip to show.
+    chrome.test.assertTrue(await remoteCall.callRemoteTestUtil(
+        'fakeMouseOver', appId, [deleteButton]));
+    await wait(tooltipShowTimeout);
 
-    // Click the delete button.
-    await remoteCall.waitAndClickElement(appId, [deleteButton]);
+    // Click the toolbar delete button.
+    await remoteCall.waitAndClickElement(appId, deleteButton);
 
-    // Confirm deletion by clicking 'Delete'.
-    await remoteCall.waitAndClickElement(appId, [okButtonQuery]);
+    // Check: the delete confirm dialog should appear.
+    await remoteCall.waitForElement(appId, '.cr-dialog-container.shown');
+
+    // Click the delete confirm dialog 'Delete' button.
+    const dialogDeleteButton =
+        await remoteCall.waitAndClickElement(appId, '.cr-dialog-ok');
+    chrome.test.assertEq('Delete', dialogDeleteButton.text);
+
+    // Check: the delete confirm dialog should close.
+    await remoteCall.waitForElementLost(appId, '.cr-dialog-container.shown');
 
     // Leave time for tooltip to show.
     await wait(tooltipShowTimeout);
 
-    // The tooltip should be hidden.
+    // Check: the tooltip should be hidden.
     await remoteCall.waitForElement(appId, tooltipQueryHidden);
   };
 })();

@@ -16,6 +16,8 @@ dialog {
   max-height: initial;
   max-width: initial;
   opacity: 0;
+  outline: none;
+  overflow: hidden;
   padding: 0;
   width: 100%;
 }

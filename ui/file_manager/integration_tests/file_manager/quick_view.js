@@ -2783,13 +2783,13 @@
 
     // Check: the Quick View delete confirm dialog should open.
     await remoteCall.waitForElement(
-        appId,  // The cr dialog is a child of the Quick View shadow DOM.
-        ['#quick-view', '.cr-dialog-container.shown .cr-dialog-ok:focus']);
+        appId,  // The <cr-dialog> is a child of the Quick View shadow DOM.
+        ['#quick-view', '.cr-dialog-container.shown .cr-dialog-cancel:focus']);
 
     // Prepare a list of tab-index focus queries.
     const tabQueries = [
-      {'query': ['#quick-view', '.cr-dialog-cancel:not([hidden])']},
       {'query': ['#quick-view', '.cr-dialog-ok:not([hidden])']},
+      {'query': ['#quick-view', '.cr-dialog-cancel:not([hidden])']},
     ];
 
     for (const query of tabQueries) {
@@ -2826,9 +2826,17 @@
         await remoteCall.callRemoteTestUtil('fakeKeyDown', appId, deleteKey),
         'Pressing Delete failed.');
 
-    // Click the delete confirm dialog OK button.
-    const deleteConfirm = ['#quick-view', '.cr-dialog-ok:not([hidden])'];
-    await remoteCall.waitAndClickElement(appId, deleteConfirm);
+    // Check: the delete confirm dialog should focus the 'Cancel' button.
+    let defaultDialogButton = ['#quick-view', '.cr-dialog-cancel:focus'];
+    defaultDialogButton =
+        await remoteCall.waitForElement(appId, defaultDialogButton);
+    chrome.test.assertEq('Cancel', defaultDialogButton.text);
+
+    // Click the delete confirm dialog 'Delete' button.
+    let deleteDialogButton = ['#quick-view', '.cr-dialog-ok:not([hidden])'];
+    deleteDialogButton =
+        await remoteCall.waitAndClickElement(appId, deleteDialogButton);
+    chrome.test.assertEq('Delete', deleteDialogButton.text);
 
     // Check: |hello.txt| should have been deleted.
     await remoteCall.waitForElementLost(
@@ -2875,9 +2883,17 @@
         await remoteCall.callRemoteTestUtil('fakeKeyDown', appId, deleteKey),
         'Pressing Delete failed.');
 
-    // Click the delete confirm dialog OK button.
-    const deleteConfirm = ['#quick-view', '.cr-dialog-ok:not([hidden])'];
-    await remoteCall.waitAndClickElement(appId, deleteConfirm);
+    // Check: the delete confirm dialog should focus the 'Cancel' button.
+    let defaultDialogButton = ['#quick-view', '.cr-dialog-cancel:focus'];
+    defaultDialogButton =
+        await remoteCall.waitForElement(appId, defaultDialogButton);
+    chrome.test.assertEq('Cancel', defaultDialogButton.text);
+
+    // Click the delete confirm dialog 'Delete' button.
+    let deleteDialogButton = ['#quick-view', '.cr-dialog-ok:not([hidden])'];
+    deleteDialogButton =
+        await remoteCall.waitAndClickElement(appId, deleteDialogButton);
+    chrome.test.assertEq('Delete', deleteDialogButton.text);
 
     // Check: |hello.txt| should have been deleted.
     await remoteCall.waitForElementLost(

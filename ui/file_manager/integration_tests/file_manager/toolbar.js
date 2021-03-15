@@ -43,8 +43,10 @@ testcase.toolbarDeleteButtonOpensDeleteConfirmDialog = async () => {
   // Check: the delete confirm dialog should appear.
   await remoteCall.waitForElement(appId, '.cr-dialog-container.shown');
 
-  // Check: the dialog cancel button should be focused by default.
-  await remoteCall.waitForElement(appId, 'button.cr-dialog-cancel:focus');
+  // Check: the dialog 'Cancel' button should be focused by default.
+  const defaultDialogButton =
+      await remoteCall.waitForElement(appId, '.cr-dialog-cancel:focus');
+  chrome.test.assertEq('Cancel', defaultDialogButton.text);
 };
 
 /**
@@ -66,11 +68,16 @@ testcase.toolbarDeleteButtonKeepFocus = async () => {
   // Check: the Delete button should lose focus.
   await remoteCall.waitForElementLost(appId, '#delete-button:focus');
 
-  // Wait until the delete confirm dialog appears.
+  // Check: the delete confirm dialog should appear.
   await remoteCall.waitForElement(appId, '.cr-dialog-container.shown');
 
-  // Click the dialog cancel button.
-  await remoteCall.waitAndClickElement(appId, 'button.cr-dialog-cancel');
+  // Check: the dialog 'Cancel' button should be focused by default.
+  const defaultDialogButton =
+      await remoteCall.waitForElement(appId, '.cr-dialog-cancel:focus');
+  chrome.test.assertEq('Cancel', defaultDialogButton.text);
+
+  // Click the dialog 'Cancel' button.
+  await remoteCall.waitAndClickElement(appId, '.cr-dialog-cancel');
 
   // Check: the toolbar Delete button should be focused.
   await remoteCall.waitForElement(appId, '#delete-button:focus');
