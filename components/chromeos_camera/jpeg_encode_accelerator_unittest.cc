@@ -817,6 +817,9 @@ void JpegEncodeAcceleratorTest::TestEncode(size_t num_concurrent_encoders,
   VLOG(1) << "Exit TestEncode";
 }
 
+// We may need to keep the VAAPI shared memory path for Linux-based Chrome VCD.
+// Some of our older boards are still running on the Linux VCD.
+#if BUILDFLAG(USE_VAAPI)
 TEST_F(JpegEncodeAcceleratorTest, SimpleEncode) {
   for (size_t i = 0; i < g_env->repeat_; i++) {
     for (auto& image : g_env->image_data_user_) {
@@ -855,6 +858,7 @@ TEST_F(JpegEncodeAcceleratorTest, CodedSizeAlignment) {
   TestEncode(/*num_concurrent_encoders=*/1u, /*is_dma=*/false,
              /*exif_size=*/0u);
 }
+#endif
 
 TEST_F(JpegEncodeAcceleratorTest, SimpleDmaEncode) {
   for (size_t i = 0; i < g_env->repeat_; i++) {
