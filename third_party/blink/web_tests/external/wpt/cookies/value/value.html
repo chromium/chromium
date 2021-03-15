@@ -131,6 +131,11 @@
           expected: "testA=22; test22=; testB=22",
           name: "Set valueless cookie, given `Set-Cookie: test22=`",
         },
+        {
+          cookie: "test=%32%33",
+          expected: "test=%32%33",
+          name: "URL-encoded cookie value is not decoded",
+        },
       ];
 
       for (const test of valueTests) {
