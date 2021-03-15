@@ -1775,12 +1775,16 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="EnterpriseCheck.InvalidJsonPolicies" enum="EnterprisePolicies"
-    expires_after="2020-06-18">
+    expires_after="2021-07-01">
   <owner>olsen@chromium.org</owner>
+  <owner>chromeos-commercial-stability@google.com</owner>
   <summary>
     A set of policy rules that failed validation due to unparsable JSON, or JSON
     that did not match the schema. This validation happens on start-up and when
     the policy has changed.
+
+    The histogram was expired (not recording data) from 2020-06-18 until
+    2021-03-15.
   </summary>
 </histogram>
 
