@@ -140,6 +140,8 @@ const char kCrossOriginMaliciousIframeHost[] = "malware.test";
 const char kMaliciousIframe[] = "/safe_browsing/malware_iframe.html";
 const char kUnrelatedUrl[] = "https://www.google.com";
 const char kEnhancedProtectionUrl[] = "chrome://settings/security?q=enhanced";
+const char kMaliciousJsPage[] = "/safe_browsing/malware_js.html";
+const char kMaliciousJs[] = "/safe_browsing/script.js";
 
 }  // namespace
 
@@ -1662,6 +1664,29 @@ IN_PROC_BROWSER_TEST_P(SafeBrowsingBlockingPageBrowserTest,
                                         allowlist);
 
   SetURLThreatType(url, testing::get<0>(GetParam()));
+  ui_test_utils::NavigateToURL(browser(), url);
+  base::RunLoop().RunUntilIdle();
+  WebContents* contents = browser()->tab_strip_model()->GetActiveWebContents();
+  EXPECT_TRUE(content::WaitForRenderFrameReady(contents->GetMainFrame()));
+  EXPECT_FALSE(IsShowingInterstitial(contents));
+}
+
+// Test that no safe browsing interstitial will be shown, if the subresource URL
+// matches enterprise safe browsing allowlist domains. Regression test for
+// https://crbug.com/1179276.
+IN_PROC_BROWSER_TEST_P(SafeBrowsingBlockingPageBrowserTest,
+                       VerifyEnterpriseAllowlistSubresource) {
+  GURL url = embedded_test_server()->GetURL(kMaliciousJsPage);
+  GURL js_url = embedded_test_server()->GetURL(kMaliciousJs);
+  // Add test server domain into the enterprise allowlist.
+  base::ListValue allowlist;
+  allowlist.AppendString(url.host());
+  browser()->profile()->GetPrefs()->Set(prefs::kSafeBrowsingAllowlistDomains,
+                                        allowlist);
+
+  SetURLThreatType(js_url, testing::get<0>(GetParam()));
+  // Open a new tab to rebind the allowlist to the renderer.
+  chrome::NewTab(browser());
   ui_test_utils::NavigateToURL(browser(), url);
   base::RunLoop().RunUntilIdle();
   WebContents* contents = browser()->tab_strip_model()->GetActiveWebContents();

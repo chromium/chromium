@@ -133,13 +133,23 @@ bool UrlCheckerDelegateImpl::IsUrlAllowlisted(const GURL& url) {
   return false;
 }
 
+void UrlCheckerDelegateImpl::SetPolicyAllowlistDomains(
+    const std::vector<std::string>& allowlist_domains) {
+  allowlist_domains_ = allowlist_domains;
+}
+
 bool UrlCheckerDelegateImpl::ShouldSkipRequestCheck(
     const GURL& original_url,
     int frame_tree_node_id,
     int render_process_id,
     int render_frame_id,
     bool originated_from_service_worker) {
-  return false;
+  // Check for whether the URL matches the Safe Browsing allowlist domains
+  // (a.k. a prefs::kSafeBrowsingAllowlistDomains).
+  return std::find_if(allowlist_domains_.begin(), allowlist_domains_.end(),
+                      [&original_url](const std::string& domain) {
+                        return original_url.DomainIs(domain);
+                      }) != allowlist_domains_.end();
 }
 
 void UrlCheckerDelegateImpl::NotifySuspiciousSiteDetected(

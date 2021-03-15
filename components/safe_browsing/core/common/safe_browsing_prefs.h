@@ -287,6 +287,11 @@ bool IsURLAllowlistedByPolicy(const GURL& url,
 // Called on UI thread.
 bool IsURLAllowlistedByPolicy(const GURL& url, const PrefService& pref);
 
+// Helper function to get a list of Safe Browsing allowlist domains
+// (a.k. a prefs::kSafeBrowsingAllowlistDomains).
+// Called on UI thread.
+std::vector<std::string> GetURLAllowlistByPolicy(PrefService* pref_service);
+
 // Helper function to determine if any entry on the |url_chain| matches Safe
 // Browsing allowlist domains.
 // Called on UI thread.

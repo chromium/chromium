@@ -100,6 +100,12 @@ bool AwUrlCheckerDelegateImpl::IsUrlAllowlisted(const GURL& url) {
   return allowlist_manager_->IsUrlAllowed(url);
 }
 
+void AwUrlCheckerDelegateImpl::SetPolicyAllowlistDomains(
+    const std::vector<std::string>& allowlist_domains) {
+  // The SafeBrowsingAllowlistDomains policy is not supported on AW.
+  return;
+}
+
 bool AwUrlCheckerDelegateImpl::ShouldSkipRequestCheck(
     const GURL& original_url,
     int frame_tree_node_id,

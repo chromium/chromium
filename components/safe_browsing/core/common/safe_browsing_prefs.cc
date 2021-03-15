@@ -328,6 +328,16 @@ bool IsURLAllowlistedByPolicy(const GURL& url, const PrefService& pref) {
   return false;
 }
 
+std::vector<std::string> GetURLAllowlistByPolicy(PrefService* pref_service) {
+  std::vector<std::string> allowlist_domains;
+  const base::ListValue* allowlist =
+      pref_service->GetList(prefs::kSafeBrowsingAllowlistDomains);
+  for (const base::Value& value : allowlist->GetList()) {
+    allowlist_domains.push_back(value.GetString());
+  }
+  return allowlist_domains;
+}
+
 bool MatchesEnterpriseAllowlist(const PrefService& pref,
                                 const std::vector<GURL>& url_chain) {
   for (const GURL& url : url_chain) {
