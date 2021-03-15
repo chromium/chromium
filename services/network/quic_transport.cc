@@ -40,7 +40,7 @@ net::QuicTransportClient::Parameters CreateParameters(
 
 class QuicTransport::Stream final {
  public:
-  class StreamVisitor final : public quic::QuicTransportStream::Visitor {
+  class StreamVisitor final : public quic::WebTransportStreamVisitor {
    public:
     explicit StreamVisitor(Stream* stream)
         : stream_(stream->weak_factory_.GetWeakPtr()) {}

@@ -32,7 +32,7 @@ class URLRequestContext;
 
 // QuicTransportClient is the top-level API for QuicTransport in //net.
 class NET_EXPORT QuicTransportClient
-    : public quic::QuicTransportClientSession::ClientVisitor,
+    : public quic::WebTransportVisitor,
       public QuicChromiumPacketReader::Visitor,
       public QuicChromiumPacketWriter::Delegate,
       public quic::QuicSession::Visitor {
