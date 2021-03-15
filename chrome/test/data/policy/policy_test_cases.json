@@ -26,7 +26,7 @@
         "prefs": {
             "${pref}": {
               "value": "The value that |pref| should take on.",
-              "expect_default": "Whether or not the pref value should be the default one.",
+              "expect_default": "Whether or not the pref value should be the default one (i.e. unmanaged and user-modifiable). Defaults to false if not specified.",
               "location": "The location where the pref is registered, possible values are ['user_profile', 'signin_profile', 'local_state', 'cros_setting']. Defaults to 'user_profile' if not specified.",
               "check_for_mandatory": "Should the preference be tested when a mandatory value is set for the policy? Defaults to |true| if not specified.",
               "check_for_recommended": "Should the preference be tested when a recommended value is set for the policy? Defaults to |true| if not specified."

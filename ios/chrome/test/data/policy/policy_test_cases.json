@@ -16,7 +16,7 @@
         "prefs": {
           "${pref}": {
             "value": "The value that |pref| should take on. Defaults to the value that the policy was set to.",
-            "expect_default": "Whether or not the pref value should be the default one.",
+            "expect_default": "Whether or not the pref value should be the default one (i.e. unmanaged and user-modifiable). Defaults to false if not specified.",
             "location": "The location where the pref is registered, possible values are ['user_profile', 'local_state']. Defaults to 'user_profile' if not specified."
           }
         }
