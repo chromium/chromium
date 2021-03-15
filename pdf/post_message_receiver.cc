@@ -49,8 +49,19 @@ PostMessageReceiver::PostMessageReceiver(
 
 gin::ObjectTemplateBuilder PostMessageReceiver::GetObjectTemplateBuilder(
     v8::Isolate* isolate) {
+  // The function template needs to be created with a repeating callback instead
+  // of a member function pointer (MFP). Gin expects the first parameter for a
+  // callback to a MFP to be the JavaScript `this` object corresponding to this
+  // scriptable object exposed through Blink. However, the actual receiving
+  // object for a plugins is a HTMLEmbedElement and Blink internally forwards
+  // the parameters to this scriptable object.
+  //
+  // `base::Unretained(this)` is safe to use because the callback will only be
+  // called within the lifetime of the wrapped PostMessageReceiver object.
   return gin::Wrappable<PostMessageReceiver>::GetObjectTemplateBuilder(isolate)
-      .SetMethod("postMessage", &PostMessageReceiver::PostMessage);
+      .SetMethod("postMessage",
+                 base::BindRepeating(&PostMessageReceiver::PostMessage,
+                                     base::Unretained(this)));
 }
 
 const char* PostMessageReceiver::GetTypeName() {
