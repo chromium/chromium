@@ -1,3 +1,5 @@
+# Screen Time
+
 This directory contains the integration between Chromium and the macOS
 ScreenTime system, which is a digital wellbeing tool allowing users to restrict
 their own use of apps and websites by category.
