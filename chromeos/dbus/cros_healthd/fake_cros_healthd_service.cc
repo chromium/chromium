@@ -7,7 +7,27 @@
 #include <utility>
 
 #include "base/bind.h"
+#include "base/check.h"
 #include "base/threading/thread_task_runner_handle.h"
+#include "mojo/public/cpp/system/handle.h"
+#include "mojo/public/cpp/system/platform_handle.h"
+
+namespace {
+
+// Will destroy `handle` if it's not a valid platform handle.
+mojo::ScopedHandle CloneScopedHandle(mojo::ScopedHandle* handle) {
+  DCHECK(handle);
+  if (!handle->is_valid()) {
+    return mojo::ScopedHandle();
+  }
+  mojo::PlatformHandle platform_handle =
+      mojo::UnwrapPlatformHandle(std::move(*handle));
+  DCHECK(platform_handle.is_valid());
+  *handle = mojo::WrapPlatformHandle(platform_handle.Clone());
+  return mojo::WrapPlatformHandle(std::move(platform_handle));
+}
+
+}  // namespace
 
 namespace chromeos {
 namespace cros_healthd {
@@ -82,8 +102,8 @@ void FakeCrosHealthdService::GetRoutineUpdate(
           std::move(callback),
           mojom::RoutineUpdate::New(
               routine_update_response_->progress_percent,
-              std::move(routine_update_response_->output),
-              std::move(routine_update_response_->routine_update_union))),
+              CloneScopedHandle(&routine_update_response_->output),
+              routine_update_response_->routine_update_union.Clone())),
       callback_delay_);
 }
 
