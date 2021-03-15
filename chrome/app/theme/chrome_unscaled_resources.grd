@@ -118,6 +118,7 @@
         <include name="IDR_APPS_FOLDER_OVERLAY_512" file="mac/apps_folder_overlay_512.png" type="BINDATA" />
       </if>
       <if expr="chromeos">
+        <include name="IDR_LOGO_CROSH" file="chromium/chromeos/crosh_app_icon_256.png" type="BINDATA" />
         <!-- Borealis icons -->
         <include name="IDR_LOGO_BOREALIS_DEFAULT_192" file="borealis/logo_borealis_default_192.png" type="BINDATA" />
         <!-- Crostini icons -->
