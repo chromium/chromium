@@ -1013,6 +1013,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Enterprise.InitialEnrollmentRequirement"
     enum="EnterpriseInitialEnrollmentRequirement" expires_after="M77">
+  <obsolete>
+    Removed in M91 since the data is not monitored.
+  </obsolete>
   <owner>pmarko@chromium.org</owner>
   <owner>igorcov@chromium.org</owner>
   <summary>

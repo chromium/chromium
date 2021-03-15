@@ -89,20 +89,6 @@ constexpr base::TimeDelta kSystemClockSyncWaitTimeout =
 using SystemClockSyncCallback = base::OnceCallback<void(
     AutoEnrollmentController::SystemClockSyncState system_clock_sync_state)>;
 
-// These values are persisted to logs. Entries should not be renumbered and
-// numeric values should never be reused.
-// These values must match the corresponding enum defined in enums.xml.
-enum class InitialEnrollmentRequirementHistogramValue {
-  kRequired = 0,
-  kNotRequiredSerialNumberMissing = 1,
-  kNotRequiredBrandCodeMissing = 2,
-  kNotRequiredEmbargoEndDateInvalid = 3,
-  kNotRequiredEmbargoEndDateInvalidWithoutSystemClockSync = 4,
-  kNotRequiredInEmbargoPeriod = 5,
-  kNotRequiredInEmbargoPeriodWithoutSystemClockSync = 6,
-  kMaxValue = kNotRequiredInEmbargoPeriodWithoutSystemClockSync
-};
-
 // Returns the int value of the `switch_name` argument, clamped to the [0, 62]
 // interval. Returns 0 if the argument doesn't exist or isn't an int value.
 int GetSanitizedArg(const std::string& switch_name) {
@@ -293,39 +279,6 @@ class AutoEnrollmentController::SystemClockSyncWaiter
 
   DISALLOW_COPY_AND_ASSIGN(SystemClockSyncWaiter);
 };
-
-namespace {
-
-// Records the "Enterprise.InitialEnrollmentRequirement" histogram value.
-// Do not pass `*WithoutSystemClockSync` enum values as `value`.
-// If `value` is one of the values that are only generated at specific system
-// clock values (that is, related to the factory ping embargo period),
-// `system_clock_sync_state` is used to determine if the reported value should
-// be `value` or the corresponding `*WithoutSystemClockSync` value.
-void RecordInitialEnrollmentRequirement(
-    InitialEnrollmentRequirementHistogramValue value,
-    AutoEnrollmentController::SystemClockSyncState system_clock_sync_state) {
-  DCHECK_NE(value, InitialEnrollmentRequirementHistogramValue::
-                       kNotRequiredEmbargoEndDateInvalidWithoutSystemClockSync);
-  DCHECK_NE(value, InitialEnrollmentRequirementHistogramValue::
-                       kNotRequiredInEmbargoPeriodWithoutSystemClockSync);
-  if (system_clock_sync_state !=
-      AutoEnrollmentController::SystemClockSyncState::kSynchronized) {
-    if (value == InitialEnrollmentRequirementHistogramValue::
-                     kNotRequiredEmbargoEndDateInvalid) {
-      value = InitialEnrollmentRequirementHistogramValue::
-          kNotRequiredEmbargoEndDateInvalidWithoutSystemClockSync;
-    }
-    if (value == InitialEnrollmentRequirementHistogramValue::
-                     kNotRequiredInEmbargoPeriod) {
-      value = InitialEnrollmentRequirementHistogramValue::
-          kNotRequiredInEmbargoPeriodWithoutSystemClockSync;
-    }
-  }
-  UMA_HISTOGRAM_ENUMERATION("Enterprise.InitialEnrollmentRequirement", value);
-}
-
-}  // namespace
 
 const char AutoEnrollmentController::kForcedReEnrollmentAlways[] = "always";
 const char AutoEnrollmentController::kForcedReEnrollmentNever[] = "never";
@@ -537,10 +490,6 @@ AutoEnrollmentController::GetInitialStateDeterminationRequirement() {
   if (provider->GetEnterpriseMachineID().empty()) {
     LOG(WARNING)
         << "Skip Initial State Determination due to missing serial number.";
-    RecordInitialEnrollmentRequirement(
-        InitialEnrollmentRequirementHistogramValue::
-            kNotRequiredSerialNumberMissing,
-        system_clock_sync_state_);
     return InitialStateDeterminationRequirement::kNotRequired;
   }
 
@@ -550,10 +499,6 @@ AutoEnrollmentController::GetInitialStateDeterminationRequirement() {
   if (!rlz_brand_code_found || rlz_brand_code.empty()) {
     LOG(WARNING)
         << "Skip Initial State Determination due to missing brand code.";
-    RecordInitialEnrollmentRequirement(
-        InitialEnrollmentRequirementHistogramValue::
-            kNotRequiredBrandCodeMissing,
-        system_clock_sync_state_);
     return InitialStateDeterminationRequirement::kNotRequired;
   }
 
@@ -575,25 +520,14 @@ AutoEnrollmentController::GetInitialStateDeterminationRequirement() {
     LOG(WARNING)
         << "Skip Initial State Determination due to invalid embargo date ("
         << system_clock_log_info << ").";
-    RecordInitialEnrollmentRequirement(
-        InitialEnrollmentRequirementHistogramValue::
-            kNotRequiredEmbargoEndDateInvalid,
-        system_clock_sync_state_);
     return InitialStateDeterminationRequirement::kNotRequired;
   }
   if (embargo_state == system::FactoryPingEmbargoState::kNotPassed) {
     LOG(WARNING) << "Skip Initial State Determination because the device is in "
                     "the embargo period ("
                  << system_clock_log_info << ").";
-    RecordInitialEnrollmentRequirement(
-        InitialEnrollmentRequirementHistogramValue::kNotRequiredInEmbargoPeriod,
-        system_clock_sync_state_);
     return InitialStateDeterminationRequirement::kNotRequired;
   }
-
-  RecordInitialEnrollmentRequirement(
-      InitialEnrollmentRequirementHistogramValue::kRequired,
-      system_clock_sync_state_);
 
   return InitialStateDeterminationRequirement::kRequired;
 }

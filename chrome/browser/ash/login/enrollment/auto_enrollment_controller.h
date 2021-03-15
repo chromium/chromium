@@ -192,11 +192,6 @@ class AutoEnrollmentController {
   // reached while waiting for the system clock sync.
   void OnSystemClockSyncResult(SystemClockSyncState system_clock_sync_state);
 
-  // Re-checks if initial enrollment is required. The requirement could change
-  // if the system clock has been synchronized, because the device may not be
-  // in the factory ping embargo period according to the new system time.
-  void RecheckInitialEnrollmentRequirement();
-
   // Starts the auto-enrollment client for initial enrollment.
   void StartClientForInitialEnrollment();
 

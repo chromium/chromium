@@ -23006,6 +23006,9 @@ Called by update_document_policy_enum.py.-->
 </enum>
 
 <enum name="EnterpriseInitialEnrollmentRequirement">
+  <obsolete>
+    Removed in M91 since the data is not monitored.
+  </obsolete>
   <int value="0" label="Required">Initial Enrollment is required.</int>
   <int value="1" label="NotRequiredSerialNumberMissing">
     Initial Enrollment is skipped because the serial number is missing from VPD.

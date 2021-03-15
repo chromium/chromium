@@ -1334,9 +1334,6 @@ IN_PROC_BROWSER_TEST_P(WizardControllerDeviceStateExplicitRequirementTest,
   mock_enrollment_screen_->ExitScreen(EnrollmentScreen::Result::COMPLETED);
 
   EXPECT_TRUE(StartupUtils::IsOobeCompleted());
-
-  histogram_tester()->ExpectTotalCount(
-      "Enterprise.InitialEnrollmentRequirement", 0 /* count */);
 }
 
 // Tests that a server error occurs during a check for Forced Re-Enrollment.
@@ -1534,9 +1531,6 @@ class WizardControllerDeviceStateWithInitialEnrollmentTest
     mock_enrollment_screen_->ExitScreen(EnrollmentScreen::Result::COMPLETED);
 
     EXPECT_TRUE(StartupUtils::IsOobeCompleted());
-    histogram_tester()->ExpectUniqueSample(
-        "Enterprise.InitialEnrollmentRequirement", 0 /* Required */,
-        1 /* count */);
   }
 
   SystemClockClient::TestInterface* system_clock_client() {
@@ -1651,10 +1645,6 @@ IN_PROC_BROWSER_TEST_F(WizardControllerDeviceStateWithInitialEnrollmentTest,
   mock_enrollment_screen_->ExitScreen(EnrollmentScreen::Result::COMPLETED);
 
   EXPECT_TRUE(StartupUtils::IsOobeCompleted());
-
-  histogram_tester()->ExpectUniqueSample(
-      "Enterprise.InitialEnrollmentRequirement", 0 /* Required */,
-      1 /* count */);
 }
 
 IN_PROC_BROWSER_TEST_F(WizardControllerDeviceStateWithInitialEnrollmentTest,
@@ -1697,10 +1687,6 @@ IN_PROC_BROWSER_TEST_F(WizardControllerDeviceStateWithInitialEnrollmentTest,
   mock_auto_enrollment_check_screen_->RealShow();
   EXPECT_EQ(policy::AUTO_ENROLLMENT_STATE_NO_ENROLLMENT,
             auto_enrollment_controller()->state());
-
-  histogram_tester()->ExpectUniqueSample(
-      "Enterprise.InitialEnrollmentRequirement",
-      5 /* NotRequiredInEmbargoPeriod*/, 1 /* count */);
 }
 
 IN_PROC_BROWSER_TEST_F(WizardControllerDeviceStateWithInitialEnrollmentTest,
@@ -1749,10 +1735,6 @@ IN_PROC_BROWSER_TEST_F(WizardControllerDeviceStateWithInitialEnrollmentTest,
             auto_enrollment_controller()->auto_enrollment_check_type());
   EXPECT_EQ(policy::AUTO_ENROLLMENT_STATE_NO_ENROLLMENT,
             auto_enrollment_controller()->state());
-
-  histogram_tester()->ExpectUniqueSample(
-      "Enterprise.InitialEnrollmentRequirement",
-      5 /* NotRequiredInEmbargoPeriod*/, 1 /* count */);
 }
 
 IN_PROC_BROWSER_TEST_F(WizardControllerDeviceStateWithInitialEnrollmentTest,
@@ -1804,10 +1786,6 @@ IN_PROC_BROWSER_TEST_F(WizardControllerDeviceStateWithInitialEnrollmentTest,
             auto_enrollment_controller()->auto_enrollment_check_type());
   EXPECT_EQ(policy::AUTO_ENROLLMENT_STATE_NO_ENROLLMENT,
             auto_enrollment_controller()->state());
-
-  histogram_tester()->ExpectUniqueSample(
-      "Enterprise.InitialEnrollmentRequirement",
-      6 /* NotRequiredInEmbargoPeriodWithoutSystemClockSync*/, 1 /* count */);
 }
 
 IN_PROC_BROWSER_TEST_F(WizardControllerDeviceStateWithInitialEnrollmentTest,
@@ -1887,10 +1865,6 @@ IN_PROC_BROWSER_TEST_F(WizardControllerDeviceStateWithInitialEnrollmentTest,
   CheckCurrentScreen(EnrollmentScreenView::kScreenId);
   mock_enrollment_screen_->ExitScreen(EnrollmentScreen::Result::COMPLETED);
   EXPECT_TRUE(StartupUtils::IsOobeCompleted());
-
-  histogram_tester()->ExpectUniqueSample(
-      "Enterprise.InitialEnrollmentRequirement", 0 /* Required */,
-      1 /* count */);
 }
 
 class WizardControllerScreenPriorityOOBETest : public OobeBaseTest {
