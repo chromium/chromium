@@ -12,10 +12,13 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/time/default_clock.h"
 #include "chrome/browser/ash/login/login_manager_test.h"
+#include "chrome/browser/ash/login/test/js_checker.h"
 #include "chrome/browser/ash/login/test/local_state_mixin.h"
 #include "chrome/browser/ash/login/test/login_manager_mixin.h"
+#include "chrome/browser/ash/login/test/offline_login_test_mixin.h"
 #include "chrome/browser/ash/login/test/oobe_screen_waiter.h"
 #include "chrome/browser/ash/login/test/test_predicate_waiter.h"
+#include "chrome/browser/ui/webui/chromeos/login/error_screen_handler.h"
 #include "chrome/browser/ui/webui/chromeos/login/gaia_screen_handler.h"
 #include "chromeos/cryptohome/cryptohome_parameters.h"
 #include "chromeos/dbus/cryptohome/fake_cryptohome_client.h"
@@ -25,11 +28,24 @@
 namespace chromeos {
 
 namespace {
+constexpr char kUser1Email[] = "test-user1@gmail.com";
+constexpr char kGaia1ID[] = "111111";
+
+constexpr char kUser2Email[] = "test-user2@gmail.com";
+constexpr char kGaia2ID[] = "222222";
+
+constexpr char kUser3Email[] = "test-user3@gmail.com";
+constexpr char kGaia3ID[] = "333333";
 
 constexpr base::TimeDelta kLoginOnlineShortDelay =
     base::TimeDelta::FromSeconds(10);
 constexpr base::TimeDelta kLoginOnlineLongDelay =
     base::TimeDelta::FromSeconds(20);
+
+const test::UIPath kErrorMessageGuestSigninLink = {"error-message",
+                                                   "error-guest-signin-link"};
+const test::UIPath kErrorMessageOfflineSigninLink = {
+    "error-message", "error-offline-login-link"};
 
 }  // namespace
 
@@ -157,6 +173,90 @@ IN_PROC_BROWSER_TEST_F(UserSelectionScreenEnforceOnlineTest,
   EXPECT_TRUE(ash::LoginScreenTestApi::FocusUser(users[0].account_id));
   OobeScreenWaiter(GaiaView::kScreenId).Wait();
   EXPECT_TRUE(ash::LoginScreenTestApi::IsOobeDialogVisible());
+}
+
+class UserSelectionScreenBlockOfflineTest : public LoginManagerTest,
+                                            public LocalStateMixin::Delegate {
+ public:
+  UserSelectionScreenBlockOfflineTest() : LoginManagerTest() {}
+  ~UserSelectionScreenBlockOfflineTest() override = default;
+  UserSelectionScreenBlockOfflineTest(
+      const UserSelectionScreenBlockOfflineTest&) = delete;
+  UserSelectionScreenBlockOfflineTest& operator=(
+      const UserSelectionScreenBlockOfflineTest&) = delete;
+
+  // chromeos::LocalStateMixin::Delegate:
+  void SetUpLocalState() override {
+    const base::Time now = base::DefaultClock::GetInstance()->Now();
+
+    user_manager::known_user::SetLastOnlineSignin(
+        test_user_over_the_limit_.account_id, now - kLoginOnlineLongDelay);
+    user_manager::known_user::SetOfflineSigninLimit(
+        test_user_over_the_limit_.account_id, kLoginOnlineShortDelay);
+
+    user_manager::known_user::SetLastOnlineSignin(
+        test_user_under_the_limit_.account_id, now);
+    user_manager::known_user::SetOfflineSigninLimit(
+        test_user_under_the_limit_.account_id, kLoginOnlineShortDelay);
+  }
+
+ protected:
+  void OpenGaiaDialog(const AccountId& account_id) {
+    EXPECT_FALSE(ash::LoginScreenTestApi::IsOobeDialogVisible());
+    EXPECT_TRUE(ash::LoginScreenTestApi::IsForcedOnlineSignin(account_id));
+    EXPECT_TRUE(ash::LoginScreenTestApi::FocusUser(account_id));
+    OobeScreenWaiter(GaiaView::kScreenId).Wait();
+    EXPECT_TRUE(ash::LoginScreenTestApi::IsOobeDialogVisible());
+  }
+
+  const LoginManagerMixin::TestUserInfo test_user_over_the_limit_{
+      AccountId::FromUserEmailGaiaId(kUser1Email, kGaia1ID),
+      user_manager::UserType::USER_TYPE_REGULAR,
+      user_manager::User::OAuthTokenStatus::OAUTH2_TOKEN_STATUS_INVALID};
+  const LoginManagerMixin::TestUserInfo test_user_under_the_limit_{
+      AccountId::FromUserEmailGaiaId(kUser2Email, kGaia2ID),
+      user_manager::UserType::USER_TYPE_REGULAR,
+      user_manager::User::OAuthTokenStatus::OAUTH2_TOKEN_STATUS_INVALID};
+  const LoginManagerMixin::TestUserInfo test_user_limit_not_set_{
+      AccountId::FromUserEmailGaiaId(kUser3Email, kGaia3ID),
+      user_manager::UserType::USER_TYPE_REGULAR,
+      user_manager::User::OAuthTokenStatus::OAUTH2_TOKEN_STATUS_INVALID};
+  LoginManagerMixin login_mixin_{
+      &mixin_host_,
+      {test_user_over_the_limit_, test_user_under_the_limit_,
+       test_user_limit_not_set_}};
+  OfflineLoginTestMixin offline_login_test_mixin_{&mixin_host_};
+  chromeos::LocalStateMixin local_state_mixin_{&mixin_host_, this};
+};
+
+// Tests that offline login link is hidden on the network error screen when
+// offline login period expires.
+IN_PROC_BROWSER_TEST_F(UserSelectionScreenBlockOfflineTest, HideOfflineLink) {
+  offline_login_test_mixin_.GoOffline();
+  OpenGaiaDialog(test_user_over_the_limit_.account_id);
+  OobeScreenWaiter(ErrorScreenView::kScreenId).Wait();
+  test::OobeJS().ExpectVisiblePath(kErrorMessageGuestSigninLink);
+  test::OobeJS().ExpectHiddenPath(kErrorMessageOfflineSigninLink);
+}
+
+// Validates that offline login link is visible on the network error screen.
+IN_PROC_BROWSER_TEST_F(UserSelectionScreenBlockOfflineTest, ShowOfflineLink) {
+  offline_login_test_mixin_.GoOffline();
+  OpenGaiaDialog(test_user_under_the_limit_.account_id);
+  OobeScreenWaiter(ErrorScreenView::kScreenId).Wait();
+  test::OobeJS().ExpectVisiblePath(kErrorMessageGuestSigninLink);
+  test::OobeJS().ExpectVisiblePath(kErrorMessageOfflineSigninLink);
+}
+
+// Offline login link is always shown when offline login time limit policy is
+// not set.
+IN_PROC_BROWSER_TEST_F(UserSelectionScreenBlockOfflineTest,
+                       OfflineLimitNotSet) {
+  offline_login_test_mixin_.GoOffline();
+  OpenGaiaDialog(test_user_limit_not_set_.account_id);
+  OobeScreenWaiter(ErrorScreenView::kScreenId).Wait();
+  test::OobeJS().ExpectVisiblePath(kErrorMessageGuestSigninLink);
+  test::OobeJS().ExpectVisiblePath(kErrorMessageOfflineSigninLink);
 }
 
 }  // namespace chromeos

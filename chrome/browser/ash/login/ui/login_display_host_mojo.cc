@@ -19,6 +19,7 @@
 #include "chrome/browser/ash/certificate_provider/certificate_provider_service_factory.h"
 #include "chrome/browser/ash/certificate_provider/pin_dialog_manager.h"
 #include "chrome/browser/ash/login/existing_user_controller.h"
+#include "chrome/browser/ash/login/helper.h"
 #include "chrome/browser/ash/login/mojo_system_info_dispatcher.h"
 #include "chrome/browser/ash/login/reauth_stats.h"
 #include "chrome/browser/ash/login/screens/chrome_user_selection_screen.h"
@@ -40,6 +41,7 @@
 #include "chrome/browser/ui/webui/chromeos/login/user_creation_screen_handler.h"
 #include "chromeos/login/auth/user_context.h"
 #include "components/startup_metric_utils/browser/startup_metric_utils.h"
+#include "components/user_manager/known_user.h"
 #include "components/user_manager/user.h"
 #include "components/user_manager/user_manager.h"
 #include "components/user_manager/user_names.h"
@@ -464,11 +466,17 @@ void LoginDisplayHostMojo::HandleHardlockPod(const AccountId& account_id) {
 void LoginDisplayHostMojo::HandleOnFocusPod(const AccountId& account_id) {
   user_selection_screen_->HandleFocusPod(account_id);
   WallpaperControllerClient::Get()->ShowUserWallpaper(account_id);
+  if (focused_pod_account_id_ != account_id)
+    MaybeUpdateOfflineLoginLinkVisibility(account_id);
   focused_pod_account_id_ = account_id;
 }
 
 void LoginDisplayHostMojo::HandleOnNoPodFocused() {
   user_selection_screen_->HandleNoPodFocused();
+  focused_pod_account_id_ = EmptyAccountId();
+  if (GetOobeUI()) {
+    GetOobeUI()->GetErrorScreen()->AllowOfflineLoginPerUser(true);
+  }
 }
 
 bool LoginDisplayHostMojo::HandleFocusLockScreenApps(bool reverse) {
@@ -664,6 +672,29 @@ void LoginDisplayHostMojo::OnOwnerSigninSuccess() {
   std::move(owner_verified_callback_).Run();
   extended_authenticator_.reset();
   ShowFullScreen();
+}
+
+void LoginDisplayHostMojo::MaybeUpdateOfflineLoginLinkVisibility(
+    const AccountId& account_id) {
+  if (!GetOobeUI())
+    return;
+  bool offline_limit_expired = false;
+
+  const base::Optional<base::TimeDelta> offline_signin_interval =
+      user_manager::known_user::GetOfflineSigninLimit(account_id);
+
+  // Check if the limit is set only.
+  if (offline_signin_interval) {
+    const base::Time last_online_signin =
+        user_manager::known_user::GetLastOnlineSignin(account_id);
+    offline_limit_expired =
+        login::TimeToOnlineSignIn(last_online_signin,
+                                  offline_signin_interval.value()) <=
+        base::TimeDelta();
+  }
+
+  GetOobeUI()->GetErrorScreen()->AllowOfflineLoginPerUser(
+      !offline_limit_expired);
 }
 
 }  // namespace chromeos
