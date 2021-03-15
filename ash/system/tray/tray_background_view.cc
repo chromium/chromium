@@ -70,7 +70,8 @@ constexpr base::TimeDelta kAnimationDurationForHideMs =
 // Bounce animation constants
 const base::TimeDelta kAnimationDurationForBounceElement =
     base::TimeDelta::FromMilliseconds(250);
-const int kAnimationBounceDistance = 16;
+const int kAnimationBounceUpDistance = 16;
+const int kAnimationBounceDownDistance = 8;
 const float kAnimationBounceScaleFactor = 0.5;
 
 // When becoming visible delay the animation so that StatusAreaWidgetDelegate
@@ -417,12 +418,32 @@ void TrayBackgroundView::BounceInAnimation() {
                        1),
           gfx::Point3F(1, 1, 1));
 
+  gfx::PointF start_point = gfx::PointF(0, 0);
+  gfx::PointF bounce_up_point;
+  gfx::PointF bounce_down_point;
+
+  switch (shelf_->alignment()) {
+    case ShelfAlignment::kLeft:
+      bounce_up_point = gfx::PointF(kAnimationBounceUpDistance, 0);
+      bounce_down_point = gfx::PointF(-kAnimationBounceDownDistance, 0);
+      break;
+    case ShelfAlignment::kRight:
+      bounce_up_point = gfx::PointF(-kAnimationBounceUpDistance, 0);
+      bounce_down_point = gfx::PointF(kAnimationBounceDownDistance, 0);
+      break;
+    case ShelfAlignment::kBottom:
+    case ShelfAlignment::kBottomLocked:
+    default:
+      bounce_up_point = gfx::PointF(0, -kAnimationBounceUpDistance);
+      bounce_down_point = gfx::PointF(0, kAnimationBounceDownDistance);
+  }
+
   std::unique_ptr<ui::InterpolatedTransform> scale_about_pivot =
       std::make_unique<ui::InterpolatedTransformAboutPivot>(
           GetLocalBounds().CenterPoint(), std::move(scale));
 
   scale_about_pivot->SetChild(std::make_unique<ui::InterpolatedTranslation>(
-      gfx::PointF(0, 0), gfx::PointF(0, -kAnimationBounceDistance)));
+      start_point, bounce_up_point));
 
   std::unique_ptr<ui::LayerAnimationElement> scale_and_move_up =
       ui::LayerAnimationElement::CreateInterpolatedTransformElement(
@@ -431,16 +452,15 @@ void TrayBackgroundView::BounceInAnimation() {
 
   std::unique_ptr<ui::LayerAnimationElement> move_down =
       ui::LayerAnimationElement::CreateInterpolatedTransformElement(
-          std::make_unique<ui::InterpolatedTranslation>(
-              gfx::PointF(0, -kAnimationBounceDistance),
-              gfx::PointF(0, kAnimationBounceDistance)),
+          std::make_unique<ui::InterpolatedTranslation>(bounce_up_point,
+                                                        bounce_down_point),
           kAnimationDurationForBounceElement);
   move_down->set_tween_type(gfx::Tween::EASE_OUT_4);
 
   std::unique_ptr<ui::LayerAnimationElement> move_up =
       ui::LayerAnimationElement::CreateInterpolatedTransformElement(
-          std::make_unique<ui::InterpolatedTranslation>(
-              gfx::PointF(0, kAnimationBounceDistance), gfx::PointF(0, 0)),
+          std::make_unique<ui::InterpolatedTranslation>(bounce_down_point,
+                                                        start_point),
           kAnimationDurationForBounceElement);
   move_up->set_tween_type(gfx::Tween::FAST_OUT_SLOW_IN_3);
 
@@ -458,6 +478,20 @@ void TrayBackgroundView::BounceInAnimation() {
 }
 
 void TrayBackgroundView::HideAnimation() {
+  std::unique_ptr<ui::InterpolatedTransform> scale =
+      std::make_unique<ui::InterpolatedScale>(
+          gfx::Point3F(1, 1, 1), gfx::Point3F(kAnimationBounceScaleFactor,
+                                              kAnimationBounceScaleFactor, 1));
+  std::unique_ptr<ui::InterpolatedTransform> scale_about_pivot =
+      std::make_unique<ui::InterpolatedTransformAboutPivot>(
+          GetLocalBounds().CenterPoint(), std::move(scale));
+  std::unique_ptr<ui::LayerAnimationElement> scale_down =
+      ui::LayerAnimationElement::CreateInterpolatedTransformElement(
+          std::move(scale_about_pivot), kAnimationDurationForHideMs);
+  std::unique_ptr<ui::LayerAnimationSequence> scale_sequence =
+      std::make_unique<ui::LayerAnimationSequence>();
+  scale_sequence->AddElement(std::move(scale_down));
+
   std::unique_ptr<ui::LayerAnimationSequence> fade_sequence =
       std::make_unique<ui::LayerAnimationSequence>();
   std::unique_ptr<ui::LayerAnimationElement> fade_out =
@@ -466,7 +500,8 @@ void TrayBackgroundView::HideAnimation() {
   fade_sequence->AddElement(std::move(fade_out));
   fade_sequence->AddObserver(this);
 
-  layer()->GetAnimator()->StartAnimation(fade_sequence.release());
+  layer()->GetAnimator()->StartTogether(
+      {fade_sequence.release(), scale_sequence.release()});
 }
 
 void TrayBackgroundView::SetIsActive(bool is_active) {
