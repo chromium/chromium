@@ -4536,36 +4536,6 @@
             ]
         }
     ],
-    "OfflinePagesCctV2": [
-        {
-            "platforms": [
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "OfflinePagesCTV2"
-                    ]
-                }
-            ]
-        }
-    ],
-    "OfflinePagesDinoPageExperiment": [
-        {
-            "platforms": [
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "OfflinePagesShowAlternateDinoPage"
-                    ]
-                }
-            ]
-        }
-    ],
     "OmniboxAssistantVoiceSearch": [
         {
             "platforms": [
