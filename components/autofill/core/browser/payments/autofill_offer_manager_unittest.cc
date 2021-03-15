@@ -32,6 +32,7 @@ const char kTestNumber[] = "4234567890123456";  // Visa
 const char kTestUrl[] = "http://www.example.com/";
 const char kTestUrlWithParam[] =
     "http://www.example.com/en/payments?name=checkout";
+const char kOfferDetailsUrl[] = "http://pay.google.com";
 
 }  // namespace
 
@@ -85,6 +86,7 @@ class AutofillOfferManagerTest : public testing::Test {
     }
     offer_data.merchant_domain = std::move(domains);
     offer_data.eligible_instrument_id = {card.instrument_id()};
+    offer_data.offer_details_url = GURL(kOfferDetailsUrl);
     return offer_data;
   }
 
@@ -233,7 +235,8 @@ TEST_F(AutofillOfferManagerTest,
       autofill_offer_manager_->GetEligibleDomainsAndCardForOfferForUrl(
           GURL("http://www.example.com"));
   EXPECT_EQ(0U, std::get<0>(result).size());
-  EXPECT_EQ(nullptr, std::get<1>(result));
+  EXPECT_EQ(GURL(), std::get<1>(result));
+  EXPECT_EQ(nullptr, std::get<2>(result));
 }
 
 TEST_F(AutofillOfferManagerTest,
@@ -261,7 +264,8 @@ TEST_F(AutofillOfferManagerTest,
   EXPECT_NE(eligible_domain.end(),
             std::find(eligible_domain.begin(), eligible_domain.end(),
                       GURL("http://www.example2.com")));
-  EXPECT_EQ(101, std::get<1>(result)->instrument_id());
+  EXPECT_EQ(GURL(kOfferDetailsUrl), std::get<1>(result));
+  EXPECT_EQ(101, std::get<2>(result)->instrument_id());
 }
 
 TEST_F(
@@ -278,7 +282,8 @@ TEST_F(
       autofill_offer_manager_->GetEligibleDomainsAndCardForOfferForUrl(
           GURL("http://www.google.com"));
   EXPECT_EQ(2U, std::get<0>(result).size());
-  EXPECT_EQ(nullptr, std::get<1>(result));
+  EXPECT_EQ(GURL(kOfferDetailsUrl), std::get<1>(result));
+  EXPECT_EQ(nullptr, std::get<2>(result));
 }
 
 }  // namespace autofill

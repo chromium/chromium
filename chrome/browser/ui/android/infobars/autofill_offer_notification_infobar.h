@@ -11,7 +11,6 @@
 
 #include "base/macros.h"
 #include "chrome/browser/ui/android/infobars/chrome_confirm_infobar.h"
-
 namespace autofill {
 class AutofillOfferNotificationInfoBarDelegateMobile;
 }
@@ -32,7 +31,9 @@ class AutofillOfferNotificationInfoBar : public ChromeConfirmInfoBar {
       const AutofillOfferNotificationInfoBar&) = delete;
 
   // Called when a link in the legal message text was clicked.
-  void OnOfferDeepLinkClicked(JNIEnv* env, jobject obj, jstring url);
+  void OnOfferDeepLinkClicked(JNIEnv* env,
+                              jobject obj,
+                              const base::android::JavaParamRef<jobject>& url);
 
  private:
   // ChromeConfirmInfoBar:

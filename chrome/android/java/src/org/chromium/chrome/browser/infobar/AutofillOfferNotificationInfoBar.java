@@ -19,6 +19,7 @@ import org.chromium.components.infobars.InfoBarControlLayout;
 import org.chromium.components.infobars.InfoBarLayout;
 import org.chromium.ui.UiUtils;
 import org.chromium.ui.text.NoUnderlineClickableSpan;
+import org.chromium.url.GURL;
 
 /**
  * Infobar to be displayed when an offer is available for the current merchant website.
@@ -26,14 +27,14 @@ import org.chromium.ui.text.NoUnderlineClickableSpan;
 public class AutofillOfferNotificationInfoBar extends ConfirmInfoBar {
     private final long mNativeAutofillOfferNotificationInfoBar;
     private String mCreditCardIdentifierString;
-    private String mOfferDeepLinkUrl;
+    private GURL mOfferDeepLinkUrl;
     private String mTitleText;
     private int mHeaderIconDrawableId;
     private int mNetworkIconDrawableId = -1;
 
     private AutofillOfferNotificationInfoBar(long nativeAutofillOfferNotificationInfoBar,
             int headerIconDrawableId, String title, String positiveButtonLabel,
-            String offerDeepLinkUrl) {
+            GURL offerDeepLinkUrl) {
         // No icon is specified here; it is rather added in |createContent|. This hides the
         // ImageView that normally shows the icon and gets rid of the left padding of the infobar
         // content.
@@ -48,7 +49,7 @@ public class AutofillOfferNotificationInfoBar extends ConfirmInfoBar {
     @CalledByNative
     private static AutofillOfferNotificationInfoBar create(
             long nativeAutofillOfferNotificationInfoBar, int headerIconDrawableId, String title,
-            String positiveButtonLabel, String offerDeepLinkUrl) {
+            String positiveButtonLabel, GURL offerDeepLinkUrl) {
         return new AutofillOfferNotificationInfoBar(nativeAutofillOfferNotificationInfoBar,
                 headerIconDrawableId, title, positiveButtonLabel, offerDeepLinkUrl);
     }
@@ -79,7 +80,7 @@ public class AutofillOfferNotificationInfoBar extends ConfirmInfoBar {
                 indexForCardIdentifierString + mCreditCardIdentifierString.length(),
                 Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
 
-        if (!TextUtils.isEmpty(mOfferDeepLinkUrl)) {
+        if (mOfferDeepLinkUrl.isValid()) {
             String linkText =
                     getContext().getString(R.string.autofill_offers_reminder_deep_link_text);
             NoUnderlineClickableSpan noUnderlineClickableSpan = new NoUnderlineClickableSpan(
@@ -99,6 +100,6 @@ public class AutofillOfferNotificationInfoBar extends ConfirmInfoBar {
     @NativeMethods
     interface Natives {
         void onOfferDeepLinkClicked(long nativeAutofillOfferNotificationInfoBar,
-                AutofillOfferNotificationInfoBar caller, String url);
+                AutofillOfferNotificationInfoBar caller, GURL url);
     }
 }

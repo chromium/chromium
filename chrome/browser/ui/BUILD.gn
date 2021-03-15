@@ -634,6 +634,7 @@ static_library("ui") {
       "//components/query_tiles",
       "//components/resources:android_resources",
       "//components/security_state/content/android",
+      "//url:gurl_android",
     ]
   } else {
     # !is_android

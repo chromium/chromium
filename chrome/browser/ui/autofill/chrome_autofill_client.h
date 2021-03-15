@@ -147,6 +147,7 @@ class ChromeAutofillClient
   void HideAutofillPopup(PopupHidingReason reason) override;
   void ShowOfferNotificationIfApplicable(
       const std::vector<GURL>& domains_to_display_bubble,
+      const GURL& offer_details_url,
       const CreditCard* card) override;
   bool IsAutocompleteEnabled() override;
   void PropagateAutofillPredictions(

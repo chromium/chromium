@@ -648,11 +648,13 @@ void ChromeAutofillClient::HideAutofillPopup(PopupHidingReason reason) {
 
 void ChromeAutofillClient::ShowOfferNotificationIfApplicable(
     const std::vector<GURL>& domains_to_display_bubble,
+    const GURL& offer_details_url,
     const CreditCard* card) {
 #if defined(OS_ANDROID)
   std::unique_ptr<OfferNotificationInfoBarControllerImpl> controller =
       std::make_unique<OfferNotificationInfoBarControllerImpl>(web_contents());
-  controller->ShowIfNecessary(domains_to_display_bubble, card);
+  controller->ShowIfNecessary(domains_to_display_bubble, offer_details_url,
+                              card);
 #else
   OfferNotificationBubbleControllerImpl::CreateForWebContents(web_contents());
   OfferNotificationBubbleControllerImpl* controller =

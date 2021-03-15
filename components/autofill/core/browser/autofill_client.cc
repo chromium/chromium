@@ -60,6 +60,7 @@ AutofillClient::CreateCreditCardInternalAuthenticator(
 
 void AutofillClient::ShowOfferNotificationIfApplicable(
     const std::vector<GURL>& domains_to_display_bubble,
+    const GURL& offer_details_url,
     const CreditCard* card) {
   // This is overridden by platform subclasses. Currently only
   // ChromeAutofillClient (Chrome Desktop and Clank) implement this.

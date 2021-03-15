@@ -19,6 +19,7 @@ OfferNotificationInfoBarControllerImpl::OfferNotificationInfoBarControllerImpl(
 
 void OfferNotificationInfoBarControllerImpl::ShowIfNecessary(
     const std::vector<GURL>& origins_to_display_infobar,
+    const GURL& offer_details_url,
     const CreditCard* card) {
   OfferNotificationHelper::CreateForWebContents(web_contents_);
   OfferNotificationHelper* offer_notification_helper =
@@ -29,7 +30,7 @@ void OfferNotificationInfoBarControllerImpl::ShowIfNecessary(
     InfoBarService::FromWebContents(web_contents_)
         ->AddInfoBar(std::make_unique<AutofillOfferNotificationInfoBar>(
             std::make_unique<AutofillOfferNotificationInfoBarDelegateMobile>(
-                *card)));
+                offer_details_url, *card)));
     offer_notification_helper->OnDisplayOfferNotification(
         origins_to_display_infobar);
   }

@@ -28,6 +28,7 @@ class OfferNotificationInfoBarControllerImpl {
   // Show the infobar unless it was already shown in the same tab with the same
   // origin.
   void ShowIfNecessary(const std::vector<GURL>& origins_to_display_infobar,
+                       const GURL& offer_details_url,
                        const CreditCard* card);
 
  private:

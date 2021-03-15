@@ -49,8 +49,10 @@ class AutofillOfferManager : public KeyedService,
   bool IsUrlEligible(const GURL& last_committed_url);
 
   // Returns the set of domains and the card linked to a specific offer that
-  // contains the domain of |last_committed_url|.
-  std::tuple<std::vector<GURL>, CreditCard*>
+  // contains the domain of |last_committed_url|. Also return the
+  // offer_details_url which redirects to a GPay surface with more details about
+  // the offer.
+  std::tuple<std::vector<GURL>, GURL, CreditCard*>
   GetEligibleDomainsAndCardForOfferForUrl(const GURL& last_committed_url);
 
  private:
