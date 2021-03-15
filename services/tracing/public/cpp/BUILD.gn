@@ -161,6 +161,10 @@ target(tracing_lib_type, "cpp") {
       }
     }
 
+    if (is_chromeos_ash) {
+      deps += [ "//chromeos/dbus/constants" ]
+    }
+
     if (is_android && can_unwind_with_cfi_table && is_official_build) {
       sources += [
         "stack_sampling/stack_sampler_android.cc",

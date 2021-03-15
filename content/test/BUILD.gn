@@ -1700,6 +1700,10 @@ test("content_browsertests") {
   if (use_ozone) {
     deps += [ "//ui/ozone" ]
   }
+
+  if (is_chromeos_ash) {
+    deps += [ "//chromeos/dbus/constants" ]
+  }
 }
 
 grit("web_ui_mojo_test_resources") {

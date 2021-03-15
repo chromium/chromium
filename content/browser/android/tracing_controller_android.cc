@@ -103,7 +103,9 @@ bool TracingControllerAndroid::StartTracing(
       base::trace_event::TraceConfig(), /*privacy_filtering_enabled=*/false,
       /*convert_to_legacy_json=*/!use_protobuf);
   delete g_tracing_session;
-  g_tracing_session = perfetto::Tracing::NewTrace().release();
+  g_tracing_session =
+      perfetto::Tracing::NewTrace(perfetto::BackendType::kCustomBackend)
+          .release();
   g_tracing_session->Setup(perfetto_config);
   g_tracing_session->Start();
   return true;

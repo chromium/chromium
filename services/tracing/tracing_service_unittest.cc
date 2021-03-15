@@ -191,7 +191,8 @@ TEST_F(TracingServiceTest, PerfettoClientConsumer) {
   wait_for_registration.Run();
 
   // Start a tracing session using the client API.
-  auto session = perfetto::Tracing::NewTrace();
+  auto session =
+      perfetto::Tracing::NewTrace(perfetto::BackendType::kCustomBackend);
   perfetto::TraceConfig perfetto_config;
   perfetto_config.add_buffers()->set_size_kb(1024);
   auto* ds_cfg = perfetto_config.add_data_sources()->mutable_config();
@@ -234,7 +235,8 @@ TEST_F(TracingServiceTest, PerfettoClientConsumerLegacyJson) {
   EnableClientApiConsumer();
 
   // Start a tracing session with legacy JSON exporting.
-  auto session = perfetto::Tracing::NewTrace();
+  auto session =
+      perfetto::Tracing::NewTrace(perfetto::BackendType::kCustomBackend);
   perfetto::TraceConfig perfetto_config = GetDefaultPerfettoConfig(
       base::trace_event::TraceConfig(), /*privacy_filtering_enabled=*/false,
       /*convert_to_legacy_json=*/true);
@@ -318,7 +320,8 @@ TEST_F(TracingServiceTest, PerfettoClientProducer) {
   CustomDataSource::Register(dsd);
 
   // Start a tracing session using the client API.
-  auto session = perfetto::Tracing::NewTrace();
+  auto session =
+      perfetto::Tracing::NewTrace(perfetto::BackendType::kCustomBackend);
   perfetto::TraceConfig perfetto_config;
   perfetto_config.add_buffers()->set_size_kb(1024);
   auto* ds_cfg = perfetto_config.add_data_sources()->mutable_config();

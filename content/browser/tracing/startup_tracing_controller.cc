@@ -119,7 +119,8 @@ class StartupTracingController::BackgroundTracer {
         output_file_(output_file),
         output_format_(output_format),
         on_tracing_finished_(std::move(on_tracing_finished)) {
-    tracing_session_ = perfetto::Tracing::NewTrace();
+    tracing_session_ =
+        perfetto::Tracing::NewTrace(perfetto::BackendType::kCustomBackend);
 
     if (write_mode_ == WriteMode::kStreaming) {
 #if !defined(OS_WIN)

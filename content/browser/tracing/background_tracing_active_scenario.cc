@@ -97,7 +97,8 @@ class BackgroundTracingActiveScenario::TracingSession {
         /*privacy_filtering_enabled=*/true,
         /*convert_to_legacy_json=*/convert_to_legacy_json,
         perfetto::protos::gen::ChromeConfig::BACKGROUND);
-    tracing_session_ = perfetto::Tracing::NewTrace();
+    tracing_session_ =
+        perfetto::Tracing::NewTrace(perfetto::BackendType::kCustomBackend);
     tracing_session_->Setup(perfetto_config);
 
     auto category_preset = parent_scenario->GetConfig()->category_preset();

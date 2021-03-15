@@ -23,6 +23,11 @@
 #include "services/tracing/public/mojom/tracing_service.mojom.h"
 #include "third_party/perfetto/include/perfetto/tracing/tracing.h"
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "base/command_line.h"
+#include "chromeos/dbus/constants/dbus_switches.h"
+#endif
+
 #if defined(OS_POSIX)
 // As per 'gn help check':
 /*
@@ -254,6 +259,30 @@ void PerfettoTracedProcess::SetupClientLibrary() {
   init_args.platform = platform_.get();
   init_args.custom_backend = tracing_backend_.get();
   init_args.backends |= perfetto::kCustomBackend;
+// System tracing backend is currently only supported on ChromeOS.
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  // Enable the system backend for access as system consumer
+  // in the browser process.
+  bool is_browser = base::CommandLine::ForCurrentProcess()
+                        ->GetSwitchValueASCII("type")
+                        .empty();
+
+  // We currently only use the system backend for consumer connections, and
+  // those should only be allowed when the CrOS device is in dev mode.
+  // TODO(eseckler): Augment this check with content's
+  // TracingDelegate::IsSystemWideTracingEnabled().
+  // TODO(eseckler): Move the check for the system wide tracing policy into the
+  // consumer backend connection, it probably shouldn't affect the producer
+  // connection.
+  bool is_system_wide_tracing_enabled =
+      base::CommandLine::ForCurrentProcess()->HasSwitch(
+          chromeos::switches::kSystemDevMode);
+
+  if (is_browser && is_system_wide_tracing_enabled &&
+      tracing::ShouldSetupSystemTracing()) {
+    init_args.backends |= perfetto::kSystemBackend;
+  }
+#endif
   perfetto::Tracing::Initialize(init_args);
 }
 

@@ -8380,6 +8380,17 @@ experimental domain Tracing
       light
       detailed
 
+  # Backend type to use for tracing. `chrome` uses the Chrome-integrated
+  # tracing service and is supported on all platforms. `system` is only
+  # supported on Chrome OS and uses the Perfetto system tracing service.
+  # `auto` chooses `system` when the perfettoConfig provided to Tracing.start
+  # specifies at least one non-Chrome data source; otherwise uses `chrome`.
+  type TracingBackend extends string
+    enum
+      auto
+      chrome
+      system
+
   # Stop trace events collection.
   command end
 
@@ -8433,6 +8444,8 @@ experimental domain Tracing
       # When specified, the parameters `categories`, `options`, `traceConfig`
       # are ignored.
       optional binary perfettoConfig
+      # Backend type (defaults to `auto`)
+      optional TracingBackend tracingBackend
 
   event bufferUsage
     parameters
