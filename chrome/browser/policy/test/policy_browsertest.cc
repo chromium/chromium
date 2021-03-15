@@ -60,12 +60,8 @@
 #include "chrome/browser/devtools/devtools_window_testing.h"
 #include "chrome/browser/download/download_prefs.h"
 #include "chrome/browser/extensions/api/chrome_extensions_api_client.h"
-#include "chrome/browser/policy/chrome_browser_policy_connector.h"
 #include "chrome/browser/policy/policy_test_utils.h"
-#include "chrome/browser/policy/profile_policy_connector.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/task_manager/task_manager_interface.h"
-#include "chrome/browser/ui/bookmarks/bookmark_bar.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_list.h"
@@ -82,11 +78,9 @@
 #include "chrome/common/url_constants.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/grit/locale_settings.h"
-#include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/search_test_utils.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/ui_test_utils.h"
-#include "components/bookmarks/common/bookmark_pref_names.h"
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/content_settings/core/common/content_settings_pattern.h"
 #include "components/content_settings/core/common/pref_names.h"
@@ -96,14 +90,11 @@
 #include "components/policy/core/common/external_data_fetcher.h"
 #include "components/policy/core/common/policy_map.h"
 #include "components/policy/core/common/policy_pref_names.h"
-#include "components/policy/core/common/policy_service.h"
-#include "components/policy/core/common/policy_service_impl.h"
 #include "components/policy/core/common/policy_types.h"
 #include "components/policy/policy_constants.h"
 #include "components/security_interstitials/content/security_interstitial_page.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/strings/grit/components_strings.h"
-#include "components/unified_consent/pref_names.h"
 #include "components/update_client/update_client_errors.h"
 #include "components/version_info/version_info.h"
 #include "content/common/content_navigation_policy.h"
@@ -159,14 +150,12 @@
 #include "third_party/blink/public/common/web_preferences/web_preferences.h"
 #include "third_party/blink/public/mojom/mediastream/media_stream.mojom-shared.h"
 #include "ui/base/page_transition_types.h"
-#include "ui/display/manager/display_manager.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ash/public/cpp/ash_pref_names.h"
 #include "ash/public/cpp/ash_switches.h"
-#include "ash/shell.h"
 #include "chrome/browser/ash/login/test/js_checker.h"
 #include "chrome/browser/ash/system/timezone_resolver_manager.h"
 #include "chrome/browser/chromeos/note_taking_helper.h"
@@ -229,57 +218,6 @@ bool IsWebGLEnabled(content::WebContents* contents) {
 }
 
 }  // namespace
-
-IN_PROC_BROWSER_TEST_F(PolicyTest, BookmarkBarEnabled) {
-  // Verifies that the bookmarks bar can be forced to always or never show up.
-
-  // Test starts in about:blank.
-  PrefService* prefs = browser()->profile()->GetPrefs();
-  EXPECT_FALSE(prefs->IsManagedPreference(bookmarks::prefs::kShowBookmarkBar));
-  EXPECT_FALSE(prefs->GetBoolean(bookmarks::prefs::kShowBookmarkBar));
-  EXPECT_EQ(BookmarkBar::HIDDEN, browser()->bookmark_bar_state());
-
-  PolicyMap policies;
-  policies.Set(key::kBookmarkBarEnabled, POLICY_LEVEL_MANDATORY,
-               POLICY_SCOPE_USER, POLICY_SOURCE_CLOUD, base::Value(true),
-               nullptr);
-  UpdateProviderPolicy(policies);
-  EXPECT_TRUE(prefs->IsManagedPreference(bookmarks::prefs::kShowBookmarkBar));
-  EXPECT_TRUE(prefs->GetBoolean(bookmarks::prefs::kShowBookmarkBar));
-  EXPECT_EQ(BookmarkBar::SHOW, browser()->bookmark_bar_state());
-}
-
-IN_PROC_BROWSER_TEST_F(PolicyTest, SeparateProxyPoliciesMerging) {
-  // Add an individual proxy policy value.
-  PolicyMap policies;
-  policies.Set(key::kProxyServerMode, POLICY_LEVEL_MANDATORY, POLICY_SCOPE_USER,
-               POLICY_SOURCE_CLOUD, base::Value(3), nullptr);
-  UpdateProviderPolicy(policies);
-
-  // It should be removed and replaced with a dictionary.
-  PolicyMap expected;
-  base::Value expected_value(base::Value::Type::DICTIONARY);
-  expected_value.SetIntKey(key::kProxyServerMode, 3);
-  expected.Set(key::kProxySettings, POLICY_LEVEL_MANDATORY, POLICY_SCOPE_USER,
-               POLICY_SOURCE_CLOUD, std::move(expected_value), nullptr);
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  SetEnterpriseUsersDefaults(&expected);
-#endif
-
-  // Check both the browser and the profile.
-  const PolicyMap& actual_from_browser =
-      g_browser_process->browser_policy_connector()
-          ->GetPolicyService()
-          ->GetPolicies(PolicyNamespace(POLICY_DOMAIN_CHROME, std::string()));
-  EXPECT_TRUE(expected.Equals(actual_from_browser));
-  const PolicyMap& actual_from_profile =
-      browser()
-          ->profile()
-          ->GetProfilePolicyConnector()
-          ->policy_service()
-          ->GetPolicies(PolicyNamespace(POLICY_DOMAIN_CHROME, std::string()));
-  EXPECT_TRUE(expected.Equals(actual_from_profile));
-}
 
 // This test is flaky on Windows 10: https://crbug.com/1069558
 #if defined(OS_WIN)
@@ -395,24 +333,6 @@ IN_PROC_BROWSER_TEST_F(PolicyTest, MAYBE_IncognitoEnabled) {
   EXPECT_TRUE(BrowserList::IsOffTheRecordBrowserActive());
 }
 
-IN_PROC_BROWSER_TEST_F(PolicyTest, UrlKeyedAnonymizedDataCollection) {
-  PrefService* prefs = browser()->profile()->GetPrefs();
-  prefs->SetBoolean(
-      unified_consent::prefs::kUrlKeyedAnonymizedDataCollectionEnabled, true);
-  EXPECT_TRUE(prefs->GetBoolean(
-      unified_consent::prefs::kUrlKeyedAnonymizedDataCollectionEnabled));
-
-  // Disable by policy.
-  PolicyMap policies;
-  policies.Set(key::kUrlKeyedAnonymizedDataCollectionEnabled,
-               POLICY_LEVEL_MANDATORY, POLICY_SCOPE_USER, POLICY_SOURCE_CLOUD,
-               base::Value(false), nullptr);
-  UpdateProviderPolicy(policies);
-
-  EXPECT_FALSE(prefs->GetBoolean(
-      unified_consent::prefs::kUrlKeyedAnonymizedDataCollectionEnabled));
-}
-
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 
 // Flaky on MSan (crbug.com/476964) and regular Chrome OS (crbug.com/645769).
@@ -509,85 +429,6 @@ IN_PROC_BROWSER_TEST_F(PolicyTest, WaitForInitialUserActivitySatisfied) {
 
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
-// Test that TaskManagerInterface::IsEndProcessEnabled is controlled by
-// TaskManagerEndProcessEnabled policy
-IN_PROC_BROWSER_TEST_F(PolicyTest, TaskManagerEndProcessEnabled) {
-  // By default it's allowed to end tasks.
-  EXPECT_TRUE(task_manager::TaskManagerInterface::IsEndProcessEnabled());
-
-  // Disabling ending tasks in task manager by policy
-  PolicyMap policies1;
-  policies1.Set(key::kTaskManagerEndProcessEnabled, POLICY_LEVEL_MANDATORY,
-                POLICY_SCOPE_MACHINE, POLICY_SOURCE_CLOUD, base::Value(false),
-                nullptr);
-  UpdateProviderPolicy(policies1);
-
-  // Policy should not allow ending tasks anymore.
-  EXPECT_FALSE(task_manager::TaskManagerInterface::IsEndProcessEnabled());
-
-  // Enabling ending tasks in task manager by policy
-  PolicyMap policies2;
-  policies2.Set(key::kTaskManagerEndProcessEnabled, POLICY_LEVEL_MANDATORY,
-                POLICY_SCOPE_MACHINE, POLICY_SOURCE_CLOUD, base::Value(true),
-                nullptr);
-  UpdateProviderPolicy(policies2);
-
-  // Policy should allow ending tasks again.
-  EXPECT_TRUE(task_manager::TaskManagerInterface::IsEndProcessEnabled());
-}
-
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
-// Sets the hardware acceleration mode policy before the browser is started.
-class HardwareAccelerationModePolicyTest : public PolicyTest {
- public:
-  HardwareAccelerationModePolicyTest() {}
-
-  void SetUpInProcessBrowserTestFixture() override {
-    PolicyTest::SetUpInProcessBrowserTestFixture();
-    PolicyMap policies;
-    policies.Set(key::kHardwareAccelerationModeEnabled, POLICY_LEVEL_MANDATORY,
-                 POLICY_SCOPE_USER, POLICY_SOURCE_CLOUD, base::Value(false),
-                 nullptr);
-    provider_.UpdateChromePolicy(policies);
-  }
-};
-
-IN_PROC_BROWSER_TEST_F(HardwareAccelerationModePolicyTest,
-                       HardwareAccelerationDisabled) {
-  // Verifies that hardware acceleration can be disabled with policy.
-  EXPECT_FALSE(
-      content::GpuDataManager::GetInstance()->HardwareAccelerationEnabled());
-}
-#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-// Policy is only available in ChromeOS
-IN_PROC_BROWSER_TEST_F(PolicyTest, UnifiedDesktopEnabledByDefault) {
-  // Verify that Unified Desktop can be enabled by policy
-  display::DisplayManager* display_manager =
-      ash::Shell::Get()->display_manager();
-
-  // The policy description promises that Unified Desktop is not available
-  // unless the policy is set (or a command line or an extension is used). If
-  // this default behaviour changes, please change the description at
-  // components/policy/resources/policy_templates.json.
-  EXPECT_FALSE(display_manager->unified_desktop_enabled());
-  // Now set the policy and check that unified desktop is turned on.
-  PolicyMap policies;
-  policies.Set(key::kUnifiedDesktopEnabledByDefault, POLICY_LEVEL_MANDATORY,
-               POLICY_SCOPE_USER, POLICY_SOURCE_CLOUD, base::Value(true),
-               nullptr);
-  UpdateProviderPolicy(policies);
-  EXPECT_TRUE(display_manager->unified_desktop_enabled());
-  policies.Set(key::kUnifiedDesktopEnabledByDefault, POLICY_LEVEL_MANDATORY,
-               POLICY_SCOPE_USER, POLICY_SOURCE_CLOUD, base::Value(false),
-               nullptr);
-  UpdateProviderPolicy(policies);
-  EXPECT_FALSE(display_manager->unified_desktop_enabled());
-}
-
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-
 class NetworkTimePolicyTest : public PolicyTest {
  public:
   NetworkTimePolicyTest() {}
@@ -668,22 +509,5 @@ IN_PROC_BROWSER_TEST_F(NetworkTimePolicyTest,
 }
 
 #undef MAYBE_RunTest
-
-class SharedClipboardPolicyTest : public PolicyTest {
-  void SetUpInProcessBrowserTestFixture() override {
-    PolicyTest::SetUpInProcessBrowserTestFixture();
-    PolicyMap policies;
-    policies.Set(policy::key::kSharedClipboardEnabled,
-                 policy::POLICY_LEVEL_MANDATORY, policy::POLICY_SCOPE_USER,
-                 policy::POLICY_SOURCE_CLOUD, base::Value(true), nullptr);
-    provider_.UpdateChromePolicy(policies);
-  }
-};
-
-IN_PROC_BROWSER_TEST_F(SharedClipboardPolicyTest, SharedClipboardEnabled) {
-  PrefService* prefs = browser()->profile()->GetPrefs();
-  EXPECT_TRUE(prefs->IsManagedPreference(prefs::kSharedClipboardEnabled));
-  EXPECT_TRUE(prefs->GetBoolean(prefs::kSharedClipboardEnabled));
-}
 
 }  // namespace policy
