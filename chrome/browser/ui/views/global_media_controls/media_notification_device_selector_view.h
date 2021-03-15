@@ -70,6 +70,8 @@ class MediaNotificationDeviceSelectorView
   FRIEND_TEST_ALL_PREFIXES(MediaNotificationDeviceSelectorViewTest,
                            ExpandButtonOpensEntryContainer);
   FRIEND_TEST_ALL_PREFIXES(MediaNotificationDeviceSelectorViewTest,
+                           DeviceEntryContainerVisibility);
+  FRIEND_TEST_ALL_PREFIXES(MediaNotificationDeviceSelectorViewTest,
                            AudioDeviceButtonClickNotifiesContainer);
   FRIEND_TEST_ALL_PREFIXES(MediaNotificationDeviceSelectorViewTest,
                            CurrentAudioDeviceHighlighted);

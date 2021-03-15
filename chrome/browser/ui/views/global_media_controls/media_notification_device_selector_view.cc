@@ -117,6 +117,9 @@ MediaNotificationDeviceSelectorView::MediaNotificationDeviceSelectorView(
           views::BoxLayout::Orientation::kVertical));
   device_entry_views_container_->SetVisible(false);
 
+  if (entry_point_ == GlobalMediaControlsEntryPoint::kPresentation) {
+    ShowDevices();
+  }
   SetBackground(views::CreateSolidBackground(background_color_));
   // Set the size of this view
   SetPreferredSize(kExpandButtonStripSize);

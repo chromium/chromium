@@ -180,11 +180,12 @@ class MediaNotificationDeviceSelectorViewTest : public ChromeViewsTestBase {
       MockMediaNotificationDeviceSelectorViewDelegate* delegate,
       std::unique_ptr<MockCastDialogController> controller =
           std::make_unique<MockCastDialogController>(),
-      const std::string& device_description = "1") {
+      const std::string& device_description = "1",
+      GlobalMediaControlsEntryPoint entry_point =
+          GlobalMediaControlsEntryPoint::kToolbarIcon) {
     return std::make_unique<MediaNotificationDeviceSelectorView>(
         delegate, std::move(controller), device_description,
-        gfx::kPlaceholderColor, gfx::kPlaceholderColor,
-        GlobalMediaControlsEntryPoint::kToolbarIcon);
+        gfx::kPlaceholderColor, gfx::kPlaceholderColor, entry_point);
   }
 
   std::unique_ptr<MediaNotificationDeviceSelectorView> view_;
@@ -218,6 +219,24 @@ TEST_F(MediaNotificationDeviceSelectorViewTest,
   ASSERT_TRUE(view_->expand_button_);
   EXPECT_FALSE(view_->device_entry_views_container_->GetVisible());
   SimulateButtonClick(view_->GetExpandButtonForTesting());
+  EXPECT_TRUE(view_->device_entry_views_container_->GetVisible());
+}
+
+TEST_F(MediaNotificationDeviceSelectorViewTest,
+       DeviceEntryContainerVisibility) {
+  MockMediaNotificationDeviceSelectorViewDelegate delegate;
+  AddAudioDevices(delegate);
+
+  // The device entry container should be collapsed if the media dialog is
+  // opened from the toolbar or Chrome OS system tray.
+  view_ = CreateDeviceSelectorView(&delegate);
+  EXPECT_FALSE(view_->device_entry_views_container_->GetVisible());
+
+  // The device entry container should be expanded if the media dialog is opened
+  // for a presentation request.
+  view_ = CreateDeviceSelectorView(
+      &delegate, std::make_unique<MockCastDialogController>(), "1",
+      GlobalMediaControlsEntryPoint::kPresentation);
   EXPECT_TRUE(view_->device_entry_views_container_->GetVisible());
 }
 
