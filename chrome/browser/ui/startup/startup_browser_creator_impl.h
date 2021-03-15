@@ -125,8 +125,8 @@ class StartupBrowserCreatorImpl {
   // Creates a tab for each of the Tabs in |tabs|. If browser is non-null
   // and a tabbed browser, the tabs are added to it. Otherwise a new tabbed
   // browser is created and the tabs are added to it. The browser the tabs
-  // are added to is returned, which is either |browser| or the newly created
-  // browser.
+  // are added to is returned, which is either |browser|, the newly created
+  // browser, or nullptr if browser could not be created.
   Browser* OpenTabsInBrowser(Browser* browser,
                              bool process_startup,
                              const StartupTabs& tabs);

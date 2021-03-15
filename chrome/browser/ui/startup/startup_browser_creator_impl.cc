@@ -229,6 +229,14 @@ Browser* StartupBrowserCreatorImpl::OpenTabsInBrowser(Browser* browser,
     profile_ = browser->profile();
 
   if (!browser || !browser->is_type_normal()) {
+    // In some conditions a new browser object cannot be created. The most
+    // common reason for not being able to create browser is having this call
+    // when the browser process is shutting down. This can also fail if the
+    // passed profile is of a type that is not suitable for browser creation.
+    if (Browser::GetCreationStatusForProfile(profile_) !=
+        Browser::CreationStatus::kOk) {
+      return nullptr;
+    }
     // Startup browsers are not counted as being created by a user_gesture
     // because of historical accident, even though the startup browser was
     // created in response to the user clicking on chrome. There was an
