@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <title>
-  Nested fragmentation for out-of-flow positioned elements create new columns.
+  Nested abpos in a nested fragmentation context.
 </title>
 <link rel="help" href="https://www.w3.org/TR/css-position-3/#abspos-breaking">
 <link rel="match" href="../reference/ref-filled-green-100px-square.xht">
@@ -20,7 +20,6 @@
   }
   .rel {
     position: relative;
-    height: 200px;
   }
   .abs {
     position: absolute;
@@ -32,8 +31,9 @@
 <div class="multicol" id="outer">
   <div class="multicol" id="inner">
     <div class="rel">
-      <div class="abs" style="top: 50px; height: 350px;"></div>
-      <div class="abs" style="top: 0x; height: 350px;"></div>
+      <div class="abs" style="top: 400px;">
+        <div class="abs" style="top: -400px; height: 400px;"></div>
+      </div>
     </div>
   </div>
 </div>

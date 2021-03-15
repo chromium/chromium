@@ -254,6 +254,9 @@ class CORE_EXPORT NGOutOfFlowLayoutPart {
   // This is used to calculate the column size of any newly added proxy
   // fragments when handling fragmentation for abspos elements.
   LayoutUnit original_column_block_size_ = kIndefiniteSize;
+  // The consumed block size of previous fragmentainers. This is accumulated and
+  // used as we add OOF elements to fragmentainers.
+  LayoutUnit fragmentainer_consumed_block_size_;
   bool is_absolute_container_ = false;
   bool is_fixed_container_ = false;
   bool allow_first_tier_oof_cache_ = false;

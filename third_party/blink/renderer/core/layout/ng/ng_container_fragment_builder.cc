@@ -61,7 +61,8 @@ void NGContainerFragmentBuilder::PropagateChildData(
                                             new_inline_container);
   }
 
-  PropagateOOFPositionedInfo(child, child_offset);
+  PropagateOOFPositionedInfo(child, child_offset,
+                             fragmentainer_consumed_block_size_);
 
   // We only need to report if inflow or floating elements depend on the
   // percentage resolution block-size. OOF-positioned children resolve their
@@ -294,7 +295,8 @@ void NGContainerFragmentBuilder::
 
 void NGContainerFragmentBuilder::PropagateOOFPositionedInfo(
     const NGPhysicalContainerFragment& fragment,
-    LogicalOffset offset) {
+    LogicalOffset offset,
+    LayoutUnit fragmentainer_consumed_block_size) {
   const NGPhysicalBoxFragment* box_fragment =
       DynamicTo<NGPhysicalBoxFragment>(&fragment);
   if (!box_fragment)
@@ -331,8 +333,7 @@ void NGContainerFragmentBuilder::PropagateOOFPositionedInfo(
     if (!fragment.IsFragmentainerBox())
       containing_block_offset.block_offset += offset.block_offset;
     if (IsBlockFragmentationContextRoot()) {
-      containing_block_offset.block_offset +=
-          fragmentainer_consumed_block_size_;
+      containing_block_offset.block_offset += fragmentainer_consumed_block_size;
     }
 
     // The static position should remain relative to its containing block

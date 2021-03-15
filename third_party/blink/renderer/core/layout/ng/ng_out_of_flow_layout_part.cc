@@ -726,14 +726,38 @@ void NGOutOfFlowLayoutPart::LayoutFragmentainerDescendants(
       descendants_to_layout[start_index].emplace_back(node_to_layout);
     }
 
-    // Layout the OOF descendants in order of fragmentainer index.
     Vector<NodeToLayout> fragmented_descendants;
+    fragmentainer_consumed_block_size_ = LayoutUnit();
+    wtf_size_t num_children = container_builder_->Children().size();
+
+    // Layout the OOF descendants in order of fragmentainer index.
     for (wtf_size_t index = 0; index < descendants_to_layout.size(); index++) {
-      const Vector<NodeToLayout>& pending_descendants =
-          descendants_to_layout[index];
-      LayoutOOFsInFragmentainer(pending_descendants, index,
-                                column_inline_progression,
-                                &fragmented_descendants, multicol_children);
+      const NGPhysicalFragment* fragment = nullptr;
+      if (index < num_children)
+        fragment = container_builder_->Children()[index].fragment.get();
+
+      // Skip over any column spanners.
+      if (!fragment || fragment->IsFragmentainerBox()) {
+        const Vector<NodeToLayout>& pending_descendants =
+            descendants_to_layout[index];
+        LayoutOOFsInFragmentainer(pending_descendants, index,
+                                  column_inline_progression,
+                                  &fragmented_descendants, multicol_children);
+        // Retrieve the updated or newly added fragmentainer, and add its block
+        // contribution to the consumed block size. (Note: We don't add new
+        // columns in a nested fragmentation context. Instead, any OOFs are
+        // added to the last existing fragmentainer with an additional inline
+        // offset).
+        wtf_size_t used_index = (!fragment && nested_fragmentation_context_)
+                                    ? num_children - 1
+                                    : index;
+        fragment = container_builder_->Children()[used_index].fragment.get();
+        fragmentainer_consumed_block_size_ +=
+            fragment->Size()
+                .ConvertToLogical(container_builder_->Style().GetWritingMode())
+                .block_size;
+      }
+
       // Extend |descendants_to_layout| if an OOF element fragments into a
       // fragmentainer at an index that does not yet exist in
       // |descendants_to_layout|.
@@ -1196,11 +1220,6 @@ void NGOutOfFlowLayoutPart::LayoutOOFsInFragmentainer(
   wtf_size_t num_children = container_builder_->Children().size();
   bool is_new_fragment = index >= num_children;
 
-  // Skip over any column spanners.
-  if (!is_new_fragment &&
-      !container_builder_->Children()[index].fragment->IsFragmentainerBox())
-    return;
-
   DCHECK(fragmented_descendants);
   Vector<NodeToLayout> descendants_continued;
   std::swap(*fragmented_descendants, descendants_continued);
@@ -1298,10 +1317,10 @@ void NGOutOfFlowLayoutPart::AddOOFToFragmentainer(
     result->GetMutableForOutOfFlow().SetOutOfFlowPositionedOffset(
         oof_offset, allow_first_tier_oof_cache_);
   }
-  // TODO(almaher): Handle nested OOFs and inner multicols with pending
-  // OOFs in the case of nested fragmentation.
+  // TODO(almaher): Handle nested inner multicols with pending OOFs.
   container_builder_->PropagateOOFPositionedInfo(
-      result->PhysicalFragment(), result->OutOfFlowPositionedOffset());
+      result->PhysicalFragment(), result->OutOfFlowPositionedOffset(),
+      fragmentainer_consumed_block_size_);
   algorithm->AppendOutOfFlowResult(result);
 
   const auto& physical_fragment =

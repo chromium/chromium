@@ -179,7 +179,8 @@ class CORE_EXPORT NGContainerFragmentBuilder : public NGFragmentBuilder {
   // appending them to our list of descendants.
   // In addition, propagate any inner multicols with pending OOF descendants.
   void PropagateOOFPositionedInfo(const NGPhysicalContainerFragment& fragment,
-                                  LogicalOffset offset);
+                                  LogicalOffset offset,
+                                  LayoutUnit fragmentainer_consumed_block_size);
 
   void SetIsSelfCollapsing() { is_self_collapsing_ = true; }
 
