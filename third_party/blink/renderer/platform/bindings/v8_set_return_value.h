@@ -47,6 +47,7 @@ struct V8ReturnValue {
   // Returns the exposed object of the given type.
   enum InterfaceObject { kInterfaceObject };
   enum NamespaceObject { kNamespaceObject };
+  enum IDLObject { kIDLObject };
 
   // Selects the appropriate creation context.
   static v8::Local<v8::Object> CreationContext(

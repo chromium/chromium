@@ -25,6 +25,21 @@ void V8SetReturnValue(const CallbackInfo& info,
   V8SetReturnValue(info, value.V8Value());
 }
 
+// IDLObject type
+template <typename CallbackInfo>
+void V8SetReturnValue(const CallbackInfo& info,
+                      const ScriptValue& value,
+                      V8ReturnValue::IDLObject) {
+  DCHECK(!value.IsEmpty());
+  v8::Local<v8::Value> v8_value = value.V8Value();
+  // TODO(crbug.com/1185033): Change this if-branch to DCHECK.
+  if (!v8_value->IsObject()) {
+    V8SetReturnValue(info, v8::Undefined(info.GetIsolate()));
+    return;
+  }
+  V8SetReturnValue(info, v8_value);
+}
+
 // String types
 template <typename CallbackInfo>
 void V8SetReturnValue(const CallbackInfo& info,

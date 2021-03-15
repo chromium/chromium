@@ -1632,6 +1632,15 @@ bindings::V8SetReturnValue(
             args.append("${blink_receiver}")
         return T("bindings::V8SetReturnValue({});".format(", ".join(args)))
 
+    if return_type.is_any:
+        return T("bindings::V8SetReturnValue(${info}, ${return_value});")
+
+    if return_type.is_object:
+        return T("bindings::V8SetReturnValue("
+                 "${info}, "
+                 "${return_value}, "
+                 "bindings::V8ReturnValue::kIDLObject);")
+
     if return_type.is_sequence:
         return T("bindings::V8SetReturnValue(${info}, ${v8_return_value});")
 

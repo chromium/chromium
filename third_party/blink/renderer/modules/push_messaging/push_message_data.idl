@@ -9,6 +9,6 @@
 ] interface PushMessageData {
     ArrayBuffer arrayBuffer();
     Blob blob();
-    [CallWith=ScriptState, RaisesException] JSON json();
+    [CallWith=ScriptState, RaisesException] any json();
     USVString text();
 };
