@@ -2037,6 +2037,22 @@ ci.clang_builder(
     ),
 )
 
+ci.clang_builder(
+    name = "ToTFuchsia x64",
+    console_view_entry = consoles.console_view_entry(
+        category = "ToT Fuchsia",
+        short_name = "x64",
+    ),
+)
+
+ci.clang_builder(
+    name = "ToTFuchsiaOfficial",
+    console_view_entry = consoles.console_view_entry(
+        category = "ToT Fuchsia",
+        short_name = "off",
+    ),
+)
+
 def clang_tot_linux_builder(short_name, category = "ToT Linux", **kwargs):
     ci.clang_builder(
         console_view_entry = consoles.console_view_entry(

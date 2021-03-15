@@ -1865,6 +1865,42 @@
           'isolated_scripts': 'chrome_sizes_android',
         },
       },
+      'ToTFuchsia x64': {
+        'additional_compile_targets': [
+          'all',
+        ],
+        'browser_config': 'web-engine-shell',
+        'os_type': 'linux',
+        'mixins': [
+          'linux-xenial',
+        ],
+        'swarming': {
+          'dimension_sets': [
+            {
+              'kvm': '1',
+            },
+          ],
+        },
+        'test_suites': {
+          'gtest_tests': 'fuchsia_gtests',
+          'isolated_scripts': 'fuchsia_x64_isolated_scripts',
+          'gpu_telemetry_tests': 'fuchsia_gpu_telemetry_tests',
+        },
+      },
+      'ToTFuchsiaOfficial': {
+        'additional_compile_targets': [
+          'all',
+        ],
+        'test_suites': {
+          'gtest_tests': 'fuchsia_gtests',
+          'isolated_scripts': 'fuchsia_arm64_isolated_scripts',
+        },
+        'mixins': [
+          'arm64',
+          'docker',
+          'linux-xenial',
+        ],
+      },
       'ToTLinux': {
         'mixins': [
           'linux-xenial',
