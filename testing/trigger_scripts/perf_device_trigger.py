@@ -355,7 +355,9 @@ def main():
   # Setup args for common contract of base class
   parser = base_test_triggerer.BaseTestTriggerer.setup_parser_contract(
       argparse.ArgumentParser(description=__doc__))
-  parser.add_argument('--use-dynamic-shards', type=bool, default=None,
+  parser.add_argument('--use-dynamic-shards',
+                      action='store_true',
+                      required=False,
                       help='Ignore --shards and the existing shard map. Will '
                            'generate a shard map at run time and use as much '
                            'device as possible.')
