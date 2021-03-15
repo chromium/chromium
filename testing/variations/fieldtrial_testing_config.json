@@ -4069,21 +4069,6 @@
             ]
         }
     ],
-    "MacAllowBackgroundingProcesses": [
-        {
-            "platforms": [
-                "mac"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "MacAllowBackgroundingProcesses"
-                    ]
-                }
-            ]
-        }
-    ],
     "MacSystemMediaPermissionsInfoUI": [
         {
             "platforms": [
