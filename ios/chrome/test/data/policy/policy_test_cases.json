@@ -7,7 +7,7 @@
 
 
     "intro": "The schema below is a subset of the schema in chrome/test/data/policy/policy_test_cases.json",
-    "can_be_recommended": "Whether a recommended value may be set for the policy. Defaults to |false| if not specified.",
+    "can_be_recommended": "Whether a recommended value may be set for the policy. Defaults to |false| if not specified. Use |check_for_mandatory| and |check_for_recommended| if you want to provide separate test cases for mandatory/recommended. Otherwise, the same pref mapping is checked for both mandatory+recommended modes when enabled or only as mandatory if disabled.",
     "note": "If the policy affects any preferences, the following array should be specified with one entry per such preference.",
 
     "policy_pref_mapping_tests": [
@@ -17,7 +17,9 @@
           "${pref}": {
             "value": "The value that |pref| should take on. Defaults to the value that the policy was set to.",
             "expect_default": "Whether or not the pref value should be the default one (i.e. unmanaged and user-modifiable). Defaults to false if not specified.",
-            "location": "The location where the pref is registered, possible values are ['user_profile', 'local_state']. Defaults to 'user_profile' if not specified."
+            "location": "The location where the pref is registered, possible values are ['user_profile', 'local_state']. Defaults to 'user_profile' if not specified.",
+            "check_for_mandatory": "Should the preference be tested when a mandatory value is set for the policy? Defaults to |true| if not specified. See |can_be_recommended|.",
+            "check_for_recommended": "Should the preference be tested when a recommended value is set for the policy? Defaults to |true| if not specified. See |can_be_recommended|."
           }
         }
       }

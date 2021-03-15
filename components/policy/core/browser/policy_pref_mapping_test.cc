@@ -64,9 +64,49 @@ std::string GetPolicyName(const std::string& policy_name_decorated) {
   return policy_name_decorated;
 }
 
+void CheckPrefHasValue(const PrefService::Preference* pref,
+                       const base::Value* expected_value) {
+  EXPECT_TRUE(pref->GetValue()->Equals(expected_value))
+      << *pref->GetValue() << " != " << *expected_value;
+}
+
+void CheckPrefHasDefaultValue(const PrefService::Preference* pref,
+                              const base::Value* expected_value = nullptr) {
+  EXPECT_TRUE(pref->IsDefaultValue());
+  EXPECT_TRUE(pref->IsUserModifiable());
+  EXPECT_FALSE(pref->IsUserControlled());
+  EXPECT_FALSE(pref->IsManaged());
+  EXPECT_FALSE(pref->IsRecommended());
+  if (expected_value)
+    CheckPrefHasValue(pref, expected_value);
+}
+
+void CheckPrefHasRecommendedValue(const PrefService::Preference* pref,
+                                  const base::Value* expected_value = nullptr) {
+  EXPECT_FALSE(pref->IsDefaultValue());
+  EXPECT_TRUE(pref->IsUserModifiable());
+  EXPECT_FALSE(pref->IsUserControlled());
+  EXPECT_FALSE(pref->IsManaged());
+  EXPECT_TRUE(pref->IsRecommended());
+  if (expected_value)
+    CheckPrefHasValue(pref, expected_value);
+}
+
+void CheckPrefHasMandatoryValue(const PrefService::Preference* pref,
+                                const base::Value* expected_value = nullptr) {
+  EXPECT_FALSE(pref->IsDefaultValue());
+  EXPECT_FALSE(pref->IsUserModifiable());
+  EXPECT_FALSE(pref->IsUserControlled());
+  EXPECT_TRUE(pref->IsManaged());
+  EXPECT_FALSE(pref->IsRecommended());
+  if (expected_value)
+    CheckPrefHasValue(pref, expected_value);
+}
+
 // Contains the details of a single test case verifying that the controlled
-// setting indicators for a pref affected by a policy work correctly. This is
-// part of the data loaded from chrome/test/data/policy/policy_test_cases.json.
+// setting indicators for a pref affected by a policy work correctly. This
+// is part of the data loaded from
+// chrome/test/data/policy/policy_test_cases.json.
 class PrefIndicatorTest {
  public:
   explicit PrefIndicatorTest(const base::Value& indicator_test) {
@@ -460,10 +500,14 @@ void VerifyPolicyToPrefMappings(const base::FilePath& test_case_path,
 
       for (const auto& pref_mapping : pref_mappings) {
         for (const auto& pref_case : pref_mapping->prefs()) {
-          // Skip preferences that should not be checked when the policy is set
-          // to a mandatory value.
-          if (!pref_case->check_for_mandatory())
-            continue;
+          const bool check_recommended = test_case->can_be_recommended() &&
+                                         pref_case->check_for_recommended();
+          const bool check_mandatory = pref_case->check_for_mandatory();
+
+          EXPECT_TRUE(check_recommended || check_mandatory)
+              << "pref mapping test for " << policy.first << "(pref "
+              << pref_case->pref()
+              << ") has to either be for recommended/mandatory or both";
 
           PrefService* prefs = nullptr;
           switch (pref_case->location()) {
@@ -488,7 +532,12 @@ void VerifyPolicyToPrefMappings(const base::FilePath& test_case_path,
           if (!prefs)
             continue;
 
-          LOG(INFO) << "Testing policy: " << policy.first;
+          LOG(INFO) << "Testing policy " << policy.first << " (pref "
+                    << pref_case->pref() << " with "
+                    << ((check_recommended) ? "recommended" : "")
+                    << ((check_recommended && check_mandatory) ? " & " : "")
+                    << ((check_mandatory) ? "mandatory" : "")
+                    << " policy values)";
 
           if (!preprocessor_macros_checker.SupportsTest(pref_mapping.get())) {
             LOG(INFO) << " Skipping policy_pref_mapping_test because of "
@@ -497,34 +546,34 @@ void VerifyPolicyToPrefMappings(const base::FilePath& test_case_path,
           }
           // The preference must have been registered.
           const PrefService::Preference* pref =
-              prefs->FindPreference(pref_case->pref().c_str());
+              prefs->FindPreference(pref_case->pref());
           ASSERT_TRUE(pref)
-              << "Pref " << pref_case->pref().c_str() << " not registered";
+              << "Pref " << pref_case->pref() << " not registered";
 
-          // Verify that setting the policy overrides the pref.
           provider->UpdateChromePolicy(PolicyMap());
-          prefs->ClearPref(pref_case->pref().c_str());
-          EXPECT_TRUE(pref->IsDefaultValue());
-          EXPECT_TRUE(pref->IsUserModifiable());
-          EXPECT_FALSE(pref->IsUserControlled());
-          EXPECT_FALSE(pref->IsManaged());
+          prefs->ClearPref(pref_case->pref());
+          CheckPrefHasDefaultValue(pref);
 
-          ASSERT_NO_FATAL_FAILURE(SetProviderPolicy(
-              provider, pref_mapping->policies(), POLICY_LEVEL_MANDATORY));
-          if (pref_case->expect_default()) {
-            EXPECT_TRUE(pref->IsDefaultValue());
-            EXPECT_TRUE(pref->IsUserModifiable());
-            EXPECT_FALSE(pref->IsUserControlled());
-            EXPECT_FALSE(pref->IsManaged());
-          } else {
-            EXPECT_FALSE(pref->IsDefaultValue());
-            EXPECT_FALSE(pref->IsUserModifiable());
-            EXPECT_FALSE(pref->IsUserControlled());
-            EXPECT_TRUE(pref->IsManaged());
+          const base::Value* expected_value = pref_case->value();
+
+          if (check_recommended) {
+            ASSERT_NO_FATAL_FAILURE(SetProviderPolicy(
+                provider, pref_mapping->policies(), POLICY_LEVEL_RECOMMENDED));
+            if (pref_case->expect_default()) {
+              CheckPrefHasDefaultValue(pref, expected_value);
+            } else {
+              CheckPrefHasRecommendedValue(pref, expected_value);
+            }
           }
-          if (pref_case->value()) {
-            EXPECT_TRUE(pref->GetValue()->Equals(pref_case->value()))
-                << *pref->GetValue() << " != " << *pref_case->value();
+
+          if (check_mandatory) {
+            ASSERT_NO_FATAL_FAILURE(SetProviderPolicy(
+                provider, pref_mapping->policies(), POLICY_LEVEL_MANDATORY));
+            if (pref_case->expect_default()) {
+              CheckPrefHasDefaultValue(pref, expected_value);
+            } else {
+              CheckPrefHasMandatoryValue(pref, expected_value);
+            }
           }
         }
       }
