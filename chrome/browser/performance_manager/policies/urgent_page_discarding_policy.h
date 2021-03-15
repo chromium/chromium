@@ -9,6 +9,7 @@
 #include "base/memory/memory_pressure_listener.h"
 #include "base/sequence_checker.h"
 #include "components/performance_manager/public/graph/graph.h"
+#include "components/performance_manager/public/graph/system_node.h"
 
 namespace performance_manager {
 
@@ -17,7 +18,8 @@ namespace policies {
 // Urgently discard a tab when receiving a memory pressure signal. The discard
 // strategy used by this policy is based on a feature flag, see
 // UrgentDiscardingParams for more details.
-class UrgentPageDiscardingPolicy : public GraphOwned {
+class UrgentPageDiscardingPolicy : public GraphOwned,
+                                   public SystemNode::ObserverDefaultImpl {
  public:
   UrgentPageDiscardingPolicy();
   ~UrgentPageDiscardingPolicy() override;
@@ -30,21 +32,18 @@ class UrgentPageDiscardingPolicy : public GraphOwned {
   void OnTakenFromGraph(Graph* graph) override;
 
  private:
+  // SystemNodeObserver:
   void OnMemoryPressure(
-      base::MemoryPressureListener::MemoryPressureLevel level);
-
-  // Register to start listening to memory pressure. Called on startup or after
-  // handling a pressure event.
-  void RegisterMemoryPressureListener();
-
-  // Unregister to stop listening to memory pressure. Called on shutdown or
-  // when handling a pressure event.
-  void UnregisterMemoryPressureListener();
+      base::MemoryPressureListener::MemoryPressureLevel new_level) override;
 
   // Callback called when a discard attempt has completed.
   void PostDiscardAttemptCallback(bool success);
 
-  std::unique_ptr<base::MemoryPressureListener> memory_pressure_listener_;
+  // True while we are in the process of discarding tab(s) in response to a
+  // memory pressure notification. It becomes false once we're done responding
+  // to this notification.
+  bool handling_memory_pressure_notification_ = false;
+
   Graph* graph_ = nullptr;
 
   SEQUENCE_CHECKER(sequence_checker_);

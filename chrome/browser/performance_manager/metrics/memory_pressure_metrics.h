@@ -8,12 +8,14 @@
 #include "base/memory/memory_pressure_listener.h"
 #include "base/memory/weak_ptr.h"
 #include "components/performance_manager/public/graph/graph.h"
+#include "components/performance_manager/public/graph/system_node.h"
 
 namespace performance_manager {
 namespace metrics {
 
 // Record some memory pressure related metrics.
-class MemoryPressureMetrics : public GraphOwned {
+class MemoryPressureMetrics : public GraphOwned,
+                              public SystemNode::ObserverDefaultImpl {
  public:
   MemoryPressureMetrics();
   ~MemoryPressureMetrics() override;
@@ -32,9 +34,9 @@ class MemoryPressureMetrics : public GraphOwned {
   using MemoryPressureLevel = base::MemoryPressureListener::MemoryPressureLevel;
   static constexpr int kInvalidSysRAMValue = 0;
 
-  void OnMemoryPressure(MemoryPressureLevel pressure_level);
+  // SystemNodeObserver:
+  void OnBeforeMemoryPressure(MemoryPressureLevel new_level) override;
 
-  std::unique_ptr<base::MemoryPressureListener> memory_pressure_listener_;
   Graph* graph_ = nullptr;
   int system_ram_mb_ = kInvalidSysRAMValue;
 };

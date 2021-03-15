@@ -19,54 +19,48 @@ UrgentPageDiscardingPolicy::~UrgentPageDiscardingPolicy() = default;
 void UrgentPageDiscardingPolicy::OnPassedToGraph(Graph* graph) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   graph_ = graph;
-  RegisterMemoryPressureListener();
+  DCHECK(!handling_memory_pressure_notification_);
+  graph_->AddSystemNodeObserver(this);
+  DCHECK(PageDiscardingHelper::GetFromGraph(graph_))
+      << "A PageDiscardingHelper instance should be registered against the "
+         "graph in order to use this policy.";
 }
 
 void UrgentPageDiscardingPolicy::OnTakenFromGraph(Graph* graph) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  UnregisterMemoryPressureListener();
+  graph_->RemoveSystemNodeObserver(this);
   graph_ = nullptr;
 }
 
 void UrgentPageDiscardingPolicy::OnMemoryPressure(
-    base::MemoryPressureListener::MemoryPressureLevel level) {
+    base::MemoryPressureListener::MemoryPressureLevel new_level) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  if (level != base::MemoryPressureListener::MemoryPressureLevel::
-                   MEMORY_PRESSURE_LEVEL_CRITICAL) {
+  // The Memory Pressure Monitor will send notifications at regular interval,
+  // |handling_memory_pressure_notification_| prevents this class from trying to
+  // reply to multiple notifications at the same time.
+  if (handling_memory_pressure_notification_ ||
+      new_level != base::MemoryPressureListener::MemoryPressureLevel::
+                       MEMORY_PRESSURE_LEVEL_CRITICAL) {
     return;
   }
 
-  // The Memory Pressure Monitor will send notifications at regular interval,
-  // it's important to unregister the pressure listener to ensure that we don't
-  // reply to multiple notifications at the same time.
-  UnregisterMemoryPressureListener();
+  handling_memory_pressure_notification_ = true;
 
   PageDiscardingHelper::GetFromGraph(graph_)->UrgentlyDiscardAPage(
       features::UrgentDiscardingParams::GetParams().discard_strategy(),
       base::BindOnce(
           [](UrgentPageDiscardingPolicy* policy, bool success_unused) {
-            policy->RegisterMemoryPressureListener();
+            DCHECK(policy->handling_memory_pressure_notification_);
+            policy->handling_memory_pressure_notification_ = false;
           },
+          // |PageDiscardingHelper| and this class are both GraphOwned objects,
+          // their lifetime is tied to the Graph's lifetime and both objects
+          // will be released sequentially while it's being torn down. This
+          // ensures that the reply callback passed to |UrgentlyDiscardAPage|
+          // won't ever run after the destruction of this class and so it's safe
+          // to use Unretained.
           base::Unretained(this)));
-}
-
-void UrgentPageDiscardingPolicy::RegisterMemoryPressureListener() {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(!memory_pressure_listener_);
-  DCHECK(PageDiscardingHelper::GetFromGraph(graph_))
-      << "A PageDiscardingHelper instance should be registered against the "
-         "graph in order to use this policy.";
-
-  memory_pressure_listener_ = std::make_unique<base::MemoryPressureListener>(
-      FROM_HERE,
-      base::BindRepeating(&UrgentPageDiscardingPolicy::OnMemoryPressure,
-                          base::Unretained(this)));
-}
-
-void UrgentPageDiscardingPolicy::UnregisterMemoryPressureListener() {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  memory_pressure_listener_.reset();
 }
 
 }  // namespace policies

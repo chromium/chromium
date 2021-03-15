@@ -21,23 +21,20 @@ MemoryPressureMetrics::~MemoryPressureMetrics() = default;
 void MemoryPressureMetrics::OnPassedToGraph(Graph* graph) {
   graph_ = graph;
 
+  graph_->AddSystemNodeObserver(this);
   base::SystemMemoryInfoKB mem_info = {};
   if (base::GetSystemMemoryInfo(&mem_info))
     system_ram_mb_ = mem_info.total / 1024;
-
-  memory_pressure_listener_ = std::make_unique<base::MemoryPressureListener>(
-      FROM_HERE, base::BindRepeating(&MemoryPressureMetrics::OnMemoryPressure,
-                                     base::Unretained(this)));
 }
 
 void MemoryPressureMetrics::OnTakenFromGraph(Graph* graph) {
-  memory_pressure_listener_.reset();
+  graph_->RemoveSystemNodeObserver(this);
   graph_ = nullptr;
 }
 
-void MemoryPressureMetrics::OnMemoryPressure(
-    MemoryPressureLevel pressure_level) {
-  if (pressure_level != MemoryPressureLevel::MEMORY_PRESSURE_LEVEL_CRITICAL)
+void MemoryPressureMetrics::OnBeforeMemoryPressure(
+    MemoryPressureLevel new_level) {
+  if (new_level != MemoryPressureLevel::MEMORY_PRESSURE_LEVEL_CRITICAL)
     return;
 
   int total_rss_mb = 0;
@@ -47,7 +44,7 @@ void MemoryPressureMetrics::OnMemoryPressure(
 
   // Records an estimate of the total amount of RAM used by Chrome.
   // Note: The histogram will cap at 100GB.
-  UMA_HISTOGRAM_COUNTS_100000("Discarding.OnCriticalPressure.TotalRSS_Mb",
+  UMA_HISTOGRAM_COUNTS_100000("Discarding.OnCriticalPressure.TotalRSS_Mb2",
                               total_rss_mb);
 
   if (system_ram_mb_ != kInvalidSysRAMValue) {
@@ -57,7 +54,7 @@ void MemoryPressureMetrics::OnMemoryPressure(
     // Note that the estimate might exceeds 100% in some cases as it overcount
     // the shared memory, round the value down to 100% in this case.
     UMA_HISTOGRAM_PERCENTAGE(
-        "Discarding.OnCriticalPressure.TotalRSS_PercentOfRAM",
+        "Discarding.OnCriticalPressure.TotalRSS_PercentOfRAM2",
         std::min(100, static_cast<int>(footprint_percent_of_total_ram)));
   }
 }

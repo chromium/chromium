@@ -71,11 +71,7 @@ void ScheduleLoadForRestoredTabs(
 }
 
 BackgroundTabLoadingPolicy::BackgroundTabLoadingPolicy()
-    : memory_pressure_listener_(
-          FROM_HERE,
-          base::BindRepeating(&BackgroundTabLoadingPolicy::OnMemoryPressure,
-                              base::Unretained(this))),
-      page_loader_(std::make_unique<mechanism::PageLoader>()) {
+    : page_loader_(std::make_unique<mechanism::PageLoader>()) {
   DCHECK(!g_background_tab_loading_policy);
   g_background_tab_loading_policy = this;
   max_simultaneous_tab_loads_ = CalculateMaxSimultaneousTabLoads(
@@ -90,12 +86,14 @@ BackgroundTabLoadingPolicy::~BackgroundTabLoadingPolicy() {
 
 void BackgroundTabLoadingPolicy::OnPassedToGraph(Graph* graph) {
   graph->AddPageNodeObserver(this);
+  graph->AddSystemNodeObserver(this);
   graph->GetNodeDataDescriberRegistry()->RegisterDescriber(this,
                                                            kDescriberName);
 }
 
 void BackgroundTabLoadingPolicy::OnTakenFromGraph(Graph* graph) {
   graph->GetNodeDataDescriberRegistry()->UnregisterDescriber(this);
+  graph->RemoveSystemNodeObserver(this);
   graph->RemovePageNodeObserver(this);
 }
 
@@ -286,8 +284,8 @@ void BackgroundTabLoadingPolicy::StopLoadingTabs() {
 }
 
 void BackgroundTabLoadingPolicy::OnMemoryPressure(
-    base::MemoryPressureListener::MemoryPressureLevel memory_pressure_level) {
-  switch (memory_pressure_level) {
+    base::MemoryPressureListener::MemoryPressureLevel new_level) {
+  switch (new_level) {
     case base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_NONE:
       break;
     case base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_MODERATE:

@@ -10,6 +10,7 @@
 #include "components/performance_manager/decorators/freezing_vote_decorator.h"
 #include "components/performance_manager/freezing/freezing_vote_aggregator.h"
 #include "components/performance_manager/graph/frame_node_impl.h"
+#include "components/performance_manager/graph/graph_impl.h"
 #include "components/performance_manager/graph/page_node_impl.h"
 #include "components/performance_manager/public/decorators/page_live_state_decorator.h"
 #include "components/performance_manager/test_support/graph_test_harness.h"
@@ -26,7 +27,8 @@ void LenientMockPageDiscarder::DiscardPageNode(
   std::move(post_discard_cb).Run(DiscardPageNodeImpl(page_node));
 }
 
-GraphTestHarnessWithMockDiscarder::GraphTestHarnessWithMockDiscarder() {
+GraphTestHarnessWithMockDiscarder::GraphTestHarnessWithMockDiscarder()
+    : system_node_(TestNodeWrapper<SystemNodeImpl>::Create(graph())) {
   // Some tests depends on the existence of the PageAggregator.
   graph()->PassToGraph(std::make_unique<PageAggregator>());
 }

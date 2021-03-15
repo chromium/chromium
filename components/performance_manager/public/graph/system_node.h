@@ -6,6 +6,7 @@
 #define COMPONENTS_PERFORMANCE_MANAGER_PUBLIC_GRAPH_SYSTEM_NODE_H_
 
 #include "base/macros.h"
+#include "base/memory/memory_pressure_listener.h"
 #include "components/performance_manager/public/graph/node.h"
 
 namespace performance_manager {
@@ -17,6 +18,7 @@ class SystemNodeObserver;
 class SystemNode : public Node {
  public:
   using Observer = SystemNodeObserver;
+  using MemoryPressureLevel = base::MemoryPressureListener::MemoryPressureLevel;
   class ObserverDefaultImpl;
 
   SystemNode();
@@ -45,6 +47,24 @@ class SystemNodeObserver {
   virtual void OnProcessMemoryMetricsAvailable(
       const SystemNode* system_node) = 0;
 
+  // Called before OnMemoryPressure(). This can be used to track state before
+  // memory start being released in response to memory pressure.
+  //
+  // Note: This is guaranteed to be invoked before OnMemoryPressure(), but
+  // will not necessarily be called before base::MemoryPressureListeners
+  // are notified.
+  virtual void OnBeforeMemoryPressure(
+      base::MemoryPressureListener::MemoryPressureLevel new_level) = 0;
+
+  // Called when the system is under memory pressure. Observers may start
+  // releasing memory in response to memory pressure.
+  //
+  // NOTE: This isn't called for a transition to the MEMORY_PRESSURE_LEVEL_NONE
+  // level. For this reason there's no corresponding property in this node and
+  // the response to these notifications should be stateless.
+  virtual void OnMemoryPressure(
+      base::MemoryPressureListener::MemoryPressureLevel new_level) = 0;
+
  private:
   DISALLOW_COPY_AND_ASSIGN(SystemNodeObserver);
 };
@@ -62,6 +82,10 @@ class SystemNode::ObserverDefaultImpl : public SystemNodeObserver {
   void OnBeforeSystemNodeRemoved(const SystemNode* system_node) override {}
   void OnProcessMemoryMetricsAvailable(const SystemNode* system_node) override {
   }
+  void OnBeforeMemoryPressure(
+      base::MemoryPressureListener::MemoryPressureLevel new_level) override {}
+  void OnMemoryPressure(
+      base::MemoryPressureListener::MemoryPressureLevel new_level) override {}
 
  private:
   DISALLOW_COPY_AND_ASSIGN(ObserverDefaultImpl);

@@ -4241,6 +4241,22 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Discarding.OnCriticalPressure.TotalRSS_Mb" units="MB"
     expires_after="2021-01-31">
+  <obsolete>
+    Removed 03/2021, replaced by Discarding.OnCriticalPressure.TotalRSS_Mb2. The
+    new histogram is now guaranteed to be recorded before discarding any tab.
+  </obsolete>
+  <owner>sebmarchand@chromium.org</owner>
+  <owner>catan-team@chromium.org</owner>
+  <summary>
+    An estimate of the total resident set of Chrome when receiving a critical
+    memory pressure event, in megabytes. Note that the estimate is based on the
+    most recent data collected by Performance Manager, which are refreshed at a
+    low frequency (up to 2 minutes).
+  </summary>
+</histogram>
+
+<histogram name="Discarding.OnCriticalPressure.TotalRSS_Mb2" units="MB"
+    expires_after="2021-10-30">
   <owner>sebmarchand@chromium.org</owner>
   <owner>catan-team@chromium.org</owner>
   <summary>
@@ -4253,6 +4269,23 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Discarding.OnCriticalPressure.TotalRSS_PercentOfRAM" units="%"
     expires_after="2021-08-09">
+  <obsolete>
+    Removed 03/2021, replaced by
+    Discarding.OnCriticalPressure.TotalRSS_PercentOfRAM2. The new histogram is
+    now guaranteed to be recorded before discarding any tab.
+  </obsolete>
+  <owner>sebmarchand@chromium.org</owner>
+  <owner>catan-team@chromium.org</owner>
+  <summary>
+    An estimate of the total resident set of Chrome when receiving a critical
+    memory pressure event, in percentage of the total amount of RAM. Note that
+    the estimate is based on the most recent data collected by Performance
+    Manager, which are refreshed at a low frequency (up to 2 minutes).
+  </summary>
+</histogram>
+
+<histogram name="Discarding.OnCriticalPressure.TotalRSS_PercentOfRAM2"
+    units="%" expires_after="2021-10-30">
   <owner>sebmarchand@chromium.org</owner>
   <owner>catan-team@chromium.org</owner>
   <summary>
