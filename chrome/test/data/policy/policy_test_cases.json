@@ -31,17 +31,7 @@
               "check_for_mandatory": "Should the preference be tested when a mandatory value is set for the policy? Defaults to |true| if not specified. See |can_be_recommended|.",
               "check_for_recommended": "Should the preference be tested when a recommended value is set for the policy? Defaults to |true| if not specified. See |can_be_recommended|."
             }
-          },
-        "indicator_tests": [
-          {
-            "pref": "The affected preference's name.",
-            "test_url": "The URL to navigate to in order to test the indicators. Defaults to |chrome://extensions-frame/| if not specified.",
-            "test_setup_js": "Any JavaScript that should be executed before testing the indicators. This should be specified only if an explicit user action must be simulated (e.g. clicking a button).",
-            "selector": "A CSS selector that locates all controlled setting indicators for |pref|. This is appended to the selector 'span.controlled-setting-indicator' and if not specified, defaults to '[pref=(the value of |pref|)', e.g. '[pref=homepage]'.",
-            "value": "The value that |pref| should take on. This must only be specified if |pref| has multiple controlled setting indicators, each corresponding to a specific value (e.g. indicators next to radio buttons).",
-            "readonly": "Whether setting the policy dictionary as recommended should cause |pref| to become read-only in the settings UI. This will be the case when the dictionary sets another policy that makes |pref| not applicable (e.g. setting 'homepage is NTP' makes the 'homepage URL' pref not applicable and read-only)."
           }
-        ]
       }
     ]
   },
@@ -216,14 +206,7 @@
     "policy_pref_mapping_tests": [
       {
         "policies": { "JavascriptEnabled": false },
-        "prefs": { "profile.managed_default_content_settings.javascript": {}},
-        "indicator_tests": [
-          {
-            "pref": "profile.managed_default_content_settings.javascript",
-            "selector": "[content-setting=javascript]",
-            "value": "block"
-          }
-        ]
+        "prefs": { "profile.managed_default_content_settings.javascript": {}}
       }
     ]
   },
@@ -849,13 +832,7 @@
     "policy_pref_mapping_tests": [
       {
         "policies": { "MetricsReportingEnabled": false },
-        "prefs": { "user_experience_metrics.reporting_enabled": { "location": "local_state" } },
-        "indicator_tests": [
-          {
-            "pref": "user_experience_metrics.reporting_enabled",
-            "selector": "#metrics-reporting-disabled-icon"
-          }
-        ]
+        "prefs": { "user_experience_metrics.reporting_enabled": { "location": "local_state" } }
       }
     ]
   },
@@ -1663,8 +1640,7 @@
     "policy_pref_mapping_tests": [
       {
         "policies": { "DeveloperToolsDisabled": true },
-        "prefs": { "devtools.availability": { "value": 2 }},
-        "indicator_tests": [{ "pref": "devtools.availability", "test_url": "chrome://extensions-frame/", "selector": "#dev-toggle-disabled-by-policy-indicator", "value": 2 }]
+        "prefs": { "devtools.availability": { "value": 2 }}
       }
     ]
   },
@@ -1674,8 +1650,7 @@
     "policy_pref_mapping_tests": [
       {
         "policies": { "DeveloperToolsAvailability": 2 },
-        "prefs": { "devtools.availability": { "value": 2 }},
-        "indicator_tests": [{ "pref": "devtools.availability", "test_url": "chrome://extensions-frame/", "selector": "#dev-toggle-disabled-by-policy-indicator", "value": 2 }]
+        "prefs": { "devtools.availability": { "value": 2 }}
       }
     ]
   },
@@ -1967,18 +1942,15 @@
     "policy_pref_mapping_tests": [
       {
         "policies": { "DefaultCookiesSetting": 1 },
-        "prefs": { "profile.managed_default_content_settings.cookies": { "value": 1 } },
-        "indicator_tests": [{ "pref": "profile.managed_default_content_settings.cookies", "selector": "[content-setting=cookies]", "value": 1 }]
+        "prefs": { "profile.managed_default_content_settings.cookies": { "value": 1 } }
       },
       {
         "policies": { "DefaultCookiesSetting": 2 },
-        "prefs": { "profile.managed_default_content_settings.cookies": { "value": 2 } },
-        "indicator_tests": [{ "pref": "profile.managed_default_content_settings.cookies", "selector": "[content-setting=cookies]", "value": "block" }]
+        "prefs": { "profile.managed_default_content_settings.cookies": { "value": 2 } }
       },
       {
         "policies": { "DefaultCookiesSetting": 3 },
-        "prefs": { "profile.managed_default_content_settings.cookies": { "value": 3 } },
-        "indicator_tests": [{ "pref": "profile.managed_default_content_settings.cookies", "selector": "[content-setting=cookies]", "value": "session_only" }]
+        "prefs": { "profile.managed_default_content_settings.cookies": { "value": 3 } }
       }
     ]
   },
@@ -1989,13 +1961,11 @@
     "policy_pref_mapping_tests": [
       {
         "policies": { "DefaultImagesSetting": 1 },
-        "prefs": { "profile.managed_default_content_settings.images": { "value": 1 } },
-        "indicator_tests": [{ "pref": "profile.managed_default_content_settings.images", "selector": "[content-setting=images]", "value": "allow" }]
+        "prefs": { "profile.managed_default_content_settings.images": { "value": 1 } }
       },
       {
         "policies": { "DefaultImagesSetting": 2 },
-        "prefs": { "profile.managed_default_content_settings.images": { "value": 2 } },
-        "indicator_tests": [{ "pref": "profile.managed_default_content_settings.images", "selector": "[content-setting=images]", "value": "block" }]
+        "prefs": { "profile.managed_default_content_settings.images": { "value": 2 } }
       }
     ]
   },
@@ -2006,13 +1976,11 @@
     "policy_pref_mapping_tests": [
       {
         "policies": { "DefaultInsecureContentSetting": 2 },
-        "prefs": { "profile.managed_default_content_settings.insecure_content": { "value": 2 } },
-        "indicator_tests": [{ "pref": "profile.managed_default_content_settings.insecure_content", "selector": "[content-setting=mixed-script]", "value": "block" }]
+        "prefs": { "profile.managed_default_content_settings.insecure_content": { "value": 2 } }
       },
       {
         "policies": { "DefaultInsecureContentSetting": 3 },
-        "prefs": { "profile.managed_default_content_settings.insecure_content": { "value": 3 } },
-        "indicator_tests": [{ "pref": "profile.managed_default_content_settings.insecure_content", "selector": "[content-setting=mixed-script]", "value": "ask" }]
+        "prefs": { "profile.managed_default_content_settings.insecure_content": { "value": 3 } }
       }
     ]
   },
@@ -2023,13 +1991,11 @@
     "policy_pref_mapping_tests": [
       {
         "policies": { "DefaultJavaScriptSetting": 1 },
-        "prefs": { "profile.managed_default_content_settings.javascript": { "value": 1 } },
-        "indicator_tests": [{ "pref": "profile.managed_default_content_settings.javascript", "selector": "[content-setting=javascript]", "value": "allow" }]
+        "prefs": { "profile.managed_default_content_settings.javascript": { "value": 1 } }
       },
       {
         "policies": { "DefaultJavaScriptSetting": 2 },
-        "prefs": { "profile.managed_default_content_settings.javascript": { "value": 2 } },
-        "indicator_tests": [{ "pref": "profile.managed_default_content_settings.javascript", "selector": "[content-setting=javascript]", "value": "block" }]
+        "prefs": { "profile.managed_default_content_settings.javascript": { "value": 2 } }
       }
     ]
   },
@@ -2100,13 +2066,11 @@
     "policy_pref_mapping_tests": [
       {
         "policies": { "DefaultPopupsSetting": 1 },
-        "prefs": { "profile.managed_default_content_settings.popups": { "value": 1 } },
-        "indicator_tests": [{ "pref": "profile.managed_default_content_settings.popups", "selector": "[content-setting=popups]", "value": "allow" }]
+        "prefs": { "profile.managed_default_content_settings.popups": { "value": 1 } }
       },
       {
         "policies": { "DefaultPopupsSetting": 2 },
-        "prefs": { "profile.managed_default_content_settings.popups": {} },
-        "indicator_tests": [{ "pref": "profile.managed_default_content_settings.popups","selector": "[content-setting=popups]", "value": "block" }]
+        "prefs": { "profile.managed_default_content_settings.popups": {} }
       }
     ]
   },
@@ -2117,18 +2081,15 @@
     "policy_pref_mapping_tests": [
       {
         "policies": { "DefaultNotificationsSetting": 1 },
-        "prefs": { "profile.managed_default_content_settings.notifications": { "value": 1 } },
-        "indicator_tests": [{ "pref": "profile.managed_default_content_settings.notifications", "selector": "[content-setting=notifications]", "value": "allow" }]
+        "prefs": { "profile.managed_default_content_settings.notifications": { "value": 1 } }
       },
       {
         "policies": { "DefaultNotificationsSetting": 2 },
-        "prefs": { "profile.managed_default_content_settings.notifications": { "value": 2 } },
-        "indicator_tests": [{ "pref": "profile.managed_default_content_settings.notifications", "selector": "[content-setting=notifications]", "value": "block" }]
+        "prefs": { "profile.managed_default_content_settings.notifications": { "value": 2 } }
       },
       {
         "policies": { "DefaultNotificationsSetting": 3 },
-        "prefs": { "profile.managed_default_content_settings.notifications": { "value": 3 } },
-        "indicator_tests": [{ "pref": "profile.managed_default_content_settings.notifications", "selector": "[content-setting=notifications]", "value": "ask" }]
+        "prefs": { "profile.managed_default_content_settings.notifications": { "value": 3 } }
       }
     ]
   },
@@ -2139,18 +2100,15 @@
     "policy_pref_mapping_tests": [
       {
         "policies": { "DefaultGeolocationSetting": 1 },
-        "prefs": { "profile.managed_default_content_settings.geolocation": { "value": 1 } },
-        "indicator_tests": [{ "pref": "profile.managed_default_content_settings.geolocation", "selector": "[content-setting=location]","value": "allow"}]
+        "prefs": { "profile.managed_default_content_settings.geolocation": { "value": 1 } }
       },
       {
         "policies": { "DefaultGeolocationSetting": 2 },
-        "prefs": { "profile.managed_default_content_settings.geolocation": { "value": 2 } },
-        "indicator_tests": [{"pref": "profile.managed_default_content_settings.geolocation", "selector": "[content-setting=location]", "value": "block" }]
+        "prefs": { "profile.managed_default_content_settings.geolocation": { "value": 2 } }
       },
       {
         "policies": { "DefaultGeolocationSetting": 3 },
-        "prefs": { "profile.managed_default_content_settings.geolocation": { "value": 3 } },
-        "indicator_tests": [{ "pref": "profile.managed_default_content_settings.geolocation", "selector": "[content-setting=location]", "value": "ask" }]
+        "prefs": { "profile.managed_default_content_settings.geolocation": { "value": 3 } }
       }
     ]
   },
@@ -2161,25 +2119,11 @@
     "policy_pref_mapping_tests": [
       {
         "policies": { "DefaultMediaStreamSetting": 2 },
-        "prefs": { "profile.managed_default_content_settings.media_stream": { "value": 2 } },
-        "indicator_tests": [
-          {
-            "pref": "profile.managed_default_content_settings.media_stream",
-            "selector": "[content-setting=media-stream-mic],[content-setting=media-stream-camera]",
-            "value": "block"
-          }
-        ]
+        "prefs": { "profile.managed_default_content_settings.media_stream": { "value": 2 } }
       },
       {
         "policies": { "DefaultMediaStreamSetting": 3 },
-        "prefs": { "profile.managed_default_content_settings.media_stream": { "value": 3 } },
-        "indicator_tests": [
-          {
-            "pref": "profile.managed_default_content_settings.media_stream",
-            "selector": "[content-setting=media-stream-mic],[content-setting=media-stream-camera]",
-            "value": "ask"
-          }
-        ]
+        "prefs": { "profile.managed_default_content_settings.media_stream": { "value": 3 } }
       }
     ]
   },
@@ -2189,36 +2133,15 @@
     "policy_pref_mapping_tests": [
       {
         "policies": { "AudioCaptureAllowed": false },
-        "prefs": { "profile.managed_default_content_settings.media_stream": { "value": 0, "expect_default": true } },
-        "indicator_tests": [
-          {
-            "pref": "profile.managed_default_content_settings.media_stream",
-            "selector": "[content-setting=media-stream-mic]",
-            "value": "block"
-          }
-        ]
+        "prefs": { "profile.managed_default_content_settings.media_stream": { "value": 0, "expect_default": true } }
       },
       {
         "policies": { "DefaultMediaStreamSetting": 2, "AudioCaptureAllowed": true },
-        "prefs": { "profile.managed_default_content_settings.media_stream": { "value": 2 } },
-        "indicator_tests": [
-          {
-            "pref": "profile.managed_default_content_settings.media_stream",
-            "selector": "[content-setting=media-stream-mic]",
-            "value": "block"
-          }
-        ]
+        "prefs": { "profile.managed_default_content_settings.media_stream": { "value": 2 } }
       },
       {
         "policies": { "DefaultMediaStreamSetting": 3, "AudioCaptureAllowed": true },
-        "prefs": { "profile.managed_default_content_settings.media_stream": { "value": 3 } },
-        "indicator_tests": [
-          {
-            "pref": "profile.managed_default_content_settings.media_stream",
-            "selector": "[content-setting=media-stream-mic]",
-            "value": "ask"
-          }
-        ]
+        "prefs": { "profile.managed_default_content_settings.media_stream": { "value": 3 } }
       }
     ]
   },
@@ -2228,36 +2151,15 @@
     "policy_pref_mapping_tests": [
       {
         "policies": { "VideoCaptureAllowed": false },
-        "prefs": { "profile.managed_default_content_settings.media_stream": { "value": 0, "expect_default": true }},
-        "indicator_tests": [
-          {
-            "pref": "profile.managed_default_content_settings.media_stream",
-            "selector": "[content-setting=media-stream-mic]",
-            "value": "block"
-          }
-        ]
+        "prefs": { "profile.managed_default_content_settings.media_stream": { "value": 0, "expect_default": true }}
       },
       {
         "policies": { "DefaultMediaStreamSetting": 2, "VideoCaptureAllowed": true },
-        "prefs": { "profile.managed_default_content_settings.media_stream": { "value": 2 } },
-        "indicator_tests": [
-          {
-            "pref": "profile.managed_default_content_settings.media_stream",
-            "selector": "[content-setting=media-stream-mic]",
-            "value": "block"
-          }
-        ]
+        "prefs": { "profile.managed_default_content_settings.media_stream": { "value": 2 } }
       },
       {
         "policies": { "DefaultMediaStreamSetting": 3, "VideoCaptureAllowed": true },
-        "prefs": { "profile.managed_default_content_settings.media_stream": { "value": 3 } },
-        "indicator_tests": [
-          {
-            "pref": "profile.managed_default_content_settings.media_stream",
-            "selector": "[content-setting=media-stream-mic]",
-            "value": "ask"
-          }
-        ]
+        "prefs": { "profile.managed_default_content_settings.media_stream": { "value": 3 } }
       }
 
     ]
@@ -2269,13 +2171,11 @@
     "policy_pref_mapping_tests": [
       {
         "policies": { "DefaultSensorsSetting": 1 },
-        "prefs": { "profile.managed_default_content_settings.sensors": { "value": 1 } },
-        "indicator_tests": [{ "pref": "profile.managed_default_content_settings.sensors", "selector": "[content-setting=sensors]", "value": "allow" }]
+        "prefs": { "profile.managed_default_content_settings.sensors": { "value": 1 } }
       },
       {
         "policies": { "DefaultSensorsSetting": 2 },
-        "prefs": { "profile.managed_default_content_settings.sensors": { "value": 2 } },
-        "indicator_tests": [{ "pref": "profile.managed_default_content_settings.sensors", "selector": "[content-setting=sensors]", "value": "block" }]
+        "prefs": { "profile.managed_default_content_settings.sensors": { "value": 2 } }
       }
     ]
   },
@@ -2285,14 +2185,7 @@
     "policy_pref_mapping_tests": [
       {
         "policies": { "AudioCaptureAllowed": false },
-        "prefs": { "hardware.audio_capture_enabled": { "value": false } },
-        "indicator_tests": [
-          {
-            "pref": "hardware.audio_capture_enabled",
-            "selector": "[content-setting=media-stream-mic][value=block]",
-            "value": "block"
-          }
-        ]
+        "prefs": { "hardware.audio_capture_enabled": { "value": false } }
       }
     ]
   },
@@ -2302,8 +2195,7 @@
     "policy_pref_mapping_tests": [
       {
         "policies": { "AudioCaptureAllowedUrls": ["[*.]google.com"] },
-        "prefs": { "hardware.audio_capture_allowed_urls": {}},
-        "indicator_tests": [{ "pref": "hardware.audio_capture_allowed_urls", "selector": "[content-exception=media-stream-mic]" }]
+        "prefs": { "hardware.audio_capture_allowed_urls": {}}
       }
     ]
   },
@@ -2313,14 +2205,7 @@
     "policy_pref_mapping_tests": [
       {
         "policies": { "VideoCaptureAllowed": false },
-        "prefs": { "hardware.video_capture_enabled": { "value": false }},
-        "indicator_tests": [
-          {
-            "pref": "hardware.video_capture_enabled",
-            "selector": "[content-setting=media-stream-camera][value=block]",
-            "value": "block"
-          }
-        ]
+        "prefs": { "hardware.video_capture_enabled": { "value": false }}
       }
     ]
   },
@@ -2330,8 +2215,7 @@
     "policy_pref_mapping_tests": [
       {
         "policies": { "VideoCaptureAllowedUrls": ["[*.]google.com"] },
-        "prefs": { "hardware.video_capture_allowed_urls": {}},
-        "indicator_tests": [{ "pref": "hardware.video_capture_allowed_urls", "selector": "[content-exception=media-stream-camera]" }]
+        "prefs": { "hardware.video_capture_allowed_urls": {}}
       }
     ]
   },
@@ -2372,13 +2256,11 @@
     "policy_pref_mapping_tests": [
       {
         "policies": { "DefaultSerialGuardSetting": 2 },
-        "prefs": { "profile.managed_default_content_settings.serial_guard": { "value": 2 } },
-        "indicator_tests": [{ "pref": "profile.managed_default_content_settings_serial_ports", "selector": "[content-setting=serial-ports]", "value": "block" }]
+        "prefs": { "profile.managed_default_content_settings.serial_guard": { "value": 2 } }
       },
       {
         "policies": { "DefaultSerialGuardSetting": 3 },
-        "prefs": { "profile.managed_default_content_settings.serial_guard": { "value": 3 } },
-        "indicator_tests": [{ "pref": "profile.managed_default_content_settings.serial_ports", "selector": "[content-setting=serial-ports]", "value": "ask" }]
+        "prefs": { "profile.managed_default_content_settings.serial_guard": { "value": 3 } }
       }
     ]
   },
@@ -2404,14 +2286,7 @@
     "policy_pref_mapping_tests": [
       {
         "policies": { "CookiesAllowedForUrls": ["[*.]google.com"] },
-        "prefs": { "profile.managed_cookies_allowed_for_urls": {} },
-        "indicator_tests": [
-          {
-            "pref": "profile.managed_cookies_allowed_for_urls",
-            "test_setup_js": "document.querySelector('button.exceptions-list-button[contentType=cookies]').click();",
-            "selector": "[content-exception=cookies]"
-          }
-        ]
+        "prefs": { "profile.managed_cookies_allowed_for_urls": {} }
       }
     ]
   },
@@ -2422,14 +2297,7 @@
     "policy_pref_mapping_tests": [
       {
         "policies": { "CookiesBlockedForUrls": [ "[*.]google.com" ] },
-        "prefs": { "profile.managed_cookies_blocked_for_urls": {} },
-        "indicator_tests": [
-          {
-            "pref": "profile.managed_cookies_blocked_for_urls",
-            "test_setup_js": "document.querySelector('button.exceptions-list-button[contentType=cookies]').click();",
-            "selector": "[content-exception=cookies]"
-          }
-        ]
+        "prefs": { "profile.managed_cookies_blocked_for_urls": {} }
       }
     ]
   },
@@ -2440,14 +2308,7 @@
     "policy_pref_mapping_tests": [
       {
         "policies": { "CookiesSessionOnlyForUrls": ["[*.]google.com"] },
-        "prefs": { "profile.managed_cookies_sessiononly_for_urls": {} },
-        "indicator_tests": [
-          {
-            "pref": "profile.managed_cookies_sessiononly_for_urls",
-            "test_setup_js": "document.querySelector('button.exceptions-list-button[contentType=cookies]').click();",
-            "selector": "[content-exception=cookies]"
-          }
-        ]
+        "prefs": { "profile.managed_cookies_sessiononly_for_urls": {} }
       }
     ]
   },
@@ -2458,14 +2319,7 @@
     "policy_pref_mapping_tests": [
       {
         "policies": { "ImagesAllowedForUrls": ["[*.]google.com"] },
-        "prefs": { "profile.managed_images_allowed_for_urls": {} },
-        "indicator_tests": [
-          {
-            "pref": "profile.managed_images_allowed_for_urls",
-            "test_setup_js": "document.querySelector('button.exceptions-list-button[contentType=images]').click();",
-            "selector": "[content-exception=images]"
-          }
-        ]
+        "prefs": { "profile.managed_images_allowed_for_urls": {} }
       }
     ]
   },
@@ -2476,14 +2330,7 @@
     "policy_pref_mapping_tests": [
       {
         "policies": { "ImagesBlockedForUrls": ["[*.]google.com"]},
-        "prefs": { "profile.managed_images_blocked_for_urls": {} },
-        "indicator_tests": [
-          {
-            "pref": "profile.managed_images_blocked_for_urls",
-            "test_setup_js": "document.querySelector('button.exceptions-list-button[contentType=images]').click();",
-            "selector": "[content-exception=images]"
-          }
-        ]
+        "prefs": { "profile.managed_images_blocked_for_urls": {} }
       }
     ]
   },
@@ -2496,14 +2343,7 @@
         "policies": {
           "InsecureContentAllowedForUrls": ["[*.]google.com"]
         },
-        "prefs": { "profile.managed_insecure_content_allowed_for_urls": {} },
-        "indicator_tests": [
-          {
-            "pref": "profile.managed_insecure_content_allowed_for_urls",
-            "test_setup_js": "document.querySelector('button.exceptions-list-button[contentType=mixed-script]').click();",
-            "selector": "[content-exception=mixed-script]"
-          }
-        ]
+        "prefs": { "profile.managed_insecure_content_allowed_for_urls": {} }
       }
     ]
   },
@@ -2516,14 +2356,7 @@
         "policies": {
           "InsecureContentBlockedForUrls": ["[*.]google.com"]
         },
-        "prefs": { "profile.managed_insecure_content_blocked_for_urls": {} },
-        "indicator_tests": [
-          {
-            "pref": "profile.managed_insecure_content_blocked_for_urls",
-            "test_setup_js": "document.querySelector('button.exceptions-list-button[contentType=mixed-script]').click();",
-            "selector": "[content-exception=mixed-script]"
-          }
-        ]
+        "prefs": { "profile.managed_insecure_content_blocked_for_urls": {} }
       }
     ]
   },
@@ -2536,14 +2369,7 @@
         "policies": {
           "JavaScriptAllowedForUrls": ["[*.]google.com"]
         },
-        "prefs": { "profile.managed_javascript_allowed_for_urls": {} },
-        "indicator_tests": [
-          {
-            "pref": "profile.managed_javascript_allowed_for_urls",
-            "test_setup_js": "document.querySelector('button.exceptions-list-button[contentType=javascript]').click();",
-            "selector": "[content-exception=javascript]"
-          }
-        ]
+        "prefs": { "profile.managed_javascript_allowed_for_urls": {} }
       }
     ]
   },
@@ -2554,14 +2380,7 @@
     "policy_pref_mapping_tests": [
       {
         "policies": { "JavaScriptBlockedForUrls": ["[*.]google.com"]},
-        "prefs": { "profile.managed_javascript_blocked_for_urls": {} },
-        "indicator_tests": [
-          {
-            "pref": "profile.managed_javascript_blocked_for_urls",
-            "test_setup_js": "document.querySelector('button.exceptions-list-button[contentType=javascript]').click();",
-            "selector": "[content-exception=javascript]"
-          }
-        ]
+        "prefs": { "profile.managed_javascript_blocked_for_urls": {} }
       }
     ]
   },
@@ -2588,14 +2407,7 @@
     "policy_pref_mapping_tests": [
       {
         "policies": { "PopupsAllowedForUrls": ["[*.]google.com"]},
-        "prefs": { "profile.managed_popups_allowed_for_urls": {} },
-        "indicator_tests": [
-          {
-            "pref": "profile.managed_popups_allowed_for_urls",
-            "test_setup_js": "document.querySelector('button.exceptions-list-button[contentType=popups]').click();",
-            "selector": "[content-exception=popups]"
-          }
-        ]
+        "prefs": { "profile.managed_popups_allowed_for_urls": {} }
       }
     ]
   },
@@ -2606,14 +2418,7 @@
     "policy_pref_mapping_tests": [
       {
         "policies": { "PopupsBlockedForUrls": ["[*.]google.com"]},
-        "prefs": { "profile.managed_popups_blocked_for_urls": {} },
-        "indicator_tests": [
-          {
-            "pref": "profile.managed_popups_blocked_for_urls",
-            "test_setup_js": "document.querySelector('button.exceptions-list-button[contentType=popups]').click();",
-            "selector": "[content-exception=popups]"
-          }
-        ]
+        "prefs": { "profile.managed_popups_blocked_for_urls": {} }
       }
     ]
   },
@@ -2624,14 +2429,7 @@
     "policy_pref_mapping_tests": [
       {
         "policies": { "NotificationsAllowedForUrls": ["[*.]google.com"]},
-        "prefs": { "profile.managed_notifications_allowed_for_urls": {} },
-        "indicator_tests": [
-          {
-            "pref": "profile.managed_notifications_allowed_for_urls",
-            "test_setup_js": "document.querySelector('button.exceptions-list-button[contentType=notifications]').click();",
-            "selector": "[content-exception=notifications]"
-          }
-        ]
+        "prefs": { "profile.managed_notifications_allowed_for_urls": {} }
       }
     ]
   },
@@ -2642,14 +2440,7 @@
     "policy_pref_mapping_tests": [
       {
         "policies": { "NotificationsBlockedForUrls": ["[*.]google.com"]},
-        "prefs": { "profile.managed_notifications_blocked_for_urls": {} },
-        "indicator_tests": [
-          {
-            "pref": "profile.managed_notifications_blocked_for_urls",
-            "test_setup_js": "document.querySelector('button.exceptions-list-button[contentType=notifications]').click();",
-            "selector": "[content-exception=notifications]"
-          }
-        ]
+        "prefs": { "profile.managed_notifications_blocked_for_urls": {} }
       }
     ]
   },
@@ -2660,14 +2451,7 @@
     "policy_pref_mapping_tests": [
       {
         "policies": { "SensorsAllowedForUrls": ["[*.]google.com"]},
-        "prefs": { "profile.managed_sensors_allowed_for_urls": {} },
-        "indicator_tests": [
-          {
-            "pref": "profile.sensors_allowed_for_urls",
-            "test_setup_js": "document.querySelector('button.exceptions-list-button[contentType=sensors]').click();",
-            "selector": "[content-exception=sensors]"
-          }
-        ]
+        "prefs": { "profile.managed_sensors_allowed_for_urls": {} }
       }
     ]
   },
@@ -2678,14 +2462,7 @@
     "policy_pref_mapping_tests": [
       {
         "policies": { "SensorsBlockedForUrls": ["[*.]google.com"]},
-        "prefs": { "profile.managed_sensors_blocked_for_urls": {} },
-        "indicator_tests": [
-          {
-            "pref": "profile.sensors_blocked_for_urls",
-            "test_setup_js": "document.querySelector('button.exceptions-list-button[contentType=sensors]').click();",
-            "selector": "[content-exception=sensors]"
-          }
-        ]
+        "prefs": { "profile.managed_sensors_blocked_for_urls": {} }
       }
     ]
   },
@@ -4074,10 +3851,7 @@
     "os": ["chromeos"],
     "pref_mappings": [
       {
-        "pref": "settings.a11y.floating_menu",
-        "indicator_tests": [
-          { "policy": {"FloatingAccessibilityMenuEnabled": true}}
-        ]
+        "pref": "settings.a11y.floating_menu"
       }
     ]
   },
@@ -4527,10 +4301,7 @@
     "policy_pref_mapping_tests": [
       {
         "policies": { "PrimaryMouseButtonSwitch": true },
-        "prefs": { "settings.mouse.primary_right": {} },
-        "indicator_tests": [
-          { "pref": "settings" }
-        ]
+        "prefs": { "settings.mouse.primary_right": {} }
       }
     ]
   },
@@ -5683,14 +5454,7 @@
         "prefs": { "cros.metrics.reportingEnabled": {
             "location": "cros_setting"
           }
-        },
-        "indicator_tests": [
-          {
-            "pref": "cros.metrics.reportingEnabled",
-            "test_setup_js": "var controllingPref = 'spellcheck.use_spelling_service'; var testedPref = 'cros.metrics.reportingEnabled'; Preferences.prefsChangedCallback([testedPref, Preferences.getInstance().registeredPreferences_[controllingPref].orig]); Preferences.getInstance().addEventListener(controllingPref, function(event) {Preferences.prefsChangedCallback([testedPref, {value: event.value.value, controlledBy: event.value.controlledBy, disabled: event.value.disabled}]);});"
-          }
-        ],
-        "note": "TODO(bartfab): The |test_setup_js| above is a hack that makes |cros.metrics.reportingEnabled| track the status of the entirely unrelated |spellcheck.use_spelling_service| pref. This is because cros settings cannot currently be made policy-controlled in browser tests. Remove this hack once that restriction is lifted."
+        }
       }
     ]
   },
@@ -6395,25 +6159,11 @@
     "policy_pref_mapping_tests": [
       {
         "policies": { "AdsSettingForIntrusiveAdsSites": 1 },
-        "prefs": { "profile.managed_default_content_settings.ads": { "value": 1 }},
-        "indicator_tests": [
-          {
-            "pref": "profile.managed_default_content_settings.ads",
-            "selector": "[content-setting=ads]",
-            "value": "allow"
-          }
-        ]
+        "prefs": { "profile.managed_default_content_settings.ads": { "value": 1 }}
       },
       {
         "policies": { "AdsSettingForIntrusiveAdsSites": 2 },
-        "prefs": { "profile.managed_default_content_settings.ads":{ "value": 2 }},
-        "indicator_tests": [
-          {
-            "pref": "profile.managed_default_content_settings.ads",
-            "selector": "[content-setting=ads]",
-            "value": "block"
-          }
-        ]
+        "prefs": { "profile.managed_default_content_settings.ads":{ "value": 2 }}
       }
     ]
   },

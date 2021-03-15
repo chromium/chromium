@@ -103,50 +103,6 @@ void CheckPrefHasMandatoryValue(const PrefService::Preference* pref,
     CheckPrefHasValue(pref, expected_value);
 }
 
-// Contains the details of a single test case verifying that the controlled
-// setting indicators for a pref affected by a policy work correctly. This
-// is part of the data loaded from
-// chrome/test/data/policy/policy_test_cases.json.
-class PrefIndicatorTest {
- public:
-  explicit PrefIndicatorTest(const base::Value& indicator_test) {
-    base::Optional<bool> readonly = indicator_test.FindBoolKey("readonly");
-    const std::string* value = indicator_test.FindStringKey("value");
-    const std::string* selector = indicator_test.FindStringKey("selector");
-    const std::string* test_url = indicator_test.FindStringKey("test_url");
-    const std::string* pref = indicator_test.FindStringKey("pref");
-    const std::string* test_setup_js =
-        indicator_test.FindStringKey("test_setup_js");
-
-    readonly_ = readonly.value_or(false);
-    value_ = value ? *value : std::string();
-    test_url_ = test_url ? *test_url : std::string();
-    test_setup_js_ = test_setup_js ? *test_setup_js : std::string();
-    selector_ = selector ? *selector : std::string();
-    pref_ = pref ? *pref : std::string();
-  }
-
-  ~PrefIndicatorTest() = default;
-
-  const std::string& value() const { return value_; }
-  const std::string& test_url() const { return test_url_; }
-  const std::string& test_setup_js() const { return test_setup_js_; }
-  const std::string& selector() const { return selector_; }
-  const std::string& pref() const { return pref_; }
-
-  bool readonly() const { return readonly_; }
-
- private:
-  bool readonly_;
-  std::string value_;
-  std::string test_url_;
-  std::string test_setup_js_;
-  std::string selector_;
-  std::string pref_;
-
-  DISALLOW_COPY_AND_ASSIGN(PrefIndicatorTest);
-};
-
 // Contains the testing details for a single pref affected by one or multiple
 // policies. This is part of the data loaded from
 // chrome/test/data/policy/policy_test_cases.json.
@@ -154,7 +110,6 @@ class PrefTestCase {
  public:
   explicit PrefTestCase(const std::string& name, const base::Value& settings) {
     const base::Value* value = settings.FindKey("value");
-    const base::Value* indicator_test = settings.FindDictKey("indicator_test");
     location_ = GetPrefLocation(settings);
     check_for_mandatory_ =
         settings.FindBoolKey("check_for_mandatory").value_or(true);
@@ -165,10 +120,6 @@ class PrefTestCase {
     pref_ = name;
     if (value)
       value_ = value->CreateDeepCopy();
-    if (indicator_test) {
-      pref_indicator_test_ =
-          std::make_unique<PrefIndicatorTest>(*indicator_test);
-    }
   }
 
   ~PrefTestCase() = default;
@@ -186,10 +137,6 @@ class PrefTestCase {
 
   bool expect_default() const { return expect_default_; }
 
-  const PrefIndicatorTest* indicator_test_case() const {
-    return pref_indicator_test_.get();
-  }
-
  private:
   std::string pref_;
   std::unique_ptr<base::Value> value_;
@@ -197,7 +144,6 @@ class PrefTestCase {
   bool check_for_mandatory_;
   bool check_for_recommended_;
   bool expect_default_;
-  std::unique_ptr<PrefIndicatorTest> pref_indicator_test_;
 };
 
 // Contains the testing details for a single pref affected by a policy. This is
