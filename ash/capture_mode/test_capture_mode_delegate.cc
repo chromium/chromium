@@ -26,6 +26,9 @@ class FakeRecordingService : public recording::mojom::RecordingService {
   }
   gfx::Size frame_sink_size() const { return frame_sink_size_; }
   const gfx::Size& video_size() const { return video_size_; }
+  void set_thumbnail(const gfx::ImageSkia& thumbnail) {
+    thumbnail_ = thumbnail;
+  }
 
   void Bind(
       mojo::PendingReceiver<recording::mojom::RecordingService> receiver) {
@@ -76,7 +79,7 @@ class FakeRecordingService : public recording::mojom::RecordingService {
     video_size_ = crop_region.size();
   }
   void StopRecording() override {
-    remote_client_->OnRecordingEnded(/*success=*/true);
+    remote_client_->OnRecordingEnded(/*success=*/true, thumbnail_);
     remote_client_.FlushForTesting();
   }
   void OnRecordedWindowChangingRoot(
@@ -102,6 +105,7 @@ class FakeRecordingService : public recording::mojom::RecordingService {
   CaptureModeSource current_capture_source_ = CaptureModeSource::kFullscreen;
   gfx::Size frame_sink_size_;
   gfx::Size video_size_;
+  gfx::ImageSkia thumbnail_;
 };
 
 // -----------------------------------------------------------------------------
@@ -127,6 +131,12 @@ gfx::Size TestCaptureModeDelegate::GetCurrentFrameSinkSize() const {
 
 gfx::Size TestCaptureModeDelegate::GetCurrentVideoSize() const {
   return fake_service_ ? fake_service_->video_size() : gfx::Size();
+}
+
+void TestCaptureModeDelegate::SetVideoThumbnail(
+    const gfx::ImageSkia& thumbnail) {
+  if (fake_service_)
+    fake_service_->set_thumbnail(thumbnail);
 }
 
 base::FilePath TestCaptureModeDelegate::GetScreenCaptureDir() const {

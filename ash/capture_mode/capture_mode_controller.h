@@ -116,7 +116,7 @@ class ASH_EXPORT CaptureModeController
 
   // recording::mojom::RecordingServiceClient:
   void OnMuxerOutput(const std::string& chunk) override;
-  void OnRecordingEnded(bool success) override;
+  void OnRecordingEnded(bool success, const gfx::ImageSkia& thumbnail) override;
 
   // SessionObserver:
   void OnActiveUserSessionChanged(const AccountId& account_id) override;
@@ -237,8 +237,10 @@ class ASH_EXPORT CaptureModeController
   void OnVideoFileStatus(bool success);
 
   // Called back when the |video_file_handler_| flushes the remaining cached
-  // video chunks in its buffer. Called on the UI thread.
-  void OnVideoFileSaved(bool success);
+  // video chunks in its buffer. Called on the UI thread. |video_thumbnail| is
+  // an RGB image provided by the recording service that can be used as a
+  // thumbnail of the video in the notification.
+  void OnVideoFileSaved(const gfx::ImageSkia& video_thumbnail, bool success);
 
   // Shows a preview notification of the newly taken screenshot or screen
   // recording.
