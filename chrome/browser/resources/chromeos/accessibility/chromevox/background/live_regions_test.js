@@ -11,6 +11,17 @@ GEN_INCLUDE([
  * Test fixture for Live Regions.
  */
 ChromeVoxLiveRegionsTest = class extends ChromeVoxNextE2ETest {
+  setUp() {
+    window.TreeChangeType = chrome.automation.TreeChangeType;
+    const runTest = this.deferRunTest(WhenTestDone.EXPECT);
+    (async function() {
+      const module = await import('/chromevox/background/live_regions.js');
+      window.LiveRegions = module.LiveRegions;
+
+      runTest();
+    })();
+  }
+
   /**
    * Simulates work done when users interact using keyboard, braille, or
    * touch.

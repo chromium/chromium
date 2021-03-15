@@ -54,7 +54,6 @@ chromevox_modules = [
   "background/injected_script_loader.js",
   "background/keyboard_handler.js",
   "background/keymaps/key_map.js",
-  "background/live_regions.js",
   "background/locale_output_helper.js",
   "background/logging/event_stream_logger.js",
   "background/logging/log.js",
@@ -117,6 +116,7 @@ chromevox_modules = [
 # ES6 modules.
 chromevox_es6_modules = [
   "background/background.js",
+  "background/live_regions.js",
   "background/es6_loader.js",
   "background/find_handler.js",
   "background/media_automation_handler.js",

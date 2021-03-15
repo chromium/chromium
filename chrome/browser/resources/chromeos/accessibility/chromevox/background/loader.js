@@ -22,7 +22,6 @@ goog.require('ExtensionBridge');
 goog.require('FocusAutomationHandler');
 goog.require('GestureCommandHandler');
 goog.require('InstanceChecker');
-goog.require('LiveRegions');
 goog.require('LocaleOutputHelper');
 goog.require('MathHandler');
 goog.require('NavBraille');

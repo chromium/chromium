@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 import {FindHandler} from './find_handler.js';
+import {LiveRegions} from './live_regions.js';
 import {MediaAutomationHandler} from './media_automation_handler.js';
 import {NextEarcons} from './next_earcons.js';
 import {RangeAutomationHandler} from './range_automation_handler.js';

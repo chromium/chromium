@@ -6,11 +6,6 @@
  * @fileoverview Implements support for live regions in ChromeVox Next.
  */
 
-goog.provide('LiveRegions');
-
-goog.require('ChromeVoxState');
-
-goog.scope(function() {
 const AutomationNode = chrome.automation.AutomationNode;
 const RoleType = chrome.automation.RoleType;
 const StateType = chrome.automation.StateType;
@@ -21,7 +16,7 @@ const TreeChangeType = chrome.automation.TreeChangeType;
 /**
  * ChromeVox2 live region handler.
  */
-LiveRegions = class {
+export class LiveRegions {
   /**
    * @param {!ChromeVoxState} chromeVoxState The ChromeVox state object,
    *     keeping track of the current mode and current range.
@@ -245,7 +240,7 @@ LiveRegions = class {
 
     return true;
   }
-};
+}
 
 /**
  * Live region events received in fewer than this many milliseconds will
@@ -269,4 +264,3 @@ LiveRegions.LIVE_REGION_MIN_SAME_NODE_MS = 20;
  * @private
  */
 LiveRegions.announceLiveRegionsFromBackgroundTabs_ = false;
-});  // goog.scope
