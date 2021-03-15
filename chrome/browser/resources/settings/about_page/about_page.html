@@ -50,9 +50,6 @@
         <h1 class="product-title">$i18n{aboutProductTitle}</h1>
       </div>
       <div class="cr-row two-line">
-        <!-- TODO(dpapad): Investigate why vulcanize does not handle well
-          a new line after "getThrobberSrcIfUpdating_(", causes incorrect
-          src URL -->
         <!-- Set the icon from the iconset (when it's obsolete/EOL and
           when update is done) or set the src (when it's updating). -->
 <if expr="not chromeos">
@@ -61,7 +58,8 @@
           <iron-icon
               icon$="[[getUpdateStatusIcon_(
                   obsoleteSystemInfo_, currentUpdateStatusEvent_)]]"
-              src="[[getThrobberSrcIfUpdating_(obsoleteSystemInfo_, currentUpdateStatusEvent_)]]">
+              src="[[getThrobberSrcIfUpdating_(
+                  obsoleteSystemInfo_, currentUpdateStatusEvent_)]]">
           </iron-icon>
         </div>
 </if>

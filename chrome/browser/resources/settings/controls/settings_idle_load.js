@@ -2,8 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// TODO(dpapad): Complete Polymer 3 migration of this file.
-
 /**
  * @fileoverview
  * settings-idle-load is a simple variant of dom-if designed for lazy
