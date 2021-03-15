@@ -6,6 +6,7 @@
 #include "base/task/thread_pool/thread_pool_instance.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
+#include "build/build_config.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
 #include "chrome/browser/optimization_guide/page_content_annotations_service_factory.h"
@@ -126,8 +127,14 @@ class PageContentAnnotationsServiceBrowserTest : public InProcessBrowserTest {
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
+// TODO(crbug.com/1187987): Test is flaky on Win7.
+#if defined(OS_WIN)
+#define MAYBE_ModelExecutes DISABLED_ModelExecutes
+#else
+#define MAYBE_ModelExecutes ModelExecutes
+#endif
 IN_PROC_BROWSER_TEST_F(PageContentAnnotationsServiceBrowserTest,
-                       ModelExecutes) {
+                       MAYBE_ModelExecutes) {
   base::HistogramTester histogram_tester;
 
   GURL url(embedded_test_server()->GetURL("a.com", "/hello.html"));
