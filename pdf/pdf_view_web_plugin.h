@@ -78,7 +78,6 @@ class PdfViewWebPlugin final : public PdfViewPluginBase,
   void DocumentLoadFailed() override;
   pp::Instance* GetPluginInstance() override;
   void DocumentHasUnsupportedFeature(const std::string& feature) override;
-  void FormTextFieldFocusChange(bool in_focus) override;
   bool IsPrintPreview() override;
   void SelectionChanged(const gfx::Rect& left, const gfx::Rect& right) override;
   void EnteredEditMode() override;
@@ -114,6 +113,7 @@ class PdfViewWebPlugin final : public PdfViewPluginBase,
                       int32_t result) override;
   void SendMessage(base::Value message) override;
   void InitImageData(const gfx::Size& size) override;
+  void SetFormFieldInFocus(bool in_focus) override;
   void SetAccessibilityDocInfo(const AccessibilityDocInfo& doc_info) override;
   void SetAccessibilityPageInfo(AccessibilityPageInfo page_info,
                                 std::vector<AccessibilityTextRunInfo> text_runs,

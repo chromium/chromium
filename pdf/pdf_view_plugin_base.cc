@@ -261,6 +261,15 @@ void PdfViewPluginBase::DocumentLoadProgress(uint32_t available,
   SendLoadingProgress(progress);
 }
 
+void PdfViewPluginBase::FormTextFieldFocusChange(bool in_focus) {
+  base::Value message(base::Value::Type::DICTIONARY);
+  message.SetStringKey("type", "formFocusChange");
+  message.SetBoolKey("focused", in_focus);
+  SendMessage(std::move(message));
+
+  SetFormFieldInFocus(in_focus);
+}
+
 SkColor PdfViewPluginBase::GetBackgroundColor() {
   return background_color_;
 }

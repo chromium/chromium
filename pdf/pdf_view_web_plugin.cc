@@ -253,8 +253,6 @@ pp::Instance* PdfViewWebPlugin::GetPluginInstance() {
 void PdfViewWebPlugin::DocumentHasUnsupportedFeature(
     const std::string& feature) {}
 
-void PdfViewWebPlugin::FormTextFieldFocusChange(bool in_focus) {}
-
 bool PdfViewWebPlugin::IsPrintPreview() {
   return false;
 }
@@ -365,6 +363,10 @@ void PdfViewWebPlugin::SendMessage(base::Value message) {
 
 void PdfViewWebPlugin::InitImageData(const gfx::Size& size) {
   mutable_image_data() = CreateN32PremulSkBitmap(gfx::SizeToSkISize(size));
+}
+
+void PdfViewWebPlugin::SetFormFieldInFocus(bool in_focus) {
+  NOTIMPLEMENTED();
 }
 
 // TODO(https://crbug.com/1144444): Add a Pepper-free implementation to set

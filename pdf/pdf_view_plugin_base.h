@@ -73,6 +73,7 @@ class PdfViewPluginBase : public PDFEngine::Client,
              const std::string& subject,
              const std::string& body) override;
   void DocumentLoadProgress(uint32_t available, uint32_t doc_size) override;
+  void FormTextFieldFocusChange(bool in_focus) override;
   SkColor GetBackgroundColor() override;
   void SetIsSelecting(bool is_selecting) override;
   void DocumentFocusChanged(bool document_has_focus) override;
@@ -205,6 +206,9 @@ class PdfViewPluginBase : public PDFEngine::Client,
   int GetDocumentPixelWidth() const;
   int GetDocumentPixelHeight() const;
 
+  // Sets the text input type for this plugin based on `in_focus`.
+  virtual void SetFormFieldInFocus(bool in_focus) = 0;
+
   // Starts loading accessibility information.
   void LoadAccessibility();
 
@@ -212,7 +216,7 @@ class PdfViewPluginBase : public PDFEngine::Client,
   virtual void SetAccessibilityDocInfo(
       const AccessibilityDocInfo& doc_info) = 0;
 
-  // Sets the accessibility information about the given |page_index| in the
+  // Sets the accessibility information about the given `page_index` in the
   // renderer.
   void PrepareAndSetAccessibilityPageInfo(int32_t page_index);
 

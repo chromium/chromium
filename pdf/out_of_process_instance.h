@@ -118,7 +118,6 @@ class OutOfProcessInstance : public PdfViewPluginBase,
   void DocumentLoadFailed() override;
   pp::Instance* GetPluginInstance() override;
   void DocumentHasUnsupportedFeature(const std::string& feature) override;
-  void FormTextFieldFocusChange(bool in_focus) override;
   bool IsPrintPreview() override;
   void SelectionChanged(const gfx::Rect& left, const gfx::Rect& right) override;
   void EnteredEditMode() override;
@@ -151,6 +150,7 @@ class OutOfProcessInstance : public PdfViewPluginBase,
   void SendMessage(base::Value message) override;
   void InitImageData(const gfx::Size& size) override;
   Image GetPluginImageData() const override;
+  void SetFormFieldInFocus(bool in_focus) override;
   void SetAccessibilityDocInfo(const AccessibilityDocInfo& doc_info) override;
   void SetAccessibilityPageInfo(AccessibilityPageInfo page_info,
                                 std::vector<AccessibilityTextRunInfo> text_runs,
@@ -240,9 +240,6 @@ class OutOfProcessInstance : public PdfViewPluginBase,
   // Helper for HandleInputEvent(). Returns whether engine() handled the event
   // or not.
   bool SendInputEventToEngine(const pp::InputEvent& event);
-
-  // Sets the text input type for this plugin based on |form_field_in_focus|.
-  void SetFormFieldInFocus(bool form_field_in_focus);
 
   // The Pepper image data that is in sync with image_data().
   pp::ImageData pepper_image_data_;

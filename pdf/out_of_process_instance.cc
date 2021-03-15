@@ -108,10 +108,6 @@ constexpr char kJSPreviewPageIndex[] = "index";
 // Editing forms in document (Plugin -> Page)
 constexpr char kJSSetIsEditingType[] = "setIsEditing";
 
-// Notify when a form field is focused (Plugin -> Page)
-constexpr char kJSFieldFocusType[] = "formFocusChange";
-constexpr char kJSFieldFocus[] = "focused";
-
 // Request the thumbnail image for a particular page (Page -> Plugin)
 constexpr char kJSGetThumbnailType[] = "getThumbnail";
 constexpr char kJSGetThumbnailPage[] = "page";
@@ -902,6 +898,14 @@ void OutOfProcessInstance::InitImageData(const gfx::Size& size) {
       std::make_unique<pp::ImageData>(pepper_image_data_));
 }
 
+void OutOfProcessInstance::SetFormFieldInFocus(bool in_focus) {
+  if (!text_input_)
+    return;
+
+  text_input_->SetTextInputType(in_focus ? PP_TEXTINPUT_TYPE_DEV_TEXT
+                                         : PP_TEXTINPUT_TYPE_DEV_NONE);
+}
+
 void OutOfProcessInstance::DidScroll(const gfx::Vector2d& offset) {
   if (!image_data().drawsNothing())
     paint_manager().ScrollRect(available_area(), offset);
@@ -1334,15 +1338,6 @@ void OutOfProcessInstance::DocumentHasUnsupportedFeature(
   pp::PDF::HasUnsupportedFeature(this);
 }
 
-void OutOfProcessInstance::FormTextFieldFocusChange(bool in_focus) {
-  pp::VarDictionary message;
-  message.Set(pp::Var(kType), pp::Var(kJSFieldFocusType));
-  message.Set(pp::Var(kJSFieldFocus), pp::Var(in_focus));
-  PostMessage(message);
-
-  SetFormFieldInFocus(in_focus);
-}
-
 void OutOfProcessInstance::ResetRecentlySentFindUpdate(int32_t /* unused */) {
   recently_sent_find_update_ = false;
 }
@@ -1607,15 +1602,6 @@ void OutOfProcessInstance::HistogramCustomCounts(const char* name,
 
 void OutOfProcessInstance::OnPrint(int32_t /*unused_but_required*/) {
   pp::PDF::Print(this);
-}
-
-void OutOfProcessInstance::SetFormFieldInFocus(bool form_field_in_focus) {
-  if (!text_input_)
-    return;
-
-  text_input_->SetTextInputType(form_field_in_focus
-                                    ? PP_TEXTINPUT_TYPE_DEV_TEXT
-                                    : PP_TEXTINPUT_TYPE_DEV_NONE);
 }
 
 void OutOfProcessInstance::PrintSettings::Clear() {
