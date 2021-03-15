@@ -95,21 +95,6 @@ bool CanShowAppInfoDialog(Profile* profile, const std::string& extension_id) {
   return CanPlatformShowAppInfoDialog();
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-void ShowAppInfoInAppList(gfx::NativeWindow parent,
-                          const gfx::Rect& app_info_bounds,
-                          Profile* profile,
-                          const extensions::Extension* app) {
-  views::DialogDelegate* dialog = CreateAppListContainerForView(
-      std::make_unique<AppInfoDialog>(profile, app));
-
-  views::Widget* dialog_widget =
-      constrained_window::CreateBrowserModalDialogViews(dialog, parent);
-  dialog_widget->SetBounds(app_info_bounds);
-  dialog_widget->Show();
-}
-#endif
-
 void ShowAppInfoInNativeDialog(content::WebContents* web_contents,
                                Profile* profile,
                                const extensions::Extension* app,
