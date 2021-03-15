@@ -91,7 +91,7 @@ IN_PROC_BROWSER_TEST_F(AutoplayPolicyTest, AutoplayAllowedByPolicy) {
   UpdateProviderPolicy(policies);
 
   // Check that autoplay was allowed by policy.
-  GetWebContents()->OnWebPreferencesChanged();
+  NavigateToTestPage();
   EXPECT_TRUE(TryAutoplay(GetMainFrame()));
   EXPECT_TRUE(TryAutoplay(GetChildFrame()));
 }
@@ -113,7 +113,7 @@ IN_PROC_BROWSER_TEST_F(AutoplayPolicyTest, AutoplayWhitelist_Allowed) {
   UpdateProviderPolicy(policies);
 
   // Check that autoplay was allowed by policy.
-  GetWebContents()->OnWebPreferencesChanged();
+  NavigateToTestPage();
   EXPECT_TRUE(TryAutoplay(GetMainFrame()));
   EXPECT_TRUE(TryAutoplay(GetChildFrame()));
 }
@@ -135,7 +135,7 @@ IN_PROC_BROWSER_TEST_F(AutoplayPolicyTest, AutoplayWhitelist_PatternAllowed) {
   UpdateProviderPolicy(policies);
 
   // Check that autoplay was allowed by policy.
-  GetWebContents()->OnWebPreferencesChanged();
+  NavigateToTestPage();
   EXPECT_TRUE(TryAutoplay(GetMainFrame()));
   EXPECT_TRUE(TryAutoplay(GetChildFrame()));
 }
@@ -157,7 +157,7 @@ IN_PROC_BROWSER_TEST_F(AutoplayPolicyTest, AutoplayWhitelist_Missing) {
   UpdateProviderPolicy(policies);
 
   // Check that autoplay was not allowed.
-  GetWebContents()->OnWebPreferencesChanged();
+  NavigateToTestPage();
   EXPECT_FALSE(TryAutoplay(GetMainFrame()));
   EXPECT_FALSE(TryAutoplay(GetChildFrame()));
 }
@@ -175,7 +175,7 @@ IN_PROC_BROWSER_TEST_F(AutoplayPolicyTest, AutoplayDeniedByPolicy) {
   UpdateProviderPolicy(policies);
 
   // Check that autoplay was not allowed by policy.
-  GetWebContents()->OnWebPreferencesChanged();
+  NavigateToTestPage();
   EXPECT_FALSE(TryAutoplay(GetMainFrame()));
   EXPECT_FALSE(TryAutoplay(GetChildFrame()));
 
@@ -188,7 +188,7 @@ IN_PROC_BROWSER_TEST_F(AutoplayPolicyTest, AutoplayDeniedByPolicy) {
   UpdateProviderPolicy(policies);
 
   // Check that autoplay was not allowed.
-  GetWebContents()->OnWebPreferencesChanged();
+  NavigateToTestPage();
   EXPECT_FALSE(TryAutoplay(GetMainFrame()));
   EXPECT_FALSE(TryAutoplay(GetChildFrame()));
 }
@@ -206,7 +206,7 @@ IN_PROC_BROWSER_TEST_F(AutoplayPolicyTest, AutoplayDeniedAllowedWithURL) {
   UpdateProviderPolicy(policies);
 
   // Check that autoplay was not allowed by policy.
-  GetWebContents()->OnWebPreferencesChanged();
+  NavigateToTestPage();
   EXPECT_FALSE(TryAutoplay(GetMainFrame()));
   EXPECT_FALSE(TryAutoplay(GetChildFrame()));
 
@@ -219,7 +219,7 @@ IN_PROC_BROWSER_TEST_F(AutoplayPolicyTest, AutoplayDeniedAllowedWithURL) {
   UpdateProviderPolicy(policies);
 
   // Check that autoplay was allowed by policy.
-  GetWebContents()->OnWebPreferencesChanged();
+  NavigateToTestPage();
   EXPECT_TRUE(TryAutoplay(GetMainFrame()));
   EXPECT_TRUE(TryAutoplay(GetChildFrame()));
 }
@@ -239,7 +239,7 @@ IN_PROC_BROWSER_TEST_F(AutoplayPolicyTest,
   UpdateProviderPolicy(policies);
 
   // Check that autoplay was not allowed by policy.
-  GetWebContents()->OnWebPreferencesChanged();
+  NavigateToTestPage();
   EXPECT_FALSE(TryAutoplay(GetMainFrame()));
   EXPECT_FALSE(TryAutoplay(GetChildFrame()));
 
@@ -252,7 +252,7 @@ IN_PROC_BROWSER_TEST_F(AutoplayPolicyTest,
   UpdateProviderPolicy(policies);
 
   // Check that autoplay was allowed by policy.
-  GetWebContents()->OnWebPreferencesChanged();
+  NavigateToTestPage();
   EXPECT_TRUE(TryAutoplay(GetMainFrame()));
   EXPECT_TRUE(TryAutoplay(GetChildFrame()));
 }

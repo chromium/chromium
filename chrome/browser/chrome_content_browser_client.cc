@@ -874,6 +874,46 @@ bool IsAutoplayAllowedByPolicy(content::WebContents* contents,
 }
 #endif
 
+blink::mojom::AutoplayPolicy GetAutoplayPolicyForWebContents(
+    WebContents* web_contents) {
+  const base::CommandLine& command_line =
+      *base::CommandLine::ForCurrentProcess();
+
+  std::string autoplay_policy = media::GetEffectiveAutoplayPolicy(command_line);
+  auto result = blink::mojom::AutoplayPolicy::kDocumentUserActivationRequired;
+
+  if (autoplay_policy == switches::autoplay::kNoUserGestureRequiredPolicy) {
+    result = blink::mojom::AutoplayPolicy::kNoUserGestureRequired;
+  } else if (autoplay_policy ==
+             switches::autoplay::kUserGestureRequiredPolicy) {
+    result = blink::mojom::AutoplayPolicy::kUserGestureRequired;
+  } else if (autoplay_policy ==
+             switches::autoplay::kDocumentUserActivationRequiredPolicy) {
+    result = blink::mojom::AutoplayPolicy::kDocumentUserActivationRequired;
+  } else {
+    NOTREACHED();
+  }
+
+#if !defined(OS_ANDROID)
+  Profile* profile =
+      Profile::FromBrowserContext(web_contents->GetBrowserContext());
+  PrefService* prefs = profile->GetPrefs();
+
+  // Override autoplay policy used in internal switch in case of enabling
+  // features such as policy, allowlisting or disabling from settings.
+  if (IsAutoplayAllowedByPolicy(web_contents, prefs)) {
+    result = blink::mojom::AutoplayPolicy::kNoUserGestureRequired;
+  } else if (base::FeatureList::IsEnabled(media::kAutoplayDisableSettings) &&
+             result == blink::mojom::AutoplayPolicy::
+                           kDocumentUserActivationRequired) {
+    result = UnifiedAutoplayConfig::ShouldBlockAutoplay(profile)
+                 ? blink::mojom::AutoplayPolicy::kDocumentUserActivationRequired
+                 : blink::mojom::AutoplayPolicy::kNoUserGestureRequired;
+  }
+#endif  // !defined(OS_ANDROID)
+  return result;
+}
+
 #if defined(OS_ANDROID)
 int GetCrashSignalFD(const base::CommandLine& command_line) {
   return crashpad::CrashHandlerHost::Get()->GetDeathSignalSocket();
@@ -3477,25 +3517,7 @@ void ChromeContentBrowserClient::OverrideWebkitPrefs(
     }
   }
 
-#if !defined(OS_ANDROID)
-  if (IsAutoplayAllowedByPolicy(web_contents, prefs)) {
-    // If autoplay is allowed by policy then force the no user gesture required
-    // autoplay policy.
-    web_prefs->autoplay_policy =
-        blink::mojom::AutoplayPolicy::kNoUserGestureRequired;
-  } else if (base::FeatureList::IsEnabled(media::kAutoplayDisableSettings) &&
-             web_prefs->autoplay_policy ==
-                 blink::mojom::AutoplayPolicy::
-                     kDocumentUserActivationRequired) {
-    // If the autoplay disable settings feature is enabled and the autoplay
-    // policy is set to using the unified policy then set the default autoplay
-    // policy based on user preference.
-    web_prefs->autoplay_policy =
-        UnifiedAutoplayConfig::ShouldBlockAutoplay(profile)
-            ? blink::mojom::AutoplayPolicy::kDocumentUserActivationRequired
-            : blink::mojom::AutoplayPolicy::kNoUserGestureRequired;
-  }
-#endif  // !defined(OS_ANDROID)
+  web_prefs->autoplay_policy = GetAutoplayPolicyForWebContents(web_contents);
 
   switch (GetWebTheme()->GetPreferredContrast()) {
     case ui::NativeTheme::PreferredContrast::kNoPreference:
@@ -3544,7 +3566,14 @@ void ChromeContentBrowserClient::OverrideWebkitPrefs(
 bool ChromeContentBrowserClient::OverrideWebPreferencesAfterNavigation(
     WebContents* web_contents,
     WebPreferences* prefs) {
-  return UpdatePreferredColorScheme(prefs, web_contents->GetLastCommittedURL(),
+  const auto autoplay_policy = GetAutoplayPolicyForWebContents(web_contents);
+  const bool new_autoplay_policy_needed =
+      prefs->autoplay_policy != autoplay_policy;
+  if (new_autoplay_policy_needed)
+    prefs->autoplay_policy = autoplay_policy;
+
+  return new_autoplay_policy_needed ||
+         UpdatePreferredColorScheme(prefs, web_contents->GetLastCommittedURL(),
                                     web_contents, GetWebTheme());
 }
 
