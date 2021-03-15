@@ -59,7 +59,6 @@
 #include "url/gurl.h"
 #include "url/origin.h"
 
-using base::ASCIIToUTF16;
 using storage::DatabaseUtil;
 using storage::QuotaManager;
 using storage::mojom::FailClass;
@@ -144,7 +143,7 @@ class IndexedDBBrowserTest : public ContentBrowserTest,
     if (hash)
       url = GURL(url.spec() + hash);
 
-    std::u16string expected_title16(ASCIIToUTF16(expected_string));
+    std::u16string expected_title16(base::ASCIIToUTF16(expected_string));
     TitleWatcher title_watcher(shell->web_contents(), expected_title16);
     EXPECT_TRUE(NavigateToURL(shell, url));
     EXPECT_EQ(expected_title16, title_watcher.WaitAndGetTitle());
@@ -287,7 +286,7 @@ IN_PROC_BROWSER_TEST_F(IndexedDBBrowserTest, CursorTest) {
 
 IN_PROC_BROWSER_TEST_F(IndexedDBBrowserTest, CursorTestIncognito) {
   SimpleTest(GetTestUrl("indexeddb", "cursor_test.html"),
-             true /* incognito */);
+             /*incognito=*/true);
 }
 
 IN_PROC_BROWSER_TEST_F(IndexedDBBrowserTest, CursorPrefetch) {
@@ -1105,7 +1104,7 @@ IN_PROC_BROWSER_TEST_F(
   NavigateAndWaitForTitle(new_shell, "version_change_blocked.html", "#tab2",
                           "setVersion(3) blocked");
 
-  std::u16string expected_title16(ASCIIToUTF16("setVersion(3) complete"));
+  std::u16string expected_title16(u"setVersion(3) complete");
   TitleWatcher title_watcher(new_shell->web_contents(), expected_title16);
 
   shell()->web_contents()->GetMainFrame()->GetProcess()->Shutdown(0);
@@ -1120,9 +1119,9 @@ IN_PROC_BROWSER_TEST_F(IndexedDBBrowserTest, ForceCloseEventTest) {
   constexpr char kFilename[] = "force_close_event.html";
   NavigateAndWaitForTitle(shell(), kFilename, nullptr, "connection ready");
   DeleteForOrigin(url::Origin::Create(GetTestUrl("indexeddb", kFilename)));
-  std::u16string expected_title16(ASCIIToUTF16("connection closed"));
+  std::u16string expected_title16(u"connection closed");
   TitleWatcher title_watcher(shell()->web_contents(), expected_title16);
-  title_watcher.AlsoWaitForTitle(ASCIIToUTF16("connection closed with error"));
+  title_watcher.AlsoWaitForTitle(u"connection closed with error");
   EXPECT_EQ(expected_title16, title_watcher.WaitAndGetTitle());
 }
 

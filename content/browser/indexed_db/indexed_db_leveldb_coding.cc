@@ -1010,11 +1010,11 @@ int Compare(const StringPiece& a,
 }
 
 int CompareKeys(const StringPiece& a, const StringPiece& b) {
-  return Compare(a, b, false /*index_keys*/);
+  return Compare(a, b, /*index_keys=*/false);
 }
 
 int CompareIndexKeys(const StringPiece& a, const StringPiece& b) {
-  return Compare(a, b, true /*index_keys*/);
+  return Compare(a, b, /*index_keys=*/true);
 }
 
 std::string IndexedDBKeyToDebugString(base::StringPiece key) {

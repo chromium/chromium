@@ -15,7 +15,6 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"
 #include "base/stl_util.h"
-#include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/simple_test_clock.h"
@@ -48,7 +47,6 @@
 #include "url/gurl.h"
 #include "url/origin.h"
 
-using base::ASCIIToUTF16;
 using blink::IndexedDBDatabaseMetadata;
 using url::Origin;
 
@@ -74,7 +72,7 @@ class IndexedDBFactoryTest : public testing::Test {
     ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
     quota_policy_ = base::MakeRefCounted<storage::MockSpecialStoragePolicy>();
     quota_manager_ = base::MakeRefCounted<storage::MockQuotaManager>(
-        false /*is_incognito*/, temp_dir_.GetPath(),
+        /*is_incognito=*/false, temp_dir_.GetPath(),
         base::ThreadTaskRunnerHandle::Get().get(), quota_policy_.get());
 
     quota_manager_proxy_ = base::MakeRefCounted<storage::MockQuotaManagerProxy>(
@@ -558,8 +556,7 @@ TEST_F(IndexedDBFactoryTest, ContextDestructionClosesConnections) {
       callbacks, db_callbacks,
       transaction_id, IndexedDBDatabaseMetadata::DEFAULT_VERSION,
       std::move(create_transaction_callback));
-  factory()->Open(ASCIIToUTF16("db"), std::move(connection), origin,
-                  context()->data_path());
+  factory()->Open(u"db", std::move(connection), origin, context()->data_path());
   RunPostedTasks();
 
   // Now simulate shutdown, which should clear all factories.
@@ -619,8 +616,7 @@ TEST_F(IndexedDBFactoryTest, ConnectionForceClose) {
       callbacks, db_callbacks,
       transaction_id, IndexedDBDatabaseMetadata::DEFAULT_VERSION,
       std::move(create_transaction_callback));
-  factory()->Open(ASCIIToUTF16("db"), std::move(connection), origin,
-                  context()->data_path());
+  factory()->Open(u"db", std::move(connection), origin, context()->data_path());
   EXPECT_FALSE(callbacks->connection());
   RunPostedTasks();
   EXPECT_TRUE(callbacks->connection());
@@ -656,7 +652,7 @@ TEST_F(IndexedDBFactoryTest, DatabaseForceCloseDuringUpgrade) {
     base::RunLoop loop;
     callbacks->CallOnUpgradeNeeded(
         base::BindLambdaForTesting([&]() { loop.Quit(); }));
-    factory()->Open(ASCIIToUTF16("db"), std::move(connection), origin,
+    factory()->Open(u"db", std::move(connection), origin,
                     context()->data_path());
     loop.Run();
   }
@@ -693,7 +689,7 @@ TEST_F(IndexedDBFactoryTest, ConnectionCloseDuringUpgrade) {
     base::RunLoop loop;
     callbacks->CallOnUpgradeNeeded(
         base::BindLambdaForTesting([&]() { loop.Quit(); }));
-    factory()->Open(ASCIIToUTF16("db"), std::move(connection), origin,
+    factory()->Open(u"db", std::move(connection), origin,
                     context()->data_path());
     loop.Run();
   }
@@ -717,7 +713,7 @@ TEST_F(IndexedDBFactoryTest, DatabaseForceCloseWithFullConnection) {
   std::unique_ptr<IndexedDBConnection> connection;
   scoped_refptr<MockIndexedDBDatabaseCallbacks> db_callbacks;
   std::tie(connection, db_callbacks) =
-      CreateConnectionForDatatabase(origin, ASCIIToUTF16("db"));
+      CreateConnectionForDatatabase(origin, u"db");
 
   // Force close the database.
   connection->database()->ForceCloseAndRunTasks();
@@ -736,8 +732,7 @@ TEST_F(IndexedDBFactoryTest, DeleteDatabase) {
 
   const Origin origin = Origin::Create(GURL("http://localhost:81"));
 
-  factory()->DeleteDatabase(ASCIIToUTF16("db"), callbacks, origin,
-                            context()->data_path(),
+  factory()->DeleteDatabase(u"db", callbacks, origin, context()->data_path(),
                             /*force_close=*/false);
 
   // Since there are no more references the factory should be closing.
@@ -749,7 +744,7 @@ TEST_F(IndexedDBFactoryTest, DeleteDatabaseWithForceClose) {
   SetupContext();
 
   const Origin origin = Origin::Create(GURL("http://localhost:81"));
-  const std::u16string name = ASCIIToUTF16("db");
+  const std::u16string name = u"db";
 
   std::unique_ptr<IndexedDBConnection> connection;
   scoped_refptr<MockIndexedDBDatabaseCallbacks> db_callbacks;
@@ -853,7 +848,7 @@ TEST_F(IndexedDBFactoryTest, QuotaErrorOnDiskFull) {
       base::MakeRefCounted<IndexedDBDatabaseCallbacks>(
           nullptr, mojo::NullAssociatedRemote(), context()->IDBTaskRunner());
   const Origin origin = Origin::Create(GURL("http://localhost:81"));
-  const std::u16string name(ASCIIToUTF16("name"));
+  const std::u16string name(u"name");
   auto create_transaction_callback =
       base::BindOnce(&CreateAndBindTransactionPlaceholder);
   auto connection = std::make_unique<IndexedDBPendingConnection>(
@@ -906,7 +901,7 @@ class ErrorCallbacks : public MockIndexedDBCallbacks {
 TEST_F(IndexedDBFactoryTest, DatabaseFailedOpen) {
   SetupContext();
   const Origin origin = Origin::Create(GURL("http://localhost:81"));
-  const std::u16string db_name(ASCIIToUTF16("db"));
+  const std::u16string db_name(u"db");
   const int64_t transaction_id = 1;
 
   auto callbacks = base::MakeRefCounted<MockIndexedDBCallbacks>();
@@ -1017,8 +1012,7 @@ TEST_F(IndexedDBFactoryTest, DataFormatVersion) {
       callbacks->CallOnDBSuccess(
           base::BindLambdaForTesting([&]() { loop.Quit(); }));
 
-      this->factory()->Open(ASCIIToUTF16("test_db"),
-                            std::move(pending_connection), origin,
+      this->factory()->Open(u"test_db", std::move(pending_connection), origin,
                             context()->data_path());
       loop.Run();
 

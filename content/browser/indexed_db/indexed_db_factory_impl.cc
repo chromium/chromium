@@ -57,7 +57,6 @@
 #include "third_party/blink/public/mojom/indexeddb/indexeddb.mojom.h"
 #include "third_party/leveldatabase/env_chromium.h"
 
-using base::ASCIIToUTF16;
 using url::Origin;
 
 namespace content {
@@ -94,8 +93,7 @@ leveldb::Status GetDBSizeFromEnv(leveldb::Env* env,
 IndexedDBDatabaseError CreateDefaultError() {
   return IndexedDBDatabaseError(
       blink::mojom::IDBException::kUnknownError,
-      ASCIIToUTF16("Internal error opening backing store"
-                   " for indexedDB.open."));
+      u"Internal error opening backing store for indexedDB.open.");
 }
 
 // Creates the leveldb and blob storage directories for IndexedDB.
@@ -268,10 +266,9 @@ void IndexedDBFactoryImpl::Open(
       std::make_unique<IndexedDBMetadataCoding>(), std::move(unique_identifier),
       factory->lock_manager());
   if (!database.get()) {
-    error = IndexedDBDatabaseError(blink::mojom::IDBException::kUnknownError,
-                                   ASCIIToUTF16("Internal error creating "
-                                                "database backend for "
-                                                "indexedDB.open."));
+    error = IndexedDBDatabaseError(
+        blink::mojom::IDBException::kUnknownError,
+        u"Internal error creating database backend for indexedDB.open.");
     connection->callbacks->OnError(error);
     if (s.IsCorruption())
       HandleBackingStoreCorruption(origin, error);
@@ -358,10 +355,9 @@ void IndexedDBFactoryImpl::DeleteDatabase(
       std::make_unique<IndexedDBMetadataCoding>(), unique_identifier,
       factory->lock_manager());
   if (!database.get()) {
-    error = IndexedDBDatabaseError(
-        blink::mojom::IDBException::kUnknownError,
-        ASCIIToUTF16("Internal error creating database backend for "
-                     "indexedDB.deleteDatabase."));
+    error = IndexedDBDatabaseError(blink::mojom::IDBException::kUnknownError,
+                                   u"Internal error creating database backend "
+                                   u"for indexedDB.deleteDatabase.");
     callbacks->OnError(error);
     if (s.IsCorruption())
       HandleBackingStoreCorruption(origin, error);
@@ -721,10 +717,9 @@ IndexedDBFactoryImpl::GetOrOpenOriginFactory(
     if (disk_full) {
       context_->quota_manager_proxy()->NotifyWriteFailed(origin);
       return {IndexedDBOriginStateHandle(), s,
-              IndexedDBDatabaseError(
-                  blink::mojom::IDBException::kQuotaError,
-                  ASCIIToUTF16("Encountered full disk while opening "
-                               "backing store for indexedDB.open.")),
+              IndexedDBDatabaseError(blink::mojom::IDBException::kQuotaError,
+                                     u"Encountered full disk while opening "
+                                     "backing store for indexedDB.open."),
               data_loss_info, /*was_cold_open=*/true};
 
     } else {

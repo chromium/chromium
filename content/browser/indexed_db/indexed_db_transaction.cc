@@ -547,9 +547,9 @@ base::TimeDelta IndexedDBTransaction::GetInactivityTimeout() const {
 }
 
 void IndexedDBTransaction::Timeout() {
-  leveldb::Status result = Abort(IndexedDBDatabaseError(
-      blink::mojom::IDBException::kTimeoutError,
-      base::ASCIIToUTF16("Transaction timed out due to inactivity.")));
+  leveldb::Status result = Abort(
+      IndexedDBDatabaseError(blink::mojom::IDBException::kTimeoutError,
+                             u"Transaction timed out due to inactivity."));
   if (!result.ok())
     tear_down_callback_.Run(result);
 }

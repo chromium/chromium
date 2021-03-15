@@ -10,7 +10,6 @@
 
 #include "base/files/scoped_temp_dir.h"
 #include "base/strings/string_number_conversions.h"
-#include "base/strings/utf_string_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
 #include "base/time/tick_clock.h"
@@ -95,43 +94,43 @@ class IndexedDBTombstoneSweeperTest : public testing::Test {
     //   os2
     //     index1
     //     index2
-    metadata_.emplace_back(base::ASCIIToUTF16("db1"), kDb1, 1, 29);
+    metadata_.emplace_back(u"db1", kDb1, 1, 29);
     auto& db1 = metadata_.back();
     db1.object_stores[kOs1] = IndexedDBObjectStoreMetadata(
-        base::ASCIIToUTF16("os1"), kOs1, IndexedDBKeyPath(), false, 1000);
+        u"os1", kOs1, IndexedDBKeyPath(), false, 1000);
     db1.object_stores[kOs2] = IndexedDBObjectStoreMetadata(
-        base::ASCIIToUTF16("os2"), kOs2, IndexedDBKeyPath(), false, 1000);
+        u"os2", kOs2, IndexedDBKeyPath(), false, 1000);
     auto& os2 = db1.object_stores[kOs2];
     os2.indexes[kIndex1] = IndexedDBIndexMetadata(
-        base::ASCIIToUTF16("index1"), kIndex1, IndexedDBKeyPath(), true, false);
+        u"index1", kIndex1, IndexedDBKeyPath(), true, false);
     os2.indexes[kIndex2] = IndexedDBIndexMetadata(
-        base::ASCIIToUTF16("index2"), kIndex2, IndexedDBKeyPath(), true, false);
+        u"index2", kIndex2, IndexedDBKeyPath(), true, false);
     // db2
     //   os3
     //     index3
     //   os4
-    metadata_.emplace_back(base::ASCIIToUTF16("db2"), kDb2, 1, 29);
+    metadata_.emplace_back(u"db2", kDb2, 1, 29);
     auto& db2 = metadata_.back();
     db2.object_stores[kOs3] = IndexedDBObjectStoreMetadata(
-        base::ASCIIToUTF16("os3"), kOs3, IndexedDBKeyPath(), false, 1000);
+        u"os3", kOs3, IndexedDBKeyPath(), false, 1000);
     db2.object_stores[kOs4] = IndexedDBObjectStoreMetadata(
-        base::ASCIIToUTF16("os4"), kOs4, IndexedDBKeyPath(), false, 1000);
+        u"os4", kOs4, IndexedDBKeyPath(), false, 1000);
     auto& os3 = db2.object_stores[kOs3];
     os3.indexes[kIndex3] = IndexedDBIndexMetadata(
-        base::ASCIIToUTF16("index3"), kIndex3, IndexedDBKeyPath(), true, false);
+        u"index3", kIndex3, IndexedDBKeyPath(), true, false);
   }
 
   void PopulateSingleIndexDBMetadata() {
     // db1
     //   os1
     //     index1
-    metadata_.emplace_back(base::ASCIIToUTF16("db1"), kDb1, 1, 29);
+    metadata_.emplace_back(u"db1", kDb1, 1, 29);
     auto& db1 = metadata_.back();
     db1.object_stores[kOs1] = IndexedDBObjectStoreMetadata(
-        base::ASCIIToUTF16("os1"), kOs1, IndexedDBKeyPath(), false, 1000);
+        u"os1", kOs1, IndexedDBKeyPath(), false, 1000);
     auto& os2 = db1.object_stores[kOs1];
     os2.indexes[kIndex1] = IndexedDBIndexMetadata(
-        base::ASCIIToUTF16("index1"), kIndex1, IndexedDBKeyPath(), true, false);
+        u"index1", kIndex1, IndexedDBKeyPath(), true, false);
   }
 
   void SetupMockDB() {
