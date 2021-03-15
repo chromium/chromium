@@ -4973,8 +4973,41 @@ TEST_F(DesksBentoTest, ReorderDesksInRTLMode) {
   EXPECT_EQ(2, desks_controller->GetDeskIndex(desk_0));
   VerifyDesksRestoreData(prefs, std::vector<std::string>{"1", "2", "0"});
 }
-  
-// TODO(zxdan): Add a regression test for crbug/1171880
+
+// Tests that while reordering desks by drag & drop, when a desk is snapping
+// back, click its target location won't cause any crashes.
+// Regression test of https://crbug.com/1171880.
+TEST_F(DesksBentoTest, ClickTargetLocationOfDroppedDesk) {
+  auto* overview_controller = Shell::Get()->overview_controller();
+  overview_controller->StartOverview();
+  ASSERT_TRUE(overview_controller->InOverviewSession());
+
+  auto* overview_grid = GetOverviewGridForRoot(Shell::GetPrimaryRootWindow());
+  const auto* desks_bar_view = overview_grid->desks_bar_view();
+
+  // Add a desk.
+  NewDesk();
+
+  // Cache the second desk's mini view.
+  DeskMiniView* mini_view = desks_bar_view->mini_views()[1];
+
+  auto* event_generator = GetEventGenerator();
+
+  // Drag the second desk away from the desk bar.
+  StartDragDeskPreview(mini_view, event_generator);
+  EXPECT_TRUE(desks_bar_view->IsDraggingDesk());
+
+  event_generator->MoveMouseBy(0, desks_bar_view->height());
+
+  ui::ScopedAnimationDurationScaleMode normal_anim(
+      ui::ScopedAnimationDurationScaleMode::NORMAL_DURATION);
+  // Drop the desk and click on the mini view.
+  event_generator->ReleaseLeftButton();
+  EXPECT_TRUE(desks_bar_view->IsDraggingDesk());
+  ClickOnView(mini_view, event_generator);
+}
+
+// TODO(zxdan): Add a test for crbug/1181089.
 
 // TODO(afakhry): Add more tests:
 // - Always on top windows are not tracked by any desk.
