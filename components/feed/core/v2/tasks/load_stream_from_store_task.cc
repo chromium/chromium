@@ -14,7 +14,7 @@
 #include "components/feed/core/v2/feed_stream.h"
 #include "components/feed/core/v2/proto_util.h"
 #include "components/feed/core/v2/protocol_translator.h"
-#include "components/feed/core/v2/public/feed_stream_api.h"
+#include "components/feed/core/v2/public/feed_api.h"
 #include "components/feed/core/v2/scheduling.h"
 #include "components/feed/core/v2/types.h"
 

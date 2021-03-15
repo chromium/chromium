@@ -13,7 +13,7 @@
 #include "base/observer_list.h"
 #include "components/feed/core/proto/v2/ui.pb.h"
 #include "components/feed/core/v2/enums.h"
-#include "components/feed/core/v2/public/feed_stream_api.h"
+#include "components/feed/core/v2/public/feed_api.h"
 #include "components/feed/core/v2/stream_model.h"
 
 namespace feedui {

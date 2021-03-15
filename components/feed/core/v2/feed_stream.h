@@ -20,7 +20,7 @@
 #include "components/feed/core/v2/notice_card_tracker.h"
 #include "components/feed/core/v2/persistent_key_value_store_impl.h"
 #include "components/feed/core/v2/protocol_translator.h"
-#include "components/feed/core/v2/public/feed_stream_api.h"
+#include "components/feed/core/v2/public/feed_api.h"
 #include "components/feed/core/v2/request_throttler.h"
 #include "components/feed/core/v2/scheduling.h"
 #include "components/feed/core/v2/stream_model.h"
@@ -50,9 +50,9 @@ class StreamModel;
 class SurfaceUpdater;
 struct StreamModelUpdateRequest;
 
-// Implements FeedStreamApi. |FeedStream| additionally exposes functionality
+// Implements FeedApi. |FeedStream| additionally exposes functionality
 // needed by other classes within the Feed component.
-class FeedStream : public FeedStreamApi,
+class FeedStream : public FeedApi,
                    public offline_pages::TaskQueue::Delegate,
                    public StreamModel::StoreObserver {
  public:
@@ -126,7 +126,7 @@ class FeedStream : public FeedStreamApi,
   FeedStream(const FeedStream&) = delete;
   FeedStream& operator=(const FeedStream&) = delete;
 
-  // FeedStreamApi.
+  // FeedApi.
 
   bool IsActivityLoggingEnabled() const override;
   std::string GetSessionId() const override;

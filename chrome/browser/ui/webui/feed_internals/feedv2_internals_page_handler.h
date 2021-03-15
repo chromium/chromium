@@ -17,7 +17,7 @@
 class PrefService;
 namespace feed {
 class FeedService;
-class FeedStreamApi;
+class FeedApi;
 }  // namespace feed
 
 // Concrete implementation of feed_internals::mojom::PageHandler.
@@ -56,7 +56,7 @@ class FeedV2InternalsPageHandler : public feed_internals::mojom::PageHandler {
   mojo::Receiver<feed_internals::mojom::PageHandler> receiver_;
 
   // Services that provide the data and functionality.
-  feed::FeedStreamApi* feed_stream_;
+  feed::FeedApi* feed_stream_;
   PrefService* pref_service_;
 
   base::WeakPtrFactory<FeedV2InternalsPageHandler> weak_ptr_factory_{this};

@@ -10,8 +10,8 @@
 #include "chrome/browser/android/feed/v2/feed_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
+#include "components/feed/core/v2/public/feed_api.h"
 #include "components/feed/core/v2/public/feed_service.h"
-#include "components/feed/core/v2/public/feed_stream_api.h"
 #include "components/feed/core/v2/public/types.h"
 
 using base::android::JavaParamRef;
@@ -27,7 +27,7 @@ void OnFetchFinished(JNIEnv* env,
       base::android::ToJavaByteArray(env, response.response_bytes));
 }
 
-FeedStreamApi* GetFeedStream() {
+FeedApi* GetFeedStream() {
   Profile* profile = ProfileManager::GetLastUsedProfile();
   if (!profile)
     return nullptr;
@@ -49,7 +49,7 @@ jint JNI_FeedImageFetchClient_SendRequest(
   // with OnFetchFinished.
   base::android::ScopedJavaGlobalRef<jobject> callback(j_response_callback);
 
-  FeedStreamApi* stream = GetFeedStream();
+  FeedApi* stream = GetFeedStream();
   if (!stream) {
     OnFetchFinished(env, std::move(callback), {});
     return 0;
@@ -62,7 +62,7 @@ jint JNI_FeedImageFetchClient_SendRequest(
 }
 
 void JNI_FeedImageFetchClient_Cancel(JNIEnv* env, jint j_request_id) {
-  FeedStreamApi* stream = GetFeedStream();
+  FeedApi* stream = GetFeedStream();
   if (!stream)
     return;
 

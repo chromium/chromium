@@ -11,8 +11,8 @@
 #include "components/background_task_scheduler/task_ids.h"
 #include "components/background_task_scheduler/task_info.h"
 #include "components/feed/core/v2/config.h"
+#include "components/feed/core/v2/public/feed_api.h"
 #include "components/feed/core/v2/public/feed_service.h"
-#include "components/feed/core/v2/public/feed_stream_api.h"
 
 namespace feed {
 

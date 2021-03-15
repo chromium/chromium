@@ -11,7 +11,7 @@
 #include "base/files/file_path.h"
 #include "base/memory/scoped_refptr.h"
 #include "build/build_config.h"
-#include "components/feed/core/v2/public/feed_stream_api.h"
+#include "components/feed/core/v2/public/feed_api.h"
 #include "components/feed/core/v2/public/types.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/leveldb_proto/public/proto_database.h"
@@ -81,7 +81,7 @@ class FeedService : public KeyedService {
   // Used for testing only.
   explicit FeedService(std::unique_ptr<FeedStream> stream);
 
-  // Construct a new FeedStreamApi along with FeedService.
+  // Construct a new FeedApi along with FeedService.
   FeedService(
       std::unique_ptr<Delegate> delegate,
       std::unique_ptr<RefreshTaskScheduler> refresh_task_scheduler,
@@ -102,7 +102,7 @@ class FeedService : public KeyedService {
   FeedService(const FeedService&) = delete;
   FeedService& operator=(const FeedService&) = delete;
 
-  FeedStreamApi* GetStream();
+  FeedApi* GetStream();
 
   void ClearCachedData();
 
@@ -122,8 +122,8 @@ class FeedService : public KeyedService {
   void OnApplicationStateChange(base::android::ApplicationState state);
 #endif
 
-  // These components are owned for construction of |FeedStreamApi|. These will
-  // be null if |FeedStreamApi| is created externally.
+  // These components are owned for construction of |FeedApi|. These will
+  // be null if |FeedApi| is created externally.
   std::unique_ptr<Delegate> delegate_;
   std::unique_ptr<StreamDelegateImpl> stream_delegate_;
   std::unique_ptr<MetricsReporter> metrics_reporter_;

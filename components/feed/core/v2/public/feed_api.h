@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_FEED_CORE_V2_PUBLIC_FEED_STREAM_API_H_
-#define COMPONENTS_FEED_CORE_V2_PUBLIC_FEED_STREAM_API_H_
+#ifndef COMPONENTS_FEED_CORE_V2_PUBLIC_FEED_API_H_
+#define COMPONENTS_FEED_CORE_V2_PUBLIC_FEED_API_H_
 
 #include <string>
 #include <vector>
@@ -15,6 +15,7 @@
 #include "components/feed/core/v2/common_enums.h"
 #include "components/feed/core/v2/public/refresh_task_scheduler.h"
 #include "components/feed/core/v2/public/types.h"
+#include "components/feed/core/v2/public/web_feed_subscriptions.h"
 #include "url/gurl.h"
 
 namespace feedui {
@@ -25,6 +26,7 @@ class DataOperation;
 }  // namespace feedstore
 
 namespace feed {
+class WebFeedSubscriptions;
 class PersistentKeyValueStore;
 
 // Selects the stream type.
@@ -104,14 +106,16 @@ constexpr StreamType kForYouStream(StreamType::Type::kForYou);
 constexpr StreamType kWebFeedStream(StreamType::Type::kWebFeed);
 
 // This is the public access point for interacting with the Feed contents.
-// FeedStreamApi serves multiple streams of data, one for each StreamType.
-class FeedStreamApi {
+// FeedApi serves multiple streams of data, one for each StreamType.
+class FeedApi {
  public:
+  FeedApi();
+  virtual ~FeedApi();
+  FeedApi(const FeedApi&) = delete;
+  FeedApi& operator=(const FeedApi&) = delete;
 
-  FeedStreamApi();
-  virtual ~FeedStreamApi();
-  FeedStreamApi(const FeedStreamApi&) = delete;
-  FeedStreamApi& operator=(const FeedStreamApi&) = delete;
+  // TODO(crbug/1152592): Implement subscriptions().
+  // WebFeedSubscriptions& subscriptions() = 0;
 
   // Attach/detach a surface. Surfaces should be attached when content is
   // required for display, and detached when content is no longer shown.
@@ -235,4 +239,4 @@ class FeedStreamApi {
 
 }  // namespace feed
 
-#endif  // COMPONENTS_FEED_CORE_V2_PUBLIC_FEED_STREAM_API_H_
+#endif  // COMPONENTS_FEED_CORE_V2_PUBLIC_FEED_API_H_

@@ -90,6 +90,49 @@ std::string SerializeDebugStreamData(const DebugStreamData& data);
 base::Optional<DebugStreamData> DeserializeDebugStreamData(
     base::StringPiece base64_encoded);
 
+// Information about a web page which may be used to determine an associated web
+// feed.
+struct WebFeedPageInformation {
+  // The URL for the page.
+  GURL url;
+  // TODO(crbug/1152592): There will be additional optional information.
+};
+
+// GENERATED_JAVA_ENUM_PACKAGE: org.chromium.chrome.browser.feed.webfeed
+enum class WebFeedSubscriptionStatus {
+  kUnknown = 0,
+  kSubscribed = 1,
+  kNotSubscribed = 2,
+  kSubscribeInProgress = 3,
+  kUnsubscribeInProgress = 4,
+};
+
+// Information about a web feed.
+struct WebFeedMetadata {
+  WebFeedMetadata(const WebFeedMetadata&);
+  WebFeedMetadata(WebFeedMetadata&&);
+  WebFeedMetadata& operator=(const WebFeedMetadata&);
+  WebFeedMetadata& operator=(WebFeedMetadata&&);
+
+  // Unique ID of the web feed. Empty if the client knows of no web feed.
+  std::string web_feed_id;
+  // Whether the subscribed Web Feed has content available for fetching.
+  bool is_active = false;
+  std::string title;
+  GURL publisher_url;
+  WebFeedSubscriptionStatus subscription_status =
+      WebFeedSubscriptionStatus::kUnknown;
+};
+
+// GENERATED_JAVA_ENUM_PACKAGE: org.chromium.chrome.browser.feed.webfeed
+enum class WebFeedSubscriptionRequestStatus {
+  kUnknown = 0,
+  kSuccess = 1,
+  kFailedOffline = 2,
+  kFailedTooManySubscriptions = 3,
+  kFailedUnknownError = 4,
+};
+
 }  // namespace feed
 
 #endif  // COMPONENTS_FEED_CORE_V2_PUBLIC_TYPES_H_

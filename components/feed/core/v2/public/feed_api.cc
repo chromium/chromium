@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/feed/core/v2/public/feed_stream_api.h"
+#include "components/feed/core/v2/public/feed_api.h"
 
 namespace feed {
 
@@ -39,8 +39,8 @@ bool StreamType::GetRefreshTaskId(RefreshTaskId& out_id) const {
       return true;
   }
 }
-FeedStreamApi::FeedStreamApi() = default;
-FeedStreamApi::~FeedStreamApi() = default;
+FeedApi::FeedApi() = default;
+FeedApi::~FeedApi() = default;
 
 FeedStreamSurface::FeedStreamSurface(StreamType stream_type)
     : stream_type_(stream_type) {

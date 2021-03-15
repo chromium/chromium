@@ -31,13 +31,15 @@ source_set("feed_core_v2") {
     "proto_util.h",
     "protocol_translator.cc",
     "protocol_translator.h",
+    "public/feed_api.cc",
+    "public/feed_api.h",
     "public/feed_service.cc",
     "public/feed_service.h",
-    "public/feed_stream_api.cc",
-    "public/feed_stream_api.h",
     "public/persistent_key_value_store.cc",
     "public/persistent_key_value_store.h",
     "public/refresh_task_scheduler.h",
+    "public/types.cc",
+    "public/web_feed_subscriptions.h",
     "request_throttler.cc",
     "request_throttler.h",
     "stream_model.cc",
@@ -222,6 +224,7 @@ if (is_android) {
     sources = [
       "common_enums.h",
       "enums.h",
+      "public/types.h",
     ]
   }
 }

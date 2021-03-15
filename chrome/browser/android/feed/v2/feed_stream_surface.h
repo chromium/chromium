@@ -8,7 +8,7 @@
 #include "base/android/jni_android.h"
 #include "base/android/scoped_java_ref.h"
 #include "base/macros.h"
-#include "components/feed/core/v2/public/feed_stream_api.h"
+#include "components/feed/core/v2/public/feed_api.h"
 
 namespace feedui {
 class StreamUpdate;
@@ -78,7 +78,7 @@ class FeedStreamSurface : public ::feed::FeedStreamSurface {
       const base::android::JavaParamRef<jobject>& obj);
 
   // Event reporting functions. These have no side-effect beyond recording
-  // metrics. See |FeedStreamApi| for definitions.
+  // metrics. See |FeedApi| for definitions.
   void ReportSliceViewed(JNIEnv* env,
                          const base::android::JavaParamRef<jobject>& obj,
                          const base::android::JavaParamRef<jstring>& slice_id);
@@ -111,7 +111,7 @@ class FeedStreamSurface : public ::feed::FeedStreamSurface {
 
  private:
   base::android::ScopedJavaGlobalRef<jobject> java_ref_;
-  FeedStreamApi* feed_stream_api_;
+  FeedApi* feed_stream_api_;
   bool attached_ = false;
 };
 

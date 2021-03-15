@@ -239,7 +239,7 @@ FeedService::FeedService(
 
 FeedService::~FeedService() = default;
 
-FeedStreamApi* FeedService::GetStream() {
+FeedApi* FeedService::GetStream() {
   return stream_.get();
 }
 

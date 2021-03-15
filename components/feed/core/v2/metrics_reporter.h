@@ -13,7 +13,7 @@
 #include "base/time/time.h"
 #include "components/feed/core/v2/common_enums.h"
 #include "components/feed/core/v2/enums.h"
-#include "components/feed/core/v2/public/feed_stream_api.h"
+#include "components/feed/core/v2/public/feed_api.h"
 #include "components/feed/core/v2/types.h"
 
 class PrefService;
@@ -33,7 +33,7 @@ class MetricsReporter {
   MetricsReporter(const MetricsReporter&) = delete;
   MetricsReporter& operator=(const MetricsReporter&) = delete;
 
-  // User interactions. See |FeedStreamApi| for definitions.
+  // User interactions. See |FeedApi| for definitions.
 
   virtual void ContentSliceViewed(const StreamType& stream_type,
                                   int index_in_stream);
