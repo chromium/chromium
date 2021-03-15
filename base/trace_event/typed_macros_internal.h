@@ -13,6 +13,7 @@
 #include "build/build_config.h"
 #include "third_party/perfetto/include/perfetto/protozero/message_handle.h"
 #include "third_party/perfetto/include/perfetto/tracing/event_context.h"
+#include "third_party/perfetto/include/perfetto/tracing/string_helpers.h"
 #include "third_party/perfetto/include/perfetto/tracing/track.h"
 #include "third_party/perfetto/protos/perfetto/trace/track_event/track_event.pbzero.h"
 
@@ -89,7 +90,7 @@ constexpr char kTraceEventEndName[] = "";
 base::trace_event::TrackEventHandle BASE_EXPORT
 CreateTrackEvent(char phase,
                  const unsigned char* category_group_enabled,
-                 const char* name,
+                 perfetto::StaticString name,
                  base::TimeTicks timestamp,
                  uint64_t track_uuid,
                  bool explicit_track);
@@ -110,22 +111,21 @@ void WriteTrackDescriptor(const TrackType& track) {
 }
 
 template <
-    typename NameType,
     typename TrackEventArgumentFunction = void (*)(perfetto::EventContext),
     typename ArgumentFunctionCheck = typename std::enable_if<
         IsValidTraceLambda<TrackEventArgumentFunction>()>::type>
 inline void AddTraceEvent(char phase,
                           const unsigned char* category_group_enabled,
-                          NameType name,
+                          perfetto::StaticString name,
                           const perfetto::Track& track,
                           base::TimeTicks timestamp,
                           TrackEventArgumentFunction argument_func) {
   bool emit_track_descriptor = false;
   {
     bool explicit_track = &track != &kDefaultTrack;
-    base::trace_event::TrackEventHandle track_event = CreateTrackEvent(
-        phase, category_group_enabled, static_cast<const char*>(name),
-        timestamp, track.uuid, explicit_track);
+    base::trace_event::TrackEventHandle track_event =
+        CreateTrackEvent(phase, category_group_enabled, name, timestamp,
+                         track.uuid, explicit_track);
     if (!track_event)
       return;
 
@@ -144,7 +144,6 @@ inline void AddTraceEvent(char phase,
 }
 
 template <
-    typename NameType,
     typename TrackEventArgumentFunction = void (*)(perfetto::EventContext),
     typename ArgumentFunctionCheck = typename std::enable_if<
         IsValidTraceLambda<TrackEventArgumentFunction>()>::type,
@@ -153,58 +152,53 @@ template <
         std::is_convertible<TrackType, perfetto::Track>::value>::type>
 inline void AddTraceEvent(char phase,
                           const unsigned char* category_group_enabled,
-                          NameType name,
+                          perfetto::StaticString name,
                           const TrackType& track,
                           TrackEventArgumentFunction argument_func) {
-  AddTraceEvent(phase, category_group_enabled, static_cast<const char*>(name),
-                track, base::TimeTicks(), argument_func);
+  AddTraceEvent(phase, category_group_enabled, name, track, base::TimeTicks(),
+                argument_func);
 }
 
 template <
-    typename NameType,
     typename TrackEventArgumentFunction = void (*)(perfetto::EventContext),
     typename ArgumentFunctionCheck = typename std::enable_if<
         IsValidTraceLambda<TrackEventArgumentFunction>()>::type>
 inline void AddTraceEvent(char phase,
                           const unsigned char* category_group_enabled,
-                          NameType name,
+                          perfetto::StaticString name,
                           TrackEventArgumentFunction argument_func) {
-  AddTraceEvent(phase, category_group_enabled, static_cast<const char*>(name),
-                kDefaultTrack, base::TimeTicks(), argument_func);
+  AddTraceEvent(phase, category_group_enabled, name, kDefaultTrack,
+                base::TimeTicks(), argument_func);
 }
 
-template <typename NameType>
 inline void AddTraceEvent(char phase,
                           const unsigned char* category_group_enabled,
-                          NameType name) {
-  AddTraceEvent(phase, category_group_enabled, static_cast<const char*>(name),
-                kDefaultTrack, base::TimeTicks(),
+                          perfetto::StaticString name) {
+  AddTraceEvent(phase, category_group_enabled, name, kDefaultTrack,
+                base::TimeTicks(), [](perfetto::EventContext ctx) {});
+}
+
+template <typename TrackType,
+          typename TrackTypeCheck = typename std::enable_if<
+              std::is_convertible<TrackType, perfetto::Track>::value>::type>
+inline void AddTraceEvent(char phase,
+                          const unsigned char* category_group_enabled,
+                          perfetto::StaticString name,
+                          const TrackType& track) {
+  AddTraceEvent(phase, category_group_enabled, name, track, base::TimeTicks(),
                 [](perfetto::EventContext ctx) {});
 }
 
-template <typename NameType,
-          typename TrackType,
+template <typename TrackType,
           typename TrackTypeCheck = typename std::enable_if<
               std::is_convertible<TrackType, perfetto::Track>::value>::type>
 inline void AddTraceEvent(char phase,
                           const unsigned char* category_group_enabled,
-                          NameType name,
-                          const TrackType& track) {
-  AddTraceEvent(phase, category_group_enabled, static_cast<const char*>(name),
-                track, base::TimeTicks(), [](perfetto::EventContext ctx) {});
-}
-
-template <typename NameType,
-          typename TrackType,
-          typename TrackTypeCheck = typename std::enable_if<
-              std::is_convertible<TrackType, perfetto::Track>::value>::type>
-inline void AddTraceEvent(char phase,
-                          const unsigned char* category_group_enabled,
-                          NameType name,
+                          perfetto::StaticString name,
                           const TrackType& track,
                           base::TimeTicks timestamp) {
-  AddTraceEvent(phase, category_group_enabled, static_cast<const char*>(name),
-                track, timestamp, [](perfetto::EventContext ctx) {});
+  AddTraceEvent(phase, category_group_enabled, name, track, timestamp,
+                [](perfetto::EventContext ctx) {});
 }
 
 }  // namespace trace_event_internal

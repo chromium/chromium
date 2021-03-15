@@ -118,7 +118,7 @@ namespace trace_event_internal {
 base::trace_event::TrackEventHandle CreateTrackEvent(
     char phase,
     const unsigned char* category_group_enabled,
-    const char* name,
+    perfetto::StaticString name,
     base::TimeTicks ts,
     uint64_t track_uuid,
     bool explicit_track) {
@@ -140,7 +140,7 @@ base::trace_event::TrackEventHandle CreateTrackEvent(
       GetPhaseAndIdForTraceLog(explicit_track, track_uuid, phase);
 
   if (!trace_log->ShouldAddAfterUpdatingState(
-          phase_and_id_for_trace_log.first, category_group_enabled, name,
+          phase_and_id_for_trace_log.first, category_group_enabled, name.value,
           phase_and_id_for_trace_log.second, thread_id, nullptr)) {
     return base::trace_event::TrackEventHandle();
   }
@@ -167,7 +167,7 @@ base::trace_event::TrackEventHandle CreateTrackEvent(
 
   base::trace_event::TraceEvent event(
       thread_id, ts, thread_now, thread_instruction_now, phase,
-      category_group_enabled, name, trace_event_internal::kGlobalScope,
+      category_group_enabled, name.value, trace_event_internal::kGlobalScope,
       trace_event_internal::kNoId, trace_event_internal::kNoId, nullptr, flags);
 
   return g_typed_event_callback(&event);
