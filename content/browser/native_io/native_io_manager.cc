@@ -125,7 +125,8 @@ NativeIOManager::~NativeIOManager() {
 
 void NativeIOManager::BindReceiver(
     const url::Origin& origin,
-    mojo::PendingReceiver<blink::mojom::NativeIOHost> receiver) {
+    mojo::PendingReceiver<blink::mojom::NativeIOHost> receiver,
+    mojo::ReportBadMessageCallback bad_message_callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   auto it = hosts_.find(origin);
@@ -135,7 +136,8 @@ void NativeIOManager::BindReceiver(
     // Notably this includes the https and chrome-extension schemes, among
     // others.
     if (!network::IsOriginPotentiallyTrustworthy(origin)) {
-      mojo::ReportBadMessage("Called NativeIO from an insecure context");
+      std::move(bad_message_callback)
+          .Run("Called NativeIO from an insecure context");
       return;
     }
 

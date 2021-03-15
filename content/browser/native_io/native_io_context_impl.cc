@@ -49,9 +49,10 @@ void NativeIOContextImpl::BindReceiver(
   DCHECK(initialize_called_) << __func__ << " called before Initialize()";
 #endif  // DCHECK_IS_ON()
   content::GetIOThreadTaskRunner({})->PostTask(
-      FROM_HERE, base::BindOnce(&NativeIOContextImpl::BindReceiverOnIOThread,
-                                scoped_refptr<NativeIOContextImpl>(this),
-                                origin, std::move(receiver)));
+      FROM_HERE,
+      base::BindOnce(&NativeIOContextImpl::BindReceiverOnIOThread,
+                     scoped_refptr<NativeIOContextImpl>(this), origin,
+                     std::move(receiver), mojo::GetBadMessageCallback()));
 }
 
 void NativeIOContextImpl::DeleteOriginData(
@@ -118,10 +119,12 @@ void NativeIOContextImpl::InitializeOnIOThread(
 
 void NativeIOContextImpl::BindReceiverOnIOThread(
     const url::Origin& origin,
-    mojo::PendingReceiver<blink::mojom::NativeIOHost> receiver) {
+    mojo::PendingReceiver<blink::mojom::NativeIOHost> receiver,
+    mojo::ReportBadMessageCallback bad_message_callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
 
-  native_io_manager_->BindReceiver(origin, std::move(receiver));
+  native_io_manager_->BindReceiver(origin, std::move(receiver),
+                                   std::move(bad_message_callback));
 }
 
 void NativeIOContextImpl::DeleteOriginDataOnIOThread(

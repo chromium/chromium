@@ -71,7 +71,8 @@ class CONTENT_EXPORT NativeIOContextImpl : public NativeIOContext {
 
   void BindReceiverOnIOThread(
       const url::Origin& origin,
-      mojo::PendingReceiver<blink::mojom::NativeIOHost> receiver);
+      mojo::PendingReceiver<blink::mojom::NativeIOHost> receiver,
+      mojo::ReportBadMessageCallback bad_message_callback);
 
   void DeleteOriginDataOnIOThread(
       const url::Origin& origin,

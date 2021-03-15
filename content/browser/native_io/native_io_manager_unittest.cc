@@ -257,9 +257,11 @@ class NativeIOManagerTest : public testing::TestWithParam<bool> {
         /*special storage policy=*/nullptr, quota_manager_proxy());
 
     manager_->BindReceiver(url::Origin::Create(GURL(kExampleOrigin)),
-                           example_host_remote_.BindNewPipeAndPassReceiver());
+                           example_host_remote_.BindNewPipeAndPassReceiver(),
+                           GetBadMessageCallback());
     manager_->BindReceiver(url::Origin::Create(GURL(kGoogleOrigin)),
-                           google_host_remote_.BindNewPipeAndPassReceiver());
+                           google_host_remote_.BindNewPipeAndPassReceiver(),
+                           GetBadMessageCallback());
 
     sync_manager_ =
         std::make_unique<NativeIOManagerSync>(std::move(manager_.get()));
@@ -287,6 +289,13 @@ class NativeIOManagerTest : public testing::TestWithParam<bool> {
     return static_cast<storage::MockQuotaManagerProxy*>(
         quota_manager_proxy_.get());
   }
+
+  mojo::ReportBadMessageCallback GetBadMessageCallback() {
+    return base::BindOnce(&NativeIOManagerTest::OnBadMessage,
+                          base::Unretained(this));
+  }
+
+  void OnBadMessage(const std::string& reason) { NOTREACHED(); }
 
   // This must be above NativeIOManager, to ensure that no file is accessed when
   // the temporary directory is deleted.
@@ -677,11 +686,11 @@ TEST_P(NativeIOManagerTest, OriginIsolation) {
 TEST_P(NativeIOManagerTest, BindReceiver_UntrustworthyOrigin) {
   mojo::Remote<blink::mojom::NativeIOHost> insecure_host_remote_;
 
-  // Create a fake dispatch context to trigger a bad message in.
   FakeMojoMessageDispatchContext fake_dispatch_context;
   mojo::test::BadMessageObserver bad_message_observer;
   manager_->BindReceiver(url::Origin::Create(GURL("http://insecure.com")),
-                         insecure_host_remote_.BindNewPipeAndPassReceiver());
+                         insecure_host_remote_.BindNewPipeAndPassReceiver(),
+                         mojo::GetBadMessageCallback());
   EXPECT_EQ("Called NativeIO from an insecure context",
             bad_message_observer.WaitForBadMessage());
 }
@@ -838,7 +847,8 @@ TEST_P(NativeIOManagerTest, GetOriginsByHost_ReturnsActiveOrigins) {
       std::string(kExampleOrigin).append(":1");
   manager_->BindReceiver(
       url::Origin::Create(GURL(example_with_port_origin)),
-      example_with_port_host_remote.BindNewPipeAndPassReceiver());
+      example_with_port_host_remote.BindNewPipeAndPassReceiver(),
+      GetBadMessageCallback());
   NativeIOHostSync example_with_port_host(example_with_port_host_remote.get());
   mojo::Remote<blink::mojom::NativeIOFileHost>
       example_with_port_file_host_remote;
