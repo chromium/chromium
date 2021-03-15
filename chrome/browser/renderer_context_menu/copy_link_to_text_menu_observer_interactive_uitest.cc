@@ -2,19 +2,20 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/extensions/extension_browsertest.h"
 #include "chrome/browser/renderer_context_menu/copy_link_to_text_menu_observer.h"
 
 #include "base/macros.h"
 
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/app/chrome_command_ids.h"
+#include "chrome/browser/extensions/extension_browsertest.h"
 #include "chrome/browser/renderer_context_menu/mock_render_view_context_menu.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/test/base/chrome_test_utils.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "components/shared_highlighting/core/common/shared_highlighting_features.h"
 #include "content/public/browser/context_menu_params.h"
 #include "content/public/test/browser_test.h"
 #include "net/dns/mock_host_resolver.h"
@@ -30,16 +31,18 @@ class CopyLinkToTextMenuObserverTest
   CopyLinkToTextMenuObserverTest();
 
   void SetUp() override {
-    InProcessBrowserTest::SetUp();
     base::test::ScopedFeatureList scoped_feature_list;
-
     if (GetParam()) {
-      scoped_feature_list.InitAndEnableFeature(
-          features::kPreemtiveLinkToTextGeneration);
+      scoped_feature_list.InitWithFeatures(
+          {features::kPreemtiveLinkToTextGeneration,
+           shared_highlighting::kSharedHighlightingUseBlocklist},
+          {});
     } else {
-      scoped_feature_list.InitAndDisableFeature(
-          features::kPreemtiveLinkToTextGeneration);
+      scoped_feature_list.InitWithFeatures(
+          {shared_highlighting::kSharedHighlightingUseBlocklist},
+          {features::kPreemtiveLinkToTextGeneration});
     }
+    InProcessBrowserTest::SetUp();
   }
 
   void SetUpOnMainThread() override {
@@ -73,10 +76,7 @@ class CopyLinkToTextMenuObserverTest
     observer_->InitMenu(params);
   }
 
-  bool ShouldPreemptivelyGenerateLink() {
-    return base::FeatureList::IsEnabled(
-        features::kPreemtiveLinkToTextGeneration);
-  }
+  bool ShouldPreemptivelyGenerateLink() { return GetParam(); }
 
   ~CopyLinkToTextMenuObserverTest() override;
   MockRenderViewContextMenu* menu() { return menu_.get(); }
@@ -97,6 +97,7 @@ IN_PROC_BROWSER_TEST_P(CopyLinkToTextMenuObserverTest, AddsMenuItem) {
   content::ContextMenuParams params;
   params.page_url = GURL("http://foo.com/");
   params.selection_text = base::UTF8ToUTF16("hello world");
+  observer()->OverrideGeneratedSelectorForTesting(std::string());
   InitMenu(params);
   EXPECT_EQ(1u, menu()->GetMenuSize());
   MockRenderViewContextMenu::MockMenuItem item;
@@ -132,14 +133,19 @@ IN_PROC_BROWSER_TEST_P(CopyLinkToTextMenuObserverTest,
   content::ContextMenuParams params;
   params.page_url = GURL("http://foo.com/");
   params.selection_text = base::UTF8ToUTF16("hello world");
-  observer()->OverrideGeneratedSelectorForTesting("");
+  observer()->OverrideGeneratedSelectorForTesting(std::string());
   InitMenu(params);
-  menu()->ExecuteCommand(IDC_CONTENT_CONTEXT_COPYLINKTOTEXT, 0);
 
-  ui::Clipboard* clipboard = ui::Clipboard::GetForCurrentThread();
-  base::string16 text;
-  clipboard->ReadText(ui::ClipboardBuffer::kCopyPaste, nullptr, &text);
-  EXPECT_EQ(base::UTF8ToUTF16("http://foo.com/"), text);
+  if (ShouldPreemptivelyGenerateLink()) {
+    EXPECT_FALSE(
+        menu()->IsCommandIdEnabled(IDC_CONTENT_CONTEXT_COPYLINKTOTEXT));
+  } else {
+    menu()->ExecuteCommand(IDC_CONTENT_CONTEXT_COPYLINKTOTEXT, 0);
+    ui::Clipboard* clipboard = ui::Clipboard::GetForCurrentThread();
+    base::string16 text;
+    clipboard->ReadText(ui::ClipboardBuffer::kCopyPaste, nullptr, &text);
+    EXPECT_EQ(base::UTF8ToUTF16("http://foo.com/"), text);
+  }
 }
 
 IN_PROC_BROWSER_TEST_P(CopyLinkToTextMenuObserverTest, ReplacesRefInURL) {
@@ -179,12 +185,17 @@ IN_PROC_BROWSER_TEST_P(CopyLinkToTextMenuObserverTest,
   params.page_url = main_url;
   params.selection_text = base::UTF8ToUTF16("hello world");
   InitMenu(params);
-  menu()->ExecuteCommand(IDC_CONTENT_CONTEXT_COPYLINKTOTEXT, 0);
 
-  ui::Clipboard* clipboard = ui::Clipboard::GetForCurrentThread();
-  base::string16 text;
-  clipboard->ReadText(ui::ClipboardBuffer::kCopyPaste, nullptr, &text);
-  EXPECT_EQ(base::UTF8ToUTF16(main_url.spec()), text);
+  if (ShouldPreemptivelyGenerateLink()) {
+    EXPECT_FALSE(
+        menu()->IsCommandIdEnabled(IDC_CONTENT_CONTEXT_COPYLINKTOTEXT));
+  } else {
+    menu()->ExecuteCommand(IDC_CONTENT_CONTEXT_COPYLINKTOTEXT, 0);
+    ui::Clipboard* clipboard = ui::Clipboard::GetForCurrentThread();
+    base::string16 text;
+    clipboard->ReadText(ui::ClipboardBuffer::kCopyPaste, nullptr, &text);
+    EXPECT_EQ(base::UTF8ToUTF16(main_url.spec()), text);
+  }
 }
 
 IN_PROC_BROWSER_TEST_P(CopyLinkToTextMenuObserverTest, HiddenForExtensions) {
@@ -199,6 +210,25 @@ IN_PROC_BROWSER_TEST_P(CopyLinkToTextMenuObserverTest, HiddenForExtensions) {
   std::unique_ptr<CopyLinkToTextMenuObserver> observer =
       CopyLinkToTextMenuObserver::Create(menu());
   EXPECT_EQ(nullptr, observer);
+}
+
+IN_PROC_BROWSER_TEST_P(CopyLinkToTextMenuObserverTest, Blocklist) {
+  content::BrowserTestClipboardScope test_clipboard_scope;
+  content::ContextMenuParams params;
+  params.page_url = GURL("http://facebook.com/my-profile");
+  params.selection_text = base::UTF8ToUTF16("hello world");
+  InitMenu(params);
+
+  if (ShouldPreemptivelyGenerateLink()) {
+    EXPECT_FALSE(
+        menu()->IsCommandIdEnabled(IDC_CONTENT_CONTEXT_COPYLINKTOTEXT));
+  } else {
+    menu()->ExecuteCommand(IDC_CONTENT_CONTEXT_COPYLINKTOTEXT, 0);
+    ui::Clipboard* clipboard = ui::Clipboard::GetForCurrentThread();
+    base::string16 text;
+    clipboard->ReadText(ui::ClipboardBuffer::kCopyPaste, nullptr, &text);
+    EXPECT_EQ(base::UTF8ToUTF16("http://facebook.com/my-profile"), text);
+  }
 }
 
 INSTANTIATE_TEST_SUITE_P(All,
