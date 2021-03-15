@@ -3238,6 +3238,38 @@ NamedPropsObjNamedGetterCallback(property_name, ${info});
     return func_def
 
 
+def make_named_props_obj_indexed_setter_callback(cg_context, function_name):
+    assert isinstance(cg_context, CodeGenContext)
+    assert isinstance(function_name, str)
+
+    arg_decls = [
+        "uint32_t index",
+        "v8::Local<v8::Value> v8_property_value",
+        "const v8::PropertyCallbackInfo<v8::Value>& info",
+    ]
+    arg_names = ["index", "v8_property_value", "info"]
+
+    func_def = _make_interceptor_callback_def(
+        cg_context, function_name, arg_decls, arg_names, None,
+        "NamedPropertiesObject_IndexedPropertySetter")
+    body = func_def.body
+
+    body.append(
+        TextNode("""\
+// 3.6.4.2. [[DefineOwnProperty]]
+// https://heycam.github.io/webidl/#named-properties-object-defineownproperty
+bindings::V8SetReturnValue(${info}, nullptr);
+if (${info}.ShouldThrowOnError()) {
+  ExceptionState exception_state(${info}.GetIsolate(),
+                                 ExceptionState::kIndexedSetterContext,
+                                 "${interface.identifier}");
+  exception_state.ThrowTypeError("Named property setter is not supported.");
+}
+"""))
+
+    return func_def
+
+
 def make_named_props_obj_indexed_deleter_callback(cg_context, function_name):
     assert isinstance(cg_context, CodeGenContext)
     assert isinstance(function_name, str)
@@ -3292,7 +3324,7 @@ if (${info}.ShouldThrowOnError()) {
   ExceptionState exception_state(${info}.GetIsolate(),
                                  ExceptionState::kIndexedSetterContext,
                                  "${interface.identifier}");
-  exception_state.ThrowTypeError("Named property deleter is not supported.");
+  exception_state.ThrowTypeError("Named property setter is not supported.");
 }
 """))
 
@@ -3348,6 +3380,38 @@ def make_named_props_obj_named_getter_callback(cg_context, function_name):
 // TODO(yukishiino): Update the following hard-coded call to an appropriate
 // one.
 V8Window::NamedPropertyGetterCustom(${blink_property_name}, ${info});
+"""))
+
+    return func_def
+
+
+def make_named_props_obj_named_setter_callback(cg_context, function_name):
+    assert isinstance(cg_context, CodeGenContext)
+    assert isinstance(function_name, str)
+
+    arg_decls = [
+        "v8::Local<v8::Name> v8_property_name",
+        "v8::Local<v8::Value> v8_property_value",
+        "const v8::PropertyCallbackInfo<v8::Value>& info",
+    ]
+    arg_names = ["v8_property_name", "v8_property_value", "info"]
+
+    func_def = _make_interceptor_callback_def(
+        cg_context, function_name, arg_decls, arg_names, None,
+        "NamedPropertiesObject_NamedPropertySetter")
+    body = func_def.body
+
+    body.append(
+        TextNode("""\
+// 3.6.4.2. [[DefineOwnProperty]]
+// https://heycam.github.io/webidl/#named-properties-object-defineownproperty
+bindings::V8SetReturnValue(${info}, nullptr);
+if (${info}.ShouldThrowOnError()) {
+  ExceptionState exception_state(${info}.GetIsolate(),
+                                 ExceptionState::kNamedSetterContext,
+                                 "${interface.identifier}");
+  exception_state.ThrowTypeError("Named property setter is not supported.");
+}
 """))
 
     return func_def
@@ -5863,6 +5927,8 @@ def make_named_properties_object_callbacks_and_install_node(cg_context):
     func_defs = [
         make_named_props_obj_named_getter_callback(
             cg_context, "NamedPropsObjNamedGetterCallback"),
+        make_named_props_obj_named_setter_callback(
+            cg_context, "NamedPropsObjNamedSetterCallback"),
         make_named_props_obj_named_deleter_callback(
             cg_context, "NamedPropsObjNamedDeleterCallback"),
         make_named_props_obj_named_definer_callback(
@@ -5871,6 +5937,8 @@ def make_named_properties_object_callbacks_and_install_node(cg_context):
             cg_context, "NamedPropsObjNamedDescriptorCallback"),
         make_named_props_obj_indexed_getter_callback(
             cg_context, "NamedPropsObjIndexedGetterCallback"),
+        make_named_props_obj_indexed_setter_callback(
+            cg_context, "NamedPropsObjIndexedSetterCallback"),
         make_named_props_obj_indexed_deleter_callback(
             cg_context, "NamedPropsObjIndexedDeleterCallback"),
         make_named_props_obj_indexed_definer_callback(
@@ -5887,7 +5955,7 @@ def make_named_properties_object_callbacks_and_install_node(cg_context):
 ${npo_prototype_template}->SetHandler(
     v8::NamedPropertyHandlerConfiguration(
         NamedPropsObjNamedGetterCallback,
-        nullptr,  // setter
+        NamedPropsObjNamedSetterCallback,
         nullptr,  // query
         NamedPropsObjNamedDeleterCallback,
         nullptr,  // enumerator
@@ -5901,7 +5969,7 @@ ${npo_prototype_template}->SetHandler(
 ${npo_prototype_template}->SetHandler(
     v8::IndexedPropertyHandlerConfiguration(
         NamedPropsObjIndexedGetterCallback,
-        nullptr,  // setter
+        NamedPropsObjIndexedSetterCallback,
         nullptr,  // query
         NamedPropsObjIndexedDeleterCallback,
         nullptr,  // enumerator
