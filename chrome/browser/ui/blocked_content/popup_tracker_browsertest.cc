@@ -547,7 +547,14 @@ IN_PROC_BROWSER_TEST_F(PopupTrackerBrowserTest, PopupInTab_IsWindowFalse) {
       static_cast<int>(WindowOpenDisposition::NEW_FOREGROUND_TAB));
 }
 
-IN_PROC_BROWSER_TEST_F(PopupTrackerBrowserTest, PopupInWindow_IsWindowTrue) {
+// TODO(crbug.com/1178846): Test is flaky on Linux.
+#if defined(OS_LINUX)
+#define MAYBE_PopupInWindow_IsWindowTrue DISABLED_PopupInWindow_IsWindowTrue
+#else
+#define MAYBE_PopupInWindow_IsWindowTrue PopupInWindow_IsWindowTrue
+#endif
+IN_PROC_BROWSER_TEST_F(PopupTrackerBrowserTest,
+                       MAYBE_PopupInWindow_IsWindowTrue) {
   const GURL first_url = embedded_test_server()->GetURL("/title1.html");
   ui_test_utils::NavigateToURL(browser(), first_url);
 
