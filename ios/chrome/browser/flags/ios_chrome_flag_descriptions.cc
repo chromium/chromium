@@ -161,10 +161,11 @@ const char kEditPasswordsInSettingsName[] = "Edit passwords in settings";
 const char kEditPasswordsInSettingsDescription[] =
     "Enables password editing in settings.";
 
-const char kEmbedderBlockRestoreUrlName[] =
-    "Allow embedders to prevent certain URLs from restoring.";
-const char kEmbedderBlockRestoreUrlDescription[] =
-    "Embedders can prevent URLs from restoring.";
+const char kRestoreSessionFromCacheName[] =
+    "Use iOS_TBA native WKWebView sesion restoration.";
+const char kRestoreSessionFromCacheDescription[] =
+    "Enable iOS_TBA instant session restoration for faster and more "
+    "web session restoration.";
 
 const char kEnableAutofillAddressSavePromptName[] =
     "Autofill Address Save Prompts";

@@ -36,11 +36,6 @@ bool FakeWebClient::IsAppSpecificURL(const GURL& url) const {
   return url.SchemeIs(kTestWebUIScheme) || url.SchemeIs(kTestAppSpecificScheme);
 }
 
-bool FakeWebClient::ShouldBlockUrlDuringRestore(const GURL& url,
-                                                WebState* web_state) const {
-  return false;
-}
-
 void FakeWebClient::AddSerializableData(
     web::SerializableUserDataManager* user_data_manager,
     web::WebState* web_state) {}

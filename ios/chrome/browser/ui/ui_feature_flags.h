@@ -17,9 +17,6 @@ extern const base::Feature kSnapshotDrawView;
 // Feature to apply UI Refresh theme to the settings.
 extern const base::Feature kSettingsRefresh;
 
-// Feature flag for embedders to block restore urls.
-extern const base::Feature kEmbedderBlockRestoreUrl;
-
 // Feature flag to use the unstacked tabstrip when voiceover is enabled.
 extern const base::Feature kVoiceOverUnstackedTabstrip;
 
