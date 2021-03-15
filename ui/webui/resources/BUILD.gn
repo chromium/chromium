@@ -58,6 +58,11 @@ generate_grd("build_grd") {
     deps += [ "//third_party/web-animations-js:build_grdp" ]
     grdp_files += [ "$root_gen_dir/third_party/web-animations-js/web_animations_resources.grdp" ]
   }
+
+  if (!is_android && !is_ios) {
+    deps += [ "//third_party/lottie:build_grdp" ]
+    grdp_files += [ "$root_gen_dir/third_party/lottie/resources.grdp" ]
+  }
 }
 
 group("preprocess") {
