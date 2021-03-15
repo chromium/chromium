@@ -213,7 +213,7 @@ void AppServiceAppWindowLauncherController::OnWindowVisibilityChanged(
     return;
 
   if (arc_tracker_)
-    arc_tracker_->OnWindowVisibilityChanged(window);
+    arc_tracker_->HandleWindowVisibilityChanged(window);
 
   ash::ShelfID shelf_id = GetShelfId(window);
   if (shelf_id.IsNull())

@@ -636,10 +636,6 @@ void ArcAppListPrefs::SetResizeLockState(const std::string& app_id,
     return;
   }
 
-  arc::ArcAppScopedPrefUpdate update(prefs_, app_id, arc::prefs::kArcApps);
-  base::DictionaryValue* app_dict = update.Get();
-  app_dict->SetInteger(kResizeLockState, static_cast<int32_t>(state));
-
   std::unique_ptr<AppInfo> app_info = GetApp(app_id);
   if (!app_info) {
     VLOG(2) << "Failed to get app info: " << app_id << ".";
@@ -656,6 +652,10 @@ void ArcAppListPrefs::SetResizeLockState(const std::string& app_id,
     return;
 
   instance->SetResizeLockState(app_info->package_name, state);
+
+  arc::ArcAppScopedPrefUpdate update(prefs_, app_id, arc::prefs::kArcApps);
+  base::DictionaryValue* app_dict = update.Get();
+  app_dict->SetInteger(kResizeLockState, static_cast<int32_t>(state));
 
   for (auto& observer : observer_list_)
     observer.OnResizeLockStateChanged(app_id, state);
@@ -1273,6 +1273,10 @@ void ArcAppListPrefs::AddAppAndShortcut(
       observer.OnAppRegistered(app_id, app_info);
     default_apps_->SetAppHidden(app_id, false);
     tracked_apps_.insert(app_id);
+
+    // Newly installed apps are subject to ARC++ resize lock. Set the state to
+    // READY so the lock will be turned on next time they are launched.
+    SetResizeLockState(app_id, arc::mojom::ArcResizeLockState::READY);
   }
 
   // Send pending requests in case app becomes visible.

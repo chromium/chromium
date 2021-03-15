@@ -56,6 +56,7 @@ AppServiceAppWindowArcTracker::~AppServiceAppWindowArcTracker() {
   ArcAppListPrefs* const prefs = ArcAppListPrefs::Get(observed_profile_);
   DCHECK(prefs);
   prefs->RemoveObserver(this);
+  observed_windows_.RemoveAll();
 }
 
 void AppServiceAppWindowArcTracker::ActiveUserChanged(
@@ -82,7 +83,7 @@ void AppServiceAppWindowArcTracker::ActiveUserChanged(
   }
 }
 
-void AppServiceAppWindowArcTracker::OnWindowVisibilityChanged(
+void AppServiceAppWindowArcTracker::HandleWindowVisibilityChanged(
     aura::Window* window) {
   const int task_id = arc::GetWindowTaskId(window);
   if (task_id == arc::kNoTaskId || task_id == arc::kSystemWindowTaskId)
@@ -95,7 +96,8 @@ void AppServiceAppWindowArcTracker::OnWindowVisibilityChanged(
       user_manager::UserManager::Get()->GetPrimaryUser()->GetAccountId());
 }
 
-void AppServiceAppWindowArcTracker::OnWindowDestroying(aura::Window* window) {
+void AppServiceAppWindowArcTracker::HandleWindowDestroying(
+    aura::Window* window) {
   app_service_controller_->UnregisterWindow(window);
   // Replace the pointers to the window by nullptr to prevent from using it
   // before OnTaskDestroyed() is called to remove the entry from
@@ -104,6 +106,9 @@ void AppServiceAppWindowArcTracker::OnWindowDestroying(aura::Window* window) {
   auto it = task_id_to_arc_app_window_info_.find(task_id);
   if (it != task_id_to_arc_app_window_info_.end())
     it->second->set_window(nullptr);
+
+  if (observed_windows_.IsObserving(window))
+    observed_windows_.Remove(window);
 }
 
 void AppServiceAppWindowArcTracker::OnAppStatesChanged(
@@ -285,6 +290,27 @@ void AppServiceAppWindowArcTracker::OnTaskSetActive(int32_t task_id) {
       std::string(), state);
 }
 
+void AppServiceAppWindowArcTracker::OnWindowPropertyChanged(
+    aura::Window* window,
+    const void* key,
+    intptr_t old) {
+  if (key != ash::kArcResizeLockKey)
+    return;
+  const auto new_resize_lock_state =
+      window->GetProperty(ash::kArcResizeLockKey);
+  const auto* app_id = window->GetProperty(ash::kAppIDKey);
+  if (!app_id)
+    return;
+  ArcAppListPrefs* const prefs = ArcAppListPrefs::Get(observed_profile_);
+  DCHECK(prefs);
+  const auto current_resize_lock_state = prefs->GetResizeLockState(*app_id);
+  if (new_resize_lock_state &&
+      current_resize_lock_state == arc::mojom::ArcResizeLockState::READY) {
+    prefs->SetResizeLockState(*app_id, arc::mojom::ArcResizeLockState::ON);
+    // TODO(b/180253004): Show the splash screen.
+  }
+}
+
 void AppServiceAppWindowArcTracker::AttachControllerToWindow(
     aura::Window* window) {
   const int task_id = arc::GetWindowTaskId(window);
@@ -329,6 +355,7 @@ void AppServiceAppWindowArcTracker::AttachControllerToWindow(
           chromeos::features::kArcPreImeKeyEventSupport)) {
     window->SetProperty(aura::client::kSkipImeProcessing, true);
   }
+  observed_windows_.Add(window);
 
   if (info->app_shelf_id().app_id() == arc::kPlayStoreAppId)
     HandlePlayStoreLaunch(info);
@@ -341,6 +368,8 @@ void AppServiceAppWindowArcTracker::AddCandidateWindow(aura::Window* window) {
 void AppServiceAppWindowArcTracker::RemoveCandidateWindow(
     aura::Window* window) {
   arc_window_candidates_.erase(window);
+  if (observed_windows_.IsObserving(window))
+    observed_windows_.Remove(window);
 }
 
 void AppServiceAppWindowArcTracker::OnItemDelegateDiscarded(
