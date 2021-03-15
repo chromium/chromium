@@ -899,6 +899,17 @@ _CONFIG = [
     },
     {
         'paths': [
+            'third_party/blink/renderer/core/timing/background_tracing_helper.cc',
+            'third_party/blink/renderer/core/timing/background_tracing_helper.h',
+        ],
+        'allowed': [
+            'base::MD5Digest',
+            'base::MD5Sum',
+            'base::StringPiece',
+        ]
+    },
+    {
+        'paths': [
             'third_party/blink/renderer/modules/mediasource/',
         ],
         'allowed': [

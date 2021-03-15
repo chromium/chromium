@@ -57,9 +57,10 @@ class TickClock;
 
 namespace blink {
 
-class PerformanceMarkOptions;
+class BackgroundTracingHelper;
 class EventCounts;
 class ExceptionState;
+class ExecutionContext;
 class LargestContentfulPaint;
 class LayoutShift;
 class MemoryInfo;
@@ -67,6 +68,7 @@ class Node;
 class PerformanceElementTiming;
 class PerformanceEventTiming;
 class PerformanceMark;
+class PerformanceMarkOptions;
 class PerformanceMeasure;
 class PerformanceNavigation;
 class PerformanceObserver;
@@ -341,7 +343,8 @@ class CORE_EXPORT Performance : public EventTargetWithInlineData {
 
  protected:
   Performance(base::TimeTicks time_origin,
-              scoped_refptr<base::SingleThreadTaskRunner>);
+              scoped_refptr<base::SingleThreadTaskRunner>,
+              ExecutionContext* context = nullptr);
 
   // Expect WindowPerformance to override this method,
   // WorkerPerformance doesn't have to override this.
@@ -391,6 +394,9 @@ class CORE_EXPORT Performance : public EventTargetWithInlineData {
   scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
   HeapTaskRunnerTimer<Performance> deliver_observations_timer_;
   HeapTaskRunnerTimer<Performance> resource_timing_buffer_full_timer_;
+
+  // See crbug.com/1181774.
+  Member<BackgroundTracingHelper> background_tracing_helper_;
 };
 
 }  // namespace blink

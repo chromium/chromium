@@ -58,6 +58,7 @@
 #include "third_party/blink/renderer/core/loader/document_load_timing.h"
 #include "third_party/blink/renderer/core/loader/document_loader.h"
 #include "third_party/blink/renderer/core/probe/core_probes.h"
+#include "third_party/blink/renderer/core/timing/background_tracing_helper.h"
 #include "third_party/blink/renderer/core/timing/largest_contentful_paint.h"
 #include "third_party/blink/renderer/core/timing/layout_shift.h"
 #include "third_party/blink/renderer/core/timing/measure_memory/measure_memory_controller.h"
@@ -110,7 +111,8 @@ constexpr size_t kDefaultLongTaskBufferSize = 200;
 
 Performance::Performance(
     base::TimeTicks time_origin,
-    scoped_refptr<base::SingleThreadTaskRunner> task_runner)
+    scoped_refptr<base::SingleThreadTaskRunner> task_runner,
+    ExecutionContext* context)
     : resource_timing_buffer_size_limit_(kDefaultResourceTimingBufferSize),
       event_timing_buffer_max_size_(kDefaultEventTimingBufferSize),
       element_timing_buffer_max_size_(kDefaultElementTimingBufferSize),
@@ -129,6 +131,11 @@ Performance::Performance(
   unix_at_zero_monotonic_ = ConvertSecondsToDOMHighResTimeStamp(
       base::DefaultClock::GetInstance()->Now().ToDoubleT() -
       tick_clock_->NowTicks().since_origin().InSecondsF());
+  // |context| may be null in tests.
+  if (context) {
+    background_tracing_helper_ =
+        MakeGarbageCollected<BackgroundTracingHelper>(context);
+  }
 }
 
 Performance::~Performance() = default;
@@ -715,6 +722,8 @@ PerformanceMark* Performance::mark(ScriptState* script_state,
   PerformanceMark* performance_mark = PerformanceMark::Create(
       script_state, mark_name, mark_options, exception_state);
   if (performance_mark) {
+    background_tracing_helper_->MaybeEmitBackgroundTracingPerformanceMarkEvent(
+        *performance_mark);
     GetUserTiming().AddMarkToPerformanceTimeline(*performance_mark);
     NotifyObserversOfEntry(*performance_mark);
   }
@@ -1061,6 +1070,7 @@ void Performance::Trace(Visitor* visitor) const {
   visitor->Trace(suspended_observers_);
   visitor->Trace(deliver_observations_timer_);
   visitor->Trace(resource_timing_buffer_full_timer_);
+  visitor->Trace(background_tracing_helper_);
   EventTargetWithInlineData::Trace(visitor);
 }
 

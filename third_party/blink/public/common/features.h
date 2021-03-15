@@ -358,6 +358,13 @@ BLINK_COMMON_EXPORT extern const base::Feature kScopeMemoryCachePerContext;
 
 BLINK_COMMON_EXPORT extern const base::Feature kEnablePenetratingImageSelection;
 
+// Used to configure a per-origin allowlist of performance.mark events that are
+// permitted to be included in slow reports traces. See crbug.com/1181774.
+BLINK_COMMON_EXPORT extern const base::Feature
+    kBackgroundTracingPerformanceMark;
+BLINK_COMMON_EXPORT extern const base::FeatureParam<std::string>
+    kBackgroundTracingPerformanceMark_AllowList;
+
 }  // namespace features
 }  // namespace blink
 

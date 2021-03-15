@@ -868,5 +868,13 @@ const base::Feature kScopeMemoryCachePerContext{
 const base::Feature kEnablePenetratingImageSelection{
     "EnablePenetratingImageSelection", base::FEATURE_DISABLED_BY_DEFAULT};
 
+// Used to configure a per-origin allowlist of performance.mark events that are
+// permitted to be included in slow reports traces. See crbug.com/1181774.
+const base::Feature kBackgroundTracingPerformanceMark{
+    "BackgroundTracingPerformanceMark", base::FEATURE_DISABLED_BY_DEFAULT};
+const base::FeatureParam<std::string>
+    kBackgroundTracingPerformanceMark_AllowList{
+        &kBackgroundTracingPerformanceMark, "allow_list", ""};
+
 }  // namespace features
 }  // namespace blink

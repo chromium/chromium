@@ -153,7 +153,8 @@ static base::TimeTicks ToTimeOrigin(LocalDOMWindow* window) {
 
 WindowPerformance::WindowPerformance(LocalDOMWindow* window)
     : Performance(ToTimeOrigin(window),
-                  window->GetTaskRunner(TaskType::kPerformanceTimeline)),
+                  window->GetTaskRunner(TaskType::kPerformanceTimeline),
+                  window),
       ExecutionContextClient(window),
       PageVisibilityObserver(window->GetFrame()->GetPage()) {
   DCHECK(window);

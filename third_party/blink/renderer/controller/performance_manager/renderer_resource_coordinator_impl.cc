@@ -28,6 +28,7 @@
 #include "third_party/blink/renderer/platform/wtf/casting.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_copier.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_functional.h"
+#include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
 using performance_manager::mojom::blink::IframeAttributionData;
 using performance_manager::mojom::blink::IframeAttributionDataPtr;
@@ -246,6 +247,11 @@ void RendererResourceCoordinatorImpl::OnBeforeContentFrameDetached(
   service_->OnRemoteIframeDetached(
       parent->GetLocalFrameToken(),
       frame.GetFrameToken().GetAs<RemoteFrameToken>());
+}
+
+void RendererResourceCoordinatorImpl::FireBackgroundTracingTrigger(
+    const String& trigger_name) {
+  // TODO(crbug.com/1181774): Implement this.
 }
 
 RendererResourceCoordinatorImpl::RendererResourceCoordinatorImpl(
