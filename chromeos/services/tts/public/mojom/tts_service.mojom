@@ -82,9 +82,10 @@ interface GoogleTtsStream {
   SelectVoice(string voice_name) => (bool success);
 
   // Speak text described by a serialized proto.speech.tts.Text proto with the
-  // speaker given by speaker_name. The call will fail if no speaker is given
-  // and the voice model is a multi-speaker model.
-  Speak(array<uint8> text_jspb, string speaker_name)
+  // speaker params described by a serialized proto.speech.tts.SpeakerParams
+  // proto. The call will fail if no speaker name is given and the voice model
+  // is a multi-speaker model.
+  Speak(array<uint8> text_jspb, array<uint8> speaker_params_jspb)
       => (pending_receiver<TtsEventObserver> event_observer);
 
   // Stop speaking the currently speaking text, if any.
