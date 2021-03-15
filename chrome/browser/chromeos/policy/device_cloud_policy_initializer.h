@@ -133,6 +133,24 @@ class DeviceCloudPolicyInitializer : public CloudPolicyStore::Observer {
         this};
   };
 
+  // TODO(crbug.com/705758) When DeviceCloudPolicyInitializer starts connection,
+  // that means it will be deleted soon by
+  // |BrowserPolicyConnectorChromeOS::OnDeviceCloudPolicyManagerConnected|.
+  // Sometimes this happens before |EnterpriseEnrollmentHelperImpl::DoEnroll|
+  // initiates |StartConnection| and leads to a crash. Track the reason of
+  // |StartConnection| call to find who initiates removal. Remove once the crash
+  // is resolved.
+  enum class StartConnectionReason {
+    // |StartConnection| succeeds after call from |Init|.
+    kInitialCreation = 0,
+    // |StartConnection| succeeds after notification from |state_keys_broker_|.
+    kStateKeysStored = 1,
+    // |StartConnection| succeeds after notification from |policy_store_|.
+    kCloudPolicyLoaded = 2,
+    // |StartConnection| succeeds after call from |StartEnrollment|.
+    kEnrollmentCompleted = 3,
+  };
+
   FRIEND_TEST_ALL_PREFIXES(
       DeviceCloudPolicyInitializerTpmEnrollmentKeySigningServiceTest,
       SigningSuccess);
@@ -148,8 +166,9 @@ class DeviceCloudPolicyInitializer : public CloudPolicyStore::Observer {
   std::unique_ptr<CloudPolicyClient> CreateClient(
       DeviceManagementService* device_management_service);
 
-  void TryToCreateClient();
-  void StartConnection(std::unique_ptr<CloudPolicyClient> client);
+  void TryToCreateClient(StartConnectionReason reason);
+  void StartConnection(StartConnectionReason reason,
+                       std::unique_ptr<CloudPolicyClient> client);
 
   // Get a machine flag from |statistics_provider_|, returning the given
   // |default_value| if not present.

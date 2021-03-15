@@ -101,11 +101,12 @@ void DeviceCloudPolicyInitializer::Init() {
 
   is_initialized_ = true;
   policy_store_->AddObserver(this);
-  state_keys_update_subscription_ = state_keys_broker_->RegisterUpdateCallback(
-      base::BindRepeating(&DeviceCloudPolicyInitializer::TryToCreateClient,
-                          base::Unretained(this)));
+  state_keys_update_subscription_ =
+      state_keys_broker_->RegisterUpdateCallback(base::BindRepeating(
+          &DeviceCloudPolicyInitializer::TryToCreateClient,
+          base::Unretained(this), StartConnectionReason::kStateKeysStored));
 
-  TryToCreateClient();
+  TryToCreateClient(StartConnectionReason::kInitialCreation);
 }
 
 void DeviceCloudPolicyInitializer::Shutdown() {
@@ -281,7 +282,7 @@ EnrollmentConfig DeviceCloudPolicyInitializer::GetPrescribedEnrollmentConfig()
 }
 
 void DeviceCloudPolicyInitializer::OnStoreLoaded(CloudPolicyStore* store) {
-  TryToCreateClient();
+  TryToCreateClient(StartConnectionReason::kCloudPolicyLoaded);
 }
 
 void DeviceCloudPolicyInitializer::OnStoreError(CloudPolicyStore* store) {
@@ -297,11 +298,12 @@ void DeviceCloudPolicyInitializer::EnrollmentCompleted(
 
   if (status.status() == EnrollmentStatus::SUCCESS &&
       !install_attributes_->IsActiveDirectoryManaged()) {
-    StartConnection(std::move(client));
+    StartConnection(StartConnectionReason::kEnrollmentCompleted,
+                    std::move(client));
   } else {
     // Some attempts to create a client may be blocked because the enrollment
     // was in progress. We give it a try again.
-    TryToCreateClient();
+    TryToCreateClient(StartConnectionReason::kEnrollmentCompleted);
   }
 
   if (!enrollment_callback.is_null())
@@ -344,19 +346,25 @@ std::unique_ptr<CloudPolicyClient> DeviceCloudPolicyInitializer::CreateClient(
       CloudPolicyClient::DeviceDMTokenCallback());
 }
 
-void DeviceCloudPolicyInitializer::TryToCreateClient() {
+void DeviceCloudPolicyInitializer::TryToCreateClient(
+    DeviceCloudPolicyInitializer::StartConnectionReason reason) {
   if (!policy_store_->is_initialized() || !policy_store_->has_policy() ||
       !state_keys_broker_->available() || enrollment_handler_ ||
       install_attributes_->IsActiveDirectoryManaged()) {
     return;
   }
-  StartConnection(CreateClient(enterprise_service_));
+  StartConnection(reason, CreateClient(enterprise_service_));
 }
 
 void DeviceCloudPolicyInitializer::StartConnection(
+    DeviceCloudPolicyInitializer::StartConnectionReason reason,
     std::unique_ptr<CloudPolicyClient> client) {
-  if (!policy_manager_->core()->service())
+  if (!policy_manager_->core()->service()) {
+    LOG(WARNING)
+        << "DeviceCloudPolicyInitializer will be removed soon with reason: "
+        << static_cast<int>(reason);
     policy_manager_->StartConnection(std::move(client), install_attributes_);
+  }
 }
 
 bool DeviceCloudPolicyInitializer::GetMachineFlag(const std::string& key,

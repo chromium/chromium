@@ -498,6 +498,9 @@ void BrowserPolicyConnectorChromeOS::OnDeviceCloudPolicyManagerConnected() {
   base::ThreadTaskRunnerHandle::Get()->DeleteSoon(
       FROM_HERE, std::move(device_cloud_policy_initializer_));
 
+  // TODO(crbug.com/705758): Remove once the crash is resolved.
+  LOG(WARNING) << "DeviceCloudPolicyInitializer is not available anymore.";
+
   if (!device_cert_provisioning_scheduler_) {
     // CertProvisioningScheduler depends on the device-wide CloudPolicyClient to
     // be available so it can only be created when the CloudPolicyManager is
