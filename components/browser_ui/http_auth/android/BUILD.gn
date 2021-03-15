@@ -17,6 +17,7 @@ android_library("java") {
     "//third_party/android_deps:material_design_java",
     "//third_party/androidx:androidx_appcompat_appcompat_java",
     "//ui/android:ui_java",
+    "//url:gurl_java",
   ]
   resources_package = "org.chromium.components.browser_ui.http_auth"
 }
