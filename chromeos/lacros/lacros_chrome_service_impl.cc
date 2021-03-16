@@ -309,6 +309,13 @@ class LacrosChromeServiceNeverBlockingState
     crosapi_->BindUrlHandler(std::move(pending_receiver));
   }
 
+  void BindVideoCaptureDeviceFactoryReceiver(
+      mojo::PendingReceiver<crosapi::mojom::VideoCaptureDeviceFactory>
+          pending_receiver) {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+    crosapi_->BindVideoCaptureDeviceFactory(std::move(pending_receiver));
+  }
+
   base::WeakPtr<LacrosChromeServiceNeverBlockingState> GetWeakPtr() {
     return weak_factory_.GetWeakPtr();
   }
@@ -848,6 +855,25 @@ bool LacrosChromeServiceImpl::IsOnBrowserStartupAvailable() const {
   base::Optional<uint32_t> version = CrosapiVersion();
   return version && version.value() >=
                         Crosapi::MethodMinVersions::kOnBrowserStartupMinVersion;
+}
+
+void LacrosChromeServiceImpl::BindVideoCaptureDeviceFactory(
+    mojo::PendingReceiver<crosapi::mojom::VideoCaptureDeviceFactory>
+        pending_receiver) {
+  DCHECK(IsVideoCaptureDeviceFactoryAvailable());
+
+  never_blocking_sequence_->PostTask(
+      FROM_HERE,
+      base::BindOnce(&LacrosChromeServiceNeverBlockingState::
+                         BindVideoCaptureDeviceFactoryReceiver,
+                     weak_sequenced_state_, std::move(pending_receiver)));
+}
+
+bool LacrosChromeServiceImpl::IsVideoCaptureDeviceFactoryAvailable() const {
+  base::Optional<uint32_t> version = CrosapiVersion();
+  return version && version.value() >=
+                        Crosapi::MethodMinVersions::
+                            kBindVideoCaptureDeviceFactoryMinVersion;
 }
 
 int LacrosChromeServiceImpl::GetInterfaceVersion(

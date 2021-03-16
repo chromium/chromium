@@ -32,6 +32,7 @@ class ScreenManagerAsh;
 class SelectFileAsh;
 class TestControllerAsh;
 class UrlHandlerAsh;
+class VideoCaptureDeviceFactoryAsh;
 
 // Implementation of Crosapi in Ash. It provides a set of APIs that
 // crosapi clients, such as lacros-chrome, can call into.
@@ -95,6 +96,9 @@ class CrosapiAsh : public mojom::Crosapi {
       mojo::PendingReceiver<
           chromeos::machine_learning::mojom::MachineLearningService> receiver)
       override;
+  void BindVideoCaptureDeviceFactory(
+      mojo::PendingReceiver<mojom::VideoCaptureDeviceFactory> receiver)
+      override;
 
   BrowserServiceHostAsh* browser_service_host_ash() {
     return browser_service_host_ash_.get();
@@ -119,6 +123,8 @@ class CrosapiAsh : public mojom::Crosapi {
   std::unique_ptr<SelectFileAsh> select_file_ash_;
   std::unique_ptr<TestControllerAsh> test_controller_ash_;
   std::unique_ptr<UrlHandlerAsh> url_handler_ash_;
+  std::unique_ptr<VideoCaptureDeviceFactoryAsh>
+      video_capture_device_factory_ash_;
 
   mojo::ReceiverSet<mojom::Crosapi, CrosapiId> receiver_set_;
   std::map<mojo::ReceiverId, base::OnceClosure> disconnect_handler_map_;
