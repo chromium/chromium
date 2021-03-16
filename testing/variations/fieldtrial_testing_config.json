@@ -3705,21 +3705,6 @@
             ]
         }
     ],
-    "InstantTethering": [
-        {
-            "platforms": [
-                "chromeos"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "InstantTethering"
-                    ]
-                }
-            ]
-        }
-    ],
     "IntentBlockExternalFormRedirectsNoGesture": [
         {
             "platforms": [
