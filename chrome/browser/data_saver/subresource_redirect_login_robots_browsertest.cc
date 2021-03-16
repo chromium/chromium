@@ -74,10 +74,10 @@ class SubresourceRedirectLoginRobotsBrowserTest : public InProcessBrowserTest {
           image_compression_server_.GetURL();
       // This rules fetch timeout is chosen such that the tests would have
       // enough time to fetch the rules without causing a timeout.
-      params["robots_rules_receive_timeout"] = "1500";
+      params["robots_rules_receive_timeout"] = "2500";
       // Allow first 5 images to be loaded faster.
       params["first_k_subresource_limit"] = "5";
-      params["robots_rules_receive_first_k_timeout_ms"] = "1000";
+      params["robots_rules_receive_first_k_timeout_ms"] = "2000";
       enabled_features.emplace_back(blink::features::kSubresourceRedirect,
                                     params);
       login_detection_params["logged_in_sites"] = "https://loggedin.com";
@@ -210,8 +210,9 @@ IN_PROC_BROWSER_TEST_F(SubresourceRedirectLoginRobotsBrowserTest,
 }
 
 // Test is flaky. See https://crbug.com/1187754
-IN_PROC_BROWSER_TEST_F(SubresourceRedirectLoginRobotsBrowserTest,
-                       DISABLEDTestImageDisallowedByRobots) {
+IN_PROC_BROWSER_TEST_F(
+    SubresourceRedirectLoginRobotsBrowserTest,
+    DISABLE_ON_WIN_MAC_CHROMEOS(TestImageDisallowedByRobots)) {
   CreateUkmRecorder();
   robots_rules_server_.AddRobotsRules(GetHttpsTestURL("/"),
                                       {{kRuleTypeDisallow, ""}});
@@ -430,8 +431,9 @@ IN_PROC_BROWSER_TEST_F(SubresourceRedirectLoginRobotsBrowserTest,
 
 // Test is flaky. See https://crbug.com/1187754
 // Verify an new image loads fine after robots rules fetch is complete.
-IN_PROC_BROWSER_TEST_F(SubresourceRedirectLoginRobotsBrowserTest,
-                       DISABLED_TestImageLoadAfterRobotsFetch) {
+IN_PROC_BROWSER_TEST_F(
+    SubresourceRedirectLoginRobotsBrowserTest,
+    DISABLE_ON_WIN_MAC_CHROMEOS(TestImageLoadAfterRobotsFetch)) {
   robots_rules_server_.AddRobotsRules(
       GetHttpsTestURL("/"),
       {{kRuleTypeAllow, "/load_image/image.png"}, {kRuleTypeDisallow, ""}});
@@ -868,9 +870,9 @@ IN_PROC_BROWSER_TEST_F(
          "')"});
     EXPECT_TRUE(RunScriptExtractBool(load_image_url));
     EXPECT_TRUE(RunScriptExtractBool("checkImage()"));
-    // The image should load closer to 1 second.
+    // The image should load closer to 2 seconds.
     EXPECT_LT(base::TimeDelta::FromSecondsD(0.9), elapsed_timer.Elapsed());
-    EXPECT_GT(base::TimeDelta::FromSecondsD(1.2), elapsed_timer.Elapsed());
+    EXPECT_GT(base::TimeDelta::FromSecondsD(2.2), elapsed_timer.Elapsed());
   }
 
   FetchHistogramsFromChildProcesses();
@@ -894,8 +896,8 @@ IN_PROC_BROWSER_TEST_F(
          "')"});
     EXPECT_TRUE(RunScriptExtractBool(load_image_url));
     EXPECT_TRUE(RunScriptExtractBool("checkImage()"));
-    // The image should load closer to 1.5 second.
-    EXPECT_LT(base::TimeDelta::FromSecondsD(1.4), elapsed_timer.Elapsed());
+    // The image should load closer to 2.5 seconds.
+    EXPECT_LT(base::TimeDelta::FromSecondsD(2.4), elapsed_timer.Elapsed());
   }
 
   FetchHistogramsFromChildProcesses();
