@@ -4,6 +4,8 @@
 
 #include "cc/base/devtools_instrumentation.h"
 
+#include <string>
+
 namespace cc {
 namespace devtools_instrumentation {
 namespace {
@@ -36,6 +38,7 @@ const char kFrameId[] = "frameId";
 const char kLayerId[] = "layerId";
 const char kLayerTreeId[] = "layerTreeId";
 const char kPixelRefId[] = "pixelRefId";
+const char kPresentationTimestamp[] = "presentationTimestamp";
 
 const char kImageUploadTask[] = "ImageUploadTask";
 const char kImageDecodeTask[] = "ImageDecodeTask";
