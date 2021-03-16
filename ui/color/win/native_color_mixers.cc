@@ -27,6 +27,9 @@ void AddNativeCoreColorMixer(ColorProvider* provider,
 #define MAP(chrome, native) {chrome, color_utils::GetSysSkColor(native)}
   ColorMixer& mixer = provider->AddMixer();
 
+  if (!high_contrast)
+    return;
+
   mixer.AddSet(
       {kColorSetNative,
        {
@@ -62,9 +65,6 @@ void AddNativeCoreColorMixer(ColorProvider* provider,
            MAP(kColorNativeWindowFrame, COLOR_WINDOWFRAME),
            MAP(kColorNativeWindowText, COLOR_WINDOWTEXT),
        }});
-
-  if (!high_contrast)
-    return;
 
   // Window Background
   mixer[kColorPrimaryBackground] = {kColorNativeWindow};
