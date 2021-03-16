@@ -1,6 +1,0 @@
-monorail {
-  component: "Blink>MediaStream"
-}
-wpt {
-  notify: YES
-}
