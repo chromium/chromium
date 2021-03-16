@@ -344,10 +344,12 @@ void SessionEnding() {
 
   // EndSession is invoked once per frame. Only do something the first time.
   static bool already_ended = false;
-  // We may get called in the middle of shutdown, e.g. http://crbug.com/70852
-  // In this case, do nothing.
-  if (already_ended || !content::NotificationService::current())
+  // We may get called in the middle of shutdown, e.g. https://crbug.com/70852
+  // and https://crbug.com/1187418.  In this case, do nothing.
+  if (already_ended || !content::NotificationService::current() ||
+      !g_browser_process) {
     return;
+  }
   already_ended = true;
 
   // ~ShutdownWatcherHelper uses IO (it joins a thread). We'll only trigger that
