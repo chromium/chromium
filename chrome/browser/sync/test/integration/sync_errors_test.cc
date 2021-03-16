@@ -37,6 +37,19 @@ namespace {
 
 constexpr int64_t kUserEventTimeUsec = 123456;
 
+syncer::ModelTypeSet GetThrottledDataTypes(
+    syncer::ProfileSyncService* sync_service) {
+  base::RunLoop loop;
+  syncer::ModelTypeSet throttled_types;
+  sync_service->GetThrottledDataTypesForTest(
+      base::BindLambdaForTesting([&](syncer::ModelTypeSet result) {
+        throttled_types = result;
+        loop.Quit();
+      }));
+  loop.Run();
+  return throttled_types;
+}
+
 class SyncEngineStoppedChecker : public SingleClientStatusChangeChecker {
  public:
   explicit SyncEngineStoppedChecker(ProfileSyncService* service)
@@ -402,7 +415,7 @@ IN_PROC_BROWSER_TEST_F(SyncErrorTest, ShouldThrottleOneDatatypeButNotOthers) {
             "false");
 
   // PREFERENCES should now be throttled.
-  EXPECT_EQ(GetSyncService(0)->GetThrottledDataTypesForTest(),
+  EXPECT_EQ(GetThrottledDataTypes(GetSyncService(0)),
             syncer::ModelTypeSet{syncer::PREFERENCES});
 
   // Unthrottle PREFERENCES to verify that sync can resume.
@@ -413,8 +426,7 @@ IN_PROC_BROWSER_TEST_F(SyncErrorTest, ShouldThrottleOneDatatypeButNotOthers) {
   EXPECT_TRUE(
       FakeServerPrefMatchesValueChecker(prefs::kHomePageIsNewTabPage, "true")
           .Wait());
-  EXPECT_EQ(GetSyncService(0)->GetThrottledDataTypesForTest(),
-            syncer::ModelTypeSet());
+  EXPECT_EQ(GetThrottledDataTypes(GetSyncService(0)), syncer::ModelTypeSet());
 }
 
 }  // namespace

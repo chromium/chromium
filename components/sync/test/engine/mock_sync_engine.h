@@ -68,6 +68,10 @@ class MockSyncEngine : public SyncEngine {
               (base::OnceCallback<void(bool)>),
               (const override));
   MOCK_METHOD(void,
+              GetThrottledDataTypesForTest,
+              (base::OnceCallback<void(ModelTypeSet)>),
+              (const override));
+  MOCK_METHOD(void,
               RequestBufferedProtocolEventsAndEnableForwarding,
               (),
               (override));

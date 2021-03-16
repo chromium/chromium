@@ -290,12 +290,15 @@ ModelTypeSet ProfileSyncService::GetRegisteredDataTypesForTest() const {
   return GetRegisteredDataTypes();
 }
 
-ModelTypeSet ProfileSyncService::GetThrottledDataTypesForTest() const {
+void ProfileSyncService::GetThrottledDataTypesForTest(
+    base::OnceCallback<void(ModelTypeSet)> cb) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (engine_ && engine_->IsInitialized()) {
-    return engine_->GetDetailedStatus().throttled_types;
+  if (!engine_ || !engine_->IsInitialized()) {
+    std::move(cb).Run(ModelTypeSet());
+    return;
   }
-  return ModelTypeSet();
+
+  engine_->GetThrottledDataTypesForTest(std::move(cb));
 }
 
 void ProfileSyncService::TriggerPoliciesLoadedForTest() {

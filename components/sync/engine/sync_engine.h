@@ -156,6 +156,9 @@ class SyncEngine : public ModelTypeConfigurer {
   virtual void HasUnsyncedItemsForTest(
       base::OnceCallback<void(bool)> cb) const = 0;
 
+  // Returns datatypes that are currently throttled.
+  virtual void GetThrottledDataTypesForTest(
+      base::OnceCallback<void(ModelTypeSet)> cb) const = 0;
 
   // Requests that the backend forward to the fronent any protocol events in
   // its buffer and begin forwarding automatically from now on.  Repeated calls

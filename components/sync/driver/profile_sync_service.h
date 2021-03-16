@@ -233,7 +233,9 @@ class ProfileSyncService : public SyncService,
                                   create_http_post_provider_factory_cb);
 
   ModelTypeSet GetRegisteredDataTypesForTest() const;
-  ModelTypeSet GetThrottledDataTypesForTest() const;
+
+  void GetThrottledDataTypesForTest(
+      base::OnceCallback<void(ModelTypeSet)> cb) const;
 
   // Simulates that all policies just got loaded. This does nothing if the
   // policies were already loaded.

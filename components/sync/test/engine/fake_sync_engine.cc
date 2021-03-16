@@ -118,6 +118,9 @@ const SyncStatus& FakeSyncEngine::GetDetailedStatus() const {
 void FakeSyncEngine::HasUnsyncedItemsForTest(
     base::OnceCallback<void(bool)> cb) const {}
 
+void FakeSyncEngine::GetThrottledDataTypesForTest(
+    base::OnceCallback<void(ModelTypeSet)> cb) const {}
+
 void FakeSyncEngine::RequestBufferedProtocolEventsAndEnableForwarding() {}
 
 void FakeSyncEngine::DisableProtocolEventForwarding() {}

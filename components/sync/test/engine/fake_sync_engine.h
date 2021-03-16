@@ -93,6 +93,8 @@ class FakeSyncEngine : public SyncEngine,
 
   void HasUnsyncedItemsForTest(
       base::OnceCallback<void(bool)> cb) const override;
+  void GetThrottledDataTypesForTest(
+      base::OnceCallback<void(ModelTypeSet)> cb) const override;
 
   void RequestBufferedProtocolEventsAndEnableForwarding() override;
   void DisableProtocolEventForwarding() override;
