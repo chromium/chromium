@@ -24,41 +24,48 @@ std::string GetDeviceModeSuffix() {
              : "ClamshellMode";
 }
 
-void ReportLogin(const cc::FrameSequenceMetrics::CustomReportData& data) {
-  if (data.frames_expected) {
-    int smoothness = metrics_util::CalculateSmoothness(data);
-    int jank = metrics_util::CalculateJank(data);
+void RecordMetrics(const base::TimeTicks& start,
+                   const cc::FrameSequenceMetrics::CustomReportData& data,
+                   const char* smoothness_name,
+                   const char* jank_name,
+                   const char* duration_name) {
+  DCHECK(data.frames_expected);
+  int duration_ms = (base::TimeTicks::Now() - start).InMilliseconds();
+  int smoothness, jank;
+  smoothness = metrics_util::CalculateSmoothness(data);
+  jank = metrics_util::CalculateJank(data);
 
-    float refresh_rate =
-        Shell::GetPrimaryRootWindow()->GetHost()->compositor()->refresh_rate();
-    int duration_ms = (1000.f / refresh_rate) * data.frames_expected;
-    std::string suffix = GetDeviceModeSuffix();
-    base::UmaHistogramPercentage("Ash.LoginAnimation.Smoothness." + suffix,
-                                 smoothness);
-    base::UmaHistogramPercentage("Ash.LoginAnimation.Jank." + suffix, jank);
-    // TODO(crbug.com/1143898): Deprecate this metrics once the login
-    // performance issue is resolved.
+  std::string suffix = GetDeviceModeSuffix();
+  base::UmaHistogramPercentage(smoothness_name + suffix, smoothness);
+  base::UmaHistogramPercentage(jank_name + suffix, jank);
+  // TODO(crbug.com/1143898): Deprecate this metrics once the login/unlock
+  // performance issue is resolved.
+  if (duration_name) {
     base::UmaHistogramCustomTimes(
-        "Ash.LoginAnimation.Duration." + suffix,
-        base::TimeDelta::FromMilliseconds(duration_ms),
+        duration_name + suffix, base::TimeDelta::FromMilliseconds(duration_ms),
         base::TimeDelta::FromMilliseconds(100), base::TimeDelta::FromSeconds(5),
         50);
-  } else {
-    LOG(WARNING) << "Zero frames expected in login animation throughput data";
   }
 }
 
-void ReportUnlock(const cc::FrameSequenceMetrics::CustomReportData& data) {
-  if (data.frames_expected) {
-    int smoothness = metrics_util::CalculateSmoothness(data);
-    int jank = metrics_util::CalculateJank(data);
-    std::string suffix = GetDeviceModeSuffix();
-    base::UmaHistogramPercentage("Ash.UnlockAnimation.Smoothness." + suffix,
-                                 smoothness);
-    base::UmaHistogramPercentage("Ash.UnlockAnimation.Jank." + suffix, jank);
-  } else {
-    LOG(WARNING) << "Zero frames expected in Unlock animation throughput data";
+void ReportLogin(base::TimeTicks start,
+                 const cc::FrameSequenceMetrics::CustomReportData& data) {
+  if (!data.frames_expected) {
+    LOG(WARNING) << "Zero frames expected in login animation throughput data";
+    return;
   }
+  RecordMetrics(start, data, "Ash.LoginAnimation.Smoothness.",
+                "Ash.LoginAnimation.Jank.", "Ash.LoginAnimation.Duration.");
+}
+
+void ReportUnlock(base::TimeTicks start,
+                  const cc::FrameSequenceMetrics::CustomReportData& data) {
+  if (!data.frames_expected) {
+    LOG(WARNING) << "Zero frames expected in unlock animation throughput data";
+    return;
+  }
+  RecordMetrics(start, data, "Ash.UnlockAnimation.Smoothness.",
+                "Ash.UnlockAnimation.Jank.", nullptr);
 }
 
 }  // namespace
@@ -81,7 +88,8 @@ void LoginUnlockThroughputRecorder::OnLockStateChanged(bool locked) {
        logged_in_user == chromeos::LoginState::LOGGED_IN_USER_REGULAR)) {
     auto* primary_root = Shell::GetPrimaryRootWindow();
     new ui::TotalAnimationThroughputReporter(
-        primary_root->GetHost()->compositor(), base::BindOnce(&ReportUnlock),
+        primary_root->GetHost()->compositor(),
+        base::BindOnce(&ReportUnlock, base::TimeTicks::Now()),
         /*self_destruct=*/true);
   }
 }
@@ -94,7 +102,8 @@ void LoginUnlockThroughputRecorder::LoggedInStateChanged() {
        logged_in_user == chromeos::LoginState::LOGGED_IN_USER_REGULAR)) {
     auto* primary_root = Shell::GetPrimaryRootWindow();
     new ui::TotalAnimationThroughputReporter(
-        primary_root->GetHost()->compositor(), base::BindOnce(&ReportLogin),
+        primary_root->GetHost()->compositor(),
+        base::BindOnce(&ReportLogin, base::TimeTicks::Now()),
         /*self_destruct=*/true);
   }
 }
