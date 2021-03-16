@@ -20,7 +20,6 @@
 #include "base/values.h"
 #include "base/version.h"
 #include "content/public/common/cdm_info.h"
-#include "extensions/common/manifest_constants.h"
 #include "media/base/content_decryption_module.h"
 #include "media/base/decrypt_config.h"
 #include "media/base/video_codecs.h"
@@ -45,6 +44,10 @@ namespace {
 // compatible changes. All values are strings. All values that are lists are
 // delimited by commas. No trailing commas. For example, "1,2,4".
 const char kCdmValueDelimiter[] = ",";
+
+// This field in the manifest is parsed by component updater code (e.g.
+// `ComponentInstaller::FindPreinstallation()`) as well as in this file.
+const char kCdmVersion[] = "version";
 
 // The following entries are required.
 //  Interface versions are lists of integers (e.g. "1" or "1,2,4").
@@ -258,11 +261,9 @@ bool GetEncryptionSchemes(
 
 bool GetVersion(const base::Value& manifest, base::Version* version) {
   DCHECK(manifest.is_dict());
-  auto* version_string =
-      manifest.FindStringKey(extensions::manifest_keys::kVersion);
+  auto* version_string = manifest.FindStringKey(kCdmVersion);
   if (!version_string) {
-    DLOG(ERROR) << "CDM manifest missing "
-                << extensions::manifest_keys::kVersion;
+    DLOG(ERROR) << "CDM manifest missing " << kCdmVersion;
     return false;
   }
 
