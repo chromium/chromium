@@ -110,7 +110,10 @@ IN_PROC_BROWSER_TEST_F(V8ContextTrackerTest, CrossOriginIframeAttributionData) {
     auto* ec_state = v8_context_tracker->GetExecutionContextState(
         frame_node->GetFrameToken());
     ASSERT_TRUE(ec_state);
-    ASSERT_TRUE(ec_state->iframe_attribution_data);
+    ASSERT_TRUE(ec_state->iframe_attribution_data)
+        << "url " << frame_node->GetURL() << ", current "
+        << frame_node->IsCurrent() << ", state "
+        << frame_node->GetLifecycleState();
   });
 }
 
