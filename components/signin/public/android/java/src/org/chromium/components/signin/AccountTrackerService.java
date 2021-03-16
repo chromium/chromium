@@ -19,6 +19,8 @@ import org.chromium.base.task.AsyncTask;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Android wrapper of AccountTrackerService which provides access from the java layer.
@@ -81,7 +83,7 @@ public class AccountTrackerService {
                     || mSystemAccountsChanged)
                 && mSystemAccountsSeedingStatus
                         != SystemAccountsSeedingStatus.SEEDING_IN_PROGRESS) {
-            seedSystemAccounts();
+            seedAccounts();
         }
         return false;
     }
@@ -112,7 +114,7 @@ public class AccountTrackerService {
         mSystemAccountsSeedingObservers.removeObserver(observer);
     }
 
-    private void seedSystemAccounts() {
+    private void seedAccounts() {
         ThreadUtils.assertOnUiThread();
         mSystemAccountsChanged = false;
         final AccountManagerFacade accountManagerFacade =
@@ -131,54 +133,42 @@ public class AccountTrackerService {
         }
 
         accountManagerFacade.tryGetGoogleAccounts(accounts -> {
-            new AsyncTask<String[][]>() {
+            final List<String> emails = AccountUtils.toAccountNames(accounts);
+            new AsyncTask<List<String>>() {
                 @Override
-                public String[][] doInBackground() {
+                public List<String> doInBackground() {
                     Log.d(TAG, "Getting id/email mapping");
-
-                    long seedingStartTime = SystemClock.elapsedRealtime();
-
-                    String[][] accountIdNameMap = new String[2][accounts.size()];
-                    for (int i = 0; i < accounts.size(); ++i) {
-                        accountIdNameMap[0][i] =
-                                accountManagerFacade.getAccountGaiaId(accounts.get(i).name);
-                        accountIdNameMap[1][i] = accounts.get(i).name;
+                    final long seedingStartTime = SystemClock.elapsedRealtime();
+                    final List<String> gaiaIds = new ArrayList<>();
+                    for (String email : emails) {
+                        final String gaiaId = accountManagerFacade.getAccountGaiaId(email);
+                        if (gaiaId == null) {
+                            return gaiaIds;
+                        }
+                        gaiaIds.add(gaiaId);
                     }
-
                     RecordHistogram.recordTimesHistogram("Signin.AndroidGetAccountIdsTime",
                             SystemClock.elapsedRealtime() - seedingStartTime);
-
-                    return accountIdNameMap;
+                    return gaiaIds;
                 }
                 @Override
-                public void onPostExecute(String[][] accountIdNameMap) {
-                    if (mSystemAccountsChanged) {
-                        seedSystemAccounts();
-                        return;
-                    }
-                    if (areAccountIdsValid(accountIdNameMap[0])) {
-                        AccountTrackerServiceJni.get().seedAccountsInfo(
-                                mNativeAccountTrackerService, accountIdNameMap[0],
-                                accountIdNameMap[1]);
-                        mSystemAccountsSeedingStatus = SystemAccountsSeedingStatus.SEEDING_DONE;
-                        notifyObserversOnSeedingComplete();
+                public void onPostExecute(List<String> gaiaIds) {
+                    if (mSystemAccountsChanged || gaiaIds.size() < emails.size()) {
+                        seedAccounts();
                     } else {
-                        Log.w(TAG, "Invalid mapping of id/email");
-                        seedSystemAccounts();
+                        finishSeedingAccounts(gaiaIds, emails);
                     }
                 }
             }.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
         });
     }
 
-    private boolean areAccountIdsValid(String[] accountIds) {
-        for (String accountId : accountIds) {
-            if (accountId == null) return false;
-        }
-        return true;
-    }
-
-    private void notifyObserversOnSeedingComplete() {
+    private void finishSeedingAccounts(List<String> gaiaIds, List<String> emails) {
+        assert gaiaIds.size() == emails.size() : "gaia IDs and emails should have the same size!";
+        AccountTrackerServiceJni.get().seedAccountsInfo(mNativeAccountTrackerService,
+                gaiaIds.toArray(new String[0]), emails.toArray(new String[0]));
+        mSystemAccountsSeedingStatus = SystemAccountsSeedingStatus.SEEDING_DONE;
+        // TODO(crbug/1187458): Download account information in the end of account seeding
         for (OnSystemAccountsSeededListener observer : mSystemAccountsSeedingObservers) {
             observer.onSystemAccountsSeedingComplete();
         }
@@ -203,7 +193,6 @@ public class AccountTrackerService {
 
     @NativeMethods
     interface Natives {
-        void seedAccountsInfo(
-                long nativeAccountTrackerService, String[] gaiaIds, String[] accountNames);
+        void seedAccountsInfo(long nativeAccountTrackerService, String[] gaiaIds, String[] emails);
     }
 }

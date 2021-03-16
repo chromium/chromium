@@ -20,6 +20,7 @@ import org.mockito.Mock;
 import org.mockito.Spy;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
+import org.mockito.quality.Strictness;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.task.test.CustomShadowAsyncTask;
@@ -37,7 +38,7 @@ public class AccountTrackerServiceTest {
     private static final String ACCOUNT_EMAIL = "test@gmail.com";
 
     @Rule
-    public final MockitoRule mMockitoRule = MockitoJUnit.rule();
+    public final MockitoRule mMockitoRule = MockitoJUnit.rule().strictness(Strictness.STRICT_STUBS);
 
     @Rule
     public final JniMocker mocker = new JniMocker();
@@ -49,11 +50,14 @@ public class AccountTrackerServiceTest {
     @Mock
     private AccountTrackerService.Natives mNativeMock;
 
+    private AccountTrackerService mService;
+
     @Before
     public void setUp() {
         AccountManagerFacadeProvider.setInstanceForTests(mFakeAccountManagerFacade);
         mocker.mock(AccountTrackerServiceJni.TEST_HOOKS, mNativeMock);
         mFakeAccountManagerFacade.addAccount(AccountUtils.createAccountFromName(ACCOUNT_EMAIL));
+        mService = new AccountTrackerService(ACCOUNT_TRACKER_SERVICE_NATIVE);
     }
 
     @After
@@ -72,8 +76,8 @@ public class AccountTrackerServiceTest {
         })
                 .when(mNativeMock)
                 .seedAccountsInfo(eq(ACCOUNT_TRACKER_SERVICE_NATIVE), any(), any());
-        AccountTrackerService service = new AccountTrackerService(ACCOUNT_TRACKER_SERVICE_NATIVE);
-        service.checkAndSeedSystemAccounts();
+
+        mService.checkAndSeedSystemAccounts();
         verify(mFakeAccountManagerFacade).addObserver(notNull());
         verify(mNativeMock).seedAccountsInfo(eq(ACCOUNT_TRACKER_SERVICE_NATIVE), any(), any());
     }
