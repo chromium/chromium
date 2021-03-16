@@ -73,12 +73,6 @@ class COMPONENT_EXPORT(FULL_RESTORE) FullRestoreReadHandler
   // from |profile_path_to_restore_data_| for |profile_path| .
   void RemoveApp(const base::FilePath& profile_path, const std::string& app_id);
 
-  // Removes AppRestoreData from |profile_path| for |app_id| and
-  // |restore_window_id|.
-  void RemoveAppRestoreData(const base::FilePath& profile_path,
-                            const std::string& app_id,
-                            int32_t restore_window_id);
-
   // Returns true if there is a window info for |restore_window_id| from the
   // full restore file. Otherwise, returns false. This interface can't be used
   // for Arc app windows.
@@ -136,7 +130,7 @@ class COMPONENT_EXPORT(FULL_RESTORE) FullRestoreReadHandler
                         std::unique_ptr<RestoreData>);
 
   // Removes AppRestoreData for |restore_window_id|.
-  void RemoveAppRestoreData(int32_t restore_window_id);
+  void RemoveAppRestoreData(int restore_window_id);
 
   // The current active user profile path.
   base::FilePath active_profile_path_;
@@ -146,9 +140,9 @@ class COMPONENT_EXPORT(FULL_RESTORE) FullRestoreReadHandler
       profile_path_to_restore_data_;
 
   // The map from the window id to the full restore file path and the
-  // app id. The window id is saved in the window property
+  // app id. The window id id is saved in the window property
   // |kRestoreWindowIdKey|. This map is used to find the file path and the app
-  // id when get the window info. This map is not used for ARC app windows.
+  // id when get the window info.
   std::map<int32_t, std::pair<base::FilePath, std::string>>
       window_id_to_app_restore_info_;
 

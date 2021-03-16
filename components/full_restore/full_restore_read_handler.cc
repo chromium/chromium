@@ -121,17 +121,6 @@ void FullRestoreReadHandler::RemoveApp(const base::FilePath& profile_path,
   it->second->RemoveApp(app_id);
 }
 
-void FullRestoreReadHandler::RemoveAppRestoreData(
-    const base::FilePath& profile_path,
-    const std::string& app_id,
-    int32_t restore_window_id) {
-  auto it = profile_path_to_restore_data_.find(profile_path);
-  if (it == profile_path_to_restore_data_.end())
-    return;
-
-  it->second->RemoveAppRestoreData(app_id, restore_window_id);
-}
-
 bool FullRestoreReadHandler::HasWindowInfo(int32_t restore_window_id) {
   if (!SessionID::IsValidValue(restore_window_id))
     return false;
@@ -267,14 +256,13 @@ void FullRestoreReadHandler::OnGetRestoreData(
   std::move(callback).Run(std::move(restore_data));
 }
 
-void FullRestoreReadHandler::RemoveAppRestoreData(int32_t window_id) {
+void FullRestoreReadHandler::RemoveAppRestoreData(int window_id) {
   auto it = window_id_to_app_restore_info_.find(window_id);
   if (it == window_id_to_app_restore_info_.end())
     return;
 
-  const base::FilePath& profile_path = it->second.first;
-  const std::string& app_id = it->second.second;
-  RemoveAppRestoreData(profile_path, app_id, window_id);
+  profile_path_to_restore_data_[it->second.first]->RemoveAppRestoreData(
+      it->second.second, window_id);
 
   window_id_to_app_restore_info_.erase(it);
 }
