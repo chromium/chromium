@@ -116,8 +116,7 @@ NGTableTypes::CellInlineConstraint NGTableTypes::CreateCellInlineConstraint(
     WritingMode table_writing_mode,
     bool is_fixed_layout,
     const NGBoxStrut& cell_border,
-    const NGBoxStrut& cell_padding,
-    bool has_collapsed_borders) {
+    const NGBoxStrut& cell_padding) {
   base::Optional<LayoutUnit> css_inline_size;
   base::Optional<LayoutUnit> css_min_inline_size;
   base::Optional<LayoutUnit> css_max_inline_size;
@@ -126,43 +125,45 @@ NGTableTypes::CellInlineConstraint NGTableTypes::CreateCellInlineConstraint(
   bool is_parallel =
       IsParallelWritingMode(table_writing_mode, style.GetWritingMode());
 
-  // Algorithm:
-  // - Compute cell's minmax sizes.
-  // - Constrain by css inline-size/max-inline-size.
+  // Be lazy when determining the min/max sizes, as in some circumstances we
+  // don't need to call this (relatively) expensive function.
+  base::Optional<MinMaxSizes> cached_min_max_sizes;
+  auto MinMaxSizesFunc = [&]() -> MinMaxSizes {
+    if (!cached_min_max_sizes) {
+      NGConstraintSpaceBuilder builder(table_writing_mode,
+                                       style.GetWritingDirection(),
+                                       /* is_new_fc */ true);
+      builder.SetTableCellBorders(cell_border);
+      builder.SetIsTableCell(true, /* is_legacy_table_cell */ false);
+      builder.SetCacheSlot(NGCacheSlot::kMeasure);
+      if (!is_parallel) {
+        // Only consider the ICB-size for the orthogonal fallback inline-size
+        // (don't use the size of the containing-block).
+        const PhysicalSize icb_size = node.InitialContainingBlockSize();
+        builder.SetOrthogonalFallbackInlineSize(
+            IsHorizontalWritingMode(table_writing_mode) ? icb_size.height
+                                                        : icb_size.width);
+      }
+      builder.SetAvailableSize({kIndefiniteSize, kIndefiniteSize});
+      const auto space = builder.ToConstraintSpace();
+
+      MinMaxSizesInput input(kIndefiniteSize, MinMaxSizesType::kIntrinsic);
+      cached_min_max_sizes =
+          node.ComputeMinMaxSizes(table_writing_mode, input, &space).sizes;
+    }
+
+    return *cached_min_max_sizes;
+  };
+
   InlineSizesFromStyle(style, (cell_border + cell_padding).InlineSum(),
                        is_parallel, &css_inline_size, &css_min_inline_size,
                        &css_max_inline_size, &css_percentage_inline_size);
 
-  MinMaxSizesInput input(kIndefiniteSize, MinMaxSizesType::kIntrinsic);
-  MinMaxSizesResult min_max_size;
-  bool need_constraint_space = has_collapsed_borders || !is_parallel;
-  if (need_constraint_space) {
-    NGConstraintSpaceBuilder builder(table_writing_mode,
-                                     style.GetWritingDirection(),
-                                     /* is_new_fc */ true);
-    builder.SetTableCellBorders(cell_border);
-    builder.SetIsTableCell(true, /* is_legacy_table_cell */ false);
-    builder.SetCacheSlot(NGCacheSlot::kMeasure);
-    if (!is_parallel) {
-      PhysicalSize icb_size = node.InitialContainingBlockSize();
-      builder.SetOrthogonalFallbackInlineSize(
-          IsHorizontalWritingMode(table_writing_mode) ? icb_size.height
-                                                      : icb_size.width);
-      builder.SetAvailableSize({kIndefiniteSize, kIndefiniteSize});
-    }
-    NGConstraintSpace space = builder.ToConstraintSpace();
-    // It'd be nice to avoid computing minmax if not needed, but the criteria
-    // is not clear.
-    min_max_size = node.ComputeMinMaxSizes(table_writing_mode, input, &space);
-  } else {
-    min_max_size = node.ComputeMinMaxSizes(table_writing_mode, input);
-  }
-  // Compute min inline size.
+  // Compute the resolved min inline-size.
   LayoutUnit resolved_min_inline_size;
   if (!is_fixed_layout) {
-    resolved_min_inline_size =
-        std::max(min_max_size.sizes.min_size,
-                 css_min_inline_size.value_or(LayoutUnit()));
+    resolved_min_inline_size = std::max(
+        MinMaxSizesFunc().min_size, css_min_inline_size.value_or(LayoutUnit()));
     // https://quirks.spec.whatwg.org/#the-table-cell-nowrap-minimum-width-calculation-quirk
     // Has not worked in Legacy, might be pulled out.
     if (css_inline_size && node.GetDocument().InQuirksMode()) {
@@ -177,13 +178,8 @@ NGTableTypes::CellInlineConstraint NGTableTypes::CreateCellInlineConstraint(
     }
   }
 
-  // Compute resolved max inline size.
-  LayoutUnit content_max;
-  if (css_inline_size) {
-    content_max = *css_inline_size;
-  } else {
-    content_max = min_max_size.sizes.max_size;
-  }
+  // Compute the resolved max inline-size.
+  LayoutUnit content_max = css_inline_size.value_or(MinMaxSizesFunc().max_size);
   if (css_max_inline_size) {
     content_max = std::min(content_max, *css_max_inline_size);
     resolved_min_inline_size =

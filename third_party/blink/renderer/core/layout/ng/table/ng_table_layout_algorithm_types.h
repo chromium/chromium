@@ -209,8 +209,7 @@ class CORE_EXPORT NGTableTypes {
       WritingMode table_writing_mode,
       bool is_fixed_layout,
       const NGBoxStrut& cell_border,
-      const NGBoxStrut& cell_padding,
-      bool has_collapsed_borders);
+      const NGBoxStrut& cell_padding);
 
   static Section CreateSection(const NGLayoutInputNode&,
                                wtf_size_t start_row,

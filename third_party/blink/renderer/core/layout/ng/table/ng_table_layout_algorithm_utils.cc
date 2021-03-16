@@ -424,9 +424,9 @@ void ComputeSectionInlineConstraints(
         NGBoxStrut cell_padding = table_borders.CellPaddingForMeasure(
             cell.Style(), table_writing_direction);
         NGTableTypes::CellInlineConstraint cell_constraint =
-            NGTableTypes::CreateCellInlineConstraint(
-                cell, table_writing_mode, is_fixed_layout, cell_border,
-                cell_padding, table_borders.IsCollapsed());
+            NGTableTypes::CreateCellInlineConstraint(cell, table_writing_mode,
+                                                     is_fixed_layout,
+                                                     cell_border, cell_padding);
         if (colspan == 1) {
           base::Optional<NGTableTypes::CellInlineConstraint>& constraint =
               (*cell_inline_constraints)[colspan_cell_tabulator
