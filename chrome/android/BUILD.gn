@@ -1243,7 +1243,7 @@ android_library("chrome_test_java") {
     "//components/media_router/browser/android:java",
     "//components/media_router/browser/android:test_support_java",
     "//components/messages/android:java",
-    "//components/messages/android:javatests",
+    "//components/messages/android/internal:javatests",
     "//components/metrics:metrics_java",
     "//components/minidump_uploader:minidump_uploader_java",
     "//components/minidump_uploader:minidump_uploader_javatests",

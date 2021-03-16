@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Copyright 2021 The Chromium Authors. All rights reserved.
+     Use of this source code is governed by a BSD-style license that can be
+     found in the LICENSE file. -->
+
+<resources>
+
+    <dimen name="message_banner_height">64dp</dimen>
+    <dimen name="message_banner_radius">12dp</dimen>
+    <dimen name="message_banner_vertical_padding">12dp</dimen>
+    <dimen name="message_banner_elevation">6dp</dimen>
+    <!-- Min width to ensure the min touchable size. -->
+    <dimen name="message_banner_button_min_width">12dp</dimen>
+    <dimen name="message_icon_padding">12dp</dimen>
+    <dimen name="message_divider_margin">12dp</dimen>
+    <dimen name="message_shadow_lateral_margin">12dp</dimen>
+    <dimen name="message_shadow_bottom_margin">16dp</dimen>
+    <dimen name="message_vertical_hide_threshold">16dp</dimen>
+    <dimen name="message_horizontal_hide_threshold">24dp</dimen>
+    <dimen name="message_max_horizontal_translation">360dp</dimen>
+    <dimen name="message_max_width">380dp</dimen>
+
+</resources>

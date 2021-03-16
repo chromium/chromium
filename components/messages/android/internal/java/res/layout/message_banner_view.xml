@@ -27,7 +27,7 @@
         android:id="@+id/message_icon"
         android:paddingStart="@dimen/message_icon_padding"
         android:paddingEnd="@dimen/message_icon_padding"
-        android:tint="@color/default_icon_color_blue"
+        app:tint="@color/default_icon_color_blue"
         android:layout_weight="0"
         android:layout_width="wrap_content"
         android:layout_height="match_parent"
@@ -56,7 +56,7 @@
     <!--  Content description is set programmatically according to secondary button icon. -->
     <org.chromium.components.browser_ui.widget.listmenu.ListMenuButton
         android:id="@+id/message_secondary_button"
-        android:tint="@color/default_icon_color_secondary"
+        app:tint="@color/default_icon_color_secondary"
         android:layout_weight="0"
         android:paddingStart="@dimen/message_icon_padding"
         android:paddingEnd="@dimen/message_icon_padding"
