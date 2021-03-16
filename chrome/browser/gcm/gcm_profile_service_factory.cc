@@ -106,7 +106,8 @@ GCMProfileService* GCMProfileServiceFactory::GetForProfile(
 
 // static
 GCMProfileServiceFactory* GCMProfileServiceFactory::GetInstance() {
-  return base::Singleton<GCMProfileServiceFactory>::get();
+  static base::NoDestructor<GCMProfileServiceFactory> instance;
+  return instance.get();
 }
 
 GCMProfileServiceFactory::GCMProfileServiceFactory()
