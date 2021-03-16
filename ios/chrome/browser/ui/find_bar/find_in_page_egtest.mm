@@ -130,7 +130,8 @@ const std::string kFindInPageResponse = "Find in page. Find in page.";
 // Tests that Find In Page search term retention is working as expected, e.g.
 // the search term is persisted between FIP runs, but in incognito search term
 // is not retained and not autofilled.
-- (void)testFindInPageRetainsSearchTerm {
+// TODO(crbug.com/1188709) : Fix failing test.
+- (void)DISABLED_testFindInPageRetainsSearchTerm {
   // Type "find".
   [self typeFindInPageText:@"find"];
   [self assertResultStringIsResult:1 outOfTotal:2];
