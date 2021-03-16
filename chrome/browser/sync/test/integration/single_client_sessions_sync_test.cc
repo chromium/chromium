@@ -1001,8 +1001,14 @@ class SingleClientSessionsWithDestroyProfileSyncTest
   base::test::ScopedFeatureList features_;
 };
 
+// TODO(1185289): Fails under msan.
+#if defined(MEMORY_SANITIZER)
+#define MAYBE_ShouldNotDeleteLastClosedTab DISABLED_ShouldNotDeleteLastClosedTab
+#else
+#define MAYBE_ShouldNotDeleteLastClosedTab ShouldNotDeleteLastClosedTab
+#endif
 IN_PROC_BROWSER_TEST_F(SingleClientSessionsWithDestroyProfileSyncTest,
-                       ShouldNotDeleteLastClosedTab) {
+                       MAYBE_ShouldNotDeleteLastClosedTab) {
   ASSERT_TRUE(SetupSync()) << "SetupSync() failed.";
   ASSERT_TRUE(CheckInitialState(0));
 
