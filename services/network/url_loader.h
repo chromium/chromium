@@ -402,9 +402,9 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) URLLoader
   DeleteCallback delete_callback_;
 
   int32_t options_;
-  bool corb_detachable_;
-  int resource_type_;
-  bool is_load_timing_enabled_;
+  const bool corb_detachable_;
+  const int resource_type_;
+  const bool is_load_timing_enabled_;
   bool has_received_response_ = false;
 
   // URLLoaderFactory is guaranteed to outlive URLLoader, so it is safe to
@@ -413,7 +413,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) URLLoader
   // This also belongs to URLLoaderFactory and outlives this loader.
   mojom::CrossOriginEmbedderPolicyReporter* const coep_reporter_;
 
-  uint32_t request_id_;
+  const uint32_t request_id_;
   const int keepalive_request_size_;
   const bool keepalive_;
   const bool do_not_prompt_for_login_;
@@ -455,7 +455,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) URLLoader
   // Whether client requested raw headers.
   const bool want_raw_headers_;
   // Whether we actually should report them.
-  bool report_raw_headers_;
+  bool report_raw_headers_ = false;
   net::HttpRawRequestHeaders raw_request_headers_;
   scoped_refptr<const net::HttpResponseHeaders> raw_response_headers_;
 
@@ -492,9 +492,9 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) URLLoader
   // encoded body size was reported to the client.
   int64_t reported_total_encoded_bytes_ = 0;
 
-  mojom::RequestMode request_mode_;
+  const mojom::RequestMode request_mode_;
 
-  bool has_user_activation_;
+  bool has_user_activation_ = false;
 
   mojom::RequestDestination request_destination_ =
       mojom::RequestDestination::kEmpty;
@@ -503,7 +503,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) URLLoader
 
   base::WeakPtr<KeepaliveStatisticsRecorder> keepalive_statistics_recorder_;
 
-  bool first_auth_attempt_;
+  bool first_auth_attempt_ = true;
 
   std::unique_ptr<ScopedThrottlingToken> throttling_token_;
 
@@ -519,7 +519,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) URLLoader
   std::unique_ptr<FileOpenerForUpload> file_opener_for_upload_;
 
   // Will only be set for requests that have |obey_origin_policy| set.
-  mojom::OriginPolicyManager* origin_policy_manager_;
+  mojom::OriginPolicyManager* origin_policy_manager_ = nullptr;
 
   // If the request is configured for Trust Tokens
   // (https://github.com/WICG/trust-token-api) protocol operations, annotates
