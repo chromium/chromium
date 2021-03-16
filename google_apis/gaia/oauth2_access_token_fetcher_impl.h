@@ -74,6 +74,7 @@ class OAuth2AccessTokenFetcherImpl : public OAuth2AccessTokenFetcher {
     INITIAL,
     GET_ACCESS_TOKEN_STARTED,
     GET_ACCESS_TOKEN_DONE,
+    GET_ACCESS_TOKEN_CANCELED,
     ERROR_STATE,
   };
 
