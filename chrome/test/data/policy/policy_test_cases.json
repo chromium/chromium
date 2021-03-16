@@ -8384,7 +8384,7 @@
       }
     ]
   },
-  "BrowserLabsEnabled":{
+  "BrowserLabsEnabled": {
     "os": ["win", "linux", "mac"],
     "policy_pref_mapping_tests":[
       {
@@ -8530,6 +8530,23 @@
         "policies": { "LacrosSecondaryProfilesAllowed": true },
         "prefs": {
           "lacros_secondary_profiles_allowed": { "location": "local_state", "value": true }
+        }
+      }
+    ]
+  },
+  "ForcedLanguages": {
+    "os": ["win", "linux", "mac"],
+    "can_be_recommended": false,
+    "policy_pref_mapping_tests": [
+      {
+        "policies": {
+          "ForcedLanguages": ["en-US", "fr-FR"]
+        },
+        "prefs": {
+          "intl.forced_languages": {
+            "value": ["en-US", "fr-FR"],
+            "location": "user_profile"
+          }
         }
       }
     ]

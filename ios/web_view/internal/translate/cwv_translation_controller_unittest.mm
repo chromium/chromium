@@ -93,6 +93,10 @@ class CWVTranslationControllerTest : public TestWithLocaleAndResources {
 
     pref_service_.registry()->RegisterStringPref(
         language::prefs::kAcceptLanguages, "en");
+    pref_service_.registry()->RegisterStringPref(
+        language::prefs::kSelectedLanguages, "");
+    pref_service_.registry()->RegisterListPref(
+        language::prefs::kForcedLanguages);
     pref_service_.registry()->RegisterListPref(
         language::prefs::kFluentLanguages,
         language::LanguagePrefs::GetDefaultFluentLanguages());

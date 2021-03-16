@@ -371,7 +371,7 @@ static void JNI_TranslateBridge_ResetAcceptLanguages(
 
   TranslateBridge::PrependToAcceptLanguagesIfNecessary(locale_string,
                                                        &accept_languages);
-  GetPrefService()->SetString(language::prefs::kAcceptLanguages,
+  GetPrefService()->SetString(language::prefs::kSelectedLanguages,
                               accept_languages);
 }
 

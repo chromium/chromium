@@ -308,8 +308,12 @@ class TranslatePrefs {
   // Resets the prefs of denial state. Only used internally for diagnostics.
   void ResetDenialState();
 
-  // Gets the language list of the language settings.
+  // Gets the full (policy-forced and user selected) language list from language
+  // settings.
   void GetLanguageList(std::vector<std::string>* languages) const;
+
+  // Gets the user selected language list from language settings.
+  void GetUserSelectedLanguageList(std::vector<std::string>* languages) const;
 
   bool CanTranslateLanguage(TranslateAcceptLanguages* accept_languages,
                             base::StringPiece language);

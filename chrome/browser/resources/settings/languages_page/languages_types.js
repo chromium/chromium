@@ -15,6 +15,7 @@
  *   spellCheckEnabled: boolean,
  *   translateEnabled: boolean,
  *   isManaged: boolean,
+ *   isForced: boolean,
  *   downloadDictionaryFailureCount: number,
  *   downloadDictionaryStatus:
  *       ?chrome.languageSettingsPrivate.SpellcheckDictionaryStatus,

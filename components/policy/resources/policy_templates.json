@@ -25134,6 +25134,30 @@ If you disable this policy, web page scrolling to specific text fragments via UR
       run audio with higher priority to address certain performance issues with audio capture.
       This policy will be removed in the future.''',
     },
+    {
+      'name': 'ForcedLanguages',
+      'owners': ['igorruvinov@chromium.org', 'pastarmovj@chromium.org'],
+      'type': 'list',
+      'schema': {
+        'type': 'array',
+        'items': { 'type': 'string' },
+      },
+      'supported_on': ['chrome.*:91-'],
+      'features': {
+        'dynamic_refresh': True,
+        'per_profile': True,
+      },
+      'example_value': [ 'en-US' ],
+      'id': 839,
+      'default': None,
+      'caption': '''Configure the content and order of preferred languages''',
+      'tags': [],
+      'desc': '''This policy allows admins to configure the order of the preferred languages in <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph>'s settings.
+
+      The order of the list will appear in the same order under the "Order languages based on your preference" section in chrome://settings/languages. Users won't be able to remove or reorder languages set by the policy, but will be able to add languages underneath those set by the policy. Users will also have full control over the browser's UI language and translation/spell check settings, unless enforced by other policies.
+
+      Leaving the policy unset lets users manipulate the entire list of preferred languages.''',
+    }
   ],
   'messages': {
     # Messages that are not associated to any policies.
@@ -26063,6 +26087,6 @@ The recommended way to configure policy on Windows is via GPO, although provisio
   'placeholders': [],
   'deleted_policy_ids': [114, 115, 204, 205, 206, 412, 476, 544, 546, 562, 569, 578, 583, 585, 586, 587, 588, 589, 590, 591, 600, 668, 669],
   'deleted_atomic_policy_group_ids': [19],
-  'highest_id_currently_used': 838,
+  'highest_id_currently_used': 839,
   'highest_atomic_group_id_currently_used': 40
 }

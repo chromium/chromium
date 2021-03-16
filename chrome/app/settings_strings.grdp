@@ -1106,6 +1106,12 @@
   <message name="IDS_SETTINGS_LANGUAGES_TRANSLATE_TARGET" desc="The label under a language's name in a list of enabled languages indicating that pages will be translated to this language.">
     This language is used when translating pages
   </message>
+  <message name="IDS_SETTINGS_LANGUAGES_MANAGED_DIALOG_TITLE" desc="Title text for the dialog informing users that the language they tried modifying is managed.">
+    Language is set by your Organization
+  </message>
+  <message name="IDS_SETTINGS_LANGUAGES_MANAGED_DIALOG_BODY" desc="Body text for the dialog informing users that the language they tried modifying is managed.">
+    Your administrator has set a default language which cannot be modified.
+  </message>
   <if expr="chromeos">
     <message name="IDS_SETTINGS_LANGUAGES_KEYBOARD_APPS" desc="Title for the list of keyboard apps installed via Play Store by the user.">
       Keyboard apps

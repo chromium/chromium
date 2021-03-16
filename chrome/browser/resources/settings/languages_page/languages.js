@@ -181,6 +181,8 @@ Polymer({
     'prospectiveUILanguageChanged_(prefs.intl.app_locale.value, languages)',
     'preferredLanguagesPrefChanged_(' +
         'prefs.' + preferredLanguagesPrefName + '.value, languages)',
+    'preferredLanguagesPrefChanged_(' +
+        'prefs.intl.forced_languages.value.*, languages)',
     'spellCheckDictionariesPrefChanged_(' +
         'prefs.spellcheck.dictionaries.value.*, ' +
         'prefs.spellcheck.forced_dictionaries.value.*, ' +
@@ -623,10 +625,13 @@ Polymer({
 
     const pref = this.getPref(preferredLanguagesPrefName);
     const enabledLanguageCodes = pref.value.split(',');
+    const languagesForcedPref = this.getPref('intl.forced_languages');
     const spellCheckPref = this.getPref('spellcheck.dictionaries');
     const spellCheckForcedPref = this.getPref('spellcheck.forced_dictionaries');
     const spellCheckBlockedPref =
         this.getPref('spellcheck.blocked_dictionaries');
+    const languageForcedSet = this.makeSetFromArray_(
+        /** @type {!Array<string>} */ (languagesForcedPref.value));
     const spellCheckSet = this.makeSetFromArray_(
         /** @type {!Array<string>} */ (
             spellCheckPref.value.concat(spellCheckForcedPref.value)));
@@ -640,6 +645,7 @@ Polymer({
         /** @type {!Array<string>} */ (translateBlockedPref.value));
 
     const enabledLanguageStates = [];
+
     for (let i = 0; i < enabledLanguageCodes.length; i++) {
       const code = enabledLanguageCodes[i];
       const language = this.supportedLanguageMap_.get(code);
@@ -657,6 +663,7 @@ Polymer({
           translateTarget, prospectiveUILanguage);
       languageState.isManaged =
           spellCheckForcedSet.has(code) || spellCheckBlockedSet.has(code);
+      languageState.isForced = languageForcedSet.has(code);
       languageState.downloadDictionaryFailureCount = 0;
       enabledLanguageStates.push(languageState);
     }

@@ -16,20 +16,42 @@ namespace language {
 namespace test {
 
 // Helper class for testing Accept Languages.
-class AcceptLanguagesTester {
+class LanguagePrefTester {
  public:
-  explicit AcceptLanguagesTester(PrefService* user_prefs);
+  explicit LanguagePrefTester(PrefService* user_prefs);
 
-  // Checks that the provided strings are equivalent to the content language
-  // prefs. Chrome OS uses a different pref, so we need to handle it separately.
-  void ExpectLanguagePrefs(const std::string& expected_prefs,
-                           const std::string& expected_prefs_chromeos) const;
+  // Checks that the provided strings are equivalent to the language pref of
+  // interest.
+  void ExpectPref(const std::string& pref_name,
+                  const std::string& expected_prefs,
+                  const std::string& expected_prefs_chromeos) const;
+
+  // Checks that the provided strings are equivalent to the accept languages
+  // pref. Chrome OS uses a different pref, so we need to handle it separately.
+  void ExpectAcceptLanguagePrefs(
+      const std::string& expected_prefs,
+      const std::string& expected_prefs_chromeos) const;
 
   // Similar to function above: this one expects both ChromeOS and other
   // platforms to have the same value of language prefs.
-  void ExpectLanguagePrefs(const std::string& expected_prefs) const;
+  void ExpectAcceptLanguagePrefs(const std::string& expected_prefs) const;
 
+  // Checks that the provided strings are equivalent to the selected languages
+  // pref.
+  void ExpectSelectedLanguagePrefs(
+      const std::string& expected_prefs,
+      const std::string& expected_prefs_chromeos) const;
+
+  // Similar to function above: this one expects both ChromeOS and other
+  // platforms to have the same value of language prefs.
+  void ExpectSelectedLanguagePrefs(const std::string& expected_prefs) const;
+
+  // Sets the contents of the selected language pref. Chrome OS uses a different
+  // pref so it is handled separately.
   void SetLanguagePrefs(const std::vector<std::string>& languages);
+
+  // Sets the contents of the forced language pref.
+  void SetForcedLanguagePrefs(std::vector<std::string>&& languages);
 
  private:
   PrefService* prefs_;

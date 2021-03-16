@@ -685,6 +685,9 @@ void AddLanguagesStrings(content::WebUIDataSource* html_source,
      IDS_SETTINGS_LANGUAGES_SPELL_CHECK_ENHANCED_LABEL},
     {"spellCheckEnhancedDescription",
      IDS_SETTINGS_LANGUAGES_SPELL_CHECK_ENHANCED_DESCRIPTION},
+    // Managed dialog strings:
+    {"languageManagedDialogTitle", IDS_SETTINGS_LANGUAGES_MANAGED_DIALOG_TITLE},
+    {"languageManagedDialogBody", IDS_SETTINGS_LANGUAGES_MANAGED_DIALOG_BODY},
 #if !defined(OS_MAC)
     {"spellCheckDisabledReason",
      IDS_SETTING_LANGUAGES_SPELL_CHECK_DISABLED_REASON},

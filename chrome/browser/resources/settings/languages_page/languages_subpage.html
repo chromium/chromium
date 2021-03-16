@@ -159,3 +159,9 @@
       on-close="onAddLanguagesDialogClose_">
   </settings-add-languages-dialog>
 </template>
+<template is="dom-if" if="[[showManagedLanguageDialog_]]" restamp>
+  <managed-dialog on-close="onManagedLanguageDialogClosed_"
+      title="[[i18n('languageManagedDialogTitle')]]"
+      body="[[i18n('languageManagedDialogBody')]]">
+  </managed-dialog>
+</template>

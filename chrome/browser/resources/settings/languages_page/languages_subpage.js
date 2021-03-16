@@ -6,6 +6,7 @@
  * @fileoverview 'settings-languages-page' is the settings page
  * for language and input method settings.
  */
+import 'chrome://resources/cr_components/managed_dialog/managed_dialog.js';
 import 'chrome://resources/cr_elements/cr_action_menu/cr_action_menu.m.js';
 import 'chrome://resources/cr_elements/cr_button/cr_button.m.js';
 import 'chrome://resources/cr_elements/cr_checkbox/cr_checkbox.m.js';
@@ -116,6 +117,12 @@ Polymer({
       },
     },
     // </if>
+
+    /** @private */
+    showManagedLanguageDialog_: {
+      type: Boolean,
+      value: false,
+    },
   },
 
   // <if expr="chromeos">
@@ -492,6 +499,11 @@ Polymer({
    */
   onMoveToTopTap_() {
     /** @type {!CrActionMenuElement} */ (this.$$('#menu').get()).close();
+    if (this.detailLanguage_.isForced) {
+      // If language is managed, show dialog to inform user it can't be modified
+      this.showManagedLanguageDialog_ = true;
+      return;
+    }
     this.languageHelper.moveLanguageToFront(this.detailLanguage_.language.code);
     this.languageSettingsMetricsProxy_.recordSettingsMetric(
         LanguageSettingsActionType.LANGUAGE_LIST_REORDERED);
@@ -503,6 +515,11 @@ Polymer({
    */
   onMoveUpTap_() {
     /** @type {!CrActionMenuElement} */ (this.$$('#menu').get()).close();
+    if (this.detailLanguage_.isForced) {
+      // If language is managed, show dialog to inform user it can't be modified
+      this.showManagedLanguageDialog_ = true;
+      return;
+    }
     this.languageHelper.moveLanguage(
         this.detailLanguage_.language.code, true /* upDirection */);
     this.languageSettingsMetricsProxy_.recordSettingsMetric(
@@ -515,6 +532,11 @@ Polymer({
    */
   onMoveDownTap_() {
     /** @type {!CrActionMenuElement} */ (this.$$('#menu').get()).close();
+    if (this.detailLanguage_.isForced) {
+      // If language is managed, show dialog to inform user it can't be modified
+      this.showManagedLanguageDialog_ = true;
+      return;
+    }
     this.languageHelper.moveLanguage(
         this.detailLanguage_.language.code, false /* upDirection */);
     this.languageSettingsMetricsProxy_.recordSettingsMetric(
@@ -527,6 +549,11 @@ Polymer({
    */
   onRemoveLanguageTap_() {
     /** @type {!CrActionMenuElement} */ (this.$$('#menu').get()).close();
+    if (this.detailLanguage_.isForced) {
+      // If language is managed, show dialog to inform user it can't be modified
+      this.showManagedLanguageDialog_ = true;
+      return;
+    }
     this.languageHelper.disableLanguage(this.detailLanguage_.language.code);
     this.languageSettingsMetricsProxy_.recordSettingsMetric(
         LanguageSettingsActionType.LANGUAGE_REMOVED);
@@ -587,4 +614,12 @@ Polymer({
       }
     }, kMenuCloseDelay);
   },
+
+  /**
+   * Triggered when the managed language dialog is dismissed.
+   * @private
+   */
+  onManagedLanguageDialogClosed_() {
+    this.showManagedLanguageDialog_ = false;
+  }
 });

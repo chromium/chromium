@@ -256,12 +256,15 @@ void TranslatePrefs::AddToLanguageList(base::StringPiece input_language,
   language::ToChromeLanguageSynonym(&chrome_language);
 
   std::vector<std::string> languages;
+  std::vector<std::string> user_selected_languages;
   GetLanguageList(&languages);
+  GetUserSelectedLanguageList(&user_selected_languages);
 
   // We should block the language if the list does not already contain another
-  // language with the same base language.
+  // language with the same base language. Policy-forced languages aren't
+  // counted as "blocking", so only user-selected languages are checked.
   const bool should_block =
-      !ContainsSameBaseLanguage(languages, chrome_language);
+      !ContainsSameBaseLanguage(user_selected_languages, chrome_language);
 
   if (force_blocked || should_block) {
     BlockLanguage(input_language);
@@ -269,8 +272,8 @@ void TranslatePrefs::AddToLanguageList(base::StringPiece input_language,
 
   // Add the language to the list.
   if (!base::Contains(languages, chrome_language)) {
-    languages.push_back(chrome_language);
-    language_prefs_->SetAcceptLanguagesList(languages);
+    user_selected_languages.push_back(chrome_language);
+    language_prefs_->SetUserSelectedLanguagesList(user_selected_languages);
   }
 }
 
@@ -281,24 +284,27 @@ void TranslatePrefs::RemoveFromLanguageList(base::StringPiece input_language) {
   language::ToChromeLanguageSynonym(&chrome_language);
 
   std::vector<std::string> languages;
-  GetLanguageList(&languages);
+  std::vector<std::string> user_selected_languages;
+  GetUserSelectedLanguageList(&user_selected_languages);
 
   // Remove the language from the list.
-  const auto& it =
-      std::find(languages.begin(), languages.end(), chrome_language);
-  if (it != languages.end()) {
+  const auto& it = std::find(user_selected_languages.begin(),
+                             user_selected_languages.end(), chrome_language);
+  if (it != user_selected_languages.end()) {
     // If the language being removed is the most recent language, erase that
     // data so that Chrome won't try to translate to it next time Translate is
     // triggered.
     if (chrome_language == GetRecentTargetLanguage())
       ResetRecentTargetLanguage();
 
-    languages.erase(it);
-    PurgeUnsupportedLanguagesInLanguageFamily(chrome_language, &languages);
-    language_prefs_->SetAcceptLanguagesList(languages);
+    user_selected_languages.erase(it);
+    PurgeUnsupportedLanguagesInLanguageFamily(chrome_language,
+                                              &user_selected_languages);
+    language_prefs_->SetUserSelectedLanguagesList(user_selected_languages);
 
     // We should unblock the language if this was the last one from the same
     // language family.
+    GetLanguageList(&languages);
     if (!ContainsSameBaseLanguage(languages, chrome_language)) {
       UnblockLanguage(input_language);
     }
@@ -314,7 +320,7 @@ void TranslatePrefs::RearrangeLanguage(
   DCHECK(!(offset < 1 && (where == kUp || where == kDown)));
 
   std::vector<std::string> languages;
-  GetLanguageList(&languages);
+  GetUserSelectedLanguageList(&languages);
 
   auto pos = std::find(languages.begin(), languages.end(), language);
   if (pos == languages.end())
@@ -339,11 +345,15 @@ void TranslatePrefs::RearrangeLanguage(
       while (pos != languages.begin()) {
         auto next_pos = pos - 1;
         // Skip over non-enabled languages without decrementing |offset|.
-        if (std::binary_search(enabled.begin(), enabled.end(), *next_pos)) {
-          // By only checking |offset| when an enabled language is found, and
-          // decrementing |offset| after checking it (instead of before), this
-          // means that |language| will be moved up the list until it has either
-          // reached the next enabled language or the top of the list.
+        // Also skip over languages hidden due to duplication between forced
+        // and user-selected languages.
+        if (std::binary_search(enabled.begin(), enabled.end(), *next_pos) &&
+            !language_prefs_->IsForcedLanguage(*next_pos)) {
+          // By only checking |offset| when an enabled, non-forced language is
+          // found, and decrementing |offset| after checking it (instead of
+          // before), this means that |language| will be moved up the list until
+          // it has either reached the next enabled language or the top of the
+          // list.
           if (offset <= 0)
             break;
           --offset;
@@ -358,11 +368,13 @@ void TranslatePrefs::RearrangeLanguage(
         return;
       for (auto next_pos = pos + 1; next_pos != languages.end() && offset > 0;
            pos = next_pos++) {
-        // Skip over non-enabled languages without decrementing offset. Unlike
-        // moving languages up in the list, moving languages down in the list
-        // stops as soon as |offset| reaches zero, instead of continuing to skip
-        // non-enabled languages after |offset| has reached zero.
-        if (std::binary_search(enabled.begin(), enabled.end(), *next_pos))
+        // Skip over non-enabled or forced languages without decrementing
+        // offset. Unlike moving languages up in the list, moving languages down
+        // in the list stops as soon as |offset| reaches zero, instead of
+        // continuing to skip non-enabled languages after |offset| has reached
+        // zero.
+        if (std::binary_search(enabled.begin(), enabled.end(), *next_pos) &&
+            !language_prefs_->IsForcedLanguage(*next_pos))
           --offset;
         std::swap(*next_pos, *pos);
       }
@@ -376,12 +388,12 @@ void TranslatePrefs::RearrangeLanguage(
       return;
   }
 
-  language_prefs_->SetAcceptLanguagesList(languages);
+  language_prefs_->SetUserSelectedLanguagesList(languages);
 }
 
 void TranslatePrefs::SetLanguageOrder(
     const std::vector<std::string>& new_order) {
-  language_prefs_->SetAcceptLanguagesList(new_order);
+  language_prefs_->SetUserSelectedLanguagesList(new_order);
 }
 
 // static
@@ -782,6 +794,11 @@ void TranslatePrefs::ResetDenialState() {
 void TranslatePrefs::GetLanguageList(
     std::vector<std::string>* const languages) const {
   language_prefs_->GetAcceptLanguagesList(languages);
+}
+
+void TranslatePrefs::GetUserSelectedLanguageList(
+    std::vector<std::string>* const languages) const {
+  language_prefs_->GetUserSelectedLanguagesList(languages);
 }
 
 bool TranslatePrefs::CanTranslateLanguage(

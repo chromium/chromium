@@ -629,6 +629,9 @@ const PolicyToPreferenceMapEntry kSimplePolicyMap[] = {
   { key::kBrowserLabsEnabled,
     chrome_labs_prefs::kBrowserLabsEnabled,
     base::Value::Type::BOOLEAN },
+  { key::kForcedLanguages,
+    language::prefs::kForcedLanguages,
+    base::Value::Type::LIST },
 
 #if defined(OS_ANDROID)
   { key::kDataCompressionProxyEnabled,

@@ -23912,6 +23912,7 @@ Called by update_document_policy_enum.py.-->
   <int value="836" label="AudioProcessHighPriorityEnabled"/>
   <int value="837" label="SerialAllowAllPortsForUrls"/>
   <int value="838" label="SerialAllowUsbDevicesForUrls"/>
+  <int value="839" label="ForcedLanguages"/>
 </enum>
 
 <enum name="EnterprisePolicyDeviceIdValidity">

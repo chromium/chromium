@@ -475,6 +475,11 @@ cr.define('settings', function() {
         value: 'en-US,sw',
       },
       {
+        key: 'intl.forced_languages',
+        type: chrome.settingsPrivate.PrefType.LIST,
+        value: '',
+      },
+      {
         key: 'spellcheck.blocked_dictionaries',
         type: chrome.settingsPrivate.PrefType.LIST,
         value: [],

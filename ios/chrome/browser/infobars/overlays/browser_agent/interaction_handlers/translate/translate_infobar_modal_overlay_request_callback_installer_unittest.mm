@@ -54,6 +54,10 @@ class TranslateInfobarModalOverlayRequestCallbackInstallerTest
     installer_.InstallCallbacks(request_);
   }
 
+  ~TranslateInfobarModalOverlayRequestCallbackInstallerTest() override {
+    manager()->ShutDown();
+  }
+
   InfoBarManagerImpl* manager() {
     return InfoBarManagerImpl::FromWebState(&web_state_);
   }
