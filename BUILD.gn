@@ -1418,24 +1418,6 @@ if (enable_js_type_check) {
   }
 }
 
-# Because of the source assignment filter, many targets end up over-filtering
-# their sources if the output directory contains a platform name. Assert that
-# this doesn't happen. http://crbug.com/548283
-assert(
-    filter_exclude([ "$root_build_dir/foo" ],
-                   # List copied from //build/config/BUILDCONFIG.gn.
-                   [
-                     "*\bandroid/*",
-                     "*\bchromeos/*",
-                     "*\bcocoa/*",
-                     "*\bios/*",
-                     "*\blinux/*",
-                     "*\bmac/*",
-                     "*\bposix/*",
-                     "*\bwin/*",
-                   ]) != [],
-    "Do not use a platform name in your output directory (found \"$root_build_dir\"). http://crbug.com/548283")
-
 # Write debug logs to gn_logs.txt.
 _lines = [
            "Generated during 'gn gen' by //BUILD.gn.",

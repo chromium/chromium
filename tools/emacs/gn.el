@@ -74,8 +74,8 @@ variable name or the '{{' and '}}' which surround it."
     "forward_variables_from" "get_label_info" "get_path_info"
     "get_target_outputs" "getenv" "import" "not_needed" "print"
     "process_file_template" "read_file" "rebase_path" "set_default_toolchain"
-    "set_defaults" "set_sources_assignment_filter" "split_list" "template"
-    "tool" "toolchain" "propagates_configs" "write_file"))
+    "set_defaults" "split_list" "template" "tool" "toolchain"
+    "propagates_configs" "write_file"))
 
 (defvar gn-font-lock-predefined-var-keywords
   '("current_cpu" "current_os" "current_toolchain" "default_toolchain"

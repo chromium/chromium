@@ -6532,7 +6532,6 @@ grit("resources") {
   ]
 
   if (enable_plugins) {
-    #.json is not in the default sources_assignment_filter.
     if (is_chromeos_ash) {
       inputs = [ "resources/plugin_metadata/plugins_chromeos.json" ]
     }
