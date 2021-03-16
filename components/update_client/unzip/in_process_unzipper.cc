@@ -2,19 +2,20 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/updater/unzipper.h"
+#include "components/update_client/unzip/in_process_unzipper.h"
 
 #include <utility>
+
 #include "base/files/file_path.h"
 #include "third_party/zlib/google/zip.h"
 
-namespace updater {
+namespace update_client {
 
 namespace {
 
-class UnzipperImpl : public update_client::Unzipper {
+class InProcessUnzipper : public Unzipper {
  public:
-  UnzipperImpl() = default;
+  InProcessUnzipper() = default;
 
   void Unzip(const base::FilePath& zip_path,
              const base::FilePath& output_path,
@@ -25,12 +26,12 @@ class UnzipperImpl : public update_client::Unzipper {
 
 }  // namespace
 
-UnzipperFactory::UnzipperFactory() = default;
+InProcessUnzipperFactory::InProcessUnzipperFactory() = default;
 
-std::unique_ptr<update_client::Unzipper> UnzipperFactory::Create() const {
-  return std::make_unique<UnzipperImpl>();
+std::unique_ptr<Unzipper> InProcessUnzipperFactory::Create() const {
+  return std::make_unique<InProcessUnzipper>();
 }
 
-UnzipperFactory::~UnzipperFactory() = default;
+InProcessUnzipperFactory::~InProcessUnzipperFactory() = default;
 
-}  // namespace updater
+}  // namespace update_client

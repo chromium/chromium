@@ -15,14 +15,13 @@
 #include "components/component_updater/component_updater_command_line_config_policy.h"
 #include "components/component_updater/configurator_impl.h"
 #include "components/prefs/pref_service.h"
-#include "components/services/patch/content/patch_service.h"
-#include "components/services/unzip/content/unzip_service.h"
 #include "components/update_client/activity_data_service.h"
 #include "components/update_client/crx_downloader_factory.h"
 #include "components/update_client/network.h"
-#include "components/update_client/patch/patch_impl.h"
+#include "components/update_client/patch/in_process_patcher.h"
+#include "components/update_client/patcher.h"
 #include "components/update_client/protocol_handler.h"
-#include "components/update_client/unzip/unzip_impl.h"
+#include "components/update_client/unzip/in_process_unzipper.h"
 #include "components/update_client/unzipper.h"
 #include "components/update_client/update_query_params.h"
 #include "components/version_info/android/channel_getter.h"
@@ -139,8 +138,8 @@ AwComponentUpdaterConfigurator::GetCrxDownloaderFactory() {
 scoped_refptr<update_client::UnzipperFactory>
 AwComponentUpdaterConfigurator::GetUnzipperFactory() {
   if (!unzip_factory_) {
-    unzip_factory_ = base::MakeRefCounted<update_client::UnzipChromiumFactory>(
-        base::BindRepeating(&unzip::LaunchUnzipper));
+    unzip_factory_ =
+        base::MakeRefCounted<update_client::InProcessUnzipperFactory>();
   }
   return unzip_factory_;
 }
@@ -148,8 +147,8 @@ AwComponentUpdaterConfigurator::GetUnzipperFactory() {
 scoped_refptr<update_client::PatcherFactory>
 AwComponentUpdaterConfigurator::GetPatcherFactory() {
   if (!patch_factory_) {
-    patch_factory_ = base::MakeRefCounted<update_client::PatchChromiumFactory>(
-        base::BindRepeating(&patch::LaunchFilePatcher));
+    patch_factory_ =
+        base::MakeRefCounted<update_client::InProcessPatcherFactory>();
   }
   return patch_factory_;
 }

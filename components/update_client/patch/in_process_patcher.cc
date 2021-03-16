@@ -2,22 +2,24 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/updater/patcher.h"
+#include "components/update_client/patch/in_process_patcher.h"
 
 #include <utility>
+
 #include "base/callback.h"
 #include "base/files/file.h"
 #include "base/files/file_path.h"
+#include "base/memory/scoped_refptr.h"
 #include "courgette/courgette.h"
 #include "courgette/third_party/bsdiff/bsdiff.h"
 
-namespace updater {
+namespace update_client {
 
 namespace {
 
-class PatcherImpl : public update_client::Patcher {
+class InProcessPatcher : public Patcher {
  public:
-  PatcherImpl() = default;
+  InProcessPatcher() = default;
 
   void PatchBsdiff(const base::FilePath& input_path,
                    const base::FilePath& patch_path,
@@ -60,17 +62,17 @@ class PatcherImpl : public update_client::Patcher {
   }
 
  protected:
-  ~PatcherImpl() override = default;
+  ~InProcessPatcher() override = default;
 };
 
 }  // namespace
 
-PatcherFactory::PatcherFactory() = default;
+InProcessPatcherFactory::InProcessPatcherFactory() = default;
 
-scoped_refptr<update_client::Patcher> PatcherFactory::Create() const {
-  return base::MakeRefCounted<PatcherImpl>();
+scoped_refptr<Patcher> InProcessPatcherFactory::Create() const {
+  return base::MakeRefCounted<InProcessPatcher>();
 }
 
-PatcherFactory::~PatcherFactory() = default;
+InProcessPatcherFactory::~InProcessPatcherFactory() = default;
 
-}  // namespace updater
+}  // namespace update_client

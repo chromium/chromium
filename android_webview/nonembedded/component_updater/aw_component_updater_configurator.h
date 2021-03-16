@@ -9,12 +9,11 @@
 #include "base/version.h"
 #include "components/component_updater/configurator_impl.h"
 #include "components/prefs/pref_service.h"
-#include "components/services/patch/content/patch_service.h"
-#include "components/services/unzip/content/unzip_service.h"
 #include "components/update_client/activity_data_service.h"
 #include "components/update_client/configurator.h"
 #include "components/update_client/crx_downloader_factory.h"
 #include "components/update_client/network.h"
+#include "components/update_client/patcher.h"
 #include "components/update_client/protocol_handler.h"
 #include "components/update_client/unzipper.h"
 

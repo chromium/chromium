@@ -21,6 +21,31 @@ source_set("network_impl") {
   ]
 }
 
+source_set("in_process_unzipper") {
+  sources = [
+    "unzip/in_process_unzipper.cc",
+    "unzip/in_process_unzipper.h",
+  ]
+  deps = [
+    ":update_client",
+    "//base",
+    "//third_party/zlib/google:zip",
+  ]
+}
+
+source_set("in_process_patcher") {
+  sources = [
+    "patch/in_process_patcher.cc",
+    "patch/in_process_patcher.h",
+  ]
+  deps = [
+    ":update_client",
+    "//base",
+    "//courgette:bsdiff",
+    "//courgette:courgette_lib",
+  ]
+}
+
 source_set("unzip_impl") {
   sources = [
     "unzip/unzip_impl.cc",
