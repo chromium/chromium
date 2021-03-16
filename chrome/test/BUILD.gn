@@ -5640,20 +5640,15 @@ test("unit_tests") {
     } else {
       sources += [
         "../browser/extensions/api/enterprise_reporting_private/enterprise_reporting_private_unittest.cc",
+        "../browser/extensions/api/messaging/native_message_process_host_unittest.cc",
         "../browser/extensions/api/messaging/native_messaging_host_manifest_unittest.cc",
+        "../browser/extensions/api/messaging/native_messaging_launch_from_native_unittest.cc",
         "../browser/extensions/api/messaging/native_messaging_policy_handler_unittest.cc",
       ]
 
       deps += [ "//components/enterprise:test_support" ]
     }
-    if (!is_chromeos_ash && !is_chromeos_lacros) {
-      sources += [
-        "../browser/extensions/api/messaging/native_message_process_host_unittest.cc",
-        "../browser/extensions/api/messaging/native_messaging_launch_from_native_unittest.cc",
-      ]
-    }
   }
-
   if (use_aura) {
     deps += [
       "//ui/aura:test_support",

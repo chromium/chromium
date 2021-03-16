@@ -3,6 +3,7 @@ include_rules = [
   "+services/device/public",
 
    # Enable remote assistance on Chrome OS
+  "+remoting/base",
   "+remoting/host",
 ]
 

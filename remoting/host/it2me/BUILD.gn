@@ -72,32 +72,20 @@ source_set("common") {
   }
 }
 
-if (is_chromeos_ash || is_chromeos_lacros) {
+if (is_chromeos_ash) {
   source_set("chrome_os_host") {
     sources = [
-      "it2me_native_messaging_host_allowed_origins.cc",
-      "it2me_native_messaging_host_allowed_origins.h",
+      "it2me_native_messaging_host_chromeos.cc",
+      "it2me_native_messaging_host_chromeos.h",
     ]
 
-    if (is_chromeos_lacros) {
-      sources += [
-        "it2me_native_messaging_host_lacros.cc",
-        "it2me_native_messaging_host_lacros.h",
-      ]
-    } else {
-      sources += [
-        "it2me_native_messaging_host_chromeos.cc",
-        "it2me_native_messaging_host_chromeos.h",
-      ]
+    deps = [
+      ":common",
+      "//skia",
+    ]
 
-      deps = [
-        ":common",
-        "//skia",
-      ]
-
-      if (use_ozone) {
-        deps += [ "//ui/ozone" ]
-      }
+    if (use_ozone) {
+      deps += [ "//ui/ozone" ]
     }
   }
 }

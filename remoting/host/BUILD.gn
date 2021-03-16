@@ -26,7 +26,7 @@ group("all") {
     deps += [ ":remoting_host_branded" ]
   }
 
-  if (!is_chromeos_ash && !is_chromeos_lacros && !is_android && !is_ios) {
+  if (!is_chromeos_ash && !is_android && !is_ios) {
     deps += [
       "//remoting/host:remoting_native_messaging_host",
       "//remoting/host:remoting_native_messaging_manifests",

@@ -7,7 +7,6 @@
 #include <memory>
 
 #include "base/lazy_instance.h"
-#include "base/stl_util.h"
 #include "base/task/post_task.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
@@ -37,14 +36,5 @@ CreateIt2MeNativeMessagingHostForChromeOS(
           std::move(context), std::move(host_factory)));
   return host;
 }
-
-// If you modify the list of allowed_origins, don't forget to update
-// remoting/host/it2me/com.google.chrome.remote_assistance.json.jinja2
-// to keep the two lists in sync.
-const char* const kRemotingIt2MeOrigins[] = {
-    "chrome-extension://inomeogfingihgjfjlpeplalcfajhgai/",
-    "chrome-extension://hpodccmdligbeohchckkeajbfohibipg/"};
-
-const size_t kRemotingIt2MeOriginsCount = base::size(kRemotingIt2MeOrigins);
 
 }  // namespace remoting
