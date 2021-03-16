@@ -274,7 +274,8 @@ suite('CrComponentsEsimFlowUiTest', function() {
       assertActivationCodePage(/*forwardButtonShouldBeEnabled=*/ true);
     });
 
-    test('Invalid activation code', async function() {
+    // TODO(crbug.com/1188665) Renable flaky test
+    test.skip('Invalid activation code', async function() {
       activationCodePage.barcodeDetectorClass_ = FakeBarcodeDetector;
       activationCodePage.initBarcodeDetector();
       await flushAsync();
