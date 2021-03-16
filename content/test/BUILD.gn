@@ -662,6 +662,19 @@ if (is_fuchsia) {
       "//fuchsia/engine:web_engine_with_webui",
     ]
   }
+  group("performance_web_engine_test_suite") {
+    testonly = true
+    data = [
+      "//content/test/gpu/run_telemetry_test_fuchsia.py",
+      "//content/test/gpu/",
+    ]
+    data_deps = [
+      "//fuchsia/engine:web_engine_shell",
+      "//fuchsia/engine:web_engine_with_webui",
+      "//testing:run_perf_test",
+      "//tools/perf/:perf",
+    ]
+  }
 }
 
 group("telemetry_gpu_integration_test_scripts_only") {

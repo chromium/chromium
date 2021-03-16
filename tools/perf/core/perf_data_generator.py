@@ -221,20 +221,20 @@ FYI_BUILDERS = {
         },
     },
     'fuchsia-perf-fyi': {
-        # TODO(rohpavone): Temporarily using telemetry_gpu_tests until custom
-        # test is created to run telemetry benchmarks, as this gets infra up.
         'tests': [{
             'isolate':
-            'fuchsia_telemetry_gpu_integration_test',
+            'performance_web_engine_test_suite',
             'extra_args': [
-                'hardware_accelerated_feature', '--show-stdout',
-                '--browser=web-engine-shell', '--passthrough', '-v',
-                '--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc',
+                '--output-format=histograms',
+                '--experimental-tbmv3-metrics',
                 '--device=custom',
-                '--custom-device-target=internal.astro_target'
+                '--custom-device-target=internal.astro_target',
+                # TODO(rohpavone): Remove this to enable other stories once
+                # script has stabilized.
+                '--story-filter=load:chrome:blank',
             ],
             'type':
-            TEST_TYPES.GENERIC,
+            TEST_TYPES.TELEMETRY,
         }],
         'platform':
         'fuchsia',
@@ -1340,6 +1340,8 @@ def generate_telemetry_args(tester_config, platform):
   elif (tester_config['platform'] == 'win'
     and tester_config['target_bits'] == 64):
     browser_name = 'release_x64'
+  elif tester_config['platform'] == 'fuchsia':
+    browser_name = 'web-engine-shell'
   else:
     browser_name ='release'
   test_args = [
