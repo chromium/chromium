@@ -39333,6 +39333,7 @@ Called by update_gpu_driver_bug_workaround_entries.py.-->
   <int value="1" label="Google Apps"/>
   <int value="2" label="Chrome - Other features"/>
   <int value="3" label="Chrome - Reader mode"/>
+  <int value="4" label="Chrome - Read later"/>
 </enum>
 
 <enum name="Inconsistencies">

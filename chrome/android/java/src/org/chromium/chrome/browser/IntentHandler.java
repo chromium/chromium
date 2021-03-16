@@ -268,7 +268,8 @@ public class IntentHandler {
      * When removing items, comment them out and keep existing numeric values stable.
      */
     @IntDef({IncognitoCCTCallerId.OTHER_APPS, IncognitoCCTCallerId.GOOGLE_APPS,
-            IncognitoCCTCallerId.OTHER_CHROME_FEATURES, IncognitoCCTCallerId.READER_MODE})
+            IncognitoCCTCallerId.OTHER_CHROME_FEATURES, IncognitoCCTCallerId.READER_MODE,
+            IncognitoCCTCallerId.READ_LATER})
     @Retention(RetentionPolicy.SOURCE)
     public @interface IncognitoCCTCallerId {
         int OTHER_APPS = 0;
@@ -280,9 +281,10 @@ public class IntentHandler {
 
         // Chrome Features
         int READER_MODE = 3;
+        int READ_LATER = 4;
 
         // Update {@link IncognitoCCTCallerId} in enums.xml when adding new items.
-        int NUM_ENTRIES = 4;
+        int NUM_ENTRIES = 5;
     }
 
     private static ComponentName getFakeComponentName(String packageName) {

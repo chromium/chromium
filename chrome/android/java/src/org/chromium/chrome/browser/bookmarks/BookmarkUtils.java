@@ -28,11 +28,13 @@ import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.IntentHandler;
+import org.chromium.chrome.browser.IntentHandler.IncognitoCCTCallerId;
 import org.chromium.chrome.browser.LaunchIntentDispatcher;
 import org.chromium.chrome.browser.bookmarks.BookmarkBridge.BookmarkItem;
 import org.chromium.chrome.browser.bookmarks.bottomsheet.BookmarkBottomSheetCoordinator;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider.CustomTabsUiType;
 import org.chromium.chrome.browser.customtabs.CustomTabIntentDataProvider;
+import org.chromium.chrome.browser.customtabs.IncognitoCustomTabIntentDataProvider;
 import org.chromium.chrome.browser.document.ChromeLauncherActivity;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.flags.CachedFeatureFlags;
@@ -401,7 +403,7 @@ public class BookmarkUtils {
         if (bookmarkItem.getId().getType() == BookmarkType.READING_LIST
                 && !bookmarkItem.isFolder()) {
             model.setReadStatusForReadingList(bookmarkItem.getUrl(), true);
-            openUrlInCustomTab(context, bookmarkItem.getUrl().getSpec(), isIncognito);
+            openReadingListInCustomTab(context, bookmarkItem.getUrl().getSpec(), isIncognito);
         } else {
             openUrl(context, bookmarkItem.getUrl().getSpec(), openBookmarkComponentName);
         }
@@ -463,7 +465,8 @@ public class BookmarkUtils {
         IntentHandler.startActivityForTrustedIntent(intent);
     }
 
-    private static void openUrlInCustomTab(Context context, String url, boolean isOffTheRecord) {
+    private static void openReadingListInCustomTab(
+            Context context, String url, boolean isOffTheRecord) {
         CustomTabsIntent.Builder builder = new CustomTabsIntent.Builder();
         builder.setShowTitle(true);
         builder.setShareState(CustomTabsIntent.SHARE_STATE_ON);
@@ -475,7 +478,13 @@ public class BookmarkUtils {
         intent.setPackage(context.getPackageName());
         intent.putExtra(Browser.EXTRA_APPLICATION_ID, context.getPackageName());
         intent.putExtra(CustomTabIntentDataProvider.EXTRA_UI_TYPE, CustomTabsUiType.READ_LATER);
-        intent.putExtra(IntentHandler.EXTRA_OPEN_NEW_INCOGNITO_TAB, isOffTheRecord);
+
+        // Extras for incognito CCT.
+        if (isOffTheRecord) {
+            IncognitoCustomTabIntentDataProvider.addIncongitoExtrasForChromeFeatures(
+                    intent, IncognitoCCTCallerId.READ_LATER);
+        }
+
         IntentHandler.addTrustedIntentExtras(intent);
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         IntentHandler.startActivityForTrustedIntent(intent);

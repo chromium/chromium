@@ -1197,9 +1197,7 @@ public class BookmarkTest {
                 CustomTabActivity.class, Stage.CREATED, () -> { readingListRow.performClick(); });
         CriteriaHelper.pollUiThread(() -> activity.getActivityTab() != null);
         Intent customTabIntent = activity.getInitialIntent();
-        Assert.assertTrue(customTabIntent.hasExtra(IntentHandler.EXTRA_OPEN_NEW_INCOGNITO_TAB));
-        Assert.assertFalse(
-                customTabIntent.getBooleanExtra(IntentHandler.EXTRA_OPEN_NEW_INCOGNITO_TAB, false));
+        Assert.assertFalse(customTabIntent.hasExtra(IntentHandler.EXTRA_OPEN_NEW_INCOGNITO_TAB));
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> { Assert.assertTrue(activity.getActivityTab().getUrl().equals(mTestUrlA)); });
         activity.finish();
