@@ -6,14 +6,11 @@ This document is for web developers who want to participate in Origin Trial for
 - [Chrome Status]
 - [Explainer]
 - [Intent to Experiment](https://groups.google.com/a/chromium.org/g/blink-dev/c/9CwkzaF_eQ4/m/kuR07FTTCAAJ)
+- [Registration Form](https://developer.chrome.com/origintrials/#/view_trial/-6307291278132379647)
 
 ## Origin Trial timeline
 
 Chrome M90-M92.
-
-## How to participate
-
-We'll update this document once the registration is ready.
 
 ## How to create a bundle
 
