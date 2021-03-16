@@ -112,6 +112,10 @@ class WebAppPolicyManager {
 
   void OnDisableModePolicyChanged();
 
+  // Populates ids lists of web apps disabled by SystemFeaturesDisableList
+  // policy.
+  void PopulateDisabledWebAppsIdsLists();
+
   Profile* profile_;
   PrefService* pref_service_;
 
@@ -125,6 +129,10 @@ class WebAppPolicyManager {
 
   PrefChangeRegistrar pref_change_registrar_;
   PrefChangeRegistrar local_state_pref_change_registrar_;
+  // List of disabled system web apps, containing app types.
+  std::set<SystemAppType> disabled_system_apps_;
+  // List of disabled system and progressive web apps, containing app ids.
+  std::set<AppId> disabled_web_apps_;
 
   // Testing callbacks
   base::OnceClosure refresh_policy_settings_completed_;
