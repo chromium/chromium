@@ -736,6 +736,10 @@ bool ContentBrowserClient::IsRendererCodeIntegrityEnabled() {
   return false;
 }
 
+bool ContentBrowserClient::ShouldEnableAudioProcessHighPriority() {
+  return base::FeatureList::IsEnabled(features::kAudioProcessHighPriorityWin);
+}
+
 #endif  // defined(OS_WIN)
 
 std::vector<std::unique_ptr<blink::URLLoaderThrottle>>

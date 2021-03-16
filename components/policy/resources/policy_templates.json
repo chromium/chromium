@@ -24816,7 +24816,44 @@ If you disable this policy, web page scrolling to specific text fragments via UR
        This policy allows overriding that change.
        If the policy is set to enabled or unset, JavaScript dialogs triggered from a different origin subframe will be blocked.
        If the policy is set to disabled, JavaScript dialogs triggered from a different origin subframe will not be blocked.''',
-    }
+    },
+    {
+      'name': 'AudioProcessHighPriorityEnabled',
+      'owners': ['file://services/audio/OWNERS', 'guidou@chromium.org'],
+      'type': 'main',
+      'schema': { 'type': 'boolean' },
+      'supported_on': ['chrome.win:90-'],
+      'features': {
+        'dynamic_refresh': False,
+        'per_profile': False,
+      },
+      'items': [
+        {
+          'value': True,
+          'caption': 'Use high priority for audio process',
+        },
+        {
+          'value': False,
+          'caption': 'Use normal Priority for audio process',
+        },
+        {
+          'value': None,
+          'caption': 'Use default priority for audio process',
+        },
+      ],
+      'default': None,
+      'example_value': True,
+      'id': 836,
+      'caption': '''Allow the audio process to run with priority above normal on Windows''',
+      'tags': [],
+      'desc': '''This policy controls the priority of the audio process on Windows.
+      If this policy is enabled, the audio process will run with above normal priority.
+      If this policy is disabled, the audio process will run with normal priority.
+      If this policy is not set, the default configuration for the audio process will be used.
+      This policy is intended as a temporary measure to give enterprises the ability to
+      run audio with higher priority to address certain performance issues with audio capture.
+      This policy will be removed in the future.''',
+    },
   ],
   'messages': {
     # Messages that are not associated to any policies.
@@ -25741,8 +25778,8 @@ The recommended way to configure policy on Windows is via GPO, although provisio
     },
   ],
   'placeholders': [],
-  'deleted_policy_ids': [114, 115, 204, 205, 206, 412, 476, 544, 546, 562, 569, 578, 583, 585, 586, 587, 588, 589, 590, 591, 600, 668, 669],
+  'deleted_policy_ids': [114, 115, 204, 205, 206, 412, 476, 544, 546, 562, 569, 578, 583, 585, 586, 587, 588, 589, 590, 591, 600, 668, 669, 830, 831, 832, 833, 834, 835],
   'deleted_atomic_policy_group_ids': [19],
-  'highest_id_currently_used': 829,
+  'highest_id_currently_used': 836,
   'highest_atomic_group_id_currently_used': 40
 }

@@ -23835,6 +23835,7 @@ Called by update_document_policy_enum.py.-->
   <int value="827" label="FetchKeepaliveDurationOnShutdown"/>
   <int value="828" label="AllowSystemNotifications"/>
   <int value="829" label="SuppressDifferentOriginSubframeJSDialogs"/>
+  <int value="836" label="AudioProcessHighPriorityEnabled"/>
 </enum>
 
 <enum name="EnterprisePolicyDeviceIdValidity">

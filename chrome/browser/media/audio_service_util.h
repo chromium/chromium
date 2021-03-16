@@ -5,6 +5,12 @@
 #ifndef CHROME_BROWSER_MEDIA_AUDIO_SERVICE_UTIL_H_
 #define CHROME_BROWSER_MEDIA_AUDIO_SERVICE_UTIL_H_
 
+#include "build/build_config.h"
+
 bool IsAudioServiceSandboxEnabled();
+
+#if defined(OS_WIN)
+bool IsAudioProcessHighPriorityEnabled();
+#endif
 
 #endif  // CHROME_BROWSER_MEDIA_AUDIO_SERVICE_UTIL_H_

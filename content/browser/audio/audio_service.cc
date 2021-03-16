@@ -129,6 +129,14 @@ void LaunchAudioServiceOutOfProcess(
           // UI MessageLoop type, to run AVFoundation and CoreAudio code.
           // See https://crbug.com/834581.
           .WithExtraCommandLineSwitches({switches::kMessageLoopTypeUi})
+#elif defined(OS_WIN)
+          .WithExtraCommandLineSwitches(
+              GetContentClient()
+                      ->browser()
+                      ->ShouldEnableAudioProcessHighPriority()
+                  ? std::vector<std::string>(
+                        {switches::kAudioProcessHighPriority})
+                  : std::vector<std::string>())
 #endif
           .Pass());
 }
