@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import {BrowserProxy} from '../browser_proxy.js';
-import {mojoTimeDelta} from '../utils.js';
+import {recordDuration, recordLoadDuration} from '../metrics_utils.js';
 
 /**
  * @fileoverview Provides the module descriptor. Each module must create a
@@ -75,7 +75,10 @@ export class ModuleDescriptor {
       return;
     }
     const loadEndTime = BrowserProxy.getInstance().now();
-    BrowserProxy.getInstance().handler.onModuleLoaded(
-        this.id_, mojoTimeDelta(loadEndTime - loadStartTime), loadEndTime);
+    const duration = loadEndTime - loadStartTime;
+    recordLoadDuration('NewTabPage.Modules.Loaded', loadEndTime);
+    recordLoadDuration(`NewTabPage.Modules.Loaded.${this.id_}`, loadEndTime);
+    recordDuration('NewTabPage.Modules.LoadDuration', duration);
+    recordDuration(`NewTabPage.Modules.LoadDuration.${this.id_}`, duration);
   }
 }

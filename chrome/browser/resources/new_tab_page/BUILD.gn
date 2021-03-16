@@ -80,6 +80,7 @@ js_library("app") {
     ":background_manager",
     ":browser_proxy",
     ":customize_dialog_types",
+    ":metrics_utils",
     ":one_google_bar_api",
     ":promo_browser_command_proxy",
     "modules:module_wrapper",
@@ -188,6 +189,11 @@ js_library("voice_search_overlay") {
 js_library("utils") {
 }
 
+js_library("metrics_utils") {
+  deps = [ "//ui/webui/resources/js:load_time_data.m" ]
+  externs_list = [ "//third_party/closure_compiler/externs/metrics_private.js" ]
+}
+
 js_library("iframe") {
   deps = [
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
@@ -273,6 +279,7 @@ preprocess_if_expr("preprocess") {
     "new_tab_page.js",
     "promo_browser_command_proxy.js",
     "utils.js",
+    "metrics_utils.js",
   ]
 }
 

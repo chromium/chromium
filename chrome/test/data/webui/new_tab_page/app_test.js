@@ -6,7 +6,7 @@ import {$$, BackgroundManager, BackgroundSelectionType, BrowserProxy, CustomizeD
 import {isMac} from 'chrome://resources/js/cr.m.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {PromiseResolver} from 'chrome://resources/js/promise_resolver.m.js';
-import {FakeMetricsPrivate} from 'chrome://test/new_tab_page/metrics_test_support.js';
+import {fakeMetricsPrivate, MetricsTracker} from 'chrome://test/new_tab_page/metrics_test_support.js';
 import {assertNotStyle, assertStyle, createTestProxy, createTheme} from 'chrome://test/new_tab_page/test_support.js';
 import {TestBrowserProxy} from 'chrome://test/test_browser_proxy.m.js';
 import {eventToPromise, flushTasks} from 'chrome://test/test_util.m.js';
@@ -21,7 +21,7 @@ suite('NewTabPageAppTest', () => {
    */
   let testProxy;
 
-  /** @type {FakeMetricsPrivate} */
+  /** @type {MetricsTracker} */
   let metrics;
 
   /**
@@ -68,8 +68,7 @@ suite('NewTabPageAppTest', () => {
     moduleRegistry.setResultFor('getDescriptors', []);
     moduleRegistry.setResultFor('initializeModules', moduleResolver.promise);
     ModuleRegistry.instance_ = moduleRegistry;
-    metrics = new FakeMetricsPrivate();
-    chrome.metricsPrivate = metrics;
+    metrics = fakeMetricsPrivate();
 
     app = document.createElement('ntp-app');
     document.body.appendChild(app);
@@ -453,6 +452,13 @@ suite('NewTabPageAppTest', () => {
 
     [true, false].forEach(visible => {
       test(`modules appended to page if visibility ${visible}`, async () => {
+        // Arrange.
+        loadTimeData.overrideValues({
+          navigationStartTime: 0.0,
+        });
+        testProxy.setResultFor('now', 123);
+
+
         // Act.
         moduleResolver.resolve([
           {
@@ -474,10 +480,13 @@ suite('NewTabPageAppTest', () => {
         // Assert.
         const modules = app.shadowRoot.querySelectorAll('ntp-module-wrapper');
         assertEquals(2, modules.length);
-        assertEquals(1, testProxy.handler.getCallCount('onModulesRendered'));
+        assertEquals(1, metrics.count('NewTabPage.Modules.ShownTime'));
+        assertEquals(1, metrics.count('NewTabPage.Modules.ShownTime', 123));
         const histogram = 'NewTabPage.Modules.EnabledOnNTPLoad';
         assertEquals(1, metrics.count(`${histogram}.foo`, visible));
         assertEquals(1, metrics.count(`${histogram}.bar`, false));
+        assertEquals(
+            1, metrics.count('NewTabPage.Modules.VisibleOnNTPLoad', visible));
         assertEquals(
             1, testProxy.handler.getCallCount('updateDisabledModules'));
       });

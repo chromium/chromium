@@ -357,8 +357,6 @@ NewTabPageHandler::NewTabPageHandler(
   instant_service_->UpdateNtpTheme();
   promo_service_observation_.Observe(promo_service_);
   one_google_bar_service_observation_.Observe(one_google_bar_service_);
-  logger_.SetModulesVisible(
-      profile_->GetPrefs()->GetBoolean(prefs::kNtpModulesVisible));
 }
 
 NewTabPageHandler::~NewTabPageHandler() {
@@ -964,29 +962,6 @@ void NewTabPageHandler::OnVoiceSearchError(
       break;
   }
   LogEvent(event);
-}
-
-void NewTabPageHandler::OnModuleImpression(const std::string& module_id,
-                                           double time) {
-  logger_.LogModuleImpression(
-      module_id, base::Time::FromJsTime(time) - ntp_navigation_start_time_);
-}
-
-void NewTabPageHandler::OnModuleLoaded(const std::string& module_id,
-                                       base::TimeDelta duration,
-                                       double time) {
-  logger_.LogModuleLoaded(
-      module_id, base::Time::FromJsTime(time) - ntp_navigation_start_time_,
-      duration);
-}
-
-void NewTabPageHandler::OnModuleUsage(const std::string& module_id) {
-  logger_.LogModuleUsage(module_id);
-}
-
-void NewTabPageHandler::OnModulesRendered(double time) {
-  logger_.LogEvent(NTP_MODULES_SHOWN,
-                   base::Time::FromJsTime(time) - ntp_navigation_start_time_);
 }
 
 void NewTabPageHandler::NtpThemeChanged(const NtpTheme& ntp_theme) {

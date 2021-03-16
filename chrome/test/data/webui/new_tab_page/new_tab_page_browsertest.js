@@ -64,6 +64,18 @@ TEST_F('NewTabPageUtilsTest', 'All', function() {
 });
 
 // eslint-disable-next-line no-var
+var NewTabPageMetricsUtilsTest = class extends NewTabPageBrowserTest {
+  /** @override */
+  get browsePreload() {
+    return 'chrome://new-tab-page/test_loader.html?module=new_tab_page/metrics_utils_test.js';
+  }
+};
+
+TEST_F('NewTabPageMetricsUtilsTest', 'All', function() {
+  mocha.run();
+});
+
+// eslint-disable-next-line no-var
 var NewTabPageCustomizeShortcutsTest = class extends NewTabPageBrowserTest {
   /** @override */
   get browsePreload() {

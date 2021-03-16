@@ -368,7 +368,6 @@ LogoClickType LoggingEventToLogoClick(NTPLoggingEventType event) {
 NTPUserDataLogger::NTPUserDataLogger(Profile* profile, const GURL& ntp_url)
     : has_emitted_(false),
       should_record_doodle_load_time_(true),
-      modules_visible_(false),
       during_startup_(!AfterStartupTaskUtils::IsBrowserStartupComplete()),
       ntp_url_(ntp_url),
       profile_(profile) {}
@@ -522,9 +521,6 @@ void NTPUserDataLogger::LogEvent(NTPLoggingEventType event,
     case NTP_CUSTOMIZE_SHORTCUT_VISIBILITY_TOGGLE_CLICKED:
       RecordAction(LoggingEventToShortcutUserActionName(event));
       break;
-    case NTP_MODULES_SHOWN:
-      UMA_HISTOGRAM_LOAD_TIME("NewTabPage.Modules.ShownTime", time);
-      break;
     case NTP_APP_RENDERED:
       UMA_HISTOGRAM_LOAD_TIME("NewTabPage.MainUi.ShownTime", time);
       break;
@@ -567,37 +563,6 @@ void NTPUserDataLogger::LogMostVisitedNavigation(
   // Records the action. This will be available as a time-stamped stream
   // server-side and can be used to compute time-to-long-dwell.
   base::RecordAction(base::UserMetricsAction("MostVisited_Clicked"));
-}
-
-void NTPUserDataLogger::LogModuleImpression(const std::string& id,
-                                            base::TimeDelta time) {
-  UMA_HISTOGRAM_LOAD_TIME("NewTabPage.Modules.Impression", time);
-  base::UmaHistogramCustomTimes("NewTabPage.Modules.Impression." + id, time,
-                                base::TimeDelta::FromMilliseconds(1),
-                                base::TimeDelta::FromSeconds(60), 100);
-}
-
-void NTPUserDataLogger::LogModuleLoaded(const std::string& id,
-                                        base::TimeDelta duration,
-                                        base::TimeDelta time_since_navigation) {
-  UMA_HISTOGRAM_LOAD_TIME("NewTabPage.Modules.Loaded", time_since_navigation);
-  base::UmaHistogramCustomTimes("NewTabPage.Modules.Loaded." + id,
-                                time_since_navigation,
-                                base::TimeDelta::FromMilliseconds(1),
-                                base::TimeDelta::FromSeconds(60), 100);
-  UMA_HISTOGRAM_LOAD_TIME("NewTabPage.Modules.LoadDuration", duration);
-  base::UmaHistogramCustomTimes("NewTabPage.Modules.LoadDuration." + id,
-                                duration, base::TimeDelta::FromMilliseconds(1),
-                                base::TimeDelta::FromSeconds(60), 100);
-}
-
-void NTPUserDataLogger::LogModuleUsage(const std::string& id) {
-  UMA_HISTOGRAM_EXACT_LINEAR("NewTabPage.Modules.Usage", 1, 1);
-  base::UmaHistogramExactLinear("NewTabPage.Modules.Usage." + id, 1, 1);
-}
-
-void NTPUserDataLogger::SetModulesVisible(bool visible) {
-  modules_visible_ = visible;
 }
 
 bool NTPUserDataLogger::DefaultSearchProviderIsGoogle() const {
@@ -698,11 +663,6 @@ void NTPUserDataLogger::EmitNtpStatistics(base::TimeDelta load_time) {
           "NewTabPage.Customized",
           LoggingEventToCustomizedFeature(NTP_BACKGROUND_CUSTOMIZED));
     }
-  }
-
-  if (base::FeatureList::IsEnabled(ntp_features::kModules)) {
-    base::UmaHistogramBoolean("NewTabPage.Modules.VisibleOnNTPLoad",
-                              modules_visible_);
   }
 
   has_emitted_ = true;

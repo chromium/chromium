@@ -23,6 +23,7 @@ import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/poly
 import {BackgroundManager} from './background_manager.js';
 import {BrowserProxy} from './browser_proxy.js';
 import {BackgroundSelection, BackgroundSelectionType, CustomizeDialogPage} from './customize_dialog_types.js';
+import {recordLoadDuration} from './metrics_utils.js';
 import {ModuleDescriptor} from './modules/module_descriptor.js';
 import {ModuleRegistry} from './modules/module_registry.js';
 import {oneGoogleBarApi} from './one_google_bar_api.js';
@@ -642,13 +643,16 @@ class AppElement extends PolymerElement {
   onModulesLoadedAndVisibilityDeterminedChange_() {
     if (this.modulesLoadedAndVisibilityDetermined_ &&
         loadTimeData.getBoolean('modulesEnabled')) {
-      this.pageHandler_.onModulesRendered(BrowserProxy.getInstance().now());
+      recordLoadDuration(
+          'NewTabPage.Modules.ShownTime', BrowserProxy.getInstance().now());
       this.moduleDescriptors_.forEach(({id}) => {
         chrome.metricsPrivate.recordBoolean(
             `NewTabPage.Modules.EnabledOnNTPLoad.${id}`,
             !this.disabledModules_.all &&
                 !this.disabledModules_.ids.includes(id));
       });
+      chrome.metricsPrivate.recordBoolean(
+          'NewTabPage.Modules.VisibleOnNTPLoad', !this.disabledModules_.all);
     }
   }
 

@@ -10,7 +10,10 @@ import("//ui/webui/resources/tools/generate_grd.gni")
 import("//ui/webui/webui_features.gni")
 
 js_library("module_descriptor") {
-  deps = [ "..:browser_proxy" ]
+  deps = [
+    "..:browser_proxy",
+    "..:metrics_utils",
+  ]
 }
 
 js_library("modules") {
@@ -28,7 +31,10 @@ js_library("modules") {
 js_library("module_wrapper") {
   deps = [
     ":module_descriptor",
+    "..:browser_proxy",
+    "..:metrics_utils",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+    "//ui/webui/resources/js:assert.m",
   ]
   externs_list = [ "//third_party/closure_compiler/externs/metrics_private.js" ]
 }

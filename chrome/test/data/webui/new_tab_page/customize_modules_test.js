@@ -6,7 +6,7 @@ import 'chrome://new-tab-page/lazy_load.js';
 
 import {$$, BrowserProxy, ModuleDescriptor, ModuleRegistry} from 'chrome://new-tab-page/new_tab_page.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
-import {FakeMetricsPrivate} from 'chrome://test/new_tab_page/metrics_test_support.js';
+import {fakeMetricsPrivate, MetricsTracker} from 'chrome://test/new_tab_page/metrics_test_support.js';
 import {assertNotStyle, assertStyle, createTestProxy} from 'chrome://test/new_tab_page/test_support.js';
 import {TestBrowserProxy} from 'chrome://test/test_browser_proxy.m.js';
 
@@ -32,7 +32,7 @@ suite('NewTabPageCustomizeModulesTest', () => {
    */
   let moduleRegistry;
 
-  /** @type {FakeMetricsPrivate} */
+  /** @type {MetricsTracker} */
   let metrics;
 
   /**
@@ -61,8 +61,7 @@ suite('NewTabPageCustomizeModulesTest', () => {
     BrowserProxy.instance_ = testProxy;
     moduleRegistry = TestBrowserProxy.fromClass(ModuleRegistry);
     ModuleRegistry.instance_ = moduleRegistry;
-    metrics = new FakeMetricsPrivate();
-    chrome.metricsPrivate = metrics;
+    metrics = fakeMetricsPrivate();
     loadTimeData.overrideValues({modulesVisibleManagedByPolicy: false});
   });
 

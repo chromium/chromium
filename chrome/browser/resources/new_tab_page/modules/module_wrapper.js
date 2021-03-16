@@ -6,6 +6,8 @@ import {assert} from 'chrome://resources/js/assert.m.js';
 import {html, microTask, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {BrowserProxy} from '../browser_proxy.js';
+import {recordLoadDuration, recordOccurence, recordPerdecage} from '../metrics_utils.js';
+
 import {ModuleDescriptor} from './module_descriptor.js';
 
 /** @fileoverview Element that implements the common module UI. */
@@ -42,15 +44,19 @@ class ModuleWrapperElement extends PolymerElement {
     // Log at most one usage per module per NTP page load. This is possible,
     // if a user opens a link in a new tab.
     this.descriptor.element.addEventListener('usage', () => {
-      BrowserProxy.getInstance().handler.onModuleUsage(this.descriptor.id);
+      recordOccurence('NewTabPage.Modules.Usage');
+      recordOccurence(`NewTabPage.Modules.Usage.${this.descriptor.id}`);
     }, {once: true});
 
     // Install observer to log module header impression.
     const headerObserver = new IntersectionObserver(([{intersectionRatio}]) => {
       if (intersectionRatio >= 1.0) {
         headerObserver.disconnect();
-        BrowserProxy.getInstance().handler.onModuleImpression(
-            this.descriptor.id, BrowserProxy.getInstance().now());
+        const time = BrowserProxy.getInstance().now();
+        recordLoadDuration('NewTabPage.Modules.Impression', time);
+        recordLoadDuration(
+            `NewTabPage.Modules.Impression.${this.descriptor.id}`, time);
+        this.dispatchEvent(new Event('detect-impression'));
       }
     }, {threshold: 1.0});
 
@@ -62,17 +68,6 @@ class ModuleWrapperElement extends PolymerElement {
           Math.floor(Math.max(intersectionPerdecage, intersectionRatio * 10));
     }, {threshold: [0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1]});
     window.addEventListener('unload', () => {
-      const recordPerdecage = (metricName, value) => {
-        chrome.metricsPrivate.recordValue(
-            {
-              metricName,
-              type: chrome.metricsPrivate.MetricTypeType.HISTOGRAM_LINEAR,
-              min: 1,       // Choose 1 if real min is 0.
-              max: 11,      // Exclusive.
-              buckets: 12,  // Numbers 0-10 and unused overflow bucket of 11.
-            },
-            value);
-      };
       recordPerdecage(
           'NewTabPage.Modules.ImpressionRatio', intersectionPerdecage);
       recordPerdecage(

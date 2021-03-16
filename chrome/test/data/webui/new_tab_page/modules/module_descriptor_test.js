@@ -3,6 +3,8 @@
 // found in the LICENSE file.
 
 import {BrowserProxy, ModuleDescriptor} from 'chrome://new-tab-page/new_tab_page.js';
+import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
+import {fakeMetricsPrivate, MetricsTracker} from 'chrome://test/new_tab_page/metrics_test_support.js';
 import {createTestProxy} from 'chrome://test/new_tab_page/test_support.js';
 
 suite('NewTabPageModulesModuleDescriptorTest', () => {
@@ -12,8 +14,15 @@ suite('NewTabPageModulesModuleDescriptorTest', () => {
    */
   let testProxy;
 
+  /** @type {MetricsTracker} */
+  let metrics;
+
   setup(() => {
     PolymerTest.clearBody();
+    loadTimeData.overrideValues({
+      navigationStartTime: 0.0,
+    });
+    metrics = fakeMetricsPrivate();
     testProxy = createTestProxy();
     BrowserProxy.instance_ = testProxy;
   });
@@ -33,11 +42,14 @@ suite('NewTabPageModulesModuleDescriptorTest', () => {
 
     // Assert.
     assertEquals(element, moduleDescriptor.element);
-    assertEquals(1, testProxy.handler.getCallCount('onModuleLoaded'));
-    const [[id, delta, now]] = testProxy.handler.getArgs('onModuleLoaded');
-    assertEquals('foo', id);
-    assertEquals(128, now);
-    assertEquals(5000n, delta.microseconds);  // 128ms - 123ms === 5000µs.
+    assertEquals(1, metrics.count('NewTabPage.Modules.Loaded'));
+    assertEquals(1, metrics.count('NewTabPage.Modules.Loaded', 128));
+    assertEquals(1, metrics.count('NewTabPage.Modules.Loaded.foo'));
+    assertEquals(1, metrics.count('NewTabPage.Modules.Loaded.foo', 128));
+    assertEquals(1, metrics.count('NewTabPage.Modules.LoadDuration'));
+    assertEquals(1, metrics.count('NewTabPage.Modules.LoadDuration', 5));
+    assertEquals(1, metrics.count('NewTabPage.Modules.LoadDuration.foo'));
+    assertEquals(1, metrics.count('NewTabPage.Modules.LoadDuration.foo', 5));
   });
 
   test('instantiate module without data', async () => {
@@ -50,7 +62,10 @@ suite('NewTabPageModulesModuleDescriptorTest', () => {
 
     // Assert.
     assertEquals(null, moduleDescriptor.element);
-    assertEquals(0, testProxy.handler.getCallCount('onModuleLoaded'));
+    assertEquals(0, metrics.count('NewTabPage.Modules.Loaded'));
+    assertEquals(0, metrics.count('NewTabPage.Modules.Loaded.foo'));
+    assertEquals(0, metrics.count('NewTabPage.Modules.LoadDuration'));
+    assertEquals(0, metrics.count('NewTabPage.Modules.LoadDuration.foo'));
   });
 
   test('module load times out', async () => {

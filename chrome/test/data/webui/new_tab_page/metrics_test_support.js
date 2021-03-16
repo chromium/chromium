@@ -2,19 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-/**
- * A fake to intercept metrics logging calls and verify how many times they were
- * called.
- */
-export class FakeMetricsPrivate {
+/** Tracks metrics calls to verify metric logging in tests. */
+export class MetricsTracker {
   constructor() {
-    /** @private {!Map<string, !Array>} */
+    /** @private {!Map<string, !Array<*>>} */
     this.histogramMap_ = new Map();
   }
 
   /**
    * @param {string} metricName
-   * @param {string=} value
+   * @param {*=} value
    * @return {number}
    */
   count(metricName, value) {
@@ -23,30 +20,17 @@ export class FakeMetricsPrivate {
         .length;
   }
 
-  /** @param {string} metricName */
-  recordUserAction(metricName) {
-    this.get_(metricName).push(0);
-  }
-
   /**
    * @param {string} metricName
-   * @param {string} value
+   * @param {*} value
    */
-  recordSparseHashable(metricName, value) {
+  record(metricName, value) {
     this.get_(metricName).push(value);
   }
 
   /**
    * @param {string} metricName
-   * @param {boolean} value
-   */
-  recordBoolean(metricName, value) {
-    this.get_(metricName).push(value);
-  }
-
-  /**
-   * @param {string} metricName
-   * @return {!Map<string, !Array>}
+   * @return {!Array<*>}
    * @private
    */
   get_(metricName) {
@@ -55,4 +39,18 @@ export class FakeMetricsPrivate {
     }
     return this.histogramMap_.get(metricName);
   }
+}
+
+/**
+ * Installs interceptors to metrics logging calls and forwards them to the
+ * returned |MetricsTracker| object.
+ * @return {MetricsTracker}
+ */
+export function fakeMetricsPrivate() {
+  const metrics = new MetricsTracker();
+  chrome.metricsPrivate.recordUserAction = (m) => metrics.record(m, 0);
+  chrome.metricsPrivate.recordSparseHashable = (m, v) => metrics.record(m, v);
+  chrome.metricsPrivate.recordBoolean = (m, v) => metrics.record(m, v);
+  chrome.metricsPrivate.recordValue = (m, v) => metrics.record(m.metricName, v);
+  return metrics;
 }

@@ -57,7 +57,9 @@ using content::WebContents;
 
 namespace {
 
-content::WebUIDataSource* CreateNewTabPageUiHtmlSource(Profile* profile) {
+content::WebUIDataSource* CreateNewTabPageUiHtmlSource(
+    Profile* profile,
+    const base::Time& navigation_start_time) {
   content::WebUIDataSource* source =
       content::WebUIDataSource::Create(chrome::kChromeUINewTabPageHost);
 
@@ -70,6 +72,7 @@ content::WebUIDataSource* CreateNewTabPageUiHtmlSource(Profile* profile) {
                              ->search_terms_data()
                              .GoogleBaseURLValue())
                         .spec());
+  source->AddDouble("navigationStartTime", navigation_start_time.ToJsTime());
 
   // Realbox.
   source->AddBoolean(
@@ -322,7 +325,7 @@ NewTabPageUI::NewTabPageUI(content::WebUI* web_ui)
       // for the unlikely case where the NewTabPageHandler is created before we
       // received the DidStartNavigation event.
       navigation_start_time_(base::Time::Now()) {
-  auto* source = CreateNewTabPageUiHtmlSource(profile_);
+  auto* source = CreateNewTabPageUiHtmlSource(profile_, navigation_start_time_);
   source->AddBoolean("customBackgroundDisabledByPolicy",
                      instant_service_->IsCustomBackgroundDisabledByPolicy());
   source->AddBoolean(
@@ -451,6 +454,10 @@ void NewTabPageUI::DidStartNavigation(
     content::NavigationHandle* navigation_handle) {
   if (navigation_handle->IsInMainFrame()) {
     navigation_start_time_ = base::Time::Now();
+    std::unique_ptr<base::DictionaryValue> update(new base::DictionaryValue);
+    update->SetDouble("navigationStartTime", navigation_start_time_.ToJsTime());
+    content::WebUIDataSource::Update(profile_, chrome::kChromeUINewTabPageHost,
+                                     std::move(update));
   }
 }
 
