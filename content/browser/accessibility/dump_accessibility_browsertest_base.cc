@@ -448,7 +448,7 @@ bool DumpAccessibilityTestBase::HasHtmlAttribute(BrowserAccessibility& node,
                                                  const std::string& value) {
   std::string result;
   if (node.GetHtmlAttribute(attr, &result))
-    return true;
+    return result == value;
 
   if (base::LowerCaseEqualsASCII(attr, "class"))
     return node.GetStringAttribute(ax::mojom::StringAttribute::kClassName) ==

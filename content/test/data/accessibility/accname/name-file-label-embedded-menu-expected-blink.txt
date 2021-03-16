@@ -1,0 +1,1 @@
+button name='Flash the screen times.' nameFrom=relatedElement

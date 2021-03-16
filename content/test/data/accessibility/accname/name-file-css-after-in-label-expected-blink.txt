@@ -1,0 +1,2 @@
+# BUG: The expected result is 'fancy fruit'
+button name='fancy' nameFrom=relatedElement

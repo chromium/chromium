@@ -1,0 +1,22 @@
+<!--
+@BLINK-DENY:descri*
+-->
+<!doctype html>
+<html>
+<body>
+<input type="file" id="test" />
+<label for="test">Flash <span aria-owns="id1">the screen</span> times.</label>
+<div>
+  <div id="id1" role="combobox" aria-owns="id2">
+    <div role="textbox"></div>
+  </div>
+</div>
+<div>
+  <ul id="id2" role="listbox" style="list-style-type: none;">
+    <li role="option" >1 </li>
+    <li role="option" aria-selected="true">2 </li>
+    <li role="option">3 </li>
+  </ul>
+</div>
+</body>
+</html>

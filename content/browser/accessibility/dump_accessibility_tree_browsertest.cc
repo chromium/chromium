@@ -83,6 +83,16 @@ class DumpAccessibilityTreeTest : public DumpAccessibilityTestBase {
         switches::kDisableAXMenuList, "false");
   }
 
+  void RunAccNameTest(const base::FilePath::CharType* file_path) {
+    base::FilePath test_path = GetTestFilePath("accessibility", "accname");
+    {
+      base::ScopedAllowBlockingForTesting allow_blocking;
+      ASSERT_TRUE(base::PathExists(test_path)) << test_path.LossyDisplayName();
+    }
+    base::FilePath accname_file = test_path.Append(base::FilePath(file_path));
+    RunTest(accname_file, "accessibility/accname", FILE_PATH_LITERAL("tree"));
+  }
+
   void RunAriaTest(const base::FilePath::CharType* file_path) {
     base::FilePath test_path = GetTestFilePath("accessibility", "aria");
     {
@@ -3063,6 +3073,13 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest, ComboboxItemVisibility) {
 
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest, MathNameFromContents) {
   RunHtmlTest(FILE_PATH_LITERAL("math-name-from-contents.html"));
+}
+
+//
+// AccName tests where having the full tree is desired.
+//
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest, NameImgLabelledbyInputs) {
+  RunAccNameTest(FILE_PATH_LITERAL("name-img-labelledby-inputs.html"));
 }
 
 //

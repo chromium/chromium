@@ -20,12 +20,10 @@ external/wpt/WebIDL/invalid [ Skip ]
 external/wpt/WebIDL/readme.txt [ Skip ]
 external/wpt/WebIDL/testable_assertions.txt [ Skip ]
 external/wpt/WebIDL/valid [ Skip ]
-external/wpt/accname [ Skip ]
 external/wpt/annotation-model [ Skip ]
 external/wpt/annotation-protocol [ Skip ]
 external/wpt/annotation-vocab [ Skip ]
 external/wpt/conformance-checkers [ Skip ]
-external/wpt/core-aam [ Skip ]
 external/wpt/css/.htaccess [ Skip ]
 external/wpt/css/CSS1 [ Skip ]
 external/wpt/css/CSS2/LICENSE-BSD [ Skip ]
@@ -106,8 +104,6 @@ external/wpt/css/vendor-imports/mozilla/mozilla-central-reftests/transforms [ Sk
 external/wpt/css/vendor-imports/mozilla/mozilla-central-reftests/ui3 [ Skip ]
 external/wpt/css/vendor-imports/mozilla/mozilla-central-reftests/values3 [ Skip ]
 external/wpt/css/vendor-imports/mozilla/mozilla-central-reftests/will-change [ Skip ]
-external/wpt/dpub-aam [ Skip ]
-external/wpt/dpub-aria [ Skip ]
 external/wpt/html-longdesc [ Skip ]
 external/wpt/infrastructure/metadata/infrastructure/browsers/firefox [ Skip ]
 external/wpt/infrastructure/browsers/firefox [ Skip ]
@@ -115,9 +111,7 @@ external/wpt/js [ Skip ]
 external/wpt/old-tests [ Skip ]
 external/wpt/proximity [ Skip ]
 external/wpt/resources/test [ Skip ]
-external/wpt/svg-aam [ Skip ]
 external/wpt/svg/import [ Skip ]
-external/wpt/wai-aria [ Skip ]
 external/wpt/webgl [ Skip ]
 
 # Exceptions for individual files that fail due to bugs in the
@@ -395,6 +389,17 @@ external/wpt/feature-policy/reporting/vr-reporting.https.html [ Skip ]
 external/wpt/feature-policy/reporting/vr-reporting.https.html.headers [ Skip ]
 external/wpt/feature-policy/reporting/vr-report-only.https.html [ Skip ]
 external/wpt/feature-policy/reporting/vr-report-only.https.html.headers [ Skip ]
+
+# Manual tests related to accessibility for which we have parallel coverage,
+# e.g. porting them to content browser tests.
+external/wpt/accname [ Skip ]
+
+# Other manual tests related to accessibility.
+external/wpt/core-aam [ Skip ]
+external/wpt/dpub-aam [ Skip ]
+external/wpt/dpub-aria [ Skip ]
+external/wpt/svg-aam [ Skip ]
+external/wpt/wai-aria [ Skip ]
 
 # Manual tests for CSS Paged Media.
 external/wpt/css/css-page/forced-page-breaks-002.xht [ Skip ]

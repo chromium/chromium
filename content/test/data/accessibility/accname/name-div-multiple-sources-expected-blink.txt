@@ -1,0 +1,1 @@
+genericContainer name='bar baz' nameFrom=relatedElement

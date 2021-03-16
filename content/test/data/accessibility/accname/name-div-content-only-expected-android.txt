@@ -1,0 +1,1 @@
+android.view.View name='Div with text'

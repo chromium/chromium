@@ -1,0 +1,2 @@
+# BUG: The expected result is 'fancy fruit'
+radioButton name='fancy' nameFrom=relatedElement
