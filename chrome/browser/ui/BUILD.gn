@@ -635,6 +635,7 @@ static_library("ui") {
       "//components/feed/core/shared_prefs:feed_shared_prefs",
       "//components/feed/core/v2:feed_core_v2",
       "//components/infobars/content",
+      "//components/messages/android:feature_flags",
       "//components/query_tiles",
       "//components/resources:android_resources",
       "//components/security_state/content/android",
