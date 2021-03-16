@@ -166,6 +166,19 @@ int SystemUiVisibility(const display::Display& display) {
   return 0;
 }
 
+int SystemUiBehavior(const display::Display& display) {
+  auto* shelf_layout_manager = GetShelfLayoutManagerForDisplay(display);
+  switch (shelf_layout_manager->auto_hide_behavior()) {
+    case ash::ShelfAutoHideBehavior::kNever:
+      return ZCR_REMOTE_SURFACE_V1_SYSTEMUI_VISIBILITY_STATE_VISIBLE;
+    case ash::ShelfAutoHideBehavior::kAlways:
+    case ash::ShelfAutoHideBehavior::kAlwaysHidden:
+      return ZCR_REMOTE_SURFACE_V1_SYSTEMUI_VISIBILITY_STATE_AUTOHIDE_NON_STICKY;
+  }
+  NOTREACHED() << "Got unexpected shelf visibility behavior.";
+  return 0;
+}
+
 int Component(uint32_t direction) {
   switch (direction) {
     case ZCR_REMOTE_SURFACE_V1_RESIZE_DIRECTION_NONE:
@@ -847,7 +860,7 @@ class WaylandRemoteOutput : public WaylandDisplayObserver {
         resource_, stable_insets_in_pixel.left(), stable_insets_in_pixel.top(),
         stable_insets_in_pixel.right(), stable_insets_in_pixel.bottom());
 
-    int systemui_visibility = SystemUiVisibility(display);
+    int systemui_visibility = SystemUiBehavior(display);
     zcr_remote_output_v1_send_systemui_visibility(resource_,
                                                   systemui_visibility);
 

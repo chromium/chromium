@@ -279,6 +279,10 @@ class ASH_EXPORT ShelfLayoutManager
     is_auto_hide_state_locked_ = lock_auto_hide_state;
   }
 
+  ShelfAutoHideBehavior auto_hide_behavior() const {
+    return shelf_->auto_hide_behavior();
+  }
+
   // ShelfConfig::Observer:
   void OnShelfConfigUpdated() override;
 
