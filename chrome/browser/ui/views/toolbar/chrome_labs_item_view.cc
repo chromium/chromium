@@ -135,6 +135,8 @@ ChromeLabsItemView::ChromeLabsItemView(
           .AddChildren(
               {views::Builder<views::Combobox>()
                    .CopyAddressTo(&lab_state_combobox_)
+                   .SetTooltipTextAndAccessibleName(l10n_util::GetStringUTF16(
+                       IDS_TOOLTIP_CHROMELABS_COMBOBOX))
                    .SetOwnedModel(std::make_unique<LabsComboboxModel>(
                        lab, feature_entry_, default_index))
                    .SetCallback(base::BindRepeating(combobox_callback, this))
@@ -147,6 +149,9 @@ ChromeLabsItemView::ChromeLabsItemView(
                    .SetSizeToLargestLabel(false),
                views::Builder<views::MdTextButton>()
                    .CopyAddressTo(&feedback_button_)
+                   .SetTooltipText(l10n_util::GetStringFUTF16(
+                       IDS_TOOLTIP_CHROMELABS_FEEDBACK_BUTTON,
+                       lab.visible_name))
                    .SetCallback(base::BindRepeating(&ShowFeedbackPage, browser,
                                                     lab.feedback_category_name,
                                                     lab.visible_name))

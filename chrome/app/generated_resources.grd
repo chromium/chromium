@@ -5807,7 +5807,13 @@ Keep your key file in a safe place. You will need it to create new versions of y
         Press to go back, context menu to see history
       </message>
       <message name="IDS_TOOLTIP_CHROMELABS_BUTTON" desc="The tooltip for the Chrome Labs button in the toolbar">
-      Experiments
+        Experiments
+      </message>
+      <message name="IDS_TOOLTIP_CHROMELABS_COMBOBOX" desc="The tooltip for the Chrome Labs combobox to select between experiment states">
+        Select experiment state
+      </message>
+      <message name="IDS_TOOLTIP_CHROMELABS_FEEDBACK_BUTTON" desc="The tooltip for the Chrome Labs Send Feedback button">
+        Send feedback for <ph name="EXPERIMENT_NAME">$1<ex>Tab Scrolling</ex></ph>
       </message>
       <message name="IDS_TOOLTIP_FORWARD" desc="The tooltip for forward button">
         Click to go forward, hold to see history
