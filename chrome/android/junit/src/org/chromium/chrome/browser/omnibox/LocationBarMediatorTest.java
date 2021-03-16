@@ -76,6 +76,7 @@ import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.util.ChromeAccessibilityUtil;
 import org.chromium.chrome.test.util.browser.Features;
+import org.chromium.chrome.test.util.browser.signin.AccountManagerTestRule;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.components.search_engines.TemplateUrl;
@@ -159,6 +160,8 @@ public class LocationBarMediatorTest {
     public TestRule mProcessor = new Features.JUnitProcessor();
     @Rule
     public JniMocker mJniMocker = new JniMocker();
+    @Rule
+    public AccountManagerTestRule mAccountManagerTestRule = new AccountManagerTestRule();
 
     @Mock
     private LocationBarLayout mLocationBarLayout;
