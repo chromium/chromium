@@ -387,7 +387,12 @@ void SandboxedUnpacker::OnVerifiedContentsUncompressed(
                 "CRX_HEADER_VERIFIED_CONTENTS_UNCOMPRESSING_FAILURE")));
     return;
   }
-  if (!StoreVerifiedContentsInExtensionDir(result.value.value().byte_span()))
+  // Make a copy, since |result| may store data in shared memory, accessible by
+  // some other processes.
+  std::vector<uint8_t> verified_contents(
+      result.value.value().byte_span().begin(),
+      result.value.value().byte_span().end());
+  if (!StoreVerifiedContentsInExtensionDir(std::move(verified_contents)))
     return;
   Unpack(unzip_dir);
 }
