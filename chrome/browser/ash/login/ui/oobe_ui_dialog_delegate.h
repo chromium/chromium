@@ -84,6 +84,10 @@ class OobeUIDialogDelegate : public ui::WebDialogDelegate,
 
   views::View* GetWebDialogView();
 
+  CaptivePortalDialogDelegate* captive_portal_delegate_for_test() {
+    return captive_portal_delegate_.get();
+  }
+
  private:
   // ui::WebDialogDelegate:
   ui::ModalType GetDialogModalType() const override;

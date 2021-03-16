@@ -5,7 +5,10 @@
 #ifndef CHROME_BROWSER_ASH_LOGIN_UI_CAPTIVE_PORTAL_DIALOG_DELEGATE_H_
 #define CHROME_BROWSER_ASH_LOGIN_UI_CAPTIVE_PORTAL_DIALOG_DELEGATE_H_
 
+#include <memory>
+
 #include "base/memory/weak_ptr.h"
+#include "base/observer_list.h"
 #include "chrome/browser/ui/chrome_web_modal_dialog_manager_delegate.h"
 #include "components/web_modal/web_contents_modal_dialog_host.h"
 #include "ui/web_dialogs/web_dialog_delegate.h"
@@ -66,11 +69,19 @@ class CaptivePortalDialogDelegate
 
   base::WeakPtr<CaptivePortalDialogDelegate> GetWeakPtr();
 
+  views::Widget* widget_for_test() { return widget_; }
+  content::WebContents* web_contents_for_test() { return web_contents_; }
+
  private:
   views::Widget* widget_ = nullptr;
   views::WebDialogView* view_ = nullptr;
   views::WebDialogView* host_view_ = nullptr;
   content::WebContents* web_contents_ = nullptr;
+
+  class ModalDialogManagerCleanup;
+  std::unique_ptr<ModalDialogManagerCleanup> modal_dialog_manager_cleanup_;
+  base::ObserverList<web_modal::ModalDialogHostObserver>::Unchecked
+      modal_dialog_host_observer_list_;
 
   base::WeakPtrFactory<CaptivePortalDialogDelegate> weak_ptr_factory_{this};
 };

@@ -10,6 +10,7 @@
 #include "chrome/browser/ui/ash/ash_util.h"
 #include "chrome/browser/ui/webui/chrome_web_contents_handler.h"
 #include "components/web_modal/web_contents_modal_dialog_manager.h"
+#include "content/public/browser/web_contents_observer.h"
 #include "ui/aura/window.h"
 #include "ui/display/display.h"
 #include "ui/display/screen.h"
@@ -18,10 +19,35 @@
 
 namespace chromeos {
 
+// Cleans up the delegate for a WebContentsModalDialogManager on destruction, or
+// on WebContents destruction, whichever comes first.
+class CaptivePortalDialogDelegate::ModalDialogManagerCleanup
+    : public content::WebContentsObserver {
+ public:
+  // This constructor automatically observes |web_contents| for its lifetime.
+  explicit ModalDialogManagerCleanup(content::WebContents* web_contents)
+      : content::WebContentsObserver(web_contents) {}
+  ModalDialogManagerCleanup(const ModalDialogManagerCleanup&) = delete;
+  ModalDialogManagerCleanup& operator=(const ModalDialogManagerCleanup&) =
+      delete;
+  ~ModalDialogManagerCleanup() override { ResetDelegate(); }
+
+  // content::WebContentsObserver:
+  void WebContentsDestroyed() override { ResetDelegate(); }
+
+  void ResetDelegate() {
+    if (!web_contents())
+      return;
+    web_modal::WebContentsModalDialogManager::FromWebContents(web_contents())
+        ->SetDelegate(nullptr);
+  }
+};
+
 CaptivePortalDialogDelegate::CaptivePortalDialogDelegate(
     views::WebDialogView* host_dialog_view)
     : host_view_(host_dialog_view),
       web_contents_(host_dialog_view->web_contents()) {
+  DCHECK(web_contents_);
   view_ =
       new views::WebDialogView(ProfileHelper::GetSigninProfile(), this,
                                std::make_unique<ChromeWebContentsHandler>());
@@ -46,10 +72,13 @@ CaptivePortalDialogDelegate::CaptivePortalDialogDelegate(
   web_modal::WebContentsModalDialogManager::CreateForWebContents(web_contents_);
   web_modal::WebContentsModalDialogManager::FromWebContents(web_contents_)
       ->SetDelegate(this);
+  modal_dialog_manager_cleanup_ =
+      std::make_unique<ModalDialogManagerCleanup>(web_contents_);
 }
 
 CaptivePortalDialogDelegate::~CaptivePortalDialogDelegate() {
-  // TODO(jamescook): Clean up modal dialog delegate and observers.
+  for (auto& observer : modal_dialog_host_observer_list_)
+    observer.OnHostDestroying();
 }
 
 void CaptivePortalDialogDelegate::Show() {
@@ -133,12 +162,12 @@ gfx::Size CaptivePortalDialogDelegate::GetMaximumDialogSize() {
 
 void CaptivePortalDialogDelegate::AddObserver(
     web_modal::ModalDialogHostObserver* observer) {
-  // TODO(jamescook): Store observers in a list.
+  modal_dialog_host_observer_list_.AddObserver(observer);
 }
 
 void CaptivePortalDialogDelegate::RemoveObserver(
     web_modal::ModalDialogHostObserver* observer) {
-  // TODO(jamescook): Store observers in a list.
+  modal_dialog_host_observer_list_.RemoveObserver(observer);
 }
 
 base::WeakPtr<CaptivePortalDialogDelegate>

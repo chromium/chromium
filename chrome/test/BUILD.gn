@@ -2593,6 +2593,7 @@ if (!is_android) {
         "../browser/ash/login/test/user_adding_screen_utils.h",
         "../browser/ash/login/test/webview_content_extractor.cc",
         "../browser/ash/login/test/webview_content_extractor.h",
+        "../browser/ash/login/ui/captive_portal_dialog_delegate_browsertest.cc",
         "../browser/ash/login/ui/captive_portal_window_browsertest.cc",
         "../browser/ash/login/ui/login_feedback_browsertest.cc",
         "../browser/ash/login/ui/login_web_dialog_browsertest.cc",

@@ -137,6 +137,8 @@ class LoginDisplayHostMojo : public LoginDisplayHostCommon,
   // messages on the Views and WebUI side. Consider removing.
   bool IsOobeUIDialogVisible() const;
 
+  OobeUIDialogDelegate* dialog_for_test() { return dialog_; }
+
  private:
   void LoadOobeDialog();
 
