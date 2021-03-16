@@ -3,9 +3,11 @@
 # found in the LICENSE file.
 
 import("//build/config/compiler/compiler.gni")
+import("//build/config/python.gni")
 import("//testing/test.gni")
 
-action("ulp_serialized_to_static_c") {
+# TODO(crbug.com/1112471): Get this to run correctly under Python3.
+python2_action("ulp_serialized_to_static_c") {
   script = "ulp_serialized_to_static_c.py"
   inputs = [
     "geolanguage-data_rank0.bin",

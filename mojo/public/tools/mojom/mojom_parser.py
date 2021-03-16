@@ -27,9 +27,16 @@ from mojom.parse import parser
 from mojom.parse import conditional_features
 
 
-# Disable this for easier debugging.
-# In Python 2, subprocesses just hang when exceptions are thrown :(.
-ENABLE_MULTIPROCESSING = sys.version_info[0] > 2
+# TODO(crbug.com/1187708): The multiprocessing code below seems
+# like it doesn't work on (at least) Mac Python3, and so it's
+# disabled for now until we can dig into it. Once that's working,
+# we can restore the logic to just be disabled under Python2.
+#
+# # Disable this for easier debugging.
+# # In Python 2, subprocesses just hang when exceptions are thrown :(.
+# ENABLE_MULTIPROCESSING = sys.version_info[0] > 2
+#
+ENABLE_MULTIPROCESSING = False
 
 
 def _ResolveRelativeImportPath(path, roots):
