@@ -1613,6 +1613,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Enterprise.UserPolicyValidationFailure"
     enum="ValidationFailures" expires_after="M85">
+  <obsolete>
+    Removed in M91 since the data is not monitored.
+  </obsolete>
   <owner>mnissler@chromium.org</owner>
   <summary>Source of policy validation errors on Chrome OS.</summary>
 </histogram>

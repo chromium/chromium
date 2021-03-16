@@ -78535,6 +78535,9 @@ Full version information for the fingerprint enum values:
 </enum>
 
 <enum name="ValidationFailures">
+  <obsolete>
+    Removed in M91 since the data is not monitored.
+  </obsolete>
   <int value="0" label="DBus"/>
   <int value="1" label="Load Key"/>
 </enum>
