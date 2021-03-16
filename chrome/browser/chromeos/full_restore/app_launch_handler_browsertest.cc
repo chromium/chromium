@@ -410,10 +410,7 @@ IN_PROC_BROWSER_TEST_F(AppLaunchHandlerBrowserTest, WindowProperties) {
   ASSERT_EQ(count + 1u, BrowserList::GetInstance()->size());
 
   // TODO(sammiequon): Check the values from the actual browser window.
-  auto window = std::make_unique<aura::Window>(nullptr);
-  window->Init(ui::LAYER_NOT_DRAWN);
-  window->SetProperty(::full_restore::kRestoreWindowIdKey, kId);
-  auto stored_window_info = ::full_restore::GetWindowInfo(window.get());
+  auto stored_window_info = ::full_restore::GetWindowInfo(kId);
   EXPECT_EQ(kDeskId, *stored_window_info->desk_id);
   EXPECT_EQ(kRestoreBounds, *stored_window_info->restore_bounds);
   EXPECT_EQ(kCurrentBounds, *stored_window_info->current_bounds);
@@ -477,7 +474,7 @@ IN_PROC_BROWSER_TEST_F(AppLaunchHandlerBrowserTest, RestoreChromeApp) {
 
   // Close the window.
   CloseAppWindow(app_window);
-  ASSERT_FALSE(::full_restore::GetWindowInfo(window));
+  ASSERT_FALSE(::full_restore::GetWindowInfo(restore_window_id));
 
   // Remove the added desks.
   while (true) {

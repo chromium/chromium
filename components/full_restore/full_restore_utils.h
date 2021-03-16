@@ -70,7 +70,9 @@ void SaveAppLaunchInfo(const base::FilePath& profile_path,
 COMPONENT_EXPORT(FULL_RESTORE)
 void SaveWindowInfo(const WindowInfo& window_info);
 
-// Gets the window information from the full restore file for |window|.
+// Gets the window information from the full restore file.
+COMPONENT_EXPORT(FULL_RESTORE)
+std::unique_ptr<WindowInfo> GetWindowInfo(int32_t restore_window_id);
 COMPONENT_EXPORT(FULL_RESTORE)
 std::unique_ptr<WindowInfo> GetWindowInfo(aura::Window* window);
 
@@ -92,8 +94,7 @@ COMPONENT_EXPORT(FULL_RESTORE)
 void SetActiveProfilePath(const base::FilePath& profile_path);
 
 // Returns true if there is a window info for |restore_window_id| from the full
-// restore file. Otherwise, returns false. This interface can't be used for Arc
-// app windows.
+// restore file. Otherwise, returns false.
 COMPONENT_EXPORT(FULL_RESTORE)
 bool HasWindowInfo(int32_t restore_window_id);
 
