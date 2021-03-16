@@ -690,7 +690,7 @@ const char kNTPHelpURL[] =
   // both of these ViewControllers directly.
   if (offset > minimumOffset) {
     if ([self isRefactoredFeedVisible]) {
-      [self.ntpViewController setContentOffset:offset];
+      [self.ntpViewController setSavedContentOffset:offset];
     } else {
       [self.suggestionsViewController setContentOffset:offset];
     }
