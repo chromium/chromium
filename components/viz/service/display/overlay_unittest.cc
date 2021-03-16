@@ -4338,18 +4338,11 @@ TEST_F(UnderlayTest, EstimateOccludedDamage) {
           quad_candidate->shared_quad_state->overlay_damage_index.has_value());
     }
 
-    // We have to find the occluder end of our list as it changes each
-    // iteration.
-    auto iter_occluder_end = quad_list.begin();
-    for (size_t j = 0; j < occluder_iter_count; j++) {
-      iter_occluder_end++;
-    }
-
     // Now we test the opaque occlusion provided by 'EstimateOccludedDamage'
     // function.
     candidate.damage_area_estimate = OverlayCandidate::EstimateVisibleDamage(
         quad_candidate, &surface_damage_rect_list, quad_list.begin(),
-        iter_occluder_end);
+        std::next(quad_list.begin(), occluder_iter_count));
 
     ASSERT_EQ(kExpectedDamages[i], candidate.damage_area_estimate);
   }
