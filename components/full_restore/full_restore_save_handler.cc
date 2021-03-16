@@ -123,7 +123,7 @@ void FullRestoreSaveHandler::OnWindowDestroyed(aura::Window* window) {
       // The window could be recreated, so only remove the window info. When the
       // task is destroyed, the full restore data can be removed.
       it->second.window = nullptr;
-      RemoveWindowInfo(it->second.app_id, window_id);
+      RemoveWindowInfo(primary_profile_path_, it->second.app_id, window_id);
     }
     return;
   }
@@ -247,6 +247,49 @@ void FullRestoreSaveHandler::Flush(const base::FilePath& profile_path) {
                          weak_factory_.GetWeakPtr(), profile_path));
 }
 
+void FullRestoreSaveHandler::AddAppLaunchInfo(
+    const base::FilePath& profile_path,
+    AppLaunchInfoPtr app_launch_info) {
+  if (profile_path.empty() || !app_launch_info ||
+      !app_launch_info->window_id.has_value()) {
+    return;
+  }
+
+  if (!app_launch_info->arc_session_id.has_value()) {
+    // If |app_launch_info| is not an ARC app launch info, add to
+    // |window_id_to_app_restore_info_|.
+    window_id_to_app_restore_info_[app_launch_info->window_id.value()] =
+        std::make_pair(profile_path, app_launch_info->app_id);
+  }
+
+  // Each user should have one full restore file saving the restore data in the
+  // profile directory |profile_path|. So |app_launch_info| is saved to the
+  // restore data for the user with |profile_path|.
+  profile_path_to_restore_data_[profile_path].AddAppLaunchInfo(
+      std::move(app_launch_info));
+
+  pending_save_profile_paths_.insert(profile_path);
+
+  MaybeStartSaveTimer();
+}
+
+void FullRestoreSaveHandler::ModifyWindowInfo(
+    const base::FilePath& profile_path,
+    const std::string& app_id,
+    int32_t window_id,
+    const WindowInfo& window_info) {
+  auto it = profile_path_to_restore_data_.find(profile_path);
+  if (it == profile_path_to_restore_data_.end())
+    return;
+
+  profile_path_to_restore_data_[profile_path].ModifyWindowInfo(
+      app_id, window_id, window_info);
+
+  pending_save_profile_paths_.insert(profile_path);
+
+  MaybeStartSaveTimer();
+}
+
 void FullRestoreSaveHandler::RemoveApp(const base::FilePath& profile_path,
                                        const std::string& app_id) {
   auto it = profile_path_to_restore_data_.find(profile_path);
@@ -254,6 +297,36 @@ void FullRestoreSaveHandler::RemoveApp(const base::FilePath& profile_path,
     return;
 
   it->second.RemoveApp(app_id);
+
+  pending_save_profile_paths_.insert(profile_path);
+
+  MaybeStartSaveTimer();
+}
+
+void FullRestoreSaveHandler::RemoveAppRestoreData(
+    const base::FilePath& profile_path,
+    const std::string& app_id,
+    int window_id) {
+  auto it = profile_path_to_restore_data_.find(profile_path);
+  if (it == profile_path_to_restore_data_.end())
+    return;
+
+  it->second.RemoveAppRestoreData(app_id, window_id);
+
+  pending_save_profile_paths_.insert(profile_path);
+
+  MaybeStartSaveTimer();
+}
+
+void FullRestoreSaveHandler::RemoveWindowInfo(
+    const base::FilePath& profile_path,
+    const std::string& app_id,
+    int window_id) {
+  auto it = profile_path_to_restore_data_.find(profile_path);
+  if (it == profile_path_to_restore_data_.end())
+    return;
+
+  it->second.RemoveWindowInfo(app_id, window_id);
 
   pending_save_profile_paths_.insert(profile_path);
 
@@ -307,48 +380,15 @@ base::SequencedTaskRunner* FullRestoreSaveHandler::BackendTaskRunner(
   return GetFileHandler(profile_path)->owning_task_runner();
 }
 
-void FullRestoreSaveHandler::AddAppLaunchInfo(
-    const base::FilePath& profile_path,
-    AppLaunchInfoPtr app_launch_info) {
-  if (profile_path.empty() || !app_launch_info ||
-      !app_launch_info->window_id.has_value()) {
-    return;
-  }
-
-  window_id_to_app_restore_info_[app_launch_info->window_id.value()] =
-      std::make_pair(profile_path, app_launch_info->app_id);
-
-  // Each user should have one full restore file saving the restore data in the
-  // profile directory |profile_path|. So |app_launch_info| is saved to the
-  // restore data for the user with |profile_path|.
-  profile_path_to_restore_data_[profile_path].AddAppLaunchInfo(
-      std::move(app_launch_info));
-
-  pending_save_profile_paths_.insert(profile_path);
-
-  MaybeStartSaveTimer();
-}
-
 void FullRestoreSaveHandler::ModifyWindowInfo(int window_id,
                                               const WindowInfo& window_info) {
   auto it = window_id_to_app_restore_info_.find(window_id);
   if (it == window_id_to_app_restore_info_.end())
     return;
 
-  const auto& profile_path = it->second.first;
-  const auto& app_id = it->second.second;
-  auto restore_data_it = profile_path_to_restore_data_.find(profile_path);
-  if (restore_data_it == profile_path_to_restore_data_.end() ||
-      !restore_data_it->second.HasAppRestoreData(app_id, window_id)) {
-    return;
-  }
-
-  profile_path_to_restore_data_[profile_path].ModifyWindowInfo(
-      app_id, window_id, window_info);
-
-  pending_save_profile_paths_.insert(profile_path);
-
-  MaybeStartSaveTimer();
+  const base::FilePath& profile_path = it->second.first;
+  const std::string& app_id = it->second.second;
+  ModifyWindowInfo(profile_path, app_id, window_id, window_info);
 }
 
 void FullRestoreSaveHandler::RemoveAppRestoreData(int window_id) {
@@ -356,26 +396,12 @@ void FullRestoreSaveHandler::RemoveAppRestoreData(int window_id) {
   if (it == window_id_to_app_restore_info_.end())
     return;
 
-  profile_path_to_restore_data_[it->second.first].RemoveAppRestoreData(
-      it->second.second, window_id);
+  const base::FilePath& profile_path = it->second.first;
+  const std::string& app_id = it->second.second;
 
-  pending_save_profile_paths_.insert(it->second.first);
+  RemoveAppRestoreData(profile_path, app_id, window_id);
 
   window_id_to_app_restore_info_.erase(it);
-
-  MaybeStartSaveTimer();
-}
-
-void FullRestoreSaveHandler::RemoveWindowInfo(const std::string& app_id,
-                                              int window_id) {
-  if (app_id.empty())
-    return;
-
-  auto it = profile_path_to_restore_data_.find(primary_profile_path_);
-  if (it == profile_path_to_restore_data_.end())
-    return;
-
-  it->second.RemoveWindowInfo(app_id, window_id);
 }
 
 }  // namespace full_restore

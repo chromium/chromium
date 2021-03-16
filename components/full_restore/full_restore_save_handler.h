@@ -40,6 +40,8 @@ class COMPONENT_EXPORT(FULL_RESTORE) FullRestoreSaveHandler
     : public aura::EnvObserver,
       public aura::WindowObserver {
  public:
+  using AppLaunchInfoPtr = std::unique_ptr<AppLaunchInfo>;
+
   static FullRestoreSaveHandler* GetInstance();
 
   FullRestoreSaveHandler();
@@ -77,9 +79,31 @@ class COMPONENT_EXPORT(FULL_RESTORE) FullRestoreSaveHandler
   // data.
   void Flush(const base::FilePath& profile_path);
 
+  // Saves |app_launch_info| to |profile_path_to_file_handler_| for
+  // |profile_path| which will be written to the full restore file, if
+  // |app_launch_info| has a window_id.
+  void AddAppLaunchInfo(const base::FilePath& profile_path,
+                        AppLaunchInfoPtr app_launch_info);
+
+  // Saves |window_info| to |profile_path| for |app_id| and |window_id|.
+  void ModifyWindowInfo(const base::FilePath& profile_path,
+                        const std::string& app_id,
+                        int32_t window_id,
+                        const WindowInfo& window_info);
+
   // Removes app launching and app windows for an app with the given |app_id|
   // from |file_path_to_restore_data_| for |profile_path| .
   void RemoveApp(const base::FilePath& profile_path, const std::string& app_id);
+
+  // Removes AppRestoreData from |profile_path| for |app_id| and |window_id|.
+  void RemoveAppRestoreData(const base::FilePath& profile_path,
+                            const std::string& app_id,
+                            int window_id);
+
+  // Removes WindowInfo from |profile_path| for |app_id| and |window_id|.
+  void RemoveWindowInfo(const base::FilePath& profile_path,
+                        const std::string& app_id,
+                        int window_id);
 
   // Generates the ARC session id (0 - 1,000,000,000) for ARC apps.
   int32_t GetArcSessionId();
@@ -91,8 +115,6 @@ class COMPONENT_EXPORT(FULL_RESTORE) FullRestoreSaveHandler
     std::string app_id;
     aura::Window* window;
   };
-
-  using AppLaunchInfoPtr = std::unique_ptr<AppLaunchInfo>;
 
   // Map from a profile path to AppLaunchInfos.
   using AppLaunchInfos = std::map<base::FilePath, std::list<AppLaunchInfoPtr>>;
@@ -111,20 +133,11 @@ class COMPONENT_EXPORT(FULL_RESTORE) FullRestoreSaveHandler
   base::SequencedTaskRunner* BackendTaskRunner(
       const base::FilePath& profile_path);
 
-  // Saves |app_launch_info| to |profile_path_to_file_handler_| for
-  // |profile_path| which will be written to the full restore file, if
-  // |app_launch_info| has a window_id.
-  void AddAppLaunchInfo(const base::FilePath& profile_path,
-                        AppLaunchInfoPtr app_launch_info);
-
   // Saves |window_info| to |profile_path_to_file_handler_|.
   void ModifyWindowInfo(int window_id, const WindowInfo& window_info);
 
   // Removes AppRestoreData for |window_id|.
   void RemoveAppRestoreData(int window_id);
-
-  // Removes WindowInfo for |app_id| and |window_id|.
-  void RemoveWindowInfo(const std::string& app_id, int window_id);
 
   // Records whether there are new updates for saving between each saving delay.
   // |pending_save_profile_paths_| is cleared when Save is invoked.
@@ -140,7 +153,8 @@ class COMPONENT_EXPORT(FULL_RESTORE) FullRestoreSaveHandler
 
   // The map from the window id to the full restore file path and the app id.
   // The window id is saved in the window property. This map is used to find the
-  // file path and the app id when save the window info.
+  // file path and the app id for browser windows and Chrome app windows only
+  // when save the window info. This map can't be used for ARC app windows.
   std::map<int32_t, std::pair<base::FilePath, std::string>>
       window_id_to_app_restore_info_;
 
