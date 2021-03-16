@@ -64,7 +64,7 @@ if (is_chrome_branded && is_official_build && target_os != "ios") {
 # The path to the hermetic install of Xcode. Only relevant when
 # use_system_xcode = false.
 if (!use_system_xcode) {
-  _hermetic_xcode_path = "//build/${target_os}_files/xcode_binaries"
+  _hermetic_xcode_path = "//build/mac_files/xcode_binaries"
 }
 
 script_name = "//build/config/apple/sdk_info.py"
