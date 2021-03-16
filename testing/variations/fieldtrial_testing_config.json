@@ -6680,25 +6680,6 @@
             ]
         }
     ],
-    "TranslateCompactUI": [
-        {
-            "platforms": [
-                "android",
-                "android_weblayer"
-            ],
-            "experiments": [
-                {
-                    "name": "DarkerColor",
-                    "params": {
-                        "translate_tab_default_text_color": "1"
-                    },
-                    "enable_features": [
-                        "TranslateCompactUI"
-                    ]
-                }
-            ]
-        }
-    ],
     "TranslateRankerModel": [
         {
             "platforms": [
