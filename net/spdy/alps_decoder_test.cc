@@ -189,6 +189,17 @@ TEST(AlpsDecoderTest, SettingsOnInvalidStream) {
   EXPECT_EQ(AlpsDecoder::Error::kFramingError, error);
 }
 
+TEST(AlpsDecoderTest, SettingsAck) {
+  AlpsDecoder decoder;
+  AlpsDecoder::Error error =
+      decoder.Decode(HexDecode("000000"       // length
+                               "04"           // type SETTINGS
+                               "01"           // ACK flag
+                               "00000000"));  // stream ID
+
+  EXPECT_EQ(AlpsDecoder::Error::kSettingsWithAck, error);
+}
+
 // According to https://httpwg.org/specs/rfc7540.html#FrameHeader:
 // "Flags that have no defined semantics for a particular frame type MUST be
 // ignored [...]"

@@ -72,6 +72,7 @@ class NET_EXPORT_PRIVATE AlpsDecoder {
     ~SettingsParser() override;
 
     bool forbidden_frame_received() const { return forbidden_frame_received_; }
+    bool settings_ack_received() const { return settings_ack_received_; }
     int settings_frame_count() const { return settings_frame_count_; }
     // Number of SETTINGS frames received.
     const spdy::SettingsMap& GetSettings() const { return settings_; }
@@ -83,10 +84,13 @@ class NET_EXPORT_PRIVATE AlpsDecoder {
                         uint8_t flags) override;
     void OnSettings() override;
     void OnSetting(spdy::SpdySettingsId id, uint32_t value) override;
+    void OnSettingsAck() override;
 
    private:
     // True if a forbidden HTTP/2 frame has been received.
     bool forbidden_frame_received_ = false;
+    // True if a SETTINGS frame with ACK flag has been received.
+    bool settings_ack_received_ = false;
     // Number of SETTINGS frames received.
     int settings_frame_count_ = 0;
     // Accumulated setting parameters.

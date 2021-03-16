@@ -44,6 +44,10 @@ AlpsDecoder::Error AlpsDecoder::Decode(base::span<const char> data) {
     return Error::kForbiddenFrame;
   }
 
+  if (settings_parser_.settings_ack_received()) {
+    return Error::kSettingsWithAck;
+  }
+
   if (decoder_adapter_.state() !=
       http2::Http2DecoderAdapter::SPDY_READY_FOR_FRAME) {
     return Error::kNotOnFrameBoundary;
@@ -83,6 +87,10 @@ void AlpsDecoder::SettingsParser::OnSettings() {
 void AlpsDecoder::SettingsParser::OnSetting(spdy::SpdySettingsId id,
                                             uint32_t value) {
   settings_[id] = value;
+}
+
+void AlpsDecoder::SettingsParser::OnSettingsAck() {
+  settings_ack_received_ = true;
 }
 
 AlpsDecoder::AcceptChParser::AcceptChParser() = default;
