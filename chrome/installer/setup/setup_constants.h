@@ -42,6 +42,9 @@ extern const char kSetDisplayVersionProduct[];
 extern const char kSetDisplayVersionValue[];
 extern const char kUserExperiment[];
 
+extern const char kCleanupForDowngradeOperation[];
+extern const char kCleanupForDowngradeVersion[];
+
 }  // namespace switches
 
 }  // namespace installer

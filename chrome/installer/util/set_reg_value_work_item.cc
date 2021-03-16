@@ -193,6 +193,18 @@ bool SetRegValueWorkItem::DoImpl() {
     return false;
   }
 
+  if (VLOG_IS_ON(1)) {
+    if (type_ == REG_SZ) {
+      std::wstring value_str;
+      BinaryDataToString(value_, &value_str);
+      VLOG(1) << "Successfully wrote value " << value_str << " into "
+              << key_path_;
+
+    } else {
+      VLOG(1) << "Successfully wrote into " << key_path_;
+    }
+  }
+
   status_ = previous_type_ ? VALUE_OVERWRITTEN : NEW_VALUE_CREATED;
   return true;
 }
