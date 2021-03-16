@@ -17178,6 +17178,17 @@ regressions. -->
   </summary>
 </histogram>
 
+<histogram name="VoiceInteraction.AudioPermissionEvent"
+    enum="AudioPermissionState" expires_after="2021-08-22">
+  <owner>basiaz@google.com</owner>
+  <owner>chrome-language@google.com</owner>
+  <summary>
+    Android: The events related to granting or denying audio permission for
+    system level transcription (as opposite to Assistant). Will be logged each
+    time non-Assistant voice recognition is triggered with a mic button click.
+  </summary>
+</histogram>
+
 <histogram name="VoiceInteraction.DismissedEventSource"
     enum="VoiceInteractionEventSource" expires_after="2021-08-22">
   <owner>wylieb@chromium.org</owner>

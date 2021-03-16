@@ -156,6 +156,23 @@ public class VoiceRecognitionHandler implements ProfileManager.Observer {
     private final SettingsLauncher mSettingsLauncher;
 
     /**
+     * AudioPermissionState defined in tools/metrics/histograms/enums.xml.
+     *
+     * Do not reorder or remove items, only add new items before NUM_ENTRIES.
+     */
+    @IntDef({AudioPermissionState.GRANTED, AudioPermissionState.DENIED_CAN_ASK_AGAIN,
+            AudioPermissionState.DENIED_CANNOT_ASK_AGAIN})
+    public @interface AudioPermissionState {
+        // Permissions have been granted and won't be requested this time.
+        int GRANTED = 0;
+        int DENIED_CAN_ASK_AGAIN = 1;
+        int DENIED_CANNOT_ASK_AGAIN = 2;
+
+        // Be sure to also update enums.xml when updating these values.
+        int NUM_ENTRIES = 3;
+    }
+
+    /**
      * VoiceInteractionEventSource defined in tools/metrics/histograms/enums.xml.
      *
      * Do not reorder or remove items, only add new items before NUM_ENTRIES.
@@ -728,24 +745,33 @@ public class VoiceRecognitionHandler implements ProfileManager.Observer {
      */
     private boolean ensureAudioPermissionGranted(
             Activity activity, WindowAndroid windowAndroid, @VoiceInteractionSource int source) {
-        if (windowAndroid.hasPermission(Manifest.permission.RECORD_AUDIO)) return true;
-
+        if (windowAndroid.hasPermission(Manifest.permission.RECORD_AUDIO)) {
+            recordAudioPermissionStateEvent(AudioPermissionState.GRANTED);
+            return true;
+        }
         // If we don't have permission and also can't ask, then there's no more work left other
         // than telling the delegate to update the mic state.
         if (!windowAndroid.canRequestPermission(Manifest.permission.RECORD_AUDIO)) {
+            recordAudioPermissionStateEvent(AudioPermissionState.DENIED_CANNOT_ASK_AGAIN);
             notifyVoiceAvailabilityImpacted();
             return false;
         }
 
         PermissionCallback callback = (permissions, grantResults) -> {
             if (grantResults.length != 1) {
+                recordAudioPermissionStateEvent(AudioPermissionState.DENIED_CAN_ASK_AGAIN);
                 return;
             }
 
             if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                // Don't record granted permission here, it will get logged from
+                // within startSystemForVoiceSearch call.
                 startSystemForVoiceSearch(activity, windowAndroid, source);
             } else if (!windowAndroid.canRequestPermission(Manifest.permission.RECORD_AUDIO)) {
+                recordAudioPermissionStateEvent(AudioPermissionState.DENIED_CANNOT_ASK_AGAIN);
                 notifyVoiceAvailabilityImpacted();
+            } else {
+                recordAudioPermissionStateEvent(AudioPermissionState.DENIED_CAN_ASK_AGAIN);
             }
         };
         windowAndroid.requestPermissions(new String[] {Manifest.permission.RECORD_AUDIO}, callback);
@@ -1193,6 +1219,16 @@ public class VoiceRecognitionHandler implements ProfileManager.Observer {
     protected void recordTranslateExtrasAttachResult(boolean result) {
         RecordHistogram.recordBooleanHistogram(
                 "VoiceInteraction.AssistantIntent.TranslateExtrasAttached", result);
+    }
+
+    /**
+     * Records audio permissions state when a system voice recognition is requested.
+     * @param permissionsState The current RECORD_AUDIO permission state.
+     */
+    @VisibleForTesting
+    protected void recordAudioPermissionStateEvent(@AudioPermissionState int permissionsState) {
+        RecordHistogram.recordEnumeratedHistogram("VoiceInteraction.AudioPermissionEvent",
+                permissionsState, AudioPermissionState.NUM_ENTRIES);
     }
 
     /** Allows for overriding the TranslateBridgeWrapper for test purposes. */

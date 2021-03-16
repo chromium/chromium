@@ -4556,6 +4556,12 @@ others/histograms.xml -->
   <int value="6" label="Document destroyed during stream creation"/>
 </enum>
 
+<enum name="AudioPermissionState">
+  <int value="0" label="Granted"/>
+  <int value="1" label="Denied but can ask again"/>
+  <int value="2" label="Denied and can't ask again"/>
+</enum>
+
 <enum name="AudioRenderDeviceError">
   <int value="0" label="No error"/>
   <int value="1" label="Error during stream creation"/>

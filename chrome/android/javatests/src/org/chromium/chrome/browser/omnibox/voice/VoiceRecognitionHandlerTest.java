@@ -50,6 +50,7 @@ import org.chromium.chrome.browser.omnibox.suggestions.AutocompleteCoordinator;
 import org.chromium.chrome.browser.omnibox.suggestions.AutocompleteDelegate;
 import org.chromium.chrome.browser.omnibox.suggestions.OmniboxSuggestionsDropdownEmbedder;
 import org.chromium.chrome.browser.omnibox.voice.VoiceRecognitionHandler.AssistantActionPerformed;
+import org.chromium.chrome.browser.omnibox.voice.VoiceRecognitionHandler.AudioPermissionState;
 import org.chromium.chrome.browser.omnibox.voice.VoiceRecognitionHandler.TranslateBridgeWrapper;
 import org.chromium.chrome.browser.omnibox.voice.VoiceRecognitionHandler.VoiceIntentTarget;
 import org.chromium.chrome.browser.omnibox.voice.VoiceRecognitionHandler.VoiceInteractionSource;
@@ -1477,6 +1478,43 @@ public class VoiceRecognitionHandlerTest {
         Assert.assertEquals(0,
                 RecordHistogram.getHistogramTotalCountForTesting(
                         "VoiceInteraction.QueryDuration.Android.Transcription"));
+    }
+
+    @Test
+    @SmallTest
+    public void testRecordAudioState_deniedCannotAsk() {
+        mPermissionDelegate.setHasPermission(false);
+        mPermissionDelegate.setCanRequestPermission(false);
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> { mHandler.startVoiceRecognition(VoiceInteractionSource.OMNIBOX); });
+        Assert.assertEquals(1,
+                RecordHistogram.getHistogramValueCountForTesting(
+                        "VoiceInteraction.AudioPermissionEvent",
+                        AudioPermissionState.DENIED_CANNOT_ASK_AGAIN));
+    }
+
+    @Test
+    @SmallTest
+    public void testRecordAudioState_deniedCanAsk() {
+        mPermissionDelegate.setCanRequestPermission(true);
+        mPermissionDelegate.setPermissionResults(PackageManager.PERMISSION_DENIED);
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> { mHandler.startVoiceRecognition(VoiceInteractionSource.OMNIBOX); });
+        Assert.assertEquals(1,
+                RecordHistogram.getHistogramValueCountForTesting(
+                        "VoiceInteraction.AudioPermissionEvent",
+                        AudioPermissionState.DENIED_CAN_ASK_AGAIN));
+    }
+
+    @Test
+    @SmallTest
+    public void testRecordAudioState_granted() {
+        mPermissionDelegate.setHasPermission(true);
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> { mHandler.startVoiceRecognition(VoiceInteractionSource.OMNIBOX); });
+        Assert.assertEquals(1,
+                RecordHistogram.getHistogramValueCountForTesting(
+                        "VoiceInteraction.AudioPermissionEvent", AudioPermissionState.GRANTED));
     }
 
     @Test
