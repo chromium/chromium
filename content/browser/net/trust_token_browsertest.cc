@@ -437,7 +437,13 @@ IN_PROC_BROWSER_TEST_F(TrustTokenBrowsertest, FetchEndToEndInIsolatedWorld) {
               request_handler_.hashes_of_redemption_bound_public_keys())))));
 }
 
-IN_PROC_BROWSER_TEST_F(TrustTokenBrowsertest, RecordsTimers) {
+// Flaky on Linux. https://crbug.com/1165862
+#if defined(OS_LINUX)
+#define MAYBE_RecordsTimers DISABLED_RecordsTimers
+#else
+#define MAYBE_RecordsTimers RecordsTimers
+#endif
+IN_PROC_BROWSER_TEST_F(TrustTokenBrowsertest, MAYBE_RecordsTimers) {
   base::HistogramTester histograms;
 
   ProvideRequestHandlerKeyCommitmentsToNetworkService({"a.test"});
