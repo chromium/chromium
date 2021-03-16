@@ -21,7 +21,7 @@ namespace android_webview {
 // Add trust tokens ComponentLoaderPolicy to the given policies vector, if Trust
 // Tokens is enabled.
 void LoadTrustTokenKeyCommitmentsComponent(
-    ComponentLoaderPolicyVector* policies) {
+    ComponentLoaderPolicyVector& policies) {
   if (!base::FeatureList::IsEnabled(network::features::kTrustTokens))
     return;
 
@@ -29,7 +29,7 @@ void LoadTrustTokenKeyCommitmentsComponent(
       << "Registering Trust Token Key Commitments component for loading in "
          "embedded WebView.";
 
-  policies->push_back(
+  policies.push_back(
       std::make_unique<
           component_updater::TrustTokenKeyCommitmentsComponentLoaderPolicy>(
           /* on_commitments_ready = */ base::BindRepeating(

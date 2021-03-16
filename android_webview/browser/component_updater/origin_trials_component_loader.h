@@ -16,7 +16,7 @@ namespace android_webview {
 // Adds origin trials ComponentLoaderPolicy to `policies`, if Origin Trials
 // support is enabled.
 void LoadOriginTrialsComponent(
-    component_updater::ComponentLoaderPolicyVector* policies);
+    component_updater::ComponentLoaderPolicyVector& policies);
 
 }  // namespace android_webview
 

@@ -15,11 +15,11 @@
 namespace android_webview {
 
 void LoadOriginTrialsComponent(
-    component_updater::ComponentLoaderPolicyVector* policies) {
+    component_updater::ComponentLoaderPolicyVector& policies) {
   if (!base::FeatureList::IsEnabled(features::kWebViewOriginTrials))
     return;
 
-  policies->push_back(std::make_unique<OriginTrialsComponentLoaderPolicy>());
+  policies.push_back(std::make_unique<OriginTrialsComponentLoaderPolicy>());
 }
 
 }  // namespace android_webview

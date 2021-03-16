@@ -11,8 +11,8 @@ namespace android_webview {
 
 component_updater::ComponentLoaderPolicyVector GetComponentLoaderPolicies() {
   component_updater::ComponentLoaderPolicyVector policies;
-  LoadTrustTokenKeyCommitmentsComponent(&policies);
-  LoadOriginTrialsComponent(&policies);
+  LoadTrustTokenKeyCommitmentsComponent(policies);
+  LoadOriginTrialsComponent(policies);
   return policies;
 }
 

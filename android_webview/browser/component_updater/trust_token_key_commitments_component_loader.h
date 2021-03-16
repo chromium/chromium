@@ -17,7 +17,7 @@ using ComponentLoaderPolicyVector =
     std::vector<std::unique_ptr<component_updater::ComponentLoaderPolicy>>;
 
 void LoadTrustTokenKeyCommitmentsComponent(
-    ComponentLoaderPolicyVector* policies);
+    ComponentLoaderPolicyVector& policies);
 
 }  // namespace android_webview
 
