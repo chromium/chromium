@@ -79,20 +79,6 @@ compressed, how it's aligned).
 When we change build gn files, the native libraries and assets can sometimes
 be changed in an unexpected way.
 
-## Native Flags
-The compile and link flags that are used to build chrome.
-
-### What are `*flags.expected` files?
-`*flags.expected` files store in a text format the list of flags passed to
-the compiler and linker when building chrome's native libraries.
-
-### Why do we care about compile/link flag discrepancies?
-Some of chrome's native code is compiled outside of the repo. The
-`*flags.expected` files inform the build team that these flags changed (most
-importantly if any relate to security). When you update a `*flags.expected`
-file the build team is informed (via a WATCHLIST entry) and can then choose
-to add these flags for out-of-repo native library builds.
-
 ## Build failures caused by `*.expected` files
 
 ### What is the build error telling me?
