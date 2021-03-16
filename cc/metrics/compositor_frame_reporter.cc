@@ -576,7 +576,7 @@ CompositorFrameReporter::CopyReporterAtBeginImplStage() {
 
   // Set up the new reporter so that it depends on |this| for partial update
   // information.
-  new_reporter->SetPartialUpdateDecider(weak_factory_.GetWeakPtr());
+  new_reporter->SetPartialUpdateDecider(this);
 
   return new_reporter;
 }
@@ -1255,10 +1255,6 @@ bool CompositorFrameReporter::IsDroppedFrameAffectingSmoothness() const {
   return false;
 }
 
-base::WeakPtr<CompositorFrameReporter> CompositorFrameReporter::GetWeakPtr() {
-  return weak_factory_.GetWeakPtr();
-}
-
 void CompositorFrameReporter::AdoptReporter(
     std::unique_ptr<CompositorFrameReporter> reporter) {
   // If |this| reporter is dependent on another reporter to decide about partial
@@ -1270,12 +1266,12 @@ void CompositorFrameReporter::AdoptReporter(
 }
 
 void CompositorFrameReporter::SetPartialUpdateDecider(
-    base::WeakPtr<CompositorFrameReporter> decider) {
+    CompositorFrameReporter* decider) {
   DCHECK(decider);
-  has_partial_update_ = true;
-  partial_update_decider_ = decider;
-  decider->partial_update_dependents_.push(GetWeakPtr());
   DCHECK(partial_update_dependents_.empty());
+  has_partial_update_ = true;
+  partial_update_decider_ = decider->GetWeakPtr();
+  decider->partial_update_dependents_.push(GetWeakPtr());
 }
 
 void CompositorFrameReporter::DiscardOldPartialUpdateReporters() {
@@ -1296,6 +1292,10 @@ bool CompositorFrameReporter::MightHavePartialUpdate() const {
 
 size_t CompositorFrameReporter::GetPartialUpdateDependentsCount() const {
   return partial_update_dependents_.size();
+}
+
+base::WeakPtr<CompositorFrameReporter> CompositorFrameReporter::GetWeakPtr() {
+  return weak_factory_.GetWeakPtr();
 }
 
 }  // namespace cc

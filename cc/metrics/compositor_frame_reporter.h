@@ -288,7 +288,7 @@ class CC_EXPORT CompositorFrameReporter {
     tick_clock_ = tick_clock;
   }
 
-  void SetPartialUpdateDecider(base::WeakPtr<CompositorFrameReporter> decider);
+  void SetPartialUpdateDecider(CompositorFrameReporter* decider);
 
   bool MightHavePartialUpdate() const;
   size_t GetPartialUpdateDependentsCount() const;
@@ -303,11 +303,9 @@ class CC_EXPORT CompositorFrameReporter {
   // If this is a cloned reporter, then this returns a weak-ptr to the original
   // reporter this was cloned from (using |CopyReporterAtBeginImplStage()|).
 
-  base::WeakPtr<CompositorFrameReporter> partial_update_decider() {
-    return partial_update_decider_;
+  CompositorFrameReporter* partial_update_decider() const {
+    return partial_update_decider_.get();
   }
-
-  base::WeakPtr<CompositorFrameReporter> GetWeakPtr();
 
  protected:
   void set_has_partial_update(bool has_partial_update) {
@@ -353,6 +351,8 @@ class CC_EXPORT CompositorFrameReporter {
   base::TimeTicks Now() const;
 
   bool IsDroppedFrameAffectingSmoothness() const;
+
+  base::WeakPtr<CompositorFrameReporter> GetWeakPtr();
 
   const bool should_report_metrics_;
   const viz::BeginFrameArgs args_;

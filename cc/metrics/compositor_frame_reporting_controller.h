@@ -126,9 +126,9 @@ class CC_EXPORT CompositorFrameReportingController {
       base::TimeTicks timestamp) const;
 
   // Checks whether there are reporters containing updates from the main
-  // thread, and returns a weak-ptr to that reporter (if any). Otherwise returns
-  // null.
-  base::WeakPtr<CompositorFrameReporter> HasOutstandingUpdatesFromMain(
+  // thread, and returns a pointer to that reporter (if any). Otherwise returns
+  // nullptr.
+  CompositorFrameReporter* GetOutstandingUpdatesFromMain(
       const viz::BeginFrameId& id) const;
 
   // If the display-compositor skips over some frames (e.g. when the gpu is

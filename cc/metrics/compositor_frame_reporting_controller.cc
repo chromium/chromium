@@ -222,8 +222,8 @@ void CompositorFrameReportingController::DidSubmitCompositorFrame(
     AdvanceReporterStage(PipelineStage::kBeginImplFrame,
                          PipelineStage::kActivate);
     impl_reporter = std::move(reporters_[PipelineStage::kActivate]);
-    auto partial_update_decider =
-        HasOutstandingUpdatesFromMain(current_frame_id);
+    CompositorFrameReporter* partial_update_decider =
+        GetOutstandingUpdatesFromMain(current_frame_id);
     if (partial_update_decider)
       impl_reporter->SetPartialUpdateDecider(partial_update_decider);
   } else if (CanSubmitMainFrame(current_frame_id)) {
@@ -333,8 +333,8 @@ void CompositorFrameReportingController::
   } else {
     // The stage_reporter in this case was waiting for main, so needs to
     // be adopted by the reporter which is waiting on Main thread's work
-    auto partial_update_decider =
-        HasOutstandingUpdatesFromMain(stage_reporter->frame_id());
+    CompositorFrameReporter* partial_update_decider =
+        GetOutstandingUpdatesFromMain(stage_reporter->frame_id());
     if (partial_update_decider) {
       stage_reporter->SetPartialUpdateDecider(partial_update_decider);
       stage_reporter->OnDidNotProduceFrame(FrameSkippedReason::kWaitingOnMain);
@@ -384,7 +384,8 @@ void CompositorFrameReportingController::DidPresentCompositorFrame(
     // original reporter is terminated, and the cloned reporter's 'partial
     // update' flag can be unset if necessary.
     if (reporter->MightHavePartialUpdate()) {
-      auto orig_reporter = reporter->partial_update_decider();
+      CompositorFrameReporter* orig_reporter =
+          reporter->partial_update_decider();
       if (orig_reporter)
         orig_reporter->AdoptReporter(std::move(reporter));
     }
@@ -532,8 +533,8 @@ CompositorFrameReportingController::GetSmoothThreadAtTime(
   return smooth_thread_history_.lower_bound(timestamp)->second;
 }
 
-base::WeakPtr<CompositorFrameReporter>
-CompositorFrameReportingController::HasOutstandingUpdatesFromMain(
+CompositorFrameReporter*
+CompositorFrameReportingController::GetOutstandingUpdatesFromMain(
     const viz::BeginFrameId& id) const {
   // Any unterminated reporter in the 'main frame', or 'commit' stages, then
   // that indicates some pending updates from the main thread.
@@ -541,17 +542,17 @@ CompositorFrameReportingController::HasOutstandingUpdatesFromMain(
     const auto& reporter = reporters_[PipelineStage::kBeginMainFrame];
     if (reporter && reporter->frame_id() < id &&
         !reporter->did_abort_main_frame()) {
-      return reporter->GetWeakPtr();
+      return reporter.get();
     }
   }
   {
     const auto& reporter = reporters_[PipelineStage::kCommit];
     if (reporter && reporter->frame_id() < id) {
       DCHECK(!reporter->did_abort_main_frame());
-      return reporter->GetWeakPtr();
+      return reporter.get();
     }
   }
-  return {};
+  return nullptr;
 }
 
 void CompositorFrameReportingController::CreateReportersForDroppedFrames(
