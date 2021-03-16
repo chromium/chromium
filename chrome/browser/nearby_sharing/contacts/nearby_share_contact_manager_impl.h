@@ -20,6 +20,7 @@
 class NearbyShareClientFactory;
 class NearbyShareContactDownloader;
 class NearbyShareLocalDeviceDataManager;
+class NearbyShareProfileInfoProvider;
 class NearbyShareScheduler;
 class PrefService;
 
@@ -49,7 +50,7 @@ class NearbyShareContactManagerImpl : public NearbyShareContactManager {
         PrefService* pref_service,
         NearbyShareClientFactory* http_client_factory,
         NearbyShareLocalDeviceDataManager* local_device_data_manager,
-        const std::string& profile_user_name);
+        NearbyShareProfileInfoProvider* profile_info_provider);
     static void SetFactoryForTesting(Factory* test_factory);
 
    protected:
@@ -58,7 +59,7 @@ class NearbyShareContactManagerImpl : public NearbyShareContactManager {
         PrefService* pref_service,
         NearbyShareClientFactory* http_client_factory,
         NearbyShareLocalDeviceDataManager* local_device_data_manager,
-        const std::string& profile_user_name) = 0;
+        NearbyShareProfileInfoProvider* profile_info_provider) = 0;
 
    private:
     static Factory* test_factory_;
@@ -71,7 +72,7 @@ class NearbyShareContactManagerImpl : public NearbyShareContactManager {
       PrefService* pref_service,
       NearbyShareClientFactory* http_client_factory,
       NearbyShareLocalDeviceDataManager* local_device_data_manager,
-      const std::string& profile_user_name);
+      NearbyShareProfileInfoProvider* profile_info_provider);
 
   // NearbyShareContactsManager:
   void DownloadContacts() override;
@@ -106,7 +107,7 @@ class NearbyShareContactManagerImpl : public NearbyShareContactManager {
   PrefService* pref_service_ = nullptr;
   NearbyShareClientFactory* http_client_factory_ = nullptr;
   NearbyShareLocalDeviceDataManager* local_device_data_manager_ = nullptr;
-  std::string profile_user_name_;
+  NearbyShareProfileInfoProvider* profile_info_provider_ = nullptr;
   std::unique_ptr<NearbyShareScheduler> periodic_contact_upload_scheduler_;
   std::unique_ptr<NearbyShareScheduler> contact_download_and_upload_scheduler_;
   std::unique_ptr<NearbyShareContactDownloader> contact_downloader_;

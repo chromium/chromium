@@ -20,11 +20,15 @@ source_set("local_device_data") {
 
   deps = [
     "//base",
+    "//chrome/app:generated_resources",
+    "//chrome/app:generated_resources_grit",
     "//chrome/browser/nearby_sharing/client",
     "//chrome/browser/nearby_sharing/common",
     "//chrome/browser/nearby_sharing/proto",
     "//chrome/browser/nearby_sharing/scheduling",
     "//components/prefs",
+    "//ui/base",
+    "//ui/chromeos",
   ]
 }
 
@@ -58,13 +62,18 @@ source_set("unit_tests") {
     ":test_support",
     "//base",
     "//base/test:test_support",
+    "//chrome/app:generated_resources",
+    "//chrome/app:generated_resources_grit",
     "//chrome/browser/nearby_sharing/client",
     "//chrome/browser/nearby_sharing/client:test_support",
     "//chrome/browser/nearby_sharing/common",
+    "//chrome/browser/nearby_sharing/common:test_support",
     "//chrome/browser/nearby_sharing/proto",
     "//chrome/browser/nearby_sharing/scheduling",
     "//chrome/browser/nearby_sharing/scheduling:test_support",
     "//components/sync_preferences:test_support",
     "//testing/gtest",
+    "//ui/base",
+    "//ui/chromeos",
   ]
 }

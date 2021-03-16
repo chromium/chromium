@@ -11,6 +11,7 @@
 #include "base/optional.h"
 #include "base/strings/string_number_conversions.h"
 #include "chrome/browser/nearby_sharing/client/fake_nearby_share_client.h"
+#include "chrome/browser/nearby_sharing/common/fake_nearby_share_profile_info_provider.h"
 #include "chrome/browser/nearby_sharing/common/nearby_share_prefs.h"
 #include "chrome/browser/nearby_sharing/contacts/fake_nearby_share_contact_downloader.h"
 #include "chrome/browser/nearby_sharing/contacts/nearby_share_contact_downloader.h"
@@ -170,10 +171,11 @@ class NearbyShareContactManagerImplTest
     NearbyShareSchedulerFactory::SetFactoryForTesting(&scheduler_factory_);
     NearbyShareContactDownloaderImpl::Factory::SetFactoryForTesting(
         &downloader_factory_);
+    profile_info_provider_.set_profile_user_name(kTestProfileUserName);
 
     manager_ = NearbyShareContactManagerImpl::Factory::Create(
         &pref_service_, &http_client_factory_, &local_device_data_manager_,
-        kTestProfileUserName);
+        &profile_info_provider_);
     manager_awaiter_ =
         std::make_unique<nearby_share::mojom::ContactManagerAsyncWaiter>(
             manager_.get());
@@ -465,6 +467,7 @@ class NearbyShareContactManagerImplTest
   sync_preferences::TestingPrefServiceSyncable pref_service_;
   FakeNearbyShareClientFactory http_client_factory_;
   FakeNearbyShareLocalDeviceDataManager local_device_data_manager_;
+  FakeNearbyShareProfileInfoProvider profile_info_provider_;
   FakeNearbyShareSchedulerFactory scheduler_factory_;
   FakeNearbyShareContactDownloader::Factory downloader_factory_;
   std::unique_ptr<NearbyShareContactManager> manager_;

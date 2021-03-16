@@ -16,6 +16,7 @@
 #include "chrome/browser/ui/webui/nearby_share/public/mojom/nearby_share_settings.mojom.h"
 
 class NearbyShareClientFactory;
+class NearbyShareProfileInfoProvider;
 class PrefService;
 
 // A fake implementation of NearbyShareLocalDeviceDataManager, along with a fake
@@ -43,16 +44,21 @@ class FakeNearbyShareLocalDeviceDataManager
       return latest_http_client_factory_;
     }
 
+    NearbyShareProfileInfoProvider* latest_profile_info_provider() const {
+      return latest_profile_info_provider_;
+    }
+
    protected:
     std::unique_ptr<NearbyShareLocalDeviceDataManager> CreateInstance(
         PrefService* pref_service,
         NearbyShareClientFactory* http_client_factory,
-        const std::string& default_device_name) override;
+        NearbyShareProfileInfoProvider* profile_info_provider) override;
 
    private:
     std::vector<FakeNearbyShareLocalDeviceDataManager*> instances_;
     PrefService* latest_pref_service_ = nullptr;
     NearbyShareClientFactory* latest_http_client_factory_ = nullptr;
+    NearbyShareProfileInfoProvider* latest_profile_info_provider_ = nullptr;
   };
 
   struct UploadContactsCall {

@@ -17,6 +17,7 @@
 
 class NearbyShareClientFactory;
 class NearbyShareLocalDeviceDataManager;
+class NearbyShareProfileInfoProvider;
 class PrefService;
 
 // A fake implementation of NearbyShareContactManager, along with a fake
@@ -51,8 +52,8 @@ class FakeNearbyShareContactManager : public NearbyShareContactManager {
       return latest_local_device_data_manager_;
     }
 
-    std::string latest_profile_user_name() const {
-      return latest_profile_user_name_;
+    NearbyShareProfileInfoProvider* latest_profile_info_provider() const {
+      return latest_profile_info_provider_;
     }
 
    private:
@@ -61,14 +62,14 @@ class FakeNearbyShareContactManager : public NearbyShareContactManager {
         PrefService* pref_service,
         NearbyShareClientFactory* http_client_factory,
         NearbyShareLocalDeviceDataManager* local_device_data_manager,
-        const std::string& profile_user_name) override;
+        NearbyShareProfileInfoProvider* profile_info_provider) override;
 
     std::vector<FakeNearbyShareContactManager*> instances_;
     PrefService* latest_pref_service_ = nullptr;
     NearbyShareClientFactory* latest_http_client_factory_ = nullptr;
     NearbyShareLocalDeviceDataManager* latest_local_device_data_manager_ =
         nullptr;
-    std::string latest_profile_user_name_;
+    NearbyShareProfileInfoProvider* latest_profile_info_provider_ = nullptr;
   };
 
   FakeNearbyShareContactManager();

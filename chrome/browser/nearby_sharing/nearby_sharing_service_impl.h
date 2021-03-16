@@ -31,6 +31,7 @@
 #include "chrome/browser/nearby_sharing/nearby_connections_manager.h"
 #include "chrome/browser/nearby_sharing/nearby_file_handler.h"
 #include "chrome/browser/nearby_sharing/nearby_notification_manager.h"
+#include "chrome/browser/nearby_sharing/nearby_share_profile_info_provider_impl.h"
 #include "chrome/browser/nearby_sharing/nearby_share_settings.h"
 #include "chrome/browser/nearby_sharing/nearby_sharing_service.h"
 #include "chrome/browser/nearby_sharing/outgoing_share_target_info.h"
@@ -389,6 +390,7 @@ class NearbySharingServiceImpl
   std::unique_ptr<NearbyNotificationManager> nearby_notification_manager_;
   NearbyShareHttpNotifier nearby_share_http_notifier_;
   std::unique_ptr<NearbyShareClientFactory> http_client_factory_;
+  std::unique_ptr<NearbyShareProfileInfoProvider> profile_info_provider_;
   std::unique_ptr<NearbyShareLocalDeviceDataManager> local_device_data_manager_;
   std::unique_ptr<NearbyShareContactManager> contact_manager_;
   std::unique_ptr<NearbyShareCertificateManager> certificate_manager_;
