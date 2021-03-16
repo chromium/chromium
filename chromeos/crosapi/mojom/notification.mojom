@@ -144,4 +144,12 @@ struct Notification {
   // Badge to show the source of the notification (e.g. a 16x16 browser icon).
   [MinVersion=1]
   gfx.mojom.ImageSkia? badge@23;
+
+  [MinVersion=2]
+  // Whether the bool badge_needs_additional_masking is set.
+  bool badge_needs_additional_masking_has_value@24;
+
+  [MinVersion=2]
+  // Whether the badge needs additional masking.
+  bool badge_needs_additional_masking@25;
 };

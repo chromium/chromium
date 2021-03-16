@@ -79,10 +79,15 @@ void NotificationIconTrayItemView::SetNotification(
     message_center::Notification* notification) {
   notification_id_ = notification->id();
 
+  auto* theme = GetNativeTheme();
   gfx::Image masked_small_icon = notification->GenerateMaskedSmallIcon(
       kUnifiedTrayIconSize,
       AshColorProvider::Get()->GetContentLayerColor(
-          AshColorProvider::ContentLayerType::kIconColorPrimary));
+          AshColorProvider::ContentLayerType::kIconColorPrimary),
+      theme->GetSystemColor(
+          ui::NativeTheme::kColorId_MessageCenterSmallImageMaskBackground),
+      theme->GetSystemColor(
+          ui::NativeTheme::kColorId_MessageCenterSmallImageMaskForeground));
   if (!masked_small_icon.IsEmpty()) {
     image_view()->SetImage(masked_small_icon.AsImageSkia());
   } else {

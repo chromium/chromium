@@ -555,7 +555,8 @@ void ArcNotificationContentView::UpdateMask(bool force_update) {
   auto mask_painter =
       std::make_unique<message_center::NotificationBackgroundPainter>(
           top_radius_, bottom_radius_,
-          message_center::kNotificationBackgroundColor);
+          GetNativeTheme()->GetSystemColor(
+              ui::NativeTheme::kColorId_NotificationBackground));
   // Set insets to round visible notification corners. https://crbug.com/866777
   mask_painter->set_insets(new_insets);
 
@@ -721,6 +722,13 @@ void ArcNotificationContentView::OnBlur() {
 
   NativeViewHost::OnBlur();
   notification_view->OnContentBlurred();
+}
+
+void ArcNotificationContentView::OnThemeChanged() {
+  View::OnThemeChanged();
+  // OnThemeChanged may be called before container is set.
+  if (GetWidget() && GetNativeViewContainer())
+    UpdateMask(true);
 }
 
 void ArcNotificationContentView::OnRemoteInputActivationChanged(

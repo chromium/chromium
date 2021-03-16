@@ -57,8 +57,13 @@ std::unique_ptr<mc::Notification> FromMojo(
   rich_data.timestamp = notification->timestamp;
   if (!notification->image.isNull())
     rich_data.image = gfx::Image(notification->image);
-  if (!notification->badge.isNull())
+  if (!notification->badge.isNull()) {
     rich_data.small_image = gfx::Image(notification->badge);
+    if (notification->badge_needs_additional_masking_has_value) {
+      rich_data.small_image_needs_additional_masking =
+          notification->badge_needs_additional_masking;
+    }
+  }
   for (const auto& mojo_item : notification->items) {
     mc::NotificationItem item;
     item.title = mojo_item->title;

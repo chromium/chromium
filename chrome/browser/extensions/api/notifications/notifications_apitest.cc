@@ -556,3 +556,18 @@ IN_PROC_BROWSER_TEST_F(NotificationsApiTest,
             notification->fullscreen_visibility());
 }
 #endif  // !defined(OS_MAC)
+
+IN_PROC_BROWSER_TEST_F(NotificationsApiTest, TestSmallImage) {
+  ExtensionTestMessageListener notification_created_listener("created", false);
+  const Extension* extension = LoadAppWithWindowState(
+      "notifications/api/basic_app", WindowState::NORMAL);
+  ASSERT_TRUE(extension) << message_;
+  ASSERT_TRUE(notification_created_listener.WaitUntilSatisfied());
+
+  message_center::Notification* notification =
+      GetNotificationForExtension(extension);
+  ASSERT_TRUE(notification);
+
+  EXPECT_FALSE(notification->small_image().IsEmpty());
+  EXPECT_TRUE(notification->small_image_needs_additional_masking());
+}

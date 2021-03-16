@@ -1022,10 +1022,15 @@ void NotificationViewMD::CreateOrUpdateSmallIconView(
           accent_color, GetNotificationHeaderViewBackgroundColor())
           .color;
 
+  auto* theme = GetNativeTheme();
   // TODO(knollr): figure out if this has a performance impact and
   // cache images if so. (crbug.com/768748)
-  gfx::Image masked_small_icon =
-      notification.GenerateMaskedSmallIcon(kSmallImageSizeMD, icon_color);
+  gfx::Image masked_small_icon = notification.GenerateMaskedSmallIcon(
+      kSmallImageSizeMD, icon_color,
+      theme->GetSystemColor(
+          ui::NativeTheme::kColorId_MessageCenterSmallImageMaskBackground),
+      theme->GetSystemColor(
+          ui::NativeTheme::kColorId_MessageCenterSmallImageMaskForeground));
 
   if (masked_small_icon.IsEmpty()) {
     header_row_->ClearAppIcon();

@@ -316,6 +316,12 @@ SkColor GetDefaultColor(NativeTheme::ColorId color_id,
           accent, (color_id == kInitial) ? 0x4D : gfx::kGoogleGreyAlpha200);
     }
 
+    // Message Center
+    case NativeTheme::kColorId_MessageCenterSmallImageMaskForeground:
+      return SK_ColorWHITE;
+    case NativeTheme::kColorId_MessageCenterSmallImageMaskBackground:
+      return SkColorSetRGB(0xa3, 0xa3, 0xa3);
+
     // Notification
     case NativeTheme::kColorId_NotificationBackground:
     case NativeTheme::kColorId_NotificationColor:

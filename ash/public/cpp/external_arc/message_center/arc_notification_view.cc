@@ -56,9 +56,6 @@ ArcNotificationView::ArcNotificationView(
         content_view_->background()->get_color());
   }
 
-  focus_painter_ = views::Painter::CreateSolidFocusPainter(
-      message_center::kFocusBorderColor, gfx::Insets(0, 1, 3, 2));
-
   UpdateCornerRadius(message_center::kNotificationCornerRadius,
                      message_center::kNotificationCornerRadius);
 }
@@ -160,6 +157,14 @@ void ArcNotificationView::OnSnoozeButtonPressed(const ui::Event& event) {
 
   if (item_)
     return item_->OpenSnooze();
+}
+
+void ArcNotificationView::OnThemeChanged() {
+  message_center::MessageView::OnThemeChanged();
+  focus_painter_ = views::Painter::CreateSolidFocusPainter(
+      GetNativeTheme()->GetSystemColor(
+          ui::NativeTheme::kColorId_FocusedBorderColor),
+      gfx::Insets(0, 1, 3, 2));
 }
 
 void ArcNotificationView::OnContainerAnimationEnded() {

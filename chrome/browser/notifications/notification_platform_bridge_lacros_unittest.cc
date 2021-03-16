@@ -178,6 +178,7 @@ TEST_F(NotificationPlatformBridgeLacrosTest, SerializationSimple) {
             last_notification->fullscreen_visibility);
 
   ASSERT_FALSE(last_notification->badge.isNull());
+  EXPECT_TRUE(last_notification->badge_needs_additional_masking_has_value);
   EXPECT_TRUE(last_notification->badge.HasRepresentation(1.0f));
   EXPECT_TRUE(last_notification->badge.HasRepresentation(2.0f));
   EXPECT_TRUE(AreImagesEqual(badge, gfx::Image(last_notification->badge)));

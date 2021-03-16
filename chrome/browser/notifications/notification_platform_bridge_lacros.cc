@@ -64,8 +64,12 @@ crosapi::mojom::NotificationPtr ToMojo(
   mojo_note->timestamp = notification.timestamp();
   if (!notification.image().IsEmpty())
     mojo_note->image = notification.image().AsImageSkia();
-  if (!notification.small_image().IsEmpty())
+  if (!notification.small_image().IsEmpty()) {
     mojo_note->badge = notification.small_image().AsImageSkia();
+    mojo_note->badge_needs_additional_masking_has_value = true;
+    mojo_note->badge_needs_additional_masking =
+        notification.small_image_needs_additional_masking();
+  }
   for (const auto& item : notification.items()) {
     auto mojo_item = crosapi::mojom::NotificationItem::New();
     mojo_item->title = item.title;

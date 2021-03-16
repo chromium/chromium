@@ -106,6 +106,11 @@ class MESSAGE_CENTER_PUBLIC_EXPORT RichNotificationData {
   // notification. Optional.
   gfx::Image small_image;
 
+  // If true, the small image should be masked with the foreground and then
+  // added on top of the background. Masking is delayed until the notification
+  // is in the views hierarchy or about to be passed to the OS.
+  bool small_image_needs_additional_masking = false;
+
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   // If true, we simply use the raw |small_image| icon, ignoring accent color
   // styling. For example, this is used with raw icons received from Android.
@@ -347,6 +352,14 @@ class MESSAGE_CENTER_PUBLIC_EXPORT Notification {
     optional_fields_.small_image = image;
   }
 
+  bool small_image_needs_additional_masking() const {
+    return optional_fields_.small_image_needs_additional_masking;
+  }
+  void set_small_image_needs_additional_masking(bool needs_additional_masking) {
+    optional_fields_.small_image_needs_additional_masking =
+        needs_additional_masking;
+  }
+
   const gfx::VectorIcon& vector_small_image() const {
     return *optional_fields_.vector_small_image;
   }
@@ -362,7 +375,14 @@ class MESSAGE_CENTER_PUBLIC_EXPORT Notification {
   // filled by the |color|.
   // Otherwise, it uses alpha channel of the rasterized |small_image| for
   // masking.
-  gfx::Image GenerateMaskedSmallIcon(int dip_size, SkColor color) const;
+  gfx::Image GenerateMaskedSmallIcon(int dip_size,
+                                     SkColor mask_color,
+                                     SkColor background_color,
+                                     SkColor foreground_color) const;
+
+  gfx::Image GetMaskedSmallImage(const gfx::ImageSkia& small_image,
+                                 SkColor background_color,
+                                 SkColor foreground_color) const;
 
   // Buttons, with icons fetched asynchronously.
   const std::vector<ButtonInfo>& buttons() const {

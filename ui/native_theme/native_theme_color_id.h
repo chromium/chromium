@@ -86,6 +86,9 @@
   OP(kColorId_OverlayScrollbarThumbHoveredFill),                               \
   OP(kColorId_OverlayScrollbarThumbHoveredStroke),                             \
   OP(kColorId_OverlayScrollbarThumbStroke),                                    \
+  /* Message Center */ \
+  OP(kColorId_MessageCenterSmallImageMaskBackground),                          \
+  OP(kColorId_MessageCenterSmallImageMaskForeground),                          \
   /* Notification view */                                                      \
   OP(kColorId_NotificationBackground),                                         \
   OP(kColorId_NotificationBackgroundActive),                                   \

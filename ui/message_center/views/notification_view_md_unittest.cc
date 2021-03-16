@@ -1012,9 +1012,18 @@ TEST_F(NotificationViewMDTest, TestAccentColor) {
     notification_view()->ToggleExpanded();
   EXPECT_TRUE(notification_view()->actions_row_->GetVisible());
 
+  auto* theme = notification_view()->GetNativeTheme();
   auto app_icon_color_matches = [&](SkColor color) {
     SkBitmap expected =
-        notification->GenerateMaskedSmallIcon(kSmallImageSizeMD, color)
+        notification
+            ->GenerateMaskedSmallIcon(
+                kSmallImageSizeMD, color,
+                theme->GetSystemColor(
+                    ui::NativeTheme::
+                        kColorId_MessageCenterSmallImageMaskBackground),
+                theme->GetSystemColor(
+                    ui::NativeTheme::
+                        kColorId_MessageCenterSmallImageMaskForeground))
             .AsBitmap();
     SkBitmap actual = *notification_view()
                            ->header_row_->app_icon_view_for_testing()

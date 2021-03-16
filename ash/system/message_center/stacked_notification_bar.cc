@@ -124,12 +124,18 @@ class StackedNotificationBar::StackedNotificationBarIcon
   void OnThemeChanged() override {
     views::ImageView::OnThemeChanged();
 
+    auto* theme = GetNativeTheme();
+
     auto* notification =
         message_center::MessageCenter::Get()->FindVisibleNotificationById(id_);
     SkColor accent_color = GetNativeTheme()->GetSystemColor(
         ui::NativeTheme::kColorId_NotificationDefaultAccentColor);
     gfx::Image masked_small_icon = notification->GenerateMaskedSmallIcon(
-        kStackedNotificationIconSize, accent_color);
+        kStackedNotificationIconSize, accent_color,
+        theme->GetSystemColor(
+            ui::NativeTheme::kColorId_MessageCenterSmallImageMaskBackground),
+        theme->GetSystemColor(
+            ui::NativeTheme::kColorId_MessageCenterSmallImageMaskForeground));
 
     if (masked_small_icon.IsEmpty()) {
       SetImage(gfx::CreateVectorIcon(message_center::kProductIcon,
