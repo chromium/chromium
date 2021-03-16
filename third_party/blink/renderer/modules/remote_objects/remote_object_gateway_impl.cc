@@ -54,7 +54,7 @@ void RemoteObjectGatewayImpl::BindMojoReceiver(
     LocalFrame* frame,
     mojo::PendingRemote<mojom::blink::RemoteObjectHost> host,
     mojo::PendingReceiver<mojom::blink::RemoteObjectGateway> receiver) {
-  if (!frame)
+  if (!frame || !frame->IsAttached())
     return;
 
   DCHECK(!RemoteObjectGatewayImpl::From(*frame));
