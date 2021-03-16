@@ -31,9 +31,10 @@ class VIZ_COMMON_EXPORT RenderPassInternal {
  public:
   SharedQuadState* CreateAndAppendSharedQuadState();
 
-  // Replaces a quad in |quad_list| with a transparent black SolidColorQuad.
-  void ReplaceExistingQuadWithOpaqueTransparentSolidColor(
-      QuadList::Iterator at);
+  // Replaces a quad in |quad_list| with a |SolidColorDrawQuad|.
+  void ReplaceExistingQuadWithSolidColor(QuadList::Iterator at,
+                                         SkColor color,
+                                         SkBlendMode blend_mode);
 
   // These are in the space of the render pass' physical pixels.
   gfx::Rect output_rect;

@@ -2190,6 +2190,56 @@ TEST_F(TransitionOverlayTypeTest, DamageChangeOnTransistionOverlayType) {
   }
 }
 
+// A candidate with a mask filter must go to underlay, and not single on top.
+// Also, the quad must be replaced by a black quad with |SkBlendMode::kDstOut|.
+TEST_F(TransitionOverlayTypeTest, MaskFilterBringsUnderlay) {
+  auto pass = CreateRenderPass();
+  damage_rect_ = kOverlayRect;
+
+  SharedQuadState* default_damaged_shared_quad_state =
+      pass->shared_quad_state_list.AllocateAndCopyFrom(
+          pass->shared_quad_state_list.back());
+
+  SurfaceDamageRectList surface_damage_rect_list;
+  auto* sqs = pass->shared_quad_state_list.front();
+  sqs->overlay_damage_index = 0;
+  surface_damage_rect_list.emplace_back(damage_rect_);
+  sqs->mask_filter_info =
+      gfx::MaskFilterInfo(gfx::RectF(kOverlayRect), gfx::RoundedCornersF(1.f));
+  CreateFullscreenCandidateQuad(resource_provider_.get(),
+                                child_resource_provider_.get(),
+                                child_provider_.get(), sqs, pass.get());
+  CreateFullscreenOpaqueQuad(resource_provider_.get(),
+                             default_damaged_shared_quad_state, pass.get());
+
+  OverlayCandidateList candidate_list;
+  OverlayProcessorInterface::FilterOperationsMap render_pass_filters;
+  OverlayProcessorInterface::FilterOperationsMap render_pass_backdrop_filters;
+  AggregatedRenderPassList pass_list;
+  pass_list.push_back(std::move(pass));
+
+  overlay_processor_->ProcessForOverlays(
+      resource_provider_.get(), &pass_list, GetIdentityColorMatrix(),
+      render_pass_filters, render_pass_backdrop_filters,
+      std::move(surface_damage_rect_list), nullptr, &candidate_list,
+      &damage_rect_, &content_bounds_);
+
+  ASSERT_EQ(candidate_list.size(), 1U);
+  EXPECT_LT(candidate_list.front().plane_z_order, 0);
+
+  ASSERT_EQ(1U, pass_list.size());
+  ASSERT_EQ(2U, pass_list.front()->quad_list.size());
+  EXPECT_EQ(SK_ColorBLACK, static_cast<SolidColorDrawQuad*>(
+                               pass_list.front()->quad_list.front())
+                               ->color);
+  EXPECT_FALSE(pass_list.front()
+                   ->quad_list.front()
+                   ->shared_quad_state->are_contents_opaque);
+  EXPECT_EQ(
+      SkBlendMode::kDstOut,
+      pass_list.front()->quad_list.front()->shared_quad_state->blend_mode);
+}
+
 // The first time an underlay is scheduled its damage must not be excluded.
 TEST_F(UnderlayTest, InitialUnderlayDamageNotExcluded) {
   auto pass = CreateRenderPass();
@@ -2368,6 +2418,58 @@ TEST_F(UnderlayTest, DamageNotExcludedForNonConsecutiveIdenticalUnderlays) {
     } else {
       EXPECT_EQ(damage_rect_.IsEmpty(),
                 has_fullscreen_candidate[i] && has_fullscreen_candidate[i - 1]);
+    }
+  }
+}
+
+// Underlay damage cannot be excluded if the underlay has a mask filter in the
+// current frame but did not in the previous frame or vice versa.
+TEST_F(
+    UnderlayTest,
+    DamageNotExcludedForConsecutiveUnderlaysIfOneHasMaskFilterAndOtherDoesNot) {
+  constexpr bool kHasMaskFilter[] = {true, false, true,  false, true,
+                                     true, true,  false, false, false};
+
+  for (int i = 0; i < 10; ++i) {
+    SCOPED_TRACE(i);
+
+    auto pass = CreateRenderPass();
+    damage_rect_ = kOverlayRect;
+
+    SharedQuadState* default_damaged_shared_quad_state =
+        pass->shared_quad_state_list.AllocateAndCopyFrom(
+            pass->shared_quad_state_list.back());
+
+    SurfaceDamageRectList surface_damage_rect_list;
+    auto* sqs = pass->shared_quad_state_list.front();
+    sqs->overlay_damage_index = 0;
+    surface_damage_rect_list.emplace_back(damage_rect_);
+    if (kHasMaskFilter[i]) {
+      sqs->mask_filter_info = gfx::MaskFilterInfo(gfx::RectF(kOverlayRect),
+                                                  gfx::RoundedCornersF(1.f));
+    }
+    CreateCandidateQuadAt(resource_provider_.get(),
+                          child_resource_provider_.get(), child_provider_.get(),
+                          sqs, pass.get(), kOverlayRect);
+    CreateFullscreenOpaqueQuad(resource_provider_.get(),
+                               default_damaged_shared_quad_state, pass.get());
+
+    OverlayCandidateList candidate_list;
+    OverlayProcessorInterface::FilterOperationsMap render_pass_filters;
+    OverlayProcessorInterface::FilterOperationsMap render_pass_backdrop_filters;
+    AggregatedRenderPassList pass_list;
+    pass_list.push_back(std::move(pass));
+
+    overlay_processor_->ProcessForOverlays(
+        resource_provider_.get(), &pass_list, GetIdentityColorMatrix(),
+        render_pass_filters, render_pass_backdrop_filters,
+        std::move(surface_damage_rect_list), nullptr, &candidate_list,
+        &damage_rect_, &content_bounds_);
+    if (i == 0) {
+      EXPECT_FALSE(damage_rect_.IsEmpty());
+    } else {
+      EXPECT_EQ(damage_rect_.IsEmpty(),
+                kHasMaskFilter[i] == kHasMaskFilter[i - 1]);
     }
   }
 }
@@ -3066,6 +3168,45 @@ TEST_F(UnderlayCastTest, NoOverlayPromotionWithoutProtectedContent) {
 
   ASSERT_TRUE(candidate_list.empty());
   EXPECT_TRUE(content_bounds_.empty());
+}
+
+TEST_F(UnderlayCastTest, OverlayPromotionWithMaskFilter) {
+  auto pass = CreateRenderPass();
+
+  SurfaceDamageRectList surface_damage_rect_list;
+  auto* sqs = pass->shared_quad_state_list.front();
+  sqs->overlay_damage_index = 0;
+  surface_damage_rect_list.emplace_back(damage_rect_);
+  sqs->mask_filter_info =
+      gfx::MaskFilterInfo(gfx::RectF(kOverlayRect), gfx::RoundedCornersF(1.f));
+  CreateVideoHoleDrawQuadAt(sqs, pass.get(), kOverlayRect);
+
+  OverlayCandidateList candidate_list;
+  OverlayProcessorInterface::FilterOperationsMap render_pass_filters;
+  OverlayProcessorInterface::FilterOperationsMap render_pass_backdrop_filters;
+  AggregatedRenderPassList pass_list;
+  pass_list.push_back(std::move(pass));
+
+  overlay_processor_->ProcessForOverlays(
+      resource_provider_.get(), &pass_list, GetIdentityColorMatrix(),
+      render_pass_filters, render_pass_backdrop_filters,
+      std::move(surface_damage_rect_list), nullptr, &candidate_list,
+      &damage_rect_, &content_bounds_);
+
+  ASSERT_EQ(1U, content_bounds_.size());
+  EXPECT_TRUE(content_bounds_.front().IsEmpty());
+
+  ASSERT_EQ(1U, pass_list.size());
+  ASSERT_EQ(1U, pass_list.front()->quad_list.size());
+  EXPECT_EQ(SK_ColorBLACK, static_cast<SolidColorDrawQuad*>(
+                               pass_list.front()->quad_list.front())
+                               ->color);
+  EXPECT_FALSE(pass_list.front()
+                   ->quad_list.front()
+                   ->shared_quad_state->are_contents_opaque);
+  EXPECT_EQ(
+      SkBlendMode::kDstOut,
+      pass_list.front()->quad_list.front()->shared_quad_state->blend_mode);
 }
 #endif
 

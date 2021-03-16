@@ -890,7 +890,8 @@ void DCLayerOverlayProcessor::ProcessForUnderlay(
     // When the opacity == 1.0, drawing with transparent will be done without
     // blending and will have the proper effect of completely clearing the
     // layer.
-    render_pass->ReplaceExistingQuadWithOpaqueTransparentSolidColor(it);
+    render_pass->ReplaceExistingQuadWithSolidColor(it, SK_ColorTRANSPARENT,
+                                                   SkBlendMode::kSrcOver);
     is_opaque = true;
   }
 

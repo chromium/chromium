@@ -145,9 +145,6 @@ bool OverlayCandidate::FromDrawQuad(
   if (sqs->opacity != 1.f)
     return false;
 
-  // We can't support overlays with mask filter.
-  if (!sqs->mask_filter_info.IsEmpty())
-    return false;
   // We support only kSrc (no blending) and kSrcOver (blending with premul).
   if (!(sqs->blend_mode == SkBlendMode::kSrc ||
         sqs->blend_mode == SkBlendMode::kSrcOver)) {
@@ -315,7 +312,9 @@ bool OverlayCandidate::FromDrawQuadResource(
 
   candidate->clip_rect = sqs->clip_rect;
   candidate->is_clipped = sqs->is_clipped;
-  candidate->is_opaque = !quad->ShouldDrawWithBlending();
+  candidate->is_opaque =
+      !quad->ShouldDrawWithBlendingForReasonOtherThanMaskFilter();
+  candidate->has_mask_filter = !sqs->mask_filter_info.IsEmpty();
   // For underlays the function 'EstimateVisibleDamage()' is called to update
   // |damage_area_estimate| to more accurately reflect the actual visible
   // damage.
@@ -345,6 +344,10 @@ bool OverlayCandidate::FromVideoHoleQuad(
   candidate->display_rect = gfx::RectF(quad->rect);
   transform.TransformRect(&candidate->display_rect);
   candidate->transform = overlay_transform;
+  candidate->is_opaque =
+      !quad->ShouldDrawWithBlendingForReasonOtherThanMaskFilter();
+  candidate->has_mask_filter =
+      !quad->shared_quad_state->mask_filter_info.IsEmpty();
   // For underlays the function 'EstimateVisibleDamage()' is called to update
   // |damage_area_estimate| to more accurately reflect the actual visible
   // damage.

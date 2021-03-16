@@ -101,6 +101,8 @@ class VIZ_SERVICE_EXPORT OverlayCandidate {
   bool is_clipped = false;
   // If the quad doesn't require blending.
   bool is_opaque = false;
+  // If the quad has a mask filter.
+  bool has_mask_filter = false;
   // Texture resource to present in an overlay.
   ResourceId resource_id = kInvalidResourceId;
   // Mailbox from resource_id. It is used by SkiaRenderer.

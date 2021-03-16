@@ -363,7 +363,8 @@ void CALayerOverlayProcessor::PutHDRContentInSeparateOverlay(
         break;
       }
 
-      render_pass->ReplaceExistingQuadWithOpaqueTransparentSolidColor(it);
+      render_pass->ReplaceExistingQuadWithSolidColor(it, SK_ColorTRANSPARENT,
+                                                     SkBlendMode::kSrcOver);
       ca_layer_overlays->push_back(ca_layer);
     }
   }

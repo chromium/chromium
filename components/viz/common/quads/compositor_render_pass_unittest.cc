@@ -301,8 +301,8 @@ TEST(CompositorRenderPassTest, ReplacedQuadsShouldntMove) {
   auto* quad = pass->quad_list.AllocateAndConstruct<SolidColorDrawQuad>();
   gfx::Rect quad_rect(1, 2, 3, 4);
   quad->SetNew(quad_state, quad_rect, quad_rect, SkColor(), false);
-  pass->ReplaceExistingQuadWithOpaqueTransparentSolidColor(
-      pass->quad_list.begin());
+  pass->ReplaceExistingQuadWithSolidColor(pass->quad_list.begin(), SkColor(),
+                                          SkBlendMode::kSrcOver);
   EXPECT_EQ(pass->quad_list.begin()->rect, quad_rect);
 }
 
@@ -312,9 +312,48 @@ TEST(CompositorRenderPassTest, ReplacedQuadsShouldntBeOpaque) {
   auto* quad = pass->quad_list.AllocateAndConstruct<SolidColorDrawQuad>();
   gfx::Rect quad_rect(1, 2, 3, 4);
   quad->SetNew(quad_state, quad_rect, quad_rect, SkColor(), false);
-  pass->ReplaceExistingQuadWithOpaqueTransparentSolidColor(
-      pass->quad_list.begin());
+  pass->ReplaceExistingQuadWithSolidColor(pass->quad_list.begin(), SkColor(),
+                                          SkBlendMode::kSrcOver);
   EXPECT_FALSE(pass->quad_list.begin()->shared_quad_state->are_contents_opaque);
+}
+
+TEST(CompositorRenderPassTest, ReplacedQuadsGetColor) {
+  auto pass = CompositorRenderPass::Create();
+  const SharedQuadState* quad_state = pass->CreateAndAppendSharedQuadState();
+  auto* quad = pass->quad_list.AllocateAndConstruct<SolidColorDrawQuad>();
+  const gfx::Rect quad_rect(1, 2, 3, 4);
+  quad->SetNew(quad_state, quad_rect, quad_rect, SK_ColorRED, false);
+  pass->ReplaceExistingQuadWithSolidColor(pass->quad_list.begin(),
+                                          SK_ColorGREEN, SkBlendMode::kSrcOver);
+  EXPECT_EQ(SK_ColorGREEN, quad->color);
+}
+
+TEST(CompositorRenderPassTest, ReplacedQuadsGetBlendMode) {
+  auto pass = CompositorRenderPass::Create();
+  SharedQuadState* quad_state = pass->CreateAndAppendSharedQuadState();
+  // Make |are_contents_opaque| already false, to test that the blend mode is
+  // recognized as a reason for needing a new |SharedQuadState|.
+  quad_state->are_contents_opaque = false;
+  auto* quad = pass->quad_list.AllocateAndConstruct<SolidColorDrawQuad>();
+  const gfx::Rect quad_rect(1, 2, 3, 4);
+  quad->SetNew(quad_state, quad_rect, quad_rect, SkColor(), false);
+  pass->ReplaceExistingQuadWithSolidColor(pass->quad_list.begin(), SkColor(),
+                                          SkBlendMode::kDstOut);
+  EXPECT_EQ(SkBlendMode::kDstOut, quad->shared_quad_state->blend_mode);
+}
+
+TEST(CompositorRenderPassTest,
+     ReplacedQuadsKeepOldSharedQuadStateWhenPossible) {
+  auto pass = CompositorRenderPass::Create();
+  SharedQuadState* quad_state = pass->CreateAndAppendSharedQuadState();
+  quad_state->are_contents_opaque = false;
+  quad_state->blend_mode = SkBlendMode::kSoftLight;
+  auto* quad = pass->quad_list.AllocateAndConstruct<SolidColorDrawQuad>();
+  const gfx::Rect quad_rect(1, 2, 3, 4);
+  quad->SetNew(quad_state, quad_rect, quad_rect, SK_ColorRED, false);
+  pass->ReplaceExistingQuadWithSolidColor(
+      pass->quad_list.begin(), SK_ColorGREEN, SkBlendMode::kSoftLight);
+  EXPECT_EQ(quad_state, quad->shared_quad_state);
 }
 
 }  // namespace

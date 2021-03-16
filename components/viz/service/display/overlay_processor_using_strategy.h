@@ -175,6 +175,7 @@ class VIZ_SERVICE_EXPORT OverlayProcessorUsingStrategy
 
   gfx::Rect overlay_damage_rect_;
   bool previous_is_underlay = false;
+  bool previous_has_mask_filter_ = false;
   gfx::Rect previous_frame_overlay_rect_;
 
   struct OverlayPrioritizationConfig {

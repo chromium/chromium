@@ -75,9 +75,15 @@ bool OverlayStrategyUnderlay::Attempt(
     }
 
     // If the candidate can be handled by an overlay, create a pass for it. We
-    // need to switch out the video quad with a black transparent one.
+    // need to switch out the video quad with an underlay hole quad.
     if (new_candidate_list.back().overlay_handled) {
-      render_pass->ReplaceExistingQuadWithOpaqueTransparentSolidColor(it);
+      if (candidate.has_mask_filter) {
+        render_pass->ReplaceExistingQuadWithSolidColor(it, SK_ColorBLACK,
+                                                       SkBlendMode::kDstOut);
+      } else {
+        render_pass->ReplaceExistingQuadWithSolidColor(it, SK_ColorTRANSPARENT,
+                                                       SkBlendMode::kSrcOver);
+      }
       candidate_list->swap(new_candidate_list);
       return true;
     }
@@ -164,10 +170,16 @@ bool OverlayStrategyUnderlay::AttemptPrioritized(
   }
 
   // If the candidate can be handled by an overlay, create a pass for it. We
-  // need to switch out the video quad with a black transparent one.
+  // need to switch out the video quad with an underlay hole quad.
   if (new_candidate_list.back().overlay_handled) {
-    render_pass->ReplaceExistingQuadWithOpaqueTransparentSolidColor(
-        proposed_candidate->quad_iter);
+    if (proposed_candidate->candidate.has_mask_filter) {
+      render_pass->ReplaceExistingQuadWithSolidColor(
+          proposed_candidate->quad_iter, SK_ColorBLACK, SkBlendMode::kDstOut);
+    } else {
+      render_pass->ReplaceExistingQuadWithSolidColor(
+          proposed_candidate->quad_iter, SK_ColorTRANSPARENT,
+          SkBlendMode::kSrcOver);
+    }
     candidate_list->swap(new_candidate_list);
 
     return true;

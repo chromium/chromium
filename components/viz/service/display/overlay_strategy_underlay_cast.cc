@@ -122,7 +122,13 @@ bool OverlayStrategyUnderlayCast::Attempt(
           VideoHoleDrawQuad::MaterialCast(*it)->overlay_plane_id);
 #endif
 
-      render_pass->ReplaceExistingQuadWithOpaqueTransparentSolidColor(it);
+      if (candidate.has_mask_filter) {
+        render_pass->ReplaceExistingQuadWithSolidColor(it, SK_ColorBLACK,
+                                                       SkBlendMode::kDstOut);
+      } else {
+        render_pass->ReplaceExistingQuadWithSolidColor(it, SK_ColorTRANSPARENT,
+                                                       SkBlendMode::kSrcOver);
+      }
 
       break;
     }
@@ -255,7 +261,13 @@ bool OverlayStrategyUnderlayCast::AttemptPrioritized(
           VideoHoleDrawQuad::MaterialCast(*it)->overlay_plane_id);
 #endif
 
-      render_pass->ReplaceExistingQuadWithOpaqueTransparentSolidColor(it);
+      if (candidate.has_mask_filter) {
+        render_pass->ReplaceExistingQuadWithSolidColor(it, SK_ColorBLACK,
+                                                       SkBlendMode::kDstOut);
+      } else {
+        render_pass->ReplaceExistingQuadWithSolidColor(it, SK_ColorTRANSPARENT,
+                                                       SkBlendMode::kSrcOver);
+      }
 
       break;
     }

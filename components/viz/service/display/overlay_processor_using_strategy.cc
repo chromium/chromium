@@ -240,12 +240,14 @@ void OverlayProcessorUsingStrategy::UpdateDamageRect(
   DCHECK_LE(candidates->size(), 1U);
 
   gfx::Rect this_frame_overlay_rect;
+  bool has_mask_filter = false;
   bool is_opaque_overlay = false;
   bool is_underlay = false;
   uint32_t exclude_overlay_index = OverlayCandidate::kInvalidDamageIndex;
 
   for (const OverlayCandidate& overlay : *candidates) {
     this_frame_overlay_rect = GetOverlayDamageRectForOutputSurface(overlay);
+    has_mask_filter = overlay.has_mask_filter;
     if (overlay.plane_z_order >= 0) {
       // If an overlay candidate comes from output surface, its z-order should
       // be 0.
@@ -272,13 +274,11 @@ void OverlayProcessorUsingStrategy::UpdateDamageRect(
       exclude_overlay_index, surface_damage_rect_list, *damage_rect,
       this_frame_overlay_rect, is_opaque_overlay && !is_underlay);
 
-  // Track the overlay_rect from frame to frame. If it is the same and nothing
-  // is on top of it then that rect doesn't need to be damaged because the
-  // drawing is occurring on a different plane. If it is different then that
-  // indicates that a different overlay has been chosen and the previous
-  // overlay rect should be damaged because it has changed planes from the
-  // overlay plane to the main plane. https://crbug.com/875879
+  // Drawing on the overlay_rect usually occurs on a different plane, but we
+  // still need to damage the overlay_rect when certain changes occur from one
+  // frame to the next.  https://crbug.com/875879  https://crbug.com/1107460
   if ((!previous_is_underlay && is_underlay) ||
+      has_mask_filter != previous_has_mask_filter_ ||
       this_frame_overlay_rect != previous_frame_overlay_rect_) {
     damage_rect->Union(previous_frame_overlay_rect_);
 
@@ -293,6 +293,7 @@ void OverlayProcessorUsingStrategy::UpdateDamageRect(
   }
 
   previous_frame_overlay_rect_ = this_frame_overlay_rect;
+  previous_has_mask_filter_ = has_mask_filter;
   previous_is_underlay = is_underlay;
 }
 
