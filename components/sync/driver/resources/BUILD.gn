@@ -3,6 +3,65 @@
 # found in the LICENSE file.
 
 import("//third_party/closure_compiler/compile_js.gni")
+import("//tools/grit/grit_rule.gni")
+import("//tools/grit/preprocess_if_expr.gni")
+import("//ui/webui/resources/tools/generate_grd.gni")
+
+grd_file = "$target_gen_dir/resources.grd"
+
+preprocess_if_expr("preprocess") {
+  in_folder = "./"
+  out_folder = "$target_gen_dir/preprocess"
+  out_manifest = "$target_gen_dir/manifest.json"
+  in_files = [
+    "sync_index.js",
+    "sync_node_browser.css",
+    "sync_search.css",
+  ]
+}
+
+generate_grd("build_grd") {
+  deps = [ ":preprocess" ]
+  grd_prefix = "sync_driver_sync_internals"
+  out_grd = grd_file
+  input_files = [
+    "about.css",
+    "about.js",
+    "chrome_sync.js",
+    "data.js",
+    "events.css",
+    "events.js",
+    "index.html",
+    "invalidations.css",
+    "invalidations.js",
+    "search.js",
+    "star_small.png",
+    "sync_log.js",
+    "sync_node_browser.js",
+    "sync_search.js",
+    "traffic_log.css",
+    "traffic_log.js",
+    "user_events.js",
+  ]
+  input_files_base_dir = rebase_path("./", "//")
+  manifest_files = [ "$target_gen_dir/manifest.json" ]
+}
+
+grit("resources") {
+  source = grd_file
+
+  # Required because the .grd is generated.
+  enable_input_discovery_for_gn_analyze = false
+
+  outputs = [
+    "grit/sync_driver_sync_internals_resources.h",
+    "grit/sync_driver_sync_internals_resources_map.cc",
+    "grit/sync_driver_sync_internals_resources_map.h",
+    "sync_driver_sync_internals_resources.pak",
+  ]
+  output_dir = "$root_gen_dir/components"
+  deps = [ ":build_grd" ]
+}
 
 js_type_check("closure_compile") {
   uses_legacy_modules = true

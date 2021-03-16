@@ -521,13 +521,13 @@ repack("repack_resources") {
   visibility = [ ":web_view_resources" ]
   deps = [
     "//components/resources:components_resources",
-    "//components/sync/driver:resources",
+    "//components/sync/driver/resources",
     "//ios/web:resources",
     "//ui/resources",
   ]
   sources = [
     "$root_gen_dir/components/components_resources.pak",
-    "$root_gen_dir/components/sync_driver_resources.pak",
+    "$root_gen_dir/components/sync_driver_sync_internals_resources.pak",
     "$root_gen_dir/ios/web/ios_web_resources.pak",
     "$root_gen_dir/ui/resources/webui_generated_resources.pak",
     "$root_gen_dir/ui/resources/webui_resources.pak",

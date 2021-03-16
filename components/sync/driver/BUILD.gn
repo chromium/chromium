@@ -4,7 +4,6 @@
 
 import("//build/config/chromeos/ui_mode.gni")
 import("//build/config/features.gni")
-import("//tools/grit/grit_rule.gni")
 
 static_library("driver") {
   sources = [
@@ -114,16 +113,6 @@ static_library("driver") {
   }
 
   configs += [ "//build/config/compiler:wexit_time_destructors" ]
-}
-
-grit("resources") {
-  source = "resources.grd"
-
-  outputs = [
-    "grit/sync_driver_resources.h",
-    "sync_driver_resources.pak",
-  ]
-  output_dir = "$root_gen_dir/components"
 }
 
 static_library("test_support") {

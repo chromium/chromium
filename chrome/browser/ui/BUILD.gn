@@ -523,7 +523,7 @@ static_library("ui") {
     "//components/subresource_filter/content/browser",
     "//components/subresource_filter/core/browser",
     "//components/sync",
-    "//components/sync/driver:resources",
+    "//components/sync/driver/resources",
     "//components/sync_preferences",
     "//components/sync_sessions",
     "//components/tab_groups",

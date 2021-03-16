@@ -316,7 +316,8 @@
    "META": {"sizes": {"includes": [10],}},
    "includes": [2230],
   },
-  "components/sync/driver/resources.grd": {
+  "<(SHARED_INTERMEDIATE_DIR)/components/sync/driver/resources/resources.grd": {
+   "META": {"sizes": {"includes": [30],}},
     "includes": [2240],
   },
   "components/resources/dev_ui_components_resources.grd": {

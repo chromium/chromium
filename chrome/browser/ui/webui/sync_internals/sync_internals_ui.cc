@@ -10,7 +10,8 @@
 #include "chrome/browser/ui/webui/sync_internals/sync_internals_message_handler.h"
 #include "chrome/browser/ui/webui/webui_util.h"
 #include "chrome/common/url_constants.h"
-#include "components/grit/sync_driver_resources.h"
+#include "components/grit/sync_driver_sync_internals_resources.h"
+#include "components/grit/sync_driver_sync_internals_resources_map.h"
 #include "components/sync/driver/sync_internals_util.h"
 #include "content/public/browser/web_ui.h"
 #include "content/public/browser/web_ui_data_source.h"
@@ -29,32 +30,9 @@ content::WebUIDataSource* CreateSyncInternalsHTMLSource() {
       "trusted-types jstemplate cr-ui-tree-js-static;");
 
   source->UseStringsJs();
-
-  static constexpr webui::ResourcePath kResources[] = {
-      {syncer::sync_ui_util::kSyncIndexJS,
-       IDR_SYNC_DRIVER_SYNC_INTERNALS_INDEX_JS},
-      {syncer::sync_ui_util::kChromeSyncJS,
-       IDR_SYNC_DRIVER_SYNC_INTERNALS_CHROME_SYNC_JS},
-      {syncer::sync_ui_util::kSyncLogJS,
-       IDR_SYNC_DRIVER_SYNC_INTERNALS_SYNC_LOG_JS},
-      {syncer::sync_ui_util::kSyncNodeBrowserJS,
-       IDR_SYNC_DRIVER_SYNC_INTERNALS_SYNC_NODE_BROWSER_JS},
-      {syncer::sync_ui_util::kSyncSearchJS,
-       IDR_SYNC_DRIVER_SYNC_INTERNALS_SYNC_SEARCH_JS},
-      {syncer::sync_ui_util::kAboutJS, IDR_SYNC_DRIVER_SYNC_INTERNALS_ABOUT_JS},
-      {syncer::sync_ui_util::kDataJS, IDR_SYNC_DRIVER_SYNC_INTERNALS_DATA_JS},
-      {syncer::sync_ui_util::kEventsJS,
-       IDR_SYNC_DRIVER_SYNC_INTERNALS_EVENTS_JS},
-      {syncer::sync_ui_util::kSearchJS,
-       IDR_SYNC_DRIVER_SYNC_INTERNALS_SEARCH_JS},
-      {syncer::sync_ui_util::kUserEventsJS,
-       IDR_SYNC_DRIVER_SYNC_INTERNALS_USER_EVENTS_JS},
-      {syncer::sync_ui_util::kTrafficLogJS,
-       IDR_SYNC_DRIVER_SYNC_INTERNALS_TRAFFIC_LOG_JS},
-      {syncer::sync_ui_util::kInvalidationsJS,
-       IDR_SYNC_DRIVER_SYNC_INTERNALS_INVALIDATIONS_JS},
-  };
-  source->AddResourcePaths(kResources);
+  source->AddResourcePaths(
+      base::make_span(kSyncDriverSyncInternalsResources,
+                      kSyncDriverSyncInternalsResourcesSize));
 
   source->SetDefaultResource(IDR_SYNC_DRIVER_SYNC_INTERNALS_INDEX_HTML);
   return source;
