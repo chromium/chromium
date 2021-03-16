@@ -35,7 +35,7 @@ class DeletingNavigationThrottle : public NavigationThrottle {
   DeletingNavigationThrottle(NavigationHandle* handle,
                              const base::RepeatingClosure& deletion_callback)
       : NavigationThrottle(handle), deletion_callback_(deletion_callback) {}
-  ~DeletingNavigationThrottle() override {}
+  ~DeletingNavigationThrottle() override = default;
 
   NavigationThrottle::ThrottleCheckResult WillStartRequest() override {
     deletion_callback_.Run();
@@ -67,9 +67,7 @@ class DeletingNavigationThrottle : public NavigationThrottle {
 
 class NavigationRequestTest : public RenderViewHostImplTestHarness {
  public:
-  NavigationRequestTest()
-      : was_callback_called_(false),
-        callback_result_(NavigationThrottle::DEFER) {}
+  NavigationRequestTest() : callback_result_(NavigationThrottle::DEFER) {}
 
   void SetUp() override {
     RenderViewHostImplTestHarness::SetUp();
@@ -227,7 +225,7 @@ class NavigationRequestTest : public RenderViewHostImplTestHarness {
   }
 
   std::unique_ptr<NavigationRequest> request_;
-  bool was_callback_called_;
+  bool was_callback_called_ = false;
   NavigationThrottle::ThrottleCheckResult callback_result_;
 };
 
@@ -452,9 +450,10 @@ namespace {
 class GetRenderFrameHostOnFailureNavigationThrottle
     : public NavigationThrottle {
  public:
-  GetRenderFrameHostOnFailureNavigationThrottle(NavigationHandle* handle)
+  explicit GetRenderFrameHostOnFailureNavigationThrottle(
+      NavigationHandle* handle)
       : NavigationThrottle(handle) {}
-  ~GetRenderFrameHostOnFailureNavigationThrottle() override {}
+  ~GetRenderFrameHostOnFailureNavigationThrottle() override = default;
 
   NavigationThrottle::ThrottleCheckResult WillFailRequest() override {
     EXPECT_TRUE(navigation_handle()->GetRenderFrameHost());

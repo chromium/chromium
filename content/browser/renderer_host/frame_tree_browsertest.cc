@@ -47,7 +47,7 @@ EvalJsResult GetOriginFromRenderer(FrameTreeNode* node) {
 
 class FrameTreeBrowserTest : public ContentBrowserTest {
  public:
-  FrameTreeBrowserTest() {}
+  FrameTreeBrowserTest() = default;
 
   void SetUpOnMainThread() override {
     host_resolver()->AddRule("*", "127.0.0.1");
@@ -804,7 +804,7 @@ IN_PROC_BROWSER_TEST_F(FrameTreeBrowserTest,
 
 class CrossProcessFrameTreeBrowserTest : public ContentBrowserTest {
  public:
-  CrossProcessFrameTreeBrowserTest() {}
+  CrossProcessFrameTreeBrowserTest() = default;
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
     IsolateAllSitesForTesting(command_line);
@@ -1243,7 +1243,7 @@ IN_PROC_BROWSER_TEST_F(CrossProcessFrameTreeBrowserTest,
 // it from outsiders.
 class IsolateIcelandFrameTreeBrowserTest : public ContentBrowserTest {
  public:
-  IsolateIcelandFrameTreeBrowserTest() {}
+  IsolateIcelandFrameTreeBrowserTest() = default;
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
     // Blink suppresses navigations to blob URLs of origins different from the

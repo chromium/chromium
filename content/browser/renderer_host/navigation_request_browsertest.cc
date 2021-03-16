@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <memory>
+
 #include "base/bind.h"
 #include "base/command_line.h"
 #include "base/files/scoped_temp_dir.h"
@@ -79,7 +81,7 @@ class TestNavigationThrottle : public NavigationThrottle {
         did_call_will_redirect_(std::move(did_call_will_redirect)),
         did_call_will_fail_(std::move(did_call_will_fail)),
         did_call_will_process_(std::move(did_call_will_process)) {}
-  ~TestNavigationThrottle() override {}
+  ~TestNavigationThrottle() override = default;
 
   const char* GetNameForLogging() override { return "TestNavigationThrottle"; }
 
@@ -176,7 +178,7 @@ class TestNavigationThrottleInstaller : public WebContentsObserver {
         will_fail_result_(will_fail_result),
         will_process_result_(will_process_result),
         expected_start_url_(expected_start_url) {}
-  ~TestNavigationThrottleInstaller() override {}
+  ~TestNavigationThrottleInstaller() override = default;
 
   // Installs a TestNavigationThrottle whose |method| method will return
   // |result|. All other methods will return NavigationThrottle::PROCEED.
@@ -393,7 +395,7 @@ class TestDeferringNavigationThrottleInstaller
 // Records all navigation start URLs from the WebContents.
 class NavigationStartUrlRecorder : public WebContentsObserver {
  public:
-  NavigationStartUrlRecorder(WebContents* web_contents)
+  explicit NavigationStartUrlRecorder(WebContents* web_contents)
       : WebContentsObserver(web_contents) {}
 
   void DidStartNavigation(NavigationHandle* navigation_handle) override {
@@ -1069,16 +1071,17 @@ IN_PROC_BROWSER_TEST_F(NavigationRequestBrowserTest, ThrottleBlockAndCollapse) {
     std::unique_ptr<TestNavigationThrottleInstaller>
         subframe_throttle_installer;
     if (test_case.deferred_block) {
-      subframe_throttle_installer.reset(
-          new TestDeferringNavigationThrottleInstaller(
+      subframe_throttle_installer =
+          std::make_unique<TestDeferringNavigationThrottleInstaller>(
               shell()->web_contents(), test_case.will_start_result,
               test_case.will_redirect_result, NavigationThrottle::PROCEED,
-              NavigationThrottle::PROCEED, blocked_subframe_url));
+              NavigationThrottle::PROCEED, blocked_subframe_url);
     } else {
-      subframe_throttle_installer.reset(new TestNavigationThrottleInstaller(
-          shell()->web_contents(), test_case.will_start_result,
-          test_case.will_redirect_result, NavigationThrottle::PROCEED,
-          NavigationThrottle::PROCEED, blocked_subframe_url));
+      subframe_throttle_installer =
+          std::make_unique<TestNavigationThrottleInstaller>(
+              shell()->web_contents(), test_case.will_start_result,
+              test_case.will_redirect_result, NavigationThrottle::PROCEED,
+              NavigationThrottle::PROCEED, blocked_subframe_url);
     }
 
     {
@@ -1709,7 +1712,7 @@ IN_PROC_BROWSER_TEST_F(NavigationRequestHostResolutionFailureTest,
 // Record and list the navigations that are started and finished.
 class NavigationLogger : public WebContentsObserver {
  public:
-  NavigationLogger(WebContents* web_contents)
+  explicit NavigationLogger(WebContents* web_contents)
       : WebContentsObserver(web_contents) {}
 
   void DidStartNavigation(NavigationHandle* navigation_handle) override {
@@ -2910,7 +2913,7 @@ IN_PROC_BROWSER_TEST_F(NavigationRequestBrowserTest, AuthChallengeInfo) {
 
 class TestMixedContentWebContentsDelegate : public WebContentsDelegate {
  public:
-  TestMixedContentWebContentsDelegate() {}
+  TestMixedContentWebContentsDelegate() = default;
   TestMixedContentWebContentsDelegate(
       const TestMixedContentWebContentsDelegate&) = delete;
   TestMixedContentWebContentsDelegate& operator=(

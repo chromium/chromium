@@ -1314,8 +1314,8 @@ class CONTENT_EXPORT RenderFrameHostImpl
   // navigation callback and if returning false, will return straight away.
   class CommitCallbackInterceptor {
    public:
-    CommitCallbackInterceptor() {}
-    virtual ~CommitCallbackInterceptor() {}
+    CommitCallbackInterceptor() = default;
+    virtual ~CommitCallbackInterceptor() = default;
 
     virtual bool WillProcessDidCommitNavigation(
         NavigationRequest* navigation_request,

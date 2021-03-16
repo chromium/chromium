@@ -183,8 +183,7 @@ class RenderWidgetHostIteratorImpl : public RenderWidgetHostIterator {
   ~RenderWidgetHostIteratorImpl() override = default;
 
   void Add(RenderWidgetHost* host) {
-    hosts_.push_back(
-        RenderWidgetHostID(host->GetProcess()->GetID(), host->GetRoutingID()));
+    hosts_.emplace_back(host->GetProcess()->GetID(), host->GetRoutingID());
   }
 
   // RenderWidgetHostIterator:

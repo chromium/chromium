@@ -2086,11 +2086,10 @@ void NavigationControllerImpl::CopyStateFrom(NavigationController* temp,
   needs_reload_type_ = NeedsReloadType::kCopyStateFrom;
   InsertEntriesFrom(source, source->GetEntryCount());
 
-  for (auto it = source->session_storage_namespace_map_.begin();
-       it != source->session_storage_namespace_map_.end(); ++it) {
+  for (auto& it : source->session_storage_namespace_map_) {
     SessionStorageNamespaceImpl* source_namespace =
-        static_cast<SessionStorageNamespaceImpl*>(it->second.get());
-    session_storage_namespace_map_[it->first] = source_namespace->Clone();
+        static_cast<SessionStorageNamespaceImpl*>(it.second.get());
+    session_storage_namespace_map_[it.first] = source_namespace->Clone();
   }
 
   FinishRestore(source->last_committed_entry_index_, RestoreType::kRestored);

@@ -60,7 +60,7 @@ class CONTENT_EXPORT FrameTreeNode {
     // Invoked when a FrameTreeNode becomes focused.
     virtual void OnFrameTreeNodeFocused(FrameTreeNode* node) {}
 
-    virtual ~Observer() {}
+    virtual ~Observer() = default;
   };
 
   static const int kFrameTreeNodeInvalidId;

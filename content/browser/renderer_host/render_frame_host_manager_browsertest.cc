@@ -160,7 +160,7 @@ class RenderFrameHostDestructionObserver : public WebContentsObserver {
         message_loop_runner_(new MessageLoopRunner),
         deleted_(false),
         render_frame_host_(rfh) {}
-  ~RenderFrameHostDestructionObserver() override {}
+  ~RenderFrameHostDestructionObserver() override = default;
 
   bool deleted() const { return deleted_; }
 
@@ -2253,7 +2253,7 @@ class RenderViewHostDestructionObserver : public WebContentsObserver {
  public:
   explicit RenderViewHostDestructionObserver(WebContents* web_contents)
       : WebContentsObserver(web_contents) {}
-  ~RenderViewHostDestructionObserver() override {}
+  ~RenderViewHostDestructionObserver() override = default;
   void EnsureRVHGetsDestructed(RenderViewHost* rvh) {
     watched_render_view_hosts_.insert(rvh);
   }
@@ -2495,7 +2495,7 @@ IN_PROC_BROWSER_TEST_P(RenderFrameHostManagerTest,
 
 class RFHMProcessPerTabTest : public RenderFrameHostManagerTest {
  public:
-  RFHMProcessPerTabTest() {}
+  RFHMProcessPerTabTest() = default;
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
     command_line->AppendSwitch(switches::kProcessPerTab);
@@ -7641,7 +7641,7 @@ IN_PROC_BROWSER_TEST_P(ProactivelySwapBrowsingInstancesSameSiteTest,
 class RenderFrameHostManagerUnloadBrowserTest
     : public RenderFrameHostManagerTest {
  public:
-  RenderFrameHostManagerUnloadBrowserTest() {}
+  RenderFrameHostManagerUnloadBrowserTest() = default;
 
   // Starts monitoring requests made to the embedded_http_server() looking for
   // one made to |url|.  To be used together with WaitForMonitoredRequest().
@@ -7658,7 +7658,7 @@ class RenderFrameHostManagerUnloadBrowserTest
     if (saw_request_url_)
       return;
 
-    run_loop_.reset(new base::RunLoop());
+    run_loop_ = std::make_unique<base::RunLoop>();
     {
       base::RunLoop* run_loop = run_loop_.get();
       base::AutoUnlock unlock(lock_);
@@ -8023,7 +8023,7 @@ namespace {
 // out of scope.
 class AssertForegroundHelper {
  public:
-  AssertForegroundHelper() {}
+  AssertForegroundHelper() = default;
 
 #if defined(OS_MAC)
   // Asserts that |renderer_process| isn't backgrounded and reposts self to
@@ -8524,7 +8524,7 @@ class RenderFrameHostManagerDefaultProcessTest
     feature_list_.InitAndEnableFeature(
         features::kProcessSharingWithStrictSiteInstances);
   }
-  ~RenderFrameHostManagerDefaultProcessTest() override {}
+  ~RenderFrameHostManagerDefaultProcessTest() override = default;
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
     RenderFrameHostManagerTest::SetUpCommandLine(command_line);

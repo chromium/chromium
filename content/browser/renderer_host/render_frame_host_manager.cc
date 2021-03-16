@@ -2665,7 +2665,7 @@ void RenderFrameHostManager::CreateRenderFrameProxy(SiteInstance* instance) {
       // Before creating a new RenderFrameProxyHost, ensure a RenderViewHost
       // exists for |instance|, as it creates the page level structure in Blink.
       render_view_host = frame_tree_node_->frame_tree()->CreateRenderViewHost(
-          instance, /*frame_routing_id=*/MSG_ROUTING_NONE,
+          instance, /*main_frame_routing_id=*/MSG_ROUTING_NONE,
           /*swapped_out=*/true, /*renderer_initiated_creation=*/false);
     }
     proxy = CreateRenderFrameProxyHost(instance, std::move(render_view_host));
@@ -3580,7 +3580,7 @@ void RenderFrameHostManager::CreateNewFrameForInnerDelegateAttachIfNecessary() {
   if (!CreateSpeculativeRenderFrameHost(
           current_frame_host()->GetSiteInstance(),
           current_frame_host()->GetParent()->GetSiteInstance(),
-          /*for_early_commit=*/false)) {
+          /*recovering_without_early_commit=*/false)) {
     NotifyPrepareForInnerDelegateAttachComplete(false /* success */);
     return;
   }

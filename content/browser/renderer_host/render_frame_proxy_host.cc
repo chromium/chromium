@@ -4,6 +4,7 @@
 
 #include "content/browser/renderer_host/render_frame_proxy_host.h"
 
+#include <memory>
 #include <unordered_map>
 #include <utility>
 #include <vector>
@@ -180,7 +181,8 @@ RenderFrameProxyHost::RenderFrameProxyHost(
     // parent. The same CrossProcessFrameConnector is used for subsequent cross-
     // process navigations, but it will be destroyed if the frame is
     // navigated back to the same SiteInstance as its parent.
-    cross_process_frame_connector_.reset(new CrossProcessFrameConnector(this));
+    cross_process_frame_connector_ =
+        std::make_unique<CrossProcessFrameConnector>(this);
   }
 
   if (!GetProxyHostCreatedCallback().is_null())
