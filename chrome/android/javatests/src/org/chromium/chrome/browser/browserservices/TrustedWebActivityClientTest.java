@@ -38,7 +38,7 @@ import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.notifications.NotificationUmaTracker;
 import org.chromium.chrome.browser.notifications.StandardNotificationBuilder;
 import org.chromium.chrome.test.util.browser.Features;
-import org.chromium.chrome.test.util.browser.Features.DisableFeatures;
+import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
 import org.chromium.components.embedder_support.util.Origin;
 import org.chromium.content_public.browser.UiThreadTaskTraits;
 
@@ -64,7 +64,7 @@ import java.util.concurrent.TimeoutException;
  * 4. This sends a Message to ResponseHandler in this class.
  */
 @RunWith(BaseJUnit4ClassRunner.class)
-@DisableFeatures(ChromeFeatureList.USE_NOTIFICATION_COMPAT_BUILDER)
+@EnableFeatures(ChromeFeatureList.USE_NOTIFICATION_COMPAT_BUILDER)
 public class TrustedWebActivityClientTest {
     private static final Uri SCOPE = Uri.parse("https://www.example.com/notifications");
     private static final Origin ORIGIN = Origin.create(SCOPE);

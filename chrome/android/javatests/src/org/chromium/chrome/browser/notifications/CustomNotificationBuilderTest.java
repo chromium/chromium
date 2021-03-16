@@ -39,7 +39,7 @@ import org.chromium.chrome.R;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.notifications.channels.ChromeChannelDefinitions;
 import org.chromium.chrome.test.util.browser.Features;
-import org.chromium.chrome.test.util.browser.Features.DisableFeatures;
+import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
 import org.chromium.components.browser_ui.notifications.NotificationMetadata;
 import org.chromium.components.browser_ui.notifications.PendingIntentProvider;
 import org.chromium.content_public.browser.test.NativeLibraryTestUtils;
@@ -51,7 +51,7 @@ import java.util.Arrays;
  * Instrumentation unit tests for CustomNotificationBuilder.
  */
 @RunWith(BaseJUnit4ClassRunner.class)
-@DisableFeatures(ChromeFeatureList.USE_NOTIFICATION_COMPAT_BUILDER)
+@EnableFeatures(ChromeFeatureList.USE_NOTIFICATION_COMPAT_BUILDER)
 public class CustomNotificationBuilderTest {
     private static final String NOTIFICATION_TAG = "TestNotificationTag";
     private static final int NOTIFICATION_ID = 99;

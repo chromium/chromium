@@ -35,7 +35,7 @@ import org.chromium.chrome.R;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.notifications.channels.ChromeChannelDefinitions;
 import org.chromium.chrome.test.util.browser.Features;
-import org.chromium.chrome.test.util.browser.Features.DisableFeatures;
+import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
 import org.chromium.components.browser_ui.notifications.NotificationMetadata;
 import org.chromium.components.browser_ui.notifications.PendingIntentProvider;
 import org.chromium.components.browser_ui.widget.RoundedIconGenerator;
@@ -51,7 +51,7 @@ import org.chromium.content_public.browser.test.NativeLibraryTestUtils;
  */
 @RunWith(BaseJUnit4ClassRunner.class)
 @Batch(Batch.UNIT_TESTS)
-@DisableFeatures(ChromeFeatureList.USE_NOTIFICATION_COMPAT_BUILDER)
+@EnableFeatures(ChromeFeatureList.USE_NOTIFICATION_COMPAT_BUILDER)
 public class StandardNotificationBuilderTest {
     private static final String NOTIFICATION_TAG = "TestNotificationTag";
     private static final int NOTIFICATION_ID = 99;
@@ -141,9 +141,17 @@ public class StandardNotificationBuilderTest {
         Assert.assertNotNull(
                 NotificationTestUtil.getLargeIconFromNotification(context, notification));
 
-        Assert.assertEquals(Notification.DEFAULT_ALL, notification.defaults);
-        Assert.assertEquals(1, notification.vibrate.length);
-        Assert.assertEquals(100L, notification.vibrate[0]);
+        // On Android O+ the defaults are ignored as vibrate and silent moved to the notification
+        // channel.
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O
+                && NotificationBuilderBase.shouldUseCompat()) {
+            Assert.assertEquals(0, notification.defaults);
+        } else {
+            Assert.assertEquals(Notification.DEFAULT_ALL, notification.defaults);
+            Assert.assertEquals(1, notification.vibrate.length);
+            Assert.assertEquals(100L, notification.vibrate[0]);
+        }
+
         Notification.Action[] actions = NotificationTestUtil.getActions(notification);
         Assert.assertEquals(3, actions.length);
         Assert.assertEquals("button 1", NotificationTestUtil.getActionTitle(actions[0]));
