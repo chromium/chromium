@@ -192,9 +192,12 @@ export class RangeAutomationHandler extends BaseAutomationHandler {
       return;
     }
 
-    const event = new CustomAutomationEvent(
-        EventType.CHECKED_STATE_CHANGED, evt.target, evt.eventFrom,
-        evt.eventFromAction, evt.intents);
+    const event =
+        new CustomAutomationEvent(EventType.CHECKED_STATE_CHANGED, evt.target, {
+          eventFrom: evt.eventFrom,
+          eventFromAction: evt.eventFromAction,
+          intents: evt.intents
+        });
     this.onEventIfInRange(event);
   }
 

@@ -97,8 +97,10 @@ DesktopAutomationHandler = class extends BaseAutomationHandler {
       chrome.automation.getFocus((function(focus) {
                                    if (focus) {
                                      const event = new CustomAutomationEvent(
-                                         EventType.FOCUS, focus, 'page',
-                                         ActionType.FOCUS, []);
+                                         EventType.FOCUS, focus, {
+                                           eventFrom: 'page',
+                                           eventFromAction: ActionType.FOCUS
+                                         });
                                      this.onFocus(event);
                                    }
                                  }).bind(this));
@@ -216,9 +218,12 @@ DesktopAutomationHandler = class extends BaseAutomationHandler {
     if (selectionStart.state[StateType.EDITABLE]) {
       selectionStart =
           AutomationUtil.getEditableRoot(selectionStart) || selectionStart;
-      this.onEditableChanged_(new CustomAutomationEvent(
-          evt.type, selectionStart, evt.eventFrom, evt.eventFromAction,
-          evt.intents));
+      this.onEditableChanged_(
+          new CustomAutomationEvent(evt.type, selectionStart, {
+            eventFrom: evt.eventFrom,
+            eventFromAction: evt.eventFromAction,
+            intents: evt.intents
+          }));
     }
 
     // Non-editable selections are handled in |Background|.
@@ -274,8 +279,11 @@ DesktopAutomationHandler = class extends BaseAutomationHandler {
     // category flush here or the focus events will all queue up.
     Output.forceModeForNextSpeechUtterance(QueueMode.CATEGORY_FLUSH);
 
-    const event = new CustomAutomationEvent(
-        EventType.FOCUS, node, evt.eventFrom, evt.eventFromAction, evt.intents);
+    const event = new CustomAutomationEvent(EventType.FOCUS, node, {
+      eventFrom: evt.eventFrom,
+      eventFromAction: evt.eventFromAction,
+      intents: evt.intents
+    });
     this.onEventDefault(event);
 
     // Refresh the handler, if needed, now that ChromeVox focus is up to date.
@@ -604,7 +612,8 @@ DesktopAutomationHandler = class extends BaseAutomationHandler {
     chrome.automation.getFocus(function(focus) {
       if (focus) {
         const event = new CustomAutomationEvent(
-            EventType.FOCUS, focus, 'page', ActionType.FOCUS, []);
+            EventType.FOCUS, focus,
+            {eventFrom: 'page', eventFromAction: ActionType.FOCUS});
         this.onFocus(event);
       }
     }.bind(this));

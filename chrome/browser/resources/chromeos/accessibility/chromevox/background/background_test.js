@@ -2671,14 +2671,12 @@ TEST_F('ChromeVoxBackgroundTest', 'FocusOnUnknown', function() {
           }
         });
 
-        const evt2 =
-            new CustomAutomationEvent(EventType.FOCUS, group2, '', '', []);
+        const evt2 = new CustomAutomationEvent(EventType.FOCUS, group2);
         const currentRange = ChromeVoxState.instance.currentRange;
         DesktopAutomationHandler.instance.onFocus(evt2);
         assertEquals(currentRange, ChromeVoxState.instance.currentRange);
 
-        const evt1 =
-            new CustomAutomationEvent(EventType.FOCUS, group1, '', '', []);
+        const evt1 = new CustomAutomationEvent(EventType.FOCUS, group1);
         mockFeedback
             .call(DesktopAutomationHandler.instance.onFocus.bind(
                 DesktopAutomationHandler.instance, evt1))
@@ -2905,8 +2903,7 @@ TEST_F('ChromeVoxBackgroundTest', 'AlertNoAnnouncement', function() {
           }
         }());
         const button = root.find({role: RoleType.BUTTON});
-        const alertEvt =
-            new CustomAutomationEvent(EventType.ALERT, button, '', '', []);
+        const alertEvt = new CustomAutomationEvent(EventType.ALERT, button);
         mockFeedback
             .call(DesktopAutomationHandler.instance.onAlert.bind(
                 DesktopAutomationHandler.instance, alertEvt))
@@ -2929,8 +2926,7 @@ TEST_F('ChromeVoxBackgroundTest', 'AlertAnnouncement', function() {
         }());
 
         const button = root.find({role: RoleType.BUTTON});
-        const alertEvt =
-            new CustomAutomationEvent(EventType.ALERT, button, '', '', []);
+        const alertEvt = new CustomAutomationEvent(EventType.ALERT, button);
         mockFeedback
             .call(DesktopAutomationHandler.instance.onAlert.bind(
                 DesktopAutomationHandler.instance, alertEvt))
