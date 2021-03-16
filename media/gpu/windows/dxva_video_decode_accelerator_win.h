@@ -25,7 +25,6 @@
 #include "base/threading/thread.h"
 #include "gpu/config/gpu_preferences.h"
 #include "media/base/video_color_space.h"
-#include "media/base/win/mf_initializer.h"
 #include "media/gpu/gpu_video_decode_accelerator_helpers.h"
 #include "media/gpu/media_gpu_export.h"
 #include "media/gpu/windows/d3d11_com_defs.h"
@@ -418,9 +417,6 @@ class MEDIA_GPU_EXPORT DXVAVideoDecodeAccelerator
 
   // To expose client callbacks from VideoDecodeAccelerator.
   VideoDecodeAccelerator::Client* client_;
-
-  // MediaFoundation session, calls MFShutdown on deletion.
-  MFSessionLifetime session_;
 
   Microsoft::WRL::ComPtr<IMFTransform> decoder_;
 

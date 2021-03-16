@@ -322,7 +322,8 @@ class VideoCaptureDeviceTest
 
 #if defined(OS_WIN)
   bool UseWinMediaFoundation() {
-    return std::get<1>(GetParam()) == WIN_MEDIA_FOUNDATION;
+    return std::get<1>(GetParam()) == WIN_MEDIA_FOUNDATION &&
+           VideoCaptureDeviceFactoryWin::PlatformSupportsMediaFoundation();
   }
 #endif
 

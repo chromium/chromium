@@ -317,8 +317,9 @@ void FindAndSetDefaultVideoCamera(
 // distributions such as Windows 7 N and Windows 7 KN.
 // static
 bool VideoCaptureDeviceFactoryWin::PlatformSupportsMediaFoundation() {
-  static bool g_dlls_available = LoadMediaFoundationDlls();
-  return g_dlls_available;
+  static const bool has_media_foundation =
+      LoadMediaFoundationDlls() && InitializeMediaFoundation();
+  return has_media_foundation;
 }
 
 VideoCaptureDeviceFactoryWin::VideoCaptureDeviceFactoryWin()
@@ -332,7 +333,6 @@ VideoCaptureDeviceFactoryWin::VideoCaptureDeviceFactoryWin()
     LogVideoCaptureWinBackendUsed(
         VideoCaptureWinBackendUsed::kUsingDirectShowAsFallback);
   } else if (use_media_foundation_) {
-    session_ = InitializeMediaFoundation();
     LogVideoCaptureWinBackendUsed(
         VideoCaptureWinBackendUsed::kUsingMediaFoundationAsDefault);
   } else {
@@ -539,7 +539,7 @@ void VideoCaptureDeviceFactoryWin::GetDevicesInfo(
 
   std::vector<VideoCaptureDeviceInfo> devices_info;
 
-  if (use_media_foundation_ && session_) {
+  if (use_media_foundation_) {
     DCHECK(PlatformSupportsMediaFoundation());
     devices_info = GetDevicesInfoMediaFoundation();
     AugmentDevicesListWithDirectShowOnlyDevices(&devices_info);
