@@ -16,6 +16,7 @@
 #include "base/callback.h"
 #include "base/callback_helpers.h"
 #include "base/command_line.h"
+#include "base/dcheck_is_on.h"
 #include "base/location.h"
 #include "base/memory/ptr_util.h"
 #include "base/optional.h"
@@ -2507,7 +2508,9 @@ class DetachToBrowserTabDragControllerTestWithScrollableTabStripEnabled
 
 // TODO(crbug.com/1052397): Revisit once build flag switch of lacros-chrome is
 // complete.
-#if defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
+// Disabling on macOS due to DCHECK crashes; see https://crbug.com/1183043.
+#if defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS) || \
+    (defined(OS_MAC) && DCHECK_IS_ON())
 #define MAYBE_DraggingRightExpandsTabStripSize \
   DISABLED_DraggingRightExpandsTabStripSize
 #else
