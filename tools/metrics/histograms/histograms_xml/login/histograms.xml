@@ -246,6 +246,19 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <summary>Chrome OS login success reason.</summary>
 </histogram>
 
+<histogram name="Login.SwitchToFeatureFlagMappingStatus"
+    enum="LoginFeatureFlagMappingStatus" expires_after="2021-11-30">
+  <owner>mnissler@chromium.org</owner>
+  <owner>xiyuan@chromium.org</owner>
+  <summary>
+    Tracks whether switches were mapped to feature flags in session_manager for
+    compatibility. session_manager does this and emits UMA samples when
+    encountering old device settings files that still contain feature
+    configuration in command line switch representation. This data will inform
+    the decision when to remove this compatibility code.
+  </summary>
+</histogram>
+
 <histogram name="Login.TokenCheckResponseTime" units="ms"
     expires_after="2021-08-09">
   <owner>rsorokin@chromium.org</owner>

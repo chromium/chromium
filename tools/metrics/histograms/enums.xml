@@ -48305,6 +48305,12 @@ from previous Chrome versions.
   <int value="16" label="Cryptohome is corrupted"/>
 </enum>
 
+<enum name="LoginFeatureFlagMappingStatus">
+  <int value="0" label="No switches present in device settings"/>
+  <int value="1" label="All switches mapped successfully"/>
+  <int value="2" label="Unknown or invalid switch found"/>
+</enum>
+
 <enum name="LoginIsKnownUser">
   <int value="0" label="Unknown user"/>
   <int value="1" label="Known user"/>
