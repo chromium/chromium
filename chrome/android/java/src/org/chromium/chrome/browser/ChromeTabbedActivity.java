@@ -1050,8 +1050,19 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
 
     private boolean shouldShowTabSwitcherOnStart() {
         String intentUrl = IntentHandler.getUrlFromIntent(getIntent());
-        if (ReturnToChromeExperimentsUtil.shouldShowStartSurfaceAsTheHomePage()
-                && ReturnToChromeExperimentsUtil.isCanonicalizedNTPUrl(intentUrl)) {
+        // If Chrome is launched by tapping the New Tab Item from the launch icon and
+        // {@link OMNIBOX_FOCUSED_ON_NEW_TAB} is enabled, a new Tab with omnibox focused will be
+        // shown on Startup.
+        boolean isCanonicalizedNTPUrl =
+                ReturnToChromeExperimentsUtil.isCanonicalizedNTPUrl(intentUrl);
+        if (isCanonicalizedNTPUrl && IntentHandler.isTabOpenAsNewTabFromLauncher(getIntent())
+                && StartSurfaceConfiguration.OMNIBOX_FOCUSED_ON_NEW_TAB.getValue()
+                && IntentHandler.wasIntentSenderChrome(getIntent())) {
+            return false;
+        }
+
+        if (isCanonicalizedNTPUrl
+                && ReturnToChromeExperimentsUtil.shouldShowStartSurfaceAsTheHomePage()) {
             // Handle NTP intent.
             return true;
         } else if (ReturnToChromeExperimentsUtil.shouldShowStartSurfaceAsTheHomePageNoTabs()

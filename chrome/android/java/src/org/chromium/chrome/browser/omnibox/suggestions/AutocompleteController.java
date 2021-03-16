@@ -54,6 +54,7 @@ public class AutocompleteController {
     private boolean mUseCachedZeroSuggestResults;
     private boolean mEnableNativeVoiceSuggestProvider;
     private boolean mWaitingForSuggestionsToCache;
+    private Profile mProfile;
 
     /**
      * Listener for receiving OmniboxSuggestions.
@@ -78,7 +79,8 @@ public class AutocompleteController {
     }
 
     /**
-     * Resets the underlying autocomplete controller based on the specified profile.
+     * Resets the underlying autocomplete controller based on the specified profile. This function
+     * returns early if there are no profile changes.
      *
      * <p>This will implicitly stop the autocomplete suggestions, so
      * {@link #start(Profile, String, String, boolean)} must be called again to start them flowing
@@ -89,6 +91,13 @@ public class AutocompleteController {
      */
     public void setProfile(Profile profile) {
         assert mListener != null : "Ensure a listener is set prior to calling.";
+        if (mProfile == profile) {
+            mNativeAutocompleteControllerAndroid =
+                    AutocompleteControllerJni.get().init(AutocompleteController.this, profile);
+            return;
+        }
+
+        mProfile = profile;
         stop(true);
         if (profile == null) {
             mNativeAutocompleteControllerAndroid = 0;
@@ -134,8 +143,8 @@ public class AutocompleteController {
                 TextUtils.isEmpty(url));
         if (profile == null || TextUtils.isEmpty(url)) return;
 
-        mNativeAutocompleteControllerAndroid =
-                AutocompleteControllerJni.get().init(AutocompleteController.this, profile);
+        setProfile(profile);
+
         // Initializing the native counterpart might still fail.
         if (mNativeAutocompleteControllerAndroid != 0) {
             AutocompleteControllerJni.get().start(mNativeAutocompleteControllerAndroid,
@@ -204,8 +213,8 @@ public class AutocompleteController {
                             ChromeFeatureList.OMNIBOX_SPARE_RENDERER,
                             "omnibox_spare_renderer_delay_ms", OMNIBOX_SPARE_RENDERER_DELAY_MS));
         }
-        mNativeAutocompleteControllerAndroid =
-                AutocompleteControllerJni.get().init(AutocompleteController.this, profile);
+        setProfile(profile);
+
         if (mNativeAutocompleteControllerAndroid != 0) {
             if (mUseCachedZeroSuggestResults) mWaitingForSuggestionsToCache = true;
             AutocompleteControllerJni.get().onOmniboxFocused(mNativeAutocompleteControllerAndroid,
