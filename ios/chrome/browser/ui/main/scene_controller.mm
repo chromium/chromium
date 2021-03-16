@@ -91,6 +91,7 @@
 #import "ios/chrome/browser/ui/main/ui_blocker_scene_agent.h"
 #import "ios/chrome/browser/ui/scoped_ui_blocker/scoped_ui_blocker.h"
 #import "ios/chrome/browser/ui/settings/settings_navigation_controller.h"
+#import "ios/chrome/browser/ui/start_surface/start_surface_recent_tab_browser_agent.h"
 #import "ios/chrome/browser/ui/start_surface/start_surface_scene_agent.h"
 #import "ios/chrome/browser/ui/start_surface/start_surface_util.h"
 #include "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_grid_coordinator.h"
@@ -559,10 +560,13 @@ const char kMultiWindowOpenInNewWindowHistogram[] =
   if (!ShouldShowStartSurfaceForSceneState(self.sceneState)) {
     return;
   }
+
   self.sceneState.modifytVisibleNTPForStartSurface = YES;
+  Browser* browser = self.currentInterface.browser;
+  StartSurfaceRecentTabBrowserAgent::FromBrowser(browser)->SaveMostRecentTab();
 
   // Activate the existing NTP tab for the Start surface.
-  WebStateList* webStateList = self.currentInterface.browser->GetWebStateList();
+  WebStateList* webStateList = browser->GetWebStateList();
   for (int i = 0; i < webStateList->count(); i++) {
     if (IsURLNtp(webStateList->GetWebStateAt(i)->GetVisibleURL())) {
       webStateList->ActivateWebStateAt(i);
@@ -574,7 +578,6 @@ const char kMultiWindowOpenInNewWindowHistogram[] =
   OpenNewTabCommand* command =
       [OpenNewTabCommand commandWithIncognito:self.currentInterface.incognito];
   command.userInitiated = NO;
-  Browser* browser = self.currentInterface.browser;
   id<ApplicationCommands> applicationHandler =
       HandlerForProtocol(browser->GetCommandDispatcher(), ApplicationCommands);
   [applicationHandler openURLInNewTab:command];

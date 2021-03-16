@@ -18,6 +18,10 @@ source_set("feature_flags") {
 
 source_set("start_surface") {
   sources = [
+    "start_surface_recent_tab_browser_agent.h",
+    "start_surface_recent_tab_browser_agent.mm",
+    "start_surface_recent_tab_removal_observer_bridge.h",
+    "start_surface_recent_tab_removal_observer_bridge.mm",
     "start_surface_scene_agent.h",
     "start_surface_scene_agent.mm",
     "start_surface_util.h",
@@ -29,7 +33,9 @@ source_set("start_surface") {
   deps = [
     ":feature_flags",
     "//base",
+    "//ios/chrome/browser/ui/main:browser_interface_provider",
     "//ios/chrome/browser/ui/main:observing_scene_agent",
     "//ios/chrome/browser/ui/main:scene_state_header",
+    "//ios/chrome/browser/web_state_list",
   ]
 }
