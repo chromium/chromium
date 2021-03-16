@@ -7561,27 +7561,6 @@
             ]
         }
     ],
-    "WebSocketReassembleShortMessages": [
-        {
-            "platforms": [
-                "android",
-                "android_webview",
-                "chromeos",
-                "chromeos_lacros",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "DisabledBeta",
-                    "disable_features": [
-                        "WebSocketReassembleShortMessages"
-                    ]
-                }
-            ]
-        }
-    ],
     "WebUITabStrip": [
         {
             "platforms": [
