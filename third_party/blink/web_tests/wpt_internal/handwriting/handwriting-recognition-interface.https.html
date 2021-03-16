@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Handwriting Recognition API: Test calls from WebIDL to mojo and back.</title>
+  <script src="/resources/testharness.js"></script>
+  <script src="/resources/testharnessreport.js"></script>
+</head>
+<body>
+<script type="module">
+  import {generateHandwritingPrediction} from './resources/mock-handwriting-recognition-service.js';
+
+  promise_test(async () => {
+    assert_not_equals(navigator.queryHandwritingRecognizerSupport, undefined);
+    assert_not_equals(navigator.queryHandwritingRecognizerSupport, null);
+    assert_not_equals(navigator.createHandwritingRecognizer, undefined);
+    assert_not_equals(navigator.createHandwritingRecognizer, null);
+    assert_not_equals(HandwritingStroke, undefined);
+    assert_not_equals(HandwritingStroke, null);
+  }, 'Handwriting recognition exposed interfaces exist.');
+
+  promise_test(async () => {
+    const stroke = new HandwritingStroke();
+    assert_equals(stroke.getPoints().length, 0);
+    stroke.addPoint({x:123, y:456, t:20});
+    stroke.addPoint({x:31, y:654, t:100});
+    assert_equals(stroke.getPoints().length, 2);
+    assert_equals(stroke.getPoints()[0].x, 123);
+    assert_equals(stroke.getPoints()[0].y, 456);
+    assert_equals(stroke.getPoints()[0].t, 20);
+    assert_equals(stroke.getPoints()[1].x, 31);
+    assert_equals(stroke.getPoints()[1].y, 654);
+    assert_equals(stroke.getPoints()[1].t, 100);
+  }, 'HandwritingStroke works as expected.');
+
+  promise_test(async () => {
+    const stroke = new HandwritingStroke();
+    stroke.addPoint({x:1, y:2, t:3});
+    assert_equals(stroke.getPoints().length, 1);
+    assert_equals(stroke.getPoints()[0].x, 1);
+    assert_equals(stroke.getPoints()[0].y, 2);
+    assert_equals(stroke.getPoints()[0].t, 3);
+    stroke.getPoints()[0].x = 100;
+    stroke.getPoints()[0].y = 200;
+    stroke.getPoints()[0].t = 300;
+    assert_equals(stroke.getPoints()[0].x, 1);
+    assert_equals(stroke.getPoints()[0].y, 2);
+    assert_equals(stroke.getPoints()[0].t, 3);
+  }, 'HandwritingPoint can not be changed after added.');
+
+  promise_test(async () => {
+    const response = await navigator.queryHandwritingRecognizerSupport({
+      languages: ['en'],
+      alternatives: false
+    });
+    assert_equals(Object.keys(response).length, 2);
+    assert_equals(response.languages, true);
+    assert_equals(response.alternatives, true);
+  }, 'queryHandwritingRecognizerSupport works.');
+
+  promise_test(async () => {
+    const response = await navigator.createHandwritingRecognizer({languages: ['en']});
+    assert_not_equals(response, undefined);
+    assert_not_equals(response, null);
+    assert_equals(typeof response.startDrawing, 'function');
+    assert_equals(typeof response.finish, 'function');
+  }, 'createHandwritingRecognizer works.');
+
+  promise_test(async () => {
+    const recognizer = await navigator.createHandwritingRecognizer({languages: ['en']});
+    assert_not_equals(recognizer, undefined);
+    assert_not_equals(recognizer, null);
+
+    const stroke1 = new HandwritingStroke();
+    stroke1.addPoint({x:1, y:2, t:3});
+    stroke1.addPoint({x:4, y:5, t:6});
+    const stroke2 = new HandwritingStroke();
+    stroke2.addPoint({x:7, y:8, t:9});
+    stroke2.addPoint({x:10, y:11, t:12});
+
+    const hints = {
+      recognitionType: "recognition_type_for_test",
+      inputType: "input_type_for_test",
+      textContext: "text_context_for_test",
+      alternatives: 3
+    }
+    const drawing = recognizer.startDrawing(hints);
+    assert_not_equals(drawing, undefined);
+    assert_not_equals(drawing, null);
+    drawing.addStroke(stroke1);
+    drawing.addStroke(stroke2);
+    assert_equals(drawing.getStrokes().length, 2);
+    drawing.removeStroke(stroke1);
+    assert_equals(drawing.getStrokes().length, 1);
+    assert_equals(drawing.getStrokes()[0], stroke2);
+    drawing.clear();
+    assert_equals(drawing.getStrokes().length, 0);
+
+    recognizer.finish();
+  }, 'HandwritingDrawing can add, remove, clear strokes');
+
+  promise_test(async () => {
+    const recognizer = await navigator.createHandwritingRecognizer({languages: ['en']});
+    assert_not_equals(recognizer, undefined);
+    assert_not_equals(recognizer, null);
+
+    const stroke1 = new HandwritingStroke();
+    stroke1.addPoint({x:1, y:2, t:3});
+    stroke1.addPoint({x:4, y:5, t:6});
+    const stroke2 = new HandwritingStroke();
+    stroke2.addPoint({x:7, y:8, t:9});
+    stroke2.addPoint({x:10, y:11, t:12});
+
+    const hints = {
+      recognitionType: "recognition_type_for_test",
+      inputType: "input_type_for_test",
+      textContext: "text_context_for_test",
+      alternatives: 3
+    }
+    const drawing = recognizer.startDrawing(hints);
+    assert_not_equals(drawing, undefined);
+    assert_not_equals(drawing, null);
+    drawing.addStroke(stroke1);
+    drawing.addStroke(stroke2);
+
+    const prediction = await drawing.getPrediction();
+    assert_equals(prediction.length, 1);
+    assert_equals(prediction[0].segmentationResult.length, 0);
+
+    const expected_prediction = generateHandwritingPrediction(drawing.getStrokes(), hints);
+    assert_equals(expected_prediction.length, 1);
+    assert_equals(prediction[0].text, expected_prediction[0].text);
+    assert_equals(expected_prediction[0].segmentationResult.length, 0);
+
+    recognizer.finish();
+  }, 'HandwritingDrawing.getPrediction() works');
+</script>
+</body>
+</html>
