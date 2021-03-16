@@ -89,6 +89,9 @@ void EduCoexistenceStateTracker::OnConsentLogged(
     const std::string& account_email) {
   DCHECK(base::Contains(state_tracker_, web_ui));
 
+  // Update the webui state that consent was logged.
+  OnWebUiStateChanged(web_ui, FlowResult::kConsentLogged);
+
   if (state_tracker_[web_ui].consent_logged_callback) {
     DCHECK_EQ(state_tracker_[web_ui].email, account_email);
     std::move(state_tracker_[web_ui].consent_logged_callback)

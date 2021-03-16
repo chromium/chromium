@@ -335,11 +335,9 @@ void EduCoexistenceLoginHandler::ConsentLogged(const base::ListValue* args) {
   edu_account_email_ = arguments[0].GetString();
   terms_of_service_version_number_ = arguments[1].GetString();
 
+  // Notify EduCoexistenceStateTracker that consent has been logged.
   EduCoexistenceStateTracker::Get()->OnConsentLogged(web_ui(),
                                                      edu_account_email_);
-
-  EduCoexistenceStateTracker::Get()->OnWebUiStateChanged(
-      web_ui(), EduCoexistenceStateTracker::FlowResult::kConsentLogged);
 }
 
 void EduCoexistenceLoginHandler::OnError(const base::ListValue* args) {
