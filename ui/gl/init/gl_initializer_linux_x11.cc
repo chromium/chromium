@@ -149,11 +149,7 @@ bool InitializeStaticEGLInternal(GLImplementation implementation) {
   }
 #endif  // !BUILDFLAG(USE_STATIC_ANGLE)
 
-  if (implementation == kGLImplementationEGLANGLE) {
-    SetGLImplementation(kGLImplementationEGLANGLE);
-  } else {
-    SetGLImplementation(kGLImplementationEGLGLES2);
-  }
+  SetGLImplementation(implementation);
 
   InitializeStaticGLBindingsGL();
   InitializeStaticGLBindingsEGL();
