@@ -438,8 +438,15 @@ int32_t RTCVideoDecoderStreamAdapter::Decode(
       // drop any other non-key frame.
       key_frame_required_ = true;
 
+#if defined(OS_ANDROID) && !BUILDFLAG(ENABLE_FFMPEG_VIDEO_DECODERS)
+      const bool has_software_fallback =
+          video_codec_type_ != webrtc::kVideoCodecH264;
+#else
+      const bool has_software_fallback = true;
+#endif
       // If we hit the absolute limit, then give up.
-      if (pending_buffer_count_ >= kAbsoluteMaxPendingBuffers) {
+      if (has_software_fallback &&
+          pending_buffer_count_ >= kAbsoluteMaxPendingBuffers) {
         has_error_ = true;
         PostCrossThreadTask(
             *media_task_runner_.get(), FROM_HERE,

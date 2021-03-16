@@ -332,12 +332,19 @@ int32_t RTCVideoDecoderAdapter::Decode(const webrtc::EncodedImage& input_image,
     GetDecoderCounter()->IncrementCount();
   }
 
+#if defined(OS_ANDROID) && !BUILDFLAG(ENABLE_FFMPEG_VIDEO_DECODERS)
+  const bool has_software_fallback =
+      video_codec_type_ != webrtc::kVideoCodecH264;
+#else
+  const bool has_software_fallback = true;
+#endif
+
   // Don't allow hardware decode for small videos if there are too many
   // decoder instances.  This includes the case where our resolution drops while
   // too many decoders exist.
   {
     base::AutoLock auto_lock(lock_);
-    if (current_resolution_ < kMinResolution &&
+    if (has_software_fallback && current_resolution_ < kMinResolution &&
         GetDecoderCounter()->Count() > kMaxDecoderInstances) {
       // Decrement the count and clear the flag, so that other decoders don't
       // fall back also.
@@ -428,7 +435,8 @@ int32_t RTCVideoDecoderAdapter::Decode(const webrtc::EncodedImage& input_image,
       return WEBRTC_VIDEO_CODEC_FALLBACK_SOFTWARE;
     }
 
-    if (pending_buffers_.size() >= kMaxPendingBuffers) {
+    if (has_software_fallback &&
+        pending_buffers_.size() >= kMaxPendingBuffers) {
       // We are severely behind. Drop pending buffers and request a keyframe to
       // catch up as quickly as possible.
       DVLOG(2) << "Pending buffers overflow";
