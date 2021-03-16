@@ -76,6 +76,7 @@ class LayoutSVGResourceMarker final : public LayoutSVGResourceContainer {
  private:
   void UpdateLayout() override;
   SVGTransformChange CalculateLocalTransform(bool bounds_changed) final;
+  bool FindCycleFromSelf() const override;
 
   AffineTransform local_to_parent_transform_;
   FloatSize viewport_size_;

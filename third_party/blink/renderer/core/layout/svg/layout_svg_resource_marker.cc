@@ -53,6 +53,11 @@ void LayoutSVGResourceMarker::UpdateLayout() {
   ClearInvalidationMask();
 }
 
+bool LayoutSVGResourceMarker::FindCycleFromSelf() const {
+  NOT_DESTROYED();
+  return FindCycleInSubtree(*this);
+}
+
 void LayoutSVGResourceMarker::RemoveAllClientsFromCache() {
   NOT_DESTROYED();
   MarkAllClientsForInvalidation(kLayoutInvalidation | kBoundariesInvalidation);
