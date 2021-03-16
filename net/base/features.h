@@ -218,6 +218,7 @@ NET_EXPORT extern const base::Feature kSameSiteDefaultChecksMethodRigorously;
 NET_EXPORT extern const base::Feature kCertVerifierBuiltinFeature;
 #if defined(OS_MAC)
 NET_EXPORT extern const base::FeatureParam<int> kCertVerifierBuiltinImpl;
+NET_EXPORT extern const base::FeatureParam<int> kCertVerifierBuiltinCacheSize;
 #endif /* defined(OS_MAC) */
 #endif /* BUILDFLAG(BUILTIN_CERT_VERIFIER_FEATURE_SUPPORTED) */
 
@@ -225,6 +226,8 @@ NET_EXPORT extern const base::FeatureParam<int> kCertVerifierBuiltinImpl;
 NET_EXPORT extern const base::Feature kCertDualVerificationTrialFeature;
 #if defined(OS_MAC)
 NET_EXPORT extern const base::FeatureParam<int> kCertDualVerificationTrialImpl;
+NET_EXPORT extern const base::FeatureParam<int>
+    kCertDualVerificationTrialCacheSize;
 #endif /* defined(OS_MAC) */
 #endif /* BUILDFLAG(BUILTIN_CERT_VERIFIER_FEATURE_SUPPORTED) */
 

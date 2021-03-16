@@ -105,8 +105,9 @@ class NET_EXPORT TrustStoreMac : public TrustStore {
   // |policy_oid|. For list of possible policy values, see:
   // https://developer.apple.com/reference/security/1667150-certificate_key_and_trust_servic/1670151-standard_policies_for_specific_c?language=objc
   // |impl| selects which internal implementation is used for checking trust
-  // settings.
-  TrustStoreMac(CFStringRef policy_oid, TrustImplType impl);
+  // settings, and the interpretation of |cache_size| varies depending on
+  // |impl|.
+  TrustStoreMac(CFStringRef policy_oid, TrustImplType impl, size_t cache_size);
   ~TrustStoreMac() override;
 
   // Initializes the trust cache, if it isn't already initialized.

@@ -141,6 +141,8 @@ const base::Feature kCertVerifierBuiltinFeature{
 #if defined(OS_MAC)
 const base::FeatureParam<int> kCertVerifierBuiltinImpl{
     &kCertVerifierBuiltinFeature, "impl", 0};
+const base::FeatureParam<int> kCertVerifierBuiltinCacheSize{
+    &kCertVerifierBuiltinFeature, "cachesize", 0};
 #endif /* defined(OS_MAC) */
 #endif
 
@@ -152,6 +154,8 @@ const base::Feature kCertDualVerificationTrialFeature{
 #if defined(OS_MAC)
 const base::FeatureParam<int> kCertDualVerificationTrialImpl{
     &kCertDualVerificationTrialFeature, "impl", 0};
+const base::FeatureParam<int> kCertDualVerificationTrialCacheSize{
+    &kCertDualVerificationTrialFeature, "cachesize", 0};
 #endif /* defined(OS_MAC) */
 #endif
 

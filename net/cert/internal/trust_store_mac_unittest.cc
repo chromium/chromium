@@ -30,6 +30,8 @@ namespace net {
 
 namespace {
 
+constexpr size_t kDefaultCacheSize = 512;
+
 // The PEM block header used for DER certificates
 const char kCertificateHeader[] = "CERTIFICATE";
 
@@ -120,7 +122,8 @@ TEST(TrustStoreMacTest, MultiRootNotTrusted) {
   test_keychain_search_list->AddKeychain(keychain);
 
   TrustStoreMac trust_store(kSecPolicyAppleSSL,
-                            TrustStoreMac::TrustImplType::kDomainCache);
+                            TrustStoreMac::TrustImplType::kDomainCache,
+                            kDefaultCacheSize);
 
   scoped_refptr<ParsedCertificate> a_by_b, b_by_c, b_by_f, c_by_d, c_by_e,
       f_by_e, d_by_d, e_by_e;
@@ -237,7 +240,8 @@ TEST_P(TrustStoreMacImplTest, SystemCerts) {
        "/System/Library/Keychains/SystemRootCertificates.keychain"},
       &find_certificate_system_roots_output));
 
-  TrustStoreMac trust_store(kSecPolicyAppleX509Basic, GetParam());
+  TrustStoreMac trust_store(kSecPolicyAppleX509Basic, GetParam(),
+                            kDefaultCacheSize);
 
   base::ScopedCFTypeRef<SecPolicyRef> sec_policy(SecPolicyCreateBasicX509());
   ASSERT_TRUE(sec_policy);

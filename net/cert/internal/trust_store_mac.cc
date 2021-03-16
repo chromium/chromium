@@ -756,8 +756,9 @@ class TrustStoreMac::TrustImplMRUCache : public TrustStoreMac::TrustImpl {
   DISALLOW_COPY_AND_ASSIGN(TrustImplMRUCache);
 };
 
-TrustStoreMac::TrustStoreMac(CFStringRef policy_oid, TrustImplType impl) {
-  constexpr size_t cache_size = 512;  // TODO(mattm): make this a param.
+TrustStoreMac::TrustStoreMac(CFStringRef policy_oid,
+                             TrustImplType impl,
+                             size_t cache_size) {
   switch (impl) {
     case TrustImplType::kUnknown:
       DCHECK(false);

@@ -210,9 +210,23 @@ class SystemTrustStoreMac : public BaseSystemTrustStore {
     return kDefaultTrustImpl;
   }
 
+  static size_t GetTrustStoreCacheSize() {
+    if (base::FeatureList::IsEnabled(features::kCertVerifierBuiltinFeature) &&
+        features::kCertVerifierBuiltinCacheSize.Get() > 0) {
+      return features::kCertVerifierBuiltinCacheSize.Get();
+    }
+    if (base::FeatureList::IsEnabled(
+            features::kCertDualVerificationTrialFeature) &&
+        features::kCertDualVerificationTrialCacheSize.Get() > 0) {
+      return features::kCertDualVerificationTrialCacheSize.Get();
+    }
+    constexpr size_t kDefaultCacheSize = 512;
+    return kDefaultCacheSize;
+  }
+
   static TrustStoreMac* GetGlobalTrustStoreMac() {
     static base::NoDestructor<TrustStoreMac> static_trust_store_mac(
-        kSecPolicyAppleSSL, GetTrustStoreImplParam());
+        kSecPolicyAppleSSL, GetTrustStoreImplParam(), GetTrustStoreCacheSize());
     return static_trust_store_mac.get();
   }
 };
