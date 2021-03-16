@@ -26,6 +26,8 @@
 namespace base {
 namespace internal {
 
+class PCScanTask;
+
 [[noreturn]] BASE_EXPORT NOINLINE NOT_TAIL_CALLED void DoubleFreeAttempt();
 
 // PCScan (Probabilistic Conservative Scanning) is the algorithm that eliminates
@@ -74,9 +76,7 @@ class BASE_EXPORT PCScan final {
   void PerformScanIfNeeded(InvocationMode invocation_mode);
 
   // Checks if there is a PCScan task currently in progress.
-  ALWAYS_INLINE bool IsInProgress() const {
-    return in_progress_.load(std::memory_order_relaxed);
-  }
+  ALWAYS_INLINE bool IsInProgress() const;
 
   // Sets process name (used for histograms). |name| must be a string literal.
   void SetProcessName(const char* name);
@@ -84,8 +84,8 @@ class BASE_EXPORT PCScan final {
   void ClearRootsForTesting();
 
  private:
-  class PCScanTask;
   class PCScanThread;
+  friend class PCScanTask;
   friend class PCScanTest;
 
   class QuarantineData final {
@@ -117,6 +117,17 @@ class BASE_EXPORT PCScan final {
     size_t last_size_ = 0;
   };
 
+  enum class State : uint8_t {
+    // PCScan task is not scheduled.
+    kNotRunning,
+    // PCScan task is being started and about to be scheduled.
+    kScheduled,
+    // PCScan task is scheduled and can be scanning (or clearing).
+    kScanning,
+    // PCScan task is sweeping or finalizing.
+    kSweepingAndFinishing
+  };
+
   inline constexpr PCScan();
 
   // Performs scanning unconditionally.
@@ -126,7 +137,7 @@ class BASE_EXPORT PCScan final {
   static PCScan instance_ PA_CONSTINIT;
 
   QuarantineData quarantine_data_{};
-  std::atomic<bool> in_progress_{false};
+  std::atomic<State> state_{State::kNotRunning};
 };
 
 // To please Chromium's clang plugin.
@@ -140,6 +151,10 @@ ALWAYS_INLINE bool PCScan::QuarantineData::Account(size_t size) {
 // To please Chromium's clang plugin.
 constexpr PCScan::PCScan() = default;
 
+ALWAYS_INLINE bool PCScan::IsInProgress() const {
+  return state_.load(std::memory_order_relaxed) != State::kNotRunning;
+}
+
 ALWAYS_INLINE void PCScan::MoveToQuarantine(void* ptr, size_t slot_size) {
   auto* quarantine = QuarantineBitmapFromPointer(QuarantineBitmapType::kMutator,
                                                  quarantine_data_.epoch(), ptr);
@@ -151,7 +166,7 @@ ALWAYS_INLINE void PCScan::MoveToQuarantine(void* ptr, size_t slot_size) {
   const bool is_limit_reached = quarantine_data_.Account(slot_size);
   if (UNLIKELY(is_limit_reached)) {
     // Perform a quick check if another scan is already in progress.
-    if (in_progress_.load(std::memory_order_relaxed))
+    if (IsInProgress())
       return;
     // Avoid blocking the current thread for regular scans.
     PerformScan(InvocationMode::kNonBlocking);

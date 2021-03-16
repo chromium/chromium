@@ -200,7 +200,10 @@ bool IsScannerQuarantineBitmapEmpty(char* super_page, size_t epoch) {
   V(Sweep)                               \
   V(Overall)
 
-#define FOR_ALL_PCSCAN_MUTATOR_SCOPES(V) V(Scan)
+#define FOR_ALL_PCSCAN_MUTATOR_SCOPES(V) \
+  V(Clear)                               \
+  V(Scan)                                \
+  V(Overall)
 
 class StatsCollector final {
  public:
@@ -208,12 +211,14 @@ class StatsCollector final {
 #define DECLARE_ENUM(name) k##name,
     FOR_ALL_PCSCAN_SCANNER_SCOPES(DECLARE_ENUM)
 #undef DECLARE_ENUM
+        kNumIds,
   };
 
   enum class MutatorId {
 #define DECLARE_ENUM(name) k##name,
     FOR_ALL_PCSCAN_MUTATOR_SCOPES(DECLARE_ENUM)
 #undef DECLARE_ENUM
+        kNumIds,
   };
 
   enum class Context {
@@ -255,12 +260,22 @@ class StatsCollector final {
           return "PCScan.Scanner.Sweep";
         case ScannerId::kOverall:
           return "PCScan.Scanner";
+        case ScannerId::kNumIds:
+          __builtin_unreachable();
       }
     }
 
     static constexpr const char* ToTracingString(MutatorId id) {
-      PA_DCHECK(id == MutatorId::kScan);
-      return "PCScan.Mutator.Sweep";
+      switch (id) {
+        case MutatorId::kClear:
+          return "PCScan.Mutator.Clear";
+        case MutatorId::kScan:
+          return "PCScan.Mutator.Scan";
+        case MutatorId::kOverall:
+          return "PCScan.Mutator";
+        case MutatorId::kNumIds:
+          __builtin_unreachable();
+      }
     }
 
     StatsCollector& stats_;
@@ -278,28 +293,48 @@ class StatsCollector final {
   StatsCollector& operator=(const StatsCollector&) = delete;
 
   void IncreaseScopeTime(ScannerId type, base::TimeDelta duration) {
-    scanner_scopes_[static_cast<size_t>(type)] += duration;
+    const int64_t ms = duration.InMicroseconds();
+    PA_DCHECK(ms <= std::numeric_limits<uint32_t>::max());
+    scanner_scopes_[static_cast<size_t>(type)].fetch_add(
+        ms, std::memory_order_relaxed);
   }
 
   void IncreaseScopeTime(MutatorId type, base::TimeDelta duration) {
-    mutator_scopes_[static_cast<size_t>(type)] += duration;
+    const int64_t ms = duration.InMicroseconds();
+    PA_DCHECK(ms <= std::numeric_limits<uint32_t>::max());
+    mutator_scopes_[static_cast<size_t>(type)].fetch_add(
+        ms, std::memory_order_relaxed);
   }
+
+  void IncreaseSurvivedQuarantineSize(size_t size) {
+    survived_quarantine_size_.fetch_add(size, std::memory_order_relaxed);
+  }
+  size_t survived_quarantine_size() const {
+    return survived_quarantine_size_.load(std::memory_order_relaxed);
+  }
+
+  void IncreaseSweptSize(size_t size) { swept_size_ += size; }
+  size_t swept_size() const { return swept_size_; }
 
   void UpdateHistograms() {
     if (!process_name_) {
       // Don't update histograms if |process_name_| is not set.
       return;
     }
-#define UPDATE_UMA(name)                       \
-  UMA_HISTOGRAM_TIMES(                         \
-      ToUMAString(ScannerId::k##name).c_str(), \
-      scanner_scopes_[static_cast<size_t>(ScannerId::k##name)]);
+#define UPDATE_UMA(name)                                                 \
+  UMA_HISTOGRAM_TIMES(                                                   \
+      ToUMAString(ScannerId::k##name).c_str(),                           \
+      base::TimeDelta::FromMicroseconds(                                 \
+          scanner_scopes_[static_cast<size_t>(ScannerId::k##name)].load( \
+              std::memory_order_relaxed)));
     FOR_ALL_PCSCAN_SCANNER_SCOPES(UPDATE_UMA)
 #undef UPDATE_UMA
-#define UPDATE_UMA(name)                       \
-  UMA_HISTOGRAM_TIMES(                         \
-      ToUMAString(MutatorId::k##name).c_str(), \
-      mutator_scopes_[static_cast<size_t>(MutatorId::k##name)]);
+#define UPDATE_UMA(name)                                                 \
+  UMA_HISTOGRAM_TIMES(                                                   \
+      ToUMAString(MutatorId::k##name).c_str(),                           \
+      base::TimeDelta::FromMicroseconds(                                 \
+          mutator_scopes_[static_cast<size_t>(MutatorId::k##name)].load( \
+              std::memory_order_relaxed)));
     FOR_ALL_PCSCAN_MUTATOR_SCOPES(UPDATE_UMA)
 #undef UPDATE_UMA
   }
@@ -320,24 +355,57 @@ class StatsCollector final {
         return "PA.PCScan." + process_name + ".Scanner.Sweep";
       case ScannerId::kOverall:
         return "PA.PCScan." + process_name + ".Scanner";
+      case ScannerId::kNumIds:
+        __builtin_unreachable();
     }
   }
 
   MetadataString ToUMAString(MutatorId id) const {
     PA_DCHECK(process_name_);
-    PA_DCHECK(id == MutatorId::kScan);
-    return "PA.PCScan." + MetadataString(process_name_) + ".Mutator.Scan";
+    const MetadataString process_name = process_name_;
+    switch (id) {
+      case MutatorId::kClear:
+        return "PA.PCScan." + process_name + ".Mutator.Clear";
+      case MutatorId::kScan:
+        return "PA.PCScan." + process_name + ".Mutator.Scan";
+      case MutatorId::kOverall:
+        return "PA.PCScan." + process_name + ".Mutator";
+      case MutatorId::kNumIds:
+        __builtin_unreachable();
+    }
   }
 
+  std::array<std::atomic<uint32_t>, static_cast<size_t>(ScannerId::kNumIds)>
+      scanner_scopes_;
+  std::array<std::atomic<uint32_t>, static_cast<size_t>(MutatorId::kNumIds)>
+      mutator_scopes_;
+  std::atomic<size_t> survived_quarantine_size_{0u};
+  size_t swept_size_ = 0u;
   const char* process_name_ = nullptr;
-  std::array<base::TimeDelta, 4> scanner_scopes_;
-  std::array<base::TimeDelta, 1> mutator_scopes_;
 };
 
 #undef FOR_ALL_PCSCAN_MUTATOR_SCOPES
 #undef FOR_ALL_PCSCAN_SCANNER_SCOPES
 
-// Internal singleton that keeps cold data.
+enum class SimdSupport : uint8_t {
+  kUnvectorized,
+  kSSE3,
+  kAVX2,
+  // TODO(bikineev): Add support for Neon.
+};
+
+SimdSupport DetectSimdSupport() {
+  base::CPU cpu;
+  if (cpu.has_avx2())
+    return SimdSupport::kAVX2;
+  if (cpu.has_sse3())
+    return SimdSupport::kSSE3;
+  return SimdSupport::kUnvectorized;
+}
+
+// Internal PCScan singleton. The separation between frontend and backend is
+// needed to keep access to the hot data (quarantine) in the frontend fast,
+// whereas the backend can hold cold data.
 class PCScanInternal final {
  public:
   using Root = PCScan::Root;
@@ -373,8 +441,8 @@ class PCScanInternal final {
   static PCScanInternal& Instance() {
     // Since the data that PCScanInternal holds is cold, it's fine to have the
     // runtime check for thread-safe local static initialization.
-    static PCScanInternal instance;
-    return instance;
+    static base::NoDestructor<PCScanInternal> instance;
+    return *instance;
   }
 
   PCScanInternal(const PCScanInternal&) = delete;
@@ -395,14 +463,19 @@ class PCScanInternal final {
   // Get size of all committed pages from scannable and nonscannable roots.
   size_t CalculateTotalHeapSize() const;
 
+  SimdSupport simd_support() const { return simd_support_; }
+
   void ClearRootsForTesting();  // IN-TEST
 
  private:
+  friend base::NoDestructor<PCScanInternal>;
+
   PCScanInternal();
 
   Roots scannable_roots_{};
   Roots nonscannable_roots_{};
   const char* process_name_ = nullptr;
+  const SimdSupport simd_support_;
 };
 
 void PCScanInternal::Roots::Add(Root* root) {
@@ -418,7 +491,7 @@ void PCScanInternal::Roots::ClearForTesting() {
   current_ = 0;
 }
 
-PCScanInternal::PCScanInternal() {
+PCScanInternal::PCScanInternal() : simd_support_(DetectSimdSupport()) {
 #if defined(PA_HAS_64_BITS_POINTERS)
   if (features::IsPartitionAllocGigaCageEnabled()) {
     PartitionAddressSpace::Init();
@@ -493,8 +566,8 @@ class PCScanSnapshot final {
   struct ScanArea {
     ScanArea(uintptr_t* begin, uintptr_t* end) : begin(begin), end(end) {}
 
-    uintptr_t* begin;
-    uintptr_t* end;
+    uintptr_t* begin = nullptr;
+    uintptr_t* end = nullptr;
   };
   using ScanAreas = std::vector<ScanArea, MetadataAllocator<ScanArea>>;
 
@@ -548,8 +621,8 @@ void PCScanSnapshot::Take(size_t pcscan_epoch) {
     typename Root::ScopedGuard guard(root->lock_);
 
     // Take a snapshot of all super pages and scannable slot spans.
-    // TODO(bikineev): Consider making current_extent lock-free and moving it to
-    // the concurrent thread.
+    // TODO(bikineev): Consider making current_extent lock-free and moving it
+    // to the concurrent thread.
     for (auto* super_page_extent = root->first_extent; super_page_extent;
          super_page_extent = super_page_extent->next) {
       for (char* super_page = super_page_extent->super_page_base;
@@ -607,7 +680,8 @@ void PCScanSnapshot::Take(size_t pcscan_epoch) {
 }  // namespace
 
 // This class is responsible for performing the entire PCScan task.
-class PCScan::PCScanTask final {
+// TODO(bikineev): Move PCScan algorithm out of PCScanTask.
+class PCScanTask final {
  public:
   static void* operator new(size_t size) {
     return PCScanMetadataAllocator().AllocFlagsNoHooks(0, size);
@@ -623,12 +697,14 @@ class PCScan::PCScanTask final {
   PCScanTask(PCScanTask&&) noexcept = delete;
   PCScanTask& operator=(PCScanTask&&) noexcept = delete;
 
-  // Execute PCScan. Must be executed only once.
-  void RunOnce() &&;
+  // Execute PCScan from the scanner thread. Must be called only once from the
+  // scanner thread.
+  void RunFromScanner();
 
  private:
   class ScanLoop;
 
+  using Root = PCScan::Root;
   using SlotSpan = SlotSpanMetadata<ThreadSafe>;
 
   struct GigaCageLookupPolicy {
@@ -669,15 +745,17 @@ class PCScan::PCScanTask final {
 
   // Scans all registeres partitions and marks reachable quarantined objects.
   // Returns the size of marked objects.
-  size_t ScanPartitions();
+  void ScanPartitions();
 
-  // Clear quarantined objects and filter out super pages that don't contain
-  // quarantine.
-  void ClearQuarantinedObjectsAndFilterSuperPages();
+  // Clear quarantined objects and prepare card table for fast lookup
+  void ClearQuarantinedObjectsAndPrepareCardTable();
 
   // Sweeps (frees) unreachable quarantined entries. Returns the size of swept
   // objects.
-  size_t SweepQuarantine();
+  void SweepQuarantine();
+
+  // Finishes the scanner (updates limits, UMA, etc).
+  void FinishScanner();
 
   // Cache the pcscan epoch to avoid the compiler loading the atomic
   // QuarantineData::epoch_ on each access.
@@ -688,8 +766,8 @@ class PCScan::PCScanTask final {
 };
 
 template <typename LookupPolicy>
-ALWAYS_INLINE QuarantineBitmap*
-PCScan::PCScanTask::TryFindScannerBitmapForPointer(uintptr_t maybe_ptr) const {
+ALWAYS_INLINE QuarantineBitmap* PCScanTask::TryFindScannerBitmapForPointer(
+    uintptr_t maybe_ptr) const {
   // First, check if |maybe_ptr| points to a valid super page or a quarantined
   // card.
   LookupPolicy lookup{snapshot_};
@@ -717,7 +795,7 @@ PCScan::PCScanTask::TryFindScannerBitmapForPointer(uintptr_t maybe_ptr) const {
 // entries in the scanner bitmap correspond to unreachable objects.
 template <typename LookupPolicy>
 ALWAYS_INLINE size_t
-PCScan::PCScanTask::TryMarkObjectInNormalBucketPool(uintptr_t maybe_ptr) const {
+PCScanTask::TryMarkObjectInNormalBucketPool(uintptr_t maybe_ptr) const {
   using AccessType = QuarantineBitmap::AccessType;
   // Check if maybe_ptr points somewhere to the heap.
   auto* scanner_bitmap =
@@ -755,22 +833,17 @@ PCScan::PCScanTask::TryMarkObjectInNormalBucketPool(uintptr_t maybe_ptr) const {
   return target_slot_span->bucket->slot_size;
 }
 
-void PCScan::PCScanTask::ClearQuarantinedObjectsAndFilterSuperPages() {
+void PCScanTask::ClearQuarantinedObjectsAndPrepareCardTable() {
   using AccessType = QuarantineBitmap::AccessType;
 
-  StatsCollector::ScannerScope clear_scope(stats_,
-                                           StatsCollector::ScannerId::kClear);
-
   const bool giga_cage_enabled = features::IsPartitionAllocGigaCageEnabled();
-  PCScanSnapshot::SuperPages filtered_super_pages;
   for (auto super_page : snapshot_.quarantinable_super_pages()) {
     auto* bitmap = QuarantineBitmapFromPointer(
         QuarantineBitmapType::kScanner, pcscan_epoch_,
         reinterpret_cast<char*>(super_page));
     auto* root = Root::FromSuperPage(reinterpret_cast<char*>(super_page));
-    bool visited = false;
     bitmap->template Iterate<AccessType::kNonAtomic>(
-        [root, giga_cage_enabled, &visited](uintptr_t ptr) {
+        [root, giga_cage_enabled](uintptr_t ptr) {
           auto* object = reinterpret_cast<void*>(ptr);
           auto* slot_span = SlotSpan::FromSlotInnerPtr(object);
           // Use zero as a zapping value to speed up the fast bailout check in
@@ -785,21 +858,13 @@ void PCScan::PCScanTask::ClearQuarantinedObjectsAndFilterSuperPages() {
 #else
           (void)giga_cage_enabled;
 #endif
-          visited = true;
         });
-    if (visited) {
-      // Filter out super pages that don't contain quarantined objects to bail
-      // out earlier in the fast path (and avoid expensive cache-misses while
-      // checking the quarantine bit).
-      filtered_super_pages.insert(super_page);
-    }
   }
-  snapshot_.quarantinable_super_pages() = std::move(filtered_super_pages);
 }
 
 // Class used to perform actual scanning. Dispatches at runtime based on
 // supported SIMD extensions.
-class PCScan::PCScanTask::ScanLoop final {
+class PCScanTask::ScanLoop final {
  public:
   explicit ScanLoop(const PCScanTask& pcscan_task)
       : scan_function_(GetScanFunction()),
@@ -832,16 +897,16 @@ class PCScan::PCScanTask::ScanLoop final {
     if (UNLIKELY(!features::IsPartitionAllocGigaCageEnabled())) {
       return &ScanLoop::RunUnvectorizedNoGigaCage;
     }
-    // We define vectorized versions of the scanning loop only for 64bit since
-    // they require support of the 64bit GigaCage, and only for x86 because
-    // a special instruction set is required.
+// We allow vectorization only for 64bit since they require support of the
+// 64bit GigaCage, and only for x86 because a special instruction set is
+// required.
 #if defined(ARCH_CPU_X86_64)
-    base::CPU cpu;
-    if (cpu.has_avx2())
+    const SimdSupport simd = PCScanInternal::Instance().simd_support();
+    if (simd == SimdSupport::kAVX2)
       return &ScanLoop::RunAVX2;
-    if (cpu.has_sse3())
+    if (simd == SimdSupport::kSSE3)
       return &ScanLoop::RunSSE3;
-#endif  // defined(ARCH_CPU_X86_64)
+#endif
     return &ScanLoop::RunUnvectorized;
   }
 
@@ -993,16 +1058,16 @@ class PCScan::PCScanTask::ScanLoop final {
 #endif
 };
 
-size_t PCScan::PCScanTask::ScanPartitions() {
-  StatsCollector::ScannerScope scan_scope(stats_,
-                                          StatsCollector::ScannerId::kScan);
+PCScanTask::PCScanTask(PCScan& pcscan)
+    : pcscan_epoch_(pcscan.quarantine_data_.epoch()),
+      stats_(PCScanInternal::Instance().process_name()),
+      pcscan_(pcscan) {}
 
+void PCScanTask::ScanPartitions() {
   const ScanLoop scan_loop(*this);
-
-  size_t new_quarantine_size = 0;
-
   // For scanning large areas, it's worthwhile checking whether the range that
   // is scanned contains quarantined objects.
+  size_t quarantine_size = 0;
   for (auto scan_area : snapshot_.large_scan_areas()) {
     // The bitmap is (a) always guaranteed to exist and (b) the same for all
     // objects in a given slot span.
@@ -1022,25 +1087,23 @@ size_t PCScan::PCScanTask::ScanPartitions() {
       uintptr_t* current_slot_end =
           current_slot + (scan_area.slot_size / sizeof(uintptr_t));
       PA_DCHECK(current_slot_end <= scan_area.end);
-      new_quarantine_size += scan_loop.Run(current_slot, current_slot_end);
+      quarantine_size += scan_loop.Run(current_slot, current_slot_end);
     }
   }
+  // Scan areas with regular size slots.
   for (auto scan_area : snapshot_.scan_areas()) {
-    new_quarantine_size += scan_loop.Run(scan_area.begin, scan_area.end);
+    quarantine_size += scan_loop.Run(scan_area.begin, scan_area.end);
   }
-  return new_quarantine_size;
+  stats_.IncreaseSurvivedQuarantineSize(quarantine_size);
 }
 
-size_t PCScan::PCScanTask::SweepQuarantine() {
+void PCScanTask::SweepQuarantine() {
   using AccessType = QuarantineBitmap::AccessType;
 
-  StatsCollector::ScannerScope sweep_scope(stats_,
-                                           StatsCollector::ScannerId::kSweep);
+  const bool giga_cage_enabled = features::IsPartitionAllocGigaCageEnabled();
   size_t swept_bytes = 0;
 
-  const bool giga_cage_enabled = features::IsPartitionAllocGigaCageEnabled();
-
-  for (auto super_page : snapshot_.quarantinable_super_pages()) {
+  for (uintptr_t super_page : snapshot_.quarantinable_super_pages()) {
     auto* bitmap = QuarantineBitmapFromPointer(
         QuarantineBitmapType::kScanner, pcscan_epoch_,
         reinterpret_cast<char*>(super_page));
@@ -1067,46 +1130,54 @@ size_t PCScan::PCScanTask::SweepQuarantine() {
         });
   }
 
-  return swept_bytes;
+  stats_.IncreaseSweptSize(swept_bytes);
 }
 
-PCScan::PCScanTask::PCScanTask(PCScan& pcscan)
-    : pcscan_epoch_(pcscan.quarantine_data_.epoch()),
-      stats_(PCScanInternal::Instance().process_name()),
-      pcscan_(pcscan) {}
-
-void PCScan::PCScanTask::RunOnce() && {
-  size_t new_quarantine_size = 0;
-  size_t swept_bytes = 0;
-
-  // Take snapshot of partition-alloc heap.
-  snapshot_.Take(pcscan_epoch_);
-
-  {
-    StatsCollector::ScannerScope overall_scope(
-        stats_, StatsCollector::ScannerId::kOverall);
-
-    // Clear all quarantined objects and filter out super pages that
-    // don't contain quarantined objects.
-    ClearQuarantinedObjectsAndFilterSuperPages();
-
-    // Mark and sweep the quarantine list.
-    new_quarantine_size = ScanPartitions();
-    swept_bytes = SweepQuarantine();
-  }
-
+void PCScanTask::FinishScanner() {
   stats_.UpdateHistograms();
-  LogStats(swept_bytes, pcscan_.quarantine_data_.last_size(),
-           new_quarantine_size);
+  LogStats(stats_.swept_size(), pcscan_.quarantine_data_.last_size(),
+           stats_.survived_quarantine_size());
 
   const size_t total_pa_heap_size =
       PCScanInternal::Instance().CalculateTotalHeapSize();
 
-  pcscan_.quarantine_data_.Account(new_quarantine_size);
+  pcscan_.quarantine_data_.Account(stats_.survived_quarantine_size());
   pcscan_.quarantine_data_.GrowLimitIfNeeded(total_pa_heap_size);
 
   // Check that concurrent task can't be scheduled twice.
-  PA_CHECK(pcscan_.in_progress_.exchange(false, std::memory_order_acq_rel));
+  PA_CHECK(pcscan_.state_.exchange(PCScan::State::kNotRunning,
+                                   std::memory_order_acq_rel) ==
+           PCScan::State::kSweepingAndFinishing);
+}
+
+void PCScanTask::RunFromScanner() {
+  {
+    StatsCollector::ScannerScope overall_scope(
+        stats_, StatsCollector::ScannerId::kOverall);
+    // Take snapshot of partition-alloc heap.
+    snapshot_.Take(pcscan_epoch_);
+    {
+      // Clear all quarantined objects and prepare the card table.
+      StatsCollector::ScannerScope clear_scope(
+          stats_, StatsCollector::ScannerId::kClear);
+      ClearQuarantinedObjectsAndPrepareCardTable();
+    }
+    {
+      // Scan heap for dangling references.
+      StatsCollector::ScannerScope scan_scope(stats_,
+                                              StatsCollector::ScannerId::kScan);
+      ScanPartitions();
+    }
+    pcscan_.state_.store(PCScan::State::kSweepingAndFinishing,
+                         std::memory_order_relaxed);
+    {
+      // Sweep unreachable quarantined objects.
+      StatsCollector::ScannerScope sweep_scope(
+          stats_, StatsCollector::ScannerId::kSweep);
+      SweepQuarantine();
+    }
+  }
+  FinishScanner();
 }
 
 class PCScan::PCScanThread final {
@@ -1149,7 +1220,7 @@ class PCScan::PCScanThread final {
         condvar_.wait(lock, [this] { return posted_task_.get(); });
         std::swap(current_task, posted_task_);
       }
-      std::move(*current_task).RunOnce();
+      std::move(*current_task).RunFromScanner();
     }
   }
 
@@ -1188,15 +1259,18 @@ void PCScan::PerformScan(InvocationMode invocation_mode) {
                   [](Root* root) { return root->IsQuarantineEnabled(); }));
 #endif
 
-  if (in_progress_.exchange(true, std::memory_order_acq_rel)) {
+  if (state_.exchange(State::kScheduled, std::memory_order_acq_rel) !=
+      State::kNotRunning) {
     // Bail out if PCScan is already in progress.
     return;
   }
 
   quarantine_data_.ResetAndAdvanceEpoch();
 
-  // Initialize PCScan task.
+  // Create PCScan task.
   auto task = std::make_unique<PCScanTask>(*this);
+
+  state_.store(State::kScanning, std::memory_order_release);
 
   // Post PCScan task.
   if (LIKELY(invocation_mode == InvocationMode::kNonBlocking)) {
@@ -1204,7 +1278,7 @@ void PCScan::PerformScan(InvocationMode invocation_mode) {
   } else {
     PA_DCHECK(InvocationMode::kBlocking == invocation_mode ||
               InvocationMode::kForcedBlocking == invocation_mode);
-    std::move(*task).RunOnce();
+    std::move(*task).RunFromScanner();
   }
 }
 
