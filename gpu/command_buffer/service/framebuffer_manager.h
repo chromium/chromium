@@ -12,6 +12,7 @@
 #include <unordered_map>
 #include <vector>
 
+#include "base/containers/small_map.h"
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "gpu/command_buffer/service/context_group.h"
@@ -286,7 +287,8 @@ class GPU_GLES2_EXPORT Framebuffer : public base::RefCounted<Framebuffer> {
   unsigned framebuffer_complete_state_count_id_;
 
   // A map of attachments.
-  typedef std::unordered_map<GLenum, scoped_refptr<Attachment>> AttachmentMap;
+  using AttachmentMap =
+      base::small_map<std::unordered_map<GLenum, scoped_refptr<Attachment>>, 8>;
   AttachmentMap attachments_;
 
   // User's draw buffers setting through DrawBuffers() call.
