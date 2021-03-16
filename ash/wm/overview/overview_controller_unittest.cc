@@ -620,6 +620,34 @@ TEST_F(OverviewControllerTest, OverviewExitWhileStillEntering) {
   EXPECT_TRUE(WindowState::Get(window.get())->IsMinimized());
 }
 
+// Tests that overview animations continue even if a window gets destroyed
+// during the animation.
+TEST_F(OverviewControllerTest, CloseWindowDuringAnimation) {
+  // Create two windows. They should both be visible so that they both get
+  // animated.
+  std::unique_ptr<aura::Window> window1 = CreateAppWindow(gfx::Rect(250, 100));
+  std::unique_ptr<aura::Window> window2 =
+      CreateAppWindow(gfx::Rect(250, 250, 250, 100));
+
+  ui::ScopedAnimationDurationScaleMode non_zero(
+      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+  Shell::Get()->overview_controller()->StartOverview();
+
+  // Destroy a window during the enter animation.
+  window1.reset();
+  ShellTestApi().WaitForOverviewAnimationState(
+      OverviewAnimationState::kEnterAnimationComplete);
+  ASSERT_TRUE(Shell::Get()->overview_controller()->InOverviewSession());
+
+  Shell::Get()->overview_controller()->EndOverview();
+
+  // Destroy a window during the exit animation.
+  window2.reset();
+  ShellTestApi().WaitForOverviewAnimationState(
+      OverviewAnimationState::kExitAnimationComplete);
+  EXPECT_FALSE(Shell::Get()->overview_controller()->InOverviewSession());
+}
+
 // A subclass of DeskSwitchAnimationWaiter that additionally attempts to start
 // overview after the desk animation screenshots have been taken. Using the
 // regular DeskSwitchAnimatorWaiter and attempting to start overview before

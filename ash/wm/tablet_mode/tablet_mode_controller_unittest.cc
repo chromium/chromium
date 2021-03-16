@@ -1632,6 +1632,31 @@ TEST_F(TabletModeControllerTest, TabletModeTransitionHistogramsSnappedWindows) {
   histogram_tester.ExpectTotalCount(kExitHistogram, 0);
 }
 
+// Tests that closing a window during the tablet mode enter animation does not
+// cause a crash.
+TEST_F(TabletModeControllerTest, CloseWindowDuringEnterAnimation) {
+  std::unique_ptr<aura::Window> window = CreateAppWindow(gfx::Rect(250, 100));
+
+  ui::ScopedAnimationDurationScaleMode test_duration_mode(
+      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+
+  tablet_mode_controller()->SetEnabledForTest(true);
+  window.reset();
+}
+
+// Tests that closing a window during the tablet mode exit animation does not
+// cause a crash.
+TEST_F(TabletModeControllerTest, CloseWindowDuringExitAnimation) {
+  std::unique_ptr<aura::Window> window = CreateAppWindow(gfx::Rect(250, 100));
+  tablet_mode_controller()->SetEnabledForTest(true);
+
+  ui::ScopedAnimationDurationScaleMode test_duration_mode(
+      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+
+  tablet_mode_controller()->SetEnabledForTest(false);
+  window.reset();
+}
+
 class TabletModeControllerOnDeviceTest : public TabletModeControllerTest {
  public:
   TabletModeControllerOnDeviceTest() = default;

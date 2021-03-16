@@ -15,6 +15,19 @@
 
 namespace ash {
 
+namespace {
+
+void WaitEndingScreenshotTaken(DeskActivationAnimation* animation) {
+  base::RunLoop run_loop;
+  auto* desk_switch_animator =
+      animation->GetDeskSwitchAnimatorAtIndexForTesting(0);
+  RootWindowDeskSwitchAnimatorTestApi(desk_switch_animator)
+      .SetOnEndingScreenshotTakenCallback(run_loop.QuitClosure());
+  run_loop.Run();
+}
+
+}  // namespace
+
 using DeskActivationAnimationTest = AshTestBase;
 
 // Tests that there is no crash when ending a swipe animation before the
@@ -86,32 +99,26 @@ TEST_F(DeskActivationAnimationTest, VisibleDeskChangeCount) {
   desks_controller->NewDesk(DesksCreationRemovalSource::kButton);
   desks_controller->NewDesk(DesksCreationRemovalSource::kButton);
 
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(features::kEnhancedDeskAnimations);
+
   DeskActivationAnimation animation(desks_controller, 0, 1,
                                     DesksSwitchSource::kDeskSwitchTouchpad,
                                     /*update_window_activation=*/false);
   animation.set_skip_notify_controller_on_animation_finished_for_testing(true);
   animation.Launch();
 
-  auto wait_ending_screenshot_taken = [](DeskActivationAnimation* animation) {
-    base::RunLoop run_loop;
-    auto* desk_switch_animator =
-        animation->GetDeskSwitchAnimatorAtIndexForTesting(0);
-    RootWindowDeskSwitchAnimatorTestApi(desk_switch_animator)
-        .SetOnEndingScreenshotTakenCallback(run_loop.QuitClosure());
-    run_loop.Run();
-  };
-
-  wait_ending_screenshot_taken(&animation);
+  WaitEndingScreenshotTaken(&animation);
   EXPECT_EQ(0, animation.visible_desk_changes());
 
   // Swipe enough so that our third and fourth desk screenshots are taken, and
   // then swipe so that the fourth desk is fully shown. There should be 3
   // visible desk changes in total.
   animation.UpdateSwipeAnimation(-kTouchpadSwipeLengthForDeskChange);
-  wait_ending_screenshot_taken(&animation);
+  WaitEndingScreenshotTaken(&animation);
 
   animation.UpdateSwipeAnimation(-kTouchpadSwipeLengthForDeskChange);
-  wait_ending_screenshot_taken(&animation);
+  WaitEndingScreenshotTaken(&animation);
 
   animation.UpdateSwipeAnimation(-3 * kTouchpadSwipeLengthForDeskChange);
   EXPECT_EQ(3, animation.visible_desk_changes());
@@ -129,6 +136,26 @@ TEST_F(DeskActivationAnimationTest, VisibleDeskChangeCount) {
   animation.UpdateSwipeAnimation(-kTouchpadSwipeLengthForDeskChange);
   animation.UpdateSwipeAnimation(-kTouchpadSwipeLengthForDeskChange);
   EXPECT_EQ(7, animation.visible_desk_changes());
+}
+
+// Tests that closing windows during a desk animation does not cause a crash.
+TEST_F(DeskActivationAnimationTest, CloseWindowDuringAnimation) {
+  auto* desks_controller = DesksController::Get();
+  desks_controller->NewDesk(DesksCreationRemovalSource::kButton);
+
+  std::unique_ptr<aura::Window> window = CreateAppWindow(gfx::Rect(250, 100));
+
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(features::kEnhancedDeskAnimations);
+
+  DeskActivationAnimation animation(desks_controller, 0, 1,
+                                    DesksSwitchSource::kDeskSwitchTouchpad,
+                                    /*update_window_activation=*/false);
+  animation.set_skip_notify_controller_on_animation_finished_for_testing(true);
+  animation.Launch();
+
+  window.reset();
+  WaitEndingScreenshotTaken(&animation);
 }
 
 }  // namespace ash
