@@ -48,10 +48,6 @@ class ImeDecoder {
   // Return `Status::kSuccess` if the lib is successfully initialized.
   Status GetStatus() const;
 
-  // Returns an instance of ImeEngineMainEntry from the IME shared library.
-  // TODO(b/172527471): Remove it when decoder DSO is uprevved.
-  ImeEngineMainEntry* CreateMainEntry(ImeCrosPlatform* platform);
-
   // Returns entry points of the loaded decoder shared library.
   EntryPoints GetEntryPoints();
 
@@ -66,10 +62,6 @@ class ImeDecoder {
 
   // Result of IME decoder DSO initialization.
   base::Optional<base::ScopedNativeLibrary> library_;
-
-  // Function pointors from decoder DSO.
-  // TODO(b/172527471): Remove it when decoder DSO is uprevved.
-  ImeMainEntryCreateFn createMainEntry_;
 
   EntryPoints entry_points_;
 

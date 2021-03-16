@@ -204,63 +204,39 @@ class ImeClientDelegate {
   virtual void Destroy() = 0;
 };
 
-// The main entry point of an IME shared library.
-//
-// This class is implemented in the shared library and processes messages from
-// clients of the IME service. The shared library will exposes its create
-// function to the IME service.
-// DEPRECATED: Will be removed soon.
-class ImeEngineMainEntry {
- protected:
-  virtual ~ImeEngineMainEntry() = default;
-
- public:
-  // Returns whether a specific IME is supported by this IME shared library.
-  // The argument is the specfiation name of an IME, and the caller should
-  // explicitly know the IME engine's naming rules.
-  virtual bool IsImeSupported(const char*) = 0;
-
-  // Activate an engine instance in the shared library with an IME specfiation
-  // name and a bound `ImeClientDelegate` which is used to create a channel from
-  // the engine instance to the IME client. The ownership of `ImeClientDelegate`
-  // will be passed to the Main Entry.
-  virtual bool ActivateIme(const char*, ImeClientDelegate*) = 0;
-
-  // Process data from an IME service in `ImeEngineMainEntry`.
-  // The data will be invalidated by IME service soon after this call.
-  virtual void Process(const uint8_t* data, size_t size) = 0;
-
-  // Destroy the `ImeEngineMainEntry` instance, which is called in IME service
-  // on demand.
-  virtual void Destroy() = 0;
-};
-
-// Create ImeEngineMainEntry instance from the IME engine shared library.
-//
-// Applications using IME engines must call this function before any others.
-// The caller will take ownership of the returned pointer and is responsible for
-// deleting the ImeEngineMainEntry by calling `Destroy` on it when it's done.
-//
-// The provided `Platform` must remain valid until the `ImeEngineMainEntry`
-// is destroyed.
-//
-// IME engine shared library must implement this function and export it with the
-// name defined in IME_MAIN_ENTRY_CREATE_FN_NAME.
-//
-// Returns an instance of ImeEngineMainEntry from the IME shared library.
-typedef ImeEngineMainEntry* (*ImeMainEntryCreateFn)(ImeCrosPlatform*);
-
 // For use when bridging logs logged in IME shared library to Chrome logging.
 typedef void (*ImeEngineLoggerSetterFn)(ChromeLoggerFunc);
 
-typedef void (*ImeDecoderInitOnceFn)(ImeCrosPlatform*);
-typedef bool (*ImeDecoderSupportsFn)(const char*);
-typedef bool (*ImeDecoderActivateImeFn)(const char*, ImeClientDelegate*);
-typedef void (*ImeDecoderProcessFn)(const uint8_t*, size_t);
-typedef void (*ImeDecoderCloseFn)();
+// Functions blow are exported by the IME decoder shared library that we expose
+// through a loader.
 
-// Defined name of ImeMainEntryCreateFn exported from shared library.
-#define IME_MAIN_ENTRY_CREATE_FN_NAME "CreateImeMainEntry"
+// Initialize the IME decoder.
+//
+// Any user of IME decoder must make a call on this function before any others.
+//
+// The provided `ImeCrosPlatform` must remain valid during the whole life of
+// shared libraray
+typedef void (*ImeDecoderInitOnceFn)(ImeCrosPlatform*);
+
+// Returns whether a specific IME is supported by this IME shared library.
+// The argument is the specfiation name of an IME, and the caller should
+// explicitly know the IME engine's naming rules.
+typedef bool (*ImeDecoderSupportsFn)(const char*);
+
+// Activate an IME instance in the shared library with an IME specfiation name
+// and a bound `ImeClientDelegate` which is a channel from the IME instance to
+// its client.
+//
+// The ownership of `ImeClientDelegate` will be passed to the IME instance.
+typedef bool (*ImeDecoderActivateImeFn)(const char*, ImeClientDelegate*);
+
+// Process IME events by the activated IME instance.
+// The data passed in  should be invalidated by the IME instance soon after it's
+// consumed.
+typedef void (*ImeDecoderProcessFn)(const uint8_t*, size_t);
+
+// Release resources used by the IME decoder.
+typedef void (*ImeDecoderCloseFn)();
 
 }  // namespace ime
 }  // namespace chromeos

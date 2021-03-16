@@ -72,10 +72,6 @@ ImeDecoder::ImeDecoder() : status_(Status::kUninitialized) {
     return;
   }
 
-  // TODO(b/172527471): Remove it when decoder DSO is uprevved.
-  createMainEntry_ = reinterpret_cast<ImeMainEntryCreateFn>(
-      library.GetFunctionPointer(IME_MAIN_ENTRY_CREATE_FN_NAME));
-
   // TODO(b/172527471): Create a macro to fetch function pointers.
   entry_points_.init_once = reinterpret_cast<ImeDecoderInitOnceFn>(
       library.GetFunctionPointer("ImeDecoderInitOnce"));
@@ -116,12 +112,6 @@ ImeDecoder* ImeDecoder::GetInstance() {
 
 ImeDecoder::Status ImeDecoder::GetStatus() const {
   return status_;
-}
-
-// TODO(b/172527471): Remove it when decoder DSO is uprevved.
-ImeEngineMainEntry* ImeDecoder::CreateMainEntry(ImeCrosPlatform* platform) {
-  DCHECK(createMainEntry_);
-  return createMainEntry_(platform);
 }
 
 ImeDecoder::EntryPoints ImeDecoder::GetEntryPoints() {
