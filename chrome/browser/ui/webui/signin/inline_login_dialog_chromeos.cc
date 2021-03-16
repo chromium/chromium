@@ -135,10 +135,14 @@ gfx::Point InlineLoginDialogChromeOS::GetDialogPosition(const gfx::Size& size) {
 }
 
 void InlineLoginDialogChromeOS::AddObserver(
-    web_modal::ModalDialogHostObserver* observer) {}
+    web_modal::ModalDialogHostObserver* observer) {
+  modal_dialog_host_observer_list_.AddObserver(observer);
+}
 
 void InlineLoginDialogChromeOS::RemoveObserver(
-    web_modal::ModalDialogHostObserver* observer) {}
+    web_modal::ModalDialogHostObserver* observer) {
+  modal_dialog_host_observer_list_.RemoveObserver(observer);
+}
 
 void InlineLoginDialogChromeOS::SetEduCoexistenceFlowResult(
     EduCoexistenceFlowResult result) {
@@ -168,6 +172,15 @@ InlineLoginDialogChromeOS::InlineLoginDialogChromeOS(
 }
 
 InlineLoginDialogChromeOS::~InlineLoginDialogChromeOS() {
+  for (auto& observer : modal_dialog_host_observer_list_)
+    observer.OnHostDestroying();
+
+  if (webui()) {
+    web_modal::WebContentsModalDialogManager::FromWebContents(
+        webui()->GetWebContents())
+        ->SetDelegate(nullptr);
+  }
+
   if (!close_dialog_closure_.is_null()) {
     std::move(close_dialog_closure_).Run();
   }

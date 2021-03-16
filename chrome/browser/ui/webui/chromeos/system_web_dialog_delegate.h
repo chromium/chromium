@@ -107,6 +107,8 @@ class SystemWebDialogDelegate : public ui::WebDialogDelegate {
   // A setter for modal type.
   void set_modal_type(ui::ModalType modal_type) { modal_type_ = modal_type; }
 
+  content::WebUI* webui() { return webui_; }
+
  private:
   GURL gurl_;
   base::string16 title_;

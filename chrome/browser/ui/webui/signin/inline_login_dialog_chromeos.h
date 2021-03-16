@@ -9,10 +9,12 @@
 
 #include "ash/components/account_manager/account_manager.h"
 #include "base/macros.h"
+#include "base/observer_list.h"
 #include "base/optional.h"
 #include "chrome/browser/ui/webui/chromeos/system_web_dialog_delegate.h"
 #include "chrome/browser/ui/webui/signin/inline_login_handler_modal_delegate.h"
 #include "components/account_manager_core/account_manager_facade.h"
+#include "components/web_modal/modal_dialog_host.h"
 #include "components/web_modal/web_contents_modal_dialog_host.h"
 
 class GURL;
@@ -77,6 +79,7 @@ class InlineLoginDialogChromeOS : public SystemWebDialogDelegate,
   gfx::Point GetDialogPosition(const gfx::Size& size) override;
   void AddObserver(web_modal::ModalDialogHostObserver* observer) override;
   void RemoveObserver(web_modal::ModalDialogHostObserver* observer) override;
+
   void SetEduCoexistenceFlowResult(EduCoexistenceFlowResult result);
 
  protected:
@@ -117,6 +120,8 @@ class InlineLoginDialogChromeOS : public SystemWebDialogDelegate,
   const GURL url_;
   base::Optional<EduCoexistenceFlowResult> edu_coexistence_flow_result_;
   base::OnceClosure close_dialog_closure_;
+  base::ObserverList<web_modal::ModalDialogHostObserver>::Unchecked
+      modal_dialog_host_observer_list_;
 
   DISALLOW_COPY_AND_ASSIGN(InlineLoginDialogChromeOS);
 };
