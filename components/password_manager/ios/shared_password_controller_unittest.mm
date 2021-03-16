@@ -4,6 +4,7 @@
 
 #import "components/password_manager/ios/shared_password_controller.h"
 
+#include "base/test/metrics/histogram_tester.h"
 #include "components/autofill/core/browser/ui/popup_item_ids.h"
 #include "components/autofill/core/common/form_data.h"
 #include "components/autofill/core/common/password_form_generation_data.h"
@@ -55,6 +56,13 @@ class MockPasswordManager : public PasswordManagerInterface {
   MOCK_METHOD(void,
               OnPasswordFormCleared,
               (PasswordManagerDriver*, const autofill::FormData&),
+              (override));
+  MOCK_METHOD(void,
+              SetGenerationElementAndTypeForForm,
+              (PasswordManagerDriver*,
+               autofill::FormRendererId,
+               autofill::FieldRendererId,
+               autofill::password_generation::PasswordGenerationType),
               (override));
   MOCK_METHOD(void,
               OnPasswordFormSubmittedNoChecksForiOS,
@@ -356,6 +364,7 @@ TEST_F(SharedPasswordControllerTest, SuggestsGeneratedPassword) {
   [[delegate_ expect] sharedPasswordController:controller_
                 showGeneratedPotentialPassword:[OCMArg isNotNil]
                                decisionHandler:[OCMArg any]];
+  EXPECT_CALL(password_manager_, SetGenerationElementAndTypeForForm);
 
   [controller_ didSelectSuggestion:suggestion
                               form:@"test-form-name"
@@ -370,6 +379,7 @@ TEST_F(SharedPasswordControllerTest, SuggestsGeneratedPassword) {
 
 // Tests that generated passwords are presaved.
 TEST_F(SharedPasswordControllerTest, PresavesGeneratedPassword) {
+  base::HistogramTester histogram_tester;
   autofill::FormRendererId form_id(0);
   autofill::FieldRendererId field_id(1);
   autofill::PasswordFormGenerationData form_generation_data = {
@@ -414,6 +424,7 @@ TEST_F(SharedPasswordControllerTest, PresavesGeneratedPassword) {
             completionHandler:extract_completion_handler_arg];
 
   EXPECT_CALL(password_manager_, PresaveGeneratedPassword);
+  EXPECT_CALL(password_manager_, SetGenerationElementAndTypeForForm);
 
   [controller_ didSelectSuggestion:suggestion
                               form:@"test-form-name"
@@ -424,11 +435,15 @@ TEST_F(SharedPasswordControllerTest, PresavesGeneratedPassword) {
                  completionHandler:nil];
 
   [delegate_ verify];
+  histogram_tester.ExpectUniqueSample(
+      "PasswordGeneration.Event",
+      autofill::password_generation::PASSWORD_ACCEPTED, 1);
 }
 
 // Tests that triggering password generation on the last focused field triggers
 // the generation flow.
 TEST_F(SharedPasswordControllerTest, TriggerPasswordGeneration) {
+  base::HistogramTester histogram_tester;
   autofill::FormActivityParams params;
   params.unique_form_id = autofill::FormRendererId(0);
   params.field_type = "password";
@@ -445,10 +460,15 @@ TEST_F(SharedPasswordControllerTest, TriggerPasswordGeneration) {
   [[delegate_ expect] sharedPasswordController:controller_
                 showGeneratedPotentialPassword:[OCMArg isNotNil]
                                decisionHandler:[OCMArg any]];
+  EXPECT_CALL(password_manager_, SetGenerationElementAndTypeForForm);
 
   [controller_ triggerPasswordGeneration];
 
   [delegate_ verify];
+  histogram_tester.ExpectUniqueSample(
+      "PasswordGeneration.Event",
+      autofill::password_generation::PASSWORD_GENERATION_CONTEXT_MENU_PRESSED,
+      1);
 }
 
 // Tests that triggering password generation on the last focused field does not

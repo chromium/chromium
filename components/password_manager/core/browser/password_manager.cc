@@ -269,7 +269,8 @@ void PasswordManager::OnGeneratedPasswordAccepted(
     const FormData& form_data,
     autofill::FieldRendererId generation_element_id,
     const std::u16string& password) {
-  PasswordFormManager* manager = GetMatchedManager(driver, form_data);
+  PasswordFormManager* manager =
+      GetMatchedManager(driver, form_data.unique_renderer_id);
   if (manager) {
     manager->OnGeneratedPasswordAccepted(form_data, generation_element_id,
                                          password);
@@ -285,7 +286,8 @@ void PasswordManager::OnPresaveGeneratedPassword(
     const FormData& form_data,
     const std::u16string& generated_password) {
   DCHECK(client_->IsSavingAndFillingEnabled(form_data.url));
-  PasswordFormManager* form_manager = GetMatchedManager(driver, form_data);
+  PasswordFormManager* form_manager =
+      GetMatchedManager(driver, form_data.unique_renderer_id);
   UMA_HISTOGRAM_BOOLEAN("PasswordManager.GeneratedFormHasNoFormManager",
                         !form_manager);
   if (form_manager)
@@ -296,20 +298,20 @@ void PasswordManager::OnPasswordNoLongerGenerated(PasswordManagerDriver* driver,
                                                   const FormData& form_data) {
   DCHECK(client_->IsSavingAndFillingEnabled(form_data.url));
 
-  PasswordFormManager* form_manager = GetMatchedManager(driver, form_data);
+  PasswordFormManager* form_manager =
+      GetMatchedManager(driver, form_data.unique_renderer_id);
   if (form_manager)
     form_manager->PasswordNoLongerGenerated();
 }
 
 void PasswordManager::SetGenerationElementAndTypeForForm(
     password_manager::PasswordManagerDriver* driver,
-    const FormData& form_data,
+    FormRendererId form_id,
     FieldRendererId generation_element,
     autofill::password_generation::PasswordGenerationType type) {
-  DCHECK(client_->IsSavingAndFillingEnabled(form_data.url));
-
-  PasswordFormManager* form_manager = GetMatchedManager(driver, form_data);
+  PasswordFormManager* form_manager = GetMatchedManager(driver, form_id);
   if (form_manager) {
+    DCHECK(client_->IsSavingAndFillingEnabled(form_manager->GetURL()));
     form_manager->SetGenerationElement(generation_element);
     form_manager->SetGenerationPopupWasShown(type);
   }
@@ -465,7 +467,8 @@ void PasswordManager::OnPasswordFormSubmittedNoChecks(
 void PasswordManager::OnPasswordFormCleared(
     PasswordManagerDriver* driver,
     const autofill::FormData& form_data) {
-  PasswordFormManager* manager = GetMatchedManager(driver, form_data);
+  PasswordFormManager* manager =
+      GetMatchedManager(driver, form_data.unique_renderer_id);
   if (!manager || !manager->is_submitted() ||
       !manager->GetSubmittedForm()->IsPossibleChangePasswordForm()) {
     return;
@@ -605,7 +608,8 @@ void PasswordManager::CreateFormManagers(
     if (!client_->IsFillingEnabled(form_data.url))
       continue;
 
-    PasswordFormManager* manager = GetMatchedManager(driver, form_data);
+    PasswordFormManager* manager =
+        GetMatchedManager(driver, form_data.unique_renderer_id);
 
     if (manager) {
       // This extra filling is just duplicating redundancy that was in
@@ -666,7 +670,7 @@ PasswordFormManager* PasswordManager::ProvisionallySaveForm(
   }
 
   PasswordFormManager* matched_manager =
-      GetMatchedManager(driver, submitted_form);
+      GetMatchedManager(driver, submitted_form.unique_renderer_id);
 
   auto availability =
       matched_manager
@@ -736,7 +740,8 @@ void PasswordManager::PresaveGeneratedPassword(
     const FormData& form,
     const std::u16string& generated_password,
     FieldRendererId generation_element) {
-  PasswordFormManager* form_manager = GetMatchedManager(driver, form);
+  PasswordFormManager* form_manager =
+      GetMatchedManager(driver, form.unique_renderer_id);
   UMA_HISTOGRAM_BOOLEAN("PasswordManager.GeneratedFormHasNoFormManager",
                         !form_manager);
 
@@ -1106,7 +1111,7 @@ void PasswordManager::ProcessAutofillPredictions(
     if (logger)
       logger->LogFormStructure(Logger::STRING_SERVER_PREDICTIONS, *form);
     FormData form_data = SimplifiedFormDataFromFormStructure(*form);
-    if (GetMatchedManager(driver, form_data)) {
+    if (GetMatchedManager(driver, form_data.unique_renderer_id)) {
       // The form manager is already created.
       continue;
     }
@@ -1174,7 +1179,7 @@ void PasswordManager::RecordProvisionalSaveFailure(
 // PasswordFormManager when PasswordFormManager is gone.
 PasswordFormManager* PasswordManager::GetMatchedManager(
     PasswordManagerDriver* driver,
-    const FormData& form) {
+    FormRendererId form_id) {
   for (auto& form_manager : form_managers_) {
 // Until support of cross-origin iframes is implemented, there is only one
 // driver on iOS. It needs to be set in order for filling to work.
@@ -1182,7 +1187,7 @@ PasswordFormManager* PasswordManager::GetMatchedManager(
     if (driver && !form_manager->GetDriver())
       form_manager->SetDriver(driver->AsWeakPtr());
 #endif
-    if (form_manager->DoesManage(form, driver))
+    if (form_manager->DoesManageAccordingToRendererId(form_id, driver))
       return form_manager.get();
   }
   return nullptr;

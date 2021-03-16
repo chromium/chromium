@@ -46,6 +46,13 @@ class PasswordManagerInterface : public FormSubmissionObserver {
   virtual void OnPasswordFormCleared(PasswordManagerDriver* driver,
                                      const autofill::FormData& form_data) = 0;
 
+  // Update the `generation_element` and `type` for `form_id`.
+  virtual void SetGenerationElementAndTypeForForm(
+      PasswordManagerDriver* driver,
+      autofill::FormRendererId form_id,
+      autofill::FieldRendererId generation_element,
+      autofill::password_generation::PasswordGenerationType type) = 0;
+
 #if defined(OS_IOS)
   // Handles a password form being submitted, assumes that submission is
   // successful and does not do any checks on success of submission. For

@@ -2157,7 +2157,8 @@ TEST_P(PasswordManagerTest, SetGenerationElementAndTypeForForm) {
   manager()->OnPasswordFormsParsed(&driver_, {form.form_data});
 
   manager()->SetGenerationElementAndTypeForForm(
-      &driver_, form.form_data, form.form_data.fields[1].unique_renderer_id,
+      &driver_, form.form_data.unique_renderer_id,
+      form.form_data.fields[1].unique_renderer_id,
       autofill::password_generation::PasswordGenerationType::kAutomatic);
   EXPECT_CALL(*store_, AddLogin(_));
   manager()->OnPresaveGeneratedPassword(&driver_, form.form_data,

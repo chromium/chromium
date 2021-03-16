@@ -24,6 +24,7 @@
 #include "components/autofill/core/common/form_data.h"
 #include "components/autofill/core/common/password_form_fill_data.h"
 #include "components/autofill/core/common/password_form_generation_data.h"
+#include "components/autofill/core/common/password_generation_util.h"
 #include "components/autofill/core/common/renderer_id.h"
 #include "components/autofill/core/common/signatures.h"
 #include "components/autofill/ios/browser/autofill_util.h"
@@ -57,6 +58,8 @@ using autofill::FormActivityObserverBridge;
 using autofill::FormData;
 using autofill::FormRendererId;
 using autofill::PasswordFormGenerationData;
+using autofill::password_generation::LogPasswordGenerationEvent;
+using autofill::password_generation::PasswordGenerationType;
 using base::SysNSStringToUTF16;
 using base::SysUTF16ToNSString;
 using base::SysUTF8ToNSString;
@@ -169,6 +172,8 @@ NSString* const kSuggestionSuffix = @" ••••••••";
   if (!_lastFocusedFieldIdentifier) {
     return;
   }
+  LogPasswordGenerationEvent(
+      autofill::password_generation::PASSWORD_GENERATION_CONTEXT_MENU_PRESSED);
   [self generatePasswordForFormId:_lastFocusedFormIdentifier
                   fieldIdentifier:_lastFocusedFieldIdentifier
               isManuallyTriggered:YES];
@@ -293,6 +298,8 @@ NSString* const kSuggestionSuffix = @" ••••••••";
     // flow and avoid the manual flow, for a cleaner and simpler UI.
     if (formQuery.typedValue.length < kMinimumLengthForEditedPassword) {
       self.isPasswordGenerated = NO;
+      LogPasswordGenerationEvent(
+          autofill::password_generation::PASSWORD_DELETED);
       self.passwordGeneratedIdentifier = FieldRendererId();
       _passwordManager->OnPasswordNoLongerGenerated(
           _delegate.passwordManagerDriver);
@@ -606,6 +613,8 @@ NSString* const kSuggestionSuffix = @" ••••••••";
        showGeneratedPotentialPassword:self.generatedPotentialPassword
                       decisionHandler:^(BOOL accept) {
                         if (accept) {
+                          LogPasswordGenerationEvent(
+                              autofill::password_generation::PASSWORD_ACCEPTED);
                           [weakSelf
                               injectGeneratedPasswordForFormId:formIdentifier
                                              generatedPassword:
@@ -617,6 +626,11 @@ NSString* const kSuggestionSuffix = @" ••••••••";
                           completionHandler();
                         }
                       }];
+
+  _passwordManager->SetGenerationElementAndTypeForForm(
+      _delegate.passwordManagerDriver, formIdentifier, fieldIdentifier,
+      isManuallyTriggered ? PasswordGenerationType::kManual
+                          : PasswordGenerationType::kAutomatic);
 }
 
 - (void)injectGeneratedPasswordForFormId:(FormRendererId)formIdentifier

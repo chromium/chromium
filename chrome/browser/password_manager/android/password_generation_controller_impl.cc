@@ -96,7 +96,7 @@ void PasswordGenerationControllerImpl::OnAutomaticGenerationAvailable(
 
   active_frame_driver_->GetPasswordManager()
       ->SetGenerationElementAndTypeForForm(
-          active_frame_driver_.get(), ui_data.form_data,
+          active_frame_driver_.get(), ui_data.form_data.unique_renderer_id,
           ui_data.generation_element_id, PasswordGenerationType::kAutomatic);
 
   if (!base::FeatureList::IsEnabled(

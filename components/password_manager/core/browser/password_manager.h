@@ -81,6 +81,11 @@ class PasswordManager : public PasswordManagerInterface {
                                const autofill::FormData& form_data) override;
   void OnPasswordFormCleared(PasswordManagerDriver* driver,
                              const autofill::FormData& form_data) override;
+  void SetGenerationElementAndTypeForForm(
+      PasswordManagerDriver* driver,
+      autofill::FormRendererId form_id,
+      autofill::FieldRendererId generation_element,
+      autofill::password_generation::PasswordGenerationType type) override;
 #if defined(OS_IOS)
   void OnPasswordFormSubmittedNoChecksForiOS(
       PasswordManagerDriver* driver,
@@ -123,13 +128,6 @@ class PasswordManager : public PasswordManagerInterface {
   // matched form manager.
   void OnPasswordNoLongerGenerated(PasswordManagerDriver* driver,
                                    const autofill::FormData& form_data);
-
-  // Update the `generation_element` and `type` for `form_data`.
-  void SetGenerationElementAndTypeForForm(
-      PasswordManagerDriver* driver,
-      const autofill::FormData& form_data,
-      autofill::FieldRendererId generation_element,
-      autofill::password_generation::PasswordGenerationType type);
 
   // Called upon navigation to persist the state from |CredentialCache|
   // used to decide when to record
@@ -291,10 +289,10 @@ class PasswordManager : public PasswordManagerInterface {
       const GURL& form_origin,
       BrowserSavePasswordProgressLogger* logger);
 
-  // Returns the manager which manages |form|. |driver| is needed to determine
-  // the match. Returns nullptr when no matched manager is found.
+  // Returns the manager which manages |form_id|. |driver| is needed to
+  // determine the match. Returns nullptr when no matched manager is found.
   PasswordFormManager* GetMatchedManager(PasswordManagerDriver* driver,
-                                         const autofill::FormData& form);
+                                         autofill::FormRendererId form_id);
 
   // Log a frame (main frame, iframe) of a submitted password form.
   void ReportSubmittedFormFrameMetric(const PasswordManagerDriver* driver,
