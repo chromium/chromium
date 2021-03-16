@@ -10,7 +10,6 @@
 
 #include "base/auto_reset.h"
 #include "base/optional.h"
-#include "base/strings/nullable_string16.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/utf_string_conversions.h"
 #include "testing/gtest/include/gtest/gtest.h"

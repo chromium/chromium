@@ -56,7 +56,7 @@ void LegacyDomStorageDatabase::ReadAllValues(
     std::u16string key = statement.ColumnString16(0);
     std::u16string value;
     statement.ColumnBlobAsString16(1, &value);
-    (*result)[key] = base::NullableString16(value, false);
+    (*result)[key] = value;
   }
   known_to_be_empty_ = result->empty();
 
@@ -90,9 +90,9 @@ bool LegacyDomStorageDatabase::CommitChanges(
   auto it = changes.begin();
   for (; it != changes.end(); ++it) {
     sql::Statement statement;
-    std::u16string key = it->first;
-    base::NullableString16 value = it->second;
-    if (value.is_null()) {
+    const std::u16string& key = it->first;
+    const base::Optional<std::u16string>& value = it->second;
+    if (!value.has_value()) {
       statement.Assign(db_->GetCachedStatement(
           SQL_FROM_HERE, "DELETE FROM ItemTable WHERE key=?"));
       statement.BindString16(0, key);
@@ -101,8 +101,8 @@ bool LegacyDomStorageDatabase::CommitChanges(
       statement.Assign(db_->GetCachedStatement(
           SQL_FROM_HERE, "INSERT INTO ItemTable VALUES (?,?)"));
       statement.BindString16(0, key);
-      statement.BindBlob(1, value.string().data(),
-                         value.string().length() * sizeof(char16_t));
+      statement.BindBlob(1, value.value().data(),
+                         value.value().length() * sizeof(char16_t));
       known_to_be_empty_ = false;
       did_insert = true;
     }

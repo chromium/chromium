@@ -128,7 +128,7 @@ void MigrateStorageHelper(
   auto values = std::make_unique<StorageAreaImpl::ValueMap>();
   for (const auto& it : map) {
     (*values)[LocalStorageImpl::MigrateString(it.first)] =
-        LocalStorageImpl::MigrateString(it.second.string());
+        LocalStorageImpl::MigrateString(it.second.value());
   }
   reply_task_runner->PostTask(
       FROM_HERE, base::BindOnce(std::move(callback), std::move(values)));

@@ -485,8 +485,8 @@ TEST_F(SessionStorageMetadataMigrationTest, MigrateV0ToV1) {
   key2.push_back(0xd83d);
   key2.push_back(0xde00);
   LegacyDomStorageValuesMap data;
-  data[key] = base::NullableString16(value, false);
-  data[key2] = base::NullableString16(value, false);
+  data[key] = value;
+  data[key2] = value;
   EXPECT_TRUE(old_ss_database_->CommitAreaChanges(test_namespace1_id_,
                                                   test_origin1_, false, data));
   EXPECT_TRUE(old_ss_database_->CloneNamespace(test_namespace1_id_,

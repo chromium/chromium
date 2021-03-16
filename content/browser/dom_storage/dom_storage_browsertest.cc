@@ -181,8 +181,7 @@ IN_PROC_BROWSER_TEST_F(DOMStorageBrowserTest, DataMigrates) {
         std::make_unique<storage::FilesystemProxy>(
             storage::FilesystemProxy::UNRESTRICTED, legacy_local_storage_path));
     storage::LegacyDomStorageValuesMap data;
-    data[base::ASCIIToUTF16("foo")] =
-        base::NullableString16(base::ASCIIToUTF16("bar"), false);
+    data[u"foo"] = u"bar";
     db.CommitChanges(false, data);
     EXPECT_TRUE(base::PathExists(db_path));
   }

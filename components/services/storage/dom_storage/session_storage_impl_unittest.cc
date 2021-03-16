@@ -183,8 +183,8 @@ TEST_F(SessionStorageImplTest, MigrationV0ToV1) {
     auto db = base::MakeRefCounted<TestingLegacySessionStorageDatabase>(
         old_db_path, base::ThreadTaskRunnerHandle::Get().get());
     LegacyDomStorageValuesMap data;
-    data[key] = base::NullableString16(value, false);
-    data[key2] = base::NullableString16(value, false);
+    data[key] = value;
+    data[key2] = value;
     EXPECT_TRUE(db->CommitAreaChanges(namespace_id1, origin1, false, data));
     EXPECT_TRUE(db->CloneNamespace(namespace_id1, namespace_id2));
   }

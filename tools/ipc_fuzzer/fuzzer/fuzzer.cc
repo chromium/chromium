@@ -13,7 +13,6 @@
 #include "base/containers/span.h"
 #include "base/memory/ptr_util.h"
 #include "base/stl_util.h"
-#include "base/strings/nullable_string16.h"
 #include "base/strings/string_util.h"
 #include "base/unguessable_token.h"
 #include "base/util/type_safety/id_type.h"
@@ -439,20 +438,6 @@ struct FuzzTraits<base::File::Info> {
     p->last_modified = base::Time::FromDoubleT(last_modified);
     p->last_accessed = base::Time::FromDoubleT(last_accessed);
     p->creation_time = base::Time::FromDoubleT(creation_time);
-    return true;
-  }
-};
-
-template <>
-struct FuzzTraits<base::NullableString16> {
-  static bool Fuzz(base::NullableString16* p, Fuzzer* fuzzer) {
-    std::u16string string = p->string();
-    bool is_null = p->is_null();
-    if (!FuzzParam(&string, fuzzer))
-      return false;
-    if (!FuzzParam(&is_null, fuzzer))
-      return false;
-    *p = base::NullableString16(string, is_null);
     return true;
   }
 };

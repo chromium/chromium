@@ -696,8 +696,8 @@ TEST_F(LocalStorageImplTest, Migration) {
         old_db_path, std::make_unique<FilesystemProxy>(
                          FilesystemProxy::UNRESTRICTED, local_storage_path));
     LegacyDomStorageValuesMap data;
-    data[key] = base::NullableString16(value, false);
-    data[key2] = base::NullableString16(value, false);
+    data[key] = value;
+    data[key2] = value;
     db.CommitChanges(false, data);
   }
   EXPECT_TRUE(base::PathExists(old_db_path));
