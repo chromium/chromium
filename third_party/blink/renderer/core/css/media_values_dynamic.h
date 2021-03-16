@@ -54,7 +54,7 @@ class CORE_EXPORT MediaValuesDynamic : public MediaValues {
   ForcedColors GetForcedColors() const override;
   NavigationControls GetNavigationControls() const override;
   ScreenSpanning GetScreenSpanning() const override;
-  ScreenFoldPosture GetScreenFoldPosture() const override;
+  DevicePosture GetDevicePosture() const override;
   Document* GetDocument() const override;
   bool HasValues() const override;
   void OverrideViewportDimensions(double width, double height) override;

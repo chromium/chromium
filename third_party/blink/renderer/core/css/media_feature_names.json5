@@ -59,7 +59,7 @@
     "resolution",
     "-webkit-transform-3d",
     "scan",
-    "screen-fold-posture",
+    "device-posture",
     "screen-spanning",
   ],
 }

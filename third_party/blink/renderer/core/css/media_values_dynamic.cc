@@ -169,8 +169,8 @@ ScreenSpanning MediaValuesDynamic::GetScreenSpanning() const {
   return CalculateScreenSpanning(frame_);
 }
 
-ScreenFoldPosture MediaValuesDynamic::GetScreenFoldPosture() const {
-  return CalculateScreenFoldPosture(frame_);
+DevicePosture MediaValuesDynamic::GetDevicePosture() const {
+  return CalculateDevicePosture(frame_);
 }
 
 Document* MediaValuesDynamic::GetDocument() const {

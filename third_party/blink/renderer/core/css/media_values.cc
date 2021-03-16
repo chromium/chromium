@@ -277,9 +277,9 @@ ScreenSpanning MediaValues::CalculateScreenSpanning(LocalFrame* frame) {
   return ScreenSpanning::kNone;
 }
 
-ScreenFoldPosture MediaValues::CalculateScreenFoldPosture(LocalFrame* frame) {
+DevicePosture MediaValues::CalculateDevicePosture(LocalFrame* frame) {
   // TODO(darktears): Retrieve information from the host.
-  return ScreenFoldPosture::kNoFold;
+  return DevicePosture::kNoFold;
 }
 
 bool MediaValues::ComputeLengthImpl(double value,
