@@ -154,7 +154,8 @@ KeyedService* DeviceInfoSyncServiceFactory::BuildServiceInstanceFor(
       std::make_unique<DeviceInfoSyncClient>(profile);
   auto local_device_info_provider =
       std::make_unique<syncer::LocalDeviceInfoProviderImpl>(
-          chrome::GetChannel(), chrome::GetVersionString(),
+          chrome::GetChannel(),
+          chrome::GetVersionString(chrome::WithExtendedStable(false)),
           device_info_sync_client.get());
 
   auto device_prefs = std::make_unique<syncer::DeviceInfoPrefs>(
