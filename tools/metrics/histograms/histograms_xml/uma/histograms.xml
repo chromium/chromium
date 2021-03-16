@@ -183,7 +183,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="UMA.JavaCachingRecorder.DroppedHistogramSampleCount"
-    units="samples" expires_after="2021-03-21">
+    units="samples" expires_after="2022-03-21">
   <owner>bttk@chromium.org</owner>
   <owner>src/base/metrics/OWNERS</owner>
   <summary>
@@ -194,7 +194,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="UMA.JavaCachingRecorder.DroppedUserActionCount"
-    units="samples" expires_after="2021-03-21">
+    units="samples" expires_after="2022-03-21">
   <owner>bttk@chromium.org</owner>
   <owner>src/base/metrics/OWNERS</owner>
   <summary>
@@ -204,7 +204,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="UMA.JavaCachingRecorder.FlushedHistogramCount"
-    units="histograms" expires_after="2021-03-21">
+    units="histograms" expires_after="2022-03-21">
   <owner>bttk@chromium.org</owner>
   <owner>src/base/metrics/OWNERS</owner>
   <summary>
@@ -213,7 +213,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="UMA.JavaCachingRecorder.InputHistogramSampleCount"
-    units="samples" expires_after="2021-03-21">
+    units="samples" expires_after="2022-03-21">
   <owner>bttk@chromium.org</owner>
   <owner>src/base/metrics/OWNERS</owner>
   <summary>
@@ -223,7 +223,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="UMA.JavaCachingRecorder.InputUserActionCount" units="samples"
-    expires_after="2021-03-21">
+    expires_after="2022-03-21">
   <owner>bttk@chromium.org</owner>
   <owner>src/base/metrics/OWNERS</owner>
   <summary>
