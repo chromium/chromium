@@ -84,12 +84,6 @@ enum NotificationType {
   // TODO(https://crbug.com/1174741): Remove.
   NOTIFICATION_EXTENSION_HOST_DID_STOP_FIRST_LOAD,
 
-  // Sent by an ExtensionHost* when its render view requests closing through
-  // window.close(). The details are an ExtensionHost* and the source is a
-  // BrowserContext*.
-  // TODO(https://crbug.com/1174742): Remove.
-  NOTIFICATION_EXTENSION_HOST_VIEW_SHOULD_CLOSE,
-
   // Sent when extension render process ends (whether it crashes or closes). The
   // details are an ExtensionHost* and the source is a BrowserContext*. Not sent
   // during browser shutdown.

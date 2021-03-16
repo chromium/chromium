@@ -16,7 +16,6 @@
 #include "chrome/browser/extensions/api/image_writer_private/operation.h"
 #include "chrome/common/extensions/api/image_writer_private.h"
 #include "content/public/browser/notification_observer.h"
-#include "content/public/browser/notification_registrar.h"
 #include "extensions/browser/browser_context_keyed_api_factory.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_registry_observer.h"
@@ -40,7 +39,6 @@ class Operation;
 // Manages image writer operations for the current profile.  Including clean-up
 // and message routing.
 class OperationManager : public BrowserContextKeyedAPI,
-                         public content::NotificationObserver,
                          public ExtensionRegistryObserver,
                          public ProcessManagerObserver,
                          public base::SupportsWeakPtr<OperationManager> {
@@ -94,11 +92,6 @@ class OperationManager : public BrowserContextKeyedAPI,
     return "OperationManager";
   }
 
-  // NotificationObserver:
-  void Observe(int type,
-               const content::NotificationSource& source,
-               const content::NotificationDetails& details) override;
-
   // ExtensionRegistryObserver:
   void OnExtensionUnloaded(content::BrowserContext* browser_context,
                            const Extension* extension,
@@ -108,6 +101,7 @@ class OperationManager : public BrowserContextKeyedAPI,
   // ProcessManagerObserver:
   void OnBackgroundHostClose(const std::string& extension_id) override;
   void OnProcessManagerShutdown(ProcessManager* manager) override;
+  void OnExtensionProcessTerminated(const Extension* extension) override;
 
   Operation* GetOperation(const ExtensionId& extension_id);
   void DeleteOperation(const ExtensionId& extension_id);
@@ -120,7 +114,6 @@ class OperationManager : public BrowserContextKeyedAPI,
 
   content::BrowserContext* browser_context_;
   OperationMap operations_;
-  content::NotificationRegistrar registrar_;
 
   // Listen to extension unloaded notification.
   base::ScopedObservation<ExtensionRegistry, ExtensionRegistryObserver>

@@ -43,13 +43,6 @@ OperationManager::OperationManager(content::BrowserContext* context)
   extension_registry_observation_.Observe(
       ExtensionRegistry::Get(browser_context_));
   process_manager_observation_.Observe(ProcessManager::Get(browser_context_));
-  Profile* profile = Profile::FromBrowserContext(browser_context_);
-  registrar_.Add(this,
-                 extensions::NOTIFICATION_EXTENSION_PROCESS_TERMINATED,
-                 content::Source<Profile>(profile));
-  registrar_.Add(this,
-                 extensions::NOTIFICATION_EXTENSION_HOST_VIEW_SHOULD_CLOSE,
-                 content::Source<Profile>(profile));
 }
 
 OperationManager::~OperationManager() {
@@ -257,25 +250,9 @@ void OperationManager::OnProcessManagerShutdown(ProcessManager* manager) {
   process_manager_observation_.Reset();
 }
 
-void OperationManager::Observe(int type,
-                               const content::NotificationSource& source,
-                               const content::NotificationDetails& details) {
-  switch (type) {
-    case extensions::NOTIFICATION_EXTENSION_PROCESS_TERMINATED: {
-      DeleteOperation(content::Details<const Extension>(details).ptr()->id());
-      break;
-    }
-    case extensions::NOTIFICATION_EXTENSION_HOST_VIEW_SHOULD_CLOSE:
-      // Note: |ExtensionHost::extension()| can be null if the extension was
-      // already unloaded, use ExtensionHost::extension_id() instead.
-      DeleteOperation(
-          content::Details<ExtensionHost>(details)->extension_id());
-      break;
-    default: {
-      NOTREACHED();
-      break;
-    }
-  }
+void OperationManager::OnExtensionProcessTerminated(
+    const Extension* extension) {
+  DeleteOperation(extension->id());
 }
 
 OperationManager* OperationManager::Get(content::BrowserContext* context) {
