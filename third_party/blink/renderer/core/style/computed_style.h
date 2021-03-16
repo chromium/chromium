@@ -1642,19 +1642,19 @@ class ComputedStyle : public ComputedStyleBase,
   void SetBorderImageSlicesFill(bool);
   const BorderValue BorderLeft() const {
     return BorderValue(BorderLeftStyle(), BorderLeftColor(),
-                       BorderLeftWidthInternal().ToFloat());
+                       BorderLeftWidthInternal());
   }
   const BorderValue BorderRight() const {
     return BorderValue(BorderRightStyle(), BorderRightColor(),
-                       BorderRightWidthInternal().ToFloat());
+                       BorderRightWidthInternal());
   }
   const BorderValue BorderTop() const {
     return BorderValue(BorderTopStyle(), BorderTopColor(),
-                       BorderTopWidthInternal().ToFloat());
+                       BorderTopWidthInternal());
   }
   const BorderValue BorderBottom() const {
     return BorderValue(BorderBottomStyle(), BorderBottomColor(),
-                       BorderBottomWidthInternal().ToFloat());
+                       BorderBottomWidthInternal());
   }
 
   bool BorderSizeEquals(const ComputedStyle& o) const {
@@ -1682,20 +1682,22 @@ class ComputedStyle : public ComputedStyleBase,
   BorderValue BorderStart() const { return BorderStartUsing(*this); }
   BorderValue BorderEnd() const { return BorderEndUsing(*this); }
 
-  float BorderAfterWidth() const {
+  LayoutUnit BorderAfterWidth() const {
     return PhysicalBorderWidthToLogical().After();
   }
-  float BorderBeforeWidth() const {
+  LayoutUnit BorderBeforeWidth() const {
     return PhysicalBorderWidthToLogical().Before();
   }
-  float BorderEndWidth() const { return PhysicalBorderWidthToLogical().End(); }
-  float BorderStartWidth() const {
+  LayoutUnit BorderEndWidth() const {
+    return PhysicalBorderWidthToLogical().End();
+  }
+  LayoutUnit BorderStartWidth() const {
     return PhysicalBorderWidthToLogical().Start();
   }
-  float BorderOverWidth() const {
+  LayoutUnit BorderOverWidth() const {
     return PhysicalBorderWidthToLogical().Over();
   }
-  float BorderUnderWidth() const {
+  LayoutUnit BorderUnderWidth() const {
     return PhysicalBorderWidthToLogical().Under();
   }
 
@@ -1751,7 +1753,7 @@ class ComputedStyle : public ComputedStyleBase,
            BorderLeftColor() == o.BorderLeftColor();
   }
   bool BorderLeftEquals(const BorderValue& o) const {
-    return BorderLeftWidthInternal().ToFloat() == o.Width() &&
+    return BorderLeftWidthInternal() == o.Width() &&
            BorderLeftStyle() == o.Style() && BorderLeftColor() == o.GetColor();
   }
 
@@ -1771,7 +1773,7 @@ class ComputedStyle : public ComputedStyleBase,
            BorderRightColor() == o.BorderRightColor();
   }
   bool BorderRightEquals(const BorderValue& o) const {
-    return BorderRightWidthInternal().ToFloat() == o.Width() &&
+    return BorderRightWidthInternal() == o.Width() &&
            BorderRightStyle() == o.Style() &&
            BorderRightColor() == o.GetColor();
   }
@@ -1802,7 +1804,7 @@ class ComputedStyle : public ComputedStyleBase,
            BorderTopColor() == o.BorderTopColor();
   }
   bool BorderTopEquals(const BorderValue& o) const {
-    return BorderTopWidthInternal().ToFloat() == o.Width() &&
+    return BorderTopWidthInternal() == o.Width() &&
            BorderTopStyle() == o.Style() && BorderTopColor() == o.GetColor();
   }
 
@@ -1822,7 +1824,7 @@ class ComputedStyle : public ComputedStyleBase,
            BorderBottomColor() == o.BorderBottomColor();
   }
   bool BorderBottomEquals(const BorderValue& o) const {
-    return BorderBottomWidthInternal().ToFloat() == o.Width() &&
+    return BorderBottomWidthInternal() == o.Width() &&
            BorderBottomStyle() == o.Style() &&
            BorderBottomColor() == o.GetColor();
   }
@@ -2930,10 +2932,10 @@ class ComputedStyle : public ComputedStyleBase,
                                           BorderBottom(), BorderLeft());
   }
 
-  PhysicalToLogical<float> PhysicalBorderWidthToLogical() const {
-    return PhysicalToLogical<float>(GetWritingDirection(), BorderTopWidth(),
-                                    BorderRightWidth(), BorderBottomWidth(),
-                                    BorderLeftWidth());
+  PhysicalToLogical<LayoutUnit> PhysicalBorderWidthToLogical() const {
+    return PhysicalToLogical<LayoutUnit>(
+        GetWritingDirection(), BorderTopWidth(), BorderRightWidth(),
+        BorderBottomWidth(), BorderLeftWidth());
   }
 
   PhysicalToLogical<EBorderStyle> PhysicalBorderStyleToLogical() const {
