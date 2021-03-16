@@ -191,6 +191,7 @@ class QuicChromiumClientStreamTest
     headers_[":host"] = "www.google.com";
     headers_[":path"] = "/index.hml";
     headers_[":scheme"] = "https";
+    headers_[":status"] = "200";
     headers_["cookie"] =
         "__utma=208381060.1228362404.1372200928.1372200928.1372200928.1; "
         "__utmc=160408618; "
