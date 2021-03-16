@@ -51,14 +51,21 @@ void ProjectorControllerImpl::OnTranscription(
   }
 }
 
-void ProjectorControllerImpl::ShowToolbar() {
+void ProjectorControllerImpl::SetProjectorToolsVisible(bool is_visible) {
   // TODO(yilkal): Projector toolbar shouldn't be shown if soda is not
   // available.
-  ui_controller_->ShowToolbar();
+  if (is_visible)
+    ui_controller_->ShowToolbar();
+  else
+    ui_controller_->CloseToolbar();
 }
 
-void ProjectorControllerImpl::CloseToolbar() {
-  ui_controller_->CloseToolbar();
+void ProjectorControllerImpl::StartProjectorSession() {
+  // TODO(https://crbug.com/1185262): Start projector session.
+}
+
+bool ProjectorControllerImpl::IsEligible() const {
+  return is_speech_recognition_available_;
 }
 
 void ProjectorControllerImpl::SetCaptionState(bool is_on) {

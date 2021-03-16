@@ -37,6 +37,8 @@ class ASH_EXPORT ProjectorUiController {
 
   ProjectorUiModel* model() { return &model_; }
 
+  bool IsToolbarVisible() const;
+
  private:
   // Reset tools, including resetting the state in model, closing the sub
   // widgets, etc.

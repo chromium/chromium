@@ -38,12 +38,9 @@ class ASH_EXPORT ProjectorControllerImpl : public ProjectorController {
                        base::TimeDelta audio_end_time,
                        const std::vector<base::TimeDelta>& word_offsets,
                        bool is_final) override;
-
-  // Shows projector toolbar.
-  void ShowToolbar();
-  // Close projector toolbar.
-  void CloseToolbar();
-
+  void SetProjectorToolsVisible(bool is_visible) override;
+  void StartProjectorSession() override;
+  bool IsEligible() const override;
   // Set caption on/off state.
   void SetCaptionState(bool is_on);
   // Mark a key idea.
@@ -65,7 +62,6 @@ class ASH_EXPORT ProjectorControllerImpl : public ProjectorController {
       std::unique_ptr<ProjectorMetadataController> metadata_controller);
 
   ProjectorUiController* ui_controller() { return ui_controller_.get(); }
-  bool is_eligible() const { return is_speech_recognition_available_; }
   ProjectorSessionImpl* projector_session() { return projector_session_.get(); }
 
  private:

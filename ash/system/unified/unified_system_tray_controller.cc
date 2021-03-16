@@ -448,7 +448,7 @@ void UnifiedSystemTrayController::InitFeaturePods() {
   if (features::IsCaptureModeEnabled())
     AddFeaturePodItem(std::make_unique<CaptureModeFeaturePodController>(this));
   if (chromeos::features::IsProjectorFeaturePodEnabled() &&
-      Shell::Get()->projector_controller()->is_eligible()) {
+      Shell::Get()->projector_controller()->IsEligible()) {
     AddFeaturePodItem(std::make_unique<ProjectorFeaturePodController>(this));
   }
   AddFeaturePodItem(std::make_unique<NearbyShareFeaturePodController>(this));
