@@ -42,9 +42,9 @@ class ClipboardX11 : public Clipboard, public x11::EventObserver {
   // Underlying X11 clipboard implementation.
   XServerClipboard x_server_clipboard_;
 
-  // Connection to the X server, used by |x_server_clipboard_|. This is created
-  // and owned by this class.
-  std::unique_ptr<x11::Connection> connection_;
+  // Connection to the X server, used by |x_server_clipboard_|. This must only
+  // be accessed on the input thread.
+  x11::Connection* connection_;
 
   // Watcher used to handle X11 events from |display_|.
   std::unique_ptr<base::FileDescriptorWatcher::Controller>
@@ -64,19 +64,13 @@ ClipboardX11::~ClipboardX11() {
 
 void ClipboardX11::Start(
     std::unique_ptr<protocol::ClipboardStub> client_clipboard) {
-  // TODO(lambroslambrou): Share the X connection with InputInjector.
-  DCHECK(!connection_);
-  connection_ = std::make_unique<x11::Connection>();
-  if (!connection_->Ready()) {
-    LOG(ERROR) << "Couldn't open X display";
-    return;
-  }
+  connection_ = x11::Connection::Get();
   connection_->AddEventObserver(this);
   client_clipboard_.swap(client_clipboard);
 
   x_server_clipboard_.Init(
-      connection_.get(), base::BindRepeating(&ClipboardX11::OnClipboardChanged,
-                                             base::Unretained(this)));
+      connection_, base::BindRepeating(&ClipboardX11::OnClipboardChanged,
+                                       base::Unretained(this)));
 
   x_connection_watch_controller_ = base::FileDescriptorWatcher::WatchReadable(
       connection_->GetFd(),
