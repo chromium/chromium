@@ -31860,6 +31860,8 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="3850" label="PermissionsPolicyHeader"/>
   <int value="3851" label="WebAppManifestUrlHandlers"/>
   <int value="3852" label="LaxAllowingUnsafeCookies"/>
+  <int value="3853" label="V8MediaSession_SetMicrophoneActive_Method"/>
+  <int value="3854" label="V8MediaSession_SetCameraActive_Method"/>
 </enum>
 
 <enum name="FeaturePolicyAllowlistType">

@@ -51,6 +51,10 @@ class MODULES_EXPORT MediaSession final
 
   void setPositionState(MediaPositionState*, ExceptionState&);
 
+  void setMicrophoneActive(bool active);
+
+  void setCameraActive(bool active);
+
   // Called by the MediaMetadata owned by |this| when it has updates. Also used
   // internally when a new MediaMetadata object is set.
   void OnMetadataChanged();

@@ -3160,6 +3160,8 @@ enum WebFeature {
   kPermissionsPolicyHeader = 3850,
   kWebAppManifestUrlHandlers = 3851,
   kLaxAllowingUnsafeCookies = 3852,
+  kV8MediaSession_SetMicrophoneActive_Method = 3853,
+  kV8MediaSession_SetCameraActive_Method = 3854,
 
   // Add new features immediately above this line. Don't change assigned
   // numbers of any item, and don't reuse removed slots.

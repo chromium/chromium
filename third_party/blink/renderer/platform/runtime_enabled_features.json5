@@ -1291,6 +1291,9 @@
       status: "stable",
     },
     {
+      name: "MediaSessionWebRTC",
+    },
+    {
       name: "MediaSourceExperimental",
       status: "experimental",
     },

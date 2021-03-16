@@ -124,6 +124,7 @@ class WebRuntimeFeatures {
   BLINK_PLATFORM_EXPORT static void EnableLazyImageVisibleLoadTimeMetrics(bool);
   BLINK_PLATFORM_EXPORT static void EnableMediaFeeds(bool);
   BLINK_PLATFORM_EXPORT static void EnableMediaSession(bool);
+  BLINK_PLATFORM_EXPORT static void EnableMediaSessionWebRTC(bool);
   BLINK_PLATFORM_EXPORT static void EnableNetInfoDownlinkMax(bool);
   BLINK_PLATFORM_EXPORT static void EnableNeverSlowMode(bool);
   BLINK_PLATFORM_EXPORT static void EnableNotificationContentImage(bool);

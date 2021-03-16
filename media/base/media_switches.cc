@@ -836,6 +836,10 @@ const base::Feature kMediaOptimizer{"JointMediaOptimizer",
 const base::Feature kMediaPowerExperiment{"MediaPowerExperiment",
                                           base::FEATURE_DISABLED_BY_DEFAULT};
 
+// Enable WebRTC actions for the Media Session API.
+const base::Feature kMediaSessionWebRTC{"MediaSessionWebRTC",
+                                        base::FEATURE_DISABLED_BY_DEFAULT};
+
 // Enables flash to be ducked by audio focus. This is enabled on Chrome OS which
 // has audio focus enabled.
 const base::Feature kAudioFocusDuckFlash {

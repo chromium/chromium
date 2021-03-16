@@ -251,6 +251,10 @@ void WebRuntimeFeatures::EnableMediaSession(bool enable) {
   RuntimeEnabledFeatures::SetMediaSessionEnabled(enable);
 }
 
+void WebRuntimeFeatures::EnableMediaSessionWebRTC(bool enable) {
+  RuntimeEnabledFeatures::SetMediaSessionWebRTCEnabled(enable);
+}
+
 void WebRuntimeFeatures::EnableNotificationContentImage(bool enable) {
   RuntimeEnabledFeatures::SetNotificationContentImageEnabled(enable);
 }

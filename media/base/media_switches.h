@@ -164,6 +164,7 @@ MEDIA_EXPORT extern const base::Feature kMediaLearningFramework;
 MEDIA_EXPORT extern const base::Feature kMediaLearningSmoothnessExperiment;
 MEDIA_EXPORT extern const base::Feature kMediaOptimizer;
 MEDIA_EXPORT extern const base::Feature kMediaPowerExperiment;
+MEDIA_EXPORT extern const base::Feature kMediaSessionWebRTC;
 MEDIA_EXPORT extern const base::Feature kMemoryPressureBasedSourceBufferGC;
 MEDIA_EXPORT extern const base::Feature kOverlayFullscreenVideo;
 MEDIA_EXPORT extern const base::Feature kPictureInPicture;
