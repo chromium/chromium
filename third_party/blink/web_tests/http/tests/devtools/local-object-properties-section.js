@@ -5,6 +5,7 @@
 (async function() {
   TestRunner.addResult(`Test that ObjectPropertiesSection works with local remote objects.\n`);
   await TestRunner.loadModule('object_ui');
+  await TestRunner.loadLegacyModule('object_ui');
 
   var d = [];
   for (var i = 1000; i < 1256; ++i)
