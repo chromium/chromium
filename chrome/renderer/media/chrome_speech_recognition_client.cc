@@ -117,8 +117,8 @@ void ChromeSpeechRecognitionClient::SpeechRecognitionAvailabilityChanged(
     bool is_speech_recognition_available) {
   if (is_speech_recognition_available) {
     initialize_callback_.Run();
-  } else {
-    Reset();
+  } else if (reset_callback_) {
+    reset_callback_.Run();
   }
 }
 
@@ -149,6 +149,10 @@ void ChromeSpeechRecognitionClient::Initialize() {
     base::UmaHistogramBoolean("Accessibility.LiveCaption.WebsiteBlocked",
                               is_website_blocked_);
   }
+
+  // Bind the call to Reset() to the Media thread.
+  reset_callback_ = media::BindToCurrentLoop(base::BindRepeating(
+      &ChromeSpeechRecognitionClient::Reset, weak_factory_.GetWeakPtr()));
 
   speech_recognition_context_.set_disconnect_handler(media::BindToCurrentLoop(
       base::BindOnce(&ChromeSpeechRecognitionClient::OnRecognizerDisconnected,

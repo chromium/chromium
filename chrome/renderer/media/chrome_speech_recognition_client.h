@@ -94,6 +94,8 @@ class ChromeSpeechRecognitionClient
 
   media::SpeechRecognitionClient::OnReadyCallback on_ready_callback_;
 
+  base::RepeatingClosure reset_callback_;
+
   // Sends audio to the speech recognition thread on the renderer thread.
   SendAudioToSpeechRecognitionServiceCallback send_audio_callback_;
 
