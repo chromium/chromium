@@ -147,7 +147,13 @@ class BASE_EXPORT HistogramSamples {
   virtual std::unique_ptr<SampleCountIterator> Iterator() const = 0;
   virtual void Serialize(Pickle* pickle) const;
 
-  // Accessor fuctions.
+  // Returns ASCII representation of histograms data for histogram samples.
+  // The dictionary returned will be of the form
+  // {"header":<string>, "body": <string>}
+  base::DictionaryValue ToGraphDict(StringPiece histogram_name,
+                                    int32_t flags) const;
+
+  // Accessor functions.
   uint64_t id() const { return meta_->id; }
   int64_t sum() const {
 #ifdef ARCH_CPU_64_BITS
@@ -196,6 +202,28 @@ class BASE_EXPORT HistogramSamples {
   const AtomicSingleSample& single_sample() const {
     return meta_->single_sample;
   }
+
+  // Produces an actual graph (set of blank vs non blank char's) for a bucket.
+  void WriteAsciiBucketGraph(double x_count,
+                             int line_length,
+                             std::string* output) const;
+
+  // Writes textual description of the bucket contents (relative to histogram).
+  // Output is the count in the buckets, as well as the percentage.
+  void WriteAsciiBucketValue(HistogramBase::Count current,
+                             double scaled_sum,
+                             std::string* output) const;
+
+  // Gets a body for this histogram samples.
+  virtual std::string GetAsciiBody() const;
+
+  // Gets a header message describing this histogram samples.
+  virtual std::string GetAsciiHeader(StringPiece histogram_name,
+                                     int32_t flags) const;
+
+  // Returns a string description of what goes in a given bucket.
+  const std::string GetSimpleAsciiBucketRange(
+      HistogramBase::Sample sample) const;
 
   Metadata* meta() { return meta_; }
 

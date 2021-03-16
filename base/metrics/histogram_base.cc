@@ -226,6 +226,13 @@ void HistogramBase::WriteAsciiBucketValue(Count current,
   StringAppendF(output, " (%d = %3.1f%%)", current, current/scaled_sum);
 }
 
+void HistogramBase::WriteAscii(std::string* output) const {
+  base::DictionaryValue graph_dict = ToGraphDict();
+  output->append(*graph_dict.FindStringKey("header"));
+  output->append("\n");
+  output->append(*graph_dict.FindStringKey("body"));
+}
+
 // static
 char const* HistogramBase::GetPermanentName(const std::string& name) {
   // A set of histogram names that provides the "permanent" lifetime required

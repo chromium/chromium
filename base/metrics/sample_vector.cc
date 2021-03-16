@@ -10,6 +10,7 @@
 #include "base/metrics/persistent_memory_allocator.h"
 #include "base/notreached.h"
 #include "base/numerics/safe_conversions.h"
+#include "base/strings/stringprintf.h"
 #include "base/synchronization/lock.h"
 #include "base/threading/platform_thread.h"
 
@@ -311,6 +312,108 @@ SampleVector::~SampleVector() {
 bool SampleVector::MountExistingCountsStorage() const {
   // There is never any existing storage other than what is already in use.
   return counts() != nullptr;
+}
+
+std::string SampleVector::GetAsciiHeader(StringPiece histogram_name,
+                                         int32_t flags) const {
+  Count sample_count = TotalCount();
+  std::string output;
+  StringAppendF(&output, "Histogram: %.*s recorded %d samples",
+                static_cast<int>(histogram_name.size()), histogram_name.data(),
+                sample_count);
+  if (sample_count == 0) {
+    DCHECK_EQ(sum(), 0);
+  } else {
+    double mean = static_cast<float>(sum()) / sample_count;
+    StringAppendF(&output, ", mean = %.1f", mean);
+  }
+  if (flags)
+    StringAppendF(&output, " (flags = 0x%x)", flags);
+  return output;
+}
+
+std::string SampleVector::GetAsciiBody() const {
+  Count sample_count = TotalCount();
+
+  // Prepare to normalize graphical rendering of bucket contents.
+  double max_size = 0;
+  double scaling_factor = 1;
+  max_size = GetPeakBucketSize();
+  // Scale histogram bucket counts to take at most 72 characters.
+  // Note: Keep in sync w/ kLineLength histogram_samples.cc
+  const double kLineLength = 72;
+  if (max_size > kLineLength)
+    scaling_factor = kLineLength / max_size;
+
+  // Calculate space needed to print bucket range numbers.  Leave room to print
+  // nearly the largest bucket range without sliding over the histogram.
+  uint32_t largest_non_empty_bucket = bucket_count() - 1;
+  while (0 == GetCountAtIndex(largest_non_empty_bucket)) {
+    if (0 == largest_non_empty_bucket)
+      break;  // All buckets are empty.
+    --largest_non_empty_bucket;
+  }
+
+  // Calculate largest print width needed for any of our bucket range displays.
+  size_t print_width = 1;
+  for (uint32_t i = 0; i < bucket_count(); ++i) {
+    if (GetCountAtIndex(i)) {
+      size_t width =
+          GetSimpleAsciiBucketRange(bucket_ranges()->range(i)).size() + 1;
+      if (width > print_width)
+        print_width = width;
+    }
+  }
+
+  int64_t remaining = sample_count;
+  int64_t past = 0;
+  std::string output;
+  // Output the actual histogram graph.
+  for (uint32_t i = 0; i < bucket_count(); ++i) {
+    Count current = GetCountAtIndex(i);
+    remaining -= current;
+    std::string range = GetSimpleAsciiBucketRange(bucket_ranges()->range(i));
+    output.append(range);
+    for (size_t j = 0; range.size() + j < print_width + 1; ++j)
+      output.push_back(' ');
+    if (0 == current && i < bucket_count() - 1 && 0 == GetCountAtIndex(i + 1)) {
+      while (i < bucket_count() - 1 && 0 == GetCountAtIndex(i + 1)) {
+        ++i;
+      }
+      output.append("... \n");
+      continue;  // No reason to plot emptiness.
+    }
+    Count current_size = round(current * scaling_factor);
+    WriteAsciiBucketGraph(current_size, kLineLength, &output);
+    WriteAsciiBucketContext(past, current, remaining, i, &output);
+    output.append("\n");
+    past += current;
+  }
+  DCHECK_EQ(sample_count, past);
+  return output;
+}
+
+double SampleVector::GetPeakBucketSize() const {
+  Count max = 0;
+  for (uint32_t i = 0; i < bucket_count(); ++i) {
+    Count current = GetCountAtIndex(i);
+    if (current > max)
+      max = current;
+  }
+  return max;
+}
+
+void SampleVector::WriteAsciiBucketContext(int64_t past,
+                                           Count current,
+                                           int64_t remaining,
+                                           uint32_t current_bucket_index,
+                                           std::string* output) const {
+  double scaled_sum = (past + current + remaining) / 100.0;
+  WriteAsciiBucketValue(current, scaled_sum, output);
+  if (0 < current_bucket_index) {
+    double percentage = past / scaled_sum;
+    StringAppendF(output, " {%3.1f%%}", percentage);
+  }
 }
 
 HistogramBase::AtomicCount* SampleVector::CreateCountsStorageWhileLocked() {
