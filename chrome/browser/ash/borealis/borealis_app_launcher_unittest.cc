@@ -156,5 +156,31 @@ TEST_F(BorealisAppLauncherTest, SuccessfulLaunchHasSuccessResponse) {
   BorealisAppLauncher::Launch(Context(), baz_id, callback_check.BindOnce());
 }
 
+TEST_F(BorealisAppLauncherTest, ApplicationIsRunWithGivenArgs) {
+  CallbackFactory callback_check;
+  EXPECT_CALL(callback_check,
+              Call(BorealisAppLauncher::LaunchResult::kSuccess));
+  std::string baz_id = SetDummyApp("baz.desktop");
+  Cicerone()->SetOnLaunchContainerApplicationCallback(
+      base::BindLambdaForTesting(
+          [&](const vm_tools::cicerone::LaunchContainerApplicationRequest&
+                  request,
+              chromeos::DBusMethodCallback<
+                  vm_tools::cicerone::LaunchContainerApplicationResponse>
+                  callback) {
+            EXPECT_EQ(request.desktop_file_id(), "baz.desktop");
+            EXPECT_THAT(
+                request.files(),
+                testing::Pointwise(testing::Eq(),
+                                   {"these", "are", "some", "arguments"}));
+            vm_tools::cicerone::LaunchContainerApplicationResponse response;
+            response.set_success(true);
+            std::move(callback).Run(response);
+          }));
+  BorealisAppLauncher::Launch(Context(), baz_id,
+                              {"these", "are", "some", "arguments"},
+                              callback_check.BindOnce());
+}
+
 }  // namespace
 }  // namespace borealis

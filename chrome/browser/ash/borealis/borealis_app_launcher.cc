@@ -23,6 +23,13 @@ namespace borealis {
 void BorealisAppLauncher::Launch(const BorealisContext& ctx,
                                  const std::string& app_id,
                                  OnLaunchedCallback callback) {
+  Launch(std::move(ctx), std::move(app_id), {}, std::move(callback));
+}
+
+void BorealisAppLauncher::Launch(const BorealisContext& ctx,
+                                 const std::string& app_id,
+                                 const std::vector<std::string>& args,
+                                 OnLaunchedCallback callback) {
   // Do not launch anything when using the installer app.
   //
   // TODO(b/170677773): Launch a _certain_ application...
@@ -45,6 +52,9 @@ void BorealisAppLauncher::Launch(const BorealisContext& ctx,
   request.set_vm_name(ctx.vm_name());
   request.set_container_name(ctx.container_name());
   request.set_desktop_file_id(reg->DesktopFileId());
+  std::copy(
+      args.begin(), args.end(),
+      google::protobuf::RepeatedFieldBackInserter(request.mutable_files()));
 
   chromeos::DBusThreadManager::Get()
       ->GetCiceroneClient()
@@ -77,6 +87,12 @@ BorealisAppLauncher::BorealisAppLauncher(Profile* profile)
 
 void BorealisAppLauncher::Launch(std::string app_id,
                                  OnLaunchedCallback callback) {
+  Launch(std::move(app_id), {}, std::move(callback));
+}
+
+void BorealisAppLauncher::Launch(std::string app_id,
+                                 const std::vector<std::string>& args,
+                                 OnLaunchedCallback callback) {
   DCHECK(BorealisService::GetForProfile(profile_)->Features().IsAllowed());
   if (!borealis::BorealisService::GetForProfile(profile_)
            ->Features()
@@ -90,7 +106,7 @@ void BorealisAppLauncher::Launch(std::string app_id,
     borealis::ShowBorealisSplashScreenView(profile_);
   BorealisService::GetForProfile(profile_)->ContextManager().StartBorealis(
       base::BindOnce(
-          [](std::string app_id,
+          [](std::string app_id, const std::vector<std::string>& args,
              BorealisAppLauncher::OnLaunchedCallback callback,
              BorealisContextManager::ContextOrFailure result) {
             if (!result) {
@@ -104,9 +120,9 @@ void BorealisAppLauncher::Launch(std::string app_id,
               return;
             }
             BorealisAppLauncher::Launch(*result.Value(), std::move(app_id),
-                                        std::move(callback));
+                                        std::move(args), std::move(callback));
           },
-          std::move(app_id), std::move(callback)));
+          std::move(app_id), std::move(args), std::move(callback)));
 }
 
 }  // namespace borealis

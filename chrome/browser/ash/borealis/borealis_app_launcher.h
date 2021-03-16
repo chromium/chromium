@@ -33,11 +33,25 @@ class BorealisAppLauncher {
                      const std::string& app_id,
                      OnLaunchedCallback callback);
 
+  // Launch the app with the given |app_id| and with the given |args| in the
+  // borealis instance referred to by |ctx|.
+  static void Launch(const BorealisContext& ctx,
+                     const std::string& app_id,
+                     const std::vector<std::string>& args,
+                     OnLaunchedCallback callback);
+
   explicit BorealisAppLauncher(Profile* profile);
 
   // Launch the given |app_id|'s associated application. This can be the
   // borealis launcher itself or one of its GuestOsRegistry apps.
   void Launch(std::string app_id, OnLaunchedCallback callback);
+
+  // Launch the given |app_id|'s associated application with the given |args|.
+  // This can be the borealis launcher itself or one of its GuestOsRegistry
+  // apps.
+  void Launch(std::string app_id,
+              const std::vector<std::string>& args,
+              OnLaunchedCallback callback);
 
  private:
   Profile* const profile_;
