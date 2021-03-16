@@ -4,6 +4,8 @@
 
 #include "chromeos/services/multidevice_setup/feature_state_manager.h"
 
+#include "chromeos/components/multidevice/logging/logging.h"
+
 namespace chromeos {
 
 namespace multidevice_setup {
@@ -26,6 +28,9 @@ bool FeatureStateManager::SetFeatureEnabledState(mojom::Feature feature,
     return true;
   }
 
+  PA_LOG(ERROR) << __func__ << ": Cannot set feature " << feature
+                << " state from " << state << " to "
+                << (enabled ? "enabled" : "disabled");
   return false;
 }
 

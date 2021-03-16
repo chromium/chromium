@@ -14,6 +14,7 @@ namespace chromeos {
 namespace phonehub {
 namespace {
 using multidevice_setup::mojom::Feature;
+using multidevice_setup::mojom::FeatureState;
 using multidevice_setup::mojom::HostStatus;
 }  // namespace
 
@@ -31,10 +32,6 @@ MultideviceSetupStateUpdater::MultideviceSetupStateUpdater(
       notification_access_manager_(notification_access_manager) {
   multidevice_setup_client_->AddObserver(this);
   notification_access_manager_->AddObserver(this);
-
-  const HostStatus host_status =
-      multidevice_setup_client_->GetHostStatus().first;
-  UpdateIsAwaitingVerifiedHost(host_status);
 }
 
 MultideviceSetupStateUpdater::~MultideviceSetupStateUpdater() {
@@ -60,39 +57,64 @@ void MultideviceSetupStateUpdater::OnNotificationAccessChanged() {
 void MultideviceSetupStateUpdater::OnHostStatusChanged(
     const multidevice_setup::MultiDeviceSetupClient::HostStatusWithDevice&
         host_device_with_status) {
-  const HostStatus host_status = host_device_with_status.first;
+  EnablePhoneHubIfAwaitingVerifiedHost();
+}
 
+void MultideviceSetupStateUpdater::OnFeatureStatesChanged(
+    const multidevice_setup::MultiDeviceSetupClient::FeatureStatesMap&
+        feature_state_map) {
+  EnablePhoneHubIfAwaitingVerifiedHost();
+}
+
+void MultideviceSetupStateUpdater::EnablePhoneHubIfAwaitingVerifiedHost() {
   bool is_awaiting_verified_host =
       pref_service_->GetBoolean(prefs::kIsAwaitingVerifiedHost);
+  const HostStatus host_status =
+      multidevice_setup_client_->GetHostStatus().first;
+  const FeatureState feature_state =
+      multidevice_setup_client_->GetFeatureState(Feature::kPhoneHub);
 
-  // Enable the PhoneHub feature if phone is verified and there was an
-  // intent to enable the feature.
-  if (is_awaiting_verified_host && host_status == HostStatus::kHostVerified) {
+  // Enable the PhoneHub feature if the phone is verified and there was an
+  // intent to enable the feature. We also ensure that the feature is currently
+  // disabled and not in state like kNotSupportedByPhone or kProhibitedByPolicy.
+  if (is_awaiting_verified_host && host_status == HostStatus::kHostVerified &&
+      feature_state == FeatureState::kDisabledByUser) {
     multidevice_setup_client_->SetFeatureEnabledState(
         Feature::kPhoneHub, /*enabled=*/true, /*auth_token=*/base::nullopt,
         base::DoNothing());
     util::LogFeatureOptInEntryPoint(util::OptInEntryPoint::kSetupFlow);
   }
 
-  UpdateIsAwaitingVerifiedHost(host_status);
+  UpdateIsAwaitingVerifiedHost();
 }
 
-void MultideviceSetupStateUpdater::UpdateIsAwaitingVerifiedHost(
-    HostStatus host_status) {
-  // Keep |prefs::kIsAwaitingVerifiedHost| at the same state.
-  if (host_status == HostStatus::kHostSetButNotYetVerified)
+void MultideviceSetupStateUpdater::UpdateIsAwaitingVerifiedHost() {
+  // Wait to enable Phone Hub until after host phone is verified. The intent to
+  // enable Phone Hub must be persisted in the event that this class is
+  // destroyed before the phone is verified.
+  const HostStatus host_status =
+      multidevice_setup_client_->GetHostStatus().first;
+  if (host_status ==
+      HostStatus::kHostSetLocallyButWaitingForBackendConfirmation) {
+    pref_service_->SetBoolean(prefs::kIsAwaitingVerifiedHost, true);
     return;
+  }
 
-  // Begin waiting for a verified host if the phone is
-  // |kHostSetLocallyButWaitingForBackendConfirmation|.
-  bool is_awaiting_verified_host =
-      host_status ==
-      HostStatus::kHostSetLocallyButWaitingForBackendConfirmation;
-
-  // Must be persisted in the event that this class is destroyed
-  // before the phone is verified.
-  pref_service_->SetBoolean(prefs::kIsAwaitingVerifiedHost,
-                            is_awaiting_verified_host);
+  // The intent to enable Phone Hub after host verification was fulfilled.
+  // Note: We don't want to reset the pref if, say, the host status is
+  // kNoEligibleHosts; that might just be a transient state seen during
+  // start-up, for instance. It is true that we don't want to enable Phone Hub
+  // if the user explicitly disabled it in settings, however, that can only
+  // occur after the host becomes verified and we first enable Phone Hub.
+  const bool is_awaiting_verified_host =
+      pref_service_->GetBoolean(prefs::kIsAwaitingVerifiedHost);
+  const FeatureState feature_state =
+      multidevice_setup_client_->GetFeatureState(Feature::kPhoneHub);
+  if (is_awaiting_verified_host && host_status == HostStatus::kHostVerified &&
+      feature_state == FeatureState::kEnabledByUser) {
+    pref_service_->SetBoolean(prefs::kIsAwaitingVerifiedHost, false);
+    return;
+  }
 }
 
 }  // namespace phonehub
