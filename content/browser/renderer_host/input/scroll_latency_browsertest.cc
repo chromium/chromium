@@ -505,8 +505,9 @@ IN_PROC_BROWSER_TEST_F(ScrollLatencyScrollbarBrowserTest,
   RunScrollbarButtonLatencyTest();
 }
 
+// Disabled due to flakes; see https://crbug.com/1188553.
 IN_PROC_BROWSER_TEST_F(ScrollLatencyScrollbarBrowserTest,
-                       ScrollbarThumbDragLatency) {
+                       DISABLED_ScrollbarThumbDragLatency) {
   LoadURL();
 
   RunScrollbarThumbDragLatencyTest();
