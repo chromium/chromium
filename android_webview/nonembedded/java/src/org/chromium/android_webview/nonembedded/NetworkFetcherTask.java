@@ -16,7 +16,6 @@ import org.chromium.url.GURL;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -72,10 +71,6 @@ public class NetworkFetcherTask {
             }
 
             File outputFile = new File(filePath);
-            if (!outputFile.exists()) {
-                throw new FileNotFoundException("File to download contents to does not exist.");
-            }
-
             long contentLength = 0;
             String contentLengthString = connection.getHeaderField("Content-Length");
             if (contentLengthString != null && !contentLengthString.isEmpty()) {
@@ -89,7 +84,7 @@ public class NetworkFetcherTask {
             connection.setConnectTimeout(READ_TIMEOUT_MS);
 
             InputStream inputStream = connection.getInputStream();
-            OutputStream outputStream = new FileOutputStream(outputFile, /* append= */ true);
+            OutputStream outputStream = new FileOutputStream(outputFile);
             byte[] buffer = new byte[BUFFER_SIZE_BYTES];
 
             int bytesCount;
