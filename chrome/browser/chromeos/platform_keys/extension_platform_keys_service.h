@@ -18,25 +18,15 @@
 #include "chrome/browser/chromeos/platform_keys/platform_keys_service.h"
 #include "components/keyed_service/core/keyed_service.h"
 
-class PrefService;
-
 namespace content {
 class BrowserContext;
 class WebContents;
 }  // namespace content
 
-namespace extensions {
-class StateStore;
-}
-
 namespace net {
 class X509Certificate;
 typedef std::vector<scoped_refptr<X509Certificate>> CertificateList;
 }  // namespace net
-
-namespace policy {
-class PolicyService;
-}
 
 namespace chromeos {
 
@@ -72,17 +62,9 @@ class ExtensionPlatformKeysService : public KeyedService {
     DISALLOW_ASSIGN(SelectDelegate);
   };
 
-  // Stores registration information in |state_store|, i.e. for each extension
-  // the list of public keys that are valid to be used for signing. See
-  // |ExtensionKeyPermissionsService| for more details.
-  // |browser_context| and |state_store| must not be null and outlive this
-  // object.
+  // |browser_context| must not be null and must outlive this object.
   explicit ExtensionPlatformKeysService(
-      bool profile_is_managed,
-      PrefService* profile_prefs,
-      policy::PolicyService* profile_policies,
-      content::BrowserContext* browser_context,
-      extensions::StateStore* state_store);
+      content::BrowserContext* browser_context);
 
   ~ExtensionPlatformKeysService() override;
 

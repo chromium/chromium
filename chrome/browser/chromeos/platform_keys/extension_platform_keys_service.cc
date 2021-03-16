@@ -28,7 +28,6 @@
 #include "chrome/browser/profiles/profile.h"
 #include "content/public/browser/browser_thread.h"
 #include "extensions/browser/extension_registry.h"
-#include "extensions/browser/state_store.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/features/behavior_feature.h"
 #include "extensions/common/features/feature.h"
@@ -763,11 +762,7 @@ ExtensionPlatformKeysService::SelectDelegate::SelectDelegate() {}
 ExtensionPlatformKeysService::SelectDelegate::~SelectDelegate() {}
 
 ExtensionPlatformKeysService::ExtensionPlatformKeysService(
-    bool profile_is_managed,
-    PrefService* profile_prefs,
-    policy::PolicyService* profile_policies,
-    content::BrowserContext* browser_context,
-    extensions::StateStore* state_store)
+    content::BrowserContext* browser_context)
     : browser_context_(browser_context),
       platform_keys_service_(
           platform_keys::PlatformKeysServiceFactory::GetForBrowserContext(
@@ -777,7 +772,6 @@ ExtensionPlatformKeysService::ExtensionPlatformKeysService(
               GetForBrowserContext(browser_context)) {
   DCHECK(platform_keys_service_);
   DCHECK(browser_context);
-  DCHECK(state_store);
 }
 
 ExtensionPlatformKeysService::~ExtensionPlatformKeysService() {}
