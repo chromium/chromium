@@ -16,6 +16,7 @@ android_library("java") {
     "java/src/org/chromium/components/messages/MessageScopeChange.java",
     "java/src/org/chromium/components/messages/MessagesFactory.java",
     "java/src/org/chromium/components/messages/ScopeChangeController.java",
+    "java/src/org/chromium/components/messages/ScopeKey.java",
     "java/src/org/chromium/components/messages/SingleActionMessage.java",
   ]
 
@@ -44,7 +45,6 @@ java_library("junit") {
     "java/src/org/chromium/components/messages/MessageAutoDismissTimerTest.java",
     "java/src/org/chromium/components/messages/MessageBannerMediatorUnitTest.java",
     "java/src/org/chromium/components/messages/MessageQueueManagerTest.java",
-    "java/src/org/chromium/components/messages/ScopeChangeControllerTest.java",
   ]
   deps = [
     ":java",
@@ -55,6 +55,7 @@ java_library("junit") {
     "//base:base_junit_test_support",
     "//components/browser_ui/widget/android:java",
     "//content/public/android:content_java",
+    "//content/public/test/android:content_java_test_support",
     "//third_party/android_deps:robolectric_all_java",
     "//third_party/androidx:androidx_test_runner_java",
     "//third_party/junit",

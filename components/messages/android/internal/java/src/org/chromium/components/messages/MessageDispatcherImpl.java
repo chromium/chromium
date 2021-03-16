@@ -21,7 +21,6 @@ public class MessageDispatcherImpl implements ManagedMessageDispatcher {
     private final Supplier<Integer> mMessageMaxTranslationSupplier;
     private final Supplier<Long> mAutodismissDurationMs;
     private final Callback<Animator> mAnimatorStartCallback;
-    private final ScopeChangeController mScopeChangeController;
 
     /**
      * Build a new message dispatcher
@@ -39,7 +38,6 @@ public class MessageDispatcherImpl implements ManagedMessageDispatcher {
         mMessageContainer = messageContainer;
         mMessageMaxTranslationSupplier = messageMaxTranslation;
         mAnimatorStartCallback = animatorStartCallback;
-        mScopeChangeController = new ScopeChangeController(mMessageQueueManager);
         mAutodismissDurationMs = autodismissDurationMs;
     }
 
@@ -49,21 +47,19 @@ public class MessageDispatcherImpl implements ManagedMessageDispatcher {
         MessageStateHandler messageStateHandler = new SingleActionMessage(mMessageContainer,
                 messageProperties, this::dismissMessage, mMessageMaxTranslationSupplier,
                 mAutodismissDurationMs, mAnimatorStartCallback);
+        ScopeKey scopeKey = new ScopeKey(scopeType, webContents);
         mMessageQueueManager.enqueueMessage(
-                messageStateHandler, messageProperties, scopeType, webContents);
-        mScopeChangeController.observe(messageProperties, webContents);
+                messageStateHandler, messageProperties, scopeType, scopeKey);
     }
 
     @Override
     public void dismissMessage(PropertyModel messageProperties, @DismissReason int dismissReason) {
         mMessageQueueManager.dismissMessage(messageProperties, dismissReason);
-        mScopeChangeController.stopObservation(messageProperties);
     }
 
     @Override
     public void dismissAllMessages(@DismissReason int dismissReason) {
         mMessageQueueManager.dismissAllMessages(dismissReason);
-        mScopeChangeController.stopAllObservation();
     }
 
     @Override

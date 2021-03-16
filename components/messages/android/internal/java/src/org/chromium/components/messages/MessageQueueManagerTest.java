@@ -15,12 +15,15 @@ import static org.mockito.Mockito.verify;
 
 import androidx.test.filters.SmallTest;
 
+import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mockito;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.components.messages.MessageScopeChange.ChangeType;
+import org.chromium.content_public.browser.Visibility;
+import org.chromium.content_public.browser.test.mock.MockWebContents;
 
 /**
  * Unit tests for MessageQueueManager.
@@ -50,10 +53,19 @@ public class MessageQueueManagerTest {
         public void dismiss(@DismissReason int dismissReason) {}
     }
 
-    private static final int SCOPE_TYPE = 0;
-    private static final int SCOPE_INSTANCE_ID = 0;
+    private static class InactiveMockWebContents extends MockWebContents {
+        @Override
+        public @Visibility int getVisibility() {
+            return Visibility.HIDDEN;
+        }
+    }
 
-    private static final int SCOPE_INSTANCE_ID_A = 1;
+    private static final int SCOPE_TYPE = 0;
+    private static final ScopeKey SCOPE_INSTANCE_ID =
+            new ScopeKey(SCOPE_TYPE, new MockWebContents());
+
+    private static final ScopeKey SCOPE_INSTANCE_ID_A =
+            new ScopeKey(SCOPE_TYPE, new MockWebContents());
 
     /**
      * Tests lifecycle of a single message:
@@ -64,8 +76,6 @@ public class MessageQueueManagerTest {
     @SmallTest
     public void testEnqueueMessage() {
         MessageQueueManager queueManager = new MessageQueueManager();
-        queueManager.onScopeChange(
-                new MessageScopeChange(SCOPE_TYPE, SCOPE_INSTANCE_ID, ChangeType.ACTIVE));
         queueManager.setDelegate(mEmptyDelegate);
         MessageStateHandler m1 = Mockito.spy(new EmptyMessageStateHandler());
         MessageStateHandler m2 = Mockito.spy(new EmptyMessageStateHandler());
@@ -84,20 +94,46 @@ public class MessageQueueManagerTest {
     }
 
     /**
+     * Test method {@link MessageQueueManager#dismissAllMessages(int)}.
+     */
+    @Test
+    @SmallTest
+    public void testDismissAllMessages() {
+        MessageQueueManager queueManager = new MessageQueueManager();
+        queueManager.setDelegate(mEmptyDelegate);
+        MessageStateHandler m1 = Mockito.spy(new EmptyMessageStateHandler());
+        MessageStateHandler m2 = Mockito.spy(new EmptyMessageStateHandler());
+        MessageStateHandler m3 = Mockito.spy(new EmptyMessageStateHandler());
+
+        queueManager.enqueueMessage(m1, m1, SCOPE_TYPE, SCOPE_INSTANCE_ID);
+        queueManager.enqueueMessage(m2, m2, SCOPE_TYPE, SCOPE_INSTANCE_ID);
+        queueManager.enqueueMessage(m3, m3, SCOPE_TYPE, SCOPE_INSTANCE_ID_A);
+
+        queueManager.dismissAllMessages(DismissReason.ACTIVITY_DESTROYED);
+        verify(m1).dismiss(DismissReason.ACTIVITY_DESTROYED);
+        verify(m2).dismiss(DismissReason.ACTIVITY_DESTROYED);
+        verify(m3).dismiss(DismissReason.ACTIVITY_DESTROYED);
+
+        Assert.assertTrue("#dismissAllMessages should clear the message queue.",
+                queueManager.getMessagesForTesting().isEmpty());
+    }
+
+    /**
      * Tests that, with multiple enqueued messages, only one message is shown at a time.
      */
     @Test
     @SmallTest
     public void testOneMessageShownAtATime() {
         MessageQueueManager queueManager = new MessageQueueManager();
-        queueManager.onScopeChange(
-                new MessageScopeChange(SCOPE_TYPE, SCOPE_INSTANCE_ID, ChangeType.ACTIVE));
+
         queueManager.setDelegate(mEmptyDelegate);
         MessageStateHandler m1 = Mockito.spy(new EmptyMessageStateHandler());
         MessageStateHandler m2 = Mockito.spy(new EmptyMessageStateHandler());
 
         queueManager.enqueueMessage(m1, m1, SCOPE_TYPE, SCOPE_INSTANCE_ID);
         queueManager.enqueueMessage(m2, m2, SCOPE_TYPE, SCOPE_INSTANCE_ID);
+        queueManager.onScopeChange(
+                new MessageScopeChange(SCOPE_TYPE, SCOPE_INSTANCE_ID, ChangeType.ACTIVE));
         verify(m1).show();
         verify(m2, never()).show();
 
@@ -115,14 +151,12 @@ public class MessageQueueManagerTest {
     @SmallTest
     public void testDismissBeforeShow() {
         MessageQueueManager queueManager = new MessageQueueManager();
-        queueManager.onScopeChange(
-                new MessageScopeChange(SCOPE_TYPE, SCOPE_INSTANCE_ID, ChangeType.ACTIVE));
         queueManager.setDelegate(mEmptyDelegate);
         MessageStateHandler m1 = Mockito.mock(MessageStateHandler.class);
         MessageStateHandler m2 = Mockito.mock(MessageStateHandler.class);
 
-        queueManager.enqueueMessage(m1, m1, SCOPE_TYPE, 0);
-        queueManager.enqueueMessage(m2, m2, SCOPE_TYPE, 0);
+        queueManager.enqueueMessage(m1, m1, SCOPE_TYPE, SCOPE_INSTANCE_ID);
+        queueManager.enqueueMessage(m2, m2, SCOPE_TYPE, SCOPE_INSTANCE_ID);
         verify(m1).show();
         verify(m2, never()).show();
 
@@ -142,8 +176,6 @@ public class MessageQueueManagerTest {
     @SmallTest
     public void testEnqueueDuplicateKey() {
         MessageQueueManager queueManager = new MessageQueueManager();
-        queueManager.onScopeChange(
-                new MessageScopeChange(SCOPE_TYPE, SCOPE_INSTANCE_ID, ChangeType.ACTIVE));
         queueManager.setDelegate(mEmptyDelegate);
         MessageStateHandler m1 = Mockito.mock(MessageStateHandler.class);
         MessageStateHandler m2 = Mockito.mock(MessageStateHandler.class);
@@ -151,6 +183,8 @@ public class MessageQueueManagerTest {
 
         queueManager.enqueueMessage(m1, key, SCOPE_TYPE, SCOPE_INSTANCE_ID);
         queueManager.enqueueMessage(m2, key, SCOPE_TYPE, SCOPE_INSTANCE_ID);
+        queueManager.onScopeChange(
+                new MessageScopeChange(SCOPE_TYPE, SCOPE_INSTANCE_ID, ChangeType.ACTIVE));
     }
 
     /**
@@ -160,8 +194,6 @@ public class MessageQueueManagerTest {
     @SmallTest
     public void testDismissMessageTwice() {
         MessageQueueManager queueManager = new MessageQueueManager();
-        queueManager.onScopeChange(
-                new MessageScopeChange(SCOPE_TYPE, SCOPE_INSTANCE_ID, ChangeType.ACTIVE));
         queueManager.setDelegate(mEmptyDelegate);
         MessageStateHandler m1 = Mockito.spy(new EmptyMessageStateHandler());
         queueManager.enqueueMessage(m1, m1, SCOPE_TYPE, SCOPE_INSTANCE_ID);
@@ -179,8 +211,6 @@ public class MessageQueueManagerTest {
     public void testSuspendAndResumeQueue() {
         MessageQueueDelegate delegate = Mockito.spy(mEmptyDelegate);
         MessageQueueManager queueManager = new MessageQueueManager();
-        queueManager.onScopeChange(
-                new MessageScopeChange(SCOPE_TYPE, SCOPE_INSTANCE_ID, ChangeType.ACTIVE));
         queueManager.setDelegate(delegate);
         int token = queueManager.suspend();
         MessageStateHandler m1 = Mockito.spy(new EmptyMessageStateHandler());
@@ -208,8 +238,6 @@ public class MessageQueueManagerTest {
     public void testDismissOnSuspend() {
         MessageQueueDelegate delegate = Mockito.spy(mEmptyDelegate);
         MessageQueueManager queueManager = new MessageQueueManager();
-        queueManager.onScopeChange(
-                new MessageScopeChange(SCOPE_TYPE, SCOPE_INSTANCE_ID, ChangeType.ACTIVE));
         queueManager.setDelegate(delegate);
         queueManager.suspend();
         MessageStateHandler m1 = Mockito.mock(MessageStateHandler.class);
@@ -237,15 +265,17 @@ public class MessageQueueManagerTest {
         //                          which have been destroyed.
         MessageQueueDelegate delegate = Mockito.spy(mEmptyDelegate);
         MessageQueueManager queueManager = new MessageQueueManager();
-        queueManager.onScopeChange(
-                new MessageScopeChange(SCOPE_TYPE, SCOPE_INSTANCE_ID, ChangeType.ACTIVE));
         queueManager.setDelegate(delegate);
+        final ScopeKey inactiveScopeKey = new ScopeKey(SCOPE_TYPE, new InactiveMockWebContents());
+        final ScopeKey inactiveScopeKey2 = new ScopeKey(SCOPE_TYPE, new InactiveMockWebContents());
         MessageStateHandler m1 = Mockito.spy(new EmptyMessageStateHandler());
-        queueManager.enqueueMessage(m1, m1, SCOPE_TYPE, SCOPE_INSTANCE_ID_A);
+        queueManager.enqueueMessage(m1, m1, SCOPE_TYPE, inactiveScopeKey2);
 
         MessageStateHandler m2 = Mockito.spy(new EmptyMessageStateHandler());
-        queueManager.enqueueMessage(m2, m2, SCOPE_TYPE, SCOPE_INSTANCE_ID);
+        queueManager.enqueueMessage(m2, m2, SCOPE_TYPE, inactiveScopeKey);
 
+        queueManager.onScopeChange(
+                new MessageScopeChange(SCOPE_TYPE, inactiveScopeKey, ChangeType.ACTIVE));
         verify(m1, never().description("A message should not be shown on another scope instance."))
                 .show();
         verify(m1,
@@ -256,9 +286,9 @@ public class MessageQueueManagerTest {
         verify(m2, description("A message should show on its target scope instance.")).show();
 
         queueManager.onScopeChange(
-                new MessageScopeChange(SCOPE_TYPE, SCOPE_INSTANCE_ID, ChangeType.INACTIVE));
+                new MessageScopeChange(SCOPE_TYPE, inactiveScopeKey, ChangeType.INACTIVE));
         queueManager.onScopeChange(
-                new MessageScopeChange(SCOPE_TYPE, SCOPE_INSTANCE_ID_A, ChangeType.ACTIVE));
+                new MessageScopeChange(SCOPE_TYPE, inactiveScopeKey2, ChangeType.ACTIVE));
 
         verify(m2,
                 description(
@@ -281,13 +311,9 @@ public class MessageQueueManagerTest {
     public void testMessageAnimationTransitionOnScopeChange() {
         MessageQueueDelegate delegate = Mockito.spy(mEmptyDelegate);
         MessageQueueManager queueManager = new MessageQueueManager();
-        queueManager.onScopeChange(
-                new MessageScopeChange(SCOPE_TYPE, SCOPE_INSTANCE_ID, ChangeType.ACTIVE));
         queueManager.setDelegate(delegate);
         MessageStateHandler m1 = Mockito.spy(new EmptyMessageStateHandler());
         queueManager.enqueueMessage(m1, m1, SCOPE_TYPE, SCOPE_INSTANCE_ID);
-        queueManager.onScopeChange(
-                new MessageScopeChange(SCOPE_TYPE, SCOPE_INSTANCE_ID, ChangeType.ACTIVE));
         queueManager.onScopeChange(
                 new MessageScopeChange(SCOPE_TYPE, SCOPE_INSTANCE_ID, ChangeType.INACTIVE, true));
 
@@ -315,8 +341,6 @@ public class MessageQueueManagerTest {
     public void testMessageDismissedOnScopeDestroy() {
         MessageQueueDelegate delegate = Mockito.spy(mEmptyDelegate);
         MessageQueueManager queueManager = new MessageQueueManager();
-        queueManager.onScopeChange(
-                new MessageScopeChange(SCOPE_TYPE, SCOPE_INSTANCE_ID, ChangeType.ACTIVE));
         queueManager.setDelegate(delegate);
         MessageStateHandler m1 = Mockito.spy(new EmptyMessageStateHandler());
 
@@ -334,5 +358,62 @@ public class MessageQueueManagerTest {
                 description(
                         "Message should be dismissed when its target scope instance is destroyed."))
                 .dismiss(anyInt());
+    }
+
+    /**
+     * Test scope change controller is properly called when message is enqueued and dismissed.
+     */
+    @Test
+    @SmallTest
+    public void testScopeChangeControllerInvoked() {
+        ScopeChangeController controller = Mockito.mock(ScopeChangeController.class);
+        MessageQueueManager queueManager = new MessageQueueManager();
+        queueManager.setScopeChangeControllerForTesting(controller);
+        MessageStateHandler m1 = Mockito.spy(new EmptyMessageStateHandler());
+        MessageStateHandler m2 = Mockito.spy(new EmptyMessageStateHandler());
+        MessageStateHandler m3 = Mockito.spy(new EmptyMessageStateHandler());
+
+        queueManager.enqueueMessage(m1, m1, SCOPE_TYPE, SCOPE_INSTANCE_ID);
+        verify(controller,
+                description(
+                        "ScopeChangeController should be notified when the queue of scope gets its first message"))
+                .firstMessageEnqueued(SCOPE_INSTANCE_ID);
+
+        queueManager.enqueueMessage(m2, m2, SCOPE_TYPE, SCOPE_INSTANCE_ID);
+        verify(controller,
+                times(1).description(
+                        "ScopeChangeController should be notified **only** when the queue of scope gets its first message"))
+                .firstMessageEnqueued(SCOPE_INSTANCE_ID);
+
+        queueManager.enqueueMessage(m3, m3, SCOPE_TYPE, SCOPE_INSTANCE_ID_A);
+        verify(controller,
+                times(1).description(
+                        "ScopeChangeController should be notified **only** when the queue of scope gets its first message"))
+                .firstMessageEnqueued(SCOPE_INSTANCE_ID);
+        verify(controller,
+                description(
+                        "ScopeChangeController should be notified when the queue of scope gets its first message"))
+                .firstMessageEnqueued(SCOPE_INSTANCE_ID_A);
+
+        queueManager.dismissMessage(m3, DismissReason.TIMER);
+        verify(controller,
+                never().description(
+                        "ScopeChangeController should not be notified when the queue of scope is not empty."))
+                .lastMessageDismissed(SCOPE_INSTANCE_ID);
+        verify(controller,
+                description(
+                        "ScopeChangeController should be notified when the queue of scope becomes empty."))
+                .lastMessageDismissed(SCOPE_INSTANCE_ID_A);
+
+        queueManager.dismissMessage(m1, DismissReason.TIMER);
+        verify(controller,
+                never().description(
+                        "ScopeChangeController should not be notified when the queue of scope is not empty."))
+                .lastMessageDismissed(SCOPE_INSTANCE_ID);
+        queueManager.dismissMessage(m2, DismissReason.TIMER);
+        verify(controller,
+                description(
+                        "ScopeChangeController should be notified when the queue of scope is empty."))
+                .lastMessageDismissed(SCOPE_INSTANCE_ID);
     }
 }
