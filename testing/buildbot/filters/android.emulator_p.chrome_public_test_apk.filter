@@ -124,3 +124,6 @@
 
 # crbug.com/1163913
 -org.chromium.chrome.browser.autofill_assistant.AutofillAssistantTriggerScriptIntegrationTest.dontShowOnboardingIfAcceptedInDifferentTab
+
+# crbug.com/1187536
+-org.chromium.chrome.browser.customtabs.CustomTabExternalNavigationTest.testIntentPickerNotShownForNormalUrl
