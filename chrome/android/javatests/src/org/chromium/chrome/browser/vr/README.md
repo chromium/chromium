@@ -15,7 +15,9 @@
 
 If you are reproducing an issue with the AR tests, run
 `export DOWNLOAD_VR_TEST_APKS=1 && gclient runhooks` in order to get the
-playback datasets that are necessary.
+playback datasets that are necessary. This requires authentication, run
+`gsutil.py config` [documentation](https://chromium.googlesource.com/chromiumos/docs/+/master/gsutil.md) 
+to set this up if necessary.
 
 **NOTE** The message "Main  Unable to find package info for org.chromium.chrome"
          is usually displayed when the test package is being installed and does
