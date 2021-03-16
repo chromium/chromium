@@ -900,6 +900,8 @@ IN_PROC_BROWSER_TEST_F(PDFExtensionDocumentPropertiesEnabledTest,
                        ViewerPropertiesDialog) {
   // The properties dialog formats some values based on locale.
   base::test::ScopedRestoreICUDefaultLocale scoped_locale{"en_US"};
+  base::test::ScopedRestoreDefaultTimezone
+      scoped_timezone{"America/Los_Angeles"};
   RunTestsInJsModule("viewer_properties_dialog_test.js", "document_info.pdf");
 }
 
