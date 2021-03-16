@@ -2412,7 +2412,7 @@
   {
     "name": "enable-surface-control",
     "owners": [ "vikassoni", "vasilyt" ],
-    "expiry_milestone": 90
+    "expiry_milestone": 100
   },
   {
     "name": "enable-swipe-to-move-cursor",
