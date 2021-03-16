@@ -333,10 +333,16 @@ _MAC_LOW_END_EXECUTABLE_CONFIGS = frozenset([
     _load_library_perf_tests(),
     _performance_browser_tests(210),
 ])
-_MAC_M1_MINI_2020_BENCHMARK_CONFIGS = PerfSuite([
-    'loading.desktop',
-]).Abridge([
-    'loading.desktop',
+_MAC_M1_MINI_2020_BENCHMARK_CONFIGS = PerfSuite(
+    OFFICIAL_BENCHMARK_CONFIGS).Remove([
+        'blink_perf.display_locking',
+        'v8.runtime_stats.top_25',
+    ])
+_MAC_M1_MINI_2020_EXECUTABLE_CONFIGS = frozenset([
+    _base_perftests(300),
+    _dawn_perf_tests(330),
+    _performance_browser_tests(190),
+    _views_perftests(),
 ])
 
 _WIN_10_BENCHMARK_CONFIGS = PerfSuite(OFFICIAL_BENCHMARK_CONFIGS).Remove([
@@ -496,8 +502,13 @@ MAC_LOW_END = PerfPlatform(
     26,
     'mac',
     executables=_MAC_LOW_END_EXECUTABLE_CONFIGS)
-MAC_M1_MINI_2020 = PerfPlatform('mac-m1_mini_2020-perf', 'Mac M1 Mini 2020',
-                                _MAC_M1_MINI_2020_BENCHMARK_CONFIGS, 2, 'mac')
+MAC_M1_MINI_2020 = PerfPlatform(
+    'mac-m1_mini_2020-perf',
+    'Mac M1 Mini 2020',
+    _MAC_M1_MINI_2020_BENCHMARK_CONFIGS,
+    8,
+    'mac',
+    executables=_MAC_M1_MINI_2020_EXECUTABLE_CONFIGS)
 
 # Win
 WIN_10_LOW_END = PerfPlatform(

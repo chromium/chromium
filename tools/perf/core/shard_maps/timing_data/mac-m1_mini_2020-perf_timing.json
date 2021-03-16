@@ -1,6 +1,6 @@
 [
     {
-        "duration": "28.0",
+        "duration": "29.0",
         "name": "loading.desktop/AirBnB_warm"
     },
     {
@@ -20,7 +20,7 @@
         "name": "loading.desktop/Naver_cold"
     },
     {
-        "duration": "15.0",
+        "duration": "14.0",
         "name": "loading.desktop/Orange_cold"
     },
     {
@@ -28,7 +28,7 @@
         "name": "loading.desktop/Orange_warm"
     },
     {
-        "duration": "31.0",
+        "duration": "33.0",
         "name": "loading.desktop/Taobao_warm"
     },
     {
@@ -36,7 +36,23 @@
         "name": "loading.desktop/TheOnion_cold"
     },
     {
-        "duration": "16.0",
+        "duration": "17.0",
         "name": "loading.desktop/ru.wikipedia_warm"
+    },
+    {
+        "duration": "300.0",
+        "name": "base_perftests/_gtest_"
+    },
+    {
+        "duration": "190.0",
+        "name": "performance_browser_tests/_gtest_"
+    },
+    {
+        "duration": "7.0",
+        "name": "views_perftests/_gtest_"
+    },
+    {
+        "duration": "330.0",
+        "name": "dawn_perf_tests/_gtest_"
     }
 ]
