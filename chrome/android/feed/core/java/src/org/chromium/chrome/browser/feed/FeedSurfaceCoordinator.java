@@ -26,12 +26,12 @@ import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
-import org.chromium.chrome.browser.feed.shared.FeedFeatures;
 import org.chromium.chrome.browser.feed.shared.FeedSurfaceDelegate;
 import org.chromium.chrome.browser.feed.shared.FeedSurfaceProvider;
 import org.chromium.chrome.browser.feed.shared.stream.Header;
 import org.chromium.chrome.browser.feed.shared.stream.NonDismissibleHeader;
 import org.chromium.chrome.browser.feed.shared.stream.Stream;
+import org.chromium.chrome.browser.feed.v2.FeedStream;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.native_page.ContextMenuManager;
 import org.chromium.chrome.browser.native_page.NativePageNavigationDelegate;
@@ -47,7 +47,6 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.share.ShareDelegate;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.signin.ui.PersonalizedSigninPromoView;
-import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.browser.user_education.UserEducationHelper;
 import org.chromium.chrome.features.start_surface.StartSurfaceConfiguration;
@@ -75,34 +74,6 @@ public class FeedSurfaceCoordinator implements FeedSurfaceProvider {
     @VisibleForTesting
     public static final String FEED_STREAM_CREATED_TIME_MS_UMA = "FeedStreamCreatedTime";
 
-    /**
-     * Provides an interface that can be implemented by both Feed v1 and v2, allowing us to compile
-     * without Feed v1. Once v1 is removed, this interface should be removed.
-     */
-    public interface StreamWrapper {
-        int defaultMarginPixels(Activity activity);
-        int wideMarginPixels(Activity activity);
-
-        /**
-         * Creates the stream. Only called once unless doneWithStream is called.
-         */
-        Stream createStream(Profile profile, Activity activity, boolean showDarkBackground,
-                SnackbarManager snackbarManager,
-                NativePageNavigationDelegate pageNavigationDelegate, UiConfig uiConfig,
-                boolean placeholderShown, BottomSheetController bottomSheetController,
-                WindowAndroid windowAndroid, FeedV1ActionOptions v1ActionOptions,
-                Supplier<ShareDelegate> shareDelegateSupplier);
-
-        /**
-         * Called after the stream returned by createStream() is no longer needed.
-         */
-        void doneWithStream();
-        boolean isPlaceholderShown();
-        void addScrollListener();
-    }
-
-    StreamWrapper mStreamWrapper;
-
     protected final Activity mActivity;
     private final SnackbarManager mSnackbarManager;
     @Nullable
@@ -114,13 +85,11 @@ public class FeedSurfaceCoordinator implements FeedSurfaceProvider {
     private final int mWideMarginPixels;
     private final FeedSurfaceMediator mMediator;
     private final BottomSheetController mBottomSheetController;
-    private final FeedV1ActionOptions mV1ActionOptions;
     private final WindowAndroid mWindowAndroid;
     private final Supplier<ShareDelegate> mShareSupplier;
 
     private UiConfig mUiConfig;
     private FrameLayout mRootView;
-    private ContextMenuManager mContextMenuManager;
     private Tracker mTracker;
     private long mStreamCreatedTimeMs;
 
@@ -147,15 +116,10 @@ public class FeedSurfaceCoordinator implements FeedSurfaceProvider {
     private @Nullable ScrollView mScrollViewForPolicy;
     private @Nullable ViewResizer mScrollViewResizer;
 
-    // Used for the feed header menu.
-    private UserEducationHelper mUserEducationHelper;
-
     // Used to handle things related to the main scrollable container of NTP surface.
     private @Nullable ScrollableContainerDelegate mScrollableContainerDelegate;
 
     private @Nullable HeaderIphScrollListener mHeaderIphScrollListener;
-
-    private final Handler mHandler = new Handler();
 
     private class SignInPromoHeader implements Header {
         @Override
@@ -268,32 +232,27 @@ public class FeedSurfaceCoordinator implements FeedSurfaceProvider {
      * Constructs a new FeedSurfaceCoordinator.
      * @param activity The containing {@link Activity}.
      * @param snackbarManager The {@link SnackbarManager} displaying Snackbar UI.
-     * @param tabModelSelector {@link TabModelSelector} object.
      * @param windowAndroid The window of the page.
      * @param snapScrollHelper The {@link SnapScrollHelper} for the New Tab Page.
      * @param ntpHeader The extra header on top of the feeds for the New Tab Page.
      * @param sectionHeaderView The {@link SectionHeaderView} for the feed.
-     * @param actionOptions Configures feed v1 actions.
      * @param showDarkBackground Whether is shown on dark background.
      * @param delegate The constructing {@link FeedSurfaceDelegate}.
      * @param pageNavigationDelegate The {@link NativePageNavigationDelegate}
      *                               that handles page navigation.
      * @param profile The current user profile.
      * @param isPlaceholderShownInitially Whether the placeholder is shown initially.
-     * @param bottomSheetController The bottom sheet controller, used in v2.
+     * @param bottomSheetController The bottom sheet controller.
      * @param shareDelegateSupplier The supplier for the share delegate used to share articles.
      */
     public FeedSurfaceCoordinator(Activity activity, SnackbarManager snackbarManager,
-            TabModelSelector tabModelSelector, WindowAndroid windowAndroid,
-            @Nullable SnapScrollHelper snapScrollHelper, @Nullable View ntpHeader,
-            @Nullable SectionHeaderView sectionHeaderView, FeedV1ActionOptions actionOptions,
+            WindowAndroid windowAndroid, @Nullable SnapScrollHelper snapScrollHelper,
+            @Nullable View ntpHeader, @Nullable SectionHeaderView sectionHeaderView,
             boolean showDarkBackground, FeedSurfaceDelegate delegate,
             @Nullable NativePageNavigationDelegate pageNavigationDelegate, Profile profile,
             boolean isPlaceholderShownInitially, BottomSheetController bottomSheetController,
             Supplier<ShareDelegate> shareDelegateSupplier,
             @Nullable ScrollableContainerDelegate externalScrollableContainerDelegate) {
-        mStreamWrapper = FeedV2.createStreamWrapper();
-
         mActivity = activity;
         mSnackbarManager = snackbarManager;
         mNtpHeader = ntpHeader;
@@ -303,20 +262,20 @@ public class FeedSurfaceCoordinator implements FeedSurfaceProvider {
         mPageNavigationDelegate = pageNavigationDelegate;
         mBottomSheetController = bottomSheetController;
         mProfile = profile;
-        mV1ActionOptions = actionOptions;
         mWindowAndroid = windowAndroid;
         mShareSupplier = shareDelegateSupplier;
         mScrollableContainerDelegate = externalScrollableContainerDelegate;
 
         Resources resources = mActivity.getResources();
-        mDefaultMarginPixels = mStreamWrapper.defaultMarginPixels(activity);
-        mWideMarginPixels = mStreamWrapper.wideMarginPixels(activity);
+        mDefaultMarginPixels = mActivity.getResources().getDimensionPixelSize(
+                R.dimen.content_suggestions_card_modern_margin);
+        mWideMarginPixels = mActivity.getResources().getDimensionPixelSize(
+                R.dimen.ntp_wide_card_lateral_margins);
 
         mRootView = new RootView(mActivity);
         mRootView.setPadding(0, resources.getDimensionPixelOffset(R.dimen.tab_strip_height), 0, 0);
         mUiConfig = new UiConfig(mRootView);
 
-        mTracker = TrackerFactory.getTrackerForProfile(profile);
 
         if (isEnhancedProtectionPromoEnabled()) {
             mEnhancedProtectionPromoController =
@@ -340,8 +299,6 @@ public class FeedSurfaceCoordinator implements FeedSurfaceProvider {
         // Mediator should be created before any Stream changes.
         mMediator = new FeedSurfaceMediator(
                 this, snapScrollHelper, mPageNavigationDelegate, mSectionHeaderModel);
-
-        mUserEducationHelper = new UserEducationHelper(mActivity, mHandler);
     }
 
     @Override
@@ -350,7 +307,6 @@ public class FeedSurfaceCoordinator implements FeedSurfaceProvider {
         mMediator.destroy();
         if (mStreamLifecycleManager != null) mStreamLifecycleManager.destroy();
         mStreamLifecycleManager = null;
-        mStreamWrapper.doneWithStream();
         if (mEnhancedProtectionPromoController != null) {
             mEnhancedProtectionPromoController.destroy();
         }
@@ -407,7 +363,7 @@ public class FeedSurfaceCoordinator implements FeedSurfaceProvider {
 
     /** @return Whether the placeholder is shown. */
     public boolean isPlaceholderShown() {
-        return mStreamWrapper.isPlaceholderShown();
+        return mStream.isPlaceholderShown();
     }
 
     /**
@@ -422,9 +378,9 @@ public class FeedSurfaceCoordinator implements FeedSurfaceProvider {
         }
 
         mStreamCreatedTimeMs = SystemClock.elapsedRealtime();
-        mStream = mStreamWrapper.createStream(mProfile, mActivity, mShowDarkBackground,
-                mSnackbarManager, mPageNavigationDelegate, mUiConfig, mIsPlaceholderShownInitially,
-                mBottomSheetController, mWindowAndroid, mV1ActionOptions, mShareSupplier);
+        mStream = new FeedStream(mActivity, mShowDarkBackground, mSnackbarManager,
+                mPageNavigationDelegate, mBottomSheetController, mIsPlaceholderShownInitially,
+                mWindowAndroid, mShareSupplier);
 
         mStreamLifecycleManager = mDelegate.createStreamLifecycleManager(mStream, mActivity);
 
@@ -452,8 +408,6 @@ public class FeedSurfaceCoordinator implements FeedSurfaceProvider {
         } else if (mSectionHeaderView != null) {
             mStream.setHeaderViews(Arrays.asList(new NonDismissibleHeader(mSectionHeaderView)));
         }
-
-        mStreamWrapper.addScrollListener();
 
         // Work around https://crbug.com/943873 where default focus highlight shows up after
         // toggling dark mode.
@@ -498,7 +452,6 @@ public class FeedSurfaceCoordinator implements FeedSurfaceProvider {
                 mEnhancedProtectionPromoController.destroy();
                 mEnhancedProtectionPromoController = null;
             }
-            mStreamWrapper.doneWithStream();
         }
 
         mScrollViewForPolicy = new PolicyScrollView(mActivity);
@@ -542,13 +495,6 @@ public class FeedSurfaceCoordinator implements FeedSurfaceProvider {
             mSigninPromoView = (PersonalizedSigninPromoView) inflater.inflate(
                     R.layout.personalized_signin_promo_view_modern_content_suggestions, mRootView,
                     false);
-
-            // If the placeholder is shown in Feed v1, delay to show the sign-in view until the
-            // articles are shown. Feed v2's articles don't have fade-in animations, so sign-in view
-            // is already shown together with v2 articles.
-            if (isPlaceholderShown() && !FeedFeatures.isV2Enabled()) {
-                mSigninPromoView.setVisibility(View.INVISIBLE);
-            }
         }
         return mSigninPromoView;
     }
@@ -598,14 +544,6 @@ public class FeedSurfaceCoordinator implements FeedSurfaceProvider {
         mMediator.onOverviewShownAtLaunch(activityCreationTimeMs, mIsPlaceholderShownInitially);
         StartSurfaceConfiguration.recordHistogram(FEED_STREAM_CREATED_TIME_MS_UMA,
                 mStreamCreatedTimeMs - activityCreationTimeMs, mIsPlaceholderShownInitially);
-    }
-
-    Tracker getFeatureEngagementTracker() {
-        return mTracker;
-    }
-
-    UserEducationHelper getUserEducationHelper() {
-        return mUserEducationHelper;
     }
 
     EnhancedProtectionPromoController getEnhancedProtectionPromoController() {
@@ -661,11 +599,12 @@ public class FeedSurfaceCoordinator implements FeedSurfaceProvider {
         HeaderIphScrollListener.Delegate delegate = new HeaderIphScrollListener.Delegate() {
             @Override
             public Tracker getFeatureEngagementTracker() {
-                return mTracker;
+                return TrackerFactory.getTrackerForProfile(mProfile);
             }
             @Override
             public void showMenuIph() {
-                mSectionHeaderView.showMenuIph(mUserEducationHelper);
+                UserEducationHelper helper = new UserEducationHelper(mActivity, new Handler());
+                mSectionHeaderView.showMenuIph(helper);
             }
             @Override
             public boolean isFeedExpanded() {

@@ -12,7 +12,6 @@ import android.view.ViewGroup;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.app.ChromeActivity;
 import org.chromium.chrome.browser.feed.FeedSurfaceCoordinator;
-import org.chromium.chrome.browser.feed.FeedV1ActionOptions;
 import org.chromium.chrome.browser.feed.StreamLifecycleManager;
 import org.chromium.chrome.browser.feed.shared.FeedSurfaceDelegate;
 import org.chromium.chrome.browser.feed.shared.stream.Stream;
@@ -111,17 +110,10 @@ class ExploreSurfaceCoordinator implements FeedSurfaceDelegate {
             }
         }
 
-        FeedV1ActionOptions feedActionOptions = new FeedV1ActionOptions();
-        feedActionOptions.inhibitDownload = true;
-        feedActionOptions.inhibitOpenInIncognito = true;
-        feedActionOptions.inhibitOpenInNewTab = true;
-        feedActionOptions.inhibitLearnMore = true;
-
         FeedSurfaceCoordinator feedSurfaceCoordinator = new FeedSurfaceCoordinator(mActivity,
-                mActivity.getSnackbarManager(), mActivity.getTabModelSelector(),
-                mActivity.getWindowAndroid(), null, null, sectionHeaderView, feedActionOptions,
-                isInNightMode, this, mExploreSurfaceNavigationDelegate, profile, isPlaceholderShown,
-                bottomSheetController, mActivity.getShareDelegateSupplier(),
+                mActivity.getSnackbarManager(), mActivity.getWindowAndroid(), null, null,
+                sectionHeaderView, isInNightMode, this, mExploreSurfaceNavigationDelegate, profile,
+                isPlaceholderShown, bottomSheetController, mActivity.getShareDelegateSupplier(),
                 scrollableContainerDelegate);
         feedSurfaceCoordinator.getView().setId(R.id.start_surface_explore_view);
         return feedSurfaceCoordinator;

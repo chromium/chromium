@@ -1106,7 +1106,7 @@ public class StartSurfaceTest {
                                 SingleTabSwitcherMediator.SINGLE_TAB_TITLE_AVAILABLE_TIME_UMA,
                                 isInstantStart)));
 
-        // TODO(crbug.com/1129187): Looks like this doesn't work with FeedV2.
+        // TODO(crbug.com/1187320): Looks like this doesn't work with FeedV2.
         if (!(FeedFeatures.isV2Enabled() && mImmediateReturn)) {
             Assert.assertEquals(expectedRecordCount,
                     RecordHistogram.getHistogramTotalCountForTesting(
@@ -1114,7 +1114,7 @@ public class StartSurfaceTest {
                                     FeedSurfaceMediator.FEED_CONTENT_FIRST_LOADED_TIME_MS_UMA,
                                     isInstantStart)));
         }
-        // TODO(crbug.com/1129187): Looks like this doesn't work with FeedV2.
+        // TODO(crbug.com/1187320): Looks like this doesn't work with FeedV2.
         if (!(FeedFeatures.isV2Enabled() && mImmediateReturn && mUseInstantStart)) {
             Assert.assertEquals(expectedRecordCount,
                     RecordHistogram.getHistogramTotalCountForTesting(

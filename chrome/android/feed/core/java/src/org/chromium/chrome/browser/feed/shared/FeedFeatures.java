@@ -5,7 +5,6 @@
 package org.chromium.chrome.browser.feed.shared;
 
 import org.chromium.base.Log;
-import org.chromium.chrome.browser.flags.CachedFeatureFlags;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.preferences.PrefChangeRegistrar;
@@ -26,29 +25,8 @@ public final class FeedFeatures {
 
     private static PrefChangeRegistrar sPrefChangeRegistrar;
 
-    /**
-     * @return Whether implicit Feed user actions are being reported based on feature states. Can be
-     *         used for both Feed v1 and v2.
-     */
-    public static boolean isReportingUserActions() {
-        return isV2Enabled()
-                || ChromeFeatureList.isEnabled(ChromeFeatureList.REPORT_FEED_USER_ACTIONS);
-    }
-
-    /**
-     * Identical to {@link isReportingUserActions} but uses {@link CachedFeatureFlags} for checking
-     * feature states.
-     */
-    public static boolean cachedIsReportingUserActions() {
-        return cachedIsV2Enabled()
-                || CachedFeatureFlags.isEnabled(ChromeFeatureList.REPORT_FEED_USER_ACTIONS);
-    }
-
+    /** TODO(crbug.com/1187320): Remove when tests are fixed. */
     public static boolean isV2Enabled() {
-        return true;
-    }
-
-    public static boolean cachedIsV2Enabled() {
         return true;
     }
 

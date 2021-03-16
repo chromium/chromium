@@ -94,7 +94,6 @@ import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.compositor.layouts.Layout;
 import org.chromium.chrome.browser.compositor.layouts.StaticLayout;
 import org.chromium.chrome.browser.compositor.layouts.content.TabContentManager;
-import org.chromium.chrome.browser.feed.shared.FeedFeatures;
 import org.chromium.chrome.browser.flags.CachedFeatureFlags;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
@@ -1892,6 +1891,7 @@ public class StartSurfaceLayoutTest {
 
     @Test
     @MediumTest
+    @DisabledTest(message = "crbug.com/1187320 This doesn't work with FeedV2.")
     public void testActivityCanBeGarbageCollectedAfterFinished() throws Exception {
         prepareTabs(1, 0, "about:blank");
 
@@ -1906,12 +1906,9 @@ public class StartSurfaceLayoutTest {
         mTabListDelegate = null;
         mActivityTestRule.setActivity(activity);
 
-        // TODO(crbug.com/1129187): Looks like this doesn't work with FeedV2.
-        if (!FeedFeatures.isV2Enabled()) {
-            // A longer timeout is needed. Achieve that by using the CriteriaHelper.pollUiThread.
-            CriteriaHelper.pollUiThread(
-                    () -> GarbageCollectionTestUtils.canBeGarbageCollected(activityRef));
-        }
+        // A longer timeout is needed. Achieve that by using the CriteriaHelper.pollUiThread.
+        CriteriaHelper.pollUiThread(
+                () -> GarbageCollectionTestUtils.canBeGarbageCollected(activityRef));
     }
 
     /**

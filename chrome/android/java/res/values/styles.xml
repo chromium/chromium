@@ -551,7 +551,7 @@
 
     <!-- Content and Site Suggestions -->
     <style name="SuggestionCardModern" parent="Card">
-        <item name="android:layout_marginBottom">@dimen/content_suggestions_card_modern_margin</item>
+        <item name="android:layout_marginBottom">@dimen/content_suggestions_card_bottom_margin</item>
     </style>
 
     <!-- Password manager settings page -->

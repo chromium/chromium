@@ -295,8 +295,7 @@
          to both the top and bottom bounds to bring the 48dp modern_toolbar_background_size to 56dp
          (matches toolbar_height_no_shadow). -->
     <dimen name="ntp_search_box_bounds_vertical_inset_modern">-4dp</dimen>
-    <dimen name="ntp_wide_card_lateral_margins">48dp</dimen>
-    <dimen name="ntp_wide_card_lateral_margins_v2">36dp</dimen>
+    <dimen name="ntp_wide_card_lateral_margins">36dp</dimen>
     <dimen name="snippets_article_header_height">40dp</dimen>
     <dimen name="snippets_article_header_menu_size">48dp</dimen>
     <dimen name="feed_v2_header_menu_width">18dp</dimen>
@@ -305,9 +304,9 @@
     <!-- This should match |ntp_header_lateral_margins_v2|. -->
     <dimen name="ntp_header_lateral_margins_v2">16dp</dimen>
     <!-- This is in sp because we want the icon to scale with the TextView it sits alongside. -->
-    <dimen name="content_suggestions_card_modern_margin">12dp</dimen>
-    <dimen name="content_suggestions_card_modern_margin_v2">0dp</dimen>
-    <dimen name="content_suggestions_card_modern_padding_v2">16dp</dimen>
+    <dimen name="content_suggestions_card_modern_margin">0dp</dimen>
+    <dimen name="content_suggestions_card_modern_padding">16dp</dimen>
+    <dimen name="content_suggestions_card_bottom_margin">12dp</dimen>
     <dimen name="md_incognito_ntp_line_spacing">6sp</dimen>
     <dimen name="md_incognito_ntp_padding_left">16dp</dimen>
     <dimen name="cryptid_height_in_logo_wrapper">60dp</dimen>

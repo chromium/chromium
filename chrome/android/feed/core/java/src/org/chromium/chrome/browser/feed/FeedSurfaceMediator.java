@@ -221,24 +221,17 @@ public class FeedSurfaceMediator
                 mStreamContentChanged = true;
                 if (mSnapScrollHelper != null) mSnapScrollHelper.resetSearchBoxOnScroll(true);
 
-                // Feed v2's background is set to be transparent in {@link
+                // Feed's background is set to be transparent in {@link
                 // FeedSurfaceCoordinator#createStream} to show the Feed placeholder. When first
                 // batch of articles are about to show, set recyclerView back to non-transparent.
-                // Feed v2 doesn't call onAddFinished(), so we hide placeholder here.
-                if (FeedFeatures.isV2Enabled() && mCoordinator.isPlaceholderShown()) {
+                if (mCoordinator.isPlaceholderShown()) {
                     stream.hidePlaceholder();
                 }
             }
 
             @Override
             public void onAddFinished() {
-                // Feed v1's background is set to be transparent in {@link
-                // FeedSurfaceCoordinator#createStream} to show the Feed placeholder. After first
-                // batch of articles finish fade-in animation, set recyclerView back to
-                // non-transparent.
-                if (!FeedFeatures.isV2Enabled() && mCoordinator.isPlaceholderShown()) {
-                    stream.hidePlaceholder();
-                }
+                // TODO(crbug.com/1187320): Remove this method altogether when bug fixed.
                 if (mContentFirstAvailableTimeMs == 0) {
                     mContentFirstAvailableTimeMs = SystemClock.elapsedRealtime();
                     if (mHasPendingUmaRecording) {
@@ -247,16 +240,6 @@ public class FeedSurfaceMediator
                     }
                 }
                 mIsLoadingFeed = false;
-            }
-
-            @Override
-            public void onAddStarting() {
-                // Feed v1's sign-in view is set to be invisible in {@link
-                // FeedSurfaceCoordinator#getSigninPromoView} if the Feed placeholder is shown. Set
-                // sign-in box visible back when Feed articles are about to show.
-                if (!FeedFeatures.isV2Enabled() && mCoordinator.isPlaceholderShown()) {
-                    mCoordinator.fadeInSigninView();
-                }
             }
         };
         stream.addOnContentChangedListener(mStreamContentChangedListener);
@@ -272,7 +255,7 @@ public class FeedSurfaceMediator
             mFeedMenuModel = buildMenuItems();
 
             PropertyModel interestFeedHeader = SectionHeaderProperties.createSectionHeader(
-                    getSectionHeaderText(suggestionsVisible));
+                    getInterestFeedHeaderText(suggestionsVisible));
             mSectionHeaderModel.get(SectionHeaderListProperties.SECTION_HEADERS_KEY)
                     .add(interestFeedHeader);
 
@@ -393,7 +376,7 @@ public class FeedSurfaceMediator
             mSectionHeaderModel.get(SectionHeaderListProperties.SECTION_HEADERS_KEY)
                     .get(INTEREST_FEED_HEADER_POSITION)
                     .set(SectionHeaderProperties.HEADER_TEXT_KEY,
-                            getSectionHeaderText(suggestionsVisible));
+                            getInterestFeedHeaderText(suggestionsVisible));
         }
 
         // Update toggleswitch item, which is last item in list.
@@ -425,8 +408,8 @@ public class FeedSurfaceMediator
         SuggestionsMetrics.recordArticlesListVisible();
     }
 
-    /** Returns the section header text based on the selected default search engine */
-    private String getSectionHeaderText(boolean isExpanded) {
+    /** Returns the interest feed header text based on the selected default search engine */
+    private String getInterestFeedHeaderText(boolean isExpanded) {
         Resources res = mCoordinator.getSectionHeaderView().getResources();
         final boolean isDefaultSearchEngineGoogle =
                 TemplateUrlServiceFactory.get().isDefaultSearchEngineGoogle();

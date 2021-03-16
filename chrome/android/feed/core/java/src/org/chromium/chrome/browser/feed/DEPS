@@ -1,9 +1,0 @@
-include_rules = [
-  "-chrome/android/feed/core/java/src/org/chromium/chrome/browser/feed/v2",
-]
-
-specific_include_rules = {
-    "FeedV2\.java": [
-        "+chrome/android/feed/core/java/src/org/chromium/chrome/browser/feed/v2",
-    ],
-}

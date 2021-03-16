@@ -78,10 +78,6 @@ import org.chromium.base.NativeLibraryLoadedStatus;
 import org.chromium.base.StreamUtil;
 import org.chromium.base.SysUtils;
 import org.chromium.base.library_loader.LibraryLoader;
-import org.chromium.base.test.params.ParameterAnnotations;
-import org.chromium.base.test.params.ParameterProvider;
-import org.chromium.base.test.params.ParameterSet;
-import org.chromium.base.test.params.ParameterizedRunner;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
@@ -97,7 +93,6 @@ import org.chromium.chrome.browser.compositor.layouts.LayoutManagerChromeTablet;
 import org.chromium.chrome.browser.compositor.layouts.StaticLayout;
 import org.chromium.chrome.browser.compositor.layouts.content.TabContentManager;
 import org.chromium.chrome.browser.device.DeviceClassManager;
-import org.chromium.chrome.browser.feed.FeedV2;
 import org.chromium.chrome.browser.flags.CachedFeatureFlags;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
@@ -128,7 +123,7 @@ import org.chromium.chrome.browser.toolbar.top.StartSurfaceToolbarCoordinator;
 import org.chromium.chrome.browser.toolbar.top.TopToolbarCoordinator;
 import org.chromium.chrome.browser.util.ChromeAccessibilityUtil;
 import org.chromium.chrome.test.ChromeActivityTestRule;
-import org.chromium.chrome.test.ChromeJUnit4RunnerDelegate;
+import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.R;
 import org.chromium.chrome.test.util.ActivityUtils;
@@ -161,8 +156,7 @@ import java.util.concurrent.atomic.AtomicReference;
 /**
  * Integration tests of Instant Start which requires 2-stage initialization for Clank startup.
  */
-@RunWith(ParameterizedRunner.class)
-@ParameterAnnotations.UseRunnerDelegate(ChromeJUnit4RunnerDelegate.class)
+@RunWith(ChromeJUnit4ClassRunner.class)
 // clang-format off
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 @EnableFeatures({ChromeFeatureList.TAB_GRID_LAYOUT_ANDROID,
@@ -195,24 +189,6 @@ public class InstantStartTest {
         if (mActivityTestRule.getActivity() != null) {
             ActivityUtils.clearActivityOrientation(mActivityTestRule.getActivity());
         }
-    }
-
-    /**
-     * Parameter set controlling whether Feed v2 is enabled.
-     */
-    public static class FeedParams implements ParameterProvider {
-        @Override
-        public List<ParameterSet> getParameters() {
-            List<ParameterSet> feedParams = new ArrayList<ParameterSet>();
-            if (FeedV2.IS_AVAILABLE) {
-                feedParams.add(new ParameterSet().value(true).name("FeedV2"));
-            }
-            return feedParams;
-        }
-    }
-
-    private void setFeedVersion(boolean isFeedV2) {
-        CachedFeatureFlags.setForTesting(ChromeFeatureList.INTEREST_FEED_V2, isFeedV2);
     }
 
     /**
@@ -774,10 +750,9 @@ public class InstantStartTest {
             "/exclude_mv_tiles/true" +
             "/hide_switch_when_no_incognito_tabs/true" +
             "/show_last_active_tab_only/true"})
-    @ParameterAnnotations.UseMethodParameter(FeedParams.class)
-    public void renderSingleAsHomepage_SingleTabNoMVTiles(boolean isFeedV2) throws IOException {
+    public void renderSingleAsHomepage_SingleTabNoMVTiles()
+        throws IOException {
         // clang-format on
-        setFeedVersion(isFeedV2);
 
         createTabStateFile(new int[] {0});
         createThumbnailBitmapAndWriteToFile(0);
@@ -806,15 +781,13 @@ public class InstantStartTest {
     @SmallTest
     @Restriction({UiRestriction.RESTRICTION_TYPE_PHONE})
     @EnableFeatures({ChromeFeatureList.TAB_SWITCHER_ON_RETURN + "<Study,",
-            ChromeFeatureList.START_SURFACE_ANDROID + "<Study", ChromeFeatureList.INTEREST_FEED_V2})
+            ChromeFeatureList.START_SURFACE_ANDROID + "<Study"})
     // clang-format off
     @CommandLineFlags.Add({ChromeSwitches.DISABLE_NATIVE_INITIALIZATION,
             "force-fieldtrials=Study/Group",
             IMMEDIATE_RETURN_PARAMS + "/start_surface_variation/single"})
-    @ParameterAnnotations.UseMethodParameter(FeedParams.class)
-    public void testFeedPlaceholderFromColdStart(boolean isFeedV2) {
+    public void testFeedPlaceholderFromColdStart() {
         // clang-format on
-        setFeedVersion(isFeedV2);
         startMainActivityFromLauncher();
         Assert.assertFalse(mActivityTestRule.getActivity().isTablet());
         Assert.assertTrue(CachedFeatureFlags.isEnabled(ChromeFeatureList.INSTANT_START));
@@ -838,14 +811,12 @@ public class InstantStartTest {
     @SmallTest
     @Restriction({UiRestriction.RESTRICTION_TYPE_PHONE})
     @EnableFeatures({ChromeFeatureList.TAB_SWITCHER_ON_RETURN + "<Study,",
-            ChromeFeatureList.START_SURFACE_ANDROID + "<Study", ChromeFeatureList.INTEREST_FEED_V2})
+            ChromeFeatureList.START_SURFACE_ANDROID + "<Study"})
     // clang-format off
     @CommandLineFlags.Add({"force-fieldtrials=Study/Group",
             IMMEDIATE_RETURN_PARAMS + "/start_surface_variation/single"})
-    @ParameterAnnotations.UseMethodParameter(FeedParams.class)
-    public void testCachedFeedVisibility(boolean isFeedV2) {
+    public void testCachedFeedVisibility() {
         // clang-format on
-        setFeedVersion(isFeedV2);
         startMainActivityFromLauncher();
         mActivityTestRule.waitForActivityNativeInitializationComplete();
         // FEED_ARTICLES_LIST_VISIBLE should equal to ARTICLES_LIST_VISIBLE.
@@ -879,15 +850,13 @@ public class InstantStartTest {
     @SmallTest
     @Restriction({UiRestriction.RESTRICTION_TYPE_PHONE})
     @EnableFeatures({ChromeFeatureList.TAB_SWITCHER_ON_RETURN + "<Study,",
-            ChromeFeatureList.START_SURFACE_ANDROID + "<Study", ChromeFeatureList.INTEREST_FEED_V2})
+            ChromeFeatureList.START_SURFACE_ANDROID + "<Study"})
     // clang-format off
     @CommandLineFlags.Add({ChromeSwitches.DISABLE_NATIVE_INITIALIZATION,
             "force-fieldtrials=Study/Group",
             IMMEDIATE_RETURN_PARAMS + "/start_surface_variation/single"})
-    @ParameterAnnotations.UseMethodParameter(FeedParams.class)
-    public void testHidePlaceholder(boolean isFeedV2) {
+    public void testHidePlaceholder() {
         // clang-format on
-        setFeedVersion(isFeedV2);
         StartSurfaceConfiguration.setFeedVisibilityForTesting(false);
         startMainActivityFromLauncher();
 
@@ -899,15 +868,13 @@ public class InstantStartTest {
     @SmallTest
     @Restriction({UiRestriction.RESTRICTION_TYPE_PHONE})
     @EnableFeatures({ChromeFeatureList.TAB_SWITCHER_ON_RETURN + "<Study,",
-            ChromeFeatureList.START_SURFACE_ANDROID + "<Study", ChromeFeatureList.INTEREST_FEED_V2})
+            ChromeFeatureList.START_SURFACE_ANDROID + "<Study"})
     // clang-format off
     @CommandLineFlags.Add({ChromeSwitches.DISABLE_NATIVE_INITIALIZATION,
             "force-fieldtrials=Study/Group",
             IMMEDIATE_RETURN_PARAMS + "/start_surface_variation/single"})
-    @ParameterAnnotations.UseMethodParameter(FeedParams.class)
-    public void testShowPlaceholder(boolean isFeedV2) {
+    public void testShowPlaceholder() {
         // clang-format on
-        setFeedVersion(isFeedV2);
         StartSurfaceConfiguration.setFeedVisibilityForTesting(true);
         startMainActivityFromLauncher();
 
@@ -1137,11 +1104,8 @@ public class InstantStartTest {
     @CommandLineFlags.Add({ChromeSwitches.DISABLE_NATIVE_INITIALIZATION,
             "force-fieldtrials=Study/Group",
             IMMEDIATE_RETURN_PARAMS + "/start_surface_variation/single"})
-    @ParameterAnnotations.UseMethodParameter(FeedParams.class)
-    public void renderSingleAsHomepage_Landscape(boolean isFeedV2) throws IOException {
+    public void renderSingleAsHomepage_Landscape() throws IOException {
         // clang-format on
-        setFeedVersion(isFeedV2);
-
         createTabStateFile(new int[] {0, 1, 2});
 
         startMainActivityFromLauncher();

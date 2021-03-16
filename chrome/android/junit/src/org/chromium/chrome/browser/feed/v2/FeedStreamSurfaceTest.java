@@ -88,9 +88,6 @@ public class FeedStreamSurfaceTest {
         }
 
         @Override
-        public void onAddStarting() {}
-
-        @Override
         public void onAddFinished() {}
     }
 

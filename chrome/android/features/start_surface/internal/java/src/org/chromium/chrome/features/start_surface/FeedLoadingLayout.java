@@ -18,7 +18,6 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 
 import org.chromium.chrome.browser.feed.FeedSurfaceCoordinator;
-import org.chromium.chrome.browser.feed.shared.FeedFeatures;
 import org.chromium.chrome.start_surface.R;
 import org.chromium.components.browser_ui.widget.displaystyle.UiConfig;
 import org.chromium.components.browser_ui.widget.displaystyle.ViewResizer;
@@ -73,21 +72,10 @@ public class FeedLoadingLayout extends LinearLayout {
     private void setHeader() {
         LinearLayout headerView = findViewById(R.id.feed_placeholder_header);
         ViewGroup.LayoutParams lp = headerView.getLayoutParams();
-        // FeedFeatures.cachedIsReportingUserActions uses CachedFeatureFlags for checking feature
-        // states, but these same features are checked directly with ChromeFeatureList in other
-        // places. Using the cached check here is deliberate for pre-native usage. This
-        // inconsistency is fine because the check here is for the Feed header blank size, the
-        // mismatch is bearable and only once for every change.
-        if (FeedFeatures.cachedIsReportingUserActions()) {
             // Header blank size should be consistent with
             // R.layout.new_tab_page_snippets_expandable_header_with_menu.
             lp.height =
                     getResources().getDimensionPixelSize(R.dimen.snippets_article_header_menu_size);
-        } else {
-            // Header blank size should be consistent with R.layout.ss_feed_header.
-            lp.height =
-                    getResources().getDimensionPixelSize(R.dimen.snippets_article_header_height);
-        }
         headerView.setLayoutParams(lp);
     }
 
@@ -99,9 +87,8 @@ public class FeedLoadingLayout extends LinearLayout {
 
         LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(
                 ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-        int contentPadding = FeedFeatures.cachedIsV2Enabled() ? mResources.getDimensionPixelSize(
-                                     R.dimen.content_suggestions_card_modern_padding_v2)
-                                                              : 0;
+        int contentPadding =
+                mResources.getDimensionPixelSize(R.dimen.content_suggestions_card_modern_padding);
         lp.setMargins(contentPadding, 0, contentPadding, dpToPx(CARD_MARGIN_DP));
 
         // Set the First placeholder container - an image-right card.
@@ -235,12 +222,9 @@ public class FeedLoadingLayout extends LinearLayout {
      * is resized by {@link ViewResizer} in {@link FeedSurfaceCoordinator}
      */
     private void setPadding() {
-        int defaultPadding = mResources.getDimensionPixelSize(FeedFeatures.cachedIsV2Enabled()
-                        ? R.dimen.content_suggestions_card_modern_margin_v2
-                        : R.dimen.content_suggestions_card_modern_margin);
-        int widePadding = mResources.getDimensionPixelSize(FeedFeatures.cachedIsV2Enabled()
-                        ? R.dimen.ntp_wide_card_lateral_margins_v2
-                        : R.dimen.ntp_wide_card_lateral_margins);
+        int defaultPadding =
+                mResources.getDimensionPixelSize(R.dimen.content_suggestions_card_modern_margin);
+        int widePadding = mResources.getDimensionPixelSize(R.dimen.ntp_wide_card_lateral_margins);
 
         ViewResizer.createAndAttach(this, mUiConfig, defaultPadding, widePadding);
     }
