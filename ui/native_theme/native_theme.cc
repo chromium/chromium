@@ -300,7 +300,12 @@ NativeTheme::PreferredContrast NativeTheme::CalculatePreferredContrast() const {
 
 bool NativeTheme::AllowColorPipelineRedirection(
     ColorScheme color_scheme) const {
-  return color_scheme != ColorScheme::kPlatformHighContrast;
+  // TODO(kerenzhu): Don't use UserHasContrastPreference().
+  // ColorScheme should encode high contrast info but currently on mac it does
+  // not. ColorScheme should also allow combination of light/dark mode with high
+  // contrast.
+  return color_scheme != ColorScheme::kPlatformHighContrast &&
+         !UserHasContrastPreference();
 }
 
 SkColor NativeTheme::GetSystemColorDeprecated(ColorId color_id,

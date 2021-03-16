@@ -145,7 +145,7 @@ SkColor NativeThemeMac::ApplySystemControlTint(SkColor color) {
 SkColor NativeThemeMac::GetSystemColorDeprecated(ColorId color_id,
                                                  ColorScheme color_scheme,
                                                  bool apply_processing) const {
-  if (UserHasContrastPreference()) {
+  if (GetPreferredContrast() == PreferredContrast::kMore) {
     switch (color_id) {
       case kColorId_SelectedMenuItemForegroundColor:
         return color_scheme == ColorScheme::kDark ? SK_ColorBLACK
@@ -170,8 +170,9 @@ SkColor NativeThemeMac::GetSystemColorDeprecated(ColorId color_id,
 base::Optional<SkColor> NativeThemeMac::GetOSColor(
     ColorId color_id,
     ColorScheme color_scheme) const {
-  ScopedCurrentNSAppearance scoped_nsappearance(color_scheme ==
-                                                ColorScheme::kDark);
+  ScopedCurrentNSAppearance scoped_nsappearance(
+      color_scheme == ColorScheme::kDark,
+      GetPreferredContrast() == PreferredContrast::kMore);
 
   // Even with --secondary-ui-md, menus use the platform colors and styling, and
   // Mac has a couple of specific color overrides, documented below.

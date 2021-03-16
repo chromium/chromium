@@ -7,6 +7,7 @@
 #include <ostream>
 #include <tuple>
 
+#include "base/notreached.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
@@ -17,6 +18,12 @@
 #if defined(OS_MAC)
 #include "ui/color/mac/system_color_utils.h"
 #endif
+
+namespace {
+
+enum class ContrastMode { kNonHighContrast, kHighContrast };
+
+}  // namespace
 
 namespace ui {
 namespace {
@@ -47,17 +54,22 @@ std::ostream& operator<<(std::ostream& os, PrintableSkColor printable_color) {
 }
 
 class NativeThemeRedirectedEquivalenceTest
-    : public testing::TestWithParam<
-          std::tuple<NativeTheme::ColorScheme, NativeTheme::ColorId>> {
+    : public testing::TestWithParam<std::tuple<NativeTheme::ColorScheme,
+                                               ContrastMode,
+                                               NativeTheme::ColorId>> {
  public:
   NativeThemeRedirectedEquivalenceTest() = default;
 
   static std::string ParamInfoToString(
       ::testing::TestParamInfo<std::tuple<NativeTheme::ColorScheme,
+                                          ContrastMode,
                                           NativeTheme::ColorId>> param_info) {
     auto param_tuple = param_info.param;
-    return ColorSchemeToString(std::get<0>(param_tuple)) + "_With_" +
-           ColorIdToString(std::get<1>(param_tuple));
+    return ColorSchemeToString(
+               std::get<NativeTheme::ColorScheme>(param_tuple)) +
+           ContrastModeToString(std::get<ContrastMode>(param_tuple)) +
+           "_With_" +
+           ColorIdToString(std::get<NativeTheme::ColorId>(param_tuple));
   }
 
  private:
@@ -76,6 +88,18 @@ class NativeThemeRedirectedEquivalenceTest
     }
   }
 
+  static std::string ContrastModeToString(ContrastMode contrast_mode) {
+    switch (contrast_mode) {
+      case ContrastMode::kNonHighContrast:
+        return "";
+      case ContrastMode::kHighContrast:
+        return "HighContrast";
+      default:
+        NOTREACHED();
+        return "InvalidContrastMode";
+    }
+  }
+
   static std::string ColorIdToString(NativeTheme::ColorId id) {
     if (id >= NativeTheme::ColorId::kColorId_NumColors) {
       NOTREACHED() << "Invalid color value " << id;
@@ -87,8 +111,17 @@ class NativeThemeRedirectedEquivalenceTest
 
 std::pair<PrintableSkColor, PrintableSkColor> GetOriginalAndRedirected(
     NativeTheme::ColorId color_id,
-    NativeTheme::ColorScheme color_scheme) {
+    NativeTheme::ColorScheme color_scheme,
+    ContrastMode contrast_mode) {
   NativeTheme* native_theme = NativeTheme::GetInstanceForNativeUi();
+
+  if (contrast_mode == ContrastMode::kHighContrast) {
+#if defined(OS_WIN)
+    color_scheme = NativeTheme::ColorScheme::kPlatformHighContrast;
+#endif
+    native_theme->set_preferred_contrast(NativeTheme::PreferredContrast::kMore);
+  }
+
   PrintableSkColor original{
       native_theme->GetSystemColor(color_id, color_scheme)};
 
@@ -96,6 +129,8 @@ std::pair<PrintableSkColor, PrintableSkColor> GetOriginalAndRedirected(
   scoped_feature_list.InitAndEnableFeature(features::kColorProviderRedirection);
   PrintableSkColor redirected{
       native_theme->GetSystemColor(color_id, color_scheme)};
+  native_theme->set_preferred_contrast(
+      NativeTheme::PreferredContrast::kNoPreference);
 
   return std::make_pair(original, redirected);
 }
@@ -105,10 +140,11 @@ std::pair<PrintableSkColor, PrintableSkColor> GetOriginalAndRedirected(
 TEST_P(NativeThemeRedirectedEquivalenceTest, NativeUiGetSystemColor) {
   auto param_tuple = GetParam();
   auto color_scheme = std::get<NativeTheme::ColorScheme>(param_tuple);
+  auto contrast_mode = std::get<ContrastMode>(param_tuple);
   auto color_id = std::get<NativeTheme::ColorId>(param_tuple);
 
   // Verifies that colors with and without the Color Provider are the same.
-  auto pair = GetOriginalAndRedirected(color_id, color_scheme);
+  auto pair = GetOriginalAndRedirected(color_id, color_scheme, contrast_mode);
   auto original = pair.first;
   auto redirected = pair.second;
   EXPECT_EQ(original, redirected);
@@ -118,11 +154,12 @@ TEST_P(NativeThemeRedirectedEquivalenceTest, NativeUiGetSystemColor) {
 TEST_P(NativeThemeRedirectedEquivalenceTest, NativeUiGetSystemColorWithTint) {
   auto param_tuple = GetParam();
   auto color_scheme = std::get<NativeTheme::ColorScheme>(param_tuple);
+  auto contrast_mode = std::get<ContrastMode>(param_tuple);
   auto color_id = std::get<NativeTheme::ColorId>(param_tuple);
 
   ScopedEnableGraphiteTint enable_graphite_tint;
   // Verifies that colors with and without the Color Provider are the same.
-  auto pair = GetOriginalAndRedirected(color_id, color_scheme);
+  auto pair = GetOriginalAndRedirected(color_id, color_scheme, contrast_mode);
   auto original = pair.first;
   auto redirected = pair.second;
   EXPECT_EQ(original, redirected);
@@ -133,11 +170,11 @@ TEST_P(NativeThemeRedirectedEquivalenceTest, NativeUiGetSystemColorWithTint) {
 INSTANTIATE_TEST_SUITE_P(
     ,
     NativeThemeRedirectedEquivalenceTest,
-    ::testing::Combine(
-        ::testing::Values(NativeTheme::ColorScheme::kLight,
-                          NativeTheme::ColorScheme::kDark,
-                          NativeTheme::ColorScheme::kPlatformHighContrast),
-        ::testing::Values(NATIVE_THEME_COLOR_IDS)),
+    ::testing::Combine(::testing::Values(NativeTheme::ColorScheme::kLight,
+                                         NativeTheme::ColorScheme::kDark),
+                       ::testing::Values(ContrastMode::kNonHighContrast,
+                                         ContrastMode::kHighContrast),
+                       ::testing::Values(NATIVE_THEME_COLOR_IDS)),
     NativeThemeRedirectedEquivalenceTest::ParamInfoToString);
 #undef OP
 

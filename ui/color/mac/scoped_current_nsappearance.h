@@ -13,7 +13,7 @@ namespace ui {
 // based on the desired light/dark colors scheme.
 class COMPONENT_EXPORT(COLOR) ScopedCurrentNSAppearance {
  public:
-  explicit ScopedCurrentNSAppearance(bool dark);
+  explicit ScopedCurrentNSAppearance(bool dark, bool high_contrast);
 
   // There should be no reason to copy or move a ScopedCurrentNSAppearance.
   ScopedCurrentNSAppearance(const ScopedCurrentNSAppearance&) = delete;
