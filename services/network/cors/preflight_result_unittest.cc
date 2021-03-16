@@ -177,9 +177,6 @@ TEST_F(PreflightResultTest, MaxAge) {
   EXPECT_EQ(base::TimeTicks() + base::TimeDelta::FromSeconds(573),
             result1->absolute_expiry_time());
 
-  // Negative values are invalid. The preflight result itself can be usable, but
-  // should not cache such results. PreflightResult expresses it as a result
-  // with 'Access-Control-Max-Age: 0'.
   std::unique_ptr<PreflightResult> result2 =
       PreflightResult::Create(mojom::CredentialsMode::kOmit, base::nullopt,
                               base::nullopt, std::string("-765"), nullptr);

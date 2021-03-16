@@ -1,9 +1,0 @@
-This is a testharness.js-based test.
-PASS Test preflight
-PASS preflight for x-print should be cached
-FAIL age = blank, should be cached assert_equals: did preflight expected "0" but got "1"
-PASS age = 0, should not be cached
-PASS age = -1, should not be cached
-PASS preflight first request, second from cache, wait, third should preflight again
-Harness: the test ran to completion.
-
