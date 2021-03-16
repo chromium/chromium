@@ -50,6 +50,8 @@ PluginVmLaunchResult ConvertToLaunchResult(int result_code) {
       return PluginVmLaunchResult::kExpiredLicense;
     case PRL_ERR_JLIC_WEB_PORTAL_ACCESS_REQUIRED:
       return PluginVmLaunchResult::kNetworkError;
+    case PRL_ERR_NOT_ENOUGH_DISK_SPACE_TO_START_VM:
+      return PluginVmLaunchResult::kInsufficientDiskSpace;
     default:
       return PluginVmLaunchResult::kError;
   }
@@ -92,6 +94,11 @@ void ShowStartVmFailedDialog(PluginVmLaunchResult result) {
       title = l10n_util::GetStringFUTF16(IDS_PLUGIN_VM_START_VM_ERROR_TITLE,
                                          app_name);
       message_id = IDS_PLUGIN_VM_NETWORK_ERROR_MESSAGE;
+      break;
+    case PluginVmLaunchResult::kInsufficientDiskSpace:
+      title = l10n_util::GetStringFUTF16(IDS_PLUGIN_VM_START_VM_ERROR_TITLE,
+                                         app_name);
+      message_id = IDS_PLUGIN_VM_START_VM_INSUFFICIENT_DISK_SPACE_ERROR_MESSAGE;
       break;
   }
 

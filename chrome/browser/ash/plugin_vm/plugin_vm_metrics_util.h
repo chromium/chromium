@@ -23,7 +23,8 @@ enum class PluginVmLaunchResult {
   kVmMissing = 3,
   kExpiredLicense = 4,
   kNetworkError = 5,
-  kMaxValue = kNetworkError,
+  kInsufficientDiskSpace = 6,
+  kMaxValue = kInsufficientDiskSpace,
 };
 
 // These values are persisted to logs. Entries should not be renumbered and

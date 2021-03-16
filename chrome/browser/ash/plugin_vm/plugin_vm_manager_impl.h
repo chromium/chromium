@@ -35,6 +35,7 @@ constexpr int PRL_ERR_LICENSE_SUBSCR_EXPIRED = 0x80011074;
 constexpr int PRL_ERR_JLIC_WRONG_HWID = 0x80057005;
 constexpr int PRL_ERR_JLIC_LICENSE_DISABLED = 0x80057010;
 constexpr int PRL_ERR_JLIC_WEB_PORTAL_ACCESS_REQUIRED = 0x80057012;
+constexpr int PRL_ERR_NOT_ENOUGH_DISK_SPACE_TO_START_VM = 0x80000456;
 
 // The PluginVmManagerImpl is responsible for connecting to the D-Bus services
 // to manage the Plugin Vm.

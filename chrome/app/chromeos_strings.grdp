@@ -5222,6 +5222,9 @@
   <message name="IDS_PLUGIN_VM_START_VM_ERROR_TITLE" desc="Title in the notification shown when launching the 'Plugin VM' app failed due to a network or unknown error.">
     Couldn't open <ph name="APP_NAME">$1<ex>Plugin VM</ex></ph>
   </message>
+  <message name="IDS_PLUGIN_VM_START_VM_INSUFFICIENT_DISK_SPACE_ERROR_MESSAGE" desc="Message in the error dialog shown when launching Parallels Desktop fails due to insufficient disk space.">
+    Disk space is critically low. Free up disk space and try again.
+  </message>
   <message name="IDS_PLUGIN_VM_NETWORK_ERROR_MESSAGE" desc="Message in the notification shown when launching the 'Plugin VM' app failed due to a network error.">
     Connect to the internet and try again
   </message>

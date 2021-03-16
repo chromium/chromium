@@ -61250,6 +61250,7 @@ Called by update_net_trust_anchors.py.-->
   <int value="3" label="VM missing"/>
   <int value="4" label="Expired license"/>
   <int value="5" label="Network error"/>
+  <int value="6" label="Insufficient disk space"/>
 </enum>
 
 <enum name="PluginVmSetupFailureReason">
