@@ -660,6 +660,8 @@ source_set("chromeos") {
     "../ash/certificate_provider/sign_requests.h",
     "../ash/certificate_provider/thread_safe_certificate_map.cc",
     "../ash/certificate_provider/thread_safe_certificate_map.h",
+    "../ash/crosapi/automation_ash.cc",
+    "../ash/crosapi/automation_ash.h",
     "../ash/crosapi/browser_loader.cc",
     "../ash/crosapi/browser_loader.h",
     "../ash/crosapi/browser_manager.cc",

@@ -11,6 +11,7 @@
 #include "ash/components/account_manager/account_manager.h"
 #include "ash/components/account_manager/account_manager_ash.h"
 #include "ash/components/account_manager/account_manager_factory.h"
+#include "chrome/browser/ash/crosapi/automation_ash.h"
 #include "chrome/browser/ash/crosapi/browser_manager.h"
 #include "chrome/browser/ash/crosapi/browser_service_host_ash.h"
 #include "chrome/browser/ash/crosapi/cert_database_ash.h"
@@ -48,7 +49,8 @@
 namespace crosapi {
 
 CrosapiAsh::CrosapiAsh()
-    : browser_service_host_ash_(std::make_unique<BrowserServiceHostAsh>()),
+    : automation_ash_(std::make_unique<AutomationAsh>()),
+      browser_service_host_ash_(std::make_unique<BrowserServiceHostAsh>()),
       cert_database_ash_(std::make_unique<CertDatabaseAsh>()),
       clipboard_ash_(std::make_unique<ClipboardAsh>()),
       device_attributes_ash_(std::make_unique<DeviceAttributesAsh>()),
@@ -85,6 +87,11 @@ void CrosapiAsh::BindReceiver(
       receiver_set_.Add(this, std::move(pending_receiver), crosapi_id);
   if (!disconnect_handler.is_null())
     disconnect_handler_map_.emplace(id, std::move(disconnect_handler));
+}
+
+void CrosapiAsh::BindAutomation(
+    mojo::PendingReceiver<mojom::Automation> receiver) {
+  automation_ash_->BindReceiver(std::move(receiver));
 }
 
 void CrosapiAsh::BindAccountManager(

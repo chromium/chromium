@@ -5,6 +5,7 @@
 module crosapi.mojom;
 
 import "chromeos/components/sensors/mojom/cros_sensor_service.mojom";
+import "chromeos/crosapi/mojom/automation.mojom";
 import "chromeos/crosapi/mojom/account_manager.mojom";
 import "chromeos/crosapi/mojom/cert_database.mojom";
 import "chromeos/crosapi/mojom/clipboard.mojom";
@@ -49,11 +50,17 @@ struct BrowserInfo {
 // please note the milestone when you added it, to help us reason about
 // compatibility between the client applications and older ash-chrome binaries.
 //
-// Next version: 18
-// Next method id: 23
+// Next version: 19
+// Next method id: 24
 [Stable, Uuid="8b79c34f-2bf8-4499-979a-b17cac522c1e",
  RenamedFrom="crosapi.mojom.AshChromeService"]
 interface Crosapi {
+  // Binds the automation interface which allows ash to enableautomation
+  // for Lacros.
+  // Added in M91.
+  [MinVersion=18]
+  BindAutomation@23(pending_receiver<Automation> receiver);
+
   // Binds Chrome OS Account Manager for Identity management.
   // Added in M87.
   [MinVersion=4]

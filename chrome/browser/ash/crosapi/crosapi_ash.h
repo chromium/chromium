@@ -17,6 +17,7 @@
 
 namespace crosapi {
 
+class AutomationAsh;
 class BrowserServiceHostAsh;
 class CertDatabaseAsh;
 class ClipboardAsh;
@@ -47,6 +48,8 @@ class CrosapiAsh : public mojom::Crosapi {
                     base::OnceClosure disconnect_handler);
 
   // crosapi::mojom::Crosapi:
+  void BindAutomation(
+      mojo::PendingReceiver<mojom::Automation> receiver) override;
   void BindAccountManager(
       mojo::PendingReceiver<mojom::AccountManager> receiver) override;
   void BindBrowserServiceHost(
@@ -100,10 +103,13 @@ class CrosapiAsh : public mojom::Crosapi {
     return browser_service_host_ash_.get();
   }
 
+  AutomationAsh* automation_ash() { return automation_ash_.get(); }
+
  private:
   // Called when a connection is lost.
   void OnDisconnected();
 
+  std::unique_ptr<AutomationAsh> automation_ash_;
   std::unique_ptr<BrowserServiceHostAsh> browser_service_host_ash_;
   std::unique_ptr<CertDatabaseAsh> cert_database_ash_;
   std::unique_ptr<ClipboardAsh> clipboard_ash_;

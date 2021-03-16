@@ -220,6 +220,12 @@ class LacrosChromeServiceNeverBlockingState
     crosapi_->BindFeedback(std::move(pending_receiver));
   }
 
+  void BindAutomationReceiver(
+      mojo::PendingReceiver<crosapi::mojom::Automation> pending_receiver) {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+    crosapi_->BindAutomation(std::move(pending_receiver));
+  }
+
   void BindCertDbReceiver(
       mojo::PendingReceiver<crosapi::mojom::CertDatabase> pending_receiver) {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -485,6 +491,15 @@ void LacrosChromeServiceImpl::BindReceiver(
   delegate_->OnInitialized(*init_params_);
   did_bind_receiver_ = true;
 
+  if (IsAutomationAvailable()) {
+    never_blocking_sequence_->PostTask(
+        FROM_HERE,
+        base::BindOnce(
+            &LacrosChromeServiceNeverBlockingState::BindAutomationReceiver,
+            weak_sequenced_state_,
+            automation_remote_.BindNewPipeAndPassReceiver()));
+  }
+
   if (IsCertDbAvailable()) {
     never_blocking_sequence_->PostTask(
         FROM_HERE,
@@ -632,6 +647,12 @@ void LacrosChromeServiceImpl::BindReceiver(
 // static
 void LacrosChromeServiceImpl::DisableCrosapiForTests() {
   g_disable_all_crosapi_for_tests = true;
+}
+
+bool LacrosChromeServiceImpl::IsAutomationAvailable() const {
+  base::Optional<uint32_t> version = CrosapiVersion();
+  return version && version.value() >=
+                        Crosapi::MethodMinVersions::kBindAutomationMinVersion;
 }
 
 bool LacrosChromeServiceImpl::IsAccountManagerAvailable() const {
