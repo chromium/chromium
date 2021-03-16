@@ -599,7 +599,8 @@ std::u16string SafetyCheckHandler::GetStringForUpdates(UpdateStatus status) {
           l10n_util::GetStringUTF16(version_info::IsOfficialBuild()
                                         ? IDS_VERSION_UI_OFFICIAL
                                         : IDS_VERSION_UI_UNOFFICIAL),
-          base::UTF8ToUTF16(chrome::GetChannelName()),
+          base::UTF8ToUTF16(
+              chrome::GetChannelName(chrome::WithExtendedStable(true))),
           l10n_util::GetStringUTF16(VersionUI::VersionProcessorVariation()));
     // This state is only used on Android for recording metrics. This codepath
     // is unreachable.

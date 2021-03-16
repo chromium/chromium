@@ -1247,7 +1247,8 @@ std::string PolicyUIHandler::GetPoliciesAsJson() const {
         " %s", base::UTF16ToUTF8(cohort_version_info).c_str());
   }
 #endif
-  std::string channel_name = chrome::GetChannelName();
+  std::string channel_name =
+      chrome::GetChannelName(chrome::WithExtendedStable(true));
   std::string version = base::StringPrintf(
       "%s (%s)%s %s%s", version_info::GetVersionNumber().c_str(),
       l10n_util::GetStringUTF8(version_info::IsOfficialBuild()

@@ -187,8 +187,9 @@ bool NaClDomHandler::isPluginEnabled(size_t plugin_index) {
 void NaClDomHandler::AddOperatingSystemInfo(base::ListValue* list) {
   // Obtain the Chrome version info.
   AddPair(list, l10n_util::GetStringUTF16(IDS_PRODUCT_NAME),
-          ASCIIToUTF16(version_info::GetVersionNumber() + " (" +
-                       chrome::GetChannelName() + ")"));
+          ASCIIToUTF16(
+              version_info::GetVersionNumber() + " (" +
+              chrome::GetChannelName(chrome::WithExtendedStable(true)) + ")"));
 
   // OS version information.
   // TODO(jvoung): refactor this to share the extra windows labeling

@@ -531,7 +531,9 @@ TEST_F(SafetyCheckHandlerTest, CheckUpdates_Disabled) {
       event, "Version " + version_info::GetVersionNumber() + " (" +
                  (version_info::IsOfficialBuild() ? "Official Build"
                                                   : "Developer Build") +
-                 ") " + chrome::GetChannelName() + processor_variation);
+                 ") " +
+                 chrome::GetChannelName(chrome::WithExtendedStable(true)) +
+                 processor_variation);
   histogram_tester_.ExpectBucketCount(
       "Settings.SafetyCheck.UpdatesResult",
       SafetyCheckHandler::UpdateStatus::kUnknown, 1);

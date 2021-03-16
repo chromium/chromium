@@ -162,8 +162,9 @@ void VersionUI::AddVersionDetailStrings(content::WebUIDataSource* html_source) {
   // Data strings.
   html_source->AddString(version_ui::kVersion,
                          version_info::GetVersionNumber());
-  html_source->AddString(version_ui::kVersionModifier,
-                         chrome::GetChannelName());
+  html_source->AddString(
+      version_ui::kVersionModifier,
+      chrome::GetChannelName(chrome::WithExtendedStable(true)));
   html_source->AddString(version_ui::kJSEngine, "V8");
   html_source->AddString(version_ui::kJSVersion, V8_VERSION_STRING);
   html_source->AddString(

@@ -39,7 +39,8 @@ content::WebUIDataSource* CreateInternalsHTMLSource(
   source->AddString(version_ui::kOfficial, version_info::IsOfficialBuild()
                                                ? "official"
                                                : "Developer build");
-  source->AddString(version_ui::kVersionModifier, chrome::GetChannelName());
+  source->AddString(version_ui::kVersionModifier,
+                    chrome::GetChannelName(chrome::WithExtendedStable(true)));
   source->AddString(version_ui::kCL, version_info::GetLastChange());
   source->AddString(version_ui::kUserAgent, embedder_support::GetUserAgent());
   source->AddString("app_locale", g_browser_process->GetApplicationLocale());
