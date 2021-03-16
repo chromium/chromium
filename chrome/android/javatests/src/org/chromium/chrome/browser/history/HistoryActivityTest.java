@@ -58,7 +58,6 @@ import org.chromium.components.browser_ui.widget.RecyclerViewTestUtils;
 import org.chromium.components.browser_ui.widget.selectable_list.SelectableItemView;
 import org.chromium.components.browser_ui.widget.selectable_list.SelectableItemViewHolder;
 import org.chromium.components.signin.base.CoreAccountInfo;
-import org.chromium.components.signin.metrics.SigninAccessPoint;
 import org.chromium.components.signin.metrics.SignoutReason;
 import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.content_public.browser.UiThreadTaskTraits;
@@ -555,21 +554,15 @@ public class HistoryActivityTest {
             mPrefChangeRegistrar = new PrefChangeRegistrar();
             mPrefChangeRegistrar.addObserver(Pref.ALLOW_DELETING_BROWSER_HISTORY, mTestObserver);
             mPrefChangeRegistrar.addObserver(Pref.INCOGNITO_MODE_AVAILABILITY, mTestObserver);
+            IdentityServicesProvider.get()
+                    .getSigninManager(Profile.getLastUsedRegularProfile())
+                    .addSignInStateObserver(mTestObserver);
         });
 
         // Sign in to account. Note that if supervised user is set before sign in, the supervised
         // user setting will be reset.
         final CoreAccountInfo coreAccountInfo =
-                mAccountManagerTestRule.addAccount(AccountManagerTestRule.TEST_ACCOUNT_EMAIL);
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            Profile profile = Profile.getLastUsedRegularProfile();
-            IdentityServicesProvider.get().getSigninManager(profile).onFirstRunCheckDone();
-            IdentityServicesProvider.get().getSigninManager(profile).addSignInStateObserver(
-                    mTestObserver);
-            IdentityServicesProvider.get().getSigninManager(profile).signinAndEnableSync(
-                    SigninAccessPoint.UNKNOWN, coreAccountInfo, null);
-        });
-
+                mAccountManagerTestRule.addTestAccountThenSigninAndEnableSync();
         mTestObserver.onSigninStateChangedCallback.waitForCallback(
                 0, 1, SyncTestUtil.TIMEOUT_MS, TimeUnit.MILLISECONDS);
         Assert.assertEquals(coreAccountInfo, mAccountManagerTestRule.getCurrentSignedInAccount());
