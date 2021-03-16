@@ -164,7 +164,7 @@ void MultiProfileUserController::RemoveCachedValues(
     const std::string& user_email) {
   DictionaryPrefUpdate update(local_state_,
                               prefs::kCachedMultiProfileUserBehavior);
-  update->RemoveWithoutPathExpansion(user_email, NULL);
+  update->RemoveKey(user_email);
 }
 
 std::string MultiProfileUserController::GetCachedValue(
@@ -209,7 +209,7 @@ void MultiProfileUserController::OnUserPrefChanged(Profile* user_profile) {
     // TODO(xiyuan): Remove this after M35.
     DictionaryPrefUpdate update(local_state_,
                                 prefs::kCachedMultiProfileUserBehavior);
-    update->RemoveWithoutPathExpansion(user_email, NULL);
+    update->RemoveKey(user_email);
   } else {
     const std::string behavior =
         prefs->GetString(prefs::kMultiProfileUserBehavior);

@@ -855,7 +855,7 @@ void UserImageManagerImpl::DeleteUserImageAndLocalStateEntry(
         FROM_HERE, base::BindOnce(base::GetDeleteFileCallback(),
                                   base::FilePath(image_path)));
   }
-  update->RemoveWithoutPathExpansion(user_id(), nullptr);
+  update->RemoveKey(user_id());
 }
 
 void UserImageManagerImpl::OnJobChangedUserImage() {

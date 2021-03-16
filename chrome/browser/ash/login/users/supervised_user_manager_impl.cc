@@ -250,7 +250,7 @@ void SupervisedUserManagerImpl::CleanPref(const std::string& user_id,
                                           const char* key) {
   PrefService* prefs = g_browser_process->local_state();
   DictionaryPrefUpdate dict_update(prefs, key);
-  dict_update->RemoveWithoutPathExpansion(user_id, NULL);
+  dict_update->RemoveKey(user_id);
 }
 
 bool SupervisedUserManagerImpl::CheckForFirstRun(const std::string& user_id) {
