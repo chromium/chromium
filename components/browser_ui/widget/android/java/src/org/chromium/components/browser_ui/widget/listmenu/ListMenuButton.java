@@ -11,6 +11,7 @@ import android.graphics.Rect;
 import android.graphics.drawable.ColorDrawable;
 import android.text.TextUtils;
 import android.util.AttributeSet;
+import android.view.View;
 
 import org.chromium.base.ObserverList;
 import org.chromium.components.browser_ui.widget.R;
@@ -117,14 +118,16 @@ public class ListMenuButton
         ListMenu menu = mDelegate.getListMenu();
         menu.addContentViewClickRunnable(this::dismiss);
 
-        mPopupMenu =
-                new AnchoredPopupWindow(getContext(), this, new ColorDrawable(Color.TRANSPARENT),
-                        menu.getContentView(), mDelegate.getRectProvider(this));
+        final View contentView = menu.getContentView();
+        mPopupMenu = new AnchoredPopupWindow(getContext(), this,
+                new ColorDrawable(Color.TRANSPARENT), contentView, mDelegate.getRectProvider(this));
         mPopupMenu.setVerticalOverlapAnchor(mMenuVerticalOverlapAnchor);
         mPopupMenu.setHorizontalOverlapAnchor(mMenuHorizontalOverlapAnchor);
         mPopupMenu.setMaxWidth(mMenuMaxWidth);
         if (mTryToFitLargestItem) {
-            mPopupMenu.setDesiredContentWidth(menu.getMaxItemWidth());
+            // Content width includes the padding around the items, so add it here.
+            final int lateralPadding = contentView.getPaddingLeft() + contentView.getPaddingRight();
+            mPopupMenu.setDesiredContentWidth(menu.getMaxItemWidth() + lateralPadding);
         }
         mPopupMenu.setFocusable(true);
         mPopupMenu.setLayoutObserver(this);
