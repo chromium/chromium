@@ -91,7 +91,7 @@ public class AwPacProcessor {
     // The calling code must not call any methods after it called destroy().
     @UsedByReflection("Android")
     public void destroy() {
-        getConnectivityManager().unregisterNetworkCallback(mNetworkCallback);
+        unregisterNetworkCallback();
         AwPacProcessorJni.get().destroyNative(mNativePacProcessor, this);
     }
 
