@@ -1015,13 +1015,11 @@ public class InstantStartTest {
                 mActivityTestRule.getActivity().findViewById(R.id.placeholders_layout), 0, 0, 0,
                 toY, 1);
 
-        // The start surface toolbar should be scrolled up and not be displayed.
-        onView(withId(org.chromium.chrome.start_surface.R.id.tab_switcher_toolbar))
-                .check(matches(not(isDisplayed())));
+        // Toolbar layout view should show.
+        onViewWaiting(withId(R.id.toolbar));
 
-        // Toolbar container view should show.
-        onView(withId(org.chromium.chrome.start_surface.R.id.toolbar_container))
-                .check(matches(isDisplayed()));
+        // The start surface toolbar should be scrolled up and not be displayed.
+        onView(withId(R.id.tab_switcher_toolbar)).check(matches(not(isDisplayed())));
 
         View surface = mActivityTestRule.getActivity().findViewById(R.id.toolbar);
         ChromeRenderTestRule.sanitize(surface);

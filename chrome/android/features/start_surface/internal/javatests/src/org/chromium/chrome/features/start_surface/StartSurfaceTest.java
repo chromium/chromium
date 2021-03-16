@@ -2006,10 +2006,11 @@ public class StartSurfaceTest {
                                 .getResources()
                                 .getDimensionPixelOffset(R.dimen.toolbar_height_no_shadow)));
 
-        onView(withId(R.id.tab_switcher_toolbar)).check(matches(not(isDisplayed())));
+        // Toolbar layout view should show.
+        onViewWaiting(withId(R.id.toolbar));
 
-        // Toolbar container view should show.
-        onView(withId(R.id.toolbar_container)).check(matches(isDisplayed()));
+        // The start surface toolbar should be scrolled up and not be displayed.
+        onView(withId(R.id.tab_switcher_toolbar)).check(matches(not(isDisplayed())));
 
         // Check the toolbar's background color.
         ToolbarPhone toolbar =
