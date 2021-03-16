@@ -55,8 +55,13 @@ WidgetDelegate::WidgetDelegate()
       non_client_frame_view_factory_(
           base::BindRepeating(&CreateDefaultNonClientFrameView)),
       overlay_view_factory_(base::BindOnce(&CreateDefaultOverlayView)) {}
+
 WidgetDelegate::~WidgetDelegate() {
   CHECK(can_delete_this_) << "A WidgetDelegate must outlive its Widget";
+  if (destructor_ran_) {
+    DCHECK(!*destructor_ran_);
+    *destructor_ran_ = true;
+  }
 }
 
 void WidgetDelegate::SetCanActivate(bool can_activate) {
@@ -220,10 +225,27 @@ void WidgetDelegate::WindowClosing() {
 }
 
 void WidgetDelegate::DeleteDelegate() {
-  for (auto&& callback : delete_delegate_callbacks_)
+  bool owned_by_widget = params_.owned_by_widget;
+  ClosureVector delete_callbacks;
+  delete_callbacks.swap(delete_delegate_callbacks_);
+
+  bool destructor_ran = false;
+  destructor_ran_ = &destructor_ran;
+  for (auto&& callback : delete_callbacks)
     std::move(callback).Run();
-  if (params_.owned_by_widget)
+
+  // If the WidgetDelegate is owned by the Widget, it is illegal for the
+  // DeleteDelegate callbacks to destruct it; if it is not owned by the Widget,
+  // the DeleteDelete callbacks are allowed but not required to destroy it.
+  if (owned_by_widget) {
+    DCHECK(!destructor_ran);
     delete this;
+  } else {
+    // If the destructor didn't get run, reset destructor_ran_ so that when it
+    // does run it doesn't try to scribble over where our stack was.
+    if (!destructor_ran)
+      destructor_ran_ = nullptr;
+  }
 }
 
 Widget* WidgetDelegate::GetWidget() {

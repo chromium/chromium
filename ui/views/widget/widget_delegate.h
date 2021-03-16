@@ -419,6 +419,10 @@ class VIEWS_EXPORT WidgetDelegate {
   // Managed by Widget. Ensures |this| outlives its Widget.
   bool can_delete_this_ = true;
 
+  // Used to ensure that a client Delete callback doesn't actually destruct the
+  // WidgetDelegate if the client has given ownership to the Widget.
+  bool* destructor_ran_ = nullptr;
+
   // The first two are stored as unique_ptrs to make it easier to check in the
   // registration methods whether a callback is being registered too late in the
   // WidgetDelegate's lifecycle.
