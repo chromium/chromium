@@ -17,8 +17,6 @@ class UnsentLogStoreMetricsImpl : public UnsentLogStoreMetrics {
   ~UnsentLogStoreMetricsImpl() override {}
 
   // UnsentLogStoreMetrics:
-  void RecordLogReadStatus(
-    UnsentLogStoreMetrics::LogReadStatus status) override;
   void RecordCompressionRatio(
     size_t compressed_size, size_t original_size) override;
   void RecordDroppedLogSize(size_t size) override;

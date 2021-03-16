@@ -11324,6 +11324,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="PrefService.PersistentLogRecallProtobufs"
     enum="PersistedLogsLogReadStatus" expires_after="M77">
+  <obsolete>
+    Expired in M77, later removed.
+  </obsolete>
   <owner>holte@chromium.org</owner>
   <summary>The status when loading PersistedLogs from Prefs.</summary>
 </histogram>
