@@ -132,7 +132,8 @@ WebUILoginView::~WebUILoginView() {
   for (auto& observer : observer_list_)
     observer.OnHostDestroying();
 
-  if (observing_system_tray_focus_)
+  // TODO(crbug.com/1188526) - Improve the observation of the system tray
+  if (observing_system_tray_focus_ && LoginScreenClient::HasInstance())
     LoginScreenClient::Get()->RemoveSystemTrayFocusObserver(this);
   ChromeKeyboardControllerClient::Get()->RemoveObserver(this);
 
