@@ -10,7 +10,7 @@
 
 // Returns a promise that settles once the given path has been fetched as an
 // image resource.
-function load_image(path) {
+const load_image = path => {
   return new Promise(resolve => {
     const img = new Image();
     img.onload = img.onerror = resolve;
@@ -20,7 +20,7 @@ function load_image(path) {
 
 // Returns a promise that settles once the given path has been fetched as a
 // font resource.
-function load_font(path) {
+const load_font = path => {
   document.getElementById('forFonts').innerHTML = `
     <style>
     @font-face {
@@ -33,7 +33,7 @@ function load_font(path) {
   return document.fonts.ready;
 }
 
-function assert_ordered(entry, attributes) {
+const assert_ordered = (entry, attributes) => {
   let before = attributes[0];
   attributes.slice(1).forEach(after => {
     assert_greater_than_equal(entry[after], entry[before],
@@ -42,27 +42,27 @@ function assert_ordered(entry, attributes) {
   });
 }
 
-function assert_zeroed(entry, attributes) {
+const assert_zeroed = (entry, attributes) => {
   attributes.forEach(attribute => {
     assert_equals(entry[attribute], 0, `${attribute} should be 0`);
   });
 }
 
-function assert_not_negative(entry, attributes) {
+const assert_not_negative = (entry, attributes) => {
   attributes.forEach(attribute => {
     assert_greater_than_equal(entry[attribute], 0,
       `${attribute} should be greater than or equal to 0`);
   });
 }
 
-function assert_positive(entry, attributes) {
+const assert_positive = (entry, attributes) => {
   attributes.forEach(attribute => {
     assert_greater_than(entry[attribute], 0,
       `${attribute} should be greater than 0`);
   });
 }
 
-function assert_http_resource(entry) {
+const assert_http_resource = entry => {
   assert_ordered(entry, [
     "fetchStart",
     "domainLookupStart",
@@ -93,7 +93,7 @@ function assert_http_resource(entry) {
   ]);
 }
 
-function assert_same_origin_redirected_resource(entry) {
+const assert_same_origin_redirected_resource = entry => {
   assert_positive(entry, [
     "redirectStart",
   ]);
@@ -113,7 +113,7 @@ function assert_same_origin_redirected_resource(entry) {
 
 // Given a resource-loader and a PerformanceResourceTiming validator, loads a
 // resource and validates the resulting entry.
-function attribute_test(load_resource, validate, test_label) {
+const attribute_test = (load_resource, validate, test_label) => {
   promise_test(
     async () => {
       // Clear out everything that isn't the one ResourceTiming entry under test.
