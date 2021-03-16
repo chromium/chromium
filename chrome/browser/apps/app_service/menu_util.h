@@ -45,12 +45,12 @@ void AddRadioItem(uint32_t command_id,
 void AddSeparator(ui::MenuSeparatorType separator_type,
                   apps::mojom::MenuItemsPtr* menu_items);
 
-// Adds an ARC shortcut command menu item to |menu_items|.
-void AddArcCommandItem(int command_id,
-                       const std::string& shortcut_id,
-                       const std::string& label,
-                       const gfx::ImageSkia& icon,
-                       apps::mojom::MenuItemsPtr* menu_items);
+// Adds a shortcut command menu item to |menu_items|.
+void AddShortcutCommandItem(int command_id,
+                            const std::string& shortcut_id,
+                            const std::string& label,
+                            const gfx::ImageSkia& icon,
+                            apps::mojom::MenuItemsPtr* menu_items);
 
 // Adds a LAUNCH_NEW menu item to |menu_items|, and create radio items for the
 // submenu.

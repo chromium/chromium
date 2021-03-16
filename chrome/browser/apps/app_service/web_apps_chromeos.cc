@@ -344,9 +344,7 @@ void WebAppsChromeOs::OnShortcutsMenuIconsRead(
 
     const std::string label = base::UTF16ToUTF8(menu_item_info.name);
 
-    // TODO(crbug.com/1140356): Rename AddArcCommandItem to
-    // AddPublisherCommandItem.
-    AddArcCommandItem(command_id, shortcut_id, label, icon, &menu_items);
+    AddShortcutCommandItem(command_id, shortcut_id, label, icon, &menu_items);
 
     ++menu_item_index;
   }

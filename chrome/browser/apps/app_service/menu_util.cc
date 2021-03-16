@@ -63,11 +63,11 @@ void AddSeparator(ui::MenuSeparatorType separator_type,
   (*menu_items)->items.push_back(std::move(menu_item));
 }
 
-void AddArcCommandItem(int command_id,
-                       const std::string& shortcut_id,
-                       const std::string& label,
-                       const gfx::ImageSkia& icon,
-                       apps::mojom::MenuItemsPtr* menu_items) {
+void AddShortcutCommandItem(int command_id,
+                            const std::string& shortcut_id,
+                            const std::string& label,
+                            const gfx::ImageSkia& icon,
+                            apps::mojom::MenuItemsPtr* menu_items) {
   apps::mojom::MenuItemPtr menu_item = apps::mojom::MenuItem::New();
   menu_item->type = apps::mojom::MenuItemType::kPublisherCommand;
   menu_item->command_id = command_id;

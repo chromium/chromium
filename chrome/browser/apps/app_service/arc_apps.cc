@@ -1444,8 +1444,8 @@ void ArcApps::OnGetAppShortcutItems(
     if (command_id != ash::LAUNCH_APP_SHORTCUT_FIRST) {
       AddSeparator(ui::PADDED_SEPARATOR, &menu_items);
     }
-    AddArcCommandItem(command_id++, item.shortcut_id, item.short_label,
-                      item.icon, &menu_items);
+    AddShortcutCommandItem(command_id++, item.shortcut_id, item.short_label,
+                           item.icon, &menu_items);
   }
   std::move(callback).Run(std::move(menu_items));
   arc_app_shortcuts_request_.reset();
