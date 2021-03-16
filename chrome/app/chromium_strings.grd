@@ -302,9 +302,6 @@ If you update this file, be sure also to update google_chrome_strings.grd. -->
       <message name="IDS_ABOUT_TERMS_OF_SERVICE" desc="The terms of service label in the About box." translateable="false">
         Not used in Chromium. Placeholder to keep resource maps in sync.
       </message>
-      <message name="IDS_CPU_X86_SSE2_OBSOLETE_SOON" desc="A message displayed on an at-launch infobar and About (Help) page warning the user that the computer they are using will soon be or is already unsupported.">
-        This computer will soon stop receiving Chromium updates because its hardware is no longer supported.
-      </message>
       <if expr="is_macosx">
         <message name="IDS_MAC_10_10_OBSOLETE_SOON" desc="A message displayed on an at-launch infobar and About (Help) page warning the user that the OS version they are using will soon be or is already unsupported.">
           To get future Chromium updates, you'll need OS X 10.11 or later. This computer is using OS X 10.10.

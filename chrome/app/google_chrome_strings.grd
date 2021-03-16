@@ -308,9 +308,6 @@ chromium_strings.grd. -->
       <message name="IDS_ABOUT_TERMS_OF_SERVICE" desc="The terms of service label in the About box.">
         Terms of Service
       </message>
-      <message name="IDS_CPU_X86_SSE2_OBSOLETE_SOON" desc="A message displayed on an at-launch infobar and About (Help) page warning the user that the computer they are using will soon be or is already unsupported.">
-        This computer will soon stop receiving Google Chrome updates because its hardware is no longer supported.
-      </message>
       <if expr="is_macosx">
         <message name="IDS_MAC_10_10_OBSOLETE_SOON" desc="A message displayed on an at-launch infobar and About (Help) page warning the user that the OS version they are using will soon be or is already unsupported.">
           To get future Google Chrome updates, you'll need OS X 10.11 or later. This computer is using OS X 10.10.

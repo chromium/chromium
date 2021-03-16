@@ -131,9 +131,6 @@ extern const char kContentSettingsExceptionsLearnMoreURL[];
 // "Learn more" URL for cookies.
 extern const char kCookiesSettingsHelpCenterURL[];
 
-// The URL for the "learn more" link on the SSE2 obsolescence infobar.
-extern const char kCpuX86Sse2ObsoleteURL[];
-
 // "Learn more" URL for "Aw snap" page when showing "Reload" button.
 extern const char kCrashReasonURL[];
 
