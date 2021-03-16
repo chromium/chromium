@@ -221,7 +221,8 @@ class PrerenderBrowserTest
     WaitForPrerenderLoadCompletion(prerendering_url);
   }
 
-  // Navigates to the URL and waits until the completion of navigation.
+  // Navigates the primary page to the URL and waits until the completion of the
+  // navigation.
   //
   // Navigations that could activate a prerendered page on the multiple
   // WebContents architecture (not multiple-pages architecture known as MPArch)
@@ -229,7 +230,7 @@ class PrerenderBrowserTest
   // is because the test helper accesses the predecessor WebContents to be
   // destroyed during activation and results in crashes.
   // See https://crbug.com/1154501 for the MPArch migration.
-  void NavigateWithLocation(const GURL& url) {
+  void NavigatePrimaryPage(const GURL& url) {
     DCHECK_CURRENTLY_ON(BrowserThread::UI);
     content::TestNavigationObserver observer(shell()->web_contents());
     // Ignore the result of ExecJs().
@@ -243,9 +244,28 @@ class PrerenderBrowserTest
     // approach just to ignore it instead of fixing the timing issue. When
     // ExecJs() actually fails, the remaining test steps should fail, so it
     // should be safe to ignore it.
-    ignore_result(
-        ExecJs(shell()->web_contents(), JsReplace("location = $1", url)));
+    ignore_result(ExecJs(shell()->web_contents()->GetMainFrame(),
+                         JsReplace("location = $1", url)));
     observer.Wait();
+  }
+
+  // Navigates a prerendered page to the URL.
+  void NavigatePrerenderedPage(PrerenderHost& prerender_host, const GURL& url) {
+    RenderFrameHostImpl* prerender_render_frame_host =
+        prerender_host.GetPrerenderedMainFrameHostForTesting();
+    // Ignore the result of ExecJs().
+    //
+    // Navigation from the prerendered page could cancel prerendering and
+    // destroy the prerendered frame before ExecJs() gets a result from that.
+    // This results in execution failure even when the execution succeeded. See
+    // https://crbug.com/1186584 for details.
+    //
+    // This part will drastically be modified by the MPArch, so we take the
+    // approach just to ignore it instead of fixing the timing issue. When
+    // ExecJs() actually fails, the remaining test steps should fail, so it
+    // should be safe to ignore it.
+    ignore_result(
+        ExecJs(prerender_render_frame_host, JsReplace("location = $1", url)));
   }
 
   GURL GetUrl(const std::string& path) {
@@ -319,7 +339,7 @@ class PrerenderBrowserTest
     }
 
     // Activate the prerendered page.
-    NavigateWithLocation(prerender_url);
+    NavigatePrimaryPage(prerender_url);
     EXPECT_EQ(shell()->web_contents()->GetURL(), prerender_url);
 
     // The activated page should no longer be in the prerendering state.
@@ -382,7 +402,7 @@ IN_PROC_BROWSER_TEST_P(PrerenderBrowserTest, LinkRelPrerender) {
   EXPECT_NE(registry.FindHostByUrlForTesting(kPrerenderingUrl), nullptr);
 
   // Activate the prerendered page.
-  NavigateWithLocation(kPrerenderingUrl);
+  NavigatePrimaryPage(kPrerenderingUrl);
   EXPECT_EQ(shell()->web_contents()->GetURL(), kPrerenderingUrl);
 
   // The prerender host should be consumed.
@@ -422,7 +442,7 @@ IN_PROC_BROWSER_TEST_P(PrerenderBrowserTest, LinkRelPrerender_Multiple) {
   EXPECT_NE(registry.FindHostByUrlForTesting(kPrerenderingUrl2), nullptr);
 
   // Activate the prerendered page.
-  NavigateWithLocation(kPrerenderingUrl2);
+  NavigatePrimaryPage(kPrerenderingUrl2);
   EXPECT_EQ(shell()->web_contents()->GetURL(), kPrerenderingUrl2);
 
   // The prerender hosts should be consumed or destroyed for activation.
@@ -464,7 +484,7 @@ IN_PROC_BROWSER_TEST_P(PrerenderBrowserTest, LinkRelPrerender_Duplicate) {
   EXPECT_NE(registry.FindHostByUrlForTesting(kPrerenderingUrl2), nullptr);
 
   // Activate the prerendered page.
-  NavigateWithLocation(kPrerenderingUrl1);
+  NavigatePrimaryPage(kPrerenderingUrl1);
   EXPECT_EQ(shell()->web_contents()->GetURL(), kPrerenderingUrl1);
 
   // The prerender hosts should be consumed or destroyed for activation.
@@ -607,7 +627,7 @@ IN_PROC_BROWSER_TEST_P(PrerenderBrowserTest,
   ASSERT_EQ(GetRequestCount(kCrossOriginSubframeUrl), 0);
 
   // Activate.
-  NavigateWithLocation(kPrerenderingUrl);
+  NavigatePrimaryPage(kPrerenderingUrl);
   ASSERT_EQ(shell()->web_contents()->GetURL(), kPrerenderingUrl);
   ASSERT_EQ("LOADED",
             EvalJs(prerender_frame_host, JsReplace("wait_iframe_async($1)",
@@ -699,7 +719,7 @@ IN_PROC_BROWSER_TEST_P(PrerenderBrowserTest, Activation_PageWithPopUpWindow) {
   // should fail and fallback to network request because the pop-up window
   // exists.
   ASSERT_EQ(GetRequestCount(kPrerenderingUrl), 1);
-  NavigateWithLocation(kPrerenderingUrl);
+  NavigatePrimaryPage(kPrerenderingUrl);
   EXPECT_EQ(shell()->web_contents()->GetURL(), kPrerenderingUrl);
   EXPECT_EQ(GetRequestCount(kPrerenderingUrl), 2);
 
@@ -723,7 +743,7 @@ IN_PROC_BROWSER_TEST_P(PrerenderBrowserTest, HistoryAfterActivation) {
 
   // Make and activate a prerendered page.
   AddPrerender(kPrerenderingUrl);
-  NavigateWithLocation(kPrerenderingUrl);
+  NavigatePrimaryPage(kPrerenderingUrl);
   EXPECT_EQ(shell()->web_contents()->GetLastCommittedURL(), kPrerenderingUrl);
 
   // Navigate back to the initial page.
@@ -859,7 +879,7 @@ IN_PROC_BROWSER_TEST_P(PrerenderBrowserTest, MojoCapabilityControl) {
   }
 
   // Activate the prerendered page.
-  NavigateWithLocation(kPrerenderingUrl);
+  NavigatePrimaryPage(kPrerenderingUrl);
   EXPECT_EQ(shell()->web_contents()->GetURL(), kPrerenderingUrl);
   EXPECT_EQ(test_browser_client.GetDeferReceiverSetSize(), frames.size());
 
@@ -1094,11 +1114,10 @@ IN_PROC_BROWSER_TEST_P(PrerenderBrowserTest, CookieAccess) {
             EvalJs(shell()->web_contents(), "document.cookie"));
 }
 
-// TODO(crbug.com/1186584) Test is flaky.
 // Test that a cross-site navigation from prerendering browser context will
 // cancel prerendering.
 IN_PROC_BROWSER_TEST_P(PrerenderBrowserTest,
-                       DISABLED_PrerenderedPageCrossSiteNavigation) {
+                       PrerenderedPageCrossSiteNavigation) {
   base::HistogramTester histogram_tester;
   const GURL kInitialUrl = GetUrl("/prerender/add_prerender.html");
   const GURL kPrerenderingUrl = GetUrl("/empty.html");
@@ -1112,14 +1131,9 @@ IN_PROC_BROWSER_TEST_P(PrerenderBrowserTest,
   PrerenderHostRegistry& registry = GetPrerenderHostRegistry();
   PrerenderHost* prerender_host =
       registry.FindHostByUrlForTesting(kPrerenderingUrl);
-  ASSERT_TRUE(prerender_host);
-  RenderFrameHostImpl* prerendered_render_frame_host =
-      prerender_host->GetPrerenderedMainFrameHostForTesting();
 
   // Run cross-site navigation from the prerendering browser context.
-  EXPECT_TRUE(ExecJs(
-      prerendered_render_frame_host,
-      JsReplace("window.location.href = $1", kCrossSitePrerenderingUrl)));
+  NavigatePrerenderedPage(*prerender_host, kCrossSitePrerenderingUrl);
 
   // The cross-site navigation should cancel prerendering.
   EXPECT_FALSE(registry.FindHostByUrlForTesting(kPrerenderingUrl));
@@ -1147,14 +1161,9 @@ IN_PROC_BROWSER_TEST_P(PrerenderBrowserTest,
   PrerenderHostRegistry& registry = GetPrerenderHostRegistry();
   PrerenderHost* prerender_host =
       registry.FindHostByUrlForTesting(kPrerenderingUrl);
-  ASSERT_TRUE(prerender_host);
-  RenderFrameHostImpl* prerendered_render_frame_host =
-      prerender_host->GetPrerenderedMainFrameHostForTesting();
 
   // Navigate same-site from the prerendered page.
-  EXPECT_TRUE(
-      ExecJs(prerendered_render_frame_host,
-             JsReplace("window.location.href = $1", kSameSitePrerenderingUrl)));
+  NavigatePrerenderedPage(*prerender_host, kSameSitePrerenderingUrl);
   prerender_host->WaitForLoadStopForTesting();
 
   // The prerender host should be registered for the initial request URL, not
@@ -1163,7 +1172,7 @@ IN_PROC_BROWSER_TEST_P(PrerenderBrowserTest,
   EXPECT_FALSE(registry.FindHostByUrlForTesting(kSameSitePrerenderingUrl));
 
   // Activate the prerendered page.
-  NavigateWithLocation(kPrerenderingUrl);
+  NavigatePrimaryPage(kPrerenderingUrl);
   if (IsActivationDisabled()) {
     // Activation is disabled. The navigation should issue a request again
     // pointing to kPrerenderingUrl.
@@ -1211,13 +1220,8 @@ IN_PROC_BROWSER_TEST_P(PrerenderBrowserTest, RenderFrameHostLifecycleState) {
   EXPECT_EQ(LifecycleState::kPrerendering, rfh_a->lifecycle_state());
   EXPECT_EQ(LifecycleState::kPrerendering, rfh_b->lifecycle_state());
 
-  RenderFrameHostImpl* prerendered_render_frame_host =
-      prerender_host->GetPrerenderedMainFrameHostForTesting();
-
   // Navigate same-origin from the prerendered page.
-  EXPECT_TRUE(
-      ExecJs(prerendered_render_frame_host,
-             JsReplace("window.location.href = $1", kPrerenderingUrl2)));
+  NavigatePrerenderedPage(*prerender_host, kPrerenderingUrl2);
   prerender_host->WaitForLoadStopForTesting();
 
   // Open an iframe in the new prerendered page.
@@ -1232,7 +1236,7 @@ IN_PROC_BROWSER_TEST_P(PrerenderBrowserTest, RenderFrameHostLifecycleState) {
   EXPECT_EQ(LifecycleState::kPrerendering, rfh_d->lifecycle_state());
 
   // Activate the prerendered page.
-  NavigateWithLocation(kPrerenderingUrl1);
+  NavigatePrimaryPage(kPrerenderingUrl1);
 
   // Both rfh_c and rfh_d lifecycle state's should be kActive after activation.
   EXPECT_EQ(LifecycleState::kActive, rfh_c->lifecycle_state());
@@ -1476,7 +1480,7 @@ IN_PROC_BROWSER_TEST_P(PrerenderFileSystemAccessBrowserTest,
 
   // Inform the prerendered page that it will be activated and activate it.
   EXPECT_TRUE(ExecJs(prerender_render_frame_host, "setWillActivate();"));
-  NavigateWithLocation(kPrerenderingUrl);
+  NavigatePrimaryPage(kPrerenderingUrl);
 
   // `temp_file` should be selected after `willActivate` was set to true,
   // otherwise the prerendered page will throw an error.
@@ -1517,7 +1521,7 @@ IN_PROC_BROWSER_TEST_P(PrerenderBrowserTest, RenderDocumentHostUserData) {
   EXPECT_TRUE(data);
 
   // Activate the prerendered page.
-  NavigateWithLocation(kPrerenderingUrl);
+  NavigatePrimaryPage(kPrerenderingUrl);
   EXPECT_EQ(shell()->web_contents()->GetURL(), kPrerenderingUrl);
 
   // The prerender host should be consumed.
@@ -1655,7 +1659,7 @@ IN_PROC_BROWSER_TEST_P(PrerenderBrowserTest,
 
   // Cancelling the prerendering disables the activation. The navigation
   // should issue a request again.
-  NavigateWithLocation(kPrerenderingUrl);
+  NavigatePrimaryPage(kPrerenderingUrl);
   EXPECT_EQ(GetRequestCount(kPrerenderingUrl), 2);
 }
 
@@ -1699,20 +1703,15 @@ IN_PROC_BROWSER_TEST_P(PrerenderWithBackForwardCacheTest,
 
   PrerenderHost* prerender_host =
       GetPrerenderHostRegistry().FindHostByUrlForTesting(kPrerenderingUrl);
-  ASSERT_TRUE(prerender_host);
-  RenderFrameHostImpl* prerendered_render_frame_host =
-      prerender_host->GetPrerenderedMainFrameHostForTesting();
 
   // Navigate the Prerender page to a new URL.
-  EXPECT_TRUE(
-      ExecJs(prerendered_render_frame_host,
-             JsReplace("window.location.href = $1", kSameSitePrerenderingUrl)));
+  NavigatePrerenderedPage(*prerender_host, kSameSitePrerenderingUrl);
   prerender_host->WaitForLoadStopForTesting();
 
   prerender_host =
       GetPrerenderHostRegistry().FindHostByUrlForTesting(kPrerenderingUrl);
   ASSERT_TRUE(prerender_host);
-  prerendered_render_frame_host =
+  RenderFrameHostImpl* prerendered_render_frame_host =
       prerender_host->GetPrerenderedMainFrameHostForTesting();
 
   // Go back. The page should not be restored from the bfcache.
