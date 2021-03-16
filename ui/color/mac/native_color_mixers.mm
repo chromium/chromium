@@ -89,7 +89,7 @@ void AddNativeUiColorMixer(ColorProvider* provider,
 void AddSystemTintMixer(ColorProvider* provider) {
   ColorMixer& mixer = provider->AddMixer();
 
-  for (ui::ColorId id = ui::kUiColorsStart; id < kUiColorsLast; ++id) {
+  for (ColorId id = kUiColorsStart; id < kUiColorsEnd; ++id) {
     // Apply system tint to non-OS colors.
     if (!kNativeOSColorIds.contains(id))
       mixer[id] += ApplySystemControlTintIfNeeded();
