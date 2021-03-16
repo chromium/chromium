@@ -976,7 +976,6 @@ void PrintPreviewUI::OnHidePreviewDialog() {
 }
 
 void PrintPreviewUI::OnClosePrintPreviewDialog() {
-  receiver_.reset();
   if (dialog_closed_)
     return;
   dialog_closed_ = true;
