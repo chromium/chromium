@@ -21,6 +21,14 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histograms>
 
+<variants name="URLLoaderThrottleStages">
+  <variant name="BeforeWillProcessResponse"/>
+  <variant name="WillOnCompleteWithError"/>
+  <variant name="WillProcessResponse"/>
+  <variant name="WillRedirectRequest"/>
+  <variant name="WillStartRequest"/>
+</variants>
+
 <histogram name="Net.AlternateProtocolBrokenLocation"
     enum="BrokenAlternateProtocolLocation" expires_after="2021-07-27">
   <owner>dschinazi@chromium.org</owner>
@@ -5237,6 +5245,28 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
     one does not record the OK bucket, since it's both not terribly meaningful
     and URLs are canonicalized so frequently.
   </summary>
+</histogram>
+
+<histogram name="Net.URLLoaderThrottleDeferTime.{Stage}" units="ms"
+    expires_after="2022-03-14">
+  <owner>cduvall@chromium.org</owner>
+  <owner>jam@chromium.org</owner>
+  <summary>
+    Measures time a URLLoaderThrottle was deferred when on {Stage}. Logged every
+    time a throttle defers a request.
+  </summary>
+  <token key="Stage" variants="URLLoaderThrottleStages"/>
+</histogram>
+
+<histogram name="Net.URLLoaderThrottleExecutionTime.{Stage}" units="ms"
+    expires_after="2022-03-14">
+  <owner>cduvall@chromium.org</owner>
+  <owner>jam@chromium.org</owner>
+  <summary>
+    Measures time a URLLoaderThrottle took to execute {Stage}. Logged every time
+    a throttle runs.
+  </summary>
+  <token key="Stage" variants="URLLoaderThrottleStages"/>
 </histogram>
 
 <histogram name="Net.URLRequest.ReferrerHasInformativePath"
