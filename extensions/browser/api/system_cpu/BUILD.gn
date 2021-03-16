@@ -34,7 +34,7 @@ source_set("system_cpu") {
     sources += [ "cpu_info_provider_win.cc" ]
   }
 
-  if (is_chromeos_ash) {
+  if (is_chromeos) {
     deps += [ "//chromeos/system" ]
   }
 
