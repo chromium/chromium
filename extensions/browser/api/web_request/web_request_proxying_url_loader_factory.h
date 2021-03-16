@@ -252,6 +252,7 @@ class WebRequestProxyingURLLoaderFactory
       content::BrowserContext* browser_context,
       int render_process_id,
       int frame_routing_id,
+      int view_routing_id,
       WebRequestAPI::RequestIDGenerator* request_id_generator,
       std::unique_ptr<ExtensionNavigationUIData> navigation_ui_data,
       base::Optional<int64_t> navigation_id,
@@ -270,6 +271,7 @@ class WebRequestProxyingURLLoaderFactory
       content::BrowserContext* browser_context,
       int render_process_id,
       int frame_routing_id,
+      int view_routing_id,
       WebRequestAPI::RequestIDGenerator* request_id_generator,
       std::unique_ptr<ExtensionNavigationUIData> navigation_ui_data,
       base::Optional<int64_t> navigation_id,
@@ -329,6 +331,7 @@ class WebRequestProxyingURLLoaderFactory
   content::BrowserContext* const browser_context_;
   const int render_process_id_;
   const int frame_routing_id_;
+  const int view_routing_id_;
   WebRequestAPI::RequestIDGenerator* const request_id_generator_;
   std::unique_ptr<ExtensionNavigationUIData> navigation_ui_data_;
   base::Optional<int64_t> navigation_id_;

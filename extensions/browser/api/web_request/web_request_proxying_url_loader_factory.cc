@@ -1102,6 +1102,7 @@ WebRequestProxyingURLLoaderFactory::WebRequestProxyingURLLoaderFactory(
     content::BrowserContext* browser_context,
     int render_process_id,
     int frame_routing_id,
+    int view_routing_id,
     WebRequestAPI::RequestIDGenerator* request_id_generator,
     std::unique_ptr<ExtensionNavigationUIData> navigation_ui_data,
     base::Optional<int64_t> navigation_id,
@@ -1115,6 +1116,7 @@ WebRequestProxyingURLLoaderFactory::WebRequestProxyingURLLoaderFactory(
     : browser_context_(browser_context),
       render_process_id_(render_process_id),
       frame_routing_id_(frame_routing_id),
+      view_routing_id_(view_routing_id),
       request_id_generator_(request_id_generator),
       navigation_ui_data_(std::move(navigation_ui_data)),
       navigation_id_(std::move(navigation_id)),
@@ -1148,6 +1150,7 @@ void WebRequestProxyingURLLoaderFactory::StartProxying(
     content::BrowserContext* browser_context,
     int render_process_id,
     int frame_routing_id,
+    int view_routing_id,
     WebRequestAPI::RequestIDGenerator* request_id_generator,
     std::unique_ptr<ExtensionNavigationUIData> navigation_ui_data,
     base::Optional<int64_t> navigation_id,
@@ -1161,7 +1164,7 @@ void WebRequestProxyingURLLoaderFactory::StartProxying(
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   auto proxy = std::make_unique<WebRequestProxyingURLLoaderFactory>(
-      browser_context, render_process_id, frame_routing_id,
+      browser_context, render_process_id, frame_routing_id, view_routing_id,
       request_id_generator, std::move(navigation_ui_data),
       std::move(navigation_id), ukm_source_id, std::move(loader_receiver),
       std::move(target_factory_remote), std::move(header_client_receiver),
@@ -1192,7 +1195,7 @@ void WebRequestProxyingURLLoaderFactory::CreateLoaderAndStart(
   // request ID may be the same as a previous request if the previous
   // request was redirected to a URL that required a different loader.
   const uint64_t web_request_id =
-      request_id_generator_->Generate(routing_id, request_id);
+      request_id_generator_->Generate(view_routing_id_, request_id);
 
   if (request_id) {
     // Only requests with a non-zero request ID can have their proxy
@@ -1208,7 +1211,7 @@ void WebRequestProxyingURLLoaderFactory::CreateLoaderAndStart(
   auto result = requests_.emplace(
       web_request_id,
       std::make_unique<InProgressRequest>(
-          this, web_request_id, request_id, routing_id, frame_routing_id_,
+          this, web_request_id, request_id, view_routing_id_, frame_routing_id_,
           options, ukm_source_id_, request, traffic_annotation,
           std::move(loader_receiver), std::move(client)));
   result.first->second->Restart();
