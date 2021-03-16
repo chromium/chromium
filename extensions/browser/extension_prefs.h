@@ -391,6 +391,14 @@ class ExtensionPrefs : public KeyedService {
   void SetExtensionAllowlistState(const std::string& extension_id,
                                   AllowlistState state);
 
+  // Gets the Safe Browsing allowlist acknowledge state.
+  AllowlistAcknowledgeState GetExtensionAllowlistAcknowledgeState(
+      const std::string& extension_id) const;
+
+  // Sets the Safe Browsing allowlist acknowledge state.
+  void SetExtensionAllowlistAcknowledgeState(const std::string& extension_id,
+                                             AllowlistAcknowledgeState state);
+
   // Increment the count of how many times we prompted the user to acknowledge
   // the given extension, and return the new count.
   int IncrementAcknowledgePromptCount(const std::string& extension_id);

@@ -18,6 +18,22 @@ enum AllowlistState {
   ALLOWLIST_ALLOWLISTED = 1,
   // The extension is not included in the Safe Browsing extension allowlist.
   ALLOWLIST_NOT_ALLOWLISTED = 2,
+  ALLOWLIST_LAST = 3
+};
+
+// The acknowledge states for the Safe Browsing CRX allowlist enforcements.
+enum AllowlistAcknowledgeState {
+  ALLOWLIST_ACKNOWLEDGE_NONE = 0,
+  // Used to notify the user that an extension was disabled or re-enabled by the
+  // allowlist enforcement.
+  ALLOWLIST_ACKNOWLEDGE_NEEDED = 1,
+  // State set when the user dismiss the notification in the extension menu.
+  ALLOWLIST_ACKNOWLEDGE_DONE = 2,
+  // The user clicked through the install friction dialog or re-enabled the
+  // extension after it was disabled. The extension should not be disabled again
+  // from the allowlist enforcement.
+  ALLOWLIST_ACKNOWLEDGE_ENABLED_BY_USER = 3,
+  ALLOWLIST_ACKNOWLEDGE_LAST = 4
 };
 
 }  // namespace extensions

@@ -5,7 +5,10 @@
 #ifndef CHROME_BROWSER_EXTENSIONS_EXTENSION_ALLOWLIST_H_
 #define CHROME_BROWSER_EXTENSIONS_EXTENSION_ALLOWLIST_H_
 
+#include "base/scoped_observation.h"
 #include "components/prefs/pref_change_registrar.h"
+#include "extensions/browser/extension_prefs.h"
+#include "extensions/browser/extension_prefs_observer.h"
 
 class Profile;
 
@@ -14,19 +17,18 @@ class Value;
 }  // namespace base
 
 namespace extensions {
-class ExtensionPrefs;
 class ExtensionRegistry;
 class ExtensionService;
 
 // Manages the Safe Browsing CRX Allowlist.
-class ExtensionAllowlist {
+class ExtensionAllowlist : private ExtensionPrefsObserver {
  public:
   ExtensionAllowlist(Profile* profile,
                      ExtensionPrefs* extension_prefs,
                      ExtensionService* extension_service);
   ExtensionAllowlist(const ExtensionAllowlist&) = delete;
   ExtensionAllowlist& operator=(const ExtensionAllowlist&) = delete;
-  ~ExtensionAllowlist() = default;
+  ~ExtensionAllowlist();
 
   void Init();
 
@@ -45,15 +47,26 @@ class ExtensionAllowlist {
   // Set if the allowlist should be enforced or not.
   void SetAllowlistEnforcedField();
 
+  // Apply the allowlist enforcement by disabling a not allowlisted extension if
+  // allowed by policy.
+  void ApplyEnforcement(const std::string& extension_id);
+
   // Blocklist all extensions with allowlist state `ALLOWLIST_NOT_ALLOWLISTED`.
   void ActivateAllowlistEnforcement();
 
   // Unblocklist all extensions with allowlist state
-  // |ALLOWLIST_NOT_ALLOWLISTED|.
+  // `ALLOWLIST_NOT_ALLOWLISTED`.
   void DeactivateAllowlistEnforcement();
 
   // Called when the 'Enhanced Safe Browsing' setting changes.
   void OnSafeBrowsingEnhancedChanged();
+
+  // ExtensionPrefsObserver:
+  // Observes extension state changes to set
+  // `ALLOWLIST_ACKNOWLEDGE_ENABLED_BY_USER` when a not allowlisted extension is
+  // re-enabled by the user.
+  void OnExtensionStateChanged(const std::string& extension_id,
+                               bool is_now_enabled) override;
 
   Profile* profile_ = nullptr;
   ExtensionPrefs* extension_prefs_ = nullptr;
@@ -65,6 +78,9 @@ class ExtensionAllowlist {
 
   // Used to subscribe to profile preferences updates.
   PrefChangeRegistrar pref_change_registrar_;
+
+  base::ScopedObservation<ExtensionPrefs, ExtensionPrefsObserver>
+      extension_prefs_observation_{this};
 };
 
 }  // namespace extensions
