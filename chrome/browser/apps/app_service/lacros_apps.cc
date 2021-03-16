@@ -34,6 +34,8 @@ apps::mojom::AppPtr LacrosApps::GetLacrosApp(bool is_ready) {
       apps::mojom::Readiness::kReady,
       "Lacros",  // TODO(jamescook): Localized name.
       apps::mojom::InstallSource::kSystem);
+  // Make Lacros searchable with the term "chrome", too.
+  app->additional_search_terms.push_back("chrome");
   app->icon_key = NewIconKey(is_ready ? State::kReady : State::kLoading);
   app->searchable = apps::mojom::OptionalBool::kTrue;
   app->show_in_launcher = apps::mojom::OptionalBool::kTrue;
