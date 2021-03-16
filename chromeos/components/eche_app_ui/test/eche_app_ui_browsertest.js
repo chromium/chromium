@@ -28,12 +28,10 @@ var EcheAppUIBrowserTest = class extends testing.Test {
   }
 };
 
-// Tests that chrome://eche-app runs js file and that it goes
-// somewhere instead of 404ing or crashing.
-// Failing, see crbug.com/1185641
-TEST_F('EcheAppUIBrowserTest', 'DISABLED_HasChromeSchemeURL', () => {
-  const header = document.querySelector('header');
-
-  assertEquals(header.innerText, 'Eche App');
+// Tests that chrome://eche-app goes somewhere instead of
+// 404ing or crashing.
+TEST_F('EcheAppUIBrowserTest', 'HasChromeSchemeURL', () => {
+  assertEquals(document.title, 'Eche');
   assertEquals(document.location.origin, HOST_ORIGIN);
+  testDone();
 });
