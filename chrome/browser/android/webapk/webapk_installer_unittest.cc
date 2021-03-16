@@ -167,7 +167,7 @@ class UpdateRequestStorer {
     WebApkInstaller::StoreUpdateRequestToFile(
         update_request_path, webapps::ShortcutInfo((GURL())), SkBitmap(), false,
         SkBitmap(), "", "", std::map<std::string, WebApkIconHasher::Icon>(),
-        false, WebApkUpdateReason::PRIMARY_ICON_HASH_DIFFERS,
+        false, {WebApkUpdateReason::PRIMARY_ICON_HASH_DIFFERS},
         base::BindOnce(&UpdateRequestStorer::OnComplete,
                        base::Unretained(this)));
     run_loop.Run();

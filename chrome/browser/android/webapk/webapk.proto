@@ -78,10 +78,10 @@ message WebApk {
   // no longer available.
   optional bool stale_manifest = 9;
 
-  // The reason that a WebAPK update is requested.
-  optional UpdateReason update_reason = 10;
+  // A list of all reasons why the WebAPK needs to be updated.
+  repeated UpdateReason update_reasons = 11;
 
-  reserved 4;
+  reserved 4, 10;
 }
 
 // Contains data from the Web App Manifest.

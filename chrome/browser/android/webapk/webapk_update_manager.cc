@@ -79,7 +79,7 @@ static void JNI_WebApkUpdateManager_StoreWebApkUpdateRequestToFile(
     const JavaParamRef<jstring>& java_webapk_package,
     jint java_webapk_version,
     jboolean java_is_manifest_stale,
-    jint java_update_reason,
+    const JavaParamRef<jintArray>& java_update_reasons,
     const JavaParamRef<jobject>& java_callback) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
@@ -195,15 +195,19 @@ static void JNI_WebApkUpdateManager_StoreWebApkUpdateRequestToFile(
     info.shortcut_items.push_back(std::move(shortcut_item));
   }
 
-  WebApkUpdateReason update_reason =
-      static_cast<WebApkUpdateReason>(java_update_reason);
+  std::vector<int> int_update_reasons;
+  base::android::JavaIntArrayToIntVector(env, java_update_reasons,
+                                         &int_update_reasons);
+  std::vector<WebApkUpdateReason> update_reasons;
+  for (int update_reason : int_update_reasons)
+    update_reasons.push_back(static_cast<WebApkUpdateReason>(update_reason));
 
   WebApkInstaller::StoreUpdateRequestToFile(
       base::FilePath(update_request_path), info, primary_icon,
       java_is_primary_icon_maskable, splash_icon, webapk_package,
       base::NumberToString(java_webapk_version),
       std::move(icon_url_to_murmur2_hash), java_is_manifest_stale,
-      update_reason,
+      std::move(update_reasons),
       base::BindOnce(&base::android::RunBooleanCallbackAndroid,
                      ScopedJavaGlobalRef<jobject>(java_callback)));
 }
