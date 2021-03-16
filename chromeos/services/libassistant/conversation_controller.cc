@@ -398,6 +398,9 @@ void ConversationController::OnOpenUrl(const std::string& url,
 }
 
 // Called from Libassistant thread.
+// Note that OnVerifyAndroidApp() will be handled by |DisplayController|
+// directly since it stores an updated list of all installed Android Apps on the
+// device.
 void ConversationController::OnOpenAndroidApp(
     const chromeos::assistant::AndroidAppInfo& app_info,
     const chromeos::assistant::InteractionInfo& interaction) {

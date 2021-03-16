@@ -42,6 +42,10 @@ class DisplayConnectionImpl : public assistant_client::DisplayConnection {
   void OnAndroidAppListRefreshed(
       const std::vector<assistant::AndroidAppInfo>& apps_info);
 
+  const std::vector<assistant::AndroidAppInfo>& GetCachedAndroidAppList() {
+    return apps_info_;
+  }
+
  private:
   void SendDisplayRequestLocked();
 

@@ -18,7 +18,6 @@
 #include "base/scoped_observation.h"
 #include "base/synchronization/lock.h"
 #include "base/threading/thread.h"
-#include "chromeos/assistant/internal/action/assistant_action_observer.h"
 #include "chromeos/assistant/internal/action/cros_action_module.h"
 #include "chromeos/services/assistant/assistant_manager_service.h"
 #include "chromeos/services/assistant/assistant_settings_impl.h"
@@ -99,7 +98,6 @@ enum class AssistantQueryResponseType {
 // enabled/disabled in settings or switches to a non-primary profile.
 class COMPONENT_EXPORT(ASSISTANT_SERVICE) AssistantManagerServiceImpl
     : public AssistantManagerService,
-      public chromeos::assistant::action::AssistantActionObserver,
       public assistant_client::ConversationStateListener,
       public AppListEventSubscriber,
       private chromeos::libassistant::mojom::StateObserver,
@@ -167,10 +165,6 @@ class COMPONENT_EXPORT(ASSISTANT_SERVICE) AssistantManagerServiceImpl
   void AddRemoteConversationObserver(ConversationObserver* observer) override;
   mojo::PendingReceiver<chromeos::libassistant::mojom::NotificationDelegate>
   GetPendingNotificationDelegate() override;
-
-  // AssistantActionObserver overrides:
-  void OnVerifyAndroidApp(const std::vector<AndroidAppInfo>& apps_info,
-                          const InteractionInfo& interaction) override;
 
   // chromeos::assistant::ConversationObserver overrides:
   void OnInteractionStarted(
@@ -295,9 +289,6 @@ class COMPONENT_EXPORT(ASSISTANT_SERVICE) AssistantManagerServiceImpl
                           &DeviceActions::RemoveAppListEventSubscriber>
       scoped_app_list_event_subscriber_{this};
   base::ObserverList<AssistantManagerService::StateObserver> state_observers_;
-  base::ScopedObservation<action::CrosActionModule,
-                          action::AssistantActionObserver>
-      scoped_action_observer_{this};
 
   base::WeakPtrFactory<AssistantManagerServiceImpl> weak_factory_;
 

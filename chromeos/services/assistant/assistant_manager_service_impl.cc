@@ -269,7 +269,6 @@ void AssistantManagerServiceImpl::Stop() {
 
   media_host_->Stop();
   scoped_app_list_event_subscriber_.Reset();
-  scoped_action_observer_.Reset();
 
   // When user disables the feature, we also delete all data.
   if (!assistant_state()->settings_enabled().value())
@@ -499,32 +498,6 @@ void AssistantManagerServiceImpl::OnOpenUrlResponse(const GURL& url,
   receive_url_response_ = url.spec();
 }
 
-void AssistantManagerServiceImpl::OnVerifyAndroidApp(
-    const std::vector<AndroidAppInfo>& apps_info,
-    const InteractionInfo& interaction) {
-  ENSURE_MAIN_THREAD(&AssistantManagerServiceImpl::OnVerifyAndroidApp,
-                     apps_info, interaction);
-  std::vector<AndroidAppInfo> result_apps_info;
-  for (auto& app_info : apps_info) {
-    AndroidAppInfo result_app_info(app_info);
-    AppStatus status = device_actions()->GetAndroidAppStatus(app_info);
-    result_app_info.status = status;
-    result_apps_info.emplace_back(result_app_info);
-  }
-  std::string interaction_proto = CreateVerifyProviderResponseInteraction(
-      interaction.interaction_id, result_apps_info);
-
-  assistant_client::VoicelessOptions options;
-  options.obfuscated_gaia_id = interaction.user_id;
-  // Set the request to be user initiated so that a new conversation will be
-  // created to handle the client OPs in the response of this request.
-  options.is_user_initiated = true;
-
-  assistant_manager_internal()->SendVoicelessInteraction(
-      interaction_proto, /*description=*/"verify_provider_response", options,
-      [](auto) {});
-}
-
 void AssistantManagerServiceImpl::OnStateChanged(
     chromeos::libassistant::mojom::ServiceState new_state) {
   using chromeos::libassistant::mojom::ServiceState;
@@ -572,8 +545,6 @@ void AssistantManagerServiceImpl::OnServiceStarted() {
 
   if (base::FeatureList::IsEnabled(assistant::features::kAssistantAppSupport))
     scoped_app_list_event_subscriber_.Observe(device_actions());
-
-  scoped_action_observer_.Observe(action_module());
 }
 
 bool AssistantManagerServiceImpl::IsServiceStarted() const {
