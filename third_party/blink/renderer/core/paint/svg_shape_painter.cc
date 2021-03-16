@@ -162,8 +162,7 @@ void SVGShapePainter::FillShape(GraphicsContext& context,
                        DarkModeFilter::ElementRole::kSVG);
     }
   }
-  PaintTiming& timing = PaintTiming::From(
-      layout_svg_shape_.GetElement()->GetDocument().TopDocument());
+  PaintTiming& timing = PaintTiming::From(layout_svg_shape_.GetDocument());
   timing.MarkFirstContentfulPaint();
 }
 
@@ -188,8 +187,7 @@ void SVGShapePainter::StrokeShape(GraphicsContext& context,
       context.DrawPath(use_path->GetSkPath(), flags,
                        DarkModeFilter::ElementRole::kSVG);
   }
-  PaintTiming& timing = PaintTiming::From(
-      layout_svg_shape_.GetElement()->GetDocument().TopDocument());
+  PaintTiming& timing = PaintTiming::From(layout_svg_shape_.GetDocument());
   timing.MarkFirstContentfulPaint();
 }
 

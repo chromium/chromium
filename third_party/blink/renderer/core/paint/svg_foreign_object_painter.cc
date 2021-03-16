@@ -54,8 +54,8 @@ void SVGForeignObjectPainter::Paint(const PaintInfo& paint_info) {
   // ScopedSVGPaintState only applies masks (and clips-within-clips) here.
   ScopedSVGPaintState paint_state(layout_svg_foreign_object_, paint_info);
 
-  PaintTiming& timing = PaintTiming::From(
-      layout_svg_foreign_object_.GetElement()->GetDocument().TopDocument());
+  PaintTiming& timing =
+      PaintTiming::From(layout_svg_foreign_object_.GetDocument());
   timing.MarkFirstContentfulPaint();
 
   BlockPainter(layout_svg_foreign_object_).Paint(paint_info);
