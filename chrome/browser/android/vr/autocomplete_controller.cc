@@ -5,6 +5,7 @@
 #include "chrome/browser/android/vr/autocomplete_controller.h"
 
 #include <string>
+#include <utility>
 
 #include "base/bind.h"
 #include "base/strings/string_util.h"
@@ -97,8 +98,8 @@ void AutocompleteController::OnResultChanged(
   suggestions_timeout_.Cancel();
 
   if (suggestions.size() < kMaxNumberOfSuggestions) {
-    suggestions_timeout_.Reset(base::BindOnce(
-        suggestion_callback_, base::Passed(std::move(suggestions))));
+    suggestions_timeout_.Reset(
+        base::BindOnce(suggestion_callback_, std::move(suggestions)));
     base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
         FROM_HERE, suggestions_timeout_.callback(),
         base::TimeDelta::FromMilliseconds(kSuggestionThrottlingDelayMs));

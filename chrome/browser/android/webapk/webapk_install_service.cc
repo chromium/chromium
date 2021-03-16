@@ -57,7 +57,7 @@ void WebApkInstallService::InstallAsync(
   WebApkInstaller::InstallAsync(
       browser_context_, shortcut_info, primary_icon, is_primary_icon_maskable,
       base::BindOnce(&WebApkInstallService::OnFinishedInstall,
-                     weak_ptr_factory_.GetWeakPtr(), base::Passed(&observer),
+                     weak_ptr_factory_.GetWeakPtr(), std::move(observer),
                      shortcut_info, primary_icon, is_primary_icon_maskable));
 }
 

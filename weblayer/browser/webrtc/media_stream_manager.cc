@@ -4,6 +4,8 @@
 
 #include "weblayer/browser/webrtc/media_stream_manager.h"
 
+#include <utility>
+
 #include "base/supports_user_data.h"
 #include "components/webrtc/media_stream_devices_controller.h"
 #include "content/public/browser/media_stream_request.h"
@@ -115,8 +117,7 @@ void MediaStreamManager::RequestMediaAccessPermission(
   webrtc::MediaStreamDevicesController::RequestPermissions(
       request, nullptr,
       base::BindOnce(&MediaStreamManager::OnMediaAccessPermissionResult,
-                     weak_factory_.GetWeakPtr(),
-                     base::Passed(std::move(callback))));
+                     weak_factory_.GetWeakPtr(), std::move(callback)));
 }
 
 void MediaStreamManager::OnClientReadyToStream(JNIEnv* env,

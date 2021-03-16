@@ -4,6 +4,7 @@
 
 #include <memory>
 #include <string>
+#include <utility>
 
 #include "base/android/jni_android.h"
 #include "base/android/jni_string.h"
@@ -55,7 +56,7 @@ void JNI_TestRulesetPublisher_CreateAndPublishRulesetDisallowingSuffixForTesting
   auto* ruleset_service =
       g_browser_process->subresource_filter_ruleset_service();
   ruleset_service->SetRulesetPublishedCallbackForTesting(base::BindOnce(
-      &OnRulesetPublished, base::Passed(&creator), ruleset_service, publisher));
+      &OnRulesetPublished, std::move(creator), ruleset_service, publisher));
   ruleset_service->IndexAndStoreAndPublishRulesetIfNeeded(
       unindexed_ruleset_info);
 

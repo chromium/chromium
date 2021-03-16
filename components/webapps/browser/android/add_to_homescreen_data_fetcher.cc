@@ -136,7 +136,7 @@ AddToHomescreenDataFetcher::AddToHomescreenDataFetcher(
   auto* web_page_metadata_proxy = metadata_agent.get();
   web_page_metadata_proxy->GetWebPageMetadata(base::BindOnce(
       &AddToHomescreenDataFetcher::OnDidGetWebPageMetadata,
-      weak_ptr_factory_.GetWeakPtr(), base::Passed(&metadata_agent)));
+      weak_ptr_factory_.GetWeakPtr(), std::move(metadata_agent)));
 }
 
 AddToHomescreenDataFetcher::~AddToHomescreenDataFetcher() = default;

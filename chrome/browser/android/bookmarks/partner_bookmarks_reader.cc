@@ -4,6 +4,8 @@
 
 #include "chrome/browser/android/bookmarks/partner_bookmarks_reader.h"
 
+#include <utility>
+
 #include "base/android/jni_android.h"
 #include "base/android/jni_string.h"
 #include "base/bind.h"
@@ -267,9 +269,8 @@ void PartnerBookmarksReader::GetFaviconFromCacheOrServer(
   GetLargeIconService()->GetLargeIconRawBitmapOrFallbackStyleForPageUrl(
       page_url, kPartnerBookmarksMinimumFaviconSizePx, desired_favicon_size_px,
       base::BindOnce(&PartnerBookmarksReader::OnGetFaviconFromCacheFinished,
-                     base::Unretained(this), page_url,
-                     base::Passed(std::move(callback)), fallback_to_server,
-                     from_server, desired_favicon_size_px),
+                     base::Unretained(this), page_url, std::move(callback),
+                     fallback_to_server, from_server, desired_favicon_size_px),
       &favicon_task_tracker_);
 }
 
@@ -326,7 +327,7 @@ void PartnerBookmarksReader::OnGetFaviconFromCacheFinished(
           base::BindOnce(
               &PartnerBookmarksReader::OnGetFaviconFromServerFinished,
               base::Unretained(this), page_url, desired_favicon_size_px,
-              base::Passed(std::move(callback))));
+              std::move(callback)));
 }
 
 void PartnerBookmarksReader::OnGetFaviconFromServerFinished(

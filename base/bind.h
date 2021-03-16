@@ -70,15 +70,10 @@ inline OnceCallback<internal::MakeUnboundRunType<Functor, Args...>> BindOnce(
                      !std::is_const<std::remove_reference_t<Functor>>()),
                 "BindOnce requires non-const rvalue for OnceCallback binding."
                 " I.e.: base::BindOnce(std::move(callback)).");
-#if defined(OS_APPLE) || defined(OS_CHROMEOS) || defined(OS_FUCHSIA) || \
-    defined(OS_LINUX) || defined(OS_WIN) ||                             \
-    defined(NCTEST_BIND_ONCE_WITH_PASSED)
-  // TODO(https://crbug.com/1180750): Enable this everywhere.
   static_assert(
       conjunction<
           internal::AssertBindArgIsNotBasePassed<std::decay_t<Args>>...>::value,
       "Use std::move() instead of base::Passed() with base::BindOnce()");
-#endif
 
   return internal::BindImpl<OnceCallback>(std::forward<Functor>(functor),
                                           std::forward<Args>(args)...);

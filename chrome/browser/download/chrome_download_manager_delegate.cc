@@ -1619,7 +1619,7 @@ void ChromeDownloadManagerDelegate::CheckDownloadAllowed(
       web_contents_getter,
       base::BindOnce(&OnDownloadAcquireFileAccessPermissionDone,
                      web_contents_getter, url, request_method,
-                     std::move(request_initiator), base::Passed(&cb)));
+                     std::move(request_initiator), std::move(cb)));
 #else
   CheckCanDownload(web_contents_getter, url, request_method,
                    std::move(request_initiator),
