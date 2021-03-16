@@ -11,10 +11,6 @@ export class Earcons extends AbstractEarcons {
   constructor() {
     super();
 
-    if (localStorage['earcons'] === 'false') {
-      AbstractEarcons.enabled = false;
-    }
-
     /**
      * @type {EarconEngine}
      * @private
@@ -50,7 +46,7 @@ export class Earcons extends AbstractEarcons {
    * @override
    */
   playEarcon(earcon, opt_location) {
-    if (!AbstractEarcons.enabled) {
+    if (!this.enabled) {
       return;
     }
     if (localStorage['enableEarconLogging'] === 'true') {

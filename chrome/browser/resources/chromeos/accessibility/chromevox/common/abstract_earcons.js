@@ -103,19 +103,18 @@ AbstractEarcons = class {
   }
 
   /**
-   * Toggles earcons on or off.
-   * @return {boolean} True if earcons are now enabled; false otherwise.
+   * Whether or not earcons are enabled.
+   * @return {boolean} True if earcons are enabled.
    */
-  toggle() {
-    AbstractEarcons.enabled = !AbstractEarcons.enabled;
-    return AbstractEarcons.enabled;
+  get enabled() {
+    return localStorage['earcons'] === 'true';
+  }
+
+  /**
+   * Set whether or not earcons are enabled.
+   * @param {Boolean} value True turns on earcons, false turns off earcons.
+   */
+  set enabled(value) {
+    localStorage['earcons'] = value;
   }
 };
-
-
-/**
- * Public static flag set to enable or disable earcons. Callers should prefer
- * toggle(); however, this member is public for initialization.
- * @type {boolean}
- */
-AbstractEarcons.enabled = true;

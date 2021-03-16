@@ -168,9 +168,9 @@ CommandHandler.onCommand = function(command) {
       ChromeVoxState.isReadingContinuously = false;
       return false;
     case 'toggleEarcons': {
-      AbstractEarcons.enabled = !AbstractEarcons.enabled;
-      const announce = AbstractEarcons.enabled ? Msgs.getMsg('earcons_on') :
-                                                 Msgs.getMsg('earcons_off');
+      ChromeVox.earcons.enabled = !ChromeVox.earcons.enabled;
+      const announce = ChromeVox.earcons.enabled ? Msgs.getMsg('earcons_on') :
+                                                   Msgs.getMsg('earcons_off');
       ChromeVox.tts.speak(
           announce, QueueMode.FLUSH, AbstractTts.PERSONALITY_ANNOTATION);
     }
