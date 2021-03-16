@@ -297,9 +297,9 @@ const PHOTOS_WELCOME_COUNTER_LIMIT = 3;
    */
   setPhotosWelcomeCounter_(value) {
     this.photosWelcomeCounter_ = value;
-    chrome.storage.local.set({
-      PHOTOS_WELCOME_COUNTER_KEY: value,
-    });
+    const values = {};
+    values[PHOTOS_WELCOME_COUNTER_KEY] = value;
+    chrome.storage.local.set(values);
   }
 
   /**
