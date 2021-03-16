@@ -1060,6 +1060,7 @@ Anda boleh mengurus tetapan akaun ini dengan memasang apl Family Link pada peran
 <translation id="215753907730220065">Keluar Daripada Skrin Penuh</translation>
 <translation id="2157875535253991059">Halaman ini kini dalam skrin penuh.</translation>
 <translation id="2158475082070321257">Salin pautan kepada serlahan</translation>
+<translation id="2159488579268505102">USB-C</translation>
 <translation id="216169395504480358">Tambah Wi-Fi...</translation>
 <translation id="2162155940152307086">Penyegerakan akan bermula selepas anda meninggalkan tetapan penyegerakan</translation>
 <translation id="2162838847352058695">Sekat tapak daripada memuat turun beberapa fail secara automatik</translation>
@@ -1182,6 +1183,7 @@ Anda boleh mengurus tetapan akaun ini dengan memasang apl Family Link pada peran
 <translation id="2297705863329999812">Cari pencetak</translation>
 <translation id="2299734369537008228">Peluncur: <ph name="MIN_LABEL" /> hingga <ph name="MAX_LABEL" /></translation>
 <translation id="2299941608784654630">Sertakan semua fail log yang dikumpulkan oleh debugd sebagai arkib yang berasingan.</translation>
+<translation id="2300214399009193026">PCIe</translation>
 <translation id="2300383962156589922">Sesuaikan dan kawal <ph name="APP_NAME" /></translation>
 <translation id="2301382460326681002">Direktori akar sambungan adalah tidak sah.</translation>
 <translation id="23030561267973084">"<ph name="EXTENSION_NAME" />" telah meminta kebenaran tambahan.</translation>
@@ -2760,6 +2762,7 @@ Anda boleh mengurus tetapan akaun ini dengan memasang apl Family Link pada peran
 <translation id="404493185430269859">Enjin carian lalai</translation>
 <translation id="4046013316139505482">Sambungan ini tidak perlu melihat dan menukar maklumat di tapak ini.</translation>
 <translation id="4046123991198612571">Lagu seterusnya</translation>
+<translation id="4047581153955375979">USB4</translation>
 <translation id="4047726037116394521">Layari laman utama</translation>
 <translation id="4049783682480068824">{COUNT,plural, =1{# kenalan tidak tersedia. Untuk menggunakan Kongsi Berdekatan dengan mereka, tambahkan alamat e-mel yang dikaitkan dengan Akaun Google mereka pada kenalan anda.}other{# kenalan tidak tersedia. Untuk menggunakan Kongsi Berdekatan dengan mereka, tambahkan alamat e-mel yang dikaitkan dengan Akaun Google mereka pada kenalan anda.}}</translation>
 <translation id="4050225813016893843">Kaedah pengesahan</translation>
@@ -7210,6 +7213,7 @@ Tekan suis yang telah ditetapkan untuk membatalkan penetapan.</translation>
 <translation id="9168436347345867845">Lakukan kemudian</translation>
 <translation id="9169496697824289689">Lihat pintasan papan kekunci</translation>
 <translation id="916964310188958970">Mengapakah cadangan ini dipaparkan?</translation>
+<translation id="9170048603158555829">Thunderbolt</translation>
 <translation id="9170061643796692986">Tetapan keterlihatan semasa ialah semua kenalan</translation>
 <translation id="9170848237812810038">&amp;Buat asal</translation>
 <translation id="9170884462774788842">Program lain pada komputer anda menambah tema yang boleh mengubah cara Chrome berfungsi.</translation>

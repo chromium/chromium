@@ -1060,6 +1060,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="215753907730220065">Esci da schermo intero</translation>
 <translation id="2157875535253991059">Questa pagina ora è a schermo intero.</translation>
 <translation id="2158475082070321257">Copia link al testo evidenziato</translation>
+<translation id="2159488579268505102">USB-C</translation>
 <translation id="216169395504480358">Aggiungi Wi-Fi...</translation>
 <translation id="2162155940152307086">La sincronizzazione inizierà quando esci dalle impostazioni di sincronizzazione</translation>
 <translation id="2162838847352058695">Impedisci ai siti di scaricare automaticamente più file</translation>
@@ -1182,6 +1183,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="2297705863329999812">Cerca stampanti</translation>
 <translation id="2299734369537008228">Dispositivo di scorrimento: da <ph name="MIN_LABEL" /> a <ph name="MAX_LABEL" /></translation>
 <translation id="2299941608784654630">Includi tutti i file di log raccolti da debugd sotto forma di archivio separato.</translation>
+<translation id="2300214399009193026">PCIe</translation>
 <translation id="2300383962156589922">Personalizza e controlla <ph name="APP_NAME" /></translation>
 <translation id="2301382460326681002">Directory principale dell'estensione non valida.</translation>
 <translation id="23030561267973084">"<ph name="EXTENSION_NAME" />" ha richiesto altre autorizzazioni.</translation>
@@ -2759,6 +2761,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="404493185430269859">Motore di ricerca predefinito</translation>
 <translation id="4046013316139505482">Queste estensioni non devono vedere e modificare le informazioni su questo sito.</translation>
 <translation id="4046123991198612571">Traccia successiva</translation>
+<translation id="4047581153955375979">USB4</translation>
 <translation id="4047726037116394521">Vai alla Home page</translation>
 <translation id="4049783682480068824">{COUNT,plural, =1{# contatto non disponibile. Per usare la funzionalità Condivisione nelle vicinanze con questa persona, aggiungi ai tuoi contatti l'indirizzo email associato al suo Account Google.}other{# contatti non disponibili. Per usare la funzionalità Condivisione nelle vicinanze con queste persone, aggiungi ai tuoi contatti gli indirizzi email associati ai loro Account Google.}}</translation>
 <translation id="4050225813016893843">Metodo di autenticazione</translation>
@@ -7207,6 +7210,7 @@ Premi un sensore assegnato per rimuovere l'assegnazione.</translation>
 <translation id="9168436347345867845">Più tardi</translation>
 <translation id="9169496697824289689">Visualizza scorciatoie da tastiera</translation>
 <translation id="916964310188958970">Perché questo suggerimento?</translation>
+<translation id="9170048603158555829">Thunderbolt</translation>
 <translation id="9170061643796692986">L'attuale impostazione di visibilità è Tutti i contatti</translation>
 <translation id="9170848237812810038">&amp;Annulla</translation>
 <translation id="9170884462774788842">Un altro programma sul computer ha aggiunto un tema che potrebbe modificare il funzionamento di Chrome.</translation>

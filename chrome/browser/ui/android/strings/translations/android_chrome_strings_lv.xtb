@@ -100,7 +100,7 @@
 <translation id="1697284962337958118">Pievienot:</translation>
 <translation id="1718835860248848330">Pēdējā stunda</translation>
 <translation id="1724977129262658800">Atbloķējiet, lai rediģētu paroli</translation>
-<translation id="173522743738009831">Par Privacy Sandbox</translation>
+<translation id="173522743738009831">Par Konfidencialitātes smilškasti</translation>
 <translation id="1736419249208073774">Izpētīt</translation>
 <translation id="1749561566933687563">Sinhronizējiet grāmatzīmes</translation>
 <translation id="17513872634828108">Atvērt cilnes</translation>
@@ -354,7 +354,7 @@ Nospiediet un turiet jebkuru vārdu, lai to meklētu. Lai precizētu meklēšanu
 <translation id="3384347053049321195">Kopīgot attēlu</translation>
 <translation id="3387650086002190359">Neizdevās lejupielādēt failu <ph name="FILE_NAME" />, jo radās failu sistēmas kļūdas.</translation>
 <translation id="3389286852084373014">Teksts ir pārāk liels</translation>
-<translation id="3391512812407811893">Privacy Sandbox izmēģinājuma periodi</translation>
+<translation id="3391512812407811893">Konfidencialitātes smilškastes izmēģinājuma periodi</translation>
 <translation id="3398320232533725830">Atvērt grāmatzīmju pārvaldnieku</translation>
 <translation id="3414952576877147120">Lielums:</translation>
 <translation id="3429160811076349561">Izmēģinājuma versijas funkcijas ir izslēgtas</translation>
@@ -1070,7 +1070,7 @@ No jūsu inkognito sesijas iegūtie dati tiks dzēsti no Chrome tikai tad, kad <
 <translation id="8156139159503939589">Kādā valodā jūs lasāt?</translation>
 <translation id="8168435359814927499">Saturs</translation>
 <translation id="8186512483418048923">Atlikuši faili: <ph name="FILES" /></translation>
-<translation id="8189750580333936930">Privacy Sandbox</translation>
+<translation id="8189750580333936930">Konfidencialitātes smilškaste</translation>
 <translation id="8190358571722158785">Atlikusi 1 diena</translation>
 <translation id="8200772114523450471">Kopsavilkums</translation>
 <translation id="8209050860603202033">Atvērt attēlu</translation>

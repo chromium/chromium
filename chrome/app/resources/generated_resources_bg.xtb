@@ -1057,6 +1057,7 @@
 <translation id="215753907730220065">Изход от цял екран</translation>
 <translation id="2157875535253991059">Тази страница сега е на цял екран.</translation>
 <translation id="2158475082070321257">Копиране на връзката към откроения текст</translation>
+<translation id="2159488579268505102">USB-C</translation>
 <translation id="216169395504480358">Добавяне на Wi-Fi...</translation>
 <translation id="2162155940152307086">Синхронизирането ще започне, след като излезете от страницата с настройките му</translation>
 <translation id="2162838847352058695">Блокиране на сайтовете, така че да не изтеглят автоматично няколко файла</translation>
@@ -1179,6 +1180,7 @@
 <translation id="2297705863329999812">Търсете принтери</translation>
 <translation id="2299734369537008228">Плъзгач: от <ph name="MIN_LABEL" /> до <ph name="MAX_LABEL" /></translation>
 <translation id="2299941608784654630">Добавяне на всички регистрационни файлове от debugd в отделен архив.</translation>
+<translation id="2300214399009193026">PCIe</translation>
 <translation id="2300383962156589922">Персонализиране и управление на <ph name="APP_NAME" /></translation>
 <translation id="2301382460326681002">Основната директория на разширението е невалидна.</translation>
 <translation id="23030561267973084"><ph name="EXTENSION_NAME" /> поиска допълнителни разрешения.</translation>
@@ -2758,6 +2760,7 @@
 <translation id="404493185430269859">Основна търсеща машина</translation>
 <translation id="4046013316139505482">Тези разширения нямат нужда да виждат и променят информацията на сайта.</translation>
 <translation id="4046123991198612571">Следващ запис</translation>
+<translation id="4047581153955375979">USB4</translation>
 <translation id="4047726037116394521">Към началния екран</translation>
 <translation id="4049783682480068824">{COUNT,plural, =1{# контакт не е налице. За да използвате функцията „Споделяне в близост“ с този човек, добавете към контактите си имейл адреса, свързан с профила му в Google.}other{# контакта не са налице. За да използвате функцията „Споделяне в близост“ с тях, добавете към контактите си имейл адресите, свързани със съответните профили в Google.}}</translation>
 <translation id="4050225813016893843">Метод за удостоверяване</translation>
@@ -7208,6 +7211,7 @@
 <translation id="9168436347345867845">По-късно</translation>
 <translation id="9169496697824289689">Преглед на клавишните комбинации</translation>
 <translation id="916964310188958970">Защо виждате това предложение?</translation>
+<translation id="9170048603158555829">Thunderbolt</translation>
 <translation id="9170061643796692986">Текущата настройка за видимост е „Всички контакти“</translation>
 <translation id="9170848237812810038">&amp;Отмяна</translation>
 <translation id="9170884462774788842">Друга програма на компютъра ви добави тема, която може да промени начина на работа на Chrome.</translation>

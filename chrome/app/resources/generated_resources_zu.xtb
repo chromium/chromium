@@ -1059,6 +1059,7 @@ Ungaphatha izilungiselelo zale akhawunti ngokufaka uhlelo lokusebenza lwe-Family
 <translation id="215753907730220065">Phuma kusikrini esigcwele</translation>
 <translation id="2157875535253991059">Leli khasi manje seliyisikrini esigcwele.</translation>
 <translation id="2158475082070321257">Kopisha isixhumanisi kokokugqamisa</translation>
+<translation id="2159488579268505102">USB-C</translation>
 <translation id="216169395504480358">Engeza i-Wi-Fi...</translation>
 <translation id="2162155940152307086">Ukuvumelanisa kuzoqala uma ushiya izilungiselelo zokuvumelanisa</translation>
 <translation id="2162838847352058695">Vimbela amasayithi kusukela ekulandeni ngokuzenzakalela amafayela amaningi</translation>
@@ -1181,6 +1182,7 @@ Ungaphatha izilungiselelo zale akhawunti ngokufaka uhlelo lokusebenza lwe-Family
 <translation id="2297705863329999812">Sesha amaphrinta</translation>
 <translation id="2299734369537008228">Isilayida: <ph name="MIN_LABEL" /> ku-<ph name="MAX_LABEL" /></translation>
 <translation id="2299941608784654630">Faka wonke amafayela elogu aqoqwe ngokususa iphutha njengengobo yomlando ehlukanisiwe.</translation>
+<translation id="2300214399009193026">PCIe</translation>
 <translation id="2300383962156589922">Enza ngendlela oyifisayo uphinde ulawule i-<ph name="APP_NAME" /></translation>
 <translation id="2301382460326681002">Isandiso sempande yomkhombandlela asivumelekile.</translation>
 <translation id="23030561267973084">I-"<ph name="EXTENSION_NAME" />" icele izimvume ezingeziwe.</translation>
@@ -2758,6 +2760,7 @@ I-<ph name="DOMAIN" /> idinga ukuba ugcine ikhadi lakho elimsathi lifakiwe.</tra
 <translation id="404493185430269859">Injini yokusesha ezenzakalelayo</translation>
 <translation id="4046013316139505482">Lezi zandiso azidingi ukubona nokushintsha ulwazi kuleli sayithi.</translation>
 <translation id="4046123991198612571">Ithrekhi elandelayo</translation>
+<translation id="4047581153955375979">USB4</translation>
 <translation id="4047726037116394521">Iya ekhaya</translation>
 <translation id="4049783682480068824">{COUNT,plural, =1{othintwayo ongu-# akatholakali. Ukuze usebenzise Ukwabelana Eduze nabo, engeza ikheli le-imeyili elihlothaniswa ne-Akhawunti yabo ye-Google koxhumana nabo.}one{abathintwayo abangu-# abatholakali. Ukuze usebenzise Ukuthumela Eduze nabo, engeza amakheli e-imeyili ahlotshaniswa nama-Akhawunti abo e-Google koxhumana nabo.}other{abathintwayo abangu-# abatholakali. Ukuze usebenzise Ukuthumela Eduze nabo, engeza amakheli e-imeyili ahlotshaniswa nama-Akhawunti abo e-Google koxhumana nabo.}}</translation>
 <translation id="4050225813016893843">Indlela yokufakazela ubuqiniso</translation>
@@ -7210,6 +7213,7 @@ I-<ph name="DOMAIN" /> idinga ukuba ugcine ikhadi lakho elimsathi lifakiwe.}}</t
 <translation id="9168436347345867845">Yenza emuva kwesikhathi</translation>
 <translation id="9169496697824289689">Buka izinqamuleli zekhibhodi</translation>
 <translation id="916964310188958970">Kungani lesi siphakamiso?</translation>
+<translation id="9170048603158555829">I-Thunderbolt</translation>
 <translation id="9170061643796692986">Isethingi lamanje lokubonakala liyibo bonke abathintwayo</translation>
 <translation id="9170848237812810038">&amp;Hlehlisa</translation>
 <translation id="9170884462774788842">Olunye uhlelo kukhompyutha yakho lungeze itimu engaguquka indlela i-Chrome esebenza ngayo.</translation>

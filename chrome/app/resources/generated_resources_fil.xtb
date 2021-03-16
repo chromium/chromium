@@ -1061,6 +1061,7 @@ Puwede mong pamahalaan ang mga setting ng account na ito sa pamamagitan ng pag-i
 <translation id="215753907730220065">Umalis sa Full Screen</translation>
 <translation id="2157875535253991059">Full screen na ngayon ang pahinang ito.</translation>
 <translation id="2158475082070321257">Kopyahin ang link sa highlight</translation>
+<translation id="2159488579268505102">USB-C</translation>
 <translation id="216169395504480358">Magdagdag ng Wi-Fi...</translation>
 <translation id="2162155940152307086">Magsisimula ang pag-sync sa sandaling umalis ka sa mga setting ng pag-sync</translation>
 <translation id="2162838847352058695">I-block ang mga site sa awtomatikong pag-download ng maraming file</translation>
@@ -1183,6 +1184,7 @@ Puwede mong pamahalaan ang mga setting ng account na ito sa pamamagitan ng pag-i
 <translation id="2297705863329999812">Maghanap ng mga printer</translation>
 <translation id="2299734369537008228">Slider: <ph name="MIN_LABEL" /> hanggang <ph name="MAX_LABEL" /></translation>
 <translation id="2299941608784654630">Isama ang lahat ng nakolektang log file ng debugd bilang hiwalay na archive.</translation>
+<translation id="2300214399009193026">PCIe</translation>
 <translation id="2300383962156589922">I-customize at kontrolin ang <ph name="APP_NAME" /></translation>
 <translation id="2301382460326681002">Hindi wasto ang pinagmulang direktoryo ng extension.</translation>
 <translation id="23030561267973084">Humiling ng karagdagang mga pahintulot ang "<ph name="EXTENSION_NAME" />."</translation>
@@ -2761,6 +2763,7 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="404493185430269859">Default na search engine</translation>
 <translation id="4046013316139505482">Hindi kailangang makita at baguhin ng mga extension na ito ang impormasyon sa site na ito.</translation>
 <translation id="4046123991198612571">Susunod na track</translation>
+<translation id="4047581153955375979">USB4</translation>
 <translation id="4047726037116394521">Pumunta sa home</translation>
 <translation id="4049783682480068824">{COUNT,plural, =1{# contact ang hindi available. Para magamit ang Nearby Share kasama niya, idagdag sa iyong mga contact ang email address na nauugnay sa kanyang Google Account.}one{# contact ang hindi available. Para magamit ang Nearby Share kasama nila, idagdag sa iyong mga contact ang mga email address na nauugnay sa kanilang mga Google Account.}other{# na contact ang hindi available. Para magamit ang Nearby Share kasama nila, idagdag sa iyong mga contact ang mga email address na nauugnay sa kanilang mga Google Account.}}</translation>
 <translation id="4050225813016893843">Paraan ng pag-authenticate</translation>
@@ -7213,6 +7216,7 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="9168436347345867845">Gawin ito sa ibang pagkakataon</translation>
 <translation id="9169496697824289689">Tingnan ang mga keyboard shortcut</translation>
 <translation id="916964310188958970">Bakit ang suhestyong ito?</translation>
+<translation id="9170048603158555829">Thunderbolt</translation>
 <translation id="9170061643796692986">Ang kasalukuyang setting ng visibility ay lahat ng contact</translation>
 <translation id="9170848237812810038">&amp;I-undo</translation>
 <translation id="9170884462774788842">Ang isa pang program sa iyong computer ay nagdagdag ng tema na maaaring magpabago sa paraan ng paggana ng Chrome.</translation>

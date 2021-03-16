@@ -1060,6 +1060,7 @@ Jy kan hierdie rekening se instellings bestuur deur die Family Link-program op j
 <translation id="215753907730220065">Gaan by Volskerm uit</translation>
 <translation id="2157875535253991059">Hierdie bladsy is nou volskerm.</translation>
 <translation id="2158475082070321257">Kopieer skakel na hoogtepunt</translation>
+<translation id="2159488579268505102">USB-C</translation>
 <translation id="216169395504480358">Voeg Wi-Fi by …</translation>
 <translation id="2162155940152307086">Sinkronisering sal begin sodra jy sinkroniseringinstellings verlaat</translation>
 <translation id="2162838847352058695">Keer dat werwe outomaties veelvuldige lêers aflaai</translation>
@@ -1182,6 +1183,7 @@ Jy kan hierdie rekening se instellings bestuur deur die Family Link-program op j
 <translation id="2297705863329999812">Soek drukkers</translation>
 <translation id="2299734369537008228">Glyer: <ph name="MIN_LABEL" /> tot <ph name="MAX_LABEL" /></translation>
 <translation id="2299941608784654630">Sluit alle loglêers wat deur debugd ingesamel is as 'n afsonderlike argief in.</translation>
+<translation id="2300214399009193026">PCIe</translation>
 <translation id="2300383962156589922">Pasmaak en beheer <ph name="APP_NAME" /></translation>
 <translation id="2301382460326681002">Uitbreidingkerngids is ongeldig.</translation>
 <translation id="23030561267973084">"<ph name="EXTENSION_NAME" />" het bykomende toestemmings versoek.</translation>
@@ -2760,6 +2762,7 @@ Jy kan hierdie rekening se instellings bestuur deur die Family Link-program op j
 <translation id="404493185430269859">Versteksoekenjin</translation>
 <translation id="4046013316139505482">Hierdie uitbreidings hoef nie inligting op hierdie werf te sien en te verander nie.</translation>
 <translation id="4046123991198612571">Volgende snit</translation>
+<translation id="4047581153955375979">USB4</translation>
 <translation id="4047726037116394521">Gaan tuisblad toe</translation>
 <translation id="4049783682480068824">{COUNT,plural, =1{# kontak is nie beskikbaar nie. Om Nabydeling met hulle te gebruik, moet jy die e-posadres wat met hul Google-rekening geassosieer word, by jou kontakte voeg.}other{# kontakte is nie beskikbaar nie. Om Nabydeling met hulle te gebruik, moet jy die e-posadresse wat met hul Google-rekeninge geassosieer word, by jou kontakte voeg.}}</translation>
 <translation id="4050225813016893843">Stawingmetode</translation>
@@ -7209,6 +7212,7 @@ Druk 'n toegewysde skakelaar om toewysing te verwyder.</translation>
 <translation id="9168436347345867845">Doen dit later</translation>
 <translation id="9169496697824289689">Bekyk sleutelbordkortpaaie</translation>
 <translation id="916964310188958970">Hoekom hierdie voorstel?</translation>
+<translation id="9170048603158555829">Thunderbolt</translation>
 <translation id="9170061643796692986">Huidige sigbaarheidinstelling is alle kontakte</translation>
 <translation id="9170848237812810038">Ontdoen</translation>
 <translation id="9170884462774788842">'n Ander program op jou rekenaar het 'n tema bygevoeg wat Chrome se werkwyse kan verander.</translation>

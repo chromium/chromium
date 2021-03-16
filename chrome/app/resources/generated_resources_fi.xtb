@@ -1060,6 +1060,7 @@ Voit ylläpitää tilin asetuksia asentamalla laitteellesi Family Link ‑sovell
 <translation id="215753907730220065">Poistu koko näytön tilasta</translation>
 <translation id="2157875535253991059">Tämä sivu on nyt koko näytöllä.</translation>
 <translation id="2158475082070321257">Kopioi linkki korostukseen</translation>
+<translation id="2159488579268505102">USB-C</translation>
 <translation id="216169395504480358">Lisää Wi-Fi-yhteys...</translation>
 <translation id="2162155940152307086">Synkronointi alkaa, kun poistut synkronointiasetuksista</translation>
 <translation id="2162838847352058695">Estä sivustoja lataamasta useita tiedostoja automaattisesti</translation>
@@ -1182,6 +1183,7 @@ Voit ylläpitää tilin asetuksia asentamalla laitteellesi Family Link ‑sovell
 <translation id="2297705863329999812">Hae tulostimia</translation>
 <translation id="2299734369537008228">Liukusäädin: <ph name="MIN_LABEL" />–<ph name="MAX_LABEL" /></translation>
 <translation id="2299941608784654630">Sisällytä kaikki debugd-palvelun keräämät lokitiedostot erillisenä arkistona.</translation>
+<translation id="2300214399009193026">PCIe</translation>
 <translation id="2300383962156589922">Muokkaus ja hallinta: <ph name="APP_NAME" /></translation>
 <translation id="2301382460326681002">Laajennuksen juurihakemisto on virheellinen.</translation>
 <translation id="23030561267973084"><ph name="EXTENSION_NAME" /> on pyytänyt lisäoikeuksia.</translation>
@@ -2757,6 +2759,7 @@ Voit ylläpitää tilin asetuksia asentamalla laitteellesi Family Link ‑sovell
 <translation id="404493185430269859">Oletushakukone</translation>
 <translation id="4046013316139505482">Näiden laajennusten ei tarvitse nähdä tai muokata sivuston tietoja.</translation>
 <translation id="4046123991198612571">Seuraava kappale</translation>
+<translation id="4047581153955375979">USB4</translation>
 <translation id="4047726037116394521">Aloitusnäytölle</translation>
 <translation id="4049783682480068824">{COUNT,plural, =1{# kontakti ei ole saatavilla. Jos haluat käyttää lähijakamista hänen kanssaan, lisää hänen Google-tiliinsä liittyvä sähköpostiosoite yhteystietoihisi.}other{# kontaktia ei ole saatavilla. Jos haluat käyttää lähijakamista heidän kanssaan, lisää heidän Google-tileihinsä liittyvät sähköpostiosoitteet yhteystietoihisi.}}</translation>
 <translation id="4050225813016893843">Todennustapa</translation>
@@ -7205,6 +7208,7 @@ Paina määritettyä kytkintä, niin poistat sen määrityksen.</translation>
 <translation id="9168436347345867845">Myöhemmin</translation>
 <translation id="9169496697824289689">Näytä pikanäppäimet</translation>
 <translation id="916964310188958970">Miksi ehdotus näytetään?</translation>
+<translation id="9170048603158555829">Thunderbolt</translation>
 <translation id="9170061643796692986">Näkyvyysasetus on kaikki yhteystiedot</translation>
 <translation id="9170848237812810038">K&amp;umoa</translation>
 <translation id="9170884462774788842">Toinen tietokoneellasi oleva ohjelma lisäsi teeman, joka voi muuttaa Chromen toimintaa.</translation>

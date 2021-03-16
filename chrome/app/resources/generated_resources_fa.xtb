@@ -1058,6 +1058,7 @@
 <translation id="215753907730220065">خروج از حالت تمام صفحه</translation>
 <translation id="2157875535253991059">این صفحه اکنون در حالت تمام صفحه است.</translation>
 <translation id="2158475082070321257">کپی کردن پیوند به مورد برجسته</translation>
+<translation id="2159488579268505102">USB-C</translation>
 <translation id="216169395504480358">‏افزودن Wi-Fi…</translation>
 <translation id="2162155940152307086">از صفحه تنظیمات همگام‌سازی که خارج شوید، همگام‌سازی شروع می‌شود</translation>
 <translation id="2162838847352058695">سایت‌ها نمی‌توانند چندین فایل را هم‌زمان بارگیری کنند</translation>
@@ -1180,6 +1181,7 @@
 <translation id="2297705863329999812">جستجوی چاپگرها</translation>
 <translation id="2299734369537008228">لغزنده: <ph name="MIN_LABEL" /> تا <ph name="MAX_LABEL" /></translation>
 <translation id="2299941608784654630">‏همه فایل‌های گزارش جمع‌آوری‌شده توسط debugd به‌عنوان بایگانی جداگانه‌ای اضافه شود.</translation>
+<translation id="2300214399009193026">PCIe</translation>
 <translation id="2300383962156589922">سفارشی ساختن و کنترل <ph name="APP_NAME" /></translation>
 <translation id="2301382460326681002">دایرکتوری ریشه برنامهٔ افزودنی نامعتبر است.</translation>
 <translation id="23030561267973084">«<ph name="EXTENSION_NAME" />» اجازه‌های تکمیلی درخواست کرده است.</translation>
@@ -2758,6 +2760,7 @@
 <translation id="404493185430269859">موتور جستجوی پیش‌‌فرض</translation>
 <translation id="4046013316139505482">این افزونه‌ها نیازی به مشاهده و تغییر اطلاعات در این سایت ندارند.</translation>
 <translation id="4046123991198612571">آهنگ بعدی</translation>
+<translation id="4047581153955375979">USB4</translation>
 <translation id="4047726037116394521">رفتن به صفحه اصلی</translation>
 <translation id="4049783682480068824">{COUNT,plural, =1{‏# مخاطب دردسترس نیست. برای استفاده از «هم‌رسانی با اطراف» با این مخاطب، نشانی ایمیل مرتبط با «حساب Google» او را به مخاطبین خود اضافه کنید.}one{‏# مخاطب دردسترس نیست. برای استفاده از «هم‌رسانی با اطراف» با این مخاطب، نشانی ایمیل مرتبط با «حساب Google» او را به مخاطبین خود اضافه کنید.}other{‏# مخاطب دردسترس نیستند. برای استفاده از «هم‌رسانی با اطراف» با این مخاطبین، نشانی‌های ایمیل مرتبط با «حساب‌های Google» آن‌ها را به مخاطبین خود اضافه کنید.}}</translation>
 <translation id="4050225813016893843">روش اصالت‌سنجی</translation>
@@ -7208,6 +7211,7 @@
 <translation id="9168436347345867845">بعداً انجام شود</translation>
 <translation id="9169496697824289689">مشاهده میان‌برهای صفحه‌کلید</translation>
 <translation id="916964310188958970">چرا این پیشنهاد؟</translation>
+<translation id="9170048603158555829">Thunderbolt</translation>
 <translation id="9170061643796692986">تنظیم نمایان بودن کنونی «همه مخاطبین» است</translation>
 <translation id="9170848237812810038">&amp;واگرد</translation>
 <translation id="9170884462774788842">‏برنامه‌ای دیگر بر روی رایانه شما یک طرح زمینه را اضافه کرده است که ممکن است نحوه کارکرد Chrome را تغییر دهد.</translation>

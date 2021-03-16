@@ -1060,6 +1060,7 @@
 <translation id="215753907730220065">전체화면 종료</translation>
 <translation id="2157875535253991059">페이지가 현재 전체화면으로 전환되었습니다.</translation>
 <translation id="2158475082070321257">하이라이트 링크 복사</translation>
+<translation id="2159488579268505102">USB-C</translation>
 <translation id="216169395504480358">Wi-Fi 추가</translation>
 <translation id="2162155940152307086">동기화 설정을 종료하면 동기화가 시작됩니다.</translation>
 <translation id="2162838847352058695">사이트에서 여러 파일을 자동으로 다운로드하지 못하도록 차단</translation>
@@ -1182,6 +1183,7 @@
 <translation id="2297705863329999812">프린터 검색</translation>
 <translation id="2299734369537008228">슬라이더: <ph name="MIN_LABEL" />~<ph name="MAX_LABEL" /></translation>
 <translation id="2299941608784654630">debugd로 수집된 모든 로그 파일을 별도의 보관 파일로 포함합니다.</translation>
+<translation id="2300214399009193026">PCIe</translation>
 <translation id="2300383962156589922"><ph name="APP_NAME" /> 맞춤설정 및 제어</translation>
 <translation id="2301382460326681002">확장 프로그램 루트 디렉터리가 잘못되었습니다.</translation>
 <translation id="23030561267973084">'<ph name="EXTENSION_NAME" />'이(가) 추가 승인을 요청했습니다.</translation>
@@ -2760,6 +2762,7 @@
 <translation id="404493185430269859">기본 검색엔진</translation>
 <translation id="4046013316139505482">이 사이트의 정보를 확인하고 변경할 필요가 없는 확장 프로그램입니다.</translation>
 <translation id="4046123991198612571">다음 트랙</translation>
+<translation id="4047581153955375979">USB4</translation>
 <translation id="4047726037116394521">홈으로 이동</translation>
 <translation id="4049783682480068824">{COUNT,plural, =1{연락처 #개를 사용할 수 없습니다. 연락처와 Nearby Share를 사용하려면 상대방의 Google 계정과 연결된 이메일 주소를 연락처에 추가하세요.}other{연락처 #개를 사용할 수 없습니다. 연락처와 Nearby Share를 사용하려면 상대방의 Google 계정과 연결된 이메일 주소를 연락처에 추가하세요.}}</translation>
 <translation id="4050225813016893843">인증 방법</translation>
@@ -6463,7 +6466,7 @@
 <translation id="8327039559959785305">Linux 파일을 마운트하는 중에 오류가 발생했습니다. 다시 시도해 보세요.</translation>
 <translation id="8327676037044516220">권한 및 콘텐츠 설정</translation>
 <translation id="833256022891467078">Crostini 공유 폴더</translation>
-<translation id="8335587457941836791">임시보관함에서 고정 해제</translation>
+<translation id="8335587457941836791">실행기에서 고정 해제</translation>
 <translation id="8336407002559723354"><ph name="MONTH_AND_YEAR" />에 업데이트 종료</translation>
 <translation id="8336721153892716270"><ph name="LANGUAGE" />로 시스템 텍스트를 표시하려면 기기 다시 시작하기</translation>
 <translation id="8336739000755212683">기기 계정 이미지 변경</translation>
@@ -7207,6 +7210,7 @@
 <translation id="9168436347345867845">나중에</translation>
 <translation id="9169496697824289689">단축키 보기</translation>
 <translation id="916964310188958970">이러한 추천이 표시된 이유는 무엇인가요?</translation>
+<translation id="9170048603158555829">Thunderbolt</translation>
 <translation id="9170061643796692986">현재 공개 범위가 모든 연락처로 설정되어 있음</translation>
 <translation id="9170848237812810038">실행 취소(&amp;U)</translation>
 <translation id="9170884462774788842">컴퓨터의 다른 프로그램에서 Chrome 작동에 영향을 줄 수 있는 테마를 추가했습니다.</translation>

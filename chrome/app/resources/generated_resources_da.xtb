@@ -1061,6 +1061,7 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
 <translation id="215753907730220065">Afslut fuld skærm</translation>
 <translation id="2157875535253991059">Denne side er nu i fuld skærm.</translation>
 <translation id="2158475082070321257">Kopiér link til fremhævning</translation>
+<translation id="2159488579268505102">USB-C</translation>
 <translation id="216169395504480358">Tilføj Wi-Fi...</translation>
 <translation id="2162155940152307086">Synkroniseringen starter, når du forlader indstillingerne for synkronisering</translation>
 <translation id="2162838847352058695">Bloker websites, så de ikke kan downloade flere filer automatisk</translation>
@@ -1183,6 +1184,7 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
 <translation id="2297705863329999812">Søg efter printere</translation>
 <translation id="2299734369537008228">Skyder: <ph name="MIN_LABEL" /> til <ph name="MAX_LABEL" /></translation>
 <translation id="2299941608784654630">Medtag alle logfiler, der indsamles af debugd, som adskilt arkiv.</translation>
+<translation id="2300214399009193026">PCIe</translation>
 <translation id="2300383962156589922">Tilpas og administrer <ph name="APP_NAME" /></translation>
 <translation id="2301382460326681002">Udvidelsens rodmappe er ugyldig.</translation>
 <translation id="23030561267973084">"<ph name="EXTENSION_NAME" />" har anmodet om yderligere tilladelser.</translation>
@@ -2761,6 +2763,7 @@ Vil du starte <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="404493185430269859">Standardsøgemaskine</translation>
 <translation id="4046013316139505482">Disse udvidelser kan ikke se og ændre oplysninger på dette website.</translation>
 <translation id="4046123991198612571">Næste nummer</translation>
+<translation id="4047581153955375979">USB4</translation>
 <translation id="4047726037116394521">Gå til startsiden</translation>
 <translation id="4049783682480068824">{COUNT,plural, =1{# kontakt er ikke tilgængelig. Hvis du vil bruge "Deling tæt på" med denne kontakt, skal du føje den mailadresse, der er tilknyttet vedkommendes Google-konto, til dine kontakter.}one{# kontakt er ikke tilgængelig. Hvis du vil bruge "Deling tæt på" med denne kontakt, skal du føje den mailadresse, der er tilknyttet vedkommendes Google-konto, til dine kontakter.}other{# kontakter er ikke tilgængelige. Hvis du vil bruge "Deling tæt på" med disse kontakter, skal du føje de mailadresser, der er tilknyttet deres Google-konti, til dine kontakter.}}</translation>
 <translation id="4050225813016893843">Godkendelsesmetode</translation>
@@ -7211,6 +7214,7 @@ Tryk på en kontakt, der er tildelt en handling, for at fjerne tildelingen.</tra
 <translation id="9168436347345867845">Gør det senere</translation>
 <translation id="9169496697824289689">Se tastaturgenveje</translation>
 <translation id="916964310188958970">Hvorfor vises dette forslag?</translation>
+<translation id="9170048603158555829">Thunderbolt</translation>
 <translation id="9170061643796692986">Den aktuelle indstilling for synlighed er Alle kontakter</translation>
 <translation id="9170848237812810038">&amp;Fortryd</translation>
 <translation id="9170884462774788842">Et andet program på din computer tilføjede et tema, der kan ændre den måde, hvorpå Chrome fungerer.</translation>

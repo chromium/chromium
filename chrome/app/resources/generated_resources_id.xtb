@@ -1060,6 +1060,7 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="215753907730220065">Keluar dari Tampilan Layar Penuh</translation>
 <translation id="2157875535253991059">Sekarang halaman ini dalam mode layar penuh.</translation>
 <translation id="2158475082070321257">Salin link ke sorotan</translation>
+<translation id="2159488579268505102">USB-C</translation>
 <translation id="216169395504480358">Tambahkan Wi-Fi...</translation>
 <translation id="2162155940152307086">Sinkronisasi akan dimulai setelah Anda meninggalkan setelan sinkronisasi</translation>
 <translation id="2162838847352058695">Blokir situs agar tidak otomatis mendownload beberapa file</translation>
@@ -1182,6 +1183,7 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="2297705863329999812">Telusuri printer</translation>
 <translation id="2299734369537008228">Penggeser: <ph name="MIN_LABEL" /> hingga <ph name="MAX_LABEL" /></translation>
 <translation id="2299941608784654630">Sertakan semua file log yang dikumpulkan oleh debugd sebagai arsip terpisah.</translation>
+<translation id="2300214399009193026">PCIe</translation>
 <translation id="2300383962156589922">Sesuaikan dan kontrol <ph name="APP_NAME" /></translation>
 <translation id="2301382460326681002">Direktori akar ekstensi tidak valid.</translation>
 <translation id="23030561267973084">"<ph name="EXTENSION_NAME" />" telah meminta izin tambahan.</translation>
@@ -2760,6 +2762,7 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="404493185430269859">Mesin telusur default</translation>
 <translation id="4046013316139505482">Ekstensi ini tidak perlu melihat dan mengubah informasi pada situs ini.</translation>
 <translation id="4046123991198612571">Lagu berikutnya</translation>
+<translation id="4047581153955375979">USB4</translation>
 <translation id="4047726037116394521">Kembali ke beranda</translation>
 <translation id="4049783682480068824">{COUNT,plural, =1{# kontak tidak tersedia. Untuk menggunakan fitur Berbagi Langsung dengan kontak tersebut, tambahkan alamat email yang terkait dengan Akun Google mereka ke kontak Anda.}other{# kontak tidak tersedia. Untuk menggunakan fitur Berbagi Langsung dengan kontak tersebut, tambahkan alamat email yang terkait dengan Akun Google mereka ke kontak Anda.}}</translation>
 <translation id="4050225813016893843">Metode autentikasi</translation>
@@ -7209,6 +7212,7 @@ Tekan kunci tombol akses yang telah ditetapkan untuk menghapus penetapan.</trans
 <translation id="9168436347345867845">Nanti saja</translation>
 <translation id="9169496697824289689">Lihat pintasan keyboard</translation>
 <translation id="916964310188958970">Mengapa saran ini muncul?</translation>
+<translation id="9170048603158555829">Thunderbolt</translation>
 <translation id="9170061643796692986">Visibilitas saat ini disetel ke semua kontak</translation>
 <translation id="9170848237812810038">&amp;Urung</translation>
 <translation id="9170884462774788842">Program lain di komputer Anda menambahkan tema yang dapat mengubah cara kerja Chrome.</translation>

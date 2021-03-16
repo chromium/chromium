@@ -1060,6 +1060,7 @@ Pode gerir as definições desta conta ao instalar a aplicação Family Link no 
 <translation id="215753907730220065">Sair do modo de ecrã inteiro</translation>
 <translation id="2157875535253991059">Esta página está agora em ecrã inteiro.</translation>
 <translation id="2158475082070321257">Copiar link para realçar</translation>
+<translation id="2159488579268505102">USB-C</translation>
 <translation id="216169395504480358">Adicionar Wi-Fi...</translation>
 <translation id="2162155940152307086">A sincronização é iniciada depois de sair das definições de sincronização.</translation>
 <translation id="2162838847352058695">Impedir que os sites transfiram automaticamente vários ficheiros</translation>
@@ -1182,6 +1183,7 @@ Pode gerir as definições desta conta ao instalar a aplicação Family Link no 
 <translation id="2297705863329999812">Pesquisar impressoras</translation>
 <translation id="2299734369537008228">Controlo de deslize: de <ph name="MIN_LABEL" /> a <ph name="MAX_LABEL" /></translation>
 <translation id="2299941608784654630">Inclua todos os ficheiros de registo recolhidos por debugd como um arquivo separado.</translation>
+<translation id="2300214399009193026">PCIe</translation>
 <translation id="2300383962156589922">Personalizar e controlar a aplicação <ph name="APP_NAME" /></translation>
 <translation id="2301382460326681002">O directório de raiz da extensão é inválido.</translation>
 <translation id="23030561267973084">"<ph name="EXTENSION_NAME" />" solicitou permissões adicionais.</translation>
@@ -2760,6 +2762,7 @@ Pretende pará-lo?</translation>
 <translation id="404493185430269859">Motor de pesquisa predefinido</translation>
 <translation id="4046013316139505482">Estas extensões não precisam de ver nem de alterar informações neste site.</translation>
 <translation id="4046123991198612571">Faixa seguinte</translation>
+<translation id="4047581153955375979">USB4</translation>
 <translation id="4047726037116394521">Ir para a página inicial</translation>
 <translation id="4049783682480068824">{COUNT,plural, =1{# contacto não está disponível. Para utilizar a funcionalidade Partilhar na proximidade com o mesmo, adicione o endereço de email associado à respetiva Conta Google aos seus contactos.}other{# contactos não estão disponíveis. Para utilizar a funcionalidade Partilhar na proximidade com o mesmo, adicione os endereços de email associados às respetivas Contas Google aos seus contactos.}}</translation>
 <translation id="4050225813016893843">Método de autenticação</translation>
@@ -7209,6 +7212,7 @@ Prima um comutador atribuído para remover a atribuição.</translation>
 <translation id="9168436347345867845">Fazer isto mais tarde</translation>
 <translation id="9169496697824289689">Ver atalhos de teclado</translation>
 <translation id="916964310188958970">Porquê esta sugestão?</translation>
+<translation id="9170048603158555829">Thunderbolt</translation>
 <translation id="9170061643796692986">A definição de visibilidade atual é Todos os contactos.</translation>
 <translation id="9170848237812810038">An&amp;ular</translation>
 <translation id="9170884462774788842">Outro programa do computador adicionou um tema que pode alterar o funcionamento do Chrome.</translation>

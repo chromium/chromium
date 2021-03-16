@@ -1061,6 +1061,7 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="215753907730220065">Sair do modo tela cheia</translation>
 <translation id="2157875535253991059">Esta página está no modo de tela inteira.</translation>
 <translation id="2158475082070321257">Copiar link para o conteúdo destacado</translation>
+<translation id="2159488579268505102">USB-C</translation>
 <translation id="216169395504480358">Adicionar Wi-Fi...</translation>
 <translation id="2162155940152307086">A sincronização será iniciada assim que você sair das configurações</translation>
 <translation id="2162838847352058695">Impedir que sites façam o download automático de vários arquivos</translation>
@@ -1183,6 +1184,7 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="2297705863329999812">Pesquisar impressoras</translation>
 <translation id="2299734369537008228">Controle deslizante: <ph name="MIN_LABEL" /> a <ph name="MAX_LABEL" /></translation>
 <translation id="2299941608784654630">Incluir todos os arquivos de registros coletados por debugd como um arquivo separado.</translation>
+<translation id="2300214399009193026">PCIe</translation>
 <translation id="2300383962156589922">Personalizar e controlar o app <ph name="APP_NAME" /></translation>
 <translation id="2301382460326681002">O diretório raiz da extensão é inválido.</translation>
 <translation id="23030561267973084">A extensão "<ph name="EXTENSION_NAME" />" solicitou permissões adicionais.</translation>
@@ -2762,6 +2764,7 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="404493185430269859">Mecanismo de pesquisa padrão</translation>
 <translation id="4046013316139505482">Estas extensões não precisam ver e mudar as informações neste site.</translation>
 <translation id="4046123991198612571">Próxima faixa</translation>
+<translation id="4047581153955375979">USB4</translation>
 <translation id="4047726037116394521">Ir para página inicial</translation>
 <translation id="4049783682480068824">{COUNT,plural, =1{# contato não está disponível. Para usar o "Compartilhar por proximidade" com esse contato, adicione o endereço de e-mail associado à Conta do Google dele.}one{# contato não está disponível. Para usar o "Compartilhar por proximidade" com esse contato, adicione o endereço de e-mail associado à Conta do Google dele.}other{# contatos não estão disponíveis. Para usar o "Compartilhar por proximidade" com esses contatos, adicione os endereços de e-mail associados à Conta do Google deles.}}</translation>
 <translation id="4050225813016893843">Método de autenticação</translation>
@@ -7213,6 +7216,7 @@ Pressione um interruptor atribuído para remover a atribuição.</translation>
 <translation id="9168436347345867845">Mais tarde</translation>
 <translation id="9169496697824289689">Ver atalhos de teclado</translation>
 <translation id="916964310188958970">Por que essa sugestão?</translation>
+<translation id="9170048603158555829">Thunderbolt</translation>
 <translation id="9170061643796692986">A configuração de visibilidade atual é: todos os contatos</translation>
 <translation id="9170848237812810038">&amp;Desfazer</translation>
 <translation id="9170884462774788842">Outro programa em seu computador adicionou um tema que pode mudar a forma como o Google Chrome funciona.</translation>

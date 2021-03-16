@@ -1059,6 +1059,7 @@ Instala a aplicación Family Link no teu dispositivo e poderás xestionar a conf
 <translation id="215753907730220065">Saír do modo de pantalla completa</translation>
 <translation id="2157875535253991059">Esta páxina está agora en pantalla completa.</translation>
 <translation id="2158475082070321257">Copiar ligazón ao texto destacado</translation>
+<translation id="2159488579268505102">USB-C</translation>
 <translation id="216169395504480358">Engadir wifi...</translation>
 <translation id="2162155940152307086">A sincronización comezará cando saias da configuración desta función</translation>
 <translation id="2162838847352058695">Impedir que os sitios descarguen automaticamente varios ficheiros</translation>
@@ -1181,6 +1182,7 @@ Instala a aplicación Family Link no teu dispositivo e poderás xestionar a conf
 <translation id="2297705863329999812">Buscar impresoras</translation>
 <translation id="2299734369537008228">Control desprazable: de <ph name="MIN_LABEL" /> a <ph name="MAX_LABEL" /></translation>
 <translation id="2299941608784654630">Incluír todos os ficheiros de rexistro obtidos por debugd como un arquivo independente.</translation>
+<translation id="2300214399009193026">PCIe</translation>
 <translation id="2300383962156589922">Personaliza e controla <ph name="APP_NAME" /></translation>
 <translation id="2301382460326681002">O directorio raíz da extensión non é válido.</translation>
 <translation id="23030561267973084">"<ph name="EXTENSION_NAME" />" solicitou permisos adicionais.</translation>
@@ -2759,6 +2761,7 @@ Instala a aplicación Family Link no teu dispositivo e poderás xestionar a conf
 <translation id="404493185430269859">Motor de busca predeterminado</translation>
 <translation id="4046013316139505482">Estas extensións non necesitan ver nin cambiar a información deste sitio.</translation>
 <translation id="4046123991198612571">Pista seguinte</translation>
+<translation id="4047581153955375979">USB4</translation>
 <translation id="4047726037116394521">Ir á páxina de inicio</translation>
 <translation id="4049783682480068824">{COUNT,plural, =1{# contacto non está dispoñible. Para utilizar con el a función Compartir por Nearby, engade aos teus contactos os enderezos de correo electrónico asociados á súa Conta de Google.}other{# contactos non están dispoñibles. Para utilizar con eles a función Compartir por Nearby, engádelles os enderezos de correo electrónico asociados ás súas Contas de Google.}}</translation>
 <translation id="4050225813016893843">Método de autenticación</translation>
@@ -7207,6 +7210,7 @@ Preme un que xa estea asignado se queres quitarlle a asignación.</translation>
 <translation id="9168436347345867845">Configurar máis tarde</translation>
 <translation id="9169496697824289689">Ver atallos de teclado</translation>
 <translation id="916964310188958970">Por que ves esta suxestión?</translation>
+<translation id="9170048603158555829">Thunderbolt</translation>
 <translation id="9170061643796692986">Visibilidade actual configurada como Todos os contactos</translation>
 <translation id="9170848237812810038">&amp;Desfacer</translation>
 <translation id="9170884462774788842">Outro programa do teu ordenador engadiu un tema que pode cambiar o funcionamento de Chrome.</translation>

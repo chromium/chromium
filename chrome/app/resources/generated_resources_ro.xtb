@@ -1061,6 +1061,7 @@ Poți gestiona setările contului dacă instalezi aplicația Family Link pe disp
 <translation id="215753907730220065">Ieși din ecranul complet</translation>
 <translation id="2157875535253991059">Acum această pagină este în modul ecran complet.</translation>
 <translation id="2158475082070321257">Copiază linkul spre evidențiere</translation>
+<translation id="2159488579268505102">USB-C</translation>
 <translation id="216169395504480358">Adăugați o rețea Wi-Fi...</translation>
 <translation id="2162155940152307086">Sincronizarea va porni după ce părăsești setările pentru sincronizare</translation>
 <translation id="2162838847352058695">Împiedică site-urile să descarce automat mai multe fișiere</translation>
@@ -1183,6 +1184,7 @@ Poți gestiona setările contului dacă instalezi aplicația Family Link pe disp
 <translation id="2297705863329999812">Caută imprimante</translation>
 <translation id="2299734369537008228">Glisor: de la <ph name="MIN_LABEL" /> la <ph name="MAX_LABEL" /></translation>
 <translation id="2299941608784654630">Include toate fișierele jurnal colectate de debugd ca arhivă separată.</translation>
+<translation id="2300214399009193026">PCIe</translation>
 <translation id="2300383962156589922">Personalizează și controlează <ph name="APP_NAME" /></translation>
 <translation id="2301382460326681002">Directorul rădăcină pentru extensie este nevalid.</translation>
 <translation id="23030561267973084">„<ph name="EXTENSION_NAME" />” a solicitat permisiuni suplimentare.</translation>
@@ -2761,6 +2763,7 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="404493185430269859">Motor de căutare prestabilit</translation>
 <translation id="4046013316139505482">Aceste extensii nu au nevoie să vadă și să modifice informații de pe site.</translation>
 <translation id="4046123991198612571">Melodia următoare</translation>
+<translation id="4047581153955375979">USB4</translation>
 <translation id="4047726037116394521">Înapoi la pagina principală</translation>
 <translation id="4049783682480068824">{COUNT,plural, =1{# persoană de contact nu este disponibilă. Pentru a folosi Nearby Share cu aceasta, adaugă în agendă adresa de e-mail asociată Contului Google respectiv.}few{# persoane de contact nu sunt disponibile. Pentru a folosi Nearby Share cu acestea, adaugă în agendă adresele de e-mail asociate Conturilor Google respective.}other{# de persoane de contact nu sunt disponibile. Pentru a folosi Nearby Share cu acestea, adaugă în agendă adresele de e-mail asociate Conturilor Google respective.}}</translation>
 <translation id="4050225813016893843">Metodă de autentificare</translation>
@@ -7211,6 +7214,7 @@ Apasă o tastă de comutare atribuită pentru a elimina atribuirea.</translation
 <translation id="9168436347345867845">Mai târziu</translation>
 <translation id="9169496697824289689">Vedeți comenzile rapide de la tastatură</translation>
 <translation id="916964310188958970">De ce se afișează această sugestie?</translation>
+<translation id="9170048603158555829">Thunderbolt</translation>
 <translation id="9170061643796692986">Setarea actuală de vizibilitate este pentru toate contactele</translation>
 <translation id="9170848237812810038">&amp;Anulează</translation>
 <translation id="9170884462774788842">Un alt program de pe computerul dvs. a adăugat o temă care poate schimba modul în care funcționează Chrome.</translation>

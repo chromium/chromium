@@ -1060,6 +1060,7 @@ Je kunt de instellingen van dit account beheren door de Family Link-app op je ap
 <translation id="215753907730220065">Volledig scherm sluiten</translation>
 <translation id="2157875535253991059">Deze pagina wordt nu op volledig scherm weergegeven.</translation>
 <translation id="2158475082070321257">Link naar markering kopiëren</translation>
+<translation id="2159488579268505102">USB-C</translation>
 <translation id="216169395504480358">Wifi toevoegen...</translation>
 <translation id="2162155940152307086">De synchronisatie wordt gestart wanneer je de synchronisatie-instellingen verlaat</translation>
 <translation id="2162838847352058695">Voorkomen dat sites automatisch meerdere bestanden downloaden</translation>
@@ -1182,6 +1183,7 @@ Je kunt de instellingen van dit account beheren door de Family Link-app op je ap
 <translation id="2297705863329999812">Printers zoeken</translation>
 <translation id="2299734369537008228">Schuifregelaar: <ph name="MIN_LABEL" /> - <ph name="MAX_LABEL" /></translation>
 <translation id="2299941608784654630">Alle logbestanden die door debugd zijn verzameld, opnemen als afzonderlijk archief.</translation>
+<translation id="2300214399009193026">PCIe</translation>
 <translation id="2300383962156589922"><ph name="APP_NAME" /> aanpassen en beheren</translation>
 <translation id="2301382460326681002">Hoofddirectory van extensie is ongeldig.</translation>
 <translation id="23030561267973084">De extensie '<ph name="EXTENSION_NAME" />' heeft gevraagd om extra rechten.</translation>
@@ -2760,6 +2762,7 @@ Je kunt de instellingen van dit account beheren door de Family Link-app op je ap
 <translation id="404493185430269859">Standaard­zoekmachine</translation>
 <translation id="4046013316139505482">Deze extensies hoeven geen informatie op deze site te bekijken en te wijzigen.</translation>
 <translation id="4046123991198612571">Volgend nummer</translation>
+<translation id="4047581153955375979">USB4</translation>
 <translation id="4047726037116394521">Naar startscherm gaan</translation>
 <translation id="4049783682480068824">{COUNT,plural, =1{# contact is niet beschikbaar. Als je 'Dichtbij delen' met deze persoon wilt gebruiken, voeg je het e-mailadres dat bij dit Google-account hoort aan je contacten toe.}other{# contacten zijn niet beschikbaar Als je 'Dichtbij delen' met ze wilt gebruiken, voeg je de e-mailadressen die bij hun Google-accounts horen aan je contacten toe.}}</translation>
 <translation id="4050225813016893843">Verificatiemethode</translation>
@@ -7209,6 +7212,7 @@ Druk op een toegewezen schakelaar om de toewijzing te verwijderen.</translation>
 <translation id="9168436347345867845">Later doen</translation>
 <translation id="9169496697824289689">Sneltoetsen bekijken</translation>
 <translation id="916964310188958970">Waarom deze suggestie?</translation>
+<translation id="9170048603158555829">Thunderbolt</translation>
 <translation id="9170061643796692986">Huidige zichtbaarheidsinstelling is 'Alle contacten'</translation>
 <translation id="9170848237812810038">&amp;Ongedaan maken</translation>
 <translation id="9170884462774788842">Een ander programma op je computer heeft een thema toegevoegd dat de manier waarop Chrome werkt kan wijzigen.</translation>

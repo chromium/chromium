@@ -1062,6 +1062,7 @@ Ak chcete spravovať nastavenia tohto účtu, nainštalujte si do zariadenia apl
 <translation id="215753907730220065">Ukončiť zobrazenie na celú obrazovku</translation>
 <translation id="2157875535253991059">Táto stránka je teraz zobrazená na celú obrazovku.</translation>
 <translation id="2158475082070321257">Kopírovať odkaz na zvýraznenie</translation>
+<translation id="2159488579268505102">USB‑C</translation>
 <translation id="216169395504480358">Pridať Wi‑Fi…</translation>
 <translation id="2162155940152307086">Synchronizácia sa spustí, keď opustíte nastavenia synchronizácie</translation>
 <translation id="2162838847352058695">Brániť webom automaticky sťahovať viacero súborov</translation>
@@ -1184,6 +1185,7 @@ Ak chcete spravovať nastavenia tohto účtu, nainštalujte si do zariadenia apl
 <translation id="2297705863329999812">Hľadať tlačiarne</translation>
 <translation id="2299734369537008228">Posúvač: <ph name="MIN_LABEL" /> až <ph name="MAX_LABEL" /></translation>
 <translation id="2299941608784654630">Zahŕňať všetky súbory denníkov zhromaždené systémovou službou debugd v podobe samostatného archívu</translation>
+<translation id="2300214399009193026">PCIe</translation>
 <translation id="2300383962156589922">Prispôsobiť a spravovať aplikáciu <ph name="APP_NAME" /></translation>
 <translation id="2301382460326681002">Koreňový adresár rozšírenia je neplatný.</translation>
 <translation id="23030561267973084">Rozšírenie <ph name="EXTENSION_NAME" /> vyžaduje ďalšie povolenia.</translation>
@@ -2761,6 +2763,7 @@ Ak chcete spravovať nastavenia tohto účtu, nainštalujte si do zariadenia apl
 <translation id="404493185430269859">Predvolený vyhľadávač</translation>
 <translation id="4046013316139505482">Tieto rozšírenia nepotrebujú zobrazovať a meniť informácie na tomto webe.</translation>
 <translation id="4046123991198612571">Ďalšia skladba</translation>
+<translation id="4047581153955375979">USB4</translation>
 <translation id="4047726037116394521">Prejsť na plochu</translation>
 <translation id="4049783682480068824">{COUNT,plural, =1{# kontakt nie je k dispozícii. Ak s ním chcete použiť zdieľanie nablízku, pridajte e‑mailovú adresu spojenú s jeho účtom Google do svojich kontaktov.}few{# kontakty nie sú k dispozícii. Ak s nimi chcete použiť zdieľanie nablízku, pridajte e‑mailové adresy spojené s ich účtami Google do svojich kontaktov.}many{# contacts are not available. Ak s nimi chcete použiť zdieľanie nablízku, pridajte e‑mailové adresy spojené s ich účtami Google do svojich kontaktov.}other{# kontaktov nie je k dispozícii. Ak s nimi chcete použiť zdieľanie nablízku, pridajte e‑mailové adresy spojené s ich účtami Google do svojich kontaktov.}}</translation>
 <translation id="4050225813016893843">Spôsob overenia</translation>
@@ -7211,6 +7214,7 @@ Existujúce pridelenie odstránite stlačením prideleného prepínača.</transl
 <translation id="9168436347345867845">Neskôr</translation>
 <translation id="9169496697824289689">Zobraziť klávesové skratky</translation>
 <translation id="916964310188958970">Prečo tento návrh?</translation>
+<translation id="9170048603158555829">Thunderbolt</translation>
 <translation id="9170061643796692986">Aktuálne nastavenie viditeľnosti je Všetky kontakty</translation>
 <translation id="9170848237812810038">&amp;Naspäť</translation>
 <translation id="9170884462774788842">Iný program v počítači pridal motív, ktorý môže zmeniť spôsob fungovania prehliadača Chrome.</translation>

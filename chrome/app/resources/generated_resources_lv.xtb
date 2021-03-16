@@ -679,7 +679,7 @@ Saskaņā ar domēna <ph name="DOMAIN" /> prasībām viedkartei ir jābūt ievie
 <translation id="1734212868489994726">Gaiši zila</translation>
 <translation id="1734230530703461088">Neizdevās ielādēt paplašinājumus noteiktajā laika ierobežojumā. Lūdzu, sazinieties ar administratoru.</translation>
 <translation id="1734824808160898225">Pārlūka <ph name="PRODUCT_NAME" /> automātiskā atjaunināšana, iespējams, nebūs pieejama.</translation>
-<translation id="173522743738009831">Par Privacy Sandbox</translation>
+<translation id="173522743738009831">Par Konfidencialitātes smilškasti</translation>
 <translation id="173628468822554835">Labi. Pēc noklusējuma jaunās vietnes, kuras apmeklējat, jums nesūtīs paziņojumus.</translation>
 <translation id="1736419249208073774">Izpētīt</translation>
 <translation id="1737968601308870607">Faila blusa</translation>
@@ -1062,6 +1062,7 @@ Varat pārvaldīt šī konta iestatījumus, savā ierīcē instalējot lietotni 
 <translation id="215753907730220065">Iziet no pilnekrāna režīma</translation>
 <translation id="2157875535253991059">Šī lapa tagad ir redzama pilnekrāna režīmā.</translation>
 <translation id="2158475082070321257">Kopēt saiti uz atzīmēto tekstu</translation>
+<translation id="2159488579268505102">USB-C</translation>
 <translation id="216169395504480358">Pievienot Wi-Fi...</translation>
 <translation id="2162155940152307086">Sinhronizācija tiks sākta, tiklīdz aizvērsiet sinhronizācijas iestatījumus.</translation>
 <translation id="2162838847352058695">Liegt vietnēm automātisku vairāku failu lejupielādi</translation>
@@ -1184,6 +1185,7 @@ Varat pārvaldīt šī konta iestatījumus, savā ierīcē instalējot lietotni 
 <translation id="2297705863329999812">Meklēt printerus</translation>
 <translation id="2299734369537008228">Slīdnis: no <ph name="MIN_LABEL" /> līdz <ph name="MAX_LABEL" /></translation>
 <translation id="2299941608784654630">Atsevišķā arhīvā iekļaut visus pakalpojuma debugd ievāktos žurnālfailus.</translation>
+<translation id="2300214399009193026">PCIe</translation>
 <translation id="2300383962156589922">Pielāgot un kontrolēt lietotni <ph name="APP_NAME" /></translation>
 <translation id="2301382460326681002">Paplašinājuma saknes direktorijs nav derīgs.</translation>
 <translation id="23030561267973084"><ph name="EXTENSION_NAME" /> pieprasīja papildu atļaujas.</translation>
@@ -2016,7 +2018,7 @@ Saskaņā ar domēna <ph name="DOMAIN" /> prasībām viedkartei ir jābūt ievie
 <translation id="3238192140106069382">Notiek savienojuma izveide un apstiprināšana</translation>
 <translation id="3239373508713281971">Lietotnei <ph name="APP_NAME" /> ir noņemts laika ierobežojums.</translation>
 <translation id="3241680850019875542">Atlasiet pakojamā paplašinājuma saknes direktoriju. Lai atjauninātu paplašinājumu, atlasiet arī privātās atslēgas failu atkārtotai izmantošanai.</translation>
-<translation id="3242905690080165035">Privacy Sandbox izstrāde joprojām tiek aktīvi turpināta, un šī tehnoloģiju kopa ir pieejama tikai noteiktos reģionos. Pagaidām vietnēs vienlaikus var tikt izmēģinātas Privacy Sandbox tehnoloģijas un turpināta pašreizējo tīmekļa tehnoloģiju (piemēram, trešās puses sīkfailu) lietošana. <ph name="BEGIN_LINK" />Uzzināt vairāk<ph name="END_LINK" /></translation>
+<translation id="3242905690080165035">Konfidencialitātes smilškastes izstrāde joprojām tiek aktīvi turpināta, un šī tehnoloģiju kopa ir pieejama tikai noteiktos reģionos. Pagaidām vietnēs vienlaikus var tikt izmēģinātas Konfidencialitātes smilškastes tehnoloģijas un turpināta pašreizējo tīmekļa tehnoloģiju (piemēram, trešās puses sīkfailu) lietošana. <ph name="BEGIN_LINK" />Uzzināt vairāk<ph name="END_LINK" /></translation>
 <translation id="3244294424315804309">Turpināt ar izslēgtu skaņu</translation>
 <translation id="3246107497225150582">{0,plural, =1{Ierīce jāatjaunina dienas laikā}zero{Ierīce jāatjaunina # dienu laikā}one{Ierīce jāatjaunina # dienas laikā}other{Ierīce jāatjaunina # dienu laikā}}</translation>
 <translation id="324849028894344899"><ph name="WINDOW_TITLE" /> — tīkla kļūda</translation>
@@ -2144,7 +2146,7 @@ Saskaņā ar domēna <ph name="DOMAIN" /> prasībām viedkartei ir jābūt ievie
 <translation id="3390013585654699824">Lietotnes informācija</translation>
 <translation id="3390741581549395454">Linux lietotnes un faili ir sekmīgi dublēti. Drīz sāksies jaunināšana.</translation>
 <translation id="3391482648489541560">failu rediģēšana</translation>
-<translation id="3391512812407811893">Privacy Sandbox izmēģinājuma periodi</translation>
+<translation id="3391512812407811893">Konfidencialitātes smilškastes izmēģinājuma periodi</translation>
 <translation id="339178315942519818">Skatiet paziņojumus no savām tērzēšanas lietotnēm savā <ph name="DEVICE_TYPE" /> ierīcē.</translation>
 <translation id="3396800784455899911">Noklikšķinot uz pogas “Piekrist un turpināt”, jūs piekrītat iepriekš aprakstītajai apstrādei šajos Google pakalpojumos.</translation>
 <translation id="3399432415385675819">Paziņojumi tiks atspējoti</translation>
@@ -2762,6 +2764,7 @@ Vai vēlaties palaist rīku <ph name="CONTROL_PANEL_APPLET_NAME" />?</translatio
 <translation id="404493185430269859">Noklusējuma meklētājprogramma</translation>
 <translation id="4046013316139505482">Šiem paplašinājumiem nav nepieciešams skatīt un mainīt informāciju šajā vietnē.</translation>
 <translation id="4046123991198612571">Nākamais ieraksts</translation>
+<translation id="4047581153955375979">USB4</translation>
 <translation id="4047726037116394521">Doties uz sākuma ekrānu</translation>
 <translation id="4049783682480068824">{COUNT,plural, =1{# kontaktpersona nav pieejama. Lai veiktu kopīgošanu tuvumā ar šo kontaktpersonu, pievienojiet kontaktpersonu sarakstam šīs personas e-pasta adresi, kas saistīta ar tās Google kontu.}zero{# kontaktpersonas nav pieejamas. Lai veiktu kopīgošanu tuvumā ar šīm kontaktpersonām, pievienojiet kontaktpersonu sarakstam šo personu e-pasta adreses, kas saistītas ar viņu Google kontiem.}one{# kontaktpersona nav pieejama. Lai veiktu kopīgošanu tuvumā ar šīm kontaktpersonām, pievienojiet kontaktpersonu sarakstam šo personu e-pasta adreses, kas saistītas ar viņu Google kontiem.}other{# kontaktpersonas nav pieejamas. Lai veiktu kopīgošanu tuvumā ar šīm kontaktpersonām, pievienojiet kontaktpersonu sarakstam šo personu e-pasta adreses, kas saistītas ar viņu Google kontiem.}}</translation>
 <translation id="4050225813016893843">Autentifikācijas metode</translation>
@@ -4647,7 +4650,7 @@ Vai vēlaties palaist rīku <ph name="CONTROL_PANEL_APPLET_NAME" />?</translatio
 <translation id="6271348838875430303">labojums atsaukts</translation>
 <translation id="6272643420381259437">Lejupielādējot spraudni, radās kļūda (<ph name="ERROR" />)</translation>
 <translation id="6273677812470008672">Kvalitāte</translation>
-<translation id="6275846828483490454">Privacy Sandbox ir aktīva iniciatīva atvērta tīmekļa saglabāšanai, kas palīdz aizsargāt jūs no izsekošanas mehānismiem.</translation>
+<translation id="6275846828483490454">Konfidencialitātes smilškaste ir aktīva iniciatīva atvērta tīmekļa saglabāšanai, kas palīdz aizsargāt jūs no izsekošanas mehānismiem.</translation>
 <translation id="6276210637549544171">Starpniekserveris <ph name="PROXY_SERVER" /> pieprasa norādīt lietotājvārdu un paroli.</translation>
 <translation id="6277105963844135994">Radās tīkla noildze.</translation>
 <translation id="6277518330158259200">I&amp;egūt ekrānuzņēmumu</translation>
@@ -5310,7 +5313,7 @@ Saskaņā ar domēna <ph name="DOMAIN" /> prasībām viedkartei ir jābūt ievie
 <translation id="7018275672629230621">Lasīt un mainīt jūsu pārlūkošanas vēsturi</translation>
 <translation id="7019805045859631636">Ātrs</translation>
 <translation id="7022562585984256452">Jūsu sākumlapa ir iestatīta.</translation>
-<translation id="7023206482239788111">Privacy Sandbox saglabā atvērtā tīmekļa darbību, radot labākas iespējas šo pakalpojumu nodrošināšanai un netraucējot vietņu darbību, bet liedzot jūsu darbību slepenu izsekošanu tīmeklī.</translation>
+<translation id="7023206482239788111">Konfidencialitātes smilškaste saglabā atvērtā tīmekļa darbību, radot labākas iespējas šo pakalpojumu nodrošināšanai un netraucējot vietņu darbību, bet liedzot jūsu darbību slepenu izsekošanu tīmeklī.</translation>
 <translation id="7025082428878635038">Jauns navigācijas veids, izmantojot žestus</translation>
 <translation id="7025190659207909717">Mobilo datu pakalpojumu pārvaldība</translation>
 <translation id="7025895441903756761">Drošība un konfidencialitāte</translation>
@@ -6345,7 +6348,7 @@ Glabājiet atslēgas failu drošā vietā. Tas būs vajadzīgs, lai izveidotu ja
 <translation id="8186609076106987817">Serveris nevarēja atrast failu.</translation>
 <translation id="8188389033983459049">Lai turpinātu, pārbaudiet ierīces iestatījumus un ieslēdziet to.</translation>
 <translation id="8189306097519446565">Mācību iestāžu konti</translation>
-<translation id="8189750580333936930">Privacy Sandbox</translation>
+<translation id="8189750580333936930">Konfidencialitātes smilškaste</translation>
 <translation id="8190193592390505034">Savienojas ar <ph name="PROVIDER_NAME" /></translation>
 <translation id="8191230140820435481">Pārvaldīt jūsu lietotnes, paplašinājumus un motīvus</translation>
 <translation id="8192944472786724289"><ph name="APP_NAME" /> vēlas kopīgot jūsu ekrāna saturu.</translation>
@@ -7212,6 +7215,7 @@ Saskaņā ar domēna <ph name="DOMAIN" /> prasībām viedkartei ir jābūt ievie
 <translation id="9168436347345867845">Vēlāk</translation>
 <translation id="9169496697824289689">Skatīt īsinājumtaustiņus</translation>
 <translation id="916964310188958970">Kāpēc tiek rādīts šis ieteikums?</translation>
+<translation id="9170048603158555829">Thunderbolt</translation>
 <translation id="9170061643796692986">Pašreizējais redzamības iestatījums ir “Visas kontaktpersonas”.</translation>
 <translation id="9170848237812810038">&amp;Atsaukt</translation>
 <translation id="9170884462774788842">Cita datorā instalēta programma ir izraisījusi tāda motīva pievienošanu, kas var ietekmēt pārlūkprogrammas Chrome darbību.</translation>

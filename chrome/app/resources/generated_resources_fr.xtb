@@ -1061,6 +1061,7 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="215753907730220065">Quitter le mode plein écran</translation>
 <translation id="2157875535253991059">Cette page est maintenant en mode plein écran</translation>
 <translation id="2158475082070321257">Copier le lien vers le texte en surbrillance</translation>
+<translation id="2159488579268505102">USB-C</translation>
 <translation id="216169395504480358">Ajouter un réseau Wi-Fi…</translation>
 <translation id="2162155940152307086">La synchronisation commencera une fois que vous aurez quitté les paramètres de synchronisation</translation>
 <translation id="2162838847352058695">Empêcher les sites de télécharger automatiquement plusieurs fichiers</translation>
@@ -1183,6 +1184,7 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="2297705863329999812">Rechercher des imprimantes</translation>
 <translation id="2299734369537008228">Curseur allant de <ph name="MIN_LABEL" /> à <ph name="MAX_LABEL" /></translation>
 <translation id="2299941608784654630">Ajouter tous les fichiers journaux collectés par debugd dans une archive séparée.</translation>
+<translation id="2300214399009193026">PCIe</translation>
 <translation id="2300383962156589922">Personnaliser et configurer <ph name="APP_NAME" /></translation>
 <translation id="2301382460326681002">Le répertoire racine de l'extension est incorrect.</translation>
 <translation id="23030561267973084">"<ph name="EXTENSION_NAME" />" a demandé des autorisations supplémentaires.</translation>
@@ -2761,6 +2763,7 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" /> ?</translation>
 <translation id="404493185430269859">Moteur de recherche par défaut</translation>
 <translation id="4046013316139505482">Ces extensions n'ont pas besoin de voir ni de modifier des informations sur ce site.</translation>
 <translation id="4046123991198612571">Piste suivante</translation>
+<translation id="4047581153955375979">USB4</translation>
 <translation id="4047726037116394521">Accéder à l'écran d'accueil</translation>
 <translation id="4049783682480068824">{COUNT,plural, =1{# contact n'est pas disponible. Pour utiliser le Partage à proximité avec cette personne, ajoutez à vos contacts l'adresse e-mail associée à son compte Google.}one{# contact n'est pas disponible. Pour utiliser le Partage à proximité avec cette personne, ajoutez à vos contacts l'adresse e-mail associée à son compte Google.}other{# contacts ne sont pas disponibles. Pour utiliser le Partage à proximité avec ces personnes, ajoutez à vos contacts les adresses e-mail associées à leurs comptes Google.}}</translation>
 <translation id="4050225813016893843">Méthode d'authentification</translation>
@@ -7212,6 +7215,7 @@ Appuyez sur un contacteur associé à l'action pour supprimer l'association.</tr
 <translation id="9168436347345867845">Plus tard</translation>
 <translation id="9169496697824289689">Afficher les raccourcis clavier</translation>
 <translation id="916964310188958970">Pourquoi cette suggestion ?</translation>
+<translation id="9170048603158555829">Thunderbolt</translation>
 <translation id="9170061643796692986">Le paramètre actuel de visibilité s'applique à tous les contacts</translation>
 <translation id="9170848237812810038">Ann&amp;uler</translation>
 <translation id="9170884462774788842">Un autre programme sur votre ordinateur a ajouté un thème qui risque de modifier le fonctionnement de Google Chrome.</translation>

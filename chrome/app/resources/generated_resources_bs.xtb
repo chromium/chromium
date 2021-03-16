@@ -1062,6 +1062,7 @@ Postavkama ovog računa možete upravljati instaliranjem aplikacije Family Link 
 <translation id="215753907730220065">Izađi iz prikaza preko cijelog ekrana</translation>
 <translation id="2157875535253991059">Ova stranica se sada prikazuje preko cijelog ekrana.</translation>
 <translation id="2158475082070321257">Kopiraj link za istaknuti tekst</translation>
+<translation id="2159488579268505102">USB-C</translation>
 <translation id="216169395504480358">Dodaj WiFi...</translation>
 <translation id="2162155940152307086">Sinhronizacija će se pokrenuti kada zatvorite postavke sinhronizacije</translation>
 <translation id="2162838847352058695">Blokiraj web lokacijama da automatski preuzimaju više fajlova</translation>
@@ -1184,6 +1185,7 @@ Postavkama ovog računa možete upravljati instaliranjem aplikacije Family Link 
 <translation id="2297705863329999812">Pretražite štampače</translation>
 <translation id="2299734369537008228">Klizač: od <ph name="MIN_LABEL" /> do <ph name="MAX_LABEL" /></translation>
 <translation id="2299941608784654630">Uključi sve fajlove zapisnika koje je prikupio debugd kao odvojenu arhivu.</translation>
+<translation id="2300214399009193026">PCIe</translation>
 <translation id="2300383962156589922">Prilagodite i kontrolirajte aplikaciju <ph name="APP_NAME" /></translation>
 <translation id="2301382460326681002">Temeljni direktorij ekstenzije je nevažeći.</translation>
 <translation id="23030561267973084">Ekstenzija "<ph name="EXTENSION_NAME" />" je zatražila dodatna odobrenja.</translation>
@@ -2762,6 +2764,7 @@ Domena <ph name="DOMAIN" /> zahtijeva da pametna kartica ostane umetnuta.</trans
 <translation id="404493185430269859">Zadani pretraživač</translation>
 <translation id="4046013316139505482">Ove ekstenzije ne moraju pregledati i mijenjati podatke na ovoj web lokaciji.</translation>
 <translation id="4046123991198612571">Sljedeća pjesma</translation>
+<translation id="4047581153955375979">USB4</translation>
 <translation id="4047726037116394521">Odlazak na početnu stranicu</translation>
 <translation id="4049783682480068824">{COUNT,plural, =1{# kontakt nije dostupan. Da s tom osobom koristite Dijeljenje u blizini, u kontakte dodajte adresu e-pošte povezanu s Google računom tog kontakta.}one{# kontakt nije dostupan. Da s tim osobama koristite Dijeljenje u blizini, u kontakte dodajte adrese e-pošte povezane s njihovim Google računima.}few{# kontakta nisu dostupna. Da s tim osobama koristite Dijeljenje u blizini, u kontakte dodajte adrese e-pošte povezane s njihovim Google računima.}other{# kontakata nije dostupno. Da s tim osobama koristite Dijeljenje u blizini, u kontakte dodajte adrese e-pošte povezane s njihovim Google računima.}}</translation>
 <translation id="4050225813016893843">Metoda autentifikacije</translation>
@@ -7213,6 +7216,7 @@ Domena <ph name="DOMAIN" /> zahtijeva da pametna kartica ostane umetnuta.}}</tra
 <translation id="9168436347345867845">Uradit ću to kasnije</translation>
 <translation id="9169496697824289689">Prikaži prečice na tastaturi</translation>
 <translation id="916964310188958970">Zbog čega ovaj prijedlog?</translation>
+<translation id="9170048603158555829">Thunderbolt</translation>
 <translation id="9170061643796692986">Trenutna postavka vidljivosti je Svi kontakti</translation>
 <translation id="9170848237812810038">&amp;Poništi</translation>
 <translation id="9170884462774788842">Drugi program na vašem računaru je dodao temu koja može izmijeniti način na koji Chrome funkcionira.</translation>

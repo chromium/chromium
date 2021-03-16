@@ -1057,6 +1057,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="215753907730220065">Salir de pantalla completa</translation>
 <translation id="2157875535253991059">Esta página está en modo de pantalla completa.</translation>
 <translation id="2158475082070321257">Copiar el vínculo al texto destacado</translation>
+<translation id="2159488579268505102">USB-C</translation>
 <translation id="216169395504480358">Agregar Wi-Fi</translation>
 <translation id="2162155940152307086">La sincronización volverá a comenzar cuando salgas de la configuración</translation>
 <translation id="2162838847352058695">No permitir que los sitios descarguen múltiples archivos de forma automática</translation>
@@ -1179,6 +1180,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="2297705863329999812">Buscar impresoras</translation>
 <translation id="2299734369537008228">Control deslizante: <ph name="MIN_LABEL" /> a <ph name="MAX_LABEL" /></translation>
 <translation id="2299941608784654630">Incluye todos los archivos de registro que recopiló debugd en un solo archivo de almacenamiento.</translation>
+<translation id="2300214399009193026">PCIe</translation>
 <translation id="2300383962156589922">Personaliza y controla <ph name="APP_NAME" /></translation>
 <translation id="2301382460326681002">El directorio de raíz de la extensión no es válido.</translation>
 <translation id="23030561267973084">"<ph name="EXTENSION_NAME" />" ha solicitado permisos adicionales.</translation>
@@ -2757,6 +2759,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="404493185430269859">Motor de búsqueda predeterminado</translation>
 <translation id="4046013316139505482">Estas extensiones no necesitan ver ni cambiar información en este sitio.</translation>
 <translation id="4046123991198612571">Siguiente pista</translation>
+<translation id="4047581153955375979">USB4</translation>
 <translation id="4047726037116394521">Ir a la página principal</translation>
 <translation id="4049783682480068824">{COUNT,plural, =1{# contacto no está disponible. Para usar Compartir con Nearby con esa persona, agrega a tus contactos la dirección de correo electrónico asociada a su Cuenta de Google.}other{# contactos no están disponibles. Para usar Compartir con Nearby con esas personas, agrega a tus contactos las direcciones de correo electrónico asociadas a sus Cuentas de Google.}}</translation>
 <translation id="4050225813016893843">Método de autenticación</translation>
@@ -7206,6 +7209,7 @@ Presiona un interruptor asignado para quitar la asignación.</translation>
 <translation id="9168436347345867845">Hacerlo más tarde</translation>
 <translation id="9169496697824289689">Ver combinaciones de teclas para acceso directo</translation>
 <translation id="916964310188958970">¿Por qué recibo esta sugerencia?</translation>
+<translation id="9170048603158555829">Thunderbolt</translation>
 <translation id="9170061643796692986">Se estableció la configuración de visibilidad actual en Todos los contactos</translation>
 <translation id="9170848237812810038">&amp;Deshacer</translation>
 <translation id="9170884462774788842">Otro programa en tu computadora agregó un tema que puede cambiar el funcionamiento de Chrome.</translation>

@@ -1057,6 +1057,7 @@ Unaweza kudhibiti mipangilio ya akaunti hii kwa kusakinisha programu ya Family L
 <translation id="215753907730220065">Ondoka kwenye Skrini Kamili</translation>
 <translation id="2157875535253991059">Ukurasa huu sasa umejaa.</translation>
 <translation id="2158475082070321257">Nakili kiungo cha maandishi yaliyoangaziwa</translation>
+<translation id="2159488579268505102">USB-C</translation>
 <translation id="216169395504480358">Ongeza Wi-Fi...</translation>
 <translation id="2162155940152307086">Itaanza kusawazisha utakapofunga mipangilio ya usawazishaji</translation>
 <translation id="2162838847352058695">Zuia tovuti zisipakue faili nyingi kiotomatiki</translation>
@@ -1179,6 +1180,7 @@ Unaweza kudhibiti mipangilio ya akaunti hii kwa kusakinisha programu ya Family L
 <translation id="2297705863329999812">Tafuta printa</translation>
 <translation id="2299734369537008228">Kitelezi: <ph name="MIN_LABEL" /> hadi <ph name="MAX_LABEL" /></translation>
 <translation id="2299941608784654630">Jumuisha faili zote za kumbukumbu zilizokusanywa na debugd kama kumbukumbu tofauti.</translation>
+<translation id="2300214399009193026">PCIe</translation>
 <translation id="2300383962156589922">Dhibiti na uweke mapendeleo kwenye <ph name="APP_NAME" /></translation>
 <translation id="2301382460326681002">Saraka la shina la kiendelezi ni batili.</translation>
 <translation id="23030561267973084">"<ph name="EXTENSION_NAME" />" kimeomba vibali vya ziada.</translation>
@@ -2757,6 +2759,7 @@ Ungependa kuanza <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="404493185430269859">Injini tafuti chaguomsingi</translation>
 <translation id="4046013316139505482">Viendelezi hivi havihitaji kuona na kubadilisha maelezo kwenye tovuti hii.</translation>
 <translation id="4046123991198612571">Wimbo unaofuata</translation>
+<translation id="4047581153955375979">USB4</translation>
 <translation id="4047726037116394521">Nenda kwenye skrini ya kwanza</translation>
 <translation id="4049783682480068824">{COUNT,plural, =1{Anwani # haipatikani. Ili utumie kipengele cha Uhamishaji wa Karibu naye, weka anwani ya barua pepe inayohusishwa na Akaunti yake ya Google kwenye anwani zako.}other{Anwani # hazipatikani. Ili utumie kipengele cha Uhamishaji wa Karibu nao, weka anwani za barua pepe zinazohusishwa na Akaunti zao za Google kwenye anwani zako.}}</translation>
 <translation id="4050225813016893843">Njia ya uthibitishaji</translation>
@@ -7206,6 +7209,7 @@ Bonyeza swichi uliyokabidhi ili uache kuikabidhi.</translation>
 <translation id="9168436347345867845">Ufanye baadaye</translation>
 <translation id="9169496697824289689">Angalia njia za mkato za kibodi</translation>
 <translation id="916964310188958970">Kwa nini pendekezo hili?</translation>
+<translation id="9170048603158555829">Thunderbolt</translation>
 <translation id="9170061643796692986">Mipangilio ya sasa ya uonekanaji ni 'anwani zote'</translation>
 <translation id="9170848237812810038">&amp;Tendua</translation>
 <translation id="9170884462774788842">Programu nyingine kwenye kompyuta yako iliongeza mandhari ambayo yanaweza kubadilisha jinsi Chrome inavyofanya kazi.</translation>

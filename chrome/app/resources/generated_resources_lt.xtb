@@ -1063,6 +1063,7 @@ Jei nenorite, dabar atsijunkite, kad šios paskyros pakeitimai būtų matomi ši
 <translation id="215753907730220065">Išeiti iš viso ekrano režimo</translation>
 <translation id="2157875535253991059">Dabar šis puslapis veikia viso ekrano režimu.</translation>
 <translation id="2158475082070321257">Kopijuoti nuorodą į paryškintą tekstą</translation>
+<translation id="2159488579268505102">USB-C</translation>
 <translation id="216169395504480358">Pridėti „Wi-Fi“...</translation>
 <translation id="2162155940152307086">Sinchronizavimas bus pradėtas, kai išeisite iš sinchronizavimo nustatymų</translation>
 <translation id="2162838847352058695">Blokuoti svetaines, kad nebūtų galima automatiškai atsisiųsti kelių failų</translation>
@@ -1185,6 +1186,7 @@ Jei nenorite, dabar atsijunkite, kad šios paskyros pakeitimai būtų matomi ši
 <translation id="2297705863329999812">Ieškoti spausdintuvų</translation>
 <translation id="2299734369537008228">Šliaužiklis: nuo <ph name="MIN_LABEL" /> iki <ph name="MAX_LABEL" /></translation>
 <translation id="2299941608784654630">Yra visi žurnalo failai, kuriuos surinko „debugd“ kaip atskirą archyvą.</translation>
+<translation id="2300214399009193026">PCIe</translation>
 <translation id="2300383962156589922">„<ph name="APP_NAME" />“ tinkinimas ir valdymas</translation>
 <translation id="2301382460326681002">Plėtinio šakninis katalogas neteisingas.</translation>
 <translation id="23030561267973084">„<ph name="EXTENSION_NAME" />“ pateikė papildomų leidimų užklausą.</translation>
@@ -2763,6 +2765,7 @@ Ar norite paleisti „<ph name="CONTROL_PANEL_APPLET_NAME" />“?</translation>
 <translation id="404493185430269859">Numatytasis paieškos variklis</translation>
 <translation id="4046013316139505482">Šiems plėtiniams nereikia peržiūrėti ir keisti informacijos šioje svetainėje.</translation>
 <translation id="4046123991198612571">Kitas takelis</translation>
+<translation id="4047581153955375979">USB4</translation>
 <translation id="4047726037116394521">Eiti į pagrindinį ekraną</translation>
 <translation id="4049783682480068824">{COUNT,plural, =1{# kontaktas nepasiekiamas. Jei norite kartu naudoti „Bendrinimo netoliese“ funkciją, prie savo kontaktų pridėkite el. pašto adresą, susietą su jo (jos) „Google“ paskyra.}one{# kontaktas nepasiekiamas. Jei norite kartu naudoti „Bendrinimo netoliese“ funkciją, prie savo kontaktų pridėkite el. pašto adresus, susietus su jų „Google“ paskyromis.}few{# kontaktai nepasiekiami. Jei norite kartu naudoti „Bendrinimo netoliese“ funkciją, prie savo kontaktų pridėkite el. pašto adresus, susietus su jų „Google“ paskyromis.}many{# kontakto nepasiekiama. Jei norite kartu naudoti „Bendrinimo netoliese“ funkciją, prie savo kontaktų pridėkite el. pašto adresus, susietus su jų „Google“ paskyromis.}other{# kontaktų nepasiekiama. Jei norite kartu naudoti „Bendrinimo netoliese“ funkciją, prie savo kontaktų pridėkite el. pašto adresus, susietus su jų „Google“ paskyromis.}}</translation>
 <translation id="4050225813016893843">Autentifikavimo metodas</translation>
@@ -7216,6 +7219,7 @@ Paspauskite priskirtą jungiklį, kad pašalintumėte priskyrimą.</translation>
 <translation id="9168436347345867845">Atlikti vėliau</translation>
 <translation id="9169496697824289689">Peržiūrėti sparčiuosius klavišus</translation>
 <translation id="916964310188958970">Kodėl tai siūloma?</translation>
+<translation id="9170048603158555829">Thunderbolt</translation>
 <translation id="9170061643796692986">Dabartinis matomumo nustatymas yra „Visi kontaktai“</translation>
 <translation id="9170848237812810038">&amp;Atšaukti</translation>
 <translation id="9170884462774788842">Kita jūsų kompiuteryje esanti programa pridėjo temą, kuri gali pakeisti „Chrome“ veikimo būdą.</translation>

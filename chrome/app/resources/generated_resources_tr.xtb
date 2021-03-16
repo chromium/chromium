@@ -1060,6 +1060,7 @@ Cihazınızda Family Link uygulamasını yükleyerek bu hesabın ayarlarını y�
 <translation id="215753907730220065">Tam Ekrandan Çık</translation>
 <translation id="2157875535253991059">Bu sayfa artık tam ekran.</translation>
 <translation id="2158475082070321257">Seçili metin bağlantısını kopyala</translation>
+<translation id="2159488579268505102">USB-C</translation>
 <translation id="216169395504480358">Kablosuz Ekle...</translation>
 <translation id="2162155940152307086">Senkronizasyon işlemi, senkonizasyon ayarlarından çıktığınızda başlayacaktır</translation>
 <translation id="2162838847352058695">Sitelerin birden fazla dosyayı otomatik olarak indirmesini engelle</translation>
@@ -1182,6 +1183,7 @@ Cihazınızda Family Link uygulamasını yükleyerek bu hesabın ayarlarını y�
 <translation id="2297705863329999812">Yazıcı ara</translation>
 <translation id="2299734369537008228">Kaydırma çubuğu: <ph name="MIN_LABEL" />değerden <ph name="MAX_LABEL" /> değere</translation>
 <translation id="2299941608784654630">debugd ile toplanan bütün günlük dosyalarını ayrı bir arşiv olarak dahil et.</translation>
+<translation id="2300214399009193026">PCIe</translation>
 <translation id="2300383962156589922"><ph name="APP_NAME" /> uygulamasını özelleştirin ve denetleyin</translation>
 <translation id="2301382460326681002">Uzantı kök dizini geçersiz.</translation>
 <translation id="23030561267973084">"<ph name="EXTENSION_NAME" />" ek izinler istedi.</translation>
@@ -2760,6 +2762,7 @@ Sunucunun mesajı: <ph name="SERVER_MSG" /></translation>
 <translation id="404493185430269859">Varsayılan arama motoru</translation>
 <translation id="4046013316139505482">Bu uzantıların bu sitedeki bilgileri görmesi ve değiştirmesi gerekmiyor.</translation>
 <translation id="4046123991198612571">Sonraki parça</translation>
+<translation id="4047581153955375979">USB4</translation>
 <translation id="4047726037116394521">Ana sayfaya git</translation>
 <translation id="4049783682480068824">{COUNT,plural, =1{# kişiye bağlanılamıyor. Yakındakilerle Paylaş özelliğini bu kişilerle kullanabilmek için bu kişilerin Google Hesaplarıyla ilişkilendirilmiş e-posta adreslerini kişilerinize ekleyin.}other{# kişiye bağlanılamıyor. Yakındakilerle Paylaş özelliğini bu kişilerle kullanabilmek için bu kişilerin Google Hesaplarıyla ilişkilendirilmiş e-posta adreslerini kişilerinize ekleyin.}}</translation>
 <translation id="4050225813016893843">Kimlik doğrulama yöntemi</translation>
@@ -7209,6 +7212,7 @@ Atamayı kaldırmak için atanmış anahtara basın.</translation>
 <translation id="9168436347345867845">Daha sonra yap</translation>
 <translation id="9169496697824289689">Klavye kısayollarını görüntüle</translation>
 <translation id="916964310188958970">Neden bu öneri gösteriliyor?</translation>
+<translation id="9170048603158555829">Thunderbolt</translation>
 <translation id="9170061643796692986">Mevcut görünürlük ayarı tüm kişiler şeklindedir</translation>
 <translation id="9170848237812810038">&amp;Geri al</translation>
 <translation id="9170884462774788842">Bilgisayarınızdaki başka bir program, Chrome'un çalışma şeklini değiştirebilecek bir tema ekledi.</translation>

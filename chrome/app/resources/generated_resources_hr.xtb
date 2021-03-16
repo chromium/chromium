@@ -1061,6 +1061,7 @@ Postavkama računa možete upravljati tako da instalirate aplikaciju Family Link
 <translation id="215753907730220065">Napusti potpuni ekran</translation>
 <translation id="2157875535253991059">Ova je stranica sada na cijelom zaslonu.</translation>
 <translation id="2158475082070321257">Kopiraj vezu na istaknuti tekst</translation>
+<translation id="2159488579268505102">USB-C</translation>
 <translation id="216169395504480358">Dodaj Wi-Fi...</translation>
 <translation id="2162155940152307086">Sinkronizacija će se pokrenuti kad napustite postavke sinkronizacije</translation>
 <translation id="2162838847352058695">Onemogući web-lokacijama automatsko preuzimanje više datoteka</translation>
@@ -1183,6 +1184,7 @@ Postavkama računa možete upravljati tako da instalirate aplikaciju Family Link
 <translation id="2297705863329999812">Pretražite pisače</translation>
 <translation id="2299734369537008228">Klizač: od <ph name="MIN_LABEL" /> do <ph name="MAX_LABEL" /></translation>
 <translation id="2299941608784654630">Sve datoteke zapisnika prikupljene u otklanjanju pogrešaka uključi kao zasebnu arhivu.</translation>
+<translation id="2300214399009193026">PCIe</translation>
 <translation id="2300383962156589922">Prilagodite i kontrolirajte aplikaciju <ph name="APP_NAME" /></translation>
 <translation id="2301382460326681002">Korijenski direktorij proširenja nije važeći.</translation>
 <translation id="23030561267973084">Proširenje "<ph name="EXTENSION_NAME" />" zatražilo je dodatne dozvole.</translation>
@@ -2761,6 +2763,7 @@ Postavkama računa možete upravljati tako da instalirate aplikaciju Family Link
 <translation id="404493185430269859">Zadana tražilica</translation>
 <translation id="4046013316139505482">Proširenja ne mogu vidjeti ni mijenjati podatke na ovoj web-lokaciji.</translation>
 <translation id="4046123991198612571">Sljedeća pjesma</translation>
+<translation id="4047581153955375979">USB4</translation>
 <translation id="4047726037116394521">Otvaranje početnog zaslona</translation>
 <translation id="4049783682480068824">{COUNT,plural, =1{# kontakt nije dostupan. Da biste s tim kontaktom koristili dijeljenje s Android uređajima, u kontakte dodajte e-adresu povezanu s njegovim Google računom.}one{# kontakt nije dostupan. Da biste s tim kontaktima koristili dijeljenje s Android uređajima, u kontakte dodajte e-adrese povezane s njihovim Google računima.}few{# kontakta nisu dostupna. Da biste s tim kontaktima koristili dijeljenje s Android uređajima, u kontakte dodajte e-adrese povezane s njihovim Google računima.}other{# kontakata nije dostupno. Da biste s tim kontaktima koristili dijeljenje s Android uređajima, u kontakte dodajte e-adrese povezane s njihovim Google računima.}}</translation>
 <translation id="4050225813016893843">Način autentifikacije</translation>
@@ -7211,6 +7214,7 @@ Pritisnite dodijeljeni prekidač da biste uklonili dodjelu.</translation>
 <translation id="9168436347345867845">Učinite to kasnije</translation>
 <translation id="9169496697824289689">Prikaz tipkovnih prečaca</translation>
 <translation id="916964310188958970">Zašto taj prijedlog?</translation>
+<translation id="9170048603158555829">Thunderbolt</translation>
 <translation id="9170061643796692986">Trenutačna postavka vidljivosti obuhvaća sve kontakte</translation>
 <translation id="9170848237812810038">&amp;Poništi</translation>
 <translation id="9170884462774788842">Drugi program na vašem računalu dodao je temu koja može promijeniti način na koji radi Chrome.</translation>

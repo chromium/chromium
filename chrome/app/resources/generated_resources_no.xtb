@@ -1057,6 +1057,7 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="215753907730220065">Avslutt fullskjermmodus</translation>
 <translation id="2157875535253991059">Denne siden vises nå i full skjerm.</translation>
 <translation id="2158475082070321257">Kopiér link til markert tekst</translation>
+<translation id="2159488579268505102">USB-C</translation>
 <translation id="216169395504480358">Legg til Wi-Fi</translation>
 <translation id="2162155940152307086">Synkroniseringen starter når du går ut av synkroniseringsinnstillingene</translation>
 <translation id="2162838847352058695">Blokkér nettsteder fra å laste ned flere filer automatisk</translation>
@@ -1179,6 +1180,7 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="2297705863329999812">Søk i skrivere</translation>
 <translation id="2299734369537008228">Glidebryter: <ph name="MIN_LABEL" /> til <ph name="MAX_LABEL" /></translation>
 <translation id="2299941608784654630">Inkluder alle loggfilene som er samlet inn av debugd, som et eget arkiv.</translation>
+<translation id="2300214399009193026">PCIe</translation>
 <translation id="2300383962156589922">Tilpass og kontrollér <ph name="APP_NAME" /></translation>
 <translation id="2301382460326681002">Utvidelsens rotkatalog er ugyldig.</translation>
 <translation id="23030561267973084">«<ph name="EXTENSION_NAME" />» har bedt om ekstra tilgang.</translation>
@@ -2755,6 +2757,7 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="404493185430269859">Standard søkemotor</translation>
 <translation id="4046013316139505482">Disse utvidelsene trenger ikke å se og endre informasjonen på dette nettstedet.</translation>
 <translation id="4046123991198612571">Neste spor</translation>
+<translation id="4047581153955375979">USB4</translation>
 <translation id="4047726037116394521">Gå til startskjermen</translation>
 <translation id="4049783682480068824">{COUNT,plural, =1{# kontakt er ikke tilgjengelig. For å bruke nærdeling med vedkommende må du legge til e-postadressen som er knyttet til vedkommendes Google-konto, i kontaktene dine.}other{# kontakter er ikke tilgjengelige. For å bruke nærdeling med dem må du legge til e-postadressene som er knyttet til Google-kontoene deres, i kontaktene dine.}}</translation>
 <translation id="4050225813016893843">Autentiseringsmetode</translation>
@@ -7204,6 +7207,7 @@ Trykk på en tilordnet bryter for å fjerne tilordningen.</translation>
 <translation id="9168436347345867845">Gjør det senere</translation>
 <translation id="9169496697824289689">Se tastaturets hurtigtaster</translation>
 <translation id="916964310188958970">Hvorfor dette forslaget?</translation>
+<translation id="9170048603158555829">Thunderbolt</translation>
 <translation id="9170061643796692986">Den gjeldende synlighetsinnstillingen er alle kontakter</translation>
 <translation id="9170848237812810038">&amp;Angre</translation>
 <translation id="9170884462774788842">Et annet program på datamaskinen la til et tema som kan endre måten Chrome fungerer på.</translation>

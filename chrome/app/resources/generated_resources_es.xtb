@@ -1060,6 +1060,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="215753907730220065">Desactivar pantalla completa</translation>
 <translation id="2157875535253991059">Esta página se muestra ahora en pantalla completa.</translation>
 <translation id="2158475082070321257">Copiar enlace al texto destacado</translation>
+<translation id="2159488579268505102">USB-C</translation>
 <translation id="216169395504480358">Añadir Wi-Fi...</translation>
 <translation id="2162155940152307086">La sincronización empezará cuando salgas de la configuración</translation>
 <translation id="2162838847352058695">No permitir que los sitios descarguen varios archivos automáticamente</translation>
@@ -1182,6 +1183,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="2297705863329999812">Buscar impresoras</translation>
 <translation id="2299734369537008228">Control deslizante: de <ph name="MIN_LABEL" /> a <ph name="MAX_LABEL" /></translation>
 <translation id="2299941608784654630">Incluye todos los archivos de registro recopilados por debugd en un archivo independiente.</translation>
+<translation id="2300214399009193026">PCIe</translation>
 <translation id="2300383962156589922">Personalizar y controlar <ph name="APP_NAME" /></translation>
 <translation id="2301382460326681002">El directorio raíz de la extensión no es válido.</translation>
 <translation id="23030561267973084"><ph name="EXTENSION_NAME" /> ha solicitado permisos adicionales.</translation>
@@ -2759,6 +2761,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="404493185430269859">Motor de búsqueda predeterminado</translation>
 <translation id="4046013316139505482">Estas extensiones no necesitan ver ni cambiar información en este sitio web.</translation>
 <translation id="4046123991198612571">Pista siguiente</translation>
+<translation id="4047581153955375979">USB4</translation>
 <translation id="4047726037116394521">Ir a la página principal</translation>
 <translation id="4049783682480068824">{COUNT,plural, =1{# contacto no está disponible. Para usar Compartir con Nearby con esta persona, añade a tus contactos la dirección de correo asociada a su cuenta de Google.}other{# contactos no están disponibles. Para usar Compartir con Nearby con estas personas, añade a tus contactos las direcciones de correo asociadas a sus cuentas de Google.}}</translation>
 <translation id="4050225813016893843">Método de autenticación</translation>
@@ -7208,6 +7211,7 @@ Pulsa un interruptor asignado para quitar la asignación.</translation>
 <translation id="9168436347345867845">En otro momento</translation>
 <translation id="9169496697824289689">Ver combinaciones de teclas</translation>
 <translation id="916964310188958970">¿Por qué aparece esta sugerencia?</translation>
+<translation id="9170048603158555829">Thunderbolt</translation>
 <translation id="9170061643796692986">El ajuste de visibilidad actual es todos los contactos</translation>
 <translation id="9170848237812810038">&amp;Deshacer</translation>
 <translation id="9170884462774788842">Otro programa de tu ordenador ha añadido un tema que puede cambiar el funcionamiento de Chrome.</translation>

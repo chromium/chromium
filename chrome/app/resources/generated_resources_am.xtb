@@ -1061,6 +1061,7 @@
 <translation id="215753907730220065">ከሙሉ ገጽ ዕይታ ውጣ</translation>
 <translation id="2157875535253991059">ይህ ገጽ አሁን ሙሉ ማያ ገጽ ነው።</translation>
 <translation id="2158475082070321257">ወደ ድምቀቱ የሚወስድ አገናኝን ቅዳ</translation>
+<translation id="2159488579268505102">USB-C</translation>
 <translation id="216169395504480358">Wi-Fi ያክሉ...</translation>
 <translation id="2162155940152307086">አንዴ ከስምረት ቅንብሮች ከወጡ በኋላ ስምረት ይጀምራል</translation>
 <translation id="2162838847352058695">ጣቢያዎች ብዙ ፋይሎችን በራስ-ሰር እንዳያወረዱ አግድ</translation>
@@ -1183,6 +1184,7 @@
 <translation id="2297705863329999812">አታሚዎችን ይፈልጉ</translation>
 <translation id="2299734369537008228">ተንሸራታች፦ <ph name="MIN_LABEL" /> እስከ <ph name="MAX_LABEL" /></translation>
 <translation id="2299941608784654630">በ debugd የተሰበሰቡ ሁሉም ምዝግብ ፋይሎችን እንደ የተለየ ማህደር አድርገው ያካትቱ።</translation>
+<translation id="2300214399009193026">PCIe</translation>
 <translation id="2300383962156589922"><ph name="APP_NAME" />ን ያብጁት እና ይቆጣጠሩት</translation>
 <translation id="2301382460326681002">የቅጥያ ስርወ ማውጫ ልክ አይደለም።</translation>
 <translation id="23030561267973084">«<ph name="EXTENSION_NAME" />» ተጨማሪ ፍቃዶችን ጠይቋል።</translation>
@@ -2014,7 +2016,7 @@
 <translation id="3238192140106069382">በመገናኘት እና በማረጋገጥ ላይ</translation>
 <translation id="3239373508713281971">ለ<ph name="APP_NAME" /> የጊዜ ገደብ ተወግዷል</translation>
 <translation id="3241680850019875542">ለመሸከፍ የቅጥያውን ስርወ ማውጫ ይምረጡ። ቅጥያውን ለማዘመን እንዲሁ የግል ቁልፍ ፋይልን እንደገና ለመጠቀም ይምረጡ።</translation>
-<translation id="3242905690080165035">የግላዊነት ማጠሪያ አሁንም በንቁ ግንባታ ላይ ነው፣ እና በተመረጡ ክልሎች ውስጥ ይገኛል። ለአሁን ጣቢያዎች እንደ የሶስተኛ ወገን ኩኪዎችን ያሉ ወቅታዊ የድር ቴክኖሎጂዎችን መጠቀሙን በሚቀጥሉበት ጊዜ የግላዊነት ማጠሪያን ሊሞክሩ ይችላሉ። <ph name="BEGIN_LINK" />የበለጠ ለመረዳት<ph name="END_LINK" /></translation>
+<translation id="3242905690080165035">የግላዊነት Sandbox አሁንም በንቁ ግንባታ ላይ ነው፣ እና በተመረጡ ክልሎች ውስጥ ይገኛል። ለአሁን ጣቢያዎች እንደ የሶስተኛ ወገን ኩኪዎችን ያሉ ወቅታዊ የድር ቴክኖሎጂዎችን መጠቀሙን በሚቀጥሉበት ጊዜ የግላዊነት Sandboxን ሊሞክሩ ይችላሉ። <ph name="BEGIN_LINK" />የበለጠ ለመረዳት<ph name="END_LINK" /></translation>
 <translation id="3244294424315804309">ድምጽን መዝጋቱ ቀጥል</translation>
 <translation id="3246107497225150582">{0,plural, =1{በአንድ ቀን ውስጥ መሣሪያን ያዘምኑ}one{በ# ቀኖች ውስጥ መሣሪያን ያዘምኑ}other{በ# ቀኖች ውስጥ መሣሪያን ያዘምኑ}}</translation>
 <translation id="324849028894344899"><ph name="WINDOW_TITLE" /> - የአውታረ መረብ ስህተት</translation>
@@ -2142,7 +2144,7 @@
 <translation id="3390013585654699824">የመተግበሪያ ዝርዝሮች</translation>
 <translation id="3390741581549395454">Linux መተግበሪያዎች እና ፋይሎች በተሳካ ሁኔታ በምትኬ ተቀምጠዋል። ደረጃ ማሻሻል ከትንሽ ጊዜ በኋላ ይጀምራል።</translation>
 <translation id="3391482648489541560">የፋይል አርትዖት አደራረግ</translation>
-<translation id="3391512812407811893">የግላዊነት ማጠሪያ ሙከራዎች</translation>
+<translation id="3391512812407811893">የግላዊነት Sandbox ሙከራዎች</translation>
 <translation id="339178315942519818">በእርስዎ <ph name="DEVICE_TYPE" /> ላይ ከእርስዎ የውይይት መተግበሪያዎች የመጡ ማሳወቂያዎችን ይመልከቱ</translation>
 <translation id="3396800784455899911">የ«እስማማለሁ እና ቀጥል» አዝራርን ጠቅ በማድረግ ለእነዚህ የGoogle አገልግሎቶች ከላይ በተብራራው ማስሄድ መስማማትዎን ያረጋግጣሉ።</translation>
 <translation id="3399432415385675819">ማሳወቂያዎች ይሰናከላሉ</translation>
@@ -2760,6 +2762,7 @@
 <translation id="404493185430269859">ነባሪ የፍለጋ ፕሮግራም</translation>
 <translation id="4046013316139505482">እነዚህ ቅጥያዎች በዚህ ጣቢያ ላይ ያለውን መረጃ መመልከትና መቀየር አያስፈልጋቸውም።</translation>
 <translation id="4046123991198612571">ቀጣይ ትራክ</translation>
+<translation id="4047581153955375979">ዩኤስቢ4</translation>
 <translation id="4047726037116394521">ወደ መነሻ ሂድ</translation>
 <translation id="4049783682480068824">{COUNT,plural, =1{# እውቂያ አይገኝም። የአቅራቢያ ማጋሪያን ከእነሱ ጋር ለመጠቀም ከGoogle መለያቸው ጋር የተጎዳኘውን የኢሜይል አድራሻ ወደ የእርስዎ እውቂያዎች ያክሉት።}one{# እውቂያዎች አይገኙም። የአቅራቢያ ማጋሪያን ከእነሱ ጋር ለመጠቀም ከGoogle መለያቸው ጋር የተጎዳኙትን የኢሜይል አድራሻዎች ወደ የእርስዎ እውቂያዎች ያክሏቸው።}other{# እውቂያዎች አይገኙም። የአቅራቢያ ማጋሪያን ከእነሱ ጋር ለመጠቀም ከGoogle መለያቸው ጋር የተጎዳኙትን የኢሜይል አድራሻዎች ወደ የእርስዎ እውቂያዎች ያክሏቸው።}}</translation>
 <translation id="4050225813016893843">የማረጋገጫ ዘዴ</translation>
@@ -4643,7 +4646,7 @@
 <translation id="6271348838875430303">እርማት ተቀልብሷል</translation>
 <translation id="6272643420381259437">ተሰኪውን በማውረድ ላይ ሳለ ስህተት (<ph name="ERROR" />) ነበር</translation>
 <translation id="6273677812470008672">ጥራት</translation>
-<translation id="6275846828483490454">የግላዊነት ማጠሪያ እርስዎን ከመከታተያ ዘዴዎች ለመጠበቅ የሚያግዝ ክፍት ድርን ለመጠበቅ ቀጣይነት ያለው ተነሳሽነት ነው።</translation>
+<translation id="6275846828483490454">የግላዊነት Sandbox እርስዎን ከመከታተያ ዘዴዎች ለመጠበቅ የሚያግዝ ክፍት ድርን ለመጠበቅ ቀጣይነት ያለው ተነሳሽነት ነው።</translation>
 <translation id="6276210637549544171">ተኪ <ph name="PROXY_SERVER" /> የተጠቃሚ ስም እና የይለፍ ቃል ያስፈልገዋል።</translation>
 <translation id="6277105963844135994">የአውታረ መረብ ጊዜ ማብቂያ</translation>
 <translation id="6277518330158259200">ቅጽበታዊ ገጽ እይታ ፎቶ አን&amp;ሳ</translation>
@@ -5306,7 +5309,7 @@
 <translation id="7018275672629230621">የአሰሳ ታሪክዎን ያነብባል እና ይቀይራል</translation>
 <translation id="7019805045859631636">ፈጣን</translation>
 <translation id="7022562585984256452">የእርስዎ መነሻ ገጽ ተዋቅሯል።</translation>
-<translation id="7023206482239788111">የግላዊነት ማጠሪያ እነዚህን አገልግሎቶች ለማከናወን የተሻሉ መንገዶችን በመፍጠር የክፍት ድር ጠቃሚነትን ጠብቆ ያቆያል–ጣቢያዎችን ሳይሰበር እና በመላው ድር ላይ በድብቅ ክትትል እንዳይደረግብዎትም እየተካታተለ።</translation>
+<translation id="7023206482239788111">የግላዊነት Sandbox እነዚህን አገልግሎቶች ለማከናወን የተሻሉ መንገዶችን በመፍጠር የክፍት ድር ጠቃሚነትን ጠብቆ ያቆያል–ጣቢያዎችን ሳይሰበር እና በመላው ድር ላይ በድብቅ ክትትል እንዳይደረግብዎትም እየተካታተለ።</translation>
 <translation id="7025082428878635038">በእጅ ምልክቶች የሚታሰስበት አዲስ መንገድ</translation>
 <translation id="7025190659207909717">የተንቀሳቃሽ ስልክ ውሂብ አገልግሎት ማቀናበር</translation>
 <translation id="7025895441903756761">ደህንነት እና ግላዊነት</translation>
@@ -6346,7 +6349,7 @@ nil</translation>
 <translation id="8186609076106987817">አገልጋዩ ፋይሉን ሊያገኝ አልቻለም።</translation>
 <translation id="8188389033983459049">የመሣሪያዎን ቅንብሮችዎ ይፈትሹና ለመቀጠል ያብሩት</translation>
 <translation id="8189306097519446565">የትምህርት ቤት መለያዎች</translation>
-<translation id="8189750580333936930">የግላዊነት ማጠሪያ</translation>
+<translation id="8189750580333936930">የግላዊነት Sandbox</translation>
 <translation id="8190193592390505034">ከ<ph name="PROVIDER_NAME" /> ጋር በመገናኘት ላይ</translation>
 <translation id="8191230140820435481">መተግበሪያዎችዎን፣ ቅጥያዎችዎን እና ገጽታዎችዎን ያቀናብራል</translation>
 <translation id="8192944472786724289"><ph name="APP_NAME" /> የማያ ገጽዎን ይዘቶች ማጋራት ይፈልጋል።</translation>
@@ -7212,6 +7215,7 @@ nil</translation>
 <translation id="9168436347345867845">በኋላ ያድርጉት</translation>
 <translation id="9169496697824289689">የቁልፍ ሰሌዳ አቋራጮችን ይመልከቱ</translation>
 <translation id="916964310188958970">ይህ የአስተያየት ጥቆማ ለምን?</translation>
+<translation id="9170048603158555829">Thunderbolt</translation>
 <translation id="9170061643796692986">የአሁኑ የታይነት ቅንብር ሁሉም እውቂያዎች ነው</translation>
 <translation id="9170848237812810038">&amp;ቀልብስ</translation>
 <translation id="9170884462774788842">በኮምፒውተርዎ ላይ ያለ ሌላ ፕሮግራም Chrome የሚሰራበት መንገድ ሊቀይር የሚችል አንድ ገጽታ አክሏል።</translation>

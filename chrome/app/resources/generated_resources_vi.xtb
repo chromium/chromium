@@ -1060,6 +1060,7 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="215753907730220065">Thoát khỏi Chế độ Toàn màn hình</translation>
 <translation id="2157875535253991059">Trang này hiện ở chế độ toàn màn hình.</translation>
 <translation id="2158475082070321257">Sao chép đường liên kết đến văn bản được làm nổi bật</translation>
+<translation id="2159488579268505102">USB-C</translation>
 <translation id="216169395504480358">Thêm Wi-Fi...</translation>
 <translation id="2162155940152307086">Quá trình đồng bộ hóa sẽ bắt đầu sau khi bạn thoát khỏi trang cài đặt đồng bộ hóa</translation>
 <translation id="2162838847352058695">Không cho các trang web tự động tải nhiều tệp xuống</translation>
@@ -1182,6 +1183,7 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="2297705863329999812">Tìm kiếm máy in</translation>
 <translation id="2299734369537008228">Thanh trượt: <ph name="MIN_LABEL" /> đến <ph name="MAX_LABEL" /></translation>
 <translation id="2299941608784654630">Thêm tất cả tệp nhật ký thu thập được trong quá trình gỡ lỗi dưới dạng một mục lưu trữ riêng.</translation>
+<translation id="2300214399009193026">PCIe</translation>
 <translation id="2300383962156589922">Tùy chỉnh và kiểm soát <ph name="APP_NAME" /></translation>
 <translation id="2301382460326681002">Thư mục gốc của tiện ích không hợp lệ.</translation>
 <translation id="23030561267973084">"<ph name="EXTENSION_NAME" />" đã yêu cầu thêm quyền.</translation>
@@ -2760,6 +2762,7 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="404493185430269859">Công cụ tìm kiếm mặc định</translation>
 <translation id="4046013316139505482">Các tiện ích này không cần xem và thay đổi thông tin trên trang web này.</translation>
 <translation id="4046123991198612571">Bản nhạc tiếp theo</translation>
+<translation id="4047581153955375979">USB4</translation>
 <translation id="4047726037116394521">Chuyển đến màn hình chính</translation>
 <translation id="4049783682480068824">{COUNT,plural, =1{Không chia sẻ được với # người liên hệ. Để chia sẻ với người này bằng tính năng Chia sẻ lân cận, hãy thêm địa chỉ email liên kết với Tài khoản Google của họ vào danh bạ của bạn.}other{Không chia sẻ được với # người liên hệ. Để chia sẻ với những người này bằng tính năng Chia sẻ lân cận, hãy thêm các địa chỉ email liên kết với Tài khoản Google của họ vào danh bạ của bạn.}}</translation>
 <translation id="4050225813016893843">Phương thức xác thực</translation>
@@ -7209,6 +7212,7 @@ Nhấn một công tắc đã gán để xóa.</translation>
 <translation id="9168436347345867845">Thực hiện sau</translation>
 <translation id="9169496697824289689">Xem phím tắt</translation>
 <translation id="916964310188958970">Tại sao bạn thấy đề xuất này?</translation>
+<translation id="9170048603158555829">Thunderbolt</translation>
 <translation id="9170061643796692986">Tùy chọn hiển thị hiện tại là tất cả những người liên hệ</translation>
 <translation id="9170848237812810038">H&amp;oàn tác</translation>
 <translation id="9170884462774788842">Một chương trình khác trên máy tính của bạn đã thêm một chủ đề có thể thay đổi cách Chrome hoạt động.</translation>

@@ -1060,6 +1060,7 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="215753907730220065">Avsluta helskärmsläge</translation>
 <translation id="2157875535253991059">Denna sida visas nu i helskärm.</translation>
 <translation id="2158475082070321257">Kopiera länk till markering</translation>
+<translation id="2159488579268505102">USB-C</translation>
 <translation id="216169395504480358">Lägg till Wi-Fi ...</translation>
 <translation id="2162155940152307086">Synkroniseringen startar när du lämnar synkroniseringsinställningarna</translation>
 <translation id="2162838847352058695">Förhindra att webbplatser laddar ned flera filer automatiskt</translation>
@@ -1182,6 +1183,7 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="2297705863329999812">Sök skrivare</translation>
 <translation id="2299734369537008228">Skjutreglage <ph name="MIN_LABEL" /> till <ph name="MAX_LABEL" /></translation>
 <translation id="2299941608784654630">Ta med alla loggfiler som har samlats in av debugd i ett eget arkiv.</translation>
+<translation id="2300214399009193026">PCIe</translation>
 <translation id="2300383962156589922">Anpassa och kontrollera <ph name="APP_NAME" /></translation>
 <translation id="2301382460326681002">Tilläggets rotkatalog är ogiltig.</translation>
 <translation id="23030561267973084"><ph name="EXTENSION_NAME" /> har begärt ytterligare behörigheter.</translation>
@@ -2760,6 +2762,7 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="404493185430269859">Standardsökmotor</translation>
 <translation id="4046013316139505482">De här tilläggen behöver inte se och ändra information på den här webbplatsen.</translation>
 <translation id="4046123991198612571">Nästa spår</translation>
+<translation id="4047581153955375979">USB4</translation>
 <translation id="4047726037116394521">Öppna startsidan</translation>
 <translation id="4049783682480068824">{COUNT,plural, =1{# kontakt är inte tillgänglig. Lägg till den e-postadress som är kopplad till personens Google-konto i dina kontakter om du vill använda Närdelning med honom eller henne.}other{# kontakter är inte tillgängliga. Lägg till de e-postadresser som är kopplade till personernas Google-konton i dina kontakter om du vill använda Närdelning med dem.}}</translation>
 <translation id="4050225813016893843">Autentiseringsmetod</translation>
@@ -7209,6 +7212,7 @@ Tryck på en tilldelad brytare för att ta bort tilldelningen.</translation>
 <translation id="9168436347345867845">Gör det senare</translation>
 <translation id="9169496697824289689">Visa kortkommandon</translation>
 <translation id="916964310188958970">Varför visas detta förslag?</translation>
+<translation id="9170048603158555829">Thunderbolt</translation>
 <translation id="9170061643796692986">Den aktuella synlighetsinställningen är Alla kontakter</translation>
 <translation id="9170848237812810038">&amp;Ångra</translation>
 <translation id="9170884462774788842">Ett annat program i datorn har lagt till ett tema som kan ändra hur Chrome fungerar.</translation>

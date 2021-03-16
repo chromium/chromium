@@ -1060,6 +1060,7 @@
 <translation id="215753907730220065">結束全螢幕</translation>
 <translation id="2157875535253991059">這個頁面已顯示為全螢幕。</translation>
 <translation id="2158475082070321257">複製醒目顯示文字的連結</translation>
+<translation id="2159488579268505102">USB-C</translation>
 <translation id="216169395504480358">新增 Wi-Fi...</translation>
 <translation id="2162155940152307086">同步功能會在你退出同步功能設定後立即啟動</translation>
 <translation id="2162838847352058695">禁止網站自動下載多個檔案</translation>
@@ -1182,6 +1183,7 @@
 <translation id="2297705863329999812">搜尋印表機</translation>
 <translation id="2299734369537008228">滑桿：<ph name="MIN_LABEL" />到<ph name="MAX_LABEL" /></translation>
 <translation id="2299941608784654630">單獨封存 debugd 收集的所有記錄檔。</translation>
+<translation id="2300214399009193026">PCIe</translation>
 <translation id="2300383962156589922">自訂及控制 <ph name="APP_NAME" /></translation>
 <translation id="2301382460326681002">擴充功能根目錄無效。</translation>
 <translation id="23030561267973084">「<ph name="EXTENSION_NAME" />」要求其他權限。</translation>
@@ -2758,6 +2760,7 @@
 <translation id="404493185430269859">預設搜尋引擎</translation>
 <translation id="4046013316139505482">這些擴充功能不需要查看和變更這個網站上的資訊。</translation>
 <translation id="4046123991198612571">下一首曲目</translation>
+<translation id="4047581153955375979">USB4</translation>
 <translation id="4047726037116394521">前往主畫面</translation>
 <translation id="4049783682480068824">{COUNT,plural, =1{無法與 # 位聯絡人建立連線。如要使用鄰近分享功能分享內容，請將與對方 Google 帳戶相關聯的電子郵件地址加入聯絡人資料。}other{無法與 # 位聯絡人建立連線。如要使用鄰近分享功能分享內容，請將與對方 Google 帳戶相關聯的電子郵件地址加入聯絡人資料。}}</translation>
 <translation id="4050225813016893843">驗證方式</translation>
@@ -7206,6 +7209,7 @@
 <translation id="9168436347345867845">稍後再說</translation>
 <translation id="9169496697824289689">查看鍵盤快速鍵</translation>
 <translation id="916964310188958970">為什麼會顯示這項建議？</translation>
+<translation id="9170048603158555829">Thunderbolt</translation>
 <translation id="9170061643796692986">目前的瀏覽權限設為「所有聯絡人」</translation>
 <translation id="9170848237812810038">取消(&amp;U)</translation>
 <translation id="9170884462774788842">電腦中其他程式所新增的主題可能會變更 Chrome 的運作方式。</translation>

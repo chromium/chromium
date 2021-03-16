@@ -1058,6 +1058,7 @@ Możesz zarządzać ustawieniami konta, korzystając z aplikacji Family Link na
 <translation id="215753907730220065">Zamknij pełny ekran</translation>
 <translation id="2157875535253991059">Ta strona jest wyświetlana w trybie pełnoekranowym.</translation>
 <translation id="2158475082070321257">Kopiuj link do podświetlenia</translation>
+<translation id="2159488579268505102">USB-C</translation>
 <translation id="216169395504480358">Dodaj Wi-Fi...</translation>
 <translation id="2162155940152307086">Synchronizacja rozpocznie się zaraz po zamknięciu ustawień</translation>
 <translation id="2162838847352058695">Nie zezwalaj stronom na automatyczne pobieranie wielu plików</translation>
@@ -1180,6 +1181,7 @@ Możesz zarządzać ustawieniami konta, korzystając z aplikacji Family Link na
 <translation id="2297705863329999812">Wyszukaj drukarki</translation>
 <translation id="2299734369537008228">Suwak: od <ph name="MIN_LABEL" /> do <ph name="MAX_LABEL" /></translation>
 <translation id="2299941608784654630">Uwzględnij wszystkie pliki dzienników zebrane przez debugd jako osobne archiwum.</translation>
+<translation id="2300214399009193026">PCIe</translation>
 <translation id="2300383962156589922">Ustawienia aplikacji <ph name="APP_NAME" /></translation>
 <translation id="2301382460326681002">Główny katalog rozszerzenia jest nieprawidłowy.</translation>
 <translation id="23030561267973084">„<ph name="EXTENSION_NAME" />” żąda dodatkowych pozwoleń.</translation>
@@ -2758,6 +2760,7 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="404493185430269859">Domyślna wyszukiwarka</translation>
 <translation id="4046013316139505482">Te rozszerzenia nie muszą odczytywać ani zmieniać informacji na tej stronie.</translation>
 <translation id="4046123991198612571">Następny utwór</translation>
+<translation id="4047581153955375979">USB4</translation>
 <translation id="4047726037116394521">Wróć do ekranu głównego</translation>
 <translation id="4049783682480068824">{COUNT,plural, =1{# kontakt jest niedostępny. Aby skorzystać z funkcji Udostępnianie w pobliżu, dodaj do kontaktów adres e-mail powiązany z kontem Google tej osoby.}few{# kontakty są niedostępne. Aby skorzystać z funkcji Udostępnianie w pobliżu, dodaj do kontaktów adresy e-mail powiązane z kontami Google tych osób.}many{# kontaktów jest niedostępnych. Aby skorzystać z funkcji Udostępnianie w pobliżu, dodaj do kontaktów adresy e-mail powiązane z kontami Google tych osób.}other{# kontaktu jest niedostępne. Aby skorzystać z funkcji Udostępnianie w pobliżu, dodaj do kontaktów adresy e-mail powiązane z kontami Google tych osób.}}</translation>
 <translation id="4050225813016893843">Metoda uwierzytelniania</translation>
@@ -7209,6 +7212,7 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="9168436347345867845">Później</translation>
 <translation id="9169496697824289689">Pokaż skróty klawiszowe</translation>
 <translation id="916964310188958970">Dlaczego ta sugestia?</translation>
+<translation id="9170048603158555829">Thunderbolt</translation>
 <translation id="9170061643796692986">Bieżące ustawienie widoczności: wszystkie kontakty</translation>
 <translation id="9170848237812810038">&amp;Cofnij</translation>
 <translation id="9170884462774788842">Inny program na Twoim komputerze dodał motyw, który może zmienić działanie Chrome.</translation>

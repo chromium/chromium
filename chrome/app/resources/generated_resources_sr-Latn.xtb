@@ -1059,6 +1059,7 @@ Možete da upravljate podešavanjima ovog naloga ako instalirate aplikaciju Fami
 <translation id="215753907730220065">Izađi iz režima celog ekrana</translation>
 <translation id="2157875535253991059">Ova stranica je sada u režimu celog ekrana.</translation>
 <translation id="2158475082070321257">Kopiraj link do istaknutog teksta</translation>
+<translation id="2159488579268505102">USB-C</translation>
 <translation id="216169395504480358">Dodaj WiFi...</translation>
 <translation id="2162155940152307086">Sinhronizacija će početi kada izađete iz podešavanja sinhronizacije</translation>
 <translation id="2162838847352058695">Onemogući sajtovima da automatski preuzimaju više fajlova</translation>
@@ -1181,6 +1182,7 @@ Možete da upravljate podešavanjima ovog naloga ako instalirate aplikaciju Fami
 <translation id="2297705863329999812">Pretražite štampače</translation>
 <translation id="2299734369537008228">Klizač: od <ph name="MIN_LABEL" /> do <ph name="MAX_LABEL" /></translation>
 <translation id="2299941608784654630">Uvrsti sve datoteke evidencije koje je prikupio debugd kao posebnu arhivu.</translation>
+<translation id="2300214399009193026">PCIe</translation>
 <translation id="2300383962156589922">Prilagodite i kontrolišite aplikaciju <ph name="APP_NAME" /></translation>
 <translation id="2301382460326681002">Osnovni direktorijum dodatka je nevažeći.</translation>
 <translation id="23030561267973084">Dodatak „<ph name="EXTENSION_NAME" />“ je zatražio dodatne dozvole.</translation>
@@ -2759,6 +2761,7 @@ Možete da upravljate podešavanjima ovog naloga ako instalirate aplikaciju Fami
 <translation id="404493185430269859">Podrazumevani pretraživač</translation>
 <translation id="4046013316139505482">Ovi dodaci ne moraju da vide i menjaju informacije na ovom sajtu.</translation>
 <translation id="4046123991198612571">Sledeća pesma</translation>
+<translation id="4047581153955375979">USB4</translation>
 <translation id="4047726037116394521">Idite na početni ekran</translation>
 <translation id="4049783682480068824">{COUNT,plural, =1{# kontakt nije dostupan. Da biste koristili deljenje u blizini sa njim, u kontakte dodajte imejl adrese povezane sa njegovim Google nalozima.}one{# kontakt nije dostupan. Da biste koristili Deljenje u blizini sa tim kontaktima, u kontakte dodajte imejl adrese povezane sa njihovim Google nalozima.}few{# kontakta nisu dostupna. Da biste koristili Deljenje u blizini sa tim kontaktima, u kontakte dodajte imejl adrese povezane sa njihovim Google nalozima.}other{# kontakata nije dostupno. Da biste koristili Deljenje u blizini sa tim kontaktima, u kontakte dodajte imejl adrese povezane sa njihovim Google nalozima.}}</translation>
 <translation id="4050225813016893843">Metod za potvrdu identiteta</translation>
@@ -7211,6 +7214,7 @@ Pritisnite dodeljeni prekidač da biste uklonili dodelu.</translation>
 <translation id="9168436347345867845">Uradiću to kasnije</translation>
 <translation id="9169496697824289689">Prikaz tasterskih prečica</translation>
 <translation id="916964310188958970">Zašto ovaj predlog?</translation>
+<translation id="9170048603158555829">Thunderbolt</translation>
 <translation id="9170061643796692986">Aktuelno podešavanje vidljivosti je: Svi kontakti</translation>
 <translation id="9170848237812810038">&amp;Opozovi</translation>
 <translation id="9170884462774788842">Drugi program na računaru je dodao temu koja može da promeni način na koji Chrome funkcioniše.</translation>

@@ -1063,6 +1063,7 @@ Nastavitve tega računa je mogoče upravljati z namestitvijo aplikacije Family L
 <translation id="215753907730220065">Izhod iz celozaslonskega načina</translation>
 <translation id="2157875535253991059">Ta stran je zdaj prikazana na celotnem zaslonu.</translation>
 <translation id="2158475082070321257">Kopiraj povezavo do označitve</translation>
+<translation id="2159488579268505102">USB-C</translation>
 <translation id="216169395504480358">Dodaj Wi-Fi ...</translation>
 <translation id="2162155940152307086">Sinhronizacija se bo začela, ko zaprete nastavitve sinhronizacije</translation>
 <translation id="2162838847352058695">Spletnim mestom prepreči samodejno prenašanje več datotek</translation>
@@ -1185,6 +1186,7 @@ Nastavitve tega računa je mogoče upravljati z namestitvijo aplikacije Family L
 <translation id="2297705863329999812">Iskanje tiskalnikov</translation>
 <translation id="2299734369537008228">Drsnik: od <ph name="MIN_LABEL" /> do <ph name="MAX_LABEL" /></translation>
 <translation id="2299941608784654630">Vključi vse dnevniške datoteke, zbrane pri odpravljanju napak, v ločen arhiv.</translation>
+<translation id="2300214399009193026">PCIe</translation>
 <translation id="2300383962156589922">Prilagajanje in nadziranje aplikacije <ph name="APP_NAME" /></translation>
 <translation id="2301382460326681002">Korenski imenik razširitve je neveljaven.</translation>
 <translation id="23030561267973084">Razširitev »<ph name="EXTENSION_NAME" />« zahteva dodatna dovoljenja.</translation>
@@ -2763,6 +2765,7 @@ Domena <ph name="DOMAIN" /> zahteva, da je pametna kartica vstavljena.</translat
 <translation id="404493185430269859">Privzeti iskalnik</translation>
 <translation id="4046013316139505482">Tem razširitve si ni treba ogledati podatkov na tem spletnem mestu in jih spreminjati.</translation>
 <translation id="4046123991198612571">Naslednja skladba</translation>
+<translation id="4047581153955375979">USB4</translation>
 <translation id="4047726037116394521">Na začetni zaslon</translation>
 <translation id="4049783682480068824">{COUNT,plural, =1{# stik ni na voljo. Če želite s tem stikom uporabljati funkcijo Deljenje v bližini, mu dodajte e-poštni naslov, povezan z njegovim računom Google.}one{# stik ni na voljo. Če želite s temi stiki uporabljati funkcijo Deljenje v bližini, jim dodajte e-poštni naslov, povezan z njihovimi računi Google.}two{# stika nista na voljo. Če želite s temi stiki uporabljati funkcijo Deljenje v bližini, jim dodajte e-poštni naslov, povezan z njihovimi računi Google.}few{# stiki niso na voljo. Če želite s temi stiki uporabljati funkcijo Deljenje v bližini, jim dodajte e-poštni naslov, povezan z njihovimi računi Google.}other{# stikov ni na voljo. Če želite s temi stiki uporabljati funkcijo Deljenje v bližini, jim dodajte e-poštni naslov, povezan z njihovimi računi Google.}}</translation>
 <translation id="4050225813016893843">Način preverjanja pristnosti</translation>
@@ -7217,6 +7220,7 @@ Domena <ph name="DOMAIN" /> zahteva, da je pametna kartica vstavljena.}}</transl
 <translation id="9168436347345867845">Pozneje</translation>
 <translation id="9169496697824289689">Ogled bližnjičnih tipk</translation>
 <translation id="916964310188958970">Zakaj ta predlog?</translation>
+<translation id="9170048603158555829">Thunderbolt</translation>
 <translation id="9170061643796692986">Trenutna nastavitev vidnosti je za vse stike</translation>
 <translation id="9170848237812810038">&amp;Razveljavi</translation>
 <translation id="9170884462774788842">Drug program v računalniku je dodal temo, ki lahko spremeni način delovanja Chroma.</translation>

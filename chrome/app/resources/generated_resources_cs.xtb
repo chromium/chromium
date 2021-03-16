@@ -1062,6 +1062,7 @@ Chcete-li spravovat nastavení tohoto účtu, nainstalujte si do zařízení apl
 <translation id="215753907730220065">Ukončit režim celé obrazovky</translation>
 <translation id="2157875535253991059">Tato stránka se teď zobrazuje na celou obrazovku</translation>
 <translation id="2158475082070321257">Kopírovat odkaz na zvýraznění</translation>
+<translation id="2159488579268505102">USB-C</translation>
 <translation id="216169395504480358">Přidat Wi-Fi...</translation>
 <translation id="2162155940152307086">Synchronizace bude zahájena, až opustíte nastavení</translation>
 <translation id="2162838847352058695">Bránit webům automaticky stahovat více souborů</translation>
@@ -1184,6 +1185,7 @@ Chcete-li spravovat nastavení tohoto účtu, nainstalujte si do zařízení apl
 <translation id="2297705863329999812">Hledat tiskárny</translation>
 <translation id="2299734369537008228">Posuvník: <ph name="MIN_LABEL" /> až <ph name="MAX_LABEL" /></translation>
 <translation id="2299941608784654630">Všechny soubory protokolů shromážděné službou debugd zahrnout jako samostatný archiv.</translation>
+<translation id="2300214399009193026">PCIe</translation>
 <translation id="2300383962156589922">Přizpůsobení a ovládání aplikace <ph name="APP_NAME" /></translation>
 <translation id="2301382460326681002">Kořenový adresář rozšíření je neplatný.</translation>
 <translation id="23030561267973084">Aplikace <ph name="EXTENSION_NAME" /> požaduje další oprávnění.</translation>
@@ -2760,6 +2762,7 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="404493185430269859">Výchozí vyhledávač</translation>
 <translation id="4046013316139505482">Tato rozšíření nepotřebují zobrazit a změnit informace na tomto webu.</translation>
 <translation id="4046123991198612571">Další skladba</translation>
+<translation id="4047581153955375979">USB4</translation>
 <translation id="4047726037116394521">Přejít domů</translation>
 <translation id="4049783682480068824">{COUNT,plural, =1{# kontakt není dostupný. Chcete-li u něj používat sdílení nablízko, přidejte si do kontaktů e‑mailovou adresu přidruženou k jeho účtu Google.}few{# kontakty nejsou dostupné. Pokud s nimi chcete používat sdílení nablízko, přidejte si do kontaktů e‑mailovou adresu přidruženou k jejich účtům Google.}many{# kontaktu není dostupných. Pokud s nimi chcete používat sdílení nablízko, přidejte si do kontaktů e‑mailovou adresu přidruženou k jejich účtům Google.}other{# kontaktů není dostupných. Pokud s nimi chcete používat sdílení nablízko, přidejte si do kontaktů e‑mailovou adresu přidruženou k jejich účtům Google.}}</translation>
 <translation id="4050225813016893843">Metoda ověření</translation>
@@ -7210,6 +7213,7 @@ Přiřazení odstraníte stisknutím přiřazeného přepínače.</translation>
 <translation id="9168436347345867845">Později</translation>
 <translation id="9169496697824289689">Zobrazit klávesové zkratky</translation>
 <translation id="916964310188958970">Proč tento návrh?</translation>
+<translation id="9170048603158555829">Thunderbolt</translation>
 <translation id="9170061643796692986">Aktuální nastavení viditelnosti je Všechny kontakty</translation>
 <translation id="9170848237812810038">Z&amp;pět</translation>
 <translation id="9170884462774788842">Jiný program ve vašem počítači nainstaloval motiv, který může měnit funkce Chromu.</translation>

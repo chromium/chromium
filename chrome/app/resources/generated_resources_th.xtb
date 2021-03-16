@@ -1060,6 +1060,7 @@
 <translation id="215753907730220065">ออกจากการแสดงเต็มหน้าจอ</translation>
 <translation id="2157875535253991059">หน้าเว็บนี้แสดงแบบเต็มหน้าจอแล้ว</translation>
 <translation id="2158475082070321257">คัดลอกลิงก์ไปยังไฮไลต์</translation>
+<translation id="2159488579268505102">USB-C</translation>
 <translation id="216169395504480358">เพิ่ม WiFi...</translation>
 <translation id="2162155940152307086">การซิงค์จะเริ่มขึ้นเมื่อคุณออกจากการตั้งค่า</translation>
 <translation id="2162838847352058695">บล็อกเว็บไซต์ไม่ให้ดาวน์โหลดไฟล์หลายไฟล์โดยอัตโนมัติ</translation>
@@ -1182,6 +1183,7 @@
 <translation id="2297705863329999812">ค้นหาเครื่องพิมพ์</translation>
 <translation id="2299734369537008228">แถบเลื่อน: <ph name="MIN_LABEL" /> ถึง <ph name="MAX_LABEL" /></translation>
 <translation id="2299941608784654630">รวมไฟล์บันทึกทั้งหมดที่รวบรวมโดย debugd เป็นที่เก็บถาวรแยกต่างหาก</translation>
+<translation id="2300214399009193026">PCIe</translation>
 <translation id="2300383962156589922">ปรับแต่งและควบคุม <ph name="APP_NAME" /></translation>
 <translation id="2301382460326681002">ไดเรกทอรีหลักของส่วนขยายไม่ถูกต้อง</translation>
 <translation id="23030561267973084">"<ph name="EXTENSION_NAME" />" ขออนุญาตเพิ่มเติม</translation>
@@ -2760,6 +2762,7 @@
 <translation id="404493185430269859">เครื่องมือค้นหาเริ่มต้น</translation>
 <translation id="4046013316139505482">ส่วนขยายเหล่านี้ไม่จำเป็นต้องเห็นและเปลี่ยนแปลงข้อมูลในเว็บไซต์นี้</translation>
 <translation id="4046123991198612571">แทร็กถัดไป</translation>
+<translation id="4047581153955375979">USB4</translation>
 <translation id="4047726037116394521">ไปที่หน้าแรก</translation>
 <translation id="4049783682480068824">{COUNT,plural, =1{รายชื่อติดต่อ # รายการไม่พร้อมใช้งาน หากต้องการใช้การแชร์ใกล้เคียงกับรายชื่อดังกล่าว ให้เพิ่มอีเมลที่เชื่อมโยงกับบัญชี Google ของรายชื่อนั้นลงในรายชื่อติดต่อของคุณ}other{รายชื่อติดต่อ # รายการไม่พร้อมใช้งาน หากต้องการใช้การแชร์ใกล้เคียงกับรายชื่อดังกล่าว ให้เพิ่มอีเมลที่เชื่อมโยงกับบัญชี Google ของรายชื่อเหล่านั้นลงในรายชื่อติดต่อของคุณ}}</translation>
 <translation id="4050225813016893843">วิธีการตรวจสอบสิทธิ์</translation>
@@ -7209,6 +7212,7 @@
 <translation id="9168436347345867845">ข้ามไปก่อน</translation>
 <translation id="9169496697824289689">ดูแป้นพิมพ์ลัด</translation>
 <translation id="916964310188958970">ทำไมแนะนำการค้นหานี้</translation>
+<translation id="9170048603158555829">Thunderbolt</translation>
 <translation id="9170061643796692986">การตั้งค่าระดับการเข้าถึงปัจจุบันคือรายชื่อติดต่อทั้งหมด</translation>
 <translation id="9170848237812810038">เ&amp;ลิกทำ</translation>
 <translation id="9170884462774788842">โปรแกรมอื่นในคอมพิวเตอร์ของคุณเพิ่มธีมที่อาจเปลี่ยนวิธีการทำงานของ Chrome</translation>

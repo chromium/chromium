@@ -1058,6 +1058,7 @@ Oʻz qurilmangizda Family Link ilovasini oʻrnatib, bu hisob sozlamalarini boshq
 <translation id="215753907730220065">To‘liq ekran rejimidan chiqish</translation>
 <translation id="2157875535253991059">Ushbu sahifa hozir to‘liq ekran rejimida.</translation>
 <translation id="2158475082070321257">Havolani tanlangan matnga nusxalash</translation>
+<translation id="2159488579268505102">USB-C</translation>
 <translation id="216169395504480358">Wi-Fi ulanishini qo‘shish...</translation>
 <translation id="2162155940152307086">Sync sozlamalaridan chiqishingiz bilan sinxronizatsiya boshlanadi</translation>
 <translation id="2162838847352058695">Saytlarga bir nechta faylni avtomatik yuklab olishni taqiqlash</translation>
@@ -1180,6 +1181,7 @@ Oʻz qurilmangizda Family Link ilovasini oʻrnatib, bu hisob sozlamalarini boshq
 <translation id="2297705863329999812">Printerlarni qidirish</translation>
 <translation id="2299734369537008228">Slayder: <ph name="MIN_LABEL" /> – <ph name="MAX_LABEL" /></translation>
 <translation id="2299941608784654630">debugd orqali yigʻilgan barcha jurnal fayllarini alohida arxivlash.</translation>
+<translation id="2300214399009193026">PCIe</translation>
 <translation id="2300383962156589922"><ph name="APP_NAME" /> ilovasini sozlash va boshqarish</translation>
 <translation id="2301382460326681002">Kengaytma tub katalogi noto‘g‘ri.</translation>
 <translation id="23030561267973084">“<ph name="EXTENSION_NAME" />” kengaytmasi qo‘shimcha ruxsatnomalar so‘radi.</translation>
@@ -2758,6 +2760,7 @@ Oʻz qurilmangizda Family Link ilovasini oʻrnatib, bu hisob sozlamalarini boshq
 <translation id="404493185430269859">Birlamchi qidiruv tizimi</translation>
 <translation id="4046013316139505482">Bu kengaytmalar mazkur saytdagi maʼlumotlarni koʻrishi va oʻzgartirishi kerak emas.</translation>
 <translation id="4046123991198612571">Keyingi musiqa</translation>
+<translation id="4047581153955375979">USB4</translation>
 <translation id="4047726037116394521">Boshiga</translation>
 <translation id="4049783682480068824">{COUNT,plural, =1{# ta kontakt aloqada emas. Ular bilan Yaqin-atrofga yuborish funksiyasini ishlatish uchun kontaktlaringizga ularning Google hisobidagi email manzilini kiriting.}other{# ta kontant aloqada emas. Ular bilan Yaqin-atrofga yuborish funksiyasini ishlatish uchun kontaktlaringizga ularning Google hisoblaridagi email manzillarini kiriting.}}</translation>
 <translation id="4050225813016893843">Autentifikatsiya usuli</translation>
@@ -7205,6 +7208,7 @@ Tayinlovni bekor qilish uchun belgilangan tugmani bosing.</translation>
 <translation id="9168436347345867845">Keyinroq</translation>
 <translation id="9169496697824289689">Klaviatura yorliqlarini ko‘rish</translation>
 <translation id="916964310188958970">Bu taklif nega chiqdi?</translation>
+<translation id="9170048603158555829">Thunderbolt</translation>
 <translation id="9170061643796692986">Ayni vaqtda barcha kontaktlarga ochiqlik sozlangan</translation>
 <translation id="9170848237812810038">&amp;Bekor qilish</translation>
 <translation id="9170884462774788842">Kompyuteringizdagi dasturlardan biri Chrome faoliyatiga ta’sir qiladigan mavzu o‘rnatib qo‘ydi.</translation>

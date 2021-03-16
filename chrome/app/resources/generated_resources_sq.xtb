@@ -674,7 +674,7 @@
 <translation id="1734212868489994726">Blu e çelur</translation>
 <translation id="1734230530703461088">Ngarkimi i shtesave brenda kufirit kohor dështoi. Kontakto me administratorin tënd.</translation>
 <translation id="1734824808160898225"><ph name="PRODUCT_NAME" /> mund të mos jetë në gjendje të përditësohet vetë</translation>
-<translation id="173522743738009831">Rreth "Nismës për mjedis uebi privat"</translation>
+<translation id="173522743738009831">Rreth Privacy Sandbox</translation>
 <translation id="173628468822554835">E kuptova. Si parazgjedhje, sajtet e reja që viziton nuk do të të dërgojnë njoftime.</translation>
 <translation id="1736419249208073774">Eksploro</translation>
 <translation id="1737968601308870607">Gabim i skedarit</translation>
@@ -1057,6 +1057,7 @@ Cilësimet e kësaj llogarie mund t'i menaxhosh duke instaluar aplikacionin Fami
 <translation id="215753907730220065">Dil nga ekrani i plotë</translation>
 <translation id="2157875535253991059">Kjo faqe tani është në ekran të plotë</translation>
 <translation id="2158475082070321257">Kopjo lidhjen për te teksti i theksuar</translation>
+<translation id="2159488579268505102">USB-C</translation>
 <translation id="216169395504480358">Shto Wi-Fi...</translation>
 <translation id="2162155940152307086">Sinkronizimi do të fillojë pasi të largohesh nga cilësimet e sinkronizimit</translation>
 <translation id="2162838847352058695">Blloko sajtet që të mos shkarkojnë automatikisht shumë skedarë</translation>
@@ -1179,6 +1180,7 @@ Cilësimet e kësaj llogarie mund t'i menaxhosh duke instaluar aplikacionin Fami
 <translation id="2297705863329999812">Kërko printerët</translation>
 <translation id="2299734369537008228">Rrëshqitësi: <ph name="MIN_LABEL" /> në <ph name="MAX_LABEL" /></translation>
 <translation id="2299941608784654630">Përfshi të gjithë skedarët e evidencave të mbledhur nga debugd si një arkiv të veçantë.</translation>
+<translation id="2300214399009193026">PCIe</translation>
 <translation id="2300383962156589922">Personalizo dhe kontrollo <ph name="APP_NAME" /></translation>
 <translation id="2301382460326681002">Direktoria rrënjë e shtesës është e pavlefshme.</translation>
 <translation id="23030561267973084">"<ph name="EXTENSION_NAME" />" ka kërkuar leje shtesë.</translation>
@@ -2011,7 +2013,7 @@ Cilësimet e kësaj llogarie mund t'i menaxhosh duke instaluar aplikacionin Fami
 <translation id="3238192140106069382">Po lidh dhe po verifikon</translation>
 <translation id="3239373508713281971">Kufiri kohor u hoq për <ph name="APP_NAME" /></translation>
 <translation id="3241680850019875542">Përzgjidh direktorinë kryesore të shtesës prej nga do të krijosh paketën. Për të përditësuar një shtesë, përzgjidh gjithashtu skedarin e çelësit privat për ripërdorim.</translation>
-<translation id="3242905690080165035">"Nisma për mjedis uebi privat" është ende në zhvillim aktiv dhe ofrohet në rajone të caktuara. Për momentin, sajtet mund të provojnë "Nismën për mjedis uebi privat" ndërkohë që vazhdojnë të përdorin teknologjitë aktuale të uebit, si p.sh. kukit e palëve të treta. <ph name="BEGIN_LINK" />Mëso më shumë<ph name="END_LINK" /></translation>
+<translation id="3242905690080165035">Privacy Sandbox është ende në zhvillim aktiv dhe ofrohet në rajone të caktuara. Për momentin, sajtet mund të provojnë Privacy Sandbox ndërkohë që vazhdojnë të përdorin teknologjitë aktuale të uebit, si p.sh. kukit e palëve të treta. <ph name="BEGIN_LINK" />Mëso më shumë<ph name="END_LINK" /></translation>
 <translation id="3244294424315804309">Vazhdo ta çaktivizosh tingullin</translation>
 <translation id="3246107497225150582">{0,plural, =1{Përditëso pajisjen brenda një dite}other{Përditëso pajisjen brenda # ditësh}}</translation>
 <translation id="324849028894344899"><ph name="WINDOW_TITLE" /> - gabim i rrjetit</translation>
@@ -2139,7 +2141,7 @@ Cilësimet e kësaj llogarie mund t'i menaxhosh duke instaluar aplikacionin Fami
 <translation id="3390013585654699824">Detajet e aplikacioneve</translation>
 <translation id="3390741581549395454">Aplikacionet dhe skedarët e Linux janë rezervuar me sukses. Përditësimi do të fillojë së shpejti.</translation>
 <translation id="3391482648489541560">modifikimi i skedarëve</translation>
-<translation id="3391512812407811893">Provat e "Nismës për mjedis uebi privat"</translation>
+<translation id="3391512812407811893">Provat e Privacy Sandbox</translation>
 <translation id="339178315942519818">Shiko njoftimet nga aplikacionet e tua të bisedës në pajisjen tënde <ph name="DEVICE_TYPE" /></translation>
 <translation id="3396800784455899911">Duke klikuar butonin "Prano dhe vazhdo", bie njëherësh dakord me përpunimin e përshkruar më lart për këto shërbime të Google.</translation>
 <translation id="3399432415385675819">Njoftimet do të çaktivizohen</translation>
@@ -2757,6 +2759,7 @@ Cilësimet e kësaj llogarie mund t'i menaxhosh duke instaluar aplikacionin Fami
 <translation id="404493185430269859">Motori kërkimor me parazgjedhje</translation>
 <translation id="4046013316139505482">Këto shtesa nuk kanë nevojë të shikojnë dhe të ndryshojnë informacionet në këtë sajt.</translation>
 <translation id="4046123991198612571">Kënga tjetër</translation>
+<translation id="4047581153955375979">USB4</translation>
 <translation id="4047726037116394521">Shko tek ekrani bazë</translation>
 <translation id="4049783682480068824">{COUNT,plural, =1{# kontakt nuk ofrohet. Për të përdorur "Ndarjen në afërsi" me të, shto te kontaktet e tua adresën e email-it të lidhur me "Llogarinë e tij të Google".}other{# kontakte nuk ofrohen. Për të përdorur "Ndarjen në afërsi" me ta, shto te kontaktet e tua adresën e email-it të lidhur me "Llogaritë e tyre të Google".}}</translation>
 <translation id="4050225813016893843">Metoda e vërtetimit</translation>
@@ -4642,7 +4645,7 @@ Cilësimet e kësaj llogarie mund t'i menaxhosh duke instaluar aplikacionin Fami
 <translation id="6271348838875430303">korrigjimi u zhbë</translation>
 <translation id="6272643420381259437">Ndodhi një gabim (<ph name="ERROR" />) gjatë shkarkimit të përbërësit shtesë.</translation>
 <translation id="6273677812470008672">Cilësia</translation>
-<translation id="6275846828483490454">"Nisma për mjedis uebi privat" është një nismë e vazhdueshme për të ruajtur uebin e hapur që do të të ndihmojë të mbrohesh nga mekanizmat e gjurmimit.</translation>
+<translation id="6275846828483490454">Privacy Sandbox është një nismë e vazhdueshme për të ruajtur uebin e hapur që do të të ndihmojë të mbrohesh nga mekanizmat e gjurmimit.</translation>
 <translation id="6276210637549544171">Përfaqësuesi <ph name="PROXY_SERVER" /> kërkon një emër përdoruesi dhe një fjalëkalim.</translation>
 <translation id="6277105963844135994">Rrjetit i kaloi afati</translation>
 <translation id="6277518330158259200">N&amp;xjirr një pamje të ekranit</translation>
@@ -5305,7 +5308,7 @@ Cilësimet e kësaj llogarie mund t'i menaxhosh duke instaluar aplikacionin Fami
 <translation id="7018275672629230621">Lexo dhe ndrysho historikun e shfletimit</translation>
 <translation id="7019805045859631636">E shpejtë</translation>
 <translation id="7022562585984256452">Faqja jote kryesore është caktuar.</translation>
-<translation id="7023206482239788111">"Nisma për mjedis uebi privat" ruan vitalitetin e uebit të hapur duke krijuar mënyra më të mira për të kryer këto shërbime, pa prishur sajtet dhe duke parandaluar njëkohësisht që të mos gjurmohesh fshehtas nëpër ueb.</translation>
+<translation id="7023206482239788111">Privacy Sandbox ruan vitalitetin e uebit të hapur duke krijuar mënyra më të mira për të kryer këto shërbime, pa prishur sajtet dhe duke parandaluar njëkohësisht që të mos gjurmohesh fshehtas nëpër ueb.</translation>
 <translation id="7025082428878635038">Prezantimi i një mënyre të re për të naviguar me gjeste</translation>
 <translation id="7025190659207909717">Menaxhimi i shërbimit të të dhënave celulare</translation>
 <translation id="7025895441903756761">Siguria dhe privatësia</translation>
@@ -6339,7 +6342,7 @@ Mbaje skedarin e çelësit tënd në një vend të sigurt. Do të të duhet për
 <translation id="8186609076106987817">Serveri nuk mund të gjejë skedarin.</translation>
 <translation id="8188389033983459049">Kontrollo cilësimet e pajisjes dhe aktivizoje për të vazhduar</translation>
 <translation id="8189306097519446565">Llogaritë e shkollës</translation>
-<translation id="8189750580333936930">Nisma për mjedis uebi privat</translation>
+<translation id="8189750580333936930">Privacy Sandbox</translation>
 <translation id="8190193592390505034">Po lidhet me <ph name="PROVIDER_NAME" /></translation>
 <translation id="8191230140820435481">Menaxho aplikacionet e tua, shtesat dhe temat</translation>
 <translation id="8192944472786724289"><ph name="APP_NAME" /> dëshiron të ndajë përmbajtjen e ekranit tënd.</translation>
@@ -7204,6 +7207,7 @@ Shtyp një çelës të caktuar për të hequr detyrën.</translation>
 <translation id="9168436347345867845">Bëje më vonë</translation>
 <translation id="9169496697824289689">Shiko shkurtoret e tastierës</translation>
 <translation id="916964310188958970">Pse ky sugjerim?</translation>
+<translation id="9170048603158555829">Thunderbolt</translation>
 <translation id="9170061643796692986">Cilësimi aktual i dukshmërisë është "Të gjitha kontaktet"</translation>
 <translation id="9170848237812810038">&amp;Zhbëj</translation>
 <translation id="9170884462774788842">Një program tjetër në kompjuterin tënd shtoi një temë që mund të ndryshojë mënyrën e funksionimit të Chrome.</translation>

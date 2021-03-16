@@ -1059,6 +1059,7 @@
 <translation id="215753907730220065">יציאה ממסך מלא</translation>
 <translation id="2157875535253991059">דף זה הוא במסך מלא כעת.</translation>
 <translation id="2158475082070321257">העתקת קישור לטקסט המודגש</translation>
+<translation id="2159488579268505102">USB-C</translation>
 <translation id="216169395504480358">‏הוספת רשת Wi-Fi...</translation>
 <translation id="2162155940152307086">הסנכרון יתחיל מיד לאחר היציאה מהגדרות הסנכרון</translation>
 <translation id="2162838847352058695">חסימת האפשרות של אתרים להוריד מספר קבצים באופן אוטומטי</translation>
@@ -1181,6 +1182,7 @@
 <translation id="2297705863329999812">חיפוש מדפסות</translation>
 <translation id="2299734369537008228">מחוון: <ph name="MIN_LABEL" /> עד <ph name="MAX_LABEL" /></translation>
 <translation id="2299941608784654630">הכללה של כל קובצי היומן שנאספו על-ידי ניפוי הבאגים כארכיון נפרד.</translation>
+<translation id="2300214399009193026">PCIe</translation>
 <translation id="2300383962156589922">התאמה אישית ושליטה ב-<ph name="APP_NAME" /></translation>
 <translation id="2301382460326681002">ספריית הבסיס של ההרחבה אינה חוקית.</translation>
 <translation id="23030561267973084">"<ph name="EXTENSION_NAME" />" ביקש אישורים נוספים.</translation>
@@ -2760,6 +2762,7 @@
 <translation id="404493185430269859">מנוע החיפוש המוגדר כברירת מחדל</translation>
 <translation id="4046013316139505482">לתוספים האלה לא דרושה יכולת לראות את המידע באתר הזה ולשנות אותו.</translation>
 <translation id="4046123991198612571">הרצועה הבאה</translation>
+<translation id="4047581153955375979">USB4</translation>
 <translation id="4047726037116394521">חזרה לדף הבית</translation>
 <translation id="4049783682480068824">{COUNT,plural, =1{‏איש קשר אחד לא זמין. כדי להשתמש ב'שיתוף בקרבת מקום' עם אנשי הקשר שלך, יש להוסיף להם את כתובת האימייל שמשויכת לחשבון Google שלהם.}two{‏# אנשי קשר אינם זמינים. כדי להשתמש ב'שיתוף בקרבת מקום' עם אנשי הקשר שלך, יש להוסיף להם את כתובות האימייל שמשויכות לחשבונות Google שלהם.}many{‏# אנשי קשר אינם זמינים. כדי להשתמש ב'שיתוף בקרבת מקום' עם אנשי הקשר שלך, יש להוסיף להם את כתובות האימייל שמשויכות לחשבונות Google שלהם.}other{‏# אנשי קשר אינם זמינים. כדי להשתמש ב'שיתוף בקרבת מקום' עם אנשי הקשר שלך, יש להוסיף להם את כתובות האימייל שמשויכות לחשבונות Google שלהם.}}</translation>
 <translation id="4050225813016893843">שיטת אימות</translation>
@@ -7212,6 +7215,7 @@
 <translation id="9168436347345867845">מאוחר יותר</translation>
 <translation id="9169496697824289689">הצגת מקשי קיצור</translation>
 <translation id="916964310188958970">למה ההצעה הזאת הופיעה?</translation>
+<translation id="9170048603158555829">Thunderbolt</translation>
 <translation id="9170061643796692986">הגדרת הרשאות הגישה הנוכחית היא 'כל אנשי הקשר'</translation>
 <translation id="9170848237812810038">&amp;ביטול</translation>
 <translation id="9170884462774788842">‏תוכנית אחרת במחשב שלך הוסיפה עיצוב שעשוי לשנות את אופן הפעולה של Chrome.</translation>
