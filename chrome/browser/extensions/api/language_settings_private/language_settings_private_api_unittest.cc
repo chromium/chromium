@@ -189,6 +189,23 @@ TEST_F(LanguageSettingsPrivateApiTest, GetSpellcheckDictionaryStatusesTest) {
   EXPECT_EQ(expected, *actual);
 }
 
+TEST_F(LanguageSettingsPrivateApiTest, SetLanguageAlwaysTranslateStateTest) {
+  std::unique_ptr<translate::TranslatePrefs> translate_prefs_ =
+      ChromeTranslateClient::CreateTranslatePrefs(profile()->GetPrefs());
+
+  EXPECT_FALSE(translate_prefs_->HasLanguagePairsToAlwaysTranslate());
+
+  auto function = base::MakeRefCounted<
+      LanguageSettingsPrivateSetLanguageAlwaysTranslateStateFunction>();
+  api_test_utils::RunFunction(function.get(), "[\"af\", true]", profile());
+  EXPECT_TRUE(translate_prefs_->HasLanguagePairsToAlwaysTranslate());
+
+  function = base::MakeRefCounted<
+      LanguageSettingsPrivateSetLanguageAlwaysTranslateStateFunction>();
+  api_test_utils::RunFunction(function.get(), "[\"af\", false]", profile());
+  EXPECT_FALSE(translate_prefs_->HasLanguagePairsToAlwaysTranslate());
+}
+
 TEST_F(LanguageSettingsPrivateApiTest, GetAlwaysTranslateLanguagesListTest) {
   std::unique_ptr<translate::TranslatePrefs> translate_prefs_ =
       ChromeTranslateClient::CreateTranslatePrefs(profile()->GetPrefs());

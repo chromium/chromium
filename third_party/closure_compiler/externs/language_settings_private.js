@@ -109,6 +109,13 @@ chrome.languageSettingsPrivate.moveLanguage = function(languageCode, moveType) {
 chrome.languageSettingsPrivate.getAlwaysTranslateLanguages = function(callback) {};
 
 /**
+ * Sets whether a given language should always be automatically translated.
+ * @param {string} languageCode
+ * @param {boolean} alwaysTranslate
+*/
+chrome.languageSettingsPrivate.setLanguageAlwaysTranslateState = function(languageCode, alwaysTranslate) {};
+
+/**
  * Gets the current status of the chosen spell check dictionaries.
  * @param {function(!Array<!chrome.languageSettingsPrivate.SpellcheckDictionaryStatus>): void}
  *     callback

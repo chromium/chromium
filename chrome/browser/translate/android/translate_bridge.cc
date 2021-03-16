@@ -277,15 +277,9 @@ static void JNI_TranslateBridge_SetLanguageAlwaysTranslateState(
   std::string language_code(ConvertJavaStringToUTF8(env, language));
   std::unique_ptr<translate::TranslatePrefs> translate_prefs =
       ChromeTranslateClient::CreateTranslatePrefs(GetPrefService());
-  std::string target_language_code(translate_prefs->GetRecentTargetLanguage());
 
-  if (alwaysTranslate) {
-    translate_prefs->AddLanguagePairToAlwaysTranslateList(language_code,
-                                                          target_language_code);
-  } else {
-    translate_prefs->RemoveLanguagePairFromAlwaysTranslateList(
-        language_code, target_language_code);
-  }
+  translate_prefs->SetLanguageAlwaysTranslateState(language_code,
+                                                   alwaysTranslate);
 }
 
 // static

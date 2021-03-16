@@ -593,6 +593,18 @@ void TranslatePrefs::RemoveLanguagePairFromAlwaysTranslateList(
   dict->RemoveKey(original_language);
 }
 
+void TranslatePrefs::SetLanguageAlwaysTranslateState(
+    base::StringPiece original_language,
+    bool always_translate) {
+  if (always_translate) {
+    AddLanguagePairToAlwaysTranslateList(original_language,
+                                         GetRecentTargetLanguage());
+  } else {
+    RemoveLanguagePairFromAlwaysTranslateList(original_language,
+                                              GetRecentTargetLanguage());
+  }
+}
+
 std::vector<std::string> TranslatePrefs::GetAlwaysTranslateLanguages() const {
   const base::DictionaryValue* dict =
       prefs_->GetDictionary(kPrefAlwaysTranslateLists);

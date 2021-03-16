@@ -1100,6 +1100,16 @@ TEST_F(TranslatePrefsTest, AlwaysTranslateLanguages) {
 
   // AlwaysTranslateList should be empty now
   EXPECT_FALSE(translate_prefs_->HasLanguagePairsToAlwaysTranslate());
+
+  // SetLanguageAlwaysTranslateState
+  translate_prefs_->SetRecentTargetLanguage("es");
+  translate_prefs_->SetLanguageAlwaysTranslateState("am", true);
+  translate_prefs_->SetRecentTargetLanguage("en");
+  translate_prefs_->SetLanguageAlwaysTranslateState("am", true);
+  always_translate_languages = translate_prefs_->GetAlwaysTranslateLanguages();
+  EXPECT_EQ(std::vector<std::string>({"am"}), always_translate_languages);
+  translate_prefs_->SetLanguageAlwaysTranslateState("am", false);
+  EXPECT_FALSE(translate_prefs_->HasLanguagePairsToAlwaysTranslate());
 }
 
 TEST_F(TranslatePrefsTest, CanTranslateLanguage) {

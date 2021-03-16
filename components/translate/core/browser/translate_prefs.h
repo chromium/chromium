@@ -250,6 +250,13 @@ class TranslatePrefs {
       base::StringPiece original_language,
       base::StringPiece target_language);
 
+  // Sets the always translate state for a language.
+  // The always translate language list is actually a dict mapping
+  // source_language -> target_language.  We use the current target language
+  // when adding |language| to the dict.
+  void SetLanguageAlwaysTranslateState(base::StringPiece original_language,
+                                       bool always_translate);
+
   // Gets the languages that are set to always translate formatted as Chrome
   // language codes.
   std::vector<std::string> GetAlwaysTranslateLanguages() const;

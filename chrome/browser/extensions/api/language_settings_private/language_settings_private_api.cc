@@ -448,6 +448,29 @@ LanguageSettingsPrivateGetAlwaysTranslateLanguagesFunction::Run() {
       base::Value::FromUniquePtrValue(std::move(always_translate_languages_))));
 }
 
+LanguageSettingsPrivateSetLanguageAlwaysTranslateStateFunction::
+    LanguageSettingsPrivateSetLanguageAlwaysTranslateStateFunction()
+    : chrome_details_(this) {}
+
+LanguageSettingsPrivateSetLanguageAlwaysTranslateStateFunction::
+    ~LanguageSettingsPrivateSetLanguageAlwaysTranslateStateFunction() = default;
+
+ExtensionFunction::ResponseAction
+LanguageSettingsPrivateSetLanguageAlwaysTranslateStateFunction::Run() {
+  const auto params = language_settings_private::
+      SetLanguageAlwaysTranslateState::Params::Create(*args_);
+  EXTENSION_FUNCTION_VALIDATE(params.get());
+
+  const std::unique_ptr<translate::TranslatePrefs> translate_prefs =
+      ChromeTranslateClient::CreateTranslatePrefs(
+          chrome_details_.GetProfile()->GetPrefs());
+
+  translate_prefs->SetLanguageAlwaysTranslateState(params->language_code,
+                                                   params->always_translate);
+
+  return RespondNow(NoArguments());
+}
+
 LanguageSettingsPrivateMoveLanguageFunction::
     LanguageSettingsPrivateMoveLanguageFunction()
     : chrome_details_(this) {}

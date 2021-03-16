@@ -950,6 +950,16 @@ Polymer({
   },
 
   /**
+   * Sets whether a given language should always be automatically translated.
+   * @param {string} languageCode
+   * @param {boolean} alwaysTranslate
+   */
+  setLanguageAlwaysTranslateState(languageCode, alwaysTranslate) {
+    this.languageSettingsPrivate_.setLanguageAlwaysTranslateState(
+        languageCode, alwaysTranslate);
+  },
+
+  /**
    * Moves the language in the list of enabled languages either up (toward the
    * front of the list) or down (toward the back).
    * @param {string} languageCode

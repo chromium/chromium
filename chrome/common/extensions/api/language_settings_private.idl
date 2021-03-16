@@ -112,6 +112,10 @@ namespace languageSettingsPrivate {
     // Gets languages that should always be automatically translated.
     static void getAlwaysTranslateLanguages(GetAlwaysTranslateLanguagesCallback callback);
 
+    // Sets whether a given language should always be automatically translated.
+    static void setLanguageAlwaysTranslateState(
+      DOMString languageCode, boolean alwaysTranslate);
+
     // Gets the current status of the chosen spell check dictionaries.
     static void getSpellcheckDictionaryStatuses(
         GetSpellcheckDictionaryStatusesCallback callback);

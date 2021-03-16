@@ -225,6 +225,23 @@ cr.define('settings', function() {
     }
 
     /**
+     * Sets whether a given language should always be automatically translated.
+     * @param {string} languageCode
+     * @param {boolean} alwaysTranslate
+     */
+    setLanguageAlwaysTranslateState(languageCode, alwaysTranslate) {
+      if (alwaysTranslate) {
+        this.alwaysTranslateList.push(languageCode);
+      } else {
+        const index = this.alwaysTranslateList.indexOf(languageCode);
+        if (index === -1) {
+          return;
+        }
+        this.alwaysTranslateList.splice(index, 1);
+      }
+    }
+
+    /**
      * Enables a language, adding it to the Accept-Language list (used to decide
      * which languages to translate, generate the Accept-Language header, etc.).
      * @param {string} languageCode
