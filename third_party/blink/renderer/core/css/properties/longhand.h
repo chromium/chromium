@@ -40,6 +40,12 @@ class Longhand : public CSSProperty {
   virtual void ApplyValue(StyleResolverState&, const CSSValue&) const {
     NOTREACHED();
   }
+  void ApplyUnset(StyleResolverState& state) const {
+    if (IsInherited())
+      ApplyInherit(state);
+    else
+      ApplyInitial(state);
+  }
   virtual const blink::Color ColorIncludingFallback(bool, const ComputedStyle&)
       const {
     NOTREACHED();

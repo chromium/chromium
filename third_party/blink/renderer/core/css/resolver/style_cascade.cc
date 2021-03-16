@@ -11,6 +11,7 @@
 #include "third_party/blink/renderer/core/animation/property_handle.h"
 #include "third_party/blink/renderer/core/animation/transition_interpolation.h"
 #include "third_party/blink/renderer/core/css/css_custom_property_declaration.h"
+#include "third_party/blink/renderer/core/css/css_cyclic_variable_value.h"
 #include "third_party/blink/renderer/core/css/css_font_selector.h"
 #include "third_party/blink/renderer/core/css/css_invalid_variable_value.h"
 #include "third_party/blink/renderer/core/css/css_pending_substitution_value.h"
@@ -230,8 +231,16 @@ const CSSValue* StyleCascade::Resolve(const CSSPropertyName& name,
 
   DCHECK(resolved);
 
-  if (resolved->IsInvalidVariableValue())
+  // TODO(crbug.com/1185745): Cycles in animations get special handling by our
+  // implementation. This is not per spec, but the correct behavior is not
+  // defined at the moment.
+  if (resolved->IsCyclicVariableValue())
     return nullptr;
+
+  // TODO(crbug.com/1185745): We should probably not return 'unset' for
+  // properties where CustomProperty::SupportsGuaranteedInvalid return true.
+  if (resolved->IsInvalidVariableValue())
+    return cssvalue::CSSUnsetValue::Create();
 
   return resolved;
 }
@@ -640,12 +649,10 @@ const CSSValue* StyleCascade::ResolveCustomProperty(
   state_.Style()->SetHasVariableDeclaration();
 
   if (resolver.InCycle())
-    return CSSInvalidVariableValue::Create();
+    return CSSCyclicVariableValue::Create();
 
-  if (!data) {
-    MaybeUseCountInvalidVariableUnset(To<CustomProperty>(property));
-    return cssvalue::CSSUnsetValue::Create();
-  }
+  if (!data)
+    return CSSInvalidVariableValue::Create();
 
   if (data == decl.Value())
     return &decl;
@@ -979,20 +986,6 @@ void StyleCascade::CountUse(WebFeature feature) {
 void StyleCascade::MaybeUseCountRevert(const CSSValue& value) {
   if (IsRevert(value))
     CountUse(WebFeature::kCSSKeywordRevert);
-}
-
-void StyleCascade::MaybeUseCountInvalidVariableUnset(
-    const CustomProperty& property) {
-  if (!property.SupportsGuaranteedInvalid())
-    return;
-  if (!property.IsInherited() && !property.HasInitialValue())
-    return;
-  const AtomicString& name = property.GetPropertyNameAtomicString();
-  const ComputedStyle* parent_style = state_.ParentStyle();
-  if (parent_style &&
-      parent_style->GetVariableData(name, property.IsInherited())) {
-    CountUse(WebFeature::kCSSInvalidVariableUnset);
-  }
 }
 
 }  // namespace blink

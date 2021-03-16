@@ -112,6 +112,8 @@ blink_core_sources_css = [
   "css_initial_value.h",
   "css_invalid_variable_value.cc",
   "css_invalid_variable_value.h",
+  "css_cyclic_variable_value.cc",
+  "css_cyclic_variable_value.h",
   "css_keyframe_rule.cc",
   "css_keyframe_rule.h",
   "css_keyframe_shorthand_value.cc",

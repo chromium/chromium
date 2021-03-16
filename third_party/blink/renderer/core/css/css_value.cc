@@ -36,6 +36,7 @@
 #include "third_party/blink/renderer/core/css/css_cursor_image_value.h"
 #include "third_party/blink/renderer/core/css/css_custom_ident_value.h"
 #include "third_party/blink/renderer/core/css/css_custom_property_declaration.h"
+#include "third_party/blink/renderer/core/css/css_cyclic_variable_value.h"
 #include "third_party/blink/renderer/core/css/css_element_offset_value.h"
 #include "third_party/blink/renderer/core/css/css_font_face_src_value.h"
 #include "third_party/blink/renderer/core/css/css_font_family_value.h"
@@ -279,6 +280,8 @@ bool CSSValue::operator==(const CSSValue& other) const {
                                                                        other);
       case kInvalidVariableValueClass:
         return CompareCSSValues<CSSInvalidVariableValue>(*this, other);
+      case kCyclicVariableValueClass:
+        return CompareCSSValues<CSSCyclicVariableValue>(*this, other);
       case kLightDarkValuePairClass:
         return CompareCSSValues<CSSLightDarkValuePair>(*this, other);
       case kIdSelectorClass:
@@ -403,6 +406,8 @@ String CSSValue::CssText() const {
       return To<cssvalue::CSSPendingSubstitutionValue>(this)->CustomCSSText();
     case kInvalidVariableValueClass:
       return To<CSSInvalidVariableValue>(this)->CustomCSSText();
+    case kCyclicVariableValueClass:
+      return To<CSSCyclicVariableValue>(this)->CustomCSSText();
     case kLightDarkValuePairClass:
       return To<CSSLightDarkValuePair>(this)->CustomCSSText();
     case kIdSelectorClass:
@@ -585,6 +590,9 @@ void CSSValue::FinalizeGarbageCollectedObject() {
       return;
     case kInvalidVariableValueClass:
       To<CSSInvalidVariableValue>(this)->~CSSInvalidVariableValue();
+      return;
+    case kCyclicVariableValueClass:
+      To<CSSCyclicVariableValue>(this)->~CSSCyclicVariableValue();
       return;
     case kLightDarkValuePairClass:
       To<CSSLightDarkValuePair>(this)->~CSSLightDarkValuePair();
@@ -770,6 +778,9 @@ void CSSValue::Trace(Visitor* visitor) const {
       return;
     case kInvalidVariableValueClass:
       To<CSSInvalidVariableValue>(this)->TraceAfterDispatch(visitor);
+      return;
+    case kCyclicVariableValueClass:
+      To<CSSCyclicVariableValue>(this)->TraceAfterDispatch(visitor);
       return;
     case kLightDarkValuePairClass:
       To<CSSLightDarkValuePair>(this)->TraceAfterDispatch(visitor);
