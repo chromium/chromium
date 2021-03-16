@@ -19,7 +19,6 @@
 #include "base/task/post_task.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
-#include "base/task_runner_util.h"
 #include "base/threading/scoped_blocking_call.h"
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
@@ -443,9 +442,8 @@ void AccountTrackerService::LoadAccountImagesFromDisk() {
     return;
   for (const auto& pair : accounts_) {
     const CoreAccountId& account_id = pair.second.account_id;
-    PostTaskAndReplyWithResult(
-        image_storage_task_runner_.get(), FROM_HERE,
-        base::BindOnce(&ReadImage, GetImagePathFor(account_id)),
+    image_storage_task_runner_->PostTaskAndReplyWithResult(
+        FROM_HERE, base::BindOnce(&ReadImage, GetImagePathFor(account_id)),
         base::BindOnce(&AccountTrackerService::OnAccountImageLoaded,
                        weak_factory_.GetWeakPtr(), account_id));
   }
@@ -458,8 +456,8 @@ void AccountTrackerService::SaveAccountImageToDisk(
   if (!image_storage_task_runner_)
     return;
 
-  PostTaskAndReplyWithResult(
-      image_storage_task_runner_.get(), FROM_HERE,
+  image_storage_task_runner_->PostTaskAndReplyWithResult(
+      FROM_HERE,
       base::BindOnce(&SaveImage, image.As1xPNGBytes(),
                      GetImagePathFor(account_id)),
       base::BindOnce(&AccountTrackerService::OnAccountImageUpdated,
