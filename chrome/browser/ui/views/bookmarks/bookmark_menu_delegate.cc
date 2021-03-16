@@ -186,9 +186,8 @@ void BookmarkMenuDelegate::ExecuteCommand(int id, int mouse_event_flags) {
 bool BookmarkMenuDelegate::ShouldExecuteCommandWithoutClosingMenu(
     int id,
     const ui::Event& event) {
-  if ((event.flags() & ui::EF_LEFT_MOUSE_BUTTON) &&
-      ui::DispositionFromEventFlags(event.flags()) ==
-          WindowOpenDisposition::NEW_BACKGROUND_TAB) {
+  if (ui::DispositionFromEventFlags(event.flags()) ==
+      WindowOpenDisposition::NEW_BACKGROUND_TAB) {
     DCHECK(menu_id_to_node_map_.find(id) != menu_id_to_node_map_.end());
     const BookmarkNode* node = menu_id_to_node_map_[id];
     // Close the menu before opening a folder since this may pop up a dialog

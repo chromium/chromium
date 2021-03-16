@@ -1018,9 +1018,12 @@ void AppMenu::OnMenuClosed(views::MenuItemView* menu) {
 
 bool AppMenu::ShouldExecuteCommandWithoutClosingMenu(int command_id,
                                                      const ui::Event& event) {
-  return IsRecentTabsCommand(command_id) && event.IsMouseEvent() &&
-         (ui::DispositionFromEventFlags(event.flags()) ==
-          WindowOpenDisposition::NEW_BACKGROUND_TAB);
+  return (IsRecentTabsCommand(command_id) && event.IsMouseEvent() &&
+          (ui::DispositionFromEventFlags(event.flags()) ==
+           WindowOpenDisposition::NEW_BACKGROUND_TAB)) ||
+         (IsBookmarkCommand(command_id) &&
+          bookmark_menu_delegate_->ShouldExecuteCommandWithoutClosingMenu(
+              command_id, event));
 }
 
 void AppMenu::BookmarkModelChanged() {
