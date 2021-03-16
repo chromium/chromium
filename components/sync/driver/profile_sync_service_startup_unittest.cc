@@ -696,8 +696,6 @@ TEST_F(ProfileSyncServiceStartupTest, FullStartupSequenceNthTime) {
 
   ASSERT_EQ(DataTypeController::MODEL_STARTING,
             get_controller(SESSIONS)->state());
-  EXPECT_EQ(SyncService::TransportState::CONFIGURING,
-            sync_service()->GetTransportState());
   EXPECT_NE(nullptr, data_type_manager());
   EXPECT_TRUE(engine());
 

@@ -159,6 +159,7 @@ class ProfileSyncService : public SyncService,
 
   // SyncEngineHost implementation.
   void OnEngineInitialized(
+      ModelTypeSet initial_types,
       const WeakHandle<JsBackend>& js_backend,
       const WeakHandle<DataTypeDebugInfoListener>& debug_info_listener,
       bool success,
