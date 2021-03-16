@@ -4,12 +4,18 @@
 
 #include "chrome/browser/enterprise/connectors/reporting/reporting_service_settings.h"
 
+#include "base/command_line.h"
 #include "base/json/json_reader.h"
 #include "base/no_destructor.h"
 #include "chrome/browser/enterprise/connectors/connectors_service.h"
 #include "chrome/browser/enterprise/connectors/service_provider_config.h"
+#include "chrome/browser/policy/chrome_browser_policy_connector.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "chrome/browser/ash/settings/scoped_cros_settings_test_helper.h"
+#endif
 
 namespace enterprise_connectors {
 
@@ -69,6 +75,13 @@ class ReportingServiceSettingsTest : public testing::TestWithParam<TestParam> {
 
  private:
   content::BrowserTaskEnvironment task_environment_;
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  // This is necessary so the URL flag code works on CrOS. If it's absent, a
+  // CrOS DCHECK fails when trying to access the
+  // BrowserPolicyConnectorChromeOS as it is not completely initialized.
+  ash::ScopedCrosSettingsTestHelper cros_settings_;
+#endif
 };
 
 TEST_P(ReportingServiceSettingsTest, Test) {
@@ -91,6 +104,26 @@ TEST_P(ReportingServiceSettingsTest, Test) {
               reporting_settings.value().enabled_event_names);
   } else {
     ASSERT_EQ(expected_settings(), NoSettings());
+  }
+}
+
+TEST_P(ReportingServiceSettingsTest, FlagOverride) {
+  base::CommandLine* cmd = base::CommandLine::ForCurrentProcess();
+  cmd->AppendSwitchASCII("reporting-connector-url", "https://test.com/reports");
+  policy::ChromeBrowserPolicyConnector::EnableCommandLineSupportForTesting();
+
+  auto settings = base::JSONReader::Read(settings_value(),
+                                         base::JSON_ALLOW_TRAILING_COMMAS);
+  ASSERT_TRUE(settings.has_value());
+
+  ServiceProviderConfig config(kServiceProviderConfig);
+  ReportingServiceSettings service_settings(settings.value(), config);
+
+  auto reporting_settings = service_settings.GetReportingSettings();
+  ASSERT_EQ((expected_settings() != nullptr), reporting_settings.has_value());
+  if (expected_settings()) {
+    ASSERT_TRUE(reporting_settings->reporting_url.is_valid());
+    ASSERT_EQ(reporting_settings->reporting_url, "https://test.com/reports");
   }
 }
 
