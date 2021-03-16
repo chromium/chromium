@@ -146,6 +146,7 @@ public class SadTabTest {
         reloadSadTab(tab);
         Assert.assertTrue(isShowingSadTab(tab));
         actualText = getSadTabButton(tab).getText().toString();
+        Assert.assertTrue(showSendFeedbackView(tab));
         Assert.assertEquals(
                 "Expected the sad tab button to have the feedback label after the tab button "
                         + "crashes twice in a row.",
@@ -183,6 +184,15 @@ public class SadTabTest {
             sadTab.removeIfPresent();
             sadTab.show(tab.getContext(), () -> {}, () -> {});
         });
+    }
+
+    private static boolean showSendFeedbackView(final Tab tab) {
+        try {
+            return TestThreadUtils.runOnUiThreadBlocking(
+                    () -> SadTab.from(tab).showSendFeedbackView());
+        } catch (ExecutionException e) {
+            return false; // Make tests fail when an exception is thrown.
+        }
     }
 
     /**

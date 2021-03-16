@@ -77,9 +77,9 @@ public class SadTab extends EmptyTabObserver implements UserData, TabViewProvide
 
         // Make sure we are not adding the "Aw, snap" view over an existing one.
         assert mView == null;
+        mSadTabSuccessiveRefreshCounter++;
         mView = createView(context, suggestionAction, buttonAction, showSendFeedbackView(),
                 mTab.isIncognito());
-        mSadTabSuccessiveRefreshCounter++;
 
         mTab.getTabViewManager().addTabViewProvider(this);
     }
@@ -90,7 +90,7 @@ public class SadTab extends EmptyTabObserver implements UserData, TabViewProvide
     public boolean showSendFeedbackView() {
         // If the tab has crashed twice in a row change the sad tab view to the "Send Feedback"
         // version and change the onClickListener.
-        return mSadTabSuccessiveRefreshCounter >= 1;
+        return mSadTabSuccessiveRefreshCounter >= 2;
     }
 
     /**
