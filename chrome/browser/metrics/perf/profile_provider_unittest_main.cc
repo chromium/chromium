@@ -166,6 +166,7 @@ class ProfileProviderRealCollectionTest : public testing::Test {
     StopSpinningCPU();
 
     profile_provider_.reset();
+    TestingBrowserProcess::DeleteInstance();
     chromeos::LoginState::Shutdown();
     chromeos::PowerManagerClient::Shutdown();
     chromeos::DBusThreadManager::Shutdown();
