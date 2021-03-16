@@ -18,6 +18,10 @@ class PrefService;
 class Profile;
 class SupervisedUserService;
 
+namespace account_manager {
+class AccountManagerFacade;
+}
+
 namespace content {
 class WebUIDataSource;
 }  // namespace content
@@ -84,6 +88,7 @@ class PeopleSection : public OsSettingsSection,
   void UpdateRemoveFingerprintSearchTags();
 
   AccountManager* account_manager_ = nullptr;
+  account_manager::AccountManagerFacade* account_manager_facade_ = nullptr;
   syncer::SyncService* sync_service_;
   SupervisedUserService* supervised_user_service_;
   KerberosCredentialsManager* kerberos_credentials_manager_;

@@ -16,6 +16,7 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "base/values.h"
+#include "chrome/browser/account_manager_facade_factory.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part.h"
 #include "chrome/browser/chromeos/child_accounts/secondary_account_consent_logger.h"
@@ -30,6 +31,7 @@
 #include "chrome/browser/ui/webui/signin/signin_helper_chromeos.h"
 #include "chrome/common/pref_names.h"
 #include "chromeos/dbus/util/version_loader.h"
+#include "components/account_manager_core/account_manager_facade.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 #include "components/signin/public/identity_manager/account_info.h"
@@ -392,13 +394,9 @@ void InlineLoginHandlerChromeOS::GetAccountsInSession(
     const base::ListValue* args) {
   const std::string& callback_id = args->GetList()[0].GetString();
   const Profile* profile = Profile::FromWebUI(web_ui());
-  auto* account_manager = g_browser_process->platform_part()
-                              ->GetAccountManagerFactory()
-                              ->GetAccountManager(profile->GetPath().value());
-
-  account_manager->GetAccounts(
-      base::BindOnce(&InlineLoginHandlerChromeOS::OnGetAccounts,
-                     weak_factory_.GetWeakPtr(), callback_id));
+  ::GetAccountManagerFacade(profile->GetPath().value())
+      ->GetAccounts(base::BindOnce(&InlineLoginHandlerChromeOS::OnGetAccounts,
+                                   weak_factory_.GetWeakPtr(), callback_id));
 }
 
 void InlineLoginHandlerChromeOS::OnGetAccounts(

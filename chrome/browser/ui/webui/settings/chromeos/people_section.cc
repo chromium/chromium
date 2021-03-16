@@ -15,6 +15,7 @@
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
+#include "chrome/browser/account_manager_facade_factory.h"
 #include "chrome/browser/ash/account_manager/account_manager_util.h"
 #include "chrome/browser/ash/login/quick_unlock/quick_unlock_utils.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
@@ -41,6 +42,7 @@
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/chromium_strings.h"
 #include "chrome/grit/generated_resources.h"
+#include "components/account_manager_core/account_manager_facade.h"
 #include "components/google/core/common/google_util.h"
 #include "components/omnibox/common/omnibox_features.h"
 #include "components/prefs/pref_service.h"
@@ -739,8 +741,11 @@ PeopleSection::PeopleSection(
         g_browser_process->platform_part()->GetAccountManagerFactory();
     account_manager_ = factory->GetAccountManager(profile->GetPath().value());
     DCHECK(account_manager_);
-
     account_manager_->AddObserver(this);
+
+    account_manager_facade_ =
+        ::GetAccountManagerFacade(profile->GetPath().value());
+    DCHECK(account_manager_facade_);
     FetchAccounts();
   }
 
@@ -1075,7 +1080,7 @@ void PeopleSection::RegisterHierarchy(HierarchyGenerator* generator) const {
 }
 
 void PeopleSection::FetchAccounts() {
-  account_manager_->GetAccounts(
+  account_manager_facade_->GetAccounts(
       base::BindOnce(&PeopleSection::UpdateAccountManagerSearchTags,
                      weak_factory_.GetWeakPtr()));
 }
