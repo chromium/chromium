@@ -9,6 +9,7 @@
 #include <string>
 
 #include "base/files/file_path.h"
+#include "chrome/browser/ash/borealis/borealis_game_mode_controller.h"
 
 class Profile;
 
@@ -63,6 +64,8 @@ class BorealisContext {
 
   std::unique_ptr<guest_os::GuestOsStabilityMonitor>
       guest_os_stability_monitor_;
+
+  std::unique_ptr<BorealisGameModeController> game_mode_controller_;
 };
 
 }  // namespace borealis
