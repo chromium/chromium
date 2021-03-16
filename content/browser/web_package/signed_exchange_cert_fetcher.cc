@@ -125,7 +125,6 @@ SignedExchangeCertFetcher::SignedExchangeCertFetcher(
     resource_request_->load_flags |=
         net::LOAD_DISABLE_CACHE | net::LOAD_BYPASS_CACHE;
   }
-  resource_request_->render_frame_id = MSG_ROUTING_NONE;
   if (devtools_proxy_) {
     cert_request_id_ = base::UnguessableToken::Create();
     resource_request_->enable_load_timing = true;

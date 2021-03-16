@@ -303,18 +303,6 @@ struct URLRequest {
   // credentials or default credentials may still be used for authentication.
   bool do_not_prompt_for_login;
 
-  // The id of the RenderFrame. This may be:
-  // - The render frame id for a) subresource requests from a document, b) the
-  //   main resource request for a dedicated/shared worker if that worker was
-  //   created by a frame.
-  // - MSG_ROUTING_NONE for nested dedicated workers.
-  // - MSG_ROUTING_NONE for subresource requests from a dedicated/shared worker.
-  // - service_worker_route_id from EmbeddedWorkerStartParams for service worker
-  //   main script requests and subresource requests.
-  // - The frame tree node ID for navigation requests only. Please do not use
-  //   frame tree node ID for other requests.
-  int32 render_frame_id;
-
   // True if |frame_id| is the main frame of a RenderView.
   bool is_main_frame;
 

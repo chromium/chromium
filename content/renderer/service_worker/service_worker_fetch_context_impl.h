@@ -56,7 +56,6 @@ class CONTENT_EXPORT ServiceWorkerFetchContextImpl final
           preference_watcher_receiver,
       mojo::PendingReceiver<blink::mojom::SubresourceLoaderUpdater>
           pending_subresource_loader_updater,
-      int32_t service_worker_route_id,
       const std::vector<std::string>& cors_exempt_header_list);
 
   // blink::WebServiceWorkerFetchContext implementation:
@@ -142,7 +141,6 @@ class CONTENT_EXPORT ServiceWorkerFetchContextImpl final
 
   blink::AcceptLanguagesWatcher* accept_languages_watcher_ = nullptr;
 
-  int32_t service_worker_route_id_;
   std::vector<std::string> cors_exempt_header_list_;
   bool is_offline_mode_ = false;
 };

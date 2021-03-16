@@ -209,21 +209,6 @@ TEST(PreflightControllerCreatePreflightRequestTest, FetchWindowId) {
   EXPECT_EQ(request.fetch_window_id, preflight->fetch_window_id);
 }
 
-TEST(PreflightControllerCreatePreflightRequestTest, RenderFrameId) {
-  ResourceRequest request;
-  request.mode = mojom::RequestMode::kCors;
-  request.credentials_mode = mojom::CredentialsMode::kOmit;
-  request.request_initiator = url::Origin();
-  request.headers.SetHeader(net::HttpRequestHeaders::kContentType,
-                            "application/octet-stream");
-  request.render_frame_id = 99;
-
-  std::unique_ptr<ResourceRequest> preflight =
-      PreflightController::CreatePreflightRequestForTesting(request);
-
-  EXPECT_EQ(request.render_frame_id, preflight->render_frame_id);
-}
-
 TEST(PreflightControllerOptionsTest, CheckOptions) {
   base::test::TaskEnvironment task_environment_(
       base::test::TaskEnvironment::MainThreadType::IO);

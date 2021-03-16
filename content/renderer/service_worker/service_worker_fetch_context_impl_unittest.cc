@@ -50,7 +50,6 @@ TEST_F(ServiceWorkerFetchContextImplTest, SkipThrottling) {
       std::make_unique<FakeURLLoaderThrottleProvider>(),
       /*websocket_handshake_throttle_provider=*/nullptr, mojo::NullReceiver(),
       mojo::NullReceiver(),
-      /*service_worker_route_id=*/-1,
       /*cors_exempt_header_list=*/std::vector<std::string>());
 
   {

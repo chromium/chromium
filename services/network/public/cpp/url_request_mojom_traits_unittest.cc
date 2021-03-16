@@ -76,7 +76,6 @@ TEST(URLRequestMojomTraitsTest, Roundtrips_ResourceRequest) {
   original.enable_load_timing = true;
   original.enable_upload_progress = false;
   original.do_not_prompt_for_login = true;
-  original.render_frame_id = 5;
   original.is_main_frame = true;
   original.transition_type = 0;
   original.report_raw_headers = true;

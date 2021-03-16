@@ -482,7 +482,6 @@ URLLoader::URLLoader(
       is_load_timing_enabled_(request.enable_load_timing),
       factory_params_(factory_params),
       coep_reporter_(coep_reporter),
-      render_frame_id_(request.render_frame_id),
       request_id_(request_id),
       keepalive_request_size_(keepalive_request_size),
       keepalive_(request.keepalive),
@@ -1224,15 +1223,6 @@ void URLLoader::OnAuthRequired(net::URLRequest* url_request,
 void URLLoader::OnCertificateRequested(net::URLRequest* unused,
                                        net::SSLCertRequestInfo* cert_info) {
   DCHECK(!client_cert_responder_receiver_.is_bound());
-
-  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
-          switches::kIgnoreUrlFetcherCertRequests) &&
-      factory_params_->process_id == 0 &&
-      render_frame_id_ == MSG_ROUTING_NONE) {
-    ContinueWithoutCertificate();
-    return;
-  }
-
   auto* url_loader_network_observer = GetURLLoaderNetworkServiceObserver();
   if (!url_loader_network_observer) {
     CancelRequest();
@@ -1701,10 +1691,6 @@ void URLLoader::OnBeforeURLRequest() {
 
 net::LoadState URLLoader::GetLoadStateForTesting() const {
   return url_request_->GetLoadState().state;
-}
-
-int32_t URLLoader::GetRenderFrameId() const {
-  return render_frame_id_;
 }
 
 int32_t URLLoader::GetProcessId() const {

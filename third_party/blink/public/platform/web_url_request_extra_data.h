@@ -30,9 +30,6 @@ class BLINK_PLATFORM_EXPORT WebURLRequestExtraData
   WebURLRequestExtraData(const WebURLRequestExtraData&) = delete;
   WebURLRequestExtraData& operator=(const WebURLRequestExtraData&) = delete;
 
-  void set_render_frame_id(int render_frame_id) {
-    render_frame_id_ = render_frame_id;
-  }
   void set_is_main_frame(bool is_main_frame) { is_main_frame_ = is_main_frame; }
   ui::PageTransition transition_type() const { return transition_type_; }
   void set_transition_type(ui::PageTransition transition_type) {
@@ -97,7 +94,6 @@ class BLINK_PLATFORM_EXPORT WebURLRequestExtraData
   virtual ~WebURLRequestExtraData();
 
  private:
-  base::Optional<int> render_frame_id_;
   bool is_main_frame_ = false;
   ui::PageTransition transition_type_ = ui::PAGE_TRANSITION_LINK;
   bool is_for_no_state_prefetch_ = false;

@@ -180,7 +180,6 @@ class BLINK_PLATFORM_EXPORT WebResourceRequestSender {
   struct PendingRequestInfo {
     PendingRequestInfo(scoped_refptr<WebRequestPeer> peer,
                        network::mojom::RequestDestination request_destination,
-                       int render_frame_id,
                        const GURL& request_url,
                        std::unique_ptr<ResourceLoadInfoNotifierWrapper>
                            resource_load_info_notifier_wrapper);
@@ -189,7 +188,6 @@ class BLINK_PLATFORM_EXPORT WebResourceRequestSender {
 
     scoped_refptr<WebRequestPeer> peer;
     network::mojom::RequestDestination request_destination;
-    int render_frame_id;
     WebURLLoader::DeferType is_deferred = WebURLLoader::DeferType::kNotDeferred;
     // Original requested url.
     GURL url;

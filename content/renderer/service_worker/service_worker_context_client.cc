@@ -384,8 +384,7 @@ ServiceWorkerContextClient::CreateWorkerFetchContextOnInitiatorThread() {
           ->renderer()
           ->CreateWebSocketHandshakeThrottleProvider(),
       std::move(preference_watcher_receiver_),
-      std::move(pending_subresource_loader_updater_), service_worker_route_id_,
-      cors_exempt_header_list_);
+      std::move(pending_subresource_loader_updater_), cors_exempt_header_list_);
 }
 
 void ServiceWorkerContextClient::OnNavigationPreloadResponse(

@@ -271,8 +271,8 @@ int WebResourceRequestSender::SendAsync(
   // Compute a unique request_id for this renderer process.
   int request_id = MakeRequestID();
   request_info_ = std::make_unique<PendingRequestInfo>(
-      std::move(peer), request->destination, request->render_frame_id,
-      request->url, std::move(resource_load_info_notifier_wrapper));
+      std::move(peer), request->destination, request->url,
+      std::move(resource_load_info_notifier_wrapper));
 
   request_info_->resource_load_info_notifier_wrapper
       ->NotifyResourceLoadInitiated(
@@ -365,13 +365,11 @@ void WebResourceRequestSender::DeletePendingRequest(
 WebResourceRequestSender::PendingRequestInfo::PendingRequestInfo(
     scoped_refptr<WebRequestPeer> peer,
     network::mojom::RequestDestination request_destination,
-    int render_frame_id,
     const GURL& request_url,
     std::unique_ptr<ResourceLoadInfoNotifierWrapper>
         resource_load_info_notifier_wrapper)
     : peer(std::move(peer)),
       request_destination(request_destination),
-      render_frame_id(render_frame_id),
       url(request_url),
       response_url(request_url),
       local_request_start(base::TimeTicks::Now()),

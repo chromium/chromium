@@ -212,7 +212,6 @@ std::unique_ptr<network::ResourceRequest> CreateResourceRequest(
       request_info->client_security_state.Clone();
   new_request->is_main_frame = request_info->is_main_frame;
   new_request->priority = net::HIGHEST;
-  new_request->render_frame_id = frame_tree_node_id;
   new_request->request_initiator =
       request_info->common_params->initiator_origin;
   new_request->referrer = request_info->common_params->referrer->url;

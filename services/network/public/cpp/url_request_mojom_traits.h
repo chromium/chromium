@@ -245,9 +245,6 @@ struct COMPONENT_EXPORT(NETWORK_CPP_BASE)
   static bool do_not_prompt_for_login(const network::ResourceRequest& request) {
     return request.do_not_prompt_for_login;
   }
-  static int32_t render_frame_id(const network::ResourceRequest& request) {
-    return request.render_frame_id;
-  }
   static bool is_main_frame(const network::ResourceRequest& request) {
     return request.is_main_frame;
   }

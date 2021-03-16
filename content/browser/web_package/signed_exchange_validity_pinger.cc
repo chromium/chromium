@@ -97,7 +97,6 @@ void SignedExchangeValidityPinger::Start(
   // (While we don't check the result yet)
   resource_request->load_flags |=
       net::LOAD_DISABLE_CACHE | net::LOAD_BYPASS_CACHE;
-  resource_request->render_frame_id = MSG_ROUTING_NONE;
   resource_request->throttling_profile_id = throttling_profile_id;
 
   url_loader_ = blink::ThrottlingURLLoader::CreateLoaderAndStart(

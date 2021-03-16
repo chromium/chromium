@@ -198,7 +198,6 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) URLLoader
 
   net::LoadState GetLoadStateForTesting() const;
 
-  int32_t GetRenderFrameId() const;
   int32_t GetProcessId() const;
   uint32_t GetResourceType() const;
 
@@ -414,7 +413,6 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) URLLoader
   // This also belongs to URLLoaderFactory and outlives this loader.
   mojom::CrossOriginEmbedderPolicyReporter* const coep_reporter_;
 
-  int render_frame_id_;
   uint32_t request_id_;
   const int keepalive_request_size_;
   const bool keepalive_;

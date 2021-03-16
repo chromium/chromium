@@ -124,7 +124,6 @@ TemplateURLFetcher::RequestDelegate::RequestDelegate(
   auto resource_request = std::make_unique<network::ResourceRequest>();
   resource_request->url = osdd_url;
   resource_request->request_initiator = initiator;
-  resource_request->render_frame_id = render_frame_id;
   // TODO(crbug.com/1059639): Remove |resource_type| once the request is handled
   // with RequestDestination without ResourceType.
   resource_request->resource_type =

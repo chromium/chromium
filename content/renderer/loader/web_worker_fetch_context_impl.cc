@@ -454,7 +454,6 @@ void WebWorkerFetchContextImpl::WillSendRequest(blink::WebURLRequest& request) {
 
   auto url_request_extra_data =
       base::MakeRefCounted<blink::WebURLRequestExtraData>();
-  url_request_extra_data->set_render_frame_id(ancestor_frame_id_);
   url_request_extra_data->set_frame_request_blocker(frame_request_blocker_);
   if (throttle_provider_) {
     url_request_extra_data->set_url_loader_throttles(

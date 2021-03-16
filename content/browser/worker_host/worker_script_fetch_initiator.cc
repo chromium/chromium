@@ -142,10 +142,6 @@ void WorkerScriptFetchInitiator::Start(
       outside_fetch_client_settings_object->referrer_policy);
   resource_request->destination = request_destination;
   resource_request->credentials_mode = credentials_mode;
-  if (creator_render_frame_host) {
-    resource_request->render_frame_id =
-        creator_render_frame_host->GetRoutingID();
-  }
 
   // For a classic worker script request:
   // https://html.spec.whatwg.org/C/#fetch-a-classic-worker-script

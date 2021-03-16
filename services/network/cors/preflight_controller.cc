@@ -95,7 +95,6 @@ std::unique_ptr<ResourceRequest> CreatePreflightRequest(
   preflight_request->load_flags = RetrieveCacheFlags(request.load_flags);
   preflight_request->resource_type = request.resource_type;
   preflight_request->fetch_window_id = request.fetch_window_id;
-  preflight_request->render_frame_id = request.render_frame_id;
 
   preflight_request->headers.SetHeader(net::HttpRequestHeaders::kAccept,
                                        kDefaultAcceptHeaderValue);
