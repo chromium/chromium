@@ -166,6 +166,7 @@ void ChromeSpeechRecognitionClient::Initialize() {
 
 void ChromeSpeechRecognitionClient::Reset() {
   is_recognizer_bound_ = false;
+  is_browser_requesting_transcription_ = true;
   speech_recognition_context_.reset();
   speech_recognition_recognizer_.reset();
   speech_recognition_client_receiver_.reset();
