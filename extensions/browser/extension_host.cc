@@ -238,6 +238,9 @@ void ExtensionHost::RenderProcessGone(base::TerminationStatus status) {
       extensions::NOTIFICATION_EXTENSION_PROCESS_TERMINATED,
       content::Source<BrowserContext>(browser_context_),
       content::Details<ExtensionHost>(this));
+
+  ProcessManager::Get(browser_context_)
+      ->NotifyExtensionProcessTerminated(extension_);
 }
 
 void ExtensionHost::DidStopLoading() {

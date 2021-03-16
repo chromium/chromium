@@ -12,9 +12,12 @@
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/optional.h"
+#include "base/scoped_observation.h"
 #include "build/chromeos_buildflags.h"
-#include "content/public/browser/notification_observer.h"
-#include "content/public/browser/notification_registrar.h"
+#include "extensions/browser/extension_host.h"
+#include "extensions/browser/extension_host_observer.h"
+#include "extensions/browser/process_manager.h"
+#include "extensions/browser/process_manager_observer.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/gfx/native_widget_types.h"
 #include "ui/views/window/dialog_delegate.h"
@@ -36,7 +39,8 @@ class ExtensionViewHost;
 // Dialog is automatically centered in the owning window and has fixed size.
 // For example, used by the Chrome OS file browser.
 class ExtensionDialog : public views::DialogDelegate,
-                        public content::NotificationObserver,
+                        public extensions::ExtensionHostObserver,
+                        public extensions::ProcessManagerObserver,
                         public base::RefCounted<ExtensionDialog> {
  public:
   struct InitParams {
@@ -95,10 +99,15 @@ class ExtensionDialog : public views::DialogDelegate,
   const views::Widget* GetWidget() const override;
   views::View* GetContentsView() override;
 
-  // content::NotificationObserver:
-  void Observe(int type,
-               const content::NotificationSource& source,
-               const content::NotificationDetails& details) override;
+  // extensions::ExtensionHostObserver:
+  void OnExtensionHostDidStopFirstLoad(
+      const extensions::ExtensionHost* host) override;
+  void OnExtensionHostShouldClose(extensions::ExtensionHost* host) override;
+
+  // extensions::ProcessManagerObserver:
+  void OnExtensionProcessTerminated(
+      const extensions::Extension* extension) override;
+  void OnProcessManagerShutdown(extensions::ProcessManager* manager) override;
 
  protected:
   ~ExtensionDialog() override;
@@ -120,7 +129,13 @@ class ExtensionDialog : public views::DialogDelegate,
 
   ExtensionViewViews* extension_view_ = nullptr;
 
-  content::NotificationRegistrar registrar_;
+  base::ScopedObservation<extensions::ExtensionHost,
+                          extensions::ExtensionHostObserver>
+      extension_host_observation_{this};
+
+  base::ScopedObservation<extensions::ProcessManager,
+                          extensions::ProcessManagerObserver>
+      process_manager_observation_{this};
 
   // The observer of this popup.
   ExtensionDialogObserver* observer_;

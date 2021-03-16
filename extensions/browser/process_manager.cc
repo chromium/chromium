@@ -529,6 +529,13 @@ void ProcessManager::DecrementLazyKeepaliveCount(
     DecrementLazyKeepaliveCount(extension->id(), activity_type, extra_data);
 }
 
+void ProcessManager::NotifyExtensionProcessTerminated(
+    const Extension* extension) {
+  DCHECK(extension);
+  for (auto& observer : observer_list_)
+    observer.OnExtensionProcessTerminated(extension);
+}
+
 ProcessManager::ActivitiesMultiset ProcessManager::GetLazyKeepaliveActivities(
     const Extension* extension) {
   ProcessManager::ActivitiesMultiset result;

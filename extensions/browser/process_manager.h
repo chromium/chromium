@@ -147,6 +147,9 @@ class ProcessManager : public KeyedService,
                                    Activity::Type activity_type,
                                    const std::string& extra_data);
 
+  // Sends out notification to observers when the extension process is gone.
+  void NotifyExtensionProcessTerminated(const Extension* extension);
+
   // Methods to increment or decrement the ref-count of a specified service
   // worker with id |worker_id|.
   // The increment method returns the guid that needs to be passed to the

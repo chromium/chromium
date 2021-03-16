@@ -114,35 +114,33 @@ views::View* ExtensionDialog::GetContentsView() {
   return extension_view_;
 }
 
-void ExtensionDialog::Observe(int type,
-                              const content::NotificationSource& source,
-                              const content::NotificationDetails& details) {
-  switch (type) {
-    case extensions::NOTIFICATION_EXTENSION_HOST_DID_STOP_FIRST_LOAD:
-      // Avoid potential overdraw by removing the temporary background after
-      // the extension finishes loading.
-      extension_view_->SetBackground(nullptr);
-      // The render view is created during the LoadURL(), so we should
-      // set the focus to the view if nobody else takes the focus.
-      if (content::Details<extensions::ExtensionHost>(host()) == details)
-        MaybeFocusRenderer();
-      break;
-    case extensions::NOTIFICATION_EXTENSION_HOST_VIEW_SHOULD_CLOSE:
-      // If we aren't the host of the popup, then disregard the notification.
-      if (content::Details<extensions::ExtensionHost>(host()) != details)
-        return;
-      GetWidget()->Close();
-      break;
-    case extensions::NOTIFICATION_EXTENSION_PROCESS_TERMINATED:
-      if (content::Details<extensions::ExtensionHost>(host()) != details)
-        return;
-      if (observer_)
-        observer_->ExtensionTerminated(this);
-      break;
-    default:
-      NOTREACHED() << "Received unexpected notification";
-      break;
-  }
+void ExtensionDialog::OnExtensionHostDidStopFirstLoad(
+    const extensions::ExtensionHost* host) {
+  DCHECK_EQ(host, host_.get());
+  // Avoid potential overdraw by removing the temporary background after
+  // the extension finishes loading.
+  extension_view_->SetBackground(nullptr);
+  // The render view is created during the LoadURL(), so we should
+  // set the focus to the view if nobody else takes the focus.
+  MaybeFocusRenderer();
+}
+
+void ExtensionDialog::OnExtensionHostShouldClose(
+    extensions::ExtensionHost* host) {
+  DCHECK_EQ(host, host_.get());
+  GetWidget()->Close();
+}
+
+void ExtensionDialog::OnExtensionProcessTerminated(
+    const extensions::Extension* extension) {
+  if (extension == host_->extension() && observer_)
+    observer_->ExtensionTerminated(this);
+}
+
+void ExtensionDialog::OnProcessManagerShutdown(
+    extensions::ProcessManager* manager) {
+  DCHECK(process_manager_observation_.IsObservingSource(manager));
+  process_manager_observation_.Reset();
 }
 
 ExtensionDialog::~ExtensionDialog() = default;
@@ -158,17 +156,10 @@ ExtensionDialog::ExtensionDialog(
 
   AddRef();  // Balanced in DeleteDelegate();
 
-  const content::Source<content::BrowserContext> source =
-      host_->browser_context();
-  registrar_.Add(this,
-                 extensions::NOTIFICATION_EXTENSION_HOST_DID_STOP_FIRST_LOAD,
-                 source);
-  // Listen for the containing view calling window.close();
-  registrar_.Add(
-      this, extensions::NOTIFICATION_EXTENSION_HOST_VIEW_SHOULD_CLOSE, source);
-  // Listen for a crash or other termination of the extension process.
-  registrar_.Add(this, extensions::NOTIFICATION_EXTENSION_PROCESS_TERMINATED,
-                 source);
+  extension_host_observation_.Observe(host_.get());
+  process_manager_observation_.Observe(
+      extensions::ProcessManager::Get(host_->browser_context()));
+
   chrome::RecordDialogCreation(chrome::DialogIdentifier::EXTENSION);
 
   SetModalType(ui::MODAL_TYPE_WINDOW);

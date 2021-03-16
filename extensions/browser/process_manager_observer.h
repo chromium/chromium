@@ -52,6 +52,9 @@ class ProcessManagerObserver : public base::CheckedObserver {
 
   // Called when the observed ProcessManager is shutting down.
   virtual void OnProcessManagerShutdown(ProcessManager* manager) {}
+
+  // Called when the renderer process has gone.
+  virtual void OnExtensionProcessTerminated(const Extension* extension) {}
 };
 
 }  // namespace extensions
