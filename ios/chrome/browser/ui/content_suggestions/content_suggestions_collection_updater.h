@@ -25,6 +25,7 @@ typedef NS_ENUM(NSInteger, ContentSuggestionType) {
   ContentSuggestionTypeArticle,
   ContentSuggestionTypeReadingList,
   ContentSuggestionTypeMostVisited,
+  ContentSuggestionTypeReturnToRecentTab,
   ContentSuggestionTypePromo,
   ContentSuggestionTypeLearnMore,
   ContentSuggestionTypeDiscover,

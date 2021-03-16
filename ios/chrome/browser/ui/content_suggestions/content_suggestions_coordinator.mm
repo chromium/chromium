@@ -9,6 +9,7 @@
 #include "base/metrics/user_metrics.h"
 #include "base/metrics/user_metrics_action.h"
 #include "base/scoped_observer.h"
+#include "base/strings/sys_string_conversions.h"
 #import "components/feature_engagement/public/event_constants.h"
 #import "components/feature_engagement/public/tracker.h"
 #include "components/feed/core/shared_prefs/pref_names.h"
@@ -74,10 +75,14 @@
 #import "ios/chrome/browser/ui/overscroll_actions/overscroll_actions_controller.h"
 #import "ios/chrome/browser/ui/settings/utils/pref_backed_boolean.h"
 #import "ios/chrome/browser/ui/sharing/sharing_coordinator.h"
+#import "ios/chrome/browser/ui/start_surface/start_surface_features.h"
+#import "ios/chrome/browser/ui/start_surface/start_surface_recent_tab_browser_agent.h"
+#import "ios/chrome/browser/ui/start_surface/start_surface_util.h"
 #import "ios/chrome/browser/ui/util/named_guide.h"
 #import "ios/chrome/browser/ui/util/uikit_ui_util.h"
 #import "ios/chrome/browser/url_loading/url_loading_browser_agent.h"
 #import "ios/chrome/browser/url_loading/url_loading_params.h"
+#import "ios/chrome/browser/web_state_list/web_state_list.h"
 #include "ios/chrome/grit/ios_strings.h"
 #import "ios/public/provider/chrome/browser/chrome_browser_provider.h"
 #import "ios/public/provider/chrome/browser/discover_feed/discover_feed_provider.h"
@@ -99,6 +104,10 @@
     OverscrollActionsControllerDelegate,
     ThemeChangeDelegate,
     URLDropDelegate> {
+  // Observer bridge for mediator to listen to
+  // StartSurfaceRecentTabRemovalObserverBridge.
+  std::unique_ptr<StartSurfaceRecentTabRemovalObserverBridge>
+      _startSurfaceObserver;
 }
 
 @property(nonatomic, strong)
@@ -245,6 +254,9 @@
         self.contentSuggestionsExpanded;
   }
   self.contentSuggestionsMediator.discoverFeedDelegate = self;
+  self.contentSuggestionsMediator.webStateList =
+      self.browser->GetWebStateList();
+  [self configureStartSurfaceIfNeeded];
 
   self.headerController.promoCanShow =
       [self.contentSuggestionsMediator notificationPromo]->CanShow();
@@ -355,6 +367,11 @@
         ->RemoveFeedViewController(self.discoverFeedViewController);
   }
   self.contentSuggestionsExpanded = nil;
+  if (_startSurfaceObserver) {
+    StartSurfaceRecentTabBrowserAgent::FromBrowser(self.browser)
+        ->RemoveObserver(_startSurfaceObserver.get());
+    _startSurfaceObserver.reset();
+  }
   _started = NO;
 }
 
@@ -391,6 +408,12 @@
   if (IsDiscoverFeedEnabled() && !self.feedShownWasCalled) {
     ios::GetChromeBrowserProvider()->GetDiscoverFeedProvider()->FeedWasShown();
     self.feedShownWasCalled = YES;
+  }
+}
+
+- (void)viewDidDisappear {
+  if (ShouldShowReturnToMostRecentTabForStartSurface()) {
+    [self.contentSuggestionsMediator hideRecentTabTile];
   }
 }
 
@@ -709,6 +732,30 @@
 }
 
 #pragma mark - Helpers
+
+- (void)configureStartSurfaceIfNeeded {
+  SceneState* scene =
+      SceneStateBrowserAgent::FromBrowser(self.browser)->GetSceneState();
+  BOOL shouldShowReturnToRecentTabTile =
+      scene.modifytVisibleNTPForStartSurface &&
+      ShouldShowReturnToMostRecentTabForStartSurface();
+  if (shouldShowReturnToRecentTabTile) {
+    web::WebState* most_recent_tab =
+        StartSurfaceRecentTabBrowserAgent::FromBrowser(self.browser)
+            ->most_recent_tab();
+    DCHECK(most_recent_tab);
+    [self.contentSuggestionsMediator
+        configureMostRecentTabItemWithWebState:most_recent_tab];
+    if (!_startSurfaceObserver) {
+      _startSurfaceObserver =
+          std::make_unique<StartSurfaceRecentTabRemovalObserverBridge>(
+              self.contentSuggestionsMediator);
+      StartSurfaceRecentTabBrowserAgent::FromBrowser(self.browser)
+          ->AddObserver(_startSurfaceObserver.get());
+    }
+    scene.modifytVisibleNTPForStartSurface = NO;
+  }
+}
 
 // Creates, configures and returns a DiscoverFeed ViewController.
 - (UIViewController*)discoverFeed {

@@ -14,6 +14,7 @@
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_mediator.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_metrics_recorder.h"
 #import "ios/chrome/browser/ui/settings/utils/pref_backed_boolean.h"
+#import "ios/chrome/browser/ui/start_surface/start_surface_recent_tab_removal_observer_bridge.h"
 
 namespace favicon {
 class LargeIconService;
@@ -41,13 +42,15 @@ class GURL;
 class LargeIconCache;
 class NotificationPromoWhatsNew;
 class ReadingListModel;
+class WebStateList;
 
 // Mediator for ContentSuggestions. Makes the interface between a
 // ntp_snippets::ContentSuggestionsService and the Objective-C services using
 // its data.
 @interface ContentSuggestionsMediator
-    : NSObject<ContentSuggestionsDataSource,
-               ContentSuggestionsMetricsRecorderDelegate>
+    : NSObject <ContentSuggestionsDataSource,
+                ContentSuggestionsMetricsRecorderDelegate,
+                StartSurfaceRecentTabRemovalObserving>
 
 // Initialize the mediator with the |contentService| to mediate.
 - (instancetype)
@@ -91,6 +94,9 @@ class ReadingListModel;
 // The consumer for this mediator.
 @property(nonatomic, weak) id<ContentSuggestionsConsumer> consumer;
 
+// WebStateList associated with this mediator.
+@property(nonatomic, assign) WebStateList* webStateList;
+
 // Disconnects the mediator.
 - (void)disconnect;
 
@@ -108,6 +114,12 @@ class ReadingListModel;
 
 // Get the maximum number of sites shown.
 + (NSUInteger)maxSitesShown;
+
+// Configures the most recent tab item for |webState|.
+- (void)configureMostRecentTabItemWithWebState:(web::WebState*)webState;
+
+// Indicates that the "Return to Recent Tab" tile should be hidden.
+- (void)hideRecentTabTile;
 
 @end
 

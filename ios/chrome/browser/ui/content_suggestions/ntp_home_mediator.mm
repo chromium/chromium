@@ -33,6 +33,7 @@
 #import "ios/chrome/browser/ui/content_suggestions/cells/content_suggestions_item.h"
 #import "ios/chrome/browser/ui/content_suggestions/cells/content_suggestions_most_visited_action_item.h"
 #import "ios/chrome/browser/ui/content_suggestions/cells/content_suggestions_most_visited_item.h"
+#import "ios/chrome/browser/ui/content_suggestions/cells/content_suggestions_return_to_recent_tab_item.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_alert_factory.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_header_synchronizer.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_mediator.h"
@@ -53,6 +54,7 @@
 #import "ios/chrome/browser/url_loading/url_loading_browser_agent.h"
 #import "ios/chrome/browser/url_loading/url_loading_params.h"
 #import "ios/chrome/browser/voice/voice_search_availability.h"
+#import "ios/chrome/browser/web_state_list/web_state_list.h"
 #import "ios/chrome/common/ui/favicon/favicon_attributes.h"
 #include "ios/chrome/grit/ios_strings.h"
 #import "ios/public/provider/chrome/browser/chrome_browser_provider.h"
@@ -429,6 +431,17 @@ const char kNTPHelpURL[] =
 - (void)handleLearnMoreTapped {
   [self openMenuItemWebPage:GURL(kNTPHelpURL)];
   [self.NTPMetrics recordAction:new_tab_page_uma::ACTION_OPENED_LEARN_MORE];
+}
+
+- (void)openMostRecentTab:(CollectionViewItem*)item {
+  DCHECK([item isKindOfClass:[ContentSuggestionsReturnToRecentTabItem class]]);
+  [self.suggestionsMediator hideRecentTabTile];
+  WebStateList* web_state_list = self.browser->GetWebStateList();
+  web::WebState* web_state =
+      StartSurfaceRecentTabBrowserAgent::FromBrowser(self.browser)
+          ->most_recent_tab();
+  int index = web_state_list->GetIndexOfWebState(web_state);
+  web_state_list->ActivateWebStateAt(index);
 }
 
 #pragma mark - ContentSuggestionsGestureCommands

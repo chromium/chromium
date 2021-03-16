@@ -37,6 +37,7 @@
 #import "ios/chrome/browser/ui/ntp/new_tab_page_header_constants.h"
 #import "ios/chrome/browser/ui/ntp_tile_views/ntp_tile_layout_util.h"
 #import "ios/chrome/browser/ui/overscroll_actions/overscroll_actions_controller.h"
+#import "ios/chrome/browser/ui/start_surface/start_surface_features.h"
 #import "ios/chrome/browser/ui/toolbar/public/toolbar_utils.h"
 #import "ios/chrome/browser/ui/ui_feature_flags.h"
 #import "ios/chrome/browser/ui/util/menu_util.h"
@@ -341,6 +342,9 @@ NSString* const kContentSuggestionsMostVisitedAccessibilityIdentifierPrefix =
 - (void)viewDidDisappear:(BOOL)animated {
   [super viewDidDisappear:animated];
   self.headerSynchronizer.showing = NO;
+  if (ShouldShowReturnToMostRecentTabForStartSurface()) {
+    [self.audience viewDidDisappear];
+  }
 }
 
 - (void)didMoveToParentViewController:(UIViewController*)parent {
@@ -425,6 +429,9 @@ NSString* const kContentSuggestionsMostVisitedAccessibilityIdentifierPrefix =
     case ContentSuggestionTypeMostVisited:
       [self.suggestionCommandHandler openMostVisitedItem:item
                                                  atIndex:indexPath.item];
+      break;
+    case ContentSuggestionTypeReturnToRecentTab:
+      [self.suggestionCommandHandler openMostRecentTab:item];
       break;
     case ContentSuggestionTypePromo:
       [self dismissSection:indexPath.section];

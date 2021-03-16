@@ -416,6 +416,9 @@
 }
 
 - (void)ntpDidChangeVisibility:(BOOL)visible {
+  if (visible) {
+    [self.contentSuggestionsCoordinator configureStartSurfaceIfNeeded];
+  }
   self.viewPresented = visible;
   [self updateVisible];
 }

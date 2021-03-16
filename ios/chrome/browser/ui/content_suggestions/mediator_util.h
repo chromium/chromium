@@ -47,6 +47,10 @@ ntp_snippets::ContentSuggestion::ID SuggestionIDForSectionID(
     ContentSuggestionsCategoryWrapper* category,
     const std::string& id_in_category);
 
+// Creates and returns a SectionInfo for the section containing the "Return to
+// Recent Tab" tile for the Start Surface.
+ContentSuggestionsSectionInformation* ReturnToRecentTabSectionInformation();
+
 // Creates and returns a SectionInfo for the section containing the logo and
 // omnibox.
 ContentSuggestionsSectionInformation* LogoSectionInformation();

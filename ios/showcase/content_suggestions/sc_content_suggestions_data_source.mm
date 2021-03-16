@@ -120,6 +120,7 @@ using CSCollectionViewItem = CollectionViewItem<SuggestedContent>;
       return @[ learnMore ];
     }
     case ContentSuggestionsSectionLogo:
+    case ContentSuggestionsSectionReturnToRecentTab:
     case ContentSuggestionsSectionPromo:
     case ContentSuggestionsSectionDiscover:
     case ContentSuggestionsSectionUnknown:

@@ -8,6 +8,7 @@
 #include "base/mac/foundation_util.h"
 #include "base/optional.h"
 #include "base/strings/sys_string_conversions.h"
+#include "components/favicon/ios/web_favicon_driver.h"
 #include "components/ntp_snippets/category.h"
 #include "components/ntp_snippets/category_info.h"
 #include "components/ntp_snippets/content_suggestion.h"
@@ -28,6 +29,7 @@
 #import "ios/chrome/browser/ui/content_suggestions/cells/content_suggestions_learn_more_item.h"
 #import "ios/chrome/browser/ui/content_suggestions/cells/content_suggestions_most_visited_action_item.h"
 #import "ios/chrome/browser/ui/content_suggestions/cells/content_suggestions_most_visited_item.h"
+#import "ios/chrome/browser/ui/content_suggestions/cells/content_suggestions_return_to_recent_tab_item.h"
 #import "ios/chrome/browser/ui/content_suggestions/cells/content_suggestions_whats_new_item.h"
 #import "ios/chrome/browser/ui/content_suggestions/cells/suggested_content.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_category_wrapper.h"
@@ -47,10 +49,13 @@
 #include "ios/chrome/browser/ui/ntp/ntp_tile_saver.h"
 #import "ios/chrome/browser/ui/start_surface/start_surface_features.h"
 #include "ios/chrome/browser/ui/util/ui_util.h"
+#import "ios/chrome/browser/web_state_list/web_state_list.h"
 #include "ios/chrome/common/app_group/app_group_constants.h"
+#include "ios/chrome/grit/ios_strings.h"
 #include "ios/public/provider/chrome/browser/chrome_browser_provider.h"
 #import "ios/public/provider/chrome/browser/discover_feed/discover_feed_observer_bridge.h"
 #include "ios/public/provider/chrome/browser/images/branded_image_provider.h"
+#include "ui/base/l10n/l10n_util_mac.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -104,6 +109,12 @@ const NSInteger kMaxNumMostVisitedTiles = 4;
 // Section Info for the logo and omnibox section.
 @property(nonatomic, strong)
     ContentSuggestionsSectionInformation* logoSectionInfo;
+// Section Info for the "Return to Recent Tab" section.
+@property(nonatomic, strong)
+    ContentSuggestionsSectionInformation* returnToRecentTabSectionInfo;
+// Item for the "Return to Recent Tab" tile.
+@property(nonatomic, strong)
+    ContentSuggestionsReturnToRecentTabItem* returnToRecentTabItem;
 // Section Info for the What's New promo section.
 @property(nonatomic, strong)
     ContentSuggestionsSectionInformation* promoSectionInfo;
@@ -139,7 +150,8 @@ const NSInteger kMaxNumMostVisitedTiles = 4;
 @property(nonatomic, strong) ContentSuggestionsDiscoverItem* discoverItem;
 // Number of unread items in reading list model.
 @property(nonatomic, assign) NSInteger readingListUnreadCount;
-
+// Whether to show the most recent tab tile.
+@property(nonatomic, assign) BOOL showMostRecentTabStartSurfaceTile;
 // Whether the incognito mode is available.
 @property(nonatomic, assign) BOOL incognitoAvailable;
 
@@ -267,6 +279,47 @@ const NSInteger kMaxNumMostVisitedTiles = 4;
   return kMaxNumMostVisitedTiles;
 }
 
+- (void)configureMostRecentTabItemWithWebState:(web::WebState*)webState {
+  DCHECK(IsStartSurfaceEnabled());
+  self.returnToRecentTabSectionInfo = ReturnToRecentTabSectionInformation();
+  if (!self.returnToRecentTabItem) {
+    self.returnToRecentTabItem =
+        [[ContentSuggestionsReturnToRecentTabItem alloc] initWithType:0];
+  }
+
+  // Retrieve favicon associated with the page.
+  favicon::WebFaviconDriver* driver =
+      favicon::WebFaviconDriver::FromWebState(webState);
+  if (driver->FaviconIsValid()) {
+    gfx::Image favicon = driver->GetFavicon();
+    if (!favicon.IsEmpty()) {
+      self.returnToRecentTabItem.icon = favicon.ToUIImage();
+    }
+  }
+
+  self.returnToRecentTabItem.title =
+      l10n_util::GetNSString(IDS_IOS_RETURN_TO_RECENT_TAB_TITLE);
+  self.returnToRecentTabItem.subtitle =
+      base::SysUTF16ToNSString(webState->GetTitle());
+  self.showMostRecentTabStartSurfaceTile = YES;
+
+  // TODO(crbug.com/1187303): Create insert section to add a section.
+  [self.dataSink reloadAllData];
+}
+
+- (void)hideRecentTabTile {
+  DCHECK(IsStartSurfaceEnabled());
+  self.showMostRecentTabStartSurfaceTile = NO;
+  [self.dataSink clearSection:self.returnToRecentTabSectionInfo];
+}
+
+#pragma mark - StartSurfaceRecentTabRemovalObserving
+
+- (void)mostRecentTabWasRemoved:(web::WebState*)web_state {
+  DCHECK(IsStartSurfaceEnabled());
+  [self hideRecentTabTile];
+}
+
 #pragma mark - ContentSuggestionsDataSource
 
 - (NSArray<ContentSuggestionsSectionInformation*>*)sectionsInfo {
@@ -274,6 +327,11 @@ const NSInteger kMaxNumMostVisitedTiles = 4;
       [NSMutableArray array];
 
   [sectionsInfo addObject:self.logoSectionInfo];
+
+  if (self.showMostRecentTabStartSurfaceTile) {
+    DCHECK(IsStartSurfaceEnabled());
+    [sectionsInfo addObject:self.returnToRecentTabSectionInfo];
+  }
 
   if (_notificationPromo->CanShow()) {
     [sectionsInfo addObject:self.promoSectionInfo];
@@ -327,6 +385,9 @@ const NSInteger kMaxNumMostVisitedTiles = 4;
       item.text = base::SysUTF8ToNSString(_notificationPromo->promo_text());
       [convertedSuggestions addObject:item];
     }
+  } else if (sectionInfo == self.returnToRecentTabSectionInfo) {
+    DCHECK(IsStartSurfaceEnabled());
+    [convertedSuggestions addObject:self.returnToRecentTabItem];
   } else if (sectionInfo == self.mostVisitedSectionInfo) {
     [convertedSuggestions addObjectsFromArray:self.mostVisitedItems];
     if (!ShouldHideShortcutsForStartSurface()) {

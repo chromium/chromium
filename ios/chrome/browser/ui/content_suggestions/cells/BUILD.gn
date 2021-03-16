@@ -11,6 +11,8 @@ source_set("cells") {
     "content_suggestions_most_visited_action_item.mm",
     "content_suggestions_most_visited_item.h",
     "content_suggestions_most_visited_item.mm",
+    "content_suggestions_return_to_recent_tab_item.h",
+    "content_suggestions_return_to_recent_tab_item.mm",
   ]
   deps = [
     ":cells_ui",
