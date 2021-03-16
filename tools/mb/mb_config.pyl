@@ -2003,11 +2003,11 @@
     ],
 
     'fuchsia_clang_tot_official_arm64': [
-      'official_optimize_goma', 'fuchsia', 'arm64', 'clang_tot',
+      'official_optimize', 'fuchsia', 'arm64', 'clang_tot', 'static',
     ],
 
     'fuchsia_clang_tot_release_x64': [
-      'fuchsia', 'release_bot', 'clang_tot',
+      'fuchsia', 'release', 'clang_tot', 'static',
     ],
 
     'fuchsia_official_arm64_size': [
