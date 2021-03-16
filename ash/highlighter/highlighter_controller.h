@@ -90,7 +90,7 @@ class ASH_EXPORT HighlighterController
                          aura::Window* root_window) override;
   void UpdatePointerView(ui::TouchEvent* event) override;
   void DestroyPointerView() override;
-  bool CanStartNewGesture(ui::TouchEvent* event) override;
+  bool CanStartNewGesture(ui::LocatedEvent* event) override;
 
   // Performs gesture recognition, initiates appropriate visual effects,
   // notifies the observer if necessary.

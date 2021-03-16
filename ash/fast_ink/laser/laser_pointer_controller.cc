@@ -77,9 +77,38 @@ void LaserPointerController::CreatePointerView(
 
 void LaserPointerController::UpdatePointerView(ui::TouchEvent* event) {
   LaserPointerView* laser_pointer_view = GetLaserPointerView();
+
+  if (IsPointerInExcludedWindows(event)) {
+    // Destroy the |LaserPointerView| since the pointer is in the bound of
+    // excluded windows.
+    DestroyPointerView();
+    return;
+  }
+
   laser_pointer_view->AddNewPoint(event->root_location_f(),
                                   event->time_stamp());
   if (event->type() == ui::ET_TOUCH_RELEASED) {
+    laser_pointer_view->FadeOut(base::BindOnce(
+        &LaserPointerController::DestroyPointerView, base::Unretained(this)));
+  }
+}
+
+void LaserPointerController::UpdatePointerView(ui::MouseEvent* event) {
+  LaserPointerView* laser_pointer_view = GetLaserPointerView();
+  if (event->type() == ui::ET_MOUSE_MOVED) {
+    if (IsPointerInExcludedWindows(event)) {
+      // Destroy the |LaserPointerView| since the cursor is in the bound of
+      // excluded windows.
+      DestroyPointerView();
+      return;
+    }
+
+    // TODO(llin): Hide the mouse cursor.
+  }
+
+  laser_pointer_view->AddNewPoint(event->root_location_f(),
+                                  event->time_stamp());
+  if (event->type() == ui::ET_MOUSE_RELEASED) {
     laser_pointer_view->FadeOut(base::BindOnce(
         &LaserPointerController::DestroyPointerView, base::Unretained(this)));
   }
@@ -89,11 +118,22 @@ void LaserPointerController::DestroyPointerView() {
   laser_pointer_view_widget_.reset();
 }
 
-bool LaserPointerController::CanStartNewGesture(ui::TouchEvent* event) {
+bool LaserPointerController::CanStartNewGesture(ui::LocatedEvent* event) {
   // Ignore events over the palette.
+  // TODO(llin): Register palette as a excluded window instead.
   if (palette_utils::PaletteContainsPointInScreen(event->root_location()))
     return false;
   return FastInkPointerController::CanStartNewGesture(event);
+}
+
+bool LaserPointerController::ShouldProcessEvent(ui::LocatedEvent* event) {
+  // Allow clicking when laser pointer is enabled.
+  if (event->type() == ui::ET_MOUSE_PRESSED ||
+      event->type() == ui::ET_MOUSE_RELEASED) {
+    return false;
+  }
+
+  return FastInkPointerController::ShouldProcessEvent(event);
 }
 
 void LaserPointerController::NotifyStateChanged(bool enabled) {

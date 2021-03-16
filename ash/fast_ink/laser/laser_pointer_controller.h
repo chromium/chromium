@@ -47,8 +47,10 @@ class ASH_EXPORT LaserPointerController
   void CreatePointerView(base::TimeDelta presentation_delay,
                          aura::Window* root_window) override;
   void UpdatePointerView(ui::TouchEvent* event) override;
+  void UpdatePointerView(ui::MouseEvent* event) override;
   void DestroyPointerView() override;
-  bool CanStartNewGesture(ui::TouchEvent* event) override;
+  bool CanStartNewGesture(ui::LocatedEvent* event) override;
+  bool ShouldProcessEvent(ui::LocatedEvent* event) override;
 
   void NotifyStateChanged(bool enabled);
 

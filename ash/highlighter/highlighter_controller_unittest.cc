@@ -9,6 +9,7 @@
 #include "ash/assistant/test/assistant_ash_test_base.h"
 #include "ash/fast_ink/fast_ink_points.h"
 #include "ash/highlighter/highlighter_controller_test_api.h"
+#include "ash/public/cpp/stylus_utils.h"
 #include "ash/shell.h"
 #include "ash/system/palette/mock_palette_tool_delegate.h"
 #include "ash/system/palette/palette_tool.h"
@@ -120,6 +121,8 @@ class HighlighterControllerTest : public AssistantAshTestBase {
 // Test to ensure the class responsible for drawing the highlighter pointer
 // receives points from stylus movements as expected.
 TEST_F(HighlighterControllerTest, HighlighterRenderer) {
+  ash::stylus_utils::SetHasStylusInputForTesting();
+
   // The highlighter pointer mode only works with stylus.
   ui::test::EventGenerator* event_generator = GetEventGenerator();
   event_generator->EnterPenPointerMode();

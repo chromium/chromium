@@ -4,10 +4,12 @@
 
 #include "ash/fast_ink/fast_ink_pointer_controller.h"
 
+#include "ash/public/cpp/stylus_utils.h"
 #include "ui/aura/window.h"
 #include "ui/display/screen.h"
 #include "ui/events/base_event_utils.h"
 #include "ui/views/widget/widget.h"
+#include "ui/wm/core/coordinate_conversion.h"
 
 namespace fast_ink {
 namespace {
@@ -18,9 +20,14 @@ const int kPresentationDelayMs = 18;
 
 }  // namespace
 
+// TODO(llin): Update |enabled_for_mouse_event_| based on whether the user has
+// been interacted with a stylus.
 FastInkPointerController::FastInkPointerController()
     : presentation_delay_(
-          base::TimeDelta::FromMilliseconds(kPresentationDelayMs)) {}
+          base::TimeDelta::FromMilliseconds(kPresentationDelayMs)),
+      enabled_for_mouse_event_(!ash::stylus_utils::HasStylusInput()) {
+  input_device_event_observation_.Observe(ui::DeviceDataManager::GetInstance());
+}
 
 FastInkPointerController::~FastInkPointerController() {}
 
@@ -32,51 +39,142 @@ void FastInkPointerController::SetEnabled(bool enabled) {
   // while it is being animated away.
 }
 
-bool FastInkPointerController::CanStartNewGesture(ui::TouchEvent* event) {
-  // 1) The stylus is pressed
-  // 2) The stylus is moving, but the pointer session has not started yet
-  // (most likely because the preceding press event was consumed by another
-  // handler).
-  return (event->type() == ui::ET_TOUCH_PRESSED ||
-          (event->type() == ui::ET_TOUCH_MOVED && !GetPointerView()));
+void FastInkPointerController::AddExcludedWindow(aura::Window* window) {
+  DCHECK(window);
+  excluded_windows_.Add(window);
 }
 
-void FastInkPointerController::OnTouchEvent(ui::TouchEvent* event) {
-  if (!enabled_)
-    return;
+bool FastInkPointerController::CanStartNewGesture(ui::LocatedEvent* event) {
+  if (IsPointerInExcludedWindows(event))
+    return false;
 
-  if (event->pointer_details().pointer_type != ui::EventPointerType::kPen)
-    return;
+  // 1) The stylus/finger is pressed.
+  // 2) The stylus/finger is moving, but the pointer session has not started yet
+  // (most likely because the preceding press event was consumed by another
+  // handler).
+  bool can_start_on_touch_event =
+      event->type() == ui::ET_TOUCH_PRESSED ||
+      (event->type() == ui::ET_TOUCH_MOVED && !GetPointerView());
+  if (can_start_on_touch_event)
+    return true;
 
-  if (event->type() != ui::ET_TOUCH_MOVED &&
-      event->type() != ui::ET_TOUCH_PRESSED &&
-      event->type() != ui::ET_TOUCH_RELEASED)
-    return;
+  // 1) The mouse is pressed.
+  // 2) The mouse is moving, but the pointer session has not started yet
+  // (most likely because the preceding press event was consumed by another
+  // handler).
+  bool can_start_on_mouse_event =
+      event->type() == ui::ET_MOUSE_PRESSED ||
+      (event->type() == ui::ET_MOUSE_MOVED && !GetPointerView());
+  if (can_start_on_mouse_event)
+    return true;
 
-  // Find the root window that the event was captured on. We never need to
-  // switch between different root windows because it is not physically possible
-  // to seamlessly drag a stylus between two displays like it is with a mouse.
+  return false;
+}
+
+bool FastInkPointerController::ShouldProcessEvent(ui::LocatedEvent* event) {
+  return event->type() == ui::ET_TOUCH_RELEASED ||
+         event->type() == ui::ET_TOUCH_MOVED ||
+         event->type() == ui::ET_TOUCH_PRESSED ||
+         event->type() == ui::ET_MOUSE_PRESSED ||
+         event->type() == ui::ET_MOUSE_RELEASED ||
+         event->type() == ui::ET_MOUSE_MOVED;
+}
+
+bool FastInkPointerController::IsPointerInExcludedWindows(
+    ui::LocatedEvent* event) {
+  gfx::Point screen_location = event->location();
+  aura::Window* event_target = static_cast<aura::Window*>(event->target());
+  wm::ConvertPointToScreen(event_target, &screen_location);
+
+  for (const auto* excluded_window : excluded_windows_.windows()) {
+    if (excluded_window->GetBoundsInScreen().Contains(screen_location)) {
+      return true;
+    }
+  }
+
+  return false;
+}
+
+bool FastInkPointerController::MaybeCreatePointerView(
+    ui::LocatedEvent* event,
+    bool can_start_new_gesture) {
   aura::Window* root_window =
       static_cast<aura::Window*>(event->target())->GetRootWindow();
-
-  if (CanStartNewGesture(event)) {
+  if (can_start_new_gesture) {
     DestroyPointerView();
     CreatePointerView(presentation_delay_, root_window);
   } else {
     views::View* pointer_view = GetPointerView();
     if (!pointer_view)
-      return;
+      return false;
     views::Widget* widget = pointer_view->GetWidget();
     if (widget->IsClosed() ||
         widget->GetNativeWindow()->GetRootWindow() != root_window) {
       // The pointer widget is no longer valid, end the current pointer session.
       DestroyPointerView();
-      return;
+      return false;
     }
   }
 
-  UpdatePointerView(event);
-  event->StopPropagation();
+  return true;
+}
+
+void FastInkPointerController::OnTouchEvent(ui::TouchEvent* event) {
+  const int touch_id = event->pointer_details().id;
+  // Keep track of touch point count.
+  if (event->type() == ui::ET_TOUCH_PRESSED)
+    touch_ids_.insert(touch_id);
+  if (event->type() == ui::ET_TOUCH_RELEASED ||
+      event->type() == ui::ET_TOUCH_CANCELLED) {
+    auto iter = touch_ids_.find(touch_id);
+
+    // Can happen if this object is constructed while fingers were down.
+    if (iter == touch_ids_.end())
+      return;
+
+    touch_ids_.erase(touch_id);
+  }
+
+  if (!enabled_)
+    return;
+
+  // Disable on touch events if the device has stylus.
+  if (ash::stylus_utils::HasStylusInput() &&
+      event->pointer_details().pointer_type != ui::EventPointerType::kPen) {
+    return;
+  }
+
+  // Disable for multiple fingers touch.
+  if (touch_ids_.size() > 1) {
+    DestroyPointerView();
+    return;
+  }
+
+  if (!ShouldProcessEvent(event))
+    return;
+
+  // Update pointer view and stop event propagation if pointer view is
+  // available.
+  if (MaybeCreatePointerView(event, CanStartNewGesture(event))) {
+    UpdatePointerView(event);
+    event->StopPropagation();
+  }
+}
+
+void FastInkPointerController::OnMouseEvent(ui::MouseEvent* event) {
+  if (!enabled_ || !enabled_for_mouse_event_ || !ShouldProcessEvent(event))
+    return;
+
+  // Update pointer view and stop event propagation if pointer view is
+  // available.
+  if (MaybeCreatePointerView(event, CanStartNewGesture(event))) {
+    UpdatePointerView(event);
+    event->StopPropagation();
+  }
+}
+
+void FastInkPointerController::OnDeviceListsComplete() {
+  enabled_for_mouse_event_ = !ash::stylus_utils::HasStylusInput();
 }
 
 }  // namespace fast_ink

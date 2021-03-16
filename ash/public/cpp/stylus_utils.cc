@@ -60,5 +60,9 @@ void SetHasStylusInputForTesting() {
   g_has_stylus_input_for_testing = true;
 }
 
+void SetNoStylusInputForTesting() {
+  g_has_stylus_input_for_testing = false;
+}
+
 }  // namespace stylus_utils
 }  // namespace ash

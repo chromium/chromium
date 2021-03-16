@@ -232,7 +232,7 @@ void HighlighterController::DestroyPointerView() {
   DestroyResultView();
 }
 
-bool HighlighterController::CanStartNewGesture(ui::TouchEvent* event) {
+bool HighlighterController::CanStartNewGesture(ui::LocatedEvent* event) {
   // Ignore events over the palette.
   if (palette_utils::PaletteContainsPointInScreen(event->root_location()))
     return false;
