@@ -103,13 +103,6 @@ Polymer({
   headerReceived_: false,
 
   /**
-   * Whether the webview has been successfully loaded.
-   * @type {boolean}
-   * @private
-   */
-  webViewLoaded_: false,
-
-  /**
    * Whether all the setting zippy has been successfully loaded.
    * @type {boolean}
    * @private
@@ -198,7 +191,7 @@ Polymer({
   },
 
   /**
-   * Reloads value prop webview.
+   * Reloads value prop page by fetching setting zippy and consent string.
    */
   reloadPage() {
     this.fire('loading');
@@ -209,14 +202,19 @@ Polymer({
       this.consentStringLoaded_ = false;
     }
 
+    this.buttonsDisabled = true;
+  },
+
+  /**
+   * Reloads value prop animation webview.
+   */
+  reloadWebView() {
     this.loadingError_ = false;
     this.headerReceived_ = false;
     let locale = this.locale.replace('-', '_').toLowerCase();
     for (let webviewObj of this.valuePropViewElements_) {
       webviewObj.src = this.urlTemplate_.replace('$', locale);
     }
-
-    this.buttonsDisabled = true;
   },
 
   /**
@@ -246,7 +244,6 @@ Polymer({
       return;
     }
 
-    this.webViewLoaded_ = true;
     if (this.settingZippyLoaded_ && this.consentStringLoaded_) {
       this.onPageLoaded();
     }
@@ -291,8 +288,8 @@ Polymer({
         this.sanitizer_.sanitizeHtml(data['valuePropFooter']);
 
     this.consentStringLoaded_ = true;
-    if (this.webViewLoaded_ && this.settingZippyLoaded_) {
-      this.onPageLoaded();
+    if (this.settingZippyLoaded_) {
+      this.reloadWebView();
     }
   },
 
@@ -301,8 +298,8 @@ Polymer({
    */
   addSettingZippy(zippy_data) {
     if (this.settingZippyLoaded_) {
-      if (this.webViewLoaded_ && this.consentStringLoaded_) {
-        this.onPageLoaded();
+      if (this.consentStringLoaded_) {
+        this.reloadWebView();
       }
       return;
     }
@@ -345,8 +342,8 @@ Polymer({
     }
 
     this.settingZippyLoaded_ = true;
-    if (this.webViewLoaded_ && this.consentStringLoaded_) {
-      this.onPageLoaded();
+    if (this.consentStringLoaded_) {
+      this.reloadWebView();
     }
   },
 
