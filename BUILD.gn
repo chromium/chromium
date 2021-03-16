@@ -1291,12 +1291,6 @@ if (!is_ios) {
   }
 }
 
-# TODO(cassew): Add more OS's that don't support x86
-assert(
-    !(target_cpu == "x86" &&
-          (target_os == "ios" || target_os == "mac" || target_os == "linux")),
-    "'target_cpu=x86' is not supported for 'target_os=$target_os'. Consider omitting 'target_cpu' (default) or using 'target_cpu=x64' instead.")
-
 group("chromium_builder_perf") {
   testonly = true
 
