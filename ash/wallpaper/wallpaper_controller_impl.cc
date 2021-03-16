@@ -1433,6 +1433,7 @@ void WallpaperControllerImpl::OnSessionStateChanged(
   if (wallpaper_mode_ == WALLPAPER_IMAGE &&
       (state == session_manager::SessionState::ACTIVE ||
        state == session_manager::SessionState::LOCKED ||
+       state == session_manager::SessionState::LOGGED_IN_NOT_ACTIVE ||
        state == session_manager::SessionState::LOGIN_SECONDARY)) {
     UpdateWallpaperForAllRootWindows(/*lock_state_changed=*/true);
   } else {

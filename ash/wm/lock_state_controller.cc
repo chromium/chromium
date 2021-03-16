@@ -437,7 +437,6 @@ void LockStateController::PostLockAnimationFinished() {
 }
 
 void LockStateController::UnlockAnimationAfterUIDestroyedFinished() {
-  Shell::Get()->wallpaper_controller()->UpdateWallpaperBlurForLockState(false);
   RestoreUnlockedProperties();
 }
 
