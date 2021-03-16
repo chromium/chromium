@@ -1026,7 +1026,7 @@ bool GpuDataManagerImplPrivate::VulkanRequested() const {
   return gpu_info_vulkan_requested_;
 }
 
-void GpuDataManagerImplPrivate::OnBrowserThreadsStarted() {
+void GpuDataManagerImplPrivate::PostCreateThreads() {
   base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
   if (command_line->HasSwitch(switches::kNoDelayForDX12VulkanInfoCollection)) {
     // This is for the info collection test of the gpu integration tests.

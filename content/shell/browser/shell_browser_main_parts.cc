@@ -205,7 +205,7 @@ void ShellBrowserMainParts::PostCreateThreads() {
           performance_manager::Decorators::kMinimal, base::DoNothing());
 }
 
-void ShellBrowserMainParts::PreMainMessageLoopRun() {
+int ShellBrowserMainParts::PreMainMessageLoopRun() {
   InitializeBrowserContexts();
   Shell::Initialize(CreateShellPlatformDelegate());
   net::NetModule::SetResourceProvider(PlatformResourceProvider);
@@ -217,10 +217,16 @@ void ShellBrowserMainParts::PreMainMessageLoopRun() {
     delete parameters_.ui_task;
     run_message_loop_ = false;
   }
+
+  return 0;
 }
 
-bool ShellBrowserMainParts::MainMessageLoopRun(int* result_code)  {
-  return !run_message_loop_;
+void ShellBrowserMainParts::WillRunMainMessageLoop(
+    std::unique_ptr<base::RunLoop>& run_loop) {
+  if (run_message_loop_)
+    Shell::SetMainMessageLoopQuitClosure(run_loop->QuitClosure());
+  else
+    run_loop.reset();
 }
 
 void ShellBrowserMainParts::PostMainMessageLoopRun() {
@@ -231,11 +237,6 @@ void ShellBrowserMainParts::PostMainMessageLoopRun() {
   views::LinuxUI::SetInstance(nullptr);
 #endif
   performance_manager_lifetime_.reset();
-}
-
-void ShellBrowserMainParts::PreDefaultMainMessageLoopRun(
-    base::OnceClosure quit_closure) {
-  Shell::SetMainMessageLoopQuitClosure(std::move(quit_closure));
 }
 
 void ShellBrowserMainParts::PostDestroyThreads() {

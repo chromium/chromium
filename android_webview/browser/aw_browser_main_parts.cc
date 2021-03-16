@@ -32,6 +32,7 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/i18n/rtl.h"
+#include "base/logging.h"
 #include "base/message_loop/message_pump_type.h"
 #include "base/path_service.h"
 #include "base/task/current_thread.h"
@@ -167,7 +168,7 @@ void AwBrowserMainParts::RegisterSyntheticTrials() {
   }
 }
 
-void AwBrowserMainParts::PreMainMessageLoopRun() {
+int AwBrowserMainParts::PreMainMessageLoopRun() {
   TRACE_EVENT0("startup", "AwBrowserMainParts::PreMainMessageLoopRun");
   AwBrowserProcess::GetInstance()->PreMainMessageLoopRun();
   browser_client_->InitBrowserContext();
@@ -175,12 +176,12 @@ void AwBrowserMainParts::PreMainMessageLoopRun() {
       AwWebUIControllerFactory::GetInstance());
   content::RenderFrameHost::AllowInjectingJavaScript();
   metrics_logger_ = std::make_unique<metrics::MemoryMetricsLogger>();
+  return content::RESULT_CODE_NORMAL_EXIT;
 }
 
-bool AwBrowserMainParts::MainMessageLoopRun(int* result_code) {
-  // Android WebView does not use default MessageLoop. It has its own
-  // Android specific MessageLoop.
-  return true;
+void AwBrowserMainParts::WillRunMainMessageLoop(
+    std::unique_ptr<base::RunLoop>& run_loop) {
+  NOTREACHED();
 }
 
 void AwBrowserMainParts::PostCreateThreads() {

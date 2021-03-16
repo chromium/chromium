@@ -30,9 +30,9 @@ class HeadlessBrowserMainParts : public content::BrowserMainParts {
   ~HeadlessBrowserMainParts() override;
 
   // content::BrowserMainParts implementation:
-  void PreMainMessageLoopRun() override;
-  void PreDefaultMainMessageLoopRun(base::OnceClosure quit_closure) override;
-  bool MainMessageLoopRun(int* result_code) override;
+  int PreMainMessageLoopRun() override;
+  void WillRunMainMessageLoop(
+      std::unique_ptr<base::RunLoop>& run_loop) override;
   void PostMainMessageLoopRun() override;
 #if defined(OS_MAC)
   void PreMainMessageLoopStart() override;

@@ -579,7 +579,7 @@ void ChromeBrowserMainPartsChromeos::PostMainMessageLoopStart() {
 
 // Threads are initialized between MainMessageLoopStart and MainMessageLoopRun.
 // about_flags settings are applied in ChromeBrowserMainParts::PreCreateThreads.
-void ChromeBrowserMainPartsChromeos::PreMainMessageLoopRun() {
+int ChromeBrowserMainPartsChromeos::PreMainMessageLoopRun() {
   network_change_manager_client_.reset(new NetworkChangeManagerClient(
       static_cast<net::NetworkChangeNotifierPosix*>(
           content::GetNetworkChangeNotifier())));
@@ -663,7 +663,7 @@ void ChromeBrowserMainPartsChromeos::PreMainMessageLoopRun() {
   chromeos::cfm::InitializeCfmServices();
 #endif  // BUILDFLAG(PLATFORM_CFM)
 
-  ChromeBrowserMainPartsLinux::PreMainMessageLoopRun();
+  return ChromeBrowserMainPartsLinux::PreMainMessageLoopRun();
 }
 
 void ChromeBrowserMainPartsChromeos::PreProfileInit() {

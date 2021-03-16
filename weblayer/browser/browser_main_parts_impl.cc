@@ -217,7 +217,7 @@ void BrowserMainPartsImpl::PostCreateThreads() {
           performance_manager::Decorators::kMinimal, base::DoNothing());
 }
 
-void BrowserMainPartsImpl::PreMainMessageLoopRun() {
+int BrowserMainPartsImpl::PreMainMessageLoopRun() {
   FeatureListCreator::GetInstance()->PerformPreMainMessageLoopStartup();
 
   // It's necessary to have a complete dependency graph of
@@ -278,18 +278,20 @@ void BrowserMainPartsImpl::PreMainMessageLoopRun() {
   Java_MojoInterfaceRegistrar_registerMojoInterfaces(
       base::android::AttachCurrentThread());
 #endif
+
+  return content::RESULT_CODE_NORMAL_EXIT;
 }
 
-bool BrowserMainPartsImpl::MainMessageLoopRun(int* result_code) {
-  return !run_message_loop_;
-}
-
-void BrowserMainPartsImpl::PreDefaultMainMessageLoopRun(
-    base::OnceClosure quit_closure) {
-  // Wrap the method that stops the message loop so we can do other shutdown
-  // cleanup inside content.
-  params_->delegate->SetMainMessageLoopQuitClosure(
-      base::BindOnce(StopMessageLoop, std::move(quit_closure)));
+void BrowserMainPartsImpl::WillRunMainMessageLoop(
+    std::unique_ptr<base::RunLoop>& run_loop) {
+  if (run_message_loop_) {
+    // Wrap the method that stops the message loop so we can do other shutdown
+    // cleanup inside content.
+    params_->delegate->SetMainMessageLoopQuitClosure(
+        base::BindOnce(StopMessageLoop, run_loop->QuitClosure()));
+  } else {
+    run_loop.reset();
+  }
 }
 
 void BrowserMainPartsImpl::PostMainMessageLoopRun() {
@@ -298,4 +300,5 @@ void BrowserMainPartsImpl::PostMainMessageLoopRun() {
 
   performance_manager_lifetime_.reset();
 }
+
 }  // namespace weblayer

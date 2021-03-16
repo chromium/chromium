@@ -70,8 +70,9 @@ class ChromeBrowserMainParts : public content::BrowserMainParts {
   void PostMainMessageLoopStart() override;
   int PreCreateThreads() override;
   void PostCreateThreads() override;
-  void PreMainMessageLoopRun() override;
-  bool MainMessageLoopRun(int* result_code) override;
+  int PreMainMessageLoopRun() override;
+  void WillRunMainMessageLoop(
+      std::unique_ptr<base::RunLoop>& run_loop) override;
   void PostMainMessageLoopRun() override;
   void PostDestroyThreads() override;
 

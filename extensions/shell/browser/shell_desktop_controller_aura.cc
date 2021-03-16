@@ -8,7 +8,6 @@
 #include <string>
 
 #include "base/check_op.h"
-#include "base/run_loop.h"
 #include "build/chromeos_buildflags.h"
 #include "components/keep_alive_registry/keep_alive_registry.h"
 #include "extensions/browser/app_window/app_window.h"
@@ -162,14 +161,16 @@ ShellDesktopControllerAura::~ShellDesktopControllerAura() {
   extensions::AppWindowClient::Set(NULL);
 }
 
-void ShellDesktopControllerAura::Run() {
+void ShellDesktopControllerAura::PreMainMessageLoopRun() {
   KeepAliveRegistry::GetInstance()->AddObserver(this);
+}
 
-  base::RunLoop run_loop;
-  run_loop_ = &run_loop;
-  run_loop.Run();
-  run_loop_ = nullptr;
+void ShellDesktopControllerAura::WillRunMainMessageLoop(
+    std::unique_ptr<base::RunLoop>& run_loop) {
+  quit_when_idle_closure_ = run_loop->QuitWhenIdleClosure();
+}
 
+void ShellDesktopControllerAura::PostMainMessageLoopRun() {
   KeepAliveRegistry::GetInstance()->SetIsShuttingDown(true);
   KeepAliveRegistry::GetInstance()->RemoveObserver(this);
 }
@@ -399,9 +400,9 @@ void ShellDesktopControllerAura::TearDownRootWindowController(
 void ShellDesktopControllerAura::MaybeQuit() {
   // Quit if there are no app windows open and no keep-alives waiting for apps
   // to relaunch.  |run_loop_| may be null in tests.
-  if (run_loop_ && root_window_controllers_.empty() &&
+  if (quit_when_idle_closure_ && root_window_controllers_.empty() &&
       !KeepAliveRegistry::GetInstance()->IsKeepingAlive()) {
-    run_loop_->QuitWhenIdle();
+    std::move(quit_when_idle_closure_).Run();
   }
 }
 

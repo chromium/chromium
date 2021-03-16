@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "content/public/common/result_codes.h"
 #include "content/shell/browser/shell_browser_context.h"
 #include "ui/display/screen.h"
 #include "ui/views/widget/desktop_aura/desktop_screen.h"
@@ -25,7 +26,7 @@ class ViewsContentClientMainPartsDesktopAura
   ~ViewsContentClientMainPartsDesktopAura() override = default;
 
   // ViewsContentClientMainPartsAura:
-  void PreMainMessageLoopRun() override;
+  int PreMainMessageLoopRun() override;
 };
 
 ViewsContentClientMainPartsDesktopAura::ViewsContentClientMainPartsDesktopAura(
@@ -34,12 +35,14 @@ ViewsContentClientMainPartsDesktopAura::ViewsContentClientMainPartsDesktopAura(
     : ViewsContentClientMainPartsAura(content_params, views_content_client) {
 }
 
-void ViewsContentClientMainPartsDesktopAura::PreMainMessageLoopRun() {
+int ViewsContentClientMainPartsDesktopAura::PreMainMessageLoopRun() {
   ViewsContentClientMainPartsAura::PreMainMessageLoopRun();
 
   views::CreateDesktopScreen();
 
   views_content_client()->OnPreMainMessageLoopRun(browser_context(), nullptr);
+
+  return content::RESULT_CODE_NORMAL_EXIT;
 }
 
 }  // namespace

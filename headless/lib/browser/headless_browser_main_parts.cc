@@ -4,6 +4,7 @@
 
 #include "headless/lib/browser/headless_browser_main_parts.h"
 
+#include "content/public/common/result_codes.h"
 #include "headless/app/headless_shell_switches.h"
 #include "headless/lib/browser/headless_browser_context_impl.h"
 #include "headless/lib/browser/headless_browser_impl.h"
@@ -34,7 +35,7 @@ HeadlessBrowserMainParts::HeadlessBrowserMainParts(
 
 HeadlessBrowserMainParts::~HeadlessBrowserMainParts() = default;
 
-void HeadlessBrowserMainParts::PreMainMessageLoopRun() {
+int HeadlessBrowserMainParts::PreMainMessageLoopRun() {
 #if defined(HEADLESS_USE_PREFS)
   CreatePrefService();
 #endif
@@ -50,15 +51,16 @@ void HeadlessBrowserMainParts::PreMainMessageLoopRun() {
     delete parameters_.ui_task;
     run_message_loop_ = false;
   }
+
+  return content::RESULT_CODE_NORMAL_EXIT;
 }
 
-void HeadlessBrowserMainParts::PreDefaultMainMessageLoopRun(
-    base::OnceClosure quit_closure) {
-  quit_main_message_loop_ = std::move(quit_closure);
-}
-
-bool HeadlessBrowserMainParts::MainMessageLoopRun(int* result_code) {
-  return !run_message_loop_;
+void HeadlessBrowserMainParts::WillRunMainMessageLoop(
+    std::unique_ptr<base::RunLoop>& run_loop) {
+  if (run_message_loop_)
+    quit_main_message_loop_ = run_loop->QuitClosure();
+  else
+    run_loop.reset();
 }
 
 void HeadlessBrowserMainParts::PostMainMessageLoopRun() {

@@ -23,7 +23,6 @@ class ShellDesktopControllerMac : public DesktopController {
   ~ShellDesktopControllerMac() override;
 
   // DesktopController:
-  void Run() override;
   void AddAppWindow(AppWindow* app_window, gfx::NativeWindow window) override;
   void CloseAppWindows() override;
 

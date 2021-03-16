@@ -13,11 +13,11 @@ int BrowserMainParts::PreEarlyInitialization() {
 }
 
 int BrowserMainParts::PreCreateThreads() {
-  return 0;
+  return RESULT_CODE_NORMAL_EXIT;
 }
 
-bool BrowserMainParts::MainMessageLoopRun(int* result_code) {
-  return false;
+int BrowserMainParts::PreMainMessageLoopRun() {
+  return RESULT_CODE_NORMAL_EXIT;
 }
 
 }  // namespace content

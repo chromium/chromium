@@ -28,6 +28,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/metrics/field_trial.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/no_destructor.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
@@ -318,8 +319,13 @@
 namespace {
 
 #if !defined(OS_ANDROID)
-// Holds the RunLoop for the non-Android MainMessageLoopRun() to Run().
-base::RunLoop* g_run_loop = nullptr;
+// Initialized in PreMainMessageLoopRun() and handed off to content:: in
+// WillRunMainMessageLoop() (or in TakeRunLoopForTest() in tests)
+std::unique_ptr<base::RunLoop>& GetMainRunLoopInstance() {
+  static base::NoDestructor<std::unique_ptr<base::RunLoop>>
+      main_run_loop_instance;
+  return *main_run_loop_instance;
+}
 #endif
 
 // This function provides some ways to test crash and assertion handling
@@ -479,18 +485,6 @@ bool ProcessSingletonNotificationCallback(
                                 command_line, current_directory));
 }
 #endif  // !defined(OS_ANDROID)
-
-class ScopedMainMessageLoopRunEvent {
- public:
-  ScopedMainMessageLoopRunEvent() {
-    TRACE_EVENT_NESTABLE_ASYNC_BEGIN0(
-        "toplevel", "ChromeBrowserMainParts::MainMessageLoopRun", this);
-  }
-  ~ScopedMainMessageLoopRunEvent() {
-    TRACE_EVENT_NESTABLE_ASYNC_END0(
-        "toplevel", "ChromeBrowserMainParts::MainMessageLoopRun", this);
-  }
-};
 
 }  // namespace
 
@@ -903,8 +897,8 @@ int ChromeBrowserMainParts::PreCreateThreadsImpl() {
 #if !defined(OS_ANDROID)
   // Create the RunLoop for MainMessageLoopRun() to use, and pass a copy of
   // its QuitClosure to the BrowserProcessImpl to call when it is time to exit.
-  DCHECK(!g_run_loop);
-  g_run_loop = new base::RunLoop;
+  DCHECK(!GetMainRunLoopInstance());
+  GetMainRunLoopInstance() = std::make_unique<base::RunLoop>();
 
   // These members must be initialized before returning from this function.
   // Android doesn't use StartupBrowserCreator.
@@ -1039,13 +1033,15 @@ void ChromeBrowserMainParts::PostCreateThreads() {
     chrome_extra_parts_[i]->PostCreateThreads();
 }
 
-void ChromeBrowserMainParts::PreMainMessageLoopRun() {
+int ChromeBrowserMainParts::PreMainMessageLoopRun() {
   TRACE_EVENT0("startup", "ChromeBrowserMainParts::PreMainMessageLoopRun");
 
   result_code_ = PreMainMessageLoopRunImpl();
 
   for (size_t i = 0; i < chrome_extra_parts_.size(); ++i)
     chrome_extra_parts_[i]->PreMainMessageLoopRun();
+
+  return result_code_;
 }
 
 // PreMainMessageLoopRun calls these extra stages in the following order:
@@ -1683,7 +1679,8 @@ int ChromeBrowserMainParts::PreMainMessageLoopRunImpl() {
 #endif  // defined(OS_MAC)
 
     // Transfer ownership of the browser's lifetime to the BrowserProcess.
-    browser_process_->SetQuitClosure(g_run_loop->QuitWhenIdleClosure());
+    browser_process_->SetQuitClosure(
+        GetMainRunLoopInstance()->QuitWhenIdleClosure());
     DCHECK(!run_message_loop_);
     run_message_loop_ = true;
   }
@@ -1718,21 +1715,17 @@ int ChromeBrowserMainParts::PreMainMessageLoopRunImpl() {
   return result_code_;
 }
 
-bool ChromeBrowserMainParts::MainMessageLoopRun(int* result_code) {
-  // Trace the entry and exit of this method. We don't use the TRACE_EVENT0
-  // macro because the tracing infrastructure doesn't expect a synchronous event
-  // around the main loop of a thread.
-  ScopedMainMessageLoopRunEvent scoped_main_message_loop_run_event;
+void ChromeBrowserMainParts::WillRunMainMessageLoop(
+    std::unique_ptr<base::RunLoop>& run_loop) {
 #if defined(OS_ANDROID)
   // Chrome on Android does not use default MessageLoop. It has its own
   // Android specific MessageLoop
   NOTREACHED();
-  return true;
 #else
-  // Set the result code set in PreMainMessageLoopRun or set above.
-  *result_code = result_code_;
-  if (!run_message_loop_)
-    return true;  // Don't run the default message loop.
+  if (!run_message_loop_) {
+    run_loop.reset();
+    return;
+  }
 
   // These should be invoked as close to the start of the browser's
   // UI thread message loop as possible to get a stable measurement
@@ -1741,13 +1734,20 @@ bool ChromeBrowserMainParts::MainMessageLoopRun(int* result_code) {
 
   DCHECK(base::CurrentUIThread::IsSet());
 
-  g_run_loop->Run();
+  DCHECK(GetMainRunLoopInstance());
+  run_loop = std::move(GetMainRunLoopInstance());
 
-  return true;
+  // Trace the entry and exit of this main message loop. We don't use the
+  // TRACE_EVENT_BEGIN0 macro because the tracing infrastructure doesn't expect
+  // a synchronous event around the main loop of a thread.
+  TRACE_EVENT_NESTABLE_ASYNC_BEGIN0(
+      "toplevel", "ChromeBrowserMainParts::MainMessageLoopRun", this);
 #endif  // defined(OS_ANDROID)
 }
 
 void ChromeBrowserMainParts::PostMainMessageLoopRun() {
+  TRACE_EVENT_NESTABLE_ASYNC_END0(
+      "toplevel", "ChromeBrowserMainParts::MainMessageLoopRun", this);
   TRACE_EVENT0("startup", "ChromeBrowserMainParts::PostMainMessageLoopRun");
 #if defined(OS_ANDROID)
   // Chrome on Android does not use default MessageLoop. It has its own
@@ -1854,8 +1854,7 @@ void ChromeBrowserMainParts::AddParts(
 #if !defined(OS_ANDROID)
 // static
 std::unique_ptr<base::RunLoop> ChromeBrowserMainParts::TakeRunLoopForTest() {
-  auto run_loop = base::WrapUnique<base::RunLoop>(g_run_loop);
-  g_run_loop = nullptr;
-  return run_loop;
+  DCHECK(GetMainRunLoopInstance());
+  return std::move(GetMainRunLoopInstance());
 }
 #endif

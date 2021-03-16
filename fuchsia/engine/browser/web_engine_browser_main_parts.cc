@@ -20,6 +20,7 @@
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/public/common/main_function_params.h"
+#include "content/public/common/result_codes.h"
 #include "fuchsia/base/legacymetrics_client.h"
 #include "fuchsia/engine/browser/context_impl.h"
 #include "fuchsia/engine/browser/media_resource_provider_service.h"
@@ -70,7 +71,7 @@ void WebEngineBrowserMainParts::PostEarlyInitialization() {
   base::ImportantFileWriterCleaner::GetInstance().Initialize();
 }
 
-void WebEngineBrowserMainParts::PreMainMessageLoopRun() {
+int WebEngineBrowserMainParts::PreMainMessageLoopRun() {
   DCHECK(!screen_);
 
   // Watch for changes to the user's locale setting.
@@ -147,15 +148,16 @@ void WebEngineBrowserMainParts::PreMainMessageLoopRun() {
 
   // Make sure temporary files associated with this process are cleaned up.
   base::ImportantFileWriterCleaner::GetInstance().Start();
+
+  return content::RESULT_CODE_NORMAL_EXIT;
 }
 
-void WebEngineBrowserMainParts::PreDefaultMainMessageLoopRun(
-    base::OnceClosure quit_closure) {
-  quit_closure_ = std::move(quit_closure);
-}
-
-bool WebEngineBrowserMainParts::MainMessageLoopRun(int* result_code) {
-  return !run_message_loop_;
+void WebEngineBrowserMainParts::WillRunMainMessageLoop(
+    std::unique_ptr<base::RunLoop>& run_loop) {
+  if (run_message_loop_)
+    quit_closure_ = run_loop->QuitClosure();
+  else
+    run_loop.reset();
 }
 
 void WebEngineBrowserMainParts::PostMainMessageLoopRun() {

@@ -53,9 +53,9 @@ class WebEngineBrowserMainParts : public content::BrowserMainParts {
 
   // content::BrowserMainParts overrides.
   void PostEarlyInitialization() override;
-  void PreMainMessageLoopRun() override;
-  void PreDefaultMainMessageLoopRun(base::OnceClosure quit_closure) override;
-  bool MainMessageLoopRun(int* result_code) override;
+  int PreMainMessageLoopRun() override;
+  void WillRunMainMessageLoop(
+      std::unique_ptr<base::RunLoop>& run_loop) override;
   void PostMainMessageLoopRun() override;
 
   ContextImpl* context_for_test() const { return context_service_.get(); }

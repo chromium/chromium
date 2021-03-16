@@ -67,6 +67,7 @@
 #include "content/public/browser/storage_partition.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/common/main_function_params.h"
+#include "content/public/common/result_codes.h"
 #include "gpu/command_buffer/service/gpu_switches.h"
 #include "media/base/media.h"
 #include "media/base/media_switches.h"
@@ -517,7 +518,7 @@ int CastBrowserMainParts::PreCreateThreads() {
   return 0;
 }
 
-void CastBrowserMainParts::PreMainMessageLoopRun() {
+int CastBrowserMainParts::PreMainMessageLoopRun() {
 #if !defined(OS_ANDROID) && !defined(OS_FUCHSIA)
   memory_pressure_monitor_.reset(new util::MultiSourceMemoryPressureMonitor());
   auto cast_system_memory_pressure_evaluator =
@@ -686,6 +687,8 @@ void CastBrowserMainParts::PreMainMessageLoopRun() {
     delete parameters_.ui_task;
     run_message_loop_ = false;
   }
+
+  return content::RESULT_CODE_NORMAL_EXIT;
 }
 
 #if defined(OS_ANDROID)
@@ -708,24 +711,25 @@ void CastBrowserMainParts::OnStartPeriodicCrashReportUpload() {
 }
 #endif  // defined(OS_ANDROID)
 
-bool CastBrowserMainParts::MainMessageLoopRun(int* result_code) {
+void CastBrowserMainParts::WillRunMainMessageLoop(
+    std::unique_ptr<base::RunLoop>& run_loop) {
 #if defined(OS_ANDROID)
   // Android does not use native main MessageLoop.
   NOTREACHED();
-  return true;
 #else
   if (run_message_loop_) {
-    base::RunLoop run_loop;
-
 #if !defined(OS_FUCHSIA)
     // Fuchsia doesn't have signals.
-    RegisterClosureOnSignal(run_loop.QuitClosure());
+    RegisterClosureOnSignal(run_loop->QuitClosure());
 #endif  // !defined(OS_FUCHSIA)
-
-    run_loop.Run();
+  } else {
+    run_loop.reset();
   }
+#endif
+}
 
-#if !defined(OS_FUCHSIA)
+void CastBrowserMainParts::PostMainMessageLoopRun() {
+#if !defined(OS_ANDROID) && !defined(OS_FUCHSIA)
   // Once the main loop has stopped running, we give the browser process a few
   // seconds to stop cast service and finalize all resources. If a hang occurs
   // and cast services refuse to terminate successfully, then we SIGKILL the
@@ -734,14 +738,10 @@ bool CastBrowserMainParts::MainMessageLoopRun(int* result_code) {
   // TODO(sergeyu): Fuchsia doesn't implement POSIX signals. Implement a
   // different shutdown watchdog mechanism.
   RegisterKillOnAlarm(kKillOnAlarmTimeoutSec);
-#endif  // !defined(OS_FUCHSIA)
+#endif  // !defined(OS_ANDROID) && !defined(OS_FUCHSIA)
 
   cast_browser_process_->cast_service()->Stop();
-  return true;
-#endif
-}
 
-void CastBrowserMainParts::PostMainMessageLoopRun() {
 #if (defined(OS_LINUX) || defined(OS_CHROMEOS)) && defined(USE_OZONE)
   wayland_server_controller_.reset();
 #endif

@@ -642,11 +642,19 @@ void BrowserMainLoop::MainMessageLoopStart() {
   // PostMainMessageLoopStart() below.
 
   TRACE_EVENT0("startup", "BrowserMainLoop::MainMessageLoopStart");
+
+  base::PlatformThread::SetName("CrBrowserMain");
+
+  // Register the main thread. The main thread's task runner should already have
+  // been initialized but it's not yet known as BrowserThread::UI.
+  DCHECK(base::ThreadTaskRunnerHandle::IsSet());
   DCHECK(base::CurrentUIThread::IsSet());
-  InitializeMainThread();
+  main_thread_.reset(new BrowserThreadImpl(
+      BrowserThread::UI, base::ThreadTaskRunnerHandle::Get()));
 }
 
 void BrowserMainLoop::PostMainMessageLoopStart() {
+  TRACE_EVENT0("startup", "BrowserMainLoop::PostMainMessageLoopStart");
   {
     TRACE_EVENT0("startup", "BrowserMainLoop::Subsystem:SystemMonitor");
     system_monitor_.reset(new base::SystemMonitor);
@@ -815,10 +823,6 @@ int BrowserMainLoop::PreCreateThreads() {
   return result_code_;
 }
 
-void BrowserMainLoop::PreShutdown() {
-  ui::Clipboard::OnPreShutdownForCurrentThread();
-}
-
 void BrowserMainLoop::CreateStartupTasks() {
   TRACE_EVENT0("startup", "BrowserMainLoop::CreateStartupTasks");
 
@@ -847,10 +851,6 @@ void BrowserMainLoop::CreateStartupTasks() {
   StartupTask post_create_threads = base::BindOnce(
       &BrowserMainLoop::PostCreateThreads, base::Unretained(this));
   startup_task_runner_->AddTask(std::move(post_create_threads));
-
-  StartupTask browser_thread_started = base::BindOnce(
-      &BrowserMainLoop::BrowserThreadsStarted, base::Unretained(this));
-  startup_task_runner_->AddTask(std::move(browser_thread_started));
 
   StartupTask pre_main_message_loop_run = base::BindOnce(
       &BrowserMainLoop::PreMainMessageLoopRun, base::Unretained(this));
@@ -925,19 +925,23 @@ int BrowserMainLoop::CreateThreads() {
 }
 
 int BrowserMainLoop::PostCreateThreads() {
+  TRACE_EVENT0("startup", "BrowserMainLoop::PostCreateThreads");
+
   tracing_controller_ = std::make_unique<content::TracingControllerImpl>();
   content::BackgroundTracingManagerImpl::GetInstance()
       ->AddMetadataGeneratorFunction();
 
-  if (parts_) {
-    TRACE_EVENT0("startup", "BrowserMainLoop::PostCreateThreads");
+  if (parts_)
     parts_->PostCreateThreads();
-  }
+
+  PostCreateThreadsImpl();
 
   return result_code_;
 }
 
 int BrowserMainLoop::PreMainMessageLoopRun() {
+  TRACE_EVENT0("startup", "BrowserMainLoop::PreMainMessageLoopRun");
+
 #if defined(OS_ANDROID)
   bool use_display_wide_color_gamut =
       GetContentClient()->browser()->GetWideColorGamutHeuristic() ==
@@ -946,11 +950,8 @@ int BrowserMainLoop::PreMainMessageLoopRun() {
   ui::SetScreenAndroid(use_display_wide_color_gamut);
 #endif
 
-  if (parts_) {
-    TRACE_EVENT0("startup", "BrowserMainLoop::PreMainMessageLoopRun");
-
-    parts_->PreMainMessageLoopRun();
-  }
+  if (parts_)
+    result_code_ = parts_->PreMainMessageLoopRun();
 
 #if defined(OS_WIN)
   // ShellBrowserMainParts initializes a ShellBrowserContext with a profile
@@ -972,13 +973,21 @@ int BrowserMainLoop::PreMainMessageLoopRun() {
   return result_code_;
 }
 
-void BrowserMainLoop::RunMainMessageLoopParts() {
-  bool ran_main_loop = false;
-  if (parts_)
-    ran_main_loop = parts_->MainMessageLoopRun(&result_code_);
+void BrowserMainLoop::RunMainMessageLoop() {
+#if defined(OS_ANDROID)
+  // Android's main message loop is the Java message loop.
+  NOTREACHED();
+#else   // defined(OS_ANDROID)
 
-  if (!ran_main_loop)
-    MainMessageLoopRun();
+  auto main_run_loop = std::make_unique<base::RunLoop>();
+  parts_->WillRunMainMessageLoop(main_run_loop);
+  if (main_run_loop)
+    main_run_loop->Run();
+#endif  // defined(OS_ANDROID)
+}
+
+void BrowserMainLoop::PreShutdown() {
+  ui::Clipboard::OnPreShutdownForCurrentThread();
 }
 
 void BrowserMainLoop::ShutdownThreadsAndCleanUp() {
@@ -1139,20 +1148,8 @@ void BrowserMainLoop::GetCompositingModeReporter(
 #endif
 }
 
-void BrowserMainLoop::InitializeMainThread() {
-  TRACE_EVENT0("startup", "BrowserMainLoop::InitializeMainThread");
-  base::PlatformThread::SetName("CrBrowserMain");
-
-  // Register the main thread. The main thread's task runner should already have
-  // been initialized in MainMessageLoopStart() (or before if
-  // CurrentThread::Get() was externally provided).
-  DCHECK(base::ThreadTaskRunnerHandle::IsSet());
-  main_thread_.reset(new BrowserThreadImpl(
-      BrowserThread::UI, base::ThreadTaskRunnerHandle::Get()));
-}
-
-int BrowserMainLoop::BrowserThreadsStarted() {
-  TRACE_EVENT0("startup", "BrowserMainLoop::BrowserThreadsStarted");
+void BrowserMainLoop::PostCreateThreadsImpl() {
+  TRACE_EVENT0("startup", "BrowserMainLoop::PostCreateThreadsImpl");
 
   // Bring up Mojo IPC and the embedded Service Manager as early as possible.
   // Initializaing mojo requires the IO thread to have been initialized first,
@@ -1227,17 +1224,17 @@ int BrowserMainLoop::BrowserThreadsStarted() {
 #endif
 
   {
-    TRACE_EVENT0("startup", "BrowserThreadsStarted::Subsystem:AudioMan");
+    TRACE_EVENT0("startup", "PostCreateThreads::Subsystem:AudioMan");
     InitializeAudio();
   }
 
   {
-    TRACE_EVENT0("startup", "BrowserThreadsStarted::Subsystem:MidiService");
+    TRACE_EVENT0("startup", "PostCreateThreads::Subsystem:MidiService");
     midi_service_.reset(new midi::MidiService);
   }
 
   {
-    TRACE_EVENT0("startup", "BrowserThreadsStarted::Subsystem:Devices");
+    TRACE_EVENT0("startup", "PostCreateThreads::Subsystem:Devices");
     device::GamepadService::GetInstance()->StartUp(
         base::BindRepeating(&BindHidManager));
 #if !defined(OS_ANDROID)
@@ -1268,9 +1265,8 @@ int BrowserMainLoop::BrowserThreadsStarted() {
 
   // MediaStreamManager needs the IO thread to be created.
   {
-    TRACE_EVENT0(
-        "startup",
-        "BrowserMainLoop::BrowserThreadsStarted:InitMediaStreamManager");
+    TRACE_EVENT0("startup",
+                 "BrowserMainLoop::PostCreateThreads:InitMediaStreamManager");
 
     scoped_refptr<base::SingleThreadTaskRunner> audio_task_runner =
         audio_manager_ ? audio_manager_->GetTaskRunner() : nullptr;
@@ -1290,24 +1286,22 @@ int BrowserMainLoop::BrowserThreadsStarted() {
   }
 
   {
-    TRACE_EVENT0(
-        "startup",
-        "BrowserMainLoop::BrowserThreadsStarted:InitSpeechRecognition");
+    TRACE_EVENT0("startup",
+                 "BrowserMainLoop::PostCreateThreads:InitSpeechRecognition");
     speech_recognition_manager_.reset(new SpeechRecognitionManagerImpl(
         audio_system_.get(), media_stream_manager_.get()));
   }
 
   {
-    TRACE_EVENT0(
-        "startup",
-        "BrowserMainLoop::BrowserThreadsStarted::InitUserInputMonitor");
+    TRACE_EVENT0("startup",
+                 "BrowserMainLoop::PostCreateThreads::InitUserInputMonitor");
     user_input_monitor_ = media::UserInputMonitor::Create(
         io_thread_->task_runner(), base::ThreadTaskRunnerHandle::Get());
   }
 
   {
     TRACE_EVENT0("startup",
-                 "BrowserMainLoop::BrowserThreadsStarted::SaveFileManager");
+                 "BrowserMainLoop::PostCreateThreads::SaveFileManager");
     save_file_manager_ = new SaveFileManager();
   }
 
@@ -1333,7 +1327,7 @@ int BrowserMainLoop::BrowserThreadsStarted() {
   }
 
 #if defined(OS_WIN)
-  GpuDataManagerImpl::GetInstance()->OnBrowserThreadsStarted();
+  GpuDataManagerImpl::GetInstance()->PostCreateThreads();
 #endif
 
   if (MediaKeysListenerManager::IsMediaKeysListenerManagerEnabled()) {
@@ -1355,7 +1349,6 @@ int BrowserMainLoop::BrowserThreadsStarted() {
 #if defined(ENABLE_IPC_FUZZER)
   SetFileUrlPathAliasForIpcFuzzer();
 #endif
-  return result_code_;
 }
 
 bool BrowserMainLoop::UsingInProcessGpu() const {
@@ -1405,17 +1398,6 @@ bool BrowserMainLoop::InitializeToolkit() {
     parts_->ToolkitInitialized();
 
   return true;
-}
-
-void BrowserMainLoop::MainMessageLoopRun() {
-#if defined(OS_ANDROID)
-  // Android's main message loop is the Java message loop.
-  NOTREACHED();
-#else
-  base::RunLoop run_loop;
-  parts_->PreDefaultMainMessageLoopRun(run_loop.QuitClosure());
-  run_loop.Run();
-#endif
 }
 
 void BrowserMainLoop::InitializeMojo() {

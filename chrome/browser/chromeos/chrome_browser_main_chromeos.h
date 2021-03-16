@@ -123,7 +123,7 @@ class ChromeBrowserMainPartsChromeos : public ChromeBrowserMainPartsLinux {
   int PreEarlyInitialization() override;
   void PreMainMessageLoopStart() override;
   void PostMainMessageLoopStart() override;
-  void PreMainMessageLoopRun() override;
+  int PreMainMessageLoopRun() override;
 
   // Stages called from PreMainMessageLoopRun.
   void PreProfileInit() override;
