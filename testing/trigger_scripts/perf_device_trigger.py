@@ -165,8 +165,9 @@ class PerfDeviceTriggerer(base_test_triggerer.BaseTestTriggerer):
     selected_config.sort()
 
     if verbose:
-      for shard_index, bot_id in selected_config:
-        print('Shard %d\n\tBot: %s' % (shard_index, bot_id))
+      for shard_index, bot_index in selected_config:
+        print('Shard %d\n\tBot: %s' %
+              (shard_index, self._bot_configs[bot_index]['id']))
 
     return selected_config
 
