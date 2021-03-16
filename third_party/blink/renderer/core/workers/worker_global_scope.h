@@ -231,6 +231,8 @@ class CORE_EXPORT WorkerGlobalScope
     return agent_group_scheduler_compositor_task_runner_;
   }
 
+  bool IsUrlValid() { return url_.IsValid(); }
+
  protected:
   WorkerGlobalScope(std::unique_ptr<GlobalScopeCreationParams>,
                     WorkerThread*,
