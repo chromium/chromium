@@ -146,7 +146,7 @@ std::vector<WebRtcVideoTrackSourceTest::ParamType> TestParams() {
   std::vector<WebRtcVideoTrackSourceTest::ParamType> test_params;
   // All formats for owned memory.
   for (media::VideoPixelFormat format :
-       WebRtcVideoFrameAdapter::AdaptableMappablePixelFormats()) {
+       LegacyWebRtcVideoFrameAdapter::AdaptableMappablePixelFormats()) {
     test_params.emplace_back(
         media::VideoFrame::StorageType::STORAGE_OWNED_MEMORY, format);
   }

@@ -11,7 +11,7 @@
 #include "media/base/video_frame_pool.h"
 #include "media/capture/video_frame_feedback.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
-#include "third_party/blink/renderer/platform/webrtc/webrtc_video_frame_adapter.h"
+#include "third_party/blink/renderer/platform/webrtc/legacy_webrtc_video_frame_adapter.h"
 #include "third_party/webrtc/media/base/adapted_video_track_source.h"
 #include "third_party/webrtc/rtc_base/timestamp_aligner.h"
 
@@ -76,7 +76,8 @@ class PLATFORM_EXPORT WebRtcVideoTrackSource
 
   // |thread_checker_| is bound to the libjingle worker thread.
   THREAD_CHECKER(thread_checker_);
-  scoped_refptr<WebRtcVideoFrameAdapter::SharedResources> adapter_resources_;
+  scoped_refptr<LegacyWebRtcVideoFrameAdapter::SharedResources>
+      adapter_resources_;
   // State for the timestamp translation.
   rtc::TimestampAligner timestamp_aligner_;
 

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "third_party/blink/renderer/platform/webrtc/webrtc_video_frame_adapter.h"
+#include "third_party/blink/renderer/platform/webrtc/legacy_webrtc_video_frame_adapter.h"
 
 #include "base/callback_helpers.h"
 #include "base/containers/span.h"
@@ -178,7 +178,7 @@ rtc::scoped_refptr<webrtc::VideoFrameBuffer> MakeFrameAdapter(
 
 scoped_refptr<media::VideoFrame> MakeScaledI420VideoFrame(
     scoped_refptr<media::VideoFrame> source_frame,
-    scoped_refptr<blink::WebRtcVideoFrameAdapter::SharedResources>
+    scoped_refptr<blink::LegacyWebRtcVideoFrameAdapter::SharedResources>
         shared_resources) {
   // ARGB pixel format may be produced by readback of texture backed frames.
   DCHECK(source_frame->format() == media::PIXEL_FORMAT_NV12 ||
@@ -301,7 +301,7 @@ scoped_refptr<media::VideoFrame> MakeScaledI420VideoFrame(
 
 scoped_refptr<media::VideoFrame> MakeScaledNV12VideoFrame(
     scoped_refptr<media::VideoFrame> source_frame,
-    scoped_refptr<blink::WebRtcVideoFrameAdapter::SharedResources>
+    scoped_refptr<blink::LegacyWebRtcVideoFrameAdapter::SharedResources>
         shared_resources) {
   DCHECK_EQ(source_frame->format(), media::PIXEL_FORMAT_NV12);
   auto dst_frame = shared_resources->CreateFrame(
@@ -327,7 +327,7 @@ scoped_refptr<media::VideoFrame> MakeScaledNV12VideoFrame(
 
 scoped_refptr<media::VideoFrame> MaybeConvertAndScaleFrame(
     scoped_refptr<media::VideoFrame> source_frame,
-    scoped_refptr<blink::WebRtcVideoFrameAdapter::SharedResources>
+    scoped_refptr<blink::LegacyWebRtcVideoFrameAdapter::SharedResources>
         shared_resources) {
   if (!source_frame)
     return nullptr;
@@ -374,7 +374,7 @@ static void CreateContextProviderOnMainThread(
 namespace blink {
 
 scoped_refptr<media::VideoFrame>
-WebRtcVideoFrameAdapter::SharedResources::CreateFrame(
+LegacyWebRtcVideoFrameAdapter::SharedResources::CreateFrame(
     media::VideoPixelFormat format,
     const gfx::Size& coded_size,
     const gfx::Rect& visible_rect,
@@ -385,7 +385,7 @@ WebRtcVideoFrameAdapter::SharedResources::CreateFrame(
 }
 
 scoped_refptr<media::VideoFrame>
-WebRtcVideoFrameAdapter::SharedResources::CreateTemporaryFrame(
+LegacyWebRtcVideoFrameAdapter::SharedResources::CreateTemporaryFrame(
     media::VideoPixelFormat format,
     const gfx::Size& coded_size,
     const gfx::Rect& visible_rect,
@@ -396,7 +396,7 @@ WebRtcVideoFrameAdapter::SharedResources::CreateTemporaryFrame(
 }
 
 scoped_refptr<viz::RasterContextProvider>
-WebRtcVideoFrameAdapter::SharedResources::GetRasterContextProvider() {
+LegacyWebRtcVideoFrameAdapter::SharedResources::GetRasterContextProvider() {
   base::AutoLock auto_lock(context_provider_lock_);
   if (raster_context_provider_) {
     // Reuse created context provider if it's alive.
@@ -423,7 +423,7 @@ WebRtcVideoFrameAdapter::SharedResources::GetRasterContextProvider() {
 }
 
 scoped_refptr<media::VideoFrame>
-WebRtcVideoFrameAdapter::SharedResources::ConstructVideoFrameFromTexture(
+LegacyWebRtcVideoFrameAdapter::SharedResources::ConstructVideoFrameFromTexture(
     scoped_refptr<media::VideoFrame> source_frame) {
   RTC_DCHECK(source_frame->HasTextures());
 
@@ -447,7 +447,7 @@ WebRtcVideoFrameAdapter::SharedResources::ConstructVideoFrameFromTexture(
 }
 
 scoped_refptr<media::VideoFrame>
-WebRtcVideoFrameAdapter::SharedResources::ConstructVideoFrameFromGpu(
+LegacyWebRtcVideoFrameAdapter::SharedResources::ConstructVideoFrameFromGpu(
     scoped_refptr<media::VideoFrame> source_frame) {
   CHECK(source_frame);
   // NV12 is the only supported format.
@@ -458,54 +458,55 @@ WebRtcVideoFrameAdapter::SharedResources::ConstructVideoFrameFromGpu(
   return media::ConvertToMemoryMappedFrame(std::move(source_frame));
 }
 
-void WebRtcVideoFrameAdapter::SharedResources::SetFeedback(
+void LegacyWebRtcVideoFrameAdapter::SharedResources::SetFeedback(
     const media::VideoFrameFeedback& feedback) {
   base::AutoLock auto_lock(feedback_lock_);
   last_feedback_ = feedback;
 }
 
 media::VideoFrameFeedback
-WebRtcVideoFrameAdapter::SharedResources::GetFeedback() {
+LegacyWebRtcVideoFrameAdapter::SharedResources::GetFeedback() {
   base::AutoLock auto_lock(feedback_lock_);
   return last_feedback_;
 }
 
-WebRtcVideoFrameAdapter::SharedResources::SharedResources(
+LegacyWebRtcVideoFrameAdapter::SharedResources::SharedResources(
     media::GpuVideoAcceleratorFactories* gpu_factories)
     : gpu_factories_(gpu_factories) {}
 
-WebRtcVideoFrameAdapter::SharedResources::~SharedResources() = default;
+LegacyWebRtcVideoFrameAdapter::SharedResources::~SharedResources() = default;
 
-WebRtcVideoFrameAdapter::WebRtcVideoFrameAdapter(
+LegacyWebRtcVideoFrameAdapter::LegacyWebRtcVideoFrameAdapter(
     scoped_refptr<media::VideoFrame> frame)
-    : WebRtcVideoFrameAdapter(frame, nullptr) {}
+    : LegacyWebRtcVideoFrameAdapter(frame, nullptr) {}
 
-WebRtcVideoFrameAdapter::WebRtcVideoFrameAdapter(
+LegacyWebRtcVideoFrameAdapter::LegacyWebRtcVideoFrameAdapter(
     scoped_refptr<media::VideoFrame> frame,
     scoped_refptr<SharedResources> shared_resources)
     : frame_(std::move(frame)), shared_resources_(shared_resources) {}
 
-WebRtcVideoFrameAdapter::~WebRtcVideoFrameAdapter() {
+LegacyWebRtcVideoFrameAdapter::~LegacyWebRtcVideoFrameAdapter() {
   if (shared_resources_) {
     shared_resources_->SetFeedback(
         media::VideoFrameFeedback().RequireMapped(was_mapped_));
   }
 }
 
-webrtc::VideoFrameBuffer::Type WebRtcVideoFrameAdapter::type() const {
+webrtc::VideoFrameBuffer::Type LegacyWebRtcVideoFrameAdapter::type() const {
   return Type::kNative;
 }
 
-int WebRtcVideoFrameAdapter::width() const {
+int LegacyWebRtcVideoFrameAdapter::width() const {
   return frame_->natural_size().width();
 }
 
-int WebRtcVideoFrameAdapter::height() const {
+int LegacyWebRtcVideoFrameAdapter::height() const {
   return frame_->natural_size().height();
 }
 
 // static
-bool WebRtcVideoFrameAdapter::IsFrameAdaptable(const media::VideoFrame* frame) {
+bool LegacyWebRtcVideoFrameAdapter::IsFrameAdaptable(
+    const media::VideoFrame* frame) {
   // Currently accept I420, I420A, NV12 formats in a mapped frame,
   // or a texture or GPU memory buffer frame.
   return (frame->IsMappable() &&
@@ -517,7 +518,7 @@ bool WebRtcVideoFrameAdapter::IsFrameAdaptable(const media::VideoFrame* frame) {
 
 // static
 base::span<const media::VideoPixelFormat>
-WebRtcVideoFrameAdapter::AdaptableMappablePixelFormats() {
+LegacyWebRtcVideoFrameAdapter::AdaptableMappablePixelFormats() {
   static constexpr const media::VideoPixelFormat
       kAdaptableMappablePixelFormats[] = {media::PIXEL_FORMAT_I420,
                                           media::PIXEL_FORMAT_I420A,
@@ -526,7 +527,7 @@ WebRtcVideoFrameAdapter::AdaptableMappablePixelFormats() {
 }
 
 rtc::scoped_refptr<webrtc::VideoFrameBuffer>
-WebRtcVideoFrameAdapter::CreateFrameAdapter() const {
+LegacyWebRtcVideoFrameAdapter::CreateFrameAdapter() const {
   DCHECK(IsFrameAdaptable(frame_.get()))
       << "Can not create WebRTC frame adapter for frame "
       << frame_->AsHumanReadableString();
@@ -566,7 +567,7 @@ WebRtcVideoFrameAdapter::CreateFrameAdapter() const {
 }
 
 rtc::scoped_refptr<webrtc::I420BufferInterface>
-WebRtcVideoFrameAdapter::ToI420() {
+LegacyWebRtcVideoFrameAdapter::ToI420() {
   base::AutoLock auto_lock(adapter_lock_);
   if (!frame_adapter_) {
     frame_adapter_ = CreateFrameAdapter();
@@ -575,7 +576,7 @@ WebRtcVideoFrameAdapter::ToI420() {
 }
 
 rtc::scoped_refptr<webrtc::VideoFrameBuffer>
-WebRtcVideoFrameAdapter::GetMappedFrameBuffer(
+LegacyWebRtcVideoFrameAdapter::GetMappedFrameBuffer(
     rtc::ArrayView<webrtc::VideoFrameBuffer::Type> types) {
   base::AutoLock auto_lock(adapter_lock_);
   if (!frame_adapter_) {
@@ -587,7 +588,8 @@ WebRtcVideoFrameAdapter::GetMappedFrameBuffer(
   return nullptr;
 }
 
-const webrtc::I420BufferInterface* WebRtcVideoFrameAdapter::GetI420() const {
+const webrtc::I420BufferInterface* LegacyWebRtcVideoFrameAdapter::GetI420()
+    const {
   base::AutoLock auto_lock(adapter_lock_);
   if (!frame_adapter_) {
     frame_adapter_ = CreateFrameAdapter();

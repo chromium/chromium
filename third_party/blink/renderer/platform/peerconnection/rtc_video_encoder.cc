@@ -34,7 +34,7 @@
 #include "media/video/video_encode_accelerator.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/renderer/platform/scheduler/public/post_cross_thread_task.h"
-#include "third_party/blink/renderer/platform/webrtc/webrtc_video_frame_adapter.h"
+#include "third_party/blink/renderer/platform/webrtc/legacy_webrtc_video_frame_adapter.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_functional.h"
 #include "third_party/blink/renderer/platform/wtf/deque.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
@@ -1061,7 +1061,7 @@ void RTCVideoEncoder::Impl::EncodeOneFrame() {
   // conditions are met.
   bool requires_copy = !is_native_frame;
   if (!requires_copy) {
-    frame = static_cast<blink::WebRtcVideoFrameAdapter*>(
+    frame = static_cast<blink::LegacyWebRtcVideoFrameAdapter*>(
                 next_frame->video_frame_buffer().get())
                 ->getMediaVideoFrame();
     const media::VideoFrame::StorageType storage = frame->storage_type();
@@ -1173,7 +1173,7 @@ void RTCVideoEncoder::Impl::EncodeOneFrameWithNativeInput() {
     frame->set_timestamp(
         base::TimeDelta::FromMilliseconds(next_frame->ntp_time_ms()));
   } else {
-    frame = static_cast<blink::WebRtcVideoFrameAdapter*>(
+    frame = static_cast<blink::LegacyWebRtcVideoFrameAdapter*>(
                 next_frame->video_frame_buffer().get())
                 ->getMediaVideoFrame();
   }

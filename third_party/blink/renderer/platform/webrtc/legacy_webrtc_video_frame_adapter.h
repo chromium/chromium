@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_WEBRTC_WEBRTC_VIDEO_FRAME_ADAPTER_H_
-#define THIRD_PARTY_BLINK_RENDERER_PLATFORM_WEBRTC_WEBRTC_VIDEO_FRAME_ADAPTER_H_
+#ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_WEBRTC_LEGACY_WEBRTC_VIDEO_FRAME_ADAPTER_H_
+#define THIRD_PARTY_BLINK_RENDERER_PLATFORM_WEBRTC_LEGACY_WEBRTC_VIDEO_FRAME_ADAPTER_H_
 
 #include <stdint.h>
 #include <map>
@@ -34,9 +34,9 @@ namespace blink {
 // - The frame is mappable in either I420, I420A or NV12 pixel formats.
 // - Or, the frame is on a GPU Memory Buffer in NV12.
 // - Or, the frame has textures.
-// Creators of WebRtcVideoFrameAdapter can ensure the frame is convertible by
-// calling |IsFrameAdaptable| before constructing this object.
-class PLATFORM_EXPORT WebRtcVideoFrameAdapter
+// Creators of LegacyWebRtcVideoFrameAdapter can ensure the frame is convertible
+// by calling |IsFrameAdaptable| before constructing this object.
+class PLATFORM_EXPORT LegacyWebRtcVideoFrameAdapter
     : public webrtc::VideoFrameBuffer {
  public:
   class PLATFORM_EXPORT SharedResources
@@ -113,9 +113,11 @@ class PLATFORM_EXPORT WebRtcVideoFrameAdapter
   static base::span<const media::VideoPixelFormat>
   AdaptableMappablePixelFormats();
 
-  explicit WebRtcVideoFrameAdapter(scoped_refptr<media::VideoFrame> frame);
-  WebRtcVideoFrameAdapter(scoped_refptr<media::VideoFrame> frame,
-                          scoped_refptr<SharedResources> shared_resources);
+  explicit LegacyWebRtcVideoFrameAdapter(
+      scoped_refptr<media::VideoFrame> frame);
+  LegacyWebRtcVideoFrameAdapter(
+      scoped_refptr<media::VideoFrame> frame,
+      scoped_refptr<SharedResources> shared_resources);
 
   scoped_refptr<media::VideoFrame> getMediaVideoFrame() const { return frame_; }
 
@@ -130,7 +132,7 @@ class PLATFORM_EXPORT WebRtcVideoFrameAdapter
       rtc::ArrayView<webrtc::VideoFrameBuffer::Type> types) override;
 
  protected:
-  ~WebRtcVideoFrameAdapter() override;
+  ~LegacyWebRtcVideoFrameAdapter() override;
 
   rtc::scoped_refptr<webrtc::VideoFrameBuffer> CreateFrameAdapter() const;
 
@@ -152,4 +154,4 @@ class PLATFORM_EXPORT WebRtcVideoFrameAdapter
 
 }  // namespace blink
 
-#endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_WEBRTC_WEBRTC_VIDEO_FRAME_ADAPTER_H_
+#endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_WEBRTC_LEGACY_WEBRTC_VIDEO_FRAME_ADAPTER_H_

@@ -18,8 +18,8 @@
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/mojom/mediastream/media_stream.mojom-blink.h"
 #include "third_party/blink/renderer/platform/scheduler/public/post_cross_thread_task.h"
+#include "third_party/blink/renderer/platform/webrtc/legacy_webrtc_video_frame_adapter.h"
 #include "third_party/blink/renderer/platform/webrtc/track_observer.h"
-#include "third_party/blink/renderer/platform/webrtc/webrtc_video_frame_adapter.h"
 #include "third_party/blink/renderer/platform/webrtc/webrtc_video_utils.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_functional.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
@@ -177,7 +177,7 @@ void MediaStreamRemoteVideoSource::RemoteVideoSourceDelegate::OnFrame(
 
   switch (buffer->type()) {
     case webrtc::VideoFrameBuffer::Type::kNative: {
-      video_frame = static_cast<WebRtcVideoFrameAdapter*>(buffer.get())
+      video_frame = static_cast<LegacyWebRtcVideoFrameAdapter*>(buffer.get())
                         ->getMediaVideoFrame();
       video_frame->set_timestamp(elapsed_timestamp);
       break;

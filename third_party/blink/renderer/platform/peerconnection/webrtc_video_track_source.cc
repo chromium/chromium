@@ -92,7 +92,7 @@ WebRtcVideoTrackSource::WebRtcVideoTrackSource(
     media::GpuVideoAcceleratorFactories* gpu_factories)
     : AdaptedVideoTrackSource(/*required_alignment=*/1),
       adapter_resources_(
-          new WebRtcVideoFrameAdapter::SharedResources(gpu_factories)),
+          new LegacyWebRtcVideoFrameAdapter::SharedResources(gpu_factories)),
       is_screencast_(is_screencast),
       needs_denoising_(needs_denoising),
       callback_(callback) {
@@ -144,7 +144,7 @@ void WebRtcVideoTrackSource::OnFrameCaptured(
     scoped_refptr<media::VideoFrame> frame) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   TRACE_EVENT0("media", "WebRtcVideoSource::OnFrameCaptured");
-  if (!WebRtcVideoFrameAdapter::IsFrameAdaptable(frame.get())) {
+  if (!LegacyWebRtcVideoFrameAdapter::IsFrameAdaptable(frame.get())) {
     // Since connecting sources and sinks do not check the format, we need to
     // just ignore formats that we can not handle.
     LOG(ERROR) << "We cannot send frame with storage type: "
@@ -317,7 +317,7 @@ void WebRtcVideoTrackSource::DeliverFrame(
   webrtc::VideoFrame::Builder frame_builder =
       webrtc::VideoFrame::Builder()
           .set_video_frame_buffer(
-              new rtc::RefCountedObject<WebRtcVideoFrameAdapter>(
+              new rtc::RefCountedObject<LegacyWebRtcVideoFrameAdapter>(
                   frame, adapter_resources_))
           .set_rotation(GetFrameRotation(frame.get()))
           .set_timestamp_us(timestamp_us);
