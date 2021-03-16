@@ -11,6 +11,7 @@ compile_js_files = [
   "device/camera3_device_info.js",
   "device/constraints_preferrer.js",
   "device/device_info_updater.js",
+  "device/stream_manager.js",
   "dom.js",
   "error.js",
   "face.js",

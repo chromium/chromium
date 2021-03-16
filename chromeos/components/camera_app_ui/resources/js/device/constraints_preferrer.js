@@ -170,6 +170,118 @@ export class ConstraintsPreferrer {
   setPreferredResolutionChangeListener(listener) {
     this.preferredResolutionChangeListener_ = listener;
   }
+
+  /**
+   * Sorts the preview resolution (Rp) according to the capture resolution
+   * (Rc) and the screen size (Rs) with the following orders:
+   * If |Rc| <= |Rs|:
+   *   1. All |Rp| <= |Rc|, and the larger, the better.
+   *   2. All |Rp| > |Rc|, and the smaller, the better.
+   *
+   * If |Rc| > |Rs|:
+   *   1. All |Rp| where |Rs| <= |Rp| <= |Rc|, and the smaller, the
+   *   better.
+   *   2. All |Rp| < |Rs|, and the larger, the better.
+   *   3. All |Rp| > |Rc|, and the smaller, the better.
+   *
+   * @param {!ResolutionList} previewResolutions
+   * @param {!Resolution} captureResolution
+   * @return {!ResolutionList}
+   * @protected
+   */
+  sortPreview_(previewResolutions, captureResolution) {
+    if (previewResolutions.length === 0) {
+      return [];
+    }
+
+    const Rs = Math.floor(window.screen.width * window.devicePixelRatio);
+    const Rc = captureResolution.width;
+    const cmpDescending = (r1, r2) => r2.width - r1.width;
+    const cmpAscending = (r1, r2) => r1.width - r2.width;
+
+    if (Rc <= Rs) {
+      const notLargerThanR =
+          previewResolutions.filter((r) => r.width <= Rc).sort(cmpDescending);
+      const largerThanR =
+          previewResolutions.filter((r) => r.width > Rc).sort(cmpAscending);
+      return notLargerThanR.concat(largerThanR);
+    } else {
+      const betweenRsR =
+          previewResolutions.filter((r) => Rs <= r.width && r.width <= Rc)
+              .sort(cmpAscending);
+      const smallerThanRs =
+          previewResolutions.filter((r) => r.width < Rs).sort(cmpDescending);
+      const largerThanR =
+          previewResolutions.filter((r) => r.width > Rc).sort(cmpAscending);
+      return betweenRsR.concat(smallerThanRs).concat(largerThanR);
+    }
+  }
+
+  /**
+   * Sorts prefer resolutions.
+   * @param {!Resolution} prefR Preferred resolution.
+   * @return {function(!CaptureCandidate, !CaptureCandidate): number} Return
+   *     compare function for comparing based on preferred resolution.
+   * @protected
+   */
+  getPreferResolutionSort_(prefR) {
+    /*
+     * @param {!CaptureCandidate} candidate
+     * @param {!CaptureCandidate} candidate2
+     * @return {number}
+     */
+    return ({resolution: r1}, {resolution: r2}) => {
+      if (r1.equals(r2)) {
+        return 0;
+      }
+      // Exactly the preferred resolution.
+      if (r1.equals(prefR)) {
+        return -1;
+      }
+      if (r2.equals(prefR)) {
+        return 1;
+      }
+
+      // Aspect ratio same as preferred resolution.
+      if (!r1.aspectRatioEquals(r2)) {
+        if (r1.aspectRatioEquals(prefR)) {
+          return -1;
+        }
+        if (r2.aspectRatioEquals(prefR)) {
+          return 1;
+        }
+      }
+      return r2.area - r1.area;
+    };
+  }
+
+  /**
+   * Groups resolutions with same ratio into same list.
+   * @param {!ResolutionList} rs
+   * @return {!Map<number, !ResolutionList>} Ratio as key, all resolutions
+   *     with that ratio as value.
+   */
+  groupResolutionRatio_(rs) {
+    /**
+     * @param {!Resolution} r
+     * @return {number}
+     */
+    const toSupportedPreviewRatio = (r) => {
+      // Special aspect ratio mapping rule, see http://b/147986763.
+      if (r.width === 848 && r.height === 480) {
+        return (new Resolution(16, 9)).aspectRatio;
+      }
+      return r.aspectRatio;
+    };
+
+    const result = new Map();
+    for (const r of rs) {
+      const ratio = toSupportedPreviewRatio(r);
+      result.set(ratio, result.get(ratio) || []);
+      result.get(ratio).push(r);
+    }
+    return result;
+  }
 }
 
 /**
@@ -222,6 +334,15 @@ export class VideoConstraintsPreferrer extends ConstraintsPreferrer {
     this.resolution_ = new Resolution(0, -1);
     this.restoreResolutionPreference_('deviceVideoResolution');
     this.restoreFpsPreference_();
+
+    /**
+     * Maps from device id as key to video and preview resolutions of
+     * same aspect ratio supported by that video device as value.
+     * @type {!Map<string, !Array<{videoRs: !ResolutionList, previewRs:
+     *     !ResolutionList}>>}
+     * @private
+     */
+    this.deviceVideoPreviewResolutionMap_ = new Map();
 
     this.toggleFps_.addEventListener('click', (event) => {
       if (!state.get(state.State.STREAMING) || state.get(state.State.TAKING)) {
@@ -298,12 +419,33 @@ export class VideoConstraintsPreferrer extends ConstraintsPreferrer {
    * @override
    */
   updateDevicesInfo(devices) {
+    this.deviceVideoPreviewResolutionMap_ = new Map();
     this.supportedResolutions_ = new Map();
     this.constFpsInfo_ = {};
 
     devices.forEach(({deviceId, videoResols, videoMaxFps, fpsRanges}) => {
       this.supportedResolutions_.set(
           deviceId, [...videoResols].sort((r1, r2) => r2.area - r1.area));
+
+      // Filter out preview resolution greater than 1920x1080 and 1600x1200.
+      const previewRatios = this.groupResolutionRatio_(videoResols.filter(
+          ({width, height}) => width <= 1920 && height <= 1200));
+      const videoRatios = this.groupResolutionRatio_(videoResols);
+      /**
+       * @type {!Array<{videoRs: !ResolutionList, previewRs:
+       *     !ResolutionList}>}
+       */
+      const pairedResolutions = [];
+      for (const [ratio, videoRs] of videoRatios) {
+        const previewRs = previewRatios.get(/** @type {number} */ (ratio));
+        if (previewRs === undefined) {
+          continue;
+        }
+        pairedResolutions.push(
+            {videoRs: /** @type {!ResolutionList} */ (videoRs), previewRs});
+      }
+      this.deviceVideoPreviewResolutionMap_.set(deviceId, pairedResolutions);
+
       /**
        * @param {number} width
        * @param {number} height
@@ -360,40 +502,8 @@ export class VideoConstraintsPreferrer extends ConstraintsPreferrer {
    * @override
    */
   getSortedCandidates(deviceId) {
-    // Due to the limitation of MediaStream API, preview stream is used directly
-    // to do video recording.
-
     /** @type {!Resolution} */
     const prefR = this.getPrefResolution(deviceId) || new Resolution(0, -1);
-    /**
-     * @param {!Resolution} r1
-     * @param {!Resolution} r2
-     * @return {number}
-     */
-    const sortPrefResol = (r1, r2) => {
-      if (r1.equals(r2)) {
-        return 0;
-      }
-
-      // Exactly the preferred resolution.
-      if (r1.equals(prefR)) {
-        return -1;
-      }
-      if (r2.equals(prefR)) {
-        return 1;
-      }
-
-      // Aspect ratio same as preferred resolution.
-      if (!r1.aspectRatioEquals(r2)) {
-        if (r1.aspectRatioEquals(prefR)) {
-          return -1;
-        }
-        if (r2.aspectRatioEquals(prefR)) {
-          return 1;
-        }
-      }
-      return r2.area - r1.area;
-    };
 
     /**
      * Maps specified video resolution to object of resolution and all supported
@@ -420,27 +530,37 @@ export class VideoConstraintsPreferrer extends ConstraintsPreferrer {
     };
 
     /**
-     * @param {!Resolution} r
-     * @param {number} fps
-     * @return {!MediaStreamConstraints}
+     * @param {{videoRs: !ResolutionList, previewRs: !ResolutionList}} capture
+     * @return {!Array<!CaptureCandidate>}
      */
-    const toConstraints = ({width, height}, fps) => ({
-      audio: {echoCancellation: false},
-      video: {
-        deviceId: {exact: deviceId},
-        frameRate: fps ? {exact: fps} : {min: 20, ideal: 30},
-        width,
-        height,
-      },
-    });
+    const toVideoCandidate = ({videoRs, previewRs}) => {
+      let /** !Resolution */ videoR = prefR;
+      if (!videoRs.some((r) => r.equals(prefR))) {
+        videoR = videoRs.reduce(
+            (videoR, r) => (r.width > videoR.width ? r : videoR));
+      }
 
-    return [...this.supportedResolutions_.get(deviceId)]
-        .sort(sortPrefResol)
-        .flatMap(getFpses)
-        .map(({r, fps}) => ({
-               resolution: r,
-               previewCandidates: [toConstraints(r, fps)],
-             }));
+      return getFpses(videoR).map(
+          ({r, fps}) => ({
+            resolution: videoR,
+            previewCandidates:
+                this.sortPreview_(previewRs, videoR)
+                    .map(({width, height}) => ({
+                           audio: {echoCancellation: false},
+                           video: {
+                             deviceId: {exact: deviceId},
+                             frameRate: fps ? {exact: fps} :
+                                              {min: 20, ideal: 30},
+                             width,
+                             height,
+                           },
+                         })),
+          }));
+    };
+
+    return this.deviceVideoPreviewResolutionMap_.get(deviceId)
+        .flatMap(toVideoCandidate)
+        .sort(this.getPreferResolutionSort_(prefR));
   }
 }
 
@@ -488,36 +608,8 @@ export class PhotoConstraintsPreferrer extends ConstraintsPreferrer {
     this.supportedResolutions_ = new Map();
 
     devices.forEach(({deviceId, photoResols, videoResols: previewResols}) => {
-      /**
-       * @param {!Resolution} r
-       * @return {number}
-       */
-      const toSupportedPreviewRatio = (r) => {
-        // Special aspect ratio mapping rule, see http://b/147986763.
-        if (r.width === 848 && r.height === 480) {
-          return (new Resolution(16, 9)).aspectRatio;
-        }
-        return r.aspectRatio;
-      };
-
-      /**
-       * Groups resolutions with same ratio into same list.
-       * @param {!ResolutionList} rs
-       * @return {!Map<number, !ResolutionList>} Ratio as key, all resolutions
-       *     with that ratio as value.
-       */
-      const groupResolutionRatio = (rs) => {
-        const result = new Map();
-        for (const r of rs) {
-          const ratio = toSupportedPreviewRatio(r);
-          result.set(ratio, result.get(ratio) || []);
-          result.get(ratio).push(r);
-        }
-        return result;
-      };
-
-      const previewRatios = groupResolutionRatio(previewResols);
-      const captureRatios = groupResolutionRatio(photoResols);
+      const previewRatios = this.groupResolutionRatio_(previewResols);
+      const captureRatios = this.groupResolutionRatio_(photoResols);
       /**
        * @type {!Array<{captureRs: !ResolutionList, previewRs:
        *     !ResolutionList}>}
@@ -569,25 +661,6 @@ export class PhotoConstraintsPreferrer extends ConstraintsPreferrer {
     const prefR = this.getPrefResolution(deviceId) || new Resolution(0, -1);
 
     /**
-     * @param {!CaptureCandidate} candidate
-     * @param {!CaptureCandidate} candidate2
-     * @return {number}
-     */
-    const sortPrefResol = ({resolution: r1}, {resolution: r2}) => {
-      if (r1.equals(r2)) {
-        return 0;
-      }
-      // Exactly the preferred resolution.
-      if (r1.equals(prefR)) {
-        return -1;
-      }
-      if (r2.equals(prefR)) {
-        return 1;
-      }
-      return r2.area - r1.area;
-    };
-
-    /**
      * @param {{captureRs: !ResolutionList, previewRs: !ResolutionList}} capture
      * @return {!CaptureCandidate}
      */
@@ -598,64 +671,21 @@ export class PhotoConstraintsPreferrer extends ConstraintsPreferrer {
             (captureR, r) => (r.width > captureR.width ? r : captureR));
       }
 
-      /**
-       * @param {!ResolutionList} resolutions
-       * @return {!ResolutionList}
-       */
-      const sortPreview = (resolutions) => {
-        if (resolutions.length === 0) {
-          return [];
-        }
-
-        // Sorts the preview resolution (Rp) according to the capture resolution
-        // (Rc) and the screen size (Rs) with the following orders:
-        // If |Rc| <= |Rs|:
-        //   1. All |Rp| <= |Rc|, and the larger, the better.
-        //   2. All |Rp| > |Rc|, and the smaller, the better.
-        //
-        // If |Rc| > |Rs|:
-        //   1. All |Rp| where |Rs| <= |Rp| <= |Rc|, and the smaller, the
-        //   better.
-        //   2. All |Rp| < |Rs|, and the larger, the better.
-        //   3. All |Rp| > |Rc|, and the smaller, the better.
-        //
-        const Rs = Math.floor(window.screen.width * window.devicePixelRatio);
-        const Rc = captureR.width;
-        const cmpDescending = (r1, r2) => r2.width - r1.width;
-        const cmpAscending = (r1, r2) => r1.width - r2.width;
-
-        if (Rc <= Rs) {
-          const notLargerThanRc =
-              resolutions.filter((r) => r.width <= Rc).sort(cmpDescending);
-          const largerThanRc =
-              resolutions.filter((r) => r.width > Rc).sort(cmpAscending);
-          return notLargerThanRc.concat(largerThanRc);
-        } else {
-          const betweenRsRc =
-              resolutions.filter((r) => Rs <= r.width && r.width <= Rc)
-                  .sort(cmpAscending);
-          const smallerThanRs =
-              resolutions.filter((r) => r.width < Rs).sort(cmpDescending);
-          const largerThanRc =
-              resolutions.filter((r) => r.width > Rc).sort(cmpAscending);
-          return betweenRsRc.concat(smallerThanRs).concat(largerThanRc);
-        }
-      };
-
       const /** !Array<!MediaStreamConstraints> */ previewCandidates =
-          sortPreview(previewRs).map(({width, height}) => ({
-                                       audio: false,
-                                       video: {
-                                         deviceId: {exact: deviceId},
-                                         width,
-                                         height,
-                                       },
-                                     }));
+          this.sortPreview_(previewRs, captureR).map(({width, height}) => ({
+                                                       audio: false,
+                                                       video: {
+                                                         deviceId:
+                                                             {exact: deviceId},
+                                                         width,
+                                                         height,
+                                                       },
+                                                     }));
       return {resolution: captureR, previewCandidates};
     };
 
     return this.deviceCapturePreviewResolutionMap_.get(deviceId)
         .map(toCaptureCandidate)
-        .sort(sortPrefResol);
+        .sort(this.getPreferResolutionSort_(prefR));
   }
 }
