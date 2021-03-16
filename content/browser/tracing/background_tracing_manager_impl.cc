@@ -47,18 +47,22 @@
 
 namespace content {
 
+namespace {
+
 const char kBackgroundTracingConfig[] = "config";
 const char kBackgroundTracingUploadUrl[] = "upload_url";
+
+}  // namespace
+
+// static
+BackgroundTracingManager* BackgroundTracingManager::GetInstance() {
+  return BackgroundTracingManagerImpl::GetInstance();
+}
 
 // static
 void BackgroundTracingManagerImpl::RecordMetric(Metrics metric) {
   UMA_HISTOGRAM_ENUMERATION("Tracing.Background.ScenarioState", metric,
                             Metrics::NUMBER_OF_BACKGROUND_TRACING_METRICS);
-}
-
-// static
-BackgroundTracingManager* BackgroundTracingManager::GetInstance() {
-  return BackgroundTracingManagerImpl::GetInstance();
 }
 
 // static
@@ -409,7 +413,8 @@ void BackgroundTracingManagerImpl::OnRuleTriggered(
 }
 
 BackgroundTracingManagerImpl::TriggerHandle
-BackgroundTracingManagerImpl::RegisterTriggerType(const char* trigger_name) {
+BackgroundTracingManagerImpl::RegisterTriggerType(
+    base::StringPiece trigger_name) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
   trigger_handle_ids_ += 1;
@@ -424,8 +429,8 @@ bool BackgroundTracingManagerImpl::IsTriggerHandleValid(
   return trigger_handles_.find(handle) != trigger_handles_.end();
 }
 
-std::string BackgroundTracingManagerImpl::GetTriggerNameFromHandle(
-    BackgroundTracingManager::TriggerHandle handle) const {
+const std::string& BackgroundTracingManagerImpl::GetTriggerNameFromHandle(
+    BackgroundTracingManager::TriggerHandle handle) {
   CHECK(IsTriggerHandleValid(handle));
   return trigger_handles_.find(handle)->second;
 }

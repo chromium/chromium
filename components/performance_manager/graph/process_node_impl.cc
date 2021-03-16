@@ -14,8 +14,54 @@
 #include "components/performance_manager/graph/worker_node_impl.h"
 #include "components/performance_manager/public/execution_context/execution_context_registry.h"
 #include "components/performance_manager/v8_memory/v8_context_tracker.h"
+#include "content/public/browser/background_tracing_manager.h"
+#include "content/public/browser/browser_task_traits.h"
+#include "content/public/browser/browser_thread.h"
 
 namespace performance_manager {
+
+namespace {
+
+void FireBackgroundTracingTriggerOnUI(
+    const std::string& trigger_name,
+    content::BackgroundTracingManager* manager) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+
+  // Don't fire a trigger unless we're in an active tracing scenario.
+  // Renderer-initiated background tracing triggers are always "preemptive"
+  // traces so we expect a scenario to be active.
+  if (!manager)
+    manager = content::BackgroundTracingManager::GetInstance();
+  if (!manager->HasActiveScenario())
+    return;
+
+  static content::BackgroundTracingManager::TriggerHandle trigger_handle = -1;
+  if (trigger_handle == -1) {
+    trigger_handle = manager->RegisterTriggerType(trigger_name.c_str());
+  } else {
+    // We only expect to be configured for a single renderer-initiated
+    // background tracing trigger at a time. So, if we've already had one
+    // registered, then simply check to see if it matches. If it doesn't match,
+    // then ignore this trigger event entirely. This prevents an abusive
+    // renderer from creating arbitrarily many trigger events. It does allow an
+    // abusive renderer to consume the single trigger slot, preventing valid
+    // renderers from firing triggers, but this is not a big deal. Ideally we'd
+    // be able to see if the active scenario is for |trigger_name|, but the
+    // tracing manager doesn't support that functionality right now.
+    const std::string& registered_trigger_name =
+        manager->GetTriggerNameFromHandle(trigger_handle);
+    if (registered_trigger_name != trigger_name)
+      return;
+  }
+
+  // Actually fire the trigger. We don't need to know when the trace is being
+  // finalized so pass an empty callback.
+  manager->TriggerNamedEvent(
+      trigger_handle,
+      content::BackgroundTracingManager::StartedFinalizingCallback());
+}
+
+}  // namespace
 
 ProcessNodeImpl::ProcessNodeImpl(content::ProcessType process_type,
                                  RenderProcessHostProxy render_process_proxy)
@@ -111,6 +157,14 @@ void ProcessNodeImpl::OnRemoteIframeDetached(
   }
 }
 
+void ProcessNodeImpl::FireBackgroundTracingTrigger(
+    const std::string& trigger_name) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  content::GetUIThreadTaskRunner({})->PostTask(
+      FROM_HERE,
+      base::BindOnce(&FireBackgroundTracingTriggerOnUI, trigger_name, nullptr));
+}
+
 void ProcessNodeImpl::SetProcessExitStatus(int32_t exit_status) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   // This may occur as the first event seen in the case where the process
@@ -188,6 +242,13 @@ void ProcessNodeImpl::RemoveWorker(WorkerNodeImpl* worker_node) {
 void ProcessNodeImpl::set_priority(base::TaskPriority priority) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   priority_.SetAndMaybeNotify(this, priority);
+}
+
+// static
+void ProcessNodeImpl::FireBackgroundTracingTriggerOnUIForTesting(
+    const std::string& trigger_name,
+    content::BackgroundTracingManager* manager) {
+  FireBackgroundTracingTriggerOnUI(trigger_name, manager);
 }
 
 base::WeakPtr<ProcessNodeImpl> ProcessNodeImpl::GetWeakPtrOnUIThread() {

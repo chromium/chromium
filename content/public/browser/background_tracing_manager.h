@@ -87,7 +87,11 @@ class BackgroundTracingManager {
 
   // Registers a manual trigger handle, and returns a TriggerHandle which can
   // be passed to DidTriggerHappen().
-  virtual TriggerHandle RegisterTriggerType(const char* trigger_name) = 0;
+  virtual TriggerHandle RegisterTriggerType(base::StringPiece trigger_name) = 0;
+
+  // Returns the name associated with the given trigger handle.
+  virtual const std::string& GetTriggerNameFromHandle(
+      TriggerHandle trigger_handle) = 0;
 
   virtual bool HasActiveScenario() = 0;
 

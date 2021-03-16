@@ -251,7 +251,7 @@ void RendererResourceCoordinatorImpl::OnBeforeContentFrameDetached(
 
 void RendererResourceCoordinatorImpl::FireBackgroundTracingTrigger(
     const String& trigger_name) {
-  // TODO(crbug.com/1181774): Implement this.
+  DispatchFireBackgroundTracingTrigger(trigger_name);
 }
 
 RendererResourceCoordinatorImpl::RendererResourceCoordinatorImpl(
@@ -307,6 +307,21 @@ void RendererResourceCoordinatorImpl::DispatchOnV8ContextDestroyed(
             WTF::CrossThreadUnretained(this), token));
   } else {
     service_->OnV8ContextDestroyed(token);
+  }
+}
+
+void RendererResourceCoordinatorImpl::DispatchFireBackgroundTracingTrigger(
+    const String& trigger_name) {
+  DCHECK(service_);
+  if (!IsMainThread()) {
+    blink::PostCrossThreadTask(
+        *Thread::MainThread()->GetTaskRunner(), FROM_HERE,
+        WTF::CrossThreadBindOnce(&RendererResourceCoordinatorImpl::
+                                     DispatchFireBackgroundTracingTrigger,
+                                 WTF::CrossThreadUnretained(this),
+                                 trigger_name));
+  } else {
+    service_->FireBackgroundTracingTrigger(trigger_name);
   }
 }
 

@@ -6,6 +6,7 @@
 #define COMPONENTS_PERFORMANCE_MANAGER_GRAPH_PROCESS_NODE_IMPL_H_
 
 #include <memory>
+#include <string>
 
 #include "base/containers/flat_set.h"
 #include "base/macros.h"
@@ -25,6 +26,10 @@
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
+
+namespace content {
+class BackgroundTracingManager;
+}  // namespace content
 
 namespace performance_manager {
 
@@ -74,6 +79,7 @@ class ProcessNodeImpl
   void OnRemoteIframeDetached(
       const blink::LocalFrameToken& parent_frame_token,
       const blink::RemoteFrameToken& remote_frame_token) override;
+  void FireBackgroundTracingTrigger(const std::string& trigger_name) override;
 
   void SetProcessExitStatus(int32_t exit_status);
   void SetProcess(base::Process process, base::Time launch_time);
@@ -160,6 +166,9 @@ class ProcessNodeImpl
   void set_priority(base::TaskPriority priority);
 
   void OnAllFramesInProcessFrozenForTesting() { OnAllFramesInProcessFrozen(); }
+  static void FireBackgroundTracingTriggerOnUIForTesting(
+      const std::string& trigger_name,
+      content::BackgroundTracingManager* manager);
 
   base::WeakPtr<ProcessNodeImpl> GetWeakPtrOnUIThread();
   base::WeakPtr<ProcessNodeImpl> GetWeakPtr();
