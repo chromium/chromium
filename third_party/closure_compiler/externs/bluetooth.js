@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,9 +11,7 @@
 
 /** @fileoverview Externs generated from namespace: bluetooth */
 
-/**
- * @const
- */
+/** @const */
 chrome.bluetooth = {};
 
 /**
@@ -130,13 +128,13 @@ chrome.bluetooth.getDevice = function(deviceAddress, callback) {};
 /**
  * Get a list of Bluetooth devices known to the system, including paired and
  * recently discovered devices.
- * @param {!chrome.bluetooth.BluetoothFilter=} filter Some criteria to filter
- *     the list of returned bluetooth devices. If the filter is not set or set
- *     to <code>{}</code>, returned device list will contain all bluetooth
- *     devices. Right now this is only supported in ChromeOS, for other
- *     platforms, a full list is returned.
- * @param {function(!Array<!chrome.bluetooth.Device>): void=} callback Called when
- *     the search is completed.
+ * @param {?chrome.bluetooth.BluetoothFilter|undefined} filter Some criteria to
+ *     filter the list of returned bluetooth devices. If the filter is not set
+ *     or set to <code>{}</code>, returned device list will contain all
+ *     bluetooth devices. Right now this is only supported in ChromeOS, for
+ *     other platforms, a full list is returned.
+ * @param {function(!Array<!chrome.bluetooth.Device>): void} callback Called
+ *     when the search is completed.
  * @see https://developer.chrome.com/extensions/bluetooth#method-getDevices
  */
 chrome.bluetooth.getDevices = function(filter, callback) {};
