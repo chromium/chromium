@@ -2379,6 +2379,29 @@ Response InspectorCSSAgent::stopRuleUsageTracking(
   return response;
 }
 
+void InspectorCSSAgent::BuildRulesMap(
+    InspectorStyleSheet* style_sheet,
+    HeapHashMap<Member<const StyleRule>, Member<CSSStyleRule>>*
+        rule_to_css_rule) {
+  const CSSRuleVector& css_rules = style_sheet->FlatRules();
+  for (auto css_rule : css_rules) {
+    if (css_rule->GetType() == CSSRule::kStyleRule) {
+      CSSStyleRule* css_style_rule = DynamicTo<CSSStyleRule>(css_rule.Get());
+      rule_to_css_rule->Set(css_style_rule->GetStyleRule(), css_style_rule);
+    }
+    if (css_rule->GetType() == CSSRule::kImportRule) {
+      CSSImportRule* css_import_rule = DynamicTo<CSSImportRule>(css_rule.Get());
+      InspectorStyleSheet* imported_style_sheet =
+          css_style_sheet_to_inspector_style_sheet_.at(
+              const_cast<CSSStyleSheet*>(css_import_rule->styleSheet()));
+      if (!imported_style_sheet)
+        continue;
+
+      BuildRulesMap(imported_style_sheet, rule_to_css_rule);
+    }
+  }
+}
+
 Response InspectorCSSAgent::takeCoverageDelta(
     std::unique_ptr<protocol::Array<protocol::CSS::RuleUsage>>* result,
     double* out_timestamp) {
@@ -2401,17 +2424,21 @@ Response InspectorCSSAgent::takeCoverageDelta(
       continue;
 
     HeapHashMap<Member<const StyleRule>, Member<CSSStyleRule>> rule_to_css_rule;
-    const CSSRuleVector& css_rules = style_sheet->FlatRules();
-    for (auto css_rule : css_rules) {
-      if (css_rule->GetType() != CSSRule::kStyleRule)
-        continue;
-      CSSStyleRule* css_style_rule = AsCSSStyleRule(css_rule);
-      rule_to_css_rule.Set(css_style_rule->GetStyleRule(), css_style_rule);
-    }
+    BuildRulesMap(style_sheet, &rule_to_css_rule);
+
     for (auto used_rule : *entry.value) {
       CSSStyleRule* css_style_rule = rule_to_css_rule.at(used_rule);
+      if (!css_style_rule)
+        continue;
+      // If the rule comes from an @import'ed file, the `rule_style_sheet` is
+      // different from `style_sheet`.
+      InspectorStyleSheet* rule_style_sheet =
+          css_style_sheet_to_inspector_style_sheet_.at(
+              const_cast<CSSStyleSheet*>(css_style_rule->parentStyleSheet()));
+      if (!rule_style_sheet)
+        continue;
       if (std::unique_ptr<protocol::CSS::RuleUsage> rule_usage_object =
-              style_sheet->BuildObjectForRuleUsage(css_style_rule, true)) {
+              rule_style_sheet->BuildObjectForRuleUsage(css_style_rule, true)) {
         (*result)->emplace_back(std::move(rule_usage_object));
       }
     }

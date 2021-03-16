@@ -255,6 +255,9 @@ class CORE_EXPORT InspectorCSSAgent final
   class SetElementStyleAction;
   class AddRuleAction;
 
+  void BuildRulesMap(InspectorStyleSheet* style_sheet,
+                     HeapHashMap<Member<const StyleRule>, Member<CSSStyleRule>>*
+                         rule_to_css_rule);
   static void CollectStyleSheets(CSSStyleSheet*,
                                  HeapVector<Member<CSSStyleSheet>>&);
 
