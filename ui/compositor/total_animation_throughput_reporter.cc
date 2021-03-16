@@ -44,6 +44,9 @@ void TotalAnimationThroughputReporter::OnLastAnimationEnded(
     ui::Compositor* compositor) {
   throughput_tracker_->Stop();
   throughput_tracker_.reset();
+  // Stop observing if no need to report multiple times.
+  if (report_repeating_callback_.is_null())
+    compositor_->RemoveObserver(this);
 }
 
 void TotalAnimationThroughputReporter::OnCompositingShuttingDown(

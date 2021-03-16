@@ -11,6 +11,7 @@
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "cc/metrics/frame_sequence_metrics.h"
+#include "ui/compositor/compositor_observer.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/layer_animation_sequence.h"
 #include "ui/compositor/layer_animator.h"
@@ -252,6 +253,32 @@ TEST_F(TotalAnimationThroughputReporterTest, PersistedAnimation) {
   EXPECT_TRUE(checker.WaitUntilReported());
 }
 
+namespace {
+
+class ObserverChecker : public ui::CompositorObserver {
+ public:
+  ObserverChecker(ui::Compositor* compositor,
+                  ui::CompositorObserver* reporter_observer)
+      : reporter_observer_(reporter_observer) {
+    EXPECT_TRUE(compositor->HasObserver(reporter_observer_));
+    compositor->AddObserver(this);
+  }
+  ObserverChecker(const ObserverChecker&) = delete;
+  ObserverChecker& operator=(const ObserverChecker&) = delete;
+  ~ObserverChecker() override = default;
+
+  // ui::CompositorObserver:
+  void OnLastAnimationEnded(ui::Compositor* compositor) override {
+    EXPECT_FALSE(compositor->HasObserver(reporter_observer_));
+    compositor->RemoveObserver(this);
+  }
+
+ private:
+  ui::CompositorObserver* const reporter_observer_;
+};
+
+}  // namespace
+
 // Make sure the once reporter is called only once.
 TEST_F(TotalAnimationThroughputReporterTest, OnceReporter) {
   Layer layer;
@@ -266,6 +293,10 @@ TEST_F(TotalAnimationThroughputReporterTest, OnceReporter) {
   ThroughputReportChecker checker(this);
   TotalAnimationThroughputReporter reporter(
       compositor(), checker.once_callback(), /*should_delete=*/false);
+
+  // Make sure the TotalAnimationThroughputReporter removes itself
+  // from compositor as observer.
+  ObserverChecker observer_checker(compositor(), &reporter);
 
   // Report data for animation of opacity goes to 1.
   layer.SetOpacity(1.0f);
