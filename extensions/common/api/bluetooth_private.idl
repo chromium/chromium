@@ -125,32 +125,37 @@ namespace bluetoothPrivate {
     // Changes the state of the Bluetooth adapter.
     // |adapterState|: The new state of the adapter.
     // |callback|: Called when all the state changes have been completed.
-    static void setAdapterState(NewAdapterState adapterState,
-                                optional VoidCallback callback);
+    [supportsPromises] static void setAdapterState(
+        NewAdapterState adapterState,
+        optional VoidCallback callback);
 
-    static void setPairingResponse(SetPairingResponseOptions options,
-                                   optional VoidCallback callback);
+    [supportsPromises] static void setPairingResponse(
+        SetPairingResponseOptions options,
+        optional VoidCallback callback);
 
     // Tears down all connections to the given device.
-    static void disconnectAll(DOMString deviceAddress,
-                              optional VoidCallback callback);
+    [supportsPromises] static void disconnectAll(
+        DOMString deviceAddress,
+        optional VoidCallback callback);
 
     // Forgets the given device.
-    static void forgetDevice(DOMString deviceAddress,
-                             optional VoidCallback callback);
+    [supportsPromises] static void forgetDevice(DOMString deviceAddress,
+                                                optional VoidCallback callback);
 
     // Set or clear discovery filter.
-    static void setDiscoveryFilter(DiscoveryFilter discoveryFilter,
-                                   optional VoidCallback callback);
+    [supportsPromises] static void setDiscoveryFilter(
+        DiscoveryFilter discoveryFilter,
+        optional VoidCallback callback);
 
     // Connects to the given device. This will only throw an error if the
     // device address is invalid or the device is already connected. Otherwise
     // this will succeed and invoke |callback| with ConnectResultType.
-    static void connect(DOMString deviceAddress,
-                        optional ConnectCallback callback);
+    [supportsPromises] static void connect(DOMString deviceAddress,
+                                           optional ConnectCallback callback);
 
     // Pairs the given device.
-    static void pair(DOMString deviceAddress, optional VoidCallback callback);
+    [supportsPromises] static void pair(DOMString deviceAddress,
+                                        optional VoidCallback callback);
 
     // Record that a pairing attempt finished. Ignores cancellations.
     static void recordPairing(bluetooth.Transport transport,
