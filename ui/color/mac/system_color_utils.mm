@@ -6,7 +6,7 @@
 
 #import <Cocoa/Cocoa.h>
 
-#include "third_party/skia/include/core/SkScalar.h"
+#include "ui/gfx/color_utils.h"
 
 namespace {
 bool graphite_tint_test_override = false;
@@ -22,9 +22,7 @@ bool IsSystemGraphiteTinted() {
 }
 
 SkColor ColorToGrayscale(SkColor color) {
-  SkScalar luminance = SkColorGetR(color) * 0.21 + SkColorGetG(color) * 0.72 +
-                       SkColorGetB(color) * 0.07;
-  uint8_t component = SkScalarRoundToInt(luminance);
+  uint8_t component = color_utils::GetLuma(color);
   return SkColorSetARGB(SkColorGetA(color), component, component, component);
 }
 

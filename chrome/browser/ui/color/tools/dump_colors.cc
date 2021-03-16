@@ -31,6 +31,10 @@ const char* enum_names[] = {
 
 #include "ui/color/color_id_macros.inc"
 
+#if defined(OS_MAC)
+#include "ui/color/color_mixers.h"
+#endif
+
 constexpr size_t kColorColumnWidth = 19 + 1;  // '#xxxxxxxx '/'#xxxxxxxx\n'
 
 std::string SkColorToString(SkColor color) {
@@ -51,6 +55,10 @@ int main(int argc, const char* argv[]) {
     ui::AddNativeCoreColorMixer(provider, dark_window, high_contrast);
     ui::AddUiColorMixer(provider);
     ui::AddNativeUiColorMixer(provider, dark_window, high_contrast);
+#if defined(OS_MAC)
+    // Always keep this mixer after all non-embedder ui mixers.
+    ui::AddSystemTintMixer(provider);
+#endif
     AddChromeColorMixers(provider);
     AddOmniboxColorMixers(provider, false);
   };
