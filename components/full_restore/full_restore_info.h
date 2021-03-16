@@ -35,11 +35,20 @@ class COMPONENT_EXPORT(FULL_RESTORE) FullRestoreInfo {
     virtual void OnRestoreFlagChanged(const AccountId& account_id,
                                       bool should_restore) {}
 
-    // Notifies when |window| is ready to be restored, after we have the app
-    // launch information, e.g. a task id for an ARC app.
+    // Notifies when |window| is ready to save the window info.
+    //
+    // When |window| is created, we might not have the app launch info yet. For
+    // example, if the ARC task is not created, we don't have the launch info.
+    // When the task is created, OnAppLaunched is called to notify observers to
+    // save the window info.
     virtual void OnAppLaunched(aura::Window* window) {}
 
-    // Notifies when |window| has been initialized.
+    // If |window| is restored from the full restore file, notifies observers to
+    // restore |window|, when |window| has been initialized.
+    //
+    // For ARC app windows, when |window| is initialized, the task might not be
+    // created yet, so we don't have the window info, |window| might be parent
+    // to a hidden container based on the property kParentToHiddenContainerKey.
     virtual void OnWindowInitialized(aura::Window* window) {}
 
    protected:

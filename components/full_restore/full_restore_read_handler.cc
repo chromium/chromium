@@ -13,6 +13,7 @@
 #include "base/task/post_task.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "components/full_restore/full_restore_file_handler.h"
+#include "components/full_restore/full_restore_info.h"
 #include "components/full_restore/restore_data.h"
 #include "components/full_restore/window_info.h"
 #include "components/sessions/core/session_id.h"
@@ -43,6 +44,7 @@ void FullRestoreReadHandler::OnWindowInitialized(aura::Window* window) {
       return;
 
     observed_windows_.AddObservation(window);
+    FullRestoreInfo::GetInstance()->OnWindowInitialized(window);
     return;
   }
 
@@ -51,6 +53,7 @@ void FullRestoreReadHandler::OnWindowInitialized(aura::Window* window) {
   }
 
   observed_windows_.AddObservation(window);
+  FullRestoreInfo::GetInstance()->OnWindowInitialized(window);
 }
 
 void FullRestoreReadHandler::OnWindowDestroyed(aura::Window* window) {

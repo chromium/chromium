@@ -63,7 +63,6 @@ void FullRestoreSaveHandler::OnWindowInitialized(aura::Window* window) {
       static_cast<int>(ash::AppType::ARC_APP)) {
     task_id_to_app_window_info_[window_id].window = window;
     observed_windows_.AddObservation(window);
-    FullRestoreInfo::GetInstance()->OnWindowInitialized(window);
 
     // If the task id has an app id, OnTaskCreated has been invoked, and the app
     // launch info has been saved, so OnAppLaunched can be called to save the
@@ -78,7 +77,6 @@ void FullRestoreSaveHandler::OnWindowInitialized(aura::Window* window) {
     return;
 
   observed_windows_.AddObservation(window);
-  FullRestoreInfo::GetInstance()->OnWindowInitialized(window);
 
   std::string* app_id_str = window->GetProperty(::full_restore::kAppIdKey);
   AppLaunchInfoPtr app_launch_info;
