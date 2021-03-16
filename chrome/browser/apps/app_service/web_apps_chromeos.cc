@@ -782,15 +782,14 @@ apps::mojom::OptionalBool WebAppsChromeOs::ShouldShowBadge(
              switches::
                  kDesktopPWAsAttentionBadgingCrOSApiOverridesNotifications) {
     // When the flag is set to "api-overrides-notifications" we show a badge if
-    // either the Web Badging API has a badge set, or the Badging API has not
-    // been used by the origin and a notification is showing.
-    if (!badge_manager_)
+    // either the Web Badging API recently has a badge set, or the Badging API
+    // has not been recently used by the app and a notification is showing.
+    if (!badge_manager_ || !badge_manager_->HasRecentApiUsage(app_id))
       return has_notification;
-    if (badge_manager_->GetBadgeValue(app_id).has_value())
-      return apps::mojom::OptionalBool::kTrue;
-    if (badge_manager_->HasRecentApiUsage(app_id))
-      return apps::mojom::OptionalBool::kFalse;
-    return has_notification;
+
+    return badge_manager_->GetBadgeValue(app_id).has_value()
+               ? apps::mojom::OptionalBool::kTrue
+               : apps::mojom::OptionalBool::kFalse;
   } else {
     // Show a badge only if a notification is showing.
     return has_notification;
