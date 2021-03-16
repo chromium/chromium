@@ -167,6 +167,7 @@ const char kManagementReportAppInfoAndActivity[] =
 const char kManagementReportExtensions[] = "managementReportExtensions";
 const char kManagementReportAndroidApplications[] =
     "managementReportAndroidApplications";
+const char kManagementReportPrintJobs[] = "managementReportPrintJobs";
 const char kManagementPrinting[] = "managementPrinting";
 const char kManagementCrostini[] = "managementCrostini";
 const char kManagementCrostiniContainerConfiguration[] =
@@ -210,6 +211,7 @@ enum class DeviceReportingType {
   kAppInfoAndActivity,
   kLogs,
   kPrint,
+  kPrintJobs,
   kCrostini,
   kUsername,
   kExtensions,
@@ -235,6 +237,8 @@ std::string ToJSDeviceReportingType(const DeviceReportingType& type) {
       return "logs";
     case DeviceReportingType::kPrint:
       return "print";
+    case DeviceReportingType::kPrintJobs:
+      return "print jobs";
     case DeviceReportingType::kCrostini:
       return "crostini";
     case DeviceReportingType::kUsername:
@@ -583,8 +587,17 @@ void ManagementUIHandler::AddDeviceReportingInfo(
                               DeviceReportingType::kLogs);
   }
 
-  if (profile->GetPrefs()->GetBoolean(
-          prefs::kPrintingSendUsernameAndFilenameEnabled)) {
+  bool report_print_jobs = false;
+  chromeos::CrosSettings::Get()->GetBoolean(chromeos::kReportDevicePrintJobs,
+                                            &report_print_jobs);
+  if (report_print_jobs) {
+    AddDeviceReportingElement(report_sources, kManagementReportPrintJobs,
+                              DeviceReportingType::kPrintJobs);
+  }
+
+  bool report_print_username = profile->GetPrefs()->GetBoolean(
+      prefs::kPrintingSendUsernameAndFilenameEnabled);
+  if (report_print_username && !report_print_jobs) {
     AddDeviceReportingElement(report_sources, kManagementPrinting,
                               DeviceReportingType::kPrint);
   }

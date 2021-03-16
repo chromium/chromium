@@ -76,6 +76,7 @@ export const DeviceReportingType = {
   APP_INFO_AND_ACTIVITY: 'app info and activity',
   LOGS: 'logs',
   PRINT: 'print',
+  PRINT_JOBS: 'print jobs',
   CROSTINI: 'crostini',
   USERNAME: 'username',
   EXTENSION: 'extension',

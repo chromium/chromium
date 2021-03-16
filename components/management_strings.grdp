@@ -113,6 +113,9 @@
     <message name="IDS_MANAGEMENT_REPORT_PRINTING" desc="Message stating that administrators can see names of printed files.">
       Names of files that you print
     </message>
+    <message name="IDS_MANAGEMENT_REPORT_PRINT_JOBS" desc="Message stating that administrators can see printing history associated with user, device, and printer.">
+      Printing history
+    </message>
     <message name="IDS_MANAGEMENT_CROSTINI" desc="Message stating that administrators can see Crostini usage">
       Linux apps installed and when they were last used
     </message>

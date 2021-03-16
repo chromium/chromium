@@ -34,6 +34,7 @@ extern const char kManagementReportNetworkInterfaces[];
 extern const char kManagementReportUsers[];
 extern const char kManagementReportCrashReports[];
 extern const char kManagementReportAppInfoAndActivity[];
+extern const char kManagementReportPrintJobs[];
 extern const char kManagementPrinting[];
 extern const char kManagementCrostini[];
 extern const char kManagementCrostiniContainerConfiguration[];
