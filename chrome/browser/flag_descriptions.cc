@@ -4657,10 +4657,6 @@ const char kNearbySharingWebRtcName[] = "Nearby Sharing WebRTC";
 const char kNearbySharingWebRtcDescription[] =
     "Enables use of WebRTC in Nearby Share.";
 
-const char kOsSettingsPolymer3Name[] = "Enable OS Settings Polymer3";
-const char kOsSettingsPolymer3Description[] =
-    "Flips chrome://os-settings to show Polymer3 version.";
-
 const char kPhoneHubName[] = "Enable Phone Hub";
 const char kPhoneHubDescription[] =
     "Provides a UI for users to view information about their Android phone "

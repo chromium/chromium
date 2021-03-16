@@ -2736,9 +2736,6 @@ extern const char kNearbySharingDeviceContactsDescription[];
 extern const char kNearbySharingWebRtcName[];
 extern const char kNearbySharingWebRtcDescription[];
 
-extern const char kOsSettingsPolymer3Name[];
-extern const char kOsSettingsPolymer3Description[];
-
 extern const char kPhoneHubName[];
 extern const char kPhoneHubDescription[];
 

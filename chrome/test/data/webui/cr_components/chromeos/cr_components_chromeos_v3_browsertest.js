@@ -75,7 +75,6 @@ function registerTest(componentName, webuiHost, testName, module, caseName) {
       return {
         enabled: [
           'chromeos::features::kConnectivityDiagnosticsWebUi',
-          'chromeos::features::kOsSettingsPolymer3',
           'chromeos::features::kUpdatedCellularActivationUi',
         ],
       };
