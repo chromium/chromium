@@ -165,8 +165,12 @@ class CONTENT_EXPORT FrameTree {
   RenderFrameHostManager::Delegate* manager_delegate() {
     return manager_delegate_;
   }
-  const std::unordered_map<int /* SiteInstance ID */, RenderViewHostImpl*>&
-  render_view_hosts() const {
+
+  using RenderViewHostMapId = util::IdType32<class RenderViewHostMap>;
+  using RenderViewHostMap = std::unordered_map<RenderViewHostMapId,
+                                               RenderViewHostImpl*,
+                                               RenderViewHostMapId::Hasher>;
+  const RenderViewHostMap& render_view_hosts() const {
     return render_view_host_map_;
   }
 
@@ -265,8 +269,14 @@ class CONTENT_EXPORT FrameTree {
   scoped_refptr<RenderViewHostImpl> GetRenderViewHost(
       SiteInstance* site_instance);
 
+  // Returns the ID used for the RenderViewHost associated with |site_instance|.
+  // Note: Callers should not assume that there is a 1:1 mapping between
+  // SiteInstances and IDs returned by this function, since several
+  // SiteInstances may share a RenderViewHost.
+  RenderViewHostMapId GetRenderViewHostMapId(SiteInstance* site_instance) const;
+
   // Registers a RenderViewHost so that it can be reused by other frames
-  // belonging to the same SiteInstance.
+  // whose SiteInstance maps to the same RenderViewHostMapId.
   //
   // This method does not take ownership of|rvh|.
   //
@@ -277,13 +287,12 @@ class CONTENT_EXPORT FrameTree {
   // *must* be called for |rvh| when it is destroyed or put into the
   // BackForwardCache, to prevent FrameTree::CreateRenderViewHost from trying to
   // reuse it.
-  void RegisterRenderViewHost(SiteInstance* site_instance,
-                              RenderViewHostImpl* rvh);
+  void RegisterRenderViewHost(RenderViewHostMapId id, RenderViewHostImpl* rvh);
 
   // Unregisters the RenderViewHostImpl that's available for reuse for a
-  // particular SiteInstance. NOTE: This method CHECK fails if it is called for
-  // a |render_view_host| that is not currently set for reuse.
-  void UnregisterRenderViewHost(SiteInstance* site_instance,
+  // particular RenderViewHostMapId. NOTE: This method CHECK fails if it is
+  // called for a |render_view_host| that is not currently set for reuse.
+  void UnregisterRenderViewHost(RenderViewHostMapId id,
                                 RenderViewHostImpl* render_view_host);
 
   // This is called when the frame is about to be removed and started to run
@@ -381,12 +390,11 @@ class CONTENT_EXPORT FrameTree {
   // the frame.
   Navigator navigator_;
 
-  // Map of SiteInstance ID to RenderViewHost. This allows us to look up the
+  // Map of RenderViewHostMapId to RenderViewHost. This allows us to look up the
   // RenderViewHost for a given SiteInstance when creating RenderFrameHosts.
   // Each RenderViewHost maintains a refcount and is deleted when there are no
   // more RenderFrameHosts or RenderFrameProxyHosts using it.
-  std::unordered_map<int /* SiteInstance ID */, RenderViewHostImpl*>
-      render_view_host_map_;
+  RenderViewHostMap render_view_host_map_;
 
   // This is an owned ptr to the root FrameTreeNode, which never changes over
   // the lifetime of the FrameTree. It is not a scoped_ptr because we need the

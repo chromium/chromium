@@ -177,9 +177,10 @@ class CONTENT_EXPORT NavigationControllerImpl : public NavigationController {
   // case, we know there is no content displayed in the page.
   bool IsUnmodifiedBlankTab();
 
-  // The session storage namespace that all child RenderViews belonging to
-  // |instance| should use.
-  SessionStorageNamespace* GetSessionStorageNamespace(SiteInstance* instance);
+  // The session storage namespace that all child RenderViews associated with
+  // |site_info| should use.
+  SessionStorageNamespace* GetSessionStorageNamespace(
+      const SiteInfo& site_info);
 
   // Returns the index of the specified entry, or -1 if entry is not contained
   // in this NavigationController.

@@ -20,11 +20,6 @@ WebContents* RenderViewHostDelegate::GetAsWebContents() {
   return nullptr;
 }
 
-SessionStorageNamespace* RenderViewHostDelegate::GetSessionStorageNamespace(
-    SiteInstance* instance) {
-  return nullptr;
-}
-
 SessionStorageNamespaceMap
 RenderViewHostDelegate::GetSessionStorageNamespaceMap() {
   return SessionStorageNamespaceMap();

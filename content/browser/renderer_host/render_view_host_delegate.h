@@ -37,8 +37,6 @@ namespace content {
 class RenderViewHost;
 class RenderViewHostImpl;
 class RenderViewHostDelegateView;
-class SessionStorageNamespace;
-class SiteInstance;
 class WebContents;
 
 //
@@ -99,11 +97,6 @@ class CONTENT_EXPORT RenderViewHostDelegate {
 
   // The contents' preferred size changed.
   virtual void UpdatePreferredSize(const gfx::Size& pref_size) {}
-
-  // Returns the SessionStorageNamespace the render view should use. Might
-  // create the SessionStorageNamespace on the fly.
-  virtual SessionStorageNamespace* GetSessionStorageNamespace(
-      SiteInstance* instance);
 
   // Returns a copy of the map of all session storage namespaces related
   // to this view.

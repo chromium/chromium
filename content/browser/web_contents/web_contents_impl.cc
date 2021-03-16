@@ -3575,7 +3575,10 @@ RenderFrameHostDelegate* WebContentsImpl::CreateNewWindow(
   auto* source_site_instance =
       static_cast<SiteInstanceImpl*>(opener->GetSiteInstance());
 
-  const auto& partition_id = source_site_instance->GetStoragePartitionId();
+  const auto& partition_id =
+      source_site_instance->GetSiteInfo().GetStoragePartitionId(
+          GetBrowserContext());
+
   {
     StoragePartition* partition = BrowserContext::GetStoragePartition(
         GetBrowserContext(), source_site_instance);
@@ -3996,11 +3999,6 @@ std::string WebContentsImpl::GetDefaultMediaDeviceID(
   if (!delegate_)
     return std::string();
   return delegate_->GetDefaultMediaDeviceID(this, type);
-}
-
-SessionStorageNamespace* WebContentsImpl::GetSessionStorageNamespace(
-    SiteInstance* instance) {
-  return GetController().GetSessionStorageNamespace(instance);
 }
 
 SessionStorageNamespaceMap WebContentsImpl::GetSessionStorageNamespaceMap() {

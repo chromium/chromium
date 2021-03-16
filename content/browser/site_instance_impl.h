@@ -260,6 +260,15 @@ class CONTENT_EXPORT SiteInfo {
   // RenderProcessHost per site for the entire browser context.
   bool ShouldUseProcessPerSite(BrowserContext* browser_context) const;
 
+  // Get the partition ID or StoragePartitionConfig for this object given a
+  // specific `browser_context`. The BrowserContext will affect whether the
+  // partition is forced to be in memory based on whether it is off-the-record
+  // or not.
+  StoragePartitionId GetStoragePartitionId(
+      BrowserContext* browser_context) const;
+  StoragePartitionConfig GetStoragePartitionConfig(
+      BrowserContext* browser_context) const;
+
  private:
   static auto MakeTie(const SiteInfo& site_info);
 
@@ -506,6 +515,18 @@ class CONTENT_EXPORT SiteInstanceImpl final : public SiteInstance,
   // GetSiteURL().
   const SiteInfo& GetSiteInfo();
 
+  // Called when a RenderViewHost was created with this object. It returns the
+  // same information as GetSiteInfo(), but also enables extra checks to ensure
+  // that the StoragePartition info for this object does not change when
+  // |site_info_| is set. This is important to verify if the SiteInfo has not
+  // been explicitly set at the time of this call (e.g. first navigation in a
+  // new tab).
+  // TODO(acolwell) : Remove once RenderViewHost no longer needs to store a
+  // SiteInfo and can store a StoragePartitionConfig instead. Extra verification
+  // should be enabled when the config is fetched and |site_info_| has not been
+  // set yet.
+  const SiteInfo& GetSiteInfoForRenderViewHost();
+
   // Derives a new SiteInfo based on this SiteInstance's current state, and
   // the information provided in |url_info|. This function is slightly different
   // than SiteInfo::Create() because it takes into account information
@@ -541,10 +562,6 @@ class CONTENT_EXPORT SiteInstanceImpl final : public SiteInstance,
   // storage_partition->GetPartitionDomain() once we've verified that this is
   // safe.
   std::string GetPartitionDomain(StoragePartitionImpl* storage_partition);
-
-  // Storage Partition ID to use when associating storage partition namespaces
-  // with this object.
-  const StoragePartitionId& GetStoragePartitionId();
 
   // Set the web site that this SiteInstance is rendering pages for.
   // This includes the scheme and registered domain, but not the port.  If the
@@ -736,10 +753,6 @@ class CONTENT_EXPORT SiteInstanceImpl final : public SiteInstance,
   // to be handled by this default SiteInstance.
   void AddSiteInfoToDefault(const SiteInfo& site_info);
 
-  // Helper function that asks the embedder to compute a storage partition ID
-  // based on the current `site_info_`.
-  StoragePartitionId ComputeStoragePartitionId() const;
-
   // Return whether both UrlInfos must share a process to preserve script
   // relationships.  The decision is based on a variety of factors such as
   // the registered domain of the URLs (google.com, bbc.co.uk), the scheme
@@ -833,12 +846,9 @@ class CONTENT_EXPORT SiteInstanceImpl final : public SiteInstance,
   class DefaultSiteInstanceState;
   std::unique_ptr<DefaultSiteInstanceState> default_site_instance_state_;
 
-  // Keeps track of the storage partition ID associated with this object.
-  // It caches the value returned by the embedder so it can ensure consistent
-  // values are returned over the lifetime of this object. This member gets set
-  // by either GetStoragePartitionId() or SetSiteInfoInternal(), whichever is
-  // called first.
-  base::Optional<StoragePartitionId> storage_partition_id_;
+  // Keeps track of whether we need to verify that the StoragePartition
+  // information does not change when `site_info_` is set.
+  bool verify_storage_partition_info_ = false;
 
   DISALLOW_COPY_AND_ASSIGN(SiteInstanceImpl);
 };

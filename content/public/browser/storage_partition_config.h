@@ -96,6 +96,9 @@ class CONTENT_EXPORT StoragePartitionConfig {
       FallbackMode::kNone;
 };
 
+CONTENT_EXPORT std::ostream& operator<<(std::ostream& out,
+                                        const StoragePartitionConfig& config);
+
 // Represents the storage partition ID that is used as the key for the
 // SessionStorageNamespaceMap. This type is to help facilitate migrating the
 // map key away from a string to a StoragePartitionConfig.

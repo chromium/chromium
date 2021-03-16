@@ -2507,19 +2507,17 @@ bool NavigationControllerImpl::IsUnmodifiedBlankTab() {
 }
 
 SessionStorageNamespace* NavigationControllerImpl::GetSessionStorageNamespace(
-    SiteInstance* instance) {
-  StoragePartitionId partition_id;
-  if (instance) {
-    // TODO(ajwong): When GetDefaultSessionStorageNamespace() goes away, remove
-    // this if statement so |instance| must not be null.
-    partition_id =
-        static_cast<SiteInstanceImpl*>(instance)->GetStoragePartitionId();
-  }
+    const SiteInfo& site_info) {
+  // TODO(acolwell): Remove partition_id logic once we have successfully
+  // migrated the implementation to be a StoragePartitionConfig. At that point
+  // |site_info| can be replaced with a StoragePartitionConfig.
+  const StoragePartitionId partition_id =
+      site_info.GetStoragePartitionId(browser_context_);
+  const StoragePartitionConfig partition_config =
+      site_info.GetStoragePartitionConfig(browser_context_);
 
-  // TODO(ajwong): Should this use the |partition_id| directly rather than
-  // re-lookup via |instance|?  http://crbug.com/142685
   StoragePartition* partition =
-      BrowserContext::GetStoragePartition(browser_context_, instance);
+      BrowserContext::GetStoragePartition(browser_context_, partition_config);
   DOMStorageContextWrapper* context_wrapper =
       static_cast<DOMStorageContextWrapper*>(partition->GetDOMStorageContext());
 
@@ -2545,8 +2543,7 @@ SessionStorageNamespace* NavigationControllerImpl::GetSessionStorageNamespace(
 
 SessionStorageNamespace*
 NavigationControllerImpl::GetDefaultSessionStorageNamespace() {
-  // TODO(ajwong): Remove if statement in GetSessionStorageNamespace().
-  return GetSessionStorageNamespace(nullptr);
+  return GetSessionStorageNamespace(SiteInfo());
 }
 
 const SessionStorageNamespaceMap&

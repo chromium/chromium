@@ -291,11 +291,12 @@ RenderViewHostImpl::RenderViewHostImpl(
     bool has_initialized_audio_host)
     : render_widget_host_(std::move(widget)),
       delegate_(delegate),
-      instance_(static_cast<SiteInstanceImpl*>(instance)),
+      render_view_host_map_id_(frame_tree->GetRenderViewHostMapId(instance)),
+      site_info_(static_cast<SiteInstanceImpl*>(instance)
+                     ->GetSiteInfoForRenderViewHost()),
       routing_id_(routing_id),
       main_frame_routing_id_(main_frame_routing_id),
       frame_tree_(frame_tree) {
-  DCHECK(instance_.get());
   DCHECK(delegate_);
   DCHECK_NE(GetRoutingID(), render_widget_host_->GetRoutingID());
 
@@ -334,7 +335,7 @@ RenderViewHostImpl::RenderViewHostImpl(
                               : blink::mojom::PageVisibilityState::kHidden);
 
   GetWidget()->set_owner_delegate(this);
-  frame_tree_->RegisterRenderViewHost(instance_.get(), this);
+  frame_tree_->RegisterRenderViewHost(render_view_host_map_id_, this);
 }
 
 RenderViewHostImpl::~RenderViewHostImpl() {
@@ -376,7 +377,7 @@ RenderViewHostImpl::~RenderViewHostImpl() {
   // If |this| is in the BackForwardCache, then it was already removed from
   // the FrameTree at the time it entered the BackForwardCache.
   if (!is_in_back_forward_cache_)
-    frame_tree_->UnregisterRenderViewHost(instance_.get(), this);
+    frame_tree_->UnregisterRenderViewHost(render_view_host_map_id_, this);
 }
 
 RenderViewHostDelegate* RenderViewHostImpl::GetDelegate() {
@@ -468,15 +469,15 @@ bool RenderViewHostImpl::CreateRenderView(
   }
 
   params->session_storage_namespace_id =
-      delegate_->GetSessionStorageNamespace(instance_.get())->id();
+      frame_tree_->controller().GetSessionStorageNamespace(site_info_)->id();
   params->hidden = GetWidget()->delegate()->IsHidden();
   params->never_composited = delegate_->IsNeverComposited();
   params->window_was_created_with_opener = window_was_created_with_opener;
   // GuestViews in the same StoragePartition need to find each other's frames.
-  params->renderer_wide_named_frame_lookup = instance_->IsGuest();
+  params->renderer_wide_named_frame_lookup = site_info_.is_guest();
 
   bool is_portal = delegate_->IsPortal();
-  bool is_guest_view = instance_->IsGuest();
+  bool is_guest_view = site_info_.is_guest();
 
   // A view cannot be inside both a <portal> and inside a <webview>.
   DCHECK(!is_portal || !is_guest_view);
@@ -523,7 +524,7 @@ void RenderViewHostImpl::EnterBackForwardCache() {
     will_enter_back_forward_cache_callback_for_testing_.Run();
 
   TRACE_EVENT0("navigation", "RenderViewHostImpl::EnterBackForwardCache");
-  frame_tree_->UnregisterRenderViewHost(instance_.get(), this);
+  frame_tree_->UnregisterRenderViewHost(render_view_host_map_id_, this);
   is_in_back_forward_cache_ = true;
   page_lifecycle_state_manager_->SetIsInBackForwardCache(
       is_in_back_forward_cache_, /*page_restore_params=*/nullptr);
@@ -540,7 +541,7 @@ void RenderViewHostImpl::LeaveBackForwardCache(
   TRACE_EVENT0("navigation", "RenderViewHostImpl::LeaveBackForwardCache");
   // At this point, the frames |this| RenderViewHostImpl belongs to are
   // guaranteed to be committed, so it should be reused going forward.
-  frame_tree_->RegisterRenderViewHost(instance_.get(), this);
+  frame_tree_->RegisterRenderViewHost(render_view_host_map_id_, this);
   is_in_back_forward_cache_ = false;
   page_lifecycle_state_manager_->SetIsInBackForwardCache(
       is_in_back_forward_cache_, std::move(page_restore_params));
@@ -639,7 +640,6 @@ void RenderViewHostImpl::ClosePage() {
 
     // TODO(creis): Should this be moved to Shutdown?  It may not be called for
     // RenderViewHosts that have been swapped out.
-    CHECK_EQ(instance_.get(), GetMainFrame()->GetSiteInstance());
 #if !defined(OS_ANDROID)
     static_cast<HostZoomMapImpl*>(
         HostZoomMap::Get(GetMainFrame()->GetSiteInstance()))

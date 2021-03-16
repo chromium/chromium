@@ -5,6 +5,7 @@
 #include "content/public/browser/storage_partition_config.h"
 
 #include "base/check.h"
+#include "base/strings/string_number_conversions.h"
 #include "content/public/browser/browser_context.h"
 #include "url/gurl.h"
 
@@ -95,6 +96,28 @@ bool StoragePartitionConfig::operator==(
 bool StoragePartitionConfig::operator!=(
     const StoragePartitionConfig& rhs) const {
   return !(*this == rhs);
+}
+
+std::ostream& operator<<(std::ostream& out,
+                         const StoragePartitionConfig& config) {
+  out << "{";
+  if (config.is_default()) {
+    out << "default";
+  } else {
+    out << "partition_domain='" << config.partition_domain() << "'";
+    out << " partition_name='" << config.partition_name() << "'";
+
+    if (config.in_memory())
+      out << " in_memory";
+
+    auto fallback_mode = config.fallback_to_partition_domain_for_blob_urls();
+    if (fallback_mode != StoragePartitionConfig::FallbackMode::kNone) {
+      out << " fallback_mode="
+          << base::NumberToString(static_cast<int>(fallback_mode));
+    }
+  }
+  out << "}";
+  return out;
 }
 
 }  // namespace content

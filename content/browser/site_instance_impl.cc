@@ -359,6 +359,24 @@ bool SiteInfo::ShouldUseProcessPerSite(BrowserContext* browser_context) const {
                                                                 site_url_);
 }
 
+StoragePartitionId SiteInfo::GetStoragePartitionId(
+    BrowserContext* browser_context) const {
+  if (site_url().is_empty())
+    return StoragePartitionId();
+
+  return GetContentClient()->browser()->GetStoragePartitionIdForSite(
+      browser_context, site_url());
+}
+
+StoragePartitionConfig SiteInfo::GetStoragePartitionConfig(
+    BrowserContext* browser_context) const {
+  if (site_url().is_empty())
+    return StoragePartitionConfig::CreateDefault(browser_context);
+
+  return GetContentClient()->browser()->GetStoragePartitionConfigForSite(
+      browser_context, site_url());
+}
+
 bool SiteInfo::is_error_page() const {
   return !is_guest_ && site_url_ == GetErrorPageSiteAndLockURL();
 }
@@ -897,21 +915,21 @@ void SiteInstanceImpl::SetSiteInfoInternal(const SiteInfo& site_info) {
   CHECK_EQ(site_info.coop_coep_cross_origin_isolated_info(),
            browsing_instance_->coop_coep_cross_origin_isolated_info());
 
+  if (verify_storage_partition_info_) {
+    auto* browser_context = browsing_instance_->GetBrowserContext();
+    auto old_partition_id = site_info_.GetStoragePartitionId(browser_context);
+    auto old_partition_config =
+        site_info_.GetStoragePartitionConfig(browser_context);
+    auto new_partition_id = site_info.GetStoragePartitionId(browser_context);
+    auto new_partition_config =
+        site_info.GetStoragePartitionConfig(browser_context);
+    CHECK_EQ(old_partition_id, new_partition_id);
+    CHECK_EQ(old_partition_config, new_partition_config);
+  }
   // Remember that this SiteInstance has been used to load a URL, even if the
   // URL is invalid.
   has_site_ = true;
   site_info_ = site_info;
-
-  auto storage_partition_id = ComputeStoragePartitionId();
-  if (storage_partition_id_.has_value()) {
-    // Verify that setting `site_info_` did not cause the storage_partition_id
-    // to change from the value that was previously computed.
-    CHECK_EQ(storage_partition_id_.value(), storage_partition_id);
-  } else {
-    // The partition ID was never requested before `site_info` was set so
-    // assign it now.
-    storage_partition_id_ = storage_partition_id;
-  }
 
   // Now that we have a site, register it with the BrowsingInstance.  This
   // ensures that we won't create another SiteInstance for this site within
@@ -983,6 +1001,19 @@ const GURL& SiteInstanceImpl::GetSiteURL() {
 }
 
 const SiteInfo& SiteInstanceImpl::GetSiteInfo() {
+  return site_info_;
+}
+
+const SiteInfo& SiteInstanceImpl::GetSiteInfoForRenderViewHost() {
+  if (!has_site_) {
+    // Note: `site_info_` has not been set yet. When the RenderViewHost uses
+    // this SiteInfo to generate a partition ID it will be using an empty
+    // SiteInfo. This is ok as long as the ID does not change when `site_info_`
+    // is actually set. Enable the verification code in SetSiteInfoInternal() to
+    // verify that the partition info does not change.
+    verify_storage_partition_info_ = true;
+  }
+
   return site_info_;
 }
 
@@ -1254,23 +1285,6 @@ std::string SiteInstanceImpl::GetPartitionDomain(
     return storage_partition_config.partition_domain();
   }
   return storage_partition->GetPartitionDomain();
-}
-
-const StoragePartitionId& SiteInstanceImpl::GetStoragePartitionId() {
-  if (!storage_partition_id_.has_value()) {
-    // Note: This can get called before `site_info_` is set. This will result
-    // in a partition ID being generated from an empty site URL. This is ok
-    // as long as the ID does not change when `site_info_` is actually set.
-    // There is code in SetSiteInfoInternal() to verify this condition.
-    storage_partition_id_ = ComputeStoragePartitionId();
-  }
-
-  return storage_partition_id_.value();
-}
-
-StoragePartitionId SiteInstanceImpl::ComputeStoragePartitionId() const {
-  return GetContentClient()->browser()->GetStoragePartitionIdForSite(
-      browsing_instance_->GetBrowserContext(), site_info_.site_url());
 }
 
 bool SiteInstanceImpl::IsOriginalUrlSameSite(

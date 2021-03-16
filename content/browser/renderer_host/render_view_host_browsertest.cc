@@ -127,12 +127,12 @@ IN_PROC_BROWSER_TEST_F(RenderViewHostTest, MAYBE_ReleaseSessionOnCloseACK) {
   EXPECT_TRUE(ExecuteScript(shell(), "window.open();"));
   Shell* new_shell = new_shell_observer.GetShell();
   new_shell->LoadURL(test_url);
-  SiteInstance* site_instance =
-      new_shell->web_contents()->GetMainFrame()->GetSiteInstance();
+  auto* site_instance = static_cast<SiteInstanceImpl*>(
+      new_shell->web_contents()->GetMainFrame()->GetSiteInstance());
   auto* controller = static_cast<NavigationControllerImpl*>(
       &new_shell->web_contents()->GetController());
   scoped_refptr<SessionStorageNamespace> session_namespace =
-      controller->GetSessionStorageNamespace(site_instance);
+      controller->GetSessionStorageNamespace(site_instance->GetSiteInfo());
   EXPECT_FALSE(session_namespace->HasOneRef());
 
   // Close it, or rather start the close operation. The session namespace
