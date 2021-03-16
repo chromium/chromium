@@ -14,7 +14,6 @@
 #include "base/time/time.h"
 #include "components/sync/engine/nigori/keystore_keys_handler.h"
 #include "components/sync/engine/sync_encryption_handler.h"
-#include "components/sync/test/engine/fake_cryptographer.h"
 
 namespace syncer {
 
@@ -40,7 +39,6 @@ class FakeSyncEncryptionHandler : public KeystoreKeysHandler,
       const std::vector<std::vector<uint8_t>>& keys) override;
   base::Time GetKeystoreMigrationTime() const override;
   KeystoreKeysHandler* GetKeystoreKeysHandler() override;
-  Cryptographer* GetCryptographer() override;
 
   // KeystoreKeysHandler implementation.
   bool NeedKeystoreKey() const override;
@@ -49,7 +47,6 @@ class FakeSyncEncryptionHandler : public KeystoreKeysHandler,
  private:
   base::ObserverList<SyncEncryptionHandler::Observer>::Unchecked observers_;
   std::vector<uint8_t> keystore_key_;
-  FakeCryptographer fake_cryptographer_;
 };
 
 }  // namespace syncer

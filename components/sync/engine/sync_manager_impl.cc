@@ -197,7 +197,9 @@ void SyncManagerImpl::Init(InitArgs* args) {
   }
 
   model_type_registry_ = std::make_unique<ModelTypeRegistry>(
-      this, args->cancelation_signal, sync_encryption_handler_);
+      this, args->cancelation_signal,
+      sync_encryption_handler_->GetKeystoreKeysHandler());
+  sync_encryption_handler_->AddObserver(model_type_registry_.get());
 
   // Build a SyncCycleContext and store the worker in it.
   DVLOG(1) << "Sync is bringing up SyncCycleContext.";
@@ -337,6 +339,9 @@ void SyncManagerImpl::ShutdownOnSyncThread() {
 
   scheduler_.reset();
   cycle_context_.reset();
+
+  if (model_type_registry_)
+    sync_encryption_handler_->RemoveObserver(model_type_registry_.get());
 
   model_type_registry_.reset();
 

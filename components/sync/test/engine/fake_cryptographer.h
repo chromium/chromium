@@ -38,6 +38,7 @@ class FakeCryptographer : public Cryptographer {
   void ClearDefaultEncryptionKey();
 
   // Cryptographer implementation.
+  std::unique_ptr<Cryptographer> Clone() const override;
   bool CanEncrypt() const override;
   bool CanDecrypt(const sync_pb::EncryptedData& encrypted) const override;
   std::string GetDefaultEncryptionKeyName() const override;

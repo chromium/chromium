@@ -115,12 +115,8 @@ class ModelTypeWorkerTest : public ::testing::Test {
   const ClientTagHash kHash2 = GenerateTagHash(kTag2);
   const ClientTagHash kHash3 = GenerateTagHash(kTag3);
 
-  ModelTypeWorkerTest()
-      : ModelTypeWorkerTest(PREFERENCES, /*is_encrypted_type=*/false) {}
-
-  ModelTypeWorkerTest(ModelType model_type, bool is_encrypted_type)
+  explicit ModelTypeWorkerTest(ModelType model_type = PREFERENCES)
       : model_type_(model_type),
-        is_encrypted_type_(is_encrypted_type),
         foreign_encryption_key_index_(0),
         update_encryption_filter_index_(0),
         mock_type_processor_(nullptr),
@@ -181,26 +177,14 @@ class ModelTypeWorkerTest : public ::testing::Test {
 
     worker_ = std::make_unique<ModelTypeWorker>(
         type, state, !state.initial_sync_done(),
-        is_encrypted_type_ ? &cryptographer_ : nullptr,
+        cryptographer_ ? cryptographer_->Clone() : nullptr,
         PassphraseType::kImplicitPassphrase, &mock_nudge_handler_,
         std::move(processor), &cancelation_signal_);
   }
 
-  // If the type isn't encrypted yet, makes the cryptographer available to the
-  // worker and marks the type as encrypted. Otherwise, just notifies a change
-  // in the cryptographer state.
-  void EnableEncryptionOrNotify() {
-    if (!worker()) {
-      // No worker to notify, just ensure |is_encrypted_type_| is true.
-      is_encrypted_type_ = true;
-      return;
-    }
-
-    if (is_encrypted_type_) {
-      worker()->OnCryptographerChange();
-    } else {
-      is_encrypted_type_ = true;
-      worker()->EnableEncryption(&cryptographer_);
+  void InitializeCryptographer() {
+    if (!cryptographer_) {
+      cryptographer_ = std::make_unique<FakeCryptographer>();
     }
   }
 
@@ -208,23 +192,32 @@ class ModelTypeWorkerTest : public ::testing::Test {
   // the cryptographer becomes unusable (no default key until the issue gets
   // resolved, via DecryptPendingKey()).
   void AddPendingKey() {
+    InitializeCryptographer();
+
     foreign_encryption_key_index_++;
-    cryptographer_.ClearDefaultEncryptionKey();
-    EnableEncryptionOrNotify();
+    cryptographer_->ClearDefaultEncryptionKey();
+
+    // Update the worker with the latest cryptographer.
+    if (worker()) {
+      worker()->UpdateCryptographer(cryptographer_->Clone());
+    }
   }
 
   // Update the local cryptographer with all relevant keys.
   void DecryptPendingKey() {
     DCHECK_NE(foreign_encryption_key_index_, 0);
+    InitializeCryptographer();
+
     std::string last_key_name;
     for (int i = 1; i <= foreign_encryption_key_index_; ++i) {
       last_key_name = GetNthKeyName(i);
-      cryptographer_.AddEncryptionKey(last_key_name);
+      cryptographer_->AddEncryptionKey(last_key_name);
     }
-    cryptographer_.SelectDefaultEncryptionKey(last_key_name);
+    cryptographer_->SelectDefaultEncryptionKey(last_key_name);
 
-    EnableEncryptionOrNotify();
+    // Update the worker with the latest cryptographer.
     if (worker()) {
+      worker()->UpdateCryptographer(cryptographer_->Clone());
       worker()->EncryptionAcceptedMaybeApplyUpdates();
     }
   }
@@ -409,23 +402,27 @@ class ModelTypeWorkerTest : public ::testing::Test {
 
   void ResetWorker() { worker_.reset(); }
 
+  // Returns the name of the encryption key in the cryptographer last passed to
+  // the CommitQueue. Returns an empty string if no cryptographer is
+  // in use. See also: DecryptPendingKey().
+  std::string GetLocalCryptographerKeyName() const {
+    if (!cryptographer_) {
+      return std::string();
+    }
+    return cryptographer_->GetDefaultEncryptionKeyName();
+  }
+
   MockModelTypeProcessor* processor() { return mock_type_processor_; }
   ModelTypeWorker* worker() { return worker_.get(); }
   SingleTypeMockServer* server() { return mock_server_.get(); }
   MockNudgeHandler* nudge_handler() { return &mock_nudge_handler_; }
   StatusController* status_controller() { return &status_controller_; }
-  std::string default_encryption_key_name() {
-    return cryptographer_.GetDefaultEncryptionKeyName();
-  }
 
  private:
   const ModelType model_type_;
 
-  FakeCryptographer cryptographer_;
-
-  // Determines whether |worker_| has access to the cryptographer or not.
-  // Can be set to true via EnableEncryptionOrNotify().
-  bool is_encrypted_type_;
+  // The cryptographer itself. Null if we're not encrypting the type.
+  std::unique_ptr<FakeCryptographer> cryptographer_;
 
   // The number of the most recent foreign encryption key known to our
   // cryptographer. Note that not all of these will be decryptable.
@@ -972,7 +969,7 @@ TEST_F(ModelTypeWorkerTest, EncryptedCommit) {
   AddPendingKey();
   DecryptPendingKey();
   ASSERT_EQ(1U, processor()->GetNumUpdateResponses());
-  EXPECT_EQ(default_encryption_key_name(),
+  EXPECT_EQ(GetLocalCryptographerKeyName(),
             processor()->GetNthUpdateState(0).encryption_key_name());
 
   // Normal commit request stuff.
@@ -1004,7 +1001,7 @@ TEST_F(ModelTypeWorkerTest, EncryptedDelete) {
   AddPendingKey();
   DecryptPendingKey();
   ASSERT_EQ(1U, processor()->GetNumUpdateResponses());
-  EXPECT_EQ(default_encryption_key_name(),
+  EXPECT_EQ(GetLocalCryptographerKeyName(),
             processor()->GetNthUpdateState(0).encryption_key_name());
 
   // Normal commit request stuff.
@@ -1153,7 +1150,7 @@ TEST_F(ModelTypeWorkerTest, InitializeWithCryptographer) {
   // possible, so that it will have the chance to re-encrypt local data if
   // necessary.
   ASSERT_EQ(1U, processor()->GetNumUpdateResponses());
-  EXPECT_EQ(default_encryption_key_name(),
+  EXPECT_EQ(GetLocalCryptographerKeyName(),
             processor()->GetNthUpdateState(0).encryption_key_name());
 }
 
@@ -1171,7 +1168,7 @@ TEST_F(ModelTypeWorkerTest, InitializeWithPendingCryptographer) {
   // Init the cryptographer, it'll push the EKN.
   DecryptPendingKey();
   ASSERT_EQ(1U, processor()->GetNumUpdateResponses());
-  EXPECT_EQ(default_encryption_key_name(),
+  EXPECT_EQ(GetLocalCryptographerKeyName(),
             processor()->GetNthUpdateState(0).encryption_key_name());
 }
 
@@ -1190,7 +1187,7 @@ TEST_F(ModelTypeWorkerTest, FirstInitializeWithCryptographer) {
   // Now perform first sync and make sure the EKN makes it.
   TriggerTypeRootUpdateFromServer();
   ASSERT_EQ(1U, processor()->GetNumUpdateResponses());
-  EXPECT_EQ(default_encryption_key_name(),
+  EXPECT_EQ(GetLocalCryptographerKeyName(),
             processor()->GetNthUpdateState(0).encryption_key_name());
 }
 
@@ -1208,7 +1205,7 @@ TEST_F(ModelTypeWorkerTest, CryptographerDuringInitialization) {
   // Now perform first sync and make sure the EKN makes it.
   TriggerTypeRootUpdateFromServer();
   ASSERT_EQ(1U, processor()->GetNumUpdateResponses());
-  EXPECT_EQ(default_encryption_key_name(),
+  EXPECT_EQ(GetLocalCryptographerKeyName(),
             processor()->GetNthUpdateState(0).encryption_key_name());
 }
 
@@ -1236,7 +1233,7 @@ TEST_F(ModelTypeWorkerTest, ReceiveUndecryptableEntries) {
   const UpdateResponseData& update = processor()->GetUpdateResponse(kHash1);
   EXPECT_EQ(kTag1, update.entity.specifics.preference().name());
   EXPECT_EQ(kValue1, update.entity.specifics.preference().value());
-  EXPECT_EQ(default_encryption_key_name(), update.encryption_key_name);
+  EXPECT_EQ(GetLocalCryptographerKeyName(), update.encryption_key_name);
 }
 
 TEST_F(ModelTypeWorkerTest, OverwriteUndecryptableUpdateWithDecryptableOne) {
@@ -1301,10 +1298,9 @@ TEST_F(ModelTypeWorkerTest, BlockedDueToUndecryptableDataMetrics) {
 
   // This isn't an encrypted type, so this worker has no cryptographer. Under
   // the hood however, the overall client does have a cryptographer containing
-  // key 1. That one is injected with SetFallbackCryptographerForUma().
-  std::unique_ptr<Cryptographer> cryptographer_for_uma =
-      FakeCryptographer::FromSingleDefaultKey(GetNthKeyName(1));
-  worker()->SetFallbackCryptographerForUma(cryptographer_for_uma.get());
+  // key 1. That one is injected with UpdateFallbackCryptographerForUma().
+  worker()->UpdateFallbackCryptographerForUma(
+      FakeCryptographer::FromSingleDefaultKey(GetNthKeyName(1)));
 
   // Send an update encrypted with key 1 and another encrypted with an unknown
   // key 2.
@@ -1326,9 +1322,6 @@ TEST_F(ModelTypeWorkerTest, BlockedDueToUndecryptableDataMetrics) {
   histogram_tester.ExpectUniqueSample(
       "Sync.ModelTypeBlockedDueToUndecryptableUpdate",
       ModelTypeHistogramValue(worker()->GetModelType()), 1);
-
-  // The worker must not outlive |cryptographer_for_uma|.
-  ResetWorker();
 }
 
 TEST_F(ModelTypeWorkerTest, TimeUntilEncryptionKeyFoundMetric) {
@@ -1881,8 +1874,9 @@ class ModelTypeWorkerPasswordsTest : public ModelTypeWorkerTest {
  protected:
   const std::string kPassword = "SomePassword";
 
-  ModelTypeWorkerPasswordsTest()
-      : ModelTypeWorkerTest(PASSWORDS, /*is_encrypted_type=*/true) {}
+  ModelTypeWorkerPasswordsTest() : ModelTypeWorkerTest(PASSWORDS) {
+    InitializeCryptographer();
+  }
 };
 
 // Similar to EncryptedCommit but tests PASSWORDS specifically, which use a
@@ -1896,7 +1890,7 @@ TEST_F(ModelTypeWorkerPasswordsTest, PasswordCommit) {
   AddPendingKey();
   DecryptPendingKey();
   ASSERT_EQ(1U, processor()->GetNumUpdateResponses());
-  EXPECT_EQ(default_encryption_key_name(),
+  EXPECT_EQ(GetLocalCryptographerKeyName(),
             processor()->GetNthUpdateState(0).encryption_key_name());
 
   EntitySpecifics specifics;
@@ -2071,8 +2065,7 @@ TEST_F(ModelTypeWorkerPasswordsTest, ReceiveCorruptedPasswordEntities) {
 // to test some special encryption requirements for BOOKMARKS.
 class ModelTypeWorkerBookmarksTest : public ModelTypeWorkerTest {
  protected:
-  ModelTypeWorkerBookmarksTest()
-      : ModelTypeWorkerTest(BOOKMARKS, /*is_encrypted_type=*/false) {}
+  ModelTypeWorkerBookmarksTest() : ModelTypeWorkerTest(BOOKMARKS) {}
 };
 
 TEST_F(ModelTypeWorkerBookmarksTest, CanDecryptUpdateWithMissingBookmarkGUID) {

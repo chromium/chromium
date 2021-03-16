@@ -51,19 +51,14 @@ void CommitQueueProxy::NudgeForCommit() {
 
 }  // namespace
 
-ModelTypeRegistry::ModelTypeRegistry(
-    NudgeHandler* nudge_handler,
-    CancelationSignal* cancelation_signal,
-    SyncEncryptionHandler* sync_encryption_handler)
+ModelTypeRegistry::ModelTypeRegistry(NudgeHandler* nudge_handler,
+                                     CancelationSignal* cancelation_signal,
+                                     KeystoreKeysHandler* keystore_keys_handler)
     : nudge_handler_(nudge_handler),
       cancelation_signal_(cancelation_signal),
-      sync_encryption_handler_(sync_encryption_handler) {
-  sync_encryption_handler_->AddObserver(this);
-}
+      keystore_keys_handler_(keystore_keys_handler) {}
 
-ModelTypeRegistry::~ModelTypeRegistry() {
-  sync_encryption_handler_->RemoveObserver(this);
-}
+ModelTypeRegistry::~ModelTypeRegistry() = default;
 
 void ModelTypeRegistry::ConnectDataType(
     ModelType type,
@@ -80,16 +75,22 @@ void ModelTypeRegistry::ConnectDataType(
   bool initial_sync_done =
       activation_response->model_type_state.initial_sync_done();
 
+  DCHECK(!encrypted_types_.Has(type) || cryptographer_)
+      << "Connecting encrypted type " << ModelTypeToString(type)
+      << " but the cryptographer isn't set";
+
   auto worker = std::make_unique<ModelTypeWorker>(
       type, activation_response->model_type_state,
       /*trigger_initial_sync=*/!initial_sync_done,
-      encrypted_types_.Has(type) ? sync_encryption_handler_->GetCryptographer()
-                                 : nullptr,
+      encrypted_types_.Has(type) ? cryptographer_->Clone() : nullptr,
       passphrase_type_, nudge_handler_,
       std::move(activation_response->type_processor), cancelation_signal_);
 
-  worker->SetFallbackCryptographerForUma(
-      sync_encryption_handler_->GetCryptographer());
+  // If the cryptographer wasn't set yet, it will be informed to this |worker|
+  // as soon as it's set in OnCryptographerStateChanged().
+  if (cryptographer_) {
+    worker->UpdateFallbackCryptographerForUma(cryptographer_->Clone());
+  }
 
   // Save a raw pointer and add the worker to our structures.
   ModelTypeWorker* worker_ptr = worker.get();
@@ -170,7 +171,7 @@ CommitContributorMap* ModelTypeRegistry::commit_contributor_map() {
 }
 
 KeystoreKeysHandler* ModelTypeRegistry::keystore_keys_handler() {
-  return sync_encryption_handler_->GetKeystoreKeysHandler();
+  return keystore_keys_handler_;
 }
 
 bool ModelTypeRegistry::HasUnsyncedItems() const {
@@ -216,24 +217,22 @@ void ModelTypeRegistry::OnBootstrapTokenUpdated(
 
 void ModelTypeRegistry::OnEncryptedTypesChanged(ModelTypeSet encrypted_types,
                                                 bool encrypt_everything) {
-  DCHECK(encrypted_types.HasAll(encrypted_types_))
-      << "ModelTypeRegistry doesn't support removing encrypted types.";
-  for (const auto& worker : connected_model_type_workers_) {
-    if (encrypted_types.Has(worker->GetModelType()) &&
-        !encrypted_types_.Has(worker->GetModelType())) {
-      worker->EnableEncryption(sync_encryption_handler_->GetCryptographer());
-    }
-  }
+  // TODO(skym): This does not handle reducing the number of encrypted types
+  // correctly. They're removed from |encrypted_types_| but corresponding
+  // workers never have their Cryptographers removed. This probably is not a use
+  // case that currently needs to be supported, but it should be guarded against
+  // here.
   encrypted_types_ = encrypted_types;
+  UpdateCryptographerForConnectedEncryptedTypes();
 }
 
 void ModelTypeRegistry::OnCryptographerStateChanged(
     Cryptographer* cryptographer,
     bool has_pending_keys) {
+  cryptographer_ = cryptographer->Clone();
+  UpdateCryptographerForConnectedEncryptedTypes();
   for (const auto& worker : connected_model_type_workers_) {
-    if (encrypted_types_.Has(worker->GetModelType())) {
-      worker->OnCryptographerChange();
-    }
+    worker->UpdateFallbackCryptographerForUma(cryptographer_->Clone());
   }
 }
 
@@ -243,6 +242,17 @@ void ModelTypeRegistry::OnPassphraseTypeChanged(PassphraseType type,
   for (const auto& worker : connected_model_type_workers_) {
     if (encrypted_types_.Has(worker->GetModelType())) {
       worker->UpdatePassphraseType(type);
+    }
+  }
+}
+
+void ModelTypeRegistry::UpdateCryptographerForConnectedEncryptedTypes() {
+  for (const auto& worker : connected_model_type_workers_) {
+    if (encrypted_types_.Has(worker->GetModelType())) {
+      DCHECK(cryptographer_)
+          << ModelTypeToString(worker->GetModelType())
+          << " is a connected encrypted type but there's no cryptographer";
+      worker->UpdateCryptographer(cryptographer_->Clone());
     }
   }
 }

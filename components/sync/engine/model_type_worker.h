@@ -60,13 +60,10 @@ class ModelTypeWorker : public UpdateHandler,
   // Public for testing.
   enum DecryptionStatus { SUCCESS, DECRYPTION_PENDING, FAILED_TO_DECRYPT };
 
-  // |nudge_handler| and |cancelation_signal| must outlive this object.
-  // |cryptographer| must either outlive this object or be null. Passing a
-  // a null cryptographer means this type won't use encryption.
   ModelTypeWorker(ModelType type,
                   const sync_pb::ModelTypeState& initial_state,
                   bool trigger_initial_sync,
-                  Cryptographer* cryptographer,
+                  std::unique_ptr<Cryptographer> cryptographer,
                   PassphraseType passphrase_type,
                   NudgeHandler* nudge_handler,
                   std::unique_ptr<ModelTypeProcessor> model_type_processor,
@@ -84,22 +81,12 @@ class ModelTypeWorker : public UpdateHandler,
 
   ModelType GetModelType() const;
 
-  // Will start using |cryptographer| to encrypt/decrypt data. Must be called at
-  // most once, if the type transitioned from non-encrypted to encrypted.
-  // |cryptographer| must outlive this object.
-  void EnableEncryption(Cryptographer* cryptographer);
-
-  // Always called in production, may not be called in tests. Causes a worker
-  // without cryptographer to log whether |fallback_cryptographer_for_uma| would
-  // have been able to decrypt incoming encrypted updates.
-  // |fallback_cryptographer_for_uma| must outlive this object.
-  void SetFallbackCryptographerForUma(
-      Cryptographer* fallback_cryptographer_for_uma);
-
-  // Must only be called if there is a cryptographer. Called on every change to
-  // its state.
-  void OnCryptographerChange();
-
+  void UpdateCryptographer(std::unique_ptr<Cryptographer> cryptographer);
+  // Causes a worker without cryptographer to record whether
+  // |fallback_cryptographer_for_uma| would have been able to decrypt incoming
+  // encrypted updates. |fallback_cryptographer_for_uma| must be non-null.
+  void UpdateFallbackCryptographerForUma(
+      std::unique_ptr<Cryptographer> fallback_cryptographer_for_uma);
   void UpdatePassphraseType(PassphraseType type);
 
   // UpdateHandler implementation.
@@ -222,23 +209,24 @@ class ModelTypeWorker : public UpdateHandler,
   // Pointer to the ModelTypeProcessor associated with this worker. Never null.
   std::unique_ptr<ModelTypeProcessor> model_type_processor_;
 
-  // Initialized on construction or later via InitCryptographer(). Null as long
-  // as encryption is not enabled for this type.
-  Cryptographer* cryptographer_ = nullptr;
+  // A private copy of the most recent cryptographer known to sync.
+  // Initialized at construction time and updated with UpdateCryptographer().
+  // null if encryption is not enabled for this type.
+  std::unique_ptr<Cryptographer> cryptographer_;
 
   // Used to investigate an issue where the worker receives encrypted updates
   // despite not having a |cryptographer_| (|type_| is not an encrypted type).
   // In those cases, this will eventually hold the underlying cryptographer used
   // by other types. The worker then records whether that cryptographer is able
   // to decrypt the updates. See crbug.com/1178418.
-  Cryptographer* fallback_cryptographer_for_uma_ = nullptr;
+  std::unique_ptr<Cryptographer> fallback_cryptographer_for_uma_;
 
   // A private copy of the most recent passphrase type. Initialized at
   // construction time and updated with UpdatePassphraseType().
   PassphraseType passphrase_type_;
 
   // Interface used to access and send nudges to the sync scheduler. Not owned.
-  NudgeHandler* const nudge_handler_;
+  NudgeHandler* nudge_handler_;
 
   // A map of sync entities, keyed by server_id. Holds updates encrypted with
   // pending keys. Entries are stored in a map for de-duplication (applying only
@@ -270,7 +258,7 @@ class ModelTypeWorker : public UpdateHandler,
 
   // Cancellation signal is used to cancel blocking operation on engine
   // shutdown.
-  CancelationSignal* const cancelation_signal_;
+  CancelationSignal* cancelation_signal_;
 
   SEQUENCE_CHECKER(sequence_checker_);
 
