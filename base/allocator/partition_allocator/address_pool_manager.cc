@@ -353,7 +353,8 @@ void AddressPoolManager::MarkUnused(pool_handle handle,
                                     size_t length) {
   AutoLock guard(AddressPoolManagerBitmap::GetLock());
   // Currently, address regions allocated by kNormalBucketHandle are never freed
-  // in PartitionAlloc. Thus we have LIKELY for kDirectMapHandle
+  // in PartitionAlloc, except on error paths. Thus we have LIKELY for
+  // kDirectMapHandle
   if (LIKELY(handle == kDirectMapHandle)) {
     ResetBitmap(AddressPoolManagerBitmap::directmap_bits_,
                 address / PageAllocationGranularity(),

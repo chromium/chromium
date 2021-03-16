@@ -123,6 +123,16 @@ void RecommitSystemPagesInternal(
   SetSystemPagesAccess(address, length, accessibility);
 }
 
+bool TryRecommitSystemPagesInternal(
+    void* address,
+    size_t length,
+    PageAccessibilityConfiguration accessibility,
+    PageAccessibilityDisposition accessibility_disposition) {
+  // Ignore accessibility_disposition, because decommitting is equivalent to
+  // making pages inaccessible.
+  return TrySetSystemPagesAccess(address, length, accessibility);
+}
+
 void DiscardSystemPagesInternal(void* address, size_t length) {
   // On Windows, discarded pages are not returned to the system immediately and
   // not guaranteed to be zeroed when returned to the application.

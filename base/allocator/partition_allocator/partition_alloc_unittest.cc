@@ -64,11 +64,11 @@ bool SetAddressSpaceLimit() {
   // https://crbug.com/674665.
   const size_t kAddressSpaceLimit = static_cast<size_t>(6144) * 1024 * 1024;
   struct rlimit limit;
-  if (getrlimit(RLIMIT_AS, &limit) != 0)
+  if (getrlimit(RLIMIT_DATA, &limit) != 0)
     return false;
   if (limit.rlim_cur == RLIM_INFINITY || limit.rlim_cur > kAddressSpaceLimit) {
     limit.rlim_cur = kAddressSpaceLimit;
-    if (setrlimit(RLIMIT_AS, &limit) != 0)
+    if (setrlimit(RLIMIT_DATA, &limit) != 0)
       return false;
   }
   return true;
@@ -82,10 +82,10 @@ bool ClearAddressSpaceLimit() {
   return true;
 #elif defined(OS_POSIX)
   struct rlimit limit;
-  if (getrlimit(RLIMIT_AS, &limit) != 0)
+  if (getrlimit(RLIMIT_DATA, &limit) != 0)
     return false;
   limit.rlim_cur = limit.rlim_max;
-  if (setrlimit(RLIMIT_AS, &limit) != 0)
+  if (setrlimit(RLIMIT_DATA, &limit) != 0)
     return false;
   return true;
 #else
@@ -1653,29 +1653,28 @@ TEST_F(PartitionAllocTest, LostFreeSlotSpansBug) {
 // Performing them as death tests causes them to be forked into their own
 // process, so they won't pollute other tests.
 //
-// Disabled tests as they are (1) slow, and (2) don't work. They are slow
-// because with DCHECK_IS_ON() they memset() multiple tens of GiB of memory per
-// test, and they don't work because some EXPECT_*() fail, but since they are
-// wrapped into EXPECT_DEATH(), this is not reported.
-// See crbug.com/1168168 for details.
-TEST_F(PartitionAllocDeathTest, DISABLED_RepeatedAllocReturnNullDirect) {
+// These tests are *very* slow when DCHECK_IS_ON(), because they memset() many
+// GiB of data (see crbug.com/1168168).
+// TODO(lizeb): make these tests faster.
+TEST_F(PartitionAllocDeathTest, RepeatedAllocReturnNullDirect) {
   // A direct-mapped allocation size.
   EXPECT_DEATH(DoReturnNullTest(32 * 1024 * 1024, kPartitionAllocFlags),
                "DoReturnNullTest");
 }
 
 // Repeating above test with Realloc
-TEST_F(PartitionAllocDeathTest, DISABLED_RepeatedReallocReturnNullDirect) {
+TEST_F(PartitionAllocDeathTest, RepeatedReallocReturnNullDirect) {
   EXPECT_DEATH(DoReturnNullTest(32 * 1024 * 1024, kPartitionReallocFlags),
                "DoReturnNullTest");
 }
 
 // Repeating above test with TryRealloc
-TEST_F(PartitionAllocDeathTest, DISABLED_RepeatedTryReallocReturnNullDirect) {
+TEST_F(PartitionAllocDeathTest, RepeatedTryReallocReturnNullDirect) {
   EXPECT_DEATH(DoReturnNullTest(32 * 1024 * 1024, kPartitionRootTryRealloc),
                "DoReturnNullTest");
 }
 
+// See crbug.com/1187404 to re-enable the tests below.
 // Test "return null" with a 512 kB block size.
 TEST_F(PartitionAllocDeathTest, DISABLED_RepeatedAllocReturnNull) {
   // A single-slot but non-direct-mapped allocation size.

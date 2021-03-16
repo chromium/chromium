@@ -227,6 +227,20 @@ void RecommitSystemPages(
                               accessibility_disposition);
 }
 
+bool TryRecommitSystemPages(
+    void* address,
+    size_t length,
+    PageAccessibilityConfiguration accessibility,
+    PageAccessibilityDisposition accessibility_disposition) {
+  // Duplicated because we want errors to be reported at a lower level in the
+  // crashing case.
+  PA_DCHECK(!(reinterpret_cast<uintptr_t>(address) & SystemPageOffsetMask()));
+  PA_DCHECK(!(length & SystemPageOffsetMask()));
+  PA_DCHECK(accessibility != PageInaccessible);
+  return TryRecommitSystemPagesInternal(address, length, accessibility,
+                                        accessibility_disposition);
+}
+
 void DiscardSystemPages(void* address, size_t length) {
   PA_DCHECK(!(length & SystemPageOffsetMask()));
   DiscardSystemPagesInternal(address, length);

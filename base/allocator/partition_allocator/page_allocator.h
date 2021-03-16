@@ -161,6 +161,13 @@ BASE_EXPORT void RecommitSystemPages(
     PageAccessibilityConfiguration page_accessibility,
     PageAccessibilityDisposition accessibility_disposition);
 
+// Like RecommitSystemPages(), but returns false instead of crashing.
+BASE_EXPORT bool TryRecommitSystemPages(
+    void* address,
+    size_t length,
+    PageAccessibilityConfiguration page_accessibility,
+    PageAccessibilityDisposition accessibility_disposition) WARN_UNUSED_RESULT;
+
 // Discard one or more system pages starting at |address| and continuing for
 // |length| bytes. |length| must be a multiple of |SystemPageSize()|.
 //

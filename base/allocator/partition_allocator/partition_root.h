@@ -273,6 +273,11 @@ struct BASE_EXPORT PartitionRoot {
       size_t length,
       PageAccessibilityDisposition accessibility_disposition)
       EXCLUSIVE_LOCKS_REQUIRED(lock_);
+  ALWAYS_INLINE bool TryRecommitSystemPagesForData(
+      void* address,
+      size_t length,
+      PageAccessibilityDisposition accessibility_disposition)
+      EXCLUSIVE_LOCKS_REQUIRED(lock_);
 
   [[noreturn]] NOINLINE void OutOfMemory(size_t size);
 
@@ -1044,6 +1049,19 @@ ALWAYS_INLINE void PartitionRoot<thread_safe>::RecommitSystemPagesForData(
   RecommitSystemPages(address, length, PageReadWrite,
                       accessibility_disposition);
   IncreaseCommittedPages(length);
+}
+
+template <bool thread_safe>
+ALWAYS_INLINE bool PartitionRoot<thread_safe>::TryRecommitSystemPagesForData(
+    void* address,
+    size_t length,
+    PageAccessibilityDisposition accessibility_disposition) {
+  bool ok = TryRecommitSystemPages(address, length, PageReadWrite,
+                                   accessibility_disposition);
+  if (ok)
+    IncreaseCommittedPages(length);
+
+  return ok;
 }
 
 // static

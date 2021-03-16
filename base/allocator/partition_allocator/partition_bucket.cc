@@ -39,7 +39,8 @@ PartitionDirectMap(PartitionRoot<thread_safe>* root, int flags, size_t raw_size)
 
   char* ptr = nullptr;
   // Allocate from GigaCage, if enabled.
-  if (features::IsPartitionAllocGigaCageEnabled()) {
+  bool with_giga_cage = features::IsPartitionAllocGigaCageEnabled();
+  if (with_giga_cage) {
     ptr = internal::AddressPoolManager::GetInstance()->Reserve(
         GetDirectMapPool(), nullptr, reserved_size);
   } else {
@@ -56,7 +57,26 @@ PartitionDirectMap(PartitionRoot<thread_safe>* root, int flags, size_t raw_size)
   char* slot = ptr + PartitionPageSize();
   RecommitSystemPages(ptr + SystemPageSize(), SystemPageSize(), PageReadWrite,
                       PageUpdatePermissions);
-  root->RecommitSystemPagesForData(slot, slot_size, PageUpdatePermissions);
+  // It is typically possible to map a large range of inaccessible pages, and
+  // this is leveraged in multiple places, including the GigaCage. However, this
+  // doesn't mean that we can commit all this memory.  For the vast majority of
+  // allocations, this just means that we crash in a slightly different places,
+  // but for callers ready to handle failures, we have to return nullptr.
+  // See crbug.com/1187404.
+  //
+  // Note that we didn't check above, because if we cannot even commit a single
+  // page, then this is likely hopeless anyway, and we will crash very soon.
+  bool ok = root->TryRecommitSystemPagesForData(slot, slot_size,
+                                                PageUpdatePermissions);
+  if (!ok) {
+    if (with_giga_cage) {
+      internal::AddressPoolManager::GetInstance()->UnreserveAndDecommit(
+          GetDirectMapPool(), ptr, reserved_size);
+    } else {
+      FreePages(ptr, reserved_size);
+    }
+    return nullptr;
+  }
 
   auto* metadata = reinterpret_cast<PartitionDirectMapMetadata<thread_safe>*>(
       PartitionSuperPageToMetadataArea(ptr));
@@ -408,6 +428,7 @@ ALWAYS_INLINE char* PartitionBucket<thread_safe>::ProvisionMoreSlotsAndAllocOne(
   // knowledge which pages have been committed before (it doesn't matter on
   // Windows anyway).
   if (root->use_lazy_commit) {
+    // TODO(lizeb): Handle commit failure.
     root->RecommitSystemPagesForData(commit_start, commit_end - commit_start,
                                      PageUpdatePermissions);
   }
@@ -612,6 +633,7 @@ void* PartitionBucket<thread_safe>::SlowPathAlloc(
         // optimization. Otherwise fall back to PageUpdatePermissions (slower).
         // (Insider knowledge: as of writing this comment, lazy commit is only
         // used on Windows and this flag is ignored there, thus no perf impact.)
+        // TODO(lizeb): Handle commit failure.
         root->RecommitSystemPagesForData(
             addr, new_slot_span->bucket->get_bytes_per_span(),
             root->never_used_lazy_commit ? PageKeepPermissionsIfPossible
