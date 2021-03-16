@@ -957,11 +957,17 @@ static_library("extensions") {
     sources += [
       "api/enterprise_device_attributes/enterprise_device_attributes_api.h",
       "api/enterprise_platform_keys/enterprise_platform_keys_api.h",
+      "api/messaging/native_message_built_in_host.cc",
+      "api/messaging/native_message_built_in_host.h",
+      "api/messaging/native_message_echo_host.cc",
+      "api/messaging/native_message_echo_host.h",
       "api/platform_keys/platform_keys_api.h",
     ]
     deps += [
       "//chromeos/crosapi/cpp",
       "//chromeos/crosapi/mojom",
+      "//remoting/host",
+      "//remoting/host/it2me:chrome_os_host",
     ]
     if (is_chromeos_lacros) {
       sources += [
@@ -969,11 +975,23 @@ static_library("extensions") {
         "api/enterprise_device_attributes/enterprise_device_attributes_api_lacros.h",
         "api/enterprise_platform_keys/enterprise_platform_keys_api_lacros.cc",
         "api/enterprise_platform_keys/enterprise_platform_keys_api_lacros.h",
+        "api/messaging/native_message_host_lacros.cc",
         "api/platform_keys/platform_keys_api_lacros.cc",
         "api/platform_keys/platform_keys_api_lacros.h",
       ]
       deps += [ "//chromeos/lacros" ]
+    } else {
+      sources += [ "api/messaging/native_message_host_chromeos.cc" ]
     }
+  } else {
+    sources += [
+      "api/messaging/native_message_process_host.cc",
+      "api/messaging/native_message_process_host.h",
+      "api/messaging/native_messaging_launch_from_native.cc",
+      "api/messaging/native_messaging_launch_from_native.h",
+      "api/messaging/native_process_launcher.cc",
+      "api/messaging/native_process_launcher.h",
+    ]
   }
 
   if (is_chromeos_ash) {
@@ -1006,7 +1024,6 @@ static_library("extensions") {
       "api/input_ime/input_ime_event_router_base.h",
       "api/media_perception_private/media_perception_api_delegate_chromeos.cc",
       "api/media_perception_private/media_perception_api_delegate_chromeos.h",
-      "api/messaging/native_message_host_chromeos.cc",
       "api/networking_cast_private/chrome_networking_cast_private_delegate.cc",
       "api/networking_cast_private/chrome_networking_cast_private_delegate.h",
       "api/networking_cast_private/networking_cast_private_api.cc",
@@ -1094,9 +1111,6 @@ static_library("extensions") {
       "//components/user_manager",
       "//media/capture:capture_lib",
       "//media/capture/video/chromeos/mojom:cros_camera",
-      "//remoting/base",
-      "//remoting/host",
-      "//remoting/host/it2me:chrome_os_host",
       "//third_party/protobuf:protobuf_lite",
       "//ui/base/ime/chromeos",
       "//ui/chromeos",
@@ -1125,12 +1139,6 @@ static_library("extensions") {
       "api/enterprise_reporting_private/keychain_data_helper_mac.h",
       "api/enterprise_reporting_private/keychain_data_helper_mac.mm",
       "api/image_writer_private/operation_nonchromeos.cc",
-      "api/messaging/native_message_process_host.cc",
-      "api/messaging/native_message_process_host.h",
-      "api/messaging/native_messaging_launch_from_native.cc",
-      "api/messaging/native_messaging_launch_from_native.h",
-      "api/messaging/native_process_launcher.cc",
-      "api/messaging/native_process_launcher.h",
       "api/tabs/tabs_util.cc",
       "chrome_kiosk_delegate.cc",
       "default_apps.cc",

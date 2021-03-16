@@ -83,7 +83,7 @@ IN_PROC_BROWSER_TEST_P(NativeMessagingApiTest,
   ASSERT_TRUE(RunTest("native_messaging_connect")) << message_;
 }
 
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_CHROMEOS_ASH) && !BUILDFLAG(IS_CHROMEOS_LACROS)
 
 class TestProcessManagerObserver : public ProcessManagerObserver {
  public:
@@ -437,7 +437,7 @@ IN_PROC_BROWSER_TEST_F(NativeMessagingLaunchBackgroundModeApiTest,
   ASSERT_NO_FATAL_FAILURE(TestKeepAliveStateObserver().WaitForNoKeepAlive());
 }
 
-#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // !BUILDFLAG(IS_CHROMEOS_ASH) && !BUILDFLAG(IS_CHROMEOS_LACROS)
 
 }  // namespace
 }  // namespace extensions
