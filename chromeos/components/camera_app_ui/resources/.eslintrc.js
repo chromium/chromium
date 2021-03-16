@@ -373,7 +373,6 @@ module.exports = {
   'globals': {
     'arc': 'readable',
     'chromeosCamera': 'readable',
-    'blink': 'readable',
     'cros': 'readable',
     'trustedTypes': 'readable',
     'BarcodeDetector': 'readable',

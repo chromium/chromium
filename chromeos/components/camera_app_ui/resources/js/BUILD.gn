@@ -58,7 +58,6 @@ js_library("compile_resources") {
     "//components/arc/mojom:camera_intent_js_library_for_compile",
     "//media/capture/mojom:image_capture_js_library_for_compile",
     "//media/capture/video/chromeos/mojom:cros_camera_js_library_for_compile",
-    "//third_party/blink/public/mojom:mojom_platform_js_library_for_compile",
   ]
   externs_list = [
     "$externs_path/chrome_extensions.js",

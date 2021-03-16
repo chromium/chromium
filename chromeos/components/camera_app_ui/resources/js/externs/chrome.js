@@ -13,6 +13,16 @@
 window.loadTimeData;
 
 /**
+ * It is available since we enabled IdleDetection in origin trials map of CCA.
+ * @typedef {{
+ *   addEventListener: function(string, function()),
+ *   screenState: string,
+ *   start: function(): !Promise<void>,
+ * }}
+ */
+window.IdleDetector;
+
+/**
  * @typedef {{
  *   getDirectory: function(): !Promise<!FileSystemDirectoryHandle>,
  * }}

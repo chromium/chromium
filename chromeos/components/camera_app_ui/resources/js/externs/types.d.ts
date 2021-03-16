@@ -9,7 +9,6 @@ type MojomNamespace = {
 };
 
 declare var arc: MojomNamespace;
-declare var blink: MojomNamespace;
 declare var chromeosCamera: MojomNamespace;
 declare var cros: MojomNamespace;
 

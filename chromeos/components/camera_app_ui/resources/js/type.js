@@ -212,6 +212,7 @@ export let ErrorInfo;
  */
 export const ErrorType = {
   BROKEN_THUMBNAIL: 'broken-thumbnail',
+  IDLE_DETECTOR_FAILURE: 'idle-detector-failure',
   PRELOAD_IMAGE_FAILURE: 'preload-image-failure',
   SET_FPS_RANGE_FAILURE: 'set-fps-range-failure',
   UNCAUGHT_PROMISE: 'uncaught-promise',

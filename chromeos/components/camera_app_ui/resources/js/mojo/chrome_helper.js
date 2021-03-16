@@ -229,31 +229,6 @@ export class ChromeHelper {
   }
 
   /**
-   * Adds listener for screen locked event.
-   * @param {function(boolean): void} callback Callback for screen locked status
-   *     changed. Called with the latest status of whether screen is locked.
-   */
-  async addOnLockListener(callback) {
-    const monitorCallbackRouter = new blink.mojom.IdleMonitorCallbackRouter();
-    closeWhenUnload(monitorCallbackRouter);
-    monitorCallbackRouter.update.addListener((newState) => {
-      callback(newState.screen === blink.mojom.ScreenIdleState.kLocked);
-    });
-
-    const idleManager = blink.mojom.IdleManager.getRemote();
-    closeWhenUnload(idleManager);
-    // Set a large threshold since we don't care about user idle. Note that
-    // ESLint does not yet seem to know about BigInt, so it complains about an
-    // uppercase "function" being used as something other than a constructor,
-    // and about BigInt not existing.
-    // eslint-disable-next-line new-cap, no-undef
-    const threshold = {microseconds: BigInt(86400000000)};
-    const {state} = await idleManager.addMonitor(
-        threshold, monitorCallbackRouter.$.bindNewPipeAndPassRemote());
-    callback(state.screen === blink.mojom.ScreenIdleState.kLocked);
-  }
-
-  /**
    * Checks if the logging consent option is enabled.
    * @return {!Promise<boolean>}
    */

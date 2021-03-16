@@ -14,6 +14,7 @@ import {
 // eslint-disable-next-line no-unused-vars
 import {DeviceInfoUpdater} from '../device/device_info_updater.js';
 import * as dom from '../dom.js';
+import * as error from '../error.js';
 import * as metrics from '../metrics.js';
 import * as localStorage from '../models/local_storage.js';
 // eslint-disable-next-line no-unused-vars
@@ -26,6 +27,7 @@ import {PerfLogger} from '../perf.js';
 import * as sound from '../sound.js';
 import * as state from '../state.js';
 import * as toast from '../toast.js';
+import {ErrorLevel, ErrorType} from '../type.js';
 import {
   CanceledError,
   Facing,
@@ -278,11 +280,17 @@ export class Camera extends View {
         });
 
     // Monitor the states to stop camera when locked/minimized.
-    ChromeHelper.getInstance().addOnLockListener((isLocked) => {
-      this.locked_ = isLocked;
+    const idleDetector = new window.IdleDetector();
+    idleDetector.addEventListener('change', () => {
+      this.locked_ = idleDetector.screenState === 'locked';
       if (this.locked_) {
         this.start();
       }
+    });
+    idleDetector.start().catch((e) => {
+      error.reportError(
+          ErrorType.IDLE_DETECTOR_FAILURE, ErrorLevel.ERROR,
+          assertInstanceof(e, Error));
     });
 
     document.addEventListener('visibilitychange', () => {

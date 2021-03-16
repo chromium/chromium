@@ -133,7 +133,8 @@ base::flat_map<SystemAppType, SystemAppInfo> CreateSystemWebApps(
     }
     // We need "FileHandling" to use File Handling API to set launch directory.
     infos.at(SystemAppType::CAMERA).enabled_origin_trials =
-        OriginTrialsMap({{GetOrigin("chrome://camera-app"), {"FileHandling"}}});
+        OriginTrialsMap({{GetOrigin("chrome://camera-app"),
+                          {"FileHandling", "IdleDetection"}}});
     infos.at(SystemAppType::CAMERA).capture_navigations = true;
 
     // Minimum height +32 for top bar height.
