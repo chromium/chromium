@@ -16,3 +16,4 @@ Local Modifications:
 - Added logs
 - Introduced some helper method.
 - Add @TargetApi(Build.VERSION_CODES.Q).
+- Catch an exception thrown by ContentResolver.delete()
