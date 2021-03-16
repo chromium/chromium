@@ -33,7 +33,6 @@ class ModalDialogHostObserver;
 
 // Implements a WebContentsModalDialogHost for an ARC Custom Tab. This allows a
 // web contents modal dialog to be drawn in the ARC Custom Tab.
-// The WebContents hosted by this object must outlive it.
 class ArcCustomTabModalDialogHost
     : public content::WebContentsObserver,
       public web_modal::WebContentsModalDialogHost,
