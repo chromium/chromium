@@ -27794,6 +27794,8 @@ should be able to be added at any place in this file.
       label="For the Previews UI in the Android Omnibox feature."/>
   <suffix name="QuietNotificationPrompts"
       label="For the quiet notification prompts feature."/>
+  <suffix name="ReadingListDiscovery"
+      label="For ReadingListDiscoveryFeature feature."/>
   <suffix name="ReopenTab" label="For ReopenTab feature."/>
   <suffix name="TabGroupsDragAndDrop" label="For drop-to-merge in tab group."/>
   <suffix name="TabGroupsQuicklyComparePages"

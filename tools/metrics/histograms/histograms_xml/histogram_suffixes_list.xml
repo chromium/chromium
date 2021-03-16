@@ -8086,6 +8086,8 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
       label="In product help for the Previews UI in the Android Omnibox."/>
   <suffix name="IPH_QuietNotificationPrompts"
       label="For the quiet notification prompts feature."/>
+  <suffix name="IPH_ReadingListDiscovery"
+      label="In product help for first time a tab is added to reading list."/>
   <suffix name="IPH_ReopenTab"
       label="In product help for reopening closed tabs."/>
   <suffix name="IPH_TabGroupsDragAndDrop"
