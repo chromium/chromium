@@ -74,7 +74,7 @@ class MEDIA_EXPORT Gav1VideoDecoder : public OffloadableVideoDecoder {
 
   // Info configured in Initialize(). These are used in outputting frames.
   VideoColorSpace color_space_;
-  gfx::Size natural_size_;
+  double pixel_aspect_ratio_;
 
   DecoderState state_ = DecoderState::kUninitialized;
 
