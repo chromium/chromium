@@ -118,7 +118,7 @@ public class DownloadManagerService implements DownloadController.Observer,
     /** Generic interface for notifying external UI components about downloads and their states. */
     public interface DownloadObserver extends DownloadSharedPreferenceHelper.Observer {
         /** Called in response to {@link DownloadManagerService#getAllDownloads(OTRProfileID)}. */
-        void onAllDownloadsRetrieved(final List<DownloadItem> list, boolean isOffTheRecord);
+        void onAllDownloadsRetrieved(final List<DownloadItem> list, ProfileKey profileKey);
 
         /** Called when a download is created. */
         void onDownloadItemCreated(DownloadItem item);
@@ -127,7 +127,7 @@ public class DownloadManagerService implements DownloadController.Observer,
         void onDownloadItemUpdated(DownloadItem item);
 
         /** Called when a download has been removed. */
-        void onDownloadItemRemoved(String guid, boolean isOffTheRecord);
+        void onDownloadItemRemoved(String guid);
 
         /** Only for testing */
         default void broadcastDownloadSuccessfulForTesting(DownloadInfo downloadInfo) {}
@@ -1459,11 +1459,8 @@ public class DownloadManagerService implements DownloadController.Observer,
     // Deprecated after new download backend.
     @CalledByNative
     private void onAllDownloadsRetrieved(final List<DownloadItem> list, ProfileKey profileKey) {
-        // TODO(https://crbug.com/1099577): Pass the profileKey/profile to adapter instead of the
-        // boolean.
-        boolean isOffTheRecord = profileKey.isOffTheRecord();
         for (DownloadObserver adapter : mDownloadObservers) {
-            adapter.onAllDownloadsRetrieved(list, isOffTheRecord);
+            adapter.onAllDownloadsRetrieved(list, profileKey);
         }
         maybeShowMissingSdCardError(list);
     }
@@ -1567,8 +1564,7 @@ public class DownloadManagerService implements DownloadController.Observer,
         }
 
         for (DownloadObserver adapter : mDownloadObservers) {
-            // TODO(crbug.com/1099577): Pass OTRProfileID to support non-primary OTR profiles.
-            adapter.onDownloadItemRemoved(guid, OTRProfileID.isOffTheRecord(otrProfileID));
+            adapter.onDownloadItemRemoved(guid);
         }
     }
 

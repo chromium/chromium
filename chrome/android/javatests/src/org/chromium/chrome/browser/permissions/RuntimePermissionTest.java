@@ -23,6 +23,7 @@ import org.chromium.chrome.browser.download.DownloadManagerService.DownloadObser
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.permissions.RuntimePermissionTestUtils.RuntimePromptResponse;
 import org.chromium.chrome.browser.permissions.RuntimePermissionTestUtils.TestAndroidPermissionDelegate;
+import org.chromium.chrome.browser.profiles.ProfileKey;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.components.offline_items_collection.ContentId;
 import org.chromium.components.permissions.R;
@@ -153,11 +154,11 @@ public class RuntimePermissionTest {
         DownloadObserver observer = new DownloadObserver() {
             @Override
             public void onAllDownloadsRetrieved(
-                    final List<DownloadItem> list, boolean isOffTheRecord) {}
+                    final List<DownloadItem> list, ProfileKey profileKey) {}
             @Override
             public void onDownloadItemUpdated(DownloadItem item) {}
             @Override
-            public void onDownloadItemRemoved(String guid, boolean isOffTheRecord) {}
+            public void onDownloadItemRemoved(String guid) {}
             @Override
             public void onAddOrReplaceDownloadSharedPreferenceEntry(ContentId id) {}
 

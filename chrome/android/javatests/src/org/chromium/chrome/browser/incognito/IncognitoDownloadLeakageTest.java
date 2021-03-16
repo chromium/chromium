@@ -34,6 +34,7 @@ import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.profiles.ProfileKey;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.test.ChromeJUnit4RunnerDelegate;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
@@ -84,8 +85,8 @@ public class IncognitoDownloadLeakageTest {
             new DownloadManagerService.DownloadObserver() {
                 @Override
                 public void onAllDownloadsRetrieved(
-                        List<DownloadItem> list, boolean isOffTheRecord) {
-                    if (isOffTheRecord) {
+                        List<DownloadItem> list, ProfileKey profileKey) {
+                    if (profileKey.isOffTheRecord()) {
                         mOffTheRecordDownloadItems = new ArrayList<DownloadItem>(list);
                     } else {
                         mRegularDownloadItems = new ArrayList<DownloadItem>(list);
@@ -100,7 +101,7 @@ public class IncognitoDownloadLeakageTest {
                 public void onDownloadItemUpdated(DownloadItem item) {}
 
                 @Override
-                public void onDownloadItemRemoved(String guid, boolean isOffTheRecord) {}
+                public void onDownloadItemRemoved(String guid) {}
 
                 @Override
                 public void onAddOrReplaceDownloadSharedPreferenceEntry(ContentId id) {}

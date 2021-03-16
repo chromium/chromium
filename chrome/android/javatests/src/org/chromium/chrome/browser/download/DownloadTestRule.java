@@ -18,6 +18,7 @@ import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.base.Log;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.chrome.browser.download.items.OfflineContentAggregatorFactory;
+import org.chromium.chrome.browser.profiles.ProfileKey;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.components.offline_items_collection.ContentId;
 import org.chromium.components.offline_items_collection.OfflineContentProvider;
@@ -194,7 +195,7 @@ public class DownloadTestRule extends ChromeTabbedActivityTestRule {
     private class TestDownloadManagerServiceObserver
             implements DownloadManagerService.DownloadObserver {
         @Override
-        public void onAllDownloadsRetrieved(final List<DownloadItem> list, boolean isOffTheRecord) {
+        public void onAllDownloadsRetrieved(final List<DownloadItem> list, ProfileKey profileKey) {
             mAllDownloads = list;
         }
 
@@ -202,7 +203,7 @@ public class DownloadTestRule extends ChromeTabbedActivityTestRule {
         public void onDownloadItemCreated(DownloadItem item) {}
 
         @Override
-        public void onDownloadItemRemoved(String guid, boolean isOffTheRecord) {}
+        public void onDownloadItemRemoved(String guid) {}
 
         @Override
         public void onAddOrReplaceDownloadSharedPreferenceEntry(ContentId id) {}
