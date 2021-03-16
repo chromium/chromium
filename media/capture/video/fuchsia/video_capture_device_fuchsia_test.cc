@@ -225,6 +225,11 @@ class VideoCaptureDeviceFuchsiaTest : public testing::Test {
     device_ = device_factory_.CreateDevice(devices_info[0].descriptor);
   }
 
+  FakeCameraStream* GetDefaultCameraStream() {
+    DCHECK(!fake_device_watcher_.devices().empty());
+    return fake_device_watcher_.devices().begin()->second->stream();
+  }
+
   void StartCapturer() {
     if (!device_)
       CreateDevice();
@@ -238,14 +243,14 @@ class VideoCaptureDeviceFuchsiaTest : public testing::Test {
     client_ = client.get();
     device_->AllocateAndStart(params, std::move(client));
 
-    EXPECT_TRUE(fake_device_watcher_.stream()->WaitBuffersAllocated());
+    EXPECT_TRUE(GetDefaultCameraStream()->WaitBuffersAllocated());
   }
 
   void ProduceAndCaptureFrame() {
     const uint8_t kFrameSalt = 1;
 
     auto frame_timestamp = base::TimeTicks::Now();
-    fake_device_watcher_.stream()->ProduceFrame(frame_timestamp, kFrameSalt);
+    GetDefaultCameraStream()->ProduceFrame(frame_timestamp, kFrameSalt);
     client_->WaitFrame();
 
     ASSERT_EQ(client_->received_frames().size(), 1U);
@@ -279,7 +284,7 @@ TEST_F(VideoCaptureDeviceFuchsiaTest, SendFrame) {
 // Verifies that VideoCaptureDevice can recover from failed Sync() on the sysmem
 // buffer collection.
 TEST_F(VideoCaptureDeviceFuchsiaTest, FailBufferCollectionSync) {
-  fake_device_watcher_.stream()->SetFirstBufferCollectionFailMode(
+  GetDefaultCameraStream()->SetFirstBufferCollectionFailMode(
       FakeCameraStream::SysmemFailMode::kFailSync);
 
   StartCapturer();
@@ -289,7 +294,7 @@ TEST_F(VideoCaptureDeviceFuchsiaTest, FailBufferCollectionSync) {
 // Verifies that VideoCaptureDevice can recover from sysmem buffer allocation
 // failures..
 TEST_F(VideoCaptureDeviceFuchsiaTest, FailBufferCollectionAllocation) {
-  fake_device_watcher_.stream()->SetFirstBufferCollectionFailMode(
+  GetDefaultCameraStream()->SetFirstBufferCollectionFailMode(
       FakeCameraStream::SysmemFailMode::kFailAllocation);
 
   StartCapturer();
@@ -299,16 +304,18 @@ TEST_F(VideoCaptureDeviceFuchsiaTest, FailBufferCollectionAllocation) {
 TEST_F(VideoCaptureDeviceFuchsiaTest, MultipleFrames) {
   StartCapturer();
 
-  EXPECT_TRUE(fake_device_watcher_.stream()->WaitBuffersAllocated());
+  FakeCameraStream* stream = GetDefaultCameraStream();
+
+  EXPECT_TRUE(stream->WaitBuffersAllocated());
 
   auto start_timestamp = base::TimeTicks::Now();
 
   for (size_t i = 0; i < 10; ++i) {
-    ASSERT_TRUE(fake_device_watcher_.stream()->WaitFreeBuffer());
+    ASSERT_TRUE(stream->WaitFreeBuffer());
 
     auto frame_timestamp =
         start_timestamp + base::TimeDelta::FromMilliseconds(i * 16);
-    fake_device_watcher_.stream()->ProduceFrame(frame_timestamp, i);
+    stream->ProduceFrame(frame_timestamp, i);
     client_->WaitFrame();
 
     ASSERT_EQ(client_->received_frames().size(), i + 1);
@@ -320,11 +327,13 @@ TEST_F(VideoCaptureDeviceFuchsiaTest, MultipleFrames) {
 
 TEST_F(VideoCaptureDeviceFuchsiaTest, FrameRotation) {
   const gfx::Size kResolution(4, 2);
-  fake_device_watcher_.stream()->SetFakeResolution(kResolution);
+
+  FakeCameraStream* stream = GetDefaultCameraStream();
+  stream->SetFakeResolution(kResolution);
 
   StartCapturer();
 
-  EXPECT_TRUE(fake_device_watcher_.stream()->WaitBuffersAllocated());
+  EXPECT_TRUE(stream->WaitBuffersAllocated());
 
   for (int i = static_cast<int>(fuchsia::camera3::Orientation::UP);
        i <= static_cast<int>(fuchsia::camera3::Orientation::RIGHT_FLIPPED);
@@ -333,9 +342,9 @@ TEST_F(VideoCaptureDeviceFuchsiaTest, FrameRotation) {
 
     auto orientation = static_cast<fuchsia::camera3::Orientation>(i);
 
-    ASSERT_TRUE(fake_device_watcher_.stream()->WaitFreeBuffer());
-    fake_device_watcher_.stream()->SetFakeOrientation(orientation);
-    fake_device_watcher_.stream()->ProduceFrame(base::TimeTicks::Now(), i);
+    ASSERT_TRUE(stream->WaitFreeBuffer());
+    stream->SetFakeOrientation(orientation);
+    stream->ProduceFrame(base::TimeTicks::Now(), i);
     client_->WaitFrame();
 
     gfx::Size expected_size = kResolution;
@@ -350,12 +359,13 @@ TEST_F(VideoCaptureDeviceFuchsiaTest, FrameRotation) {
 }
 
 TEST_F(VideoCaptureDeviceFuchsiaTest, FrameDimensionsNotDivisibleBy2) {
+  FakeCameraStream* stream = GetDefaultCameraStream();
   const gfx::Size kOddResolution(21, 7);
-  fake_device_watcher_.stream()->SetFakeResolution(kOddResolution);
+  stream->SetFakeResolution(kOddResolution);
 
   StartCapturer();
 
-  fake_device_watcher_.stream()->ProduceFrame(base::TimeTicks::Now(), 1);
+  stream->ProduceFrame(base::TimeTicks::Now(), 1);
   client_->WaitFrame();
 
   ASSERT_EQ(client_->received_frames().size(), 1U);
@@ -366,14 +376,15 @@ TEST_F(VideoCaptureDeviceFuchsiaTest, MidStreamResolutionChange) {
   StartCapturer();
 
   // Capture the first frame at the default resolution.
-  fake_device_watcher_.stream()->ProduceFrame(base::TimeTicks::Now(), 1);
+  FakeCameraStream* stream = GetDefaultCameraStream();
+  stream->ProduceFrame(base::TimeTicks::Now(), 1);
   client_->WaitFrame();
-  ASSERT_TRUE(fake_device_watcher_.stream()->WaitFreeBuffer());
+  ASSERT_TRUE(stream->WaitFreeBuffer());
 
   // Update resolution and produce another frames.
   const gfx::Size kUpdatedResolution(3, 14);
-  fake_device_watcher_.stream()->SetFakeResolution(kUpdatedResolution);
-  fake_device_watcher_.stream()->ProduceFrame(base::TimeTicks::Now(), 1);
+  stream->SetFakeResolution(kUpdatedResolution);
+  stream->ProduceFrame(base::TimeTicks::Now(), 1);
   client_->WaitFrame();
 
   // Verify that we get captured frames with correct resolution.
@@ -398,7 +409,7 @@ TEST_F(VideoCaptureDeviceFuchsiaTest,
 
   StartCapturer();
 
-  fake_device_watcher_.stream()->ProduceFrame(base::TimeTicks::Now(), 1);
+  GetDefaultCameraStream()->ProduceFrame(base::TimeTicks::Now(), 1);
   client_->WaitFrame();
 
   ASSERT_EQ(client_->received_frames().size(), 1U);

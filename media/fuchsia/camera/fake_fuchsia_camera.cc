@@ -18,8 +18,6 @@ namespace media {
 
 namespace {
 
-constexpr uint64_t kDefaultFakeDeviceId = 42;
-
 constexpr uint8_t kYPlaneSalt = 1;
 constexpr uint8_t kUPlaneSalt = 2;
 constexpr uint8_t kVPlaneSalt = 3;
@@ -475,9 +473,7 @@ void FakeCameraStream::OnZxHandleSignalled(zx_handle_t handle,
   if (wait_free_buffer_run_loop_)
     wait_free_buffer_run_loop_->Quit();
 }
-FakeCameraDevice::FakeCameraDevice(FakeCameraStream* stream)
-    : stream_(stream) {}
-
+FakeCameraDevice::FakeCameraDevice() = default;
 FakeCameraDevice::~FakeCameraDevice() = default;
 
 void FakeCameraDevice::Bind(
@@ -485,7 +481,18 @@ void FakeCameraDevice::Bind(
   bindings_.AddBinding(this, std::move(request));
 }
 
+void FakeCameraDevice::SetGetIdentifierHandler(
+    base::RepeatingCallback<void(GetIdentifierCallback)>
+        get_identifier_handler) {
+  get_identifier_handler_ = std::move(get_identifier_handler);
+}
+
 void FakeCameraDevice::GetIdentifier(GetIdentifierCallback callback) {
+  if (get_identifier_handler_) {
+    get_identifier_handler_.Run(std::move(callback));
+    return;
+  }
+
   callback("Fake Camera");
 }
 
@@ -506,7 +513,7 @@ void FakeCameraDevice::ConnectToStream(
     uint32_t index,
     fidl::InterfaceRequest<fuchsia::camera3::Stream> request) {
   EXPECT_EQ(index, 0U);
-  stream_->Bind(std::move(request));
+  stream_.Bind(std::move(request));
 }
 
 void FakeCameraDevice::NotImplemented_(const std::string& name) {
@@ -517,9 +524,20 @@ FakeCameraDeviceWatcher::FakeCameraDeviceWatcher(
     sys::OutgoingDirectory* outgoing_directory) {
   outgoing_directory->AddPublicService<fuchsia::camera3::DeviceWatcher>(
       [this](fidl::InterfaceRequest<fuchsia::camera3::DeviceWatcher> request) {
-        bindings_.AddBinding(std::make_unique<Client>(&device_),
-                             std::move(request));
+        auto client = std::make_unique<Client>(this);
+
+        // Queue events for all existing devices.
+        for (auto& device : devices_) {
+          fuchsia::camera3::WatchDevicesEvent event;
+          event.set_added(device.first);
+          client->QueueEvent(std::move(event));
+        }
+
+        bindings_.AddBinding(std::move(client), std::move(request));
       });
+
+  devices_.insert(
+      std::make_pair(next_device_id_++, std::make_unique<FakeCameraDevice>()));
 }
 
 FakeCameraDeviceWatcher::~FakeCameraDeviceWatcher() = default;
@@ -528,27 +546,60 @@ void FakeCameraDeviceWatcher::DisconnectClients() {
   bindings_.CloseAll();
 }
 
-FakeCameraDeviceWatcher::Client::Client(FakeCameraDevice* device)
-    : device_(device) {}
+std::unique_ptr<FakeCameraDevice> FakeCameraDeviceWatcher::RemoveDevice(
+    uint64_t device_id) {
+  auto device_it = devices_.find(device_id);
+  DCHECK(device_it != devices_.end());
+
+  // Queue an event for each client to inform about the device removal.
+  for (auto& binding : bindings_.bindings()) {
+    fuchsia::camera3::WatchDevicesEvent event;
+    event.set_removed(device_id);
+    binding->impl()->QueueEvent(std::move(event));
+  }
+
+  std::unique_ptr<FakeCameraDevice> device = std::move(device_it->second);
+  devices_.erase(device_it);
+
+  return device;
+}
+
+FakeCameraDeviceWatcher::Client::Client(FakeCameraDeviceWatcher* device_watcher)
+    : device_watcher_(device_watcher) {}
 FakeCameraDeviceWatcher::Client::~Client() {}
+
+void FakeCameraDeviceWatcher::Client::QueueEvent(
+    fuchsia::camera3::WatchDevicesEvent event) {
+  event_queue_.push_back(std::move(event));
+
+  if (watch_devices_callback_) {
+    watch_devices_callback_(std::move(event_queue_));
+    event_queue_.clear();
+    watch_devices_callback_ = {};
+  }
+}
 
 void FakeCameraDeviceWatcher::Client::WatchDevices(
     WatchDevicesCallback callback) {
-  if (devices_sent_)
+  DCHECK(!watch_devices_callback_);
+
+  if (initial_list_sent_ && event_queue_.empty()) {
+    watch_devices_callback_ = std::move(callback);
     return;
+  }
 
-  std::vector<fuchsia::camera3::WatchDevicesEvent> events(1);
-  events[0].set_added(kDefaultFakeDeviceId);
-  callback(std::move(events));
-
-  devices_sent_ = true;
+  callback(std::move(event_queue_));
+  event_queue_.clear();
+  initial_list_sent_ = true;
 }
 
 void FakeCameraDeviceWatcher::Client::ConnectToDevice(
     uint64_t id,
     fidl::InterfaceRequest<fuchsia::camera3::Device> request) {
-  if (id == kDefaultFakeDeviceId)
-    device_->Bind(std::move(request));
+  auto it = device_watcher_->devices().find(id);
+  if (it == device_watcher_->devices().end())
+    return;
+  it->second->Bind(std::move(request));
 }
 
 void FakeCameraDeviceWatcher::Client::NotImplemented_(const std::string& name) {
