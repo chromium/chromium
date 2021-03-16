@@ -1632,6 +1632,12 @@ std::unique_ptr<ConfigurationPolicyHandlerList> BuildHandlerList(
           chrome_schema));
 #endif  // defined(OS_LINUX) || defined(OS_MAC) || defined(OS_WIN)
 
+#if defined(OS_CHROMEOS)
+  handlers->AddHandler(std::make_unique<extensions::ExtensionListPolicyHandler>(
+      key::kAttestationExtensionAllowlist,
+      prefs::kAttestationExtensionAllowlist, false));
+#endif  // defined(OS_CHROMEOS)
+
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   std::vector<std::unique_ptr<ConfigurationPolicyHandler>>
       power_management_idle_legacy_policies;
@@ -1697,10 +1703,6 @@ std::unique_ptr<ConfigurationPolicyHandlerList> BuildHandlerList(
   handlers->AddHandler(std::make_unique<LegacyPoliciesDeprecatingPolicyHandler>(
       std::move(screen_lock_legacy_policies),
       std::make_unique<ScreenLockDelayPolicyHandler>(chrome_schema)));
-
-  handlers->AddHandler(std::make_unique<extensions::ExtensionListPolicyHandler>(
-      key::kAttestationExtensionAllowlist,
-      prefs::kAttestationExtensionAllowlist, false));
 
   handlers->AddHandler(std::make_unique<SimplePolicyHandler>(
       key::kQuickUnlockModeAllowlist, prefs::kQuickUnlockModeAllowlist,

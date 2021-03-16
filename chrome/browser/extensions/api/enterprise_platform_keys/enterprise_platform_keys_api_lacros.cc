@@ -12,6 +12,7 @@
 #include "base/bind.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/optional.h"
+#include "chrome/browser/extensions/api/enterprise_platform_keys/enterprise_platform_keys_api.h"
 #include "chrome/browser/extensions/api/platform_keys/platform_keys_api.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/extensions/api/enterprise_platform_keys.h"
@@ -50,6 +51,8 @@ const char kUnsupportedSigning[] = "Unsupported signing algorithm.";
 const char kUnsupportedSigningInput[] =
     "Unsupported input for signing algorithm.";
 const char kInvalidKeystoreType[] = "Invalid keystore type.";
+const char kExtensionDoesNotHavePermission[] =
+    "The extension does not have permission to call this function.";
 
 // Performs common crosapi validation. These errors are not caused by the
 // extension so they are considered recoverable. Returns an error message on
@@ -338,8 +341,18 @@ EnterprisePlatformKeysChallengeMachineKeyFunction::Run() {
   std::unique_ptr<api_epk::ChallengeMachineKey::Params> params(
       api_epk::ChallengeMachineKey::Params::Create(*args_));
   EXTENSION_FUNCTION_VALIDATE(params);
-  // TODO(https://crbug.com/1113443): This implementation needs to check if the
-  // extension is allowlisted via the AttestationExtensionAllowlist policy.
+
+  const std::string error = ValidateCrosapi(
+      KeystoreService::kChallengeAttestationOnlyKeystoreMinVersion,
+      browser_context());
+  if (!error.empty())
+    return RespondNow(Error(error));
+
+  if (!platform_keys::IsExtensionAllowed(
+          Profile::FromBrowserContext(browser_context()), extension())) {
+    return RespondNow(Error(kExtensionDoesNotHavePermission));
+  }
+
   auto c = base::BindOnce(&EnterprisePlatformKeysChallengeMachineKeyFunction::
                               OnChallengeAttestationOnlyKeystore,
                           this);
@@ -373,15 +386,17 @@ EnterprisePlatformKeysChallengeUserKeyFunction::Run() {
       api_epk::ChallengeUserKey::Params::Create(*args_));
   EXTENSION_FUNCTION_VALIDATE(params);
 
-  std::string error = ValidateCrosapi(
+  const std::string error = ValidateCrosapi(
       KeystoreService::kChallengeAttestationOnlyKeystoreMinVersion,
       browser_context());
-  if (!error.empty()) {
+  if (!error.empty())
     return RespondNow(Error(error));
+
+  if (!platform_keys::IsExtensionAllowed(
+          Profile::FromBrowserContext(browser_context()), extension())) {
+    return RespondNow(Error(kExtensionDoesNotHavePermission));
   }
 
-  // TODO(https://crbug.com/1113443): This implementation needs to check if the
-  // extension is allowlisted via the AttestationExtensionAllowlist policy.
   auto c = base::BindOnce(&EnterprisePlatformKeysChallengeUserKeyFunction::
                               OnChallengeAttestationOnlyKeystore,
                           this);

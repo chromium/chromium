@@ -466,6 +466,12 @@ const char kDefaultAppsInstallState[] = "default_apps_install_state";
 // from the New Tab Page and app launcher.
 const char kHideWebStoreIcon[] = "hide_web_store_icon";
 
+#if defined(OS_CHROMEOS)
+// The list of extensions allowed to use the platformKeys API for remote
+// attestation.
+const char kAttestationExtensionAllowlist[] = "attestation.extension_allowlist";
+#endif
+
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 // An integer preference to store the number of times the Chrome OS Account
 // Manager migration flow ran successfully.
@@ -689,9 +695,6 @@ const char kTermsOfServiceURL[] = "terms_of_service.url";
 
 // Indicates whether the remote attestation is enabled for the user.
 const char kAttestationEnabled[] = "attestation.enabled";
-// The list of extensions allowed to use the platformKeysPrivate API for
-// remote attestation.
-const char kAttestationExtensionAllowlist[] = "attestation.extension_allowlist";
 
 // A boolean pref recording whether user has dismissed the multiprofile
 // itroduction dialog show.

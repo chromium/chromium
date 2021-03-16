@@ -33,8 +33,6 @@ class EPKPChallengeKey {
   EPKPChallengeKey& operator=(const EPKPChallengeKey&) = delete;
   ~EPKPChallengeKey();
 
-  static void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry);
-
   // Asynchronously run the flow to challenge a key in the |caller|
   // context.
   void Run(chromeos::attestation::AttestationKeyType type,

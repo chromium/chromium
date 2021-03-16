@@ -9,6 +9,7 @@
 #include "base/values.h"
 #include "chrome/browser/ash/attestation/tpm_challenge_key.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
+#include "chrome/browser/extensions/api/enterprise_platform_keys/enterprise_platform_keys_api.h"
 #include "chrome/browser/extensions/chrome_extension_function_details.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/extensions/api/enterprise_platform_keys_private.h"
@@ -26,11 +27,6 @@ namespace api_epkp = api::enterprise_platform_keys_private;
 EPKPChallengeKey::EPKPChallengeKey() = default;
 EPKPChallengeKey::~EPKPChallengeKey() = default;
 
-void EPKPChallengeKey::RegisterProfilePrefs(
-    user_prefs::PrefRegistrySyncable* registry) {
-  registry->RegisterListPref(prefs::kAttestationExtensionAllowlist);
-}
-
 // Check if the extension is allowisted in the user policy.
 bool EPKPChallengeKey::IsExtensionAllowed(
     Profile* profile,
@@ -41,15 +37,7 @@ bool EPKPChallengeKey::IsExtensionAllowed(
     // TODO(drcrash): Use a separate device-wide policy for the API.
     return Manifest::IsPolicyLocation(extension->location());
   }
-  if (Manifest::IsComponentLocation(extension->location())) {
-    // Note: For this to even be called, the component extension must also be
-    // allowed in chrome/common/extensions/api/_permission_features.json
-    return true;
-  }
-  const base::ListValue* list =
-      profile->GetPrefs()->GetList(prefs::kAttestationExtensionAllowlist);
-  base::Value value(extension->id());
-  return list->Find(value) != list->end();
+  return platform_keys::IsExtensionAllowed(profile, extension.get());
 }
 
 void EPKPChallengeKey::Run(

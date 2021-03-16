@@ -956,6 +956,7 @@ static_library("extensions") {
   if (is_chromeos_lacros || is_chromeos_ash) {
     sources += [
       "api/enterprise_device_attributes/enterprise_device_attributes_api.h",
+      "api/enterprise_platform_keys/enterprise_platform_keys_api.cc",
       "api/enterprise_platform_keys/enterprise_platform_keys_api.h",
       "api/platform_keys/platform_keys_api.h",
     ]
