@@ -130,7 +130,14 @@ void TransportContext::EnsureFreshIceConfig() {
 void TransportContext::OnIceConfig(const IceConfig& ice_config) {
   ice_config_ = ice_config;
   ice_config_request_.reset();
-  last_request_completion_time_ = base::Time::Now();
+
+  if (!ice_config_.is_null()) {
+    // Only reset |last_request_completion_time_| if we received a valid config.
+    // If we received an empty config, it could mean a problem in the backend,
+    // a network issue, or some other error. Regardless of the specific error,
+    // we should try to fetch a new config the next time one is requested.
+    last_request_completion_time_ = base::Time::Now();
+  }
 
   HOST_LOG << "Using newly requested ICE Config.";
   PrintIceConfig(ice_config);
