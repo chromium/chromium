@@ -1583,8 +1583,11 @@ void NearbySharingServiceImpl::InvalidateSurfaceState() {
     // We need to debounce the call to shut down the process in case this state
     // is temporary (we don't want to the thrash the process). Any advertisment,
     // scanning or transfering will stop this timer from triggering.
+    // Logging disabled due to test failures; see https://crbug.com/1188613.
+#if 0
     NS_LOG(INFO) << __func__
                  << ": Scheduling process shutdown if not needed in 15 seconds";
+#endif
     // NOTE: Using base::Unretained is safe because if shutdown_pending_timer_
     // goes out of scope the timer will be canceled.
     process_shutdown_pending_timer_.Start(
