@@ -1516,10 +1516,11 @@ public class StartSurfaceTest {
                         -> Assert.assertTrue(StartSurfaceUserData.getKeepTab(
                                 cta.getTabModelSelector().getCurrentTab())));
 
+        OverviewModeBehaviorWatcher overviewModeWatcher = new OverviewModeBehaviorWatcher(
+                mActivityTestRule.getActivity().getLayoutManager(), true, false);
         pressBack();
         // Verifies the new Tab isn't deleted, and Start surface is shown.
-        CriteriaHelper.pollUiThread(() -> cta.getLayoutManager().overviewVisible());
-        waitForView(withId(R.id.primary_tasks_surface_view));
+        overviewModeWatcher.waitForBehavior();
         TabUiTestHelper.verifyTabModelTabCount(cta, 2, 0);
 
         // Verifies Chrome is closed.
@@ -1527,11 +1528,15 @@ public class StartSurfaceTest {
             pressBack();
         } catch (Exception e) {
         } finally {
-            TestThreadUtils.runOnUiThreadBlocking(() -> {
-                Assert.assertEquals(Stage.STOPPED,
-                        ActivityLifecycleMonitorRegistry.getInstance().getLifecycleStageOf(
-                                mActivityTestRule.getActivity()));
-            });
+            CriteriaHelper.pollUiThread(
+                    ()
+                            -> {
+                        return ActivityLifecycleMonitorRegistry.getInstance().getLifecycleStageOf(
+                                       mActivityTestRule.getActivity())
+                                == Stage.STOPPED;
+                    },
+                    "Tapping back button should close Chrome.", MAX_TIMEOUT_MS,
+                    CriteriaHelper.DEFAULT_POLLING_INTERVAL);
         }
     }
 
