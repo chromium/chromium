@@ -15,6 +15,7 @@
 #include "chrome/browser/ash/plugin_vm/plugin_vm_manager.h"
 #include "chrome/browser/ash/plugin_vm/plugin_vm_manager_factory.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
+#include "chrome/browser/ash/settings/cros_settings.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part_chromeos.h"
 #include "chrome/browser/chromeos/arc/session/arc_service_launcher.h"
@@ -38,6 +39,7 @@
 #include "chrome/browser/ui/ash/holding_space/holding_space_keyed_service_factory.h"
 #include "chrome/browser/ui/ash/media_client_impl.h"
 #include "chrome/common/pref_names.h"
+#include "chromeos/dbus/pciguard/pciguard_client.h"
 #include "chromeos/network/network_cert_loader.h"
 #include "chromeos/tpm/install_attributes.h"
 #include "components/prefs/pref_service.h"
@@ -229,6 +231,14 @@ void UserSessionInitializer::OnUserSessionStarted(bool is_primary_user) {
       plugin_vm_manager->OnPrimaryUserSessionStarted();
 
     VmCameraMicManager::Get()->OnPrimaryUserSessionStarted(primary_profile_);
+
+    bool pcie_tunneling_allowed = false;
+    CrosSettings::Get()->GetBoolean(
+        chromeos::kDevicePeripheralDataAccessEnabled, &pcie_tunneling_allowed);
+    // Pciguard can only be set by non-guest, primary users. By default,
+    // Pciguard is turned on.
+    PciguardClient::Get()->SendExternalPciDevicesPermissionState(
+        pcie_tunneling_allowed);
   }
 }
 
