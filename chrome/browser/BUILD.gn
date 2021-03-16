@@ -3999,8 +3999,6 @@ static_library("browser") {
                                                               # to extensions
                                                               # section ?
       "speech/extension_api/tts_extension_api_constants.h",
-      "speech/on_device_speech_recognizer.cc",
-      "speech/on_device_speech_recognizer.h",
       "speech/speech_recognition_client_browser_interface.cc",
       "speech/speech_recognition_client_browser_interface.h",
       "speech/speech_recognition_client_browser_interface_factory.cc",
@@ -4208,6 +4206,8 @@ static_library("browser") {
         "speech/cros_speech_recognition_service.h",
         "speech/cros_speech_recognition_service_factory.cc",
         "speech/cros_speech_recognition_service_factory.h",
+        "speech/on_device_speech_recognizer.cc",
+        "speech/on_device_speech_recognizer.h",
       ]
 
       deps += [ "//chrome/services/speech:lib" ]
