@@ -35,10 +35,6 @@ interface WebDatabaseHost {
   GetFileAttributes(mojo_base.mojom.String16 vfs_file_name) => (
       int32 attributes);
 
-  // Asks the browser process to return the size of a DB file.
-  [Sync]
-  GetFileSize(mojo_base.mojom.String16 vfs_file_name) => (int64 size);
-
   // Asks the browser set the size of a DB file.
   [Sync]
   SetFileSize(mojo_base.mojom.String16 vfs_file_name,

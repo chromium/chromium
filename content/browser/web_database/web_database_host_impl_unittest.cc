@@ -149,9 +149,6 @@ TEST_F(WebDatabaseHostImplTest, BadMessagesUnauthorized) {
     host()->GetFileAttributes(bad_vfs_file_name, base::DoNothing());
   });
 
-  CheckUnauthorizedOrigin(
-      [&]() { host()->GetFileSize(bad_vfs_file_name, base::DoNothing()); });
-
   CheckUnauthorizedOrigin([&]() {
     host()->SetFileSize(bad_vfs_file_name, /*expected_size=*/0,
                         base::DoNothing());

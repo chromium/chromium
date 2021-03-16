@@ -51,9 +51,6 @@ class CONTENT_EXPORT WebDatabaseHostImpl
   void GetFileAttributes(const std::u16string& vfs_file_name,
                          GetFileAttributesCallback callback) override;
 
-  void GetFileSize(const std::u16string& vfs_file_name,
-                   GetFileSizeCallback callback) override;
-
   void SetFileSize(const std::u16string& vfs_file_name,
                    int64_t expected_size,
                    SetFileSizeCallback callback) override;
@@ -102,9 +99,6 @@ class CONTENT_EXPORT WebDatabaseHostImpl
 
   void GetFileAttributesValidated(const std::u16string& vfs_file_name,
                                   GetFileAttributesCallback callback);
-
-  void GetFileSizeValidated(const std::u16string& vfs_file_name,
-                            GetFileSizeCallback callback);
 
   void SetFileSizeValidated(const std::u16string& vfs_file_name,
                             int64_t expected_size,
