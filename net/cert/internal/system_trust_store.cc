@@ -38,6 +38,7 @@
 #include "net/cert/known_roots_nss.h"
 #include "net/cert/scoped_nss_types.h"
 #elif defined(OS_MAC)
+#include "net/base/features.h"
 #include "net/cert/internal/trust_store_mac.h"
 #include "net/cert/x509_util_mac.h"
 #elif defined(OS_FUCHSIA)
@@ -183,9 +184,35 @@ class SystemTrustStoreMac : public BaseSystemTrustStore {
   }
 
  private:
+  static constexpr TrustStoreMac::TrustImplType kDefaultTrustImpl =
+      TrustStoreMac::TrustImplType::kDomainCache;
+
+  static TrustStoreMac::TrustImplType ParamToTrustImplType(int param) {
+    switch (param) {
+      case 1:
+        return TrustStoreMac::TrustImplType::kDomainCache;
+      case 2:
+        return TrustStoreMac::TrustImplType::kSimple;
+      case 3:
+        return TrustStoreMac::TrustImplType::kMruCache;
+      default:
+        return kDefaultTrustImpl;
+    }
+  }
+
+  static TrustStoreMac::TrustImplType GetTrustStoreImplParam() {
+    if (base::FeatureList::IsEnabled(features::kCertVerifierBuiltinFeature))
+      return ParamToTrustImplType(features::kCertVerifierBuiltinImpl.Get());
+    if (base::FeatureList::IsEnabled(
+            features::kCertDualVerificationTrialFeature))
+      return ParamToTrustImplType(
+          features::kCertDualVerificationTrialImpl.Get());
+    return kDefaultTrustImpl;
+  }
+
   static TrustStoreMac* GetGlobalTrustStoreMac() {
     static base::NoDestructor<TrustStoreMac> static_trust_store_mac(
-        kSecPolicyAppleSSL);
+        kSecPolicyAppleSSL, GetTrustStoreImplParam());
     return static_trust_store_mac.get();
   }
 };

@@ -368,6 +368,8 @@ TEST(ErrorReportTest, TrialDebugInfo) {
   debug_info->mac_combined_trust_debug_info =
       net::TrustStoreMac::TRUST_SETTINGS_DICT_CONTAINS_APPLICATION |
       net::TrustStoreMac::TRUST_SETTINGS_DICT_CONTAINS_RESULT;
+  debug_info->mac_trust_impl =
+      network::mojom::CertVerifierDebugInfo::MacTrustImplType::kMruCache;
 #endif
   base::Time time = base::Time::Now();
   debug_info->trial_verification_time = time;
@@ -427,8 +429,12 @@ TEST(ErrorReportTest, TrialDebugInfo) {
   EXPECT_EQ(chrome_browser_ssl::TrialVerificationInfo::
                 MAC_TRUST_SETTINGS_DICT_CONTAINS_RESULT,
             trial_info.mac_combined_trust_debug_info()[1]);
+  EXPECT_TRUE(trial_info.has_mac_trust_impl());
+  EXPECT_EQ(chrome_browser_ssl::TrialVerificationInfo::MAC_TRUST_IMPL_MRU_CACHE,
+            trial_info.mac_trust_impl());
 #else
   EXPECT_EQ(0, trial_info.mac_combined_trust_debug_info_size());
+  EXPECT_FALSE(trial_info.has_mac_trust_impl());
 #endif
   ASSERT_TRUE(trial_info.has_trial_verification_time_usec());
   EXPECT_EQ(time.ToDeltaSinceWindowsEpoch().InMicroseconds(),

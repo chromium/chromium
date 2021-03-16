@@ -49,6 +49,18 @@ struct CertVerifierDebugInfo {
   [EnableIf=is_mac]
   int32 mac_combined_trust_debug_info;
 
+  // A TrustStoreMac::TrustImplType value representing which implementation was
+  // used for the verification
+  [EnableIf=is_mac]
+  enum MacTrustImplType {
+    kUnknown = 0,
+    kDomainCache = 1,
+    kSimple = 2,
+    kMruCache = 3,
+  };
+  [EnableIf=is_mac]
+  MacTrustImplType mac_trust_impl;
+
   [EnableIf=is_mac]
   MacPlatformVerifierDebugInfo? mac_platform_debug_info;
 

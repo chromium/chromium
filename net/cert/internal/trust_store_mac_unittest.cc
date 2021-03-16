@@ -119,7 +119,8 @@ TEST(TrustStoreMacTest, MultiRootNotTrusted) {
   ASSERT_TRUE(keychain);
   test_keychain_search_list->AddKeychain(keychain);
 
-  TrustStoreMac trust_store(kSecPolicyAppleSSL);
+  TrustStoreMac trust_store(kSecPolicyAppleSSL,
+                            TrustStoreMac::TrustImplType::kDomainCache);
 
   scoped_refptr<ParsedCertificate> a_by_b, b_by_c, b_by_f, c_by_d, c_by_e,
       f_by_e, d_by_d, e_by_e;
@@ -211,9 +212,12 @@ TEST(TrustStoreMacTest, MultiRootNotTrusted) {
   }
 }
 
+class TrustStoreMacImplTest
+    : public testing::TestWithParam<TrustStoreMac::TrustImplType> {};
+
 // Test against all the certificates in the default keychains. Confirms that
 // the computed trust value matches that of SecTrustEvaluate.
-TEST(TrustStoreMacTest, SystemCerts) {
+TEST_P(TrustStoreMacImplTest, SystemCerts) {
   // Get the list of all certificates in the user & system keychains.
   // This may include both trusted and untrusted certificates.
   //
@@ -233,7 +237,7 @@ TEST(TrustStoreMacTest, SystemCerts) {
        "/System/Library/Keychains/SystemRootCertificates.keychain"},
       &find_certificate_system_roots_output));
 
-  TrustStoreMac trust_store(kSecPolicyAppleX509Basic);
+  TrustStoreMac trust_store(kSecPolicyAppleX509Basic, GetParam());
 
   base::ScopedCFTypeRef<SecPolicyRef> sec_policy(SecPolicyCreateBasicX509());
   ASSERT_TRUE(sec_policy);
@@ -324,9 +328,18 @@ TEST(TrustStoreMacTest, SystemCerts) {
         // what bits should be set in the trust debug info, but it should at
         // least have something set.
         EXPECT_NE(0, trust_debug_data->combined_trust_debug_info());
+        // The impl that was used should be specified in the debug data.
+        EXPECT_EQ(GetParam(), trust_debug_data->trust_impl());
       }
     }
   }
 }
+
+INSTANTIATE_TEST_SUITE_P(
+    Impl,
+    TrustStoreMacImplTest,
+    testing::Values(TrustStoreMac::TrustImplType::kDomainCache,
+                    TrustStoreMac::TrustImplType::kSimple,
+                    TrustStoreMac::TrustImplType::kMruCache));
 
 }  // namespace net

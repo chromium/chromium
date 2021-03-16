@@ -8,7 +8,6 @@
 #include "chrome/browser/net/trial_comparison_cert_verifier_controller.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
-#include "chrome/common/chrome_features.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/metrics/content/subprocess_metrics_provider.h"
@@ -47,7 +46,8 @@ class TrialComparisonCertVerifierFeatureEnabledTest
     // None of these tests should generate a report, but set the trial to
     // uma_only mode anyway just to be safe.
     scoped_feature_->InitAndEnableFeatureWithParameters(
-        features::kCertDualVerificationTrialFeature, {{"uma_only", "true"}});
+        net::features::kCertDualVerificationTrialFeature,
+        {{"uma_only", "true"}});
   }
 
   ~TrialComparisonCertVerifierFeatureEnabledTest() override {
@@ -103,7 +103,8 @@ class TrialComparisonCertVerifierFeatureOverridenByBuiltinVerifierTest
     scoped_feature_->InitWithFeaturesAndParameters(
         // None of these tests should generate a report, but set the trial to
         // uma_only mode anyway just to be safe.
-        {{features::kCertDualVerificationTrialFeature, {{"uma_only", "true"}}},
+        {{net::features::kCertDualVerificationTrialFeature,
+          {{"uma_only", "true"}}},
          // Enable the builtin verifier.
          {net::features::kCertVerifierBuiltinFeature, {}}},
         {});

@@ -138,6 +138,21 @@ const base::Feature kSameSiteDefaultChecksMethodRigorously{
 #if BUILDFLAG(BUILTIN_CERT_VERIFIER_FEATURE_SUPPORTED)
 const base::Feature kCertVerifierBuiltinFeature{
     "CertVerifierBuiltin", base::FEATURE_DISABLED_BY_DEFAULT};
+#if defined(OS_MAC)
+const base::FeatureParam<int> kCertVerifierBuiltinImpl{
+    &kCertVerifierBuiltinFeature, "impl", 0};
+#endif /* defined(OS_MAC) */
+#endif
+
+#if BUILDFLAG(TRIAL_COMPARISON_CERT_VERIFIER_SUPPORTED)
+// Enables the dual certificate verification trial feature.
+// https://crbug.com/649026
+const base::Feature kCertDualVerificationTrialFeature{
+    "CertDualVerificationTrial", base::FEATURE_DISABLED_BY_DEFAULT};
+#if defined(OS_MAC)
+const base::FeatureParam<int> kCertDualVerificationTrialImpl{
+    &kCertDualVerificationTrialFeature, "impl", 0};
+#endif /* defined(OS_MAC) */
 #endif
 
 const base::Feature kTurnOffStreamingMediaCachingOnBattery{

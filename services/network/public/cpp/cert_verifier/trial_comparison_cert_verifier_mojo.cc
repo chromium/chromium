@@ -18,6 +18,27 @@
 #include "net/cert/internal/trust_store_mac.h"
 #endif
 
+namespace {
+
+#if defined(OS_MAC)
+network::mojom::CertVerifierDebugInfo::MacTrustImplType TrustImplTypeToMojom(
+    net::TrustStoreMac::TrustImplType input) {
+  switch (input) {
+    case net::TrustStoreMac::TrustImplType::kUnknown:
+      return network::mojom::CertVerifierDebugInfo::MacTrustImplType::kUnknown;
+    case net::TrustStoreMac::TrustImplType::kDomainCache:
+      return network::mojom::CertVerifierDebugInfo::MacTrustImplType::
+          kDomainCache;
+    case net::TrustStoreMac::TrustImplType::kSimple:
+      return network::mojom::CertVerifierDebugInfo::MacTrustImplType::kSimple;
+    case net::TrustStoreMac::TrustImplType::kMruCache:
+      return network::mojom::CertVerifierDebugInfo::MacTrustImplType::kMruCache;
+  }
+}
+#endif
+
+}  // namespace
+
 namespace network {
 
 TrialComparisonCertVerifierMojo::TrialComparisonCertVerifierMojo(
@@ -99,6 +120,8 @@ void TrialComparisonCertVerifierMojo::OnSendTrialReport(
   if (mac_trust_debug_info) {
     debug_info->mac_combined_trust_debug_info =
         mac_trust_debug_info->combined_trust_debug_info();
+    debug_info->mac_trust_impl =
+        TrustImplTypeToMojom(mac_trust_debug_info->trust_impl());
   }
 #endif
   auto* cert_verify_proc_builtin_debug_data =

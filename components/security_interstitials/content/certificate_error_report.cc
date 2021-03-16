@@ -147,6 +147,23 @@ void AddMacPlatformDebugInfoToReport(
       report_cert_info->add_status_codes(code);
   }
 }
+
+chrome_browser_ssl::TrialVerificationInfo::MacTrustImplType
+TrustImplTypeFromMojom(
+    network::mojom::CertVerifierDebugInfo::MacTrustImplType input) {
+  switch (input) {
+    case network::mojom::CertVerifierDebugInfo::MacTrustImplType::kUnknown:
+      return chrome_browser_ssl::TrialVerificationInfo::MAC_TRUST_IMPL_UNKNOWN;
+    case network::mojom::CertVerifierDebugInfo::MacTrustImplType::kDomainCache:
+      return chrome_browser_ssl::TrialVerificationInfo::
+          MAC_TRUST_IMPL_DOMAIN_CACHE;
+    case network::mojom::CertVerifierDebugInfo::MacTrustImplType::kSimple:
+      return chrome_browser_ssl::TrialVerificationInfo::MAC_TRUST_IMPL_SIMPLE;
+    case network::mojom::CertVerifierDebugInfo::MacTrustImplType::kMruCache:
+      return chrome_browser_ssl::TrialVerificationInfo::
+          MAC_TRUST_IMPL_MRU_CACHE;
+  }
+}
 #endif  // defined(OS_APPLE)
 #endif  // BUILDFLAG(TRIAL_COMPARISON_CERT_VERIFIER_SUPPORTED)
 
@@ -223,6 +240,8 @@ CertificateErrorReport::CertificateErrorReport(
   AddMacTrustFlagsToReport(
       debug_info->mac_combined_trust_debug_info,
       trial_report->mutable_mac_combined_trust_debug_info());
+  trial_report->set_mac_trust_impl(
+      TrustImplTypeFromMojom(debug_info->mac_trust_impl));
 #endif
   if (!debug_info->trial_verification_time.is_null()) {
     trial_report->set_trial_verification_time_usec(

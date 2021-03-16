@@ -101,13 +101,6 @@ const base::Feature kBackgroundModeAllowRestart{
 const base::Feature kBorealis{"Borealis", base::FEATURE_DISABLED_BY_DEFAULT};
 #endif
 
-#if BUILDFLAG(TRIAL_COMPARISON_CERT_VERIFIER_SUPPORTED)
-// Enables the dual certificate verification trial feature.
-// https://crbug.com/649026
-const base::Feature kCertDualVerificationTrialFeature{
-    "CertDualVerificationTrial", base::FEATURE_DISABLED_BY_DEFAULT};
-#endif
-
 // Enables change picture video mode.
 const base::Feature kChangePictureVideoMode{"ChangePictureVideoMode",
                                             base::FEATURE_ENABLED_BY_DEFAULT};

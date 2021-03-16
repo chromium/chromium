@@ -128,7 +128,8 @@ TEST(TrialComparisonCertVerifierMojoTest, SendReportDebugInfo) {
   auto* mac_trust_debug_info =
       net::TrustStoreMac::ResultDebugData::GetOrCreate(&trial_result);
   ASSERT_TRUE(mac_trust_debug_info);
-  mac_trust_debug_info->UpdateTrustDebugInfo(kExpectedTrustDebugInfo);
+  mac_trust_debug_info->UpdateTrustDebugInfo(
+      kExpectedTrustDebugInfo, net::TrustStoreMac::TrustImplType::kSimple);
 #endif
 
   base::Time time = base::Time::Now();
@@ -188,6 +189,8 @@ TEST(TrialComparisonCertVerifierMojoTest, SendReportDebugInfo) {
 
   EXPECT_EQ(kExpectedTrustDebugInfo,
             report.debug_info->mac_combined_trust_debug_info);
+  EXPECT_EQ(network::mojom::CertVerifierDebugInfo::MacTrustImplType::kSimple,
+            report.debug_info->mac_trust_impl);
 #endif
 
   EXPECT_EQ(time, report.debug_info->trial_verification_time);

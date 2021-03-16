@@ -16,7 +16,6 @@
 #include "build/chromeos_buildflags.h"
 #include "chrome/common/buildflags.h"
 #include "device/vr/buildflags/buildflags.h"
-#include "net/net_buildflags.h"
 #include "ppapi/buildflags/buildflags.h"
 #include "printing/buildflags/buildflags.h"
 #include "ui/base/buildflags.h"
@@ -83,11 +82,6 @@ extern const base::Feature kBackgroundModeAllowRestart;
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 COMPONENT_EXPORT(CHROME_FEATURES) extern const base::Feature kBorealis;
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-
-#if BUILDFLAG(TRIAL_COMPARISON_CERT_VERIFIER_SUPPORTED)
-COMPONENT_EXPORT(CHROME_FEATURES)
-extern const base::Feature kCertDualVerificationTrialFeature;
-#endif
 
 COMPONENT_EXPORT(CHROME_FEATURES)
 extern const base::Feature kChangePictureVideoMode;

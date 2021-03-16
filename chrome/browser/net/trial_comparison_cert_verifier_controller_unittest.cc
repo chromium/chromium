@@ -16,7 +16,6 @@
 #include "chrome/browser/safe_browsing/certificate_reporting_service_factory.h"
 #include "chrome/browser/safe_browsing/certificate_reporting_service_test_utils.h"
 #include "chrome/browser/safe_browsing/test_safe_browsing_service.h"
-#include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
@@ -29,6 +28,7 @@
 #include "content/public/test/test_utils.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
+#include "net/base/features.h"
 #include "net/base/net_errors.h"
 #include "net/cert/cert_verify_result.h"
 #include "net/cert/x509_certificate.h"
@@ -279,7 +279,7 @@ TEST_F(TrialComparisonCertVerifierControllerTest,
        NotOfficialBuildTrialEnabled) {
   scoped_feature_ = std::make_unique<base::test::ScopedFeatureList>();
   scoped_feature_->InitAndEnableFeature(
-      features::kCertDualVerificationTrialFeature);
+      net::features::kCertDualVerificationTrialFeature);
   CreateController();
 
   EXPECT_FALSE(trial_controller().IsAllowed());
@@ -317,7 +317,7 @@ TEST_F(TrialComparisonCertVerifierControllerTest, OfficialBuildTrialEnabled) {
   TrialComparisonCertVerifierController::SetFakeOfficialBuildForTesting(true);
   scoped_feature_ = std::make_unique<base::test::ScopedFeatureList>();
   scoped_feature_->InitAndEnableFeature(
-      features::kCertDualVerificationTrialFeature);
+      net::features::kCertDualVerificationTrialFeature);
   CreateController();
 
   EXPECT_FALSE(trial_controller().IsAllowed());
@@ -398,7 +398,7 @@ TEST_F(TrialComparisonCertVerifierControllerTest,
   TrialComparisonCertVerifierController::SetFakeOfficialBuildForTesting(true);
   scoped_feature_ = std::make_unique<base::test::ScopedFeatureList>();
   scoped_feature_->InitAndEnableFeature(
-      features::kCertDualVerificationTrialFeature);
+      net::features::kCertDualVerificationTrialFeature);
   CreateController();
 
   mojo::Remote<network::mojom::TrialComparisonCertVerifierReportClient>
@@ -506,7 +506,7 @@ TEST_F(TrialComparisonCertVerifierControllerTest,
   TrialComparisonCertVerifierController::SetFakeOfficialBuildForTesting(true);
   scoped_feature_ = std::make_unique<base::test::ScopedFeatureList>();
   scoped_feature_->InitAndEnableFeatureWithParameters(
-      features::kCertDualVerificationTrialFeature, {{"uma_only", "true"}});
+      net::features::kCertDualVerificationTrialFeature, {{"uma_only", "true"}});
   CreateController();
 
   EXPECT_FALSE(trial_controller().IsAllowed());
@@ -542,7 +542,7 @@ TEST_F(TrialComparisonCertVerifierControllerTest,
   TrialComparisonCertVerifierController::SetFakeOfficialBuildForTesting(true);
   scoped_feature_ = std::make_unique<base::test::ScopedFeatureList>();
   scoped_feature_->InitAndEnableFeature(
-      features::kCertDualVerificationTrialFeature);
+      net::features::kCertDualVerificationTrialFeature);
   CreateController(profile()->GetPrimaryOTRProfile());
 
   EXPECT_FALSE(trial_controller().IsAllowed());

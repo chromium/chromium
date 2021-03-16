@@ -7,6 +7,8 @@
 
 #include <Security/Security.h>
 
+#include "net/base/hash_value.h"
+
 namespace net {
 
 // IsKnownRoot returns true if the given certificate is one that we believe
@@ -17,6 +19,7 @@ namespace net {
 // acquire that lock prior to calling this, or eagerly initialize beforehand
 // using InitializeKnownRoots().
 bool IsKnownRoot(SecCertificateRef cert);
+bool IsKnownRoot(const HashValue& cert_sha256);
 
 // Calling this is optional as initialization will otherwise be done lazily when
 // calling IsKnownRoot(). When calling this, the current thread must NOT already

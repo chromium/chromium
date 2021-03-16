@@ -27,6 +27,7 @@
 #include "content/public/test/browser_test.h"
 #include "net/dns/public/dns_over_https_server_config.h"
 #include "net/dns/public/secure_dns_mode.h"
+#include "net/net_buildflags.h"
 #include "services/cert_verifier/test_cert_verifier_service_factory.h"
 #include "services/network/public/cpp/features.h"
 #include "services/network/public/cpp/network_service_buildflags.h"

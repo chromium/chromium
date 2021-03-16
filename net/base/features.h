@@ -11,6 +11,7 @@
 #include "base/metrics/field_trial_params.h"
 #include "base/strings/string_piece.h"
 #include "base/time/time.h"
+#include "build/build_config.h"
 #include "net/base/net_export.h"
 #include "net/net_buildflags.h"
 
@@ -215,7 +216,17 @@ NET_EXPORT extern const base::Feature kSameSiteDefaultChecksMethodRigorously;
 #if BUILDFLAG(BUILTIN_CERT_VERIFIER_FEATURE_SUPPORTED)
 // When enabled, use the builtin cert verifier instead of the platform verifier.
 NET_EXPORT extern const base::Feature kCertVerifierBuiltinFeature;
-#endif
+#if defined(OS_MAC)
+NET_EXPORT extern const base::FeatureParam<int> kCertVerifierBuiltinImpl;
+#endif /* defined(OS_MAC) */
+#endif /* BUILDFLAG(BUILTIN_CERT_VERIFIER_FEATURE_SUPPORTED) */
+
+#if BUILDFLAG(TRIAL_COMPARISON_CERT_VERIFIER_SUPPORTED)
+NET_EXPORT extern const base::Feature kCertDualVerificationTrialFeature;
+#if defined(OS_MAC)
+NET_EXPORT extern const base::FeatureParam<int> kCertDualVerificationTrialImpl;
+#endif /* defined(OS_MAC) */
+#endif /* BUILDFLAG(BUILTIN_CERT_VERIFIER_FEATURE_SUPPORTED) */
 
 // Turns off streaming media caching to disk when on battery power.
 NET_EXPORT extern const base::Feature kTurnOffStreamingMediaCachingOnBattery;

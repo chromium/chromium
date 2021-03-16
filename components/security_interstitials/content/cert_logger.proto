@@ -265,6 +265,14 @@ message TrialVerificationInfo {
   // calls done during verification.
   repeated MacTrustFlags mac_combined_trust_debug_info = 7;
 
+  enum MacTrustImplType {
+    MAC_TRUST_IMPL_UNKNOWN = 0;
+    MAC_TRUST_IMPL_DOMAIN_CACHE = 1;
+    MAC_TRUST_IMPL_SIMPLE = 2;
+    MAC_TRUST_IMPL_MRU_CACHE = 3;
+  };
+  optional MacTrustImplType mac_trust_impl = 13;
+
   // The time (in usec since the Windows epoch) when the trial verifier
   // attempted to verify the chain.
   optional int64 trial_verification_time_usec = 8;
