@@ -10,6 +10,7 @@
 
 #include "ash/public/cpp/shell_window_ids.h"
 #include "ash/shell.h"
+#include "ash/wm/desks/desks_util.h"
 #include "ash/wm/window_animations.h"
 #include "base/barrier_closure.h"
 #include "ui/aura/client/aura_constants.h"
@@ -272,11 +273,18 @@ void GetContainersInRootWindow(int container_mask,
     aura::Window* non_lock_screen_containers = Shell::GetContainer(
         root_window, kShellWindowId_NonLockScreenContainersContainer);
     // |non_lock_screen_containers| may already be removed in some tests.
+    constexpr int ContainersToAnimate[] = {
+        kShellWindowId_HomeScreenContainer,
+        kShellWindowId_AlwaysOnTopContainer,
+        kShellWindowId_PipContainer,
+        kShellWindowId_SystemModalContainer,
+    };
     if (non_lock_screen_containers) {
       for (aura::Window* window : non_lock_screen_containers->children()) {
-        if (window->id() == kShellWindowId_ShelfContainer)
-          continue;
-        containers->push_back(window);
+        if ((base::Contains(ContainersToAnimate, window->id()) ||
+             desks_util::IsActiveDeskContainer(window))) {
+          containers->push_back(window);
+        }
       }
     }
   }
