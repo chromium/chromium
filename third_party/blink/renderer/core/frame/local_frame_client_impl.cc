@@ -404,7 +404,6 @@ void LocalFrameClientImpl::DispatchDidCommitLoad(
     HistoryItem* item,
     WebHistoryCommitType commit_type,
     bool should_reset_browser_interface_broker,
-    network::mojom::WebSandboxFlags sandbox_flags,
     const blink::ParsedPermissionsPolicy& permissions_policy_header,
     const blink::DocumentPolicyFeatureState& document_policy_header) {
   if (!web_frame_->Parent()) {
@@ -414,7 +413,7 @@ void LocalFrameClientImpl::DispatchDidCommitLoad(
 
   if (web_frame_->Client()) {
     web_frame_->Client()->DidCommitNavigation(
-        commit_type, should_reset_browser_interface_broker, sandbox_flags,
+        commit_type, should_reset_browser_interface_broker,
         permissions_policy_header, document_policy_header);
 
     // With local to local swap it's possible for the frame to be deleted as a

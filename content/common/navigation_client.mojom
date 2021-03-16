@@ -12,7 +12,6 @@ import "services/network/public/mojom/host_resolver.mojom";
 import "services/network/public/mojom/url_loader.mojom";
 import "services/network/public/mojom/url_loader_factory.mojom";
 import "services/network/public/mojom/url_response_head.mojom";
-import "services/network/public/mojom/web_sandbox_flags.mojom";
 import "third_party/blink/public/mojom/commit_result/commit_result.mojom";
 import "third_party/blink/public/mojom/permissions_policy/document_policy_feature.mojom";
 import "third_party/blink/public/mojom/permissions_policy/permissions_policy.mojom";
@@ -120,10 +119,6 @@ struct DidCommitProvisionalLoadParams {
   // Origin of the frame.  This will be replicated to any associated
   // RenderFrameProxies.
   url.mojom.Origin origin;
-
-  // TODO(https://crbug.com/1041376): Remove this, once we trust the value
-  // computed by the browser process.
-  network.mojom.WebSandboxFlags sandbox_flags;
 
   // The 'Permissions-Policy' headers applied to the document.
   // https://w3c.github.io/webappsec-permissions-policy/#permissions-policy-http-header-field

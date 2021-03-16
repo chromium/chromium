@@ -1139,6 +1139,7 @@ RenderFrameHostImpl::RenderFrameHostImpl(
     // Creating a RFH in kActive state implies that it is the RFH for a
     // newly-created FTN, which should not have committed a real load yet.
     DCHECK(!frame_tree_node_->has_committed_real_load());
+
     if (parent_) {
       SetPolicyContainerHost(parent_->policy_container_host()->Clone());
     } else if (frame_tree_node_->opener()) {
@@ -1149,6 +1150,14 @@ RenderFrameHostImpl::RenderFrameHostImpl(
     } else {
       SetPolicyContainerHost(base::MakeRefCounted<PolicyContainerHost>());
     }
+
+    // The initial empty document gets its sandbox flags from either:
+    // 1. The parent + iframe.sandbox for <iframe>.
+    // 2. The opener for popup, when "allow-popups-to-escape-sandbox" isn't set.
+    //
+    // Both are already computed and stored in the FrameTreeNode. So only a copy
+    // is needed here.
+    active_sandbox_flags_ = frame_tree_node_->active_sandbox_flags();
   }
 
   if (!base::FeatureList::IsEnabled(
@@ -9008,7 +9017,13 @@ void RenderFrameHostImpl::DidCommitNewDocument(
   DCHECK(!navigation_request->IsServedFromBackForwardCache());
 
   ResetPermissionsPolicy();
-  active_sandbox_flags_ = params.sandbox_flags;
+  // There are two type of navigations committing new documents:
+  // 1. The regular ones. They can change sandbox_flags.
+  // 2. The synchronous re-navigation to about:blank. A second about:blank
+  //    document commits on top of initial one. No properties are changed,
+  //    including sandbox_flags.
+  if (navigation_request->IsWaitingToCommit())
+    active_sandbox_flags_ = navigation_request->SandboxFlagsToCommit();
   permissions_policy_header_ = params.permissions_policy_header;
   permissions_policy_->SetHeaderPolicy(params.permissions_policy_header);
   document_policy_ = blink::DocumentPolicy::CreateWithHeaderPolicy({
@@ -9030,16 +9045,6 @@ void RenderFrameHostImpl::DidCommitNewDocument(
 
   renderer_reported_scheduler_tracked_features_ = 0;
   browser_reported_scheduler_tracked_features_ = 0;
-
-  // TODO(https://crbug.com/1041376): The sandbox flags computed from the
-  // browser must match with the ones computed from the renderer process.
-  // Ultimately, the one from the browser process should supersede the
-  // renderer one. The browser will just "push" the correct value.
-  //
-  // This currently doesn't match for about blank in the WPT test:
-  // window-open-blank-from-different-initiator-after-slow.html
-  DCHECK(navigation_request->GetURL().IsAboutBlank() ||
-         params.sandbox_flags == navigation_request->SandboxFlagsToCommit());
 
   // TODO(https://crbug.com/888079): The origin computed from the browser must
   // match the one reported from the renderer process.

@@ -100,7 +100,6 @@ class CORE_EXPORT LocalFrameClientImpl final : public LocalFrameClient {
       HistoryItem*,
       WebHistoryCommitType,
       bool should_reset_browser_interface_broker,
-      network::mojom::WebSandboxFlags sandbox_flags,
       const blink::ParsedPermissionsPolicy& permissions_policy_header,
       const blink::DocumentPolicyFeatureState& document_policy_header) override;
   void DispatchDidFailLoad(const ResourceError&, WebHistoryCommitType) override;

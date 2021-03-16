@@ -2199,7 +2199,6 @@ void DocumentLoader::CommitNavigation() {
       GetLocalFrameClient().DispatchDidCommitLoad(
           history_item_.Get(), LoadTypeToCommitType(load_type_),
           previous_window != frame_->DomWindow(),
-          frame_->DomWindow()->GetSandboxFlags(),
           security_init.PermissionsPolicyHeader(),
           document_policy_.feature_state);
     }

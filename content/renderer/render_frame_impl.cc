@@ -4007,7 +4007,6 @@ void RenderFrameImpl::DidCreateDocumentLoader(
 void RenderFrameImpl::DidCommitNavigation(
     blink::WebHistoryCommitType commit_type,
     bool should_reset_browser_interface_broker,
-    network::mojom::WebSandboxFlags sandbox_flags,
     const blink::ParsedPermissionsPolicy& permissions_policy_header,
     const blink::DocumentPolicyFeatureState& document_policy_header) {
   CHECK_EQ(NavigationCommitState::kWillCommit, navigation_commit_state_);
@@ -4120,7 +4119,7 @@ void RenderFrameImpl::DidCommitNavigation(
       GetTransitionType(frame_->GetDocumentLoader(), IsMainFrame());
 
   DidCommitNavigationInternal(
-      commit_type, transition, sandbox_flags, permissions_policy_header,
+      commit_type, transition, permissions_policy_header,
       document_policy_header,
       should_reset_browser_interface_broker
           ? mojom::DidCommitProvisionalLoadInterfaceParams::New(
@@ -4282,7 +4281,7 @@ void RenderFrameImpl::DidFinishSameDocumentNavigation(
   same_document_params->is_history_api_navigation = is_history_api_navigation;
   same_document_params->is_client_redirect = is_client_redirect;
   DidCommitNavigationInternal(
-      commit_type, transition, network::mojom::WebSandboxFlags(),
+      commit_type, transition,
       blink::ParsedPermissionsPolicy(),     // permissions_policy_header
       blink::DocumentPolicyFeatureState(),  // document_policy_header
       nullptr,                              // interface_params
@@ -4758,7 +4757,6 @@ mojom::DidCommitProvisionalLoadParamsPtr
 RenderFrameImpl::MakeDidCommitProvisionalLoadParams(
     blink::WebHistoryCommitType commit_type,
     ui::PageTransition transition,
-    network::mojom::WebSandboxFlags sandbox_flags,
     const blink::ParsedPermissionsPolicy& permissions_policy_header,
     const blink::DocumentPolicyFeatureState& document_policy_header,
     const base::Optional<base::UnguessableToken>& embedding_token) {
@@ -4809,7 +4807,6 @@ RenderFrameImpl::MakeDidCommitProvisionalLoadParams(
   WebSecurityOrigin frame_origin = frame_document.GetSecurityOrigin();
   params->origin = frame_origin;
 
-  params->sandbox_flags = sandbox_flags;
   params->permissions_policy_header = permissions_policy_header;
   params->document_policy_header = document_policy_header;
 
@@ -5037,7 +5034,6 @@ void RenderFrameImpl::UpdateStateForCommit(
 void RenderFrameImpl::DidCommitNavigationInternal(
     blink::WebHistoryCommitType commit_type,
     ui::PageTransition transition,
-    network::mojom::WebSandboxFlags sandbox_flags,
     const blink::ParsedPermissionsPolicy& permissions_policy_header,
     const blink::DocumentPolicyFeatureState& document_policy_header,
     mojom::DidCommitProvisionalLoadInterfaceParamsPtr interface_params,
@@ -5055,7 +5051,7 @@ void RenderFrameImpl::DidCommitNavigationInternal(
   // after the browser process has already been informed of the provisional
   // load committing.
   auto params = MakeDidCommitProvisionalLoadParams(
-      commit_type, transition, sandbox_flags, permissions_policy_header,
+      commit_type, transition, permissions_policy_header,
       document_policy_header, embedding_token);
 
   if (same_document_params) {

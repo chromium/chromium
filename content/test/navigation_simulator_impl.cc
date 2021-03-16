@@ -1331,10 +1331,8 @@ NavigationSimulatorImpl::BuildDidCommitProvisionalLoadParams(
   } else {
     params->should_update_history = true;
     if (same_document) {
-      params->sandbox_flags = current_rfh->active_sandbox_flags();
       params->origin = current_rfh->GetLastCommittedOrigin();
     } else {
-      params->sandbox_flags = request_->SandboxFlagsToCommit();
       params->origin =
           origin_.value_or(request_->GetOriginForURLLoaderFactory());
     }
