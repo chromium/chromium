@@ -7,11 +7,15 @@
 #include "third_party/abseil-cpp/absl/strings/str_format.h"
 #include "third_party/liburlpattern/pattern.h"
 
-namespace liburlpattern {
+namespace {
 
 absl::StatusOr<std::string> PassThrough(absl::string_view input) {
   return std::string(input);
 }
+
+}  // namespace
+
+namespace liburlpattern {
 
 absl::StatusOr<std::string> ToUpper(absl::string_view input) {
   std::string output;
@@ -262,6 +266,10 @@ TEST(ParseTest, Name) {
            /*value=*/"", /*suffix=*/"", Modifier::kNone),
   };
   RunParseTest("/foo:bar", expected_parts);
+}
+
+TEST(ParseTest, NameStartsWithNumber) {
+  RunParseTest("/foo/:0", absl::InvalidArgumentError("Missing parameter name"));
 }
 
 TEST(ParseTest, NameInGroup) {

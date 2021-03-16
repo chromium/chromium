@@ -29,8 +29,8 @@ class State {
         encode_callback_(std::move(encode_callback)),
         options_(std::move(options)),
         segment_wildcard_regex_(
-            absl::StrFormat("[^%s]+?", EscapeString(options_.delimiter_list))) {
-  }
+            absl::StrFormat("[^%s]+?",
+                            EscapeRegexpString(options_.delimiter_list))) {}
 
   // Return true if there are more tokens to process.
   bool HasMoreTokens() const { return index_ < token_list_.size(); }

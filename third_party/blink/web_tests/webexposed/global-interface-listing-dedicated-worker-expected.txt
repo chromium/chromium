@@ -1606,6 +1606,14 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     setter username
 [Worker] interface URLPattern
 [Worker]     attribute @@toStringTag
+[Worker]     getter hash
+[Worker]     getter hostname
+[Worker]     getter password
+[Worker]     getter pathname
+[Worker]     getter port
+[Worker]     getter protocol
+[Worker]     getter search
+[Worker]     getter username
 [Worker]     method constructor
 [Worker]     method exec
 [Worker]     method test

@@ -44,7 +44,14 @@ class URLPattern : public ScriptWrappable {
   URLPatternResult* exec(const USVStringOrURLPatternInit& input,
                          ExceptionState& exception_state) const;
 
-  // TODO: define a stringifier
+  String protocol() const;
+  String username() const;
+  String password() const;
+  String hostname() const;
+  String port() const;
+  String pathname() const;
+  String search() const;
+  String hash() const;
 
   void Trace(Visitor* visitor) const override;
 

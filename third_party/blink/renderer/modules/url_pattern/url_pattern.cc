@@ -31,6 +31,9 @@ class URLPattern::Component final
 
   void Trace(Visitor* visitor) const { visitor->Trace(regexp); }
 
+  // The parsed pattern.
+  liburlpattern::Pattern pattern;
+
   // The pattern compiled down to a js regular expression.
   Member<ScriptRegexp> regexp;
 
@@ -38,11 +41,15 @@ class URLPattern::Component final
   // liburlpattern regular expressions do not use named capture groups directly.
   Vector<String> name_list;
 
-  Component(ScriptRegexp* r, Vector<String> n)
-      : regexp(r), name_list(std::move(n)) {}
+  Component(liburlpattern::Pattern p, ScriptRegexp* r, Vector<String> n)
+      : pattern(p), regexp(r), name_list(std::move(n)) {}
 };
 
 namespace {
+
+// The default pattern string for components that are not specified in the
+// URLPattern constructor.
+const char* kDefaultPattern = "*";
 
 // The liburlpattern::Options to use for most component patterns.  We
 // default to strict mode and case sensitivity.  In addition, most
@@ -762,6 +769,62 @@ URLPatternResult* URLPattern::exec(const USVStringOrURLPatternInit& input,
   return result;
 }
 
+String URLPattern::protocol() const {
+  if (!protocol_)
+    return kDefaultPattern;
+  std::string result = protocol_->pattern.GeneratePatternString();
+  return String::FromUTF8(result);
+}
+
+String URLPattern::username() const {
+  if (!username_)
+    return kDefaultPattern;
+  std::string result = username_->pattern.GeneratePatternString();
+  return String::FromUTF8(result);
+}
+
+String URLPattern::password() const {
+  if (!password_)
+    return kDefaultPattern;
+  std::string result = password_->pattern.GeneratePatternString();
+  return String::FromUTF8(result);
+}
+
+String URLPattern::hostname() const {
+  if (!hostname_)
+    return kDefaultPattern;
+  std::string result = hostname_->pattern.GeneratePatternString();
+  return String::FromUTF8(result);
+}
+
+String URLPattern::port() const {
+  if (!port_)
+    return kDefaultPattern;
+  std::string result = port_->pattern.GeneratePatternString();
+  return String::FromUTF8(result);
+}
+
+String URLPattern::pathname() const {
+  if (!pathname_)
+    return kDefaultPattern;
+  std::string result = pathname_->pattern.GeneratePatternString();
+  return String::FromUTF8(result);
+}
+
+String URLPattern::search() const {
+  if (!search_)
+    return kDefaultPattern;
+  std::string result = search_->pattern.GeneratePatternString();
+  return String::FromUTF8(result);
+}
+
+String URLPattern::hash() const {
+  if (!hash_)
+    return kDefaultPattern;
+  std::string result = hash_->pattern.GeneratePatternString();
+  return String::FromUTF8(result);
+}
+
 void URLPattern::Trace(Visitor* visitor) const {
   visitor->Trace(protocol_);
   visitor->Trace(username_);
@@ -823,8 +886,9 @@ URLPattern::Component* URLPattern::CompilePattern(
     wtf_name_list.push_back(String::FromUTF8(name.data(), name.size()));
   }
 
-  return MakeGarbageCollected<URLPattern::Component>(std::move(regexp),
-                                                     std::move(wtf_name_list));
+  return MakeGarbageCollected<URLPattern::Component>(
+      std::move(parse_result.value()), std::move(regexp),
+      std::move(wtf_name_list));
 }
 
 bool URLPattern::Match(const USVStringOrURLPatternInit& input,

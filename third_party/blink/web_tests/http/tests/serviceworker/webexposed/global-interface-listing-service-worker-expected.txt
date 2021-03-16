@@ -1562,6 +1562,14 @@ interface URL
     setter username
 interface URLPattern
     attribute @@toStringTag
+    getter hash
+    getter hostname
+    getter password
+    getter pathname
+    getter port
+    getter protocol
+    getter search
+    getter username
     method constructor
     method exec
     method test

@@ -6,15 +6,21 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/liburlpattern/parse.h"
 
+namespace {
+
+absl::StatusOr<std::string> PassThrough(absl::string_view input) {
+  return std::string(input);
+}
+
+}  // namespace
+
 namespace liburlpattern {
 
 void RunRegexTest(absl::string_view input,
                   absl::string_view expected_regex,
                   std::vector<std::string> expected_name_list,
                   Options options = Options()) {
-  auto result = Parse(
-      input, [](absl::string_view input) { return std::string(input); },
-      options);
+  auto result = Parse(input, PassThrough, options);
   ASSERT_TRUE(result.ok());
   auto& pattern = result.value();
   std::vector<std::string> name_list;
@@ -180,6 +186,136 @@ TEST(PatternRegexTest, EndsWithNoEndNameWithPrefixAndOneOrMoreModifier) {
                R"(^\/foo(?:\/((?:[^\/#\?]+?)(?:\/(?:[^\/#\?]+?))*))(?:[\/)"
                R"(#\?](?=[#]|$))?(?=[\/#\?]|[#]|$))",
                {"bar"}, {.end = false, .ends_with = "#"});
+}
+
+void RunPatternStringTest(absl::string_view input,
+                          absl::string_view expected_pattern_string) {
+  auto result = Parse(input, PassThrough);
+  ASSERT_TRUE(result.ok());
+  auto& pattern = result.value();
+  std::string pattern_string = pattern.GeneratePatternString();
+  EXPECT_EQ(pattern_string, expected_pattern_string);
+
+  // The computed pattern string should be valid and parse correctly.
+  auto result2 = Parse(pattern_string, PassThrough);
+  EXPECT_TRUE(result.ok());
+
+  // The second Pattern object may or may not be identical to the first
+  // due to normalization.  For example, stripping the unnecessary grouping
+  // from a `{foo}` term.
+
+  // Computing a second pattern string should result in an identical
+  // value, however.
+  std::string pattern_string2 = result2.value().GeneratePatternString();
+  EXPECT_EQ(pattern_string2, pattern_string);
+}
+
+TEST(PatternStringTest, Fixed) {
+  RunPatternStringTest("/foo/bar", "/foo/bar");
+}
+
+TEST(PatternStringTest, Group) {
+  RunPatternStringTest("/foo/{bar}", "/foo/bar");
+}
+
+TEST(PatternStringTest, GroupWithRegexp) {
+  RunPatternStringTest("/foo/{(bar)}", "/foo/(bar)");
+}
+
+TEST(PatternStringTest, GroupWithPrefixAndRegexp) {
+  RunPatternStringTest("/foo/{b(ar)}", "/foo/{b(ar)}");
+}
+
+TEST(PatternStringTest, GroupWithDefaultPrefixAndRegexp) {
+  RunPatternStringTest("/foo{/(bar)}", "/foo/(bar)");
+}
+
+TEST(PatternStringTest, GroupWithRegexpAndSuffix) {
+  RunPatternStringTest("/foo/{(ba)r}", "/foo/{(ba)r}");
+}
+
+TEST(PatternStringTest, GroupWithDefaultPrefixRegexpAndSuffix) {
+  RunPatternStringTest("/foo{/(ba)r}", "/foo{/(ba)r}");
+}
+
+TEST(PatternStringTest, GroupWithQuestionModifier) {
+  RunPatternStringTest("/foo/{bar}?", "/foo/{bar}?");
+}
+
+TEST(PatternStringTest, GroupWithStarModifier) {
+  RunPatternStringTest("/foo/{bar}*", "/foo/{bar}*");
+}
+
+TEST(PatternStringTest, GroupWithPlusModifier) {
+  RunPatternStringTest("/foo/{bar}+", "/foo/{bar}+");
+}
+
+TEST(PatternStringTest, NamedGroup) {
+  RunPatternStringTest("/foo/:bar", "/foo/:bar");
+}
+
+TEST(PatternStringTest, NamedGroupWithRegexp) {
+  RunPatternStringTest("/foo/:bar(baz)", "/foo/:bar(baz)");
+}
+
+TEST(PatternStringTest, NamedGroupWithEquivalentRegexp) {
+  RunPatternStringTest("/foo/:bar([^\\/#\\?]+?)", "/foo/:bar");
+}
+
+TEST(PatternStringTest, NamedGroupWithWildcardEquivalentRegexp) {
+  RunPatternStringTest("/foo/:bar(.*)", "/foo/:bar(.*)");
+}
+
+TEST(PatternStringTest, NamedGroupWithQuestionModifier) {
+  RunPatternStringTest("/foo/:bar?", "/foo/:bar?");
+}
+
+TEST(PatternStringTest, NamedGroupWithStarModifier) {
+  RunPatternStringTest("/foo/:bar*", "/foo/:bar*");
+}
+
+TEST(PatternStringTest, NamedGroupWithPlusModifier) {
+  RunPatternStringTest("/foo/:bar+", "/foo/:bar+");
+}
+
+TEST(PatternStringTest, Regexp) {
+  RunPatternStringTest("/foo/(bar)", "/foo/(bar)");
+}
+
+TEST(PatternStringTest, RegexpWithQuestionModifier) {
+  RunPatternStringTest("/foo/(bar)?", "/foo/(bar)?");
+}
+
+TEST(PatternStringTest, RegexpWithStarModifier) {
+  RunPatternStringTest("/foo/(bar)*", "/foo/(bar)*");
+}
+
+TEST(PatternStringTest, RegexpWithPlusModifier) {
+  RunPatternStringTest("/foo/(bar)+", "/foo/(bar)+");
+}
+
+TEST(PatternStringTest, Wildcard) {
+  RunPatternStringTest("/foo/*", "/foo/*");
+}
+
+TEST(PatternStringTest, RegexpWildcardEquivalent) {
+  RunPatternStringTest("/foo/(.*)", "/foo/*");
+}
+
+TEST(PatternStringTest, RegexpEscapedNonPatternChar) {
+  RunPatternStringTest("/foo/\\bar", "/foo/bar");
+}
+
+TEST(PatternStringTest, RegexpEscapedPatternChar) {
+  RunPatternStringTest("/foo/\\:bar", "/foo/\\:bar");
+}
+
+TEST(PatternStringTest, RegexpEscapedPatternCharInPrefix) {
+  RunPatternStringTest("/foo/{\\:bar(foo)}", "/foo/{\\:bar(foo)}");
+}
+
+TEST(PatternStringTest, RegexpEscapedPatternCharInSuffix) {
+  RunPatternStringTest("/foo/{(foo)\\:bar}", "/foo/{(foo)\\:bar}");
 }
 
 }  // namespace liburlpattern

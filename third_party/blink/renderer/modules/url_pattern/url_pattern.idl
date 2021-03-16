@@ -13,4 +13,13 @@ typedef (USVString or URLPatternInit) URLPatternInput;
   [RaisesException] constructor(URLPatternInit init);
   [RaisesException] boolean test(URLPatternInput input);
   [RaisesException] URLPatternResult exec(URLPatternInput input);
+
+  readonly attribute USVString protocol;
+  readonly attribute USVString username;
+  readonly attribute USVString password;
+  readonly attribute USVString hostname;
+  readonly attribute USVString port;
+  readonly attribute USVString pathname;
+  readonly attribute USVString search;
+  readonly attribute USVString hash;
 };

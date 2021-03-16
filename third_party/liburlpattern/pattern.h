@@ -106,6 +106,15 @@ class COMPONENT_EXPORT(LIBURLPATTERN) Pattern {
           Options options,
           std::string segment_wildcard_regex);
 
+  // Generate a canonical string for the parsed pattern.  This may result
+  // in a value different from the pattern string originally passed to
+  // Parse().  For example, no-op syntax like `{bar}` will be simplified to
+  // `bar`.  In addition, the generated string will include any changes mad
+  // by EncodingCallback hooks.  Finally, regular expressions equivalent to
+  // `*` and named group default matching will be simplified; e.g. `(.*)`
+  // will become just `*`.
+  std::string GeneratePatternString() const;
+
   // Generate an ECMA-262 regular expression string that is equivalent to this
   // pattern.  A vector of strings can be optionally passed to |name_list_out|
   // to be populated with the list of group names.  These correspond
