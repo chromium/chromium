@@ -49,6 +49,7 @@
 #include "components/proxy_config/pref_proxy_config_tracker_impl.h"
 #include "components/proxy_config/proxy_config_dictionary.h"
 #include "components/proxy_config/proxy_config_pref_names.h"
+#include "components/proxy_config/proxy_prefs.h"
 #include "net/base/url_util.h"
 #include "net/proxy_resolution/proxy_bypass_rules.h"
 #include "net/proxy_resolution/proxy_config.h"
@@ -92,6 +93,13 @@ bool GetHttpProxyServer(const ProxyConfigDictionary* proxy_config_dict,
   *host = server.host_port_pair().host();
   *port = server.host_port_pair().port();
   return !host->empty() && *port;
+}
+
+bool IsProxyAutoDetectionConfigured(const base::Value* proxy_config_dict) {
+  ProxyConfigDictionary dict(proxy_config_dict->Clone());
+  ProxyPrefs::ProxyMode mode;
+  dict.GetMode(&mode);
+  return mode == ProxyPrefs::MODE_AUTO_DETECT;
 }
 
 }  // namespace
@@ -233,6 +241,9 @@ class ArcSettingsServiceImpl
   std::string default_network_name_;
   // Proxy configuration of the default network.
   base::Value default_proxy_config_;
+  // The PAC URL associated with `default_network_name_`, received via the DHCP
+  // discovery method.
+  GURL dhcp_wpad_url_;
 
   DISALLOW_COPY_AND_ASSIGN(ArcSettingsServiceImpl);
 };
@@ -303,15 +314,35 @@ void ArcSettingsServiceImpl::TimezoneChanged(const icu::TimeZone& timezone) {
 }
 
 // This function is called when the default network changes or when any of its
-// properties change.
+// properties change. If the proxy configuration of the default network has
+// changed, this method will call `SyncProxySettings` which syncs the proxy
+// settings with ARC. Proxy changes on the default network are triggered by:
+// - a user changing the proxy in the Network Settings UI;
+// - ONC policy changes;
+// - DHCP settings the WPAD URL via  option 252.
 void ArcSettingsServiceImpl::DefaultNetworkChanged(
     const chromeos::NetworkState* network) {
-  bool sync_proxy = false;
-  // kProxy pref has more priority than the default network update.
-  // If a default network is changed to the network with ONC policy with proxy
-  // settings, it should be translated here.
-  if (!network || IsPrefProxyConfigApplied())
+  if (!network)
     return;
+
+  bool dhcp_wpad_url_changed =
+      dhcp_wpad_url_ != network->GetWebProxyAutoDiscoveryUrl();
+  dhcp_wpad_url_ = network->GetWebProxyAutoDiscoveryUrl();
+
+  if (IsPrefProxyConfigApplied()) {
+    //  Normally, we would ignore proxy changes coming from the default
+    //  network because the kProxy pref has priority. If the proxy is
+    //  configured to use the Web Proxy Auto-Discovery (WPAD) Protocol via the
+    //  DHCP discovery method, the PAC URL will be propagated to Chrome via the
+    //  default network properties.
+    if (dhcp_wpad_url_changed && IsProxyAutoDetectionConfigured(GetPrefs()->Get(
+                                     proxy_config::prefs::kProxy))) {
+      SyncProxySettings();
+    }
+    return;
+  }
+
+  bool sync_proxy = false;
   // Trigger a proxy settings sync to ARC if the default network changes.
   if (default_network_name_ != network->name()) {
     default_network_name_ = network->name();
@@ -325,6 +356,14 @@ void ArcSettingsServiceImpl::DefaultNetworkChanged(
     default_proxy_config_ = network->proxy_config().Clone();
     sync_proxy = true;
   }
+
+  // Check if proxy auto detection is enabled. If yes, and the PAC URL set via
+  // DHCP has changed, propagate the change to ARC.
+  if (!default_proxy_config_.is_none() && dhcp_wpad_url_changed &&
+      IsProxyAutoDetectionConfigured(&default_proxy_config_)) {
+    sync_proxy = true;
+  }
+
   if (!sync_proxy)
     return;
 
@@ -522,9 +561,16 @@ void ArcSettingsServiceImpl::SyncProxySettings() const {
     case ProxyPrefs::MODE_SYSTEM:
       VLOG(1) << "The system mode is not translated.";
       return;
-    case ProxyPrefs::MODE_AUTO_DETECT:
-      extras.SetString("pacUrl", "http://wpad/wpad.dat");
+    case ProxyPrefs::MODE_AUTO_DETECT: {
+      // WPAD with DHCP has a higher priority than DNS.
+      if (dhcp_wpad_url_.is_valid()) {
+        extras.SetString("pacUrl", dhcp_wpad_url_.spec());
+      } else {
+        // Fallback to WPAD via DNS.
+        extras.SetString("pacUrl", "http://wpad/wpad.dat");
+      }
       break;
+    }
     case ProxyPrefs::MODE_PAC_SCRIPT: {
       std::string pac_url;
       if (!proxy_config_dict->GetPacUrl(&pac_url)) {

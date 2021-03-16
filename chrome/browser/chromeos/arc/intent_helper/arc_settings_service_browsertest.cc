@@ -21,6 +21,7 @@
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chromeos/dbus/dbus_thread_manager.h"
+#include "chromeos/dbus/shill/shill_ipconfig_client.h"
 #include "chromeos/dbus/shill/shill_profile_client.h"
 #include "chromeos/dbus/shill/shill_service_client.h"
 #include "chromeos/network/network_handler.h"
@@ -854,6 +855,74 @@ IN_PROC_BROWSER_TEST_F(ArcSettingsServiceTest, ProxySyncUnmanagedDevice) {
   EXPECT_EQ(CountProxyBroadcasts(fake_intent_helper_instance_->broadcasts(),
                                  expected_proxy_configs),
             proxy_sync_count);
+}
+
+IN_PROC_BROWSER_TEST_F(ArcSettingsServiceTest, WebProxyAutoDiscovery) {
+  fake_intent_helper_instance_->clear_broadcasts();
+
+  // Set the proxy config to use auto-discovery. There's no PAC URL set via DHCP
+  // so the URL "http://wpad/wpad.dat" set via DNS will be propagated to ARC.
+  base::Value proxy_config_wpad(base::Value::Type::DICTIONARY);
+  proxy_config_wpad.SetKey("mode",
+                           base::Value(ProxyPrefs::kAutoDetectProxyModeName));
+  browser()->profile()->GetPrefs()->Set(proxy_config::prefs::kProxy,
+                                        proxy_config_wpad);
+
+  RunUntilIdle();
+  const char kWebProxyAutodetectionUrl[] = "www.proxyurl.com:443";
+
+  chromeos::ShillIPConfigClient::TestInterface* ip_config_client =
+      chromeos::DBusThreadManager::Get()
+          ->GetShillIPConfigClient()
+          ->GetTestInterface();
+
+  // Set the WPAD DHCP URL. This should now have precedence over the PAC URL set
+  // via DNS.
+  base::Value wpad_config(base::Value::Type::DICTIONARY);
+  wpad_config.SetKey(shill::kWebProxyAutoDiscoveryUrlProperty,
+                     base::Value(kWebProxyAutodetectionUrl));
+  const std::string kIPConfigPath = "test_ip_config";
+  ip_config_client->AddIPConfig(kIPConfigPath, wpad_config);
+
+  chromeos::ShillServiceClient::TestInterface* service_test =
+      chromeos::DBusThreadManager::Get()
+          ->GetShillServiceClient()
+          ->GetTestInterface();
+
+  service_test->SetServiceProperty(kDefaultServicePath,
+                                   shill::kIPConfigProperty,
+                                   base::Value(kIPConfigPath));
+  RunUntilIdle();
+
+  // Remove the proxy.
+  base::Value proxy_config_direct(base::Value::Type::DICTIONARY);
+  proxy_config_direct.SetKey("mode",
+                             base::Value(ProxyPrefs::kDirectProxyModeName));
+  browser()->profile()->GetPrefs()->Set(proxy_config::prefs::kProxy,
+                                        proxy_config_direct);
+
+  RunUntilIdle();
+  base::Value expected_proxy_config_wpad_dns(base::Value::Type::DICTIONARY);
+  expected_proxy_config_wpad_dns.SetKey(
+      "mode", base::Value(ProxyPrefs::kAutoDetectProxyModeName));
+  expected_proxy_config_wpad_dns.SetKey("pacUrl",
+                                        base::Value("http://wpad/wpad.dat"));
+
+  base::Value expected_proxy_config_wpad_dhcp(base::Value::Type::DICTIONARY);
+  expected_proxy_config_wpad_dhcp.SetKey(
+      "mode", base::Value(ProxyPrefs::kAutoDetectProxyModeName));
+  expected_proxy_config_wpad_dhcp.SetKey(
+      "pacUrl", base::Value(kWebProxyAutodetectionUrl));
+
+  base::Value expected_proxy_config_direct(base::Value::Type::DICTIONARY);
+  expected_proxy_config_direct.SetKey(
+      "mode", base::Value(ProxyPrefs::kDirectProxyModeName));
+
+  EXPECT_EQ(CountProxyBroadcasts(fake_intent_helper_instance_->broadcasts(),
+                                 {&expected_proxy_config_wpad_dns,
+                                  &expected_proxy_config_wpad_dhcp,
+                                  &expected_proxy_config_direct}),
+            3);
 }
 
 }  // namespace arc
