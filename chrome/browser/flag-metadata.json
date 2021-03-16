@@ -2901,12 +2901,12 @@
   {
     "name": "font-access",
     "owners": [ "cmp", "oyiptong" ],
-    "expiry_milestone": 90
+    "expiry_milestone": 96
   },
   {
     "name": "font-access-chooser",
     "owners": [ "oyiptong" ],
-    "expiry_milestone": 92
+    "expiry_milestone": 96
   },
   {
     "name": "font-access-persistent",
