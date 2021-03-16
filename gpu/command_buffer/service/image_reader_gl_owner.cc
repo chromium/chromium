@@ -346,6 +346,11 @@ ImageReaderGLOwner::GetAHardwareBuffer() {
   if (!buffer)
     return nullptr;
 
+  // TODO(1179206): We suspect that buffer is already freed here and it causes
+  // crash later. Trying to crash earlier.
+  base::AndroidHardwareBufferCompat::GetInstance().Acquire(buffer);
+  base::AndroidHardwareBufferCompat::GetInstance().Release(buffer);
+
   return std::make_unique<ScopedHardwareBufferImpl>(
       weak_factory_.GetWeakPtr(), current_image_ref_->image(),
       base::android::ScopedHardwareBufferHandle::Create(buffer),
