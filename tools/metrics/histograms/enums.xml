@@ -31879,6 +31879,9 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="3852" label="LaxAllowingUnsafeCookies"/>
   <int value="3853" label="V8MediaSession_SetMicrophoneActive_Method"/>
   <int value="3854" label="V8MediaSession_SetCameraActive_Method"/>
+  <int value="3855" label="V8Navigator_JoinAdInterestGroup_Method"/>
+  <int value="3856" label="V8Navigator_LeaveAdInterestGroup_Method"/>
+  <int value="3857" label="V8Navigator_RunAdAuction_Method"/>
 </enum>
 
 <enum name="FeaturePolicyAllowlistType">

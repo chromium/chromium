@@ -3162,6 +3162,9 @@ enum WebFeature {
   kLaxAllowingUnsafeCookies = 3852,
   kV8MediaSession_SetMicrophoneActive_Method = 3853,
   kV8MediaSession_SetCameraActive_Method = 3854,
+  kV8Navigator_JoinAdInterestGroup_Method = 3855,
+  kV8Navigator_LeaveAdInterestGroup_Method = 3856,
+  kV8Navigator_RunAdAuction_Method = 3857,
 
   // Add new features immediately above this line. Don't change assigned
   // numbers of any item, and don't reuse removed slots.
