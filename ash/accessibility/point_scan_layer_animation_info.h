@@ -12,6 +12,7 @@ namespace ash {
 struct PointScanLayerAnimationInfo {
   base::TimeTicks start_time;
   base::TimeTicks change_time;
+  base::TimeTicks linger_until;
   float offset = 0;
   float offset_bound = 0;
   float offset_start = 0;
