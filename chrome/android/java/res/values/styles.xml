@@ -66,7 +66,10 @@
          navigation bar colors from being applied -->
     <style name="Theme.Chromium.SearchActivity" parent="Base.Theme.Chromium.WithWindowAnimation" />
 
-    <style name="Base.Theme.Chromium.TabbedMode" parent="Theme.Chromium.WithWindowAnimation" />
+    <style name="Base.Theme.Chromium.TabbedMode" parent="Theme.Chromium.WithWindowAnimation">
+        <!-- Attributes for material design component. See https://crbug.com/1186712 -->
+        <item name="colorSurface">@color/material_color_surface</item>
+    </style>
     <style name="Theme.Chromium.TabbedMode" parent="Base.Theme.Chromium.TabbedMode" />
 
     <!-- Web app themes -->
