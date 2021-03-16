@@ -19,6 +19,7 @@ import "chromeos/crosapi/mojom/metrics_reporting.mojom";
 import "chromeos/crosapi/mojom/prefs.mojom";
 import "chromeos/crosapi/mojom/screen_manager.mojom";
 import "chromeos/crosapi/mojom/select_file.mojom";
+import "chromeos/crosapi/mojom/task_manager.mojom";
 import "chromeos/crosapi/mojom/test_controller.mojom";
 import "chromeos/crosapi/mojom/url_handler.mojom";
 import "chromeos/services/machine_learning/public/mojom/machine_learning_service.mojom";
@@ -50,8 +51,8 @@ struct BrowserInfo {
 // please note the milestone when you added it, to help us reason about
 // compatibility between the client applications and older ash-chrome binaries.
 //
-// Next version: 19
-// Next method id: 24
+// Next version: 20
+// Next method id: 25
 [Stable, Uuid="8b79c34f-2bf8-4499-979a-b17cac522c1e",
  RenamedFrom="crosapi.mojom.AshChromeService"]
 interface Crosapi {
@@ -164,6 +165,11 @@ interface Crosapi {
   // Added in M88.
   [MinVersion=6] BindMediaSessionAudioFocusDebug@11(
       pending_receiver<media_session.mojom.AudioFocusManagerDebug> receiver);
+
+  // Binds the Task Manager interface for integrating lacros tasks in ash
+  // task manager.
+  // Added in M91.
+  [MinVersion=19] BindTaskManager@24(pending_receiver<TaskManager> receiver);
 
   // Binds the test controller service, which tests can use to mutate ash. This
   // is not available on production devices.

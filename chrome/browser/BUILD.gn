@@ -4659,6 +4659,8 @@ static_library("browser") {
       "lacros/snap_controller_lacros.h",
       "lacros/system_logs/lacros_system_log_fetcher.cc",
       "lacros/system_logs/lacros_system_log_fetcher.h",
+      "lacros/task_manager_lacros.cc",
+      "lacros/task_manager_lacros.h",
       "metrics/enrollment_status.h",
       "metrics/lacros_metrics_provider.cc",
       "metrics/lacros_metrics_provider.h",

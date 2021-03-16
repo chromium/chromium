@@ -11,6 +11,10 @@
 
 class AutomationManagerLacros;
 
+namespace crosapi {
+class TaskManagerLacros;
+}
+
 // Browser initialization for Lacros.
 class ChromeBrowserMainExtraPartsLacros : public ChromeBrowserMainExtraParts {
  public:
@@ -22,10 +26,13 @@ class ChromeBrowserMainExtraPartsLacros : public ChromeBrowserMainExtraParts {
   ~ChromeBrowserMainExtraPartsLacros() override;
 
  private:
-  // Overridden from ChromeBrowserMainExtraParts:
+  // ChromeBrowserMainExtraParts:
   void PostBrowserStart() override;
 
   std::unique_ptr<AutomationManagerLacros> automation_manager_;
+
+  // Handles task manager crosapi from ash for sending lacros tasks to ash.
+  std::unique_ptr<crosapi::TaskManagerLacros> task_manager_provider_;
 };
 
 #endif  // CHROME_BROWSER_LACROS_CHROME_BROWSER_MAIN_EXTRA_PARTS_LACROS_H_

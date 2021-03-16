@@ -705,6 +705,8 @@ source_set("chromeos") {
     "../ash/crosapi/screen_manager_ash.h",
     "../ash/crosapi/select_file_ash.cc",
     "../ash/crosapi/select_file_ash.h",
+    "../ash/crosapi/task_manager_ash.cc",
+    "../ash/crosapi/task_manager_ash.h",
     "../ash/crosapi/test_controller_ash.cc",
     "../ash/crosapi/test_controller_ash.h",
     "../ash/crosapi/test_mojo_connection_manager.cc",

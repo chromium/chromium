@@ -12,6 +12,7 @@
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ash/crosapi/crosapi_id.h"
 #include "chromeos/crosapi/mojom/crosapi.mojom.h"
+#include "chromeos/crosapi/mojom/task_manager.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
 
@@ -31,6 +32,7 @@ class MetricsReportingAsh;
 class PrefsAsh;
 class ScreenManagerAsh;
 class SelectFileAsh;
+class TaskManagerAsh;
 class TestControllerAsh;
 class UrlHandlerAsh;
 
@@ -90,6 +92,8 @@ class CrosapiAsh : public mojom::Crosapi {
   void BindMediaSessionAudioFocusDebug(
       mojo::PendingReceiver<media_session::mojom::AudioFocusManagerDebug>
           receiver) override;
+  void BindTaskManager(
+      mojo::PendingReceiver<mojom::TaskManager> receiver) override;
   void BindTestController(
       mojo::PendingReceiver<mojom::TestController> receiver) override;
   void BindUrlHandler(
@@ -104,6 +108,8 @@ class CrosapiAsh : public mojom::Crosapi {
   }
 
   AutomationAsh* automation_ash() { return automation_ash_.get(); }
+
+  TaskManagerAsh* task_manager_ash() { return task_manager_ash_.get(); }
 
  private:
   // Called when a connection is lost.
@@ -123,6 +129,7 @@ class CrosapiAsh : public mojom::Crosapi {
   std::unique_ptr<PrefsAsh> prefs_ash_;
   std::unique_ptr<ScreenManagerAsh> screen_manager_ash_;
   std::unique_ptr<SelectFileAsh> select_file_ash_;
+  std::unique_ptr<TaskManagerAsh> task_manager_ash_;
   std::unique_ptr<TestControllerAsh> test_controller_ash_;
   std::unique_ptr<UrlHandlerAsh> url_handler_ash_;
 

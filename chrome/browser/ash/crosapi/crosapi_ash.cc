@@ -26,6 +26,7 @@
 #include "chrome/browser/ash/crosapi/prefs_ash.h"
 #include "chrome/browser/ash/crosapi/screen_manager_ash.h"
 #include "chrome/browser/ash/crosapi/select_file_ash.h"
+#include "chrome/browser/ash/crosapi/task_manager_ash.h"
 #include "chrome/browser/ash/crosapi/test_controller_ash.h"
 #include "chrome/browser/ash/crosapi/url_handler_ash.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
@@ -40,6 +41,7 @@
 #include "chromeos/crosapi/mojom/message_center.mojom.h"
 #include "chromeos/crosapi/mojom/screen_manager.mojom.h"
 #include "chromeos/crosapi/mojom/select_file.mojom.h"
+#include "chromeos/crosapi/mojom/task_manager.mojom.h"
 #include "chromeos/services/machine_learning/public/cpp/service_connection.h"
 #include "chromeos/services/machine_learning/public/mojom/machine_learning_service.mojom.h"
 #include "components/user_manager/user_manager.h"
@@ -66,6 +68,7 @@ CrosapiAsh::CrosapiAsh()
                                      g_browser_process->local_state())),
       screen_manager_ash_(std::make_unique<ScreenManagerAsh>()),
       select_file_ash_(std::make_unique<SelectFileAsh>()),
+      task_manager_ash_(std::make_unique<TaskManagerAsh>()),
       test_controller_ash_(std::make_unique<TestControllerAsh>()),
       url_handler_ash_(std::make_unique<UrlHandlerAsh>()) {
   receiver_set_.set_disconnect_handler(base::BindRepeating(
@@ -196,6 +199,11 @@ void CrosapiAsh::BindMediaSessionAudioFocusDebug(
 void CrosapiAsh::BindCertDatabase(
     mojo::PendingReceiver<mojom::CertDatabase> receiver) {
   cert_database_ash_->BindReceiver(std::move(receiver));
+}
+
+void CrosapiAsh::BindTaskManager(
+    mojo::PendingReceiver<mojom::TaskManager> receiver) {
+  task_manager_ash_->BindReceiver(std::move(receiver));
 }
 
 void CrosapiAsh::BindTestController(

@@ -303,6 +303,12 @@ class LacrosChromeServiceNeverBlockingState
     crosapi_->BindPrefs(std::move(pending_receiver));
   }
 
+  void BindTaskManagerReceiver(
+      mojo::PendingReceiver<crosapi::mojom::TaskManager> pending_receiver) {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+    crosapi_->BindTaskManager(std::move(pending_receiver));
+  }
+
   void BindTestControllerReceiver(
       mojo::PendingReceiver<crosapi::mojom::TestController> pending_receiver) {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -623,6 +629,16 @@ void LacrosChromeServiceImpl::BindReceiver(
             weak_sequenced_state_, std::move(select_file_pending_receiver)));
   }
 
+  if (IsTaskManagerAvailable()) {
+    mojo::PendingReceiver<crosapi::mojom::TaskManager> pending_receiver =
+        task_manager_remote_.BindNewPipeAndPassReceiver();
+    never_blocking_sequence_->PostTask(
+        FROM_HERE,
+        base::BindOnce(
+            &LacrosChromeServiceNeverBlockingState::BindTaskManagerReceiver,
+            weak_sequenced_state_, std::move(pending_receiver)));
+  }
+
   if (IsTestControllerAvailable()) {
     mojo::PendingReceiver<crosapi::mojom::TestController> pending_receiver =
         test_controller_remote_.BindNewPipeAndPassReceiver();
@@ -771,6 +787,12 @@ bool LacrosChromeServiceImpl::IsSensorHalClientAvailable() const {
   return version &&
          version.value() >=
              Crosapi::MethodMinVersions::kBindSensorHalClientMinVersion;
+}
+
+bool LacrosChromeServiceImpl::IsTaskManagerAvailable() const {
+  base::Optional<uint32_t> version = CrosapiVersion();
+  return version && version.value() >=
+                        Crosapi::MethodMinVersions::kBindTaskManagerMinVersion;
 }
 
 bool LacrosChromeServiceImpl::IsTestControllerAvailable() const {
