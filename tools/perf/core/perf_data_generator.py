@@ -935,6 +935,7 @@ BUILDERS = {
             # chromium_swarming recipe_module ignore this dimension.
             'gpu': None,
             'os': 'ChromeOS',
+            'device_status': 'available',
             'device_type': 'eve',
         },
     },

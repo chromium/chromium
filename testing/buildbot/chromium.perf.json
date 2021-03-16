@@ -1118,6 +1118,7 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
+              "device_status": "available",
               "device_type": "eve",
               "gpu": null,
               "os": "ChromeOS",
