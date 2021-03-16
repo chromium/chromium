@@ -44,9 +44,9 @@ class VP9Encoder : public AcceleratedVideoEncoder {
 
     // Quantization parameter. They are vp9 ac/dc indices and their ranges are
     // 0-255.
-    int initial_qp;
-    int min_qp;
-    int max_qp;
+    uint8_t initial_qp;
+    uint8_t min_qp;
+    uint8_t max_qp;
 
     bool error_resilient_mode;
   };

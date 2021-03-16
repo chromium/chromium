@@ -18,12 +18,12 @@ constexpr int kCPBWindowSizeMs = 1500;
 
 // Quantization parameter. They are vp8 ac/dc indices and their ranges are
 // 0-127. Based on WebRTC's defaults.
-constexpr int kMinQP = 4;
+constexpr uint8_t kMinQP = 4;
 // b/110059922, crbug.com/1001900: Tuned 112->117 for bitrate issue in a lower
 // resolution (180p).
-constexpr int kMaxQP = 117;
+constexpr uint8_t kMaxQP = 117;
 // This stands for 32 as a real ac value (see rfc 14.1. table ac_qlookup).
-constexpr int kDefaultQP = 28;
+constexpr uint8_t kDefaultQP = 28;
 }  // namespace
 
 VP8Encoder::EncodeParams::EncodeParams()

@@ -62,6 +62,34 @@ constexpr size_t kMinNumFramesInFlight = 4;
 // Percentage of bitrate set to be targeted by the HW encoder.
 constexpr unsigned int kTargetBitratePercentage = 90;
 
+void FillVAEncRateControlParams(
+    uint32_t bps,
+    uint32_t window_size,
+    uint32_t initial_qp,
+    uint32_t min_qp,
+    uint32_t max_qp,
+    uint32_t framerate,
+    uint32_t buffer_size,
+    VAEncMiscParameterRateControl& rate_control_param,
+    VAEncMiscParameterFrameRate& framerate_param,
+    VAEncMiscParameterHRD& hrd_param) {
+  memset(&rate_control_param, 0, sizeof(rate_control_param));
+  rate_control_param.bits_per_second = bps;
+  rate_control_param.target_percentage = kTargetBitratePercentage;
+  rate_control_param.window_size = window_size;
+  rate_control_param.initial_qp = initial_qp;
+  rate_control_param.min_qp = min_qp;
+  rate_control_param.max_qp = max_qp;
+  rate_control_param.rc_flags.bits.disable_frame_skip = true;
+
+  memset(&framerate_param, 0, sizeof(framerate_param));
+  framerate_param.framerate = framerate;
+
+  memset(&hrd_param, 0, sizeof(hrd_param));
+  hrd_param.buffer_size = buffer_size;
+  hrd_param.initial_buffer_fullness = buffer_size / 2;
+}
+
 // Calculate the size of the allocated buffer aligned to hardware/driver
 // requirements.
 gfx::Size GetInputFrameSize(VideoPixelFormat format,
@@ -1178,21 +1206,18 @@ bool VaapiVideoEncodeAccelerator::H264Accelerator::SubmitFrameParameters(
   ref_list_entry = slice_param.RefPicList1;
   std::for_each(ref_pic_list1.begin(), ref_pic_list1.end(), fill_ref_frame);
 
-  VAEncMiscParameterRateControl rate_control_param = {};
-  rate_control_param.bits_per_second = encode_params.bitrate_bps;
-  rate_control_param.target_percentage = kTargetBitratePercentage;
-  rate_control_param.window_size = encode_params.cpb_window_size_ms;
-  rate_control_param.initial_qp = pic_param.pic_init_qp;
-  rate_control_param.min_qp = encode_params.min_qp;
-  rate_control_param.max_qp = encode_params.max_qp;
-  rate_control_param.rc_flags.bits.disable_frame_skip = true;
-
-  VAEncMiscParameterFrameRate framerate_param = {};
-  framerate_param.framerate = encode_params.framerate;
-
-  VAEncMiscParameterHRD hrd_param = {};
-  hrd_param.buffer_size = encode_params.cpb_size_bits;
-  hrd_param.initial_buffer_fullness = hrd_param.buffer_size / 2;
+  VAEncMiscParameterRateControl rate_control_param;
+  VAEncMiscParameterFrameRate framerate_param;
+  VAEncMiscParameterHRD hrd_param;
+  FillVAEncRateControlParams(
+      encode_params.bitrate_bps,
+      base::strict_cast<uint32_t>(encode_params.cpb_window_size_ms),
+      base::strict_cast<uint32_t>(pic_param.pic_init_qp),
+      base::strict_cast<uint32_t>(encode_params.min_qp),
+      base::strict_cast<uint32_t>(encode_params.max_qp),
+      encode_params.framerate,
+      base::strict_cast<uint32_t>(encode_params.cpb_size_bits),
+      rate_control_param, framerate_param, hrd_param);
 
   job->AddSetupCallback(
       base::BindOnce(&VaapiVideoEncodeAccelerator::SubmitBuffer,
@@ -1389,22 +1414,19 @@ bool VaapiVideoEncodeAccelerator::VP8Accelerator::SubmitFrameParameters(
   qmatrix_buf.quantization_index_delta[4] =
       frame_header->quantization_hdr.uv_ac_delta;
 
-  VAEncMiscParameterRateControl rate_control_param = {};
-  rate_control_param.bits_per_second =
-      encode_params.bitrate_allocation.GetSumBps();
-  rate_control_param.target_percentage = kTargetBitratePercentage;
-  rate_control_param.window_size = encode_params.cpb_window_size_ms;
-  rate_control_param.initial_qp = encode_params.initial_qp;
-  rate_control_param.min_qp = encode_params.min_qp;
-  rate_control_param.max_qp = encode_params.max_qp;
-  rate_control_param.rc_flags.bits.disable_frame_skip = true;
-
-  VAEncMiscParameterFrameRate framerate_param = {};
-  framerate_param.framerate = encode_params.framerate;
-
-  VAEncMiscParameterHRD hrd_param = {};
-  hrd_param.buffer_size = encode_params.cpb_size_bits;
-  hrd_param.initial_buffer_fullness = hrd_param.buffer_size / 2;
+  VAEncMiscParameterRateControl rate_control_param;
+  VAEncMiscParameterFrameRate framerate_param;
+  VAEncMiscParameterHRD hrd_param;
+  FillVAEncRateControlParams(
+      base::checked_cast<uint32_t>(
+          encode_params.bitrate_allocation.GetSumBps()),
+      base::strict_cast<uint32_t>(encode_params.cpb_window_size_ms),
+      base::strict_cast<uint32_t>(encode_params.initial_qp),
+      base::strict_cast<uint32_t>(encode_params.min_qp),
+      base::strict_cast<uint32_t>(encode_params.max_qp),
+      encode_params.framerate,
+      base::strict_cast<uint32_t>(encode_params.cpb_size_bits),
+      rate_control_param, framerate_param, hrd_param);
 
   job->AddSetupCallback(
       base::BindOnce(&VaapiVideoEncodeAccelerator::SubmitBuffer,
@@ -1554,22 +1576,19 @@ bool VaapiVideoEncodeAccelerator::VP9Accelerator::SubmitFrameParameters(
     return true;
   }
 
-  VAEncMiscParameterRateControl rate_control_param = {};
-  rate_control_param.bits_per_second =
-      encode_params.bitrate_allocation.GetSumBps();
-  rate_control_param.target_percentage = kTargetBitratePercentage;
-  rate_control_param.window_size = encode_params.cpb_window_size_ms;
-  rate_control_param.initial_qp = encode_params.initial_qp;
-  rate_control_param.min_qp = encode_params.min_qp;
-  rate_control_param.max_qp = encode_params.max_qp;
-  rate_control_param.rc_flags.bits.disable_frame_skip = true;
-
-  VAEncMiscParameterFrameRate framerate_param = {};
-  framerate_param.framerate = encode_params.framerate;
-
-  VAEncMiscParameterHRD hrd_param = {};
-  hrd_param.buffer_size = encode_params.cpb_size_bits;
-  hrd_param.initial_buffer_fullness = hrd_param.buffer_size / 2;
+  VAEncMiscParameterRateControl rate_control_param;
+  VAEncMiscParameterFrameRate framerate_param;
+  VAEncMiscParameterHRD hrd_param;
+  FillVAEncRateControlParams(
+      base::checked_cast<uint32_t>(
+          encode_params.bitrate_allocation.GetSumBps()),
+      base::strict_cast<uint32_t>(encode_params.cpb_window_size_ms),
+      base::strict_cast<uint32_t>(encode_params.initial_qp),
+      base::strict_cast<uint32_t>(encode_params.min_qp),
+      base::strict_cast<uint32_t>(encode_params.max_qp),
+      encode_params.framerate,
+      base::strict_cast<uint32_t>(encode_params.cpb_size_bits),
+      rate_control_param, framerate_param, hrd_param);
 
   job->AddSetupCallback(base::BindOnce(
       &VaapiVideoEncodeAccelerator::SubmitVAEncMiscParamBuffer,

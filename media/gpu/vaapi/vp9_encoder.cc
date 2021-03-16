@@ -25,19 +25,19 @@ constexpr int kCPBWindowSizeMs = 500;
 
 // Quantization parameter. They are vp9 ac/dc indices and their ranges are
 // 0-255. Based on WebRTC's defaults.
-constexpr int kMinQP = 4;
-constexpr int kMaxQP = 112;
+constexpr uint8_t kMinQP = 4;
+constexpr uint8_t kMaxQP = 112;
 // The upper limitation of the quantization parameter for the software rate
 // controller. This is larger than |kMaxQP| because a driver might ignore the
 // specified maximum quantization parameter when the driver determines the
 // value, but it doesn't ignore the quantization parameter by the software rate
 // controller.
-constexpr int kMaxQPForSoftwareRateCtrl = 224;
+constexpr uint8_t kMaxQPForSoftwareRateCtrl = 224;
 
 // This stands for 31 as a real ac value (see rfc 8.6.1 table
 // ac_qlookup[3][256]). Note: This needs to be revisited once we have 10&12 bit
 // encoder support.
-constexpr int kDefaultQP = 24;
+constexpr uint8_t kDefaultQP = 24;
 
 // filter level may affect on quality at lower bitrates; for now,
 // we set a constant value (== 10) which is what other VA-API
@@ -47,8 +47,8 @@ constexpr uint8_t kDefaultLfLevel = 10;
 // Convert Qindex, whose range is 0-255, to the quantizer parameter used in
 // libvpx vp9 rate control, whose range is 0-63.
 // Cited from //third_party/libvpx/source/libvpx/vp9/encoder/vp9_quantize.cc.
-int QindexToQuantizer(int q_index) {
-  constexpr int kQuantizerToQindex[] = {
+uint8_t QindexToQuantizer(uint8_t q_index) {
+  constexpr uint8_t kQuantizerToQindex[] = {
       0,   4,   8,   12,  16,  20,  24,  28,  32,  36,  40,  44,  48,
       52,  56,  60,  64,  68,  72,  76,  80,  84,  88,  92,  96,  100,
       104, 108, 112, 116, 120, 124, 128, 132, 136, 140, 144, 148, 152,
