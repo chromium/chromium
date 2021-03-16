@@ -22,4 +22,8 @@ bool ShareAction::ShouldShowAction(const apps::mojom::IntentPtr& intent,
 #endif
 }
 
+bool ShareAction::OnAcceleratorPressed(const ui::Accelerator& accelerator) {
+  return false;
+}
+
 }  // namespace sharesheet

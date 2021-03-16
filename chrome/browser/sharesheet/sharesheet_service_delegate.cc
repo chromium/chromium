@@ -49,10 +49,6 @@ void SharesheetServiceDelegate::OnBubbleClosed(
   // Therefore there is no need to set is_bubble_open_ to false.
 }
 
-void SharesheetServiceDelegate::OnActionLaunched() {
-  sharesheet_bubble_view_->ShowActionView();
-}
-
 void SharesheetServiceDelegate::OnTargetSelected(
     const std::u16string& target_name,
     const TargetType type,
@@ -60,6 +56,21 @@ void SharesheetServiceDelegate::OnTargetSelected(
     views::View* share_action_view) {
   sharesheet_service_->OnTargetSelected(native_window_, target_name, type,
                                         std::move(intent), share_action_view);
+}
+
+bool SharesheetServiceDelegate::OnAcceleratorPressed(
+    const ui::Accelerator& accelerator,
+    const std::u16string& active_action) {
+  return sharesheet_service_->OnAcceleratorPressed(accelerator, active_action);
+}
+
+void SharesheetServiceDelegate::OnActionLaunched() {
+  sharesheet_bubble_view_->ShowActionView();
+}
+
+const gfx::VectorIcon* SharesheetServiceDelegate::GetVectorIcon(
+    const std::u16string& display_name) {
+  return sharesheet_service_->GetVectorIcon(display_name);
 }
 
 gfx::NativeWindow SharesheetServiceDelegate::GetNativeWindow() {
@@ -79,11 +90,6 @@ void SharesheetServiceDelegate::SetSharesheetSize(const int& width,
 
 void SharesheetServiceDelegate::CloseSharesheet() {
   sharesheet_bubble_view_->CloseBubble();
-}
-
-const gfx::VectorIcon* SharesheetServiceDelegate::GetVectorIcon(
-    const std::u16string& display_name) {
-  return sharesheet_service_->GetVectorIcon(display_name);
 }
 
 }  // namespace sharesheet

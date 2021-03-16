@@ -16,6 +16,7 @@
 #include "chrome/browser/sharesheet/sharesheet_types.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/services/app_service/public/mojom/types.mojom.h"
+#include "ui/base/accelerators/accelerator.h"
 #include "ui/gfx/native_widget_types.h"
 
 class Profile;
@@ -71,6 +72,8 @@ class SharesheetService : public KeyedService {
                         const TargetType type,
                         apps::mojom::IntentPtr intent,
                         views::View* share_action_view);
+  bool OnAcceleratorPressed(const ui::Accelerator& accelerator,
+                            const std::u16string& active_action);
   SharesheetServiceDelegate* GetOrCreateDelegate(
       gfx::NativeWindow native_window);
   SharesheetServiceDelegate* GetDelegate(gfx::NativeWindow native_window);

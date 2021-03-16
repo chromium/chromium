@@ -51,8 +51,11 @@ class SharesheetBubbleView : public views::BubbleDialogDelegateView {
  private:
   class SharesheetParentWidgetObserver;
 
+  // ui::AcceleratorTarget:
+  bool AcceleratorPressed(const ui::Accelerator& accelerator) override;
+
   // ui::EventHandler:
-  void OnKeyEvent(ui::KeyEvent* event) override;
+  bool OnKeyPressed(const ui::KeyEvent& event) override;
 
   // views::WidgetDelegate:
   ax::mojom::Role GetAccessibleWindowRole() override;

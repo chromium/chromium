@@ -116,6 +116,19 @@ void SharesheetService::OnTargetSelected(gfx::NativeWindow native_window,
   }
 }
 
+bool SharesheetService::OnAcceleratorPressed(
+    const ui::Accelerator& accelerator,
+    const std::u16string& active_action) {
+  if (active_action.empty())
+    return false;
+  ShareAction* share_action =
+      sharesheet_action_cache_->GetActionFromName(active_action);
+  DCHECK(share_action);
+  return share_action == nullptr
+             ? false
+             : share_action->OnAcceleratorPressed(accelerator);
+}
+
 SharesheetServiceDelegate* SharesheetService::GetOrCreateDelegate(
     gfx::NativeWindow native_window) {
   auto* delegate = GetDelegate(native_window);

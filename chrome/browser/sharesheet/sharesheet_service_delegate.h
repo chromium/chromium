@@ -12,6 +12,7 @@
 #include "chrome/browser/sharesheet/sharesheet_controller.h"
 #include "chrome/browser/sharesheet/sharesheet_types.h"
 #include "components/services/app_service/public/mojom/types.mojom.h"
+#include "ui/base/accelerators/accelerator.h"
 #include "ui/gfx/native_widget_types.h"
 
 class Profile;
@@ -48,6 +49,8 @@ class SharesheetServiceDelegate : public SharesheetController {
                         const TargetType type,
                         apps::mojom::IntentPtr intent,
                         views::View* share_action_view);
+  bool OnAcceleratorPressed(const ui::Accelerator& accelerator,
+                            const std::u16string& active_action);
   void OnActionLaunched();
   const gfx::VectorIcon* GetVectorIcon(const std::u16string& display_name);
   gfx::NativeWindow GetNativeWindow();

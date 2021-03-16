@@ -150,6 +150,7 @@ SharesheetBubbleView::SharesheetBubbleView(
       this, views::Widget::GetWidgetForNativeWindow(native_window));
   parent_view_ =
       views::Widget::GetWidgetForNativeWindow(native_window)->GetRootView();
+  AddAccelerator(ui::Accelerator(ui::VKEY_ESCAPE, ui::EF_NONE));
   UpdateAnchorPosition();
 
   CreateBubble();
@@ -427,20 +428,36 @@ void SharesheetBubbleView::CloseBubble() {
   }
 }
 
-void SharesheetBubbleView::OnKeyEvent(ui::KeyEvent* event) {
-  // Ignore key press if bubble is closing.
-  // TODO(crbug.com/1141741) Update to OnKeyPressed.
-  if (!IsKeyboardCodeArrow(event->key_code()) ||
-      event->type() != ui::ET_KEY_RELEASED || default_view_ == nullptr ||
+bool SharesheetBubbleView::AcceleratorPressed(
+    const ui::Accelerator& accelerator) {
+  // We override this because when this is handled by the base class,
+  // OnKeyPressed is not invoked when a user presses |VKEY_ESCAPE| if they have
+  // not pressed |VKEY_TAB| first to focus the SharesheetBubbleView.
+  DCHECK_EQ(accelerator.key_code(), ui::VKEY_ESCAPE);
+  if (share_action_view_->GetVisible() &&
+      delegate_->OnAcceleratorPressed(accelerator, active_target_)) {
+    return true;
+  }
+  escape_pressed_ = true;
+  sharesheet::SharesheetMetrics::RecordSharesheetActionMetrics(
+      sharesheet::SharesheetMetrics::UserAction::kCancelledThroughEscPress);
+  CloseWidgetWithAnimateFadeOut(views::Widget::ClosedReason::kEscKeyPressed);
+
+  return true;
+}
+
+bool SharesheetBubbleView::OnKeyPressed(const ui::KeyEvent& event) {
+  // Ignore key press if it's not an arrow or bubble is closing.
+  if (!IsKeyboardCodeArrow(event.key_code()) || default_view_ == nullptr ||
       is_bubble_closing_) {
-    if (event->key_code() == ui::VKEY_ESCAPE && !is_bubble_closing_)
+    if (event.key_code() == ui::VKEY_ESCAPE && !is_bubble_closing_) {
       escape_pressed_ = true;
-    View::OnKeyEvent(event);
-    return;
+    }
+    return false;
   }
 
   int delta = 0;
-  switch (event->key_code()) {
+  switch (event.key_code()) {
     case ui::VKEY_UP:
       delta = -kMaxTargetsPerRow;
       break;
@@ -473,8 +490,7 @@ void SharesheetBubbleView::OnKeyEvent(ui::KeyEvent* event) {
     expanded_view_->children()[keyboard_highlighted_target_ + 1 - default_views]
         ->RequestFocus();
   }
-
-  View::OnKeyEvent(event);
+  return true;
 }
 
 ax::mojom::Role SharesheetBubbleView::GetAccessibleWindowRole() {
@@ -510,12 +526,16 @@ void SharesheetBubbleView::OnWidgetActivationChanged(views::Widget* widget,
     if (close_callback_) {
       std::move(close_callback_).Run(sharesheet::SharesheetResult::kCancel);
     }
-    auto action = escape_pressed_ ? sharesheet::SharesheetMetrics::UserAction::
-                                        kCancelledThroughEscPress
-                                  : sharesheet::SharesheetMetrics::UserAction::
-                                        kCancelledThroughClickingOut;
-    sharesheet::SharesheetMetrics::RecordSharesheetActionMetrics(action);
-    CloseWidgetWithAnimateFadeOut(views::Widget::ClosedReason::kLostFocus);
+    auto user_action =
+        sharesheet::SharesheetMetrics::UserAction::kCancelledThroughClickingOut;
+    auto closed_reason = views::Widget::ClosedReason::kLostFocus;
+    if (escape_pressed_) {
+      user_action =
+          sharesheet::SharesheetMetrics::UserAction::kCancelledThroughEscPress;
+      closed_reason = views::Widget::ClosedReason::kEscKeyPressed;
+    }
+    sharesheet::SharesheetMetrics::RecordSharesheetActionMetrics(user_action);
+    CloseWidgetWithAnimateFadeOut(closed_reason);
   }
 }
 

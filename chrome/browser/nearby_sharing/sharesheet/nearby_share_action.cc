@@ -162,6 +162,16 @@ void NearbyShareAction::OnClosing(
   }
 }
 
+bool NearbyShareAction::OnAcceleratorPressed(
+    const ui::Accelerator& accelerator) {
+  // This is overridden because the default case returns false
+  // which means the accelerator has not been handled by the ShareAction. In
+  // that case, the sharesheet handles it by closing the UI. We return true
+  // instead to indicate we will handle the accelerator ourselves, which
+  // prevents the UI from being closed by the sharesheet.
+  return true;
+}
+
 bool NearbyShareAction::HandleKeyboardEvent(
     content::WebContents* source,
     const content::NativeWebKeyboardEvent& event) {
