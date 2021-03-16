@@ -116,6 +116,7 @@ class WebContentController
   void HandleGetTitle(int64_t id);
   void HandleResize(const gfx::Size& size);
   void HandleSetInsets(const gfx::Insets& insets);
+  void HandleGetUserAgent(int64_t id);
 
   viz::SurfaceId GetSurfaceId();
   void ChannelModified(content::RenderFrameHost* frame,

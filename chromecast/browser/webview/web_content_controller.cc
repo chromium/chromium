@@ -13,6 +13,7 @@
 #include "chromecast/browser/webview/proto/webview.pb.h"
 #include "chromecast/browser/webview/webview_input_method_observer.h"
 #include "chromecast/browser/webview/webview_navigation_throttle.h"
+#include "chromecast/common/cast_content_client.h"
 #include "chromecast/graphics/cast_focus_client_aura.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browsing_data_remover.h"
@@ -182,6 +183,10 @@ void WebContentController::ProcessRequest(
       } else {
         client_->OnError("set_insets() not supplied");
       }
+      break;
+
+    case webview::WebviewRequest::kGetUserAgent:
+      HandleGetUserAgent(request.id());
       break;
 
     default:
@@ -527,6 +532,15 @@ void WebContentController::HandleSetInsets(const gfx::Insets& insets) {
   auto* contents = GetWebContents();
   if (contents && contents->GetTopLevelRenderWidgetHostView())
     contents->GetTopLevelRenderWidgetHostView()->SetInsets(insets);
+}
+
+void WebContentController::HandleGetUserAgent(int64_t id) {
+  std::unique_ptr<webview::WebviewResponse> response =
+      std::make_unique<webview::WebviewResponse>();
+
+  response->set_id(id);
+  response->mutable_get_user_agent()->set_user_agent(shell::GetUserAgent());
+  client_->EnqueueSend(std::move(response));
 }
 
 viz::SurfaceId WebContentController::GetSurfaceId() {

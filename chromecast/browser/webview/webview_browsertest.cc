@@ -420,4 +420,24 @@ IN_PROC_BROWSER_TEST_F(WebviewTest, UserDataOverride) {
   RunMessageLoop();
 }
 
+IN_PROC_BROWSER_TEST_F(WebviewTest, GetUserAgent) {
+  auto check = [](const std::unique_ptr<webview::WebviewResponse>& response) {
+    return response->has_get_user_agent();
+  };
+  EXPECT_CALL(client_, EnqueueSend(_)).Times(testing::AnyNumber());
+  EXPECT_CALL(client_, EnqueueSend(Truly(check)))
+      .Times(testing::AtLeast(1))
+      .WillOnce([this](std::unique_ptr<webview::WebviewResponse> response) {
+        EXPECT_NE(response->get_user_agent().user_agent(), "");
+        Quit();
+      });
+  WebviewController webview(context_.get(), &client_, true);
+
+  webview::WebviewRequest request;
+  request.mutable_get_user_agent();
+  SubmitWebviewRequest(&webview, request);
+
+  RunMessageLoop();
+}
+
 }  // namespace chromecast
