@@ -102,6 +102,10 @@ enum SearchResultType {
   OMNIBOX_RICH_ENTITY_ANSWER,
   // A rich entity result from omnibox with image icon.
   OMNIBOX_RICH_ENTITY_IMAGE_ENTITY,
+  // A local file search result.
+  LOCAL_FILE_SEARCH,
+  // A Drive file search result.
+  DRIVE_FILE_SEARCH,
   // Boundary is always last.
   SEARCH_RESULT_TYPE_BOUNDARY
 };

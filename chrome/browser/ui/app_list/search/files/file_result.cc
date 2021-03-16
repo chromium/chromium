@@ -67,6 +67,12 @@ FileResult::FileResult(const std::string& schema,
     case ResultType::kZeroStateFile:
       SetMetricsType(ash::ZERO_STATE_FILE);
       break;
+    case ResultType::kLocalFile:
+      SetMetricsType(ash::LOCAL_FILE_SEARCH);
+      break;
+    case ResultType::kDriveFile:
+      SetMetricsType(ash::DRIVE_FILE_SEARCH);
+      break;
     default:
       NOTREACHED();
   }
