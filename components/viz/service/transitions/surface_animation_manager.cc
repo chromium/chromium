@@ -230,6 +230,12 @@ void SurfaceAnimationManager::InterpolateFrame(Surface* surface) {
   for (auto& render_pass : active_frame.render_pass_list) {
     if (render_pass->id > max_id)
       max_id = render_pass->id;
+    // TODO(vmpstr): If we are doing an interpolation, we fail requested copy
+    // requests, since we can't copy them into an interpolated frame below. The
+    // todo is to change DeepCopy into a function that copies everything and
+    // moves copy output requests, since we can satisfy the requests on the
+    // interpolated frame.
+    render_pass->copy_requests.clear();
     interpolated_frame.render_pass_list.emplace_back(render_pass->DeepCopy());
   }
 

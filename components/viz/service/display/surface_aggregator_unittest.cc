@@ -41,6 +41,7 @@
 #include "components/viz/service/surfaces/pending_copy_output_request.h"
 #include "components/viz/service/surfaces/surface.h"
 #include "components/viz/service/surfaces/surface_manager.h"
+#include "components/viz/test/begin_frame_args_test.h"
 #include "components/viz/test/compositor_frame_helpers.h"
 #include "components/viz/test/fake_compositor_frame_sink_client.h"
 #include "components/viz/test/fake_surface_observer.h"
@@ -114,6 +115,8 @@ class DisplayTimeSource {
   base::TimeTicks next_display_time_ =
       base::TimeTicks() + base::TimeDelta::FromSeconds(1);
 };
+
+}  // namespace
 
 class SurfaceAggregatorTest : public testing::Test, public DisplayTimeSource {
  public:
@@ -5597,6 +5600,16 @@ class SurfaceAggregatorWithResourcesTest : public testing::Test,
                                   gfx::OVERLAY_TRANSFORM_NONE);
   }
 
+  void SendBeginFrame(CompositorFrameSinkSupport* support, uint64_t id) {
+    BeginFrameArgs args =
+        CreateBeginFrameArgsForTesting(BEGINFRAME_FROM_HERE, 0, id);
+    support->OnBeginFrame(args);
+  }
+
+  void EnableDocumentTransitions(CompositorFrameSinkSupport* support) {
+    support->document_transitions_enabled_ = true;
+  }
+
  protected:
   ServerSharedBitmapManager shared_bitmap_manager_;
   FrameSinkManagerImpl manager_;
@@ -5604,12 +5617,10 @@ class SurfaceAggregatorWithResourcesTest : public testing::Test,
   std::unique_ptr<SurfaceAggregator> aggregator_;
 };
 
-void SubmitCompositorFrameWithResources(
+CompositorFrame BuildCompositorFrameWithResources(
     const std::vector<ResourceId>& resource_ids,
     bool valid,
-    SurfaceId child_id,
-    CompositorFrameSinkSupport* support,
-    SurfaceId surface_id) {
+    SurfaceId child_id) {
   CompositorFrame frame = MakeEmptyCompositorFrame();
   auto pass = CompositorRenderPass::Create();
   pass->SetNew(CompositorRenderPassId{1}, gfx::Rect(0, 0, 20, 20), gfx::Rect(),
@@ -5653,6 +5664,16 @@ void SubmitCompositorFrameWithResources(
                  secure_output_only, protected_video_type);
   }
   frame.render_pass_list.push_back(std::move(pass));
+  return frame;
+}
+
+void SubmitCompositorFrameWithResources(
+    const std::vector<ResourceId>& resource_ids,
+    bool valid,
+    SurfaceId child_id,
+    CompositorFrameSinkSupport* support,
+    SurfaceId surface_id) {
+  auto frame = BuildCompositorFrameWithResources(resource_ids, valid, child_id);
   support->SubmitCompositorFrame(surface_id.local_surface_id(),
                                  std::move(frame));
 }
@@ -8947,8 +8968,94 @@ TEST_F(SurfaceAggregatorValidSurfaceTest, ColorUsageChangeFullFrameDamage) {
   }
 }
 
+TEST_F(SurfaceAggregatorWithResourcesTest, TransitionDirectiveFrameBehind) {
+  FakeCompositorFrameSinkClient client;
+  auto support = std::make_unique<CompositorFrameSinkSupport>(
+      &client, &manager_, kArbitraryRootFrameSinkId, kRootIsRoot);
+  EnableDocumentTransitions(support.get());
+
+  LocalSurfaceId local_surface_id(7u, base::UnguessableToken::Create());
+  SurfaceId surface_id(support->frame_sink_id(), local_surface_id);
+
+  // Create and submit a 'save' frame.
+  SendBeginFrame(support.get(), 1);
+  {
+    auto frame = BuildCompositorFrameWithResources({}, true, SurfaceId());
+    frame.metadata.transition_directives.emplace_back(
+        1, CompositorFrameTransitionDirective::Type::kSave,
+        CompositorFrameTransitionDirective::Effect::kCoverLeft,
+        base::TimeDelta::FromMilliseconds(500));
+
+    support->SubmitCompositorFrame(local_surface_id, std::move(frame));
+    auto* surface = support->GetLastCreatedSurfaceForTesting();
+    ASSERT_TRUE(surface);
+    surface->GetSurfaceSavedFrameStorage()->CompleteForTesting();
+  }
+  AggregateFrame(surface_id);
+
+  // Create and submit an 'animate' frame.
+  SendBeginFrame(support.get(), 2);
+  {
+    auto frame = BuildCompositorFrameWithResources({}, true, SurfaceId());
+    frame.metadata.transition_directives.emplace_back(
+        2, CompositorFrameTransitionDirective::Type::kAnimate);
+    support->SubmitCompositorFrame(local_surface_id, std::move(frame));
+  }
+  AggregateFrame(surface_id);
+
+  // Create and submit a frame with some resources.
+  SendBeginFrame(support.get(), 3);
+  {
+    std::vector<ResourceId> ids = {ResourceId(11), ResourceId(12),
+                                   ResourceId(13)};
+    SubmitCompositorFrameWithResources(ids, true, SurfaceId(), support.get(),
+                                       surface_id);
+  }
+  auto frame = AggregateFrame(surface_id);
+  auto count_textures = [](const AggregatedFrame& frame) {
+    size_t result = 0;
+    for (auto& render_pass : frame.render_pass_list) {
+      for (auto* quad : render_pass->quad_list) {
+        if (quad->material == DrawQuad::Material::kTextureContent)
+          ++result;
+      }
+    }
+    return result;
+  };
+  // We should have 4 referenced textures (1 from interpolation and 3 from the
+  // original frame).
+  EXPECT_EQ(count_textures(frame), 4u);
+
+  // At this point we will interpolate with the above frame (resources 11, 12,
+  // 13).
+  SendBeginFrame(support.get(), 4);
+  {
+    std::vector<ResourceId> ids = {ResourceId(15), ResourceId(16),
+                                   ResourceId(17)};
+    // This will cause an activation which will unref 11, 12, 13. So, the
+    // activation must also interpolate a new frame.
+    SubmitCompositorFrameWithResources(ids, true, SurfaceId(), support.get(),
+                                       surface_id);
+  }
+  // Ensure that the interpolated frame is not using unreffed resources
+  // (otherwise this would DCHECK).
+  frame = AggregateFrame(surface_id);
+  // We should have 4 referenced textures (1 from interpolation and 3 (different
+  // ones) from the original frame).
+  EXPECT_EQ(count_textures(frame), 4u);
+
+  ASSERT_EQ(3u, client.returned_resources().size());
+  ResourceId returned_ids[3];
+  for (size_t i = 0; i < 3; ++i) {
+    returned_ids[i] = client.returned_resources()[i].id;
+  }
+  // We expect that 11, 12, and 13 are now returned.
+  EXPECT_THAT(returned_ids,
+              testing::WhenSorted(testing::ElementsAreArray(
+                  {ResourceId(11), ResourceId(12), ResourceId(13)})));
+}
+
 INSTANTIATE_TEST_SUITE_P(,
                          SurfaceAggregatorValidSurfaceWithMergingPassesTest,
                          testing::Bool());
-}  // namespace
 }  // namespace viz

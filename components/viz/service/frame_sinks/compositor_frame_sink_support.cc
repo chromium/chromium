@@ -161,12 +161,10 @@ void CompositorFrameSinkSupport::OnSurfaceActivated(Surface* surface) {
     bool started_animation =
         surface_animation_manager_.ProcessTransitionDirectives(
             transition_directives, surface->GetSurfaceSavedFrameStorage());
-    // If processing the new directives caused us to start an animation, then
-    // interpoate the frame immediately. This is needed since if we wait until
-    // the next BeginFrame to do the first interpolation, then we maybe have
-    // already drawn this destination frame.
-    if (started_animation)
-      surface_animation_manager_.InterpolateFrame(surface);
+
+    // If we started an animation, then we must need a begin frame for the code
+    // below to work properly.
+    DCHECK(!started_animation || surface_animation_manager_.NeedsBeginFrame());
 
     // The above call can cause us to start an animation, meaning we need begin
     // frames. If that's the case, make sure to update the begin frame
@@ -174,6 +172,18 @@ void CompositorFrameSinkSupport::OnSurfaceActivated(Surface* surface) {
     if (surface_animation_manager_.NeedsBeginFrame())
       UpdateNeedsBeginFramesInternal();
   }
+
+  // If surface animation manager needs a frame, then we should interpolate
+  // here. Note that we also interpolate in OnBeginFrame. The reason for two
+  // calls is that we might not receive and active a frame from the client in
+  // time to draw, which is why OnBeginFrame interpolates and damages the
+  // surface. Here, we only interpolate in case we did receive a new frame. We
+  // always use the latest frame, because it may have new resources that need to
+  // be reffed by SurfaceAggregator. If we don't do this, then they will be
+  // unreffed and cleaned up causing a DCHECK in subsequent frames that do use
+  // the frame.
+  if (surface_animation_manager_.NeedsBeginFrame())
+    surface_animation_manager_.InterpolateFrame(surface);
 
   if (surface->surface_id() == last_activated_surface_id_)
     return;

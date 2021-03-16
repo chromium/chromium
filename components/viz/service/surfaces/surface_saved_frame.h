@@ -9,6 +9,7 @@
 
 #include "base/compiler_specific.h"
 #include "base/memory/weak_ptr.h"
+#include "base/optional.h"
 #include "base/time/time.h"
 #include "components/viz/common/frame_sinks/copy_output_result.h"
 #include "components/viz/common/quads/compositor_frame_transition_directive.h"
@@ -24,16 +25,17 @@ class VIZ_SERVICE_EXPORT SurfaceSavedFrame {
   using TransitionDirectiveCompleteCallback =
       base::RepeatingCallback<void(uint32_t)>;
 
-  struct TextureResult {
-    TextureResult();
-    TextureResult(TextureResult&& other);
-    ~TextureResult();
+  struct OutputCopyResult {
+    OutputCopyResult();
+    OutputCopyResult(OutputCopyResult&& other);
+    ~OutputCopyResult();
 
-    TextureResult& operator=(TextureResult&& other);
+    OutputCopyResult& operator=(OutputCopyResult&& other);
 
     gpu::Mailbox mailbox;
     gpu::SyncToken sync_token;
     gfx::Size size;
+    bool is_software = false;
     std::unique_ptr<SingleReleaseCallback> release_callback;
   };
 
@@ -50,10 +52,7 @@ class VIZ_SERVICE_EXPORT SurfaceSavedFrame {
   // frame.
   void RequestCopyOfOutput(Surface* surface);
 
-  // Takes the root texture result.
-  // TODO(crbug.com/1174141): We need to support more than just the root result.
-  bool HasTextureResult() const;
-  TextureResult TakeTextureResult() WARN_UNUSED_RESULT;
+  base::Optional<OutputCopyResult> TakeResult() WARN_UNUSED_RESULT;
 
   // For testing functionality that ensures that we have a valid frame.
   void CompleteSavedFrameForTesting(
@@ -65,7 +64,7 @@ class VIZ_SERVICE_EXPORT SurfaceSavedFrame {
   CompositorFrameTransitionDirective directive_;
   TransitionDirectiveCompleteCallback directive_finished_callback_;
 
-  TextureResult texture_result_;
+  base::Optional<OutputCopyResult> result_;
 
   base::WeakPtrFactory<SurfaceSavedFrame> weak_factory_{this};
 };

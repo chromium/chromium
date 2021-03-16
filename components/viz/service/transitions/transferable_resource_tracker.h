@@ -43,9 +43,6 @@ class VIZ_SERVICE_EXPORT TransferableResourceTracker {
 
   ResourceId GetNextAvailableResourceId();
 
-  TransferableResource ImportTextureResult(
-      SurfaceSavedFrame::TextureResult result);
-
   static_assert(std::is_same<decltype(kInvalidResourceId.GetUnsafeValue()),
                              uint32_t>::value,
                 "ResourceId underlying type should be uint32_t");

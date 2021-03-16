@@ -32,9 +32,7 @@ SurfaceSavedFrame::~SurfaceSavedFrame() {
 }
 
 bool SurfaceSavedFrame::IsValid() const {
-  // TODO(crbug.com/1174129): This needs to be updated with software copies as
-  // well.
-  return HasTextureResult();
+  return result_.has_value();
 }
 
 void SurfaceSavedFrame::RequestCopyOfOutput(Surface* surface) {
@@ -63,45 +61,44 @@ void SurfaceSavedFrame::NotifyCopyOfOutputComplete(
     return;
 
   auto copy_output_texture = *result->GetTextureResult();
-  texture_result_.mailbox = copy_output_texture.mailbox;
-  texture_result_.sync_token = copy_output_texture.sync_token;
-  texture_result_.size = result->size();
-  texture_result_.release_callback = result->TakeTextureOwnership();
+  DCHECK(!result_.has_value());
+  result_.emplace();
+  result_->mailbox = copy_output_texture.mailbox;
+  result_->sync_token = copy_output_texture.sync_token;
+  result_->size = result->size();
+  result_->release_callback = result->TakeTextureOwnership();
+  result_->is_software = false;
 }
 
-bool SurfaceSavedFrame::HasTextureResult() const {
-  return texture_result_.release_callback && !texture_result_.mailbox.IsZero();
-}
-
-SurfaceSavedFrame::TextureResult SurfaceSavedFrame::TakeTextureResult() {
-  DCHECK(HasTextureResult());
-  // Note that the TextureResult move constructor resets sufficient state in the
-  // member so that HasTextureResult() returns false afterwards, effectively
-  // clearing the member variable.
-  return std::move(texture_result_);
+base::Optional<SurfaceSavedFrame::OutputCopyResult>
+SurfaceSavedFrame::TakeResult() {
+  return std::move(result_);
 }
 
 void SurfaceSavedFrame::CompleteSavedFrameForTesting(
     base::OnceCallback<void(const gpu::SyncToken&, bool)> release_callback) {
-  texture_result_.mailbox = gpu::Mailbox::GenerateForSharedImage();
-  texture_result_.release_callback =
+  result_.emplace();
+  result_->mailbox = gpu::Mailbox::GenerateForSharedImage();
+  result_->release_callback =
       SingleReleaseCallback::Create(std::move(release_callback));
-  texture_result_.size = kDefaultTextureSizeForTesting;
+  result_->size = kDefaultTextureSizeForTesting;
+  result_->is_software = true;
   DCHECK(IsValid());
 }
 
-SurfaceSavedFrame::TextureResult::TextureResult() = default;
-SurfaceSavedFrame::TextureResult::TextureResult(TextureResult&& other) {
+SurfaceSavedFrame::OutputCopyResult::OutputCopyResult() = default;
+SurfaceSavedFrame::OutputCopyResult::OutputCopyResult(
+    OutputCopyResult&& other) {
   *this = std::move(other);
 }
 
-SurfaceSavedFrame::TextureResult::~TextureResult() {
+SurfaceSavedFrame::OutputCopyResult::~OutputCopyResult() {
   if (release_callback)
     release_callback->Run(sync_token, /*is_lost=*/false);
 }
 
-SurfaceSavedFrame::TextureResult& SurfaceSavedFrame::TextureResult::operator=(
-    TextureResult&& other) {
+SurfaceSavedFrame::OutputCopyResult&
+SurfaceSavedFrame::OutputCopyResult::operator=(OutputCopyResult&& other) {
   mailbox = std::move(other.mailbox);
   other.mailbox = gpu::Mailbox();
 
@@ -111,6 +108,9 @@ SurfaceSavedFrame::TextureResult& SurfaceSavedFrame::TextureResult::operator=(
   size = std::move(other.size);
 
   release_callback = std::move(other.release_callback);
+
+  is_software = other.is_software;
+  other.is_software = false;
   return *this;
 }
 

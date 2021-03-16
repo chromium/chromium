@@ -29,27 +29,32 @@ TransferableResourceTracker::~TransferableResourceTracker() = default;
 TransferableResource TransferableResourceTracker::ImportResource(
     std::unique_ptr<SurfaceSavedFrame> saved_frame) {
   DCHECK(saved_frame);
-  DCHECK(saved_frame->IsValid());
-  if (saved_frame->HasTextureResult())
-    return ImportTextureResult(saved_frame->TakeTextureResult());
+  // Since we will be dereferencing this blindly, CHECK that the frame is indeed
+  // valid.
+  CHECK(saved_frame->IsValid());
 
-  NOTREACHED();
-  return TransferableResource();
-}
+  SurfaceSavedFrame::OutputCopyResult output_copy = *saved_frame->TakeResult();
 
-TransferableResource TransferableResourceTracker::ImportTextureResult(
-    SurfaceSavedFrame::TextureResult texture) {
-  TransferableResource result =
-      TransferableResource::MakeGL(texture.mailbox, GL_LINEAR, GL_TEXTURE_2D,
-                                   texture.sync_token, texture.size,
-                                   /*is_overlay_candidate=*/false);
-  result.id = GetNextAvailableResourceId();
+  TransferableResource resource;
+  if (output_copy.is_software) {
+    // TODO(vmpstr): This needs to be updated and tested in software. For
+    // example, we don't currently have a release callback in software, although
+    // tests do set one up.
+    resource = TransferableResource::MakeSoftware(output_copy.mailbox,
+                                                  output_copy.size, RGBA_8888);
+  } else {
+    resource = TransferableResource::MakeGL(
+        output_copy.mailbox, GL_LINEAR, GL_TEXTURE_2D, output_copy.sync_token,
+        output_copy.size,
+        /*is_overlay_candidate=*/false);
+  }
 
-  DCHECK(!base::Contains(managed_resources_, result.id));
+  resource.id = GetNextAvailableResourceId();
+  DCHECK(!base::Contains(managed_resources_, resource.id));
   managed_resources_.emplace(
-      result.id,
-      TransferableResourceHolder(result, std::move(texture.release_callback)));
-  return result;
+      resource.id, TransferableResourceHolder(
+                       resource, std::move(output_copy.release_callback)));
+  return resource;
 }
 
 void TransferableResourceTracker::RefResource(ResourceId id) {
