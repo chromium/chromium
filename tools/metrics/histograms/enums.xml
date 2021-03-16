@@ -67,6 +67,13 @@ uploading your change for review.  These are checked by presubmit scripts.
   <int value="2" label="ScrolledMainFrameWithUnacceleratedFixedRootBackground"/>
 </enum>
 
+<enum name="AcceptChEntries">
+  <int value="0" label="no entries"/>
+  <int value="1" label="only valid entries"/>
+  <int value="2" label="only invalid entries"/>
+  <int value="3" label="both valid and invalid entries"/>
+</enum>
+
 <enum name="AccessibilityAndroidAnimationsEnabled">
   <obsolete>
     Removed from code 2020/10.

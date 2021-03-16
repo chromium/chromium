@@ -2593,6 +2593,30 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="Net.QuicSession.AcceptChForOrigin" enum="Boolean"
+    expires_after="M99">
+  <owner>bnc@chromium.org</owner>
+  <owner>src/net/OWNERS</owner>
+  <summary>
+    Records whether the QUIC session receives an Accept-CH entry for the given
+    origin, which GetAcceptChViaAlps() returns. Logged every time
+    QuicHttpStream::GetAcceptChViaAlps() is called, typically once for each
+    request that is served over HTTP/3.
+  </summary>
+</histogram>
+
+<histogram name="Net.QuicSession.AcceptChFrameReceivedViaAlps"
+    enum="AcceptChEntries" expires_after="M99">
+  <owner>bnc@chromium.org</owner>
+  <owner>src/net/OWNERS</owner>
+  <summary>
+    Records both whether there are any valid origin fields and whether there are
+    any invalid ones in the ACCEPT_CH frame. Logged during the TLS handshake of
+    a QUIC connection if ALPS is negotiated, once for every ACCEPT_CH HTTP/3
+    frame received (possibly zero, typically not more than one).
+  </summary>
+</histogram>
+
 <histogram name="Net.QuicSession.ActiveStreamsOnGoAwayAfterPathDegrading"
     units="Streams" expires_after="2021-05-11">
   <owner>renjietang@chromium.org</owner>

@@ -15,6 +15,7 @@
 #include "base/stl_util.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/time/default_tick_clock.h"
 #include "base/time/time.h"
@@ -2690,6 +2691,37 @@ TEST_P(QuicHttpStreamTest, DataReadErrorAsynchronous) {
   EXPECT_EQ(static_cast<int64_t>(spdy_request_headers_frame_length),
             stream_->GetTotalSentBytes());
   EXPECT_EQ(0, stream_->GetTotalReceivedBytes());
+}
+
+TEST_P(QuicHttpStreamTest, GetAcceptChViaAlps) {
+  AddWrite(ConstructInitialSettingsPacket());
+  Initialize();
+
+  if (!VersionUsesHttp3(version_.transport_version)) {
+    // ALPS is only implemented for HTTP/3.
+    return;
+  }
+
+  base::HistogramTester histogram_tester;
+
+  session_->OnAcceptChFrameReceivedViaAlps(
+      {{{"https://www.example.org", "Sec-UA-CH-Platform"}}});
+
+  request_.method = "GET";
+  request_.url = GURL("https://www.example.org/foo");
+
+  EXPECT_EQ(OK,
+            stream_->InitializeStream(&request_, true, DEFAULT_PRIORITY,
+                                      net_log_.bound(), callback_.callback()));
+  EXPECT_EQ("Sec-UA-CH-Platform", stream_->GetAcceptChViaAlps());
+  EXPECT_TRUE(AtEof());
+
+  histogram_tester.ExpectBucketCount(
+      "Net.QuicSession.AcceptChFrameReceivedViaAlps", 1, 1);
+  histogram_tester.ExpectTotalCount(
+      "Net.QuicSession.AcceptChFrameReceivedViaAlps", 1);
+  histogram_tester.ExpectBucketCount("Net.QuicSession.AcceptChForOrigin", 1, 1);
+  histogram_tester.ExpectTotalCount("Net.QuicSession.AcceptChForOrigin", 1);
 }
 
 }  // namespace test

@@ -18,6 +18,7 @@
 #include <string>
 #include <vector>
 
+#include "base/containers/flat_map.h"
 #include "base/containers/mru_cache.h"
 #include "base/macros.h"
 #include "base/observer_list_types.h"
@@ -656,6 +657,8 @@ class NET_EXPORT_PRIVATE QuicChromiumClientSession
       quic::QuicStreamId id,
       const spdy::SpdyStreamPrecedence& new_precedence) override;
   void OnHttp3GoAway(uint64_t id) override;
+  void OnAcceptChFrameReceivedViaAlps(
+      const quic::AcceptChFrame& frame) override;
 
   // quic::QuicSession methods:
   QuicChromiumClientStream* CreateOutgoingBidirectionalStream() override;
@@ -1075,6 +1078,9 @@ class NET_EXPORT_PRIVATE QuicChromiumClientSession
   std::unique_ptr<quic::QuicClientPushPromiseIndex> push_promise_index_;
 
   QuicChromiumPathValidationWriterDelegate path_validation_writer_delegate_;
+
+  // Map of origin to Accept-CH header field values received via ALPS.
+  base::flat_map<url::Origin, std::string> accept_ch_entries_received_via_alps_;
 
   base::WeakPtrFactory<QuicChromiumClientSession> weak_factory_{this};
 

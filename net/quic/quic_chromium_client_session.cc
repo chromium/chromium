@@ -55,6 +55,7 @@
 #include "net/third_party/quiche/src/quic/platform/api/quic_ptr_util.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "third_party/boringssl/src/include/openssl/ssl.h"
+#include "url/origin.h"
 
 namespace net {
 
@@ -77,6 +78,40 @@ const size_t kMinRetryTimeForDefaultNetworkSecs = 1;
 // Maximum RTT time for this session when set initial timeout for probing
 // network.
 const int kDefaultRTTMilliSecs = 300;
+
+// These values are persisted to logs. Entries should not be renumbered,
+// and numeric values should never be reused.
+enum class AcceptChEntries {
+  kNoEntries = 0,
+  kOnlyValidEntries = 1,
+  kOnlyInvalidEntries = 2,
+  kBothValidAndInvalidEntries = 3,
+  kMaxValue = kBothValidAndInvalidEntries,
+};
+
+void LogAcceptChFrameReceivedHistogram(bool has_valid_entry,
+                                       bool has_invalid_entry) {
+  AcceptChEntries value;
+  if (has_valid_entry) {
+    if (has_invalid_entry) {
+      value = AcceptChEntries::kBothValidAndInvalidEntries;
+    } else {
+      value = AcceptChEntries::kOnlyValidEntries;
+    }
+  } else {
+    if (has_invalid_entry) {
+      value = AcceptChEntries::kOnlyInvalidEntries;
+    } else {
+      value = AcceptChEntries::kNoEntries;
+    }
+  }
+  base::UmaHistogramEnumeration("Net.QuicSession.AcceptChFrameReceivedViaAlps",
+                                value);
+}
+
+void LogAcceptChForOriginHistogram(bool value) {
+  base::UmaHistogramBoolean("Net.QuicSession.AcceptChForOrigin", value);
+}
 
 void RecordConnectionCloseErrorCodeImpl(const std::string& histogram,
                                         uint64_t error,
@@ -1195,6 +1230,30 @@ void QuicChromiumClientSession::OnHttp3GoAway(uint64_t id) {
   });
 }
 
+void QuicChromiumClientSession::OnAcceptChFrameReceivedViaAlps(
+    const quic::AcceptChFrame& frame) {
+  bool has_valid_entry = false;
+  bool has_invalid_entry = false;
+  for (const auto& entry : frame.entries) {
+    // |entry.origin| must be a valid origin.
+    GURL url(entry.origin);
+    if (!url.is_valid()) {
+      has_invalid_entry = true;
+      continue;
+    }
+    const url::Origin origin = url::Origin::Create(url);
+    std::string serialized = origin.Serialize();
+    if (serialized.empty() || entry.origin != serialized) {
+      has_invalid_entry = true;
+      continue;
+    }
+    has_valid_entry = true;
+    accept_ch_entries_received_via_alps_.insert(
+        std::make_pair(std::move(origin), entry.value));
+  }
+  LogAcceptChFrameReceivedHistogram(has_valid_entry, has_invalid_entry);
+}
+
 void QuicChromiumClientSession::AddHandle(Handle* handle) {
   if (going_away_) {
     handle->OnSessionClosed(connection()->version(), ERR_UNEXPECTED, error(),
@@ -1455,8 +1514,14 @@ bool QuicChromiumClientSession::GetSSLInfo(SSLInfo* ssl_info) const {
 
 base::StringPiece QuicChromiumClientSession::GetAcceptChViaAlpsForOrigin(
     const url::Origin& origin) const {
-  // TODO(https://crbug.com/1184252): Implement.
-  return {};
+  auto it = accept_ch_entries_received_via_alps_.find(origin);
+  if (it == accept_ch_entries_received_via_alps_.end()) {
+    LogAcceptChForOriginHistogram(false);
+    return {};
+  } else {
+    LogAcceptChForOriginHistogram(true);
+    return it->second;
+  }
 }
 
 int QuicChromiumClientSession::CryptoConnect(CompletionOnceCallback callback) {
