@@ -269,14 +269,8 @@ class TwoClientSessionsWithDestroyProfileSyncTest
   base::test::ScopedFeatureList features_;
 };
 
-// TODO(1185289): Fails under msan.
-#if defined(MEMORY_SANITIZER)
-#define MAYBE_ShouldNotSyncLastClosedTab DISABLED_ShouldNotSyncLastClosedTab
-#else
-#define MAYBE_ShouldNotSyncLastClosedTab ShouldNotSyncLastClosedTab
-#endif
 IN_PROC_BROWSER_TEST_F(TwoClientSessionsWithDestroyProfileSyncTest,
-                       MAYBE_ShouldNotSyncLastClosedTab) {
+                       ShouldNotSyncLastClosedTab) {
   ASSERT_TRUE(SetupSync()) << "SetupSync() failed.";
 
   ASSERT_TRUE(CheckInitialState(0));
