@@ -419,7 +419,13 @@ class MediaCodecUtil {
 
             // MediaTek decoders do not work properly on vp8. See http://crbug.com/446974 and
             // http://crbug.com/597836.
-            if (Build.HARDWARE.startsWith("mt")) return false;
+            if (Build.HARDWARE.startsWith("mt")) {
+                if (Build.VERSION.SDK_INT < Build.VERSION_CODES.P) return false;
+
+                // The following chipsets have been confirmed by MediaTek to work on P+
+                return Build.HARDWARE.startsWith("mt5599") || Build.HARDWARE.startsWith("mt5895")
+                        || Build.HARDWARE.startsWith("m7332");
+            }
         } else if (mime.equals(MimeTypes.VIDEO_VP9)) {
             // Nexus Player VP9 decoder performs poorly at >= 1080p resolution.
             if (Build.MODEL.equals("Nexus Player")) {

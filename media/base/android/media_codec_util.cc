@@ -31,6 +31,7 @@ using base::android::ScopedJavaLocalRef;
 using base::android::SDK_VERSION_KITKAT;
 using base::android::SDK_VERSION_LOLLIPOP;
 using base::android::SDK_VERSION_LOLLIPOP_MR1;
+using base::android::SDK_VERSION_P;
 
 namespace media {
 
@@ -385,12 +386,17 @@ bool MediaCodecUtil::IsKnownUnaccelerated(VideoCodec codec,
   // MediaTek hardware vp9 is known crashy, see http://crbug.com/446974 and
   // http://crbug.com/597836.
   if (base::StartsWith(codec_name, "OMX.MTK.", base::CompareCase::SENSITIVE)) {
-    if (codec == kCodecVP8)
-      return true;
+    if (codec == kCodecVP8) {
+      // We may still reject VP8 hardware decoding later on certain chipsets,
+      // see isDecoderSupportedForDevice(). We don't have the the chipset ID
+      // here to check now though.
+      return base::android::BuildInfo::GetInstance()->sdk_int() < SDK_VERSION_P;
+    }
 
-    if (codec == kCodecVP9)
+    if (codec == kCodecVP9) {
       return base::android::BuildInfo::GetInstance()->sdk_int() <
              SDK_VERSION_LOLLIPOP;
+    }
 
     return false;
   }
