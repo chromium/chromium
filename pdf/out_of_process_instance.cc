@@ -81,8 +81,6 @@ constexpr char kType[] = "type";
 // Name of identifier field passed from JS to the plugin and back, to associate
 // Page->Plugin messages to Plugin->Page responses.
 constexpr char kJSMessageId[] = "messageId";
-// Document print preview loaded (Plugin -> Page)
-constexpr char kJSPreviewLoadedType[] = "printPreviewLoaded";
 // Print (Page -> Plugin)
 constexpr char kJSPrintType[] = "print";
 // Save attachment (Page -> Plugin)
@@ -1500,12 +1498,6 @@ void OutOfProcessInstance::LoadNextPreviewPage() {
   if (print_preview_loaded_page_count_ == print_preview_page_count_) {
     SendPrintPreviewLoadedNotification();
   }
-}
-
-void OutOfProcessInstance::SendPrintPreviewLoadedNotification() {
-  pp::VarDictionary loaded_message;
-  loaded_message.Set(pp::Var(kType), pp::Var(kJSPreviewLoadedType));
-  PostMessage(loaded_message);
 }
 
 void OutOfProcessInstance::SendThumbnail(const std::string& message_id,

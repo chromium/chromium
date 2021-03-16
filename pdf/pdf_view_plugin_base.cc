@@ -464,6 +464,12 @@ void PdfViewPluginBase::SendLoadingProgress(double percentage) {
   SendMessage(std::move(message));
 }
 
+void PdfViewPluginBase::SendPrintPreviewLoadedNotification() {
+  base::Value message(base::Value::Type::DICTIONARY);
+  message.SetStringKey("type", "printPreviewLoaded");
+  SendMessage(std::move(message));
+}
+
 void PdfViewPluginBase::OnPaint(const std::vector<gfx::Rect>& paint_rects,
                                 std::vector<PaintReadyRect>& ready,
                                 std::vector<gfx::Rect>& pending) {

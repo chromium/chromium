@@ -169,6 +169,9 @@ class PdfViewPluginBase : public PDFEngine::Client,
   // -1 for loading error.
   void SendLoadingProgress(double percentage);
 
+  // Send a notification that the print preview has loaded.
+  void SendPrintPreviewLoadedNotification();
+
   // Initialize image buffer(s) according to the new context size.
   virtual void InitImageData(const gfx::Size& size) = 0;
 
