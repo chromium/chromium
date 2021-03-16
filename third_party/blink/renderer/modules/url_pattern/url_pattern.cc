@@ -870,7 +870,8 @@ URLPattern::Component* URLPattern::CompilePattern(
                                           : WTF::kTextCaseASCIIInsensitive;
   DCHECK(base::IsStringASCII(regexp_string));
   ScriptRegexp* regexp = MakeGarbageCollected<ScriptRegexp>(
-      String(regexp_string.data(), regexp_string.size()), case_sensitive);
+      String(regexp_string.data(), regexp_string.size()), case_sensitive,
+      kMultilineDisabled, ScriptRegexp::UTF16);
   if (!regexp->IsValid()) {
     // TODO: Figure out which embedded regex expression caused the failure
     //       by compiling each pattern kRegex part individually.

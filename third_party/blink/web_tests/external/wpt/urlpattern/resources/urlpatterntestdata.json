@@ -1360,5 +1360,44 @@
       "protocol": { "input": "data", "groups": {}},
       "pathname": { "input": "8675309", "groups": { "number": "8675309" }}
     }
+  },
+  {
+    "pattern": { "pathname": "/(\\m)" },
+    "error": true
+  },
+  {
+    "pattern": { "pathname": "/foo!" },
+    "input": { "pathname": "/foo!" },
+    "expected_match": {
+      "input": { "pathname": "/foo!" },
+      "pathname": { "input": "/foo!", "groups": {}}
+    }
+  },
+  {
+    "pattern": { "pathname": "/foo\\:" },
+    "input": { "pathname": "/foo:" },
+    "expected_match": {
+      "input": { "pathname": "/foo:" },
+      "pathname": { "input": "/foo:", "groups": {}}
+    }
+  },
+  {
+    "pattern": { "pathname": "/foo\\{" },
+    "input": { "pathname": "/foo{" },
+    "expected_obj": {
+      "pathname": "/foo%7B"
+    },
+    "expected_match": {
+      "input": { "pathname": "/foo{" },
+      "pathname": { "input": "/foo%7B", "groups": {}}
+    }
+  },
+  {
+    "pattern": { "pathname": "/foo\\(" },
+    "input": { "pathname": "/foo(" },
+    "expected_match": {
+      "input": { "pathname": "/foo(" },
+      "pathname": { "input": "/foo(", "groups": {}}
+    }
   }
 ]

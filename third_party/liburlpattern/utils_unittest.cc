@@ -31,7 +31,7 @@ TEST(UtilsTest, EscapeRegexpStringQuestion) {
 }
 
 TEST(UtilsTest, EscapeRegexpStringEquals) {
-  RunEscapeRegexpStringTest("foo=bar", "foo\\=bar");
+  RunEscapeRegexpStringTest("foo=bar", "foo=bar");
 }
 
 TEST(UtilsTest, EscapeRegexpStringCaret) {
@@ -39,11 +39,11 @@ TEST(UtilsTest, EscapeRegexpStringCaret) {
 }
 
 TEST(UtilsTest, EscapeRegexpStringBang) {
-  RunEscapeRegexpStringTest("!foo", "\\!foo");
+  RunEscapeRegexpStringTest("!foo", "!foo");
 }
 
 TEST(UtilsTest, EscapeRegexpStringColon) {
-  RunEscapeRegexpStringTest(":foo", "\\:foo");
+  RunEscapeRegexpStringTest(":foo", ":foo");
 }
 
 TEST(UtilsTest, EscapeRegexpStringDollar) {

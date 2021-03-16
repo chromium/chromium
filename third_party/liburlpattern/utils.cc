@@ -9,7 +9,7 @@ namespace liburlpattern {
 
 namespace {
 
-constexpr absl::string_view kRegexpSpecialCharacters(".+*?=^!:${}()[]|/\\");
+constexpr absl::string_view kRegexpSpecialCharacters(".+*?^${}()[]|/\\");
 constexpr absl::string_view kPatternSpecialCharacters("+*?:{}()\\");
 
 void EscapeStringAndAppendInternal(absl::string_view input,
