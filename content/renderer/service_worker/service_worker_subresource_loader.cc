@@ -712,7 +712,19 @@ void ServiceWorkerSubresourceLoader::FollowRedirect(
       TRACE_ID_WITH_SCOPE(kServiceWorkerSubresourceLoaderScope,
                           TRACE_ID_LOCAL(request_id_)),
       TRACE_EVENT_FLAG_FLOW_IN | TRACE_EVENT_FLAG_FLOW_OUT, "new_url",
-      redirect_info_->new_url.spec());
+      redirect_info_ ? redirect_info_->new_url.spec() : "(none)");
+
+  // In rare cases, the client seems to call FollowRedirect() when we aren't
+  // expecting it. Just complete with error if we have not already completed.
+  // https://crbug.com/1162035
+  if (!redirect_info_) {
+    if (status_ != Status::kCompleted)
+      CommitCompleted(net::ERR_INVALID_REDIRECT);
+    return;
+  }
+
+  DCHECK_EQ(status_, Status::kSentRedirect);
+
   // TODO(arthursonzogni, juncai): This seems to be correctly implemented, but
   // not used so far. Add tests and remove this DCHECK to support this feature
   // if needed. See https://crbug.com/845683.
@@ -721,7 +733,6 @@ void ServiceWorkerSubresourceLoader::FollowRedirect(
          "https://crbug.com/845683";
   DCHECK(!new_url.has_value()) << "Redirect with modified url was not "
                                   "supported yet. crbug.com/845683";
-  DCHECK(redirect_info_);
 
   bool should_clear_upload = false;
   net::RedirectUtil::UpdateHttpRequest(

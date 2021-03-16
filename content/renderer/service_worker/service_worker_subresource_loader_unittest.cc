@@ -197,6 +197,9 @@ class FakeControllerServiceWorker
     blob_range_body_ = body;
   }
 
+  // Tells this controller to not respond to fetch events.
+  void DontRespond() { response_mode_ = ResponseMode::kDontRespond; }
+
   void ReadRequestBody(std::string* out_string) {
     ASSERT_TRUE(request_body_);
     std::vector<network::DataElement>* elements =
@@ -337,13 +340,16 @@ class FakeControllerServiceWorker
         std::move(callback).Run(
             blink::mojom::ServiceWorkerEventStatus::REJECTED);
         break;
-      case ResponseMode::kRedirectResponse: {
+      case ResponseMode::kRedirectResponse:
         response_callback->OnResponse(
             RedirectResponse(redirect_location_header_), std::move(timing));
         std::move(callback).Run(
             blink::mojom::ServiceWorkerEventStatus::COMPLETED);
         break;
-      }
+      case ResponseMode::kDontRespond:
+        response_callback_ = std::move(response_callback);
+        callback_ = std::move(callback);
+        break;
     }
     if (fetch_event_callback_)
       std::move(fetch_event_callback_).Run();
@@ -377,7 +383,8 @@ class FakeControllerServiceWorker
     kBlobRange,
     kFallbackResponse,
     kErrorResponse,
-    kRedirectResponse
+    kRedirectResponse,
+    kDontRespond
   };
 
   ResponseMode response_mode_ = ResponseMode::kDefault;
@@ -397,8 +404,13 @@ class FakeControllerServiceWorker
   // For ResponseMode::kBlobRange.
   std::string blob_range_body_;
 
-  // For ResponseMode::kRedirectResponse
+  // For ResponseMode::kRedirectResponse.
   std::string redirect_location_header_;
+
+  // For ResponseMode::kDontRespond.
+  DispatchFetchEventForSubresourceCallback callback_;
+  mojo::Remote<blink::mojom::ServiceWorkerFetchResponseCallback>
+      response_callback_;
 
   network::mojom::FetchResponseSource response_source_ =
       network::mojom::FetchResponseSource::kUnspecified;
@@ -1390,6 +1402,27 @@ TEST_F(ServiceWorkerSubresourceLoaderTest, TooManyRedirects) {
   histogram_tester.ExpectUniqueSample(kHistogramSubresourceFetchEvent,
                                       blink::ServiceWorkerStatusCode::kOk,
                                       net::URLRequest::kMaxRedirects + 1);
+}
+
+TEST_F(ServiceWorkerSubresourceLoaderTest, FollowNonexistentRedirect) {
+  // Delay the response from the service worker indefinitely so the test can
+  // run without races.
+  fake_controller_.DontRespond();
+
+  // Start a request.
+  mojo::Remote<network::mojom::URLLoaderFactory> factory =
+      CreateSubresourceLoaderFactory();
+  network::ResourceRequest request =
+      CreateRequest(GURL("https://www.example.com/foo.png"));
+  mojo::Remote<network::mojom::URLLoader> loader;
+  std::unique_ptr<network::TestURLLoaderClient> client;
+  StartRequest(factory, request, &loader, &client);
+
+  // Tell the loader to follow a non-existent redirect. It should complete
+  // with network error.
+  loader->FollowRedirect({}, {}, {}, base::nullopt);
+  client->RunUntilComplete();
+  EXPECT_EQ(net::ERR_INVALID_REDIRECT, client->completion_status().error_code);
 }
 
 TEST_F(ServiceWorkerSubresourceLoaderTest, FallbackWithRequestBody_String) {
