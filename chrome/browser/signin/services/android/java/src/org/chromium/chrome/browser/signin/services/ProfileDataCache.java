@@ -225,17 +225,20 @@ public class ProfileDataCache implements ProfileDataSource.Observer, IdentityMan
         });
     }
 
-    private DisplayableProfileData createDisplayableProfileData(
-            ProfileDataSource.ProfileData profileData) {
-        return new DisplayableProfileData(profileData.getAccountEmail(),
-                prepareAvatar(profileData.getAvatar(), profileData.getAccountEmail()),
-                profileData.getFullName(), profileData.getGivenName());
-    }
-
     @Override
     public void onProfileDataUpdated(ProfileDataSource.ProfileData profileData) {
         ThreadUtils.assertOnUiThread();
-        updateCachedProfileDataAndNotifyObservers(createDisplayableProfileData(profileData));
+        final String email = profileData.getAccountEmail();
+        Bitmap avatar = profileData.getAvatar();
+        if (avatar == null) {
+            // If the avatar is null, try to fetch the monogram from IdentityManager
+            final AccountInfo accountInfo =
+                    mIdentityManager
+                            .findExtendedAccountInfoForAccountWithRefreshTokenByEmailAddress(email);
+            avatar = accountInfo != null ? accountInfo.getAccountImage() : null;
+        }
+        updateCacheAndNotifyObservers(
+                email, avatar, profileData.getFullName(), profileData.getGivenName());
     }
 
     @Override
@@ -250,28 +253,22 @@ public class ProfileDataCache implements ProfileDataSource.Observer, IdentityMan
     @Override
     public void onExtendedAccountInfoUpdated(AccountInfo accountInfo) {
         if (accountInfo.getAccountImage() != null) {
-            final String accountEmail = accountInfo.getEmail();
-            updateCachedProfileDataAndNotifyObservers(new DisplayableProfileData(accountEmail,
-                    prepareAvatar(accountInfo.getAccountImage(), accountEmail),
-                    accountInfo.getFullName(), accountInfo.getGivenName()));
+            updateCacheAndNotifyObservers(accountInfo.getEmail(), accountInfo.getAccountImage(),
+                    accountInfo.getFullName(), accountInfo.getGivenName());
         }
     }
 
-    private Drawable prepareAvatar(Bitmap bitmap, String accountEmail) {
-        if (bitmap == null) {
-            // If the given bitmap is null, try to fetch the account image which can be monogram
-            // from IdentityManager
-            bitmap = getAccountImageFromIdentityManager(accountEmail);
-        }
-        Drawable croppedAvatar = bitmap != null
-                ? AvatarGenerator.makeRoundAvatar(mContext.getResources(), bitmap, mImageSize)
+    private void updateCacheAndNotifyObservers(
+            String email, Bitmap avatar, String fullName, String givenName) {
+        Drawable croppedAvatar = avatar != null
+                ? AvatarGenerator.makeRoundAvatar(mContext.getResources(), avatar, mImageSize)
                 : mPlaceholderImage;
-        return mBadgeConfig == null ? croppedAvatar : overlayBadgeOnUserPicture(croppedAvatar);
-    }
-
-    private void updateCachedProfileDataAndNotifyObservers(DisplayableProfileData profileData) {
-        mCachedProfileData.put(profileData.getAccountEmail(), profileData);
-        notifyObservers(profileData.getAccountEmail());
+        if (mBadgeConfig != null) {
+            croppedAvatar = overlayBadgeOnUserPicture(croppedAvatar);
+        }
+        mCachedProfileData.put(
+                email, new DisplayableProfileData(email, croppedAvatar, fullName, givenName));
+        notifyObservers(email);
     }
 
     private void notifyObservers(String accountEmail) {
@@ -321,22 +318,5 @@ public class ProfileDataCache implements ProfileDataSource.Observer, IdentityMan
         drawable.setBounds(0, 0, imageSize, imageSize);
         drawable.draw(canvas);
         return new BitmapDrawable(context.getResources(), output);
-    }
-
-    /**
-     * Fetches the account image stored in {@link AccountInfo}.
-     *
-     * If user is signed in and has a profile photo, the profile photo will be returned, otherwise,
-     * a monogram is returned.
-     * If the user is signed out, returns null.
-     *
-     * TODO(https://crbug.com/1130545): We should refactor the different sources for getting
-     *  the profile image.
-     */
-    private @Nullable Bitmap getAccountImageFromIdentityManager(String accountEmail) {
-        AccountInfo accountInfo =
-                mIdentityManager.findExtendedAccountInfoForAccountWithRefreshTokenByEmailAddress(
-                        accountEmail);
-        return accountInfo != null ? accountInfo.getAccountImage() : null;
     }
 }
