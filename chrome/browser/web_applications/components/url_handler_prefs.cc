@@ -102,7 +102,7 @@ void FilterAndAddMatches(const base::Value& all_handlers,
 
     base::Optional<base::FilePath> profile_path =
         util::ValueToFilePath(handler.FindKey(kProfilePath));
-    if (!profile_path)
+    if (!profile_path || profile_path->empty())
       continue;
 
     if (origin_trimmed) {

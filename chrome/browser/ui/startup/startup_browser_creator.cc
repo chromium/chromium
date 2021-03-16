@@ -474,10 +474,6 @@ bool MaybeLaunchUrlHandlerWebApp(
   // TODO(crbug/1072058): Check user preferences before showing intent picker.
   ProfileManager* profile_manager = g_browser_process->profile_manager();
   for (const auto& match : url_handler_matches) {
-    if (match.profile_path.empty() || match.app_id.empty() ||
-        !match.url.is_valid()) {
-      continue;
-    }
     // Do not load profile if profile path is not valid.
     if (!profile_manager->GetProfileAttributesStorage()
              .GetProfileAttributesWithPath(match.profile_path)) {
