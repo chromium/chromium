@@ -36,28 +36,33 @@
 #include "ui/display/types/display_constants.h"
 #include "ui/gfx/geometry/rect.h"
 
+namespace ash {
+
 namespace {
 
-bool IsAppListBackground(ash::ShelfBackgroundType background_type) {
+bool IsAppListBackground(ShelfBackgroundType background_type) {
   switch (background_type) {
-    case ash::ShelfBackgroundType::kAppList:
-    case ash::ShelfBackgroundType::kHomeLauncher:
-    case ash::ShelfBackgroundType::kMaximizedWithAppList:
+    case ShelfBackgroundType::kAppList:
+    case ShelfBackgroundType::kHomeLauncher:
+    case ShelfBackgroundType::kMaximizedWithAppList:
       return true;
-    case ash::ShelfBackgroundType::kDefaultBg:
-    case ash::ShelfBackgroundType::kMaximized:
-    case ash::ShelfBackgroundType::kOobe:
-    case ash::ShelfBackgroundType::kLogin:
-    case ash::ShelfBackgroundType::kLoginNonBlurredWallpaper:
-    case ash::ShelfBackgroundType::kOverview:
-    case ash::ShelfBackgroundType::kInApp:
+    case ShelfBackgroundType::kDefaultBg:
+    case ShelfBackgroundType::kMaximized:
+    case ShelfBackgroundType::kOobe:
+    case ShelfBackgroundType::kLogin:
+    case ShelfBackgroundType::kLoginNonBlurredWallpaper:
+    case ShelfBackgroundType::kOverview:
+    case ShelfBackgroundType::kInApp:
       return false;
   }
 }
 
-}  // namespace
+bool IsBottomAlignment(ShelfAlignment alignment) {
+  return alignment == ShelfAlignment::kBottom ||
+         alignment == ShelfAlignment::kBottomLocked;
+}
 
-namespace ash {
+}  // namespace
 
 // Records smoothness of bounds animations for the HotseatWidget.
 class HotseatWidgetAnimationMetricsReporter {
@@ -464,12 +469,17 @@ void Shelf::SetAlignment(ShelfAlignment alignment) {
     return;
   }
 
+  bool needs_relayout =
+      !IsBottomAlignment(alignment_) || !IsBottomAlignment(alignment);
+
   ShelfAlignment old_alignment = alignment_;
   alignment_ = alignment;
   tooltip_->Close();
-  shelf_layout_manager_->LayoutShelf();
-  Shell::Get()->NotifyShelfAlignmentChanged(GetWindow()->GetRootWindow(),
-                                            old_alignment);
+  if (needs_relayout) {
+    shelf_layout_manager_->LayoutShelf();
+    Shell::Get()->NotifyShelfAlignmentChanged(GetWindow()->GetRootWindow(),
+                                              old_alignment);
+  }
 }
 
 bool Shelf::IsHorizontalAlignment() const {
