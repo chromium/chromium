@@ -40,7 +40,6 @@
 #include "components/user_manager/user_manager.h"
 #include "components/user_manager/user_type.h"
 #include "components/version_info/channel.h"
-#include "media/capture/mojom/video_capture.mojom.h"
 #include "mojo/public/cpp/platform/platform_channel.h"
 #include "mojo/public/cpp/system/invitation.h"
 
@@ -194,7 +193,7 @@ bool IsLacrosWindow(const aura::Window* window) {
 
 base::flat_map<base::Token, uint32_t> GetInterfaceVersions() {
   static_assert(
-      crosapi::mojom::Crosapi::Version_ == 18,
+      crosapi::mojom::Crosapi::Version_ == 17,
       "if you add a new crosapi, please add it to the version map here");
   InterfaceVersions versions;
   AddVersion<chromeos::sensors::mojom::SensorHalClient>(&versions);
@@ -217,7 +216,6 @@ base::flat_map<base::Token, uint32_t> GetInterfaceVersions() {
   AddVersion<crosapi::mojom::SnapshotCapturer>(&versions);
   AddVersion<crosapi::mojom::TestController>(&versions);
   AddVersion<crosapi::mojom::UrlHandler>(&versions);
-  AddVersion<crosapi::mojom::VideoCaptureDeviceFactory>(&versions);
   AddVersion<device::mojom::HidConnection>(&versions);
   AddVersion<device::mojom::HidManager>(&versions);
   AddVersion<media_session::mojom::MediaControllerManager>(&versions);

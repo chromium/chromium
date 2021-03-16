@@ -27,7 +27,6 @@
 #include "chrome/browser/ash/crosapi/select_file_ash.h"
 #include "chrome/browser/ash/crosapi/test_controller_ash.h"
 #include "chrome/browser/ash/crosapi/url_handler_ash.h"
-#include "chrome/browser/ash/crosapi/video_capture_device_factory_ash.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part.h"
@@ -66,9 +65,7 @@ CrosapiAsh::CrosapiAsh()
       screen_manager_ash_(std::make_unique<ScreenManagerAsh>()),
       select_file_ash_(std::make_unique<SelectFileAsh>()),
       test_controller_ash_(std::make_unique<TestControllerAsh>()),
-      url_handler_ash_(std::make_unique<UrlHandlerAsh>()),
-      video_capture_device_factory_ash_(
-          std::make_unique<VideoCaptureDeviceFactoryAsh>()) {
+      url_handler_ash_(std::make_unique<UrlHandlerAsh>()) {
   receiver_set_.set_disconnect_handler(base::BindRepeating(
       &CrosapiAsh::OnDisconnected, weak_factory_.GetWeakPtr()));
 }
@@ -229,11 +226,6 @@ void CrosapiAsh::BindMachineLearningService(
         chromeos::machine_learning::mojom::MachineLearningService> receiver) {
   chromeos::machine_learning::ServiceConnection::GetInstance()
       ->BindMachineLearningService(std::move(receiver));
-}
-
-void CrosapiAsh::BindVideoCaptureDeviceFactory(
-    mojo::PendingReceiver<mojom::VideoCaptureDeviceFactory> receiver) {
-  video_capture_device_factory_ash_->BindReceiver(std::move(receiver));
 }
 
 void CrosapiAsh::OnBrowserStartup(mojom::BrowserInfoPtr browser_info) {
