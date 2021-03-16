@@ -23,7 +23,7 @@ namespace syncer {
 
 class CancelationSignal;
 class CommitContributor;
-class KeystoreKeysHandler;
+class SyncEncryptionHandler;
 class ModelTypeWorker;
 class UpdateHandler;
 
@@ -34,9 +34,11 @@ using CommitContributorMap = std::map<ModelType, CommitContributor*>;
 class ModelTypeRegistry : public ModelTypeConnector,
                           public SyncEncryptionHandler::Observer {
  public:
+  // |nudge_handler|, |cancelation_signal| and |sync_encryption_handler| must
+  // outlive this object.
   ModelTypeRegistry(NudgeHandler* nudge_handler,
                     CancelationSignal* cancelation_signal,
-                    KeystoreKeysHandler* keystore_keys_handler);
+                    SyncEncryptionHandler* sync_encryption_handler);
   ~ModelTypeRegistry() override;
 
   // Implementation of ModelTypeConnector.
@@ -86,9 +88,6 @@ class ModelTypeRegistry : public ModelTypeConnector,
   base::WeakPtr<ModelTypeConnector> AsWeakPtr();
 
  private:
-  // Called when either |cryptographer_| or |encrypted_types_| change.
-  void UpdateCryptographerForConnectedEncryptedTypes();
-
   // Enabled proxy types, which don't have a worker.
   ModelTypeSet enabled_proxy_types_;
 
@@ -98,9 +97,6 @@ class ModelTypeRegistry : public ModelTypeConnector,
   // They do not own any of the objects they point to.
   UpdateHandlerMap update_handler_map_;
   CommitContributorMap commit_contributor_map_;
-
-  // A copy of the most recent cryptographer.
-  std::unique_ptr<Cryptographer> cryptographer_;
 
   // A copy of the most recent passphrase type.
   PassphraseType passphrase_type_ =
@@ -115,7 +111,7 @@ class ModelTypeRegistry : public ModelTypeConnector,
   // ModelTypeWorker to cancel blocking operation.
   CancelationSignal* const cancelation_signal_;
 
-  KeystoreKeysHandler* const keystore_keys_handler_;
+  SyncEncryptionHandler* const sync_encryption_handler_;
 
   base::WeakPtrFactory<ModelTypeRegistry> weak_ptr_factory_{this};
 

@@ -19,8 +19,6 @@ class Cryptographer {
   Cryptographer();
   virtual ~Cryptographer();
 
-  virtual std::unique_ptr<Cryptographer> Clone() const = 0;
-
   // Returns whether this cryptographer is ready to encrypt data, using
   // EncryptString(). This usually means that a default encryption key is
   // available and there are no pending keys.

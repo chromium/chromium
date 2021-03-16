@@ -123,6 +123,10 @@ class SyncEncryptionHandler {
   // even delete this API altogether.
   virtual bool Init() = 0;
 
+  // TODO(crbug.com/1178418): Add similar getters for the rest of the state
+  // notified to the observers.
+  virtual Cryptographer* GetCryptographer() = 0;
+
   // Attempts to re-encrypt encrypted data types using the passphrase provided.
   // Notifies observers of the result of the operation via OnPassphraseAccepted
   // or OnPassphraseRequired, updates the nigori node, and does re-encryption as

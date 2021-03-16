@@ -276,7 +276,7 @@ sync_pb::NigoriSpecifics NigoriState::ToSpecificsProto() const {
 
 NigoriState NigoriState::Clone() const {
   NigoriState result;
-  result.cryptographer = cryptographer->CloneImpl();
+  result.cryptographer = cryptographer->Clone();
   result.pending_keys = pending_keys;
   result.passphrase_type = passphrase_type;
   result.keystore_migration_time = keystore_migration_time;
