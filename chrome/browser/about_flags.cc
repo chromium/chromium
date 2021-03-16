@@ -2070,22 +2070,6 @@ const FeatureEntry::FeatureVariation
          base::size(kPhotoPickerVideoSupportEnabledWithAnimatedThumbnails),
          nullptr}};
 
-const FeatureEntry::FeatureParam
-    kTabbedAppOverflowMenuThreeButtonActionbarAction[] = {
-        {"three_button_action_bar", "action_chip_view"}};
-const FeatureEntry::FeatureParam
-    kTabbedAppOverflowMenuThreeButtonActionbarDestination[] = {
-        {"three_button_action_bar", "destination_chip_view"}};
-const FeatureEntry::FeatureVariation
-    kTabbedAppOverflowMenuThreeButtonActionbarVariations[] = {
-        {"(three button with action chip view)",
-         kTabbedAppOverflowMenuThreeButtonActionbarAction,
-         base::size(kTabbedAppOverflowMenuThreeButtonActionbarAction), nullptr},
-        {"(three button with destination chip view)",
-         kTabbedAppOverflowMenuThreeButtonActionbarDestination,
-         base::size(kTabbedAppOverflowMenuThreeButtonActionbarDestination),
-         nullptr}};
-
 // Request Desktop Site on Tablet by default variations.
 const FeatureEntry::FeatureParam kRequestDesktopSiteForTablets768[] = {
     {"screen_width_dp", "768"},
@@ -4471,14 +4455,6 @@ const FeatureEntry kFeatureEntries[] = {
 #endif  // OS_ANDROID
 
 #if defined(OS_ANDROID)
-    {"tabbed-app-overflow-menu-three-button-actionbar",
-     flag_descriptions::kTabbedAppOverflowMenuThreeButtonActionbarName,
-     flag_descriptions::kTabbedAppOverflowMenuThreeButtonActionbarDescription,
-     kOsAndroid,
-     FEATURE_WITH_PARAMS_VALUE_TYPE(
-         chrome::android::kTabbedAppOverflowMenuThreeButtonActionbar,
-         kTabbedAppOverflowMenuThreeButtonActionbarVariations,
-         "AndroidAppMenuUiReworkPhase4And5")},
     {"request-desktop-site-for-tablets",
      flag_descriptions::kRequestDesktopSiteForTabletsName,
      flag_descriptions::kRequestDesktopSiteForTabletsDescription, kOsAndroid,

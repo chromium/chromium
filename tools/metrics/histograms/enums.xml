@@ -3313,6 +3313,9 @@ Unknown properties are collapsed to zero. -->
 </enum>
 
 <enum name="AppMenuSimilarSelectionType">
+  <obsolete>
+    Deprecated as of 03/2021.
+  </obsolete>
   <int value="0"
       label="selected adding to bookmarks, and then selected all bookmarks"/>
   <int value="1"

@@ -43,10 +43,6 @@ public class ReadLaterIPHController {
      */
     public void onCopyContextMenuItemClicked() {
         if (!ChromeFeatureList.isEnabled(ChromeFeatureList.READ_LATER)) return;
-        if (ChromeFeatureList.isEnabled(
-                    ChromeFeatureList.TABBED_APP_OVERFLOW_MENU_THREE_BUTTON_ACTIONBAR)) {
-            return;
-        }
         mUserEducationHelper.requestShowIPH(
                 new IPHCommandBuilder(mToolbarMenuButton.getContext().getResources(),
                         FeatureConstants.READ_LATER_APP_MENU_BOOKMARK_THIS_PAGE_FEATURE,
@@ -68,10 +64,6 @@ public class ReadLaterIPHController {
 
     private void showReadLaterAppMenuBookmarksIPH() {
         if (!ChromeFeatureList.isEnabled(ChromeFeatureList.READ_LATER)) return;
-        if (ChromeFeatureList.isEnabled(
-                    ChromeFeatureList.TABBED_APP_OVERFLOW_MENU_THREE_BUTTON_ACTIONBAR)) {
-            return;
-        }
         mUserEducationHelper.requestShowIPH(
                 new IPHCommandBuilder(mToolbarMenuButton.getContext().getResources(),
                         FeatureConstants.READ_LATER_APP_MENU_BOOKMARKS_FEATURE,

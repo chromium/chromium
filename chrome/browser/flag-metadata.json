@@ -4968,11 +4968,6 @@
     "expiry_milestone": 82
   },
   {
-    "name": "tabbed-app-overflow-menu-three-button-actionbar",
-    "owners": [ "gangwu" ],
-    "expiry_milestone": 91
-  },
-  {
     "name": "text-fragment-color-change",
     "owners": [ "cheickcisse@google.com" ],
     "expiry_milestone": 92

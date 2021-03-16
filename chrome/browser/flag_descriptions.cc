@@ -3426,11 +3426,6 @@ const char kSwipeToMoveCursorDescription[] =
     "Allows user to use touch gestures to move the text cursor around. This "
     "flag will only take effect on Android 11 and above.";
 
-const char kTabbedAppOverflowMenuThreeButtonActionbarName[] =
-    "Android tabbed app overflow menu three buttons actionbar";
-const char kTabbedAppOverflowMenuThreeButtonActionbarDescription[] =
-    "If enabled, the actionbar in the overflow menu will have 3 buttons.";
-
 const char kWalletRequiresFirstSyncSetupCompleteName[] =
     "Controls whether Wallet (GPay) integration on Android requires "
     "first-sync-setup to be complete";

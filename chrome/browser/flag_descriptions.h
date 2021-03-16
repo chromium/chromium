@@ -1986,9 +1986,6 @@ extern const char kAndroidDarkSearchDescription[];
 extern const char kSwipeToMoveCursorName[];
 extern const char kSwipeToMoveCursorDescription[];
 
-extern const char kTabbedAppOverflowMenuThreeButtonActionbarName[];
-extern const char kTabbedAppOverflowMenuThreeButtonActionbarDescription[];
-
 extern const char kWalletRequiresFirstSyncSetupCompleteName[];
 extern const char kWalletRequiresFirstSyncSetupCompleteDescription[];
 

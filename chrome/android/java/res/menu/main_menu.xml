@@ -52,28 +52,12 @@
         <item android:id="@+id/open_history_menu_id"
             android:title="@string/menu_history"
             android:icon="@drawable/ic_history_googblue_24dp" />
-        <item android:id="@+id/downloads_row_menu_id"
-            android:title="@null">
-          <menu>
-                <item android:id="@+id/downloads_menu_id"
-                    android:title="@string/menu_downloads"
-                    android:icon="@drawable/infobar_download_complete" />
-                <item android:id="@+id/offline_page_chip_id"
-                    android:title="@string/menu_download"
-                    android:icon="@drawable/ic_file_download_white_24dp" />
-          </menu>
-        </item>
-        <item android:id="@+id/all_bookmarks_row_menu_id"
-            android:title="@null">
-          <menu>
-                <item android:id="@+id/all_bookmarks_menu_id"
-                    android:title="@string/menu_bookmarks"
-                    android:icon="@drawable/btn_star_filled" />
-                <item android:id="@+id/bookmark_this_page_chip_id"
-                    android:title="@string/menu_bookmark"
-                    android:icon="@drawable/btn_star" />
-          </menu>
-        </item>
+        <item android:id="@+id/downloads_menu_id"
+            android:title="@string/menu_downloads"
+            android:icon="@drawable/infobar_download_complete" />
+        <item android:id="@+id/all_bookmarks_menu_id"
+            android:title="@string/menu_bookmarks"
+            android:icon="@drawable/btn_star_filled" />
         <item android:id="@+id/recent_tabs_menu_id"
             android:title="@string/menu_recent_tabs"
             android:icon="@drawable/devices_black_24dp" />

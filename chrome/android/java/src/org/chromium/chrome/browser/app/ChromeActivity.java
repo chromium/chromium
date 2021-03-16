@@ -2264,13 +2264,13 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
             return false;
         }
 
-        if (id == R.id.bookmark_this_page_id || id == R.id.bookmark_this_page_chip_id) {
+        if (id == R.id.bookmark_this_page_id) {
             addOrEditBookmark(currentTab);
             RecordUserAction.record("MobileMenuAddToBookmarks");
             return true;
         }
 
-        if (id == R.id.offline_page_id || id == R.id.offline_page_chip_id) {
+        if (id == R.id.offline_page_id) {
             DownloadUtils.downloadOfflinePage(this, currentTab);
             RecordUserAction.record("MobileMenuDownloadPage");
             return true;

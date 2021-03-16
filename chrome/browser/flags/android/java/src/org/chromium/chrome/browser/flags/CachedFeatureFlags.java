@@ -78,7 +78,6 @@ public class CachedFeatureFlags {
             put(ChromeFeatureList.TEST_DEFAULT_ENABLED, true);
             put(ChromeFeatureList.REPORT_FEED_USER_ACTIONS, false);
             put(ChromeFeatureList.INTEREST_FEED_V2, true);
-            put(ChromeFeatureList.TABBED_APP_OVERFLOW_MENU_THREE_BUTTON_ACTIONBAR, false);
             put(ChromeFeatureList.THEME_REFACTOR_ANDROID, false);
             put(ChromeFeatureList.USE_CHIME_ANDROID_SDK, false);
             put(ChromeFeatureList.CCT_INCOGNITO_AVAILABLE_TO_THIRD_PARTY, false);

@@ -11,7 +11,6 @@ import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.os.SystemClock;
 import android.text.TextUtils;
-import android.util.Pair;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.SubMenu;
@@ -42,7 +41,6 @@ import org.chromium.chrome.browser.download.DownloadUtils;
 import org.chromium.chrome.browser.flags.CachedFeatureFlags;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
-import org.chromium.chrome.browser.flags.StringCachedFieldTrialParameter;
 import org.chromium.chrome.browser.image_descriptions.ImageDescriptionsController;
 import org.chromium.chrome.browser.incognito.IncognitoUtils;
 import org.chromium.chrome.browser.multiwindow.MultiWindowModeStateDispatcher;
@@ -69,23 +67,13 @@ import org.chromium.net.ConnectionType;
 import org.chromium.ui.base.DeviceFormFactor;
 
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Map;
-import java.util.Set;
 
 /**
  * Base implementation of {@link AppMenuPropertiesDelegate} that handles hiding and showing menu
  * items based on activity state.
  */
 public class AppMenuPropertiesDelegateImpl implements AppMenuPropertiesDelegate {
-    public static final StringCachedFieldTrialParameter THREE_BUTTON_ACTION_BAR_VARIATION =
-            new StringCachedFieldTrialParameter(
-                    ChromeFeatureList.TABBED_APP_OVERFLOW_MENU_THREE_BUTTON_ACTIONBAR,
-                    "three_button_action_bar", "");
-
     private static Boolean sItemBookmarkedForTesting;
 
     protected MenuItem mReloadMenuItem;
@@ -105,13 +93,6 @@ public class AppMenuPropertiesDelegateImpl implements AppMenuPropertiesDelegate 
     // Keeps track of which menu item was shown when installable app is detected.
     private int mAddAppTitleShown;
 
-    // The keys of the Map are menuitem ids, the first elements in the Pair are menuitem ids,
-    // and the second elements in the Pair are AppMenuSimilarSelectionType. If users first
-    // selected the menuitems in the Pair.first, and then selected a menuitem which is the key
-    // if the Map, then users' selection match the pattern Pair.second.
-    private static final Map<Integer, Pair<Set<Integer>, Integer>> sSimilarSelectedMenuItemMap =
-            createSimilarSelectedMap();
-
     @VisibleForTesting
     @IntDef({MenuGroup.INVALID, MenuGroup.PAGE_MENU, MenuGroup.OVERVIEW_MODE_MENU,
             MenuGroup.START_SURFACE_MODE_MENU, MenuGroup.TABLET_EMPTY_MODE_MENU})
@@ -121,33 +102,6 @@ public class AppMenuPropertiesDelegateImpl implements AppMenuPropertiesDelegate 
         int OVERVIEW_MODE_MENU = 1;
         int START_SURFACE_MODE_MENU = 2;
         int TABLET_EMPTY_MODE_MENU = 3;
-    }
-
-    @IntDef({ThreeButtonActionBarType.DISABLED, ThreeButtonActionBarType.ACTION_CHIP_VIEW,
-            ThreeButtonActionBarType.DESTINATION_CHIP_VIEW,
-            ThreeButtonActionBarType.DEPRECATED_ADD_TO_OPTION})
-    @interface ThreeButtonActionBarType {
-        int DISABLED = 0;
-        int ACTION_CHIP_VIEW = 1;
-        int DESTINATION_CHIP_VIEW = 2;
-        int DEPRECATED_ADD_TO_OPTION = 3;
-    }
-
-    /**
-     * Keep this list sync with AppMenuSimilarSelectionType in enums.xml.
-     */
-    @IntDef({AppMenuSimilarSelectionType.NO_MATCH,
-            AppMenuSimilarSelectionType.BOOKMARK_PAGE_THEN_ALL_BOOKMARKS,
-            AppMenuSimilarSelectionType.ALL_BOOKMARKS_THEN_BOOKMARK_PAGE,
-            AppMenuSimilarSelectionType.DOWNLOAD_PAGE_THEN_ALL_DOWNLOADS,
-            AppMenuSimilarSelectionType.ALL_DOWNLOADS_THEN_DOWNLOAD_PAGE})
-    @interface AppMenuSimilarSelectionType {
-        int NO_MATCH = -1;
-        int BOOKMARK_PAGE_THEN_ALL_BOOKMARKS = 0;
-        int ALL_BOOKMARKS_THEN_BOOKMARK_PAGE = 1;
-        int DOWNLOAD_PAGE_THEN_ALL_DOWNLOADS = 2;
-        int ALL_DOWNLOADS_THEN_DOWNLOAD_PAGE = 3;
-        int NUM_ENTRIES = 4;
     }
 
     protected @Nullable OverviewModeBehavior mOverviewModeBehavior;
@@ -214,7 +168,6 @@ public class AppMenuPropertiesDelegateImpl implements AppMenuPropertiesDelegate 
         customViewBinders.add(new ManagedByMenuItemViewBinder());
         customViewBinders.add(new IncognitoMenuItemViewBinder());
         customViewBinders.add(new DividerLineMenuItemViewBinder());
-        customViewBinders.add(new ChipViewMenuItemViewBinder(getThreeButtonActionBarType()));
         return customViewBinders;
     }
 
@@ -309,26 +262,12 @@ public class AppMenuPropertiesDelegateImpl implements AppMenuPropertiesDelegate 
             loadingStateChanged(currentTab.isLoading());
 
             MenuItem bookmarkMenuItem = actionBar.findItem(R.id.bookmark_this_page_id);
-            if (shouldShowThreeButtonActionBar()) {
-                actionBar.removeItem(R.id.bookmark_this_page_id);
-            } else {
-                updateBookmarkMenuItem(bookmarkMenuItem, currentTab);
-            }
+            updateBookmarkMenuItem(bookmarkMenuItem, currentTab);
 
             MenuItem offlineMenuItem = actionBar.findItem(R.id.offline_page_id);
-            if (offlineMenuItem != null) {
-                if (shouldShowThreeButtonActionBar()) {
-                    actionBar.removeItem(R.id.offline_page_id);
-                } else {
-                    offlineMenuItem.setEnabled(shouldEnableDownloadPage(currentTab));
-                }
-            }
+            offlineMenuItem.setEnabled(shouldEnableDownloadPage(currentTab));
 
-            if (shouldShowThreeButtonActionBar()) {
-                assert actionBar.size() == 3;
-            } else {
-                assert actionBar.size() == 5;
-            }
+            assert actionBar.size() == 5;
         }
 
         mUpdateMenuItemVisible = shouldShowUpdateMenuItem();
@@ -339,41 +278,6 @@ public class AppMenuPropertiesDelegateImpl implements AppMenuPropertiesDelegate 
         }
 
         menu.findItem(R.id.move_to_other_window_menu_id).setVisible(shouldShowMoveToOtherWindow());
-
-        if (shouldShowThreeButtonActionBar()) {
-            @ThreeButtonActionBarType
-            int threeButtonActionBarType = getThreeButtonActionBarType();
-
-            MenuItem downloadMenuItem =
-                    menu.findItem(R.id.downloads_row_menu_id).getSubMenu().getItem(1);
-            assert downloadMenuItem.getItemId() == R.id.offline_page_chip_id;
-            downloadMenuItem.setEnabled(shouldEnableDownloadPage(currentTab));
-
-            MenuItem bookmarkMenuItem =
-                    menu.findItem(R.id.all_bookmarks_row_menu_id).getSubMenu().getItem(1);
-            assert bookmarkMenuItem.getItemId() == R.id.bookmark_this_page_chip_id;
-            updateBookmarkMenuItem(bookmarkMenuItem, currentTab);
-
-            // Update titles for ChipView menu items.
-            if (threeButtonActionBarType == ThreeButtonActionBarType.ACTION_CHIP_VIEW) {
-                downloadMenuItem.setTitle(R.string.add);
-                if (bookmarkMenuItem.isChecked()) {
-                    bookmarkMenuItem.setTitle(R.string.bookmark_item_edit);
-                } else {
-                    bookmarkMenuItem.setTitle(R.string.add);
-                }
-            } else if (threeButtonActionBarType == ThreeButtonActionBarType.DESTINATION_CHIP_VIEW) {
-                MenuItem allDownloadMenuItem =
-                        menu.findItem(R.id.downloads_row_menu_id).getSubMenu().getItem(0);
-                assert allDownloadMenuItem.getItemId() == R.id.downloads_menu_id;
-                allDownloadMenuItem.setTitle(R.string.all);
-
-                MenuItem allBookmarkMenuItem =
-                        menu.findItem(R.id.all_bookmarks_row_menu_id).getSubMenu().getItem(0);
-                assert allBookmarkMenuItem.getItemId() == R.id.all_bookmarks_menu_id;
-                allBookmarkMenuItem.setTitle(R.string.all);
-            }
-        }
 
         // Don't allow either "chrome://" pages or interstitial pages to be shared.
         menu.findItem(R.id.share_row_menu_id).setVisible(mShareUtils.shouldEnableShare(currentTab));
@@ -455,13 +359,6 @@ public class AppMenuPropertiesDelegateImpl implements AppMenuPropertiesDelegate 
                 if (item.getItemId() != R.id.reader_mode_prefs_id
                         && item.getItemId() != R.id.update_menu_id) {
                     item.setIcon(null);
-                }
-                // Remove icons for menu items that have submenus.
-                if (item.getItemId() == R.id.downloads_row_menu_id
-                        || item.getItemId() == R.id.all_bookmarks_row_menu_id) {
-                    for (int j = 0; j < item.getSubMenu().size(); ++j) {
-                        item.getSubMenu().getItem(j).setIcon(null);
-                    }
                 }
             }
 
@@ -840,95 +737,5 @@ public class AppMenuPropertiesDelegateImpl implements AppMenuPropertiesDelegate 
     @VisibleForTesting
     static void setPageBookmarkedForTesting(Boolean bookmarked) {
         sItemBookmarkedForTesting = bookmarked;
-    }
-
-    private static boolean shouldShowThreeButtonActionBar() {
-        return CachedFeatureFlags.isEnabled(
-                ChromeFeatureList.TABBED_APP_OVERFLOW_MENU_THREE_BUTTON_ACTIONBAR);
-    }
-
-    /**
-     * @return The type of three button action bar should be shown.
-     */
-    private static @ThreeButtonActionBarType int getThreeButtonActionBarType() {
-        if (shouldShowThreeButtonActionBar()) {
-            if (THREE_BUTTON_ACTION_BAR_VARIATION.getValue().equals("action_chip_view")) {
-                return ThreeButtonActionBarType.ACTION_CHIP_VIEW;
-            } else if (THREE_BUTTON_ACTION_BAR_VARIATION.getValue().equals(
-                               "destination_chip_view")) {
-                return ThreeButtonActionBarType.DESTINATION_CHIP_VIEW;
-            }
-        }
-        return ThreeButtonActionBarType.DISABLED;
-    }
-
-    /**
-     * @return The "download" menu items id in the app menu.
-     */
-    public static int getOfflinePageId() {
-        @ThreeButtonActionBarType
-        int type = getThreeButtonActionBarType();
-        if (type == ThreeButtonActionBarType.ACTION_CHIP_VIEW
-                || type == ThreeButtonActionBarType.DESTINATION_CHIP_VIEW) {
-            return R.id.offline_page_chip_id;
-        }
-        return R.id.offline_page_id;
-    }
-
-    @Override
-    public boolean recordAppMenuSimilarSelectionIfNeeded(
-            int previousMenuItemId, int currentMenuItemId) {
-        @AppMenuSimilarSelectionType
-        int pattern = findSimilarSelectionPattern(previousMenuItemId, currentMenuItemId);
-        if (pattern == AppMenuSimilarSelectionType.NO_MATCH) {
-            return false;
-        }
-
-        RecordHistogram.recordEnumeratedHistogram("Mobile.AppMenu.SimilarSelection", pattern,
-                AppMenuSimilarSelectionType.NUM_ENTRIES);
-        return true;
-    }
-
-    @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
-    public @AppMenuSimilarSelectionType int findSimilarSelectionPattern(
-            int previousMenuItemId, int currentMenuItemId) {
-        Pair<Set<Integer>, Integer> menuItemToSelectType =
-                sSimilarSelectedMenuItemMap.get(currentMenuItemId);
-        if (menuItemToSelectType != null
-                && menuItemToSelectType.first.contains(previousMenuItemId)) {
-            return menuItemToSelectType.second;
-        }
-
-        return AppMenuSimilarSelectionType.NO_MATCH;
-    }
-
-    private static Map<Integer, Pair<Set<Integer>, Integer>> createSimilarSelectedMap() {
-        Map<Integer, Pair<Set<Integer>, Integer>> map = new LinkedHashMap<>();
-        map.put(R.id.all_bookmarks_menu_id,
-                new Pair<Set<Integer>, Integer>(
-                        new HashSet<>(Arrays.asList(
-                                R.id.bookmark_this_page_id, R.id.bookmark_this_page_chip_id)),
-                        AppMenuSimilarSelectionType.BOOKMARK_PAGE_THEN_ALL_BOOKMARKS));
-        map.put(R.id.bookmark_this_page_id,
-                new Pair<Set<Integer>, Integer>(
-                        new HashSet<>(Arrays.asList(R.id.all_bookmarks_menu_id)),
-                        AppMenuSimilarSelectionType.ALL_BOOKMARKS_THEN_BOOKMARK_PAGE));
-        map.put(R.id.bookmark_this_page_chip_id,
-                new Pair<Set<Integer>, Integer>(
-                        new HashSet<>(Arrays.asList(R.id.all_bookmarks_menu_id)),
-                        AppMenuSimilarSelectionType.ALL_BOOKMARKS_THEN_BOOKMARK_PAGE));
-        map.put(R.id.downloads_menu_id,
-                new Pair<Set<Integer>, Integer>(new HashSet<>(Arrays.asList(R.id.offline_page_id,
-                                                        R.id.offline_page_chip_id)),
-                        AppMenuSimilarSelectionType.DOWNLOAD_PAGE_THEN_ALL_DOWNLOADS));
-        map.put(R.id.offline_page_id,
-                new Pair<Set<Integer>, Integer>(
-                        new HashSet<>(Arrays.asList(R.id.downloads_menu_id)),
-                        AppMenuSimilarSelectionType.ALL_DOWNLOADS_THEN_DOWNLOAD_PAGE));
-        map.put(R.id.offline_page_chip_id,
-                new Pair<Set<Integer>, Integer>(
-                        new HashSet<>(Arrays.asList(R.id.downloads_menu_id)),
-                        AppMenuSimilarSelectionType.ALL_DOWNLOADS_THEN_DOWNLOAD_PAGE));
-        return map;
     }
 }

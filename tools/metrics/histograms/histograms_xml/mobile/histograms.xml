@@ -32,6 +32,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Mobile.AppMenu.SimilarSelection"
     enum="AppMenuSimilarSelectionType" expires_after="M95">
+  <obsolete>
+    Deprecated as of 03/2021.
+  </obsolete>
   <owner>gangwu@chromium.org</owner>
   <owner>twellington@chromium.org</owner>
   <summary>

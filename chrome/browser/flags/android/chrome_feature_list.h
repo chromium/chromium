@@ -121,7 +121,6 @@ extern const base::Feature kTabGridLayoutAndroid;
 extern const base::Feature kTabReparenting;
 extern const base::Feature kTabSwitcherOnReturn;
 extern const base::Feature kTabToGTSAnimation;
-extern const base::Feature kTabbedAppOverflowMenuThreeButtonActionbar;
 extern const base::Feature kTestDefaultDisabled;
 extern const base::Feature kTestDefaultEnabled;
 extern const base::Feature kThemeRefactorAndroid;

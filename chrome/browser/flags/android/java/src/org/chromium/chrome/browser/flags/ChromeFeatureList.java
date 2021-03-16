@@ -448,8 +448,6 @@ public abstract class ChromeFeatureList {
     public static final String TAB_REPARENTING = "TabReparenting";
     public static final String TAB_SWITCHER_ON_RETURN = "TabSwitcherOnReturn";
     public static final String TAB_TO_GTS_ANIMATION = "TabToGTSAnimation";
-    public static final String TABBED_APP_OVERFLOW_MENU_THREE_BUTTON_ACTIONBAR =
-            "TabbedAppOverflowMenuThreeButtonActionbar";
     public static final String TEST_DEFAULT_DISABLED = "TestDefaultDisabled";
     public static final String TEST_DEFAULT_ENABLED = "TestDefaultEnabled";
     public static final String THEME_REFACTOR_ANDROID = "ThemeRefactorAndroid";

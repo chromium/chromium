@@ -14,7 +14,6 @@ import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.base.task.PostTask;
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.app.appmenu.AppMenuPropertiesDelegateImpl;
 import org.chromium.chrome.browser.datareduction.DataReductionSavingsMilestonePromo;
 import org.chromium.chrome.browser.download.DownloadUtils;
 import org.chromium.chrome.browser.feature_engagement.ScreenshotMonitor;
@@ -291,10 +290,7 @@ public class ToolbarButtonInProductHelpController
                 new IPHCommandBuilder(mActivity.getResources(), featureName,
                         R.string.iph_download_page_for_offline_usage_text,
                         R.string.iph_download_page_for_offline_usage_accessibility_text)
-                        .setOnShowCallback(
-                                ()
-                                        -> turnOnHighlightForMenuItem(
-                                                AppMenuPropertiesDelegateImpl.getOfflinePageId()))
+                        .setOnShowCallback(() -> turnOnHighlightForMenuItem(R.id.offline_page_id))
                         .setOnDismissCallback(this::turnOffHighlightForMenuItem)
                         .setAnchorView(mMenuButtonAnchorView)
                         .build());
@@ -336,7 +332,7 @@ public class ToolbarButtonInProductHelpController
         }
 
         Integer menuItemId = DownloadUtils.isAllowedToDownloadPage(mCurrentTabSupplier.get())
-                ? AppMenuPropertiesDelegateImpl.getOfflinePageId()
+                ? R.id.offline_page_id
                 : R.id.downloads_menu_id;
 
         mUserEducationHelper.requestShowIPH(
