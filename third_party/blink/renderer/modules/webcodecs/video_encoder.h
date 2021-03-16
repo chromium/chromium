@@ -12,7 +12,7 @@
 #include "media/base/video_color_space.h"
 #include "media/base/video_encoder.h"
 #include "media/base/video_frame_pool.h"
-#include "third_party/blink/renderer/bindings/modules/v8/v8_video_encoder_output_callback.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_encoded_video_chunk_output_callback.h"
 #include "third_party/blink/renderer/modules/webcodecs/encoder_base.h"
 #include "third_party/blink/renderer/modules/webcodecs/hardware_preference.h"
 #include "third_party/blink/renderer/modules/webcodecs/video_frame.h"
@@ -51,7 +51,7 @@ class MODULES_EXPORT VideoEncoderTraits {
   using Frame = VideoFrame;
   using EncodeOptions = VideoEncoderEncodeOptions;
   using OutputChunk = EncodedVideoChunk;
-  using OutputCallback = V8VideoEncoderOutputCallback;
+  using OutputCallback = V8EncodedVideoChunkOutputCallback;
   using MediaEncoder = media::VideoEncoder;
 
   // Can't be a virtual method, because it's used from base ctor.

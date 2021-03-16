@@ -60,7 +60,10 @@ promise_test(t => {
 promise_test(async t => {
   let output_chunks = [];
   let codecInit = getDefaultCodecInit(t);
-  codecInit.output = chunk => output_chunks.push(chunk);
+  codecInit.output = (chunk, metadata) => {
+    assert_not_equals(metadata, null);
+    output_chunks.push(chunk);
+  }
 
   let encoder = new VideoEncoder(codecInit);
 
@@ -102,7 +105,7 @@ promise_test(async t => {
   let bitmap = await generateBitmap(320, 200);
   let encoder = null;
   let reset_completed = false;
-  codecInit.output = chunk => {
+  codecInit.output = (chunk, metadata) => {
     if (chunk.timestamp % 2 == 0) {
       // pre-reset frames have even timestamp
       callbacks_before_reset++;

@@ -6,9 +6,9 @@
 #include "base/run_loop.h"
 #include "testing/libfuzzer/proto/lpm_interface.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_encoded_video_chunk_output_callback.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_video_decoder_config.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_video_encoder_init.h"
-#include "third_party/blink/renderer/bindings/modules/v8/v8_video_encoder_output_callback.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_webcodecs_error_callback.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/settings.h"
@@ -66,8 +66,8 @@ DEFINE_TEXT_PROTO_FUZZER(
         V8WebCodecsErrorCallback::Create(error_function->Bind());
     Persistent<FakeFunction> output_function =
         FakeFunction::Create(script_state, "output");
-    Persistent<V8VideoEncoderOutputCallback> output_callback =
-        V8VideoEncoderOutputCallback::Create(output_function->Bind());
+    Persistent<V8EncodedVideoChunkOutputCallback> output_callback =
+        V8EncodedVideoChunkOutputCallback::Create(output_function->Bind());
 
     Persistent<VideoEncoderInit> video_encoder_init =
         MakeGarbageCollected<VideoEncoderInit>();

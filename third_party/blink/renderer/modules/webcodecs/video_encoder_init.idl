@@ -6,7 +6,7 @@
 
 dictionary VideoEncoderInit {
   // Called whenever there is a new encoded video chunk available.
-  required VideoEncoderOutputCallback output;
+  required EncodedVideoChunkOutputCallback output;
 
   // Called when there is a decoding error.
   required WebCodecsErrorCallback error;

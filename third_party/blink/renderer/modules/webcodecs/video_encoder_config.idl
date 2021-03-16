@@ -16,4 +16,7 @@ dictionary VideoEncoderConfig {
   required unsigned long height;
 
   AvcEncoderConfig avc;
+
+  // Same as in WebRTC SVC (https://w3c.github.io/webrtc-svc/)
+  DOMString scalabilityMode;
 };

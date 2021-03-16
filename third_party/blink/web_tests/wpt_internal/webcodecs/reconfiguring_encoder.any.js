@@ -17,7 +17,8 @@ async function change_encoding_params_test(codec, acc) {
   let after_reconf_frames = 0;
   let errors = 0;
 
-  let process_video_chunk = function (chunk, config) {
+  let process_video_chunk = function (chunk, metadata) {
+    let config = metadata.decoderConfig;
     var data = new Uint8Array(chunk.data);
     assert_greater_than_equal(data.length, 0);
     let after_reconf = (reconf_ts != 0) && (chunk.timestamp >= reconf_ts);

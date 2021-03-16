@@ -25,8 +25,8 @@ async function encode_decode_test(codec, acc, avc_format) {
   });
 
   const encoder_init = {
-    output(chunk, config) {
-      var data = new Uint8Array(chunk.data);
+    output(chunk, metadata) {
+      let config = metadata.decoderConfig;
       if (decoder.state != "configured" || config.description) {
         decoder.configure(config);
       }
@@ -81,8 +81,9 @@ async function encode_test(codec, acc) {
   let frames_processed = 0;
   let errors = 0;
 
-  let process_video_chunk = function (chunk, config) {
+  let process_video_chunk = function (chunk, metadata) {
     assert_greater_than_equal(chunk.timestamp, next_ts++);
+    let config = metadata.decoderConfig;
     let data = new Uint8Array(chunk.data);
     let type = (chunk.timestamp % 5 == 0) ? "key" : "delta";
     assert_equals(chunk.type, type);

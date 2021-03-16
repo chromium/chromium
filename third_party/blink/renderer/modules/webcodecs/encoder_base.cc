@@ -24,7 +24,6 @@
 #include "third_party/blink/renderer/modules/webcodecs/audio_encoder.h"
 #include "third_party/blink/renderer/modules/webcodecs/codec_state_helper.h"
 #include "third_party/blink/renderer/modules/webcodecs/encoded_video_chunk.h"
-#include "third_party/blink/renderer/modules/webcodecs/encoded_video_metadata.h"
 #include "third_party/blink/renderer/modules/webcodecs/video_encoder.h"
 #include "third_party/blink/renderer/platform/bindings/enumeration_base.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"

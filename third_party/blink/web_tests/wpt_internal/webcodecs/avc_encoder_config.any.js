@@ -20,7 +20,8 @@ function cycleAvcOutputFormats(acc, desc) {
 
     let encoderInit = {
       error: () => t.unreached_func("Unexpected error"),
-      output: (chunk, config) => {
+      output: (chunk, metadata) => {
+        let config = metadata.decoderConfig;
         assert_equals(output, undefined, "output undefined sanity");
         output = {
           chunk: chunk,

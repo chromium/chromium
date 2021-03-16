@@ -733,6 +733,7 @@ crbug.com/1145641 external/wpt/requestidlecallback/callback-invoked.html [ Slow 
 crbug.com/1146221 [ Linux ] http/tests/devtools/sources/debugger-ui/debugger-inline-values.js [ Slow ]
 crbug.com/1182691 external/wpt/webcodecs/audio-encoder.any.html [ Slow ]
 crbug.com/1182691 external/wpt/webcodecs/video-encoder.any.html [ Slow ]
+crbug.com/1176474 wpt_internal/webcodecs/temporal_svc.any.html [ Slow ]
 
 # Composited scroll snap is not accelerated for testing.
 crbug.com/1186753 virtual/threaded-prefer-compositing/fast/scroll-snap/snaps-after-scrollbar-scrolling-arrow.html [ Slow ]

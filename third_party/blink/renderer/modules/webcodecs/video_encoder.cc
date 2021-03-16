@@ -30,6 +30,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_dom_exception.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_avc_encoder_config.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_encoded_video_chunk_metadata.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_video_decoder_config.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_video_encoder_config.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_video_encoder_encode_options.h"
@@ -39,7 +40,6 @@
 #include "third_party/blink/renderer/core/streams/writable_stream.h"
 #include "third_party/blink/renderer/modules/webcodecs/codec_state_helper.h"
 #include "third_party/blink/renderer/modules/webcodecs/encoded_video_chunk.h"
-#include "third_party/blink/renderer/modules/webcodecs/encoded_video_metadata.h"
 #include "third_party/blink/renderer/platform/bindings/enumeration_base.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
@@ -193,6 +193,18 @@ VideoEncoder::ParsedConfig* VideoEncoder::ParseConfig(
 
   if (config->hasBitrate())
     parsed->options.bitrate = config->bitrate();
+
+  // https://w3c.github.io/webrtc-svc/
+  if (config->hasScalabilityMode()) {
+    if (config->scalabilityMode() == "L1T2") {
+      parsed->options.temporal_layers = 2;
+    } else if (config->scalabilityMode() == "L1T3") {
+      parsed->options.temporal_layers = 3;
+    } else {
+      exception_state.ThrowTypeError("Unsupported scalabilityMode.");
+      return nullptr;
+    }
+  }
 
   // The IDL defines a default value of "allow".
   DCHECK(config->hasHardwareAcceleration());
@@ -625,18 +637,15 @@ void VideoEncoder::CallOutputCallback(
       reset_count != reset_count_)
     return;
 
-  EncodedVideoMetadata metadata;
-  metadata.timestamp = output.timestamp;
-  metadata.key_frame = output.key_frame;
   auto deleter = [](void* data, size_t length, void*) {
     delete[] static_cast<uint8_t*>(data);
   };
   ArrayBufferContents data(output.data.release(), output.size, deleter);
   auto* dom_array = MakeGarbageCollected<DOMArrayBuffer>(std::move(data));
-  auto* chunk = MakeGarbageCollected<EncodedVideoChunk>(metadata, dom_array);
+  auto* chunk = MakeGarbageCollected<EncodedVideoChunk>(
+      output.timestamp, output.key_frame, dom_array);
 
-  VideoDecoderConfig* decoder_config =
-      MakeGarbageCollected<VideoDecoderConfig>();
+  auto* decoder_config = MakeGarbageCollected<VideoDecoderConfig>();
   decoder_config->setCodec(active_config->codec_string);
   decoder_config->setCodedHeight(active_config->options.frame_size.height());
   decoder_config->setCodedWidth(active_config->options.frame_size.width());
@@ -646,8 +655,13 @@ void VideoEncoder::CallOutputCallback(
     decoder_config->setDescription(
         ArrayBufferOrArrayBufferView::FromArrayBuffer(desc_array_buf));
   }
+
+  auto* metadata = MakeGarbageCollected<EncodedVideoChunkMetadata>();
+  metadata->setDecoderConfig(decoder_config);
+  metadata->setTemporalLayerId(output.temporal_id);
+
   ScriptState::Scope scope(script_state_);
-  output_callback_->InvokeAndReportException(nullptr, chunk, decoder_config);
+  output_callback_->InvokeAndReportException(nullptr, chunk, metadata);
 }
 
 }  // namespace blink
