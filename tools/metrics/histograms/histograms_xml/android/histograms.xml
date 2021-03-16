@@ -1614,7 +1614,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Android.NativeStartupBridge.LoadFullBrowser"
-    enum="BooleanRequested" expires_after="2021-06-01">
+    enum="BooleanRequested" expires_after="2021-09-12">
   <owner>mheikal@chromium.org</owner>
   <owner>hnakashima@chromium.org</owner>
   <owner>hanxi@chromium.org</owner>

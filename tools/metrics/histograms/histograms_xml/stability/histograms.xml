@@ -527,7 +527,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Stability.iOS.UTE.MobileSessionAppWillTerminateWasReceived"
-    enum="AppWillTerminateReceived" expires_after="2021-07-11">
+    enum="AppWillTerminateReceived" expires_after="2021-09-12">
   <owner>eugenebut@google.com</owner>
   <owner>olivierrobin@chromium.org</owner>
   <summary>
