@@ -830,11 +830,6 @@ void FontFace::InitCSSFontFace(ExecutionContext* context, const CSSValue& src) {
           css_font_face_, font_selector, item.GetResource()));
     }
   }
-
-  if (display_) {
-    UMA_HISTOGRAM_ENUMERATION("WebFont.FontDisplayValue",
-                              CSSValueToFontDisplay(display_.Get()));
-  }
 }
 
 void FontFace::InitCSSFontFace(const unsigned char* data, size_t size) {

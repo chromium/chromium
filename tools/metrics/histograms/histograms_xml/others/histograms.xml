@@ -18039,6 +18039,9 @@ regressions. -->
 
 <histogram name="WebFont.FontDisplayValue" enum="FontDisplayValue"
     expires_after="2021-03-21">
+  <obsolete>
+    Removed 2021-03
+  </obsolete>
   <owner>kenjibaheux@chromium.org</owner>
   <owner>ksakamoto@chromium.org</owner>
   <summary>
