@@ -1825,9 +1825,18 @@ public class BookmarkTest {
                         LaunchCauseMetrics.LAUNCH_CAUSE_HISTOGRAM));
     }
 
+    /**
+     * Test that we record Bookmarks.OpenBookmarkManager.PerProfileType when
+     * R.id.all_bookmarks_menu_id is clicked in regular mode.
+     *
+     * Please note that this test doesn't run for tablet because of the way bookmark manager is
+     * opened for tablets via openBookmarkManager test method which circumvents the click of
+     * R.id.all_bookmarks_menu_id, this doesn't happen in actual case and the metric indeed gets
+     * recorded in tablets.
+     */
     @Test
     @MediumTest
-    @DisabledTest(message = "crbug.com/1187193")
+    @Restriction({UiRestriction.RESTRICTION_TYPE_PHONE})
     public void testRecordsHistogramWhenBookmarkManagerOpened_InRegular() throws Throwable {
         Assert.assertEquals(0,
                 RecordHistogram.getHistogramTotalCountForTesting(
@@ -1847,9 +1856,18 @@ public class BookmarkTest {
                         BrowserProfileType.REGULAR));
     }
 
+    /**
+     * Test that we record Bookmarks.OpenBookmarkManager.PerProfileType when
+     * R.id.all_bookmarks_menu_id is clicked in Incognito mode.
+     *
+     * Please note that this test doesn't run for tablet because of the way bookmark manager is
+     * opened for tablets via openBookmarkManager test method which circumvents the click of
+     * R.id.all_bookmarks_menu_id. This doesn't happen in actual case and the metric indeed gets
+     * recorded in tablets.
+     */
     @Test
     @MediumTest
-    @DisabledTest(message = "crbug.com/1187193")
+    @Restriction({UiRestriction.RESTRICTION_TYPE_PHONE})
     public void testRecordsHistogramWhenBookmarkManagerOpened_InIncognito() throws Throwable {
         Assert.assertEquals(0,
                 RecordHistogram.getHistogramTotalCountForTesting(
