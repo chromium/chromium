@@ -7,7 +7,6 @@ compile_js_files = [
   "app_window.js",
   "async_job_queue.js",
   "barcode_chip.js",
-  "browser_proxy/browser_proxy.js",
   "chrome_util.js",
   "device/camera3_device_info.js",
   "device/constraints_preferrer.js",
@@ -81,7 +80,6 @@ compile_js_files = [
   "views/warning.js",
   "waitable_event.js",
   "window_controller.js",
-  "window_controller/window_controller.js",
 ]
 
 no_compile_js_files = [
