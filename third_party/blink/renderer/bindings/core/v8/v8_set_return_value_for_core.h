@@ -70,6 +70,18 @@ void V8SetReturnValue(const CallbackInfo& info,
       JSEventHandler::AsV8Value(isolate, event_target, event_listener));
 }
 
+// IDLDictionaryBase
+template <typename CallbackInfo>
+void V8SetReturnValue(const CallbackInfo& info,
+                      const IDLDictionaryBase* dictionary) {
+  // TODO(crbug.com/1185018): Change this if-branch to DCHECK(dictionary).
+  if (!dictionary)
+    return V8SetReturnValue(info, v8::Null(info.GetIsolate()));
+  V8SetReturnValue(info,
+                   dictionary->ToV8Impl(V8ReturnValue::CreationContext(info),
+                                        info.GetIsolate()));
+}
+
 }  // namespace bindings
 
 }  // namespace blink

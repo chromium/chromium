@@ -6,6 +6,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_BINDINGS_V8_SET_RETURN_VALUE_H_
 
 #include "third_party/blink/public/platform/web_string.h"
+#include "third_party/blink/renderer/platform/bindings/dictionary_base.h"
 #include "third_party/blink/renderer/platform/bindings/dom_data_store.h"
 #include "third_party/blink/renderer/platform/bindings/dom_wrapper_world.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
@@ -363,6 +364,16 @@ void V8SetReturnValue(const CallbackInfo& info,
 
   info.GetReturnValue().Set(
       wrappable->Wrap(info.GetIsolate(), creation_context->Global()));
+}
+
+// DictionaryBase
+template <typename CallbackInfo>
+void V8SetReturnValue(const CallbackInfo& info,
+                      const bindings::DictionaryBase* dictionary) {
+  DCHECK(dictionary);
+  v8::Local<v8::Value> v8_value = dictionary->CreateV8Object(
+      info.GetIsolate(), V8ReturnValue::CreationContext(info));
+  V8SetReturnValue(info, v8_value);
 }
 
 // Exposed objects

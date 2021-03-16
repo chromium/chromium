@@ -1641,6 +1641,9 @@ bindings::V8SetReturnValue(
                  "${return_value}, "
                  "bindings::V8ReturnValue::kIDLObject);")
 
+    if return_type.is_dictionary:
+        return T("bindings::V8SetReturnValue(${info}, ${return_value});")
+
     if return_type.is_sequence:
         return T("bindings::V8SetReturnValue(${info}, ${v8_return_value});")
 
