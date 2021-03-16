@@ -8,12 +8,14 @@
 #include <map>
 #include <memory>
 #include <set>
+#include <utility>
 
 #include "base/component_export.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_multi_source_observation.h"
 #include "base/timer/timer.h"
+#include "components/full_restore/arc_save_handler.h"
 #include "ui/aura/env_observer.h"
 #include "ui/aura/window.h"
 #include "ui/aura/window_observer.h"
@@ -111,11 +113,6 @@ class COMPONENT_EXPORT(FULL_RESTORE) FullRestoreSaveHandler
   base::OneShotTimer* GetTimerForTesting() { return &save_timer_; }
 
  private:
-  struct AppWindowInfo {
-    std::string app_id;
-    aura::Window* window;
-  };
-
   // Map from a profile path to AppLaunchInfos.
   using AppLaunchInfos = std::map<base::FilePath, std::list<AppLaunchInfoPtr>>;
 
@@ -162,9 +159,6 @@ class COMPONENT_EXPORT(FULL_RESTORE) FullRestoreSaveHandler
   // path.
   std::map<std::string, AppLaunchInfos> app_id_to_app_launch_infos_;
 
-  // The map from the task id to the AppWindowInfo for ARC apps.
-  std::map<int, AppWindowInfo> task_id_to_app_window_info_;
-
   // The current active user profile path.
   base::FilePath active_profile_path_;
 
@@ -177,7 +171,7 @@ class COMPONENT_EXPORT(FULL_RESTORE) FullRestoreSaveHandler
   // Records whether the saving process is running for a full restore file.
   std::set<base::FilePath> save_running_;
 
-  int32_t arc_session_id_ = 0;
+  std::unique_ptr<ArcSaveHandler> arc_save_handler_;
 
   base::ScopedMultiSourceObservation<aura::Window, aura::WindowObserver>
       observed_windows_{this};

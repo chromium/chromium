@@ -4,8 +4,6 @@
 
 #include "components/full_restore/full_restore_save_handler.h"
 
-#include <utility>
-
 #include "ash/public/cpp/app_types.h"
 #include "base/bind.h"
 #include "base/files/file_path.h"
@@ -49,6 +47,7 @@ FullRestoreSaveHandler::~FullRestoreSaveHandler() {
 void FullRestoreSaveHandler::SetPrimaryProfilePath(
     const base::FilePath& profile_path) {
   primary_profile_path_ = profile_path;
+  arc_save_handler_ = std::make_unique<ArcSaveHandler>(primary_profile_path_);
 }
 
 void FullRestoreSaveHandler::SetActiveProfilePath(
@@ -57,22 +56,17 @@ void FullRestoreSaveHandler::SetActiveProfilePath(
 }
 
 void FullRestoreSaveHandler::OnWindowInitialized(aura::Window* window) {
-  int32_t window_id = window->GetProperty(::full_restore::kWindowIdKey);
-
   if (window->GetProperty(aura::client::kAppType) ==
       static_cast<int>(ash::AppType::ARC_APP)) {
-    task_id_to_app_window_info_[window_id].window = window;
     observed_windows_.AddObservation(window);
 
-    // If the task id has an app id, OnTaskCreated has been invoked, and the app
-    // launch info has been saved, so OnAppLaunched can be called to save the
-    // window info.
-    if (!task_id_to_app_window_info_[window_id].app_id.empty())
-      FullRestoreInfo::GetInstance()->OnAppLaunched(window);
+    if (arc_save_handler_)
+      arc_save_handler_->OnWindowInitialized(window);
 
     return;
   }
 
+  int32_t window_id = window->GetProperty(::full_restore::kWindowIdKey);
   if (!SessionID::IsValidValue(window_id))
     return;
 
@@ -118,13 +112,8 @@ void FullRestoreSaveHandler::OnWindowDestroyed(aura::Window* window) {
 
   if (window->GetProperty(aura::client::kAppType) ==
       static_cast<int>(ash::AppType::ARC_APP)) {
-    auto it = task_id_to_app_window_info_.find(window_id);
-    if (it != task_id_to_app_window_info_.end()) {
-      // The window could be recreated, so only remove the window info. When the
-      // task is destroyed, the full restore data can be removed.
-      it->second.window = nullptr;
-      RemoveWindowInfo(primary_profile_path_, it->second.app_id, window_id);
-    }
+    if (arc_save_handler_)
+      arc_save_handler_->OnWindowDestroyed(window);
     return;
   }
 
@@ -141,11 +130,16 @@ void FullRestoreSaveHandler::SaveAppLaunchInfo(
 
   const std::string app_id = app_launch_info->app_id;
 
+  if (app_launch_info->arc_session_id.has_value()) {
+    if (arc_save_handler_)
+      arc_save_handler_->SaveAppLaunchInfo(std::move(app_launch_info));
+    return;
+  }
+
   if (!app_launch_info->window_id.has_value()) {
-    // For ARC apps and Chrome apps, save |app_launch_info| to
-    // |app_id_to_app_launch_infos_|, and wait for the task id or window
-    // initialized to get the window id.
-    app_id_to_app_launch_infos_[app_id][profile_path].emplace_back(
+    // For Chrome apps, save |app_launch_info| to |app_id_to_app_launch_infos_|,
+    // and wait for the window to be initialized to get the window id.
+    app_id_to_app_launch_infos_[app_id][profile_path].push_back(
         std::move(app_launch_info));
     return;
   }
@@ -200,35 +194,13 @@ void FullRestoreSaveHandler::SaveWindowInfo(const WindowInfo& window_info) {
 void FullRestoreSaveHandler::OnTaskCreated(const std::string& app_id,
                                            int32_t task_id,
                                            int32_t session_id) {
-  task_id_to_app_window_info_[task_id].app_id = app_id;
-
-  auto it = app_id_to_app_launch_infos_.find(app_id);
-  if (it == app_id_to_app_launch_infos_.end())
-    return;
-
-  auto launch_it = it->second.find(primary_profile_path_);
-  if (launch_it == it->second.end() || launch_it->second.empty())
-    return;
-
-  auto app_launch_info = std::move(*launch_it->second.begin());
-  app_launch_info->window_id = task_id;
-  it->second.erase(primary_profile_path_);
-  if (it->second.empty())
-    app_id_to_app_launch_infos_.erase(it);
-
-  AddAppLaunchInfo(primary_profile_path_, std::move(app_launch_info));
-
-  // If the window has been created, OnAppLaunched can be called to save the
-  // window info.
-  if (task_id_to_app_window_info_[task_id].window) {
-    FullRestoreInfo::GetInstance()->OnAppLaunched(
-        task_id_to_app_window_info_[task_id].window);
-  }
+  if (arc_save_handler_)
+    arc_save_handler_->OnTaskCreated(app_id, task_id, session_id);
 }
 
 void FullRestoreSaveHandler::OnTaskDestroyed(int32_t task_id) {
-  RemoveAppRestoreData(task_id);
-  task_id_to_app_window_info_.erase(task_id);
+  if (arc_save_handler_)
+    arc_save_handler_->OnTaskDestroyed(task_id);
 }
 
 void FullRestoreSaveHandler::Flush(const base::FilePath& profile_path) {
@@ -334,12 +306,9 @@ void FullRestoreSaveHandler::RemoveWindowInfo(
 }
 
 int32_t FullRestoreSaveHandler::GetArcSessionId() {
-  if (arc_session_id_ >= kArcSessionIdOffsetForRestoredLaunching) {
-    LOG(WARNING) << "ARC session id is too large: " << arc_session_id_;
-    arc_session_id_ = 0;
-  }
-
-  return ++arc_session_id_;
+  if (!arc_save_handler_)
+    return -1;
+  return arc_save_handler_->GetArcSessionId();
 }
 
 void FullRestoreSaveHandler::MaybeStartSaveTimer() {

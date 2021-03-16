@@ -9,6 +9,8 @@ component("full_restore") {
     "app_launch_info.h",
     "app_restore_data.cc",
     "app_restore_data.h",
+    "arc_save_handler.cc",
+    "arc_save_handler.h",
     "full_restore_file_handler.cc",
     "full_restore_file_handler.h",
     "full_restore_info.cc",
