@@ -90,7 +90,6 @@ public class ChromeContextMenuPopulator implements ContextMenuPopulator {
     private final Supplier<ShareDelegate> mShareDelegateSupplier;
     private final ExternalAuthUtils mExternalAuthUtils;
     private final ContextMenuParams mParams;
-    private boolean mEnableLensWithSearchByImageText;
     private boolean mIsLensIntentInProgress;
     private @Nullable UkmRecorder.Bridge mUkmRecorderBridge;
     private ContextMenuNativeDelegate mNativeDelegate;
@@ -452,12 +451,7 @@ public class ChromeContextMenuPopulator implements ContextMenuPopulator {
                             getSearchByImageMenuItemsToShowAndRecordMetrics(
                                     mParams.getPageUrl(), mItemDelegate.isIncognito());
                     if (imageSearchMenuItemsToShow.get(LENS_SEARCH_MENU_ITEM_KEY)) {
-                        if (LensUtils.useLensWithSearchByImageText()) {
-                            mEnableLensWithSearchByImageText = true;
-                            imageGroup.add(createListItem(Item.SEARCH_BY_IMAGE));
-                        } else {
-                            imageGroup.add(createListItem(Item.SEARCH_WITH_GOOGLE_LENS, true));
-                        }
+                        imageGroup.add(createListItem(Item.SEARCH_WITH_GOOGLE_LENS, true));
                         maybeRecordUkmLensShown();
                     } else if (imageSearchMenuItemsToShow.get(SEARCH_BY_IMAGE_MENU_ITEM_KEY)) {
                         imageGroup.add(createListItem(Item.SEARCH_BY_IMAGE));
@@ -690,14 +684,8 @@ public class ChromeContextMenuPopulator implements ContextMenuPopulator {
             prefManager.writeBoolean(
                     ChromePreferenceKeys.CONTEXT_MENU_SEARCH_WITH_GOOGLE_LENS_CLICKED, true);
         } else if (itemId == R.id.contextmenu_search_by_image) {
-            if (mEnableLensWithSearchByImageText) {
-                recordContextMenuSelection(ContextMenuUma.Action.SEARCH_WITH_GOOGLE_LENS);
-                searchWithGoogleLens(LensEntryPoint.CONTEXT_MENU_SEARCH_MENU_ITEM,
-                        /*requiresConfirmation=*/false);
-            } else {
-                recordContextMenuSelection(ContextMenuUma.Action.SEARCH_BY_IMAGE);
-                mNativeDelegate.searchForImage();
-            }
+            recordContextMenuSelection(ContextMenuUma.Action.SEARCH_BY_IMAGE);
+            mNativeDelegate.searchForImage();
         } else if (itemId == R.id.contextmenu_shop_similar_products) {
             recordContextMenuSelection(ContextMenuUma.Action.SHOP_SIMILAR_PRODUCTS);
             searchWithGoogleLens(
