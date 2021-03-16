@@ -1511,6 +1511,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Enterprise.UserCloudPolicyStore.LoadStatus"
     enum="PolicyLoadStatus" expires_after="M77">
+  <obsolete>
+    Removed in M91 since the data is not monitored.
+  </obsolete>
   <owner>atwilson@chromium.org</owner>
   <summary>
     Result of the attempted policy load during profile initialization.
@@ -1519,6 +1522,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Enterprise.UserCloudPolicyStore.LoadValidationStatus"
     enum="PolicyValidationStatus" expires_after="M77">
+  <obsolete>
+    Removed in M91 since the data is not monitored.
+  </obsolete>
   <owner>atwilson@chromium.org</owner>
   <summary>
     Result of validating the policy that has just been loaded from disk.
@@ -1527,6 +1533,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Enterprise.UserCloudPolicyStore.StoreValidationStatus"
     enum="PolicyValidationStatus" expires_after="M77">
+  <obsolete>
+    Removed in M91 since the data is not monitored.
+  </obsolete>
   <owner>atwilson@chromium.org</owner>
   <summary>
     Result of validating the policy sent down from the server, before writing to
@@ -1622,6 +1631,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Enterprise.UserPolicyValidationLoadStatus"
     enum="PolicyValidationStatus" expires_after="M77">
+  <obsolete>
+    Removed in M91 since the data is not monitored.
+  </obsolete>
   <owner>mnissler@chromium.org</owner>
   <summary>
     Validation result when loading user policy from the policy store.
@@ -1630,6 +1642,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Enterprise.UserPolicyValidationStoreStatus"
     enum="PolicyValidationStatus" expires_after="M77">
+  <obsolete>
+    Removed in M91 since the data is not monitored.
+  </obsolete>
   <owner>mnissler@chromium.org</owner>
   <summary>
     Validation result when writing user policy to the policy store.

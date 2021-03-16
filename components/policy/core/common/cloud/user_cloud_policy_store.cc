@@ -203,9 +203,6 @@ PolicyLoadResult DesktopCloudPolicyStore::LoadPolicyFromDisk(
 
 void DesktopCloudPolicyStore::PolicyLoaded(bool validate_in_background,
                                            PolicyLoadResult result) {
-  // TODO(zmin): figure out what do with the metrics. https://crbug.com/814371
-  UMA_HISTOGRAM_ENUMERATION("Enterprise.UserCloudPolicyStore.LoadStatus",
-                            result.status, LOAD_RESULT_SIZE);
   switch (result.status) {
     case LOAD_RESULT_LOAD_ERROR:
       status_ = STATUS_LOAD_ERROR;
@@ -308,10 +305,6 @@ void DesktopCloudPolicyStore::InstallLoadedPolicyAfterValidation(
     bool doing_key_rotation,
     const std::string& signing_key,
     UserCloudPolicyValidator* validator) {
-  // TODO(zmin): metrics
-  UMA_HISTOGRAM_ENUMERATION(
-      "Enterprise.UserCloudPolicyStore.LoadValidationStatus",
-      validator->status(), CloudPolicyValidatorBase::VALIDATION_STATUS_SIZE);
   validation_result_ = validator->GetValidationResult();
   if (!validator->success()) {
     DVLOG(1) << "Validation failed: status=" << validator->status();
@@ -356,9 +349,6 @@ void DesktopCloudPolicyStore::Store(const em::PolicyFetchResponse& policy) {
 
 void DesktopCloudPolicyStore::OnPolicyToStoreValidated(
     UserCloudPolicyValidator* validator) {
-  UMA_HISTOGRAM_ENUMERATION(
-      "Enterprise.UserCloudPolicyStore.StoreValidationStatus",
-      validator->status(), CloudPolicyValidatorBase::VALIDATION_STATUS_SIZE);
   validation_result_ = validator->GetValidationResult();
   DVLOG(1) << "Policy validation complete: status = " << validator->status();
   if (!validator->success()) {

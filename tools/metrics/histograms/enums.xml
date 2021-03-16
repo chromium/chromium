@@ -61387,12 +61387,18 @@ Called by update_net_trust_anchors.py.-->
 </enum>
 
 <enum name="PolicyLoadStatus">
+  <obsolete>
+    Removed in M91 since the data is not monitored.
+  </obsolete>
   <int value="0" label="Success"/>
   <int value="1" label="No Policy File"/>
   <int value="2" label="Load Error"/>
 </enum>
 
 <enum name="PolicyValidationStatus">
+  <obsolete>
+    Removed in M91 since the data is not monitored.
+  </obsolete>
   <int value="0" label="OK"/>
   <int value="1" label="Bad Initial Signature"/>
   <int value="2" label="Bad Signature"/>

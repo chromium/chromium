@@ -10,7 +10,6 @@
 #include "base/callback_helpers.h"
 #include "base/debug/dump_without_crashing.h"
 #include "base/logging.h"
-#include "base/metrics/histogram_macros.h"
 #include "base/sequence_checker.h"
 #include "base/sequenced_task_runner.h"
 #include "chrome/browser/ash/crosapi/browser_manager.h"
@@ -174,10 +173,6 @@ void UserCloudPolicyStoreChromeOS::OnPolicyToStoreValidated(
     UserCloudPolicyValidator* validator) {
   DCHECK(!is_active_directory_);
 
-  UMA_HISTOGRAM_ENUMERATION("Enterprise.UserPolicyValidationStoreStatus",
-                            validator->status(),
-                            UserCloudPolicyValidator::VALIDATION_STATUS_SIZE);
-
   validation_result_ = validator->GetValidationResult();
   if (!validator->success()) {
     status_ = STATUS_VALIDATION_ERROR;
@@ -267,10 +262,6 @@ void UserCloudPolicyStoreChromeOS::ValidateRetrievedPolicy(
 
 void UserCloudPolicyStoreChromeOS::OnRetrievedPolicyValidated(
     UserCloudPolicyValidator* validator) {
-  UMA_HISTOGRAM_ENUMERATION("Enterprise.UserPolicyValidationLoadStatus",
-                            validator->status(),
-                            UserCloudPolicyValidator::VALIDATION_STATUS_SIZE);
-
   validation_result_ = validator->GetValidationResult();
   if (!validator->success()) {
     status_ = STATUS_VALIDATION_ERROR;
