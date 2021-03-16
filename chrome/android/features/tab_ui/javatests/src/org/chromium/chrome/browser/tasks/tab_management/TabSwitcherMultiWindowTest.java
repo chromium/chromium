@@ -35,6 +35,7 @@ import org.junit.runner.RunWith;
 
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.MinAndroidSdkLevel;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
@@ -158,6 +159,7 @@ public class TabSwitcherMultiWindowTest {
     @TargetApi(Build.VERSION_CODES.N)
     @Features.
     EnableFeatures({ChromeFeatureList.TAB_GROUPS_ANDROID, ChromeFeatureList.TAB_REPARENTING})
+    @DisabledTest(message = "https://crbug.com/1163569")
     public void testMoveTabsAcrossWindow_GTS_WithGroup() {
         // Initially, we have 5 normal tabs and 5 incognito tabs in cta1.
         final ChromeTabbedActivity cta1 = mActivityTestRule.getActivity();
