@@ -7653,6 +7653,12 @@ Called by update_bad_message_reasons.py.-->
   <int value="11" label="SDP browse failed"/>
   <int value="12" label="GATT browse failed"/>
   <int value="13" label="Unknown"/>
+  <int value="14" label="BT IO connection failed"/>
+  <int value="15" label="Not connected"/>
+  <int value="16" label="Operation not permitted"/>
+  <int value="17" label="Invalid parameters"/>
+  <int value="18" label="Connection refused"/>
+  <int value="19" label="Connection canceled"/>
 </enum>
 
 <enum name="BlueZResultOfPairing">
