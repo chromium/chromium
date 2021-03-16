@@ -7,6 +7,8 @@
 #include "base/optional.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/flag_descriptions.h"
+#include "chrome/grit/generated_resources.h"
+#include "ui/base/l10n/l10n_util.h"
 
 namespace {
 
@@ -25,8 +27,7 @@ void SetLabInfoForTesting(const std::vector<LabInfo>& test_feature_info) {
 // TODO(elainechien): Explore better ways to allow developers to add their
 // experiments.
 // Experiments featured in labs must have feature entries of type FEATURE_VALUE
-// (Default, Enabled, Disabled states). Experiments with multiple parameters may
-// be considered in the future.
+// (Default, Enabled, Disabled states) or FEATURE_WITH_PARAMS_VALUE
 const std::vector<LabInfo>& GetData() {
   if (GetTestData())
     return GetTestData().value();
@@ -36,27 +37,31 @@ const std::vector<LabInfo>& GetData() {
 
     // Read Later.
     lab_info.emplace_back(LabInfo(
-        flag_descriptions::kReadLaterFlagId, base::ASCIIToUTF16("Reading List"),
-        base::ASCIIToUTF16("Right click on a tab or click the Bookmark icon to "
-                           "add tabs to a reading "
-                           "list. Access from the Bookmarks bar."),
+        flag_descriptions::kReadLaterFlagId,
+        l10n_util::GetStringUTF16(IDS_READ_LATER_EXPERIMENT_NAME),
+        l10n_util::GetStringUTF16(IDS_READ_LATER_EXPERIMENT_DESCRIPTION),
         "chrome-labs-read-later", version_info::Channel::BETA));
 
     // Tab Scrolling.
-    lab_info.emplace_back(
-        LabInfo(flag_descriptions::kScrollableTabStripFlagId,
-                base::ASCIIToUTF16("Tab Scrolling"),
-                base::ASCIIToUTF16(
-                    "Enables tab strip to scroll left and right when full."),
-                "chrome-labs-tab-scrolling", version_info::Channel::BETA));
+    std::vector<std::u16string> tab_scrolling_variation_descriptions = {
+        l10n_util::GetStringUTF16(IDS_TABS_SHRINK_TO_PINNED_TAB_WIDTH),
+        l10n_util::GetStringUTF16(IDS_TABS_SHRINK_TO_MEDIUM_WIDTH),
+        l10n_util::GetStringUTF16(IDS_TABS_SHRINK_TO_LARGE_WIDTH),
+        l10n_util::GetStringUTF16(IDS_TABS_DO_NOT_SHRINK)};
+
+    lab_info.emplace_back(LabInfo(
+        flag_descriptions::kScrollableTabStripFlagId,
+        l10n_util::GetStringUTF16(IDS_TAB_SCROLLING_EXPERIMENT_NAME),
+        l10n_util::GetStringUTF16(IDS_TAB_SCROLLING_EXPERIMENT_DESCRIPTION),
+        "chrome-labs-tab-scrolling", version_info::Channel::BETA,
+        tab_scrolling_variation_descriptions));
 
     // Tab Search.
-    lab_info.emplace_back(
-        LabInfo(flag_descriptions::kEnableTabSearchFlagId,
-                base::ASCIIToUTF16("Tab Search"),
-                base::ASCIIToUTF16("Enable a popup bubble in Top Chrome UI to "
-                                   "search over currently open tabs."),
-                "chrome-labs-tab-search", version_info::Channel::BETA));
+    lab_info.emplace_back(LabInfo(
+        flag_descriptions::kEnableTabSearchFlagId,
+        l10n_util::GetStringUTF16(IDS_TAB_SEARCH_EXPERIMENT_NAME),
+        l10n_util::GetStringUTF16(IDS_TAB_SEARCH_EXPERIMENT_DESCRIPTION),
+        "chrome-labs-tab-search", version_info::Channel::BETA));
 
     return lab_info;
   }());
@@ -65,16 +70,20 @@ const std::vector<LabInfo>& GetData() {
 }
 }  // namespace
 
-LabInfo::LabInfo(const std::string& internal_name,
-                 const std::u16string& visible_name,
-                 const std::u16string& visible_description,
-                 const std::string& feedback_category_name,
-                 version_info::Channel allowed_channel)
+LabInfo::LabInfo(
+    const std::string& internal_name,
+    const std::u16string& visible_name,
+    const std::u16string& visible_description,
+    const std::string& feedback_category_name,
+    version_info::Channel allowed_channel,
+    std::vector<std::u16string> translated_feature_variation_descriptions)
     : internal_name(internal_name),
       visible_name(visible_name),
       visible_description(visible_description),
       feedback_category_name(feedback_category_name),
-      allowed_channel(allowed_channel) {}
+      allowed_channel(allowed_channel),
+      translated_feature_variation_descriptions(
+          translated_feature_variation_descriptions) {}
 
 LabInfo::LabInfo(const LabInfo& other) = default;
 

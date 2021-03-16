@@ -16,6 +16,9 @@ namespace flags_ui {
 // also need to update the html file.
 const char kMultiSeparatorChar = '@';
 
+// These descriptions are translated for display in Chrome Labs. If these
+// strings are changed the translated strings in Chrome Labs must also be
+// changed (IDS_CHROMELABS_XXX).
 const char kGenericExperimentChoiceDefault[] = "Default";
 const char kGenericExperimentChoiceEnabled[] = "Enabled";
 const char kGenericExperimentChoiceDisabled[] = "Disabled";
@@ -69,6 +72,10 @@ std::string FeatureEntry::NameForOption(int index) const {
          base::NumberToString(index);
 }
 
+// The order in which these descriptions are returned is the same in the
+// LabsComboboxModel::GetItemAt(..) (in the chrome_labs_item_view.cc file) for
+// the translated version of these strings. If there are changes to this, the
+// same changes must be made in LabsComboboxModel
 std::u16string FeatureEntry::DescriptionForOption(int index) const {
   DCHECK(type == FeatureEntry::MULTI_VALUE ||
          type == FeatureEntry::ENABLE_DISABLE_VALUE ||

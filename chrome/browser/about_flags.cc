@@ -1512,7 +1512,7 @@ const FeatureEntry::FeatureVariation kTabScrollingVariations[] = {
      base::size(kMinimumTabWidthSettingMedium), nullptr},
     {" - tabs shrink to a large width", kMinimumTabWidthSettingLarge,
      base::size(kMinimumTabWidthSettingLarge), nullptr},
-    {" - tabs do not shrink", kMinimumTabWidthSettingFull,
+    {" - tabs don't shrink", kMinimumTabWidthSettingFull,
      base::size(kMinimumTabWidthSettingFull), nullptr}};
 
 const FeatureEntry::FeatureParam kTabHoverCardImagesOptimizationCaptureSpeed[] =

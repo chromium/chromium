@@ -11197,6 +11197,52 @@ Please help our engineers fix this problem. Tell us what happened right before y
     <message name="IDS_CHROMELABS_SEND_FEEDBACK_DESCRIPTION_PLACEHOLDER" desc="The placeholder text for the send feedback dialog to submit feedback for each experiment.">
       Send feedback for <ph name="EXPERIMENT_NAME">$1<ex>Tab Scrolling</ex></ph>.
     </message>
+    <message name="IDS_CHROMELABS_DEFAULT" desc="Label for combobox option for the default experiment state">
+      Default
+    </message>
+    <message name="IDS_CHROMELABS_ENABLED" desc="Label for combobox option for the enable experiment state">
+      Enabled
+    </message>
+    <message name="IDS_CHROMELABS_DISABLED" desc="Label for combobox option for the disabled experiment state">
+      Disabled
+    </message>
+    <message name = "IDS_CHROMELABS_ENABLED_WITH_VARIATION_NAME" desc="Label for combobox option for an enabled variation that will have a description describing what variation is enabled in the placeholder.">
+      Enabled – <ph name="VARIATION_NAME">$1<ex>tabs shrink to pinned tab width</ex></ph>
+    </message>
+
+    <!-- ChromeLabs Read Later-->
+    <message name="IDS_READ_LATER_EXPERIMENT_NAME" desc="Name for Read Later experiment">
+      Reading List
+    </message>
+    <message name="IDS_READ_LATER_EXPERIMENT_DESCRIPTION" desc="Description for Read Later experiment">
+      Right click on a tab or click the Bookmark icon to add tabs to a reading list. Access from the Bookmarks bar.
+    </message>
+    <!-- ChromeLabs Tab Scrolling-->
+    <message name="IDS_TAB_SCROLLING_EXPERIMENT_NAME" desc="Name for Tab Scrolling experiment">
+      Tab Scrolling
+    </message>
+    <message name="IDS_TAB_SCROLLING_EXPERIMENT_DESCRIPTION" desc="Description for Tab Scrolling experiment">
+      Enables tab strip to scroll left and right when full.
+    </message>
+    <message name="IDS_TABS_SHRINK_TO_PINNED_TAB_WIDTH" desc="Label describing tab behavior will shrink to pinned tab width">
+      Tabs shrink to pinned tab width
+    </message>
+    <message name="IDS_TABS_SHRINK_TO_MEDIUM_WIDTH" desc="Label describing tab behavior will shrink to medium width">
+      Tabs shrink to a medium width
+    </message>
+    <message name="IDS_TABS_SHRINK_TO_LARGE_WIDTH" desc="Label describing tab behavior will shrink to large width">
+      Tabs shrink to a large width
+    </message>
+    <message name="IDS_TABS_DO_NOT_SHRINK" desc="Label describing tab behavior will not shrink">
+      Tabs don't shrink
+    </message>
+    <!-- ChromeLabs Tab Search -->
+    <message name="IDS_TAB_SEARCH_EXPERIMENT_NAME" desc="Name for Tab Search experiment">
+      Tab Search
+    </message>
+    <message name="IDS_TAB_SEARCH_EXPERIMENT_DESCRIPTION" desc="Description for Tab Search experiment">
+      Enable a popup bubble in Top Chrome UI to search over currently open tabs.
+    </message>
   </messages>
 </release>
 </grit>

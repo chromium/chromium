@@ -26,7 +26,7 @@
 
 namespace {
 const char kFirstTestFeatureId[] = "feature-1";
-const char kSecondTestFeatureId[] = "feature-2";
+const char kTestFeatureWithVariationId[] = "feature-2";
 const char kThirdTestFeatureId[] = "feature-3";
 const char kExpiredFlagTestFeatureId[] = "expired-feature";
 
@@ -54,7 +54,7 @@ class ChromeLabsBubbleTest : public TestWithBrowserView {
             {{kFirstTestFeatureId, "", "",
               flags_ui::FlagsState::GetCurrentPlatform(),
               FEATURE_VALUE_TYPE(kTestFeature1)},
-             {kSecondTestFeatureId, "", "",
+             {kTestFeatureWithVariationId, "", "",
               flags_ui::FlagsState::GetCurrentPlatform(),
               FEATURE_WITH_PARAMS_VALUE_TYPE(kTestFeature2,
                                              kTestVariations2,
@@ -164,9 +164,13 @@ class ChromeLabsBubbleTest : public TestWithBrowserView {
         LabInfo(kFirstTestFeatureId, base::ASCIIToUTF16(""),
                 base::ASCIIToUTF16(""), "", version_info::Channel::STABLE));
 
+    std::vector<std::u16string> variation_descriptions = {
+        base::ASCIIToUTF16("Description")};
+
     test_feature_info.emplace_back(
-        LabInfo(kSecondTestFeatureId, base::ASCIIToUTF16(""),
-                base::ASCIIToUTF16(""), "", version_info::Channel::STABLE));
+        LabInfo(kTestFeatureWithVariationId, base::ASCIIToUTF16(""),
+                base::ASCIIToUTF16(""), "", version_info::Channel::STABLE,
+                variation_descriptions));
 
     test_feature_info.emplace_back(
         LabInfo(kThirdTestFeatureId, base::ASCIIToUTF16(""),

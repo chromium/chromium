@@ -39,21 +39,54 @@ void ShowFeedbackPage(Browser* browser,
 
 class LabsComboboxModel : public ui::ComboboxModel {
  public:
-  explicit LabsComboboxModel(const flags_ui::FeatureEntry* feature_entry,
+  explicit LabsComboboxModel(const LabInfo& lab,
+                             const flags_ui::FeatureEntry* feature_entry,
                              int default_index)
-      : feature_entry_(feature_entry), default_index_(default_index) {}
+      : lab_(lab),
+        feature_entry_(feature_entry),
+        default_index_(default_index) {}
 
   // ui::ComboboxModel:
   int GetItemCount() const override { return feature_entry_->NumOptions(); }
 
+  // The order in which these descriptions are returned is the same in
+  // flags_ui::FeatureEntry::DescriptionForOption(..). If there are changes to
+  // this, the same changes must be made in
+  // flags_ui::FeatureEntry::DescriptionForOption(..).
   std::u16string GetItemAt(int index) const override {
-    // TODO(elainechien): remove white space for description
-    return feature_entry_->DescriptionForOption(index);
+    DCHECK_LT(index, feature_entry_->NumOptions());
+    int description_translation_id = IDS_CHROMELABS_DEFAULT;
+    if (feature_entry_->type ==
+        flags_ui::FeatureEntry::FEATURE_WITH_PARAMS_VALUE) {
+      if (index == 0) {
+        description_translation_id = IDS_CHROMELABS_DEFAULT;
+      } else if (index == 1) {
+        description_translation_id = IDS_CHROMELABS_ENABLED;
+      } else if (index < feature_entry_->NumOptions() - 1) {
+        // First two options do not have variations params.
+        int variation_index = index - 2;
+        return l10n_util::GetStringFUTF16(
+            IDS_CHROMELABS_ENABLED_WITH_VARIATION_NAME,
+            lab_.translated_feature_variation_descriptions[variation_index]);
+      } else {
+        DCHECK_EQ(feature_entry_->NumOptions() - 1, index);
+        description_translation_id = IDS_CHROMELABS_DISABLED;
+      }
+    } else {
+      const int kEnableDisableDescriptions[] = {
+          IDS_CHROMELABS_DEFAULT,
+          IDS_CHROMELABS_ENABLED,
+          IDS_CHROMELABS_DISABLED,
+      };
+      description_translation_id = kEnableDisableDescriptions[index];
+    }
+    return l10n_util::GetStringUTF16(description_translation_id);
   }
 
   int GetDefaultIndex() const override { return default_index_; }
 
  private:
+  const LabInfo& lab_;
   const flags_ui::FeatureEntry* feature_entry_;
   int default_index_;
 };
@@ -103,7 +136,7 @@ ChromeLabsItemView::ChromeLabsItemView(
               {views::Builder<views::Combobox>()
                    .CopyAddressTo(&lab_state_combobox_)
                    .SetOwnedModel(std::make_unique<LabsComboboxModel>(
-                       feature_entry_, default_index))
+                       lab, feature_entry_, default_index))
                    .SetCallback(base::BindRepeating(combobox_callback, this))
 
                    .SetProperty(views::kFlexBehaviorKey,
