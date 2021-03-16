@@ -148,6 +148,11 @@ struct NormalizedCLSData {
   // is not bigger than 5000ms.
   double session_windows_gap5000ms_maxMax_average_cls = 0.0;
 
+  // Maximum CLS of session windows. The gap between two consecutive shifts is
+  // not bigger than 1000ms or segmented by a user input. The maximum window
+  // size is 5000ms.
+  double session_windows_by_inputs_gap1000ms_max5000ms_max_cls = 0.0;
+
   // If true, will not report the data in UKM.
   bool data_tainted = false;
 };

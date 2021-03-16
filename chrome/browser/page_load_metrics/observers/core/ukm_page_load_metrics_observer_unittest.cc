@@ -1462,17 +1462,28 @@ TEST_F(UkmPageLoadMetricsObserverTest, CpuTimeMetrics) {
 
 TEST_F(UkmPageLoadMetricsObserverTest, LayoutInstability) {
   NavigateAndCommit(GURL(kTestUrl1));
+  base::TimeTicks time_origin = base::TimeTicks::Now();
+  page_load_metrics::mojom::FrameRenderDataUpdate render_data(
+      1.0, 1.0, 0, 0, 0, 0, {},
+      {time_origin - base::TimeDelta::FromMilliseconds(3000)});
+  render_data.new_layout_shifts.emplace_back(
+      page_load_metrics::mojom::LayoutShift::New(
+          time_origin - base::TimeDelta::FromMilliseconds(4000), 0.5));
+  render_data.new_layout_shifts.emplace_back(
+      page_load_metrics::mojom::LayoutShift::New(
+          time_origin - base::TimeDelta::FromMilliseconds(3500), 0.5));
 
-  page_load_metrics::mojom::FrameRenderDataUpdate render_data(1.0, 1.0, 0, 0, 0,
-                                                              0, {});
   tester()->SimulateRenderDataUpdate(render_data);
 
   // Simulate hiding the tab (the report should include shifts after hide).
   web_contents()->WasHidden();
 
-  render_data.layout_shift_delta = 1.5;
-  render_data.layout_shift_delta_before_input_or_scroll = 0.0;
-  tester()->SimulateRenderDataUpdate(render_data);
+  page_load_metrics::mojom::FrameRenderDataUpdate render_data_2(1.5, 0.0, 0, 0,
+                                                                0, 0, {}, {});
+  render_data_2.new_layout_shifts.emplace_back(
+      page_load_metrics::mojom::LayoutShift::New(
+          time_origin - base::TimeDelta::FromMilliseconds(2500), 1.5));
+  tester()->SimulateRenderDataUpdate(render_data_2);
 
   // Simulate closing the tab.
   DeleteContents();
@@ -1492,6 +1503,36 @@ TEST_F(UkmPageLoadMetricsObserverTest, LayoutInstability) {
         PageLoad::
             kLayoutInstability_CumulativeShiftScore_MainFrame_BeforeInputOrScrollName,
         100);
+    ukm_recorder.ExpectEntryMetric(
+        ukm_entry,
+        PageLoad::
+            kLayoutInstability_MaxCumulativeShiftScore_SessionWindow_Gap1000ms_Max5000msName,
+        250);
+    ukm_recorder.ExpectEntryMetric(
+        ukm_entry,
+        PageLoad::
+            kLayoutInstability_MaxCumulativeShiftScore_SessionWindow_Gap1000msName,
+        250);
+    ukm_recorder.ExpectEntryMetric(
+        ukm_entry,
+        PageLoad::
+            kLayoutInstability_MaxCumulativeShiftScore_SlidingWindow_Duration1000msName,
+        200);
+    ukm_recorder.ExpectEntryMetric(
+        ukm_entry,
+        PageLoad::
+            kLayoutInstability_MaxCumulativeShiftScore_SlidingWindow_Duration300msName,
+        150);
+    ukm_recorder.ExpectEntryMetric(
+        ukm_entry,
+        PageLoad::
+            kLayoutInstability_AverageCumulativeShiftScore_SessionWindow_Gap5000msName,
+        250);
+    ukm_recorder.ExpectEntryMetric(
+        ukm_entry,
+        PageLoad::
+            kLayoutInstability_MaxCumulativeShiftScore_SessionWindowByInputs_Gap1000ms_Max5000msName,
+        150);
     ukm_recorder.ExpectEntryMetric(kv.second.get(),
                                    PageLoad::kNavigation_PageEndReason3Name,
                                    page_load_metrics::END_CLOSE);
@@ -1585,7 +1626,7 @@ TEST_F(UkmPageLoadMetricsObserverTest, LayoutInstabilitySubframeAggregation) {
 
   // Simulate layout instability in the main frame.
   page_load_metrics::mojom::FrameRenderDataUpdate render_data(1.0, 1.0, 0, 0, 0,
-                                                              0, {});
+                                                              0, {}, {});
   tester()->SimulateRenderDataUpdate(render_data);
 
   RenderFrameHost* subframe =
@@ -2042,7 +2083,7 @@ void CLSUkmPageLoadMetricsObserverTest::SimulateShiftDelta(
     float delta,
     content::RenderFrameHost* frame) {
   page_load_metrics::mojom::FrameRenderDataUpdate render_data(delta, delta, 0,
-                                                              0, 0, 0, {});
+                                                              0, 0, 0, {}, {});
   tester()->SimulateRenderDataUpdate(render_data, frame);
 }
 

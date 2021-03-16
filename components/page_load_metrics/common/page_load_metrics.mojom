@@ -295,6 +295,9 @@ struct FrameRenderDataUpdate {
 
   // New layout shifts with timestamps.
   array<LayoutShift> new_layout_shifts;
+
+  // Recent input timestamps for layout shift tracking.
+  array<mojo_base.mojom.TimeTicks> input_timestamps;
 };
 
 // Metrics about the time spent in tasks (cpu time) by a frame.

@@ -51,6 +51,8 @@ class MetricsRenderFrameObserver
   void DidObserveNewCssPropertyUsage(blink::mojom::CSSSampleId css_property,
                                      bool is_animated) override;
   void DidObserveLayoutShift(double score, bool after_input_or_scroll) override;
+  void DidObserveInputForLayoutShiftTracking(
+      base::TimeTicks timestamp) override;
   void DidObserveLayoutNg(uint32_t all_block_count,
                           uint32_t ng_block_count,
                           uint32_t all_call_count,

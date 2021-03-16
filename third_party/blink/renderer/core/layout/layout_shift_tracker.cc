@@ -613,6 +613,8 @@ void LayoutShiftTracker::UpdateInputTimestamp(base::TimeTicks timestamp) {
   } else if (timestamp > most_recent_input_timestamp_) {
     most_recent_input_timestamp_ = timestamp;
   }
+  LocalFrame& frame = frame_view_->GetFrame();
+  frame.Client()->DidObserveInputForLayoutShiftTracking(timestamp);
 }
 
 void LayoutShiftTracker::NotifyScroll(mojom::blink::ScrollType scroll_type,
