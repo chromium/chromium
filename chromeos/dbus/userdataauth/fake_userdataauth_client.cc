@@ -18,4 +18,9 @@ void FakeUserDataAuthClient::IsMounted(
   NOTIMPLEMENTED();
 }
 
+void FakeUserDataAuthClient::WaitForServiceToBeAvailable(
+    chromeos::WaitForServiceToBeAvailableCallback callback) {
+  NOTIMPLEMENTED();
+}
+
 }  // namespace chromeos

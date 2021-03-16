@@ -67,6 +67,12 @@ class UserDataAuthClientImpl : public UserDataAuthClient {
   }
 
   // UserDataAuthClient override:
+
+  void WaitForServiceToBeAvailable(
+      chromeos::WaitForServiceToBeAvailableCallback callback) override {
+    proxy_->WaitForServiceToBeAvailable(std::move(callback));
+  }
+
   void IsMounted(const ::user_data_auth::IsMountedRequest& request,
                  IsMountedCallback callback) override {
     CallProtoMethod(::user_data_auth::kIsMounted,
