@@ -267,23 +267,19 @@ int TooltipAura::GetMaxWidth(const gfx::Point& location) const {
 void TooltipAura::Update(aura::Window* window,
                          const std::u16string& tooltip_text,
                          const TooltipPosition& position) {
+  // Hide() must be called before showing the next tooltip.  See also the
+  // comment in Hide().
+  DCHECK(!widget_);
+
   tooltip_window_ = window;
 
-  if (!widget_) {
-    auto new_tooltip_view = std::make_unique<TooltipView>();
-    new_tooltip_view->SetMaxWidth(GetMaxWidth(position.anchor_point));
-    new_tooltip_view->SetText(tooltip_text);
-    CreateTooltipWidget(
-        GetTooltipBounds(new_tooltip_view->GetPreferredSize(), position));
-    widget_->SetTooltipView(std::move(new_tooltip_view));
-    widget_->AddObserver(this);
-  } else {
-    TooltipView* old_tooltip_view = widget_->GetTooltipView();
-    old_tooltip_view->SetMaxWidth(GetMaxWidth(position.anchor_point));
-    old_tooltip_view->SetText(tooltip_text);
-    widget_->SetBounds(
-        GetTooltipBounds(old_tooltip_view->GetPreferredSize(), position));
-  }
+  auto new_tooltip_view = std::make_unique<TooltipView>();
+  new_tooltip_view->SetMaxWidth(GetMaxWidth(position.anchor_point));
+  new_tooltip_view->SetText(tooltip_text);
+  CreateTooltipWidget(
+      GetTooltipBounds(new_tooltip_view->GetPreferredSize(), position));
+  widget_->SetTooltipView(std::move(new_tooltip_view));
+  widget_->AddObserver(this);
 
   ui::NativeTheme* native_theme = widget_->GetNativeTheme();
   auto background_color =
