@@ -323,11 +323,12 @@ String SerializeSdpSemantics(webrtc::SdpSemantics sdp_semantics) {
     default:
       NOTREACHED();
   }
-  return sdp_semantics_str;
+  return "\"" + sdp_semantics_str + "\"";
 }
 
 String SerializeConfiguration(
-    const webrtc::PeerConnectionInterface::RTCConfiguration& config) {
+    const webrtc::PeerConnectionInterface::RTCConfiguration& config,
+    bool usesInsertableStreams) {
   StringBuilder result;
   // TODO(hbos): Add serialization of certificate.
   result.Append("{ iceServers: ");
@@ -340,9 +341,12 @@ String SerializeConfiguration(
   result.Append(SerializeRtcpMuxPolicy(config.rtcp_mux_policy));
   result.Append(", iceCandidatePoolSize: ");
   result.AppendNumber(config.ice_candidate_pool_size);
-  result.Append(", sdpSemantics: \"");
+  result.Append(", sdpSemantics: ");
   result.Append(SerializeSdpSemantics(config.sdp_semantics));
-  result.Append("\" }");
+  if (usesInsertableStreams) {
+    result.Append(", encodedInsertableStreams: true");
+  }
+  result.Append(" }");
   return result.ToString();
 }
 
@@ -834,7 +838,11 @@ void PeerConnectionTracker::RegisterPeerConnection(
   auto info = blink::mojom::blink::PeerConnectionInfo::New();
 
   info->lid = GetNextLocalID();
-  info->rtc_configuration = SerializeConfiguration(config);
+  bool usesInsertableStreams =
+      pc_handler->force_encoded_audio_insertable_streams() &&
+      pc_handler->force_encoded_video_insertable_streams();
+  info->rtc_configuration =
+      SerializeConfiguration(config, usesInsertableStreams);
 
   info->constraints = SerializeMediaConstraints(constraints);
   if (frame)
@@ -950,8 +958,12 @@ void PeerConnectionTracker::TrackSetConfiguration(
   if (id == -1)
     return;
 
-  SendPeerConnectionUpdate(id, "setConfiguration",
-                           SerializeConfiguration(config));
+  bool usesInsertableStreams =
+      pc_handler->force_encoded_audio_insertable_streams() &&
+      pc_handler->force_encoded_video_insertable_streams();
+  SendPeerConnectionUpdate(
+      id, "setConfiguration",
+      SerializeConfiguration(config, usesInsertableStreams));
 }
 
 void PeerConnectionTracker::TrackAddIceCandidate(
