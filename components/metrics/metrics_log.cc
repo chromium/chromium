@@ -183,6 +183,7 @@ void MetricsLog::RecordUserAction(const std::string& key,
 void MetricsLog::RecordCoreSystemProfile(MetricsServiceClient* client,
                                          SystemProfileProto* system_profile) {
   RecordCoreSystemProfile(client->GetVersionString(), client->GetChannel(),
+                          client->IsExtendedStableChannel(),
                           client->GetApplicationLocale(),
                           client->GetAppPackageName(), system_profile);
 
@@ -195,12 +196,15 @@ void MetricsLog::RecordCoreSystemProfile(MetricsServiceClient* client,
 void MetricsLog::RecordCoreSystemProfile(
     const std::string& version,
     metrics::SystemProfileProto::Channel channel,
+    bool is_extended_stable_channel,
     const std::string& application_locale,
     const std::string& package_name,
     SystemProfileProto* system_profile) {
   system_profile->set_build_timestamp(metrics::MetricsLog::GetBuildTime());
   system_profile->set_app_version(version);
   system_profile->set_channel(channel);
+  if (is_extended_stable_channel)
+    system_profile->set_is_extended_stable_channel(true);
   system_profile->set_application_locale(application_locale);
 
 #if defined(ADDRESS_SANITIZER) || DCHECK_IS_ON()

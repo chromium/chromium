@@ -139,6 +139,7 @@ class AndroidMetricsServiceClient : public MetricsServiceClient,
   std::string GetApplicationLocale() override;
   bool GetBrand(std::string* brand_code) override;
   SystemProfileProto::Channel GetChannel() override;
+  bool IsExtendedStableChannel() override;
   std::string GetVersionString() override;
   void CollectFinalMetricsForLog(
       const base::OnceClosure done_callback) override;

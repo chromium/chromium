@@ -484,6 +484,10 @@ SystemProfileProto::Channel AndroidMetricsServiceClient::GetChannel() {
   return AsProtobufChannel(version_info::android::GetChannel());
 }
 
+bool AndroidMetricsServiceClient::IsExtendedStableChannel() {
+  return false;  // Not supported on AndroidMetricsServiceClients.
+}
+
 std::string AndroidMetricsServiceClient::GetVersionString() {
   return metrics::GetVersionString();
 }

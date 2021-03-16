@@ -514,6 +514,10 @@ metrics::SystemProfileProto::Channel ChromeMetricsServiceClient::GetChannel() {
   return metrics::AsProtobufChannel(chrome::GetChannel());
 }
 
+bool ChromeMetricsServiceClient::IsExtendedStableChannel() {
+  return chrome::IsExtendedStableChannel();
+}
+
 std::string ChromeMetricsServiceClient::GetVersionString() {
   return metrics::GetVersionString();
 }

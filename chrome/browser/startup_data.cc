@@ -73,6 +73,7 @@ void StartupData::RecordCoreSystemProfile() {
   metrics::MetricsLog::RecordCoreSystemProfile(
       metrics::GetVersionString(),
       metrics::AsProtobufChannel(chrome::GetChannel()),
+      chrome::IsExtendedStableChannel(),
       chrome_feature_list_creator_->actual_locale(),
       metrics::GetAppPackageName(), &system_profile);
 

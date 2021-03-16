@@ -90,6 +90,7 @@ class CastMetricsServiceClient : public ::metrics::MetricsServiceClient,
   std::string GetApplicationLocale() override;
   bool GetBrand(std::string* brand_code) override;
   ::metrics::SystemProfileProto::Channel GetChannel() override;
+  bool IsExtendedStableChannel() override;
   std::string GetVersionString() override;
   void CollectFinalMetricsForLog(base::OnceClosure done_callback) override;
   GURL GetMetricsServerUrl() override;

@@ -121,6 +121,7 @@ class MetricsLog {
   static void RecordCoreSystemProfile(
       const std::string& version,
       metrics::SystemProfileProto::Channel channel,
+      bool is_extended_stable_channel,
       const std::string& application_locale,
       const std::string& package_name,
       SystemProfileProto* system_profile);

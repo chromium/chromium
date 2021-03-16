@@ -65,6 +65,7 @@ class ChromeMetricsServiceClient : public metrics::MetricsServiceClient,
   std::string GetApplicationLocale() override;
   bool GetBrand(std::string* brand_code) override;
   metrics::SystemProfileProto::Channel GetChannel() override;
+  bool IsExtendedStableChannel() override;
   std::string GetVersionString() override;
   void OnEnvironmentUpdate(std::string* serialized_environment) override;
   void CollectFinalMetricsForLog(base::OnceClosure done_callback) override;

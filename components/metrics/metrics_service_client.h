@@ -66,6 +66,9 @@ class MetricsServiceClient {
   // Returns the release channel (e.g. stable, beta, etc) of the application.
   virtual SystemProfileProto::Channel GetChannel() = 0;
 
+  // Returns true if the application is on the extended stable channel.
+  virtual bool IsExtendedStableChannel() = 0;
+
   // Returns the version of the application as a string.
   virtual std::string GetVersionString() = 0;
 

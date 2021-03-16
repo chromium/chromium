@@ -175,6 +175,10 @@ bool CastMetricsServiceClient::GetBrand(std::string* brand_code) {
 #endif  // defined(OS_ANDROID) || defined(OS_FUCHSIA)
 }
 
+bool CastMetricsServiceClient::IsExtendedStableChannel() {
+  return false;  // Not supported on Chromecast.
+}
+
 std::string CastMetricsServiceClient::GetVersionString() {
   int build_number;
   if (!base::StringToInt(CAST_BUILD_INCREMENTAL, &build_number))
