@@ -21,11 +21,15 @@
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/platform_util.h"
 #include "chrome/grit/generated_resources.h"
+#include "chromeos/components/string_matching/tokenized_string_match.h"
 #include "ui/base/l10n/l10n_util.h"
 
 namespace app_list {
 
 namespace {
+
+using chromeos::string_matching::TokenizedString;
+using chromeos::string_matching::TokenizedStringMatch;
 
 std::string StripHostedFileExtensions(const std::string& filename) {
   static const base::NoDestructor<std::vector<std::string>> hosted_extensions(
@@ -42,6 +46,23 @@ std::string StripHostedFileExtensions(const std::string& filename) {
 }
 
 }  // namespace
+
+double CalculateFilenameRelevance(const base::Optional<TokenizedString>& query,
+                                  const base::FilePath& path) {
+  const TokenizedString title(
+      base::UTF8ToUTF16(StripHostedFileExtensions(path.BaseName().value())),
+      TokenizedString::Mode::kWords);
+
+  if (!query || query.value().text().empty() || title.text().empty()) {
+    // TODO(crbug.com/1154513): Log error histogram.
+    static constexpr double kDefaultRelevance = 0.5;
+    return kDefaultRelevance;
+  }
+
+  TokenizedStringMatch match;
+  match.Calculate(query.value(), title);
+  return match.relevance();
+}
 
 FileResult::FileResult(const std::string& schema,
                        const base::FilePath& filepath,

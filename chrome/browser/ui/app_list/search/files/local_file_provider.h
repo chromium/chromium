@@ -7,7 +7,9 @@
 
 #include "base/files/file_path.h"
 #include "base/memory/weak_ptr.h"
+#include "base/optional.h"
 #include "chrome/browser/ui/app_list/search/search_provider.h"
+#include "chromeos/components/string_matching/tokenized_string.h"
 
 class Profile;
 
@@ -30,6 +32,9 @@ class LocalFileProvider : public SearchProvider {
  private:
   void SearchFilesByPattern(const std::string& query);
   std::unique_ptr<FileResult> MakeResult(const base::FilePath& path);
+
+  base::Optional<chromeos::string_matching::TokenizedString>
+      last_tokenized_query_;
 
   Profile* const profile_;
 

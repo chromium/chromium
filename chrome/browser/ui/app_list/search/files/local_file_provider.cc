@@ -19,11 +19,10 @@
 namespace app_list {
 namespace {
 
+using chromeos::string_matching::TokenizedString;
+
 constexpr char kLocalFileSchema[] = "local_file://";
 constexpr int kMaxResults = 25;
-// The default relevance should only be used as a fallback.
-// TODO(crbug.com/1154513): Log error histograms whenever this needs to be used.
-constexpr double kDefaultRelevance = 0.5;
 
 // Construct a case-insensitive fnmatch query from |query|. E.g. for abc123, the
 // result would be *[aA][bB][cC]123*.
@@ -74,6 +73,8 @@ void LocalFileProvider::Start(const std::u16string& query) {
   if (query.empty())
     return;
 
+  last_tokenized_query_.emplace(query, TokenizedString::Mode::kWords);
+
   base::ThreadPool::PostTask(
       FROM_HERE, {base::MayBlock(), base::TaskPriority::BEST_EFFORT},
       base::BindOnce(&LocalFileProvider::SearchFilesByPattern,
@@ -101,10 +102,11 @@ void LocalFileProvider::SearchFilesByPattern(const std::string& query) {
 
 std::unique_ptr<FileResult> LocalFileProvider::MakeResult(
     const base::FilePath& path) {
-  // TODO(crbug.com/1154513): Set the result's fuzzy match relevance.
+  const double relevance =
+      CalculateFilenameRelevance(last_tokenized_query_, path);
   return std::make_unique<FileResult>(
       kLocalFileSchema, path, ash::AppListSearchResultType::kLocalFile,
-      ash::SearchResultDisplayType::kList, kDefaultRelevance, profile_);
+      ash::SearchResultDisplayType::kList, relevance, profile_);
 }
 
 }  // namespace app_list

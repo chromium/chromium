@@ -8,11 +8,19 @@
 #include <iosfwd>
 
 #include "base/files/file_path.h"
+#include "base/optional.h"
 #include "chrome/browser/ui/app_list/search/chrome_search_result.h"
+#include "chromeos/components/string_matching/tokenized_string.h"
 
 class Profile;
 
 namespace app_list {
+
+// Helper function for calculating a file's relevance score. Will return a
+// default relevance score if the query is missing or the filename is empty.
+double CalculateFilenameRelevance(
+    const base::Optional<chromeos::string_matching::TokenizedString>& query,
+    const base::FilePath& path);
 
 class FileResult : public ChromeSearchResult {
  public:

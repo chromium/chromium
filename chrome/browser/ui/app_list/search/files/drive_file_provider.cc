@@ -10,44 +10,15 @@
 #include "chrome/browser/chromeos/drive/drive_integration_service.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/app_list/search/files/file_result.h"
-#include "chrome/browser/ui/app_list/search/search_controller.h"
 #include "chromeos/components/drivefs/mojom/drivefs.mojom.h"
-#include "chromeos/components/string_matching/fuzzy_tokenized_string_match.h"
 
 namespace app_list {
 namespace {
 
-using TokenizedString = chromeos::string_matching::TokenizedString;
-using FuzzyTokenizedStringMatch =
-    chromeos::string_matching::FuzzyTokenizedStringMatch;
+using chromeos::string_matching::TokenizedString;
 
 constexpr char kDriveFileSchema[] = "drive_file://";
 constexpr int kMaxResults = 10;
-// The default relevance should only be used as a fallback.
-// TODO(crbug.com/1154513): Log error histograms whenever this needs to be used.
-constexpr double kDefaultRelevance = 0.5;
-
-// Parameters for FuzzyTokenizedStringMatch. Note that the underlying file
-// search uses an exact substring match to retrieve file results, so using edit
-// distance here doesn't provide any benefit.
-constexpr bool kUsePrefixOnly = false;
-constexpr bool kUseWeightedRatio = true;
-constexpr bool kUseEditDistance = false;
-constexpr double kRelevanceThreshold = 0.0;
-constexpr double kPartialMatchPenaltyRate = 0.9;
-
-double FuzzyMatchRelevance(const TokenizedString& title,
-                           const TokenizedString& query) {
-  if (title.text().empty() || query.text().empty()) {
-    return kDefaultRelevance;
-  }
-
-  FuzzyTokenizedStringMatch match;
-  match.IsRelevant(query, title, kRelevanceThreshold, kUsePrefixOnly,
-                   kUseWeightedRatio, kUseEditDistance,
-                   kPartialMatchPenaltyRate);
-  return match.relevance();
-}
 
 }  // namespace
 
@@ -81,10 +52,8 @@ void DriveFileProvider::Start(const std::u16string& query) {
 
   last_tokenized_query_.emplace(query, TokenizedString::Mode::kWords);
 
-  // New scores will be assigned for sorting purposes so SortField and
-  // SortDirection are chosen arbitrarily.
-  // TODO(crbug.com/1154513): Double check that sorting doesn't affect the set
-  // of results from the backend.
+  // New scores will be assigned for sorting purposes so use the default
+  // SortField. The SortDirection does nothing in this case.
   drive_service_->SearchDriveByFileName(
       base::UTF16ToUTF8(query), kMaxResults,
       drivefs::mojom ::QueryParameters::SortField::kNone,
@@ -116,21 +85,13 @@ std::unique_ptr<FileResult> DriveFileProvider::MakeResult(
   const base::FilePath& reparented_path =
       drive_service_->GetMountPointPath().Append(path.value());
 
-  auto result = std::make_unique<FileResult>(
-      kDriveFileSchema, reparented_path,
-      ash::AppListSearchResultType::kDriveFile,
-      ash::SearchResultDisplayType::kList, kDefaultRelevance, profile_);
+  const double relevance =
+      CalculateFilenameRelevance(last_tokenized_query_, path);
 
-  // Calculate and set the fuzzy match relevance for the result.
-  if (last_tokenized_query_) {
-    const TokenizedString tokenized_title(result->title(),
-                                          TokenizedString::Mode::kWords);
-    const double relevance =
-        FuzzyMatchRelevance(tokenized_title, last_tokenized_query_.value());
-    result->set_relevance(relevance);
-  }
-
-  return result;
+  return std::make_unique<FileResult>(kDriveFileSchema, reparented_path,
+                                      ash::AppListSearchResultType::kDriveFile,
+                                      ash::SearchResultDisplayType::kList,
+                                      relevance, profile_);
 }
 
 }  // namespace app_list
