@@ -674,6 +674,9 @@ class TabStrip : public views::View,
   // Responsible for animating tabs in response to model changes.
   views::BoundsAnimator bounds_animator_{this};
 
+  // Responsible for animating the scroll of the tab strip.
+  std::unique_ptr<gfx::LinearAnimation> tab_scrolling_animation_;
+
   // If this value is defined, it is used as the width to lay out tabs
   // (instead of GetAvailableWidthForTabStrip()). It is defined when closing
   // tabs with the mouse, and is used to control which tab will end up under the

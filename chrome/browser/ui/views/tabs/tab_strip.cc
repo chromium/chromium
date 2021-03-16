@@ -32,6 +32,7 @@
 #include "base/scoped_observation.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/time/time.h"
 #include "base/timer/elapsed_timer.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -322,6 +323,48 @@ int GetStackableTabWidth() {
   return TabStyle::GetTabOverlap() +
          (ui::TouchUiController::Get()->touch_ui() ? 136 : 102);
 }
+
+// Helper class that manages the tab scrolling animation.
+class TabScrollingAnimation : public gfx::LinearAnimation,
+                              public gfx::AnimationDelegate {
+ public:
+  explicit TabScrollingAnimation(
+      TabStrip* tab_strip,
+      gfx::AnimationContainer* bounds_animator_container,
+      base::TimeDelta duration,
+      const gfx::Rect start_visible_rect,
+      const gfx::Rect end_visible_rect)
+      : gfx::LinearAnimation(duration,
+                             gfx::LinearAnimation::kDefaultFrameRate,
+                             this),
+        tab_strip_(tab_strip),
+        start_visible_rect_(start_visible_rect),
+        end_visible_rect_(end_visible_rect) {
+    SetContainer(bounds_animator_container);
+  }
+  TabScrollingAnimation(const TabScrollingAnimation&) = delete;
+  TabScrollingAnimation& operator=(const TabScrollingAnimation&) = delete;
+  ~TabScrollingAnimation() override = default;
+
+  void AnimateToState(double state) override {
+    gfx::Rect intermediary_rect(
+        start_visible_rect_.x() +
+            (end_visible_rect_.x() - start_visible_rect_.x()) * state,
+        start_visible_rect_.y(), start_visible_rect_.width(),
+        start_visible_rect_.height());
+
+    tab_strip_->ScrollRectToVisible(intermediary_rect);
+  }
+
+  void AnimationEnded(const gfx::Animation* animation) override {
+    tab_strip_->ScrollRectToVisible(end_visible_rect_);
+  }
+
+ private:
+  TabStrip* const tab_strip_;
+  const gfx::Rect start_visible_rect_;
+  const gfx::Rect end_visible_rect_;
+};
 
 }  // namespace
 
@@ -1423,26 +1466,37 @@ void TabStrip::ScrollTabToVisible(int model_index) {
     return;
   }
 
-  gfx::Rect visible_content_rect = scroll_container->GetVisibleRect();
-  Tab* active_tab = tab_at(model_index);
+  if (tab_scrolling_animation_)
+    tab_scrolling_animation_->Stop();
 
-  if ((active_tab->x() >= visible_content_rect.x()) &&
-      (active_tab->bounds().right() <= visible_content_rect.right())) {
+  gfx::Rect visible_content_rect = scroll_container->GetVisibleRect();
+  gfx::Rect active_tab_ideal_bounds = ideal_bounds(model_index);
+
+  if ((active_tab_ideal_bounds.x() >= visible_content_rect.x()) &&
+      (active_tab_ideal_bounds.right() <= visible_content_rect.right())) {
     return;
   }
 
-  bool scroll_left = active_tab->x() < visible_content_rect.x();
+  bool scroll_left = active_tab_ideal_bounds.x() < visible_content_rect.x();
   if (scroll_left) {
-    gfx::Rect new_visible(active_tab->x(), visible_content_rect.y(),
+    gfx::Rect new_visible(active_tab_ideal_bounds.x(), visible_content_rect.y(),
                           visible_content_rect.width(),
                           visible_content_rect.height());
-    ScrollRectToVisible(new_visible);
+    tab_scrolling_animation_ = std::make_unique<TabScrollingAnimation>(
+        this, bounds_animator_.container(),
+        bounds_animator_.GetAnimationDuration(), visible_content_rect,
+        new_visible);
+    tab_scrolling_animation_->Start();
   } else {
     gfx::Rect new_visible(
-        active_tab->bounds().right() - visible_content_rect.width(),
+        active_tab_ideal_bounds.right() - visible_content_rect.width(),
         visible_content_rect.y(), visible_content_rect.width(),
         visible_content_rect.height());
-    ScrollRectToVisible(new_visible);
+    tab_scrolling_animation_ = std::make_unique<TabScrollingAnimation>(
+        this, bounds_animator_.container(),
+        bounds_animator_.GetAnimationDuration(), visible_content_rect,
+        new_visible);
+    tab_scrolling_animation_->Start();
   }
 }
 
@@ -2847,6 +2901,8 @@ void TabStrip::CompleteAnimationAndLayout() {
   last_layout_size_ = size();
 
   bounds_animator_.Cancel();
+  if (tab_scrolling_animation_)
+    tab_scrolling_animation_->SetCurrentValue(1);
 
   SwapLayoutIfNecessary();
   if (touch_layout_)
