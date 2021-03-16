@@ -10,7 +10,7 @@ import 'chrome://resources/polymer/v3_0/iron-iconset-svg/iron-iconset-svg.js';
 import './infinite_list.js';
 import './tab_search_item.js';
 import './tab_search_search_field.js';
-import './strings.js';
+import './strings.m.js';
 
 import {assert} from 'chrome://resources/js/assert.m.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';

@@ -38,11 +38,6 @@ template("optimize_webui") {
 
     inputs = []
     outputs = []
-    if (defined(invoker.html_out_files)) {
-      foreach(_out, invoker.html_out_files) {
-        outputs += [ "$target_gen_dir/$_out" ]
-      }
-    }
     foreach(_out, invoker.js_out_files) {
       outputs += [ "$target_gen_dir/$_out" ]
     }
@@ -83,25 +78,8 @@ template("optimize_webui") {
     }
     args += [ "--external_paths" ] + external_paths
 
-    if (defined(invoker.html_in_files)) {
-      args += [ "--html_in_files" ] + invoker.html_in_files
-    }
-
-    if (defined(invoker.html_out_files)) {
-      args += [ "--html_out_files" ] + invoker.html_out_files
-    }
-
-    if (defined(invoker.insert_in_head)) {
-      args += [
-        "--insert_in_head",
-        invoker.insert_in_head,
-      ]
-    }
-
-    if (defined(invoker.js_module_in_files)) {
-      inputs += [ "//chrome/browser/resources/tools/rollup_plugin.js" ]
-      args += [ "--js_module_in_files" ] + invoker.js_module_in_files
-    }
+    inputs += [ "//chrome/browser/resources/tools/rollup_plugin.js" ]
+    args += [ "--js_module_in_files" ] + invoker.js_module_in_files
 
     if (defined(invoker.out_manifest)) {
       args += [

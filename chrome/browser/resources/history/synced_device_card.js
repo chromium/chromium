@@ -9,7 +9,7 @@ import 'chrome://resources/polymer/v3_0/iron-collapse/iron-collapse.js';
 import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
 import './searched_label.js';
 import './shared_style.js';
-import './strings.js';
+import './strings.m.js';
 
 import {FocusRow} from 'chrome://resources/js/cr/ui/focus_row.m.js';
 import {getFaviconForPageURL} from 'chrome://resources/js/icon.m.js';

@@ -4,7 +4,7 @@
 
 import './searched_label.js';
 import './shared_style.js';
-import './strings.js';
+import './strings.m.js';
 import 'chrome://resources/cr_elements/cr_icons_css.m.js';
 import 'chrome://resources/cr_elements/shared_vars_css.m.js';
 import 'chrome://resources/js/icon.m.js';

@@ -9,16 +9,15 @@ import 'chrome://resources/cr_elements/mwb_shared_style.js';
 import 'chrome://resources/cr_elements/mwb_shared_vars.js';
 import 'chrome://resources/polymer/v3_0/iron-selector/iron-selector.js';
 import './read_later_shared_style.js';
+import './strings.m.js';
 
 import {assertNotReached} from 'chrome://resources/js/assert.m.js';
-import {listenOnce} from 'chrome://resources/js/util.m.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
+import {listenOnce} from 'chrome://resources/js/util.m.js';
 import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {ReadLaterApiProxy, ReadLaterApiProxyImpl} from './read_later_api_proxy.js';
 import {ReadLaterItemElement} from './read_later_item.js';
-
-import './strings.js';
 
 /** @type {!Set<string>} */
 const navigationKeys = new Set(['ArrowDown', 'ArrowUp']);

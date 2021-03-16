@@ -7,6 +7,7 @@ import 'chrome://resources/cr_elements/cr_icons_css.m.js';
 import 'chrome://resources/cr_elements/mwb_shared_icons.js';
 import 'chrome://resources/cr_elements/mwb_shared_vars.js';
 import 'chrome://resources/cr_elements/shared_vars_css.m.js';
+import './strings.m.js';
 
 import {getFaviconForPageURL} from 'chrome://resources/js/icon.m.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
@@ -15,7 +16,6 @@ import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/poly
 
 import {TabData} from './tab_data.js';
 import {Tab} from './tab_search.mojom-webui.js';
-import './strings.js';
 
 export class TabSearchItem extends PolymerElement {
   static get is() {

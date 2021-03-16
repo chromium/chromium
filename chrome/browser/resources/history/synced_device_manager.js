@@ -10,7 +10,7 @@ import 'chrome://resources/cr_elements/shared_style_css.m.js';
 import 'chrome://resources/cr_elements/shared_vars_css.m.js';
 import './shared_style.js';
 import './synced_device_card.js';
-import './strings.js';
+import './strings.m.js';
 
 import {assert} from 'chrome://resources/js/assert.m.js';
 import {FocusGrid} from 'chrome://resources/js/cr/ui/focus_grid.m.js';

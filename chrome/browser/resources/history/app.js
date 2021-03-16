@@ -11,7 +11,7 @@ import './history_toolbar.js';
 import './query_manager.js';
 import './router.js';
 import './shared_style.js';
-import './strings.js';
+import './strings.m.js';
 
 import {FindShortcutBehavior} from 'chrome://resources/cr_elements/find_shortcut_behavior.m.js';
 import {assert} from 'chrome://resources/js/assert.m.js';

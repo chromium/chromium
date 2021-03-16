@@ -11,7 +11,7 @@ import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
 import './icons.js';
 import './profile_card.js';
 import './profile_picker_shared_css.js';
-import './strings.js';
+import './strings.m.js';
 
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {WebUIListenerBehavior} from 'chrome://resources/js/web_ui_listener_behavior.m.js';
