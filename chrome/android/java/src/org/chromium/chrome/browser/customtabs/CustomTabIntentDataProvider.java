@@ -186,13 +186,6 @@ public class CustomTabIntentDataProvider extends BrowserServicesIntentDataProvid
     public static final String EXTRA_HIDE_VISITS_FROM_CCT =
             "androidx.browser.customtabs.extra.HIDE_VISITS_FROM_CCT";
 
-    /**
-     * Extra used to provide a PendingIntent that we can launch to focus the client.
-     * TODO(peconn): Move to AndroidX.
-     */
-    private static final String EXTRA_FOCUS_INTENT =
-            "androidx.browser.customtabs.extra.FOCUS_INTENT";
-
     private static final String EXTRA_TWA_DISCLOSURE_UI =
             "androidx.browser.trusted.extra.DISCLOSURE_VERSION";
 
@@ -241,7 +234,6 @@ public class CustomTabIntentDataProvider extends BrowserServicesIntentDataProvid
     private PendingIntent mRemoteViewsPendingIntent;
     // OnFinished listener for PendingIntents. Used for testing only.
     private PendingIntent.OnFinished mOnFinished;
-    private PendingIntent mFocusIntent;
 
     /** Whether this CustomTabActivity was explicitly started by another Chrome Activity. */
     private final boolean mIsOpenedByChrome;
@@ -365,7 +357,6 @@ public class CustomTabIntentDataProvider extends BrowserServicesIntentDataProvid
                 IntentUtils.safeGetBooleanExtra(intent, EXTRA_DISABLE_DOWNLOAD_BUTTON, false);
 
         mTranslateLanguage = IntentUtils.safeGetStringExtra(intent, EXTRA_TRANSLATE_LANGUAGE);
-        mFocusIntent = IntentUtils.safeGetParcelableExtra(intent, EXTRA_FOCUS_INTENT);
         // Import the {@link ScreenOrientation}.
         mDefaultOrientation = convertOrientationType(IntentUtils.safeGetIntExtra(intent,
                 TrustedWebActivityIntentBuilder.EXTRA_SCREEN_ORIENTATION,
@@ -829,12 +820,6 @@ public class CustomTabIntentDataProvider extends BrowserServicesIntentDataProvid
             // Catch unparcelling errors.
             return null;
         }
-    }
-
-    @Override
-    @Nullable
-    public PendingIntent getFocusIntent() {
-        return mFocusIntent;
     }
 
     @TwaDisclosureUi

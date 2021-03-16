@@ -21,7 +21,6 @@ import org.chromium.base.PackageManagerUtils;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.cc.input.BrowserControlsState;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
-import org.chromium.chrome.browser.ShortcutHelper;
 import org.chromium.chrome.browser.app.ChromeActivity;
 import org.chromium.chrome.browser.app.tab_activity_glue.ActivityTabWebContentsDelegateAndroid;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
@@ -56,9 +55,6 @@ import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.document.TabDelegate;
 import org.chromium.chrome.browser.ui.native_page.NativePage;
-import org.chromium.chrome.browser.webapps.WebappActivity;
-import org.chromium.chrome.browser.webapps.WebappIntentUtils;
-import org.chromium.chrome.browser.webapps.WebappLauncherActivity;
 import org.chromium.components.browser_ui.util.BrowserControlsVisibilityDelegate;
 import org.chromium.components.browser_ui.util.ComposedBrowserControlsVisibilityDelegate;
 import org.chromium.components.embedder_support.delegate.WebContentsDelegateAndroid;
@@ -239,46 +235,8 @@ public class CustomTabDelegateFactory implements TabDelegateFactory {
 
         @Override
         protected void bringActivityToForeground() {
-            // TODO: Unify WebAPK and CCT behavior.
-            if (isWebappOrWebApk(mActivityType)) {
-                bringActivityToForegroundWebapp();
-            } else {
-                bringActivityToForegroundCustomTab();
-            }
-        }
-
-        private void bringActivityToForegroundCustomTab() {
             ((ActivityManager) mActivity.getSystemService(Context.ACTIVITY_SERVICE))
                     .moveTaskToFront(mActivity.getTaskId(), 0);
-        }
-
-        private void bringActivityToForegroundWebapp() {
-            WebappActivity webappActivity = (WebappActivity) mActivity;
-            BrowserServicesIntentDataProvider intentDataProvider =
-                    webappActivity.getIntentDataProvider();
-
-            // Create an Intent that will be fired toward the WebappLauncherActivity, which in turn
-            // will fire an Intent to launch the correct WebappActivity. On L+ this could probably
-            // be changed to call AppTask.moveToFront(), but for backwards compatibility we relaunch
-            // it the hard way.
-            String startUrl = intentDataProvider.getUrlToLoad();
-
-            if (intentDataProvider.isWebApkActivity()) {
-                Intent activateIntent = null;
-                activateIntent = new Intent(ACTION_ACTIVATE_WEBAPK);
-                activateIntent.setPackage(ContextUtils.getApplicationContext().getPackageName());
-                IntentUtils.safeStartActivity(mActivity, activateIntent);
-                return;
-            }
-
-            Intent intent = new Intent();
-            intent.setAction(WebappLauncherActivity.ACTION_START_WEBAPP);
-            intent.setPackage(mActivity.getPackageName());
-            WebappIntentUtils.copyWebappLaunchIntentExtras(mActivity.getIntent(), intent);
-
-            intent.putExtra(ShortcutHelper.EXTRA_MAC, ShortcutHelper.getEncodedMac(startUrl));
-            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-            IntentUtils.safeStartActivity(ContextUtils.getApplicationContext(), intent);
         }
 
         @Override

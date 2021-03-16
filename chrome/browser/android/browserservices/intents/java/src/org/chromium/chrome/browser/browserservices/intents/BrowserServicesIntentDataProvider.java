@@ -480,11 +480,6 @@ public abstract class BrowserServicesIntentDataProvider {
         return getUiType() == CustomTabsUiType.INFO_PAGE;
     }
 
-    @Nullable
-    public PendingIntent getFocusIntent() {
-        return null;
-    }
-
     @TwaDisclosureUi
     public int getTwaDisclosureUi() {
         return TwaDisclosureUi.DEFAULT;
