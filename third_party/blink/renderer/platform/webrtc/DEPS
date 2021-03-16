@@ -4,11 +4,20 @@ include_rules = [
 ]
 
 specific_include_rules = {
+    "webrtc_video_frame_adapter\.cc": [
+        "+base/dcheck_is_on.h",
+        "+gpu/command_buffer/client/raster_interface.h",
+    ],
+    "webrtc_video_frame_adapter\.h": [
+        "+components/viz/common/gpu/raster_context_provider.h",
+        "+media/video/gpu_video_accelerator_factories.h",
+    ],
     "legacy_webrtc_video_frame_adapter\.cc": [
         "+media/video/gpu_video_accelerator_factories.h",
         "+gpu/command_buffer/client/raster_interface.h",
     ],
     "legacy_webrtc_video_frame_adapter\.h": [
         "+components/viz/common/gpu/raster_context_provider.h",
+        "+media/video/gpu_video_accelerator_factories.h",
     ],
 }
