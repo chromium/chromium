@@ -793,7 +793,7 @@ Polymer({
     }
 
     if (!properties) {
-      console.error('Details page: GUID no longer exists: ' + this.guid);
+      // Close the page if the network was removed and no longer exists.
       this.close();
       return;
     }
