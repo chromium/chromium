@@ -145,15 +145,6 @@ export class SelectToSpeak {
     this.currentCharIndex_ = -1;
 
     /**
-     * Whether we are reading user-selected content. True if the current
-     * content is from mouse or keyboard selection. False if the current
-     * content is processed by the navigation features like paragraph
-     * navigation, sentence navigation, pause and resume.
-     * @private {boolean}
-     */
-    this.isUserSelectedContent_ = false;
-
-    /**
      * Whether the current nodes support use of the navigation panel.
      * @private {boolean}
      */
@@ -308,8 +299,7 @@ export class SelectToSpeak {
         // expand to entire paragraph.
         nodes = NodeUtils.getAllNodesInParagraph(nodes[0]);
       }
-      this.startSpeechQueue_(
-          nodes, {clearFocusRing: true, isUserSelectedContent: true});
+      this.startSpeechQueue_(nodes, {clearFocusRing: true});
       MetricsUtils.recordStartEvent(
           MetricsUtils.StartSpeechMethod.MOUSE, this.prefsManager_);
     }.bind(this));
@@ -449,15 +439,13 @@ export class SelectToSpeak {
         // relates to a node that doesn't exist.
         this.startSpeechQueue_(nodes, {
           clearFocusRing: userRequested,
-          startCharIndex: firstPosition.offset,
-          isUserSelectedContent: true
+          startCharIndex: firstPosition.offset
         });
       } else {
         this.startSpeechQueue_(nodes, {
           clearFocusRing: userRequested,
           startCharIndex: firstPosition.offset,
-          endCharIndex: lastPosition.offset,
-          isUserSelectedContent: true
+          endCharIndex: lastPosition.offset
         });
       }
       if (focusedNode) {
@@ -589,12 +577,6 @@ export class SelectToSpeak {
         resolve();
       };
       chrome.tts.stop();
-      // If the user triggers pause_() or navigation features that use pause_()
-      // (e.g., sentence navigation), the following reading content will not be
-      // user-selected content. This enables us to distinguish between a user-
-      // trigger pause from the auto pause happening at the end of user-selected
-      // content.
-      this.isUserSelectedContent_ = false;
     });
   }
 
@@ -683,7 +665,6 @@ export class SelectToSpeak {
     // Clear the node and also stop the interval testing.
     this.resetNodes_();
     this.supportsNavigationPanel_ = true;
-    this.isUserSelectedContent_ = false;
     clearInterval(this.intervalId_);
     this.intervalId_ = undefined;
     this.scrollToSpokenNode_ = false;
@@ -986,8 +967,7 @@ export class SelectToSpeak {
    * @param {!Array<AutomationNode>} nodes The nodes to speak.
    * @param {!{clearFocusRing: (boolean|undefined),
    *          startCharIndex: (number|undefined),
-   *          endCharIndex: (number|undefined),
-   *          isUserSelectedContent: (boolean|undefined)}=} opt_params
+   *          endCharIndex: (number|undefined)}=} opt_params
    *    clearFocusRing: Whether to clear the focus ring or not. For example, we
    * need to clear the focus ring when starting from scratch but we do not need
    * to clear the focus ring when resuming from a previous pause. If this is not
@@ -996,8 +976,6 @@ export class SelectToSpeak {
    * speaking. If this is not passed, will start at 0.
    *    endCharIndex: The index into the last node's text at which to end
    * speech. If this is not passed, will stop at the end.
-   *    isUserSelectedContent: Whether the content is from user selection. If
-   * this is not passed, will default to false.
    * @private
    */
   startSpeechQueue_(nodes, opt_params) {
@@ -1005,7 +983,6 @@ export class SelectToSpeak {
     const clearFocusRing = params.clearFocusRing || false;
     let startCharIndex = params.startCharIndex;
     let endCharIndex = params.endCharIndex;
-    this.isUserSelectedContent_ = params.isUserSelectedContent || false;
 
     this.prepareForSpeech_(clearFocusRing /* clear the focus ring */);
 
