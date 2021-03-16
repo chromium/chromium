@@ -5,6 +5,9 @@
 #ifndef COMPONENTS_FEED_CORE_V2_NOTICE_CARD_TRACKER_H_
 #define COMPONENTS_FEED_CORE_V2_NOTICE_CARD_TRACKER_H_
 
+#include "base/synchronization/lock.h"
+#include "base/thread_annotations.h"
+
 class PrefService;
 
 namespace feed {
@@ -31,7 +34,8 @@ class NoticeCardTracker {
   // Get signals based on the actions.
 
   // Indicates whether there were enough views or clicks done on the notice
-  // card to consider it as acknowledged by the user.
+  // card to consider it as acknowledged by the user. This is safe to call in a
+  // background thread.
   bool HasAcknowledgedNoticeCard() const;
 
  private:
@@ -40,6 +44,22 @@ class NoticeCardTracker {
   void MaybeUpdateNoticeCardClicksCount(int index);
 
   PrefService* profile_prefs_;
+
+  // The number of views of the notice card.
+  mutable base::Lock views_count_lock_;
+  int views_count_ GUARDED_BY(views_count_lock_);
+
+  // The number of clicks/taps of the notice card.
+  mutable base::Lock clicks_count_lock_;
+  int clicks_count_ GUARDED_BY(clicks_count_lock_);
+
+  // The number of views of the notice card to consider it acknowledged by the
+  // user.
+  int views_count_threshold_;
+
+  // The number of clicks/taps of the notice card to consider it acknowledged by
+  // the user.
+  int clicks_count_threshold_;
 };
 
 }  // namespace feed
