@@ -120,7 +120,7 @@ chromevox_es6_modules = [
   "background/es6_loader.js",
   "background/find_handler.js",
   "background/media_automation_handler.js",
-  "background/next_earcons.js",
+  "background/earcons.js",
   "background/range_automation_handler.js",
 ]
 

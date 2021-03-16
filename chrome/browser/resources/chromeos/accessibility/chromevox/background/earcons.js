@@ -7,7 +7,7 @@
  * auditory cues.
  */
 
-export class NextEarcons extends AbstractEarcons {
+export class Earcons extends AbstractEarcons {
   constructor() {
     super();
 
@@ -39,7 +39,7 @@ export class NextEarcons extends AbstractEarcons {
    * @return {string} The human-readable name of the earcon set.
    */
   getName() {
-    return 'ChromeVox Next earcons';
+    return 'ChromeVox earcons';
   }
 
   /**

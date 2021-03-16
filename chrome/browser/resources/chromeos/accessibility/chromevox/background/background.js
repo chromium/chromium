@@ -2,10 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {Earcons} from './earcons.js';
 import {FindHandler} from './find_handler.js';
 import {LiveRegions} from './live_regions.js';
 import {MediaAutomationHandler} from './media_automation_handler.js';
-import {NextEarcons} from './next_earcons.js';
 import {RangeAutomationHandler} from './range_automation_handler.js';
 
 /**
@@ -37,12 +37,12 @@ export class Background extends ChromeVoxState {
     this.currentRange_ = null;
 
     /** @type {!AbstractEarcons} @private */
-    this.nextEarcons_ = new NextEarcons();
+    this.earcons_ = new Earcons();
 
     // Read-only earcons.
     Object.defineProperty(ChromeVox, 'earcons', {
       get: (function() {
-             return this.nextEarcons_;
+             return this.earcons_;
            }).bind(this)
     });
 
