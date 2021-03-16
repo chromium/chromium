@@ -11,8 +11,8 @@
 #include "base/containers/span.h"
 #include "base/memory/ptr_util.h"
 #include "chromeos/components/scanning/mojom/scanning.mojom.h"
+#include "chromeos/components/scanning/scanning_app_delegate.h"
 #include "chromeos/components/scanning/scanning_metrics_handler.h"
-#include "chromeos/components/scanning/scanning_paths_provider.h"
 #include "chromeos/components/scanning/url_constants.h"
 #include "chromeos/grit/chromeos_scanning_app_resources.h"
 #include "chromeos/grit/chromeos_scanning_app_resources_map.h"
@@ -116,9 +116,7 @@ void AddScanningAppPluralStrings(ScanningHandler* handler) {
 ScanningUI::ScanningUI(
     content::WebUI* web_ui,
     BindScanServiceCallback callback,
-    const ScanningHandler::SelectFilePolicyCreator& select_file_policy_creator,
-    std::unique_ptr<ScanningPathsProvider> scanning_paths_provider,
-    const ScanningHandler::OpenFilesAppFunction& open_files_app_fn)
+    std::unique_ptr<ScanningAppDelegate> scanning_app_delegate)
     : ui::MojoWebUIController(web_ui, true /* enable_chrome_send */),
       bind_pending_receiver_callback_(std::move(callback)) {
   auto html_source = base::WrapUnique(
@@ -140,9 +138,8 @@ ScanningUI::ScanningUI(
 
   AddScanningAppStrings(html_source.get());
 
-  auto handler = std::make_unique<ScanningHandler>(
-      select_file_policy_creator, std::move(scanning_paths_provider),
-      open_files_app_fn);
+  auto handler =
+      std::make_unique<ScanningHandler>(std::move(scanning_app_delegate));
   AddScanningAppPluralStrings(handler.get());
 
   web_ui->AddMessageHandler(std::move(handler));

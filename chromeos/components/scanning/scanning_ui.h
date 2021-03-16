@@ -19,7 +19,7 @@ class WebUI;
 
 namespace chromeos {
 
-class ScanningPathsProvider;
+class ScanningAppDelegate;
 
 // The WebUI for chrome://scanning.
 class ScanningUI : public ui::MojoWebUIController {
@@ -31,10 +31,7 @@ class ScanningUI : public ui::MojoWebUIController {
   // chromeos::scanning::mojom::ScanService.
   ScanningUI(content::WebUI* web_ui,
              BindScanServiceCallback callback,
-             const ScanningHandler::SelectFilePolicyCreator&
-                 select_file_policy_creator,
-             std::unique_ptr<ScanningPathsProvider> scanning_paths_provider,
-             const ScanningHandler::OpenFilesAppFunction& open_files_app_fn);
+             std::unique_ptr<ScanningAppDelegate> scanning_app_delegate);
   ~ScanningUI() override;
 
   ScanningUI(const ScanningUI&) = delete;

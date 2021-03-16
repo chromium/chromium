@@ -4,10 +4,8 @@
 
 #include "chromeos/components/scanning/scanning_handler.h"
 
-#include <string>
-
 #include "base/values.h"
-#include "chromeos/components/scanning/scanning_paths_provider.h"
+#include "chromeos/components/scanning/scanning_app_delegate.h"
 #include "chromeos/strings/grit/chromeos_strings.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -24,12 +22,8 @@ constexpr char kFilePath[] = "filePath";
 namespace chromeos {
 
 ScanningHandler::ScanningHandler(
-    const SelectFilePolicyCreator& select_file_policy_creator,
-    std::unique_ptr<ScanningPathsProvider> scanning_paths_provider,
-    OpenFilesAppFunction open_files_app_fn)
-    : select_file_policy_creator_(select_file_policy_creator),
-      scanning_paths_provider_(std::move(scanning_paths_provider)),
-      open_files_app_fn_(std::move(open_files_app_fn)) {}
+    std::unique_ptr<ScanningAppDelegate> scanning_app_delegate)
+    : scanning_app_delegate_(std::move(scanning_app_delegate)) {}
 
 ScanningHandler::~ScanningHandler() = default;
 
@@ -81,8 +75,8 @@ base::Value ScanningHandler::CreateSelectedPathValue(
     const base::FilePath& path) {
   base::Value selected_path(base::Value::Type::DICTIONARY);
   selected_path.SetStringKey(kFilePath, path.value());
-  selected_path.SetStringKey(
-      kBaseName, scanning_paths_provider_->GetBaseNameFromPath(web_ui(), path));
+  selected_path.SetStringKey(kBaseName,
+                             scanning_app_delegate_->GetBaseNameFromPath(path));
   return selected_path;
 }
 
@@ -109,7 +103,7 @@ void ScanningHandler::HandleRequestScanToLocation(const base::ListValue* args) {
       web_contents ? web_contents->GetTopLevelNativeWindow()
                    : gfx::kNullNativeWindow;
   select_file_dialog_ = ui::SelectFileDialog::Create(
-      this, select_file_policy_creator_.Run(web_contents));
+      this, scanning_app_delegate_->CreateChromeSelectFilePolicy());
   select_file_dialog_->SelectFile(
       ui::SelectFileDialog::SELECT_FOLDER,
       l10n_util::GetStringUTF16(IDS_SCANNING_APP_SELECT_DIALOG_TITLE),
@@ -126,8 +120,10 @@ void ScanningHandler::HandleShowFileInLocation(const base::ListValue* args) {
   CHECK_EQ(2U, args->GetSize());
   const std::string callback = args->GetList()[0].GetString();
   const base::FilePath file_location(args->GetList()[1].GetString());
-  const bool file_opened = open_files_app_fn_.Run(web_ui(), file_location);
-  ResolveJavascriptCallback(base::Value(callback), base::Value(file_opened));
+  const bool files_app_opened =
+      scanning_app_delegate_->ShowFileInFilesApp(file_location);
+  ResolveJavascriptCallback(base::Value(callback),
+                            base::Value(files_app_opened));
 }
 
 void ScanningHandler::HandleGetPluralString(const base::ListValue* args) {
@@ -152,8 +148,7 @@ void ScanningHandler::HandleGetMyFilesPath(const base::ListValue* args) {
   CHECK_EQ(1U, args->GetSize());
   const std::string& callback = args->GetList()[0].GetString();
 
-  const base::FilePath my_files_path =
-      scanning_paths_provider_->GetMyFilesPath(web_ui());
+  const base::FilePath my_files_path = scanning_app_delegate_->GetMyFilesPath();
   ResolveJavascriptCallback(base::Value(callback),
                             base::Value(my_files_path.value()));
 }

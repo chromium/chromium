@@ -8,10 +8,9 @@
 #include <string>
 #include <utility>
 
-#include "base/bind.h"
 #include "base/files/file_path.h"
 #include "base/values.h"
-#include "chromeos/components/scanning/scanning_paths_provider.h"
+#include "chromeos/components/scanning/scanning_app_delegate.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui.h"
 #include "content/public/test/browser_task_environment.h"
@@ -38,11 +37,6 @@ class TestSelectFilePolicy : public ui::SelectFilePolicy {
   bool CanOpenSelectFileDialog() override { return true; }
   void SelectFileDenied() override {}
 };
-
-std::unique_ptr<ui::SelectFilePolicy> CreateTestSelectFilePolicy(
-    content::WebContents* web_contents) {
-  return std::make_unique<TestSelectFilePolicy>();
-}
 
 // A test ui::SelectFileDialog.
 class TestSelectFileDialog : public ui::SelectFileDialog {
@@ -109,31 +103,31 @@ class TestSelectFileDialogFactory : public ui::SelectFileDialogFactory {
   base::FilePath selected_path_;
 };
 
-// A test impl of ScanningPathsProvider.
-class TestScanningPathsProvider : public ScanningPathsProvider {
+// A fake impl of ScanningAppDelegate.
+class FakeScanningAppDelegate : public ScanningAppDelegate {
  public:
-  TestScanningPathsProvider() = default;
+  FakeScanningAppDelegate() = default;
 
-  TestScanningPathsProvider(const TestScanningPathsProvider&) = delete;
-  TestScanningPathsProvider& operator=(const TestScanningPathsProvider&) =
-      delete;
+  FakeScanningAppDelegate(const FakeScanningAppDelegate&) = delete;
+  FakeScanningAppDelegate& operator=(const FakeScanningAppDelegate&) = delete;
 
-  std::string GetBaseNameFromPath(content::WebUI* web_ui,
-                                  const base::FilePath& path) override {
+  std::unique_ptr<ui::SelectFilePolicy> CreateChromeSelectFilePolicy()
+      override {
+    return std::make_unique<TestSelectFilePolicy>();
+  }
+
+  std::string GetBaseNameFromPath(const base::FilePath& path) override {
     return path.BaseName().value();
   }
 
-  base::FilePath GetMyFilesPath(content::WebUI* web_ui) override {
+  base::FilePath GetMyFilesPath() override {
     return base::FilePath(kTestFilePath);
   }
-};
 
-bool ShowFileInFilesApp(const base::FilePath& drive_path,
-                        const base::FilePath& my_files_path,
-                        content::WebUI* web_ui,
-                        const base::FilePath& path_to_file) {
-  return kTestFilePath == path_to_file.value();
-}
+  bool ShowFileInFilesApp(const base::FilePath& path_to_file) override {
+    return kTestFilePath == path_to_file.value();
+  }
+};
 
 class ScanningHandlerTest : public testing::Test {
  public:
@@ -145,10 +139,7 @@ class ScanningHandlerTest : public testing::Test {
 
   void SetUp() override {
     scanning_handler_ = std::make_unique<ScanningHandler>(
-        base::BindRepeating(&CreateTestSelectFilePolicy),
-        std::make_unique<chromeos::TestScanningPathsProvider>(),
-        base::BindRepeating(&ShowFileInFilesApp, base::FilePath(),
-                            base::FilePath()));
+        std::make_unique<chromeos::FakeScanningAppDelegate>());
     scanning_handler_->SetWebUIForTest(&web_ui_);
     scanning_handler_->RegisterMessages();
 

@@ -155,17 +155,15 @@
 #include "chrome/browser/ash/login/easy_unlock/easy_unlock_service.h"
 #include "chrome/browser/ash/login/easy_unlock/easy_unlock_service_factory.h"
 #include "chrome/browser/ash/login/login_pref_names.h"
+#include "chrome/browser/ash/scanning/chrome_scanning_app_delegate.h"
 #include "chrome/browser/ash/scanning/scan_service.h"
 #include "chrome/browser/ash/scanning/scan_service_factory.h"
-#include "chrome/browser/ash/scanning/scanning_paths_provider_impl.h"
-#include "chrome/browser/ash/scanning/scanning_util.h"
 #include "chrome/browser/ash/web_applications/chrome_camera_app_ui_delegate.h"
 #include "chrome/browser/ash/web_applications/chrome_help_app_ui_delegate.h"
 #include "chrome/browser/ash/web_applications/chrome_media_app_ui_delegate.h"
 #include "chrome/browser/chromeos/arc/arc_util.h"
 #include "chrome/browser/chromeos/device_sync/device_sync_client_factory.h"
 #include "chrome/browser/chromeos/eche_app/eche_app_manager_factory.h"
-#include "chrome/browser/chromeos/file_manager/path_util.h"
 #include "chrome/browser/chromeos/multidevice_setup/multidevice_setup_service_factory.h"
 #include "chrome/browser/chromeos/net/network_health/network_health_service.h"
 #include "chrome/browser/chromeos/printing/print_management/printing_manager.h"
@@ -420,12 +418,7 @@ WebUIController* NewWebUI<chromeos::ScanningUI>(WebUI* web_ui,
   Profile* profile = Profile::FromWebUI(web_ui);
   return new chromeos::ScanningUI(
       web_ui, base::BindRepeating(&BindScanService, profile),
-      base::BindRepeating(&CreateChromeSelectFilePolicy),
-      std::make_unique<ash::ScanningPathsProviderImpl>(),
-      base::BindRepeating(
-          &ash::scanning::ShowFileInFilesApp,
-          ash::scanning::GetDrivePath(profile),
-          file_manager::util::GetMyFilesFolderForProfile(profile)));
+      std::make_unique<chromeos::ChromeScanningAppDelegate>(web_ui));
 }
 
 template <>

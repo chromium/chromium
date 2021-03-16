@@ -8,40 +8,30 @@
 #include <memory>
 #include <string>
 
-#include "base/bind.h"
 #include "base/files/file_path.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/values.h"
 #include "content/public/browser/web_ui_message_handler.h"
 #include "ui/shell_dialogs/select_file_dialog.h"
-#include "ui/shell_dialogs/select_file_policy.h"
 
 namespace base {
 class ListValue;
 }  // namespace base
 
 namespace content {
-class WebContents;
+class WebUI;
 }  // namespace content
 
 namespace chromeos {
 
-class ScanningPathsProvider;
+class ScanningAppDelegate;
 
 // ChromeOS Scanning app UI handler.
 class ScanningHandler : public content::WebUIMessageHandler,
                         public ui::SelectFileDialog::Listener {
  public:
-  using SelectFilePolicyCreator =
-      base::RepeatingCallback<std::unique_ptr<ui::SelectFilePolicy>(
-          content::WebContents*)>;
-  using OpenFilesAppFunction =
-      base::RepeatingCallback<bool(content::WebUI*, const base::FilePath&)>;
-
-  ScanningHandler(
-      const SelectFilePolicyCreator& select_file_policy_creator,
-      std::unique_ptr<ScanningPathsProvider> scanning_paths_provider,
-      OpenFilesAppFunction open_files_app_fn);
+  explicit ScanningHandler(
+      std::unique_ptr<ScanningAppDelegate> scanning_app_delegate);
   ~ScanningHandler() override;
 
   ScanningHandler(const ScanningHandler&) = delete;
@@ -83,17 +73,12 @@ class ScanningHandler : public content::WebUIMessageHandler,
   // Gets the MyFiles path for the current user.
   void HandleGetMyFilesPath(const base::ListValue* args);
 
-  SelectFilePolicyCreator select_file_policy_creator_;
-
   std::string scan_location_callback_id_;
 
   scoped_refptr<ui::SelectFileDialog> select_file_dialog_;
 
-  // Provides FilePath util for converting a FilePath base name.
-  std::unique_ptr<ScanningPathsProvider> scanning_paths_provider_;
-
-  // Opens Files app to the desired file location.
-  OpenFilesAppFunction open_files_app_fn_;
+  // Provides browser functionality from //chrome to the Scan app UI.
+  std::unique_ptr<ScanningAppDelegate> scanning_app_delegate_;
 
   std::map<std::string, int> string_id_map_;
 };
