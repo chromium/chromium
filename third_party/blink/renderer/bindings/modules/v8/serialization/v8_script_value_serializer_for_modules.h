@@ -12,6 +12,7 @@
 
 namespace blink {
 
+class AudioFrameSerializationData;
 class FileSystemHandle;
 class RTCEncodedAudioFrame;
 class RTCEncodedVideoFrame;
@@ -38,6 +39,8 @@ class MODULES_EXPORT V8ScriptValueSerializerForModules final
   bool WriteRTCEncodedAudioFrame(RTCEncodedAudioFrame*);
   bool WriteRTCEncodedVideoFrame(RTCEncodedVideoFrame*);
   bool WriteVideoFrameHandle(scoped_refptr<VideoFrameHandle>);
+  bool WriteAudioFrameSerializationData(
+      std::unique_ptr<AudioFrameSerializationData>);
 };
 
 }  // namespace blink

@@ -104,6 +104,7 @@ enum SerializationTag {
   kRTCEncodedAudioFrameTag = 'A',  // uint32_t -> transferred audio frame ID
   kRTCEncodedVideoFrameTag = 'V',  // uint32_t -> transferred video frame ID
 
+  kAudioFrameTag = 'a',  // uint32_t -> transferred audio frame data
   kVideoFrameTag = 'v',  // uint32_t -> transferred video frame ID
 
   // The following tags were used by the Shape Detection API implementation

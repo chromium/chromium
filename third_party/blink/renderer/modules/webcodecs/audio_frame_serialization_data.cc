@@ -37,4 +37,5 @@ std::unique_ptr<AudioFrameSerializationData> AudioFrameSerializationData::Wrap(
   return std::make_unique<BasicAudioFrameSerializationData>(
       std::move(data), sample_rate, timestamp);
 }
+
 }  // namespace blink

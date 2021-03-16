@@ -1,3 +1,26 @@
+function make_audio_frame(timestamp, channels, sampleRate, length) {
+  let buffer = new AudioBuffer({
+    length: length,
+    numberOfChannels: channels,
+    sampleRate: sampleRate
+  });
+
+  for (var channel = 0; channel < buffer.numberOfChannels; channel++) {
+    // This gives us the actual array that contains the data
+    var array = buffer.getChannelData(channel);
+    let hz = 100 + channel * 50; // sound frequency
+    for (var i = 0; i < array.length; i++) {
+      let t = (i / sampleRate) * hz * (Math.PI * 2);
+      array[i] = Math.sin(t);
+    }
+  }
+
+  return new AudioFrame({
+    timestamp: timestamp,
+    buffer: buffer
+  });
+}
+
 function makeOffscreenCanvas(width, height) {
   let canvas = new OffscreenCanvas(width, height);
   let ctx = canvas.getContext('2d');

@@ -47,31 +47,10 @@ AudioFrame::AudioFrame(scoped_refptr<media::AudioBuffer> buffer)
   buffer->ReadAllFrames(wrapped_channels);
 }
 
-std::unique_ptr<AudioFrameSerializationData>
-AudioFrame::GetSerializationData() {
-  DCHECK(buffer_);
-
-  // Copy buffer unaligned memory into media::AudioBus' aligned memory.
-  // TODO(https://crbug.com/1168418): reevaluate if this copy is necessary after
-  // our changes. E.g. If we can ever guarantee AudioBuffer's memory alignment,
-  // we could save this copy here, by using buffer_->GetSharedAudioBuffer() and
-  // wrapping it directly.
-  auto data_copy =
-      media::AudioBus::Create(buffer_->numberOfChannels(), buffer_->length());
-
-  for (int i = 0; i < data_copy->channels(); ++i) {
-    size_t byte_length = buffer_->getChannelData(i)->byteLength();
-    DCHECK_EQ(byte_length, data_copy->frames() * sizeof(float));
-    float* buffer_data_src = buffer_->getChannelData(i)->Data();
-    memcpy(data_copy->channel(i), buffer_data_src, byte_length);
-  }
-
-  return AudioFrameSerializationData::Wrap(
-      std::move(data_copy), buffer_->sampleRate(),
-      base::TimeDelta::FromMicroseconds(timestamp_));
-}
-
 AudioFrame::AudioFrame(std::unique_ptr<AudioFrameSerializationData> data)
+    : AudioFrame(data.get()) {}
+
+AudioFrame::AudioFrame(AudioFrameSerializationData* data)
     : timestamp_(data->timestamp().InMicroseconds()) {
   media::AudioBus* data_bus = data->data();
 
@@ -98,6 +77,31 @@ AudioFrame::AudioFrame(std::unique_ptr<AudioFrameSerializationData> data)
     float* buffer_data_dest = buffer_->getChannelData(i)->Data();
     memcpy(buffer_data_dest, data_bus->channel(i), byte_length);
   }
+}
+
+std::unique_ptr<AudioFrameSerializationData>
+AudioFrame::GetSerializationData() {
+  if (!buffer_)
+    return nullptr;
+
+  // Copy buffer unaligned memory into media::AudioBus' aligned memory.
+  // TODO(https://crbug.com/1168418): reevaluate if this copy is necessary after
+  // our changes. E.g. If we can ever guarantee AudioBuffer's memory alignment,
+  // we could save this copy here, by using buffer_->GetSharedAudioBuffer() and
+  // wrapping it directly.
+  auto data_copy =
+      media::AudioBus::Create(buffer_->numberOfChannels(), buffer_->length());
+
+  for (int i = 0; i < data_copy->channels(); ++i) {
+    size_t byte_length = buffer_->getChannelData(i)->byteLength();
+    DCHECK_EQ(byte_length, data_copy->frames() * sizeof(float));
+    float* buffer_data_src = buffer_->getChannelData(i)->Data();
+    memcpy(data_copy->channel(i), buffer_data_src, byte_length);
+  }
+
+  return AudioFrameSerializationData::Wrap(
+      std::move(data_copy), buffer_->sampleRate(),
+      base::TimeDelta::FromMicroseconds(timestamp_));
 }
 
 void AudioFrame::close() {

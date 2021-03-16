@@ -26,6 +26,9 @@ class MODULES_EXPORT AudioFrame final : public ScriptWrappable {
   explicit AudioFrame(scoped_refptr<media::AudioBuffer>);
   explicit AudioFrame(std::unique_ptr<AudioFrameSerializationData> data);
 
+  // Makes an internal copy of the data.
+  explicit AudioFrame(AudioFrameSerializationData* data);
+
   // audio_frame.idl implementation.
   explicit AudioFrame(AudioFrameInit*);
   void close();
