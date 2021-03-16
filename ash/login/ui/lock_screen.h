@@ -16,6 +16,7 @@
 #include "base/macros.h"
 #include "base/scoped_observation.h"
 #include "ui/base/clipboard/clipboard.h"
+#include "ui/views/widget/widget.h"
 
 namespace views {
 class View;
@@ -100,6 +101,8 @@ class ASH_EXPORT LockScreen : public TrayActionObserver,
   bool is_shown_ = false;
 
   std::unique_ptr<ui::Clipboard> saved_clipboard_;
+
+  std::unique_ptr<views::Widget::PaintAsActiveLock> paint_as_active_lock_;
 
   base::ScopedObservation<TrayAction, TrayActionObserver>
       tray_action_observation_{this};

@@ -20,12 +20,12 @@
 #include "ash/shelf/shelf_widget.h"
 #include "ash/shell.h"
 #include "ash/wallpaper/wallpaper_controller_impl.h"
+#include "ash/wm/window_util.h"
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/command_line.h"
 #include "ui/display/display.h"
 #include "ui/display/screen.h"
-#include "ui/views/widget/widget.h"
 #include "ui/wm/core/capture_controller.h"
 
 namespace ash {
@@ -55,6 +55,14 @@ void LockScreen::TestApi::AddOnShownCallback(base::OnceClosure on_shown) {
 }
 
 LockScreen::LockScreen(ScreenType type) : type_(type) {
+  auto* active_window = window_util::GetActiveWindow();
+  if (active_window) {
+    auto* active_widget =
+        views::Widget::GetWidgetForNativeWindow(active_window);
+    if (active_widget)
+      paint_as_active_lock_ = active_widget->LockPaintAsActive();
+  }
+
   tray_action_observation_.Observe(Shell::Get()->tray_action());
   saved_clipboard_ = ui::Clipboard::TakeForCurrentThread();
 }
