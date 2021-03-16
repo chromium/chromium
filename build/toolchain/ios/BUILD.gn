@@ -31,7 +31,7 @@ apple_toolchain("ios_clang_arm_fat") {
     current_cpu = "arm"
     current_os = "ios"
     is_fat_secondary_toolchain = true
-    primary_fat_toolchain_name = "//build/toolchain/mac:ios_clang_arm64"
+    primary_fat_toolchain_name = "//build/toolchain/ios:ios_clang_arm64"
   }
 }
 
@@ -62,6 +62,6 @@ apple_toolchain("ios_clang_x86_fat") {
     current_cpu = "x86"
     current_os = "ios"
     is_fat_secondary_toolchain = true
-    primary_fat_toolchain_name = "//build/toolchain/mac:ios_clang_x64"
+    primary_fat_toolchain_name = "//build/toolchain/ios:ios_clang_x64"
   }
 }
