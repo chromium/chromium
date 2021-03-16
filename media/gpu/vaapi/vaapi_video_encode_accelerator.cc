@@ -59,9 +59,6 @@ namespace {
 // if encoder requests less.
 constexpr size_t kMinNumFramesInFlight = 4;
 
-// Percentage of bitrate set to be targeted by the HW encoder.
-constexpr unsigned int kTargetBitratePercentage = 90;
-
 void FillVAEncRateControlParams(
     uint32_t bps,
     uint32_t window_size,
@@ -75,7 +72,6 @@ void FillVAEncRateControlParams(
     VAEncMiscParameterHRD& hrd_param) {
   memset(&rate_control_param, 0, sizeof(rate_control_param));
   rate_control_param.bits_per_second = bps;
-  rate_control_param.target_percentage = kTargetBitratePercentage;
   rate_control_param.window_size = window_size;
   rate_control_param.initial_qp = initial_qp;
   rate_control_param.min_qp = min_qp;
