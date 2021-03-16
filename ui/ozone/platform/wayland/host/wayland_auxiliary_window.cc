@@ -30,6 +30,7 @@ void WaylandAuxiliaryWindow::Show(bool inactive) {
 void WaylandAuxiliaryWindow::Hide() {
   if (!subsurface_)
     return;
+  WaylandWindow::Hide();
 
   subsurface_.reset();
 

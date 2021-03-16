@@ -78,6 +78,7 @@ void WaylandPopup::Hide() {
 
   if (child_window())
     child_window()->Hide();
+  WaylandWindow::Hide();
 
   if (shell_popup_) {
     parent_window()->set_child_window(nullptr);

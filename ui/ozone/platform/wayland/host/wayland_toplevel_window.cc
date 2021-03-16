@@ -115,6 +115,7 @@ void WaylandToplevelWindow::Hide() {
     child_window()->Hide();
     set_child_window(nullptr);
   }
+  WaylandWindow::Hide();
 
   shell_toplevel_.reset();
   connection()->ScheduleFlush();

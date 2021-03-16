@@ -175,7 +175,11 @@ void WaylandWindow::Show(bool inactive) {
 }
 
 void WaylandWindow::Hide() {
-  NOTREACHED();
+  // Mutter compositor crashes if we don't remove subsurface roles when hiding.
+  if (primary_subsurface_)
+    primary_subsurface()->Hide();
+  for (auto& subsurface : wayland_subsurfaces_)
+    subsurface->Hide();
 }
 
 void WaylandWindow::Close() {
