@@ -249,7 +249,7 @@ void AccountManagerFacadeImpl::OnTokenUpserted(
     return;
   }
   for (auto& observer : observer_list_) {
-    observer.OnAccountUpserted(maybe_account->key);
+    observer.OnAccountUpserted(maybe_account.value());
   }
 }
 
@@ -262,7 +262,7 @@ void AccountManagerFacadeImpl::OnAccountRemoved(
     return;
   }
   for (auto& observer : observer_list_) {
-    observer.OnAccountRemoved(maybe_account->key);
+    observer.OnAccountRemoved(maybe_account.value());
   }
 }
 

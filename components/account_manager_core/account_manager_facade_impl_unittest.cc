@@ -162,8 +162,8 @@ class MockObserver : public AccountManagerFacade::Observer {
   MockObserver& operator=(const MockObserver&) = delete;
   ~MockObserver() override = default;
 
-  MOCK_METHOD(void, OnAccountUpserted, (const AccountKey& account), (override));
-  MOCK_METHOD(void, OnAccountRemoved, (const AccountKey& account), (override));
+  MOCK_METHOD(void, OnAccountUpserted, (const Account& account), (override));
+  MOCK_METHOD(void, OnAccountRemoved, (const Account& account), (override));
 };
 
 MATCHER_P(AccountEq, expected_account, "") {
@@ -251,7 +251,7 @@ TEST_F(AccountManagerFacadeImplTest, OnTokenUpsertedIsPropagatedToObservers) {
 
   Account account = CreateTestGaiaAccount(kTestAccountEmail);
   base::RunLoop run_loop;
-  EXPECT_CALL(observer, OnAccountUpserted(account.key))
+  EXPECT_CALL(observer, OnAccountUpserted(AccountEq(account)))
       .WillOnce(base::test::RunClosure(run_loop.QuitClosure()));
   account_manager().NotifyOnTokenUpsertedObservers(account);
   run_loop.Run();
@@ -265,7 +265,7 @@ TEST_F(AccountManagerFacadeImplTest, OnAccountRemovedIsPropagatedToObservers) {
 
   Account account = CreateTestGaiaAccount(kTestAccountEmail);
   base::RunLoop run_loop;
-  EXPECT_CALL(observer, OnAccountRemoved(account.key))
+  EXPECT_CALL(observer, OnAccountRemoved(AccountEq(account)))
       .WillOnce(base::test::RunClosure(run_loop.QuitClosure()));
   account_manager().NotifyOnAccountRemovedObservers(account);
   run_loop.Run();

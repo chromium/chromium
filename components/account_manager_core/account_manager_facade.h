@@ -34,9 +34,9 @@ class COMPONENT_EXPORT(ACCOUNT_MANAGER_CORE) AccountManagerFacade {
     ~Observer() override;
 
     // Invoked when an account is added or updated.
-    virtual void OnAccountUpserted(const AccountKey& account) = 0;
+    virtual void OnAccountUpserted(const Account& account) = 0;
     // Invoked when an account is removed.
-    virtual void OnAccountRemoved(const AccountKey& account) = 0;
+    virtual void OnAccountRemoved(const Account& account) = 0;
   };
 
   // The source UI surface used for launching the account addition /
