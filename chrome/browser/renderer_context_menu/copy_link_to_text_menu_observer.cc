@@ -63,14 +63,8 @@ void CopyLinkToTextMenuObserver::InitMenu(
       IDC_CONTENT_CONTEXT_COPYLINKTOTEXT,
       l10n_util::GetStringUTF16(IDS_CONTENT_CONTEXT_COPYLINKTOTEXT));
 
-  if (ShouldPreemptivelyGenerateLink()) {
+  if (ShouldPreemptivelyGenerateLink())
     RequestLinkGeneration();
-    base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
-        FROM_HERE,
-        base::BindOnce(&CopyLinkToTextMenuObserver::Timeout,
-                       weak_ptr_factory_.GetWeakPtr()),
-        kTimeoutMs);
-  }
 }
 
 bool CopyLinkToTextMenuObserver::IsCommandIdSupported(int command_id) {
@@ -170,6 +164,11 @@ void CopyLinkToTextMenuObserver::RequestLinkGeneration() {
   remote_->RequestSelector(base::BindOnce(
       &CopyLinkToTextMenuObserver::OnRequestLinkGenerationCompleted,
       weak_ptr_factory_.GetWeakPtr()));
+  base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
+      FROM_HERE,
+      base::BindOnce(&CopyLinkToTextMenuObserver::Timeout,
+                     weak_ptr_factory_.GetWeakPtr()),
+      kTimeoutMs);
 }
 
 void CopyLinkToTextMenuObserver::CopyLinkToClipboard() {
@@ -180,6 +179,8 @@ void CopyLinkToTextMenuObserver::CopyLinkToClipboard() {
 
 void CopyLinkToTextMenuObserver::Timeout() {
   DCHECK(ShouldPreemptivelyGenerateLink());
+  DCHECK(remote_.is_bound());
+  DCHECK(remote_.is_connected());
   if (generated_link_.has_value())
     return;
   remote_->Cancel();
