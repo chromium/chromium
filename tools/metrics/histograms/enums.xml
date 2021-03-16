@@ -7657,11 +7657,16 @@ Called by update_bad_message_reasons.py.-->
   <int value="6" label="Not supported"/>
   <int value="7" label="Connection Establishment failed"/>
   <int value="8" label="Authentication failed"/>
-  <int value="9" label="Authentication rejected"/>
-  <int value="10" label="Authentication cancelled"/>
-  <int value="11" label="Authentication timeout"/>
+  <int value="9" label="Pairing rejected"/>
+  <int value="10" label="Pairing cancelled"/>
+  <int value="11" label="Connection timeout"/>
   <int value="12" label="Unknown"/>
   <int value="13" label="BT IO connection failed"/>
+  <int value="14" label="Unknown command"/>
+  <int value="15" label="Peer not connected"/>
+  <int value="16" label="No resources"/>
+  <int value="17" label="Peer disconnected"/>
+  <int value="18" label="Other failures"/>
 </enum>
 
 <enum name="BlueZResultOfPerProfileConnection">
