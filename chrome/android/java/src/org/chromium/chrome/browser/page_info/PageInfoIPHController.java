@@ -31,9 +31,8 @@ public class PageInfoIPHController {
      * @param statusView The status view in the omnibox. Used as anchor for IPH bubble.
      */
     public PageInfoIPHController(Activity activity, View statusView) {
-        mUserEducationHelper = new UserEducationHelper(activity,
-                new Handler(Looper.getMainLooper()), TrackerFactory::getTrackerForProfile);
-
+        mUserEducationHelper =
+                new UserEducationHelper(activity, new Handler(Looper.getMainLooper()));
         mStatusView = statusView;
     }
 

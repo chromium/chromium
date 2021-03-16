@@ -92,8 +92,7 @@ public class ToolbarButtonInProductHelpController
         mMenuButtonAnchorView = menuButtonAnchorView;
         mSecurityIconAnchorView = securityIconAnchorView;
         mIsInOverviewModeSupplier = isInOverviewModeSupplier;
-        mUserEducationHelper =
-                new UserEducationHelper(mActivity, mHandler, TrackerFactory::getTrackerForProfile);
+        mUserEducationHelper = new UserEducationHelper(mActivity, mHandler);
         mScreenshotMonitor = new ScreenshotMonitor(this);
         mLifecycleDispatcher = lifecycleDispatcher;
         mLifecycleDispatcher.register(this);

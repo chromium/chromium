@@ -7,4 +7,6 @@ package org.chromium.chrome.browser.feature_engagement;
 /**
  * This class serves as a callback from ScreenshotMonitor.
  */
-public interface ScreenshotMonitorDelegate { void onScreenshotTaken(); }
+public interface ScreenshotMonitorDelegate {
+    void onScreenshotTaken();
+}

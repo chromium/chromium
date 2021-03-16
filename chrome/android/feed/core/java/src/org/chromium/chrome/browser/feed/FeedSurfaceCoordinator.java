@@ -341,8 +341,7 @@ public class FeedSurfaceCoordinator implements FeedSurfaceProvider {
         mMediator = new FeedSurfaceMediator(
                 this, snapScrollHelper, mPageNavigationDelegate, mSectionHeaderModel);
 
-        mUserEducationHelper =
-                new UserEducationHelper(mActivity, mHandler, TrackerFactory::getTrackerForProfile);
+        mUserEducationHelper = new UserEducationHelper(mActivity, mHandler);
     }
 
     @Override

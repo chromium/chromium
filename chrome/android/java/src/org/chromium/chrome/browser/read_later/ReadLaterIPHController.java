@@ -10,7 +10,6 @@ import android.os.Looper;
 import android.view.View;
 
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuHandler;
 import org.chromium.chrome.browser.user_education.IPHCommandBuilder;
@@ -35,8 +34,8 @@ public class ReadLaterIPHController {
             Activity activity, View toolbarMenuButton, AppMenuHandler appMenuHandler) {
         mToolbarMenuButton = toolbarMenuButton;
         mAppMenuHandler = appMenuHandler;
-        mUserEducationHelper = new UserEducationHelper(activity,
-                new Handler(Looper.getMainLooper()), TrackerFactory::getTrackerForProfile);
+        mUserEducationHelper =
+                new UserEducationHelper(activity, new Handler(Looper.getMainLooper()));
     }
 
     /**

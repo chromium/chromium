@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 #include "base/android/scoped_java_ref.h"
-#include "chrome/android/chrome_jni_headers/TrackerFactory_jni.h"
+#include "chrome/browser/feature_engagement/jni_headers/TrackerFactory_jni.h"
 #include "chrome/browser/feature_engagement/tracker_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_android.h"

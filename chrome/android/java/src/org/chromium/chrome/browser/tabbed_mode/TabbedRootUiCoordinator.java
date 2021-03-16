@@ -32,7 +32,6 @@ import org.chromium.chrome.browser.compositor.layouts.OverviewModeBehavior;
 import org.chromium.chrome.browser.contextualsearch.ContextualSearchManager;
 import org.chromium.chrome.browser.continuous_search.ContinuousSearchContainerCoordinator;
 import org.chromium.chrome.browser.datareduction.DataReductionPromoScreen;
-import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.feed.shared.FeedFeatures;
 import org.chromium.chrome.browser.feed.webfeed.WebFeedFollowIntroController;
 import org.chromium.chrome.browser.firstrun.FirstRunStatus;
@@ -412,7 +411,7 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
                         mActivity, mAppMenuCoordinator.getAppMenuHandler(),
                         ()
                                 -> mActivity.getToolbarManager().getMenuButtonView(),
-                        R.id.add_to_homescreen_id, TrackerFactory::getTrackerForProfile);
+                        R.id.add_to_homescreen_id);
         AppBannerInProductHelpControllerFactory.attach(
                 mActivity.getWindowAndroid(), mAppBannerInProductHelpController);
 

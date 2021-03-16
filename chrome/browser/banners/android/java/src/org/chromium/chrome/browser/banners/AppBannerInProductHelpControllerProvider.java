@@ -4,9 +4,9 @@
 
 package org.chromium.chrome.browser.banners;
 
-import org.chromium.base.Function;
 import org.chromium.base.UnownedUserDataKey;
 import org.chromium.base.annotations.CalledByNative;
+import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.components.feature_engagement.FeatureConstants;
 import org.chromium.components.feature_engagement.Tracker;
@@ -21,17 +21,6 @@ public class AppBannerInProductHelpControllerProvider {
     /** The key used to bind the controller to the unowned data host. */
     private static final UnownedUserDataKey<AppBannerInProductHelpController> KEY =
             new UnownedUserDataKey<>(AppBannerInProductHelpController.class);
-
-    private static Function<Profile, Tracker> sTrackerFromProfileFactory;
-
-    /**
-     * Sets the factory to obtain a Tracker from.
-     * @param trackerFromProfileFactory The factory to use.
-     */
-    public static void setTrackerFromProfileFactory(
-            Function<Profile, Tracker> trackerFromProfileFactory) {
-        sTrackerFromProfileFactory = trackerFromProfileFactory;
-    }
 
     /**
      * Get the shared {@link AppBannerInProductHelpController} from the provided {@link
@@ -60,7 +49,7 @@ public class AppBannerInProductHelpControllerProvider {
     private static String showInProductHelp(WebContents webContents) {
         // Consult the tracker to see if the IPH can be shown.
         final Tracker tracker =
-                sTrackerFromProfileFactory.apply(Profile.fromWebContents(webContents));
+                TrackerFactory.getTrackerForProfile(Profile.fromWebContents(webContents));
         if (!tracker.wouldTriggerHelpUI(FeatureConstants.PWA_INSTALL_AVAILABLE_FEATURE)) {
             // Tracker replied that the request to show will not be honored. Return whether the
             // limit of how often to show has been exceeded.

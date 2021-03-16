@@ -35,7 +35,6 @@ import org.chromium.chrome.browser.compositor.layouts.content.InvalidationAwareT
 import org.chromium.chrome.browser.cryptids.ProbabilisticCryptidRenderer;
 import org.chromium.chrome.browser.explore_sites.ExperimentalExploreSitesSection;
 import org.chromium.chrome.browser.explore_sites.ExploreSitesBridge;
-import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.lens.LensEntryPoint;
 import org.chromium.chrome.browser.lens.LensFeature;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
@@ -970,8 +969,7 @@ public class NewTabPageLayout extends LinearLayout implements TileGroup.Observer
 
     private void maybeShowVideoTutorialTryNowIPH() {
         VideoTutorialTryNowTracker tryNowTracker = VideoTutorialServiceFactory.getTryNowTracker();
-        UserEducationHelper userEducationHelper = new UserEducationHelper(
-                mActivity, new Handler(), TrackerFactory::getTrackerForProfile);
+        UserEducationHelper userEducationHelper = new UserEducationHelper(mActivity, new Handler());
         // TODO(shaktisahu): Pass correct y-inset.
         // TODO(shaktisahu): Determine if there is conflict with another IPH.
         if (tryNowTracker.didClickTryNowButton(FeatureType.SEARCH)) {
