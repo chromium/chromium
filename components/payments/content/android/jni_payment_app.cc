@@ -128,7 +128,7 @@ bool JniPaymentApp::IsUserGestureRequiredToSkipUi(JNIEnv* env) {
 void JniPaymentApp::InvokePaymentApp(JNIEnv* env,
                                      const JavaParamRef<jobject>& jcallback) {
   invoke_callback_ = jcallback;
-  payment_app_->InvokePaymentApp(/*delegate=*/this);
+  payment_app_->InvokePaymentApp(/*delegate=*/weak_ptr_factory_.GetWeakPtr());
 }
 
 void JniPaymentApp::UpdateWith(

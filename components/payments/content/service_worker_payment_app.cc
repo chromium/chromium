@@ -213,7 +213,8 @@ void ServiceWorkerPaymentApp::OnCanMakePaymentEventResponded(
       base::BindOnce(std::move(callback), this, can_make_payment_result_));
 }
 
-void ServiceWorkerPaymentApp::InvokePaymentApp(Delegate* delegate) {
+void ServiceWorkerPaymentApp::InvokePaymentApp(
+    base::WeakPtr<Delegate> delegate) {
   delegate_ = delegate;
   auto* payment_app_provider = GetPaymentAppProvider();
   if (!payment_app_provider)

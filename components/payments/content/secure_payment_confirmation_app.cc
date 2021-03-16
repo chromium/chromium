@@ -119,7 +119,8 @@ SecurePaymentConfirmationApp::SecurePaymentConfirmationApp(
 
 SecurePaymentConfirmationApp::~SecurePaymentConfirmationApp() = default;
 
-void SecurePaymentConfirmationApp::InvokePaymentApp(Delegate* delegate) {
+void SecurePaymentConfirmationApp::InvokePaymentApp(
+    base::WeakPtr<Delegate> delegate) {
   if (!authenticator_ || !spec_)
     return;
 
@@ -272,9 +273,12 @@ void SecurePaymentConfirmationApp::RenderFrameDeleted(
 }
 
 void SecurePaymentConfirmationApp::OnGetAssertion(
-    Delegate* delegate,
+    base::WeakPtr<Delegate> delegate,
     blink::mojom::AuthenticatorStatus status,
     blink::mojom::GetAssertionAuthenticatorResponsePtr response) {
+  if (!delegate)
+    return;
+
   if (status != blink::mojom::AuthenticatorStatus::SUCCESS || !response) {
     std::stringstream status_string_stream;
     status_string_stream << status;

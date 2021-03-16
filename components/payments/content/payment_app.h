@@ -66,7 +66,7 @@ class PaymentApp {
   virtual ~PaymentApp();
 
   // Will call into the |delegate| (can't be null) on success or error.
-  virtual void InvokePaymentApp(Delegate* delegate) = 0;
+  virtual void InvokePaymentApp(base::WeakPtr<Delegate> delegate) = 0;
   // Called when the payment app window has closed.
   virtual void OnPaymentAppWindowClosed() {}
   // Returns whether the app is complete to be used for payment without further

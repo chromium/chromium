@@ -40,7 +40,7 @@ class MockApp : public PaymentApp {
   ~MockApp() override = default;
 
   // PaymentApp implementation:
-  MOCK_METHOD1(InvokePaymentApp, void(Delegate* delegate));
+  MOCK_METHOD1(InvokePaymentApp, void(base::WeakPtr<Delegate> delegate));
   MOCK_CONST_METHOD0(IsCompleteForPayment, bool());
   MOCK_CONST_METHOD0(GetCompletenessScore, uint32_t());
   MOCK_CONST_METHOD0(CanPreselect, bool());
