@@ -98,7 +98,9 @@ void PermissionPromptImpl::UpdateAnchor() {
   const bool is_location_bar_drawn = lbv && lbv->IsDrawn();
   switch (prompt_style_) {
     case PermissionPromptStyle::kBubbleOnly:
-      DCHECK(prompt_bubble_);
+      // TODO(olesiamarukhno): CHECK is temporary to see if this is the reason
+      // of the crash (crbug.com/1175231).
+      CHECK(prompt_bubble_);
       DCHECK(!permission_chip_);
       if (ShouldCurrentRequestUseChipUI() && is_location_bar_drawn) {
         // Change prompt style to chip to avoid dismissing request while
