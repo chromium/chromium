@@ -7,6 +7,7 @@
 #include <stddef.h>
 #include <utility>
 
+#include "base/barrier_closure.h"
 #include "base/bind.h"
 #include "base/files/file.h"
 #include "base/files/file_path.h"
@@ -54,171 +55,11 @@ GURL ConvertRelativeFilePathToFileSystemUrl(const base::FilePath& relative_path,
                                         false));  // Space to %20 instead of +.
 }
 
-// Creates an ErrorDefinition with an error set to |error|.
+// Creates an EntryDefinition object with an error set to |error|.
 EntryDefinition CreateEntryDefinitionWithError(base::File::Error error) {
   EntryDefinition result;
   result.error = error;
   return result;
-}
-
-// Helper class for performing conversions from file definitions to entry
-// definitions. It is possible to do it without a class, but the code would be
-// crazy and super tricky.
-//
-// This class copies the input |file_definition_list|,
-// so there is no need to worry about validity of passed |file_definition_list|
-// reference. Also, it automatically deletes itself after converting finished,
-// or if shutdown is invoked during ResolveURL(). Must be called on UI thread.
-class FileDefinitionListConverter {
- public:
-  FileDefinitionListConverter(
-      scoped_refptr<storage::FileSystemContext> file_system_context,
-      const url::Origin& origin,
-      const FileDefinitionList& file_definition_list,
-      EntryDefinitionListCallback callback);
-  ~FileDefinitionListConverter() = default;
-
- private:
-  // Converts the element under the iterator to an entry. First, converts
-  // the virtual path to an URL, and calls OnResolvedURL(). In case of error
-  // calls OnIteratorConverted with an error entry definition.
-  void ConvertNextIterator(
-      std::unique_ptr<FileDefinitionListConverter> self_deleter,
-      FileDefinitionList::const_iterator iterator);
-
-  // Creates an entry definition from the URL as well as the file definition.
-  // Then, calls OnIteratorConverted with the created entry definition.
-  void OnResolvedURL(std::unique_ptr<FileDefinitionListConverter> self_deleter,
-                     FileDefinitionList::const_iterator iterator,
-                     base::File::Error error,
-                     const storage::FileSystemInfo& info,
-                     const base::FilePath& file_path,
-                     storage::FileSystemContext::ResolvedEntryType type);
-
-  // Called when the iterator is converted. Adds the |entry_definition| to
-  // |results_| and calls ConvertNextIterator() for the next element.
-  void OnIteratorConverted(
-      std::unique_ptr<FileDefinitionListConverter> self_deleter,
-      FileDefinitionList::const_iterator iterator,
-      const EntryDefinition& entry_definition);
-
-  scoped_refptr<storage::FileSystemContext> file_system_context_;
-  const url::Origin origin_;
-  const FileDefinitionList file_definition_list_;
-  EntryDefinitionListCallback callback_;
-  std::unique_ptr<EntryDefinitionList> result_;
-};
-
-FileDefinitionListConverter::FileDefinitionListConverter(
-    scoped_refptr<storage::FileSystemContext> file_system_context,
-    const url::Origin& origin,
-    const FileDefinitionList& file_definition_list,
-    EntryDefinitionListCallback callback)
-    : file_system_context_(file_system_context),
-      origin_(origin),
-      file_definition_list_(file_definition_list),
-      callback_(std::move(callback)),
-      result_(new EntryDefinitionList) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-
-  // Deletes the converter, once the scoped pointer gets out of scope. It is
-  // either, if the conversion is finished, or ResolveURL() is terminated, and
-  // the callback not called because of shutdown.
-  std::unique_ptr<FileDefinitionListConverter> self_deleter(this);
-  ConvertNextIterator(std::move(self_deleter), file_definition_list_.begin());
-}
-
-void FileDefinitionListConverter::ConvertNextIterator(
-    std::unique_ptr<FileDefinitionListConverter> self_deleter,
-    FileDefinitionList::const_iterator iterator) {
-  if (iterator == file_definition_list_.end()) {
-    // The converter object will be destroyed since |self_deleter| gets out of
-    // scope.
-    std::move(callback_).Run(std::move(result_));
-    return;
-  }
-
-  if (!file_system_context_.get()) {
-    OnIteratorConverted(std::move(self_deleter), iterator,
-                        CreateEntryDefinitionWithError(
-                            base::File::FILE_ERROR_INVALID_OPERATION));
-    return;
-  }
-
-  storage::FileSystemURL url = file_system_context_->CreateCrackedFileSystemURL(
-      origin_, storage::kFileSystemTypeExternal, iterator->virtual_path);
-
-  if (!url.is_valid()) {
-    OnIteratorConverted(
-        std::move(self_deleter), iterator,
-        CreateEntryDefinitionWithError(base::File::FILE_ERROR_NOT_FOUND));
-    return;
-  }
-
-  // The converter object will be deleted if the callback is not called because
-  // of shutdown during ResolveURL().
-  file_system_context_->ResolveURL(
-      url, base::BindOnce(&FileDefinitionListConverter::OnResolvedURL,
-                          base::Unretained(this), std::move(self_deleter),
-                          iterator));
-}
-
-void FileDefinitionListConverter::OnResolvedURL(
-    std::unique_ptr<FileDefinitionListConverter> self_deleter,
-    FileDefinitionList::const_iterator iterator,
-    base::File::Error error,
-    const storage::FileSystemInfo& info,
-    const base::FilePath& file_path,
-    storage::FileSystemContext::ResolvedEntryType type) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-
-  if (error != base::File::FILE_OK) {
-    OnIteratorConverted(std::move(self_deleter), iterator,
-                        CreateEntryDefinitionWithError(error));
-    return;
-  }
-
-  EntryDefinition entry_definition;
-  entry_definition.file_system_root_url = info.root_url.spec();
-  entry_definition.file_system_name = info.name;
-  switch (type) {
-    case storage::FileSystemContext::RESOLVED_ENTRY_FILE:
-      entry_definition.is_directory = false;
-      break;
-    case storage::FileSystemContext::RESOLVED_ENTRY_DIRECTORY:
-      entry_definition.is_directory = true;
-      break;
-    case storage::FileSystemContext::RESOLVED_ENTRY_NOT_FOUND:
-      entry_definition.is_directory = iterator->is_directory;
-      break;
-  }
-  entry_definition.error = base::File::FILE_OK;
-
-  // Construct a target Entry.fullPath value from the virtual path and the
-  // root URL. Eg. Downloads/A/b.txt -> A/b.txt.
-  storage::FileSystemURL fs_url = file_system_context_->CrackURL(info.root_url);
-  if (!fs_url.is_valid()) {
-    OnIteratorConverted(
-        std::move(self_deleter), iterator,
-        CreateEntryDefinitionWithError(base::File::FILE_ERROR_NOT_FOUND));
-    return;
-  }
-  const base::FilePath root_virtual_path = fs_url.virtual_path();
-  DCHECK(root_virtual_path == iterator->virtual_path ||
-         root_virtual_path.IsParent(iterator->virtual_path));
-  base::FilePath full_path;
-  root_virtual_path.AppendRelativePath(iterator->virtual_path, &full_path);
-  entry_definition.full_path = full_path;
-
-  OnIteratorConverted(std::move(self_deleter), iterator, entry_definition);
-}
-
-void FileDefinitionListConverter::OnIteratorConverted(
-    std::unique_ptr<FileDefinitionListConverter> self_deleter,
-    FileDefinitionList::const_iterator iterator,
-    const EntryDefinition& entry_definition) {
-  result_->push_back(entry_definition);
-  ConvertNextIterator(std::move(self_deleter), ++iterator);
 }
 
 // Helper function to return the converted definition entry directly, without
@@ -316,8 +157,8 @@ class ConvertSelectedFileInfoListToFileChooserFileInfoListImpl {
       need_fill_metadata = true;
     }
 
-    // If the list includes at least one non-native file (wihtout a snapshot
-    // file), move to IO thread to obtian metadata for the non-native file.
+    // If the list includes at least one non-native file (without a snapshot
+    // file), move to IO thread to obtain metadata for the non-native file.
     if (need_fill_metadata) {
       content::GetIOThreadTaskRunner({})->PostTask(
           FROM_HERE,
@@ -493,6 +334,82 @@ bool ConvertAbsoluteFilePathToRelativeFileSystemPath(
   return true;
 }
 
+// Helper class used to resolve a list of URLs. This class serves as a callback
+// for ResolveURL method. set_barrier() must be called before any call to
+// OnURLResolved() or AddEntry(). Each entry added calls the barrier, which
+// determines if the overall collection is complete. The main reason for this
+// class is so that it can hold on to |file_system_context| and |result|
+// objects needed on OnURLResolved() callback.
+class ResolvedURLCollector {
+ public:
+  ResolvedURLCollector(
+      scoped_refptr<storage::FileSystemContext> file_system_context,
+      EntryDefinitionList* result)
+      : file_system_context_(file_system_context), result_(result) {}
+
+  // Sets the barrier that will be called on each added FileDefinition.
+  void set_barrier(base::RepeatingClosure barrier) {
+    barrier_ = std::move(barrier);
+  }
+
+  // Callback invoked by ResolveURL method of the FileSystemContext. The first
+  // argument must be bound before this method is passed to ResolveURL.
+  void OnURLResolved(const FileDefinition& fd,
+                     base::File::Error error,
+                     const storage::FileSystemInfo& info,
+                     const base::FilePath& file_path,
+                     storage::FileSystemContext::ResolvedEntryType type) {
+    // Construct a target Entry.fullPath value from the virtual path and the
+    // root URL. Eg. Downloads/A/b.txt -> A/b.txt.
+    EntryDefinition entry_definition;
+    storage::FileSystemURL fs_url =
+        file_system_context_->CrackURL(info.root_url);
+    if (error != base::File::FILE_OK) {
+      entry_definition = CreateEntryDefinitionWithError(error);
+    } else if (!fs_url.is_valid()) {
+      entry_definition =
+          CreateEntryDefinitionWithError(base::File::FILE_ERROR_NOT_FOUND);
+    } else {
+      entry_definition.file_system_root_url = info.root_url.spec();
+      entry_definition.file_system_name = info.name;
+      switch (type) {
+        case storage::FileSystemContext::RESOLVED_ENTRY_FILE:
+          entry_definition.is_directory = false;
+          break;
+        case storage::FileSystemContext::RESOLVED_ENTRY_DIRECTORY:
+          entry_definition.is_directory = true;
+          break;
+        case storage::FileSystemContext::RESOLVED_ENTRY_NOT_FOUND:
+          entry_definition.is_directory = fd.is_directory;
+          break;
+      }
+      entry_definition.error = base::File::FILE_OK;
+      const base::FilePath root_virtual_path = fs_url.virtual_path();
+      DCHECK(root_virtual_path == fd.virtual_path ||
+             root_virtual_path.IsParent(fd.virtual_path));
+      base::FilePath full_path;
+      root_virtual_path.AppendRelativePath(fd.virtual_path, &full_path);
+      entry_definition.full_path = full_path;
+    }
+    AddEntry(entry_definition);
+  }
+
+  void AddEntry(const EntryDefinition& entry) {
+    DCHECK(!barrier_.is_null());
+    result_->push_back(entry);
+    barrier_.Run();
+  }
+
+ private:
+  // Holds onto a reference counted pointer to the context associated with
+  // the storage partition whose file descriptors are converted.
+  scoped_refptr<storage::FileSystemContext> file_system_context_;
+  // The list filled with entries.
+  EntryDefinitionList* result_;
+  // Guards the done_callback_ call.
+  base::RepeatingClosure barrier_;
+};
+
 void ConvertFileDefinitionListToEntryDefinitionList(
     scoped_refptr<storage::FileSystemContext> file_system_context,
     const url::Origin& origin,
@@ -500,9 +417,50 @@ void ConvertFileDefinitionListToEntryDefinitionList(
     EntryDefinitionListCallback callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
-  // The converter object destroys itself.
-  new FileDefinitionListConverter(file_system_context, origin,
-                                  file_definition_list, std::move(callback));
+  auto result = std::make_unique<EntryDefinitionList>();
+
+  if (!file_system_context.get()) {
+    // Without file system context we cannot convert anything. We just
+    // create entry definition with error for all files on the list.
+    for (size_t i = file_definition_list.size(); i > 0; --i) {
+      result->push_back(CreateEntryDefinitionWithError(
+          base::File::FILE_ERROR_INVALID_OPERATION));
+    }
+    std::move(callback).Run(std::move(result));
+    return;
+  }
+
+  // The barrier owns the collector so that it can delete it, once the final
+  // callback is invoked. The collector must know about the barrier so it can
+  // call it when adding entries. Hence the intricate, constructor, setter dance
+  // we have here.
+  auto collector = std::make_unique<ResolvedURLCollector>(
+      file_system_context.get(), result.get());
+  ResolvedURLCollector* collector_ptr = collector.get();
+  collector_ptr->set_barrier(base::BarrierClosure(
+      file_definition_list.size(),
+      base::BindOnce(
+          [](std::unique_ptr<ResolvedURLCollector> collector,
+             std::unique_ptr<EntryDefinitionList> result,
+             EntryDefinitionListCallback done_callback) {
+            // collector will be deleted here, once this function is executed.
+            std::move(done_callback).Run(std::move(result));
+          },
+          std::move(collector), std::move(result), std::move(callback))));
+
+  for (const FileDefinition& fd : file_definition_list) {
+    storage::FileSystemURL url =
+        file_system_context->CreateCrackedFileSystemURL(
+            origin, storage::kFileSystemTypeExternal, fd.virtual_path);
+    if (url.is_valid()) {
+      file_system_context->ResolveURL(
+          url, base::BindOnce(&ResolvedURLCollector::OnURLResolved,
+                              base::Unretained(collector_ptr), fd));
+    } else {
+      collector_ptr->AddEntry(
+          CreateEntryDefinitionWithError(base::File::FILE_ERROR_NOT_FOUND));
+    }
+  }
 }
 
 void ConvertFileDefinitionToEntryDefinition(
