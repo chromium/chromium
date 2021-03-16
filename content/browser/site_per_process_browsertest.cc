@@ -10222,8 +10222,8 @@ IN_PROC_BROWSER_TEST_P(
   EXPECT_EQ(foo_url, web_contents()->GetMainFrame()->GetLastCommittedURL());
 }
 
-// The test is flaky on lacros, cf https://crbug.com/1170583.
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
+// The test is flaky on Linux, Chrome OS, etc; cf https://crbug.com/1170583.
+#if defined(OS_POSIX)
 #define MAYBE_CrossProcessInertSubframe DISABLED_CrossProcessInertSubframe
 #else
 #define MAYBE_CrossProcessInertSubframe CrossProcessInertSubframe
