@@ -22,7 +22,6 @@
 #include "media/base/cdm_context.h"
 #include "media/base/timestamp_constants.h"
 #include "media/base/win/mf_helpers.h"
-#include "media/base/win/mf_initializer.h"
 
 namespace media {
 
@@ -126,7 +125,8 @@ HRESULT MediaFoundationRenderer::CreateMediaEngine(
     MediaResource* media_resource) {
   DVLOG_FUNC(1);
 
-  if (!InitializeMediaFoundation())
+  mf_session_life_time_ = InitializeMediaFoundation();
+  if (!mf_session_life_time_)
     return E_FAIL;
 
   // TODO(frankli): Only call the followings when there is a video stream.

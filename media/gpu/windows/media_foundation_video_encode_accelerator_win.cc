@@ -432,8 +432,9 @@ uint32_t MediaFoundationVideoEncodeAccelerator::EnumerateHardwareEncoders(
     }
   }
 
-  if (!InitializeMediaFoundation())
+  if (!(session_ = InitializeMediaFoundation())) {
     return 0;
+  }
 
   uint32_t flags = MFT_ENUM_FLAG_HARDWARE | MFT_ENUM_FLAG_SORTANDFILTER;
   MFT_REGISTER_TYPE_INFO input_info;
