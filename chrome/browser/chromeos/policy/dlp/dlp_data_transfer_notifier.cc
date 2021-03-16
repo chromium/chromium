@@ -131,18 +131,18 @@ void DlpDataTransferNotifier::ShowWarningBubble(
 
 void DlpDataTransferNotifier::CloseWidget(views::Widget* widget,
                                           views::Widget::ClosedReason reason) {
-  if (widget && widget == widget_.get())
-    widget->CloseWithReason(reason);
+  if (widget_) {
+    DCHECK_EQ(widget, widget_.get());
+    widget_closing_timer_.Stop();
+    widget_->CloseWithReason(reason);
+  }
 }
 
 void DlpDataTransferNotifier::OnWidgetClosing(views::Widget* widget) {
-  if (widget == widget_.get())
-    widget_.reset();
-}
-
-void DlpDataTransferNotifier::OnWidgetDestroyed(views::Widget* widget) {
-  if (widget == widget_.get())
-    widget_.reset();
+  DCHECK_EQ(widget, widget_.get());
+  widget_->RemoveObserver(this);
+  widget_.reset();
+  widget_closing_timer_.Stop();
 }
 
 void DlpDataTransferNotifier::OnWidgetActivationChanged(views::Widget* widget,
@@ -165,14 +165,13 @@ void DlpDataTransferNotifier::ResizeAndShowWidget(const gfx::Size& bubble_size,
 
   widget_->Show();
 
-  base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
-      FROM_HERE,
+  widget_closing_timer_.Start(
+      FROM_HERE, base::TimeDelta::FromMilliseconds(timeout_duration_ms),
       base::BindOnce(&DlpDataTransferNotifier::CloseWidget,
                      base::Unretained(this),
                      widget_.get(),  // Safe as DlpClipboardNotificationHelper
                                      // owns `widget_` and outlives it.
-                     views::Widget::ClosedReason::kUnspecified),
-      base::TimeDelta::FromMilliseconds(timeout_duration_ms));
+                     views::Widget::ClosedReason::kUnspecified));
 }
 
 }  // namespace policy

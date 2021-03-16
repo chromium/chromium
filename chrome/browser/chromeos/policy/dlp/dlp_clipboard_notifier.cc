@@ -260,13 +260,7 @@ void DlpClipboardNotifier::OnWidgetClosing(views::Widget* widget) {
     std::move(blink_paste_cb_).Run(false);
     Observe(nullptr);
   }
-}
-
-void DlpClipboardNotifier::OnWidgetDestroyed(views::Widget* widget) {
-  if (!blink_paste_cb_.is_null()) {
-    std::move(blink_paste_cb_).Run(false);
-    Observe(nullptr);
-  }
+  DlpDataTransferNotifier::OnWidgetClosing(widget);
 }
 
 void DlpClipboardNotifier::WebContentsDestroyed() {

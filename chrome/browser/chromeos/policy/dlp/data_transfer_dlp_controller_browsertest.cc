@@ -208,15 +208,7 @@ IN_PROC_BROWSER_TEST_F(DataTransferDlpBrowserTest, MAYBE_EmptyPolicy) {
   EXPECT_EQ(base::UTF8ToUTF16(kClipboardText1), result);
 }
 
-// Flaky on MSan bots: http://crbug.com/1178328
-#if defined(MEMORY_SANITIZER)
-#define MAYBE_BlockDestination \
-  DISABLED_BlockDestination
-#else
-#define MAYBE_BlockDestination \
-  BlockDestination
-#endif
-IN_PROC_BROWSER_TEST_F(DataTransferDlpBrowserTest, MAYBE_BlockDestination) {
+IN_PROC_BROWSER_TEST_F(DataTransferDlpBrowserTest, BlockDestination) {
   SkipToLoginScreen();
   LogIn(kAccountId, kAccountPassword, kEmptyServices);
 
