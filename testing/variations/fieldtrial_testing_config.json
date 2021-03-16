@@ -3665,18 +3665,6 @@
             ]
         }
     ],
-    "InstantApps": [
-        {
-            "platforms": [
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "InstantAppsEnabled"
-                }
-            ]
-        }
-    ],
     "IntentBlockExternalFormRedirectsNoGesture": [
         {
             "platforms": [
