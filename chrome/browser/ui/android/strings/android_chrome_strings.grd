@@ -3525,6 +3525,11 @@ Data from your Incognito session will only be cleared from Chrome when you <ph n
         Feed card menu is closed
       </message>
 
+      <!-- WebFeed -->
+      <message name="IDS_WEB_FEED_FOLLOW_LOADING_DESCRIPTION" desc="The content description of the loading spinner after the user presses Follow and is waiting for a response.">
+        Following...
+      </message>
+
       <!-- Storage Preference UI strings for clearing storage. -->
       <message name="IDS_STORAGE_MANAGEMENT_ACTIVITY_LABEL" desc="Title for Chrome's Manage Space Activity.">
          Google <ph name="APP_NAME">%1$s<ex>Chrome</ex></ph> storage

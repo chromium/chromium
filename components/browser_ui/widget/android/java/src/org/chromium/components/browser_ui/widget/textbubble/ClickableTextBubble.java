@@ -9,6 +9,8 @@ import android.view.View;
 import androidx.annotation.DrawableRes;
 import androidx.annotation.StringRes;
 
+import org.chromium.components.browser_ui.widget.LoadingView;
+import org.chromium.components.browser_ui.widget.R;
 import org.chromium.ui.widget.RectProvider;
 
 /**
@@ -21,9 +23,35 @@ import org.chromium.ui.widget.RectProvider;
  *     <li>Smaller padding
  *     //TODO(sophey): Implement shadow once 9-patches are available.
  *     <li>Shadow
+ *     <li>Optional loading UI
  * </ul>
+ *
+ * <p>A loading UI using {@link LoadingView} can be shown using {@link #showLoadingUI(int)}. This
+ * should be used if there is a possibility of a response time >500ms, after which the loading
+ * view will show. To hide the LoadingView and dismiss the bubble, call
+ * {@link #hideLoadingUI(LoadingView.Observer)}, which takes in a {@link LoadingView.Observer},
+ * for when further actions should be taken after the UI is hidden (such as showing another UI
+ * element). Example below:
+ *
+ *  <pre>{@code
+ *      ClickableTextBubble clickableTextBubble;
+ *      OnTouchListener onTouchListener = (view, motionEvent) -> {
+ *          performPotentiallyLongRequest();
+ *          clickableTextBubble.showLoadingUI(loadingViewContentDescriptionId);
+ *      };
+ *
+ *      void potentiallyLongRequestFinished() {
+ *          clickableTextBubble.hideLoadingUI(new LoadingView.Observer() {
+ *              public void onHideLoadingUIComplete() {
+ *                  // show another UI element (eg. bubble, snackbar)
+ *              }
+ *          }
+ *      }
+ *  }</pre>
  */
 public class ClickableTextBubble extends TextBubble {
+    private final LoadingView mLoadingView;
+
     /**
      * Constructs a {@link ClickableTextBubble} instance.
      *
@@ -42,8 +70,50 @@ public class ClickableTextBubble extends TextBubble {
             @DrawableRes int imageDrawableId, boolean isAccessibilityEnabled,
             View.OnTouchListener onTouchListener) {
         super(context, rootView, stringId, accessibilityStringId, /*showArrow=*/false,
-                anchorRectProvider, imageDrawableId, /*isRoundBubble=*/true,
+                anchorRectProvider, imageDrawableId, /*isRoundBubble=*/true, /*inverseColor=*/false,
                 isAccessibilityEnabled);
         setTouchInterceptor(onTouchListener);
+        mLoadingView = mContentView.findViewById(R.id.loading_view);
+    }
+
+    /**
+     * Replaces image with loading spinner. Dismisses the entire button when loading spinner is
+     * hidden.
+     *
+     * @param loadingViewContentDescriptionId ID of the ContentDescription for the loading spinner.
+     */
+    public void showLoadingUI(@StringRes int loadingViewContentDescriptionId) {
+        mLoadingView.addObserver(new LoadingView.Observer() {
+            @Override
+            public void onShowLoadingUIComplete() {
+                View loadingViewContainer = mContentView.findViewById(R.id.loading_view_container);
+                loadingViewContainer.setVisibility(View.VISIBLE);
+                loadingViewContainer.setContentDescription(
+                        mContext.getString(loadingViewContentDescriptionId));
+                mContentView.findViewById(R.id.image).setVisibility(View.GONE);
+                setAutoDismissTimeout(NO_TIMEOUT);
+            }
+
+            @Override
+            public void onHideLoadingUIComplete() {
+                dismiss();
+            }
+        });
+        mLoadingView.showLoadingUI();
+    }
+
+    /**
+     * Exposes {@link LoadingView#hideLoadingUI()} and adds a {@link LoadingView.Observer} to the
+     * {@link LoadingView}.
+     *
+     * @param loadingViewObserver Observer to add to the {@link LoadingView}.
+     */
+    public void hideLoadingUI(LoadingView.Observer loadingViewObserver) {
+        mLoadingView.addObserver(loadingViewObserver);
+        mLoadingView.hideLoadingUI();
+    }
+
+    public void destroy() {
+        mLoadingView.destroy();
     }
 }

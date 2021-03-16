@@ -49,8 +49,9 @@ public class TextBubble implements AnchoredPopupWindow.LayoutObserver {
      */
     private static final Set<TextBubble> sBubbles = new HashSet<>();
 
-    private final Context mContext;
+    protected final Context mContext;
     private final Handler mHandler;
+    private final boolean mInverseColor;
 
     /** The actual {@link PopupWindow}.  Internalized to prevent API leakage. */
     private final AnchoredPopupWindow mPopupWindow;
@@ -91,7 +92,7 @@ public class TextBubble implements AnchoredPopupWindow.LayoutObserver {
     private final boolean mIsAccessibilityEnabled;
 
     /** The content view shown in the popup window. */
-    private View mContentView;
+    protected View mContentView;
 
     /**
      * Constructs a {@link TextBubble} instance using the default arrow drawable background. Creates
@@ -177,7 +178,8 @@ public class TextBubble implements AnchoredPopupWindow.LayoutObserver {
             RectProvider anchorRectProvider, boolean isAccessibilityEnabled) {
         this(context, rootView, context.getString(stringId),
                 context.getString(accessibilityStringId), showArrow, anchorRectProvider,
-                /*imageDrawable=*/null, /*isRoundBubble=*/false, isAccessibilityEnabled);
+                /*imageDrawable=*/null, /*isRoundBubble=*/false, /*inverseColor=*/false,
+                isAccessibilityEnabled);
     }
 
     /**
@@ -195,7 +197,8 @@ public class TextBubble implements AnchoredPopupWindow.LayoutObserver {
             String accessibilityString, boolean showArrow, RectProvider anchorRectProvider,
             boolean isAccessibilityEnabled) {
         this(context, rootView, contentString, accessibilityString, showArrow, anchorRectProvider,
-                /*imageDrawable=*/null, /*isRoundBubble=*/false, isAccessibilityEnabled);
+                /*imageDrawable=*/null, /*isRoundBubble=*/false, /*inverseColor=*/false,
+                isAccessibilityEnabled);
     }
 
     /**
@@ -209,17 +212,18 @@ public class TextBubble implements AnchoredPopupWindow.LayoutObserver {
      * @param anchorRectProvider The {@link RectProvider} used to anchor the text bubble.
      * @param imageDrawableId The resource id of the image to show at the start of the text bubble.
      * @param isRoundBubble Whether the bubble should be round.
+     * @param inverseColor Whether the background and icon/text colors should be inverted.
      * @param isAccessibilityEnabled Whether accessibility mode is enabled. Used to determine bubble
      *         text and dismiss UX.
      */
     public TextBubble(Context context, View rootView, @StringRes int stringId,
             @StringRes int accessibilityStringId, boolean showArrow,
             RectProvider anchorRectProvider, @DrawableRes int imageDrawableId,
-            boolean isRoundBubble, boolean isAccessibilityEnabled) {
+            boolean isRoundBubble, boolean inverseColor, boolean isAccessibilityEnabled) {
         this(context, rootView, context.getString(stringId),
                 context.getString(accessibilityStringId), showArrow, anchorRectProvider,
                 AppCompatResources.getDrawable(context, imageDrawableId), isRoundBubble,
-                isAccessibilityEnabled);
+                inverseColor, isAccessibilityEnabled);
     }
 
     /**
@@ -234,17 +238,19 @@ public class TextBubble implements AnchoredPopupWindow.LayoutObserver {
      * @param imageDrawable The image to show at the start of the text bubble, or null if there
      *         should be no image.
      * @param isRoundBubble Whether the bubble should be round.
+     * @param inverseColor Whether the background and icon/text colors should be inverted.
      * @param isAccessibilityEnabled Whether accessibility mode is enabled. Used to determine bubble
      *         text and dismiss UX.
      */
     public TextBubble(Context context, View rootView, String contentString,
             String accessibilityString, boolean showArrow, RectProvider anchorRectProvider,
-            @Nullable Drawable imageDrawable, boolean isRoundBubble,
+            @Nullable Drawable imageDrawable, boolean isRoundBubble, boolean inverseColor,
             boolean isAccessibilityEnabled) {
         mContext = context;
         mString = contentString;
         mAccessibilityString = accessibilityString;
         mImageDrawable = imageDrawable;
+        mInverseColor = inverseColor;
         mIsAccessibilityEnabled = isAccessibilityEnabled;
 
         mBubbleDrawable = new ArrowBubbleDrawable(context, isRoundBubble);
@@ -273,8 +279,13 @@ public class TextBubble implements AnchoredPopupWindow.LayoutObserver {
         if (mIsAccessibilityEnabled) setDismissOnTouchInteraction(true);
 
         // Set predefined styles for the TextBubble.
-        mBubbleDrawable.setBubbleColor(ApiCompatibilityUtils.getColor(
-                mContext.getResources(), R.color.default_control_color_active));
+        if (inverseColor) {
+            mBubbleDrawable.setBubbleColor(ApiCompatibilityUtils.getColor(
+                    mContext.getResources(), R.color.default_bg_color));
+        } else {
+            mBubbleDrawable.setBubbleColor(ApiCompatibilityUtils.getColor(
+                    mContext.getResources(), R.color.default_control_color_active));
+        }
     }
 
     /** Shows the bubble. Will have no effect if the bubble is already showing. */
@@ -406,7 +417,12 @@ public class TextBubble implements AnchoredPopupWindow.LayoutObserver {
         }
         View view =
                 LayoutInflater.from(mContext).inflate(R.layout.textbubble_text_with_image, null);
-        ((ImageView) view.findViewById(R.id.image)).setImageDrawable(mImageDrawable);
+        ImageView imageView = view.findViewById(R.id.image);
+        imageView.setImageDrawable(mImageDrawable);
+        if (mInverseColor) {
+            imageView.setColorFilter(ApiCompatibilityUtils.getColor(
+                    mContext.getResources(), R.color.default_control_color_active));
+        }
         setText(view.findViewById(R.id.message));
         return view;
     }
@@ -416,5 +432,9 @@ public class TextBubble implements AnchoredPopupWindow.LayoutObserver {
      */
     private void setText(TextView view) {
         view.setText(mIsAccessibilityEnabled ? mAccessibilityString : mString);
+        if (mInverseColor) {
+            ApiCompatibilityUtils.setTextAppearance(
+                    view, R.style.TextAppearance_TextMediumThick_Blue);
+        }
     }
 }

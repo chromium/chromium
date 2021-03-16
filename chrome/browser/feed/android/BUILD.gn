@@ -11,6 +11,7 @@ android_library("java") {
   sources = [
     "java/src/org/chromium/chrome/browser/feed/webfeed/WebFeedBridge.java",
     "java/src/org/chromium/chrome/browser/feed/webfeed/WebFeedFollowIntroController.java",
+    "java/src/org/chromium/chrome/browser/feed/webfeed/WebFeedFollowIntroView.java",
     "java/src/org/chromium/chrome/browser/feed/webfeed/WebFeedMainMenuItem.java",
   ]
   deps = [

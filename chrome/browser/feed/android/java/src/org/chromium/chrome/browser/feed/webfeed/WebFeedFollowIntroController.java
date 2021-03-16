@@ -5,8 +5,7 @@
 package org.chromium.chrome.browser.feed.webfeed;
 
 import android.app.Activity;
-import android.graphics.Rect;
-import android.os.Handler;
+import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.view.View;
 
@@ -14,10 +13,7 @@ import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.chrome.browser.tab.CurrentTabObserver;
 import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.Tab;
-import org.chromium.chrome.browser.util.ChromeAccessibilityUtil;
-import org.chromium.components.browser_ui.widget.highlight.ViewHighlighter;
-import org.chromium.components.browser_ui.widget.textbubble.ClickableTextBubble;
-import org.chromium.ui.widget.ViewRectProvider;
+import org.chromium.components.browser_ui.widget.LoadingView;
 import org.chromium.url.GURL;
 
 /**
@@ -25,10 +21,10 @@ import org.chromium.url.GURL;
  */
 public class WebFeedFollowIntroController {
     private final Activity mActivity;
-    private final Handler mHandler = new Handler();
-    private final View mMenuButtonAnchorView;
+    private final CurrentTabObserver mCurrentTabObserver;
+    private final WebFeedFollowIntroView mWebFeedFollowIntroView;
 
-    private CurrentTabObserver mCurrentTabObserver;
+    private boolean mAcceleratorPressed;
 
     /**
      * Constructs an instance of {@link WebFeedFollowIntroController}.
@@ -40,14 +36,19 @@ public class WebFeedFollowIntroController {
     public WebFeedFollowIntroController(
             Activity activity, ObservableSupplier<Tab> tabSupplier, View menuButtonAnchorView) {
         mActivity = activity;
-        mMenuButtonAnchorView = menuButtonAnchorView;
+        mWebFeedFollowIntroView = new WebFeedFollowIntroView(mActivity, menuButtonAnchorView);
 
         mCurrentTabObserver = new CurrentTabObserver(tabSupplier, new EmptyTabObserver() {
             @Override
             public void onPageLoadFinished(Tab tab, GURL url) {
-                // TODO(sophey): Add proper heuristics for showing the accelerator. Also add IPH
-                // variation.
-                maybeShowFollowAccelerator();
+                // TODO(sophey): Add proper heuristics for showing the accelerator.
+                mAcceleratorPressed = false;
+                maybeShowFollowIntro(url);
+            }
+
+            @Override
+            public void onPageLoadStarted(Tab tab, GURL url) {
+                mWebFeedFollowIntroView.dismissBubble();
             }
         }, /*swapCallback=*/null);
     }
@@ -56,46 +57,54 @@ public class WebFeedFollowIntroController {
         mCurrentTabObserver.destroy();
     }
 
-    private void maybeShowFollowAccelerator() {
-        if (!shouldShowFollowAccelerator()) {
+    private void maybeShowFollowIntro(GURL url) {
+        if (!shouldShowFollowIntro()) {
             return;
         }
-
-        ViewRectProvider rectProvider = new ViewRectProvider(mMenuButtonAnchorView);
-        int yInsetPx = mActivity.getResources().getDimensionPixelOffset(
-                R.dimen.iph_text_bubble_menu_anchor_y_inset);
-        Rect insetRect = new Rect(0, 0, 0, yInsetPx);
-        rectProvider.setInsetPx(insetRect);
-
-        View.OnTouchListener onTouchListener = new View.OnTouchListener() {
-            @Override
-            public boolean onTouch(View view, MotionEvent motionEvent) {
-                // TODO(sophey): Hook up follow functionality and implement post-follow animation.
-                view.performClick();
-                return true;
-            }
-        };
-
-        ClickableTextBubble textBubble = new ClickableTextBubble(mActivity, mMenuButtonAnchorView,
-                R.string.menu_follow, R.string.menu_follow, rectProvider, R.drawable.ic_add,
-                ChromeAccessibilityUtil.get().isAccessibilityEnabled(), onTouchListener);
-        // TODO(sophey): Remove once onClick functionality is implemented.
-        textBubble.setDismissOnTouchInteraction(true);
-        textBubble.addOnDismissListener(() -> mHandler.postDelayed(() -> {
-            turnOffHighlightForFollowMenuItem();
-        }, ViewHighlighter.IPH_MIN_DELAY_BETWEEN_TWO_HIGHLIGHTS));
-        turnOnHighlightForFollowMenuItem();
-
-        textBubble.show();
+        // TODO(crbug/1152592): Add IPH variation.
+        showFollowAccelerator(url);
     }
 
-    private boolean shouldShowFollowAccelerator() {
+    private void showFollowAccelerator(GURL url) {
+        GestureDetector gestureDetector = new GestureDetector(
+                mActivity.getApplicationContext(), new GestureDetector.SimpleOnGestureListener() {
+                    @Override
+                    public boolean onSingleTapUp(MotionEvent motionEvent) {
+                        if (!mAcceleratorPressed) {
+                            mAcceleratorPressed = true;
+                            performFollowWithAccelerator(url);
+                        }
+                        return true;
+                    }
+                });
+        View.OnTouchListener onTouchListener = (view, motionEvent) -> {
+            view.performClick();
+            gestureDetector.onTouchEvent(motionEvent);
+            return true;
+        };
+        mWebFeedFollowIntroView.showAccelerator(onTouchListener);
+    }
+
+    private void performFollowWithAccelerator(GURL url) {
+        mWebFeedFollowIntroView.showLoadingUI();
+        WebFeedBridge bridge = new WebFeedBridge();
+        bridge.followFromUrl(
+                url, result -> mWebFeedFollowIntroView.hideLoadingUI(new LoadingView.Observer() {
+                    @Override
+                    public void onShowLoadingUIComplete() {}
+
+                    @Override
+                    public void onHideLoadingUIComplete() {
+                        mWebFeedFollowIntroView.dismissBubble();
+                        if (result.success) {
+                            mWebFeedFollowIntroView.showFollowingBubble();
+                        }
+                        // TODO(crbug/1152592): Add snackbar for failure.
+                    }
+                }));
+    }
+
+    private boolean shouldShowFollowIntro() {
         return true;
     }
-
-    private void turnOnHighlightForFollowMenuItem() {
-        // TODO(crbug/1152592): Figure out how to highlight footer.
-    }
-
-    private void turnOffHighlightForFollowMenuItem() {}
 }
