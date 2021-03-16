@@ -461,13 +461,15 @@ const base::Feature kUnifiedAutoplay{"UnifiedAutoplay",
 
 // TODO(crbug.com/1052397): Revisit once build flag switch of lacros-chrome is
 // complete.
-#if defined(OS_LINUX) || defined(OS_FREEBSD) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#if defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
 // Enable vaapi video decoding on linux. This is already enabled by default on
 // chromeos, but needs an experiment on linux.
 const base::Feature kVaapiVideoDecodeLinux{"VaapiVideoDecoder",
                                            base::FEATURE_DISABLED_BY_DEFAULT};
-#endif  // defined(OS_LINUX) || defined(OS_FREEBSD) ||
-        // BUILDFLAG(IS_CHROMEOS_LACROS)
+
+const base::Feature kVaapiVideoEncodeLinux{"VaapiVideoEncoder",
+                                           base::FEATURE_DISABLED_BY_DEFAULT};
+#endif  // defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
 
 // Enable VA-API hardware decode acceleration for AV1.
 const base::Feature kVaapiAV1Decoder{"VaapiAV1Decoder",
