@@ -1,0 +1,120 @@
+<!doctype html>
+<html>
+
+<head>
+  <title>MediaStreamTrackGenerator</title>
+  <link rel="help" href="https://w3c.github.io/mediacapture-insertable-streams">
+</head>
+
+<body>
+  <p class="instructions">When prompted, use the accept button to give permission to use your audio and video devices.</p>
+  <h1 class="instructions">Description</h1>
+  <p class="instructions">This test checks that generating audio MediaStreamTracks works as expected.</p>
+  <audio id="audioElement" autoplay=true></audio>
+  <script src=/resources/testharness.js></script>
+  <script src=/resources/testharnessreport.js></script>
+  <script>
+
+    function makeAudioFrame(timestamp) {
+      const sampleRate = 3000;
+      const buffer = new AudioBuffer({
+        length: sampleRate / 10, // 100ms
+        numberOfChannels: 1,
+        sampleRate: sampleRate
+      });
+      // Generate a simple sin wave, so we have something.
+      const array = buffer.getChannelData(0);
+      const hz = 100; // sound frequency
+      for (let i = 0; i < array.length; i++) {
+        const t = (i / sampleRate) * hz * (Math.PI * 2);
+        array[i] = Math.sin(t);
+      }
+
+      return new AudioFrame({
+        timestamp: timestamp,
+        buffer: buffer
+      });
+    }
+
+    promise_test(async t => {
+      const generator = new MediaStreamTrackGenerator("audio");
+
+      const writer = generator.writable.getWriter();
+      await writer.write(makeAudioFrame(1));
+
+      assert_equals(generator.kind, "audio");
+      assert_equals(generator.readyState, "live");
+
+      t.add_cleanup(() => generator.stop());
+    }, "Tests that creating a Audio MediaStreamTrackGenerator works as expected");
+
+    promise_test(async t => {
+      const capturedStream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      assert_equals(capturedStream.getAudioTracks().length, 1);
+      const upstreamTrack = capturedStream.getAudioTracks()[0];
+      t.add_cleanup(() => upstreamTrack.stop());
+
+      const generator = new MediaStreamTrackGenerator({ signalTarget: upstreamTrack, kind: "audio" });
+      t.add_cleanup(() => generator.stop());
+
+      const writer = generator.writable.getWriter();
+      const frame = makeAudioFrame(1);
+      await writer.write(frame);
+
+      assert_equals(generator.kind, "audio");
+      assert_equals(generator.readyState, "live");
+    }, "Tests that creating an Audio MediaStreamTrackGenerator with a signal target works as expected");
+
+    promise_test(async t => {
+      assert_throws_js(TypeError, () => { new MediaStreamTrackGenerator({ kind: "invalid kind" }) });
+    }, "Creating Generator with an invalid kind throws");
+
+    promise_test(async t => {
+      const capturedStream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      assert_equals(capturedStream.getAudioTracks().length, 1);
+      const upstreamTrack = capturedStream.getAudioTracks()[0];
+      t.add_cleanup(() => upstreamTrack.stop());
+
+      assert_throws_js(TypeError, () => { new MediaStreamTrackGenerator({ signalTarget: upstreamTrack }) });
+    }, "Creating Generator with a missing kind throws");
+
+    promise_test(async t => {
+      const capturedStream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      assert_equals(capturedStream.getAudioTracks().length, 1);
+      const upstreamTrack = capturedStream.getAudioTracks()[0];
+      t.add_cleanup(() => upstreamTrack.stop());
+
+      assert_throws_js(TypeError, () => { new MediaStreamTrackGenerator({ signalTarget: upstreamTrack, kind: "video" }) });
+    }, "Creating Generator with mismatched kinds throws");
+
+    promise_test(async t => {
+      assert_throws_js(TypeError, () => { new MediaStreamTrackGenerator({ signalTarget: "IamNotATrack" }) });
+    }, "Creating Generator with invalid signalTarget throws");
+
+    promise_test(async t => {
+      const generator = new MediaStreamTrackGenerator({ kind: "video" });
+      t.add_cleanup(() => generator.stop());
+
+      const writer = generator.writable.getWriter();
+      const frame = makeAudioFrame(1);
+
+      writer.write(frame).then(t.step_func(() => assert_unreached("Write should reject")), t.step_func(f => assert_true(f instanceof TypeError, "write rejects with a TypeError")));
+    }, "Mismatched frame and generator kind throws on write.");
+
+    promise_test(async t => {
+      const generator = new MediaStreamTrackGenerator("audio");
+      t.add_cleanup(() => generator.stop());
+
+      const audioElement = document.getElementById("audioElement");
+      audioElement.srcObject = new MediaStream([generator]);
+      await audioElement.play();
+
+      const writer = generator.writable.getWriter();
+      await writer.write(makeAudioFrame(1));
+
+      // Wait for audio playout to actually happen.
+      await t.step_wait(() => audioElement.currentTime > 0, "audioElement played out generated track");
+    }, "Tests that audio actually flows to a connected audio element");
+  </script>
+</body>
+</html>
