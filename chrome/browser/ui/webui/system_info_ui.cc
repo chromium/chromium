@@ -80,14 +80,16 @@ class SystemInfoHandler : public WebUIMessageHandler {
 
   // WebUIMessageHandler implementation.
   void RegisterMessages() override;
+  void OnJavascriptDisallowed() override;
 
   // Callback for the "requestSystemInfo" message. This asynchronously requests
   // system info and eventually returns it to the front end.
-  void HandleRequestSystemInfo(const base::ListValue*);
+  void HandleRequestSystemInfo(const base::ListValue* args);
 
   void OnSystemInfo(std::unique_ptr<SystemLogsResponse> sys_info);
 
  private:
+  std::string callback_id_;
   base::WeakPtrFactory<SystemInfoHandler> weak_ptr_factory_{this};
   DISALLOW_COPY_AND_ASSIGN(SystemInfoHandler);
 };
@@ -101,15 +103,22 @@ SystemInfoHandler::SystemInfoHandler() {}
 
 SystemInfoHandler::~SystemInfoHandler() {}
 
+void SystemInfoHandler::OnJavascriptDisallowed() {
+  weak_ptr_factory_.InvalidateWeakPtrs();
+  callback_id_.clear();
+}
+
 void SystemInfoHandler::RegisterMessages() {
   web_ui()->RegisterMessageCallback(
       "requestSystemInfo",
       base::BindRepeating(&SystemInfoHandler::HandleRequestSystemInfo,
-                          weak_ptr_factory_.GetWeakPtr()));
+                          base::Unretained(this)));
 }
 
-void SystemInfoHandler::HandleRequestSystemInfo(const base::ListValue*) {
+void SystemInfoHandler::HandleRequestSystemInfo(const base::ListValue* args) {
   AllowJavascript();
+  callback_id_ = args->GetList()[0].GetString();
+
   system_logs::SystemLogsFetcher* fetcher =
       system_logs::BuildAboutSystemLogsFetcher();
   fetcher->Fetch(base::BindOnce(&SystemInfoHandler::OnSystemInfo,
@@ -129,7 +138,8 @@ void SystemInfoHandler::OnSystemInfo(
     val->SetString("statValue", it->second);
     data.Append(std::move(val));
   }
-  CallJavascriptFunction("returnSystemInfo", data);
+  ResolveJavascriptCallback(base::Value(callback_id_), data);
+  callback_id_.clear();
 }
 
 ////////////////////////////////////////////////////////////////////////////////
