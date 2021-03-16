@@ -205,13 +205,6 @@ void ConversionHost::RegisterConversion(
   content::RenderFrameHost* render_frame_host =
       receiver_.GetCurrentTargetFrame();
 
-  // Conversion registration is only allowed in the main frame.
-  if (render_frame_host->GetParent()) {
-    mojo::ReportBadMessage(
-        "blink.mojom.ConversionHost can only be used by the main frame.");
-    return;
-  }
-
   // If there is no conversion manager available, ignore any conversion
   // registrations.
   ConversionManager* conversion_manager =
@@ -219,12 +212,16 @@ void ConversionHost::RegisterConversion(
   if (!conversion_manager)
     return;
 
-  url::Origin conversion_origin = render_frame_host->GetLastCommittedOrigin();
+  const url::Origin& conversion_origin =
+      render_frame_host->GetLastCommittedOrigin();
+  const url::Origin& main_frame_origin =
+      render_frame_host->GetMainFrame()->GetLastCommittedOrigin();
 
   // Only allow conversion registration on secure pages with a secure conversion
   // redirects.
   if (!network::IsOriginPotentiallyTrustworthy(conversion_origin) ||
-      !network::IsOriginPotentiallyTrustworthy(conversion->reporting_origin)) {
+      !network::IsOriginPotentiallyTrustworthy(conversion->reporting_origin) ||
+      !network::IsOriginPotentiallyTrustworthy(main_frame_origin)) {
     mojo::ReportBadMessage(
         "blink.mojom.ConversionHost can only be used in secure contexts with a "
         "secure conversion registration origin.");
@@ -234,13 +231,12 @@ void ConversionHost::RegisterConversion(
   if (!GetContentClient()->browser()->IsConversionMeasurementOperationAllowed(
           web_contents()->GetBrowserContext(),
           ContentBrowserClient::ConversionMeasurementOperation::kConversion,
-          nullptr /* impression_origin */, &conversion_origin,
+          nullptr /* impression_origin */, &main_frame_origin,
           &conversion->reporting_origin)) {
     return;
   }
 
-  net::SchemefulSite conversion_destination(
-      render_frame_host->GetLastCommittedOrigin());
+  net::SchemefulSite conversion_destination(main_frame_origin);
 
   StorableConversion storable_conversion(
       conversion_manager->GetConversionPolicy().GetSanitizedConversionData(

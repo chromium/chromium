@@ -68,8 +68,8 @@ class ConversionHostTest : public RenderViewHostTestHarness {
   std::unique_ptr<ConversionHost> conversion_host_;
 };
 
-TEST_F(ConversionHostTest, ConversionInSubframe_BadMessage) {
-  contents()->NavigateAndCommit(GURL("http://www.example.com"));
+TEST_F(ConversionHostTest, ValidConversionInSubframe_NoBadMessage) {
+  contents()->NavigateAndCommit(GURL("https://www.example.com"));
 
   // Create a subframe and use it as a target for the conversion registration
   // mojo.
@@ -81,13 +81,134 @@ TEST_F(ConversionHostTest, ConversionInSubframe_BadMessage) {
   // Create a fake dispatch context to trigger a bad message in.
   FakeMojoMessageDispatchContext fake_dispatch_context;
   mojo::test::BadMessageObserver bad_message_observer;
-  blink::mojom::ConversionPtr conversion = blink::mojom::Conversion::New();
 
-  // Message should be ignored because it was registered from a subframe.
+  blink::mojom::ConversionPtr conversion = blink::mojom::Conversion::New();
+  conversion->reporting_origin =
+      url::Origin::Create(GURL("https://secure.com"));
   conversion_host()->RegisterConversion(std::move(conversion));
-  EXPECT_EQ("blink.mojom.ConversionHost can only be used by the main frame.",
-            bad_message_observer.WaitForBadMessage());
+
+  // Run loop to allow the bad message code to run if a bad message was
+  // triggered.
+  base::RunLoop().RunUntilIdle();
+  EXPECT_FALSE(bad_message_observer.got_bad_message());
+  EXPECT_EQ(1u, test_manager_.num_conversions());
+
+  EXPECT_EQ(net::SchemefulSite(GURL("https://www.example.com")),
+            test_manager_.last_conversion_destination());
+}
+
+TEST_F(ConversionHostTest,
+       ConversionInSubframe_ConversionDestinationMatchesMainFrame) {
+  contents()->NavigateAndCommit(GURL("https://www.example.com"));
+
+  // Create a subframe and use it as a target for the conversion registration
+  // mojo.
+  content::RenderFrameHostTester* rfh_tester =
+      content::RenderFrameHostTester::For(main_rfh());
+  content::RenderFrameHost* subframe = rfh_tester->AppendChild("subframe");
+  subframe = NavigationSimulatorImpl::NavigateAndCommitFromDocument(
+      GURL("https://www.conversion.com"), subframe);
+  conversion_host()->SetCurrentTargetFrameForTesting(subframe);
+
+  // Create a fake dispatch context to trigger a bad message in.
+  FakeMojoMessageDispatchContext fake_dispatch_context;
+  mojo::test::BadMessageObserver bad_message_observer;
+
+  blink::mojom::ConversionPtr conversion = blink::mojom::Conversion::New();
+  conversion->reporting_origin =
+      url::Origin::Create(GURL("https://secure.com"));
+  conversion_host()->RegisterConversion(std::move(conversion));
+
+  // Run loop to allow the bad message code to run if a bad message was
+  // triggered.
+  base::RunLoop().RunUntilIdle();
+  EXPECT_FALSE(bad_message_observer.got_bad_message());
+  EXPECT_EQ(1u, test_manager_.num_conversions());
+
+  EXPECT_EQ(net::SchemefulSite(GURL("https://www.example.com")),
+            test_manager_.last_conversion_destination());
+}
+
+TEST_F(ConversionHostTest, ConversionInSubframeOnInsecurePage_BadMessage) {
+  contents()->NavigateAndCommit(GURL("http://www.example.com"));
+
+  // Create a subframe and use it as a target for the conversion registration
+  // mojo.
+  content::RenderFrameHostTester* rfh_tester =
+      content::RenderFrameHostTester::For(main_rfh());
+  content::RenderFrameHost* subframe = rfh_tester->AppendChild("subframe");
+  subframe = NavigationSimulatorImpl::NavigateAndCommitFromDocument(
+      GURL("https://www.example.com"), subframe);
+  conversion_host()->SetCurrentTargetFrameForTesting(subframe);
+
+  // Create a fake dispatch context to trigger a bad message in.
+  FakeMojoMessageDispatchContext fake_dispatch_context;
+  mojo::test::BadMessageObserver bad_message_observer;
+
+  blink::mojom::ConversionPtr conversion = blink::mojom::Conversion::New();
+  conversion->reporting_origin =
+      url::Origin::Create(GURL("https://secure.com"));
+  conversion_host()->RegisterConversion(std::move(conversion));
+  EXPECT_EQ(
+      "blink.mojom.ConversionHost can only be used in secure contexts with a "
+      "secure conversion registration origin.",
+      bad_message_observer.WaitForBadMessage());
   EXPECT_EQ(0u, test_manager_.num_conversions());
+}
+
+TEST_F(ConversionHostTest,
+       ConversionInSubframe_EmbeddedDisabledContextOnMainFrame) {
+  // Verifies that conversions from subframes use the correct origins when
+  // checking if the operation is allowed by the embedded.
+
+  ConfigurableConversionTestBrowserClient browser_client;
+  ContentBrowserClient* old_browser_client =
+      SetBrowserClientForTesting(&browser_client);
+
+  browser_client.BlockConversionMeasurementInContext(
+      base::nullopt /* impression_origin */,
+      base::make_optional(
+          url::Origin::Create(GURL("https://blocked-top.example"))),
+      base::make_optional(
+          url::Origin::Create(GURL("https://blocked-reporting.example"))));
+
+  struct {
+    GURL top_frame_url;
+    GURL reporting_origin;
+    bool conversion_allowed;
+  } kTestCases[] = {{GURL("https://blocked-top.example"),
+                     GURL("https://blocked-reporting.example"), false},
+                    {GURL("https://blocked-reporting.example"),
+                     GURL("https://blocked-top.example"), true},
+                    {GURL("https://other.example"),
+                     GURL("https://blocked-reporting.example"), true}};
+
+  for (const auto& test_case : kTestCases) {
+    contents()->NavigateAndCommit(test_case.top_frame_url);
+
+    // Create a subframe and use it as a target for the conversion registration
+    // mojo.
+    content::RenderFrameHostTester* rfh_tester =
+        content::RenderFrameHostTester::For(main_rfh());
+    content::RenderFrameHost* subframe = rfh_tester->AppendChild("subframe");
+    subframe = NavigationSimulatorImpl::NavigateAndCommitFromDocument(
+        GURL("https://www.another.com"), subframe);
+    conversion_host()->SetCurrentTargetFrameForTesting(subframe);
+
+    blink::mojom::ConversionPtr conversion = blink::mojom::Conversion::New();
+    conversion->reporting_origin =
+        url::Origin::Create(test_case.reporting_origin);
+    conversion_host()->RegisterConversion(std::move(conversion));
+
+    EXPECT_EQ(static_cast<size_t>(test_case.conversion_allowed),
+              test_manager_.num_conversions())
+        << "Top frame url: " << test_case.top_frame_url
+        << ", reporting origin: " << test_case.reporting_origin;
+
+    test_manager_.Reset();
+  }
+
+  SetBrowserClientForTesting(old_browser_client);
 }
 
 TEST_F(ConversionHostTest, ConversionOnInsecurePage_BadMessage) {

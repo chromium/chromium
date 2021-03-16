@@ -810,10 +810,8 @@ bool FrameFetchContext::SendConversionRequestInsteadOfRedirecting(
     return false;
   }
 
-  LocalFrame* frame = document_->GetFrame();
-  DCHECK(frame);
-  // Only register conversions pings that are redirects in the main frame.
-  if (!frame->IsMainFrame() || !redirect_info ||
+  // Only treat same origin redirects as conversion pings.
+  if (!redirect_info ||
       !SecurityOrigin::AreSameOrigin(url, redirect_info->previous_url)) {
     return false;
   }
@@ -836,13 +834,23 @@ bool FrameFetchContext::SendConversionRequestInsteadOfRedirecting(
 
   // Only allow conversion registration on secure pages with a secure conversion
   // redirect.
+  const Frame& main_frame = GetFrame()->Tree().Top();
+  if (!main_frame.GetSecurityContext()
+           ->GetSecurityOrigin()
+           ->IsPotentiallyTrustworthy()) {
+    return false;
+  }
+
+  if (!GetFrame()->IsMainFrame() && !GetFrame()
+                                         ->GetSecurityContext()
+                                         ->GetSecurityOrigin()
+                                         ->IsPotentiallyTrustworthy()) {
+    return false;
+  }
+
   scoped_refptr<const SecurityOrigin> redirect_origin =
       SecurityOrigin::Create(url);
-  if (!GetFrame()
-           ->GetSecurityContext()
-           ->GetSecurityOrigin()
-           ->IsPotentiallyTrustworthy() ||
-      !redirect_origin->IsPotentiallyTrustworthy()) {
+  if (!redirect_origin->IsPotentiallyTrustworthy()) {
     return false;
   }
 
