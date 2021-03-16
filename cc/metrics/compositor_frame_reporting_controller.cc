@@ -383,12 +383,11 @@ void CompositorFrameReportingController::DidPresentCompositorFrame(
     // the original reporter, so that the cloned reporter stays alive until the
     // original reporter is terminated, and the cloned reporter's 'partial
     // update' flag can be unset if necessary.
-    if (reporter->MightHavePartialUpdate()) {
-      CompositorFrameReporter* orig_reporter =
-          reporter->partial_update_decider();
-      if (orig_reporter)
-        orig_reporter->AdoptReporter(std::move(reporter));
+    if (CompositorFrameReporter* orig_reporter =
+            reporter->partial_update_decider()) {
+      orig_reporter->AdoptReporter(std::move(reporter));
     }
+
     submitted_compositor_frames_.erase(submitted_frame);
   }
 }

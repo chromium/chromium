@@ -30,16 +30,7 @@ using ::testing::NotNull;
 
 class CompositorFrameReporterTest : public testing::Test {
  public:
-  CompositorFrameReporterTest()
-      : pipeline_reporter_(std::make_unique<CompositorFrameReporter>(
-            CompositorFrameReporter::ActiveTrackers(),
-            viz::BeginFrameArgs(),
-            nullptr,
-            /*should_report_metrics=*/true,
-            CompositorFrameReporter::SmoothThread::kSmoothBoth,
-            /*layer_tree_host_id=*/1,
-            &dropped_frame_counter_)) {
-    pipeline_reporter_->set_tick_clock(&test_tick_clock_);
+  CompositorFrameReporterTest() : pipeline_reporter_(CreatePipelineReporter()) {
     AdvanceNowByMs(1);
     dropped_frame_counter_.set_total_counter(&total_frame_counter_);
   }
@@ -115,6 +106,17 @@ class CompositorFrameReporterTest : public testing::Test {
     return event_times;
   }
 
+  std::unique_ptr<CompositorFrameReporter> CreatePipelineReporter() {
+    auto reporter = std::make_unique<CompositorFrameReporter>(
+        CompositorFrameReporter::ActiveTrackers(), viz::BeginFrameArgs(),
+        /*latency_ukm_reporter=*/nullptr,
+        /*should_report_metrics=*/true,
+        CompositorFrameReporter::SmoothThread::kSmoothBoth,
+        /*layer_tree_host_id=*/1, &dropped_frame_counter_);
+    reporter->set_tick_clock(&test_tick_clock_);
+    return reporter;
+  }
+
   // This should be defined before |pipeline_reporter_| so it is created before
   // and destroyed after that.
   base::SimpleTestTickClock test_tick_clock_;
@@ -130,30 +132,30 @@ TEST_F(CompositorFrameReporterTest, MainFrameAbortedReportingTest) {
   pipeline_reporter_->StartStage(
       CompositorFrameReporter::StageType::kBeginImplFrameToSendBeginMainFrame,
       Now());
-  EXPECT_EQ(0, pipeline_reporter_->StageHistorySizeForTesting());
+  EXPECT_EQ(0, pipeline_reporter_->stage_history_size_for_testing());
 
   AdvanceNowByMs(3);
   pipeline_reporter_->StartStage(
       CompositorFrameReporter::StageType::kSendBeginMainFrameToCommit, Now());
-  EXPECT_EQ(1, pipeline_reporter_->StageHistorySizeForTesting());
+  EXPECT_EQ(1, pipeline_reporter_->stage_history_size_for_testing());
 
   AdvanceNowByMs(3);
   pipeline_reporter_->StartStage(
       CompositorFrameReporter::StageType::kEndActivateToSubmitCompositorFrame,
       Now());
-  EXPECT_EQ(2, pipeline_reporter_->StageHistorySizeForTesting());
+  EXPECT_EQ(2, pipeline_reporter_->stage_history_size_for_testing());
 
   AdvanceNowByMs(3);
   pipeline_reporter_->StartStage(
       CompositorFrameReporter::StageType::
           kSubmitCompositorFrameToPresentationCompositorFrame,
       Now());
-  EXPECT_EQ(3, pipeline_reporter_->StageHistorySizeForTesting());
+  EXPECT_EQ(3, pipeline_reporter_->stage_history_size_for_testing());
 
   AdvanceNowByMs(3);
   pipeline_reporter_->TerminateFrame(
       CompositorFrameReporter::FrameTerminationStatus::kPresentedFrame, Now());
-  EXPECT_EQ(4, pipeline_reporter_->StageHistorySizeForTesting());
+  EXPECT_EQ(4, pipeline_reporter_->stage_history_size_for_testing());
 
   pipeline_reporter_ = nullptr;
   histogram_tester.ExpectTotalCount(
@@ -175,18 +177,18 @@ TEST_F(CompositorFrameReporterTest, ReplacedByNewReporterReportingTest) {
 
   pipeline_reporter_->StartStage(CompositorFrameReporter::StageType::kCommit,
                                  Now());
-  EXPECT_EQ(0, pipeline_reporter_->StageHistorySizeForTesting());
+  EXPECT_EQ(0, pipeline_reporter_->stage_history_size_for_testing());
 
   AdvanceNowByMs(3);
   pipeline_reporter_->StartStage(
       CompositorFrameReporter::StageType::kEndCommitToActivation, Now());
-  EXPECT_EQ(1, pipeline_reporter_->StageHistorySizeForTesting());
+  EXPECT_EQ(1, pipeline_reporter_->stage_history_size_for_testing());
 
   AdvanceNowByMs(2);
   pipeline_reporter_->TerminateFrame(
       CompositorFrameReporter::FrameTerminationStatus::kReplacedByNewReporter,
       Now());
-  EXPECT_EQ(2, pipeline_reporter_->StageHistorySizeForTesting());
+  EXPECT_EQ(2, pipeline_reporter_->stage_history_size_for_testing());
 
   pipeline_reporter_ = nullptr;
   histogram_tester.ExpectTotalCount("CompositorLatency.Commit", 0);
@@ -199,18 +201,18 @@ TEST_F(CompositorFrameReporterTest, SubmittedFrameReportingTest) {
 
   pipeline_reporter_->StartStage(
       CompositorFrameReporter::StageType::kActivation, Now());
-  EXPECT_EQ(0, pipeline_reporter_->StageHistorySizeForTesting());
+  EXPECT_EQ(0, pipeline_reporter_->stage_history_size_for_testing());
 
   AdvanceNowByMs(3);
   pipeline_reporter_->StartStage(
       CompositorFrameReporter::StageType::kEndActivateToSubmitCompositorFrame,
       Now());
-  EXPECT_EQ(1, pipeline_reporter_->StageHistorySizeForTesting());
+  EXPECT_EQ(1, pipeline_reporter_->stage_history_size_for_testing());
 
   AdvanceNowByMs(2);
   pipeline_reporter_->TerminateFrame(
       CompositorFrameReporter::FrameTerminationStatus::kPresentedFrame, Now());
-  EXPECT_EQ(2, pipeline_reporter_->StageHistorySizeForTesting());
+  EXPECT_EQ(2, pipeline_reporter_->stage_history_size_for_testing());
 
   pipeline_reporter_ = nullptr;
   histogram_tester.ExpectTotalCount("CompositorLatency.Activation", 1);
@@ -235,18 +237,18 @@ TEST_F(CompositorFrameReporterTest, SubmittedDroppedFrameReportingTest) {
 
   pipeline_reporter_->StartStage(
       CompositorFrameReporter::StageType::kSendBeginMainFrameToCommit, Now());
-  EXPECT_EQ(0, pipeline_reporter_->StageHistorySizeForTesting());
+  EXPECT_EQ(0, pipeline_reporter_->stage_history_size_for_testing());
 
   AdvanceNowByMs(3);
   pipeline_reporter_->StartStage(CompositorFrameReporter::StageType::kCommit,
                                  Now());
-  EXPECT_EQ(1, pipeline_reporter_->StageHistorySizeForTesting());
+  EXPECT_EQ(1, pipeline_reporter_->stage_history_size_for_testing());
 
   AdvanceNowByMs(2);
   pipeline_reporter_->TerminateFrame(
       CompositorFrameReporter::FrameTerminationStatus::kDidNotPresentFrame,
       Now());
-  EXPECT_EQ(2, pipeline_reporter_->StageHistorySizeForTesting());
+  EXPECT_EQ(2, pipeline_reporter_->stage_history_size_for_testing());
 
   pipeline_reporter_ = nullptr;
   histogram_tester.ExpectTotalCount(
@@ -478,6 +480,123 @@ TEST_F(CompositorFrameReporterTest,
 
   EXPECT_THAT(histogram_tester.GetTotalCountsForPrefix("EventLaterncy."),
               IsEmpty());
+}
+
+// Verifies that partial update dependent queues are working as expected when
+// they reach their maximum capacity.
+TEST_F(CompositorFrameReporterTest, PartialUpdateDependentQueues) {
+  // This constant should match the constant with the same name in
+  // compositor_frame_reporter.cc.
+  const size_t kMaxOwnedPartialUpdateDependents = 300u;
+
+  // The first three dependent reporters for the front of the queue.
+  std::unique_ptr<CompositorFrameReporter> deps[] = {
+      CreatePipelineReporter(),
+      CreatePipelineReporter(),
+      CreatePipelineReporter(),
+  };
+
+  // Set `deps[0]` as a dependent of the main reporter and adopt it at the same
+  // time. This should enqueue it in both non-owned and owned dependents queues.
+  deps[0]->SetPartialUpdateDecider(pipeline_reporter_.get());
+  pipeline_reporter_->AdoptReporter(std::move(deps[0]));
+  DCHECK_EQ(1u,
+            pipeline_reporter_->partial_update_dependents_size_for_testing());
+  DCHECK_EQ(
+      1u,
+      pipeline_reporter_->owned_partial_update_dependents_size_for_testing());
+
+  // Set `deps[1]` as a dependent of the main reporter, but don't adopt it yet.
+  // This should enqueue it in non-owned dependents queue only.
+  deps[1]->SetPartialUpdateDecider(pipeline_reporter_.get());
+  DCHECK_EQ(2u,
+            pipeline_reporter_->partial_update_dependents_size_for_testing());
+  DCHECK_EQ(
+      1u,
+      pipeline_reporter_->owned_partial_update_dependents_size_for_testing());
+
+  // Set `deps[2]` as a dependent of the main reporter and adopt it at the same
+  // time. This should enqueue it in both non-owned and owned dependents queues.
+  deps[2]->SetPartialUpdateDecider(pipeline_reporter_.get());
+  pipeline_reporter_->AdoptReporter(std::move(deps[2]));
+  DCHECK_EQ(3u,
+            pipeline_reporter_->partial_update_dependents_size_for_testing());
+  DCHECK_EQ(
+      2u,
+      pipeline_reporter_->owned_partial_update_dependents_size_for_testing());
+
+  // Now adopt `deps[1]` to enqueue it in the owned dependents queue.
+  pipeline_reporter_->AdoptReporter(std::move(deps[1]));
+  DCHECK_EQ(3u,
+            pipeline_reporter_->partial_update_dependents_size_for_testing());
+  DCHECK_EQ(
+      3u,
+      pipeline_reporter_->owned_partial_update_dependents_size_for_testing());
+
+  // Fill the queues with more dependent reporters until the capacity is
+  // reached. After this, the queues should look like this (assuming n equals
+  // `kMaxOwnedPartialUpdateDependents`):
+  //   Partial Update Dependents:       [0, 1, 2, 3, 4, ..., n-1]
+  //   Owned Partial Update Dependents: [0, 2, 1, 3, 4, ..., n-1]
+  while (
+      pipeline_reporter_->owned_partial_update_dependents_size_for_testing() <
+      kMaxOwnedPartialUpdateDependents) {
+    std::unique_ptr<CompositorFrameReporter> dependent =
+        CreatePipelineReporter();
+    dependent->SetPartialUpdateDecider(pipeline_reporter_.get());
+    pipeline_reporter_->AdoptReporter(std::move(dependent));
+  }
+  DCHECK_EQ(kMaxOwnedPartialUpdateDependents,
+            pipeline_reporter_->partial_update_dependents_size_for_testing());
+  DCHECK_EQ(
+      kMaxOwnedPartialUpdateDependents,
+      pipeline_reporter_->owned_partial_update_dependents_size_for_testing());
+
+  // Enqueue a new dependent reporter. This should pop `deps[0]` from the front
+  // of the owned dependents queue and destroy it. Since the same one is in
+  // front of the non-owned dependents queue, it will be popped out of that
+  // queue, too. The queues will look like this:
+  //   Partial Update Dependents:       [1, 2, 3, 4, ..., n]
+  //   Owned Partial Update Dependents: [2, 1, 3, 4, ..., n]
+  auto new_dep = CreatePipelineReporter();
+  new_dep->SetPartialUpdateDecider(pipeline_reporter_.get());
+  pipeline_reporter_->AdoptReporter(std::move(new_dep));
+  DCHECK_EQ(kMaxOwnedPartialUpdateDependents,
+            pipeline_reporter_->partial_update_dependents_size_for_testing());
+  DCHECK_EQ(
+      kMaxOwnedPartialUpdateDependents,
+      pipeline_reporter_->owned_partial_update_dependents_size_for_testing());
+
+  // Enqueue another new dependent reporter. This should pop `deps[2]` from the
+  // front of the owned dependents queue and destroy it. Since another reporter
+  // is in front of the non-owned dependents queue it won't be popped out of
+  // that queue. The queues will look like this:
+  //   Partial Update Dependents:       [2, 3, 4, ..., n+1]
+  //   Owned Partial Update Dependents: [2, nullptr, 3, 4, ..., n+1]
+  new_dep = CreatePipelineReporter();
+  new_dep->SetPartialUpdateDecider(pipeline_reporter_.get());
+  pipeline_reporter_->AdoptReporter(std::move(new_dep));
+  DCHECK_EQ(kMaxOwnedPartialUpdateDependents + 1,
+            pipeline_reporter_->partial_update_dependents_size_for_testing());
+  DCHECK_EQ(
+      kMaxOwnedPartialUpdateDependents,
+      pipeline_reporter_->owned_partial_update_dependents_size_for_testing());
+
+  // Enqueue yet another new dependent reporter. This should pop `deps[1]` from
+  // the front of the owned dependents queue and destroy it. Since the same one
+  // is in front of the non-owned dependents queue followed by `deps[2]` which
+  // was destroyed in the previous step, they will be popped out of that queue,
+  // too. The queues will look like this:
+  //   Partial Update Dependents:       [3, 4, ..., n+2]
+  //   Owned Partial Update Dependents: [3, 4, ..., n+2]
+  new_dep = CreatePipelineReporter();
+  new_dep->SetPartialUpdateDecider(pipeline_reporter_.get());
+  pipeline_reporter_->AdoptReporter(std::move(new_dep));
+  DCHECK_EQ(kMaxOwnedPartialUpdateDependents,
+            pipeline_reporter_->partial_update_dependents_size_for_testing());
+  DCHECK_EQ(
+      kMaxOwnedPartialUpdateDependents,
+      pipeline_reporter_->owned_partial_update_dependents_size_for_testing());
 }
 
 }  // namespace

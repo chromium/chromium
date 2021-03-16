@@ -66,7 +66,8 @@ class TestCompositorFrameReportingController
     };
     for (auto stage : kStages) {
       auto& reporter = reporters()[stage];
-      if (reporter && reporter->GetPartialUpdateDependentsCount() > 0) {
+      if (reporter &&
+          reporter->partial_update_dependents_size_for_testing() > 0) {
         ++count;
       }
     }
@@ -84,7 +85,7 @@ class TestCompositorFrameReportingController
     for (auto stage : kStages) {
       auto& reporter = reporters()[stage];
       if (reporter)
-        count += reporter->GetPartialUpdateDependentsCount();
+        count += reporter->partial_update_dependents_size_for_testing();
     }
     return count;
   }
