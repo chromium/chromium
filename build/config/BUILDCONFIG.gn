@@ -232,7 +232,7 @@ if (target_os == "android") {
 } else if (target_os == "fuchsia") {
   _default_toolchain = "//build/toolchain/fuchsia:$target_cpu"
 } else if (target_os == "ios") {
-  _default_toolchain = "//build/toolchain/mac:ios_clang_$target_cpu"
+  _default_toolchain = "//build/toolchain/ios:ios_clang_$target_cpu"
 } else if (target_os == "mac") {
   assert(host_os == "mac" || host_os == "linux",
          "Mac cross-compiles are unsupported.")

@@ -8,7 +8,6 @@ import re
 import subprocess
 import sys
 import tempfile
-
 """Wrapper around actool to compile assets catalog.
 
 The script compile_xcassets.py is a wrapper around actool to compile
@@ -40,16 +39,17 @@ SPURIOUS_PATTERNS = [
 
         # crbug.com/770634, likely a bug in Xcode 9.2 beta, remove once build
         # requires a version of Xcode with a fix.
-        r'\[\]\[ipad\]\[76x76\]\[\]\[\]\[1x\]\[\]\[\]: notice: 76x76@1x app icons'
-        ' only apply to iPad apps targeting releases of iOS prior to 10.0.',
+        r'\[\]\[ipad\]\[76x76\]\[\]\[\]\[1x\]\[\]\[\]: notice: 76x76@1x app'
+        ' icons only apply to iPad apps targeting releases of iOS prior to'
+        ' 10.0.',
     ]
 ]
 
 # Map special type of asset catalog to the corresponding command-line
 # parameter that need to be passed to actool.
 ACTOOL_FLAG_FOR_ASSET_TYPE = {
-  '.appiconset': '--app-icon',
-  '.launchimage': '--launch-image',
+    '.appiconset': '--app-icon',
+    '.launchimage': '--launch-image',
 }
 
 
@@ -115,7 +115,7 @@ def FilterCompilerOutput(compiler_output, relative_paths):
 
 
 def CompileAssetCatalog(output, platform, product_type, min_deployment_target,
-    inputs, compress_pngs, partial_info_plist):
+                        inputs, compress_pngs, partial_info_plist):
   """Compile the .xcassets bundles to an asset catalog using actool.
 
   Args:
@@ -128,9 +128,16 @@ def CompileAssetCatalog(output, platform, product_type, min_deployment_target,
     partial_info_plist: path to partial Info.plist to generate
   """
   command = [
-      'xcrun', 'actool', '--output-format=human-readable-text',
-      '--notices', '--warnings', '--errors', '--platform', platform,
-      '--minimum-deployment-target', min_deployment_target,
+      'xcrun',
+      'actool',
+      '--output-format=human-readable-text',
+      '--notices',
+      '--warnings',
+      '--errors',
+      '--platform',
+      platform,
+      '--minimum-deployment-target',
+      min_deployment_target,
   ]
 
   if compress_pngs:
@@ -190,8 +197,9 @@ def CompileAssetCatalog(output, platform, product_type, min_deployment_target,
   try:
     # Run actool and redirect stdout and stderr to the same pipe (as actool
     # is confused about what should go to stderr/stdout).
-    process = subprocess.Popen(
-        command, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+    process = subprocess.Popen(command,
+                               stdout=subprocess.PIPE,
+                               stderr=subprocess.STDOUT)
     stdout, _ = process.communicate()
 
     # Filter the output to remove all garbarge and to fix the paths.
@@ -209,44 +217,44 @@ def CompileAssetCatalog(output, platform, product_type, min_deployment_target,
 def Main():
   parser = argparse.ArgumentParser(
       description='compile assets catalog for a bundle')
+  parser.add_argument('--platform',
+                      '-p',
+                      required=True,
+                      choices=('macosx', 'iphoneos', 'iphonesimulator'),
+                      help='target platform for the compiled assets catalog')
   parser.add_argument(
-      '--platform', '-p', required=True,
-      choices=('macosx', 'iphoneos', 'iphonesimulator'),
-      help='target platform for the compiled assets catalog')
-  parser.add_argument(
-      '--minimum-deployment-target', '-t', required=True,
+      '--minimum-deployment-target',
+      '-t',
+      required=True,
       help='minimum deployment target for the compiled assets catalog')
-  parser.add_argument(
-      '--output', '-o', required=True,
-      help='path to the compiled assets catalog')
-  parser.add_argument(
-      '--compress-pngs', '-c', action='store_true', default=False,
-      help='recompress PNGs while compiling assets catalog')
-  parser.add_argument(
-      '--product-type', '-T',
-      help='type of the containing bundle')
-  parser.add_argument(
-      '--partial-info-plist', '-P',
-      help='path to partial info plist to create')
-  parser.add_argument(
-      'inputs', nargs='+',
-      help='path to input assets catalog sources')
+  parser.add_argument('--output',
+                      '-o',
+                      required=True,
+                      help='path to the compiled assets catalog')
+  parser.add_argument('--compress-pngs',
+                      '-c',
+                      action='store_true',
+                      default=False,
+                      help='recompress PNGs while compiling assets catalog')
+  parser.add_argument('--product-type',
+                      '-T',
+                      help='type of the containing bundle')
+  parser.add_argument('--partial-info-plist',
+                      '-P',
+                      help='path to partial info plist to create')
+  parser.add_argument('inputs',
+                      nargs='+',
+                      help='path to input assets catalog sources')
   args = parser.parse_args()
 
   if os.path.basename(args.output) != 'Assets.car':
-    sys.stderr.write(
-        'output should be path to compiled asset catalog, not '
-        'to the containing bundle: %s\n' % (args.output,))
+    sys.stderr.write('output should be path to compiled asset catalog, not '
+                     'to the containing bundle: %s\n' % (args.output, ))
     sys.exit(1)
 
-  CompileAssetCatalog(
-      args.output,
-      args.platform,
-      args.product_type,
-      args.minimum_deployment_target,
-      args.inputs,
-      args.compress_pngs,
-      args.partial_info_plist)
+  CompileAssetCatalog(args.output, args.platform, args.product_type,
+                      args.minimum_deployment_target, args.inputs,
+                      args.compress_pngs, args.partial_info_plist)
 
 
 if __name__ == '__main__':
