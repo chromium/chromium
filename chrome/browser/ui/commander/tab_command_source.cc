@@ -5,7 +5,9 @@
 #include "chrome/browser/ui/commander/tab_command_source.h"
 
 #include <numeric>
+#include <string>
 
+#include "base/bind.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/ui/accelerator_utils.h"
@@ -17,6 +19,7 @@
 #include "chrome/browser/ui/tabs/tab_group_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/grit/generated_resources.h"
+#include "components/sessions/content/session_tab_helper.h"
 #include "ui/base/accelerators/accelerator.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/models/list_selection_model.h"
@@ -57,6 +60,21 @@ base::Optional<tab_groups::TabGroupId> IneligibleGroupForSelected(
   return excluded_group;
 }
 
+// Returns true only if `browser` is alive, and the contents at `index` match
+// `tab_session_id`.
+bool DoesTabAtIndexMatchSessionId(base::WeakPtr<Browser> browser,
+                                  int index,
+                                  int tab_session_id) {
+  if (!browser.get())
+    return false;
+  if (browser->tab_strip_model()->count() <= index)
+    return false;
+  content::WebContents* contents =
+      browser->tab_strip_model()->GetWebContentsAt(index);
+  DCHECK(contents);
+  return sessions::SessionTabHelper::IdForTab(contents).id() == tab_session_id;
+}
+
 // Commands:
 
 // TODO(lgrey): If this command ships, upstream these to TabStripModel
@@ -85,12 +103,12 @@ void CloseTabsToLeft(Browser* browser) {
   }
 }
 
-bool CanCloseUnpinnedTabs(const TabStripModel* model) {
-  for (int i = 0; i < model->count(); ++i) {
-    if (!model->IsTabPinned(i))
-      return true;
-  }
-  return false;
+bool HasUnpinnedTabs(const TabStripModel* model) {
+  return model->IndexOfFirstNonPinnedTab() < model->count();
+}
+
+bool HasPinnedTabs(const TabStripModel* model) {
+  return model->IndexOfFirstNonPinnedTab() > 0;
 }
 
 void CloseUnpinnedTabs(Browser* browser) {
@@ -139,7 +157,106 @@ void AddSelectedToNewGroup(Browser* browser) {
   model->AddToNewGroup(std::vector<int>(sel.begin(), sel.end()));
 }
 
+void MuteAllTabs(Browser* browser, bool exclude_active) {
+  TabStripModel* model = browser->tab_strip_model();
+  for (int i = 0; i < model->count(); ++i) {
+    if (exclude_active && i == model->active_index())
+      return;
+    content::WebContents* contents = model->GetWebContentsAt(i);
+    if (contents->IsCurrentlyAudible())
+      contents->SetAudioMuted(true);
+  }
+}
+
+// TODO(lgrey): Precalculate tab strip properties like "has audible tabs", "has
+// pinned tabs" etc. in one iteration at search time.
+bool HasAudibleTabs(const TabStripModel* model) {
+  for (int i = 0; i < model->count(); ++i) {
+    content::WebContents* contents = model->GetWebContentsAt(i);
+    if (contents->IsCurrentlyAudible())
+      return true;
+  }
+  return false;
+}
+
+bool HasMutedTabs(const TabStripModel* model) {
+  for (int i = 0; i < model->count(); ++i) {
+    content::WebContents* contents = model->GetWebContentsAt(i);
+    if (contents->IsAudioMuted())
+      return true;
+  }
+  return false;
+}
+
 // Multiphase commands:
+
+void MuteUnmuteTab(base::WeakPtr<Browser> browser,
+                   int tab_index,
+                   int tab_session_id,
+                   bool mute) {
+  if (!DoesTabAtIndexMatchSessionId(browser, tab_index, tab_session_id))
+    return;
+  browser->tab_strip_model()->GetWebContentsAt(tab_index)->SetAudioMuted(mute);
+}
+
+std::unique_ptr<CommandItem> CreateMuteUnmuteTabItem(const TabMatch& match,
+                                                     Browser* browser,
+                                                     bool mute) {
+  auto item = match.ToCommandItem();
+  item->command = base::BindOnce(&MuteUnmuteTab, browser->AsWeakPtr(),
+                                 match.index, match.session_id, mute);
+  return item;
+}
+
+CommandSource::CommandResults MuteUnmuteTabItemsForTabsMatching(
+    Browser* browser,
+    bool mute,
+    const std::u16string& input) {
+  CommandSource::CommandResults results;
+  TabSearchOptions options;
+  if (mute)
+    options.only_audible = true;
+  else
+    options.only_muted = true;
+  for (auto& match : TabsMatchingInput(browser, input, options)) {
+    results.push_back(CreateMuteUnmuteTabItem(match, browser, mute));
+  }
+  return results;
+}
+
+void TogglePinTab(base::WeakPtr<Browser> browser,
+                  int tab_index,
+                  int tab_session_id,
+                  bool pin) {
+  if (!DoesTabAtIndexMatchSessionId(browser, tab_index, tab_session_id))
+    return;
+  browser->tab_strip_model()->SetTabPinned(tab_index, pin);
+}
+
+std::unique_ptr<CommandItem> CreatePinTabItem(const TabMatch& match,
+                                              Browser* browser,
+                                              bool pin) {
+  auto item = match.ToCommandItem();
+  item->command = base::BindOnce(&TogglePinTab, browser->AsWeakPtr(),
+                                 match.index, match.session_id, pin);
+  return item;
+}
+
+CommandSource::CommandResults TogglePinTabCommandsForTabsMatching(
+    Browser* browser,
+    bool pin,
+    const std::u16string& input) {
+  CommandSource::CommandResults results;
+  TabSearchOptions options;
+  if (pin)
+    options.only_unpinned = true;
+  else
+    options.only_pinned = true;
+  for (auto& match : TabsMatchingInput(browser, input, options)) {
+    results.push_back(CreatePinTabItem(match, browser, pin));
+  }
+  return results;
+}
 
 std::unique_ptr<CommandItem> CreateMoveTabsToWindowItem(
     Browser* source,
@@ -257,23 +374,13 @@ CommandSource::CommandResults TabCommandSource::GetCommands(
     }
   }
 
-  if (CanCloseUnpinnedTabs(tab_strip_model)) {
+  if (HasUnpinnedTabs(tab_strip_model)) {
     if (auto item = ItemForTitle(base::ASCIIToUTF16("Close unpinned tabs"),
                                  finder, &ranges)) {
       item->command =
           base::BindOnce(&CloseUnpinnedTabs, base::Unretained(browser));
       results.push_back(std::move(item));
     }
-  }
-
-  bool is_active_pinned =
-      tab_strip_model->IsTabPinned(tab_strip_model->active_index());
-  std::u16string active_title = is_active_pinned
-                                    ? base::ASCIIToUTF16("Unpin tab")
-                                    : base::ASCIIToUTF16("Pin tab");
-  if (auto item = ItemForTitle(active_title, finder, &ranges)) {
-    item->command = base::BindOnce(chrome::PinTab, base::Unretained(browser));
-    results.push_back(std::move(item));
   }
 
   // TODO(https://crbug.com/1181879): This should handle all selected tabs.
@@ -321,6 +428,58 @@ CommandSource::CommandResults TabCommandSource::GetCommands(
                             base::Unretained(browser)));
     results.push_back(std::move(item));
   }
+  if (auto item = ItemForTitle(u"Mute all tabs", finder, &ranges)) {
+    item->command =
+        base::BindOnce(&MuteAllTabs, base::Unretained(browser), false);
+    results.push_back(std::move(item));
+  }
+
+  if (auto item = ItemForTitle(u"Mute other tabs", finder, &ranges)) {
+    item->command =
+        base::BindOnce(&MuteAllTabs, base::Unretained(browser), false);
+    results.push_back(std::move(item));
+  }
+
+  if (HasAudibleTabs(tab_strip_model)) {
+    if (auto item = ItemForTitle(u"Mute tab...", finder, &ranges)) {
+      item->command =
+          std::make_pair(u"Mute tab...",
+                         base::BindRepeating(&MuteUnmuteTabItemsForTabsMatching,
+                                             base::Unretained(browser), true));
+      results.push_back(std::move(item));
+    }
+  }
+
+  if (HasMutedTabs(tab_strip_model)) {
+    if (auto item = ItemForTitle(u"Unmute tab...", finder, &ranges)) {
+      item->command =
+          std::make_pair(u"Unmute tab...",
+                         base::BindRepeating(&MuteUnmuteTabItemsForTabsMatching,
+                                             base::Unretained(browser), false));
+      results.push_back(std::move(item));
+    }
+  }
+
+  if (HasUnpinnedTabs(tab_strip_model)) {
+    if (auto item = ItemForTitle(u"Pin tab...", finder, &ranges)) {
+      item->command = std::make_pair(
+          u"Pin tab...",
+          base::BindRepeating(&TogglePinTabCommandsForTabsMatching,
+                              base::Unretained(browser), true));
+      results.push_back((std::move(item)));
+    }
+  }
+
+  if (HasPinnedTabs(tab_strip_model)) {
+    if (auto item = ItemForTitle(u"Unpin tab...", finder, &ranges)) {
+      item->command = std::make_pair(
+          u"Unpin tab...",
+          base::BindRepeating(&TogglePinTabCommandsForTabsMatching,
+                              base::Unretained(browser), false));
+      results.push_back((std::move(item)));
+    }
+  }
+
   return results;
 }
 
