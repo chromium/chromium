@@ -176,6 +176,7 @@ android_resources("chrome_base_module_resources") {
 android_resources("chrome_app_java_resources") {
   sources = chrome_java_resources
   sources += [
+    "//chrome/android/java/res_app/layout/main.xml",
     "//chrome/android/java/res_chromium/drawable-hdpi/fre_product_logo.png",
     "//chrome/android/java/res_chromium/drawable-hdpi/product_logo_name.png",
     "//chrome/android/java/res_chromium/drawable-mdpi/fre_product_logo.png",
