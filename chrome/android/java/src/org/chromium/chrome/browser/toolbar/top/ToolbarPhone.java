@@ -140,6 +140,7 @@ public class ToolbarPhone extends ToolbarLayout implements OnClickListener, TabC
 
     @ViewDebug.ExportedProperty(category = "chrome")
     protected int mTabSwitcherState;
+    private boolean mIsShowingStartSurface;
 
     // This determines whether or not the toolbar draws as expected (false) or whether it always
     // draws as if it's showing the non-tabswitcher, non-animating toolbar. This is used in grabbing
@@ -472,14 +473,14 @@ public class ToolbarPhone extends ToolbarLayout implements OnClickListener, TabC
             }
         });
 
-        // Calls the {@link triggerUrlFocusAnimation()} here if it is skipped in {@link
-        // handleOmniboxInOverviewMode()}. In the overview mode focusing omnibox should also show
-        // keyboard.
+        // Calls the {@link triggerUrlFocusAnimation()} here to finish the pending focus request if
+        // it is skipped in {@link handleOmniboxInOverviewMode()}.
         if (mPendingTriggerUrlFocusRequest) {
+            // This pending focus request must be from user's click on the fake omnibox on start
+            // surface before native library is ready.
+            assert getToolbarDataProvider().isInOverviewAndShowingOmnibox();
             mPendingTriggerUrlFocusRequest = false;
-            boolean hasFocus =
-                    getToolbarDataProvider().isInOverviewAndShowingOmnibox() && !urlHasFocus();
-            triggerUrlFocusAnimation(hasFocus, /* shouldShowKeyboard= */ hasFocus);
+            triggerUrlFocusAnimation(true);
         }
 
         updateVisualsForLocationBarState();
@@ -1859,6 +1860,7 @@ public class ToolbarPhone extends ToolbarLayout implements OnClickListener, TabC
      */
     private boolean handleOmniboxInOverviewMode(boolean inTabSwitcherMode) {
         if (!getToolbarDataProvider().shouldShowLocationBarInOverviewMode()) return false;
+        mIsShowingStartSurface = inTabSwitcherMode;
 
         if (mToggleTabStackButton != null) {
             boolean isGone = inTabSwitcherMode;
@@ -1871,15 +1873,8 @@ public class ToolbarPhone extends ToolbarLayout implements OnClickListener, TabC
         // possible that this function is called before native initialization when Instant Start
         // is enabled. Keyboard shouldn't be shown here.
         if (isNativeLibraryReady()) {
-            boolean hasFocus = inTabSwitcherMode && !urlHasFocus();
-            boolean shouldShowKeyboard = false;
-            // When switching out of the tab switcher and the url has got focused, we don't clear
-            // the focus.
-            if (!inTabSwitcherMode && urlHasFocus()) {
-                hasFocus = true;
-                shouldShowKeyboard = true;
-            }
-            triggerUrlFocusAnimation(hasFocus, shouldShowKeyboard);
+            // When the url has got focused, we don't clear the focus.
+            triggerUrlFocusAnimation(urlHasFocus());
         } else {
             mPendingTriggerUrlFocusRequest = true;
         }
@@ -1981,7 +1976,7 @@ public class ToolbarPhone extends ToolbarLayout implements OnClickListener, TabC
         };
     }
 
-    private void populateUrlFocusingAnimatorSet(List<Animator> animators) {
+    private void populateUrlExpansionAnimatorSet(List<Animator> animators) {
         TraceEvent.begin("ToolbarPhone.populateUrlFocusingAnimatorSet");
         Animator animator = ObjectAnimator.ofFloat(this, mUrlFocusChangeFractionProperty, 1f);
         animator.setDuration(URL_FOCUS_CHANGE_ANIMATION_DURATION_MS);
@@ -2036,7 +2031,7 @@ public class ToolbarPhone extends ToolbarLayout implements OnClickListener, TabC
         TraceEvent.end("ToolbarPhone.populateUrlFocusingAnimatorSet");
     }
 
-    private void populateUrlClearFocusingAnimatorSet(List<Animator> animators) {
+    private void populateUrlClearExpansionAnimatorSet(List<Animator> animators) {
         Animator animator = ObjectAnimator.ofFloat(this, mUrlFocusChangeFractionProperty, 0f);
         animator.setDuration(URL_FOCUS_CHANGE_ANIMATION_DURATION_MS);
         animator.setInterpolator(BakedBezierInterpolator.TRANSFORM_CURVE);
@@ -2096,21 +2091,24 @@ public class ToolbarPhone extends ToolbarLayout implements OnClickListener, TabC
         super.onUrlFocusChange(hasFocus);
 
         if (mToggleTabStackButton != null) mToggleTabStackButton.setClickable(!hasFocus);
-
-        if (getToolbarDataProvider().isInOverviewAndShowingOmnibox()) {
-            mUrlBar.setText("");
-            if (!hasFocus) return;
-        }
-
-        triggerUrlFocusAnimation(hasFocus, /* shouldShowKeyboard= */ hasFocus);
+        triggerUrlFocusAnimation(hasFocus);
     }
 
     /**
-     * @param hasFocus Whether the URL field has gained focus.
-     * @param shouldShowKeyboard Whether the keyboard should be shown. This value should be the same
-     *         as hasFocus by default.
+     * @param showExpandedState Whether the url bar should be expanded.
      */
-    private void triggerUrlFocusAnimation(final boolean hasFocus, boolean shouldShowKeyboard) {
+    private void triggerUrlFocusAnimation(boolean showExpandedState) {
+        boolean shouldShowKeyboard = urlHasFocus();
+
+        // Sometimes when it's exiting start surface and showing a normal tab,
+        // |getToolbarDataProvider().isInOverviewAndShowingOmnibox()| is not updated yet and still
+        // true. So we need to check |mIsEnteringStartSurface| here.
+        if (mIsShowingStartSurface) {
+            // If now it's on start surface, omnibox should be expanded without showing the keyboard
+            // even though it's not focus.
+            showExpandedState = true;
+        }
+
         TraceEvent.begin("ToolbarPhone.triggerUrlFocusAnimation");
         if (mUrlFocusLayoutAnimator != null && mUrlFocusLayoutAnimator.isRunning()) {
             mUrlFocusLayoutAnimator.cancel();
@@ -2119,19 +2117,21 @@ public class ToolbarPhone extends ToolbarLayout implements OnClickListener, TabC
         if (mOptionalButtonAnimationRunning) mOptionalButtonAnimator.end();
 
         List<Animator> animators = new ArrayList<>();
-        if (hasFocus) {
-            populateUrlFocusingAnimatorSet(animators);
+        if (showExpandedState) {
+            populateUrlExpansionAnimatorSet(animators);
         } else {
-            populateUrlClearFocusingAnimatorSet(animators);
+            populateUrlClearExpansionAnimatorSet(animators);
         }
         mUrlFocusLayoutAnimator = new AnimatorSet();
         mUrlFocusLayoutAnimator.playTogether(animators);
 
         mUrlFocusChangeInProgress = true;
+        // |showExpandedState| needs to be final when accessed within inner class.
+        final boolean showExpandedStateFinal = showExpandedState;
         mUrlFocusLayoutAnimator.addListener(new CancelAwareAnimatorListener() {
             @Override
             public void onStart(Animator animation) {
-                if (!hasFocus) {
+                if (!showExpandedStateFinal) {
                     mDisableLocationBarRelayout = true;
                 } else {
                     mLayoutLocationBarInFocusedMode = true;
@@ -2141,19 +2141,19 @@ public class ToolbarPhone extends ToolbarLayout implements OnClickListener, TabC
 
             @Override
             public void onCancel(Animator animation) {
-                if (!hasFocus) mDisableLocationBarRelayout = false;
+                if (!showExpandedStateFinal) mDisableLocationBarRelayout = false;
 
                 mUrlFocusChangeInProgress = false;
             }
 
             @Override
             public void onEnd(Animator animation) {
-                if (!hasFocus) {
+                if (!showExpandedStateFinal) {
                     mDisableLocationBarRelayout = false;
                     mLayoutLocationBarInFocusedMode = false;
                     requestLayout();
                 }
-                mLocationBar.finishUrlFocusChange(hasFocus, shouldShowKeyboard,
+                mLocationBar.finishUrlFocusChange(showExpandedStateFinal, shouldShowKeyboard,
                         getToolbarDataProvider().shouldShowLocationBarInOverviewMode());
                 mUrlFocusChangeInProgress = false;
             }
@@ -2303,7 +2303,7 @@ public class ToolbarPhone extends ToolbarLayout implements OnClickListener, TabC
             if (mTabSwitcherState == STATIC_TAB && previousNtpScrollFraction > 0f) {
                 mUrlFocusChangeFraction =
                         Math.max(previousNtpScrollFraction, mUrlFocusChangeFraction);
-                triggerUrlFocusAnimation(/* hasFocus= */ false, /* shouldShowKeyboard= */ false);
+                triggerUrlFocusAnimation(false);
             }
             requestLayout();
         }
