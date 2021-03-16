@@ -82,11 +82,7 @@ GPUTestConfig::OS GetCurrentOS() {
       }
       break;
     case 11:
-      switch (minor_version) {
-        case 0:
-          return GPUTestConfig::kOsMacBigSur;
-      }
-      break;
+      return GPUTestConfig::kOsMacBigSur;
   }
   return GPUTestConfig::kOsUnknown;
 #elif defined(OS_ANDROID)
