@@ -4,6 +4,8 @@
 
 import("//chrome/test/base/js2gtest.gni")
 import("//third_party/closure_compiler/compile_js.gni")
+import("//ui/webui/resources/tools/js_modulizer.gni")
+import("//tools/polymer/polymer.gni")
 
 group("closure_compile") {
   deps = [
@@ -35,6 +37,15 @@ js_type_check("closure_compile_local") {
     ":oobe_modal_dialog",
     ":oobe_select",
     ":oobe_types",
+  ]
+}
+
+js_type_check("closure_compile_module") {
+  is_polymer3 = true
+  deps = [
+    ":display_manager_types.m",
+    ":login_screen_behavior.m",
+    ":multi_step_behavior.m",
   ]
 }
 
@@ -104,4 +115,35 @@ js_library("oobe_select") {
 }
 
 js_library("html-echo") {
+}
+
+#### Polymer3 / JS Modules
+
+js_library("display_manager_types.m") {
+  sources = [ "$root_gen_dir/chrome/browser/resources/chromeos/login/components/display_manager_types.m.js" ]
+  deps = []
+  extra_deps = [ ":modulize" ]
+}
+
+js_library("login_screen_behavior.m") {
+  sources = [ "$root_gen_dir/chrome/browser/resources/chromeos/login/components/login_screen_behavior.m.js" ]
+  deps = [
+    ":display_manager_types.m"
+  ]
+  extra_deps = [ ":modulize" ]
+}
+
+js_library("multi_step_behavior.m") {
+  sources = [ "$root_gen_dir/chrome/browser/resources/chromeos/login/components/multi_step_behavior.m.js" ]
+  deps = []
+  extra_deps = [ ":modulize" ]
+}
+
+js_modulizer("modulize") {
+  input_files = [
+    "display_manager_types.js",
+    "login_screen_behavior.js",
+    "multi_step_behavior.js",
+  ]
+  namespace_rewrites = []
 }

@@ -18,7 +18,11 @@ const GesturePage = {
 Polymer({
   is: 'gesture-navigation-element',
 
-  behaviors: [OobeI18nBehavior, LoginScreenBehavior, MultiStepBehavior],
+  behaviors: [
+    OobeI18nBehavior,
+    LoginScreenBehavior,
+    MultiStepBehavior
+  ],
 
   UI_STEPS: GesturePage,
 

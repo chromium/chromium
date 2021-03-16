@@ -39,7 +39,11 @@ const UIState = {
 Polymer({
   is: 'oobe-update-element',
 
-  behaviors: [OobeI18nBehavior, MultiStepBehavior, LoginScreenBehavior],
+  behaviors: [
+    OobeI18nBehavior,
+    MultiStepBehavior,
+    LoginScreenBehavior
+  ],
 
   EXTERNAL_API: [
     'setCancelUpdateShortcutEnabled',

@@ -28,6 +28,13 @@ group("closure_compile") {
   ]
 }
 
+js_type_check("closure_compile_module") {
+  is_polymer3 = true
+  deps = [
+    "components:closure_compile_module",
+  ]
+}
+
 js_type_check("closure_compile_local") {
   uses_legacy_modules = true
   deps = [

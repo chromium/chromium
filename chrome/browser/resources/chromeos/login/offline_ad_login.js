@@ -40,7 +40,11 @@ var JoinConfigType;
 Polymer({
   is: 'offline-ad-login-element',
 
-  behaviors: [OobeI18nBehavior, LoginScreenBehavior, MultiStepBehavior],
+  behaviors: [
+    OobeI18nBehavior,
+    LoginScreenBehavior,
+    MultiStepBehavior
+  ],
 
   EXTERNAL_API: [
     'reset',

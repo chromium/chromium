@@ -17,7 +17,11 @@ const UIState = {
 Polymer({
   is: 'supervision-transition-element',
 
-  behaviors: [OobeI18nBehavior, LoginScreenBehavior, MultiStepBehavior],
+  behaviors: [
+    OobeI18nBehavior,
+    LoginScreenBehavior,
+    MultiStepBehavior
+  ],
 
   properties: {
     /**

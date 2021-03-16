@@ -40,7 +40,7 @@ var DISPLAY_TYPE = {
  * Should be in sync with login_types.h
  * @enum {number}
  */
-var OOBE_UI_STATE = {
+/* #export */ var OOBE_UI_STATE = {
   HIDDEN: 0, /* Any OOBE screen without specific state */
   GAIA_SIGNIN: 1,
   ACCOUNT_PICKER: 2,

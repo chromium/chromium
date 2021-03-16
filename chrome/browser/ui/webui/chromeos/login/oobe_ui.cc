@@ -149,6 +149,12 @@ constexpr char kRecommendAppListViewJSPath[] = "recommend_app_list_view.js";
 constexpr char kTestAPIJSPath[] = "test_api.js";
 constexpr char kWebviewSamlInjectedJSPath[] = "webview_saml_injected.js";
 
+// Public
+constexpr char kLoginScreenBehaviorHTML[] = "components/login_screen_behavior.html";
+constexpr char kLoginScreenBehaviorJS[] = "components/login_screen_behavior.js";
+constexpr char kMultiStepBehaviorHTML[] = "components/multi_step_behavior.html";
+constexpr char kMultiStepBehaviorJS[] = "components/multi_step_behavior.js";
+
 // Components
 constexpr char kOobeSharedVarsCssHTML[] =
     "components/oobe_shared_vars_css.html";
@@ -693,6 +699,15 @@ OobeUI::~OobeUI() {
 
 void OobeUI::AddOobeComponents(content::WebUIDataSource* source,
                                const base::DictionaryValue& localized_strings) {
+  source->AddResourcePath(kLoginScreenBehaviorHTML,
+                          IDR_OOBE_COMPONENTS_LOGIN_SCREEN_BEHAVIOR_HTML);
+  source->AddResourcePath(kLoginScreenBehaviorJS,
+                          IDR_OOBE_COMPONENTS_LOGIN_SCREEN_BEHAVIOR_JS);
+  source->AddResourcePath(kMultiStepBehaviorHTML,
+                          IDR_OOBE_COMPONENTS_MULTI_STEP_BEHAVIOR_HTML);
+  source->AddResourcePath(kMultiStepBehaviorJS,
+                          IDR_OOBE_COMPONENTS_MULTI_STEP_BEHAVIOR_JS);
+
   source->AddResourcePath(kI18nBehaviorHTML,
                           IDR_OOBE_COMPONENTS_I18N_BEHAVIOR_HTML);
   source->AddResourcePath(kI18nBehaviorJS,
