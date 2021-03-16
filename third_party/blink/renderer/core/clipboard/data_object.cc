@@ -57,10 +57,9 @@ DataObject* DataObject::CreateFromClipboard(SystemClipboard* system_clipboard,
   for (const String& type : system_clipboard->ReadAvailableTypes()) {
     if (paste_mode == PasteMode::kPlainTextOnly && type != kMimeTypeTextPlain)
       continue;
-    mojom::blink::ClipboardFilesPtr files;
     if (type == kMimeTypeTextURIList &&
         base::FeatureList::IsEnabled(features::kClipboardFilenames)) {
-      files = system_clipboard->ReadFiles();
+      mojom::blink::ClipboardFilesPtr files = system_clipboard->ReadFiles();
       // Ignore ReadFiles() result if clipboard sequence number has changed.
       if (system_clipboard->SequenceNumber() != sequence_number) {
         files->files.clear();
@@ -72,9 +71,9 @@ DataObject* DataObject::CreateFromClipboard(SystemClipboard* system_clipboard,
             base::MakeRefCounted<FileSystemAccessDropData>(
                 std::move(file->file_system_access_token)));
       }
-    }
-    if (files && !files->files.IsEmpty()) {
-      DraggedIsolatedFileSystem::PrepareForDataObject(data_object);
+      if (files && !files->files.IsEmpty()) {
+        DraggedIsolatedFileSystem::PrepareForDataObject(data_object);
+      }
     } else {
       data_object->item_list_.push_back(DataObjectItem::CreateFromClipboard(
           system_clipboard, type, sequence_number));
