@@ -587,8 +587,8 @@ IN_PROC_BROWSER_TEST_F(PopupTrackerBrowserTest,
       static_cast<int>(WindowOpenDisposition::NEW_POPUP));
 }
 
-// TODO(crbug.com/1146598): Test is flaky on Lacros.
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
+// TODO(crbug.com/1146598): Test is flaky on Lacros, Linux Ozone Wayland.
+#if BUILDFLAG(IS_CHROMEOS_LACROS) || defined(OS_LINUX)
 #define MAYBE_PopupNoRedirect_RedirectCountZero DISABLED_PopupNoRedirect_RedirectCountZero
 #else
 #define MAYBE_PopupNoRedirect_RedirectCountZero PopupNoRedirect_RedirectCountZero
