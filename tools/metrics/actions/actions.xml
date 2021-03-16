@@ -2960,6 +2960,15 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="Autofill_OfferNotificationInfoBar_DeepLinkClicked">
+  <owner>siashah@chromium.org</owner>
+  <owner>siyua@chromium.org</owner>
+  <description>
+    This user action is logged when user clicks on the &quot;See details&quot;
+    link shown in the Offer Notification InfoBar on mobile.
+  </description>
+</action>
+
 <action name="Autofill_OnWillSubmitForm">
   <owner>battre@chromium.org</owner>
   <description>
