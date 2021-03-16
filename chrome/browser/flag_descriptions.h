@@ -2841,10 +2841,6 @@ extern const char kUnifiedMediaViewDescription[];
 extern const char kUseFakeDeviceForMediaStreamName[];
 extern const char kUseFakeDeviceForMediaStreamDescription[];
 
-// TODO(b/177462291): make flag available on LaCrOS.
-extern const char kVaapiAV1DecoderName[];
-extern const char kVaapiAV1DecoderDescription[];
-
 extern const char kVaapiJpegImageDecodeAccelerationName[];
 extern const char kVaapiJpegImageDecodeAccelerationDescription[];
 
@@ -2879,6 +2875,9 @@ extern const char kWifiSyncAndroidDescription[];
 #if defined(OS_CHROMEOS)
 extern const char kDeprecateLowUsageCodecsName[];
 extern const char kDeprecateLowUsageCodecsDescription[];
+
+extern const char kVaapiAV1DecoderName[];
+extern const char kVaapiAV1DecoderDescription[];
 #endif  // defined(OS_CHROMEOS)
 
 #if defined(OS_CHROMEOS) && BUILDFLAG(USE_CHROMEOS_MEDIA_ACCELERATION)
