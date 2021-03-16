@@ -9,12 +9,8 @@ import("//build/config/android/rules.gni")
 # uses :preconditions_stub_java
 android_library("preconditions_stub_java") {
   sources = [
+    "java/androidx/core/util/Preconditions.java",
     "java/com/google/android/gms/common/internal/Preconditions.java",
     "java/com/google/common/base/Preconditions.java",
   ]
-  deps = [ ":preconditions_androidx_stub_java" ]
-}
-
-android_library("preconditions_androidx_stub_java") {
-  sources = [ "java/androidx/core/util/Preconditions.java" ]
 }
