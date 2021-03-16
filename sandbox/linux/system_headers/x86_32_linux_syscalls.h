@@ -1710,5 +1710,33 @@
 #define __NR_clone3 435
 #endif
 
+#if !defined(__NR_close_range)
+#define __NR_close_range 436
+#endif
+
+#if !defined(__NR_openat2)
+#define __NR_openat2 437
+#endif
+
+#if !defined(__NR_pidfd_getfd)
+#define __NR_pidfd_getfd 438
+#endif
+
+#if !defined(__NR_faccessat2)
+#define __NR_faccessat2 439
+#endif
+
+#if !defined(__NR_process_madvise)
+#define __NR_process_madvise 440
+#endif
+
+#if !defined(__NR_epoll_pwait2)
+#define __NR_epoll_pwait2 441
+#endif
+
+#if !defined(__NR_mount_setattr)
+#define __NR_mount_setattr 442
+#endif
+
 #endif  // SANDBOX_LINUX_SYSTEM_HEADERS_X86_32_LINUX_SYSCALLS_H_
 
