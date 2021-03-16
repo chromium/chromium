@@ -88,29 +88,9 @@ public class PageInfoDiscoverabilityTest {
         });
     }
 
-    @Test
-    @MediumTest
-    @Feature({"PageInfoDiscoverability"})
-    @EnableFeatures({PageInfoFeatureList.PAGE_INFO_DISCOVERABILITY})
-    public void testPageInfoDiscoverabilityFlagOn() throws Exception {
-        Assert.assertEquals(ContentSettingsType.DEFAULT, mMediator.getLastPermission());
-
-        // Prompt for location and accept it.
-        RuntimePermissionTestUtils.setupGeolocationSystemMock();
-        String[] requestablePermission = new String[] {Manifest.permission.ACCESS_COARSE_LOCATION,
-                Manifest.permission.ACCESS_FINE_LOCATION};
-        RuntimePermissionTestUtils.TestAndroidPermissionDelegate testAndroidPermissionDelegate =
-                new RuntimePermissionTestUtils.TestAndroidPermissionDelegate(requestablePermission,
-                        RuntimePermissionTestUtils.RuntimePromptResponse.GRANT);
-        RuntimePermissionTestUtils.runTest(mPermissionTestRule, testAndroidPermissionDelegate,
-                GEOLOCATION_TEST, true /* expectPermissionAllowed */,
-                true /* permissionPromptAllow */, false /* waitForMissingPermissionPrompt */,
-                true /* waitForUpdater */, null /* javascriptToExecute */,
-                0 /* missingPermissionPromptTextId */);
-
-        Assert.assertEquals(ContentSettingsType.GEOLOCATION, mMediator.getLastPermission());
-    }
-
+    /**
+     * Tests no omnibox permission with flag off.
+     */
     @Test
     @MediumTest
     @Feature({"PageInfoDiscoverability"})
@@ -132,5 +112,57 @@ public class PageInfoDiscoverabilityTest {
                 0 /* missingPermissionPromptTextId */);
 
         Assert.assertEquals(ContentSettingsType.DEFAULT, mMediator.getLastPermission());
+    }
+
+    /**
+     * Tests omnibox permission when permission is allowed by the user.
+     */
+    @Test
+    @MediumTest
+    @Feature({"PageInfoDiscoverability"})
+    @EnableFeatures({PageInfoFeatureList.PAGE_INFO_DISCOVERABILITY})
+    public void testPageInfoDiscoverabilityAllowPrompt() throws Exception {
+        Assert.assertEquals(ContentSettingsType.DEFAULT, mMediator.getLastPermission());
+
+        // Prompt for location and accept it.
+        RuntimePermissionTestUtils.setupGeolocationSystemMock();
+        String[] requestablePermission = new String[] {Manifest.permission.ACCESS_COARSE_LOCATION,
+                Manifest.permission.ACCESS_FINE_LOCATION};
+        RuntimePermissionTestUtils.TestAndroidPermissionDelegate testAndroidPermissionDelegate =
+                new RuntimePermissionTestUtils.TestAndroidPermissionDelegate(requestablePermission,
+                        RuntimePermissionTestUtils.RuntimePromptResponse.GRANT);
+        RuntimePermissionTestUtils.runTest(mPermissionTestRule, testAndroidPermissionDelegate,
+                GEOLOCATION_TEST, true /* expectPermissionAllowed */,
+                true /* permissionPromptAllow */, false /* waitForMissingPermissionPrompt */,
+                true /* waitForUpdater */, null /* javascriptToExecute */,
+                0 /* missingPermissionPromptTextId */);
+
+        Assert.assertEquals(ContentSettingsType.GEOLOCATION, mMediator.getLastPermission());
+    }
+
+    /**
+     * Tests omnibox permission when permission is blocked by the user.
+     */
+    @Test
+    @MediumTest
+    @Feature({"PageInfoDiscoverability"})
+    @EnableFeatures({PageInfoFeatureList.PAGE_INFO_DISCOVERABILITY})
+    public void testPageInfoDiscoverabilityBlockPrompt() throws Exception {
+        Assert.assertEquals(ContentSettingsType.DEFAULT, mMediator.getLastPermission());
+
+        // Prompt for location and deny it.
+        RuntimePermissionTestUtils.setupGeolocationSystemMock();
+        String[] requestablePermission = new String[] {Manifest.permission.ACCESS_COARSE_LOCATION,
+                Manifest.permission.ACCESS_FINE_LOCATION};
+        RuntimePermissionTestUtils.TestAndroidPermissionDelegate testAndroidPermissionDelegate =
+                new RuntimePermissionTestUtils.TestAndroidPermissionDelegate(requestablePermission,
+                        RuntimePermissionTestUtils.RuntimePromptResponse.DENY);
+        RuntimePermissionTestUtils.runTest(mPermissionTestRule, testAndroidPermissionDelegate,
+                GEOLOCATION_TEST, false /* expectPermissionAllowed */,
+                false /* permissionPromptAllow */, false /* waitForMissingPermissionPrompt */,
+                true /* waitForUpdater */, null /* javascriptToExecute */,
+                0 /* missingPermissionPromptTextId */);
+
+        Assert.assertEquals(ContentSettingsType.GEOLOCATION, mMediator.getLastPermission());
     }
 }

@@ -17,6 +17,7 @@ import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
 import static org.hamcrest.CoreMatchers.allOf;
 import static org.hamcrest.CoreMatchers.containsString;
+import static org.hamcrest.Matchers.not;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
@@ -530,6 +531,22 @@ public class PageInfoViewTest {
                     PageInfoController.NO_HIGHLIGHTED_PERMISSION);
         });
         onViewWaiting(allOf(withText(R.string.page_info_connection_paint_preview), isDisplayed()));
+    }
+
+    /**
+     * Tests PageInfo on a website with permissions and no particular row highlight.
+     */
+    @Test
+    @MediumTest
+    @Features.EnableFeatures(
+            {PageInfoFeatureList.PAGE_INFO_V2, PageInfoFeatureList.PAGE_INFO_DISCOVERABILITY})
+    public void
+    testShowWithPermissionsAndWithoutHighlight() throws IOException {
+        addSomePermissions(mTestServerRule.getServer().getURL("/"));
+        loadUrlAndOpenPageInfoWithPermission(mTestServerRule.getServer().getURL(sSimpleHtml),
+                PageInfoController.NO_HIGHLIGHTED_PERMISSION);
+        onView(withId(R.id.page_info_permissions_row))
+                .check(matches(not(hasBackgroundColor(R.color.iph_highlight_blue))));
     }
 
     /**
