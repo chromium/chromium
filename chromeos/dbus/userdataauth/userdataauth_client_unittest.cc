@@ -19,6 +19,7 @@
 using ::testing::_;
 using ::testing::Invoke;
 using ::testing::Return;
+using ::testing::SaveArg;
 
 namespace chromeos {
 
@@ -30,6 +31,57 @@ void RunResponseCallback(dbus::ObjectProxy::ResponseCallback callback,
                          std::unique_ptr<dbus::Response> response) {
   std::move(callback).Run(response.get());
 }
+
+bool ProtobufEquals(const google::protobuf::MessageLite& a,
+                    const google::protobuf::MessageLite& b) {
+  std::string a_serialized, b_serialized;
+  a.SerializeToString(&a_serialized);
+  b.SerializeToString(&b_serialized);
+  return a_serialized == b_serialized;
+}
+
+class TestObserver : public UserDataAuthClient::Observer {
+ public:
+  // UserDataAuthClient::Observer overrides
+  void LowDiskSpace(const ::user_data_auth::LowDiskSpace& status) override {
+    last_low_disk_space_.CopyFrom(status);
+    low_disk_space_count_++;
+  }
+
+  void DircryptoMigrationProgress(
+      const ::user_data_auth::DircryptoMigrationProgress& progress) override {
+    last_dircrypto_progress_.CopyFrom(progress);
+    dircrypto_progress_count_++;
+  }
+
+  const ::user_data_auth::LowDiskSpace& last_low_disk_space() const {
+    return last_low_disk_space_;
+  }
+
+  int low_disk_space_count() const { return low_disk_space_count_; }
+
+  const ::user_data_auth::DircryptoMigrationProgress& last_dircrypto_progress()
+      const {
+    return last_dircrypto_progress_;
+  }
+
+  int dircrypto_progress_count() const { return dircrypto_progress_count_; }
+
+ private:
+  // The protobuf that came with the signal when the last low disk space_ event
+  // came.
+  ::user_data_auth::LowDiskSpace last_low_disk_space_;
+
+  // The number of times the LowDiskSpace signal is triggered.
+  int low_disk_space_count_ = 0;
+
+  // The protobuf that came with the signal when the last dircrypto migration
+  // progress event came.
+  ::user_data_auth::DircryptoMigrationProgress last_dircrypto_progress_;
+
+  // The number of times the DircryptoMigrationProgress signal is triggered.
+  int dircrypto_progress_count_ = 0;
+};
 
 }  // namespace
 
@@ -59,6 +111,16 @@ class UserDataAuthClientTest : public testing::Test {
     EXPECT_CALL(*proxy_.get(), DoCallMethod(_, _, _))
         .WillRepeatedly(Invoke(this, &UserDataAuthClientTest::OnCallMethod));
 
+    EXPECT_CALL(
+        *proxy_,
+        DoConnectToSignal(::user_data_auth::kUserDataAuthInterface,
+                          ::user_data_auth::kDircryptoMigrationProgress, _, _))
+        .WillOnce(SaveArg<2>(&dircrypto_progress_callback_));
+    EXPECT_CALL(*proxy_,
+                DoConnectToSignal(::user_data_auth::kUserDataAuthInterface,
+                                  ::user_data_auth::kLowDiskSpace, _, _))
+        .WillOnce(SaveArg<2>(&low_disk_space_callback_));
+
     UserDataAuthClient::Initialize(bus_.get());
 
     // Execute callbacks posted by `client_->Init()`.
@@ -70,6 +132,27 @@ class UserDataAuthClientTest : public testing::Test {
   void TearDown() override { UserDataAuthClient::Shutdown(); }
 
  protected:
+  void EmitLowDiskSpaceSignal(const ::user_data_auth::LowDiskSpace& status) {
+    dbus::Signal signal(::user_data_auth::kUserDataAuthInterface,
+                        ::user_data_auth::kLowDiskSpace);
+    dbus::MessageWriter writer(&signal);
+    writer.AppendProtoAsArrayOfBytes(status);
+    // Emit the signal.
+    ASSERT_FALSE(low_disk_space_callback_.is_null());
+    low_disk_space_callback_.Run(&signal);
+  }
+
+  void EmitDircryptoMigrationProgressSignal(
+      const ::user_data_auth::DircryptoMigrationProgress& status) {
+    dbus::Signal signal(::user_data_auth::kUserDataAuthInterface,
+                        ::user_data_auth::kDircryptoMigrationProgress);
+    dbus::MessageWriter writer(&signal);
+    writer.AppendProtoAsArrayOfBytes(status);
+    // Emit the signal.
+    ASSERT_FALSE(dircrypto_progress_callback_.is_null());
+    dircrypto_progress_callback_.Run(&signal);
+  }
+
   base::test::SingleThreadTaskEnvironment task_environment_;
 
   // Mock bus and proxy for simulating calls.
@@ -109,6 +192,13 @@ class UserDataAuthClientTest : public testing::Test {
         FROM_HERE, base::BindOnce(RunResponseCallback, std::move(*callback),
                                   std::move(response)));
   }
+
+  // Callback that delivers the Low Disk Space signal to the client when called.
+  dbus::ObjectProxy::SignalCallback low_disk_space_callback_;
+
+  // Callback that delivers the dircrypto Migration Progress signal to the
+  // client when called.
+  dbus::ObjectProxy::SignalCallback dircrypto_progress_callback_;
 };
 
 TEST_F(UserDataAuthClientTest, IsMounted) {
@@ -143,6 +233,65 @@ TEST_F(UserDataAuthClientTest, IsMountedInvalidProtobuf) {
   client_->IsMounted(::user_data_auth::IsMountedRequest(), std::move(callback));
   base::RunLoop().RunUntilIdle();
   ASSERT_EQ(result_reply, base::nullopt);
+}
+
+TEST_F(UserDataAuthClientTest, LowDiskSpaceSignal) {
+  constexpr uint64_t kFreeSpace1 = 0x1234567890123ULL;
+  constexpr uint64_t kFreeSpace2 = 0xFFFF9876ULL;
+
+  TestObserver observer;
+  client_->AddObserver(&observer);
+
+  ::user_data_auth::LowDiskSpace status;
+  status.set_disk_free_bytes(kFreeSpace1);
+
+  // Basic validity check, emit a signal and check.
+  EmitLowDiskSpaceSignal(status);
+  EXPECT_EQ(observer.low_disk_space_count(), 1);
+  EXPECT_EQ(observer.last_low_disk_space().disk_free_bytes(), kFreeSpace1);
+
+  // Try again to see nothing is stuck.
+  status.set_disk_free_bytes(kFreeSpace2);
+  EmitLowDiskSpaceSignal(status);
+  EXPECT_EQ(observer.low_disk_space_count(), 2);
+  EXPECT_EQ(observer.last_low_disk_space().disk_free_bytes(), kFreeSpace2);
+
+  // Remove the observer to check that it no longer gets triggered.
+  client_->RemoveObserver(&observer);
+  EmitLowDiskSpaceSignal(status);
+  EXPECT_EQ(observer.low_disk_space_count(), 2);
+}
+
+TEST_F(UserDataAuthClientTest, DircryptoMigrationProgressSignal) {
+  // Prepare the test constants.
+  constexpr uint64_t kTotalBytes = 0x1234567890123ULL;
+  ::user_data_auth::DircryptoMigrationProgress progress1, progress2;
+  progress1.set_status(::user_data_auth::DircryptoMigrationStatus::
+                           DIRCRYPTO_MIGRATION_IN_PROGRESS);
+  progress1.set_current_bytes(12345);
+  progress1.set_total_bytes(kTotalBytes);
+  progress2.set_status(
+      ::user_data_auth::DircryptoMigrationStatus::DIRCRYPTO_MIGRATION_SUCCESS);
+  progress2.set_current_bytes(kTotalBytes);
+  progress2.set_total_bytes(kTotalBytes);
+
+  TestObserver observer;
+  client_->AddObserver(&observer);
+
+  // Basic validity check, emit a signal and check.
+  EmitDircryptoMigrationProgressSignal(progress1);
+  EXPECT_EQ(observer.dircrypto_progress_count(), 1);
+  EXPECT_TRUE(ProtobufEquals(observer.last_dircrypto_progress(), progress1));
+
+  // Try again to see nothing is stuck.
+  EmitDircryptoMigrationProgressSignal(progress2);
+  EXPECT_EQ(observer.dircrypto_progress_count(), 2);
+  EXPECT_TRUE(ProtobufEquals(observer.last_dircrypto_progress(), progress2));
+
+  // Remove the observer to check that it no longer gets triggered.
+  client_->RemoveObserver(&observer);
+  EmitDircryptoMigrationProgressSignal(progress1);
+  EXPECT_EQ(observer.dircrypto_progress_count(), 2);
 }
 
 }  // namespace chromeos

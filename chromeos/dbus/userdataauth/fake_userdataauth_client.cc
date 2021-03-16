@@ -12,6 +12,14 @@ FakeUserDataAuthClient::FakeUserDataAuthClient() = default;
 
 FakeUserDataAuthClient::~FakeUserDataAuthClient() = default;
 
+void FakeUserDataAuthClient::AddObserver(Observer* observer) {
+  NOTIMPLEMENTED();
+}
+
+void FakeUserDataAuthClient::RemoveObserver(Observer* observer) {
+  NOTIMPLEMENTED();
+}
+
 void FakeUserDataAuthClient::IsMounted(
     const ::user_data_auth::IsMountedRequest& request,
     IsMountedCallback callback) {

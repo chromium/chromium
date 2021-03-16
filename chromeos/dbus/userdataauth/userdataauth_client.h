@@ -7,6 +7,7 @@
 
 #include "base/callback.h"
 #include "base/component_export.h"
+#include "base/observer_list_types.h"
 #include "chromeos/dbus/cryptohome/UserDataAuth.pb.h"
 #include "chromeos/dbus/dbus_method_call_status.h"
 
@@ -21,6 +22,19 @@ namespace chromeos {
 // thread (UI thread) which initializes the DBusThreadManager instance.
 class COMPONENT_EXPORT(USERDATAAUTH_CLIENT) UserDataAuthClient {
  public:
+  class Observer : public base::CheckedObserver {
+   public:
+    // Called when LowDiskSpace signal is received, when the cryptohome
+    // partition is running out of disk space.
+    virtual void LowDiskSpace(const ::user_data_auth::LowDiskSpace& status) {}
+
+    // Called when DircryptoMigrationProgress signal is received.
+    // Typically, called periodically during a migration is performed by
+    // cryptohomed, as well as to notify the completion of migration.
+    virtual void DircryptoMigrationProgress(
+        const ::user_data_auth::DircryptoMigrationProgress& progress) {}
+  };
+
   using IsMountedCallback =
       DBusMethodCallback<::user_data_auth::IsMountedReply>;
 
@@ -39,6 +53,12 @@ class COMPONENT_EXPORT(USERDATAAUTH_CLIENT) UserDataAuthClient {
 
   // Returns the global instance which may be null if not initialized.
   static UserDataAuthClient* Get();
+
+  // Adds an observer.
+  virtual void AddObserver(Observer* observer) = 0;
+
+  // Removes an observer if added.
+  virtual void RemoveObserver(Observer* observer) = 0;
 
   // Actual DBus Methods:
 

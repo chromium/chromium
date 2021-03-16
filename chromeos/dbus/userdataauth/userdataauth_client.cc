@@ -49,6 +49,14 @@ bool ParseProto(dbus::Response* response,
   return true;
 }
 
+void OnSignalConnected(const std::string& interface_name,
+                       const std::string& signal_name,
+                       bool success) {
+  DCHECK_EQ(interface_name, ::user_data_auth::kUserDataAuthInterface);
+  LOG_IF(DFATAL, !success) << "Failed to connect to D-Bus signal; interface: "
+                           << interface_name << "; signal: " << signal_name;
+}
+
 // "Real" implementation of UserDataAuthClient talking to the cryptohomed's
 // UserDataAuth interface on the Chrome OS side.
 class UserDataAuthClientImpl : public UserDataAuthClient {
@@ -64,9 +72,18 @@ class UserDataAuthClientImpl : public UserDataAuthClient {
     proxy_ = bus->GetObjectProxy(
         ::user_data_auth::kUserDataAuthServiceName,
         dbus::ObjectPath(::user_data_auth::kUserDataAuthServicePath));
+    ConnectToSignals();
   }
 
   // UserDataAuthClient override:
+
+  void AddObserver(Observer* observer) override {
+    observer_list_.AddObserver(observer);
+  }
+
+  void RemoveObserver(Observer* observer) override {
+    observer_list_.RemoveObserver(observer);
+  }
 
   void WaitForServiceToBeAvailable(
       chromeos::WaitForServiceToBeAvailableCallback callback) override {
@@ -137,8 +154,54 @@ class UserDataAuthClientImpl : public UserDataAuthClient {
     std::move(callback).Run(reply_proto);
   }
 
+  void OnDircryptoMigrationProgress(dbus::Signal* signal) {
+    dbus::MessageReader reader(signal);
+    ::user_data_auth::DircryptoMigrationProgress proto;
+    if (!reader.PopArrayOfBytesAsProto(&proto)) {
+      LOG(ERROR) << "Failed to parse DircryptoMigrationProgress protobuf from "
+                    "UserDataAuth signal";
+      return;
+    }
+    for (auto& observer : observer_list_) {
+      observer.DircryptoMigrationProgress(proto);
+    }
+  }
+
+  void OnLowDiskSpace(dbus::Signal* signal) {
+    dbus::MessageReader reader(signal);
+    ::user_data_auth::LowDiskSpace proto;
+    if (!reader.PopArrayOfBytesAsProto(&proto)) {
+      LOG(ERROR)
+          << "Failed to parse LowDiskSpace protobuf from UserDataAuth signal";
+      return;
+    }
+    for (auto& observer : observer_list_) {
+      observer.LowDiskSpace(proto);
+    }
+  }
+
+  // Connects the dbus signals.
+  void ConnectToSignals() {
+    proxy_->ConnectToSignal(
+        ::user_data_auth::kUserDataAuthInterface,
+        ::user_data_auth::kDircryptoMigrationProgress,
+        base::BindRepeating(
+            &UserDataAuthClientImpl::OnDircryptoMigrationProgress,
+            weak_factory_.GetWeakPtr()),
+        base::BindOnce(&OnSignalConnected));
+    proxy_->ConnectToSignal(
+        ::user_data_auth::kUserDataAuthInterface,
+        ::user_data_auth::kLowDiskSpace,
+        base::BindRepeating(&UserDataAuthClientImpl::OnLowDiskSpace,
+                            weak_factory_.GetWeakPtr()),
+        base::BindOnce(&OnSignalConnected));
+  }
+
   // D-Bus proxy for cryptohomed, not owned.
   dbus::ObjectProxy* proxy_ = nullptr;
+
+  // List of observers for dbus signals.
+  base::ObserverList<Observer> observer_list_;
 
   base::WeakPtrFactory<UserDataAuthClientImpl> weak_factory_{this};
 };

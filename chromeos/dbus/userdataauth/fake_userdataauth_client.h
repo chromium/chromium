@@ -23,6 +23,8 @@ class COMPONENT_EXPORT(USERDATAAUTH_CLIENT) FakeUserDataAuthClient
   FakeUserDataAuthClient& operator=(const FakeUserDataAuthClient&) = delete;
 
   // UserDataAuthClient override:
+  void AddObserver(Observer* observer) override;
+  void RemoveObserver(Observer* observer) override;
   void WaitForServiceToBeAvailable(
       chromeos::WaitForServiceToBeAvailableCallback callback) override;
   void IsMounted(const ::user_data_auth::IsMountedRequest& request,
