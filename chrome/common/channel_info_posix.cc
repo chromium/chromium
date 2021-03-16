@@ -4,13 +4,7 @@
 
 #include "chrome/common/channel_info.h"
 
-#include <stdlib.h>
-
-#include <string>
-
 #include "base/environment.h"
-#include "base/notreached.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 #include "build/branding_buildflags.h"
 #include "build/build_config.h"
@@ -21,58 +15,46 @@ namespace chrome {
 
 namespace {
 
-struct ChannelState {
-  version_info::Channel channel;
-  bool is_extended_stable;
-};
+// Helper function to return both the channel enum and modifier string.
+// Implements both together to prevent their behavior from diverging, which has
+// happened multiple times in the past.
+version_info::Channel GetChannelImpl(std::string* modifier_out) {
+  version_info::Channel channel = version_info::Channel::UNKNOWN;
+  std::string modifier;
 
-// Returns the channel state for the browser based on branding and the
-// CHROME_VERSION_EXTRA environment variable. In unbranded (Chromium) builds,
-// this function unconditionally returns `channel` = UNKNOWN and
-// `is_extended_stable` = false. In branded (Google Chrome) builds, this
-// function returns `channel` = UNKNOWN and `is_extended_stable` = false for any
-// unexpected $CHROME_VERSION_EXTRA value.
-ChannelState GetChannelImpl() {
+  char* env = getenv("CHROME_VERSION_EXTRA");
+  if (env)
+    modifier = env;
+
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-  const base::StringPiece env = getenv("CHROME_VERSION_EXTRA");
+  // Only ever return "", "unknown", "dev" or "beta" in a branded build.
+  if (modifier == "unstable")  // linux version of "dev"
+    modifier = "dev";
+  if (modifier == "stable") {
+    channel = version_info::Channel::STABLE;
+    modifier = "";
+  } else if (modifier == "dev") {
+    channel = version_info::Channel::DEV;
+  } else if (modifier == "beta") {
+    channel = version_info::Channel::BETA;
+  } else {
+    modifier = "unknown";
+  }
+#endif
 
-  // Ordered by decreasing expected population size.
-  if (env == "stable")
-    return {version_info::Channel::STABLE, /*is_extended_stable=*/false};
-  if (env == "extended")
-    return {version_info::Channel::STABLE, /*is_extended_stable=*/true};
-  if (env == "beta")
-    return {version_info::Channel::BETA, /*is_extended_stable=*/false};
-  if (env == "unstable")  // linux version of "dev"
-    return {version_info::Channel::DEV, /*is_extended_stable=*/false};
-#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
+  if (modifier_out)
+    modifier_out->swap(modifier);
 
-  return {version_info::Channel::UNKNOWN, /*is_extended_stable=*/false};
+  return channel;
 }
 
 }  // namespace
 
 std::string GetChannelName(WithExtendedStable with_extended_stable) {
-#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-  const auto channel_state = GetChannelImpl(with_extended_stable);
-  switch (channel_state.channel) {
-    case version_info::Channel::UNKNOWN:
-      return "unknown";
-    case version_info::Channel::CANARY:
-      NOTREACHED();
-      return "unknown";
-    case version_info::Channel::DEV:
-      return "dev";
-    case version_info::Channel::BETA:
-      return "beta";
-    case version_info::Channel::STABLE:
-      if (with_extended_stable && channel_state.is_extended_stable)
-        return "extended";
-      return std::string();
-  }
-#else   // BUILDFLAG(GOOGLE_CHROME_BRANDING)
-  return std::string(base::StringPiece(getenv("CHROME_VERSION_EXTRA")));
-#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
+  // TODO(https://crbug.com/1185621): Detect extended stable.
+  std::string modifier;
+  GetChannelImpl(&modifier);
+  return modifier;
 }
 
 std::string GetChannelSuffixForDataDir() {
@@ -82,8 +64,7 @@ std::string GetChannelSuffixForDataDir() {
     case version_info::Channel::DEV:
       return "-unstable";
     default:
-      // Stable, extended stable, and unknown (e.g. in unbranded builds) don't
-      // get a suffix.
+      // Stable and unknown (e.g. in unbranded builds) don't get a suffix.
       return std::string();
   }
 }
@@ -107,7 +88,6 @@ std::string GetDesktopName(base::Environment* env) {
     case version_info::Channel::BETA:
       return "google-chrome-beta.desktop";
     default:
-      // Extended stable is not differentiated from regular stable.
       return "google-chrome.desktop";
   }
 #else  // BUILDFLAG(CHROMIUM_BRANDING)
@@ -123,11 +103,12 @@ std::string GetDesktopName(base::Environment* env) {
 #endif  // defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
 
 version_info::Channel GetChannel() {
-  return GetChannelImpl().channel;
+  return GetChannelImpl(nullptr);
 }
 
 bool IsExtendedStableChannel() {
-  return GetChannelImpl().is_extended_stable;
+  // TODO(https://crbug.com/1185621): Detect extended stable.
+  return false;
 }
 
 }  // namespace chrome
