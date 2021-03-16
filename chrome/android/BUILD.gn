@@ -154,8 +154,8 @@ generate_ui_locale_resources("ui_locale_string_resources") {
 
 # Resources which are needed in the base module manifest's application tag
 # should be added here. These are split out from chrome_app_java_resources
-# because //chrome resources may be included in a DFM instead of the base module
-# if the enable_chrome_module gn arg is true.
+# because //chrome resources may be included in a DFM instead of the base
+# module.
 android_resources("chrome_base_module_resources") {
   sources = [
     "java/res_base/anim/no_anim.xml",
@@ -2219,8 +2219,8 @@ android_library("base_monochrome_module_java") {
   }
 }
 
-# Target for classes which should be in the base module, even when
-# enable_chrome_module is true and //chrome code is in a DFM.
+# Target for classes which should be in the base module, even when //chrome code
+# is in a DFM.
 android_library("base_module_java") {
   sources = [
     "java/src/com/google/ipc/invalidation/ticl/android2/channel/GcmRegistrationTaskService.java",
@@ -2354,13 +2354,12 @@ template("monochrome_public_apk_or_module_tmpl") {
       "$target_gen_dir/manifest/${target_name}/AndroidManifest_split.xml"
   _is_trichrome =
       defined(invoker.use_trichrome_library) && invoker.use_trichrome_library
-  _enable_chrome_module =
-      enable_chrome_module && invoker.target_type == "android_app_bundle_module"
+  _is_bundle = invoker.target_type == "android_app_bundle_module"
 
   # Generate the manifest here in the template, to avoid a growing collection
   # of manually-instantiated manifests.
   split_manifest_template("${target_name}__android_manifest") {
-    definitions_in_split = _enable_chrome_module
+    definitions_in_split = _is_bundle
     includes = [ "java/AndroidManifest.xml" ]
     split_input = "java/AndroidManifest_split.xml"
     split_output = _split_android_manifest
@@ -2444,7 +2443,7 @@ template("monochrome_public_apk_or_module_tmpl") {
     }
 
     deps = []
-    if (_enable_chrome_module) {
+    if (_is_bundle) {
       deps += [ "//chrome/android:chrome_base_module_resources" ]
     } else {
       deps += [
@@ -2458,7 +2457,7 @@ template("monochrome_public_apk_or_module_tmpl") {
         "//android_webview/nonembedded:icon_resources",
         "//android_webview/nonembedded:monochrome_devui_launcher_icon_resources",
       ]
-      if (!_enable_chrome_module) {
+      if (!_is_bundle) {
         deps += [ ":monochrome_java" ]
       }
       if (webview_includes_weblayer) {
@@ -3100,14 +3099,12 @@ template("monochrome_or_trichrome_public_bundle_tmpl") {
     min_sdk_version = _min_sdk_version
     module_descs = _module_descs
     version_code = _version_code
-    if (enable_chrome_module) {
-      chrome_deps = [
-        "//chrome/android:app_hooks_java",
-        "//components/externalauth/android:google_delegate_public_impl_java",
-      ]
-      if (!_is_trichrome) {
-        chrome_deps += [ "//chrome/android:monochrome_java" ]
-      }
+    chrome_deps = [
+      "//chrome/android:app_hooks_java",
+      "//components/externalauth/android:google_delegate_public_impl_java",
+    ]
+    if (!_is_trichrome) {
+      chrome_deps += [ "//chrome/android:monochrome_java" ]
     }
 
     if (!is_java_debug) {

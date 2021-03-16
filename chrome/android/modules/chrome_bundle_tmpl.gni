@@ -23,8 +23,7 @@ template("chrome_bundle") {
   _package_id = 126  # == 0x7e.
   _extra_modules = []
   _module_descs = invoker.module_descs
-  _enable_chrome_module =
-      enable_chrome_module && invoker.is_monochrome_or_trichrome
+  _enable_chrome_module = invoker.is_monochrome_or_trichrome
 
   # If enable_chrome_module is true, //chrome Java code and resources will be
   # split out into a chrome DFM in Monochrome and Trichrome bundles. This will
@@ -55,9 +54,7 @@ template("chrome_bundle") {
     _module_descs += [ chrome_module_desc ]
   }
 
-  _enable_isolated_splits =
-      enable_isolated_splits && invoker.is_monochrome_or_trichrome
-  if (_enable_isolated_splits) {
+  if (invoker.is_monochrome_or_trichrome) {
     # TODO(crbug.com/1126301): Isolated splits cause various bugs with resource
     # access. For now, move all resources to the base module.
     _base_target_name = get_label_info(invoker.base_module_target, "name")
@@ -82,7 +79,7 @@ template("chrome_bundle") {
     # "Replacing nonempty scope" error is thrown.
     _module_desc = {
     }
-    if (_enable_chrome_module && enable_chrome_child_modules) {
+    if (_enable_chrome_module) {
       _module_desc = _tmp_module_desc
     } else {
       # Remove uses_split if child modules are not enabled.

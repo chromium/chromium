@@ -73,6 +73,6 @@ trichrome_module_descs = monochrome_module_descs
 
 # Add this after we assign trichrome_module_descs, since WebLayer should only be
 # part of Monochrome.
-if (enable_chrome_module && webview_includes_weblayer) {
+if (webview_includes_weblayer) {
   monochrome_module_descs += [ weblayer_module_desc ]
 }

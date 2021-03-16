@@ -7,23 +7,6 @@ import("//build/config/android/config.gni")
 import("//build/config/compiler/compiler.gni")
 import("//device/vr/buildflags/buildflags.gni")
 
-declare_args() {
-  # Whether //chrome code and resources are in a DFM for Monochrome and
-  # Trichrome bundles. This module will also include code and resources from all
-  # other DFMs.
-  enable_chrome_module = true
-
-  # Whether to enable DFMs which depend on the chrome DFM. These will be split
-  # out of the chrome DFM using DexSplitter.
-  enable_chrome_child_modules = true
-}
-
-declare_args() {
-  # Whether isolated splits are enabled. This can be enabled/disabled separately
-  # from enable_chrome_module to test performance in various configurations.
-  enable_isolated_splits = enable_chrome_module
-}
-
 # If true, lld is used to partition feature code into separate libraries, which
 # in turn are included in Dynamic Feature Modules.
 use_native_partitions = is_android && is_clang && use_lld && !is_component_build

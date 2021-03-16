@@ -165,6 +165,11 @@ public class SplitChromeApplication extends SplitCompatApplication {
                     @Override
                     public void onActivityStateChange(
                             Activity activity, @ActivityState int newState) {
+                        // Some tests pass an activity without a base context.
+                        if (activity.getBaseContext() == null) {
+                            return;
+                        }
+
                         if (newState != ActivityState.CREATED) {
                             return;
                         }

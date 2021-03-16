@@ -73,8 +73,6 @@ template("chrome_public_common_apk_or_module_tmpl") {
   _is_64_bit_browser =
       defined(invoker.is_64_bit_browser) && invoker.is_64_bit_browser
   _is_bundle = invoker.target_type == "android_app_bundle_module"
-  _enable_chrome_module =
-      _is_bundle && enable_chrome_module && (_is_monochrome || _is_trichrome)
   not_needed([ "_is_64_bit_browser" ])
   assert(!(_is_monochrome && _is_trichrome),
          "Cannot be both trichrome and monochrome!")
@@ -265,10 +263,6 @@ template("chrome_public_common_apk_or_module_tmpl") {
         "//base/android/proguard/chromium_apk.flags",
         "//base/android/proguard/chromium_code.flags",
       ]
-      if (_enable_chrome_module) {
-        proguard_configs +=
-            [ "//chrome/android/proguard/isolated_splits.flags" ]
-      }
     }
 
     if (use_chromium_linker) {
@@ -303,7 +297,7 @@ template("chrome_public_common_apk_or_module_tmpl") {
       deps += [ ":$_unwind_asset_target" ]
     }
 
-    if (!_enable_chrome_module) {
+    if (!_is_bundle || !(_is_monochrome || _is_trichrome)) {
       deps += [ "//chrome/android:chrome_all_java" ]
     }
 
@@ -388,18 +382,11 @@ template("monochrome_public_common_apk_or_module_tmpl") {
       }
 
       if (_is_bundle_module && invoker.is_base_module && enable_arcore) {
-        # AR DFM is disabled - bring in the ar_java target along with ARCore SDK
-        # and set the loadable_modules / secondary_abi_loadable_modules to what
-        # would be brought in by the module.
-        # This needs to happen for monochrome & trichrome builds of base module if ARCore is enabled.
-
-        if (!enable_chrome_module) {
-          deps += [
-            "//components/webxr/android:ar_java",
-            "//third_party/arcore-android-sdk-client:com_google_ar_core_java",
-          ]
-        }
-
+        # AR DFM is disabled - set the loadable_modules /
+        # secondary_abi_loadable_modules to what would be brought in by the
+        # module. The AR Java will be brought in by the chrome_bundle target.
+        # This needs to happen for monochrome & trichrome builds of base module
+        # if ARCore is enabled.
         _libarcore_dir = get_label_info(
                              "//third_party/arcore-android-sdk-client:com_google_ar_core_java($default_toolchain)",
                              "target_out_dir") + "/com_google_ar_core_java/jni"
@@ -418,15 +405,13 @@ template("monochrome_public_common_apk_or_module_tmpl") {
         }
       }
 
-      if (_is_bundle_module && enable_isolated_splits) {
+      if (_is_bundle_module) {
         # Sets ISOLATED_SPLITS_ENABLED in BuildConfig.java.
         isolated_splits_enabled = true
         deps += [ ":${target_name}__all_dfm_resources" ]
       }
 
-      _enable_chrome_module =
-          _is_bundle_module && invoker.is_base_module && enable_chrome_module
-      if (_enable_chrome_module) {
+      if (_is_bundle_module && invoker.is_base_module) {
         # If the manifest is being verified, add the chrome module's manifest.
         if (defined(invoker.expected_android_manifest)) {
           _bundle_target_gen_dir =
@@ -496,7 +481,7 @@ template("monochrome_public_common_apk_or_module_tmpl") {
           "//android_webview/glue:glue_java",
           "//android_webview/nonembedded:nonembedded_java",
         ]
-        if (!enable_chrome_module || !_is_bundle_module) {
+        if (!_is_bundle_module) {
           deps += [ "//chrome/android:monochrome_java" ]
         }
 

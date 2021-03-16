@@ -8,13 +8,7 @@
 ## Note: This is a jinja2 template, processed at build time into the final manifest.
 ##
 
-{% block application_name %}
-{%- if enable_isolated_splits -%}
-org.chromium.chrome.browser.base.SplitMonochromeApplication
-{%- else -%}
-org.chromium.chrome.browser.MonochromeApplication
-{%- endif -%}
-{% endblock %}
+{% block application_name %}org.chromium.chrome.browser.base.SplitMonochromeApplication{% endblock %}
 
 ##
 ## The below is same as internal version, it seems that jinja doesn't have
