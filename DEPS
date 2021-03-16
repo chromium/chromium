@@ -379,8 +379,7 @@ vars = {
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling feed
   # and whatever else without interference from each other.
-  # TODO(crbug.com/1166332) rename to clang_format_revision.
-  'clang_fmt_revision':    '99803d74e35962f63a775f29477882afd4d57d94',
+  'clang_format_revision':    '99803d74e35962f63a775f29477882afd4d57d94',
 
   # If you change this, also update the libc++ revision in
   # //buildtools/deps_revisions.gni.
@@ -411,7 +410,7 @@ deps = {
   'src/buildtools/clang_format/script':
     Var('chromium_git') +
     '/external/github.com/llvm/llvm-project/clang/tools/clang-format.git@' +
-    Var('clang_fmt_revision'),
+    Var('clang_format_revision'),
   'src/buildtools/linux64': {
     'packages': [
       {
