@@ -4784,11 +4784,6 @@
     "expiry_milestone": -1
   },
   {
-    "name": "show-bluetooth-device-battery",
-    "owners": [ "hansberry", "cros-system-services@google.com", "sonnysasaka" ],
-    "expiry_milestone": 88
-  },
-  {
     "name": "show-metered-toggle",
     "owners": [ "stevenjb" ],
     "expiry_milestone": 92
