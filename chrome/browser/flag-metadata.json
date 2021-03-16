@@ -5239,11 +5239,6 @@
     "expiry_milestone": 93
   },
   {
-    "name": "videotoolbox-vp9-decoding",
-    "owners": [ "dalecurtis", "videostack-eng" ],
-    "expiry_milestone": 90
-  },
-  {
     "name": "vm-camera-mic-indicators-and-notifications",
     "owners": [ "lxj", "joelhockey", "timloh" ],
     "expiry_milestone": 90
