@@ -198,16 +198,6 @@ void BorealisApps::GetMenuModel(const std::string& app_id,
     AddCommandItem(ash::UNINSTALL, IDS_APP_LIST_UNINSTALL_ITEM, &menu_items);
   }
 
-  // TODO(b/170677773): Show shutdown in another app.
-  if (app_id == borealis::kBorealisAppId &&
-      borealis::BorealisService::GetForProfile(profile_)
-          ->ContextManager()
-          .IsRunning()) {
-    // TODO(b/174705762): Use borealis-specific strings.
-    AddCommandItem(ash::SHUTDOWN_GUEST_OS, IDS_PLUGIN_VM_SHUT_DOWN_MENU_ITEM,
-                   &menu_items);
-  }
-
   if (ShouldAddCloseItem(app_id, menu_type, profile_)) {
     AddCommandItem(ash::MENU_CLOSE, IDS_SHELF_CONTEXT_MENU_CLOSE, &menu_items);
   }
