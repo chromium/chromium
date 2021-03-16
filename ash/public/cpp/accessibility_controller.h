@@ -100,6 +100,10 @@ class ASH_PUBLIC_EXPORT AccessibilityController {
   // Stops point scanning in Switch Access.
   virtual void StopPointScan() = 0;
 
+  // Sets point scanning speed in Switch Access.
+  virtual void SetPointScanSpeedDipsPerSecond(
+      int point_scan_speed_dips_per_second) = 0;
+
   // Set whether dictation is active.
   virtual void SetDictationActive(bool is_active) = 0;
 

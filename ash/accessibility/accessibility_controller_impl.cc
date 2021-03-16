@@ -1114,8 +1114,6 @@ bool AccessibilityControllerImpl::IsPointScanEnabled() {
 
 void AccessibilityControllerImpl::StartPointScan() {
   if (::switches::IsSwitchAccessPointScanningEnabled()) {
-    if (!point_scan_controller_)
-      point_scan_controller_ = std::make_unique<PointScanController>();
     point_scan_controller_->Start();
   }
 }
@@ -1129,6 +1127,12 @@ void AccessibilityControllerImpl::SetA11yOverrideWindow(
 void AccessibilityControllerImpl::StopPointScan() {
   if (point_scan_controller_)
     point_scan_controller_->HideAll();
+}
+
+void AccessibilityControllerImpl::SetPointScanSpeedDipsPerSecond(
+    int point_scan_speed_dips_per_second) {
+  point_scan_controller_->SetSpeedDipsPerSecond(
+      point_scan_speed_dips_per_second);
 }
 
 void AccessibilityControllerImpl::
@@ -1790,6 +1794,11 @@ void AccessibilityControllerImpl::
 
 void AccessibilityControllerImpl::UpdateSwitchAccessPointScanSpeedFromPref() {
   // TODO(accessibility): Log histogram for point scan speed
+  DCHECK(active_user_prefs_);
+  const int point_scan_speed_dips_per_second = active_user_prefs_->GetInteger(
+      prefs::kAccessibilitySwitchAccessPointScanSpeedDipsPerSecond);
+
+  SetPointScanSpeedDipsPerSecond(point_scan_speed_dips_per_second);
   SyncSwitchAccessPrefsToSignInProfile();
 }
 
@@ -1821,7 +1830,9 @@ void AccessibilityControllerImpl::UpdateKeyCodesAfterSwitchAccessEnabled() {
 void AccessibilityControllerImpl::ActivateSwitchAccess() {
   switch_access_bubble_controller_ =
       std::make_unique<SwitchAccessMenuBubbleController>();
+  point_scan_controller_ = std::make_unique<PointScanController>();
   UpdateKeyCodesAfterSwitchAccessEnabled();
+  UpdateSwitchAccessPointScanSpeedFromPref();
   if (skip_switch_access_notification_) {
     skip_switch_access_notification_ = false;
     return;
@@ -1833,6 +1844,7 @@ void AccessibilityControllerImpl::ActivateSwitchAccess() {
 void AccessibilityControllerImpl::DeactivateSwitchAccess() {
   if (client_)
     client_->OnSwitchAccessDisabled();
+  point_scan_controller_.reset();
   switch_access_bubble_controller_.reset();
 }
 
