@@ -42557,6 +42557,15 @@ Called by update_gpu_driver_bug_workaround_entries.py.-->
   <int value="3" label="Failure Threshold Reached"/>
 </enum>
 
+<enum name="LinkToTextShouldOfferResult">
+  <int value="0" label="Success"/>
+  <int value="1" label="Rejected in JavaScript"/>
+  <int value="2" label="Blocklisted"/>
+  <int value="3" label="Unable to invoke JavaScript"/>
+  <int value="4" label="Web layer task timeout"/>
+  <int value="5" label="Dispatched timeout"/>
+</enum>
+
 <enum name="LinuxAudioIO">
   <int value="0" label="PulseAudio"/>
   <int value="1" label="ALSA"/>
