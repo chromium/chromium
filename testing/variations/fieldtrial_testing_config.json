@@ -4309,21 +4309,6 @@
             ]
         }
     ],
-    "NotificationTimeouts": [
-        {
-            "platforms": [
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "NotificationDurationLongForRequireInteraction"
-                    ]
-                }
-            ]
-        }
-    ],
     "NtpRepeatableQueriesDesktop": [
         {
             "platforms": [
