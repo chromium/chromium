@@ -8,7 +8,6 @@
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/command_line.h"
-#include "base/debug/crash_logging.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/optional.h"
@@ -517,7 +516,6 @@ void ServiceWorkerSubresourceLoader::StartResponse(
       return;
     }
     response_head_->encoded_data_length = 0;
-    received_redirect_for_bug1162035_ = true;
     url_loader_client_->OnReceiveRedirect(*redirect_info_,
                                           response_head_.Clone());
     TransitionToStatus(Status::kSentRedirect);
@@ -723,18 +721,7 @@ void ServiceWorkerSubresourceLoader::FollowRedirect(
          "https://crbug.com/845683";
   DCHECK(!new_url.has_value()) << "Redirect with modified url was not "
                                   "supported yet. crbug.com/845683";
-
-  // TODO(crbug.com/1162035): Replace with a DCHECK or early return when
-  // the bug is understood.
-  if (!redirect_info_) {
-    SCOPED_CRASH_KEY_NUMBER("bug1162035", "follow_status",
-                            static_cast<int>(status_));
-    SCOPED_CRASH_KEY_BOOL("bug1162035", "received_redirect",
-                          received_redirect_for_bug1162035_);
-    SCOPED_CRASH_KEY_BOOL("bug1162035", "followed_redirect",
-                          followed_redirect_for_bug1162035_);
-    CHECK(false);
-  }
+  DCHECK(redirect_info_);
 
   bool should_clear_upload = false;
   net::RedirectUtil::UpdateHttpRequest(
@@ -757,7 +744,6 @@ void ServiceWorkerSubresourceLoader::FollowRedirect(
   // Restart the request.
   TransitionToStatus(Status::kNotStarted);
   redirect_info_.reset();
-  followed_redirect_for_bug1162035_ = true;
   response_callback_receiver_.reset();
   StartRequest(resource_request_);
 }
@@ -909,31 +895,25 @@ void ServiceWorkerSubresourceLoaderFactory::OnMojoDisconnect() {
 }
 
 void ServiceWorkerSubresourceLoader::TransitionToStatus(Status new_status) {
-  // TODO(crbug.com/1162035): Remove once the bug is understood and replace
-  // the CHECKs below to DCHECKs.
-  SCOPED_CRASH_KEY_NUMBER("bug1162035", "transition_old",
-                          static_cast<int>(status_));
-  SCOPED_CRASH_KEY_NUMBER("bug1162035", "transition_new",
-                          static_cast<int>(new_status));
-
+#if DCHECK_IS_ON()
   switch (new_status) {
     case Status::kNotStarted:
-      CHECK_EQ(status_, Status::kSentRedirect);
+      DCHECK_EQ(status_, Status::kSentRedirect);
       break;
     case Status::kStarted:
-      CHECK_EQ(status_, Status::kNotStarted);
+      DCHECK_EQ(status_, Status::kNotStarted);
       break;
     case Status::kSentRedirect:
-      CHECK_EQ(status_, Status::kStarted);
+      DCHECK_EQ(status_, Status::kStarted);
       break;
     case Status::kSentHeader:
-      CHECK_EQ(status_, Status::kStarted);
+      DCHECK_EQ(status_, Status::kStarted);
       break;
     case Status::kSentBody:
-      CHECK_EQ(status_, Status::kSentHeader);
+      DCHECK_EQ(status_, Status::kSentHeader);
       break;
     case Status::kCompleted:
-      CHECK(
+      DCHECK(
           // Network fallback before interception.
           status_ == Status::kNotStarted ||
           // Network fallback after interception.
@@ -944,6 +924,7 @@ void ServiceWorkerSubresourceLoader::TransitionToStatus(Status new_status) {
           status_ == Status::kSentBody);
       break;
   }
+#endif  // DCHECK_IS_ON()
 
   status_ = new_status;
 }
