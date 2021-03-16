@@ -8,7 +8,9 @@
 #include <string>
 #include <vector>
 
+#include "android_webview/nonembedded/net/network_impl.h"
 #include "base/bind.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/version.h"
 #include "components/component_updater/component_updater_command_line_config_policy.h"
 #include "components/component_updater/configurator_impl.h"
@@ -119,7 +121,8 @@ std::string AwComponentUpdaterConfigurator::GetDownloadPreference() const {
 scoped_refptr<update_client::NetworkFetcherFactory>
 AwComponentUpdaterConfigurator::GetNetworkFetcherFactory() {
   if (!network_fetcher_factory_) {
-    // TODO(crbug.com/1174140) create network fetcher factory.
+    network_fetcher_factory_ =
+        base::MakeRefCounted<NetworkFetcherFactoryImpl>();
   }
   return network_fetcher_factory_;
 }
