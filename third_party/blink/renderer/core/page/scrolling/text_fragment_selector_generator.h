@@ -61,9 +61,6 @@ class CORE_EXPORT TextFragmentSelectorGenerator final
 
   void NoMatchFound() override;
 
-  // Notifies the results of |GenerateSelector|.
-  void NotifySelectorReady(const TextFragmentSelector& selector);
-
   // Wrappers for tests.
   String GetPreviousTextBlockForTesting(const Position& position) {
     return GetPreviousTextBlock(position);
@@ -123,6 +120,15 @@ class CORE_EXPORT TextFragmentSelectorGenerator final
 
   void Reset();
 
+  void RecordAllMetrics(const TextFragmentSelector& selector);
+  void RecordPreemptiveGenerationMetrics(const TextFragmentSelector& selector);
+
+  // Called when selector generation is complete.
+  void OnSelectorReady(const TextFragmentSelector& selector);
+
+  // Called to notify clients of the result of |GenerateSelector|.
+  void NotifyClientSelectorReady(const TextFragmentSelector& selector);
+
   Member<LocalFrame> selection_frame_;
   Member<Range> selection_range_;
   std::unique_ptr<TextFragmentSelector> selector_;
@@ -136,6 +142,10 @@ class CORE_EXPORT TextFragmentSelectorGenerator final
 
   GenerationStep step_ = kExact;
   SelectorState state_ = kNeedsNewCandidate;
+
+  // Used when preemptive link generation is enabled to report
+  // whether |RequestSelector| was called before or after selector was ready.
+  base::Optional<bool> selector_requested_before_ready_;
 
   base::Optional<shared_highlighting::LinkGenerationError> error_;
 
