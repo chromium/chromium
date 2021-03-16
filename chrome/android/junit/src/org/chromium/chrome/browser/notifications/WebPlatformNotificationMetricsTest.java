@@ -58,8 +58,8 @@ public class WebPlatformNotificationMetricsTest {
     public void recordsClick() {
         mMetrics.onNotificationClicked(mActionButtonClicked);
 
-        assertActionRecorded(mActionButtonClicked ? "Notifications.WebPlatform.ActionButton.Click"
-                                                  : "Notifications.WebPlatform.Body.Click");
+        assertActionRecorded(mActionButtonClicked ? "Notifications.WebPlatformV2.ActionButton.Click"
+                                                  : "Notifications.WebPlatformV2.Body.Click");
         assertNumActions(1);
     }
 
@@ -69,8 +69,8 @@ public class WebPlatformNotificationMetricsTest {
         mMetrics.onTabFocused();
 
         assertActionRecorded(mActionButtonClicked
-                        ? "Notifications.WebPlatform.ActionButton.FocusActivity"
-                        : "Notifications.WebPlatform.Body.FocusActivity");
+                        ? "Notifications.WebPlatformV2.ActionButton.FocusActivity"
+                        : "Notifications.WebPlatformV2.Body.FocusActivity");
         assertNumActions(2); // Click + FocusActivity.
     }
 
@@ -81,8 +81,8 @@ public class WebPlatformNotificationMetricsTest {
         mMetrics.onTabFocused();
 
         assertActionRecorded(mActionButtonClicked
-                        ? "Notifications.WebPlatform.ActionButton.NewActivity"
-                        : "Notifications.WebPlatform.Body.NewActivity");
+                        ? "Notifications.WebPlatformV2.ActionButton.NewActivity"
+                        : "Notifications.WebPlatformV2.Body.NewActivity");
         assertNumActions(2); // Click + NewActivity.
     }
 
@@ -91,8 +91,8 @@ public class WebPlatformNotificationMetricsTest {
         mMetrics.onNotificationClicked(mActionButtonClicked);
         mMetrics.onNotificationClosed();
 
-        assertActionRecorded(mActionButtonClicked ? "Notifications.WebPlatform.ActionButton.Close"
-                                                  : "Notifications.WebPlatform.Body.Close");
+        assertActionRecorded(mActionButtonClicked ? "Notifications.WebPlatformV2.ActionButton.Close"
+                                                  : "Notifications.WebPlatformV2.Body.Close");
         assertNumActions(2); // Click + Close.
     }
 
@@ -101,14 +101,14 @@ public class WebPlatformNotificationMetricsTest {
         mMetrics.onNotificationClicked(mActionButtonClicked);
         mMetrics.onNotificationClosed();
 
-        assertActionRecorded(mActionButtonClicked ? "Notifications.WebPlatform.ActionButton.Close"
-                                                  : "Notifications.WebPlatform.Body.Close");
+        assertActionRecorded(mActionButtonClicked ? "Notifications.WebPlatformV2.ActionButton.Close"
+                                                  : "Notifications.WebPlatformV2.Body.Close");
 
         mMetrics.onTabFocused();
 
         assertActionRecorded(mActionButtonClicked
-                        ? "Notifications.WebPlatform.ActionButton.FocusActivity"
-                        : "Notifications.WebPlatform.Body.FocusActivity");
+                        ? "Notifications.WebPlatformV2.ActionButton.FocusActivity"
+                        : "Notifications.WebPlatformV2.Body.FocusActivity");
         assertNumActions(3); // Click + Close + FocusActivity.
     }
 
@@ -154,7 +154,7 @@ public class WebPlatformNotificationMetricsTest {
     public void timeLimitOnClose() {
         mMetrics.onNotificationClicked(mActionButtonClicked);
 
-        when(mClock.getTime()).thenReturn(7000L);
+        when(mClock.getTime()).thenReturn(12_000L);
         mMetrics.onNotificationClosed();
 
         assertNumActions(1); // Click.
@@ -164,7 +164,7 @@ public class WebPlatformNotificationMetricsTest {
     public void timeLimitOnFocus() {
         mMetrics.onNotificationClicked(mActionButtonClicked);
 
-        when(mClock.getTime()).thenReturn(7000L);
+        when(mClock.getTime()).thenReturn(12_000L);
         mMetrics.onTabFocused();
 
         assertNumActions(1); // Click.
@@ -178,8 +178,8 @@ public class WebPlatformNotificationMetricsTest {
         mMetrics.onTabFocused();
 
         assertDurationRecorded(mActionButtonClicked
-                        ? "Notifications.WebPlatform.ActionButton.TimeToActivity"
-                        : "Notifications.WebPlatform.Body.TimeToActivity",
+                        ? "Notifications.WebPlatformV2.ActionButton.TimeToActivity"
+                        : "Notifications.WebPlatformV2.Body.TimeToActivity",
                 2000);
     }
 
@@ -191,8 +191,8 @@ public class WebPlatformNotificationMetricsTest {
         mMetrics.onNotificationClosed();
 
         assertDurationRecorded(mActionButtonClicked
-                        ? "Notifications.WebPlatform.ActionButton.TimeToClose"
-                        : "Notifications.WebPlatform.Body.TimeToClose",
+                        ? "Notifications.WebPlatformV2.ActionButton.TimeToClose"
+                        : "Notifications.WebPlatformV2.Body.TimeToClose",
                 3000);
     }
 
