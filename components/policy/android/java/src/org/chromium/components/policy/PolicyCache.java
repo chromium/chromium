@@ -14,7 +14,6 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import org.chromium.base.BuildConfig;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.StrictModeContext;
 import org.chromium.base.ThreadUtils;
@@ -55,9 +54,7 @@ public class PolicyCache {
      *         application context is not available.
      */
     private SharedPreferences getSharedPreferences() {
-        if (BuildConfig.DCHECK_IS_ON) {
-            assert mReadable;
-        }
+        assert mReadable;
         mThreadChecker.assertOnValidThread();
         if (mSharedPreferences == null) {
             Context context = ContextUtils.getApplicationContext();

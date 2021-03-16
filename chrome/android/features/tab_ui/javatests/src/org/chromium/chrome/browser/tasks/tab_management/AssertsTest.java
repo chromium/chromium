@@ -25,7 +25,7 @@ public class AssertsTest {
     @SmallTest
     @SuppressWarnings("UseCorrectAssertInTests")
     public void assertInTests() {
-        if (BuildConfig.DCHECK_IS_ON) {
+        if (BuildConfig.ENABLE_ASSERTS) {
             try {
                 assert false;
             } catch (AssertionError e) {
@@ -43,7 +43,7 @@ public class AssertsTest {
     @SmallTest
     @SuppressWarnings("UseCorrectAssertInTests")
     public void assertInModule() {
-        if (BuildConfig.DCHECK_IS_ON) {
+        if (BuildConfig.ENABLE_ASSERTS) {
             try {
                 TabGroupUtils.triggerAssertionForTesting();
             } catch (AssertionError e) {

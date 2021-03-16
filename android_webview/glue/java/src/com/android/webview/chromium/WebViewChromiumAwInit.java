@@ -364,7 +364,7 @@ public class WebViewChromiumAwInit {
     AwBrowserContext getBrowserContextOnUiThread() {
         assert mInitState == INIT_FINISHED;
 
-        if (BuildConfig.DCHECK_IS_ON && !ThreadUtils.runningOnUiThread()) {
+        if (BuildConfig.ENABLE_ASSERTS && !ThreadUtils.runningOnUiThread()) {
             throw new RuntimeException(
                     "getBrowserContextOnUiThread called on " + Thread.currentThread());
         }

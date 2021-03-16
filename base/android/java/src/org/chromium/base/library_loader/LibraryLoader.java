@@ -406,9 +406,10 @@ public class LibraryLoader {
         }
     }
 
-    @CheckDiscard("Can't use @RemovableInRelease because Release build with DCHECK_IS_ON needs it")
+    @CheckDiscard(
+            "Can't use @RemovableInRelease because Release build with ENABLE_ASSERTS needs it")
     public void enableJniChecks() {
-        if (!BuildConfig.DCHECK_IS_ON) return;
+        if (!BuildConfig.ENABLE_ASSERTS) return;
 
         NativeLibraryLoadedStatus.setProvider(new NativeLibraryLoadedStatusProvider() {
             @Override

@@ -23,16 +23,16 @@ public class AssertsTest {
     @SmallTest
     @SuppressWarnings("UseCorrectAssertInTests")
     public void testAssertsWorkAsExpected() {
-        if (BuildConfig.DCHECK_IS_ON) {
+        if (BuildConfig.ENABLE_ASSERTS) {
             try {
                 assert false;
             } catch (AssertionError e) {
-                // When DCHECK is on, asserts should throw AssertionErrors.
+                // When asserts are enabled, asserts should throw AssertionErrors.
                 return;
             }
             Assert.fail("Java assert unexpectedly didn't fire.");
         } else {
-            // When DCHECK isn't on, asserts should be removed by proguard.
+            // When asserts are disabled, asserts should be removed by proguard.
             assert false : "Java assert unexpectedly fired.";
         }
     }

@@ -290,7 +290,7 @@ public class ProxyChangeListener {
     }
 
     private void assertOnThread() {
-        if (BuildConfig.DCHECK_IS_ON && !onThread()) {
+        if (BuildConfig.ENABLE_ASSERTS && !onThread()) {
             throw new IllegalStateException("Must be called on ProxyChangeListener thread.");
         }
     }

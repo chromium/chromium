@@ -184,7 +184,7 @@ public final class UnownedUserDataKey<T extends UnownedUserData> {
     }
 
     private void assertNoDestroyedAttachments() {
-        if (BuildConfig.DCHECK_IS_ON) {
+        if (BuildConfig.ENABLE_ASSERTS) {
             for (UnownedUserDataHost attachedHost : mWeakHostAttachments) {
                 if (attachedHost.isDestroyed()) {
                     assert false : "Host should have been removed already.";

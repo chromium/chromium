@@ -209,7 +209,7 @@ public final class PolicyCacheTest {
                 Pair.create(POLICY_NAME_5, Pair.create(PolicyCache.Type.Dict, "{1:2}"))));
 
         Assert.assertFalse(mPolicyCache.isReadable());
-        if (BuildConfig.DCHECK_IS_ON) {
+        if (BuildConfig.ENABLE_ASSERTS) {
             assertAssertionError(() -> mPolicyCache.getIntValue(POLICY_NAME));
             assertAssertionError(() -> mPolicyCache.getBooleanValue(POLICY_NAME_2));
             assertAssertionError(() -> mPolicyCache.getStringValue(POLICY_NAME_3));

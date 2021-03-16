@@ -11,7 +11,6 @@ import("//build/config/android/internal_rules.gni")
 import("//build/config/clang/clang.gni")
 import("//build/config/compiler/compiler.gni")
 import("//build/config/coverage/coverage.gni")
-import("//build/config/dcheck_always_on.gni")
 import("//build/config/python.gni")
 import("//build/config/zip.gni")
 import("//build/toolchain/toolchain.gni")
@@ -1920,8 +1919,8 @@ if (enable_java_templates) {
 
       # Set these even when !use_final_fields so that they have correct default
       # values within junit_binary(), which ignores jar_excluded_patterns.
-      if (is_java_debug || dcheck_always_on) {
-        defines += [ "_DCHECK_IS_ON" ]
+      if (enable_java_asserts) {
+        defines += [ "_ENABLE_ASSERTS" ]
       }
       if (use_cfi_diag || is_ubsan || is_ubsan_security || is_ubsan_vptr) {
         defines += [ "_IS_UBSAN" ]
@@ -2825,7 +2824,7 @@ if (enable_java_templates) {
         if (_enable_main_dex_list) {
           proguard_configs += [ "//build/android/multidex.flags" ]
         }
-        if (!dcheck_always_on && (!defined(testonly) || !testonly) &&
+        if (!enable_java_asserts && (!defined(testonly) || !testonly) &&
             # Injected JaCoCo code causes -checkdiscards to fail.
             !use_jacoco_coverage) {
           proguard_configs += [ "//build/android/dcheck_is_off.flags" ]

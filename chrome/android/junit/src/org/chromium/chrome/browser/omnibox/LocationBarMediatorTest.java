@@ -370,7 +370,7 @@ public class LocationBarMediatorTest {
 
     @Test
     public void testLoadUrl_NativeNotInitialized() {
-        if (BuildConfig.DCHECK_IS_ON) {
+        if (BuildConfig.ENABLE_ASSERTS) {
             // clang-format off
             try {
                 mMediator.loadUrl(TEST_URL, PageTransition.TYPED, 0);

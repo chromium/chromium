@@ -9,6 +9,7 @@
 # toolchains. Checking |is_android| here would therefore be too restrictive.
 if (is_android || is_chromeos) {
   import("//build/config/chromecast_build.gni")
+  import("//build/config/dcheck_always_on.gni")
   import("//build_overrides/build.gni")
   import("abi.gni")
 
@@ -261,6 +262,9 @@ if (is_android || is_chromeos) {
     } else {
       android_sdk_platform_version = android_sdk_version
     }
+
+    # Whether java assertions and Preconditions checks are enabled.
+    enable_java_asserts = is_java_debug || dcheck_always_on
 
     # Reduce build time by using d8 incremental build.
     enable_incremental_d8 = true

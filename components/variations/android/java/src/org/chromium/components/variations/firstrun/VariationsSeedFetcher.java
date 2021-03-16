@@ -151,7 +151,7 @@ public class VariationsSeedFetcher {
 
         @Override
         public String toString() {
-            if (BuildConfig.DCHECK_IS_ON) {
+            if (BuildConfig.ENABLE_ASSERTS) {
                 return "SeedInfo{signature=\"" + signature + "\" country=\"" + country
                         + "\" date=\"" + date + " isGzipCompressed=" + isGzipCompressed
                         + " seedData=" + Arrays.toString(seedData);

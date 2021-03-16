@@ -9,7 +9,6 @@ import("//build/config/android/copy_ex.gni")
 import("//build/config/compiler/compiler.gni")
 import("//build/config/compute_inputs_for_analyze.gni")
 import("//build/config/coverage/coverage.gni")
-import("//build/config/dcheck_always_on.gni")
 import("//build/config/python.gni")
 import("//build/config/sanitizers/sanitizers.gni")
 import("//build/toolchain/goma.gni")
@@ -1265,8 +1264,7 @@ if (enable_java_templates) {
       _args += [ "--show-desugar-default-interface-warnings" ]
     }
 
-    _enable_assert = is_java_debug || dcheck_always_on
-    if (_enable_assert) {
+    if (enable_java_asserts) {
       # The default for generating dex file format is
       # --force-disable-assertions.
       _args += [ "--force-enable-assertions" ]
@@ -1696,8 +1694,7 @@ if (enable_java_templates) {
           not_needed(invoker, [ "desugar_jars_paths" ])
         }
 
-        _enable_assert = is_java_debug || dcheck_always_on
-        if (_enable_assert) {
+        if (enable_java_asserts) {
           # The default for generating dex file format is
           # --force-disable-assertions.
           args += [ "--force-enable-assertions" ]

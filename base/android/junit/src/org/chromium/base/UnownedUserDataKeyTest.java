@@ -918,7 +918,7 @@ public class UnownedUserDataKeyTest {
 
     private void assertAsserts(Runnable runnable) {
         // When DCHECK is off, asserts are stripped.
-        if (!BuildConfig.DCHECK_IS_ON) return;
+        if (!BuildConfig.ENABLE_ASSERTS) return;
 
         try {
             runnable.run();

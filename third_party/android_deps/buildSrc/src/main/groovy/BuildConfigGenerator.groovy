@@ -618,7 +618,7 @@ class BuildConfigGenerator extends DefaultTask {
               sb.append("""
                 |
                 | jar_excluded_patterns = []
-                | if (!is_java_debug && !dcheck_always_on) {
+                | if (!enable_java_asserts) {
                 |   # Omit the file since we use our own copy.
                 |   jar_excluded_patterns += [
                 |     "${computePreconditionsClassForDep(dependencyId)}",

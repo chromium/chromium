@@ -53,7 +53,7 @@ public class SharedPreferencesManager {
 
     private void maybeInitializeChecker() {
         // Create a working key checker, which does not happen in production builds.
-        if (BuildConfig.DCHECK_IS_ON) {
+        if (BuildConfig.ENABLE_ASSERTS) {
             mKeyChecker = ChromePreferenceKeyChecker.getInstance();
         }
     }

@@ -76,11 +76,11 @@ class ChromeThreadPoolExecutor extends ThreadPoolExecutor {
                 blamedClass = field.get(runnable).getClass();
             }
         } catch (NoSuchFieldException e) {
-            if (BuildConfig.DCHECK_IS_ON) {
+            if (BuildConfig.ENABLE_ASSERTS) {
                 throw new RuntimeException(e);
             }
         } catch (IllegalAccessException e) {
-            if (BuildConfig.DCHECK_IS_ON) {
+            if (BuildConfig.ENABLE_ASSERTS) {
                 throw new RuntimeException(e);
             }
         }

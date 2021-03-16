@@ -973,7 +973,7 @@ public class InstantStartTest {
         "force-fieldtrial-params=Study.Group:start_surface_variation/single"})
     public void testNoGURLPreNative() {
         // clang-format on
-        if (!BuildConfig.DCHECK_IS_ON) return;
+        if (!BuildConfig.ENABLE_ASSERTS) return;
 
         collector.checkThat(StartSurfaceConfiguration.isStartSurfaceSinglePaneEnabled(), is(true));
         collector.checkThat(TextUtils.isEmpty(HomepageManager.getHomepageUri()), is(false));

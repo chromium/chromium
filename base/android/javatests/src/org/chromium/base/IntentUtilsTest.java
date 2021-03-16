@@ -43,7 +43,7 @@ public class IntentUtilsTest {
             asserted = true;
             if (!expectAssertion) throw e;
         }
-        if (BuildConfig.DCHECK_IS_ON) Assert.assertEquals(expectAssertion, asserted);
+        if (BuildConfig.ENABLE_ASSERTS) Assert.assertEquals(expectAssertion, asserted);
     }
 
     @Test

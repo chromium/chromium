@@ -28,10 +28,10 @@ public class BuildConfig {
     public static MAYBE_FINAL boolean IS_MULTIDEX_ENABLED MAYBE_FALSE;
 #endif
 
-#if defined(_DCHECK_IS_ON)
-    public static MAYBE_FINAL boolean DCHECK_IS_ON = true;
+#if defined(_ENABLE_ASSERTS)
+    public static MAYBE_FINAL boolean ENABLE_ASSERTS = true;
 #else
-    public static MAYBE_FINAL boolean DCHECK_IS_ON MAYBE_FALSE;
+    public static MAYBE_FINAL boolean ENABLE_ASSERTS MAYBE_FALSE;
 #endif
 
 #if defined(_IS_UBSAN)

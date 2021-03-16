@@ -35,7 +35,7 @@ public class PreconditionsTest {
     @Test
     @SmallTest
     public void testFailingPreconditionsWorkAsExpected() {
-        if (BuildConfig.DCHECK_IS_ON) {
+        if (BuildConfig.ENABLE_ASSERTS) {
             assertThrowsNullPointerException(() -> {
                 com.google.android.gms.common.internal.Preconditions.checkNotNull(null);
             });
