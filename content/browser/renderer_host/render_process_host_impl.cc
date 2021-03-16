@@ -3184,6 +3184,7 @@ void RenderProcessHostImpl::PropagateBrowserCommandLineToRenderer(
     switches::kDomAutomationController,
     switches::kEnableAccessibilityObjectModel,
     switches::kEnableAutomation,
+    switches::kEnableBackgroundThreadPool,
     switches::kEnableExperimentalAccessibilityLanguageDetection,
     switches::kEnableExperimentalAccessibilityLabelsDebugging,
     switches::kEnableExperimentalWebPlatformFeatures,

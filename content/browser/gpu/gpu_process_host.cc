@@ -248,6 +248,7 @@ static const char* const kSwitchNames[] = {
     switches::kDisableShaderNameHashing,
     switches::kDisableSkiaRuntimeOpts,
     switches::kDisableWebRtcHWEncoding,
+    switches::kEnableBackgroundThreadPool,
     switches::kEnableGpuRasterization,
     switches::kEnableLogging,
     switches::kEnableDeJelly,
