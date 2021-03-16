@@ -21,6 +21,9 @@ const char kNewTabOpened[] = "new_tab_opened";
 const char kSixthTabOpened[] = "sixth_tab_opened";
 const char kTabGroupCreated[] = "tab_group_created";
 
+const char kReadingListItemAdded[] = "reading_list_item_added";
+const char kReadingListMenuOpened[] = "reading_list_menu_opened";
+
 const char kReopenTabConditionsMet[] = "reopen_tab_conditions_met";
 const char kTabReopened[] = "tab_reopened";
 

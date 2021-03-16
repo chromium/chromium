@@ -2500,6 +2500,12 @@
             "experiments": [
                 {
                     "name": "Enabled",
+                    "params": {
+                        "availability": "any",
+                        "event_trigger": "name:reading_list_item_added;comparator:==0;window:365;storage:365",
+                        "event_used": "name:reading_list_menu_opened;comparator:==0;window:365;storage:365",
+                        "session_rate": "<3"
+                    },
                     "enable_features": [
                         "ReadLater"
                     ]
