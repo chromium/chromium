@@ -158,6 +158,7 @@ TabHoverCardBubbleView::TabHoverCardBubbleView(Tab* tab)
   // not become active. Setting this to false creates the need to explicitly
   // hide the hovercard on press, touch, and keyboard events.
   SetCanActivate(false);
+  set_accept_events(false);
 
   // Set so that the tab hover card is not focus traversable when keyboard
   // navigating through the tab strip.

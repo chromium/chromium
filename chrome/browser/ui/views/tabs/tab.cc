@@ -582,13 +582,11 @@ void Tab::MaybeUpdateHoverStatus(const ui::MouseEvent& event) {
   if (mouse_hovered_ || !GetWidget()->IsMouseEventsEnabled())
     return;
 
-#if defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_MAC)
+#if defined(OS_LINUX) || defined(OS_CHROMEOS)
   // Move the hit test area for hovering up so that it is not overlapped by tab
   // hover cards when they are shown.
   // TODO(crbug.com/978134): Once Linux/CrOS widget transparency is solved,
   // remove that case.
-  // TODO(crbug.com/1187189): Once Mac widget transparency is solved, remove
-  // that case.
   constexpr int kHoverCardOverlap = 6;
   if (event.location().y() >= height() - kHoverCardOverlap)
     return;
