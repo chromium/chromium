@@ -4,6 +4,7 @@
 
 #include <memory>
 
+#include "base/strings/stringprintf.h"
 #include "chrome/browser/extensions/extension_apitest.h"
 #include "content/public/test/browser_test.h"
 #include "extensions/test/result_catcher.h"
@@ -13,21 +14,18 @@ namespace extensions {
 
 namespace {
 
-constexpr char kBackgroundScriptManifestStub[] =
+constexpr char kManifestStub[] =
     R"({
          "name": "extension",
          "version": "0.1",
-         "manifest_version": 2,
-         "background": { "scripts": ["background.js"] }
+         "manifest_version": %d,
+         "background": { %s }
        })";
 
-constexpr char kWorkerScriptManifestStub[] =
-    R"({
-         "name": "extension",
-         "version": "0.1",
-         "manifest_version": 3,
-         "background": { "service_worker": "worker.js" }
-       })";
+constexpr char kPersistentBackground[] = R"("scripts": ["background.js"])";
+
+constexpr char kServiceWorkerBackground[] =
+    R"("service_worker": "background.js")";
 
 // NOTE(devlin): When running tests using the chrome.tests.runTests API, it's
 // not possible to validate the failure message of individual sub-tests using
@@ -42,51 +40,59 @@ constexpr char kExpectedFailureMessage[] = "Failed 1 of 1 tests";
 
 }  // namespace
 
+using ContextType = ExtensionApiTest::ContextType;
+
 class TestAPITest : public ExtensionApiTest {
- public:
-  ~TestAPITest() override = default;
+ protected:
+  const Extension* LoadExtensionScriptWithContext(const char* background_script,
+                                                  ContextType context_type,
+                                                  int manifest_version);
 
-  // Loads and returns an extension with the given |background_script| as a
-  // manifest v2 extension.
-  const Extension* LoadExtensionWithBackgroundScript(
-      const char* background_script);
-
-  // Loads and returns an extension with the given |worker_script| as a manifest
-  // v3 extension.
-  const Extension* LoadExtensionWithWorkerScript(const char* worker_script);
-
- private:
   std::vector<std::unique_ptr<TestExtensionDir>> test_dirs_;
 };
 
-const Extension* TestAPITest::LoadExtensionWithBackgroundScript(
-    const char* background_script) {
+const Extension* TestAPITest::LoadExtensionScriptWithContext(
+    const char* background_script,
+    ContextType context_type,
+    int manifest_version = 2) {
   auto test_dir = std::make_unique<TestExtensionDir>();
-  test_dir->WriteManifest(kBackgroundScriptManifestStub);
+  const char* background_value = context_type == ContextType::kServiceWorker
+                                     ? kServiceWorkerBackground
+                                     : kPersistentBackground;
+  const std::string manifest =
+      base::StringPrintf(kManifestStub, manifest_version, background_value);
+  test_dir->WriteManifest(manifest);
   test_dir->WriteFile(FILE_PATH_LITERAL("background.js"), background_script);
   const Extension* extension = LoadExtension(test_dir->UnpackedPath());
   test_dirs_.push_back(std::move(test_dir));
   return extension;
 }
 
-const Extension* TestAPITest::LoadExtensionWithWorkerScript(
-    const char* worker_script) {
-  auto test_dir = std::make_unique<TestExtensionDir>();
-  test_dir->WriteManifest(kWorkerScriptManifestStub);
-  test_dir->WriteFile(FILE_PATH_LITERAL("worker.js"), worker_script);
-  const Extension* extension = LoadExtension(test_dir->UnpackedPath());
-  test_dirs_.push_back(std::move(test_dir));
-  return extension;
-}
+class TestAPITestWithContextType
+    : public TestAPITest,
+      public testing::WithParamInterface<ContextType> {};
+
+INSTANTIATE_TEST_SUITE_P(
+    PersistentBackground,
+    TestAPITestWithContextType,
+    ::testing::Values(ExtensionApiTest::ContextType::kPersistentBackground));
+
+INSTANTIATE_TEST_SUITE_P(
+    ServiceWorker,
+    TestAPITestWithContextType,
+    ::testing::Values(ExtensionApiTest::ContextType::kServiceWorker));
 
 // TODO(devlin): This test name should be more descriptive.
-IN_PROC_BROWSER_TEST_F(TestAPITest, ApiTest) {
-  ASSERT_TRUE(RunExtensionTest("apitest")) << message_;
+IN_PROC_BROWSER_TEST_P(TestAPITestWithContextType, ApiTest) {
+  ASSERT_TRUE(RunExtensionTest(
+      {.name = "apitest"},
+      {.load_as_service_worker = GetParam() == ContextType::kServiceWorker}))
+      << message_;
 }
 
 // Verifies that failing an assert in a promise will properly fail and end the
 // test.
-IN_PROC_BROWSER_TEST_F(TestAPITest, FailedAssertsInPromises) {
+IN_PROC_BROWSER_TEST_P(TestAPITestWithContextType, FailedAssertsInPromises) {
   ResultCatcher result_catcher;
   constexpr char kBackgroundJs[] =
       R"(chrome.test.runTests([
@@ -98,13 +104,14 @@ IN_PROC_BROWSER_TEST_F(TestAPITest, FailedAssertsInPromises) {
              p.then(() => { chrome.test.succeed(); });
            }
          ]);)";
-  ASSERT_TRUE(LoadExtensionWithBackgroundScript(kBackgroundJs));
+  ASSERT_TRUE(LoadExtensionScriptWithContext(kBackgroundJs, GetParam()));
   EXPECT_FALSE(result_catcher.GetNextResult());
   EXPECT_EQ(kExpectedFailureMessage, result_catcher.message());
 }
 
 // Verifies that using await and assert'ing aspects of the results succeeds.
-IN_PROC_BROWSER_TEST_F(TestAPITest, AsyncAwaitAssertions_Succeed) {
+IN_PROC_BROWSER_TEST_P(TestAPITestWithContextType,
+                       AsyncAwaitAssertions_Succeed) {
   ResultCatcher result_catcher;
   constexpr char kBackgroundJs[] =
       R"(chrome.test.runTests([
@@ -116,13 +123,14 @@ IN_PROC_BROWSER_TEST_F(TestAPITest, AsyncAwaitAssertions_Succeed) {
              chrome.test.succeed();
            }
          ]);)";
-  ASSERT_TRUE(LoadExtensionWithBackgroundScript(kBackgroundJs));
+  ASSERT_TRUE(LoadExtensionScriptWithContext(kBackgroundJs, GetParam()));
   EXPECT_TRUE(result_catcher.GetNextResult());
 }
 
 // Verifies that using await and having failed assertions properly fails the
 // test.
-IN_PROC_BROWSER_TEST_F(TestAPITest, AsyncAwaitAssertions_Failed) {
+IN_PROC_BROWSER_TEST_P(TestAPITestWithContextType,
+                       AsyncAwaitAssertions_Failed) {
   ResultCatcher result_catcher;
   constexpr char kBackgroundJs[] =
       R"(chrome.test.runTests([
@@ -134,29 +142,9 @@ IN_PROC_BROWSER_TEST_F(TestAPITest, AsyncAwaitAssertions_Failed) {
              chrome.test.succeed();
            }
          ]);)";
-  ASSERT_TRUE(LoadExtensionWithBackgroundScript(kBackgroundJs));
+  ASSERT_TRUE(LoadExtensionScriptWithContext(kBackgroundJs, GetParam()));
   EXPECT_FALSE(result_catcher.GetNextResult());
   EXPECT_EQ(kExpectedFailureMessage, result_catcher.message());
-}
-
-// Verifies that we can assert values on chrome.runtime.lastError after using
-// await with an API call.
-IN_PROC_BROWSER_TEST_F(TestAPITest, AsyncAwaitAssertions_LastError) {
-  ResultCatcher result_catcher;
-  constexpr char kBackgroundJs[] =
-      R"(chrome.test.runTests([
-           async function asyncAssertions() {
-             let result = await new Promise((resolve) => {
-               const nonexistentId = 99999;
-               chrome.tabs.update(
-                   nonexistentId, {url: 'https://example.com'}, resolve);
-             });
-             chrome.test.assertLastError('No tab with id: 99999.');
-             chrome.test.succeed();
-           }
-         ]);)";
-  ASSERT_TRUE(LoadExtensionWithBackgroundScript(kBackgroundJs));
-  EXPECT_TRUE(result_catcher.GetNextResult());
 }
 
 // Verifies that chrome.test.assertPromiseRejects() succeeds using
@@ -192,7 +180,9 @@ IN_PROC_BROWSER_TEST_F(TestAPITest, AssertPromiseRejects_Successful) {
              chrome.test.succeed();
            },
          ]);)";
-  ASSERT_TRUE(LoadExtensionWithWorkerScript(kWorkerJs));
+  ASSERT_TRUE(LoadExtensionScriptWithContext(kWorkerJs,
+                                             ContextType::kServiceWorker,
+                                             /*manifest_version=*/3));
   EXPECT_TRUE(result_catcher.GetNextResult());
 }
 
@@ -208,7 +198,9 @@ IN_PROC_BROWSER_TEST_F(TestAPITest, AssertPromiseRejects_WrongErrorMessage) {
              chrome.test.succeed();
            },
          ]);)";
-  ASSERT_TRUE(LoadExtensionWithWorkerScript(kWorkerJs));
+  ASSERT_TRUE(LoadExtensionScriptWithContext(kWorkerJs,
+                                             ContextType::kServiceWorker,
+                                             /*manifest_version=*/3));
   EXPECT_FALSE(result_catcher.GetNextResult());
   EXPECT_EQ(kExpectedFailureMessage, result_catcher.message());
 }
@@ -225,7 +217,9 @@ IN_PROC_BROWSER_TEST_F(TestAPITest, AssertPromiseRejects_PromiseResolved) {
              chrome.test.succeed();
            },
          ]);)";
-  ASSERT_TRUE(LoadExtensionWithWorkerScript(kWorkerJs));
+  ASSERT_TRUE(LoadExtensionScriptWithContext(kWorkerJs,
+                                             ContextType::kServiceWorker,
+                                             /*manifest_version=*/3));
   EXPECT_FALSE(result_catcher.GetNextResult());
   EXPECT_EQ(kExpectedFailureMessage, result_catcher.message());
 }
@@ -242,7 +236,9 @@ IN_PROC_BROWSER_TEST_F(TestAPITest, AssertPromiseRejects_PromiseIgnored) {
              chrome.test.succeed();
            },
          ]);)";
-  ASSERT_TRUE(LoadExtensionWithWorkerScript(kWorkerJs));
+  ASSERT_TRUE(LoadExtensionScriptWithContext(kWorkerJs,
+                                             ContextType::kServiceWorker,
+                                             /*manifest_version=*/3));
   EXPECT_FALSE(result_catcher.GetNextResult());
   EXPECT_EQ(kExpectedFailureMessage, result_catcher.message());
 }
