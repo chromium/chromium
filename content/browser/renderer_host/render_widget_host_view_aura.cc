@@ -2597,9 +2597,7 @@ void RenderWidgetHostViewAura::TakeFallbackContentFrom(
               ->IsRenderWidgetHostViewChildFrame());
   RenderWidgetHostViewAura* view_aura =
       static_cast<RenderWidgetHostViewAura*>(view);
-  base::Optional<SkColor> color = view_aura->GetBackgroundColor();
-  if (color)
-    SetBackgroundColor(*color);
+  CopyBackgroundColorIfPresentFrom(*view);
 
   DCHECK(delegated_frame_host_) << "Cannot be invoked during destruction.";
   DCHECK(view_aura->delegated_frame_host_);

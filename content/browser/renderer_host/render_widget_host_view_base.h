@@ -97,6 +97,8 @@ class CONTENT_EXPORT RenderWidgetHostViewBase : public RenderWidgetHostView {
   bool LockKeyboard(base::Optional<base::flat_set<ui::DomCode>> codes) override;
   void SetBackgroundColor(SkColor color) override;
   base::Optional<SkColor> GetBackgroundColor() override;
+  void CopyBackgroundColorIfPresentFrom(
+      const RenderWidgetHostView& other) override;
   void UnlockKeyboard() override;
   bool IsKeyboardLocked() override;
   base::flat_map<std::string, std::string> GetKeyboardLayoutMap() override;
@@ -610,6 +612,10 @@ class CONTENT_EXPORT RenderWidgetHostViewBase : public RenderWidgetHostView {
                                         RenderWidgetHostViewBase* target_view,
                                         const gfx::PointF& point,
                                         gfx::PointF* transformed_point) const;
+
+  // Helper function to return whether the current background color is fully
+  // opaque.
+  bool IsBackgroundColorOpaque();
 
   bool view_stopped_flinging_for_test() const {
     return view_stopped_flinging_for_test_;

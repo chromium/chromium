@@ -314,6 +314,33 @@ base::Optional<SkColor> RenderWidgetHostViewBase::GetBackgroundColor() {
   return default_background_color_;
 }
 
+bool RenderWidgetHostViewBase::IsBackgroundColorOpaque() {
+  base::Optional<SkColor> bg_color = GetBackgroundColor();
+  return bg_color ? SkColorGetA(*bg_color) == SK_AlphaOPAQUE : true;
+}
+
+void RenderWidgetHostViewBase::CopyBackgroundColorIfPresentFrom(
+    const RenderWidgetHostView& other) {
+  const RenderWidgetHostViewBase& other_base =
+      static_cast<const RenderWidgetHostViewBase&>(other);
+  if (!other_base.content_background_color_ &&
+      !other_base.default_background_color_) {
+    return;
+  }
+  if (content_background_color_ == other_base.content_background_color_ &&
+      default_background_color_ == other_base.default_background_color_) {
+    return;
+  }
+  bool was_opaque = IsBackgroundColorOpaque();
+  content_background_color_ = other_base.content_background_color_;
+  default_background_color_ = other_base.default_background_color_;
+  UpdateBackgroundColor();
+  bool opaque = IsBackgroundColorOpaque();
+  if (was_opaque != opaque && host()->owner_delegate()) {
+    host()->owner_delegate()->SetBackgroundOpaque(opaque);
+  }
+}
+
 bool RenderWidgetHostViewBase::IsMouseLocked() {
   return false;
 }

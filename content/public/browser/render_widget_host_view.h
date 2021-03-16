@@ -157,6 +157,9 @@ class CONTENT_EXPORT RenderWidgetHostView {
   virtual void SetBackgroundColor(SkColor color) = 0;
   // GetBackgroundColor returns the current background color of the view.
   virtual base::Optional<SkColor> GetBackgroundColor() = 0;
+  // Copy background color from another view if other view has background color.
+  virtual void CopyBackgroundColorIfPresentFrom(
+      const RenderWidgetHostView& other) = 0;
 
   // Return value indicates whether the mouse is locked successfully or a
   // reason why it failed.
