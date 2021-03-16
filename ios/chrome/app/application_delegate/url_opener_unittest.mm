@@ -171,7 +171,7 @@ TEST_F(URLOpenerTest, HandleOpenURL) {
                                  tabOpener:tabOpener
                      connectionInformation:connectionInformation
                         startupInformation:startupInformation
-                           inIncognitoMode:NO];
+                               prefService:nil];
 
           // Tests.
           EXPECT_EQ(isValid, result);
@@ -244,7 +244,7 @@ TEST_F(URLOpenerTest, VerifyLaunchOptions) {
            connectionInformation:connectionInformationMock
               startupInformation:startupInformationMock
                         appState:appStateMock
-                 inIncognitoMode:NO];
+                     prefService:nil];
 
   // Test.
   EXPECT_OCMOCK_VERIFY(startupInformationMock);
@@ -267,7 +267,7 @@ TEST_F(URLOpenerTest, VerifyLaunchOptionsNil) {
            connectionInformation:connectionInformationMock
               startupInformation:startupInformationMock
                         appState:appStateMock
-                 inIncognitoMode:NO];
+                     prefService:nil];
 }
 
 // Tests that -handleApplication set startup parameters as expected with no
@@ -309,7 +309,7 @@ TEST_F(URLOpenerTest, VerifyLaunchOptionsWithNoSourceApplication) {
            connectionInformation:connectionInformationMock
               startupInformation:startupInformationMock
                         appState:appStateMock
-                 inIncognitoMode:NO];
+                     prefService:nil];
 
   // Test.
   EXPECT_OCMOCK_VERIFY(startupInformationMock);
@@ -338,7 +338,7 @@ TEST_F(URLOpenerTest, VerifyLaunchOptionsWithNoURL) {
            connectionInformation:connectionInformationMock
               startupInformation:startupInformationMock
                         appState:appStateMock
-                 inIncognitoMode:NO];
+                     prefService:nil];
 }
 
 // Tests that -handleApplication set startup parameters as expected with a bad
@@ -374,7 +374,7 @@ TEST_F(URLOpenerTest, VerifyLaunchOptionsWithBadURL) {
            connectionInformation:connectionInformationMock
               startupInformation:startupInformationMock
                         appState:appStateMock
-                 inIncognitoMode:NO];
+                     prefService:nil];
 
   // Test.
   EXPECT_OCMOCK_VERIFY(startupInformationMock);
@@ -417,7 +417,7 @@ TEST_F(URLOpenerTest, PresentingFirstRunUI) {
            connectionInformation:connectionInformationMock
               startupInformation:startupInformationMock
                         appState:appStateMock
-                 inIncognitoMode:NO];
+                     prefService:nil];
 
   // Test.
   EXPECT_OCMOCK_VERIFY(tabOpenerMock);

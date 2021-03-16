@@ -7,12 +7,14 @@
 #import <Foundation/Foundation.h>
 
 #include "base/metrics/histogram_macros.h"
+#include "components/prefs/pref_service.h"
 #import "ios/chrome/app/application_delegate/app_state.h"
 #import "ios/chrome/app/application_delegate/startup_information.h"
 #import "ios/chrome/app/application_delegate/tab_opening.h"
 #import "ios/chrome/app/application_delegate/url_opener_params.h"
 #include "ios/chrome/app/startup/chrome_app_startup_parameters.h"
 #import "ios/chrome/browser/chrome_url_util.h"
+#import "ios/chrome/browser/policy/policy_util.h"
 #import "ios/chrome/browser/ui/main/connection_information.h"
 #import "ios/chrome/browser/url_loading/url_loading_params.h"
 #include "url/gurl.h"
@@ -36,14 +38,19 @@ const char* const kUMAMobileSessionStartFromAppsHistogram =
                 tabOpener:(id<TabOpening>)tabOpener
     connectionInformation:(id<ConnectionInformation>)connectionInformation
        startupInformation:(id<StartupInformation>)startupInformation
-          inIncognitoMode:(BOOL)openInIncognito {
+              prefService:(PrefService*)prefService {
   NSURL* URL = options.URL;
   NSString* sourceApplication = options.sourceApplication;
 
   ChromeAppStartupParameters* params = [ChromeAppStartupParameters
       newChromeAppStartupParametersWithURL:URL
                      fromSourceApplication:sourceApplication];
-  params.launchInIncognito = openInIncognito;
+
+  if (IsIncognitoModeDisabled(prefService)) {
+    params.launchInIncognito = NO;
+  } else if (IsIncognitoModeForced(prefService)) {
+    params.launchInIncognito = YES;
+  }
 
   MobileSessionCallerApp callerApp = [params callerApp];
 
@@ -118,7 +125,7 @@ const char* const kUMAMobileSessionStartFromAppsHistogram =
       connectionInformation:(id<ConnectionInformation>)connectionInformation
          startupInformation:(id<StartupInformation>)startupInformation
                    appState:(AppState*)appState
-            inIncognitoMode:(BOOL)openInIncognito {
+                prefService:(PrefService*)prefService {
   if (options.URL) {
     // This method is always called when the SceneState transitions to
     // SceneActivationLevelForegroundActive, and before the handling of
@@ -129,7 +136,7 @@ const char* const kUMAMobileSessionStartFromAppsHistogram =
                                   tabOpener:tabOpener
                       connectionInformation:connectionInformation
                          startupInformation:startupInformation
-                            inIncognitoMode:openInIncognito];
+                                prefService:prefService];
     [appState launchFromURLHandled:openURLResult];
   }
 }

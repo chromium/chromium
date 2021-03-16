@@ -2036,12 +2036,13 @@ const char kMultiWindowOpenInNewWindowHistogram[] =
                  startupInformation:(id<StartupInformation>)startupInformation
                            appState:(AppState*)appState {
   if (params) {
-    [URLOpener handleLaunchOptions:params
-                         tabOpener:self
-             connectionInformation:self
-                startupInformation:startupInformation
-                          appState:appState
-                   inIncognitoMode:[self isIncognitoForced]];
+    [URLOpener
+          handleLaunchOptions:params
+                    tabOpener:self
+        connectionInformation:self
+           startupInformation:startupInformation
+                     appState:appState
+                  prefService:self.currentInterface.browserState->GetPrefs()];
   }
 }
 
@@ -2706,7 +2707,7 @@ const char kMultiWindowOpenInNewWindowHistogram[] =
                     tabOpener:self
         connectionInformation:self
            startupInformation:self.sceneState.appState.startupInformation
-              inIncognitoMode:[self isIncognitoForced]];
+                  prefService:self.currentInterface.browserState->GetPrefs()];
   }
 }
 

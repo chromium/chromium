@@ -9,6 +9,7 @@
 
 @class AppState;
 @protocol ConnectionInformation;
+class PrefService;
 @protocol StartupInformation;
 @protocol TabOpening;
 @class URLOpenerParams;
@@ -24,7 +25,7 @@
                 tabOpener:(id<TabOpening>)tabOpener
     connectionInformation:(id<ConnectionInformation>)connectionInformation
        startupInformation:(id<StartupInformation>)startupInformation
-          inIncognitoMode:(BOOL)openInIncognito;
+              prefService:(PrefService*)prefService;
 
 // Handles open URL at application startup.
 + (void)handleLaunchOptions:(URLOpenerParams*)options
@@ -32,7 +33,7 @@
       connectionInformation:(id<ConnectionInformation>)connectionInformation
          startupInformation:(id<StartupInformation>)startupInformation
                    appState:(AppState*)appState
-            inIncognitoMode:(BOOL)openInIncognito;
+                prefService:(PrefService*)prefService;
 @end
 
 #endif  // IOS_CHROME_APP_APPLICATION_DELEGATE_URL_OPENER_H_
