@@ -25,7 +25,7 @@ export function GetSsrcFromReport(report) {
   // TODO(jiayl): remove the fallback to id once the Libjingle change is rolled
   // to Chrome.
   if (report.stats && report.stats.values) {
-    for (var i = 0; i < report.stats.values.length - 1; i += 2) {
+    for (let i = 0; i < report.stats.values.length - 1; i += 2) {
       if (report.stats.values[i] === 'ssrc') {
         return report.stats.values[i + 1];
       }
@@ -47,7 +47,7 @@ export class SsrcInfoManager {
     this.streamInfoContainer_ = {};
 
     /**
-     * The string separating attibutes in an SDP.
+     * The string separating attributes in an SDP.
      * @type {string}
      * @const
      * @private
@@ -87,28 +87,29 @@ export class SsrcInfoManager {
    * @param {string} sdp The SDP string.
    */
   addSsrcStreamInfo(sdp) {
-    var attributes = sdp.split(this.ATTRIBUTE_SEPARATOR_);
-    for (var i = 0; i < attributes.length; ++i) {
+    const attributes = sdp.split(this.ATTRIBUTE_SEPARATOR_);
+    for (let i = 0; i < attributes.length; ++i) {
       // Check if this is a ssrc attribute.
       if (attributes[i].indexOf(this.SSRC_ATTRIBUTE_PREFIX_) !== 0) {
         continue;
       }
 
-      var nextFieldIndex = attributes[i].search(this.FIELD_SEPARATOR_REGEX_);
+      let nextFieldIndex = attributes[i].search(this.FIELD_SEPARATOR_REGEX_);
 
       if (nextFieldIndex === -1) {
         continue;
       }
 
-      var ssrc = attributes[i].substring(
+      const ssrc = attributes[i].substring(
           this.SSRC_ATTRIBUTE_PREFIX_.length, nextFieldIndex);
       if (!this.streamInfoContainer_[ssrc]) {
         this.streamInfoContainer_[ssrc] = {};
       }
 
       // Make |rest| starting at the next field.
-      var rest = attributes[i].substring(nextFieldIndex + 1);
-      var name, value;
+      let rest = attributes[i].substring(nextFieldIndex + 1);
+      let name;
+      let value;
       while (rest.length > 0) {
         nextFieldIndex = rest.search(this.FIELD_SEPARATOR_REGEX_);
         if (nextFieldIndex === -1) {
@@ -149,8 +150,8 @@ export class SsrcInfoManager {
 
     parentElement.className = this.SSRC_INFO_BLOCK_CLASS;
 
-    var fieldElement;
-    for (var property in this.streamInfoContainer_[ssrc]) {
+    let fieldElement;
+    for (const property in this.streamInfoContainer_[ssrc]) {
       fieldElement = document.createElement('div');
       parentElement.appendChild(fieldElement);
       fieldElement.textContent =

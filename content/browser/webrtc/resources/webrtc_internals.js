@@ -14,18 +14,18 @@ import {StatsRatesCalculator, StatsReport} from './stats_rates_calculator.js';
 import {StatsTable} from './stats_table.js';
 import {TabView} from './tab_view.js';
 
-var USER_MEDIA_TAB_ID = 'user-media-tab-id';
+const USER_MEDIA_TAB_ID = 'user-media-tab-id';
 
 const OPTION_GETSTATS_STANDARD = 'Standardized (promise-based) getStats() API';
 const OPTION_GETSTATS_LEGACY =
     'Legacy Non-Standard (callback-based) getStats() API';
 let currentGetStatsMethod = OPTION_GETSTATS_STANDARD;
 
-var tabView = null;
-var ssrcInfoManager = null;
-var peerConnectionUpdateTable = null;
-var statsTable = null;
-var dumpCreator = null;
+let tabView = null;
+let ssrcInfoManager = null;
+let peerConnectionUpdateTable = null;
+let statsTable = null;
+let dumpCreator = null;
 
 // Exporting these on window since they are directly accessed by tests.
 window.setCurrentGetStatsMethod = function(method) {
@@ -92,7 +92,7 @@ class PeerConnectionRecord {
    *   "value".
    */
   addUpdate(update) {
-    var time = new Date(parseFloat(update.time));
+    const time = new Date(parseFloat(update.time));
     this.record_.updateLog.push({
       time: time.toLocaleString(),
       type: update.type,
@@ -181,9 +181,9 @@ function createStatsSelectionOptionElements() {
 }
 
 function requestStats() {
-  if (currentGetStatsMethod == OPTION_GETSTATS_STANDARD) {
+  if (currentGetStatsMethod === OPTION_GETSTATS_STANDARD) {
     requestStandardStats();
-  } else if (currentGetStatsMethod == OPTION_GETSTATS_LEGACY) {
+  } else if (currentGetStatsMethod === OPTION_GETSTATS_LEGACY) {
     requestLegacyStats();
   }
 }
@@ -238,8 +238,8 @@ function getPeerConnectionId(data) {
  * @param {!PeerConnectionUpdateEntry} data The peer connection update data.
  */
 function extractSsrcInfo(data) {
-  if (data.type == 'setLocalDescription' ||
-      data.type == 'setRemoteDescription') {
+  if (data.type === 'setLocalDescription' ||
+      data.type === 'setRemoteDescription') {
     ssrcInfoManager.addSsrcStreamInfo(data.value);
   }
 }
@@ -254,7 +254,7 @@ function extractSsrcInfo(data) {
  * @return {!Element} the new DIV element.
  */
 function appendChildWithText(parent, tag, text) {
-  var child = document.createElement(tag);
+  const child = document.createElement(tag);
   child.textContent = text;
   parent.appendChild(child);
   return child;
@@ -284,7 +284,7 @@ function addPeerConnectionUpdate(peerConnectionElement, update) {
  *     connection.
  */
 function removePeerConnection(data) {
-  var element = $(getPeerConnectionId(data));
+  const element = $(getPeerConnectionId(data));
   if (element) {
     delete peerConnectionDataStore[element.id];
     tabView.removeTab(element.id);
@@ -299,7 +299,7 @@ function removePeerConnection(data) {
  *     rtcConfiguration, and constraints of a peer connection.
  */
 function addPeerConnection(data) {
-  var id = getPeerConnectionId(data);
+  const id = getPeerConnectionId(data);
 
   if (!peerConnectionDataStore[id]) {
     peerConnectionDataStore[id] = new PeerConnectionRecord();
@@ -307,12 +307,12 @@ function addPeerConnection(data) {
   peerConnectionDataStore[id].initialize(
       data.url, data.rtcConfiguration, data.constraints);
 
-  var peerConnectionElement = $(id);
+  let peerConnectionElement = $(id);
   if (!peerConnectionElement) {
     peerConnectionElement = tabView.addTab(id, data.url + ' [' + id + ']');
   }
 
-  var p = document.createElement('p');
+  const p = document.createElement('p');
   p.textContent =
       data.url + ', ' + data.rtcConfiguration + ', ' + data.constraints;
   peerConnectionElement.appendChild(p);
@@ -327,7 +327,7 @@ function addPeerConnection(data) {
  * @param {!PeerConnectionUpdateEntry} data The peer connection update data.
  */
 function updatePeerConnection(data) {
-  var peerConnectionElement = $(getPeerConnectionId(data));
+  const peerConnectionElement = $(getPeerConnectionId(data));
   addPeerConnectionUpdate(peerConnectionElement, data);
 }
 
@@ -340,14 +340,14 @@ function updatePeerConnection(data) {
  *     constraints, and an array of updates as the log.
  */
 function updateAllPeerConnections(data) {
-  for (var i = 0; i < data.length; ++i) {
-    var peerConnection = addPeerConnection(data[i]);
+  for (let i = 0; i < data.length; ++i) {
+    const peerConnection = addPeerConnection(data[i]);
 
-    var log = data[i].log;
+    const log = data[i].log;
     if (!log) {
       continue;
     }
-    for (var j = 0; j < log.length; ++j) {
+    for (let j = 0; j < log.length; ++j) {
       addPeerConnectionUpdate(peerConnection, log[j]);
     }
   }
@@ -367,7 +367,7 @@ function addStandardStats(data) {
   if (currentGetStatsMethod != OPTION_GETSTATS_STANDARD) {
     return;  // Obsolete!
   }
-  var peerConnectionElement = $(getPeerConnectionId(data));
+  const peerConnectionElement = $(getPeerConnectionId(data));
   if (!peerConnectionElement) {
     return;
   }
@@ -380,8 +380,8 @@ function addStandardStats(data) {
   const r = StatsReport.fromInternalsReportList(data.reports);
   statsRatesCalculator.addStatsReport(r);
   data.reports = statsRatesCalculator.currentReport.toInternalsReportList();
-  for (var i = 0; i < data.reports.length; ++i) {
-    var report = data.reports[i];
+  for (let i = 0; i < data.reports.length; ++i) {
+    const report = data.reports[i];
     statsTable.addStatsReport(peerConnectionElement, report);
     drawSingleReport(peerConnectionElement, report, false);
   }
@@ -400,13 +400,13 @@ function addLegacyStats(data) {
   if (currentGetStatsMethod != OPTION_GETSTATS_LEGACY) {
     return;  // Obsolete!
   }
-  var peerConnectionElement = $(getPeerConnectionId(data));
+  const peerConnectionElement = $(getPeerConnectionId(data));
   if (!peerConnectionElement) {
     return;
   }
 
-  for (var i = 0; i < data.reports.length; ++i) {
-    var report = data.reports[i];
+  for (let i = 0; i < data.reports.length; ++i) {
+    const report = data.reports[i];
     statsTable.addStatsReport(peerConnectionElement, report);
     drawSingleReport(peerConnectionElement, report, true);
   }
@@ -426,7 +426,7 @@ function addGetUserMedia(data) {
     tabView.addTab(USER_MEDIA_TAB_ID, 'GetUserMedia Requests');
   }
 
-  var requestDiv = document.createElement('div');
+  const requestDiv = document.createElement('div');
   requestDiv.className = 'user-media-request-div-class';
   requestDiv.rid = data.rid;
   $(USER_MEDIA_TAB_ID).appendChild(requestDiv);
@@ -450,19 +450,19 @@ function addGetUserMedia(data) {
  * @param {!Object} data The object containing rid {number}, the render id.
  */
 function removeGetUserMediaForRenderer(data) {
-  for (var i = userMediaRequests.length - 1; i >= 0; --i) {
-    if (userMediaRequests[i].rid == data.rid) {
+  for (let i = userMediaRequests.length - 1; i >= 0; --i) {
+    if (userMediaRequests[i].rid === data.rid) {
       userMediaRequests.splice(i, 1);
     }
   }
 
-  var requests = $(USER_MEDIA_TAB_ID).childNodes;
-  for (var i = 0; i < requests.length; ++i) {
-    if (requests[i].rid == data.rid) {
+  const requests = $(USER_MEDIA_TAB_ID).childNodes;
+  for (let i = 0; i < requests.length; ++i) {
+    if (requests[i].rid === data.rid) {
       $(USER_MEDIA_TAB_ID).removeChild(requests[i]);
     }
   }
-  if ($(USER_MEDIA_TAB_ID).childNodes.length == 0) {
+  if ($(USER_MEDIA_TAB_ID).childNodes.length === 0) {
     tabView.removeTab(USER_MEDIA_TAB_ID);
   }
 }

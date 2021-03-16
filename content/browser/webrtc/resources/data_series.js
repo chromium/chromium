@@ -36,8 +36,8 @@ export class TimelineDataSeries {
       return {};
     }
 
-    var values = [];
-    for (var i = 0; i < this.dataPoints_.length; ++i) {
+    const values = [];
+    for (let i = 0; i < this.dataPoints_.length; ++i) {
       values.push(this.dataPoints_[i].value);
     }
     return {
@@ -52,7 +52,7 @@ export class TimelineDataSeries {
    * DataPoints are assumed to be received in chronological order.
    */
   addPoint(timeTicks, value) {
-    var time = new Date(timeTicks);
+    const time = new Date(timeTicks);
     this.dataPoints_.push(new DataPoint(time, value));
 
     if (this.dataPoints_.length > MAX_STATS_DATA_POINT_BUFFER_SIZE) {
@@ -104,11 +104,11 @@ export class TimelineDataSeries {
    * Returns the cached |values| in the specified time period.
    */
   getValuesInternal_(startTime, stepSize, count) {
-    var values = [];
-    var nextPoint = 0;
-    var currentValue = 0;
-    var time = startTime;
-    for (var i = 0; i < count; ++i) {
+    const values = [];
+    let nextPoint = 0;
+    let currentValue = 0;
+    let time = startTime;
+    for (let i = 0; i < count; ++i) {
       while (nextPoint < this.dataPoints_.length &&
              this.dataPoints_[nextPoint].time < time) {
         currentValue = this.dataPoints_[nextPoint].value;

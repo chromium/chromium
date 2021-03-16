@@ -18,15 +18,15 @@ import {peerConnectionDataStore} from './dump_creator.js';
 import {GetSsrcFromReport} from './ssrc_info_manager.js';
 import {TimelineGraphView} from './timeline_graph_view.js';
 
-var STATS_GRAPH_CONTAINER_HEADING_CLASS = 'stats-graph-container-heading';
+const STATS_GRAPH_CONTAINER_HEADING_CLASS = 'stats-graph-container-heading';
 
-var RECEIVED_PROPAGATION_DELTA_LABEL =
+const RECEIVED_PROPAGATION_DELTA_LABEL =
     'googReceivedPacketGroupPropagationDeltaDebug';
-var RECEIVED_PACKET_GROUP_ARRIVAL_TIME_LABEL =
+const RECEIVED_PACKET_GROUP_ARRIVAL_TIME_LABEL =
     'googReceivedPacketGroupArrivalTimeDebug';
 
 // Specifies which stats should be drawn on the 'bweCompound' graph and how.
-var bweCompoundGraphConfig = {
+const bweCompoundGraphConfig = {
   googAvailableSendBandwidth: {color: 'red'},
   googTargetEncBitrateCorrected: {color: 'purple'},
   googActualEncBitrate: {color: 'orange'},
@@ -36,11 +36,11 @@ var bweCompoundGraphConfig = {
 
 // Converts the last entry of |srcDataSeries| from the total amount to the
 // amount per second.
-var totalToPerSecond = function(srcDataSeries) {
-  var length = srcDataSeries.dataPoints_.length;
+const totalToPerSecond = function(srcDataSeries) {
+  const length = srcDataSeries.dataPoints_.length;
   if (length >= 2) {
-    var lastDataPoint = srcDataSeries.dataPoints_[length - 1];
-    var secondLastDataPoint = srcDataSeries.dataPoints_[length - 2];
+    const lastDataPoint = srcDataSeries.dataPoints_[length - 1];
+    const secondLastDataPoint = srcDataSeries.dataPoints_[length - 2];
     return Math.floor(
         (lastDataPoint.value - secondLastDataPoint.value) * 1000 /
         (lastDataPoint.time - secondLastDataPoint.time));
@@ -50,7 +50,7 @@ var totalToPerSecond = function(srcDataSeries) {
 };
 
 // Converts the value of total bytes to bits per second.
-var totalBytesToBitsPerSecond = function(srcDataSeries) {
+const totalBytesToBitsPerSecond = function(srcDataSeries) {
   return totalToPerSecond(srcDataSeries) * 8;
 };
 
@@ -58,7 +58,7 @@ var totalBytesToBitsPerSecond = function(srcDataSeries) {
 // |convertedName| is the name of the converted value, |convertFunction|
 // is the function used to calculate the new converted value based on the
 // original dataSeries.
-var dataConversionConfig = {
+const dataConversionConfig = {
   packetsSent: {
     convertedName: 'packetsSentPerSecond',
     convertFunction: totalToPerSecond,
@@ -79,9 +79,9 @@ var dataConversionConfig = {
   // TODO (jiayl): remove this when the unit bug is fixed.
   googTargetEncBitrate: {
     convertedName: 'googTargetEncBitrateCorrected',
-    convertFunction: function(srcDataSeries) {
-      var length = srcDataSeries.dataPoints_.length;
-      var lastDataPoint = srcDataSeries.dataPoints_[length - 1];
+    convertFunction(srcDataSeries) {
+      const length = srcDataSeries.dataPoints_.length;
+      const lastDataPoint = srcDataSeries.dataPoints_[length - 1];
       if (lastDataPoint.value < 5000) {
         return lastDataPoint.value * 1000;
       }
@@ -93,7 +93,7 @@ var dataConversionConfig = {
 
 // The object contains the stats names that should not be added to the graph,
 // even if they are numbers.
-var statsNameBlackList = {
+const statsNameBlackList = {
   'ssrc': true,
   'googTrackId': true,
   'googComponent': true,
@@ -128,7 +128,7 @@ function isStandardReportBlocklisted(report) {
 }
 
 function readReportStat(report, stat) {
-  let values = report.stats.values;
+  const values = report.stats.values;
   for (let i = 0; i < values.length; i += 2) {
     if (values[i] === stat) {
       return values[i + 1];
@@ -150,10 +150,10 @@ function isStandardStatBlocklisted(report, statName) {
   return false;
 }
 
-var graphViews = {};
+const graphViews = {};
 // Export on |window| since tests access this directly from C++.
 window.graphViews = graphViews;
-let graphElementsByPeerConnectionId = new Map();
+const graphElementsByPeerConnectionId = new Map();
 
 // Returns number parsed from |value|, or NaN if the stats name is black-listed.
 function getNumberFromValue(name, value) {
@@ -170,9 +170,9 @@ function getNumberFromValue(name, value) {
 // |peerConnectionElement|.
 export function drawSingleReport(
     peerConnectionElement, report, isLegacyReport) {
-  var reportType = report.type;
-  var reportId = report.id;
-  var stats = report.stats;
+  const reportType = report.type;
+  const reportId = report.id;
+  const stats = report.stats;
   if (!stats || !stats.values) {
     return;
   }
@@ -181,16 +181,16 @@ export function drawSingleReport(
       Array.from(peerConnectionElement.childNodes) :
       [];
 
-  for (var i = 0; i < stats.values.length - 1; i = i + 2) {
-    var rawLabel = stats.values[i];
+  for (let i = 0; i < stats.values.length - 1; i = i + 2) {
+    const rawLabel = stats.values[i];
     // Propagation deltas are handled separately.
     if (rawLabel === RECEIVED_PROPAGATION_DELTA_LABEL) {
       drawReceivedPropagationDelta(
           peerConnectionElement, report, stats.values[i + 1]);
       continue;
     }
-    var rawDataSeriesId = reportId + '-' + rawLabel;
-    var rawValue = getNumberFromValue(rawLabel, stats.values[i + 1]);
+    const rawDataSeriesId = reportId + '-' + rawLabel;
+    const rawValue = getNumberFromValue(rawLabel, stats.values[i + 1]);
     if (isNaN(rawValue)) {
       // We do not draw non-numerical values, but still want to record it in the
       // data series.
@@ -199,9 +199,9 @@ export function drawSingleReport(
           [stats.values[i + 1]]);
       continue;
     }
-    var finalDataSeriesId = rawDataSeriesId;
-    var finalLabel = rawLabel;
-    var finalValue = rawValue;
+    let finalDataSeriesId = rawDataSeriesId;
+    let finalLabel = rawLabel;
+    let finalValue = rawValue;
     // We need to convert the value if dataConversionConfig[rawLabel] exists.
     if (isLegacyReport && dataConversionConfig[rawLabel]) {
       // Updates the original dataSeries before the conversion.
@@ -232,20 +232,20 @@ export function drawSingleReport(
     }
 
     // Updates the graph.
-    var graphType =
+    const graphType =
         bweCompoundGraphConfig[finalLabel] ? 'bweCompound' : finalLabel;
-    var graphViewId =
+    const graphViewId =
         peerConnectionElement.id + '-' + reportId + '-' + graphType;
 
     if (!graphViews[graphViewId]) {
       graphViews[graphViewId] =
           createStatsGraphView(peerConnectionElement, report, graphType);
-      var date = new Date(stats.timestamp);
+      const date = new Date(stats.timestamp);
       graphViews[graphViewId].setDateRange(date, date);
     }
     // Adds the new dataSeries to the graphView. We have to do it here to cover
     // both the simple and compound graph cases.
-    var dataSeries =
+    const dataSeries =
         peerConnectionDataStore[peerConnectionElement.id].getDataSeries(
             finalDataSeriesId);
     if (!graphViews[graphViewId].hasDataSeries(dataSeries)) {
@@ -292,7 +292,7 @@ export function removeStatsReportGraphs(peerConnectionElement) {
 // each data point, and |values| is the list of the data point values.
 function addDataSeriesPoints(
     peerConnectionElement, dataSeriesId, label, times, values) {
-  var dataSeries =
+  let dataSeries =
       peerConnectionDataStore[peerConnectionElement.id].getDataSeries(
           dataSeriesId);
   if (!dataSeries) {
@@ -303,7 +303,7 @@ function addDataSeriesPoints(
       dataSeries.setColor(bweCompoundGraphConfig[label].color);
     }
   }
-  for (var i = 0; i < times.length; ++i) {
+  for (let i = 0; i < times.length; ++i) {
     dataSeries.addPoint(times[i], values[i]);
   }
 }
@@ -313,11 +313,11 @@ function addDataSeriesPoints(
 // ['googReceivedPacketGroupArrivalTimeDebug', '[123456, 234455, 344566]',
 //  'googReceivedPacketGroupPropagationDeltaDebug', '[23, 45, 56]', ...].
 function drawReceivedPropagationDelta(peerConnectionElement, report, deltas) {
-  var reportId = report.id;
-  var stats = report.stats;
-  var times = null;
+  const reportId = report.id;
+  const stats = report.stats;
+  let times = null;
   // Find the packet group arrival times.
-  for (var i = 0; i < stats.values.length - 1; i = i + 2) {
+  for (let i = 0; i < stats.values.length - 1; i = i + 2) {
     if (stats.values[i] === RECEIVED_PACKET_GROUP_ARRIVAL_TIME_LABEL) {
       times = stats.values[i + 1];
       break;
@@ -338,20 +338,20 @@ function drawReceivedPropagationDelta(peerConnectionElement, report, deltas) {
   }
 
   // Update the data series.
-  var dataSeriesId = reportId + '-' + RECEIVED_PROPAGATION_DELTA_LABEL;
+  const dataSeriesId = reportId + '-' + RECEIVED_PROPAGATION_DELTA_LABEL;
   addDataSeriesPoints(
       peerConnectionElement, dataSeriesId, RECEIVED_PROPAGATION_DELTA_LABEL,
       times, deltas);
   // Update the graph.
-  var graphViewId = peerConnectionElement.id + '-' + reportId + '-' +
+  const graphViewId = peerConnectionElement.id + '-' + reportId + '-' +
       RECEIVED_PROPAGATION_DELTA_LABEL;
-  var date = new Date(times[times.length - 1]);
+  const date = new Date(times[times.length - 1]);
   if (!graphViews[graphViewId]) {
     graphViews[graphViewId] = createStatsGraphView(
         peerConnectionElement, report, RECEIVED_PROPAGATION_DELTA_LABEL);
     graphViews[graphViewId].setScale(10);
     graphViews[graphViewId].setDateRange(date, date);
-    var dataSeries =
+    const dataSeries =
         peerConnectionDataStore[peerConnectionElement.id].getDataSeries(
             dataSeriesId);
     graphViews[graphViewId].addDataSeries(dataSeries);
@@ -386,9 +386,9 @@ function getSsrcReportType(report) {
 // Ensures a div container to hold all stats graphs for one track is created as
 // a child of |peerConnectionElement|.
 function ensureStatsGraphTopContainer(peerConnectionElement, report) {
-  var containerId = peerConnectionElement.id + '-' + report.type + '-' +
+  const containerId = peerConnectionElement.id + '-' + report.type + '-' +
       report.id + '-graph-container';
-  var container = $(containerId);
+  let container = $(containerId);
   if (!container) {
     container = document.createElement('details');
     container.id = containerId;
@@ -400,13 +400,13 @@ function ensureStatsGraphTopContainer(peerConnectionElement, report) {
         STATS_GRAPH_CONTAINER_HEADING_CLASS;
     container.firstChild.firstChild.textContent =
         'Stats graphs for ' + report.id + ' (' + report.type + ')';
-    var statsType = getSsrcReportType(report);
+    const statsType = getSsrcReportType(report);
     if (statsType !== '') {
       container.firstChild.firstChild.textContent += ' (' + statsType + ')';
     }
 
     if (report.type === 'ssrc') {
-      var ssrcInfoElement = document.createElement('div');
+      const ssrcInfoElement = document.createElement('div');
       container.firstChild.appendChild(ssrcInfoElement);
       ssrcInfoManager.populateSsrcInfo(
           ssrcInfoElement, GetSsrcFromReport(report));
@@ -418,14 +418,14 @@ function ensureStatsGraphTopContainer(peerConnectionElement, report) {
 // Creates the container elements holding a timeline graph
 // and the TimelineGraphView object.
 function createStatsGraphView(peerConnectionElement, report, statsName) {
-  var topContainer =
+  const topContainer =
       ensureStatsGraphTopContainer(peerConnectionElement, report);
 
-  var graphViewId =
+  const graphViewId =
       peerConnectionElement.id + '-' + report.id + '-' + statsName;
-  var divId = graphViewId + '-div';
-  var canvasId = graphViewId + '-canvas';
-  var container = document.createElement('div');
+  const divId = graphViewId + '-div';
+  const canvasId = graphViewId + '-canvas';
+  const container = document.createElement('div');
   container.className = 'stats-graph-sub-container';
 
   topContainer.appendChild(container);
@@ -444,9 +444,9 @@ function createStatsGraphView(peerConnectionElement, report, statsName) {
 // Creates the legend section for the bweCompound graph.
 // Returns the legend element.
 function createBweCompoundLegend(peerConnectionElement, reportId) {
-  var legend = document.createElement('div');
-  for (var prop in bweCompoundGraphConfig) {
-    var div = document.createElement('div');
+  const legend = document.createElement('div');
+  for (const prop in bweCompoundGraphConfig) {
+    const div = document.createElement('div');
     legend.appendChild(div);
     div.appendChild($('checkbox-template').content.cloneNode(true));
     div.appendChild(document.createTextNode(prop));
@@ -454,8 +454,8 @@ function createBweCompoundLegend(peerConnectionElement, reportId) {
     div.dataSeriesId = reportId + '-' + prop;
     div.graphViewId =
         peerConnectionElement.id + '-' + reportId + '-bweCompound';
-    div.firstChild.addEventListener('click', function(event) {
-      var target =
+    div.firstChild.addEventListener('click', event => {
+      const target =
           peerConnectionDataStore[peerConnectionElement.id].getDataSeries(
               event.target.parentNode.dataSeriesId);
       target.show(event.target.checked);

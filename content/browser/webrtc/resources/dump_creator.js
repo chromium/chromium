@@ -5,9 +5,9 @@
 import {$} from 'chrome://resources/js/util.m.js';
 
 /** A list of getUserMedia requests. */
-export var userMediaRequests = [];
+export const userMediaRequests = [];
 /** A map from peer connection id to the PeerConnectionRecord. */
-export var peerConnectionDataStore = {};
+export const peerConnectionDataStore = {};
 
 // Also duplicating on window since tests access these from C++.
 window.userMediaRequests = userMediaRequests;
@@ -31,10 +31,10 @@ export class DumpCreator {
 
     this.root_.className = 'peer-connection-dump-root';
     containerElement.appendChild(this.root_);
-    var summary = document.createElement('summary');
+    const summary = document.createElement('summary');
     this.root_.appendChild(summary);
     summary.textContent = 'Create Dump';
-    var content = document.createElement('div');
+    const content = document.createElement('div');
     this.root_.appendChild(content);
 
     content.appendChild($('dump-template').content.cloneNode(true));
@@ -72,7 +72,7 @@ export class DumpCreator {
     // https://crbug.com/817391
     this.root_.getElementsByTagName('input')[1].disabled = !mutable;
     if (!mutable) {
-      var label = this.root_.getElementsByTagName('label')[2];
+      const label = this.root_.getElementsByTagName('label')[2];
       label.style = 'color:red;';
       label.textContent =
           ' WebRTC event logging\'s state was set by a command line flag.';
@@ -85,16 +85,16 @@ export class DumpCreator {
    * @private
    */
   onDownloadData_() {
-    var dumpObject = {
+    const dumpObject = {
       'getUserMedia': userMediaRequests,
       'PeerConnections': peerConnectionDataStore,
       'UserAgent': navigator.userAgent,
     };
-    var textBlob =
+    const textBlob =
         new Blob([JSON.stringify(dumpObject, null, 1)], {type: 'octet/stream'});
-    var URL = window.URL.createObjectURL(textBlob);
+    const URL = window.URL.createObjectURL(textBlob);
 
-    var anchor = this.root_.getElementsByTagName('a')[0];
+    const anchor = this.root_.getElementsByTagName('a')[0];
     anchor.href = URL;
     anchor.download = 'webrtc_internals_dump.txt';
     // The default action of the anchor will download the URL.
@@ -106,7 +106,7 @@ export class DumpCreator {
    * @private
    */
   onAudioDebugRecordingsChanged_() {
-    var enabled = this.root_.getElementsByTagName('input')[0].checked;
+    const enabled = this.root_.getElementsByTagName('input')[0].checked;
     if (enabled) {
       chrome.send('enableAudioDebugRecordings');
     } else {
@@ -120,7 +120,7 @@ export class DumpCreator {
    * @private
    */
   onEventLogRecordingsChanged_() {
-    var enabled = this.root_.getElementsByTagName('input')[1].checked;
+    const enabled = this.root_.getElementsByTagName('input')[1].checked;
     if (enabled) {
       chrome.send('enableEventLogRecordings');
     } else {

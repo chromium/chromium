@@ -52,7 +52,7 @@ class CalculatedStats {
   // Gets the calculated metrics associated with |originalName| in the order
   // that they were added, or an empty list if there are no associated metrics.
   getCalculatedMetrics(originalName) {
-    let calculatedMetrics =
+    const calculatedMetrics =
         this.calculatedMetricsByOriginalName.get(originalName);
     if (!calculatedMetrics) {
       return [];
@@ -62,7 +62,7 @@ class CalculatedStats {
 
   toString() {
     let str = '{id:"' + this.id + '"';
-    for (let originalName of this.calculatedMetricsByOriginalName.keys()) {
+    for (const originalName of this.calculatedMetricsByOriginalName.keys()) {
       const calculatedMetrics =
           this.calculatedMetricsByOriginalName.get(originalName);
       str += ',' + originalName + ':[';
@@ -125,7 +125,7 @@ export class StatsReport {
 
   toInternalsReportList() {
     const result = [];
-    for (let stats of this.statsById.values()) {
+    for (const stats of this.statsById.values()) {
       const internalReport = {
         id: stats.id,
         type: stats.type,
@@ -158,14 +158,14 @@ export class StatsReport {
 
   toString() {
     let str = '';
-    for (let stats of this.statsById.values()) {
+    for (const stats of this.statsById.values()) {
       if (str !== '') {
         str += ',';
       }
       str += JSON.stringify(stats);
     }
     let str2 = '';
-    for (let stats of this.calculatedStatsById.values()) {
+    for (const stats of this.calculatedStatsById.values()) {
       if (str2 !== '') {
         str2 += ',';
       }
@@ -180,7 +180,7 @@ export class StatsReport {
 
   getByType(type) {
     const result = [];
-    for (let stats of this.statsById.values()) {
+    for (const stats of this.statsById.values()) {
       if (stats.type === type) {
         result.push(stats);
       }

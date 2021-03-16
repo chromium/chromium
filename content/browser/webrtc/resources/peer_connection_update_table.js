@@ -71,18 +71,18 @@ export class PeerConnectionUpdateTable {
    * @param {!PeerConnectionUpdateEntry} update The update to add.
    */
   addPeerConnectionUpdate(peerConnectionElement, update) {
-    var tableElement = this.ensureUpdateContainer_(peerConnectionElement);
+    const tableElement = this.ensureUpdateContainer_(peerConnectionElement);
 
-    var row = document.createElement('tr');
+    const row = document.createElement('tr');
     tableElement.firstChild.appendChild(row);
 
-    var time = new Date(parseFloat(update.time));
+    const time = new Date(parseFloat(update.time));
     const timeItem = document.createElement('td');
     timeItem.textContent = time.toLocaleString();
     row.appendChild(timeItem);
 
     // map internal event names to spec event names.
-    var type = {
+    let type = {
       onRenegotiationNeeded: 'negotiationneeded',
       signalingStateChange: 'signalingstatechange',
       iceGatheringStateChange: 'icegatheringstatechange',
@@ -103,7 +103,7 @@ export class PeerConnectionUpdateTable {
 
     if (update.type === 'onIceCandidate' || update.type === 'addIceCandidate') {
       // extract ICE candidate type from the field following typ.
-      var candidateType = update.value.match(/(?: typ )(host|srflx|relay)/);
+      const candidateType = update.value.match(/(?: typ )(host|srflx|relay)/);
       if (candidateType) {
         type += ' (' + candidateType[1] + ')';
       }
@@ -121,8 +121,8 @@ export class PeerConnectionUpdateTable {
     summary.textContent = type;
     row.appendChild(summaryItem);
 
-    var valueContainer = document.createElement('pre');
-    var details = row.cells[1].childNodes[0];
+    const valueContainer = document.createElement('pre');
+    const details = row.cells[1].childNodes[0];
     details.appendChild(valueContainer);
 
     // Highlight ICE failures and failure callbacks.
@@ -133,7 +133,7 @@ export class PeerConnectionUpdateTable {
       valueContainer.parentElement.classList.add('update-log-failure');
     }
 
-    var value = update.value;
+    let {value} = update;
     // map internal names and values to names and events from the
     // specification. This is a display change which shall not
     // change the JSON dump.
@@ -211,10 +211,10 @@ export class PeerConnectionUpdateTable {
    * @private
    */
   ensureUpdateContainer_(peerConnectionElement) {
-    var tableId = peerConnectionElement.id + this.UPDATE_LOG_ID_SUFFIX_;
-    var tableElement = $(tableId);
+    const tableId = peerConnectionElement.id + this.UPDATE_LOG_ID_SUFFIX_;
+    let tableElement = $(tableId);
     if (!tableElement) {
-      var tableContainer = document.createElement('div');
+      const tableContainer = document.createElement('div');
       tableContainer.className = this.UPDATE_LOG_CONTAINER_CLASS_;
       peerConnectionElement.appendChild(tableContainer);
 

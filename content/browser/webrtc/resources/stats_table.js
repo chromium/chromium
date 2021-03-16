@@ -35,7 +35,7 @@ export class StatsTable {
     if (report.type === 'codec') {
       return;
     }
-    var statsTable = this.ensureStatsTable_(peerConnectionElement, report);
+    const statsTable = this.ensureStatsTable_(peerConnectionElement, report);
 
     if (report.stats) {
       this.addStatsToTable_(
@@ -44,8 +44,8 @@ export class StatsTable {
   }
 
   clearStatsLists(peerConnectionElement) {
-    let containerId = peerConnectionElement.id + '-table-container';
-    let container = $(containerId);
+    const containerId = peerConnectionElement.id + '-table-container';
+    const container = $(containerId);
     if (container) {
       peerConnectionElement.removeChild(container);
       this.ensureStatsTableContainer_(peerConnectionElement);
@@ -61,13 +61,13 @@ export class StatsTable {
    * @private
    */
   ensureStatsTableContainer_(peerConnectionElement) {
-    var containerId = peerConnectionElement.id + '-table-container';
-    var container = $(containerId);
+    const containerId = peerConnectionElement.id + '-table-container';
+    let container = $(containerId);
     if (!container) {
       container = document.createElement('div');
       container.id = containerId;
       container.className = 'stats-table-container';
-      var head = document.createElement('div');
+      const head = document.createElement('div');
       head.textContent = 'Stats Tables';
       container.appendChild(head);
       peerConnectionElement.appendChild(container);
@@ -88,14 +88,14 @@ export class StatsTable {
    * @private
    */
   ensureStatsTable_(peerConnectionElement, report) {
-    var tableId = peerConnectionElement.id + '-table-' + report.id;
-    var table = $(tableId);
+    const tableId = peerConnectionElement.id + '-table-' + report.id;
+    let table = $(tableId);
     if (!table) {
-      var container = this.ensureStatsTableContainer_(peerConnectionElement);
-      var details = document.createElement('details');
+      const container = this.ensureStatsTableContainer_(peerConnectionElement);
+      const details = document.createElement('details');
       container.appendChild(details);
 
-      var summary = document.createElement('summary');
+      const summary = document.createElement('summary');
       summary.textContent = report.id + ' (' + report.type + ')';
       details.appendChild(summary);
 
@@ -126,9 +126,9 @@ export class StatsTable {
    * @private
    */
   addStatsToTable_(statsTable, time, statsData) {
-    var date = new Date(time);
+    const date = new Date(time);
     this.updateStatsTableRow_(statsTable, 'timestamp', date.toLocaleString());
-    for (var i = 0; i < statsData.length - 1; i = i + 2) {
+    for (let i = 0; i < statsData.length - 1; i = i + 2) {
       this.updateStatsTableRow_(statsTable, statsData[i], statsData[i + 1]);
     }
   }
@@ -143,9 +143,9 @@ export class StatsTable {
    * @private
    */
   updateStatsTableRow_(statsTable, rowName, value) {
-    var trId = statsTable.id + '-' + rowName;
-    var trElement = $(trId);
-    var activeConnectionClass = 'stats-table-active-connection';
+    const trId = statsTable.id + '-' + rowName;
+    let trElement = $(trId);
+    const activeConnectionClass = 'stats-table-active-connection';
     if (!trElement) {
       trElement = document.createElement('tr');
       trElement.id = trId;
