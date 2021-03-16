@@ -41,8 +41,17 @@ js_library("memories") {
 
 js_library("memory_card") {
   deps = [
+    ":top_visit",
     "//components/memories/core:mojo_bindings_webui_js",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+  ]
+}
+
+js_library("page_favicon") {
+  deps = [
+    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+    "//ui/webui/resources/js:icon.m",
+    "//url/mojom:url_mojom_origin_webui_js",
   ]
 }
 
@@ -56,15 +65,40 @@ js_library("page_thumbnail") {
   ]
 }
 
+js_library("top_visit") {
+  deps = [
+    ":visit_row",
+    "//components/memories/core:mojo_bindings_webui_js",
+    "//third_party/polymer/v3_0/components-chromium/iron-collapse:iron-collapse",
+    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+    "//ui/webui/resources/cr_elements/cr_expand_button:cr_expand_button.m",
+  ]
+}
+
 js_library("utils") {
   deps = [ "//mojo/public/mojom/base:base_webui_js" ]
+}
+
+js_library("visit_row") {
+  deps = [
+    ":page_favicon",
+    ":utils",
+    "//components/memories/core:mojo_bindings_webui_js",
+    "//mojo/public/mojom/base:base_webui_js",
+    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+    "//url/mojom:url_mojom_origin_webui_js",
+  ]
 }
 
 html_to_js("web_components_local") {
   js_files = [
     "app.js",
     "memory_card.js",
+    "page_favicon.js",
     "page_thumbnail.js",
+    "shared_vars.js",
+    "top_visit.js",
+    "visit_row.js",
   ]
 }
 
@@ -97,7 +131,11 @@ preprocess_if_expr("preprocess_gen") {
   in_files = [
     "app.js",
     "memory_card.js",
+    "page_favicon.js",
     "page_thumbnail.js",
+    "shared_vars.js",
+    "top_visit.js",
+    "visit_row.js",
   ]
   deps = [ ":web_components" ]
 }

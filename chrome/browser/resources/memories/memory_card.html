@@ -4,9 +4,21 @@
     border: 1px solid var(--google-grey-refresh-300);
     border-radius: 16px;
     box-sizing: border-box;
-    color: var(--google-grey-900);
     margin: 24px 0;
     padding: 24px;
     width: var(--memory-card-width);
   }
+
+  .section .header {
+    font-size: 14px;
+    line-height: 20px;
+  }
 </style>
+<div class="section" hidden="[[!memory.topVisits.length]]">
+  <div class="header">$i18n{topVisitsSectionHeader}</div>
+  <div class="top-visits">
+    <template is="dom-repeat" items="[[memory.topVisits]]">
+      <top-visit visit="[[item]]"></top-visit>
+    </template>
+  </div>
+</div>

@@ -1,6 +1,6 @@
 <style include="cr-shared-style">
   :host {
-    --memory-card-width: 742px;
+    color: var(--cr-primary-text-color);
   }
 
   .container {
@@ -18,9 +18,9 @@
   }
 
   page-thumbnail {
-    --border-radius: 16px;
-    --max-height: 100px;
-    --max-width: 100px;
+    --thumbnail-border-radius: 16px;
+    --thumbnail-max-height: 100px;
+    --thumbnail-max-width: 100px;
     margin-inline-end: 25px;
   }
 
@@ -30,7 +30,7 @@
   }
 
   .title .description {
-    color: var(--google-grey-refresh-700);
+    color: var(--cr-secondary-text-color);
     font-size: 12px;
     line-height: 20px;
   }
@@ -41,9 +41,9 @@
   }
 </style>
 <div class="container">
-  <div class="header" hidden$="[[!title_]]">
+  <div class="header" hidden="[[!result_.title]]">
     <page-thumbnail page="[[createPageWithThumbnail_(result_.thumbnailUrl)]]"
-        hidden$="[[!result_.thumbnailUrl]]">
+        hidden="[[!result_.thumbnailUrl]]">
     </page-thumbnail>
     <div class="title">
       <span class="description">$i18n{memoryTitleDescription}</span>

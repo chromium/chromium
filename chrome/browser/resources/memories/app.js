@@ -4,6 +4,7 @@
 
 import './memory_card.js';
 import './page_thumbnail.js';
+import './shared_vars.js';
 import 'chrome://resources/cr_elements/shared_style_css.m.js';
 
 import {MemoriesResult, PageCallbackRouter, PageHandlerRemote} from '/chrome/browser/ui/webui/memories/memories.mojom-webui.js';

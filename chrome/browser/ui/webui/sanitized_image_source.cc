@@ -97,6 +97,12 @@ std::string SanitizedImageSource::GetMimeType(const std::string& path) {
   return "image/png";
 }
 
+bool SanitizedImageSource::ShouldReplaceExistingSource() {
+  // Leave the existing DataSource in place, otherwise we'll drop any pending
+  // requests on the floor.
+  return false;
+}
+
 void SanitizedImageSource::OnImageLoaded(
     network::SimpleURLLoader* loader,
     content::URLDataSource::GotDataCallback callback,

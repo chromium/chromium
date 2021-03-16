@@ -35,10 +35,18 @@ content::WebUIDataSource* CreateAndSetupWebUIDataSource(Profile* profile) {
   // TODO(crbug.com/1173908): Replace these with localized strings.
   source->AddString("memoryTitleDescription",
                     base::UTF8ToUTF16("Based on previous web activity"));
+  source->AddString("topVisitsSectionHeader",
+                    base::UTF8ToUTF16("From Chrome History"));
 
   webui::SetupWebUIDataSource(
       source, base::make_span(kMemoriesResources, kMemoriesResourcesSize),
       IDR_MEMORIES_MEMORIES_HTML);
+
+  content::URLDataSource::Add(profile,
+                              std::make_unique<SanitizedImageSource>(profile));
+  content::URLDataSource::Add(
+      profile, std::make_unique<FaviconSource>(
+                   profile, chrome::FaviconUrlFormat::kFavicon2));
 
   return source;
 }

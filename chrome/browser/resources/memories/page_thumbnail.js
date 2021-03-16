@@ -2,8 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'chrome://resources/cr_elements/shared_style_css.m.js';
-
 import {WebPage} from '/components/memories/core/memories.mojom-webui.js';
 import {String16} from 'chrome://resources/mojo/mojo/public/mojom/base/string16.mojom-webui.js';
 import {Url} from 'chrome://resources/mojo/url/mojom/url.mojom-webui.js';
@@ -48,7 +46,7 @@ class PageThumbnailElement extends PolymerElement {
    * @return {string}
    * @private
    */
-  thumbnailSrc_(thumbnailUrl) {
+  getThumbnailSrc_(thumbnailUrl) {
     return thumbnailUrl ? `chrome://image?${thumbnailUrl.url}` : '';
   }
 

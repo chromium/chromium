@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import './shared_vars.js';
+import './top_visit.js';
 import 'chrome://resources/cr_elements/shared_style_css.m.js';
 
 import {Memory} from '/components/memories/core/memories.mojom-webui.js';
