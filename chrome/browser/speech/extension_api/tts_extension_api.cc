@@ -309,10 +309,13 @@ ExtensionFunction::ResponseAction TtsSpeakFunction::Run() {
     extensions::ExtensionHost* host =
         extensions::ProcessManager::Get(browser_context())
             ->GetBackgroundHostForExtension(extension()->id());
-    utterance = content::TtsUtterance::Create(host->host_contents());
-  } else {
-    utterance = content::TtsUtterance::Create(browser_context());
+
+    if (host && host->host_contents())
+      utterance = content::TtsUtterance::Create(host->host_contents());
   }
+
+  if (!utterance)
+    utterance = content::TtsUtterance::Create(browser_context());
 
   utterance->SetText(text);
   utterance->SetVoiceName(voice_name);
