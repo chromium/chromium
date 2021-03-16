@@ -2771,6 +2771,11 @@
           'shards': 2,
         },
       },
+      'linux-chromeos-lts': {
+        'args': [
+          '--test-launcher-filter-file=../../testing/buildbot/filters/chromeos.unit_tests.filter',
+        ],
+      },
       'linux-chromeos-rel': {
         'swarming': {
           'shards': 2,
