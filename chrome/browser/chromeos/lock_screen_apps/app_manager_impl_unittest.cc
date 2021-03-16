@@ -255,15 +255,15 @@ class LockScreenAppManagerImplTest
     return base::FilePath();
   }
 
-  extensions::Manifest::Location GetAppLocation(TestAppLocation location) {
+  extensions::mojom::ManifestLocation GetAppLocation(TestAppLocation location) {
     switch (location) {
       case TestAppLocation::kUnpacked:
-        return extensions::Manifest::UNPACKED;
+        return extensions::mojom::ManifestLocation::kUnpacked;
       case TestAppLocation::kInternal:
-        return extensions::Manifest::INTERNAL;
+        return extensions::mojom::ManifestLocation::kInternal;
     }
 
-    return extensions::Manifest::UNPACKED;
+    return extensions::mojom::ManifestLocation::kUnpacked;
   }
 
   scoped_refptr<const extensions::Extension> CreateTestApp(

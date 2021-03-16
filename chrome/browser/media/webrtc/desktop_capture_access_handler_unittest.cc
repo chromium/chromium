@@ -352,7 +352,7 @@ TEST_F(DesktopCaptureAccessHandlerTest, ScreenCaptureAccessSuccess) {
       switches::kAllowHttpScreenCapture);
 
   extensions::ExtensionBuilder extensionBuilder("Component Extension");
-  extensionBuilder.SetLocation(extensions::Manifest::COMPONENT);
+  extensionBuilder.SetLocation(extensions::mojom::ManifestLocation::kComponent);
   auto extension = extensionBuilder.Build();
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -389,7 +389,7 @@ TEST_F(DesktopCaptureAccessHandlerTest, ScreenCaptureAccessDlpRestricted) {
       switches::kAllowHttpScreenCapture);
 
   extensions::ExtensionBuilder extensionBuilder("Component Extension");
-  extensionBuilder.SetLocation(extensions::Manifest::COMPONENT);
+  extensionBuilder.SetLocation(extensions::mojom::ManifestLocation::kComponent);
   auto extension = extensionBuilder.Build();
 
   std::unique_ptr<aura::Window> primary_root_window =

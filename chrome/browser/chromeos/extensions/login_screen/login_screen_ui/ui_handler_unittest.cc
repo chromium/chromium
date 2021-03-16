@@ -26,6 +26,8 @@
 #include "extensions/common/features/feature_channel.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
+using extensions::mojom::ManifestLocation;
+
 namespace {
 
 const char kErrorWindowAlreadyExists[] =
@@ -126,7 +128,7 @@ class LoginScreenExtensionUiHandlerUnittest : public testing::Test {
     extension_ = extensions::ExtensionBuilder(
                      /*extension_name=*/"LoginScreenUi test extension")
                      .SetID(kWhitelistedExtensionID1)
-                     .SetLocation(extensions::Manifest::EXTERNAL_POLICY)
+                     .SetLocation(ManifestLocation::kExternalPolicy)
                      .AddPermission(kPermissionName)
                      .AddFlags(extensions::Extension::FOR_LOGIN_SCREEN)
                      .Build();
@@ -293,7 +295,7 @@ TEST_F(LoginScreenExtensionUiHandlerUnittest, OnlyOneWindow) {
   scoped_refptr<const extensions::Extension> other_extension =
       extensions::ExtensionBuilder(/*extension_name=*/"Imprivata")
           .SetID(kWhitelistedExtensionID2)
-          .SetLocation(extensions::Manifest::EXTERNAL_POLICY)
+          .SetLocation(ManifestLocation::kExternalPolicy)
           .AddPermission(kPermissionName)
           .AddFlags(extensions::Extension::FOR_LOGIN_SCREEN)
           .Build();
@@ -372,7 +374,7 @@ TEST_F(LoginScreenExtensionUiHandlerDeathUnittest, NotAllowed) {
   scoped_refptr<const extensions::Extension> other_profile_extension =
       extensions::ExtensionBuilder("other profile" /*extension_name*/)
           .SetID(kWhitelistedExtensionID2)  // whitelisted
-          .SetLocation(extensions::Manifest::EXTERNAL_POLICY)
+          .SetLocation(ManifestLocation::kExternalPolicy)
           .AddPermission(kPermissionName)
           .AddFlags(extensions::Extension::FOR_LOGIN_SCREEN)
           .Build();
@@ -384,7 +386,7 @@ TEST_F(LoginScreenExtensionUiHandlerDeathUnittest, NotAllowed) {
   scoped_refptr<const extensions::Extension> no_permission_extension =
       extensions::ExtensionBuilder("no permission extension" /*extension_name*/)
           .SetID(kWhitelistedExtensionID2)  // whitelisted
-          .SetLocation(extensions::Manifest::EXTERNAL_POLICY)
+          .SetLocation(ManifestLocation::kExternalPolicy)
           .AddFlags(extensions::Extension::FOR_LOGIN_SCREEN)
           .Build();
   extension_registry_->AddEnabled(no_permission_extension);

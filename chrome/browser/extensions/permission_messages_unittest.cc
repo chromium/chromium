@@ -61,7 +61,7 @@ class PermissionMessagesUnittest : public testing::Test {
                .SetManifestKey("optional_permissions",
                                std::move(optional_permissions))
                .SetID(crx_file::id_util::GenerateId("extension"))
-               .SetLocation(Manifest::INTERNAL)
+               .SetLocation(mojom::ManifestLocation::kInternal)
                .Build();
     env_.GetExtensionService()->AddExtension(app_.get());
   }

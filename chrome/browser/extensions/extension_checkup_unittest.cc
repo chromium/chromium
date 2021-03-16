@@ -39,12 +39,14 @@ class ExtensionCheckupTest : public ExtensionServiceTestBase,
     // Install policy extension.
     scoped_refptr<const Extension> policy_extension =
         ExtensionBuilder("policy")
-            .SetLocation(Manifest::EXTERNAL_POLICY)
+            .SetLocation(mojom::ManifestLocation::kExternalPolicy)
             .Build();
     service()->AddExtension(policy_extension.get());
     // Install component extension.
     scoped_refptr<const Extension> component_extension =
-        ExtensionBuilder("component").SetLocation(Manifest::COMPONENT).Build();
+        ExtensionBuilder("component")
+            .SetLocation(mojom::ManifestLocation::kComponent)
+            .Build();
     service()->AddExtension(component_extension.get());
     // Load a default installed extension.
     int creation_flags = Extension::WAS_INSTALLED_BY_DEFAULT;

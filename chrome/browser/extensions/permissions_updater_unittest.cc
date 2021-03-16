@@ -47,7 +47,7 @@ scoped_refptr<const Extension> CreateExtensionWithOptionalPermissions(
     std::unique_ptr<base::Value> permissions,
     const std::string& name) {
   return ExtensionBuilder()
-      .SetLocation(Manifest::INTERNAL)
+      .SetLocation(mojom::ManifestLocation::kInternal)
       .SetManifest(
           DictionaryBuilder()
               .Set("name", name)

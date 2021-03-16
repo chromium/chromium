@@ -48,8 +48,8 @@ class ExtensionSettingsOverriddenDialogUnitTest
   // Adds a new extension with the given |name| and |location| to the profile.
   const extensions::Extension* AddExtension(
       const char* name = "alpha",
-      extensions::Manifest::Location location =
-          extensions::Manifest::INTERNAL) {
+      extensions::mojom::ManifestLocation location =
+          extensions::mojom::ManifestLocation::kInternal) {
     scoped_refptr<const extensions::Extension> extension =
         extensions::ExtensionBuilder(name).SetLocation(location).Build();
     service()->AddExtension(extension.get());
@@ -106,7 +106,8 @@ TEST_F(ExtensionSettingsOverriddenDialogUnitTest,
 TEST_F(ExtensionSettingsOverriddenDialogUnitTest,
        WontShowForAnExtensionThatCantBeDisabled) {
   const extensions::Extension* policy_extension = AddExtension(
-      "policy installed", extensions::Manifest::EXTERNAL_POLICY_DOWNLOAD);
+      "policy installed",
+      extensions::mojom::ManifestLocation::kExternalPolicyDownload);
 
   ExtensionSettingsOverriddenDialog controller(
       CreateTestDialogParams(policy_extension->id()), profile());

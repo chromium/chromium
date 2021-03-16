@@ -14,6 +14,7 @@
 #include "base/memory/ref_counted.h"
 #include "base/strings/string_piece.h"
 #include "extensions/common/manifest.h"
+#include "extensions/common/mojom/manifest.mojom-shared.h"
 #include "extensions/common/value_builder.h"
 
 namespace extensions {
@@ -151,7 +152,7 @@ class ExtensionBuilder {
   ExtensionBuilder& SetPath(const base::FilePath& path);
 
   // Defaults to Manifest::UNPACKED.
-  ExtensionBuilder& SetLocation(Manifest::Location location);
+  ExtensionBuilder& SetLocation(mojom::ManifestLocation location);
 
   // Merge another manifest into the current manifest, with new keys taking
   // precedence.
@@ -180,7 +181,7 @@ class ExtensionBuilder {
   std::unique_ptr<base::DictionaryValue> manifest_value_;
 
   base::FilePath path_;
-  Manifest::Location location_;
+  mojom::ManifestLocation location_;
   int flags_;
   std::string id_;
 

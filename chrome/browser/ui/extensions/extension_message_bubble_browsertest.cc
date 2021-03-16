@@ -114,7 +114,7 @@ void ExtensionMessageBubbleBrowserTest::TestBubbleAnchoredToExtensionAction() {
   scoped_refptr<const extensions::Extension> action_extension =
       extensions::ExtensionBuilder("action_extension")
           .SetAction(extensions::ExtensionBuilder::ActionType::BROWSER_ACTION)
-          .SetLocation(extensions::Manifest::UNPACKED)
+          .SetLocation(extensions::mojom::ManifestLocation::kUnpacked)
           .Build();
   extension_service()->AddExtension(action_extension.get());
 
@@ -131,7 +131,7 @@ void ExtensionMessageBubbleBrowserTest::TestBubbleAnchoredToExtensionAction() {
 void ExtensionMessageBubbleBrowserTest::TestBubbleAnchoredToAppMenu() {
   scoped_refptr<const extensions::Extension> no_action_extension =
       extensions::ExtensionBuilder("no_action_extension")
-          .SetLocation(extensions::Manifest::INTERNAL)
+          .SetLocation(extensions::mojom::ManifestLocation::kInternal)
           .Build();
   extension_service()->AddExtension(no_action_extension.get());
   // The 'suspicious extension' bubble warns the user about extensions that are
@@ -154,14 +154,14 @@ void ExtensionMessageBubbleBrowserTest::
     TestBubbleAnchoredToAppMenuWithOtherAction() {
   scoped_refptr<const extensions::Extension> no_action_extension =
       extensions::ExtensionBuilder("no_action_extension")
-          .SetLocation(extensions::Manifest::INTERNAL)
+          .SetLocation(extensions::mojom::ManifestLocation::kInternal)
           .Build();
   extension_service()->AddExtension(no_action_extension.get());
 
   scoped_refptr<const extensions::Extension> action_extension =
       extensions::ExtensionBuilder("action_extension")
           .SetAction(extensions::ExtensionBuilder::ActionType::BROWSER_ACTION)
-          .SetLocation(extensions::Manifest::INTERNAL)
+          .SetLocation(extensions::mojom::ManifestLocation::kInternal)
           .Build();
   extension_service()->AddExtension(action_extension.get());
 
@@ -245,7 +245,7 @@ void ExtensionMessageBubbleBrowserTest::TestDevModeBubbleIsntShownTwice() {
   scoped_refptr<const extensions::Extension> action_extension =
       extensions::ExtensionBuilder("action_extension")
           .SetAction(extensions::ExtensionBuilder::ActionType::BROWSER_ACTION)
-          .SetLocation(extensions::Manifest::UNPACKED)
+          .SetLocation(extensions::mojom::ManifestLocation::kUnpacked)
           .Build();
   extension_service()->AddExtension(action_extension.get());
 
@@ -384,7 +384,7 @@ void ExtensionMessageBubbleBrowserTest::TestClickingLearnMoreButton() {
   CheckBubbleIsNotPresent(browser(), false, false);
   scoped_refptr<const extensions::Extension> no_action_extension =
       extensions::ExtensionBuilder("no_action_extension")
-          .SetLocation(extensions::Manifest::INTERNAL)
+          .SetLocation(extensions::mojom::ManifestLocation::kInternal)
           .Build();
   extension_service()->AddExtension(no_action_extension.get());
 

@@ -223,7 +223,7 @@ const Extension* DeveloperPrivateApiUnitTest::LoadSimpleExtension() {
   scoped_refptr<const Extension> extension =
       ExtensionBuilder()
           .SetManifest(manifest.Build())
-          .SetLocation(Manifest::INTERNAL)
+          .SetLocation(mojom::ManifestLocation::kInternal)
           .SetID(id)
           .Build();
   service()->AddExtension(extension.get());

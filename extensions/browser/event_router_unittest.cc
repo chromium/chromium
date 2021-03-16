@@ -119,7 +119,7 @@ scoped_refptr<const Extension> CreateExtension(bool component,
   manifest->SetBoolean("background.persistent", persistent);
   builder.SetManifest(std::move(manifest));
   if (component)
-    builder.SetLocation(Manifest::Location::COMPONENT);
+    builder.SetLocation(mojom::ManifestLocation::kComponent);
 
   return builder.Build();
 }

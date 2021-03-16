@@ -28,6 +28,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 using extensions::file_system_api::ConsentProvider;
+using extensions::mojom::ManifestLocation;
 using file_manager::Volume;
 
 namespace extensions {
@@ -146,7 +147,7 @@ TEST_F(FileSystemApiConsentProviderTest, ForNonKioskApps) {
   {
     scoped_refptr<const Extension> component_extension(
         ExtensionBuilder("Test", ExtensionBuilder::Type::PLATFORM_APP)
-            .SetLocation(Manifest::COMPONENT)
+            .SetLocation(ManifestLocation::kComponent)
             .Build());
     TestingConsentProviderDelegate delegate;
     ConsentProvider provider(&delegate);
@@ -159,7 +160,7 @@ TEST_F(FileSystemApiConsentProviderTest, ForNonKioskApps) {
   {
     scoped_refptr<const Extension> allowlisted_component_extension(
         ExtensionBuilder("Test", ExtensionBuilder::Type::PLATFORM_APP)
-            .SetLocation(Manifest::COMPONENT)
+            .SetLocation(ManifestLocation::kComponent)
             .Build());
     TestingConsentProviderDelegate delegate;
     delegate.SetComponentAllowlist(allowlisted_component_extension->id());
@@ -183,7 +184,7 @@ TEST_F(FileSystemApiConsentProviderTest, ForNonKioskApps) {
   {
     scoped_refptr<const Extension> allowlisted_extension(
         ExtensionBuilder("Test", ExtensionBuilder::Type::PLATFORM_APP)
-            .SetLocation(Manifest::COMPONENT)
+            .SetLocation(ManifestLocation::kComponent)
             .AddPermission("fileSystem.requestDownloads")
             .Build());
     TestingConsentProviderDelegate delegate;

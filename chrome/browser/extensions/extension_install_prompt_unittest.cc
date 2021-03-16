@@ -263,7 +263,7 @@ TEST_F(ExtensionInstallPromptTestWithholdingAllowed,
   scoped_refptr<const Extension> extension =
       ExtensionBuilder("all_hosts")
           .AddPermission("<all_urls>")
-          .SetLocation(Manifest::EXTERNAL_POLICY)
+          .SetLocation(mojom::ManifestLocation::kExternalPolicy)
           .Build();
   content::TestWebContentsFactory factory;
   ExtensionInstallPrompt prompt(factory.CreateWebContents(profile()));

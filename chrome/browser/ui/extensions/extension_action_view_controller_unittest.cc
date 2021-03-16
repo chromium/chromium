@@ -40,6 +40,8 @@
 #include "extensions/test/test_extension_dir.h"
 #include "ui/base/l10n/l10n_util.h"
 
+using extensions::mojom::ManifestLocation;
+
 class ExtensionActionViewControllerUnitTest : public BrowserWithTestWindowTest {
  public:
   ExtensionActionViewControllerUnitTest() = default;
@@ -105,7 +107,7 @@ class ExtensionActionViewControllerUnitTest : public BrowserWithTestWindowTest {
     scoped_refptr<const extensions::Extension> extension =
         extensions::ExtensionBuilder(name)
             .SetAction(action_type)
-            .SetLocation(extensions::Manifest::INTERNAL)
+            .SetLocation(ManifestLocation::kInternal)
             .Build();
     extension_service()->AddExtension(extension.get());
     return extension;
@@ -166,7 +168,7 @@ TEST_F(ExtensionActionViewControllerUnitTest, BrowserActionBlockedActions) {
   scoped_refptr<const extensions::Extension> extension =
       extensions::ExtensionBuilder("browser action")
           .SetAction(extensions::ExtensionBuilder::ActionType::BROWSER_ACTION)
-          .SetLocation(extensions::Manifest::INTERNAL)
+          .SetLocation(ManifestLocation::kInternal)
           .AddPermission("https://www.google.com/*")
           .Build();
 
@@ -217,7 +219,7 @@ TEST_F(ExtensionActionViewControllerUnitTest, PageActionBlockedActions) {
   scoped_refptr<const extensions::Extension> extension =
       extensions::ExtensionBuilder("page action")
           .SetAction(extensions::ExtensionBuilder::ActionType::PAGE_ACTION)
-          .SetLocation(extensions::Manifest::INTERNAL)
+          .SetLocation(ManifestLocation::kInternal)
           .AddPermission("https://www.google.com/*")
           .Build();
 
@@ -258,7 +260,7 @@ TEST_F(ExtensionActionViewControllerUnitTest, PageActionBlockedActions) {
 TEST_F(ExtensionActionViewControllerUnitTest, OnlyHostPermissionsAppearance) {
   scoped_refptr<const extensions::Extension> extension =
       extensions::ExtensionBuilder("just hosts")
-          .SetLocation(extensions::Manifest::INTERNAL)
+          .SetLocation(ManifestLocation::kInternal)
           .AddPermission("https://www.google.com/*")
           .Build();
 
@@ -530,7 +532,7 @@ ExtensionActionViewControllerGrayscaleTest::CreateExtension(
     PermissionType permission_type) {
   extensions::ExtensionBuilder builder("extension");
   builder.SetAction(extensions::ExtensionBuilder::ActionType::BROWSER_ACTION)
-      .SetLocation(extensions::Manifest::INTERNAL);
+      .SetLocation(ManifestLocation::kInternal);
   constexpr char kHostGoogle[] = "https://www.google.com/*";
   switch (permission_type) {
     case PermissionType::kScriptableHost: {
@@ -578,7 +580,7 @@ TEST_F(ExtensionActionViewControllerUnitTest, RuntimeHostsTooltip) {
   scoped_refptr<const extensions::Extension> extension =
       extensions::ExtensionBuilder("extension name")
           .SetAction(extensions::ExtensionBuilder::ActionType::BROWSER_ACTION)
-          .SetLocation(extensions::Manifest::INTERNAL)
+          .SetLocation(ManifestLocation::kInternal)
           .AddPermission("https://www.google.com/*")
           .Build();
   extension_service()->GrantPermissions(extension.get());

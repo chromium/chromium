@@ -106,7 +106,7 @@ const Extension* ExtensionActionRunnerUnitTest::AddExtension() {
                   .Set("permissions",
                        ListBuilder().Append(kAllHostsPermission).Build())
                   .Build())
-          .SetLocation(Manifest::INTERNAL)
+          .SetLocation(mojom::ManifestLocation::kInternal)
           .SetID(kId)
           .Build();
 

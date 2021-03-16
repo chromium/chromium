@@ -20,7 +20,6 @@
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 #include "extensions/buildflags/buildflags.h"
-#include "extensions/common/extension_l10n_util.h"
 #include "ui/base/resource/resource_bundle.h"
 
 #if defined(OS_ANDROID)
@@ -30,6 +29,10 @@
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ash/constants/ash_switches.h"
 #include "chrome/common/pref_names.h"
+#endif
+
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+#include "extensions/common/extension_l10n_util.h"
 #endif
 
 namespace {

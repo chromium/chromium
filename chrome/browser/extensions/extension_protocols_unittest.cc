@@ -804,7 +804,7 @@ TEST_F(ExtensionProtocolsTest, MimeTypesForKnownFiles) {
       ExtensionBuilder()
           .SetManifest(std::move(manifest))
           .SetPath(unpacked_path)
-          .SetLocation(Manifest::INTERNAL)
+          .SetLocation(mojom::ManifestLocation::kInternal)
           .Build();
   ASSERT_TRUE(extension);
 

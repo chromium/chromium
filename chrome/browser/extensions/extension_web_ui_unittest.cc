@@ -31,6 +31,8 @@
 #include "chrome/browser/ash/settings/scoped_cros_settings_test_helper.h"
 #endif
 
+using extensions::mojom::ManifestLocation;
+
 namespace extensions {
 
 namespace {
@@ -87,7 +89,7 @@ TEST_F(ExtensionWebUITest, ExtensionURLOverride) {
   scoped_refptr<const Extension> ext_unpacked(
       ExtensionBuilder()
           .SetManifest(manifest.Build())
-          .SetLocation(Manifest::UNPACKED)
+          .SetLocation(ManifestLocation::kUnpacked)
           .SetID("abcdefghijabcdefghijabcdefghijaa")
           .Build());
   extension_service_->AddExtension(ext_unpacked.get());
@@ -123,7 +125,7 @@ TEST_F(ExtensionWebUITest, ExtensionURLOverride) {
   scoped_refptr<const Extension> ext_component(
       ExtensionBuilder()
           .SetManifest(manifest2.Build())
-          .SetLocation(Manifest::COMPONENT)
+          .SetLocation(ManifestLocation::kComponent)
           .SetID("bbabcdefghijabcdefghijabcdefghij")
           .Build());
   extension_service_->AddComponentExtension(ext_component.get());
@@ -265,7 +267,7 @@ TEST_F(ExtensionWebUITest, TestNumExtensionsOverridingURL) {
         DictionaryBuilder().Set("newtab", "newtab.html").Build();
     scoped_refptr<const Extension> extension =
         ExtensionBuilder(name)
-            .SetLocation(Manifest::INTERNAL)
+            .SetLocation(ManifestLocation::kInternal)
             .SetManifestKey("chrome_url_overrides",
                             std::move(chrome_url_overrides))
             .Build();

@@ -55,6 +55,7 @@
 
 namespace {
 
+using extensions::mojom::ManifestLocation;
 using ActionType = extensions::ExtensionBuilder::ActionType;
 
 // A simple observer that tracks the number of times certain events occur.
@@ -287,14 +288,14 @@ testing::AssertionResult ToolbarActionsModelUnitTest::RemoveExtension(
 testing::AssertionResult ToolbarActionsModelUnitTest::AddActionExtensions() {
   browser_action_extension_ = extensions::ExtensionBuilder("browser_action")
                                   .SetAction(ActionType::BROWSER_ACTION)
-                                  .SetLocation(extensions::Manifest::INTERNAL)
+                                  .SetLocation(ManifestLocation::kInternal)
                                   .Build();
   page_action_extension_ = extensions::ExtensionBuilder("page_action")
                                .SetAction(ActionType::PAGE_ACTION)
-                               .SetLocation(extensions::Manifest::INTERNAL)
+                               .SetLocation(ManifestLocation::kInternal)
                                .Build();
   no_action_extension_ = extensions::ExtensionBuilder("no_action")
-                             .SetLocation(extensions::Manifest::INTERNAL)
+                             .SetLocation(ManifestLocation::kInternal)
                              .Build();
 
   extensions::ExtensionList extensions;
@@ -309,15 +310,15 @@ testing::AssertionResult
 ToolbarActionsModelUnitTest::AddBrowserActionExtensions() {
   browser_action_a_ = extensions::ExtensionBuilder("browser_actionA")
                           .SetAction(ActionType::BROWSER_ACTION)
-                          .SetLocation(extensions::Manifest::INTERNAL)
+                          .SetLocation(ManifestLocation::kInternal)
                           .Build();
   browser_action_b_ = extensions::ExtensionBuilder("browser_actionB")
                           .SetAction(ActionType::BROWSER_ACTION)
-                          .SetLocation(extensions::Manifest::INTERNAL)
+                          .SetLocation(ManifestLocation::kInternal)
                           .Build();
   browser_action_c_ = extensions::ExtensionBuilder("browser_actionC")
                           .SetAction(ActionType::BROWSER_ACTION)
-                          .SetLocation(extensions::Manifest::INTERNAL)
+                          .SetLocation(ManifestLocation::kInternal)
                           .Build();
 
   extensions::ExtensionList extensions;
@@ -368,7 +369,7 @@ TEST_F(ToolbarActionsModelUnitTest, BasicToolbarActionsModelTest) {
   scoped_refptr<const extensions::Extension> extension =
       extensions::ExtensionBuilder("browser_action")
           .SetAction(ActionType::BROWSER_ACTION)
-          .SetLocation(extensions::Manifest::INTERNAL)
+          .SetLocation(ManifestLocation::kInternal)
           .Build();
   ASSERT_TRUE(AddExtension(extension));
 
@@ -566,22 +567,22 @@ TEST_F(ToolbarActionsModelUnitTest, NewToolbarExtensionsAreVisible) {
   scoped_refptr<const extensions::Extension> extension_a =
       extensions::ExtensionBuilder("a")
           .SetAction(ActionType::BROWSER_ACTION)
-          .SetLocation(extensions::Manifest::INTERNAL)
+          .SetLocation(ManifestLocation::kInternal)
           .Build();
   scoped_refptr<const extensions::Extension> extension_b =
       extensions::ExtensionBuilder("b")
           .SetAction(ActionType::BROWSER_ACTION)
-          .SetLocation(extensions::Manifest::INTERNAL)
+          .SetLocation(ManifestLocation::kInternal)
           .Build();
   scoped_refptr<const extensions::Extension> extension_c =
       extensions::ExtensionBuilder("c")
           .SetAction(ActionType::BROWSER_ACTION)
-          .SetLocation(extensions::Manifest::INTERNAL)
+          .SetLocation(ManifestLocation::kInternal)
           .Build();
   scoped_refptr<const extensions::Extension> extension_d =
       extensions::ExtensionBuilder("d")
           .SetAction(ActionType::BROWSER_ACTION)
-          .SetLocation(extensions::Manifest::INTERNAL)
+          .SetLocation(ManifestLocation::kInternal)
           .Build();
 
   // We should start off without any actions.
@@ -873,7 +874,7 @@ TEST_F(ToolbarActionsModelUnitTest, TestToolbarExtensionTypesEnabledSwitch) {
       extensions::ExtensionBuilder()
           .SetManifest(default_installed_manifest.Build())
           .SetID(crx_file::id_util::GenerateId("default"))
-          .SetLocation(extensions::Manifest::INTERNAL)
+          .SetLocation(ManifestLocation::kInternal)
           .AddFlags(extensions::Extension::WAS_INSTALLED_BY_DEFAULT)
           .Build();
   EXPECT_TRUE(AddExtension(default_installed_extension.get()));
@@ -883,7 +884,7 @@ TEST_F(ToolbarActionsModelUnitTest, TestToolbarExtensionTypesEnabledSwitch) {
   // Component extensions shouldn't be given an icon.
   scoped_refptr<const extensions::Extension> component_extension_no_action =
       extensions::ExtensionBuilder("component ext no action")
-          .SetLocation(extensions::Manifest::COMPONENT)
+          .SetLocation(ManifestLocation::kComponent)
           .Build();
   EXPECT_TRUE(AddExtension(component_extension_no_action.get()));
   EXPECT_EQ(3u, num_actions());
@@ -893,7 +894,7 @@ TEST_F(ToolbarActionsModelUnitTest, TestToolbarExtensionTypesEnabledSwitch) {
   // have an icon.
   scoped_refptr<const extensions::Extension> internal_extension_no_action =
       extensions::ExtensionBuilder("internal ext no action")
-          .SetLocation(extensions::Manifest::INTERNAL)
+          .SetLocation(ManifestLocation::kInternal)
           .Build();
   EXPECT_TRUE(AddExtension(internal_extension_no_action.get()));
   EXPECT_EQ(4u, num_actions());
@@ -1227,7 +1228,7 @@ TEST_F(ToolbarActionsModelUnitTest, AddUserScriptExtension) {
 
   scoped_refptr<const extensions::Extension> extension =
       extensions::ExtensionBuilder("a")
-          .SetLocation(extensions::Manifest::INTERNAL)
+          .SetLocation(ManifestLocation::kInternal)
           .MergeManifest(extensions::DictionaryBuilder()
                              .Set("converted_from_user_script", true)
                              .Build())
@@ -1484,7 +1485,7 @@ TEST_F(ToolbarActionsModelUnitTest, PinStateErasedOnUninstallation) {
   scoped_refptr<const extensions::Extension> extension =
       extensions::ExtensionBuilder("extension")
           .SetAction(ActionType::BROWSER_ACTION)
-          .SetLocation(extensions::Manifest::INTERNAL)
+          .SetLocation(ManifestLocation::kInternal)
           .Build();
 
   // Add and pin an extension.
@@ -1534,7 +1535,7 @@ TEST_F(ToolbarActionsModelUnitTest, ForcePinnedByPolicy) {
   scoped_refptr<const extensions::Extension> extension =
       extensions::ExtensionBuilder("test")
           .SetAction(ActionType::BROWSER_ACTION)
-          .SetLocation(extensions::Manifest::INTERNAL)
+          .SetLocation(ManifestLocation::kInternal)
           .SetID(extension_id)
           .Build();
 

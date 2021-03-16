@@ -172,6 +172,7 @@ using content::BrowserContext;
 using content::BrowserThread;
 using content::DOMStorageContext;
 using content::PluginService;
+using extensions::mojom::ManifestLocation;
 
 namespace extensions {
 
@@ -258,7 +259,7 @@ size_t GetExternalInstallBubbleCount(ExtensionService* service) {
 
 scoped_refptr<const Extension> CreateExtension(const std::string& name,
                                                const base::FilePath& path,
-                                               Manifest::Location location) {
+                                               ManifestLocation location) {
   return ExtensionBuilder(name).SetPath(path).SetLocation(location).Build();
 }
 
@@ -6971,7 +6972,7 @@ TEST_F(ExtensionServiceTest, DisablingComponentExtensions) {
   scoped_refptr<const Extension> external_component_extension = CreateExtension(
       "external_component_extension",
       base::FilePath(FILE_PATH_LITERAL("//external_component_extension")),
-      Manifest::EXTERNAL_COMPONENT);
+      ManifestLocation::kExternalComponent);
   service_->AddExtension(external_component_extension.get());
   EXPECT_TRUE(registry()->enabled_extensions().Contains(
       external_component_extension->id()));
@@ -6983,7 +6984,7 @@ TEST_F(ExtensionServiceTest, DisablingComponentExtensions) {
   scoped_refptr<const Extension> component_extension = CreateExtension(
       "component_extension",
       base::FilePath(FILE_PATH_LITERAL("//component_extension")),
-      Manifest::COMPONENT);
+      ManifestLocation::kComponent);
   service_->AddExtension(component_extension.get());
   EXPECT_TRUE(
       registry()->enabled_extensions().Contains(component_extension->id()));
@@ -7708,12 +7709,12 @@ TEST_F(ExtensionServiceTest, UninstallMigratedExtensions) {
   scoped_refptr<const Extension> cast_extension =
       ExtensionBuilder("stable")
           .SetID(cast_stable)
-          .SetLocation(Manifest::INTERNAL)
+          .SetLocation(ManifestLocation::kInternal)
           .Build();
   scoped_refptr<const Extension> cast_beta_extension =
       ExtensionBuilder("beta")
           .SetID(cast_beta)
-          .SetLocation(Manifest::INTERNAL)
+          .SetLocation(ManifestLocation::kInternal)
           .Build();
   service()->AddExtension(cast_extension.get());
   service()->AddExtension(cast_beta_extension.get());
@@ -7733,7 +7734,7 @@ TEST_F(ExtensionServiceTest, UninstallDisabledMigratedExtension) {
   scoped_refptr<const Extension> cast_extension =
       ExtensionBuilder("stable")
           .SetID(cast_stable)
-          .SetLocation(Manifest::INTERNAL)
+          .SetLocation(ManifestLocation::kInternal)
           .Build();
   service()->AddExtension(cast_extension.get());
   service()->DisableExtension(cast_stable, disable_reason::DISABLE_USER_ACTION);
@@ -7752,7 +7753,7 @@ TEST_F(ExtensionServiceTest, UninstallMigratedComponentExtensions) {
   scoped_refptr<const Extension> genius_extension =
       ExtensionBuilder("genius")
           .SetID(genius_app)
-          .SetLocation(Manifest::INTERNAL)
+          .SetLocation(ManifestLocation::kInternal)
           .Build();
   service()->AddComponentExtension(genius_extension.get());
   ASSERT_TRUE(registry()->enabled_extensions().Contains(genius_app));
@@ -7771,7 +7772,7 @@ TEST_F(ExtensionServiceTest, UninstallMigratedExtensionsKeepsGoodComponents) {
   scoped_refptr<const Extension> good_extension =
       ExtensionBuilder("good")
           .SetID(good0)
-          .SetLocation(Manifest::INTERNAL)
+          .SetLocation(ManifestLocation::kInternal)
           .Build();
   service()->AddComponentExtension(good_extension.get());
   ASSERT_TRUE(registry()->enabled_extensions().Contains(good0));
@@ -7790,12 +7791,12 @@ TEST_F(ExtensionServiceTest, UninstallMigratedExtensionsMultipleCalls) {
   scoped_refptr<const Extension> cast_extension =
       ExtensionBuilder("stable")
           .SetID(cast_stable)
-          .SetLocation(Manifest::INTERNAL)
+          .SetLocation(ManifestLocation::kInternal)
           .Build();
   scoped_refptr<const Extension> genius_extension =
       ExtensionBuilder("genius")
           .SetID(genius_app)
-          .SetLocation(Manifest::INTERNAL)
+          .SetLocation(ManifestLocation::kInternal)
           .Build();
   service()->AddExtension(cast_extension.get());
   service()->AddComponentExtension(genius_extension.get());

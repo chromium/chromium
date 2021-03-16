@@ -131,7 +131,8 @@ struct ExtensionBuilder::ManifestData {
 };
 
 ExtensionBuilder::ExtensionBuilder()
-    : location_(Manifest::UNPACKED), flags_(Extension::NO_FLAGS) {}
+    : location_(mojom::ManifestLocation::kUnpacked),
+      flags_(Extension::NO_FLAGS) {}
 
 ExtensionBuilder::ExtensionBuilder(const std::string& name, Type type)
     : ExtensionBuilder() {
@@ -154,7 +155,7 @@ scoped_refptr<const Extension> ExtensionBuilder::Build() {
 
   std::string error;
   scoped_refptr<const Extension> extension = Extension::Create(
-      path_, location_,
+      path_, static_cast<Manifest::Location>(location_),
       manifest_data_ ? *manifest_data_->GetValue() : *manifest_value_, flags_,
       id_, &error);
 
@@ -211,7 +212,8 @@ ExtensionBuilder& ExtensionBuilder::SetPath(const base::FilePath& path) {
   return *this;
 }
 
-ExtensionBuilder& ExtensionBuilder::SetLocation(Manifest::Location location) {
+ExtensionBuilder& ExtensionBuilder::SetLocation(
+    mojom::ManifestLocation location) {
   location_ = location;
   return *this;
 }

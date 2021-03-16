@@ -195,7 +195,7 @@ ToolbarActionsBarUnitTest::CreateAndAddExtension(const std::string& name,
   scoped_refptr<const extensions::Extension> extension =
       extensions::ExtensionBuilder(name)
           .SetAction(action_type)
-          .SetLocation(extensions::Manifest::INTERNAL)
+          .SetLocation(extensions::mojom::ManifestLocation::kInternal)
           .Build();
   extensions::ExtensionSystem::Get(profile())->extension_service()->
       AddExtension(extension.get());

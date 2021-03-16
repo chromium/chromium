@@ -682,7 +682,8 @@ IN_PROC_BROWSER_TEST_P(ExtensionPolicyUITest,
   extensions::ExtensionBuilder builder;
   builder.SetPath(temp_dir_.GetPath());
   builder.SetManifest(manifest.Build());
-  builder.SetLocation(extensions::Manifest::EXTERNAL_POLICY_DOWNLOAD);
+  builder.SetLocation(
+      extensions::mojom::ManifestLocation::kExternalPolicyDownload);
 
   // Install extension.
   extensions::ExtensionService* service =

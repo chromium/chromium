@@ -674,7 +674,7 @@ TEST_F(NativeExtensionBindingsSystemUnittest,
     connectable_extension =
         ExtensionBuilder()
             .SetManifest(manifest.Build())
-            .SetLocation(Manifest::INTERNAL)
+            .SetLocation(mojom::ManifestLocation::kInternal)
             .SetID(crx_file::id_util::GenerateId("connectable"))
             .Build();
   }

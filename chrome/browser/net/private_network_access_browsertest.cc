@@ -471,7 +471,7 @@ IN_PROC_BROWSER_TEST_F(PrivateNetworkAccessWithFeatureEnabledBrowserTest,
   extensions::ExtensionBuilder builder("test");
   builder.SetPath(temp_dir.GetPath())
       .SetVersion("1.0")
-      .SetLocation(extensions::Manifest::EXTERNAL_POLICY_DOWNLOAD)
+      .SetLocation(extensions::mojom::ManifestLocation::kExternalPolicyDownload)
       .SetManifestKey("web_accessible_resources", std::move(resources));
 
   extensions::ExtensionService* service =

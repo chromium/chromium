@@ -32,7 +32,7 @@ const char kBogusId[] = "bogus";
 
 scoped_refptr<const Extension> CreateExtension(const std::string& id) {
   return ExtensionBuilder("test")
-      .SetLocation(Manifest::INTERNAL)
+      .SetLocation(mojom::ManifestLocation::kInternal)
       .SetID(id)
       .Build();
 }

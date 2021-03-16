@@ -38,8 +38,9 @@
 using base::UTF16ToUTF8;
 using content::SocketPermissionRequest;
 using extension_test_util::LoadManifest;
-using extension_test_util::LoadManifestUnchecked;
 using extension_test_util::LoadManifestStrict;
+using extension_test_util::LoadManifestUnchecked;
+using extensions::mojom::ManifestLocation;
 
 namespace extensions {
 
@@ -69,7 +70,7 @@ bool CheckSocketPermission(scoped_refptr<Extension> extension,
 scoped_refptr<const Extension> GetExtensionWithHostPermission(
     const std::string& id,
     const std::string& host_permissions,
-    Manifest::Location location) {
+    ManifestLocation location) {
   ListBuilder permissions;
   if (!host_permissions.empty())
     permissions.Append(host_permissions);
@@ -290,19 +291,15 @@ TEST(PermissionsDataTest, SocketPermissions) {
 }
 
 TEST(PermissionsDataTest, IsRestrictedUrl) {
-  scoped_refptr<const Extension> extension =
-      GetExtensionWithHostPermission("normal_extension",
-                                     kAllHostsPermission,
-                                     Manifest::INTERNAL);
+  scoped_refptr<const Extension> extension = GetExtensionWithHostPermission(
+      "normal_extension", kAllHostsPermission, ManifestLocation::kInternal);
   // Chrome and chrome-untrusted:// urls should be blocked for normal
   // extensions.
   CheckRestrictedUrls(extension.get(), /*block_chrome_urls=*/true,
                       /*block_chrome_untrusted_urls=*/true);
 
-  scoped_refptr<const Extension> component =
-      GetExtensionWithHostPermission("component",
-                                     kAllHostsPermission,
-                                     Manifest::COMPONENT);
+  scoped_refptr<const Extension> component = GetExtensionWithHostPermission(
+      "component", kAllHostsPermission, ManifestLocation::kComponent);
   // Chrome and chrome-untrusted:// urls should be accessible by component
   // extensions.
   CheckRestrictedUrls(component.get(), /*block_chrome_urls=*/false,
@@ -360,13 +357,13 @@ TEST(PermissionsDataTest, ExtensionScheme) {
   // A regular extension shouldn't get access to chrome-extension: scheme URLs
   // even with <all_urls> specified.
   extension = GetExtensionWithHostPermission("regular_extension", "<all_urls>",
-                                             Manifest::UNPACKED);
+                                             ManifestLocation::kUnpacked);
   ASSERT_FALSE(extension->permissions_data()->HasHostPermission(external_file));
 
   // Component extensions should get access to chrome-extension: scheme URLs
   // when <all_urls> is specified.
-  extension = GetExtensionWithHostPermission("component_extension",
-                                             "<all_urls>", Manifest::COMPONENT);
+  extension = GetExtensionWithHostPermission(
+      "component_extension", "<all_urls>", ManifestLocation::kComponent);
   ASSERT_TRUE(extension->permissions_data()->HasHostPermission(external_file));
 }
 
@@ -914,14 +911,16 @@ TEST_F(ExtensionScriptAndCaptureVisibleTest, CaptureFileURLs) {
 TEST(PermissionsDataTest, ChromeWebstoreUrl) {
   scoped_refptr<const Extension> normal_extension =
       GetExtensionWithHostPermission("all_hosts_normal_extension",
-                                     kAllHostsPermission, Manifest::INTERNAL);
+                                     kAllHostsPermission,
+                                     ManifestLocation::kInternal);
   scoped_refptr<const Extension> policy_extension =
       GetExtensionWithHostPermission("all_hosts_policy_extension",
                                      kAllHostsPermission,
-                                     Manifest::EXTERNAL_POLICY);
+                                     ManifestLocation::kExternalPolicy);
   scoped_refptr<const Extension> unpacked_extension =
       GetExtensionWithHostPermission("all_hosts_unpacked_extension",
-                                     kAllHostsPermission, Manifest::UNPACKED);
+                                     kAllHostsPermission,
+                                     ManifestLocation::kUnpacked);
   const Extension* extensions[] = {
       normal_extension.get(), policy_extension.get(), unpacked_extension.get(),
   };

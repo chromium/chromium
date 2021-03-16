@@ -51,6 +51,7 @@
 #include "chrome/browser/ash/settings/scoped_cros_settings_test_helper.h"
 #endif
 
+using extensions::mojom::ManifestLocation;
 using testing::_;
 using testing::AtMost;
 using testing::Exactly;
@@ -648,26 +649,26 @@ TEST_F(BackgroundModeManagerTest,
 TEST_F(BackgroundModeManagerWithExtensionsTest, BackgroundMenuGeneration) {
   scoped_refptr<const extensions::Extension> component_extension =
       extensions::ExtensionBuilder("Component Extension")
-          .SetLocation(extensions::Manifest::COMPONENT)
+          .SetLocation(ManifestLocation::kComponent)
           .AddPermission("background")
           .Build();
 
   scoped_refptr<const extensions::Extension> component_extension_with_options =
       extensions::ExtensionBuilder("Component Extension with Options")
-          .SetLocation(extensions::Manifest::COMPONENT)
+          .SetLocation(ManifestLocation::kComponent)
           .AddPermission("background")
           .SetManifestKey("options_page", "test.html")
           .Build();
 
   scoped_refptr<const extensions::Extension> regular_extension =
       extensions::ExtensionBuilder("Regular Extension")
-          .SetLocation(extensions::Manifest::COMMAND_LINE)
+          .SetLocation(ManifestLocation::kCommandLine)
           .AddPermission("background")
           .Build();
 
   scoped_refptr<const extensions::Extension> regular_extension_with_options =
       extensions::ExtensionBuilder("Regular Extension with Options")
-          .SetLocation(extensions::Manifest::COMMAND_LINE)
+          .SetLocation(ManifestLocation::kCommandLine)
           .AddPermission("background")
           .SetManifestKey("options_page", "test.html")
           .Build();
@@ -712,26 +713,26 @@ TEST_F(BackgroundModeManagerWithExtensionsTest,
        BackgroundMenuGenerationMultipleProfile) {
   scoped_refptr<const extensions::Extension> component_extension =
       extensions::ExtensionBuilder("Component Extension")
-          .SetLocation(extensions::Manifest::COMPONENT)
+          .SetLocation(ManifestLocation::kComponent)
           .AddPermission("background")
           .Build();
 
   scoped_refptr<const extensions::Extension> component_extension_with_options =
       extensions::ExtensionBuilder("Component Extension with Options")
-          .SetLocation(extensions::Manifest::COMPONENT)
+          .SetLocation(ManifestLocation::kComponent)
           .AddPermission("background")
           .SetManifestKey("options_page", "test.html")
           .Build();
 
   scoped_refptr<const extensions::Extension> regular_extension =
       extensions::ExtensionBuilder("Regular Extension")
-          .SetLocation(extensions::Manifest::COMMAND_LINE)
+          .SetLocation(ManifestLocation::kCommandLine)
           .AddPermission("background")
           .Build();
 
   scoped_refptr<const extensions::Extension> regular_extension_with_options =
       extensions::ExtensionBuilder("Regular Extension with Options")
-          .SetLocation(extensions::Manifest::COMMAND_LINE)
+          .SetLocation(ManifestLocation::kCommandLine)
           .AddPermission("background")
           .SetManifestKey("options_page", "test.html")
           .Build();
@@ -856,27 +857,27 @@ TEST_F(BackgroundModeManagerWithExtensionsTest, BalloonDisplay) {
   scoped_refptr<const extensions::Extension> bg_ext =
       extensions::ExtensionBuilder("Background Extension")
           .SetVersion("1.0")
-          .SetLocation(extensions::Manifest::COMMAND_LINE)
+          .SetLocation(ManifestLocation::kCommandLine)
           .AddPermission("background")
           .Build();
 
   scoped_refptr<const extensions::Extension> upgraded_bg_ext =
       extensions::ExtensionBuilder("Background Extension")
           .SetVersion("2.0")
-          .SetLocation(extensions::Manifest::COMMAND_LINE)
+          .SetLocation(ManifestLocation::kCommandLine)
           .AddPermission("background")
           .Build();
 
   scoped_refptr<const extensions::Extension> no_bg_ext =
       extensions::ExtensionBuilder("Regular Extension")
           .SetVersion("1.0")
-          .SetLocation(extensions::Manifest::COMMAND_LINE)
+          .SetLocation(ManifestLocation::kCommandLine)
           .Build();
 
   scoped_refptr<const extensions::Extension> upgraded_no_bg_ext_has_bg =
       extensions::ExtensionBuilder("Regular Extension")
           .SetVersion("1.0")
-          .SetLocation(extensions::Manifest::COMMAND_LINE)
+          .SetLocation(ManifestLocation::kCommandLine)
           .AddPermission("background")
           .Build();
 

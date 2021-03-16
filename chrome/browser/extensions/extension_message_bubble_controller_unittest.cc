@@ -51,6 +51,8 @@
 #include "extensions/common/value_builder.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
+using extensions::mojom::ManifestLocation;
+
 namespace {
 
 const char kId1[] = "iccfkkhkfiphcjdakkmcjmkfboccmndk";
@@ -187,7 +189,7 @@ class ExtensionMessageBubbleTest : public BrowserWithTestWindowTest {
 
   testing::AssertionResult LoadGenericExtension(const std::string& index,
                                                 const std::string& id,
-                                                Manifest::Location location) {
+                                                ManifestLocation location) {
     ExtensionBuilder builder;
     builder.SetManifest(DictionaryBuilder()
                             .Set("name", std::string("Extension " + index))
@@ -203,10 +205,9 @@ class ExtensionMessageBubbleTest : public BrowserWithTestWindowTest {
     return testing::AssertionFailure() << "Could not install extension: " << id;
   }
 
-  testing::AssertionResult LoadExtensionWithAction(
-      const std::string& index,
-      const std::string& id,
-      Manifest::Location location) {
+  testing::AssertionResult LoadExtensionWithAction(const std::string& index,
+                                                   const std::string& id,
+                                                   ManifestLocation location) {
     ExtensionBuilder builder;
     builder.SetManifest(
         DictionaryBuilder()
@@ -229,7 +230,7 @@ class ExtensionMessageBubbleTest : public BrowserWithTestWindowTest {
   testing::AssertionResult LoadExtensionOverridingHome(
       const std::string& index,
       const std::string& id,
-      Manifest::Location location) {
+      ManifestLocation location) {
     ExtensionBuilder builder;
     builder.SetManifest(DictionaryBuilder()
                             .Set("name", std::string("Extension " + index))
@@ -252,7 +253,7 @@ class ExtensionMessageBubbleTest : public BrowserWithTestWindowTest {
   testing::AssertionResult LoadExtensionOverridingStart(
       const std::string& index,
       const std::string& id,
-      Manifest::Location location) {
+      ManifestLocation location) {
     ExtensionBuilder builder;
     builder.SetManifest(
         DictionaryBuilder()
@@ -277,7 +278,7 @@ class ExtensionMessageBubbleTest : public BrowserWithTestWindowTest {
   testing::AssertionResult LoadExtensionOverridingNtp(
       const std::string& index,
       const std::string& id,
-      Manifest::Location location) {
+      ManifestLocation location) {
     ExtensionBuilder builder;
     builder.SetManifest(
         DictionaryBuilder()
@@ -300,7 +301,7 @@ class ExtensionMessageBubbleTest : public BrowserWithTestWindowTest {
   testing::AssertionResult LoadExtensionOverridingProxy(
       const std::string& index,
       const std::string& id,
-      Manifest::Location location) {
+      ManifestLocation location) {
     ExtensionBuilder builder;
     builder.SetManifest(
         DictionaryBuilder()
@@ -432,8 +433,10 @@ TEST_F(ExtensionMessageBubbleTest,
        DISABLED_BubbleCorrectlyReshowsOnDeactivationDismissal) {
   Init();
 
-  ASSERT_TRUE(LoadExtensionOverridingNtp("1", kId1, Manifest::INTERNAL));
-  ASSERT_TRUE(LoadExtensionOverridingNtp("2", kId2, Manifest::INTERNAL));
+  ASSERT_TRUE(
+      LoadExtensionOverridingNtp("1", kId1, ManifestLocation::kInternal));
+  ASSERT_TRUE(
+      LoadExtensionOverridingNtp("2", kId2, ManifestLocation::kInternal));
   std::unique_ptr<TestExtensionMessageBubbleController> controller(
       new TestExtensionMessageBubbleController(
           new NtpOverriddenBubbleDelegate(browser()->profile()), browser()));
@@ -502,9 +505,11 @@ TEST_F(ExtensionMessageBubbleTest, WipeoutControllerTest) {
   Init();
   // Add three extensions, and control two of them in this test (extension 1
   // and 2).
-  ASSERT_TRUE(LoadExtensionWithAction("1", kId1, Manifest::COMMAND_LINE));
-  ASSERT_TRUE(LoadGenericExtension("2", kId2, Manifest::UNPACKED));
-  ASSERT_TRUE(LoadGenericExtension("3", kId3, Manifest::EXTERNAL_POLICY));
+  ASSERT_TRUE(
+      LoadExtensionWithAction("1", kId1, ManifestLocation::kCommandLine));
+  ASSERT_TRUE(LoadGenericExtension("2", kId2, ManifestLocation::kUnpacked));
+  ASSERT_TRUE(
+      LoadGenericExtension("3", kId3, ManifestLocation::kExternalPolicy));
 
   std::unique_ptr<TestExtensionMessageBubbleController> controller(
       new TestExtensionMessageBubbleController(
@@ -584,9 +589,11 @@ TEST_F(ExtensionMessageBubbleTest, DevModeControllerTest) {
   // Add three extensions, and control two of them in this test (extension 1
   // and 2). Extension 1 is a regular extension, Extension 2 is UNPACKED so it
   // counts as a DevMode extension.
-  ASSERT_TRUE(LoadExtensionWithAction("1", kId1, Manifest::COMMAND_LINE));
-  ASSERT_TRUE(LoadGenericExtension("2", kId2, Manifest::UNPACKED));
-  ASSERT_TRUE(LoadGenericExtension("3", kId3, Manifest::EXTERNAL_POLICY));
+  ASSERT_TRUE(
+      LoadExtensionWithAction("1", kId1, ManifestLocation::kCommandLine));
+  ASSERT_TRUE(LoadGenericExtension("2", kId2, ManifestLocation::kUnpacked));
+  ASSERT_TRUE(
+      LoadGenericExtension("3", kId3, ManifestLocation::kExternalPolicy));
 
   std::unique_ptr<TestExtensionMessageBubbleController> controller(
       new TestExtensionMessageBubbleController(
@@ -669,7 +676,7 @@ TEST_F(ExtensionMessageBubbleTest, ShowDevModeBubbleOncePerOriginalProfile) {
       FeatureSwitch::force_dev_mode_highlighting(), true);
   Init();
 
-  ASSERT_TRUE(LoadGenericExtension("1", kId1, Manifest::UNPACKED));
+  ASSERT_TRUE(LoadGenericExtension("1", kId1, ManifestLocation::kUnpacked));
 
   auto get_controller = [](Browser* browser) {
     auto controller = std::make_unique<TestExtensionMessageBubbleController>(
@@ -747,10 +754,12 @@ TEST_F(ExtensionMessageBubbleTest, SettingsApiControllerTest) {
         // Load two extensions overriding home page and one overriding something
         // unrelated (to check for interference). Extension 2 should still win
         // on the home page setting.
-        ASSERT_TRUE(LoadExtensionOverridingHome("1", kId1, Manifest::UNPACKED));
-        ASSERT_TRUE(LoadExtensionOverridingHome("2", kId2, Manifest::UNPACKED));
-        ASSERT_TRUE(
-            LoadExtensionOverridingStart("3", kId3, Manifest::UNPACKED));
+        ASSERT_TRUE(LoadExtensionOverridingHome("1", kId1,
+                                                ManifestLocation::kUnpacked));
+        ASSERT_TRUE(LoadExtensionOverridingHome("2", kId2,
+                                                ManifestLocation::kUnpacked));
+        ASSERT_TRUE(LoadExtensionOverridingStart("3", kId3,
+                                                 ManifestLocation::kUnpacked));
         break;
       case BUBBLE_TYPE_SEARCH_ENGINE:
         // We deliberately skip testing the search engine since it relies on
@@ -763,11 +772,12 @@ TEST_F(ExtensionMessageBubbleTest, SettingsApiControllerTest) {
         // Load two extensions overriding start page and one overriding
         // something unrelated (to check for interference). Extension 2 should
         // still win on the startup page setting.
-        ASSERT_TRUE(
-            LoadExtensionOverridingStart("1", kId1, Manifest::UNPACKED));
-        ASSERT_TRUE(
-            LoadExtensionOverridingStart("2", kId2, Manifest::UNPACKED));
-        ASSERT_TRUE(LoadExtensionOverridingHome("3", kId3, Manifest::UNPACKED));
+        ASSERT_TRUE(LoadExtensionOverridingStart("1", kId1,
+                                                 ManifestLocation::kUnpacked));
+        ASSERT_TRUE(LoadExtensionOverridingStart("2", kId2,
+                                                 ManifestLocation::kUnpacked));
+        ASSERT_TRUE(LoadExtensionOverridingHome("3", kId3,
+                                                ManifestLocation::kUnpacked));
         break;
       default:
         NOTREACHED();
@@ -881,7 +891,8 @@ TEST_F(ExtensionMessageBubbleTest, SettingsApiControllerTest) {
 // enabled extension is uninstalled.
 TEST_F(ExtensionMessageBubbleTest, BubbleClosedAfterEnabledExtensionUninstall) {
   Init();
-  ASSERT_TRUE(LoadExtensionOverridingNtp("1", kId1, Manifest::UNPACKED));
+  ASSERT_TRUE(
+      LoadExtensionOverridingNtp("1", kId1, ManifestLocation::kUnpacked));
 
   auto controller = std::make_unique<TestExtensionMessageBubbleController>(
       new NtpOverriddenBubbleDelegate(browser()->profile()), browser());
@@ -914,7 +925,8 @@ TEST_F(ExtensionMessageBubbleTest, BubbleClosedAfterEnabledExtensionUninstall) {
 TEST_F(ExtensionMessageBubbleTest,
        BubbleClosedAfterDisabledExtensionUninstall) {
   Init();
-  ASSERT_TRUE(LoadExtensionOverridingNtp("1", kId1, Manifest::COMMAND_LINE));
+  ASSERT_TRUE(
+      LoadExtensionOverridingNtp("1", kId1, ManifestLocation::kCommandLine));
 
   auto controller = std::make_unique<TestExtensionMessageBubbleController>(
       new SuspiciousExtensionBubbleDelegate(browser()->profile()), browser());
@@ -968,9 +980,9 @@ TEST_F(ExtensionMessageBubbleTest, BubbleShownForMultipleExtensions) {
   FeatureSwitch::ScopedOverride force_dev_mode_highlighting(
       FeatureSwitch::force_dev_mode_highlighting(), true);
   Init();
-  ASSERT_TRUE(LoadGenericExtension("1", kId1, Manifest::UNPACKED));
-  ASSERT_TRUE(LoadGenericExtension("2", kId2, Manifest::UNPACKED));
-  ASSERT_TRUE(LoadGenericExtension("3", kId3, Manifest::UNPACKED));
+  ASSERT_TRUE(LoadGenericExtension("1", kId1, ManifestLocation::kUnpacked));
+  ASSERT_TRUE(LoadGenericExtension("2", kId2, ManifestLocation::kUnpacked));
+  ASSERT_TRUE(LoadGenericExtension("3", kId3, ManifestLocation::kUnpacked));
 
   auto controller = std::make_unique<TestExtensionMessageBubbleController>(
       new DevModeBubbleDelegate(browser()->profile()), browser());
@@ -1013,9 +1025,12 @@ TEST_F(ExtensionMessageBubbleTest, NtpOverriddenControllerTest) {
   // Load two extensions overriding new tab page and one overriding something
   // unrelated (to check for interference). Extension 2 should still win
   // on the new tab page setting.
-  ASSERT_TRUE(LoadExtensionOverridingNtp("1", kId1, Manifest::UNPACKED));
-  ASSERT_TRUE(LoadExtensionOverridingNtp("2", kId2, Manifest::UNPACKED));
-  ASSERT_TRUE(LoadExtensionOverridingStart("3", kId3, Manifest::UNPACKED));
+  ASSERT_TRUE(
+      LoadExtensionOverridingNtp("1", kId1, ManifestLocation::kUnpacked));
+  ASSERT_TRUE(
+      LoadExtensionOverridingNtp("2", kId2, ManifestLocation::kUnpacked));
+  ASSERT_TRUE(
+      LoadExtensionOverridingStart("3", kId3, ManifestLocation::kUnpacked));
 
   std::unique_ptr<TestExtensionMessageBubbleController> controller(
       new TestExtensionMessageBubbleController(
@@ -1123,18 +1138,21 @@ TEST_F(ExtensionMessageBubbleTest, NtpOverriddenControllerTest) {
 // still pass on Linux and Mac.
 TEST_F(ExtensionMessageBubbleTest, ShowNtpBubblePerProfilePerExtensionTest) {
   Init();
-  ASSERT_TRUE(LoadExtensionOverridingNtp("1", kId1, Manifest::UNPACKED));
+  ASSERT_TRUE(
+      LoadExtensionOverridingNtp("1", kId1, ManifestLocation::kUnpacked));
   std::unique_ptr<TestExtensionMessageBubbleController> controller(
       std::make_unique<TestExtensionMessageBubbleController>(
           new NtpOverriddenBubbleDelegate(browser()->profile()), browser()));
   ShowAndDismissBubbleByDeactivation(controller.get(), "Extension 1");
 
-  ASSERT_TRUE(LoadExtensionOverridingNtp("2", kId2, Manifest::UNPACKED));
+  ASSERT_TRUE(
+      LoadExtensionOverridingNtp("2", kId2, ManifestLocation::kUnpacked));
   controller = std::make_unique<TestExtensionMessageBubbleController>(
       new NtpOverriddenBubbleDelegate(browser()->profile()), browser());
   ShowAndDismissBubbleByDeactivation(controller.get(), "Extension 2");
 
-  ASSERT_TRUE(LoadExtensionOverridingNtp("3", kId3, Manifest::UNPACKED));
+  ASSERT_TRUE(
+      LoadExtensionOverridingNtp("3", kId3, ManifestLocation::kUnpacked));
   controller = std::make_unique<TestExtensionMessageBubbleController>(
       new NtpOverriddenBubbleDelegate(browser()->profile()), browser());
   ShowAndDismissBubbleByDeactivation(controller.get(), "Extension 3");
@@ -1181,9 +1199,12 @@ TEST_F(ExtensionMessageBubbleTest, MAYBE_ProxyOverriddenControllerTest) {
   // Load two extensions overriding proxy and one overriding something
   // unrelated (to check for interference). Extension 2 should still win
   // on the proxy setting.
-  ASSERT_TRUE(LoadExtensionOverridingProxy("1", kId1, Manifest::UNPACKED));
-  ASSERT_TRUE(LoadExtensionOverridingProxy("2", kId2, Manifest::UNPACKED));
-  ASSERT_TRUE(LoadExtensionOverridingStart("3", kId3, Manifest::UNPACKED));
+  ASSERT_TRUE(
+      LoadExtensionOverridingProxy("1", kId1, ManifestLocation::kUnpacked));
+  ASSERT_TRUE(
+      LoadExtensionOverridingProxy("2", kId2, ManifestLocation::kUnpacked));
+  ASSERT_TRUE(
+      LoadExtensionOverridingStart("3", kId3, ManifestLocation::kUnpacked));
 
   // The bubble will not show if the extension was installed in the last 7 days
   // so we artificially set the install time to simulate an old install during
@@ -1307,7 +1328,7 @@ TEST_F(ExtensionMessageBubbleTest, TestBubbleOutlivesBrowser) {
   ToolbarActionsModel* model = ToolbarActionsModel::Get(profile());
   base::RunLoop().RunUntilIdle();
 
-  ASSERT_TRUE(LoadExtensionWithAction("1", kId1, Manifest::UNPACKED));
+  ASSERT_TRUE(LoadExtensionWithAction("1", kId1, ManifestLocation::kUnpacked));
 
   auto controller = std::make_unique<TestExtensionMessageBubbleController>(
       new DevModeBubbleDelegate(browser()->profile()), browser());
@@ -1333,7 +1354,7 @@ TEST_F(ExtensionMessageBubbleTest,
   ToolbarActionsModel* model = ToolbarActionsModel::Get(profile());
   base::RunLoop().RunUntilIdle();
 
-  ASSERT_TRUE(LoadExtensionWithAction("1", kId1, Manifest::UNPACKED));
+  ASSERT_TRUE(LoadExtensionWithAction("1", kId1, ManifestLocation::kUnpacked));
 
   auto controller = std::make_unique<TestExtensionMessageBubbleController>(
       new DevModeBubbleDelegate(browser()->profile()), browser());
@@ -1360,7 +1381,7 @@ TEST_F(ExtensionMessageBubbleTest,
   ToolbarActionsModel* model = ToolbarActionsModel::Get(profile());
   base::RunLoop().RunUntilIdle();
 
-  ASSERT_TRUE(LoadExtensionWithAction("1", kId1, Manifest::UNPACKED));
+  ASSERT_TRUE(LoadExtensionWithAction("1", kId1, ManifestLocation::kUnpacked));
 
   auto controller = std::make_unique<TestExtensionMessageBubbleController>(
       new DevModeBubbleDelegate(browser()->profile()), browser());
@@ -1380,7 +1401,8 @@ TEST_F(ExtensionMessageBubbleTest,
 TEST_F(ExtensionMessageBubbleTest, TestShouldShowMethod) {
   Init();
   ExtensionRegistry* registry = ExtensionRegistry::Get(profile());
-  ASSERT_TRUE(LoadExtensionOverridingNtp("1", kId1, Manifest::UNPACKED));
+  ASSERT_TRUE(
+      LoadExtensionOverridingNtp("1", kId1, ManifestLocation::kUnpacked));
   ASSERT_TRUE(registry->enabled_extensions().GetByID(kId1));
 
   std::unique_ptr<TestExtensionMessageBubbleController> ntp_bubble_controller(

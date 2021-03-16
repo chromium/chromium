@@ -117,7 +117,7 @@ TEST_F(ExtensionHooksDelegateTest, SendRequestDisabled) {
   scoped_refptr<const Extension> extension =
       ExtensionBuilder("foo")
           .SetBackgroundContext(ExtensionBuilder::BackgroundContext::EVENT_PAGE)
-          .SetLocation(Manifest::UNPACKED)
+          .SetLocation(mojom::ManifestLocation::kUnpacked)
           .Build();
   RegisterExtension(extension);
 

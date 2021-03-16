@@ -945,7 +945,7 @@ class ExtensionPrefsComponentExtension : public ExtensionPrefsTest {
     // Adding a component extension.
     component_extension_ =
         ExtensionBuilder("a")
-            .SetLocation(Manifest::COMPONENT)
+            .SetLocation(mojom::ManifestLocation::kComponent)
             .SetPath(prefs_.extensions_dir().AppendASCII("a"))
             .Build();
     prefs_.AddExtension(component_extension_.get());
@@ -953,7 +953,7 @@ class ExtensionPrefsComponentExtension : public ExtensionPrefsTest {
     // Adding a non component extension.
     no_component_extension_ =
         ExtensionBuilder("b")
-            .SetLocation(Manifest::INTERNAL)
+            .SetLocation(mojom::ManifestLocation::kInternal)
             .SetPath(prefs_.extensions_dir().AppendASCII("b"))
             .Build();
     prefs_.AddExtension(no_component_extension_.get());

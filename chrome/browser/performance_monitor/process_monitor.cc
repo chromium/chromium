@@ -19,12 +19,12 @@
 #include "content/public/browser/child_process_data.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/common/content_constants.h"
-#include "extensions/browser/process_map.h"
 #include "extensions/buildflags/buildflags.h"
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
 #include "extensions/browser/extension_host.h"
 #include "extensions/browser/extension_registry.h"
+#include "extensions/browser/process_map.h"
 #include "extensions/common/manifest_handlers/background_info.h"
 #endif
 

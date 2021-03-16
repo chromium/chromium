@@ -123,7 +123,7 @@ class ExtensionGarbageCollectorChromeOSUnitTest
         .SetVersion(version)
         .SetID(id)
         .SetPath(path)
-        .SetLocation(Manifest::INTERNAL)
+        .SetLocation(mojom::ManifestLocation::kInternal)
         .Build();
   }
 
