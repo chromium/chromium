@@ -15,11 +15,6 @@ CC_BASE_EXPORT extern const base::Feature kAnimatedImageResume;
 CC_BASE_EXPORT extern const base::Feature kImpulseScrollAnimations;
 CC_BASE_EXPORT extern const base::Feature kSynchronizedScrolling;
 
-#if !defined(OS_ANDROID)
-CC_BASE_EXPORT extern const base::Feature kImplLatencyRecovery;
-CC_BASE_EXPORT extern const base::Feature kMainLatencyRecovery;
-#endif  // !defined(OS_ANDROID)
-
 CC_BASE_EXPORT bool IsImplLatencyRecoveryEnabled();
 CC_BASE_EXPORT bool IsMainLatencyRecoveryEnabled();
 
