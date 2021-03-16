@@ -771,7 +771,7 @@ void DistributeExcessBlockSizeToRows(
   if (distributable_block_size <= LayoutUnit())
     return;
 
-  // Step 1: percentage rows grow to their percentage size.
+  // Step 1: percentage rows grow to no more than their percentage size.
   if (percent_rows_with_deficit_count > 0) {
     float ratio = std::min(
         distributable_block_size.ToFloat() / percentage_block_size_deficit,
@@ -792,6 +792,9 @@ void DistributeExcessBlockSizeToRows(
     }
     last_row->block_size += remaining_deficit;
     distributed_block_size += remaining_deficit;
+    // Rounding errors might cause us to distribute more than available length.
+    distributed_block_size =
+        std::min(distributed_block_size, distributable_block_size);
     distributable_block_size -= distributed_block_size;
   }
   DCHECK_GE(distributable_block_size, LayoutUnit());
