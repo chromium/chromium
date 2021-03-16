@@ -3,13 +3,14 @@
 # found in the LICENSE file.
 
 import("//build/toolchain/goma.gni")
+import("//build/toolchain/rbe.gni")
 
 declare_args() {
   # Precompiled header file support is by default available,
-  # but for distributed build system uses (like goma) or when
+  # but for distributed build system uses (like goma or rbe) or when
   # doing official builds.
   # On Linux it slows down the build, so don't enable it by default.
-  enable_precompiled_headers = !is_official_build && !use_goma && !is_linux
+  enable_precompiled_headers = !is_official_build && !(use_goma || use_rbe) && !is_linux
   # TODO (crbug.com/1176750): Disable PCH on windows temporarily to unbreak the
   # buildbots.
   if (is_win) {
