@@ -760,6 +760,9 @@ void WebContentsViewAura::EndDrag(
 
 void WebContentsViewAura::InstallOverscrollControllerDelegate(
     RenderWidgetHostViewAura* view) {
+  if (!base::FeatureList::IsEnabled(features::kOverscrollHistoryNavigation))
+    return;
+
   if (!gesture_nav_simple_)
     gesture_nav_simple_ = std::make_unique<GestureNavSimple>(web_contents_);
   if (view)

@@ -4037,9 +4037,11 @@
     "expiry_milestone": 91
   },
   {
+    // This flag is used by ChromeOS for some accessibility users.
+    // TODO(b/172341945): Fix this asap.
     "name": "overscroll-history-navigation",
     "owners": [ "mohsen", "jinsukkim" ],
-    "expiry_milestone": 88
+    "expiry_milestone": 93
   },
   {
     "name": "page-info-discoverability",

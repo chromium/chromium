@@ -479,6 +479,10 @@ const base::Feature kOriginPolicy{"OriginPolicy",
 const base::Feature kOpenXrExtendedFeatureSupport{
     "OpenXrExtendedFeatureSupport", base::FEATURE_DISABLED_BY_DEFAULT};
 
+// History navigation in response to horizontal overscroll (aka gesture-nav).
+const base::Feature kOverscrollHistoryNavigation{
+    "OverscrollHistoryNavigation", base::FEATURE_ENABLED_BY_DEFAULT};
+
 // Whether web apps can run periodic tasks upon network connectivity.
 const base::Feature kPeriodicBackgroundSync{"PeriodicBackgroundSync",
                                             base::FEATURE_DISABLED_BY_DEFAULT};
