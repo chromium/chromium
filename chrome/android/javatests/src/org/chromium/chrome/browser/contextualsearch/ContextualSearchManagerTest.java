@@ -2890,6 +2890,7 @@ public class ContextualSearchManagerTest {
     @SmallTest
     @Feature({"ContextualSearch"})
     @Restriction(UiRestriction.RESTRICTION_TYPE_PHONE)
+    @DisableIf.Build(sdk_is_greater_than = Build.VERSION_CODES.O, message = "crbug.com/1184410")
     @ParameterAnnotations.UseMethodParameter(FeatureParamProvider.class)
     public void testTapExpandNotRemovedFromHistory(@EnabledFeature int enabledFeature)
             throws Exception {
@@ -3731,6 +3732,7 @@ public class ContextualSearchManagerTest {
     @Test
     @SmallTest
     @Feature({"ContextualSearch"})
+    @DisableIf.Build(sdk_is_greater_than = Build.VERSION_CODES.O, message = "crbug.com/1182040")
     public void testRelatedSearchesResponseWhenEnabled() throws Exception {
         FeatureList.setTestFeatures(ENABLE_RELATED_SEARCHES_UI);
         mFakeServer.reset();
