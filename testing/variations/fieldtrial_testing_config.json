@@ -3222,34 +3222,6 @@
             ]
         }
     ],
-    "FreezeBackgroundTabOnNetworkIdle": [
-        {
-            "platforms": [
-                "android",
-                "android_weblayer"
-            ],
-            "experiments": [
-                {
-                    "name": "enable_1min",
-                    "params": {
-                        "DelayForBackgroundAndNetworkIdleTabFreezingMills": "60000"
-                    },
-                    "enable_features": [
-                        "freeze-background-tab-on-network-idle"
-                    ]
-                },
-                {
-                    "name": "enable_3min",
-                    "params": {
-                        "DelayForBackgroundAndNetworkIdleTabFreezingMills": "180000"
-                    },
-                    "enable_features": [
-                        "freeze-background-tab-on-network-idle"
-                    ]
-                }
-            ]
-        }
-    ],
     "FuzzyAppSearch": [
         {
             "platforms": [
